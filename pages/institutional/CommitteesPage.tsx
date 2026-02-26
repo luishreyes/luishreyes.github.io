@@ -2,6 +2,7 @@
 
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { PageWrapper } from '../../components/PageWrapper';
 import { CommitteeCard } from '../../components/CommitteeCard';
 import { committeesData, leadershipRolesData } from '../../components/data/institutional';
@@ -32,11 +33,7 @@ const itemVariants = {
     },
 };
 
-interface CommitteesPageProps {
-  setCurrentPage?: (page: string) => void;
-}
-
-export const CommitteesPage: React.FC<CommitteesPageProps> = ({ setCurrentPage }) => {
+export const CommitteesPage: React.FC = () => {
 
     // FIX: Changed component to React.FC to resolve TypeScript error with the 'key' prop.
     const CommitteeSection: React.FC<{ title: string; committees: Committee[] }> = ({ title, committees }) => {
@@ -59,7 +56,7 @@ export const CommitteesPage: React.FC<CommitteesPageProps> = ({ setCurrentPage }
                         </motion.div>
                     ))}
 
-                    {title === "Administrative & Leadership Roles" && setCurrentPage && (
+                    {title === "Administrative & Leadership Roles" && (
                         <motion.div {...{variants: itemVariants}}>
                             <div className="bg-white p-6 rounded-lg shadow-lg border border-zinc-200 w-full flex flex-col sm:flex-row items-center justify-between gap-4 transition-transform duration-300 hover:-translate-y-1">
                                 <div className="flex-grow text-center sm:text-left">
@@ -68,12 +65,12 @@ export const CommitteesPage: React.FC<CommitteesPageProps> = ({ setCurrentPage }
                                     <p className="mt-2 text-sm text-brand-gray">A strategic initiative to transform engineering education with Generative AI. For more details on my role and its impact, visit the dedicated page.</p>
                                 </div>
                                 <div className="flex-shrink-0">
-                                    <button
-                                        onClick={() => setCurrentPage('institutional.augmented-intelligence')}
+                                    <Link
+                                        to="/service/augmented-intelligence"
                                         className="inline-block bg-yellow-400 text-brand-dark font-semibold px-6 py-2 rounded-lg shadow-md hover:bg-yellow-500 transition-colors duration-300 text-sm"
                                     >
                                         Learn More
-                                    </button>
+                                    </Link>
                                 </div>
                             </div>
                         </motion.div>

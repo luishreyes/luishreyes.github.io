@@ -1,5 +1,6 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
 import { AboutPage } from './pages/AboutPage';
 import { ResearchOverviewPage } from './pages/ResearchOverviewPage';
@@ -39,9 +40,9 @@ import { TeachingPurposePage } from './pages/purpose/TeachingPurposePage';
 import { ResearchPurposePage } from './pages/purpose/ResearchPurposePage';
 import { ServicePurposePage } from './pages/purpose/ServicePurposePage';
 import { startSequentialImagePreloading } from './services/preloader';
+import { AppDataContext } from './context/AppDataContext';
 
 const App: React.FC = () => {
-  const [currentPage, setCurrentPage] = useState('about');
   const [products, setProducts] = useState<Product[]>([]);
   const [productsLoading, setProductsLoading] = useState(true);
   const [citationData, setCitationData] = useState<{
@@ -58,6 +59,8 @@ const App: React.FC = () => {
     isLoading: true,
   });
 
+  const location = useLocation();
+
   useEffect(() => {
     const loadInitialData = async () => {
       setProductsLoading(true);
@@ -68,7 +71,6 @@ const App: React.FC = () => {
 
         setProducts(fetchedProducts);
 
-        // This logic was in the second useEffect. Now it runs as soon as data is available.
         const allCounts = {
           ...fetchedProducts.reduce((acc, p) => ({ ...acc, [p.doi]: null }), {}),
           ...dbCitations
@@ -106,12 +108,11 @@ const App: React.FC = () => {
 
     loadInitialData();
 
-    // Delay preloading images so it doesn't block critical data fetching
     const timer = setTimeout(() => {
       startSequentialImagePreloading();
-    }, 1000); // 1-second delay
+    }, 1000);
 
-    return () => clearTimeout(timer); // Cleanup timer on unmount
+    return () => clearTimeout(timer);
   }, []);
 
   const handleDownloadCv = () => {
@@ -131,83 +132,52 @@ const App: React.FC = () => {
     );
   };
 
-  const renderPage = () => {
-    switch (currentPage) {
-      case 'research.overview':
-        return <ResearchOverviewPage citationData={citationData} products={products} />;
-      case 'research.program':
-        return <ResearchProgramPage />;
-      case 'research.products':
-        return <ProductsPage 
-                  products={products}
-                  isLoadingProducts={productsLoading}
-                  citationCounts={citationData.counts}
-                  isLoadingCitations={citationData.isLoading}
-                />;
-      case 'research.grants':
-        return <GrantsPage />;
-      case 'research.students':
-        return <StudentsPage />;
-      case 'teaching.overview':
-        return <TeachingOverviewPage />;
-      case 'principles.philosophy':
-        return <TeachingPhilosophyPage />;
-      case 'teaching.courses':
-        return <CoursesPage />;
-      case 'teaching.unit-ops':
-        return <UnitOperationsInnovationPage />;
-      case 'teaching.edco':
-        return <ContinuingEducationPage />;
-      case 'teaching.testimonials':
-        return <TestimonialsPage />;
-      case 'teaching.sotl':
-        return <ScholarshipOfTeachingPage products={products} />;
-      case 'teaching.development':
-        return <ProfessionalDevelopmentPage />;
-      case 'institutional.overview':
-        return <InstitutionalOverviewPage />;
-      case 'institutional.committees':
-        return <CommitteesPage />;
-      case 'institutional.editorial':
-        return <EditorialPage />;
-      case 'institutional.outreach':
-        return <OutreachPage />;
-      case 'institutional.augmented-intelligence':
-        return <AugmentedIntelligencePage />;
-      case 'future.overview':
-        return <FutureOverviewPage />;
-      case 'future.research':
-        return <ResearchDirectionsPage />;
-      case 'future.collaboration':
-        return <CollaborationPage />;
-      case 'recognition':
-        return <AwardsPage />;
-      case 'principles.teaching':
-        return <TeachingPurposePage />;
-      case 'principles.research':
-        return <ResearchPurposePage />;
-      case 'principles.service':
-        return <ServicePurposePage />;
-      case 'about':
-      default:
-        return <AboutPage />;
-    }
-  };
+  const contextValue = useMemo(() => ({
+    products,
+    productsLoading,
+    citationData,
+  }), [products, productsLoading, citationData]);
 
   return (
-    <main className="relative">
-      <Navbar 
-        currentPage={currentPage} 
-        setCurrentPage={setCurrentPage}
-        onDownloadCv={handleDownloadCv}
-      />
-      <div> {/* No offset, allows content to go under navbar */}
-        <AnimatePresence mode="wait">
-            {React.cloneElement(renderPage(), { key: currentPage, setCurrentPage })}
-        </AnimatePresence>
-      </div>
-       <ScrollToTopButton />
-    </main>
+    <AppDataContext.Provider value={contextValue}>
+      <main className="relative">
+        <Navbar onDownloadCv={handleDownloadCv} />
+        <div>
+          <AnimatePresence mode="wait">
+            <Routes location={location} key={location.pathname}>
+              <Route path="/" element={<AboutPage />} />
+              <Route path="/principles/teaching" element={<TeachingPurposePage />} />
+              <Route path="/principles/research" element={<ResearchPurposePage />} />
+              <Route path="/principles/service" element={<ServicePurposePage />} />
+              <Route path="/principles/philosophy" element={<TeachingPhilosophyPage />} />
+              <Route path="/research" element={<ResearchOverviewPage />} />
+              <Route path="/research/program" element={<ResearchProgramPage />} />
+              <Route path="/research/products" element={<ProductsPage />} />
+              <Route path="/research/grants" element={<GrantsPage />} />
+              <Route path="/research/students" element={<StudentsPage />} />
+              <Route path="/teaching" element={<TeachingOverviewPage />} />
+              <Route path="/teaching/courses" element={<CoursesPage />} />
+              <Route path="/teaching/unit-ops" element={<UnitOperationsInnovationPage />} />
+              <Route path="/teaching/continuing-education" element={<ContinuingEducationPage />} />
+              <Route path="/teaching/testimonials" element={<TestimonialsPage />} />
+              <Route path="/teaching/scholarship" element={<ScholarshipOfTeachingPage />} />
+              <Route path="/teaching/professional-development" element={<ProfessionalDevelopmentPage />} />
+              <Route path="/service" element={<InstitutionalOverviewPage />} />
+              <Route path="/service/augmented-intelligence" element={<AugmentedIntelligencePage />} />
+              <Route path="/service/committees" element={<CommitteesPage />} />
+              <Route path="/service/editorial" element={<EditorialPage />} />
+              <Route path="/service/outreach" element={<OutreachPage />} />
+              <Route path="/future" element={<FutureOverviewPage />} />
+              <Route path="/future/research" element={<ResearchDirectionsPage />} />
+              <Route path="/future/collaboration" element={<CollaborationPage />} />
+              <Route path="/recognition" element={<AwardsPage />} />
+              <Route path="*" element={<AboutPage />} />
+            </Routes>
+          </AnimatePresence>
+        </div>
+        <ScrollToTopButton />
+      </main>
+    </AppDataContext.Provider>
   );
 };
 

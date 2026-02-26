@@ -6,13 +6,7 @@ import type { Product, ProductType, ResearchArea } from '../types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FilterModal, type AdvancedFiltersState } from '../components/FilterModal';
 import { PageWrapper } from '../components/PageWrapper';
-
-interface ProductsPageProps {
-  products: Product[];
-  isLoadingProducts: boolean;
-  citationCounts: Record<string, number | null>;
-  isLoadingCitations: boolean;
-}
+import { useAppData } from '../context/AppDataContext';
 
 const ChevronIcon = ({ open }: { open: boolean }) => (
     <motion.svg
@@ -33,7 +27,10 @@ const ChevronIcon = ({ open }: { open: boolean }) => (
 );
 
 
-export const ProductsPage = ({ products, isLoadingProducts, citationCounts, isLoadingCitations }: ProductsPageProps) => {
+export const ProductsPage = () => {
+  const { products, productsLoading: isLoadingProducts, citationData } = useAppData();
+  const citationCounts = citationData.counts;
+  const isLoadingCitations = citationData.isLoading;
   const [sortBy, setSortBy] = useState<'date' | 'citations'>('date');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [searchQuery, setSearchQuery] = useState('');

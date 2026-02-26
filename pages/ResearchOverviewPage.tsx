@@ -1,6 +1,7 @@
 
 
 import React, { useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { PageWrapper } from '../components/PageWrapper';
 import { StatsSection } from '../components/StatsSection';
 import { grantsData } from '../components/data/grants';
@@ -8,20 +9,10 @@ import { studentsData, graduatedStudentsData } from '../components/data/students
 import { ProductsOverTimeChart } from '../components/ProductsOverTimeChart';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { ResearchConnectionsGraph } from '../components/ResearchConnectionsGraph';
-import type { Product } from '../types';
+import { useAppData } from '../context/AppDataContext';
 
-interface ResearchOverviewPageProps {
-  citationData: {
-    total: number;
-    hIndex: number;
-    i10Index: number;
-    isLoading: boolean;
-  };
-  products: Product[];
-  setCurrentPage?: (page: string) => void;
-}
-
-export const ResearchOverviewPage: React.FC<ResearchOverviewPageProps> = ({ citationData, products, setCurrentPage }) => {
+export const ResearchOverviewPage: React.FC = () => {
+  const { citationData, products } = useAppData();
   const totalMentees = studentsData.phd.length + studentsData.ms.length + graduatedStudentsData.phd.length + graduatedStudentsData.ms.length;
 
   const stats = [
@@ -103,16 +94,14 @@ export const ResearchOverviewPage: React.FC<ResearchOverviewPageProps> = ({ cita
               <p className="mt-4 text-brand-gray leading-relaxed text-lg">
                 My research group is dedicated to engineering biology for a better life and creating a sustainable future. We operate at the convergence of biotechnology, nanotechnology, and artificial intelligence, applying engineering principles to design, build, and optimize living systems. Our work addresses critical challenges across biomedical, food, and environmental engineering, transforming microorganisms into microscopic factories that produce high-value products for medicine, food, and sustainable industry.
               </p>
-              {setCurrentPage && (
-                <div className="mt-8">
-                  <button 
-                    onClick={() => setCurrentPage('research.program')}
-                    className="inline-block bg-yellow-400 text-brand-dark font-semibold px-8 py-3 rounded-lg shadow-md hover:bg-yellow-500 transition-colors duration-300"
-                  >
-                    Explore Our Research Program
-                  </button>
-                </div>
-              )}
+              <div className="mt-8">
+                <Link
+                  to="/research/program"
+                  className="inline-block bg-yellow-400 text-brand-dark font-semibold px-8 py-3 rounded-lg shadow-md hover:bg-yellow-500 transition-colors duration-300"
+                >
+                  Explore Our Research Program
+                </Link>
+              </div>
             </motion.div>
             
             <motion.div 

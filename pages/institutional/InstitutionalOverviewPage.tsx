@@ -1,13 +1,10 @@
 
 
 import React, { useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { PageWrapper } from '../../components/PageWrapper';
 // FIX: Removed 'Variants' from framer-motion import to resolve module export error.
 import { motion, useScroll, useTransform } from 'framer-motion';
-
-interface InstitutionalOverviewPageProps {
-  setCurrentPage?: (page: string) => void;
-}
 
 const serviceItems = [
   {
@@ -16,7 +13,7 @@ const serviceItems = [
     icon: (
         <img src="https://cdn-icons-png.flaticon.com/512/9942/9942521.png" alt="Service & Leadership Icon" className="h-8 w-8" />
     ),
-    link: 'institutional.committees'
+    link: '/service/committees'
   },
   {
     title: 'Augmented Intelligence Initiative',
@@ -24,7 +21,7 @@ const serviceItems = [
     icon: (
         <img src="https://icons.veryicon.com/png/o/education-technology/alibaba-cloud-iot-business-department/ai-27.png" alt="Augmented Intelligence Icon" className="h-8 w-8" />
     ),
-    link: 'institutional.augmented-intelligence'
+    link: '/service/augmented-intelligence'
   },
   {
     title: 'Editorial Contributions',
@@ -32,7 +29,7 @@ const serviceItems = [
     icon: (
         <img src="https://cdn-icons-png.flaticon.com/512/4598/4598321.png" alt="Editorial Contributions Icon" className="h-8 w-8" />
     ),
-    link: 'institutional.editorial'
+    link: '/service/editorial'
   },
   {
     title: 'Outreach & Scouting',
@@ -40,7 +37,7 @@ const serviceItems = [
     icon: (
         <img src="https://cdn-icons-png.flaticon.com/512/2112/2112735.png" alt="Outreach Icon" className="h-8 w-8" />
     ),
-    link: 'institutional.outreach'
+    link: '/service/outreach'
   }
 ];
 
@@ -68,7 +65,7 @@ const itemVariants = {
     },
 };
 
-export const InstitutionalOverviewPage: React.FC<InstitutionalOverviewPageProps> = ({ setCurrentPage }) => {
+export const InstitutionalOverviewPage: React.FC = () => {
   const headerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: headerRef,
@@ -152,10 +149,9 @@ export const InstitutionalOverviewPage: React.FC<InstitutionalOverviewPageProps>
                       {...{variants: itemVariants}}
                       className="h-full"
                   >
-                      <button
-                          onClick={() => setCurrentPage && item.link && setCurrentPage(item.link)}
+                      <Link
+                          to={item.link}
                           className="bg-white p-8 rounded-lg shadow-lg border border-zinc-100 text-center flex flex-col items-center h-full w-full transition-all duration-300 hover:-translate-y-2 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-400"
-                          disabled={!setCurrentPage || !item.link}
                           aria-label={`Learn more about ${item.title}`}
                       >
                           <div className="bg-yellow-400/20 p-4 rounded-full mb-4">
@@ -163,7 +159,7 @@ export const InstitutionalOverviewPage: React.FC<InstitutionalOverviewPageProps>
                           </div>
                           <h3 className="text-xl font-semibold text-brand-dark mb-2">{item.title}</h3>
                           <p className="text-brand-gray text-sm flex-grow">{item.description}</p>
-                      </button>
+                      </Link>
                   </motion.div>
               ))}
             </motion.div>

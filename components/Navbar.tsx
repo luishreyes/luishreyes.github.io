@@ -1,71 +1,76 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 interface NavbarProps {
-  currentPage: string;
-  setCurrentPage: (page: string) => void;
   onDownloadCv: () => void;
 }
 
 const navItems = [
-  { 
-    id: 'principles', 
+  {
+    id: 'principles',
     title: 'Guiding Principles',
-    defaultPage: 'principles.teaching',
+    defaultPath: '/principles/teaching',
+    pathPrefix: '/principles',
     subItems: [
-      { id: 'principles.teaching', title: 'Teaching Purpose' },
-      { id: 'principles.research', title: 'Research Purpose' },
-      { id: 'principles.service', title: 'Service Purpose' },
-      { id: 'principles.philosophy', title: 'Teaching Philosophy' },
+      { title: 'Teaching Purpose', path: '/principles/teaching' },
+      { title: 'Research Purpose', path: '/principles/research' },
+      { title: 'Service Purpose', path: '/principles/service' },
+      { title: 'Teaching Philosophy', path: '/principles/philosophy' },
     ],
   },
-  { 
-    id: 'research', 
+  {
+    id: 'research',
     title: 'Research',
-    defaultPage: 'research.overview',
+    defaultPath: '/research',
+    pathPrefix: '/research',
     subItems: [
-      { id: 'research.overview', title: 'Overview' },
-      { id: 'research.program', title: 'Research Program' },
-      { id: 'research.products', title: 'Products' },
-      { id: 'research.grants', title: 'Grants' },
-      { id: 'research.students', title: 'Grad Students' },
+      { title: 'Overview', path: '/research' },
+      { title: 'Research Program', path: '/research/program' },
+      { title: 'Products', path: '/research/products' },
+      { title: 'Grants', path: '/research/grants' },
+      { title: 'Grad Students', path: '/research/students' },
     ],
   },
-  { 
-    id: 'teaching', 
+  {
+    id: 'teaching',
     title: 'Teaching',
-    defaultPage: 'teaching.overview',
+    defaultPath: '/teaching',
+    pathPrefix: '/teaching',
     subItems: [
-      { id: 'teaching.overview', title: 'Overview' },
-      { id: 'teaching.courses', title: 'Courses Taught' },
-      { id: 'teaching.unit-ops', title: 'Unit Ops Innovation' },
-      { id: 'teaching.edco', title: 'Continuing Education' },
-      { id: 'teaching.testimonials', title: 'Testimonials' },
-      { id: 'teaching.sotl', title: 'Scholarship of Teaching' },
-      { id: 'teaching.development', title: 'Professional Development' },
+      { title: 'Overview', path: '/teaching' },
+      { title: 'Courses Taught', path: '/teaching/courses' },
+      { title: 'Unit Ops Innovation', path: '/teaching/unit-ops' },
+      { title: 'Continuing Education', path: '/teaching/continuing-education' },
+      { title: 'Testimonials', path: '/teaching/testimonials' },
+      { title: 'Scholarship of Teaching', path: '/teaching/scholarship' },
+      { title: 'Professional Development', path: '/teaching/professional-development' },
     ],
   },
-  { 
-    id: 'institutional', 
+  {
+    id: 'institutional',
     title: 'Service',
-    defaultPage: 'institutional.overview',
+    defaultPath: '/service',
+    pathPrefix: '/service',
     subItems: [
-      { id: 'institutional.overview', title: 'Overview' },
-      { id: 'institutional.augmented-intelligence', title: 'Augmented Intelligence' },
-      { id: 'institutional.committees', title: 'Service & Leadership' },
-      { id: 'institutional.editorial', title: 'Editorial Boards' },
-      { id: 'institutional.outreach', title: 'Outreach & Scouting' },
+      { title: 'Overview', path: '/service' },
+      { title: 'Augmented Intelligence', path: '/service/augmented-intelligence' },
+      { title: 'Service & Leadership', path: '/service/committees' },
+      { title: 'Editorial Boards', path: '/service/editorial' },
+      { title: 'Outreach & Scouting', path: '/service/outreach' },
     ],
   },
-  { id: 'recognition', title: 'Recognition', defaultPage: 'recognition' },
+  { id: 'recognition', title: 'Recognition', defaultPath: '/recognition', pathPrefix: '/recognition' },
 ];
 
 
-export const Navbar = ({ currentPage, setCurrentPage, onDownloadCv }: NavbarProps) => {
+export const Navbar = ({ onDownloadCv }: NavbarProps) => {
   const [openDesktopMenu, setOpenDesktopMenu] = useState<string | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [openMobileSubMenu, setOpenMobileSubMenu] = useState<string | null>(null);
   const navRef = useRef<HTMLElement>(null);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -82,18 +87,18 @@ export const Navbar = ({ currentPage, setCurrentPage, onDownloadCv }: NavbarProp
   // Close mobile menu on page change or resize to desktop
   useEffect(() => {
     const handleResize = () => {
-        if (window.innerWidth >= 768) { // md breakpoint
+        if (window.innerWidth >= 768) {
             setIsMobileMenuOpen(false);
         }
     };
     window.addEventListener('resize', handleResize);
-    
+
     // Close on navigation
     setIsMobileMenuOpen(false);
-    setOpenMobileSubMenu(null); // Reset submenu state on navigation
+    setOpenMobileSubMenu(null);
 
     return () => window.removeEventListener('resize', handleResize);
-  }, [currentPage]);
+  }, [location.pathname]);
 
 
   return (
@@ -101,20 +106,22 @@ export const Navbar = ({ currentPage, setCurrentPage, onDownloadCv }: NavbarProp
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex-shrink-0">
-             <button 
-                onClick={() => setCurrentPage('about')} 
+             <Link
+                to="/"
                 className="text-xl font-bold text-brand-dark tracking-tight transition-opacity hover:opacity-80"
              >
                 LHR
-             </button>
+             </Link>
           </div>
-          
+
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center justify-center">
             <div className="flex items-baseline space-x-2 md:space-x-4">
                 {navItems.map((item) => {
-                const isParentActive = currentPage.startsWith(item.id + '.');
-                
+                const isParentActive = item.pathPrefix === '/recognition'
+                  ? location.pathname === '/recognition'
+                  : location.pathname.startsWith(item.pathPrefix);
+
                 let dropdownPositionClass = 'left-1/2 -translate-x-1/2';
                 if (item.id === 'research') {
                     dropdownPositionClass = 'left-0';
@@ -132,26 +139,25 @@ export const Navbar = ({ currentPage, setCurrentPage, onDownloadCv }: NavbarProp
                             if (item.subItems) {
                                 setOpenDesktopMenu(openDesktopMenu === item.id ? null : item.id);
                             } else {
-                                setCurrentPage(item.defaultPage);
+                                navigate(item.defaultPath);
                                 setOpenDesktopMenu(null);
                             }
                         }}
                         className={`${
-                        (currentPage === item.id || isParentActive)
+                        isParentActive
                             ? 'text-brand-dark'
                             : 'text-brand-gray hover:text-brand-dark'
                         } relative px-3 py-2 text-sm font-medium rounded-md transition-colors flex items-center`}
                         aria-haspopup={!!item.subItems}
                         aria-expanded={openDesktopMenu === item.id}
-                        aria-current={(currentPage === item.id || isParentActive) ? 'page' : undefined}
+                        aria-current={isParentActive ? 'page' : undefined}
                     >
                         {item.title}
                         {item.subItems && (
                         <svg className={`w-4 h-4 ml-1 transition-transform transform ${openDesktopMenu === item.id ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
                         )}
-                        {(currentPage === item.id || isParentActive) && (
+                        {isParentActive && (
                         <motion.div
-                            // FIX: Spread motion props to avoid TypeScript type errors.
                             {...{
                                 layoutId: "underline",
                                 transition: { type: 'spring', stiffness: 300, damping: 25 },
@@ -163,7 +169,6 @@ export const Navbar = ({ currentPage, setCurrentPage, onDownloadCv }: NavbarProp
                     <AnimatePresence>
                         {item.subItems && openDesktopMenu === item.id && (
                         <motion.div
-                            // FIX: Spread motion props to avoid TypeScript type errors.
                             {...{
                                 initial: { opacity: 0, y: 10 },
                                 animate: { opacity: 1, y: 0 },
@@ -175,13 +180,13 @@ export const Navbar = ({ currentPage, setCurrentPage, onDownloadCv }: NavbarProp
                             <div className="py-1">
                             {item.subItems.map(subItem => (
                                 <button
-                                    key={subItem.id}
+                                    key={subItem.path}
                                     onClick={() => {
-                                    setCurrentPage(subItem.id);
+                                    navigate(subItem.path);
                                     setOpenDesktopMenu(null);
                                     }}
                                     className={`${
-                                    currentPage === subItem.id ? 'bg-zinc-100 text-brand-dark' : 'text-brand-gray'
+                                    location.pathname === subItem.path ? 'bg-zinc-100 text-brand-dark' : 'text-brand-gray'
                                     } block w-full text-left px-4 py-2 text-sm hover:bg-zinc-100 transition-colors`}
                                 >
                                 {subItem.title}
@@ -226,7 +231,6 @@ export const Navbar = ({ currentPage, setCurrentPage, onDownloadCv }: NavbarProp
               <span className="sr-only">Open main menu</span>
               <AnimatePresence initial={false} mode="wait">
                   <motion.div
-                    // FIX: Spread motion props to avoid TypeScript type errors.
                     {...{
                         key: isMobileMenuOpen ? 'close' : 'open',
                         initial: { rotate: -90, opacity: 0 },
@@ -252,7 +256,6 @@ export const Navbar = ({ currentPage, setCurrentPage, onDownloadCv }: NavbarProp
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
-            // FIX: Spread motion props to avoid TypeScript type errors.
             {...{
                 initial: { opacity: 0, y: -20 },
                 animate: { opacity: 1, y: 0 },
@@ -264,7 +267,9 @@ export const Navbar = ({ currentPage, setCurrentPage, onDownloadCv }: NavbarProp
           >
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
               {navItems.map(item => {
-                const isParentActive = currentPage.startsWith(item.id + '.');
+                const isParentActive = item.pathPrefix === '/recognition'
+                  ? location.pathname === '/recognition'
+                  : location.pathname.startsWith(item.pathPrefix);
                 return (
                     <div key={item.id}>
                     {item.subItems ? (
@@ -279,7 +284,6 @@ export const Navbar = ({ currentPage, setCurrentPage, onDownloadCv }: NavbarProp
                         <AnimatePresence>
                             {openMobileSubMenu === item.id && (
                             <motion.div
-                                // FIX: Spread motion props to avoid TypeScript type errors.
                                 {...{
                                     initial: "collapsed",
                                     animate: "open",
@@ -295,9 +299,9 @@ export const Navbar = ({ currentPage, setCurrentPage, onDownloadCv }: NavbarProp
                                 <div className="py-1">
                                     {item.subItems.map(subItem => (
                                     <button
-                                        key={subItem.id}
-                                        onClick={() => setCurrentPage(subItem.id)}
-                                        className={`${currentPage === subItem.id ? 'bg-zinc-100 text-brand-dark' : 'text-brand-gray'} block w-full text-left px-3 py-2 rounded-md text-base font-medium hover:bg-zinc-50 transition-colors`}
+                                        key={subItem.path}
+                                        onClick={() => navigate(subItem.path)}
+                                        className={`${location.pathname === subItem.path ? 'bg-zinc-100 text-brand-dark' : 'text-brand-gray'} block w-full text-left px-3 py-2 rounded-md text-base font-medium hover:bg-zinc-50 transition-colors`}
                                     >
                                         {subItem.title}
                                     </button>
@@ -309,8 +313,8 @@ export const Navbar = ({ currentPage, setCurrentPage, onDownloadCv }: NavbarProp
                         </>
                     ) : (
                         <button
-                        onClick={() => setCurrentPage(item.defaultPage)}
-                        className={`${currentPage === item.id ? 'bg-zinc-100 text-brand-dark' : 'text-brand-gray'} block w-full text-left px-3 py-2 rounded-md text-base font-medium hover:bg-zinc-50 transition-colors`}
+                        onClick={() => navigate(item.defaultPath)}
+                        className={`${location.pathname === item.defaultPath ? 'bg-zinc-100 text-brand-dark' : 'text-brand-gray'} block w-full text-left px-3 py-2 rounded-md text-base font-medium hover:bg-zinc-50 transition-colors`}
                         >
                         {item.title}
                         </button>

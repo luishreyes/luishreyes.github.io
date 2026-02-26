@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { PageWrapper } from '../../components/PageWrapper';
 // FIX: Removed 'Variants' from framer-motion import to resolve module export error.
 import { motion } from 'framer-motion';
@@ -60,11 +61,7 @@ const CheckIcon = () => (
     </svg>
 );
 
-interface AugmentedIntelligencePageProps {
-  setCurrentPage?: (page: string) => void;
-}
-
-export const AugmentedIntelligencePage: React.FC<AugmentedIntelligencePageProps> = ({ setCurrentPage }) => {
+export const AugmentedIntelligencePage: React.FC = () => {
   return (
     <PageWrapper noPadding>
       <div className="pt-16">
@@ -182,16 +179,14 @@ export const AugmentedIntelligencePage: React.FC<AugmentedIntelligencePageProps>
                             ></iframe>
                         </div>
 
-                        {setCurrentPage && (
-                            <div className="mt-2 self-start">
-                                <button
-                                    onClick={() => setCurrentPage('recognition')}
-                                    className="text-yellow-500 font-medium hover:underline hover:text-yellow-400 transition-colors"
-                                >
-                                    See the recognition details &rarr;
-                                </button>
-                            </div>
-                        )}
+                        <div className="mt-2 self-start">
+                            <Link
+                                to="/recognition"
+                                className="text-yellow-500 font-medium hover:underline hover:text-yellow-400 transition-colors"
+                            >
+                                See the recognition details &rarr;
+                            </Link>
+                        </div>
                     </div>
                 </motion.div>
             </Section>

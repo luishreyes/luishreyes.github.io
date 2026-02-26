@@ -5,10 +5,7 @@ import React, { useMemo } from 'react';
 import { PageWrapper } from '../../components/PageWrapper';
 import type { Product } from '../../types';
 import { motion } from 'framer-motion';
-
-interface ScholarshipOfTeachingPageProps {
-  products: Product[];
-}
+import { useAppData } from '../../context/AppDataContext';
 
 // FIX: Changed component to React.FC to resolve TypeScript error with the 'key' prop.
 const PublicationCard: React.FC<{ product: Product }> = ({ product }) => (
@@ -67,7 +64,8 @@ const editorialRole = {
 };
 
 
-export const ScholarshipOfTeachingPage: React.FC<ScholarshipOfTeachingPageProps> = ({ products }) => {
+export const ScholarshipOfTeachingPage: React.FC = () => {
+  const { products } = useAppData();
     const sotlPublications = useMemo(() => 
         products
             .filter(p => p.researchAreas?.includes('Scholarship of Teaching & Learning'))
