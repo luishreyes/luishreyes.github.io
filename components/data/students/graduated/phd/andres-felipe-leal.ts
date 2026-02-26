@@ -6,7 +6,8 @@ const student: GraduatedStudent = {
     program: 'Ph.D. Program in Biological Sciences at Pontificia Universidad Javeriana',
     graduationYear: 2023,
     startedYear: 2019,
-    currentPosition: 'Postdoctoral Researcher at Nemours, Jacksonville, Florida',
+    currentPosition: 'Postdoctoral Researcher at IIMCB, Poland',
+    linkedinUrl: 'https://www.linkedin.com/in/andr%C3%A9s-felipe-leal-4347b17a/',
     thesisTitle: 'CRISPR/nCas9-Based Genome Editing for GM2 Gangliosidoses and Mucopolysaccharidosis IVA Using Non-Viral Vectors',
     laymanSummary: [
         {

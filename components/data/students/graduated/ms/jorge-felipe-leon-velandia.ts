@@ -7,6 +7,7 @@ const student: GraduatedStudent = {
     graduationYear: 2022,
     startedYear: 2020,
     currentPosition: 'Project Management Consultant, Desechables Los Ángeles, Bogotá, Colombia',
+    linkedinUrl: 'https://www.linkedin.com/in/jorge-felipe-le%C3%B3n-a053b2242/',
     thesisTitle: 'Preparation, Sensory and Physicochemical Analysis of Rice Masato Enriched with Blueberries',
     laymanSummary: [
         {

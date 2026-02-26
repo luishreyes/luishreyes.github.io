@@ -7,6 +7,7 @@ const student: GraduatedStudent = {
     graduationYear: 2023,
     startedYear: 2021,
     currentPosition: 'Quality and Innovation Analyst at Natura',
+    linkedinUrl: 'https://www.linkedin.com/in/catalina-garc%C3%ADa-rond%C3%B3n-b47896178/',
     thesisTitle: 'Design and Evaluation of a Hair Mousse Composed of a Synthetic Peptide with Antifungal Action Against Trichophyton rubrum and Candida spp.',
     laymanSummary: [
         {

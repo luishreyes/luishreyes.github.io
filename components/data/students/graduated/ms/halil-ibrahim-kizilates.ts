@@ -6,7 +6,8 @@ const student: GraduatedStudent = {
     program: 'M.S. in Bioengineering at Karlsruhe Institute of Technology & Universidad de los Andes',
     graduationYear: 2025,
     startedYear: 2024,
-    currentPosition: 'Sanofi trainee',
+    currentPosition: 'Business Development (Geodata) at Frankfurt',
+    linkedinUrl: 'https://www.linkedin.com/in/halil-kizilates-7712491ba/',
     thesisTitle: 'Enhancing Beer Sensory Profile and Wort Fermentation through Alginate-Peptone and Polyelectrolyte Complex Yeast Encapsulation: A Novel Approach',
     laymanSummary: [
         {

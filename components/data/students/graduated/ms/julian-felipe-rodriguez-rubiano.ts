@@ -7,6 +7,7 @@ const student: GraduatedStudent = {
     graduationYear: 2024,
     startedYear: 2022,
     currentPosition: 'Junior Researcher at Bio D S.A',
+    linkedinUrl: 'https://www.linkedin.com/in/julianfrodriguezr/',
     thesisTitle: 'Mathematical Modeling and Economic Evaluation of the Production of 1,3-Propanediol Through the Fermentation of Glycerol with Lactobacillus reuteri',
     laymanSummary: [
         {

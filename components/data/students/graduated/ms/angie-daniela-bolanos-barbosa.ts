@@ -7,6 +7,7 @@ const student: GraduatedStudent = {
     graduationYear: 2023,
     startedYear: 2021,
     currentPosition: 'University Tutor at Fundación Alquería Cavelier',
+    linkedinUrl: 'https://www.linkedin.com/in/angiedanielabola%C3%B1osbarbosa/',
     thesisTitle: 'Formulation and characterization of calcium alginate capsules and different strains of the yeast Saccharomyces cerevisiae: impact on the sensory profile of fermented products obtained from a base malt wort.',
     laymanSummary: [
         {

@@ -7,6 +7,7 @@ const student: GraduatedStudent = {
     graduationYear: 2025,
     startedYear: 2023,
     currentPosition: undefined,
+    linkedinUrl: 'https://www.linkedin.com/in/weysilgado4/',
     thesisTitle: "Potential Influence of 'ALE' Beer Fermentation with Low Flocculation through Encapsulation of Endemic Colombian Honey Yeasts",
     laymanSummary: [
         {

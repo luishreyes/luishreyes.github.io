@@ -7,6 +7,7 @@ const student: GraduatedStudent = {
     graduationYear: 2023,
     startedYear: 2021,
     currentPosition: 'Ph.D. student at Saarland University, Germany',
+    linkedinUrl: 'https://www.linkedin.com/in/ariel-coli/',
     thesisTitle: 'Efficient Cellular Penetration and Biocompatibility of FE23-Functionalized Magnetite Nanoparticles: A Promising Platform for Targeted Drug Delivery',
     laymanSummary: [
         {

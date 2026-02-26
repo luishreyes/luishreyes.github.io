@@ -7,6 +7,7 @@ const student: GraduatedStudent = {
     graduationYear: 2022,
     startedYear: 2020,
     currentPosition: 'Researcher at Universidad de los Andes',
+    linkedinUrl: 'https://www.linkedin.com/in/valentina-quezada-p%C3%A9rez/',
     thesisTitle: 'Formulation and evaluation of a peptide-based topical treatment against Fluconazole-resistant Candida sp.',
     laymanSummary: [
         {

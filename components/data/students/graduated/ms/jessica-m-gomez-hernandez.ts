@@ -7,6 +7,7 @@ const student: GraduatedStudent = {
     graduationYear: 2023,
     startedYear: 2021,
     currentPosition: 'Process Engineer Recovery Plant at Smurfit Westrock',
+    linkedinUrl: 'https://www.linkedin.com/in/jessica-maria-gomez-hernandez-a6b07018a/',
     thesisTitle: 'Modeling, simulation, assembly, and testing of a bench-scale process for the synthesis of magnetite nanoparticles for biological and medical applications: technical and economic feasibility',
     laymanSummary: [
         {

@@ -49,6 +49,7 @@ export interface GraduatedStudent {
   graduationYear: number;
   startedYear: number;
   currentPosition?: string;
+  linkedinUrl?: string;
   thesisTitle: string;
   laymanSummary: LaymanSummaryPoint[];
   imageUrl: string;

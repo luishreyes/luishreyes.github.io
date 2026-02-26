@@ -7,6 +7,7 @@ const student: GraduatedStudent = {
     graduationYear: 2025,
     startedYear: 2021,
     currentPosition: 'Director of Technological Extension at Cenipalma',
+    linkedinUrl: 'https://www.linkedin.com/in/julian-fernando-becerra-encinales-4129a9326/',
     thesisTitle: 'Systemic Management Model for Technological Extension in Oil Palm Cultivation in Colombia: An Integrative and Evidence-Based Approach',
     laymanSummary: [
         {

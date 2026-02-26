@@ -7,6 +7,7 @@ const student: GraduatedStudent = {
     graduationYear: 2022,
     startedYear: 2020,
     currentPosition: 'Research and development Specialist (R&D) at Grupo Danec',
+    linkedinUrl: 'https://www.linkedin.com/in/jvperezb/',
     thesisTitle: 'Novel Biosurfactants: Rationally Designed Surface-Active Peptides and in silico Evaluation at the Decane-Water Interface',
     laymanSummary: [
         {

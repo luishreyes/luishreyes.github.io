@@ -7,6 +7,7 @@ const student: GraduatedStudent = {
     graduationYear: 2025,
     startedYear: 2023,
     currentPosition: undefined,
+    linkedinUrl: 'https://www.linkedin.com/in/lucia-acuna-ingenieraquimica/',
     thesisTitle: 'Design Study of Thermally Sensitive Liposomes Based on Soy Lecithin, Using Carbon Quantum Dots as Marker Nanoparticles',
     laymanSummary: [
         {

@@ -7,6 +7,7 @@ const student: GraduatedStudent = {
     graduationYear: 2023,
     startedYear: 2021,
     currentPosition: 'Ph.D. Student in Biotechnology at TEC de Monterrey',
+    linkedinUrl: 'https://www.linkedin.com/in/lauraparradaza/',
     thesisTitle: 'Design and Assembly of a Microbial Bio-Factory for the Heterologous Expression of (2S)-Naringenin in Escherichia coli',
     laymanSummary: [
         {

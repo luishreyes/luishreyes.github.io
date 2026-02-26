@@ -7,6 +7,7 @@ const student: GraduatedStudent = {
     graduationYear: 2022,
     startedYear: 2020,
     currentPosition: 'Research Networks Officer - Vicerrectoría de Investigación y Creación, Universidad de los Andes',
+    linkedinUrl: 'https://www.linkedin.com/in/andresmantillaorozco/',
     thesisTitle: 'Modeling, simulation, and synthesis of magnetoliposomes formation by encapsulation of magnetic nanoparticles in liposomes enabled by low-cost microfluidic platforms as potential drugs delivery vehicles.',
     laymanSummary: [
         {

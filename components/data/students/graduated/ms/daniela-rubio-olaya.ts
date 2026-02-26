@@ -6,7 +6,8 @@ const student: GraduatedStudent = {
     program: 'M.S. in Biomedical Engineering',
     graduationYear: 2021,
     startedYear: 2019,
-    currentPosition: 'Programs Manager at Rockstar',
+    currentPosition: 'Senior Media Planning Analyst at Publicis Global Delivery',
+    linkedinUrl: 'https://www.linkedin.com/in/daniela-rubio-olaya/',
     thesisTitle: "Buforin II-Escherichia coli's DNA interactome: routes to elucidate the molecular mechanisms of its antimicrobial activity",
     laymanSummary: [
         {

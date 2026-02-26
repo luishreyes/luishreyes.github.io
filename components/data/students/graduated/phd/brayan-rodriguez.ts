@@ -7,6 +7,7 @@ const student: GraduatedStudent = {
     graduationYear: 2025,
     startedYear: 2021,
     currentPosition: 'Assistant Professor at Pontificia Universidad Javeriana',
+    linkedinUrl: 'https://www.linkedin.com/in/brayanrodbajo/',
     thesisTitle: 'Listening to Sustainable Bites: Assessing the Influence of Sound on Sustainable Food Perceptions and Behaviors Using a Data-Driven Approach',
     laymanSummary: [
         {

@@ -7,6 +7,7 @@ const student: GraduatedStudent = {
     graduationYear: 2023,
     startedYear: 2021,
     currentPosition: 'Clinical Data Manager at MSD',
+    linkedinUrl: 'https://www.linkedin.com/in/anamar%C3%ADa-moreno-castano-a139a612a/',
     thesisTitle: 'Integrating In-Silico and Experimental Approaches in the Discovery of Potential Pea Protein (Pisum sativum L.) Bioactive Peptides for the Food Industry',
     laymanSummary: [
         {

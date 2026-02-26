@@ -7,6 +7,7 @@ const student: GraduatedStudent = {
     graduationYear: 2022,
     startedYear: 2020,
     currentPosition: 'Senior Clinical Data Manager at MSD LATAM',
+    linkedinUrl: 'https://www.linkedin.com/in/jorge-luis-patarroyo-5391401a2/',
     thesisTitle: 'Novel antibacterial hydrogels based on gelatin/polyvinyl-alcohol and graphene oxide/silver nanoconjugates: formulation, characterization, and preliminary biocompatibility evaluation',
     laymanSummary: [
         {

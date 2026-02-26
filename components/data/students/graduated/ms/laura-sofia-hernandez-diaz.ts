@@ -7,6 +7,7 @@ const student: GraduatedStudent = {
     graduationYear: 2024,
     startedYear: 2022,
     currentPosition: 'Improvement Management Analyst at Vitalis',
+    linkedinUrl: 'https://www.linkedin.com/in/laura-sof%C3%ADa-hernandez-d%C3%ADaz-8a051116a/',
     thesisTitle: 'Identification and Characterization of Native Yeast Strains in Sugarcane Plantations in Cali, Colombia, for the Efficient Production of Ethanol in the Brewing Industry',
     laymanSummary: [
         {

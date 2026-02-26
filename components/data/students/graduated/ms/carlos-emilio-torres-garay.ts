@@ -7,6 +7,7 @@ const student: GraduatedStudent = {
     graduationYear: 2021,
     startedYear: 2019,
     currentPosition: 'Sustainability and Climate Change Manager at PwC Colombia',
+    linkedinUrl: 'https://www.linkedin.com/in/carlos-emilio-torres-garay-734574169/',
     thesisTitle: 'Microfluidic Synthesis and Purification of Magnetoliposomes for Oral Drug Delivery',
     laymanSummary: [
         {

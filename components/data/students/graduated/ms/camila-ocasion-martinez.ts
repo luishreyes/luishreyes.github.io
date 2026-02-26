@@ -6,7 +6,8 @@ const student: GraduatedStudent = {
     program: 'M.S. in Chemical Engineering at Universidad de Los Andes',
     graduationYear: 2021,
     startedYear: 2019,
-    currentPosition: 'Director of Corporate Responsibility at Hevolución',
+    currentPosition: 'CEO at Excelsa',
+    linkedinUrl: 'https://www.linkedin.com/in/camila-ocasion/',
     thesisTitle: 'Improvement in the Functional Screening of Metagenomic Libraries',
     laymanSummary: [
         {

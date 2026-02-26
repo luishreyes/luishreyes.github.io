@@ -7,6 +7,7 @@ const student: GraduatedStudent = {
     graduationYear: 2023,
     startedYear: 2021,
     currentPosition: 'Instructor Professor at Universidad de los Andes',
+    linkedinUrl: 'https://www.linkedin.com/in/cristian-felipe-rodriguez-ospino/',
     thesisTitle: 'Accelerating Tissue Maturation through Magnetized Cell Spheroids: A Bioprinting Approach Enhanced by Stochastic Multiphysics Modeling in Tissue Engineering',
     laymanSummary: [
         {

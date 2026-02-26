@@ -6,7 +6,8 @@ const student: GraduatedStudent = {
     program: 'M.S. in Chemical Engineering at Universidad de Los Andes',
     graduationYear: 2021,
     startedYear: 2019,
-    currentPosition: 'Research Professional at Vecol S.A.',
+    currentPosition: 'Regional Qualification Expert at Sanofi',
+    linkedinUrl: 'https://www.linkedin.com/in/carlos-manuel-ramirez-89638b198/',
     thesisTitle: 'Design, Synthesis and Evaluation of pH Responsive Bio Nanoparticles for the Guided Transport and Delivery of CRISPR/Cas9 Plasmids: A Vehicle for Highly-Targeted Gene Therapy',
     laymanSummary: [
         {

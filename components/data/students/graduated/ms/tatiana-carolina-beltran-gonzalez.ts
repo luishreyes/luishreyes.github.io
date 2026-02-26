@@ -7,6 +7,7 @@ const student: GraduatedStudent = {
     graduationYear: 2022,
     startedYear: 2020,
     currentPosition: 'Teacher at Liceo Boston',
+    linkedinUrl: 'https://www.linkedin.com/in/tatiana-beltrang/',
     thesisTitle: 'Development of a Nanoplatform for the Efficient Intracellular Delivery of Linearized Nucleic Acids: Applications in Gene Therapy',
     laymanSummary: [
         {

@@ -7,6 +7,7 @@ const student: GraduatedStudent = {
     graduationYear: 2023,
     startedYear: 2019,
     currentPosition: 'Assistant Professor at Universidad EAN',
+    linkedinUrl: 'https://www.linkedin.com/in/julian-daniel-torres-vanegas-ua2019118/',
     thesisTitle: 'Rational Design of Carbon-Based Nanoplatforms for the Delivery of Therapeutic Agents: The Impact of Changing the Support and the Translocating Agent on Cell Internalization and Endosomal Escape Abilities',
     laymanSummary: [
         {

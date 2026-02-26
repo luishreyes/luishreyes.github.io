@@ -7,6 +7,7 @@ const student: GraduatedStudent = {
     graduationYear: 2021,
     startedYear: 2019,
     currentPosition: 'Medical Writer at Zimmer Biomet',
+    linkedinUrl: 'https://www.linkedin.com/in/saul-camilo-g%C3%B3mez-tinoco-2022a51b3/',
     thesisTitle: 'Design and manufacture of a low-cost microfluidic platform for the synthesis of giant liposomes for the encapsulation and separation of yeasts: Applications for the screening of membrane-active peptides',
     laymanSummary: [
         {

@@ -7,6 +7,7 @@ const student: GraduatedStudent = {
     graduationYear: 2023,
     startedYear: 2021,
     currentPosition: 'Head of Supply Chain at Waruwa',
+    linkedinUrl: 'https://www.linkedin.com/in/jonatan-garcia-mape-0237ab194/',
     thesisTitle: "Development of Nanobioconjugates from Magnetite Nanoparticles (MNPs) as a Transport Vehicle for Idebenone (IDE) and Study of Their Antioxidant Capacity",
     laymanSummary: [
         {

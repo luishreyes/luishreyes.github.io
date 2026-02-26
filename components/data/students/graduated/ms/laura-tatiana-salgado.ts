@@ -6,6 +6,7 @@ const student: GraduatedStudent = {
     program: 'M.S. in Biomedical Engineering',
     graduationYear: 2024,
     startedYear: 2022,
+    linkedinUrl: 'https://www.linkedin.com/in/laura-tatiana-salgado-rios-18738a312/',
     thesisTitle: 'Evaluating the Impact of Cell-Penetrating Motif Position on the Cellular Uptake of Magnetite Nanoparticles',
     laymanSummary: [
         {

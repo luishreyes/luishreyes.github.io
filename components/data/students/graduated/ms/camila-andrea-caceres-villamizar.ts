@@ -7,6 +7,7 @@ const student: GraduatedStudent = {
     graduationYear: 2022,
     startedYear: 2020,
     currentPosition: 'Commercial Chief at Bavaria',
+    linkedinUrl: 'https://www.linkedin.com/in/camilaandreacv/',
     thesisTitle: 'Genome Editing of Lactobacillus bulgaricus with CRISPR-Cas9 to Increase Its Bioprotective Potential in Dairy Products',
     laymanSummary: [
         {

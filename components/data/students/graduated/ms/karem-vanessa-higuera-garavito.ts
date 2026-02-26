@@ -7,6 +7,7 @@ const student: GraduatedStudent = {
     graduationYear: 2022,
     startedYear: 2020,
     currentPosition: 'Product Analyst, West Química',
+    linkedinUrl: 'https://www.linkedin.com/in/karem-vanessa-higuera-garavito-606bbb157/',
     thesisTitle: 'Formulation of a Whey Protein Isolate Supplemented with 3,3-Diindolylmethane as a Result Enhancer in Fat Loss and Maintenance Programs',
     laymanSummary: [
         {
