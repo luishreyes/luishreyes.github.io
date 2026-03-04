@@ -11,14 +11,32 @@ export interface EdcoCourse {
 
 export const edcoCoursesData: EdcoCourse[] = [
   // 2026
-  { 
-    year: 2026, 
-    title: 'Dominando la Inteligencia Artificial: Más Allá de ChatGPT y los Modelos Generativos', 
-    titleEn: 'Mastering Artificial Intelligence: Beyond ChatGPT and Generative Models', 
-    type: 'Open Course', 
-    client: 'EDCO', 
-    attendees: 40, 
-    role: 'Instructor' 
+  {
+    year: 2026,
+    title: 'Generalidades de la IA',
+    titleEn: 'AI Fundamentals',
+    type: 'Corporate Course',
+    client: 'Contraloría General de la República de Colombia',
+    attendees: 36,
+    role: 'Instructor'
+  },
+  {
+    year: 2026,
+    title: 'Herramientas en IA',
+    titleEn: 'AI Tools',
+    type: 'Corporate Course',
+    client: 'Contraloría General de la República de Colombia',
+    attendees: 34,
+    role: 'Instructor'
+  },
+  {
+    year: 2026,
+    title: 'Dominando la Inteligencia Artificial: Más Allá de ChatGPT y los Modelos Generativos',
+    titleEn: 'Mastering Artificial Intelligence: Beyond ChatGPT and Generative Models',
+    type: 'Open Course',
+    client: 'EDCO',
+    attendees: 40,
+    role: 'Instructor'
   },
 
   // 2025
