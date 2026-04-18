@@ -2,6 +2,8 @@
 
 
 import React, { useRef, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { SocialLinks } from '../components/SocialLinks';
 // FIX: Removed 'Variants' from framer-motion import to resolve module export error.
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { educationData, specializationsData, credentialsData } from '../components/data/education';
@@ -163,17 +165,18 @@ export const AboutPage = () => {
                   {...{ variants: heroChildVariants }}
                   className="mt-10"
                 >
-                  <button
-                    onClick={() => {
-                      const mainContent = document.getElementById('main-content');
-                      if (mainContent) {
-                        mainContent.scrollIntoView({ behavior: 'smooth' });
-                      }
-                    }}
-                    className="bg-yellow-400 text-brand-dark font-semibold px-8 py-3 rounded-lg shadow-md hover:bg-yellow-500 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-zinc-50 focus:ring-yellow-400"
+                  <Link
+                    to="/teaching"
+                    className="inline-block bg-yellow-400 text-brand-dark font-semibold px-8 py-3 rounded-lg shadow-md hover:bg-yellow-500 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-zinc-50 focus:ring-yellow-400"
                   >
                     Explore My Work
-                  </button>
+                  </Link>
+                </motion.div>
+                <motion.div
+                  {...{ variants: heroChildVariants }}
+                  className="mt-6"
+                >
+                  <SocialLinks />
                 </motion.div>
               </motion.div>
 
