@@ -17,7 +17,7 @@ const prioritizedImageUrls = [
   'https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/Campus_mision-historia-y-simbolos_0.webp', // Teaching Purpose
   'https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/Generales%20campus_2015_2015%20(69).jpg', // Research Purpose
   'https://ingenieria.uniandes.edu.co/sites/default/files/actualidad_0.jpg', // Service Purpose
-  'https://scontent-bog2-1.xx.fbcdn.net/v/t1.6435-9/126177274_10158054021613160_2071561028163868049_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=127cfc&_nc_ohc=dj840BgOy88Q7kNvwEiT1uy&_nc_oc=AdnFc82mDCvfBO131TvBC4UAontS_bG0tuNzjVIsU-C_XK_iB36TUYEowg6TU8k_Y-E&_nc_zt=23&_nc_ht=scontent-bog2-1.xx&_nc_gid=V3Z7ZIpHD2vHjRFe8ifdyw&oh=00_AfYf6zTruxitjBwowMEhRIze8yY2sM174dYmVyrv5ZWdAw&oe=68F4BC6B', // Teaching Philosophy
+  '/images/uniandes-bw.jpg', // Teaching Philosophy
 
   // Research
   'https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/Generated%20Image%20September%2002,%202025%20-%201_07PM.jpeg', // Research Overview
@@ -31,15 +31,6 @@ const prioritizedImageUrls = [
   // Recognition
   'https://pbs.twimg.com/media/DWKm7gvXcAIISbY?format=jpg&name=4096x4096', // Awards Page
 
-  // Future
-  'https://images.unsplash.com/photo-1516641051054-9df6a1aad654', // Future Overview
-  
-  // --- Other Banners (used randomly in PageWrapper) ---
-  'https://images.unsplash.com/photo-1602108987428-4768d7c7ecbe',
-  'https://images.unsplash.com/photo-1583621908511-e082803e3aa2',
-  'https://images.unsplash.com/photo-1685086934749-2f9b941716f8',
-  'https://images.unsplash.com/photo-1686094464066-305cc8e5a49e',
-  'https://images.unsplash.com/photo-1533891244820-1d2dbcf93f56',
 ];
 
 // Use a Set to ensure there are no duplicate URLs in the final queue.

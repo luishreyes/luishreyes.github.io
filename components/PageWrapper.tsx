@@ -1,10 +1,8 @@
 
 
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { bannerImageUrls } from './data/banners';
-
 interface PageWrapperProps {
   title?: string;
   // FIX: Made children optional to resolve multiple TypeScript errors where it was incorrectly flagged as missing.
@@ -17,12 +15,7 @@ interface PageWrapperProps {
   scrollToTop?: boolean;
 }
 
-const getRandomBanner = () => {
-    return bannerImageUrls[Math.floor(Math.random() * bannerImageUrls.length)];
-}
-
-export const PageWrapper = ({ title, children, maxWidth = 'max-w-7xl', imageShouldRotate = false, noPadding = false, bannerUrl: specificBannerUrl, bannerAlt = "Decorative banner image", scrollToTop = true }: PageWrapperProps) => {
-  const [bannerUrl] = useState(specificBannerUrl || getRandomBanner());
+export const PageWrapper = ({ title, children, maxWidth = 'max-w-7xl', imageShouldRotate = false, noPadding = false, bannerUrl, bannerAlt = "Decorative banner image", scrollToTop = true }: PageWrapperProps) => {
 
   useEffect(() => {
     if (scrollToTop) {
