@@ -65,11 +65,11 @@ export const TeachingPhilosophyPage = () => {
             className="relative rounded-2xl shadow-xl z-10 overflow-hidden"
           >
             <img 
-                src="https://scontent-bog2-1.xx.fbcdn.net/v/t1.6435-9/126177274_10158054021613160_2071561028163868049_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=127cfc&_nc_ohc=dj840BgOy88Q7kNvwEiT1uy&_nc_oc=AdnFc82mDCvfBO131TvBC4UAontS_bG0tuNzjVIsU-C_XK_iB36TUYEowg6TU8k_Y-E&_nc_zt=23&_nc_ht=scontent-bog2-1.xx&_nc_gid=V3Z7ZIpHD2vHjRFe8ifdyw&oh=00_AfYf6zTruxitjBwowMEhRIze8yY2sM174dYmVyrv5ZWdAw&oe=68F4BC6B" 
-                alt="Students collaborating in a modern Uniandes classroom, representing a dynamic learning environment"
+                src="/images/uniandes-bw.jpg"
+                alt="Universidad de los Andes campus building"
                 className="absolute inset-0 w-full h-full object-cover object-center"
             />
-            <div className="absolute inset-0 bg-white mix-blend-saturation pointer-events-none"></div>
+            {/* Image is already B&W, no saturation filter needed */}
             <div className="absolute inset-0 bg-zinc-900/60 mix-blend-multiply" />
             <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-48 pb-24">
                 <motion.div
