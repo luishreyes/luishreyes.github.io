@@ -7,9 +7,11 @@ interface ReadingLayoutProps {
   course: Course;
   reading: Reading;
   children: React.ReactNode;
+  /** When true the content area expands to max-w-6xl and the reading-prose wrapper is omitted so the caller controls layout. */
+  wide?: boolean;
 }
 
-export const ReadingLayout: React.FC<ReadingLayoutProps> = ({ course, reading, children }) => {
+export const ReadingLayout: React.FC<ReadingLayoutProps> = ({ course, reading, children, wide = false }) => {
   return (
     <motion.article
       {...{
@@ -65,8 +67,8 @@ export const ReadingLayout: React.FC<ReadingLayoutProps> = ({ course, reading, c
         </div>
       </header>
 
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="reading-prose">{children}</div>
+      <div className={`${wide ? 'max-w-6xl' : 'max-w-3xl'} mx-auto px-4 sm:px-6 lg:px-8 py-12`}>
+        {wide ? children : <div className="reading-prose">{children}</div>}
 
         <div className="mt-14 pt-8 border-t border-zinc-200">
           <Link

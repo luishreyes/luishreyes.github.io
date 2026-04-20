@@ -8,9 +8,9 @@ export const pouCourse: Course = {
   credits: 3,
   modality: 'Presencial',
   duration: '16 semanas',
-  tagline: 'Diseño Integrado de Productos y Procesos (DIPP)',
+  tagline: 'Diseño integral de una planta de producción de alcohol',
   description:
-    'El curso "Proyecto de Operaciones Unitarias" (POU) se enfoca en el "Diseño Integrado de Productos y Procesos" (DIPP), una metodología avanzada que integra diversos aspectos del diseño de productos, incluyendo sus propiedades, proceso de producción, y elementos de emprendimiento e innovación.',
+    'En este curso diseñarás, dimensionarás y simularás una planta completa de producción de alcohol a partir de materias primas renovables colombianas. Desde los diagramas de ingeniería hasta la torre de destilación, pasando por manejo de sólidos, transporte de fluidos, agitación, intercambio de calor y filtración — cada semana aplicas lo aprendido directamente en tu proyecto. El modelo es híbrido: aula invertida con podcasts y lecturas previas, quices al iniciar clase, talleres prácticos en parejas y trabajo autónomo en equipos de 4-5 personas a lo largo de las 16 semanas.',
   accessCode: 'POU202610',
   bannerUrl:
     'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?q=80&w=1920&auto=format&fit=crop',

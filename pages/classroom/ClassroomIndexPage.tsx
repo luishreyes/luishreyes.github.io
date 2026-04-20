@@ -11,12 +11,13 @@ export const ClassroomIndexPage: React.FC = () => {
           Classroom
         </p>
         <h1 className="mt-2 text-3xl sm:text-4xl font-bold tracking-tight text-brand-dark">
-          Espacio de clase
+          Classroom
         </h1>
         <p className="mt-4 text-brand-gray leading-relaxed">
-          Portal por curso para mis estudiantes. Cada curso tiene su landing,
-          lecturas y presentaciones listas para usar en clase. El acceso a los
-          materiales requiere el código que entrego al inicio del semestre.
+          A dedicated space for each of my courses. Here you will find the syllabus,
+          weekly readings, and class presentations — everything you need to prepare
+          before, during, and after each session. Access is protected by a course code
+          provided at the beginning of the semester.
         </p>
       </div>
 
