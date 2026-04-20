@@ -5,6 +5,7 @@ import { getCourseBySlug } from '../../components/data/classroom';
 import { CourseAccessGate } from '../../components/classroom/CourseAccessGate';
 import { CourseHero } from '../../components/classroom/CourseHero';
 import { Section } from '../../components/classroom/Section';
+import { TodayButton } from '../../components/classroom/TodayButton';
 import { NotFoundInClassroom } from './NotFoundInClassroom';
 
 export const CourseLandingPage: React.FC = () => {
@@ -24,6 +25,10 @@ export const CourseLandingPage: React.FC = () => {
         className="bg-zinc-50"
       >
         <CourseHero course={course} />
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16 relative z-10 mb-6">
+          <TodayButton course={course} />
+        </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-10 relative z-10">
           <div className="grid gap-4 sm:grid-cols-2">
