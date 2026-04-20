@@ -1,0 +1,2409 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Columnas de destilación · IQYA-2031</title>
+  <style>
+    :root {
+      --brand-dark: #1A1A1A;
+      --brand-yellow: #FFBF00;
+      --brand-yellow-dark: #E6AC00;
+      --brand-gray: #555555;
+      --surface: #ffffff;
+      --muted: #f4f4f5;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      background: var(--brand-dark);
+      color: var(--brand-dark);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      overflow: hidden;
+      -webkit-text-size-adjust: 100%;
+    }
+    .deck {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+    }
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(1rem, 4vw, 3.5rem);
+      background: var(--surface);
+      opacity: 0;
+      transition: opacity 260ms ease;
+    }
+    .slide.active {
+      display: flex;
+      opacity: 1;
+    }
+    .slide .content {
+      width: 100%;
+      max-width: 72rem;
+      display: flex;
+      flex-direction: column;
+      gap: clamp(0.75rem, 1.5vw, 1.5rem);
+    }
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      font-size: clamp(0.65rem, 1vw, 0.8rem);
+      color: var(--brand-yellow-dark);
+      font-weight: 600;
+    }
+    h1 {
+      font-size: clamp(1.75rem, 5.5vw, 4rem);
+      line-height: 1.05;
+      margin: 0;
+      color: var(--brand-dark);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    h2 {
+      font-size: clamp(1.25rem, 3.4vw, 2.25rem);
+      line-height: 1.15;
+      margin: 0;
+      color: var(--brand-dark);
+      font-weight: 700;
+    }
+    p, li {
+      font-size: clamp(0.95rem, 1.8vw, 1.35rem);
+      line-height: 1.55;
+      color: var(--brand-gray);
+      margin: 0;
+    }
+    ul, ol {
+      padding-left: 1.25em;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45em;
+    }
+    li::marker { color: var(--brand-yellow-dark); }
+    .slide.title-slide {
+      background: linear-gradient(135deg, #141414 0%, #1A1A1A 50%, #2a2a2a 100%);
+      color: #fff;
+    }
+    .slide.title-slide h1 { color: #fff; }
+    .slide.title-slide p { color: #d4d4d8; }
+    .slide.title-slide .eyebrow { color: var(--brand-yellow); }
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 0.5rem;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.35em 0.9em;
+      border-radius: 999px;
+      background: var(--muted);
+      color: var(--brand-dark);
+      font-size: clamp(0.75rem, 1.3vw, 1rem);
+      font-weight: 500;
+    }
+    .slide.title-slide .pill {
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .grid {
+      display: grid;
+      gap: clamp(0.75rem, 1.5vw, 1.25rem);
+    }
+    .grid.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    @media (max-width: 640px) {
+      .grid.cols-2, .grid.cols-3 { grid-template-columns: 1fr; }
+    }
+    .card {
+      background: var(--muted);
+      border-radius: 0.75rem;
+      padding: clamp(0.9rem, 1.5vw, 1.35rem);
+    }
+    .card h3 {
+      font-size: clamp(1rem, 2vw, 1.35rem);
+      margin: 0 0 0.35em 0;
+      color: var(--brand-dark);
+      font-weight: 600;
+    }
+    .card p { font-size: clamp(0.8rem, 1.4vw, 1rem); }
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(1rem, 2vw, 2rem);
+      align-items: center;
+    }
+    @media (max-width: 640px) {
+      .two-col { grid-template-columns: 1fr; }
+    }
+    .diagram {
+      width: 100%;
+      max-width: 38rem;
+      border-radius: 0.75rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+    }
+    .small-text {
+      font-size: clamp(0.75rem, 1.2vw, 0.95rem);
+      color: var(--brand-gray);
+      opacity: 0.8;
+    }
+    .tip {
+      background: #fffbe6;
+      border-left: 4px solid var(--brand-yellow);
+      padding: 0.75em 1em;
+      border-radius: 0 0.5rem 0.5rem 0;
+      font-size: clamp(0.85rem, 1.4vw, 1.05rem);
+      color: var(--brand-dark);
+    }
+    .warning {
+      background: #fef2f2;
+      border-left: 4px solid #ef4444;
+      padding: 0.75em 1em;
+      border-radius: 0 0.5rem 0.5rem 0;
+      font-size: clamp(0.85rem, 1.4vw, 1.05rem);
+      color: var(--brand-dark);
+    }
+    .big-example {
+      background: var(--muted);
+      border-radius: 0.75rem;
+      padding: clamp(1rem, 2vw, 1.5rem);
+      text-align: center;
+    }
+    .big-example code {
+      font-size: clamp(1.25rem, 3vw, 2.25rem);
+      font-weight: 700;
+      color: var(--brand-dark);
+    }
+    .big-example .legend {
+      font-size: clamp(0.75rem, 1.2vw, 0.95rem);
+      color: var(--brand-gray);
+      margin-top: 0.5em;
+    }
+    .hud {
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      padding: 0.5rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: rgba(255,255,255,0.75);
+      font-size: 0.75rem;
+      pointer-events: none;
+      z-index: 10;
+    }
+    .slide:not(.title-slide) ~ .hud { color: var(--brand-gray); }
+    .controls {
+      position: fixed;
+      right: 1rem;
+      bottom: 2.5rem;
+      display: flex;
+      gap: 0.5rem;
+      z-index: 11;
+    }
+    .controls button {
+      -webkit-appearance: none;
+      appearance: none;
+      border: 1px solid rgba(0,0,0,0.1);
+      background: rgba(255,255,255,0.9);
+      color: var(--brand-dark);
+      width: 2.5rem; height: 2.5rem;
+      border-radius: 999px;
+      font-size: 1rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    }
+    .controls button:active { transform: scale(0.96); }
+    .progress {
+      position: fixed;
+      top: 0; left: 0;
+      height: 3px;
+      background: var(--brand-yellow);
+      transition: width 260ms ease;
+      z-index: 20;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .slide { transition: none; }
+      .progress { transition: none; }
+    }
+    @media (max-width: 480px) {
+      .controls { right: 0.5rem; bottom: 1.25rem; }
+      .hud { font-size: 0.65rem; }
+    }
+
+    /* ─── Decorative: L-shaped yellow corner accent ─── */
+    .slide:not(.title-slide)::before {
+      content: '';
+      position: absolute;
+      top: clamp(1rem, 3vw, 2.5rem);
+      right: clamp(1rem, 3vw, 2.5rem);
+      width: clamp(2rem, 5vw, 4rem);
+      height: clamp(2rem, 5vw, 4rem);
+      border-top: 2.5px solid var(--brand-yellow);
+      border-right: 2.5px solid var(--brand-yellow);
+      pointer-events: none;
+      z-index: 1;
+    }
+    .slide.title-slide::before {
+      content: '';
+      position: absolute;
+      bottom: clamp(1rem, 3vw, 2.5rem);
+      left: clamp(1rem, 3vw, 2.5rem);
+      width: clamp(2rem, 5vw, 4rem);
+      height: clamp(2rem, 5vw, 4rem);
+      border-bottom: 2.5px solid var(--brand-yellow);
+      border-left: 2.5px solid var(--brand-yellow);
+      opacity: 0.4;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* ─── Decorative: large background slide number ─── */
+    .slide-number {
+      position: absolute;
+      bottom: clamp(0.5rem, 2vw, 1.5rem);
+      left: clamp(1rem, 3vw, 2.5rem);
+      font-size: clamp(4rem, 12vw, 10rem);
+      font-weight: 800;
+      line-height: 1;
+      color: rgba(0, 0, 0, 0.04);
+      pointer-events: none;
+      z-index: 0;
+      user-select: none;
+      letter-spacing: -0.04em;
+    }
+    .slide.title-slide .slide-number {
+      color: rgba(255, 255, 255, 0.06);
+    }
+  </style>
+</head>
+<body>
+  <div class="progress" style="width:0"></div>
+  <div class="deck" id="deck">
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 1 — Portada (p1) -->
+    <!-- ============================================================ -->
+    <section class="slide title-slide active" data-slide>
+      <div class="content">
+        <p class="eyebrow">IQYA-2031 · 2026-10</p>
+        <h1>Destilación continua</h1>
+        <p>Diseño y análisis de columnas de destilación continua para mezclas binarias.</p>
+        <div class="pill-row">
+          <span class="pill">McCabe-Thiele</span>
+          <span class="pill">Líneas de operación</span>
+          <span class="pill">Reflujo</span>
+          <span class="pill">Etapas teóricas</span>
+          <span class="pill">Eficiencia</span>
+          <span class="pill">Control</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 2 — Estructura y objetivos (p2, 1/2) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Introducción</p>
+        <h2>Estructura y objetivos de aprendizaje (1/2)</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>1. Fundamentos de la destilación</h3>
+            <p>Comprenderemos los principios físicos que permiten la separación, analizaremos el concepto de equilibrio líquido-vapor y cuantificaremos la separabilidad mediante volatilidad relativa.</p>
+          </div>
+          <div class="card">
+            <h3>2. Componentes y funcionamiento</h3>
+            <p>Identificaremos cada componente de una columna de destilación, entenderemos cómo fluyen e interactúan las corrientes internas y estableceremos los balances de materia fundamentales.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 3 — Estructura y objetivos (p2, 2/2) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Introducción</p>
+        <h2>Estructura y objetivos de aprendizaje (2/2)</h2>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>3. Método McCabe-Thiele</h3>
+            <p>Aprenderemos las simplificaciones que hacen posible el método gráfico, construiremos paso a paso el diagrama y derivaremos las ecuaciones de las líneas de operación.</p>
+          </div>
+          <div class="card">
+            <h3>4. Diseño y optimización</h3>
+            <p>Calcularemos el número de etapas teóricas requeridas, determinaremos condiciones óptimas de operación y resolveremos un ejemplo completo de diseño.</p>
+          </div>
+          <div class="card">
+            <h3>5. Aspectos prácticos</h3>
+            <p>Consideraremos eficiencias reales y diseño mecánico, identificaremos limitaciones y casos especiales y exploraremos herramientas modernas y tendencias futuras.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SEPARADOR: FUNDAMENTOS -->
+    <!-- ============================================================ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Parte I</p>
+        <h1>Fundamentos de la destilación</h1>
+        <p>Volatilidad relativa y equilibrio líquido-vapor.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 5 — Volatilidad relativa intro (p3) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Fundamentos</p>
+        <h2>Volatilidad relativa</h2>
+        <p>La volatilidad relativa (α) es el parámetro más importante en destilación, ya que cuantifica qué tan fácil o difícil será separar dos componentes.</p>
+        <p>Es una medida adimensional que compara las tendencias de vaporización de dos sustancias.</p>
+        <div class="tip">Cuanto mayor sea α, más fácil será la separación por destilación.</div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 6 — Volatilidad relativa: definición (p4) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Fundamentos</p>
+        <h2>Volatilidad relativa — Definición termodinámica</h2>
+        <div class="two-col">
+          <div>
+            <p>Para una mezcla binaria de componentes A (más volátil) y B (menos volátil) en equilibrio:</p>
+            <div class="big-example">
+              <code>α<sub>AB</sub> = (y<sub>A</sub>/x<sub>A</sub>) / (y<sub>B</sub>/x<sub>B</sub>)</code>
+              <p class="legend">= y<sub>A</sub>(1 − x<sub>A</sub>) / [x<sub>A</sub>(1 − y<sub>A</sub>)]</p>
+            </div>
+            <p>Esta ecuación nos dice que α es la relación entre las razones vapor/líquido de cada componente.</p>
+          </div>
+          <div>
+            <p>Para componentes puros (sistema ideal):</p>
+            <div class="big-example">
+              <code>α<sub>AB</sub> = P°<sub>A</sub> / P°<sub>B</sub></code>
+              <p class="legend">Donde P° representa la presión de vapor del componente puro a la temperatura del sistema.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 7 — Volatilidad relativa: interpretación (p5) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Fundamentos</p>
+        <h2>Volatilidad relativa — Interpretación práctica</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>α = 1</h3>
+            <p>No hay diferencia de volatilidad. Los componentes no pueden separarse por destilación (caso de azeótropos).</p>
+          </div>
+          <div class="card">
+            <h3>1 &lt; α &lt; 1.5</h3>
+            <p>Separación difícil. Se requieren muchas etapas y alto reflujo.</p>
+          </div>
+          <div class="card">
+            <h3>1.5 &lt; α &lt; 3</h3>
+            <p>Separación moderada. Diseño económico típico.</p>
+          </div>
+          <div class="card">
+            <h3>α &gt; 3</h3>
+            <p>Separación fácil. Pocas etapas y bajo reflujo requeridos.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 8 — Volatilidad relativa: variación con T (p6) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Fundamentos</p>
+        <h2>Volatilidad relativa — Variación con la temperatura</h2>
+        <div class="two-col">
+          <div>
+            <p>La volatilidad relativa generalmente <strong>disminuye al aumentar la temperatura</strong>, ya que las presiones de vapor de ambos componentes se acercan.</p>
+            <p>Por esto, algunas separaciones se realizan al vacío (menor temperatura) para aumentar α.</p>
+            <div class="tip">Operar al vacío puede mejorar la separabilidad, pero incrementa costos de equipos y servicios auxiliares.</div>
+          </div>
+          <img class="diagram" src="img/pres17-p06-2.png" alt="Variación de la volatilidad relativa con la temperatura" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 9 — Curva ELV: introducción (p7) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Fundamentos</p>
+        <h2>La curva de equilibrio líquido-vapor</h2>
+        <div class="two-col">
+          <div>
+            <p>La curva de equilibrio líquido-vapor (ELV) es la representación gráfica fundamental para el diseño por McCabe-Thiele. Muestra la relación de equilibrio entre la composición del vapor (y) y la del líquido (x) a presión constante.</p>
+            <p>Para sistemas ideales (Ley de Raoult):</p>
+            <div class="big-example">
+              <code>y<sub>A</sub> = αx<sub>A</sub> / [1 + (α − 1)x<sub>A</sub>]</code>
+            </div>
+            <p>Esta ecuación genera una curva suave desde (0,0) hasta (1,1) que siempre está por encima de la diagonal para α &gt; 1.</p>
+          </div>
+          <img class="diagram" src="img/pres17-p07-2.png" alt="Curva de equilibrio líquido-vapor" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 10 — Curva ELV: sistemas no ideales (p8) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Fundamentos</p>
+        <h2>Curva ELV — Sistemas no ideales</h2>
+        <div class="two-col">
+          <div>
+            <p>Para sistemas no ideales:</p>
+            <div class="big-example">
+              <code>y<sub>A</sub> = γ<sub>A</sub> x<sub>A</sub> P°<sub>A</sub> / P<sub>total</sub></code>
+              <p class="legend">Donde γ es el coeficiente de actividad que considera las desviaciones de la idealidad debido a interacciones moleculares.</p>
+            </div>
+            <p>Los modelos de coeficiente de actividad (NRTL, UNIQUAC, Wilson, Margules) permiten predecir el comportamiento no ideal a partir de datos experimentales limitados.</p>
+          </div>
+          <img class="diagram" src="img/pres17-p08-2.png" alt="Curva ELV para sistemas no ideales" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 11 — Curva ELV: características (p9) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Fundamentos</p>
+        <h2>Curva ELV — Características importantes</h2>
+        <div class="two-col">
+          <div>
+            <ul>
+              <li><strong>Siempre pasa por (0,0) y (1,1):</strong> En los extremos, tenemos componentes puros.</li>
+              <li><strong>La distancia vertical a la diagonal:</strong> Representa la fuerza impulsora para la separación en cualquier composición.</li>
+              <li><strong>Curvatura:</strong> Relacionada con α. Mayor α produce mayor curvatura y mayor separación de la diagonal.</li>
+              <li><strong>Puntos de inflexión o máximos:</strong> Indican formación de azeótropos en sistemas no ideales.</li>
+            </ul>
+          </div>
+          <img class="diagram" src="img/pres17-p09-2.png" alt="Características de la curva ELV" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 12 — Curva ELV: obtención de datos (p10) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Fundamentos</p>
+        <h2>Obtención de datos de equilibrio</h2>
+        <div class="two-col">
+          <div>
+            <div class="grid cols-1">
+              <div class="card">
+                <h3>Experimental</h3>
+                <p>Medición directa en equilibrio (más preciso).</p>
+              </div>
+              <div class="card">
+                <h3>Correlaciones</h3>
+                <p>Ecuaciones de estado o modelos de actividad.</p>
+              </div>
+              <div class="card">
+                <h3>Simuladores</h3>
+                <p>Bancos de datos termodinámicos integrados.</p>
+              </div>
+            </div>
+            <div class="warning">La precisión del diseño depende directamente de la calidad de los datos de equilibrio utilizados.</div>
+          </div>
+          <img class="diagram" src="img/pres17-p10-2.png" alt="Obtención de datos de equilibrio" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SEPARADOR: ANATOMÍA DE LA COLUMNA -->
+    <!-- ============================================================ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Parte II</p>
+        <h1>Anatomía de una columna de destilación</h1>
+        <p>Componentes principales y dispositivos internos.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 14 — Torre o casco (p11) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Anatomía de la columna</p>
+        <h2>Torre o casco de la columna</h2>
+        <div class="two-col">
+          <div>
+            <ul>
+              <li><strong>Función:</strong> Contener los dispositivos de contacto y mantener los perfiles de presión y temperatura.</li>
+              <li><strong>Diseño:</strong> Cilindro vertical con diámetro constante o variable.</li>
+              <li><strong>Material:</strong> Acero al carbono (más común), acero inoxidable (corrosivos), aleaciones especiales.</li>
+            </ul>
+          </div>
+          <img class="diagram" src="img/pres17-p11-2.png" alt="Torre o casco de la columna de destilación" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 15 — Rehervidor (p12) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Anatomía de la columna</p>
+        <h2>Rehervidor (calderín)</h2>
+        <div class="two-col">
+          <div>
+            <ul>
+              <li><strong>Función:</strong> Generar el vapor necesario para la separación.</li>
+              <li><strong>Tipos:</strong>
+                <ul>
+                  <li><em>Kettle:</em> permite separación adicional</li>
+                  <li><em>Termosifón:</em> circulación natural</li>
+                  <li><em>Circulación forzada:</em> fluidos viscosos</li>
+                </ul>
+              </li>
+            </ul>
+            <div class="big-example">
+              <code>Q = V × λ = (R + 1)D × λ + pérdidas</code>
+              <p class="legend">Diseño térmico del rehervidor</p>
+            </div>
+          </div>
+          <img class="diagram" src="img/pres17-p12-2.png" alt="Rehervidor de columna de destilación" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 16 — Condensador (p13) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Anatomía de la columna</p>
+        <h2>Condensador</h2>
+        <div class="two-col">
+          <div>
+            <ul>
+              <li><strong>Función:</strong> Condensar vapores del domo y proporcionar reflujo.</li>
+              <li><strong>Tipos:</strong>
+                <ul>
+                  <li><em>Total:</em> todo el vapor se condensa</li>
+                  <li><em>Parcial:</em> solo parte se condensa</li>
+                </ul>
+              </li>
+              <li><strong>Medio enfriante:</strong> Agua (más económico) o aire (escasez de agua).</li>
+            </ul>
+            <div class="big-example">
+              <code>Q = V × λ = (R + 1)D × λ</code>
+              <p class="legend">Diseño térmico del condensador</p>
+            </div>
+          </div>
+          <img class="diagram" src="img/pres17-p13-2.png" alt="Condensador de columna de destilación" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 17 — Dispositivos internos (p14) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Anatomía de la columna</p>
+        <h2>Dispositivos internos de contacto</h2>
+        <div class="two-col">
+          <div>
+            <p><strong>Platos o Bandejas:</strong></p>
+            <ul>
+              <li><em>Platos perforados:</em> Orificios de 3-12 mm, simples y económicos</li>
+              <li><em>Platos de válvulas:</em> Válvulas móviles que se abren con el vapor</li>
+              <li><em>Platos de campanas:</em> Campanas fijas sobre los orificios</li>
+            </ul>
+            <p><strong>Empaques:</strong></p>
+            <ul>
+              <li><em>Aleatorios:</em> Anillos Pall, Raschig, IMTP</li>
+              <li><em>Estructurados:</em> Mellapak, Flexipac</li>
+            </ul>
+          </div>
+          <img class="diagram" src="img/pres17-p14-2.png" alt="Dispositivos internos de contacto" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SEPARADOR: MÉTODO McCABE-THIELE -->
+    <!-- ============================================================ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Parte III</p>
+        <h1>Método de McCabe-Thiele</h1>
+        <p>Herramienta gráfica fundamental para el análisis de destilación binaria.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 19 — Introducción al método (p16) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">McCabe-Thiele</p>
+        <h2>Introducción al método McCabe-Thiele</h2>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>Definición</h3>
+            <p>Herramienta gráfica fundamental en ingeniería química para analizar la destilación binaria, es decir, la separación de una mezcla de dos componentes.</p>
+          </div>
+          <div class="card">
+            <h3>Ventajas</h3>
+            <p>Permite visualizar gráficamente el proceso de separación, calcular el número de etapas teóricas y determinar la ubicación óptima del plato de alimentación sin resolver complejos sistemas de ecuaciones.</p>
+          </div>
+          <div class="card">
+            <h3>Aplicaciones</h3>
+            <p>Diseño de columnas de destilación, optimización de procesos existentes, análisis de sensibilidad de parámetros operativos y evaluación de separaciones binarias.</p>
+          </div>
+        </div>
+        <div class="tip">Este método se basa en balances de materia y relaciones de equilibrio líquido-vapor, utilizando varias suposiciones simplificadoras para facilitar el análisis gráfico.</div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 20 — Zonas de la columna (p17) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">McCabe-Thiele</p>
+        <h2>Zonas de la columna</h2>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>Zona de rectificación</h3>
+            <p>Ubicada en la parte superior de la columna, es donde la mezcla se enriquece en el componente más volátil a medida que asciende hacia el condensador.</p>
+          </div>
+          <div class="card">
+            <h3>Zona de alimentación</h3>
+            <p>Plato donde ingresa la mezcla a separar, conecta las zonas de rectificación y agotamiento. Su condición térmica afecta significativamente el rendimiento de la columna.</p>
+          </div>
+          <div class="card">
+            <h3>Zona de agotamiento</h3>
+            <p>Parte inferior de la columna donde se agota el componente más volátil, concentrando el menos volátil hacia el rehervidor y la corriente de fondos.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 21 — Corrientes principales (p18) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">McCabe-Thiele</p>
+        <h2>Corrientes principales</h2>
+        <p>Las corrientes principales de una columna de destilación incluyen:</p>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>Entradas</h3>
+            <p><strong>Alimentación (F, z):</strong> mezcla a separar.<br/>
+            <strong>Calor rehervidor (Q<sub>R</sub>):</strong> energía suministrada.</p>
+          </div>
+          <div class="card">
+            <h3>Salidas superiores</h3>
+            <p><strong>Destilado (D, x<sub>D</sub>):</strong> producto rico en componente más volátil.<br/>
+            <strong>Calor condensador (Q<sub>C</sub>):</strong> energía removida.</p>
+          </div>
+          <div class="card">
+            <h3>Salidas inferiores</h3>
+            <p><strong>Fondos (B, x<sub>B</sub>):</strong> producto rico en componente menos volátil.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SEPARADOR: ZONA DE RECTIFICACIÓN -->
+    <!-- ============================================================ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">McCabe-Thiele</p>
+        <h1>Zona de rectificación</h1>
+        <p>Balances de materia y línea de operación superior (LOS).</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 23 — Balance de materia rect. plato 2 (p19) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Zona de rectificación</p>
+        <h2>Balances de materia — Plato 2</h2>
+        <p>Para analizar la zona de rectificación, establecemos balances de materia alrededor de cada etapa en la parte superior de la columna.</p>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Balance global</h3>
+            <p><code>V<sub>2</sub> = L<sub>1</sub> + D</code></p>
+          </div>
+          <div class="card">
+            <h3>Balance por componente</h3>
+            <p><code>V<sub>2</sub>y<sub>2</sub> = L<sub>1</sub>x<sub>1</sub> + Dx<sub>D</sub></code></p>
+          </div>
+        </div>
+        <p>Donde: V<sub>2</sub> = flujo molar de vapor desde plato 2, L<sub>1</sub> = flujo molar de líquido desde plato 1, y<sub>2</sub> = fracción molar del más volátil en vapor, x<sub>1</sub> = fracción molar en líquido, D = flujo del destilado, x<sub>D</sub> = composición del destilado.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 24 — Balance de materia rect. plato 3 (p20) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Zona de rectificación</p>
+        <h2>Balances de materia — Plato 3</h2>
+        <p>Si analizamos el balance hasta el plato 3:</p>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Balance global</h3>
+            <p><code>V<sub>3</sub> = L<sub>2</sub> + D</code></p>
+          </div>
+          <div class="card">
+            <h3>Balance por componente</h3>
+            <p><code>V<sub>3</sub>y<sub>3</sub> = L<sub>2</sub>x<sub>2</sub> + Dx<sub>D</sub></code></p>
+          </div>
+        </div>
+        <p>Donde: V<sub>3</sub> = flujo molar de vapor desde plato 3, L<sub>2</sub> = flujo molar de líquido desde plato 2, y<sub>3</sub> = fracción molar en vapor, x<sub>2</sub> = fracción molar en líquido.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 25 — Balance generalizado rectificación (p21) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Zona de rectificación</p>
+        <h2>Balances de materia — Forma general</h2>
+        <p>Podemos generalizar los balances a:</p>
+        <div class="big-example">
+          <code>V<sub>n</sub> = L<sub>n−1</sub> + D</code><br/>
+          <code>V<sub>n</sub>y<sub>n</sub> = L<sub>n−1</sub>x<sub>n−1</sub> + Dx<sub>D</sub></code>
+        </div>
+        <p>Estos balances son fundamentales porque describen matemáticamente cómo se va enriqueciendo la mezcla en el componente más volátil a medida que ascendemos en la columna, etapa por etapa.</p>
+        <div class="tip">El balance de materia en la zona de rectificación constituye la base para derivar la Línea de Operación Superior (LOS), que será una recta en el diagrama de McCabe-Thiele.</div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 26 — Suposición de corrientes equimolares (p22) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Zona de rectificación</p>
+        <h2>Línea de operación superior — Suposición clave</h2>
+        <p>Para simplificar el análisis, hacemos suposiciones clave sobre los flujos en la columna:</p>
+        <div class="big-example">
+          <code>V<sub>1</sub> = V<sub>2</sub> = … = V &nbsp;&nbsp;&nbsp; L<sub>1</sub> = L<sub>2</sub> = … = L</code>
+          <p class="legend">Suposición de corrientes equimolares (CMO — Constant Molar Overflow)</p>
+        </div>
+        <p>A partir de los balances de materia y aplicando esta suposición:</p>
+        <div class="big-example">
+          <code>Vy = Lx + Dx<sub>D</sub></code><br/>
+          <code>y = (L/V)x + (D/V)x<sub>D</sub></code>
+        </div>
+        <p>Conociendo que: <strong>V = L + D</strong></p>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 27 — Derivación de la LOS (p23) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Zona de rectificación</p>
+        <h2>Derivación de la LOS</h2>
+        <p>Sustituyendo V = L + D:</p>
+        <div class="big-example">
+          <code>y = [L/(L + D)]x + [D/(L + D)]x<sub>D</sub></code>
+        </div>
+        <p>Introducimos la <strong>relación de reflujo (R)</strong>, un parámetro de diseño fundamental:</p>
+        <div class="big-example">
+          <code>R = L / D</code>
+        </div>
+        <p>Sustituyendo y manipulando algebraicamente, obtenemos la ecuación final de la <strong>Línea de Operación Superior (LOS)</strong>:</p>
+        <div class="big-example">
+          <code>y = [R/(R+1)]x + x<sub>D</sub>/(R+1)</code>
+          <p class="legend">Ecuación de la Línea de Operación Superior</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 28 — Interpretación de la LOS (p24, 1/2) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Zona de rectificación</p>
+        <h2>Interpretación de la LOS (1/2)</h2>
+        <p>La clave es el <strong>desbordamiento equimolar</strong>: los flujos de líquido (L) y vapor (V) se mantienen constantes en esta zona. Esto simplifica enormemente los cálculos y nos permite derivar una sola ecuación lineal.</p>
+        <p>Su representación en el diagrama y vs x es una recta con:</p>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Pendiente</h3>
+            <p><code>m = R / (R + 1)</code></p>
+          </div>
+          <div class="card">
+            <h3>Intercepto con eje y</h3>
+            <p><code>b = x<sub>D</sub> / (R + 1)</code></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 29 — Interpretación de la LOS (p24, 2/2) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Zona de rectificación</p>
+        <h2>Interpretación de la LOS (2/2)</h2>
+        <p>La pendiente y el intercepto dependen de la <strong>Relación de Reflujo (R)</strong>, un parámetro de diseño importante que afecta directamente el número de etapas necesarias.</p>
+        <ul>
+          <li>La pendiente representa la relación L/V.</li>
+          <li><strong>Mayor R</strong> → mayor pendiente → línea más vertical → menos etapas pero más energía.</li>
+          <li><strong>Menor R</strong> → menor pendiente → línea más horizontal → más etapas pero menos energía.</li>
+        </ul>
+        <div class="tip">Existe un balance económico entre el costo de capital (más etapas) y el costo operativo (más energía).</div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SEPARADOR: ZONA DE AGOTAMIENTO -->
+    <!-- ============================================================ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">McCabe-Thiele</p>
+        <h1>Zona de agotamiento</h1>
+        <p>Balances de materia y línea de operación inferior (LOI).</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 31 — Balance agotamiento (p25) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Zona de agotamiento</p>
+        <h2>Balances de materia</h2>
+        <p>De manera análoga a la sección superior, realizamos balances de materia en la zona de agotamiento, enfocándonos en la parte inferior de la columna:</p>
+        <div class="big-example">
+          <code>L̄<sub>N−1</sub> = V̄<sub>N</sub> + B</code><br/>
+          <code>L̄<sub>N−1</sub>x<sub>N−1</sub> = V̄<sub>N</sub>y<sub>N</sub> + Bx<sub>B</sub></code>
+        </div>
+        <p>Donde: L̄<sub>m</sub> = flujo molar de líquido en la zona de agotamiento, V̄<sub>m</sub> = flujo molar de vapor en la zona de agotamiento, B = flujo molar de fondos, x<sub>B</sub> = composición de fondos.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 32 — Notación barras (p26) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Zona de agotamiento</p>
+        <h2>Importancia de la notación</h2>
+        <p>Las barras sobre L y V (L̄, V̄) son importantes para diferenciar estos flujos de los de la zona de rectificación, ya que pueden tener <strong>valores diferentes</strong> debido a la entrada de alimentación.</p>
+        <div class="warning">No confundir L con L̄ ni V con V̄. La alimentación modifica los flujos internos de la columna al entrar.</div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 33 — Derivación LOI (p27) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Zona de agotamiento</p>
+        <h2>Línea de operación inferior — Derivación</h2>
+        <p>Aplicamos la misma suposición de corrientes equimolares en la zona de agotamiento:</p>
+        <div class="big-example">
+          <code>V̄<sub>m</sub> = V̄<sub>m−1</sub> = … = V̄ &nbsp;&nbsp;&nbsp; L̄<sub>m</sub> = L̄<sub>m−1</sub> = … = L̄</code>
+        </div>
+        <p>A partir de los balances:</p>
+        <div class="big-example">
+          <code>y = (L̄/V̄)x − (B/V̄)x<sub>B</sub></code>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 34 — Ecuación final LOI (p28) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Zona de agotamiento</p>
+        <h2>Ecuación final de la LOI</h2>
+        <p>Si L̄ = V̄ + B, entonces introducimos la <strong>relación de ebullición (S)</strong>:</p>
+        <div class="big-example">
+          <code>S = V̄ / B</code>
+        </div>
+        <p>Sustituyendo y manipulando algebraicamente, obtenemos la ecuación final de la <strong>Línea de Operación Inferior (LOI)</strong>:</p>
+        <div class="big-example">
+          <code>y = [(S+1)/S]x − x<sub>B</sub>/S</code>
+          <p class="legend">Ecuación de la Línea de Operación Inferior</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 35 — Interpretación LOI (p29) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Zona de agotamiento</p>
+        <h2>Interpretación de la LOI</h2>
+        <p>Aplicando la misma suposición de flujos constantes, la LOI describe la relación entre las composiciones de líquido y vapor en la zona de agotamiento.</p>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Pendiente</h3>
+            <p><code>m = (S+1)/S</code></p>
+          </div>
+          <div class="card">
+            <h3>Intercepto con eje y</h3>
+            <p><code>b = −x<sub>B</sub>/S</code></p>
+          </div>
+        </div>
+        <p>La pendiente y el intercepto de esta línea dependen de la composición de los fondos (x<sub>B</sub>) y la <strong>Relación de Ebullición (S)</strong>, que está relacionada con la cantidad de calor suministrada en el rehervidor.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SEPARADOR: ZONA DE ALIMENTACIÓN -->
+    <!-- ============================================================ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">McCabe-Thiele</p>
+        <h1>Zona de alimentación</h1>
+        <p>Conexión de flujos, parámetro q y línea de alimentación.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 37 — Conexión de flujos (p30) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Zona de alimentación</p>
+        <h2>Conexión de flujos</h2>
+        <div class="two-col">
+          <div>
+            <p>La zona de alimentación es el punto crítico donde se conectan las secciones de rectificación y agotamiento. En esta zona se produce un cambio en los flujos internos:</p>
+            <div class="big-example">
+              <code>L̄ = L + Fq</code><br/>
+              <code>V = V̄ + F(1 − q)</code>
+            </div>
+            <p>Donde: F = flujo molar de alimentación, q = fracción de F que entra como líquido, (1 − q) = fracción de F que entra como vapor.</p>
+          </div>
+          <img class="diagram" src="img/pres17-p30-2.png" alt="Conexión de flujos en la zona de alimentación" />
+        </div>
+        <div class="tip">El parámetro q define la condición térmica de la alimentación y es crucial para determinar cómo la alimentación afecta los flujos internos de la columna.</div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 38 — q = 1 Líquido saturado (p31) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Zona de alimentación</p>
+        <h2>Condición q = 1 — Líquido saturado</h2>
+        <div class="two-col">
+          <div>
+            <p>La alimentación está exactamente en su punto de burbuja. Todo el caudal de alimentación se incorpora como líquido a la corriente de líquido descendente.</p>
+            <div class="big-example">
+              <code>q = 1</code><br/>
+              <code>L̄ = L + F</code><br/>
+              <code>V = V̄</code>
+            </div>
+          </div>
+          <img class="diagram" src="img/pres17-p31-2.png" alt="Alimentación como líquido saturado q=1" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 39 — q = 0 Vapor saturado (p32) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Zona de alimentación</p>
+        <h2>Condición q = 0 — Vapor saturado</h2>
+        <div class="two-col">
+          <div>
+            <p>La alimentación está exactamente en su punto de rocío. Todo el caudal de alimentación se incorpora como vapor a la corriente de vapor ascendente.</p>
+            <div class="big-example">
+              <code>q = 0</code><br/>
+              <code>L̄ = L</code><br/>
+              <code>V = V̄ + F</code>
+            </div>
+          </div>
+          <img class="diagram" src="img/pres17-p32-2.png" alt="Alimentación como vapor saturado q=0" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 40 — 0 < q < 1 Mezcla (p33) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Zona de alimentación</p>
+        <h2>Condición 0 &lt; q &lt; 1 — Mezcla líquido-vapor</h2>
+        <div class="two-col">
+          <div>
+            <p>La alimentación contiene tanto líquido como vapor. La fracción q se une al líquido descendente y la fracción (1 − q) al vapor ascendente.</p>
+            <div class="big-example">
+              <code>0 &lt; q &lt; 1</code><br/>
+              <code>L̄ = L + Fq</code><br/>
+              <code>V = V̄ + F(1 − q)</code>
+            </div>
+            <ul>
+              <li><strong>q</strong> ≈ fracción líquida (calidad inversa): indica qué fracción de la mezcla se encuentra en fase líquida.</li>
+              <li><strong>χ = 1 − q</strong> ≈ fracción vaporizada (calidad del vapor): indica qué fracción está en fase vapor.</li>
+            </ul>
+          </div>
+          <img class="diagram" src="img/pres17-p33-2.png" alt="Alimentación como mezcla líquido-vapor" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 41 — q > 1 Líquido subenfriado (p34) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Zona de alimentación</p>
+        <h2>Condición q &gt; 1 — Líquido subenfriado</h2>
+        <div class="two-col">
+          <div>
+            <p>La alimentación está por debajo de su punto de burbuja. Su calentamiento hasta el punto de burbuja libera calor que condensa parte del vapor ascendente, aumentando el flujo de líquido.</p>
+            <div class="big-example">
+              <code>q &gt; 1</code><br/>
+              <code>L̄ = L + Fq</code><br/>
+              <code>V = V̄ + F(1 − q)</code>
+            </div>
+          </div>
+          <img class="diagram" src="img/pres17-p34-2.png" alt="Alimentación como líquido subenfriado q>1" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 42 — q < 0 Vapor sobrecalentado (p35) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Zona de alimentación</p>
+        <h2>Condición q &lt; 0 — Vapor sobrecalentado</h2>
+        <div class="two-col">
+          <div>
+            <p>La alimentación está por encima de su punto de rocío. Su enfriamiento hasta el punto de rocío requiere calor que evapora parte del líquido descendente, aumentando el flujo de vapor.</p>
+            <div class="big-example">
+              <code>q &lt; 0</code><br/>
+              <code>L̄ = L + Fq</code><br/>
+              <code>V = V̄ + F(1 − q)</code>
+            </div>
+          </div>
+          <img class="diagram" src="img/pres17-p35-2.png" alt="Alimentación como vapor sobrecalentado q<0" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 43 — Definición termodinámica de q (p36) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Zona de alimentación</p>
+        <h2>Definición termodinámica de q</h2>
+        <p>q es la relación entre el calor necesario para vaporizar 1 mol de alimentación y el calor latente molar:</p>
+        <div class="big-example">
+          <code>q = (H<sub>V</sub> − H<sub>F</sub>) / (H<sub>V</sub> − H<sub>L</sub>)</code>
+          <p class="legend">H<sub>V</sub> = entalpía molar del vapor saturado · H<sub>L</sub> = entalpía molar del líquido saturado · H<sub>F</sub> = entalpía molar de la alimentación</p>
+        </div>
+        <p>Cálculo práctico de q para líquido subenfriado:</p>
+        <div class="big-example">
+          <code>q = [c<sub>p</sub>(T<sub>burbuja</sub> − T<sub>F</sub>) + λ] / λ</code>
+          <p class="legend">Donde c<sub>p</sub> es el calor específico y λ es el calor latente de vaporización</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 44 — Derivación línea q (p37) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Zona de alimentación</p>
+        <h2>Ecuación de la línea q — Derivación</h2>
+        <p>El punto de intersección de las líneas de operación superior e inferior se encuentra sobre la línea de alimentación, conocida como <strong>Línea q</strong>.</p>
+        <p>A partir de los balances de materia en el plato de alimentación:</p>
+        <ul>
+          <li>F + L + V̄ = L̄ + V → V̄ − V = L̄ − L − F</li>
+          <li>Fz + Lx + V̄y = L̄x + Vy</li>
+          <li>Combinando y simplificando con L̄ = L + Fq → q = (L̄ − L)/F</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 45 — Ecuación de la línea q (p38) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Zona de alimentación</p>
+        <h2>Ecuación de la línea q</h2>
+        <p>Luego de un manejo algebraico, se obtiene la ecuación de la Línea q:</p>
+        <div class="big-example">
+          <code>y = [q/(q − 1)]x − z/(q − 1)</code>
+          <p class="legend">z = composición de la alimentación · q = condición térmica</p>
+        </div>
+        <p>Características según el valor de q:</p>
+        <ul>
+          <li>Si <strong>q = 1</strong> (líquido saturado): Línea vertical en x = z</li>
+          <li>Si <strong>q = 0</strong> (vapor saturado): Línea horizontal en y = z</li>
+          <li>Si <strong>0 &lt; q &lt; 1</strong> (mezcla): Línea con pendiente negativa</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 46 — Resumen de ecuaciones (p39) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">McCabe-Thiele</p>
+        <h2>Resumen de ecuaciones del método</h2>
+        <p>Estas tres ecuaciones lineales, junto con la curva de equilibrio, constituyen la base matemática del método McCabe-Thiele.</p>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>1. LOS (Rectificación)</h3>
+            <p><code>y = [R/(R+1)]x + x<sub>D</sub>/(R+1)</code></p>
+            <p>Pendiente depende de la relación de reflujo (R).</p>
+          </div>
+          <div class="card">
+            <h3>2. Línea q (Alimentación)</h3>
+            <p><code>y = [q/(q−1)]x − z/(q−1)</code></p>
+            <p>Lugar geométrico donde deben intersectarse LOS y LOI.</p>
+          </div>
+          <div class="card">
+            <h3>3. LOI (Agotamiento)</h3>
+            <p><code>y = [(S+1)/S]x − x<sub>B</sub>/S</code></p>
+            <p>Pendiente depende de la relación de ebullición (S).</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SEPARADOR: EJEMPLO -->
+    <!-- ============================================================ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Parte IV</p>
+        <h1>Ejemplo: destilación binaria</h1>
+        <p>n-hexano / p-xileno — Aplicación completa del método McCabe-Thiele.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 48 — Planteamiento del ejemplo (p40) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ejemplo n-hexano / p-xileno</p>
+        <h2>Planteamiento del problema</h2>
+        <div class="two-col">
+          <div>
+            <p>Aplicaremos los conceptos a un caso práctico de destilación binaria entre n-hexano y p-xileno. La meta es calcular:</p>
+            <ul>
+              <li>Flujos de productos (D y B)</li>
+              <li>Reflujo mínimo (R<sub>min</sub>)</li>
+              <li>Relación de ebullición mínima (S<sub>min</sub>)</li>
+              <li>Flujos mínimos de retorno (L<sub>min</sub> y V<sub>min</sub>)</li>
+              <li>Reflujo de operación (R)</li>
+              <li>Flujos de retorno reales (L y V̄)</li>
+              <li>Número de etapas teóricas (N)</li>
+              <li>Ubicación óptima del plato de alimentación (N<sub>F</sub>)</li>
+              <li>Número de etapas mínimas (N<sub>min</sub>)</li>
+            </ul>
+          </div>
+          <img class="diagram" src="img/pres17-p40-2.png" alt="Planteamiento del problema de destilación binaria" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 49 — Balance de materia (p41) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ejemplo n-hexano / p-xileno</p>
+        <h2>Paso 1 — Balance de materia general</h2>
+        <div class="two-col">
+          <div>
+            <div class="big-example">
+              <code>F = D + B</code><br/>
+              <code>Fz = Dx<sub>D</sub> + Bx<sub>B</sub></code>
+            </div>
+            <p>Sustituyendo los valores:</p>
+            <div class="big-example">
+              <code>100 = D + B</code><br/>
+              <code>100 × 0.45 = D × 0.95 + B × 0.03</code><br/>
+              <code>45 = 0.95D + 0.03B</code>
+            </div>
+          </div>
+          <img class="diagram" src="img/pres17-p41-2.png" alt="Balance de materia general" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 50 — Solución balance y datos VLE (p42) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ejemplo n-hexano / p-xileno</p>
+        <h2>Solución del balance y datos de equilibrio</h2>
+        <div class="two-col">
+          <div>
+            <p>Resolviendo el sistema de ecuaciones:</p>
+            <div class="big-example">
+              <code>D = 45.65 kmol/h</code><br/>
+              <code>B = 54.35 kmol/h</code>
+            </div>
+            <p><strong>Paso 2 — Datos de equilibrio (VLE):</strong></p>
+            <p>Usando la volatilidad relativa (α ≈ 6.88) entre n-hexano y p-xileno:</p>
+            <div class="big-example">
+              <code>y = αx / [1 + x(α − 1)]</code>
+            </div>
+            <p>Esta ecuación permite calcular la composición de equilibrio del vapor (y) para cada composición de líquido (x).</p>
+          </div>
+          <img class="diagram" src="img/pres17-p42-2.png" alt="Cálculos de equilibrio VLE" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 51 — Curva de equilibrio calculada (p43) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ejemplo n-hexano / p-xileno</p>
+        <h2>Curva de equilibrio calculada</h2>
+        <div class="two-col">
+          <div>
+            <p><strong>Datos de equilibrio calculados:</strong></p>
+            <div class="grid cols-2">
+              <div class="card">
+                <h3>x</h3>
+                <p>0.0 · 0.2 · 0.4 · 0.6 · 0.8 · 1.0</p>
+              </div>
+              <div class="card">
+                <h3>y</h3>
+                <p>0.0 · 0.63 · 0.82 · 0.91 · 0.96 · 1.0</p>
+              </div>
+            </div>
+            <p>Para la resolución graficaremos la curva completa.</p>
+          </div>
+          <img class="diagram" src="img/pres17-p43-2.png" alt="Curva de equilibrio n-hexano/p-xileno" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 52 — Línea q del ejemplo (p44) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ejemplo n-hexano / p-xileno</p>
+        <h2>Paso 3 — Línea q</h2>
+        <div class="two-col">
+          <div>
+            <p>Para nuestro ejemplo (q = 0.5), calculamos la ecuación de la línea q:</p>
+            <div class="big-example">
+              <code>y = [q/(q−1)]x − z/(q−1)</code><br/><br/>
+              <code>y = [0.5/(0.5−1)]x − 0.45/(0.5−1)</code><br/><br/>
+              <code>y = −1x + 0.9</code>
+            </div>
+            <p>Esta línea tiene una pendiente de −1 y se origina en la composición de la alimentación sobre la línea de 45° (y = x), es decir, en el punto <strong>(0.45, 0.45)</strong>.</p>
+          </div>
+          <img class="diagram" src="img/pres17-p44-2.png" alt="Línea q del ejemplo" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 53 — Nota sobre q=0.5 (p45) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ejemplo n-hexano / p-xileno</p>
+        <h2>Nota sobre la condición q = 0.5</h2>
+        <div class="two-col">
+          <div>
+            <p>Una alimentación con q = 0.5 significa que entra como una mezcla <strong>50% líquido y 50% vapor</strong>.</p>
+            <p>Esta condición produce una línea q con pendiente −1, lo que implica que parte del vapor ascendente se condensa y parte del líquido descendente se evapora en el plato de alimentación.</p>
+            <div class="tip">La condición de la alimentación es un grado de libertad que el ingeniero puede elegir mediante precalentamiento o preenfriamiento de la corriente de alimentación.</div>
+          </div>
+          <img class="diagram" src="img/pres17-p45-2.png" alt="Condición q=0.5 en diagrama" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 54 — Punto pinch: cálculo (p46) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ejemplo n-hexano / p-xileno</p>
+        <h2>Paso 4 — Cálculo del punto pinch</h2>
+        <div class="two-col">
+          <div>
+            <p>El <strong>Punto Pinch</strong> es donde la Línea q corta a la curva de equilibrio. Representa el "cuello de botella" o la zona de máxima dificultad para la separación.</p>
+            <p>Para encontrarlo, resolvemos simultáneamente:</p>
+            <div class="big-example">
+              <code>Línea q: y = −1x + 0.9</code><br/>
+              <code>Curva ELV: y = 6.88x / [1 + x(6.88−1)]</code>
+            </div>
+          </div>
+          <img class="diagram" src="img/pres17-p46-2.png" alt="Cálculo del punto pinch" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 55 — Punto pinch: resultado (p47) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ejemplo n-hexano / p-xileno</p>
+        <h2>Resultado del punto pinch</h2>
+        <div class="two-col">
+          <div>
+            <p>Al resolver el sistema, obtenemos:</p>
+            <div class="big-example">
+              <code>x<sub>p</sub> = 0.23 &nbsp;&nbsp; y<sub>p</sub> = 0.67</code>
+              <p class="legend">Punto Pinch = (0.23, 0.67)</p>
+            </div>
+            <p>El Punto Pinch tiene gran importancia porque:</p>
+            <ul>
+              <li>Determina el reflujo mínimo necesario</li>
+              <li>Identifica la zona donde más etapas serán necesarias</li>
+              <li>Es clave para optimizar energéticamente la columna</li>
+            </ul>
+          </div>
+          <img class="diagram" src="img/pres17-p47-2.png" alt="Punto pinch en el diagrama" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 56 — Punto pinch: significado (p48) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ejemplo n-hexano / p-xileno</p>
+        <h2>Significado del punto pinch</h2>
+        <div class="two-col">
+          <div>
+            <p>Si operamos la columna con un reflujo cercano al mínimo, la mayor parte de las etapas se concentrarán alrededor del Punto Pinch.</p>
+            <p>Esto se debe a que en esta zona la diferencia entre la composición del líquido y el vapor en equilibrio es mínima, haciendo más difícil la separación.</p>
+            <div class="warning">Operar demasiado cerca del reflujo mínimo resulta en una columna con un número excesivo de etapas (y por lo tanto, muy alta y costosa).</div>
+          </div>
+          <img class="diagram" src="img/pres17-p48-2.png" alt="Etapas concentradas en punto pinch" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 57 — Reflujo mínimo: cálculo (p49) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ejemplo n-hexano / p-xileno</p>
+        <h2>Paso 5 — Cálculo del reflujo mínimo</h2>
+        <p>El reflujo mínimo (R<sub>min</sub>) es la condición teórica que requeriría un número infinito de etapas. Gráficamente, corresponde a una línea de operación que parte de x<sub>D</sub> y toca la curva de equilibrio en el Punto Pinch.</p>
+        <div class="big-example">
+          <code>y<sub>p</sub> = [R<sub>min</sub>/(R<sub>min</sub>+1)]x<sub>p</sub> + x<sub>D</sub>/(R<sub>min</sub>+1)</code>
+        </div>
+        <p>Despejando R<sub>min</sub>:</p>
+        <div class="big-example">
+          <code>R<sub>min</sub> = (x<sub>D</sub> − y<sub>p</sub>) / (y<sub>p</sub> − x<sub>p</sub>)</code><br/><br/>
+          <code>R<sub>min</sub> = (0.95 − 0.67) / (0.67 − 0.23) = 0.28 / 0.44 = 0.636</code>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 58 — Reflujo mínimo: importancia (p50) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ejemplo n-hexano / p-xileno</p>
+        <h2>Importancia práctica del reflujo mínimo</h2>
+        <p>El reflujo mínimo establece el <strong>límite teórico inferior</strong> para la operación de la columna.</p>
+        <p>En la práctica, siempre operamos con un reflujo mayor (típicamente <strong>1.2 a 1.5 veces R<sub>min</sub></strong>) para tener un número finito y razonable de etapas.</p>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>R → R<sub>min</sub></h3>
+            <p>N → ∞ (infinitas etapas, mínima energía)</p>
+          </div>
+          <div class="card">
+            <h3>R → ∞</h3>
+            <p>N → N<sub>min</sub> (mínimas etapas, máxima energía)</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 59 — Reflujo de operación (p51) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ejemplo n-hexano / p-xileno</p>
+        <h2>Paso 6 — Reflujo de operación</h2>
+        <div class="two-col">
+          <div>
+            <p>En la práctica, nunca se opera a reflujo mínimo. Se utiliza un reflujo de operación que es un múltiplo del mínimo.</p>
+            <p>Según los datos del problema:</p>
+            <div class="big-example">
+              <code>R = 1.3 × R<sub>min</sub></code><br/><br/>
+              <code>R = 1.3 × 0.636 = 0.827</code>
+            </div>
+          </div>
+          <img class="diagram" src="img/pres17-p51-2.png" alt="Reflujo de operación vs mínimo" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 60 — LOS con reflujo de operación (p52) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ejemplo n-hexano / p-xileno</p>
+        <h2>LOS con reflujo de operación</h2>
+        <div class="two-col">
+          <div>
+            <p>Con R = 0.827, definimos la ecuación final de nuestra Línea de Operación Superior:</p>
+            <div class="big-example">
+              <code>y = [R/(R+1)]x + x<sub>D</sub>/(R+1)</code><br/><br/>
+              <code>y = [0.827/1.827]x + 0.95/1.827</code><br/><br/>
+              <code>y = 0.453x + 0.520</code>
+            </div>
+          </div>
+          <img class="diagram" src="img/pres17-p52-2.png" alt="Línea de operación superior con reflujo de operación" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 61 — Relación reflujo-etapas (p53) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ejemplo n-hexano / p-xileno</p>
+        <h2>Relación entre reflujo y número de etapas</h2>
+        <p>Al aumentar el reflujo por encima del mínimo:</p>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>Disminuye N</h3>
+            <p>El número de etapas necesarias se reduce.</p>
+          </div>
+          <div class="card">
+            <h3>Aumenta energía</h3>
+            <p>Aumenta el consumo de energía en el condensador y rehervidor.</p>
+          </div>
+          <div class="card">
+            <h3>Aumenta diámetro</h3>
+            <p>Mayores flujos internos requieren columna más ancha.</p>
+          </div>
+        </div>
+        <div class="tip">El reflujo óptimo económico típicamente se encuentra entre 1.1 y 1.5 veces R<sub>min</sub>.</div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 62 — Ebullición mínima (p54) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ejemplo n-hexano / p-xileno</p>
+        <h2>Paso 7 — Ebullición mínima y flujos mínimos</h2>
+        <p>De forma similar al reflujo mínimo, la ebullición mínima (S<sub>min</sub>) es la condición teórica en la sección de agotamiento que requeriría infinitas etapas.</p>
+        <div class="big-example">
+          <code>S<sub>min</sub> = (y<sub>p</sub> − x<sub>B</sub>) / (x<sub>p</sub> − x<sub>B</sub>)</code><br/><br/>
+          <code>S<sub>min</sub> = (0.67 − 0.03) / (0.23 − 0.03) = 0.64 / 0.20 = 3.2</code>
+        </div>
+        <p>Flujos mínimos en la columna:</p>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>L<sub>min</sub></h3>
+            <p>R<sub>min</sub> × D = 0.636 × 45.65 = <strong>28.75 kmol/h</strong></p>
+          </div>
+          <div class="card">
+            <h3>V̄<sub>min</sub></h3>
+            <p>S<sub>min</sub> × B = 3.2 × 54.35 = <strong>173.9 kmol/h</strong></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 63 — Líneas de operación reales: LOS (p55) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ejemplo n-hexano / p-xileno</p>
+        <h2>Paso 8 — Líneas de operación reales</h2>
+        <div class="two-col">
+          <div>
+            <p>Ahora que tenemos el reflujo de operación, podemos trazar las líneas de operación reales que usaremos para contar las etapas.</p>
+            <p><strong>1. Línea de Operación Superior (LOS)</strong> — ya calculada:</p>
+            <div class="big-example">
+              <code>y = 0.453x + 0.520</code>
+            </div>
+          </div>
+          <img class="diagram" src="img/pres17-p55-2.png" alt="Línea de operación superior real" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 64 — Punto de intersección (p56) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ejemplo n-hexano / p-xileno</p>
+        <h2>Punto de intersección (x<sub>i</sub>, y<sub>i</sub>)</h2>
+        <div class="two-col">
+          <div>
+            <p><strong>2. Punto de Intersección:</strong> La intersección entre la LOS y la Línea q se calcula igualando sus ecuaciones:</p>
+            <div class="big-example">
+              <code>0.453x + 0.520 = −1x + 0.9</code><br/>
+              <code>1.453x = 0.38</code><br/>
+              <code>x<sub>i</sub> = 0.26</code>
+            </div>
+            <p>Sustituyendo en la LOS:</p>
+            <div class="big-example">
+              <code>y<sub>i</sub> = 0.453 × 0.26 + 0.520 = 0.64</code>
+            </div>
+          </div>
+          <img class="diagram" src="img/pres17-p56-2.png" alt="Punto de intersección de líneas de operación" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 65 — LOI real (p57) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ejemplo n-hexano / p-xileno</p>
+        <h2>Línea de Operación Inferior (LOI)</h2>
+        <div class="two-col">
+          <div>
+            <p><strong>3. LOI:</strong> Se traza una línea desde (x<sub>B</sub>, x<sub>B</sub>) = (0.03, 0.03) que pasa por el punto de intersección (0.26, 0.64).</p>
+            <div class="tip">La LOI se define por estos dos puntos: no necesitamos calcular S de operación explícitamente si ya tenemos el punto de intersección.</div>
+          </div>
+          <img class="diagram" src="img/pres17-p57-2.png" alt="Línea de operación inferior real" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 66 — Conteo de etapas: procedimiento (p58) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ejemplo n-hexano / p-xileno</p>
+        <h2>Paso 9 — Conteo de etapas de equilibrio</h2>
+        <div class="two-col">
+          <div>
+            <p>Este es el <strong>corazón del método McCabe-Thiele</strong>. Cada "escalón" representa una etapa de equilibrio teórica.</p>
+            <p><strong>Procedimiento:</strong></p>
+            <ol>
+              <li>Empezar en x<sub>D</sub> (0.95) sobre la diagonal y = x.</li>
+              <li>Trazar línea horizontal hacia la curva de equilibrio (fin de etapa 1).</li>
+              <li>Trazar línea vertical hacia abajo hasta la LOS.</li>
+              <li>Repetir hasta llegar a la intersección de las líneas.</li>
+              <li>Al cruzar la Línea q (o x<sub>i</sub>), cambiar a la LOI.</li>
+              <li>Continuar hasta alcanzar x<sub>B</sub> (0.03).</li>
+            </ol>
+          </div>
+          <img class="diagram" src="img/pres17-p58-2.png" alt="Procedimiento de conteo de etapas" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 67 — Significado físico de los escalones (p59) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ejemplo n-hexano / p-xileno</p>
+        <h2>Significado físico de los escalones</h2>
+        <div class="two-col">
+          <div>
+            <ul>
+              <li><strong>Cada escalón horizontal</strong> representa el equilibrio líquido-vapor en un plato.</li>
+              <li><strong>Cada escalón vertical</strong> representa los flujos entre platos consecutivos.</li>
+              <li>El conjunto representa el proceso de separación etapa por etapa que ocurre en la columna real.</li>
+            </ul>
+            <div class="tip">El cambio de la LOS a la LOI indica el plato de alimentación óptimo. Cambiar demasiado pronto o demasiado tarde incrementa el número de etapas necesarias.</div>
+          </div>
+          <img class="diagram" src="img/pres17-p59-2.png" alt="Significado físico de los escalones" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 68 — Resultados finales: especificaciones (p60, 1/2) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ejemplo n-hexano / p-xileno</p>
+        <h2>Resultados finales del diseño (1/2)</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Especificaciones</h3>
+            <p>F = 100 kmol/h<br/>
+            α = 6.88<br/>
+            z = 0.45<br/>
+            x<sub>D</sub> = 0.95<br/>
+            x<sub>B</sub> = 0.03<br/>
+            R/R<sub>min</sub> = 1.3</p>
+          </div>
+          <div class="card">
+            <h3>Resultados principales</h3>
+            <p>D = 45.65 kmol/h<br/>
+            B = 54.35 kmol/h<br/>
+            R<sub>min</sub> = 0.63<br/>
+            L<sub>min</sub> = 28.75 kmol/h<br/>
+            S<sub>min</sub> = 0.45<br/>
+            V̄<sub>min</sub> = 24.45 kmol/h</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 69 — Resultados finales: diseño (p60, 2/2) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ejemplo n-hexano / p-xileno</p>
+        <h2>Resultados finales del diseño (2/2)</h2>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>Reflujo y ebullición</h3>
+            <p>R = 0.819<br/>
+            S = 0.605<br/>
+            V̄ = SB = 32.9 kmol/h<br/>
+            L = RD = 37.38 kmol/h</p>
+          </div>
+          <div class="card">
+            <h3>Etapas</h3>
+            <p><strong>N = 7</strong> etapas teóricas<br/>
+            <strong>N<sub>feed</sub> = 3</strong> (plato de alimentación)</p>
+          </div>
+          <div class="card">
+            <h3>Resumen</h3>
+            <p>Se necesitan 7 etapas teóricas con alimentación en el plato 3 (contando desde arriba) para lograr la separación deseada.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 70 — Etapas mínimas / reflujo total (p61) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ejemplo n-hexano / p-xileno</p>
+        <h2>Etapas mínimas — Reflujo total</h2>
+        <div class="two-col">
+          <div>
+            <p>Cuando tenemos <strong>reflujo infinito</strong> (R → ∞), las líneas de operación coinciden con la diagonal y = x, y podemos determinar el número de platos mínimo.</p>
+            <div class="big-example">
+              <code>N<sub>min</sub> = 4</code>
+              <p class="legend">Número mínimo de etapas teóricas a reflujo total</p>
+            </div>
+            <p>Este valor establece el límite inferior absoluto de etapas necesarias para la separación.</p>
+          </div>
+          <img class="diagram" src="img/pres17-p61-2.png" alt="Etapas mínimas a reflujo total" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SEPARADOR: EFICIENCIA Y DISEÑO -->
+    <!-- ============================================================ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Parte V</p>
+        <h1>Eficiencia y diseño mecánico</h1>
+        <p>De etapas teóricas a platos reales y dimensionamiento.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 72 — Eficiencia: definición (p62) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Eficiencia y diseño</p>
+        <h2>Eficiencia de plato — Definición</h2>
+        <p>Las etapas calculadas por McCabe-Thiele son <strong>teóricas</strong> (equilibrio perfecto). Los platos reales nunca alcanzan el equilibrio completo debido a limitaciones de tiempo de contacto y mezclado.</p>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Eficiencia global (Murphree)</h3>
+            <p><code>E<sub>o</sub> = N<sub>teórico</sub> / N<sub>real</sub> × 100%</code></p>
+          </div>
+          <div class="card">
+            <h3>Correlación de O'Connell</h3>
+            <p><code>E<sub>o</sub> = 51 − 32.5 log(μ<sub>L</sub> × α<sub>avg</sub>)</code></p>
+            <p>Donde μ<sub>L</sub> = viscosidad del líquido (cP) y α<sub>avg</sub> = volatilidad relativa promedio.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 73 — Factores que afectan eficiencia (p63) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Eficiencia y diseño</p>
+        <h2>Factores que afectan la eficiencia</h2>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>Propiedades físicas</h3>
+            <ul>
+              <li>Viscosidad (↑μ → ↓E): dificulta transferencia de masa</li>
+              <li>Tensión superficial: afecta formación de burbujas</li>
+              <li>Difusividad: determina velocidad de transferencia</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Diseño del plato</h3>
+            <ul>
+              <li>Espaciamiento entre platos (típico 450-600 mm)</li>
+              <li>Tipo (válvulas &gt; perforados &gt; campanas)</li>
+              <li>Área activa vs área total</li>
+              <li>Diseño del vertedero y bajante</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Condiciones operativas</h3>
+            <ul>
+              <li>Relación L/V (óptima ~0.7-0.8)</li>
+              <li>Velocidad del vapor (80% de inundación)</li>
+              <li>Altura de líquido en el plato</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 74 — Eficiencias típicas y HETP (p64) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Eficiencia y diseño</p>
+        <h2>Eficiencias típicas y HETP</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Eficiencias típicas por sistema</h3>
+            <ul>
+              <li>Hidrocarburos ligeros: 80-90%</li>
+              <li>Aromáticos: 70-80%</li>
+              <li>Alcoholes: 60-70%</li>
+              <li>Sistemas acuosos: 50-60%</li>
+              <li>Glicoles: 30-40%</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Conversión a platos/empaque</h3>
+            <p><strong>Platos reales:</strong></p>
+            <p><code>N<sub>real</sub> = N<sub>teórico</sub> / (E<sub>o</sub>/100)</code></p>
+            <p><strong>Empaque (HETP):</strong></p>
+            <p><code>H<sub>empaque</sub> = N<sub>teórico</sub> × HETP</code></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 75 — Diámetro de la columna: Souders-Brown (p65) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Eficiencia y diseño</p>
+        <h2>Diseño hidráulico — Velocidad de inundación</h2>
+        <p>El diámetro debe manejar los flujos de vapor sin inundación excesiva.</p>
+        <div class="big-example">
+          <code>u<sub>flood</sub> = C<sub>SB</sub> √[(ρ<sub>L</sub> − ρ<sub>V</sub>) / ρ<sub>V</sub>]</code>
+          <p class="legend">Correlación de Souders-Brown</p>
+        </div>
+        <p>Donde C<sub>SB</sub> depende del tipo y espaciamiento de platos:</p>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Platos perforados</h3>
+            <p>450 mm → C<sub>SB</sub> = 0.15 m/s<br/>600 mm → C<sub>SB</sub> = 0.18 m/s</p>
+          </div>
+          <div class="card">
+            <h3>Platos de válvulas</h3>
+            <p>450 mm → C<sub>SB</sub> = 0.17 m/s<br/>600 mm → C<sub>SB</sub> = 0.21 m/s</p>
+          </div>
+        </div>
+        <p>Velocidad de diseño: <code>u<sub>diseño</sub> = F<sub>flood</sub> × u<sub>flood</sub></code> donde F<sub>flood</sub> = 0.80-0.85</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 76 — Cálculo del diámetro (p66, 1/2) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Eficiencia y diseño</p>
+        <h2>Cálculo del diámetro (1/2)</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Flujo volumétrico de vapor</h3>
+            <p><code>Q<sub>V</sub> = (V × MW<sub>avg</sub>) / (3600 × ρ<sub>V</sub>)</code> [m³/s]</p>
+            <p>Donde V = flujo molar de vapor (kmol/h), MW<sub>avg</sub> = peso molecular promedio, ρ<sub>V</sub> = densidad del vapor (kg/m³).</p>
+          </div>
+          <div class="card">
+            <h3>Área y diámetro</h3>
+            <p><code>A<sub>columna</sub> = Q<sub>V</sub> / u<sub>diseño</sub></code></p>
+            <p><code>D = √(4 × A<sub>columna</sub> / π)</code></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 77 — Verificaciones y estandarización (p66, 2/2) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Eficiencia y diseño</p>
+        <h2>Cálculo del diámetro (2/2) — Verificaciones</h2>
+        <ul>
+          <li><strong>Capacidad del bajante:</strong> t<sub>residencia</sub> = (A<sub>bajante</sub> × h<sub>líquido</sub>) / Q<sub>L</sub> &gt; 3-5 segundos</li>
+          <li><strong>Velocidad en el bajante:</strong> u<sub>bajante</sub> = Q<sub>L</sub> / A<sub>bajante</sub> &lt; 0.15 m/s</li>
+          <li><strong>Relación de áreas:</strong> A<sub>bajante</sub> / A<sub>columna</sub> = 0.10 − 0.15 típicamente</li>
+        </ul>
+        <div class="tip"><strong>Estandarización:</strong> Los diámetros se redondean a valores estándar: 0.5, 0.6, 0.8, 1.0, 1.2, 1.5, 1.8, 2.0, 2.5, 3.0, 3.5, 4.0 m</div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SEPARADOR: LIMITACIONES -->
+    <!-- ============================================================ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Parte VI</p>
+        <h1>Limitaciones del método McCabe-Thiele</h1>
+        <p>Cuándo funciona, cuándo no, y qué alternativas existen.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 79 — Limitación 1: sistemas binarios (p67) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Limitaciones</p>
+        <h2>1. Limitación a sistemas binarios</h2>
+        <p>El método solo funciona para <strong>dos componentes</strong> porque requiere un diagrama bidimensional (x − y).</p>
+        <p>Para sistemas multicomponentes:</p>
+        <ul>
+          <li>No hay representación gráfica simple</li>
+          <li>Usar métodos matriciales (Thiele-Geddes)</li>
+          <li>Recurrir a simuladores de proceso</li>
+        </ul>
+        <div class="warning">La mayoría de los sistemas industriales involucran más de dos componentes. McCabe-Thiele se usa como herramienta de diseño preliminar y verificación.</div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 80 — Limitación 2: violación CMO (p68) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Limitaciones</p>
+        <h2>2. Violación de la hipótesis CMO</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Cuándo falla CMO</h3>
+            <ul>
+              <li>Calores latentes muy diferentes (error &gt; 20%)</li>
+              <li>Ejemplo: Agua (λ = 40.7 kJ/mol) vs hidrocarburos (λ ≈ 30 kJ/mol)</li>
+              <li>Calores de mezcla significativos</li>
+              <li>Ejemplo: Ácido sulfúrico-agua (muy exotérmico)</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Consecuencias</h3>
+            <ul>
+              <li>Líneas de operación curvas, no rectas</li>
+              <li>Método gráfico se vuelve iterativo</li>
+              <li>Usar método de Ponchon-Savarit (entalpía-concentración)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 81 — Limitación 3: sistemas no ideales (p69) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Limitaciones</p>
+        <h2>3. Sistemas altamente no ideales</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Azeótropos</h3>
+            <ul>
+              <li>La curva de equilibrio cruza la diagonal</li>
+              <li>Separación limitada por composición azeotrópica</li>
+              <li>Requiere técnicas especiales (cambio de presión, agente de arrastre)</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Inmiscibilidad líquida</h3>
+            <ul>
+              <li>Dos fases líquidas en equilibrio</li>
+              <li>Comportamiento complejo del equilibrio</li>
+              <li>Método gráfico no aplicable directamente</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 82 — Limitación 4: condiciones especiales (p70) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Limitaciones</p>
+        <h2>4. Condiciones operativas especiales</h2>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>Columnas a presión variable</h3>
+            <p>α cambia significativamente con la presión. Equilibrio no es constante en la columna. Ejemplo: destilación al vacío profundo.</p>
+          </div>
+          <div class="card">
+            <h3>Reacciones químicas</h3>
+            <p>Destilación reactiva. Balances de materia no lineales. Requiere modelado simultáneo de reacción y separación.</p>
+          </div>
+          <div class="card">
+            <h3>Configuraciones complejas</h3>
+            <p>Alimentaciones múltiples. Extracciones laterales. Intercambiadores de calor intermedios. Columnas térmicamente acopladas.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 83 — Valor pedagógico permanente (p71) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Limitaciones</p>
+        <h2>Valor pedagógico permanente</h2>
+        <p>A pesar de las limitaciones, McCabe-Thiele sigue siendo esencial porque:</p>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Comprensión visual</h3>
+            <p>Proporciona una comprensión intuitiva y visual del proceso de separación.</p>
+          </div>
+          <div class="card">
+            <h3>Estimaciones rápidas</h3>
+            <p>Permite estimaciones rápidas del número de etapas y reflujo necesarios.</p>
+          </div>
+          <div class="card">
+            <h3>Base conceptual</h3>
+            <p>Es la base conceptual para entender métodos avanzados y simuladores.</p>
+          </div>
+          <div class="card">
+            <h3>Verificación</h3>
+            <p>Herramienta de verificación y sanity check de resultados de simuladores.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SEPARADOR: AZEÓTROPOS -->
+    <!-- ============================================================ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Parte VII</p>
+        <h1>Sistemas azeotrópicos y soluciones</h1>
+        <p>Tipos de azeótropos y estrategias para romperlos.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 85 — Tipos de azeótropos (p72) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Azeótropos</p>
+        <h2>Tipos de azeótropos</h2>
+        <p>Los azeótropos representan un límite termodinámico fundamental donde x = y, haciendo imposible la separación adicional por destilación simple.</p>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>1. Azeótropo de mínimo punto de ebullición</h3>
+            <p>(Más común)<br/>
+            T<sub>az</sub> &lt; T<sub>A</sub> y T<sub>B</sub> puros<br/>
+            <strong>Ejemplo:</strong> Etanol-agua (95.6% etanol, 78.1 °C)<br/>
+            Desviaciones positivas de Raoult.</p>
+          </div>
+          <div class="card">
+            <h3>2. Azeótropo de máximo punto de ebullición</h3>
+            <p>T<sub>az</sub> &gt; T<sub>A</sub> y T<sub>B</sub> puros<br/>
+            <strong>Ejemplo:</strong> Ácido nítrico-agua (68% HNO₃, 122 °C)<br/>
+            Desviaciones negativas de Raoult.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 86 — Identificación en diagrama (p73) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Azeótropos</p>
+        <h2>Identificación en el diagrama McCabe-Thiele</h2>
+        <div class="two-col">
+          <div>
+            <ul>
+              <li>La curva de equilibrio <strong>toca o cruza la diagonal</strong></li>
+              <li>En ese punto, <strong>no hay fuerza impulsora</strong> (y = x)</li>
+              <li>Las líneas de operación no pueden cruzar este punto</li>
+            </ul>
+            <div class="warning">Si la composición azeotrópica cae entre x<sub>D</sub> y x<sub>B</sub>, la destilación simple no puede lograr la separación deseada.</div>
+          </div>
+          <img class="diagram" src="img/pres17-p73-2.png" alt="Azeótropo en diagrama McCabe-Thiele" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 87 — Estrategias 1 y 2 (p74, 1/2) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Azeótropos</p>
+        <h2>Estrategias para romper azeótropos (1/2)</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>1. Destilación por cambio de presión</h3>
+            <p>Muchos azeótropos cambian composición con P.<br/>
+            <strong>Ejemplo:</strong> THF-agua (5% agua a 1 atm, 16% a 8 atm).<br/>
+            <strong>Proceso:</strong> dos columnas a diferentes presiones.</p>
+          </div>
+          <div class="card">
+            <h3>2. Destilación azeotrópica</h3>
+            <p>Añadir tercer componente (arrastrante).<br/>
+            Forma nuevo azeótropo con uno de los componentes.<br/>
+            <strong>Ejemplo:</strong> Benceno para deshidratar etanol.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 88 — Estrategias 3 y 4 (p74, 2/2) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Azeótropos</p>
+        <h2>Estrategias para romper azeótropos (2/2)</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>3. Destilación extractiva</h3>
+            <p>Añadir solvente pesado no volátil.<br/>
+            Modifica volatilidades relativas.<br/>
+            <strong>Ejemplo:</strong> Etilenglicol para separar etanol-agua.</p>
+          </div>
+          <div class="card">
+            <h3>4. Procesos híbridos</h3>
+            <p>Destilación + membranas.<br/>
+            Destilación + adsorción (tamices moleculares).<br/>
+            Pervaporación para el acabado.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SEPARADOR: CONTROL -->
+    <!-- ============================================================ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Parte VIII</p>
+        <h1>Control de columnas de destilación</h1>
+        <p>Variables, esquemas y estrategias avanzadas.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 90 — Variables a controlar (p75) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Control</p>
+        <h2>Variables a controlar</h2>
+        <p>El control adecuado es importante para mantener especificaciones de producto y operación eficiente.</p>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>1. Composiciones de productos (objetivos primarios)</h3>
+            <ul>
+              <li><strong>x<sub>D</sub>:</strong> pureza del destilado</li>
+              <li><strong>x<sub>B</sub>:</strong> pureza de los fondos</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>2. Variables operativas (medios de control)</h3>
+            <ul>
+              <li>Reflujo (L o L/D)</li>
+              <li>Vapor al rehervidor (V o V/B)</li>
+              <li>Presión de la columna</li>
+              <li>Niveles (acumulador y fondo)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 91 — Esquemas de control típicos (p76) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Control</p>
+        <h2>Esquemas de control típicos</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>1. Control L-V (más común)</h3>
+            <ul>
+              <li>Composición destilado → Reflujo (L)</li>
+              <li>Composición fondos → Vapor (V)</li>
+              <li><strong>Ventaja:</strong> Respuesta directa</li>
+              <li><strong>Desventaja:</strong> Interacción entre lazos</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>2. Control L/D − V/B</h3>
+            <ul>
+              <li>Mantiene razones constantes</li>
+              <li>Mejor para perturbaciones en alimentación</li>
+              <li>Auto-regulación parcial</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 92 — Control de temperatura inferencial (p77) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Control</p>
+        <h2>Control de temperatura inferencial</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Principio</h3>
+            <ul>
+              <li>Medir T en plato sensible</li>
+              <li>Correlacionar T con composición</li>
+              <li>Más económico que analizadores en línea</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Selección del plato de control</h3>
+            <p>El plato óptimo es donde ∂T/∂x es máximo:</p>
+            <ol>
+              <li>Calcular perfil de temperatura</li>
+              <li>Calcular sensibilidad en cada plato</li>
+              <li>Seleccionar máximo (típicamente cerca de alimentación)</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 93 — Estrategias avanzadas (p78) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Control</p>
+        <h2>Estrategias avanzadas de control</h2>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>Control multivariable predictivo (MPC)</h3>
+            <p>Considera interacciones. Anticipa perturbaciones. Optimiza energía en línea.</p>
+          </div>
+          <div class="card">
+            <h3>Control por presión diferencial</h3>
+            <p>ΔP correlaciona con inundación. Protege contra condiciones límite.</p>
+          </div>
+          <div class="card">
+            <h3>Control feedforward</h3>
+            <p>Mide perturbaciones (F, z<sub>F</sub>, T<sub>F</sub>). Ajusta preventivamente. Minimiza desviaciones.</p>
+          </div>
+        </div>
+        <div class="tip"><strong>Sintonización típica:</strong> Niveles → control proporcional flojo · Presión → PI moderado · Composición/temperatura → PID conservador.</div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 94 — Cierre -->
+    <!-- ============================================================ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">IQYA-2031 · 2026-10</p>
+        <h1>Resumen y cierre</h1>
+        <p>Destilación continua: del equilibrio termodinámico al diseño de columnas reales.</p>
+        <div class="pill-row">
+          <span class="pill">Volatilidad relativa</span>
+          <span class="pill">ELV</span>
+          <span class="pill">McCabe-Thiele</span>
+          <span class="pill">LOS / LOI / Línea q</span>
+          <span class="pill">Reflujo óptimo</span>
+          <span class="pill">Eficiencia</span>
+          <span class="pill">Diseño hidráulico</span>
+          <span class="pill">Azeótropos</span>
+          <span class="pill">Control</span>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="hud">
+    <span id="hud-title">Columnas de destilación · IQYA-2031</span>
+    <span id="hud-counter">1 / 94</span>
+  </div>
+
+  <div class="controls">
+    <button aria-label="Anterior" id="prev">‹</button>
+    <button aria-label="Pantalla completa" id="fs">⛶</button>
+    <button aria-label="Siguiente" id="next">›</button>
+  </div>
+
+  <script>
+    (function () {
+      var slides = Array.prototype.slice.call(document.querySelectorAll('[data-slide]'));
+      var i = 0;
+      var counter = document.getElementById('hud-counter');
+      var progress = document.querySelector('.progress');
+
+      function render() {
+        slides.forEach(function (s, idx) {
+          s.classList.toggle('active', idx === i);
+        });
+        if (counter) counter.textContent = (i + 1) + ' / ' + slides.length;
+        if (progress) progress.style.width = ((i + 1) / slides.length * 100) + '%';
+        var isTitle = slides[i] && slides[i].classList.contains('title-slide');
+        document.body.style.background = isTitle ? '#1A1A1A' : '#ffffff';
+      }
+      function go(n) { i = Math.max(0, Math.min(slides.length - 1, n)); render(); }
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); go(i + 1); }
+        else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(i - 1); }
+        else if (e.key === 'Home') { e.preventDefault(); go(0); }
+        else if (e.key === 'End') { e.preventDefault(); go(slides.length - 1); }
+        else if (e.key === 'f' || e.key === 'F') { toggleFs(); }
+      });
+
+      document.getElementById('prev').addEventListener('click', function () { go(i - 1); });
+      document.getElementById('next').addEventListener('click', function () { go(i + 1); });
+      document.getElementById('fs').addEventListener('click', toggleFs);
+
+      function toggleFs() {
+        var el = document.documentElement;
+        if (!document.fullscreenElement) {
+          (el.requestFullscreen || el.webkitRequestFullscreen || function(){}).call(el);
+        } else {
+          (document.exitFullscreen || document.webkitExitFullscreen || function(){}).call(document);
+        }
+      }
+
+      var tx = 0, ty = 0;
+      document.addEventListener('touchstart', function (e) {
+        if (!e.changedTouches[0]) return;
+        tx = e.changedTouches[0].clientX; ty = e.changedTouches[0].clientY;
+      }, { passive: true });
+      document.addEventListener('touchend', function (e) {
+        if (!e.changedTouches[0]) return;
+        var dx = e.changedTouches[0].clientX - tx;
+        var dy = e.changedTouches[0].clientY - ty;
+        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+          if (dx < 0) go(i + 1); else go(i - 1);
+        }
+      }, { passive: true });
+
+      // Inject decorative slide numbers
+      slides.forEach(function (s, idx) {
+        var num = document.createElement('div');
+        num.className = 'slide-number';
+        num.setAttribute('aria-hidden', 'true');
+        num.textContent = String(idx + 1).padStart(2, '0');
+        s.appendChild(num);
+      });
+
+      render();
+    })();
+  </script>
+</body>
+</html>

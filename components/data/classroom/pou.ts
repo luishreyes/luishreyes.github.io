@@ -950,6 +950,15 @@ export const pouCourse: Course = {
       sessionNumber: 16,
       file: 'clase-16-destilacion-diferencial.html',
     },
+    {
+      id: 'clase-17-columnas-destilacion',
+      title: 'Diseño y análisis de columnas de destilación continua',
+      description:
+        'McCabe-Thiele, líneas de operación, reflujo mínimo y óptimo, localización del plato de alimentación, eficiencias, diseño de platos, columnas empacadas, HETP y optimización económica.',
+      date: '2026-04-28',
+      sessionNumber: 17,
+      file: 'clase-17-columnas-destilacion.html',
+    },
   ],
   cronograma: pouCronograma,
 };
