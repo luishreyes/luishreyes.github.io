@@ -843,6 +843,24 @@ export const pouCourse: Course = {
       sessionNumber: 4,
       file: 'clase-04-pid.html',
     },
+    {
+      id: 'clase-05-solidos',
+      title: 'Propiedades de sólidos particulados',
+      description:
+        'Caracterización, distribución de tamaños, formas de partícula, densidad, porosidad y fluidización.',
+      date: '2026-02-10',
+      sessionNumber: 5,
+      file: 'clase-05-solidos.html',
+    },
+    {
+      id: 'clase-06-molienda',
+      title: 'Reducción de tamaño',
+      description:
+        'Teoría de molienda, leyes de Rittinger-Kick-Bond, tipos de molinos, selección de equipos y cálculos de potencia.',
+      date: '2026-02-12',
+      sessionNumber: 6,
+      file: 'clase-06-molienda.html',
+    },
   ],
   cronograma: pouCronograma,
 };

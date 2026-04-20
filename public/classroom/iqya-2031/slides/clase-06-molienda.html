@@ -1,0 +1,1173 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Reducción de tamaño · IQYA-2031</title>
+  <style>
+    :root {
+      --brand-dark: #1A1A1A;
+      --brand-yellow: #FFBF00;
+      --brand-yellow-dark: #E6AC00;
+      --brand-gray: #555555;
+      --surface: #ffffff;
+      --muted: #f4f4f5;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      background: var(--brand-dark);
+      color: var(--brand-dark);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      overflow: hidden;
+      -webkit-text-size-adjust: 100%;
+    }
+    .deck {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+    }
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(1rem, 4vw, 3.5rem);
+      background: var(--surface);
+      opacity: 0;
+      transition: opacity 260ms ease;
+    }
+    .slide.active {
+      display: flex;
+      opacity: 1;
+    }
+    .slide .content {
+      width: 100%;
+      max-width: 72rem;
+      display: flex;
+      flex-direction: column;
+      gap: clamp(0.75rem, 1.5vw, 1.5rem);
+    }
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      font-size: clamp(0.65rem, 1vw, 0.8rem);
+      color: var(--brand-yellow-dark);
+      font-weight: 600;
+    }
+    h1 {
+      font-size: clamp(1.75rem, 5.5vw, 4rem);
+      line-height: 1.05;
+      margin: 0;
+      color: var(--brand-dark);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    h2 {
+      font-size: clamp(1.25rem, 3.4vw, 2.25rem);
+      line-height: 1.15;
+      margin: 0;
+      color: var(--brand-dark);
+      font-weight: 700;
+    }
+    p, li {
+      font-size: clamp(0.95rem, 1.8vw, 1.35rem);
+      line-height: 1.55;
+      color: var(--brand-gray);
+      margin: 0;
+    }
+    ul, ol {
+      padding-left: 1.25em;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45em;
+    }
+    li::marker { color: var(--brand-yellow-dark); }
+    .slide.title-slide {
+      background: linear-gradient(135deg, #141414 0%, #1A1A1A 50%, #2a2a2a 100%);
+      color: #fff;
+    }
+    .slide.title-slide h1 { color: #fff; }
+    .slide.title-slide p { color: #d4d4d8; }
+    .slide.title-slide .eyebrow { color: var(--brand-yellow); }
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 0.5rem;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.35em 0.9em;
+      border-radius: 999px;
+      background: var(--muted);
+      color: var(--brand-dark);
+      font-size: clamp(0.75rem, 1.3vw, 1rem);
+      font-weight: 500;
+    }
+    .slide.title-slide .pill {
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .grid {
+      display: grid;
+      gap: clamp(0.75rem, 1.5vw, 1.25rem);
+    }
+    .grid.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid.cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    @media (max-width: 640px) {
+      .grid.cols-2, .grid.cols-3, .grid.cols-4 { grid-template-columns: 1fr; }
+    }
+    .card {
+      background: var(--muted);
+      border-radius: 0.75rem;
+      padding: clamp(0.9rem, 1.5vw, 1.35rem);
+    }
+    .card h3 {
+      font-size: clamp(1rem, 2vw, 1.35rem);
+      margin: 0 0 0.35em 0;
+      color: var(--brand-dark);
+      font-weight: 600;
+    }
+    .card p { font-size: clamp(0.8rem, 1.4vw, 1rem); }
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(1rem, 2vw, 2rem);
+      align-items: start;
+    }
+    @media (max-width: 640px) {
+      .two-col { grid-template-columns: 1fr; }
+    }
+    .hud {
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      padding: 0.5rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: rgba(255,255,255,0.75);
+      font-size: 0.75rem;
+      pointer-events: none;
+      z-index: 10;
+    }
+    .slide:not(.title-slide) ~ .hud { color: var(--brand-gray); }
+    .controls {
+      position: fixed;
+      right: 1rem;
+      bottom: 2.5rem;
+      display: flex;
+      gap: 0.5rem;
+      z-index: 11;
+    }
+    .controls button {
+      -webkit-appearance: none;
+      appearance: none;
+      border: 1px solid rgba(0,0,0,0.1);
+      background: rgba(255,255,255,0.9);
+      color: var(--brand-dark);
+      width: 2.5rem; height: 2.5rem;
+      border-radius: 999px;
+      font-size: 1rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    }
+    .controls button:active { transform: scale(0.96); }
+    .progress {
+      position: fixed;
+      top: 0; left: 0;
+      height: 3px;
+      background: var(--brand-yellow);
+      transition: width 260ms ease;
+      z-index: 20;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .slide { transition: none; }
+      .progress { transition: none; }
+    }
+    @media (max-width: 480px) {
+      .controls { right: 0.5rem; bottom: 1.25rem; }
+      .hud { font-size: 0.65rem; }
+    }
+
+    /* ─── Decorative: L-shaped yellow corner accent ─── */
+    .slide:not(.title-slide)::before {
+      content: '';
+      position: absolute;
+      top: clamp(1rem, 3vw, 2.5rem);
+      right: clamp(1rem, 3vw, 2.5rem);
+      width: clamp(2rem, 5vw, 4rem);
+      height: clamp(2rem, 5vw, 4rem);
+      border-top: 2.5px solid var(--brand-yellow);
+      border-right: 2.5px solid var(--brand-yellow);
+      pointer-events: none;
+      z-index: 1;
+    }
+    .slide.title-slide::before {
+      content: '';
+      position: absolute;
+      bottom: clamp(1rem, 3vw, 2.5rem);
+      left: clamp(1rem, 3vw, 2.5rem);
+      width: clamp(2rem, 5vw, 4rem);
+      height: clamp(2rem, 5vw, 4rem);
+      border-bottom: 2.5px solid var(--brand-yellow);
+      border-left: 2.5px solid var(--brand-yellow);
+      opacity: 0.4;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* ─── Decorative: large background slide number ─── */
+    .slide-number {
+      position: absolute;
+      bottom: clamp(0.5rem, 2vw, 1.5rem);
+      left: clamp(1rem, 3vw, 2.5rem);
+      font-size: clamp(4rem, 12vw, 10rem);
+      font-weight: 800;
+      line-height: 1;
+      color: rgba(0, 0, 0, 0.04);
+      pointer-events: none;
+      z-index: 0;
+      user-select: none;
+      letter-spacing: -0.04em;
+    }
+    .slide.title-slide .slide-number {
+      color: rgba(255, 255, 255, 0.06);
+    }
+
+    /* ─── Extra components ─── */
+    .tip {
+      background: #fef9c3;
+      border-left: 4px solid var(--brand-yellow);
+      border-radius: 0.5rem;
+      padding: 0.85rem 1.1rem;
+      font-size: clamp(0.85rem, 1.5vw, 1.1rem);
+      color: #92400e;
+    }
+    .warning {
+      background: #fee2e2;
+      border-left: 4px solid #ef4444;
+      border-radius: 0.5rem;
+      padding: 0.85rem 1.1rem;
+      font-size: clamp(0.85rem, 1.5vw, 1.1rem);
+      color: #991b1b;
+    }
+    .big-example {
+      background: var(--brand-dark);
+      color: #fff;
+      border-radius: 0.75rem;
+      padding: clamp(1rem, 2vw, 1.75rem);
+      text-align: center;
+    }
+    .big-example code {
+      font-size: clamp(1.1rem, 2.5vw, 1.75rem);
+      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+      color: var(--brand-yellow);
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+    .big-example .legend {
+      font-size: clamp(0.75rem, 1.2vw, 0.95rem);
+      color: #a1a1aa;
+    }
+    .small-text {
+      font-size: clamp(0.7rem, 1.1vw, 0.85rem);
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+  <div class="progress" style="width:0"></div>
+  <div class="deck" id="deck">
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 1 — Portada (Página 1) -->
+    <!-- ============================================================ -->
+    <section class="slide title-slide active" data-slide>
+      <div class="content">
+        <p class="eyebrow">IQYA-2031 · 2026-10</p>
+        <h1>Reducción de tamaño</h1>
+        <p>Teoría de molienda, leyes de conminución, tipos de molinos, selección de equipos y cálculos de potencia.</p>
+        <div class="pill-row">
+          <span class="pill">Conminución</span>
+          <span class="pill">Leyes de Rittinger, Kick y Bond</span>
+          <span class="pill">Molinos</span>
+          <span class="pill">Clasificación</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 2 — ¿Por qué reducir tamaño? (Página 2) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Fundamentos</p>
+        <h2>¿Por qué reducir tamaño?</h2>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>1. Aumentar área superficial</h3>
+            <p>Acelera transferencia de masa/calor. En su proceso, moler caña aumenta superficie de 0.1 a &gt;10 m²/kg, acelerando extracción 100×.</p>
+          </div>
+          <div class="card">
+            <h3>2. Liberar componentes valiosos</h3>
+            <p>Azúcares en caña, almidón en granos. Para granos, romper estructura celular es prerequisito para acceso enzimático al almidón.</p>
+          </div>
+          <div class="card">
+            <h3>3. Alcanzar tamaño específico</h3>
+            <p>Para operaciones posteriores (tamizado, fluidización), cumplir especificaciones de producto y facilitar manejo y transporte.</p>
+          </div>
+        </div>
+        <div class="warning">La reducción de tamaño consume 1-2% de toda la energía eléctrica mundial, por lo que debe justificarse cuidadosamente. El arte está en moler "justo lo necesario", ni más ni menos.</div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 3 — Mecanismos de fractura (Página 3, parte 1/2) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Fundamentos</p>
+        <h2>Mecanismos de fractura</h2>
+        <p>La fractura de sólidos ocurre cuando el esfuerzo aplicado excede la resistencia del material, pero el mecanismo específico determina la distribución de productos y energía requerida.</p>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Compresión</h3>
+            <p>Fuerza lenta entre superficies, fractura a lo largo de planos de debilidad naturales.</p>
+          </div>
+          <div class="card">
+            <h3>Impacto</h3>
+            <p>Fuerza súbita, propaga ondas de esfuerzo causando fractura generalizada.</p>
+          </div>
+          <div class="card">
+            <h3>Atrición</h3>
+            <p>Frotamiento entre partículas o contra superficies, erosiona material superficial.</p>
+          </div>
+          <div class="card">
+            <h3>Corte</h3>
+            <p>Fuerzas de cizalla, efectivo para materiales fibrosos.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 4 — Mecanismos de fractura (Página 3, parte 2/2) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Fundamentos</p>
+        <h2>Mecanismos de fractura — respuesta de materiales</h2>
+        <div class="tip">Cada material responde diferentemente: cristales frágiles favorecen impacto, fibras requieren corte, materiales dúctiles resisten todos los mecanismos requiriendo diseños especiales.</div>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>Cristales frágiles</h3>
+            <p>Favorecen <strong>impacto</strong>. Fractura rápida y limpia a lo largo de planos cristalinos.</p>
+          </div>
+          <div class="card">
+            <h3>Fibras</h3>
+            <p>Requieren <strong>corte</strong>. Resistentes a compresión e impacto por su estructura elongada.</p>
+          </div>
+          <div class="card">
+            <h3>Materiales dúctiles</h3>
+            <p>Resisten todos los mecanismos. Requieren <strong>diseños especiales</strong> como molienda criogénica.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 5 — Teoría de Griffith (Página 4) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Teoría de Griffith</p>
+        <h2>La física de las grietas</h2>
+        <p>La teoría de Griffith (1920) revolucionó nuestra comprensión de fractura al reconocer que la resistencia real de materiales es <strong>10-1000× menor</strong> que la teórica debido a defectos microscópicos.</p>
+        <p>Cuando se aplica fuerza externa, el esfuerzo en la punta de grieta se amplifica según:</p>
+        <div class="big-example">
+          <code>σ_punta = σ_aplicado × 2 × √(L / r)</code>
+          <p class="legend">L = longitud de grieta · r = radio de punta de grieta</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 6 — Teoría de Griffith: criterio energético (Página 5) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Teoría de Griffith</p>
+        <h2>Criterio energético de fractura</h2>
+        <p>La fractura ocurre cuando la energía elástica liberada por propagación excede la energía para crear nuevas superficies:</p>
+        <div class="big-example">
+          <code>σ_fractura = √(2Eγ / πL)</code>
+          <p class="legend">E = módulo elástico · γ = energía superficial · L = longitud de grieta</p>
+        </div>
+        <div class="tip">La propagación de grieta es un balance energético: la energía almacenada elásticamente debe superar la energía necesaria para crear dos nuevas superficies.</div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 7 — Griffith: implicaciones prácticas (Página 6) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Teoría de Griffith</p>
+        <h2>Implicaciones prácticas</h2>
+        <ul>
+          <li><strong>Partículas grandes con grietas largas</strong> se rompen más fácilmente.</li>
+          <li><strong>Pre-tratamientos</strong> que introducen grietas reducen energía requerida.</li>
+          <li><strong>Material húmedo</strong> puede ser más fácil o difícil de moler según si agua lubrica o sella grietas.</li>
+        </ul>
+        <div class="tip">Griffith explica por qué la molienda fina es exponencialmente más costosa: partículas pequeñas tienen menos defectos y grietas más cortas, requiriendo esfuerzos mucho mayores para fracturar.</div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 8 — Separador: Leyes de la conminución -->
+    <!-- ============================================================ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Leyes de la conminución</p>
+        <h1>Rittinger, Kick y Bond</h1>
+        <p>Tres modelos empíricos para predecir la energía necesaria en reducción de tamaño.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 9 — Ley de Rittinger (Página 7) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Leyes de la conminución</p>
+        <h2>Ley de Rittinger (1867)</h2>
+        <p>Postula que la energía requerida es proporcional a la <strong>nueva superficie creada</strong>:</p>
+        <div class="big-example">
+          <code>E = K_R × (1/x₂ − 1/x₁)</code>
+          <p class="legend">E = energía específica (kWh/ton) · K_R = constante de Rittinger · x₁, x₂ = tamaños inicial y final</p>
+        </div>
+        <p>Para esferas, el área nueva creada es:</p>
+        <div class="big-example">
+          <code>ΔÁrea_nueva = 6ρ × (1/x₂ − 1/x₁)  [m²/kg]</code>
+          <p class="legend">ρ = densidad del material</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 10 — Rittinger: ejemplo numérico (Página 8) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Leyes de la conminución</p>
+        <h2>Ley de Rittinger — ejemplo numérico</h2>
+        <p>Moler cuarzo de 1 mm a 0.1 mm:</p>
+        <div class="big-example">
+          <code>E = K_R × (1/0.1 − 1/1) = 9 K_R</code>
+          <p class="legend">Ratio de reducción 10:1</p>
+        </div>
+        <p>De 0.1 mm a 0.01 mm:</p>
+        <div class="big-example">
+          <code>E = K_R × (1/0.01 − 1/0.1) = 90 K_R</code>
+          <p class="legend">Mismo ratio 10:1 pero ¡10× más energía!</p>
+        </div>
+        <div class="warning">¡10× más energía para la misma reducción de ratio! La molienda fina es exponencialmente más costosa.</div>
+        <div class="tip">Mejor para molienda fina (x &lt; 100 µm) donde la creación de superficie domina.</div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 11 — Ley de Kick (Página 9) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Leyes de la conminución</p>
+        <h2>Ley de Kick (1885)</h2>
+        <p>Propone que la energía es proporcional al <strong>logaritmo del ratio de reducción</strong>:</p>
+        <div class="big-example">
+          <code>E = K_K × log(x₁ / x₂)</code>
+          <p class="legend">K_K = constante de Kick</p>
+        </div>
+        <p>Esta ley implica que la misma energía reduce cualquier tamaño por el mismo ratio: 100→10 mm requiere igual energía que 10→1 mm o 1→0.1 mm.</p>
+        <div class="big-example">
+          <code>E = K_K × log(R)</code>
+          <p class="legend">R = ratio de reducción = x₁/x₂</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 12 — Kick: ejemplo y aplicabilidad (Página 10) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Leyes de la conminución</p>
+        <h2>Ley de Kick — ejemplo y aplicabilidad</h2>
+        <p>Para R = 10:</p>
+        <div class="big-example">
+          <code>E = K_K × log(10) = K_K</code>
+          <p class="legend">Una unidad de energía para ratio 10:1</p>
+        </div>
+        <p>Doblando energía (2K_K):</p>
+        <div class="big-example">
+          <code>2K_K = K_K × log(R₂)  →  R₂ = 100</code>
+          <p class="legend">El doble de energía permite ratio 100:1</p>
+        </div>
+        <div class="tip"><strong>Aplicabilidad:</strong> mejor para trituración gruesa (x &gt; 50 mm) donde partículas grandes se deforman significativamente antes de fracturar.</div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 13 — Ley de Bond (Página 11) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Leyes de la conminución</p>
+        <h2>Ley de Bond (1952) — el compromiso práctico</h2>
+        <p>Fred Bond desarrolló la ley más usada industrialmente, un compromiso empírico entre Rittinger y Kick:</p>
+        <div class="big-example">
+          <code>E = W_i × 10 × (1/√P₈₀ − 1/√F₈₀)</code>
+          <p class="legend">W_i = índice de trabajo de Bond (kWh/ton) · F₈₀ = tamaño 80% pasante alimentación (µm) · P₈₀ = tamaño 80% pasante producto (µm)</p>
+        </div>
+        <p>Bond razonó que la energía varía con x<sup>−3/2</sup>, intermedio entre x<sup>−1</sup> de Rittinger y x<sup>0</sup> de Kick.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 14 — Bond: Work Index y ejemplo (Página 12) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Leyes de la conminución</p>
+        <h2>Ley de Bond — Work Index y valores típicos</h2>
+        <p>El Work Index W<sub>i</sub> es la energía para reducir 1 tonelada desde tamaño infinito a 100 µm, determinado experimentalmente en molino estándar.</p>
+        <div class="grid cols-4">
+          <div class="card">
+            <h3>Cuarzo</h3>
+            <p>W<sub>i</sub> = 13.6 kWh/ton</p>
+          </div>
+          <div class="card">
+            <h3>Caliza</h3>
+            <p>W<sub>i</sub> = 11.6 kWh/ton</p>
+          </div>
+          <div class="card">
+            <h3>Caña de azúcar</h3>
+            <p>W<sub>i</sub> ≈ 15 kWh/ton</p>
+          </div>
+          <div class="card">
+            <h3>Granos</h3>
+            <p>W<sub>i</sub> ≈ 10 kWh/ton</p>
+          </div>
+        </div>
+        <p><strong>Ejemplo:</strong> caña 50 mm → 2 mm:</p>
+        <div class="big-example">
+          <code>E = 15 × 10 × (1/√2000 − 1/√50000) = 2.91 kWh/ton</code>
+          <p class="legend">F₈₀ = 50 000 µm · P₈₀ = 2 000 µm</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 15 — Comparación de las tres leyes (Página 13) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Leyes de la conminución</p>
+        <h2>Comparación de las tres leyes</h2>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>Ley de Kick</h3>
+            <p>Mejor para <strong>trituración primaria</strong> (&gt;100 mm).</p>
+            <p>Predice menor energía cuando la deformación domina.</p>
+            <p>Energía constante para mismo ratio de reducción.</p>
+          </div>
+          <div class="card">
+            <h3>Ley de Bond</h3>
+            <p>Más precisa para <strong>régimen intermedio</strong> (10→1 mm).</p>
+            <p>Ampliamente validada para 90% de aplicaciones industriales.</p>
+            <p>Energía varía con x<sup>−3/2</sup>.</p>
+          </div>
+          <div class="card">
+            <h3>Ley de Rittinger</h3>
+            <p>Mejor para <strong>molienda fina</strong> (&lt;1 mm).</p>
+            <p>Más precisa cuando la creación de superficie domina.</p>
+            <p>Energía varía con x<sup>−1</sup>.</p>
+          </div>
+        </div>
+        <div class="tip"><strong>Para su proyecto:</strong> molienda de caña (50→2 mm) use Bond, molienda fina de azúcar (&lt;100 µm) verifique con Rittinger, primera quebrada de granos duros considere Kick.</div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 16 — Work Index: determinación experimental (Página 14) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Work Index de Bond</p>
+        <h2>Determinación experimental del Work Index</h2>
+        <p>El Work Index se determina en <strong>molino de bolas estándar Bond</strong>: 12" diámetro × 12" largo, 285 revoluciones, 70 rpm, carga específica de bolas.</p>
+        <p>Procedimiento iterativo: moler muestra hasta alcanzar "equilibrio" donde gramos netos producidos bajo malla objetivo por revolución se estabilizan (G<sub>br</sub>).</p>
+        <div class="big-example">
+          <code>W_i = 44.5 / (P₁⁰·²³ × G_br⁰·⁸² × (10/√P₈₀ − 10/√F₈₀))</code>
+          <p class="legend">P₁ = apertura malla de corte (µm) · G_br = gramos netos por revolución</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 17 — Alternativas para estimación rápida (Página 15) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Work Index de Bond</p>
+        <h2>Alternativas para estimación rápida</h2>
+        <ul>
+          <li><strong>Hardgrove Index (HGI)</strong> para carbones: W<sub>i</sub> = 435 / HGI<sup>0.91</sup></li>
+          <li><strong>Ensayo de impacto:</strong> correlaciones específicas por industria.</li>
+          <li><strong>Molienda comparativa:</strong> W<sub>i,material</sub> = W<sub>i,referencia</sub> × (kWh<sub>material</sub> / kWh<sub>referencia</sub>)</li>
+        </ul>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Materiales no convencionales</h3>
+            <p>Para materiales no convencionales (residuos agrícolas), desarrolle correlación propia.</p>
+          </div>
+          <div class="card">
+            <h3>Variabilidad importante</h3>
+            <p>Mismo material puede variar ±20% según origen, humedad, tratamiento previo.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 18 — Factores que modifican el consumo energético (Página 16) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Factores energéticos</p>
+        <h2>Factores que modifican el consumo energético</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Humedad</h3>
+            <p>Efecto dual: lubrica reduciendo fricción interna (<strong>−20% energía</strong>) pero causa empaste y reduce eficiencia de impacto (<strong>+50% energía</strong>). Óptimo típicamente 1-4% para minerales, 10-15% para biomasas.</p>
+          </div>
+          <div class="card">
+            <h3>Temperatura</h3>
+            <p>Materiales se fragilizan a baja temperatura (nitrógeno líquido reduce energía 50% para plásticos), pero ablandamiento térmico aumenta consumo.</p>
+          </div>
+          <div class="card">
+            <h3>Fatiga</h3>
+            <p>Impactos repetidos sub-críticos debilitan estructura. Pre-molienda reduce energía de molienda fina 20-30%.</p>
+          </div>
+          <div class="card">
+            <h3>Aditivos de molienda</h3>
+            <p>Surfactantes (&lt;0.1%) reducen energía 10-25% previniendo re-aglomeración y sellado de grietas.</p>
+          </div>
+        </div>
+        <div class="tip"><strong>Para su proceso:</strong> evalúe pre-tratamientos (vapor para fibras, enzimas para ablandamiento), optimice humedad experimentalmente, considere molienda en etapas con clasificación intermedia.</div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 19 — Separador: Equipos de reducción de tamaño -->
+    <!-- ============================================================ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Equipos</p>
+        <h1>Equipos de reducción de tamaño</h1>
+        <p>Trituradoras, molinos y sus principios de operación.</p>
+        <div class="pill-row">
+          <span class="pill">Mandíbulas</span>
+          <span class="pill">Giratorias</span>
+          <span class="pill">Martillos</span>
+          <span class="pill">Rodillos</span>
+          <span class="pill">Bolas</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 20 — Trituradoras de mandíbulas (Página 17) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Trituradoras</p>
+        <h2>Trituradoras de mandíbulas</h2>
+        <p>Son el caballo de batalla para <strong>reducción primaria</strong> de materiales duros y abrasivos, operando por compresión entre una mandíbula fija y una móvil.</p>
+        <p><strong>Geometría crítica:</strong> ángulo entre mandíbulas 20-30° para atrapar sin expulsar material.</p>
+        <div class="big-example">
+          <code>Q = 0.6 × L × S × n × ρ_b  [ton/h]</code>
+          <p class="legend">L = longitud abertura (m) · S = carrera (m) · n = frecuencia (Hz) · ρ_b = densidad bulk</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 21 — Trituradoras de mandíbulas: tipos (Página 18) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Trituradoras</p>
+        <h2>Trituradoras de mandíbulas — tipos y limitaciones</h2>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>Blake</h3>
+            <p>Pivote arriba, producto uniforme.</p>
+          </div>
+          <div class="card">
+            <h3>Dodge</h3>
+            <p>Pivote abajo, mayor reducción pero menor capacidad.</p>
+          </div>
+          <div class="card">
+            <h3>Universal</h3>
+            <p>Pivote intermedio, compromiso entre Blake y Dodge.</p>
+          </div>
+        </div>
+        <div class="two-col">
+          <div>
+            <h3>Ventajas</h3>
+            <ul>
+              <li>Construcción robusta</li>
+              <li>Mantenimiento simple</li>
+              <li>Maneja materiales muy duros</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Limitaciones</h3>
+            <ul>
+              <li>Solo reducción gruesa</li>
+              <li>Vibración significativa</li>
+              <li>No apropiado para materiales pegajosos</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 22 — Trituradoras giratorias (Página 19) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Trituradoras</p>
+        <h2>Trituradoras giratorias</h2>
+        <p>Ofrecen <strong>mayor capacidad</strong> que mandíbulas mediante compresión continua entre cono móvil excéntrico y carcasa fija cónica.</p>
+        <p><strong>Geometría:</strong> ángulo del cono 45-60°, mayor que mandíbulas permitiendo alimentación continua por gravedad.</p>
+        <div class="big-example">
+          <code>Q = 45 × D² × A × n × ρ_b  [ton/h]</code>
+          <p class="legend">D = diámetro cono base (m) · A = amplitud (m) · n = frecuencia (Hz) · ρ_b = densidad bulk</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 23 — Giratorias: ventajas y limitaciones (Página 20) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Trituradoras</p>
+        <h2>Trituradoras giratorias — ventajas y limitaciones</h2>
+        <div class="two-col">
+          <div>
+            <h3>Ventajas sobre mandíbulas</h3>
+            <ul>
+              <li>3-5× mayor capacidad/peso</li>
+              <li>Alimentación continua sin atascamiento</li>
+              <li>Producto más cúbico</li>
+              <li>Menor mantenimiento/ton</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Limitaciones</h3>
+            <ul>
+              <li>Mayor costo capital</li>
+              <li>Instalación más compleja</li>
+              <li>No maneja materiales pegajosos/plásticos</li>
+            </ul>
+          </div>
+        </div>
+        <div class="tip"><strong>Aplicación:</strong> limitada en agroindustria, más común en minería.</div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 24 — Molinos de martillos (Página 21) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Molinos</p>
+        <h2>Molinos de martillos</h2>
+        <p>Dominan la reducción de tamaño en agroindustria por su versatilidad, capacidad de manejar materiales diversos y producir amplio rango de productos.</p>
+        <p><strong>Principio:</strong> martillos montados en rotor de alta velocidad (1 000-5 000 rpm) impactan material causando fractura por impacto y atrición contra placas rompedoras y tamiz perimetral.</p>
+        <p><strong>Diseño crítico:</strong> velocidad periférica 40-120 m/s según dureza material. Óptimo caña/granos: 60-80 m/s.</p>
+        <div class="big-example">
+          <code>P = K × Q × (1/d₂ − 1/d₁)  [kW]</code>
+          <p class="legend">K = 50-150 según material · Q = caudal · d₁, d₂ = tamaños inicial y final</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 25 — Molinos de martillos: configuración (Página 22) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Molinos</p>
+        <h2>Molinos de martillos — configuración y detalles</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Configuración de martillos</h3>
+            <ul>
+              <li><strong>Rígidos</strong> para materiales duros</li>
+              <li><strong>Pivotantes</strong> para fibrosos (auto-limpieza)</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Control de tamaño</h3>
+            <p>Tamiz perimetral controla tamaño producto: perforaciones 1-25 mm típicas. Área abierta 30-50% para flujo adecuado.</p>
+          </div>
+          <div class="card">
+            <h3>Ventajas</h3>
+            <ul>
+              <li>Maneja materiales húmedos/fibrosos</li>
+              <li>Fácil cambio de granulometría</li>
+              <li>Construcción simple</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Limitaciones</h3>
+            <ul>
+              <li>Alto desgaste con abrasivos</li>
+              <li>Genera calor</li>
+              <li>Ruido extremo &gt;100 dB</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 26 — Molinos de rodillos (Página 23) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Molinos</p>
+        <h2>Molinos de rodillos</h2>
+        <p>Aplican <strong>compresión pura</strong> entre cilindros contra-rotantes, ofreciendo control preciso del tamaño producto y mínima generación de finos.</p>
+        <p><strong>Principio:</strong> material es arrastrado por fricción hacia el gap donde esfuerzo compresivo excede resistencia.</p>
+        <p><strong>Ángulo de pellizco crítico:</strong></p>
+        <div class="big-example">
+          <code>α_max = arctan(μ)</code>
+          <p class="legend">μ = coeficiente de fricción · Típicamente 30° máximo → limita ratio de reducción a 4:1 por paso</p>
+        </div>
+        <div class="big-example">
+          <code>Q = π × D × L × v × ρ_b × C  [kg/s]</code>
+          <p class="legend">C = factor de utilización (0.3-0.5) · D = diámetro rodillo · L = largo rodillo · v = velocidad periférica</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 27 — Molinos de rodillos: configuración (Página 24) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Molinos</p>
+        <h2>Molinos de rodillos — configuración y aplicaciones</h2>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>Configuración de rodillos</h3>
+            <ul>
+              <li><strong>Lisos</strong> para reducción simple</li>
+              <li><strong>Corrugados/dentados</strong> para mayor agarre</li>
+              <li><strong>Diferenciales</strong> (velocidades diferentes) añaden cizalla</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Ventajas</h3>
+            <ul>
+              <li>Producto uniforme</li>
+              <li>Eficiencia energética superior</li>
+              <li>Generación mínima de polvo/calor</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Aplicaciones ideales</h3>
+            <ul>
+              <li>Granos → harina</li>
+              <li>Azúcar → glass</li>
+              <li>Preparación de malta</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 28 — Molinos de bolas (Página 25) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Molinos</p>
+        <h2>Molinos de bolas</h2>
+        <p>Dominan la <strong>molienda fina</strong> mediante combinación de impacto y atrición entre bolas de acero en tambor rotante.</p>
+        <p><strong>Velocidad crítica:</strong></p>
+        <div class="big-example">
+          <code>N_c = 42.3 / √D  [rpm]</code>
+          <p class="legend">D = diámetro molino (m) · Operación típica 65-80% de N_c · Sobre N_c → centrifugación</p>
+        </div>
+        <p><strong>Potencia:</strong></p>
+        <div class="big-example">
+          <code>P = 0.2 × D^2.5 × L × ρ_carga × %N_c  [kW]</code>
+          <p class="legend">Carga de bolas 30-45% del volumen: menor reduce capacidad, mayor reduce espacio para material</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 29 — Molinos de bolas: detalles (Página 26) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Molinos</p>
+        <h2>Molinos de bolas — acción de molienda</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Acción de molienda</h3>
+            <ul>
+              <li><strong>Impacto</strong> en zona toe (gruesos)</li>
+              <li><strong>Atrición</strong> en zona carga (finos)</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Ventajas</h3>
+            <ul>
+              <li>Molienda muy fina posible (&lt;10 µm)</li>
+              <li>Operación continua simple</li>
+            </ul>
+          </div>
+        </div>
+        <div class="warning">
+          <strong>Limitaciones:</strong> alto consumo energético (&gt;20 kWh/ton para &lt;100 µm), desgaste de bolas y revestimiento, ruido extremo.
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 30 — Separador: Clasificación y control -->
+    <!-- ============================================================ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Operaciones complementarias</p>
+        <h1>Clasificación, tamizado y control de polvo</h1>
+        <p>Operaciones inseparables de la molienda eficiente.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 31 — Clasificación y tamizado (Página 27) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Clasificación</p>
+        <h2>Clasificación y tamizado industrial</h2>
+        <p>La clasificación por tamaños es inseparable de la molienda eficiente, determinando calidad producto y eficiencia energética.</p>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>Tamices vibratorios</h3>
+            <p>Dominan clasificación seca 100 µm - 100 mm. Movimiento crítico: <strong>circular</strong> (eficiente, compacto), <strong>lineal</strong> (mejor transporte), <strong>elíptico</strong> (compromiso).</p>
+          </div>
+          <div class="card">
+            <h3>Clasificadores neumáticos</h3>
+            <p>Para finos secos &lt;100 µm: por gravedad, centrífugos o por impacto.</p>
+          </div>
+          <div class="card">
+            <h3>Hidrociclones</h3>
+            <p>Dominan clasificación húmeda 10-500 µm: sin partes móviles, alta capacidad, corte preciso.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 32 — Factores de eficiencia en tamizado (Página 28) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Clasificación</p>
+        <h2>Factores de eficiencia en tamizado</h2>
+        <ul>
+          <li><strong>Área abierta tamiz:</strong> 35-50% óptimo.</li>
+          <li><strong>Forma abertura vs partícula:</strong> la forma relativa determina probabilidad de paso.</li>
+          <li><strong>Carga específica:</strong> &lt;1 ton/h·m² para finos.</li>
+          <li><strong>Humedad:</strong> &lt;3% o problemas de pegado.</li>
+        </ul>
+        <div class="tip">Mantenga la humedad por debajo de 3% en tamizado seco para evitar obstrucción de malla y pérdida de eficiencia.</div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 33 — Control de polvo y emisiones (Página 29, parte 1/2) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Control ambiental</p>
+        <h2>Control de polvo y emisiones</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Fuentes de emisión</h3>
+            <p>Puntos de transferencia (diseñar caídas mínimas), descarga de molino (mayor velocidad de aire), tamices (encapsular), transporte neumático (filtros en descarga).</p>
+          </div>
+          <div class="card">
+            <h3>Velocidad de captura</h3>
+            <p>0.5-2.5 m/s según tamaño de partícula para arrastre efectivo. Insuficiente: polvo escapa. Excesiva: arrastra producto valioso.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 34 — Control de polvo: tecnologías y prevención (Página 29, parte 2/2) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Control ambiental</p>
+        <h2>Tecnologías de control y prevención de explosiones</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Tecnologías de control</h3>
+            <ul>
+              <li><strong>Filtros manga:</strong> 99.9% eficiencia &gt;1 µm</li>
+              <li><strong>Precipitadores electrostáticos:</strong> partículas finas, baja ΔP</li>
+              <li><strong>Scrubbers húmedos:</strong> simultáneo enfriamiento</li>
+              <li><strong>Ciclones:</strong> pre-separación de gruesos</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Prevención de explosiones</h3>
+            <ul>
+              <li>Concentración &lt;25% LIE mediante ventilación</li>
+              <li>Eliminación de fuentes de ignición</li>
+              <li>Sistemas de supresión/venteo</li>
+              <li>Monitoreo continuo de particulado</li>
+            </ul>
+          </div>
+        </div>
+        <div class="warning"><strong>Riesgo de explosión de polvo:</strong> partículas finas (&lt;100 µm) de materiales orgánicos en concentración adecuada son extremadamente peligrosas. Nunca omitir sistemas de venteo y supresión.</div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 35 — Cierre -->
+    <!-- ============================================================ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">IQYA-2031 · Sesión 6</p>
+        <h1>Resumen — Reducción de tamaño</h1>
+        <div class="pill-row">
+          <span class="pill">Griffith: grietas → fractura</span>
+          <span class="pill">Rittinger: molienda fina</span>
+          <span class="pill">Kick: trituración gruesa</span>
+          <span class="pill">Bond: uso industrial</span>
+          <span class="pill">Mandíbulas y giratorias</span>
+          <span class="pill">Martillos y rodillos</span>
+          <span class="pill">Molinos de bolas</span>
+          <span class="pill">Clasificación y seguridad</span>
+        </div>
+        <p>El arte está en moler "justo lo necesario", ni más ni menos.</p>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="hud">
+    <span id="hud-title">Reducción de tamaño · IQYA-2031</span>
+    <span id="hud-counter">1 / 35</span>
+  </div>
+
+  <div class="controls">
+    <button aria-label="Anterior" id="prev">‹</button>
+    <button aria-label="Pantalla completa" id="fs">⛶</button>
+    <button aria-label="Siguiente" id="next">›</button>
+  </div>
+
+  <script>
+    (function () {
+      var slides = Array.prototype.slice.call(document.querySelectorAll('[data-slide]'));
+      var i = 0;
+      var counter = document.getElementById('hud-counter');
+      var progress = document.querySelector('.progress');
+
+      function render() {
+        slides.forEach(function (s, idx) {
+          s.classList.toggle('active', idx === i);
+        });
+        if (counter) counter.textContent = (i + 1) + ' / ' + slides.length;
+        if (progress) progress.style.width = ((i + 1) / slides.length * 100) + '%';
+        var isTitle = slides[i] && slides[i].classList.contains('title-slide');
+        document.body.style.background = isTitle ? '#1A1A1A' : '#ffffff';
+      }
+      function go(n) { i = Math.max(0, Math.min(slides.length - 1, n)); render(); }
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); go(i + 1); }
+        else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(i - 1); }
+        else if (e.key === 'Home') { e.preventDefault(); go(0); }
+        else if (e.key === 'End') { e.preventDefault(); go(slides.length - 1); }
+        else if (e.key === 'f' || e.key === 'F') { toggleFs(); }
+      });
+
+      document.getElementById('prev').addEventListener('click', function () { go(i - 1); });
+      document.getElementById('next').addEventListener('click', function () { go(i + 1); });
+      document.getElementById('fs').addEventListener('click', toggleFs);
+
+      function toggleFs() {
+        var el = document.documentElement;
+        if (!document.fullscreenElement) {
+          (el.requestFullscreen || el.webkitRequestFullscreen || function(){}).call(el);
+        } else {
+          (document.exitFullscreen || document.webkitExitFullscreen || function(){}).call(document);
+        }
+      }
+
+      var tx = 0, ty = 0;
+      document.addEventListener('touchstart', function (e) {
+        if (!e.changedTouches[0]) return;
+        tx = e.changedTouches[0].clientX; ty = e.changedTouches[0].clientY;
+      }, { passive: true });
+      document.addEventListener('touchend', function (e) {
+        if (!e.changedTouches[0]) return;
+        var dx = e.changedTouches[0].clientX - tx;
+        var dy = e.changedTouches[0].clientY - ty;
+        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+          if (dx < 0) go(i + 1); else go(i - 1);
+        }
+      }, { passive: true });
+
+      // Inject decorative slide numbers
+      slides.forEach(function (s, idx) {
+        var num = document.createElement('div');
+        num.className = 'slide-number';
+        num.setAttribute('aria-hidden', 'true');
+        num.textContent = String(idx + 1).padStart(2, '0');
+        s.appendChild(num);
+      });
+
+      render();
+    })();
+  </script>
+</body>
+</html>
