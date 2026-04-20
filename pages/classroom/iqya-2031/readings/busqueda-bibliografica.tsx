@@ -12,6 +12,7 @@ const tocItems = [
   { id: 'estrategias', label: 'Estrategias de búsqueda' },
   { id: 'chatgpt', label: 'ChatGPT' },
   { id: 'gemini', label: 'Google Gemini' },
+  { id: 'notebooklm', label: 'NotebookLM' },
   { id: 'claude', label: 'Claude' },
   { id: 'perplexity', label: 'Perplexity' },
   { id: 'scispace', label: 'SciSpace' },
@@ -213,7 +214,7 @@ const BusquedaBibliografica: React.FC = () => {
             <div className="rounded-xl border border-zinc-200 p-5">
               <h4 className="font-semibold text-brand-dark text-base mb-2">Herramientas de IA</h4>
               <p className="text-sm text-brand-gray leading-relaxed">
-                ChatGPT, Gemini, Claude, Perplexity, SciSpace, Consensus y Connected Papers — la nueva generación de asistentes de investigación.
+                ChatGPT, Gemini, NotebookLM, Claude, Perplexity, SciSpace, Consensus y Connected Papers — la nueva generación de asistentes de investigación.
               </p>
             </div>
           </div>
@@ -767,6 +768,108 @@ const BusquedaBibliografica: React.FC = () => {
 
           </>)}
 
+          {isVisible('notebooklm') && (<>
+          {/* ═══════════════════════════════════════════════════════════════
+              SECTION — NOTEBOOKLM
+          ═══════════════════════════════════════════════════════════════ */}
+          <SectionTitle id="notebooklm">Google NotebookLM</SectionTitle>
+
+          <p>
+            <a href="https://notebooklm.google/" target="_blank" rel="noopener noreferrer">NotebookLM</a> es
+            la herramienta de investigación y toma de notas de Google, construida sobre los modelos Gemini.
+            Su principio fundamental es el <strong>source-grounding</strong> (RAG — Retrieval Augmented Generation):
+            opera estrictamente dentro de los límites de las fuentes que tú subes, reduciendo drásticamente
+            las alucinaciones comparado con chatbots de propósito general. Esto la hace particularmente
+            adecuada para trabajo académico donde la fidelidad al material fuente es crítica.
+          </p>
+
+          <SubTitle>Interfaz de tres paneles</SubTitle>
+          <p>
+            En marzo de 2026, NotebookLM fue rediseñado con una interfaz de tres paneles:
+          </p>
+          <div className="grid sm:grid-cols-3 gap-4 my-6 not-prose">
+            <div className="rounded-xl border border-zinc-200 p-5">
+              <h4 className="font-semibold text-brand-dark text-base mb-2">Panel de fuentes</h4>
+              <p className="text-sm text-brand-gray leading-relaxed">Sube y gestiona documentos: PDFs, Google Docs, Slides, Sheets, Word, PowerPoint, texto plano, Markdown, CSV, EPUB, URLs, videos de YouTube, archivos de audio y más.</p>
+            </div>
+            <div className="rounded-xl border border-zinc-200 p-5">
+              <h4 className="font-semibold text-brand-dark text-base mb-2">Panel de chat</h4>
+              <p className="text-sm text-brand-gray leading-relaxed">Interactúa con tus fuentes mediante conversación. Las respuestas están ancladas exclusivamente a lo que subiste — las citas son trazables.</p>
+            </div>
+            <div className="rounded-xl border border-zinc-200 p-5">
+              <h4 className="font-semibold text-brand-dark text-base mb-2">Panel de estudio</h4>
+              <p className="text-sm text-brand-gray leading-relaxed">Genera entregables: reportes, presentaciones (exportables a PPTX), infografías con 10 estilos predefinidos, mapas mentales.</p>
+            </div>
+          </div>
+
+          <SubTitle>Funciones destacadas para investigación</SubTitle>
+
+          <div className="grid sm:grid-cols-2 gap-4 my-6 not-prose">
+            <div className="rounded-xl border border-zinc-200 p-5">
+              <h4 className="font-semibold text-brand-dark text-base mb-2">Audio Overview</h4>
+              <p className="text-sm text-brand-gray leading-relaxed">Genera un podcast conversacional con dos presentadores a partir de tus fuentes. Ideal para revisar literatura o material de clase mientras te desplazas. 3 por día (gratis) o 20 por día (Plus).</p>
+            </div>
+            <div className="rounded-xl border border-zinc-200 p-5">
+              <h4 className="font-semibold text-brand-dark text-base mb-2">Video Overviews cinemáticos</h4>
+              <p className="text-sm text-brand-gray leading-relaxed">Nuevo en 2026: genera videos con animaciones fluidas y visuales ricos a partir de tus documentos. Gemini toma decisiones estructurales y estilísticas automáticamente.</p>
+            </div>
+            <div className="rounded-xl border border-zinc-200 p-5">
+              <h4 className="font-semibold text-brand-dark text-base mb-2">Flashcards y quizzes</h4>
+              <p className="text-sm text-brand-gray leading-relaxed">Genera tarjetas de estudio con seguimiento ("Lo sé" / "No lo sé"), quizzes con progreso guardado entre sesiones, y modo Learning Guide que actúa como tutor personal.</p>
+            </div>
+            <div className="rounded-xl border border-zinc-200 p-5">
+              <h4 className="font-semibold text-brand-dark text-base mb-2">Deep Research</h4>
+              <p className="text-sm text-brand-gray leading-relaxed">Capacidad de investigación multi-paso agregada a finales de 2025. Realiza búsquedas iterativas dentro y fuera de tus fuentes.</p>
+            </div>
+          </div>
+
+          <SubTitle>Planes y precios</SubTitle>
+          <div className="overflow-x-auto my-6 not-prose">
+            <table className="w-full text-sm border-collapse">
+              <thead>
+                <tr className="bg-zinc-50 text-left">
+                  <th className="px-4 py-2.5 font-semibold text-brand-dark border-b border-zinc-200">Característica</th>
+                  <th className="px-4 py-2.5 font-semibold text-brand-dark border-b border-zinc-200">Gratis</th>
+                  <th className="px-4 py-2.5 font-semibold text-brand-dark border-b border-zinc-200">Plus ($19.99/mes)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-b border-zinc-100"><td className="px-4 py-2.5 text-brand-gray">Notebooks</td><td className="px-4 py-2.5 text-brand-gray">100</td><td className="px-4 py-2.5 text-brand-gray">500</td></tr>
+                <tr className="border-b border-zinc-100"><td className="px-4 py-2.5 text-brand-gray">Fuentes por notebook</td><td className="px-4 py-2.5 text-brand-gray">50</td><td className="px-4 py-2.5 text-brand-gray">300</td></tr>
+                <tr className="border-b border-zinc-100"><td className="px-4 py-2.5 text-brand-gray">Consultas de chat por día</td><td className="px-4 py-2.5 text-brand-gray">50</td><td className="px-4 py-2.5 text-brand-gray">500</td></tr>
+                <tr className="border-b border-zinc-100"><td className="px-4 py-2.5 text-brand-gray">Audio Overviews por día</td><td className="px-4 py-2.5 text-brand-gray">3</td><td className="px-4 py-2.5 text-brand-gray">20</td></tr>
+                <tr className="border-b border-zinc-100"><td className="px-4 py-2.5 text-brand-gray">Video Overviews</td><td className="px-4 py-2.5 text-brand-gray">Limitado</td><td className="px-4 py-2.5 text-brand-gray">Sí</td></tr>
+                <tr className="border-b border-zinc-100"><td className="px-4 py-2.5 text-brand-gray">Exportar a PPTX</td><td className="px-4 py-2.5 text-brand-gray">Sí</td><td className="px-4 py-2.5 text-brand-gray">Sí</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <TipCallout title="💡 Descuento estudiantil">
+            <p>NotebookLM Plus está incluido en Google One AI Premium ($19.99/mes), que también incluye Gemini Advanced y 2 TB de almacenamiento. Estudiantes en EE.UU. mayores de 18 años pueden obtenerlo a mitad de precio ($9.99/mes por 12 meses). Además, instituciones con Google Workspace for Education Plus tienen límites expandidos sin costo adicional desde abril 2026.</p>
+          </TipCallout>
+
+          <SubTitle>¿Cómo usarlo para revisión bibliográfica?</SubTitle>
+          <ol>
+            <li><strong>Revisiones de literatura:</strong> Sube múltiples artículos (PDFs) a un notebook y pídele que sintetice hallazgos, identifique contradicciones o compare metodologías entre papers.</li>
+            <li><strong>Comprensión de lecturas:</strong> Sube grabaciones de clase (audio) o diapositivas y usa el chat para hacer preguntas de aclaración. El modo Learning Guide te guía paso a paso.</li>
+            <li><strong>Audio para repasar:</strong> Convierte tus notas de termodinámica o fenómenos de transporte en un podcast para escuchar en el bus.</li>
+            <li><strong>Preparación de exámenes:</strong> Genera flashcards y quizzes a partir de tus apuntes, capítulos de libros o lecturas del curso.</li>
+            <li><strong>Colaboración en equipo:</strong> Comparte notebooks con tu equipo; todas las conversaciones y contenido generado permanecen dentro del notebook.</li>
+          </ol>
+
+          <WarningCallout title="⚠️ Limitaciones">
+            <p>NotebookLM solo conoce lo que tú subes — no busca en la web abierta por sí solo (excepto con Deep Research). Las fuentes de YouTube solo importan la transcripción, no el contenido visual. El límite por fuente es de 500,000 palabras o 200 MB.</p>
+          </WarningCallout>
+
+          <p>
+            <strong>Enlace:</strong>{' '}
+            <a href="https://notebooklm.google/" target="_blank" rel="noopener noreferrer">
+              notebooklm.google
+            </a>
+          </p>
+
+          </>)}
+
           {isVisible('claude') && (<>
           {/* ═══════════════════════════════════════════════════════════════
               SECTION 9 — CLAUDE
@@ -1153,6 +1256,12 @@ const BusquedaBibliografica: React.FC = () => {
                   <td className="px-4 py-2.5 text-brand-gray">Solo mapeo, sin análisis de contenido, limitado a Semantic Scholar/arXiv/PubMed</td>
                   <td className="px-4 py-2.5 text-brand-gray">Descubrir literatura relacionada, mapear campos de investigación, encontrar seminal papers</td>
                 </tr>
+                <tr className="border-b border-zinc-100">
+                  <td className="px-4 py-2.5 font-medium text-brand-dark">NotebookLM</td>
+                  <td className="px-4 py-2.5 text-brand-gray">Source-grounding (sin alucinaciones), Audio Overviews, flashcards, quizzes, infografías, PPTX export</td>
+                  <td className="px-4 py-2.5 text-brand-gray">Solo analiza lo que subes, no busca en la web por sí solo, límite de 500K palabras por fuente</td>
+                  <td className="px-4 py-2.5 text-brand-gray">Sintetizar múltiples papers, preparar exámenes, repasar material en formato podcast</td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -1184,6 +1293,13 @@ const BusquedaBibliografica: React.FC = () => {
                   <td className="px-4 py-2.5 text-brand-gray">Sí</td>
                   <td className="px-4 py-2.5 text-brand-gray">$19,99/mes</td>
                   <td className="px-4 py-2.5 text-brand-gray">No exclusivo</td>
+                </tr>
+                <tr className="border-b border-zinc-100">
+                  <td className="px-4 py-2.5 font-medium text-brand-dark">NotebookLM</td>
+                  <td className="px-4 py-2.5 text-brand-gray">Sintetizar papers, estudio</td>
+                  <td className="px-4 py-2.5 text-brand-gray">Sí (50 consultas/día)</td>
+                  <td className="px-4 py-2.5 text-brand-gray">$19,99/mes</td>
+                  <td className="px-4 py-2.5 text-brand-gray">Solo tus fuentes</td>
                 </tr>
                 <tr className="border-b border-zinc-100">
                   <td className="px-4 py-2.5 font-medium text-brand-dark">Claude</td>
@@ -1248,6 +1364,9 @@ const BusquedaBibliografica: React.FC = () => {
             </li>
             <li>
               <strong>Emplea SciSpace o Consensus para analizar contenido:</strong> Usa Chat with PDF de SciSpace para comprender papers complejos, o Consensus para verificar el estado del consenso científico sobre preguntas específicas.
+            </li>
+            <li>
+              <strong>Sintetiza con NotebookLM:</strong> Sube los papers más relevantes a un notebook. Pídele que compare metodologías, identifique contradicciones y sintetice hallazgos. Genera un Audio Overview para repasar tus conclusiones mientras te desplazas.
             </li>
             <li>
               <strong>Usa ChatGPT Deep Research, Gemini Deep Research o Claude para investigaciones profundas:</strong> Para temas que requieren síntesis de múltiples fuentes, utiliza Deep Research de ChatGPT o Gemini. Para análisis detallado de documentos que ya tienes, sube los PDFs a Claude y solicita comparaciones, extracción de datos o identificación de contradicciones.
