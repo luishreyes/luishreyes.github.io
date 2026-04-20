@@ -428,6 +428,15 @@ export const pouCourse: Course = {
       readingMinutes: 5,
       tags: ['bienvenida', 'logística'],
     },
+    {
+      slug: 'trabajo-en-equipo',
+      title: 'Trabajo en equipo: guía práctica para el proyecto',
+      summary:
+        'Principios de equipos efectivos, normas de convivencia, roles, resolución de conflictos y evaluación entre pares para el proyecto de Operaciones Unitarias.',
+      date: '2026-01-26',
+      readingMinutes: 20,
+      tags: ['equipos', 'gestión de proyectos', 'soft skills'],
+    },
   ],
   presentations: [
     {
