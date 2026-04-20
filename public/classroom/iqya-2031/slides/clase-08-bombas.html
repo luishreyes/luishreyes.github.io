@@ -1,0 +1,1713 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Bombas centrífugas · IQYA-2031</title>
+  <style>
+    :root {
+      --brand-dark: #1A1A1A;
+      --brand-yellow: #FFBF00;
+      --brand-yellow-dark: #E6AC00;
+      --brand-gray: #555555;
+      --surface: #ffffff;
+      --muted: #f4f4f5;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      background: var(--brand-dark);
+      color: var(--brand-dark);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      overflow: hidden;
+      -webkit-text-size-adjust: 100%;
+    }
+    .deck {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+    }
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(1rem, 4vw, 3.5rem);
+      background: var(--surface);
+      opacity: 0;
+      transition: opacity 260ms ease;
+    }
+    .slide.active {
+      display: flex;
+      opacity: 1;
+    }
+    .slide .content {
+      width: 100%;
+      max-width: 72rem;
+      display: flex;
+      flex-direction: column;
+      gap: clamp(0.75rem, 1.5vw, 1.5rem);
+    }
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      font-size: clamp(0.65rem, 1vw, 0.8rem);
+      color: var(--brand-yellow-dark);
+      font-weight: 600;
+    }
+    h1 {
+      font-size: clamp(1.75rem, 5.5vw, 4rem);
+      line-height: 1.05;
+      margin: 0;
+      color: var(--brand-dark);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    h2 {
+      font-size: clamp(1.25rem, 3.4vw, 2.25rem);
+      line-height: 1.15;
+      margin: 0;
+      color: var(--brand-dark);
+      font-weight: 700;
+    }
+    p, li {
+      font-size: clamp(0.95rem, 1.8vw, 1.35rem);
+      line-height: 1.55;
+      color: var(--brand-gray);
+      margin: 0;
+    }
+    ul, ol {
+      padding-left: 1.25em;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45em;
+    }
+    li::marker { color: var(--brand-yellow-dark); }
+    .slide.title-slide {
+      background: linear-gradient(135deg, #141414 0%, #1A1A1A 50%, #2a2a2a 100%);
+      color: #fff;
+    }
+    .slide.title-slide h1 { color: #fff; }
+    .slide.title-slide p { color: #d4d4d8; }
+    .slide.title-slide .eyebrow { color: var(--brand-yellow); }
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 0.5rem;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.35em 0.9em;
+      border-radius: 999px;
+      background: var(--muted);
+      color: var(--brand-dark);
+      font-size: clamp(0.75rem, 1.3vw, 1rem);
+      font-weight: 500;
+    }
+    .slide.title-slide .pill {
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .grid {
+      display: grid;
+      gap: clamp(0.75rem, 1.5vw, 1.25rem);
+    }
+    .grid.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid.cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    @media (max-width: 640px) {
+      .grid.cols-2, .grid.cols-3, .grid.cols-4 { grid-template-columns: 1fr; }
+    }
+    .card {
+      background: var(--muted);
+      border-radius: 0.75rem;
+      padding: clamp(0.9rem, 1.5vw, 1.35rem);
+    }
+    .card h3 {
+      font-size: clamp(1rem, 2vw, 1.35rem);
+      margin: 0 0 0.35em 0;
+      color: var(--brand-dark);
+      font-weight: 600;
+    }
+    .card p { font-size: clamp(0.8rem, 1.4vw, 1rem); }
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(1rem, 2vw, 2rem);
+      align-items: center;
+    }
+    @media (max-width: 640px) {
+      .two-col { grid-template-columns: 1fr; }
+    }
+    .diagram {
+      max-width: 100%;
+      height: auto;
+      border-radius: 0.5rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+    }
+    .small-text {
+      font-size: clamp(0.7rem, 1.1vw, 0.85rem);
+      color: var(--brand-gray);
+      text-align: center;
+    }
+    .tip {
+      background: #fef9e7;
+      border-left: 4px solid var(--brand-yellow);
+      padding: 0.85em 1.1em;
+      border-radius: 0 0.5rem 0.5rem 0;
+      font-size: clamp(0.85rem, 1.4vw, 1.1rem);
+      color: var(--brand-dark);
+    }
+    .warning {
+      background: #fef2f2;
+      border-left: 4px solid #ef4444;
+      padding: 0.85em 1.1em;
+      border-radius: 0 0.5rem 0.5rem 0;
+      font-size: clamp(0.85rem, 1.4vw, 1.1rem);
+      color: var(--brand-dark);
+    }
+    .big-example {
+      background: var(--muted);
+      border-radius: 0.75rem;
+      padding: clamp(1rem, 2vw, 2rem);
+      text-align: center;
+    }
+    .big-example code {
+      font-size: clamp(1.2rem, 3vw, 2.5rem);
+      font-weight: 700;
+      color: var(--brand-dark);
+    }
+    .big-example .legend {
+      font-size: clamp(0.75rem, 1.2vw, 0.95rem);
+      color: var(--brand-gray);
+      margin-top: 0.5em;
+    }
+    .hud {
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      padding: 0.5rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: rgba(255,255,255,0.75);
+      font-size: 0.75rem;
+      pointer-events: none;
+      z-index: 10;
+    }
+    .slide:not(.title-slide) ~ .hud { color: var(--brand-gray); }
+    .controls {
+      position: fixed;
+      right: 1rem;
+      bottom: 2.5rem;
+      display: flex;
+      gap: 0.5rem;
+      z-index: 11;
+    }
+    .controls button {
+      -webkit-appearance: none;
+      appearance: none;
+      border: 1px solid rgba(0,0,0,0.1);
+      background: rgba(255,255,255,0.9);
+      color: var(--brand-dark);
+      width: 2.5rem; height: 2.5rem;
+      border-radius: 999px;
+      font-size: 1rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    }
+    .controls button:active { transform: scale(0.96); }
+    .progress {
+      position: fixed;
+      top: 0; left: 0;
+      height: 3px;
+      background: var(--brand-yellow);
+      transition: width 260ms ease;
+      z-index: 20;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .slide { transition: none; }
+      .progress { transition: none; }
+    }
+    @media (max-width: 480px) {
+      .controls { right: 0.5rem; bottom: 1.25rem; }
+      .hud { font-size: 0.65rem; }
+    }
+
+    /* ─── Decorative: L-shaped yellow corner accent ─── */
+    .slide:not(.title-slide)::before {
+      content: '';
+      position: absolute;
+      top: clamp(1rem, 3vw, 2.5rem);
+      right: clamp(1rem, 3vw, 2.5rem);
+      width: clamp(2rem, 5vw, 4rem);
+      height: clamp(2rem, 5vw, 4rem);
+      border-top: 2.5px solid var(--brand-yellow);
+      border-right: 2.5px solid var(--brand-yellow);
+      pointer-events: none;
+      z-index: 1;
+    }
+    .slide.title-slide::before {
+      content: '';
+      position: absolute;
+      bottom: clamp(1rem, 3vw, 2.5rem);
+      left: clamp(1rem, 3vw, 2.5rem);
+      width: clamp(2rem, 5vw, 4rem);
+      height: clamp(2rem, 5vw, 4rem);
+      border-bottom: 2.5px solid var(--brand-yellow);
+      border-left: 2.5px solid var(--brand-yellow);
+      opacity: 0.4;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* ─── Decorative: large background slide number ─── */
+    .slide-number {
+      position: absolute;
+      bottom: clamp(0.5rem, 2vw, 1.5rem);
+      left: clamp(1rem, 3vw, 2.5rem);
+      font-size: clamp(4rem, 12vw, 10rem);
+      font-weight: 800;
+      line-height: 1;
+      color: rgba(0, 0, 0, 0.04);
+      pointer-events: none;
+      z-index: 0;
+      user-select: none;
+      letter-spacing: -0.04em;
+    }
+    .slide.title-slide .slide-number {
+      color: rgba(255, 255, 255, 0.06);
+    }
+  </style>
+</head>
+<body>
+  <div class="progress" style="width:0"></div>
+  <div class="deck" id="deck">
+
+    <!-- ============================================================
+         SLIDE 1 — Portada (PDF p.1)
+         ============================================================ -->
+    <section class="slide title-slide active" data-slide>
+      <div class="content">
+        <p class="eyebrow">IQYA-2031 · 2026-10</p>
+        <h1>Bombas centrífugas</h1>
+        <p>Clasificación, curvas características, punto de operación, NPSH, cavitación, selección y dimensionamiento.</p>
+        <div class="pill-row">
+          <span class="pill">Principio centrífugo</span>
+          <span class="pill">Curvas H-Q</span>
+          <span class="pill">NPSH</span>
+          <span class="pill">Cavitación</span>
+          <span class="pill">Selección</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 2 — Fundamentos de bombeo (PDF p.2)
+         ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Fundamentos</p>
+        <h2>Fundamentos de bombeo</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Principio básico</h3>
+            <p>Conversión de energía rotacional en presión y flujo mediante fuerzas centrífugas.</p>
+          </div>
+          <div class="card">
+            <h3>Componentes principales</h3>
+            <p>Impulsor, voluta, eje, cojinetes, sello mecánico, anillos de desgaste y carcasa.</p>
+          </div>
+          <div class="card">
+            <h3>Curvas características</h3>
+            <p>H-Q (altura-caudal), &eta;-Q (eficiencia-caudal), P-Q (potencia-caudal).</p>
+          </div>
+          <div class="card">
+            <h3>NPSH</h3>
+            <p>Net Positive Suction Head &mdash; margen energético para prevenir cavitación.</p>
+          </div>
+        </div>
+        <div class="tip">La diferencia entre una bomba bien seleccionada y una marginal puede ser años de operación sin problemas versus paradas costosas y fallas catastróficas.</div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 3 — El principio centrífugo: definición (PDF p.3)
+         ============================================================ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Principio centrífugo</p>
+        <h1>El principio centrífugo</h1>
+        <p>El principio de operación de bombas centrífugas es simple: impartir energía cinética a un fluido mediante rotación, luego convertir esa velocidad en presión útil.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 4 — Funcionamiento del impulsor (PDF p.4)
+         ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Principio centrífugo</p>
+        <h2>Funcionamiento del impulsor</h2>
+        <div class="two-col">
+          <div>
+            <p>Cuando el impulsor gira, las paletas arrastran el fluido desde el centro (ojo) hacia la periferia. La aceleración centrífuga genera un campo de presión donde la presión aumenta radialmente.</p>
+          </div>
+          <img class="diagram" src="img/pres08-p04-3.png" alt="Diagrama del funcionamiento del impulsor centrífugo" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 5 — En el impulsor (PDF p.5)
+         ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Principio centrífugo</p>
+        <h2>En el impulsor</h2>
+        <div class="two-col">
+          <div>
+            <ul>
+              <li>El fluido entra axialmente con baja velocidad y presión.</li>
+              <li>Es acelerado tangencial y radialmente por las paletas.</li>
+              <li>Sale con alta velocidad (20-60 m/s típico) y presión moderada.</li>
+            </ul>
+            <p style="margin-top:0.75em;">El área creciente desacelera el fluido gradualmente, convirtiendo energía cinética en presión según el principio de Bernoulli.</p>
+          </div>
+          <img class="diagram" src="img/pres08-p05-3.png" alt="Flujo en el impulsor centrífugo" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 6 — En la voluta (PDF p.6)
+         ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Principio centrífugo</p>
+        <h2>En la voluta</h2>
+        <div class="two-col">
+          <div>
+            <p>La voluta convierte la energía cinética restante en presión estática. El principio de Bernoulli gobierna esta conversión:</p>
+            <div class="big-example">
+              <code>v&sup2;/2g + P/&rho;g = cte</code>
+            </div>
+            <div class="tip">Un impulsor de 300 mm a 3000 rpm genera aceleración de 1500 m/s&sup2; (150 g!), explicando cómo líquidos ganan 50-200 m de altura en milisegundos.</div>
+          </div>
+          <img class="diagram" src="img/pres08-p06-3.png" alt="Conversión de energía en la voluta" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 7 — Anatomía de una bomba centrífuga (PDF p.7, 1/2)
+         ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Anatomía</p>
+        <h2>Anatomía de una bomba centrífuga (1/2)</h2>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>Impulsor</h3>
+            <p>Corazón de la bomba, discos con paletas que transfieren energía del eje al fluido. Geometría compleja optimizada por CFD moderno.</p>
+          </div>
+          <div class="card">
+            <h3>Voluta / difusor</h3>
+            <p>Carcasa espiral que colecta fluido del impulsor, convierte velocidad en presión, guía hacia descarga. Forma evolutiva crítica para eficiencia.</p>
+          </div>
+          <div class="card">
+            <h3>Eje</h3>
+            <p>Transmite torque del motor al impulsor, diseñado para velocidad crítica y deflexión mínima. Acero inoxidable típico, 40-100 mm diámetro.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 8 — Anatomía de una bomba centrífuga (PDF p.7, 2/2)
+         ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Anatomía</p>
+        <h2>Anatomía de una bomba centrífuga (2/2)</h2>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>Cojinetes</h3>
+            <p>Soportan cargas radiales y axiales, vida &gt;40,000 horas con lubricación apropiada.</p>
+          </div>
+          <div class="card">
+            <h3>Sello mecánico</h3>
+            <p>Previene fugas en penetración del eje, componente más delicado, 80% de fallas aquí. Caras carbón/carburo silicio, presión balanceada.</p>
+          </div>
+          <div class="card">
+            <h3>Anillos de desgaste</h3>
+            <p>Minimiza recirculación interna, mantiene eficiencia, reemplazable.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 9 — Tipos de impulsores (PDF p.8)
+         ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Impulsores</p>
+        <h2>Tipos de impulsores</h2>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>Impulsor cerrado</h3>
+            <p>Paletas entre dos discos, máxima eficiencia (85-92%), mínima recirculación. Tolera poco sólidos, común en agua limpia, químicos.</p>
+          </div>
+          <div class="card">
+            <h3>Impulsor semiabierto</h3>
+            <p>Paletas en un disco contra carcasa, eficiencia media (75-85%), maneja algunos sólidos. Ajuste axial compensa desgaste.</p>
+          </div>
+          <div class="card">
+            <h3>Impulsor abierto</h3>
+            <p>Paletas sin discos, eficiencia menor (60-75%), excelente para sólidos/fibrosos. Gran clearance previene atascamiento.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 10 — Velocidad específica (PDF p.9, 1/2)
+         ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Velocidad específica</p>
+        <h2>Velocidad específica N<sub>s</sub></h2>
+        <p>La velocidad específica (N<sub>s</sub>) es un parámetro adimensional que caracteriza la geometría óptima del impulsor para condiciones dadas:</p>
+        <div class="big-example">
+          <code>N<sub>s</sub> = N &middot; &radic;Q / H<sup>3/4</sup></code>
+          <p class="legend">N = rpm &middot; Q = m&sup3;/s (en el BEP) &middot; H = metros</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 11 — Velocidad específica: rangos (PDF p.9, 2/2)
+         ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Velocidad específica</p>
+        <h2>Rangos de N<sub>s</sub> y geometría del impulsor</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>N<sub>s</sub> &lt; 20</h3>
+            <p>Flujo radial puro, impulsores angostos (D<sub>1</sub>/D<sub>2</sub> &ge; 2-3), alta presión/bajo flujo, múltiples etapas común.</p>
+          </div>
+          <div class="card">
+            <h3>N<sub>s</sub> = 20-40</h3>
+            <p>Flujo mixto radial, balance óptimo H-Q-&eta;, mayoría de aplicaciones.</p>
+          </div>
+          <div class="card">
+            <h3>N<sub>s</sub> = 40-80</h3>
+            <p>Flujo mixto axial, impulsores anchos, presión moderada.</p>
+          </div>
+          <div class="card">
+            <h3>N<sub>s</sub> &gt; 80</h3>
+            <p>Flujo axial (propeller), baja altura/alto flujo, una etapa.</p>
+          </div>
+        </div>
+        <div class="tip">Eficiencia máxima ocurre en N<sub>s</sub> &asymp; 30-40 (mixto). Diseño fuera del rango óptimo resulta en eficiencia pobre y operación inestable.</div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 12 — La curva H-Q: definición (PDF p.10)
+         ============================================================ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Curvas características</p>
+        <h1>La curva H-Q</h1>
+        <p>La curva altura-caudal (H-Q) es la característica fundamental que define cómo responde una bomba a diferentes demandas de flujo.</p>
+        <div class="pill-row">
+          <span class="pill">Forma descendente</span>
+          <span class="pill">Shutoff head a Q=0</span>
+          <span class="pill">Pérdidas hidráulicas crecen con flujo</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 13 — La curva H-Q: física (PDF p.10 cont.)
+         ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Curvas características</p>
+        <h2>Curva H-Q: física subyacente</h2>
+        <div class="two-col">
+          <div>
+            <p>Forma típica descendente: máxima altura a válvula cerrada (shutoff head), disminuye continuamente con flujo aumentando.</p>
+            <p style="margin-top:0.75em;">A Q = 0, el impulsor solo genera presión centrífuga:</p>
+            <div class="big-example">
+              <code>H<sub>0</sub> &asymp; &omega;&sup2; D<sub>2</sub>&sup2; / g</code>
+            </div>
+            <p style="margin-top:0.75em;">Con flujo, las pérdidas hidráulicas aumentan:</p>
+            <div class="big-example">
+              <code>H = H<sub>0</sub> &minus; k<sub>1</sub>Q &minus; k<sub>2</sub>Q&sup2;</code>
+            </div>
+          </div>
+          <img class="diagram" src="img/pres08-p10-4.png" alt="Curva H-Q típica de una bomba centrífuga" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 14 — Tipos de curvas H-Q (PDF p.11)
+         ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Curvas características</p>
+        <h2>Tipos de curvas H-Q</h2>
+        <div class="two-col">
+          <div>
+            <ul>
+              <li><strong>Curva empinada</strong> (dH/dQ grande): bomba &ldquo;rígida&rdquo;, mantiene presión.</li>
+              <li><strong>Curva plana:</strong> bomba &ldquo;suave&rdquo;, flujo estable, ideal para operación en paralelo.</li>
+              <li><strong>Curva con máximo:</strong> inestable entre shutoff y máximo, puede oscilar (surging).</li>
+            </ul>
+            <p style="margin-top:0.75em;"><strong>Modificaciones:</strong> impulsor recortado aplana y baja curva; velocidad variable desplaza verticalmente.</p>
+          </div>
+          <img class="diagram" src="img/pres08-p11-3.png" alt="Diferentes tipos de curvas H-Q" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 15 — Eficiencia: ecuación (PDF p.12)
+         ============================================================ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Eficiencia</p>
+        <h1>Eficiencia &eta;</h1>
+        <p>La eficiencia hidráulica cuantifica qué fracción de la potencia entregada al eje se convierte en energía útil del fluido.</p>
+        <div class="pill-row">
+          <span class="pill">&eta; = &rho;gQH / P<sub>eje</sub></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 16 — Eficiencia: pérdidas (PDF p.12 cont.)
+         ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Eficiencia</p>
+        <h2>Tipos de pérdidas</h2>
+        <div class="two-col">
+          <div class="grid cols-2">
+            <div class="card">
+              <h3>Pérdidas hidráulicas</h3>
+              <p>Fricción, turbulencia, choque: 5-15%</p>
+            </div>
+            <div class="card">
+              <h3>Pérdidas volumétricas</h3>
+              <p>Recirculación interna: 2-5%</p>
+            </div>
+            <div class="card">
+              <h3>Pérdidas mecánicas</h3>
+              <p>Cojinetes, sellos: 1-3%</p>
+            </div>
+            <div class="card">
+              <h3>Pérdidas de disco</h3>
+              <p>Fricción impulsor con fluido: 2-8%</p>
+            </div>
+          </div>
+          <img class="diagram" src="img/pres08-p12-3.png" alt="Distribución de pérdidas en una bomba centrífuga" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 17 — Eficiencia: curva y BEP (PDF p.13)
+         ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Eficiencia</p>
+        <h2>Curva &eta;-Q y punto de mejor eficiencia (BEP)</h2>
+        <div class="two-col">
+          <div>
+            <div class="grid cols-2">
+              <div class="card">
+                <h3>Forma de la curva</h3>
+                <p>La curva &eta;-Q tiene forma de campana característica.</p>
+              </div>
+              <div class="card">
+                <h3>Punto óptimo (BEP)</h3>
+                <p>Eficiencia máxima de 70-90% en el punto de mejor eficiencia.</p>
+              </div>
+              <div class="card">
+                <h3>Comportamiento</h3>
+                <p>Cero a Q=0, disminuye gradualmente fuera del BEP.</p>
+              </div>
+              <div class="card">
+                <h3>Impacto económico</h3>
+                <p>En operación 24/7, cada 1% de mejora en eficiencia = $10,000+/año en ahorro energético.</p>
+              </div>
+            </div>
+          </div>
+          <img class="diagram" src="img/pres08-p13-3.png" alt="Curva de eficiencia con BEP" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 18 — Curva de potencia (PDF p.14)
+         ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Potencia</p>
+        <h2>Curva de potencia</h2>
+        <div class="two-col">
+          <div>
+            <p>La curva de potencia muestra la demanda real sobre el motor a diferentes flujos, crítica para especificación correcta y prevención de sobrecargas.</p>
+            <ul>
+              <li><strong>Bombas radiales</strong> (N<sub>s</sub> bajo): potencia aumenta con flujo continuamente. P &prop; Q.</li>
+              <li><strong>Bombas mixtas</strong> (N<sub>s</sub> medio): potencia aumenta hasta cerca del BEP, luego aplana o cae ligeramente.</li>
+              <li><strong>Bombas axiales</strong> (N<sub>s</sub> alto): potencia máxima a shutoff, disminuye con flujo.</li>
+            </ul>
+            <div class="big-example">
+              <code>P = &rho;gQH / &eta;</code>
+            </div>
+          </div>
+          <img class="diagram" src="img/pres08-p14-3.png" alt="Curvas de potencia según tipo de bomba" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 19 — Factores que afectan la potencia (PDF p.15)
+         ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Potencia</p>
+        <h2>Factores que afectan la potencia</h2>
+        <div class="two-col">
+          <div>
+            <ul>
+              <li>Viscosidad aumenta potencia significativamente.</li>
+              <li>Densidad afecta proporcionalmente.</li>
+              <li>Sólidos en suspensión aumentan demanda.</li>
+            </ul>
+            <div class="warning">Motor debe tener factor de servicio 1.15-1.25 sobre máxima potencia esperada.</div>
+            <div class="tip">Instrumentación: amperímetro en motor indica punto de operación aproximado, útil para diagnóstico remoto.</div>
+          </div>
+          <img class="diagram" src="img/pres08-p15-3.png" alt="Factores que afectan la potencia de bombeo" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 20 — NPSH: introducción (PDF p.16)
+         ============================================================ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">NPSH</p>
+        <h1>NPSH</h1>
+        <p>Net Positive Suction Head (NPSH) cuantifica el margen energético disponible para prevenir cavitación, fenómeno donde presión local cae bajo presión de vapor formando burbujas destructivas.</p>
+        <div class="pill-row">
+          <span class="pill">NPSHd (disponible)</span>
+          <span class="pill">NPSHr (requerido)</span>
+          <span class="pill">NPSHd &gt; NPSHr + margen</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 21 — NPSH para líquidos calientes (PDF p.16 cont.)
+         ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">NPSH</p>
+        <h2>NPSH y líquidos calientes/volátiles</h2>
+        <div class="two-col">
+          <div>
+            <p>Para líquidos calientes/volátiles, NPSH gobierna el diseño.</p>
+            <div class="tip">Ejemplo: Etanol a 78 &deg;C tiene P<sub>vapor</sub> = 5.2 m, dejando solo 3.5 m disponible a nivel del mar.</div>
+          </div>
+          <img class="diagram" src="img/pres08-p16-3.png" alt="NPSH en líquidos calientes" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 22 — NPSH disponible (PDF p.17)
+         ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">NPSH</p>
+        <h2>NPSH disponible (NPSHa o NPSHd)</h2>
+        <div class="two-col">
+          <div>
+            <p>Es la energía disponible en la succión de la bomba por encima de la presión de vapor del líquido.</p>
+            <div class="big-example">
+              <code>NPSHa = (P<sub>a</sub> &minus; P<sub>v</sub>) / &gamma; + h<sub>s</sub> &minus; h<sub>f</sub></code>
+            </div>
+            <ul>
+              <li><strong>P<sub>a</sub></strong> = Presión atmosférica o del tanque (Pa)</li>
+              <li><strong>P<sub>v</sub></strong> = Presión de vapor del líquido (Pa)</li>
+              <li><strong>&gamma;</strong> = Peso específico del líquido (N/m&sup3;)</li>
+              <li><strong>h<sub>s</sub></strong> = Altura estática de succión (m)</li>
+              <li><strong>h<sub>f</sub></strong> = Pérdidas por fricción en succión (m)</li>
+            </ul>
+          </div>
+          <img class="diagram" src="img/pres08-p17-3.png" alt="Diagrama de NPSH disponible" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 23 — NPSH requerido (PDF p.18)
+         ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">NPSH</p>
+        <h2>NPSH requerido (NPSHr)</h2>
+        <div class="two-col">
+          <div>
+            <p>Es la energía mínima que necesita la bomba en la succión para funcionar sin cavitación.</p>
+            <ul>
+              <li>Depende del diseño de la bomba.</li>
+              <li>Proporcionado por el fabricante.</li>
+              <li>Varía con el caudal de operación.</li>
+              <li>Se obtiene de las curvas de la bomba.</li>
+            </ul>
+            <div class="warning">Condición para evitar cavitación: NPSHa &gt; NPSHr + margen de seguridad (0.5-1 m).</div>
+          </div>
+          <img class="diagram" src="img/pres08-p18-3.png" alt="Curva de NPSHr" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 24 — Mecanismo de daño por cavitación (PDF p.19)
+         ============================================================ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Cavitación</p>
+        <h1>Mecanismo de daño por cavitación</h1>
+        <p>La cavitación daña por colapso violento de burbujas de vapor cerca de superficies sólidas, no por la formación de burbujas per se.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 25 — Secuencia destructiva (PDF p.19 cont.)
+         ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Cavitación</p>
+        <h2>Secuencia destructiva</h2>
+        <ol>
+          <li>Presión local &lt; P<sub>vapor</sub> &rarr; nucleación de burbujas en sitios (microgrietas, partículas).</li>
+          <li>Burbujas crecen en zona de baja presión absorbiendo calor latente.</li>
+          <li>Arrastradas a zona de alta presión (salida impulsor), colapsan asimétricamente cerca de la pared.</li>
+          <li>Micro-jet líquido se forma, velocidad 100-1000 m/s, presión de impacto &gt;1000 MPa.</li>
+          <li>Repetición de millones de ciclos/segundo causa fatiga y erosión.</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 26 — Factores agravantes y ubicación del daño (PDF p.20)
+         ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Cavitación</p>
+        <h2>Factores agravantes y ubicación del daño</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Factores agravantes</h3>
+            <ul>
+              <li>Contenido de gas disuelto reduce violencia (cushioning).</li>
+              <li>Temperatura alta acelera daño (vapor más voluminoso).</li>
+              <li>Materiales duros resisten mejor pero ninguno es inmune.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Ubicación del daño</h3>
+            <ul>
+              <li><strong>Entrada impulsor</strong> = NPSHd insuficiente.</li>
+              <li><strong>Puntas paletas descarga</strong> = recirculación.</li>
+              <li><strong>Carcasa cerca cutwater</strong> = desalineación de flujo.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 27 — Cálculo detallado de NPSHd (PDF p.21)
+         ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">NPSH</p>
+        <h2>Cálculo detallado de NPSH<sub>d</sub></h2>
+        <p>El cálculo preciso de NPSH<sub>d</sub> requiere atención meticulosa a cada componente, pues márgenes son típicamente pequeños (2-5 m total).</p>
+        <div class="big-example">
+          <code>NPSH<sub>d</sub> = (P<sub>tanque</sub> + P<sub>atm</sub> &minus; P<sub>vapor</sub>) / &rho;g + z &minus; hL<sub>succión</sub></code>
+        </div>
+        <p>Pérdidas de succión hL incluyen:</p>
+        <ul>
+          <li>Entrada tanque (K = 0.5 típico)</li>
+          <li>Tubería recta (minimizar L, maximizar D)</li>
+          <li>Accesorios (evitar codos múltiples)</li>
+          <li>Filtro/colador (factor de ensuciamiento 2&times;)</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 28 — Factores críticos de NPSHd (PDF p.22)
+         ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">NPSH</p>
+        <h2>Factores críticos en cálculo de NPSH<sub>d</sub></h2>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>Velocidad de succión</h3>
+            <p>Mantener &lt; 1.5 m/s para minimizar pérdidas.</p>
+          </div>
+          <div class="card">
+            <h3>Efectos transitorios</h3>
+            <p>Arranque genera depresión momentánea que puede causar cavitación transitoria.</p>
+          </div>
+          <div class="card">
+            <h3>Temperatura variable</h3>
+            <p>Diseñe para máxima temperatura posible para asegurar margen de NPSH.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 29 — NPSHr: determinación (PDF p.23)
+         ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">NPSH</p>
+        <h2>NPSH<sub>r</sub>: determinación</h2>
+        <div class="two-col">
+          <div>
+            <p>NPSH<sub>r</sub> representa la energía mínima necesaria en la succión para evitar cavitación, determinado experimentalmente por fabricantes según normas (ANSI/HI, ISO).</p>
+            <p style="margin-top:0.75em;">El fluido debe acelerar desde velocidad de succión hasta velocidad del ojo del impulsor. Esto conlleva una caída de presión asociada:</p>
+            <div class="big-example">
+              <code>&Delta;P = &rho;(v<sub>ojo</sub>&sup2; &minus; v<sub>succión</sub>&sup2;) / 2</code>
+            </div>
+            <p style="margin-top:0.75em;">Si la presión resultante &lt; P<sub>vapor</sub>, ocurre cavitación.</p>
+          </div>
+          <img class="diagram" src="img/pres08-p23-3.png" alt="Determinación del NPSHr" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 30 — NPSHr: dependencia (PDF p.24)
+         ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">NPSH</p>
+        <h2>NPSH<sub>r</sub>: dependencia con variables</h2>
+        <div class="two-col">
+          <div>
+            <p>NPSH<sub>r</sub> aumenta con:</p>
+            <ul>
+              <li><strong>Flujo</strong> (velocidades mayores): NPSH<sub>r</sub> &prop; Q&sup2;</li>
+              <li><strong>Velocidad de rotación:</strong> NPSH<sub>r</sub> &prop; N&sup2;</li>
+              <li><strong>Tamaño succión impulsor:</strong> ojos pequeños = velocidades altas = mayor NPSH<sub>r</sub></li>
+            </ul>
+          </div>
+          <img class="diagram" src="img/pres08-p24-3.png" alt="Variación de NPSHr con caudal y velocidad" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 31 — NPSHr: factores de corrección (PDF p.25)
+         ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">NPSH</p>
+        <h2>NPSH<sub>r</sub>: factores de corrección</h2>
+        <div class="two-col">
+          <div>
+            <ul>
+              <li><strong>Hidrocarburos:</strong> &minus;0.3 m por liberación de gas disuelto.</li>
+              <li><strong>Agua caliente:</strong> +0.5 m por mejor liberación de vapor.</li>
+              <li><strong>Líquidos viscosos:</strong> +20-50% por pérdidas adicionales.</li>
+            </ul>
+            <p style="margin-top:0.75em;">Curva NPSH<sub>r</sub>-Q siempre ascendente.</p>
+            <div class="tip">Algunos fabricantes dan NPSH de 0% cavitación = 1.2-1.5 &times; NPSH<sub>3%</sub>. Use para servicios críticos.</div>
+          </div>
+          <img class="diagram" src="img/pres08-p25-3.png" alt="Factores de corrección de NPSHr" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 32 — Síntomas y diagnóstico de cavitación (PDF p.26)
+         ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Cavitación</p>
+        <h2>Síntomas y diagnóstico de cavitación</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Ruido característico</h3>
+            <p>Como &ldquo;grava en hormigonera&rdquo; o &ldquo;palomitas de maíz&rdquo;, frecuencia 1-20 kHz. Intensidad aumenta con severidad.</p>
+          </div>
+          <div class="card">
+            <h3>Vibración</h3>
+            <p>Picos aleatorios 1-50&times; frecuencia de paso de paletas. Acelerómetros muestran banda ancha de ruido. Nivel aumenta exponencialmente.</p>
+          </div>
+          <div class="card">
+            <h3>Degradación del desempeño</h3>
+            <p>Altura y flujo caen progresivamente. Curva H-Q se trunca en alto flujo. Eficiencia deteriora 5-30%.</p>
+          </div>
+          <div class="card">
+            <h3>Daño físico</h3>
+            <p>Erosión tipo panal en impulsor/carcasa. Metal parece &ldquo;comido por termitas&rdquo;. Concentrado en zonas de baja presión.</p>
+          </div>
+        </div>
+        <div class="tip">Prueba definitiva: aumentar NPSH<sub>d</sub> temporalmente (elevar tanque, enfriar líquido, reducir flujo). Si síntomas desaparecen = cavitación confirmada.</div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 33 — Soluciones a problemas de NPSH (PDF p.27, 1/2)
+         ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Soluciones NPSH</p>
+        <h2>Soluciones a problemas de NPSH (1/2)</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Aumentar NPSH<sub>d</sub></h3>
+            <ul>
+              <li>Elevar tanque de suministro.</li>
+              <li>Presurizar tanque con gas inerte (N&sub2;).</li>
+              <li>Enfriar líquido (10 &deg;C menos = 2-3 m NPSH).</li>
+              <li>Minimizar pérdidas de succión (aumentar diámetro de tubería).</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Reducir NPSH<sub>r</sub></h3>
+            <ul>
+              <li>Operar a menor flujo.</li>
+              <li>Reducir velocidad con VFD (NPSH<sub>r</sub> &prop; N&sup2;).</li>
+              <li>Instalar inducer (pre-impulsor axial).</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 34 — Soluciones a problemas de NPSH (PDF p.27, 2/2)
+         ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Soluciones NPSH</p>
+        <h2>Soluciones a problemas de NPSH (2/2)</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Cambios de diseño</h3>
+            <ul>
+              <li>Bomba vertical sumergida.</li>
+              <li>Multietapa con primera etapa especial de bajo NPSHr.</li>
+              <li>Bombas en serie con booster dedicado.</li>
+              <li>Cambiar a bomba de diseño especial de bajo NPSHr.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Recomendación</h3>
+            <p>Anticipe problemas en bombeo de alcohol caliente, diseñe con margen generoso desde el inicio.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 35 — Curva del sistema: separador (PDF p.28)
+         ============================================================ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Sistema</p>
+        <h1>Curvas de operación del sistema</h1>
+        <p>La curva del sistema representa la energía total (altura) que el sistema de tuberías demanda a la bomba para un caudal dado.</p>
+        <div class="pill-row">
+          <span class="pill">Altura estática</span>
+          <span class="pill">Pérdidas por fricción</span>
+          <span class="pill">Punto de operación</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 36 — Curva del sistema: ecuación (PDF p.28 cont.)
+         ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Sistema</p>
+        <h2>Curva del sistema</h2>
+        <div class="two-col">
+          <div>
+            <div class="big-example">
+              <code>H<sub>sistema</sub> = H<sub>estática</sub> + H<sub>fricción</sub></code>
+            </div>
+            <p style="margin-top:0.75em;">Donde:</p>
+            <ul>
+              <li><strong>H<sub>estática</sub></strong> = &Delta;z + (P<sub>2</sub> &minus; P<sub>1</sub>) / &rho;g &nbsp;(constante)</li>
+              <li><strong>&Delta;z</strong>: Diferencia de elevación entre succión y descarga.</li>
+              <li><strong>P<sub>1</sub>, P<sub>2</sub></strong>: Presiones en el punto de succión y descarga.</li>
+            </ul>
+          </div>
+          <img class="diagram" src="img/pres08-p28-3.png" alt="Curva del sistema con componentes estático y de fricción" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 37 — Fricción del sistema (PDF p.29)
+         ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Sistema</p>
+        <h2>Componente de fricción</h2>
+        <div class="two-col">
+          <div>
+            <div class="big-example">
+              <code>H<sub>fricción</sub> = k &middot; Q&sup2;</code>
+            </div>
+            <ul>
+              <li><strong>k</strong>: Coeficiente de resistencia del sistema, incluye tuberías y accesorios.</li>
+              <li><strong>Q</strong>: Caudal volumétrico.</li>
+            </ul>
+            <p style="margin-top:0.75em;">La curva del sistema es intrínseca a la instalación y representa la &ldquo;demanda&rdquo; energética, mientras que la curva de la bomba es la &ldquo;oferta&rdquo; energética.</p>
+            <div class="tip">Su forma parabólica (H<sub>fricción</sub> &prop; Q&sup2;) significa que pequeñas variaciones en el caudal resultan en grandes cambios en las pérdidas por fricción.</div>
+          </div>
+          <img class="diagram" src="img/pres08-p29-3.png" alt="Curva parabólica de fricción del sistema" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 38 — Punto de operación (PDF p.30)
+         ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Sistema</p>
+        <h2>El punto de operación</h2>
+        <div class="two-col">
+          <div>
+            <p>Es la intersección única donde la curva de la bomba (H<sub>bomba</sub>-Q) se cruza con la curva del sistema (H<sub>sistema</sub>-Q). En este punto, la bomba entrega exactamente la energía que el sistema demanda.</p>
+            <ul>
+              <li>La bomba se ajusta automáticamente a este punto.</li>
+              <li>Es el único punto estable de funcionamiento para esa configuración.</li>
+              <li>Cualquier cambio en la bomba o el sistema desplazará este punto.</li>
+            </ul>
+          </div>
+          <img class="diagram" src="img/pres08-p30-3.png" alt="Punto de operación: intersección bomba-sistema" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 39 — Métodos de control (PDF p.31, 1/2)
+         ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Control de flujo</p>
+        <h2>Métodos de control de flujo (1/2)</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Válvula de throttling</h3>
+            <p>Aumenta artificialmente la resistencia del sistema, desplazando la curva del sistema hacia arriba y a la izquierda, reduciendo el caudal y aumentando ligeramente la altura de operación.</p>
+          </div>
+          <div class="card">
+            <h3>Velocidad variable (VFD)</h3>
+            <p>Modifica la curva de la bomba completa (leyes de afinidad), permitiendo operar a diferentes puntos manteniendo la eficiencia. Es el método más eficiente energéticamente.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 40 — Métodos de control (PDF p.31, 2/2)
+         ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Control de flujo</p>
+        <h2>Métodos de control de flujo (2/2)</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Bypass</h3>
+            <p>Recircula una parte del flujo de descarga de vuelta a la succión o a un tanque. Reduce el caudal efectivo entregado al sistema, pero es ineficiente energéticamente y puede generar calor en el fluido.</p>
+          </div>
+          <div class="card">
+            <h3>Recorte del impulsor</h3>
+            <p>Reduce permanentemente el diámetro del impulsor, lo que baja la curva de la bomba. Se usa cuando la bomba es sobredimensionada para una aplicación específica y se busca una reducción de capacidad permanente.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 41 — Operación en paralelo: principio (PDF p.32)
+         ============================================================ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Operación en paralelo</p>
+        <h1>Operación en paralelo</h1>
+        <p>Operar bombas en paralelo aumenta confiabilidad y flexibilidad, pero requiere comprensión cuidadosa de interacciones hidráulicas.</p>
+        <div class="pill-row">
+          <span class="pill">Q<sub>total</sub> = &Sigma; Q<sub>individuales</sub></span>
+          <span class="pill">Cabezal común</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 42 — Operación en paralelo: condiciones (PDF p.32 cont.)
+         ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Operación en paralelo</p>
+        <h2>Principio y condiciones de éxito</h2>
+        <div class="two-col">
+          <div>
+            <p>Las bombas comparten cabezal común de descarga. Presión igual &rarr; cada bomba opera en punto donde su curva intersecta la presión del sistema.</p>
+            <h3 style="margin-top:0.75em;">Condiciones de éxito</h3>
+            <ul>
+              <li>Curvas H-Q similares (&pm;5% en rango de operación).</li>
+              <li>Curvas estables (dH/dQ &lt; 0 siempre).</li>
+              <li>Curvas planas ideales, minimizan desbalance.</li>
+              <li>NPSHd adecuado para flujo individual máximo.</li>
+            </ul>
+          </div>
+          <img class="diagram" src="img/pres08-p32-3.png" alt="Curvas de bombas en operación paralela" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 43 — Operación en paralelo: problemas (PDF p.33)
+         ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Operación en paralelo</p>
+        <h2>Problemas comunes y diseño robusto</h2>
+        <div class="two-col">
+          <div>
+            <div class="card" style="margin-bottom:1rem;">
+              <h3>Problemas comunes</h3>
+              <ul>
+                <li>Bombas idénticas nunca verdaderamente idénticas.</li>
+                <li>Desgaste diferencial agrava con el tiempo.</li>
+                <li>Una bomba puede forzar otra fuera de curva.</li>
+                <li>Recirculación entre bombas si mal diseñado.</li>
+              </ul>
+            </div>
+            <div class="card">
+              <h3>Diseño robusto</h3>
+              <ul>
+                <li>Manifolds simétricos minimizan desbalance hidráulico.</li>
+                <li>Instrumentación individual permite diagnóstico.</li>
+                <li>Configuración N+1 da mantenimiento sin parada.</li>
+              </ul>
+            </div>
+          </div>
+          <img class="diagram" src="img/pres08-p33-3.png" alt="Diseño robusto para operación paralela" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 44 — Operación en serie: principio (PDF p.34)
+         ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Operación en serie</p>
+        <h2>Operación en serie</h2>
+        <p>Bombas en serie suman alturas manteniendo mismo flujo, útil cuando presión requerida excede capacidad de bombas individuales disponibles.</p>
+        <div class="big-example">
+          <code>H<sub>total</sub> = H<sub>1</sub> + H<sub>2</sub> + ... &nbsp; a mismo Q</code>
+        </div>
+        <h3>Aplicaciones típicas</h3>
+        <ul>
+          <li>Booster + principal para problemas de NPSH.</li>
+          <li>Sistemas de alta presión: más económico que una bomba especial.</li>
+          <li>Procesos con grandes cambios de elevación.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 45 — Operación en serie: consideraciones (PDF p.35)
+         ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Operación en serie</p>
+        <h2>Consideraciones de diseño en serie</h2>
+        <ul>
+          <li>Primera bomba debe manejar la presión de succión de la segunda.</li>
+          <li>Rating de carcasa es importante (presión máxima).</li>
+          <li>Q<sub>máximo</sub> limitado por bomba de menor capacidad.</li>
+          <li>Secuencia de arranque: primera bomba primero, estabilizar, luego segunda.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 46 — Eficiencia energética: estadísticas (PDF p.36)
+         ============================================================ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Eficiencia energética</p>
+        <h1>Eficiencia energética en bombeo</h1>
+        <p>La optimización de bombas ofrece un potencial significativo de ahorro energético en la industria.</p>
+        <div class="pill-row">
+          <span class="pill">20% consumo eléctrico industrial</span>
+          <span class="pill">75% bombas sobredimensionadas</span>
+          <span class="pill">30-50% potencial de ahorro</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 47 — Eficiencia energética: estrategias (PDF p.37)
+         ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Eficiencia energética</p>
+        <h2>Estrategias de eficiencia energética</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Operación óptima</h3>
+            <p>Mantener la bomba cerca de su Punto de Mejor Eficiencia (BEP) para maximizar el rendimiento energético.</p>
+          </div>
+          <div class="card">
+            <h3>Control de velocidad</h3>
+            <p>Utilizar Variadores de Frecuencia (VFD) sobre el estrangulamiento para ahorros de 30-70%.</p>
+          </div>
+          <div class="card">
+            <h3>Mantenimiento proactivo</h3>
+            <p>Reducir la fricción interna y mantener los componentes en buen estado.</p>
+          </div>
+          <div class="card">
+            <h3>Reemplazo estratégico</h3>
+            <p>Sustituir bombas antiguas con eficiencias inferiores al 60% por modelos modernos.</p>
+          </div>
+        </div>
+        <div class="tip">El monitoreo continuo es clave para sostener la eficiencia y asegurar un retorno de inversión rápido.</div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 48 — Resumen visual eficiencia (PDF p.38)
+         ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Eficiencia energética</p>
+        <h2>Ciclo de mejora continua</h2>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>1. Operación óptima</h3>
+            <p>Operar cerca del BEP, evitar rangos inestables.</p>
+          </div>
+          <div class="card">
+            <h3>2. Control de velocidad</h3>
+            <p>VFD para adaptar la curva de la bomba a la demanda real.</p>
+          </div>
+          <div class="card">
+            <h3>3. Mantenimiento proactivo</h3>
+            <p>Reparar antes de fallar, mantener clearances y sellos.</p>
+          </div>
+          <div class="card">
+            <h3>4. Reemplazo estratégico</h3>
+            <p>Evaluar costo de vida vs inversión en equipo nuevo.</p>
+          </div>
+          <div class="card">
+            <h3>5. Monitoreo continuo</h3>
+            <p>Sensores, tendencias, alertas tempranas para mantener eficiencia.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 49 — Materiales de construcción (PDF p.39, 1/2)
+         ============================================================ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Materiales</p>
+        <h1>Materiales de construcción</h1>
+        <p>La selección de materiales depende del fluido, temperatura, presión y requisitos de corrosión/abrasión.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 50 — Materiales: opciones (PDF p.39 cont.)
+         ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Materiales</p>
+        <h2>Opciones de materiales</h2>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>Hierro fundido</h3>
+            <p>Económico, buena maquinabilidad, frágil. OK para agua neutra, no ácidos/alcalinos. Común en servicios de utilidad.</p>
+          </div>
+          <div class="card">
+            <h3>Acero carbono</h3>
+            <p>Más fuerte, soldable, se oxida. Requiere protección. Económico para hidrocarburos.</p>
+          </div>
+          <div class="card">
+            <h3>SS 316L</h3>
+            <p>Excelente resistencia general, estándar industria alimentos. Cloruros &gt;50 ppm problemáticos. Pulido sanitario disponible.</p>
+          </div>
+          <div class="card">
+            <h3>Duplex 2205</h3>
+            <p>Superior resistencia a cloruros, mayor resistencia mecánica. Costo 1.5&times; SS316. Justificado en agua de mar, salmueras.</p>
+          </div>
+          <div class="card">
+            <h3>Hastelloy C</h3>
+            <p>Resistencia química extrema, muy costoso. Ácidos oxidantes/reductores.</p>
+          </div>
+          <div class="card">
+            <h3>Revestimientos</h3>
+            <p>Opción económica de protección. Ebonite, PTFE, PFA. Cuidado con delaminación.</p>
+          </div>
+        </div>
+        <div class="tip">Para su proyecto: SS316L para contacto con producto (mosto ácido, alcohol, CIP). Hierro fundido para utilidades. Considere duplex para salmueras si aplica.</div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 51 — Sellos mecánicos: principio (PDF p.40)
+         ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Sellos mecánicos</p>
+        <h2>Sellos mecánicos</h2>
+        <p>El sello mecánico previene fugas donde el eje rotativo penetra la carcasa, componente más delicado y crítico para confiabilidad.</p>
+        <p><strong>Principio:</strong> dos caras ultraplanas (flatness &lt; 0.001 mm), una rotativa, una estacionaria, presionadas por resorte, film líquido de 1-3 &mu;m las separa y lubrica.</p>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Sello simple</h3>
+            <p>Una barrera, económico, OK para fluidos benignos.</p>
+          </div>
+          <div class="card">
+            <h3>Sello doble</h3>
+            <p>Dos barreras, fluido buffer entre ellos. Zero emisiones, para fluidos peligrosos/valiosos.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 52 — Sellos mecánicos: materiales y fallas (PDF p.41)
+         ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Sellos mecánicos</p>
+        <h2>Materiales de caras y causas de falla</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Materiales de caras</h3>
+            <ul>
+              <li>Carbón vs cerámica (agua).</li>
+              <li>Carbón vs carburo de silicio (abrasivos).</li>
+              <li>Carburo de silicio vs carburo de silicio (alta temperatura).</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Causas de falla</h3>
+            <p>80% operación incorrecta (dry run, cavitación, golpe de ariete).</p>
+            <p style="margin-top:0.5em;">Vida esperada: 2-5 años servicio continuo limpio. 6-18 meses servicios severos.</p>
+          </div>
+        </div>
+        <div class="tip">Para su proyecto: Plan 11 suficiente para la mayoría de servicios. Doble sello para alcohol producto.</div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 53 — Especificación de bombas (PDF p.42, 1/2)
+         ============================================================ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Especificación</p>
+        <h1>Especificación de bombas</h1>
+        <p>La hoja de datos de una bomba centrífuga debe cubrir todos los aspectos del servicio, condiciones hidráulicas, propiedades del fluido y construcción.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 54 — Especificación: detalles (PDF p.42 cont.)
+         ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Especificación</p>
+        <h2>Elementos de especificación</h2>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>Servicio</h3>
+            <p>Fluido exacto, concentración, temperatura rango, sólidos %.</p>
+          </div>
+          <div class="card">
+            <h3>Condiciones hidráulicas</h3>
+            <p>Flujo (normal/mínimo/máximo), presión succión/descarga, NPSHd calculado conservador.</p>
+          </div>
+          <div class="card">
+            <h3>Propiedades</h3>
+            <p>Densidad, viscosidad, presión de vapor @ temperatura. pH, cloruros si relevante.</p>
+          </div>
+          <div class="card">
+            <h3>Construcción</h3>
+            <p>Materiales wetted parts, tipo de sello, orientación. Norma aplicable (ANSI, ISO, API).</p>
+          </div>
+          <div class="card">
+            <h3>Motor</h3>
+            <p>Voltaje/frecuencia disponible, clasificación de área, factor de servicio. Enclosure (TEFC típico).</p>
+          </div>
+          <div class="card">
+            <h3>Instrumentación</h3>
+            <p>Switches presión/flujo/temperatura requeridos. Transmisores para control/monitoreo.</p>
+          </div>
+        </div>
+        <div class="warning">No sobre-especificar: evite requerimientos innecesarios que limitan oferentes y aumentan costo.</div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 55 — Mantenimiento predictivo (PDF p.43, 1/2)
+         ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Mantenimiento</p>
+        <h2>Mantenimiento predictivo (1/2)</h2>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>Monitoreo de vibración</h3>
+            <p>Espectro identifica problemas específicos. 1&times; RPM = desbalance, 2&times; = desalineación, &gt;3&times; = mecánico. Tendencia más importante que valor absoluto.</p>
+          </div>
+          <div class="card">
+            <h3>Análisis de aceite</h3>
+            <p>Partículas de desgaste indican componente (Fe = cojinetes, Cr = sellos, Si = contaminación). Agua &gt;200 ppm degrada lubricación.</p>
+          </div>
+          <div class="card">
+            <h3>Termografía</h3>
+            <p>Detecta problemas de cojinetes (&gt;80 &deg;C alarma), acoplamientos desalineados, motores sobrecargados. Barato, no invasivo.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 56 — Mantenimiento predictivo (PDF p.43, 2/2)
+         ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Mantenimiento</p>
+        <h2>Mantenimiento predictivo (2/2)</h2>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>Parámetros de proceso</h3>
+            <p>Alejamiento del BEP indica problema del sistema. Aumento de presión = ensuciamiento. Caída de flujo = desgaste.</p>
+          </div>
+          <div class="card">
+            <h3>Ultrasonido</h3>
+            <p>Detecta cavitación incipiente antes del daño. Fugas internas (válvulas check). Frecuencias &gt;20 kHz.</p>
+          </div>
+          <div class="card">
+            <h3>Programa efectivo</h3>
+            <p>Baseline commissioning, monitoreo mensual (críticas) / trimestral (otras), análisis de tendencias, reparación planificada. ROI típico 10:1.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 57 — Selección para aplicaciones específicas (PDF p.44, 1/2)
+         ============================================================ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Selección</p>
+        <h1>Selección para aplicaciones específicas</h1>
+        <p>La elección adecuada de una bomba centrífuga es crucial para asegurar su rendimiento óptimo y larga vida útil, dependiendo de las características del fluido a bombear.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 58 — Selección: agua y químicos (PDF p.44 cont., 1/2)
+         ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Selección</p>
+        <h2>Aplicaciones específicas (1/2)</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Agua limpia</h3>
+            <ul>
+              <li>Bomba end-succión estándar.</li>
+              <li>Impulsor cerrado de alta eficiencia.</li>
+              <li>Materiales típicos: hierro fundido o bronce, acero inoxidable.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Químicos corrosivos</h3>
+            <ul>
+              <li>Materiales especiales: SS316L, Hastelloy, titanio.</li>
+              <li>Sellos dobles con sistema de flush para contención.</li>
+              <li>Considerar bombas magnéticas para cero fugas.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 59 — Selección: slurries y alta temp. (PDF p.44 cont., 2/2)
+         ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Selección</p>
+        <h2>Aplicaciones específicas (2/2)</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Slurries y sólidos</h3>
+            <ul>
+              <li>Impulsor abierto o &ldquo;recessed&rdquo; para evitar atascamientos.</li>
+              <li>Bajas velocidades de operación (&lt;1200 rpm).</li>
+              <li>Materiales endurecidos resistentes a la abrasión.</li>
+              <li>Sistema de flush en el sello para protegerlo.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Alta temperatura (&gt;150 &deg;C)</h3>
+            <ul>
+              <li>Plan de sello con enfriamiento (e.g., Plan 53A, 54 de API 682).</li>
+              <li>Soportes de carcasa tipo &ldquo;centerline&rdquo; para expansión térmica.</li>
+              <li>Precalentamiento gradual de la bomba antes del arranque.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="tip">La especificación de la bomba debe considerar no solo el caudal y la altura, sino también la naturaleza física y química del fluido.</div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SLIDE 60 — Cierre
+         ============================================================ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">IQYA-2031 · Sesión 8</p>
+        <h1>Resumen</h1>
+        <p>Bombas centrífugas: del principio de funcionamiento a la selección y especificación para aplicaciones industriales reales.</p>
+        <div class="pill-row">
+          <span class="pill">Principio centrífugo</span>
+          <span class="pill">Curvas H-Q, &eta;, P</span>
+          <span class="pill">NPSH y cavitación</span>
+          <span class="pill">Punto de operación</span>
+          <span class="pill">Paralelo y serie</span>
+          <span class="pill">Eficiencia energética</span>
+          <span class="pill">Materiales y sellos</span>
+          <span class="pill">Selección y especificación</span>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="hud">
+    <span id="hud-title">Bombas centrífugas · IQYA-2031</span>
+    <span id="hud-counter">1 / 60</span>
+  </div>
+
+  <div class="controls">
+    <button aria-label="Anterior" id="prev">‹</button>
+    <button aria-label="Pantalla completa" id="fs">⛶</button>
+    <button aria-label="Siguiente" id="next">›</button>
+  </div>
+
+  <script>
+    (function () {
+      var slides = Array.prototype.slice.call(document.querySelectorAll('[data-slide]'));
+      var i = 0;
+      var counter = document.getElementById('hud-counter');
+      var progress = document.querySelector('.progress');
+
+      function render() {
+        slides.forEach(function (s, idx) {
+          s.classList.toggle('active', idx === i);
+        });
+        if (counter) counter.textContent = (i + 1) + ' / ' + slides.length;
+        if (progress) progress.style.width = ((i + 1) / slides.length * 100) + '%';
+        var isTitle = slides[i] && slides[i].classList.contains('title-slide');
+        document.body.style.background = isTitle ? '#1A1A1A' : '#ffffff';
+      }
+      function go(n) { i = Math.max(0, Math.min(slides.length - 1, n)); render(); }
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); go(i + 1); }
+        else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(i - 1); }
+        else if (e.key === 'Home') { e.preventDefault(); go(0); }
+        else if (e.key === 'End') { e.preventDefault(); go(slides.length - 1); }
+        else if (e.key === 'f' || e.key === 'F') { toggleFs(); }
+      });
+
+      document.getElementById('prev').addEventListener('click', function () { go(i - 1); });
+      document.getElementById('next').addEventListener('click', function () { go(i + 1); });
+      document.getElementById('fs').addEventListener('click', toggleFs);
+
+      function toggleFs() {
+        var el = document.documentElement;
+        if (!document.fullscreenElement) {
+          (el.requestFullscreen || el.webkitRequestFullscreen || function(){}).call(el);
+        } else {
+          (document.exitFullscreen || document.webkitExitFullscreen || function(){}).call(document);
+        }
+      }
+
+      var tx = 0, ty = 0;
+      document.addEventListener('touchstart', function (e) {
+        if (!e.changedTouches[0]) return;
+        tx = e.changedTouches[0].clientX; ty = e.changedTouches[0].clientY;
+      }, { passive: true });
+      document.addEventListener('touchend', function (e) {
+        if (!e.changedTouches[0]) return;
+        var dx = e.changedTouches[0].clientX - tx;
+        var dy = e.changedTouches[0].clientY - ty;
+        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+          if (dx < 0) go(i + 1); else go(i - 1);
+        }
+      }, { passive: true });
+
+      // Inject decorative slide numbers
+      slides.forEach(function (s, idx) {
+        var num = document.createElement('div');
+        num.className = 'slide-number';
+        num.setAttribute('aria-hidden', 'true');
+        num.textContent = String(idx + 1).padStart(2, '0');
+        s.appendChild(num);
+      });
+
+      render();
+    })();
+  </script>
+</body>
+</html>

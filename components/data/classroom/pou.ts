@@ -861,6 +861,24 @@ export const pouCourse: Course = {
       sessionNumber: 6,
       file: 'clase-06-molienda.html',
     },
+    {
+      id: 'clase-07-flujo-fluidos',
+      title: 'Flujo de fluidos',
+      description:
+        'Ecuación de Bernoulli, pérdidas mayores y menores, factor de fricción, diagramas de Moody y diseño de sistemas de tuberías.',
+      date: '2026-02-17',
+      sessionNumber: 7,
+      file: 'clase-07-flujo-fluidos.html',
+    },
+    {
+      id: 'clase-08-bombas',
+      title: 'Bombas centrífugas',
+      description:
+        'Clasificación de bombas, curvas características, punto de operación, NPSH, cavitación, selección y dimensionamiento.',
+      date: '2026-02-26',
+      sessionNumber: 8,
+      file: 'clase-08-bombas.html',
+    },
   ],
   cronograma: pouCronograma,
 };
