@@ -1,0 +1,1114 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Agitación · IQYA-2031</title>
+  <style>
+    :root {
+      --brand-dark: #1A1A1A;
+      --brand-yellow: #FFBF00;
+      --brand-yellow-dark: #E6AC00;
+      --brand-gray: #555555;
+      --surface: #ffffff;
+      --muted: #f4f4f5;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      background: var(--brand-dark);
+      color: var(--brand-dark);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      overflow: hidden;
+      -webkit-text-size-adjust: 100%;
+    }
+    .deck {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+    }
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(1rem, 4vw, 3.5rem);
+      background: var(--surface);
+      opacity: 0;
+      transition: opacity 260ms ease;
+    }
+    .slide.active {
+      display: flex;
+      opacity: 1;
+    }
+    .slide .content {
+      width: 100%;
+      max-width: 72rem;
+      display: flex;
+      flex-direction: column;
+      gap: clamp(0.75rem, 1.5vw, 1.5rem);
+    }
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      font-size: clamp(0.65rem, 1vw, 0.8rem);
+      color: var(--brand-yellow-dark);
+      font-weight: 600;
+    }
+    h1 {
+      font-size: clamp(1.75rem, 5.5vw, 4rem);
+      line-height: 1.05;
+      margin: 0;
+      color: var(--brand-dark);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    h2 {
+      font-size: clamp(1.25rem, 3.4vw, 2.25rem);
+      line-height: 1.15;
+      margin: 0;
+      color: var(--brand-dark);
+      font-weight: 700;
+    }
+    p, li {
+      font-size: clamp(0.95rem, 1.8vw, 1.35rem);
+      line-height: 1.55;
+      color: var(--brand-gray);
+      margin: 0;
+    }
+    ul, ol {
+      padding-left: 1.25em;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45em;
+    }
+    li::marker { color: var(--brand-yellow-dark); }
+    .slide.title-slide {
+      background: linear-gradient(135deg, #141414 0%, #1A1A1A 50%, #2a2a2a 100%);
+      color: #fff;
+    }
+    .slide.title-slide h1 { color: #fff; }
+    .slide.title-slide p { color: #d4d4d8; }
+    .slide.title-slide .eyebrow { color: var(--brand-yellow); }
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 0.5rem;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.35em 0.9em;
+      border-radius: 999px;
+      background: var(--muted);
+      color: var(--brand-dark);
+      font-size: clamp(0.75rem, 1.3vw, 1rem);
+      font-weight: 500;
+    }
+    .slide.title-slide .pill {
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .grid {
+      display: grid;
+      gap: clamp(0.75rem, 1.5vw, 1.25rem);
+    }
+    .grid.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    @media (max-width: 640px) {
+      .grid.cols-2, .grid.cols-3 { grid-template-columns: 1fr; }
+    }
+    .card {
+      background: var(--muted);
+      border-radius: 0.75rem;
+      padding: clamp(0.9rem, 1.5vw, 1.35rem);
+    }
+    .card h3 {
+      font-size: clamp(1rem, 2vw, 1.35rem);
+      margin: 0 0 0.35em 0;
+      color: var(--brand-dark);
+      font-weight: 600;
+    }
+    .card p { font-size: clamp(0.8rem, 1.4vw, 1rem); }
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(1rem, 2vw, 2rem);
+      align-items: center;
+    }
+    @media (max-width: 640px) {
+      .two-col { grid-template-columns: 1fr; }
+    }
+    .diagram {
+      max-width: 100%;
+      height: auto;
+      border-radius: 0.5rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+    }
+    .small-text {
+      font-size: clamp(0.7rem, 1.1vw, 0.85rem);
+      color: var(--brand-gray);
+      opacity: 0.8;
+    }
+    .tip {
+      background: #fef9c3;
+      border-left: 4px solid var(--brand-yellow);
+      padding: 0.75em 1em;
+      border-radius: 0 0.5rem 0.5rem 0;
+      font-size: clamp(0.85rem, 1.4vw, 1.1rem);
+      color: var(--brand-dark);
+    }
+    .warning {
+      background: #fee2e2;
+      border-left: 4px solid #ef4444;
+      padding: 0.75em 1em;
+      border-radius: 0 0.5rem 0.5rem 0;
+      font-size: clamp(0.85rem, 1.4vw, 1.1rem);
+      color: var(--brand-dark);
+    }
+    .big-example {
+      background: var(--muted);
+      border-radius: 0.75rem;
+      padding: clamp(1rem, 2vw, 2rem);
+      text-align: center;
+    }
+    .big-example code {
+      font-size: clamp(1.25rem, 3vw, 2.5rem);
+      font-weight: 700;
+      color: var(--brand-dark);
+    }
+    .big-example .legend {
+      font-size: clamp(0.7rem, 1.1vw, 0.9rem);
+      margin-top: 0.5em;
+    }
+    .hud {
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      padding: 0.5rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: rgba(255,255,255,0.75);
+      font-size: 0.75rem;
+      pointer-events: none;
+      z-index: 10;
+    }
+    .slide:not(.title-slide) ~ .hud { color: var(--brand-gray); }
+    .controls {
+      position: fixed;
+      right: 1rem;
+      bottom: 2.5rem;
+      display: flex;
+      gap: 0.5rem;
+      z-index: 11;
+    }
+    .controls button {
+      -webkit-appearance: none;
+      appearance: none;
+      border: 1px solid rgba(0,0,0,0.1);
+      background: rgba(255,255,255,0.9);
+      color: var(--brand-dark);
+      width: 2.5rem; height: 2.5rem;
+      border-radius: 999px;
+      font-size: 1rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    }
+    .controls button:active { transform: scale(0.96); }
+    .progress {
+      position: fixed;
+      top: 0; left: 0;
+      height: 3px;
+      background: var(--brand-yellow);
+      transition: width 260ms ease;
+      z-index: 20;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .slide { transition: none; }
+      .progress { transition: none; }
+    }
+    @media (max-width: 480px) {
+      .controls { right: 0.5rem; bottom: 1.25rem; }
+      .hud { font-size: 0.65rem; }
+    }
+
+    /* ─── Decorative: L-shaped yellow corner accent ─── */
+    .slide:not(.title-slide)::before {
+      content: '';
+      position: absolute;
+      top: clamp(1rem, 3vw, 2.5rem);
+      right: clamp(1rem, 3vw, 2.5rem);
+      width: clamp(2rem, 5vw, 4rem);
+      height: clamp(2rem, 5vw, 4rem);
+      border-top: 2.5px solid var(--brand-yellow);
+      border-right: 2.5px solid var(--brand-yellow);
+      pointer-events: none;
+      z-index: 1;
+    }
+    .slide.title-slide::before {
+      content: '';
+      position: absolute;
+      bottom: clamp(1rem, 3vw, 2.5rem);
+      left: clamp(1rem, 3vw, 2.5rem);
+      width: clamp(2rem, 5vw, 4rem);
+      height: clamp(2rem, 5vw, 4rem);
+      border-bottom: 2.5px solid var(--brand-yellow);
+      border-left: 2.5px solid var(--brand-yellow);
+      opacity: 0.4;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* ─── Decorative: large background slide number ─── */
+    .slide-number {
+      position: absolute;
+      bottom: clamp(0.5rem, 2vw, 1.5rem);
+      left: clamp(1rem, 3vw, 2.5rem);
+      font-size: clamp(4rem, 12vw, 10rem);
+      font-weight: 800;
+      line-height: 1;
+      color: rgba(0, 0, 0, 0.04);
+      pointer-events: none;
+      z-index: 0;
+      user-select: none;
+      letter-spacing: -0.04em;
+    }
+    .slide.title-slide .slide-number {
+      color: rgba(255, 255, 255, 0.06);
+    }
+  </style>
+</head>
+<body>
+  <div class="progress" style="width:0"></div>
+  <div class="deck" id="deck">
+
+    <!-- ══════════════════════════════════════════════════════════════
+         SLIDE 1 — Portada (Página 1)
+         ══════════════════════════════════════════════════════════════ -->
+    <section class="slide title-slide active" data-slide>
+      <div class="content">
+        <p class="eyebrow">IQYA-2031 · 2026-10</p>
+        <h1>Agitación</h1>
+        <p>Teoría de agitación, tipos de impulsores, número de potencia, patrones de flujo, baffles y diseño de sistemas de mezclado.</p>
+        <div class="pill-row">
+          <span class="pill">Impulsores</span>
+          <span class="pill">Número de potencia</span>
+          <span class="pill">Patrones de flujo</span>
+          <span class="pill">Baffles</span>
+          <span class="pill">Escalamiento</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         SLIDE 2 — Objetivos de aprendizaje (Página 2)
+         ══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Introducción</p>
+        <h2>Objetivos de aprendizaje</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>1. Comprender los fundamentos teóricos</h3>
+            <p>Entender los principios físicos que gobiernan el comportamiento de fluidos bajo agitación y los parámetros adimensionales que caracterizan el proceso.</p>
+          </div>
+          <div class="card">
+            <h3>2. Identificar tipos de impulsores</h3>
+            <p>Reconocer los diferentes tipos de impulsores y sus aplicaciones específicas según el objetivo de proceso requerido.</p>
+          </div>
+          <div class="card">
+            <h3>3. Analizar patrones de flujo</h3>
+            <p>Interpretar los patrones de flujo generados por diferentes configuraciones y su impacto en la eficiencia del proceso.</p>
+          </div>
+          <div class="card">
+            <h3>4. Aplicar criterios de diseño</h3>
+            <p>Utilizar las metodologías de cálculo para dimensionar sistemas de agitación eficientes y calcular sus requerimientos energéticos.</p>
+          </div>
+        </div>
+        <div class="tip">Este conocimiento será fundamental para optimizar los procesos de fermentación y preparación en su planta de alcohol.</div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         SLIDE 3 — Objetivos de la agitación (Página 3)
+         ══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Fundamentos</p>
+        <h2>Objetivos de la agitación</h2>
+        <p>La agitación consume <strong>5-10% de la energía</strong> en plantas de proceso, justificada solo cuando cumple objetivos específicos medibles.</p>
+        <p>Cada objetivo requiere diseño específico:</p>
+        <ul>
+          <li>La <strong>homogenización</strong> favorece el flujo axial.</li>
+          <li>La <strong>suspensión</strong> requiere flujo radial en el fondo.</li>
+          <li>La <strong>dispersión</strong> necesita alta cizalla.</li>
+        </ul>
+        <div class="warning">No existe un impulsor universal óptimo para todos los casos.</div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         SLIDE 4 — Tipos de impulsores — Separador (Página 4)
+         ══════════════════════════════════════════════════════════════ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Sección</p>
+        <h1>Tipos de impulsores</h1>
+        <p>Clasificación según el patrón de flujo que generan: axial, radial y especializados.</p>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         SLIDE 5 — Impulsores de flujo axial — Características (Página 5)
+         ══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Impulsores</p>
+        <h2>Impulsores de flujo axial</h2>
+        <p>Los impulsores de flujo axial mueven líquido paralelamente al eje, creando circulación vertical suave ideal para homogenización y suspensión ligera.</p>
+        <ul>
+          <li>Patrón de circulación loop largo</li>
+          <li>Baja cizalla local (protege células frágiles)</li>
+          <li>Excelente para gradientes top-bottom</li>
+          <li>Eficiencia energética superior para mezcla bulk</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         SLIDE 6 — Impulsores de flujo axial — Tipos (Página 6)
+         ══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Impulsores · Flujo axial</p>
+        <h2>Tipos de impulsores axiales</h2>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>Hélice marina (propeller)</h3>
+            <p>Tres palas inclinadas 45°, alta velocidad (300-1750 rpm), número de flujo N<sub>Q</sub> = 0.5 - 0.7</p>
+            <img class="diagram" src="img/pres09-p06-2.png" alt="Hélice marina" style="margin-top:0.5rem;" />
+          </div>
+          <div class="card">
+            <h3>Pitched blade turbine (PBT)</h3>
+            <p>4-6 palas inclinadas 45°, velocidad media (50-300 rpm), N<sub>Q</sub> = 0.7 - 1.0</p>
+            <img class="diagram" src="img/pres09-p06-4.png" alt="Pitched blade turbine" style="margin-top:0.5rem;" />
+          </div>
+          <div class="card">
+            <h3>Hydrofoil (alta eficiencia)</h3>
+            <p>Palas perfiladas minimizan drag, máxima relación pumping/potencia, N<sub>Q</sub> > 1.0</p>
+            <img class="diagram" src="img/pres09-p06-6.png" alt="Hydrofoil" style="margin-top:0.5rem;" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         SLIDE 7 — Impulsores de flujo radial — Características (Página 7)
+         ══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Impulsores</p>
+        <h2>Impulsores de flujo radial</h2>
+        <p>Los impulsores radiales descargan perpendicular al eje, generando patrones de flujo divididos y alta cizalla local, ideales para dispersión y reacciones rápidas.</p>
+        <ul>
+          <li>Dos loops de circulación (arriba/abajo del impulsor)</li>
+          <li>Alta cizalla en descarga (rompe burbujas/gotas)</li>
+          <li>Mejor para tanques H/T &lt; 1.5</li>
+          <li>Mayor consumo de potencia que axial</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         SLIDE 8 — Impulsores de flujo radial — Tipos (Página 8)
+         ══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Impulsores · Flujo radial</p>
+        <h2>Tipos de impulsores radiales</h2>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>Turbina Rushton</h3>
+            <p>Disco con 6 palas planas. Flujo radial puro, N<sub>Q</sub> = 0.2 - 0.3 (bajo pumping). Estándar para fermentaciones aeróbicas.</p>
+            <img class="diagram" src="img/pres09-p08-2.png" alt="Turbina Rushton" style="margin-top:0.5rem;" />
+          </div>
+          <div class="card">
+            <h3>Turbina palas curvas (CD-6)</h3>
+            <p>Similar a Rushton pero 20-30% menos potencia. Palas curvadas reducen drag manteniendo dispersión.</p>
+            <img class="diagram" src="img/pres09-p08-4.png" alt="Turbina palas curvas CD-6" style="margin-top:0.5rem;" />
+          </div>
+          <div class="card">
+            <h3>Turbina alta cizalla</h3>
+            <p>Múltiples palas (8-12), alta velocidad. Para dispersiones líquido-líquido, emulsiones.</p>
+            <img class="diagram" src="img/pres09-p08-6.png" alt="Turbina alta cizalla" style="margin-top:0.5rem;" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         SLIDE 9 — Impulsores especializados (Página 9)
+         ══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Impulsores · Especializados</p>
+        <h2>Impulsores especializados</h2>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>Cinta helicoidal</h3>
+            <p>Flujo axial en viscosos. Excelente homogenización y transferencia de calor. Complejo y costoso, justificado para polímeros.</p>
+            <img class="diagram" src="img/pres09-p09-2.png" alt="Cinta helicoidal" style="margin-top:0.5rem;" />
+          </div>
+          <div class="card">
+            <h3>Inducción de gas</h3>
+            <p>Tubo hueco succiona gas del headspace, auto-aspirante. Elimina necesidad de compresor separado. Limitado a k<sub>L</sub>a ~ 100 h<sup>-1</sup>.</p>
+            <img class="diagram" src="img/pres09-p09-3.png" alt="Inductor de gas" style="margin-top:0.5rem;" />
+          </div>
+          <div class="card">
+            <h3>Ancla</h3>
+            <p>Sirve para mezclar de manera eficiente líquidos de alta viscosidad o suspensiones en recipientes grandes, moviendo el fluido desde las paredes hacia el centro.</p>
+            <img class="diagram" src="img/pres09-p09-5.png" alt="Impulsor tipo ancla" style="margin-top:0.5rem;" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         SLIDE 10 — Geometría estándar del tanque (Página 10)
+         ══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Diseño</p>
+        <h2>Geometría estándar del tanque</h2>
+        <p>La geometría "estándar" de tanques agitados resulta de décadas de optimización empírica, proporcionando base confiable para diseño:</p>
+        <div class="grid cols-2">
+          <div>
+            <ul>
+              <li><strong>Relación altura/diámetro:</strong> H/T = 1.0 a 1.5</li>
+              <li><strong>Nivel líquido:</strong> Z/T = 1.0 típico</li>
+              <li><strong>Diámetro impulsor:</strong> D/T = 0.3 a 0.5, típico 0.33 (1/3)</li>
+              <li><strong>Altura sobre fondo:</strong> C/T = 0.25 a 0.33</li>
+              <li><strong>Baffles:</strong> 4 estándar, ancho B/T = 0.08 a 0.1 (1/12-1/10)</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Fermentadores del proyecto</h3>
+            <p>T = 2.5 m, Z = 3 m, D = 0.85 m (PBT), C = 0.7 m, 4 baffles de 0.2 m de ancho.</p>
+            <p class="small-text">Geometría probada con millones de horas de operación industrial.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         SLIDE 11 — Patrones de flujo (Página 11)
+         ══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Flujo</p>
+        <h2>Patrones de flujo según configuración</h2>
+        <p>Los patrones de flujo determinan la efectividad de mezclado y distribución de energía en el tanque.</p>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>Sin baffles</h3>
+            <p>Vórtice central domina, rotación sólida del bulk, mezclado radial pobre.</p>
+          </div>
+          <div class="card">
+            <h3>Con baffles + axial</h3>
+            <p>Loop primario desde impulsor hacia arriba, flujo por pared hacia abajo, succión en el centro.</p>
+          </div>
+          <div class="card">
+            <h3>Con baffles + radial</h3>
+            <p>Jet radial impacta pared, se divide arriba/abajo, dos loops distintos.</p>
+          </div>
+        </div>
+        <ul>
+          <li><strong>Múltiples impulsores:</strong> interacción compleja. Spacing crítico 1-2 diámetros. Muy cerca actúan como uno, muy lejos generan zonas muertas entre ellos.</li>
+          <li><strong>Tiempo de mezcla:</strong> trazador inyectado alcanza 95% uniformidad. Típico 3 a 5 × t<sub>circulación</sub>. Menor con axial, mayor con radial.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         SLIDE 12 — Número de Reynolds en agitación (Página 12)
+         ══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Parámetros adimensionales</p>
+        <h2>Número de Reynolds en agitación</h2>
+        <p>El Reynolds del impulsor caracteriza el régimen de flujo determinando comportamiento de potencia y mezclado:</p>
+        <div class="big-example">
+          <code>Re = ρND² / μ</code>
+        </div>
+        <p>Donde:</p>
+        <ul>
+          <li><strong>N</strong> = revoluciones por segundo</li>
+          <li><strong>D</strong> = diámetro del impulsor</li>
+          <li><strong>ρ</strong> = densidad del fluido</li>
+          <li><strong>μ</strong> = viscosidad del fluido</li>
+        </ul>
+        <div class="tip">Físicamente representa el ratio entre fuerzas inerciales y fuerzas viscosas en la escala del impulsor.</div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         SLIDE 13 — Regímenes de flujo (Página 13)
+         ══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Parámetros adimensionales</p>
+        <h2>Regímenes de flujo en agitación</h2>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>Laminar (Re &lt; 10)</h3>
+            <p>Flujo ordenado sigue palas exactamente, reversible. Potencia proporcional a viscosidad × velocidad. Tiempo de mezcla largo (100+ revoluciones).</p>
+          </div>
+          <div class="card">
+            <h3>Transición (10 &lt; Re &lt; 10⁴)</h3>
+            <p>Vórtices aparecen tras palas, flujo cada vez más caótico. Potencia transiciona de viscosa a inercial. Región a evitar para diseño.</p>
+          </div>
+          <div class="card">
+            <h3>Turbulento (Re &gt; 10⁴)</h3>
+            <p>Remolinos turbulentos dominan, flujo caótico 3D. Potencia independiente de viscosidad, proporcional a densidad × N³.</p>
+          </div>
+        </div>
+        <div class="big-example">
+          <code>Re = ρND² / μ = (1000 × 1.67 × 0.85²) / 0.001 = 1.2 × 10⁶</code>
+          <p class="legend">Ejemplo: agua a 25 °C con impulsor 0.85 m a 100 rpm — completamente turbulento.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         SLIDE 14 — Video: Reynolds Parte 1 (Página 14)
+         ══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Video demostrativo</p>
+        <h2>Flujo laminar con fluido de alta viscosidad</h2>
+        <div class="two-col">
+          <div>
+            <p><strong>Industrial Mixing Basics — What is Reynolds Number? (Part 1)</strong></p>
+            <p>Demostración a escala de laboratorio de flujo laminar con un fluido de alta viscosidad (jarabe de maíz; 2600 cps) en un tanque con baffles.</p>
+            <div class="tip">Observe cómo el flujo sigue las palas ordenadamente — característico del régimen laminar.</div>
+          </div>
+          <img class="diagram" src="img/pres09-p14-4.png" alt="Captura del video de flujo laminar" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         SLIDE 15 — Video: Reynolds Parte 2 (Página 15)
+         ══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Video demostrativo</p>
+        <h2>Flujo turbulento con fluido de baja viscosidad</h2>
+        <div class="two-col">
+          <div>
+            <p><strong>Industrial Mixing Basics — What is Reynolds Number? (Part 2)</strong></p>
+            <p>Demostración a escala de laboratorio de mezclado turbulento usando un fluido de baja viscosidad (agua). El diámetro del impulsor y la configuración son iguales al video anterior.</p>
+            <div class="tip">Note el contraste dramático: flujo caótico 3D con remolinos turbulentos dominando.</div>
+          </div>
+          <img class="diagram" src="img/pres09-p15-3.png" alt="Captura del video de flujo turbulento" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         SLIDE 16 — Número de potencia (Página 16)
+         ══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Parámetros adimensionales</p>
+        <h2>Número de potencia</h2>
+        <div class="two-col">
+          <div>
+            <p>El número de potencia (N<sub>p</sub> o P<sub>o</sub>) es un parámetro adimensional que caracteriza el consumo energético de cada geometría de impulsor:</p>
+            <div class="big-example">
+              <code>N<sub>p</sub> = P / (ρN³D⁵)</code>
+            </div>
+            <p>Donde:</p>
+            <ul>
+              <li><strong>P</strong> = potencia absorbida (W)</li>
+              <li><strong>ρ</strong> = densidad del fluido (kg/m³)</li>
+              <li><strong>N</strong> = velocidad rotacional (rev/s)</li>
+              <li><strong>D</strong> = diámetro del impulsor (m)</li>
+            </ul>
+          </div>
+          <div>
+            <div class="card">
+              <h3>Régimen turbulento</h3>
+              <p>N<sub>p</sub> = constante característica según tipo de impulsor.</p>
+            </div>
+            <div class="card" style="margin-top:0.75rem;">
+              <h3>Régimen laminar</h3>
+              <p>N<sub>p</sub> × Re = K<sub>p</sub> = constante (40-70 típico).</p>
+              <p>Entonces: P ∝ μN²D³, independiente de la densidad.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         SLIDE 17 — Curvas de potencia (Página 17)
+         ══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Parámetros adimensionales</p>
+        <h2>Curvas de potencia</h2>
+        <p>Las curvas N<sub>p</sub> vs Re en escala log-log revelan comportamiento universal de impulsores a través de todos los regímenes:</p>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>Zona laminar (Re &lt; 10)</h3>
+            <p>Línea recta pendiente -1, N<sub>p</sub> × Re = constante. Física dominada por viscosidad. Todos los impulsores convergen.</p>
+          </div>
+          <div class="card">
+            <h3>Zona transición (10 &lt; Re &lt; 10⁴)</h3>
+            <p>Curvatura compleja, N<sub>p</sub> cae 2-3 órdenes de magnitud. Vórtices desarrollándose alteran flujo. Geometría específica.</p>
+          </div>
+          <div class="card">
+            <h3>Zona turbulenta (Re &gt; 10⁴)</h3>
+            <p>Línea horizontal, N<sub>p</sub> = constante. Inercia domina. Valor específico según tipo de impulsor.</p>
+          </div>
+        </div>
+        <div class="tip">Los fermentadores del proyecto operarán a Re = 10⁵ a 10⁶, firmemente en régimen turbulento. Use N<sub>p</sub> constante de tabla.</div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         SLIDE 18 — Efecto de los baffles (Página 18)
+         ══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Baffles</p>
+        <h2>Efecto de los baffles</h2>
+        <h3 style="color:var(--brand-dark);margin:0;">Función crítica</h3>
+        <p>Los baffles son placas verticales que previenen rotación sólida del líquido, transformando movimiento tangencial inútil en flujo radial/axial productivo.</p>
+        <ul>
+          <li><strong>Configuración estándar:</strong> 4 placas a 90°</li>
+          <li><strong>Ancho:</strong> B = T/12 a T/10</li>
+          <li><strong>Gap con pared:</strong> ~B/5 para evitar zonas muertas</li>
+        </ul>
+        <div class="tip">Para fermentadores: 4 baffles estándar son obligatorios. Pueden incorporar serpentines de enfriamiento como baffles.</div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         SLIDE 19 — Baffles: con y sin (Página 19)
+         ══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Baffles · Comparación</p>
+        <h2>Sin baffles vs. con baffles</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Sin baffles</h3>
+            <ul>
+              <li>Flujo desarrolla vórtice central profundo (profundidad ∝ N²D²)</li>
+              <li>Rotación casi-sólida con poco mezclado radial</li>
+              <li>Potencia cae 10-20% del valor con baffles</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Con baffles</h3>
+            <ul>
+              <li>Eliminan vórtice completamente</li>
+              <li>Fuerzan flujo radial/axial</li>
+              <li>Aumentan turbulencia local 10×</li>
+              <li>Restauran N<sub>p</sub> a valor "plena deflexión"</li>
+              <li>Mejoran transferencia de calor en pared 2-3×</li>
+            </ul>
+          </div>
+        </div>
+        <img class="diagram" src="img/pres09-p19-4.png" alt="Comparación con y sin baffles" style="max-height:220px;align-self:center;" />
+        <p class="small-text">Video: Mixing with Baffle and without Baffle — Research &amp; Development, Miscible Agitator Testing</p>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         SLIDE 20 — Tiempo de mezclado — Definición (Página 20)
+         ══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Tiempo de mezclado</p>
+        <h2>Tiempo de mezclado</h2>
+        <p>El tiempo de mezclado (t<sub>m</sub> o θ<sub>95</sub>) es el tiempo requerido para alcanzar <strong>95% de uniformidad</strong> después de adición puntual de trazador, métrica fundamental de efectividad.</p>
+        <div class="big-example">
+          <code>n·t<sub>m</sub> = C · (N<sub>p</sub>)<sup>a</sup> · (Re)<sup>b</sup> · (T/D)<sup>c</sup></code>
+          <p class="legend">Donde: n = revoluciones por segundo, C, a, b, c = constantes empíricas</p>
+        </div>
+        <p><strong>Simplificación útil:</strong></p>
+        <div class="big-example">
+          <code>t<sub>m</sub> ∝ (T³ / P)<sup>1/3</sup></code>
+          <p class="legend">Doblar potencia reduce tiempo solo 20%.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         SLIDE 21 — Tiempo de mezclado — Medición (Página 21)
+         ══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Tiempo de mezclado</p>
+        <h2>Medición del tiempo de mezclado</h2>
+        <div class="two-col">
+          <div>
+            <p><strong>Procedimiento:</strong></p>
+            <ol>
+              <li>Inyectar trazador (colorante, ácido, sal)</li>
+              <li>Monitorear concentración en múltiples puntos</li>
+              <li>Determinar cuándo todas las lecturas están dentro de ±5% del valor final</li>
+            </ol>
+            <div class="tip">El punto de inyección y los puntos de medición afectan significativamente el resultado.</div>
+          </div>
+          <img class="diagram" src="img/pres09-p21-3.png" alt="Medición de tiempo de mezclado" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         SLIDE 22 — Suspensión de sólidos (Página 22, 1/2)
+         ══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Aplicaciones</p>
+        <h2>Suspensión de sólidos (1/2)</h2>
+        <p>La suspensión completa de sólidos es crítica para contacto efectivo sólido-líquido en lixiviación, disolución, reacción catalítica y fermentación con biomasa.</p>
+        <p><strong>Criterio Zwietering "just suspended" (N<sub>js</sub>):</strong> velocidad mínima donde ninguna partícula permanece estacionaria más de 1-2 segundos.</p>
+        <div class="big-example">
+          <code>N<sub>js</sub> = S · ν<sup>0.1</sup> · d<sub>p</sub><sup>0.2</sup> · (gΔρ/ρ)<sup>0.45</sup> · X<sup>0.13</sup> · D<sup>-0.85</sup></code>
+          <p class="legend">S = constante función geometría (4-8) · ν = viscosidad cinemática · d<sub>p</sub> = diámetro partícula · Δρ = diferencia densidad · X = concentración sólidos wt%</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         SLIDE 23 — Suspensión de sólidos (Página 22, 2/2)
+         ══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Aplicaciones</p>
+        <h2>Suspensión de sólidos (2/2)</h2>
+        <p><strong>Diseño típico:</strong> operar 1.2-1.5 × N<sub>js</sub> para margen. Clearance C/T = 0.25-0.33 crítico, menor es mejor.</p>
+        <h3 style="color:var(--brand-dark);margin:0;">Observaciones clave</h3>
+        <ul>
+          <li>Fuerte dependencia de Δρ (sólidos pesados son difíciles)</li>
+          <li>Aumentar D es muy efectivo (exponente -0.85)</li>
+          <li>Partículas grandes son problemáticas (sedimentan rápido)</li>
+          <li>Efecto de concentración débil hasta ~20 wt%</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         SLIDE 24 — Dispersión gas-líquido — Introducción (Página 23)
+         ══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Aplicaciones</p>
+        <h2>Dispersión gas-líquido</h2>
+        <div class="two-col">
+          <div>
+            <p>La dispersión efectiva de gas en líquido maximiza área interfacial para transferencia de masa, crítico en fermentaciones aeróbicas, oxidaciones e hidrogenaciones.</p>
+            <p><strong>Configuración:</strong> múltiples Rushton estándar para k<sub>L</sub>a alto. Spacing 0.5-1 × T evita coalescencia. Sparger ring D = 0.8D<sub>i</sub>, orificios 3-5 mm.</p>
+          </div>
+          <img class="diagram" src="img/pres09-p23-3.png" alt="Dispersión gas-líquido" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         SLIDE 25 — Dispersión gas-líquido — Mecanismos (Página 24)
+         ══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Aplicaciones · Gas-líquido</p>
+        <h2>Mecanismos y parámetros de dispersión</h2>
+        <div class="two-col">
+          <div>
+            <ul>
+              <li>Gas introducido bajo impulsor es cortado en burbujas por alta cizalla de descarga</li>
+              <li>Tamaño de burbuja 1-5 mm típico, menor con mayor potencia</li>
+              <li><strong>Flooding:</strong> gas excesivo causa impulsor "flooded", pierde capacidad de bombeo</li>
+              <li><strong>Hold-up (ε):</strong> fracción volumétrica gas disperso, típico 5-20%</li>
+            </ul>
+          </div>
+          <div>
+            <div class="card">
+              <h3>Correlación k<sub>L</sub>a</h3>
+              <p><strong>k<sub>L</sub>a = C · (P/V)<sup>α</sup> · (v<sub>s</sub>)<sup>β</sup></strong></p>
+              <p>donde α = 0.4 a 0.7, β = 0.2 a 0.5</p>
+            </div>
+            <img class="diagram" src="img/pres09-p24-3.png" alt="Parámetros de dispersión gas-líquido" style="margin-top:0.75rem;" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         SLIDE 26 — Escalamiento (Página 25, 1/2)
+         ══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Escalamiento</p>
+        <h2>Criterios de escalamiento (1/2)</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Similitud geométrica</h3>
+            <p>Mantener todas las proporciones (D/T, C/T, etc.) para asegurar patrones de flujo similares. <strong>No negociable.</strong></p>
+          </div>
+          <div class="card">
+            <h3>P/V constante</h3>
+            <p>Mantiene intensidad de turbulencia. N₂ = N₁(D₁/D₂)<sup>2/3</sup>. Más común, robusto.</p>
+          </div>
+          <div class="card">
+            <h3>Tip speed constante</h3>
+            <p>πND igual. N₂ = N₁(D₁/D₂). Conservador, costoso.</p>
+          </div>
+          <div class="card">
+            <h3>Re constante</h3>
+            <p>N₂ = N₁(D₁/D₂)². Solo relevante si cerca de transición.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         SLIDE 27 — Escalamiento (Página 25, 2/2)
+         ══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Escalamiento</p>
+        <h2>Criterios de escalamiento (2/2)</h2>
+        <div class="card">
+          <h3>Tiempo de mezcla constante</h3>
+          <p>Complejo, típicamente N₂ = N₁(D₁/D₂)<sup>3/4</sup></p>
+        </div>
+        <div class="warning">
+          <strong>Ejemplo:</strong> D₁ = 0.1 m → D₂ = 1 m (10×):<br>
+          P/V → N₂ = 0.22·N₁ | Tip speed → N₂ = 0.1·N₁ | Re → N₂ = 0.01·N₁<br>
+          ¡Orden de magnitud de diferencia entre criterios!
+        </div>
+        <div class="tip">Compromiso típico: P/V constante ± ajustes por experiencia. CFD cada vez más usado para validar.</div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         SLIDE 28 — Transferencia de calor — Introducción (Página 26)
+         ══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Transferencia de calor</p>
+        <h2>Transferencia de calor en tanques agitados</h2>
+        <p>La agitación mejora dramáticamente la transferencia de calor entre fluido de proceso y superficies de intercambio (jacket, serpentín, external loop).</p>
+        <h3 style="color:var(--brand-dark);margin:0;">Mecanismos</h3>
+        <ul>
+          <li>Reduce espesor de capa límite térmica en pared</li>
+          <li>Continuamente renueva fluido en contacto con superficie</li>
+          <li>Homogeniza bulk previniendo estratificación</li>
+          <li>Puede aumentar h de 5-10× vs convección natural</li>
+        </ul>
+        <div class="big-example">
+          <code>Nu = C · Re<sup>a</sup> · Pr<sup>b</sup> · (μ/μ<sub>w</sub>)<sup>c</sup></code>
+          <p class="legend">Correlación lado proceso para coeficiente de transferencia de calor</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         SLIDE 29 — Transferencia de calor — Valores y configuraciones (Página 27)
+         ══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Transferencia de calor</p>
+        <h2>Valores típicos y configuraciones</h2>
+        <p>Para tanque con baffles, turbina Rushton y jacket: C = 0.36, a = 0.67, b = 0.33, c = 0.14</p>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Valores típicos de h (W/m²·K)</h3>
+            <ul>
+              <li><strong>Sin agitación:</strong> 200-500</li>
+              <li><strong>Agitación moderada:</strong> 800-1500</li>
+              <li><strong>Agitación intensa:</strong> 1500-3000</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Configuraciones</h3>
+            <ul>
+              <li><strong>Jacket:</strong> simple construcción, difícil limpieza</li>
+              <li><strong>Serpentín:</strong> mayor área posible, actúa como baffle</li>
+              <li><strong>Placas internas:</strong> máxima área, muy eficiente</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         SLIDE 30 — Instrumentación — Parámetros de proceso (Página 28)
+         ══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Instrumentación y control</p>
+        <h2>Parámetros críticos de proceso</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Potencia/corriente motor</h3>
+            <p>Indica viscosidad, nivel, problemas mecánicos. Trend detecta cambios. Límites alarma ±20% normal.</p>
+          </div>
+          <div class="card">
+            <h3>Temperatura múltiples puntos</h3>
+            <p>Detecta gradientes, efectividad de enfriamiento. RTD Pt100 estándar.</p>
+          </div>
+          <div class="card">
+            <h3>Nivel</h3>
+            <p>Crítico para sumergencia del impulsor. Radar/ultrasónico no afectado por espuma.</p>
+          </div>
+          <div class="card">
+            <h3>pH, DO en fermentaciones</h3>
+            <p>Sondas esterilizables in-situ. Requieren calibración frecuente.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         SLIDE 31 — Instrumentación — Parámetros mecánicos y control (Página 29)
+         ══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Instrumentación y control</p>
+        <h2>Parámetros mecánicos y estrategias de control</h2>
+        <div class="grid cols-2">
+          <div>
+            <h3 style="color:var(--brand-dark);margin:0 0 0.5em 0;">Parámetros mecánicos</h3>
+            <ul>
+              <li><strong>Vibración:</strong> Acelerómetros detectan desbalance, desgaste de cojinetes. Límite 4.5 mm/s RMS, alarma 7 mm/s.</li>
+              <li><strong>Temperatura cojinetes/sello:</strong> Anticipa fallas. &gt;80 °C investigar. Límite 100 °C típico.</li>
+              <li><strong>Presión sello:</strong> Confirma operación correcta.</li>
+            </ul>
+          </div>
+          <div>
+            <h3 style="color:var(--brand-dark);margin:0 0 0.5em 0;">Estrategias de control</h3>
+            <ul>
+              <li>Velocidad variable mejor que on/off para proceso</li>
+              <li>Cascade temperatura-velocidad para fermentación</li>
+              <li><strong>Interlocks:</strong> no arrancar si nivel bajo, parar si vibración/temperatura excesiva</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         SLIDE 32 — Cierre
+         ══════════════════════════════════════════════════════════════ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">IQYA-2031 · Agitación</p>
+        <h1>Resumen</h1>
+        <div class="pill-row">
+          <span class="pill">Impulsores axiales, radiales y especializados</span>
+          <span class="pill">Re = ρND²/μ</span>
+          <span class="pill">Np = P/(ρN³D⁵)</span>
+          <span class="pill">Baffles obligatorios</span>
+          <span class="pill">Escalamiento P/V</span>
+        </div>
+        <p>La selección del impulsor y el diseño del sistema de agitación dependen del objetivo de proceso. No existe un impulsor universal — cada aplicación requiere análisis específico.</p>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="hud">
+    <span id="hud-title">Agitación · IQYA-2031</span>
+    <span id="hud-counter">1 / 32</span>
+  </div>
+
+  <div class="controls">
+    <button aria-label="Anterior" id="prev">‹</button>
+    <button aria-label="Pantalla completa" id="fs">⛶</button>
+    <button aria-label="Siguiente" id="next">›</button>
+  </div>
+
+  <script>
+    (function () {
+      var slides = Array.prototype.slice.call(document.querySelectorAll('[data-slide]'));
+      var i = 0;
+      var counter = document.getElementById('hud-counter');
+      var progress = document.querySelector('.progress');
+
+      function render() {
+        slides.forEach(function (s, idx) {
+          s.classList.toggle('active', idx === i);
+        });
+        if (counter) counter.textContent = (i + 1) + ' / ' + slides.length;
+        if (progress) progress.style.width = ((i + 1) / slides.length * 100) + '%';
+        var isTitle = slides[i] && slides[i].classList.contains('title-slide');
+        document.body.style.background = isTitle ? '#1A1A1A' : '#ffffff';
+      }
+      function go(n) { i = Math.max(0, Math.min(slides.length - 1, n)); render(); }
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); go(i + 1); }
+        else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(i - 1); }
+        else if (e.key === 'Home') { e.preventDefault(); go(0); }
+        else if (e.key === 'End') { e.preventDefault(); go(slides.length - 1); }
+        else if (e.key === 'f' || e.key === 'F') { toggleFs(); }
+      });
+
+      document.getElementById('prev').addEventListener('click', function () { go(i - 1); });
+      document.getElementById('next').addEventListener('click', function () { go(i + 1); });
+      document.getElementById('fs').addEventListener('click', toggleFs);
+
+      function toggleFs() {
+        var el = document.documentElement;
+        if (!document.fullscreenElement) {
+          (el.requestFullscreen || el.webkitRequestFullscreen || function(){}).call(el);
+        } else {
+          (document.exitFullscreen || document.webkitExitFullscreen || function(){}).call(document);
+        }
+      }
+
+      var tx = 0, ty = 0;
+      document.addEventListener('touchstart', function (e) {
+        if (!e.changedTouches[0]) return;
+        tx = e.changedTouches[0].clientX; ty = e.changedTouches[0].clientY;
+      }, { passive: true });
+      document.addEventListener('touchend', function (e) {
+        if (!e.changedTouches[0]) return;
+        var dx = e.changedTouches[0].clientX - tx;
+        var dy = e.changedTouches[0].clientY - ty;
+        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+          if (dx < 0) go(i + 1); else go(i - 1);
+        }
+      }, { passive: true });
+
+      // Inject decorative slide numbers
+      slides.forEach(function (s, idx) {
+        var num = document.createElement('div');
+        num.className = 'slide-number';
+        num.setAttribute('aria-hidden', 'true');
+        num.textContent = String(idx + 1).padStart(2, '0');
+        s.appendChild(num);
+      });
+
+      render();
+    })();
+  </script>
+</body>
+</html>

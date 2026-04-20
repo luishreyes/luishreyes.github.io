@@ -1,0 +1,701 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Mezclado de fluidos · IQYA-2031</title>
+  <style>
+    :root {
+      --brand-dark: #1A1A1A;
+      --brand-yellow: #FFBF00;
+      --brand-yellow-dark: #E6AC00;
+      --brand-gray: #555555;
+      --surface: #ffffff;
+      --muted: #f4f4f5;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      background: var(--brand-dark);
+      color: var(--brand-dark);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      overflow: hidden;
+      -webkit-text-size-adjust: 100%;
+    }
+    .deck {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+    }
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(1rem, 4vw, 3.5rem);
+      background: var(--surface);
+      opacity: 0;
+      transition: opacity 260ms ease;
+    }
+    .slide.active {
+      display: flex;
+      opacity: 1;
+    }
+    .slide .content {
+      width: 100%;
+      max-width: 72rem;
+      display: flex;
+      flex-direction: column;
+      gap: clamp(0.75rem, 1.5vw, 1.5rem);
+    }
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      font-size: clamp(0.65rem, 1vw, 0.8rem);
+      color: var(--brand-yellow-dark);
+      font-weight: 600;
+    }
+    h1 {
+      font-size: clamp(1.75rem, 5.5vw, 4rem);
+      line-height: 1.05;
+      margin: 0;
+      color: var(--brand-dark);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    h2 {
+      font-size: clamp(1.25rem, 3.4vw, 2.25rem);
+      line-height: 1.15;
+      margin: 0;
+      color: var(--brand-dark);
+      font-weight: 700;
+    }
+    p, li {
+      font-size: clamp(0.95rem, 1.8vw, 1.35rem);
+      line-height: 1.55;
+      color: var(--brand-gray);
+      margin: 0;
+    }
+    ul, ol {
+      padding-left: 1.25em;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45em;
+    }
+    li::marker { color: var(--brand-yellow-dark); }
+    .slide.title-slide {
+      background: linear-gradient(135deg, #141414 0%, #1A1A1A 50%, #2a2a2a 100%);
+      color: #fff;
+    }
+    .slide.title-slide h1 { color: #fff; }
+    .slide.title-slide p { color: #d4d4d8; }
+    .slide.title-slide .eyebrow { color: var(--brand-yellow); }
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 0.5rem;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.35em 0.9em;
+      border-radius: 999px;
+      background: var(--muted);
+      color: var(--brand-dark);
+      font-size: clamp(0.75rem, 1.3vw, 1rem);
+      font-weight: 500;
+    }
+    .slide.title-slide .pill {
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .grid {
+      display: grid;
+      gap: clamp(0.75rem, 1.5vw, 1.25rem);
+    }
+    .grid.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    @media (max-width: 640px) {
+      .grid.cols-2, .grid.cols-3 { grid-template-columns: 1fr; }
+    }
+    .card {
+      background: var(--muted);
+      border-radius: 0.75rem;
+      padding: clamp(0.9rem, 1.5vw, 1.35rem);
+    }
+    .card h3 {
+      font-size: clamp(1rem, 2vw, 1.35rem);
+      margin: 0 0 0.35em 0;
+      color: var(--brand-dark);
+      font-weight: 600;
+    }
+    .card p { font-size: clamp(0.8rem, 1.4vw, 1rem); }
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(1rem, 2vw, 2rem);
+      align-items: center;
+    }
+    @media (max-width: 640px) {
+      .two-col { grid-template-columns: 1fr; }
+    }
+    img.diagram {
+      max-width: 100%;
+      border-radius: 0.75rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+    }
+    .small-text {
+      font-size: clamp(0.7rem, 1.1vw, 0.85rem);
+      color: var(--brand-gray);
+      text-align: center;
+    }
+    .tip {
+      background: #fffbeb;
+      border-left: 3px solid var(--brand-yellow);
+      padding: 0.75em 1em;
+      border-radius: 0.5rem;
+      font-size: clamp(0.85rem, 1.4vw, 1.05rem);
+      color: var(--brand-dark);
+    }
+    .warning {
+      background: #fef2f2;
+      border-left: 3px solid #ef4444;
+      padding: 0.75em 1em;
+      border-radius: 0.5rem;
+      font-size: clamp(0.85rem, 1.4vw, 1.05rem);
+      color: var(--brand-dark);
+    }
+    .big-example {
+      background: var(--muted);
+      border-radius: 0.75rem;
+      padding: clamp(1rem, 2vw, 2rem);
+      text-align: center;
+    }
+    .big-example code {
+      font-size: clamp(1.5rem, 4vw, 3rem);
+      font-weight: 700;
+      color: var(--brand-dark);
+    }
+    .big-example .legend {
+      font-size: clamp(0.75rem, 1.2vw, 0.95rem);
+      color: var(--brand-gray);
+      margin-top: 0.5em;
+    }
+    .hud {
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      padding: 0.5rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: rgba(255,255,255,0.75);
+      font-size: 0.75rem;
+      pointer-events: none;
+      z-index: 10;
+    }
+    .slide:not(.title-slide) ~ .hud { color: var(--brand-gray); }
+    .controls {
+      position: fixed;
+      right: 1rem;
+      bottom: 2.5rem;
+      display: flex;
+      gap: 0.5rem;
+      z-index: 11;
+    }
+    .controls button {
+      -webkit-appearance: none;
+      appearance: none;
+      border: 1px solid rgba(0,0,0,0.1);
+      background: rgba(255,255,255,0.9);
+      color: var(--brand-dark);
+      width: 2.5rem; height: 2.5rem;
+      border-radius: 999px;
+      font-size: 1rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    }
+    .controls button:active { transform: scale(0.96); }
+    .progress {
+      position: fixed;
+      top: 0; left: 0;
+      height: 3px;
+      background: var(--brand-yellow);
+      transition: width 260ms ease;
+      z-index: 20;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .slide { transition: none; }
+      .progress { transition: none; }
+    }
+    @media (max-width: 480px) {
+      .controls { right: 0.5rem; bottom: 1.25rem; }
+      .hud { font-size: 0.65rem; }
+    }
+
+    /* ─── Decorative: L-shaped yellow corner accent ─── */
+    .slide:not(.title-slide)::before {
+      content: '';
+      position: absolute;
+      top: clamp(1rem, 3vw, 2.5rem);
+      right: clamp(1rem, 3vw, 2.5rem);
+      width: clamp(2rem, 5vw, 4rem);
+      height: clamp(2rem, 5vw, 4rem);
+      border-top: 2.5px solid var(--brand-yellow);
+      border-right: 2.5px solid var(--brand-yellow);
+      pointer-events: none;
+      z-index: 1;
+    }
+    .slide.title-slide::before {
+      content: '';
+      position: absolute;
+      bottom: clamp(1rem, 3vw, 2.5rem);
+      left: clamp(1rem, 3vw, 2.5rem);
+      width: clamp(2rem, 5vw, 4rem);
+      height: clamp(2rem, 5vw, 4rem);
+      border-bottom: 2.5px solid var(--brand-yellow);
+      border-left: 2.5px solid var(--brand-yellow);
+      opacity: 0.4;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* ─── Decorative: large background slide number ─── */
+    .slide-number {
+      position: absolute;
+      bottom: clamp(0.5rem, 2vw, 1.5rem);
+      left: clamp(1rem, 3vw, 2.5rem);
+      font-size: clamp(4rem, 12vw, 10rem);
+      font-weight: 800;
+      line-height: 1;
+      color: rgba(0, 0, 0, 0.04);
+      pointer-events: none;
+      z-index: 0;
+      user-select: none;
+      letter-spacing: -0.04em;
+    }
+    .slide.title-slide .slide-number {
+      color: rgba(255, 255, 255, 0.06);
+    }
+  </style>
+</head>
+<body>
+  <div class="progress" style="width:0"></div>
+  <div class="deck" id="deck">
+
+    <!-- ====== SLIDE 1 — Portada (Página 1) ====== -->
+    <section class="slide title-slide active" data-slide>
+      <div class="content">
+        <p class="eyebrow">IQYA-2031 · 2026-10</p>
+        <h1>Mezclado de fluidos</h1>
+        <p>Proyecto de Operaciones Unitarias · Luis H. Reyes</p>
+        <div class="pill-row">
+          <span class="pill">Agitación vs. mezclado</span>
+          <span class="pill">Mecanismos de mezclado</span>
+          <span class="pill">Tiempo de mezclado</span>
+          <span class="pill">Retos de diseño</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== SLIDE 2 — Objetivos de aprendizaje (Página 2) ====== -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Introducción</p>
+        <h2>Objetivos de aprendizaje</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>1. Diferenciar agitación y mezclado</h3>
+            <p>Comprender que la agitación es la causa y el mezclado es el efecto deseado del proceso.</p>
+          </div>
+          <div class="card">
+            <h3>2. Identificar los mecanismos de mezclado</h3>
+            <p>Reconocer los tres mecanismos fundamentales que gobiernan la homogeneización: convección, dispersión turbulenta y difusión molecular.</p>
+          </div>
+          <div class="card">
+            <h3>3. Cuantificar la eficiencia del mezclado</h3>
+            <p>Definir y aplicar el concepto de "tiempo de mezclado" (t<sub>m</sub>) como métrica clave del rendimiento.</p>
+          </div>
+          <div class="card">
+            <h3>4. Analizar los retos del mezclado</h3>
+            <p>Entender cómo la viscosidad, las fases inmiscibles y la geometría del tanque impactan el proceso de mezclado.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== SLIDE 3 — ¿Agitación o mezclado? (Página 3) ====== -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Conceptos fundamentales</p>
+        <h2>¿Agitación o mezclado?</h2>
+        <p>La agitación y el mezclado son conceptos relacionados pero distintos.</p>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Agitación</h3>
+            <p>Es la acción de inducir movimiento en un fluido mediante una fuerza externa, usualmente un impulsor. La agitación es el <strong>input de energía</strong>.</p>
+          </div>
+          <div class="card">
+            <h3>Mezclado</h3>
+            <p>Es el <strong>resultado</strong> de la agitación. Es el proceso que reduce la no uniformidad de concentración, temperatura o propiedades en el volumen del fluido hasta alcanzar un estado homogéneo.</p>
+          </div>
+        </div>
+        <div class="tip">La agitación es la causa; el mezclado es el efecto deseado.</div>
+      </div>
+    </section>
+
+    <!-- ====== SLIDE 4 — Mecanismo 1: Convección (Página 4) ====== -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Mecanismos fundamentales</p>
+        <h2>Mecanismos fundamentales del mezclado (1/3)</h2>
+        <p>El mezclado ocurre a diferentes escalas simultáneamente:</p>
+        <div class="two-col">
+          <div>
+            <div class="card">
+              <h3>Convección (bulk flow)</h3>
+              <p>Movimiento a gran escala del fluido generado directamente por el impulsor. Responsable de transportar grandes porciones de material de una parte del tanque a otra. Es el mecanismo más rápido y energéticamente dominante.</p>
+            </div>
+          </div>
+          <img class="diagram" src="img/pres10-p04-2.png" alt="Diagrama de convección en un tanque agitado" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== SLIDE 5 — Mecanismo 2: Dispersión turbulenta (Página 5) ====== -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Mecanismos fundamentales</p>
+        <h2>Mecanismos fundamentales del mezclado (2/3)</h2>
+        <p>El mezclado ocurre a diferentes escalas simultáneamente:</p>
+        <div class="two-col">
+          <div>
+            <div class="card">
+              <h3>Dispersión turbulenta (eddy diffusion)</h3>
+              <p>A una escala intermedia, los remolinos o "eddies" turbulentos causan un mezclado caótico y rápido, rompiendo y entrelazando las porciones de fluido. Este mecanismo es crucial en el régimen turbulento (Re &gt; 10<sup>4</sup>).</p>
+            </div>
+          </div>
+          <img class="diagram" src="img/pres10-p05-2.png" alt="Diagrama de dispersión turbulenta con eddies" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== SLIDE 6 — Mecanismo 3: Difusión molecular (Página 6) ====== -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Mecanismos fundamentales</p>
+        <h2>Mecanismos fundamentales del mezclado (3/3)</h2>
+        <p>El mezclado ocurre a diferentes escalas simultáneamente:</p>
+        <div class="two-col">
+          <div>
+            <div class="card">
+              <h3>Difusión molecular</h3>
+              <p>A la escala más pequeña, las moléculas se mueven aleatoriamente debido a su energía térmica. Es un proceso muy lento, pero es el que logra la homogeneización final a nivel molecular. En la mayoría de los procesos industriales turbulentos, su efecto es secundario frente a la convección y la turbulencia.</p>
+            </div>
+          </div>
+          <img class="diagram" src="img/pres10-p06-2.png" alt="Diagrama de difusión molecular" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== SLIDE 7 — Tiempo de mezclado: definición (Página 7) ====== -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Tiempo de mezclado</p>
+        <h2>Cuantificando el proceso: tiempo de mezclado (t<sub>m</sub>)</h2>
+        <p>La métrica más importante para evaluar la efectividad de un sistema de mezclado.</p>
+        <div class="card">
+          <h3>Definición</h3>
+          <p>El tiempo de mezcla (t<sub>m</sub>) o (&theta;<sub>95</sub>) es el tiempo que tarda un fluido agitado en alcanzar un <strong>95% de homogeneidad</strong>. Es un parámetro crítico en ingeniería química y en procesos de manufactura. Se utiliza para evaluar la eficiencia de la mezcla y para predecir resultados al escalar procesos de producción.</p>
+        </div>
+        <div class="tip">
+          <strong>Influencia del flujo:</strong> Los impulsores de flujo axial generalmente producen tiempos de mezclado más cortos que los de flujo radial para tareas de homogeneización, debido a su eficiente circulación "top-to-bottom".
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== SLIDE 8 — Cómo se mide el tiempo de mezclado (Página 8) ====== -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Tiempo de mezclado</p>
+        <h2>¿Cómo se mide &theta;<sub>95</sub>?</h2>
+        <p>Para medir el tiempo de mezcla, se añade una sustancia trazadora al fluido y se monitorea su concentración a lo largo del tiempo mediante sensores u otros métodos. Algunos métodos comunes son:</p>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>Método de conductividad</h3>
+            <p>Se inyecta en el fluido una pequeña cantidad de solución salina como trazador. Varias sondas de conductividad ubicadas en diferentes puntos del recipiente registran el momento en que la sal se dispersa de manera uniforme.</p>
+          </div>
+          <div class="card">
+            <h3>Método colorimétrico</h3>
+            <p>Se añade un colorante al fluido. Posteriormente se emplea el procesamiento digital de imágenes para analizarlas y determinar cuándo el color se vuelve uniforme.</p>
+          </div>
+          <div class="card">
+            <h3>Método con indicador de pH</h3>
+            <p>En fluidos de alta viscosidad, el tiempo de mezcla puede determinarse mediante una decoloración química usando indicadores ácido-base.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== SLIDE 9 — Factores que influyen en θ₉₅ (Página 9) ====== -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Tiempo de mezclado</p>
+        <h2>Factores que influyen en &theta;<sub>95</sub></h2>
+        <p>Varios factores afectan el tiempo de mezcla y la eficiencia general de un mezclador:</p>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>Velocidad de agitación</h3>
+            <p>El tiempo de mezcla es inversamente proporcional a la velocidad del agitador. Una agitación más rápida suele reducir el tiempo de mezcla.</p>
+          </div>
+          <div class="card">
+            <h3>Viscosidad del fluido</h3>
+            <p>En fluidos más viscosos, el tiempo de mezcla es mayor.</p>
+          </div>
+          <div class="card">
+            <h3>Tipo y tamaño del impulsor</h3>
+            <p>La geometría específica del equipo de mezcla influye en los patrones de flujo y en el tiempo de mezcla.</p>
+          </div>
+        </div>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Geometría del recipiente</h3>
+            <p>La forma del tanque y la presencia de deflectores afectan de manera significativa los patrones de flujo y la eficiencia global de la mezcla.</p>
+          </div>
+          <div class="card">
+            <h3>Ubicación de la alimentación</h3>
+            <p>El punto donde se introduce el trazador o el reactivo influye en el tiempo necesario para alcanzar la homogeneidad.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== SLIDE 10 — Relación con la potencia (Página 10) ====== -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Tiempo de mezclado</p>
+        <h2>Relación con la potencia</h2>
+        <p>El tiempo de mezclado no se reduce fácilmente. Una simplificación útil muestra que:</p>
+        <div class="big-example">
+          <code>t<sub>m</sub> &prop; (T<sup>3</sup> / P)<sup>1/3</sup></code>
+          <p class="legend">donde T = diámetro del tanque y P = potencia consumida</p>
+        </div>
+        <div class="warning">Esto implica que para reducir el tiempo de mezclado en un 20%, se necesita <strong>duplicar</strong> la potencia consumida.</div>
+      </div>
+    </section>
+
+    <!-- ====== SLIDE 11 — Medición del tiempo de mezclado (Página 11) ====== -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Tiempo de mezclado</p>
+        <h2>Medición del tiempo de mezclado</h2>
+        <p>El tiempo de mezclado es un parámetro empírico que se mide experimentalmente.</p>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>1. Inyección</h3>
+            <p>Se introduce una pequeña cantidad de un trazador en un punto del tanque. El trazador puede ser un colorante, una sal (para medir conductividad), o un ácido/base (para medir pH).</p>
+          </div>
+          <div class="card">
+            <h3>2. Monitoreo</h3>
+            <p>Se colocan sensores en uno o varios puntos del tanque, típicamente en lugares donde se espera que el mezclado sea más lento.</p>
+          </div>
+          <div class="card">
+            <h3>3. Determinación</h3>
+            <p>Se registra la propiedad (color, conductividad, pH) a lo largo del tiempo. El t<sub>m</sub> se alcanza cuando todas las lecturas de los sensores se estabilizan dentro de un rango definido (ej. &plusmn;5%) del valor de equilibrio final.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== SLIDE 12 — Retos: alta viscosidad – comportamiento (Página 12) ====== -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Retos en el mezclado</p>
+        <h2>Retos en el mezclado: alta viscosidad</h2>
+        <p>Cuando la viscosidad del fluido es alta, el régimen de flujo cambia de turbulento a laminar (Re &lt; 10).</p>
+        <div class="card">
+          <h3>Comportamiento del fluido</h3>
+          <ul>
+            <li>El flujo es ordenado y predecible; el fluido se "adhiere" a las palas del impulsor.</li>
+            <li>No hay dispersión turbulenta. La difusión molecular es el único mecanismo de mezclado a pequeña escala.</li>
+            <li>Se pueden crear <strong>"zonas muertas"</strong> donde el fluido apenas se mueve.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== SLIDE 13 — Retos: alta viscosidad – soluciones (Página 13) ====== -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Retos en el mezclado</p>
+        <h2>Alta viscosidad: soluciones de diseño</h2>
+        <div class="card">
+          <h3>Soluciones de diseño</h3>
+          <ul>
+            <li>Se requieren impulsores de gran diámetro en relación al tanque (<strong>D/T &gt; 0.5</strong>) que operan a baja velocidad.</li>
+            <li>Impulsores especializados como la <strong>cinta helicoidal</strong> o el <strong>ancla</strong> son necesarios para mover material cerca de las paredes y asegurar la mezcla de todo el volumen.</li>
+          </ul>
+        </div>
+        <div class="tip">Para fluidos muy viscosos, el impulsor debe "barrer" casi todo el volumen del tanque en lugar de depender de la turbulencia.</div>
+      </div>
+    </section>
+
+    <!-- ====== SLIDE 14 — Mezclado de líquidos inmiscibles (Página 14) ====== -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Retos en el mezclado</p>
+        <h2>Mezclado de líquidos inmiscibles</h2>
+        <p>El objetivo no es crear una solución, sino una <strong>dispersión o emulsión</strong> (ej. aceite en agua).</p>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Mecanismo clave</h3>
+            <p>Se requiere <strong>alta cizalla</strong> (high shear) para romper las gotas de la fase dispersa y vencer la tensión interfacial que busca que se vuelvan a unir (coalescencia).</p>
+          </div>
+          <div class="card">
+            <h3>Diseño del sistema</h3>
+            <ul>
+              <li>Impulsores de flujo radial como la <strong>turbina Rushton</strong> son efectivos, ya que la zona de descarga del impulsor es de muy alta cizalla.</li>
+              <li>Para emulsiones finas, se usan turbinas de alta cizalla con múltiples palas y alta velocidad de rotación.</li>
+              <li>La <strong>potencia por unidad de volumen (P/V)</strong> es un parámetro de diseño crítico.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== SLIDE 15 — Conclusiones (Página 15) ====== -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Cierre</p>
+        <h1>Conclusiones</h1>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>Conclusión 1</h3>
+            <p>El mezclado es el objetivo final de la agitación y se logra a través de mecanismos de convección, turbulencia y difusión.</p>
+          </div>
+          <div class="card">
+            <h3>Conclusión 2</h3>
+            <p>El tiempo de mezclado (t<sub>m</sub>) es la métrica clave de rendimiento. Reducirlo es energéticamente costoso.</p>
+          </div>
+          <div class="card">
+            <h3>Conclusión 3</h3>
+            <p>El diseño del sistema de mezclado debe adaptarse a las propiedades del fluido. La alta viscosidad y las fases inmiscibles requieren configuraciones y tipos de impulsores especializados.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== SLIDE 16 — Aplicación al proyecto (Página 16) ====== -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Aplicación al proyecto</p>
+        <h2>Aplicación al proyecto</h2>
+        <p>En los fermentadores, un mezclado eficaz es fundamental:</p>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>Distribución uniforme de nutrientes</h3>
+            <p>Asegura una distribución uniforme de nutrientes para la levadura, optimizando el proceso de fermentación.</p>
+          </div>
+          <div class="card">
+            <h3>Temperatura homogénea</h3>
+            <p>Mantiene una temperatura homogénea, evitando puntos calientes que podrían dañar el cultivo.</p>
+          </div>
+          <div class="card">
+            <h3>pH constante</h3>
+            <p>Garantiza un pH constante en todo el tanque para condiciones óptimas de fermentación.</p>
+          </div>
+        </div>
+        <div class="warning">Un mezclado deficiente resultará directamente en una menor eficiencia de fermentación y un menor rendimiento de etanol.</div>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="hud">
+    <span id="hud-title">Mezclado de fluidos · IQYA-2031</span>
+    <span id="hud-counter">1 / 16</span>
+  </div>
+
+  <div class="controls">
+    <button aria-label="Anterior" id="prev">&#8249;</button>
+    <button aria-label="Pantalla completa" id="fs">&#9974;</button>
+    <button aria-label="Siguiente" id="next">&#8250;</button>
+  </div>
+
+  <script>
+    (function () {
+      var slides = Array.prototype.slice.call(document.querySelectorAll('[data-slide]'));
+      var i = 0;
+      var counter = document.getElementById('hud-counter');
+      var progress = document.querySelector('.progress');
+
+      function render() {
+        slides.forEach(function (s, idx) {
+          s.classList.toggle('active', idx === i);
+        });
+        if (counter) counter.textContent = (i + 1) + ' / ' + slides.length;
+        if (progress) progress.style.width = ((i + 1) / slides.length * 100) + '%';
+        var isTitle = slides[i] && slides[i].classList.contains('title-slide');
+        document.body.style.background = isTitle ? '#1A1A1A' : '#ffffff';
+      }
+      function go(n) { i = Math.max(0, Math.min(slides.length - 1, n)); render(); }
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); go(i + 1); }
+        else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(i - 1); }
+        else if (e.key === 'Home') { e.preventDefault(); go(0); }
+        else if (e.key === 'End') { e.preventDefault(); go(slides.length - 1); }
+        else if (e.key === 'f' || e.key === 'F') { toggleFs(); }
+      });
+
+      document.getElementById('prev').addEventListener('click', function () { go(i - 1); });
+      document.getElementById('next').addEventListener('click', function () { go(i + 1); });
+      document.getElementById('fs').addEventListener('click', toggleFs);
+
+      function toggleFs() {
+        var el = document.documentElement;
+        if (!document.fullscreenElement) {
+          (el.requestFullscreen || el.webkitRequestFullscreen || function(){}).call(el);
+        } else {
+          (document.exitFullscreen || document.webkitExitFullscreen || function(){}).call(document);
+        }
+      }
+
+      var tx = 0, ty = 0;
+      document.addEventListener('touchstart', function (e) {
+        if (!e.changedTouches[0]) return;
+        tx = e.changedTouches[0].clientX; ty = e.changedTouches[0].clientY;
+      }, { passive: true });
+      document.addEventListener('touchend', function (e) {
+        if (!e.changedTouches[0]) return;
+        var dx = e.changedTouches[0].clientX - tx;
+        var dy = e.changedTouches[0].clientY - ty;
+        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+          if (dx < 0) go(i + 1); else go(i - 1);
+        }
+      }, { passive: true });
+
+      // Inject decorative slide numbers
+      slides.forEach(function (s, idx) {
+        var num = document.createElement('div');
+        num.className = 'slide-number';
+        num.setAttribute('aria-hidden', 'true');
+        num.textContent = String(idx + 1).padStart(2, '0');
+        s.appendChild(num);
+      });
+
+      render();
+    })();
+  </script>
+</body>
+</html>

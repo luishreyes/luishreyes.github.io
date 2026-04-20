@@ -879,6 +879,24 @@ export const pouCourse: Course = {
       sessionNumber: 8,
       file: 'clase-08-bombas.html',
     },
+    {
+      id: 'clase-09-agitacion',
+      title: 'Agitación',
+      description:
+        'Teoría de agitación, tipos de impulsores, número de potencia, patrones de flujo, baffles y diseño de sistemas de mezclado.',
+      date: '2026-03-10',
+      sessionNumber: 9,
+      file: 'clase-09-agitacion.html',
+    },
+    {
+      id: 'clase-10-mezclado',
+      title: 'Mezclado de fluidos',
+      description:
+        'Patrones de flujo, criterios de escalado, tiempo de mezclado, número de Reynolds en agitación y diseño de mezcladores.',
+      date: '2026-03-12',
+      sessionNumber: 10,
+      file: 'clase-10-mezclado.html',
+    },
   ],
   cronograma: pouCronograma,
 };
