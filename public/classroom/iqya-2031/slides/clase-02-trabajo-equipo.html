@@ -1,0 +1,787 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Trabajo en equipo · IQYA-2031</title>
+  <style>
+    :root {
+      --brand-dark: #1A1A1A;
+      --brand-yellow: #FFBF00;
+      --brand-yellow-dark: #E6AC00;
+      --brand-gray: #555555;
+      --surface: #ffffff;
+      --muted: #f4f4f5;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      background: var(--brand-dark);
+      color: var(--brand-dark);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      overflow: hidden;
+      -webkit-text-size-adjust: 100%;
+    }
+    .deck {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+    }
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(1rem, 4vw, 3.5rem);
+      background: var(--surface);
+      opacity: 0;
+      transition: opacity 260ms ease;
+    }
+    .slide.active {
+      display: flex;
+      opacity: 1;
+    }
+    .slide .content {
+      width: 100%;
+      max-width: 72rem;
+      display: flex;
+      flex-direction: column;
+      gap: clamp(0.75rem, 1.5vw, 1.5rem);
+    }
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      font-size: clamp(0.65rem, 1vw, 0.8rem);
+      color: var(--brand-yellow-dark);
+      font-weight: 600;
+    }
+    h1 {
+      font-size: clamp(1.75rem, 5.5vw, 4rem);
+      line-height: 1.05;
+      margin: 0;
+      color: var(--brand-dark);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    h2 {
+      font-size: clamp(1.25rem, 3.4vw, 2.25rem);
+      line-height: 1.15;
+      margin: 0;
+      color: var(--brand-dark);
+      font-weight: 700;
+    }
+    p, li {
+      font-size: clamp(0.95rem, 1.8vw, 1.35rem);
+      line-height: 1.55;
+      color: var(--brand-gray);
+      margin: 0;
+    }
+    ul, ol {
+      padding-left: 1.25em;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45em;
+    }
+    li::marker { color: var(--brand-yellow-dark); }
+    .slide.title-slide {
+      background: linear-gradient(135deg, #141414 0%, #1A1A1A 50%, #2a2a2a 100%);
+      color: #fff;
+    }
+    .slide.title-slide h1 { color: #fff; }
+    .slide.title-slide p { color: #d4d4d8; }
+    .slide.title-slide .eyebrow { color: var(--brand-yellow); }
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 0.5rem;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.35em 0.9em;
+      border-radius: 999px;
+      background: var(--muted);
+      color: var(--brand-dark);
+      font-size: clamp(0.75rem, 1.3vw, 1rem);
+      font-weight: 500;
+    }
+    .slide.title-slide .pill {
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .grid {
+      display: grid;
+      gap: clamp(0.75rem, 1.5vw, 1.25rem);
+    }
+    .grid.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid.cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    @media (max-width: 640px) {
+      .grid.cols-2, .grid.cols-3, .grid.cols-4 { grid-template-columns: 1fr; }
+    }
+    .card {
+      background: var(--muted);
+      border-radius: 0.75rem;
+      padding: clamp(0.9rem, 1.5vw, 1.35rem);
+    }
+    .card h3 {
+      font-size: clamp(1rem, 2vw, 1.35rem);
+      margin: 0 0 0.35em 0;
+      color: var(--brand-dark);
+      font-weight: 600;
+    }
+    .card p { font-size: clamp(0.8rem, 1.4vw, 1rem); }
+    .slide img.diagram {
+      max-width: 100%;
+      max-height: 55vh;
+      border-radius: 0.5rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+      margin: 0 auto;
+      display: block;
+    }
+    .slide .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(1rem, 2vw, 2rem);
+      align-items: start;
+    }
+    @media (max-width: 640px) {
+      .slide .two-col { grid-template-columns: 1fr; }
+    }
+    .tip {
+      background: rgba(255,191,0,0.1);
+      border-left: 3px solid var(--brand-yellow);
+      padding: 0.75rem 1rem;
+      border-radius: 0 0.5rem 0.5rem 0;
+      font-size: clamp(0.85rem, 1.4vw, 1.05rem);
+      color: var(--brand-gray);
+    }
+    .warning {
+      background: rgba(220,38,38,0.06);
+      border-left: 3px solid #dc2626;
+      padding: 0.75rem 1rem;
+      border-radius: 0 0.5rem 0.5rem 0;
+      font-size: clamp(0.85rem, 1.4vw, 1.05rem);
+      color: var(--brand-gray);
+    }
+    .big-example {
+      background: var(--muted);
+      border-radius: 0.75rem;
+      padding: clamp(1rem, 2vw, 1.5rem);
+      text-align: center;
+    }
+    .big-example code {
+      font-size: clamp(1.1rem, 2.5vw, 1.8rem);
+      font-weight: 700;
+      color: var(--brand-dark);
+      font-family: "SF Mono", "Fira Code", monospace;
+    }
+    .big-example .legend {
+      font-size: clamp(0.8rem, 1.3vw, 1rem);
+      color: var(--brand-gray);
+      margin-top: 0.5rem;
+    }
+    .small-text {
+      font-size: clamp(0.75rem, 1.2vw, 0.9rem);
+      color: var(--brand-gray);
+      text-align: center;
+      margin-top: 0.5rem;
+    }
+    .hud {
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      padding: 0.5rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: rgba(255,255,255,0.75);
+      font-size: 0.75rem;
+      pointer-events: none;
+      z-index: 10;
+    }
+    .slide:not(.title-slide) ~ .hud { color: var(--brand-gray); }
+    .controls {
+      position: fixed;
+      right: 1rem;
+      bottom: 2.5rem;
+      display: flex;
+      gap: 0.5rem;
+      z-index: 11;
+    }
+    .controls button {
+      -webkit-appearance: none;
+      appearance: none;
+      border: 1px solid rgba(0,0,0,0.1);
+      background: rgba(255,255,255,0.9);
+      color: var(--brand-dark);
+      width: 2.5rem; height: 2.5rem;
+      border-radius: 999px;
+      font-size: 1rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    }
+    .controls button:active { transform: scale(0.96); }
+    .progress {
+      position: fixed;
+      top: 0; left: 0;
+      height: 3px;
+      background: var(--brand-yellow);
+      transition: width 260ms ease;
+      z-index: 20;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .slide { transition: none; }
+      .progress { transition: none; }
+    }
+    @media (max-width: 480px) {
+      .controls { right: 0.5rem; bottom: 1.25rem; }
+      .hud { font-size: 0.65rem; }
+    }
+
+    /* ─── Decorative: L-shaped yellow corner accent ─── */
+    .slide:not(.title-slide)::before {
+      content: '';
+      position: absolute;
+      top: clamp(1rem, 3vw, 2.5rem);
+      right: clamp(1rem, 3vw, 2.5rem);
+      width: clamp(2rem, 5vw, 4rem);
+      height: clamp(2rem, 5vw, 4rem);
+      border-top: 2.5px solid var(--brand-yellow);
+      border-right: 2.5px solid var(--brand-yellow);
+      pointer-events: none;
+      z-index: 1;
+    }
+    .slide.title-slide::before {
+      content: '';
+      position: absolute;
+      bottom: clamp(1rem, 3vw, 2.5rem);
+      left: clamp(1rem, 3vw, 2.5rem);
+      width: clamp(2rem, 5vw, 4rem);
+      height: clamp(2rem, 5vw, 4rem);
+      border-bottom: 2.5px solid var(--brand-yellow);
+      border-left: 2.5px solid var(--brand-yellow);
+      opacity: 0.4;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* ─── Decorative: large background slide number ─── */
+    .slide-number {
+      position: absolute;
+      bottom: clamp(0.5rem, 2vw, 1.5rem);
+      left: clamp(1rem, 3vw, 2.5rem);
+      font-size: clamp(4rem, 12vw, 10rem);
+      font-weight: 800;
+      line-height: 1;
+      color: rgba(0, 0, 0, 0.04);
+      pointer-events: none;
+      z-index: 0;
+      user-select: none;
+      letter-spacing: -0.04em;
+    }
+    .slide.title-slide .slide-number {
+      color: rgba(255, 255, 255, 0.06);
+    }
+  </style>
+</head>
+<body>
+  <div class="progress" style="width:0"></div>
+  <div class="deck" id="deck">
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 1 — Portada (Page 1)                                   -->
+    <!-- ============================================================ -->
+    <section class="slide title-slide active" data-slide>
+      <div class="content">
+        <p class="eyebrow">IQYA-2031 · 2026-10</p>
+        <h1>Trabajo en equipo</h1>
+        <p>Proyecto de Operaciones Unitarias · by Luis H. Reyes</p>
+        <div class="pill-row">
+          <span class="pill">Grupos vs equipos</span>
+          <span class="pill">Proyecto Aristóteles</span>
+          <span class="pill">Seguridad psicológica</span>
+          <span class="pill">Contrato de equipo</span>
+          <span class="pill">Coevaluación</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 2 — Agenda (Page 2)                                    -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Agenda</p>
+        <h2>Nuestra agenda</h2>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>La situación</h3>
+            <p>La distinción crítica entre un grupo y un equipo.</p>
+          </div>
+          <div class="card">
+            <h3>La complicación</h3>
+            <p>El factor oculto que determina el fracaso o éxito de un equipo.</p>
+          </div>
+          <div class="card">
+            <h3>La resolución</h3>
+            <p>Una metodología probada para construir equipos de alto rendimiento.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 3 — Grupo vs Equipo: Intro (Page 3, part 1)            -->
+    <!-- ============================================================ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">La situación</p>
+        <h1>No todos los colectivos constituyen un equipo</h1>
+        <p>El trabajo en equipo es fundamental, pero la diferencia entre un grupo y un equipo es crítica.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 4 — Grupo vs Equipo: Comparación (Page 3, part 2)      -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">La situación</p>
+        <h2>Grupo de trabajo vs. Equipo</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Grupo de trabajo</h3>
+            <p>Un grupo de trabajo se asemeja a una colección de individuos que operan en un mismo espacio, pero con objetivos predominantemente personales.</p>
+            <ul>
+              <li>Menor interdependencia entre sus miembros.</li>
+              <li>Se reúne principalmente para compartir información.</li>
+              <li>La responsabilidad es mayormente individual.</li>
+              <li>El éxito se mide por el desempeño de cada miembro.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Equipo</h3>
+            <p>Un equipo es un colectivo cohesionado que comparte un propósito y metas comunes, donde la sinergia es clave.</p>
+            <ul>
+              <li>Alta interdependencia entre sus miembros.</li>
+              <li>Planifica, resuelve problemas y toma decisiones de forma colaborativa.</li>
+              <li>La responsabilidad es compartida; los miembros se necesitan mutuamente para el éxito colectivo.</li>
+              <li>El éxito se mide por los resultados del equipo en su conjunto.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 5 — Interdependencia positiva (Page 4)                 -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">La situación</p>
+        <h2>La interdependencia positiva</h2>
+        <p>El éxito del proyecto depende de una interdependencia positiva y multifacética.</p>
+        <div class="grid cols-4">
+          <div class="card">
+            <h3>Objetivos</h3>
+            <p>Todos los miembros comparten las mismas metas finales, asegurando una dirección unificada.</p>
+          </div>
+          <div class="card">
+            <h3>Recursos</h3>
+            <p>Cada individuo aporta conocimientos y habilidades específicas, complementándose entre sí.</p>
+          </div>
+          <div class="card">
+            <h3>Tareas</h3>
+            <p>El trabajo de un miembro está intrínsecamente ligado y depende del trabajo de los demás.</p>
+          </div>
+          <div class="card">
+            <h3>Reconocimiento</h3>
+            <p>El éxito o fracaso es compartido y atribuible al equipo en su conjunto, fomentando la unidad.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 6 — Separador: La complicación                        -->
+    <!-- ============================================================ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">La complicación</p>
+        <h1>El paradigma roto: agrupar a los mejores talentos no garantiza el éxito</h1>
+        <p>La creencia de que agrupar a los mejores talentos garantiza el éxito es un mito, según la investigación.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 7 — Proyecto Aristóteles (Page 5)                      -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">La complicación · Proyecto Aristóteles</p>
+        <h2>El Proyecto Aristóteles de Google</h2>
+        <ul>
+          <li>Google estudió <strong>180 de sus equipos</strong> para descifrar los patrones de la efectividad.</li>
+          <li>Contrario a la intuición, descubrieron que la <strong>composición del equipo</strong> (la combinación de habilidades o personalidades) <strong>no impactaba significativamente</strong> en su rendimiento.</li>
+        </ul>
+        <div class="tip">"No encontramos evidencia de que la composición del equipo [...] impacte significativamente en la efectividad del equipo."</div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 8 — Lo que realmente importa (Page 6, part 1)          -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">La complicación · Hallazgos</p>
+        <h2>Lo que realmente importa es CÓMO interactúan los miembros</h2>
+        <p>El hallazgo fundamental del Proyecto Aristóteles fue el poder de las <strong>normas de equipo</strong>: los estándares y reglas no escritas que rigen la interacción y el comportamiento de un grupo.</p>
+        <p>De todas estas normas, una emergió como el factor más determinante para el éxito sostenido de un equipo de alto rendimiento: la <strong>Seguridad Psicológica</strong>.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 9 — Tres dimensiones clave (Page 6, part 2)            -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">La complicación · Las tres dimensiones</p>
+        <h2>Las dimensiones de la efectividad</h2>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>1. Interacción</h3>
+            <p>La manera en que los miembros se comunican, colaboran y gestionan los conflictos.</p>
+          </div>
+          <div class="card">
+            <h3>2. Estructura del trabajo</h3>
+            <p>Claridad en roles, responsabilidades y procesos para alcanzar objetivos.</p>
+          </div>
+          <div class="card">
+            <h3>3. Percepción de contribuciones</h3>
+            <p>Sentimiento de que su voz es valorada y que pueden asumir riesgos sin temor.</p>
+          </div>
+        </div>
+        <div class="warning">"El problema central no es la falta de talento, sino la ausencia de un entorno adecuado. La dinámica interna del equipo, gobernada por sus normas, es lo que predice el éxito. Y la norma más importante de todas es la seguridad psicológica."</div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 10 — Separador: La resolución                         -->
+    <!-- ============================================================ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">La resolución</p>
+        <h1>La solución no es esperar que la buena dinámica surja, sino construirla metódicamente</h1>
+        <p>La capacidad de trabajar en equipo no es un talento innato, sino una competencia que se desarrolla a través de la práctica intencionada y la aplicación de metodologías probadas.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 11 — La guía (Page 7)                                  -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">La resolución · Metodología</p>
+        <h2>La "Guía Completa de Trabajo en Equipo"</h2>
+        <p>Para construir una dinámica de equipo exitosa, les proporcionaremos la <strong>"Guía Completa de Trabajo en Equipo"</strong>, que constituye el esqueleto operativo para funcionar de manera eficiente.</p>
+        <div class="tip">La capacidad de trabajar en equipo no es un talento innato, sino una competencia que se desarrolla a través de la práctica intencionada y la aplicación de metodologías probadas.</div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 12 — Contrato de Equipo (Page 8)                      -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">La resolución · Contrato de equipo</p>
+        <h2>El "Contrato de Equipo" es su documento fundacional</h2>
+        <p>Es un contrato social que establece expectativas compartidas y previene conflictos, sirviendo como la brújula operativa de su equipo.</p>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>Normas de equipo</h3>
+            <p>Define claramente los comportamientos deseados con indicadores observables para una convivencia y productividad óptimas.</p>
+          </div>
+          <div class="card">
+            <h3>Roles y responsabilidades</h3>
+            <p>Establece los roles de cada miembro, sus responsabilidades específicas y los suplentes para asegurar la continuidad del trabajo.</p>
+          </div>
+          <div class="card">
+            <h3>Resolución de conflictos</h3>
+            <p>Provee mecanismos escalonados y transparentes para abordar desacuerdos y mantener la armonía del equipo.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 13 — Organización metodológica (Page 9, part 1)        -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">La resolución · Organización</p>
+        <h2>Organización metodológica</h2>
+        <p>La metodología se completa con una organización y evaluación sistemáticas.</p>
+        <ul>
+          <li>Establecerán una <strong>frecuencia fija</strong> para reuniones de seguimiento, técnicas y de revisión.</li>
+          <li>Definirán <strong>canales de comunicación oficiales</strong> para evitar malentendidos.</li>
+          <li>Llevarán un <strong>registro semanal</strong> de decisiones y tareas a través de actas.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 14 — Evaluación continua (Page 9, part 2)              -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">La resolución · Evaluación</p>
+        <h2>Evaluación continua</h2>
+        <ul>
+          <li>Se realizarán <strong>5 ciclos</strong> de autoevaluación y coevaluación durante el semestre.</li>
+          <li>Esto se hará con una <strong>matriz de evaluación</strong> basada en las normas que ustedes mismos definan en su contrato.</li>
+        </ul>
+        <div class="tip">La evaluación no es solo para una nota; es una herramienta de mejora continua que les permitirá identificar y corregir problemas a tiempo.</div>
+        <p>Además del contrato, la guía les instruye sobre cómo organizar su trabajo semanal y cómo evaluarse de forma justa y constructiva.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 15 — Competencias profesionales (Page 10)              -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Valor profesional</p>
+        <h2>Las competencias desarrolladas aquí son un activo profesional de alto valor</h2>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>Colaboración crítica</h3>
+            <p>La industria opera a través de equipos multidisciplinarios donde la colaboración efectiva es crítica.</p>
+          </div>
+          <div class="card">
+            <h3>Gestión de desacuerdos</h3>
+            <p>Las empresas líderes evalúan específicamente la capacidad de manejar desacuerdos técnicos de forma constructiva.</p>
+          </div>
+          <div class="card">
+            <h3>Impacto profesional</h3>
+            <p>El dominio de estas habilidades no solo asegura el éxito académico, sino que multiplica el impacto profesional.</p>
+          </div>
+        </div>
+        <div class="warning">"Las habilidades que desarrollarán —gestión de conflictos, comunicación asertiva, documentación rigurosa y fomento de la seguridad psicológica— son exactamente las que la industria demanda. Están invirtiendo directamente en su futuro profesional."</div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 16 — Próximos pasos (Page 11)                         -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Próximos pasos</p>
+        <h2>El éxito se define por la calidad de su colaboración</h2>
+        <p>El trabajo en equipo eficaz no es magia; es método.</p>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>1. Formen sus equipos</h3>
+            <p>Reúnan sus grupos y establezcan conexiones iniciales.</p>
+          </div>
+          <div class="card">
+            <h3>2. Revisen la "Guía completa de trabajo en equipo"</h3>
+            <p>Lean detenidamente la guía completa de colaboración proporcionada.</p>
+          </div>
+          <div class="card">
+            <h3>3. Redacten y firmen su "Contrato de equipo"</h3>
+            <p>Su primera tarea: desarrollar, discutir y acordar formalmente su Contrato de equipo antes de la fecha límite estipulada.</p>
+          </div>
+        </div>
+        <div class="tip">Este proyecto sirve como un laboratorio no solo para las habilidades técnicas, sino también para la dinámica humana que impulsa la innovación. Este contrato es la base sobre la cual construirán su éxito.</div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 17 — Separador: Equipos                               -->
+    <!-- ============================================================ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Equipos asignados</p>
+        <h1>Equipos de trabajo para este semestre</h1>
+        <p>A continuación, se presentan los equipos asignados para el proyecto de este semestre. Por favor, identifiquen su grupo y a sus compañeros.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 18 — Grupos 1-3 (Page 12, part 1)                     -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Equipos asignados</p>
+        <h2>Grupos 1, 2 y 3</h2>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>Grupo 1</h3>
+            <p>Castellanos Coy, Nicolás</p>
+            <p>Fonseca Calderón, Ana María</p>
+            <p>Martínez Salazar, Alejandra</p>
+            <p>Mendoza Rey, Santiago</p>
+            <p>Vega Garzón, Mariana Lucía</p>
+          </div>
+          <div class="card">
+            <h3>Grupo 2</h3>
+            <p>Acosta Patiño, Isabel Sofía</p>
+            <p>Acuña Tafur, Laura Camila</p>
+            <p>Amaya Sánchez, Juanita Camila</p>
+            <p>Contreras Bohórquez, Ana Sofía</p>
+            <p>Rodríguez Gordillo, Mariana</p>
+          </div>
+          <div class="card">
+            <h3>Grupo 3</h3>
+            <p>Cubides Toscano, Andrea Carolina</p>
+            <p>Mahecha Ballén, Gabriela</p>
+            <p>Ruiz Reyes, Paula Alejandra</p>
+            <p>Torres Medina, Gian Carlo</p>
+            <p>Velandia Muñoz, Santiago</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 19 — Grupos 4-6 (Page 12 part 2 + Page 13)            -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Equipos asignados</p>
+        <h2>Grupos 4, 5 y 6</h2>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>Grupo 4</h3>
+            <p>Correa Jiménez, Sara</p>
+            <p>Duarte Pérez, Isabella</p>
+            <p>Martínez Osorio, Ana Sofía</p>
+            <p>Pisciotti Díaz, María José</p>
+            <p>Rodríguez Caneva, Valentina</p>
+          </div>
+          <div class="card">
+            <h3>Grupo 5</h3>
+            <p>Carballo Otero, Reinaldo Antonio</p>
+            <p>Castellanos Ríos, Andrea Carolina</p>
+            <p>Guarín Ruiz, Salomé</p>
+            <p>Ibáñez Lengua, Valentín Elías</p>
+          </div>
+          <div class="card">
+            <h3>Grupo 6</h3>
+            <p>Fernández Romero, María José</p>
+            <p>Ochoa Romero, Camilo José</p>
+            <p>Rodríguez Cortes, Laura Prieto</p>
+            <p>Pulido, Edgar Nicolás</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 20 — Cierre                                           -->
+    <!-- ============================================================ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">IQYA-2031 · 2026-10</p>
+        <h1>Trabajo en equipo</h1>
+        <p>Construyan su contrato, definan sus normas y comiencen a trabajar como un verdadero equipo.</p>
+        <div class="pill-row">
+          <span class="pill">Grupos vs equipos</span>
+          <span class="pill">Seguridad psicológica</span>
+          <span class="pill">Contrato de equipo</span>
+          <span class="pill">Coevaluación</span>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="hud">
+    <span id="hud-title">Trabajo en equipo · IQYA-2031</span>
+    <span id="hud-counter">1 / 20</span>
+  </div>
+
+  <div class="controls">
+    <button aria-label="Anterior" id="prev">&#8249;</button>
+    <button aria-label="Pantalla completa" id="fs">&#9974;</button>
+    <button aria-label="Siguiente" id="next">&#8250;</button>
+  </div>
+
+  <script>
+    (function () {
+      var slides = Array.prototype.slice.call(document.querySelectorAll('[data-slide]'));
+      var i = 0;
+      var counter = document.getElementById('hud-counter');
+      var progress = document.querySelector('.progress');
+
+      function render() {
+        slides.forEach(function (s, idx) {
+          s.classList.toggle('active', idx === i);
+        });
+        if (counter) counter.textContent = (i + 1) + ' / ' + slides.length;
+        if (progress) progress.style.width = ((i + 1) / slides.length * 100) + '%';
+        var isTitle = slides[i] && slides[i].classList.contains('title-slide');
+        document.body.style.background = isTitle ? '#1A1A1A' : '#ffffff';
+      }
+      function go(n) { i = Math.max(0, Math.min(slides.length - 1, n)); render(); }
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); go(i + 1); }
+        else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(i - 1); }
+        else if (e.key === 'Home') { e.preventDefault(); go(0); }
+        else if (e.key === 'End') { e.preventDefault(); go(slides.length - 1); }
+        else if (e.key === 'f' || e.key === 'F') { toggleFs(); }
+      });
+
+      document.getElementById('prev').addEventListener('click', function () { go(i - 1); });
+      document.getElementById('next').addEventListener('click', function () { go(i + 1); });
+      document.getElementById('fs').addEventListener('click', toggleFs);
+
+      function toggleFs() {
+        var el = document.documentElement;
+        if (!document.fullscreenElement) {
+          (el.requestFullscreen || el.webkitRequestFullscreen || function(){}).call(el);
+        } else {
+          (document.exitFullscreen || document.webkitExitFullscreen || function(){}).call(document);
+        }
+      }
+
+      var tx = 0, ty = 0;
+      document.addEventListener('touchstart', function (e) {
+        if (!e.changedTouches[0]) return;
+        tx = e.changedTouches[0].clientX; ty = e.changedTouches[0].clientY;
+      }, { passive: true });
+      document.addEventListener('touchend', function (e) {
+        if (!e.changedTouches[0]) return;
+        var dx = e.changedTouches[0].clientX - tx;
+        var dy = e.changedTouches[0].clientY - ty;
+        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+          if (dx < 0) go(i + 1); else go(i - 1);
+        }
+      }, { passive: true });
+
+      // Inject decorative slide numbers
+      slides.forEach(function (s, idx) {
+        var num = document.createElement('div');
+        num.className = 'slide-number';
+        num.setAttribute('aria-hidden', 'true');
+        num.textContent = String(idx + 1).padStart(2, '0');
+        s.appendChild(num);
+      });
+
+      render();
+    })();
+  </script>
+</body>
+</html>

@@ -796,14 +796,33 @@ export const pouCourse: Course = {
       readingMinutes: 30,
       tags: ['bibliografía', 'IA', 'investigación', 'bases de datos'],
     },
+    {
+      slug: 'bitacoras-de-calculo',
+      title: 'Guía de elaboración de bitácoras de cálculo',
+      summary:
+        'Guía completa para elaborar las bitácoras de cálculo del proyecto: estructura general, contenido específico por entrega (diagramas, sólidos, intercambiadores, destilación), formato, manejo de fuentes y errores comunes.',
+      date: '2026-01-30',
+      readingMinutes: 20,
+      tags: ['bitácoras', 'documentación', 'cálculos', 'proyecto'],
+    },
   ],
   presentations: [
+    {
+      id: 'clase-02-trabajo-equipo',
+      title: 'Trabajo en equipo',
+      description:
+        'Grupos vs equipos, Proyecto Aristóteles, seguridad psicológica, bienestar, organización, normas, roles y coevaluación.',
+      date: '2026-01-22',
+      sessionNumber: 2,
+      file: 'clase-02-trabajo-equipo.html',
+    },
     {
       id: 'clase-03-diagramas',
       title: 'Diagramas de ingeniería',
       description:
         'PBD, PFD, P&ID: el lenguaje visual de la ingeniería química. Simbología ISA, codificación de equipos, balance de masa y mejores prácticas.',
       date: '2026-02-03',
+      sessionNumber: 3,
       file: 'clase-03-diagramas.html',
     },
   ],
