@@ -1,0 +1,743 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Diagramas de ingeniería · IQYA-2031</title>
+  <style>
+    :root {
+      --brand-dark: #1A1A1A;
+      --brand-yellow: #FFBF00;
+      --brand-yellow-dark: #E6AC00;
+      --brand-gray: #555555;
+      --surface: #ffffff;
+      --muted: #f4f4f5;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      background: var(--brand-dark);
+      color: var(--brand-dark);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      overflow: hidden;
+      -webkit-text-size-adjust: 100%;
+    }
+    .deck {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+    }
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(1rem, 4vw, 3.5rem);
+      background: var(--surface);
+      opacity: 0;
+      transition: opacity 260ms ease;
+    }
+    .slide.active {
+      display: flex;
+      opacity: 1;
+    }
+    .slide .content {
+      width: 100%;
+      max-width: 72rem;
+      display: flex;
+      flex-direction: column;
+      gap: clamp(0.75rem, 1.5vw, 1.5rem);
+    }
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      font-size: clamp(0.65rem, 1vw, 0.8rem);
+      color: var(--brand-yellow-dark);
+      font-weight: 600;
+    }
+    h1 {
+      font-size: clamp(1.75rem, 5.5vw, 4rem);
+      line-height: 1.05;
+      margin: 0;
+      color: var(--brand-dark);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    h2 {
+      font-size: clamp(1.25rem, 3.4vw, 2.25rem);
+      line-height: 1.15;
+      margin: 0;
+      color: var(--brand-dark);
+      font-weight: 700;
+    }
+    p, li {
+      font-size: clamp(0.95rem, 1.8vw, 1.35rem);
+      line-height: 1.55;
+      color: var(--brand-gray);
+      margin: 0;
+    }
+    ul, ol {
+      padding-left: 1.25em;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45em;
+    }
+    li::marker { color: var(--brand-yellow-dark); }
+    .slide.title-slide {
+      background: linear-gradient(135deg, #141414 0%, #1A1A1A 50%, #2a2a2a 100%);
+      color: #fff;
+    }
+    .slide.title-slide h1 { color: #fff; }
+    .slide.title-slide p { color: #d4d4d8; }
+    .slide.title-slide .eyebrow { color: var(--brand-yellow); }
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 0.5rem;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.35em 0.9em;
+      border-radius: 999px;
+      background: var(--muted);
+      color: var(--brand-dark);
+      font-size: clamp(0.75rem, 1.3vw, 1rem);
+      font-weight: 500;
+    }
+    .slide.title-slide .pill {
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .grid {
+      display: grid;
+      gap: clamp(0.75rem, 1.5vw, 1.25rem);
+    }
+    .grid.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid.cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    @media (max-width: 640px) {
+      .grid.cols-2, .grid.cols-3, .grid.cols-4 { grid-template-columns: 1fr; }
+    }
+    .card {
+      background: var(--muted);
+      border-radius: 0.75rem;
+      padding: clamp(0.9rem, 1.5vw, 1.35rem);
+    }
+    .card h3 {
+      font-size: clamp(1rem, 2vw, 1.35rem);
+      margin: 0 0 0.35em 0;
+      color: var(--brand-dark);
+      font-weight: 600;
+    }
+    .card p { font-size: clamp(0.8rem, 1.4vw, 1rem); }
+    .slide img.diagram {
+      max-width: 100%;
+      max-height: 55vh;
+      border-radius: 0.5rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+      margin: 0 auto;
+      display: block;
+    }
+    .slide .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(1rem, 2vw, 2rem);
+      align-items: start;
+    }
+    @media (max-width: 640px) {
+      .slide .two-col { grid-template-columns: 1fr; }
+    }
+    .tip {
+      background: rgba(255,191,0,0.1);
+      border-left: 3px solid var(--brand-yellow);
+      padding: 0.75rem 1rem;
+      border-radius: 0 0.5rem 0.5rem 0;
+      font-size: clamp(0.85rem, 1.4vw, 1.05rem);
+      color: var(--brand-gray);
+    }
+    .warning {
+      background: rgba(220,38,38,0.06);
+      border-left: 3px solid #dc2626;
+      padding: 0.75rem 1rem;
+      border-radius: 0 0.5rem 0.5rem 0;
+      font-size: clamp(0.85rem, 1.4vw, 1.05rem);
+      color: var(--brand-gray);
+    }
+    .big-example {
+      background: var(--muted);
+      border-radius: 0.75rem;
+      padding: clamp(1rem, 2vw, 1.5rem);
+      text-align: center;
+    }
+    .big-example code {
+      font-size: clamp(1.1rem, 2.5vw, 1.8rem);
+      font-weight: 700;
+      color: var(--brand-dark);
+      font-family: "SF Mono", "Fira Code", monospace;
+    }
+    .big-example .legend {
+      font-size: clamp(0.8rem, 1.3vw, 1rem);
+      color: var(--brand-gray);
+      margin-top: 0.5rem;
+    }
+    .small-text {
+      font-size: clamp(0.75rem, 1.2vw, 0.9rem);
+      color: var(--brand-gray);
+      text-align: center;
+      margin-top: 0.5rem;
+    }
+    .hud {
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      padding: 0.5rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: rgba(255,255,255,0.75);
+      font-size: 0.75rem;
+      pointer-events: none;
+      z-index: 10;
+    }
+    .slide:not(.title-slide) ~ .hud { color: var(--brand-gray); }
+    .controls {
+      position: fixed;
+      right: 1rem;
+      bottom: 2.5rem;
+      display: flex;
+      gap: 0.5rem;
+      z-index: 11;
+    }
+    .controls button {
+      -webkit-appearance: none;
+      appearance: none;
+      border: 1px solid rgba(0,0,0,0.1);
+      background: rgba(255,255,255,0.9);
+      color: var(--brand-dark);
+      width: 2.5rem; height: 2.5rem;
+      border-radius: 999px;
+      font-size: 1rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    }
+    .controls button:active { transform: scale(0.96); }
+    .progress {
+      position: fixed;
+      top: 0; left: 0;
+      height: 3px;
+      background: var(--brand-yellow);
+      transition: width 260ms ease;
+      z-index: 20;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .slide { transition: none; }
+      .progress { transition: none; }
+    }
+    @media (max-width: 480px) {
+      .controls { right: 0.5rem; bottom: 1.25rem; }
+      .hud { font-size: 0.65rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="progress" style="width:0"></div>
+  <div class="deck" id="deck">
+
+    <!-- Slide 1: Portada -->
+    <section class="slide title-slide active" data-slide>
+      <div class="content">
+        <p class="eyebrow">IQYA-2031 · 2026-10</p>
+        <h1>Diagramas de ingeniería</h1>
+        <p>El lenguaje visual universal de la ingeniería química</p>
+        <div class="pill-row">
+          <span class="pill">PBD</span>
+          <span class="pill">PFD</span>
+          <span class="pill">P&amp;ID</span>
+          <span class="pill">Simbología ISA</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 2: Agenda -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Agenda</p>
+        <h2>Qué veremos hoy</h2>
+        <div class="grid cols-2">
+          <div class="card"><h3>1. Diagramas de bloques (PBD)</h3><p>La vista macroscópica del proceso.</p></div>
+          <div class="card"><h3>2. Diagramas de flujo (PFD)</h3><p>Detalle técnico para cálculos y balances.</p></div>
+          <div class="card"><h3>3. P&amp;ID</h3><p>Especificaciones para construcción y operación segura.</p></div>
+          <div class="card"><h3>4. Aplicación práctica</h3><p>Talleres y proyecto semestral.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 3: Contexto -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Contexto</p>
+        <h1>El lenguaje visual de la ingeniería química</h1>
+        <p>Los diagramas de ingeniería son el lenguaje visual universal de nuestra profesión, permitiendo una comunicación clara entre ingenieros de distintas culturas. Esta precisión es vital, especialmente en la industria química, donde un error puede tener consecuencias catastróficas y la claridad es cuestión de vida o muerte.</p>
+      </div>
+    </section>
+
+    <!-- Slide 4: Tres niveles -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Niveles de diagramación</p>
+        <h2>Tres niveles de diagramación</h2>
+        <div class="grid cols-3">
+          <div class="card"><h3>PBD</h3><p>Vista simplificada, 6-10 bloques, ideal para presentaciones ejecutivas.</p></div>
+          <div class="card"><h3>PFD</h3><p>Equipos principales con información técnica, base para cálculos.</p></div>
+          <div class="card"><h3>P&amp;ID</h3><p>Detalle completo para construcción, incluye instrumentación.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 5: PBD intro -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">PBD</p>
+        <h1>Diagramas de bloques</h1>
+        <p>El PBD comunica la esencia de su proceso en 30 segundos. Responde: ¿qué hacemos? No al ¿cómo lo hacemos?</p>
+      </div>
+    </section>
+
+    <!-- Slide 6: PBD ejemplo con imagen -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">PBD · Ejemplo</p>
+        <h2>Ejemplo de PBD</h2>
+        <div class="two-col">
+          <div>
+            <ul>
+              <li>Cada bloque = operación unitaria</li>
+              <li>Flechas = flujo de materiales</li>
+              <li>Para su proyecto: 6-10 bloques típicos</li>
+            </ul>
+          </div>
+          <div>
+            <img class="diagram" src="img/diag-p05-2.png" alt="PBD de proceso tolueno a benceno" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 7: Elementos del PBD -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">PBD · Elementos</p>
+        <h2>Elementos esenciales del PBD</h2>
+        <div class="grid cols-3">
+          <div class="card"><h3>Bloques rectangulares</h3><p>Proporción 1.5:1, nombres descriptivos centrados ("FERMENTACIÓN").</p></div>
+          <div class="card"><h3>Líneas de flujo</h3><p>Flechas claras, grosor consistente (1.5 pt).</p></div>
+          <div class="card"><h3>Flujos de entrada</h3><p>Materias primas a la izquierda.</p></div>
+          <div class="card"><h3>Flujos de salida</h3><p>Productos y subproductos a la derecha.</p></div>
+          <div class="card"><h3>Balance de masa</h3><p>Flujos principales en kg/h sobre las líneas.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 8: Construcción sistemática -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">PBD · Construcción</p>
+        <h2>Construcción sistemática</h2>
+        <ol>
+          <li>Identificar transformaciones (caña → jugo → mosto → alcohol crudo → rectificado)</li>
+          <li>Agrupar operaciones (molienda + extracción = "PREPARACIÓN")</li>
+          <li>Ordenar izquierda a derecha siguiendo flujo natural</li>
+          <li>Añadir servicios auxiliares (solo si son críticos)</li>
+          <li>Verificar coherencia (cada bloque tiene entrada y salida)</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- Slide 9: Errores comunes PBD -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">PBD · Errores</p>
+        <h2>Errores comunes en PBD</h2>
+        <div class="grid cols-3">
+          <div class="card"><h3>Exceso de detalle</h3><p>Incluir cada bomba y válvula.</p></div>
+          <div class="card"><h3>Bloques desproporcionados</h3><p>Aspecto amateur.</p></div>
+          <div class="card"><h3>Flujos cruzados</h3><p>Líneas caóticas.</p></div>
+          <div class="card"><h3>Omitir flujos de residuos</h3><p>La vinaza es 90% del flujo másico.</p></div>
+          <div class="card"><h3>Nombres incorrectos</h3><p>"FERMENTADOR" en vez de "FERMENTACIÓN".</p></div>
+          <div class="card"><h3>Flechas ambiguas</h3><p>Dirección debe ser inequívoca.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 10: Del PBD al PFD -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">PFD</p>
+        <h1>Del PBD al PFD</h1>
+        <p>El PFD añade el detalle técnico necesario para cálculos de diseño. Es el documento de trabajo del ingeniero de proceso.</p>
+      </div>
+    </section>
+
+    <!-- Slide 11: Evolución PBD al PFD con imagen -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">PFD · Ejemplo</p>
+        <h2>Evolución del PBD al PFD</h2>
+        <div class="two-col">
+          <div>
+            <p>Mientras el PBD dice "FERMENTACIÓN", el PFD muestra:</p>
+            <ul>
+              <li>4 fermentadores de 50 m³</li>
+              <li>Conexiones específicas</li>
+              <li>Bombas e intercambiadores</li>
+            </ul>
+          </div>
+          <div>
+            <img class="diagram" src="img/diag-p09-2.png" alt="PFD de bioetanol lignocelulósico" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 12: Simbología ISA con imagen -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">PFD · Simbología</p>
+        <h2>Simbología estándar ISA</h2>
+        <div class="two-col">
+          <div>
+            <ul>
+              <li>Recipientes</li>
+              <li>Bombas</li>
+              <li>Compresores</li>
+              <li>Intercambiadores</li>
+              <li>Torres</li>
+              <li>Válvulas de control</li>
+            </ul>
+          </div>
+          <div>
+            <img class="diagram" src="img/diag-p11-2.png" alt="Tabla de símbolos ISA para válvulas" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 13: Información requerida -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">PFD · Información</p>
+        <h2>Información requerida en el PFD</h2>
+        <div class="grid cols-3">
+          <div class="card"><h3>Equipos principales</h3><p>Código único (V-101), descripción, condiciones T y P.</p></div>
+          <div class="card"><h3>Corrientes de proceso</h3><p>Número único, flujo másico, composición, T, P, estado físico.</p></div>
+          <div class="card"><h3>Tabla de corrientes</h3><p>Listado completo de propiedades, flujo por componente, entalpía.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 14: Construcción profesional -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">PFD · Construcción</p>
+        <h2>Construcción profesional del PFD</h2>
+        <ol>
+          <li>Layout: materias primas izquierda, productos derecha</li>
+          <li>Escalas consistentes entre equipos</li>
+          <li>Capas: equipos → líneas → numeración → información adicional</li>
+          <li>Agrupación funcional de equipos relacionados</li>
+          <li>Espacio adecuado para claridad y futuras adiciones</li>
+        </ol>
+        <div class="tip">Están creando un documento que usarán por meses. Inviertan tiempo en hacerlo bien.</div>
+      </div>
+    </section>
+
+    <!-- Slide 15: Codificación de equipos -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">PFD · Codificación</p>
+        <h2>Codificación de equipos</h2>
+        <div class="grid cols-2">
+          <div class="card"><h3>Tipo</h3><p>V=tanque, P=bomba, E=intercambiador, C=columna, K=compresor, R=reactor.</p></div>
+          <div class="card"><h3>Área</h3><p>100=preparación, 200=fermentación, 300=separación, 400=destilación, 500=servicios.</p></div>
+          <div class="card"><h3>Secuencia</h3><p>Números secuenciales dentro del área (P-201 = primera bomba en fermentación).</p></div>
+          <div class="card"><h3>Paralelos</h3><p>Sufijos A/B/C para equipos idénticos (P-201A/B/C).</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 16: Líneas de proceso con imagen -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">PFD · Líneas</p>
+        <h2>Líneas de proceso</h2>
+        <div class="two-col">
+          <div>
+            <ul>
+              <li>Principales: sólidas 1.5-2 pt</li>
+              <li>Servicios: punteadas 1 pt</li>
+              <li>Flechas en cada cambio de dirección</li>
+              <li>Numeración en círculos 8-10 pt</li>
+            </ul>
+          </div>
+          <div>
+            <img class="diagram" src="img/diag-p15-2.png" alt="PFD de endulzamiento de gas con aminas" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 17: Codificación de líneas -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">PFD · Líneas</p>
+        <h2>Codificación de líneas</h2>
+        <div class="big-example">
+          <code>2"-FG-3001-CS</code>
+          <p class="legend">2 pulgadas · FG: Fluido General · 3001: número de línea · CS: Carbon Steel</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 18: Balance de masa -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">PFD · Balance</p>
+        <h2>Balance de masa en el PFD</h2>
+        <p>El PFD debe cerrar al menos a ±1%, idealmente a ±0.1%. Un balance que no cierra indica error.</p>
+        <ul>
+          <li>Balance global: Entrada = Salida</li>
+          <li>Fermentación: Azúcar = Alcohol + CO₂ + biomasa + residual</li>
+        </ul>
+        <div class="tip">Eficiencia real 90-92%. Excel es su aliado.</div>
+      </div>
+    </section>
+
+    <!-- Slide 19: Servicios auxiliares -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">PFD · Servicios</p>
+        <h2>Integración de servicios auxiliares</h2>
+        <div class="grid cols-2">
+          <div class="card"><h3>Vapor</h3><p>3 kg/kg alcohol, líneas punteadas rojas, 3 barg.</p></div>
+          <div class="card"><h3>Agua de enfriamiento</h3><p>50 m³/m³ mosto, líneas punteadas azules, 2 barg.</p></div>
+          <div class="card"><h3>Electricidad</h3><p>100 kW para agitación y bombeo.</p></div>
+          <div class="card"><h3>Aire comprimido</h3><p>Para instrumentación y control, 6 barg.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 20: PFD industrial con imagen -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">PFD · Ejemplo real</p>
+        <h2>PFD industrial</h2>
+        <img class="diagram" src="img/diag-p18-2.png" alt="PFD industrial con leyenda de colores" />
+        <p class="small-text">Ejemplo de PFD profesional con leyenda de colores y codificación completa.</p>
+      </div>
+    </section>
+
+    <!-- Slide 21: Software -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">PFD · Software</p>
+        <h2>Software para PFD</h2>
+        <div class="grid cols-3">
+          <div class="card"><h3>Microsoft Visio</h3><p>Bibliotecas ISA completas, drag-and-drop intuitivo.</p></div>
+          <div class="card"><h3>AutoCAD</h3><p>Precisión dimensional, útil para evolución a P&amp;ID.</p></div>
+          <div class="card"><h3>Draw.io</h3><p>Alternativa gratuita aceptable.</p></div>
+        </div>
+        <div class="warning">Eviten PowerPoint; no está diseñado para diagramas técnicos.</div>
+      </div>
+    </section>
+
+    <!-- Slide 22: Tabla de corrientes -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">PFD · Tabla de corrientes</p>
+        <h2>Tabla de corrientes</h2>
+        <p>Complementa el PFD con información cuantitativa.</p>
+        <ul>
+          <li>Número y descripción</li>
+          <li>Flujo total y por componente</li>
+          <li>Fracción másica/molar</li>
+          <li>T y P</li>
+          <li>Densidad y estado físico</li>
+          <li>Entalpía específica</li>
+        </ul>
+        <div class="tip">Usen Excel con fórmulas vinculadas. Incluyan mínimo: agua, etanol, azúcares, CO₂, sólidos, biomasa.</div>
+      </div>
+    </section>
+
+    <!-- Slide 23: Ejemplo PFD Merox con imagen -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">PFD · Ejemplo PFD completo</p>
+        <h2>Ejemplo: PFD de proceso Merox</h2>
+        <img class="diagram" src="img/diag-p03-2.png" alt="PFD completo del proceso Merox para tratamiento de jet fuel" />
+      </div>
+    </section>
+
+    <!-- Slide 24: Errores que destruyen calificaciones -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Errores</p>
+        <h2>Errores que destruyen calificaciones</h2>
+        <div class="grid cols-4">
+          <div class="card"><h3>Plagio</h3><p>Copiar PFDs de internet. "Los reconozco inmediatamente."</p></div>
+          <div class="card"><h3>Balance desequilibrado</h3><p>Error &gt;5%.</p></div>
+          <div class="card"><h3>Simbología mezclada</h3><p>ISA y DIN combinados.</p></div>
+          <div class="card"><h3>Omisión de corrientes</h3><p>CO₂ de fermentación = 48% de masa convertida.</p></div>
+          <div class="card"><h3>Escalas irreales</h3><p>Bombas del tamaño de tanques.</p></div>
+          <div class="card"><h3>Info contradictoria</h3><p>PFD dice 100 kg/h, tabla dice 150.</p></div>
+          <div class="card"><h3>Formato inadecuado</h3><p>JPG pixelado. Usen PDF vectorial.</p></div>
+          <div class="card"><h3>Bombas olvidadas</h3><p>¿Cómo mueven la materia?</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 25: Mejores prácticas -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Mejores prácticas</p>
+        <h2>Mejores prácticas de la industria</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Gestión documental</h3>
+            <ul>
+              <li>Control de versiones</li>
+              <li>Revisión cruzada</li>
+              <li>Validación dimensional</li>
+              <li>Consistencia visual</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Documentación técnica</h3>
+            <ul>
+              <li>Registro de supuestos</li>
+              <li>Citar fuentes</li>
+              <li>Cuadro de título con nombre/fecha/versión</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 26: Conexión con el curso -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Documento vivo</p>
+        <h2>Conexión con el resto del curso</h2>
+        <p>Su PFD es el <em>single source of truth</em>. No es tarea para entregar y olvidar.</p>
+        <div class="grid cols-3">
+          <div class="card"><h3>Semana 3</h3><p>Molinos: potencias y tamaños.</p></div>
+          <div class="card"><h3>Semana 5</h3><p>Bombas: cabezas y NPSHr.</p></div>
+          <div class="card"><h3>Semana 8</h3><p>Intercambiadores: áreas y configuraciones.</p></div>
+          <div class="card"><h3>Semana 12</h3><p>Destilación: número de platos y reflujo.</p></div>
+          <div class="card"><h3>Semana 15</h3><p>ASPEN: validar contra cálculos manuales.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 27: Resumen -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Resumen</p>
+        <h1>Inviertan tiempo ahora</h1>
+        <p>El PFD es el hilo conductor que une todos los elementos en un diseño coherente. Inviertan tiempo ahora en hacerlo bien; pagarán dividendos todo el semestre.</p>
+        <div class="pill-row">
+          <span class="pill">PBD → PFD → P&amp;ID</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 28: Preguntas -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">IQYA-2031</p>
+        <h1>¿Preguntas?</h1>
+        <p>Proy. de Op. Unitarias · Prof. Luis H. Reyes</p>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="hud">
+    <span id="hud-title">Diagramas de ingeniería · IQYA-2031</span>
+    <span id="hud-counter">1 / 28</span>
+  </div>
+
+  <div class="controls">
+    <button aria-label="Anterior" id="prev">&#8249;</button>
+    <button aria-label="Pantalla completa" id="fs">&#9974;</button>
+    <button aria-label="Siguiente" id="next">&#8250;</button>
+  </div>
+
+  <script>
+    (function () {
+      var slides = Array.prototype.slice.call(document.querySelectorAll('[data-slide]'));
+      var i = 0;
+      var counter = document.getElementById('hud-counter');
+      var progress = document.querySelector('.progress');
+
+      function render() {
+        slides.forEach(function (s, idx) {
+          s.classList.toggle('active', idx === i);
+        });
+        if (counter) counter.textContent = (i + 1) + ' / ' + slides.length;
+        if (progress) progress.style.width = ((i + 1) / slides.length * 100) + '%';
+        var isTitle = slides[i] && slides[i].classList.contains('title-slide');
+        document.body.style.background = isTitle ? '#1A1A1A' : '#ffffff';
+      }
+      function go(n) { i = Math.max(0, Math.min(slides.length - 1, n)); render(); }
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); go(i + 1); }
+        else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(i - 1); }
+        else if (e.key === 'Home') { e.preventDefault(); go(0); }
+        else if (e.key === 'End') { e.preventDefault(); go(slides.length - 1); }
+        else if (e.key === 'f' || e.key === 'F') { toggleFs(); }
+      });
+
+      document.getElementById('prev').addEventListener('click', function () { go(i - 1); });
+      document.getElementById('next').addEventListener('click', function () { go(i + 1); });
+      document.getElementById('fs').addEventListener('click', toggleFs);
+
+      function toggleFs() {
+        var el = document.documentElement;
+        if (!document.fullscreenElement) {
+          (el.requestFullscreen || el.webkitRequestFullscreen || function(){}).call(el);
+        } else {
+          (document.exitFullscreen || document.webkitExitFullscreen || function(){}).call(document);
+        }
+      }
+
+      var tx = 0, ty = 0;
+      document.addEventListener('touchstart', function (e) {
+        if (!e.changedTouches[0]) return;
+        tx = e.changedTouches[0].clientX; ty = e.changedTouches[0].clientY;
+      }, { passive: true });
+      document.addEventListener('touchend', function (e) {
+        if (!e.changedTouches[0]) return;
+        var dx = e.changedTouches[0].clientX - tx;
+        var dy = e.changedTouches[0].clientY - ty;
+        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+          if (dx < 0) go(i + 1); else go(i - 1);
+        }
+      }, { passive: true });
+
+      render();
+    })();
+  </script>
+</body>
+</html>

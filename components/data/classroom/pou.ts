@@ -448,12 +448,12 @@ export const pouCourse: Course = {
   ],
   presentations: [
     {
-      id: 'clase-01-intro',
-      title: 'Clase 1 · Introducción al curso y al proyecto',
-      sessionNumber: 1,
+      id: 'clase-03-diagramas',
+      title: 'Diagramas de ingeniería',
       description:
-        'Presentación de bienvenida: DIPP, metodología PO-PBL + aula invertida, y formación de equipos.',
-      file: 'clase-01-intro.html',
+        'PBD, PFD, P&ID: el lenguaje visual de la ingeniería química. Simbología ISA, codificación de equipos, balance de masa y mejores prácticas.',
+      date: '2026-02-03',
+      file: '/classroom/iqya-2031/slides/clase-03-diagramas.html',
     },
   ],
 };
