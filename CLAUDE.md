@@ -108,6 +108,19 @@ Cada curso tiene un `accessCode`. Se guarda en `localStorage` con key `classroom
 - Los archivos en `components/data/students/**/*.ts` tienen errores de TypeScript por imports rotos — **ignorar**, no son del Classroom
 - `App.tsx` tiene un error de tipo en `RoutesProps` — **ignorar**
 
-## Principio #1: No resumir, no recortar
+## Principios inquebrantables
 
+### #1: No resumir, no recortar
 **NUNCA** omitir información del material fuente. Si un PDF tiene 28 páginas, el contenido generado debe contener toda esa información. Si es demasiado para una lectura o slide, dividir en más secciones/slides. Pero nunca eliminar contenido.
+
+### #2: No filtrar imágenes por tamaño
+**NUNCA** descartar imágenes del PDF por ser >800KB o >1MB. Las imágenes grandes son frecuentemente contenido técnico valioso (equipos industriales, microscopías SEM, diagramas de proceso). Solo descartar barras decorativas (284x85 px) e íconos diminutos (<50px). **Siempre verificar visualmente** cada imagen antes de usarla o descartarla.
+
+### #3: Verificar visualmente cada imagen
+Los nombres de archivo extraídos del PDF (`pXX-Y.png`) NO indican qué contiene la imagen. **SIEMPRE** abrir la imagen con `Read` tool antes de asignarla a un slide. Las imágenes cruzadas (poner la imagen A donde va la B) son errores frecuentes y costosos de corregir.
+
+### #4: KaTeX para todas las fórmulas
+**NUNCA** dejar fórmulas como texto plano. Siempre usar notación KaTeX: `$\rho = \frac{m}{V}$` para inline, `$$...$$` para display. Incluir KaTeX CDN en el `<head>` de cada presentación.
+
+### #5: Videos YouTube a la derecha
+Los videos embebidos van siempre a la **DERECHA** en layout `two-col`, nunca debajo del contenido.
