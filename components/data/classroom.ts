@@ -1,0 +1,127 @@
+export interface Reading {
+  slug: string;
+  title: string;
+  summary: string;
+  date: string;
+  readingMinutes?: number;
+  tags?: string[];
+}
+
+export interface Presentation {
+  id: string;
+  title: string;
+  sessionNumber?: number;
+  date?: string;
+  description?: string;
+  file: string;
+}
+
+export interface TeamMember {
+  name: string;
+  role: string;
+  email: string;
+  officeHours?: string;
+}
+
+export interface Schedule {
+  label: string;
+  detail: string;
+}
+
+export interface EvaluationItem {
+  component: string;
+  percentage: number;
+  description: string;
+}
+
+export interface AbetOutcome {
+  title: string;
+  indicators: string[];
+}
+
+export interface SyllabusModule {
+  title: string;
+  topics: string[];
+}
+
+export interface DeliveryDate {
+  label: string;
+  date: string;
+}
+
+export interface AiasLevel {
+  level: number;
+  title: string;
+  description: string;
+  application: string;
+}
+
+export interface Course {
+  slug: string;
+  code: string;
+  title: string;
+  term: string;
+  credits: number;
+  modality: string;
+  duration: string;
+  description: string;
+  tagline?: string;
+  accessCode: string;
+  bannerUrl: string;
+  pillars?: { title: string; description: string }[];
+  team: TeamMember[];
+  schedule: Schedule[];
+  objectives: string[];
+  methodology: {
+    summary: string;
+    phases: { label: string; title: string; items: string[] }[];
+    synergies?: string[];
+  };
+  abet: {
+    peos: string[];
+    outcomes: AbetOutcome[];
+  };
+  project: {
+    title: string;
+    overview: string;
+    rawMaterials: { name: string; outcome: string }[];
+    scope: string[];
+    teamwork: string[];
+  };
+  modules: SyllabusModule[];
+  evaluation: EvaluationItem[];
+  deliveries: {
+    bitacoras: DeliveryDate[];
+    coevaluations: DeliveryDate[];
+    feedback: DeliveryDate[];
+  };
+  coevaluation: {
+    importance: string[];
+    application: string[];
+    procedure: string[];
+    example: string[];
+  };
+  aias: {
+    intro: string;
+    levels: AiasLevel[];
+    goals: string[];
+    declaration: string[];
+  };
+  policies: {
+    category: string;
+    items: string[];
+  }[];
+  community: {
+    category: string;
+    items: string[];
+  }[];
+  readings: Reading[];
+  presentations: Presentation[];
+}
+
+import { pouCourse } from './classroom/pou';
+
+export const classroomData: Course[] = [pouCourse];
+
+export const getCourseBySlug = (slug: string): Course | undefined =>
+  classroomData.find((c) => c.slug === slug);
