@@ -61,6 +61,7 @@ const navItems = [
     ],
   },
   { id: 'recognition', title: 'Recognition', defaultPath: '/recognition', pathPrefix: '/recognition' },
+  { id: 'classroom', title: 'Classroom', defaultPath: '/classroom', pathPrefix: '/classroom' },
 ];
 
 

@@ -25,4 +25,9 @@ export const ROUTES: Record<string, string> = {
   'future.research':                      '/future/research',
   'future.collaboration':                 '/future/collaboration',
   'recognition':                          '/recognition',
+  'classroom.index':                      '/classroom',
+  'classroom.course':                     '/classroom/:courseSlug',
+  'classroom.readings':                   '/classroom/:courseSlug/readings',
+  'classroom.reading':                    '/classroom/:courseSlug/readings/:slug',
+  'classroom.presentations':              '/classroom/:courseSlug/presentations',
 };
