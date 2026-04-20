@@ -436,6 +436,15 @@ export const pouCourse: Course = {
       readingMinutes: 20,
       tags: ['equipos', 'gestión de proyectos', 'soft skills'],
     },
+    {
+      slug: 'busqueda-bibliografica',
+      title: 'Búsqueda bibliográfica y herramientas de IA',
+      summary:
+        'Guía completa de plataformas académicas (Google Scholar, WoS, Scopus), estrategias de búsqueda con operadores booleanos, y herramientas de IA generativa (ChatGPT, Gemini, Claude, Perplexity, SciSpace, Consensus y Connected Papers) para revisiones bibliográficas en ingeniería química.',
+      date: '2026-01-28',
+      readingMinutes: 30,
+      tags: ['bibliografía', 'IA', 'investigación', 'bases de datos'],
+    },
   ],
   presentations: [
     {
