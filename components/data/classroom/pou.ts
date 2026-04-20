@@ -453,7 +453,7 @@ export const pouCourse: Course = {
       description:
         'PBD, PFD, P&ID: el lenguaje visual de la ingeniería química. Simbología ISA, codificación de equipos, balance de masa y mejores prácticas.',
       date: '2026-02-03',
-      file: '/classroom/iqya-2031/slides/clase-03-diagramas.html',
+      file: 'clase-03-diagramas.html',
     },
   ],
 };
