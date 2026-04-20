@@ -915,6 +915,23 @@ export const pouCourse: Course = {
       sessionNumber: 12,
       file: 'clase-12-intercambiadores-ntu.html',
     },
+    {
+      id: 'clase-13-filtracion',
+      title: 'Filtración',
+      description: 'Teoría de filtración, resistencia de la torta, ecuación de Ruth, filtros rotatorios, filtros prensa y diseño de sistemas de separación sólido-líquido.',
+      date: '2026-04-07',
+      sessionNumber: 13,
+      file: 'clase-13-filtracion.html',
+    },
+    {
+      id: 'clase-14-equilibrio-fases',
+      title: 'Equilibrio de fases y destilación',
+      description:
+        'Equilibrio líquido-vapor, ley de Raoult, volatilidad relativa, diagramas T-xy y x-y, y fundamentos de destilación.',
+      date: '2026-04-14',
+      sessionNumber: 14,
+      file: 'clase-14-equilibrio-fases.html',
+    },
   ],
   cronograma: pouCronograma,
 };

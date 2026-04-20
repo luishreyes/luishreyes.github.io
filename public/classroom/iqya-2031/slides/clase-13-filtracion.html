@@ -1,0 +1,1071 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Filtración · IQYA-2031</title>
+  <style>
+    :root {
+      --brand-dark: #1A1A1A;
+      --brand-yellow: #FFBF00;
+      --brand-yellow-dark: #E6AC00;
+      --brand-gray: #555555;
+      --surface: #ffffff;
+      --muted: #f4f4f5;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      background: var(--brand-dark);
+      color: var(--brand-dark);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      overflow: hidden;
+      -webkit-text-size-adjust: 100%;
+    }
+    .deck {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+    }
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(1rem, 4vw, 3.5rem);
+      background: var(--surface);
+      opacity: 0;
+      transition: opacity 260ms ease;
+    }
+    .slide.active {
+      display: flex;
+      opacity: 1;
+    }
+    .slide .content {
+      width: 100%;
+      max-width: 72rem;
+      display: flex;
+      flex-direction: column;
+      gap: clamp(0.75rem, 1.5vw, 1.5rem);
+    }
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      font-size: clamp(0.65rem, 1vw, 0.8rem);
+      color: var(--brand-yellow-dark);
+      font-weight: 600;
+    }
+    h1 {
+      font-size: clamp(1.75rem, 5.5vw, 4rem);
+      line-height: 1.05;
+      margin: 0;
+      color: var(--brand-dark);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    h2 {
+      font-size: clamp(1.25rem, 3.4vw, 2.25rem);
+      line-height: 1.15;
+      margin: 0;
+      color: var(--brand-dark);
+      font-weight: 700;
+    }
+    p, li {
+      font-size: clamp(0.95rem, 1.8vw, 1.35rem);
+      line-height: 1.55;
+      color: var(--brand-gray);
+      margin: 0;
+    }
+    ul, ol {
+      padding-left: 1.25em;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45em;
+    }
+    li::marker { color: var(--brand-yellow-dark); }
+    .slide.title-slide {
+      background: linear-gradient(135deg, #141414 0%, #1A1A1A 50%, #2a2a2a 100%);
+      color: #fff;
+    }
+    .slide.title-slide h1 { color: #fff; }
+    .slide.title-slide p { color: #d4d4d8; }
+    .slide.title-slide .eyebrow { color: var(--brand-yellow); }
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 0.5rem;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.35em 0.9em;
+      border-radius: 999px;
+      background: var(--muted);
+      color: var(--brand-dark);
+      font-size: clamp(0.75rem, 1.3vw, 1rem);
+      font-weight: 500;
+    }
+    .slide.title-slide .pill {
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .grid {
+      display: grid;
+      gap: clamp(0.75rem, 1.5vw, 1.25rem);
+    }
+    .grid.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    @media (max-width: 640px) {
+      .grid.cols-2, .grid.cols-3 { grid-template-columns: 1fr; }
+    }
+    .card {
+      background: var(--muted);
+      border-radius: 0.75rem;
+      padding: clamp(0.9rem, 1.5vw, 1.35rem);
+    }
+    .card h3 {
+      font-size: clamp(1rem, 2vw, 1.35rem);
+      margin: 0 0 0.35em 0;
+      color: var(--brand-dark);
+      font-weight: 600;
+    }
+    .card p { font-size: clamp(0.8rem, 1.4vw, 1rem); }
+    .hud {
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      padding: 0.5rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: rgba(255,255,255,0.75);
+      font-size: 0.75rem;
+      pointer-events: none;
+      z-index: 10;
+    }
+    .slide:not(.title-slide) ~ .hud { color: var(--brand-gray); }
+    .controls {
+      position: fixed;
+      right: 1rem;
+      bottom: 2.5rem;
+      display: flex;
+      gap: 0.5rem;
+      z-index: 11;
+    }
+    .controls button {
+      -webkit-appearance: none;
+      appearance: none;
+      border: 1px solid rgba(0,0,0,0.1);
+      background: rgba(255,255,255,0.9);
+      color: var(--brand-dark);
+      width: 2.5rem; height: 2.5rem;
+      border-radius: 999px;
+      font-size: 1rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    }
+    .controls button:active { transform: scale(0.96); }
+    .progress {
+      position: fixed;
+      top: 0; left: 0;
+      height: 3px;
+      background: var(--brand-yellow);
+      transition: width 260ms ease;
+      z-index: 20;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .slide { transition: none; }
+      .progress { transition: none; }
+    }
+    @media (max-width: 480px) {
+      .controls { right: 0.5rem; bottom: 1.25rem; }
+      .hud { font-size: 0.65rem; }
+    }
+
+    /* ─── Decorative: L-shaped yellow corner accent ─── */
+    .slide:not(.title-slide)::before {
+      content: '';
+      position: absolute;
+      top: clamp(1rem, 3vw, 2.5rem);
+      right: clamp(1rem, 3vw, 2.5rem);
+      width: clamp(2rem, 5vw, 4rem);
+      height: clamp(2rem, 5vw, 4rem);
+      border-top: 2.5px solid var(--brand-yellow);
+      border-right: 2.5px solid var(--brand-yellow);
+      pointer-events: none;
+      z-index: 1;
+    }
+    .slide.title-slide::before {
+      content: '';
+      position: absolute;
+      bottom: clamp(1rem, 3vw, 2.5rem);
+      left: clamp(1rem, 3vw, 2.5rem);
+      width: clamp(2rem, 5vw, 4rem);
+      height: clamp(2rem, 5vw, 4rem);
+      border-bottom: 2.5px solid var(--brand-yellow);
+      border-left: 2.5px solid var(--brand-yellow);
+      opacity: 0.4;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* ─── Decorative: large background slide number ─── */
+    .slide-number {
+      position: absolute;
+      bottom: clamp(0.5rem, 2vw, 1.5rem);
+      left: clamp(1rem, 3vw, 2.5rem);
+      font-size: clamp(4rem, 12vw, 10rem);
+      font-weight: 800;
+      line-height: 1;
+      color: rgba(0, 0, 0, 0.04);
+      pointer-events: none;
+      z-index: 0;
+      user-select: none;
+      letter-spacing: -0.04em;
+    }
+    .slide.title-slide .slide-number {
+      color: rgba(255, 255, 255, 0.06);
+    }
+
+    /* ─── Extra: equations / formulas ─── */
+    .formula {
+      font-family: "Georgia", "Times New Roman", serif;
+      font-size: clamp(1.1rem, 2.2vw, 1.6rem);
+      text-align: center;
+      padding: 0.75em 1em;
+      background: var(--muted);
+      border-radius: 0.5rem;
+      color: var(--brand-dark);
+      line-height: 1.6;
+      overflow-x: auto;
+    }
+    .formula-inline {
+      font-family: "Georgia", "Times New Roman", serif;
+      font-style: italic;
+    }
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(1rem, 2vw, 2rem);
+      align-items: center;
+    }
+    @media (max-width: 640px) {
+      .two-col { grid-template-columns: 1fr; }
+    }
+    .diagram {
+      max-width: 100%;
+      height: auto;
+      border-radius: 0.5rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+    }
+    .small-text {
+      font-size: clamp(0.75rem, 1.2vw, 0.95rem);
+      color: var(--brand-gray);
+    }
+    .tip {
+      background: #fef9c3;
+      border-left: 4px solid var(--brand-yellow);
+      padding: 0.75em 1em;
+      border-radius: 0 0.5rem 0.5rem 0;
+      font-size: clamp(0.85rem, 1.5vw, 1.1rem);
+      color: var(--brand-dark);
+    }
+    .warning {
+      background: #fef2f2;
+      border-left: 4px solid #ef4444;
+      padding: 0.75em 1em;
+      border-radius: 0 0.5rem 0.5rem 0;
+      font-size: clamp(0.85rem, 1.5vw, 1.1rem);
+      color: var(--brand-dark);
+    }
+    .big-example {
+      text-align: center;
+      padding: 1em;
+    }
+    .big-example code {
+      font-size: clamp(1.2rem, 3vw, 2.2rem);
+      font-family: "SF Mono", "Fira Code", monospace;
+      background: var(--muted);
+      padding: 0.3em 0.6em;
+      border-radius: 0.4rem;
+    }
+    .big-example .legend {
+      margin-top: 0.5em;
+      font-size: clamp(0.75rem, 1.2vw, 0.95rem);
+      color: var(--brand-gray);
+    }
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: clamp(0.8rem, 1.4vw, 1.05rem);
+    }
+    table.data-table th {
+      background: var(--brand-dark);
+      color: #fff;
+      padding: 0.6em 0.8em;
+      text-align: left;
+      font-weight: 600;
+    }
+    table.data-table td {
+      padding: 0.5em 0.8em;
+      border-bottom: 1px solid #e4e4e7;
+      color: var(--brand-gray);
+    }
+    table.data-table tr:nth-child(even) td {
+      background: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="progress" style="width:0"></div>
+  <div class="deck" id="deck">
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 1 — Portada (Página 1)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide title-slide active" data-slide>
+      <div class="content">
+        <p class="eyebrow">IQYA-2031 · 2026-10</p>
+        <h1>Filtración</h1>
+        <p>Separación sólido-líquido: teoría, diseño y equipos industriales.</p>
+        <div class="pill-row">
+          <span class="pill">Ley de Darcy</span>
+          <span class="pill">Torta y medio filtrante</span>
+          <span class="pill">Ecuaciones de diseño</span>
+          <span class="pill">Filtros prensa</span>
+          <span class="pill">Filtros rotatorios</span>
+          <span class="pill">Centrífugas</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 2 — Fundamentos de la filtración (Página 2)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Fundamentos</p>
+        <h2>Fundamentos de la filtración</h2>
+        <p>La filtración es una de las operaciones unitarias más antiguas y fundamentales en la ingeniería química, consistente en separar partículas sólidas de un fluido (líquido o gas) haciéndolo pasar a través de un medio poroso.</p>
+        <p>Sus aplicaciones son diversas, abarcando:</p>
+        <ul>
+          <li>Tratamiento de aguas residuales a gran escala</li>
+          <li>Procesos mineros y metalúrgicos</li>
+          <li>Producción y procesamiento de alimentos</li>
+          <li>Purificación estéril de productos farmacéuticos</li>
+          <li>Bioprocesos y purificación biotecnológica</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 3 — Filtración con torta (Página 3)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Mecanismos de filtración</p>
+        <h2>Filtración con torta (<em>cake filtration</em>)</h2>
+        <p>Mecanismo dominante para suspensiones con concentración de sólidos relativamente alta (típicamente &gt; 1.0% en peso).</p>
+        <ul>
+          <li>Los sólidos se acumulan en la superficie del medio filtrante</li>
+          <li>Forman una capa gruesa y porosa llamada <strong>torta</strong></li>
+          <li>La torta actúa como el principal medio de filtración</li>
+          <li>El objetivo puede ser recuperar el sólido o el líquido filtrado</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 4 — Clarificación / filtración profunda (Página 4)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Mecanismos de filtración</p>
+        <h2>Clarificación o filtración profunda (<em>depth filtration</em>)</h2>
+        <p>Se aplica a suspensiones muy diluidas (usualmente &lt; 0.1% en sólidos).</p>
+        <ul>
+          <li>No se forma una torta visible en la superficie</li>
+          <li>Las partículas finas son atrapadas <strong>dentro</strong> de la matriz porosa</li>
+          <li>El objetivo principal es obtener un líquido extremadamente claro</li>
+          <li>La vida útil termina cuando los poros internos se saturan</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 5 — Ley de Darcy: variables (Página 5)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ley de Darcy</p>
+        <h2>Variables fundamentales</h2>
+        <div class="two-col">
+          <div>
+            <ul>
+              <li><span class="formula-inline">Q</span> = caudal volumétrico</li>
+              <li><span class="formula-inline">&Delta;P</span> = diferencia de presión aplicada</li>
+              <li><span class="formula-inline">A</span> = área de filtración</li>
+              <li><span class="formula-inline">&mu;</span> = viscosidad del fluido</li>
+              <li><span class="formula-inline">L</span> = espesor del medio poroso</li>
+              <li><span class="formula-inline">K</span> = permeabilidad del medio</li>
+            </ul>
+          </div>
+          <img class="diagram" src="img/pres13-p05-3.png" alt="Variables de la Ley de Darcy" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 6 — Ley de Darcy: flux y resistencia (Página 6)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ley de Darcy</p>
+        <h2>Flux y resistencia a la filtración</h2>
+        <p>Para el análisis de filtración, es más conveniente expresar la Ley de Darcy en términos de flujo específico o <strong>flux</strong> (<span class="formula-inline">J = Q/A</span>) y <strong>resistencia a la filtración</strong> (<span class="formula-inline">R<sub>m</sub> = L/K</span>):</p>
+        <div class="formula">
+          J = Q / A = &Delta;P / (&mu; &middot; R<sub>m</sub>)
+        </div>
+        <p>Esta forma permite analizar el sistema como un análogo a la ley de Ohm (<span class="formula-inline">I = V / R</span>), donde:</p>
+        <ul>
+          <li>El flux <span class="formula-inline">J</span> es la &laquo;corriente&raquo;</li>
+          <li><span class="formula-inline">&Delta;P</span> es el &laquo;potencial&raquo;</li>
+          <li><span class="formula-inline">&mu; &middot; R<sub>m</sub></span> es la &laquo;resistencia total al flujo&raquo;</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 7 — Resistencias en serie (Página 7)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Resistencias</p>
+        <h2>Resistencias de la torta y del medio filtrante</h2>
+        <p>En la filtración con torta, el fluido debe superar dos barreras que actúan como <strong>resistencias en serie</strong>:</p>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Medio filtrante</h3>
+            <p>Tela, malla o membrana &mdash; primera barrera.</p>
+          </div>
+          <div class="card">
+            <h3>Torta de sólidos</h3>
+            <p>Capa acumulada &mdash; resistencia creciente.</p>
+          </div>
+        </div>
+        <div class="formula">
+          J = Q / A = &Delta;P / [&mu; &middot; (R<sub>c</sub> + R<sub>m</sub>)]
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 8 — Resistencias: detalle Rc y Rm (Página 8)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Resistencias</p>
+        <h2>Modelo de resistencias en serie &mdash; Detalle</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>R<sub>m</sub> &mdash; Medio filtrante</h3>
+            <p>Característica del equipo; se considera <strong>constante</strong> durante el ciclo de filtración.</p>
+          </div>
+          <div class="card">
+            <h3>R<sub>c</sub> &mdash; Torta</h3>
+            <p><strong>Variable y creciente.</strong> A medida que se acumula más torta, su resistencia aumenta, convirtiéndose rápidamente en el término dominante.</p>
+          </div>
+        </div>
+        <div class="formula">
+          R<sub>c</sub> = &alpha; &middot; w
+        </div>
+        <p>Donde <span class="formula-inline">w</span> es la masa de sólidos secos por unidad de área (kg/m&sup2;) y <span class="formula-inline">&alpha;</span> es la resistencia específica de la torta (m/kg).</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 9 — Compresibilidad de la torta (Página 9)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Compresibilidad</p>
+        <h2>Compresibilidad de la torta</h2>
+        <p>La resistencia específica de la torta, <span class="formula-inline">&alpha;</span>, no siempre es constante. Muchas tortas, especialmente las formadas por partículas finas, orgánicas o floculadas, son <strong>compresibles</strong>.</p>
+        <p>Esto significa que a medida que aumenta la presión:</p>
+        <ul>
+          <li>Las partículas se deforman y reordenan</li>
+          <li>La estructura se vuelve más compacta y menos porosa</li>
+          <li>Aumenta la resistencia específica de la torta</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 10 — Compresibilidad: ley de potencia (Página 10)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Compresibilidad</p>
+        <h2>Índice de compresibilidad</h2>
+        <p>La relación entre <span class="formula-inline">&alpha;</span> y la caída de presión a través de la torta (<span class="formula-inline">&Delta;P<sub>c</sub></span>) se modela con una ley de potencia empírica:</p>
+        <div class="formula">
+          &alpha; = &alpha;<sub>0</sub> &middot; (&Delta;P<sub>c</sub>)<sup>s</sup>
+        </div>
+        <p><span class="formula-inline">&alpha;<sub>0</sub></span> es una constante empírica y <span class="formula-inline">s</span> es el <strong>índice de compresibilidad</strong>:</p>
+        <ul>
+          <li>Si <span class="formula-inline">s = 0</span>, la torta es <strong>incompresible</strong> (ej. arena, diatomita)</li>
+          <li>Si <span class="formula-inline">s</span> está entre 0 y 1, la torta es <strong>compresible</strong></li>
+          <li>Si <span class="formula-inline">s &asymp; 1</span>, la torta es <strong>altamente compresible</strong> (ej. hidróxidos metálicos, biomasa)</li>
+        </ul>
+        <div class="tip">Entender la compresibilidad es fundamental para seleccionar la presión de operación óptima.</div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 11 — Separador: Ecuaciones de diseño
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">IQYA-2031 · Filtración</p>
+        <h1>Ecuaciones de diseño</h1>
+        <p>Filtración a presión constante, flujo constante e integración en ciclos completos.</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 12 — Presión constante: planteamiento (Página 11)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ecuaciones de diseño</p>
+        <h2>Filtración a presión constante &mdash; Planteamiento</h2>
+        <p>La operación a presión constante es típica de los <strong>filtros prensa</strong> y otros filtros batch. Partimos de la ecuación general, sustituyendo la masa de torta por unidad de área (<span class="formula-inline">w</span>) por una expresión en función del volumen de filtrado:</p>
+        <div class="formula">
+          w = c<sub>s</sub> &middot; V / A
+        </div>
+        <p>donde <span class="formula-inline">c<sub>s</sub></span> es la masa de sólidos en la suspensión por unidad de volumen de filtrado.</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 13 — Presión constante: ecuación fundamental (Página 12, 1/2)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ecuaciones de diseño</p>
+        <h2>Filtración a presión constante &mdash; Ecuación diferencial</h2>
+        <p>Sustituyendo en la ecuación general:</p>
+        <div class="formula">
+          (1/A) &middot; dV/dt = &Delta;P / [&mu; &middot; (&alpha; &middot; c<sub>s</sub> &middot; V/A + R<sub>m</sub>)]
+        </div>
+        <p>Para <span class="formula-inline">&Delta;P = constante</span>, esta ecuación diferencial se puede separar e integrar desde <span class="formula-inline">t = 0, V = 0</span> hasta <span class="formula-inline">t, V</span>.</p>
+        <img class="diagram" src="img/pres13-p12-2.png" alt="Ecuación de filtración a presión constante" />
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 14 — Presión constante: forma linealizada (Página 12, 2/2)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ecuaciones de diseño</p>
+        <h2>Filtración a presión constante &mdash; Forma linealizada</h2>
+        <p>La solución es la <strong>ecuación fundamental</strong> de la filtración a presión constante:</p>
+        <div class="formula">
+          t / (V/A) = [&mu; &middot; &alpha; &middot; c<sub>s</sub> / (2 &middot; &Delta;P)] &middot; (V/A) + &mu; &middot; R<sub>m</sub> / &Delta;P
+        </div>
+        <p>Esta ecuación tiene la forma de una <strong>línea recta</strong> (<span class="formula-inline">y = mx + b</span>), si graficamos <span class="formula-inline">t/(V/A)</span> vs <span class="formula-inline">V/A</span>.</p>
+        <div class="tip">Esto es extremadamente útil para analizar datos experimentales y determinar los parámetros de filtración.</div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 15 — Filtración a flujo constante (Página 13)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ecuaciones de diseño</p>
+        <h2>Filtración a flujo constante</h2>
+        <p>La operación a flujo constante (<span class="formula-inline">Q = dV/dt = constante</span>) se encuentra a menudo al inicio de un ciclo de filtración con una bomba de desplazamiento positivo.</p>
+        <p>El objetivo es determinar cómo aumenta la presión (<span class="formula-inline">&Delta;P</span>) con el tiempo a medida que se acumula la torta. Resolviendo para <span class="formula-inline">&Delta;P</span>:</p>
+        <div class="formula">
+          &Delta;P = &mu; &middot; (Q/A) &middot; (&alpha; &middot; c<sub>s</sub> &middot; V/A + R<sub>m</sub>)
+        </div>
+        <p>Sabiendo que <span class="formula-inline">V = Q &middot; t</span>, sustituimos:</p>
+        <div class="formula">
+          &Delta;P = (&mu; &middot; &alpha; &middot; c<sub>s</sub> &middot; Q&sup2; / A&sup2;) &middot; t + &mu; &middot; Q &middot; R<sub>m</sub> / A
+        </div>
+        <p>Relación <strong>lineal</strong> entre <span class="formula-inline">&Delta;P</span> y <span class="formula-inline">t</span>. La presión aumenta linealmente a medida que la torta crece a un ritmo constante.</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 16 — Ciclo completo: Fase 1 y 2 (Página 14, 1/2)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ciclo completo</p>
+        <h2>Integración de ecuaciones en un ciclo completo (1/2)</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Fase 1: Flujo constante</h3>
+            <p>El ciclo comienza con la bomba operando a un caudal relativamente constante. La resistencia es baja y la presión aumenta linealmente con el tiempo:</p>
+            <p class="formula" style="font-size:clamp(0.85rem,1.5vw,1.1rem);">&Delta;P = (&mu;&alpha;c<sub>s</sub>Q&sup2;/A&sup2;)&middot;t + &mu;QR<sub>m</sub>/A</p>
+          </div>
+          <div class="card">
+            <h3>Fase 2: Presión constante</h3>
+            <p>La presión aumenta hasta alcanzar la presión máxima del equipo. A partir de este punto, el caudal comienza a disminuir según:</p>
+            <p class="formula" style="font-size:clamp(0.85rem,1.5vw,1.1rem);">t/(V/A) = [&mu;&alpha;c<sub>s</sub>/(2&Delta;P)]&middot;(V/A) + &mu;R<sub>m</sub>/&Delta;P</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 17 — Ciclo completo: Fase 3 y optimización (Página 14, 2/2)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ciclo completo</p>
+        <h2>Integración de ecuaciones en un ciclo completo (2/2)</h2>
+        <div class="card">
+          <h3>Fase 3: Lavado y limpieza</h3>
+          <p>Una vez que el caudal decae a un nivel antieconómico, la filtración se detiene. Sigue un paso de lavado de la torta y finalmente el equipo se abre, se retira la torta y se prepara para el siguiente ciclo.</p>
+        </div>
+        <div class="tip">El diseño óptimo busca minimizar el tiempo total del ciclo (filtración + lavado + limpieza) para maximizar la productividad del equipo.</div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 18 — Determinación experimental: procedimiento (Página 15)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Determinación experimental</p>
+        <h2>Determinación experimental de &alpha; y R<sub>m</sub></h2>
+        <p>Los parámetros clave, la resistencia específica de la torta (<span class="formula-inline">&alpha;</span>) y la resistencia del medio (<span class="formula-inline">R<sub>m</sub></span>), deben determinarse experimentalmente para cada suspensión específica.</p>
+        <ol>
+          <li>Realizar un ensayo de filtración a presión constante conocida (<span class="formula-inline">&Delta;P</span>)</li>
+          <li>Recoger datos de volumen de filtrado acumulado (<span class="formula-inline">V</span>) en función del tiempo (<span class="formula-inline">t</span>)</li>
+          <li>Procesar los datos para calcular los términos de la ecuación linealizada: eje y = <span class="formula-inline">t/(V/A)</span> y eje x = <span class="formula-inline">V/A</span></li>
+          <li>Realizar una regresión lineal. El resultado debe ser una línea recta</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 19 — Determinación experimental: regresión (Página 16)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Determinación experimental</p>
+        <h2>Determinación de &alpha; y R<sub>m</sub> &mdash; Regresión</h2>
+        <p>De la regresión lineal:</p>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Pendiente (K<sub>p</sub>)</h3>
+            <p class="formula" style="font-size:clamp(0.85rem,1.5vw,1.1rem);">K<sub>p</sub> = &mu; &middot; &alpha; &middot; c<sub>s</sub> / (2 &middot; &Delta;P)</p>
+          </div>
+          <div class="card">
+            <h3>Intercepto (C)</h3>
+            <p class="formula" style="font-size:clamp(0.85rem,1.5vw,1.1rem);">C = &mu; &middot; R<sub>m</sub> / &Delta;P</p>
+          </div>
+        </div>
+        <p>Conociendo <span class="formula-inline">&mu;</span>, <span class="formula-inline">&Delta;P</span> y <span class="formula-inline">c<sub>s</sub></span> (que se mide por separado), se pueden despejar los valores de <span class="formula-inline">&alpha;</span> y <span class="formula-inline">R<sub>m</sub></span>.</p>
+        <div class="tip">Para determinar la compresibilidad (<span class="formula-inline">s</span>), todo este experimento se repite a varias presiones diferentes.</div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 20 — Separador: Mejorando la filtrabilidad
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">IQYA-2031 · Filtración</p>
+        <h1>Mejorando la filtrabilidad</h1>
+        <p>Ayudas de filtración: materiales, pre-capa y body feed.</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 21 — Ayudas de filtración: materiales (Página 17)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Mejorando la filtrabilidad</p>
+        <h2>Ayudas de filtración &mdash; Materiales comunes</h2>
+        <p>Estos son materiales granulares, porosos e incompresibles que se añaden al proceso para mejorar las características de la torta cuando se trabaja con partículas muy finas, coloidales o tortas altamente compresibles.</p>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>Tierra de diatomeas</h3>
+            <p>También conocida como Kieselgur. Material fósil silíceo muy poroso.</p>
+          </div>
+          <div class="card">
+            <h3>Perlita</h3>
+            <p>Vidrio volcánico expandido, ligero y de alta porosidad.</p>
+          </div>
+          <div class="card">
+            <h3>Celulosa</h3>
+            <p>Fibras naturales que crean una estructura abierta en la torta.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 22 — Pre-capa (Página 18)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Mejorando la filtrabilidad</p>
+        <h2>Pre-capa (<em>precoat</em>)</h2>
+        <p>Se hace pasar una suspensión de agua y ayuda de filtración a través del filtro <strong>antes de iniciar el proceso</strong>. Esto forma una fina capa protectora sobre el medio filtrante, previniendo que las partículas finas lo cieguen y proporcionando una superficie de filtración ideal.</p>
+        <div class="tip">La pre-capa protege al medio filtrante y mejora la calidad del filtrado desde el primer instante de operación.</div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 23 — Body feed (Página 19)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Mejorando la filtrabilidad</p>
+        <h2>Body feed</h2>
+        <p>El body feed se mezcla directamente con la suspensión <strong>antes de ser bombeada al filtro</strong>. Las partículas de la ayuda se incorporan a la torta a medida que se forma, creando una estructura mucho más abierta, rígida y porosa.</p>
+        <p>Esto reduce drásticamente:</p>
+        <ul>
+          <li>La resistencia específica de la torta (<span class="formula-inline">&alpha;</span>)</li>
+          <li>Su compresibilidad (<span class="formula-inline">s</span>)</li>
+        </ul>
+        <p>Aumentando significativamente el flujo de filtración.</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 24 — Separador: Equipos (Página 20)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">IQYA-2031 · Filtración</p>
+        <h1>Equipos de filtración</h1>
+        <p>Filtros prensa, filtros rotatorios de vacío y centrífugas filtrantes.</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 25 — Filtro prensa: construcción y ciclo (Página 21)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Equipos</p>
+        <h2>Filtro prensa de placas y marcos</h2>
+        <p>El filtro prensa es el equipo de filtración por lotes (batch) más común y versátil en la industria.</p>
+        <h3 style="margin:0;color:var(--brand-dark);font-weight:600;font-size:clamp(1rem,2vw,1.35rem);">Construcción</h3>
+        <p>Se compone de un paquete de placas verticales y marcos huecos que se presionan fuertemente entre sí mediante un sistema hidráulico o de tornillo. Una tela filtrante se coloca sobre la superficie de cada placa.</p>
+        <h3 style="margin:0;color:var(--brand-dark);font-weight:600;font-size:clamp(1rem,2vw,1.35rem);">Ciclo de operación</h3>
+        <ol>
+          <li><strong>Cierre:</strong> El paquete de placas se sella herméticamente</li>
+          <li><strong>Filtración:</strong> La suspensión se bombea a los marcos, formando la torta</li>
+          <li><strong>Lavado (opcional):</strong> Se introduce líquido de lavado para purificar la torta</li>
+          <li><strong>Descarga:</strong> El equipo se abre y las tortas caen por gravedad</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 26 — Filtro prensa: ventajas y desventajas (Página 22)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Equipos</p>
+        <h2>Filtro prensa &mdash; Ventajas y desventajas</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Ventajas</h3>
+            <ul>
+              <li>Diseño simple y robusto</li>
+              <li>Opera a altas presiones (hasta 15 bar)</li>
+              <li>Permite un lavado eficiente de la torta</li>
+              <li>Produce tortas muy secas</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Desventajas</h3>
+            <ul>
+              <li>Operación discontinua</li>
+              <li>Intensiva en mano de obra para la descarga</li>
+              <li>Tiempos muertos entre ciclos</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 27 — RVDF: construcción (Página 23)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Equipos</p>
+        <h2>Filtro rotatorio de vacío (RVDF)</h2>
+        <p>Para procesos que requieren una operación <strong>continua y a gran escala</strong>, el filtro rotatorio de vacío es el equipo de elección.</p>
+        <h3 style="margin:0;color:var(--brand-dark);font-weight:600;font-size:clamp(1rem,2vw,1.35rem);">Construcción</h3>
+        <p>Consiste en un gran tambor horizontal que gira lentamente, cuya superficie está cubierta por un medio filtrante. La parte inferior del tambor se sumerge en un tanque que contiene la suspensión a filtrar. El interior del tambor está segmentado y conectado a una fuente de vacío.</p>
+        <h3 style="margin:0;color:var(--brand-dark);font-weight:600;font-size:clamp(1rem,2vw,1.35rem);">Operación continua</h3>
+        <p>Cada sección del tambor completa un ciclo de filtración en una sola rotación.</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 28 — RVDF: ventajas y desventajas (Página 24)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Equipos</p>
+        <h2>Filtro rotatorio de vacío &mdash; Ventajas y desventajas</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Ventajas</h3>
+            <p>Operación totalmente continua y automática.</p>
+          </div>
+          <div class="card">
+            <h3>Desventajas</h3>
+            <p>Fuerza impulsora limitada a <span class="formula-inline">&Delta;P &lt; 1 bar</span>.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 29 — Centrífugas filtrantes: construcción (Página 25)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Equipos</p>
+        <h2>Centrífugas filtrantes</h2>
+        <p>En estos equipos, la fuerza impulsora para la separación no es la presión, sino una <strong>fuerza centrífuga</strong> que puede ser miles de veces superior a la gravedad.</p>
+        <h3 style="margin:0;color:var(--brand-dark);font-weight:600;font-size:clamp(1rem,2vw,1.35rem);">Construcción</h3>
+        <p>Consisten en una canasta perforada que rota a muy alta velocidad (cientos o miles de RPM). La pared interior de la canasta está revestida con un medio filtrante adecuado.</p>
+        <p>La suspensión se alimenta al centro de la canasta en rotación. La inmensa fuerza centrífuga lanza el material hacia la pared:</p>
+        <ul>
+          <li>El líquido es forzado a pasar a través de la torta y el medio filtrante</li>
+          <li>Los sólidos quedan retenidos como una torta compacta</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 30 — Centrífugas filtrantes: ventajas (Página 26)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Equipos</p>
+        <h2>Centrífugas filtrantes &mdash; Ventajas y aplicaciones</h2>
+        <div class="card">
+          <h3>Ventajas</h3>
+          <ul>
+            <li>Ciclos de filtración muy rápidos</li>
+            <li>Alta fuerza G produce tortas con un contenido de humedad residual extremadamente bajo</li>
+            <li>Excelente para materiales difíciles de filtrar</li>
+          </ul>
+        </div>
+        <div class="card" style="margin-top:0.5rem;">
+          <h3>Aplicaciones típicas</h3>
+          <p>Son ideales para separar y secar sólidos cristalinos como azúcar, sal, o productos farmacéuticos cristalizados.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 31 — Criterios de selección (Página 27)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Selección de equipos</p>
+        <h2>Criterios para la selección de equipos de filtración</h2>
+        <p>No existe un &laquo;mejor&raquo; filtro; existe el filtro adecuado para una aplicación específica.</p>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Si su suspensión es...</th>
+              <th>Y su objetivo es...</th>
+              <th>Considere...</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Concentrada, batch</td><td>Una torta muy seca</td><td>Filtro Prensa</td></tr>
+            <tr><td>Concentrada, gran volumen</td><td>Operación continua</td><td>Filtro Rotatorio de Vacío</td></tr>
+            <tr><td>Muy diluida (&lt;0.1%)</td><td>Un líquido ultra-claro</td><td>Filtro de Cartuchos / Profundo</td></tr>
+            <tr><td>De sólidos cristalinos</td><td>Una torta muy seca y pura</td><td>Centrífuga Filtrante</td></tr>
+            <tr><td>Muy compresible/gelatinosa</td><td>Mejorar el flujo</td><td>Filtro Prensa + Ayuda Filtrante</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 32 — Separador: Aplicación industrial
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">IQYA-2031 · Filtración</p>
+        <h1>Aplicación industrial</h1>
+        <p>Cosecha de células en biotecnología: un desafío de filtración.</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 33 — Biotecnología: el problema (Página 28)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Aplicación industrial</p>
+        <h2>Cosecha de células en biotecnología &mdash; El problema</h2>
+        <p>La separación de biomasa (células de levadura, bacterias, etc.) del caldo de fermentación es un paso crucial en la mayoría de los procesos biotecnológicos, pero representa un <strong>desafío de filtración significativo</strong>.</p>
+        <p>Las células microbianas son partículas muy pequeñas (1-10 &mu;m) y biológicas, formando tortas con:</p>
+        <ul>
+          <li>Resistencia específica (<span class="formula-inline">&alpha;</span>) extremadamente alta</li>
+          <li>Compresibilidad (<span class="formula-inline">s</span>) muy cercana a 1</li>
+        </ul>
+        <p>Esto provoca que la torta se compacte inmediatamente al aplicar presión, bloqueando casi por completo el flujo:</p>
+        <div class="formula">
+          &alpha; = &alpha;<sub>0</sub> &middot; (&Delta;P<sub>c</sub>)<sup>s</sup> &asymp; &alpha;<sub>0</sub> &middot; (&Delta;P<sub>c</sub>)<sup>1</sup>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 34 — Biotecnología: soluciones (Página 29)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Aplicación industrial</p>
+        <h2>Cosecha de células &mdash; Soluciones en la industria</h2>
+        <ol>
+          <li><strong>Floculación:</strong> Adición de agentes químicos para aglomerar las células en partículas más grandes y fáciles de filtrar</li>
+          <li><strong>Uso intensivo de ayudas de filtración:</strong> Adición de grandes cantidades de diatomita como body feed para crear una torta mixta con estructura porosa y rígida</li>
+          <li><strong>Equipos especializados:</strong>
+            <ul>
+              <li>Filtros prensa para lotes más pequeños</li>
+              <li>Filtros rotatorios de vacío de pre-capa para operaciones a gran escala</li>
+              <li>Centrifugación como alternativa o paso previo</li>
+            </ul>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 35 — Cierre
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">IQYA-2031 · Filtración</p>
+        <h1>Resumen</h1>
+        <div class="pill-row">
+          <span class="pill">Ley de Darcy</span>
+          <span class="pill">Resistencias en serie</span>
+          <span class="pill">Compresibilidad</span>
+          <span class="pill">Presión constante</span>
+          <span class="pill">Flujo constante</span>
+          <span class="pill">Determinación experimental</span>
+          <span class="pill">Ayudas de filtración</span>
+          <span class="pill">Filtro prensa</span>
+          <span class="pill">RVDF</span>
+          <span class="pill">Centrífugas</span>
+          <span class="pill">Selección de equipos</span>
+          <span class="pill">Biotecnología</span>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="hud">
+    <span id="hud-title">Filtración · IQYA-2031</span>
+    <span id="hud-counter">1 / 35</span>
+  </div>
+
+  <div class="controls">
+    <button aria-label="Anterior" id="prev">&#x2039;</button>
+    <button aria-label="Pantalla completa" id="fs">&#x26F6;</button>
+    <button aria-label="Siguiente" id="next">&#x203A;</button>
+  </div>
+
+  <script>
+    (function () {
+      var slides = Array.prototype.slice.call(document.querySelectorAll('[data-slide]'));
+      var i = 0;
+      var counter = document.getElementById('hud-counter');
+      var progress = document.querySelector('.progress');
+
+      function render() {
+        slides.forEach(function (s, idx) {
+          s.classList.toggle('active', idx === i);
+        });
+        if (counter) counter.textContent = (i + 1) + ' / ' + slides.length;
+        if (progress) progress.style.width = ((i + 1) / slides.length * 100) + '%';
+        var isTitle = slides[i] && slides[i].classList.contains('title-slide');
+        document.body.style.background = isTitle ? '#1A1A1A' : '#ffffff';
+      }
+      function go(n) { i = Math.max(0, Math.min(slides.length - 1, n)); render(); }
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); go(i + 1); }
+        else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(i - 1); }
+        else if (e.key === 'Home') { e.preventDefault(); go(0); }
+        else if (e.key === 'End') { e.preventDefault(); go(slides.length - 1); }
+        else if (e.key === 'f' || e.key === 'F') { toggleFs(); }
+      });
+
+      document.getElementById('prev').addEventListener('click', function () { go(i - 1); });
+      document.getElementById('next').addEventListener('click', function () { go(i + 1); });
+      document.getElementById('fs').addEventListener('click', toggleFs);
+
+      function toggleFs() {
+        var el = document.documentElement;
+        if (!document.fullscreenElement) {
+          (el.requestFullscreen || el.webkitRequestFullscreen || function(){}).call(el);
+        } else {
+          (document.exitFullscreen || document.webkitExitFullscreen || function(){}).call(document);
+        }
+      }
+
+      var tx = 0, ty = 0;
+      document.addEventListener('touchstart', function (e) {
+        if (!e.changedTouches[0]) return;
+        tx = e.changedTouches[0].clientX; ty = e.changedTouches[0].clientY;
+      }, { passive: true });
+      document.addEventListener('touchend', function (e) {
+        if (!e.changedTouches[0]) return;
+        var dx = e.changedTouches[0].clientX - tx;
+        var dy = e.changedTouches[0].clientY - ty;
+        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+          if (dx < 0) go(i + 1); else go(i - 1);
+        }
+      }, { passive: true });
+
+      // Inject decorative slide numbers
+      slides.forEach(function (s, idx) {
+        var num = document.createElement('div');
+        num.className = 'slide-number';
+        num.setAttribute('aria-hidden', 'true');
+        num.textContent = String(idx + 1).padStart(2, '0');
+        s.appendChild(num);
+      });
+
+      render();
+    })();
+  </script>
+</body>
+</html>
