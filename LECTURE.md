@@ -9,8 +9,8 @@
 2. **Complementar, no reemplazar.** Si hay oportunidad de enriquecer con videos de YouTube, referencias externas o contexto adicional investigado online, hacerlo. Pero siempre preservando el 100% del contenido original.
 
 3. **Formato de guía interactiva, no blog post.** Las lecturas no son artículos de blog. Son guías de referencia que los estudiantes consultarán múltiples veces. Deben tener:
-   - Tabla de contenidos sticky (sidebar en desktop, colapsable en mobile)
-   - Secciones con IDs para navegación directa
+   - Tabla de contenidos sticky (sidebar en desktop, colapsable en mobile) con **click-to-filter** (clicking a TOC item hides all other sections; clicking again or "Ver todo" restores all)
+   - Secciones con IDs for the TOC, each wrapped in `{isVisible('id') && (<>...</>)}`
    - Secciones colapsables para contenido extenso (casos prácticos, plantillas, ejemplos detallados)
    - Callouts destacados para ideas clave, advertencias y notas
    - Cards en grids para comparaciones, roles, características
@@ -75,31 +75,96 @@ const NombreLectura: React.FC = () => {
   const toggle = (key: string) =>
     setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
 
+  const [tocOpen, setTocOpen] = useState(false);
+
+  // Section filtering: clicking a TOC item shows only that section
+  const [activeSection, setActiveSection] = useState<string | null>(null);
+
+  const handleTocClick = (id: string) => {
+    setActiveSection((prev) => (prev === id ? null : id));
+    setTocOpen(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const isVisible = (id: string) => activeSection === null || activeSection === id;
+
   return (
     <ReadingLayout course={course} reading={reading} wide>
-      <div className="lg:grid lg:grid-cols-[220px_1fr] lg:gap-10">
-        {/* Sticky TOC sidebar (desktop) */}
-        <nav className="hidden lg:block">
-          <div className="sticky top-28 space-y-1.5 text-sm text-brand-gray">
-            {tocItems.map((item) => (
-              <a
-                key={item.id}
-                href={`#${item.id}`}
-                className="block hover:text-brand-dark transition-colors truncate"
+      {/* Mobile TOC toggle */}
+      <div className="lg:hidden sticky top-20 z-30 mb-6 not-prose">
+        <button
+          onClick={() => setTocOpen(!tocOpen)}
+          className="w-full flex items-center justify-between py-2.5 px-4 rounded-lg bg-zinc-50 border border-zinc-200 text-sm font-semibold text-brand-dark"
+        >
+          <span>{activeSection ? tocItems.find(t => t.id === activeSection)?.label ?? 'Contenido' : 'Contenido'}</span>
+          <span className="text-brand-gray">{tocOpen ? '−' : '+'}</span>
+        </button>
+        {tocOpen && (
+          <nav className="mt-1 rounded-lg bg-white border border-zinc-200 shadow-lg p-3 space-y-1">
+            {activeSection && (
+              <button
+                onClick={() => { setActiveSection(null); setTocOpen(false); }}
+                className="block w-full text-left py-1.5 px-2 text-sm font-semibold text-brand-yellow-dark hover:bg-zinc-50 rounded transition-colors"
               >
-                {item.label}
-              </a>
+                ← Ver todo
+              </button>
+            )}
+            {tocItems.map((t) => (
+              <button
+                key={t.id}
+                onClick={() => handleTocClick(t.id)}
+                className={`block w-full text-left py-1 px-2 text-sm rounded transition-colors ${
+                  activeSection === t.id
+                    ? 'text-brand-dark font-semibold bg-yellow-50'
+                    : 'text-brand-gray hover:text-brand-dark hover:bg-zinc-50'
+                }`}
+              >
+                {t.label}
+              </button>
+            ))}
+          </nav>
+        )}
+      </div>
+
+      <div className="lg:grid lg:grid-cols-[220px_1fr] lg:gap-10">
+        {/* Sticky TOC sidebar (desktop) — click-to-filter, not scroll-to-anchor */}
+        <nav className="hidden lg:block">
+          <div className="sticky top-28 space-y-1 text-sm">
+            {activeSection && (
+              <button
+                onClick={() => setActiveSection(null)}
+                className="block w-full text-left py-1.5 mb-2 text-sm font-semibold text-brand-yellow-dark hover:text-brand-dark transition-colors"
+              >
+                ← Ver todo
+              </button>
+            )}
+            {tocItems.map((t) => (
+              <button
+                key={t.id}
+                onClick={() => handleTocClick(t.id)}
+                className={`block w-full text-left py-1 rounded px-2 transition-colors ${
+                  activeSection === t.id
+                    ? 'text-brand-dark font-semibold bg-yellow-50'
+                    : 'text-brand-gray hover:text-brand-dark'
+                }`}
+              >
+                {t.label}
+              </button>
             ))}
           </div>
         </nav>
 
-        {/* Main content */}
+        {/* Main content — each section wrapped in isVisible() */}
         <div className="reading-prose">
-          {/* Sections with id attributes matching TOC */}
-          <section id="seccion-1">
-            <h2>Título de la sección</h2>
-            {/* Content */}
-          </section>
+          {isVisible('seccion-1') && (<>
+            <SectionTitle id="seccion-1">Título de la sección</SectionTitle>
+            {/* Section content */}
+          </>)}
+
+          {isVisible('seccion-2') && (<>
+            <SectionTitle id="seccion-2">Otra sección</SectionTitle>
+            {/* Section content */}
+          </>)}
         </div>
       </div>
     </ReadingLayout>
