@@ -43,24 +43,25 @@ const tocItems = [
 ];
 
 // Reusable callout components (definir dentro del archivo)
+// All callouts use dark background (brand-dark) with colored titles only
 const TipCallout = ({ title = '💡 Idea clave', children }) => (
-  <div className="my-6 rounded-lg border-l-4 border-yellow-400 bg-yellow-50 p-4 sm:p-5 not-prose">
-    <p className="font-semibold text-brand-dark mb-1">{title}</p>
-    <div className="text-sm text-brand-gray leading-relaxed">{children}</div>
+  <div className="my-6 rounded-xl bg-brand-dark p-5 sm:p-6 not-prose">
+    <p className="font-semibold text-brand-yellow text-sm mb-2">{title}</p>
+    <div className="text-sm text-zinc-300 leading-relaxed">{children}</div>
   </div>
 );
 
 const WarningCallout = ({ title = '⚠️ Importante', children }) => (
-  <div className="my-6 rounded-lg border-l-4 border-red-400 bg-red-50 p-4 sm:p-5 not-prose">
-    <p className="font-semibold text-red-800 mb-1">{title}</p>
-    <div className="text-sm text-red-700 leading-relaxed">{children}</div>
+  <div className="my-6 rounded-xl bg-brand-dark p-5 sm:p-6 not-prose">
+    <p className="font-semibold text-red-400 text-sm mb-2">{title}</p>
+    <div className="text-sm text-zinc-300 leading-relaxed">{children}</div>
   </div>
 );
 
 const InfoCallout = ({ title = '📌 Nota', children }) => (
-  <div className="my-6 rounded-lg border-l-4 border-blue-400 bg-blue-50 p-4 sm:p-5 not-prose">
-    <p className="font-semibold text-blue-800 mb-1">{title}</p>
-    <div className="text-sm text-blue-700 leading-relaxed">{children}</div>
+  <div className="my-6 rounded-xl bg-brand-dark p-5 sm:p-6 not-prose">
+    <p className="font-semibold text-emerald-400 text-sm mb-2">{title}</p>
+    <div className="text-sm text-zinc-300 leading-relaxed">{children}</div>
   </div>
 );
 
