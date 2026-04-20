@@ -897,6 +897,24 @@ export const pouCourse: Course = {
       sessionNumber: 10,
       file: 'clase-10-mezclado.html',
     },
+    {
+      id: 'clase-11-intercambiadores-lmtd',
+      title: 'Intercambiadores de calor I — LMTD',
+      description:
+        'Fundamentos de transferencia de calor, tipos de intercambiadores, método LMTD, factor de corrección y diseño térmico.',
+      date: '2026-03-19',
+      sessionNumber: 11,
+      file: 'clase-11-intercambiadores-lmtd.html',
+    },
+    {
+      id: 'clase-12-intercambiadores-ntu',
+      title: 'Intercambiadores de calor II — ε-NTU',
+      description:
+        'Método de efectividad-NTU, dimensionamiento, selección de intercambiadores y comparación con LMTD.',
+      date: '2026-03-24',
+      sessionNumber: 12,
+      file: 'clase-12-intercambiadores-ntu.html',
+    },
   ],
   cronograma: pouCronograma,
 };

@@ -1,0 +1,859 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Intercambiadores II — ε-NTU · IQYA-2031</title>
+  <style>
+    :root {
+      --brand-dark: #1A1A1A;
+      --brand-yellow: #FFBF00;
+      --brand-yellow-dark: #E6AC00;
+      --brand-gray: #555555;
+      --surface: #ffffff;
+      --muted: #f4f4f5;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      background: var(--brand-dark);
+      color: var(--brand-dark);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      overflow: hidden;
+      -webkit-text-size-adjust: 100%;
+    }
+    .deck {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+    }
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(1rem, 4vw, 3.5rem);
+      background: var(--surface);
+      opacity: 0;
+      transition: opacity 260ms ease;
+    }
+    .slide.active {
+      display: flex;
+      opacity: 1;
+    }
+    .slide .content {
+      width: 100%;
+      max-width: 72rem;
+      display: flex;
+      flex-direction: column;
+      gap: clamp(0.75rem, 1.5vw, 1.5rem);
+    }
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      font-size: clamp(0.65rem, 1vw, 0.8rem);
+      color: var(--brand-yellow-dark);
+      font-weight: 600;
+    }
+    h1 {
+      font-size: clamp(1.75rem, 5.5vw, 4rem);
+      line-height: 1.05;
+      margin: 0;
+      color: var(--brand-dark);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    h2 {
+      font-size: clamp(1.25rem, 3.4vw, 2.25rem);
+      line-height: 1.15;
+      margin: 0;
+      color: var(--brand-dark);
+      font-weight: 700;
+    }
+    p, li {
+      font-size: clamp(0.95rem, 1.8vw, 1.35rem);
+      line-height: 1.55;
+      color: var(--brand-gray);
+      margin: 0;
+    }
+    ul, ol {
+      padding-left: 1.25em;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45em;
+    }
+    li::marker { color: var(--brand-yellow-dark); }
+    .slide.title-slide {
+      background: linear-gradient(135deg, #141414 0%, #1A1A1A 50%, #2a2a2a 100%);
+      color: #fff;
+    }
+    .slide.title-slide h1 { color: #fff; }
+    .slide.title-slide p { color: #d4d4d8; }
+    .slide.title-slide .eyebrow { color: var(--brand-yellow); }
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 0.5rem;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.35em 0.9em;
+      border-radius: 999px;
+      background: var(--muted);
+      color: var(--brand-dark);
+      font-size: clamp(0.75rem, 1.3vw, 1rem);
+      font-weight: 500;
+    }
+    .slide.title-slide .pill {
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .grid {
+      display: grid;
+      gap: clamp(0.75rem, 1.5vw, 1.25rem);
+    }
+    .grid.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    @media (max-width: 640px) {
+      .grid.cols-2, .grid.cols-3 { grid-template-columns: 1fr; }
+    }
+    .card {
+      background: var(--muted);
+      border-radius: 0.75rem;
+      padding: clamp(0.9rem, 1.5vw, 1.35rem);
+    }
+    .card h3 {
+      font-size: clamp(1rem, 2vw, 1.35rem);
+      margin: 0 0 0.35em 0;
+      color: var(--brand-dark);
+      font-weight: 600;
+    }
+    .card p { font-size: clamp(0.8rem, 1.4vw, 1rem); }
+    .hud {
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      padding: 0.5rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: rgba(255,255,255,0.75);
+      font-size: 0.75rem;
+      pointer-events: none;
+      z-index: 10;
+    }
+    .slide:not(.title-slide) ~ .hud { color: var(--brand-gray); }
+    .controls {
+      position: fixed;
+      right: 1rem;
+      bottom: 2.5rem;
+      display: flex;
+      gap: 0.5rem;
+      z-index: 11;
+    }
+    .controls button {
+      -webkit-appearance: none;
+      appearance: none;
+      border: 1px solid rgba(0,0,0,0.1);
+      background: rgba(255,255,255,0.9);
+      color: var(--brand-dark);
+      width: 2.5rem; height: 2.5rem;
+      border-radius: 999px;
+      font-size: 1rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    }
+    .controls button:active { transform: scale(0.96); }
+    .progress {
+      position: fixed;
+      top: 0; left: 0;
+      height: 3px;
+      background: var(--brand-yellow);
+      transition: width 260ms ease;
+      z-index: 20;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .slide { transition: none; }
+      .progress { transition: none; }
+    }
+    @media (max-width: 480px) {
+      .controls { right: 0.5rem; bottom: 1.25rem; }
+      .hud { font-size: 0.65rem; }
+    }
+
+    /* ─── Decorative: L-shaped yellow corner accent ─── */
+    .slide:not(.title-slide)::before {
+      content: '';
+      position: absolute;
+      top: clamp(1rem, 3vw, 2.5rem);
+      right: clamp(1rem, 3vw, 2.5rem);
+      width: clamp(2rem, 5vw, 4rem);
+      height: clamp(2rem, 5vw, 4rem);
+      border-top: 2.5px solid var(--brand-yellow);
+      border-right: 2.5px solid var(--brand-yellow);
+      pointer-events: none;
+      z-index: 1;
+    }
+    .slide.title-slide::before {
+      content: '';
+      position: absolute;
+      bottom: clamp(1rem, 3vw, 2.5rem);
+      left: clamp(1rem, 3vw, 2.5rem);
+      width: clamp(2rem, 5vw, 4rem);
+      height: clamp(2rem, 5vw, 4rem);
+      border-bottom: 2.5px solid var(--brand-yellow);
+      border-left: 2.5px solid var(--brand-yellow);
+      opacity: 0.4;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* ─── Decorative: large background slide number ─── */
+    .slide-number {
+      position: absolute;
+      bottom: clamp(0.5rem, 2vw, 1.5rem);
+      left: clamp(1rem, 3vw, 2.5rem);
+      font-size: clamp(4rem, 12vw, 10rem);
+      font-weight: 800;
+      line-height: 1;
+      color: rgba(0, 0, 0, 0.04);
+      pointer-events: none;
+      z-index: 0;
+      user-select: none;
+      letter-spacing: -0.04em;
+    }
+    .slide.title-slide .slide-number {
+      color: rgba(255, 255, 255, 0.06);
+    }
+
+    /* ─── Additional: formulas, two-col, tips, warnings ─── */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(1rem, 2vw, 2rem);
+      align-items: start;
+    }
+    @media (max-width: 640px) {
+      .two-col { grid-template-columns: 1fr; }
+    }
+    .diagram {
+      max-width: 100%;
+      border-radius: 0.75rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+    }
+    .small-text {
+      font-size: clamp(0.7rem, 1.1vw, 0.85rem);
+      color: var(--brand-gray);
+      opacity: 0.75;
+    }
+    .tip {
+      background: #fef9c3;
+      border-left: 4px solid var(--brand-yellow);
+      padding: 0.9em 1.2em;
+      border-radius: 0.5rem;
+      font-size: clamp(0.85rem, 1.5vw, 1.1rem);
+      color: #92400e;
+    }
+    .warning {
+      background: #fee2e2;
+      border-left: 4px solid #ef4444;
+      padding: 0.9em 1.2em;
+      border-radius: 0.5rem;
+      font-size: clamp(0.85rem, 1.5vw, 1.1rem);
+      color: #991b1b;
+    }
+    .big-example {
+      background: var(--muted);
+      border-radius: 0.75rem;
+      padding: clamp(1rem, 2vw, 1.75rem);
+      text-align: center;
+    }
+    .big-example code {
+      font-size: clamp(1.25rem, 3vw, 2rem);
+      font-weight: 700;
+      color: var(--brand-dark);
+      font-family: "SF Mono", "Fira Code", "Cascadia Code", monospace;
+    }
+    .big-example .legend {
+      font-size: clamp(0.75rem, 1.2vw, 0.95rem);
+      color: var(--brand-gray);
+      margin-top: 0.5rem;
+    }
+    .formula {
+      background: var(--muted);
+      border-radius: 0.75rem;
+      padding: clamp(0.75rem, 1.5vw, 1.25rem);
+      text-align: center;
+      font-size: clamp(1.1rem, 2.2vw, 1.6rem);
+      font-family: "SF Mono", "Fira Code", "Cascadia Code", monospace;
+      font-weight: 600;
+      color: var(--brand-dark);
+    }
+  </style>
+</head>
+<body>
+  <div class="progress" style="width:0"></div>
+  <div class="deck" id="deck">
+
+    <!-- ═══════════════════════════════════════════════════
+         SLIDE 1 — Portada (Página 1)
+         ═══════════════════════════════════════════════════ -->
+    <section class="slide title-slide active" data-slide>
+      <div class="content">
+        <p class="eyebrow">IQYA-2031 · 2026-10</p>
+        <h1>Método ε-NTU y dimensionamiento de intercambiadores de calor</h1>
+        <p>Intercambiadores de calor II — Efectividad, NTU, selección y verificación con software.</p>
+        <div class="pill-row">
+          <span class="pill">Método ε-NTU</span>
+          <span class="pill">Dimensionamiento</span>
+          <span class="pill">Selección de equipos</span>
+          <span class="pill">Software industrial</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════
+         SLIDE 2 — Problema fundamental (Página 2 · 1/2)
+         ═══════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Método ε-NTU</p>
+        <h2>Método de efectividad-NTU (ε-NTU)</h2>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>Problema fundamental</h3>
+            <p>El método LMTD es ideal cuando conocemos todas las temperaturas de entrada y salida, pero ¿qué sucede cuando tenemos un intercambiador existente y queremos predecir su comportamiento bajo nuevas condiciones?</p>
+          </div>
+          <div class="card">
+            <h3>Limitación del LMTD</h3>
+            <p>Intentar resolver problemas de simulación con LMTD requiere un tedioso proceso iterativo de prueba y error, haciendo el análisis ineficiente.</p>
+          </div>
+          <div class="card">
+            <h3>Solución elegante</h3>
+            <p>El método ε-NTU está diseñado específicamente para resolver problemas de simulación de forma directa, permitiendo calcular temperaturas de salida conociendo el área y las condiciones de entrada.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════
+         SLIDE 3 — Pregunta clave (Página 2 · 2/2)
+         ═══════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Método ε-NTU</p>
+        <h2>¿Cuándo usar ε-NTU?</h2>
+        <div class="tip">Este método nos permite responder con precisión a la pregunta: dado un intercambiador con características conocidas, ¿cómo se comportará bajo nuevas condiciones operativas?</div>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Problema de diseño (LMTD)</h3>
+            <p>Se conocen todas las temperaturas. Se busca el área <strong>A</strong> necesaria.</p>
+          </div>
+          <div class="card">
+            <h3>Problema de simulación (ε-NTU)</h3>
+            <p>Se conocen el área y las temperaturas de entrada. Se buscan las temperaturas de salida.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════
+         SLIDE 4 — Definición de efectividad (Página 3 · 1/2)
+         ═══════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Definiciones</p>
+        <h2>Definición de efectividad (ε)</h2>
+        <p>La efectividad (ε) de un intercambiador de calor es una medida adimensional de su rendimiento térmico, definida como:</p>
+        <div class="formula">ε = q<sub>real</sub> / q<sub>máx</sub></div>
+        <ul>
+          <li><strong>q<sub>real</sub></strong>: Calor que realmente se transfiere.</li>
+          <li><strong>q<sub>máx</sub></strong>: Calor máximo teóricamente posible.</li>
+        </ul>
+        <p>La efectividad nos indica qué tan cerca está nuestro intercambiador del rendimiento termodinámico ideal, siempre entre 0 y 1 (o 0% y 100%).</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════
+         SLIDE 5 — Cálculo de q_real y q_max (Página 3 · 2/2)
+         ═══════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Definiciones</p>
+        <h2>Calor real y calor máximo</h2>
+        <p>El calor real se calcula a partir del cambio de entalpía de cualquiera de los dos fluidos:</p>
+        <div class="formula">q<sub>real</sub> = (ṁ c<sub>p</sub>)<sub>h</sub> (T<sub>h,in</sub> − T<sub>h,out</sub>) = (ṁ c<sub>p</sub>)<sub>c</sub> (T<sub>c,out</sub> − T<sub>c,in</sub>)</div>
+        <p>El calor máximo se daría en un intercambiador ideal de contraflujo con área infinita:</p>
+        <div class="formula">q<sub>máx</sub> = C<sub>mín</sub> (T<sub>h,in</sub> − T<sub>c,in</sub>)</div>
+        <p>Donde C<sub>mín</sub> es la menor capacidad calorífica:</p>
+        <div class="formula">C<sub>mín</sub> = mín[ (ṁ c<sub>p</sub>)<sub>h</sub> , (ṁ c<sub>p</sub>)<sub>c</sub> ]</div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════
+         SLIDE 6 — NTU (Página 4 · 1/2)
+         ═══════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Definiciones</p>
+        <h2>Número de unidades de transferencia (NTU)</h2>
+        <p>El NTU es un parámetro adimensional que caracteriza el "tamaño" térmico de un intercambiador. Se define como:</p>
+        <div class="formula">NTU = UA / C<sub>mín</sub></div>
+        <ul>
+          <li><strong>U</strong>: Coeficiente global de transferencia de calor [W/m²K]</li>
+          <li><strong>A</strong>: Área de transferencia de calor [m²]</li>
+          <li><strong>C<sub>mín</sub></strong>: La menor de las dos capacidades caloríficas [W/K]</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════
+         SLIDE 7 — Interpretación de NTU (Página 4 · 2/2)
+         ═══════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Definiciones</p>
+        <h2>Interpretación del NTU</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>NTU alto (> 3)</h3>
+            <p>Indica que el intercambiador tiene una gran capacidad de transferencia de calor en relación con el flujo, y probablemente operará cerca de su máxima efectividad posible.</p>
+          </div>
+          <div class="card">
+            <h3>NTU bajo</h3>
+            <p>Indica que la capacidad del intercambiador es limitada en relación con los flujos térmicos que maneja.</p>
+          </div>
+        </div>
+        <div class="tip">El NTU es al intercambiador lo que la longitud es a un tubo: mide cuánta «oportunidad» tiene el calor para transferirse.</div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════
+         SLIDE 8 — Relaciones ε-NTU: contraflujo y paralelo (Página 5 · 1/2)
+         ═══════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Relaciones ε-NTU</p>
+        <h2>Relaciones ε-NTU por configuración (1/2)</h2>
+        <p>La efectividad (ε) es una función directa del NTU y de la relación de capacidades caloríficas C<sub>r</sub> = C<sub>mín</sub> / C<sub>máx</sub>. Las relaciones varían según la geometría del flujo:</p>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Contraflujo</h3>
+            <div class="formula" style="font-size:clamp(0.85rem,1.6vw,1.15rem)">ε = [1 − exp(−NTU(1 − C<sub>r</sub>))] / [1 − C<sub>r</sub> exp(−NTU(1 − C<sub>r</sub>))]</div>
+            <p>Configuración más eficiente para la mayoría de aplicaciones.</p>
+          </div>
+          <div class="card">
+            <h3>Flujo paralelo</h3>
+            <div class="formula" style="font-size:clamp(0.85rem,1.6vw,1.15rem)">ε = [1 − exp(−NTU(1 + C<sub>r</sub>))] / (1 + C<sub>r</sub>)</div>
+            <p>Configuración menos eficiente, pero a veces necesaria por razones constructivas.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════
+         SLIDE 9 — Relaciones ε-NTU: evaporador/condensador y gráficas (Página 5 · 2/2)
+         ═══════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Relaciones ε-NTU</p>
+        <h2>Relaciones ε-NTU por configuración (2/2)</h2>
+        <div class="card">
+          <h3>Evaporador o condensador</h3>
+          <div class="formula">ε = 1 − exp(−NTU)</div>
+          <p>Caso especial donde C<sub>máx</sub> → ∞ (temperatura constante en uno de los fluidos), es decir C<sub>r</sub> = 0.</p>
+        </div>
+        <img class="diagram" src="img/pres12-p05-3.png" alt="Gráficas de ε vs. NTU para diferentes configuraciones y valores de Cr" />
+        <p class="small-text">Para geometrías complejas como intercambiadores de tubos y coraza, existen ecuaciones más elaboradas o gráficas de ε vs. NTU con curvas para diferentes valores de C<sub>r</sub>.</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════
+         SLIDE 10 — Ventajas del método ε-NTU (Página 6)
+         ═══════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Comparación de métodos</p>
+        <h2>Ventajas del método ε-NTU sobre LMTD</h2>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>Evita la iteración</h3>
+            <p>Es el beneficio principal. Si se conocen las condiciones de entrada y la geometría del equipo (U y A), se puede calcular directamente NTU y C<sub>r</sub>, encontrar ε y calcular las temperaturas de salida de forma explícita. No requiere procesos iterativos.</p>
+          </div>
+          <div class="card">
+            <h3>Claridad conceptual</h3>
+            <p>La efectividad (ε) es un indicador de rendimiento mucho más intuitivo que el factor de corrección F del método LMTD. Un valor de ε = 0.8 nos dice directamente que el intercambiador está logrando el 80% de la transferencia de calor máxima posible.</p>
+          </div>
+          <div class="card">
+            <h3>Ideal para análisis paramétrico</h3>
+            <p>Facilita enormemente la evaluación de cómo cambiarán las temperaturas de salida si se modifica un caudal, se altera una temperatura de entrada o el ensuciamiento modifica el valor de U.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════
+         SLIDE 11 — Separador: Ejemplo
+         ═══════════════════════════════════════════════════ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ejemplo resuelto</p>
+        <h1>Aplicación del método ε-NTU</h1>
+        <p>Intercambiador de flujo paralelo: cálculo de temperaturas de salida paso a paso.</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════
+         SLIDE 12 — Ejemplo: enunciado y datos (Página 7 · 1/2)
+         ═══════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ejemplo</p>
+        <h2>Enunciado del problema</h2>
+        <p>Un intercambiador de <strong>flujo paralelo</strong> con <strong>A = 30 m²</strong> y <strong>U = 500 W/m²K</strong> se usa para calentar 1 kg/s de agua (c<sub>p</sub> = 4.2 kJ/kgK) que entra a 15 °C. El fluido caliente es aceite (c<sub>p</sub> = 2.1 kJ/kgK) a 1.2 kg/s entrando a 110 °C. Calcular las temperaturas de salida.</p>
+        <h2>Paso 1: Calcular capacidades caloríficas (C)</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Fluido frío (agua)</h3>
+            <div class="formula">C<sub>c</sub> = 1 × 4200 = 4200 W/K</div>
+          </div>
+          <div class="card">
+            <h3>Fluido caliente (aceite)</h3>
+            <div class="formula">C<sub>h</sub> = 1.2 × 2100 = 2520 W/K</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════
+         SLIDE 13 — Ejemplo: Cmin, Cmax, Cr (Página 7 · 2/2)
+         ═══════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ejemplo</p>
+        <h2>Paso 2: Identificar C<sub>mín</sub>, C<sub>máx</sub> y C<sub>r</sub></h2>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>C<sub>mín</sub></h3>
+            <div class="formula">C<sub>mín</sub> = C<sub>h</sub> = 2520 W/K</div>
+          </div>
+          <div class="card">
+            <h3>C<sub>máx</sub></h3>
+            <div class="formula">C<sub>máx</sub> = C<sub>c</sub> = 4200 W/K</div>
+          </div>
+          <div class="card">
+            <h3>C<sub>r</sub></h3>
+            <div class="formula">C<sub>r</sub> = 2520 / 4200 = 0.6</div>
+          </div>
+        </div>
+        <div class="tip">C<sub>mín</sub> es siempre el fluido con menor capacidad calorífica total (ṁ × c<sub>p</sub>). Es el fluido que «limita» la transferencia de calor.</div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════
+         SLIDE 14 — Ejemplo: NTU y ε (Página 8 · 1/2)
+         ═══════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ejemplo</p>
+        <h2>Paso 3: Calcular NTU</h2>
+        <div class="formula">NTU = UA / C<sub>mín</sub> = (500 × 30) / 2520 = 5.95</div>
+        <h2>Paso 4: Calcular efectividad (ε) para flujo paralelo</h2>
+        <div class="formula" style="font-size:clamp(0.9rem,1.6vw,1.2rem)">ε = [1 − exp(−5.95 × (1 + 0.6))] / (1 + 0.6) = [1 − exp(−9.52)] / 1.6 ≈ 0.625</div>
+        <div class="tip">Un NTU de 5.95 es bastante alto. Para flujo paralelo con C<sub>r</sub> = 0.6, la efectividad se acerca al límite teórico de 1/(1 + C<sub>r</sub>) = 0.625.</div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════
+         SLIDE 15 — Ejemplo: q y temperaturas de salida (Página 8 · 2/2)
+         ═══════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ejemplo</p>
+        <h2>Paso 5: Calcular q<sub>real</sub> y temperaturas de salida</h2>
+        <div class="formula">q<sub>máx</sub> = C<sub>mín</sub> (T<sub>h,in</sub> − T<sub>c,in</sub>) = 2520 × (110 − 15) = 239 400 W</div>
+        <div class="formula">q<sub>real</sub> = ε × q<sub>máx</sub> = 0.625 × 239 400 = 149 625 W</div>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>T<sub>h,out</sub> (aceite)</h3>
+            <div class="formula">110 − 149 625 / 2520 = 50.6 °C</div>
+          </div>
+          <div class="card">
+            <h3>T<sub>c,out</sub> (agua)</h3>
+            <div class="formula">15 + 149 625 / 4200 = 50.6 °C</div>
+          </div>
+        </div>
+        <p class="small-text">Nota: en flujo paralelo, ambas temperaturas de salida convergen cuando ε se acerca al máximo teórico.</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════
+         SLIDE 16 — Separador: Dimensionamiento
+         ═══════════════════════════════════════════════════ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Selección y dimensionamiento</p>
+        <h1>Del cálculo térmico al equipo real</h1>
+        <p>Criterios prácticos para traducir los parámetros calculados en una geometría funcional y económica.</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════
+         SLIDE 17 — Selección y dimensionamiento (Página 9)
+         ═══════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Dimensionamiento</p>
+        <h2>Selección y dimensionamiento</h2>
+        <p>Una vez determinada el área de transferencia de calor necesaria (A) y el deber térmico (q), comienza el proceso de dimensionamiento físico, que consiste en traducir estos parámetros abstractos en una geometría real y funcional para un intercambiador de tubos y coraza.</p>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Este proceso busca equilibrar</h3>
+            <ul>
+              <li>Satisfacer el requerimiento térmico</li>
+              <li>No exceder limitaciones de caída de presión</li>
+              <li>Utilizar configuraciones económicas</li>
+              <li>Facilitar el mantenimiento</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Parámetros clave a definir</h3>
+            <ul>
+              <li>Diámetro y número de tubos</li>
+              <li>Longitud de los tubos</li>
+              <li>Diámetro de la coraza</li>
+              <li>Configuración de los bafles</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════
+         SLIDE 18 — Velocidades de flujo (Página 10 · 1/2)
+         ═══════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Dimensionamiento</p>
+        <h2>Velocidades de flujo y caída de presión</h2>
+        <p>La velocidad del fluido, especialmente en el lado de los tubos, es un parámetro crítico de diseño que afecta tanto el rendimiento térmico como el costo operativo.</p>
+        <div class="card">
+          <h3>Efecto de la velocidad</h3>
+          <p>Una mayor velocidad aumenta la turbulencia, mejorando significativamente el coeficiente de convección <strong>h</strong> y reduciendo el ensuciamiento. Sin embargo, la caída de presión (ΔP) aumenta aproximadamente con el cuadrado de la velocidad, incrementando los costos de bombeo (OPEX).</p>
+          <div class="formula">ΔP ∝ v²</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════
+         SLIDE 19 — Velocidades recomendadas (Página 10 · 2/2)
+         ═══════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Dimensionamiento</p>
+        <h2>Velocidades recomendadas y ΔP permitida</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Velocidades recomendadas (lado tubos)</h3>
+            <ul>
+              <li><strong>Líquidos (agua, solventes):</strong> 1.0 – 2.5 m/s</li>
+              <li><strong>Líquidos viscosos (aceites):</strong> 0.5 – 1.2 m/s</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Caída de presión permitida (ΔP)</h3>
+            <ul>
+              <li><strong>Líquidos:</strong> Típicamente 0.3 – 0.7 bar (5 – 10 psi)</li>
+              <li><strong>Gases y vapores:</strong> Mucho menor, del orden de 0.05 bar</li>
+            </ul>
+          </div>
+        </div>
+        <div class="warning">El diseñador debe seleccionar un diámetro y número de tubos que resulten en una velocidad dentro del rango recomendado y una caída de presión por debajo del límite permitido.</div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════
+         SLIDE 20 — Método de Kern: área de flujo (Página 11 · 1/2)
+         ═══════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Método de Kern</p>
+        <h2>Método de Kern simplificado (1/2)</h2>
+        <p>El Método de Kern es un procedimiento clásico para estimar el coeficiente de transferencia de calor (h<sub>o</sub>) y la caída de presión (ΔP<sub>s</sub>) en el lado de la coraza, la parte más compleja del diseño.</p>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Área de flujo cruzado (A<sub>s</sub>)</h3>
+            <p>Se calcula un área de flujo promedio a través del haz de tubos, en la sección central entre dos bafles. Depende del diámetro de la coraza, el espaciamiento de los bafles y el paso de los tubos.</p>
+          </div>
+          <div class="card">
+            <h3>Diámetro equivalente (D<sub>e</sub>)</h3>
+            <p>Se define un diámetro hidráulico equivalente para el flujo complejo del lado de la coraza. Para un arreglo cuadrado:</p>
+            <div class="formula" style="font-size:clamp(0.85rem,1.4vw,1.05rem)">D<sub>e</sub> = 4(P<sub>T</sub>² − π d<sub>o</sub>²/4) / (π d<sub>o</sub>)</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════
+         SLIDE 21 — Método de Kern: cálculo ho y ΔPs (Página 11 · 2/2)
+         ═══════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Método de Kern</p>
+        <h2>Método de Kern simplificado (2/2)</h2>
+        <div class="card">
+          <h3>Cálculo de h<sub>o</sub> y ΔP<sub>s</sub></h3>
+          <p>Con el área de flujo y el diámetro equivalente, se calcula un Número de Reynolds del lado coraza. Usando este Reynolds, se obtienen factores de transferencia de calor (j<sub>H</sub>) y de fricción (f) a partir de correlaciones empíricas. Estos factores permiten finalmente calcular <strong>h<sub>o</sub></strong> y <strong>ΔP<sub>s</sub></strong>.</p>
+        </div>
+        <div class="tip">Aunque superado por métodos más modernos, el Método de Kern es invaluable para entender las relaciones fundamentales entre la geometría y el rendimiento del lado coraza.</div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════
+         SLIDE 22 — Verificación con software (Página 12 · 1/2)
+         ═══════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Software industrial</p>
+        <h2>Verificación y optimización con software</h2>
+        <p>Si bien los cálculos manuales son fundamentales para la comprensión y el dimensionamiento preliminar, el diseño final, detallado y optimizado de un intercambiador de calor se realiza hoy en día exclusivamente con software especializado.</p>
+        <h3>Herramientas estándar de la industria:</h3>
+        <ul>
+          <li><strong>Aspen EDR</strong> (Exchanger Design and Rating)</li>
+          <li><strong>HTRI</strong> (Heat Transfer Research, Inc.)</li>
+          <li><strong>ProSim</strong></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════
+         SLIDE 23 — Capacidades del software (Página 12 · 2/2)
+         ═══════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Software industrial</p>
+        <h2>¿Qué ofrecen estas herramientas?</h2>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>Correlaciones avanzadas</h3>
+            <p>Utilizan métodos mucho más sofisticados que el de Kern, como el análisis de corrientes de flujo (stream analysis), que consideran fugas y bypass en los bafles.</p>
+          </div>
+          <div class="card">
+            <h3>Optimización rápida</h3>
+            <p>Permiten evaluar cientos de configuraciones geométricas en minutos para encontrar el diseño óptimo que cumpla los requerimientos al menor costo posible.</p>
+          </div>
+          <div class="card">
+            <h3>Análisis mecánico</h3>
+            <p>Verifican que el diseño sea mecánicamente robusto y que las velocidades de flujo no induzcan vibraciones dañinas en los tubos.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════
+         SLIDE 24 — Cierre
+         ═══════════════════════════════════════════════════ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">IQYA-2031 · Sesión 12</p>
+        <h1>Resumen</h1>
+        <div class="pill-row">
+          <span class="pill">ε = q<sub>real</sub> / q<sub>máx</sub></span>
+          <span class="pill">NTU = UA / C<sub>mín</sub></span>
+          <span class="pill">C<sub>r</sub> = C<sub>mín</sub> / C<sub>máx</sub></span>
+        </div>
+        <p>El método ε-NTU resuelve problemas de simulación sin iteración. El dimensionamiento traduce el área calculada en una geometría real, equilibrando rendimiento térmico, caída de presión y economía. El software industrial verifica y optimiza el diseño final.</p>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="hud">
+    <span id="hud-title">Intercambiadores II — ε-NTU · IQYA-2031</span>
+    <span id="hud-counter">1 / 24</span>
+  </div>
+
+  <div class="controls">
+    <button aria-label="Anterior" id="prev">‹</button>
+    <button aria-label="Pantalla completa" id="fs">⛶</button>
+    <button aria-label="Siguiente" id="next">›</button>
+  </div>
+
+  <script>
+    (function () {
+      var slides = Array.prototype.slice.call(document.querySelectorAll('[data-slide]'));
+      var i = 0;
+      var counter = document.getElementById('hud-counter');
+      var progress = document.querySelector('.progress');
+
+      function render() {
+        slides.forEach(function (s, idx) {
+          s.classList.toggle('active', idx === i);
+        });
+        if (counter) counter.textContent = (i + 1) + ' / ' + slides.length;
+        if (progress) progress.style.width = ((i + 1) / slides.length * 100) + '%';
+        var isTitle = slides[i] && slides[i].classList.contains('title-slide');
+        document.body.style.background = isTitle ? '#1A1A1A' : '#ffffff';
+      }
+      function go(n) { i = Math.max(0, Math.min(slides.length - 1, n)); render(); }
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); go(i + 1); }
+        else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(i - 1); }
+        else if (e.key === 'Home') { e.preventDefault(); go(0); }
+        else if (e.key === 'End') { e.preventDefault(); go(slides.length - 1); }
+        else if (e.key === 'f' || e.key === 'F') { toggleFs(); }
+      });
+
+      document.getElementById('prev').addEventListener('click', function () { go(i - 1); });
+      document.getElementById('next').addEventListener('click', function () { go(i + 1); });
+      document.getElementById('fs').addEventListener('click', toggleFs);
+
+      function toggleFs() {
+        var el = document.documentElement;
+        if (!document.fullscreenElement) {
+          (el.requestFullscreen || el.webkitRequestFullscreen || function(){}).call(el);
+        } else {
+          (document.exitFullscreen || document.webkitExitFullscreen || function(){}).call(document);
+        }
+      }
+
+      var tx = 0, ty = 0;
+      document.addEventListener('touchstart', function (e) {
+        if (!e.changedTouches[0]) return;
+        tx = e.changedTouches[0].clientX; ty = e.changedTouches[0].clientY;
+      }, { passive: true });
+      document.addEventListener('touchend', function (e) {
+        if (!e.changedTouches[0]) return;
+        var dx = e.changedTouches[0].clientX - tx;
+        var dy = e.changedTouches[0].clientY - ty;
+        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+          if (dx < 0) go(i + 1); else go(i - 1);
+        }
+      }, { passive: true });
+
+      // Inject decorative slide numbers
+      slides.forEach(function (s, idx) {
+        var num = document.createElement('div');
+        num.className = 'slide-number';
+        num.setAttribute('aria-hidden', 'true');
+        num.textContent = String(idx + 1).padStart(2, '0');
+        s.appendChild(num);
+      });
+
+      render();
+    })();
+  </script>
+</body>
+</html>

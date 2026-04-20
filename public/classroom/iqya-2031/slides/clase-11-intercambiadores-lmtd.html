@@ -1,0 +1,1151 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Intercambiadores I — LMTD · IQYA-2031</title>
+  <style>
+    :root {
+      --brand-dark: #1A1A1A;
+      --brand-yellow: #FFBF00;
+      --brand-yellow-dark: #E6AC00;
+      --brand-gray: #555555;
+      --surface: #ffffff;
+      --muted: #f4f4f5;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      background: var(--brand-dark);
+      color: var(--brand-dark);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      overflow: hidden;
+      -webkit-text-size-adjust: 100%;
+    }
+    .deck {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+    }
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(1rem, 4vw, 3.5rem);
+      background: var(--surface);
+      opacity: 0;
+      transition: opacity 260ms ease;
+    }
+    .slide.active {
+      display: flex;
+      opacity: 1;
+    }
+    .slide .content {
+      width: 100%;
+      max-width: 72rem;
+      display: flex;
+      flex-direction: column;
+      gap: clamp(0.75rem, 1.5vw, 1.5rem);
+    }
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      font-size: clamp(0.65rem, 1vw, 0.8rem);
+      color: var(--brand-yellow-dark);
+      font-weight: 600;
+    }
+    h1 {
+      font-size: clamp(1.75rem, 5.5vw, 4rem);
+      line-height: 1.05;
+      margin: 0;
+      color: var(--brand-dark);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    h2 {
+      font-size: clamp(1.25rem, 3.4vw, 2.25rem);
+      line-height: 1.15;
+      margin: 0;
+      color: var(--brand-dark);
+      font-weight: 700;
+    }
+    p, li {
+      font-size: clamp(0.95rem, 1.8vw, 1.35rem);
+      line-height: 1.55;
+      color: var(--brand-gray);
+      margin: 0;
+    }
+    ul, ol {
+      padding-left: 1.25em;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45em;
+    }
+    li::marker { color: var(--brand-yellow-dark); }
+    .slide.title-slide {
+      background: linear-gradient(135deg, #141414 0%, #1A1A1A 50%, #2a2a2a 100%);
+      color: #fff;
+    }
+    .slide.title-slide h1 { color: #fff; }
+    .slide.title-slide p { color: #d4d4d8; }
+    .slide.title-slide .eyebrow { color: var(--brand-yellow); }
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 0.5rem;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.35em 0.9em;
+      border-radius: 999px;
+      background: var(--muted);
+      color: var(--brand-dark);
+      font-size: clamp(0.75rem, 1.3vw, 1rem);
+      font-weight: 500;
+    }
+    .slide.title-slide .pill {
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .grid {
+      display: grid;
+      gap: clamp(0.75rem, 1.5vw, 1.25rem);
+    }
+    .grid.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid.cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    @media (max-width: 640px) {
+      .grid.cols-2, .grid.cols-3, .grid.cols-4 { grid-template-columns: 1fr; }
+    }
+    .card {
+      background: var(--muted);
+      border-radius: 0.75rem;
+      padding: clamp(0.9rem, 1.5vw, 1.35rem);
+    }
+    .card h3 {
+      font-size: clamp(1rem, 2vw, 1.35rem);
+      margin: 0 0 0.35em 0;
+      color: var(--brand-dark);
+      font-weight: 600;
+    }
+    .card p { font-size: clamp(0.8rem, 1.4vw, 1rem); }
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(1rem, 2vw, 2rem);
+      align-items: center;
+    }
+    @media (max-width: 640px) {
+      .two-col { grid-template-columns: 1fr; }
+    }
+    img.diagram {
+      max-width: 100%;
+      height: auto;
+      border-radius: 0.5rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+    }
+    .small-text {
+      font-size: clamp(0.7rem, 1.2vw, 0.9rem);
+      color: var(--brand-gray);
+      text-align: center;
+    }
+    .tip {
+      background: #fffbeb;
+      border-left: 3px solid var(--brand-yellow);
+      padding: 0.75em 1em;
+      border-radius: 0.35rem;
+      font-size: clamp(0.85rem, 1.5vw, 1.1rem);
+      color: var(--brand-dark);
+    }
+    .warning {
+      background: #fef2f2;
+      border-left: 3px solid #ef4444;
+      padding: 0.75em 1em;
+      border-radius: 0.35rem;
+      font-size: clamp(0.85rem, 1.5vw, 1.1rem);
+      color: var(--brand-dark);
+    }
+    .big-example {
+      background: var(--muted);
+      border-radius: 0.75rem;
+      padding: clamp(1rem, 2vw, 1.5rem);
+      text-align: center;
+    }
+    .big-example code {
+      font-size: clamp(1.2rem, 3vw, 2rem);
+      font-weight: 700;
+      color: var(--brand-dark);
+    }
+    .big-example .legend {
+      font-size: clamp(0.75rem, 1.2vw, 0.95rem);
+      color: var(--brand-gray);
+      margin-top: 0.5em;
+    }
+    .hud {
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      padding: 0.5rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: rgba(255,255,255,0.75);
+      font-size: 0.75rem;
+      pointer-events: none;
+      z-index: 10;
+    }
+    .slide:not(.title-slide) ~ .hud { color: var(--brand-gray); }
+    .controls {
+      position: fixed;
+      right: 1rem;
+      bottom: 2.5rem;
+      display: flex;
+      gap: 0.5rem;
+      z-index: 11;
+    }
+    .controls button {
+      -webkit-appearance: none;
+      appearance: none;
+      border: 1px solid rgba(0,0,0,0.1);
+      background: rgba(255,255,255,0.9);
+      color: var(--brand-dark);
+      width: 2.5rem; height: 2.5rem;
+      border-radius: 999px;
+      font-size: 1rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    }
+    .controls button:active { transform: scale(0.96); }
+    .progress {
+      position: fixed;
+      top: 0; left: 0;
+      height: 3px;
+      background: var(--brand-yellow);
+      transition: width 260ms ease;
+      z-index: 20;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .slide { transition: none; }
+      .progress { transition: none; }
+    }
+    @media (max-width: 480px) {
+      .controls { right: 0.5rem; bottom: 1.25rem; }
+      .hud { font-size: 0.65rem; }
+    }
+
+    /* ─── Decorative: L-shaped yellow corner accent ─── */
+    .slide:not(.title-slide)::before {
+      content: '';
+      position: absolute;
+      top: clamp(1rem, 3vw, 2.5rem);
+      right: clamp(1rem, 3vw, 2.5rem);
+      width: clamp(2rem, 5vw, 4rem);
+      height: clamp(2rem, 5vw, 4rem);
+      border-top: 2.5px solid var(--brand-yellow);
+      border-right: 2.5px solid var(--brand-yellow);
+      pointer-events: none;
+      z-index: 1;
+    }
+    .slide.title-slide::before {
+      content: '';
+      position: absolute;
+      bottom: clamp(1rem, 3vw, 2.5rem);
+      left: clamp(1rem, 3vw, 2.5rem);
+      width: clamp(2rem, 5vw, 4rem);
+      height: clamp(2rem, 5vw, 4rem);
+      border-bottom: 2.5px solid var(--brand-yellow);
+      border-left: 2.5px solid var(--brand-yellow);
+      opacity: 0.4;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* ─── Decorative: large background slide number ─── */
+    .slide-number {
+      position: absolute;
+      bottom: clamp(0.5rem, 2vw, 1.5rem);
+      left: clamp(1rem, 3vw, 2.5rem);
+      font-size: clamp(4rem, 12vw, 10rem);
+      font-weight: 800;
+      line-height: 1;
+      color: rgba(0, 0, 0, 0.04);
+      pointer-events: none;
+      z-index: 0;
+      user-select: none;
+      letter-spacing: -0.04em;
+    }
+    .slide.title-slide .slide-number {
+      color: rgba(255, 255, 255, 0.06);
+    }
+  </style>
+</head>
+<body>
+  <div class="progress" style="width:0"></div>
+  <div class="deck" id="deck">
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 1 — Portada (Página 1) -->
+    <!-- ============================================================ -->
+    <section class="slide title-slide active" data-slide>
+      <div class="content">
+        <p class="eyebrow">IQYA-2031 · 2026-10</p>
+        <h1>Intercambiadores de calor I — Fundamentos y diseño por LMTD</h1>
+        <p>Mecanismos de transferencia, coeficiente global, ensuciamiento, tipos de intercambiadores, método LMTD, factor de corrección y diseño térmico.</p>
+        <div class="pill-row">
+          <span class="pill">Transferencia de calor</span>
+          <span class="pill">Coeficiente U</span>
+          <span class="pill">Ensuciamiento</span>
+          <span class="pill">LMTD</span>
+          <span class="pill">Factor F</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 2 — Fundamentos esenciales (Página 2) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Fundamentos</p>
+        <h2>Fundamentos esenciales</h2>
+        <p>Los intercambiadores de calor son componentes críticos en la industria de procesos, esenciales para:</p>
+        <ul>
+          <li>La <strong>regulación térmica</strong> (calentar o enfriar corrientes)</li>
+          <li>La <strong>eficiencia energética</strong> industrial</li>
+          <li>La <strong>sostenibilidad</strong> de los procesos</li>
+        </ul>
+        <div class="tip">Un diseño óptimo impacta directamente la rentabilidad y la huella ambiental de las plantas, optimizando la recuperación energética y minimizando los costos operativos.</div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 3 — Mecanismos de transferencia de calor (Página 3) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Fundamentos</p>
+        <h2>Mecanismos de transferencia de calor</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Conducción</h3>
+            <p>Transferencia de calor a través del medio material estacionario (pared del tubo o placa) que separa los fluidos.</p>
+            <p style="margin-top:0.5em"><strong>Ley de Fourier:</strong> El flujo de calor (<em>q</em>) es proporcional al gradiente de temperatura y al área.</p>
+            <div class="big-example" style="margin-top:0.5em">
+              <code>q = kA (T<sub>caliente</sub> - T<sub>fría</sub>) / &Delta;x</code>
+            </div>
+            <p style="margin-top:0.5em">Donde <em>k</em> es la conductividad térmica del material.</p>
+          </div>
+          <div class="card">
+            <h3>Convección</h3>
+            <p>Transferencia de calor entre una superficie sólida y un fluido en movimiento.</p>
+            <p style="margin-top:0.5em"><strong>Ley de enfriamiento de Newton:</strong></p>
+            <div class="big-example" style="margin-top:0.5em">
+              <code>q<sub>c</sub> = hA (T<sub>superficie</sub> - T<sub>fluido</sub>)</code>
+            </div>
+            <p style="margin-top:0.5em">Donde <em>h</em> es el coeficiente de transferencia de calor por convección, dependiente de la geometría, las propiedades del fluido y el régimen de flujo.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 4 — Coeficiente global U (Página 4, 1/2) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Fundamentos</p>
+        <h2>Coeficiente global de transferencia de calor (U)</h2>
+        <p>En la práctica, agrupamos todas las resistencias térmicas en un único parámetro denominado <strong>Coeficiente Global de Transferencia de Calor (U)</strong>.</p>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Ecuación fundamental</h3>
+            <div class="big-example">
+              <code>q = UA &Delta;T<sub>global</sub></code>
+            </div>
+            <p style="margin-top:0.5em">Donde <em>U</em> es el coeficiente global, <em>A</em> el área de transferencia y &Delta;T<sub>global</sub> la diferencia de temperatura efectiva.</p>
+          </div>
+          <div class="card">
+            <h3>Definición matemática</h3>
+            <div class="big-example">
+              <code>1/UA = R<sub>total</sub> = 1/(h<sub>i</sub>A<sub>i</sub>) + ln(D<sub>o</sub>/D<sub>i</sub>)/(2&pi;kL) + 1/(h<sub>o</sub>A<sub>o</sub>)</code>
+            </div>
+            <p style="margin-top:0.5em"><em>U</em> representa la facilidad con la que el calor se transfiere a través de toda la barrera compuesta por unidad de área y diferencia de temperatura.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 5 — Coeficiente global U base externa (Página 4, 2/2) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Fundamentos</p>
+        <h2>Coeficiente global U — Base del área externa</h2>
+        <div class="big-example">
+          <code>1/U<sub>o</sub> = A<sub>o</sub>/(h<sub>i</sub>A<sub>i</sub>) + A<sub>o</sub> ln(D<sub>o</sub>/D<sub>i</sub>)/(2&pi;kL) + 1/h<sub>o</sub></code>
+        </div>
+        <p>Normalmente, <em>U</em> se basa en el área externa (U<sub>o</sub>) o interna (U<sub>i</sub>).</p>
+        <div class="tip">La elección del área de referencia (interna o externa) es una convención; el calor transferido <em>q</em> es el mismo independientemente de la base elegida.</div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 6 — Separador: Ensuciamiento (Página 5) -->
+    <!-- ============================================================ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">IQYA-2031 · 2026-10</p>
+        <h1>Ensuciamiento (fouling)</h1>
+        <p>Resistencias térmicas adicionales que degradan el rendimiento de los intercambiadores.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 7 — Factores de ensuciamiento (Página 6) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ensuciamiento</p>
+        <h2>Factores de ensuciamiento (R<sub>f</sub>)</h2>
+        <p>El ensuciamiento (<em>fouling</em>) es la acumulación de depósitos indeseados (sarro, óxido, biopelículas, coque) en las superficies de transferencia. Estos depósitos generan una <strong>resistencia térmica adicional</strong> que disminuye el rendimiento del intercambiador.</p>
+        <p>Para el diseño, se incorporan factores de ensuciamiento (R<sub>f</sub>) en la ecuación:</p>
+        <div class="big-example">
+          <code>1/U<sub>sucio</sub> = 1/U<sub>limpio</sub> + R<sub>f,i</sub> + R<sub>f,o</sub></code>
+        </div>
+        <p>Donde R<sub>f,i</sub> y R<sub>f,o</sub> representan las resistencias por ensuciamiento interna y externa.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 8 — Tabla de factores de ensuciamiento (Página 7) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ensuciamiento</p>
+        <h2>Factores de ensuciamiento típicos</h2>
+        <div class="grid cols-2">
+          <div>
+            <table style="width:100%;border-collapse:collapse;font-size:clamp(0.8rem,1.4vw,1.1rem)">
+              <thead>
+                <tr style="border-bottom:2px solid var(--brand-yellow)">
+                  <th style="text-align:left;padding:0.5em 0.75em;color:var(--brand-dark)">Fluido</th>
+                  <th style="text-align:left;padding:0.5em 0.75em;color:var(--brand-dark)">R<sub>f</sub> (m²·K/W)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="border-bottom:1px solid #eee"><td style="padding:0.5em 0.75em">Agua de torre de enfriamiento</td><td style="padding:0.5em 0.75em">0.0002 – 0.0004</td></tr>
+                <tr style="border-bottom:1px solid #eee"><td style="padding:0.5em 0.75em">Agua de río</td><td style="padding:0.5em 0.75em">0.0002 – 0.0006</td></tr>
+                <tr style="border-bottom:1px solid #eee"><td style="padding:0.5em 0.75em">Vapor de agua (libre de aceite)</td><td style="padding:0.5em 0.75em">0.0001</td></tr>
+                <tr style="border-bottom:1px solid #eee"><td style="padding:0.5em 0.75em">Hidrocarburos líquidos</td><td style="padding:0.5em 0.75em">0.0002 – 0.0009</td></tr>
+                <tr><td style="padding:0.5em 0.75em">Gases de combustión</td><td style="padding:0.5em 0.75em">0.0009 – 0.0018</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div>
+            <div class="tip">Estos valores son aproximaciones de diseño. En la práctica, el ensuciamiento depende de la velocidad del fluido, la temperatura de la superficie y la calidad del fluido.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 9 — Tipo: Cristalización (Página 8) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ensuciamiento</p>
+        <h2>Tipos de ensuciamiento — Cristalización</h2>
+        <div class="two-col">
+          <div>
+            <p>El ensuciamiento no es un fenómeno único; existen diversas formas en que los depósitos se acumulan, cada una con sus propias características y desafíos.</p>
+            <h3 style="color:var(--brand-dark);margin:0.5em 0 0.25em">Cristalización (<em>scaling</em>)</h3>
+            <p>Formación de capas duras por precipitación de sales minerales (ej. carbonatos de calcio) debido a cambios de temperatura o concentración.</p>
+          </div>
+          <img class="diagram" src="img/pres11-p08-3.png" alt="Ejemplo de ensuciamiento por cristalización" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 10 — Tipo: Reacción química (Página 9) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ensuciamiento</p>
+        <h2>Tipos de ensuciamiento — Reacción química</h2>
+        <div class="two-col">
+          <div>
+            <h3 style="color:var(--brand-dark);margin:0 0 0.25em">Reacción química</h3>
+            <p>Depósitos generados por reacciones químicas que ocurren directamente en la superficie del intercambiador, como polimerización o craqueo.</p>
+          </div>
+          <img class="diagram" src="img/pres11-p09-3.png" alt="Ejemplo de ensuciamiento por reacción química" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 11 — Tipo: Oxidación (Página 10) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ensuciamiento</p>
+        <h2>Tipos de ensuciamiento — Oxidación</h2>
+        <div class="two-col">
+          <div>
+            <h3 style="color:var(--brand-dark);margin:0 0 0.25em">Oxidación</h3>
+            <p>Formación de óxidos metálicos en las superficies de los materiales del intercambiador debido a la reacción con fluidos que corroen el material.</p>
+          </div>
+          <img class="diagram" src="img/pres11-p10-3.png" alt="Ejemplo de ensuciamiento por oxidación" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 12 — Tipo: Biológico (Página 11) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ensuciamiento</p>
+        <h2>Tipos de ensuciamiento — Biológico</h2>
+        <div class="two-col">
+          <div>
+            <h3 style="color:var(--brand-dark);margin:0 0 0.25em">Biológico (<em>biofouling</em>)</h3>
+            <p>Crecimiento de microorganismos (bacterias, algas, hongos) que forman una biopelícula, especialmente en sistemas que manejan agua.</p>
+          </div>
+          <img class="diagram" src="img/pres11-p11-3.png" alt="Ejemplo de ensuciamiento biológico" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 13 — Tipo: Partículas sólidas (Página 12) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ensuciamiento</p>
+        <h2>Tipos de ensuciamiento — Partículas sólidas</h2>
+        <div class="two-col">
+          <div>
+            <h3 style="color:var(--brand-dark);margin:0 0 0.25em">Partículas sólidas</h3>
+            <p>Acumulación de partículas suspendidas en el fluido (lodo, óxidos, arena) que se adhieren a la superficie por gravedad o fuerzas de Van der Waals.</p>
+          </div>
+          <img class="diagram" src="img/pres11-p12-3.png" alt="Ejemplo de ensuciamiento por partículas sólidas" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 14 — Separador: Tipos de intercambiadores (Página 13) -->
+    <!-- ============================================================ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">IQYA-2031 · 2026-10</p>
+        <h1>Tipos de intercambiadores</h1>
+        <p>Principales configuraciones utilizadas en la industria de procesos.</p>
+        <div class="pill-row">
+          <span class="pill">Tubos y coraza</span>
+          <span class="pill">Placas</span>
+          <span class="pill">Espiral</span>
+          <span class="pill">Tubos aletados</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 15 — Tubos y coraza (Página 14) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Tipos de intercambiadores</p>
+        <h2>Tubos y coraza</h2>
+        <p>Este es el tipo de intercambiador <strong>más utilizado en la industria</strong>. Su diseño está estandarizado por la <strong>TEMA</strong> (Tubular Exchanger Manufacturers Association).</p>
+        <p><strong>Componentes principales:</strong></p>
+        <ul>
+          <li><strong>Coraza (<em>shell</em>):</strong> Cuerpo exterior que contiene el fluido de la coraza</li>
+          <li><strong>Haz de tubos (<em>tube bundle</em>):</strong> Conjunto de tubos por donde circula el otro fluido</li>
+          <li><strong>Placas tubulares (<em>tubesheets</em>):</strong> Placas perforadas que sostienen los tubos</li>
+          <li><strong>Cabezales (<em>channels</em>):</strong> Dirigen el flujo hacia adentro y afuera del haz</li>
+          <li><strong>Bafles o desviadores (<em>baffles</em>):</strong> Dirigen el flujo en zigzag para aumentar la turbulencia y el coeficiente de transferencia</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 16 — Placas y empaques (Página 15) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Tipos de intercambiadores</p>
+        <h2>Placas y empaques</h2>
+        <p>Consisten en un paquete de placas de metal delgadas y corrugadas, montadas en un bastidor y selladas por empaques (juntas). Los fluidos caliente y frío fluyen en canales alternos formados entre las placas.</p>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Ventajas</h3>
+            <ul>
+              <li><strong>Alta eficiencia:</strong> Coeficientes U de 3-5 veces mayores que en tubos y coraza</li>
+              <li><strong>Diseño compacto:</strong> Requieren mucho menos espacio</li>
+              <li><strong>Flexibilidad:</strong> Área de transferencia modificable añadiendo o quitando placas</li>
+              <li><strong>Fácil mantenimiento:</strong> Se pueden desmontar completamente</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Limitaciones</h3>
+            <ul>
+              <li>Presiones máximas limitadas a ~30 bar</li>
+              <li>Temperaturas máximas de ~180 °C por los empaques</li>
+              <li>No adecuados para fluidos viscosos o con sólidos</li>
+              <li>Susceptibles a fugas si los empaques fallan</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 17 — Intercambiador de espiral (Página 16) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Tipos de intercambiadores</p>
+        <h2>Intercambiador de espiral</h2>
+        <p>Se construye enrollando dos largas placas de metal alrededor de un mandril central, formando dos canales espirales concéntricos separados por espaciadores.</p>
+        <p><strong>Ventajas:</strong></p>
+        <ul>
+          <li>Logra un flujo en contraflujo casi perfecto (F &asymp; 1)</li>
+          <li>Efecto de "autolimpieza" por el flujo en un solo canal</li>
+          <li>Ideal para lodos, líquidos con sólidos y fluidos viscosos</li>
+          <li>Menor ensuciamiento que otros diseños</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 18 — Intercambiador de tubos aletados (Página 17) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Tipos de intercambiadores</p>
+        <h2>Intercambiador de tubos aletados</h2>
+        <p>Tubos con superficies extendidas (aletas) en el exterior para aumentar el área efectiva de transferencia.</p>
+        <p><strong>Aplicación clave:</strong> Cuando un fluido tiene un coeficiente <em>h</em> mucho menor que el otro (típicamente gas-líquido).</p>
+        <div class="big-example">
+          <code>1/(U<sub>o</sub>A<sub>o</sub>) = 1/(h<sub>i</sub>A<sub>i</sub>) + R<sub>pared</sub>/A<sub>o</sub> + 1/(h<sub>o</sub>A<sub>o</sub>)</code>
+        </div>
+        <div class="tip">Las aletas aumentan A<sub>o</sub> para compensar el bajo h<sub>o</sub> del lado del gas, equilibrando las resistencias térmicas.</div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 19 — Separador: Métodos de cálculo (Página 18) -->
+    <!-- ============================================================ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">IQYA-2031 · 2026-10</p>
+        <h1>Métodos de cálculo</h1>
+        <p>LMTD: la media logarítmica de la diferencia de temperatura como fuerza impulsora del diseño térmico.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 20 — El problema (Página 19) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Método LMTD</p>
+        <h2>El problema</h2>
+        <p>La fuerza impulsora para la transferencia de calor, <strong>&Delta;T</strong>, <em>no es constante</em> a lo largo del intercambiador; varía en cada punto a medida que los fluidos intercambian energía.</p>
+        <div class="warning">Usar una simple media aritmética de las diferencias de temperatura en los extremos sería incorrecto desde el punto de vista teórico.</div>
+        <div class="two-col" style="margin-top:0.5rem">
+          <img class="diagram" src="img/pres11-p20-2.png" alt="Perfil de temperaturas en intercambiador" />
+          <img class="diagram" src="img/pres11-p20-3.png" alt="Variación de delta T a lo largo del intercambiador" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 21 — Método LMTD detallado (Página 20) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Método LMTD</p>
+        <h2>Método LMTD detallado</h2>
+        <p>El método LMTD (<em>Log Mean Temperature Difference</em>) proporciona la <strong>media teórica correcta</strong> de la diferencia de temperatura para el cálculo de la transferencia de calor total.</p>
+        <p>La ecuación fundamental se reescribe como:</p>
+        <div class="big-example">
+          <code>q = UA &Delta;T<sub>ML</sub></code>
+        </div>
+        <p>Donde &Delta;T<sub>ML</sub> (o LMTD) es la <strong>media logarítmica de la diferencia de temperatura</strong>, que depende de la configuración del flujo.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 22 — Perfil de temperaturas (Página 21) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Método LMTD</p>
+        <h2>Perfil de temperaturas en el intercambiador</h2>
+        <p>Perfil de temperaturas a lo largo de un intercambiador que muestra cómo la diferencia de temperatura varía entre la entrada y la salida, justificando la necesidad de una media logarítmica.</p>
+        <div class="two-col">
+          <img class="diagram" src="img/pres11-p21-2.png" alt="Perfil de temperaturas — flujo paralelo" />
+          <img class="diagram" src="img/pres11-p21-3.png" alt="Perfil de temperaturas — contraflujo" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 23 — Derivación conceptual de la LMTD (Página 22) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Método LMTD</p>
+        <h2>Derivación conceptual de la LMTD</h2>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>1. Balance diferencial</h3>
+            <p>Para un elemento diferencial de área <em>dA</em> en el intercambiador:</p>
+            <div class="big-example" style="margin-top:0.5em">
+              <code>dq = U(T<sub>h</sub> - T<sub>c</sub>) dA</code>
+            </div>
+            <p style="margin-top:0.5em">El calor transferido es proporcional a la diferencia local de temperatura.</p>
+          </div>
+          <div class="card">
+            <h3>2. Balance energético</h3>
+            <p>El calor perdido por el fluido caliente:</p>
+            <div class="big-example" style="margin-top:0.5em">
+              <code>dq = -&#7745;<sub>h</sub> c<sub>p,h</sub> dT<sub>h</sub></code>
+            </div>
+            <p style="margin-top:0.5em">El calor ganado por el fluido frío:</p>
+            <div class="big-example" style="margin-top:0.5em">
+              <code>dq = &#7745;<sub>c</sub> c<sub>p,c</sub> dT<sub>c</sub></code>
+            </div>
+          </div>
+          <div class="card">
+            <h3>3. Integración</h3>
+            <p>Combinando las ecuaciones y asumiendo <em>U</em>, <em>&#7745;</em> y <em>c<sub>p</sub></em> constantes, se obtiene una ecuación diferencial para (T<sub>h</sub> - T<sub>c</sub>).</p>
+            <p style="margin-top:0.5em">La integración a lo largo del intercambiador resulta en la <strong>fórmula LMTD</strong> (para un sistema de tubos concéntricos), que promedia adecuadamente la fuerza impulsora.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 24 — Flujo paralelo (Página 23) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Método LMTD</p>
+        <h2>Flujo paralelo</h2>
+        <p>La LMTD se calcula según cómo fluyen los fluidos entre sí. La fórmula general es:</p>
+        <div class="big-example">
+          <code>&Delta;T<sub>ML</sub> = (&Delta;T<sub>1</sub> - &Delta;T<sub>2</sub>) / ln(&Delta;T<sub>1</sub> / &Delta;T<sub>2</sub>)</code>
+        </div>
+        <div class="two-col" style="margin-top:0.75rem">
+          <div>
+            <p><strong>Flujo paralelo:</strong> Los fluidos entran por el mismo extremo y fluyen en la misma dirección.</p>
+            <ul>
+              <li>&Delta;T<sub>1</sub> = T<sub>h,in</sub> - T<sub>c,in</sub></li>
+              <li>&Delta;T<sub>2</sub> = T<sub>h,out</sub> - T<sub>c,out</sub></li>
+            </ul>
+            <div class="warning" style="margin-top:0.5em">En esta configuración, la temperatura del fluido frío nunca puede superar la temperatura de salida del fluido caliente.</div>
+          </div>
+          <img class="diagram" src="img/pres11-p23-2.png" alt="Diagrama de flujo paralelo" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 25 — Flujo en contraflujo (Página 24) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Método LMTD</p>
+        <h2>Flujo en contraflujo</h2>
+        <div class="two-col">
+          <div>
+            <p>Los fluidos entran por extremos opuestos y fluyen en direcciones contrarias.</p>
+            <ul>
+              <li>&Delta;T<sub>1</sub> = T<sub>h,in</sub> - T<sub>c,out</sub></li>
+              <li>&Delta;T<sub>2</sub> = T<sub>h,out</sub> - T<sub>c,in</sub></li>
+            </ul>
+            <div class="tip" style="margin-top:0.75em">Para las mismas temperaturas, el contraflujo siempre resulta en una &Delta;T<sub>ML</sub> mayor, lo que significa <strong>mayor eficiencia térmica</strong>.</div>
+          </div>
+          <img class="diagram" src="img/pres11-p24-2.png" alt="Diagrama de flujo en contraflujo" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 26 — Factor de corrección F (Página 25) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Factor de corrección</p>
+        <h2>Factor de corrección F</h2>
+        <p>La fórmula de LMTD es estrictamente válida solo para flujo en paralelo puro o contraflujo puro. Los intercambiadores reales, con múltiples pasos por los tubos o por la coraza, requieren un <strong>factor de corrección, F</strong>:</p>
+        <div class="big-example">
+          <code>q = UA F &Delta;T<sub>ML,contraflujo</sub></code>
+        </div>
+        <ul>
+          <li><em>F</em> es un factor adimensional, con valor <strong>F &le; 1</strong></li>
+          <li><strong>F = 1</strong> para un intercambiador de contraflujo verdadero</li>
+          <li>Para un diseño viable, se recomienda que <strong>F &gt; 0.75</strong></li>
+          <li>Si F es muy bajo, indica una "cruz de temperaturas" ineficiente</li>
+        </ul>
+        <div class="tip">La &Delta;T<sub>ML</sub> en esta ecuación siempre se calcula utilizando las temperaturas de entrada y salida como si el equipo operara en contraflujo puro.</div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 27 — Gráficas del factor F (Página 26) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Factor de corrección</p>
+        <h2>Gráficas del factor de corrección F</h2>
+        <p>El factor F se determina a partir de gráficas estandarizadas, específicas para cada configuración geométrica del intercambiador. Estas gráficas utilizan dos parámetros adimensionales:</p>
+        <div class="two-col">
+          <div>
+            <div class="card">
+              <h3>Razón de capacidades térmicas (R)</h3>
+              <div class="big-example">
+                <code>R = (T<sub>1</sub> - T<sub>2</sub>) / (t<sub>2</sub> - t<sub>1</sub>) = (&#7745;c<sub>p</sub>)<sub>tubo</sub> / (&#7745;c<sub>p</sub>)<sub>coraza</sub></code>
+              </div>
+            </div>
+            <div class="card" style="margin-top:0.75rem">
+              <h3>Efectividad térmica (P)</h3>
+              <div class="big-example">
+                <code>P = (t<sub>2</sub> - t<sub>1</sub>) / (T<sub>1</sub> - t<sub>1</sub>)</code>
+              </div>
+            </div>
+            <p style="margin-top:0.75em"><strong>Nota:</strong> <em>T</em> mayúscula para el fluido de la coraza, <em>t</em> minúscula para el fluido de los tubos; subíndice 1 para entrada, 2 para salida.</p>
+            <p>Con los valores calculados de R y P, se ingresa a la gráfica correspondiente y se lee el valor de F en las curvas de nivel.</p>
+          </div>
+          <img class="diagram" src="img/pres11-p26-3.png" alt="Gráfica del factor de corrección F" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 28 — Limitaciones del método LMTD (Página 27) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Método LMTD</p>
+        <h2>Limitaciones del método LMTD</h2>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>1. Ideal para diseño</h3>
+            <p>Perfecto para problemas de diseño o cálculo de área (<em>rating</em>), donde:</p>
+            <ul>
+              <li>Las cuatro temperaturas terminales (entradas y salidas) son conocidas</li>
+              <li>Se pueden determinar fácilmente a partir de un balance de energía global</li>
+            </ul>
+            <div class="big-example" style="margin-top:0.5em">
+              <code>A = q / (U &middot; F &middot; &Delta;T<sub>ML</sub>)</code>
+            </div>
+          </div>
+          <div class="card">
+            <h3>2. Iterativo para simulación</h3>
+            <p>Se vuelve engorroso para problemas de simulación o rendimiento (<em>performance</em>), donde:</p>
+            <ul>
+              <li>Se conocen las temperaturas de entrada y los caudales</li>
+              <li>Se desea encontrar las temperaturas de salida</li>
+              <li>Las temperaturas de salida son necesarias para calcular LMTD y F</li>
+            </ul>
+            <p style="margin-top:0.5em">Esto conduce a un procedimiento iterativo de prueba y error.</p>
+          </div>
+          <div class="card">
+            <h3>3. Suposiciones limitantes</h3>
+            <p>El método asume que:</p>
+            <ul>
+              <li>El coeficiente global U es constante a lo largo del intercambiador</li>
+              <li>Las capacidades caloríficas (c<sub>p</sub>) de los fluidos no varían</li>
+              <li>No hay pérdidas de calor al ambiente</li>
+              <li>No hay conducción axial en las paredes</li>
+            </ul>
+            <div class="tip" style="margin-top:0.5em">Para problemas de simulación, el método de Efectividad-NTU (&epsilon;-NTU) es una alternativa más poderosa.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 29 — Separador: Ejemplo (Página 28, intro) -->
+    <!-- ============================================================ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">IQYA-2031 · 2026-10</p>
+        <h1>Ejemplo de diseño por LMTD</h1>
+        <p>Determinación del área de transferencia para un intercambiador 2-4 de tubos y coraza.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 30 — Ejemplo: planteamiento (Página 28) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ejemplo</p>
+        <h2>Planteamiento del problema</h2>
+        <div class="two-col">
+          <div>
+            <p>Se utiliza un intercambiador de calor de <strong>2 pasos por coraza y 4 pasos por los tubos</strong> para enfriar <strong>3 kg/s de aceite</strong> (c<sub>p</sub> = 2.5 kJ/kg·K) desde <strong>90 °C</strong> hasta <strong>40 °C</strong>.</p>
+            <p style="margin-top:0.5em">El enfriamiento se realiza con <strong>2 kg/s de agua</strong> (c<sub>p</sub> = 4.186 kJ/kg·K) que entra al intercambiador a <strong>20 °C</strong>.</p>
+            <p style="margin-top:0.5em">El coeficiente global de transferencia de calor de diseño (sucio) se estima en <strong>350 W/m²·K</strong>.</p>
+            <div class="tip" style="margin-top:0.75em"><strong>Objetivo:</strong> Determinar el área de transferencia de calor requerida para este servicio.</div>
+          </div>
+          <div>
+            <img class="diagram" src="img/pres11-p28-2.png" alt="Diagrama del intercambiador del ejemplo" />
+            <img class="diagram" src="img/pres11-p28-3.png" alt="Esquema del intercambiador 2-4" style="margin-top:0.75rem" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 31 — Ejemplo: Calor transferido y T salida agua (Página 29) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ejemplo — Solución</p>
+        <h2>Paso 1: Calor transferido y temperatura de salida</h2>
+        <div class="card">
+          <h3>Calor transferido (q)</h3>
+          <p>Se calcula con el fluido cuyas temperaturas de entrada y salida son conocidas (aceite):</p>
+          <div class="big-example" style="margin-top:0.5em">
+            <code>q = &#7745;<sub>aceite</sub> &middot; c<sub>p,aceite</sub> &middot; (T<sub>in</sub> - T<sub>out</sub>)</code>
+            <p class="legend">= (3 kg/s) &middot; (2500 J/kg·K) &middot; (90 - 40 K) = <strong>375 000 W = 375 kW</strong></p>
+          </div>
+        </div>
+        <div class="card" style="margin-top:0.5rem">
+          <h3>Temperatura de salida del agua</h3>
+          <div class="big-example" style="margin-top:0.5em">
+            <code>t<sub>out</sub> = t<sub>in</sub> + q / (&#7745;<sub>agua</sub> &middot; c<sub>p,agua</sub>)</code>
+            <p class="legend">= 20 + 375 000 / (2 &middot; 4186) = <strong>64.8 °C</strong></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 32 — Ejemplo: Cálculo de LMTD (Página 30) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ejemplo — Solución</p>
+        <h2>Paso 2: Cálculo de LMTD</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Diferencias de temperatura</h3>
+            <div class="big-example" style="margin-top:0.5em">
+              <code>&Delta;T<sub>1</sub> = T<sub>aceite,in</sub> - t<sub>agua,out</sub></code>
+              <p class="legend">= 90 - 64.8 = <strong>25.2 °C</strong></p>
+            </div>
+            <div class="big-example" style="margin-top:0.75em">
+              <code>&Delta;T<sub>2</sub> = T<sub>aceite,out</sub> - t<sub>agua,in</sub></code>
+              <p class="legend">= 40 - 20 = <strong>20 °C</strong></p>
+            </div>
+          </div>
+          <div class="card">
+            <h3>Media logarítmica</h3>
+            <div class="big-example" style="margin-top:0.5em">
+              <code>&Delta;T<sub>ML</sub> = (&Delta;T<sub>1</sub> - &Delta;T<sub>2</sub>) / ln(&Delta;T<sub>1</sub>/&Delta;T<sub>2</sub>)</code>
+              <p class="legend">= (25.2 - 20) / ln(25.2/20) = <strong>22.5 °C</strong></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 33 — Ejemplo: Factor F y Área (Página 31) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ejemplo — Solución</p>
+        <h2>Paso 3: Factor de corrección F y área</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Factor de corrección F</h3>
+            <div class="big-example" style="margin-top:0.5em">
+              <code>R = (T<sub>in</sub> - T<sub>out</sub>) / (t<sub>out</sub> - t<sub>in</sub>) = 50/44.8 = 1.12</code>
+            </div>
+            <div class="big-example" style="margin-top:0.5em">
+              <code>P = (t<sub>out</sub> - t<sub>in</sub>) / (T<sub>in</sub> - t<sub>in</sub>) = 44.8/70 = 0.64</code>
+            </div>
+            <p style="margin-top:0.5em">Usando la gráfica para "2-4 shell and tube exchanger" con R = 1.12 y P = 0.64, se lee <strong>F &asymp; 0.88</strong>.</p>
+          </div>
+          <div class="card">
+            <h3>Área de transferencia</h3>
+            <div class="big-example" style="margin-top:0.5em">
+              <code>A = q / (U &middot; F &middot; &Delta;T<sub>ML</sub>)</code>
+              <p class="legend">= 375 000 / (350 &middot; 0.88 &middot; 22.5)</p>
+            </div>
+            <div class="big-example" style="margin-top:0.75em;background:#e8f5e9">
+              <code style="color:#2e7d32">A = 54.1 m²</code>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 34 — Selección del intercambiador adecuado (Página 32) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Selección</p>
+        <h2>Selección del intercambiador adecuado</h2>
+        <div class="grid cols-4">
+          <div class="card">
+            <h3>Naturaleza de los fluidos</h3>
+            <ul>
+              <li>Estado físico (líquido, gas, cambio de fase)</li>
+              <li>Corrosividad y compatibilidad con materiales</li>
+              <li>Viscosidad y tendencia al ensuciamiento</li>
+            </ul>
+            <p style="margin-top:0.5em"><em>Ej: Placas para fluidos limpios, espiral para lodos.</em></p>
+          </div>
+          <div class="card">
+            <h3>Condiciones de operación</h3>
+            <ul>
+              <li>Presiones y temperaturas de diseño</li>
+              <li>Ciclado térmico y choques térmicos</li>
+              <li>Resistencia a la fatiga y corrosión</li>
+            </ul>
+            <p style="margin-top:0.5em"><em>Ej: Tubos y coraza para altas presiones/temperaturas.</em></p>
+          </div>
+          <div class="card">
+            <h3>Requerimientos del proceso</h3>
+            <ul>
+              <li>Caída de presión admisible</li>
+              <li>Espacio disponible y limitaciones de instalación</li>
+              <li>Temperatura cercana (<em>approach</em>)</li>
+            </ul>
+            <p style="margin-top:0.5em"><em>Ej: Placas para alta eficiencia y compacidad.</em></p>
+          </div>
+          <div class="card">
+            <h3>Factores económicos</h3>
+            <ul>
+              <li>Costo de capital (CAPEX)</li>
+              <li>Costos de operación y mantenimiento (OPEX)</li>
+              <li>Vida útil y facilidad de reposición</li>
+            </ul>
+            <p style="margin-top:0.5em"><em>Ej: Balance entre costo inicial vs. costos a largo plazo.</em></p>
+          </div>
+        </div>
+        <div class="tip">La selección óptima resulta de un balance técnico-económico para encontrar la solución más robusta y rentable para cada servicio específico.</div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 35 — Cierre -->
+    <!-- ============================================================ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">IQYA-2031 · 2026-10</p>
+        <h1>Resumen</h1>
+        <p>Fundamentos de transferencia de calor, tipos de intercambiadores, método LMTD con factor de corrección F y diseño térmico aplicado.</p>
+        <div class="pill-row">
+          <span class="pill">q = UA F &Delta;T<sub>ML</sub></span>
+          <span class="pill">Contraflujo &gt; Paralelo</span>
+          <span class="pill">F &gt; 0.75</span>
+          <span class="pill">Siguiente: &epsilon;-NTU</span>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="hud">
+    <span id="hud-title">Intercambiadores I — LMTD · IQYA-2031</span>
+    <span id="hud-counter">1 / 35</span>
+  </div>
+
+  <div class="controls">
+    <button aria-label="Anterior" id="prev">&#8249;</button>
+    <button aria-label="Pantalla completa" id="fs">&#9974;</button>
+    <button aria-label="Siguiente" id="next">&#8250;</button>
+  </div>
+
+  <script>
+    (function () {
+      var slides = Array.prototype.slice.call(document.querySelectorAll('[data-slide]'));
+      var i = 0;
+      var counter = document.getElementById('hud-counter');
+      var progress = document.querySelector('.progress');
+
+      function render() {
+        slides.forEach(function (s, idx) {
+          s.classList.toggle('active', idx === i);
+        });
+        if (counter) counter.textContent = (i + 1) + ' / ' + slides.length;
+        if (progress) progress.style.width = ((i + 1) / slides.length * 100) + '%';
+        var isTitle = slides[i] && slides[i].classList.contains('title-slide');
+        document.body.style.background = isTitle ? '#1A1A1A' : '#ffffff';
+      }
+      function go(n) { i = Math.max(0, Math.min(slides.length - 1, n)); render(); }
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); go(i + 1); }
+        else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(i - 1); }
+        else if (e.key === 'Home') { e.preventDefault(); go(0); }
+        else if (e.key === 'End') { e.preventDefault(); go(slides.length - 1); }
+        else if (e.key === 'f' || e.key === 'F') { toggleFs(); }
+      });
+
+      document.getElementById('prev').addEventListener('click', function () { go(i - 1); });
+      document.getElementById('next').addEventListener('click', function () { go(i + 1); });
+      document.getElementById('fs').addEventListener('click', toggleFs);
+
+      function toggleFs() {
+        var el = document.documentElement;
+        if (!document.fullscreenElement) {
+          (el.requestFullscreen || el.webkitRequestFullscreen || function(){}).call(el);
+        } else {
+          (document.exitFullscreen || document.webkitExitFullscreen || function(){}).call(document);
+        }
+      }
+
+      var tx = 0, ty = 0;
+      document.addEventListener('touchstart', function (e) {
+        if (!e.changedTouches[0]) return;
+        tx = e.changedTouches[0].clientX; ty = e.changedTouches[0].clientY;
+      }, { passive: true });
+      document.addEventListener('touchend', function (e) {
+        if (!e.changedTouches[0]) return;
+        var dx = e.changedTouches[0].clientX - tx;
+        var dy = e.changedTouches[0].clientY - ty;
+        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+          if (dx < 0) go(i + 1); else go(i - 1);
+        }
+      }, { passive: true });
+
+      // Inject decorative slide numbers
+      slides.forEach(function (s, idx) {
+        var num = document.createElement('div');
+        num.className = 'slide-number';
+        num.setAttribute('aria-hidden', 'true');
+        num.textContent = String(idx + 1).padStart(2, '0');
+        s.appendChild(num);
+      });
+
+      render();
+    })();
+  </script>
+</body>
+</html>
