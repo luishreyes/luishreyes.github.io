@@ -1,0 +1,1379 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Destilación flash · IQYA-2031</title>
+  <style>
+    :root {
+      --brand-dark: #1A1A1A;
+      --brand-yellow: #FFBF00;
+      --brand-yellow-dark: #E6AC00;
+      --brand-gray: #555555;
+      --surface: #ffffff;
+      --muted: #f4f4f5;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      background: var(--brand-dark);
+      color: var(--brand-dark);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      overflow: hidden;
+      -webkit-text-size-adjust: 100%;
+    }
+    .deck {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+    }
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(1rem, 4vw, 3.5rem);
+      background: var(--surface);
+      opacity: 0;
+      transition: opacity 260ms ease;
+    }
+    .slide.active {
+      display: flex;
+      opacity: 1;
+    }
+    .slide .content {
+      width: 100%;
+      max-width: 72rem;
+      display: flex;
+      flex-direction: column;
+      gap: clamp(0.75rem, 1.5vw, 1.5rem);
+    }
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      font-size: clamp(0.65rem, 1vw, 0.8rem);
+      color: var(--brand-yellow-dark);
+      font-weight: 600;
+    }
+    h1 {
+      font-size: clamp(1.75rem, 5.5vw, 4rem);
+      line-height: 1.05;
+      margin: 0;
+      color: var(--brand-dark);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    h2 {
+      font-size: clamp(1.25rem, 3.4vw, 2.25rem);
+      line-height: 1.15;
+      margin: 0;
+      color: var(--brand-dark);
+      font-weight: 700;
+    }
+    p, li {
+      font-size: clamp(0.95rem, 1.8vw, 1.35rem);
+      line-height: 1.55;
+      color: var(--brand-gray);
+      margin: 0;
+    }
+    ul, ol {
+      padding-left: 1.25em;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45em;
+    }
+    li::marker { color: var(--brand-yellow-dark); }
+    .slide.title-slide {
+      background: linear-gradient(135deg, #141414 0%, #1A1A1A 50%, #2a2a2a 100%);
+      color: #fff;
+    }
+    .slide.title-slide h1 { color: #fff; }
+    .slide.title-slide p { color: #d4d4d8; }
+    .slide.title-slide .eyebrow { color: var(--brand-yellow); }
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 0.5rem;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.35em 0.9em;
+      border-radius: 999px;
+      background: var(--muted);
+      color: var(--brand-dark);
+      font-size: clamp(0.75rem, 1.3vw, 1rem);
+      font-weight: 500;
+    }
+    .slide.title-slide .pill {
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .grid {
+      display: grid;
+      gap: clamp(0.75rem, 1.5vw, 1.25rem);
+    }
+    .grid.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    @media (max-width: 640px) {
+      .grid.cols-2, .grid.cols-3 { grid-template-columns: 1fr; }
+    }
+    .card {
+      background: var(--muted);
+      border-radius: 0.75rem;
+      padding: clamp(0.9rem, 1.5vw, 1.35rem);
+    }
+    .card h3 {
+      font-size: clamp(1rem, 2vw, 1.35rem);
+      margin: 0 0 0.35em 0;
+      color: var(--brand-dark);
+      font-weight: 600;
+    }
+    .card p { font-size: clamp(0.8rem, 1.4vw, 1rem); }
+    .hud {
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      padding: 0.5rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: rgba(255,255,255,0.75);
+      font-size: 0.75rem;
+      pointer-events: none;
+      z-index: 10;
+    }
+    .slide:not(.title-slide) ~ .hud { color: var(--brand-gray); }
+    .controls {
+      position: fixed;
+      right: 1rem;
+      bottom: 2.5rem;
+      display: flex;
+      gap: 0.5rem;
+      z-index: 11;
+    }
+    .controls button {
+      -webkit-appearance: none;
+      appearance: none;
+      border: 1px solid rgba(0,0,0,0.1);
+      background: rgba(255,255,255,0.9);
+      color: var(--brand-dark);
+      width: 2.5rem; height: 2.5rem;
+      border-radius: 999px;
+      font-size: 1rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    }
+    .controls button:active { transform: scale(0.96); }
+    .progress {
+      position: fixed;
+      top: 0; left: 0;
+      height: 3px;
+      background: var(--brand-yellow);
+      transition: width 260ms ease;
+      z-index: 20;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .slide { transition: none; }
+      .progress { transition: none; }
+    }
+    @media (max-width: 480px) {
+      .controls { right: 0.5rem; bottom: 1.25rem; }
+      .hud { font-size: 0.65rem; }
+    }
+
+    /* ─── Decorative: L-shaped yellow corner accent ─── */
+    .slide:not(.title-slide)::before {
+      content: '';
+      position: absolute;
+      top: clamp(1rem, 3vw, 2.5rem);
+      right: clamp(1rem, 3vw, 2.5rem);
+      width: clamp(2rem, 5vw, 4rem);
+      height: clamp(2rem, 5vw, 4rem);
+      border-top: 2.5px solid var(--brand-yellow);
+      border-right: 2.5px solid var(--brand-yellow);
+      pointer-events: none;
+      z-index: 1;
+    }
+    .slide.title-slide::before {
+      content: '';
+      position: absolute;
+      bottom: clamp(1rem, 3vw, 2.5rem);
+      left: clamp(1rem, 3vw, 2.5rem);
+      width: clamp(2rem, 5vw, 4rem);
+      height: clamp(2rem, 5vw, 4rem);
+      border-bottom: 2.5px solid var(--brand-yellow);
+      border-left: 2.5px solid var(--brand-yellow);
+      opacity: 0.4;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* ─── Decorative: large background slide number ─── */
+    .slide-number {
+      position: absolute;
+      bottom: clamp(0.5rem, 2vw, 1.5rem);
+      left: clamp(1rem, 3vw, 2.5rem);
+      font-size: clamp(4rem, 12vw, 10rem);
+      font-weight: 800;
+      line-height: 1;
+      color: rgba(0, 0, 0, 0.04);
+      pointer-events: none;
+      z-index: 0;
+      user-select: none;
+      letter-spacing: -0.04em;
+    }
+    .slide.title-slide .slide-number {
+      color: rgba(255, 255, 255, 0.06);
+    }
+
+    /* ─── Two-column layout ─── */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(1rem, 2vw, 2rem);
+      align-items: center;
+    }
+    @media (max-width: 640px) {
+      .two-col { grid-template-columns: 1fr; }
+    }
+
+    /* ─── Diagram image ─── */
+    .diagram {
+      max-width: 100%;
+      height: auto;
+      border-radius: 0.5rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    }
+
+    /* ─── Small text ─── */
+    .small-text {
+      font-size: clamp(0.7rem, 1.2vw, 0.9rem);
+      color: var(--brand-gray);
+      opacity: 0.8;
+    }
+
+    /* ─── Tip / Warning ─── */
+    .tip {
+      background: #f0fdf4;
+      border-left: 4px solid #22c55e;
+      padding: 0.75em 1em;
+      border-radius: 0 0.5rem 0.5rem 0;
+      font-size: clamp(0.85rem, 1.5vw, 1.1rem);
+      color: var(--brand-dark);
+    }
+    .warning {
+      background: #fef9ee;
+      border-left: 4px solid #f59e0b;
+      padding: 0.75em 1em;
+      border-radius: 0 0.5rem 0.5rem 0;
+      font-size: clamp(0.85rem, 1.5vw, 1.1rem);
+      color: var(--brand-dark);
+    }
+
+    /* ─── Big example ─── */
+    .big-example {
+      background: var(--muted);
+      border-radius: 0.75rem;
+      padding: clamp(1rem, 2vw, 1.5rem);
+      text-align: center;
+    }
+    .big-example code {
+      font-size: clamp(1.2rem, 2.5vw, 2rem);
+      font-weight: 700;
+      color: var(--brand-dark);
+    }
+    .big-example .legend {
+      font-size: clamp(0.75rem, 1.2vw, 0.95rem);
+      color: var(--brand-gray);
+      margin-top: 0.5em;
+    }
+
+    /* ─── Table ─── */
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: clamp(0.75rem, 1.4vw, 1rem);
+    }
+    table.data-table th, table.data-table td {
+      padding: 0.5em 0.75em;
+      text-align: left;
+      border-bottom: 1px solid #e4e4e7;
+    }
+    table.data-table th {
+      background: var(--muted);
+      font-weight: 600;
+      color: var(--brand-dark);
+    }
+    table.data-table td {
+      color: var(--brand-gray);
+    }
+  </style>
+</head>
+<body>
+  <div class="progress" style="width:0"></div>
+  <div class="deck" id="deck">
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 1 — Portada (Página 1)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide title-slide active" data-slide>
+      <div class="content">
+        <p class="eyebrow">IQYA-2031 · 2026-10</p>
+        <h1>Destilación flash: principios y fundamentos</h1>
+        <p>Operación unitaria de separación en una sola etapa de equilibrio.</p>
+        <div class="pill-row">
+          <span class="pill">Destilación flash</span>
+          <span class="pill">Rachford-Rice</span>
+          <span class="pill">Punto de burbuja</span>
+          <span class="pill">Punto de rocío</span>
+          <span class="pill">Flash multicomponente</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 2 — Definición y principios básicos (Página 2)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Definición y principios básicos</p>
+        <h2>¿Qué es la destilación flash?</h2>
+        <div class="two-col">
+          <div>
+            <p>La destilación flash, también conocida como destilación instantánea o de equilibrio, representa una de las operaciones unitarias de separación más fundamentales en la ingeniería química.</p>
+            <p>Se define como un <strong>proceso continuo de una sola etapa</strong> en el que una corriente de alimentación líquida se vaporiza parcialmente de forma súbita al ser introducida en un recipiente a una presión inferior.</p>
+            <p>El término "flash" se debe a la extrema rapidez con la que ocurre esta vaporización.</p>
+          </div>
+          <img class="diagram" src="img/pres15-p02-3.png" alt="Diagrama de destilación flash" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 3 — Principio fundamental (Página 3)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Definición y principios básicos</p>
+        <h2>Principio fundamental de separación</h2>
+        <div class="two-col">
+          <div>
+            <p>El principio fundamental de separación se basa en la <strong>diferencia de volatilidades</strong> entre los componentes de la mezcla líquida.</p>
+            <p>Los componentes más volátiles (con puntos de ebullición más bajos) tienden a concentrarse en la fase vapor, mientras que los menos volátiles permanecen en la fase líquida.</p>
+          </div>
+          <img class="diagram" src="img/pres15-p03-3.png" alt="Diferencia de volatilidades" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 4 — Principio fundamental de separación (Página 4)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Definición y principios básicos</p>
+        <h2>Principio fundamental de separación</h2>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>Vaporización parcial</h3>
+            <p>La mezcla líquida se somete a una caída de presión súbita, provocando que parte del líquido se vaporice instantáneamente.</p>
+          </div>
+          <div class="card">
+            <h3>Enriquecimiento selectivo</h3>
+            <p>La fase vapor se enriquece en los componentes más volátiles (con puntos de ebullición más bajos).</p>
+          </div>
+          <div class="card">
+            <h3>Equilibrio termodinámico</h3>
+            <p>Las corrientes de vapor y líquido abandonan el equipo en estado de equilibrio termodinámico entre sí.</p>
+          </div>
+        </div>
+        <div class="tip">Comprender la destilación flash es esencial, ya que constituye el bloque de construcción conceptual para operaciones de separación más complejas como la destilación fraccionada, que puede entenderse como una serie de etapas de equilibrio interconectadas.</div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 5 — El fenómeno del flasheo: Acondicionamiento (Página 5)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">El fenómeno del flasheo</p>
+        <h2>Acondicionamiento de la alimentación</h2>
+        <div class="two-col">
+          <div>
+            <p>La alimentación líquida es presurizada mediante una bomba y luego calentada en un intercambiador.</p>
+            <p>La temperatura aumenta por encima del punto de ebullición que tendría a la presión del tambor, pero se mantiene líquida debido a la alta presión.</p>
+          </div>
+          <img class="diagram" src="img/pres15-p05-3.png" alt="Acondicionamiento de la alimentación" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 6 — El fenómeno del flasheo: Expansión (Página 6)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">El fenómeno del flasheo</p>
+        <h2>Expansión y caída de presión</h2>
+        <div class="two-col">
+          <div>
+            <p>La corriente caliente presurizada pasa a través de una <strong>válvula de expansión</strong>, experimentando una caída de presión drástica.</p>
+            <p>Este proceso de estrangulamiento es <strong>isentálpico</strong> (efecto Joule-Thomson).</p>
+            <div class="big-example">
+              <code>H<sub>entrada</sub> = H<sub>salida</sub></code>
+            </div>
+          </div>
+          <img class="diagram" src="img/pres15-p06-3.png" alt="Expansión y caída de presión" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 7 — El fenómeno del flasheo: Vaporización (Página 7)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">El fenómeno del flasheo</p>
+        <h2>Vaporización instantánea</h2>
+        <div class="two-col">
+          <div>
+            <p>La reducción abrupta de presión disminuye el punto de ebullición de la mezcla.</p>
+            <p>Como la temperatura del fluido es mayor que su nuevo punto de ebullición, una fracción se vaporiza instantáneamente (<strong>"flasheo"</strong>).</p>
+          </div>
+          <img class="diagram" src="img/pres15-p07-3.png" alt="Vaporización instantánea" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 8 — Ubicación en procesos: Rol (Página 8)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ubicación en los procesos</p>
+        <h2>Rol en procesos industriales</h2>
+        <ul>
+          <li>Frecuentemente empleada para separaciones "gruesas" o preliminares.</li>
+          <li>Funciona como unidad de <strong>"pre-flash"</strong> para reducir la carga de alimentación a columnas de destilación más sofisticadas.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 9 — Ubicación en procesos: Simplicidad y limitaciones (Página 9)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ubicación en los procesos</p>
+        <h2>Simplicidad, economía y limitación fundamental</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Simplicidad y economía</h3>
+            <p>La destilación flash es conceptual y mecánicamente el método de destilación más simple:</p>
+            <ul>
+              <li>Equipo básico: bomba, intercambiador, válvula y tanque separador</li>
+              <li>Menor costo de capital frente a sistemas más complejos</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Limitación fundamental</h3>
+            <p>Una única etapa de equilibrio restringe el grado de separación alcanzable:</p>
+            <ul>
+              <li>No es eficaz para separar componentes con volatilidades similares</li>
+              <li>No adecuada para obtener productos de alta pureza</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 10 — Anatomía: Bomba (Página 10)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Anatomía de un sistema de destilación flash</p>
+        <h2>Bomba</h2>
+        <div class="two-col">
+          <div>
+            <p>Incrementa la presión del fluido (<strong>F</strong>) a un nivel suficientemente alto (<strong>P<sub>1</sub></strong>) para evitar vaporización en el calentador y proporcionar el diferencial necesario para el flasheo.</p>
+          </div>
+          <img class="diagram" src="img/pres15-p10-2.png" alt="Bomba del sistema flash" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 11 — Anatomía: Intercambiador (Página 11)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Anatomía de un sistema de destilación flash</p>
+        <h2>Intercambiador de calor</h2>
+        <div class="two-col">
+          <div>
+            <p>Transfiere calor (<strong>Q</strong>) para elevar la temperatura (<strong>T<sub>F</sub></strong>) y entalpía (<strong>h<sub>F</sub></strong>) de la alimentación presurizada.</p>
+          </div>
+          <img class="diagram" src="img/pres15-p11-2.png" alt="Intercambiador de calor del sistema flash" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 12 — Anatomía: Válvula de expansión (Página 12)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Anatomía de un sistema de destilación flash</p>
+        <h2>Válvula de expansión</h2>
+        <div class="two-col">
+          <div>
+            <p>Provoca la caída de presión drástica hasta la presión de operación del tambor (<strong>P<sub>drum</sub></strong>), causando la vaporización parcial instantánea.</p>
+          </div>
+          <img class="diagram" src="img/pres15-p12-2.png" alt="Válvula de expansión" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 13 — Anatomía: Tambor flash (Página 13)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Anatomía de un sistema de destilación flash</p>
+        <h2>Tambor flash</h2>
+        <div class="two-col">
+          <div>
+            <p>Recipiente de gran volumen donde las fases líquida y vapor se separan por <strong>diferencia de densidad</strong> (gravedad).</p>
+          </div>
+          <img class="diagram" src="img/pres15-p13-2.png" alt="Tambor flash" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 14 — El tambor flash: Función principal (Página 14)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">El corazón del proceso: el tambor flash</p>
+        <h2>Función principal</h2>
+        <p>Actuar como <strong>separador de fases por gravedad</strong>, proporcionando un espacio de desenganche (<em>disengaging space</em>) adecuado para que:</p>
+        <ul>
+          <li>Las gotas de líquido arrastradas puedan caer de nuevo a la fase líquida</li>
+          <li>El vapor pueda ascender libremente hacia la salida superior</li>
+        </ul>
+        <div class="tip">Un tiempo de residencia adecuado (5-10 minutos) es importante para que las fases alcancen el equilibrio termodinámico.</div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 15 — El tambor flash: Consideraciones de diseño (Página 15)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">El corazón del proceso: el tambor flash</p>
+        <h2>Consideraciones de diseño clave</h2>
+        <ul>
+          <li><strong>Velocidad del vapor controlada</strong> para evitar arrastre (<em>entrainment</em>)</li>
+          <li><strong>Geometría</strong> vertical u horizontal según necesidades</li>
+          <li><strong>Eliminadores de niebla</strong> (<em>demisters</em>) para mejorar la calidad del vapor</li>
+          <li><strong>Control preciso del nivel de líquido</strong></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 16 — Video AlfaFlash (Página 16)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Recurso audiovisual</p>
+        <h2>¿Cómo funciona el evaporador AlfaFlash?</h2>
+        <div class="two-col">
+          <div>
+            <p><strong>Video recomendado (YouTube · 03:37)</strong></p>
+            <p>El evaporador AlfaFlash concentra fluidos de alta viscosidad, alta contaminación y diluyentes por cizallamiento de manera segura, confiable y efectiva.</p>
+            <p class="small-text">Fuente: Alfa Laval</p>
+          </div>
+          <img class="diagram" src="img/pres15-p16-4.png" alt="Evaporador AlfaFlash de Alfa Laval" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 17 — Separador: Termodinámica (Página 17, 1/2)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">IQYA-2031 · 2026-10</p>
+        <h1>La termodinámica de la separación</h1>
+        <p>Volatilidad, ley de Raoult y K-values.</p>
+        <div class="pill-row">
+          <span class="pill">Volatilidad relativa</span>
+          <span class="pill">Ley de Raoult</span>
+          <span class="pill">K-values</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 18 — Termodinámica: Conceptos (Página 17, 2/2)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">La termodinámica de la separación</p>
+        <h2>Volatilidad, ley de Raoult y K-values</h2>
+        <p>La capacidad de separación se fundamenta en los principios del equilibrio líquido-vapor (ELV). La separación es posible porque, en equilibrio, la composición de cada fase es diferente.</p>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>Volatilidad relativa (&alpha;)</h3>
+            <p>Cuantifica la facilidad de separación entre dos componentes A y B:</p>
+            <div class="big-example">
+              <code>&alpha;<sub>AB</sub> = (y<sub>A</sub>/x<sub>A</sub>) / (y<sub>B</sub>/x<sub>B</sub>)</code>
+            </div>
+            <p>Si &alpha;<sub>AB</sub> &gt; 1, el componente A es más volátil que B. A mayor valor, más fácil es la separación.</p>
+          </div>
+          <div class="card">
+            <h3>Ley de Raoult (ideal)</h3>
+            <p>La presión parcial de un componente en la fase vapor es:</p>
+            <div class="big-example">
+              <code>p<sub>i</sub> = x<sub>i</sub> &middot; P<sub>i</sub><sup>sat</sup>(T)</code>
+            </div>
+            <p>Donde P<sub>i</sub><sup>sat</sup>(T) es la presión de vapor del componente puro a temperatura T.</p>
+          </div>
+          <div class="card">
+            <h3>Constante de equilibrio (K)</h3>
+            <p>Relaciona las fracciones molares en cada fase:</p>
+            <div class="big-example">
+              <code>K<sub>i</sub> = y<sub>i</sub> / x<sub>i</sub></code>
+            </div>
+            <p>Para mezclas ideales: K<sub>i</sub> = P<sub>i</sub><sup>sat</sup>(T) / P<sub>total</sub></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 19 — Diagrama P-x-y: Estructura (Página 18)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Visualizando el equilibrio a temperatura constante</p>
+        <h2>Estructura del diagrama P-x-y</h2>
+        <div class="two-col">
+          <div>
+            <p>Este diagrama representa la <strong>presión del sistema vs. la fracción molar</strong> del componente más volátil, a temperatura constante:</p>
+            <ul>
+              <li><strong>Línea de punto de burbuja:</strong> Condiciones donde un líquido comienza a hervir</li>
+              <li><strong>Línea de punto de rocío:</strong> Condiciones donde un vapor comienza a condensar</li>
+            </ul>
+          </div>
+          <img class="diagram" src="img/pres15-p18-2.png" alt="Diagrama P-x-y" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 20 — Diagrama P-x-y: Proceso flash (Página 19)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Visualizando el equilibrio a temperatura constante</p>
+        <h2>El proceso flash en el diagrama P-x-y</h2>
+        <div class="two-col">
+          <div>
+            <p>En un proceso de destilación flash:</p>
+            <ol>
+              <li>La alimentación inicialmente está en estado líquido a alta presión (<strong>P<sub>F</sub></strong>)</li>
+              <li>El flasheo se representa como una <strong>caída de presión vertical</strong></li>
+              <li>A la presión <strong>P<sub>drum</sub></strong>, el sistema entra en la región bifásica</li>
+              <li>Una <strong>línea de unión horizontal</strong> (<em>tie line</em>) conecta las composiciones de equilibrio <strong>x</strong> e <strong>y</strong></li>
+            </ol>
+          </div>
+          <img class="diagram" src="img/pres15-p19-2.png" alt="Proceso flash en diagrama P-x-y" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 21 — Diagrama T-x-y: Estructura (Página 20)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Visualizando el equilibrio a presión constante</p>
+        <h2>Estructura del diagrama T-x-y</h2>
+        <p>Representa la <strong>temperatura vs. la fracción molar</strong> del componente más volátil, a presión constante:</p>
+        <ul>
+          <li><strong>Línea de Punto de Burbuja (inferior):</strong> Temperatura donde un líquido comienza a hervir</li>
+          <li><strong>Línea de Punto de Rocío (superior):</strong> Temperatura donde un vapor comienza a condensar</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 22 — Diagrama T-x-y: Regla de la palanca (Página 21)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Visualizando el equilibrio a presión constante</p>
+        <h2>La regla de la palanca</h2>
+        <p>Permite determinar gráficamente las cantidades relativas de líquido (<strong>L</strong>) y vapor (<strong>V</strong>):</p>
+        <div class="big-example">
+          <code>L / V = (y &minus; z) / (z &minus; x)</code>
+          <p class="legend">Donde z es la composición global de la alimentación</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 23 — Diagrama T-x-y: Tie line (Página 22)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Visualizando el equilibrio a presión constante</p>
+        <h2>Línea de unión en el diagrama T-x-y</h2>
+        <div class="two-col">
+          <div>
+            <p>Un proceso flash a temperatura constante se representa mediante una <strong>línea de unión horizontal</strong> (<em>tie line</em>):</p>
+            <ul>
+              <li>La intersección con la curva de burbuja da la composición del líquido (<strong>x</strong>)</li>
+              <li>La intersección con la curva de rocío da la composición del vapor (<strong>y</strong>)</li>
+              <li>La composición global (<strong>z</strong>) debe estar entre <strong>x</strong> e <strong>y</strong></li>
+            </ul>
+          </div>
+          <img class="diagram" src="img/pres15-p23-3.png" alt="Tie line en diagrama T-x-y" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 24 — Balance de materia global (Página 23)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Cuantificando las corrientes de proceso</p>
+        <h2>Balance de materia global</h2>
+        <div class="two-col">
+          <div>
+            <p>El principio de conservación de la masa establece que:</p>
+            <div class="big-example">
+              <code>F = V + L</code>
+              <p class="legend">F = caudal molar total de alimentación · V = caudal molar total de vapor · L = caudal molar total de líquido</p>
+            </div>
+          </div>
+          <img class="diagram" src="img/pres15-p23-4.png" alt="Balance de materia global" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 25 — Balance por componente (Página 24)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Cuantificando las corrientes de proceso</p>
+        <h2>Balance de materia por componente</h2>
+        <div class="two-col">
+          <div>
+            <div class="big-example">
+              <code>F &middot; z<sub>i</sub> = V &middot; y<sub>i</sub> + L &middot; x<sub>i</sub></code>
+            </div>
+            <p>Este balance debe cumplirse para <strong>cada uno de los componentes</strong> de la mezcla.</p>
+          </div>
+          <img class="diagram" src="img/pres15-p24-3.png" alt="Balance por componente" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 26 — Fracción vaporizada (Página 25)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Cuantificando las corrientes de proceso</p>
+        <h2>Fracción vaporizada y fracción líquida</h2>
+        <div class="two-col">
+          <div>
+            <p>Para simplificar los cálculos, definimos:</p>
+            <div class="big-example">
+              <code>f = V / F</code>
+              <p class="legend">Fracción vaporizada</p>
+            </div>
+            <div class="big-example">
+              <code>q = L / F</code>
+              <p class="legend">Fracción líquida</p>
+            </div>
+            <p>Del balance global se deduce que:</p>
+            <div class="big-example">
+              <code>f + q = 1</code>
+            </div>
+          </div>
+          <img class="diagram" src="img/pres15-p25-3.png" alt="Fracción vaporizada y líquida" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 27 — Separador: Balances y equilibrio (Página 26)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">IQYA-2031 · 2026-10</p>
+        <h1>Combinando balances y equilibrio</h1>
+        <p>Derivación de la línea de operación flash.</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 28 — Derivación de la línea de operación (Página 26, contenido)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Combinando balances y equilibrio</p>
+        <h2>Derivación de la línea de operación flash</h2>
+        <p>Partiendo de los balances de materia:</p>
+        <ol>
+          <li>Balance global: <strong>F = V + L</strong> &rArr; <strong>L = F &minus; V</strong></li>
+          <li>Balance por componente: <strong>F &middot; z = V &middot; y + L &middot; x</strong></li>
+          <li>Sustituyendo L: <strong>F &middot; z = V &middot; y + (F &minus; V) &middot; x</strong></li>
+          <li>Despejando y: <strong>V &middot; y = F &middot; z &minus; (F &minus; V) &middot; x</strong></li>
+          <li>Simplificando: <strong>y = (z/f) &minus; ((1 &minus; f)/f) &middot; x</strong></li>
+        </ol>
+        <p>Introduciendo la fracción vaporizada <strong>f = V/F</strong>, obtenemos la <strong>línea de operación flash</strong>.</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 29 — Propiedades y solución gráfica (Página 27)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Combinando balances y equilibrio</p>
+        <h2>Propiedades y solución gráfica</h2>
+        <p>Esta ecuación representa una <strong>línea recta</strong> en un diagrama x-y:</p>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>Pendiente</h3>
+            <div class="big-example">
+              <code>m = &minus;(1&minus;f)/f = &minus;L/V</code>
+            </div>
+          </div>
+          <div class="card">
+            <h3>Intersección con eje y</h3>
+            <div class="big-example">
+              <code>b = z/f</code>
+            </div>
+          </div>
+          <div class="card">
+            <h3>Punto clave</h3>
+            <p>La línea siempre cruza la diagonal en el punto <strong>(z, z)</strong>.</p>
+          </div>
+        </div>
+        <div class="tip">La solución al problema flash se encuentra en la intersección entre la línea de operación y la curva de equilibrio.</div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 30 — Balance de entalpía (Página 28)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">El lado energético de la destilación flash</p>
+        <h2>Balance de entalpía general</h2>
+        <p>Aplicando la primera ley de la termodinámica en estado estacionario:</p>
+        <div class="big-example">
+          <code>F &middot; h<sub>F</sub> + Q<sub>total</sub> = V &middot; H<sub>V</sub> + L &middot; h<sub>L</sub></code>
+        </div>
+        <p>Donde:</p>
+        <ul>
+          <li><strong>h<sub>F</sub>, h<sub>L</sub></strong> = entalpías molares de corrientes líquidas</li>
+          <li><strong>H<sub>V</sub></strong> = entalpía molar de la corriente de vapor</li>
+          <li><strong>Q<sub>total</sub></strong> = tasa neta de calor transferido al sistema</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 31 — Casos de operación (Página 29)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">El lado energético de la destilación flash</p>
+        <h2>Casos de operación comunes</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Flash adiabático (Q = 0)</h3>
+            <p>El calentamiento ocurre antes de la válvula, y tanto la válvula como el tambor se consideran adiabáticos:</p>
+            <div class="big-example">
+              <code>F &middot; h<sub>F,in</sub> = V &middot; H<sub>V</sub> + L &middot; h<sub>L</sub></code>
+            </div>
+          </div>
+          <div class="card">
+            <h3>Flash isotérmico</h3>
+            <p>La temperatura y presión del tambor se fijan como variables de diseño:</p>
+            <div class="big-example">
+              <code>Q<sub>flash</sub> = V &middot; H<sub>V</sub> + L &middot; h<sub>L</sub> &minus; F &middot; h<sub>F,in</sub></code>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 32 — Separador: Flash multicomponente (Página 30)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">IQYA-2031 · 2026-10</p>
+        <h1>Resolviendo el flash multicomponente</h1>
+        <p>Ecuación de Rachford-Rice: el enfoque numérico para mezclas con más de dos componentes.</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 33 — Rachford-Rice: Derivación (Página 30, contenido)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Flash multicomponente</p>
+        <h2>Ecuación de Rachford-Rice — Derivación</h2>
+        <p>Para mezclas con más de dos componentes, se requiere un enfoque numérico. Del balance por componente:</p>
+        <div class="big-example">
+          <code>z<sub>i</sub> = f &middot; y<sub>i</sub> + (1 &minus; f) &middot; x<sub>i</sub></code>
+        </div>
+        <p>Usando la definición de K-value (<strong>y<sub>i</sub> = K<sub>i</sub> &middot; x<sub>i</sub></strong>):</p>
+        <div class="big-example">
+          <code>z<sub>i</sub> = f &middot; (K<sub>i</sub> &middot; x<sub>i</sub>) + (1 &minus; f) &middot; x<sub>i</sub> = x<sub>i</sub> [f &middot; K<sub>i</sub> + 1 &minus; f]</code>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 34 — Rachford-Rice: Ecuación final (Página 31)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Flash multicomponente</p>
+        <h2>Ecuación de Rachford-Rice — Forma final</h2>
+        <p>Despejando x<sub>i</sub> e y<sub>i</sub>:</p>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Composición del líquido</h3>
+            <div class="big-example">
+              <code>x<sub>i</sub> = z<sub>i</sub> / [1 + f(K<sub>i</sub> &minus; 1)]</code>
+            </div>
+          </div>
+          <div class="card">
+            <h3>Composición del vapor</h3>
+            <div class="big-example">
+              <code>y<sub>i</sub> = z<sub>i</sub> &middot; K<sub>i</sub> / [1 + f(K<sub>i</sub> &minus; 1)]</code>
+            </div>
+          </div>
+        </div>
+        <p>La condición &sum;y<sub>i</sub> &minus; &sum;x<sub>i</sub> = 0 lleva a la <strong>ecuación de Rachford-Rice</strong>:</p>
+        <div class="big-example">
+          <code>&sum;<sub>i=1</sub><sup>C</sup> z<sub>i</sub>(K<sub>i</sub> &minus; 1) / [1 + f(K<sub>i</sub> &minus; 1)] = 0</code>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 35 — Método de solución numérica (Página 32)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Flash multicomponente</p>
+        <h2>Método de solución numérica</h2>
+        <div class="two-col">
+          <div>
+            <p>Para un flash isotérmico (<strong>T</strong> y <strong>P</strong> especificadas):</p>
+            <ol>
+              <li>Determinar los <strong>K-values</strong> para cada componente</li>
+              <li>Resolver la ecuación de Rachford-Rice para <strong>f</strong> usando métodos numéricos</li>
+              <li>Calcular <strong>V = f &middot; F</strong> y <strong>L = (1 &minus; f) &middot; F</strong></li>
+              <li>Calcular las composiciones <strong>x<sub>i</sub></strong> e <strong>y<sub>i</sub></strong></li>
+            </ol>
+          </div>
+          <img class="diagram" src="img/pres15-p32-2.png" alt="Método de solución numérica" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 36 — Colab Rachford-Rice (Página 33)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Flash multicomponente</p>
+        <h2>Colab para resolver Rachford-Rice</h2>
+        <p>Se dispone de un cuaderno de Google Colab con la implementación numérica del método de Rachford-Rice para resolver problemas de flash multicomponente.</p>
+        <div class="tip">Utiliza el cuaderno interactivo para experimentar con diferentes mezclas, temperaturas y presiones, y observar cómo cambian las composiciones de las fases.</div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 37 — Variables de operación (Página 34)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Controlando el resultado de la separación</p>
+        <h2>Variables de operación principales</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Variables ajustables</h3>
+            <ul>
+              <li><strong>Presión del tambor</strong> (P<sub>drum</sub>)</li>
+              <li><strong>Temperatura del tambor</strong> (T<sub>drum</sub>), controlada indirectamente a través del calor suministrado (Q<sub>H</sub>)</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Efecto de las variables</h3>
+            <ul>
+              <li><strong>Aumento de temperatura:</strong> Incrementa los K-values y la fracción vaporizada (f)</li>
+              <li><strong>Disminución de presión:</strong> Aumenta los K-values y la fracción vaporizada (f)</li>
+              <li><strong>Composición de alimentación:</strong> Una alimentación más rica en componentes volátiles produce mayor fracción de vapor</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 38 — Tipos de cálculo (Página 35)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Controlando el resultado de la separación</p>
+        <h2>Tipos de cálculo flash</h2>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Tipo de cálculo</th>
+              <th>Variables especificadas</th>
+              <th>Variables a calcular</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Punto de burbuja</strong></td>
+              <td>P, x<sub>i</sub> = z<sub>i</sub></td>
+              <td>T<sub>bub</sub>, y<sub>i</sub></td>
+            </tr>
+            <tr>
+              <td><strong>Punto de rocío</strong></td>
+              <td>P, y<sub>i</sub> = z<sub>i</sub></td>
+              <td>T<sub>dew</sub>, x<sub>i</sub></td>
+            </tr>
+            <tr>
+              <td><strong>Flash isotérmico</strong></td>
+              <td>T, P, F, z<sub>i</sub></td>
+              <td>f, x<sub>i</sub>, y<sub>i</sub>, L, V, Q</td>
+            </tr>
+            <tr>
+              <td><strong>Flash adiabático</strong></td>
+              <td>P, F, z<sub>i</sub>, h<sub>F</sub>, Q = 0</td>
+              <td>T, f, x<sub>i</sub>, y<sub>i</sub>, L, V</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 39 — Separador: Aplicaciones industriales
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">IQYA-2031 · 2026-10</p>
+        <h1>Destilación flash en la práctica industrial</h1>
+        <p>Aplicaciones reales en refinación, desalinización, tratamiento de gases y más.</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 40 — Refinación de petróleo (Página 36)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Aplicaciones industriales</p>
+        <h2>Refinación de petróleo</h2>
+        <p>Aplicación más extensa de la destilación flash. Las unidades de crudo calientan el petróleo y lo flashean para obtener una separación inicial en fracciones.</p>
+        <p>Se utiliza en:</p>
+        <ul>
+          <li>Destilación atmosférica y al vacío</li>
+          <li>Hidrotratamiento</li>
+          <li>Reformado catalítico</li>
+          <li>Craqueo catalítico fluido (FCC)</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 41 — Desalinización (Página 37)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Aplicaciones industriales</p>
+        <h2>Desalinización de agua</h2>
+        <div class="two-col">
+          <div>
+            <p>La tecnología de <strong>destilación flash multietapa (MSF)</strong> es fundamental para la producción de agua dulce a gran escala.</p>
+            <p>El agua de mar caliente fluye a través de cámaras a presiones sucesivamente más bajas, vaporizando parcialmente el agua y condensándola para obtener agua pura.</p>
+          </div>
+          <img class="diagram" src="img/pres15-p37-3.png" alt="Destilación flash multietapa para desalinización" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 42 — Aplicaciones adicionales (Página 38)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Aplicaciones industriales</p>
+        <h2>Aplicaciones adicionales</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Tratamiento de gases ácidos</h3>
+            <p>En los procesos de tratamiento con aminas para eliminar H&#8322;S y CO&#8322; del gas natural:</p>
+            <ul>
+              <li>Se utiliza un tambor flash después de la columna de absorción</li>
+              <li>La amina "rica" (cargada con gases ácidos) se flashea para liberar hidrocarburos ligeros disueltos</li>
+              <li>Esto ocurre antes de que la amina pase a la columna de regeneración</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Industria farmacéutica y alimentaria</h3>
+            <p>La destilación flash se emplea para:</p>
+            <ul>
+              <li>Purificación de disolventes</li>
+              <li>Recuperación de aceites esenciales de material vegetal</li>
+              <li>Separación de productos de fermentación</li>
+              <li>Purificación de bebidas alcohólicas</li>
+            </ul>
+            <p>Su simplicidad mecánica y bajo costo las hace ideales para aplicaciones donde no se requieren productos de alta pureza.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 43 — Resumen: Conceptos fundamentales (Página 39)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">IQYA-2031 · 2026-10</p>
+        <h1>Resumen</h1>
+        <p>Conceptos fundamentales, ventajas, limitaciones y comparación.</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 44 — Resumen: Conceptos (Página 39, contenido)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Resumen</p>
+        <h2>Conceptos fundamentales</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Mecanismo</h3>
+            <p>Separación continua de una sola etapa de equilibrio.</p>
+          </div>
+          <div class="card">
+            <h3>Fuerza impulsora</h3>
+            <p>Reducción súbita de presión de una corriente líquida precalentada.</p>
+          </div>
+          <div class="card">
+            <h3>Resultado</h3>
+            <p>Enriquecimiento selectivo según volatilidad.</p>
+          </div>
+          <div class="card">
+            <h3>Modelado</h3>
+            <p>Balances de materia, energía y relaciones de equilibrio.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 45 — Resumen: Ventajas y limitaciones (Página 40)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Resumen</p>
+        <h2>Ventajas, limitaciones y puntos clave</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Ventajas</h3>
+            <p>Simplicidad, robustez, bajo costo de capital, operación continua.</p>
+          </div>
+          <div class="card">
+            <h3>Limitaciones</h3>
+            <p>Separación limitada, ineficacia para volatilidades cercanas, pureza moderada.</p>
+          </div>
+        </div>
+        <ul>
+          <li>La destilación flash es una operación unitaria fundamental en ingeniería química.</li>
+          <li>Proporciona separaciones rápidas y económicas cuando no se requiere alta pureza.</li>
+          <li>Su análisis requiere el dominio de balances de materia, energía y equilibrio de fases.</li>
+          <li>Forma parte esencial de procesos industriales como refinación y desalinización.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 46 — Comparación flash vs fraccionada (Página 41)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Resumen</p>
+        <h2>Destilación flash vs. destilación fraccionada</h2>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Característica</th>
+              <th>Destilación flash</th>
+              <th>Destilación fraccionada</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Principio</strong></td>
+              <td>Una única etapa de equilibrio</td>
+              <td>Múltiples etapas de equilibrio sucesivas</td>
+            </tr>
+            <tr>
+              <td><strong>Equipo clave</strong></td>
+              <td>Tambor Flash</td>
+              <td>Columna de platos o empaque, rehervidor y condensador</td>
+            </tr>
+            <tr>
+              <td><strong>Reflujo</strong></td>
+              <td>No utiliza reflujo</td>
+              <td>El reflujo es esencial</td>
+            </tr>
+            <tr>
+              <td><strong>Capacidad de separación</strong></td>
+              <td>Limitada (&alpha; &asymp; 1)</td>
+              <td>Alta (&alpha; &gg; 1)</td>
+            </tr>
+            <tr>
+              <td><strong>Pureza del producto</strong></td>
+              <td>Baja a moderada</td>
+              <td>Potencialmente muy alta (&gt;99%)</td>
+            </tr>
+            <tr>
+              <td><strong>Complejidad y costo</strong></td>
+              <td>Simple y económica</td>
+              <td>Compleja y costosa</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 47 — Mensaje final (Página 42)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">IQYA-2031 · 2026-10</p>
+        <h1>Mensaje final</h1>
+        <p>La destilación flash no es una versión "inferior" de la destilación fraccionada, sino una herramienta diferente para un propósito distinto.</p>
+        <p>Es la elección correcta para separaciones simples y de bajo costo, mientras que la destilación fraccionada es la solución para separaciones de alta pureza y dificultad.</p>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="hud">
+    <span id="hud-title">Destilación flash · IQYA-2031</span>
+    <span id="hud-counter">1 / 47</span>
+  </div>
+
+  <div class="controls">
+    <button aria-label="Anterior" id="prev">&#8249;</button>
+    <button aria-label="Pantalla completa" id="fs">&#9974;</button>
+    <button aria-label="Siguiente" id="next">&#8250;</button>
+  </div>
+
+  <script>
+    (function () {
+      var slides = Array.prototype.slice.call(document.querySelectorAll('[data-slide]'));
+      var i = 0;
+      var counter = document.getElementById('hud-counter');
+      var progress = document.querySelector('.progress');
+
+      function render() {
+        slides.forEach(function (s, idx) {
+          s.classList.toggle('active', idx === i);
+        });
+        if (counter) counter.textContent = (i + 1) + ' / ' + slides.length;
+        if (progress) progress.style.width = ((i + 1) / slides.length * 100) + '%';
+        var isTitle = slides[i] && slides[i].classList.contains('title-slide');
+        document.body.style.background = isTitle ? '#1A1A1A' : '#ffffff';
+      }
+      function go(n) { i = Math.max(0, Math.min(slides.length - 1, n)); render(); }
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); go(i + 1); }
+        else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(i - 1); }
+        else if (e.key === 'Home') { e.preventDefault(); go(0); }
+        else if (e.key === 'End') { e.preventDefault(); go(slides.length - 1); }
+        else if (e.key === 'f' || e.key === 'F') { toggleFs(); }
+      });
+
+      document.getElementById('prev').addEventListener('click', function () { go(i - 1); });
+      document.getElementById('next').addEventListener('click', function () { go(i + 1); });
+      document.getElementById('fs').addEventListener('click', toggleFs);
+
+      function toggleFs() {
+        var el = document.documentElement;
+        if (!document.fullscreenElement) {
+          (el.requestFullscreen || el.webkitRequestFullscreen || function(){}).call(el);
+        } else {
+          (document.exitFullscreen || document.webkitExitFullscreen || function(){}).call(document);
+        }
+      }
+
+      var tx = 0, ty = 0;
+      document.addEventListener('touchstart', function (e) {
+        if (!e.changedTouches[0]) return;
+        tx = e.changedTouches[0].clientX; ty = e.changedTouches[0].clientY;
+      }, { passive: true });
+      document.addEventListener('touchend', function (e) {
+        if (!e.changedTouches[0]) return;
+        var dx = e.changedTouches[0].clientX - tx;
+        var dy = e.changedTouches[0].clientY - ty;
+        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+          if (dx < 0) go(i + 1); else go(i - 1);
+        }
+      }, { passive: true });
+
+      // Inject decorative slide numbers
+      slides.forEach(function (s, idx) {
+        var num = document.createElement('div');
+        num.className = 'slide-number';
+        num.setAttribute('aria-hidden', 'true');
+        num.textContent = String(idx + 1).padStart(2, '0');
+        s.appendChild(num);
+      });
+
+      render();
+    })();
+  </script>
+</body>
+</html>
