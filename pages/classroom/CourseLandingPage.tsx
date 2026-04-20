@@ -26,11 +26,10 @@ export const CourseLandingPage: React.FC = () => {
       >
         <CourseHero course={course} />
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16 relative z-10 mb-6">
-          <TodayButton course={course} />
-        </div>
-
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-10 relative z-10">
+          <div className="mb-4">
+            <TodayButton course={course} />
+          </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <Link
               to={`/classroom/${course.slug}/readings`}
