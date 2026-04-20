@@ -39,6 +39,11 @@ import { researchLines } from './components/data/research';
 import { TeachingPurposePage } from './pages/purpose/TeachingPurposePage';
 import { ResearchPurposePage } from './pages/purpose/ResearchPurposePage';
 import { ServicePurposePage } from './pages/purpose/ServicePurposePage';
+import { ClassroomIndexPage } from './pages/classroom/ClassroomIndexPage';
+import { CourseLandingPage } from './pages/classroom/CourseLandingPage';
+import { ReadingsIndexPage } from './pages/classroom/ReadingsIndexPage';
+import { ReadingPage } from './pages/classroom/ReadingPage';
+import { PresentationsIndexPage } from './pages/classroom/PresentationsIndexPage';
 import { startSequentialImagePreloading } from './services/preloader';
 import { AppDataContext } from './context/AppDataContext';
 
@@ -171,6 +176,11 @@ const App: React.FC = () => {
               <Route path="/future/research" element={<ResearchDirectionsPage />} />
               <Route path="/future/collaboration" element={<CollaborationPage />} />
               <Route path="/recognition" element={<AwardsPage />} />
+              <Route path="/classroom" element={<ClassroomIndexPage />} />
+              <Route path="/classroom/:courseSlug" element={<CourseLandingPage />} />
+              <Route path="/classroom/:courseSlug/readings" element={<ReadingsIndexPage />} />
+              <Route path="/classroom/:courseSlug/readings/:slug" element={<ReadingPage />} />
+              <Route path="/classroom/:courseSlug/presentations" element={<PresentationsIndexPage />} />
               <Route path="*" element={<AboutPage />} />
             </Routes>
           </AnimatePresence>
