@@ -1,0 +1,1097 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Diagramas P&ID · IQYA-2031</title>
+  <style>
+    :root {
+      --brand-dark: #1A1A1A;
+      --brand-yellow: #FFBF00;
+      --brand-yellow-dark: #E6AC00;
+      --brand-gray: #555555;
+      --surface: #ffffff;
+      --muted: #f4f4f5;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      background: var(--brand-dark);
+      color: var(--brand-dark);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      overflow: hidden;
+      -webkit-text-size-adjust: 100%;
+    }
+    .deck {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+    }
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(1rem, 4vw, 3.5rem);
+      background: var(--surface);
+      opacity: 0;
+      transition: opacity 260ms ease;
+    }
+    .slide.active {
+      display: flex;
+      opacity: 1;
+    }
+    .slide .content {
+      width: 100%;
+      max-width: 72rem;
+      display: flex;
+      flex-direction: column;
+      gap: clamp(0.75rem, 1.5vw, 1.5rem);
+    }
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      font-size: clamp(0.65rem, 1vw, 0.8rem);
+      color: var(--brand-yellow-dark);
+      font-weight: 600;
+    }
+    h1 {
+      font-size: clamp(1.75rem, 5.5vw, 4rem);
+      line-height: 1.05;
+      margin: 0;
+      color: var(--brand-dark);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    h2 {
+      font-size: clamp(1.25rem, 3.4vw, 2.25rem);
+      line-height: 1.15;
+      margin: 0;
+      color: var(--brand-dark);
+      font-weight: 700;
+    }
+    p, li {
+      font-size: clamp(0.95rem, 1.8vw, 1.35rem);
+      line-height: 1.55;
+      color: var(--brand-gray);
+      margin: 0;
+    }
+    ul, ol {
+      padding-left: 1.25em;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45em;
+    }
+    li::marker { color: var(--brand-yellow-dark); }
+    .slide.title-slide {
+      background: linear-gradient(135deg, #141414 0%, #1A1A1A 50%, #2a2a2a 100%);
+      color: #fff;
+    }
+    .slide.title-slide h1 { color: #fff; }
+    .slide.title-slide p { color: #d4d4d8; }
+    .slide.title-slide .eyebrow { color: var(--brand-yellow); }
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 0.5rem;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.35em 0.9em;
+      border-radius: 999px;
+      background: var(--muted);
+      color: var(--brand-dark);
+      font-size: clamp(0.75rem, 1.3vw, 1rem);
+      font-weight: 500;
+    }
+    .slide.title-slide .pill {
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .grid {
+      display: grid;
+      gap: clamp(0.75rem, 1.5vw, 1.25rem);
+    }
+    .grid.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid.cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    @media (max-width: 640px) {
+      .grid.cols-2, .grid.cols-3, .grid.cols-4 { grid-template-columns: 1fr; }
+    }
+    .card {
+      background: var(--muted);
+      border-radius: 0.75rem;
+      padding: clamp(0.9rem, 1.5vw, 1.35rem);
+    }
+    .card h3 {
+      font-size: clamp(1rem, 2vw, 1.35rem);
+      margin: 0 0 0.35em 0;
+      color: var(--brand-dark);
+      font-weight: 600;
+    }
+    .card p { font-size: clamp(0.8rem, 1.4vw, 1rem); }
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(1rem, 2vw, 2rem);
+      align-items: center;
+    }
+    @media (max-width: 640px) {
+      .two-col { grid-template-columns: 1fr; }
+    }
+    .diagram {
+      width: 100%;
+      max-width: 54rem;
+      border-radius: 0.75rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    }
+    .small-text {
+      font-size: clamp(0.7rem, 1.2vw, 0.9rem);
+      color: var(--brand-gray);
+      text-align: center;
+    }
+    .tip {
+      background: #fffbe6;
+      border-left: 4px solid var(--brand-yellow);
+      padding: 0.75em 1em;
+      border-radius: 0.5rem;
+      font-size: clamp(0.85rem, 1.5vw, 1.1rem);
+      color: var(--brand-dark);
+    }
+    .warning {
+      background: #fff0f0;
+      border-left: 4px solid #e53e3e;
+      padding: 0.75em 1em;
+      border-radius: 0.5rem;
+      font-size: clamp(0.85rem, 1.5vw, 1.1rem);
+      color: var(--brand-dark);
+    }
+    .big-example {
+      background: var(--muted);
+      border-radius: 0.75rem;
+      padding: clamp(1rem, 2vw, 1.75rem);
+      text-align: center;
+    }
+    .big-example code {
+      font-size: clamp(1.25rem, 3vw, 2.5rem);
+      font-weight: 700;
+      color: var(--brand-dark);
+      letter-spacing: 0.05em;
+    }
+    .big-example .legend {
+      font-size: clamp(0.75rem, 1.3vw, 1rem);
+      color: var(--brand-gray);
+      margin-top: 0.5em;
+    }
+    .hud {
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      padding: 0.5rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: rgba(255,255,255,0.75);
+      font-size: 0.75rem;
+      pointer-events: none;
+      z-index: 10;
+    }
+    .slide:not(.title-slide) ~ .hud { color: var(--brand-gray); }
+    .controls {
+      position: fixed;
+      right: 1rem;
+      bottom: 2.5rem;
+      display: flex;
+      gap: 0.5rem;
+      z-index: 11;
+    }
+    .controls button {
+      -webkit-appearance: none;
+      appearance: none;
+      border: 1px solid rgba(0,0,0,0.1);
+      background: rgba(255,255,255,0.9);
+      color: var(--brand-dark);
+      width: 2.5rem; height: 2.5rem;
+      border-radius: 999px;
+      font-size: 1rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    }
+    .controls button:active { transform: scale(0.96); }
+    .progress {
+      position: fixed;
+      top: 0; left: 0;
+      height: 3px;
+      background: var(--brand-yellow);
+      transition: width 260ms ease;
+      z-index: 20;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .slide { transition: none; }
+      .progress { transition: none; }
+    }
+    @media (max-width: 480px) {
+      .controls { right: 0.5rem; bottom: 1.25rem; }
+      .hud { font-size: 0.65rem; }
+    }
+
+    /* ─── Decorative: L-shaped yellow corner accent ─── */
+    .slide:not(.title-slide)::before {
+      content: '';
+      position: absolute;
+      top: clamp(1rem, 3vw, 2.5rem);
+      right: clamp(1rem, 3vw, 2.5rem);
+      width: clamp(2rem, 5vw, 4rem);
+      height: clamp(2rem, 5vw, 4rem);
+      border-top: 2.5px solid var(--brand-yellow);
+      border-right: 2.5px solid var(--brand-yellow);
+      pointer-events: none;
+      z-index: 1;
+    }
+    .slide.title-slide::before {
+      content: '';
+      position: absolute;
+      bottom: clamp(1rem, 3vw, 2.5rem);
+      left: clamp(1rem, 3vw, 2.5rem);
+      width: clamp(2rem, 5vw, 4rem);
+      height: clamp(2rem, 5vw, 4rem);
+      border-bottom: 2.5px solid var(--brand-yellow);
+      border-left: 2.5px solid var(--brand-yellow);
+      opacity: 0.4;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* ─── Decorative: large background slide number ─── */
+    .slide-number {
+      position: absolute;
+      bottom: clamp(0.5rem, 2vw, 1.5rem);
+      left: clamp(1rem, 3vw, 2.5rem);
+      font-size: clamp(4rem, 12vw, 10rem);
+      font-weight: 800;
+      line-height: 1;
+      color: rgba(0, 0, 0, 0.04);
+      pointer-events: none;
+      z-index: 0;
+      user-select: none;
+      letter-spacing: -0.04em;
+    }
+    .slide.title-slide .slide-number {
+      color: rgba(255, 255, 255, 0.06);
+    }
+  </style>
+</head>
+<body>
+  <div class="progress" style="width:0"></div>
+  <div class="deck" id="deck">
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 01 · Portada (Página 1)                                -->
+    <!-- ============================================================ -->
+    <section class="slide title-slide active" data-slide>
+      <div class="content">
+        <p class="eyebrow">IQYA-2031 · 2026-10</p>
+        <h1>Diagramas de tubería e instrumentación (P&ID)</h1>
+        <p>Del diseño conceptual al documento constructivo: simbología ISA, lazos de control, seguridad y construcción profesional de P&ID.</p>
+        <div class="pill-row">
+          <span class="pill">Simbología ISA</span>
+          <span class="pill">Lazos de control</span>
+          <span class="pill">HAZOP</span>
+          <span class="pill">Válvulas</span>
+          <span class="pill">Especificación de líneas</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 02 · Del PFD al P&ID (Página 2)                       -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Contexto</p>
+        <h2>Del PFD al P&ID: evolución hacia el detalle constructivo</h2>
+        <p>El P&ID transforma el diseño conceptual del PFD en un documento constructivo completo.</p>
+        <p>Mientras el PFD responde <strong>"¿qué equipos necesitamos y cómo se conectan?"</strong>, el P&ID responde <strong>"¿cómo construimos, operamos y controlamos esta planta de manera segura?"</strong></p>
+        <p>Esta transición no es simplemente añadir más detalles; es un cambio fundamental de audiencia y propósito. El P&ID es el lenguaje que convierte ideas en realidad construible.</p>
+        <div class="tip">El P&ID es el puente entre la ingeniería conceptual y la construcción real de la planta.</div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 03 · ¿Qué es un P&ID? (Página 3)                     -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Definición</p>
+        <h2>¿Qué es un P&ID?</h2>
+        <div class="two-col">
+          <div>
+            <div class="grid cols-2">
+              <div class="card">
+                <h3>Documento maestro</h3>
+                <p>El documento más consultado durante toda la vida útil de la planta.</p>
+              </div>
+              <div class="card">
+                <h3>Carácter contractual</h3>
+                <p>A diferencia del PFD que es conceptual, el P&ID es contractual: los contratistas construyen exactamente lo que muestra.</p>
+              </div>
+              <div class="card">
+                <h3>Documento convergente</h3>
+                <p>Es donde convergen proceso (qué hacer), mecánica (cómo construir), instrumentación (cómo controlar) y seguridad (cómo proteger).</p>
+              </div>
+              <div class="card">
+                <h3>Evidencia legal</h3>
+                <p>En disputas legales sobre accidentes, el P&ID es evidencia clave de si el diseño era inherentemente seguro.</p>
+              </div>
+            </div>
+          </div>
+          <img class="diagram" src="img/pid-p02-3.png" alt="Ejemplo de diagrama P&ID" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 04 · Información que migra del PFD (Página 4 - 1/2)   -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Del PFD al P&ID</p>
+        <h2>Información que migra del PFD</h2>
+        <p>El P&ID comienza donde termina el PFD, conservando toda la información esencial pero expandiéndola significativamente:</p>
+        <ul>
+          <li>Todos los equipos principales con sus códigos (V-101, P-201, etc.)</li>
+          <li>Líneas de proceso principales con sus números</li>
+          <li>Condiciones de operación básicas (temperatura, presión, flujo)</li>
+          <li>Topología general del proceso</li>
+        </ul>
+        <div class="tip">Esta información se refina con mayor detalle en el P&ID, manteniendo siempre la trazabilidad al PFD original.</div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 05 · Ejemplo de refinamiento (Página 4 - 2/2)         -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Del PFD al P&ID</p>
+        <h2>Refinamiento del detalle</h2>
+        <p>Cada elemento del PFD se expande significativamente en el P&ID:</p>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>PFD</h3>
+            <p><code>"P-201"</code></p>
+            <p>Solo el identificador del equipo.</p>
+          </div>
+          <div class="card">
+            <h3>P&ID</h3>
+            <p><code>"P-201A/B, bombas centrífugas horizontales, 50 m³/h @ 45 m, motor 15 kW, 3600 rpm"</code></p>
+            <p>Especificación completa con redundancia.</p>
+          </div>
+        </div>
+        <p>Esta evolución mantiene la trazabilidad: cualquier elemento del P&ID debe poder rastrearse hasta el PFD original.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 06 · Nueva información crítica (Página 5)              -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Contenido del P&ID</p>
+        <h2>Nueva información crítica del P&ID</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Instrumentación completa</h3>
+            <p>Cada transmisor, controlador, válvula de control, alarma, interlock de seguridad, con su tag único y función específica.</p>
+          </div>
+          <div class="card">
+            <h3>Válvulas manuales</h3>
+            <p>Todas las válvulas de bloqueo, check, alivio, con tipo específico (compuerta, globo, bola, mariposa).</p>
+          </div>
+          <div class="card">
+            <h3>Tuberías secundarias</h3>
+            <p>Drenajes, venteos, bypasses, conexiones de utility, tomas de muestra.</p>
+          </div>
+          <div class="card">
+            <h3>Especificaciones detalladas</h3>
+            <p>Diámetro nominal, schedule, material, rating, aislamiento, instalación y requerimientos especiales.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 07 · Separador - Simbología ISA                       -->
+    <!-- ============================================================ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Sección 2</p>
+        <h1>Simbología de instrumentación ISA</h1>
+        <p>Norma ISA-5.1: el estándar universal para representar instrumentos y lazos de control en P&ID.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 08 · Simbología ISA (Página 6 - 1/2)                  -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Simbología ISA</p>
+        <h2>Norma ISA-5.1: símbolos de instrumentación</h2>
+        <div class="two-col">
+          <div>
+            <p>La norma ISA-5.1 define símbolos precisos para cada elemento de instrumentación:</p>
+            <ul>
+              <li><strong>Círculos vacíos:</strong> instrumentos montados en campo</li>
+              <li><strong>Círculos con línea horizontal:</strong> montaje en panel</li>
+              <li><strong>Círculos con línea punteada:</strong> función en DCS</li>
+            </ul>
+          </div>
+          <img class="diagram" src="img/pid-p04-2.png" alt="Símbolos de instrumentación ISA" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 09 · Código de letras ISA (Página 6 - 2/2)            -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Simbología ISA</p>
+        <h2>Código de letras ISA</h2>
+        <p>Las letras dentro del círculo siguen un código estricto:</p>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Primera letra: variable medida</h3>
+            <p><strong>T</strong> = Temperatura &nbsp; <strong>P</strong> = Presión &nbsp; <strong>F</strong> = Flujo &nbsp; <strong>L</strong> = Nivel</p>
+          </div>
+          <div class="card">
+            <h3>Letras siguientes: función</h3>
+            <p><strong>I</strong> = Indicador &nbsp; <strong>T</strong> = Transmisor &nbsp; <strong>C</strong> = Controlador &nbsp; <strong>V</strong> = Válvula</p>
+          </div>
+        </div>
+        <div class="big-example">
+          <code>TIC-301</code>
+          <p class="legend">T = Temperatura · I = Indicador · C = Controlador · 301 = número de lazo</p>
+        </div>
+        <p>Esta precisión elimina ambigüedad: un instrumentista sabe exactamente qué instalar viendo el símbolo.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 10 · Sistema de tags - Instrumentos (Página 7 - 1/2)  -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Identificación</p>
+        <h2>Sistema de tags: identificación única (1/2)</h2>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>Instrumentos</h3>
+            <p><strong>Formato:</strong> XXY-###A</p>
+            <ul>
+              <li>XX = variable y función (TI, PT, FIC)</li>
+              <li>Y = modificador opcional (D = diferencial)</li>
+              <li>### = número único de lazo</li>
+              <li>A = sufijo para múltiples elementos</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Equipos</h3>
+            <p><strong>Formato:</strong> X-###Y</p>
+            <ul>
+              <li>X = tipo de equipo (P, V, E)</li>
+              <li>### = área y número secuencial</li>
+              <li>Y = sufijo para redundantes</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Válvulas</h3>
+            <p><strong>Formato:</strong> XV-####</p>
+            <ul>
+              <li>X = tipo (HV = manual, XV = bloqueo)</li>
+              <li>#### = número único</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 11 · Sistema de tags - Ejemplos (Página 7 - 2/2)      -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Identificación</p>
+        <h2>Sistema de tags: identificación única (2/2)</h2>
+        <div class="grid cols-3">
+          <div class="big-example">
+            <code>TIC-201</code>
+            <p class="legend">Controlador indicador de temperatura</p>
+          </div>
+          <div class="big-example">
+            <code>P-201A</code>
+            <p class="legend">Bomba A del área 200</p>
+          </div>
+          <div class="big-example">
+            <code>PSV-4567</code>
+            <p class="legend">Válvula de alivio de presión</p>
+          </div>
+        </div>
+        <div class="warning">La consistencia es crítica: estos tags aparecerán en P&IDs, planos eléctricos, órdenes de compra, etiquetas físicas, sistemas de mantenimiento y procedimientos operativos por décadas.</div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 12 · Separador - Válvulas                              -->
+    <!-- ============================================================ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Sección 3</p>
+        <h1>Válvulas: tipos y representación</h1>
+        <p>Selección correcta de válvulas para operación segura y eficiente.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 13 · Válvulas de bloqueo (Página 8 - 1/2)             -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Válvulas</p>
+        <h2>Válvulas de bloqueo</h2>
+        <div class="two-col">
+          <div>
+            <div class="grid cols-2">
+              <div class="card">
+                <h3>Compuerta (gate)</h3>
+                <p>On/off en líneas grandes. Flujo sin obstrucción.</p>
+              </div>
+              <div class="card">
+                <h3>Globo</h3>
+                <p>Para regulación manual. Buena capacidad de estrangulamiento.</p>
+              </div>
+              <div class="card">
+                <h3>Bola</h3>
+                <p>Cuarto de vuelta rápido. Cierre hermético.</p>
+              </div>
+              <div class="card">
+                <h3>Mariposa</h3>
+                <p>Líneas grandes con espacio limitado. Económica.</p>
+              </div>
+            </div>
+          </div>
+          <img class="diagram" src="img/pid-p08-2.png" alt="Diagrama de lazo de control con válvulas" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 14 · Válvulas especiales (Página 8 - 2/2)             -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Válvulas</p>
+        <h2>Válvulas especiales</h2>
+        <div class="two-col">
+          <div>
+            <div class="grid cols-1">
+              <div class="card">
+                <h3>Check (retención)</h3>
+                <p>Previenen contraflujo. Críticas después de bombas.</p>
+              </div>
+              <div class="card">
+                <h3>PSV (alivio de presión)</h3>
+                <p>Protegen contra sobrepresión. Dimensionadas por API 520.</p>
+              </div>
+              <div class="card">
+                <h3>Válvulas de control</h3>
+                <p>Modulan flujo según señal del controlador.</p>
+              </div>
+            </div>
+          </div>
+          <img class="diagram" src="img/pid-p08-3.png" alt="Diagrama de control" />
+        </div>
+        <div class="tip">El P&ID muestra no solo qué válvula sino orientación, accesibilidad y conexiones de instrumentación. La selección correcta es crítica para operación segura.</div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 15 · Ejemplo PFD vs P&ID (Página 9 - 1/2)            -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Comparación</p>
+        <h2>Ejemplo comparativo: PFD vs P&ID</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>PFD: representación conceptual</h3>
+            <p>Círculo con triángulo etiquetado "P-201", línea entrando y saliendo, posiblemente "15 kW" anotado como dato básico.</p>
+          </div>
+          <div class="card">
+            <h3>P&ID: sistema completo con 15+ componentes</h3>
+            <p>P-201A/B (redundancia), válvulas de succión (gate 4"), filtro temporal, manómetros locales (PI-201, PI-202), transmisor de presión diferencial (PDT-201), válvulas de descarga (check + gate), válvula de control con bypass, drenajes y venteos.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 16 · Ejemplo PFD vs P&ID - Imagen (Página 9 - 2/2)   -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Comparación</p>
+        <h2>Expansión de detalle en el P&ID</h2>
+        <img class="diagram" src="img/pid-p09-2.png" alt="Ejemplo industrial de P&ID" />
+        <p class="small-text">Ejemplo industrial: un solo equipo del PFD se expande a un sistema completo con múltiples componentes.</p>
+        <div class="warning">Esta expansión de detalle ocurre para CADA elemento del PFD, transformando símbolos simples en sistemas operables completos.</div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 17 · Separador - Instrumentación avanzada              -->
+    <!-- ============================================================ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Sección 4</p>
+        <h1>Instrumentación avanzada</h1>
+        <p>Fermentadores, lazos de control y especificación de líneas.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 18 · Fermentador - Instrumentación (Página 10 - 1/2)  -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Instrumentación avanzada</p>
+        <h2>Instrumentación de un fermentador (1/2)</h2>
+        <div class="two-col">
+          <div>
+            <p>Este biorreactor demuestra la instrumentación avanzada empleada en procesos biotecnológicos modernos:</p>
+            <ul>
+              <li><strong>Control térmico:</strong> mediante mezclado automático de agua fría (20 °C) y caliente (80 °C), regulado por válvulas termostáticas.</li>
+              <li><strong>Control de nivel:</strong> transmisores de nivel (LT) para monitorear el contenido, regulando la adición de fluidos.</li>
+              <li><strong>Dosificación precisa:</strong> bombas peristálticas (P-001, P-002, P-003) para glicerol, agua fría y caliente, permitiendo alimentación exacta.</li>
+            </ul>
+          </div>
+          <img class="diagram" src="img/pid-p10-2.png" alt="Instrumentación de seguridad en P&ID" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 19 · Fermentador - Sensores (Página 10 - 2/2)         -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Instrumentación avanzada</p>
+        <h2>Instrumentación de un fermentador (2/2)</h2>
+        <ul>
+          <li><strong>Sensores críticos:</strong> temperatura (TT, TE), nivel (LT, LE), conductividad (CT, CE), asegurando condiciones óptimas para reacciones biológicas.</li>
+          <li><strong>Descarga controlada:</strong> salida del agua residual mediante control automático.</li>
+        </ul>
+        <div class="tip">La integración de sensores, actuadores y sistemas de control garantiza un proceso robusto, seguro y eficiente.</div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 20 · Especificación de líneas (Página 11 - 1/2)       -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Especificaciones</p>
+        <h2>Especificación de líneas</h2>
+        <div class="big-example">
+          <code>4"-PG-3001-HC1-I</code>
+          <p class="legend">4" = diámetro nominal · PG = servicio (Process General) · 3001 = número único de línea · HC1 = especificación (Hot Carbon steel clase 1) · I = aislamiento</p>
+        </div>
+        <div class="two-col">
+          <img class="diagram" src="img/pid-p06-2.png" alt="Layout detallado de un P&ID" />
+          <div>
+            <p>El código alfanumérico completo contiene toda la información necesaria para la construcción:</p>
+            <ul>
+              <li>Diámetro nominal de la tubería</li>
+              <li>Servicio o tipo de fluido</li>
+              <li>Número único de identificación</li>
+              <li>Especificación de material y clase</li>
+              <li>Requerimientos de aislamiento</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 21 · Ejemplos de líneas (Página 11 - 2/2)             -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Especificaciones</p>
+        <h2>Ejemplos para proyecto de fermentación</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Líneas de mosto fermentado</h3>
+            <div class="big-example">
+              <code>3"-PF-2001-SS2</code>
+              <p class="legend">3 pulgadas · Proceso Fermentación · Acero inoxidable sanitario</p>
+            </div>
+          </div>
+          <div class="card">
+            <h3>Líneas de vapor</h3>
+            <div class="big-example">
+              <code>2"-ST-5001-CS2-I</code>
+              <p class="legend">Vapor saturado · Carbon steel · Aislado</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 22 · Lazo de control de caudal (Página 12)             -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Lazos de control</p>
+        <h2>Lazo de control de caudal en P&ID</h2>
+        <p>Componentes de un lazo típico para regulación de caudal:</p>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>FE</h3>
+            <p>Elemento primario que mide el caudal de vapor.</p>
+          </div>
+          <div class="card">
+            <h3>FT</h3>
+            <p>Transmisor de caudal que envía la señal al controlador.</p>
+          </div>
+          <div class="card">
+            <h3>FIC</h3>
+            <p>Controlador PI de caudal que genera señal correctiva.</p>
+          </div>
+          <div class="card">
+            <h3>I/P</h3>
+            <p>Convertidor corriente-aire que acciona la válvula neumática.</p>
+          </div>
+          <div class="card">
+            <h3>Válvula de control</h3>
+            <p>Regula el paso del vapor según la señal del controlador.</p>
+          </div>
+        </div>
+        <p>La diagramación del P&ID representa claramente las líneas de señal eléctrica, la transmisión neumática, la válvula de control con posicionador, así como la dirección del flujo del vapor.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 23 · Seguridad y confiabilidad (Página 13)             -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Lazos de control</p>
+        <h2>Sistemas de seguridad y confiabilidad</h2>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>Redundancia instrumental</h3>
+            <p>Para evitar interrupciones imprevistas. Se duplican o triplican instrumentos críticos.</p>
+          </div>
+          <div class="card">
+            <h3>Interlocks</h3>
+            <p>Toman acciones automáticas ante situaciones críticas (cierre inmediato o apertura completa).</p>
+          </div>
+          <div class="card">
+            <h3>Configuraciones seguras</h3>
+            <p>Configuraciones específicas para procesos seguros y estables ante fallas.</p>
+          </div>
+        </div>
+        <div class="warning">Los interlocks de seguridad son la última línea de defensa antes de un evento catastrófico. Su diseño correcto en el P&ID es fundamental.</div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 24 · Separador - Notas y seguridad                     -->
+    <!-- ============================================================ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Sección 5</p>
+        <h1>Notas, seguridad y buenas prácticas</h1>
+        <p>El P&ID como repositorio de sabiduría operacional acumulada.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 25 · Notas operativas (Página 14 - 1/2)               -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Notas y detalles</p>
+        <h2>Notas y detalles especiales (1/2)</h2>
+        <div class="two-col">
+          <div>
+            <div class="card" style="margin-bottom:1rem;">
+              <h3>Instrucciones operativas</h3>
+              <ul>
+                <li>"MANTENER PENDIENTE 1% HACIA V-201" asegura drenaje completo.</li>
+                <li>"NO OPERAR VÁLVULA HV-201 CON P-201 EN MARCHA" previene golpe de ariete.</li>
+              </ul>
+            </div>
+            <div class="card">
+              <h3>Seguridad en mantenimiento</h3>
+              <ul>
+                <li>"BRIDA SPECTACLE NORMALMENTE INSTALADA" indica aislamiento positivo.</li>
+                <li>"PURGAR CON N₂ ANTES DE MANTENIMIENTO" salva vidas.</li>
+              </ul>
+            </div>
+          </div>
+          <img class="diagram" src="img/pid-p14-2.png" alt="Ejemplo de P&ID con notas" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 26 · Notas de previsión (Página 14 - 2/2)             -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Notas y detalles</p>
+        <h2>Notas y detalles especiales (2/2)</h2>
+        <div class="two-col">
+          <div>
+            <div class="card">
+              <h3>Previsión futura</h3>
+              <ul>
+                <li>"CONEXIÓN FUTURA PARA TANQUE V-205" anticipa expansión.</li>
+                <li>"INSTALAR CHECK LO MÁS CERCA POSIBLE A BOMBA" previene contraflujo.</li>
+              </ul>
+            </div>
+            <div class="warning" style="margin-top:1rem;">Estas notas resultan de experiencia dolorosa en plantas similares. Ignorarlas garantiza repetir errores costosos. El P&ID es repositorio de sabiduría operacional acumulada.</div>
+          </div>
+          <div>
+            <img class="diagram" src="img/pid-p14-3.png" alt="Ejemplo de P&ID con detalles" style="margin-bottom:1rem;" />
+            <img class="diagram" src="img/pid-p14-4.png" alt="Ejemplo de P&ID adicional" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 27 · Seguridad integrada (Página 15 - 1/2)            -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Seguridad</p>
+        <h2>Seguridad integrada en el P&ID</h2>
+        <div class="two-col">
+          <div>
+            <p>Elementos de seguridad clave:</p>
+            <ul>
+              <li><strong>Sistemas de alivio de presión:</strong> PSV dimensionada para caso creíble peor.</li>
+              <li><strong>Sistemas de emergencia:</strong> duchas, lavaojos, estaciones de alarma.</li>
+              <li><strong>Venteos y drenajes:</strong> ubicados para purgar bolsas de gas o líquido.</li>
+              <li><strong>Instrumentación SIL:</strong> lazos críticos con nivel de integridad certificado.</li>
+              <li><strong>Barreras físicas:</strong> diques para contención de derrames.</li>
+            </ul>
+          </div>
+          <img class="diagram" src="img/pid-p15-2.png" alt="Referencia final de P&ID" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 28 · HAZOP (Página 15 - 2/2)                          -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Seguridad</p>
+        <h2>P&ID y análisis HAZOP</h2>
+        <p>El P&ID es donde la seguridad se <strong>diseña dentro del proceso</strong>, no se añade después.</p>
+        <p>Un P&ID bien hecho permite <strong>HAZOP</strong> (Hazard and Operability Analysis) sistemático, identificando modos de falla y salvaguardas antes de construir.</p>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>Identificar</h3>
+            <p>Desviaciones posibles de las condiciones normales de operación.</p>
+          </div>
+          <div class="card">
+            <h3>Evaluar</h3>
+            <p>Consecuencias y probabilidad de cada escenario.</p>
+          </div>
+          <div class="card">
+            <h3>Proteger</h3>
+            <p>Salvaguardas diseñadas e integradas directamente en el P&ID.</p>
+          </div>
+        </div>
+        <div class="tip">La seguridad no es un anexo: se diseña dentro del proceso desde el P&ID.</div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 29 · Separador - Diferencias PFD vs P&ID               -->
+    <!-- ============================================================ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Sección 6</p>
+        <h1>Diferencias críticas PFD vs P&ID</h1>
+        <p>Cinco dimensiones fundamentales que distinguen ambos documentos.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 30 · Diferencias 1-3 (Página 16 - 1/2)                -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">PFD vs P&ID</p>
+        <h2>Diferencias críticas (1/2)</h2>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>1. Audiencia y propósito</h3>
+            <p><strong>PFD:</strong> Ingenieros de proceso haciendo cálculos.</p>
+            <p><strong>P&ID:</strong> Constructores, operadores, mantenimiento.</p>
+          </div>
+          <div class="card">
+            <h3>2. Completitud</h3>
+            <p><strong>PFD:</strong> 60-70% de equipos principales.</p>
+            <p><strong>P&ID:</strong> 100% de todo, hasta la última válvula de drenaje.</p>
+          </div>
+          <div class="card">
+            <h3>3. Status legal</h3>
+            <p><strong>PFD:</strong> Guía de diseño revisable.</p>
+            <p><strong>P&ID:</strong> Documento contractual vinculante.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 31 · Diferencias 4-5 (Página 16 - 2/2)                -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">PFD vs P&ID</p>
+        <h2>Diferencias críticas (2/2)</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>4. Evolución</h3>
+            <p><strong>PFD:</strong> Relativamente estable después de diseño básico.</p>
+            <p><strong>P&ID:</strong> Evoluciona continuamente hasta desmantelamiento.</p>
+          </div>
+          <div class="card">
+            <h3>5. Costo de error</h3>
+            <p><strong>PFD:</strong> Error requiere recálculo.</p>
+            <p><strong>P&ID:</strong> Error puede significar reconstrucción física.</p>
+          </div>
+        </div>
+        <div class="warning">Un error en el P&ID no se corrige con lápiz y papel: puede implicar parar la planta, cortar tuberías y reconstruir secciones completas.</div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 32 · Cierre                                            -->
+    <!-- ============================================================ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">IQYA-2031 · 2026-10</p>
+        <h1>Resumen</h1>
+        <p>El P&ID es el documento maestro que traduce el diseño conceptual en instrucciones constructivas precisas, integrando proceso, instrumentación, seguridad y operación.</p>
+        <div class="pill-row">
+          <span class="pill">Simbología ISA-5.1</span>
+          <span class="pill">Tags únicos</span>
+          <span class="pill">Válvulas y control</span>
+          <span class="pill">Especificación de líneas</span>
+          <span class="pill">Seguridad y HAZOP</span>
+          <span class="pill">PFD vs P&ID</span>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="hud">
+    <span id="hud-title">Diagramas P&ID · IQYA-2031</span>
+    <span id="hud-counter">1 / 32</span>
+  </div>
+
+  <div class="controls">
+    <button aria-label="Anterior" id="prev">‹</button>
+    <button aria-label="Pantalla completa" id="fs">⛶</button>
+    <button aria-label="Siguiente" id="next">›</button>
+  </div>
+
+  <script>
+    (function () {
+      var slides = Array.prototype.slice.call(document.querySelectorAll('[data-slide]'));
+      var i = 0;
+      var counter = document.getElementById('hud-counter');
+      var progress = document.querySelector('.progress');
+
+      function render() {
+        slides.forEach(function (s, idx) {
+          s.classList.toggle('active', idx === i);
+        });
+        if (counter) counter.textContent = (i + 1) + ' / ' + slides.length;
+        if (progress) progress.style.width = ((i + 1) / slides.length * 100) + '%';
+        var isTitle = slides[i] && slides[i].classList.contains('title-slide');
+        document.body.style.background = isTitle ? '#1A1A1A' : '#ffffff';
+      }
+      function go(n) { i = Math.max(0, Math.min(slides.length - 1, n)); render(); }
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); go(i + 1); }
+        else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(i - 1); }
+        else if (e.key === 'Home') { e.preventDefault(); go(0); }
+        else if (e.key === 'End') { e.preventDefault(); go(slides.length - 1); }
+        else if (e.key === 'f' || e.key === 'F') { toggleFs(); }
+      });
+
+      document.getElementById('prev').addEventListener('click', function () { go(i - 1); });
+      document.getElementById('next').addEventListener('click', function () { go(i + 1); });
+      document.getElementById('fs').addEventListener('click', toggleFs);
+
+      function toggleFs() {
+        var el = document.documentElement;
+        if (!document.fullscreenElement) {
+          (el.requestFullscreen || el.webkitRequestFullscreen || function(){}).call(el);
+        } else {
+          (document.exitFullscreen || document.webkitExitFullscreen || function(){}).call(document);
+        }
+      }
+
+      var tx = 0, ty = 0;
+      document.addEventListener('touchstart', function (e) {
+        if (!e.changedTouches[0]) return;
+        tx = e.changedTouches[0].clientX; ty = e.changedTouches[0].clientY;
+      }, { passive: true });
+      document.addEventListener('touchend', function (e) {
+        if (!e.changedTouches[0]) return;
+        var dx = e.changedTouches[0].clientX - tx;
+        var dy = e.changedTouches[0].clientY - ty;
+        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+          if (dx < 0) go(i + 1); else go(i - 1);
+        }
+      }, { passive: true });
+
+      // Inject decorative slide numbers
+      slides.forEach(function (s, idx) {
+        var num = document.createElement('div');
+        num.className = 'slide-number';
+        num.setAttribute('aria-hidden', 'true');
+        num.textContent = String(idx + 1).padStart(2, '0');
+        s.appendChild(num);
+      });
+
+      render();
+    })();
+  </script>
+</body>
+</html>

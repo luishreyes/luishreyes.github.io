@@ -805,6 +805,15 @@ export const pouCourse: Course = {
       readingMinutes: 20,
       tags: ['bitácoras', 'documentación', 'cálculos', 'proyecto'],
     },
+    {
+      slug: 'informe-final',
+      title: 'Guía de elaboración del informe final',
+      summary:
+        'Guía completa para elaborar el documento final del proyecto: estructura del reporte técnico, diferencias con las bitácoras, formato, hojas de especificación de equipos, criterios de evaluación, errores comunes y preparación para la sustentación oral.',
+      date: '2026-02-01',
+      readingMinutes: 15,
+      tags: ['informe', 'documentación', 'proyecto', 'escritura'],
+    },
   ],
   presentations: [
     {
@@ -824,6 +833,15 @@ export const pouCourse: Course = {
       date: '2026-02-03',
       sessionNumber: 3,
       file: 'clase-03-diagramas.html',
+    },
+    {
+      id: 'clase-04-pid',
+      title: 'Diagramas de tubería e instrumentación (P&ID)',
+      description:
+        'Simbología ISA para instrumentación, lazos de control, HAZOP, y construcción profesional de P&ID.',
+      date: '2026-02-05',
+      sessionNumber: 4,
+      file: 'clase-04-pid.html',
     },
   ],
   cronograma: pouCronograma,
