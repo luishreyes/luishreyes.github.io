@@ -1,0 +1,1525 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Destilación diferencial · IQYA-2031</title>
+  <style>
+    :root {
+      --brand-dark: #1A1A1A;
+      --brand-yellow: #FFBF00;
+      --brand-yellow-dark: #E6AC00;
+      --brand-gray: #555555;
+      --surface: #ffffff;
+      --muted: #f4f4f5;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      background: var(--brand-dark);
+      color: var(--brand-dark);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      overflow: hidden;
+      -webkit-text-size-adjust: 100%;
+    }
+    .deck {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+    }
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(1rem, 4vw, 3.5rem);
+      background: var(--surface);
+      opacity: 0;
+      transition: opacity 260ms ease;
+    }
+    .slide.active {
+      display: flex;
+      opacity: 1;
+    }
+    .slide .content {
+      width: 100%;
+      max-width: 72rem;
+      display: flex;
+      flex-direction: column;
+      gap: clamp(0.75rem, 1.5vw, 1.5rem);
+    }
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      font-size: clamp(0.65rem, 1vw, 0.8rem);
+      color: var(--brand-yellow-dark);
+      font-weight: 600;
+    }
+    h1 {
+      font-size: clamp(1.75rem, 5.5vw, 4rem);
+      line-height: 1.05;
+      margin: 0;
+      color: var(--brand-dark);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    h2 {
+      font-size: clamp(1.25rem, 3.4vw, 2.25rem);
+      line-height: 1.15;
+      margin: 0;
+      color: var(--brand-dark);
+      font-weight: 700;
+    }
+    p, li {
+      font-size: clamp(0.95rem, 1.8vw, 1.35rem);
+      line-height: 1.55;
+      color: var(--brand-gray);
+      margin: 0;
+    }
+    ul, ol {
+      padding-left: 1.25em;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45em;
+    }
+    li::marker { color: var(--brand-yellow-dark); }
+    .slide.title-slide {
+      background: linear-gradient(135deg, #141414 0%, #1A1A1A 50%, #2a2a2a 100%);
+      color: #fff;
+    }
+    .slide.title-slide h1 { color: #fff; }
+    .slide.title-slide p { color: #d4d4d8; }
+    .slide.title-slide .eyebrow { color: var(--brand-yellow); }
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 0.5rem;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.35em 0.9em;
+      border-radius: 999px;
+      background: var(--muted);
+      color: var(--brand-dark);
+      font-size: clamp(0.75rem, 1.3vw, 1rem);
+      font-weight: 500;
+    }
+    .slide.title-slide .pill {
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .grid {
+      display: grid;
+      gap: clamp(0.75rem, 1.5vw, 1.25rem);
+    }
+    .grid.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid.cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    @media (max-width: 640px) {
+      .grid.cols-2, .grid.cols-3, .grid.cols-4 { grid-template-columns: 1fr; }
+    }
+    .card {
+      background: var(--muted);
+      border-radius: 0.75rem;
+      padding: clamp(0.9rem, 1.5vw, 1.35rem);
+    }
+    .card h3 {
+      font-size: clamp(1rem, 2vw, 1.35rem);
+      margin: 0 0 0.35em 0;
+      color: var(--brand-dark);
+      font-weight: 600;
+    }
+    .card p { font-size: clamp(0.8rem, 1.4vw, 1rem); }
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(1rem, 2vw, 2rem);
+      align-items: center;
+    }
+    @media (max-width: 640px) {
+      .two-col { grid-template-columns: 1fr; }
+    }
+    img.diagram {
+      max-width: 100%;
+      height: auto;
+      border-radius: 0.5rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+    }
+    .small-text {
+      font-size: clamp(0.7rem, 1.2vw, 0.9rem);
+      color: var(--brand-gray);
+    }
+    .tip {
+      background: #fef9c3;
+      border-left: 4px solid var(--brand-yellow);
+      padding: 0.75rem 1rem;
+      border-radius: 0 0.5rem 0.5rem 0;
+      font-size: clamp(0.85rem, 1.5vw, 1.1rem);
+      color: var(--brand-dark);
+    }
+    .warning {
+      background: #fef2f2;
+      border-left: 4px solid #ef4444;
+      padding: 0.75rem 1rem;
+      border-radius: 0 0.5rem 0.5rem 0;
+      font-size: clamp(0.85rem, 1.5vw, 1.1rem);
+      color: var(--brand-dark);
+    }
+    .big-example {
+      background: var(--muted);
+      border-radius: 0.75rem;
+      padding: clamp(1rem, 2vw, 2rem);
+      text-align: center;
+    }
+    .big-example code {
+      font-size: clamp(1.2rem, 3vw, 2.5rem);
+      font-weight: 700;
+      color: var(--brand-dark);
+    }
+    .big-example .legend {
+      font-size: clamp(0.75rem, 1.2vw, 0.95rem);
+      color: var(--brand-gray);
+      margin-top: 0.5rem;
+    }
+    .hud {
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      padding: 0.5rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: rgba(255,255,255,0.75);
+      font-size: 0.75rem;
+      pointer-events: none;
+      z-index: 10;
+    }
+    .slide:not(.title-slide) ~ .hud { color: var(--brand-gray); }
+    .controls {
+      position: fixed;
+      right: 1rem;
+      bottom: 2.5rem;
+      display: flex;
+      gap: 0.5rem;
+      z-index: 11;
+    }
+    .controls button {
+      -webkit-appearance: none;
+      appearance: none;
+      border: 1px solid rgba(0,0,0,0.1);
+      background: rgba(255,255,255,0.9);
+      color: var(--brand-dark);
+      width: 2.5rem; height: 2.5rem;
+      border-radius: 999px;
+      font-size: 1rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    }
+    .controls button:active { transform: scale(0.96); }
+    .progress {
+      position: fixed;
+      top: 0; left: 0;
+      height: 3px;
+      background: var(--brand-yellow);
+      transition: width 260ms ease;
+      z-index: 20;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .slide { transition: none; }
+      .progress { transition: none; }
+    }
+    @media (max-width: 480px) {
+      .controls { right: 0.5rem; bottom: 1.25rem; }
+      .hud { font-size: 0.65rem; }
+    }
+
+    /* ─── Decorative: L-shaped yellow corner accent ─── */
+    .slide:not(.title-slide)::before {
+      content: '';
+      position: absolute;
+      top: clamp(1rem, 3vw, 2.5rem);
+      right: clamp(1rem, 3vw, 2.5rem);
+      width: clamp(2rem, 5vw, 4rem);
+      height: clamp(2rem, 5vw, 4rem);
+      border-top: 2.5px solid var(--brand-yellow);
+      border-right: 2.5px solid var(--brand-yellow);
+      pointer-events: none;
+      z-index: 1;
+    }
+    .slide.title-slide::before {
+      content: '';
+      position: absolute;
+      bottom: clamp(1rem, 3vw, 2.5rem);
+      left: clamp(1rem, 3vw, 2.5rem);
+      width: clamp(2rem, 5vw, 4rem);
+      height: clamp(2rem, 5vw, 4rem);
+      border-bottom: 2.5px solid var(--brand-yellow);
+      border-left: 2.5px solid var(--brand-yellow);
+      opacity: 0.4;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* ─── Decorative: large background slide number ─── */
+    .slide-number {
+      position: absolute;
+      bottom: clamp(0.5rem, 2vw, 1.5rem);
+      left: clamp(1rem, 3vw, 2.5rem);
+      font-size: clamp(4rem, 12vw, 10rem);
+      font-weight: 800;
+      line-height: 1;
+      color: rgba(0, 0, 0, 0.04);
+      pointer-events: none;
+      z-index: 0;
+      user-select: none;
+      letter-spacing: -0.04em;
+    }
+    .slide.title-slide .slide-number {
+      color: rgba(255, 255, 255, 0.06);
+    }
+
+    /* ─── Math / formula styling ─── */
+    .formula {
+      background: var(--muted);
+      border-radius: 0.75rem;
+      padding: clamp(0.75rem, 1.5vw, 1.5rem);
+      text-align: center;
+      font-size: clamp(1rem, 2.2vw, 1.6rem);
+      font-weight: 600;
+      color: var(--brand-dark);
+      font-family: "Georgia", "Times New Roman", serif;
+      font-style: italic;
+      overflow-x: auto;
+    }
+    .formula .note {
+      font-size: clamp(0.75rem, 1.2vw, 0.95rem);
+      font-weight: 400;
+      font-style: normal;
+      color: var(--brand-gray);
+      margin-top: 0.5rem;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    table.data {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: clamp(0.8rem, 1.4vw, 1.05rem);
+    }
+    table.data th, table.data td {
+      padding: 0.5rem 0.75rem;
+      border: 1px solid #e4e4e7;
+      text-align: center;
+    }
+    table.data th {
+      background: var(--brand-dark);
+      color: #fff;
+      font-weight: 600;
+    }
+    table.data tr:nth-child(even) { background: var(--muted); }
+    .step-list { counter-reset: step; list-style: none; padding-left: 0; }
+    .step-list li { counter-increment: step; padding-left: 2em; position: relative; }
+    .step-list li::before {
+      content: counter(step);
+      position: absolute; left: 0;
+      width: 1.5em; height: 1.5em;
+      background: var(--brand-yellow);
+      color: var(--brand-dark);
+      border-radius: 50%;
+      font-weight: 700;
+      font-size: 0.85em;
+      display: flex; align-items: center; justify-content: center;
+      top: 0.15em;
+    }
+  </style>
+</head>
+<body>
+  <div class="progress" style="width:0"></div>
+  <div class="deck" id="deck">
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SLIDE 1 — Portada  (Página 1)
+         ════════════════════════════════════════════════════════════════ -->
+    <section class="slide title-slide active" data-slide>
+      <div class="content">
+        <p class="eyebrow">IQYA-2031 · 2026-10</p>
+        <h1>Destilación diferencial</h1>
+        <p>Introducción a la destilación por lotes: ecuación de Rayleigh, destilación simple, cálculos de composición y recuperación.</p>
+        <div class="pill-row">
+          <span class="pill">Fundamentos</span>
+          <span class="pill">Ecuación de Rayleigh</span>
+          <span class="pill">Equipamiento</span>
+          <span class="pill">Aplicaciones industriales</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SLIDE 2 — Agenda  (Página 2)
+         ════════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Agenda</p>
+        <h2>Contenido de la sesión</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>1. Fundamentos y principios</h3>
+            <p>Conceptos básicos, naturaleza transitoria y balance de materia en destilación diferencial.</p>
+          </div>
+          <div class="card">
+            <h3>2. Modelado matemático</h3>
+            <p>Derivación y aplicación de la Ecuación de Rayleigh, métodos de solución analíticos y numéricos.</p>
+          </div>
+          <div class="card">
+            <h3>3. Equipamiento y diseño</h3>
+            <p>Componentes de un sistema de destilación, configuraciones y mejoras con columnas multietapa.</p>
+          </div>
+          <div class="card">
+            <h3>4. Aplicaciones industriales</h3>
+            <p>Casos de uso en industria farmacéutica, química fina, bebidas y desarrollo de procesos.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SLIDE 3 — Separador: Fundamentos
+         ════════════════════════════════════════════════════════════════ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Sección 1</p>
+        <h1>Fundamentos y principios</h1>
+        <p>Conceptos básicos, naturaleza transitoria y balance de materia en destilación diferencial.</p>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SLIDE 4 — Definición y proceso básico  (Página 3)
+         ════════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Fundamentos</p>
+        <h2>Definición y proceso básico</h2>
+        <p>La destilación por lotes es un proceso donde:</p>
+        <ol>
+          <li>Se carga una cantidad finita de mezcla líquida en un recipiente (calderín).</li>
+          <li>Se suministra energía térmica para llevar la mezcla a ebullición.</li>
+          <li>El vapor generado, enriquecido en el componente más volátil, se retira continuamente.</li>
+          <li>Este vapor se condensa y el líquido resultante (destilado) se recolecta.</li>
+          <li>El proceso se detiene cuando se alcanza el grado de separación deseado.</li>
+        </ol>
+        <div class="formula">
+          ln(W<sub>0</sub> / W<sub>f</sub>) = &int;<sup>x<sub>W0</sub></sup><sub>x<sub>Wf</sub></sub> dx / (y* &minus; x)
+          <p class="note">Ecuación fundamental que describe el proceso — Ecuación de Rayleigh.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SLIDE 5 — Aparato de destilación simple  (Página 4)
+         ════════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Fundamentos</p>
+        <h2>Aparato de destilación simple</h2>
+        <div class="two-col">
+          <div>
+            <p>Componentes principales del equipo:</p>
+            <ol>
+              <li>Fuente de calor</li>
+              <li>Calderín</li>
+              <li>Cabeza de destilación</li>
+              <li>Termómetro</li>
+              <li>Condensador</li>
+              <li>Entrada y salida de agua de enfriamiento</li>
+              <li>Receptor de destilado</li>
+            </ol>
+          </div>
+          <img class="diagram" src="img/pres16-p04-2.png" alt="Aparato de destilación simple con componentes etiquetados" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SLIDE 6 — Naturaleza transitoria  (Página 5)
+         ════════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Fundamentos</p>
+        <h2>La naturaleza transitoria del proceso</h2>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>Estado inicial</h3>
+            <p>Mezcla rica en componente volátil. Temperatura de ebullición relativamente baja. Alta concentración del componente volátil (x<sub>W0</sub>).</p>
+          </div>
+          <div class="card">
+            <h3>Evolución continua</h3>
+            <p>Variables cambian constantemente. Composición del líquido (x<sub>W</sub>) disminuye. Composición del vapor (y) también disminuye. Temperatura de ebullición aumenta.</p>
+          </div>
+          <div class="card">
+            <h3>Estado final</h3>
+            <p>Mezcla empobrecida en componente volátil. Temperatura de ebullición más alta. Baja concentración del componente volátil (x<sub>Wf</sub>).</p>
+          </div>
+        </div>
+        <div class="tip">Evolución temporal: la composición del componente más volátil en el calderín (x<sub>W</sub>) y en el destilado instantáneo (y<sub>D</sub>) disminuyen, mientras la temperatura (T<sub>W</sub>) aumenta continuamente.</div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SLIDE 7 — Diagrama T-x-y: Etapa inicial  (Página 6)
+         ════════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Fundamentos · Diagrama T-x-y</p>
+        <h2>Visualización en un diagrama T-x-y (1/5)</h2>
+        <div class="two-col">
+          <div>
+            <p>El diagrama T-x-y es fundamental para entender la destilación diferencial.</p>
+            <h3 style="margin:0.5em 0 0.25em;color:var(--brand-dark);">Etapa inicial (punto A &rarr; B)</h3>
+            <ul>
+              <li>Comenzamos con líquido de composición x<sub>1</sub> a temperatura por debajo de T<sub>1</sub>.</li>
+              <li>Al calentar, alcanzamos el punto B (punto de burbuja).</li>
+              <li>Aquí comienza la ebullición.</li>
+            </ul>
+          </div>
+          <img class="diagram" src="img/pres16-p06-2.png" alt="Diagrama T-x-y mostrando etapa inicial A a B" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SLIDE 8 — Diagrama T-x-y: Primera vaporización  (Página 7)
+         ════════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Fundamentos · Diagrama T-x-y</p>
+        <h2>Visualización en un diagrama T-x-y (2/5)</h2>
+        <div class="two-col">
+          <div>
+            <h3 style="margin:0 0 0.25em;color:var(--brand-dark);">Primera vaporización (B &rarr; C)</h3>
+            <ul>
+              <li>El primer vapor formado tiene composición en el punto C.</li>
+              <li>Note que y<sub>1</sub> &gt; x<sub>1</sub> (el vapor es más rico en el componente volátil).</li>
+              <li>La línea horizontal BC representa el equilibrio líquido-vapor a T<sub>1</sub>.</li>
+            </ul>
+          </div>
+          <img class="diagram" src="img/pres16-p07-2.png" alt="Diagrama T-x-y mostrando primera vaporización B a C" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SLIDE 9 — Diagrama T-x-y: Evolución del proceso  (Página 8)
+         ════════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Fundamentos · Diagrama T-x-y</p>
+        <h2>Visualización en un diagrama T-x-y (3/5)</h2>
+        <div class="two-col">
+          <div>
+            <h3 style="margin:0 0 0.25em;color:var(--brand-dark);">Evolución del proceso (D &rarr; E, G &rarr; H, &hellip;)</h3>
+            <ul>
+              <li>Al remover vapor, el líquido se empobrece en el componente volátil.</li>
+              <li>La composición del líquido se mueve hacia la derecha (menor x).</li>
+              <li>La temperatura debe aumentar para mantener la ebullición.</li>
+              <li>Cada línea horizontal representa un nuevo equilibrio a temperatura mayor.</li>
+            </ul>
+          </div>
+          <img class="diagram" src="img/pres16-p08-2.png" alt="Diagrama T-x-y mostrando evolución del proceso" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SLIDE 10 — Diagrama T-x-y: Composición final  (Página 9)
+         ════════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Fundamentos · Diagrama T-x-y</p>
+        <h2>Visualización en un diagrama T-x-y (4/5)</h2>
+        <div class="two-col">
+          <div>
+            <p>El proceso continúa hasta alcanzar la composición final deseada x<sub>f</sub>.</p>
+            <div class="tip">La trayectoria completa del proceso sobre el diagrama T-x-y describe cómo el líquido se empobrece progresivamente en el componente más volátil.</div>
+          </div>
+          <img class="diagram" src="img/pres16-p09-2.png" alt="Diagrama T-x-y mostrando composición final" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SLIDE 11 — Diagrama T-x-y: Características  (Página 10)
+         ════════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Fundamentos · Diagrama T-x-y</p>
+        <h2>Visualización en un diagrama T-x-y (5/5)</h2>
+        <div class="two-col">
+          <div>
+            <h3 style="margin:0 0 0.25em;color:var(--brand-dark);">Características importantes</h3>
+            <ul>
+              <li>Las líneas horizontales (isotermas) conectan las composiciones en equilibrio.</li>
+              <li>A medida que avanza el proceso:</li>
+            </ul>
+            <ul style="margin-left:1em;">
+              <li><strong>x</strong> disminuye (líquido se empobrece).</li>
+              <li><strong>T</strong> aumenta (necesaria mayor temperatura).</li>
+              <li><strong>y</strong> disminuye (vapor menos rico que al inicio).</li>
+            </ul>
+          </div>
+          <img class="diagram" src="img/pres16-p10-2.png" alt="Diagrama T-x-y con características clave" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SLIDE 12 — Ventajas y limitaciones  (Página 11)
+         ════════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Fundamentos</p>
+        <h2>Ventajas y limitaciones operacionales</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Ventajas</h3>
+            <ul>
+              <li>Flexibilidad para procesar diferentes mezclas.</li>
+              <li>Menor inversión inicial de capital.</li>
+              <li>Ideal para pequeñas escalas de producción.</li>
+              <li>Capacidad para alcanzar altas purezas.</li>
+              <li>Adecuada para producción intermitente o estacional.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Limitaciones</h3>
+            <ul>
+              <li>Ineficiente para grandes volúmenes.</li>
+              <li>Mayores costos operativos por unidad de producto.</li>
+              <li>Tiempos muertos entre cargas.</li>
+              <li>Dificultad para mantener consistencia entre lotes.</li>
+              <li>Mayor consumo energético por kg de producto.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="tip">La elección entre destilación por lotes y continua representa una decisión estratégica y económica impulsada por la escala de producción, la variedad de productos y el valor de mercado.</div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SLIDE 13 — Contexto industrial  (Página 12)
+         ════════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Fundamentos</p>
+        <h2>Contexto industrial y aplicaciones</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Industria farmacéutica</h3>
+            <p>Purificación de Ingredientes Farmacéuticos Activos (APIs), separación de intermediarios y recuperación de disolventes de alto costo. Fundamental por su trazabilidad y prevención de contaminación cruzada.</p>
+          </div>
+          <div class="card">
+            <h3>Bebidas alcohólicas</h3>
+            <p>Producción de bebidas espirituosas como whisky, coñac, ron y tequila en alambiques. Se realizan &laquo;cortes&raquo; para separar cabezas, corazón y colas, creando perfiles de sabor específicos.</p>
+          </div>
+          <div class="card">
+            <h3>Químicos de especialidad</h3>
+            <p>Fabricación de compuestos de alto valor en volúmenes moderados: saborizantes, fragancias, aceites esenciales, pesticidas y solventes de alta pureza para electrónica.</p>
+          </div>
+          <div class="card">
+            <h3>Investigación y desarrollo</h3>
+            <p>Herramienta esencial en laboratorios y plantas piloto para el desarrollo de nuevos procesos, purificación de pequeñas cantidades de compuestos y obtención de datos de equilibrio.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SLIDE 14 — Separador: Equipamiento
+         ════════════════════════════════════════════════════════════════ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Sección 2</p>
+        <h1>Equipamiento y diseño</h1>
+        <p>Componentes de un sistema de destilación, configuraciones y mejoras con columnas multietapa.</p>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SLIDE 15 — Anatomía: componentes  (Página 13)
+         ════════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Equipamiento</p>
+        <h2>Anatomía de un destilador simple — Componentes esenciales</h2>
+        <div class="two-col">
+          <div>
+            <ul>
+              <li><strong>Calderín:</strong> Recipiente donde se introduce la carga inicial y se aporta energía para la vaporización.</li>
+              <li><strong>Condensador:</strong> Intercambiador de calor que enfría el vapor para convertirlo en líquido.</li>
+              <li><strong>Receptor de destilado:</strong> Recipiente para recoger el líquido condensado.</li>
+            </ul>
+          </div>
+          <img class="diagram" src="img/pres16-p13-3.png" alt="Componentes esenciales de un destilador simple" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SLIDE 16 — Anatomía: instrumentación  (Página 14)
+         ════════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Equipamiento</p>
+        <h2>Anatomía de un destilador simple — Instrumentación clave</h2>
+        <div class="two-col">
+          <div>
+            <ul>
+              <li><strong>Termómetro:</strong> Ubicado en la corriente de vapor para medir la temperatura de equilibrio.</li>
+              <li><strong>Manómetro:</strong> Necesario si la destilación se realiza a presión diferente a la atmosférica.</li>
+            </ul>
+            <p class="small-text" style="margin-top:0.75rem;">Diagrama esquemático de un sistema de destilación por lotes simple tipo &laquo;pot still&raquo;. Cada componente está claramente etiquetado para mostrar su función en el proceso.</p>
+          </div>
+          <img class="diagram" src="img/pres16-p14-3.png" alt="Diagrama esquemático de un pot still con instrumentación" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SLIDE 17 — Columnas multietapa (1/2)  (Página 15)
+         ════════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Equipamiento</p>
+        <h2>Mejorando la separación con columnas multietapa (1/2)</h2>
+        <p>Para mejorar la eficiencia de separación, se utilizan columnas de fraccionamiento con el principio de reflujo:</p>
+        <ul>
+          <li>Se instala una columna vertical entre el calderín y el condensador.</li>
+          <li>La columna contiene platos o empaque que proporcionan área de contacto.</li>
+          <li>Cada plato funciona como una etapa de equilibrio adicional.</li>
+          <li>Parte del condensado (reflujo) se devuelve a la columna.</li>
+          <li>El reflujo enriquece el vapor en el componente más volátil.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SLIDE 18 — Columnas multietapa (2/2)  (Página 16)
+         ════════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Equipamiento</p>
+        <h2>Mejorando la separación con columnas multietapa (2/2)</h2>
+        <p>La relación de reflujo (R) se define como:</p>
+        <div class="formula">
+          R = L / D
+          <p class="note">Donde L es el flujo de reflujo y D el flujo de destilado.</p>
+        </div>
+        <div class="tip"><strong>Rectificador por lotes:</strong> el calderín se encuentra en la base de la columna. La columna actúa como sección de enriquecimiento, produciendo destilado rico en el componente más volátil.</div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SLIDE 19 — Separador: Modelado matemático
+         ════════════════════════════════════════════════════════════════ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Sección 3</p>
+        <h1>Modelado matemático</h1>
+        <p>Derivación y aplicación de la Ecuación de Rayleigh, métodos de solución analíticos y numéricos.</p>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SLIDE 20 — Suposiciones  (Página 17)
+         ════════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Modelado matemático</p>
+        <h2>Modelando un sistema dinámico — Suposiciones</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Equilibrio vapor-líquido</h3>
+            <p>El vapor que se retira del calderín en cualquier instante está en perfecto equilibrio termodinámico con el líquido del cual se genera. La composición del vapor (y*) y la del líquido (x<sub>W</sub>) están relacionadas por los datos de equilibrio.</p>
+          </div>
+          <div class="card">
+            <h3>Operación diferencial</h3>
+            <p>La vaporización se modela como un proceso continuo donde, en cada instante, una cantidad infinitesimal de vapor (dW) se forma y se retira del sistema.</p>
+          </div>
+          <div class="card">
+            <h3>Ausencia de retención</h3>
+            <p>La cantidad de material retenida en el espacio de vapor, tuberías y condensador es despreciable comparada con la cantidad de líquido en el calderín.</p>
+          </div>
+          <div class="card">
+            <h3>Mezcla perfecta</h3>
+            <p>El líquido en el calderín está perfectamente agitado, con composición uniforme en todo el volumen en cualquier instante de tiempo.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SLIDE 21 — Balance de materia diferencial  (Página 18)
+         ════════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Modelado matemático</p>
+        <h2>Balance de materia diferencial por componente (1/2)</h2>
+        <p>El fundamento de la Ecuación de Rayleigh es un balance de materia realizado sobre el componente más volátil (CMV) en un intervalo de tiempo infinitesimal:</p>
+        <div class="formula" style="font-size:clamp(0.85rem,1.6vw,1.2rem);">
+          Acumulación de CMV = Entrada &minus; Salida + Generación
+        </div>
+        <p>Para nuestro sistema:</p>
+        <ul>
+          <li><strong>Entrada:</strong> No hay entrada de materia al calderín durante la operación (= 0).</li>
+          <li><strong>Salida:</strong> Una cantidad diferencial dW con composición y* sale del sistema (= y* &middot; dW).</li>
+          <li><strong>Generación:</strong> No hay reacción química (= 0).</li>
+          <li><strong>Acumulación:</strong> Cambio en la cantidad de CMV en el calderín = d(W &middot; x<sub>W</sub>).</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SLIDE 22 — Balance diferencial (ecuación)  (Página 19)
+         ════════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Modelado matemático</p>
+        <h2>Balance de materia diferencial por componente (2/2)</h2>
+        <p>La ecuación de balance diferencial es:</p>
+        <div class="formula">
+          d(W &middot; x<sub>W</sub>) = 0 &minus; y* &middot; dW + 0
+        </div>
+        <p>Usando un enfoque algebraico entre el estado inicial y final:</p>
+        <div class="formula">
+          W &middot; x<sub>W</sub> = (W &minus; dW)(x<sub>W</sub> &minus; dx<sub>W</sub>) + y* &middot; dW
+        </div>
+        <div class="tip">Esta ecuación representa la conservación de la masa del componente más volátil en cada instante.</div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SLIDE 23 — Derivación paso 1-2  (Página 20)
+         ════════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Modelado matemático · Derivación</p>
+        <h2>Derivación de la ecuación de Rayleigh (1/3)</h2>
+        <p><strong>Paso 1:</strong> Expandir la ecuación de balance</p>
+        <div class="formula" style="font-size:clamp(0.85rem,1.6vw,1.2rem);">
+          Wx<sub>W</sub> = Wx<sub>W</sub> &minus; Wdx<sub>W</sub> &minus; x<sub>W</sub>dW + dx<sub>W</sub>dW + y*dW
+        </div>
+        <p><strong>Paso 2:</strong> Simplificar</p>
+        <p>Cancelamos Wx<sub>W</sub> y eliminamos el término dx<sub>W</sub>dW (diferencial de segundo orden):</p>
+        <div class="formula" style="font-size:clamp(0.85rem,1.6vw,1.2rem);">
+          0 = &minus;Wdx<sub>W</sub> &minus; x<sub>W</sub>dW + y*dW
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SLIDE 24 — Derivación paso 3  (Página 20 cont.)
+         ════════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Modelado matemático · Derivación</p>
+        <h2>Derivación de la ecuación de Rayleigh (2/3)</h2>
+        <p><strong>Paso 3:</strong> Reordenar y separar variables</p>
+        <div class="formula">
+          Wdx<sub>W</sub> = (y* &minus; x<sub>W</sub>)dW
+        </div>
+        <p>Separando variables:</p>
+        <div class="formula">
+          dW / W = dx<sub>W</sub> / (y* &minus; x<sub>W</sub>)
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SLIDE 25 — Derivación paso 4  (Página 21)
+         ════════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Modelado matemático · Derivación</p>
+        <h2>Derivación de la ecuación de Rayleigh (3/3)</h2>
+        <p><strong>Paso 4:</strong> Integrar la ecuación diferencial entre las condiciones iniciales y finales:</p>
+        <div class="formula">
+          &int;<sub>W<sub>0</sub></sub><sup>W<sub>f</sub></sup> dW/W = &int;<sub>x<sub>W0</sub></sub><sup>x<sub>Wf</sub></sup> dx<sub>W</sub> / (y* &minus; x<sub>W</sub>)
+        </div>
+        <p><strong>Paso 5:</strong> Obtener la forma final</p>
+        <p>La integral del lado izquierdo es ln(W<sub>f</sub>/W<sub>0</sub>). Invirtiendo los límites para eliminar el signo negativo:</p>
+        <div class="formula" style="background:var(--brand-dark);color:#fff;border:2px solid var(--brand-yellow);">
+          ln(W<sub>0</sub> / W<sub>f</sub>) = &int;<sub>x<sub>Wf</sub></sub><sup>x<sub>W0</sub></sup> dx<sub>W</sub> / (y* &minus; x<sub>W</sub>)
+          <p class="note" style="color:#d4d4d8;">Ecuación de Rayleigh — Forma final</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SLIDE 26 — Separador: Metodología de resolución  (Página 23)
+         ════════════════════════════════════════════════════════════════ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Sección 4</p>
+        <h1>Metodología de resolución</h1>
+        <p>Estrategias de solución para la ecuación de Rayleigh.</p>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SLIDE 27 — Estrategias de solución  (Página 24)
+         ════════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Resolución</p>
+        <h2>Estrategias de solución para la destilación diferencial</h2>
+        <p>La resolución depende fundamentalmente del tipo de sistema que estemos modelando.</p>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Sistemas ideales (&alpha; = cte)</h3>
+            <p>Se asume que la volatilidad relativa (&alpha;) del componente más volátil es constante. Esto permite definir una función de equilibrio explícita para el vapor (y* = f(x)), simplificando la integración.</p>
+          </div>
+          <div class="card">
+            <h3>Sistemas reales (datos x-y)</h3>
+            <p>Se utilizan datos experimentales de equilibrio líquido-vapor (curva x-y). En este caso, se requiere crear un interpolador (y* = f(x)) para relacionar las composiciones de ambas fases a lo largo del proceso.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SLIDE 28 — Tipos de problema  (Página 25)
+         ════════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Resolución</p>
+        <h2>Tipos de problema y enfoque de solución</h2>
+        <p>Ecuación de Rayleigh: ln(W<sub>0</sub>/W<sub>f</sub>) = &int; dx / (y* &minus; x) entre x<sub>f</sub> y x<sub>0</sub></p>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Calcular fracción vaporizada</h3>
+            <p>Se conocen x<sub>0</sub> y f. Integración numérica: Cuadratura, Trapecio, Simpson.</p>
+          </div>
+          <div class="card">
+            <h3>Calcular x<sub>f</sub> — Problema inverso</h3>
+            <p>Se conocen x<sub>0</sub> y x<sub>f</sub> deseado. Resolver con fsolve &rarr; f(x<sub>f</sub>) = 0.</p>
+          </div>
+        </div>
+        <div class="card" style="margin-top:0.5rem;">
+          <h3>Análisis de resultados</h3>
+          <p>Trayectoria del proceso &middot; Balance de materia &middot; Gráficos &middot; Verificaciones.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SLIDE 29 — Algoritmo: entrada y paso 1  (Página 26)
+         ════════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Resolución · Algoritmo</p>
+        <h2>Algoritmo detallado (1/2)</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Entrada de datos</h3>
+            <ul>
+              <li>Composición inicial (x<sub>0</sub>).</li>
+              <li>Sistema (&alpha; o datos x-y).</li>
+              <li>Objetivo: x<sub>f</sub> conocido &rarr; calcular f; o f deseado &rarr; calcular x<sub>f</sub>.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Paso 1: Modelo de equilibrio</h3>
+            <ul>
+              <li><strong>SI</strong> sistema ideal: y* = &alpha;x / (1 + (&alpha; &minus; 1)x)</li>
+              <li><strong>SI</strong> sistema real: Interpolar datos x-y (lineal, cúbica, spline).</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SLIDE 30 — Algoritmo: pasos 2 y 3  (Página 27)
+         ════════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Resolución · Algoritmo</p>
+        <h2>Algoritmo detallado (2/2)</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Paso 2: Integración</h3>
+            <p>Resolver numéricamente:</p>
+            <div class="formula" style="font-size:clamp(0.8rem,1.4vw,1.1rem);">
+              I = &int;<sub>x<sub>f</sub></sub><sup>x<sub>0</sub></sup> dx / (y* &minus; x)
+            </div>
+            <p>Métodos disponibles: Cuadratura adaptativa, Regla del trapecio, Regla de Simpson.</p>
+          </div>
+          <div class="card">
+            <h3>Paso 3: Cálculos</h3>
+            <div class="formula" style="font-size:clamp(0.8rem,1.4vw,1.1rem);">
+              W<sub>0</sub>/W<sub>f</sub> = exp(I)<br>
+              f = 1 &minus; W<sub>f</sub>/W<sub>0</sub><br>
+              ȳ = (x<sub>0</sub> &minus; x<sub>f</sub>(1 &minus; f)) / f
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SLIDE 31 — Casos especiales  (Página 28)
+         ════════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Resolución</p>
+        <h2>Casos especiales y consideraciones</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Singularidad en y* = x</h3>
+            <p>Usar tolerancia pequeña. Evitar división por cero.</p>
+          </div>
+          <div class="card">
+            <h3>Azeótropos (y* = x en x<sub>az</sub>)</h3>
+            <p>Limitan separación máxima. Pueden causar múltiples soluciones.</p>
+          </div>
+          <div class="card">
+            <h3>Problema inverso</h3>
+            <p>Requiere método iterativo. La estimación inicial es importante.</p>
+          </div>
+          <div class="card">
+            <h3>Verificación</h3>
+            <p>Balance de materia global. Comprobar que 0 &lt; x<sub>f</sub> &lt; x<sub>0</sub> &lt; 1.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SLIDE 32 — Implementación en Python  (Página 29)
+         ════════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Resolución · Implementación</p>
+        <h2>Implementación en Python</h2>
+        <ol>
+          <li><strong>Importar librerías:</strong> numpy, scipy, matplotlib, pandas.</li>
+          <li><strong>Definir funciones base:</strong>
+            <ul>
+              <li><code>equilibrio_volatilidad_constante(x, &alpha;)</code></li>
+              <li><code>crear_interpolador_equilibrio(x_datos, y_datos)</code></li>
+            </ul>
+          </li>
+          <li><strong>Función principal:</strong> <code>integrar_rayleigh(x<sub>0</sub>, x<sub>f</sub>, func_equilibrio)</code> &rarr; Retorna: {integral, W<sub>0</sub>/W<sub>f</sub>, f_vap, error}.</li>
+          <li><strong>Problema inverso:</strong> <code>encontrar_xwf_para_fraccion(x<sub>0</sub>, f_objetivo, func_eq)</code></li>
+          <li><strong>Análisis y visualización:</strong>
+            <ul>
+              <li><code>analizar_destilacion_completa()</code></li>
+              <li><code>graficar_proceso_destilacion()</code></li>
+              <li><code>verificar_balance_materia()</code></li>
+            </ul>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SLIDE 33 — Taller Colab  (Página 30)
+         ════════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Resolución · Taller</p>
+        <h2>Taller de destilación diferencial</h2>
+        <div class="big-example">
+          <code>Taller_Destilacion_Diferencial_Simple_v2.ipynb</code>
+          <p class="legend">Notebook de Google Colab con ejercicios prácticos de integración de Rayleigh.</p>
+        </div>
+        <div class="tip">Disponible en Google Docs. El notebook incluye funciones listas para usar, ejemplos paso a paso y ejercicios de práctica.</div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SLIDE 34 — Separador: Ejemplo
+         ════════════════════════════════════════════════════════════════ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Sección 5</p>
+        <h1>Ejemplo: metanol-agua</h1>
+        <p>Aplicación paso a paso de la ecuación de Rayleigh a un sistema real.</p>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SLIDE 35 — Ejemplo: enunciado  (Página 31)
+         ════════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ejemplo · Metanol-agua</p>
+        <h2>Enunciado del problema</h2>
+        <p>Se carga un destilador por lotes simple con <strong>100 kmol</strong> de una mezcla de metanol y agua. La composición inicial es <strong>75% molar de metanol</strong>. La destilación se lleva a cabo a presión atmosférica. El proceso se detiene cuando la composición del líquido en el calderín disminuye hasta un <strong>55% molar de metanol</strong>.</p>
+        <h3 style="color:var(--brand-dark);margin:0;">Objetivos del cálculo</h3>
+        <ol>
+          <li>Determinar la cantidad final de líquido en el calderín (W<sub>f</sub>).</li>
+          <li>Calcular la cantidad total de destilado recogido (D).</li>
+          <li>Obtener la composición molar promedio del destilado acumulado (x<sub>D,avg</sub>).</li>
+        </ol>
+        <h3 style="color:var(--brand-dark);margin:0;">Datos de equilibrio (sistema metanol-agua a 1 atm)</h3>
+        <table class="data">
+          <tr><th>x<sub>MeOH</sub> (líquido)</th><th>y<sub>MeOH</sub> (vapor)</th></tr>
+          <tr><td>0.50</td><td>0.779</td></tr>
+          <tr><td>0.60</td><td>0.825</td></tr>
+          <tr><td>0.70</td><td>0.870</td></tr>
+          <tr><td>0.80</td><td>0.915</td></tr>
+        </table>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SLIDE 36 — Ejemplo: paso 1  (Página 32)
+         ════════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ejemplo · Metanol-agua</p>
+        <h2>Paso 1: Preparar los datos para la integración</h2>
+        <p>Calculamos el valor del integrando 1/(y &minus; x) en los puntos donde tenemos datos de equilibrio y en los límites de integración:</p>
+        <table class="data">
+          <tr><th>x<sub>MeOH</sub></th><th>y<sub>MeOH</sub></th><th>1/(y &minus; x)</th></tr>
+          <tr><td>0.50</td><td>0.779</td><td>3.584</td></tr>
+          <tr><td>0.55*</td><td>0.802*</td><td>3.984</td></tr>
+          <tr><td>0.60</td><td>0.825</td><td>4.444</td></tr>
+          <tr><td>0.70</td><td>0.870</td><td>5.882</td></tr>
+          <tr><td>0.75*</td><td>0.893*</td><td>7.042</td></tr>
+        </table>
+        <p class="small-text">* Valores obtenidos por interpolación lineal.</p>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SLIDE 37 — Ejemplo: paso 2  (Página 33)
+         ════════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ejemplo · Metanol-agua</p>
+        <h2>Paso 2: Integrar la ecuación de Rayleigh</h2>
+        <p>Usamos la regla del trapecio compuesta para aproximar la integral entre x = 0.55 y x = 0.75:</p>
+        <div class="formula" style="font-size:clamp(0.75rem,1.3vw,1rem);text-align:left;padding:1rem;">
+          &int;<sub>0.55</sub><sup>0.75</sup> dx/(y&minus;x) &asymp;<br>
+          &frac12;(0.60 &minus; 0.55)(3.984 + 4.444) +<br>
+          &frac12;(0.70 &minus; 0.60)(4.444 + 5.882) +<br>
+          &frac12;(0.75 &minus; 0.70)(5.882 + 7.042)<br><br>
+          &asymp; 0.025(8.428) + 0.05(10.326) + 0.025(12.924)<br>
+          &asymp; 0.211 + 0.516 + 0.323 &asymp; 1.05
+        </div>
+        <p>Por lo tanto, <strong>ln(W<sub>0</sub>/W<sub>f</sub>) &asymp; 1.07</strong> (usando un valor más preciso).</p>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SLIDE 38 — Ejemplo: paso 3  (Página 34)
+         ════════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ejemplo · Metanol-agua</p>
+        <h2>Paso 3: Calcular la cantidad de líquido remanente (W<sub>f</sub>)</h2>
+        <p>Conocemos W<sub>0</sub> = 100 kmol. Despejamos W<sub>f</sub> de la ecuación:</p>
+        <div class="formula">
+          ln(W<sub>0</sub> / W<sub>f</sub>) = 1.07
+        </div>
+        <div class="formula">
+          W<sub>0</sub> / W<sub>f</sub> = e<sup>1.07</sup> &asymp; 2.915
+        </div>
+        <div class="formula" style="background:var(--brand-dark);color:#fff;border:2px solid var(--brand-yellow);">
+          W<sub>f</sub> = W<sub>0</sub> / 2.915 = 100 / 2.915 &asymp; <strong>34.3 kmol</strong>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SLIDE 39 — Ejemplo: paso 4  (Página 35)
+         ════════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ejemplo · Metanol-agua</p>
+        <h2>Paso 4: Calcular la cantidad total de destilado (D)</h2>
+        <p>Aplicamos un balance de materia total:</p>
+        <div class="formula">
+          W<sub>0</sub> = W<sub>f</sub> + D
+        </div>
+        <div class="formula">
+          100 = 34.3 + D
+        </div>
+        <div class="formula" style="background:var(--brand-dark);color:#fff;border:2px solid var(--brand-yellow);">
+          D = <strong>65.7 kmol</strong>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SLIDE 40 — Ejemplo: paso 5  (Página 36)
+         ════════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ejemplo · Metanol-agua</p>
+        <h2>Paso 5: Calcular la composición promedio del destilado (x<sub>D,avg</sub>)</h2>
+        <p>Aplicamos un balance de materia para el metanol:</p>
+        <div class="formula" style="font-size:clamp(0.8rem,1.4vw,1.1rem);">
+          W<sub>0</sub> &middot; x<sub>W0</sub> = W<sub>f</sub> &middot; x<sub>Wf</sub> + D &middot; x<sub>D,avg</sub>
+        </div>
+        <div class="formula" style="font-size:clamp(0.8rem,1.4vw,1.1rem);">
+          (100)(0.75) = (34.3)(0.55) + (65.7) &middot; x<sub>D,avg</sub><br>
+          75 = 18.865 + 65.7 &middot; x<sub>D,avg</sub>
+        </div>
+        <div class="formula" style="background:var(--brand-dark);color:#fff;border:2px solid var(--brand-yellow);">
+          x<sub>D,avg</sub> = (75 &minus; 18.865) / 65.7 &asymp; <strong>0.854</strong>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SLIDE 41 — Análisis de resultados  (Página 37)
+         ════════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ejemplo · Metanol-agua</p>
+        <h2>Análisis de resultados</h2>
+        <table class="data">
+          <tr><th>Parámetro</th><th>Valor</th></tr>
+          <tr><td>Carga inicial (W<sub>0</sub>)</td><td>100 kmol</td></tr>
+          <tr><td>Composición inicial (x<sub>W0</sub>)</td><td>75% metanol</td></tr>
+          <tr><td>Residuo final (W<sub>f</sub>)</td><td>34.3 kmol</td></tr>
+          <tr><td>Composición final residuo (x<sub>Wf</sub>)</td><td>55% metanol</td></tr>
+          <tr><td>Destilado total (D)</td><td>65.7 kmol</td></tr>
+          <tr><td>Composición promedio destilado (x<sub>D,avg</sub>)</td><td>85.4% metanol</td></tr>
+        </table>
+        <p>Los resultados son consistentes con el principio de separación:</p>
+        <ul>
+          <li>El destilado (85.4%) está <strong>enriquecido</strong> en el componente más volátil respecto a la carga inicial (75%).</li>
+          <li>El residuo (55%) está <strong>empobrecido</strong> en el componente más volátil.</li>
+        </ul>
+        <div class="tip">Este ejemplo muestra la aplicación práctica de la Ecuación de Rayleigh para predecir el comportamiento de una destilación diferencial simple.</div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SLIDE 42 — Separador: Reflujo y operación
+         ════════════════════════════════════════════════════════════════ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Sección 6</p>
+        <h1>Reflujo y modos de operación</h1>
+        <p>Relación de reflujo, operación constante vs. variable y consideraciones de diseño industrial.</p>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SLIDE 43 — El rol del reflujo  (Página 38)
+         ════════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Reflujo</p>
+        <h2>El rol del reflujo</h2>
+        <p><strong>Relación de reflujo (R)</strong> — Parámetro operativo clave en la rectificación:</p>
+        <div class="formula">
+          R = L / D
+          <p class="note">Donde L = flujo molar de líquido que se devuelve a la columna, D = flujo molar de producto que se retira como destilado.</p>
+        </div>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>R &rarr; &infin; (reflujo total)</h3>
+            <p>Máxima separación posible, sin producción neta.</p>
+          </div>
+          <div class="card">
+            <h3>R = 0 (reflujo cero)</h3>
+            <p>Equivale a destilación simple sin columna.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SLIDE 44 — Operación a reflujo constante vs. variable  (Página 39)
+         ════════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Reflujo</p>
+        <h2>Operación a reflujo constante vs. variable</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Reflujo constante (R = cte)</h3>
+            <ul>
+              <li>Se establece un valor fijo para R durante toda la destilación.</li>
+              <li>La composición del destilado (x<sub>D</sub>) disminuye con el tiempo.</li>
+              <li>La tasa de producción puede mantenerse aproximadamente constante.</li>
+              <li>Útil para fraccionar la mezcla en varios cortes de diferente pureza.</li>
+              <li>Común en recuperación de solventes y producción de bebidas alcohólicas.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Composición constante (x<sub>D</sub> = cte)</h3>
+            <ul>
+              <li>Se ajusta R para mantener una pureza predefinida en el destilado.</li>
+              <li>La relación de reflujo aumenta continuamente con el tiempo.</li>
+              <li>La tasa de producción disminuye progresivamente.</li>
+              <li>Preferida cuando se necesita un producto que cumpla con una especificación estricta.</li>
+              <li>Común en la industria farmacéutica y química fina.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SLIDE 45 — Consideraciones industriales  (Página 40)
+         ════════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Diseño industrial</p>
+        <h2>Consideraciones industriales y de diseño</h2>
+        <p>El diseño óptimo de un sistema de destilación por lotes requiere un equilibrio entre inversión de capital, costos operativos, flexibilidad y especificaciones de producto final.</p>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Control de temperatura</h3>
+            <p>La temperatura de operación aumenta constantemente durante el proceso. Los sistemas de control deben ajustar la energía suministrada para mantener una tasa de vaporización adecuada y evitar sobrecalentamiento.</p>
+          </div>
+          <div class="card">
+            <h3>Sensibilidad a perturbaciones</h3>
+            <p>Los procesos por lotes son inherentemente más sensibles a perturbaciones que los continuos. Variaciones en la potencia de calentamiento, reflujo o presión pueden afectar significativamente la calidad del producto.</p>
+          </div>
+          <div class="card">
+            <h3>Tiempo de ciclo</h3>
+            <p>El tiempo total incluye carga, calentamiento, operación, enfriamiento y descarga. La optimización de estos tiempos es crucial para la productividad. El tiempo de destilación debe balancearse con la pureza y rendimiento deseados.</p>
+          </div>
+          <div class="card">
+            <h3>Automatización</h3>
+            <p>Los sistemas modernos utilizan control avanzado y modelado dinámico para optimizar la operación. La implementación de sensores en línea para composición permite ajustes en tiempo real de la relación de reflujo.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SLIDE 46 — Flash vs. diferencial  (Página 41)
+         ════════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Diseño industrial</p>
+        <h2>Flash vs. diferencial</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Destilación flash</h3>
+            <ul>
+              <li>Una termodinámica, dos corrientes.</li>
+              <li>Ideal para grandes caudales.</li>
+              <li>Separaciones moderadas.</li>
+              <li>Operación continua.</li>
+              <li>Mayor economía de escala.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Destilación diferencial</h3>
+            <ul>
+              <li>Composición variable en el tiempo.</li>
+              <li>Óptima para lotes pequeños.</li>
+              <li>Productos de alto valor.</li>
+              <li>Permite cortes selectivos.</li>
+              <li>Mayor flexibilidad operativa.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="tip">Parámetro clave para ambos métodos: volatilidad relativa promedio (&alpha;). Si &alpha; &lt; 1.3, ambos métodos tienen dificultades, pero el batch permite cortes selectivos que pueden mejorar la pureza final.</div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SLIDE 47 — Separador: Aplicaciones industriales
+         ════════════════════════════════════════════════════════════════ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Sección 7</p>
+        <h1>Aplicaciones industriales</h1>
+        <p>Casos de uso en bebidas alcohólicas, perfumería y aceites esenciales.</p>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SLIDE 48 — Aplicación a alcoholes  (Página 42)
+         ════════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Aplicaciones</p>
+        <h2>Aplicación a alcoholes</h2>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>1. Cabezas</h3>
+            <p>Primera fracción del destilado, rica en compuestos volátiles como aldehídos y metanol. Temperatura más baja. Se separa por razones de seguridad y calidad.</p>
+          </div>
+          <div class="card">
+            <h3>2. Corazón</h3>
+            <p>Fracción principal con etanol de alta pureza (70-80% v/v). Esta es la parte valiosa que se recolecta para el producto final.</p>
+          </div>
+          <div class="card">
+            <h3>3. Colas</h3>
+            <p>Última fracción que contiene compuestos menos volátiles como furfural y ácidos grasos. Temperatura más alta. Generalmente se descarta o recicla.</p>
+          </div>
+        </div>
+        <div class="tip">La ecuación de Rayleigh permite predecir el momento exacto en que la concentración de componentes indeseables (p.ej., metanol) superará los límites legales, optimizando así el proceso de corte.</div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SLIDE 49 — Perfumería y aceites esenciales  (Página 43)
+         ════════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Aplicaciones</p>
+        <h2>Perfumería — aceites esenciales</h2>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>Problema inicial</h3>
+            <p>Los terpenos y otros compuestos aromáticos son termosensibles y pueden degradarse a altas temperaturas, afectando la calidad del producto final.</p>
+          </div>
+          <div class="card">
+            <h3>Solución implementada</h3>
+            <p>Destilación diferencial a baja presión (0.85 bar) para reducir la temperatura de ebullición a 95 &deg;C, preservando los compuestos aromáticos.</p>
+          </div>
+          <div class="card">
+            <h3>Resultados obtenidos</h3>
+            <ul>
+              <li>Reducción del 18% en consumo de vapor.</li>
+              <li>Mejora del 6% absoluto en la recuperación de linalool.</li>
+              <li>Mayor calidad sensorial del producto final.</li>
+              <li>Modelo de Rayleigh ajustado con datos de laboratorio para optimizar cortes.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="tip">Este caso demuestra cómo la aplicación adecuada de los principios teóricos puede traducirse en mejoras significativas de proceso.</div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SLIDE 50 — Resumen y conceptos clave  (Página 44)
+         ════════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Resumen</p>
+        <h2>Resumen y conceptos clave</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Naturaleza transitoria</h3>
+            <p>Proceso en estado no estacionario con variables (composición, temperatura) que cambian continuamente a lo largo del tiempo.</p>
+          </div>
+          <div class="card">
+            <h3>Ecuación de Rayleigh</h3>
+            <p>Herramienta matemática fundamental: ln(W<sub>0</sub>/W<sub>f</sub>) = &int; dx/(y* &minus; x). Conecta la cantidad evaporada con el cambio de composición.</p>
+          </div>
+          <div class="card">
+            <h3>Rectificación y reflujo</h3>
+            <p>La adición de columnas multietapa y reflujo mejora drásticamente la eficiencia de separación, permitiendo productos de mayor pureza.</p>
+          </div>
+          <div class="card">
+            <h3>Aplicaciones industriales</h3>
+            <p>Ideal para producción de químicos de especialidad, fármacos, bebidas alcohólicas y procesos de I+D, donde la flexibilidad y la capacidad para obtener alta pureza compensan la menor eficiencia energética.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════════════════════════════════════
+         SLIDE 51 — Cierre
+         ════════════════════════════════════════════════════════════════ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">IQYA-2031 · 2026-10</p>
+        <h1>Destilación diferencial</h1>
+        <p>La destilación por lotes es una operación versátil y poderosa. Su dominio requiere comprender la interacción dinámica entre balances de materia y equilibrio de fases en un sistema transitorio, un concepto central en la formación de ingenieros químicos.</p>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="hud">
+    <span id="hud-title">Destilación diferencial · IQYA-2031</span>
+    <span id="hud-counter">1 / 51</span>
+  </div>
+
+  <div class="controls">
+    <button aria-label="Anterior" id="prev">‹</button>
+    <button aria-label="Pantalla completa" id="fs">⛶</button>
+    <button aria-label="Siguiente" id="next">›</button>
+  </div>
+
+  <script>
+    (function () {
+      var slides = Array.prototype.slice.call(document.querySelectorAll('[data-slide]'));
+      var i = 0;
+      var counter = document.getElementById('hud-counter');
+      var progress = document.querySelector('.progress');
+
+      function render() {
+        slides.forEach(function (s, idx) {
+          s.classList.toggle('active', idx === i);
+        });
+        if (counter) counter.textContent = (i + 1) + ' / ' + slides.length;
+        if (progress) progress.style.width = ((i + 1) / slides.length * 100) + '%';
+        var isTitle = slides[i] && slides[i].classList.contains('title-slide');
+        document.body.style.background = isTitle ? '#1A1A1A' : '#ffffff';
+      }
+      function go(n) { i = Math.max(0, Math.min(slides.length - 1, n)); render(); }
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); go(i + 1); }
+        else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(i - 1); }
+        else if (e.key === 'Home') { e.preventDefault(); go(0); }
+        else if (e.key === 'End') { e.preventDefault(); go(slides.length - 1); }
+        else if (e.key === 'f' || e.key === 'F') { toggleFs(); }
+      });
+
+      document.getElementById('prev').addEventListener('click', function () { go(i - 1); });
+      document.getElementById('next').addEventListener('click', function () { go(i + 1); });
+      document.getElementById('fs').addEventListener('click', toggleFs);
+
+      function toggleFs() {
+        var el = document.documentElement;
+        if (!document.fullscreenElement) {
+          (el.requestFullscreen || el.webkitRequestFullscreen || function(){}).call(el);
+        } else {
+          (document.exitFullscreen || document.webkitExitFullscreen || function(){}).call(document);
+        }
+      }
+
+      var tx = 0, ty = 0;
+      document.addEventListener('touchstart', function (e) {
+        if (!e.changedTouches[0]) return;
+        tx = e.changedTouches[0].clientX; ty = e.changedTouches[0].clientY;
+      }, { passive: true });
+      document.addEventListener('touchend', function (e) {
+        if (!e.changedTouches[0]) return;
+        var dx = e.changedTouches[0].clientX - tx;
+        var dy = e.changedTouches[0].clientY - ty;
+        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+          if (dx < 0) go(i + 1); else go(i - 1);
+        }
+      }, { passive: true });
+
+      // Inject decorative slide numbers
+      slides.forEach(function (s, idx) {
+        var num = document.createElement('div');
+        num.className = 'slide-number';
+        num.setAttribute('aria-hidden', 'true');
+        num.textContent = String(idx + 1).padStart(2, '0');
+        s.appendChild(num);
+      });
+
+      render();
+    })();
+  </script>
+</body>
+</html>

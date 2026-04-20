@@ -932,6 +932,24 @@ export const pouCourse: Course = {
       sessionNumber: 14,
       file: 'clase-14-equilibrio-fases.html',
     },
+    {
+      id: 'clase-15-destilacion-flash',
+      title: 'Destilación flash',
+      description:
+        'Principios de destilación flash, ecuación de Rachford-Rice, cálculos de punto de burbuja y rocío, flash multicomponente.',
+      date: '2026-04-16',
+      sessionNumber: 15,
+      file: 'clase-15-destilacion-flash.html',
+    },
+    {
+      id: 'clase-16-destilacion-diferencial',
+      title: 'Destilación diferencial',
+      description:
+        'Ecuación de Rayleigh, destilación simple, destilación con vapor, cálculos de composición y recuperación.',
+      date: '2026-04-21',
+      sessionNumber: 16,
+      file: 'clase-16-destilacion-diferencial.html',
+    },
   ],
   cronograma: pouCronograma,
 };
