@@ -78,6 +78,16 @@ const BusquedaBibliografica: React.FC = () => {
 
   const [tocOpen, setTocOpen] = useState(false);
 
+  const [activeSection, setActiveSection] = useState<string | null>(null);
+
+  const handleTocClick = (id: string) => {
+    setActiveSection((prev) => (prev === id ? null : id));
+    setTocOpen(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const isVisible = (id: string) => activeSection === null || activeSection === id;
+
   const Collapsible: React.FC<{ id: string; title: string; children: React.ReactNode }> = ({
     id,
     title,
@@ -107,20 +117,31 @@ const BusquedaBibliografica: React.FC = () => {
           onClick={() => setTocOpen(!tocOpen)}
           className="w-full flex items-center justify-between py-2.5 px-4 rounded-lg bg-zinc-50 border border-zinc-200 text-sm font-semibold text-brand-dark"
         >
-          <span>Contenido</span>
+          <span>{activeSection ? tocItems.find(t => t.id === activeSection)?.label ?? 'Contenido' : 'Contenido'}</span>
           <span className="text-brand-gray">{tocOpen ? '−' : '+'}</span>
         </button>
         {tocOpen && (
           <nav className="mt-1 rounded-lg bg-white border border-zinc-200 shadow-lg p-3 space-y-1">
+            {activeSection && (
+              <button
+                onClick={() => { setActiveSection(null); setTocOpen(false); }}
+                className="block w-full text-left py-1.5 px-2 text-sm font-semibold text-brand-yellow-dark hover:bg-zinc-50 rounded transition-colors"
+              >
+                ← Ver todo
+              </button>
+            )}
             {tocItems.map((t) => (
-              <a
+              <button
                 key={t.id}
-                href={`#${t.id}`}
-                onClick={() => setTocOpen(false)}
-                className="block py-1 px-2 text-sm text-brand-gray hover:text-brand-dark hover:bg-zinc-50 rounded transition-colors"
+                onClick={() => handleTocClick(t.id)}
+                className={`block w-full text-left py-1 px-2 text-sm rounded transition-colors ${
+                  activeSection === t.id
+                    ? 'text-brand-dark font-semibold bg-yellow-50'
+                    : 'text-brand-gray hover:text-brand-dark hover:bg-zinc-50'
+                }`}
               >
                 {t.label}
-              </a>
+              </button>
             ))}
           </nav>
         )}
@@ -129,15 +150,27 @@ const BusquedaBibliografica: React.FC = () => {
       <div className="lg:grid lg:grid-cols-[220px_1fr] lg:gap-10">
         {/* ─── Sticky TOC sidebar (desktop) ─── */}
         <nav className="hidden lg:block">
-          <div className="sticky top-28 space-y-1.5 text-sm text-brand-gray">
+          <div className="sticky top-28 space-y-1 text-sm">
+            {activeSection && (
+              <button
+                onClick={() => setActiveSection(null)}
+                className="block w-full text-left py-1.5 mb-2 text-sm font-semibold text-brand-yellow-dark hover:text-brand-dark transition-colors"
+              >
+                ← Ver todo
+              </button>
+            )}
             {tocItems.map((t) => (
-              <a
+              <button
                 key={t.id}
-                href={`#${t.id}`}
-                className="block py-1 hover:text-brand-dark transition-colors"
+                onClick={() => handleTocClick(t.id)}
+                className={`block w-full text-left py-1 rounded px-2 transition-colors ${
+                  activeSection === t.id
+                    ? 'text-brand-dark font-semibold bg-yellow-50'
+                    : 'text-brand-gray hover:text-brand-dark'
+                }`}
               >
                 {t.label}
-              </a>
+              </button>
             ))}
           </div>
         </nav>
@@ -145,6 +178,7 @@ const BusquedaBibliografica: React.FC = () => {
         {/* ─── Main content ─── */}
         <div className="reading-prose">
 
+          {isVisible('introduccion') && (<>
           {/* ═══════════════════════════════════════════════════════════════
               SECTION 1 — INTRODUCCIÓN
           ═══════════════════════════════════════════════════════════════ */}
@@ -183,7 +217,9 @@ const BusquedaBibliografica: React.FC = () => {
               </p>
             </div>
           </div>
+          </>)}
 
+          {isVisible('google-scholar') && (<>
           {/* ═══════════════════════════════════════════════════════════════
               SECTION 2 — GOOGLE SCHOLAR
           ═══════════════════════════════════════════════════════════════ */}
@@ -249,6 +285,9 @@ const BusquedaBibliografica: React.FC = () => {
             </p>
           </TipCallout>
 
+          </>)}
+
+          {isVisible('web-of-science') && (<>
           {/* ═══════════════════════════════════════════════════════════════
               SECTION 3 — WEB OF SCIENCE
           ═══════════════════════════════════════════════════════════════ */}
@@ -314,6 +353,9 @@ const BusquedaBibliografica: React.FC = () => {
             </a>
           </p>
 
+          </>)}
+
+          {isVisible('scopus') && (<>
           {/* ═══════════════════════════════════════════════════════════════
               SECTION 4 — SCOPUS
           ═══════════════════════════════════════════════════════════════ */}
@@ -372,6 +414,9 @@ const BusquedaBibliografica: React.FC = () => {
             </a>
           </p>
 
+          </>)}
+
+          {isVisible('comparativa-clasicas') && (<>
           {/* ═══════════════════════════════════════════════════════════════
               SECTION 5 — COMPARATIVA CLÁSICAS
           ═══════════════════════════════════════════════════════════════ */}
@@ -456,6 +501,9 @@ const BusquedaBibliografica: React.FC = () => {
             </table>
           </div>
 
+          </>)}
+
+          {isVisible('estrategias') && (<>
           {/* ═══════════════════════════════════════════════════════════════
               SECTION 6 — ESTRATEGIAS DE BÚSQUEDA
           ═══════════════════════════════════════════════════════════════ */}
@@ -551,6 +599,9 @@ const BusquedaBibliografica: React.FC = () => {
             </div>
           </div>
 
+          </>)}
+
+          {isVisible('chatgpt') && (<>
           {/* ═══════════════════════════════════════════════════════════════
               SECTION 7 — CHATGPT
           ═══════════════════════════════════════════════════════════════ */}
@@ -642,6 +693,9 @@ const BusquedaBibliografica: React.FC = () => {
             </a>
           </p>
 
+          </>)}
+
+          {isVisible('gemini') && (<>
           {/* ═══════════════════════════════════════════════════════════════
               SECTION 8 — GEMINI
           ═══════════════════════════════════════════════════════════════ */}
@@ -711,6 +765,9 @@ const BusquedaBibliografica: React.FC = () => {
             </a>
           </p>
 
+          </>)}
+
+          {isVisible('claude') && (<>
           {/* ═══════════════════════════════════════════════════════════════
               SECTION 9 — CLAUDE
           ═══════════════════════════════════════════════════════════════ */}
@@ -782,6 +839,9 @@ const BusquedaBibliografica: React.FC = () => {
             </a>
           </p>
 
+          </>)}
+
+          {isVisible('perplexity') && (<>
           {/* ═══════════════════════════════════════════════════════════════
               SECTION 10 — PERPLEXITY
           ═══════════════════════════════════════════════════════════════ */}
@@ -852,6 +912,9 @@ const BusquedaBibliografica: React.FC = () => {
             </a>
           </p>
 
+          </>)}
+
+          {isVisible('scispace') && (<>
           {/* ═══════════════════════════════════════════════════════════════
               SECTION 11 — SCISPACE
           ═══════════════════════════════════════════════════════════════ */}
@@ -921,6 +984,9 @@ const BusquedaBibliografica: React.FC = () => {
             </a>
           </p>
 
+          </>)}
+
+          {isVisible('consensus') && (<>
           {/* ═══════════════════════════════════════════════════════════════
               SECTION 12 — CONSENSUS
           ═══════════════════════════════════════════════════════════════ */}
@@ -971,6 +1037,9 @@ const BusquedaBibliografica: React.FC = () => {
             </a>
           </p>
 
+          </>)}
+
+          {isVisible('connected-papers') && (<>
           {/* ═══════════════════════════════════════════════════════════════
               SECTION 13 — CONNECTED PAPERS
           ═══════════════════════════════════════════════════════════════ */}
@@ -1019,6 +1088,9 @@ const BusquedaBibliografica: React.FC = () => {
             </a>
           </p>
 
+          </>)}
+
+          {isVisible('comparativa-ia') && (<>
           {/* ═══════════════════════════════════════════════════════════════
               SECTION 14 — COMPARATIVA IA
           ═══════════════════════════════════════════════════════════════ */}
@@ -1152,6 +1224,9 @@ const BusquedaBibliografica: React.FC = () => {
             </table>
           </div>
 
+          </>)}
+
+          {isVisible('flujo-trabajo') && (<>
           {/* ═══════════════════════════════════════════════════════════════
               SECTION 15 — FLUJO DE TRABAJO
           ═══════════════════════════════════════════════════════════════ */}
@@ -1188,6 +1263,9 @@ const BusquedaBibliografica: React.FC = () => {
             </p>
           </TipCallout>
 
+          </>)}
+
+          {isVisible('conclusiones') && (<>
           {/* ═══════════════════════════════════════════════════════════════
               SECTION 16 — CONCLUSIONES
           ═══════════════════════════════════════════════════════════════ */}
@@ -1215,6 +1293,7 @@ const BusquedaBibliografica: React.FC = () => {
           <p>
             La capacidad de realizar búsquedas bibliográficas efectivas es una habilidad que te acompañará durante toda tu carrera profesional — ya sea en investigación académica, en la industria o en consultoría. Las herramientas cambiarán y evolucionarán, pero los principios fundamentales permanecen: <strong>buscar con rigor, evaluar con criterio y documentar con transparencia</strong>. Dominar estas competencias hoy te dará una ventaja significativa como ingeniero químico.
           </p>
+          </>)}
 
         </div>
       </div>

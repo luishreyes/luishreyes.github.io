@@ -82,6 +82,16 @@ const TrabajoEnEquipo: React.FC = () => {
 
   const [tocOpen, setTocOpen] = useState(false);
 
+  const [activeSection, setActiveSection] = useState<string | null>(null);
+
+  const handleTocClick = (id: string) => {
+    setActiveSection((prev) => (prev === id ? null : id));
+    setTocOpen(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const isVisible = (id: string) => activeSection === null || activeSection === id;
+
   const Collapsible: React.FC<{ id: string; title: string; children: React.ReactNode }> = ({
     id,
     title,
@@ -111,20 +121,31 @@ const TrabajoEnEquipo: React.FC = () => {
           onClick={() => setTocOpen(!tocOpen)}
           className="w-full flex items-center justify-between py-2.5 px-4 rounded-lg bg-zinc-50 border border-zinc-200 text-sm font-semibold text-brand-dark"
         >
-          <span>Contenido</span>
+          <span>{activeSection ? tocItems.find(t => t.id === activeSection)?.label ?? 'Contenido' : 'Contenido'}</span>
           <span className="text-brand-gray">{tocOpen ? '−' : '+'}</span>
         </button>
         {tocOpen && (
           <nav className="mt-1 rounded-lg bg-white border border-zinc-200 shadow-lg p-3 space-y-1">
+            {activeSection && (
+              <button
+                onClick={() => { setActiveSection(null); setTocOpen(false); }}
+                className="block w-full text-left py-1.5 px-2 text-sm font-semibold text-brand-yellow-dark hover:bg-zinc-50 rounded transition-colors"
+              >
+                ← Ver todo
+              </button>
+            )}
             {tocItems.map((t) => (
-              <a
+              <button
                 key={t.id}
-                href={`#${t.id}`}
-                onClick={() => setTocOpen(false)}
-                className="block py-1 px-2 text-sm text-brand-gray hover:text-brand-dark hover:bg-zinc-50 rounded transition-colors"
+                onClick={() => handleTocClick(t.id)}
+                className={`block w-full text-left py-1 px-2 text-sm rounded transition-colors ${
+                  activeSection === t.id
+                    ? 'text-brand-dark font-semibold bg-yellow-50'
+                    : 'text-brand-gray hover:text-brand-dark hover:bg-zinc-50'
+                }`}
               >
                 {t.label}
-              </a>
+              </button>
             ))}
           </nav>
         )}
@@ -133,15 +154,27 @@ const TrabajoEnEquipo: React.FC = () => {
       <div className="lg:grid lg:grid-cols-[220px_1fr] lg:gap-10">
         {/* ─── Sticky TOC sidebar (desktop) ─── */}
         <nav className="hidden lg:block">
-          <div className="sticky top-28 space-y-1.5 text-sm text-brand-gray">
+          <div className="sticky top-28 space-y-1 text-sm">
+            {activeSection && (
+              <button
+                onClick={() => setActiveSection(null)}
+                className="block w-full text-left py-1.5 mb-2 text-sm font-semibold text-brand-yellow-dark hover:text-brand-dark transition-colors"
+              >
+                ← Ver todo
+              </button>
+            )}
             {tocItems.map((t) => (
-              <a
+              <button
                 key={t.id}
-                href={`#${t.id}`}
-                className="block py-1 hover:text-brand-dark transition-colors"
+                onClick={() => handleTocClick(t.id)}
+                className={`block w-full text-left py-1 rounded px-2 transition-colors ${
+                  activeSection === t.id
+                    ? 'text-brand-dark font-semibold bg-yellow-50'
+                    : 'text-brand-gray hover:text-brand-dark'
+                }`}
               >
                 {t.label}
-              </a>
+              </button>
             ))}
           </div>
         </nav>
@@ -149,6 +182,7 @@ const TrabajoEnEquipo: React.FC = () => {
         {/* ─── Main content ─── */}
         <div className="reading-prose">
 
+          {isVisible('fundamentos') && (<>
           {/* ═══════════════════════════════════════════════════════════════
               SECTION 1 — FUNDAMENTOS
           ═══════════════════════════════════════════════════════════════ */}
@@ -218,6 +252,9 @@ const TrabajoEnEquipo: React.FC = () => {
             </p>
           </TipCallout>
 
+          </>)}
+
+          {isVisible('aristoteles') && (<>
           {/* ═══════════════════════════════════════════════════════════════
               SECTION 2 — PROYECTO ARISTÓTELES
           ═══════════════════════════════════════════════════════════════ */}
@@ -281,6 +318,9 @@ const TrabajoEnEquipo: React.FC = () => {
             </p>
           </TipCallout>
 
+          </>)}
+
+          {isVisible('bienestar') && (<>
           {/* ═══════════════════════════════════════════════════════════════
               SECTION 3 — BIENESTAR
           ═══════════════════════════════════════════════════════════════ */}
@@ -337,6 +377,9 @@ const TrabajoEnEquipo: React.FC = () => {
             </p>
           </TipCallout>
 
+          </>)}
+
+          {isVisible('organizacion') && (<>
           {/* ═══════════════════════════════════════════════════════════════
               SECTION 4 — ORGANIZACIÓN METODOLÓGICA
           ═══════════════════════════════════════════════════════════════ */}
@@ -423,6 +466,9 @@ const TrabajoEnEquipo: React.FC = () => {
             </p>
           </TipCallout>
 
+          </>)}
+
+          {isVisible('normas') && (<>
           {/* ═══════════════════════════════════════════════════════════════
               SECTION 5 — NORMAS Y COMPROMISOS
           ═══════════════════════════════════════════════════════════════ */}
@@ -585,6 +631,9 @@ const TrabajoEnEquipo: React.FC = () => {
             </p>
           </TipCallout>
 
+          </>)}
+
+          {isVisible('seguridad') && (<>
           {/* ═══════════════════════════════════════════════════════════════
               SECTION 6 — SEGURIDAD PSICOLÓGICA
           ═══════════════════════════════════════════════════════════════ */}
@@ -709,6 +758,9 @@ const TrabajoEnEquipo: React.FC = () => {
             </table>
           </div>
 
+          </>)}
+
+          {isVisible('conflictos') && (<>
           {/* ═══════════════════════════════════════════════════════════════
               SECTION 7 — RESOLUCIÓN DE CONFLICTOS
           ═══════════════════════════════════════════════════════════════ */}
@@ -868,6 +920,9 @@ const TrabajoEnEquipo: React.FC = () => {
             </p>
           </TipCallout>
 
+          </>)}
+
+          {isVisible('roles') && (<>
           {/* ═══════════════════════════════════════════════════════════════
               SECTION 8 — ROLES
           ═══════════════════════════════════════════════════════════════ */}
@@ -956,6 +1011,9 @@ const TrabajoEnEquipo: React.FC = () => {
             </p>
           </TipCallout>
 
+          </>)}
+
+          {isVisible('evaluacion') && (<>
           {/* ═══════════════════════════════════════════════════════════════
               SECTION 9 — MATRIZ DE EVALUACIÓN
           ═══════════════════════════════════════════════════════════════ */}
@@ -1075,6 +1133,9 @@ const TrabajoEnEquipo: React.FC = () => {
             Se harán <strong>cinco ciclos de evaluación</strong> durante el semestre con fines formativos que permitan ajustes. En todos los casos, es valioso complementar las calificaciones numéricas con comentarios cualitativos que orienten específicamente las oportunidades de mejora.
           </p>
 
+          </>)}
+
+          {isVisible('entregables') && (<>
           {/* ═══════════════════════════════════════════════════════════════
               SECTION 10 — ENTREGABLES
           ═══════════════════════════════════════════════════════════════ */}
@@ -1140,6 +1201,9 @@ const TrabajoEnEquipo: React.FC = () => {
             ))}
           </div>
 
+          </>)}
+
+          {isVisible('documentacion') && (<>
           {/* ═══════════════════════════════════════════════════════════════
               SECTION 11 — DOCUMENTACIÓN
           ═══════════════════════════════════════════════════════════════ */}
@@ -1178,6 +1242,9 @@ const TrabajoEnEquipo: React.FC = () => {
             </p>
           </TipCallout>
 
+          </>)}
+
+          {isVisible('integracion') && (<>
           {/* ═══════════════════════════════════════════════════════════════
               SECTION 12 — INTEGRACIÓN PROFESIONAL
           ═══════════════════════════════════════════════════════════════ */}
@@ -1194,6 +1261,9 @@ const TrabajoEnEquipo: React.FC = () => {
             &ldquo;La capacidad de trabajar efectivamente en equipo no es un talento innato, sino una competencia desarrollable a través de la práctica reflexiva y la aplicación de principios fundamentados en evidencia. Los ingenieros que dominan esta competencia multiplican su impacto profesional.&rdquo;
           </blockquote>
 
+          </>)}
+
+          {isVisible('reflexion') && (<>
           {/* ═══════════════════════════════════════════════════════════════
               SECTION 13 — REFLEXIÓN FINAL
           ═══════════════════════════════════════════════════════════════ */}
@@ -1241,6 +1311,9 @@ const TrabajoEnEquipo: React.FC = () => {
             Los invitamos a considerar esta experiencia como un laboratorio de aprendizaje no solo sobre operaciones unitarias, sino también sobre las dinámicas humanas que determinan cómo las organizaciones transforman conocimiento especializado en soluciones efectivas.
           </p>
 
+          </>)}
+
+          {isVisible('plantillas') && (<>
           {/* ═══════════════════════════════════════════════════════════════
               SECTION 14 — PLANTILLAS
           ═══════════════════════════════════════════════════════════════ */}
@@ -1592,6 +1665,7 @@ const TrabajoEnEquipo: React.FC = () => {
               </div>
             </div>
           </Collapsible>
+          </>)}
 
         </div>
         {/* end reading-prose */}
