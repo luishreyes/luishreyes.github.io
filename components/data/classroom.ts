@@ -56,6 +56,17 @@ export interface AiasLevel {
   application: string;
 }
 
+export interface CronogramaEntry {
+  date: string;      // ISO: '2026-01-20'
+  day: string;       // 'Martes', 'Jueves', 'Lunes'
+  week: number;
+  topic: string;     // Main topic (first line)
+  details?: string[]; // Sub-bullets
+  quiz?: string;
+  taller?: string;
+  proyecto?: string;  // Deliverable or coevaluation
+}
+
 export interface Course {
   slug: string;
   code: string;
@@ -68,6 +79,7 @@ export interface Course {
   tagline?: string;
   accessCode: string;
   bannerUrl: string;
+  cronograma?: CronogramaEntry[];
   pillars?: { title: string; description: string }[];
   team: TeamMember[];
   schedule: Schedule[];
