@@ -38,6 +38,16 @@ export const edcoCoursesData: EdcoCourse[] = [
     attendees: 40,
     role: 'Instructor'
   },
+  {
+    year: 2026,
+    title: 'Fundamentals of Using Generative AI',
+    titleEn: 'Fundamentals of Using Generative AI',
+    type: 'Open Course',
+    client: 'Coursera (MOOC)',
+    attendees: 87,
+    role: 'Instructor',
+    url: 'https://www.coursera.org/learn/fundamentals-of-using-generative-ai'
+  },
 
   // 2025
   { 
@@ -76,15 +86,15 @@ export const edcoCoursesData: EdcoCourse[] = [
     attendees: 26, 
     role: 'Instructor' 
   },
-  { 
-    year: 2025, 
-    title: 'Fundamentos del Uso de IA Generativa', 
-    titleEn: 'Fundamentals of Generative AI Usage', 
-    type: 'Open Course', 
-    client: 'Coursera (MOOC)', 
-    attendees: 2540, 
+  {
+    year: 2025,
+    title: 'Fundamentos del Uso de IA Generativa',
+    titleEn: 'Fundamentals of Generative AI Usage',
+    type: 'Open Course',
+    client: 'Coursera (MOOC)',
+    attendees: 5876,
     role: 'Instructor',
-    url: 'https://www.coursera.org/learn/fundamentos-ia-generativa-uniandes' 
+    url: 'https://www.coursera.org/learn/fundamentos-ia-generativa-uniandes'
   },
   { year: 2025, title: 'Prompt Engineering', titleEn: 'Prompt Engineering', type: 'Corporate Course', client: 'Bancolombia', attendees: 36, role: 'Instructor' },
   { year: 2025, title: 'Transformando la Productividad Corporativa con IA: Aprovechando el Potencial de los Modelos Generativos en el Entorno Empresarial', titleEn: 'Transforming Corporate Productivity with AI: Harnessing the Potential of Generative Models in the Business Environment', type: 'Corporate Course', client: 'Cenipalma', attendees: 35, role: 'Instructor' },
