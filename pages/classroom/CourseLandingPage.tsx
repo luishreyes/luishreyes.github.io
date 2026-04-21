@@ -38,9 +38,16 @@ export const CourseLandingPage: React.FC = () => {
               <div className="flex items-start justify-between">
                 <div>
                   <p className="text-xs font-semibold tracking-widest uppercase text-brand-yellow-dark">Material</p>
-                  <h3 className="mt-1 text-xl font-bold text-brand-dark">Lecturas</h3>
+                  <h3 className="mt-1 text-xl font-bold text-brand-dark">Material del curso</h3>
                   <p className="mt-2 text-sm text-brand-gray">
-                    {course.readings.length} {course.readings.length === 1 ? 'entrada' : 'entradas'} publicadas
+                    {(() => {
+                      const lecturas = course.readings.filter((r) => r.category === 'lectura').length;
+                      const guias = course.readings.length - lecturas;
+                      const parts: string[] = [];
+                      if (guias > 0) parts.push(`${guias} ${guias === 1 ? 'guía' : 'guías'}`);
+                      if (lecturas > 0) parts.push(`${lecturas} ${lecturas === 1 ? 'lectura' : 'lecturas'}`);
+                      return parts.length > 0 ? parts.join(' · ') : 'Sin material publicado';
+                    })()}
                   </p>
                 </div>
                 <span className="text-brand-dark group-hover:text-brand-yellow-dark transition-colors">

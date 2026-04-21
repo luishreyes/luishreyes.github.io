@@ -777,6 +777,7 @@ export const pouCourse: Course = {
       date: '2026-01-19',
       readingMinutes: 5,
       tags: ['bienvenida', 'logística'],
+      category: 'guia',
     },
     {
       slug: 'trabajo-en-equipo',
@@ -786,6 +787,7 @@ export const pouCourse: Course = {
       date: '2026-01-26',
       readingMinutes: 20,
       tags: ['equipos', 'gestión de proyectos', 'soft skills'],
+      category: 'guia',
     },
     {
       slug: 'busqueda-bibliografica',
@@ -795,6 +797,7 @@ export const pouCourse: Course = {
       date: '2026-01-28',
       readingMinutes: 30,
       tags: ['bibliografía', 'IA', 'investigación', 'bases de datos'],
+      category: 'guia',
     },
     {
       slug: 'bitacoras-de-calculo',
@@ -804,6 +807,7 @@ export const pouCourse: Course = {
       date: '2026-01-30',
       readingMinutes: 20,
       tags: ['bitácoras', 'documentación', 'cálculos', 'proyecto'],
+      category: 'guia',
     },
     {
       slug: 'informe-final',
@@ -813,6 +817,7 @@ export const pouCourse: Course = {
       date: '2026-02-01',
       readingMinutes: 15,
       tags: ['informe', 'documentación', 'proyecto', 'escritura'],
+      category: 'guia',
     },
     {
       slug: 'operaciones-unitarias',
@@ -822,6 +827,7 @@ export const pouCourse: Course = {
       date: '2026-01-20',
       readingMinutes: 20,
       tags: ['fundamentos', 'operaciones unitarias', 'introducción'],
+      category: 'lectura',
     },
   ],
   presentations: [
