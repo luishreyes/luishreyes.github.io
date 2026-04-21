@@ -582,11 +582,11 @@ const ReduccionTamano: React.FC = () => {
                   experimentalmente.
                 </li>
                 <li>
-                  $P_{'{80}'}$: tamaño de partícula (en µm) por el cual pasa el 80% del{' '}
+                  {String.raw`$P_{'{80}'}$`}: tamaño de partícula (en µm) por el cual pasa el 80% del{' '}
                   <strong>producto</strong> molido.
                 </li>
                 <li>
-                  $F_{'{80}'}$: tamaño de partícula (en µm) por el cual pasa el 80% de la{' '}
+                  {String.raw`$F_{'{80}'}$`}: tamaño de partícula (en µm) por el cual pasa el 80% de la{' '}
                   <strong>alimentación</strong> al equipo.
                 </li>
               </ul>
