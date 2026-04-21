@@ -814,6 +814,15 @@ export const pouCourse: Course = {
       readingMinutes: 15,
       tags: ['informe', 'documentación', 'proyecto', 'escritura'],
     },
+    {
+      slug: 'operaciones-unitarias',
+      title: 'Operaciones Unitarias: ¿qué son?',
+      summary:
+        'Introducción conceptual a las operaciones unitarias: origen histórico (Arthur D. Little, 1915), definición, importancia, clasificación según el fenómeno físico predominante (flujo de fluidos, transferencia de calor, transferencia de masa, operaciones mecánicas), balances de materia y energía, y ejemplos industriales (refinación de petróleo, potabilización de agua).',
+      date: '2026-01-20',
+      readingMinutes: 20,
+      tags: ['fundamentos', 'operaciones unitarias', 'introducción'],
+    },
   ],
   presentations: [
     {
