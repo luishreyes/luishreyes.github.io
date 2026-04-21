@@ -99,10 +99,18 @@ Cada curso tiene un `accessCode`. Se guarda en `localStorage` con key `classroom
 - **Nunca** publicar texto en español sin acentos
 
 ### Git
-- Commits descriptivos con footer `Co-Authored-By: Claude Opus 4.6 (1M context) <noreply@anthropic.com>`
+- Commits descriptivos con footer `Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>`
 - Push frecuente para no perder trabajo
 - Deploy automático al pushear a `main`
 - Para features grandes, usar rama y mergear cuando esté listo
+- Cuando se trabaja desde un worktree de `.claude/worktrees/*`, pushear con `git push origin HEAD:main` (fast-forward)
+
+### Materiales fuente (carpeta `temp/`)
+- Los PDFs originales de cada clase viven en `temp/NN-Nombre-del-tema.pdf` (ej. `temp/06-Reduccion-de-Tamano.pdf`)
+- **NO está versionada en git** — es espacio de trabajo local
+- Cuando el usuario dice "imagen recortada" o "la subí", buscar también en `~/Desktop/` y `~/Downloads/` — no solo en `temp/`
+- GIFs animados, imágenes generadas con IA (Gemini) y fotos de laboratorio también suelen estar aquí
+- Siempre copiar/mover a `public/classroom/{slug}/slides/img/` antes de referenciarlas
 
 ### Errores pre-existentes
 - Los archivos en `components/data/students/**/*.ts` tienen errores de TypeScript por imports rotos — **ignorar**, no son del Classroom
