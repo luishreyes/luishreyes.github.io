@@ -5,6 +5,13 @@ export interface Reading {
   date: string;
   readingMinutes?: number;
   tags?: string[];
+  /**
+   * Categoría editorial del material:
+   * - 'guia'    → guías de proceso / metodología (trabajo en equipo, bitácoras, informe, búsqueda, etc.)
+   * - 'lectura' → lecturas de contenido que acompañan una clase (una por sesión)
+   * Si no se especifica, se asume 'guia'.
+   */
+  category?: 'guia' | 'lectura';
 }
 
 export interface Presentation {

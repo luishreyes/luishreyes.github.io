@@ -33,7 +33,7 @@ export const ReadingLayout: React.FC<ReadingLayoutProps> = ({ course, reading, c
             <span aria-hidden="true">/</span>
             <Link to={`/classroom/${course.slug}`} className="hover:text-brand-dark transition-colors">{course.code}</Link>
             <span aria-hidden="true">/</span>
-            <Link to={`/classroom/${course.slug}/readings`} className="hover:text-brand-dark transition-colors">Lecturas</Link>
+            <Link to={`/classroom/${course.slug}/readings`} className="hover:text-brand-dark transition-colors">Material del curso</Link>
           </nav>
 
           <h1 className="mt-5 text-3xl sm:text-4xl font-bold tracking-tight text-brand-dark leading-tight">
@@ -75,7 +75,7 @@ export const ReadingLayout: React.FC<ReadingLayoutProps> = ({ course, reading, c
             to={`/classroom/${course.slug}/readings`}
             className="inline-flex items-center gap-2 text-sm text-brand-dark hover:text-brand-yellow-dark transition-colors"
           >
-            <span aria-hidden="true">←</span> Volver a lecturas
+            <span aria-hidden="true">←</span> Volver al material del curso
           </Link>
         </div>
       </div>

@@ -48,7 +48,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
 
           <div className="mt-4 flex items-center justify-between text-xs text-brand-gray">
             <div className="flex items-center gap-3">
-              <span>{course.readings.length} lecturas</span>
+              <span>{course.readings.length} {course.readings.length === 1 ? 'entrada' : 'entradas'}</span>
               <span className="text-zinc-300">·</span>
               <span>{course.presentations.length} presentaciones</span>
             </div>
