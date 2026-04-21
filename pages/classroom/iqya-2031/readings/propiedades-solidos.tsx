@@ -280,12 +280,12 @@ const PropiedadesSolidos: React.FC = () => {
               <SubTitle>Tipos de densidad</SubTitle>
               <ul>
                 <li>
-                  <strong>Densidad verdadera ($\rho_\text{verdadera}$):</strong> la densidad
+                  <strong>Densidad verdadera ({String.raw`$\rho_\text{verdadera}$`}):</strong> la densidad
                   del material en sí, excluyendo todos los poros (tanto abiertos como
                   cerrados).
                 </li>
                 <li>
-                  <strong>Densidad aparente o de partícula ($\rho_\text{aparente}$):</strong>
+                  <strong>Densidad aparente o de partícula ({String.raw`$\rho_\text{aparente}$`}):</strong>
                   la densidad de una partícula, incluyendo su porosidad interna (poros
                   cerrados), pero excluyendo los vacíos interparticulares. Se calcula como
                   la masa de una partícula dividida por su volumen total (sólido + poros
@@ -293,7 +293,7 @@ const PropiedadesSolidos: React.FC = () => {
                 </li>
                 <li>
                   <strong>Densidad masal o densidad aparente del lecho
-                  ($\rho_\text{masal}$):</strong> la masa de una cantidad de polvo dividida
+                  ({String.raw`$\rho_\text{masal}$`}):</strong> la masa de una cantidad de polvo dividida
                   por el volumen total que ocupa (incluyendo los vacíos interparticulares).
                   Este parámetro es crucial para dimensionar recipientes de almacenamiento
                   (silos, tolvas) y empaques.
@@ -336,35 +336,35 @@ const PropiedadesSolidos: React.FC = () => {
                 <strong>Procedimiento general con picnómetro de líquido (ej. agua):</strong>
               </p>
               <ol>
-                <li>Se pesa el picnómetro vacío y seco ($m_\text{pic}$).</li>
+                <li>Se pesa el picnómetro vacío y seco ({String.raw`$m_\text{pic}$`}).</li>
                 <li>
                   Se añade una cantidad conocida de polvo al picnómetro y se pesa el
-                  conjunto ($m_{\text{pic}+p}$). La masa del polvo es
-                  $m_p = m_{\text{pic}+p} - m_\text{pic}$.
+                  conjunto ({String.raw`$m_{\text{pic}+p}$`}). La masa del polvo es
+                  {String.raw`$m_p = m_{\text{pic}+p} - m_\text{pic}$`}.
                 </li>
                 <li>
                   Se llena el picnómetro (con el polvo) con un líquido de densidad conocida
-                  ($\rho_\text{liq}$), eliminando burbujas de aire para que el líquido ocupe
+                  ({String.raw`$\rho_\text{liq}$`}), eliminando burbujas de aire para que el líquido ocupe
                   todos los vacíos accesibles. Se pesa el conjunto
-                  ($m_{\text{pic}+p+\text{liq}}$).
+                  ({String.raw`$m_{\text{pic}+p+\text{liq}}$`}).
                 </li>
                 <li>
                   Se llena el picnómetro <em>solo con líquido</em> hasta la marca de
-                  calibración y se pesa ($m_{\text{pic}+\text{liq}}$). La masa del líquido es
-                  $m_\text{liq} = m_{\text{pic}+\text{liq}} - m_\text{pic}$. El volumen del
-                  picnómetro es $V_\text{pic} = m_\text{liq}/\rho_\text{liq}$.
+                  calibración y se pesa ({String.raw`$m_{\text{pic}+\text{liq}}$`}). La masa del líquido es
+                  {String.raw`$m_\text{liq} = m_{\text{pic}+\text{liq}} - m_\text{pic}$`}. El volumen del
+                  picnómetro es {String.raw`$V_\text{pic} = m_\text{liq}/\rho_\text{liq}$`}.
                 </li>
                 <li>
                   La masa del líquido que ocupa los espacios restantes con el polvo es
-                  $m'_\text{liq} = m_{\text{pic}+p+\text{liq}} - m_{\text{pic}+p}$.
+                  {String.raw`$m'_\text{liq} = m_{\text{pic}+p+\text{liq}} - m_{\text{pic}+p}$`}.
                 </li>
                 <li>
                   El volumen ocupado por el líquido con el polvo es
-                  $V'_\text{liq} = m'_\text{liq}/\rho_\text{liq}$.
+                  {String.raw`$V'_\text{liq} = m'_\text{liq}/\rho_\text{liq}$`}.
                 </li>
                 <li>
                   El volumen de las partículas de polvo (excluyendo poros abiertos
-                  accesibles al líquido) es $V_p = V_\text{pic} - V'_\text{liq}$.
+                  accesibles al líquido) es {String.raw`$V_p = V_\text{pic} - V'_\text{liq}$`}.
                 </li>
                 <li>
                   La densidad de partícula es
@@ -403,8 +403,8 @@ const PropiedadesSolidos: React.FC = () => {
               <SubTitle>Porosidad de la partícula (intraparticular)</SubTitle>
               <p>
                 Corresponde a los poros <em>internos</em> de cada partícula (si
-                $\rho_\text{aparente}$ considera solo poros cerrados y
-                $\rho_\text{verdadera}$ es la densidad verdadera):
+                {String.raw`$\rho_\text{aparente}$`} considera solo poros cerrados y
+                {String.raw`$\rho_\text{verdadera}$`} es la densidad verdadera):
               </p>
               <p>
                 {'$$\\varepsilon_\\text{partícula} = 1 - \\frac{\\rho_\\text{aparente}}{\\rho_\\text{verdadera}}$$'}
@@ -465,7 +465,7 @@ const PropiedadesSolidos: React.FC = () => {
 
               <ul>
                 <li>
-                  <strong>Diámetro de Stokes ($d_{\text{Stokes}}$, o diámetro de caída
+                  <strong>Diámetro de Stokes ({String.raw`$d_{\text{Stokes}}$`}, o diámetro de caída
                   libre):</strong> diámetro de una esfera con la misma velocidad terminal
                   que la partícula en un fluido dado. Relevante para procesos de
                   <strong> sedimentación o transporte neumático</strong>.
@@ -633,8 +633,8 @@ const PropiedadesSolidos: React.FC = () => {
 
               <SubTitle>Índice de Carr y razón de Hausner</SubTitle>
               <p>
-                A partir de las densidades masales <em>suelta</em> ($\rho_\text{suelta}$) y
-                <em> compactada</em> ($\rho_\text{compactada}$) se calculan dos indicadores
+                A partir de las densidades masales <em>suelta</em> ({String.raw`$\rho_\text{suelta}$`}) y
+                <em> compactada</em> ({String.raw`$\rho_\text{compactada}$`}) se calculan dos indicadores
                 ampliamente usados en la industria farmacéutica y de alimentos:
               </p>
 

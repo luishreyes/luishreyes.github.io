@@ -351,7 +351,7 @@ const TransporteLiquidos: React.FC = () => {
                 caption="La viscosidad disminuye de forma marcada al aumentar la temperatura, especialmente en hidrocarburos pesados."
               />
 
-              <SubTitle>Presión de vapor ($P_{'{\\text{vap}}'}$)</SubTitle>
+              <SubTitle>Presión de vapor ({String.raw`$P_{'{\\text{vap}}'}$`})</SubTitle>
               <p>
                 Presión a la cual un líquido se vaporiza (entra en ebullición) a una temperatura
                 específica (pascales o milímetros de mercurio).
@@ -363,12 +363,12 @@ const TransporteLiquidos: React.FC = () => {
                 <li>
                   Fundamental para <strong>prevenir la cavitación</strong> en las bombas.
                   Cuando la presión en la succión de la bomba cae por debajo de la
-                  $P_{'{\\text{vap}}'}$ del líquido a la temperatura de bombeo, se forman
+                  {String.raw`$P_{'{\\text{vap}}'}$`} del líquido a la temperatura de bombeo, se forman
                   burbujas de vapor que, al colapsar violentamente, dañan el equipo y reducen
                   su eficiencia.
                 </li>
                 <li>
-                  Aumenta con la temperatura. Es crucial conocer la $P_{'{\\text{vap}}'}$ a la
+                  Aumenta con la temperatura. Es crucial conocer la {String.raw`$P_{'{\\text{vap}}'}$`} a la
                   temperatura de operación.
                 </li>
               </ul>
@@ -470,15 +470,15 @@ const TransporteLiquidos: React.FC = () => {
               <p>{'$$\\mathrm{Re} = \\dfrac{\\rho V D}{\\mu}$$'}</p>
               <ul>
                 <li>
-                  <strong>Flujo laminar</strong> ($\mathrm{Re} &lt; 2100$): el factor de
-                  fricción se calcula analíticamente como $f = 64 / \mathrm{Re}$.
+                  <strong>Flujo laminar</strong> ({String.raw`$\mathrm{Re} &lt; 2100$`}): el factor de
+                  fricción se calcula analíticamente como {String.raw`$f = 64 / \mathrm{Re}$`}.
                 </li>
                 <li>
-                  <strong>Régimen de transición</strong> ($2100 &lt; \mathrm{Re} &lt; 4000$):
+                  <strong>Régimen de transición</strong> ({String.raw`$2100 &lt; \mathrm{Re} &lt; 4000$`}):
                   comportamiento inestable, se evita en diseño.
                 </li>
                 <li>
-                  <strong>Flujo turbulento</strong> ($\mathrm{Re} &gt; 4000$): $f$ se calcula
+                  <strong>Flujo turbulento</strong> ({String.raw`$\mathrm{Re} &gt; 4000$`}): $f$ se calcula
                   usando el <strong>diagrama de Moody</strong> o ecuaciones como la de
                   <strong> Colebrook-White</strong>, considerando también la rugosidad
                   relativa $\varepsilon / D$ de la tubería.
@@ -524,7 +524,7 @@ const TransporteLiquidos: React.FC = () => {
 
               <TipCallout title="💡 En la práctica">
                 El procedimiento típico es: (1) calcular $V$ a partir del caudal y el diámetro;
-                (2) calcular $\mathrm{Re}$; (3) obtener $f$ del diagrama de Moody o
+                (2) calcular {String.raw`$\mathrm{Re}$`}; (3) obtener $f$ del diagrama de Moody o
                 Colebrook-White según la rugosidad relativa; (4) calcular $h_f$ con
                 Darcy-Weisbach; (5) sumar las $h_m$ de cada accesorio; (6) finalmente, aplicar
                 Bernoulli modificada para obtener $h_A$, la cabeza que la bomba debe aportar.
