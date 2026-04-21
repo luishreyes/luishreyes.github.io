@@ -829,6 +829,36 @@ export const pouCourse: Course = {
       tags: ['fundamentos', 'operaciones unitarias', 'introducción'],
       category: 'lectura',
     },
+    {
+      slug: 'propiedades-solidos',
+      title: 'Propiedades de los sólidos particulados',
+      summary:
+        'Densidad (verdadera, aparente, masal), porosidad (inter e intraparticular), tamaño y distribución de partícula (tamizado, microscopía, sedimentación, difracción láser, Coulter), forma y esfericidad, propiedades de flujo (ángulo de reposo, índice de Carr, razón de Hausner, cohesión), otras propiedades relevantes e impacto en el diseño de silos, molinos, mezcladores y sistemas de transporte.',
+      date: '2026-02-02',
+      readingMinutes: 25,
+      tags: ['sólidos', 'propiedades', 'caracterización', 'polvos'],
+      category: 'lectura',
+    },
+    {
+      slug: 'reduccion-tamano',
+      title: 'Reducción de tamaño',
+      summary:
+        'Conminución industrial: objetivos (aumento de área, liberación de minerales, especificaciones de producto), mecanismos de fractura (compresión, impacto, atrición, corte), equipos por rango (trituradoras de mandíbula/giratorias/rodillos, molinos de martillos/atrición/bolas, jet mills, cortadoras), leyes de Rittinger, Kick y Bond, y factores de selección de equipo.',
+      date: '2026-02-09',
+      readingMinutes: 25,
+      tags: ['sólidos', 'molienda', 'conminución', 'trituración'],
+      category: 'lectura',
+    },
+    {
+      slug: 'transporte-liquidos',
+      title: 'Transporte de líquidos en la industria',
+      summary:
+        'Diseño de sistemas de tuberías: propiedades del fluido que rigen el transporte (densidad, viscosidad, presión de vapor), cavitación en bombas, ecuación de Bernoulli modificada, pérdidas mayores por fricción (Darcy-Weisbach, Moody, Colebrook-White) y menores en accesorios, desafíos de integridad y optimización del trazado.',
+      date: '2026-02-16',
+      readingMinutes: 25,
+      tags: ['fluidos', 'tuberías', 'bombas', 'hidráulica'],
+      category: 'lectura',
+    },
   ],
   presentations: [
     {
