@@ -9,6 +9,7 @@ const tocItems = [
   { id: 'tipos', label: 'Tipos de flujograma' },
   { id: 'simbolos', label: 'Símbolos estándar' },
   { id: 'proceso', label: 'Cómo hacer un flujograma' },
+  { id: 'ejemplo-academico', label: 'Ejemplo académico' },
   { id: 'herramientas', label: 'Herramientas recomendadas' },
   { id: 'entrega', label: 'Entrega' },
 ];
@@ -426,14 +427,42 @@ const Flujogramas: React.FC = () => {
                 </div>
               </div>
 
+              <figure className="my-8 not-prose">
+                <div className="flex justify-center rounded-xl bg-zinc-50 border border-zinc-200 p-6">
+                  <img
+                    src="/classroom/iqya-3050/readings/flujograma-vertical.jpeg"
+                    alt="Ejemplo de flujograma vertical con Start, Process 1, 2 y 3, decisiones Yes/No, y End"
+                    className="max-h-[60vh] w-auto rounded-md shadow-md"
+                  />
+                </div>
+                <figcaption className="text-center text-sm text-brand-gray mt-3 italic">
+                  Figura 1. Ejemplo de flujograma vertical. El flujo se lee de arriba hacia abajo, con
+                  decisiones binarias (Yes/No) que redirigen la ejecución.
+                </figcaption>
+              </figure>
+
               <SubTitle>Flujograma matricial</SubTitle>
               <p>
                 Aquellos en los que se establecen visualmente puntos de conexión lógica entre los
                 elementos de un proceso (características, funciones, actividades) empleando{' '}
                 <strong>matrices</strong> en lugar de secuencias lineales. Son ideales cuando hay
                 múltiples actores o roles involucrados, porque cada columna de la matriz corresponde
-                a uno de ellos (por ejemplo: «Laboratorio → Coordinador → Proveedor → Financiera»).
+                a uno de ellos.
               </p>
+
+              <figure className="my-8 not-prose">
+                <div className="flex justify-center rounded-xl bg-zinc-50 border border-zinc-200 p-4 sm:p-6">
+                  <img
+                    src="/classroom/iqya-3050/readings/flujograma-matricial.png"
+                    alt="Ejemplo de flujograma matricial con swim lanes: Human Resources, Employee, Manager, Payroll, Payroll Vendor"
+                    className="max-w-full w-full sm:max-w-[90%] rounded-md shadow-md"
+                  />
+                </div>
+                <figcaption className="text-center text-sm text-brand-gray mt-3 italic">
+                  Figura 2. Ejemplo de flujograma matricial. Cada columna representa un actor
+                  distinto; el flujo pasa de una a otra cuando cambia la responsabilidad.
+                </figcaption>
+              </figure>
 
               <TipCallout>
                 Para proyectos de investigación en el departamento, el <strong>flujograma vertical</strong>
@@ -551,6 +580,50 @@ const Flujogramas: React.FC = () => {
                 dibujar en la herramienta digital. Si el diagrama termina siendo difícil de seguir a
                 simple vista, algo quedó mal en esta etapa.
               </WarningCallout>
+            </>
+          )}
+
+          {isVisible('ejemplo-academico') && (
+            <>
+              <SectionTitle id="ejemplo-academico">Ejemplo académico</SectionTitle>
+              <p>
+                Así se ve un flujograma real publicado en un artículo científico. Nótese la claridad
+                en la agrupación por etapas (Initialization, Generations, Termination), el uso
+                sistemático de decisiones con salidas Yes/No, y el código de colores que diferencia
+                tipos de operación.
+              </p>
+
+              <figure className="my-8 not-prose">
+                <div className="flex justify-center rounded-xl bg-zinc-50 border border-zinc-200 p-4 sm:p-6">
+                  <img
+                    src="/classroom/iqya-3050/readings/flujograma-academico.png"
+                    alt="Flujograma académico publicado: algoritmo de encriptación con fases Initialization, Generations (One/Two Molecular Structure Chosen, colisiones, decomposition, synthesis) y Termination"
+                    className="max-w-full w-full sm:max-w-[85%] rounded-md shadow-md"
+                  />
+                </div>
+                <figcaption className="text-center text-sm text-brand-gray mt-3 italic">
+                  Alzubi, J., Alzubi, O., Beseiso, M., Budati, A. &amp; Shankar, K. (2021). Optimal
+                  multiple key-based homomorphic encryption with deep neural networks to secure
+                  medical data transmission and diagnosis. <em>Expert Systems</em>, 39.
+                  <a
+                    href="https://doi.org/10.1111/exsy.12879"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline decoration-brand-yellow decoration-2 underline-offset-2 hover:text-brand-yellow-dark ml-1"
+                  >
+                    10.1111/exsy.12879 ↗
+                  </a>
+                </figcaption>
+              </figure>
+
+              <TipCallout title="💡 Qué copiarle a este ejemplo">
+                <ul className="list-disc pl-5 space-y-1">
+                  <li><strong>Llaves de agrupación</strong> a la izquierda que marcan fases macro del proceso.</li>
+                  <li><strong>Etiquetas Yes/No</strong> sobre cada flecha que sale de un rombo, sin ambigüedad.</li>
+                  <li><strong>Un solo punto de entrada y uno de salida</strong> (Start / End en rojo).</li>
+                  <li>Código de <strong>color consistente</strong> por tipo de bloque.</li>
+                </ul>
+              </TipCallout>
             </>
           )}
 
