@@ -215,8 +215,151 @@
       font-size: 1rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
       box-shadow: 0 2px 6px rgba(0,0,0,0.12); }
     .progress { position: fixed; top: 0; left: 0; height: 3px; background: var(--brand-yellow);
-      transition: width 260ms ease; z-index: 20; }
-    @media (prefers-reduced-motion: reduce) { .slide, .progress { transition: none; } }
+      transition: width 260ms ease; z-index: 20; box-shadow: 0 0 0 rgba(255,191,0,0.6); }
+    .progress.pulse { animation: progPulse 600ms ease; }
+    @keyframes progPulse {
+      0% { box-shadow: 0 0 0 rgba(255,191,0,0.6); }
+      40% { box-shadow: 0 0 14px rgba(255,191,0,0.9); }
+      100% { box-shadow: 0 0 0 rgba(255,191,0,0.0); }
+    }
+
+    /* Inline Lucide icons */
+    .ic { width: 1em; height: 1em; display: inline-block; vertical-align: -0.15em; flex-shrink: 0; }
+    .ic-lg { width: 1.5em; height: 1.5em; }
+    .icon-chip {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 2.4em; height: 2.4em; background: #fffbeb;
+      color: var(--brand-yellow-dark); border-radius: 0.6rem;
+      font-size: clamp(1.1rem, 1.8vw, 1.5rem); margin-bottom: 0.4em;
+    }
+    .eyebrow .ic { color: var(--brand-yellow-dark); margin-right: 0.35em; }
+
+    /* Platform / tool links */
+    a.platform-link { color: var(--brand-dark); text-decoration: none;
+      border-bottom: 2px solid var(--brand-yellow); padding-bottom: 0.05em;
+      transition: color 180ms, border-color 180ms; font-weight: 600; }
+    a.platform-link:hover { color: var(--brand-yellow-dark); border-bottom-color: var(--brand-yellow-dark); }
+    a.platform-link::after { content: " \2197"; font-size: 0.65em; opacity: 0.5; margin-left: 0.12em; vertical-align: 0.3em; }
+
+    /* Hover-lift cards */
+    .card, .tool-card, .figure-card, .story-grid .block, .principles-grid .p, .chart-frame {
+      transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+    }
+    .card:hover, .tool-card:hover, .figure-card:hover,
+    .story-grid .block:hover, .principles-grid .p:hover {
+      transform: translateY(-3px); box-shadow: 0 10px 24px rgba(0,0,0,0.08);
+    }
+    .chart-frame:not(.bad):hover { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(0,0,0,0.08); }
+
+    /* Focus rings for keyboard nav */
+    .card:focus-visible, .tool-card:focus-visible, .figure-card:focus-visible,
+    .story-grid .block:focus-visible, .principles-grid .p:focus-visible,
+    .chart-frame:focus-visible, .controls button:focus-visible,
+    a.platform-link:focus-visible, .stepper-nav button:focus-visible,
+    .toggle-btn:focus-visible {
+      outline: 3px solid var(--brand-yellow); outline-offset: 3px; border-radius: 0.4rem;
+    }
+
+    /* Controls buttons enhanced */
+    .controls button { transition: transform 180ms ease, background 180ms ease, box-shadow 180ms ease; }
+    .controls button:hover { background: var(--brand-yellow); box-shadow: 0 6px 14px rgba(0,0,0,0.18); transform: translateY(-1px); }
+    .controls button svg { width: 1.1rem; height: 1.1rem; }
+
+    /* Blockquote callout (Tufte, etc.) */
+    blockquote.pull {
+      margin: 0; padding: 1rem 1.25rem;
+      border-left: 4px solid var(--brand-yellow);
+      background: #fffbeb; border-radius: 0.35rem;
+      font-size: clamp(1rem, 1.7vw, 1.5rem); color: var(--brand-dark);
+      font-style: italic;
+    }
+    blockquote.pull cite { display: block; margin-top: 0.5em; font-size: 0.75em;
+      font-style: normal; color: var(--brand-gray); font-weight: 600; letter-spacing: 0.05em; }
+
+    /* Before/After toggle */
+    .ba-wrap { display: flex; flex-direction: column; gap: 0.8rem; }
+    .ba-toggle { display: inline-flex; gap: 0; background: var(--muted); border-radius: 999px;
+      padding: 0.25rem; align-self: flex-start; }
+    .ba-toggle button { -webkit-appearance: none; appearance: none; border: 0; background: transparent;
+      color: var(--brand-gray); font-weight: 600; padding: 0.4em 1.1em; border-radius: 999px;
+      cursor: pointer; font-size: clamp(0.8rem, 1.2vw, 1.1rem);
+      transition: background-color 200ms ease, color 200ms ease; }
+    .ba-toggle button.is-active { background: var(--brand-dark); color: #fff; }
+    .ba-toggle button:not(.is-active):hover { color: var(--brand-dark); }
+    .ba-panel { display: none; }
+    .ba-panel.is-active { display: block; animation: fadeInUp 0.35s ease both; }
+
+    /* Horizontal timeline (Situación → Complicación → Resolución) */
+    .arc-timeline {
+      position: relative; display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: clamp(0.75rem, 1.5vw, 1.25rem); padding-top: 0.5rem;
+    }
+    .arc-timeline::before {
+      content: ''; position: absolute; left: 8%; right: 8%;
+      top: calc(0.75rem + clamp(1.1rem, 1.8vw, 1.6rem));
+      height: 2px; background: linear-gradient(to right, #e5e7eb, var(--brand-yellow), #e5e7eb);
+      z-index: 0;
+    }
+    @media (max-width: 900px) {
+      .arc-timeline { grid-template-columns: 1fr; }
+      .arc-timeline::before { display: none; }
+    }
+    .arc-step { position: relative; z-index: 1; text-align: center; padding: 0.25rem 0.5rem; }
+    .arc-step .dot {
+      width: clamp(2.2rem, 3.6vw, 3.2rem); height: clamp(2.2rem, 3.6vw, 3.2rem);
+      border-radius: 999px; background: #fff; border: 2.5px solid var(--brand-yellow);
+      color: var(--brand-dark); font-weight: 700; display: inline-flex;
+      align-items: center; justify-content: center;
+      font-size: clamp(1rem, 1.6vw, 1.4rem); margin-bottom: 0.6em;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+    .arc-step h3 { margin: 0; color: var(--brand-dark); font-size: clamp(1.05rem, 1.7vw, 1.5rem); }
+    .arc-step p { margin: 0.3em 0 0; font-size: clamp(0.85rem, 1.35vw, 1.25rem); }
+    .arc-step .q { font-style: italic; color: var(--brand-gray); font-size: clamp(0.8rem, 1.25vw, 1.15rem); margin-top: 0.3em; }
+
+    /* Stepper (principles) */
+    .stepper-nav { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .stepper-nav button {
+      -webkit-appearance: none; appearance: none;
+      display: inline-flex; align-items: center; gap: 0.5em;
+      border: 1.5px solid rgba(0,0,0,0.08); background: #fff;
+      color: var(--brand-dark); padding: 0.5em 0.9em; border-radius: 999px;
+      cursor: pointer; font-size: clamp(0.8rem, 1.2vw, 1.1rem); font-weight: 600;
+      transition: background 180ms ease, border-color 180ms ease, transform 180ms ease, color 180ms ease;
+    }
+    .stepper-nav button .step-n {
+      width: 1.6em; height: 1.6em; border-radius: 999px; background: var(--muted);
+      color: var(--brand-dark); display: inline-flex; align-items: center; justify-content: center;
+      font-size: 0.85em; font-weight: 700;
+    }
+    .stepper-nav button:hover { border-color: var(--brand-yellow); transform: translateY(-1px); }
+    .stepper-nav button.is-active {
+      background: var(--brand-dark); color: #fff; border-color: var(--brand-dark);
+    }
+    .stepper-nav button.is-active .step-n { background: var(--brand-yellow); color: var(--brand-dark); }
+
+    /* Staggered fadeInUp on .active slides */
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .slide.active .stagger-in > * { animation: fadeInUp 0.45s ease both; }
+    .slide.active .stagger-in > *:nth-child(1) { animation-delay: 0.05s; }
+    .slide.active .stagger-in > *:nth-child(2) { animation-delay: 0.15s; }
+    .slide.active .stagger-in > *:nth-child(3) { animation-delay: 0.25s; }
+    .slide.active .stagger-in > *:nth-child(4) { animation-delay: 0.35s; }
+    .slide.active .stagger-in > *:nth-child(5) { animation-delay: 0.45s; }
+    .slide.active .stagger-in > *:nth-child(6) { animation-delay: 0.55s; }
+    .slide.active .stagger-in > *:nth-child(7) { animation-delay: 0.65s; }
+    .slide.active .stagger-in > *:nth-child(8) { animation-delay: 0.75s; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .slide, .progress { transition: none; }
+      .slide.active .stagger-in > * { animation: none; }
+      .card:hover, .tool-card:hover, .figure-card:hover,
+      .story-grid .block:hover, .principles-grid .p:hover,
+      .chart-frame:hover, .stepper-nav button:hover,
+      .controls button:hover { transform: none; }
+      .ba-panel.is-active { animation: none; }
+      .progress.pulse { animation: none; }
+    }
   </style>
 </head>
 <body>
@@ -225,8 +368,11 @@
 
     <!-- 01 Portada -->
     <section class="slide title-slide active" data-slide>
-      <div class="content">
-        <p class="eyebrow">IQYA 3050 · Sesión 7 · Semana 7 · 13 may 2026</p>
+      <div class="content stagger-in">
+        <p class="eyebrow">
+          <svg class="ic" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M8 17v-5"/><path d="M12 17v-9"/><path d="M16 17v-3"/></svg>
+          IQYA 3050 · Sesión 7 · Semana 7 · 13 may 2026
+        </p>
         <h1>Narrativas visuales<br/>para presentación de datos</h1>
         <p>Luis H. Reyes · Miércoles 13 de mayo, 2026</p>
         <div class="pill-row">
@@ -239,7 +385,7 @@
 
     <!-- 02 Hero quote -->
     <section class="slide" data-slide>
-      <div class="content" style="align-items: center; justify-content: center;">
+      <div class="content stagger-in" style="align-items: center; justify-content: center;">
         <p class="hero-quote">Una buena gráfica<br/>es un <em>argumento</em>.<br/><span style="color: var(--brand-gray); font-weight: 400;">Una mala gráfica</span><br/><span style="color: var(--brand-gray); font-weight: 400;">es</span> <em>ruido</em>.</p>
       </div>
     </section>
@@ -247,24 +393,54 @@
     <!-- 03 Data Storytelling -->
     <section class="slide" data-slide>
       <div class="content">
-        <p class="eyebrow">Marco</p>
+        <p class="eyebrow">
+          <svg class="ic" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+          Marco
+        </p>
         <h2>Data storytelling</h2>
         <p>La comunicación efectiva de datos requiere tres elementos que se refuerzan mutuamente:</p>
-        <div class="story-grid">
-          <div class="block"><span class="num">01</span><h3>Datos</h3><p class="q">¿Qué medí? ¿Qué encontré?</p></div>
-          <div class="block"><span class="num">02</span><h3>Narrativa</h3><p class="q">¿Por qué importa? ¿Cuál es el argumento?</p></div>
-          <div class="block"><span class="num">03</span><h3>Visualización</h3><p class="q">¿Cómo lo muestro con claridad?</p></div>
+        <div class="story-grid stagger-in">
+          <div class="block" tabindex="0">
+            <span class="num">01</span>
+            <h3>
+              <svg class="ic" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: var(--brand-yellow-dark); margin-right: 0.3em;"><path d="M3 3v18h18"/><path d="M8 17v-5"/><path d="M12 17v-9"/><path d="M16 17v-3"/></svg>
+              Datos
+            </h3>
+            <p class="q">¿Qué medí? ¿Qué encontré?</p>
+          </div>
+          <div class="block" tabindex="0">
+            <span class="num">02</span>
+            <h3>
+              <svg class="ic" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: var(--brand-yellow-dark); margin-right: 0.3em;"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="2"/></svg>
+              Narrativa
+            </h3>
+            <p class="q">¿Por qué importa? ¿Cuál es el argumento?</p>
+          </div>
+          <div class="block" tabindex="0">
+            <span class="num">03</span>
+            <h3>
+              <svg class="ic" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: var(--brand-yellow-dark); margin-right: 0.3em;"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+              Visualización
+            </h3>
+            <p class="q">¿Cómo lo muestro con claridad?</p>
+          </div>
         </div>
-        <div class="banner">Cuando falta uno de estos tres, la comunicación falla.</div>
+        <div class="banner">
+          <svg class="ic" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="margin-right: 0.35em; vertical-align: -0.15em;"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+          Cuando falta uno de estos tres, la comunicación falla.
+        </div>
       </div>
     </section>
 
     <!-- 04 Tabla cruda -->
     <section class="slide" data-slide>
       <div class="content">
-        <p class="eyebrow">Los mismos datos, tres formas · 1 de 3</p>
+        <p class="eyebrow">
+          <svg class="ic" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v18"/><path d="M3 12h18"/><rect width="18" height="18" x="3" y="3" rx="2"/></svg>
+          Los mismos datos, tres formas · 1 de 3
+        </p>
         <h2>Tabla cruda</h2>
-        <div class="grid cols-2" style="align-items: center;">
+        <div class="grid cols-2 stagger-in" style="align-items: center;">
           <table class="compare">
             <thead><tr><th>Temperatura (°C)</th><th>1 %</th><th>3 %</th><th>5 %</th></tr></thead>
             <tbody>
@@ -285,8 +461,11 @@
 
     <!-- 05 Gráfica por defecto -->
     <section class="slide" data-slide>
-      <div class="content">
-        <p class="eyebrow">Los mismos datos, tres formas · 2 de 3</p>
+      <div class="content stagger-in">
+        <p class="eyebrow">
+          <svg class="ic" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M8 17v-5"/><path d="M12 17v-9"/><path d="M16 17v-3"/></svg>
+          Los mismos datos, tres formas · 2 de 3
+        </p>
         <h2>Gráfica por defecto</h2>
         <div class="chart-frame bad">
           <p class="chart-title descriptive">Viscosidad vs. Temperatura</p>
@@ -349,8 +528,11 @@
 
     <!-- 06 Gráfica argumentativa -->
     <section class="slide" data-slide>
-      <div class="content">
-        <p class="eyebrow">Los mismos datos, tres formas · 3 de 3</p>
+      <div class="content stagger-in">
+        <p class="eyebrow">
+          <svg class="ic" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+          Los mismos datos, tres formas · 3 de 3
+        </p>
         <h2>La viscosidad cae un 77 % entre 25 °C y 60 °C (concentración 1 %)</h2>
         <div class="chart-frame">
           <svg viewBox="0 0 900 400" role="img" aria-label="Líneas con una serie resaltada y anotación del hallazgo">
@@ -418,9 +600,12 @@
     <!-- 07 Cuarteto de Anscombe (intro) -->
     <section class="slide" data-slide>
       <div class="content">
-        <p class="eyebrow">Recordatorio estadístico</p>
+        <p class="eyebrow">
+          <svg class="ic" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2a10 10 0 1 0 10 10h-10Z"/><path d="M21.18 8.02a10 10 0 0 0-7.2-7.2"/></svg>
+          Recordatorio estadístico
+        </p>
         <h2>El cuarteto de Anscombe<span class="sub">Cuatro conjuntos de datos. Estadísticas idénticas.</span></h2>
-        <div class="grid cols-2" style="align-items: center;">
+        <div class="grid cols-2 stagger-in" style="align-items: center;">
           <table class="stats">
             <tbody>
               <tr><td>Media de X</td><td>9.0</td></tr>
@@ -439,9 +624,12 @@
     <!-- 08 Anscombe: Solo al graficar -->
     <section class="slide" data-slide>
       <div class="content">
-        <p class="eyebrow">Revelación</p>
+        <p class="eyebrow">
+          <svg class="ic" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/></svg>
+          Revelación
+        </p>
         <h2>Solo al graficar se revela la verdad</h2>
-        <div class="grid cols-4">
+        <div class="grid cols-4 stagger-in">
           <!-- I: clean linear scatter -->
           <div class="chart-frame" style="padding: 0.6rem;">
             <p class="chart-title" style="font-size: 1rem;">I · lineal</p>
@@ -537,16 +725,19 @@
 
     <!-- 09 5 principios -->
     <section class="slide" data-slide>
-      <div class="content" style="align-items: center; text-align: center;">
-        <p class="eyebrow">Diseño visual</p>
+      <div class="content stagger-in" style="align-items: center; text-align: center;">
+        <p class="eyebrow">
+          <svg class="ic" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 19 7-7 3 3-7 7-3-3Z"/><path d="m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5Z"/><path d="m2 2 7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
+          Diseño visual
+        </p>
         <h1 style="font-size: clamp(3rem, 8vw, 7rem);">5</h1>
         <h2>principios de diseño visual</h2>
-        <div class="principles-grid" style="margin-top: 1.5rem;">
-          <div class="p"><div class="n">1</div><p>Tipo de gráfica</p></div>
-          <div class="p"><div class="n">2</div><p>Ratio datos-tinta</p></div>
-          <div class="p"><div class="n">3</div><p>Jerarquía visual</p></div>
-          <div class="p"><div class="n">4</div><p>Color con propósito</p></div>
-          <div class="p"><div class="n">5</div><p>Títulos argumentativos</p></div>
+        <div class="principles-grid stagger-in" style="margin-top: 1.5rem;">
+          <div class="p" tabindex="0"><div class="n">1</div><p>Tipo de gráfica</p></div>
+          <div class="p" tabindex="0"><div class="n">2</div><p>Ratio datos-tinta</p></div>
+          <div class="p" tabindex="0"><div class="n">3</div><p>Jerarquía visual</p></div>
+          <div class="p" tabindex="0"><div class="n">4</div><p>Color con propósito</p></div>
+          <div class="p" tabindex="0"><div class="n">5</div><p>Títulos argumentativos</p></div>
         </div>
       </div>
     </section>
@@ -554,10 +745,13 @@
     <!-- 10 Principio 01: tipo correcto -->
     <section class="slide" data-slide>
       <div class="content">
-        <p class="eyebrow">01 · Tipo de gráfica</p>
+        <p class="eyebrow">
+          <svg class="ic" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M8 17v-5"/><path d="M12 17v-9"/><path d="M16 17v-3"/></svg>
+          01 · Tipo de gráfica
+        </p>
         <h2>Elige el tipo correcto</h2>
         <p>La pregunta que quieres responder determina el tipo de gráfica.</p>
-        <div class="grid cols-4">
+        <div class="grid cols-4 stagger-in">
           <div class="card white-card">
             <h3>¿Cómo cambia Y en el tiempo?</h3>
             <p style="font-weight: 700; color: var(--brand-yellow-dark); font-size: clamp(1rem, 1.6vw, 1.4rem);">Línea</p>
@@ -605,9 +799,12 @@
     <!-- 11 Tipo incorrecto: pie -->
     <section class="slide" data-slide>
       <div class="content">
-        <p class="eyebrow">01 · Tipo incorrecto</p>
+        <p class="eyebrow">
+          <svg class="ic" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
+          01 · Tipo incorrecto
+        </p>
         <h2>Pie con muchas categorías</h2>
-        <div class="grid cols-2" style="align-items: center;">
+        <div class="grid cols-2 stagger-in" style="align-items: center;">
           <div class="chart-frame bad" style="display: flex; align-items: center; justify-content: center;">
             <svg viewBox="0 0 300 300" aria-label="Gráfico de pastel con 8 segmentos similares">
               <g transform="translate(150,150)">
@@ -639,9 +836,12 @@
     <!-- 12 Tipo correcto: barras horizontales -->
     <section class="slide" data-slide>
       <div class="content">
-        <p class="eyebrow">01 · Tipo correcto</p>
+        <p class="eyebrow">
+          <svg class="ic" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 11-6 6v3h9l3-3"/><path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"/></svg>
+          01 · Tipo correcto
+        </p>
         <h2>Barras horizontales, ordenadas</h2>
-        <div class="grid cols-2" style="align-items: center;">
+        <div class="grid cols-2 stagger-in" style="align-items: center;">
           <div class="chart-frame">
             <svg viewBox="0 0 400 320" aria-label="Barras horizontales ordenadas de mayor a menor">
               <g font-size="12" fill="#1A1A1A">
@@ -693,9 +893,12 @@
     <!-- 13 Principio 02: ratio datos-tinta -->
     <section class="slide" data-slide>
       <div class="content">
-        <p class="eyebrow">02 · Ratio datos-tinta</p>
+        <p class="eyebrow">
+          <svg class="ic" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M3 12h18"/><path d="M3 18h18"/></svg>
+          02 · Ratio datos-tinta
+        </p>
         <h2>"Cada gota de tinta debe tener una razón de existir."<span class="sub">— Edward Tufte</span></h2>
-        <div class="grid cols-2">
+        <div class="grid cols-2 stagger-in">
           <div class="card">
             <h3>Eliminar</h3>
             <ul>
@@ -724,8 +927,11 @@
 
     <!-- 14 Antes -->
     <section class="slide" data-slide>
-      <div class="content">
-        <p class="eyebrow">02 · Antes</p>
+      <div class="content stagger-in">
+        <p class="eyebrow">
+          <svg class="ic" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>
+          02 · Antes
+        </p>
         <h2>Presupuesto por rubro</h2>
         <div class="chart-frame bad">
           <svg viewBox="0 0 900 400" aria-label="Columnas agrupadas con fondo gris y leyenda inflada">
@@ -773,8 +979,11 @@
 
     <!-- 15 Después -->
     <section class="slide" data-slide>
-      <div class="content">
-        <p class="eyebrow">02 · Después</p>
+      <div class="content stagger-in">
+        <p class="eyebrow">
+          <svg class="ic" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg>
+          02 · Después
+        </p>
         <h2>Plan A: $12.4 M vs. Plan B: $9.9 M. La diferencia está en equipo y análisis.</h2>
         <div class="chart-frame">
           <svg viewBox="0 0 900 400" aria-label="Columnas limpias con Plan A resaltado">
@@ -836,10 +1045,13 @@
     <!-- 16 Principio 03: Jerarquía visual -->
     <section class="slide" data-slide>
       <div class="content">
-        <p class="eyebrow">03 · Jerarquía visual</p>
+        <p class="eyebrow">
+          <svg class="ic" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v4"/><path d="m6.8 6.8 2.9 2.9"/><path d="M2 12h4"/><path d="m6.8 17.2 2.9-2.9"/><path d="M12 18v4"/><path d="m17.2 17.2-2.9-2.9"/><path d="M18 12h4"/><path d="m17.2 6.8-2.9 2.9"/></svg>
+          03 · Jerarquía visual
+        </p>
         <h2>Guía el ojo del lector</h2>
         <p>No todo tiene la misma importancia.</p>
-        <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-top: 0.5rem;">
+        <div class="stagger-in" style="display: flex; flex-direction: column; gap: 0.75rem; margin-top: 0.5rem;">
           <div class="card" style="background: #1A1A1A;"><h3 style="color: #fff; margin: 0;">LOS DATOS</h3><p style="color: var(--brand-yellow); margin-top: 0.3em;">Protagonista absoluto.</p></div>
           <div class="card" style="background: var(--brand-yellow);"><h3 style="color: #1A1A1A; margin: 0;">ANOTACIONES</h3><p style="color: #1A1A1A; margin-top: 0.3em;">Guían la lectura.</p></div>
           <div class="card" style="background: #e5e7eb;"><h3 style="color: #1A1A1A; margin: 0;">EJES Y ETIQUETAS</h3><p style="color: var(--brand-gray); margin-top: 0.3em;">Dan contexto.</p></div>
@@ -850,8 +1062,11 @@
 
     <!-- 17 Resaltar el hallazgo clave -->
     <section class="slide" data-slide>
-      <div class="content">
-        <p class="eyebrow">03 · Aplicación</p>
+      <div class="content stagger-in">
+        <p class="eyebrow">
+          <svg class="ic" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+          03 · Aplicación
+        </p>
         <h2>El glutaraldehído alcanza el mayor módulo elástico (22.1 kPa) a las 24 h</h2>
         <div class="chart-frame">
           <svg viewBox="0 0 900 400" aria-label="Cuatro series de entrecruzamiento con glutaraldehído resaltado">
@@ -916,9 +1131,12 @@
     <!-- 18 Color con propósito -->
     <section class="slide" data-slide>
       <div class="content">
-        <p class="eyebrow">04 · Color con propósito</p>
+        <p class="eyebrow">
+          <svg class="ic" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
+          04 · Color con propósito
+        </p>
         <h2>Tres familias de paletas</h2>
-        <div class="grid cols-3">
+        <div class="grid cols-3 stagger-in">
           <div class="card">
             <h3>Cualitativa</h3>
             <p>Distinguir categorías sin orden.</p>
@@ -963,9 +1181,12 @@
     <!-- 19 Arcoíris vs. intención -->
     <section class="slide" data-slide>
       <div class="content">
-        <p class="eyebrow">04 · Aplicación</p>
+        <p class="eyebrow">
+          <svg class="ic" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+          04 · Aplicación
+        </p>
         <h2>Arcoíris vs. intención</h2>
-        <div class="grid cols-2">
+        <div class="grid cols-2 stagger-in">
           <div class="chart-frame">
             <p class="chart-title descriptive">Sin propósito</p>
             <svg viewBox="0 0 420 240" aria-label="Cada barra de un color distinto">
@@ -1014,8 +1235,11 @@
 
     <!-- 20 Títulos argumentativos -->
     <section class="slide" data-slide>
-      <div class="content">
-        <p class="eyebrow">05 · Títulos que argumentan</p>
+      <div class="content stagger-in">
+        <p class="eyebrow">
+          <svg class="ic" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 11 18-5v12L3 13"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg>
+          05 · Títulos que argumentan
+        </p>
         <h2>Comunique el hallazgo, no describa la variable</h2>
         <table class="compare">
           <thead><tr><th style="width: 50%;">Descriptivo</th><th>Argumentativo</th></tr></thead>
@@ -1031,8 +1255,11 @@
 
     <!-- 21 De figura a historia -->
     <section class="slide title-slide" data-slide>
-      <div class="content" style="align-items: center; text-align: center;">
-        <p class="eyebrow">Transición</p>
+      <div class="content stagger-in" style="align-items: center; text-align: center;">
+        <p class="eyebrow">
+          <svg class="ic" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="20" x="2" y="2" rx="2.18" ry="2.18"/><line x1="7" x2="7" y1="2" y2="22"/><line x1="17" x2="17" y1="2" y2="22"/><line x1="2" x2="22" y1="12" y2="12"/><line x1="2" x2="7" y1="7" y2="7"/><line x1="2" x2="7" y1="17" y2="17"/><line x1="17" x2="22" y1="17" y2="17"/><line x1="17" x2="22" y1="7" y2="7"/></svg>
+          Transición
+        </p>
         <h1>De la figura individual<br/>a la historia completa</h1>
       </div>
     </section>
@@ -1040,51 +1267,90 @@
     <!-- 22 Situación-Complicación-Resolución -->
     <section class="slide" data-slide>
       <div class="content">
-        <p class="eyebrow">Estructura narrativa</p>
+        <p class="eyebrow">
+          <svg class="ic" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20"/></svg>
+          Estructura narrativa
+        </p>
         <h2>Situación → Complicación → Resolución</h2>
-        <div class="story-grid">
-          <div class="block">
-            <span class="num">1</span>
+        <div class="arc-timeline stagger-in">
+          <div class="arc-step" tabindex="0">
+            <div class="dot">1</div>
             <h3>Situación</h3>
             <p>¿Cuál era el problema?</p>
             <p class="q">Contexto y datos iniciales.</p>
           </div>
-          <div class="block">
-            <span class="num">2</span>
+          <div class="arc-step" tabindex="0">
+            <div class="dot">2</div>
             <h3>Complicación</h3>
             <p>¿Qué descubrimos?</p>
             <p class="q">El resultado principal.</p>
           </div>
-          <div class="block">
-            <span class="num">3</span>
+          <div class="arc-step" tabindex="0">
+            <div class="dot">3</div>
             <h3>Resolución</h3>
             <p>¿Qué significa?</p>
             <p class="q">Implicaciones y próximos pasos.</p>
           </div>
         </div>
-        <div class="banner"><strong>Ejercicio:</strong> ¿puedo explicar mis resultados con solo 3 figuras?</div>
+        <div class="banner">
+          <svg class="ic" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="margin-right: 0.35em; vertical-align: -0.15em;"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/></svg>
+          <strong>Ejercicio:</strong> ¿puedo explicar mis resultados con solo 3 figuras?
+        </div>
       </div>
     </section>
 
     <!-- 23 Herramientas -->
     <section class="slide" data-slide>
       <div class="content">
-        <p class="eyebrow">Herramientas</p>
+        <p class="eyebrow">
+          <svg class="ic" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+          Herramientas
+        </p>
         <h2>Con qué construir las gráficas</h2>
-        <div class="grid cols-4">
-          <div class="tool-card"><h3>📊 Excel bien usado</h3><p>Eliminar elementos por defecto. Ajustar colores, tipografía, ejes. Un <em>makeover</em> transforma la gráfica.</p></div>
-          <div class="tool-card"><h3>🐍 Python (matplotlib)</h3><p>Control total. Reproducible. Ideal cuando se generan muchas gráficas del mismo tipo.</p></div>
-          <div class="tool-card"><h3>🤖 IA generativa</h3><p>Describir lo que necesitas en lenguaje natural. La IA genera el código. Tú decides el mensaje.</p></div>
-          <div class="tool-card"><h3>🎨 Complementarias</h3><p>Canva, BioRender, draw.io para diagramas de proceso y esquemas experimentales.</p></div>
+        <div class="grid cols-4 stagger-in">
+          <div class="tool-card" tabindex="0">
+            <h3>
+              <svg class="ic" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: var(--brand-yellow-dark); margin-right: 0.35em; vertical-align: -0.1em;"><path d="M3 3v18h18"/><path d="M8 17v-5"/><path d="M12 17v-9"/><path d="M16 17v-3"/></svg>
+              Excel bien usado
+            </h3>
+            <p>Eliminar elementos por defecto. Ajustar colores, tipografía, ejes. Un <em>makeover</em> transforma la gráfica.</p>
+          </div>
+          <div class="tool-card" tabindex="0">
+            <h3>
+              <svg class="ic" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: var(--brand-yellow-dark); margin-right: 0.35em; vertical-align: -0.1em;"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+              Python (matplotlib)
+            </h3>
+            <p>Control total. Reproducible. Ideal cuando se generan muchas gráficas del mismo tipo.</p>
+          </div>
+          <div class="tool-card" tabindex="0">
+            <h3>
+              <svg class="ic" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: var(--brand-yellow-dark); margin-right: 0.35em; vertical-align: -0.1em;"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.287 1.288L3 12l5.813 1.9a2 2 0 0 1 1.288 1.288L12 21l1.9-5.813a2 2 0 0 1 1.287-1.288L21 12l-5.813-1.9a2 2 0 0 1-1.288-1.287Z"/><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/></svg>
+              IA generativa
+            </h3>
+            <p>Describir lo que necesitas en lenguaje natural con <a class="platform-link" href="https://chatgpt.com" target="_blank" rel="noopener">ChatGPT</a> o <a class="platform-link" href="https://claude.ai" target="_blank" rel="noopener">Claude</a>. La IA genera el código. Tú decides el mensaje.</p>
+          </div>
+          <div class="tool-card" tabindex="0">
+            <h3>
+              <svg class="ic" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: var(--brand-yellow-dark); margin-right: 0.35em; vertical-align: -0.1em;"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
+              Complementarias
+            </h3>
+            <p><a class="platform-link" href="https://www.canva.com" target="_blank" rel="noopener">Canva</a>, <a class="platform-link" href="https://www.biorender.com" target="_blank" rel="noopener">BioRender</a>, <a class="platform-link" href="https://app.diagrams.net" target="_blank" rel="noopener">draw.io</a> para diagramas de proceso y esquemas experimentales.</p>
+          </div>
         </div>
-        <div class="banner">La escala AIAS permite <strong>Nivel 3 (IA para edición)</strong> en el proyecto.</div>
+        <div class="banner">
+          <svg class="ic" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="margin-right: 0.35em; vertical-align: -0.15em;"><path d="M12 16v-4"/><path d="M12 8h.01"/><circle cx="12" cy="12" r="10"/></svg>
+          La escala AIAS permite <strong>Nivel 3 (IA para edición)</strong> en el proyecto.
+        </div>
       </div>
     </section>
 
     <!-- 24 Prompt para visualización -->
     <section class="slide" data-slide>
-      <div class="content">
-        <p class="eyebrow">Ejemplo</p>
+      <div class="content stagger-in">
+        <p class="eyebrow">
+          <svg class="ic" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.287 1.288L3 12l5.813 1.9a2 2 0 0 1 1.288 1.288L12 21l1.9-5.813a2 2 0 0 1 1.287-1.288L21 12l-5.813-1.9a2 2 0 0 1-1.288-1.287Z"/><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/></svg>
+          Ejemplo
+        </p>
         <h2>Prompt para visualización con IA</h2>
         <div class="prompt-box">Tengo datos de viscosidad (cP) vs temperatura (°C)
 para 3 concentraciones de polímero (1 %, 3 %, 5 %).
@@ -1102,8 +1368,11 @@ Genera un gráfico de líneas en Python con:
 
     <!-- 25 Taller intro -->
     <section class="slide title-slide" data-slide>
-      <div class="content" style="align-items: center; text-align: center;">
-        <p class="eyebrow">Práctica</p>
+      <div class="content stagger-in" style="align-items: center; text-align: center;">
+        <p class="eyebrow">
+          <svg class="ic" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+          Práctica
+        </p>
         <h1>Taller</h1>
         <p>Apliquemos los 5 principios a sus proyectos.</p>
       </div>
@@ -1112,24 +1381,32 @@ Genera un gráfico de líneas en Python con:
     <!-- 26 Actividad 1 -->
     <section class="slide" data-slide>
       <div class="content">
-        <p class="eyebrow">Actividad 1 · 8 minutos</p>
+        <p class="eyebrow">
+          <svg class="ic" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Actividad 1 · 8 minutos
+        </p>
         <h2>Makeover exprés</h2>
         <p>Cada equipo recibe una gráfica y la rediseña.</p>
-        <div class="taller-item"><span class="n">1</span><p>¿Es el tipo correcto de gráfica?</p></div>
-        <div class="taller-item"><span class="n">2</span><p>¿Qué elementos puedo eliminar?</p></div>
-        <div class="taller-item"><span class="n">3</span><p>¿Qué debo resaltar?</p></div>
-        <div class="taller-item"><span class="n">4</span><p>¿El color comunica algo?</p></div>
-        <div class="taller-item"><span class="n">5</span><p>¿El título argumenta o solo describe?</p></div>
+        <div class="stagger-in">
+          <div class="taller-item"><span class="n">1</span><p>¿Es el tipo correcto de gráfica?</p></div>
+          <div class="taller-item"><span class="n">2</span><p>¿Qué elementos puedo eliminar?</p></div>
+          <div class="taller-item"><span class="n">3</span><p>¿Qué debo resaltar?</p></div>
+          <div class="taller-item"><span class="n">4</span><p>¿El color comunica algo?</p></div>
+          <div class="taller-item"><span class="n">5</span><p>¿El título argumenta o solo describe?</p></div>
+        </div>
       </div>
     </section>
 
     <!-- 27 Actividad 2 -->
     <section class="slide" data-slide>
       <div class="content">
-        <p class="eyebrow">Actividad 2 · 15 minutos</p>
+        <p class="eyebrow">
+          <svg class="ic" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+          Actividad 2 · 15 minutos
+        </p>
         <h2>Tus 3 figuras clave</h2>
         <p>Identifiquen las 3 visualizaciones más importantes para su PDP.</p>
-        <div class="grid cols-3">
+        <div class="grid cols-3 stagger-in">
           <div class="figure-card">
             <h3>Figura 1</h3>
             <dl>
@@ -1164,9 +1441,12 @@ Genera un gráfico de líneas en Python con:
     <!-- 28 Los 5 principios en una gráfica -->
     <section class="slide" data-slide>
       <div class="content">
-        <p class="eyebrow">Síntesis</p>
+        <p class="eyebrow">
+          <svg class="ic" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+          Síntesis
+        </p>
         <h2>Los 5 principios en una sola gráfica</h2>
-        <div class="grid cols-2" style="align-items: center;">
+        <div class="grid cols-2 stagger-in" style="align-items: center;">
           <div class="chart-frame">
             <p class="chart-title argumentative">La viscosidad cae un 77 % entre 25 °C y 65 °C (1 %)</p>
             <svg viewBox="0 0 480 320" aria-label="Gráfica final con todos los principios aplicados">
@@ -1225,7 +1505,7 @@ Genera un gráfico de líneas en Python con:
 
     <!-- 29 Cierre -->
     <section class="slide title-slide" data-slide>
-      <div class="content" style="align-items: center; text-align: center;">
+      <div class="content stagger-in" style="align-items: center; text-align: center;">
         <p class="hero-quote" style="color: #fff;">Cada gráfica es<br/>una <em>oportunidad</em><br/>de convencer.</p>
         <p style="font-size: clamp(1.2rem, 1.8vw, 1.6rem); color: var(--brand-yellow); font-weight: 600; margin-top: 1rem;">No la desperdicien.</p>
       </div>
@@ -1239,9 +1519,15 @@ Genera un gráfico de líneas en Python con:
   </div>
 
   <div class="controls">
-    <button aria-label="Anterior" id="prev">‹</button>
-    <button aria-label="Pantalla completa" id="fs">⛶</button>
-    <button aria-label="Siguiente" id="next">›</button>
+    <button aria-label="Anterior" id="prev">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+    </button>
+    <button aria-label="Pantalla completa" id="fs">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" x2="14" y1="3" y2="10"/><line x1="3" x2="10" y1="21" y2="14"/></svg>
+    </button>
+    <button aria-label="Siguiente" id="next">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+    </button>
   </div>
 
   <script>
@@ -1253,7 +1539,13 @@ Genera un gráfico de líneas en Python con:
       function render() {
         slides.forEach(function (s, idx) { s.classList.toggle('active', idx === i); });
         if (counter) counter.textContent = (i + 1) + ' / ' + slides.length;
-        if (progress) progress.style.width = ((i + 1) / slides.length * 100) + '%';
+        if (progress) {
+          progress.style.width = ((i + 1) / slides.length * 100) + '%';
+          progress.classList.remove('pulse');
+          // force reflow so the animation restarts
+          void progress.offsetWidth;
+          progress.classList.add('pulse');
+        }
         var isTitle = slides[i] && slides[i].classList.contains('title-slide');
         document.body.style.background = isTitle ? '#1A1A1A' : '#ffffff';
       }
