@@ -37,9 +37,29 @@ App.tsx               ← Router principal
 
 El Classroom es la sección de cursos. Cada curso tiene:
 - **Landing** con programa completo (equipo, horarios, metodología, evaluación, etc.)
-- **Lecturas** tipo guía interactiva con TOC filtrable
+- **Material del curso** (antes "Lecturas") — dividido en dos categorías:
+  - **Guías** (`category: 'guia'`) — metodología y proceso para entregables (trabajo en equipo, bitácoras, informe, propuesta de valor, flujogramas, etc.)
+  - **Lecturas de clase** (`category: 'lectura'`) — contenido que acompaña cada sesión presencial; de aquí salen los quices
 - **Presentaciones** HTML autocontenidas responsivas
 - **Acceso por código** (localStorage, sin backend)
+
+**⚠️ Terminología:** la UI pública dice "Material del curso", no "Lecturas". Los objetos de datos siguen llamándose `readings` / `Reading` en el código por compatibilidad. La URL sigue siendo `/classroom/{slug}/readings/...`.
+
+### Tipo `Reading` — campo `category` obligatorio en readings nuevos
+
+```ts
+interface Reading {
+  slug: string;
+  title: string;
+  summary: string;
+  date: string;
+  readingMinutes?: number;
+  tags?: string[];
+  category?: 'guia' | 'lectura'; // si se omite se asume 'guia'
+}
+```
+
+En `ReadingsIndexPage.tsx` las entradas se separan en dos secciones automáticamente según `category`.
 
 ### Cómo crear contenido para un curso
 
@@ -47,8 +67,8 @@ Para crear o editar contenido del Classroom, lee la guía correspondiente:
 
 | Tipo de contenido | Guía | Descripción |
 |---|---|---|
-| **Lecturas** (readings) | [LECTURES.md](LECTURES.md) | Guías interactivas con TOC, callouts, cards, tablas, videos |
-| **Presentaciones** (slides) | [PRESENTATIONS.md](PRESENTATIONS.md) | Diapositivas HTML autocontenidas con navegación, imágenes, decoraciones |
+| **Material del curso** (readings — guías y lecturas) | [LECTURES.md](LECTURES.md) | Guías interactivas con TOC click-to-filter, callouts, cards, tablas, videos, KaTeX |
+| **Presentaciones** (slides) | [PRESENTATIONS.md](PRESENTATIONS.md) | Diapositivas HTML autocontenidas con íconos SVG Lucide, navegación, imágenes, interactividad |
 | **"Qué hay para hoy"** | [HOY.md](HOY.md) | Popup con cronograma de próximos 7 días |
 
 ### Cómo crear un curso nuevo
@@ -130,5 +150,25 @@ Los nombres de archivo extraídos del PDF (`pXX-Y.png`) NO indican qué contiene
 ### #4: KaTeX para todas las fórmulas
 **NUNCA** dejar fórmulas como texto plano. Siempre usar notación KaTeX: `$\rho = \frac{m}{V}$` para inline, `$$...$$` para display. Incluir KaTeX CDN en el `<head>` de cada presentación.
 
+**⚠️ En React/JSX (lecturas):** Las fórmulas inline con llaves (`$x_{ij}$`, `$\text{sat}$`, etc.) **DEBEN** envolverse en `{String.raw\`$...$\`}` porque JSX interpreta `{` como inicio de expresión. Si no se envuelve, el build de Vite falla con `Syntax error "t"` al encontrar `\text`. Ver [LECTURES.md](LECTURES.md) sección KaTeX.
+
 ### #5: Videos YouTube a la derecha
 Los videos embebidos van siempre a la **DERECHA** en layout `two-col`, nunca debajo del contenido.
+
+### #6: Nada de emojis como íconos — usar SVG Lucide
+Los emojis (💡 🔍 ⚗️ 📍 ✅ etc.) como íconos en presentaciones se renderizan inconsistente entre SO/navegador y se ven de juguete en un entorno académico. **Reemplazar todos por SVG Lucide inline** con `stroke="currentColor"` y `width/height="1em"` para que hereden tamaño y color. Ver [PRESENTATIONS.md](PRESENTATIONS.md) sección "Íconos SVG".
+
+### #7: Siempre que se nombre una plataforma/herramienta, debe ser clickeable
+Cuando una presentación o lectura menciona ChatGPT, Claude, Perplexity, BloqueNeón, Amazon, Alkosto, Figma, etc., el nombre debe ser un enlace con `target="_blank" rel="noopener"` y clase `.platform-link` (subrayado amarillo + sufijo `↗`). No dejar nombres sueltos como texto plano.
+
+### #8: HTML no es PowerPoint — aprovechar la interactividad
+Las presentaciones HTML deben sentirse **dinámicas**. Patrones mínimos en cada slide deck:
+- `stagger-in` con `fadeInUp` animado cuando un slide recibe `.active`
+- Hover-lift (`translateY(-3px)` + shadow) en cards
+- `:focus-visible` rings amarillos para accesibilidad teclado
+- Progress bar pulse al navegar
+- `@media (prefers-reduced-motion: reduce)` que deshabilite todo lo anterior
+- Stepper o tabs para grids que serían muy largos (6+ cards)
+- Row hover highlight en tablas
+- `<details>/<summary>` para casos de estudio o contenido extenso
+- Comillas tipográficas «...» en citas (no `"..."`)
