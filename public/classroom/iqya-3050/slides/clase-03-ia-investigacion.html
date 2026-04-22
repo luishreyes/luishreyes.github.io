@@ -1,0 +1,1035 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Sesión 3 — IA generativa para investigación · IQYA-3050</title>
+  <style>
+    :root {
+      --brand-dark: #1A1A1A;
+      --brand-yellow: #FFBF00;
+      --brand-yellow-dark: #E6AC00;
+      --brand-gray: #555555;
+      --surface: #ffffff;
+      --muted: #f4f4f5;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0; padding: 0; height: 100%; width: 100%;
+      background: var(--brand-dark);
+      color: var(--brand-dark);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      overflow: hidden;
+      -webkit-text-size-adjust: 100%;
+    }
+    .deck { position: relative; width: 100vw; height: 100vh; height: 100dvh; }
+    .slide {
+      position: absolute; inset: 0;
+      display: none; align-items: center; justify-content: center;
+      padding: clamp(1rem, 4vw, 3.5rem);
+      background: var(--surface);
+      opacity: 0;
+      transition: opacity 260ms ease;
+      overflow-y: auto;
+    }
+    .slide.active { display: flex; opacity: 1; }
+    .slide .content {
+      width: 100%; max-width: 92rem;
+      margin: auto 0;
+      display: flex; flex-direction: column;
+      gap: clamp(0.75rem, 1.5vw, 1.5rem);
+    }
+    .eyebrow {
+      text-transform: uppercase; letter-spacing: 0.2em;
+      font-size: clamp(0.65rem, 1vw, 1rem);
+      color: var(--brand-yellow-dark); font-weight: 600;
+    }
+    h1 {
+      font-size: clamp(1.75rem, 5.5vw, 5.75rem);
+      line-height: 1.05; margin: 0;
+      color: var(--brand-dark); font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    h2 {
+      font-size: clamp(1.25rem, 3.4vw, 3.25rem);
+      line-height: 1.15; margin: 0;
+      color: var(--brand-dark); font-weight: 700;
+    }
+    p, li {
+      font-size: clamp(0.95rem, 1.8vw, 1.75rem);
+      line-height: 1.55; color: var(--brand-gray); margin: 0;
+    }
+    ul, ol {
+      padding-left: 1.25em; margin: 0;
+      display: flex; flex-direction: column; gap: 0.45em;
+    }
+    li::marker { color: var(--brand-yellow-dark); }
+    .slide.title-slide {
+      background: linear-gradient(135deg, #141414 0%, #1A1A1A 50%, #2a2a2a 100%);
+      color: #fff;
+    }
+    .slide.title-slide h1 { color: #fff; }
+    .slide.title-slide p { color: #d4d4d8; }
+    .slide.title-slide .eyebrow { color: var(--brand-yellow); }
+    .pill-row { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 0.5rem; }
+    .pill {
+      display: inline-flex; align-items: center;
+      padding: 0.35em 0.9em; border-radius: 999px;
+      background: var(--muted); color: var(--brand-dark);
+      font-size: clamp(0.75rem, 1.3vw, 1.35rem); font-weight: 500;
+    }
+    .slide.title-slide .pill {
+      background: rgba(255,255,255,0.1); color: #fff;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .grid { display: grid; gap: clamp(0.75rem, 1.5vw, 1.25rem); }
+    .grid.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid.cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    @media (max-width: 640px) {
+      .grid.cols-2, .grid.cols-3, .grid.cols-4 { grid-template-columns: 1fr; }
+    }
+    .card {
+      background: var(--muted); border-radius: 0.75rem;
+      padding: clamp(0.9rem, 1.5vw, 1.35rem);
+    }
+    .card h3 {
+      font-size: clamp(1rem, 2vw, 1.75rem);
+      margin: 0 0 0.35em 0; color: var(--brand-dark); font-weight: 600;
+    }
+    .card p { font-size: clamp(0.8rem, 1.4vw, 1.3rem); }
+    .card ul li { font-size: clamp(0.8rem, 1.4vw, 1.25rem); }
+    .agenda-card {
+      background: #fff; border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 0.5rem;
+      padding: clamp(1rem, 1.8vw, 1.5rem);
+      display: flex; gap: 0.9rem; align-items: flex-start;
+    }
+    .agenda-card .n {
+      flex-shrink: 0;
+      width: 2em; height: 2em;
+      display: inline-flex; align-items: center; justify-content: center;
+      background: var(--brand-yellow); color: var(--brand-dark);
+      font-weight: 700;
+      border-radius: 0.35em;
+      font-size: clamp(1rem, 1.6vw, 1.4rem);
+    }
+    .agenda-card h3 {
+      margin: 0 0 0.3em;
+      font-size: clamp(1rem, 1.8vw, 1.6rem);
+      color: var(--brand-dark);
+    }
+    .agenda-card p {
+      font-size: clamp(0.8rem, 1.3vw, 1.2rem);
+    }
+    .scenario-box {
+      background: #fff; border: 1px solid rgba(0,0,0,0.08);
+      border-left: 4px solid var(--brand-yellow);
+      border-radius: 0.5rem;
+      padding: 1rem 1.25rem;
+    }
+    .scenario-box h3 {
+      margin: 0 0 0.35em;
+      font-size: clamp(0.95rem, 1.5vw, 1.4rem);
+      color: var(--brand-dark);
+    }
+    .scenario-box .highlight {
+      background: rgba(255,191,0,0.25);
+      padding: 0.1em 0.2em;
+      border-radius: 0.2em;
+    }
+    .banner {
+      background: #fef3c7;
+      border-left: 4px solid var(--brand-yellow-dark);
+      padding: 0.9rem 1.1rem;
+      border-radius: 0.5rem;
+      color: #78350f;
+      font-size: clamp(0.85rem, 1.4vw, 1.25rem);
+    }
+    .banner.info {
+      background: #e0f2fe;
+      border-left-color: #0284c7;
+      color: #0c4a6e;
+    }
+    .banner.warn {
+      background: #fee2e2;
+      border-left-color: #dc2626;
+      color: #7f1d1d;
+    }
+    .banner strong { color: inherit; }
+    .hero-question {
+      text-align: center;
+      font-size: clamp(2rem, 5vw, 5rem);
+      font-weight: 800;
+      line-height: 1.1;
+      color: var(--brand-dark);
+      letter-spacing: -0.02em;
+    }
+    .reflection {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: clamp(0.75rem, 1.5vw, 1.5rem);
+    }
+    @media (max-width: 640px) { .reflection { grid-template-columns: 1fr; } }
+    .reflection .item {
+      background: #fff;
+      border-top: 6px solid var(--brand-yellow);
+      padding: 1rem 1.1rem;
+      border-radius: 0.35rem;
+      box-shadow: 0 1px 0 rgba(0,0,0,0.04);
+    }
+    .reflection .item h3 {
+      margin: 0 0 0.35em;
+      font-size: clamp(1rem, 1.6vw, 1.4rem);
+      color: var(--brand-dark);
+    }
+    .reflection .item p {
+      font-size: clamp(0.8rem, 1.3vw, 1.2rem);
+    }
+    .problem-list h3 {
+      margin: 0 0 0.3em;
+      color: var(--brand-dark);
+      font-size: clamp(1rem, 1.8vw, 1.5rem);
+    }
+    .principle {
+      background: var(--muted);
+      border-left: 4px solid var(--brand-yellow);
+      padding: 1rem 1.25rem;
+      border-radius: 0.5rem;
+      font-size: clamp(1rem, 1.8vw, 1.7rem);
+      color: var(--brand-dark);
+      font-weight: 500;
+    }
+    .tipo-block {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 1.25rem;
+      align-items: start;
+      background: #fff;
+      border: 1px solid rgba(0,0,0,0.08);
+      border-left: 6px solid var(--brand-yellow);
+      padding: 1.25rem 1.5rem;
+      border-radius: 0.5rem;
+    }
+    .tipo-block .icon {
+      font-size: clamp(2.5rem, 5vw, 4.5rem);
+      line-height: 1;
+      color: var(--brand-yellow-dark);
+    }
+    .tipo-block .label {
+      font-size: clamp(1.25rem, 2vw, 1.8rem);
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      color: var(--brand-dark);
+      margin: 0;
+    }
+    .tipo-block p {
+      font-size: clamp(0.95rem, 1.5vw, 1.4rem);
+      margin: 0.4em 0;
+    }
+    .tipo-block .ejemplo {
+      font-style: italic;
+      color: var(--brand-gray);
+      margin-top: 0.7em;
+    }
+    .matriz {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: clamp(0.8rem, 1.3vw, 1.2rem);
+      background: #fff;
+      border-radius: 0.5rem;
+      overflow: hidden;
+      box-shadow: 0 1px 0 rgba(0,0,0,0.04);
+    }
+    .matriz th {
+      background: var(--brand-dark); color: #fff;
+      text-align: left;
+      padding: 0.7em 1em;
+      font-weight: 600;
+      font-size: clamp(0.75rem, 1.1vw, 1.05rem);
+    }
+    .matriz td {
+      padding: 0.7em 1em;
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+      color: var(--brand-dark);
+    }
+    .matriz tbody tr:nth-child(even) { background: #fafafa; }
+    .matriz .warn { color: var(--brand-yellow-dark); font-weight: 600; }
+    .tool-slide {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(1rem, 2vw, 2rem);
+      align-items: start;
+    }
+    @media (max-width: 768px) { .tool-slide { grid-template-columns: 1fr; } }
+    .tool-slide .col h3 {
+      font-size: clamp(1rem, 1.7vw, 1.5rem);
+      margin: 0 0 0.5em;
+      color: var(--brand-dark);
+    }
+    .tool-slide .col ul { gap: 0.4em; }
+    .tool-slide .col ul li {
+      font-size: clamp(0.85rem, 1.4vw, 1.3rem);
+      color: var(--brand-gray);
+    }
+    .prompt-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    @media (max-width: 768px) { .prompt-grid { grid-template-columns: 1fr; } }
+    .prompt-box {
+      background: var(--muted);
+      padding: 1rem 1.25rem;
+      border-radius: 0.5rem;
+      color: var(--brand-dark);
+      font-size: clamp(0.8rem, 1.2vw, 1.1rem);
+      line-height: 1.55;
+    }
+    .prompt-box .highlight { color: var(--brand-yellow-dark); }
+    .prompt-box .category { color: #1e3a8a; font-weight: 700; }
+    .workflow {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 0.75rem;
+      position: relative;
+      margin-top: 1rem;
+    }
+    @media (max-width: 900px) { .workflow { grid-template-columns: repeat(2, 1fr); } }
+    .workflow::before {
+      content: '';
+      position: absolute;
+      top: calc(50% - 1px);
+      left: 5%; right: 5%;
+      height: 2px; background: var(--brand-yellow-dark);
+      opacity: 0.3;
+      z-index: 0;
+    }
+    .workflow .step {
+      background: #fff;
+      border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 0.5rem;
+      padding: 0.9rem 0.8rem;
+      position: relative;
+      z-index: 1;
+      text-align: center;
+    }
+    .workflow .step .circ {
+      display: inline-flex;
+      align-items: center; justify-content: center;
+      width: 2.25em; height: 2.25em;
+      background: var(--brand-yellow);
+      color: var(--brand-dark);
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: clamp(1rem, 1.5vw, 1.4rem);
+      margin: 0 auto 0.5em;
+    }
+    .workflow .step h4 {
+      font-size: clamp(0.8rem, 1.1vw, 1.05rem);
+      margin: 0 0 0.35em;
+      color: var(--brand-dark);
+    }
+    .workflow .step p {
+      font-size: clamp(0.7rem, 1vw, 1rem);
+      color: var(--brand-gray);
+    }
+    .time-block {
+      background: #fff;
+      border: 1px solid rgba(0,0,0,0.08);
+      border-left: 5px solid var(--brand-yellow);
+      padding: 1rem 1.25rem;
+      border-radius: 0.5rem;
+    }
+    .time-block .time {
+      font-size: clamp(0.85rem, 1.3vw, 1.2rem);
+      font-weight: 700;
+      color: var(--brand-yellow-dark);
+    }
+    .time-block h3 {
+      margin: 0.2em 0 0.4em;
+      font-size: clamp(1rem, 1.6vw, 1.4rem);
+      color: var(--brand-dark);
+    }
+    .time-block p {
+      font-size: clamp(0.85rem, 1.3vw, 1.2rem);
+    }
+    .hero-img { border-radius: 0.5rem; border: 1px solid rgba(0,0,0,0.08); overflow: hidden; }
+    .hero-img img { width: 100%; height: auto; display: block; }
+    .side-img { max-height: 55vh; object-fit: contain; }
+    .slide-number {
+      position: absolute;
+      bottom: clamp(0.5rem, 2vw, 1.5rem);
+      left: clamp(1rem, 3vw, 2.5rem);
+      font-size: clamp(4rem, 12vw, 10rem);
+      font-weight: 800; line-height: 1;
+      color: rgba(0, 0, 0, 0.04);
+      pointer-events: none; z-index: 0; user-select: none;
+      letter-spacing: -0.04em;
+    }
+    .slide.title-slide .slide-number { color: rgba(255, 255, 255, 0.06); }
+    .slide:not(.title-slide)::before {
+      content: '';
+      position: absolute;
+      top: clamp(1rem, 3vw, 2.5rem);
+      right: clamp(1rem, 3vw, 2.5rem);
+      width: clamp(2rem, 5vw, 4rem);
+      height: clamp(2rem, 5vw, 4rem);
+      border-top: 2.5px solid var(--brand-yellow);
+      border-right: 2.5px solid var(--brand-yellow);
+      pointer-events: none; z-index: 1;
+    }
+    .slide.title-slide::before {
+      content: '';
+      position: absolute;
+      bottom: clamp(1rem, 3vw, 2.5rem);
+      left: clamp(1rem, 3vw, 2.5rem);
+      width: clamp(2rem, 5vw, 4rem);
+      height: clamp(2rem, 5vw, 4rem);
+      border-bottom: 2.5px solid var(--brand-yellow);
+      border-left: 2.5px solid var(--brand-yellow);
+      opacity: 0.4; pointer-events: none; z-index: 1;
+    }
+    .hud {
+      position: fixed; left: 0; right: 0; bottom: 0;
+      padding: 0.5rem 1rem;
+      display: flex; justify-content: space-between; align-items: center;
+      color: var(--brand-gray); font-size: 0.75rem;
+      pointer-events: none; z-index: 10;
+    }
+    .controls {
+      position: fixed; right: 1rem; bottom: 2.5rem;
+      display: flex; gap: 0.5rem; z-index: 11;
+    }
+    .controls button {
+      -webkit-appearance: none; appearance: none;
+      border: 1px solid rgba(0,0,0,0.1);
+      background: rgba(255,255,255,0.9);
+      color: var(--brand-dark);
+      width: 2.5rem; height: 2.5rem;
+      border-radius: 999px;
+      font-size: 1rem;
+      cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    }
+    .controls button:active { transform: scale(0.96); }
+    .progress {
+      position: fixed; top: 0; left: 0;
+      height: 3px; background: var(--brand-yellow);
+      transition: width 260ms ease; z-index: 20;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .slide, .progress { transition: none; }
+    }
+    @media (max-width: 480px) {
+      .controls { right: 0.5rem; bottom: 1.25rem; }
+      .hud { font-size: 0.65rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="progress" style="width:0"></div>
+  <div class="deck">
+
+    <!-- 01 Portada -->
+    <section class="slide title-slide active" data-slide>
+      <div class="content">
+        <p class="eyebrow">IQYA 3050 · Sesión 3 · 15 abr 2026</p>
+        <h1>IA generativa para<br/>investigación</h1>
+        <p>Framework de decisión estratégica · by Luis H. Reyes</p>
+        <div class="pill-row">
+          <span class="pill">Mapa de herramientas</span>
+          <span class="pill">Matriz de decisión</span>
+          <span class="pill">Workflow</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 02 Agenda -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Hoy</p>
+        <h2>Agenda</h2>
+        <div class="grid cols-2" style="align-items: start;">
+          <div class="hero-img"><img src="img/dia3-p02-x81.jpeg" alt="Estudiante leyendo con expresión pensativa" /></div>
+          <div style="display: flex; flex-direction: column; gap: 0.7rem;">
+            <div class="agenda-card">
+              <span class="n">1</span>
+              <div>
+                <h3>El mapa del territorio</h3>
+                <p>Panorama actual de herramientas de IA para investigación y cómo cada una se adapta a diferentes necesidades académicas.</p>
+              </div>
+            </div>
+            <div class="agenda-card">
+              <span class="n">2</span>
+              <div>
+                <h3>Ejercicio práctico</h3>
+                <p>Aplicaremos el framework de decisión a un caso real, desarrollando preguntas y asignando herramientas específicas.</p>
+              </div>
+            </div>
+            <div class="agenda-card">
+              <span class="n">3</span>
+              <div>
+                <h3>Advertencias críticas</h3>
+                <p>Riesgos y limitaciones más importantes de cada herramienta para evitar errores comunes.</p>
+              </div>
+            </div>
+            <div class="agenda-card">
+              <span class="n">4</span>
+              <div>
+                <h3>Plan de acción</h3>
+                <p>Pasos concretos para implementar estas herramientas en su proyecto de grado.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 03 Escenario inicial -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Caso de estudio</p>
+        <h2>Escenario inicial: reto de investigación</h2>
+        <div class="grid cols-2" style="align-items: start;">
+          <div class="hero-img"><img src="img/dia3-p03-x125.jpeg" alt="Panadero amasando masa madre en una panadería artesanal" /></div>
+          <div>
+            <div class="scenario-box">
+              <h3>Contexto del proyecto</h3>
+              <p>La masa madre representa un ingrediente fundamental en la panificación artesanal, con microorganismos únicos que varían según su origen geográfico. Colombia, con su rica biodiversidad y diferentes regiones climáticas, ofrece un escenario ideal para estudiar estas variaciones.</p>
+            </div>
+            <div class="scenario-box" style="border-left-color: var(--brand-yellow-dark); margin-top: 0.6rem;">
+              <h3>Pregunta de investigación</h3>
+              <p><span class="highlight">¿Cómo influye el origen geográfico de las masas madres colombianas en las propiedades mecánicas, estructura microscópica y características sensoriales del pan artesanal?</span></p>
+            </div>
+            <div class="scenario-box" style="margin-top: 0.6rem;">
+              <h3>Relevancia del estudio</h3>
+              <p>Esta investigación podría revelar diferencias significativas en la calidad panadera según la región de origen de la masa madre.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 04 Reflexión personal -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Reflexión personal</p>
+        <h2>¿Cómo empezaría usted a investigar esto?</h2>
+        <p>Tome 30 segundos para pensar en su enfoque natural.</p>
+        <div class="reflection" style="margin-top: 1rem;">
+          <div class="item">
+            <h3>¿Qué haría primero?</h3>
+            <p>Piense en su primer instinto: ¿buscar en Google, ir a la biblioteca, consultar un experto? No hay respuesta correcta o incorrecta aquí.</p>
+          </div>
+          <div class="item">
+            <h3>¿Qué herramientas usaría?</h3>
+            <p>Considere las plataformas, bases de datos o recursos que normalmente utiliza para investigar temas complejos en su campo.</p>
+          </div>
+          <div class="item">
+            <h3>¿Por dónde comenzaría?</h3>
+            <p>Reflexione sobre la secuencia lógica que seguiría: conceptos básicos, literatura especializada, metodologías, etc.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 05 Problema con enfoque tradicional -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Diagnóstico</p>
+        <h2>El problema con el enfoque tradicional</h2>
+        <div class="grid cols-2">
+          <div class="problem-list">
+            <h3>Mucho tiempo invertido</h3>
+            <ul>
+              <li>Búsquedas repetitivas e ineficientes en motores generales.</li>
+              <li>Revisión de <em>papers</em> irrelevantes que no aportan al objetivo específico.</li>
+              <li>Información contradictoria sin contexto para evaluar credibilidad.</li>
+              <li>Horas perdidas navegando sin una estrategia clara.</li>
+            </ul>
+          </div>
+          <div class="problem-list">
+            <h3>Mucha información, poca claridad</h3>
+            <ul>
+              <li>Abrumamiento por el volumen de información disponible.</li>
+              <li>Dificultad para determinar un punto de partida lógico.</li>
+              <li>Incertidumbre sobre cuándo se tiene suficiente información.</li>
+              <li>Problemas para organizar y sintetizar lo encontrado.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="banner">
+          <strong>Resultado:</strong> estudiantes que invierten el <strong>60-80 %</strong> de su tiempo en búsquedas improductivas, dejando poco tiempo para el análisis profundo y la síntesis creativa.
+        </div>
+      </div>
+    </section>
+
+    <!-- 06 Principio central -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">La propuesta · framework de decisión</p>
+        <h2>Principio central</h2>
+        <div class="principle">
+          No existe una herramienta perfecta para todos los propósitos. <strong>Existen herramientas adecuadas para cada tipo específico de pregunta de investigación.</strong>
+        </div>
+        <div class="grid cols-2" style="margin-top: 0.75rem;">
+          <div class="card">
+            <h3>Su rol como investigador</h3>
+            <p>Decidir estratégicamente cuál herramienta usar en cada momento del proceso investigativo, maximizando la eficiencia y calidad de los resultados obtenidos.</p>
+          </div>
+          <div class="card">
+            <h3>Ventaja competitiva</h3>
+            <p>Desarrollar criterios claros para seleccionar la herramienta correcta le permitirá completar investigaciones más profundas en menos tiempo.</p>
+          </div>
+        </div>
+        <p class="small" style="font-size: clamp(0.8rem, 1.2vw, 1.1rem); font-style: italic; color: var(--brand-gray);">Este framework transformará su aproximación a la investigación, convirtiendo el proceso de búsqueda de información de una actividad dispersa a una estrategia sistemática y efectiva.</p>
+      </div>
+    </section>
+
+    <!-- 07 Hero question -->
+    <section class="slide" data-slide>
+      <div class="content" style="align-items: center; justify-content: center; height: 100%;">
+        <p class="eyebrow" style="text-align: center;">La pregunta fundamental</p>
+        <p class="hero-question">¿Qué debemos saber<br/>para dar respuesta<br/>a la pregunta de investigación?</p>
+      </div>
+    </section>
+
+    <!-- 08 Tipos — CONCEPTUALES -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Tipos de preguntas · 1 de 4</p>
+        <h2>Preguntas conceptuales</h2>
+        <div class="tipo-block">
+          <div class="icon">💡</div>
+          <div>
+            <p class="label">CONCEPTUALES</p>
+            <p>Buscan definiciones, explicaciones de funcionamiento, marcos teóricos fundamentales.</p>
+            <p class="ejemplo"><strong>Ejemplo:</strong> "¿Qué es la fermentación láctica en masa madre?" o "¿Cómo influyen los microorganismos en la textura del pan?"</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 09 Tipos — EMPÍRICAS -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Tipos de preguntas · 2 de 4</p>
+        <h2>Preguntas empíricas</h2>
+        <div class="tipo-block">
+          <div class="icon">🔍</div>
+          <div>
+            <p class="label">EMPÍRICAS</p>
+            <p>Requieren evidencia científica, estudios previos, datos experimentales.</p>
+            <p class="ejemplo"><strong>Ejemplo:</strong> "¿Qué investigaciones han comparado masas madres de diferentes regiones?" o "¿Existen datos sobre propiedades mecánicas del pan colombiano?"</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10 Tipos — METODOLÓGICAS -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Tipos de preguntas · 3 de 4</p>
+        <h2>Preguntas metodológicas</h2>
+        <div class="tipo-block">
+          <div class="icon">⚗️</div>
+          <div>
+            <p class="label">METODOLÓGICAS</p>
+            <p>Buscan técnicas de medición, protocolos experimentales, equipos especializados.</p>
+            <p class="ejemplo"><strong>Ejemplo:</strong> "¿Cómo se mide la elasticidad de la masa?" o "¿Qué técnicas permiten analizar la microestructura del pan?"</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 11 Tipos — CONTEXTUALES -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Tipos de preguntas · 4 de 4</p>
+        <h2>Preguntas contextuales</h2>
+        <div class="tipo-block">
+          <div class="icon">📍</div>
+          <div>
+            <p class="label">CONTEXTUALES</p>
+            <p>Requieren información específica sobre situaciones locales, regionales o culturales.</p>
+            <p class="ejemplo"><strong>Ejemplo:</strong> "¿Qué tradiciones panificadoras existen en Colombia?" o "¿Cuáles son las condiciones climáticas de cada región?"</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 12 Matriz de decisión -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Decisión</p>
+        <h2>Matriz de decisión</h2>
+        <table class="matriz">
+          <thead>
+            <tr><th>Si necesita…</th><th>Use…</th><th>Limitación crítica</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Conceptos básicos y marcos teóricos</td><td><strong>ChatGPT / Claude</strong></td><td class="warn">⚠ Siempre verificar después</td></tr>
+            <tr><td>Hechos actuales con fuentes citadas</td><td><strong>Perplexity</strong></td><td class="warn">⚠ Análisis superficial</td></tr>
+            <tr><td>Literatura académica sintetizada</td><td><strong>SciSpace / Consensus</strong></td><td class="warn">⚠ Solo acceso abierto</td></tr>
+            <tr><td>Búsqueda exhaustiva de papers</td><td><strong>Google Scholar / WoS</strong></td><td class="warn">⚠ Proceso manual</td></tr>
+            <tr><td>Análisis de papers específicos</td><td><strong>NotebookLM</strong></td><td class="warn">⚠ Necesita PDFs previos</td></tr>
+            <tr><td>Investigación comprensiva de tema</td><td><strong>Deep Research</strong></td><td class="warn">⚠ 20+ min, solo fuentes abiertas</td></tr>
+          </tbody>
+        </table>
+        <div class="banner info"><strong>Clave:</strong> la efectividad no está en usar todas las herramientas, sino en usar <strong>la correcta</strong> para cada tipo de pregunta.</div>
+      </div>
+    </section>
+
+    <!-- 13 ChatGPT / Claude -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Herramienta 1</p>
+        <h2>ChatGPT / Claude</h2>
+        <div class="grid cols-3" style="align-items: start;">
+          <div class="hero-img"><img src="img/dia3-p13-x390.jpeg" alt="Pantalla de ChatGPT en un teléfono mostrando chat.openai.com/chat" /></div>
+          <div class="card">
+            <h3>Fortalezas principales</h3>
+            <ul>
+              <li>Generación de preguntas de investigación estructuradas y progresivas.</li>
+              <li>Explicación clara de conceptos fundamentales complejos.</li>
+              <li>Organización y estructuración lógica de ideas dispersas.</li>
+              <li>Disponibilidad 24/7.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Casos de uso ideales</h3>
+            <ul>
+              <li>Fase inicial de exploración temática.</li>
+              <li><em>Brainstorming</em> de enfoques metodológicos.</li>
+              <li>Clarificación de terminología técnica.</li>
+              <li>Desarrollo de marcos conceptuales.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="banner warn"><strong>⚠ Limitación crítica:</strong> puede inventar citas, referencias y datos específicos. Nunca usar como fuente final sin verificación independiente.</div>
+      </div>
+    </section>
+
+    <!-- 14 Ejemplo prompt ChatGPT -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ejemplo</p>
+        <h2>Prompt para ChatGPT</h2>
+        <div class="prompt-grid">
+          <div class="prompt-box">
+            <p>Actúa como un <span class="highlight">profesor de ingeniería química y de alimentos</span> que asesora a un estudiante de penúltimo semestre. Este estudiante está trabajando apasionadamente en la estructuración de su proyecto de investigación final.</p>
+            <p style="margin-top: 0.6em;">El reto de investigación que debe abordar es el siguiente: <span class="highlight">[INSERTE SU RETO ESPECÍFICO AQUÍ]</span></p>
+            <p style="margin-top: 0.6em;">Tu objetivo es guiar al estudiante para que desarrolle un trabajo riguroso. Para lograrlo, diseña una guía de <span class="highlight">12 preguntas críticas</span> que cumplan con los siguientes criterios:</p>
+            <p style="margin-top: 0.6em;">Deben aumentar progresivamente en complejidad. Deben preparar al estudiante para la formulación de una hipótesis sólida.</p>
+          </div>
+          <div class="prompt-box">
+            <p>Tienen que abarcar obligatoriamente cuatro enfoques distintos. Asigna cada pregunta a una de estas categorías:</p>
+            <p style="margin-top: 0.6em;"><span class="category">CONCEPTUALES:</span> buscan definiciones, explicaciones de funcionamiento y marcos teóricos fundamentales.</p>
+            <p style="margin-top: 0.4em;"><span class="category">EMPÍRICAS:</span> requieren evidencia científica, estudios previos y datos experimentales.</p>
+            <p style="margin-top: 0.4em;"><span class="category">METODOLÓGICAS:</span> buscan técnicas de medición, protocolos experimentales y equipos especializados.</p>
+            <p style="margin-top: 0.4em;"><span class="category">CONTEXTUALES:</span> requieren información específica sobre situaciones locales, regionales o culturales.</p>
+            <p style="margin-top: 0.6em;"><strong>Formato de respuesta:</strong> enumera las 12 preguntas. Etiqueta cada una con su categoría correspondiente e incluye una breve explicación de por qué responder esa pregunta específica es vital para el éxito de este proyecto.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 15 Perplexity -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Herramienta 2</p>
+        <h2>Perplexity</h2>
+        <div class="grid cols-3" style="align-items: start;">
+          <div class="hero-img"><img src="img/dia3-p15-x442.jpeg" alt="Logo de Perplexity en un teléfono" /></div>
+          <div class="card">
+            <h3>Casos de uso sugeridos</h3>
+            <ul>
+              <li>Búsquedas rápidas con fuentes citadas automáticamente.</li>
+              <li>Verificación inmediata de hechos y datos actuales.</li>
+              <li>Contexto general actualizado sobre un tema.</li>
+              <li>Identificación de tendencias recientes.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Ventajas distintivas</h3>
+            <ul>
+              <li>Combina múltiples fuentes en una respuesta coherente.</li>
+              <li>Proporciona enlaces directos para verificación.</li>
+              <li>Actualización constante con información reciente.</li>
+              <li>Interfaz intuitiva para consultas conversacionales.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="banner warn"><strong>⚠ Limitación crítica:</strong> análisis superficial con solo 2-4 fuentes por búsqueda. No reemplaza la investigación académica profunda, pero es excelente como punto de partida.</div>
+      </div>
+    </section>
+
+    <!-- 16 SciSpace / Consensus -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Herramienta 3</p>
+        <h2>SciSpace / Consensus</h2>
+        <div class="grid cols-2" style="align-items: center;">
+          <div class="hero-img"><img src="img/dia3-p16-x462.jpeg" alt="Logo de SciSpace con planos de colores superpuestos" /></div>
+          <div class="grid" style="gap: 0.7rem;">
+            <div class="card">
+              <h3>📄 Síntesis de múltiples estudios</h3>
+              <p>Analiza automáticamente cientos de <em>papers</em> relacionados y extrae conclusiones comunes, ahorrando horas de revisión manual.</p>
+            </div>
+            <div class="card">
+              <h3>✅ Identificación de consensos</h3>
+              <p>Detecta puntos de acuerdo y desacuerdo en la comunidad científica, revelando áreas consolidadas versus controversiales.</p>
+            </div>
+            <div class="card">
+              <h3>🧠 Comparación metodológica</h3>
+              <p>Facilita la comparación de diferentes enfoques experimentales y metodologías utilizadas en estudios similares.</p>
+            </div>
+          </div>
+        </div>
+        <div class="banner warn"><strong>⚠ Limitación crítica:</strong> acceso limitado a <em>papers</em> de acceso abierto únicamente (~30 % de la literatura total). Debe complementarse con bases de datos institucionales.</div>
+      </div>
+    </section>
+
+    <!-- 17 Google Scholar / WoS -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Herramienta 4</p>
+        <h2>Google Scholar / Web of Science</h2>
+        <div class="tool-slide">
+          <div class="col">
+            <div class="card" style="margin-bottom: 0.8rem;">
+              <h3>1 · Búsqueda exhaustiva</h3>
+              <p>Acceso completo a literatura académica, incluyendo <em>papers</em> de pago y acceso restringido que representan el 70% restante de publicaciones científicas.</p>
+            </div>
+            <div class="card" style="margin-bottom: 0.8rem;">
+              <h3>2 · Análisis de citaciones</h3>
+              <p>Seguimiento de referencias hacia adelante y atrás, identificando trabajos fundamentales y desarrollos más recientes en el campo.</p>
+            </div>
+            <div class="card">
+              <h3>3 · Métricas de impacto</h3>
+              <p>Evaluación de relevancia e impacto de <em>papers</em> individuales y autores mediante índices de citación y métricas bibliométricas.</p>
+            </div>
+          </div>
+          <div class="col">
+            <h3 style="margin-bottom: 0.4em;">Ecuaciones booleanas efectivas</h3>
+            <div class="prompt-box" style="font-family: 'SF Mono', Monaco, monospace;">
+              ("masa madre" OR "sourdough starter") AND<br/>
+              ("propiedades mecánicas" OR "mechanical properties") AND<br/>
+              (Colombia* OR "región andina")
+            </div>
+            <div class="prompt-box" style="font-family: 'SF Mono', Monaco, monospace; margin-top: 0.6rem;">
+              ("fermentación láctica" OR "lactic fermentation") AND<br/>
+              ("microestructura" OR "microstructure") AND<br/>
+              (pan OR bread OR "baked goods")
+            </div>
+            <p style="margin-top: 0.6em;"><strong>Tip clave:</strong> use comillas para frases exactas, asteriscos para variaciones (ferment*), y paréntesis para agrupar términos relacionados.</p>
+            <p><strong>Pro tip:</strong> puede usar ChatGPT para crear las ecuaciones booleanas.</p>
+          </div>
+        </div>
+        <div class="banner warn"><strong>⚠ Limitación crítica:</strong> proceso muy dispendioso.</div>
+      </div>
+    </section>
+
+    <!-- 18 NotebookLM -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Herramienta 5</p>
+        <h2>NotebookLM</h2>
+        <div class="grid cols-2" style="align-items: start;">
+          <div class="hero-img"><img src="img/dia3-p18-x519.jpeg" alt="Pantalla de NotebookLM mostrando la bienvenida y opciones para crear un nuevo cuaderno" /></div>
+          <div class="grid" style="gap: 0.7rem;">
+            <div class="card">
+              <h3>📤 Subida de documentos</h3>
+              <p>Carga PDFs de <em>papers</em> descargados de Scholar, ResearchGate o bases institucionales para análisis automatizado.</p>
+            </div>
+            <div class="card">
+              <h3>🔀 Análisis comparativo</h3>
+              <p>Identifica diferencias y similitudes entre metodologías, resultados y conclusiones de múltiples estudios.</p>
+            </div>
+            <div class="card">
+              <h3>🎯 Extracción específica</h3>
+              <p>Localiza y extrae valores numéricos, condiciones experimentales o conclusiones de <em>papers</em> extensos.</p>
+            </div>
+          </div>
+        </div>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Ventaja principal</h3>
+            <p><strong>Completamente gratuito</strong> y permite subir hasta 50 documentos simultáneamente para análisis cruzado.</p>
+          </div>
+          <div class="card">
+            <h3>Limitación operativa</h3>
+            <p>Requiere PDFs descargados previamente. <strong>No busca ni descarga papers</strong> automáticamente.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 19 Deep Research -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Herramienta 6</p>
+        <h2>Deep Research</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Capacidades únicas</h3>
+            <ul>
+              <li><strong>Mapeo comprehensivo:</strong> crea panoramas completos de temas complejos integrando múltiples perspectivas y fuentes.</li>
+              <li><strong>Análisis de tendencias:</strong> identifica patrones emergentes y direcciones futuras de investigación.</li>
+              <li><strong>Contexto de mercado:</strong> complementa investigación académica con aplicaciones industriales y comerciales.</li>
+              <li><strong>Síntesis inteligente:</strong> organiza información dispersa en narrativas coherentes y estructuradas.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Proceso típico</h3>
+            <p>La herramienta invierte <strong>20-30 minutos</strong> explorando sistemáticamente el tema desde múltiples ángulos, consultando fuentes académicas, informes industriales, noticias especializadas y tendencias emergentes.</p>
+          </div>
+        </div>
+        <div class="banner warn"><strong>⚠ Limitaciones:</strong> solo para versiones pagas de las mayorías de IA generativas. No hay control sobre el tipo de documentación que accede el motor. Tiempo considerable y acceso limitado a fuentes abiertas. No incluye <em>papers</em> de pago ni bases de datos institucionales.</div>
+      </div>
+    </section>
+
+    <!-- 20 Flujo de trabajo -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Integración</p>
+        <h2>Flujo de trabajo recomendado</h2>
+        <div class="workflow">
+          <div class="step">
+            <div class="circ">1</div>
+            <h4>ChatGPT → estructura inicial</h4>
+            <p>Genere 10 preguntas clave que guíen toda su investigación. Establezca el marco conceptual.</p>
+          </div>
+          <div class="step">
+            <div class="circ">2</div>
+            <h4>Perplexity → contexto general</h4>
+            <p>Obtenga una visión panorámica del estado actual del tema con fuentes citadas.</p>
+          </div>
+          <div class="step">
+            <div class="circ">3</div>
+            <h4>SciSpace + Scholar → literatura</h4>
+            <p>Busque sistemáticamente <em>papers</em> relevantes, sintetice hallazgos e identifique gaps.</p>
+          </div>
+          <div class="step">
+            <div class="circ">4</div>
+            <h4>NotebookLM → análisis profundo</h4>
+            <p>Analice <em>papers</em> específicos descargados, extraiga metodologías y compare resultados.</p>
+          </div>
+          <div class="step">
+            <div class="circ">5</div>
+            <h4>Múltiples fuentes → validación</h4>
+            <p>Verifique información crítica usando al menos 3 fuentes independientes y documente discrepancias.</p>
+          </div>
+        </div>
+        <p style="margin-top: 1rem; font-size: clamp(0.85rem, 1.3vw, 1.2rem);"><strong>Tiempo estimado total:</strong> 4-6 horas para investigación comprehensiva vs. 15-20 horas con métodos tradicionales.</p>
+      </div>
+    </section>
+
+    <!-- 21 Ejercicio práctico -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">En clase</p>
+        <h2>Ejercicio práctico · 45 min</h2>
+        <div class="grid cols-2" style="align-items: start;">
+          <div class="hero-img"><img src="img/dia3-p21-x580.jpeg" alt="Tres estudiantes trabajando juntos con laptops y libros" /></div>
+          <div style="display: flex; flex-direction: column; gap: 0.7rem;">
+            <div class="time-block">
+              <p class="time">15 minutos</p>
+              <h3>Genere sus 10 preguntas con ChatGPT</h3>
+              <p>Use el prompt sugerido adaptándolo a su proyecto. Cree preguntas que progresen en complejidad.</p>
+            </div>
+            <div class="time-block">
+              <p class="time">20 minutos</p>
+              <h3>Clasifique y asigne herramientas</h3>
+              <p>Categorice cada pregunta (conceptual, empírica, metodológica, contextual) y determine la herramienta adecuada.</p>
+            </div>
+            <div class="time-block">
+              <p class="time">10 minutos</p>
+              <h3>Compartir en plenaria</h3>
+              <p>Presente 2-3 de sus mejores preguntas y justifique la selección. Reciba feedback de compañeros y profesor.</p>
+            </div>
+          </div>
+        </div>
+        <div class="banner info">Recibirá una guía detallada con <em>templates</em> de prompts, criterios de evaluación y ejemplos específicos para maximizar la efectividad del ejercicio.</div>
+      </div>
+    </section>
+
+    <!-- 22 Siguiente sección -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Siguiente sección</p>
+        <h1>Advertencias críticas</h1>
+        <p>En la próxima sección abordaremos los errores más costosos que pueden comprometer toda su investigación, las señales de alerta que debe reconocer y las estrategias de verificación que garantizarán la credibilidad de su trabajo académico.</p>
+        <div class="pill-row"><span class="pill">Errores</span><span class="pill">Verificación</span><span class="pill">Credibilidad</span></div>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="hud">
+    <span>IA generativa para investigación · IQYA-3050</span>
+    <span id="hud-counter">1 / 22</span>
+  </div>
+
+  <div class="controls">
+    <button aria-label="Anterior" id="prev">‹</button>
+    <button aria-label="Pantalla completa" id="fs">⛶</button>
+    <button aria-label="Siguiente" id="next">›</button>
+  </div>
+
+  <script>
+    (function () {
+      var slides = Array.prototype.slice.call(document.querySelectorAll('[data-slide]'));
+      var i = 0;
+      var counter = document.getElementById('hud-counter');
+      var progress = document.querySelector('.progress');
+      function render() {
+        slides.forEach(function (s, idx) { s.classList.toggle('active', idx === i); });
+        if (counter) counter.textContent = (i + 1) + ' / ' + slides.length;
+        if (progress) progress.style.width = ((i + 1) / slides.length * 100) + '%';
+        var isTitle = slides[i] && slides[i].classList.contains('title-slide');
+        document.body.style.background = isTitle ? '#1A1A1A' : '#ffffff';
+      }
+      function go(n) { i = Math.max(0, Math.min(slides.length - 1, n)); render(); }
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); go(i + 1); }
+        else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(i - 1); }
+        else if (e.key === 'Home') { e.preventDefault(); go(0); }
+        else if (e.key === 'End') { e.preventDefault(); go(slides.length - 1); }
+        else if (e.key === 'f' || e.key === 'F') { toggleFs(); }
+      });
+      document.getElementById('prev').addEventListener('click', function () { go(i - 1); });
+      document.getElementById('next').addEventListener('click', function () { go(i + 1); });
+      document.getElementById('fs').addEventListener('click', toggleFs);
+      function toggleFs() {
+        var el = document.documentElement;
+        if (!document.fullscreenElement) { (el.requestFullscreen || el.webkitRequestFullscreen || function(){}).call(el); }
+        else { (document.exitFullscreen || document.webkitExitFullscreen || function(){}).call(document); }
+      }
+      var tx = 0, ty = 0;
+      document.addEventListener('touchstart', function (e) {
+        if (!e.changedTouches[0]) return;
+        tx = e.changedTouches[0].clientX; ty = e.changedTouches[0].clientY;
+      }, { passive: true });
+      document.addEventListener('touchend', function (e) {
+        if (!e.changedTouches[0]) return;
+        var dx = e.changedTouches[0].clientX - tx;
+        var dy = e.changedTouches[0].clientY - ty;
+        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+          if (dx < 0) go(i + 1); else go(i - 1);
+        }
+      }, { passive: true });
+      slides.forEach(function (s, idx) {
+        var num = document.createElement('div');
+        num.className = 'slide-number';
+        num.setAttribute('aria-hidden', 'true');
+        num.textContent = String(idx + 1).padStart(2, '0');
+        s.appendChild(num);
+      });
+      render();
+    })();
+  </script>
+</body>
+</html>

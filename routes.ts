@@ -30,4 +30,5 @@ export const ROUTES: Record<string, string> = {
   'classroom.readings':                   '/classroom/:courseSlug/readings',
   'classroom.reading':                    '/classroom/:courseSlug/readings/:slug',
   'classroom.presentations':              '/classroom/:courseSlug/presentations',
+  'classroom.retos':                      '/classroom/:courseSlug/retos',
 };

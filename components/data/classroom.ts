@@ -96,11 +96,11 @@ export interface Course {
     phases: { label: string; title: string; items: string[] }[];
     synergies?: string[];
   };
-  abet: {
+  abet?: {
     peos: string[];
     outcomes: AbetOutcome[];
   };
-  project: {
+  project?: {
     title: string;
     overview: string;
     rawMaterials: { name: string; outcome: string }[];
@@ -109,16 +109,21 @@ export interface Course {
   };
   modules: SyllabusModule[];
   evaluation: EvaluationItem[];
-  deliveries: {
+  deliveries?: {
     bitacoras: DeliveryDate[];
     coevaluations: DeliveryDate[];
     feedback: DeliveryDate[];
   };
-  coevaluation: {
+  coevaluation?: {
     importance: string[];
     application: string[];
     procedure: string[];
     example: string[];
+  };
+  /** If set, a "Retos del semestre" button appears in the landing with this label. */
+  challenges?: {
+    label: string;
+    term: string;
   };
   aias: {
     intro: string;
@@ -139,8 +144,9 @@ export interface Course {
 }
 
 import { pouCourse } from './classroom/pou';
+import { spdpCourse } from './classroom/spdp';
 
-export const classroomData: Course[] = [pouCourse];
+export const classroomData: Course[] = [pouCourse, spdpCourse];
 
 export const getCourseBySlug = (slug: string): Course | undefined =>
   classroomData.find((c) => c.slug === slug);
