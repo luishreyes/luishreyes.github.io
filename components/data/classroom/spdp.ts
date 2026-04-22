@@ -319,7 +319,28 @@ export const spdpCourse: Course = {
       ],
     },
   ],
-  readings: [],
+  readings: [
+    {
+      slug: 'propuesta-valor',
+      title: 'Propuesta de valor',
+      summary:
+        'Guía para desarrollar la propuesta de valor del proyecto de desarrollo profesional: dos esquemas (proyecto de desarrollo y proyecto de innovación) con ejemplos completos (EcoFilter, ChemFoodLab), campo a campo, proceso de redacción y pasos de entrega firmada por el asesor.',
+      date: '2026-02-05',
+      readingMinutes: 15,
+      tags: ['propuesta', 'proyecto', 'entregable'],
+      category: 'guia',
+    },
+    {
+      slug: 'flujogramas',
+      title: 'Flujogramas en el desarrollo de proyectos',
+      summary:
+        'Guía sobre qué es un flujograma, sus características, tipos (lineal vertical/horizontal/panorámico, matricial), símbolos estándar (terminales, proceso, decisión, entrada, salida, conectores), los cuatro pasos para construirlo y herramientas recomendadas (draw.io, Lucidchart, Miro, Canva).',
+      date: '2026-02-12',
+      readingMinutes: 18,
+      tags: ['flujograma', 'proceso', 'diseño', 'entregable'],
+      category: 'guia',
+    },
+  ],
   presentations: [
     {
       id: 'clase-01-bienvenida',
