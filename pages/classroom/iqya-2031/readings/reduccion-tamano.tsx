@@ -225,22 +225,26 @@ const ReduccionTamano: React.FC = () => {
 
         {/* Contenido principal */}
         <div className="reading-prose">
-          <p className="text-lg leading-relaxed text-brand-gray">
-            Esta lectura acompaña la sesión sobre <strong>reducción de tamaño</strong> — también
-            llamada conminución — y sintetiza los principios, mecanismos, equipos y leyes
-            energéticas que gobiernan el paso de trozos grandes de sólido a partículas
-            controladas. Es una de las operaciones mecánicas más comunes en la industria y,
-            paradójicamente, una de las menos eficientes energéticamente.
-          </p>
+          {activeSection === null && (
+            <>
+              <p className="text-lg leading-relaxed text-brand-gray">
+                Esta lectura acompaña la sesión sobre <strong>reducción de tamaño</strong> — también
+                llamada conminución — y sintetiza los principios, mecanismos, equipos y leyes
+                energéticas que gobiernan el paso de trozos grandes de sólido a partículas
+                controladas. Es una de las operaciones mecánicas más comunes en la industria y,
+                paradójicamente, una de las menos eficientes energéticamente.
+              </p>
 
-          <InfoCallout title="📌 Aplicación al proyecto del curso">
-            Si tu proyecto involucra la reducción de tamaño de un material, deberás investigar
-            sus propiedades y seleccionar un tipo de equipo adecuado. Además, tendrás que
-            justificar la elección del equipo y, si es posible,
-            <strong> estimar la energía requerida</strong> utilizando alguna de las leyes de
-            conminución. <strong>Bond</strong> es la más recomendada para estimaciones
-            preliminares siempre que se pueda obtener o asumir un <em>W<sub>i</sub></em>.
-          </InfoCallout>
+              <InfoCallout title="📌 Aplicación al proyecto del curso">
+                Si tu proyecto involucra la reducción de tamaño de un material, deberás investigar
+                sus propiedades y seleccionar un tipo de equipo adecuado. Además, tendrás que
+                justificar la elección del equipo y, si es posible,
+                <strong> estimar la energía requerida</strong> utilizando alguna de las leyes de
+                conminución. <strong>Bond</strong> es la más recomendada para estimaciones
+                preliminares siempre que se pueda obtener o asumir un <em>W<sub>i</sub></em>.
+              </InfoCallout>
+            </>
+          )}
 
           {isVisible('objetivo') && (
             <>

@@ -211,12 +211,14 @@ const OperacionesUnitarias: React.FC = () => {
 
         {/* Contenido principal */}
         <div className="reading-prose">
-          <p className="text-lg leading-relaxed text-brand-gray">
-            Esta lectura acompaña la primera sesión del curso y presenta el concepto que
-            articula toda la disciplina: las <strong>operaciones unitarias</strong>. Aquí
-            conocerás cómo surgió la idea, qué significa formalmente, por qué es tan poderosa
-            y cómo se organizan los cientos de operaciones que veremos durante el semestre.
-          </p>
+          {activeSection === null && (
+            <p className="text-lg leading-relaxed text-brand-gray">
+              Esta lectura acompaña la primera sesión del curso y presenta el concepto que
+              articula toda la disciplina: las <strong>operaciones unitarias</strong>. Aquí
+              conocerás cómo surgió la idea, qué significa formalmente, por qué es tan poderosa
+              y cómo se organizan los cientos de operaciones que veremos durante el semestre.
+            </p>
+          )}
 
           {isVisible('perspectiva') && (
             <>

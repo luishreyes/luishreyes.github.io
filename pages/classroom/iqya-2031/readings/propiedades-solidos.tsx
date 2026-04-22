@@ -224,21 +224,25 @@ const PropiedadesSolidos: React.FC = () => {
 
         {/* Contenido principal */}
         <div className="reading-prose">
-          <p className="text-lg leading-relaxed text-brand-gray">
-            Esta lectura acompaña la sesión sobre <strong>propiedades de los sólidos
-            particulados</strong>: densidad, porosidad, tamaño y su distribución, forma,
-            propiedades de flujo y otras características que determinan el comportamiento
-            de los polvos durante su almacenamiento, transporte, mezclado y procesamiento
-            industrial — especialmente en la industria de alimentos.
-          </p>
+          {activeSection === null && (
+            <>
+              <p className="text-lg leading-relaxed text-brand-gray">
+                Esta lectura acompaña la sesión sobre <strong>propiedades de los sólidos
+                particulados</strong>: densidad, porosidad, tamaño y su distribución, forma,
+                propiedades de flujo y otras características que determinan el comportamiento
+                de los polvos durante su almacenamiento, transporte, mezclado y procesamiento
+                industrial — especialmente en la industria de alimentos.
+              </p>
 
-          <InfoCallout title="📌 Aplicación al Proyecto del Curso">
-            Al seleccionar un proceso que involucre sólidos, deberán investigar y reportar
-            las propiedades relevantes de estos materiales. Estos datos serán fundamentales
-            para el diseño y selección de equipos como <strong>silos, alimentadores,
-            mezcladores, molinos o sistemas de transporte</strong> en las etapas posteriores
-            del proyecto.
-          </InfoCallout>
+              <InfoCallout title="📌 Aplicación al Proyecto del Curso">
+                Al seleccionar un proceso que involucre sólidos, deberán investigar y reportar
+                las propiedades relevantes de estos materiales. Estos datos serán fundamentales
+                para el diseño y selección de equipos como <strong>silos, alimentadores,
+                mezcladores, molinos o sistemas de transporte</strong> en las etapas posteriores
+                del proyecto.
+              </InfoCallout>
+            </>
+          )}
 
           {isVisible('introduccion') && (
             <>

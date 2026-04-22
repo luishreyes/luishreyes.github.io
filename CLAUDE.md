@@ -161,6 +161,9 @@ Los emojis (💡 🔍 ⚗️ 📍 ✅ etc.) como íconos en presentaciones se re
 ### #7: Siempre que se nombre una plataforma/herramienta, debe ser clickeable
 Cuando una presentación o lectura menciona ChatGPT, Claude, Perplexity, BloqueNeón, Amazon, Alkosto, Figma, etc., el nombre debe ser un enlace con `target="_blank" rel="noopener"` y clase `.platform-link` (subrayado amarillo + sufijo `↗`). No dejar nombres sueltos como texto plano.
 
+### #8bis: TOC click-to-filter implica contenido condicional
+En lecturas con TOC click-to-filter, el **intro**, la **imagen hero** y los **callouts generales** deben ir dentro de `{activeSection === null && (<>...</>)}` para que aparezcan SOLO en el modo "Ver todo", no en cada sección filtrada. Si van fuera, se repiten en cada click del TOC y se ven como ruido visual. Ver [LECTURES.md](LECTURES.md) sección "contenido compartido".
+
 ### #8: HTML no es PowerPoint — aprovechar la interactividad
 Las presentaciones HTML deben sentirse **dinámicas**. Patrones mínimos en cada slide deck:
 - `stagger-in` con `fadeInUp` animado cuando un slide recibe `.active`
