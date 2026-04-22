@@ -284,6 +284,250 @@
       transition: width 260ms ease; z-index: 20;
     }
     @media (prefers-reduced-motion: reduce) { .slide, .progress { transition: none; } }
+
+    /* === Dynamic / interactive enhancements === */
+
+    /* SVG icons: inherit size/color from parent */
+    .ic-svg { width: 1em; height: 1em; display: inline-block; vertical-align: -0.125em; }
+
+    /* Staggered fade-in for grids and lists on active slides */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .slide .stagger-in > * { opacity: 0; }
+    .slide.active .stagger-in > * { animation: fadeInUp 0.5s cubic-bezier(0.2,0.7,0.2,1) both; }
+    .slide.active .stagger-in > *:nth-child(1) { animation-delay: 0.05s; }
+    .slide.active .stagger-in > *:nth-child(2) { animation-delay: 0.12s; }
+    .slide.active .stagger-in > *:nth-child(3) { animation-delay: 0.19s; }
+    .slide.active .stagger-in > *:nth-child(4) { animation-delay: 0.26s; }
+    .slide.active .stagger-in > *:nth-child(5) { animation-delay: 0.33s; }
+    .slide.active .stagger-in > *:nth-child(6) { animation-delay: 0.40s; }
+    .slide.active .stagger-in > *:nth-child(7) { animation-delay: 0.47s; }
+    .slide.active .stagger-in > *:nth-child(8) { animation-delay: 0.54s; }
+
+    /* Hover lift for cards and step-blocks */
+    .card, .step-block {
+      transition: transform 220ms ease, box-shadow 220ms ease, background 220ms ease;
+    }
+    .card:hover, .step-block:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 24px rgba(0,0,0,0.08);
+    }
+
+    /* Focus visible rings for keyboard navigation */
+    .card:focus-visible, .step-block:focus-visible,
+    .interactive-card:focus-visible, .controls button:focus-visible,
+    .workflow-arrow .stage:focus-visible {
+      outline: 3px solid var(--brand-yellow);
+      outline-offset: 3px;
+    }
+
+    /* Table row hover highlight */
+    table.simple tbody tr { transition: background 180ms ease; }
+    table.simple tbody tr:hover { background: #fff7d6 !important; }
+
+    /* Control buttons transitions */
+    .controls button {
+      transition: transform 180ms ease, background 180ms ease, box-shadow 180ms ease;
+    }
+    .controls button:hover {
+      background: var(--brand-yellow);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.18);
+    }
+
+    /* Progress pulse on change */
+    @keyframes progressPulse {
+      0%   { box-shadow: 0 0 0 0 rgba(255,191,0,0.55); }
+      100% { box-shadow: 0 0 0 10px rgba(255,191,0,0); }
+    }
+    .progress.pulsing { animation: progressPulse 500ms ease-out; }
+
+    /* QR "scan me" animated border */
+    .qr-img {
+      position: relative;
+      overflow: visible;
+      transition: transform 220ms ease, box-shadow 220ms ease;
+    }
+    .qr-img:hover { transform: scale(1.03); box-shadow: 0 12px 28px rgba(0,0,0,0.12); }
+    .qr-img::after {
+      content: ''; position: absolute; inset: -4px;
+      border-radius: 0.65rem;
+      border: 2px solid var(--brand-yellow);
+      opacity: 0; pointer-events: none;
+      animation: qrPulse 2.2s ease-in-out infinite;
+    }
+    .slide.active .qr-img::after { animation-name: qrPulse; }
+    @keyframes qrPulse {
+      0%, 100% { opacity: 0; transform: scale(1); }
+      50%      { opacity: 0.8; transform: scale(1.02); }
+    }
+    .qr-scan-label {
+      display: inline-flex; align-items: center; gap: 0.4em;
+      margin-top: 0.6rem;
+      padding: 0.25em 0.7em;
+      background: var(--brand-yellow);
+      color: var(--brand-dark);
+      border-radius: 999px;
+      font-size: clamp(0.7rem, 1.1vw, 0.95rem);
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      animation: scanBob 1.8s ease-in-out infinite;
+    }
+    @keyframes scanBob {
+      0%, 100% { transform: translateY(0); }
+      50%      { transform: translateY(-3px); }
+    }
+
+    /* Code block emphasis (subtle keyword highlight border on hover) */
+    .code-block {
+      position: relative;
+      transition: border-color 200ms ease;
+      border: 1px solid transparent;
+    }
+    .code-block:hover { border-color: rgba(255,191,0,0.35); }
+
+    /* Prompt-style block with syntax hints (for QR prompt previews) */
+    .prompt-box {
+      background: var(--muted);
+      border-left: 3px solid var(--brand-yellow-dark);
+      padding: 0.8rem 1rem;
+      border-radius: 0.4rem;
+      font-family: 'SF Mono', Monaco, Consolas, monospace;
+      font-size: clamp(0.8rem, 1.2vw, 1.05rem);
+      line-height: 1.5;
+    }
+    .prompt-box .kw { color: #c2410c; font-weight: 700; }
+    .prompt-box .lbl { color: #1e3a8a; font-weight: 600; }
+
+    /* Interactive cards (slide 21) */
+    .interactive-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: clamp(0.6rem, 1.2vw, 1rem);
+      margin-top: 0.8rem;
+    }
+    @media (max-width: 900px) { .interactive-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 520px) { .interactive-grid { grid-template-columns: 1fr; } }
+
+    .interactive-card {
+      position: relative;
+      background: #fff;
+      border: 1.5px solid rgba(0,0,0,0.08);
+      border-radius: 0.75rem;
+      padding: 1rem 0.9rem 0.9rem;
+      cursor: pointer;
+      outline: none;
+      transition: transform 240ms cubic-bezier(0.2,0.7,0.2,1),
+                  box-shadow 240ms ease,
+                  border-color 240ms ease,
+                  background 240ms ease;
+      display: flex; flex-direction: column; gap: 0.4rem;
+      min-height: 11rem;
+    }
+    .interactive-card::before {
+      content: ''; position: absolute; inset: 0;
+      border-radius: 0.75rem;
+      background: linear-gradient(135deg, var(--brand-yellow) 0%, #fff3b0 100%);
+      opacity: 0; transition: opacity 240ms ease;
+      z-index: 0;
+    }
+    .interactive-card > * { position: relative; z-index: 1; }
+    .interactive-card:hover,
+    .interactive-card:focus-visible,
+    .interactive-card.is-open {
+      transform: translateY(-6px);
+      box-shadow: 0 14px 30px rgba(0,0,0,0.14);
+      border-color: var(--brand-yellow-dark);
+    }
+    .interactive-card:hover::before,
+    .interactive-card:focus-visible::before,
+    .interactive-card.is-open::before {
+      opacity: 0.22;
+    }
+    .interactive-card .step-num {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 1.6em; height: 1.6em;
+      background: var(--brand-dark); color: var(--brand-yellow);
+      border-radius: 999px;
+      font-size: clamp(0.75rem, 1.1vw, 0.95rem);
+      font-weight: 700;
+      align-self: flex-start;
+    }
+    .interactive-card .icon-wrap {
+      font-size: clamp(1.6rem, 2.8vw, 2.2rem);
+      color: var(--brand-yellow-dark);
+      line-height: 1;
+      margin-top: 0.2em;
+      transition: transform 240ms ease, color 240ms ease;
+    }
+    .interactive-card:hover .icon-wrap,
+    .interactive-card:focus-visible .icon-wrap,
+    .interactive-card.is-open .icon-wrap {
+      transform: scale(1.12) rotate(-4deg);
+      color: var(--brand-dark);
+    }
+    .interactive-card h4 {
+      margin: 0; font-size: clamp(0.95rem, 1.4vw, 1.2rem);
+      font-weight: 700; color: var(--brand-dark);
+    }
+    .interactive-card .summary {
+      margin: 0; font-size: clamp(0.78rem, 1.1vw, 1rem);
+      color: var(--brand-gray);
+    }
+    .interactive-card .detail {
+      margin: 0; font-size: clamp(0.75rem, 1vw, 0.95rem);
+      color: var(--brand-dark);
+      max-height: 0;
+      opacity: 0;
+      overflow: hidden;
+      transition: max-height 300ms ease, opacity 260ms ease, margin-top 260ms ease;
+      margin-top: 0;
+    }
+    .interactive-card:hover .detail,
+    .interactive-card:focus-visible .detail,
+    .interactive-card.is-open .detail {
+      max-height: 10rem;
+      opacity: 1;
+      margin-top: 0.25rem;
+    }
+    .interactive-card .hint {
+      position: absolute; bottom: 0.45rem; right: 0.7rem;
+      font-size: 0.7rem; color: var(--brand-gray);
+      opacity: 0.7;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .interactive-card.is-open .hint { color: var(--brand-yellow-dark); opacity: 1; }
+
+    /* Flow arrow connector hint (below cards) */
+    .flow-legend {
+      display: flex; align-items: center; justify-content: center;
+      gap: 0.5rem; margin-top: 0.8rem;
+      color: var(--brand-gray);
+      font-size: clamp(0.75rem, 1.1vw, 0.95rem);
+    }
+    .flow-legend .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--brand-yellow);
+      animation: pulseDot 1.6s ease-in-out infinite;
+    }
+    .flow-legend .dot:nth-child(2) { animation-delay: 0.2s; }
+    .flow-legend .dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes pulseDot {
+      0%, 100% { transform: scale(1); opacity: 0.4; }
+      50%      { transform: scale(1.4); opacity: 1; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .slide.active .stagger-in > *,
+      .qr-img::after, .qr-scan-label, .flow-legend .dot,
+      .progress.pulsing {
+        animation: none !important;
+      }
+      .interactive-card, .card, .step-block { transition: none; }
+    }
   </style>
 </head>
 <body>
@@ -372,7 +616,7 @@
         <p class="eyebrow">Problema</p>
         <h2>Desafíos del análisis tradicional<span class="sub">Las limitaciones de los enfoques manuales</span></h2>
         <p>Analizar grandes conjuntos de datos a mano (por ejemplo, en Excel) es:</p>
-        <div class="grid cols-2">
+        <div class="grid cols-2 stagger-in">
           <div class="card"><h3>Lleva mucho tiempo</h3><p>Lleva una cantidad significativa de tiempo, especialmente con volúmenes de datos crecientes.</p></div>
           <div class="card"><h3>Propenso a errores</h3><p>El error humano es inevitable al procesar manualmente grandes cantidades de datos.</p></div>
           <div class="card"><h3>Difícil de escalar</h3><p>Se vuelve cada vez más impráctico a medida que crecen los conjuntos de datos.</p></div>
@@ -386,14 +630,21 @@
       <div class="content">
         <p class="eyebrow">Brecha</p>
         <h2>La brecha estructurada / no estructurada<span class="sub">Perdiendo la imagen completa</span></h2>
-        <div class="grid cols-2" style="align-items: center;">
-          <div>
-            <p>A menudo, información valiosa está bloqueada en una combinación de datos estructurados y no estructurados.</p>
-            <div class="card" style="margin-top: 0.75rem;"><p><strong>Ejemplo:</strong> combinar datos de ventas (estructurados) con reseñas de clientes (no estructuradas) para comprender por qué cambian las ventas.</p></div>
-            <div class="banner" style="margin-top: 0.75rem;"><strong>Las herramientas tradicionales a menudo tienen dificultades para cerrar esta brecha de manera efectiva.</strong></div>
+        <p>A menudo, información valiosa está bloqueada en una combinación de datos estructurados y no estructurados.</p>
+        <div class="grid cols-2 stagger-in" style="margin-top: 0.5rem;">
+          <div class="card">
+            <h3>Datos estructurados</h3>
+            <p>Ventas, transacciones, métricas operativas registradas en tablas, bases de datos o CSV.</p>
           </div>
-          <div class="hero-img"><img src="img/dia4-p06-x214.jpeg" alt="Persona interactuando con una encuesta online en una tablet" /></div>
+          <div class="card">
+            <h3>Datos no estructurados</h3>
+            <p>Reseñas, tickets de soporte, correos, audios y notas libres que contienen el &ldquo;por qué&rdquo; del comportamiento.</p>
+          </div>
         </div>
+        <div class="card" style="margin-top: 0.25rem;">
+          <p><strong>Ejemplo:</strong> combinar datos de ventas (estructurados) con reseñas de clientes (no estructuradas) para comprender por qué cambian las ventas.</p>
+        </div>
+        <div class="banner"><strong>Las herramientas tradicionales a menudo tienen dificultades para cerrar esta brecha de manera efectiva.</strong></div>
       </div>
     </section>
 
@@ -403,7 +654,7 @@
         <p class="eyebrow">Barrera</p>
         <h2>Desafíos del análisis tradicional<span class="sub">Brecha de habilidades</span></h2>
         <p>El análisis de datos tradicional a menudo requiere habilidades especializadas:</p>
-        <div class="grid cols-2">
+        <div class="grid cols-2 stagger-in">
           <div class="card"><h3>Ciencia de datos</h3></div>
           <div class="card"><h3>Administración de bases de datos (SQL)</h3></div>
           <div class="card"><h3>Análisis estadístico</h3></div>
@@ -492,7 +743,7 @@
         <h2>Presentación de los LLM: más allá del texto<span class="sub">Más que solo procesamiento de texto</span></h2>
         <p>Los modelos de lenguaje grande (LLM) son modelos de IA avanzados. Principalmente conocidos por su capacidad para comprender y generar texto similar al humano.</p>
         <p><strong>Pero:</strong> los LLM tienen capacidades que van <em>más allá</em> del texto:</p>
-        <div class="grid cols-3">
+        <div class="grid cols-3 stagger-in">
           <div class="card"><h3>Generación de código</h3><p>Pueden escribir código en varios lenguajes de programación.</p></div>
           <div class="card"><h3>Comprensión de datos</h3><p>Pueden interpretar el significado y la estructura de los datos.</p></div>
           <div class="card"><h3>Razonamiento y resolución de problemas</h3><p>Pueden ayudar a planificar y ejecutar tareas de análisis de datos.</p></div>
@@ -625,19 +876,69 @@ BMW X5,<span class="n">65000</span>,"Un SUV de lujo de tamaño mediano con un mo
     <section class="slide" data-slide>
       <div class="content">
         <p class="eyebrow">Marco metodológico</p>
-        <h2>El flujo de trabajo básico</h2>
-        <div class="grid cols-2" style="align-items: center;">
-          <div>
-            <p>Un marco metodológico de <strong>cinco etapas</strong> que facilita la colaboración entre analistas humanos e IA generativa para maximizar el valor de los datos empresariales.</p>
-            <p style="margin-top: 0.7em;">Cada etapa se construye sobre la anterior, creando un ciclo de retroalimentación que asegura resultados relevantes y accionables para el negocio.</p>
+        <h2>El flujo de trabajo básico<span class="sub">Toca o pasa el cursor sobre cada etapa</span></h2>
+        <p>Un marco metodológico de <strong>cinco etapas</strong> que facilita la colaboración entre analistas humanos e IA generativa. Cada etapa se construye sobre la anterior, creando un ciclo de retroalimentación que asegura resultados accionables.</p>
+
+        <div class="interactive-grid stagger-in">
+          <div class="interactive-card" tabindex="0" role="button" aria-pressed="false" data-flip>
+            <span class="step-num">1</span>
+            <div class="icon-wrap">
+              <svg class="ic-svg" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M8 11h6"/><path d="M11 8v6"/></svg>
+            </div>
+            <h4>Diagnóstico</h4>
+            <p class="summary">Análisis exploratorio inicial del dataset</p>
+            <p class="detail">Dimensiones, tipos, valores faltantes, atípicos y calidad general. La IA hace el perfilado; el humano define qué es &ldquo;calidad suficiente&rdquo; para el objetivo.</p>
+            <span class="hint">Click</span>
           </div>
-          <div class="workflow-arrow">
-            <div class="stage"><div class="ic">📁</div><h4>Diagnóstico</h4><p>Análisis exploratorio inicial del dataset</p></div>
-            <div class="stage"><div class="ic">💡</div><h4>Ideación</h4><p>Generación colaborativa de hipótesis</p></div>
-            <div class="stage"><div class="ic">📋</div><h4>Alineación</h4><p>Validación del plan estratégico</p></div>
-            <div class="stage"><div class="ic">✈️</div><h4>Navegación</h4><p>Ejecución iterativa guiada</p></div>
-            <div class="stage"><div class="ic">🔄</div><h4>Evolución</h4><p>Refinamiento y mejora continua</p></div>
+
+          <div class="interactive-card" tabindex="0" role="button" aria-pressed="false" data-flip>
+            <span class="step-num">2</span>
+            <div class="icon-wrap">
+              <svg class="ic-svg" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg>
+            </div>
+            <h4>Ideación</h4>
+            <p class="summary">Generación colaborativa de hipótesis</p>
+            <p class="detail">El humano aporta contexto de negocio, la IA propone ángulos de análisis. Se genera un listado amplio antes de priorizar.</p>
+            <span class="hint">Click</span>
           </div>
+
+          <div class="interactive-card" tabindex="0" role="button" aria-pressed="false" data-flip>
+            <span class="step-num">3</span>
+            <div class="icon-wrap">
+              <svg class="ic-svg" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-3"/><path d="M16 2a2.83 2.83 0 1 1 4 4l-9 9-4 1 1-4 8-10z"/></svg>
+            </div>
+            <h4>Alineación</h4>
+            <p class="summary">Validación del plan estratégico</p>
+            <p class="detail">Punto de control crítico: se valida que el plan esté alineado con objetivos de negocio antes de escribir una sola línea de código.</p>
+            <span class="hint">Click</span>
+          </div>
+
+          <div class="interactive-card" tabindex="0" role="button" aria-pressed="false" data-flip>
+            <span class="step-num">4</span>
+            <div class="icon-wrap">
+              <svg class="ic-svg" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+            </div>
+            <h4>Navegación</h4>
+            <p class="summary">Ejecución iterativa guiada</p>
+            <p class="detail">Se ejecutan análisis paso a paso con validación humana continua, ajustes en tiempo real y documentación automática.</p>
+            <span class="hint">Click</span>
+          </div>
+
+          <div class="interactive-card" tabindex="0" role="button" aria-pressed="false" data-flip>
+            <span class="step-num">5</span>
+            <div class="icon-wrap">
+              <svg class="ic-svg" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7"/><polyline points="21 3 21 9 15 9"/></svg>
+            </div>
+            <h4>Evolución</h4>
+            <p class="summary">Refinamiento y mejora continua</p>
+            <p class="detail">Los hallazgos alimentan nuevas hipótesis. El ciclo se repite con mayor profundidad y foco, construyendo confianza progresiva.</p>
+            <span class="hint">Click</span>
+          </div>
+        </div>
+
+        <div class="flow-legend">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span>Ciclo iterativo · cada etapa retroalimenta a la siguiente</span>
         </div>
       </div>
     </section>
@@ -647,7 +948,7 @@ BMW X5,<span class="n">65000</span>,"Un SUV de lujo de tamaño mediano con un mo
       <div class="content">
         <p class="eyebrow">Detalle</p>
         <h2>Flujo detallado del proceso</h2>
-        <div class="grid cols-2">
+        <div class="grid cols-2 stagger-in">
           <div class="step-block">
             <p class="num">01</p>
             <h3>Diagnóstico inicial</h3>
@@ -678,7 +979,7 @@ BMW X5,<span class="n">65000</span>,"Un SUV de lujo de tamaño mediano con un mo
       <div class="content">
         <p class="eyebrow">Extensión</p>
         <h2>Para más avanzados</h2>
-        <div class="grid cols-3">
+        <div class="grid cols-3 stagger-in">
           <div class="card">
             <h3>Preparación de datos</h3>
             <ul><li><strong>Cargar</strong> datos (CSV, BD, API).</li><li><strong>Explorar</strong> la estructura (tipos, valores faltantes, atípicos).</li><li><strong>Limpiar</strong> datos (faltantes, duplicados, inconsistencias).</li><li><strong>Manipular</strong> y preprocesar (normalizar, estandarizar, codificar).</li></ul>
@@ -712,24 +1013,28 @@ BMW X5,<span class="n">65000</span>,"Un SUV de lujo de tamaño mediano con un mo
       <div class="content">
         <p class="eyebrow">Responsabilidades</p>
         <h2>Los 3 roles clave en el proceso</h2>
-        <div class="grid cols-2" style="align-items: start;">
-          <div>
-            <p>La efectividad del enfoque <em>human-in-the-loop</em> depende de una clara definición de responsabilidades entre la IA, el humano y su colaboración activa.</p>
-            <div class="hero-img" style="margin-top: 0.75rem;"><img src="img/dia4-p24-x546.jpeg" alt="Equipo colaborando alrededor de una mesa con datos y dispositivos" /></div>
+        <p>La efectividad del enfoque <em>human-in-the-loop</em> depende de una clara definición de responsabilidades entre la IA, el humano y su colaboración activa.</p>
+        <div class="grid cols-3 stagger-in" style="align-items: stretch; margin-top: 0.5rem;">
+          <div class="card">
+            <div style="color: var(--brand-yellow-dark); font-size: clamp(1.5rem, 2.5vw, 2rem); margin-bottom: 0.35em;">
+              <svg class="ic-svg" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><path d="M7 7h10"/><path d="M7 12h10"/><path d="M7 17h6"/></svg>
+            </div>
+            <h3>La IA como procesador</h3>
+            <ul><li>Analista técnico que procesa grandes volúmenes</li><li>Generador ágil de hipótesis múltiples</li><li>Ejecutor preciso de código y cálculos</li><li>Documentador automático de procesos</li></ul>
           </div>
-          <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-            <div class="card">
-              <h3>La IA como procesador</h3>
-              <ul><li>Analista técnico que procesa grandes volúmenes</li><li>Generador ágil de hipótesis múltiples</li><li>Ejecutor preciso de código y cálculos</li><li>Documentador automático de procesos</li></ul>
+          <div class="card">
+            <div style="color: var(--brand-yellow-dark); font-size: clamp(1.5rem, 2.5vw, 2rem); margin-bottom: 0.35em;">
+              <svg class="ic-svg" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg>
             </div>
-            <div class="card">
-              <h3>El humano como director</h3>
-              <ul><li>Director estratégico que define objetivos</li><li>Validador experto del contexto de negocio</li><li>Tomador final de decisiones críticas</li><li>Guardián de la calidad y relevancia</li></ul>
+            <h3>El humano como director</h3>
+            <ul><li>Director estratégico que define objetivos</li><li>Validador experto del contexto de negocio</li><li>Tomador final de decisiones críticas</li><li>Guardián de la calidad y relevancia</li></ul>
+          </div>
+          <div class="card">
+            <div style="color: var(--brand-yellow-dark); font-size: clamp(1.5rem, 2.5vw, 2rem); margin-bottom: 0.35em;">
+              <svg class="ic-svg" xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 3h5v5"/><path d="M8 21H3v-5"/><path d="M21 3l-7 7"/><path d="M3 21l7-7"/><path d="M3 8V3h5"/><path d="M21 16v5h-5"/></svg>
             </div>
-            <div class="card">
-              <h3>La colaboración como motor</h3>
-              <ul><li>Iteración continua y retroalimentación</li><li>Refinamiento progresivo de resultados</li><li>Sinergia que supera capacidades individuales</li></ul>
-            </div>
+            <h3>La colaboración como motor</h3>
+            <ul><li>Iteración continua y retroalimentación</li><li>Refinamiento progresivo de resultados</li><li>Sinergia que supera capacidades individuales</li></ul>
           </div>
         </div>
       </div>
@@ -740,7 +1045,7 @@ BMW X5,<span class="n">65000</span>,"Un SUV de lujo de tamaño mediano con un mo
       <div class="content">
         <p class="eyebrow">Principios</p>
         <h2>Principios del <em>human-in-the-loop</em></h2>
-        <div class="grid cols-2">
+        <div class="grid cols-2 stagger-in">
           <div class="card"><h3>No es automatización total</h3><p>El humano mantiene control estratégico y guía cada decisión importante, mientras la IA acelera la ejecución técnica.</p></div>
           <div class="card"><h3>Conocimiento contextual crítico</h3><p>Solo el humano comprende completamente el contexto empresarial, las restricciones del negocio y las implicaciones políticas de los hallazgos.</p></div>
           <div class="card"><h3>Iteración inmediata y ágil</h3><p>Permite corrección y ajuste en tiempo real, evitando análisis extensos en direcciones incorrectas o irrelevantes.</p></div>
@@ -785,7 +1090,13 @@ BMW X5,<span class="n">65000</span>,"Un SUV de lujo de tamaño mediano con un mo
         <p class="eyebrow">Materiales</p>
         <h2>Dataset</h2>
         <div class="qr-block">
-          <div class="qr-img"><img src="img/dia4-p28-x602.png" alt="Código QR del dataset Salary_Data.csv en Google Docs" /></div>
+          <div>
+            <div class="qr-img"><img src="img/dia4-p28-x602.png" alt="Código QR del dataset Salary_Data.csv en Google Docs" /></div>
+            <span class="qr-scan-label">
+              <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M7 12h10"/></svg>
+              Escanea
+            </span>
+          </div>
           <div class="qr-side">
             <h3>Google Docs</h3>
             <p><strong>Salary_Data.csv</strong></p>
@@ -801,7 +1112,13 @@ BMW X5,<span class="n">65000</span>,"Un SUV de lujo de tamaño mediano con un mo
         <p class="eyebrow">Prompt 1</p>
         <h2>Primer prompt: EDA</h2>
         <div class="qr-block">
-          <div class="qr-img"><img src="img/dia4-p29-x631.png" alt="Código QR del prompt 1 (EDA)" /></div>
+          <div>
+            <div class="qr-img"><img src="img/dia4-p29-x631.png" alt="Código QR del prompt 1 (EDA)" /></div>
+            <span class="qr-scan-label">
+              <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M7 12h10"/></svg>
+              Escanea
+            </span>
+          </div>
           <div class="qr-side">
             <h3>Actúa como un analista de datos senior…</h3>
             <p>Especializado en diagnóstico inicial de datasets. Tu objetivo es identificar rápidamente las características, calidad y potencial analítico de los datos.</p>
@@ -818,7 +1135,13 @@ BMW X5,<span class="n">65000</span>,"Un SUV de lujo de tamaño mediano con un mo
         <p class="eyebrow">Prompt 2</p>
         <h2>Segundo prompt: plan</h2>
         <div class="qr-block">
-          <div class="qr-img"><img src="img/dia4-p30-x656.png" alt="Código QR del prompt 2 (plan de análisis)" /></div>
+          <div>
+            <div class="qr-img"><img src="img/dia4-p30-x656.png" alt="Código QR del prompt 2 (plan de análisis)" /></div>
+            <span class="qr-scan-label">
+              <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M7 12h10"/></svg>
+              Escanea
+            </span>
+          </div>
           <div class="qr-side">
             <h3>Actúa como un líder de equipo de data science…</h3>
             <p>Diseñando la estrategia analítica para un proyecto importante. Debes pensar tanto en el valor de negocio como en la viabilidad técnica.</p>
@@ -843,7 +1166,13 @@ BMW X5,<span class="n">65000</span>,"Un SUV de lujo de tamaño mediano con un mo
         <p class="eyebrow">Prompt 3</p>
         <h2>Tercer prompt: ejecución</h2>
         <div class="qr-block">
-          <div class="qr-img"><img src="img/dia4-p32-x693.png" alt="Código QR del prompt 3 (ejecución del análisis)" /></div>
+          <div>
+            <div class="qr-img"><img src="img/dia4-p32-x693.png" alt="Código QR del prompt 3 (ejecución del análisis)" /></div>
+            <span class="qr-scan-label">
+              <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M7 12h10"/></svg>
+              Escanea
+            </span>
+          </div>
           <div class="qr-side">
             <h3>Actúa como un analista de business intelligence…</h3>
             <p>Presentando hallazgos a <em>stakeholders</em> ejecutivos. Tu análisis debe ser riguroso pero accesible, con foco en implicaciones de negocio.</p>
@@ -872,9 +1201,15 @@ BMW X5,<span class="n">65000</span>,"Un SUV de lujo de tamaño mediano con un mo
   </div>
 
   <div class="controls">
-    <button aria-label="Anterior" id="prev">‹</button>
-    <button aria-label="Pantalla completa" id="fs">⛶</button>
-    <button aria-label="Siguiente" id="next">›</button>
+    <button aria-label="Anterior" id="prev">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.1em" height="1.1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+    </button>
+    <button aria-label="Pantalla completa" id="fs">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.05em" height="1.05em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" x2="14" y1="3" y2="10"/><line x1="3" x2="10" y1="21" y2="14"/></svg>
+    </button>
+    <button aria-label="Siguiente" id="next">
+      <svg xmlns="http://www.w3.org/2000/svg" width="1.1em" height="1.1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+    </button>
   </div>
 
   <script>
@@ -886,7 +1221,13 @@ BMW X5,<span class="n">65000</span>,"Un SUV de lujo de tamaño mediano con un mo
       function render() {
         slides.forEach(function (s, idx) { s.classList.toggle('active', idx === i); });
         if (counter) counter.textContent = (i + 1) + ' / ' + slides.length;
-        if (progress) progress.style.width = ((i + 1) / slides.length * 100) + '%';
+        if (progress) {
+          progress.style.width = ((i + 1) / slides.length * 100) + '%';
+          progress.classList.remove('pulsing');
+          // re-trigger pulse animation
+          void progress.offsetWidth;
+          progress.classList.add('pulsing');
+        }
         var slide = slides[i];
         var bg = '#ffffff';
         if (slide) {
@@ -894,6 +1235,13 @@ BMW X5,<span class="n">65000</span>,"Un SUV de lujo de tamaño mediano con un mo
           else if (slide.classList.contains('section-yellow')) bg = '#F5E27A';
         }
         document.body.style.background = bg;
+        // reset interactive-card open state when leaving a slide
+        document.querySelectorAll('.interactive-card.is-open').forEach(function (c) {
+          if (!slide || !slide.contains(c)) {
+            c.classList.remove('is-open');
+            c.setAttribute('aria-pressed', 'false');
+          }
+        });
       }
       function go(n) { i = Math.max(0, Math.min(slides.length - 1, n)); render(); }
       document.addEventListener('keydown', function (e) {
@@ -931,6 +1279,19 @@ BMW X5,<span class="n">65000</span>,"Un SUV de lujo de tamaño mediano con un mo
         num.textContent = String(idx + 1).padStart(2, '0');
         s.appendChild(num);
       });
+
+      // Interactive cards: click / Enter / Space to toggle open state
+      document.querySelectorAll('.interactive-card[data-flip]').forEach(function (card) {
+        function toggle() {
+          var open = card.classList.toggle('is-open');
+          card.setAttribute('aria-pressed', open ? 'true' : 'false');
+        }
+        card.addEventListener('click', toggle);
+        card.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+        });
+      });
+
       render();
     })();
   </script>
