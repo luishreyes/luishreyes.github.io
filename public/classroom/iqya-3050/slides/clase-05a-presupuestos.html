@@ -1,0 +1,592 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Sesión 5A — Presupuesto pregrado y posgrados · IQYA-3050</title>
+  <style>
+    :root {
+      --brand-dark: #1A1A1A; --brand-yellow: #FFBF00; --brand-yellow-dark: #E6AC00;
+      --brand-gray: #555555; --surface: #ffffff; --muted: #f4f4f5;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; height: 100%; width: 100%;
+      background: var(--brand-dark); color: var(--brand-dark);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      overflow: hidden; -webkit-text-size-adjust: 100%;
+    }
+    .deck { position: relative; width: 100vw; height: 100vh; height: 100dvh; }
+    .slide { position: absolute; inset: 0; display: none; align-items: center; justify-content: center;
+      padding: clamp(1rem, 4vw, 3.5rem); background: var(--surface); opacity: 0;
+      transition: opacity 260ms ease; overflow-y: auto; }
+    .slide.active { display: flex; opacity: 1; }
+    .slide .content { width: 100%; max-width: 92rem; margin: auto 0;
+      display: flex; flex-direction: column; gap: clamp(0.75rem, 1.5vw, 1.5rem); }
+    .eyebrow { text-transform: uppercase; letter-spacing: 0.2em;
+      font-size: clamp(0.65rem, 1vw, 1rem); color: var(--brand-yellow-dark); font-weight: 600; }
+    h1 { font-size: clamp(1.75rem, 5.5vw, 5.75rem); line-height: 1.05; margin: 0;
+      color: var(--brand-dark); font-weight: 700; letter-spacing: -0.02em; }
+    h2 { font-size: clamp(1.25rem, 3.4vw, 3.25rem); line-height: 1.15; margin: 0; font-weight: 700; }
+    h2 .sub { display: block; font-size: 0.55em; font-weight: 500; color: var(--brand-gray); margin-top: 0.15em; }
+    p, li { font-size: clamp(0.95rem, 1.8vw, 1.75rem); line-height: 1.55; color: var(--brand-gray); margin: 0; }
+    ul, ol { padding-left: 1.25em; margin: 0; display: flex; flex-direction: column; gap: 0.45em; }
+    li::marker { color: var(--brand-yellow-dark); }
+    .slide.title-slide { background: linear-gradient(135deg, #141414 0%, #1A1A1A 50%, #2a2a2a 100%); color: #fff; }
+    .slide.title-slide h1 { color: #fff; }
+    .slide.title-slide p { color: #d4d4d8; }
+    .slide.title-slide .eyebrow { color: var(--brand-yellow); }
+    .pill-row { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 0.5rem; }
+    .pill { display: inline-flex; align-items: center; padding: 0.35em 0.9em; border-radius: 999px;
+      background: var(--muted); color: var(--brand-dark); font-size: clamp(0.75rem, 1.3vw, 1.35rem); font-weight: 500; }
+    .slide.title-slide .pill { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); }
+    .grid { display: grid; gap: clamp(0.75rem, 1.5vw, 1.25rem); }
+    .grid.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid.cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    @media (max-width: 640px) { .grid.cols-2, .grid.cols-3, .grid.cols-4 { grid-template-columns: 1fr; } }
+    .card { background: var(--muted); border-radius: 0.75rem; padding: clamp(0.9rem, 1.5vw, 1.35rem); }
+    .card h3 { font-size: clamp(1rem, 2vw, 1.75rem); margin: 0 0 0.35em; color: var(--brand-dark); font-weight: 600; }
+    .card p { font-size: clamp(0.8rem, 1.4vw, 1.3rem); }
+    .card ul li { font-size: clamp(0.8rem, 1.4vw, 1.25rem); }
+    .banner { background: #fef3c7; border-left: 4px solid var(--brand-yellow-dark);
+      padding: 0.9rem 1.1rem; border-radius: 0.5rem;
+      color: #78350f; font-size: clamp(0.85rem, 1.4vw, 1.25rem); }
+    .banner.warn { background: #fef3c7; border-left-color: var(--brand-yellow-dark); }
+    .budget-card {
+      background: var(--muted); padding: clamp(1.25rem, 2.5vw, 2rem);
+      border-radius: 0.5rem;
+    }
+    .budget-card h3 {
+      font-size: clamp(1rem, 1.7vw, 1.5rem); margin: 0 0 0.4em;
+      color: var(--brand-dark);
+    }
+    .budget-card .amount {
+      font-size: clamp(1.5rem, 3vw, 2.5rem);
+      font-weight: 700; color: var(--brand-yellow-dark);
+      margin: 0 0 0.35em;
+    }
+    .budget-card p { font-size: clamp(0.85rem, 1.3vw, 1.2rem); }
+    .num-item { display: grid; grid-template-columns: auto 1fr; gap: 0.75rem 1.1rem; align-items: start; }
+    .num-item .num-tag {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 2em; height: 2em; background: var(--brand-yellow); color: var(--brand-dark);
+      font-weight: 700; border-radius: 0.35em; font-size: clamp(0.95rem, 1.4vw, 1.3rem); flex-shrink: 0;
+    }
+    .num-item h4 { margin: 0; font-size: clamp(0.95rem, 1.5vw, 1.4rem); color: var(--brand-dark); }
+    .num-item p { font-size: clamp(0.8rem, 1.3vw, 1.2rem); margin-top: 0.15em; }
+    .step-block { background: #fff; border: 1px solid rgba(0,0,0,0.08);
+      border-left: 5px solid var(--brand-yellow);
+      border-radius: 0.5rem; padding: 1rem 1.25rem; }
+    .step-block p.num { font-size: clamp(0.95rem, 1.4vw, 1.25rem);
+      color: var(--brand-yellow-dark); font-weight: 700; margin: 0; letter-spacing: 0.05em; }
+    .step-block p.num::after { content: ''; display: block; width: 3em; height: 2px;
+      background: var(--brand-yellow-dark); margin-top: 0.25em; }
+    .step-block h3 { margin: 0.5em 0 0.4em; font-size: clamp(1rem, 1.6vw, 1.4rem); color: var(--brand-dark); }
+    .step-block p { font-size: clamp(0.85rem, 1.3vw, 1.2rem); }
+    .icon-card {
+      display: grid; grid-template-columns: auto 1fr; gap: 0.9rem;
+      background: #fff; border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 0.5rem; padding: 0.95rem 1.15rem;
+    }
+    .icon-card .ic {
+      font-size: clamp(2rem, 3vw, 2.75rem); line-height: 1;
+      color: var(--brand-yellow-dark);
+    }
+    .icon-card h3 {
+      margin: 0; font-size: clamp(1rem, 1.5vw, 1.35rem); color: var(--brand-dark);
+    }
+    .icon-card p { margin-top: 0.2em; font-size: clamp(0.85rem, 1.3vw, 1.2rem); }
+    .timeline {
+      display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0.5rem; position: relative; margin-top: 1rem;
+    }
+    @media (max-width: 900px) { .timeline { grid-template-columns: repeat(2, 1fr); } }
+    .timeline::before {
+      content: ''; position: absolute;
+      top: calc(50% - 1px); left: 5%; right: 5%;
+      height: 2px; background: var(--brand-yellow-dark); opacity: 0.3; z-index: 0;
+    }
+    .timeline .step {
+      position: relative; z-index: 1; text-align: center;
+      padding: 0.75rem 0.5rem;
+    }
+    .timeline .step .ic {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 2.5em; height: 2.5em; background: var(--brand-yellow);
+      color: var(--brand-dark); border-radius: 0.35em;
+      font-size: clamp(1.1rem, 1.8vw, 1.6rem); margin: 0 auto 0.5em;
+    }
+    .timeline .step h4 { margin: 0 0 0.25em; font-size: clamp(0.9rem, 1.4vw, 1.3rem); color: var(--brand-dark); }
+    .timeline .step p { font-size: clamp(0.75rem, 1.1vw, 1.05rem); color: var(--brand-gray); }
+    .service-card {
+      background: var(--muted); padding: 1rem 1.1rem; border-radius: 0.5rem;
+    }
+    .service-card .ic { font-size: clamp(1.75rem, 2.5vw, 2.25rem); line-height: 1; }
+    .service-card h3 { margin: 0.3em 0; font-size: clamp(1rem, 1.5vw, 1.35rem); color: var(--brand-dark); }
+    .service-card p { font-size: clamp(0.8rem, 1.3vw, 1.15rem); }
+    .service-card strong { color: var(--brand-dark); }
+    .service-card a { color: var(--brand-yellow-dark); text-decoration: underline; }
+    .note-box {
+      background: #fef3c7; border-left: 4px solid var(--brand-yellow-dark);
+      padding: 0.9rem 1.1rem; border-radius: 0.5rem;
+    }
+    .note-box p { color: #78350f; font-size: clamp(0.85rem, 1.3vw, 1.2rem); }
+    .prohibited {
+      background: #FDE68A; padding: 1rem 1.25rem; border-radius: 0.5rem;
+    }
+    .prohibited h3 { margin: 0 0 0.4em; color: var(--brand-dark); font-size: clamp(1rem, 1.6vw, 1.4rem); }
+    .prohibited ul { padding-left: 1.15em; }
+    .prohibited li { font-size: clamp(0.85rem, 1.3vw, 1.2rem); color: var(--brand-dark); }
+    .hero-img { border-radius: 0.5rem; border: 1px solid rgba(0,0,0,0.08); overflow: hidden; }
+    .hero-img img { width: 100%; height: auto; display: block; }
+    .slide-number { position: absolute; bottom: clamp(0.5rem, 2vw, 1.5rem);
+      left: clamp(1rem, 3vw, 2.5rem); font-size: clamp(4rem, 12vw, 10rem);
+      font-weight: 800; line-height: 1; color: rgba(0, 0, 0, 0.04);
+      pointer-events: none; z-index: 0; user-select: none; letter-spacing: -0.04em; }
+    .slide.title-slide .slide-number { color: rgba(255, 255, 255, 0.06); }
+    .slide:not(.title-slide)::before { content: ''; position: absolute;
+      top: clamp(1rem, 3vw, 2.5rem); right: clamp(1rem, 3vw, 2.5rem);
+      width: clamp(2rem, 5vw, 4rem); height: clamp(2rem, 5vw, 4rem);
+      border-top: 2.5px solid var(--brand-yellow); border-right: 2.5px solid var(--brand-yellow);
+      pointer-events: none; z-index: 1; }
+    .slide.title-slide::before { content: ''; position: absolute;
+      bottom: clamp(1rem, 3vw, 2.5rem); left: clamp(1rem, 3vw, 2.5rem);
+      width: clamp(2rem, 5vw, 4rem); height: clamp(2rem, 5vw, 4rem);
+      border-bottom: 2.5px solid var(--brand-yellow); border-left: 2.5px solid var(--brand-yellow);
+      opacity: 0.4; pointer-events: none; z-index: 1; }
+    .hud { position: fixed; left: 0; right: 0; bottom: 0; padding: 0.5rem 1rem;
+      display: flex; justify-content: space-between; align-items: center;
+      color: var(--brand-gray); font-size: 0.75rem; pointer-events: none; z-index: 10; }
+    .controls { position: fixed; right: 1rem; bottom: 2.5rem; display: flex; gap: 0.5rem; z-index: 11; }
+    .controls button { -webkit-appearance: none; appearance: none;
+      border: 1px solid rgba(0,0,0,0.1); background: rgba(255,255,255,0.9);
+      color: var(--brand-dark); width: 2.5rem; height: 2.5rem; border-radius: 999px;
+      font-size: 1rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.12); }
+    .progress { position: fixed; top: 0; left: 0; height: 3px; background: var(--brand-yellow);
+      transition: width 260ms ease; z-index: 20; }
+    @media (prefers-reduced-motion: reduce) { .slide, .progress { transition: none; } }
+  </style>
+</head>
+<body>
+  <div class="progress" style="width:0"></div>
+  <div class="deck">
+
+    <!-- 01 Portada -->
+    <section class="slide title-slide active" data-slide>
+      <div class="content">
+        <p class="eyebrow">IQYA 3050 · Sesión 5A · 29 abr 2026</p>
+        <h1>Presupuesto<br/>pregrado y posgrados</h1>
+        <p>Cómo gestionar el presupuesto del proyecto: compras de reactivos, equipos, servicios especializados, gases y restricciones · by Luis H. Reyes</p>
+        <div class="pill-row">
+          <span class="pill">Presupuesto</span>
+          <span class="pill">Compras</span>
+          <span class="pill">Proveedores</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 02 Presupuesto por curso -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Asignación</p>
+        <h2>Presupuesto asignado por curso</h2>
+        <div class="grid cols-3">
+          <div class="budget-card">
+            <h3>Pregrado PE-PDP</h3>
+            <p class="amount">$800.000 COP</p>
+            <p>Valor definido anualmente por el departamento para estudiantes de pregrado.</p>
+          </div>
+          <div class="budget-card">
+            <h3>Maestría IQUI</h3>
+            <p class="amount">$1.600.000 COP</p>
+            <p>Equivalente a 2 veces el valor definido para pregrado.</p>
+          </div>
+          <div class="budget-card">
+            <h3>Maestría MDPP Profundización</h3>
+            <p class="amount">$800.000 COP</p>
+            <p>PEM: $800.000 COP · Tesis: $800.000 COP.</p>
+          </div>
+        </div>
+        <div class="banner">Para el periodo <strong>2026-10</strong> se presupuestó el mismo valor que periodos anteriores.</div>
+      </div>
+    </section>
+
+    <!-- 03 Compra de reactivos -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Reactivos · verificaciones</p>
+        <h2>Compra de reactivos y sustancias químicas<span class="sub">Verificaciones previas</span></h2>
+        <div class="grid cols-2" style="align-items: center;">
+          <div class="hero-img"><img src="img/dia5a-p04-x178.jpeg" alt="Material de laboratorio con reactivos y frascos" /></div>
+          <ul>
+            <li>Verificar existencia en laboratorios del departamento.</li>
+            <li>El departamento suministra hasta <strong>100 ml o 100 g</strong> dependiendo de la sustancia.</li>
+            <li><strong>Sustancias controladas:</strong> verificar disponibilidad de cupo.</li>
+            <li><strong>NO permitida</strong> la compra de <strong>Nitratos</strong> (sin permiso INDUMIL).</li>
+            <li><strong>Sustancias psicoactivas:</strong> no se tienen los permisos actualmente (verifiquen con sus asesores).</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 04 Procedimiento de compra -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Procedimiento</p>
+        <h2>Procedimiento de compra de reactivos</h2>
+        <div class="grid cols-2" style="align-items: center;">
+          <div class="hero-img"><img src="img/dia5a-p05-x207.jpeg" alt="Estantería con frascos y reactivos ordenados" /></div>
+          <div style="display: flex; flex-direction: column; gap: 0.7rem;">
+            <div class="step-block">
+              <p class="num">01</p>
+              <h3>Verificar proveedor Uniandes</h3>
+              <p>Consultar la lista de proveedores suministrada por la Coordinación de Laboratorios.</p>
+            </div>
+            <div class="step-block">
+              <p class="num">02</p>
+              <h3>Considerar importación</h3>
+              <p>Revisar si un proveedor nacional puede traer el producto. La importación es la última opción.</p>
+            </div>
+            <div class="step-block">
+              <p class="num">03</p>
+              <h3>Calcular costos adicionales</h3>
+              <p>Para compras por internet, sumar <strong>50 % más</strong> del valor informado en la página.</p>
+            </div>
+            <div class="step-block">
+              <p class="num">04</p>
+              <h3>Verificar tiempos y restricciones</h3>
+              <p>Confirmar tiempos de entrega y restricciones de aduana por peligrosidad del producto.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 05 Almacenamiento -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Almacenamiento</p>
+        <h2>Almacenamiento de reactivos</h2>
+        <div class="grid cols-2" style="align-items: center;">
+          <div class="hero-img"><img src="img/dia5a-p06-x224.jpeg" alt="Estanterías con reactivos y recipientes de almacenamiento" /></div>
+          <div class="banner">
+            <strong>Importante:</strong> verificar en el laboratorio el espacio disponible para almacenamiento <strong>antes</strong> de realizar cualquier compra de reactivos o sustancias químicas.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 06 Alimentos y perecederos -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Perecederos</p>
+        <h2>Compra de alimentos y productos perecederos</h2>
+        <div class="grid cols-2" style="align-items: start;">
+          <div class="hero-img"><img src="img/dia5a-p03-x133.jpeg" alt="Despensa con frutas, vegetales y productos frescos" /></div>
+          <div class="grid" style="gap: 0.7rem;">
+            <div class="card">
+              <h3>Proveedores autorizados</h3>
+              <p>Puede utilizar cotizaciones formales de proveedores como <strong>Éxito</strong> y <strong>Alkosto</strong>.</p>
+              <p style="margin-top: 0.5em;">Solicitar al Coordinador de Laboratorios cotización formal con proveedores Uniandes activos.</p>
+            </div>
+            <div class="card">
+              <h3>Consideraciones especiales</h3>
+              <ul>
+                <li>Cantidades pequeñas: solicitar pedido a partir de <strong>$20.000 pesos</strong>.</li>
+                <li>Especificar fechas de entrega en el momento de solicitud.</li>
+                <li>Evitar daño del producto y problemas de almacenamiento.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 07 Equipos de laboratorio -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Equipos</p>
+        <h2>Compra de equipos de laboratorio</h2>
+        <div class="grid cols-2" style="align-items: start;">
+          <div class="hero-img"><img src="img/dia5a-p07-x248.jpeg" alt="Agitador mecánico de laboratorio montado en soporte" /></div>
+          <div class="grid" style="gap: 0.7rem;">
+            <div class="card">
+              <h3>Verificación inicial</h3>
+              <p>¿Son de ensamble? Verificar políticas internas para la realización de equipos elaborados dentro del laboratorio con la Coordinación de Laboratorios.</p>
+              <p style="margin-top: 0.5em;">Verificar si requiere especificaciones especiales para ensamble.</p>
+            </div>
+            <div class="card">
+              <h3>Proceso de compra</h3>
+              <ul>
+                <li>Verificar si es proveedor Uniandes.</li>
+                <li>Confirmar fechas de entrega, garantías y respaldo postventa.</li>
+                <li>Importación: sumar <strong>50 %</strong> más del valor informado.</li>
+                <li>Considerar restricciones de aduana.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 08 Otros elementos y suministros -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Suministros</p>
+        <h2>Otros elementos y suministros</h2>
+        <div class="grid cols-2">
+          <div class="icon-card">
+            <div class="ic">💾</div>
+            <div><h3>Discos duros</h3><p>Elementos de almacenamiento digital para respaldo de datos experimentales.</p></div>
+          </div>
+          <div class="icon-card">
+            <div class="ic">🔌</div>
+            <div><h3>Cables</h3><p>Conectores y cables especializados para equipos de laboratorio.</p></div>
+          </div>
+          <div class="icon-card">
+            <div class="ic">📦</div>
+            <div><h3>Almacenaje especial</h3><p>Elementos de almacenaje especial para muestras y reactivos.</p></div>
+          </div>
+          <div class="icon-card">
+            <div class="ic">⛑️</div>
+            <div><h3>Protección personal</h3><p>Elementos de protección personal especial según requerimientos del proyecto.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 09 Compra otros elementos -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Proveedores</p>
+        <h2>Compra de otros elementos</h2>
+        <div class="grid cols-2" style="align-items: center;">
+          <div class="hero-img"><img src="img/dia5a-p09-x281.jpeg" alt="Logo de Amazon con línea decorativa" /></div>
+          <div class="grid" style="gap: 0.7rem;">
+            <div class="card">
+              <h3>Proveedores internacionales</h3>
+              <p>Para proveedores como <strong>Amazon</strong> y <strong>eBay</strong>, se debe sumar un <strong>50 % más</strong> al valor del producto por gastos aduaneros.</p>
+            </div>
+            <div class="card">
+              <h3>Proveedores nacionales</h3>
+              <p>Para discos, cables y otros elementos, solicitar cotización formal que incluya envío en:</p>
+              <ul style="margin-top: 0.4em;">
+                <li>Panamericana · Homesentry · Homecenter</li>
+                <li>Falabella · Alkosto</li>
+              </ul>
+              <p style="margin-top: 0.5em; font-style: italic;">Todos grandes contribuyentes.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10 Servicios especializados -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Servicios</p>
+        <h2>Servicios especializados</h2>
+        <div class="grid cols-2">
+          <div class="service-card">
+            <div class="ic">⚙️</div>
+            <h3>Ingeniería Mecánica</h3>
+            <p>Contacto: Gerardo Alexander Hidalgo Calpa — <a href="mailto:ghidalgo@uniandes.edu.co">ghidalgo@uniandes.edu.co</a></p>
+            <p>Requiere autorización del Asesor y Gestor Financiero. <strong>Autorización inmediata.</strong></p>
+          </div>
+          <div class="service-card">
+            <div class="ic">🔬</div>
+            <h3>Centro de Microscopía</h3>
+            <p>Contacto: <a href="mailto:cmicroscopia@uniandes.edu.co">cmicroscopia@uniandes.edu.co</a></p>
+            <p>Requiere autorización del Asesor y Director del departamento. Trámite: <strong>8 días</strong> después de recibida la cotización.</p>
+          </div>
+          <div class="service-card">
+            <div class="ic">🏭</div>
+            <h3>Ingeniería Mecánica</h3>
+            <p>Contacto: Edna Lorena Delgado Hurtado — <a href="mailto:edelgado@uniandes.edu.co">edelgado@uniandes.edu.co</a></p>
+            <p>Requiere autorización del Asesor y Gestor Financiero. <strong>Autorización inmediata.</strong></p>
+          </div>
+          <div class="service-card">
+            <div class="ic">💻</div>
+            <h3>DSIT — Máquinas virtuales</h3>
+            <p>Compra de espacio y servicios de computación especializada.</p>
+          </div>
+        </div>
+        <div class="banner">Verifique disponibilidad del departamento donde desea realizar el servicio antes de solicitar.</div>
+      </div>
+    </section>
+
+    <!-- 11 Gases especiales -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Gases</p>
+        <h2>Gases especiales</h2>
+        <div class="grid cols-2" style="align-items: center;">
+          <div class="hero-img"><img src="img/dia5a-p11-x342.jpeg" alt="Diagrama molecular abstracto representando gases" /></div>
+          <div>
+            <p>Para gases especiales de uso específico para el proyecto, como <strong>Nitrógeno líquido</strong>:</p>
+            <div class="card" style="margin-top: 0.75rem;">
+              <h3>Solicitar cotización formal a:</h3>
+              <p style="font-size: clamp(1rem, 1.6vw, 1.4rem); color: var(--brand-dark); font-weight: 600;">Jose Laurentino Buitrago Quesada</p>
+              <p><a href="mailto:jobuitra@uniandes.edu.co" style="color: var(--brand-yellow-dark);">jobuitra@uniandes.edu.co</a></p>
+              <p>ML300 · Ext. 1784</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 12 Recordatorios clave -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Recordatorios</p>
+        <h2>Recordatorios clave</h2>
+        <div class="grid cols-2" style="align-items: center;">
+          <div class="hero-img"><img src="img/dia5a-p12-x359.jpeg" alt="Signo de exclamación colorido como símbolo de recordatorio" /></div>
+          <div>
+            <div class="grid cols-2">
+              <div class="card">
+                <p>Todo gasto debe diligenciarse en el formato indicado por el Coordinador de Programas y Laboratorios.</p>
+              </div>
+              <div class="card">
+                <p>Todos los gastos suman a su bolsa: traslados internos y compras externas.</p>
+              </div>
+            </div>
+            <div class="banner" style="margin-top: 0.75rem;">Esta bolsa es <strong>libre de gastos asociados</strong> por uso de equipos.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 13 Restricciones -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Cuidado</p>
+        <h2>Restricciones y prohibiciones</h2>
+        <div class="grid cols-2">
+          <div class="prohibited">
+            <h3>❌ NO permitido</h3>
+            <ul>
+              <li>Viajes, seminarios, inscripciones.</li>
+              <li>PC, impresoras.</li>
+              <li>Pago a terceros por capacitaciones.</li>
+              <li>Material roto y/o dañado del departamento.</li>
+              <li>Licencias (ChatGPT, Gemini, otras IA).</li>
+            </ul>
+            <p style="margin-top: 0.5em; font-style: italic; color: var(--brand-dark);">Usar recursos de Uniandes disponibles.</p>
+          </div>
+          <div class="prohibited">
+            <h3>⚠️ Casos especiales</h3>
+            <p>Se revisarán casos específicos de compras especiales para investigación.</p>
+            <p style="margin-top: 0.5em;"><strong>Ejemplo:</strong> aspiradora para desbaratar y realizar cambios en su estructura.</p>
+          </div>
+        </div>
+        <div class="banner"><strong>IMPORTANTE:</strong> las compras que realice el estudiante por su cuenta de cualquier elemento y/o sustancia <strong>NO SE REALIZA REEMBOLSO</strong>.</div>
+      </div>
+    </section>
+
+    <!-- 14 Proceso de solicitud -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Timing</p>
+        <h2>Proceso de solicitud de compras</h2>
+        <div class="timeline">
+          <div class="step">
+            <div class="ic">✉️</div>
+            <h4>Envío de cotización</h4>
+            <p>Enviar al Coordinador de Laboratorios con copia al asesor. <strong>El departamento no cotiza.</strong></p>
+          </div>
+          <div class="step">
+            <div class="ic">🗓️</div>
+            <h4>Timing</h4>
+            <p>Realizar la labor la <strong>primera semana</strong> del semestre. Mejor si ocurre en el seminario.</p>
+          </div>
+          <div class="step">
+            <div class="ic">📆</div>
+            <h4>Productos perecederos</h4>
+            <p>Anexar programación de entrega para ítems que requieren uso durante todo el semestre.</p>
+          </div>
+          <div class="step">
+            <div class="ic">🚢</div>
+            <h4>Importaciones</h4>
+            <p>Solo se permite adelantar compras con visto bueno del asesor <strong>antes</strong> de inicio del semestre.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 15 ¿Preguntas? -->
+    <section class="slide title-slide" data-slide>
+      <div class="content" style="align-items: center; text-align: center;">
+        <h1>¿Preguntas?</h1>
+        <div style="width: 6rem; height: 3px; background: var(--brand-yellow); margin: 0.75rem auto;"></div>
+        <p>Contacte a la Coordinación de Laboratorios para cualquier duda o aclaración sobre el proceso de presupuesto y compras.</p>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="hud">
+    <span>Presupuesto pregrado y posgrados · IQYA-3050</span>
+    <span id="hud-counter">1 / 15</span>
+  </div>
+
+  <div class="controls">
+    <button aria-label="Anterior" id="prev">‹</button>
+    <button aria-label="Pantalla completa" id="fs">⛶</button>
+    <button aria-label="Siguiente" id="next">›</button>
+  </div>
+
+  <script>
+    (function () {
+      var slides = Array.prototype.slice.call(document.querySelectorAll('[data-slide]'));
+      var i = 0;
+      var counter = document.getElementById('hud-counter');
+      var progress = document.querySelector('.progress');
+      function render() {
+        slides.forEach(function (s, idx) { s.classList.toggle('active', idx === i); });
+        if (counter) counter.textContent = (i + 1) + ' / ' + slides.length;
+        if (progress) progress.style.width = ((i + 1) / slides.length * 100) + '%';
+        var isTitle = slides[i] && slides[i].classList.contains('title-slide');
+        document.body.style.background = isTitle ? '#1A1A1A' : '#ffffff';
+      }
+      function go(n) { i = Math.max(0, Math.min(slides.length - 1, n)); render(); }
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); go(i + 1); }
+        else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(i - 1); }
+        else if (e.key === 'Home') { e.preventDefault(); go(0); }
+        else if (e.key === 'End') { e.preventDefault(); go(slides.length - 1); }
+        else if (e.key === 'f' || e.key === 'F') { toggleFs(); }
+      });
+      document.getElementById('prev').addEventListener('click', function () { go(i - 1); });
+      document.getElementById('next').addEventListener('click', function () { go(i + 1); });
+      document.getElementById('fs').addEventListener('click', toggleFs);
+      function toggleFs() {
+        var el = document.documentElement;
+        if (!document.fullscreenElement) { (el.requestFullscreen || el.webkitRequestFullscreen || function(){}).call(el); }
+        else { (document.exitFullscreen || document.webkitExitFullscreen || function(){}).call(document); }
+      }
+      var tx = 0, ty = 0;
+      document.addEventListener('touchstart', function (e) {
+        if (!e.changedTouches[0]) return;
+        tx = e.changedTouches[0].clientX; ty = e.changedTouches[0].clientY;
+      }, { passive: true });
+      document.addEventListener('touchend', function (e) {
+        if (!e.changedTouches[0]) return;
+        var dx = e.changedTouches[0].clientX - tx;
+        var dy = e.changedTouches[0].clientY - ty;
+        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+          if (dx < 0) go(i + 1); else go(i - 1);
+        }
+      }, { passive: true });
+      slides.forEach(function (s, idx) {
+        var num = document.createElement('div');
+        num.className = 'slide-number'; num.setAttribute('aria-hidden', 'true');
+        num.textContent = String(idx + 1).padStart(2, '0');
+        s.appendChild(num);
+      });
+      render();
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,938 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Sesión 4 — IA generativa para análisis de datos · IQYA-3050</title>
+  <style>
+    :root {
+      --brand-dark: #1A1A1A;
+      --brand-yellow: #FFBF00;
+      --brand-yellow-dark: #E6AC00;
+      --brand-gray: #555555;
+      --surface: #ffffff;
+      --muted: #f4f4f5;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0; padding: 0; height: 100%; width: 100%;
+      background: var(--brand-dark); color: var(--brand-dark);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      overflow: hidden; -webkit-text-size-adjust: 100%;
+    }
+    .deck { position: relative; width: 100vw; height: 100vh; height: 100dvh; }
+    .slide {
+      position: absolute; inset: 0;
+      display: none; align-items: center; justify-content: center;
+      padding: clamp(1rem, 4vw, 3.5rem);
+      background: var(--surface);
+      opacity: 0; transition: opacity 260ms ease; overflow-y: auto;
+    }
+    .slide.active { display: flex; opacity: 1; }
+    .slide .content {
+      width: 100%; max-width: 92rem; margin: auto 0;
+      display: flex; flex-direction: column;
+      gap: clamp(0.75rem, 1.5vw, 1.5rem);
+    }
+    .eyebrow {
+      text-transform: uppercase; letter-spacing: 0.2em;
+      font-size: clamp(0.65rem, 1vw, 1rem);
+      color: var(--brand-yellow-dark); font-weight: 600;
+    }
+    h1 {
+      font-size: clamp(1.75rem, 5.5vw, 5.75rem);
+      line-height: 1.05; margin: 0;
+      color: var(--brand-dark); font-weight: 700; letter-spacing: -0.02em;
+    }
+    h2 { font-size: clamp(1.25rem, 3.4vw, 3.25rem); line-height: 1.15; margin: 0; font-weight: 700; }
+    h2 .sub { display: block; font-size: 0.6em; font-weight: 500; color: var(--brand-gray); margin-top: 0.1em; }
+    p, li { font-size: clamp(0.95rem, 1.8vw, 1.75rem); line-height: 1.55; color: var(--brand-gray); margin: 0; }
+    ul, ol { padding-left: 1.25em; margin: 0; display: flex; flex-direction: column; gap: 0.45em; }
+    li::marker { color: var(--brand-yellow-dark); }
+    .slide.title-slide {
+      background: linear-gradient(135deg, #141414 0%, #1A1A1A 50%, #2a2a2a 100%);
+      color: #fff;
+    }
+    .slide.title-slide h1 { color: #fff; }
+    .slide.title-slide p { color: #d4d4d8; }
+    .slide.title-slide .eyebrow { color: var(--brand-yellow); }
+    .pill-row { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 0.5rem; }
+    .pill {
+      display: inline-flex; align-items: center;
+      padding: 0.35em 0.9em; border-radius: 999px;
+      background: var(--muted); color: var(--brand-dark);
+      font-size: clamp(0.75rem, 1.3vw, 1.35rem); font-weight: 500;
+    }
+    .slide.title-slide .pill {
+      background: rgba(255,255,255,0.1); color: #fff;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .grid { display: grid; gap: clamp(0.75rem, 1.5vw, 1.25rem); }
+    .grid.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid.cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    @media (max-width: 640px) { .grid.cols-2, .grid.cols-3, .grid.cols-4 { grid-template-columns: 1fr; } }
+    .card {
+      background: var(--muted); border-radius: 0.75rem;
+      padding: clamp(0.9rem, 1.5vw, 1.35rem);
+    }
+    .card h3 {
+      font-size: clamp(1rem, 2vw, 1.75rem); margin: 0 0 0.35em;
+      color: var(--brand-dark); font-weight: 600;
+    }
+    .card p { font-size: clamp(0.8rem, 1.4vw, 1.3rem); }
+    .num-list {
+      display: grid; grid-template-columns: auto 1fr; gap: 0.7rem 1rem;
+      align-items: start;
+    }
+    .num-tag {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 2em; height: 2em;
+      background: var(--brand-yellow); color: var(--brand-dark);
+      font-weight: 700; border-radius: 0.35em;
+      font-size: clamp(0.95rem, 1.4vw, 1.3rem);
+      flex-shrink: 0;
+    }
+    .num-item h4 { margin: 0; font-size: clamp(0.95rem, 1.5vw, 1.4rem); color: var(--brand-dark); }
+    .num-item p { font-size: clamp(0.8rem, 1.3vw, 1.2rem); margin-top: 0.15em; }
+    .banner {
+      background: #fef3c7; border-left: 4px solid var(--brand-yellow-dark);
+      padding: 0.9rem 1.1rem; border-radius: 0.5rem;
+      color: #78350f; font-size: clamp(0.85rem, 1.4vw, 1.25rem);
+    }
+    .banner.info { background: #e0f2fe; border-left-color: #0284c7; color: #0c4a6e; }
+    .banner.warn { background: #fee2e2; border-left-color: #dc2626; color: #7f1d1d; }
+    .vs-cols {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: clamp(1rem, 2.5vw, 2.5rem);
+      position: relative;
+    }
+    @media (max-width: 768px) { .vs-cols { grid-template-columns: 1fr; } }
+    .vs-cols > div h3 {
+      font-size: clamp(1.1rem, 1.9vw, 1.7rem);
+      margin: 0 0 0.5em; color: var(--brand-dark);
+    }
+    .vs-cols > div p { margin-bottom: 0.4em; font-size: clamp(0.9rem, 1.4vw, 1.3rem); }
+    .workflow-arrow {
+      display: grid; grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 0.5rem; margin-top: 0.8rem;
+    }
+    @media (max-width: 900px) { .workflow-arrow { grid-template-columns: repeat(2, 1fr); } }
+    .workflow-arrow .stage {
+      background: var(--brand-yellow);
+      color: var(--brand-dark);
+      clip-path: polygon(0 0, 85% 0, 100% 50%, 85% 100%, 0 100%, 15% 50%);
+      padding: 1rem 1.25rem 1rem 1.75rem;
+      text-align: center;
+      opacity: 0.6;
+    }
+    .workflow-arrow .stage:nth-child(1) { opacity: 0.6; }
+    .workflow-arrow .stage:nth-child(2) { opacity: 0.7; }
+    .workflow-arrow .stage:nth-child(3) { opacity: 0.8; }
+    .workflow-arrow .stage:nth-child(4) { opacity: 0.9; }
+    .workflow-arrow .stage:nth-child(5) { opacity: 1; }
+    .workflow-arrow .stage .ic {
+      font-size: clamp(1.5rem, 2.5vw, 2rem);
+      line-height: 1;
+      margin-bottom: 0.3em;
+    }
+    .workflow-arrow .stage h4 {
+      margin: 0; font-size: clamp(0.9rem, 1.3vw, 1.2rem);
+      color: var(--brand-dark); font-weight: 700;
+    }
+    .workflow-arrow .stage p {
+      margin: 0.2em 0 0; font-size: clamp(0.75rem, 1.1vw, 1rem);
+      color: var(--brand-dark);
+    }
+    .step-block {
+      background: #fff; border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 0.5rem; padding: 1rem 1.25rem;
+    }
+    .step-block .num {
+      font-size: clamp(1rem, 1.5vw, 1.3rem);
+      color: var(--brand-yellow-dark); font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+    .step-block .num::after {
+      content: ''; display: block;
+      width: 100%; max-width: 4em; height: 2px;
+      background: var(--brand-yellow-dark); margin-top: 0.25em;
+    }
+    .step-block h3 {
+      margin: 0.5em 0 0.4em;
+      font-size: clamp(1rem, 1.6vw, 1.4rem);
+      color: var(--brand-dark);
+    }
+    .step-block ul { gap: 0.25em; padding-left: 1.15em; }
+    .step-block ul li { font-size: clamp(0.85rem, 1.3vw, 1.2rem); }
+    .code-block {
+      background: var(--muted); border-radius: 0.5rem;
+      padding: 1rem 1.25rem;
+      font-family: 'SF Mono', Monaco, Consolas, monospace;
+      font-size: clamp(0.75rem, 1.15vw, 1.05rem);
+      line-height: 1.55; color: var(--brand-dark);
+      white-space: pre-wrap; word-break: break-word;
+    }
+    .code-block .k { color: #c2410c; font-weight: 600; }
+    .code-block .s { color: #1e3a8a; }
+    .code-block .n { color: var(--brand-yellow-dark); }
+    table.simple {
+      width: 100%; border-collapse: collapse;
+      background: #fff; border-radius: 0.5rem; overflow: hidden;
+      font-size: clamp(0.8rem, 1.3vw, 1.2rem);
+    }
+    table.simple th {
+      background: var(--brand-dark); color: #fff;
+      text-align: left; padding: 0.7em 1em;
+      font-size: clamp(0.75rem, 1.1vw, 1.05rem);
+      font-weight: 600;
+    }
+    table.simple td {
+      padding: 0.7em 1em;
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+      vertical-align: top;
+    }
+    table.simple tbody tr:nth-child(even) { background: #fafafa; }
+    table.simple td.col-title { font-weight: 700; color: var(--brand-dark); }
+    table.simple td.highlight { color: var(--brand-yellow-dark); font-weight: 700; }
+    .qr-block {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 2rem; align-items: center;
+    }
+    @media (max-width: 768px) { .qr-block { grid-template-columns: 1fr; } }
+    .qr-img {
+      width: clamp(10rem, 18vw, 16rem);
+      aspect-ratio: 1; background: #fff;
+      padding: 0.5rem; border-radius: 0.5rem;
+      border: 1px solid rgba(0,0,0,0.08);
+    }
+    .qr-img img { width: 100%; height: 100%; object-fit: contain; display: block; }
+    .docs-preview {
+      background: #fff; border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 0.5rem; padding: 0.6rem;
+      margin-top: 0.7rem;
+      max-width: 100%;
+    }
+    .docs-preview img { width: 100%; height: auto; display: block; border-radius: 0.3rem; }
+    .hero-img {
+      border-radius: 0.5rem; border: 1px solid rgba(0,0,0,0.08);
+    }
+    .hero-img img { width: 100%; height: auto; display: block; border-radius: 0.5rem; }
+    .qr-side h3 { font-size: clamp(1rem, 1.6vw, 1.4rem); margin: 0 0 0.5em; color: var(--brand-dark); }
+    .qr-side p { font-size: clamp(0.9rem, 1.4vw, 1.3rem); }
+    .hero-sentence {
+      text-align: center; font-size: clamp(1.5rem, 4vw, 3.5rem);
+      font-weight: 700; line-height: 1.2; color: var(--brand-dark);
+    }
+    .section-yellow {
+      background: #F5E27A; color: var(--brand-dark);
+    }
+    .section-yellow h1, .section-yellow h2 { color: var(--brand-dark); }
+    .section-yellow p { color: rgba(26,26,26,0.75); }
+    .section-yellow .eyebrow { color: var(--brand-dark); }
+    .slide-number {
+      position: absolute; bottom: clamp(0.5rem, 2vw, 1.5rem);
+      left: clamp(1rem, 3vw, 2.5rem);
+      font-size: clamp(4rem, 12vw, 10rem);
+      font-weight: 800; line-height: 1;
+      color: rgba(0, 0, 0, 0.04);
+      pointer-events: none; z-index: 0; user-select: none; letter-spacing: -0.04em;
+    }
+    .slide.title-slide .slide-number { color: rgba(255, 255, 255, 0.06); }
+    .slide.section-yellow .slide-number { color: rgba(0, 0, 0, 0.08); }
+    .slide:not(.title-slide):not(.section-yellow)::before {
+      content: ''; position: absolute;
+      top: clamp(1rem, 3vw, 2.5rem); right: clamp(1rem, 3vw, 2.5rem);
+      width: clamp(2rem, 5vw, 4rem); height: clamp(2rem, 5vw, 4rem);
+      border-top: 2.5px solid var(--brand-yellow);
+      border-right: 2.5px solid var(--brand-yellow);
+      pointer-events: none; z-index: 1;
+    }
+    .slide.title-slide::before {
+      content: ''; position: absolute;
+      bottom: clamp(1rem, 3vw, 2.5rem); left: clamp(1rem, 3vw, 2.5rem);
+      width: clamp(2rem, 5vw, 4rem); height: clamp(2rem, 5vw, 4rem);
+      border-bottom: 2.5px solid var(--brand-yellow);
+      border-left: 2.5px solid var(--brand-yellow);
+      opacity: 0.4; pointer-events: none; z-index: 1;
+    }
+    .hud {
+      position: fixed; left: 0; right: 0; bottom: 0;
+      padding: 0.5rem 1rem;
+      display: flex; justify-content: space-between; align-items: center;
+      color: var(--brand-gray); font-size: 0.75rem;
+      pointer-events: none; z-index: 10;
+    }
+    .controls {
+      position: fixed; right: 1rem; bottom: 2.5rem;
+      display: flex; gap: 0.5rem; z-index: 11;
+    }
+    .controls button {
+      -webkit-appearance: none; appearance: none;
+      border: 1px solid rgba(0,0,0,0.1);
+      background: rgba(255,255,255,0.9); color: var(--brand-dark);
+      width: 2.5rem; height: 2.5rem; border-radius: 999px;
+      font-size: 1rem; cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    }
+    .controls button:active { transform: scale(0.96); }
+    .progress {
+      position: fixed; top: 0; left: 0;
+      height: 3px; background: var(--brand-yellow);
+      transition: width 260ms ease; z-index: 20;
+    }
+    @media (prefers-reduced-motion: reduce) { .slide, .progress { transition: none; } }
+  </style>
+</head>
+<body>
+  <div class="progress" style="width:0"></div>
+  <div class="deck">
+
+    <!-- 01 Portada -->
+    <section class="slide title-slide active" data-slide>
+      <div class="content">
+        <p class="eyebrow">IQYA 3050 · Sesión 4 · 22 abr 2026</p>
+        <h1>Uso de IA generativa<br/>para análisis de datos</h1>
+        <p>Un enfoque iterativo con <em>human-in-the-loop</em>. Transformando datos en <em>insights</em> accionables mediante la colaboración humano-IA para equipos de analítica modernos · by Luis H. Reyes</p>
+        <div class="pill-row">
+          <span class="pill">LLM</span>
+          <span class="pill">Human-in-the-loop</span>
+          <span class="pill">Prompting</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 02 Datos estructurados -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Fundamentos</p>
+        <h2>¿Qué son los datos estructurados?<span class="sub">La base de la información organizada</span></h2>
+        <p>Los datos estructurados son información organizada en un formato predefinido. Piense en ello como una tabla bien organizada, con datos dispuestos en filas y columnas.</p>
+        <p>Algunos ejemplos comunes de datos estructurados son:</p>
+        <div class="num-list" style="grid-template-columns: auto 1fr auto 1fr; gap: 0.7rem 1.25rem;">
+          <span class="num-tag">1</span>
+          <div class="num-item"><h4>Bases de datos</h4><p>(p. ej., bases de datos SQL)</p></div>
+          <span class="num-tag">2</span>
+          <div class="num-item"><h4>Hojas de cálculo</h4><p>(p. ej., Excel, Hojas de cálculo de Google)</p></div>
+          <span class="num-tag">3</span>
+          <div class="num-item"><h4>Archivos CSV</h4><p>(Valores separados por comas)</p></div>
+          <span class="num-tag">4</span>
+          <div class="num-item"><h4>Archivos JSON</h4><p>(Notación de objetos de JavaScript: estructurada, no anidada profundamente)</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 03 Estructurados vs. no estructurados -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Comparación</p>
+        <h2>Datos estructurados vs. no estructurados<span class="sub">Dos caras de la moneda de la información</span></h2>
+        <div class="vs-cols" style="margin-top: 1rem;">
+          <div>
+            <h3>Datos estructurados</h3>
+            <p>Organizados en un formato predefinido (filas y columnas).</p>
+            <p>Fácilmente buscables y analizables.</p>
+            <p><strong>Ejemplos:</strong> tablas de bases de datos, hojas de cálculo.</p>
+          </div>
+          <div>
+            <h3>Datos no estructurados</h3>
+            <p>Sin formato predefinido.</p>
+            <p>Requiere más procesamiento para extraer el significado.</p>
+            <p><strong>Ejemplos:</strong> documentos de texto, imágenes, archivos de audio, videos.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 04 Importancia -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Por qué importan</p>
+        <h2>La importancia de los datos estructurados<span class="sub">Impulsando las decisiones en todas las industrias</span></h2>
+        <p>Los datos estructurados son la columna vertebral de muchas operaciones comerciales. Permiten el almacenamiento, la recuperación y el análisis eficientes de los datos.</p>
+        <div class="num-list" style="grid-template-columns: auto 1fr auto 1fr; gap: 0.8rem 1.5rem; margin-top: 0.5rem;">
+          <span class="num-tag">1</span>
+          <div class="num-item"><h4>Seguimiento de ventas e inventario</h4></div>
+          <span class="num-tag">2</span>
+          <div class="num-item"><h4>Gestión de relaciones con los clientes (CRM)</h4></div>
+          <span class="num-tag">3</span>
+          <div class="num-item"><h4>Informes y análisis financieros</h4></div>
+          <span class="num-tag">4</span>
+          <div class="num-item"><h4>Investigación científica y recopilación de datos</h4></div>
+        </div>
+        <p style="margin-top: 0.5rem;">¡Y mucho más! Los datos estructurados impulsan la toma de decisiones críticas en una amplia gama de industrias.</p>
+      </div>
+    </section>
+
+    <!-- 05 Desafíos del análisis manual -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Problema</p>
+        <h2>Desafíos del análisis tradicional<span class="sub">Las limitaciones de los enfoques manuales</span></h2>
+        <p>Analizar grandes conjuntos de datos a mano (por ejemplo, en Excel) es:</p>
+        <div class="grid cols-2">
+          <div class="card"><h3>Lleva mucho tiempo</h3><p>Lleva una cantidad significativa de tiempo, especialmente con volúmenes de datos crecientes.</p></div>
+          <div class="card"><h3>Propenso a errores</h3><p>El error humano es inevitable al procesar manualmente grandes cantidades de datos.</p></div>
+          <div class="card"><h3>Difícil de escalar</h3><p>Se vuelve cada vez más impráctico a medida que crecen los conjuntos de datos.</p></div>
+          <div class="card"><h3>Perspectivas limitadas</h3><p>Dificulta la detección de tendencias sutiles o relaciones complejas.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 06 Brecha estructurada/no estructurada -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Brecha</p>
+        <h2>La brecha estructurada / no estructurada<span class="sub">Perdiendo la imagen completa</span></h2>
+        <div class="grid cols-2" style="align-items: center;">
+          <div>
+            <p>A menudo, información valiosa está bloqueada en una combinación de datos estructurados y no estructurados.</p>
+            <div class="card" style="margin-top: 0.75rem;"><p><strong>Ejemplo:</strong> combinar datos de ventas (estructurados) con reseñas de clientes (no estructuradas) para comprender por qué cambian las ventas.</p></div>
+            <div class="banner" style="margin-top: 0.75rem;"><strong>Las herramientas tradicionales a menudo tienen dificultades para cerrar esta brecha de manera efectiva.</strong></div>
+          </div>
+          <div class="hero-img"><img src="img/dia4-p06-x214.jpeg" alt="Persona interactuando con una encuesta online en una tablet" /></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 07 Brecha de habilidades -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Barrera</p>
+        <h2>Desafíos del análisis tradicional<span class="sub">Brecha de habilidades</span></h2>
+        <p>El análisis de datos tradicional a menudo requiere habilidades especializadas:</p>
+        <div class="grid cols-2">
+          <div class="card"><h3>Ciencia de datos</h3></div>
+          <div class="card"><h3>Administración de bases de datos (SQL)</h3></div>
+          <div class="card"><h3>Análisis estadístico</h3></div>
+          <div class="card"><h3>Programación (Python, R)</h3></div>
+        </div>
+        <p>Esto crea una barrera de entrada para muchos usuarios que necesitan analizar datos.</p>
+      </div>
+    </section>
+
+    <!-- 08 Separator dark -->
+    <section class="slide title-slide" data-slide>
+      <div class="content" style="align-items: center; text-align: center;">
+        <p class="eyebrow">Sección</p>
+        <h1>La necesidad de una mejor manera</h1>
+        <p style="font-size: clamp(1.1rem, 2vw, 1.8rem);">Presentamos los LLM como solución</p>
+      </div>
+    </section>
+
+    <!-- 09 Separator yellow - Parte 2 -->
+    <section class="slide section-yellow" data-slide>
+      <div class="content" style="align-items: center; text-align: center;">
+        <p class="eyebrow">Parte 2</p>
+        <h1>El poder del código<br/>y el auge de los LLM</h1>
+        <p style="font-size: clamp(1.1rem, 2vw, 1.8rem);">Cerrando la brecha entre datos e información valiosa</p>
+      </div>
+    </section>
+
+    <!-- 10 Herramientas existentes -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Contexto</p>
+        <h2>Desafíos del análisis tradicional<span class="sub">Limitaciones de las herramientas existentes</span></h2>
+        <p>Herramientas tradicionales (Excel, SQL):</p>
+        <div class="num-list" style="grid-template-columns: auto 1fr auto 1fr; gap: 0.7rem 1.25rem;">
+          <span class="num-tag">1</span>
+          <div class="num-item"><h4>Potentes, pero tienen limitaciones con conjuntos de datos extremadamente grandes o complejos.</h4></div>
+          <span class="num-tag">2</span>
+          <div class="num-item"><h4>SQL requiere conocimientos especializados.</h4></div>
+          <span class="num-tag">3</span>
+          <div class="num-item"><h4>Excel puede volverse lento y difícil de manejar con millones de filas.</h4></div>
+          <span class="num-tag">4</span>
+          <div class="num-item"><h4>Unir datos de diferentes fuentes puede ser complejo.</h4></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 11 El poder del código -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Fundamento</p>
+        <h2>El poder del código<span class="sub">Por qué el código es importante</span></h2>
+        <p>Es el lenguaje de la manipulación de datos. El código es la herramienta fundamental para interactuar y transformar datos. Nos permite:</p>
+        <div class="num-list" style="grid-template-columns: auto 1fr auto 1fr; gap: 0.7rem 1.25rem;">
+          <span class="num-tag">1</span><div class="num-item"><h4>Automatizar tareas repetitivas</h4></div>
+          <span class="num-tag">2</span><div class="num-item"><h4>Realizar cálculos complejos y análisis estadísticos</h4></div>
+          <span class="num-tag">3</span><div class="num-item"><h4>Personalizar el análisis para necesidades específicas</h4></div>
+          <span class="num-tag">4</span><div class="num-item"><h4>Ampliar el análisis para manejar conjuntos de datos masivos</h4></div>
+          <span class="num-tag">5</span><div class="num-item"><h4>Crear flujos de trabajo reproducibles</h4></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 12 Desafíos de codificación -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Lado B</p>
+        <h2>Desafíos de codificación tradicionales<span class="sub">Barreras de entrada y eficiencia</span></h2>
+        <p>Si bien la codificación es poderosa, puede ser un desafío:</p>
+        <div class="num-list" style="grid-template-columns: auto 1fr auto 1fr; gap: 0.8rem 1.5rem;">
+          <span class="num-tag">1</span>
+          <div class="num-item"><h4>Curva de aprendizaje</h4><p>Requiere aprender sintaxis específica y lógica de programación.</p></div>
+          <span class="num-tag">2</span>
+          <div class="num-item"><h4>Inversión de tiempo</h4><p>Escribir código, especialmente para tareas complejas, puede llevar mucho tiempo.</p></div>
+          <span class="num-tag">3</span>
+          <div class="num-item"><h4>Depuración</h4><p>Identificar y corregir errores en el código puede ser frustrante e iterativo.</p></div>
+          <span class="num-tag">4</span>
+          <div class="num-item"><h4>Mantenimiento</h4><p>Mantener el código actualizado y funcionando correctamente puede requerir un esfuerzo continuo.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 13 LLM más allá del texto -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Solución</p>
+        <h2>Presentación de los LLM: más allá del texto<span class="sub">Más que solo procesamiento de texto</span></h2>
+        <p>Los modelos de lenguaje grande (LLM) son modelos de IA avanzados. Principalmente conocidos por su capacidad para comprender y generar texto similar al humano.</p>
+        <p><strong>Pero:</strong> los LLM tienen capacidades que van <em>más allá</em> del texto:</p>
+        <div class="grid cols-3">
+          <div class="card"><h3>Generación de código</h3><p>Pueden escribir código en varios lenguajes de programación.</p></div>
+          <div class="card"><h3>Comprensión de datos</h3><p>Pueden interpretar el significado y la estructura de los datos.</p></div>
+          <div class="card"><h3>Razonamiento y resolución de problemas</h3><p>Pueden ayudar a planificar y ejecutar tareas de análisis de datos.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 14 Asistentes de datos inteligentes -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Paradigma</p>
+        <h2>LLM: sus asistentes de datos inteligentes<span class="sub">Un nuevo paradigma para el análisis de datos</span></h2>
+        <p>Los LLM pueden actuar como "asistentes inteligentes" para tareas relacionadas con los datos:</p>
+        <ul style="margin-top: 0.4rem;">
+          <li><strong>Simplificación</strong> de procesos complejos.</li>
+          <li><strong>Automatización</strong> de la generación de código.</li>
+          <li><strong>Reducción de la barrera de entrada</strong> para los no programadores.</li>
+          <li><strong>Aceleración</strong> del flujo de trabajo de análisis de datos.</li>
+        </ul>
+        <p style="margin-top: 0.5rem;">Piense en ellos como "compañeros de pensamiento" que pueden ayudarle a planificar y ejecutar análisis.</p>
+      </div>
+    </section>
+
+    <!-- 15 Separator dark -->
+    <section class="slide title-slide" data-slide>
+      <div class="content" style="align-items: center; text-align: center;">
+        <p class="eyebrow">Sección</p>
+        <h1>LLM: cerrando la brecha<br/>entre las ideas y el análisis</h1>
+        <p style="font-size: clamp(1.1rem, 2vw, 1.8rem);">De conceptos a planes concretos</p>
+      </div>
+    </section>
+
+    <!-- 16 Datos como texto (tabla) -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Comunicación</p>
+        <h2>Datos como texto<span class="sub">Comunicación con LLM</span></h2>
+        <p>Los LLM funcionan principalmente con texto. Para usar LLM con datos estructurados, necesitamos representarlos en un formato de texto.</p>
+        <p><strong>Métodos comunes:</strong></p>
+        <ul>
+          <li><strong>CSV como texto:</strong> representación de datos CSV como una cadena separada por comas.</li>
+          <li><strong>JSON como texto:</strong> uso del formato JSON (que ya está basado en texto).</li>
+          <li><strong>Descripciones de tablas:</strong> proporcionar descripciones de texto del esquema de datos (nombres de columna, tipos de datos).</li>
+        </ul>
+        <table class="simple" style="margin-top: 0.5rem;">
+          <thead><tr><th>Marca</th><th>Costo</th><th>Descripción</th></tr></thead>
+          <tbody>
+            <tr><td class="col-title">Toyota Corolla</td><td>$22,000</td><td>Un sedán compacto confiable y de bajo consumo de combustible con un interior cómodo y características de seguridad avanzadas. Ideal para viajes diarios.</td></tr>
+            <tr><td class="col-title">Tesla Model 3</td><td>$42,000</td><td>Un sedán totalmente eléctrico con tecnología de vanguardia, aceleración rápida y opciones de batería de largo alcance. Ideal para conductores con conciencia ecológica.</td></tr>
+            <tr><td class="col-title">BMW X5</td><td>$65,000</td><td>Un SUV de lujo de tamaño mediano con un motor potente, interior <em>premium</em> y sistemas avanzados de asistencia al conductor. Perfecto para aquellos que buscan rendimiento y comodidad.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 17 Datos como texto (JSON) -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Formato · JSON</p>
+        <h2>Datos como texto</h2>
+        <div class="code-block">[
+  {
+    <span class="s">"Brand"</span>: <span class="s">"Toyota Corolla"</span>,
+    <span class="s">"Cost"</span>: <span class="n">22000</span>,
+    <span class="s">"Description"</span>: <span class="s">"Un sedán compacto confiable y de bajo consumo de combustible con un interior cómodo y características de seguridad avanzadas. Ideal para viajes diarios."</span>
+  },
+  {
+    <span class="s">"Brand"</span>: <span class="s">"Tesla Model 3"</span>,
+    <span class="s">"Cost"</span>: <span class="n">42000</span>,
+    <span class="s">"Description"</span>: <span class="s">"Un sedán totalmente eléctrico con tecnología de vanguardia, aceleración rápida y opciones de batería de largo alcance. Ideal para conductores con conciencia ecológica."</span>
+  },
+  {
+    <span class="s">"Brand"</span>: <span class="s">"BMW X5"</span>,
+    <span class="s">"Cost"</span>: <span class="n">65000</span>,
+    <span class="s">"Description"</span>: <span class="s">"Un SUV de lujo de tamaño mediano con un motor potente, interior premium y sistemas avanzados de asistencia al conductor. Perfecto para aquellos que buscan rendimiento y comodidad."</span>
+  }
+]</div>
+      </div>
+    </section>
+
+    <!-- 18 CSV y YAML -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Formatos · CSV y YAML</p>
+        <h2>Datos como texto</h2>
+        <p style="margin: 0;"><strong>CSV</strong></p>
+        <div class="code-block">Brand,Cost,Description
+Toyota Corolla,<span class="n">22000</span>,"Un sedán compacto confiable y de bajo consumo de combustible con un interior cómodo y características de seguridad avanzadas. Ideal para viajes diarios."
+Tesla Model 3,<span class="n">42000</span>,"Un sedán totalmente eléctrico con tecnología de vanguardia, aceleración rápida y opciones de batería de largo alcance. Ideal para conductores con conciencia ecológica."
+BMW X5,<span class="n">65000</span>,"Un SUV de lujo de tamaño mediano con un motor potente, interior premium y sistemas avanzados de asistencia al conductor. Perfecto para aquellos que buscan rendimiento y comodidad."</div>
+        <p style="margin: 0;"><strong>YAML</strong></p>
+        <div class="code-block">cars:
+  - <span class="k">Brand</span>: <span class="s">"Toyota Corolla"</span>
+    <span class="k">Cost</span>: <span class="n">22000</span>
+    <span class="k">Description</span>: <span class="s">"Un sedán compacto confiable y de bajo consumo de combustible con un interior cómodo y características de seguridad avanzadas. Ideal para viajes diarios."</span>
+  - <span class="k">Brand</span>: <span class="s">"Tesla Model 3"</span>
+    <span class="k">Cost</span>: <span class="n">42000</span>
+    <span class="k">Description</span>: <span class="s">"Un sedán totalmente eléctrico con tecnología de vanguardia, aceleración rápida y opciones de batería de largo alcance. Ideal para conductores con conciencia ecológica."</span>
+  - <span class="k">Brand</span>: <span class="s">"BMW X5"</span>
+    <span class="k">Cost</span>: <span class="n">65000</span>
+    <span class="k">Description</span>: <span class="s">"Un SUV de lujo de tamaño mediano con un motor potente, interior premium y sistemas avanzados de asistencia al conductor. Perfecto para aquellos que buscan rendimiento y comodidad."</span></div>
+      </div>
+    </section>
+
+    <!-- 19 Separator yellow - Aproximación HITL -->
+    <section class="slide section-yellow" data-slide>
+      <div class="content" style="align-items: center; text-align: center;">
+        <p class="eyebrow">Sección</p>
+        <h1>Aproximación<br/><em>human-in-the-loop</em></h1>
+      </div>
+    </section>
+
+    <!-- 20 De la idea al plan -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Socio</p>
+        <h2>De la idea al plan<span class="sub">LLM como su socio de lluvia de ideas para el análisis de datos</span></h2>
+        <p>Los LLM pueden ayudar a refinar sus ideas iniciales de análisis de datos.</p>
+        <p>En lugar de escribir código directamente, comienza con un <em>concepto</em> o una <em>pregunta</em>.</p>
+        <p>El LLM puede sugerir:</p>
+        <ul>
+          <li>Análisis específicos para realizar.</li>
+          <li>Variables relevantes a considerar.</li>
+          <li>Posibles perspectivas para buscar.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 21 Flujo básico (5 etapas) -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Marco metodológico</p>
+        <h2>El flujo de trabajo básico</h2>
+        <div class="grid cols-2" style="align-items: center;">
+          <div>
+            <p>Un marco metodológico de <strong>cinco etapas</strong> que facilita la colaboración entre analistas humanos e IA generativa para maximizar el valor de los datos empresariales.</p>
+            <p style="margin-top: 0.7em;">Cada etapa se construye sobre la anterior, creando un ciclo de retroalimentación que asegura resultados relevantes y accionables para el negocio.</p>
+          </div>
+          <div class="workflow-arrow">
+            <div class="stage"><div class="ic">📁</div><h4>Diagnóstico</h4><p>Análisis exploratorio inicial del dataset</p></div>
+            <div class="stage"><div class="ic">💡</div><h4>Ideación</h4><p>Generación colaborativa de hipótesis</p></div>
+            <div class="stage"><div class="ic">📋</div><h4>Alineación</h4><p>Validación del plan estratégico</p></div>
+            <div class="stage"><div class="ic">✈️</div><h4>Navegación</h4><p>Ejecución iterativa guiada</p></div>
+            <div class="stage"><div class="ic">🔄</div><h4>Evolución</h4><p>Refinamiento y mejora continua</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 22 Flujo detallado -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Detalle</p>
+        <h2>Flujo detallado del proceso</h2>
+        <div class="grid cols-2">
+          <div class="step-block">
+            <p class="num">01</p>
+            <h3>Diagnóstico inicial</h3>
+            <ul><li>Dimensiones del dataset</li><li>Tipos de variables</li><li>Calidad de datos</li><li>Valores faltantes</li></ul>
+          </div>
+          <div class="step-block">
+            <p class="num">02</p>
+            <h3>Ideación humana</h3>
+            <ul><li>Revisar hallazgos de IA</li><li>Identificar patrones relevantes</li><li>Generar hipótesis de negocio</li><li>Definir objetivos específicos</li></ul>
+          </div>
+          <div class="step-block">
+            <p class="num">03</p>
+            <h3>Plan estratégico</h3>
+            <ul><li>Análisis prioritarios</li><li>Visualizaciones clave</li><li>Preguntas de negocio</li><li>Validación de viabilidad</li></ul>
+          </div>
+          <div class="step-block">
+            <p class="num">04</p>
+            <h3>Ejecución iterativa</h3>
+            <ul><li>Análisis paso a paso</li><li>Validación humana continua</li><li>Ajustes en tiempo real</li><li>Documentación automática</li></ul>
+          </div>
+        </div>
+        <div class="banner info"><strong>Punto de control crítico:</strong> antes de la ejecución, validamos que el plan esté alineado con los objetivos de negocio. Si no, iteramos en las etapas de ideación y planificación.</div>
+      </div>
+    </section>
+
+    <!-- 23 Para más avanzados -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Extensión</p>
+        <h2>Para más avanzados</h2>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>Preparación de datos</h3>
+            <ul><li><strong>Cargar</strong> datos (CSV, BD, API).</li><li><strong>Explorar</strong> la estructura (tipos, valores faltantes, atípicos).</li><li><strong>Limpiar</strong> datos (faltantes, duplicados, inconsistencias).</li><li><strong>Manipular</strong> y preprocesar (normalizar, estandarizar, codificar).</li></ul>
+          </div>
+          <div class="card">
+            <h3>Análisis exploratorio (EDA)</h3>
+            <ul><li><strong>Visualizar</strong> distribuciones (histogramas, dispersión, pares).</li><li><strong>Verificar</strong> correlaciones entre características.</li><li><strong>Seleccionar</strong> características (descartar irrelevantes, crear nuevas).</li><li><strong>Aplicar</strong> reducción de dimensionalidad (PCA, t-SNE, UMAP) si es necesario.</li></ul>
+          </div>
+          <div class="card">
+            <h3>Elegir y aplicar agrupación</h3>
+            <ul><li><strong>Elegir</strong> un método (K-Means, jerárquico, DBSCAN, etc.).</li><li><strong>Encontrar</strong> el número óptimo de clústeres (método del codo, silueta, dendrogramas).</li><li><strong>Ejecutar</strong> el algoritmo y asignar etiquetas.</li></ul>
+          </div>
+          <div class="card">
+            <h3>Evaluación e interpretación</h3>
+            <ul><li><strong>Evaluar</strong> calidad del clúster (silueta, Davies-Bouldin, varianza intra-clúster).</li><li><strong>Interpretar</strong> los clústeres (analizar características, comparar con el dominio).</li><li><strong>Validar</strong> los resultados (verificar sentido y alineación con el mundo real).</li></ul>
+          </div>
+          <div class="card">
+            <h3>Visualización y comunicación</h3>
+            <ul><li><strong>Trazar</strong> clústeres (dispersión, proyecciones PCA, dendrogramas).</li><li><strong>Resumir</strong> hallazgos clave (explicar las características del clúster).</li><li><strong>Presentar</strong> ideas y hacer recomendaciones.</li></ul>
+          </div>
+          <div class="card">
+            <h3>Refinamiento e iteración</h3>
+            <ul><li><strong>Ajustar</strong> parámetros de agrupación (métricas de distancia, inicializaciones).</li><li><strong>Probar</strong> métodos alternativos (p. ej., K-Means → DBSCAN).</li><li><strong>Mejorar</strong> la selección de características si es necesario.</li></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 24 Los 3 roles clave -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Responsabilidades</p>
+        <h2>Los 3 roles clave en el proceso</h2>
+        <div class="grid cols-2" style="align-items: start;">
+          <div>
+            <p>La efectividad del enfoque <em>human-in-the-loop</em> depende de una clara definición de responsabilidades entre la IA, el humano y su colaboración activa.</p>
+            <div class="hero-img" style="margin-top: 0.75rem;"><img src="img/dia4-p24-x546.jpeg" alt="Equipo colaborando alrededor de una mesa con datos y dispositivos" /></div>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+            <div class="card">
+              <h3>La IA como procesador</h3>
+              <ul><li>Analista técnico que procesa grandes volúmenes</li><li>Generador ágil de hipótesis múltiples</li><li>Ejecutor preciso de código y cálculos</li><li>Documentador automático de procesos</li></ul>
+            </div>
+            <div class="card">
+              <h3>El humano como director</h3>
+              <ul><li>Director estratégico que define objetivos</li><li>Validador experto del contexto de negocio</li><li>Tomador final de decisiones críticas</li><li>Guardián de la calidad y relevancia</li></ul>
+            </div>
+            <div class="card">
+              <h3>La colaboración como motor</h3>
+              <ul><li>Iteración continua y retroalimentación</li><li>Refinamiento progresivo de resultados</li><li>Sinergia que supera capacidades individuales</li></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 25 Principios -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Principios</p>
+        <h2>Principios del <em>human-in-the-loop</em></h2>
+        <div class="grid cols-2">
+          <div class="card"><h3>No es automatización total</h3><p>El humano mantiene control estratégico y guía cada decisión importante, mientras la IA acelera la ejecución técnica.</p></div>
+          <div class="card"><h3>Conocimiento contextual crítico</h3><p>Solo el humano comprende completamente el contexto empresarial, las restricciones del negocio y las implicaciones políticas de los hallazgos.</p></div>
+          <div class="card"><h3>Iteración inmediata y ágil</h3><p>Permite corrección y ajuste en tiempo real, evitando análisis extensos en direcciones incorrectas o irrelevantes.</p></div>
+          <div class="card"><h3>Escalamiento inteligente</h3><p>Progresión natural de análisis simples a complejos, construyendo confianza y comprensión gradualmente.</p></div>
+          <div class="card" style="grid-column: 1 / -1;"><h3>Documentación viva integrada</h3><p>El diálogo colaborativo se convierte automáticamente en documentación comprensible y reutilizable del proceso analítico.</p></div>
+        </div>
+        <div class="banner">Estos principios aseguran que la tecnología amplifique las capacidades humanas sin reemplazar el juicio crítico y la experiencia del dominio.</div>
+      </div>
+    </section>
+
+    <!-- 26 Ventajas HITL -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Comparación</p>
+        <h2>Ventajas del enfoque <em>human-in-the-loop</em></h2>
+        <p>La transformación en velocidad, calidad y escalabilidad del análisis de datos es significativa cuando comparamos metodologías tradicionales con este enfoque colaborativo.</p>
+        <table class="simple">
+          <thead><tr><th>Aspecto</th><th>Enfoque tradicional</th><th>Con IA generativa</th></tr></thead>
+          <tbody>
+            <tr><td class="col-title">Tiempo de análisis</td><td>Semanas de desarrollo</td><td class="highlight">Horas de iteración</td></tr>
+            <tr><td class="col-title">Desarrollo de código</td><td>Programación desde cero</td><td class="highlight">Código generado y validado</td></tr>
+            <tr><td class="col-title">Ciclo de retroalimentación</td><td>Iteración lenta y costosa</td><td class="highlight">Iteración inmediata</td></tr>
+            <tr><td class="col-title">Recursos humanos</td><td>Un analista trabajando solo</td><td class="highlight">Analista + IA colaborando</td></tr>
+            <tr><td class="col-title">Documentación</td><td>Creada posteriormente</td><td class="highlight">Generada simultáneamente</td></tr>
+            <tr><td class="col-title">Escalabilidad</td><td>Limitada por recursos humanos</td><td class="highlight">Escalable con IA como acelerador</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 27 Separator yellow - Demostración -->
+    <section class="slide section-yellow" data-slide>
+      <div class="content" style="align-items: center; text-align: center;">
+        <p class="eyebrow">Parte 3</p>
+        <h1>Demostración</h1>
+      </div>
+    </section>
+
+    <!-- 28 Dataset -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Materiales</p>
+        <h2>Dataset</h2>
+        <div class="qr-block">
+          <div class="qr-img"><img src="img/dia4-p28-x602.png" alt="Código QR del dataset Salary_Data.csv en Google Docs" /></div>
+          <div class="qr-side">
+            <h3>Google Docs</h3>
+            <p><strong>Salary_Data.csv</strong></p>
+            <p>Escanee el QR para descargar el dataset. En clase usaremos este archivo para la demostración de los tres prompts.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 29 Primer prompt: EDA -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Prompt 1</p>
+        <h2>Primer prompt: EDA</h2>
+        <div class="qr-block">
+          <div class="qr-img"><img src="img/dia4-p29-x631.png" alt="Código QR del prompt 1 (EDA)" /></div>
+          <div class="qr-side">
+            <h3>Actúa como un analista de datos senior…</h3>
+            <p>Especializado en diagnóstico inicial de datasets. Tu objetivo es identificar rápidamente las características, calidad y potencial analítico de los datos.</p>
+            <p style="margin-top: 0.4em;">Voy a compartir un dataset CSV. Necesito que realices un análisis exploratorio inicial que incluya: resumen de dimensiones, lista de columnas con tipo y calidad, estadísticas clave, distribución de categóricas, problemas de calidad y modificaciones de tipo sugeridas.</p>
+            <div class="docs-preview"><img src="img/dia4-p29-x633.jpeg" alt="Vista previa del documento Google Docs con el prompt 1 completo" /></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 30 Segundo prompt: plan -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Prompt 2</p>
+        <h2>Segundo prompt: plan</h2>
+        <div class="qr-block">
+          <div class="qr-img"><img src="img/dia4-p30-x656.png" alt="Código QR del prompt 2 (plan de análisis)" /></div>
+          <div class="qr-side">
+            <h3>Actúa como un líder de equipo de data science…</h3>
+            <p>Diseñando la estrategia analítica para un proyecto importante. Debes pensar tanto en el valor de negocio como en la viabilidad técnica.</p>
+            <p style="margin-top: 0.4em;">Con base en los resultados del análisis exploratorio, desarrolla un plan de análisis detallado: 5 descriptivos prioritarios, 3 visualizaciones clave, 2 cruces entre variables, preguntas de negocio y análisis estadísticos apropiados.</p>
+            <div class="docs-preview"><img src="img/dia4-p30-x658.jpeg" alt="Vista previa del documento Google Docs con el prompt 2 completo" /></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 31 Hero — piensen en sus objetivos -->
+    <section class="slide" data-slide>
+      <div class="content" style="align-items: center; justify-content: center;">
+        <p class="eyebrow" style="text-align: center;">Reflexión</p>
+        <p class="hero-sentence">Piensen en sus objetivos de análisis.<br/>¿Qué quieren observar?<br/>¿Qué análisis complementaría lo sugerido?</p>
+      </div>
+    </section>
+
+    <!-- 32 Tercer prompt: ejecución -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Prompt 3</p>
+        <h2>Tercer prompt: ejecución</h2>
+        <div class="qr-block">
+          <div class="qr-img"><img src="img/dia4-p32-x693.png" alt="Código QR del prompt 3 (ejecución del análisis)" /></div>
+          <div class="qr-side">
+            <h3>Actúa como un analista de business intelligence…</h3>
+            <p>Presentando hallazgos a <em>stakeholders</em> ejecutivos. Tu análisis debe ser riguroso pero accesible, con foco en implicaciones de negocio.</p>
+            <p style="margin-top: 0.4em;">Ejecuta el siguiente análisis específico del plan: <strong>[INSERTAR ANÁLISIS ESPECÍFICO DEL PLAN]</strong>. Realiza paso a paso, muestra métricas clave, describe patrones, propone visualización, interpreta en contexto de negocio e identifica limitaciones.</p>
+            <div class="docs-preview"><img src="img/dia4-p32-x695.jpeg" alt="Vista previa del documento Google Docs con el prompt 3 completo" /></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 33 Cierre -->
+    <section class="slide title-slide" data-slide>
+      <div class="content" style="align-items: center; text-align: center;">
+        <p class="eyebrow">Cierre</p>
+        <h1>La única forma<br/>de aprender es cacharreando</h1>
+        <div style="width: 6rem; height: 3px; background: var(--brand-yellow); margin: 1rem auto;"></div>
+        <p style="font-size: clamp(1.2rem, 2vw, 1.8rem);">GRACIAS</p>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="hud">
+    <span>IA generativa para análisis de datos · IQYA-3050</span>
+    <span id="hud-counter">1 / 33</span>
+  </div>
+
+  <div class="controls">
+    <button aria-label="Anterior" id="prev">‹</button>
+    <button aria-label="Pantalla completa" id="fs">⛶</button>
+    <button aria-label="Siguiente" id="next">›</button>
+  </div>
+
+  <script>
+    (function () {
+      var slides = Array.prototype.slice.call(document.querySelectorAll('[data-slide]'));
+      var i = 0;
+      var counter = document.getElementById('hud-counter');
+      var progress = document.querySelector('.progress');
+      function render() {
+        slides.forEach(function (s, idx) { s.classList.toggle('active', idx === i); });
+        if (counter) counter.textContent = (i + 1) + ' / ' + slides.length;
+        if (progress) progress.style.width = ((i + 1) / slides.length * 100) + '%';
+        var slide = slides[i];
+        var bg = '#ffffff';
+        if (slide) {
+          if (slide.classList.contains('title-slide')) bg = '#1A1A1A';
+          else if (slide.classList.contains('section-yellow')) bg = '#F5E27A';
+        }
+        document.body.style.background = bg;
+      }
+      function go(n) { i = Math.max(0, Math.min(slides.length - 1, n)); render(); }
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); go(i + 1); }
+        else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(i - 1); }
+        else if (e.key === 'Home') { e.preventDefault(); go(0); }
+        else if (e.key === 'End') { e.preventDefault(); go(slides.length - 1); }
+        else if (e.key === 'f' || e.key === 'F') { toggleFs(); }
+      });
+      document.getElementById('prev').addEventListener('click', function () { go(i - 1); });
+      document.getElementById('next').addEventListener('click', function () { go(i + 1); });
+      document.getElementById('fs').addEventListener('click', toggleFs);
+      function toggleFs() {
+        var el = document.documentElement;
+        if (!document.fullscreenElement) { (el.requestFullscreen || el.webkitRequestFullscreen || function(){}).call(el); }
+        else { (document.exitFullscreen || document.webkitExitFullscreen || function(){}).call(document); }
+      }
+      var tx = 0, ty = 0;
+      document.addEventListener('touchstart', function (e) {
+        if (!e.changedTouches[0]) return;
+        tx = e.changedTouches[0].clientX; ty = e.changedTouches[0].clientY;
+      }, { passive: true });
+      document.addEventListener('touchend', function (e) {
+        if (!e.changedTouches[0]) return;
+        var dx = e.changedTouches[0].clientX - tx;
+        var dy = e.changedTouches[0].clientY - ty;
+        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+          if (dx < 0) go(i + 1); else go(i - 1);
+        }
+      }, { passive: true });
+      slides.forEach(function (s, idx) {
+        var num = document.createElement('div');
+        num.className = 'slide-number';
+        num.setAttribute('aria-hidden', 'true');
+        num.textContent = String(idx + 1).padStart(2, '0');
+        s.appendChild(num);
+      });
+      render();
+    })();
+  </script>
+</body>
+</html>

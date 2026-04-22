@@ -1,0 +1,1098 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Sesión 1 — Bienvenida y presentación de retos · IQYA-3050</title>
+  <style>
+    :root {
+      --brand-dark: #1A1A1A;
+      --brand-yellow: #FFBF00;
+      --brand-yellow-dark: #E6AC00;
+      --brand-gray: #555555;
+      --surface: #ffffff;
+      --muted: #f4f4f5;
+      /* green removed */
+      --accent-purple: #7c3aed;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0; padding: 0; height: 100%; width: 100%;
+      background: var(--brand-dark);
+      color: var(--brand-dark);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      overflow: hidden;
+      -webkit-text-size-adjust: 100%;
+    }
+    .deck { position: relative; width: 100vw; height: 100vh; height: 100dvh; }
+    .slide {
+      position: absolute; inset: 0;
+      display: none; align-items: center; justify-content: center;
+      padding: clamp(1rem, 4vw, 3.5rem);
+      background: var(--surface);
+      opacity: 0;
+      transition: opacity 260ms ease;
+      overflow-y: auto;
+    }
+    .slide.active { display: flex; opacity: 1; }
+    .slide .content {
+      width: 100%;
+      max-width: 92rem;
+      margin: auto 0;
+      display: flex;
+      flex-direction: column;
+      gap: clamp(0.75rem, 1.5vw, 1.5rem);
+    }
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      font-size: clamp(0.65rem, 1vw, 1rem);
+      color: var(--brand-yellow-dark);
+      font-weight: 600;
+    }
+    h1 {
+      font-size: clamp(1.75rem, 5.5vw, 5.75rem);
+      line-height: 1.05;
+      margin: 0;
+      color: var(--brand-dark);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    h2 {
+      font-size: clamp(1.25rem, 3.4vw, 3.25rem);
+      line-height: 1.15;
+      margin: 0;
+      color: var(--brand-dark);
+      font-weight: 700;
+    }
+    p, li {
+      font-size: clamp(0.95rem, 1.8vw, 1.75rem);
+      line-height: 1.55;
+      color: var(--brand-gray);
+      margin: 0;
+    }
+    ul, ol {
+      padding-left: 1.25em;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45em;
+    }
+    li::marker { color: var(--brand-yellow-dark); }
+    .slide.title-slide {
+      background: linear-gradient(135deg, #141414 0%, #1A1A1A 50%, #2a2a2a 100%);
+      color: #fff;
+    }
+    .slide.title-slide h1 { color: #fff; }
+    .slide.title-slide p { color: #d4d4d8; }
+    .slide.title-slide .eyebrow { color: var(--brand-yellow); }
+    .pill-row { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 0.5rem; }
+    .pill {
+      display: inline-flex; align-items: center;
+      padding: 0.35em 0.9em;
+      border-radius: 999px;
+      background: var(--muted);
+      color: var(--brand-dark);
+      font-size: clamp(0.75rem, 1.3vw, 1.35rem);
+      font-weight: 500;
+    }
+    .slide.title-slide .pill {
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .grid {
+      display: grid;
+      gap: clamp(0.75rem, 1.5vw, 1.25rem);
+    }
+    .grid.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid.cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    @media (max-width: 640px) {
+      .grid.cols-2, .grid.cols-3, .grid.cols-4 { grid-template-columns: 1fr; }
+    }
+    .card {
+      background: var(--muted);
+      border-radius: 0.75rem;
+      padding: clamp(0.9rem, 1.5vw, 1.35rem);
+    }
+    .card h3 {
+      font-size: clamp(1rem, 2vw, 1.75rem);
+      margin: 0 0 0.35em 0;
+      color: var(--brand-dark);
+      font-weight: 600;
+    }
+    .card p { font-size: clamp(0.8rem, 1.4vw, 1.3rem); }
+    .card.pillar {
+      text-align: center;
+      border-top: 4px solid var(--brand-yellow);
+      padding: clamp(1.25rem, 2vw, 2rem);
+    }
+    .card.pillar:nth-child(2) { border-top-color: var(--brand-dark); }
+    .card.pillar:nth-child(3) { border-top-color: var(--brand-yellow-dark); }
+    .card.pillar .circle {
+      width: clamp(3rem, 5vw, 5rem);
+      height: clamp(3rem, 5vw, 5rem);
+      border-radius: 999px;
+      background: var(--brand-dark);
+      margin: 0 auto 0.75rem;
+    }
+    .card.pillar h3 {
+      font-size: clamp(1.25rem, 2.4vw, 2.25rem);
+      margin: 0 0 0.5em 0;
+    }
+    .info-card {
+      background: #fff;
+      border: 1px solid rgba(0,0,0,0.08);
+      border-left: 4px solid var(--brand-yellow);
+      border-radius: 0.5rem;
+      padding: 0.9rem 1.1rem;
+    }
+    .info-card:nth-child(3n+2) { border-left-color: var(--brand-dark); }
+    .info-card:nth-child(3n) { border-left-color: var(--brand-yellow-dark); }
+    .info-card .label {
+      font-size: clamp(0.7rem, 1vw, 0.95rem);
+      font-weight: 700;
+      color: var(--brand-dark);
+      margin: 0 0 0.2em;
+    }
+    .info-card .value {
+      font-size: clamp(0.9rem, 1.5vw, 1.4rem);
+      color: var(--brand-gray);
+      margin: 0;
+    }
+    .banner {
+      background: #fef3c7;
+      border-left: 4px solid var(--brand-yellow-dark);
+      padding: 0.9rem 1.1rem;
+      border-radius: 0.5rem;
+      font-style: italic;
+      color: #78350f;
+      font-size: clamp(0.85rem, 1.4vw, 1.25rem);
+    }
+    .small-note {
+      font-size: clamp(0.75rem, 1.2vw, 1rem);
+      color: var(--brand-gray);
+      font-style: italic;
+    }
+    table.cronograma {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: clamp(0.8rem, 1.3vw, 1.2rem);
+    }
+    table.cronograma th {
+      background: var(--brand-dark);
+      color: #fff;
+      text-align: left;
+      padding: 0.6em 0.75em;
+      font-weight: 600;
+      font-size: clamp(0.75rem, 1.1vw, 1.05rem);
+    }
+    table.cronograma td {
+      padding: 0.55em 0.75em;
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+      color: var(--brand-gray);
+    }
+    table.cronograma tbody tr:nth-child(even) { background: #fafafa; }
+    table.cronograma td.num { width: 3em; font-weight: 600; color: var(--brand-dark); }
+    table.cronograma td.fecha { white-space: nowrap; font-weight: 500; color: var(--brand-dark); }
+    table.cronograma td.entregable {
+      font-weight: 600;
+      color: #78350f;
+    }
+    .eval-block {
+      text-align: center;
+      border-top: 4px solid var(--brand-yellow);
+      padding: clamp(1.5rem, 3vw, 2.5rem) 1rem;
+      background: var(--muted);
+      border-radius: 0.5rem;
+    }
+    .eval-block:nth-child(2) { border-top-color: var(--brand-dark); }
+    .eval-block:nth-child(3) { border-top-color: var(--brand-yellow-dark); }
+    .eval-block .big-pct {
+      font-size: clamp(2.5rem, 6vw, 5.5rem);
+      font-weight: 700;
+      color: var(--brand-yellow-dark);
+      line-height: 1;
+      margin: 0 0 0.3em;
+    }
+    .eval-block h3 {
+      font-size: clamp(1rem, 2vw, 1.75rem);
+      margin: 0 0 0.3em;
+    }
+    table.aias {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: clamp(0.8rem, 1.3vw, 1.25rem);
+    }
+    table.aias th {
+      background: var(--brand-dark);
+      color: #fff;
+      text-align: left;
+      padding: 0.55em 0.75em;
+      font-weight: 600;
+      font-size: clamp(0.75rem, 1.1vw, 1.05rem);
+    }
+    table.aias td {
+      padding: 0.55em 0.75em;
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+      color: var(--brand-gray);
+      vertical-align: top;
+    }
+    table.aias td.nivel { font-weight: 700; color: var(--brand-dark); white-space: nowrap; }
+    table.aias tbody tr:nth-child(even) { background: #fafafa; }
+    .reto-card {
+      border-left: 4px solid var(--brand-yellow);
+      padding: 0.75rem 1rem 0.9rem;
+      background: #fff;
+      border-radius: 0.25rem;
+      box-shadow: 0 1px 0 rgba(0,0,0,0.04);
+      display: grid;
+      grid-template-columns: 1fr auto;
+      column-gap: 1rem;
+      row-gap: 0.2rem;
+      align-items: start;
+    }
+    .reto-card h3 {
+      margin: 0;
+      font-size: clamp(0.95rem, 1.6vw, 1.5rem);
+      color: var(--brand-dark);
+      font-weight: 700;
+    }
+    .reto-card .desc {
+      grid-column: 1 / -1;
+      margin: 0.2em 0 0;
+      font-size: clamp(0.8rem, 1.25vw, 1.1rem);
+      color: var(--brand-gray);
+      line-height: 1.5;
+    }
+    .reto-card .meta {
+      grid-column: 1 / -1;
+      margin-top: 0.35rem;
+      font-size: clamp(0.7rem, 1.1vw, 1rem);
+      color: #888;
+      font-style: italic;
+    }
+    .tipo-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.3em 0.85em;
+      border-radius: 999px;
+      font-size: clamp(0.7rem, 1vw, 0.95rem);
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+    }
+    .tipo-badge.innovacion { background: var(--brand-yellow); color: var(--brand-dark); }
+    .tipo-badge.investigacion { background: var(--brand-dark); color: #fff; }
+    .tipo-badge.especial { background: var(--accent-purple); color: #fff; }
+    .asesor-list { display: flex; flex-direction: column; gap: 0.65rem; }
+    .asesor-sub {
+      font-size: clamp(0.85rem, 1.3vw, 1.2rem);
+      color: var(--brand-gray);
+      margin: 0 0 0.5rem;
+    }
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .step {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      column-gap: 1.25rem;
+      align-items: center;
+      background: #fff;
+      border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 0.5rem;
+      padding: 1rem 1.25rem;
+    }
+    .step .num {
+      font-size: clamp(1.5rem, 3vw, 2.5rem);
+      font-weight: 700;
+      color: var(--brand-yellow-dark);
+      line-height: 1;
+    }
+    .step .num::after {
+      content: '';
+      display: block;
+      width: 1.5em;
+      height: 2px;
+      background: var(--brand-yellow-dark);
+      margin-top: 0.25em;
+    }
+    .step p {
+      margin: 0;
+      font-size: clamp(0.9rem, 1.5vw, 1.35rem);
+      color: var(--brand-dark);
+    }
+    .cta-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: var(--brand-yellow);
+      color: var(--brand-dark);
+      padding: 0.9em 1.6em;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: clamp(0.95rem, 1.6vw, 1.5rem);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+      transition: transform 120ms ease;
+    }
+    .cta-button:hover { transform: translateY(-1px); }
+    .cta-preview {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0.75rem;
+      margin-top: 1.25rem;
+    }
+    .cta-preview .kpi {
+      text-align: center;
+      background: #fff;
+      border: 1px solid rgba(0,0,0,0.08);
+      border-left: 4px solid var(--brand-yellow);
+      border-radius: 0.5rem;
+      padding: 0.75rem 0.5rem;
+    }
+    .cta-preview .kpi:nth-child(4) { border-left-color: var(--brand-dark); }
+    .cta-preview .kpi .n {
+      font-size: clamp(1.5rem, 3vw, 2.5rem);
+      font-weight: 700;
+      color: var(--brand-dark);
+      line-height: 1;
+    }
+    .cta-preview .kpi:nth-child(4) .n { color: var(--brand-dark); }
+    .cta-preview .kpi .lbl {
+      font-size: clamp(0.7rem, 1vw, 0.95rem);
+      color: var(--brand-gray);
+      margin-top: 0.4em;
+    }
+    .hud {
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      padding: 0.5rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: rgba(255,255,255,0.75);
+      font-size: 0.75rem;
+      pointer-events: none;
+      z-index: 10;
+    }
+    .slide:not(.title-slide) ~ .hud { color: var(--brand-gray); }
+    .controls {
+      position: fixed;
+      right: 1rem;
+      bottom: 2.5rem;
+      display: flex;
+      gap: 0.5rem;
+      z-index: 11;
+    }
+    .controls button {
+      -webkit-appearance: none;
+      appearance: none;
+      border: 1px solid rgba(0,0,0,0.1);
+      background: rgba(255,255,255,0.9);
+      color: var(--brand-dark);
+      width: 2.5rem; height: 2.5rem;
+      border-radius: 999px;
+      font-size: 1rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    }
+    .controls button:active { transform: scale(0.96); }
+    .progress {
+      position: fixed;
+      top: 0; left: 0;
+      height: 3px;
+      background: var(--brand-yellow);
+      transition: width 260ms ease;
+      z-index: 20;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .slide { transition: none; }
+      .progress { transition: none; }
+    }
+    @media (max-width: 480px) {
+      .controls { right: 0.5rem; bottom: 1.25rem; }
+      .hud { font-size: 0.65rem; }
+    }
+
+    /* Decorative: L-shaped yellow corner accent */
+    .slide:not(.title-slide)::before {
+      content: '';
+      position: absolute;
+      top: clamp(1rem, 3vw, 2.5rem);
+      right: clamp(1rem, 3vw, 2.5rem);
+      width: clamp(2rem, 5vw, 4rem);
+      height: clamp(2rem, 5vw, 4rem);
+      border-top: 2.5px solid var(--brand-yellow);
+      border-right: 2.5px solid var(--brand-yellow);
+      pointer-events: none;
+      z-index: 1;
+    }
+    .slide.title-slide::before {
+      content: '';
+      position: absolute;
+      bottom: clamp(1rem, 3vw, 2.5rem);
+      left: clamp(1rem, 3vw, 2.5rem);
+      width: clamp(2rem, 5vw, 4rem);
+      height: clamp(2rem, 5vw, 4rem);
+      border-bottom: 2.5px solid var(--brand-yellow);
+      border-left: 2.5px solid var(--brand-yellow);
+      opacity: 0.4;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .slide-number {
+      position: absolute;
+      bottom: clamp(0.5rem, 2vw, 1.5rem);
+      left: clamp(1rem, 3vw, 2.5rem);
+      font-size: clamp(4rem, 12vw, 10rem);
+      font-weight: 800;
+      line-height: 1;
+      color: rgba(0, 0, 0, 0.04);
+      pointer-events: none;
+      z-index: 0;
+      user-select: none;
+      letter-spacing: -0.04em;
+    }
+    .slide.title-slide .slide-number {
+      color: rgba(255, 255, 255, 0.06);
+    }
+  </style>
+</head>
+<body>
+  <div class="progress" style="width:0"></div>
+  <div class="deck" id="deck">
+
+    <!-- 01 Portada -->
+    <section class="slide title-slide active" data-slide>
+      <div class="content">
+        <p class="eyebrow">IQYA 3050 · Sesión 1 · 25 mar 2026</p>
+        <h1>Seminario de Proyecto<br/>de Desarrollo Profesional</h1>
+        <p>Semestre 2026-10 · Periodo 8B · Luis H. Reyes, Profesor Asociado · Departamento de Ingeniería Química y de Alimentos</p>
+        <div class="pill-row">
+          <span class="pill">Bienvenida</span>
+          <span class="pill">Syllabus</span>
+          <span class="pill">Retos disponibles</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 02 Bienvenidos -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bienvenida</p>
+        <h2>Bienvenidos al SPDP</h2>
+        <p>Este curso marca el inicio de su Proyecto de Desarrollo Profesional: la oportunidad de aplicar lo aprendido en el DIPP a un reto real de investigación o innovación.</p>
+        <div class="grid cols-3" style="margin-top: 0.5rem;">
+          <div class="card pillar">
+            <div class="circle"></div>
+            <h3>Creatividad</h3>
+            <p>Prototipos de baja resolución que resuelven problemas reales.</p>
+          </div>
+          <div class="card pillar">
+            <div class="circle"></div>
+            <h3>Colaboración</h3>
+            <p>Trabajo en equipo con el acompañamiento de un mentor experto.</p>
+          </div>
+          <div class="card pillar">
+            <div class="circle"></div>
+            <h3>Rigor</h3>
+            <p>Gestión de proyectos, ética e integridad académica.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 03 Información general -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Logística</p>
+        <h2>Información general</h2>
+        <div class="grid cols-3">
+          <div class="info-card"><p class="label">Código</p><p class="value">IQYA 3050</p></div>
+          <div class="info-card"><p class="label">Créditos</p><p class="value">1</p></div>
+          <div class="info-card"><p class="label">Semestre</p><p class="value">2026-10 (Periodo 8B)</p></div>
+          <div class="info-card"><p class="label">Modalidad</p><p class="value">Presencial</p></div>
+          <div class="info-card"><p class="label">Horario</p><p class="value">Miércoles, 12:30 – 1:50 pm</p></div>
+          <div class="info-card"><p class="label">Sesiones</p><p class="value">8 clases</p></div>
+          <div class="info-card"><p class="label">Salón</p><p class="value">C-209</p></div>
+          <div class="info-card"><p class="label">Correo</p><p class="value">lh.reyes@uniandes.edu.co</p></div>
+        </div>
+        <div class="banner" style="margin-top: 0.75rem;">Espacio de atención: viernes 8:00 am – 12:00 m, con cita previa vía correo electrónico.</div>
+        <p class="small-note">Los retos propuestos en este seminario serán desarrollados durante el semestre 2026-20.</p>
+      </div>
+    </section>
+
+    <!-- 04 Objetivos del curso -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Propósito</p>
+        <h2>Objetivos del curso</h2>
+        <p>Al finalizar el curso, se espera que el estudiante sea capaz de:</p>
+        <div class="grid cols-3" style="margin-top: 0.5rem;">
+          <div class="card">
+            <div style="font-size: clamp(1.5rem, 3vw, 2.5rem); font-weight: 700; color: var(--brand-yellow-dark); line-height: 1;">01</div>
+            <div style="width: 2em; height: 2px; background: var(--brand-yellow-dark); margin: 0.25em 0 0.75em;"></div>
+            <h3>Creatividad e innovación</h3>
+            <p>Integrar creatividad e innovación en el desarrollo de prototipos de baja resolución, identificando oportunidades en el diseño de productos y procesos en contextos reales.</p>
+          </div>
+          <div class="card">
+            <div style="font-size: clamp(1.5rem, 3vw, 2.5rem); font-weight: 700; color: var(--brand-yellow-dark); line-height: 1;">02</div>
+            <div style="width: 2em; height: 2px; background: var(--brand-yellow-dark); margin: 0.25em 0 0.75em;"></div>
+            <h3>Colaboración</h3>
+            <p>Colaborar en el diseño e implementación de soluciones a problemas específicos de ingeniería junto a colegas.</p>
+          </div>
+          <div class="card">
+            <div style="font-size: clamp(1.5rem, 3vw, 2.5rem); font-weight: 700; color: var(--brand-yellow-dark); line-height: 1;">03</div>
+            <div style="width: 2em; height: 2px; background: var(--brand-yellow-dark); margin: 0.25em 0 0.75em;"></div>
+            <h3>Gestión de proyectos</h3>
+            <p>Aplicar elementos clave de la gestión de proyectos, incluyendo la búsqueda efectiva de información y toma de decisiones acertadas.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 05 Metodología: tres entregas -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Metodología</p>
+        <h2>Tres entregas progresivas</h2>
+        <p>El curso se estructura alrededor de tres entregas que guían el desarrollo del proyecto:</p>
+        <div class="grid cols-3" style="margin-top: 0.5rem;">
+          <div class="card pillar" style="text-align: left;">
+            <h3>Propuesta de valor</h3>
+            <p>Nombre, tipo de proyecto, público objetivo, problema identificado, solución y diferenciadores, justificación.</p>
+          </div>
+          <div class="card pillar" style="text-align: left;">
+            <h3>Flujograma</h3>
+            <p>Prototipo de papel con representación visual del proceso, etapas, decisiones y secuencia lógica.</p>
+          </div>
+          <div class="card pillar" style="text-align: left;">
+            <h3>Propuesta final</h3>
+            <p>Documento completo: contexto, objetivos, diseño experimental (Plan A y Plan B), seguridad, presupuesto, ética.</p>
+          </div>
+        </div>
+        <div class="banner">Cada entrega debe contar con la aprobación formal del mentor asignado mediante firma digital.</div>
+      </div>
+    </section>
+
+    <!-- 06 Cronograma -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Cronograma</p>
+        <h2>Las 8 sesiones</h2>
+        <p class="small-note">Semana Santa (29 mar – 5 abr): no hay clases.</p>
+        <table class="cronograma">
+          <thead>
+            <tr><th>#</th><th>Fecha</th><th>Sesión</th><th>Entregable</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="num">1</td><td class="fecha">Mié 25 mar</td><td>Presentación del curso y de los retos</td><td>—</td></tr>
+            <tr><td class="num">2</td><td class="fecha">Mié 8 abr</td><td>Formación de equipos</td><td>—</td></tr>
+            <tr><td class="num">3</td><td class="fecha">Mié 15 abr</td><td>IA generativa para investigación</td><td>—</td></tr>
+            <tr><td class="num">4</td><td class="fecha">Mié 22 abr</td><td>IA generativa para análisis de datos</td><td class="entregable">Entrega 1: Propuesta de Valor</td></tr>
+            <tr><td class="num">5</td><td class="fecha">Mié 29 abr</td><td>Presupuestos y uso de laboratorio</td><td>—</td></tr>
+            <tr><td class="num">6</td><td class="fecha">Mié 6 may</td><td>Taller de ética en investigación</td><td class="entregable">Entrega 2: Flujograma</td></tr>
+            <tr><td class="num">7</td><td class="fecha">Mié 13 may</td><td>Narrativas visuales para datos</td><td>—</td></tr>
+            <tr><td class="num">8</td><td class="fecha">Mié 20 may</td><td>Revisión de carpeta</td><td class="entregable">Entrega final</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 07 Evaluación -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Evaluación</p>
+        <h2>Distribución de notas</h2>
+        <p>Sistema Aprobado / Reprobado.</p>
+        <div class="grid cols-3" style="margin-top: 1rem;">
+          <div class="eval-block">
+            <p class="big-pct">30%</p>
+            <h3>Primera entrega</h3>
+            <p>Propuesta de valor</p>
+          </div>
+          <div class="eval-block">
+            <p class="big-pct">30%</p>
+            <h3>Segunda entrega</h3>
+            <p>Flujograma</p>
+          </div>
+          <div class="eval-block">
+            <p class="big-pct">40%</p>
+            <h3>Entrega final</h3>
+            <p>Propuesta completa</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 08 IA generativa (AIAS) -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Inteligencia artificial generativa</p>
+        <h2>Escala AIAS (AI Assessment Scale)</h2>
+        <table class="aias">
+          <thead>
+            <tr><th>Nivel</th><th>Descripción</th><th>En este curso</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="nivel">1 · Sin IA</td><td>No se permite uso de IA.</td><td>Quices semanales</td></tr>
+            <tr><td class="nivel">2 · IA para ideas</td><td>IA para generar ideas y estructurar.</td><td>Talleres en clase</td></tr>
+            <tr><td class="nivel">3 · IA para edición</td><td>IA para refinar y mejorar claridad.</td><td>Bitácoras, proyecto</td></tr>
+            <tr><td class="nivel">4 · IA con evaluación</td><td>IA para tareas con evaluación crítica.</td><td>No aplica</td></tr>
+            <tr><td class="nivel">5 · Uso completo</td><td>IA integral a discreción.</td><td>No aplica</td></tr>
+          </tbody>
+        </table>
+        <div class="banner" style="margin-top: 0.75rem;">
+          <strong>Declaración obligatoria en cada entrega:</strong> 1. Herramientas utilizadas (incluyendo prompts) · 2. Propósito del uso · 3. Evaluación crítica de los resultados.
+        </div>
+      </div>
+    </section>
+
+    <!-- 09 Políticas del curso -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Reglas</p>
+        <h2>Políticas del curso</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Asistencia</h3>
+            <p>Obligatoria a todas las sesiones. Ausencias justificadas con anticipación.</p>
+          </div>
+          <div class="card">
+            <h3>Entregas</h3>
+            <p>Vía Bloque Neón. Sin entregas tardías (penalización 100%). Firmadas por el asesor.</p>
+          </div>
+          <div class="card">
+            <h3>Comunicación</h3>
+            <p>Correo: lh.reyes@uniandes.edu.co · Asunto: [IQYA-3050] – Tema · Respuesta: 48 horas hábiles.</p>
+          </div>
+          <div class="card">
+            <h3>Integridad académica</h3>
+            <p>Trabajo original. Citas IEEE o APA. Declaración de IA en cada entrega. Plagio = 0 + reporte al comité.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10 Title slide — Los retos -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Sección 2</p>
+        <h1>Los retos</h1>
+        <p>26 proyectos de investigación e innovación propuestos por 11 asesores del Departamento de Ingeniería Química y de Alimentos.</p>
+        <div class="pill-row">
+          <span class="pill">Investigación</span>
+          <span class="pill">Innovación</span>
+          <span class="pill">Proyecto especial</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 11 Andrea Sánchez Camargo -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Asesor | 3 retos</p>
+        <h2>Andrea Sánchez Camargo</h2>
+        <div class="asesor-list">
+          <div class="reto-card">
+            <h3>Bioingrediente encapsulado de chontaduro</h3>
+            <span class="tipo-badge investigacion">Investigación</span>
+            <p class="desc">Optimizar la extracción verde (ultrasonido) y encapsulación de carotenoides de chontaduro para obtener un bioingrediente estable aplicable en bebidas funcionales.</p>
+            <p class="meta">2 estudiantes</p>
+          </div>
+          <div class="reto-card">
+            <h3>Gomitas funcionales con frutas colombianas</h3>
+            <span class="tipo-badge investigacion">Investigación</span>
+            <p class="desc">Formular gomitas con biopolímeros sostenibles incorporando extractos bioactivos de subproductos de gulupa, uchuva o mora. Evaluar capacidad antioxidante, textura y aceptabilidad sensorial.</p>
+            <p class="meta">2 estudiantes</p>
+          </div>
+          <div class="reto-card">
+            <h3>Prototipos alimentarios de enredaderas urbanas</h3>
+            <span class="tipo-badge investigacion">Investigación</span>
+            <p class="desc">Optimizar y validar prototipos alimentarios a partir de enredaderas urbanas comestibles, integrando funcionalidad, estabilidad y un modelo de implementación en sistemas alimentarios urbanos.</p>
+            <p class="meta">2 estudiantes</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 12 Andrés Fernando González Barrios -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Asesor | 2 retos</p>
+        <h2>Andrés Fernando González Barrios</h2>
+        <div class="asesor-list">
+          <div class="reto-card">
+            <h3>Perfil sensorial de licores de chocolate colombianos</h3>
+            <span class="tipo-badge investigacion">Investigación</span>
+            <p class="desc">Caracterización mediante lengua y nariz electrónica de licores de cacao de diferentes orígenes colombianos para identificar diferencias significativas en su perfil sensorial.</p>
+            <p class="meta">1 estudiante</p>
+          </div>
+          <div class="reto-card">
+            <h3>Dinámica molecular de madurantes de frutas</h3>
+            <span class="tipo-badge investigacion">Investigación</span>
+            <p class="desc">Simulaciones de dinámica molecular para entender la interacción de madurantes con proteínas que activan el proceso de maduración en frutas, estudiando su comportamiento temporal a nivel molecular.</p>
+            <p class="meta">1 estudiante</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 13 Diego Camilo Pradilla Ragua -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Asesor | 2 retos</p>
+        <h2>Diego Camilo Pradilla Ragua</h2>
+        <div class="asesor-list">
+          <div class="reto-card">
+            <h3>Protocolos de cata para café especial colombiano</h3>
+            <span class="tipo-badge innovacion">Innovación</span>
+            <p class="desc">Desarrollar formatos y protocolos de cata, en alianza con Cumbres Sacras, que dialoguen con los aromas, sabores y procesos regionales de Colombia. Construcción de una rueda de aromas propia.</p>
+            <p class="meta">2 estudiantes</p>
+          </div>
+          <div class="reto-card">
+            <h3>Asfaltenos in-silico con dinámica molecular</h3>
+            <span class="tipo-badge investigacion">Investigación</span>
+            <p class="desc">Diseñar asfaltenos modelo in-silico y montar esquemas de simulación en GROMACS para predecir su comportamiento en diferentes interfases (líquido-líquido y líquido-aire).</p>
+            <p class="meta">2 estudiantes</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 14 Felipe Salcedo Galán -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Asesor | 3 retos</p>
+        <h2>Felipe Salcedo Galán</h2>
+        <div class="asesor-list">
+          <div class="reto-card">
+            <h3>Sustitución de fécula de maíz en Bienestarina Mas®</h3>
+            <span class="tipo-badge investigacion">Investigación</span>
+            <p class="desc">Evaluar el potencial del almidón de papa colombiana como sustituto de la fécula de maíz importada en la producción de Bienestarina Mas® del ICBF, promoviendo la soberanía alimentaria.</p>
+            <p class="meta">2 estudiantes · ICBF / Fedepapa</p>
+          </div>
+          <div class="reto-card">
+            <h3>Aditivos enzimáticos para degradación de plásticos</h3>
+            <span class="tipo-badge investigacion">Investigación</span>
+            <p class="desc">Evaluar si los aditivos enzimáticos del mercado colombiano son una opción viable para el cierre de ciclo de envases plásticos o si generan mayor impacto ambiental por microplásticos.</p>
+            <p class="meta">2 estudiantes</p>
+          </div>
+          <div class="reto-card">
+            <h3>Continuación de Proyecto Especial</h3>
+            <span class="tipo-badge especial">Proyecto especial</span>
+            <p class="desc">Espacio reservado para el proyecto de la estudiante Manuela Pinto. Los detalles metodológicos y la pregunta de investigación se definirán en conjunto con el asesor.</p>
+            <p class="meta">1 estudiante · Manuela Pinto</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 15 Jorge Mario Gómez Ramírez -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Asesor | 1 reto</p>
+        <h2>Jorge Mario Gómez Ramírez</h2>
+        <div class="asesor-list">
+          <div class="reto-card">
+            <h3>Control avanzado de equipos integrados e interconectados</h3>
+            <span class="tipo-badge investigacion">Investigación</span>
+            <p class="desc">Crear modelos digitales de conjuntos de equipos interconectados, desarrollar modelos simplificados para estrategias de control eficientes e implementar lazos de control de respuesta rápida. El reto integra simulación, IA y software de control.</p>
+            <p class="meta">2 estudiantes</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 16 Luis H. Reyes -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Asesor | 3 retos</p>
+        <h2>Luis H. Reyes</h2>
+        <div class="asesor-list">
+          <div class="reto-card">
+            <h3>Estimación microfluídica de IFT con biosurfactantes</h3>
+            <span class="tipo-badge investigacion">Investigación</span>
+            <p class="desc">Extender la metodología microfluídica de estimación de tensión interfacial (flow-focusing en PMMA) a biosurfactantes de interés farmacéutico, evaluando la correlación existente y proponiendo ajustes.</p>
+            <p class="meta">2 estudiantes · Coasesor: Juan Carlos Cruz</p>
+          </div>
+          <div class="reto-card">
+            <h3>Pipeline computacional para IFT desde video microscópico</h3>
+            <span class="tipo-badge investigacion">Investigación</span>
+            <p class="desc">Desarrollar un pipeline automatizado en Python: segmentación de gotas, extracción de métricas morfológicas y estimación de IFT con propagación de incertidumbre, tomando como benchmark un PDP previo.</p>
+            <p class="meta">2 estudiantes · Coasesor: Juan Carlos Cruz</p>
+          </div>
+          <div class="reto-card">
+            <h3>Entrecruzamiento de biotintas de dECM para bioimpresión 3D</h3>
+            <span class="tipo-badge investigacion">Investigación</span>
+            <p class="desc">Evaluar cuatro estrategias de entrecruzamiento (glutaraldehído, genipina, foto-entrecruzamiento, transglutaminasa) en hidrogel de pericardio porcino descelularizado para bioimpresión por extrusión.</p>
+            <p class="meta">2 estudiantes · Coasesor: Juan Carlos Cruz</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 17 María Hernández Carrión -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Asesora | 2 retos</p>
+        <h2>María Hernández Carrión</h2>
+        <div class="asesor-list">
+          <div class="reto-card">
+            <h3>Panela como base de alimento funcional innovador</h3>
+            <span class="tipo-badge investigacion">Investigación</span>
+            <p class="desc">Caracterizar compuestos bioactivos de la panela (fenólicos, antioxidantes, minerales) y desarrollar un prototipo de alimento funcional a escala laboratorio, evaluando propiedades físico-químicas, texturales y sensoriales.</p>
+            <p class="meta">2 estudiantes</p>
+          </div>
+          <div class="reto-card">
+            <h3>Alimento de alto valor a partir de sobras de restaurantes</h3>
+            <span class="tipo-badge innovacion">Innovación</span>
+            <p class="desc">En alianza con Chefcito (Elipson): caracterizar residuos post-consumo de restaurantes y diseñar un prototipo de alimento de alto valor agregado. La infraestructura de recolección ya existe; falta el producto.</p>
+            <p class="meta">2 estudiantes · Chefcito / Elipson</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 18 Nicolás Ríos Ratkovich -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Asesor | 3 retos</p>
+        <h2>Nicolás Ríos Ratkovich</h2>
+        <div class="asesor-list">
+          <div class="reto-card">
+            <h3>Monitoreo sensorless de pozos ESP con modelos híbridos</h3>
+            <span class="tipo-badge investigacion">Investigación</span>
+            <p class="desc">Modelo físico-computacional para estimar variables críticas en pozos con bombeo electrosumergible sin sensores de fondo, detectar anomalías y generar recomendaciones de optimización desde datos de superficie.</p>
+            <p class="meta">2 estudiantes · BCPGroup Artificial Lift Inc.</p>
+          </div>
+          <div class="reto-card">
+            <h3>Metodología de diseño de compresores centrífugos</h3>
+            <span class="tipo-badge investigacion">Investigación</span>
+            <p class="desc">Diseño paramétrico de geometrías de compresores centrífugos en CFturbo (velocidad específica 15–100), validación con CFD en STAR-CCM+ y propuesta de metodología para el curso Herramientas Computacionales I.</p>
+            <p class="meta">2 estudiantes</p>
+          </div>
+          <div class="reto-card">
+            <h3>Degradación de bombas centrífugas con fluidos viscosos</h3>
+            <span class="tipo-badge investigacion">Investigación</span>
+            <p class="desc">Simulación CFD de curvas H-Q y eficiencia para varias geometrías y viscosidades, comparando con correlaciones ANSI/HI 9.6.7-2010 y el modelo de Ofuchi et al. (2020).</p>
+            <p class="meta">2 estudiantes</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 19 Niyireth Alicia Porras Holguín -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Asesora | 3 retos</p>
+        <h2>Niyireth Alicia Porras Holguín</h2>
+        <div class="asesor-list">
+          <div class="reto-card">
+            <h3>Envases cosméticos biocompuestos + Deep Learning</h3>
+            <span class="tipo-badge innovacion">Innovación</span>
+            <p class="desc">Evaluar el efecto de fibras agroindustriales en las propiedades mecánicas de envases para emulsiones cosméticas, integrando Deep Learning para predecir desempeño sin fabricar prototipos físicos.</p>
+            <p class="meta">2 estudiantes · Pelpak</p>
+          </div>
+          <div class="reto-card">
+            <h3>Compatibilidad fibras agroindustriales–plásticos reciclados</h3>
+            <span class="tipo-badge investigacion">Investigación</span>
+            <p class="desc">Estudiar la compatibilidad entre fibras de residuos agroindustriales y plásticos reciclados, enfocándose en la adhesión interfacial y la dispersión homogénea dentro del polímero.</p>
+            <p class="meta">2 estudiantes</p>
+          </div>
+          <div class="reto-card">
+            <h3>Prótesis externa de seno personalizada con manufactura aditiva</h3>
+            <span class="tipo-badge innovacion">Innovación</span>
+            <p class="desc">Integrar digitalización 3D y materiales compuestos (silicona + fibras naturales) para desarrollar una prótesis externa personalizada que mejore simetría, peso y confort frente a soluciones estandarizadas.</p>
+            <p class="meta">2 estudiantes</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 20 Óscar Alberto Álvarez Solano -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Asesor | 2 retos</p>
+        <h2>Óscar Alberto Álvarez Solano</h2>
+        <div class="asesor-list">
+          <div class="reto-card">
+            <h3>Predicción sensorial en cremas cosméticas</h3>
+            <span class="tipo-badge innovacion">Innovación</span>
+            <p class="desc">Desarrollar un panel de no expertos para la evaluación de cremas comerciales. ¿Es posible predecir las sensaciones de un consumidor a la hora de usar una crema?</p>
+            <p class="meta">1 estudiante · Estudiante asignada</p>
+          </div>
+          <div class="reto-card">
+            <h3>Asociación crema–empaque en productos cosméticos</h3>
+            <span class="tipo-badge investigacion">Investigación</span>
+            <p class="desc">Evaluar los efectos acoplados entre las propiedades de una crema y las propiedades de su empaque en la decisión de selección de un usuario. ¿Se puede asociar la naturaleza de una crema con el tipo de empaque?</p>
+            <p class="meta">1 estudiante</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 21 Pablo Ortiz Herrera -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Asesor | 2 retos</p>
+        <h2>Pablo Ortiz Herrera</h2>
+        <div class="asesor-list">
+          <div class="reto-card">
+            <h3>Análisis de ciclo de vida aplicado</h3>
+            <span class="tipo-badge investigacion">Investigación</span>
+            <p class="desc">Caracterizar mediante ACV la cadena de producción del producto de interés y comparar con bases de datos regionales e internacionales. Requiere haber cursado la electiva IQUI de Análisis de Ciclo de Vida.</p>
+            <p class="meta">1 estudiante</p>
+          </div>
+          <div class="reto-card">
+            <h3>Catalizadores de bajo costo para electrolizadores PEM</h3>
+            <span class="tipo-badge investigacion">Investigación</span>
+            <p class="desc">Desarrollar catalizadores basados en Manganeso o mezclas Manganeso/Rutenio y evaluar su desempeño en un electrolizador PEM, buscando reducir el contenido de metales nobles.</p>
+            <p class="meta">1 estudiante · Coasesora: María Teresa Cortés</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 22 Explorador de retos -->
+    <section class="slide" data-slide>
+      <div class="content" style="align-items: center; text-align: center;">
+        <p class="eyebrow">Herramienta</p>
+        <h2>Explorador de retos</h2>
+        <p style="max-width: 55rem; margin: 0 auto;">Consulta el listado completo con filtros por línea temática, estadísticas por asesor y detalles de cada reto directamente en el portal del curso.</p>
+        <div class="cta-preview" style="max-width: 55rem; width: 100%;">
+          <div class="kpi"><div class="n">26</div><div class="lbl">Retos totales</div></div>
+          <div class="kpi"><div class="n">11</div><div class="lbl">Asesores</div></div>
+          <div class="kpi"><div class="n">45</div><div class="lbl">Cupos estudiantes</div></div>
+          <div class="kpi"><div class="n">20</div><div class="lbl">Ya asignados</div></div>
+        </div>
+        <a class="cta-button" href="../retos" target="_top" style="margin-top: 1.25rem;">
+          Abrir explorador
+          <svg style="width: 1.1em; height: 1.1em;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+        </a>
+      </div>
+    </section>
+
+    <!-- 23 Próximos pasos -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Cierre</p>
+        <h2>Próximos pasos</h2>
+        <div class="steps">
+          <div class="step">
+            <span class="num">01</span>
+            <p>Revisen los retos disponibles y piensen cuál les interesa.</p>
+          </div>
+          <div class="step">
+            <span class="num">02</span>
+            <p>La próxima sesión (Mié 8 abr) formaremos equipos y seleccionaremos retos.</p>
+          </div>
+          <div class="step">
+            <span class="num">03</span>
+            <p>Cada equipo tendrá un asesor que los acompañará durante todo el semestre.</p>
+          </div>
+          <div class="step">
+            <span class="num">04</span>
+            <p>La Entrega 1 (Propuesta de Valor) se envía el <strong>22 de abril</strong>.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 24 Preguntas -->
+    <section class="slide title-slide" data-slide>
+      <div class="content" style="align-items: center; text-align: center;">
+        <h1 style="font-size: clamp(3rem, 9vw, 8rem);">¿Preguntas?</h1>
+        <div style="width: 6rem; height: 3px; background: var(--brand-yellow); margin: 0.75rem auto;"></div>
+        <p style="font-weight: 700; color: #fff; font-size: clamp(1.1rem, 2vw, 1.75rem);">Luis H. Reyes</p>
+        <p>lh.reyes@uniandes.edu.co</p>
+        <p>Oficina: viernes 8 am – 12 m, con cita previa</p>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="hud">
+    <span id="hud-title">Bienvenida y retos · IQYA-3050</span>
+    <span id="hud-counter">1 / 24</span>
+  </div>
+
+  <div class="controls">
+    <button aria-label="Anterior" id="prev">‹</button>
+    <button aria-label="Pantalla completa" id="fs">⛶</button>
+    <button aria-label="Siguiente" id="next">›</button>
+  </div>
+
+  <script>
+    (function () {
+      var slides = Array.prototype.slice.call(document.querySelectorAll('[data-slide]'));
+      var i = 0;
+      var counter = document.getElementById('hud-counter');
+      var progress = document.querySelector('.progress');
+
+      function render() {
+        slides.forEach(function (s, idx) { s.classList.toggle('active', idx === i); });
+        if (counter) counter.textContent = (i + 1) + ' / ' + slides.length;
+        if (progress) progress.style.width = ((i + 1) / slides.length * 100) + '%';
+        var isTitle = slides[i] && slides[i].classList.contains('title-slide');
+        document.body.style.background = isTitle ? '#1A1A1A' : '#ffffff';
+      }
+      function go(n) { i = Math.max(0, Math.min(slides.length - 1, n)); render(); }
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); go(i + 1); }
+        else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(i - 1); }
+        else if (e.key === 'Home') { e.preventDefault(); go(0); }
+        else if (e.key === 'End') { e.preventDefault(); go(slides.length - 1); }
+        else if (e.key === 'f' || e.key === 'F') { toggleFs(); }
+      });
+
+      document.getElementById('prev').addEventListener('click', function () { go(i - 1); });
+      document.getElementById('next').addEventListener('click', function () { go(i + 1); });
+      document.getElementById('fs').addEventListener('click', toggleFs);
+
+      function toggleFs() {
+        var el = document.documentElement;
+        if (!document.fullscreenElement) {
+          (el.requestFullscreen || el.webkitRequestFullscreen || function(){}).call(el);
+        } else {
+          (document.exitFullscreen || document.webkitExitFullscreen || function(){}).call(document);
+        }
+      }
+
+      var tx = 0, ty = 0;
+      document.addEventListener('touchstart', function (e) {
+        if (!e.changedTouches[0]) return;
+        tx = e.changedTouches[0].clientX; ty = e.changedTouches[0].clientY;
+      }, { passive: true });
+      document.addEventListener('touchend', function (e) {
+        if (!e.changedTouches[0]) return;
+        var dx = e.changedTouches[0].clientX - tx;
+        var dy = e.changedTouches[0].clientY - ty;
+        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+          if (dx < 0) go(i + 1); else go(i - 1);
+        }
+      }, { passive: true });
+
+      slides.forEach(function (s, idx) {
+        var num = document.createElement('div');
+        num.className = 'slide-number';
+        num.setAttribute('aria-hidden', 'true');
+        num.textContent = String(idx + 1).padStart(2, '0');
+        s.appendChild(num);
+      });
+
+      render();
+    })();
+  </script>
+</body>
+</html>

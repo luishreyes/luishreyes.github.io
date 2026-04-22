@@ -78,6 +78,26 @@ export const CourseLandingPage: React.FC = () => {
               </div>
             </Link>
           </div>
+
+          {course.challenges && (
+            <Link
+              to={`/classroom/${course.slug}/retos`}
+              className="mt-4 group bg-brand-dark rounded-xl shadow-md border border-brand-dark p-6 hover:shadow-lg transition-shadow flex items-start justify-between"
+            >
+              <div>
+                <p className="text-xs font-semibold tracking-widest uppercase text-brand-yellow">Retos</p>
+                <h3 className="mt-1 text-xl font-bold text-zinc-100">{course.challenges.label}</h3>
+                <p className="mt-2 text-sm text-zinc-300">
+                  Explora los proyectos disponibles para {course.challenges.term} con estadísticas y filtros por línea temática.
+                </p>
+              </div>
+              <span className="text-brand-yellow group-hover:text-zinc-100 transition-colors">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+              </span>
+            </Link>
+          )}
         </div>
 
         {course.pillars && course.pillars.length > 0 && (
@@ -167,42 +187,44 @@ export const CourseLandingPage: React.FC = () => {
           )}
         </Section>
 
-        <Section eyebrow="Proyecto semestral" title={course.project.title} description={course.project.overview}>
-          <div className="grid gap-8 lg:grid-cols-2">
-            <div className="bg-white rounded-xl border border-zinc-200 p-6 shadow-sm">
-              <h3 className="text-sm font-semibold tracking-widest uppercase text-brand-yellow-dark">Materias primas</h3>
-              <ul className="mt-3 divide-y divide-zinc-200">
-                {course.project.rawMaterials.map((m) => (
-                  <li key={m.name} className="py-2 flex flex-wrap gap-2 justify-between text-sm">
-                    <span className="font-medium text-brand-dark">{m.name}</span>
-                    <span className="text-brand-gray">{m.outcome}</span>
+        {course.project && (
+          <Section eyebrow="Proyecto semestral" title={course.project.title} description={course.project.overview}>
+            <div className="grid gap-8 lg:grid-cols-2">
+              <div className="bg-white rounded-xl border border-zinc-200 p-6 shadow-sm">
+                <h3 className="text-sm font-semibold tracking-widest uppercase text-brand-yellow-dark">Materias primas</h3>
+                <ul className="mt-3 divide-y divide-zinc-200">
+                  {course.project.rawMaterials.map((m) => (
+                    <li key={m.name} className="py-2 flex flex-wrap gap-2 justify-between text-sm">
+                      <span className="font-medium text-brand-dark">{m.name}</span>
+                      <span className="text-brand-gray">{m.outcome}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="bg-white rounded-xl border border-zinc-200 p-6 shadow-sm">
+                <h3 className="text-sm font-semibold tracking-widest uppercase text-brand-yellow-dark">Alcance del proyecto</h3>
+                <ol className="mt-3 grid gap-2 text-sm text-brand-gray list-decimal list-inside marker:text-brand-yellow-dark marker:font-semibold">
+                  {course.project.scope.map((s, i) => (
+                    <li key={i}>{s}</li>
+                  ))}
+                </ol>
+              </div>
+            </div>
+
+            <div className="mt-6 bg-brand-dark rounded-xl p-6 text-zinc-100">
+              <h3 className="text-sm font-semibold tracking-widest uppercase text-brand-yellow">Trabajo en equipo</h3>
+              <ul className="mt-3 grid gap-2 sm:grid-cols-3 text-sm">
+                {course.project.teamwork.map((t, i) => (
+                  <li key={i} className="flex gap-2">
+                    <span aria-hidden="true" className="text-brand-yellow mt-0.5">›</span>
+                    <span>{t}</span>
                   </li>
                 ))}
               </ul>
             </div>
-
-            <div className="bg-white rounded-xl border border-zinc-200 p-6 shadow-sm">
-              <h3 className="text-sm font-semibold tracking-widest uppercase text-brand-yellow-dark">Alcance del proyecto</h3>
-              <ol className="mt-3 grid gap-2 text-sm text-brand-gray list-decimal list-inside marker:text-brand-yellow-dark marker:font-semibold">
-                {course.project.scope.map((s, i) => (
-                  <li key={i}>{s}</li>
-                ))}
-              </ol>
-            </div>
-          </div>
-
-          <div className="mt-6 bg-brand-dark rounded-xl p-6 text-zinc-100">
-            <h3 className="text-sm font-semibold tracking-widest uppercase text-brand-yellow">Trabajo en equipo</h3>
-            <ul className="mt-3 grid gap-2 sm:grid-cols-3 text-sm">
-              {course.project.teamwork.map((t, i) => (
-                <li key={i} className="flex gap-2">
-                  <span aria-hidden="true" className="text-brand-yellow mt-0.5">›</span>
-                  <span>{t}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </Section>
+          </Section>
+        )}
 
         <Section eyebrow="Contenido" title="Contenido programático" description="Más detalle del cronograma en Bloque Neón.">
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -245,22 +267,26 @@ export const CourseLandingPage: React.FC = () => {
           </div>
         </Section>
 
-        <Section eyebrow="Fechas clave" title="Entregas y retroalimentación">
-          <div className="grid gap-6 lg:grid-cols-3">
-            <DateList title="Bitácoras" items={course.deliveries.bitacoras} />
-            <DateList title="Coevaluaciones" items={course.deliveries.coevaluations} />
-            <DateList title="Retroalimentaciones" items={course.deliveries.feedback} />
-          </div>
-        </Section>
+        {course.deliveries && (
+          <Section eyebrow="Fechas clave" title="Entregas y retroalimentación">
+            <div className="grid gap-6 lg:grid-cols-3">
+              <DateList title="Bitácoras" items={course.deliveries.bitacoras} />
+              <DateList title="Coevaluaciones" items={course.deliveries.coevaluations} />
+              <DateList title="Retroalimentaciones" items={course.deliveries.feedback} />
+            </div>
+          </Section>
+        )}
 
-        <Section eyebrow="Coevaluación" title="Cómo se asigna la nota individual">
-          <div className="grid gap-6 lg:grid-cols-2">
-            <SimpleList title="Importancia" items={course.coevaluation.importance} />
-            <SimpleList title="Aplicación" items={course.coevaluation.application} />
-            <SimpleList title="Procedimiento" items={course.coevaluation.procedure} />
-            <SimpleList title="Ejemplo" items={course.coevaluation.example} accent />
-          </div>
-        </Section>
+        {course.coevaluation && (
+          <Section eyebrow="Coevaluación" title="Cómo se asigna la nota individual">
+            <div className="grid gap-6 lg:grid-cols-2">
+              <SimpleList title="Importancia" items={course.coevaluation.importance} />
+              <SimpleList title="Aplicación" items={course.coevaluation.application} />
+              <SimpleList title="Procedimiento" items={course.coevaluation.procedure} />
+              <SimpleList title="Ejemplo" items={course.coevaluation.example} accent />
+            </div>
+          </Section>
+        )}
 
         <Section eyebrow="Inteligencia artificial" title="Uso de IA generativa en el curso" description={course.aias.intro}>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
@@ -289,32 +315,34 @@ export const CourseLandingPage: React.FC = () => {
           </div>
         </Section>
 
-        <Section eyebrow="ABET" title="Program Educational Objectives">
-          <ul className="grid gap-3">
-            {course.abet.peos.map((p, i) => (
-              <li key={i} className="bg-white rounded-lg border border-zinc-200 p-4 text-sm text-brand-gray leading-relaxed">
-                {p}
-              </li>
-            ))}
-          </ul>
+        {course.abet && (
+          <Section eyebrow="ABET" title="Program Educational Objectives">
+            <ul className="grid gap-3">
+              {course.abet.peos.map((p, i) => (
+                <li key={i} className="bg-white rounded-lg border border-zinc-200 p-4 text-sm text-brand-gray leading-relaxed">
+                  {p}
+                </li>
+              ))}
+            </ul>
 
-          <h3 className="mt-10 text-lg font-semibold text-brand-dark">Student outcomes evaluados</h3>
-          <div className="mt-4 grid gap-4 lg:grid-cols-2">
-            {course.abet.outcomes.map((o) => (
-              <article key={o.title} className="bg-white rounded-xl border border-zinc-200 p-5 shadow-sm">
-                <h4 className="text-sm font-bold text-brand-dark">{o.title}</h4>
-                <ul className="mt-3 space-y-1.5 text-sm text-brand-gray">
-                  {o.indicators.map((ind, i) => (
-                    <li key={i} className="flex gap-2">
-                      <span aria-hidden="true" className="text-brand-yellow-dark">•</span>
-                      <span>{ind}</span>
-                    </li>
-                  ))}
-                </ul>
-              </article>
-            ))}
-          </div>
-        </Section>
+            <h3 className="mt-10 text-lg font-semibold text-brand-dark">Student outcomes evaluados</h3>
+            <div className="mt-4 grid gap-4 lg:grid-cols-2">
+              {course.abet.outcomes.map((o) => (
+                <article key={o.title} className="bg-white rounded-xl border border-zinc-200 p-5 shadow-sm">
+                  <h4 className="text-sm font-bold text-brand-dark">{o.title}</h4>
+                  <ul className="mt-3 space-y-1.5 text-sm text-brand-gray">
+                    {o.indicators.map((ind, i) => (
+                      <li key={i} className="flex gap-2">
+                        <span aria-hidden="true" className="text-brand-yellow-dark">•</span>
+                        <span>{ind}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </article>
+              ))}
+            </div>
+          </Section>
+        )}
 
         <Section eyebrow="Políticas" title="Reglas del curso">
           <div className="grid gap-4 sm:grid-cols-2">

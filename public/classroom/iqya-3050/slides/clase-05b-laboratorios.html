@@ -1,0 +1,574 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Sesión 5B — Laboratorios · IQYA-3050</title>
+  <style>
+    :root {
+      --brand-dark: #1A1A1A; --brand-yellow: #FFBF00; --brand-yellow-dark: #E6AC00;
+      --brand-gray: #555555; --surface: #ffffff; --muted: #f4f4f5;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; height: 100%; width: 100%;
+      background: var(--brand-dark); color: var(--brand-dark);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      overflow: hidden; -webkit-text-size-adjust: 100%; }
+    .deck { position: relative; width: 100vw; height: 100vh; height: 100dvh; }
+    .slide { position: absolute; inset: 0; display: none; align-items: center; justify-content: center;
+      padding: clamp(1rem, 4vw, 3.5rem); background: var(--surface); opacity: 0;
+      transition: opacity 260ms ease; overflow-y: auto; }
+    .slide.active { display: flex; opacity: 1; }
+    .slide .content { width: 100%; max-width: 92rem; margin: auto 0;
+      display: flex; flex-direction: column; gap: clamp(0.75rem, 1.5vw, 1.5rem); }
+    .eyebrow { text-transform: uppercase; letter-spacing: 0.2em;
+      font-size: clamp(0.65rem, 1vw, 1rem); color: var(--brand-yellow-dark); font-weight: 600; }
+    h1 { font-size: clamp(1.75rem, 5.5vw, 5.75rem); line-height: 1.05; margin: 0;
+      color: var(--brand-dark); font-weight: 700; letter-spacing: -0.02em; }
+    h2 { font-size: clamp(1.25rem, 3.4vw, 3.25rem); line-height: 1.15; margin: 0; font-weight: 700; }
+    h2 .sub { display: block; font-size: 0.55em; font-weight: 500; color: var(--brand-gray); margin-top: 0.15em; }
+    p, li { font-size: clamp(0.95rem, 1.8vw, 1.75rem); line-height: 1.55; color: var(--brand-gray); margin: 0; }
+    ul, ol { padding-left: 1.25em; margin: 0; display: flex; flex-direction: column; gap: 0.45em; }
+    li::marker { color: var(--brand-yellow-dark); }
+    .slide.title-slide { background: linear-gradient(135deg, #141414 0%, #1A1A1A 50%, #2a2a2a 100%); color: #fff; }
+    .slide.title-slide h1 { color: #fff; }
+    .slide.title-slide p { color: #d4d4d8; }
+    .slide.title-slide .eyebrow { color: var(--brand-yellow); }
+    .pill-row { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 0.5rem; }
+    .pill { display: inline-flex; align-items: center; padding: 0.35em 0.9em; border-radius: 999px;
+      background: var(--muted); color: var(--brand-dark); font-size: clamp(0.75rem, 1.3vw, 1.35rem); font-weight: 500; }
+    .slide.title-slide .pill { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); }
+    .grid { display: grid; gap: clamp(0.75rem, 1.5vw, 1.25rem); }
+    .grid.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    @media (max-width: 640px) { .grid.cols-2, .grid.cols-3 { grid-template-columns: 1fr; } }
+    .card { background: var(--muted); border-radius: 0.75rem; padding: clamp(0.9rem, 1.5vw, 1.35rem); }
+    .card h3 { font-size: clamp(1rem, 2vw, 1.75rem); margin: 0 0 0.35em; color: var(--brand-dark); font-weight: 600; }
+    .card p { font-size: clamp(0.85rem, 1.4vw, 1.3rem); }
+    .card ul li { font-size: clamp(0.85rem, 1.4vw, 1.25rem); }
+    .card a { color: var(--brand-yellow-dark); text-decoration: underline; }
+    .regulation-list {
+      background: #fff; border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 0.5rem; padding: 1rem 1.25rem;
+    }
+    .regulation-list .header {
+      background: rgba(0,0,0,0.05); padding: 0.5rem 0.75rem;
+      border-radius: 0.35rem; font-weight: 600;
+      font-size: clamp(0.8rem, 1.15vw, 1.05rem); color: var(--brand-dark);
+      letter-spacing: 0.05em; text-transform: uppercase;
+    }
+    .regulation-list ul {
+      list-style: none; padding: 0 0 0.5rem; margin: 0.7rem 0;
+      display: flex; flex-direction: column; gap: 0.35em;
+    }
+    .regulation-list ul li {
+      font-size: clamp(0.85rem, 1.3vw, 1.2rem);
+      color: var(--brand-gray); padding-left: 1.2em; position: relative;
+    }
+    .regulation-list ul li::before {
+      content: '›'; position: absolute; left: 0;
+      color: var(--brand-yellow-dark); font-weight: 700;
+    }
+    .regulation-list ul li.highlight {
+      background: #fef3c7;
+      border-left: 3px solid var(--brand-yellow-dark);
+      padding: 0.3em 0.5em 0.3em 1em; margin-left: -0.5em;
+      border-radius: 0.2em;
+      color: #78350f; font-weight: 600;
+    }
+    .banner { background: #fef3c7; border-left: 4px solid var(--brand-yellow-dark);
+      padding: 0.9rem 1.1rem; border-radius: 0.5rem;
+      color: #78350f; font-size: clamp(0.85rem, 1.4vw, 1.25rem); }
+    .banner.warn { background: #fee2e2; border-left-color: #dc2626; color: #7f1d1d; }
+    .booqui-mock {
+      background: #fff; border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 0.5rem; padding: 1rem 1.25rem;
+      display: grid; grid-template-columns: 1fr 2fr; gap: 0.8rem;
+      align-items: center;
+      font-size: clamp(0.8rem, 1.2vw, 1.1rem);
+    }
+    .booqui-mock .logo {
+      background: #2563eb; color: #fff;
+      text-align: center; padding: 1rem; border-radius: 0.3em;
+      font-weight: 700; font-size: clamp(1.1rem, 1.8vw, 1.6rem);
+      letter-spacing: 0.05em;
+    }
+    .booqui-mock p { color: var(--brand-gray); }
+    .pes-form {
+      background: var(--muted); padding: 1rem 1.25rem;
+      border-radius: 0.5rem;
+      font-size: clamp(0.8rem, 1.2vw, 1.1rem);
+    }
+    .pes-form .row {
+      padding: 0.4rem 0;
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+    }
+    .pes-form .row:last-child { border-bottom: none; }
+    .pes-form .label {
+      color: var(--brand-gray); font-size: clamp(0.75rem, 1.1vw, 1rem);
+      display: block; margin-bottom: 0.2em;
+    }
+    .pes-form .value {
+      color: var(--brand-dark); font-weight: 500;
+      background: #fff; padding: 0.35em 0.6em; border-radius: 0.25rem;
+      display: block;
+    }
+    .pending-table {
+      background: #fff; border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 0.5rem; overflow: hidden;
+      font-size: clamp(0.75rem, 1.1vw, 1.05rem);
+    }
+    .pending-table .hdr {
+      background: var(--brand-dark); color: #fff;
+      text-align: center; padding: 0.5em 1em;
+      font-weight: 600;
+    }
+    .pending-table .row {
+      display: grid; grid-template-columns: 1fr 1fr 1fr 1fr;
+      padding: 0.45em 1em;
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+      color: var(--brand-gray);
+    }
+    .pending-table .row:nth-child(even) { background: #fafafa; }
+    @media (max-width: 768px) {
+      .pending-table .row { grid-template-columns: 1fr 1fr; font-size: 0.75rem; }
+    }
+    .reserve-cat {
+      background: #fff; border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 0.5rem; padding: 0.85rem 1rem;
+      text-align: center;
+    }
+    .reserve-cat h3 { margin: 0 0 0.5em; color: #2563eb;
+      font-size: clamp(0.9rem, 1.4vw, 1.25rem); }
+    .reserve-cat .btn {
+      display: block; background: #22c55e; color: #fff;
+      padding: 0.4em; border-radius: 0.3rem;
+      font-size: clamp(0.75rem, 1.1vw, 1rem); font-weight: 600;
+    }
+    .contact-card {
+      background: var(--muted); padding: clamp(1rem, 2vw, 1.75rem);
+      border-radius: 0.5rem; text-align: center;
+    }
+    .contact-card h3 {
+      font-size: clamp(1.25rem, 2.5vw, 2.25rem);
+      margin: 0 0 0.35em; color: var(--brand-dark);
+    }
+    .contact-card p { font-size: clamp(0.9rem, 1.4vw, 1.3rem); }
+    .contact-card a {
+      color: var(--brand-yellow-dark); text-decoration: underline;
+      font-weight: 600;
+    }
+    .contact-card .hours {
+      margin-top: 1rem;
+      font-size: clamp(1.1rem, 1.8vw, 1.6rem);
+      color: var(--brand-dark); font-weight: 600;
+    }
+    .hero-img { border-radius: 0.5rem; border: 1px solid rgba(0,0,0,0.08); overflow: hidden; background: #fff; }
+    .hero-img img { width: 100%; height: auto; display: block; }
+    .screenshot { border-radius: 0.4rem; border: 1px solid rgba(0,0,0,0.08); background: #fff; overflow: hidden; }
+    .screenshot img { width: 100%; height: auto; display: block; }
+    .slide-number { position: absolute; bottom: clamp(0.5rem, 2vw, 1.5rem);
+      left: clamp(1rem, 3vw, 2.5rem); font-size: clamp(4rem, 12vw, 10rem);
+      font-weight: 800; line-height: 1; color: rgba(0, 0, 0, 0.04);
+      pointer-events: none; z-index: 0; user-select: none; letter-spacing: -0.04em; }
+    .slide.title-slide .slide-number { color: rgba(255, 255, 255, 0.06); }
+    .slide:not(.title-slide)::before { content: ''; position: absolute;
+      top: clamp(1rem, 3vw, 2.5rem); right: clamp(1rem, 3vw, 2.5rem);
+      width: clamp(2rem, 5vw, 4rem); height: clamp(2rem, 5vw, 4rem);
+      border-top: 2.5px solid var(--brand-yellow); border-right: 2.5px solid var(--brand-yellow);
+      pointer-events: none; z-index: 1; }
+    .slide.title-slide::before { content: ''; position: absolute;
+      bottom: clamp(1rem, 3vw, 2.5rem); left: clamp(1rem, 3vw, 2.5rem);
+      width: clamp(2rem, 5vw, 4rem); height: clamp(2rem, 5vw, 4rem);
+      border-bottom: 2.5px solid var(--brand-yellow); border-left: 2.5px solid var(--brand-yellow);
+      opacity: 0.4; pointer-events: none; z-index: 1; }
+    .hud { position: fixed; left: 0; right: 0; bottom: 0; padding: 0.5rem 1rem;
+      display: flex; justify-content: space-between; align-items: center;
+      color: var(--brand-gray); font-size: 0.75rem; pointer-events: none; z-index: 10; }
+    .controls { position: fixed; right: 1rem; bottom: 2.5rem; display: flex; gap: 0.5rem; z-index: 11; }
+    .controls button { -webkit-appearance: none; appearance: none;
+      border: 1px solid rgba(0,0,0,0.1); background: rgba(255,255,255,0.9);
+      color: var(--brand-dark); width: 2.5rem; height: 2.5rem; border-radius: 999px;
+      font-size: 1rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.12); }
+    .progress { position: fixed; top: 0; left: 0; height: 3px; background: var(--brand-yellow);
+      transition: width 260ms ease; z-index: 20; }
+    @media (prefers-reduced-motion: reduce) { .slide, .progress { transition: none; } }
+  </style>
+</head>
+<body>
+  <div class="progress" style="width:0"></div>
+  <div class="deck">
+
+    <!-- 01 Portada -->
+    <section class="slide title-slide active" data-slide>
+      <div class="content">
+        <p class="eyebrow">IQYA 3050 · Sesión 5B · 29 abr 2026</p>
+        <h1>Laboratorios</h1>
+        <p>Reglamentos, reservas, formatos PES, cursos de seguridad, inventario de sustancias químicas y proveedores · by Luis H. Reyes</p>
+        <div class="pill-row">
+          <span class="pill">BooQui</span>
+          <span class="pill">Seguridad</span>
+          <span class="pill">Montajes</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 02 BooQui -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Sistema</p>
+        <h2>BooQui</h2>
+        <div class="grid cols-2" style="align-items: start;">
+          <div>
+            <div class="hero-img"><img src="img/dia5b-p02-x82.jpeg" alt="Aplicación móvil de BooQui mostrando la mascota institucional y chats" /></div>
+            <div class="hero-img" style="margin-top: 0.75rem;"><img src="img/dia5b-p02-x80.jpeg" alt="Imagen promocional de BooQui como sistema de reservas de materiales, sustancias químicas, espacios y equipos" /></div>
+          </div>
+          <div class="regulation-list">
+            <p class="header">Reglamentos y formatos de laboratorio</p>
+            <ul>
+              <li>Política de uso de equipos</li>
+              <li>Reglamento general para los laboratorios de IQyA</li>
+              <li>Reglamento laboratorio de prototipado de alimentos</li>
+              <li>Listado de gases especiales en laboratorios</li>
+              <li>Sustancias químicas</li>
+              <li>Listado de equipos de laboratorios IQUI–IALI</li>
+              <li>Cálculo presupuesto uso de equipos</li>
+              <li>Formato autorización trabajo en horario no hábil</li>
+              <li>Directriz para montajes</li>
+              <li>Protocolo general de bioseguridad — Facultad de Ingeniería</li>
+              <li>Formato consentimiento informado Ingeniería de Alimentos</li>
+              <li>Instructivo de uso y manejo de BooQui</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 03 BooQui - PES -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Formato</p>
+        <h2>BooQui — PES<span class="sub">Planeación, Ejecución y Seguimiento</span></h2>
+        <div class="banner">Envío mínimo <strong>tres días antes</strong> (indispensable).</div>
+        <div class="screenshot"><img src="img/dia5b-p03-x111.jpeg" alt="Captura real del formato PES con declaración de normas, miembros del grupo, curso, profesor asesor, procedimiento y fecha de inicio" /></div>
+      </div>
+    </section>
+
+    <!-- 04 Cursos virtuales -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Formación</p>
+        <h2>Cursos virtuales</h2>
+        <p>Vigencia de <strong>un año</strong>.</p>
+        <div class="grid cols-2" style="align-items: start;">
+          <div class="hero-img"><img src="img/dia5b-p04-x147.jpeg" alt="Ilustración de pantalla con gráficos coloridos representando cursos virtuales" /></div>
+          <div class="grid" style="gap: 0.7rem;">
+            <div class="card">
+              <h3>Obligatorios para todos</h3>
+              <ul>
+                <li>Módulo básico — Seguridad y salud en lab-tall.</li>
+                <li>Módulo específico — Seguridad química y EPP.</li>
+              </ul>
+            </div>
+            <div class="card">
+              <h3>Obligatorios para algunos</h3>
+              <p>Módulo específico — Riesgo biológico, manipulación de alimentos, nanoseguridad.</p>
+              <div style="margin-top: 0.75rem; padding: 0.6rem 0.9rem; background: #fff; border-radius: 0.4rem; text-align: center;">
+                <p style="color: var(--brand-dark); font-weight: 700; margin: 0; font-size: clamp(0.9rem, 1.3vw, 1.2rem);">ÉTICA DE LA INVESTIGACIÓN</p>
+                <p style="color: var(--brand-gray); font-size: clamp(0.7rem, 1vw, 0.95rem); margin-top: 0.2em;">AD_ET_INV · CONTINUO</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 05 Charlas de seguridad -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Presencial</p>
+        <h2>Charlas de seguridad<span class="sub">Obligatorias para:</span></h2>
+        <div class="grid cols-2" style="align-items: center;">
+          <div class="hero-img"><img src="img/dia5b-p05-x158.jpeg" alt="Dos científicas trabajando en laboratorio con implementos de seguridad" /></div>
+          <div class="grid" style="gap: 0.7rem;">
+            <div class="card">
+              <h3>Trabajo en laboratorio de Biotecnología y Bioquímica</h3>
+              <p>Seguridad y normas generales.</p>
+            </div>
+            <div class="card">
+              <h3>Trabajo con nanomateriales</h3>
+              <p>Charla con SST.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 06 Material roto y pendientes -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">BooQui · Pendientes</p>
+        <h2>Material roto y otros pendientes</h2>
+        <div class="banner">Requisito para reservar y <strong>requisito para grado</strong>.</div>
+        <div class="screenshot"><img src="img/dia5b-p06-x198.jpeg" alt="Captura real del listado de pendientes por devolución en BooQui con fechas, horarios y ubicaciones" /></div>
+        <p style="font-style: italic; font-size: clamp(0.8rem, 1.2vw, 1.1rem);">Cualquier material roto sin reportar o sin reponer bloquea nuevas reservas y puede impedir la graduación.</p>
+      </div>
+    </section>
+
+    <!-- 07 BooQui Reservas -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">BooQui · Reservas</p>
+        <h2>Selecciona una categoría</h2>
+        <div class="screenshot"><img src="img/dia5b-p07-x211.png" alt="Pantalla de BooQui con las categorías de reserva ML 418 y ML 416" /></div>
+      </div>
+    </section>
+
+    <!-- 08 Inventario de sustancias químicas -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">BooQui · Insumos</p>
+        <h2>Inventario de sustancias químicas<span class="sub">Importante: revisar la ficha de datos de seguridad (FDS)</span></h2>
+        <div class="grid cols-2" style="align-items: center;">
+          <div class="hero-img"><img src="img/dia5b-p08-x224.jpeg" alt="Ilustración de frascos de laboratorio con sustancias químicas" /></div>
+          <div>
+            <div class="screenshot"><img src="img/dia5b-p08-x230.jpeg" alt="Captura del buscador de insumos en BooQui mostrando 1.104 insumos" /></div>
+            <p style="margin-top: 0.75rem; font-family: 'SF Mono', Monaco, monospace; font-size: clamp(0.75rem, 1.1vw, 1rem); color: var(--brand-yellow-dark); word-break: break-all;">https://ingquimicayalimentos.bookeau.com/es/loans/operator/consumables</p>
+          </div>
+        </div>
+        <div class="banner">Antes de usar cualquier sustancia, revisar su <strong>ficha de datos de seguridad (FDS)</strong> para conocer peligros, EPP y procedimiento de manejo seguro.</div>
+      </div>
+    </section>
+
+    <!-- 09 Montajes -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Montajes</p>
+        <h2>Cumplir directriz</h2>
+        <div class="grid cols-2" style="align-items: start;">
+          <div>
+            <p>Todo montaje dentro del laboratorio debe cumplir la <strong>Directriz para montajes</strong> publicada en el sistema de reglamentos. Esta directriz establece los requisitos mínimos de seguridad, estabilidad mecánica, compatibilidad química y supervisión.</p>
+            <div class="hero-img" style="margin-top: 0.75rem;"><img src="img/dia5b-p09-x246.jpeg" alt="Ilustración de montaje de laboratorio con conexiones entre reactores y matraces" /></div>
+          </div>
+          <div class="regulation-list">
+            <p class="header">Ubicación de la directriz</p>
+            <ul>
+              <li>Política de uso de equipos</li>
+              <li>Reglamento general para los laboratorios de IQyA</li>
+              <li>Reglamento laboratorio de prototipado de alimentos</li>
+              <li>Listado de gases especiales en laboratorios</li>
+              <li>Sustancias químicas</li>
+              <li>Listado de equipos de laboratorios IQUI–IALI</li>
+              <li>Cálculo presupuesto uso de equipos</li>
+              <li>Formato autorización trabajo en horario no hábil</li>
+              <li class="highlight">Directriz para montajes ← este documento</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10 Reglamentos -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Reglamentos</p>
+        <h2>Leer detalladamente</h2>
+        <div class="grid cols-2" style="align-items: start;">
+          <div>
+            <p>Los dos reglamentos que regulan directamente su trabajo en el laboratorio son de <strong>lectura obligatoria</strong>. Revíselos antes de empezar cualquier práctica o montaje.</p>
+            <div class="hero-img" style="margin-top: 0.75rem;"><img src="img/dia5b-p10-x260.jpeg" alt="Documento de guidelines con líneas de texto representando los reglamentos" /></div>
+          </div>
+          <div class="regulation-list">
+            <p class="header">Reglamentos clave</p>
+            <ul>
+              <li>Política de uso de equipos</li>
+              <li class="highlight">Reglamento general para los laboratorios de Ingeniería Química y de Alimentos</li>
+              <li class="highlight">Reglamento laboratorio de prototipado de alimentos</li>
+              <li>Listado de gases especiales en laboratorios</li>
+              <li>Sustancias químicas</li>
+              <li>Listado de equipos de laboratorios IQUI–IALI</li>
+              <li>Protocolo general de bioseguridad — Facultad de Ingeniería</li>
+              <li>Formato consentimiento informado Ingeniería de Alimentos</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 11 Horario no hábil -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Autorización</p>
+        <h2>Horario no hábil</h2>
+        <div class="grid cols-3" style="align-items: start;">
+          <div>
+            <ul>
+              <li>Aplica para horarios donde <strong>no estén</strong> los técnicos o auxiliares.</li>
+              <li>Vigencia: <strong>15 días</strong>.</li>
+              <li>Estudiante de posgrado responsable. <strong>Mínimo dos personas</strong>.</li>
+            </ul>
+          </div>
+          <div class="hero-img"><img src="img/dia5b-p11-x279.jpeg" alt="Listado de reglamentos con el formato de horario no hábil resaltado" /></div>
+          <div class="regulation-list">
+            <p class="header">Formato requerido</p>
+            <ul>
+              <li>Política de uso de equipos</li>
+              <li>Reglamento general IQyA</li>
+              <li>Listado de gases especiales</li>
+              <li>Sustancias químicas</li>
+              <li>Listado de equipos IQUI–IALI</li>
+              <li>Cálculo presupuesto equipos</li>
+              <li class="highlight">Formato horario no hábil</li>
+              <li>Directriz para montajes</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 12 Otros - Compras -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Compras externas</p>
+        <h2>Otros</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Compras de sustancias y materiales</h3>
+            <ol style="list-style: decimal; padding-left: 1.25em;">
+              <li>Consultar disponibilidad.</li>
+              <li>Enviar cotización.</li>
+            </ol>
+          </div>
+          <div class="card">
+            <h3>Está prohibida la compra de sustancias por su cuenta</h3>
+            <p>Excepto lo de menos de <strong>$20.000 pesos</strong>, como alimentos.</p>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Consultar si se tiene espacio para la cantidad requerida</h3>
+          <p><strong>Sustancias prohibidas y con restricciones:</strong> estupefacientes, <span style="color: #dc2626; font-weight: 600;">Indumil, psicoactivos y derivados</span>.</p>
+          <p style="margin-top: 0.4em;">Derivados del cannabis <em>no psicoactivos</em> con contenido THC &lt; 1 %. Hoja de coca y sus derivados.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 13 Otros - Proveedores -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Proveedores</p>
+        <h2>Otros · proveedores autorizados</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Proveedores sustancias químicas y medios de cultivo</h3>
+            <ul style="list-style: none; padding: 0;">
+              <li><a href="mailto:aurosquimicos@gmail.com">aurosquimicos@gmail.com</a></li>
+              <li><a href="mailto:asesor05@islasas.com">asesor05@islasas.com</a></li>
+              <li><a href="mailto:ventas5@elementosquimicos.com.co">ventas5@elementosquimicos.com.co</a></li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Proveedores sustancias químicas Sigma–Merck</h3>
+            <ul style="list-style: none; padding: 0;">
+              <li><a href="mailto:asesorventas8@blamis.com.co">asesorventas8@blamis.com.co</a></li>
+              <li><a href="mailto:jaime.comercial@gygsucesores.com">jaime.comercial@gygsucesores.com</a></li>
+              <li><a href="mailto:julieta.zapata@merckgroup.com">julieta.zapata@merckgroup.com</a></li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Proveedores de materiales</h3>
+            <ul style="list-style: none; padding: 0;">
+              <li><a href="mailto:aurosquimicos@gmail.com">aurosquimicos@gmail.com</a></li>
+              <li><a href="mailto:disproquilab@hotmail.com">disproquilab@hotmail.com</a></li>
+              <li><a href="mailto:ventas5@elementosquimicos.com.co">ventas5@elementosquimicos.com.co</a></li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Proveedor de alimentos</h3>
+            <ul style="list-style: none; padding: 0;">
+              <li><a href="mailto:wamlogic@gmail.com">wamlogic@gmail.com</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 14 Contacto -->
+    <section class="slide title-slide" data-slide>
+      <div class="content" style="align-items: center; text-align: center;">
+        <p class="eyebrow">Contacto</p>
+        <h1 style="font-size: clamp(2rem, 5.5vw, 4.5rem);">José Mauricio Gómez Parra</h1>
+        <p>Correo electrónico y Teams</p>
+        <p style="font-size: clamp(1.1rem, 1.7vw, 1.5rem); color: var(--brand-yellow); margin-top: 0.5em;"><a href="mailto:jm.gomez2478@uniandes.edu.co" style="color: var(--brand-yellow); text-decoration: underline;">jm.gomez2478@uniandes.edu.co</a></p>
+        <div style="width: 6rem; height: 3px; background: var(--brand-yellow); margin: 1.5rem auto;"></div>
+        <p style="font-size: clamp(1.2rem, 2vw, 1.8rem); font-weight: 600; color: #fff;">Horario de atención · Oficina ML 310</p>
+        <p style="font-size: clamp(1rem, 1.5vw, 1.35rem); color: #d4d4d8;">Martes y jueves de 2:00 pm a 4:00 pm</p>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="hud">
+    <span>Laboratorios · IQYA-3050</span>
+    <span id="hud-counter">1 / 14</span>
+  </div>
+
+  <div class="controls">
+    <button aria-label="Anterior" id="prev">‹</button>
+    <button aria-label="Pantalla completa" id="fs">⛶</button>
+    <button aria-label="Siguiente" id="next">›</button>
+  </div>
+
+  <script>
+    (function () {
+      var slides = Array.prototype.slice.call(document.querySelectorAll('[data-slide]'));
+      var i = 0;
+      var counter = document.getElementById('hud-counter');
+      var progress = document.querySelector('.progress');
+      function render() {
+        slides.forEach(function (s, idx) { s.classList.toggle('active', idx === i); });
+        if (counter) counter.textContent = (i + 1) + ' / ' + slides.length;
+        if (progress) progress.style.width = ((i + 1) / slides.length * 100) + '%';
+        var isTitle = slides[i] && slides[i].classList.contains('title-slide');
+        document.body.style.background = isTitle ? '#1A1A1A' : '#ffffff';
+      }
+      function go(n) { i = Math.max(0, Math.min(slides.length - 1, n)); render(); }
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); go(i + 1); }
+        else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(i - 1); }
+        else if (e.key === 'Home') { e.preventDefault(); go(0); }
+        else if (e.key === 'End') { e.preventDefault(); go(slides.length - 1); }
+        else if (e.key === 'f' || e.key === 'F') { toggleFs(); }
+      });
+      document.getElementById('prev').addEventListener('click', function () { go(i - 1); });
+      document.getElementById('next').addEventListener('click', function () { go(i + 1); });
+      document.getElementById('fs').addEventListener('click', toggleFs);
+      function toggleFs() {
+        var el = document.documentElement;
+        if (!document.fullscreenElement) { (el.requestFullscreen || el.webkitRequestFullscreen || function(){}).call(el); }
+        else { (document.exitFullscreen || document.webkitExitFullscreen || function(){}).call(document); }
+      }
+      var tx = 0, ty = 0;
+      document.addEventListener('touchstart', function (e) {
+        if (!e.changedTouches[0]) return;
+        tx = e.changedTouches[0].clientX; ty = e.changedTouches[0].clientY;
+      }, { passive: true });
+      document.addEventListener('touchend', function (e) {
+        if (!e.changedTouches[0]) return;
+        var dx = e.changedTouches[0].clientX - tx;
+        var dy = e.changedTouches[0].clientY - ty;
+        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+          if (dx < 0) go(i + 1); else go(i - 1);
+        }
+      }, { passive: true });
+      slides.forEach(function (s, idx) {
+        var num = document.createElement('div');
+        num.className = 'slide-number'; num.setAttribute('aria-hidden', 'true');
+        num.textContent = String(idx + 1).padStart(2, '0');
+        s.appendChild(num);
+      });
+      render();
+    })();
+  </script>
+</body>
+</html>
