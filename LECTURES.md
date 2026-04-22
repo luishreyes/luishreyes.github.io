@@ -442,6 +442,35 @@ pattern = re.compile(r'(?<!\$)\$(?!\$)([^$\n]*?\{[^$\n]*?)\$(?!\$)')
 # NOTA: no aplicar dentro de template literals `src={\`...${id}...\`}` — puede romper URLs
 ```
 
+## Regla crítica: contenido compartido debe ir dentro de `activeSection === null`
+
+**Error común**: poner el párrafo introductorio, la imagen hero o el callout de aplicación del curso **antes** del primer `{isVisible(...)}` block. Eso los hace aparecer SIEMPRE, incluso cuando el usuario filtra con el TOC a una sola sección — se repiten en cada click como ruido visual.
+
+**Regla**: cualquier contenido que deba aparecer **solamente en el modo "Ver todo"** debe envolverse en `{activeSection === null && (...)}`:
+
+```tsx
+<div className="reading-prose">
+  {/* Intro, hero image, callout de aplicación del proyecto → solo en Ver todo */}
+  {activeSection === null && (
+    <>
+      <p className="text-lg leading-relaxed text-brand-gray">
+        Esta lectura acompaña la sesión sobre ...
+      </p>
+      <Figure src="..." alt="..." caption="..." />
+      <InfoCallout title="📌 Aplicación al proyecto del curso">
+        ...
+      </InfoCallout>
+    </>
+  )}
+
+  {/* Secciones normales */}
+  {isVisible('seccion-1') && (<>...</>)}
+  {isVisible('seccion-2') && (<>...</>)}
+</div>
+```
+
+Si el contenido debería repetirse cuando se filtra a una sección específica, entonces sí va fuera — pero esos casos son raros. En la práctica: intro + hero + callouts de "aplicación al proyecto" / "advertencia general" van dentro del bloque `activeSection === null`.
+
 ## Callouts — fix del color de `<strong>` / `<em>` / `<a>` dentro de `.not-prose`
 
 Los callouts tienen fondo oscuro (`bg-brand-dark`) con texto claro (`text-zinc-300`). El problema: `.reading-prose strong { color: #1A1A1A }` en `index.css` cascadea dentro y hace el **negrita invisible** sobre el fondo oscuro.

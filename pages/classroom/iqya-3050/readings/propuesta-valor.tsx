@@ -280,13 +280,15 @@ const PropuestaValor: React.FC = () => {
 
         {/* Contenido */}
         <div className="reading-prose">
-          <p className="text-lg leading-relaxed text-brand-gray">
-            Esta guía acompaña la entrega de la <strong>propuesta de valor</strong> del seminario. La
-            propuesta de valor es el documento inicial que articula <em>qué</em> están desarrollando,
-            <em> para quién</em>, <em>por qué importa</em> y <em>qué la hace diferente</em>. Es el
-            punto de partida del proyecto de desarrollo profesional y la base sobre la que se construyen
-            todas las entregas siguientes.
-          </p>
+          {activeSection === null && (
+            <p className="text-lg leading-relaxed text-brand-gray">
+              Esta guía acompaña la entrega de la <strong>propuesta de valor</strong> del seminario. La
+              propuesta de valor es el documento inicial que articula <em>qué</em> están desarrollando,
+              <em> para quién</em>, <em>por qué importa</em> y <em>qué la hace diferente</em>. Es el
+              punto de partida del proyecto de desarrollo profesional y la base sobre la que se construyen
+              todas las entregas siguientes.
+            </p>
+          )}
 
           {isVisible('introduccion') && (
             <>

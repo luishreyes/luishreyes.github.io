@@ -865,42 +865,46 @@ const TransporteLiquidos: React.FC = () => {
 
         {/* Contenido */}
         <div className="reading-prose">
-          <p className="text-lg leading-relaxed text-brand-gray">
-            Esta lectura acompaña la sesión sobre <strong>transporte de líquidos</strong> en la
-            industria. Revisaremos las propiedades del fluido que gobiernan su flujo, cómo se
-            cuantifican las pérdidas de energía en tuberías, y los principales desafíos que
-            enfrenta un ingeniero al diseñar un sistema de transporte. El material es la base
-            sobre la cual construiremos, en la siguiente sesión, el estudio de las bombas.
-          </p>
+          {activeSection === null && (
+            <>
+              <p className="text-lg leading-relaxed text-brand-gray">
+                Esta lectura acompaña la sesión sobre <strong>transporte de líquidos</strong> en la
+                industria. Revisaremos las propiedades del fluido que gobiernan su flujo, cómo se
+                cuantifican las pérdidas de energía en tuberías, y los principales desafíos que
+                enfrenta un ingeniero al diseñar un sistema de transporte. El material es la base
+                sobre la cual construiremos, en la siguiente sesión, el estudio de las bombas.
+              </p>
 
-          <Figure
-            src="/classroom/iqya-2031/readings/transporte-liquidos-01.gif"
-            alt="Transporte de líquidos en la industria"
-            caption="El transporte de líquidos conecta todas las etapas del proceso industrial: desde la alimentación de materias primas hasta la distribución del producto final."
-            maxWidth="600px"
-          />
+              <Figure
+                src="/classroom/iqya-2031/readings/transporte-liquidos-01.gif"
+                alt="Transporte de líquidos en la industria"
+                caption="El transporte de líquidos conecta todas las etapas del proceso industrial: desde la alimentación de materias primas hasta la distribución del producto final."
+                maxWidth="600px"
+              />
 
-          <InfoCallout title="📌 Aplicación al proyecto del curso">
-            Si tu proyecto incluye el transporte de un líquido entre equipos o desde/hacia
-            almacenamiento, para esta parte deberás:
-            <ul className="list-disc pl-5 mt-2 space-y-1">
-              <li>
-                <strong>Caracterizar el fluido:</strong> determinar o estimar su densidad,
-                viscosidad y presión de vapor a la temperatura de operación.
-              </li>
-              <li>
-                <strong>Diseñar la línea de tubería:</strong> proponer un diámetro y material,
-                y estimar su longitud y accesorios.
-              </li>
-              <li>
-                <strong>Calcular las pérdidas de presión totales</strong> ($h_L$) en la línea.
-              </li>
-              <li>
-                <strong>Estimar la cabeza total del sistema</strong> que una bomba necesitaría
-                vencer, considerando elevación, presiones en los puntos inicial y final, y $h_L$.
-              </li>
-            </ul>
-          </InfoCallout>
+              <InfoCallout title="📌 Aplicación al proyecto del curso">
+                Si tu proyecto incluye el transporte de un líquido entre equipos o desde/hacia
+                almacenamiento, para esta parte deberás:
+                <ul className="list-disc pl-5 mt-2 space-y-1">
+                  <li>
+                    <strong>Caracterizar el fluido:</strong> determinar o estimar su densidad,
+                    viscosidad y presión de vapor a la temperatura de operación.
+                  </li>
+                  <li>
+                    <strong>Diseñar la línea de tubería:</strong> proponer un diámetro y material,
+                    y estimar su longitud y accesorios.
+                  </li>
+                  <li>
+                    <strong>Calcular las pérdidas de presión totales</strong> ($h_L$) en la línea.
+                  </li>
+                  <li>
+                    <strong>Estimar la cabeza total del sistema</strong> que una bomba necesitaría
+                    vencer, considerando elevación, presiones en los puntos inicial y final, y $h_L$.
+                  </li>
+                </ul>
+              </InfoCallout>
+            </>
+          )}
 
           {isVisible('introduccion') && (
             <>

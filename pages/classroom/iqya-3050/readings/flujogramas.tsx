@@ -324,12 +324,14 @@ const Flujogramas: React.FC = () => {
 
         {/* Contenido */}
         <div className="reading-prose">
-          <p className="text-lg leading-relaxed text-brand-gray">
-            Esta guía acompaña la entrega del <strong>flujograma</strong> del proyecto — el prototipo
-            de papel que describe gráficamente el proceso experimental o metodológico que su equipo va
-            a ejecutar. Además de ser un entregable, es la herramienta que les va a permitir detectar
-            inconsistencias y callejones sin salida antes de invertir tiempo en laboratorio.
-          </p>
+          {activeSection === null && (
+            <p className="text-lg leading-relaxed text-brand-gray">
+              Esta guía acompaña la entrega del <strong>flujograma</strong> del proyecto — el prototipo
+              de papel que describe gráficamente el proceso experimental o metodológico que su equipo va
+              a ejecutar. Además de ser un entregable, es la herramienta que les va a permitir detectar
+              inconsistencias y callejones sin salida antes de invertir tiempo en laboratorio.
+            </p>
+          )}
 
           {isVisible('introduccion') && (
             <>
