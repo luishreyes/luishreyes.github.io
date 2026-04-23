@@ -649,14 +649,14 @@ const BondCalculator: React.FC = () => {
 
 /* ─── Tabs de las leyes de la conminución ─── */
 const LawsComparisonTabs: React.FC = () => {
-  const [tab, setTab] = useState<'rittinger' | 'kick' | 'bond' | 'hukki'>('bond');
+  const [tab, setTab] = useState<'rittinger' | 'kick' | 'bond' | 'hukki'>('rittinger');
   useKatexRerender([tab]);
 
   const tabs = [
-    { id: 'rittinger', label: 'Rittinger' },
-    { id: 'kick', label: 'Kick' },
-    { id: 'bond', label: 'Bond ★' },
-    { id: 'hukki', label: 'Hukki (generalizada)' },
+    { id: 'rittinger', label: 'Rittinger (1867)' },
+    { id: 'kick', label: 'Kick (1885)' },
+    { id: 'bond', label: 'Bond (1952)' },
+    { id: 'hukki', label: 'Hukki (1961)' },
   ] as const;
 
   return (
@@ -814,6 +814,214 @@ const ReductionRatioTable: React.FC = () => {
 };
 
 /* ─── Material properties explorer ─── */
+/* ─── Cards interactivas de propiedades del material ─── */
+type PropCard = {
+  id: string;
+  name: string;
+  tagline: string;
+  icon: React.ReactNode;
+  color: string;
+  detail: React.ReactNode;
+  metric: string;
+};
+
+const MaterialPropertyCards: React.FC = () => {
+  const [open, setOpen] = useState<string | null>(null);
+  useKatexRerender([open]);
+
+  const ic = (paths: React.ReactNode) => (
+    <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      {paths}
+    </svg>
+  );
+
+  const props: PropCard[] = [
+    {
+      id: 'dureza',
+      name: 'Dureza',
+      tagline: 'Resistencia a ser rayado o indentado.',
+      color: 'text-sky-600 bg-sky-50 border-sky-200',
+      icon: ic(<><path d="M12 2L3 7v6c0 5.5 3.8 10.7 9 12 5.2-1.3 9-6.5 9-12V7l-9-5z"/></>),
+      metric: 'Mohs 1–10 · Bond Wᵢ (kWh/t)',
+      detail: (
+        <>
+          <p>
+            Define qué tan agresivo debe ser el equipo para iniciar la fractura. Escalas prácticas:
+            <strong> Mohs</strong> (1–10) para referencia mineralógica, <strong>Bond {String.raw`$W_i$`}</strong>
+            para energía específica.
+          </p>
+          <p className="mt-2 text-xs text-brand-gray">
+            <strong className="text-brand-dark">Ejemplo:</strong> cuarzo Mohs 7 → molino de bolas
+            con liners de Cr-Mo; talco Mohs 1 → molino de martillos.
+          </p>
+        </>
+      ),
+    },
+    {
+      id: 'friabilidad',
+      name: 'Friabilidad',
+      tagline: 'Facilidad con que se fractura bajo impacto.',
+      color: 'text-amber-600 bg-amber-50 border-amber-200',
+      icon: ic(<><path d="M12 2v6l-3-3M12 2v6l3-3M4 14l4 3-2 4M20 14l-4 3 2 4M8 22h8"/></>),
+      metric: 'Friable vs. tenaz',
+      detail: (
+        <>
+          <p>
+            Un material duro puede ser <strong>friable</strong> (se rompe bien con impacto) o
+            <strong> tenaz</strong> (absorbe energía sin fracturar). Dureza y friabilidad son
+            propiedades independientes.
+          </p>
+          <p className="mt-2 text-xs text-brand-gray">
+            <strong className="text-brand-dark">Ejemplo:</strong> carbón = duro pero friable, ideal
+            para molino de martillos. Caucho = blando pero tenaz, necesita cortadora rotativa.
+          </p>
+        </>
+      ),
+    },
+    {
+      id: 'abrasividad',
+      name: 'Abrasividad',
+      tagline: 'Desgaste que causa en el equipo.',
+      color: 'text-red-600 bg-red-50 border-red-200',
+      icon: ic(<><path d="M3 18h18M6 14l2-4 2 4M10 14l2-6 2 6M14 14l2-3 2 3"/></>),
+      metric: 'Ai (Bond abrasion index)',
+      detail: (
+        <>
+          <p>
+            Causa desgaste de revestimientos, medios de molienda y piezas de repuesto. En minería,
+            el costo de <em>liners</em> y bolas puede ser comparable al costo energético.
+          </p>
+          <p className="mt-2 text-xs text-brand-gray">
+            <strong className="text-brand-dark">Ejemplo:</strong> cuarzo y alúmina son altamente
+            abrasivos (Ai &gt; 0.5) → usar revestimientos de caucho o acero al manganeso.
+          </p>
+        </>
+      ),
+    },
+    {
+      id: 'humedad',
+      name: 'Humedad',
+      tagline: 'Contenido de agua libre en el material.',
+      color: 'text-blue-600 bg-blue-50 border-blue-200',
+      icon: ic(<><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/></>),
+      metric: '% p/p',
+      detail: (
+        <>
+          <p>
+            Puede causar <strong>apelmazamiento</strong>, adherencia en revestimientos y
+            obstrucción de tamices. A veces se opta por <strong>molienda húmeda</strong> o por un
+            secado previo para facilitar la fractura.
+          </p>
+          <p className="mt-2 text-xs text-brand-gray">
+            <strong className="text-brand-dark">Regla práctica:</strong> &gt; 5% humedad → considerar
+            molienda húmeda o secado upstream. Arenas de playa, harinas y algunos minerales
+            requieren tratamiento específico.
+          </p>
+        </>
+      ),
+    },
+    {
+      id: 'termico',
+      name: 'Sensibilidad al calor',
+      tagline: 'Degradación, oxidación o fusión.',
+      color: 'text-orange-600 bg-orange-50 border-orange-200',
+      icon: ic(<><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></>),
+      metric: 'T máx admisible (°C)',
+      detail: (
+        <>
+          <p>
+            Materiales farmacéuticos, alimentos, polímeros y explosivos se degradan con el
+            calor generado en la molienda. Requieren <strong>enfriamiento</strong> (con agua
+            fría, N₂ líquido para criogénica) o <strong>jet mills</strong> que expanden gas.
+          </p>
+          <p className="mt-2 text-xs text-brand-gray">
+            <strong className="text-brand-dark">Ejemplo:</strong> especias (aroma volátil) se
+            muelen criogénicamente con N₂; pigmentos orgánicos se muelen en jet mill.
+          </p>
+        </>
+      ),
+    },
+    {
+      id: 'pegajosidad',
+      name: 'Pegajosidad',
+      tagline: 'Tendencia a adherirse a superficies.',
+      color: 'text-emerald-600 bg-emerald-50 border-emerald-200',
+      icon: ic(<><path d="M12 2v8M4 10c0 4 4 8 8 8s8-4 8-8M9 10h6M10 18v4M14 18v4"/></>),
+      metric: 'Cualitativo',
+      detail: (
+        <>
+          <p>
+            Causa obstrucción del equipo, adherencia al revestimiento y apelmazamiento en
+            tamices. Requiere limpieza frecuente, revestimientos no-adherentes (PTFE) o
+            aditivos antiaglomerantes.
+          </p>
+          <p className="mt-2 text-xs text-brand-gray">
+            <strong className="text-brand-dark">Ejemplo:</strong> resinas, algunos polímeros,
+            productos farma → usar jet mill o molino con revestimiento liso + control de humedad.
+          </p>
+        </>
+      ),
+    },
+  ];
+
+  return (
+    <div className="my-6 not-prose">
+      <p className="text-sm text-brand-gray mb-3">
+        Las seis propiedades del material que más influyen en la selección del equipo y en la
+        operación. Haz clic en cada una para ver detalle y ejemplos industriales.
+      </p>
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        {props.map((p) => {
+          const isOpen = open === p.id;
+          return (
+            <button
+              key={p.id}
+              onClick={() => setOpen(isOpen ? null : p.id)}
+              className={`text-left rounded-xl border-2 p-4 transition-all ${
+                isOpen
+                  ? `${p.color} shadow-md ring-2 ring-brand-yellow`
+                  : 'bg-white border-zinc-200 hover:border-brand-yellow hover:-translate-y-0.5 hover:shadow-sm'
+              }`}
+              aria-expanded={isOpen}
+            >
+              <div className="flex items-start justify-between gap-2">
+                <div className={isOpen ? '' : 'text-brand-yellow-dark'}>{p.icon}</div>
+                <span className="text-[10px] text-brand-gray uppercase tracking-wider">
+                  {isOpen ? 'Cerrar' : 'Ver más'}
+                </span>
+              </div>
+              <h4 className="mt-2 font-semibold text-brand-dark text-base">{p.name}</h4>
+              <p className="text-xs text-brand-gray mt-0.5 leading-snug">{p.tagline}</p>
+              <p className="text-[11px] font-mono text-brand-gray/70 mt-1.5">{p.metric}</p>
+            </button>
+          );
+        })}
+      </div>
+      {/* Panel de detalle de la propiedad seleccionada */}
+      {open && (
+        <div
+          key={open}
+          className="mt-4 rounded-xl border-l-4 border-brand-yellow bg-white shadow-sm p-5 animate-[fadeIn_200ms_ease]"
+        >
+          {(() => {
+            const p = props.find((x) => x.id === open);
+            if (!p) return null;
+            return (
+              <>
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="text-brand-yellow-dark">{p.icon}</div>
+                  <h4 className="font-bold text-brand-dark text-lg">{p.name}</h4>
+                </div>
+                <div className="text-sm text-brand-gray leading-relaxed">{p.detail}</div>
+              </>
+            );
+          })()}
+        </div>
+      )}
+    </div>
+  );
+};
+
 const MaterialPropertiesExplorer: React.FC = () => {
   const [mohs, setMohs] = useState(5);
   const [humedad, setHumedad] = useState<'seco' | 'humedo' | 'muy-humedo'>('seco');
@@ -1299,13 +1507,6 @@ const ReduccionTamano: React.FC = () => {
                 diseño del equipo y las propiedades del material.
               </InfoCallout>
 
-              <Figure
-                src="/classroom/iqya-2031/readings/reduccion-tamano-01.jpeg"
-                alt="Resumen de los mecanismos de fractura: compresión, impacto, atrición y corte"
-                caption="Los cuatro mecanismos de fractura actuando sobre un sólido particulado."
-                maxWidth="600px"
-              />
-
               <TipCallout title="💡 Liberación mineralógica — el criterio de parar">
                 En minería, uno no muele hasta un tamaño arbitrario: se muele hasta el{' '}
                 <strong>tamaño de liberación</strong>, el tamaño al que las partículas de
@@ -1360,26 +1561,63 @@ const ReduccionTamano: React.FC = () => {
 
               <LawsComparisonTabs />
 
-              <TipCallout title="💡 ¿Cuál ley usar?">
-                Una regla rápida: <strong>Kick</strong> para trituración gruesa, <strong>Bond</strong>{' '}
-                para molienda intermedia (rango de operación industrial típico) y{' '}
-                <strong>Rittinger</strong> para molienda fina. Bond es, con diferencia, la más
-                usada porque cubre el rango de tamaños que domina la industria minera. Si
-                quieres un marco unificado, <strong>Hukki</strong> muestra que las tres son
-                casos particulares de una misma ecuación diferencial.
-              </TipCallout>
-
-              <WarningCallout title="⚠️ La conminución es brutalmente ineficiente">
-                La eficiencia termodinámica de la fractura (comparando energía invertida con la
-                energía de superficie realmente creada, {String.raw`$\gamma \cdot \Delta A$`})
-                apenas llega al <strong>1–2%</strong>. El resto se va en calor, vibración y
-                deformación elástica. Esto no es un defecto de diseño: es una limitación
-                <strong> física</strong> del mecanismo de propagación de grietas en sólidos.
-                Las mejoras de eficiencia en la práctica vienen de (1) <strong>no moler de
-                más</strong> (clasificar y separar el fino), (2) usar el mecanismo adecuado
-                para el material, y (3) integrar etapas para que cada una trabaje en su rango
-                óptimo.
-              </WarningCallout>
+              <div className="my-8 rounded-xl overflow-hidden border border-zinc-200 shadow-sm not-prose">
+                <div className="grid lg:grid-cols-[220px_1fr]">
+                  {/* Panel izquierdo: número grande de eficiencia */}
+                  <div className="bg-brand-dark text-white p-6 flex flex-col justify-center items-center text-center">
+                    <p className="text-xs uppercase tracking-widest text-zinc-400 mb-1">Eficiencia termodinámica</p>
+                    <p className="text-6xl font-bold text-brand-yellow leading-none">1-2<span className="text-3xl">%</span></p>
+                    <p className="text-xs text-zinc-300 mt-3 leading-relaxed">
+                      Energía invertida vs. energía de superficie creada ({String.raw`$\gamma \cdot \Delta A$`}).
+                      El resto es calor, vibración y deformación elástica.
+                    </p>
+                  </div>
+                  {/* Panel derecho: estrategias para mejorar */}
+                  <div className="bg-white p-6">
+                    <p className="text-xs uppercase tracking-widest text-brand-yellow-dark font-bold mb-3">
+                      Tres palancas para mejorar la eficiencia
+                    </p>
+                    <div className="space-y-3">
+                      <div className="flex gap-3">
+                        <span className="flex-shrink-0 w-7 h-7 rounded-full bg-brand-yellow text-brand-dark font-bold text-sm flex items-center justify-center">1</span>
+                        <p className="text-sm text-brand-dark leading-snug">
+                          <strong>No moler de más</strong> — clasifica y separa el fino antes de moler; no gastes energía en partículas que ya están en especificación.
+                        </p>
+                      </div>
+                      <div className="flex gap-3">
+                        <span className="flex-shrink-0 w-7 h-7 rounded-full bg-brand-yellow text-brand-dark font-bold text-sm flex items-center justify-center">2</span>
+                        <p className="text-sm text-brand-dark leading-snug">
+                          <strong>Elige el mecanismo correcto</strong> — compresión para duros frágiles, impacto para frágiles de dureza media, atrición para finos, corte para blandos/fibrosos.
+                        </p>
+                      </div>
+                      <div className="flex gap-3">
+                        <span className="flex-shrink-0 w-7 h-7 rounded-full bg-brand-yellow text-brand-dark font-bold text-sm flex items-center justify-center">3</span>
+                        <p className="text-sm text-brand-dark leading-snug">
+                          <strong>Integra etapas en cascada</strong> — cada equipo trabajando en su rango óptimo de reducción, sin forzar relaciones de reducción extremas.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {/* Barra inferior con leyes → rango */}
+                <div className="bg-zinc-50 border-t border-zinc-200 p-4">
+                  <p className="text-xs text-brand-gray mb-2">
+                    <strong className="text-brand-dark">Rango de aplicación de cada ley:</strong>
+                  </p>
+                  <div className="relative h-8 rounded-md bg-gradient-to-r from-sky-100 via-yellow-100 to-red-100 overflow-hidden">
+                    <div className="absolute inset-0 flex items-center text-[11px] font-semibold text-brand-dark">
+                      <span className="flex-1 text-center">Kick (cm → mm)</span>
+                      <span className="w-px h-full bg-brand-gray/30" />
+                      <span className="flex-1 text-center">Bond (mm → 100 µm)</span>
+                      <span className="w-px h-full bg-brand-gray/30" />
+                      <span className="flex-1 text-center">Rittinger (&lt; 100 µm)</span>
+                    </div>
+                  </div>
+                  <p className="text-xs text-brand-gray italic mt-2 text-center">
+                    Hukki unifica las tres como casos particulares de una misma ecuación diferencial.
+                  </p>
+                </div>
+              </div>
             </>
           )}
 
@@ -1404,37 +1642,7 @@ const ReduccionTamano: React.FC = () => {
               </p>
 
               <SubTitle>Propiedades del material</SubTitle>
-              <ul>
-                <li>
-                  <strong>Dureza:</strong> materiales muy duros requieren equipos robustos y
-                  mayor energía. Escalas prácticas: Mohs (1–10) para referencia mineralógica,
-                  Bond {String.raw`$W_i$`} para energía específica.
-                </li>
-                <li>
-                  <strong>Friabilidad:</strong> facilidad con la que un material se fractura
-                  bajo impacto. Un material duro puede ser friable (se rompe bien con impacto)
-                  o tenaz (absorbe energía sin fracturar).
-                </li>
-                <li>
-                  <strong>Abrasividad:</strong> causa desgaste en los equipos (piezas de
-                  repuesto, revestimientos). En minería, los costos de{' '}
-                  <em>liners</em> y bolas pueden ser comparables al costo energético.
-                </li>
-                <li>
-                  <strong>Contenido de humedad:</strong> puede causar apelmazamiento o
-                  dificultar la molienda en seco. A veces se opta por <strong>molienda
-                  húmeda</strong>.
-                </li>
-                <li>
-                  <strong>Sensibilidad al calor:</strong> algunos materiales se degradan, se
-                  oxidan o funden, requiriendo enfriamiento (típico en farma, alimentos,
-                  polímeros y explosivos).
-                </li>
-                <li>
-                  <strong>Pegajosidad:</strong> puede causar obstrucciones, adherencias en el
-                  revestimiento y apelmazamiento en tamices.
-                </li>
-              </ul>
+              <MaterialPropertyCards />
 
               <Figure
                 src="/classroom/iqya-2031/readings/reduccion-tamano-09.jpeg"
