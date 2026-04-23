@@ -427,10 +427,44 @@ JSX interpreta `{` como inicio de expresión JavaScript. Cualquier fórmula inli
 
 **Validación rápida antes de commitear**:
 ```bash
-# Busca patrones problemáticos: $...{...}...$ fuera de un template literal
+# 1. Fórmulas inline con llaves sin envolver (falla el build de Vite/esbuild)
 grep -nE '\$[^$]*\{[^$]*\$' pages/classroom/{slug}/readings/mi-lectura.tsx | grep -v 'String.raw\|"$$\|\x27$$'
 
-# Si algo aparece, envolver con String.raw o el build fallará en GitHub Actions
+# 2. CRÍTICO: patrones \text{X} bare en JSX text body — compilan OK pero
+#    fallan en RUNTIME con "X is not defined" porque JSX trata {X} como variable.
+#    Ejemplo real capturado: `$\varepsilon_\text{lecho}$` en JSX → "lecho is not defined"
+python3 -c "
+import re
+with open('pages/classroom/{slug}/readings/mi-lectura.tsx') as f:
+    for i, l in enumerate(f, 1):
+        if '\\\\\\text{' in l: continue  # string literal con \\text — safe
+        if 'String.raw' in l: continue    # envuelto — safe
+        s = l.strip()
+        if s.startswith('{\\'') or s.startswith('{\"'): continue  # JS expression string
+        if '\\text{' in l: print(f'{i}: {l.rstrip()[:150]}')
+"
+
+# Si el segundo check encuentra algo, envolver con {String.raw\`...\`}
+```
+
+**Runtime verification con Puppeteer** (opcional, para casos complejos):
+```bash
+npx vite build && npx vite preview --port 4173 &
+sleep 4
+node -e "
+const pup = require('puppeteer-core');
+(async () => {
+  const b = await pup.launch({ executablePath: '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', headless: 'new' });
+  const p = await b.newPage();
+  p.on('pageerror', e => console.error('RUNTIME:', e.message));
+  await p.evaluateOnNewDocument(() => localStorage.setItem('classroom:unlock:{slug}', 'true'));
+  await p.goto('http://localhost:4173/classroom/{slug}/readings/mi-lectura', { waitUntil: 'networkidle0' });
+  await new Promise(r => setTimeout(r, 2500));
+  const len = await p.evaluate(() => document.querySelector('#root').innerHTML.length);
+  console.log('DOM length:', len, '(should be > 50000 for a full reading)');
+  await b.close();
+})();
+"
 ```
 
 Un script para hacerlo automático está en `/tmp/scripts/wrap-katex.py` (se puede regenerar):

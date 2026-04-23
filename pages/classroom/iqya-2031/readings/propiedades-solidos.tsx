@@ -1421,7 +1421,7 @@ const PropiedadesSolidos: React.FC = () => {
                   </li>
                   <li>
                     En la <strong>porosidad aleatoria</strong> de empaque: partículas con
-                    $\Phi_S &lt; 0.6$ tienen $\varepsilon_\text{lecho} &gt; 0.55$.
+                    {String.raw` $\Phi_S < 0.6$ tienen $\varepsilon_\text{lecho} > 0.55$`}.
                   </li>
                 </ul>
               </TipCallout>
@@ -1795,7 +1795,7 @@ const PropiedadesSolidos: React.FC = () => {
               <SubTitle>1. Propiedades a caracterizar</SubTitle>
               <ul>
                 <li>
-                  <strong>$\rho_\text{suelta}$, $\rho_\text{compactada}$</strong> a ambos
+                  <strong>{String.raw`$\rho_\text{suelta}$, $\rho_\text{compactada}$`}</strong> a ambos
                   niveles de humedad (3 % y 7 %) — para dimensionar la tolva y estimar cuánto
                   se compactará durante el almacenamiento.
                 </li>
