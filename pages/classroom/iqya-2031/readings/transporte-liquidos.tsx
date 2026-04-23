@@ -1000,6 +1000,11 @@ const TransporteLiquidos: React.FC = () => {
   const [tocOpen, setTocOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<string | null>(null);
 
+  // Re-renderizar KaTeX cuando cambia la sección activa (click-to-filter del TOC).
+  // Si no, al cambiar entre secciones, las fórmulas de la nueva sección no se procesan
+  // porque React la monta fresca y useKatex solo corre en el mount inicial.
+  useKatexRerender([activeSection]);
+
   const handleTocClick = (id: string) => {
     setActiveSection((prev) => (prev === id ? null : id));
     setTocOpen(false);
