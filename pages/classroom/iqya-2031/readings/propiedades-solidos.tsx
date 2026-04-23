@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { ReadingLayout } from '../../../../components/classroom/ReadingLayout';
 import { getCourseBySlug } from '../../../../components/data/classroom';
 
@@ -47,6 +47,24 @@ const useKatex = () => {
   }, []);
 };
 
+/* Hook para re-renderizar KaTeX cuando cambia el contenido (tabs, steppers, etc.) */
+const useKatexRerender = (deps: unknown[]) => {
+  useEffect(() => {
+    // @ts-expect-error
+    const rme = window.renderMathInElement;
+    if (!rme) return;
+    const target = document.querySelector('.reading-prose') ?? document.body;
+    rme(target, {
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$', right: '$', display: false },
+      ],
+      throwOnError: false,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, deps);
+};
+
 /* ─── TOC ─── */
 const tocItems = [
   { id: 'introduccion', label: 'Introducción' },
@@ -57,6 +75,7 @@ const tocItems = [
   { id: 'flujo', label: 'Propiedades de flujo' },
   { id: 'otras', label: 'Otras propiedades' },
   { id: 'impacto', label: 'Impacto en operaciones' },
+  { id: 'caso', label: 'Caso práctico: tolva de cacao' },
   { id: 'consejos', label: 'Consejos prácticos' },
   { id: 'bibliografia', label: 'Bibliografía' },
 ];
@@ -78,6 +97,16 @@ const InfoCallout: React.FC<{ title?: string; children: React.ReactNode }> = ({
 }) => (
   <div className="my-6 rounded-xl bg-brand-dark p-5 sm:p-6 not-prose">
     <p className="font-semibold text-emerald-400 text-sm mb-2">{title}</p>
+    <div className="text-sm text-zinc-300 leading-relaxed">{children}</div>
+  </div>
+);
+
+const WarningCallout: React.FC<{ title?: string; children: React.ReactNode }> = ({
+  title = '⚠️ Importante',
+  children,
+}) => (
+  <div className="my-6 rounded-xl bg-brand-dark p-5 sm:p-6 not-prose">
+    <p className="font-semibold text-red-400 text-sm mb-2">{title}</p>
     <div className="text-sm text-zinc-300 leading-relaxed">{children}</div>
   </div>
 );
@@ -109,25 +138,839 @@ const VideoEmbed: React.FC<{ id: string; title: string; start?: number }> = ({
   </div>
 );
 
-/* ─── Figura con caption ─── */
-const Figure: React.FC<{ src: string; alt: string; caption?: string; maxWidth?: string }> = ({
-  src,
-  alt,
-  caption,
-  maxWidth = '640px',
-}) => (
-  <figure className="my-8 not-prose">
-    <img
-      src={src}
-      alt={alt}
-      className="rounded-xl shadow-lg mx-auto"
-      style={{ maxWidth }}
-    />
+/* ─── Figura centrada (corrige el bug de alineación izquierda) ─── */
+const Figure: React.FC<{
+  src: string;
+  alt: string;
+  caption?: React.ReactNode;
+  maxWidth?: string;
+}> = ({ src, alt, caption, maxWidth = '700px' }) => (
+  <figure className="my-8 not-prose flex flex-col items-center">
+    <div
+      className="w-full flex justify-center rounded-xl bg-zinc-50 border border-zinc-200 p-4 sm:p-6"
+    >
+      <img
+        src={src}
+        alt={alt}
+        className="block max-w-full h-auto rounded-md shadow-md"
+        style={{ maxWidth }}
+      />
+    </div>
     {caption && (
-      <figcaption className="text-center text-sm text-brand-gray mt-3">{caption}</figcaption>
+      <figcaption className="text-center text-sm text-brand-gray mt-3 italic max-w-2xl">
+        {caption}
+      </figcaption>
     )}
   </figure>
 );
+
+/* ─── Tabs: tipos de densidad ─── */
+const DensityTypesTabs: React.FC = () => {
+  const [tab, setTab] = useState<'verdadera' | 'aparente' | 'masal' | 'efectiva'>('verdadera');
+  useKatexRerender([tab]);
+
+  const tabs = [
+    { id: 'verdadera', label: 'Verdadera' },
+    { id: 'aparente', label: 'Aparente (partícula)' },
+    { id: 'masal', label: 'Masal (lecho)' },
+    { id: 'efectiva', label: 'Efectiva' },
+  ] as const;
+
+  return (
+    <div className="my-6 not-prose">
+      <div role="tablist" aria-label="Tipos de densidad" className="flex gap-2 border-b border-zinc-200 flex-wrap">
+        {tabs.map((t) => (
+          <button
+            key={t.id}
+            role="tab"
+            aria-selected={tab === t.id}
+            onClick={() => setTab(t.id)}
+            className={`px-4 py-2 text-sm font-semibold border-b-2 transition-colors ${
+              tab === t.id
+                ? 'text-brand-dark border-brand-yellow'
+                : 'text-brand-gray border-transparent hover:text-brand-dark'
+            }`}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      <div className="mt-4">
+        {tab === 'verdadera' && (
+          <div>
+            <p className="text-brand-gray leading-relaxed">
+              <strong>Densidad verdadera</strong> ({String.raw`$\rho_\text{verdadera}$`}): densidad
+              del material sólido en sí, <em>excluyendo todos los poros</em> (tanto abiertos como
+              cerrados). Se mide comúnmente con picnometría de helio, porque el He penetra incluso
+              en poros muy pequeños.
+            </p>
+            <p className="text-brand-gray leading-relaxed mt-2">
+              {'$$\\rho_\\text{verdadera} = \\dfrac{m_\\text{sólido}}{V_\\text{sólido sin poros}}$$'}
+            </p>
+            <p className="text-brand-gray leading-relaxed mt-2">
+              <strong>Cuándo usarla:</strong> como referencia termodinámica del material, para
+              calcular la porosidad intraparticular total, y en cálculos de composición.
+            </p>
+          </div>
+        )}
+        {tab === 'aparente' && (
+          <div>
+            <p className="text-brand-gray leading-relaxed">
+              <strong>Densidad aparente o de partícula</strong>
+              ({String.raw`$\rho_\text{aparente}$`}): masa de una partícula dividida por su volumen
+              total (sólido + poros cerrados), <em>sin contar los huecos entre partículas</em>.
+            </p>
+            <p className="text-brand-gray leading-relaxed mt-2">
+              {'$$\\rho_\\text{aparente} = \\dfrac{m_\\text{partícula}}{V_\\text{sólido} + V_\\text{poros cerrados}}$$'}
+            </p>
+            <p className="text-brand-gray leading-relaxed mt-2">
+              <strong>Cuándo usarla:</strong> en modelos de sedimentación, transporte neumático,
+              fluidización y cálculos de velocidad terminal. Se mide por picnometría de líquido.
+            </p>
+          </div>
+        )}
+        {tab === 'masal' && (
+          <div>
+            <p className="text-brand-gray leading-relaxed">
+              <strong>Densidad masal o aparente del lecho</strong>
+              ({String.raw`$\rho_\text{masal}$`}): masa total de polvo dividida por el volumen
+              ocupado por el lecho <em>incluyendo los huecos interparticulares</em>. Es la densidad
+              que "percibe" un silo o un empaque.
+            </p>
+            <p className="text-brand-gray leading-relaxed mt-2">
+              {'$$\\rho_\\text{masal} = \\dfrac{m_\\text{polvo}}{V_\\text{lecho}}$$'}
+            </p>
+            <ul className="mt-3 pl-5 list-disc space-y-1 text-brand-gray leading-relaxed">
+              <li>
+                <strong>Densidad masal suelta</strong> ({String.raw`$\rho_\text{suelta}$`}):
+                después de verter libremente el polvo, sin compactar.
+              </li>
+              <li>
+                <strong>Densidad masal compactada</strong> ({String.raw`$\rho_\text{compactada}$`}):
+                después de aplicar golpeteo estandarizado (típicamente 500–1250 <em>taps</em>).
+              </li>
+            </ul>
+            <p className="text-brand-gray leading-relaxed mt-2">
+              <strong>Cuándo usarla:</strong> dimensionar silos, tolvas y empaques; estimar masa de
+              producto por volumen de recipiente.
+            </p>
+          </div>
+        )}
+        {tab === 'efectiva' && (
+          <div>
+            <p className="text-brand-gray leading-relaxed">
+              <strong>Densidad efectiva de partícula</strong>: incluye <em>tanto poros abiertos
+              como cerrados</em>. Es la densidad que gobierna la interacción hidrodinámica con un
+              fluido que puede (o no) penetrar en los poros accesibles.
+            </p>
+            <p className="text-brand-gray leading-relaxed mt-2">
+              <strong>Cuándo usarla:</strong> procesos donde un fluido rodea pero no llena la
+              partícula (flujo a través de lecho fijo, filtración, secado) — relevante cuando la
+              partícula tiene poros abiertos significativos (catalizadores, granos hinchados).
+            </p>
+          </div>
+        )}
+      </div>
+
+      <Figure
+        src="/classroom/iqya-2031/readings/propiedades-solidos-02.png"
+        alt="Comparación de los tipos de densidad"
+        caption="Densidad verdadera, de partícula y masal: cada una corresponde a un volumen distinto — sólido puro, sólido + poros cerrados, y lecho completo con huecos interparticulares."
+        maxWidth="600px"
+      />
+    </div>
+  );
+};
+
+/* ─── Stepper: procedimiento del picnómetro ─── */
+const PycnometerStepper: React.FC = () => {
+  const [step, setStep] = useState(1);
+  useKatexRerender([step]);
+
+  const pasos = [
+    {
+      title: 'Pesar el picnómetro vacío',
+      body: (
+        <>
+          <p>
+            Se pesa el picnómetro limpio y seco en una balanza analítica. Esta masa base es
+            {' '}{String.raw`$m_\text{pic}$`}.
+          </p>
+          <p className="text-xs text-brand-gray italic mt-2">
+            Es crítico que esté seco — cualquier humedad residual introduce un error sistemático.
+          </p>
+        </>
+      ),
+    },
+    {
+      title: 'Añadir polvo y pesar',
+      body: (
+        <>
+          <p>
+            Se añade una cantidad conocida de polvo al picnómetro (típicamente llenando 30–50 % del
+            volumen) y se pesa el conjunto ({String.raw`$m_{\text{pic}+p}$`}). La masa del polvo se
+            obtiene por diferencia:
+          </p>
+          <p className="mt-2">{'$$m_p = m_{\\text{pic}+p} - m_\\text{pic}$$'}</p>
+        </>
+      ),
+    },
+    {
+      title: 'Llenar con líquido eliminando burbujas',
+      body: (
+        <>
+          <p>
+            Se completa el picnómetro con un líquido de densidad conocida
+            ({String.raw`$\rho_\text{liq}$`}) — típicamente agua destilada, o un solvente no polar
+            si el polvo es hidrófilo. <strong>Eliminar burbujas</strong> por ultrasonicación o
+            vacío para que el líquido ocupe todos los huecos accesibles.
+          </p>
+          <p>Se pesa el conjunto: {String.raw`$m_{\text{pic}+p+\text{liq}}$`}.</p>
+        </>
+      ),
+    },
+    {
+      title: 'Pesar el picnómetro solo con líquido',
+      body: (
+        <>
+          <p>
+            En un experimento paralelo, se llena el picnómetro <em>solo con líquido</em> hasta la
+            marca de calibración y se pesa ({String.raw`$m_{\text{pic}+\text{liq}}$`}).
+          </p>
+          <p className="mt-2">
+            Masa del líquido que llena todo el picnómetro:
+            {' '}{String.raw`$m_\text{liq} = m_{\text{pic}+\text{liq}} - m_\text{pic}$`}.
+          </p>
+        </>
+      ),
+    },
+    {
+      title: 'Calcular el volumen del picnómetro',
+      body: (
+        <>
+          <p>A partir de la masa y densidad del líquido:</p>
+          <p className="mt-2">{'$$V_\\text{pic} = \\dfrac{m_\\text{liq}}{\\rho_\\text{liq}}$$'}</p>
+          <p className="text-xs text-brand-gray italic mt-2">
+            Este volumen es la constante de calibración del picnómetro — lo ideal es verificarlo
+            periódicamente.
+          </p>
+        </>
+      ),
+    },
+    {
+      title: 'Calcular masa y volumen del líquido con polvo',
+      body: (
+        <>
+          <p>Masa del líquido que ocupa el espacio restante cuando hay polvo:</p>
+          <p className="mt-2">
+            {"$$m'_\\text{liq} = m_{\\text{pic}+p+\\text{liq}} - m_{\\text{pic}+p}$$"}
+          </p>
+          <p className="mt-2">Volumen correspondiente:</p>
+          <p className="mt-2">
+            {"$$V'_\\text{liq} = \\dfrac{m'_\\text{liq}}{\\rho_\\text{liq}}$$"}
+          </p>
+        </>
+      ),
+    },
+    {
+      title: 'Calcular el volumen de las partículas',
+      body: (
+        <>
+          <p>Por diferencia de volúmenes:</p>
+          <p className="mt-2">
+            {"$$V_p = V_\\text{pic} - V'_\\text{liq}$$"}
+          </p>
+          <p className="text-xs text-brand-gray italic mt-2">
+            Este volumen excluye poros abiertos accesibles al líquido — por eso da la densidad de
+            partícula, no la densidad verdadera.
+          </p>
+        </>
+      ),
+    },
+    {
+      title: 'Calcular la densidad de partícula',
+      body: (
+        <>
+          <p>Aplicar la definición:</p>
+          <p className="mt-2">
+            {"$$\\rho_\\text{aparente} = \\dfrac{m_p}{V_p} = \\dfrac{m_p}{V_\\text{pic} - V'_\\text{liq}}$$"}
+          </p>
+          <p className="text-xs text-brand-gray italic mt-2">
+            Repetir 3–5 veces y reportar promedio ± desviación estándar. Si se usa He en lugar de
+            líquido, el resultado se acerca a la densidad <em>verdadera</em>.
+          </p>
+        </>
+      ),
+    },
+  ];
+
+  return (
+    <div className="my-6 not-prose">
+      <div role="tablist" aria-label="Pasos del procedimiento del picnómetro" className="flex gap-1 flex-wrap mb-4">
+        {pasos.map((_, i) => (
+          <button
+            key={i}
+            role="tab"
+            aria-selected={step === i + 1}
+            onClick={() => setStep(i + 1)}
+            className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-colors ${
+              step === i + 1
+                ? 'bg-brand-dark text-white'
+                : 'bg-zinc-100 text-brand-gray hover:bg-zinc-200'
+            }`}
+          >
+            <span
+              className={`inline-flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold ${
+                step === i + 1 ? 'bg-brand-yellow text-brand-dark' : 'bg-white text-brand-dark'
+              }`}
+            >
+              {i + 1}
+            </span>
+            <span className="hidden sm:inline">{pasos[i].title}</span>
+          </button>
+        ))}
+      </div>
+      <div className="rounded-xl border-l-4 border-brand-yellow bg-white shadow-sm p-6">
+        <p className="text-xs font-bold uppercase tracking-widest text-brand-yellow-dark mb-2">
+          Paso {step} de {pasos.length}
+        </p>
+        <h3 className="text-xl font-bold text-brand-dark mb-3">{pasos[step - 1].title}</h3>
+        <div className="text-brand-gray leading-relaxed">{pasos[step - 1].body}</div>
+      </div>
+    </div>
+  );
+};
+
+/* ─── Tabs: tipos de diámetro equivalente ─── */
+const DiameterTypesTabs: React.FC = () => {
+  const [tab, setTab] = useState<'volumen' | 'superficie' | 'tamiz' | 'stokes'>('volumen');
+  useKatexRerender([tab]);
+
+  const tabs = [
+    { id: 'volumen', label: 'Volumen ($d_v$)' },
+    { id: 'superficie', label: 'Superficie ($d_s$)' },
+    { id: 'tamiz', label: 'Tamiz ($d_t$)' },
+    { id: 'stokes', label: 'Stokes' },
+  ] as const;
+
+  return (
+    <div className="my-6 not-prose">
+      <div role="tablist" aria-label="Tipos de diámetro equivalente" className="flex gap-2 border-b border-zinc-200 flex-wrap">
+        {tabs.map((t) => (
+          <button
+            key={t.id}
+            role="tab"
+            aria-selected={tab === t.id}
+            onClick={() => setTab(t.id)}
+            className={`px-4 py-2 text-sm font-semibold border-b-2 transition-colors ${
+              tab === t.id
+                ? 'text-brand-dark border-brand-yellow'
+                : 'text-brand-gray border-transparent hover:text-brand-dark'
+            }`}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      <div className="mt-4">
+        {tab === 'volumen' && (
+          <div>
+            <p className="text-brand-gray leading-relaxed">
+              <strong>Diámetro equivalente por volumen</strong> ($d_v$): diámetro de una esfera
+              que tiene <em>el mismo volumen</em> que la partícula real.
+            </p>
+            <p className="text-brand-gray leading-relaxed mt-2">
+              {'$$d_v = \\left( \\dfrac{6 V_p}{\\pi} \\right)^{1/3}$$'}
+            </p>
+            <p className="text-brand-gray leading-relaxed mt-2">
+              <strong>Cuándo aplica:</strong> modelos de masa de partícula, cálculos de
+              fluidización y empaquetamiento, simulaciones CFD-DEM donde el volumen es la variable
+              física natural.
+            </p>
+            <Figure
+              src="/classroom/iqya-2031/readings/propiedades-solidos-06.jpeg"
+              alt="Diámetro equivalente por volumen"
+              caption="Diámetro equivalente por volumen ($d_v$): diámetro de la esfera con el mismo volumen que la partícula real."
+              maxWidth="400px"
+            />
+          </div>
+        )}
+        {tab === 'superficie' && (
+          <div>
+            <p className="text-brand-gray leading-relaxed">
+              <strong>Diámetro equivalente por superficie</strong> ($d_s$): diámetro de una esfera
+              con <em>la misma área superficial externa</em> que la partícula.
+            </p>
+            <p className="text-brand-gray leading-relaxed mt-2">
+              {'$$d_s = \\left( \\dfrac{A_p}{\\pi} \\right)^{1/2}$$'}
+            </p>
+            <p className="text-brand-gray leading-relaxed mt-2">
+              <strong>Cuándo aplica:</strong> procesos donde domina la interfaz sólido-fluido —
+              disolución, catálisis, secado, transferencia de calor. También se combina con $d_v$
+              en el <strong>diámetro de Sauter</strong>
+              {' '}{String.raw`$d_{32} = d_v^3 / d_s^2$`}, muy usado en sprays y aerosoles.
+            </p>
+          </div>
+        )}
+        {tab === 'tamiz' && (
+          <div>
+            <p className="text-brand-gray leading-relaxed">
+              <strong>Diámetro de tamiz</strong> ($d_t$): tamaño de la apertura cuadrada más
+              pequeña a través de la cual la partícula <em>pasa</em> en un análisis granulométrico.
+              Es <strong>el más común en la industria</strong> por su bajo costo y simplicidad.
+            </p>
+            <p className="text-brand-gray leading-relaxed mt-2">
+              <strong>Cuándo aplica:</strong> caracterización rutinaria de polvos gruesos y
+              medios (entre ~38 μm y varios mm), control de calidad en molienda, clasificación por
+              tamaño.
+            </p>
+            <Figure
+              src="/classroom/iqya-2031/readings/propiedades-solidos-07.png"
+              alt="Diámetro de tamiz"
+              caption="Diámetro de tamiz ($d_t$): dimensión funcional de la partícula respecto al tamaño de apertura de malla cuadrada."
+              maxWidth="400px"
+            />
+          </div>
+        )}
+        {tab === 'stokes' && (
+          <div>
+            <p className="text-brand-gray leading-relaxed">
+              <strong>Diámetro de Stokes</strong> ({String.raw`$d_\text{Stokes}$`}, o <em>diámetro
+              de caída libre</em>): diámetro de una esfera con <em>la misma velocidad terminal</em>
+              que la partícula real en un fluido dado.
+            </p>
+            <p className="text-brand-gray leading-relaxed mt-2">
+              <strong>Cuándo aplica:</strong> procesos donde la partícula se mueve respecto al
+              fluido — sedimentación, hidrociclones, transporte neumático, elutriación, separación
+              gravimétrica. Es la única variable que "conoce" simultáneamente la forma, la
+              densidad y la hidrodinámica.
+            </p>
+            <Figure
+              src="/classroom/iqya-2031/readings/propiedades-solidos-08.png"
+              alt="Diámetro de Stokes"
+              caption="Diámetro de Stokes: la esfera hipotética que sedimenta a la misma velocidad que la partícula real en un fluido dado."
+              maxWidth="400px"
+            />
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+/* ─── Tabs: métodos de medición de DTP ─── */
+const SizingMethodsTabs: React.FC = () => {
+  const [tab, setTab] = useState<'tamiz' | 'micro' | 'sedim' | 'laser' | 'coulter'>('tamiz');
+  useKatexRerender([tab]);
+
+  const tabs = [
+    { id: 'tamiz', label: 'Tamizado' },
+    { id: 'micro', label: 'Microscopía' },
+    { id: 'sedim', label: 'Sedimentación' },
+    { id: 'laser', label: 'Difracción láser' },
+    { id: 'coulter', label: 'Contador Coulter' },
+  ] as const;
+
+  return (
+    <div className="my-6 not-prose">
+      <div role="tablist" aria-label="Métodos de medición de DTP" className="flex gap-2 border-b border-zinc-200 flex-wrap">
+        {tabs.map((t) => (
+          <button
+            key={t.id}
+            role="tab"
+            aria-selected={tab === t.id}
+            onClick={() => setTab(t.id)}
+            className={`px-4 py-2 text-sm font-semibold border-b-2 transition-colors ${
+              tab === t.id
+                ? 'text-brand-dark border-brand-yellow'
+                : 'text-brand-gray border-transparent hover:text-brand-dark'
+            }`}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      <div className="mt-4">
+        {tab === 'tamiz' && (
+          <div>
+            <p className="text-brand-gray leading-relaxed">
+              <strong>Principio:</strong> una pila de tamices con aperturas de malla decrecientes
+              (series Tyler o BS). El material se vierte en el tamiz superior y se agita; cada
+              fracción queda retenida entre mallas consecutivas. Se pesa cada fracción y se grafica
+              el % acumulado que pasa (o se retiene) en función del tamaño de apertura.
+            </p>
+            <p className="text-brand-gray leading-relaxed mt-2">
+              <strong>Rango útil:</strong> ~38 μm – 125 mm. Por debajo de 38 μm las partículas
+              aglomeran y el método pierde precisión (se requiere tamizado en húmedo o air-jet).
+            </p>
+            <p className="text-brand-gray leading-relaxed mt-2">
+              <strong>Ventajas:</strong> económico, robusto, ampliamente estandarizado (ASTM, ISO).
+              <strong> Limitaciones:</strong> da $d_t$ (no $d_v$), sensible a la forma, tiempo de
+              tamizado y carga influyen en el resultado.
+            </p>
+            <Figure
+              src="/classroom/iqya-2031/readings/propiedades-solidos-09.png"
+              alt="Análisis por tamizado"
+              caption="Pila de tamices con aperturas decrecientes. Es el método más común y económico para caracterizar DTP en la industria."
+              maxWidth="500px"
+            />
+          </div>
+        )}
+        {tab === 'micro' && (
+          <div>
+            <p className="text-brand-gray leading-relaxed">
+              <strong>Principio:</strong> observación directa bajo microscopio óptico o
+              electrónico (SEM). Se mide el diámetro de Feret, el diámetro circular equivalente
+              u otras proyecciones sobre imágenes digitales procesadas.
+            </p>
+            <p className="text-brand-gray leading-relaxed mt-2">
+              <strong>Rango útil:</strong> ~1 μm – 150 μm (óptico); &lt; 1 μm – nm (SEM / TEM).
+            </p>
+            <p className="text-brand-gray leading-relaxed mt-2">
+              <strong>Ventajas:</strong> caracteriza <em>simultáneamente</em> tamaño y forma —
+              insustituible para validar otros métodos. <strong>Limitaciones:</strong> requiere
+              contar estadísticamente muchas partículas (&gt; 1000), lento, costoso.
+            </p>
+            <Figure
+              src="/classroom/iqya-2031/readings/propiedades-solidos-10.gif"
+              alt="Microscopía de partículas"
+              caption="Microscopía: observación directa de morfología y dimensiones. Permite caracterizar simultáneamente tamaño y forma."
+              maxWidth="500px"
+            />
+          </div>
+        )}
+        {tab === 'sedim' && (
+          <div>
+            <p className="text-brand-gray leading-relaxed">
+              <strong>Principio:</strong> se dispersa el polvo en un fluido y se mide la velocidad
+              de sedimentación. Por la <strong>Ley de Stokes</strong> (partícula esférica, flujo
+              laminar):
+            </p>
+            <p className="text-brand-gray leading-relaxed mt-2">
+              {'$$v_t = \\dfrac{(\\rho_p - \\rho_f) \\, g \\, d^2}{18 \\, \\mu}$$'}
+            </p>
+            <p className="text-brand-gray leading-relaxed mt-2">
+              <strong>Rango útil:</strong> ~0.5 μm – 100 μm. Arriba de 100 μm, el flujo deja de
+              ser laminar; abajo de 0.5 μm, el movimiento browniano domina.
+            </p>
+            <p className="text-brand-gray leading-relaxed mt-2">
+              <strong>Ventajas:</strong> da {String.raw`$d_\text{Stokes}$`}, directamente útil para
+              diseño hidrodinámico. <strong>Limitaciones:</strong> lento, sensible a agregación.
+            </p>
+            <Figure
+              src="/classroom/iqya-2031/readings/propiedades-solidos-11.png"
+              alt="Método de sedimentación"
+              caption="Sedimentación: el tamaño se deduce de la velocidad terminal de caída libre mediante la Ley de Stokes."
+              maxWidth="500px"
+            />
+          </div>
+        )}
+        {tab === 'laser' && (
+          <div>
+            <p className="text-brand-gray leading-relaxed">
+              <strong>Principio:</strong> un láser atraviesa la suspensión o nube de partículas; el
+              patrón angular de luz difractada se invierte con la teoría de Mie (o Fraunhofer) para
+              obtener la DTP.
+            </p>
+            <p className="text-brand-gray leading-relaxed mt-2">
+              <strong>Rango útil:</strong> ~0.1 μm – 3000 μm en un solo equipo.
+            </p>
+            <p className="text-brand-gray leading-relaxed mt-2">
+              <strong>Ventajas:</strong> rapidísimo (&lt; 1 min), reproducible, amplio rango.
+              {' '}<strong>Limitaciones:</strong> asume esfericidad, requiere buen índice de
+              refracción, equipo costoso.
+            </p>
+            <Figure
+              src="/classroom/iqya-2031/readings/propiedades-solidos-12.png"
+              alt="Difracción láser"
+              caption="Difracción láser: el patrón de dispersión de la luz incidente se invierte para obtener la DTP completa en segundos."
+              maxWidth="500px"
+            />
+          </div>
+        )}
+        {tab === 'coulter' && (
+          <div>
+            <p className="text-brand-gray leading-relaxed">
+              <strong>Principio:</strong> las partículas suspendidas en un electrolito pasan una a
+              una a través de un pequeño orificio entre dos electrodos. Cada partícula que cruza
+              desplaza su propio volumen de electrolito y genera un pulso de resistencia
+              proporcional al volumen desplazado.
+            </p>
+            <p className="text-brand-gray leading-relaxed mt-2">
+              <strong>Rango útil:</strong> ~0.4 μm – 1200 μm (según tamaño del orificio).
+            </p>
+            <p className="text-brand-gray leading-relaxed mt-2">
+              <strong>Ventajas:</strong> mide $d_v$ directamente, alta resolución, cuenta número
+              de partículas. <strong>Limitaciones:</strong> requiere partículas no conductoras
+              suspendidas en electrolito, una apertura por rango de tamaño.
+            </p>
+            <Figure
+              src="/classroom/iqya-2031/readings/propiedades-solidos-13.jpeg"
+              alt="Contador Coulter"
+              caption="Contador Coulter: cada partícula que cruza el orificio genera un pulso de resistencia proporcional a su volumen."
+              maxWidth="500px"
+            />
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+/* ─── Galería de formas comunes ─── */
+const formas = [
+  {
+    id: 'acicular',
+    nombre: 'Acicular',
+    phi: '0.3 – 0.5',
+    descripcion:
+      'Partículas alargadas en forma de aguja, con relación longitud/diámetro alta. Se entrelazan mecánicamente, lo que dificulta el flujo pero puede aumentar la resistencia de compactos.',
+    ejemplo: 'Cristales de caseína, fibras de celulosa corta, sulfato de calcio anhidro.',
+  },
+  {
+    id: 'fibrosa',
+    nombre: 'Fibrosa',
+    phi: '0.2 – 0.4',
+    descripcion:
+      'Aún más alargadas que las aciculares, con relación L/D &gt; 10. Forman agregados entrelazados densos. Muy malas para fluidizar.',
+    ejemplo: 'Fibras de algodón, pulpa de papel, asbestos.',
+  },
+  {
+    id: 'granular',
+    nombre: 'Granular',
+    phi: '0.7 – 0.8',
+    descripcion:
+      'Forma irregular tridimensional sin una dimensión dominante. La mayoría de polvos industriales caen en esta categoría.',
+    ejemplo: 'Azúcar, sal, café molido, arena de río, fertilizantes.',
+  },
+  {
+    id: 'esferica',
+    nombre: 'Esférica',
+    phi: '≈ 1.0',
+    descripcion:
+      'Geometría ideal: máxima esfericidad, mínima área superficial por volumen, empaquetamiento predecible y flujo libre.',
+    ejemplo: 'Perdigones metálicos, microesferas de vidrio, spray-dried milk, polvo atomizado.',
+  },
+  {
+    id: 'laminar',
+    nombre: 'Laminar',
+    phi: '0.2 – 0.6',
+    descripcion:
+      'Forma de hojuela o placa: dos dimensiones dominantes, una pequeña. Se orientan durante el flujo (anisotropía) y se empaquetan de forma muy densa.',
+    ejemplo: 'Mica, grafito en hojuelas, copos de maíz, pigmentos perlados.',
+  },
+  {
+    id: 'cubica',
+    nombre: 'Cúbica',
+    phi: '≈ 0.81',
+    descripcion:
+      'Cristales con simetría cúbica — tres dimensiones comparables y caras planas. Empaque eficiente y flujo razonable.',
+    ejemplo: 'Sal de mesa (NaCl), azúcar moscabada fina, algunos cristales farmacéuticos.',
+  },
+];
+
+const ShapeGallery: React.FC = () => {
+  const [active, setActive] = useState<string>('esferica');
+  useKatexRerender([active]);
+  const formaActiva = formas.find((f) => f.id === active) ?? formas[3];
+
+  return (
+    <div className="my-6 not-prose">
+      <p className="text-sm text-brand-gray mb-3">
+        Haz clic en una morfología para explorar su descripción, esfericidad típica y ejemplos
+        industriales.
+      </p>
+      <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 mb-4">
+        {formas.map((f) => (
+          <button
+            key={f.id}
+            onClick={() => setActive(f.id)}
+            className={`px-3 py-2 rounded-lg text-xs sm:text-sm font-semibold border transition-colors ${
+              active === f.id
+                ? 'bg-brand-dark text-white border-brand-dark'
+                : 'bg-white text-brand-gray border-zinc-200 hover:border-brand-yellow hover:text-brand-dark'
+            }`}
+          >
+            {f.nombre}
+          </button>
+        ))}
+      </div>
+
+      <div className="rounded-xl border-l-4 border-brand-yellow bg-white shadow-sm p-5">
+        <div className="flex items-baseline gap-3 mb-2">
+          <h4 className="text-lg font-bold text-brand-dark">{formaActiva.nombre}</h4>
+          <span className="text-xs text-brand-yellow-dark font-mono">
+            $\Phi_S \approx$ {formaActiva.phi}
+          </span>
+        </div>
+        <p className="text-sm text-brand-gray leading-relaxed mb-2"
+          dangerouslySetInnerHTML={{ __html: formaActiva.descripcion }} />
+        <p className="text-xs text-brand-gray italic">
+          <strong>Ejemplos:</strong> {formaActiva.ejemplo}
+        </p>
+      </div>
+
+      <Figure
+        src="/classroom/iqya-2031/readings/propiedades-solidos-14.png"
+        alt="Formas comunes de partículas"
+        caption="Morfologías típicas: acicular, fibrosa, granular, esférica, laminar y cúbica. La forma condiciona el flujo, el empaquetamiento y la interacción con fluidos."
+        maxWidth="600px"
+      />
+    </div>
+  );
+};
+
+/* ─── Calculadora Carr/Hausner ─── */
+const CarrHausnerCalculator: React.FC = () => {
+  const [rhoS, setRhoS] = useState(500);
+  const [rhoC, setRhoC] = useState(620);
+
+  const IC = useMemo(() => ((rhoC - rhoS) / rhoC) * 100, [rhoS, rhoC]);
+  const RH = useMemo(() => rhoC / rhoS, [rhoS, rhoC]);
+
+  const clasif = useMemo(() => {
+    if (IC <= 10) return { label: 'Excelente', color: 'bg-emerald-500', text: 'text-emerald-400' };
+    if (IC <= 15) return { label: 'Bueno', color: 'bg-emerald-600', text: 'text-emerald-400' };
+    if (IC <= 20) return { label: 'Aceptable', color: 'bg-amber-400', text: 'text-amber-300' };
+    if (IC <= 25) return { label: 'Regular', color: 'bg-amber-500', text: 'text-amber-300' };
+    if (IC <= 31) return { label: 'Pobre', color: 'bg-orange-500', text: 'text-orange-300' };
+    if (IC <= 37) return { label: 'Muy pobre', color: 'bg-red-500', text: 'text-red-400' };
+    return { label: 'Muy, muy pobre', color: 'bg-red-700', text: 'text-red-400' };
+  }, [IC]);
+
+  useKatexRerender([rhoS, rhoC]);
+
+  const consistente = rhoC >= rhoS;
+
+  return (
+    <div className="my-6 rounded-xl bg-brand-dark p-5 sm:p-6 not-prose text-zinc-100">
+      <p className="font-semibold text-brand-yellow text-sm mb-3">🧮 Calculadora Carr / Hausner</p>
+      <p className="text-xs text-zinc-400 mb-4">
+        Introduce las densidades masales suelta y compactada (en kg/m³ o g/mL — solo importa que
+        sean consistentes) y observa la clasificación USP del flujo.
+      </p>
+      <div className="grid sm:grid-cols-2 gap-4 mb-4">
+        {[
+          { label: 'Densidad suelta ρs', value: rhoS, set: setRhoS, min: 100, max: 2000, step: 10 },
+          { label: 'Densidad compactada ρc', value: rhoC, set: setRhoC, min: 100, max: 2000, step: 10 },
+        ].map((f) => (
+          <label key={f.label} className="block">
+            <span className="text-xs uppercase tracking-wider text-zinc-400">{f.label}</span>
+            <div className="flex items-center gap-2 mt-1">
+              <input
+                type="number"
+                value={f.value}
+                min={f.min}
+                max={f.max}
+                step={f.step}
+                onChange={(e) => f.set(Number(e.target.value))}
+                className="w-24 bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-sm font-mono text-white focus:border-brand-yellow focus:outline-none"
+              />
+              <input
+                type="range"
+                value={f.value}
+                min={f.min}
+                max={f.max}
+                step={f.step}
+                onChange={(e) => f.set(Number(e.target.value))}
+                className="flex-1 accent-brand-yellow"
+              />
+            </div>
+          </label>
+        ))}
+      </div>
+
+      {!consistente && (
+        <p className="text-xs text-red-400 mb-3">
+          ⚠️ La densidad compactada debe ser {'\u2265'} la suelta. Ajusta los valores.
+        </p>
+      )}
+
+      <div className="grid sm:grid-cols-3 gap-3">
+        <div className="rounded-lg bg-zinc-900 border border-zinc-700 p-4">
+          <p className="text-xs uppercase tracking-wider text-zinc-500">Índice de Carr</p>
+          <p className="text-2xl font-bold font-mono text-brand-yellow">{IC.toFixed(1)} %</p>
+          <p className="text-xs text-zinc-400 mt-1">
+            {String.raw`$IC = \dfrac{\rho_c - \rho_s}{\rho_c} \times 100\%$`}
+          </p>
+        </div>
+        <div className="rounded-lg bg-zinc-900 border border-zinc-700 p-4">
+          <p className="text-xs uppercase tracking-wider text-zinc-500">Razón de Hausner</p>
+          <p className="text-2xl font-bold font-mono text-brand-yellow">{RH.toFixed(2)}</p>
+          <p className="text-xs text-zinc-400 mt-1">
+            {String.raw`$RH = \dfrac{\rho_c}{\rho_s}$`}
+          </p>
+        </div>
+        <div className="rounded-lg bg-zinc-900 border border-zinc-700 p-4 flex flex-col justify-center">
+          <p className="text-xs uppercase tracking-wider text-zinc-500">Carácter de flujo (USP)</p>
+          <div className="flex items-center gap-2 mt-1">
+            <span className={`inline-block w-3 h-3 rounded-full ${clasif.color}`} aria-hidden="true" />
+            <p className={`text-xl font-bold ${clasif.text}`}>{clasif.label}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ─── Tabla interactiva de esfericidad ─── */
+const sphericityRows = [
+  { forma: 'Esfera', phi: 1.0, note: 'Geometría ideal: máximo empaquetamiento aleatorio ≈ 64 %.' },
+  { forma: 'Cubo', phi: 0.806, note: 'Tres dimensiones iguales; empaque eficiente en malla cúbica.' },
+  { forma: 'Cilindro (L = D)', phi: 0.874, note: 'Partícula equidimensional; común en cristales prismáticos.' },
+  { forma: 'Cilindro (L = 5D)', phi: 0.70, note: 'Alargado: aumenta la fricción interparticular.' },
+  { forma: 'Placa (L = W, H = 0.1 L)', phi: 0.53, note: 'Hojuela o laminar: se orientan en el flujo.' },
+  { forma: 'Aguja (L = 10 D)', phi: 0.58, note: 'Acicular: entrelazamiento mecánico alto.' },
+  { forma: 'Partículas trituradas (angular)', phi: 0.65, note: 'Típico de materiales molidos: rocas, minerales.' },
+  { forma: 'Arena redondeada', phi: 0.82, note: 'Desgastada por transporte natural: fluye bien.' },
+];
+
+const SphericityTable: React.FC = () => {
+  const [active, setActive] = useState(0);
+  useKatexRerender([active]);
+
+  return (
+    <div className="my-6 not-prose">
+      <p className="text-sm text-brand-gray mb-3">
+        Valores típicos de esfericidad $\Phi_S$ para formas ideales y reales. Haz clic en una fila
+        para resaltarla.
+      </p>
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm border-collapse rounded-lg overflow-hidden shadow-sm">
+          <thead>
+            <tr className="bg-brand-dark text-white text-left">
+              <th className="px-4 py-2.5 font-semibold">Forma</th>
+              <th className="px-4 py-2.5 font-semibold">$\Phi_S$</th>
+              <th className="px-4 py-2.5 font-semibold">Comentario</th>
+            </tr>
+          </thead>
+          <tbody>
+            {sphericityRows.map((r, i) => (
+              <tr
+                key={r.forma}
+                onClick={() => setActive(i)}
+                className={`cursor-pointer transition-colors ${
+                  active === i ? 'bg-yellow-50' : i % 2 === 0 ? 'bg-white' : 'bg-zinc-50'
+                } hover:bg-yellow-50 border-b border-zinc-100`}
+              >
+                <td className="px-4 py-2.5 font-medium text-brand-dark">{r.forma}</td>
+                <td className="px-4 py-2.5 font-mono text-brand-dark">{r.phi.toFixed(2)}</td>
+                <td className="px-4 py-2.5 text-brand-gray text-xs">{r.note}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p className="text-xs text-brand-gray mt-2 italic">
+        A menor $\Phi_S$ → mayor área superficial por unidad de volumen → mayor coeficiente de
+        arrastre y mayor resistencia al flujo del polvo.
+      </p>
+    </div>
+  );
+};
 
 /* ─── Componente principal ─── */
 const PropiedadesSolidos: React.FC = () => {
@@ -267,6 +1110,7 @@ const PropiedadesSolidos: React.FC = () => {
                 src="/classroom/iqya-2031/readings/propiedades-solidos-01.png"
                 alt="Sólidos particulados"
                 caption="Los sólidos particulados son mezclas complejas de partículas, huecos y — en muchos casos — humedad: su caracterización combina varias propiedades independientes."
+                maxWidth="600px"
               />
             </>
           )}
@@ -282,45 +1126,11 @@ const PropiedadesSolidos: React.FC = () => {
               </p>
 
               <SubTitle>Tipos de densidad</SubTitle>
-              <ul>
-                <li>
-                  <strong>Densidad verdadera ({String.raw`$\rho_\text{verdadera}$`}):</strong> la densidad
-                  del material en sí, excluyendo todos los poros (tanto abiertos como
-                  cerrados).
-                </li>
-                <li>
-                  <strong>Densidad aparente o de partícula ({String.raw`$\rho_\text{aparente}$`}):</strong>
-                  la densidad de una partícula, incluyendo su porosidad interna (poros
-                  cerrados), pero excluyendo los vacíos interparticulares. Se calcula como
-                  la masa de una partícula dividida por su volumen total (sólido + poros
-                  cerrados).
-                </li>
-                <li>
-                  <strong>Densidad masal o densidad aparente del lecho
-                  ({String.raw`$\rho_\text{masal}$`}):</strong> la masa de una cantidad de polvo dividida
-                  por el volumen total que ocupa (incluyendo los vacíos interparticulares).
-                  Este parámetro es crucial para dimensionar recipientes de almacenamiento
-                  (silos, tolvas) y empaques.
-                  <ul>
-                    <li>
-                      Varía según el empaquetamiento de las partículas. Se distingue entre
-                      <strong> densidad masal suelta</strong> (vertida) y
-                      <strong> densidad masal compactada</strong> (después de la compactación
-                      por golpeteo).
-                    </li>
-                  </ul>
-                </li>
-                <li>
-                  <strong>Densidad efectiva de partícula:</strong> incluye tanto poros
-                  abiertos como cerrados; relevante para interacciones con fluidos.
-                </li>
-              </ul>
-
-              <Figure
-                src="/classroom/iqya-2031/readings/propiedades-solidos-02.png"
-                alt="Comparación de los tipos de densidad"
-                caption="Densidad verdadera, de partícula y masal: cada una corresponde a un volumen distinto — sólido puro, sólido + poros cerrados, y lecho completo con huecos interparticulares."
-              />
+              <p>
+                Explora las cuatro definiciones más usadas — cada una responde a un volumen
+                distinto:
+              </p>
+              <DensityTypesTabs />
 
               <SubTitle>Determinación experimental: picnometría</SubTitle>
               <p>
@@ -334,48 +1144,15 @@ const PropiedadesSolidos: React.FC = () => {
                 src="/classroom/iqya-2031/readings/propiedades-solidos-03.png"
                 alt="Picnómetro de líquido"
                 caption="Picnómetro de líquido: recipiente de volumen calibrado empleado para medir densidad de partícula por desplazamiento."
+                maxWidth="400px"
               />
 
               <p>
-                <strong>Procedimiento general con picnómetro de líquido (ej. agua):</strong>
+                <strong>Procedimiento con picnómetro de líquido (ej. agua).</strong> Navega
+                entre los 8 pasos con las pestañas numeradas:
               </p>
-              <ol>
-                <li>Se pesa el picnómetro vacío y seco ({String.raw`$m_\text{pic}$`}).</li>
-                <li>
-                  Se añade una cantidad conocida de polvo al picnómetro y se pesa el
-                  conjunto ({String.raw`$m_{\text{pic}+p}$`}). La masa del polvo es
-                  {String.raw`$m_p = m_{\text{pic}+p} - m_\text{pic}$`}.
-                </li>
-                <li>
-                  Se llena el picnómetro (con el polvo) con un líquido de densidad conocida
-                  ({String.raw`$\rho_\text{liq}$`}), eliminando burbujas de aire para que el líquido ocupe
-                  todos los vacíos accesibles. Se pesa el conjunto
-                  ({String.raw`$m_{\text{pic}+p+\text{liq}}$`}).
-                </li>
-                <li>
-                  Se llena el picnómetro <em>solo con líquido</em> hasta la marca de
-                  calibración y se pesa ({String.raw`$m_{\text{pic}+\text{liq}}$`}). La masa del líquido es
-                  {String.raw`$m_\text{liq} = m_{\text{pic}+\text{liq}} - m_\text{pic}$`}. El volumen del
-                  picnómetro es {String.raw`$V_\text{pic} = m_\text{liq}/\rho_\text{liq}$`}.
-                </li>
-                <li>
-                  La masa del líquido que ocupa los espacios restantes con el polvo es
-                  {String.raw`$m'_\text{liq} = m_{\text{pic}+p+\text{liq}} - m_{\text{pic}+p}$`}.
-                </li>
-                <li>
-                  El volumen ocupado por el líquido con el polvo es
-                  {String.raw`$V'_\text{liq} = m'_\text{liq}/\rho_\text{liq}$`}.
-                </li>
-                <li>
-                  El volumen de las partículas de polvo (excluyendo poros abiertos
-                  accesibles al líquido) es {String.raw`$V_p = V_\text{pic} - V'_\text{liq}$`}.
-                </li>
-                <li>
-                  La densidad de partícula es
-                  {' '}
-                  {'$$\\rho_\\text{aparente} = \\frac{m_p}{V_p} = \\frac{m_p}{V_\\text{pic} - V\'_\\text{liq}}$$'}
-                </li>
-              </ol>
+
+              <PycnometerStepper />
 
               <VideoEmbed id="Gw3tvSC6gZ8" title="Demostración de picnómetro de líquido" start={6} />
             </>
@@ -402,6 +1179,7 @@ const PropiedadesSolidos: React.FC = () => {
                 src="/classroom/iqya-2031/readings/propiedades-solidos-04.jpeg"
                 alt="Porosidad del lecho"
                 caption="Porosidad interparticular: los huecos visibles entre partículas dentro del lecho — función directa del empaquetamiento."
+                maxWidth="400px"
               />
 
               <SubTitle>Porosidad de la partícula (intraparticular)</SubTitle>
@@ -418,7 +1196,18 @@ const PropiedadesSolidos: React.FC = () => {
                 src="/classroom/iqya-2031/readings/propiedades-solidos-05.png"
                 alt="Porosidad intraparticular"
                 caption="Porosidad intraparticular: poros cerrados o abiertos dentro del grano. Invisible desde el exterior, pero afecta densidad efectiva y cinética de secado o extracción."
+                maxWidth="400px"
               />
+
+              <InfoCallout title="📌 Valores típicos">
+                <ul className="list-disc pl-5 space-y-1">
+                  <li>Lecho aleatorio de esferas (poured): $\varepsilon \approx 0.40$.</li>
+                  <li>Lecho aleatorio de esferas compactado: $\varepsilon \approx 0.36$.</li>
+                  <li>Empaque cúbico cerrado ordenado: $\varepsilon \approx 0.26$ (teórico).</li>
+                  <li>Lecho de partículas irregulares (p. ej. café molido): $\varepsilon = 0.45 - 0.55$.</li>
+                  <li>Polvos cohesivos (harina): $\varepsilon &gt; 0.6$ (empacamiento suelto).</li>
+                </ul>
+              </InfoCallout>
             </>
           )}
 
@@ -431,124 +1220,129 @@ const PropiedadesSolidos: React.FC = () => {
                 y la generación de polvo</strong>.
               </p>
 
+              <SubTitle>Rangos industriales típicos</SubTitle>
+              <p>
+                Como referencia, estos son los órdenes de magnitud habituales en materiales de
+                la industria de alimentos y química fina:
+              </p>
+
+              <div className="overflow-x-auto my-4 not-prose">
+                <table className="w-full text-sm border-collapse rounded-lg overflow-hidden shadow-sm">
+                  <thead>
+                    <tr className="bg-brand-dark text-white text-left">
+                      <th className="px-4 py-2.5 font-semibold">Material</th>
+                      <th className="px-4 py-2.5 font-semibold">Tamaño típico</th>
+                      <th className="px-4 py-2.5 font-semibold">Categoría</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="bg-white border-b border-zinc-100">
+                      <td className="px-4 py-2.5 text-brand-dark font-medium">Humo, aerosoles</td>
+                      <td className="px-4 py-2.5 font-mono text-brand-dark">0.01 – 1 μm</td>
+                      <td className="px-4 py-2.5 text-brand-gray text-xs">Ultrafino</td>
+                    </tr>
+                    <tr className="bg-zinc-50 border-b border-zinc-100">
+                      <td className="px-4 py-2.5 text-brand-dark font-medium">Cemento, pigmentos</td>
+                      <td className="px-4 py-2.5 font-mono text-brand-dark">5 – 30 μm</td>
+                      <td className="px-4 py-2.5 text-brand-gray text-xs">Fino</td>
+                    </tr>
+                    <tr className="bg-white border-b border-zinc-100">
+                      <td className="px-4 py-2.5 text-brand-dark font-medium">Cacao en polvo</td>
+                      <td className="px-4 py-2.5 font-mono text-brand-dark">20 – 100 μm</td>
+                      <td className="px-4 py-2.5 text-brand-gray text-xs">Fino</td>
+                    </tr>
+                    <tr className="bg-zinc-50 border-b border-zinc-100">
+                      <td className="px-4 py-2.5 text-brand-dark font-medium">Harina de trigo</td>
+                      <td className="px-4 py-2.5 font-mono text-brand-dark">50 – 150 μm</td>
+                      <td className="px-4 py-2.5 text-brand-gray text-xs">Fino – medio</td>
+                    </tr>
+                    <tr className="bg-white border-b border-zinc-100">
+                      <td className="px-4 py-2.5 text-brand-dark font-medium">Azúcar refinada</td>
+                      <td className="px-4 py-2.5 font-mono text-brand-dark">200 – 600 μm</td>
+                      <td className="px-4 py-2.5 text-brand-gray text-xs">Medio</td>
+                    </tr>
+                    <tr className="bg-zinc-50 border-b border-zinc-100">
+                      <td className="px-4 py-2.5 text-brand-dark font-medium">Sal de mesa</td>
+                      <td className="px-4 py-2.5 font-mono text-brand-dark">300 – 700 μm</td>
+                      <td className="px-4 py-2.5 text-brand-gray text-xs">Medio</td>
+                    </tr>
+                    <tr className="bg-white border-b border-zinc-100">
+                      <td className="px-4 py-2.5 text-brand-dark font-medium">Café molido (filtro)</td>
+                      <td className="px-4 py-2.5 font-mono text-brand-dark">500 – 900 μm</td>
+                      <td className="px-4 py-2.5 text-brand-gray text-xs">Medio</td>
+                    </tr>
+                    <tr className="bg-zinc-50 border-b border-zinc-100">
+                      <td className="px-4 py-2.5 text-brand-dark font-medium">Arena de playa</td>
+                      <td className="px-4 py-2.5 font-mono text-brand-dark">0.1 – 2 mm</td>
+                      <td className="px-4 py-2.5 text-brand-gray text-xs">Grueso</td>
+                    </tr>
+                    <tr className="bg-white">
+                      <td className="px-4 py-2.5 text-brand-dark font-medium">Arroz, lentejas, semillas</td>
+                      <td className="px-4 py-2.5 font-mono text-brand-dark">2 – 8 mm</td>
+                      <td className="px-4 py-2.5 text-brand-gray text-xs">Muy grueso</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
               <SubTitle>Diámetros equivalentes</SubTitle>
               <p>
-                Para partículas irregulares, se usa un <strong>"diámetro equivalente"</strong>.
-                Este puede basarse en:
+                Las partículas industriales rara vez son esferas perfectas, por lo que usamos
+                un <strong>"diámetro equivalente"</strong>: el diámetro de una esfera que
+                comparte <em>alguna</em> propiedad física con la partícula real. Explora los
+                cuatro más usados:
               </p>
-              <ul>
-                <li>
-                  <strong>Diámetro equivalente por volumen ($d_v$):</strong> diámetro de
-                  una esfera con el mismo volumen que la partícula.
-                </li>
-              </ul>
 
-              <Figure
-                src="/classroom/iqya-2031/readings/propiedades-solidos-06.jpeg"
-                alt="Diámetro equivalente por volumen"
-                caption="Diámetro equivalente por volumen ($d_v$): diámetro de la esfera con el mismo volumen que la partícula real."
-              />
-
-              <ul>
-                <li>
-                  <strong>Diámetro equivalente por superficie ($d_s$):</strong> diámetro
-                  de una esfera con la misma área superficial.
-                </li>
-                <li>
-                  <strong>Diámetro de tamiz ($d_t$):</strong> determinado por la apertura
-                  cuadrada más pequeña a través de la cual pasará la partícula. Es el
-                  <em> más común en la industria</em> para caracterización general.
-                </li>
-              </ul>
-
-              <Figure
-                src="/classroom/iqya-2031/readings/propiedades-solidos-07.png"
-                alt="Diámetro de tamiz"
-                caption="Diámetro de tamiz ($d_t$): dimensión funcional de la partícula respecto al tamaño de apertura de malla cuadrada."
-              />
-
-              <ul>
-                <li>
-                  <strong>Diámetro de Stokes ({String.raw`$d_{\text{Stokes}}$`}, o diámetro de caída
-                  libre):</strong> diámetro de una esfera con la misma velocidad terminal
-                  que la partícula en un fluido dado. Relevante para procesos de
-                  <strong> sedimentación o transporte neumático</strong>.
-                </li>
-              </ul>
-
-              <Figure
-                src="/classroom/iqya-2031/readings/propiedades-solidos-08.png"
-                alt="Diámetro de Stokes"
-                caption="Diámetro de Stokes: la esfera hipotética que sedimenta a la misma velocidad que la partícula real en un fluido dado."
-              />
+              <DiameterTypesTabs />
 
               <SubTitle>Distribución de tamaño de partícula (DTP)</SubTitle>
               <p>
                 La mayoría de los polvos consisten en partículas de varios tamaños. La
-                <strong> DTP</strong> se determina comúnmente mediante:
+                distribución se grafica típicamente como porcentaje <em>acumulado</em> que
+                pasa (undersize) en función del tamaño.
               </p>
 
               <p>
-                <strong>Análisis por tamizado:</strong> se utiliza una pila de tamices con
-                aperturas de malla decrecientes (ej. series estándar como
-                <strong> Tyler o BS</strong>, donde un número de malla mayor implica una
-                apertura más pequeña). Se pesa la cantidad de material retenido en cada
-                tamiz. Los resultados se suelen graficar como porcentaje en peso acumulado
-                que pasa (o es retenido) versus el tamaño de apertura del tamiz.
+                Tres <strong>percentiles característicos</strong> resumen la DTP:
               </p>
+              <ul>
+                <li>
+                  <strong>$d_{'{10}'}$:</strong> 10 % de la masa (o número) tiene tamaño menor
+                  — indica la fracción de finos.
+                </li>
+                <li>
+                  <strong>$d_{'{50}'}$ (mediana):</strong> el 50 % está por debajo — valor
+                  central representativo.
+                </li>
+                <li>
+                  <strong>$d_{'{90}'}$:</strong> el 90 % está por debajo — indica la fracción
+                  de gruesos.
+                </li>
+              </ul>
 
-              <Figure
-                src="/classroom/iqya-2031/readings/propiedades-solidos-09.png"
-                alt="Análisis por tamizado"
-                caption="Análisis por tamizado: pila de tamices con aperturas decrecientes. Es el método más común y económico para caracterizar DTP en la industria."
-              />
-
+              <p>Y un indicador de amplitud de la distribución:</p>
+              <p>{'$$\\text{span} = \\dfrac{d_{90} - d_{10}}{d_{50}}$$'}</p>
               <p>
-                <strong>Microscopía:</strong> permite la observación y medición directa
-                de dimensiones individuales, útil también para la forma.
+                Un <strong>span &lt; 1</strong> indica una distribución estrecha (monomodal);
+                {' '}<strong>span &gt; 2</strong> indica una distribución ancha o multimodal —
+                típica de productos molidos sin clasificar. En farmacia y microencapsulación
+                suele exigirse span &lt; 1.5.
               </p>
 
-              <Figure
-                src="/classroom/iqya-2031/readings/propiedades-solidos-10.gif"
-                alt="Microscopía de partículas"
-                caption="Microscopía: observación directa de morfología y dimensiones. Permite caracterizar simultáneamente tamaño y forma."
-              />
-
+              <SubTitle>Métodos de medición</SubTitle>
               <p>
-                <strong>Métodos de sedimentación:</strong> basados en la <strong>Ley de
-                Stokes</strong>, relacionan la velocidad de sedimentación con el tamaño
-                de partícula.
+                Cada método tiene un rango útil y una variable medida distintos. Explora los
+                cinco más comunes:
               </p>
+              <SizingMethodsTabs />
 
-              <Figure
-                src="/classroom/iqya-2031/readings/propiedades-solidos-11.png"
-                alt="Método de sedimentación"
-                caption="Sedimentación: el tamaño se deduce de la velocidad terminal de caída libre mediante la Ley de Stokes."
-              />
-
-              <p>
-                <strong>Difracción láser:</strong> técnica moderna para análisis rápido y
-                automatizado, cubriendo un amplio rango de tamaños (ej., 0.1–3000 μm). Mide
-                el patrón de luz dispersada por las partículas.
-              </p>
-
-              <Figure
-                src="/classroom/iqya-2031/readings/propiedades-solidos-12.png"
-                alt="Difracción láser"
-                caption="Difracción láser: el patrón de dispersión de la luz incidente se inversiona para obtener la DTP completa en segundos."
-              />
-
-              <p>
-                <strong>Contador Coulter:</strong> mide cambios en la resistencia eléctrica
-                cuando las partículas suspendidas en un electrolito pasan a través de un
-                pequeño orificio.
-              </p>
-
-              <Figure
-                src="/classroom/iqya-2031/readings/propiedades-solidos-13.jpeg"
-                alt="Contador Coulter"
-                caption="Contador Coulter: cada partícula que cruza el orificio genera un pulso de resistencia proporcional a su volumen."
-              />
+              <TipCallout title="💡 ¿Cuál método elegir?">
+                Para caracterización rutinaria de granulometría media-gruesa, tamizado es casi
+                siempre suficiente y es el estándar industrial. Para polvos finos (&lt; 38 μm)
+                o cuando se requiere resolución y rapidez, difracción láser domina el mercado
+                moderno. Microscopía + análisis de imagen siguen siendo la referencia para
+                forma y para validar otros métodos.
+              </TipCallout>
             </>
           )}
 
@@ -563,16 +1357,10 @@ const PropiedadesSolidos: React.FC = () => {
 
               <SubTitle>Formas comunes</SubTitle>
               <p>
-                <strong>Acicular</strong> (forma de aguja), <strong>fibrosa</strong>,
-                <strong> granular</strong> (granos irregulares), <strong>esférica</strong>,
-                <strong> laminar</strong> (forma de hojuela), <strong>cúbica</strong>, etc.
+                Seis morfologías básicas cubren la mayoría de polvos industriales. Haz clic en
+                cada una para ver descripción y ejemplos:
               </p>
-
-              <Figure
-                src="/classroom/iqya-2031/readings/propiedades-solidos-14.png"
-                alt="Formas comunes de partículas"
-                caption="Morfologías típicas: acicular, fibrosa, granular, esférica, laminar y cúbica. La forma condiciona el flujo, el empaquetamiento y la interacción con fluidos."
-              />
+              <ShapeGallery />
 
               <SubTitle>Esfericidad ($\Phi_S$)</SubTitle>
               <p>
@@ -588,7 +1376,8 @@ const PropiedadesSolidos: React.FC = () => {
               <Figure
                 src="/classroom/iqya-2031/readings/propiedades-solidos-15.jpeg"
                 alt="Esfericidad"
-                caption="Esfericidad $\\Phi_S$: razón entre área de la esfera equivalente en volumen y área real de la partícula."
+                caption={<>Esfericidad $\Phi_S$: razón entre área de la esfera equivalente en volumen y área real de la partícula.</>}
+                maxWidth="500px"
               />
 
               <p>
@@ -597,6 +1386,31 @@ const PropiedadesSolidos: React.FC = () => {
                 porque influye en los <strong>coeficientes de arrastre en fluidos</strong> y
                 en la <strong>densidad de empaquetamiento</strong>.
               </p>
+
+              <SubTitle>Valores típicos por forma</SubTitle>
+              <p>
+                La siguiente tabla recoge valores de $\Phi_S$ para formas ideales y materiales
+                reales:
+              </p>
+
+              <SphericityTable />
+
+              <TipCallout title="💡 ¿Por qué importa $\Phi_S$?">
+                <ul className="list-disc pl-5 space-y-1">
+                  <li>
+                    En la <strong>ecuación de Ergun</strong> (caída de presión en lecho fijo),
+                    $\Phi_S$ aparece en ambos términos: viscoso y de inercia.
+                  </li>
+                  <li>
+                    En el <strong>coeficiente de arrastre</strong>: para $\Phi_S &lt; 1$, $C_D$
+                    puede aumentar un factor de 2–5 respecto a una esfera del mismo $d_v$.
+                  </li>
+                  <li>
+                    En la <strong>porosidad aleatoria</strong> de empaque: partículas con
+                    $\Phi_S &lt; 0.6$ tienen $\varepsilon_\text{lecho} &gt; 0.55$.
+                  </li>
+                </ul>
+              </TipCallout>
             </>
           )}
 
@@ -632,8 +1446,62 @@ const PropiedadesSolidos: React.FC = () => {
               <Figure
                 src="/classroom/iqya-2031/readings/propiedades-solidos-16.png"
                 alt="Ángulo de reposo"
-                caption="Ángulo de reposo $\\theta$: se mide sobre el cono formado al verter el polvo libremente sobre una superficie plana."
+                caption={<>Ángulo de reposo $\theta$: se mide sobre el cono formado al verter el polvo libremente sobre una superficie plana.</>}
+                maxWidth="500px"
               />
+
+              <p>
+                <strong>Valores típicos</strong> para materiales comunes:
+              </p>
+
+              <div className="overflow-x-auto my-4 not-prose">
+                <table className="w-full text-sm border-collapse rounded-lg overflow-hidden shadow-sm">
+                  <thead>
+                    <tr className="bg-brand-dark text-white text-left">
+                      <th className="px-4 py-2.5 font-semibold">Material</th>
+                      <th className="px-4 py-2.5 font-semibold">$\theta$ (°)</th>
+                      <th className="px-4 py-2.5 font-semibold">Flujo</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="bg-white border-b border-zinc-100">
+                      <td className="px-4 py-2.5 text-brand-dark font-medium">Arena seca redondeada</td>
+                      <td className="px-4 py-2.5 font-mono text-brand-dark">28 – 32</td>
+                      <td className="px-4 py-2.5 text-brand-gray text-xs">Libre</td>
+                    </tr>
+                    <tr className="bg-zinc-50 border-b border-zinc-100">
+                      <td className="px-4 py-2.5 text-brand-dark font-medium">Azúcar granulada</td>
+                      <td className="px-4 py-2.5 font-mono text-brand-dark">30 – 35</td>
+                      <td className="px-4 py-2.5 text-brand-gray text-xs">Libre</td>
+                    </tr>
+                    <tr className="bg-white border-b border-zinc-100">
+                      <td className="px-4 py-2.5 text-brand-dark font-medium">Sal de mesa</td>
+                      <td className="px-4 py-2.5 font-mono text-brand-dark">32 – 38</td>
+                      <td className="px-4 py-2.5 text-brand-gray text-xs">Libre – aceptable</td>
+                    </tr>
+                    <tr className="bg-zinc-50 border-b border-zinc-100">
+                      <td className="px-4 py-2.5 text-brand-dark font-medium">Café molido</td>
+                      <td className="px-4 py-2.5 font-mono text-brand-dark">35 – 42</td>
+                      <td className="px-4 py-2.5 text-brand-gray text-xs">Aceptable</td>
+                    </tr>
+                    <tr className="bg-white border-b border-zinc-100">
+                      <td className="px-4 py-2.5 text-brand-dark font-medium">Harina de trigo</td>
+                      <td className="px-4 py-2.5 font-mono text-brand-dark">40 – 50</td>
+                      <td className="px-4 py-2.5 text-brand-gray text-xs">Cohesivo</td>
+                    </tr>
+                    <tr className="bg-zinc-50 border-b border-zinc-100">
+                      <td className="px-4 py-2.5 text-brand-dark font-medium">Cacao en polvo</td>
+                      <td className="px-4 py-2.5 font-mono text-brand-dark">45 – 55</td>
+                      <td className="px-4 py-2.5 text-brand-gray text-xs">Cohesivo</td>
+                    </tr>
+                    <tr className="bg-white">
+                      <td className="px-4 py-2.5 text-brand-dark font-medium">Cemento</td>
+                      <td className="px-4 py-2.5 font-mono text-brand-dark">40 – 50</td>
+                      <td className="px-4 py-2.5 text-brand-gray text-xs">Cohesivo</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
 
               <SubTitle>Índice de Carr y razón de Hausner</SubTitle>
               <p>
@@ -716,6 +1584,11 @@ const PropiedadesSolidos: React.FC = () => {
                 </table>
               </div>
 
+              <p>
+                Usa esta <strong>calculadora</strong> para evaluar un polvo en particular:
+              </p>
+              <CarrHausnerCalculator />
+
               <SubTitle>Cohesión y adhesión</SubTitle>
               <p>
                 Las fuerzas entre partículas (<strong>cohesión</strong>) y entre partículas y
@@ -739,6 +1612,21 @@ const PropiedadesSolidos: React.FC = () => {
                 concepto avanzado, pero esencial para el diseño robusto de tolvas y silos,
                 especialmente cuando se manejan polvos cohesivos.
               </p>
+
+              <InfoCallout title="📌 Función de flujo de Jenike (ffc)">
+                La función de flujo de Jenike relaciona la <strong>resistencia a la compresión
+                no confinada</strong> ($\sigma_c$) con el <strong>esfuerzo principal mayor de
+                consolidación</strong> ($\sigma_1$):
+                <p className="mt-2">{'$$ff_c = \\dfrac{\\sigma_1}{\\sigma_c}$$'}</p>
+                <ul className="list-disc pl-5 mt-2 space-y-1">
+                  <li>$ff_c &lt; 2$: polvo muy cohesivo, no fluirá por gravedad.</li>
+                  <li>$2 &lt; ff_c &lt; 4$: cohesivo.</li>
+                  <li>$4 &lt; ff_c &lt; 10$: fácil de fluir.</li>
+                  <li>$ff_c &gt; 10$: flujo libre.</li>
+                </ul>
+                Este ensayo permite diseñar el <strong>ángulo mínimo de la tolva</strong> y
+                el <strong>tamaño mínimo de salida</strong> para garantizar flujo másico.
+              </InfoCallout>
 
               <TipCallout>
                 En la práctica industrial, el <strong>ángulo de reposo</strong> y la pareja
@@ -777,6 +1665,20 @@ const PropiedadesSolidos: React.FC = () => {
                   térmica, cruciales para procesos de calentamiento o enfriamiento.
                 </li>
               </ul>
+
+              <InfoCallout title="📌 Método BET — un apunte">
+                El <strong>método BET</strong> (Brunauer-Emmett-Teller, 1938) mide el área
+                superficial específica a partir de la <em>isoterma de adsorción</em> de un
+                gas inerte (típicamente N₂ a 77 K) sobre el sólido. La ecuación BET linealiza
+                la isoterma en un rango $0.05 &lt; p/p_0 &lt; 0.35$ y de la pendiente se
+                obtiene el volumen de monocapa $v_m$; de ahí el área superficial:
+                <p className="mt-2">{'$$S_\\text{BET} = \\dfrac{v_m \\, N_A \\, \\sigma}{V_m}$$'}</p>
+                donde $\sigma$ es el área ocupada por una molécula de N₂ (0.162 nm²). Valores
+                típicos: carbón activo 500–1500 m²/g, zeolitas 300–700 m²/g, sílice 200–400
+                m²/g, polvos farmacéuticos 0.5–5 m²/g. Es <strong>crítico en catálisis</strong>
+                {' '}(actividad proporcional al área accesible) y en <strong>cinética de
+                disolución</strong> (Noyes-Whitney: $dm/dt \propto S$).
+              </InfoCallout>
             </>
           )}
 
@@ -866,6 +1768,115 @@ const PropiedadesSolidos: React.FC = () => {
             </>
           )}
 
+          {isVisible('caso') && (
+            <>
+              <SectionTitle id="caso">Caso práctico: diseñar una tolva para cacao en polvo</SectionTitle>
+              <p>
+                Supongamos que debes diseñar una tolva de almacenamiento intermedio para
+                <strong> cacao en polvo</strong> con humedad variable (entre 3 % en época seca
+                y 7 % en época húmeda) en una planta de chocolates. ¿Qué propiedades medir y
+                qué decisiones tomar?
+              </p>
+
+              <SubTitle>1. Propiedades a caracterizar</SubTitle>
+              <ul>
+                <li>
+                  <strong>$\rho_\text{suelta}$, $\rho_\text{compactada}$</strong> a ambos
+                  niveles de humedad (3 % y 7 %) — para dimensionar la tolva y estimar cuánto
+                  se compactará durante el almacenamiento.
+                </li>
+                <li>
+                  <strong>DTP por tamizado o difracción láser</strong> — el cacao típico está
+                  entre 20 y 100 μm, con $d_{'{50}'} \approx 40$ μm.
+                </li>
+                <li>
+                  <strong>Ángulo de reposo</strong> y <strong>pareja Carr/Hausner</strong> en
+                  los dos extremos de humedad — diagnóstico rápido.
+                </li>
+                <li>
+                  <strong>Ensayo de cizallamiento Jenike</strong> — obligatorio para cacao
+                  porque se sospecha cohesivo ($\theta &gt; 45°$ esperado).
+                </li>
+                <li>
+                  <strong>Higroscopicidad</strong> y <strong>actividad de agua</strong> — para
+                  evaluar apelmazamiento y crecimiento microbiano durante almacenamiento.
+                </li>
+              </ul>
+
+              <SubTitle>2. Decisiones de diseño</SubTitle>
+
+              <div className="grid sm:grid-cols-2 gap-4 my-6 not-prose">
+                <div className="rounded-xl border border-zinc-200 p-5">
+                  <h4 className="font-semibold text-brand-dark text-base mb-2">
+                    Tipo de tolva
+                  </h4>
+                  <p className="text-sm text-brand-gray leading-relaxed">
+                    Para polvos cohesivos como el cacao → <strong>tolva de flujo másico</strong>
+                    {' '}(todo el material se mueve al abrir la salida). Evitar flujo de embudo
+                    (ratholing garantizado).
+                  </p>
+                </div>
+                <div className="rounded-xl border border-zinc-200 p-5">
+                  <h4 className="font-semibold text-brand-dark text-base mb-2">
+                    Ángulo del cono
+                  </h4>
+                  <p className="text-sm text-brand-gray leading-relaxed">
+                    A partir de la celda Jenike y del ángulo de fricción con la pared, diseñar
+                    un cono con semi-ángulo típicamente <strong>15°–25°</strong> respecto a la
+                    vertical. Pared pulida (acero inox 2B).
+                  </p>
+                </div>
+                <div className="rounded-xl border border-zinc-200 p-5">
+                  <h4 className="font-semibold text-brand-dark text-base mb-2">
+                    Tamaño de salida
+                  </h4>
+                  <p className="text-sm text-brand-gray leading-relaxed">
+                    Debe superar el <strong>diámetro crítico de arco</strong> calculado con
+                    $ff_c$ — típicamente <strong>0.3–0.6 m</strong> para cacao fino. Menor que
+                    esto → arco garantizado.
+                  </p>
+                </div>
+                <div className="rounded-xl border border-zinc-200 p-5">
+                  <h4 className="font-semibold text-brand-dark text-base mb-2">
+                    Ayudas de flujo
+                  </h4>
+                  <p className="text-sm text-brand-gray leading-relaxed">
+                    Vibradores neumáticos externos o <strong>aireación con N₂ seco</strong>
+                    {' '}(no aire comprimido: el cacao absorbe humedad). Alternativa: agitador
+                    mecánico tipo "bin-activator".
+                  </p>
+                </div>
+                <div className="rounded-xl border border-zinc-200 p-5">
+                  <h4 className="font-semibold text-brand-dark text-base mb-2">
+                    Control de humedad
+                  </h4>
+                  <p className="text-sm text-brand-gray leading-relaxed">
+                    Tolva hermética, venteo con filtro dehumidificador, control de temperatura
+                    ≤ 20 °C para minimizar actividad de agua y caking.
+                  </p>
+                </div>
+                <div className="rounded-xl border border-zinc-200 p-5">
+                  <h4 className="font-semibold text-brand-dark text-base mb-2">
+                    Seguridad
+                  </h4>
+                  <p className="text-sm text-brand-gray leading-relaxed">
+                    El cacao en polvo es <strong>explosivo</strong> (ATEX clase St1).
+                    Requiere: venting de explosión, supresión química, puesta a tierra,
+                    evitar fuentes de ignición.
+                  </p>
+                </div>
+              </div>
+
+              <WarningCallout title="⚠️ Trampa frecuente">
+                Si se diseña la tolva con la {String.raw`$\rho_\text{suelta}$`} del cacao seco (3 %),
+                pero en operación real el material llega al 7 % → la densidad suelta puede
+                bajar 15 %, y el ángulo de reposo puede subir de 48° a 60°. El equipo
+                "funciona en el laboratorio y no en planta". <strong>Siempre caracterizar en
+                el peor escenario esperable</strong>, no en el de diseño ideal.
+              </WarningCallout>
+            </>
+          )}
+
           {isVisible('consejos') && (
             <>
               <SectionTitle id="consejos">Consejos prácticos</SectionTitle>
@@ -918,6 +1929,15 @@ const PropiedadesSolidos: React.FC = () => {
                   Perry, R. H., &amp; Green, D. W. (eds.). <em>Perry's Chemical Engineers'
                   Handbook</em> (8th ed.). McGraw-Hill — secciones sobre caracterización y
                   manejo de sólidos.
+                </li>
+                <li>
+                  Jenike, A. W. (1964). <em>Storage and Flow of Solids</em>. Bulletin 123,
+                  University of Utah. Referencia clásica para ensayos de cizallamiento y
+                  diseño de tolvas.
+                </li>
+                <li>
+                  Brunauer, S., Emmett, P. H., &amp; Teller, E. (1938). Adsorption of gases
+                  in multimolecular layers. <em>J. Am. Chem. Soc.</em>, 60, 309–319.
                 </li>
               </ul>
             </>

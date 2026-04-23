@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { ReadingLayout } from '../../../../components/classroom/ReadingLayout';
 import { getCourseBySlug } from '../../../../components/data/classroom';
 
@@ -47,12 +47,31 @@ const useKatex = () => {
   }, []);
 };
 
+/* Hook para re-renderizar KaTeX cuando cambia el contenido (tabs, etc.) */
+const useKatexRerender = (deps: unknown[]) => {
+  useEffect(() => {
+    // @ts-expect-error
+    const rme = window.renderMathInElement;
+    if (!rme) return;
+    const target = document.querySelector('.reading-prose') ?? document.body;
+    rme(target, {
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$', right: '$', display: false },
+      ],
+      throwOnError: false,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, deps);
+};
+
 /* ─── TOC ─── */
 const tocItems = [
   { id: 'objetivo', label: '¿Por qué rompemos las cosas?' },
   { id: 'mecanismos', label: 'Mecanismos de fractura' },
   { id: 'equipos', label: 'Equipos' },
   { id: 'leyes', label: 'Leyes de la conminución' },
+  { id: 'ejemplo', label: 'Ejemplo resuelto (Bond)' },
   { id: 'factores', label: 'Factores operativos' },
   { id: 'consejos', label: 'Consejos prácticos' },
   { id: 'bibliografia', label: 'Bibliografía' },
@@ -75,6 +94,16 @@ const InfoCallout: React.FC<{ title?: string; children: React.ReactNode }> = ({
 }) => (
   <div className="my-6 rounded-xl bg-brand-dark p-5 sm:p-6 not-prose">
     <p className="font-semibold text-emerald-400 text-sm mb-2">{title}</p>
+    <div className="text-sm text-zinc-300 leading-relaxed">{children}</div>
+  </div>
+);
+
+const WarningCallout: React.FC<{ title?: string; children: React.ReactNode }> = ({
+  title = '⚠️ Importante',
+  children,
+}) => (
+  <div className="my-6 rounded-xl bg-brand-dark p-5 sm:p-6 not-prose">
+    <p className="font-semibold text-red-400 text-sm mb-2">{title}</p>
     <div className="text-sm text-zinc-300 leading-relaxed">{children}</div>
   </div>
 );
@@ -110,25 +139,964 @@ const VideoEmbed: React.FC<{ id: string; title: string; start?: number }> = ({
   </div>
 );
 
-/* ─── Figura ─── */
-const Figure: React.FC<{ src: string; alt: string; caption?: string; maxWidth?: string }> = ({
-  src,
-  alt,
-  caption,
-  maxWidth = '720px',
-}) => (
-  <figure className="my-8 not-prose">
-    <img
-      src={src}
-      alt={alt}
-      className="rounded-xl shadow-lg mx-auto"
-      style={{ maxWidth, width: '100%' }}
-    />
+/* ─── Figura centrada (corrige el bug de alineación izquierda) ─── */
+const Figure: React.FC<{
+  src: string;
+  alt: string;
+  caption?: React.ReactNode;
+  maxWidth?: string;
+}> = ({ src, alt, caption, maxWidth = '700px' }) => (
+  <figure className="my-8 not-prose flex flex-col items-center">
+    <div
+      className="w-full flex justify-center rounded-xl bg-zinc-50 border border-zinc-200 p-4 sm:p-6"
+    >
+      <img
+        src={src}
+        alt={alt}
+        className="block max-w-full h-auto rounded-md shadow-md"
+        style={{ maxWidth }}
+      />
+    </div>
     {caption && (
-      <figcaption className="text-center text-sm text-brand-gray mt-3">{caption}</figcaption>
+      <figcaption className="text-center text-sm text-brand-gray mt-3 italic max-w-2xl">
+        {caption}
+      </figcaption>
     )}
   </figure>
 );
+
+/* ─── Mini-SVG de mecanismos de fractura ─── */
+const MechIcon: React.FC<{ kind: 'compresion' | 'impacto' | 'atricion' | 'corte' }> = ({ kind }) => {
+  const common = 'w-16 h-16 text-brand-yellow-dark';
+  if (kind === 'compresion') {
+    return (
+      <svg viewBox="0 0 64 64" className={common} fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+        <rect x="14" y="28" width="36" height="8" rx="1.5" fill="currentColor" fillOpacity="0.15" />
+        <path d="M32 8v12M32 44v12" strokeLinecap="round" />
+        <path d="M24 14l8 6 8-6M24 50l8-6 8 6" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    );
+  }
+  if (kind === 'impacto') {
+    return (
+      <svg viewBox="0 0 64 64" className={common} fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+        <circle cx="16" cy="32" r="6" fill="currentColor" />
+        <path d="M22 32h8" strokeLinecap="round" />
+        <path d="M36 20l4 4 6-6M36 44l4-4 6 6M40 32h8" strokeLinecap="round" />
+        <polygon points="34,24 42,28 38,32 44,36 34,40 38,32" fill="currentColor" fillOpacity="0.2" />
+      </svg>
+    );
+  }
+  if (kind === 'atricion') {
+    return (
+      <svg viewBox="0 0 64 64" className={common} fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+        <rect x="8" y="18" width="48" height="6" rx="1.5" fill="currentColor" fillOpacity="0.15" />
+        <rect x="8" y="40" width="48" height="6" rx="1.5" fill="currentColor" fillOpacity="0.15" />
+        <circle cx="20" cy="32" r="3" />
+        <circle cx="32" cy="32" r="3" />
+        <circle cx="44" cy="32" r="3" />
+        <path d="M8 14l4-4M52 14l4-4M8 54l4-4M52 54l4-4" strokeLinecap="round" />
+      </svg>
+    );
+  }
+  return (
+    <svg viewBox="0 0 64 64" className={common} fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+      <path d="M10 20l20 12-20 12z" fill="currentColor" fillOpacity="0.2" />
+      <path d="M34 32h20" strokeLinecap="round" />
+      <path d="M54 32l-6-4M54 32l-6 4" strokeLinecap="round" />
+      <path d="M30 10l6 22-6 22" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="3 3" />
+    </svg>
+  );
+};
+
+/* ─── Tabs de mecanismos de fractura ─── */
+const MechanismsTabs: React.FC = () => {
+  const [tab, setTab] = useState<'compresion' | 'impacto' | 'atricion' | 'corte'>('compresion');
+  useKatexRerender([tab]);
+
+  const tabs = [
+    { id: 'compresion', label: 'Compresión' },
+    { id: 'impacto', label: 'Impacto' },
+    { id: 'atricion', label: 'Atrición' },
+    { id: 'corte', label: 'Corte' },
+  ] as const;
+
+  return (
+    <div className="my-6 not-prose">
+      <div role="tablist" aria-label="Mecanismos de fractura" className="flex gap-2 border-b border-zinc-200 flex-wrap">
+        {tabs.map((t) => (
+          <button
+            key={t.id}
+            role="tab"
+            aria-selected={tab === t.id}
+            onClick={() => setTab(t.id)}
+            className={`px-4 py-2 text-sm font-semibold border-b-2 transition-colors ${
+              tab === t.id
+                ? 'text-brand-dark border-brand-yellow'
+                : 'text-brand-gray border-transparent hover:text-brand-dark'
+            }`}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      <div className="mt-4">
+        {tab === 'compresion' && (
+          <div className="flex flex-col md:flex-row gap-6 items-start">
+            <div className="shrink-0 mx-auto md:mx-0"><MechIcon kind="compresion" /></div>
+            <div className="flex-1">
+              <p className="text-brand-gray leading-relaxed">
+                Fuerzas <strong>opuestas y lentas</strong> que aplastan el sólido hasta que su
+                resistencia a la compresión se supera. Es el mecanismo dominante en la{' '}
+                <strong>reducción gruesa</strong> de materiales duros y frágiles — típicamente
+                la etapa primaria de una planta de conminución.
+              </p>
+              <ul className="mt-3 pl-5 list-disc space-y-1 text-brand-gray leading-relaxed">
+                <li><strong>Equipos típicos:</strong> trituradoras de mandíbula (jaw), giratorias (gyratory), rodillos (crushing rolls).</li>
+                <li><strong>Material ideal:</strong> rocas duras, frágiles y no demasiado abrasivas. Caliza, cuarzo, mineral de hierro.</li>
+                <li><strong>Ejemplos industriales:</strong> minería primaria, canteras, cemento (primera etapa), reciclaje de concreto.</li>
+                <li><strong>Relación de reducción típica:</strong> 3:1 a 8:1 por etapa.</li>
+              </ul>
+            </div>
+          </div>
+        )}
+
+        {tab === 'impacto' && (
+          <div className="flex flex-col md:flex-row gap-6 items-start">
+            <div className="shrink-0 mx-auto md:mx-0"><MechIcon kind="impacto" /></div>
+            <div className="flex-1">
+              <p className="text-brand-gray leading-relaxed">
+                Un <strong>golpe súbito</strong> y de alta velocidad transfiere energía cinética
+                a la partícula, generando fracturas por propagación rápida de grietas. La
+                partícula se rompe por la inercia de su propia masa frente al impacto.
+              </p>
+              <ul className="mt-3 pl-5 list-disc space-y-1 text-brand-gray leading-relaxed">
+                <li><strong>Equipos típicos:</strong> molinos de martillos (hammer mills), molinos de impacto, pulverizadores.</li>
+                <li><strong>Material ideal:</strong> frágiles y de dureza media. Carbón, fosfatos, piedra caliza, granos secos.</li>
+                <li><strong>Ejemplos industriales:</strong> molienda de carbón en plantas térmicas, harina industrial, fertilizantes.</li>
+                <li><strong>Relación de reducción típica:</strong> 10:1 a 40:1.</li>
+              </ul>
+            </div>
+          </div>
+        )}
+
+        {tab === 'atricion' && (
+          <div className="flex flex-col md:flex-row gap-6 items-start">
+            <div className="shrink-0 mx-auto md:mx-0"><MechIcon kind="atricion" /></div>
+            <div className="flex-1">
+              <p className="text-brand-gray leading-relaxed">
+                <strong>Fuerzas de cizalla</strong> entre las partículas y las superficies del
+                equipo (o entre las partículas mismas). El material se degrada progresivamente
+                por rozamiento — mecanismo dominante en la <strong>molienda fina</strong>, donde
+                es preciso crear mucha nueva área superficial.
+              </p>
+              <ul className="mt-3 pl-5 list-disc space-y-1 text-brand-gray leading-relaxed">
+                <li><strong>Equipos típicos:</strong> molinos de discos (atrición), molinos de bolas, molinos de barras, molinos coloidales.</li>
+                <li><strong>Material ideal:</strong> amplio — desde duros hasta semiduros. Cementos, pigmentos, minerales metálicos.</li>
+                <li><strong>Ejemplos industriales:</strong> molienda de clinker a cemento, beneficio de minerales, farma (activos).</li>
+                <li><strong>Relación de reducción típica:</strong> 20:1 a 100:1 (molinos de bolas largos).</li>
+              </ul>
+            </div>
+          </div>
+        )}
+
+        {tab === 'corte' && (
+          <div className="flex flex-col md:flex-row gap-6 items-start">
+            <div className="shrink-0 mx-auto md:mx-0"><MechIcon kind="corte" /></div>
+            <div className="flex-1">
+              <p className="text-brand-gray leading-relaxed">
+                Una <strong>cuchilla</strong> aplica una fuerza concentrada en una línea estrecha
+                para seccionar el material. A diferencia de la fractura frágil, el corte es el
+                mecanismo apropiado para materiales que <strong>deforman plásticamente</strong> o
+                son <strong>fibrosos</strong>.
+              </p>
+              <ul className="mt-3 pl-5 list-disc space-y-1 text-brand-gray leading-relaxed">
+                <li><strong>Equipos típicos:</strong> cortadoras rotativas (knife mills), granuladores, picadoras.</li>
+                <li><strong>Material ideal:</strong> blandos, elásticos, fibrosos o tenaces. Plásticos, caucho, papel, textiles, biomasa.</li>
+                <li><strong>Ejemplos industriales:</strong> reciclaje de plásticos, alimentos (carnes, vegetales), preparación de pulpa.</li>
+                <li><strong>Relación de reducción típica:</strong> depende del tamaño de la malla, comúnmente 5:1 a 20:1.</li>
+              </ul>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+/* ─── Explorador de equipos ─── */
+type Equipo = {
+  id: string;
+  nombre: string;
+  grupo: 'trituradoras' | 'molinos' | 'ultrafinos';
+  descripcion: string;
+  mecanismo: string;
+  aplicaciones: string;
+  material: string;
+  relacion: string;
+  imagen?: string;
+  imagenMaxWidth?: string;
+  video?: { id: string; title: string };
+};
+
+const equipos: Equipo[] = [
+  {
+    id: 'jaw',
+    nombre: 'Mandíbula (jaw)',
+    grupo: 'trituradoras',
+    descripcion: 'Mandíbula fija y móvil; el material se comprime entre ambas a medida que la móvil oscila.',
+    mecanismo: 'Compresión',
+    aplicaciones: 'Trituración primaria en minería, canteras, escorias, reciclaje de concreto.',
+    material: 'Rocas duras y abrasivas; bloques grandes (hasta 1.5 m).',
+    relacion: '3:1 a 7:1',
+    imagen: '/classroom/iqya-2031/readings/reduccion-tamano-02.gif',
+    imagenMaxWidth: '500px',
+  },
+  {
+    id: 'gyratory',
+    nombre: 'Giratoria (gyratory)',
+    grupo: 'trituradoras',
+    descripcion: 'Cono de trituración que gira excéntricamente dentro de una carcasa cónica; alimenta por arriba, descarga por abajo.',
+    mecanismo: 'Compresión continua',
+    aplicaciones: 'Minería primaria de muy alta capacidad; operación continua (sin tiempos muertos).',
+    material: 'Rocas muy duras y masivas; cobre, hierro, oro primario.',
+    relacion: 'Hasta 8:1',
+    imagen: '/classroom/iqya-2031/readings/reduccion-tamano-03.gif',
+    imagenMaxWidth: '500px',
+  },
+  {
+    id: 'rolls',
+    nombre: 'Rodillos (crushing rolls)',
+    grupo: 'trituradoras',
+    descripcion: 'Dos rodillos que giran en direcciones opuestas; el material es atrapado y comprimido en el nip.',
+    mecanismo: 'Compresión (y algo de cizalla si son dentados)',
+    aplicaciones: 'Carbón, yeso, arcilla, sal, roca fosfórica; alimentación a molinos.',
+    material: 'Dureza media-baja, no muy abrasivos.',
+    relacion: '2:1 a 4:1',
+    imagen: '/classroom/iqya-2031/readings/reduccion-tamano-04.gif',
+    imagenMaxWidth: '500px',
+  },
+  {
+    id: 'hammer',
+    nombre: 'Martillos (hammer mill)',
+    grupo: 'molinos',
+    descripcion: 'Rotor con martillos pivotantes a alta velocidad; las partículas se rompen al golpear martillos, placas y rejilla.',
+    mecanismo: 'Impacto (principal) + atrición',
+    aplicaciones: 'Carbón, piedra caliza, fosfatos, alimentos secos, biomasa, madera.',
+    material: 'Frágiles, fibrosos, dureza baja-media.',
+    relacion: '10:1 a 40:1',
+    imagen: '/classroom/iqya-2031/readings/reduccion-tamano-05.gif',
+    imagenMaxWidth: '500px',
+  },
+  {
+    id: 'disc',
+    nombre: 'Discos / atrición',
+    grupo: 'molinos',
+    descripcion: 'Uno o dos discos rotatorios con superficies abrasivas o dentadas; el material se muele en el gap entre discos.',
+    mecanismo: 'Atrición (cizalla entre superficies)',
+    aplicaciones: 'Granos, especias, pigmentos, pulpa de papel.',
+    material: 'Blandos a semiduros; tolera algo de humedad.',
+    relacion: '5:1 a 10:1',
+    imagen: '/classroom/iqya-2031/readings/reduccion-tamano-06.jpeg',
+    imagenMaxWidth: '500px',
+  },
+  {
+    id: 'ball',
+    nombre: 'Bolas / barras (tumbling)',
+    grupo: 'molinos',
+    descripcion: 'Cilindro horizontal rotatorio; los medios (bolas de acero/cerámica o barras) caen y muelen el material por impacto y cizalla.',
+    mecanismo: 'Impacto + atrición',
+    aplicaciones: 'Molienda fina de minerales, cemento, cerámica, pigmentos; workhorse de la minería.',
+    material: 'Duros y abrasivos; apto para operación húmeda o seca.',
+    relacion: '20:1 a 100:1 (configurables en circuito cerrado)',
+    imagen: '/classroom/iqya-2031/readings/reduccion-tamano-07.gif',
+    imagenMaxWidth: '500px',
+  },
+  {
+    id: 'jet',
+    nombre: 'Chorro (jet mill)',
+    grupo: 'ultrafinos',
+    descripcion: 'Chorros de gas a alta velocidad aceleran las partículas, que chocan entre sí. No hay medios de molienda — producto libre de contaminación metálica.',
+    mecanismo: 'Impacto partícula-partícula',
+    aplicaciones: 'Farmacéuticos, pigmentos, cerámicas finas, toners, cosméticos.',
+    material: 'Sensibles al calor (gas frío), alta pureza.',
+    relacion: 'Producto submicrónico (d50 < 10 µm)',
+    video: { id: 'J0WEeE_I1i0', title: 'Jet mill en operación' },
+  },
+  {
+    id: 'knife',
+    nombre: 'Cuchillas (knife mill)',
+    grupo: 'ultrafinos',
+    descripcion: 'Cuchillas montadas en un rotor que cortan el material contra cuchillas fijas; tamaño de producto definido por una malla de descarga.',
+    mecanismo: 'Corte',
+    aplicaciones: 'Reciclaje de plásticos, caucho, textiles; alimentos (carnes, vegetales).',
+    material: 'Blandos, elásticos, fibrosos, tenaces.',
+    relacion: '5:1 a 20:1 (según malla)',
+    video: { id: 'Lz_FFXp6678', title: 'Knife mill / cortadora rotativa en operación' },
+  },
+];
+
+const EquipmentSelector: React.FC = () => {
+  const [grupo, setGrupo] = useState<'trituradoras' | 'molinos' | 'ultrafinos'>('trituradoras');
+  const [selected, setSelected] = useState<string>('jaw');
+  useKatexRerender([grupo, selected]);
+
+  const visibles = equipos.filter((e) => e.grupo === grupo);
+  const activo = equipos.find((e) => e.id === selected) ?? visibles[0];
+
+  const grupos = [
+    { id: 'trituradoras', label: 'Trituradoras', sub: 'Reducción gruesa' },
+    { id: 'molinos', label: 'Molinos', sub: 'Reducción intermedia y fina' },
+    { id: 'ultrafinos', label: 'Ultrafinos + cortadoras', sub: 'Producto micrométrico o corte' },
+  ] as const;
+
+  return (
+    <div className="my-6 not-prose">
+      <div role="tablist" aria-label="Grupos de equipos" className="flex gap-2 border-b border-zinc-200 flex-wrap">
+        {grupos.map((g) => (
+          <button
+            key={g.id}
+            role="tab"
+            aria-selected={grupo === g.id}
+            onClick={() => {
+              setGrupo(g.id);
+              const first = equipos.find((e) => e.grupo === g.id);
+              if (first) setSelected(first.id);
+            }}
+            className={`px-4 py-2 text-sm font-semibold border-b-2 transition-colors ${
+              grupo === g.id
+                ? 'text-brand-dark border-brand-yellow'
+                : 'text-brand-gray border-transparent hover:text-brand-dark'
+            }`}
+          >
+            <span className="block">{g.label}</span>
+            <span className="block text-[11px] font-normal text-brand-gray">{g.sub}</span>
+          </button>
+        ))}
+      </div>
+
+      <div className="mt-4 grid md:grid-cols-[260px_1fr] gap-4">
+        {/* Lista de cards */}
+        <div className="flex md:flex-col gap-2 overflow-x-auto md:overflow-visible">
+          {visibles.map((e) => (
+            <button
+              key={e.id}
+              onClick={() => setSelected(e.id)}
+              className={`shrink-0 md:shrink text-left px-4 py-3 rounded-lg border transition-all ${
+                selected === e.id
+                  ? 'bg-yellow-50 border-brand-yellow shadow-sm'
+                  : 'bg-white border-zinc-200 hover:border-brand-yellow hover:bg-zinc-50'
+              }`}
+            >
+              <p className={`font-semibold text-sm ${selected === e.id ? 'text-brand-dark' : 'text-brand-dark'}`}>
+                {e.nombre}
+              </p>
+              <p className="text-xs text-brand-gray mt-0.5">{e.mecanismo}</p>
+            </button>
+          ))}
+        </div>
+
+        {/* Panel de detalle */}
+        {activo && (
+          <div className="rounded-xl border border-zinc-200 bg-white p-5 shadow-sm">
+            <h4 className="text-lg font-bold text-brand-dark mb-1">{activo.nombre}</h4>
+            <p className="text-xs uppercase tracking-wider text-brand-yellow-dark font-semibold mb-3">
+              {activo.mecanismo}
+            </p>
+            <p className="text-sm text-brand-gray leading-relaxed mb-3">{activo.descripcion}</p>
+            <dl className="text-sm grid sm:grid-cols-2 gap-x-4 gap-y-2 mb-3">
+              <div>
+                <dt className="text-xs uppercase tracking-wider text-brand-gray font-semibold">Aplicaciones</dt>
+                <dd className="text-brand-dark">{activo.aplicaciones}</dd>
+              </div>
+              <div>
+                <dt className="text-xs uppercase tracking-wider text-brand-gray font-semibold">Material ideal</dt>
+                <dd className="text-brand-dark">{activo.material}</dd>
+              </div>
+              <div className="sm:col-span-2">
+                <dt className="text-xs uppercase tracking-wider text-brand-gray font-semibold">Relación de reducción</dt>
+                <dd className="text-brand-dark font-mono">{activo.relacion}</dd>
+              </div>
+            </dl>
+            {activo.imagen && (
+              <Figure
+                src={activo.imagen}
+                alt={activo.nombre}
+                caption={activo.nombre}
+                maxWidth={activo.imagenMaxWidth ?? '500px'}
+              />
+            )}
+            {activo.video && <VideoEmbed id={activo.video.id} title={activo.video.title} />}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+/* ─── Calculadora de Bond ─── */
+const materialesBond = [
+  { nombre: 'Caliza', wi: 11.6 },
+  { nombre: 'Clinker (cemento)', wi: 13.5 },
+  { nombre: 'Cuarzo', wi: 13.6 },
+  { nombre: 'Granito', wi: 14.4 },
+  { nombre: 'Mineral de hierro', wi: 15.4 },
+  { nombre: 'Bauxita', wi: 9.5 },
+  { nombre: 'Yeso', wi: 7.0 },
+];
+
+const BondCalculator: React.FC = () => {
+  const [Wi, setWi] = useState(11.6);
+  const [F80, setF80] = useState(10000); // µm
+  const [P80, setP80] = useState(100); // µm
+
+  const E = useMemo(() => Wi * (10 / Math.sqrt(P80) - 10 / Math.sqrt(F80)), [Wi, F80, P80]);
+
+  useKatexRerender([E]);
+
+  const fmt = (n: number) => {
+    if (!isFinite(n)) return '—';
+    const abs = Math.abs(n);
+    if (abs >= 1e5 || (abs > 0 && abs < 1e-2)) return n.toExponential(2);
+    return n.toLocaleString('es-CO', { maximumFractionDigits: 3 });
+  };
+
+  return (
+    <div className="my-6 rounded-xl bg-brand-dark p-5 sm:p-6 not-prose text-zinc-100">
+      <p className="font-semibold text-brand-yellow text-sm mb-3">🧮 Calculadora de la ley de Bond</p>
+      <p className="text-xs text-zinc-400 mb-4">
+        Ajusta {String.raw`$W_i$`}, {String.raw`$F_{80}$`} y {String.raw`$P_{80}$`} para estimar la
+        energía específica {String.raw`$E$`} (kWh/t).
+      </p>
+
+      <div className="mb-4">
+        <p className="text-xs uppercase tracking-wider text-zinc-400 mb-2">Presets de material (fija el Wᵢ)</p>
+        <div className="flex flex-wrap gap-2">
+          {materialesBond.map((m) => (
+            <button
+              key={m.nombre}
+              onClick={() => setWi(m.wi)}
+              className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
+                Math.abs(Wi - m.wi) < 0.01
+                  ? 'bg-brand-yellow text-brand-dark border-brand-yellow font-semibold'
+                  : 'bg-zinc-800 text-zinc-300 border-zinc-700 hover:border-brand-yellow hover:text-white'
+              }`}
+            >
+              {m.nombre} <span className="opacity-70 font-mono">({m.wi})</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="grid sm:grid-cols-3 gap-4 mb-4">
+        {[
+          { label: 'Wᵢ (kWh/t)', value: Wi, set: setWi, min: 1, max: 30, step: 0.1 },
+          { label: 'F₈₀ (µm) — alimentación', value: F80, set: setF80, min: 50, max: 200000, step: 50 },
+          { label: 'P₈₀ (µm) — producto', value: P80, set: setP80, min: 5, max: 10000, step: 5 },
+        ].map((f) => (
+          <label key={f.label} className="block">
+            <span className="text-xs uppercase tracking-wider text-zinc-400">{f.label}</span>
+            <div className="flex items-center gap-2 mt-1">
+              <input
+                type="number"
+                value={f.value}
+                min={f.min}
+                max={f.max}
+                step={f.step}
+                onChange={(e) => f.set(Number(e.target.value))}
+                className="w-24 bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-sm font-mono text-white focus:border-brand-yellow focus:outline-none"
+              />
+              <input
+                type="range"
+                value={f.value}
+                min={f.min}
+                max={f.max}
+                step={f.step}
+                onChange={(e) => f.set(Number(e.target.value))}
+                className="flex-1 accent-brand-yellow"
+              />
+            </div>
+          </label>
+        ))}
+      </div>
+
+      <div className="rounded-lg bg-zinc-900 border border-zinc-700 p-4 flex flex-col sm:flex-row items-start sm:items-center gap-3">
+        <div className="flex-1">
+          <p className="text-xs uppercase tracking-wider text-zinc-500">Energía específica</p>
+          <p className="text-2xl font-bold font-mono text-brand-yellow">{fmt(E)} kWh/t</p>
+          <p className="text-xs text-zinc-400 mt-1">
+            {String.raw`$E = W_i \left[ \dfrac{10}{\sqrt{P_{80}}} - \dfrac{10}{\sqrt{F_{80}}} \right]$`}
+          </p>
+        </div>
+        <div className="text-xs text-zinc-400 sm:text-right">
+          <p>Razón de reducción:</p>
+          <p className="font-mono text-zinc-200">{fmt(F80 / P80)} :1</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ─── Tabs de las leyes de la conminución ─── */
+const LawsComparisonTabs: React.FC = () => {
+  const [tab, setTab] = useState<'rittinger' | 'kick' | 'bond' | 'hukki'>('bond');
+  useKatexRerender([tab]);
+
+  const tabs = [
+    { id: 'rittinger', label: 'Rittinger' },
+    { id: 'kick', label: 'Kick' },
+    { id: 'bond', label: 'Bond ★' },
+    { id: 'hukki', label: 'Hukki (generalizada)' },
+  ] as const;
+
+  return (
+    <div className="my-6 not-prose">
+      <div role="tablist" aria-label="Leyes de la conminución" className="flex gap-2 border-b border-zinc-200 flex-wrap">
+        {tabs.map((t) => (
+          <button
+            key={t.id}
+            role="tab"
+            aria-selected={tab === t.id}
+            onClick={() => setTab(t.id)}
+            className={`px-4 py-2 text-sm font-semibold border-b-2 transition-colors ${
+              tab === t.id
+                ? 'text-brand-dark border-brand-yellow'
+                : 'text-brand-gray border-transparent hover:text-brand-dark'
+            }`}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      <div className="mt-4">
+        {tab === 'rittinger' && (
+          <div>
+            <p className="text-brand-gray leading-relaxed">
+              <strong>Postulado:</strong> la energía requerida $E$ es proporcional a la{' '}
+              <strong>nueva área superficial creada</strong>. Ajusta bien a la molienda{' '}
+              <strong>fina</strong>, donde la creación de superficie domina el costo energético.
+            </p>
+            <p className="my-3">
+              {'$$E = K_R\\left(\\dfrac{1}{x_2} - \\dfrac{1}{x_1}\\right)$$'}
+            </p>
+            <ul className="pl-5 list-disc space-y-1 text-brand-gray leading-relaxed">
+              <li>{String.raw`$x_1$, $x_2$`}: tamaños promedio de alimentación y producto.</li>
+              <li>{String.raw`$K_R$`}: constante empírica del material y del equipo.</li>
+              <li><strong>Cuándo aplica:</strong> molienda fina (rango &lt; 100 µm).</li>
+              <li><strong>Limitaciones:</strong> sobreestima la energía en trituración gruesa; la constante depende del equipo.</li>
+            </ul>
+          </div>
+        )}
+        {tab === 'kick' && (
+          <div>
+            <p className="text-brand-gray leading-relaxed">
+              <strong>Postulado:</strong> la energía es proporcional a la{' '}
+              <strong>relación de reducción</strong> — rompe una partícula requiere el mismo trabajo
+              específico que partirla en fragmentos geométricamente similares.
+            </p>
+            <p className="my-3">
+              {'$$E = K_K \\log\\dfrac{x_1}{x_2}$$'}
+            </p>
+            <ul className="pl-5 list-disc space-y-1 text-brand-gray leading-relaxed">
+              <li>{String.raw`$K_K$`}: constante empírica del material.</li>
+              <li><strong>Cuándo aplica:</strong> trituración gruesa (cm → mm).</li>
+              <li><strong>Limitaciones:</strong> subestima la energía en molienda fina; no considera la generación de superficie nueva.</li>
+            </ul>
+          </div>
+        )}
+        {tab === 'bond' && (
+          <div>
+            <p className="text-brand-gray leading-relaxed">
+              <strong>Postulado:</strong> la energía es proporcional a la <strong>diferencia de
+              longitudes de grieta</strong> — una formulación intermedia entre Rittinger y Kick
+              que empíricamente funciona muy bien en el rango industrial de molienda.
+            </p>
+            <p className="my-3">
+              {'$$E = W_i \\left[\\dfrac{10}{\\sqrt{P_{80}}} - \\dfrac{10}{\\sqrt{F_{80}}}\\right]$$'}
+            </p>
+            <ul className="pl-5 list-disc space-y-1 text-brand-gray leading-relaxed">
+              <li>{String.raw`$W_i$`}: Índice de Trabajo de Bond (kWh/t). Se mide en un ensayo estandarizado.</li>
+              <li>{String.raw`$F_{80}, P_{80}$`}: tamaños por los que pasa el 80% de la alimentación y del producto, en µm.</li>
+              <li><strong>Cuándo aplica:</strong> rango industrial de molienda intermedia (mm → 100 µm). <strong>Es la ley más utilizada.</strong></li>
+              <li><strong>Uso industrial:</strong> dimensionamiento de molinos de bolas y barras; comparación de circuitos.</li>
+            </ul>
+            <BondCalculator />
+            <Figure
+              src="/classroom/iqya-2031/readings/reduccion-tamano-08.png"
+              alt="Tabla del Índice de Trabajo de Bond para distintos materiales"
+              caption="Índice de Trabajo de Bond para distintos materiales industriales."
+              maxWidth="700px"
+            />
+          </div>
+        )}
+        {tab === 'hukki' && (
+          <div>
+            <p className="text-brand-gray leading-relaxed">
+              <strong>Hukki (1961)</strong> observó que ninguna de las tres leyes clásicas es
+              universal, y propuso una <strong>forma generalizada</strong> donde el exponente
+              depende del tamaño de partícula:
+            </p>
+            <p className="my-3">
+              {'$$\\dfrac{dE}{dx} = -\\dfrac{K}{x^{n(x)}}$$'}
+            </p>
+            <ul className="pl-5 list-disc space-y-1 text-brand-gray leading-relaxed">
+              <li>{String.raw`$n \approx 1$`} → trituración gruesa (Kick).</li>
+              <li>{String.raw`$n \approx 1.5$`} → molienda intermedia (Bond).</li>
+              <li>{String.raw`$n \approx 2$`} → molienda fina (Rittinger).</li>
+            </ul>
+            <p className="text-brand-gray leading-relaxed mt-3">
+              La ecuación de Hukki <strong>reconcilia</strong> las tres leyes como casos
+              particulares según el rango de tamaños. Útil para entender por qué ninguna ley
+              clásica funciona en todos los rangos y por qué la industria segmenta el proceso en
+              etapas con equipos diferentes.
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+/* ─── Tabla resumen de relación de reducción por equipo ─── */
+const ReductionRatioTable: React.FC = () => {
+  const filas = [
+    { equipo: 'Trituradora de mandíbula', rr: '3:1 – 7:1', producto: '50 – 300 mm', nota: 'Primaria' },
+    { equipo: 'Trituradora giratoria', rr: '4:1 – 8:1', producto: '25 – 200 mm', nota: 'Primaria alta capacidad' },
+    { equipo: 'Rodillos lisos', rr: '2:1 – 4:1', producto: '5 – 50 mm', nota: 'Secundaria suave' },
+    { equipo: 'Molino de martillos', rr: '10:1 – 40:1', producto: '0.5 – 25 mm', nota: 'Frágiles y fibrosos' },
+    { equipo: 'Molino de bolas', rr: '20:1 – 100:1', producto: '10 – 200 µm', nota: 'Workhorse industrial' },
+    { equipo: 'Molino de barras', rr: '15:1 – 50:1', producto: '0.3 – 2 mm', nota: 'Menos finos que bolas' },
+    { equipo: 'Jet mill', rr: 'n/a', producto: '< 10 µm', nota: 'Submicrónico, sin contaminación' },
+    { equipo: 'Knife mill', rr: '5:1 – 20:1', producto: '1 – 20 mm', nota: 'Fibrosos, plásticos' },
+  ];
+  return (
+    <div className="my-6 not-prose">
+      <p className="text-sm text-brand-gray mb-3">
+        Rangos típicos de <strong>relación de reducción</strong> y tamaño de producto por tipo
+        de equipo. Úsalo para acotar qué equipos considerar según el salto {String.raw`$F/P$`} que
+        necesitas.
+      </p>
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm border-collapse rounded-lg overflow-hidden shadow-sm">
+          <thead>
+            <tr className="bg-brand-dark text-white text-left">
+              <th className="px-4 py-2.5 font-semibold">Equipo</th>
+              <th className="px-4 py-2.5 font-semibold">Relación de reducción</th>
+              <th className="px-4 py-2.5 font-semibold">Tamaño de producto</th>
+              <th className="px-4 py-2.5 font-semibold">Notas</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filas.map((f, i) => (
+              <tr key={f.equipo} className={i % 2 === 0 ? 'bg-white' : 'bg-zinc-50'}>
+                <td className="px-4 py-2.5 font-medium text-brand-dark">{f.equipo}</td>
+                <td className="px-4 py-2.5 font-mono text-brand-dark">{f.rr}</td>
+                <td className="px-4 py-2.5 font-mono text-brand-gray">{f.producto}</td>
+                <td className="px-4 py-2.5 text-brand-gray text-xs">{f.nota}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
+
+/* ─── Material properties explorer ─── */
+const MaterialPropertiesExplorer: React.FC = () => {
+  const [mohs, setMohs] = useState(5);
+  const [humedad, setHumedad] = useState<'seco' | 'humedo' | 'muy-humedo'>('seco');
+  const [termico, setTermico] = useState<'normal' | 'sensible'>('normal');
+  const [alim, setAlim] = useState<'gruesa' | 'media' | 'fina'>('media');
+  useKatexRerender([mohs, humedad, termico, alim]);
+
+  const recomendaciones = useMemo(() => {
+    const recs: { equipo: string; razon: string }[] = [];
+
+    // Primary selection by feed size
+    if (alim === 'gruesa') {
+      if (mohs >= 6) {
+        recs.push({ equipo: 'Trituradora giratoria', razon: 'Alta capacidad para rocas muy duras.' });
+        recs.push({ equipo: 'Trituradora de mandíbula', razon: 'Trituración primaria robusta y confiable.' });
+      } else {
+        recs.push({ equipo: 'Trituradora de mandíbula', razon: 'Adecuada para dureza media en primaria.' });
+        recs.push({ equipo: 'Rodillos', razon: 'Material no muy duro — compresión suave.' });
+      }
+    } else if (alim === 'media') {
+      if (mohs >= 6) {
+        recs.push({ equipo: 'Molino de bolas', razon: 'Molienda fina de materiales duros y abrasivos.' });
+        recs.push({ equipo: 'Molino de barras', razon: 'Producto grueso con menos finos que bolas.' });
+      } else if (mohs >= 3) {
+        recs.push({ equipo: 'Molino de martillos', razon: 'Materiales frágiles de dureza media.' });
+        recs.push({ equipo: 'Molino de atrición (discos)', razon: 'Semiduros; producto intermedio a fino.' });
+      } else {
+        recs.push({ equipo: 'Cortadora (knife mill)', razon: 'Materiales blandos o fibrosos.' });
+        recs.push({ equipo: 'Molino de martillos', razon: 'Frágiles y fibrosos de baja dureza.' });
+      }
+    } else {
+      // fina
+      if (termico === 'sensible') {
+        recs.push({ equipo: 'Jet mill', razon: 'Producto submicrónico sin generar calor excesivo.' });
+      }
+      recs.push({ equipo: 'Molino de bolas', razon: 'Molienda fina industrial estándar.' });
+      recs.push({ equipo: 'Molino coloidal / atrición', razon: 'Finos ultrafinos por cizalla.' });
+    }
+
+    // Wet/dry adjustments
+    if (humedad === 'muy-humedo') {
+      recs.unshift({
+        equipo: 'Molienda húmeda (ball mill con agua)',
+        razon: 'Alta humedad — la molienda húmeda evita apelmazamiento.',
+      });
+    } else if (humedad === 'humedo') {
+      recs.push({ equipo: 'Considerar secado previo', razon: 'Humedad intermedia puede dar apelmazamiento.' });
+    }
+
+    // Thermal adjustments
+    if (termico === 'sensible' && alim !== 'fina') {
+      recs.unshift({
+        equipo: 'Jet mill o molienda criogénica',
+        razon: 'Material sensible al calor — evitar fricción que genere subida de temperatura.',
+      });
+    }
+
+    return recs.slice(0, 5);
+  }, [mohs, humedad, termico, alim]);
+
+  return (
+    <div className="my-6 not-prose rounded-xl border border-zinc-200 bg-white p-5 sm:p-6 shadow-sm">
+      <p className="font-semibold text-brand-dark mb-3">🎯 Explorador de selección de equipo</p>
+      <p className="text-sm text-brand-gray mb-4">
+        Configura las propiedades del material y el tamaño de alimentación. Verás equipos
+        recomendados como primera aproximación.
+      </p>
+
+      <div className="grid sm:grid-cols-2 gap-4 mb-5">
+        <label className="block">
+          <span className="text-xs uppercase tracking-wider text-brand-gray font-semibold">
+            Dureza Mohs: <span className="font-mono text-brand-dark">{mohs}</span>
+          </span>
+          <input
+            type="range"
+            min={1}
+            max={10}
+            step={1}
+            value={mohs}
+            onChange={(e) => setMohs(Number(e.target.value))}
+            className="w-full accent-brand-yellow mt-1"
+          />
+          <div className="flex justify-between text-[10px] text-brand-gray mt-0.5">
+            <span>1 talco</span>
+            <span>5 apatita</span>
+            <span>10 diamante</span>
+          </div>
+        </label>
+
+        <label className="block">
+          <span className="text-xs uppercase tracking-wider text-brand-gray font-semibold">Humedad</span>
+          <select
+            value={humedad}
+            onChange={(e) => setHumedad(e.target.value as 'seco' | 'humedo' | 'muy-humedo')}
+            className="w-full mt-1 border border-zinc-300 rounded px-2 py-1.5 text-sm"
+          >
+            <option value="seco">Seco (&lt; 2%)</option>
+            <option value="humedo">Húmedo (2–10%)</option>
+            <option value="muy-humedo">Muy húmedo (&gt; 10%)</option>
+          </select>
+        </label>
+
+        <label className="block">
+          <span className="text-xs uppercase tracking-wider text-brand-gray font-semibold">Sensibilidad térmica</span>
+          <select
+            value={termico}
+            onChange={(e) => setTermico(e.target.value as 'normal' | 'sensible')}
+            className="w-full mt-1 border border-zinc-300 rounded px-2 py-1.5 text-sm"
+          >
+            <option value="normal">Normal</option>
+            <option value="sensible">Sensible al calor</option>
+          </select>
+        </label>
+
+        <label className="block">
+          <span className="text-xs uppercase tracking-wider text-brand-gray font-semibold">Tamaño de alimentación</span>
+          <select
+            value={alim}
+            onChange={(e) => setAlim(e.target.value as 'gruesa' | 'media' | 'fina')}
+            className="w-full mt-1 border border-zinc-300 rounded px-2 py-1.5 text-sm"
+          >
+            <option value="gruesa">Gruesa (&gt; 5 cm)</option>
+            <option value="media">Media (1 mm – 5 cm)</option>
+            <option value="fina">Fina (&lt; 1 mm)</option>
+          </select>
+        </label>
+      </div>
+
+      <div>
+        <p className="text-xs uppercase tracking-wider text-brand-gray font-semibold mb-2">
+          Equipos recomendados
+        </p>
+        <ol className="space-y-2">
+          {recomendaciones.map((r, i) => (
+            <li
+              key={`${r.equipo}-${i}`}
+              className="flex gap-3 items-start rounded-lg border border-zinc-200 p-3 bg-zinc-50"
+            >
+              <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-brand-yellow text-brand-dark text-xs font-bold shrink-0">
+                {i + 1}
+              </span>
+              <div>
+                <p className="font-semibold text-brand-dark text-sm">{r.equipo}</p>
+                <p className="text-xs text-brand-gray">{r.razon}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </div>
+  );
+};
+
+/* ─── Ejemplo resuelto con reveal progresivo ─── */
+const WorkedExample: React.FC = () => {
+  const [shown, setShown] = useState(0);
+  useKatexRerender([shown]);
+
+  const steps = [
+    {
+      heading: 'Enunciado',
+      body: (
+        <>
+          <p>
+            Se desea moler <strong>100 t/h de caliza</strong> desde {String.raw`$F_{80} = 10$`} mm
+            hasta {String.raw`$P_{80} = 100$`} µm en un molino de bolas. Para la caliza,{' '}
+            {String.raw`$W_i = 11.6$`} kWh/t.
+          </p>
+          <p className="mt-2">
+            <strong>Objetivo:</strong> calcular la energía específica $E$ y la potencia total
+            que debe entregar el molino.
+          </p>
+        </>
+      ),
+    },
+    {
+      heading: '1. Datos y unidades',
+      body: (
+        <>
+          <ul className="list-disc pl-5 space-y-1">
+            <li>Caudal: {String.raw`$\dot m = 100$`} t/h.</li>
+            <li>{String.raw`$F_{80} = 10 \text{ mm} = 10{,}000$`} µm.</li>
+            <li>{String.raw`$P_{80} = 100$`} µm.</li>
+            <li>{String.raw`$W_i = 11.6$`} kWh/t (caliza).</li>
+          </ul>
+          <p className="text-xs text-brand-gray italic mt-2">
+            Importante: la ecuación de Bond usa {String.raw`$F_{80}$`} y {String.raw`$P_{80}$`} en
+            <strong> micrómetros</strong>.
+          </p>
+        </>
+      ),
+    },
+    {
+      heading: '2. Aplicar la ecuación de Bond',
+      body: (
+        <>
+          <p>
+            {'$$E = W_i \\left[\\dfrac{10}{\\sqrt{P_{80}}} - \\dfrac{10}{\\sqrt{F_{80}}}\\right]$$'}
+          </p>
+        </>
+      ),
+    },
+    {
+      heading: '3. Calcular E',
+      body: (
+        <>
+          <p>
+            {'$$E = 11.6 \\left[\\dfrac{10}{\\sqrt{100}} - \\dfrac{10}{\\sqrt{10{,}000}}\\right] = 11.6 \\times (1 - 0.1) = 10.44 \\text{ kWh/t}$$'}
+          </p>
+          <p className="text-xs text-brand-gray italic mt-2">
+            La energía específica es del orden de <strong>10 kWh/t</strong> — valor típico para
+            molienda fina de caliza en la industria cementera.
+          </p>
+        </>
+      ),
+    },
+    {
+      heading: '4. Calcular la potencia total',
+      body: (
+        <>
+          <p>
+            {'$$P = E \\times \\dot m = 10.44 \\text{ kWh/t} \\times 100 \\text{ t/h} = 1{,}044 \\text{ kW} \\approx 1.04 \\text{ MW}$$'}
+          </p>
+          <p className="text-xs text-brand-gray italic mt-2">
+            Esta es la potencia <strong>útil</strong> que entra al proceso de fractura — el motor
+            del molino deberá ser mayor, dado que la transmisión y las pérdidas mecánicas
+            introducen factores de seguridad de 1.3–1.5×.
+          </p>
+        </>
+      ),
+    },
+    {
+      heading: '5. Interpretación',
+      body: (
+        <>
+          <p>
+            Sin embargo, la eficiencia energética real de la conminución es del orden de{' '}
+            <strong>1–2%</strong>: la energía realmente invertida en crear nueva superficie es
+            una fracción mínima del total. Casi todo se convierte en <strong>calor</strong> (el
+            molino sube de temperatura, a veces requiere enfriamiento) y en{' '}
+            <strong>deformación elástica</strong> de la carga molturante.
+          </p>
+          <p className="mt-2 font-semibold text-brand-dark">
+            Por eso la conminución es el <strong>mayor consumidor eléctrico</strong> de una
+            planta minera típica — entre el 30% y el 60% del total.
+          </p>
+          <p className="text-xs text-brand-gray italic mt-3">
+            <strong>Lección:</strong> dos estrategias para reducir el consumo: (1) no moler
+            más fino de lo necesario, (2) clasificar y reciclar agresivamente el grueso para no
+            remoler el fino que ya está en especificación.
+          </p>
+        </>
+      ),
+    },
+  ];
+
+  return (
+    <div className="my-6 not-prose">
+      <div className="rounded-xl border border-zinc-200 bg-white shadow-sm overflow-hidden">
+        {steps.slice(0, shown + 1).map((s, i) => (
+          <div key={i} className={`px-5 py-4 ${i === 0 ? 'bg-yellow-50 border-b border-zinc-200' : 'border-t border-zinc-100'}`}>
+            <h4 className="font-bold text-brand-dark mb-2">{s.heading}</h4>
+            <div className="text-sm text-brand-gray leading-relaxed">{s.body}</div>
+          </div>
+        ))}
+      </div>
+      <div className="flex gap-2 mt-3">
+        {shown < steps.length - 1 && (
+          <button
+            onClick={() => setShown(shown + 1)}
+            className="px-4 py-2 rounded-lg bg-brand-dark text-white text-sm font-semibold hover:bg-zinc-800 transition-colors"
+          >
+            Mostrar siguiente paso →
+          </button>
+        )}
+        {shown > 0 && (
+          <button
+            onClick={() => setShown(0)}
+            className="px-4 py-2 rounded-lg bg-zinc-100 text-brand-gray text-sm font-semibold hover:bg-zinc-200 transition-colors"
+          >
+            Reiniciar
+          </button>
+        )}
+        {shown === steps.length - 1 && (
+          <span className="px-4 py-2 text-sm text-brand-yellow-dark font-semibold self-center">
+            ✓ Ejercicio completo
+          </span>
+        )}
+      </div>
+    </div>
+  );
+};
 
 /* ─── Componente principal ─── */
 const ReduccionTamano: React.FC = () => {
@@ -241,7 +1209,7 @@ const ReduccionTamano: React.FC = () => {
                 justificar la elección del equipo y, si es posible,
                 <strong> estimar la energía requerida</strong> utilizando alguna de las leyes de
                 conminución. <strong>Bond</strong> es la más recomendada para estimaciones
-                preliminares siempre que se pueda obtener o asumir un <em>W<sub>i</sub></em>.
+                preliminares siempre que se pueda obtener o asumir un {String.raw`$W_i$`}.
               </InfoCallout>
             </>
           )}
@@ -279,6 +1247,17 @@ const ReduccionTamano: React.FC = () => {
                   alimentos o la capacidad de compactación en la industria farmacéutica.
                 </li>
               </ul>
+
+              <TipCallout title="💡 El poder del área superficial">
+                Para una partícula esférica, el área específica por unidad de volumen escala
+                como {String.raw`$a_v \propto 1/D$`}. Reducir de <strong>50 mm a 100 µm</strong>{' '}
+                — un factor de 500 en diámetro — multiplica el área superficial disponible por{' '}
+                <strong>~500 veces</strong>. Esta es la razón profunda por la cual la molienda
+                es irreemplazable en hidrometalurgia, en catálisis heterogénea y en la
+                liberación de activos farmacéuticos: sin esa superficie, la cinética de los
+                procesos posteriores se vuelve prohibitivamente lenta.
+              </TipCallout>
+
               <TipCallout>
                 La reducción de tamaño <strong>raramente</strong> produce partículas de un solo
                 tamaño. El producto siempre es una <strong>distribución</strong> de tamaños de
@@ -293,49 +1272,12 @@ const ReduccionTamano: React.FC = () => {
               <SectionTitle id="mecanismos">Mecanismos de fractura</SectionTitle>
               <p>
                 Para reducir el tamaño de un sólido hay que aplicar un esfuerzo que supere su
-                resistencia a la fractura. Los cuatro mecanismos fundamentales son:
+                resistencia a la fractura. Los cuatro mecanismos fundamentales son{' '}
+                <strong>compresión</strong>, <strong>impacto</strong>, <strong>atrición</strong>
+                {' '}y <strong>corte</strong>. Navega entre ellos con las pestañas:
               </p>
 
-              <SubTitle>1. Compresión</SubTitle>
-              <p>
-                Se aplican fuerzas opuestas que aplastan el material. Es el mecanismo
-                dominante en la <strong>reducción gruesa</strong> de materiales duros y
-                frágiles.
-              </p>
-              <p>
-                <strong>Equipos típicos:</strong> trituradoras de mandíbula, trituradoras
-                giratorias, rodillos de trituración.
-              </p>
-
-              <SubTitle>2. Impacto</SubTitle>
-              <p>
-                Implica un <strong>golpe súbito y de alta velocidad</strong>. Las partículas se
-                rompen debido a la energía cinética transferida. Eficaz para materiales duros
-                y algunos de dureza media.
-              </p>
-              <p>
-                <strong>Equipos típicos:</strong> molinos de martillos, molinos de impacto.
-              </p>
-
-              <SubTitle>3. Atrición (o frotamiento / cizalladura)</SubTitle>
-              <p>
-                Se produce cuando las partículas se rozan entre sí o contra las superficies
-                del equipo, generando fuerzas de cizalla que desgastan las superficies.
-                Predomina en la <strong>molienda fina</strong>.
-              </p>
-              <p>
-                <strong>Equipos típicos:</strong> molinos de discos, molinos de bolas, molinos
-                de barras, molinos coloidales.
-              </p>
-
-              <SubTitle>4. Corte</SubTitle>
-              <p>
-                Se aplica una fuerza de corte directa, como con cuchillas. Es más adecuado
-                para materiales <strong>blandos, fibrosos o plásticos</strong>.
-              </p>
-              <p>
-                <strong>Equipos típicos:</strong> cortadoras rotativas, granuladores.
-              </p>
+              <MechanismsTabs />
 
               <InfoCallout>
                 En la mayoría de los equipos industriales, estos mecanismos actúan de forma
@@ -347,7 +1289,18 @@ const ReduccionTamano: React.FC = () => {
                 src="/classroom/iqya-2031/readings/reduccion-tamano-01.jpeg"
                 alt="Resumen de los mecanismos de fractura: compresión, impacto, atrición y corte"
                 caption="Los cuatro mecanismos de fractura actuando sobre un sólido particulado."
+                maxWidth="600px"
               />
+
+              <TipCallout title="💡 Liberación mineralógica — el criterio de parar">
+                En minería, uno no muele hasta un tamaño arbitrario: se muele hasta el{' '}
+                <strong>tamaño de liberación</strong>, el tamaño al que las partículas de
+                mineral valioso quedan mayoritariamente separadas de la ganga. Moler{' '}
+                <em>más fino</em> que el tamaño de liberación gasta energía sin aportar
+                beneficio metalúrgico y además incrementa el <strong>slimes</strong> (ultrafinos
+                difíciles de recuperar por flotación). Esta es una de las decisiones económicas
+                más importantes del diseño de una planta concentradora.
+              </TipCallout>
             </>
           )}
 
@@ -357,174 +1310,25 @@ const ReduccionTamano: React.FC = () => {
               <p>
                 La elección del equipo adecuado es fundamental y depende de múltiples
                 factores. Una forma común de clasificarlos es por el{' '}
-                <strong>tamaño de producto</strong> que generan.
+                <strong>tamaño de producto</strong> que generan: trituradoras (reducción
+                gruesa), molinos (intermedia y fina), ultrafinos y cortadoras. Explora cada
+                grupo y haz clic en cada equipo para ver descripción, aplicaciones y
+                visualización.
               </p>
 
-              <SubTitle>Trituradoras — reducción gruesa</SubTitle>
-              <p>
-                Utilizadas para la <strong>reducción primaria</strong> de grandes trozos de
-                material (desde varios metros hasta unos pocos centímetros). Principalmente
-                usan <strong>compresión</strong>.
-              </p>
+              <EquipmentSelector />
 
-              <SubSubTitle>Trituradoras de mandíbula (jaw crushers)</SubSubTitle>
-              <p>
-                Una mandíbula fija y una móvil que se acerca y aleja, comprimiendo el
-                material. Tipos:
-              </p>
-              <ul>
-                <li><strong>Blake:</strong> pivote superior.</li>
-                <li><strong>Dodge:</strong> pivote inferior.</li>
-                <li><strong>De movimiento excéntrico</strong>.</li>
-              </ul>
-              <ul>
-                <li><strong>Aplicaciones:</strong> rocas duras y abrasivas, minerales, escorias.</li>
-                <li><strong>Relación de reducción típica:</strong> 3:1 a 7:1.</li>
-              </ul>
-              <Figure
-                src="/classroom/iqya-2031/readings/reduccion-tamano-02.gif"
-                alt="Trituradora de mandíbula en operación"
-                caption="Trituradora de mandíbula (jaw crusher)."
-                maxWidth="560px"
-              />
+              <SubTitle>Tabla resumen — relación de reducción por equipo</SubTitle>
+              <ReductionRatioTable />
 
-              <SubSubTitle>Trituradoras giratorias (gyratory crushers)</SubSubTitle>
-              <p>
-                Un <strong>cono de trituración</strong> que gira excéntricamente dentro de una
-                carcasa cónica fija. Alimentación por la parte superior, descarga por la
-                inferior.
-              </p>
-              <ul>
-                <li><strong>Aplicaciones:</strong> grandes capacidades, rocas muy duras, minería primaria.</li>
-                <li><strong>Relación de reducción típica:</strong> hasta 8:1.</li>
-              </ul>
-              <Figure
-                src="/classroom/iqya-2031/readings/reduccion-tamano-03.gif"
-                alt="Trituradora giratoria en operación"
-                caption="Trituradora giratoria (gyratory crusher)."
-                maxWidth="560px"
-              />
-
-              <SubSubTitle>Trituradoras de rodillos (crushing rolls)</SubSubTitle>
-              <p>
-                <strong>Dos rodillos</strong> que giran en direcciones opuestas, atrapando y
-                comprimiendo el material entre ellos. Pueden ser lisos o dentados.
-              </p>
-              <ul>
-                <li>
-                  <strong>Aplicaciones:</strong> materiales de dureza media a baja, no muy
-                  abrasivos (carbón, yeso, arcilla).
-                </li>
-              </ul>
-              <Figure
-                src="/classroom/iqya-2031/readings/reduccion-tamano-04.gif"
-                alt="Trituradora de rodillos en operación"
-                caption="Trituradora de rodillos (crushing rolls)."
-                maxWidth="560px"
-              />
-
-              <SubTitle>Molinos — reducción intermedia y fina</SubTitle>
-              <p>
-                Toman la descarga de las trituradoras o materiales más pequeños y los reducen
-                a <strong>polvos</strong> (desde centímetros hasta micrones). Combinan
-                <strong> impacto y atrición</strong>.
-              </p>
-
-              <SubSubTitle>Molinos de martillos (hammer mills)</SubSubTitle>
-              <p>
-                Rotores con <strong>martillos pivotantes</strong> que giran a alta velocidad,
-                golpeando el material contra placas rompedoras y una rejilla de descarga.
-              </p>
-              <ul>
-                <li>
-                  <strong>Aplicaciones:</strong> materiales frágiles, fibrosos, de dureza baja
-                  a media (carbón, piedra caliza, fosfatos, alimentos secos, madera).
-                </li>
-              </ul>
-              <Figure
-                src="/classroom/iqya-2031/readings/reduccion-tamano-05.gif"
-                alt="Molino de martillos en operación"
-                caption="Molino de martillos (hammer mill)."
-                maxWidth="560px"
-              />
-
-              <SubSubTitle>Molinos de atrición (attrition / disc mills)</SubSubTitle>
-              <p>
-                Uno o dos <strong>discos rotatorios</strong> con superficies abrasivas o
-                dentadas. El material se muele en el espacio entre los discos.
-              </p>
-              <ul>
-                <li>
-                  <strong>Aplicaciones:</strong> molienda fina de materiales blandos a
-                  semiduros (granos, especias, pigmentos).
-                </li>
-              </ul>
-              <Figure
-                src="/classroom/iqya-2031/readings/reduccion-tamano-06.jpeg"
-                alt="Molino de atrición / discos"
-                caption="Molino de atrición (disc mill)."
-                maxWidth="560px"
-              />
-
-              <SubSubTitle>Molinos de volteo (tumbling mills)</SubSubTitle>
-              <p>
-                Cilindros horizontales que giran sobre su eje, conteniendo{' '}
-                <strong>medios de molienda</strong> (bolas, barras, guijarros) que caen y
-                golpean / frotan el material.
-              </p>
-              <ul>
-                <li>
-                  <strong>Molinos de bolas:</strong> usan bolas de acero o cerámica. Producen
-                  un producto muy fino.
-                </li>
-                <li>
-                  <strong>Molinos de barras:</strong> usan barras de acero. Producen un
-                  producto más grueso y con menos finos que los molinos de bolas.
-                </li>
-                <li>
-                  <strong>Aplicaciones:</strong> materiales duros y abrasivos (minerales,
-                  cemento, cerámica).
-                </li>
-              </ul>
-              <Figure
-                src="/classroom/iqya-2031/readings/reduccion-tamano-07.gif"
-                alt="Molino de bolas en operación"
-                caption="Molino de bolas (ball mill) — un molino de volteo con medios esféricos."
-                maxWidth="560px"
-              />
-
-              <SubTitle>Molinos ultrafinos y cortadoras</SubTitle>
-              <p>
-                Para obtener partículas en el rango <strong>micrométrico</strong> o para
-                materiales que requieren un <strong>corte preciso</strong>.
-              </p>
-
-              <SubSubTitle>Molinos de energía de fluido (jet mills)</SubSubTitle>
-              <p>
-                Las partículas son aceleradas por <strong>chorros de gas a alta velocidad</strong>{' '}
-                (aire o vapor) y chocan entre sí o contra una superficie. Producen partículas
-                muy finas (submicrónicas) sin contaminación por medios de molienda.
-              </p>
-              <ul>
-                <li>
-                  <strong>Aplicaciones:</strong> materiales sensibles al calor, productos
-                  farmacéuticos, pigmentos, cerámicas finas.
-                </li>
-              </ul>
-              <VideoEmbed id="J0WEeE_I1i0" title="Jet mill en operación" />
-
-              <SubSubTitle>Cortadoras rotativas (rotary cutters / knife mills)</SubSubTitle>
-              <p>
-                <strong>Cuchillas montadas en un rotor</strong> que cortan el material contra
-                cuchillas fijas.
-              </p>
-              <ul>
-                <li>
-                  <strong>Aplicaciones:</strong> materiales blandos, elásticos o fibrosos
-                  (plásticos, caucho, papel, textiles, productos alimenticios).
-                </li>
-              </ul>
-              <VideoEmbed id="Lz_FFXp6678" title="Knife mill / cortadora rotativa en operación" />
+              <InfoCallout title="📌 ¿Por qué se necesitan varias etapas?">
+                Ningún equipo puede llevar un bloque de 1 m directamente a 100 µm —
+                relaciones de reducción de 10⁴:1 son imposibles en una sola máquina. Por eso
+                las plantas industriales se diseñan en <strong>cascada</strong>: trituración
+                primaria → secundaria → molienda gruesa (barras) → molienda fina (bolas) →
+                eventualmente ultrafina (jet o stirred mill). Cada etapa aplica una relación
+                de reducción que cae en su rango óptimo.
+              </InfoCallout>
             </>
           )}
 
@@ -537,82 +1341,43 @@ const ReduccionTamano: React.FC = () => {
                 <strong>inferior al 2%</strong>, porque la mayor parte de la energía
                 suministrada se disipa como <strong>calor y deformación elástica</strong> en
                 el sólido y en el equipo. Para estimar la energía requerida se usan tres
-                leyes empíricas clásicas.
+                leyes empíricas clásicas y una formulación generalizada que las reconcilia.
               </p>
 
-              <SubTitle>Ley de Rittinger</SubTitle>
-              <p>
-                Postula que la energía requerida $E$ es proporcional a la{' '}
-                <strong>nueva área superficial creada</strong>. Se ajusta mejor a la{' '}
-                <strong>molienda fina</strong>, donde se genera mucha superficie nueva:
-              </p>
-              <p>
-                {'$$E = K_R\\left(\\dfrac{1}{x_2} - \\dfrac{1}{x_1}\\right)$$'}
-              </p>
-              <p>
-                Donde $x_1$ y $x_2$ son los tamaños promedio inicial y final de partícula, y
-                $K_R$ es una constante empírica característica del material y del equipo.
-              </p>
-
-              <SubTitle>Ley de Kick</SubTitle>
-              <p>
-                Sugiere que la energía $E$ es proporcional a la <strong>relación de
-                reducción</strong>. Se ajusta mejor a la <strong>trituración gruesa</strong>:
-              </p>
-              <p>
-                {'$$E = K_K \\log\\dfrac{x_2}{x_1}$$'}
-              </p>
-              <p>
-                Donde $K_K$ es una constante empírica del material.
-              </p>
-
-              <SubTitle>Ley de Bond (la más utilizada industrialmente)</SubTitle>
-              <p>
-                Introduce el concepto de <strong>Índice de Trabajo de Bond</strong> $W_i$, que
-                representa la energía específica (en kWh / tonelada) necesaria para reducir un
-                material desde un tamaño teóricamente infinito hasta que el <strong>80%</strong>{' '}
-                del producto pase por un tamiz de <strong>100 µm</strong>. La ecuación de Bond
-                es:
-              </p>
-              <p>
-                {'$$E = W_i \\left[\\dfrac{10}{\\sqrt{P_{80}}} - \\dfrac{10}{\\sqrt{F_{80}}}\\right]$$'}
-              </p>
-              <ul>
-                <li>
-                  $E$: energía específica consumida (kWh / tonelada de material).
-                </li>
-                <li>
-                  $W_i$: Índice de Trabajo de Bond del material (kWh / tonelada). Se determina
-                  experimentalmente.
-                </li>
-                <li>
-                  {String.raw`$P_{'{80}'}$`}: tamaño de partícula (en µm) por el cual pasa el 80% del{' '}
-                  <strong>producto</strong> molido.
-                </li>
-                <li>
-                  {String.raw`$F_{'{80}'}$`}: tamaño de partícula (en µm) por el cual pasa el 80% de la{' '}
-                  <strong>alimentación</strong> al equipo.
-                </li>
-              </ul>
-              <p>
-                Esta ley se usa ampliamente para el <strong>dimensionamiento</strong> de
-                molinos de bolas y barras y para comparar la eficiencia de diferentes
-                circuitos de molienda.
-              </p>
-
-              <Figure
-                src="/classroom/iqya-2031/readings/reduccion-tamano-08.png"
-                alt="Tabla del Índice de Trabajo de Bond para distintos materiales"
-                caption="Índice de trabajo para distintos materiales."
-                maxWidth="720px"
-              />
+              <LawsComparisonTabs />
 
               <TipCallout title="💡 ¿Cuál ley usar?">
                 Una regla rápida: <strong>Kick</strong> para trituración gruesa, <strong>Bond</strong>{' '}
                 para molienda intermedia (rango de operación industrial típico) y{' '}
                 <strong>Rittinger</strong> para molienda fina. Bond es, con diferencia, la más
-                usada porque cubre el rango de tamaños que domina la industria minera.
+                usada porque cubre el rango de tamaños que domina la industria minera. Si
+                quieres un marco unificado, <strong>Hukki</strong> muestra que las tres son
+                casos particulares de una misma ecuación diferencial.
               </TipCallout>
+
+              <WarningCallout title="⚠️ La conminución es brutalmente ineficiente">
+                La eficiencia termodinámica de la fractura (comparando energía invertida con la
+                energía de superficie realmente creada, {String.raw`$\gamma \cdot \Delta A$`})
+                apenas llega al <strong>1–2%</strong>. El resto se va en calor, vibración y
+                deformación elástica. Esto no es un defecto de diseño: es una limitación
+                <strong> física</strong> del mecanismo de propagación de grietas en sólidos.
+                Las mejoras de eficiencia en la práctica vienen de (1) <strong>no moler de
+                más</strong> (clasificar y separar el fino), (2) usar el mecanismo adecuado
+                para el material, y (3) integrar etapas para que cada una trabaje en su rango
+                óptimo.
+              </WarningCallout>
+            </>
+          )}
+
+          {isVisible('ejemplo') && (
+            <>
+              <SectionTitle id="ejemplo">Ejemplo resuelto: energía de molienda con Bond</SectionTitle>
+              <p>
+                Aplicamos la ley de Bond a un caso típico de cementera / cantera. Haz clic en{' '}
+                <em>Mostrar siguiente paso</em> para avanzar — intenta calcular primero y
+                compara.
+              </p>
+              <WorkedExample />
             </>
           )}
 
@@ -628,14 +1393,18 @@ const ReduccionTamano: React.FC = () => {
               <ul>
                 <li>
                   <strong>Dureza:</strong> materiales muy duros requieren equipos robustos y
-                  mayor energía.
+                  mayor energía. Escalas prácticas: Mohs (1–10) para referencia mineralógica,
+                  Bond {String.raw`$W_i$`} para energía específica.
                 </li>
                 <li>
-                  <strong>Friabilidad:</strong> facilidad con la que un material se fractura.
+                  <strong>Friabilidad:</strong> facilidad con la que un material se fractura
+                  bajo impacto. Un material duro puede ser friable (se rompe bien con impacto)
+                  o tenaz (absorbe energía sin fracturar).
                 </li>
                 <li>
                   <strong>Abrasividad:</strong> causa desgaste en los equipos (piezas de
-                  repuesto, revestimientos).
+                  repuesto, revestimientos). En minería, los costos de{' '}
+                  <em>liners</em> y bolas pueden ser comparables al costo energético.
                 </li>
                 <li>
                   <strong>Contenido de humedad:</strong> puede causar apelmazamiento o
@@ -643,11 +1412,13 @@ const ReduccionTamano: React.FC = () => {
                   húmeda</strong>.
                 </li>
                 <li>
-                  <strong>Sensibilidad al calor:</strong> algunos materiales se degradan o
-                  funden, requiriendo enfriamiento (típico en farma y polímeros).
+                  <strong>Sensibilidad al calor:</strong> algunos materiales se degradan, se
+                  oxidan o funden, requiriendo enfriamiento (típico en farma, alimentos,
+                  polímeros y explosivos).
                 </li>
                 <li>
-                  <strong>Pegajosidad:</strong> puede causar obstrucciones y adherencias.
+                  <strong>Pegajosidad:</strong> puede causar obstrucciones, adherencias en el
+                  revestimiento y apelmazamiento en tamices.
                 </li>
               </ul>
 
@@ -655,8 +1426,43 @@ const ReduccionTamano: React.FC = () => {
                 src="/classroom/iqya-2031/readings/reduccion-tamano-09.jpeg"
                 alt="Referencia de dureza de materiales"
                 caption="Escala de dureza — referencia para evaluar qué equipo usar."
-                maxWidth="640px"
+                maxWidth="600px"
               />
+
+              <SubTitle>Molienda seca vs. molienda húmeda</SubTitle>
+              <p>
+                Una decisión transversal muy importante: la molienda puede realizarse en seco o
+                con el material suspendido en agua (o en otro líquido). Cada modo tiene
+                ventajas y limitaciones.
+              </p>
+              <div className="grid sm:grid-cols-2 gap-4 my-4 not-prose">
+                <div className="rounded-xl border border-zinc-200 p-5">
+                  <h4 className="font-semibold text-brand-dark text-base mb-2">Molienda seca</h4>
+                  <p className="text-xs text-brand-gray leading-relaxed mb-2">
+                    <strong className="text-emerald-600">Ventajas:</strong> producto seco listo
+                    para empaque/transporte; sin efluentes líquidos; útil cuando el material es
+                    sensible al agua (cemento, cal).
+                  </p>
+                  <p className="text-xs text-brand-gray leading-relaxed">
+                    <strong className="text-red-600">Desventajas:</strong> requiere captación
+                    de polvo; mayor desgaste; menor eficiencia de impacto (partículas rebotan);
+                    calentamiento.
+                  </p>
+                </div>
+                <div className="rounded-xl border border-zinc-200 p-5">
+                  <h4 className="font-semibold text-brand-dark text-base mb-2">Molienda húmeda</h4>
+                  <p className="text-xs text-brand-gray leading-relaxed mb-2">
+                    <strong className="text-emerald-600">Ventajas:</strong> mayor eficiencia
+                    energética (el agua amortigua y evacua finos); sin emisión de polvo; ideal
+                    para acoplar con flotación o lixiviación aguas abajo.
+                  </p>
+                  <p className="text-xs text-brand-gray leading-relaxed">
+                    <strong className="text-red-600">Desventajas:</strong> requiere manejo de
+                    pulpa y desaguado (filtros, espesadores); corrosión; el producto sale
+                    húmedo y debe secarse si es necesario.
+                  </p>
+                </div>
+              </div>
 
               <SubTitle>Variables de proceso</SubTitle>
               <ul>
@@ -668,14 +1474,23 @@ const ReduccionTamano: React.FC = () => {
                   <strong>Capacidad requerida</strong> (toneladas por hora).
                 </li>
                 <li>
-                  <strong>Especificaciones del producto:</strong> distribución de tamaño,
-                  forma de partícula.
+                  <strong>Especificaciones del producto:</strong> distribución de tamaño
+                  ({String.raw`$d_{50}$, $d_{80}$`}, % pasante en malla), forma de partícula.
                 </li>
                 <li>
                   <strong>Costos:</strong> de capital (equipo) y operativos (energía,
-                  mantenimiento, desgaste de partes).
+                  mantenimiento, medios de molienda, revestimientos).
                 </li>
               </ul>
+
+              <SubTitle>Explorador interactivo</SubTitle>
+              <p>
+                Configura las propiedades del material y obtendrás una lista de equipos
+                recomendados como punto de partida. No reemplaza un análisis detallado, pero
+                ayuda a acotar rápidamente las opciones razonables.
+              </p>
+
+              <MaterialPropertiesExplorer />
             </>
           )}
 
@@ -748,6 +1563,14 @@ const ReduccionTamano: React.FC = () => {
                 <li>
                   Geankoplis, C. J. (2003). <em>Transport Processes and Separation Process
                   Principles</em> (4th ed.). Prentice Hall.
+                </li>
+                <li>
+                  Bond, F. C. (1952). The third theory of comminution. <em>Transactions AIME</em>,
+                  193, 484–494.
+                </li>
+                <li>
+                  Hukki, R. T. (1961). Proposal for a solomonic settlement between the theories
+                  of von Rittinger, Kick and Bond. <em>Transactions AIME</em>, 220, 403–408.
                 </li>
               </ul>
             </>
