@@ -174,6 +174,361 @@ const Figure: React.FC<{
 );
 
 /* ─── Tabs: tipos de densidad ─── */
+/* ─── Visualizador interactivo: qué densidad mides según qué cuentas ─── */
+const DensityComparisonViz: React.FC = () => {
+  const [incInterparticle, setIncInterparticle] = useState(false);
+  const [incClosedPores, setIncClosedPores] = useState(false);
+  const [incOpenPores, setIncOpenPores] = useState(false);
+
+  const densityName = useMemo(() => {
+    if (!incInterparticle && !incClosedPores && !incOpenPores) return { label: 'Densidad verdadera', symbol: 'ρ_verdadera', desc: 'Solo el sólido puro — sin poros de ningún tipo.', color: '#0ea5e9' };
+    if (!incInterparticle && incClosedPores && !incOpenPores) return { label: 'Densidad aparente (partícula)', symbol: 'ρ_aparente', desc: 'Sólido + poros cerrados internos. Volumen de la partícula "desde fuera".', color: '#8b5cf6' };
+    if (!incInterparticle && incClosedPores && incOpenPores) return { label: 'Densidad efectiva', symbol: 'ρ_efectiva', desc: 'Sólido + todos los poros internos (cerrados y abiertos). Hidrodinámica con fluido alrededor.', color: '#f59e0b' };
+    if (incInterparticle && incClosedPores && incOpenPores) return { label: 'Densidad masal (lecho)', symbol: 'ρ_masal', desc: 'Todo: sólido + poros internos + huecos entre partículas. Lo que ves desde afuera del silo.', color: '#ef4444' };
+    return { label: 'Combinación no física', symbol: '—', desc: 'No existe una densidad estándar para esta combinación: los huecos interparticulares existen solo en un lecho (que también tiene las partículas con sus poros).', color: '#71717a' };
+  }, [incInterparticle, incClosedPores, incOpenPores]);
+
+  return (
+    <div className="my-6 not-prose">
+      <div className="rounded-xl overflow-hidden border border-zinc-200 shadow-sm">
+        <div className="bg-brand-dark text-white p-5 sm:p-6">
+          <h4 className="font-bold text-lg mb-1">¿Qué densidad estás midiendo?</h4>
+          <p className="text-sm text-zinc-400">
+            Cada densidad se define por <strong>qué volúmenes cuentas</strong> en el denominador.
+            Activa o desactiva cada tipo de vacío y observa cuál corresponde.
+          </p>
+        </div>
+        <div className="grid lg:grid-cols-[1fr_280px]">
+          <div className="bg-gradient-to-br from-zinc-50 to-white p-6 flex items-center justify-center">
+            <svg viewBox="0 0 400 320" className="w-full max-w-md" role="img" aria-label="Visualización de densidades">
+              <rect x="20" y="20" width="360" height="280" fill="none" stroke="#27272a" strokeWidth="2" strokeDasharray="6 3" rx="8" />
+              <text x="30" y="42" fontSize="10" fill="#52525b" fontWeight="600">LECHO (silo / empaque)</text>
+              {incInterparticle && (
+                <rect x="22" y="22" width="356" height="276" fill="#dbeafe" opacity="0.55" rx="6" />
+              )}
+              {[
+                [80, 100], [200, 90], [320, 110],
+                [70, 180], [190, 195], [315, 185],
+                [130, 250], [270, 255],
+              ].map(([cx, cy], i) => {
+                const r = 42;
+                return (
+                  <g key={i}>
+                    {incOpenPores && (
+                      <circle cx={cx} cy={cy} r={r + 4} fill="#fde68a" opacity="0.8" />
+                    )}
+                    <circle cx={cx} cy={cy} r={r} fill="#fff" stroke="#27272a" strokeWidth="1.5" />
+                    {incClosedPores ? (
+                      <>
+                        <circle cx={cx - 12} cy={cy - 8} r="6" fill="#c4b5fd" opacity="0.9" />
+                        <circle cx={cx + 10} cy={cy + 6} r="5" fill="#c4b5fd" opacity="0.9" />
+                        <circle cx={cx - 5} cy={cy + 14} r="4" fill="#c4b5fd" opacity="0.9" />
+                      </>
+                    ) : (
+                      <>
+                        <circle cx={cx - 12} cy={cy - 8} r="6" fill="none" stroke="#a1a1aa" strokeWidth="0.8" strokeDasharray="2 1.5" />
+                        <circle cx={cx + 10} cy={cy + 6} r="5" fill="none" stroke="#a1a1aa" strokeWidth="0.8" strokeDasharray="2 1.5" />
+                        <circle cx={cx - 5} cy={cy + 14} r="4" fill="none" stroke="#a1a1aa" strokeWidth="0.8" strokeDasharray="2 1.5" />
+                      </>
+                    )}
+                    {incOpenPores && (
+                      <>
+                        <path d={`M ${cx + r - 4} ${cy - 3} q 8 -2 12 -8`} fill="none" stroke="#f59e0b" strokeWidth="2" />
+                        <path d={`M ${cx - r + 4} ${cy + 5} q -8 2 -12 8`} fill="none" stroke="#f59e0b" strokeWidth="2" />
+                      </>
+                    )}
+                  </g>
+                );
+              })}
+            </svg>
+          </div>
+          <div className="bg-white p-5 border-t lg:border-t-0 lg:border-l border-zinc-200">
+            <p className="text-xs uppercase tracking-widest text-brand-yellow-dark font-bold mb-3">Volúmenes a contar</p>
+            <div className="space-y-2.5">
+              <label className="flex items-start gap-2.5 cursor-pointer">
+                <input type="checkbox" checked={incClosedPores} onChange={() => setIncClosedPores(!incClosedPores)} className="mt-0.5 w-4 h-4 accent-violet-500 flex-shrink-0" />
+                <span className="flex-1 text-sm">
+                  <span className="font-semibold text-brand-dark">Poros cerrados internos</span>
+                  <span className="block text-xs text-brand-gray">Huecos aislados dentro de cada partícula.</span>
+                </span>
+              </label>
+              <label className="flex items-start gap-2.5 cursor-pointer">
+                <input type="checkbox" checked={incOpenPores} onChange={() => setIncOpenPores(!incOpenPores)} className="mt-0.5 w-4 h-4 accent-amber-500 flex-shrink-0" />
+                <span className="flex-1 text-sm">
+                  <span className="font-semibold text-brand-dark">Poros abiertos</span>
+                  <span className="block text-xs text-brand-gray">Canales accesibles desde el exterior de la partícula.</span>
+                </span>
+              </label>
+              <label className="flex items-start gap-2.5 cursor-pointer">
+                <input type="checkbox" checked={incInterparticle} onChange={() => setIncInterparticle(!incInterparticle)} className="mt-0.5 w-4 h-4 accent-sky-500 flex-shrink-0" />
+                <span className="flex-1 text-sm">
+                  <span className="font-semibold text-brand-dark">Huecos interparticulares</span>
+                  <span className="block text-xs text-brand-gray">Espacios entre partículas dentro del lecho.</span>
+                </span>
+              </label>
+            </div>
+            <div className="mt-5 pt-4 border-t border-zinc-200">
+              <p className="text-[10px] uppercase tracking-widest text-brand-gray mb-1">Densidad correspondiente</p>
+              <p className="text-lg font-bold" style={{ color: densityName.color }}>{densityName.label}</p>
+              <p className="text-xs font-mono text-brand-gray mt-0.5">{densityName.symbol}</p>
+              <p className="text-xs text-brand-gray mt-2 leading-relaxed">{densityName.desc}</p>
+            </div>
+          </div>
+        </div>
+        <div className="bg-zinc-50 border-t border-zinc-200 p-3 text-[11px] text-brand-gray grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <button onClick={() => { setIncInterparticle(false); setIncClosedPores(false); setIncOpenPores(false); }} className="text-left hover:bg-white rounded px-2 py-1 transition-colors">
+            <span className="block font-semibold text-sky-600">→ Verdadera</span>
+            <span>todo apagado</span>
+          </button>
+          <button onClick={() => { setIncInterparticle(false); setIncClosedPores(true); setIncOpenPores(false); }} className="text-left hover:bg-white rounded px-2 py-1 transition-colors">
+            <span className="block font-semibold text-violet-600">→ Aparente</span>
+            <span>solo poros cerrados</span>
+          </button>
+          <button onClick={() => { setIncInterparticle(false); setIncClosedPores(true); setIncOpenPores(true); }} className="text-left hover:bg-white rounded px-2 py-1 transition-colors">
+            <span className="block font-semibold text-amber-600">→ Efectiva</span>
+            <span>todos los poros</span>
+          </button>
+          <button onClick={() => { setIncInterparticle(true); setIncClosedPores(true); setIncOpenPores(true); }} className="text-left hover:bg-white rounded px-2 py-1 transition-colors">
+            <span className="block font-semibold text-red-600">→ Masal</span>
+            <span>todo encendido</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ─── Calculadora interactiva de porosidad con interpretación ─── */
+const PorosityCalculator: React.FC = () => {
+  const [rhoMasal, setRhoMasal] = useState(600);
+  const [rhoAparente, setRhoAparente] = useState(1100);
+  const [rhoVerdadera, setRhoVerdadera] = useState(1500);
+
+  const eLecho = useMemo(() => 1 - rhoMasal / rhoAparente, [rhoMasal, rhoAparente]);
+  const eParticula = useMemo(() => 1 - rhoAparente / rhoVerdadera, [rhoAparente, rhoVerdadera]);
+  const eTotal = useMemo(() => 1 - rhoMasal / rhoVerdadera, [rhoMasal, rhoVerdadera]);
+  const consistente = rhoMasal <= rhoAparente && rhoAparente <= rhoVerdadera;
+
+  const interpretar = (e: number, tipo: 'lecho' | 'particula') => {
+    if (tipo === 'lecho') {
+      if (e < 0.26) return { label: 'Empaque ordenado', color: '#059669', note: 'Denso, tipo cúbico cerrado. Material esférico uniforme bien asentado.' };
+      if (e < 0.38) return { label: 'Empaque compactado', color: '#10b981', note: 'Esferas compactadas (tapped) o granular bien clasificado.' };
+      if (e < 0.46) return { label: 'Empaque aleatorio típico', color: '#f59e0b', note: 'Rango típico de polvos granulares vertidos libremente.' };
+      if (e < 0.60) return { label: 'Empaque suelto / irregular', color: '#f97316', note: 'Partículas irregulares o angulosas; flujo moderado.' };
+      return { label: 'Polvo cohesivo / muy suelto', color: '#dc2626', note: 'Harinas, polvos finos, aerogeles — alta porosidad, flujo deficiente.' };
+    } else {
+      if (e < 0.05) return { label: 'Prácticamente no porosa', color: '#059669', note: 'Cristales densos, metales, vidrio — densidad verdadera ≈ aparente.' };
+      if (e < 0.20) return { label: 'Porosidad baja', color: '#10b981', note: 'Minerales compactos, cerámicas densas.' };
+      if (e < 0.45) return { label: 'Porosidad moderada', color: '#f59e0b', note: 'Catalizadores, carbones activados, materiales sinterizados.' };
+      if (e < 0.70) return { label: 'Porosidad alta', color: '#f97316', note: 'Zeolitas, soportes porosos, espumas — alta área superficial interna.' };
+      return { label: 'Porosidad extrema', color: '#dc2626', note: 'Aerogeles, materiales MOF — casi todo es poro.' };
+    }
+  };
+
+  const interpLecho = interpretar(eLecho, 'lecho');
+  const interpPart = interpretar(eParticula, 'particula');
+
+  useKatexRerender([rhoMasal, rhoAparente, rhoVerdadera]);
+
+  return (
+    <div className="my-6 rounded-xl bg-brand-dark p-5 sm:p-6 not-prose text-zinc-100">
+      <p className="font-semibold text-brand-yellow text-sm mb-3">🧮 Calculadora e intérprete de porosidad</p>
+      <p className="text-xs text-zinc-400 mb-4">
+        Ingresa las tres densidades (mismas unidades — típicamente kg/m³). La calculadora deriva las
+        tres porosidades y clasifica el comportamiento esperado.
+      </p>
+      <div className="grid sm:grid-cols-3 gap-3 mb-4">
+        {[
+          { label: 'ρ masal (lecho)', value: rhoMasal, set: setRhoMasal, min: 100, max: 3000, step: 10, color: 'text-red-300' },
+          { label: 'ρ aparente (partícula)', value: rhoAparente, set: setRhoAparente, min: 100, max: 5000, step: 10, color: 'text-violet-300' },
+          { label: 'ρ verdadera (sólido)', value: rhoVerdadera, set: setRhoVerdadera, min: 100, max: 8000, step: 10, color: 'text-sky-300' },
+        ].map((f) => (
+          <label key={f.label} className="block">
+            <span className={`text-xs uppercase tracking-wider ${f.color}`}>{f.label}</span>
+            <div className="flex items-center gap-2 mt-1">
+              <input type="number" value={f.value} min={f.min} max={f.max} step={f.step}
+                onChange={(e) => f.set(Number(e.target.value))}
+                className="w-20 bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-sm font-mono text-white focus:border-brand-yellow focus:outline-none" />
+              <input type="range" value={f.value} min={f.min} max={f.max} step={f.step}
+                onChange={(e) => f.set(Number(e.target.value))}
+                className="flex-1 accent-brand-yellow" />
+            </div>
+          </label>
+        ))}
+      </div>
+      {!consistente && (
+        <p className="text-xs text-red-400 mb-3">
+          ⚠️ Debe cumplirse ρ masal ≤ ρ aparente ≤ ρ verdadera. Ajusta los valores para tener una configuración física.
+        </p>
+      )}
+      <div className="space-y-3" key={`${rhoMasal}-${rhoAparente}-${rhoVerdadera}`}>
+        {[
+          { label: 'ε lecho (interparticular)', value: eLecho, interp: interpLecho },
+          { label: 'ε partícula (intraparticular)', value: eParticula, interp: interpPart },
+        ].map((b) => {
+          const pct = Math.max(0, Math.min(100, b.value * 100));
+          return (
+            <div key={b.label} className="rounded-lg bg-zinc-900 border border-zinc-700 p-3">
+              <div className="flex items-baseline justify-between gap-2 mb-1.5">
+                <p className="text-xs font-semibold text-white">{b.label}</p>
+                <p className="text-lg font-mono font-bold text-brand-yellow">
+                  {b.value.toFixed(3)} <span className="text-xs text-zinc-400">({pct.toFixed(1)} %)</span>
+                </p>
+              </div>
+              <div className="h-2 rounded-full bg-zinc-800 overflow-hidden mb-2">
+                <div className="h-full rounded-full transition-all duration-300" style={{ width: `${pct}%`, background: b.interp.color }} />
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="inline-block w-2 h-2 rounded-full flex-shrink-0" style={{ background: b.interp.color }} />
+                <p className="text-xs font-semibold" style={{ color: b.interp.color }}>{b.interp.label}</p>
+              </div>
+              <p className="text-[11px] text-zinc-400 mt-1 leading-snug">{b.interp.note}</p>
+            </div>
+          );
+        })}
+        <div className="rounded-lg bg-zinc-900 border border-zinc-700 p-3">
+          <div className="flex items-baseline justify-between gap-2">
+            <p className="text-xs font-semibold text-zinc-400">ε total (lecho + intraparticular)</p>
+            <p className="text-lg font-mono font-bold text-zinc-300">
+              {eTotal.toFixed(3)} <span className="text-xs text-zinc-500">({(eTotal * 100).toFixed(1)} %)</span>
+            </p>
+          </div>
+          <p className="text-[11px] text-zinc-500 italic mt-1">
+            Volumen de "no sólido" en el lecho completo = 1 − ρ_masal / ρ_verdadera.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ─── Íconos SVG inline correctos para los métodos de medición ─── */
+const MethodIcon: React.FC<{ kind: 'tamiz' | 'micro' | 'sedim' | 'laser' | 'coulter' }> = ({ kind }) => {
+  const common = 'w-full h-auto max-w-[380px] block mx-auto';
+  if (kind === 'tamiz') {
+    return (
+      <svg viewBox="0 0 340 260" className={common} aria-hidden="true">
+        {[0, 1, 2].map((i) => {
+          const y = 30 + i * 60;
+          const meshGap = 5 + i * 3;
+          return (
+            <g key={i}>
+              <rect x="70" y={y} width="200" height="40" fill="#fef3c7" stroke="#1A1A1A" strokeWidth="2" rx="4" />
+              {Array.from({ length: Math.floor(200 / meshGap) }, (_, j) => (
+                <line key={j} x1={70 + j * meshGap} y1={y + 36} x2={70 + j * meshGap} y2={y + 40} stroke="#71717a" strokeWidth="0.8" />
+              ))}
+              <text x="280" y={y + 25} fontSize="10" fill="#52525b" fontWeight="600">{['2 mm', '0.5 mm', '0.1 mm'][i]}</text>
+              {Array.from({ length: 6 }, (_, j) => (
+                <circle key={j} cx={90 + j * 30} cy={y + 20} r={Math.max(1.5, 4 - i)} fill="#FFBF00" stroke="#1A1A1A" strokeWidth="0.5" />
+              ))}
+            </g>
+          );
+        })}
+        <rect x="60" y="220" width="220" height="25" fill="#e4e4e7" stroke="#1A1A1A" strokeWidth="2" rx="4" />
+        <text x="170" y="238" fontSize="10" fill="#52525b" fontWeight="600" textAnchor="middle">Colector (finos)</text>
+        <path d="M170 10 L170 25 M165 20 L170 25 L175 20" stroke="#1A1A1A" strokeWidth="1.5" fill="none" />
+        <text x="180" y="18" fontSize="10" fill="#27272a" fontWeight="600">muestra</text>
+      </svg>
+    );
+  }
+  if (kind === 'micro') {
+    return (
+      <svg viewBox="0 0 340 260" className={common} aria-hidden="true">
+        <path d="M110 30 L230 30 L230 60 Q230 75 215 75 L195 75 L195 145 Q195 160 180 160 L160 160 Q145 160 145 145 L145 75 L125 75 Q110 75 110 60 Z" fill="#e4e4e7" stroke="#1A1A1A" strokeWidth="2" />
+        <circle cx="170" cy="50" r="10" fill="#1A1A1A" />
+        <rect x="100" y="165" width="140" height="20" fill="#1A1A1A" />
+        <circle cx="170" cy="130" r="16" fill="#fef3c7" stroke="#1A1A1A" strokeWidth="1.5" />
+        <rect x="120" y="195" width="100" height="10" fill="#e4e4e7" stroke="#1A1A1A" strokeWidth="1.5" />
+        <rect x="255" y="90" width="75" height="90" fill="#fff" stroke="#1A1A1A" strokeWidth="2" rx="4" />
+        <text x="292" y="102" fontSize="8" fill="#52525b" textAnchor="middle" fontWeight="600">IMAGEN</text>
+        <path d="M268 118 q 6 -4 12 0 q 4 6 0 10 q -8 4 -14 -2 z" fill="#FFBF00" stroke="#1A1A1A" strokeWidth="0.8" />
+        <path d="M300 125 q 8 2 10 8 q -2 8 -10 6 q -6 -6 0 -14 z" fill="#FFBF00" stroke="#1A1A1A" strokeWidth="0.8" />
+        <path d="M275 152 q 10 -3 14 4 q 2 8 -6 10 q -12 2 -8 -14 z" fill="#FFBF00" stroke="#1A1A1A" strokeWidth="0.8" />
+        <path d="M195 130 C 220 130 235 130 255 130" stroke="#FFBF00" strokeWidth="1.5" strokeDasharray="3 3" fill="none" />
+        <text x="170" y="220" fontSize="9" fill="#52525b" textAnchor="middle" fontWeight="600">Microscopio + análisis de imagen</text>
+      </svg>
+    );
+  }
+  if (kind === 'sedim') {
+    return (
+      <svg viewBox="0 0 340 260" className={common} aria-hidden="true">
+        <rect x="110" y="30" width="120" height="200" fill="#e0f2fe" stroke="#1A1A1A" strokeWidth="2" rx="2" />
+        <ellipse cx="170" cy="32" rx="60" ry="4" fill="#38bdf8" />
+        {[
+          { cy: 60, r: 2 }, { cy: 70, r: 2.5 }, { cy: 80, r: 2 },
+          { cy: 90, r: 2.5 }, { cy: 105, r: 3 }, { cy: 115, r: 3.5 },
+          { cy: 130, r: 3.5 }, { cy: 140, r: 4 }, { cy: 155, r: 4.5 },
+          { cy: 170, r: 5 }, { cy: 185, r: 5.5 }, { cy: 200, r: 6 },
+        ].map((p, i) => (
+          <circle key={i} cx={140 + (i % 3) * 25} cy={p.cy} r={p.r} fill="#FFBF00" stroke="#1A1A1A" strokeWidth="0.6" />
+        ))}
+        <path d="M 111 220 Q 140 210 170 218 Q 200 210 229 220 L 229 229 L 111 229 Z" fill="#b45309" stroke="#1A1A1A" strokeWidth="1" />
+        <path d="M 250 80 L 250 120 M 245 115 L 250 120 L 255 115" stroke="#dc2626" strokeWidth="1.5" fill="none" />
+        <text x="258" y="102" fontSize="10" fill="#dc2626" fontWeight="600">g</text>
+        <text x="90" y="85" fontSize="9" fill="#52525b" textAnchor="end" fontWeight="600">finas</text>
+        <text x="90" y="195" fontSize="9" fill="#52525b" textAnchor="end" fontWeight="600">gruesas</text>
+      </svg>
+    );
+  }
+  if (kind === 'laser') {
+    return (
+      <svg viewBox="0 0 340 260" className={common} aria-hidden="true">
+        <rect x="20" y="110" width="50" height="30" fill="#1A1A1A" rx="3" />
+        <text x="45" y="105" fontSize="10" fill="#27272a" fontWeight="600" textAnchor="middle">LÁSER</text>
+        <line x1="70" y1="125" x2="160" y2="125" stroke="#dc2626" strokeWidth="3" />
+        <rect x="155" y="80" width="50" height="90" fill="#dbeafe" stroke="#1A1A1A" strokeWidth="2" rx="2" />
+        {[[170, 100], [185, 115], [170, 130], [185, 145], [175, 160]].map(([cx, cy], i) => (
+          <circle key={i} cx={cx} cy={cy} r="2.5" fill="#FFBF00" stroke="#1A1A1A" strokeWidth="0.5" />
+        ))}
+        {[-40, -25, -12, 0, 12, 25, 40].map((ang) => {
+          const rad = (ang * Math.PI) / 180;
+          const x2 = 180 + Math.cos(rad) * 120;
+          const y2 = 125 + Math.sin(rad) * 120;
+          return (
+            <line key={ang} x1="180" y1="125" x2={x2} y2={y2} stroke="#dc2626" strokeWidth="1" opacity="0.5" strokeDasharray={ang === 0 ? '0' : '3 2'} />
+          );
+        })}
+        <path d="M 290 60 A 110 110 0 0 1 290 190" fill="none" stroke="#0369a1" strokeWidth="4" strokeLinecap="round" />
+        <text x="305" y="130" fontSize="9" fill="#0369a1" fontWeight="600">detector</text>
+        <text x="180" y="210" fontSize="9" fill="#52525b" textAnchor="middle" fontWeight="600">Patrón de difracción → inversión Mie/Fraunhofer → DTP</text>
+      </svg>
+    );
+  }
+  // coulter
+  return (
+    <svg viewBox="0 0 340 260" className={common} aria-hidden="true">
+      <rect x="40" y="40" width="30" height="80" fill="#1A1A1A" />
+      <rect x="270" y="40" width="30" height="80" fill="#1A1A1A" />
+      <path d="M 55 40 L 55 20 L 170 20 L 170 10" fill="none" stroke="#1A1A1A" strokeWidth="2" />
+      <path d="M 285 40 L 285 20 L 170 20" fill="none" stroke="#1A1A1A" strokeWidth="2" />
+      <rect x="150" y="3" width="40" height="18" fill="#e4e4e7" stroke="#1A1A1A" strokeWidth="1.5" />
+      <text x="170" y="16" fontSize="10" fill="#1A1A1A" textAnchor="middle" fontWeight="700">+ −</text>
+      <path d="M 30 130 L 310 130 L 310 230 L 30 230 Z" fill="#e0f2fe" stroke="#1A1A1A" strokeWidth="2" />
+      <path d="M 170 130 L 170 170" stroke="#1A1A1A" strokeWidth="3" />
+      <path d="M 170 190 L 170 230" stroke="#1A1A1A" strokeWidth="3" />
+      <text x="196" y="183" fontSize="9" fill="#27272a" fontWeight="600">orificio</text>
+      <path d="M 175 180 L 190 180" stroke="#27272a" strokeWidth="1" fill="none" />
+      {[[60, 165], [90, 200], [120, 175], [100, 215], [70, 195]].map(([cx, cy], i) => (
+        <circle key={i} cx={cx} cy={cy} r="4" fill="#FFBF00" stroke="#1A1A1A" strokeWidth="0.6" />
+      ))}
+      <circle cx="170" cy="180" r="5" fill="#ef4444" stroke="#1A1A1A" strokeWidth="1" />
+      <path d="M 155 180 L 165 180 M 165 178 L 168 180 L 165 182" stroke="#dc2626" strokeWidth="1.5" fill="none" />
+      <rect x="215" y="148" width="80" height="54" fill="#052e16" stroke="#1A1A1A" strokeWidth="1.5" rx="3" />
+      <path d="M 220 185 L 240 185 L 240 160 L 255 160 L 255 185 L 290 185" fill="none" stroke="#22c55e" strokeWidth="1.8" />
+      <text x="255" y="215" fontSize="8" fill="#27272a" textAnchor="middle" fontWeight="600">pulso de resistencia</text>
+    </svg>
+  );
+};
+
+const SvgFigure: React.FC<{ children: React.ReactNode; caption: React.ReactNode }> = ({ children, caption }) => (
+  <figure className="my-8 not-prose flex flex-col items-center">
+    <div className="w-full flex justify-center rounded-xl bg-zinc-50 border border-zinc-200 p-4 sm:p-6">
+      {children}
+    </div>
+    <figcaption className="text-center text-sm text-brand-gray mt-3 italic max-w-2xl">{caption}</figcaption>
+  </figure>
+);
+
 const DensityTypesTabs: React.FC = () => {
   const [tab, setTab] = useState<'verdadera' | 'aparente' | 'masal' | 'efectiva'>('verdadera');
   useKatexRerender([tab]);
@@ -282,12 +637,7 @@ const DensityTypesTabs: React.FC = () => {
         )}
       </div>
 
-      <Figure
-        src="/classroom/iqya-2031/readings/propiedades-solidos-02.png"
-        alt="Comparación de los tipos de densidad"
-        caption="Densidad verdadera, de partícula y masal: cada una corresponde a un volumen distinto — sólido puro, sólido + poros cerrados, y lecho completo con huecos interparticulares."
-        maxWidth="600px"
-      />
+      <DensityComparisonViz />
     </div>
   );
 };
@@ -620,12 +970,11 @@ const SizingMethodsTabs: React.FC = () => {
               <strong> Limitaciones:</strong> da $d_t$ (no $d_v$), sensible a la forma, tiempo de
               tamizado y carga influyen en el resultado.
             </p>
-            <Figure
-              src="/classroom/iqya-2031/readings/propiedades-solidos-09.png"
-              alt="Análisis por tamizado"
-              caption="Pila de tamices con aperturas decrecientes. Es el método más común y económico para caracterizar DTP en la industria."
-              maxWidth="500px"
-            />
+            <SvgFigure
+              caption="Pila de tamices con aperturas decrecientes: las partículas se distribuyen por tamaño. El colector inferior recoge los finos que atraviesan todas las mallas."
+            >
+              <MethodIcon kind="tamiz" />
+            </SvgFigure>
           </div>
         )}
         {tab === 'micro' && (
@@ -643,12 +992,11 @@ const SizingMethodsTabs: React.FC = () => {
               insustituible para validar otros métodos. <strong>Limitaciones:</strong> requiere
               contar estadísticamente muchas partículas (&gt; 1000), lento, costoso.
             </p>
-            <Figure
-              src="/classroom/iqya-2031/readings/propiedades-solidos-10.gif"
-              alt="Microscopía de partículas"
-              caption="Microscopía: observación directa de morfología y dimensiones. Permite caracterizar simultáneamente tamaño y forma."
-              maxWidth="500px"
-            />
+            <SvgFigure
+              caption="Microscopio óptico o electrónico + análisis digital de imagen: medición directa de la morfología (diámetro de Feret, circular equivalente) de cada partícula."
+            >
+              <MethodIcon kind="micro" />
+            </SvgFigure>
           </div>
         )}
         {tab === 'sedim' && (
@@ -669,12 +1017,11 @@ const SizingMethodsTabs: React.FC = () => {
               <strong>Ventajas:</strong> da {String.raw`$d_\text{Stokes}$`}, directamente útil para
               diseño hidrodinámico. <strong>Limitaciones:</strong> lento, sensible a agregación.
             </p>
-            <Figure
-              src="/classroom/iqya-2031/readings/propiedades-solidos-11.png"
-              alt="Método de sedimentación"
-              caption="Sedimentación: el tamaño se deduce de la velocidad terminal de caída libre mediante la Ley de Stokes."
-              maxWidth="500px"
-            />
+            <SvgFigure
+              caption="Columna de sedimentación: las partículas caen con velocidades terminales que dependen de su tamaño. Las gruesas llegan primero al fondo; las finas quedan suspendidas más tiempo."
+            >
+              <MethodIcon kind="sedim" />
+            </SvgFigure>
           </div>
         )}
         {tab === 'laser' && (
@@ -692,12 +1039,11 @@ const SizingMethodsTabs: React.FC = () => {
               {' '}<strong>Limitaciones:</strong> asume esfericidad, requiere buen índice de
               refracción, equipo costoso.
             </p>
-            <Figure
-              src="/classroom/iqya-2031/readings/propiedades-solidos-12.png"
-              alt="Difracción láser"
-              caption="Difracción láser: el patrón de dispersión de la luz incidente se invierte para obtener la DTP completa en segundos."
-              maxWidth="500px"
-            />
+            <SvgFigure
+              caption="Difracción láser: un haz atraviesa la muestra y es dispersado por las partículas en ángulos que dependen de su tamaño. Un arco de detectores registra el patrón, que se invierte para obtener la DTP."
+            >
+              <MethodIcon kind="laser" />
+            </SvgFigure>
           </div>
         )}
         {tab === 'coulter' && (
@@ -716,12 +1062,11 @@ const SizingMethodsTabs: React.FC = () => {
               de partículas. <strong>Limitaciones:</strong> requiere partículas no conductoras
               suspendidas en electrolito, una apertura por rango de tamaño.
             </p>
-            <Figure
-              src="/classroom/iqya-2031/readings/propiedades-solidos-13.jpeg"
-              alt="Contador Coulter"
-              caption="Contador Coulter: cada partícula que cruza el orificio genera un pulso de resistencia proporcional a su volumen."
-              maxWidth="500px"
-            />
+            <SvgFigure
+              caption="Contador Coulter: dos cámaras con electrolito separadas por un orificio. Cada partícula que cruza genera un pulso eléctrico cuya amplitud es proporcional al volumen desplazado."
+            >
+              <MethodIcon kind="coulter" />
+            </SvgFigure>
           </div>
         )}
       </div>
@@ -1189,13 +1534,6 @@ const PropiedadesSolidos: React.FC = () => {
                 {'$$\\varepsilon_\\text{lecho} = 1 - \\frac{\\rho_\\text{masal}}{\\rho_\\text{aparente}}$$'}
               </p>
 
-              <Figure
-                src="/classroom/iqya-2031/readings/propiedades-solidos-04.jpeg"
-                alt="Porosidad del lecho"
-                caption="Porosidad interparticular: los huecos visibles entre partículas dentro del lecho — función directa del empaquetamiento."
-                maxWidth="400px"
-              />
-
               <SubTitle>Porosidad de la partícula (intraparticular)</SubTitle>
               <p>
                 Corresponde a los poros <em>internos</em> de cada partícula (si
@@ -1206,12 +1544,12 @@ const PropiedadesSolidos: React.FC = () => {
                 {'$$\\varepsilon_\\text{partícula} = 1 - \\frac{\\rho_\\text{aparente}}{\\rho_\\text{verdadera}}$$'}
               </p>
 
-              <Figure
-                src="/classroom/iqya-2031/readings/propiedades-solidos-05.png"
-                alt="Porosidad intraparticular"
-                caption="Porosidad intraparticular: poros cerrados o abiertos dentro del grano. Invisible desde el exterior, pero afecta densidad efectiva y cinética de secado o extracción."
-                maxWidth="400px"
-              />
+              <SubTitle>Pruébalo: calculadora e intérprete</SubTitle>
+              <p>
+                Ajusta las tres densidades y observa cómo cambian las porosidades y qué tipo de
+                empaquetamiento / material indica cada valor.
+              </p>
+              <PorosityCalculator />
 
               <InfoCallout title="📌 Valores típicos">
                 <ul className="list-disc pl-5 space-y-1">
