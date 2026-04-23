@@ -555,10 +555,17 @@ const materialesBond = [
   { nombre: 'Yeso', wi: 7.0 },
 ];
 
-const BondCalculator: React.FC = () => {
+const BondCalculator: React.FC<{ seedWi?: number }> = ({ seedWi }) => {
   const [Wi, setWi] = useState(11.6);
   const [F80, setF80] = useState(10000); // µm
   const [P80, setP80] = useState(100); // µm
+
+  // Cuando el explorador de Wᵢ nos pasa un nuevo valor, actualizar el slider.
+  useEffect(() => {
+    if (typeof seedWi === 'number' && !Number.isNaN(seedWi)) {
+      setWi(seedWi);
+    }
+  }, [seedWi]);
 
   const E = useMemo(() => Wi * (10 / Math.sqrt(P80) - 10 / Math.sqrt(F80)), [Wi, F80, P80]);
 
@@ -648,8 +655,351 @@ const BondCalculator: React.FC = () => {
 };
 
 /* ─── Tabs de las leyes de la conminución ─── */
+/* ─── Dataset completo del Índice de Trabajo de Bond (OCR traducido al español) ─── */
+type BondMaterial = {
+  nombre: string;
+  aka?: string;
+  sg: number;
+  wiKJ: number; // kJ/kg (del Perry's)
+  cat: 'metalico' | 'roca' | 'combustible' | 'construccion' | 'abrasivo' | 'industrial' | 'fertilizante' | 'otro';
+};
+
+const CAT_LABELS: Record<BondMaterial['cat'], string> = {
+  metalico: 'Minerales metálicos',
+  roca: 'Rocas',
+  combustible: 'Combustibles y coques',
+  construccion: 'Construcción y cemento',
+  abrasivo: 'Abrasivos',
+  industrial: 'Minerales industriales',
+  fertilizante: 'Fertilizantes y sales',
+  otro: 'Otros',
+};
+
+const CAT_COLORS: Record<BondMaterial['cat'], { bg: string; text: string; ring: string }> = {
+  metalico:     { bg: 'bg-slate-100',    text: 'text-slate-700',    ring: 'ring-slate-400' },
+  roca:         { bg: 'bg-stone-100',    text: 'text-stone-700',    ring: 'ring-stone-400' },
+  combustible:  { bg: 'bg-neutral-900/10', text: 'text-neutral-800', ring: 'ring-neutral-600' },
+  construccion: { bg: 'bg-amber-100',    text: 'text-amber-800',    ring: 'ring-amber-500' },
+  abrasivo:     { bg: 'bg-red-100',      text: 'text-red-700',      ring: 'ring-red-500' },
+  industrial:   { bg: 'bg-emerald-100',  text: 'text-emerald-700',  ring: 'ring-emerald-500' },
+  fertilizante: { bg: 'bg-lime-100',     text: 'text-lime-700',     ring: 'ring-lime-500' },
+  otro:         { bg: 'bg-sky-100',      text: 'text-sky-700',      ring: 'ring-sky-500' },
+};
+
+const BOND_MATERIALS: BondMaterial[] = [
+  { nombre: 'Andesita', aka: 'Andesite', sg: 2.84, wiKJ: 87.75, cat: 'roca' },
+  { nombre: 'Baritina', aka: 'Barite', sg: 4.28, wiKJ: 24.74, cat: 'industrial' },
+  { nombre: 'Basalto', aka: 'Basalt', sg: 2.89, wiKJ: 80.93, cat: 'roca' },
+  { nombre: 'Bauxita', aka: 'Bauxite', sg: 2.38, wiKJ: 37.47, cat: 'metalico' },
+  { nombre: 'Clinker de cemento', aka: 'Cement clinker', sg: 3.09, wiKJ: 53.49, cat: 'construccion' },
+  { nombre: 'Materia prima de cemento', aka: 'Cement raw material', sg: 2.67, wiKJ: 41.91, cat: 'construccion' },
+  { nombre: 'Mineral de cromo', aka: 'Chrome ore', sg: 4.06, wiKJ: 38.06, cat: 'metalico' },
+  { nombre: 'Arcilla', aka: 'Clay', sg: 2.23, wiKJ: 28.15, cat: 'industrial' },
+  { nombre: 'Arcilla calcinada', aka: 'Clay, calcined', sg: 2.32, wiKJ: 5.67, cat: 'industrial' },
+  { nombre: 'Carbón', aka: 'Coal', sg: 1.63, wiKJ: 45.08, cat: 'combustible' },
+  { nombre: 'Coque', aka: 'Coke', sg: 1.51, wiKJ: 82.08, cat: 'combustible' },
+  { nombre: 'Coque fluido de petróleo', aka: 'Fluid petroleum coke', sg: 1.63, wiKJ: 153.05, cat: 'combustible' },
+  { nombre: 'Coque de petróleo', aka: 'Petroleum coke', sg: 1.78, wiKJ: 292.62, cat: 'combustible' },
+  { nombre: 'Mineral de cobre', aka: 'Copper ore', sg: 3.02, wiKJ: 52.06, cat: 'metalico' },
+  { nombre: 'Coral', aka: 'Coral', sg: 2.70, wiKJ: 40.28, cat: 'roca' },
+  { nombre: 'Diorita', aka: 'Diorite', sg: 2.78, wiKJ: 76.92, cat: 'roca' },
+  { nombre: 'Dolomita', aka: 'Dolomite', sg: 2.82, wiKJ: 44.84, cat: 'roca' },
+  { nombre: 'Esmeril', aka: 'Emery', sg: 3.48, wiKJ: 230.68, cat: 'abrasivo' },
+  { nombre: 'Feldespato', aka: 'Feldspar', sg: 2.59, wiKJ: 46.27, cat: 'industrial' },
+  { nombre: 'Ferrocromo', aka: 'Ferrochrome', sg: 6.75, wiKJ: 35.17, cat: 'metalico' },
+  { nombre: 'Ferromanganeso', aka: 'Ferromanganese', sg: 5.91, wiKJ: 30.81, cat: 'metalico' },
+  { nombre: 'Ferrosilicio', aka: 'Ferrosilicon', sg: 4.91, wiKJ: 50.87, cat: 'metalico' },
+  { nombre: 'Pedernal', aka: 'Flint', sg: 2.65, wiKJ: 103.72, cat: 'abrasivo' },
+  { nombre: 'Fluorita', aka: 'Fluorspar', sg: 2.98, wiKJ: 38.70, cat: 'industrial' },
+  { nombre: 'Gabro', aka: 'Gabbro', sg: 2.83, wiKJ: 73.15, cat: 'roca' },
+  { nombre: 'Galena', aka: 'Galena', sg: 5.39, wiKJ: 40.40, cat: 'metalico' },
+  { nombre: 'Granate', aka: 'Garnet', sg: 3.30, wiKJ: 49.05, cat: 'abrasivo' },
+  { nombre: 'Vidrio', aka: 'Glass', sg: 2.58, wiKJ: 12.21, cat: 'otro' },
+  { nombre: 'Gneis', aka: 'Gneiss', sg: 2.71, wiKJ: 79.82, cat: 'roca' },
+  { nombre: 'Mineral de oro', aka: 'Gold ore', sg: 2.86, wiKJ: 58.80, cat: 'metalico' },
+  { nombre: 'Granito', aka: 'Granite', sg: 2.68, wiKJ: 57.06, cat: 'construccion' },
+  { nombre: 'Grafito', aka: 'Graphite', sg: 1.75, wiKJ: 178.54, cat: 'otro' },
+  { nombre: 'Grava', aka: 'Gravel', sg: 2.70, wiKJ: 99.80, cat: 'construccion' },
+  { nombre: 'Roca yesera', aka: 'Gypsum rock', sg: 2.69, wiKJ: 32.35, cat: 'construccion' },
+  { nombre: 'Ilmenita', aka: 'Ilmenite', sg: 4.27, wiKJ: 51.98, cat: 'metalico' },
+  { nombre: 'Mineral de hierro', aka: 'Iron ore (genérico)', sg: 3.96, wiKJ: 61.22, cat: 'metalico' },
+  { nombre: 'Hematita', aka: 'Hematite', sg: 3.76, wiKJ: 50.28, cat: 'metalico' },
+  { nombre: 'Hematita especular', aka: 'Hematite-specular', sg: 3.29, wiKJ: 61.06, cat: 'metalico' },
+  { nombre: 'Hematita oolítica', aka: 'Oolitic hematite', sg: 3.32, wiKJ: 44.92, cat: 'metalico' },
+  { nombre: 'Limonita', aka: 'Limonite', sg: 2.53, wiKJ: 33.50, cat: 'metalico' },
+  { nombre: 'Magnetita', aka: 'Magnetite', sg: 3.88, wiKJ: 40.48, cat: 'metalico' },
+  { nombre: 'Taconita', aka: 'Taconite', sg: 3.52, wiKJ: 58.96, cat: 'metalico' },
+  { nombre: 'Cianita', aka: 'Kyanite', sg: 3.23, wiKJ: 74.82, cat: 'industrial' },
+  { nombre: 'Mineral de plomo', aka: 'Lead ore', sg: 3.44, wiKJ: 45.20, cat: 'metalico' },
+  { nombre: 'Mineral de plomo-zinc', aka: 'Lead-zinc ore', sg: 3.37, wiKJ: 45.00, cat: 'metalico' },
+  { nombre: 'Caliza', aka: 'Limestone', sg: 2.69, wiKJ: 46.03, cat: 'construccion' },
+  { nombre: 'Caliza para cemento', aka: 'Limestone for cement', sg: 2.68, wiKJ: 40.36, cat: 'construccion' },
+  { nombre: 'Mineral de manganeso', aka: 'Manganese ore', sg: 3.74, wiKJ: 49.40, cat: 'metalico' },
+  { nombre: 'Magnesita calcinada', aka: 'Dead burned magnesite', sg: 5.22, wiKJ: 66.61, cat: 'industrial' },
+  { nombre: 'Mica', aka: 'Mica', sg: 2.89, wiKJ: 533.29, cat: 'industrial' },
+  { nombre: 'Molibdeno', aka: 'Molybdenum', sg: 2.70, wiKJ: 51.43, cat: 'metalico' },
+  { nombre: 'Mineral de níquel', aka: 'Nickel ore', sg: 3.32, wiKJ: 47.10, cat: 'metalico' },
+  { nombre: 'Esquisto bituminoso', aka: 'Oil shale', sg: 1.76, wiKJ: 71.77, cat: 'combustible' },
+  { nombre: 'Fertilizante fosfatado', aka: 'Phosphate fertilizer', sg: 2.65, wiKJ: 51.66, cat: 'fertilizante' },
+  { nombre: 'Roca fosfórica', aka: 'Phosphate rock', sg: 2.66, wiKJ: 40.17, cat: 'fertilizante' },
+  { nombre: 'Mineral de potasa', aka: 'Potash ore', sg: 2.37, wiKJ: 35.21, cat: 'fertilizante' },
+  { nombre: 'Sal de potasa', aka: 'Potash salt', sg: 2.18, wiKJ: 32.63, cat: 'fertilizante' },
+  { nombre: 'Piedra pómez', aka: 'Pumice', sg: 1.96, wiKJ: 47.30, cat: 'roca' },
+  { nombre: 'Pirita', aka: 'Pyrite ore', sg: 3.48, wiKJ: 35.29, cat: 'metalico' },
+  { nombre: 'Pirrotita', aka: 'Pyrrhotite ore', sg: 4.04, wiKJ: 37.95, cat: 'metalico' },
+  { nombre: 'Cuarcita', aka: 'Quartzite', sg: 2.71, wiKJ: 48.29, cat: 'roca' },
+  { nombre: 'Cuarzo', aka: 'Quartz', sg: 2.64, wiKJ: 50.63, cat: 'abrasivo' },
+  { nombre: 'Rutilo', aka: 'Rutile ore', sg: 2.84, wiKJ: 48.06, cat: 'metalico' },
+  { nombre: 'Arenisca', aka: 'Sandstone', sg: 2.68, wiKJ: 45.72, cat: 'construccion' },
+  { nombre: 'Lutita', aka: 'Shale', sg: 2.58, wiKJ: 65.03, cat: 'roca' },
+  { nombre: 'Sílice', aka: 'Silica', sg: 2.71, wiKJ: 53.65, cat: 'abrasivo' },
+  { nombre: 'Arena de sílice', aka: 'Silica sand', sg: 2.65, wiKJ: 65.26, cat: 'abrasivo' },
+  { nombre: 'Carburo de silicio', aka: 'Silicon carbide (SiC)', sg: 2.73, wiKJ: 103.76, cat: 'abrasivo' },
+  { nombre: 'Mineral de plata', aka: 'Silver ore', sg: 2.72, wiKJ: 68.59, cat: 'metalico' },
+  { nombre: 'Sinter', aka: 'Sinter', sg: 3.00, wiKJ: 34.77, cat: 'otro' },
+  { nombre: 'Escoria', aka: 'Slag', sg: 2.93, wiKJ: 62.49, cat: 'otro' },
+  { nombre: 'Escoria de alto horno', aka: 'Iron blast furnace slag', sg: 2.39, wiKJ: 48.21, cat: 'otro' },
+  { nombre: 'Pizarra', aka: 'Slate', sg: 2.48, wiKJ: 54.84, cat: 'roca' },
+  { nombre: 'Silicato de sodio', aka: 'Sodium silicate', sg: 2.10, wiKJ: 51.55, cat: 'otro' },
+  { nombre: 'Espodumeno', aka: 'Spodumene ore (litio)', sg: 2.75, wiKJ: 54.32, cat: 'metalico' },
+  { nombre: 'Sienita', aka: 'Syenite', sg: 2.73, wiKJ: 59.08, cat: 'roca' },
+  { nombre: 'Arcilla para tejas', aka: 'Tile clay', sg: 2.59, wiKJ: 61.58, cat: 'construccion' },
+  { nombre: 'Mineral de estaño', aka: 'Tin ore', sg: 3.94, wiKJ: 42.86, cat: 'metalico' },
+  { nombre: 'Mineral de titanio', aka: 'Titanium ore', sg: 4.23, wiKJ: 47.10, cat: 'metalico' },
+  { nombre: 'Roca trampa', aka: 'Trap rock', sg: 2.86, wiKJ: 83.66, cat: 'roca' },
+  { nombre: 'Mineral de uranio', aka: 'Uranium ore', sg: 2.70, wiKJ: 71.09, cat: 'metalico' },
+  { nombre: 'Mineral de zinc', aka: 'Zinc ore', sg: 3.68, wiKJ: 49.25, cat: 'metalico' },
+];
+
+// Convertir kJ/kg → kWh/t (1 kWh/t = 3.6 kJ/kg)
+const kJtokWh = (kj: number) => kj / 3.6;
+
+const BondWorkIndexExplorer: React.FC<{ onSelectWi: (wi: number) => void }> = ({ onSelectWi }) => {
+  const [query, setQuery] = useState('');
+  const [cat, setCat] = useState<BondMaterial['cat'] | 'all'>('all');
+  const [sortBy, setSortBy] = useState<'nombre' | 'wi-asc' | 'wi-desc'>('nombre');
+  const [selected, setSelected] = useState<string | null>(null);
+
+  useKatexRerender([selected]);
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    let list = BOND_MATERIALS.filter((m) => {
+      if (cat !== 'all' && m.cat !== cat) return false;
+      if (!q) return true;
+      return (
+        m.nombre.toLowerCase().includes(q) ||
+        (m.aka && m.aka.toLowerCase().includes(q))
+      );
+    });
+    if (sortBy === 'nombre') list = [...list].sort((a, b) => a.nombre.localeCompare(b.nombre, 'es'));
+    if (sortBy === 'wi-asc') list = [...list].sort((a, b) => a.wiKJ - b.wiKJ);
+    if (sortBy === 'wi-desc') list = [...list].sort((a, b) => b.wiKJ - a.wiKJ);
+    return list;
+  }, [query, cat, sortBy]);
+
+  const maxWi = Math.max(...BOND_MATERIALS.map((m) => m.wiKJ));
+  const minWi = Math.min(...BOND_MATERIALS.map((m) => m.wiKJ));
+  const promedio = 54.76; // "All materials tested" del Perry's
+
+  const sel = selected ? BOND_MATERIALS.find((m) => m.nombre === selected) ?? null : null;
+
+  const catsPresent = Array.from(new Set(BOND_MATERIALS.map((m) => m.cat)));
+
+  return (
+    <div className="my-6 not-prose">
+      <div className="rounded-xl border border-zinc-200 bg-white shadow-sm overflow-hidden">
+        {/* Header */}
+        <div className="bg-brand-dark text-white p-5 sm:p-6">
+          <h4 className="font-bold text-lg mb-1">Explorador del Índice de Trabajo de Bond</h4>
+          <p className="text-sm text-zinc-400">
+            {BOND_MATERIALS.length} materiales del <em>Perry's Chemical Engineers' Handbook</em>. Busca,
+            filtra y haz clic en una fila para cargar su {String.raw`$W_i$`} en la calculadora de arriba.
+          </p>
+          {/* Search + sort */}
+          <div className="mt-4 flex flex-wrap gap-3">
+            <div className="flex-1 min-w-[200px]">
+              <label className="block text-xs uppercase tracking-wider text-zinc-400 mb-1">Buscar material</label>
+              <input
+                type="search"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="ej: hierro, caliza, cobre…"
+                className="w-full bg-zinc-800 border border-zinc-700 rounded px-3 py-2 text-sm text-white focus:border-brand-yellow focus:outline-none placeholder:text-zinc-500"
+              />
+            </div>
+            <div>
+              <label className="block text-xs uppercase tracking-wider text-zinc-400 mb-1">Ordenar</label>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+                className="bg-zinc-800 border border-zinc-700 rounded px-3 py-2 text-sm text-white focus:border-brand-yellow focus:outline-none"
+              >
+                <option value="nombre">Alfabético</option>
+                <option value="wi-asc">Wᵢ: menor a mayor</option>
+                <option value="wi-desc">Wᵢ: mayor a menor</option>
+              </select>
+            </div>
+          </div>
+          {/* Category pills */}
+          <div className="mt-4 flex flex-wrap gap-2">
+            <button
+              onClick={() => setCat('all')}
+              className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
+                cat === 'all'
+                  ? 'bg-brand-yellow text-brand-dark border-brand-yellow font-semibold'
+                  : 'bg-zinc-800 text-zinc-300 border-zinc-700 hover:border-brand-yellow'
+              }`}
+            >
+              Todas ({BOND_MATERIALS.length})
+            </button>
+            {catsPresent.map((c) => {
+              const count = BOND_MATERIALS.filter((m) => m.cat === c).length;
+              return (
+                <button
+                  key={c}
+                  onClick={() => setCat(c)}
+                  className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
+                    cat === c
+                      ? 'bg-brand-yellow text-brand-dark border-brand-yellow font-semibold'
+                      : 'bg-zinc-800 text-zinc-300 border-zinc-700 hover:border-brand-yellow'
+                  }`}
+                >
+                  {CAT_LABELS[c]} ({count})
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Lista con barras Wᵢ */}
+        <div className="max-h-[500px] overflow-y-auto p-3 sm:p-4 bg-zinc-50 border-b border-zinc-200">
+          {filtered.length === 0 ? (
+            <p className="text-sm text-brand-gray italic text-center py-6">
+              Ningún material coincide con tu búsqueda.
+            </p>
+          ) : (
+            <ul className="space-y-1.5">
+              {filtered.map((m) => {
+                const pct = ((m.wiKJ - minWi) / (maxWi - minWi)) * 100;
+                const isSel = selected === m.nombre;
+                const col = CAT_COLORS[m.cat];
+                return (
+                  <li key={m.nombre}>
+                    <button
+                      onClick={() => {
+                        setSelected(isSel ? null : m.nombre);
+                        if (!isSel) onSelectWi(kJtokWh(m.wiKJ));
+                      }}
+                      className={`w-full text-left rounded-lg px-3 py-2 transition-all flex items-center gap-3 ${
+                        isSel
+                          ? 'bg-white shadow-md ring-2 ring-brand-yellow'
+                          : 'bg-white hover:bg-yellow-50 hover:shadow-sm'
+                      }`}
+                    >
+                      <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded flex-shrink-0 ${col.bg} ${col.text}`}>
+                        {CAT_LABELS[m.cat].split(' ')[0]}
+                      </span>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-baseline justify-between gap-2">
+                          <span className="font-semibold text-brand-dark text-sm truncate">{m.nombre}</span>
+                          <span className="font-mono text-xs text-brand-dark flex-shrink-0">
+                            {kJtokWh(m.wiKJ).toFixed(1)} <span className="text-brand-gray">kWh/t</span>
+                          </span>
+                        </div>
+                        <div className="mt-1 h-1.5 rounded-full bg-zinc-200 overflow-hidden">
+                          <div
+                            className="h-full bg-gradient-to-r from-emerald-400 via-yellow-400 to-red-500"
+                            style={{ width: `${pct}%` }}
+                          />
+                        </div>
+                      </div>
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </div>
+
+        {/* Panel de detalle */}
+        {sel ? (
+          <div key={sel.nombre} className="p-5 sm:p-6 bg-white">
+            <div className="flex items-start justify-between flex-wrap gap-3">
+              <div>
+                <span className={`text-[11px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded ${CAT_COLORS[sel.cat].bg} ${CAT_COLORS[sel.cat].text}`}>
+                  {CAT_LABELS[sel.cat]}
+                </span>
+                <h4 className="mt-1 font-bold text-brand-dark text-lg">{sel.nombre}</h4>
+                {sel.aka && <p className="text-xs text-brand-gray italic">EN: {sel.aka}</p>}
+              </div>
+              <button
+                onClick={() => { onSelectWi(kJtokWh(sel.wiKJ)); }}
+                className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-brand-yellow text-brand-dark hover:bg-brand-yellow-dark transition-colors flex items-center gap-1.5"
+              >
+                ↑ Cargar en la calculadora
+              </button>
+            </div>
+            <div className="grid sm:grid-cols-3 gap-3 mt-4">
+              <div className="rounded-lg border border-zinc-200 p-3">
+                <p className="text-[10px] uppercase tracking-wider text-brand-gray">Wᵢ</p>
+                <p className="text-xl font-bold text-brand-dark">{kJtokWh(sel.wiKJ).toFixed(2)} <span className="text-sm font-normal">kWh/t</span></p>
+                <p className="text-[10px] text-brand-gray mt-1">{sel.wiKJ.toFixed(2)} kJ/kg</p>
+              </div>
+              <div className="rounded-lg border border-zinc-200 p-3">
+                <p className="text-[10px] uppercase tracking-wider text-brand-gray">Gravedad específica</p>
+                <p className="text-xl font-bold text-brand-dark">{sel.sg.toFixed(2)}</p>
+                <p className="text-[10px] text-brand-gray mt-1">ρ ≈ {(sel.sg * 1000).toFixed(0)} kg/m³</p>
+              </div>
+              <div className="rounded-lg border border-zinc-200 p-3">
+                <p className="text-[10px] uppercase tracking-wider text-brand-gray">vs. promedio</p>
+                <p className="text-xl font-bold text-brand-dark">
+                  {sel.wiKJ > promedio ? '+' : ''}
+                  {(((sel.wiKJ - promedio) / promedio) * 100).toFixed(0)}%
+                </p>
+                <p className="text-[10px] text-brand-gray mt-1">Promedio Perry: {kJtokWh(promedio).toFixed(1)} kWh/t</p>
+              </div>
+            </div>
+            {/* Barra de posición en el espectro */}
+            <div className="mt-4">
+              <div className="flex items-center justify-between text-[10px] text-brand-gray font-mono mb-1">
+                <span>fácil ({kJtokWh(minWi).toFixed(1)})</span>
+                <span>promedio ({kJtokWh(promedio).toFixed(1)})</span>
+                <span>difícil ({kJtokWh(maxWi).toFixed(1)})</span>
+              </div>
+              <div className="relative h-3 rounded-full bg-gradient-to-r from-emerald-300 via-yellow-300 to-red-400">
+                <div
+                  className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-brand-dark ring-2 ring-white shadow-md"
+                  style={{ left: `calc(${((sel.wiKJ - minWi) / (maxWi - minWi)) * 100}% - 6px)` }}
+                />
+                <div
+                  className="absolute top-0 bottom-0 w-px bg-white/70"
+                  style={{ left: `${((promedio - minWi) / (maxWi - minWi)) * 100}%` }}
+                />
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="p-5 bg-zinc-50/40 text-center">
+            <p className="text-xs text-brand-gray italic">
+              Haz clic en un material para ver detalle y cargar su Wᵢ en la calculadora de arriba.
+            </p>
+          </div>
+        )}
+      </div>
+      <p className="text-[11px] text-brand-gray italic mt-2">
+        Datos: <em>Perry's Chemical Engineers' Handbook</em>, 9ª ed. Conversión: 1 kWh/t = 3.6 kJ/kg. Los
+        valores son referenciales — en la práctica se recomienda un ensayo de Bond específico para el
+        mineral del yacimiento.
+      </p>
+    </div>
+  );
+};
+
 const LawsComparisonTabs: React.FC = () => {
   const [tab, setTab] = useState<'rittinger' | 'kick' | 'bond' | 'hukki'>('rittinger');
+  // Wᵢ compartido: el explorador de abajo lo setea, la calculadora lo lee.
+  const [seedWi, setSeedWi] = useState<number | undefined>(undefined);
   useKatexRerender([tab]);
 
   const tabs = [
@@ -731,13 +1081,8 @@ const LawsComparisonTabs: React.FC = () => {
               <li><strong>Cuándo aplica:</strong> rango industrial de molienda intermedia (mm → 100 µm). <strong>Es la ley más utilizada.</strong></li>
               <li><strong>Uso industrial:</strong> dimensionamiento de molinos de bolas y barras; comparación de circuitos.</li>
             </ul>
-            <BondCalculator />
-            <Figure
-              src="/classroom/iqya-2031/readings/reduccion-tamano-08.png"
-              alt="Tabla del Índice de Trabajo de Bond para distintos materiales"
-              caption="Índice de Trabajo de Bond para distintos materiales industriales."
-              maxWidth="700px"
-            />
+            <BondCalculator seedWi={seedWi} />
+            <BondWorkIndexExplorer onSelectWi={setSeedWi} />
           </div>
         )}
         {tab === 'hukki' && (
