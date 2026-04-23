@@ -53,14 +53,23 @@ const useKatexRerender = (deps: unknown[]) => {
     // @ts-expect-error
     const rme = window.renderMathInElement;
     if (!rme) return;
-    const target = document.querySelector('.reading-prose') ?? document.body;
-    rme(target, {
-      delimiters: [
-        { left: '$$', right: '$$', display: true },
-        { left: '$', right: '$', display: false },
-      ],
-      throwOnError: false,
+    // Defer con rAF para que React termine su commit antes de que KaTeX modifique el DOM
+    const id = requestAnimationFrame(() => {
+      const target = document.querySelector('.reading-prose') ?? document.body;
+      try {
+        rme(target, {
+          delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '$', right: '$', display: false },
+          ],
+          throwOnError: false,
+          ignoredClasses: ['katex', 'katex-html', 'katex-mathml'],
+        });
+      } catch (e) {
+        console.warn('KaTeX rerender failed:', e);
+      }
     });
+    return () => cancelAnimationFrame(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);
 };

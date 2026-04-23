@@ -47,14 +47,23 @@ const useKatexRerender = (deps: unknown[]) => {
     // @ts-expect-error
     const rme = window.renderMathInElement;
     if (!rme) return;
-    const target = document.querySelector('.reading-prose') ?? document.body;
-    rme(target, {
-      delimiters: [
-        { left: '$$', right: '$$', display: true },
-        { left: '$', right: '$', display: false },
-      ],
-      throwOnError: false,
+    // Defer con rAF para que React termine su commit antes de que KaTeX modifique el DOM
+    const id = requestAnimationFrame(() => {
+      const target = document.querySelector('.reading-prose') ?? document.body;
+      try {
+        rme(target, {
+          delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '$', right: '$', display: false },
+          ],
+          throwOnError: false,
+          ignoredClasses: ['katex', 'katex-html', 'katex-mathml'],
+        });
+      } catch (e) {
+        console.warn('KaTeX rerender failed:', e);
+      }
     });
+    return () => cancelAnimationFrame(id);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);
 };
@@ -138,6 +147,221 @@ const Figure: React.FC<{
     )}
   </figure>
 );
+
+/* ─── Gráfica interactiva: propiedad vs. temperatura (inline SVG) ─── */
+type TempDataPoint = { T: number; v: number };
+type Curve = { name: string; color: string; data: TempDataPoint[] };
+
+const PropertyVsTempChart: React.FC<{ kind: 'density' | 'viscosity' }> = ({ kind }) => {
+  const [T, setT] = useState(25);
+  const isLog = kind === 'viscosity';
+  const xMin = 0;
+  const xMax = 100;
+  const yMin = kind === 'density' ? 700 : 0.1;
+  const yMax = kind === 'density' ? 1050 : 100000;
+
+  const curves: Curve[] = kind === 'density'
+    ? [
+        { name: 'Agua', color: '#1d4ed8', data: [
+          { T: 0, v: 1000 }, { T: 20, v: 998 }, { T: 40, v: 992 },
+          { T: 60, v: 983 }, { T: 80, v: 972 }, { T: 100, v: 958 },
+        ] },
+        { name: 'Queroseno', color: '#b45309', data: [
+          { T: 0, v: 820 }, { T: 20, v: 805 }, { T: 40, v: 790 },
+          { T: 60, v: 775 }, { T: 80, v: 760 }, { T: 100, v: 745 },
+        ] },
+        { name: 'Crudo pesado', color: '#7f1d1d', data: [
+          { T: 0, v: 970 }, { T: 20, v: 960 }, { T: 40, v: 945 },
+          { T: 60, v: 930 }, { T: 80, v: 915 }, { T: 100, v: 900 },
+        ] },
+      ]
+    : [
+        { name: 'Agua', color: '#1d4ed8', data: [
+          { T: 0, v: 1.79 }, { T: 20, v: 1.00 }, { T: 40, v: 0.65 },
+          { T: 60, v: 0.47 }, { T: 80, v: 0.36 }, { T: 100, v: 0.28 },
+        ] },
+        { name: 'Aceite ligero', color: '#b45309', data: [
+          { T: 0, v: 80 }, { T: 20, v: 40 }, { T: 40, v: 20 },
+          { T: 60, v: 12 }, { T: 80, v: 8 }, { T: 100, v: 5 },
+        ] },
+        { name: 'Crudo pesado', color: '#7f1d1d', data: [
+          { T: 0, v: 50000 }, { T: 20, v: 5000 }, { T: 40, v: 500 },
+          { T: 60, v: 150 }, { T: 80, v: 50 }, { T: 100, v: 20 },
+        ] },
+      ];
+
+  const unit = kind === 'density' ? 'kg/m³' : 'cP';
+  const property = kind === 'density' ? 'ρ' : 'μ';
+  const title = kind === 'density' ? 'Densidad vs. temperatura' : 'Viscosidad vs. temperatura (escala log)';
+
+  const interpolate = (data: TempDataPoint[], T: number): number => {
+    if (T <= data[0].T) return data[0].v;
+    if (T >= data[data.length - 1].T) return data[data.length - 1].v;
+    for (let i = 0; i < data.length - 1; i++) {
+      if (T >= data[i].T && T <= data[i + 1].T) {
+        const t = (T - data[i].T) / (data[i + 1].T - data[i].T);
+        if (isLog) {
+          const lv = Math.log10(data[i].v) + t * (Math.log10(data[i + 1].v) - Math.log10(data[i].v));
+          return Math.pow(10, lv);
+        }
+        return data[i].v + t * (data[i + 1].v - data[i].v);
+      }
+    }
+    return data[0].v;
+  };
+
+  const W = 540;
+  const H = 340;
+  const margin = { top: 20, right: 20, bottom: 50, left: 70 };
+  const plotW = W - margin.left - margin.right;
+  const plotH = H - margin.top - margin.bottom;
+
+  const xScale = (t: number) => margin.left + ((t - xMin) / (xMax - xMin)) * plotW;
+  const yScale = (v: number) => {
+    if (isLog) {
+      const logMin = Math.log10(yMin);
+      const logMax = Math.log10(yMax);
+      return margin.top + plotH - ((Math.log10(v) - logMin) / (logMax - logMin)) * plotH;
+    }
+    return margin.top + plotH - ((v - yMin) / (yMax - yMin)) * plotH;
+  };
+
+  const pathFor = (data: TempDataPoint[]) =>
+    data.map((d, i) => `${i === 0 ? 'M' : 'L'}${xScale(d.T).toFixed(1)} ${yScale(d.v).toFixed(1)}`).join(' ');
+
+  const yTicks = isLog ? [0.1, 1, 10, 100, 1000, 10000, 100000] : [700, 800, 900, 1000, 1050];
+  const xTicks = [0, 20, 40, 60, 80, 100];
+
+  const format = (v: number): string => {
+    if (isLog) {
+      if (v >= 10000) return (v / 1000).toFixed(0) + 'k';
+      if (v >= 1000) return (v / 1000).toFixed(1) + 'k';
+      if (v >= 10) return v.toFixed(0);
+      if (v >= 1) return v.toFixed(1);
+      return v.toFixed(2);
+    }
+    return v.toFixed(0);
+  };
+
+  return (
+    <div className="my-6 not-prose">
+      <div className="rounded-xl bg-white border border-zinc-200 p-4 sm:p-6 shadow-sm">
+        <div className="flex items-baseline justify-between mb-3 flex-wrap gap-2">
+          <h4 className="text-base font-semibold text-brand-dark">{title}</h4>
+          <div className="text-sm text-brand-gray">
+            Temperatura: <span className="font-mono text-brand-dark font-semibold">{T.toFixed(0)} °C</span>
+          </div>
+        </div>
+
+        <div className="flex justify-center">
+          <svg viewBox={`0 0 ${W} ${H}`} className="w-full max-w-[600px]" role="img" aria-label={title}>
+            {/* Plot background */}
+            <rect x={margin.left} y={margin.top} width={plotW} height={plotH} fill="#fafafa" />
+
+            {/* Y gridlines + labels */}
+            {yTicks.map((v) => {
+              if (v < yMin || v > yMax) return null;
+              const y = yScale(v);
+              return (
+                <g key={v}>
+                  <line x1={margin.left} y1={y} x2={margin.left + plotW} y2={y} stroke="#e4e4e7" strokeWidth="0.5" strokeDasharray="2 2" />
+                  <text x={margin.left - 8} y={y + 4} textAnchor="end" fontSize="11" fill="#52525b">{format(v)}</text>
+                </g>
+              );
+            })}
+
+            {/* X gridlines + labels */}
+            {xTicks.map((t) => {
+              const x = xScale(t);
+              return (
+                <g key={t}>
+                  <line x1={x} y1={margin.top} x2={x} y2={margin.top + plotH} stroke="#e4e4e7" strokeWidth="0.5" strokeDasharray="2 2" />
+                  <text x={x} y={margin.top + plotH + 18} textAnchor="middle" fontSize="11" fill="#52525b">{t}</text>
+                </g>
+              );
+            })}
+
+            {/* Axis lines */}
+            <line x1={margin.left} y1={margin.top + plotH} x2={margin.left + plotW} y2={margin.top + plotH} stroke="#27272a" strokeWidth="1.2" />
+            <line x1={margin.left} y1={margin.top} x2={margin.left} y2={margin.top + plotH} stroke="#27272a" strokeWidth="1.2" />
+
+            {/* Axis labels */}
+            <text x={margin.left + plotW / 2} y={H - 8} textAnchor="middle" fontSize="12" fill="#27272a" fontWeight="600">
+              Temperatura (°C)
+            </text>
+            <text
+              x="16"
+              y={margin.top + plotH / 2}
+              textAnchor="middle"
+              fontSize="12"
+              fill="#27272a"
+              fontWeight="600"
+              transform={`rotate(-90 16 ${margin.top + plotH / 2})`}
+            >
+              {kind === 'density' ? 'ρ (kg/m³)' : 'μ (cP, log)'}
+            </text>
+
+            {/* Curves */}
+            {curves.map((c) => (
+              <path key={c.name} d={pathFor(c.data)} stroke={c.color} strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+            ))}
+
+            {/* Vertical cursor at selected T */}
+            <line x1={xScale(T)} y1={margin.top} x2={xScale(T)} y2={margin.top + plotH} stroke="#E6AC00" strokeWidth="1.5" strokeDasharray="4 2" opacity="0.85" />
+
+            {/* Value dots at cursor */}
+            {curves.map((c) => {
+              const v = interpolate(c.data, T);
+              return (
+                <circle key={c.name} cx={xScale(T)} cy={yScale(v)} r="5" fill={c.color} stroke="white" strokeWidth="2" />
+              );
+            })}
+          </svg>
+        </div>
+
+        {/* Temperature slider */}
+        <div className="mt-4 flex items-center gap-3">
+          <span className="text-xs text-brand-gray w-12">0 °C</span>
+          <input
+            type="range"
+            min={0}
+            max={100}
+            step={1}
+            value={T}
+            onChange={(e) => setT(Number(e.target.value))}
+            className="flex-1 accent-brand-yellow"
+            aria-label="Temperatura"
+          />
+          <span className="text-xs text-brand-gray w-14 text-right">100 °C</span>
+        </div>
+
+        {/* Legend with live values */}
+        <div className="grid sm:grid-cols-3 gap-2 mt-4">
+          {curves.map((c) => {
+            const v = interpolate(c.data, T);
+            return (
+              <div key={c.name} className="flex items-center gap-2 rounded-lg border border-zinc-200 px-3 py-2">
+                <span className="inline-block w-3 h-3 rounded-full flex-shrink-0" style={{ background: c.color }} aria-hidden="true" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-semibold text-brand-dark truncate">{c.name}</p>
+                  <p className="text-xs font-mono text-brand-gray">
+                    {property} ≈ {format(v)} {unit}
+                  </p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        <p className="text-xs text-center text-brand-gray italic mt-4">
+          {kind === 'density'
+            ? 'La densidad cambia poco con la temperatura — los líquidos son casi incompresibles. Rango típico: 700–1050 kg/m³.'
+            : 'Escala logarítmica. Calentar un crudo pesado de 20 °C a 80 °C reduce μ aproximadamente 100×. Por eso los oleoductos a menudo operan calentados.'}
+        </p>
+      </div>
+    </div>
+  );
+};
 
 /* ─── Calculadora interactiva de Reynolds ─── */
 const ReynoldsCalculator: React.FC = () => {
@@ -335,12 +559,7 @@ const FluidPropertiesTabs: React.FC = () => {
                 kg/m³ según el grado API.
               </li>
             </ul>
-            <Figure
-              src="/classroom/iqya-2031/readings/transporte-liquidos-02.gif"
-              alt="Variación de la densidad con la temperatura"
-              caption="La densidad de los líquidos disminuye a medida que aumenta la temperatura."
-              maxWidth="500px"
-            />
+            <PropertyVsTempChart kind="density" />
           </div>
         )}
 
@@ -368,12 +587,7 @@ const FluidPropertiesTabs: React.FC = () => {
                 Miel a 20 °C: {String.raw`$\approx 10{,}000$`} cP.
               </li>
             </ul>
-            <Figure
-              src="/classroom/iqya-2031/readings/transporte-liquidos-03.gif"
-              alt="Variación de la viscosidad con la temperatura"
-              caption="La viscosidad disminuye de forma marcada al aumentar la temperatura, especialmente en hidrocarburos pesados."
-              maxWidth="500px"
-            />
+            <PropertyVsTempChart kind="viscosity" />
           </div>
         )}
 
@@ -628,7 +842,8 @@ const CalculationStepper: React.FC = () => {
           </button>
         ))}
       </div>
-      <div className="rounded-xl border-l-4 border-brand-yellow bg-white shadow-sm p-6">
+      {/* key={step} fuerza remount limpio — evita conflicto con KaTeX que modifica el DOM */}
+      <div key={step} className="rounded-xl border-l-4 border-brand-yellow bg-white shadow-sm p-6">
         <p className="text-xs font-bold uppercase tracking-widest text-brand-yellow-dark mb-2">
           Paso {step} de {pasos.length}
         </p>
