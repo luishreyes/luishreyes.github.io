@@ -363,6 +363,335 @@ const PropertyVsTempChart: React.FC<{ kind: 'density' | 'viscosity' }> = ({ kind
   );
 };
 
+/* ─── Gráfica interactiva: presión de vapor vs. temperatura ─── */
+type VaporCurve = {
+  name: string;
+  color: string;
+  bp: number; // boiling point at 1 atm (°C)
+  /** data: (T, P) con P en torr. Debe cubrir el rango 0–150 °C. */
+  data: TempDataPoint[];
+};
+
+const VaporPressureChart: React.FC = () => {
+  const [T, setT] = useState(25);
+
+  const xMin = 0;
+  const xMax = 150;
+  const yMin = 1;
+  const yMax = 10000;
+
+  const curves: VaporCurve[] = [
+    // Éter dietílico — bp 34.6 °C (muy volátil)
+    { name: 'Éter dietílico', color: '#b91c1c', bp: 34.6, data: [
+      { T: 0,   v: 185 },
+      { T: 10,  v: 291 },
+      { T: 20,  v: 442 },
+      { T: 30,  v: 647 },
+      { T: 34.6, v: 760 },
+      { T: 50,  v: 1276 },
+      { T: 70,  v: 2356 },
+      { T: 90,  v: 4000 },
+      { T: 110, v: 6500 },
+      { T: 130, v: 10000 },
+    ] },
+    // Acetona — bp 56.0 °C
+    { name: 'Acetona', color: '#c2410c', bp: 56.0, data: [
+      { T: 0,   v: 70 },
+      { T: 10,  v: 116 },
+      { T: 20,  v: 184 },
+      { T: 30,  v: 283 },
+      { T: 40,  v: 421 },
+      { T: 50,  v: 610 },
+      { T: 56,  v: 760 },
+      { T: 70,  v: 1160 },
+      { T: 90,  v: 2090 },
+      { T: 110, v: 3500 },
+      { T: 130, v: 5600 },
+      { T: 150, v: 8500 },
+    ] },
+    // Etanol — bp 78.4 °C
+    { name: 'Etanol', color: '#7c3aed', bp: 78.4, data: [
+      { T: 0,   v: 12 },
+      { T: 10,  v: 24 },
+      { T: 20,  v: 44 },
+      { T: 30,  v: 79 },
+      { T: 40,  v: 135 },
+      { T: 50,  v: 222 },
+      { T: 60,  v: 353 },
+      { T: 70,  v: 544 },
+      { T: 78.4, v: 760 },
+      { T: 90,  v: 1187 },
+      { T: 110, v: 2210 },
+      { T: 130, v: 3840 },
+      { T: 150, v: 6300 },
+    ] },
+    // Agua — bp 100 °C
+    { name: 'Agua', color: '#1d4ed8', bp: 100, data: [
+      { T: 0,   v: 4.6 },
+      { T: 10,  v: 9.2 },
+      { T: 20,  v: 17.5 },
+      { T: 30,  v: 31.8 },
+      { T: 40,  v: 55.3 },
+      { T: 50,  v: 92.5 },
+      { T: 60,  v: 149.4 },
+      { T: 70,  v: 233.7 },
+      { T: 80,  v: 355.1 },
+      { T: 90,  v: 525.8 },
+      { T: 100, v: 760 },
+      { T: 110, v: 1074 },
+      { T: 130, v: 2025 },
+      { T: 150, v: 3567 },
+    ] },
+  ];
+
+  // Interpolación lineal en log(P) — las curvas de presión de vapor son casi
+  // rectas en escala log(P) vs 1/T (Clausius-Clapeyron), y aquí T varía poco,
+  // así que log-lineal en T es una aproximación muy aceptable a ojo.
+  const interpolateLog = (data: TempDataPoint[], T: number): number => {
+    if (T <= data[0].T) return data[0].v;
+    if (T >= data[data.length - 1].T) return data[data.length - 1].v;
+    for (let i = 0; i < data.length - 1; i++) {
+      if (T >= data[i].T && T <= data[i + 1].T) {
+        const t = (T - data[i].T) / (data[i + 1].T - data[i].T);
+        const lv = Math.log10(data[i].v) + t * (Math.log10(data[i + 1].v) - Math.log10(data[i].v));
+        return Math.pow(10, lv);
+      }
+    }
+    return data[0].v;
+  };
+
+  const W = 560;
+  const H = 360;
+  const margin = { top: 20, right: 24, bottom: 54, left: 74 };
+  const plotW = W - margin.left - margin.right;
+  const plotH = H - margin.top - margin.bottom;
+
+  const xScale = (t: number) => margin.left + ((t - xMin) / (xMax - xMin)) * plotW;
+  const yScale = (v: number) => {
+    const logMin = Math.log10(yMin);
+    const logMax = Math.log10(yMax);
+    return margin.top + plotH - ((Math.log10(v) - logMin) / (logMax - logMin)) * plotH;
+  };
+
+  const pathFor = (data: TempDataPoint[]) =>
+    data
+      .filter((d) => d.T >= xMin && d.T <= xMax)
+      .map((d, i) => `${i === 0 ? 'M' : 'L'}${xScale(d.T).toFixed(1)} ${yScale(d.v).toFixed(1)}`)
+      .join(' ');
+
+  const yTicks = [1, 10, 100, 760, 1000, 10000];
+  const xTicks = [0, 25, 50, 75, 100, 125, 150];
+
+  const formatP = (v: number): string => {
+    if (v >= 1000) return (v / 1000).toFixed(v >= 10000 ? 0 : 1) + 'k';
+    if (v >= 100) return v.toFixed(0);
+    if (v >= 10) return v.toFixed(0);
+    if (v >= 1) return v.toFixed(1);
+    return v.toFixed(2);
+  };
+
+  return (
+    <div className="my-6 not-prose">
+      <div className="rounded-xl bg-white border border-zinc-200 p-4 sm:p-6 shadow-sm">
+        <div className="flex items-baseline justify-between mb-3 flex-wrap gap-2">
+          <h4 className="text-base font-semibold text-brand-dark">
+            Presión de vapor vs. temperatura (escala log)
+          </h4>
+          <div className="text-sm text-brand-gray">
+            Temperatura: <span className="font-mono text-brand-dark font-semibold">{T.toFixed(0)} °C</span>
+          </div>
+        </div>
+
+        <div className="flex justify-center">
+          <svg viewBox={`0 0 ${W} ${H}`} className="w-full max-w-[620px]" role="img" aria-label="Curvas de presión de vapor">
+            <rect x={margin.left} y={margin.top} width={plotW} height={plotH} fill="#fafafa" />
+
+            {/* Y gridlines + labels */}
+            {yTicks.map((v) => {
+              const y = yScale(v);
+              const is1atm = v === 760;
+              return (
+                <g key={v}>
+                  <line
+                    x1={margin.left}
+                    y1={y}
+                    x2={margin.left + plotW}
+                    y2={y}
+                    stroke={is1atm ? '#E6AC00' : '#e4e4e7'}
+                    strokeWidth={is1atm ? 1.6 : 0.5}
+                    strokeDasharray={is1atm ? '6 3' : '2 2'}
+                    opacity={is1atm ? 0.9 : 1}
+                  />
+                  <text
+                    x={margin.left - 8}
+                    y={y + 4}
+                    textAnchor="end"
+                    fontSize="11"
+                    fill={is1atm ? '#b45309' : '#52525b'}
+                    fontWeight={is1atm ? 700 : 400}
+                  >
+                    {formatP(v)}
+                  </text>
+                </g>
+              );
+            })}
+
+            {/* 1 atm annotation */}
+            <text
+              x={margin.left + plotW - 6}
+              y={yScale(760) - 6}
+              textAnchor="end"
+              fontSize="11"
+              fontWeight="700"
+              fill="#b45309"
+            >
+              1 atm = 760 torr
+            </text>
+
+            {/* X gridlines + labels */}
+            {xTicks.map((t) => {
+              const x = xScale(t);
+              return (
+                <g key={t}>
+                  <line x1={x} y1={margin.top} x2={x} y2={margin.top + plotH} stroke="#e4e4e7" strokeWidth="0.5" strokeDasharray="2 2" />
+                  <text x={x} y={margin.top + plotH + 18} textAnchor="middle" fontSize="11" fill="#52525b">{t}</text>
+                </g>
+              );
+            })}
+
+            {/* Axis lines */}
+            <line x1={margin.left} y1={margin.top + plotH} x2={margin.left + plotW} y2={margin.top + plotH} stroke="#27272a" strokeWidth="1.2" />
+            <line x1={margin.left} y1={margin.top} x2={margin.left} y2={margin.top + plotH} stroke="#27272a" strokeWidth="1.2" />
+
+            {/* Axis labels */}
+            <text x={margin.left + plotW / 2} y={H - 8} textAnchor="middle" fontSize="12" fill="#27272a" fontWeight="600">
+              Temperatura (°C)
+            </text>
+            <text
+              x="16"
+              y={margin.top + plotH / 2}
+              textAnchor="middle"
+              fontSize="12"
+              fill="#27272a"
+              fontWeight="600"
+              transform={`rotate(-90 16 ${margin.top + plotH / 2})`}
+            >
+              Pᵥₐₚ (torr, log)
+            </text>
+
+            {/* Curves */}
+            {curves.map((c) => (
+              <path
+                key={c.name}
+                d={pathFor(c.data)}
+                stroke={c.color}
+                strokeWidth="2.5"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            ))}
+
+            {/* Boiling-point markers at 760 torr */}
+            {curves.map((c) => (
+              <g key={`bp-${c.name}`}>
+                <circle cx={xScale(c.bp)} cy={yScale(760)} r="5" fill={c.color} stroke="white" strokeWidth="2" />
+                <text
+                  x={xScale(c.bp)}
+                  y={yScale(760) + 18}
+                  textAnchor="middle"
+                  fontSize="10"
+                  fontWeight="700"
+                  fill={c.color}
+                >
+                  {c.bp.toFixed(1)}°
+                </text>
+              </g>
+            ))}
+
+            {/* Vertical cursor */}
+            <line
+              x1={xScale(T)}
+              y1={margin.top}
+              x2={xScale(T)}
+              y2={margin.top + plotH}
+              stroke="#E6AC00"
+              strokeWidth="1.5"
+              strokeDasharray="4 2"
+              opacity="0.85"
+            />
+
+            {/* Live dots at cursor */}
+            {curves.map((c) => {
+              const v = interpolateLog(c.data, T);
+              if (v < yMin || v > yMax) return null;
+              return (
+                <circle
+                  key={`cursor-${c.name}`}
+                  cx={xScale(T)}
+                  cy={yScale(v)}
+                  r="4"
+                  fill={c.color}
+                  stroke="white"
+                  strokeWidth="1.5"
+                />
+              );
+            })}
+          </svg>
+        </div>
+
+        {/* Temperature slider */}
+        <div className="mt-4 flex items-center gap-3">
+          <span className="text-xs text-brand-gray w-12">0 °C</span>
+          <input
+            type="range"
+            min={0}
+            max={150}
+            step={1}
+            value={T}
+            onChange={(e) => setT(Number(e.target.value))}
+            className="flex-1 accent-brand-yellow"
+            aria-label="Temperatura"
+          />
+          <span className="text-xs text-brand-gray w-14 text-right">150 °C</span>
+        </div>
+
+        {/* Legend with live values */}
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-2 mt-4">
+          {curves.map((c) => {
+            const v = interpolateLog(c.data, T);
+            const aboveAtm = v > 760;
+            return (
+              <div
+                key={c.name}
+                className="flex items-center gap-2 rounded-lg border px-3 py-2"
+                style={{ borderColor: aboveAtm ? c.color : '#e4e4e7', background: aboveAtm ? `${c.color}0D` : 'white' }}
+              >
+                <span className="inline-block w-3 h-3 rounded-full flex-shrink-0" style={{ background: c.color }} aria-hidden="true" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-semibold text-brand-dark truncate">{c.name}</p>
+                  <p className="text-xs font-mono text-brand-gray">Pᵥ ≈ {formatP(v)} torr</p>
+                </div>
+                {aboveAtm && (
+                  <span className="text-[10px] font-semibold text-red-700 whitespace-nowrap" title="Hirviendo a 1 atm">
+                    hierve
+                  </span>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        <p className="text-xs text-center text-brand-gray italic mt-4">
+          La línea amarilla marca <strong>1 atm (760 torr)</strong>. Donde una curva cruza esa línea está su
+          punto de ebullición normal. Mueve el slider y observa cómo líquidos volátiles como el éter alcanzan
+          presiones muy altas a temperaturas modestas — por eso requieren cuidado con cavitación y sellado.
+        </p>
+      </div>
+    </div>
+  );
+};
+
 /* ─── Calculadora interactiva de Reynolds ─── */
 const ReynoldsCalculator: React.FC = () => {
   const [V, setV] = useState(1.5);
@@ -611,17 +940,12 @@ const FluidPropertiesTabs: React.FC = () => {
                 101.3 kPa (1 atm) — por eso hierve.
               </li>
             </ul>
+            <VaporPressureChart />
             <Figure
-              src="/classroom/iqya-2031/readings/transporte-liquidos-05.jpeg"
-              alt="Curvas de presión de vapor: diethyl ether, ethanol, water"
-              caption="Curvas de presión de vapor para diferentes líquidos. Los puntos marcan la temperatura a la que Pᵥₐₚ = 760 torr (1 atm) — es decir, el punto de ebullición."
-              maxWidth="500px"
-            />
-            <Figure
-              src="/classroom/iqya-2031/readings/transporte-liquidos-04.png"
-              alt="Cavitación en bombas"
+              src="https://www.tlv.com/sites/default/files/tlv_assets/g/steam_story/images/1406cavitation/cavitation-in-condensate-pumps1_LA.gif"
+              alt="Animación de cavitación en una bomba de condensado (TLV)"
               caption="Cavitación: cuando la presión local cae por debajo de la presión de vapor, se forman y colapsan burbujas que erosionan el impulsor."
-              maxWidth="400px"
+              maxWidth="520px"
             />
           </div>
         )}
@@ -1096,10 +1420,10 @@ const TransporteLiquidos: React.FC = () => {
               </p>
 
               <Figure
-                src="/classroom/iqya-2031/readings/transporte-liquidos-01.gif"
-                alt="Transporte de líquidos en la industria"
+                src="https://images.unsplash.com/photo-1622534376374-fe4480328daa?q=80&w=1374&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                alt="Planta industrial con líneas de tubería que conectan equipos de proceso"
                 caption="El transporte de líquidos conecta todas las etapas del proceso industrial: desde la alimentación de materias primas hasta la distribución del producto final."
-                maxWidth="600px"
+                maxWidth="720px"
               />
 
               <InfoCallout title="📌 Aplicación al proyecto del curso">
