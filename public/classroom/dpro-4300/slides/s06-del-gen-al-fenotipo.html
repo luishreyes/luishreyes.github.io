@@ -1,0 +1,2018 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Sesión 6 · Del gen al fenotipo — DPRO-4300</title>
+  <style>
+    :root {
+      --brand-dark: #1A1A1A;
+      --brand-yellow: #FFBF00;
+      --brand-yellow-dark: #E6AC00;
+      --brand-gray: #555555;
+      --surface: #ffffff;
+      --muted: #f4f4f5;
+      --accent-red: #ef4444;
+      --accent-green: #16a34a;
+      --accent-blue: #2563eb;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0; padding: 0; height: 100%; width: 100%;
+      background: var(--brand-dark); color: var(--brand-dark);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      overflow: hidden; -webkit-text-size-adjust: 100%;
+    }
+    .deck { position: relative; width: 100vw; height: 100vh; height: 100dvh; }
+    .slide {
+      position: absolute; inset: 0; display: none;
+      align-items: center; justify-content: center;
+      padding: clamp(1rem, 4vw, 3.5rem);
+      background: var(--surface); opacity: 0;
+      transition: opacity 260ms ease; overflow-y: auto;
+    }
+    .slide.active { display: flex; opacity: 1; }
+    .slide .content {
+      width: 100%; max-width: 92rem; margin: auto 0;
+      display: flex; flex-direction: column; gap: clamp(0.75rem, 1.5vw, 1.5rem);
+    }
+    .eyebrow {
+      text-transform: uppercase; letter-spacing: 0.2em;
+      font-size: clamp(0.65rem, 1vw, 1rem);
+      color: var(--brand-yellow-dark); font-weight: 600;
+    }
+    h1 {
+      font-size: clamp(1.75rem, 5.5vw, 5.75rem); line-height: 1.05;
+      margin: 0; color: var(--brand-dark); font-weight: 700; letter-spacing: -0.02em;
+    }
+    h2 {
+      font-size: clamp(1.25rem, 3.4vw, 3.25rem); line-height: 1.15;
+      margin: 0; color: var(--brand-dark); font-weight: 700;
+    }
+    h3 {
+      font-size: clamp(1rem, 2vw, 1.75rem); margin: 0 0 0.35em 0;
+      color: var(--brand-dark); font-weight: 600;
+    }
+    p, li {
+      font-size: clamp(0.95rem, 1.8vw, 1.75rem); line-height: 1.55;
+      color: var(--brand-gray); margin: 0;
+    }
+    ul, ol { padding-left: 1.25em; margin: 0; display: flex; flex-direction: column; gap: 0.45em; }
+    li::marker { color: var(--brand-yellow-dark); }
+    strong { color: var(--brand-dark); }
+
+    /* Title / separator slides */
+    .slide.title-slide {
+      background: linear-gradient(135deg, #141414 0%, #1A1A1A 50%, #2a2a2a 100%);
+      color: #fff;
+    }
+    .slide.title-slide h1, .slide.title-slide h2 { color: #fff; }
+    .slide.title-slide p, .slide.title-slide li { color: #d4d4d8; }
+    .slide.title-slide .eyebrow { color: var(--brand-yellow); }
+
+    /* Yellow separator slides (Bloque X) */
+    .slide.block-slide {
+      background: var(--brand-yellow);
+    }
+    .slide.block-slide h1, .slide.block-slide h2 { color: var(--brand-dark); }
+    .slide.block-slide p { color: #3f3f46; }
+    .slide.block-slide .eyebrow { color: #3f3f46; }
+
+    .pill-row { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 0.5rem; }
+    .pill {
+      display: inline-flex; align-items: center;
+      padding: 0.35em 0.9em; border-radius: 999px;
+      background: var(--muted); color: var(--brand-dark);
+      font-size: clamp(0.75rem, 1.3vw, 1.35rem); font-weight: 500;
+    }
+    .slide.title-slide .pill {
+      background: rgba(255,255,255,0.1); color: #fff;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .grid { display: grid; gap: clamp(0.75rem, 1.5vw, 1.25rem); }
+    .grid.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid.cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    @media (max-width: 640px) {
+      .grid.cols-2, .grid.cols-3, .grid.cols-4 { grid-template-columns: 1fr; }
+    }
+
+    .two-col {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: clamp(1rem, 2vw, 2rem); align-items: center;
+    }
+    @media (max-width: 640px) { .two-col { grid-template-columns: 1fr; } }
+
+    .card {
+      background: var(--muted); border-radius: 0.75rem;
+      padding: clamp(0.9rem, 1.5vw, 1.35rem);
+    }
+    .card p, .card li { font-size: clamp(0.8rem, 1.4vw, 1.3rem); }
+    .card.accent { background: #fff8dc; border-left: 4px solid var(--brand-yellow); }
+    .card.danger { background: #fef2f2; border-left: 4px solid var(--accent-red); }
+    .card.success { background: #f0fdf4; border-left: 4px solid var(--accent-green); }
+    .card.info { background: #eff6ff; border-left: 4px solid var(--accent-blue); }
+
+    .diagram {
+      width: 100%; max-width: 100%;
+      border-radius: 0.75rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+    }
+    .diagram-plain { width: 100%; max-width: 100%; }
+
+    .callout {
+      background: #fffbe6; border-left: 4px solid var(--brand-yellow);
+      padding: 0.75em 1em; border-radius: 0 0.5rem 0.5rem 0;
+      font-size: clamp(0.85rem, 1.4vw, 1.1rem); color: var(--brand-dark);
+    }
+    .danger-callout {
+      background: #fef2f2; border-left: 4px solid var(--accent-red);
+      padding: 0.75em 1em; border-radius: 0 0.5rem 0.5rem 0;
+      font-size: clamp(0.85rem, 1.4vw, 1.1rem); color: var(--brand-dark);
+    }
+    .success-callout {
+      background: #f0fdf4; border-left: 4px solid var(--accent-green);
+      padding: 0.75em 1em; border-radius: 0 0.5rem 0.5rem 0;
+      font-size: clamp(0.85rem, 1.4vw, 1.1rem); color: var(--brand-dark);
+    }
+
+    .big-stat {
+      font-size: clamp(3rem, 9vw, 7rem);
+      font-weight: 800; color: var(--brand-dark);
+      line-height: 1; letter-spacing: -0.03em;
+    }
+    .big-stat .accent { color: var(--brand-yellow-dark); }
+
+    /* KaTeX helpers */
+    .katex-display { margin: 0.5em 0 !important; }
+    .equation-block {
+      background: var(--muted); border-radius: 0.75rem;
+      padding: 1rem 1.5rem; text-align: center;
+    }
+
+    /* Comparison table */
+    table.comp {
+      width: 100%; border-collapse: collapse;
+      font-size: clamp(0.75rem, 1.2vw, 1.05rem);
+    }
+    table.comp th, table.comp td {
+      padding: 0.5em 0.75em; text-align: left;
+      border-bottom: 1px solid #e4e4e7;
+    }
+    table.comp th {
+      background: var(--muted); font-weight: 700;
+      color: var(--brand-dark); font-style: italic;
+    }
+    table.comp td:first-child, table.comp th:first-child {
+      font-weight: 600; color: var(--brand-dark); font-style: normal;
+    }
+    table.comp tr.highlight { background: #fff8dc; }
+
+    /* HUD + controls */
+    .hud {
+      position: fixed; left: 0; right: 0; bottom: 0;
+      padding: 0.5rem 1rem; display: flex;
+      justify-content: space-between; align-items: center;
+      color: rgba(255,255,255,0.75); font-size: 0.75rem;
+      pointer-events: none; z-index: 10;
+    }
+    .slide:not(.title-slide) ~ .hud { color: var(--brand-gray); }
+    .controls {
+      position: fixed; right: 1rem; bottom: 2.5rem;
+      display: flex; gap: 0.5rem; z-index: 11;
+    }
+    .controls button {
+      -webkit-appearance: none; appearance: none;
+      border: 1px solid rgba(0,0,0,0.1);
+      background: rgba(255,255,255,0.9); color: var(--brand-dark);
+      width: 2.5rem; height: 2.5rem; border-radius: 999px;
+      font-size: 1rem; cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    }
+    .controls button:active { transform: scale(0.96); }
+    .progress {
+      position: fixed; top: 0; left: 0; height: 3px;
+      background: var(--brand-yellow); transition: width 260ms ease; z-index: 20;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .slide { transition: none; }
+      .progress { transition: none; }
+    }
+    @media (max-width: 480px) {
+      .controls { right: 0.5rem; bottom: 1.25rem; }
+      .hud { font-size: 0.65rem; }
+    }
+
+    /* Decorative corner accent */
+    .slide:not(.title-slide):not(.block-slide)::before {
+      content: ''; position: absolute;
+      top: clamp(1rem, 3vw, 2.5rem); right: clamp(1rem, 3vw, 2.5rem);
+      width: clamp(2rem, 5vw, 4rem); height: clamp(2rem, 5vw, 4rem);
+      border-top: 2.5px solid var(--brand-yellow);
+      border-right: 2.5px solid var(--brand-yellow);
+      pointer-events: none; z-index: 1;
+    }
+    .slide.title-slide::before {
+      content: ''; position: absolute;
+      bottom: clamp(1rem, 3vw, 2.5rem); left: clamp(1rem, 3vw, 2.5rem);
+      width: clamp(2rem, 5vw, 4rem); height: clamp(2rem, 5vw, 4rem);
+      border-bottom: 2.5px solid var(--brand-yellow);
+      border-left: 2.5px solid var(--brand-yellow);
+      opacity: 0.4; pointer-events: none; z-index: 1;
+    }
+
+    .slide-number {
+      position: absolute;
+      bottom: clamp(0.5rem, 2vw, 1.5rem); left: clamp(1rem, 3vw, 2.5rem);
+      font-size: clamp(4rem, 12vw, 10rem); font-weight: 800; line-height: 1;
+      color: rgba(0, 0, 0, 0.04); pointer-events: none; z-index: 0;
+      user-select: none; letter-spacing: -0.04em;
+    }
+    .slide.title-slide .slide-number, .slide.block-slide .slide-number { color: rgba(0, 0, 0, 0.08); }
+
+    /* ═══════════ Interactive: Central dogma animation ═══════════ */
+    .dogma-svg { width: 100%; height: auto; max-height: 45vh; }
+    .dogma-svg .dna-strand { stroke: var(--accent-blue); stroke-width: 2.5; fill: none; }
+    .dogma-svg .rna-strand { stroke: var(--accent-red); stroke-width: 2.5; fill: none; stroke-dasharray: 4 2; }
+    .dogma-svg .protein-chain { stroke: var(--accent-green); stroke-width: 3; fill: none; }
+    .dogma-svg .tick {
+      animation: flow 3s linear infinite;
+    }
+    @keyframes flow {
+      0% { stroke-dashoffset: 0; }
+      100% { stroke-dashoffset: -24; }
+    }
+    .dogma-svg .label { font-size: 14px; font-weight: 700; fill: var(--brand-dark); }
+    .dogma-svg .sub { font-size: 11px; fill: var(--brand-gray); }
+
+    /* ═══════════ Interactive: Decision tree ═══════════ */
+    .decision-tree { display: flex; flex-direction: column; align-items: center; gap: 1rem; }
+    .dt-node {
+      background: #fff; border: 2px solid var(--brand-yellow);
+      border-radius: 0.75rem; padding: 0.6em 1.2em;
+      font-weight: 600; cursor: default;
+      font-size: clamp(0.8rem, 1.3vw, 1.1rem);
+    }
+    .dt-leaf {
+      background: #f0fdf4; border: 2px solid var(--accent-green);
+      border-radius: 0.75rem; padding: 0.6em 1.2em;
+      font-weight: 600; font-size: clamp(0.75rem, 1.2vw, 1rem);
+    }
+    .dt-leaf.reject { background: #fef2f2; border-color: var(--accent-red); }
+
+    /* ═══════════ Interactive: Quiz chip ═══════════ */
+    .quiz-option {
+      cursor: pointer; user-select: none;
+      transition: transform 150ms ease, box-shadow 150ms ease, background 150ms ease;
+    }
+    .quiz-option:hover { transform: translateY(-2px); box-shadow: 0 4px 14px rgba(0,0,0,0.08); }
+    .quiz-option.picked { background: #fff8dc; border-color: var(--brand-yellow-dark); }
+
+    /* Fermentation SVG (simple animated) */
+    .ferm-svg { width: 100%; height: auto; max-height: 40vh; }
+    .ferm-svg .bubble { fill: rgba(37, 99, 235, 0.35); animation: bubble 2.8s ease-in infinite; }
+    @keyframes bubble {
+      0% { transform: translateY(0); opacity: 0; }
+      20% { opacity: 0.8; }
+      100% { transform: translateY(-120px); opacity: 0; }
+    }
+
+    /* FBA stoichiometric matrix interactive */
+    .matrix-grid {
+      display: inline-grid; grid-template-columns: repeat(5, auto);
+      gap: 2px; margin: 0.5rem 0;
+    }
+    .matrix-grid .cell {
+      padding: 0.35em 0.6em; background: #fff;
+      border: 1px solid #e4e4e7; text-align: center;
+      font-family: ui-monospace, SFMono-Regular, monospace;
+      font-size: clamp(0.75rem, 1.2vw, 1rem);
+      min-width: 3em;
+    }
+    .matrix-grid .cell.pos { background: #f0fdf4; color: var(--accent-green); font-weight: 700; }
+    .matrix-grid .cell.neg { background: #fef2f2; color: var(--accent-red); font-weight: 700; }
+    .matrix-grid .cell.header { background: var(--muted); font-weight: 700; color: var(--brand-dark); }
+
+    .slide.title-slide .card { color: var(--brand-dark); }
+    .slide.title-slide .card h3 { color: var(--brand-dark); }
+    .slide.title-slide .card p, .slide.title-slide .card li { color: var(--brand-gray); }
+
+    /* Header subtitle (small eyebrow for time) */
+    .time-chip {
+      display: inline-flex; align-items: center;
+      padding: 0.2em 0.6em; border-radius: 4px;
+      background: rgba(255, 191, 0, 0.15); color: var(--brand-yellow-dark);
+      font-size: clamp(0.7rem, 1.1vw, 0.9rem); font-weight: 600;
+      margin-left: 0.5em;
+    }
+  </style>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+</head>
+<body>
+  <div class="progress" style="width:0"></div>
+  <div class="deck" id="deck">
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 1 — Portada -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide title-slide active" data-slide>
+      <div class="content">
+        <p class="eyebrow">DPRO-4300 · Diseño Sistémico de Bioproductos · Semestre 2026-10</p>
+        <h1>Sesión 6<br/>Del gen al fenotipo: diseño celular</h1>
+        <p>El valle de la muerte, la selección de chasis celular y el puente hacia los modelos metabólicos.</p>
+        <div class="pill-row">
+          <span class="pill">Luis H. Reyes</span>
+          <span class="pill">Viernes 24 de abril</span>
+          <span class="pill">08:00 — 12:20 · Edificio Alberto Lleras</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 2 — Hoja de ruta de la sesión -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Hoja de ruta · ~3h 48min + break</p>
+        <h2>Cómo vamos a usar estas 4 horas</h2>
+        <div class="grid cols-2">
+          <div class="card info">
+            <h3>Pre-break · 1h 54min</h3>
+            <ol>
+              <li>El problema de escalar una molécula · valle de la muerte</li>
+              <li>Biología molecular del scale-up · vectores, promotores, tags</li>
+              <li>Engineering del hospedero · chaperonas, redox, glyco</li>
+              <li>Tour por los chasis celulares más usados</li>
+            </ol>
+          </div>
+          <div class="card success">
+            <h3>Post-break · 1h 54min</h3>
+            <ol>
+              <li>Árbol de decisión · taller participativo</li>
+              <li>Casos de estudio clásicos (lipasa, Trastuzumab)</li>
+              <li>Casos adicionales (Humulin, artemisinina, mRNA)</li>
+              <li>Puente a Sesión 7 · modelos metabólicos + FBA</li>
+            </ol>
+          </div>
+        </div>
+        <p class="callout"><strong>Break de 15 min</strong> al terminar el tour de chasis, antes del árbol de decisión.</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 3 — Separador Bloque 1 -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide block-slide" data-slide>
+      <div class="content" style="text-align:center;">
+        <p class="eyebrow">Bloque 1 · ~20 min</p>
+        <h1>El problema de escalar una molécula</h1>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 4 — ¿Y ahora qué? -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <div class="two-col">
+          <img class="diagram" src="img/s06-p03-2-8a7d89f4.jpeg" alt="Computational design bridge: del computador a la célula" />
+          <div>
+            <p class="eyebrow">Conectando con el módulo de Andrés</p>
+            <h2>¿Y ahora qué?</h2>
+            <p>Han logrado una enzima optimizada <em>in-silico</em>. Ya saben cómo:</p>
+            <ul>
+              <li>Modelar su estructura a través de la dinámica molecular.</li>
+              <li>Optimizar su sitio activo mediante técnicas de docking.</li>
+              <li>Predecir su afinidad por sustratos específicos.</li>
+            </ul>
+            <div class="callout"><strong>La pregunta clave:</strong> ¿cómo logramos que un organismo vivo produzca esta enzima optimizada de manera eficiente y económica, pasando del diseño computacional a la realidad biológica?</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 5 — Valle de la muerte -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <div class="two-col">
+          <img class="diagram" src="img/s06-p04-2-f145ef12.jpeg" alt="Valle de la muerte entre laboratorio y factoría industrial" />
+          <div>
+            <p class="eyebrow">El camino real</p>
+            <h2>El "valle de la muerte" en bioproductos</h2>
+            <p>Desde una molécula optimizada en un computador hasta un bioproducto viable en el mercado, hay 6 etapas críticas:</p>
+            <ol>
+              <li><strong>Diseño molecular</strong> · in-silico</li>
+              <li><strong>Expresión celular</strong> · en laboratorio</li>
+              <li><strong>Cultivo en matraz</strong> · pequeña escala</li>
+              <li><strong>Biorreactor</strong> · escala intermedia</li>
+              <li><strong>Planta piloto</strong> · validación</li>
+              <li><strong>Producción industrial</strong> · comercialización</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 6 — 90% fracaso -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content" style="text-align:center;">
+        <p class="eyebrow">La estadística cruda</p>
+        <div class="big-stat"><span class="accent">90%</span> de las moléculas <em>perfectas</em> in-silico nunca llegan a producción.</div>
+        <h2 style="margin-top:1rem;">¿Por qué esta alta tasa de fracaso?</h2>
+        <p style="max-width:60rem;margin:0 auto;">A pesar del diseño computacional avanzado, factores como la <strong>toxicidad celular a gran escala</strong>, los <strong>costos de producción no escalables</strong>, las <strong>barreras regulatorias</strong> y la <strong>falta de rendimiento</strong> en condiciones reales pueden detener el progreso en cualquier punto del camino.</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 7 — ¿Por qué fracasan? (3 cards) -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Diagnóstico</p>
+        <h2>¿Por qué fracasan las moléculas prometedoras?</h2>
+        <div class="grid cols-3">
+          <div class="card accent">
+            <h3>⚠️ Problemas de expresión</h3>
+            <ul>
+              <li>La célula no puede plegar la proteína correctamente</li>
+              <li>Formación de cuerpos de inclusión</li>
+              <li>Toxicidad para el hospedero</li>
+            </ul>
+          </div>
+          <div class="card accent">
+            <h3>🧬 Problemas metabólicos</h3>
+            <ul>
+              <li>La célula no tiene suficientes precursores</li>
+              <li>Competencia con el metabolismo central</li>
+              <li>Carga metabólica excesiva</li>
+            </ul>
+          </div>
+          <div class="card accent">
+            <h3>🏭 Problemas de proceso</h3>
+            <ul>
+              <li>Condiciones de cultivo incompatibles con la actividad enzimática</li>
+              <li>Degradación durante la purificación</li>
+              <li>Costos prohibitivos de producción</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 8 — Enfoque sistémico multiescala -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">La respuesta</p>
+        <h2>El enfoque sistémico: diseño multiescala</h2>
+        <div class="two-col">
+          <div>
+            <svg viewBox="0 0 280 280" class="diagram-plain" style="max-width:22rem;">
+              <polygon points="60,40 220,40 195,90 85,90" fill="#FFBF00" stroke="#1A1A1A" stroke-width="2" />
+              <text x="140" y="68" text-anchor="middle" font-weight="700" font-size="18" fill="#1A1A1A">SISTEMA</text>
+              <text x="140" y="82" text-anchor="middle" font-size="11" fill="#3f3f46">Costos · Viabilidad</text>
+
+              <polygon points="85,90 195,90 175,150 105,150" fill="#FFD24D" stroke="#1A1A1A" stroke-width="2" />
+              <text x="140" y="120" text-anchor="middle" font-weight="700" font-size="17" fill="#1A1A1A">PROCESO</text>
+              <text x="140" y="138" text-anchor="middle" font-size="11" fill="#3f3f46">Biorreactores · Separación</text>
+
+              <polygon points="105,150 175,150 160,210 120,210" fill="#FFE380" stroke="#1A1A1A" stroke-width="2" />
+              <text x="140" y="180" text-anchor="middle" font-weight="700" font-size="16" fill="#1A1A1A">CELULAR</text>
+              <text x="140" y="196" text-anchor="middle" font-size="11" fill="#3f3f46">Expresión · Metabolismo</text>
+
+              <polygon points="120,210 160,210 150,260 130,260" fill="#FFF0B3" stroke="#1A1A1A" stroke-width="2" />
+              <text x="140" y="238" text-anchor="middle" font-weight="700" font-size="15" fill="#1A1A1A">MOLECULAR</text>
+              <text x="140" y="252" text-anchor="middle" font-size="10" fill="#3f3f46">Estructura · Cinética</text>
+            </svg>
+          </div>
+          <div>
+            <div class="card info">
+              <h3>Integración multiescala</h3>
+              <p>El éxito no depende de la optimización individual de componentes, sino de comprender y diseñar cómo interactúan entre sí a través de diferentes niveles de complejidad.</p>
+            </div>
+            <div class="card info" style="margin-top:0.75rem;">
+              <h3>Del gen al impacto global</h3>
+              <p>Cada escala impone restricciones y oportunidades a las demás. Las decisiones se alinean de abajo hacia arriba.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 9 — Ejemplo: insulina recombinante -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <div class="two-col">
+          <img class="diagram" src="img/s06-p08-2-acca65f7.jpeg" alt="Estructura de aminoácidos de la insulina: cadenas A y B con puentes disulfuro" />
+          <div>
+            <p class="eyebrow">Caso canónico</p>
+            <h2>Ejemplo: insulina recombinante</h2>
+            <p>La insulina humana es una proteína vital de 51 aminoácidos, compuesta por dos cadenas (A y B) unidas por puentes disulfuro.</p>
+            <h3 style="margin-top:1rem;">El problema sistémico en producción:</h3>
+            <ul>
+              <li><strong><em>E. coli</em> no forma puentes disulfuro</strong> correctamente en el citoplasma → impide el plegamiento.</li>
+              <li>La expresión resulta en <strong>cuerpos de inclusión</strong>, requiriendo renaturalización costosa.</li>
+              <li>La secreción en <strong>levadura</strong> es alternativa, pero ofrece menor rendimiento.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 10 — La decisión de diseño clave (3 frentes) -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">La decisión de diseño clave</p>
+        <h2>¿Enfocarse solo en la molécula, el hospedero o el proceso?</h2>
+        <div class="grid cols-3">
+          <div class="card"><h3>🧪 Optimizar la molécula</h3><p>Diseñar variantes que faciliten el plegamiento o la formación de puentes disulfuro en el hospedero.</p></div>
+          <div class="card"><h3>🦠 Optimizar el hospedero</h3><p>Ingeniería genética de <em>E. coli</em> o levadura para mejorar la capacidad de plegamiento y secreción.</p></div>
+          <div class="card"><h3>⚙️ Optimizar el proceso</h3><p>Ajustar las condiciones de cultivo para maximizar el rendimiento y minimizar la formación de cuerpos de inclusión.</p></div>
+        </div>
+        <p class="callout"><strong>La respuesta correcta</strong> es abordar los tres aspectos de manera <strong>integrada</strong> para un diseño sistémico efectivo.</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 11 — Conectando con el módulo molecular -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <div class="two-col">
+          <img class="diagram" src="img/s06-p10-2-ace2709d.jpeg" alt="Proteína transmembrana en bicapa lipídica" />
+          <div>
+            <p class="eyebrow">Puente con módulo molecular</p>
+            <h2>Cada propiedad molecular es una restricción celular</h2>
+            <table class="comp">
+              <thead><tr><th>Propiedad molecular</th><th>Implicación celular</th></tr></thead>
+              <tbody>
+                <tr><td>Tamaño de la proteína</td><td>Carga metabólica, tiempo de síntesis</td></tr>
+                <tr><td>Puentes disulfuro</td><td>Elección de compartimento/hospedero</td></tr>
+                <tr><td>Modificaciones postraduccionales</td><td>Sistema eucariota vs procariota</td></tr>
+                <tr><td>Cofactores requeridos</td><td>Disponibilidad metabólica · suplementación</td></tr>
+                <tr><td>Estabilidad térmica</td><td>Condiciones de cultivo · purificación</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 12 — Objetivos de la sesión -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Objetivos</p>
+        <h2>Al finalizar esta sesión, ustedes podrán:</h2>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3><span style="color:var(--brand-yellow-dark)">1</span> · Seleccionar chasis</h3>
+            <p>Escoger un chasis celular apropiado para una proteína específica, justificando con criterios técnicos.</p>
+          </div>
+          <div class="card">
+            <h3><span style="color:var(--brand-yellow-dark)">2</span> · Entender GEM</h3>
+            <p>Explicar qué es un modelo metabólico a escala genómica y para qué sirve en el diseño de bioproductos.</p>
+          </div>
+          <div class="card">
+            <h3><span style="color:var(--brand-yellow-dark)">3</span> · Interpretar FBA</h3>
+            <p>Interpretar los resultados básicos de un análisis de balance de flujos (FBA).</p>
+          </div>
+        </div>
+        <p class="callout">📋 <strong>Evaluación:</strong> Quiz al inicio de la Sesión 7 (21 de mayo).</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 13 — Separador Módulo C: Biología del scale-up -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide block-slide" data-slide>
+      <div class="content" style="text-align:center;">
+        <p class="eyebrow">Módulo C · NUEVO · ~30 min</p>
+        <h1>Biología molecular del scale-up</h1>
+        <p>Del DNA al producto: lo que pasa dentro de la célula cuando "expresamos" una proteína heteróloga.</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 14 — Dogma central aplicado a bioproducción (SVG animado) -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Dogma central</p>
+        <h2>De DNA a proteína, paso a paso <span class="time-chip">5 min</span></h2>
+        <svg viewBox="0 0 900 200" class="dogma-svg">
+          <!-- DNA -->
+          <g transform="translate(30,70)">
+            <rect x="0" y="-20" width="180" height="60" rx="10" fill="#eff6ff" stroke="#2563eb" stroke-width="2" />
+            <path class="dna-strand" d="M10,10 Q30,-10 50,10 T90,10 T130,10 T170,10" />
+            <path class="dna-strand" d="M10,30 Q30,50 50,30 T90,30 T130,30 T170,30" />
+            <text class="label" x="90" y="-25" text-anchor="middle">DNA · gen</text>
+            <text class="sub" x="90" y="55" text-anchor="middle">plásmido o cromosoma</text>
+          </g>
+
+          <!-- arrow 1 -->
+          <g transform="translate(215,80)">
+            <line class="tick" x1="0" y1="10" x2="70" y2="10" stroke="#555" stroke-width="2" stroke-dasharray="6 6" />
+            <polygon points="70,5 82,10 70,15" fill="#555" />
+            <text class="sub" x="40" y="-5" text-anchor="middle">transcripción</text>
+            <text class="sub" x="40" y="30" text-anchor="middle">RNAP</text>
+          </g>
+
+          <!-- mRNA -->
+          <g transform="translate(310,70)">
+            <rect x="0" y="-20" width="180" height="60" rx="10" fill="#fef2f2" stroke="#ef4444" stroke-width="2" />
+            <path class="rna-strand tick" d="M10,20 Q30,0 50,20 T90,20 T130,20 T170,20" stroke-dasharray="3 3" />
+            <text class="label" x="90" y="-25" text-anchor="middle">mRNA</text>
+            <text class="sub" x="90" y="55" text-anchor="middle">procesado (eucariotas) · 5'cap, poliA</text>
+          </g>
+
+          <!-- arrow 2 -->
+          <g transform="translate(495,80)">
+            <line class="tick" x1="0" y1="10" x2="70" y2="10" stroke="#555" stroke-width="2" stroke-dasharray="6 6" />
+            <polygon points="70,5 82,10 70,15" fill="#555" />
+            <text class="sub" x="40" y="-5" text-anchor="middle">traducción</text>
+            <text class="sub" x="40" y="30" text-anchor="middle">ribosoma · tRNA</text>
+          </g>
+
+          <!-- Protein -->
+          <g transform="translate(590,70)">
+            <rect x="0" y="-20" width="280" height="60" rx="10" fill="#f0fdf4" stroke="#16a34a" stroke-width="2" />
+            <path class="protein-chain" d="M10,15 C30,0 50,30 70,15 S110,0 130,15 S170,30 190,15 S230,0 260,15" />
+            <circle cx="10" cy="15" r="4" fill="#16a34a"/>
+            <circle cx="70" cy="15" r="4" fill="#16a34a"/>
+            <circle cx="130" cy="15" r="4" fill="#16a34a"/>
+            <circle cx="190" cy="15" r="4" fill="#16a34a"/>
+            <circle cx="260" cy="15" r="4" fill="#16a34a"/>
+            <text class="label" x="140" y="-25" text-anchor="middle">Proteína · plegada</text>
+            <text class="sub" x="140" y="55" text-anchor="middle">chaperonas · puentes S-S · modificaciones postraduccionales</text>
+          </g>
+        </svg>
+        <p class="callout"><strong>Nuestro problema:</strong> controlar cada flecha de este dogma para que la célula haga lo que queremos — a alta eficiencia y bajo costo.</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 15 — Vectores de expresión -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Biología del scale-up · paso 1</p>
+        <h2>Vectores de expresión: ¿dónde vive el gen?</h2>
+        <div class="grid cols-2">
+          <div class="card info">
+            <h3>Plásmidos (extracromosómicos)</h3>
+            <ul>
+              <li><strong>Alto número de copias</strong> (pUC: 500–700) → mucha proteína</li>
+              <li>Rápidos de construir y modificar en clonación</li>
+              <li>⚠️ <strong>Inestables sin presión selectiva</strong> (antibióticos)</li>
+              <li>⚠️ Carga metabólica por mantener el plásmido</li>
+            </ul>
+          </div>
+          <div class="card success">
+            <h3>Integración cromosómica</h3>
+            <ul>
+              <li>Una o pocas copias en el cromosoma del hospedero</li>
+              <li><strong>Estabilidad</strong> sin selección (sitios <em>attB</em>, Cre/lox, CRISPR knock-in)</li>
+              <li>Rendimientos más predecibles a escala industrial</li>
+              <li>⚠️ Construcción más laboriosa</li>
+            </ul>
+          </div>
+        </div>
+        <p class="callout"><strong>Regla práctica:</strong> plásmidos para screening y laboratorio; integración cromosómica para cepas de producción industrial.</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 16 — Promotores -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Biología del scale-up · paso 2</p>
+        <h2>Promotores: el interruptor de la expresión</h2>
+        <table class="comp">
+          <thead>
+            <tr><th>Promotor</th><th>Hospedero</th><th>Tipo</th><th>Inductor</th><th>Uso típico</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>T7</strong></td><td><em>E. coli</em> BL21(DE3)</td><td>Inducible · muy fuerte</td><td>IPTG</td><td>Producción masiva de proteína</td></tr>
+            <tr><td><strong>lac / tac</strong></td><td><em>E. coli</em></td><td>Inducible · moderado</td><td>IPTG, lactosa</td><td>Expresión regulada</td></tr>
+            <tr><td><strong>araBAD</strong> (pBAD)</td><td><em>E. coli</em></td><td>Inducible · ajustable</td><td>L-arabinosa</td><td>Proteínas tóxicas · titulación fina</td></tr>
+            <tr><td><strong>AOX1</strong></td><td><em>P. pastoris</em></td><td>Inducible · muy fuerte</td><td>Metanol</td><td>Secreción de enzimas</td></tr>
+            <tr><td><strong>TEF1 / GPD</strong></td><td><em>S. cerevisiae</em></td><td>Constitutivo · fuerte</td><td>—</td><td>Expresión permanente</td></tr>
+            <tr><td><strong>CMV</strong></td><td>CHO / HEK293</td><td>Constitutivo · fuerte</td><td>—</td><td>Proteínas terapéuticas</td></tr>
+            <tr><td><strong>EF-1α</strong></td><td>CHO / HEK293</td><td>Constitutivo · estable</td><td>—</td><td>Alternativa a CMV · menos silenciamiento</td></tr>
+          </tbody>
+        </table>
+        <div class="grid cols-2" style="margin-top:0.75rem;">
+          <div class="callout"><strong>Constitutivo:</strong> siempre encendido. Útil si la proteína no es tóxica.</div>
+          <div class="danger-callout"><strong>Inducible:</strong> encender cuando la célula ya creció. Esencial para proteínas tóxicas o de alta carga metabólica.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 17 — Signal peptides -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Biología del scale-up · paso 3</p>
+        <h2>Señales de secreción: sacar la proteína de la célula</h2>
+        <div class="two-col">
+          <div>
+            <svg viewBox="0 0 320 240" class="diagram-plain" style="max-width:28rem;">
+              <!-- célula -->
+              <ellipse cx="160" cy="130" rx="140" ry="95" fill="#f4f4f5" stroke="#1A1A1A" stroke-width="2" />
+              <!-- citoplasma -->
+              <text x="70" y="180" font-size="12" fill="#555">citoplasma</text>
+              <!-- ribosoma -->
+              <circle cx="95" cy="130" r="12" fill="#FFBF00" stroke="#1A1A1A" stroke-width="1.5" />
+              <text x="95" y="134" text-anchor="middle" font-size="10" font-weight="700">R</text>
+              <!-- naciente con SP -->
+              <rect x="115" y="125" width="14" height="10" fill="#ef4444"/>
+              <path d="M130,130 L200,130" stroke="#16a34a" stroke-width="3" fill="none"/>
+              <!-- membrana -->
+              <line x1="295" y1="45" x2="295" y2="215" stroke="#1A1A1A" stroke-width="3"/>
+              <!-- proteína secretada -->
+              <path d="M305,120 Q330,100 350,130 T370,130" stroke="#16a34a" stroke-width="3" fill="none" />
+              <text x="240" y="100" font-size="11" fill="#555">SP · corte</text>
+              <polygon points="225,115 240,130 225,145" fill="none" stroke="#ef4444" stroke-width="2"/>
+              <text x="340" y="170" font-size="11" fill="#555">proteína madura</text>
+            </svg>
+          </div>
+          <div>
+            <h3>¿Para qué secretar?</h3>
+            <ul>
+              <li><strong>Purificación más barata</strong> · no hay que lisar células</li>
+              <li>Ambiente oxidativo del periplasma/RE favorece puentes S-S</li>
+              <li>Evita degradación por proteasas citoplasmáticas</li>
+            </ul>
+            <h3 style="margin-top:0.75rem;">Señales clásicas</h3>
+            <ul>
+              <li><strong>PelB, OmpA, DsbA</strong> → periplasma en <em>E. coli</em></li>
+              <li><strong>α-factor (MAT-α)</strong> → secreción en levaduras</li>
+              <li><strong>IgG heavy chain</strong> → secreción en CHO/HEK</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 18 — Tags de fusión -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Biología del scale-up · paso 4</p>
+        <h2>Tags de fusión: purificación y plegamiento en una sola decisión</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Tags para purificación</h3>
+            <ul>
+              <li><strong>His₆</strong> · afinidad por Ni²⁺ (IMAC) · pequeño, barato</li>
+              <li><strong>FLAG, HA, Myc</strong> · epítopos cortos para detección</li>
+              <li><strong>Strep-tag</strong> · alta especificidad, elución suave</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Tags para solubilidad/plegamiento</h3>
+            <ul>
+              <li><strong>MBP</strong> (maltose binding) · potente chaperona natural</li>
+              <li><strong>SUMO</strong> · libera proteína nativa con SUMO-proteasa</li>
+              <li><strong>GST</strong> · solubilidad + afinidad por glutatión</li>
+              <li><strong>Thioredoxin (Trx)</strong> · favorece puentes disulfuro</li>
+            </ul>
+          </div>
+        </div>
+        <p class="callout"><strong>Compromiso:</strong> tags grandes (MBP, GST, SUMO) ayudan al plegamiento pero hay que removerlos con proteasa específica (TEV, PreScission, SUMO-proteasa) si queremos la proteína nativa para uso clínico.</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 19 — Codon optimization + RBS/Kozak -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Biología del scale-up · paso 5</p>
+        <h2>Codon optimization, RBS y Kozak</h2>
+        <div class="two-col">
+          <div>
+            <h3>Optimización de codones</h3>
+            <p>Aunque el código genético es universal, cada organismo prefiere <em>codones sinónimos</em> distintos según la abundancia de sus tRNAs.</p>
+            <div class="equation-block">
+              $$\text{CAI} = \left( \prod_{i=1}^{L} w_i \right)^{1/L}$$
+            </div>
+            <p class="sub" style="font-size:0.9rem;">CAI · Codon Adaptation Index. $w_i$ es el peso del codón $i$ respecto al más frecuente para ese aminoácido en el organismo hospedero.</p>
+            <div class="callout"><strong>tAI</strong> (tRNA Adaptation Index) pondera además la disponibilidad real de tRNAs en la célula.</div>
+          </div>
+          <div>
+            <h3>Iniciación de la traducción</h3>
+            <div class="card">
+              <h3 style="font-size:1rem;">RBS (procariotas) · Shine-Dalgarno</h3>
+              <p style="font-family:ui-monospace,monospace;">...<strong>AGGAGG</strong>...N<sub>7–9</sub>...<strong>AUG</strong>...</p>
+              <p class="sub">Distancia óptima al codón AUG: 7–9 nt.</p>
+            </div>
+            <div class="card" style="margin-top:0.75rem;">
+              <h3 style="font-size:1rem;">Kozak (eucariotas)</h3>
+              <p style="font-family:ui-monospace,monospace;">gccRcc<strong>AUG</strong>G</p>
+              <p class="sub">R = purina (A/G) en -3, G en +4 son los determinantes más fuertes.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 20 — Separador Módulo D: Engineering del hospedero -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide block-slide" data-slide>
+      <div class="content" style="text-align:center;">
+        <p class="eyebrow">Módulo D · NUEVO · ~20 min</p>
+        <h1>Engineering del hospedero</h1>
+        <p>Modificar la célula para que nuestro bioproducto fluya mejor a través de ella.</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 21 — Chaperonas co-expresadas -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Host engineering · plegamiento</p>
+        <h2>Chaperonas co-expresadas</h2>
+        <div class="grid cols-2">
+          <div>
+            <p>Cuando la proteína de interés tiende a formar <strong>cuerpos de inclusión</strong>, se puede co-expresar con chaperonas que asisten el plegamiento:</p>
+            <ul>
+              <li><strong>GroEL/GroES</strong> · chaperonin tipo Hsp60 · cavidad de plegamiento</li>
+              <li><strong>DnaK/DnaJ/GrpE</strong> · Hsp70 · previene agregación</li>
+              <li><strong>Trigger factor (TF)</strong> · asociado al ribosoma · primera línea</li>
+              <li><strong>DsbA/DsbC</strong> · catalizan puentes disulfuro en periplasma</li>
+            </ul>
+          </div>
+          <div class="card success">
+            <h3>🧰 Plásmidos comerciales</h3>
+            <p><strong>pGro7, pKJE7, pG-KJE8, pG-Tf2</strong> (Takara) — co-expresan combinaciones de GroEL/ES, DnaK/J/GrpE y Trigger factor bajo promotores inducibles independientes.</p>
+            <p style="margin-top:0.5rem;">Estrategia: probar cada combinación y medir solubilidad.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 22 — Cepas redox -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Host engineering · puentes disulfuro</p>
+        <h2>Cepas con citoplasma oxidativo</h2>
+        <p>El citoplasma de <em>E. coli</em> silvestre es <strong>reductor</strong> (tiorredoxina + glutatión activos) → impide puentes S-S. Se han desarrollado cepas knock-out que lo vuelven oxidativo:</p>
+        <div class="grid cols-2">
+          <div class="card info">
+            <h3><em>E. coli</em> Origami™ (Novagen)</h3>
+            <ul>
+              <li>Δ<em>trxB</em>, Δ<em>gor</em> (doble mutante)</li>
+              <li>Permite puentes S-S en el citoplasma</li>
+              <li>Crecimiento más lento que BL21</li>
+            </ul>
+          </div>
+          <div class="card info">
+            <h3><em>E. coli</em> SHuffle® (NEB)</h3>
+            <ul>
+              <li>Δ<em>trxB</em>, Δ<em>gor</em> + DsbC citoplasmática constitutiva</li>
+              <li>Isomerasa <strong>corrige</strong> puentes mal formados</li>
+              <li>Mejor para IgGs, insulina, scFv</li>
+            </ul>
+          </div>
+        </div>
+        <p class="callout"><strong>Trade-off:</strong> mayor capacidad de plegamiento ≠ mayor titer. Hay que balancear con la cinética de crecimiento.</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 23 — Glyco-engineering -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Host engineering · glicosilación</p>
+        <h2>Glyco-engineering: humanizar la glicosilación</h2>
+        <div class="grid cols-2">
+          <div class="card info">
+            <h3><em>P. pastoris</em> GlycoFi™ (Merck)</h3>
+            <ul>
+              <li>Knock-out de ruta de hipermanosilación levadura</li>
+              <li>Inserción de genes <em>α-1,2-mannosidase</em>, <em>GlcNAc transferases</em>, <em>galactosyltransferases</em></li>
+              <li>Produce IgG con glicano <strong>homogéneo tipo humano</strong> (ventaja sobre CHO heterogénea)</li>
+            </ul>
+          </div>
+          <div class="card info">
+            <h3>Líneas CHO humanizadas</h3>
+            <ul>
+              <li><strong>CHOZN ZFN</strong>: knock-out de FUT8 → glicanos afucosilados (mejoran ADCC)</li>
+              <li><strong>GlymaxX®</strong> (ProBioGen): RMD activo → bloquea fucosilación</li>
+              <li>Esenciales para <strong>biosimilares de alta potencia</strong> (ej. obinutuzumab)</li>
+            </ul>
+          </div>
+        </div>
+        <p class="callout">El patrón de glicosilación afecta vida media, función efectora (ADCC, CDC) e inmunogenicidad. <strong>No es opcional</strong> para anticuerpos terapéuticos.</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 24 — CRISPR en el hospedero -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Host engineering · edición precisa</p>
+        <h2>CRISPR/Cas9 en el hospedero de producción</h2>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>Knock-out de proteasas</h3>
+            <p>Δ<em>ompT</em>, Δ<em>lon</em>, Δ<em>dnaK</em> en <em>E. coli</em> o proteasas vacuolares en levaduras → menos degradación del producto.</p>
+          </div>
+          <div class="card">
+            <h3>Integración dirigida</h3>
+            <p>Inserción del transgén en loci de alta expresión (<em>Rosa26</em> análogo, región AAVS1 en CHO) con HDR mediada por Cas9.</p>
+          </div>
+          <div class="card">
+            <h3>Auxotrofías de selección</h3>
+            <p>Δ<em>pyrF</em>, Δ<em>leu2</em>, Δ<em>dhfr</em> → selección sin antibióticos, regulatoriamente más aceptable.</p>
+          </div>
+        </div>
+        <p class="callout"><strong>Tendencia industrial:</strong> cepas "platform" pre-editadas donde solo queda insertar el transgén específico del bioproducto. Reduce tiempo de desarrollo de cepa de 12–18 meses a 3–6 meses.</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 25 — Separador Bloque 2: Chasis -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide block-slide" data-slide>
+      <div class="content" style="text-align:center;">
+        <p class="eyebrow">Bloque 2 · ~34 min</p>
+        <h1>Selección de chasis celular</h1>
+        <p>¿En qué organismo producimos nuestra molécula?</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 26 — ¿Qué es un chasis? -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <div class="two-col">
+          <img class="diagram" src="img/s06-p13-2-285a5516.jpeg" alt="Chasis automotriz como metáfora del chasis celular" />
+          <div>
+            <p class="eyebrow">La metáfora</p>
+            <h2>¿Qué es un "chasis" celular?</h2>
+            <p>En biotecnología, un <strong>chasis celular</strong> es el organismo hospedero (bacteria, levadura, célula de mamífero) que utilizamos como plataforma biológica para producir una molécula de interés.</p>
+            <div class="callout">Piensen en él como el <strong>chasis de un automóvil</strong>: define qué motor puede llevar, qué carrocería es compatible, y en última instancia, su desempeño y funcionalidad.</div>
+            <p><strong>Una buena elección es fundamental.</strong></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 27 — El chasis ideal -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Criterios de evaluación</p>
+        <h2>El chasis ideal</h2>
+        <div class="grid cols-3">
+          <div class="card"><h3>🚀 Crecimiento óptimo</h3><p>Capaz de crecer rápidamente en medios de cultivo económicos.</p></div>
+          <div class="card"><h3>🛠️ Manipulación sencilla</h3><p>Fácilmente modificable genéticamente para introducir vías biosintéticas.</p></div>
+          <div class="card"><h3>⚙️ Maquinaria compatible</h3><p>Posee los mecanismos moleculares (ribosomas, chaperonas) para expresar y plegar correctamente la proteína.</p></div>
+          <div class="card"><h3>📋 Aprobación regulatoria</h3><p>Cumple con regulaciones para el uso final (GRAS para alimentos, bioseguridad para farmacéuticos).</p></div>
+          <div class="card"><h3>🏭 Historial probado</h3><p>Experiencia demostrada en procesos de producción industrial a gran escala.</p></div>
+          <div class="card accent"><h3>💰 Economía y escalabilidad</h3><p>Costos de medio, servicios y bioseguridad compatibles con el costo objetivo por unidad.</p></div>
+        </div>
+        <p class="callout">Sin embargo, el chasis <strong>"perfecto" rara vez existe</strong>. La selección siempre implica compromisos y un análisis cuidadoso de las necesidades específicas de cada bioproducto.</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 28 — Tabla comparativa de chasis -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Vista panorámica</p>
+        <h2>Los chasis más usados en bioproductos</h2>
+        <table class="comp">
+          <thead>
+            <tr><th></th><th><em>E. coli</em></th><th><em>S. cerevisiae</em></th><th><em>P. pastoris</em></th><th>CHO</th><th>HEK293</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Tipo</td><td>Bacteria</td><td>Levadura</td><td>Levadura</td><td>Mamífero</td><td>Mamífero</td></tr>
+            <tr><td>Tiempo duplic.</td><td>20 min</td><td>90 min</td><td>90 min</td><td>18–24 h</td><td>24 h</td></tr>
+            <tr><td>Modif. postrad.</td><td>No</td><td>Sí (limitadas)</td><td>Sí (mejores)</td><td>Sí (humanas)</td><td>Sí (humanas)</td></tr>
+            <tr><td>Secreción</td><td>Difícil</td><td>Moderada</td><td>Excelente</td><td>Excelente</td><td>Excelente</td></tr>
+            <tr><td>Escala industrial</td><td>Muy establecida</td><td>Muy establecida</td><td>Establecida</td><td>Muy establecida</td><td>Establecida</td></tr>
+            <tr><td>Costo de medio</td><td>Muy bajo</td><td>Bajo</td><td>Bajo</td><td>Alto</td><td>Alto</td></tr>
+            <tr><td>Herram. genéticas</td><td>Excelentes</td><td>Excelentes</td><td>Buenas</td><td>Buenas</td><td>Excelentes</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 29 — E. coli -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <div class="two-col">
+          <img class="diagram" src="img/s06-p16-2-ce0af227.jpeg" alt="Escherichia coli" />
+          <div>
+            <p class="eyebrow">Chasis 1/8</p>
+            <h2><em>Escherichia coli</em></h2>
+            <p>El "caballo de batalla" de la biotecnología. Fundamental para una amplia gama de bioproductos.</p>
+            <div class="grid cols-2">
+              <div>
+                <h3>Ventajas</h3>
+                <ul>
+                  <li>Genoma muy caracterizado</li>
+                  <li>Rápido · medio económico</li>
+                  <li>Alta densidad celular</li>
+                </ul>
+              </div>
+              <div>
+                <h3>Limitaciones</h3>
+                <ul>
+                  <li>Sin glicosilación eucariótica</li>
+                  <li>Plegamiento limitado</li>
+                  <li>Cuerpos de inclusión · LPS</li>
+                </ul>
+              </div>
+            </div>
+            <p class="callout"><strong>Ideal para:</strong> proteínas pequeñas no modificadas, enzimas industriales, fragmentos de anticuerpos (Fab, scFv).</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 30 — S. cerevisiae -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <div class="two-col">
+          <img class="diagram" src="img/s06-p17-2-6c384fa3.jpeg" alt="Saccharomyces cerevisiae" />
+          <div>
+            <p class="eyebrow">Chasis 2/8</p>
+            <h2><em>Saccharomyces cerevisiae</em></h2>
+            <p>Levadura de panadero/cervecero. Valorada por modificaciones postraduccionales y uso seguro en alimentos.</p>
+            <div class="grid cols-2">
+              <div>
+                <h3>Ventajas</h3>
+                <ul>
+                  <li>Glicosilación eucariótica</li>
+                  <li>Estatus <strong>GRAS</strong></li>
+                  <li>Secreción eficiente</li>
+                </ul>
+              </div>
+              <div>
+                <h3>Limitaciones</h3>
+                <ul>
+                  <li><strong>Hipermanosilación</strong> inmunogénica</li>
+                  <li>Menor titer que <em>E. coli</em></li>
+                  <li>Efecto Crabtree complica escalado</li>
+                </ul>
+              </div>
+            </div>
+            <p class="callout"><strong>Ideal para:</strong> proteínas con glicosilación no-humana, bioetanol, metabolitos (artemisinina, resveratrol).</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 31 — P. pastoris -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <div class="two-col">
+          <img class="diagram" src="img/s06-p18-2-2a34fb25.jpeg" alt="Pichia pastoris" />
+          <div>
+            <p class="eyebrow">Chasis 3/8</p>
+            <h2><em>Pichia pastoris</em> (<em>Komagataella phaffii</em>)</h2>
+            <p>Sistema de expresión poderoso por su capacidad de secretar grandes cantidades de proteína heteróloga.</p>
+            <div class="grid cols-2">
+              <div>
+                <h3>Ventajas</h3>
+                <ul>
+                  <li>Secreción al medio excelente</li>
+                  <li>Promotor AOX1 fuerte e inducible</li>
+                  <li>Glicosilación más "humana" que <em>S. cerevisiae</em></li>
+                  <li>Alta densidad celular</li>
+                </ul>
+              </div>
+              <div>
+                <h3>Limitaciones</h3>
+                <ul>
+                  <li>Herramientas genéticas menos desarrolladas</li>
+                  <li>Metanol es inflamable y tóxico</li>
+                  <li>Optimización de secreción laboriosa</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 32 — CHO -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <div class="two-col">
+          <img class="diagram" src="img/s06-p19-2-44fc8c23.jpeg" alt="Células CHO (ovario de hámster chino)" />
+          <div>
+            <p class="eyebrow">Chasis 4/8</p>
+            <h2>Células CHO <small>(Chinese Hamster Ovary)</small></h2>
+            <p>Sistema más usado para proteínas terapéuticas con glicosilación humana.</p>
+            <div class="grid cols-2">
+              <div>
+                <h3>Ventajas</h3>
+                <ul>
+                  <li>Glicosilaciones tipo humano</li>
+                  <li>Alta secreción</li>
+                  <li>Historial de seguridad</li>
+                  <li>Escalabilidad bien establecida</li>
+                </ul>
+              </div>
+              <div>
+                <h3>Limitaciones</h3>
+                <ul>
+                  <li>Crecimiento lento (18–24 h)</li>
+                  <li>Medios costosos</li>
+                  <li>Contaminación viral potencial</li>
+                </ul>
+              </div>
+            </div>
+            <p class="callout"><strong>Ideal para:</strong> anticuerpos monoclonales, vacunas recombinantes, hormonas, proteínas terapéuticas humanas.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 33 — HEK293 -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <div class="two-col">
+          <img class="diagram" src="img/s06-p20-2-2c03437d.jpeg" alt="Células HEK293" />
+          <div>
+            <p class="eyebrow">Chasis 5/8</p>
+            <h2>HEK293 <small>(Human Embryonic Kidney 293)</small></h2>
+            <p>Línea celular humana muy utilizada, conocida por su alta transfectabilidad.</p>
+            <div class="grid cols-2">
+              <div>
+                <h3>Ventajas</h3>
+                <ul>
+                  <li>Glicosilaciones tipo humano</li>
+                  <li>Alta transfectabilidad</li>
+                  <li>Crecimiento más rápido que CHO</li>
+                  <li>Versátil para terapia génica</li>
+                </ul>
+              </div>
+              <div>
+                <h3>Limitaciones</h3>
+                <ul>
+                  <li>Escalabilidad menos optimizada</li>
+                  <li>Estrés mecánico</li>
+                  <li>Consideraciones por origen humano</li>
+                </ul>
+              </div>
+            </div>
+            <p class="callout"><strong>Ideal para:</strong> producción de vectores virales (AAV, adenovirus), proteínas recombinantes con glicosilación humana precisa, desarrollo de vacunas.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 34 — B. subtilis -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <div class="two-col">
+          <img class="diagram" src="img/s06-p21-2-44d49802.jpeg" alt="Bacillus subtilis" />
+          <div>
+            <p class="eyebrow">Chasis 6/8</p>
+            <h2><em>Bacillus subtilis</em></h2>
+            <p>Gram-positiva robusta y con estatus GRAS. Excelente secretora.</p>
+            <div class="grid cols-2">
+              <div>
+                <h3>Ventajas</h3>
+                <ul>
+                  <li>Alta secreción de proteínas</li>
+                  <li>Estatus GRAS</li>
+                  <li>Sin LPS (producto libre de endotoxinas)</li>
+                  <li>Genoma bien caracterizado</li>
+                </ul>
+              </div>
+              <div>
+                <h3>Limitaciones</h3>
+                <ul>
+                  <li>Proteasas endógenas degradan productos</li>
+                  <li>Sin glicosilación compleja</li>
+                  <li>Inestabilidad de plásmidos</li>
+                </ul>
+              </div>
+            </div>
+            <p class="callout"><strong>Ideal para:</strong> enzimas industriales (amilasas, proteasas, lipasas), antibióticos peptídicos, probióticos.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 35 — Microalgas y plantas -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <div class="two-col">
+          <img class="diagram" src="img/s06-p22-2-d14e43ad.jpeg" alt="Microalgas" />
+          <div>
+            <p class="eyebrow">Chasis 7/8</p>
+            <h2>Microalgas y plantas</h2>
+            <p>Chasis únicos con inmenso potencial para producción sostenible, aprovechando la fotosíntesis como fuente de energía.</p>
+            <div class="grid cols-2">
+              <div>
+                <h3>Ventajas</h3>
+                <ul>
+                  <li>Sostenibilidad (CO₂ + luz solar)</li>
+                  <li>Capacidad eucariótica completa</li>
+                  <li>Escalabilidad en biorreactores o campos</li>
+                  <li>Menor riesgo de patógenos humanos</li>
+                </ul>
+              </div>
+              <div>
+                <h3>Limitaciones</h3>
+                <ul>
+                  <li>Rendimientos menores</li>
+                  <li>Extracción compleja</li>
+                  <li>Crecimiento lento</li>
+                  <li>Preocupaciones regulatorias (OGM)</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 36 — Sistemas cell-free -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <div class="two-col">
+          <img class="diagram" src="img/s06-p23-2-64d7d810.jpeg" alt="Sistemas cell-free · síntesis de proteínas sin células" />
+          <div>
+            <p class="eyebrow">Chasis 8/8 · sin chasis vivo</p>
+            <h2>Sistemas <em>cell-free</em> (CFPS)</h2>
+            <p>Plataforma que utiliza extractos celulares para producir proteínas <em>in vitro</em>, eludiendo la necesidad de organismos vivos.</p>
+            <div class="grid cols-2">
+              <div>
+                <h3>Ventajas</h3>
+                <ul>
+                  <li>Producción en horas</li>
+                  <li>Control preciso del entorno</li>
+                  <li>Proteínas tóxicas viables</li>
+                  <li>Aminoácidos no canónicos</li>
+                </ul>
+              </div>
+              <div>
+                <h3>Limitaciones</h3>
+                <ul>
+                  <li>Extractos costosos</li>
+                  <li>Rendimientos menores</li>
+                  <li>Modificaciones postrad. limitadas</li>
+                </ul>
+              </div>
+            </div>
+            <p class="callout"><strong>Ideal para:</strong> prototipado rápido, cribado HTS, proteínas tóxicas, diagnósticos, biosensores.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 37 — BREAK -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content" style="text-align:center;">
+        <p class="eyebrow">⏸️ Receso</p>
+        <h1>15 min de break</h1>
+        <p>Al regreso: árbol de decisión · taller participativo · casos de estudio.</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 38 — Árbol de decisión -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Herramienta de decisión</p>
+        <h2>Árbol de decisión para selección de chasis <span class="time-chip">5 min</span></h2>
+        <img class="diagram" src="img/s06-p24-2-e31b6973.jpeg" alt="Árbol de decisión para chasis celular basado en glicosilación y puentes disulfuro" style="max-height:55vh;object-fit:contain;" />
+        <p class="callout">Esto es una <strong>guía, no una regla absoluta</strong>. Cada caso requiere evaluación experimental — pero el árbol permite <em>comenzar rápido</em> con una hipótesis informada.</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 39 — Separador Taller -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide block-slide" data-slide>
+      <div class="content" style="text-align:center;">
+        <p class="eyebrow">Módulo H · NUEVO · ~35 min</p>
+        <h1>Taller participativo</h1>
+        <p>En grupos de 3–4 personas: para cada bioproducto, escojan un chasis y justifiquen.</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 40 — Los 5 bioproductos -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Taller · 12 min de análisis + 18 min de discusión</p>
+        <h2>Cinco bioproductos · escojan chasis y justifiquen</h2>
+        <div class="grid cols-3">
+          <div class="card quiz-option" onclick="this.classList.toggle('picked')">
+            <h3>💉 Insulina glargina</h3>
+            <p>51 aa · 3 puentes S-S · sin glicosilación · costo crítico (commodity farmacéutico).</p>
+          </div>
+          <div class="card quiz-option" onclick="this.classList.toggle('picked')">
+            <h3>🧬 Anticuerpo monoclonal anti-TNFα</h3>
+            <p>~150 kDa · 16 puentes S-S · glicosilación humana crítica (ADCC).</p>
+          </div>
+          <div class="card quiz-option" onclick="this.classList.toggle('picked')">
+            <h3>💊 Vacuna mRNA</h3>
+            <p>Spike proteína codificada en mRNA · nucleótidos modificados · LNPs · producción rápida.</p>
+          </div>
+          <div class="card quiz-option" onclick="this.classList.toggle('picked')">
+            <h3>🧴 Lipasa para detergentes</h3>
+            <p>Termoestable · con puente S-S · sin glicosilación · <strong>costo unitario crítico</strong>.</p>
+          </div>
+          <div class="card quiz-option" onclick="this.classList.toggle('picked')">
+            <h3>🌿 Artemisinina</h3>
+            <p>Metabolito secundario antimalárico · ruta de 12 genes · baja solubilidad.</p>
+          </div>
+          <div class="card accent">
+            <h3>Preguntas guía</h3>
+            <ol style="padding-left:1.1em;">
+              <li>¿Glicosilación?</li>
+              <li>¿Puentes S-S?</li>
+              <li>¿Toxicidad para la célula?</li>
+              <li>¿Regulatoriamente aceptable?</li>
+              <li>¿Costo objetivo por unidad?</li>
+            </ol>
+          </div>
+        </div>
+        <p class="callout">👉 Click en cada tarjeta para marcar su apuesta como grupo. Vamos a discutir al regresar.</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 41 — Respuestas guiadas del taller -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Taller · discusión guiada</p>
+        <h2>Respuestas esperadas (nada es absoluto)</h2>
+        <table class="comp">
+          <thead><tr><th>Bioproducto</th><th>Chasis probable</th><th>Razón clave</th></tr></thead>
+          <tbody>
+            <tr><td>Insulina glargina</td><td><em>E. coli</em> SHuffle o <em>P. pastoris</em></td><td>Puentes S-S, sin glicosilación, costo bajo</td></tr>
+            <tr><td>Anti-TNFα (mAb)</td><td>CHO</td><td>Glicosilación humana, ensamblaje IgG, historial FDA</td></tr>
+            <tr><td>Vacuna mRNA</td><td><em>Cell-free</em> (IVT)</td><td>Sin chasis vivo: T7-RNAP in vitro</td></tr>
+            <tr><td>Lipasa industrial</td><td><em>B. subtilis</em> o <em>E. coli</em></td><td>Secreción, sin glicosilación, costo commodity</td></tr>
+            <tr><td>Artemisinina</td><td><em>S. cerevisiae</em></td><td>Metabolic engineering de ruta larga · GRAS · Amyris/Sanofi</td></tr>
+          </tbody>
+        </table>
+        <p class="callout"><strong>Mensaje clave:</strong> no hay una tabla mágica. La decisión depende del peso relativo de cada restricción en el caso específico.</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 42 — Separador Bloque 3: Casos -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide block-slide" data-slide>
+      <div class="content" style="text-align:center;">
+        <p class="eyebrow">Bloque 3 · ~50 min</p>
+        <h1>Casos de estudio</h1>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 43 — Caso Lipasa: requerimientos -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <div class="two-col">
+          <img class="diagram" src="img/s06-p26-2-e097e85d.jpeg" alt="Lipasa industrial en envase de limpieza" />
+          <div>
+            <p class="eyebrow">Caso 1</p>
+            <h2>¿Dónde producir una lipasa industrial?</h2>
+            <p>Objetivo: producir una lipasa termoestable para la industria de detergentes.</p>
+            <h3 style="margin-top:0.75rem;">Requerimientos</h3>
+            <ul>
+              <li><strong>Alta termoestabilidad:</strong> optimizada por docking (diseño in-silico)</li>
+              <li><strong>Estructura crítica:</strong> requiere un puente disulfuro</li>
+              <li><strong>Sin glicosilación:</strong> no necesaria para su función</li>
+              <li><strong>Costo crítico:</strong> commodity — costo por unidad mínimo</li>
+            </ul>
+            <p class="callout">¿Qué chasis escogerían?</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 44 — Caso Lipasa: análisis -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Caso 1 · análisis</p>
+        <h2>Evaluando chasis candidatos</h2>
+        <div class="grid cols-3">
+          <div class="card info">
+            <h3><em>E. coli</em> (periplasma)</h3>
+            <p>Posible con DsbA/DsbC o SHuffle para el puente S-S. Secreción a periplasma limitada a gran escala, purificación más compleja.</p>
+          </div>
+          <div class="card success">
+            <h3><em>B. subtilis</em></h3>
+            <p>Excelente secreción extracelular · GRAS · no glicosila (ideal aquí) · aptitud para fermentación a gran escala.</p>
+          </div>
+          <div class="card info">
+            <h3><em>P. pastoris</em></h3>
+            <p>Secreción excelente, pero metanol añade complejidad y costo — tensión contra el requerimiento de commodity.</p>
+          </div>
+        </div>
+        <p class="callout"><strong>Decisión probable:</strong> <em>B. subtilis</em> o <em>E. coli</em> optimizado. La presión económica (commodity) orienta hacia el chasis con menor costo operativo y purificación simple.</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 45 — Trastuzumab intro -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content" style="text-align:center;">
+        <div class="two-col" style="grid-template-columns: 1fr 2fr; align-items:center;">
+          <img class="diagram" src="img/s06-p28-2-c00b632d.jpeg" alt="Vial de Herceptin (Trastuzumab)" style="max-height:45vh;object-fit:contain;" />
+          <div style="text-align:left;">
+            <p class="eyebrow">Caso 2</p>
+            <h1>Trastuzumab (Herceptin®)</h1>
+            <p>Anticuerpo monoclonal estrella — el blockbuster que definió la era de las terapias dirigidas.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 46 — ¿Qué es Trastuzumab? -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Caso 2 · ficha técnica</p>
+        <h2>¿Qué es Trastuzumab?</h2>
+        <div class="grid cols-2">
+          <div class="card info">
+            <h3>Herceptin® (Genentech/Roche)</h3>
+            <p>Anticuerpo monoclonal humanizado <strong>IgG1</strong> dirigido contra el receptor HER2.</p>
+            <ul>
+              <li>Uso: cáncer de mama HER2-positivo (~25% casos)</li>
+              <li>Aprobado FDA: <strong>1998</strong></li>
+              <li>Ventas pico: <strong>&gt;US$7 mil millones/año</strong></li>
+            </ul>
+          </div>
+          <div>
+            <h3>Estructura molecular</h3>
+            <table class="comp">
+              <tbody>
+                <tr><td>Peso molecular</td><td>~150 kDa</td></tr>
+                <tr><td>Cadenas</td><td>4 (2 pesadas + 2 ligeras)</td></tr>
+                <tr><td>Puentes disulfuro</td><td><strong>16</strong> (4 inter + 12 intracadena)</td></tr>
+                <tr><td>Glicosilación</td><td>Asn297 en región Fc</td></tr>
+                <tr><td>Función efectora</td><td>ADCC y CDC dependen de glicosilación</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 47 — ¿Por qué NO E. coli? -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Caso 2 · descarte</p>
+        <h2>¿Por qué NO <em>E. coli</em> para Trastuzumab?</h2>
+        <div class="grid cols-2">
+          <div class="card danger">
+            <h3>❌ Tamaño molecular</h3>
+            <p>~150 kDa es demasiado grande para expresión eficiente como proteína completa en bacteria.</p>
+          </div>
+          <div class="card danger">
+            <h3>❌ Puentes disulfuro</h3>
+            <p>16 puentes disulfuro requeridos. El citoplasma reductor de <em>E. coli</em> impide su formación correcta.</p>
+          </div>
+          <div class="card danger">
+            <h3>❌ Glicosilación en Asn297</h3>
+            <p>Esencial para la función efectora (ADCC, CDC). <em>E. coli</em> carece completamente de maquinaria de glicosilación.</p>
+          </div>
+          <div class="card danger">
+            <h3>❌ Ensamblaje de 4 cadenas</h3>
+            <p>Requiere retículo endoplásmico. <em>E. coli</em> no posee esta organela — imposible ensamblar IgG completa.</p>
+          </div>
+        </div>
+        <p class="callout"><strong>Nota:</strong> <em>E. coli</em> sí sirve para producir <strong>fragmentos</strong> como Fab o scFv — sin función efectora.</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 48 — ¿Por qué NO S. cerevisiae? -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Caso 2 · descarte</p>
+        <h2>¿Por qué NO <em>S. cerevisiae</em> para Trastuzumab?</h2>
+        <div class="grid cols-2">
+          <div class="card danger">
+            <h3>El problema de la hipermanosilación</h3>
+            <p><em>S. cerevisiae</em> adiciona cadenas de manosa de <strong>50–100 residuos</strong> — muy diferentes a la glicosilación humana.</p>
+            <h3 style="margin-top:0.75rem;">Consecuencias clínicas</h3>
+            <ul>
+              <li>Eliminación rápida por receptor de manosa hepático</li>
+              <li>Vida media muy reducida en circulación</li>
+              <li>Potencial respuesta inmune adversa</li>
+            </ul>
+          </div>
+          <div>
+            <div class="card info">
+              <h3>Problema adicional: secreción</h3>
+              <p>La secreción de proteínas de 150 kDa es ineficiente en <em>S. cerevisiae</em>, complicando la purificación.</p>
+            </div>
+            <div class="card danger" style="margin-top:0.75rem;">
+              <h3>Veredicto</h3>
+              <p><strong>Descartada</strong> por patrón de glicosilación incompatible con la función terapéutica requerida.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 49 — ¿P. pastoris para Trastuzumab? -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Caso 2 · evaluación</p>
+        <h2>¿<em>P. pastoris</em> para Trastuzumab?</h2>
+        <div class="grid cols-2">
+          <div class="card info">
+            <h3>Sin humanización</h3>
+            <p>Menor hipermanosilación que <em>S. cerevisiae</em>, pero glicosilación <strong>aún no tipo humano</strong> en cepa estándar.</p>
+          </div>
+          <div class="card success">
+            <h3>Con tecnología GlycoFi™</h3>
+            <p>Merck demostró producción de anticuerpos con <strong>glicoformas homogéneas humanas</strong>. Ventaja sobre CHO en consistencia.</p>
+          </div>
+          <div class="card info">
+            <h3>Ventajas económicas</h3>
+            <p>Costos menores que CHO, alta densidad celular, excelente secreción.</p>
+          </div>
+          <div class="card accent">
+            <h3>Veredicto: emergente</h3>
+            <p>Viable y prometedora para biosimilares, pero CHO mantiene ventaja por <strong>historial regulatorio extenso</strong>.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 50 — CHO: la elección -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <div class="two-col">
+          <div>
+            <p class="eyebrow">Caso 2 · selección final</p>
+            <h2>CHO: la elección para Herceptin®</h2>
+            <div class="grid cols-2">
+              <div class="card success">
+                <h3>🍬 Glicosilación completa</h3>
+                <p>Función efectora (ADCC/CDC) dependiente de Asn297 glicosilada correctamente.</p>
+              </div>
+              <div class="card success">
+                <h3>🧬 Ensamblaje correcto</h3>
+                <p>RE y Golgi permiten plegamiento y ensamblaje de las 4 cadenas + 16 puentes disulfuro.</p>
+              </div>
+              <div class="card success">
+                <h3>✅ Historial regulatorio</h3>
+                <p>Décadas de aprobaciones FDA/EMA. Camino regulatorio bien establecido.</p>
+              </div>
+              <div class="card success">
+                <h3>🏭 Escala y rendimiento</h3>
+                <p>Biorreactores hasta 25 000 L · rendimientos &gt;5 g/L con líneas optimizadas.</p>
+              </div>
+            </div>
+          </div>
+          <img class="diagram" src="img/s06-p33-2-b294df5c.jpeg" alt="Biorreactores de acero inoxidable para CHO a escala industrial" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 51 — Resumen comparativo -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Caso 2 · cierre</p>
+        <h2>Resumen del análisis comparativo</h2>
+        <table class="comp">
+          <thead><tr><th>Chasis</th><th>Glicosilación</th><th>Ensamblaje</th><th>Secreción</th><th>Regulatorio</th><th>Veredicto</th></tr></thead>
+          <tbody>
+            <tr><td><em>E. coli</em></td><td>❌ No</td><td>❌ No</td><td>❌ No</td><td>N/A</td><td>🚫 Descartado</td></tr>
+            <tr><td><em>S. cerevisiae</em></td><td>❌ Hipermanosil.</td><td>⚠️ Parcial</td><td>⚠️ Moderada</td><td>GRAS</td><td>🚫 Descartado</td></tr>
+            <tr><td><em>P. pastoris</em></td><td>⚠️ Solo GlycoFi</td><td>✅ Sí</td><td>✅ Excelente</td><td>Limitado</td><td>🥈 Posible futuro</td></tr>
+            <tr class="highlight"><td><strong>CHO</strong></td><td>✅ Sí</td><td>✅ Sí</td><td>✅ Excelente</td><td>Extenso</td><td>✅ <strong>SELECCIONADO</strong></td></tr>
+            <tr><td>HEK293</td><td>✅ Sí</td><td>✅ Sí</td><td>✅ Buena</td><td>Limitado</td><td>🔄 Alternativa</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 52 — Separador Casos adicionales -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide block-slide" data-slide>
+      <div class="content" style="text-align:center;">
+        <p class="eyebrow">Módulo K · NUEVO · ~20 min</p>
+        <h1>Tres casos más que iluminan la decisión</h1>
+        <p>Humulin · Artemisinina · Vacunas mRNA</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 53 — Humulin (historia) -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Caso histórico · 1978–1982</p>
+        <h2>Humulin® · el primer biotech aprobado</h2>
+        <div class="grid cols-2">
+          <div>
+            <h3>El hito</h3>
+            <ul>
+              <li><strong>1978:</strong> Genentech expresa insulina humana en <em>E. coli</em> (cadenas A y B separadas)</li>
+              <li><strong>1982:</strong> Eli Lilly obtiene aprobación FDA — primer fármaco recombinante</li>
+              <li>Antes: insulina de páncreas porcino/bovino (riesgo inmunogénico)</li>
+            </ul>
+          </div>
+          <div>
+            <h3>¿Por qué funcionó <em>E. coli</em> aquí?</h3>
+            <ul>
+              <li>Proteína pequeña (51 aa total)</li>
+              <li>Sin glicosilación</li>
+              <li>Tres puentes disulfuro manejables tras plegamiento in vitro</li>
+              <li><strong>Costo objetivo era crítico</strong> (insulina es commodity)</li>
+            </ul>
+          </div>
+        </div>
+        <p class="callout">💡 <strong>Lección:</strong> el primer chasis exitoso no fue el más elegante — fue el más económico y escalable compatible con la molécula. Hoy Humulin y Humalog siguen produciéndose en <em>E. coli</em>.</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 54 — Artemisinina (Amyris) -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Caso · metabolic engineering</p>
+        <h2>Artemisinina en <em>S. cerevisiae</em> · el proyecto Amyris/Sanofi</h2>
+        <div class="grid cols-2">
+          <div>
+            <h3>El desafío</h3>
+            <ul>
+              <li>Artemisinina: antimalárico extraído de <em>Artemisia annua</em></li>
+              <li>Suministro volátil · precios oscilantes</li>
+              <li>Solución: <strong>sintetizar en una célula</strong></li>
+            </ul>
+            <h3 style="margin-top:0.75rem;">La ingeniería</h3>
+            <ul>
+              <li>Amyris expresó una ruta de <strong>12 genes</strong> en <em>S. cerevisiae</em></li>
+              <li>Producción de ácido artemisínico (precursor)</li>
+              <li>Conversión química al producto final</li>
+            </ul>
+          </div>
+          <div class="card success">
+            <h3>Por qué <em>S. cerevisiae</em></h3>
+            <ol>
+              <li>Metabolismo eucariótico para P450s funcionales</li>
+              <li>Estatus GRAS · regulación sencilla para farmacéuticos</li>
+              <li>Herramientas genéticas maduras (CRISPR, overexpresión, KO)</li>
+              <li>Alta densidad celular en fed-batch</li>
+            </ol>
+          </div>
+        </div>
+        <p class="callout"><strong>2013:</strong> Sanofi produce artemisinina semi-sintética a escala industrial (35 t/año). Lección: chasis eucariótico es esencial para rutas con P450.</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 55 — mRNA vaccines -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Caso · paradigma emergente</p>
+        <h2>Vacunas mRNA · <em>sin chasis vivo</em></h2>
+        <div class="grid cols-2">
+          <div>
+            <h3>La producción</h3>
+            <ol>
+              <li>Plantilla DNA linearizada con promotor T7</li>
+              <li><strong>In Vitro Transcription (IVT)</strong> con T7-RNAP recombinante</li>
+              <li>Nucleótidos modificados (N<sup>1</sup>-metil-pseudouridina)</li>
+              <li>Capping (cap-1) y purificación cromatográfica</li>
+              <li>Encapsulación en <strong>LNPs</strong> (nanopartículas lipídicas)</li>
+            </ol>
+          </div>
+          <div class="card info">
+            <h3>Por qué cambia el juego</h3>
+            <ul>
+              <li><strong>Tiempo de desarrollo:</strong> meses, no años</li>
+              <li><strong>Flexibilidad:</strong> nueva variante = cambiar plantilla</li>
+              <li>Sin cultivo celular · sin problemas de glicosilación</li>
+              <li>Pfizer/BioNTech y Moderna probaron la plataforma con COVID-19</li>
+            </ul>
+          </div>
+        </div>
+        <p class="callout"><strong>Observación:</strong> cell-free + química + nanotecnología = paradigma distinto al "chasis tradicional". La siguiente generación de vacunas podría ser diseñada en una semana.</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 56 — Separador Módulo L: Puente a S7 -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide block-slide" data-slide>
+      <div class="content" style="text-align:center;">
+        <p class="eyebrow">Módulo L · NUEVO · ~20 min</p>
+        <h1>Puente a Sesión 7</h1>
+        <p>Del fenotipo al modelo predictivo: GEM y FBA.</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 57 — ¿Qué es un GEM? -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Puente a S7 · concepto</p>
+        <h2>¿Qué es un Genome-Scale Metabolic Model (GEM)?</h2>
+        <div class="two-col">
+          <div>
+            <p>Una <strong>reconstrucción matemática</strong> del metabolismo completo de un organismo, construida a partir de:</p>
+            <ul>
+              <li>Secuencia genómica anotada (qué enzimas tiene)</li>
+              <li>Base de datos de reacciones (KEGG, MetaCyc, BiGG)</li>
+              <li>Evidencia experimental de flujos</li>
+              <li>Reglas Gene-Protein-Reaction (GPR)</li>
+            </ul>
+            <div class="callout"><strong>Resultado:</strong> una red con miles de reacciones que <em>predice</em> cómo la célula transforma sustrato en biomasa y productos.</div>
+          </div>
+          <div class="card info">
+            <h3>Relevancia para nuestro curso</h3>
+            <ul>
+              <li>Predecir titer máximo <em>antes</em> de construir cepa</li>
+              <li>Identificar knock-outs que mejoran producción</li>
+              <li>Comparar chasis in-silico para un producto dado</li>
+              <li>Puente entre genotipo (secuencia) y fenotipo (flujo)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 58 — Matriz estequiométrica -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Puente a S7 · matemática</p>
+        <h2>La matriz estequiométrica S</h2>
+        <div class="two-col">
+          <div>
+            <p>Cada columna es una <strong>reacción</strong>; cada fila es un <strong>metabolito</strong>. Los coeficientes son los estequiométricos.</p>
+            <p>Ejemplo simple con 3 metabolitos (A, B, C) y 3 reacciones:</p>
+            <div class="matrix-grid" style="margin-top:1rem;">
+              <div class="cell header">S</div><div class="cell header">v₁</div><div class="cell header">v₂</div><div class="cell header">v₃</div><div class="cell header"></div>
+              <div class="cell header">A</div><div class="cell neg">−1</div><div class="cell">0</div><div class="cell">0</div><div class="cell">→ B</div>
+              <div class="cell header">B</div><div class="cell pos">+1</div><div class="cell neg">−1</div><div class="cell">0</div><div class="cell">→ C</div>
+              <div class="cell header">C</div><div class="cell">0</div><div class="cell pos">+1</div><div class="cell neg">−1</div><div class="cell">→ ex</div>
+            </div>
+            <p class="sub" style="margin-top:0.5rem;font-size:0.85rem;color:var(--brand-gray);">Verde = producto, rojo = sustrato.</p>
+          </div>
+          <div>
+            <h3>Estado estacionario (steady state)</h3>
+            <div class="equation-block">
+              $$S \cdot v = 0$$
+            </div>
+            <p>Los flujos <em>v</em> deben balancear todos los metabolitos internos: <strong>entran = salen</strong>.</p>
+            <p>En un modelo GEM real: miles de filas, miles de columnas. Sistema subdeterminado → infinitas soluciones posibles.</p>
+            <p class="callout"><strong>FBA</strong> selecciona <em>una</em> solución que optimiza una función objetivo.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 59 — FBA: función objetivo y LP -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Puente a S7 · optimización</p>
+        <h2>Flux Balance Analysis (FBA) · formulación</h2>
+        <div class="equation-block">
+          $$\max \quad c^{T} v \qquad \text{sujeto a} \qquad S v = 0, \quad v_{\min} \le v \le v_{\max}$$
+        </div>
+        <div class="grid cols-3" style="margin-top:0.75rem;">
+          <div class="card">
+            <h3>c<sup>T</sup> v</h3>
+            <p><strong>Función objetivo.</strong> Puede ser biomasa (crecimiento máximo), titer de un producto, o combinación.</p>
+          </div>
+          <div class="card">
+            <h3>Sv = 0</h3>
+            <p><strong>Balances de masa.</strong> No hay acumulación ni generación espontánea de materia.</p>
+          </div>
+          <div class="card">
+            <h3>vmin ≤ v ≤ vmax</h3>
+            <p><strong>Capacidades.</strong> Uptake limitado (ej. glucosa), reacciones irreversibles (v ≥ 0), knockouts (v = 0).</p>
+          </div>
+        </div>
+        <p class="callout">Esto es un problema de <strong>programación lineal</strong> (LP). Se resuelve en segundos aun con 10 000+ reacciones. Solvers: GLPK, CPLEX, Gurobi.</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 60 — Modelos disponibles -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Puente a S7 · recursos</p>
+        <h2>Modelos GEM disponibles por chasis</h2>
+        <table class="comp">
+          <thead><tr><th>Chasis</th><th>Modelo principal</th><th>#Reacciones</th><th>#Genes</th><th>Repositorio</th></tr></thead>
+          <tbody>
+            <tr><td><em>E. coli</em> K-12 MG1655</td><td><code>iML1515</code></td><td>~2700</td><td>1515</td><td>BiGG Models</td></tr>
+            <tr><td><em>E. coli</em> (histórico)</td><td><code>iJO1366</code></td><td>~2500</td><td>1366</td><td>BiGG Models</td></tr>
+            <tr><td><em>S. cerevisiae</em></td><td><code>Yeast9</code> (ex-Yeast7/8)</td><td>~3900</td><td>1150</td><td>SysBioChalmers</td></tr>
+            <tr><td><em>P. pastoris</em></td><td><code>iMT1026</code></td><td>~2000</td><td>1026</td><td>BiGG Models</td></tr>
+            <tr><td><em>B. subtilis</em></td><td><code>iYO844</code></td><td>~1250</td><td>844</td><td>BiGG Models</td></tr>
+            <tr><td>CHO</td><td><code>iCHO2441</code></td><td>~5000</td><td>2441</td><td>Lewis Lab, UCSD</td></tr>
+            <tr><td>Humano</td><td><code>Recon3D</code></td><td>~13500</td><td>3288</td><td>VMH</td></tr>
+          </tbody>
+        </table>
+        <p class="callout">En <strong>Sesión 7</strong> haremos la <em>demo con COBRApy</em> (Python) sobre uno de estos modelos para optimizar producción de un metabolito target.</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 61 — Discusión final -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <div class="two-col">
+          <img class="diagram" src="img/s06-p35-2-99addf05.jpeg" alt="Científica reflexionando sobre elección de chasis" />
+          <div>
+            <p class="eyebrow">Aplicación al proyecto del curso</p>
+            <h2>Discusión: chasis para su proyecto</h2>
+            <p>Ahora, consideremos la enzima específica con la que trabajaron en el módulo molecular con Andrés. Preguntas para guiar la decisión:</p>
+            <ol>
+              <li>¿Qué modificaciones postraduccionales requiere?</li>
+              <li>¿Tiene puentes disulfuro?</li>
+              <li>¿Es tóxica para las células?</li>
+              <li>¿Cuál sería el uso final (terapéutico, industrial, diagnóstico)?</li>
+            </ol>
+            <p class="callout">Con esa información, <strong>¿qué chasis elegirían inicialmente y por qué?</strong></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- 62 — Cierre / Gracias -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content" style="text-align:center;">
+        <p class="eyebrow">DPRO-4300 · Sesión 6</p>
+        <h1>Gracias</h1>
+        <p>Próxima sesión: <strong>21 de mayo · Modelos metabólicos y biorreactores</strong> — abrimos con quiz y la demo de COBRApy.</p>
+        <div class="pill-row" style="justify-content:center;">
+          <span class="pill">lh.reyes@uniandes.edu.co</span>
+          <span class="pill">[DPRO-4300] en asunto</span>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="hud">
+    <span id="hud-title">DPRO-4300 · Sesión 6 · Del gen al fenotipo</span>
+    <span id="hud-counter">1 / 62</span>
+  </div>
+
+  <div class="controls">
+    <button aria-label="Anterior" id="prev">‹</button>
+    <button aria-label="Pantalla completa" id="fs">⛶</button>
+    <button aria-label="Siguiente" id="next">›</button>
+  </div>
+
+  <script>
+    (function () {
+      var slides = Array.prototype.slice.call(document.querySelectorAll('[data-slide]'));
+      var i = 0;
+      var counter = document.getElementById('hud-counter');
+      var progress = document.querySelector('.progress');
+
+      function render() {
+        slides.forEach(function (s, idx) { s.classList.toggle('active', idx === i); });
+        if (counter) counter.textContent = (i + 1) + ' / ' + slides.length;
+        if (progress) progress.style.width = ((i + 1) / slides.length * 100) + '%';
+        var cur = slides[i];
+        var isTitle = cur && cur.classList.contains('title-slide');
+        var isBlock = cur && cur.classList.contains('block-slide');
+        if (isTitle) document.body.style.background = '#1A1A1A';
+        else if (isBlock) document.body.style.background = '#FFBF00';
+        else document.body.style.background = '#ffffff';
+      }
+      function go(n) { i = Math.max(0, Math.min(slides.length - 1, n)); render(); }
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); go(i + 1); }
+        else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(i - 1); }
+        else if (e.key === 'Home') { e.preventDefault(); go(0); }
+        else if (e.key === 'End') { e.preventDefault(); go(slides.length - 1); }
+        else if (e.key === 'f' || e.key === 'F') { toggleFs(); }
+      });
+
+      document.getElementById('prev').addEventListener('click', function () { go(i - 1); });
+      document.getElementById('next').addEventListener('click', function () { go(i + 1); });
+      document.getElementById('fs').addEventListener('click', toggleFs);
+
+      function toggleFs() {
+        var el = document.documentElement;
+        if (!document.fullscreenElement) {
+          (el.requestFullscreen || el.webkitRequestFullscreen || function(){}).call(el);
+        } else {
+          (document.exitFullscreen || document.webkitExitFullscreen || function(){}).call(document);
+        }
+      }
+
+      var tx = 0, ty = 0;
+      document.addEventListener('touchstart', function (e) {
+        if (!e.changedTouches[0]) return;
+        tx = e.changedTouches[0].clientX; ty = e.changedTouches[0].clientY;
+      }, { passive: true });
+      document.addEventListener('touchend', function (e) {
+        if (!e.changedTouches[0]) return;
+        var dx = e.changedTouches[0].clientX - tx;
+        var dy = e.changedTouches[0].clientY - ty;
+        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+          if (dx < 0) go(i + 1); else go(i - 1);
+        }
+      }, { passive: true });
+
+      slides.forEach(function (s, idx) {
+        var num = document.createElement('div');
+        num.className = 'slide-number';
+        num.setAttribute('aria-hidden', 'true');
+        num.textContent = String(idx + 1).padStart(2, '0');
+        s.appendChild(num);
+      });
+
+      render();
+    })();
+  </script>
+</body>
+</html>

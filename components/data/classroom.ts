@@ -145,8 +145,9 @@ export interface Course {
 
 import { pouCourse } from './classroom/pou';
 import { spdpCourse } from './classroom/spdp';
+import { dpro4300Course } from './classroom/dpro-4300';
 
-export const classroomData: Course[] = [pouCourse, spdpCourse];
+export const classroomData: Course[] = [pouCourse, spdpCourse, dpro4300Course];
 
 export const getCourseBySlug = (slug: string): Course | undefined =>
   classroomData.find((c) => c.slug === slug);
