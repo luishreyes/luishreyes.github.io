@@ -692,6 +692,551 @@ const VaporPressureChart: React.FC = () => {
   );
 };
 
+/* ─── Diagrama de Moody interactivo (leer, no calcular) ─── */
+const MoodyDiagram: React.FC = () => {
+  const [Re, setRe] = useState(1e5);
+  const [epsD, setEpsD] = useState(1e-3);
+
+  // Swamee-Jain (explícita) — aproximación de Colebrook-White (<1% error en Re > 5000).
+  // Se usa solo para dibujar y localizar el punto, no para dar el valor al estudiante.
+  const swameeJain = (Re: number, epsD: number): number => {
+    const arg = epsD / 3.7 + 5.74 / Math.pow(Re, 0.9);
+    return 0.25 / Math.pow(Math.log10(arg), 2);
+  };
+
+  const ReMin = 1e3;
+  const ReMax = 1e8;
+  const fMin = 0.008;
+  const fMax = 0.1;
+
+  const W = 720;
+  const H = 480;
+  const margin = { top: 36, right: 86, bottom: 56, left: 76 };
+  const plotW = W - margin.left - margin.right;
+  const plotH = H - margin.top - margin.bottom;
+
+  const xScale = (re: number) => {
+    const logMin = Math.log10(ReMin);
+    const logMax = Math.log10(ReMax);
+    return margin.left + ((Math.log10(re) - logMin) / (logMax - logMin)) * plotW;
+  };
+  const yScale = (f: number) => {
+    const logMin = Math.log10(fMin);
+    const logMax = Math.log10(fMax);
+    return margin.top + plotH - ((Math.log10(f) - logMin) / (logMax - logMin)) * plotH;
+  };
+
+  const epsDCurves = [0, 1e-6, 5e-6, 1e-5, 5e-5, 1e-4, 2e-4, 4e-4, 1e-3, 2e-3, 4e-3, 1e-2, 1.5e-2, 2e-2, 3e-2, 5e-2];
+
+  const laminarPath = (() => {
+    const pts: [number, number][] = [];
+    for (let logRe = 3; logRe <= Math.log10(2300) + 0.01; logRe += 0.1) {
+      const re = Math.pow(10, logRe);
+      pts.push([xScale(re), yScale(64 / re)]);
+    }
+    pts.push([xScale(2300), yScale(64 / 2300)]);
+    return 'M' + pts.map((p) => p.map((v) => v.toFixed(1)).join(' ')).join(' L');
+  })();
+
+  const turbPath = (eps: number): string => {
+    const pts: [number, number][] = [];
+    for (let logRe = Math.log10(4000); logRe <= Math.log10(ReMax) + 0.01; logRe += 0.05) {
+      const re = Math.pow(10, logRe);
+      const f = swameeJain(re, eps);
+      if (f >= fMin && f <= fMax) {
+        pts.push([xScale(re), yScale(f)]);
+      }
+    }
+    return pts.length ? 'M' + pts.map((p) => p.map((v) => v.toFixed(1)).join(' ')).join(' L') : '';
+  };
+
+  const roughBoundaryPath = (() => {
+    const pts: [number, number][] = [];
+    for (const eps of epsDCurves) {
+      if (eps === 0) continue;
+      const f = swameeJain(1e7, eps);
+      const ReCrit = 200 / (eps * Math.sqrt(f));
+      if (ReCrit > ReMin && ReCrit < ReMax && f > fMin && f < fMax) {
+        pts.push([xScale(ReCrit), yScale(f)]);
+      }
+    }
+    if (pts.length < 2) return '';
+    return 'M' + pts.map((p) => p.map((v) => v.toFixed(1)).join(' ')).join(' L');
+  })();
+
+  const userF = Re < 2300
+    ? 64 / Re
+    : Re < 4000
+      ? NaN
+      : swameeJain(Re, epsD);
+
+  const inLaminar = Re < 2300;
+  const inCritical = Re >= 2300 && Re < 4000;
+  const inTurbulent = Re >= 4000;
+  const isFullyRough = inTurbulent && (5.74 / Math.pow(Re, 0.9)) < 0.1 * (epsD / 3.7);
+
+  const regime: { label: string; color: string; note: string } = inLaminar
+    ? { label: 'Laminar', color: '#16a34a', note: 'f = 64/Re · solo depende de Re' }
+    : inCritical
+      ? { label: 'Zona crítica', color: '#ea580c', note: 'Transición inestable · evitar en diseño' }
+      : isFullyRough
+        ? { label: 'Turbulento plenamente rugoso', color: '#7c3aed', note: 'f depende solo de ε/D · las curvas se vuelven horizontales a la derecha' }
+        : { label: 'Turbulento de transición', color: '#0284c7', note: 'f depende de Re y de ε/D · seguir la curva de tu rugosidad' };
+
+  const xTicksMajor = [1e3, 1e4, 1e5, 1e6, 1e7, 1e8];
+  const yTicksMajor = [0.008, 0.01, 0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.1];
+  const xTicksMinor: number[] = [];
+  for (let decade = 3; decade < 8; decade++) {
+    for (let m = 2; m <= 9; m++) xTicksMinor.push(m * Math.pow(10, decade));
+  }
+
+  const fmtEps = (e: number): string => {
+    if (e === 0) return '0 (liso)';
+    if (e >= 1e-2) return e.toFixed(3);
+    if (e >= 1e-3) return e.toFixed(4);
+    return e.toExponential(0).replace('+', '');
+  };
+
+  const fmtRe = (re: number): string => {
+    if (re >= 1e6) return (re / 1e6).toFixed(2) + '×10⁶';
+    if (re >= 1e4) return (re / 1e3).toFixed(1) + '×10³';
+    return Math.round(re).toString();
+  };
+
+  const logRe = Math.log10(Re);
+  const logEps = epsD > 0 ? Math.log10(epsD) : -7;
+
+  const superscriptDigit = (n: number): string => {
+    const map: Record<string, string> = { '0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹' };
+    return String(n).split('').map((c) => map[c] ?? c).join('');
+  };
+
+  return (
+    <div className="my-6 not-prose">
+      <div className="rounded-xl bg-white border border-zinc-200 p-4 sm:p-6 shadow-sm">
+        <div className="flex items-baseline justify-between mb-3 flex-wrap gap-2">
+          <h4 className="text-base font-semibold text-brand-dark">
+            Diagrama de Moody — aprende a leerlo
+          </h4>
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold text-white" style={{ background: regime.color }}>
+            {regime.label}
+          </span>
+        </div>
+
+        <p className="text-xs text-brand-gray mb-4 leading-relaxed">
+          Mueve los sliders de <strong>Re</strong> y de <strong>rugosidad relativa ε/D</strong>. El cursor
+          muestra <em>dónde caer</em> en el diagrama — no te da el valor de <em>f</em> para que lo copies.
+          Aprende a reconocer el régimen, seguir la curva de ε/D correcta y leer la altura.
+        </p>
+
+        <div className="flex justify-center">
+          <svg viewBox={`0 0 ${W} ${H}`} className="w-full max-w-[780px]" role="img" aria-label="Diagrama de Moody interactivo">
+            <rect x={margin.left} y={margin.top} width={plotW} height={plotH} fill="#fafafa" />
+
+            {/* Zona crítica */}
+            <rect
+              x={xScale(2300)}
+              y={margin.top}
+              width={xScale(4000) - xScale(2300)}
+              height={plotH}
+              fill="#fed7aa"
+              opacity="0.45"
+            />
+            <text x={(xScale(2300) + xScale(4000)) / 2} y={margin.top + 14} textAnchor="middle" fontSize="9" fill="#9a3412" fontWeight="700">
+              Zona crítica
+            </text>
+
+            {/* Minor X gridlines */}
+            {xTicksMinor.map((t) => (
+              <line key={`mnx-${t}`} x1={xScale(t)} y1={margin.top} x2={xScale(t)} y2={margin.top + plotH} stroke="#e4e4e7" strokeWidth="0.3" />
+            ))}
+
+            {/* Major gridlines */}
+            {xTicksMajor.map((t) => (
+              <line key={`mjx-${t}`} x1={xScale(t)} y1={margin.top} x2={xScale(t)} y2={margin.top + plotH} stroke="#d4d4d8" strokeWidth="0.8" />
+            ))}
+            {yTicksMajor.map((f) => (
+              <line key={`mjy-${f}`} x1={margin.left} y1={yScale(f)} x2={margin.left + plotW} y2={yScale(f)} stroke="#e4e4e7" strokeWidth="0.5" strokeDasharray="2 2" />
+            ))}
+
+            {/* Laminar */}
+            <path d={laminarPath} stroke="#16a34a" strokeWidth="2.5" fill="none" />
+            <text
+              x={xScale(1200) + 2}
+              y={yScale(64 / 1200) + 14}
+              fontSize="10"
+              fill="#16a34a"
+              fontWeight="700"
+              transform={`rotate(-28 ${xScale(1200) + 2} ${yScale(64 / 1200) + 14})`}
+            >
+              Laminar · f = 64/Re
+            </text>
+
+            {/* Turbulent curves */}
+            {epsDCurves.map((eps) => {
+              const d = turbPath(eps);
+              if (!d) return null;
+              const isSmooth = eps === 0;
+              return (
+                <path
+                  key={eps}
+                  d={d}
+                  stroke={isSmooth ? '#0284c7' : '#1f2937'}
+                  strokeWidth={isSmooth ? 2 : 1}
+                  fill="none"
+                  opacity={isSmooth ? 0.9 : 0.55}
+                />
+              );
+            })}
+
+            {/* Fully-rough boundary */}
+            {roughBoundaryPath && (
+              <path d={roughBoundaryPath} stroke="#dc2626" strokeWidth="1.2" strokeDasharray="5 3" fill="none" opacity="0.7" />
+            )}
+            <text x={xScale(4e5)} y={margin.top + 26} fontSize="9" fill="#dc2626" fontStyle="italic">
+              Turbulento plenamente rugoso →
+            </text>
+
+            {/* Right-axis ε/D labels */}
+            {epsDCurves.filter((e) => e >= 1e-5).map((eps) => {
+              const f = swameeJain(ReMax * 0.98, eps);
+              if (f < fMin || f > fMax) return null;
+              return (
+                <text key={`r-${eps}`} x={margin.left + plotW + 4} y={yScale(f) + 3} fontSize="8.5" fill="#52525b">
+                  {fmtEps(eps)}
+                </text>
+              );
+            })}
+            <text x={margin.left + plotW + 38} y={margin.top - 10} fontSize="10" fontWeight="700" fill="#27272a" textAnchor="middle">
+              ε/D
+            </text>
+
+            {/* X labels */}
+            {xTicksMajor.map((t) => {
+              const exp = Math.log10(t);
+              return (
+                <g key={`xlab-${t}`}>
+                  <line x1={xScale(t)} y1={margin.top + plotH} x2={xScale(t)} y2={margin.top + plotH + 4} stroke="#27272a" strokeWidth="1" />
+                  <text x={xScale(t)} y={margin.top + plotH + 18} textAnchor="middle" fontSize="11" fill="#27272a">
+                    10{superscriptDigit(exp)}
+                  </text>
+                </g>
+              );
+            })}
+
+            {/* Y labels */}
+            {yTicksMajor.map((f) => (
+              <text key={`ylab-${f}`} x={margin.left - 8} y={yScale(f) + 4} textAnchor="end" fontSize="10" fill="#27272a">
+                {f.toFixed(3)}
+              </text>
+            ))}
+
+            {/* Axes */}
+            <line x1={margin.left} y1={margin.top + plotH} x2={margin.left + plotW} y2={margin.top + plotH} stroke="#27272a" strokeWidth="1.2" />
+            <line x1={margin.left} y1={margin.top} x2={margin.left} y2={margin.top + plotH} stroke="#27272a" strokeWidth="1.2" />
+
+            {/* Axis titles */}
+            <text x={margin.left + plotW / 2} y={H - 10} textAnchor="middle" fontSize="12" fontWeight="700" fill="#27272a">
+              Número de Reynolds, Re
+            </text>
+            <text
+              x="18"
+              y={margin.top + plotH / 2}
+              textAnchor="middle"
+              fontSize="12"
+              fontWeight="700"
+              fill="#27272a"
+              transform={`rotate(-90 18 ${margin.top + plotH / 2})`}
+            >
+              Factor de fricción de Darcy, f
+            </text>
+
+            {/* User crosshair */}
+            {Number.isFinite(userF) && userF >= fMin && userF <= fMax && (
+              <g>
+                <line x1={xScale(Re)} y1={margin.top + plotH} x2={xScale(Re)} y2={yScale(userF)} stroke="#E6AC00" strokeWidth="1.8" strokeDasharray="5 3" />
+                <line x1={margin.left} y1={yScale(userF)} x2={xScale(Re)} y2={yScale(userF)} stroke="#E6AC00" strokeWidth="1.8" strokeDasharray="5 3" />
+                <circle cx={xScale(Re)} cy={yScale(userF)} r="7" fill="#FFBF00" stroke="#1A1A1A" strokeWidth="1.8" />
+                <circle cx={xScale(Re)} cy={yScale(userF)} r="2" fill="#1A1A1A" />
+              </g>
+            )}
+
+            {inCritical && (
+              <g>
+                <line x1={xScale(Re)} y1={margin.top} x2={xScale(Re)} y2={margin.top + plotH} stroke="#ea580c" strokeWidth="1.8" strokeDasharray="5 3" />
+                <text x={xScale(Re)} y={margin.top + plotH / 2} textAnchor="middle" fontSize="11" fill="#9a3412" fontWeight="700">
+                  f indefinido
+                </text>
+              </g>
+            )}
+          </svg>
+        </div>
+
+        {/* Controls */}
+        <div className="grid sm:grid-cols-2 gap-4 mt-5">
+          <div>
+            <div className="flex items-baseline justify-between mb-1">
+              <label htmlFor="moody-re" className="text-xs font-semibold text-brand-dark uppercase tracking-wider">
+                Reynolds
+              </label>
+              <span className="font-mono text-sm text-brand-dark font-semibold">Re = {fmtRe(Re)}</span>
+            </div>
+            <input
+              id="moody-re"
+              type="range"
+              min={3}
+              max={8}
+              step={0.02}
+              value={logRe}
+              onChange={(e) => setRe(Math.pow(10, Number(e.target.value)))}
+              className="w-full accent-brand-yellow"
+              aria-label="Número de Reynolds (escala logarítmica)"
+            />
+            <div className="flex justify-between text-[10px] text-brand-gray font-mono mt-0.5">
+              <span>10³</span><span>10⁴</span><span>10⁵</span><span>10⁶</span><span>10⁷</span><span>10⁸</span>
+            </div>
+          </div>
+
+          <div>
+            <div className="flex items-baseline justify-between mb-1">
+              <label htmlFor="moody-eps" className="text-xs font-semibold text-brand-dark uppercase tracking-wider">
+                Rugosidad relativa
+              </label>
+              <span className="font-mono text-sm text-brand-dark font-semibold">ε/D = {fmtEps(epsD)}</span>
+            </div>
+            <input
+              id="moody-eps"
+              type="range"
+              min={-6}
+              max={-1.3}
+              step={0.05}
+              value={logEps}
+              onChange={(e) => setEpsD(Math.pow(10, Number(e.target.value)))}
+              className="w-full accent-brand-yellow"
+              aria-label="Rugosidad relativa (escala logarítmica)"
+            />
+            <div className="flex justify-between text-[10px] text-brand-gray font-mono mt-0.5">
+              <span>10⁻⁶</span><span>10⁻⁵</span><span>10⁻⁴</span><span>10⁻³</span><span>10⁻²</span><span>0.05</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-4 rounded-lg border border-zinc-200 bg-zinc-50 p-3">
+          <p className="text-sm text-brand-dark">
+            <span className="font-semibold" style={{ color: regime.color }}>{regime.label}.</span>{' '}
+            <span className="text-brand-gray">{regime.note}</span>
+          </p>
+          <p className="text-xs text-brand-gray mt-2 leading-relaxed">
+            <strong>Cómo leer el diagrama:</strong> (1) localiza tu Re en el eje inferior. (2) sube vertical
+            hasta cruzar la curva con tu ε/D. (3) desde ese cruce, ve a la izquierda para leer <em>f</em>.
+            La línea amarilla hace esos tres pasos por ti — el ejercicio es reconocer el régimen y la curva
+            correcta.
+          </p>
+        </div>
+
+        <div className="mt-3 flex flex-wrap gap-2">
+          <span className="text-[11px] text-brand-gray mr-1 mt-1">Ejemplos:</span>
+          {[
+            { label: 'Agua · PVC nuevo', Re: 5e4, epsD: 6e-5 },
+            { label: 'Crudo pesado · laminar', Re: 2e3, epsD: 1e-4 },
+            { label: 'Aire en acero comercial', Re: 3e6, epsD: 4e-4 },
+            { label: 'Leche en acero inoxidable', Re: 8e4, epsD: 3e-5 },
+            { label: 'Agua en hierro galvanizado', Re: 2e5, epsD: 3e-3 },
+          ].map((p) => (
+            <button
+              key={p.label}
+              type="button"
+              onClick={() => { setRe(p.Re); setEpsD(p.epsD); }}
+              className="text-[11px] px-2.5 py-1 rounded-full border border-zinc-300 hover:border-brand-yellow-dark hover:bg-yellow-50 transition text-brand-gray hover:text-brand-dark"
+            >
+              {p.label}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ─── Perfil de presión a lo largo del sistema (SVG inline) ─── */
+const PressureProfile: React.FC = () => {
+  const W = 720;
+  const H = 360;
+  const margin = { top: 40, right: 40, bottom: 60, left: 64 };
+  const plotW = W - margin.left - margin.right;
+  const plotH = H - margin.top - margin.bottom;
+
+  // Nodos a lo largo del sistema: x = distancia (normalizada 0-1), y = cabeza de presión (m)
+  // P_atm = 10.3 m. Ptanque abierto = atm. Succión baja por fricción y altura;
+  // bomba agrega 30 m; descarga pierde por fricción y subida; tanque final atm.
+  const nodes: { x: number; P: number; label: string; highlight?: 'min' | 'bomba' }[] = [
+    { x: 0.00, P: 10.3, label: 'Tanque 1\n(superficie, atm)' },
+    { x: 0.18, P: 8.2,  label: 'Entrada a\nbomba', highlight: 'min' },
+    { x: 0.30, P: 38.0, label: 'Salida de\nbomba', highlight: 'bomba' },
+    { x: 0.55, P: 28.0, label: 'Tras codos\ny válvulas' },
+    { x: 0.82, P: 18.0, label: 'Antes de\ndescarga' },
+    { x: 1.00, P: 10.3, label: 'Tanque 2\n(atm)' },
+  ];
+
+  const Pvap = 2.4; // presión de vapor del agua a 20 °C, en m de H2O
+  const NPSHreq = 4; // m, referencia de diseño
+  const minNPSH = Pvap + NPSHreq; // nivel mínimo admisible en succión
+
+  const yMin = 0;
+  const yMax = 42;
+
+  const xScale = (xn: number) => margin.left + xn * plotW;
+  const yScale = (P: number) => margin.top + plotH - ((P - yMin) / (yMax - yMin)) * plotH;
+
+  const pathD = 'M' + nodes.map((n) => `${xScale(n.x).toFixed(1)} ${yScale(n.P).toFixed(1)}`).join(' L');
+
+  return (
+    <div className="my-6 not-prose">
+      <div className="rounded-xl bg-white border border-zinc-200 p-4 sm:p-6 shadow-sm">
+        <h4 className="text-base font-semibold text-brand-dark mb-1">
+          Perfil de presión a lo largo del sistema
+        </h4>
+        <p className="text-xs text-brand-gray mb-4">
+          La presión sube en la bomba y baja por fricción y elevación. El <em>mínimo</em> del sistema
+          —justo antes de la bomba— es el punto crítico para cavitación.
+        </p>
+
+        <div className="flex justify-center">
+          <svg viewBox={`0 0 ${W} ${H}`} className="w-full max-w-[780px]" role="img" aria-label="Perfil de presión a lo largo del sistema">
+            {/* Plot area */}
+            <rect x={margin.left} y={margin.top} width={plotW} height={plotH} fill="#fafafa" />
+
+            {/* Zona de cavitación (por debajo de Pvap) en rojo tenue */}
+            <rect
+              x={margin.left}
+              y={yScale(Pvap)}
+              width={plotW}
+              height={margin.top + plotH - yScale(Pvap)}
+              fill="#fecaca"
+              opacity="0.55"
+            />
+            {/* Margen de NPSH (entre Pvap y Pvap+NPSHreq) en ámbar */}
+            <rect
+              x={margin.left}
+              y={yScale(minNPSH)}
+              width={plotW}
+              height={yScale(Pvap) - yScale(minNPSH)}
+              fill="#fde68a"
+              opacity="0.5"
+            />
+
+            {/* Líneas horizontales de referencia */}
+            <line x1={margin.left} y1={yScale(Pvap)} x2={margin.left + plotW} y2={yScale(Pvap)} stroke="#dc2626" strokeWidth="1.4" strokeDasharray="5 3" />
+            <text x={margin.left + plotW - 6} y={yScale(Pvap) - 4} textAnchor="end" fontSize="10" fill="#b91c1c" fontWeight="700">
+              P_vap ({Pvap} m) — si P cae aquí → cavitación
+            </text>
+
+            <line x1={margin.left} y1={yScale(minNPSH)} x2={margin.left + plotW} y2={yScale(minNPSH)} stroke="#b45309" strokeWidth="1.2" strokeDasharray="4 3" />
+            <text x={margin.left + plotW - 6} y={yScale(minNPSH) - 4} textAnchor="end" fontSize="10" fill="#92400e" fontWeight="700">
+              P_vap + NPSH_req ({minNPSH} m) — mínimo admisible
+            </text>
+
+            {/* Perfil de presión */}
+            <path d={pathD} stroke="#1A1A1A" strokeWidth="2.5" fill="none" />
+
+            {/* Área bajo la curva (visual) */}
+            <path
+              d={`${pathD} L ${xScale(1).toFixed(1)} ${yScale(yMin).toFixed(1)} L ${xScale(0).toFixed(1)} ${yScale(yMin).toFixed(1)} Z`}
+              fill="#FFBF00"
+              opacity="0.08"
+            />
+
+            {/* Nodos */}
+            {nodes.map((n, i) => {
+              const cx = xScale(n.x);
+              const cy = yScale(n.P);
+              const color = n.highlight === 'min'
+                ? '#dc2626'
+                : n.highlight === 'bomba'
+                  ? '#16a34a'
+                  : '#1A1A1A';
+              return (
+                <g key={i}>
+                  <circle cx={cx} cy={cy} r="6" fill={color} stroke="white" strokeWidth="2" />
+                  {n.label.split('\n').map((line, li) => (
+                    <text
+                      key={li}
+                      x={cx}
+                      y={margin.top + plotH + 14 + li * 12}
+                      textAnchor="middle"
+                      fontSize="9.5"
+                      fill={color}
+                      fontWeight={n.highlight ? 700 : 500}
+                    >
+                      {line}
+                    </text>
+                  ))}
+                  <text x={cx} y={cy - 10} textAnchor="middle" fontSize="10" fill={color} fontWeight="700" fontFamily="ui-monospace, monospace">
+                    {n.P.toFixed(1)} m
+                  </text>
+                </g>
+              );
+            })}
+
+            {/* Flecha de "salto" de la bomba */}
+            <g>
+              <defs>
+                <marker id="arr-bomba" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+                  <path d="M 0 0 L 10 5 L 0 10 z" fill="#16a34a" />
+                </marker>
+              </defs>
+              <path
+                d={`M ${xScale(0.18) + 8} ${yScale(8.2) - 2} Q ${xScale(0.24)} ${yScale(38) + 10}, ${xScale(0.30) - 8} ${yScale(38) + 2}`}
+                fill="none"
+                stroke="#16a34a"
+                strokeWidth="1.8"
+                strokeDasharray="3 3"
+                markerEnd="url(#arr-bomba)"
+              />
+              <text x={xScale(0.24)} y={yScale(23)} textAnchor="middle" fontSize="10" fill="#15803d" fontWeight="700">
+                ΔP_bomba ≈ 30 m
+              </text>
+            </g>
+
+            {/* Eje Y */}
+            <line x1={margin.left} y1={margin.top} x2={margin.left} y2={margin.top + plotH} stroke="#27272a" strokeWidth="1.2" />
+            {[0, 10, 20, 30, 40].map((p) => (
+              <g key={p}>
+                <line x1={margin.left - 4} y1={yScale(p)} x2={margin.left} y2={yScale(p)} stroke="#27272a" strokeWidth="1" />
+                <text x={margin.left - 8} y={yScale(p) + 4} textAnchor="end" fontSize="10" fill="#52525b">{p}</text>
+              </g>
+            ))}
+            {/* Eje X */}
+            <line x1={margin.left} y1={margin.top + plotH} x2={margin.left + plotW} y2={margin.top + plotH} stroke="#27272a" strokeWidth="1.2" />
+
+            {/* Títulos */}
+            <text x={margin.left + plotW / 2} y={H - 8} textAnchor="middle" fontSize="12" fontWeight="700" fill="#27272a">
+              Posición a lo largo del sistema →
+            </text>
+            <text
+              x="16"
+              y={margin.top + plotH / 2}
+              textAnchor="middle"
+              fontSize="12"
+              fontWeight="700"
+              fill="#27272a"
+              transform={`rotate(-90 16 ${margin.top + plotH / 2})`}
+            >
+              Cabeza de presión (m de H₂O)
+            </text>
+          </svg>
+        </div>
+
+        <p className="text-xs text-center text-brand-gray italic mt-4 max-w-2xl mx-auto">
+          La <strong>succión</strong> (punto rojo) es el sitio crítico: ahí la presión baja por fricción y
+          por altura antes de entrar a la bomba. Si el perfil toca la zona roja (P &lt; P_vap) → cavitación.
+          Debe quedar por encima de la franja ámbar para tener margen de NPSH.
+        </p>
+      </div>
+    </div>
+  );
+};
+
 /* ─── Calculadora interactiva de Reynolds ─── */
 const ReynoldsCalculator: React.FC = () => {
   const [V, setV] = useState(1.5);
@@ -1576,18 +2121,14 @@ const TransporteLiquidos: React.FC = () => {
                 <strong> diagrama de Moody</strong> o resolviendo la <strong>ecuación de
                 Colebrook-White</strong>:
               </p>
-              <Figure
-                src="/classroom/iqya-2031/readings/transporte-liquidos-07.png"
-                alt="Ecuación de Colebrook-White"
-                caption={<>Ecuación de Colebrook-White — implícita en $f$, requiere iteración.</>}
-                maxWidth="400px"
-              />
-              <Figure
-                src="/classroom/iqya-2031/readings/transporte-liquidos-08.png"
-                alt="Diagrama de Moody"
-                caption="Diagrama de Moody: factor de fricción vs. Reynolds para distintas rugosidades relativas. En turbulento completamente desarrollado (derecha), f depende solo de ε/D."
-                maxWidth="700px"
-              />
+              <p>{String.raw`$$\dfrac{1}{\sqrt{f}} = -2\,\log_{10}\!\left(\dfrac{\varepsilon/D}{3.7} + \dfrac{2.51}{\mathrm{Re}\,\sqrt{f}}\right)$$`}</p>
+              <p className="text-sm text-brand-gray">
+                Esta ecuación es <strong>implícita</strong> en $f$ (aparece en los dos lados), por lo que
+                requiere iteración. En la práctica se usa el diagrama de Moody o una correlación explícita
+                como Swamee-Jain (1976). El diagrama de abajo es interactivo: el objetivo no es que obtengas
+                un número, sino que practiques <em>cómo se lee</em>.
+              </p>
+              <MoodyDiagram />
 
               <MaterialRoughnessTable />
 
@@ -1727,12 +2268,7 @@ const TransporteLiquidos: React.FC = () => {
                 donde {String.raw`$\text{NPSH}_\text{req}$`} lo da el fabricante de la bomba.
                 Un margen común de diseño es {String.raw`$\text{NPSH}_\text{disp} \geq \text{NPSH}_\text{req} + 1$ m`}.
               </p>
-              <Figure
-                src="/classroom/iqya-2031/readings/transporte-liquidos-06.png"
-                alt="Mapa de presión a lo largo del sistema"
-                caption="Mapa de presión a lo largo de un sistema de transporte. La presión mínima (típicamente justo antes de la bomba) debe mantenerse por encima de la presión de vapor, con un margen de NPSH."
-                maxWidth="600px"
-              />
+              <PressureProfile />
             </>
           )}
 
