@@ -99,14 +99,24 @@
     }
 
     .two-col {
-      display: grid; grid-template-columns: minmax(0, 20rem) 1fr;
+      display: grid; grid-template-columns: 1fr 1fr;
       gap: clamp(1rem, 2.5vw, 2.5rem); align-items: center;
     }
+    /* When first child is an image, give it a tighter column so text breathes */
+    .two-col:has(> img.diagram:first-child),
+    .two-col:has(> div:first-child > img.diagram:only-child) {
+      grid-template-columns: minmax(0, 24rem) 1fr;
+    }
     .two-col > img.diagram, .two-col img.diagram {
-      width: 100%; max-width: 18rem; height: auto;
+      width: 100%; max-width: 22rem; height: auto;
       justify-self: center;
     }
-    @media (max-width: 640px) { .two-col { grid-template-columns: 1fr; } .two-col img.diagram { max-width: 12rem; } }
+    @media (max-width: 640px) {
+      .two-col,
+      .two-col:has(> img.diagram:first-child),
+      .two-col:has(> div:first-child > img.diagram:only-child) { grid-template-columns: 1fr; }
+      .two-col img.diagram { max-width: 16rem; }
+    }
 
     /* Inline SVG icons (Lucide style) */
     .ico {
@@ -176,6 +186,10 @@
       width: 100%; border-collapse: collapse;
       font-size: clamp(0.75rem, 1.2vw, 1.05rem);
     }
+    table.comp.big {
+      font-size: clamp(0.85rem, 1.3vw, 1.2rem);
+    }
+    table.comp.big th, table.comp.big td { padding: 0.55em 0.55em; }
     table.comp th, table.comp td {
       padding: 0.5em 0.75em; text-align: left;
       border-bottom: 1px solid #e4e4e7;
@@ -1692,31 +1706,27 @@
     <!-- ═══════════════════════════════════════════════════════════════ -->
     <section class="slide" data-slide>
       <div class="content">
-        <div class="two-col">
-          <div>
-            <p class="eyebrow">Caso 2 · selección final</p>
-            <h2>CHO: la elección para Herceptin®</h2>
-            <div class="grid cols-2">
-              <div class="card success">
-                <h3>Glicosilación completa</h3>
-                <p>Función efectora (ADCC/CDC) dependiente de Asn297 glicosilada correctamente.</p>
-              </div>
-              <div class="card success">
-                <h3>Ensamblaje correcto</h3>
-                <p>RE y Golgi permiten plegamiento y ensamblaje de las 4 cadenas + 16 puentes disulfuro.</p>
-              </div>
-              <div class="card success">
-                <h3>Historial regulatorio</h3>
-                <p>Décadas de aprobaciones FDA/EMA. Camino regulatorio bien establecido.</p>
-              </div>
-              <div class="card success">
-                <h3>Escala y rendimiento</h3>
-                <p>Biorreactores hasta 25 000 L · rendimientos &gt;5 g/L con líneas optimizadas.</p>
-              </div>
-            </div>
+        <p class="eyebrow">Caso 2 · selección final</p>
+        <h2>CHO: la elección para Herceptin®</h2>
+        <div class="grid cols-4">
+          <div class="card success">
+            <h3>Glicosilación completa</h3>
+            <p>Función efectora (ADCC/CDC) dependiente de Asn297 glicosilada correctamente.</p>
           </div>
-          <img class="diagram" src="img/s06-p33-2-b294df5c.jpeg" alt="Biorreactores de acero inoxidable para CHO a escala industrial" />
+          <div class="card success">
+            <h3>Ensamblaje correcto</h3>
+            <p>RE y Golgi permiten plegamiento y ensamblaje de las 4 cadenas + 16 puentes disulfuro.</p>
+          </div>
+          <div class="card success">
+            <h3>Historial regulatorio</h3>
+            <p>Décadas de aprobaciones FDA/EMA. Camino regulatorio bien establecido.</p>
+          </div>
+          <div class="card success">
+            <h3>Escala y rendimiento</h3>
+            <p>Biorreactores hasta 25 000 L · rendimientos &gt;5 g/L con líneas optimizadas.</p>
+          </div>
         </div>
+        <img class="diagram" src="img/s06-p33-2-b294df5c.jpeg" alt="Biorreactores de acero inoxidable para CHO a escala industrial" style="max-height:38vh;width:100%;object-fit:cover;margin-top:0.75rem;" />
       </div>
     </section>
 
@@ -1727,7 +1737,8 @@
       <div class="content">
         <p class="eyebrow">Caso 2 · cierre</p>
         <h2>Resumen del análisis comparativo</h2>
-        <table class="comp">
+        <div style="overflow-x:auto;width:100%;">
+        <table class="comp big" style="min-width:55rem;">
           <thead><tr><th>Chasis</th><th>Glicosilación</th><th>Ensamblaje</th><th>Secreción</th><th>Regulatorio</th><th>Veredicto</th></tr></thead>
           <tbody>
             <tr><td><em>E. coli</em></td><td><svg class="ico ico-no" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg> No</td><td><svg class="ico ico-no" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg> No</td><td><svg class="ico ico-no" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg> No</td><td>N/A</td><td><svg class="ico ico-no" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 14.14 14.14"/></svg> Descartado</td></tr>
@@ -1737,6 +1748,7 @@
             <tr><td>HEK293</td><td><svg class="ico ico-ok" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Sí</td><td><svg class="ico ico-ok" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Sí</td><td><svg class="ico ico-ok" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Buena</td><td>Limitado</td><td><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" style="color:var(--accent-blue);"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg> Alternativa</td></tr>
           </tbody>
         </table>
+        </div>
       </div>
     </section>
 
