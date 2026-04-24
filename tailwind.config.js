@@ -15,6 +15,10 @@ export default {
         'brand-dark': '#1A1A1A',
         'brand-gray': '#555555',
       },
+      fontFamily: {
+        sans: ['"Manrope Variable"', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
+        mono: ['"JetBrains Mono Variable"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
+      },
     },
   },
   plugins: [],
