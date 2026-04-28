@@ -1,0 +1,2690 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="/classroom-fonts.css" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Comunicación visual en ingeniería química · IQYA-2031</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+
+  <style>
+    :root {
+      --brand-dark: #1A1A1A;
+      --brand-yellow: #FFBF00;
+      --brand-yellow-dark: #E6AC00;
+      --brand-gray: #555555;
+      --brand-gray-soft: #9CA3AF;
+      --brand-gray-bg: #f4f4f5;
+      --surface: #ffffff;
+      --muted: #f4f4f5;
+      --accent-blue: #0F62FE;
+      --accent-red: #DC2626;
+      --accent-green: #059669;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0; padding: 0; height: 100%; width: 100%;
+      background: var(--brand-dark); color: var(--brand-dark);
+      font-family: 'Manrope Variable', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      overflow: hidden;
+      -webkit-text-size-adjust: 100%;
+    }
+    .deck { position: relative; width: 100vw; height: 100vh; height: 100dvh; }
+    .slide {
+      position: absolute; inset: 0;
+      display: none; align-items: center; justify-content: center;
+      padding: clamp(1rem, 4vw, 3.5rem);
+      background: var(--surface);
+      opacity: 0; transition: opacity 260ms ease;
+      overflow-y: auto;
+    }
+    .slide.active { display: flex; opacity: 1; }
+    .slide .content {
+      width: 100%; max-width: 92rem; margin: auto 0;
+      display: flex; flex-direction: column;
+      gap: clamp(0.75rem, 1.5vw, 1.5rem);
+      position: relative; z-index: 2;
+    }
+    .eyebrow {
+      text-transform: uppercase; letter-spacing: 0.2em;
+      font-size: clamp(0.65rem, 1vw, 1rem);
+      color: var(--brand-yellow-dark); font-weight: 600;
+    }
+    h1 {
+      font-size: clamp(1.75rem, 5.5vw, 5.75rem);
+      line-height: 1.05; margin: 0; color: var(--brand-dark);
+      font-weight: 700; letter-spacing: -0.02em;
+    }
+    h2 {
+      font-size: clamp(1.25rem, 3.4vw, 3.25rem);
+      line-height: 1.15; margin: 0; color: var(--brand-dark); font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+    h3 {
+      font-size: clamp(1rem, 2vw, 1.75rem);
+      margin: 0 0 0.35em 0; color: var(--brand-dark); font-weight: 600;
+    }
+    p, li {
+      font-size: clamp(0.95rem, 1.7vw, 1.6rem);
+      line-height: 1.5; color: var(--brand-gray); margin: 0;
+    }
+    ul, ol { padding-left: 1.25em; margin: 0; display: flex; flex-direction: column; gap: 0.45em; }
+    li::marker { color: var(--brand-yellow-dark); }
+
+    .slide.title-slide {
+      background: linear-gradient(135deg, #141414 0%, #1A1A1A 50%, #2a2a2a 100%);
+      color: #fff;
+    }
+    .slide.title-slide h1 { color: #fff; }
+    .slide.title-slide h2 { color: #fff; }
+    .slide.title-slide p { color: #d4d4d8; }
+    .slide.title-slide .eyebrow { color: var(--brand-yellow); }
+
+    .pill-row { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 0.5rem; }
+    .pill {
+      display: inline-flex; align-items: center;
+      padding: 0.35em 0.9em; border-radius: 999px;
+      background: var(--muted); color: var(--brand-dark);
+      font-size: clamp(0.75rem, 1.2vw, 1.2rem); font-weight: 500;
+    }
+    .slide.title-slide .pill {
+      background: rgba(255,255,255,0.1); color: #fff;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .grid { display: grid; gap: clamp(0.75rem, 1.5vw, 1.25rem); }
+    .grid.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid.cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    @media (max-width: 720px) {
+      .grid.cols-2, .grid.cols-3, .grid.cols-4 { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--muted); border-radius: 0.75rem;
+      padding: clamp(0.9rem, 1.5vw, 1.35rem);
+      border: 1px solid transparent;
+    }
+    .card.outline { background: #fff; border-color: rgba(0,0,0,0.08); }
+    .card p { font-size: clamp(0.8rem, 1.3vw, 1.2rem); }
+
+    .two-col {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: clamp(1rem, 2vw, 2rem); align-items: center;
+    }
+    .two-col.asym { grid-template-columns: 5fr 7fr; }
+    @media (max-width: 720px) {
+      .two-col, .two-col.asym { grid-template-columns: 1fr; }
+    }
+
+    .tip {
+      background: #fffbe6; border-left: 4px solid var(--brand-yellow);
+      padding: 0.75rem 1rem; border-radius: 0.5rem;
+      color: var(--brand-dark);
+      font-size: clamp(0.85rem, 1.4vw, 1.25rem);
+    }
+    .warning {
+      background: #fef2f2; border-left: 4px solid var(--accent-red);
+      padding: 0.75rem 1rem; border-radius: 0.5rem;
+      color: var(--brand-dark);
+      font-size: clamp(0.85rem, 1.4vw, 1.25rem);
+    }
+    .small-text {
+      font-size: clamp(0.7rem, 1.1vw, 1rem);
+      color: var(--brand-gray); font-style: italic;
+      text-align: center; margin-top: 0.4rem;
+    }
+
+    .big-number {
+      font-size: clamp(5rem, 18vw, 16rem);
+      font-weight: 800; line-height: 0.9;
+      color: var(--brand-dark); letter-spacing: -0.04em;
+    }
+    .big-number .unit { font-size: 0.5em; color: var(--brand-yellow-dark); margin-left: 0.05em; }
+
+    .quote-large {
+      font-size: clamp(1.5rem, 3.5vw, 3rem);
+      line-height: 1.2; font-weight: 600; color: var(--brand-dark);
+      letter-spacing: -0.01em;
+    }
+    .slide.title-slide .quote-large { color: #fff; }
+
+    /* SVG figures wrapper */
+    .fig {
+      background: #fafafa; border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 0.6rem;
+      padding: clamp(0.75rem, 1.5vw, 1.25rem);
+      display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+    }
+    .fig.no-border { background: transparent; border: 0; padding: 0; }
+    .fig svg { width: 100%; height: auto; max-height: 60vh; }
+    .fig figcaption {
+      font-size: clamp(0.75rem, 1.1vw, 1rem);
+      color: var(--brand-gray); font-style: italic; text-align: center;
+    }
+    .fig-label {
+      align-self: flex-start; font-weight: 700;
+      font-size: clamp(0.75rem, 1.1vw, 1rem);
+      color: var(--brand-gray); text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+    .fig-label.bad { color: var(--accent-red); }
+    .fig-label.good { color: var(--accent-green); }
+
+    /* Tables */
+    table { width: 100%; border-collapse: collapse; font-size: clamp(0.8rem, 1.3vw, 1.15rem); }
+    table th, table td {
+      padding: 0.6em 0.85em; text-align: left;
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+      color: var(--brand-dark);
+    }
+    table thead th {
+      font-weight: 600; color: var(--brand-gray);
+      text-transform: uppercase; letter-spacing: 0.08em;
+      font-size: 0.85em;
+    }
+    table.compare th:first-child { color: var(--brand-gray); font-weight: 500; }
+    table.compare td { color: var(--brand-dark); }
+
+    /* Striked text — for "wrong" labels */
+    .striked {
+      position: relative; display: inline-block;
+      color: var(--brand-gray);
+    }
+    .striked::after {
+      content: ''; position: absolute;
+      left: -2%; right: -2%; top: 52%;
+      height: 3px; background: var(--accent-red);
+      transform: rotate(-3deg);
+    }
+
+    /* Three-question cascade */
+    .cascade { display: flex; flex-direction: column; gap: 0.6rem; }
+    .cascade-step {
+      display: flex; align-items: center; gap: 0.9rem;
+      background: #fff; border: 1px solid rgba(0,0,0,0.08);
+      border-left: 6px solid var(--brand-yellow);
+      border-radius: 0.6rem; padding: 0.85rem 1.1rem;
+      font-size: clamp(1rem, 1.8vw, 1.6rem);
+    }
+    .cascade-step .num {
+      width: 1.8em; height: 1.8em; flex: 0 0 auto;
+      border-radius: 999px; background: var(--brand-dark); color: #fff;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 0.9em;
+    }
+
+    /* Spectrum bar */
+    .spectrum {
+      position: relative;
+      height: 7px; background: linear-gradient(90deg, var(--brand-dark) 0%, var(--brand-gray-soft) 100%);
+      border-radius: 999px; margin: 2rem 0 3rem 0;
+    }
+    .spectrum::before, .spectrum::after {
+      content: ''; position: absolute; top: -7px;
+      width: 21px; height: 21px; border-radius: 999px;
+      background: var(--brand-dark); border: 4px solid #fff;
+      box-shadow: 0 0 0 1.5px var(--brand-dark);
+    }
+    .spectrum::before { left: -10px; }
+    .spectrum::after { right: -10px; background: var(--brand-yellow); box-shadow: 0 0 0 1.5px var(--brand-yellow-dark); }
+    .spectrum-mid {
+      position: absolute; top: -28px; left: 50%; transform: translateX(-50%);
+      background: #fff; padding: 0.25em 0.7em; border-radius: 999px;
+      border: 2px solid var(--brand-yellow-dark); color: var(--brand-dark);
+      font-size: clamp(0.75rem, 1.1vw, 1rem); font-weight: 600;
+    }
+    .spectrum-end-label {
+      position: absolute; top: 28px; font-size: clamp(0.8rem, 1.3vw, 1.15rem);
+      color: var(--brand-dark); font-weight: 600; line-height: 1.2;
+    }
+    .spectrum-end-label.left { left: 0; }
+    .spectrum-end-label.right { right: 0; text-align: right; }
+    .spectrum-end-label small { color: var(--brand-gray); font-weight: 400; display: block; }
+
+    /* Mini visual catalog */
+    .vis-catalog {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.85rem;
+    }
+    @media (max-width: 720px) { .vis-catalog { grid-template-columns: repeat(2, 1fr); } }
+    .vis-cell {
+      background: #fff; border: 1px solid rgba(0,0,0,0.1);
+      border-radius: 0.55rem; padding: 0.6rem;
+      display: flex; flex-direction: column; gap: 0.4rem;
+      text-align: center;
+    }
+    .vis-cell svg { width: 100%; height: auto; aspect-ratio: 4/3; }
+    .vis-cell .name {
+      font-size: clamp(0.7rem, 1.05vw, 0.95rem); font-weight: 600;
+      color: var(--brand-dark);
+    }
+    .vis-cell.bad { background: #fef2f2; border-color: rgba(220,38,38,0.2); }
+    .vis-cell.bad .name { color: var(--accent-red); }
+    .vis-cell.bad .why {
+      font-size: clamp(0.65rem, 0.95vw, 0.85rem);
+      color: var(--brand-gray); font-style: italic; line-height: 1.3;
+    }
+
+    /* Numbers grid for preattentive demo */
+    .num-grid {
+      font-family: 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: clamp(1.2rem, 3vw, 2.6rem);
+      line-height: 1.7; letter-spacing: 0.4em;
+      text-align: center; color: var(--brand-dark);
+      background: #fff; border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 0.6rem; padding: 1.25rem;
+    }
+    .num-grid .hi { color: var(--accent-blue); font-weight: 800; }
+    .num-grid .dim { color: var(--brand-gray-soft); }
+
+    /* Preattentive attribute mini-cells */
+    .pa-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.7rem; }
+    @media (max-width: 720px) { .pa-grid { grid-template-columns: repeat(2, 1fr); } }
+    .pa-cell {
+      background: #fff; border: 1px solid rgba(0,0,0,0.1);
+      border-radius: 0.5rem; padding: 0.6rem 0.5rem;
+      display: flex; flex-direction: column; align-items: center; gap: 0.4rem;
+    }
+    .pa-cell svg { width: 64px; height: 48px; }
+    .pa-cell .name {
+      font-size: clamp(0.7rem, 1.05vw, 0.95rem);
+      font-weight: 600; color: var(--brand-dark);
+    }
+
+    /* Three-distances poster diagram */
+    .dist-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.85rem; }
+    @media (max-width: 720px) { .dist-row { grid-template-columns: 1fr; } }
+    .dist-card {
+      background: #fff; border: 1px solid rgba(0,0,0,0.1);
+      border-top: 6px solid var(--brand-yellow);
+      border-radius: 0.6rem; padding: 0.9rem 1rem;
+    }
+    .dist-card h4 {
+      font-size: clamp(0.95rem, 1.5vw, 1.35rem); margin: 0 0 0.3em 0;
+      color: var(--brand-dark);
+    }
+    .dist-card .dist-tag {
+      display: inline-block; font-size: 0.75em;
+      color: var(--brand-yellow-dark); font-weight: 700;
+      letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 0.2em;
+    }
+
+    /* Checklist */
+    .checklist { display: flex; flex-direction: column; gap: 0.5rem; }
+    .checklist li {
+      list-style: none; display: flex; align-items: flex-start; gap: 0.6rem;
+      padding: 0.45em 0;
+      font-size: clamp(0.85rem, 1.4vw, 1.25rem);
+      color: var(--brand-dark);
+    }
+    .checklist li svg {
+      flex: 0 0 auto; margin-top: 0.2em;
+      color: var(--brand-yellow-dark);
+    }
+    .checklist.empty li svg { color: var(--brand-gray-soft); }
+
+    /* Platform link style */
+    a.platform-link {
+      color: var(--brand-dark); text-decoration: none;
+      border-bottom: 2px solid var(--brand-yellow);
+      padding-bottom: 0.05em;
+      transition: color 180ms, border-color 180ms;
+    }
+    a.platform-link:hover {
+      color: var(--brand-yellow-dark); border-bottom-color: var(--brand-yellow-dark);
+    }
+    a.platform-link::after {
+      content: " ↗"; font-size: 0.65em; opacity: 0.5;
+      margin-left: 0.12em; vertical-align: 0.3em;
+    }
+
+    /* HUD + controls + progress (template) */
+    .hud {
+      position: fixed; left: 0; right: 0; bottom: 0;
+      padding: 0.5rem 1rem; display: flex;
+      justify-content: space-between; align-items: center;
+      color: rgba(255,255,255,0.75); font-size: 0.75rem;
+      pointer-events: none; z-index: 10;
+    }
+    .slide:not(.title-slide) ~ .hud { color: var(--brand-gray); }
+    .controls {
+      position: fixed; right: 1rem; bottom: 2.5rem;
+      display: flex; gap: 0.5rem; z-index: 11;
+    }
+    .controls button {
+      -webkit-appearance: none; appearance: none;
+      border: 1px solid rgba(0,0,0,0.1);
+      background: rgba(255,255,255,0.9); color: var(--brand-dark);
+      width: 2.5rem; height: 2.5rem; border-radius: 999px;
+      cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+      transition: transform 160ms ease, background 160ms ease;
+    }
+    .controls button:hover { background: #fff; transform: translateY(-1px); }
+    .controls button:active { transform: scale(0.96); }
+    .controls button svg { width: 1.1em; height: 1.1em; color: var(--brand-dark); }
+    .progress {
+      position: fixed; top: 0; left: 0;
+      height: 3px; background: var(--brand-yellow);
+      transition: width 260ms ease; z-index: 20;
+    }
+    .progress.pulsing { animation: progPulse 0.5s ease; }
+    @keyframes progPulse {
+      0%   { box-shadow: 0 0 0 0 rgba(255,191,0,0.0); }
+      50%  { box-shadow: 0 0 12px 3px rgba(255,191,0,0.8); }
+      100% { box-shadow: 0 0 0 0 rgba(255,191,0,0.0); }
+    }
+
+    /* L-shaped corner accent + slide number (template) */
+    .slide:not(.title-slide)::before {
+      content: ''; position: absolute;
+      top: clamp(1rem, 3vw, 2.5rem); right: clamp(1rem, 3vw, 2.5rem);
+      width: clamp(2rem, 5vw, 4rem); height: clamp(2rem, 5vw, 4rem);
+      border-top: 2.5px solid var(--brand-yellow);
+      border-right: 2.5px solid var(--brand-yellow);
+      pointer-events: none; z-index: 1;
+    }
+    .slide.title-slide::before {
+      content: ''; position: absolute;
+      bottom: clamp(1rem, 3vw, 2.5rem); left: clamp(1rem, 3vw, 2.5rem);
+      width: clamp(2rem, 5vw, 4rem); height: clamp(2rem, 5vw, 4rem);
+      border-bottom: 2.5px solid var(--brand-yellow);
+      border-left: 2.5px solid var(--brand-yellow);
+      opacity: 0.4; pointer-events: none; z-index: 1;
+    }
+    .slide-number {
+      position: absolute; bottom: clamp(0.5rem, 2vw, 1.5rem);
+      left: clamp(1rem, 3vw, 2.5rem);
+      font-size: clamp(4rem, 12vw, 10rem); font-weight: 800;
+      line-height: 1; color: rgba(0, 0, 0, 0.04);
+      pointer-events: none; z-index: 0; user-select: none;
+      letter-spacing: -0.04em;
+    }
+    .slide.title-slide .slide-number { color: rgba(255, 255, 255, 0.06); }
+
+    /* Stagger reveal */
+    .slide.active .stagger-in > * { animation: fadeInUp 0.45s ease both; }
+    .slide.active .stagger-in > *:nth-child(1) { animation-delay: 0.05s; }
+    .slide.active .stagger-in > *:nth-child(2) { animation-delay: 0.15s; }
+    .slide.active .stagger-in > *:nth-child(3) { animation-delay: 0.25s; }
+    .slide.active .stagger-in > *:nth-child(4) { animation-delay: 0.35s; }
+    .slide.active .stagger-in > *:nth-child(5) { animation-delay: 0.45s; }
+    .slide.active .stagger-in > *:nth-child(6) { animation-delay: 0.55s; }
+    .slide.active .stagger-in > *:nth-child(7) { animation-delay: 0.65s; }
+    .slide.active .stagger-in > *:nth-child(8) { animation-delay: 0.75s; }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Hover-lift */
+    .card, .vis-cell, .pa-cell, .dist-card, .cascade-step {
+      transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+    }
+    .card:hover, .vis-cell:hover, .pa-cell:hover, .dist-card:hover, .cascade-step:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    }
+
+    /* Focus rings */
+    a:focus-visible, button:focus-visible, summary:focus-visible {
+      outline: 3px solid var(--brand-yellow-dark);
+      outline-offset: 2px;
+      border-radius: 0.35rem;
+    }
+
+    /* Icon defaults inside text */
+    h2 svg, h3 svg, .eyebrow svg {
+      vertical-align: -0.15em; margin-right: 0.4em; color: var(--brand-yellow-dark);
+    }
+    .card svg { vertical-align: -0.15em; }
+
+    /* KaTeX overrides */
+    .katex { font-size: 1em; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .slide { transition: none; }
+      .progress { transition: none; }
+      .progress.pulsing { animation: none !important; }
+      .slide.active .stagger-in > * { animation: none !important; }
+      .card, .vis-cell, .pa-cell, .dist-card, .cascade-step { transition: none; }
+      .card:hover, .vis-cell:hover, .pa-cell:hover, .dist-card:hover, .cascade-step:hover {
+        transform: none;
+      }
+      .controls button:hover { transform: none; }
+    }
+
+    @media (max-width: 480px) {
+      .controls { right: 0.5rem; bottom: 1.25rem; }
+      .hud { font-size: 0.65rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="progress" style="width:0"></div>
+  <div class="deck" id="deck">
+
+    <!-- ═════════════ SLIDE 1 — Portada ═════════════ -->
+    <section class="slide title-slide active" data-slide>
+      <div class="content">
+        <p class="eyebrow">IQYA-2031 · Proyecto de Operaciones Unitarias · 2026-10</p>
+        <h1>Comunicación visual<br>en ingeniería química</h1>
+        <p style="font-size: clamp(1rem, 2vw, 1.6rem); max-width: 50ch;">
+          Cómo hacer que sus figuras y su póster cuenten la historia.
+        </p>
+        <div class="pill-row">
+          <span class="pill">Storytelling con datos</span>
+          <span class="pill">Diseño de figuras</span>
+          <span class="pill">Documento y póster</span>
+        </div>
+        <div style="margin-top: 2rem; opacity: 0.6;">
+          <svg viewBox="0 0 600 120" width="100%" style="max-width: 560px; height: auto;" aria-hidden="true">
+            <line x1="40" y1="100" x2="560" y2="100" stroke="#FFBF00" stroke-width="1.5" opacity="0.6"/>
+            <line x1="40" y1="100" x2="40" y2="20" stroke="#FFBF00" stroke-width="1.5" opacity="0.6"/>
+            <path d="M 40 90 C 100 88, 160 80, 220 65 S 380 30, 480 22 L 560 20"
+                  fill="none" stroke="#FFBF00" stroke-width="2.5" opacity="0.85"/>
+            <circle cx="220" cy="65" r="4" fill="#FFBF00"/>
+            <circle cx="380" cy="32" r="4" fill="#FFBF00"/>
+            <circle cx="480" cy="22" r="4" fill="#FFBF00"/>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 2 — Pregunta provocadora ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <div class="two-col asym">
+          <div>
+            <p class="eyebrow">Apertura</p>
+            <h2>¿Qué dice esta gráfica?</h2>
+            <p style="margin-top: 1rem;">
+              Tienen 10 segundos. En silencio, identifiquen el mensaje principal.
+            </p>
+            <div class="tip" style="margin-top: 1.25rem;">
+              En el documento técnico tienen un minuto por figura.
+              En el póster tienen <strong>cinco segundos</strong>.
+              Una figura que no se entiende en ese tiempo no está cumpliendo su función.
+            </div>
+          </div>
+          <div class="fig">
+            <span class="fig-label bad">Ejemplo real (no recomendado)</span>
+            <svg viewBox="0 0 520 360" aria-label="Gráfica de barras 3D sobrecargada con leyenda densa">
+              <!-- "3D" base -->
+              <defs>
+                <pattern id="hatch" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)">
+                  <line x1="0" y1="0" x2="0" y2="6" stroke="#9ca3af" stroke-width="1"/>
+                </pattern>
+              </defs>
+              <text x="260" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#1A1A1A">Resultados</text>
+              <!-- Grid super densa -->
+              <g stroke="#d4d4d8" stroke-width="0.5">
+                <line x1="60" y1="40" x2="430" y2="40"/>
+                <line x1="60" y1="70" x2="430" y2="70"/>
+                <line x1="60" y1="100" x2="430" y2="100"/>
+                <line x1="60" y1="130" x2="430" y2="130"/>
+                <line x1="60" y1="160" x2="430" y2="160"/>
+                <line x1="60" y1="190" x2="430" y2="190"/>
+                <line x1="60" y1="220" x2="430" y2="220"/>
+                <line x1="60" y1="250" x2="430" y2="250"/>
+                <line x1="60" y1="280" x2="430" y2="280"/>
+              </g>
+              <!-- Y axis with messy decimals -->
+              <text x="55" y="45" text-anchor="end" font-size="8" fill="#555">1234.5678</text>
+              <text x="55" y="105" text-anchor="end" font-size="8" fill="#555">987.6543</text>
+              <text x="55" y="165" text-anchor="end" font-size="8" fill="#555">741.0000</text>
+              <text x="55" y="225" text-anchor="end" font-size="8" fill="#555">494.3333</text>
+              <text x="55" y="285" text-anchor="end" font-size="8" fill="#555">247.6666</text>
+              <!-- 3D bars (8 grupos x 3 series) — exagerado -->
+              <g>
+                <!-- group 1 -->
+                <polygon points="78,250 92,250 96,242 82,242" fill="#dc2626"/>
+                <rect x="78" y="250" width="14" height="30" fill="#ef4444"/>
+                <polygon points="92,250 92,280 96,272 96,242" fill="#b91c1c"/>
+                <polygon points="98,210 112,210 116,202 102,202" fill="#2563eb"/>
+                <rect x="98" y="210" width="14" height="70" fill="#3b82f6"/>
+                <polygon points="112,210 112,280 116,272 116,202" fill="#1e40af"/>
+                <polygon points="118,180 132,180 136,172 122,172" fill="#16a34a"/>
+                <rect x="118" y="180" width="14" height="100" fill="#22c55e"/>
+                <polygon points="132,180 132,280 136,272 136,172" fill="#15803d"/>
+                <!-- group 2 -->
+                <polygon points="158,230 172,230 176,222 162,222" fill="#dc2626"/>
+                <rect x="158" y="230" width="14" height="50" fill="#ef4444"/>
+                <polygon points="172,230 172,280 176,272 176,222" fill="#b91c1c"/>
+                <polygon points="178,150 192,150 196,142 182,142" fill="#2563eb"/>
+                <rect x="178" y="150" width="14" height="130" fill="#3b82f6"/>
+                <polygon points="192,150 192,280 196,272 196,142" fill="#1e40af"/>
+                <polygon points="198,120 212,120 216,112 202,112" fill="#16a34a"/>
+                <rect x="198" y="120" width="14" height="160" fill="#22c55e"/>
+                <polygon points="212,120 212,280 216,272 216,112" fill="#15803d"/>
+                <!-- group 3 -->
+                <polygon points="238,200 252,200 256,192 242,192" fill="#dc2626"/>
+                <rect x="238" y="200" width="14" height="80" fill="#ef4444"/>
+                <polygon points="252,200 252,280 256,272 256,192" fill="#b91c1c"/>
+                <polygon points="258,90 272,90 276,82 262,82" fill="#2563eb"/>
+                <rect x="258" y="90" width="14" height="190" fill="#3b82f6"/>
+                <polygon points="272,90 272,280 276,272 276,82" fill="#1e40af"/>
+                <polygon points="278,70 292,70 296,62 282,62" fill="#16a34a"/>
+                <rect x="278" y="70" width="14" height="210" fill="#22c55e"/>
+                <polygon points="292,70 292,280 296,272 296,62" fill="#15803d"/>
+                <!-- group 4 -->
+                <polygon points="318,180 332,180 336,172 322,172" fill="#dc2626"/>
+                <rect x="318" y="180" width="14" height="100" fill="#ef4444"/>
+                <polygon points="332,180 332,280 336,272 336,172" fill="#b91c1c"/>
+                <polygon points="338,130 352,130 356,122 342,122" fill="#2563eb"/>
+                <rect x="338" y="130" width="14" height="150" fill="#3b82f6"/>
+                <polygon points="352,130 352,280 356,272 356,122" fill="#1e40af"/>
+                <polygon points="358,100 372,100 376,92 362,92" fill="#16a34a"/>
+                <rect x="358" y="100" width="14" height="180" fill="#22c55e"/>
+                <polygon points="372,100 372,280 376,272 376,92" fill="#15803d"/>
+              </g>
+              <!-- Tilted labels -->
+              <g font-size="7" fill="#555">
+                <text x="92" y="298" transform="rotate(-45 92 298)">Configuración A.001</text>
+                <text x="172" y="298" transform="rotate(-45 172 298)">Configuración B.002</text>
+                <text x="252" y="298" transform="rotate(-45 252 298)">Configuración C.003</text>
+                <text x="332" y="298" transform="rotate(-45 332 298)">Configuración D.004</text>
+              </g>
+              <!-- X/Y axes -->
+              <line x1="60" y1="280" x2="430" y2="280" stroke="#1A1A1A" stroke-width="1.5"/>
+              <line x1="60" y1="40" x2="60" y2="280" stroke="#1A1A1A" stroke-width="1.5"/>
+              <!-- Legend ridícula -->
+              <rect x="440" y="40" width="76" height="190" fill="#fff" stroke="#9ca3af" stroke-width="1"/>
+              <text x="478" y="55" text-anchor="middle" font-size="8" font-weight="700" fill="#1A1A1A">Leyenda</text>
+              <g font-size="7" fill="#1A1A1A">
+                <rect x="446" y="63" width="9" height="9" fill="#ef4444"/><text x="458" y="71">Serie α-1</text>
+                <rect x="446" y="76" width="9" height="9" fill="#3b82f6"/><text x="458" y="84">Serie α-2</text>
+                <rect x="446" y="89" width="9" height="9" fill="#22c55e"/><text x="458" y="97">Serie β-1</text>
+                <rect x="446" y="102" width="9" height="9" fill="#a855f7"/><text x="458" y="110">Serie β-2</text>
+                <rect x="446" y="115" width="9" height="9" fill="#f97316"/><text x="458" y="123">Serie γ-1</text>
+                <rect x="446" y="128" width="9" height="9" fill="#06b6d4"/><text x="458" y="136">Serie γ-2</text>
+                <rect x="446" y="141" width="9" height="9" fill="#ec4899"/><text x="458" y="149">Serie δ-1</text>
+                <rect x="446" y="154" width="9" height="9" fill="#84cc16"/><text x="458" y="162">Serie δ-2</text>
+              </g>
+              <!-- Watermark -->
+              <text x="260" y="180" text-anchor="middle" font-size="40" fill="#9ca3af" opacity="0.18" font-weight="800" transform="rotate(-15 260 180)">BORRADOR</text>
+              <!-- Heavy border -->
+              <rect x="2" y="2" width="516" height="356" fill="none" stroke="#1A1A1A" stroke-width="3"/>
+              <text x="260" y="345" text-anchor="middle" font-size="9" fill="#555">Costo total anualizado en función de la configuración de equipo (USD promedio aprox. estimado)</text>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 3 — Por qué estamos hablando de esto ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Apertura</p>
+        <h2>Por qué estamos hablando de esto</h2>
+        <div class="stagger-in" style="display: flex; flex-direction: column; gap: 0.85rem; margin-top: 1rem;">
+          <div style="display: flex; align-items: center; gap: 1rem; font-size: clamp(1.1rem, 2.2vw, 2rem); color: var(--brand-dark);">
+            <svg width="1.4em" height="1.4em" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+            <span>El programa los ha entrenado en comunicación <strong>oral</strong>.</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 1rem; font-size: clamp(1.1rem, 2.2vw, 2rem); color: var(--brand-dark);">
+            <svg width="1.4em" height="1.4em" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+            <span>El programa los ha entrenado en comunicación <strong>escrita</strong>.</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 1rem; font-size: clamp(1.1rem, 2.2vw, 2rem); color: var(--brand-dark);">
+            <svg width="1.4em" height="1.4em" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>
+            <span>El programa <strong>NO</strong> los ha entrenado en comunicación <strong>visual</strong>.</span>
+          </div>
+        </div>
+        <div class="tip" style="margin-top: 2rem;">
+          Y la mitad de su entregable final &mdash;documento técnico y póster&mdash; es visual.
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 4 — Lo que se llevarán hoy ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Apertura · Hoja de ruta</p>
+        <h2>Cinco preguntas que sabrán responder al final</h2>
+        <div class="grid cols-2 stagger-in" style="margin-top: 1rem;">
+          <div class="card outline">
+            <h3>1 · Audiencia</h3>
+            <p>¿Quién va a leer mi figura y qué necesita saber?</p>
+          </div>
+          <div class="card outline">
+            <h3>2 · Visual correcto</h3>
+            <p>¿Cuál es el tipo de gráfico que corresponde a mi mensaje?</p>
+          </div>
+          <div class="card outline">
+            <h3>3 · Desorden</h3>
+            <p>¿Qué elementos están estorbando y deben salir?</p>
+          </div>
+          <div class="card outline">
+            <h3>4 · Mirada</h3>
+            <p>¿Hacia dónde quiero que mire mi audiencia?</p>
+          </div>
+          <div class="card outline" style="grid-column: span 2;">
+            <h3>5 · Aplicación al curso</h3>
+            <p>¿Cómo bajan estos principios al documento técnico y al póster del proyecto?</p>
+          </div>
+        </div>
+        <p class="small-text" style="margin-top: 1rem; text-align: left;">
+          Una pregunta por bloque. Si no pueden responderlas frente a una figura suya, esa figura tiene un problema.
+        </p>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 5 — La pregunta equivocada ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content" style="text-align: center; align-items: center;">
+        <p class="eyebrow">Bloque 1 · Contexto antes que diseño</p>
+        <p style="margin-top: 2rem; font-size: clamp(1.2rem, 3vw, 2.6rem);">
+          La pregunta equivocada:
+        </p>
+        <p class="quote-large striked" style="font-weight: 500;">
+          ¿Cómo hago esta gráfica más bonita?
+        </p>
+        <p style="margin-top: 1.5rem; font-size: clamp(1.2rem, 3vw, 2.6rem); color: var(--brand-yellow-dark); font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em;">
+          La pregunta correcta:
+        </p>
+        <p class="quote-large" style="max-width: 28ch;">
+          ¿Qué necesito que entienda quien la mire?
+        </p>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 6 — Exploratorio versus explicativo ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 1 · Contexto</p>
+        <h2>Análisis exploratorio vs. explicativo</h2>
+        <div class="grid cols-2" style="margin-top: 0.8rem;">
+          <div class="card outline">
+            <p class="eyebrow" style="color: var(--brand-gray);">Exploratorio</p>
+            <h3 style="margin-top: 0.3em;">Cuando ustedes <em>analizan</em></h3>
+            <ul style="margin-top: 0.5em;">
+              <li>Buscan patrones.</li>
+              <li>Abren cien ostras buscando perlas.</li>
+              <li>La audiencia son ustedes mismos.</li>
+            </ul>
+          </div>
+          <div class="card" style="background: #fffbe6; border-left: 6px solid var(--brand-yellow);">
+            <p class="eyebrow">Explicativo</p>
+            <h3 style="margin-top: 0.3em;">Cuando ustedes <em>comunican</em></h3>
+            <ul style="margin-top: 0.5em;">
+              <li>Cuentan una historia.</li>
+              <li>Solo enseñan las dos perlas.</li>
+              <li>La audiencia es alguien más.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="warning" style="margin-top: 1.25rem;">
+          La tentación de mostrar todo el análisis es fuerte. Resístanla. Lo que no es perla va al apéndice o se elimina.
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 7 — Las tres preguntas ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 1 · Contexto</p>
+        <h2>Las tres preguntas, en este orden</h2>
+        <div class="cascade stagger-in" style="margin-top: 1rem; max-width: 60rem;">
+          <div class="cascade-step">
+            <span class="num">1</span>
+            <span><strong>¿QUIÉN</strong> es mi audiencia?</span>
+          </div>
+          <div class="cascade-step" style="margin-left: clamp(1rem, 4vw, 4rem);">
+            <span class="num">2</span>
+            <span><strong>¿QUÉ</strong> quiero que sepa o haga?</span>
+          </div>
+          <div class="cascade-step" style="margin-left: clamp(2rem, 8vw, 8rem); border-left-color: var(--brand-dark);">
+            <span class="num" style="background: var(--brand-yellow); color: var(--brand-dark);">3</span>
+            <span><strong>¿CÓMO</strong> me apoyan los datos?</span>
+          </div>
+        </div>
+        <p class="small-text" style="margin-top: 1.5rem; text-align: left; font-size: clamp(0.9rem, 1.4vw, 1.2rem);">
+          Solo después de responder 1 y 2 piensen en gráficas. El «cómo» es el último paso, no el primero.
+        </p>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 8 — Quién: dos audiencias ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 1 · Quién</p>
+        <h2>Dos audiencias muy distintas en este curso</h2>
+        <table class="compare" style="margin-top: 0.8rem;">
+          <thead>
+            <tr><th></th><th>Documento técnico</th><th>Póster</th></tr>
+          </thead>
+          <tbody>
+            <tr><th>Lector típico</th><td>Profesor, evaluador</td><td>Asistente que pasa</td></tr>
+            <tr><th>Tiempo disponible</th><td>Minutos por figura</td><td>5 a 30 segundos</td></tr>
+            <tr><th>Distancia de lectura</th><td>30 – 50 cm</td><td>3 m, 1 m, 30 cm</td></tr>
+            <tr><th>Nivel de detalle</th><td>Alto</td><td>Mínimo necesario</td></tr>
+            <tr><th>Cuántas figuras</th><td>Las que hagan falta</td><td>Pocas, muy fuertes</td></tr>
+            <tr><th>Texto alrededor</th><td>Mucho</td><td>Casi nada</td></tr>
+          </tbody>
+        </table>
+        <div class="tip" style="margin-top: 1rem;">
+          Si el póster no le habla al lector en cinco segundos, perdieron al lector.
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 9 — Qué: pidan acción ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 1 · Qué</p>
+        <h2>Pidan acción, no admiración</h2>
+        <div class="grid cols-2" style="margin-top: 0.8rem;">
+          <div class="card" style="background: #fef2f2; border-left: 6px solid var(--accent-red);">
+            <p class="eyebrow" style="color: var(--accent-red);">Mal</p>
+            <p style="font-size: clamp(1rem, 1.7vw, 1.5rem); color: var(--brand-dark); margin-top: 0.4em;">
+              «Aquí están los resultados de la simulación.»
+            </p>
+          </div>
+          <div class="card" style="background: #ecfdf5; border-left: 6px solid var(--accent-green);">
+            <p class="eyebrow" style="color: var(--accent-green);">Bien</p>
+            <p style="font-size: clamp(1rem, 1.7vw, 1.5rem); color: var(--brand-dark); margin-top: 0.4em;">
+              «Recomendamos operar la columna a $R = 1{,}4\,R_{\min}$ porque…»
+            </p>
+          </div>
+        </div>
+        <p style="margin-top: 1.4rem; color: var(--brand-dark); font-weight: 600;">
+          Verbos útiles para abrir la conclusión de cada figura:
+        </p>
+        <div class="pill-row">
+          <span class="pill">recomendar</span>
+          <span class="pill">proponer</span>
+          <span class="pill">seleccionar</span>
+          <span class="pill">validar</span>
+          <span class="pill">rechazar</span>
+          <span class="pill">optimizar</span>
+          <span class="pill">comparar</span>
+          <span class="pill">justificar</span>
+        </div>
+        <p class="small-text" style="text-align: left; margin-top: 1rem;">
+          Una figura sin tesis es decoración. Cada figura del documento debería poder cerrarse con una oración: <em>«Por eso recomendamos X»</em>.
+        </p>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 10 — Espectro presentación-documento ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 1 · Cómo</p>
+        <h2>El espectro presentación–documento</h2>
+        <div style="position: relative; padding: 1rem 1rem 4rem 1rem; margin-top: 1rem;">
+          <div class="spectrum">
+            <div class="spectrum-mid">PÓSTER · híbrido</div>
+            <div class="spectrum-end-label left">
+              Presentación viva
+              <small>Ustedes hablan · controlan el ritmo</small>
+            </div>
+            <div class="spectrum-end-label right">
+              Documento escrito
+              <small>El lector está solo · sin guía</small>
+            </div>
+          </div>
+        </div>
+        <div class="grid cols-2" style="margin-top: 1.5rem;">
+          <div class="card outline">
+            <h3>En presentación</h3>
+            <p>Control sobre la lectura: alto. Detalle en pantalla: poco.</p>
+          </div>
+          <div class="card outline">
+            <h3>En documento</h3>
+            <p>Control sobre la lectura: nulo. Detalle en la figura: mucho.</p>
+          </div>
+        </div>
+        <p class="small-text" style="text-align: left; margin-top: 1rem;">
+          Diseñen el póster asumiendo que el lector pasa solo. Es el caso más exigente, y a veces el único que ocurrirá.
+        </p>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 11 — La historia en 3 minutos ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 1 · Ejercicio mental</p>
+        <h2>La historia, comprimida</h2>
+        <div class="stagger-in" style="display: flex; flex-direction: column; gap: 0.8rem; margin-top: 1rem; max-width: 64rem;">
+          <div class="cascade-step">
+            <span class="num">3 min</span>
+            <span>Si solo tuvieran <strong>tres minutos</strong> para contar todo el proyecto, ¿qué dirían?</span>
+          </div>
+          <div class="cascade-step">
+            <span class="num">30 s</span>
+            <span>Si solo tuvieran <strong>treinta segundos</strong>, ¿qué dirían?</span>
+          </div>
+          <div class="cascade-step" style="border-left-color: var(--brand-dark); background: #fffbe6;">
+            <span class="num" style="background: var(--brand-yellow); color: var(--brand-dark);">1</span>
+            <span>Si solo tuvieran <strong>una oración</strong>, ¿qué dirían?</span>
+          </div>
+        </div>
+        <p style="margin-top: 1.5rem; font-size: clamp(1rem, 1.8vw, 1.5rem); color: var(--brand-dark); font-weight: 600;">
+          Esa última oración es su <span style="color: var(--brand-yellow-dark);">Gran Idea</span>.
+        </p>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 12 — La Gran Idea: tres requisitos ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 1 · Gran idea</p>
+        <h2>La Gran Idea cumple tres condiciones</h2>
+        <div class="grid cols-3 stagger-in" style="margin-top: 0.8rem;">
+          <div class="card">
+            <h3>1 · Punto de vista</h3>
+            <p>Articula su posición única frente al problema.</p>
+          </div>
+          <div class="card">
+            <h3>2 · Qué está en juego</h3>
+            <p>Comunica las consecuencias de actuar o no actuar.</p>
+          </div>
+          <div class="card">
+            <h3>3 · Una oración</h3>
+            <p>Es una oración completa, con verbo. No un sustantivo, no un tema.</p>
+          </div>
+        </div>
+        <div class="grid cols-2" style="margin-top: 1.25rem;">
+          <div class="card" style="background: #fef2f2; border-left: 6px solid var(--accent-red);">
+            <p class="eyebrow" style="color: var(--accent-red);">Mal · es un tema</p>
+            <p style="color: var(--brand-dark); font-size: clamp(0.9rem, 1.5vw, 1.3rem); margin-top: 0.3em;">
+              «Diseño de columna de destilación.»
+            </p>
+          </div>
+          <div class="card" style="background: #ecfdf5; border-left: 6px solid var(--accent-green);">
+            <p class="eyebrow" style="color: var(--accent-green);">Bien · es una tesis</p>
+            <p style="color: var(--brand-dark); font-size: clamp(0.9rem, 1.5vw, 1.3rem); margin-top: 0.3em;">
+              «Una columna de 32 etapas con $R = 1{,}4\,R_{\min}$ cumple la pureza objetivo con un costo anualizado 18 % menor que la alternativa de doble efecto.»
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 13 — Aplicación al curso ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 1 · Cierre</p>
+        <h2>Antes de abrir Excel, contesten esto</h2>
+        <div class="grid cols-2 stagger-in" style="margin-top: 0.8rem;">
+          <div class="card">
+            <h3>Para el documento</h3>
+            <ul style="margin-top: 0.4em;">
+              <li><strong>Audiencia:</strong> profesor que evalúa diseño y criterio ingenieril.</li>
+              <li><strong>Acción:</strong> que apruebe el diseño propuesto.</li>
+              <li><strong>Tono:</strong> técnico, defendido, sin adornos.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Para el póster</h3>
+            <ul style="margin-top: 0.4em;">
+              <li><strong>Audiencia:</strong> lector que pasa, posiblemente no especialista.</li>
+              <li><strong>Acción:</strong> que entienda en 30 segundos qué hicieron y por qué importa.</li>
+              <li><strong>Tono:</strong> directo, una sola idea dominante.</li>
+            </ul>
+          </div>
+        </div>
+        <p class="small-text" style="text-align: left; margin-top: 1.5rem;">
+          El resto de la clase asume que ya tienen esto resuelto. Si no, ninguna técnica de diseño los va a salvar.
+        </p>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 14 — La paleta de visuales ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 2 · Elegir el visual correcto</p>
+        <h2>La paleta que cubre el 95 % de las necesidades</h2>
+        <div class="vis-catalog stagger-in" style="margin-top: 0.6rem;">
+          <div class="vis-cell">
+            <svg viewBox="0 0 100 75" aria-hidden="true"><text x="50" y="46" text-anchor="middle" font-size="34" font-weight="800" fill="#1A1A1A">42</text></svg>
+            <span class="name">Texto / número</span>
+          </div>
+          <div class="vis-cell">
+            <svg viewBox="0 0 100 75" aria-hidden="true">
+              <rect x="14" y="14" width="72" height="48" fill="none" stroke="#1A1A1A" stroke-width="1"/>
+              <line x1="14" y1="26" x2="86" y2="26" stroke="#1A1A1A" stroke-width="1"/>
+              <line x1="40" y1="14" x2="40" y2="62" stroke="#1A1A1A" stroke-width="0.7"/>
+              <line x1="63" y1="14" x2="63" y2="62" stroke="#1A1A1A" stroke-width="0.7"/>
+              <line x1="14" y1="38" x2="86" y2="38" stroke="#1A1A1A" stroke-width="0.7"/>
+              <line x1="14" y1="50" x2="86" y2="50" stroke="#1A1A1A" stroke-width="0.7"/>
+            </svg>
+            <span class="name">Tabla</span>
+          </div>
+          <div class="vis-cell">
+            <svg viewBox="0 0 100 75" aria-hidden="true">
+              <g>
+                <rect x="14" y="14" width="14" height="14" fill="#FFE599"/>
+                <rect x="28" y="14" width="14" height="14" fill="#FFBF00"/>
+                <rect x="42" y="14" width="14" height="14" fill="#E6AC00"/>
+                <rect x="56" y="14" width="14" height="14" fill="#0F62FE"/>
+                <rect x="70" y="14" width="14" height="14" fill="#1A1A1A"/>
+                <rect x="14" y="28" width="14" height="14" fill="#FFBF00"/>
+                <rect x="28" y="28" width="14" height="14" fill="#FFD24D"/>
+                <rect x="42" y="28" width="14" height="14" fill="#FFE599"/>
+                <rect x="56" y="28" width="14" height="14" fill="#FFBF00"/>
+                <rect x="70" y="28" width="14" height="14" fill="#E6AC00"/>
+                <rect x="14" y="42" width="14" height="14" fill="#0F62FE"/>
+                <rect x="28" y="42" width="14" height="14" fill="#FFBF00"/>
+                <rect x="42" y="42" width="14" height="14" fill="#FFE599"/>
+                <rect x="56" y="42" width="14" height="14" fill="#FFD24D"/>
+                <rect x="70" y="42" width="14" height="14" fill="#FFBF00"/>
+              </g>
+            </svg>
+            <span class="name">Mapa de calor</span>
+          </div>
+          <div class="vis-cell">
+            <svg viewBox="0 0 100 75" aria-hidden="true">
+              <line x1="14" y1="62" x2="86" y2="62" stroke="#1A1A1A" stroke-width="1"/>
+              <line x1="14" y1="14" x2="14" y2="62" stroke="#1A1A1A" stroke-width="1"/>
+              <path d="M 18 50 L 32 38 L 48 44 L 62 24 L 78 18" fill="none" stroke="#0F62FE" stroke-width="2.2"/>
+            </svg>
+            <span class="name">Línea</span>
+          </div>
+          <div class="vis-cell">
+            <svg viewBox="0 0 100 75" aria-hidden="true">
+              <line x1="14" y1="62" x2="86" y2="62" stroke="#1A1A1A" stroke-width="1"/>
+              <line x1="14" y1="14" x2="14" y2="62" stroke="#1A1A1A" stroke-width="1"/>
+              <line x1="22" y1="50" x2="78" y2="22" stroke="#9CA3AF" stroke-width="1.5"/>
+              <line x1="22" y1="38" x2="78" y2="46" stroke="#0F62FE" stroke-width="2.2"/>
+              <circle cx="22" cy="38" r="2.5" fill="#0F62FE"/>
+              <circle cx="78" cy="46" r="2.5" fill="#0F62FE"/>
+              <circle cx="22" cy="50" r="2.5" fill="#9CA3AF"/>
+              <circle cx="78" cy="22" r="2.5" fill="#9CA3AF"/>
+            </svg>
+            <span class="name">Pendiente (slope)</span>
+          </div>
+          <div class="vis-cell">
+            <svg viewBox="0 0 100 75" aria-hidden="true">
+              <line x1="14" y1="62" x2="86" y2="62" stroke="#1A1A1A" stroke-width="1"/>
+              <line x1="14" y1="14" x2="14" y2="62" stroke="#1A1A1A" stroke-width="1"/>
+              <g fill="#0F62FE">
+                <circle cx="22" cy="52" r="2"/><circle cx="30" cy="46" r="2"/><circle cx="36" cy="48" r="2"/>
+                <circle cx="42" cy="40" r="2"/><circle cx="50" cy="36" r="2"/><circle cx="58" cy="30" r="2"/>
+                <circle cx="64" cy="34" r="2"/><circle cx="72" cy="22" r="2"/><circle cx="78" cy="20" r="2"/>
+              </g>
+              <line x1="18" y1="58" x2="82" y2="18" stroke="#9CA3AF" stroke-width="1" stroke-dasharray="3 3"/>
+            </svg>
+            <span class="name">Dispersión</span>
+          </div>
+          <div class="vis-cell">
+            <svg viewBox="0 0 100 75" aria-hidden="true">
+              <line x1="14" y1="62" x2="86" y2="62" stroke="#1A1A1A" stroke-width="1"/>
+              <line x1="14" y1="14" x2="14" y2="62" stroke="#1A1A1A" stroke-width="1"/>
+              <rect x="20" y="38" width="10" height="24" fill="#9CA3AF"/>
+              <rect x="34" y="28" width="10" height="34" fill="#9CA3AF"/>
+              <rect x="48" y="20" width="10" height="42" fill="#0F62FE"/>
+              <rect x="62" y="32" width="10" height="30" fill="#9CA3AF"/>
+              <rect x="76" y="44" width="10" height="18" fill="#9CA3AF"/>
+            </svg>
+            <span class="name">Barra vertical</span>
+          </div>
+          <div class="vis-cell">
+            <svg viewBox="0 0 100 75" aria-hidden="true">
+              <line x1="14" y1="62" x2="86" y2="62" stroke="#1A1A1A" stroke-width="1"/>
+              <line x1="14" y1="14" x2="14" y2="62" stroke="#1A1A1A" stroke-width="1"/>
+              <rect x="14" y="18" width="58" height="6" fill="#0F62FE"/>
+              <rect x="14" y="28" width="44" height="6" fill="#9CA3AF"/>
+              <rect x="14" y="38" width="36" height="6" fill="#9CA3AF"/>
+              <rect x="14" y="48" width="22" height="6" fill="#9CA3AF"/>
+              <rect x="14" y="58" width="14" height="3" fill="#9CA3AF"/>
+            </svg>
+            <span class="name">Barra horizontal</span>
+          </div>
+          <div class="vis-cell">
+            <svg viewBox="0 0 100 75" aria-hidden="true">
+              <line x1="14" y1="62" x2="86" y2="62" stroke="#1A1A1A" stroke-width="1"/>
+              <line x1="14" y1="14" x2="14" y2="62" stroke="#1A1A1A" stroke-width="1"/>
+              <g>
+                <rect x="22" y="46" width="14" height="16" fill="#1A1A1A"/>
+                <rect x="22" y="34" width="14" height="12" fill="#9CA3AF"/>
+                <rect x="22" y="22" width="14" height="12" fill="#FFBF00"/>
+                <rect x="42" y="42" width="14" height="20" fill="#1A1A1A"/>
+                <rect x="42" y="28" width="14" height="14" fill="#9CA3AF"/>
+                <rect x="42" y="18" width="14" height="10" fill="#FFBF00"/>
+                <rect x="62" y="38" width="14" height="24" fill="#1A1A1A"/>
+                <rect x="62" y="22" width="14" height="16" fill="#9CA3AF"/>
+                <rect x="62" y="14" width="14" height="8" fill="#FFBF00"/>
+              </g>
+            </svg>
+            <span class="name">Barra apilada</span>
+          </div>
+          <div class="vis-cell">
+            <svg viewBox="0 0 100 75" aria-hidden="true">
+              <line x1="14" y1="62" x2="86" y2="62" stroke="#1A1A1A" stroke-width="1"/>
+              <line x1="14" y1="14" x2="14" y2="62" stroke="#1A1A1A" stroke-width="1"/>
+              <rect x="20" y="22" width="10" height="40" fill="#1A1A1A"/>
+              <rect x="32" y="22" width="10" height="14" fill="#0F62FE"/>
+              <line x1="32" y1="22" x2="42" y2="22" stroke="#9CA3AF" stroke-dasharray="2 2"/>
+              <rect x="44" y="36" width="10" height="10" fill="#0F62FE"/>
+              <line x1="44" y1="36" x2="54" y2="36" stroke="#9CA3AF" stroke-dasharray="2 2"/>
+              <rect x="56" y="46" width="10" height="8" fill="#DC2626"/>
+              <rect x="68" y="42" width="10" height="20" fill="#FFBF00"/>
+            </svg>
+            <span class="name">Cascada</span>
+          </div>
+          <div class="vis-cell">
+            <svg viewBox="0 0 100 75" aria-hidden="true">
+              <rect x="14" y="14" width="48" height="48" fill="#1A1A1A"/>
+              <rect x="14" y="14" width="32" height="32" fill="#FFBF00"/>
+              <rect x="14" y="14" width="18" height="18" fill="#0F62FE"/>
+              <rect x="68" y="48" width="14" height="14" fill="none" stroke="#1A1A1A" stroke-width="1"/>
+              <text x="76" y="58" text-anchor="middle" font-size="6" fill="#1A1A1A">·</text>
+            </svg>
+            <span class="name">Área cuadrada</span>
+          </div>
+          <div class="vis-cell">
+            <svg viewBox="0 0 100 75" aria-hidden="true">
+              <line x1="14" y1="62" x2="86" y2="62" stroke="#1A1A1A" stroke-width="1"/>
+              <line x1="14" y1="14" x2="14" y2="62" stroke="#1A1A1A" stroke-width="1"/>
+              <g>
+                <rect x="22" y="14" width="14" height="48" fill="#FFBF00"/>
+                <rect x="22" y="14" width="14" height="14" fill="#9CA3AF"/>
+                <rect x="22" y="28" width="14" height="20" fill="#1A1A1A"/>
+                <rect x="42" y="14" width="14" height="48" fill="#FFBF00"/>
+                <rect x="42" y="14" width="14" height="22" fill="#9CA3AF"/>
+                <rect x="42" y="36" width="14" height="14" fill="#1A1A1A"/>
+                <rect x="62" y="14" width="14" height="48" fill="#FFBF00"/>
+                <rect x="62" y="14" width="14" height="10" fill="#9CA3AF"/>
+                <rect x="62" y="24" width="14" height="28" fill="#1A1A1A"/>
+              </g>
+            </svg>
+            <span class="name">100 % apilada</span>
+          </div>
+        </div>
+        <p class="small-text" style="text-align: left; margin-top: 1rem;">
+          Si el lector no reconoce el tipo de gráfica en un segundo, ya hay fricción. Quédense con lo conocido y háganlo bien.
+        </p>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 15 — Cuando un número alcanza ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 2 · Visual correcto</p>
+        <h2>Cuando un número alcanza, no construyan una gráfica</h2>
+        <div class="two-col" style="margin-top: 1rem;">
+          <div class="fig">
+            <span class="fig-label bad">Sobreingenierado</span>
+            <svg viewBox="0 0 320 220" aria-label="Dos barras simples">
+              <line x1="40" y1="180" x2="290" y2="180" stroke="#1A1A1A" stroke-width="1.2"/>
+              <line x1="40" y1="20" x2="40" y2="180" stroke="#1A1A1A" stroke-width="1.2"/>
+              <rect x="80" y="100" width="60" height="80" fill="#9CA3AF"/>
+              <rect x="190" y="44" width="60" height="136" fill="#0F62FE"/>
+              <text x="110" y="195" text-anchor="middle" font-size="11" fill="#555">1990</text>
+              <text x="220" y="195" text-anchor="middle" font-size="11" fill="#555">2024</text>
+              <text x="110" y="92" text-anchor="middle" font-size="12" font-weight="700" fill="#1A1A1A">62 %</text>
+              <text x="220" y="36" text-anchor="middle" font-size="12" font-weight="700" fill="#1A1A1A">80 %</text>
+              <text x="20" y="100" text-anchor="middle" font-size="9" fill="#555" transform="rotate(-90 20 100)">Eficiencia (%)</text>
+            </svg>
+            <figcaption>Dos barras para dos números: ruido innecesario.</figcaption>
+          </div>
+          <div style="text-align: left;">
+            <span class="fig-label good">Directo</span>
+            <div style="margin-top: 0.5rem;">
+              <span class="big-number" style="color: var(--brand-yellow-dark);">+18<span class="unit">%</span></span>
+            </div>
+            <p style="font-size: clamp(1rem, 1.7vw, 1.5rem); margin-top: 0.5rem;">
+              Aumento en eficiencia térmica del proceso entre <strong>1990</strong> y <strong>2024</strong>.
+            </p>
+          </div>
+        </div>
+        <p class="small-text" style="text-align: left; margin-top: 1rem;">
+          En el póster, un número de 120 puntos al frente cuenta más historia que cualquier barra.
+        </p>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 16 — Tablas: cuándo y cómo ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 2 · Visual correcto</p>
+        <h2>Tablas: livianas siempre</h2>
+        <div class="grid cols-3 stagger-in" style="margin-top: 0.8rem;">
+          <div class="fig" style="padding: 0.5rem;">
+            <span class="fig-label bad">A · pesada</span>
+            <svg viewBox="0 0 240 170" aria-label="Tabla con bordes pesados y fondo gris">
+              <rect x="2" y="2" width="236" height="166" fill="#e5e7eb" stroke="#1A1A1A" stroke-width="3"/>
+              <rect x="20" y="20" width="200" height="22" fill="#1A1A1A"/>
+              <text x="60" y="35" font-size="10" fill="#fff" font-weight="700">Equipo</text>
+              <text x="130" y="35" font-size="10" fill="#fff" font-weight="700">Q (kW)</text>
+              <text x="190" y="35" font-size="10" fill="#fff" font-weight="700">η</text>
+              <g stroke="#1A1A1A" stroke-width="1.5">
+                <line x1="20" y1="60" x2="220" y2="60"/>
+                <line x1="20" y1="80" x2="220" y2="80"/>
+                <line x1="20" y1="100" x2="220" y2="100"/>
+                <line x1="20" y1="120" x2="220" y2="120"/>
+                <line x1="20" y1="140" x2="220" y2="140"/>
+                <line x1="100" y1="42" x2="100" y2="140"/>
+                <line x1="170" y1="42" x2="170" y2="140"/>
+                <line x1="20" y1="42" x2="20" y2="140"/>
+                <line x1="220" y1="42" x2="220" y2="140"/>
+              </g>
+              <g font-size="9" fill="#1A1A1A">
+                <text x="30" y="55">E-101</text><text x="110" y="55">820</text><text x="180" y="55">0,82</text>
+                <text x="30" y="75">E-102</text><text x="110" y="75">540</text><text x="180" y="75">0,76</text>
+                <text x="30" y="95">P-201</text><text x="110" y="95">22</text><text x="180" y="95">0,68</text>
+                <text x="30" y="115">C-301</text><text x="110" y="115">1180</text><text x="180" y="115">0,79</text>
+                <text x="30" y="135">T-401</text><text x="110" y="135">95</text><text x="180" y="135">0,84</text>
+              </g>
+            </svg>
+            <p class="small-text" style="font-style: normal;">Bordes pesados. La cuadrícula compite con los datos.</p>
+          </div>
+          <div class="fig" style="padding: 0.5rem;">
+            <span class="fig-label" style="color: var(--brand-gray);">B · media</span>
+            <svg viewBox="0 0 240 170" aria-label="Tabla con bordes ligeros">
+              <text x="30" y="32" font-size="9" font-weight="700" fill="#555">EQUIPO</text>
+              <text x="110" y="32" font-size="9" font-weight="700" fill="#555">Q (kW)</text>
+              <text x="180" y="32" font-size="9" font-weight="700" fill="#555">η</text>
+              <line x1="20" y1="40" x2="220" y2="40" stroke="#1A1A1A" stroke-width="1"/>
+              <g stroke="#9CA3AF" stroke-width="0.5">
+                <line x1="20" y1="60" x2="220" y2="60"/>
+                <line x1="20" y1="80" x2="220" y2="80"/>
+                <line x1="20" y1="100" x2="220" y2="100"/>
+                <line x1="20" y1="120" x2="220" y2="120"/>
+                <line x1="20" y1="140" x2="220" y2="140"/>
+              </g>
+              <g font-size="9" fill="#1A1A1A">
+                <text x="30" y="55">E-101</text><text x="110" y="55">820</text><text x="180" y="55">0,82</text>
+                <text x="30" y="75">E-102</text><text x="110" y="75">540</text><text x="180" y="75">0,76</text>
+                <text x="30" y="95">P-201</text><text x="110" y="95">22</text><text x="180" y="95">0,68</text>
+                <text x="30" y="115">C-301</text><text x="110" y="115">1180</text><text x="180" y="115">0,79</text>
+                <text x="30" y="135">T-401</text><text x="110" y="135">95</text><text x="180" y="135">0,84</text>
+              </g>
+            </svg>
+            <p class="small-text" style="font-style: normal;">Mejor: los datos respiran.</p>
+          </div>
+          <div class="fig" style="padding: 0.5rem; border-color: rgba(5,150,105,0.3); background: #f0fdf4;">
+            <span class="fig-label good">C · mínima</span>
+            <svg viewBox="0 0 240 170" aria-label="Tabla con bordes mínimos">
+              <text x="30" y="32" font-size="9" font-weight="700" fill="#555">EQUIPO</text>
+              <text x="110" y="32" font-size="9" font-weight="700" fill="#555">Q (kW)</text>
+              <text x="180" y="32" font-size="9" font-weight="700" fill="#555">η</text>
+              <line x1="20" y1="40" x2="220" y2="40" stroke="#1A1A1A" stroke-width="0.7"/>
+              <g font-size="9" fill="#1A1A1A">
+                <text x="30" y="60">E-101</text><text x="110" y="60">820</text><text x="180" y="60">0,82</text>
+                <text x="30" y="80">E-102</text><text x="110" y="80">540</text><text x="180" y="80">0,76</text>
+                <text x="30" y="100">P-201</text><text x="110" y="100">22</text><text x="180" y="100">0,68</text>
+                <text x="30" y="120">C-301</text><text x="110" y="120">1180</text><text x="180" y="120">0,79</text>
+                <text x="30" y="140">T-401</text><text x="110" y="140">95</text><text x="180" y="140">0,84</text>
+              </g>
+              <line x1="20" y1="148" x2="220" y2="148" stroke="#1A1A1A" stroke-width="0.7"/>
+            </svg>
+            <p class="small-text" style="font-style: normal;">Sólo dos líneas finas. Datos al frente.</p>
+          </div>
+        </div>
+        <div class="tip" style="margin-top: 1rem;">
+          Las tablas hablan al sistema verbal: el lector las recorre con el dedo. En el póster, casi nunca tablas.
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 17 — Mapa de calor ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 2 · Visual correcto</p>
+        <h2>Mapa de calor: tabla con código de color</h2>
+        <div class="two-col asym" style="margin-top: 0.6rem;">
+          <div>
+            <p>
+              Excelente para análisis de sensibilidad. El lector identifica de inmediato la zona óptima
+              sin tener que leer cada número, uno a uno.
+            </p>
+            <ul style="margin-top: 0.8rem;">
+              <li>Eje X y eje Y: las dos variables de diseño.</li>
+              <li>Color: la magnitud del costo (o del KPI).</li>
+              <li>Número en cada celda: el valor exacto, para quien quiera detalle.</li>
+            </ul>
+            <p class="small-text" style="text-align: left; margin-top: 1rem;">
+              Es probablemente el visual más subutilizado en proyectos de diseño.
+            </p>
+          </div>
+          <div class="fig">
+            <span class="fig-label">Sensibilidad de costo a $R$ y $N$</span>
+            <svg viewBox="0 0 360 280" aria-label="Mapa de calor del costo anualizado">
+              <text x="180" y="14" text-anchor="middle" font-size="10" fill="#1A1A1A" font-weight="700">Costo anualizado mínimo: R = 1,4 · N = 32</text>
+              <text x="180" y="270" text-anchor="middle" font-size="10" fill="#555">Relación de reflujo R / R<tspan font-size="7" baseline-shift="-25%">mín</tspan></text>
+              <text x="14" y="140" text-anchor="middle" font-size="10" fill="#555" transform="rotate(-90 14 140)">Número de etapas, N</text>
+              <g>
+                <!-- 5 columns x 5 rows; column = R; row = N -->
+                <!-- High cost = red, low cost = green; minimum at col 3 row 3 -->
+                <g>
+                  <rect x="50" y="40" width="56" height="40" fill="#fde68a"/><text x="78" y="65" text-anchor="middle" font-size="9" fill="#1A1A1A">285</text>
+                  <rect x="106" y="40" width="56" height="40" fill="#fef3c7"/><text x="134" y="65" text-anchor="middle" font-size="9" fill="#1A1A1A">252</text>
+                  <rect x="162" y="40" width="56" height="40" fill="#bbf7d0"/><text x="190" y="65" text-anchor="middle" font-size="9" fill="#1A1A1A">210</text>
+                  <rect x="218" y="40" width="56" height="40" fill="#fef3c7"/><text x="246" y="65" text-anchor="middle" font-size="9" fill="#1A1A1A">240</text>
+                  <rect x="274" y="40" width="56" height="40" fill="#fde68a"/><text x="302" y="65" text-anchor="middle" font-size="9" fill="#1A1A1A">280</text>
+
+                  <rect x="50" y="80" width="56" height="40" fill="#fef3c7"/><text x="78" y="105" text-anchor="middle" font-size="9" fill="#1A1A1A">240</text>
+                  <rect x="106" y="80" width="56" height="40" fill="#bbf7d0"/><text x="134" y="105" text-anchor="middle" font-size="9" fill="#1A1A1A">198</text>
+                  <rect x="162" y="80" width="56" height="40" fill="#86efac"/><text x="190" y="105" text-anchor="middle" font-size="9" fill="#1A1A1A">175</text>
+                  <rect x="218" y="80" width="56" height="40" fill="#bbf7d0"/><text x="246" y="105" text-anchor="middle" font-size="9" fill="#1A1A1A">202</text>
+                  <rect x="274" y="80" width="56" height="40" fill="#fef3c7"/><text x="302" y="105" text-anchor="middle" font-size="9" fill="#1A1A1A">238</text>
+
+                  <rect x="50" y="120" width="56" height="40" fill="#fef3c7"/><text x="78" y="145" text-anchor="middle" font-size="9" fill="#1A1A1A">220</text>
+                  <rect x="106" y="120" width="56" height="40" fill="#bbf7d0"/><text x="134" y="145" text-anchor="middle" font-size="9" fill="#1A1A1A">182</text>
+                  <rect x="162" y="120" width="56" height="40" fill="#22c55e" stroke="#1A1A1A" stroke-width="2"/><text x="190" y="145" text-anchor="middle" font-size="9" fill="#fff" font-weight="700">158</text>
+                  <rect x="218" y="120" width="56" height="40" fill="#86efac"/><text x="246" y="145" text-anchor="middle" font-size="9" fill="#1A1A1A">180</text>
+                  <rect x="274" y="120" width="56" height="40" fill="#bbf7d0"/><text x="302" y="145" text-anchor="middle" font-size="9" fill="#1A1A1A">214</text>
+
+                  <rect x="50" y="160" width="56" height="40" fill="#fef3c7"/><text x="78" y="185" text-anchor="middle" font-size="9" fill="#1A1A1A">232</text>
+                  <rect x="106" y="160" width="56" height="40" fill="#bbf7d0"/><text x="134" y="185" text-anchor="middle" font-size="9" fill="#1A1A1A">194</text>
+                  <rect x="162" y="160" width="56" height="40" fill="#86efac"/><text x="190" y="185" text-anchor="middle" font-size="9" fill="#1A1A1A">170</text>
+                  <rect x="218" y="160" width="56" height="40" fill="#bbf7d0"/><text x="246" y="185" text-anchor="middle" font-size="9" fill="#1A1A1A">196</text>
+                  <rect x="274" y="160" width="56" height="40" fill="#fef3c7"/><text x="302" y="185" text-anchor="middle" font-size="9" fill="#1A1A1A">228</text>
+
+                  <rect x="50" y="200" width="56" height="40" fill="#fde68a"/><text x="78" y="225" text-anchor="middle" font-size="9" fill="#1A1A1A">258</text>
+                  <rect x="106" y="200" width="56" height="40" fill="#fef3c7"/><text x="134" y="225" text-anchor="middle" font-size="9" fill="#1A1A1A">220</text>
+                  <rect x="162" y="200" width="56" height="40" fill="#bbf7d0"/><text x="190" y="225" text-anchor="middle" font-size="9" fill="#1A1A1A">198</text>
+                  <rect x="218" y="200" width="56" height="40" fill="#fef3c7"/><text x="246" y="225" text-anchor="middle" font-size="9" fill="#1A1A1A">222</text>
+                  <rect x="274" y="200" width="56" height="40" fill="#fde68a"/><text x="302" y="225" text-anchor="middle" font-size="9" fill="#1A1A1A">252</text>
+                </g>
+                <g font-size="9" fill="#555">
+                  <text x="78" y="252" text-anchor="middle">1,1</text>
+                  <text x="134" y="252" text-anchor="middle">1,2</text>
+                  <text x="190" y="252" text-anchor="middle" font-weight="700" fill="#1A1A1A">1,4</text>
+                  <text x="246" y="252" text-anchor="middle">1,5</text>
+                  <text x="302" y="252" text-anchor="middle">1,6</text>
+                  <text x="44" y="64" text-anchor="end">24</text>
+                  <text x="44" y="104" text-anchor="end">28</text>
+                  <text x="44" y="144" text-anchor="end" font-weight="700" fill="#1A1A1A">32</text>
+                  <text x="44" y="184" text-anchor="end">36</text>
+                  <text x="44" y="224" text-anchor="end">40</text>
+                </g>
+              </g>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 18 — Línea / barra / dispersión ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 2 · Visual correcto</p>
+        <h2>¿Línea, barra o dispersión?</h2>
+        <p style="margin-top: 0.4rem;">
+          Una pregunta corta resuelve la mayoría de los casos: <strong>el eje X, ¿es continuo o discreto?</strong>
+        </p>
+        <div class="grid cols-2 stagger-in" style="margin-top: 0.8rem;">
+          <div class="card outline">
+            <h3>Línea — eje X continuo</h3>
+            <p>Tiempo, posición axial, temperatura, etapa.</p>
+            <p class="small-text" style="text-align: left; margin-top: 0.4em; font-style: normal;">
+              <strong>Ejemplo POU:</strong> perfil de composición vs. número de etapa.
+            </p>
+          </div>
+          <div class="card outline">
+            <h3>Dispersión — dos continuas</h3>
+            <p>Cada punto es una observación; la nube revela la relación.</p>
+            <p class="small-text" style="text-align: left; margin-top: 0.4em; font-style: normal;">
+              <strong>Ejemplo POU:</strong> diagrama de paridad modelo–experimento.
+            </p>
+          </div>
+          <div class="card outline">
+            <h3>Barra vertical — categorías</h3>
+            <p>Categorías ordenadas o discretas comparables.</p>
+            <p class="small-text" style="text-align: left; margin-top: 0.4em; font-style: normal;">
+              <strong>Ejemplo POU:</strong> consumo energético por equipo del proceso.
+            </p>
+          </div>
+          <div class="card outline">
+            <h3>Barra horizontal — etiquetas largas</h3>
+            <p>Categorías con nombres largos o cuando son muchas.</p>
+            <p class="small-text" style="text-align: left; margin-top: 0.4em; font-style: normal;">
+              <strong>Ejemplo POU:</strong> costos detallados de equipos.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 19 — Visualizaciones específicas POU ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 2 · Visual correcto</p>
+        <h2>Visualizaciones específicas de operaciones unitarias</h2>
+        <div class="grid cols-3 stagger-in" style="margin-top: 0.6rem;">
+          <div class="vis-cell">
+            <svg viewBox="0 0 120 90" aria-label="McCabe-Thiele">
+              <line x1="14" y1="78" x2="106" y2="78" stroke="#1A1A1A" stroke-width="1"/>
+              <line x1="14" y1="14" x2="14" y2="78" stroke="#1A1A1A" stroke-width="1"/>
+              <line x1="14" y1="78" x2="106" y2="14" stroke="#9CA3AF" stroke-width="0.7" stroke-dasharray="3 2"/>
+              <path d="M 14 78 Q 50 28 106 14" fill="none" stroke="#9CA3AF" stroke-width="1.2"/>
+              <line x1="14" y1="78" x2="60" y2="44" stroke="#9CA3AF" stroke-width="1.2"/>
+              <line x1="60" y1="44" x2="106" y2="14" stroke="#9CA3AF" stroke-width="1.2"/>
+              <g stroke="#0F62FE" stroke-width="2" fill="none">
+                <path d="M 80 78 L 80 60 L 70 60 L 70 50 L 60 50 L 60 42 L 50 42 L 50 34 L 38 34 L 38 26 L 28 26 L 28 18"/>
+              </g>
+            </svg>
+            <span class="name">McCabe-Thiele</span>
+          </div>
+          <div class="vis-cell">
+            <svg viewBox="0 0 120 90" aria-label="Diagrama T-x-y">
+              <line x1="14" y1="78" x2="106" y2="78" stroke="#1A1A1A" stroke-width="1"/>
+              <line x1="14" y1="14" x2="14" y2="78" stroke="#1A1A1A" stroke-width="1"/>
+              <path d="M 14 22 Q 50 36 106 70" fill="none" stroke="#0F62FE" stroke-width="1.6"/>
+              <path d="M 14 22 Q 60 60 106 70" fill="none" stroke="#1A1A1A" stroke-width="1.6"/>
+              <text x="68" y="46" font-size="7" fill="#0F62FE" font-weight="700">vapor</text>
+              <text x="68" y="70" font-size="7" fill="#1A1A1A" font-weight="700">líquido</text>
+            </svg>
+            <span class="name">Diagrama T-x-y</span>
+          </div>
+          <div class="vis-cell">
+            <svg viewBox="0 0 120 90" aria-label="Perfil de columna">
+              <line x1="14" y1="78" x2="106" y2="78" stroke="#1A1A1A" stroke-width="1"/>
+              <line x1="14" y1="14" x2="14" y2="78" stroke="#1A1A1A" stroke-width="1"/>
+              <path d="M 18 70 L 30 60 L 42 50 L 54 32 L 66 22 L 78 18 L 90 16 L 102 16" fill="none" stroke="#0F62FE" stroke-width="2.4"/>
+              <path d="M 18 24 L 30 30 L 42 40 L 54 56 L 66 66 L 78 72 L 90 74 L 102 75" fill="none" stroke="#9CA3AF" stroke-width="1"/>
+              <path d="M 18 50 L 30 52 L 42 54 L 54 50 L 66 48 L 78 46 L 90 46 L 102 46" fill="none" stroke="#9CA3AF" stroke-width="1"/>
+              <text x="98" y="13" font-size="7" fill="#0F62FE" font-weight="700">clave</text>
+            </svg>
+            <span class="name">Perfil de columna</span>
+          </div>
+          <div class="vis-cell">
+            <svg viewBox="0 0 120 90" aria-label="Perfil Q-T">
+              <line x1="14" y1="78" x2="106" y2="78" stroke="#1A1A1A" stroke-width="1"/>
+              <line x1="14" y1="14" x2="14" y2="78" stroke="#1A1A1A" stroke-width="1"/>
+              <line x1="20" y1="20" x2="100" y2="50" stroke="#DC2626" stroke-width="1.8"/>
+              <line x1="20" y1="68" x2="100" y2="38" stroke="#0F62FE" stroke-width="1.8"/>
+              <line x1="62" y1="38" x2="62" y2="44" stroke="#1A1A1A" stroke-width="0.8" stroke-dasharray="2 2"/>
+              <text x="63" y="36" font-size="7" fill="#1A1A1A" font-weight="700">ΔT<tspan font-size="5" baseline-shift="-25%">mín</tspan></text>
+            </svg>
+            <span class="name">Perfil Q-T</span>
+          </div>
+          <div class="vis-cell">
+            <svg viewBox="0 0 120 90" aria-label="Curva de bomba">
+              <line x1="14" y1="78" x2="106" y2="78" stroke="#1A1A1A" stroke-width="1"/>
+              <line x1="14" y1="14" x2="14" y2="78" stroke="#1A1A1A" stroke-width="1"/>
+              <path d="M 16 24 Q 50 28 106 64" fill="none" stroke="#9CA3AF" stroke-width="1.4"/>
+              <path d="M 16 70 Q 50 50 106 26" fill="none" stroke="#9CA3AF" stroke-width="1.4"/>
+              <circle cx="60" cy="44" r="4" fill="#FFBF00" stroke="#1A1A1A" stroke-width="1.5"/>
+              <line x1="60" y1="44" x2="60" y2="78" stroke="#1A1A1A" stroke-width="0.5" stroke-dasharray="2 2"/>
+              <text x="68" y="42" font-size="7" fill="#1A1A1A" font-weight="700">PO</text>
+            </svg>
+            <span class="name">Curva de bomba</span>
+          </div>
+          <div class="vis-cell">
+            <svg viewBox="0 0 120 90" aria-label="Diagrama de paridad">
+              <line x1="14" y1="78" x2="106" y2="78" stroke="#1A1A1A" stroke-width="1"/>
+              <line x1="14" y1="14" x2="14" y2="78" stroke="#1A1A1A" stroke-width="1"/>
+              <line x1="14" y1="78" x2="106" y2="14" stroke="#9CA3AF" stroke-width="0.8" stroke-dasharray="3 2"/>
+              <g fill="#0F62FE">
+                <circle cx="28" cy="64" r="2"/><circle cx="36" cy="58" r="2"/><circle cx="44" cy="48" r="2"/>
+                <circle cx="52" cy="42" r="2"/><circle cx="60" cy="38" r="2"/><circle cx="68" cy="32" r="2"/>
+                <circle cx="76" cy="28" r="2"/><circle cx="84" cy="22" r="2"/><circle cx="92" cy="20" r="2"/>
+              </g>
+              <rect x="60" y="58" width="40" height="14" fill="#fff" stroke="#1A1A1A" stroke-width="0.5"/>
+              <text x="80" y="68" text-anchor="middle" font-size="7" fill="#1A1A1A">R² = 0,97</text>
+            </svg>
+            <span class="name">Paridad modelo–dato</span>
+          </div>
+        </div>
+        <p class="small-text" style="text-align: left; margin-top: 1rem;">
+          Cada uno tiene convenciones aceptadas. No las reinventen. Sí pueden mejorar la limpieza, los colores, los tamaños y el etiquetado.
+        </p>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 20 — Lo que hay que evitar ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 2 · Visual correcto</p>
+        <h2>Lo que hay que evitar &mdash; siempre</h2>
+        <div class="vis-catalog stagger-in" style="grid-template-columns: repeat(4, 1fr); margin-top: 0.6rem;">
+          <div class="vis-cell bad">
+            <svg viewBox="0 0 100 75" aria-hidden="true">
+              <circle cx="50" cy="40" r="28" fill="#FFBF00" stroke="#1A1A1A" stroke-width="1"/>
+              <path d="M 50 40 L 50 12 A 28 28 0 0 1 76 50 Z" fill="#0F62FE"/>
+              <path d="M 50 40 L 76 50 A 28 28 0 0 1 36 64 Z" fill="#DC2626"/>
+              <path d="M 50 40 L 36 64 A 28 28 0 0 1 22 38 Z" fill="#9CA3AF"/>
+              <line x1="14" y1="14" x2="86" y2="62" stroke="#DC2626" stroke-width="3" opacity="0.85"/>
+              <line x1="14" y1="62" x2="86" y2="14" stroke="#DC2626" stroke-width="3" opacity="0.85"/>
+            </svg>
+            <span class="name">Pastel</span>
+            <span class="why">El ojo no compara áreas con precisión.</span>
+          </div>
+          <div class="vis-cell bad">
+            <svg viewBox="0 0 100 75" aria-hidden="true">
+              <polygon points="20,50 30,46 30,62 20,66" fill="#0F62FE"/>
+              <rect x="20" y="50" width="14" height="18" fill="#3b82f6"/>
+              <polygon points="34,50 34,68 38,64 38,46" fill="#1e3a8a"/>
+              <polygon points="44,30 54,26 54,62 44,66" fill="#FFBF00"/>
+              <rect x="44" y="30" width="14" height="38" fill="#FCD34D"/>
+              <polygon points="58,30 58,68 62,64 62,26" fill="#E6AC00"/>
+              <polygon points="68,18 78,14 78,62 68,66" fill="#DC2626"/>
+              <rect x="68" y="18" width="14" height="50" fill="#EF4444"/>
+              <polygon points="82,18 82,68 86,64 86,14" fill="#7F1D1D"/>
+              <line x1="14" y1="14" x2="86" y2="62" stroke="#DC2626" stroke-width="3" opacity="0.85"/>
+              <line x1="14" y1="62" x2="86" y2="14" stroke="#DC2626" stroke-width="3" opacity="0.85"/>
+            </svg>
+            <span class="name">3D</span>
+            <span class="why">Distorsiona magnitudes y agrega ruido.</span>
+          </div>
+          <div class="vis-cell bad">
+            <svg viewBox="0 0 100 75" aria-hidden="true">
+              <line x1="20" y1="14" x2="20" y2="62" stroke="#1A1A1A" stroke-width="1"/>
+              <line x1="80" y1="14" x2="80" y2="62" stroke="#DC2626" stroke-width="1"/>
+              <line x1="20" y1="62" x2="80" y2="62" stroke="#1A1A1A" stroke-width="1"/>
+              <path d="M 22 50 Q 50 38 78 22" fill="none" stroke="#1A1A1A" stroke-width="1.6"/>
+              <path d="M 22 24 Q 50 50 78 56" fill="none" stroke="#DC2626" stroke-width="1.6"/>
+              <line x1="14" y1="14" x2="86" y2="62" stroke="#DC2626" stroke-width="3" opacity="0.85"/>
+              <line x1="14" y1="62" x2="86" y2="14" stroke="#DC2626" stroke-width="3" opacity="0.85"/>
+            </svg>
+            <span class="name">Eje Y secundario</span>
+            <span class="why">Confunde qué dato pertenece a cuál escala.</span>
+          </div>
+          <div class="vis-cell bad">
+            <svg viewBox="0 0 100 75" aria-hidden="true">
+              <circle cx="50" cy="40" r="26" fill="none" stroke="#FFBF00" stroke-width="10"/>
+              <path d="M 50 14 A 26 26 0 0 1 70 30" fill="none" stroke="#0F62FE" stroke-width="10"/>
+              <path d="M 70 30 A 26 26 0 0 1 60 62" fill="none" stroke="#DC2626" stroke-width="10"/>
+              <line x1="14" y1="14" x2="86" y2="62" stroke="#DC2626" stroke-width="3" opacity="0.85"/>
+              <line x1="14" y1="62" x2="86" y2="14" stroke="#DC2626" stroke-width="3" opacity="0.85"/>
+            </svg>
+            <span class="name">Donut</span>
+            <span class="why">Peor que el pastel: ahora son arcos.</span>
+          </div>
+        </div>
+        <div class="warning" style="margin-top: 1.25rem;">
+          <strong>Frase para repetir:</strong> nunca 3D. Nunca. Solo es legítimo cuando la tercera dimensión es real.
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 21 — Antes / después: análisis sensibilidad ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 2 · Antes / después</p>
+        <h2>Análisis de sensibilidad de columna</h2>
+        <div class="grid cols-2" style="margin-top: 0.6rem;">
+          <div class="fig">
+            <span class="fig-label bad">Antes</span>
+            <svg viewBox="0 0 360 240" aria-label="Barras 3D con título genérico Resultados">
+              <text x="180" y="18" text-anchor="middle" font-size="11" font-weight="700" fill="#1A1A1A">Resultados</text>
+              <g stroke="#d4d4d8" stroke-width="0.5">
+                <line x1="50" y1="40" x2="320" y2="40"/>
+                <line x1="50" y1="80" x2="320" y2="80"/>
+                <line x1="50" y1="120" x2="320" y2="120"/>
+                <line x1="50" y1="160" x2="320" y2="160"/>
+              </g>
+              <g font-size="7" fill="#555">
+                <text x="46" y="44" text-anchor="end">2,000,000.00</text>
+                <text x="46" y="84" text-anchor="end">1,500,000.00</text>
+                <text x="46" y="124" text-anchor="end">1,000,000.00</text>
+                <text x="46" y="164" text-anchor="end">500,000.00</text>
+              </g>
+              <line x1="50" y1="200" x2="320" y2="200" stroke="#1A1A1A" stroke-width="1"/>
+              <line x1="50" y1="40" x2="50" y2="200" stroke="#1A1A1A" stroke-width="1"/>
+              <!-- 6 grupos x 3 series, exagerado 3D -->
+              <g>
+                <!-- 1.1 -->
+                <polygon points="60,180 70,176 74,170 64,174" fill="#1e40af"/><rect x="60" y="180" width="10" height="20" fill="#3b82f6"/>
+                <polygon points="72,150 82,146 86,140 76,144" fill="#15803d"/><rect x="72" y="150" width="10" height="50" fill="#22c55e"/>
+                <polygon points="84,140 94,136 98,130 88,134" fill="#7f1d1d"/><rect x="84" y="140" width="10" height="60" fill="#ef4444"/>
+                <!-- 1.2 -->
+                <polygon points="105,170 115,166 119,160 109,164" fill="#1e40af"/><rect x="105" y="170" width="10" height="30" fill="#3b82f6"/>
+                <polygon points="117,140 127,136 131,130 121,134" fill="#15803d"/><rect x="117" y="140" width="10" height="60" fill="#22c55e"/>
+                <polygon points="129,134 139,130 143,124 133,128" fill="#7f1d1d"/><rect x="129" y="134" width="10" height="66" fill="#ef4444"/>
+                <!-- 1.3 -->
+                <polygon points="150,156 160,152 164,146 154,150" fill="#1e40af"/><rect x="150" y="156" width="10" height="44" fill="#3b82f6"/>
+                <polygon points="162,128 172,124 176,118 166,122" fill="#15803d"/><rect x="162" y="128" width="10" height="72" fill="#22c55e"/>
+                <polygon points="174,124 184,120 188,114 178,118" fill="#7f1d1d"/><rect x="174" y="124" width="10" height="76" fill="#ef4444"/>
+                <!-- 1.4 -->
+                <polygon points="195,144 205,140 209,134 199,138" fill="#1e40af"/><rect x="195" y="144" width="10" height="56" fill="#3b82f6"/>
+                <polygon points="207,118 217,114 221,108 211,112" fill="#15803d"/><rect x="207" y="118" width="10" height="82" fill="#22c55e"/>
+                <polygon points="219,114 229,110 233,104 223,108" fill="#7f1d1d"/><rect x="219" y="114" width="10" height="86" fill="#ef4444"/>
+                <!-- 1.5 -->
+                <polygon points="240,134 250,130 254,124 244,128" fill="#1e40af"/><rect x="240" y="134" width="10" height="66" fill="#3b82f6"/>
+                <polygon points="252,108 262,104 266,98 256,102" fill="#15803d"/><rect x="252" y="108" width="10" height="92" fill="#22c55e"/>
+                <polygon points="264,104 274,100 278,94 268,98" fill="#7f1d1d"/><rect x="264" y="104" width="10" height="96" fill="#ef4444"/>
+                <!-- 1.6 -->
+                <polygon points="285,124 295,120 299,114 289,118" fill="#1e40af"/><rect x="285" y="124" width="10" height="76" fill="#3b82f6"/>
+                <polygon points="297,98 307,94 311,88 301,92" fill="#15803d"/><rect x="297" y="98" width="10" height="102" fill="#22c55e"/>
+                <polygon points="309,94 319,90 323,84 313,88" fill="#7f1d1d"/><rect x="309" y="94" width="10" height="106" fill="#ef4444"/>
+              </g>
+              <g font-size="7" fill="#555">
+                <text x="80" y="218" text-anchor="middle" transform="rotate(-45 80 218)">R = 1.1 R_min</text>
+                <text x="125" y="218" text-anchor="middle" transform="rotate(-45 125 218)">R = 1.2 R_min</text>
+                <text x="170" y="218" text-anchor="middle" transform="rotate(-45 170 218)">R = 1.3 R_min</text>
+                <text x="215" y="218" text-anchor="middle" transform="rotate(-45 215 218)">R = 1.4 R_min</text>
+                <text x="260" y="218" text-anchor="middle" transform="rotate(-45 260 218)">R = 1.5 R_min</text>
+                <text x="305" y="218" text-anchor="middle" transform="rotate(-45 305 218)">R = 1.6 R_min</text>
+              </g>
+              <rect x="324" y="40" width="34" height="48" fill="#fff" stroke="#9CA3AF" stroke-width="0.7"/>
+              <g font-size="6" fill="#1A1A1A">
+                <rect x="328" y="46" width="6" height="6" fill="#3b82f6"/><text x="336" y="52">CAPEX</text>
+                <rect x="328" y="56" width="6" height="6" fill="#22c55e"/><text x="336" y="62">OPEX</text>
+                <rect x="328" y="66" width="6" height="6" fill="#ef4444"/><text x="336" y="72">Total</text>
+              </g>
+            </svg>
+          </div>
+          <div class="fig">
+            <span class="fig-label good">Después</span>
+            <svg viewBox="0 0 360 240" aria-label="Líneas limpias con título conclusivo">
+              <text x="180" y="18" text-anchor="middle" font-size="11" font-weight="700" fill="#1A1A1A">El costo total anualizado es mínimo a R = 1,4.</text>
+              <line x1="50" y1="200" x2="320" y2="200" stroke="#1A1A1A" stroke-width="1"/>
+              <line x1="50" y1="40" x2="50" y2="200" stroke="#1A1A1A" stroke-width="1"/>
+              <g font-size="9" fill="#555">
+                <text x="46" y="64" text-anchor="end">220</text>
+                <text x="46" y="124" text-anchor="end">160</text>
+                <text x="46" y="184" text-anchor="end">100</text>
+              </g>
+              <text x="20" y="120" text-anchor="middle" font-size="9" fill="#555" transform="rotate(-90 20 120)">Costo anualizado (k USD)</text>
+              <!-- CAPEX (gris claro, sube con R) -->
+              <path d="M 70 175 L 120 168 L 170 158 L 220 144 L 270 128 L 320 110" fill="none" stroke="#D1D5DB" stroke-width="2"/>
+              <text x="324" y="113" font-size="8" fill="#9CA3AF">CAPEX</text>
+              <!-- OPEX (gris medio, baja con R) -->
+              <path d="M 70 80 L 120 110 L 170 132 L 220 148 L 270 156 L 320 162" fill="none" stroke="#9CA3AF" stroke-width="2"/>
+              <text x="324" y="165" font-size="8" fill="#9CA3AF">OPEX</text>
+              <!-- TOTAL (azul fuerte, suma con mínimo en R=1.4) -->
+              <path d="M 70 100 L 120 88 L 170 78 L 220 70 L 270 76 L 320 86" fill="none" stroke="#0F62FE" stroke-width="3"/>
+              <circle cx="220" cy="70" r="4.5" fill="#FFBF00" stroke="#0F62FE" stroke-width="2"/>
+              <line x1="220" y1="70" x2="220" y2="200" stroke="#0F62FE" stroke-width="0.7" stroke-dasharray="3 2" opacity="0.5"/>
+              <text x="232" y="60" font-size="9" font-weight="700" fill="#0F62FE">Total · óptimo R = 1,4</text>
+              <g font-size="9" fill="#555">
+                <text x="70" y="216" text-anchor="middle">1,1</text>
+                <text x="120" y="216" text-anchor="middle">1,2</text>
+                <text x="170" y="216" text-anchor="middle">1,3</text>
+                <text x="220" y="216" text-anchor="middle" font-weight="700" fill="#1A1A1A">1,4</text>
+                <text x="270" y="216" text-anchor="middle">1,5</text>
+                <text x="320" y="216" text-anchor="middle">1,6</text>
+              </g>
+              <text x="180" y="232" text-anchor="middle" font-size="9" fill="#555">Relación de reflujo R / R<tspan font-size="7" baseline-shift="-25%">mín</tspan></text>
+            </svg>
+          </div>
+        </div>
+        <p class="small-text" style="text-align: left; margin-top: 0.8rem;">
+          Tres cambios concretos: (i) la pregunta del visual cambió, (ii) tipo de gráfico correcto a la variable, (iii) el contexto pasó al gris para que la tesis quede al frente.
+        </p>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 22 — Carga cognitiva ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content" style="text-align: center; align-items: center;">
+        <p class="eyebrow">Bloque 3 · El desorden es el enemigo</p>
+        <p class="quote-large" style="margin-top: 1.5rem; max-width: 32ch;">
+          Cada elemento que ustedes ponen en la figura tiene un costo.
+        </p>
+        <p style="font-size: clamp(1rem, 1.8vw, 1.5rem); margin-top: 0.5rem; color: var(--brand-gray);">
+          Ese costo lo paga el cerebro del lector.
+        </p>
+        <div class="tip" style="margin-top: 2.5rem; max-width: 50rem; text-align: left;">
+          <strong>Saint-Exupéry:</strong> «Se llega a la perfección no cuando ya no hay nada más que añadir, sino cuando ya no hay nada más que quitar.»
+        </div>
+        <p style="margin-top: 2rem; font-size: clamp(1rem, 1.7vw, 1.4rem); color: var(--brand-dark); font-weight: 600;">
+          Pregunta clave: si quito esto, ¿se pierde el mensaje? Si no, fuera.
+        </p>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 23 — Razón data-tinta de Tufte ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 3 · Data-tinta</p>
+        <h2>La razón data-tinta de Tufte</h2>
+        <div class="big-example" style="background: var(--muted); border-radius: 0.6rem; padding: 0.85rem 1.15rem; max-width: 40rem;">
+          <p style="text-align: center; color: var(--brand-dark); font-weight: 600;">$$\text{razón data-tinta} = \dfrac{\text{tinta que comunica datos}}{\text{tinta total}}$$</p>
+        </div>
+        <div class="grid cols-2 stagger-in" style="margin-top: 0.8rem;">
+          <div class="fig">
+            <span class="fig-label bad">Razón baja</span>
+            <svg viewBox="0 0 320 220" aria-label="Gráfica con bordes pesados, sombras, rejilla densa">
+              <rect x="2" y="2" width="316" height="216" fill="#e5e7eb" stroke="#1A1A1A" stroke-width="3"/>
+              <text x="160" y="20" text-anchor="middle" font-size="10" font-weight="800" fill="#1A1A1A">DATOS</text>
+              <g stroke="#9CA3AF" stroke-width="0.7">
+                <line x1="40" y1="40" x2="290" y2="40"/>
+                <line x1="40" y1="60" x2="290" y2="60"/>
+                <line x1="40" y1="80" x2="290" y2="80"/>
+                <line x1="40" y1="100" x2="290" y2="100"/>
+                <line x1="40" y1="120" x2="290" y2="120"/>
+                <line x1="40" y1="140" x2="290" y2="140"/>
+                <line x1="40" y1="160" x2="290" y2="160"/>
+                <line x1="40" y1="180" x2="290" y2="180"/>
+                <line x1="80" y1="30" x2="80" y2="190"/>
+                <line x1="120" y1="30" x2="120" y2="190"/>
+                <line x1="160" y1="30" x2="160" y2="190"/>
+                <line x1="200" y1="30" x2="200" y2="190"/>
+                <line x1="240" y1="30" x2="240" y2="190"/>
+              </g>
+              <line x1="40" y1="190" x2="290" y2="190" stroke="#1A1A1A" stroke-width="2"/>
+              <line x1="40" y1="30" x2="40" y2="190" stroke="#1A1A1A" stroke-width="2"/>
+              <filter id="shadow"><feGaussianBlur stdDeviation="2"/></filter>
+              <path d="M 50 150 L 100 130 L 150 100 L 200 80 L 250 60 L 280 50" fill="none" stroke="#000" stroke-width="6" opacity="0.25" filter="url(#shadow)"/>
+              <path d="M 50 150 L 100 130 L 150 100 L 200 80 L 250 60 L 280 50" fill="none" stroke="#0F62FE" stroke-width="2.5"/>
+              <g fill="#0F62FE" stroke="#fff" stroke-width="1.2">
+                <circle cx="50" cy="150" r="5"/><circle cx="100" cy="130" r="5"/>
+                <circle cx="150" cy="100" r="5"/><circle cx="200" cy="80" r="5"/>
+                <circle cx="250" cy="60" r="5"/><circle cx="280" cy="50" r="5"/>
+              </g>
+              <text x="160" y="208" text-anchor="middle" font-size="9" fill="#1A1A1A" font-weight="700">EJE X (CON DECIMALES)</text>
+            </svg>
+            <figcaption>Mucha tinta no comunica datos.</figcaption>
+          </div>
+          <div class="fig">
+            <span class="fig-label good">Razón alta</span>
+            <svg viewBox="0 0 320 220" aria-label="Gráfica limpia, solo ejes y datos">
+              <line x1="40" y1="190" x2="290" y2="190" stroke="#1A1A1A" stroke-width="0.8"/>
+              <line x1="40" y1="30" x2="40" y2="190" stroke="#1A1A1A" stroke-width="0.8"/>
+              <path d="M 50 150 L 100 130 L 150 100 L 200 80 L 250 60 L 280 50" fill="none" stroke="#0F62FE" stroke-width="2.5"/>
+              <g font-size="9" fill="#555">
+                <text x="36" y="194" text-anchor="end">0</text>
+                <text x="36" y="124" text-anchor="end">50</text>
+                <text x="36" y="64" text-anchor="end">100</text>
+                <text x="50" y="208" text-anchor="middle">2018</text>
+                <text x="280" y="208" text-anchor="middle">2024</text>
+              </g>
+            </svg>
+            <figcaption>Toda la tinta sirve.</figcaption>
+          </div>
+        </div>
+        <p class="small-text" style="text-align: left; margin-top: 1rem;">
+          Edward Tufte, hace cuarenta años. La idea es simple: cada raya, cada color, cada borde compite con los datos por la atención del lector. Si esa raya no comunica datos, está estorbando.
+        </p>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 24 — Principios Gestalt ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 3 · Gestalt</p>
+        <h2>Cuatro principios Gestalt aplicables aquí</h2>
+        <div class="grid cols-2 stagger-in" style="margin-top: 0.6rem;">
+          <div class="card">
+            <h3>Proximidad</h3>
+            <p>Lo que está cerca se percibe agrupado.</p>
+            <p class="small-text" style="text-align: left; font-style: normal; margin-top: 0.4em;">
+              <strong>Aplicación:</strong> etiqueten los datos al lado de los datos, no en leyendas lejanas.
+            </p>
+          </div>
+          <div class="card">
+            <h3>Similitud</h3>
+            <p>Lo que comparte color o forma se percibe como relacionado.</p>
+            <p class="small-text" style="text-align: left; font-style: normal; margin-top: 0.4em;">
+              <strong>Aplicación:</strong> misma serie, mismo color a lo largo de todo el documento.
+            </p>
+          </div>
+          <div class="card">
+            <h3>Cierre</h3>
+            <p>El cerebro completa figuras incompletas.</p>
+            <p class="small-text" style="text-align: left; font-style: normal; margin-top: 0.4em;">
+              <strong>Aplicación:</strong> no necesita bordes alrededor de toda la gráfica.
+            </p>
+          </div>
+          <div class="card">
+            <h3>Continuidad</h3>
+            <p>El ojo sigue líneas.</p>
+            <p class="small-text" style="text-align: left; font-style: normal; margin-top: 0.4em;">
+              <strong>Aplicación:</strong> líneas continuas → tendencias; series discretas → categorías.
+            </p>
+          </div>
+        </div>
+        <div class="tip" style="margin-top: 1rem;">
+          <strong>Proximidad</strong>, sobre todo, resuelve uno de los errores más comunes: leyendas en una esquina que obligan al ojo a viajar de la curva al texto y de vuelta.
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 25 — Antes/después: composición · paso 1 ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 3 · Antes / después · paso 1 de 3</p>
+        <h2>Perfil de composición de columna &mdash; el problema</h2>
+        <div class="two-col asym" style="margin-top: 0.6rem;">
+          <div class="fig">
+            <span class="fig-label bad">Antes</span>
+            <svg viewBox="0 0 480 320" aria-label="Perfil de composición sobrecargado">
+              <rect x="2" y="2" width="476" height="316" fill="none" stroke="#1A1A1A" stroke-width="3"/>
+              <text x="240" y="22" text-anchor="middle" font-size="11" font-weight="700" fill="#1A1A1A">Composición vs. Etapa</text>
+              <g stroke="#d4d4d8" stroke-width="0.5">
+                <line x1="60" y1="40" x2="380" y2="40"/><line x1="60" y1="70" x2="380" y2="70"/>
+                <line x1="60" y1="100" x2="380" y2="100"/><line x1="60" y1="130" x2="380" y2="130"/>
+                <line x1="60" y1="160" x2="380" y2="160"/><line x1="60" y1="190" x2="380" y2="190"/>
+                <line x1="60" y1="220" x2="380" y2="220"/><line x1="60" y1="250" x2="380" y2="250"/>
+                <line x1="80" y1="40" x2="80" y2="270"/><line x1="100" y1="40" x2="100" y2="270"/>
+                <line x1="120" y1="40" x2="120" y2="270"/><line x1="140" y1="40" x2="140" y2="270"/>
+                <line x1="160" y1="40" x2="160" y2="270"/><line x1="180" y1="40" x2="180" y2="270"/>
+                <line x1="200" y1="40" x2="200" y2="270"/><line x1="220" y1="40" x2="220" y2="270"/>
+                <line x1="240" y1="40" x2="240" y2="270"/><line x1="260" y1="40" x2="260" y2="270"/>
+                <line x1="280" y1="40" x2="280" y2="270"/><line x1="300" y1="40" x2="300" y2="270"/>
+                <line x1="320" y1="40" x2="320" y2="270"/><line x1="340" y1="40" x2="340" y2="270"/>
+                <line x1="360" y1="40" x2="360" y2="270"/>
+              </g>
+              <line x1="60" y1="270" x2="380" y2="270" stroke="#1A1A1A" stroke-width="1.5"/>
+              <line x1="60" y1="40" x2="60" y2="270" stroke="#1A1A1A" stroke-width="1.5"/>
+              <g font-size="8" fill="#555">
+                <text x="56" y="44" text-anchor="end">1.0000</text>
+                <text x="56" y="89" text-anchor="end">0.8000</text>
+                <text x="56" y="135" text-anchor="end">0.6000</text>
+                <text x="56" y="180" text-anchor="end">0.4000</text>
+                <text x="56" y="225" text-anchor="end">0.2000</text>
+                <text x="56" y="272" text-anchor="end">0.0000</text>
+              </g>
+              <text x="34" y="155" text-anchor="middle" font-size="9" fill="#555" transform="rotate(-90 34 155)">Composición molar (fracción)</text>
+              <!-- Tilted X labels -->
+              <g font-size="6" fill="#555">
+                <text x="80" y="284" transform="rotate(-45 80 284)">Etapa 1</text>
+                <text x="100" y="284" transform="rotate(-45 100 284)">Etapa 2</text>
+                <text x="120" y="284" transform="rotate(-45 120 284)">Etapa 3</text>
+                <text x="140" y="284" transform="rotate(-45 140 284)">Etapa 4</text>
+                <text x="160" y="284" transform="rotate(-45 160 284)">Etapa 5</text>
+                <text x="180" y="284" transform="rotate(-45 180 284)">Etapa 6</text>
+                <text x="200" y="284" transform="rotate(-45 200 284)">Etapa 7</text>
+                <text x="220" y="284" transform="rotate(-45 220 284)">Etapa 8</text>
+                <text x="240" y="284" transform="rotate(-45 240 284)">Etapa 9</text>
+                <text x="260" y="284" transform="rotate(-45 260 284)">Etapa 10</text>
+                <text x="280" y="284" transform="rotate(-45 280 284)">Etapa 11</text>
+                <text x="300" y="284" transform="rotate(-45 300 284)">Etapa 12</text>
+                <text x="320" y="284" transform="rotate(-45 320 284)">Etapa 13</text>
+                <text x="340" y="284" transform="rotate(-45 340 284)">Etapa 14</text>
+                <text x="360" y="284" transform="rotate(-45 360 284)">Etapa 15</text>
+              </g>
+              <text x="220" y="312" text-anchor="middle" font-size="8" fill="#555">Número de etapa (adimensional)</text>
+              <!-- 4 series colores saturados con marcadores grandes -->
+              <g>
+                <path d="M 80 60 L 100 70 L 120 80 L 140 90 L 160 100 L 180 120 L 200 140 L 220 160 L 240 180 L 260 200 L 280 220 L 300 240 L 320 250 L 340 258 L 360 264" fill="none" stroke="#DC2626" stroke-width="2"/>
+                <path d="M 80 220 L 100 210 L 120 195 L 140 180 L 160 160 L 180 140 L 200 120 L 220 100 L 240 80 L 260 70 L 280 60 L 300 55 L 320 52 L 340 50 L 360 48" fill="none" stroke="#0F62FE" stroke-width="2"/>
+                <path d="M 80 240 L 100 235 L 120 230 L 140 222 L 160 215 L 180 205 L 200 195 L 220 185 L 240 175 L 260 165 L 280 155 L 300 145 L 320 138 L 340 132 L 360 128" fill="none" stroke="#22c55e" stroke-width="2"/>
+                <path d="M 80 200 L 100 195 L 120 190 L 140 185 L 160 178 L 180 170 L 200 162 L 220 154 L 240 145 L 260 138 L 280 130 L 300 122 L 320 116 L 340 110 L 360 105" fill="none" stroke="#a855f7" stroke-width="2"/>
+                <g fill="#DC2626"><circle cx="80" cy="60" r="3.5"/><circle cx="160" cy="100" r="3.5"/><circle cx="240" cy="180" r="3.5"/><circle cx="320" cy="250" r="3.5"/></g>
+                <g fill="#0F62FE"><circle cx="80" cy="220" r="3.5"/><circle cx="160" cy="160" r="3.5"/><circle cx="240" cy="80" r="3.5"/><circle cx="320" cy="52" r="3.5"/></g>
+                <g fill="#22c55e"><circle cx="80" cy="240" r="3.5"/><circle cx="160" cy="215" r="3.5"/><circle cx="240" cy="175" r="3.5"/><circle cx="320" cy="138" r="3.5"/></g>
+                <g fill="#a855f7"><circle cx="80" cy="200" r="3.5"/><circle cx="160" cy="178" r="3.5"/><circle cx="240" cy="145" r="3.5"/><circle cx="320" cy="116" r="3.5"/></g>
+              </g>
+              <!-- Leyenda con sombra -->
+              <rect x="386" y="40" width="86" height="80" fill="#fff" stroke="#1A1A1A" stroke-width="1"/>
+              <rect x="388" y="42" width="86" height="80" fill="#000" opacity="0.1"/>
+              <rect x="386" y="40" width="86" height="80" fill="#fff" stroke="#1A1A1A" stroke-width="1"/>
+              <g font-size="8" fill="#1A1A1A">
+                <text x="429" y="55" text-anchor="middle" font-weight="700">Leyenda</text>
+                <line x1="392" y1="65" x2="406" y2="65" stroke="#DC2626" stroke-width="2"/><circle cx="399" cy="65" r="2" fill="#DC2626"/>
+                <text x="410" y="68">Tolueno</text>
+                <line x1="392" y1="80" x2="406" y2="80" stroke="#0F62FE" stroke-width="2"/><circle cx="399" cy="80" r="2" fill="#0F62FE"/>
+                <text x="410" y="83">Benceno</text>
+                <line x1="392" y1="95" x2="406" y2="95" stroke="#22c55e" stroke-width="2"/><circle cx="399" cy="95" r="2" fill="#22c55e"/>
+                <text x="410" y="98">Xileno</text>
+                <line x1="392" y1="110" x2="406" y2="110" stroke="#a855f7" stroke-width="2"/><circle cx="399" cy="110" r="2" fill="#a855f7"/>
+                <text x="410" y="113">Otros</text>
+              </g>
+            </svg>
+          </div>
+          <div>
+            <p style="font-weight: 600; color: var(--brand-dark);">¿Cuántos elementos compiten por su atención?</p>
+            <ul style="margin-top: 0.6rem;">
+              <li>Borde grueso alrededor de toda la figura.</li>
+              <li>Rejilla horizontal y vertical densa.</li>
+              <li>Decimales innecesarios en el eje Y (0,0000).</li>
+              <li>Etiquetas del eje X inclinadas a 45°.</li>
+              <li>Marcadores grandes sobre cada punto.</li>
+              <li>Cuatro series con colores saturados.</li>
+              <li>Leyenda en esquina, con sombra.</li>
+              <li>Título genérico: «Composición vs. Etapa».</li>
+            </ul>
+            <p style="margin-top: 0.8rem; color: var(--brand-dark); font-weight: 600;">
+              Vamos a ir quitando, paso a paso, todo lo que sobra.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 26 — Antes/después: composición · paso 2 ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 3 · Antes / después · paso 2 de 3</p>
+        <h2>Limpiar &mdash; quitar lo que no comunica</h2>
+        <div class="two-col asym" style="margin-top: 0.6rem;">
+          <div class="fig">
+            <span class="fig-label" style="color: var(--brand-gray);">Después de limpiar</span>
+            <svg viewBox="0 0 460 320" aria-label="Perfil limpio, sin marcadores ni rejilla">
+              <line x1="60" y1="270" x2="380" y2="270" stroke="#1A1A1A" stroke-width="0.8"/>
+              <line x1="60" y1="40" x2="60" y2="270" stroke="#1A1A1A" stroke-width="0.8"/>
+              <g font-size="10" fill="#555">
+                <text x="56" y="44" text-anchor="end">1,0</text>
+                <text x="56" y="100" text-anchor="end">0,8</text>
+                <text x="56" y="158" text-anchor="end">0,6</text>
+                <text x="56" y="216" text-anchor="end">0,4</text>
+                <text x="56" y="274" text-anchor="end">0,2</text>
+              </g>
+              <text x="38" y="155" text-anchor="middle" font-size="10" fill="#555" transform="rotate(-90 38 155)">Composición molar</text>
+              <g font-size="10" fill="#555">
+                <text x="80" y="288" text-anchor="middle">1</text>
+                <text x="160" y="288" text-anchor="middle">5</text>
+                <text x="240" y="288" text-anchor="middle">10</text>
+                <text x="320" y="288" text-anchor="middle">15</text>
+              </g>
+              <text x="220" y="306" text-anchor="middle" font-size="10" fill="#555">Etapa</text>
+              <!-- 4 series, sin marcadores -->
+              <path d="M 80 60 L 100 70 L 120 80 L 140 90 L 160 100 L 180 120 L 200 140 L 220 160 L 240 180 L 260 200 L 280 220 L 300 240 L 320 250 L 340 258 L 360 264" fill="none" stroke="#DC2626" stroke-width="2"/>
+              <path d="M 80 220 L 100 210 L 120 195 L 140 180 L 160 160 L 180 140 L 200 120 L 220 100 L 240 80 L 260 70 L 280 60 L 300 55 L 320 52 L 340 50 L 360 48" fill="none" stroke="#0F62FE" stroke-width="2"/>
+              <path d="M 80 240 L 100 235 L 120 230 L 140 222 L 160 215 L 180 205 L 200 195 L 220 185 L 240 175 L 260 165 L 280 155 L 300 145 L 320 138 L 340 132 L 360 128" fill="none" stroke="#22c55e" stroke-width="2"/>
+              <path d="M 80 200 L 100 195 L 120 190 L 140 185 L 160 178 L 180 170 L 200 162 L 220 154 L 240 145 L 260 138 L 280 130 L 300 122 L 320 116 L 340 110 L 360 105" fill="none" stroke="#a855f7" stroke-width="2"/>
+              <!-- Etiquetas directas -->
+              <text x="364" y="51" font-size="10" fill="#0F62FE" font-weight="700">Benceno</text>
+              <text x="364" y="108" font-size="10" fill="#a855f7" font-weight="700">Otros</text>
+              <text x="364" y="131" font-size="10" fill="#22c55e" font-weight="700">Xileno</text>
+              <text x="364" y="267" font-size="10" fill="#DC2626" font-weight="700">Tolueno</text>
+            </svg>
+          </div>
+          <div>
+            <p style="font-weight: 600; color: var(--brand-dark);">Cambios aplicados:</p>
+            <ol class="stagger-in" style="margin-top: 0.6rem; padding-left: 1.5em;">
+              <li>Borde de la figura: <strong>eliminado</strong>.</li>
+              <li>Rejilla: <strong>eliminada</strong>.</li>
+              <li>Decimales del eje Y: 0,0 / 0,2 / 0,4 / 0,6 / 0,8 / 1,0.</li>
+              <li>Etiquetas del eje X: horizontales, una de cada cinco etapas.</li>
+              <li>Marcadores de datos: eliminados.</li>
+              <li>Leyenda: eliminada; cada curva etiquetada al lado.</li>
+            </ol>
+            <p class="small-text" style="text-align: left; margin-top: 1rem;">
+              La gráfica se ve más limpia y, paradójicamente, comunica más. Cada cambio elimina trabajo cognitivo del lector.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 27 — Antes/después: composición · paso 3 ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 3 · Antes / después · paso 3 de 3</p>
+        <h2>Jerarquía: una historia, no cuatro</h2>
+        <div class="two-col asym" style="margin-top: 0.6rem;">
+          <div class="fig">
+            <span class="fig-label good">Versión final</span>
+            <svg viewBox="0 0 460 340" aria-label="Perfil con benceno destacado">
+              <text x="220" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#1A1A1A">El benceno alcanza 99 % de pureza en la etapa 18.</text>
+              <line x1="60" y1="290" x2="380" y2="290" stroke="#1A1A1A" stroke-width="0.8"/>
+              <line x1="60" y1="60" x2="60" y2="290" stroke="#1A1A1A" stroke-width="0.8"/>
+              <g font-size="10" fill="#555">
+                <text x="56" y="64" text-anchor="end">1,0</text>
+                <text x="56" y="120" text-anchor="end">0,8</text>
+                <text x="56" y="178" text-anchor="end">0,6</text>
+                <text x="56" y="236" text-anchor="end">0,4</text>
+                <text x="56" y="294" text-anchor="end">0,2</text>
+              </g>
+              <text x="38" y="175" text-anchor="middle" font-size="10" fill="#555" transform="rotate(-90 38 175)">Composición molar</text>
+              <g font-size="10" fill="#555">
+                <text x="80" y="308" text-anchor="middle">1</text>
+                <text x="160" y="308" text-anchor="middle">5</text>
+                <text x="240" y="308" text-anchor="middle">10</text>
+                <text x="320" y="308" text-anchor="middle">15</text>
+              </g>
+              <text x="220" y="326" text-anchor="middle" font-size="10" fill="#555">Etapa</text>
+              <!-- 3 series en gris -->
+              <path d="M 80 80 L 100 90 L 120 100 L 140 110 L 160 120 L 180 140 L 200 160 L 220 180 L 240 200 L 260 220 L 280 240 L 300 260 L 320 270 L 340 278 L 360 284" fill="none" stroke="#D1D5DB" stroke-width="1.6"/>
+              <path d="M 80 260 L 100 255 L 120 250 L 140 242 L 160 235 L 180 225 L 200 215 L 220 205 L 240 195 L 260 185 L 280 175 L 300 165 L 320 158 L 340 152 L 360 148" fill="none" stroke="#D1D5DB" stroke-width="1.6"/>
+              <path d="M 80 220 L 100 215 L 120 210 L 140 205 L 160 198 L 180 190 L 200 182 L 220 174 L 240 165 L 260 158 L 280 150 L 300 142 L 320 136 L 340 130 L 360 125" fill="none" stroke="#D1D5DB" stroke-width="1.6"/>
+              <!-- Benceno destacado -->
+              <path d="M 80 240 L 100 230 L 120 215 L 140 200 L 160 180 L 180 160 L 200 140 L 220 120 L 240 100 L 260 90 L 280 80 L 300 75 L 320 72 L 340 70 L 360 68" fill="none" stroke="#0F62FE" stroke-width="3.2"/>
+              <text x="364" y="71" font-size="11" fill="#0F62FE" font-weight="700">Benceno</text>
+              <text x="364" y="148" font-size="9" fill="#9CA3AF">Xileno</text>
+              <text x="364" y="284" font-size="9" fill="#9CA3AF">Tolueno</text>
+              <!-- Annotation pin -->
+              <line x1="240" y1="100" x2="240" y2="150" stroke="#FFBF00" stroke-width="0.7" stroke-dasharray="2 2"/>
+              <text x="244" y="148" font-size="9" fill="#1A1A1A" font-weight="700">99 %</text>
+            </svg>
+          </div>
+          <div>
+            <p style="font-weight: 600; color: var(--brand-dark);">Tres movimientos finales:</p>
+            <ul class="stagger-in" style="margin-top: 0.6rem;">
+              <li>Tres curvas en <strong style="color: #9CA3AF;">gris claro</strong> (tolueno, xileno, otros) → contexto.</li>
+              <li>Una curva en <strong style="color: #0F62FE;">azul fuerte</strong> (benceno, el componente clave) → foco.</li>
+              <li>Etiquetas directas al final de cada curva, en su color.</li>
+              <li>Título cambia de <em>tema</em> a <em>conclusión</em>: «El benceno alcanza 99 % en la etapa 18».</li>
+            </ul>
+            <p class="small-text" style="text-align: left; margin-top: 1rem;">
+              El lector sabe en cinco segundos qué le están diciendo. Sin cambiar los datos: solo cambió la forma de mostrarlos.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 28 — Cierre del bloque 3 ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 3 · Cierre</p>
+        <h2>Lista corta: lo que casi siempre sobra</h2>
+        <div class="grid cols-2 stagger-in" style="margin-top: 0.6rem;">
+          <ul class="checklist">
+            <li><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg> <span>Bordes de la figura.</span></li>
+            <li><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg> <span>Rejilla densa.</span></li>
+            <li><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg> <span>Leyendas separadas (cuando se puede etiquetar al lado).</span></li>
+            <li><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg> <span>Decimales innecesarios.</span></li>
+          </ul>
+          <ul class="checklist">
+            <li><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg> <span>Marcadores de datos cuando hay muchos puntos.</span></li>
+            <li><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg> <span>Sombras, gradientes y fondos de color.</span></li>
+            <li><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg> <span>Texto en mayúsculas o cursivas sin razón.</span></li>
+            <li><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg> <span>Logos repetidos en cada figura.</span></li>
+          </ul>
+        </div>
+        <div class="tip" style="margin-top: 1.25rem;">
+          <strong>Lista de chequeo.</strong> Antes de entregar el documento, miren cada figura: por cada elemento de esta lista, ¿está aportando algo? Si no, fuera.
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 29 — Cuente los 3 ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content" style="text-align: center; align-items: center;">
+        <p class="eyebrow">Bloque 4 · Atributos preatentivos</p>
+        <h2>¿Cuántos «3» hay?</h2>
+        <div class="num-grid" style="margin-top: 1rem; max-width: 50rem;">
+          7 5 6 3 9 5 0 6 8 4 7 3<br>
+          6 5 8 6 6 3 0 3 7 5 7 6<br>
+          8 6 0 3 7 2 6 5 8 6 0 2<br>
+          8 4 6 5 8 9 1 0 7 8 3 0
+        </div>
+        <p style="margin-top: 1.2rem; color: var(--brand-gray);">Cuenten en silencio. Tómense diez segundos.</p>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 30 — Ahora cuéntelos otra vez ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content" style="text-align: center; align-items: center;">
+        <p class="eyebrow">Bloque 4 · Atributos preatentivos</p>
+        <h2>Ahora cuéntenlos otra vez</h2>
+        <div class="num-grid" style="margin-top: 1rem; max-width: 50rem;">
+          <span class="dim">7 5 6</span> <span class="hi">3</span> <span class="dim">9 5 0 6 8 4 7</span> <span class="hi">3</span><br>
+          <span class="dim">6 5 8 6 6</span> <span class="hi">3</span> <span class="dim">0</span> <span class="hi">3</span> <span class="dim">7 5 7 6</span><br>
+          <span class="dim">8 6 0</span> <span class="hi">3</span> <span class="dim">7 2 6 5 8 6 0 2</span><br>
+          <span class="dim">8 4 6 5 8 9 1 0 7 8</span> <span class="hi">3</span> <span class="dim">0</span>
+        </div>
+        <p style="margin-top: 1.2rem; font-size: clamp(1rem, 1.7vw, 1.4rem); color: var(--brand-dark); font-weight: 600;">
+          Saltan a la cara. Es un <span style="color: var(--brand-yellow-dark);">atributo preatentivo</span>: el cerebro lo procesa <em>antes</em> de que ustedes decidan procesarlo.
+        </p>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 31 — Paleta de atributos preatentivos ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 4 · Atributos preatentivos</p>
+        <h2>La paleta de atributos preatentivos</h2>
+        <div class="pa-grid stagger-in" style="margin-top: 0.6rem;">
+          <div class="pa-cell">
+            <svg viewBox="0 0 64 48" aria-hidden="true">
+              <g stroke="#9CA3AF" stroke-width="2"><line x1="6" y1="42" x2="6" y2="6"/><line x1="14" y1="42" x2="14" y2="6"/><line x1="22" y1="42" x2="22" y2="6"/><line x1="38" y1="42" x2="38" y2="6"/><line x1="46" y1="42" x2="46" y2="6"/><line x1="54" y1="42" x2="54" y2="6"/></g>
+              <line x1="30" y1="40" x2="34" y2="8" stroke="#0F62FE" stroke-width="2.4"/>
+            </svg>
+            <span class="name">Orientación</span>
+          </div>
+          <div class="pa-cell">
+            <svg viewBox="0 0 64 48" aria-hidden="true">
+              <g fill="#9CA3AF"><circle cx="10" cy="14" r="4"/><circle cx="22" cy="14" r="4"/><circle cx="46" cy="14" r="4"/><circle cx="58" cy="14" r="4"/><circle cx="10" cy="34" r="4"/><circle cx="22" cy="34" r="4"/><circle cx="46" cy="34" r="4"/><circle cx="58" cy="34" r="4"/></g>
+              <rect x="30" y="20" width="8" height="8" fill="#0F62FE"/>
+            </svg>
+            <span class="name">Forma</span>
+          </div>
+          <div class="pa-cell">
+            <svg viewBox="0 0 64 48" aria-hidden="true">
+              <g stroke="#9CA3AF" stroke-width="3"><line x1="8" y1="14" x2="22" y2="14"/><line x1="8" y1="26" x2="20" y2="26"/><line x1="8" y1="38" x2="18" y2="38"/></g>
+              <line x1="8" y1="20" x2="56" y2="20" stroke="#0F62FE" stroke-width="3"/>
+            </svg>
+            <span class="name">Longitud</span>
+          </div>
+          <div class="pa-cell">
+            <svg viewBox="0 0 64 48" aria-hidden="true">
+              <g stroke="#9CA3AF"><line x1="6" y1="10" x2="58" y2="10" stroke-width="1"/><line x1="6" y1="20" x2="58" y2="20" stroke-width="1.5"/><line x1="6" y1="38" x2="58" y2="38" stroke-width="2"/></g>
+              <line x1="6" y1="29" x2="58" y2="29" stroke="#0F62FE" stroke-width="5"/>
+            </svg>
+            <span class="name">Grosor</span>
+          </div>
+          <div class="pa-cell">
+            <svg viewBox="0 0 64 48" aria-hidden="true">
+              <g fill="#9CA3AF"><circle cx="14" cy="24" r="3"/><circle cx="28" cy="24" r="4"/><circle cx="44" cy="24" r="3"/><circle cx="56" cy="24" r="2"/></g>
+              <circle cx="34" cy="24" r="9" fill="#0F62FE"/>
+            </svg>
+            <span class="name">Tamaño</span>
+          </div>
+          <div class="pa-cell">
+            <svg viewBox="0 0 64 48" aria-hidden="true">
+              <g fill="none" stroke="#9CA3AF" stroke-width="2"><line x1="6" y1="36" x2="20" y2="20"/><line x1="22" y1="20" x2="36" y2="36"/><line x1="38" y1="36" x2="52" y2="20"/></g>
+              <path d="M 14 36 Q 32 6 56 36" fill="none" stroke="#0F62FE" stroke-width="2.5"/>
+            </svg>
+            <span class="name">Curvatura</span>
+          </div>
+          <div class="pa-cell">
+            <svg viewBox="0 0 64 48" aria-hidden="true">
+              <g fill="#9CA3AF"><circle cx="10" cy="24" r="3"/><circle cx="22" cy="24" r="3"/><circle cx="42" cy="24" r="3"/><circle cx="54" cy="24" r="3"/></g>
+              <g><circle cx="32" cy="24" r="3" fill="#0F62FE"/><line x1="32" y1="14" x2="32" y2="34" stroke="#0F62FE" stroke-width="1.6"/></g>
+            </svg>
+            <span class="name">Marca añadida</span>
+          </div>
+          <div class="pa-cell">
+            <svg viewBox="0 0 64 48" aria-hidden="true">
+              <g fill="#9CA3AF"><circle cx="14" cy="14" r="3"/><circle cx="50" cy="14" r="3"/><circle cx="14" cy="34" r="3"/><circle cx="50" cy="34" r="3"/></g>
+              <circle cx="32" cy="24" r="4" fill="#0F62FE"/>
+              <circle cx="32" cy="24" r="11" fill="none" stroke="#0F62FE" stroke-width="1.6"/>
+            </svg>
+            <span class="name">Encerramiento</span>
+          </div>
+          <div class="pa-cell">
+            <svg viewBox="0 0 64 48" aria-hidden="true">
+              <g><circle cx="10" cy="14" r="3" fill="#9CA3AF"/><circle cx="22" cy="14" r="3" fill="#9CA3AF"/><circle cx="42" cy="14" r="3" fill="#9CA3AF"/><circle cx="54" cy="14" r="3" fill="#9CA3AF"/><circle cx="10" cy="34" r="3" fill="#9CA3AF"/><circle cx="22" cy="34" r="3" fill="#9CA3AF"/><circle cx="42" cy="34" r="3" fill="#9CA3AF"/><circle cx="54" cy="34" r="3" fill="#9CA3AF"/></g>
+              <circle cx="32" cy="24" r="4" fill="#0F62FE"/>
+            </svg>
+            <span class="name">Tono (color)</span>
+          </div>
+          <div class="pa-cell">
+            <svg viewBox="0 0 64 48" aria-hidden="true">
+              <g><circle cx="10" cy="24" r="3" fill="#cbd5e1"/><circle cx="22" cy="24" r="3" fill="#94a3b8"/><circle cx="42" cy="24" r="3" fill="#475569"/><circle cx="54" cy="24" r="3" fill="#1e293b"/></g>
+              <circle cx="32" cy="24" r="4" fill="#0F62FE"/>
+            </svg>
+            <span class="name">Intensidad</span>
+          </div>
+          <div class="pa-cell">
+            <svg viewBox="0 0 64 48" aria-hidden="true">
+              <g fill="#9CA3AF"><circle cx="14" cy="36" r="3"/><circle cx="26" cy="32" r="3"/><circle cx="38" cy="28" r="3"/><circle cx="50" cy="24" r="3"/></g>
+              <circle cx="32" cy="10" r="4" fill="#0F62FE"/>
+            </svg>
+            <span class="name">Posición</span>
+          </div>
+          <div class="pa-cell">
+            <svg viewBox="0 0 64 48" aria-hidden="true">
+              <g fill="#9CA3AF"><circle cx="14" cy="24" r="3"/><circle cx="26" cy="24" r="3"/><circle cx="50" cy="24" r="3"/></g>
+              <g><circle cx="38" cy="24" r="4" fill="#0F62FE"/><circle cx="38" cy="24" r="9" fill="none" stroke="#0F62FE" stroke-width="1" opacity="0.5"/><circle cx="38" cy="24" r="13" fill="none" stroke="#0F62FE" stroke-width="0.7" opacity="0.3"/></g>
+            </svg>
+            <span class="name">Movimiento</span>
+          </div>
+        </div>
+        <div class="tip" style="margin-top: 1.25rem;">
+          <strong>Distinción clave:</strong> longitud y posición transmiten <em>magnitud</em> (por eso barras y dispersiones funcionan). El color transmite <em>categoría</em> o <em>énfasis</em>, no magnitud. ¿Es más grande el rojo o el azul? La pregunta no tiene respuesta.
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 32 — Color: gris es el nuevo negro ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 4 · Color</p>
+        <h2>Gris es el nuevo negro</h2>
+        <div class="grid cols-2 stagger-in" style="margin-top: 0.6rem;">
+          <div class="fig">
+            <span class="fig-label bad">Todo en color</span>
+            <svg viewBox="0 0 320 220" aria-label="Gráfica con cinco colores saturados">
+              <line x1="40" y1="180" x2="290" y2="180" stroke="#1A1A1A" stroke-width="0.8"/>
+              <line x1="40" y1="20" x2="40" y2="180" stroke="#1A1A1A" stroke-width="0.8"/>
+              <path d="M 50 160 L 100 130 L 150 100 L 200 70 L 260 50" fill="none" stroke="#DC2626" stroke-width="2.4"/>
+              <path d="M 50 150 L 100 140 L 150 130 L 200 110 L 260 90" fill="none" stroke="#0F62FE" stroke-width="2.4"/>
+              <path d="M 50 140 L 100 110 L 150 130 L 200 80 L 260 70" fill="none" stroke="#22c55e" stroke-width="2.4"/>
+              <path d="M 50 130 L 100 150 L 150 110 L 200 130 L 260 100" fill="none" stroke="#a855f7" stroke-width="2.4"/>
+              <path d="M 50 120 L 100 100 L 150 80 L 200 90 L 260 60" fill="none" stroke="#f97316" stroke-width="2.4"/>
+            </svg>
+            <figcaption>Si todo está en color, nada está en color.</figcaption>
+          </div>
+          <div class="fig">
+            <span class="fig-label good">Una sola en color</span>
+            <svg viewBox="0 0 320 220" aria-label="Gráfica con cuatro líneas en gris y una destacada">
+              <line x1="40" y1="180" x2="290" y2="180" stroke="#1A1A1A" stroke-width="0.8"/>
+              <line x1="40" y1="20" x2="40" y2="180" stroke="#1A1A1A" stroke-width="0.8"/>
+              <path d="M 50 150 L 100 140 L 150 130 L 200 110 L 260 90" fill="none" stroke="#D1D5DB" stroke-width="1.8"/>
+              <path d="M 50 140 L 100 110 L 150 130 L 200 80 L 260 70" fill="none" stroke="#D1D5DB" stroke-width="1.8"/>
+              <path d="M 50 130 L 100 150 L 150 110 L 200 130 L 260 100" fill="none" stroke="#D1D5DB" stroke-width="1.8"/>
+              <path d="M 50 120 L 100 100 L 150 80 L 200 90 L 260 60" fill="none" stroke="#D1D5DB" stroke-width="1.8"/>
+              <path d="M 50 160 L 100 130 L 150 100 L 200 70 L 260 50" fill="none" stroke="#0F62FE" stroke-width="3"/>
+              <text x="266" y="50" font-size="10" fill="#0F62FE" font-weight="700">Caso clave</text>
+            </svg>
+            <figcaption>El gris es el lienzo. El color es el énfasis.</figcaption>
+          </div>
+        </div>
+        <div class="tip" style="margin-top: 1.25rem;">
+          <strong>Regla práctica:</strong> máximo dos colores destacados por figura. Todo lo demás, gris.
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 33 — Aplicación: McCabe-Thiele ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 4 · Aplicación</p>
+        <h2>Dirigir la mirada en un McCabe-Thiele</h2>
+        <div class="grid cols-2 stagger-in" style="margin-top: 0.6rem;">
+          <div class="fig">
+            <span class="fig-label bad">Todo del mismo peso</span>
+            <svg viewBox="0 0 280 280" aria-label="McCabe-Thiele con todos los trazos negros gruesos">
+              <line x1="40" y1="240" x2="260" y2="240" stroke="#1A1A1A" stroke-width="1"/>
+              <line x1="40" y1="20" x2="40" y2="240" stroke="#1A1A1A" stroke-width="1"/>
+              <line x1="40" y1="240" x2="260" y2="20" stroke="#1A1A1A" stroke-width="0.7" stroke-dasharray="3 2"/>
+              <path d="M 40 240 Q 130 100 260 20" fill="none" stroke="#1A1A1A" stroke-width="2.4"/>
+              <line x1="40" y1="240" x2="160" y2="120" stroke="#1A1A1A" stroke-width="2.4"/>
+              <line x1="160" y1="120" x2="260" y2="20" stroke="#1A1A1A" stroke-width="2.4"/>
+              <path d="M 220 240 L 220 192 L 192 192 L 192 162 L 162 162 L 162 130 L 132 130 L 132 100 L 100 100 L 100 70 L 72 70 L 72 44" fill="none" stroke="#1A1A1A" stroke-width="2.4"/>
+              <text x="150" y="14" text-anchor="middle" font-size="10" fill="#1A1A1A" font-weight="700">Diagrama McCabe-Thiele</text>
+            </svg>
+          </div>
+          <div class="fig">
+            <span class="fig-label good">Jerarquía visual</span>
+            <svg viewBox="0 0 280 280" aria-label="McCabe-Thiele con escalones destacados">
+              <line x1="40" y1="240" x2="260" y2="240" stroke="#1A1A1A" stroke-width="0.8"/>
+              <line x1="40" y1="20" x2="40" y2="240" stroke="#1A1A1A" stroke-width="0.8"/>
+              <line x1="40" y1="240" x2="260" y2="20" stroke="#9CA3AF" stroke-width="0.6" stroke-dasharray="3 2"/>
+              <path d="M 40 240 Q 130 100 260 20" fill="none" stroke="#9CA3AF" stroke-width="1.2"/>
+              <line x1="40" y1="240" x2="160" y2="120" stroke="#9CA3AF" stroke-width="1.6"/>
+              <line x1="160" y1="120" x2="260" y2="20" stroke="#9CA3AF" stroke-width="1.6"/>
+              <!-- Pale shade behind staircase -->
+              <path d="M 220 240 L 220 192 L 192 192 L 192 162 L 162 162 L 162 130 L 132 130 L 132 100 L 100 100 L 100 70 L 72 70 L 72 44 L 40 44 L 40 240 Z" fill="#0F62FE" opacity="0.06"/>
+              <!-- Staircase -->
+              <path d="M 220 240 L 220 192 L 192 192 L 192 162 L 162 162 L 162 130 L 132 130 L 132 100 L 100 100 L 100 70 L 72 70 L 72 44" fill="none" stroke="#0F62FE" stroke-width="3.2"/>
+              <text x="150" y="14" text-anchor="middle" font-size="10" fill="#0F62FE" font-weight="700">6 etapas teóricas para alcanzar la pureza objetivo</text>
+            </svg>
+          </div>
+        </div>
+        <p class="small-text" style="text-align: left; margin-top: 1rem;">
+          Mismo dato, jerarquía distinta. El ojo va directo a los escalones, que es justo lo que importa: el número de etapas teóricas.
+        </p>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 34 — La prueba de los cinco segundos ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content" style="text-align: center; align-items: center;">
+        <p class="eyebrow">Bloque 4 · Diagnóstico</p>
+        <h2 style="margin-top: 1rem;">La prueba de los cinco segundos</h2>
+        <div class="stagger-in" style="display: flex; flex-direction: column; gap: 0.6rem; margin-top: 1.5rem; max-width: 36rem;">
+          <div class="cascade-step">
+            <span class="num">1</span>
+            <span>Muéstrenle su figura a alguien por <strong>cinco segundos</strong>.</span>
+          </div>
+          <div class="cascade-step">
+            <span class="num">2</span>
+            <span><strong>Quítenla.</strong></span>
+          </div>
+          <div class="cascade-step">
+            <span class="num">3</span>
+            <span>Pregúntenle: <em>¿qué decía?</em></span>
+          </div>
+        </div>
+        <div class="warning" style="margin-top: 2rem; max-width: 44rem;">
+          Si no puede responder, la figura tiene un problema, no la persona.
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 35 — Affordances ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 5 · Pensar como diseñador</p>
+        <h2>Affordances: pistas visuales que indican cómo interactuar</h2>
+        <div class="tip" style="margin-top: 0.6rem;">
+          Una <strong>manija</strong> dice «hale». Un <strong>botón rojo</strong> dice «presione». En una figura técnica, las pistas las ponen ustedes.
+        </div>
+        <div class="grid cols-2 stagger-in" style="margin-top: 1rem;">
+          <div class="card">
+            <h3>Énfasis</h3>
+            <p>«Mire aquí.»</p>
+          </div>
+          <div class="card">
+            <h3>Gris</h3>
+            <p>«Esto es contexto, no foco.»</p>
+          </div>
+          <div class="card">
+            <h3>Tamaño</h3>
+            <p>«Esto importa más.»</p>
+          </div>
+          <div class="card">
+            <h3>Posición</h3>
+            <p>«Lea en este orden.»</p>
+          </div>
+        </div>
+        <p class="small-text" style="text-align: left; margin-top: 1rem;">
+          Si no eligen activamente, el ojo decide solo &mdash; y muchas veces decide mal.
+        </p>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 36 — Resaltar lo importante ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 5 · Énfasis</p>
+        <h2>Resaltar lo importante</h2>
+        <div class="grid cols-2 asym" style="margin-top: 0.6rem; grid-template-columns: 1fr 1fr;">
+          <div class="card outline">
+            <h3>Tres reglas</h3>
+            <ul style="margin-top: 0.4em;">
+              <li>Resalten <strong>como máximo el 10 %</strong> de la figura.</li>
+              <li>Si todo está resaltado, nada está resaltado.</li>
+              <li>El resalte puede combinar atributos: color + negrita + tamaño.</li>
+            </ul>
+          </div>
+          <div class="fig">
+            <span class="fig-label">Ejemplo: parity plot</span>
+            <svg viewBox="0 0 280 220" aria-label="Diagrama de paridad con outliers en color">
+              <line x1="40" y1="180" x2="260" y2="180" stroke="#1A1A1A" stroke-width="0.8"/>
+              <line x1="40" y1="20" x2="40" y2="180" stroke="#1A1A1A" stroke-width="0.8"/>
+              <line x1="40" y1="180" x2="260" y2="20" stroke="#9CA3AF" stroke-width="0.7" stroke-dasharray="3 2"/>
+              <line x1="44" y1="180" x2="260" y2="24" stroke="#9CA3AF" stroke-width="0.5" opacity="0.5"/>
+              <line x1="40" y1="184" x2="256" y2="20" stroke="#9CA3AF" stroke-width="0.5" opacity="0.5"/>
+              <g fill="#9CA3AF">
+                <circle cx="60" cy="166" r="3"/><circle cx="80" cy="148" r="3"/><circle cx="92" cy="140" r="3"/>
+                <circle cx="108" cy="124" r="3"/><circle cx="124" cy="118" r="3"/><circle cx="140" cy="104" r="3"/>
+                <circle cx="156" cy="92" r="3"/><circle cx="168" cy="86" r="3"/><circle cx="184" cy="70" r="3"/>
+                <circle cx="200" cy="60" r="3"/><circle cx="216" cy="48" r="3"/><circle cx="240" cy="34" r="3"/>
+              </g>
+              <g fill="#DC2626"><circle cx="120" cy="56" r="4"/><circle cx="180" cy="138" r="4"/></g>
+              <rect x="170" y="170" width="86" height="14" fill="#fff" stroke="#1A1A1A" stroke-width="0.6"/>
+              <text x="213" y="180" text-anchor="middle" font-size="9" fill="#1A1A1A" font-weight="700">RMSE = 0,012 (excl. outliers)</text>
+            </svg>
+            <figcaption>Outliers en rojo, resto en gris. El número clave en una caja anclada.</figcaption>
+          </div>
+        </div>
+        <p class="small-text" style="text-align: left; margin-top: 1rem;">
+          Si quieren resaltar más del 10 %, el visual probablemente está intentando responder dos preguntas. Divídanlo en dos figuras.
+        </p>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 37 — Eliminar distracciones ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 5 · Eliminación</p>
+        <h2>Eliminar distracciones</h2>
+        <div class="grid cols-2 stagger-in" style="margin-top: 0.6rem;">
+          <div class="card">
+            <h3>Candidatos a eliminar</h3>
+            <ul style="margin-top: 0.4em;">
+              <li>Datos no esenciales → al apéndice.</li>
+              <li>Series que no apoyan la tesis → al fondo (gris) o al apéndice.</li>
+              <li>Detalle excesivo → resumir cuando sea posible.</li>
+              <li>Elementos decorativos → siempre.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>La pregunta única</h3>
+            <p style="font-weight: 600; color: var(--brand-dark); font-size: clamp(1rem, 1.6vw, 1.4rem);">
+              Si lo quito, ¿pierdo el mensaje?
+            </p>
+            <ul style="margin-top: 0.6em;">
+              <li>Sí → conservar.</li>
+              <li>No → fuera.</li>
+            </ul>
+            <p class="small-text" style="text-align: left; margin-top: 0.4em; font-style: normal;">
+              El apéndice es un buen aliado: permite entregar contexto sin distraer.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 38 — Jerarquía visual integrada ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 5 · Caso integrado</p>
+        <h2>Selección de equipo de transferencia de calor</h2>
+        <div class="two-col asym" style="margin-top: 0.6rem;">
+          <div class="fig">
+            <svg viewBox="0 0 480 320" aria-label="Comparación de costo anualizado entre tres tipos de intercambiador">
+              <text x="240" y="20" text-anchor="middle" font-size="13" font-weight="700" fill="#1A1A1A">
+                Para Q = 800 kW, el intercambiador de placas es 22 % más barato que carcasa y tubos.
+              </text>
+              <line x1="60" y1="270" x2="440" y2="270" stroke="#1A1A1A" stroke-width="0.8"/>
+              <line x1="60" y1="50" x2="60" y2="270" stroke="#1A1A1A" stroke-width="0.8"/>
+              <g font-size="10" fill="#555">
+                <text x="56" y="78" text-anchor="end">80</text>
+                <text x="56" y="158" text-anchor="end">60</text>
+                <text x="56" y="238" text-anchor="end">40</text>
+              </g>
+              <text x="34" y="160" text-anchor="middle" font-size="10" fill="#555" transform="rotate(-90 34 160)">Costo anualizado (k USD/año)</text>
+              <!-- Doble tubo (gris claro) — lineal -->
+              <path d="M 80 256 L 130 230 L 180 200 L 230 168 L 280 138 L 330 110 L 380 84 L 430 58" fill="none" stroke="#D1D5DB" stroke-width="2"/>
+              <text x="434" y="61" font-size="9" fill="#9CA3AF">Doble tubo</text>
+              <!-- Carcasa y tubos (gris medio) — sube con minimo en 24m² -->
+              <path d="M 80 220 L 130 188 L 180 162 L 230 142 L 280 130 L 330 124 L 380 122 L 430 122" fill="none" stroke="#9CA3AF" stroke-width="2"/>
+              <circle cx="280" cy="130" r="3" fill="#9CA3AF"/>
+              <text x="434" y="125" font-size="9" fill="#9CA3AF">Carcasa y tubos</text>
+              <!-- Placas (azul fuerte) — minimo en 18m² -->
+              <path d="M 80 230 L 130 180 L 180 130 L 230 108 L 280 116 L 330 128 L 380 140 L 430 152" fill="none" stroke="#0F62FE" stroke-width="3.2"/>
+              <circle cx="230" cy="108" r="6" fill="#FFBF00" stroke="#0F62FE" stroke-width="2.5"/>
+              <line x1="230" y1="108" x2="230" y2="270" stroke="#0F62FE" stroke-width="0.6" stroke-dasharray="3 2" opacity="0.5"/>
+              <text x="434" y="155" font-size="11" fill="#0F62FE" font-weight="700">Placas</text>
+              <!-- Annotation -->
+              <rect x="240" y="74" width="148" height="32" fill="#fff" stroke="#0F62FE" stroke-width="1.2" rx="4"/>
+              <text x="314" y="90" text-anchor="middle" font-size="10" fill="#1A1A1A" font-weight="700">Óptimo: 18 m²</text>
+              <text x="314" y="102" text-anchor="middle" font-size="10" fill="#1A1A1A">USD 42 000 / año</text>
+              <line x1="232" y1="108" x2="244" y2="100" stroke="#0F62FE" stroke-width="0.8"/>
+              <g font-size="10" fill="#555">
+                <text x="80" y="288" text-anchor="middle">5</text>
+                <text x="180" y="288" text-anchor="middle">15</text>
+                <text x="230" y="288" text-anchor="middle" font-weight="700" fill="#1A1A1A">18</text>
+                <text x="280" y="288" text-anchor="middle">25</text>
+                <text x="380" y="288" text-anchor="middle">40</text>
+              </g>
+              <text x="240" y="306" text-anchor="middle" font-size="10" fill="#555">Área de transferencia (m²)</text>
+            </svg>
+          </div>
+          <div>
+            <p style="font-weight: 600; color: var(--brand-dark);">Capas de jerarquía:</p>
+            <ol class="stagger-in" style="margin-top: 0.6rem; padding-left: 1.5em;">
+              <li><strong>Título:</strong> es la conclusión, no el tema.</li>
+              <li><strong>Curva de placas:</strong> azul fuerte, gruesa, punto óptimo destacado.</li>
+              <li><strong>Otras dos curvas:</strong> gris claro, finas. Contexto.</li>
+              <li><strong>Anotación:</strong> «18 m², 42 000 USD/año», anclada al óptimo.</li>
+              <li><strong>Ejes:</strong> limpios, sin rejilla.</li>
+            </ol>
+            <p class="small-text" style="text-align: left; margin-top: 1rem;">
+              El lector no necesita leer el texto para saber la conclusión: la conclusión está en el título y reforzada por el visual.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 39 — Reglas para figuras del documento ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 6 · Documento técnico</p>
+        <h2>Reglas para figuras del documento</h2>
+        <div class="grid cols-2" style="margin-top: 0.6rem;">
+          <ul class="checklist">
+            <li><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> <span>Cada figura responde a <strong>una</strong> pregunta clara.</span></li>
+            <li><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> <span>El título es la <strong>conclusión</strong>, no el tema.</span></li>
+            <li><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> <span>Las unidades aparecen en cada eje.</span></li>
+            <li><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> <span>El componente clave se resalta; el resto es contexto en gris.</span></li>
+          </ul>
+          <ul class="checklist">
+            <li><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> <span>La figura se entiende <strong>sin leer el texto</strong> adyacente.</span></li>
+            <li><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> <span>La figura está referenciada en el cuerpo del texto.</span></li>
+            <li><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> <span>Leyenda al pie: fuente, condiciones, supuestos relevantes.</span></li>
+            <li><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> <span>Tipo de gráfico = naturaleza de la variable (continua → línea; discreta → barra).</span></li>
+          </ul>
+        </div>
+        <div class="tip" style="margin-top: 1.25rem;">
+          La figura que necesita el texto para entenderse no es autosuficiente, y eso es un problema cuando el evaluador la mira sin leer el párrafo. <strong>Pruébenla aparte.</strong>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 40 — Reglas para el póster: 3 distancias ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 6 · Póster</p>
+        <h2>La prueba de las tres distancias</h2>
+        <div class="dist-row stagger-in" style="margin-top: 0.6rem;">
+          <div class="dist-card">
+            <span class="dist-tag">3 metros</span>
+            <h4>Atravesando el pasillo</h4>
+            <p>Solo se lee el <strong>título</strong> y, máximo, una imagen dominante.</p>
+            <p class="small-text" style="text-align: left; margin-top: 0.4em; font-style: normal;">
+              Tamaño del título: <strong>≥ 80 puntos</strong>.
+            </p>
+          </div>
+          <div class="dist-card">
+            <span class="dist-tag">1 metro</span>
+            <h4>Decidiendo si vale la pena</h4>
+            <p>Subtítulos de sección, una o dos figuras grandes.</p>
+            <p class="small-text" style="text-align: left; margin-top: 0.4em; font-style: normal;">
+              Subtítulos: <strong>36 – 48 puntos</strong>.
+            </p>
+          </div>
+          <div class="dist-card">
+            <span class="dist-tag">30 cm</span>
+            <h4>Leyendo a profundidad</h4>
+            <p>Cuerpo del texto, leyendas detalladas, datos numéricos.</p>
+            <p class="small-text" style="text-align: left; margin-top: 0.4em; font-style: normal;">
+              Texto: <strong>mínimo 24 puntos</strong>.
+            </p>
+          </div>
+        </div>
+        <div class="warning" style="margin-top: 1.25rem;">
+          Diseñen <strong>en este orden</strong>, no al revés. La mayoría de pósters fallan por llenarse de texto pequeño y dejar el título ahogado: nadie se acerca porque no hay nada que invite.
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 41 — Antes / después: póster ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 6 · Antes / después</p>
+        <h2>El mismo proyecto, dos pósters</h2>
+        <div class="grid cols-2" style="margin-top: 0.6rem;">
+          <div class="fig">
+            <span class="fig-label bad">Antes</span>
+            <svg viewBox="0 0 280 360" aria-label="Póster con título largo y diez bloques iguales">
+              <rect x="2" y="2" width="276" height="356" fill="#fff" stroke="#1A1A1A" stroke-width="1"/>
+              <text x="140" y="22" text-anchor="middle" font-size="8" fill="#1A1A1A" font-weight="700">DISEÑO DE COLUMNA DE DESTILACIÓN BINARIA ETANOL-AGUA</text>
+              <text x="140" y="32" text-anchor="middle" font-size="7" fill="#555">PARA CAPACIDAD DE PRODUCCIÓN DE 5 000 kg/h CON OPTIMIZACIÓN DEL...</text>
+              <!-- Diez recuadros idénticos -->
+              <g stroke="#9CA3AF" stroke-width="0.6" fill="#fafafa">
+                <rect x="14" y="42" width="80" height="60"/>
+                <rect x="100" y="42" width="80" height="60"/>
+                <rect x="186" y="42" width="80" height="60"/>
+                <rect x="14" y="106" width="80" height="60"/>
+                <rect x="100" y="106" width="80" height="60"/>
+                <rect x="186" y="106" width="80" height="60"/>
+                <rect x="14" y="170" width="80" height="60"/>
+                <rect x="100" y="170" width="80" height="60"/>
+                <rect x="186" y="170" width="80" height="60"/>
+                <rect x="14" y="234" width="80" height="60"/>
+                <rect x="100" y="234" width="80" height="60"/>
+                <rect x="186" y="234" width="80" height="60"/>
+              </g>
+              <!-- Lines simulando texto pequeño -->
+              <g stroke="#cbd5e1" stroke-width="1">
+                <line x1="20" y1="50" x2="86" y2="50"/><line x1="20" y1="56" x2="80" y2="56"/><line x1="20" y1="62" x2="84" y2="62"/><line x1="20" y1="68" x2="78" y2="68"/><line x1="20" y1="74" x2="82" y2="74"/><line x1="20" y1="80" x2="76" y2="80"/><line x1="20" y1="86" x2="80" y2="86"/><line x1="20" y1="92" x2="74" y2="92"/><line x1="20" y1="98" x2="78" y2="98"/>
+                <line x1="106" y1="50" x2="172" y2="50"/><line x1="106" y1="56" x2="166" y2="56"/><line x1="106" y1="62" x2="170" y2="62"/><line x1="106" y1="68" x2="164" y2="68"/><line x1="106" y1="74" x2="168" y2="74"/><line x1="106" y1="80" x2="162" y2="80"/><line x1="106" y1="86" x2="166" y2="86"/><line x1="106" y1="92" x2="160" y2="92"/><line x1="106" y1="98" x2="164" y2="98"/>
+                <line x1="192" y1="50" x2="258" y2="50"/><line x1="192" y1="56" x2="252" y2="56"/><line x1="192" y1="62" x2="256" y2="62"/><line x1="192" y1="68" x2="250" y2="68"/><line x1="192" y1="74" x2="254" y2="74"/><line x1="192" y1="80" x2="248" y2="80"/><line x1="192" y1="86" x2="252" y2="86"/><line x1="192" y1="92" x2="246" y2="92"/><line x1="192" y1="98" x2="250" y2="98"/>
+                <line x1="20" y1="114" x2="86" y2="114"/><line x1="20" y1="120" x2="80" y2="120"/><line x1="20" y1="126" x2="84" y2="126"/><line x1="20" y1="132" x2="78" y2="132"/><line x1="20" y1="138" x2="82" y2="138"/><line x1="20" y1="144" x2="76" y2="144"/><line x1="20" y1="150" x2="80" y2="150"/><line x1="20" y1="156" x2="74" y2="156"/><line x1="20" y1="162" x2="78" y2="162"/>
+                <line x1="106" y1="114" x2="172" y2="114"/><line x1="106" y1="120" x2="166" y2="120"/><line x1="106" y1="126" x2="170" y2="126"/><line x1="106" y1="132" x2="164" y2="132"/><line x1="106" y1="138" x2="168" y2="138"/><line x1="106" y1="144" x2="162" y2="144"/><line x1="106" y1="150" x2="166" y2="150"/><line x1="106" y1="156" x2="160" y2="156"/><line x1="106" y1="162" x2="164" y2="162"/>
+                <line x1="192" y1="114" x2="258" y2="114"/><line x1="192" y1="120" x2="252" y2="120"/><line x1="192" y1="126" x2="256" y2="126"/><line x1="192" y1="132" x2="250" y2="132"/><line x1="192" y1="138" x2="254" y2="138"/><line x1="192" y1="144" x2="248" y2="144"/><line x1="192" y1="150" x2="252" y2="150"/><line x1="192" y1="156" x2="246" y2="156"/><line x1="192" y1="162" x2="250" y2="162"/>
+              </g>
+              <!-- Logo grande -->
+              <rect x="14" y="298" width="100" height="46" fill="#9CA3AF" stroke="#1A1A1A" stroke-width="1"/>
+              <text x="64" y="324" text-anchor="middle" font-size="8" fill="#fff" font-weight="700">LOGO U.</text>
+              <!-- Tablitas -->
+              <rect x="120" y="298" width="146" height="46" fill="#fff" stroke="#9CA3AF" stroke-width="0.5"/>
+              <g stroke="#cbd5e1"><line x1="120" y1="306" x2="266" y2="306"/><line x1="120" y1="318" x2="266" y2="318"/><line x1="120" y1="330" x2="266" y2="330"/><line x1="158" y1="298" x2="158" y2="344"/><line x1="200" y1="298" x2="200" y2="344"/><line x1="234" y1="298" x2="234" y2="344"/></g>
+            </svg>
+            <figcaption>Título largo, diez bloques iguales, mucho texto pequeño.</figcaption>
+          </div>
+          <div class="fig">
+            <span class="fig-label good">Después</span>
+            <svg viewBox="0 0 280 360" aria-label="Póster con título corto y figura dominante">
+              <rect x="2" y="2" width="276" height="356" fill="#fff" stroke="#1A1A1A" stroke-width="1"/>
+              <text x="140" y="36" text-anchor="middle" font-size="18" fill="#1A1A1A" font-weight="800">ETANOL ANHIDRO</text>
+              <text x="140" y="58" text-anchor="middle" font-size="18" fill="#0F62FE" font-weight="800">A 18 % MENOS COSTO</text>
+              <text x="140" y="76" text-anchor="middle" font-size="9" fill="#555">Columna de 32 etapas + tamiz molecular vs. azeotrópica con benceno.</text>
+              <!-- Figura dominante -->
+              <rect x="20" y="92" width="240" height="120" fill="#fafafa" stroke="#1A1A1A" stroke-width="0.6"/>
+              <line x1="40" y1="190" x2="240" y2="190" stroke="#1A1A1A" stroke-width="0.6"/>
+              <line x1="40" y1="106" x2="40" y2="190" stroke="#1A1A1A" stroke-width="0.6"/>
+              <path d="M 60 180 L 100 162 L 140 142 L 180 130 L 220 134" fill="none" stroke="#9CA3AF" stroke-width="1.6"/>
+              <path d="M 60 178 L 100 152 L 140 132 L 180 118 L 220 116" fill="none" stroke="#0F62FE" stroke-width="2.6"/>
+              <circle cx="180" cy="118" r="4" fill="#FFBF00" stroke="#0F62FE" stroke-width="1.4"/>
+              <text x="184" y="113" font-size="7" fill="#0F62FE" font-weight="700">Óptimo</text>
+              <!-- Dos figuras de apoyo más pequeñas -->
+              <rect x="20" y="222" width="116" height="80" fill="#fafafa" stroke="#1A1A1A" stroke-width="0.6"/>
+              <line x1="34" y1="290" x2="124" y2="290" stroke="#1A1A1A" stroke-width="0.5"/>
+              <line x1="34" y1="234" x2="34" y2="290" stroke="#1A1A1A" stroke-width="0.5"/>
+              <line x1="34" y1="290" x2="124" y2="234" stroke="#9CA3AF" stroke-width="0.5" stroke-dasharray="2 1"/>
+              <path d="M 110 290 L 110 268 L 92 268 L 92 256 L 76 256 L 76 244 L 60 244" fill="none" stroke="#0F62FE" stroke-width="1.4"/>
+              <text x="78" y="218" text-anchor="middle" font-size="7" fill="#555">McCabe-Thiele</text>
+              <rect x="144" y="222" width="116" height="80" fill="#fafafa" stroke="#1A1A1A" stroke-width="0.6"/>
+              <g stroke="#1A1A1A" stroke-width="0.5"><circle cx="170" cy="262" r="6" fill="none"/><circle cx="200" cy="246" r="6" fill="none"/><circle cx="234" cy="270" r="6" fill="none"/><line x1="176" y1="262" x2="194" y2="246"/><line x1="206" y1="246" x2="228" y2="270"/></g>
+              <text x="202" y="218" text-anchor="middle" font-size="7" fill="#555">Diagrama de proceso</text>
+              <!-- Tres bloques cortos abajo -->
+              <g font-size="7" fill="#1A1A1A">
+                <text x="20" y="318" font-weight="700">CONTEXTO</text>
+                <text x="100" y="318" font-weight="700">MÉTODO</text>
+                <text x="180" y="318" font-weight="700">CONCLUSIÓN</text>
+              </g>
+              <g stroke="#cbd5e1" stroke-width="0.7"><line x1="20" y1="324" x2="80" y2="324"/><line x1="20" y1="330" x2="76" y2="330"/><line x1="20" y1="336" x2="80" y2="336"/><line x1="100" y1="324" x2="160" y2="324"/><line x1="100" y1="330" x2="156" y2="330"/><line x1="100" y1="336" x2="160" y2="336"/><line x1="180" y1="324" x2="240" y2="324"/><line x1="180" y1="330" x2="236" y2="330"/><line x1="180" y1="336" x2="240" y2="336"/></g>
+              <text x="248" y="350" text-anchor="end" font-size="6" fill="#9CA3AF">Universidad · Programa</text>
+            </svg>
+            <figcaption>Título corto y conclusivo, una figura dominante, jerarquía de capas.</figcaption>
+          </div>
+        </div>
+        <p class="small-text" style="text-align: left; margin-top: 0.8rem;">
+          La diferencia no es de cantidad de información: es de jerarquía. Y el título cambió de un tema descriptivo a una conclusión defendible.
+        </p>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 42 — Lista de verificación final ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 6 · Cierre</p>
+        <h2>Lista de verificación &mdash; pásenla por cada figura</h2>
+        <div class="grid cols-2" style="margin-top: 0.6rem;">
+          <ul class="checklist empty">
+            <li><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/></svg> <span>Tengo clara la audiencia.</span></li>
+            <li><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/></svg> <span>Tengo clara la pregunta que responde la figura.</span></li>
+            <li><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/></svg> <span>El título es una oración con conclusión, no un tema.</span></li>
+            <li><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/></svg> <span>El tipo de gráfico es el correcto para la variable.</span></li>
+            <li><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/></svg> <span>No hay 3D, ni pasteles, ni ejes Y secundarios.</span></li>
+          </ul>
+          <ul class="checklist empty">
+            <li><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/></svg> <span>El gris domina; el color resalta solo lo importante.</span></li>
+            <li><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/></svg> <span>Las series están etiquetadas directamente, no en leyenda lejana.</span></li>
+            <li><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/></svg> <span>Los ejes tienen unidades y no tienen decimales innecesarios.</span></li>
+            <li><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/></svg> <span>Rejilla, bordes y marcadores innecesarios fueron eliminados.</span></li>
+            <li><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/></svg> <span>Pasé la prueba de los cinco segundos con un compañero.</span></li>
+          </ul>
+        </div>
+        <p class="small-text" style="text-align: left; margin-top: 1rem;">
+          Si una figura no pasa los diez puntos, vuelvan a trabajarla.
+        </p>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 43 — Tres errores que jamás ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 6 · Cierre</p>
+        <h2>Tres errores que jamás</h2>
+        <div class="stagger-in" style="display: flex; flex-direction: column; gap: 0.8rem; margin-top: 1rem;">
+          <div class="card" style="border-left: 6px solid var(--accent-red); background: #fef2f2;">
+            <h3 style="color: var(--accent-red);">1 · Nunca presenten datos sin tesis</h3>
+            <p style="color: var(--brand-dark);">Si no saben qué quieren que el lector concluya, la figura sobra.</p>
+          </div>
+          <div class="card" style="border-left: 6px solid var(--accent-red); background: #fef2f2;">
+            <h3 style="color: var(--accent-red);">2 · Nunca usen 3D</h3>
+            <p style="color: var(--brand-dark);">Distorsiona y no añade información. Cero excepciones cuando ya hay dos dimensiones.</p>
+          </div>
+          <div class="card" style="border-left: 6px solid var(--accent-red); background: #fef2f2;">
+            <h3 style="color: var(--accent-red);">3 · Nunca pongan todo en color</h3>
+            <p style="color: var(--brand-dark);">El gris es lo que hace que el color funcione.</p>
+          </div>
+        </div>
+        <p class="small-text" style="text-align: left; margin-top: 1.25rem;">
+          Si retienen solo tres cosas de los noventa minutos, que sean estas. Las demás son refinamientos.
+        </p>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 44 — Cierre ═════════════ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content" style="text-align: center; align-items: center;">
+        <p class="eyebrow">Cierre</p>
+        <p class="quote-large" style="margin-top: 1rem; max-width: 28ch;">
+          Una buena figura no se ve bien.
+        </p>
+        <p class="quote-large" style="color: var(--brand-yellow); max-width: 28ch;">
+          Se entiende en cinco segundos.
+        </p>
+        <div style="margin-top: 3rem; max-width: 50rem; text-align: left;">
+          <p class="eyebrow" style="color: var(--brand-yellow);">Lecturas recomendadas</p>
+          <ul style="margin-top: 0.6rem; color: #d4d4d8;">
+            <li>Knaflic, C. N. (2015). <em>Storytelling with Data</em>. Wiley.</li>
+            <li>Tufte, E. R. (2001). <em>The Visual Display of Quantitative Information</em>. Graphics Press.</li>
+            <li>Few, S. (2012). <em>Show Me the Numbers</em>. Analytics Press.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="hud">
+    <span id="hud-title">Comunicación visual · IQYA-2031</span>
+    <span id="hud-counter">1 / 44</span>
+  </div>
+
+  <div class="controls">
+    <button aria-label="Anterior" id="prev">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+    </button>
+    <button aria-label="Pantalla completa" id="fs">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" x2="14" y1="3" y2="10"/><line x1="3" x2="10" y1="21" y2="14"/></svg>
+    </button>
+    <button aria-label="Siguiente" id="next">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+    </button>
+  </div>
+
+  <script>
+    (function () {
+      var slides = Array.prototype.slice.call(document.querySelectorAll('[data-slide]'));
+      var i = 0;
+      var counter = document.getElementById('hud-counter');
+      var progress = document.querySelector('.progress');
+
+      function render() {
+        slides.forEach(function (s, idx) { s.classList.toggle('active', idx === i); });
+        if (counter) counter.textContent = (i + 1) + ' / ' + slides.length;
+        if (progress) {
+          progress.style.width = ((i + 1) / slides.length * 100) + '%';
+          progress.classList.remove('pulsing');
+          void progress.offsetWidth;
+          progress.classList.add('pulsing');
+        }
+        var isTitle = slides[i] && slides[i].classList.contains('title-slide');
+        document.body.style.background = isTitle ? '#1A1A1A' : '#ffffff';
+      }
+      function go(n) { i = Math.max(0, Math.min(slides.length - 1, n)); render(); }
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); go(i + 1); }
+        else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(i - 1); }
+        else if (e.key === 'Home') { e.preventDefault(); go(0); }
+        else if (e.key === 'End') { e.preventDefault(); go(slides.length - 1); }
+        else if (e.key === 'f' || e.key === 'F') { toggleFs(); }
+      });
+
+      document.getElementById('prev').addEventListener('click', function () { go(i - 1); });
+      document.getElementById('next').addEventListener('click', function () { go(i + 1); });
+      document.getElementById('fs').addEventListener('click', toggleFs);
+
+      function toggleFs() {
+        var el = document.documentElement;
+        if (!document.fullscreenElement) {
+          (el.requestFullscreen || el.webkitRequestFullscreen || function(){}).call(el);
+        } else {
+          (document.exitFullscreen || document.webkitExitFullscreen || function(){}).call(document);
+        }
+      }
+
+      var tx = 0, ty = 0;
+      document.addEventListener('touchstart', function (e) {
+        if (!e.changedTouches[0]) return;
+        tx = e.changedTouches[0].clientX; ty = e.changedTouches[0].clientY;
+      }, { passive: true });
+      document.addEventListener('touchend', function (e) {
+        if (!e.changedTouches[0]) return;
+        var dx = e.changedTouches[0].clientX - tx;
+        var dy = e.changedTouches[0].clientY - ty;
+        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+          if (dx < 0) go(i + 1); else go(i - 1);
+        }
+      }, { passive: true });
+
+      slides.forEach(function (s, idx) {
+        var num = document.createElement('div');
+        num.className = 'slide-number';
+        num.setAttribute('aria-hidden', 'true');
+        num.textContent = String(idx + 1).padStart(2, '0');
+        s.appendChild(num);
+      });
+
+      render();
+    })();
+  </script>
+</body>
+</html>
