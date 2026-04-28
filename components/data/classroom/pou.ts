@@ -1024,6 +1024,15 @@ export const pouCourse: Course = {
       sessionNumber: 17,
       file: 'clase-17-columnas-destilacion.html',
     },
+    {
+      id: 'clase-18-comunicacion-visual',
+      title: 'Comunicación visual en ingeniería química',
+      description:
+        'Storytelling con datos: contexto antes que diseño, elección del visual correcto, eliminación del desorden, atributos preatentivos, jerarquía visual y aplicación al documento técnico y al póster.',
+      date: '2026-04-30',
+      sessionNumber: 18,
+      file: 'clase-18-comunicacion-visual.html',
+    },
   ],
   cronograma: pouCronograma,
 };
