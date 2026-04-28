@@ -680,6 +680,326 @@ const PowerCalculator: React.FC = () => {
   );
 };
 
+/* ─── Selector interactivo Centrífuga vs DP ─── */
+type PumpFamily = {
+  id: string;
+  name: string;
+  group: 'centrifuga' | 'dp';
+  qRange: [number, number];   // m³/h
+  hRange: [number, number];   // m
+  muMax: number;              // cP (a partir de aquí se degrada)
+  solids: boolean;
+  pulsates: boolean;
+  color: string;
+};
+
+const families: PumpFamily[] = [
+  { id: 'centrifuga', name: 'Centrífuga',           group: 'centrifuga', qRange: [3, 2000], hRange: [3, 300],  muMax: 500,    solids: false, pulsates: false, color: '#1d4ed8' },
+  { id: 'piston',     name: 'Pistón / émbolo',      group: 'dp',         qRange: [0.1, 100], hRange: [20, 2000], muMax: 50000, solids: false, pulsates: true,  color: '#7f1d1d' },
+  { id: 'diafragma',  name: 'Diafragma',            group: 'dp',         qRange: [0.1, 50],  hRange: [1, 200],   muMax: 20000, solids: true,  pulsates: true,  color: '#b45309' },
+  { id: 'tornillo',   name: 'Tornillo',             group: 'dp',         qRange: [0.5, 500], hRange: [1, 150],   muMax: 100000, solids: true, pulsates: false, color: '#15803d' },
+  { id: 'engranajes', name: 'Engranajes',           group: 'dp',         qRange: [0.1, 100], hRange: [1, 200],   muMax: 20000, solids: false, pulsates: true,  color: '#9333ea' },
+  { id: 'lobulos',    name: 'Lóbulos',              group: 'dp',         qRange: [1, 300],   hRange: [1, 100],   muMax: 50000, solids: true,  pulsates: true,  color: '#0e7490' },
+];
+
+const PumpSelector: React.FC = () => {
+  const [Q, setQ] = useState(50);   // m³/h
+  const [H, setH] = useState(40);   // m
+  const [mu, setMu] = useState(1);  // cP
+  const [solids, setSolids] = useState(false);
+  const [needsSmooth, setNeedsSmooth] = useState(false);
+
+  const evaluate = (f: PumpFamily) => {
+    const reasons: string[] = [];
+    let ok = true;
+    if (Q < f.qRange[0] || Q > f.qRange[1]) {
+      ok = false;
+      reasons.push(`Q fuera de rango (${f.qRange[0]}–${f.qRange[1]} m³/h)`);
+    }
+    if (H < f.hRange[0] || H > f.hRange[1]) {
+      ok = false;
+      reasons.push(`H fuera de rango (${f.hRange[0]}–${f.hRange[1]} m)`);
+    }
+    if (mu > f.muMax) {
+      ok = false;
+      reasons.push(`viscosidad excesiva (máx ${f.muMax} cP)`);
+    }
+    if (solids && !f.solids) {
+      ok = false;
+      reasons.push('no tolera sólidos');
+    }
+    if (needsSmooth && f.pulsates) {
+      ok = false;
+      reasons.push('flujo pulsante');
+    }
+    // marginal si está cerca de los bordes
+    let marginal = false;
+    if (ok) {
+      const nearQEdge = Q < f.qRange[0] * 1.5 || Q > f.qRange[1] * 0.7;
+      const nearHEdge = H < f.hRange[0] * 1.5 || H > f.hRange[1] * 0.7;
+      const nearMu = mu > f.muMax * 0.5;
+      if (nearQEdge || nearHEdge || nearMu) {
+        marginal = true;
+        if (nearMu) reasons.push('viscosidad cercana al límite');
+      }
+    }
+    return { ok, marginal, reasons };
+  };
+
+  const evaluations = families.map((f) => ({ family: f, ...evaluate(f) }));
+  const recommended = evaluations.filter((e) => e.ok && !e.marginal);
+  const marginalList = evaluations.filter((e) => e.ok && e.marginal);
+  const excluded = evaluations.filter((e) => !e.ok);
+
+  // Mapa Q-H log-log
+  const W = 560;
+  const HSVG = 380;
+  const margin = { top: 20, right: 20, bottom: 50, left: 60 };
+  const plotW = W - margin.left - margin.right;
+  const plotH = HSVG - margin.top - margin.bottom;
+  const qMin = 0.1, qMax = 3000;
+  const hMin = 0.5, hMax = 3000;
+  const xScale = (q: number) =>
+    margin.left + ((Math.log10(Math.max(qMin, q)) - Math.log10(qMin)) / (Math.log10(qMax) - Math.log10(qMin))) * plotW;
+  const yScale = (h: number) =>
+    margin.top + plotH - ((Math.log10(Math.max(hMin, h)) - Math.log10(hMin)) / (Math.log10(hMax) - Math.log10(hMin))) * plotH;
+
+  const xTicks = [0.1, 1, 10, 100, 1000];
+  const yTicks = [1, 10, 100, 1000];
+
+  return (
+    <div className="my-8 not-prose">
+      <div className="rounded-xl bg-white border border-zinc-200 p-5 sm:p-6 shadow-sm">
+        <h4 className="text-base font-semibold text-brand-dark mb-1">Selector visual de bomba</h4>
+        <p className="text-sm text-brand-gray mb-4">
+          Mueve los controles para ver qué familias de bomba caben en tu punto de operación. El
+          rectángulo de cada familia es su rango típico publicado por fabricantes (orientativo).
+        </p>
+
+        <div className="grid lg:grid-cols-[1fr_280px] gap-6">
+          {/* Mapa Q-H */}
+          <div>
+            <svg viewBox={`0 0 ${W} ${HSVG}`} className="w-full" role="img" aria-label="Mapa de selección de bomba (Q vs H)">
+              <rect x={margin.left} y={margin.top} width={plotW} height={plotH} fill="#fafafa" />
+
+              {/* Gridlines */}
+              {xTicks.map((t) => {
+                const x = xScale(t);
+                return (
+                  <g key={`x-${t}`}>
+                    <line x1={x} y1={margin.top} x2={x} y2={margin.top + plotH} stroke="#e4e4e7" strokeWidth="0.5" strokeDasharray="2 2" />
+                    <text x={x} y={margin.top + plotH + 18} textAnchor="middle" fontSize="11" fill="#52525b">{t < 1 ? t : t.toFixed(0)}</text>
+                  </g>
+                );
+              })}
+              {yTicks.map((t) => {
+                const y = yScale(t);
+                return (
+                  <g key={`y-${t}`}>
+                    <line x1={margin.left} y1={y} x2={margin.left + plotW} y2={y} stroke="#e4e4e7" strokeWidth="0.5" strokeDasharray="2 2" />
+                    <text x={margin.left - 8} y={y + 4} textAnchor="end" fontSize="11" fill="#52525b">{t}</text>
+                  </g>
+                );
+              })}
+
+              {/* Family rectangles */}
+              {families.map((f) => {
+                const ev = evaluate(f);
+                const x1 = xScale(f.qRange[0]);
+                const x2 = xScale(f.qRange[1]);
+                const y1 = yScale(f.hRange[1]);
+                const y2 = yScale(f.hRange[0]);
+                const dim = !ev.ok;
+                return (
+                  <g key={f.id}>
+                    <rect
+                      x={x1} y={y1}
+                      width={x2 - x1} height={y2 - y1}
+                      fill={f.color}
+                      fillOpacity={dim ? 0.06 : 0.16}
+                      stroke={f.color}
+                      strokeOpacity={dim ? 0.25 : 0.85}
+                      strokeWidth={dim ? 1 : 1.6}
+                      strokeDasharray={dim ? '4 3' : '0'}
+                    />
+                    <text
+                      x={(x1 + x2) / 2}
+                      y={y1 + 14}
+                      textAnchor="middle"
+                      fontSize="11"
+                      fontWeight="700"
+                      fill={f.color}
+                      opacity={dim ? 0.4 : 0.95}
+                    >
+                      {f.name}
+                    </text>
+                  </g>
+                );
+              })}
+
+              {/* Axis lines */}
+              <line x1={margin.left} y1={margin.top + plotH} x2={margin.left + plotW} y2={margin.top + plotH} stroke="#27272a" strokeWidth="1.2" />
+              <line x1={margin.left} y1={margin.top} x2={margin.left} y2={margin.top + plotH} stroke="#27272a" strokeWidth="1.2" />
+
+              {/* Axis labels */}
+              <text x={margin.left + plotW / 2} y={HSVG - 8} textAnchor="middle" fontSize="12" fill="#27272a" fontWeight="600">
+                Caudal Q (m³/h, escala log)
+              </text>
+              <text x="14" y={margin.top + plotH / 2} textAnchor="middle" fontSize="12" fill="#27272a" fontWeight="600"
+                transform={`rotate(-90 14 ${margin.top + plotH / 2})`}>
+                Cabeza H (m, escala log)
+              </text>
+
+              {/* User point */}
+              <line x1={xScale(Q)} y1={margin.top} x2={xScale(Q)} y2={margin.top + plotH} stroke="#1A1A1A" strokeWidth="1" strokeDasharray="3 2" opacity="0.5" />
+              <line x1={margin.left} y1={yScale(H)} x2={margin.left + plotW} y2={yScale(H)} stroke="#1A1A1A" strokeWidth="1" strokeDasharray="3 2" opacity="0.5" />
+              <circle cx={xScale(Q)} cy={yScale(H)} r="8" fill="#FFBF00" stroke="#1A1A1A" strokeWidth="2" />
+            </svg>
+          </div>
+
+          {/* Controls */}
+          <div className="space-y-4">
+            <label className="block">
+              <div className="flex justify-between text-xs mb-1">
+                <span className="text-brand-gray">Caudal Q</span>
+                <span className="font-mono font-semibold text-brand-dark">{Q < 10 ? Q.toFixed(1) : Q.toFixed(0)} m³/h</span>
+              </div>
+              <input type="range" min={-1} max={3.3} step={0.05}
+                value={Math.log10(Q)}
+                onChange={(e) => setQ(Math.pow(10, parseFloat(e.target.value)))}
+                className="w-full accent-brand-yellow-dark" />
+            </label>
+
+            <label className="block">
+              <div className="flex justify-between text-xs mb-1">
+                <span className="text-brand-gray">Cabeza H</span>
+                <span className="font-mono font-semibold text-brand-dark">{H < 10 ? H.toFixed(1) : H.toFixed(0)} m</span>
+              </div>
+              <input type="range" min={0} max={3.3} step={0.05}
+                value={Math.log10(H)}
+                onChange={(e) => setH(Math.pow(10, parseFloat(e.target.value)))}
+                className="w-full accent-brand-yellow-dark" />
+            </label>
+
+            <label className="block">
+              <div className="flex justify-between text-xs mb-1">
+                <span className="text-brand-gray">Viscosidad μ</span>
+                <span className="font-mono font-semibold text-brand-dark">{mu < 10 ? mu.toFixed(1) : mu.toFixed(0)} cP</span>
+              </div>
+              <input type="range" min={0} max={5} step={0.05}
+                value={Math.log10(mu)}
+                onChange={(e) => setMu(Math.pow(10, parseFloat(e.target.value)))}
+                className="w-full accent-brand-yellow-dark" />
+              <div className="flex justify-between text-[10px] text-brand-gray mt-0.5">
+                <span>agua</span><span>aceite</span><span>melaza</span><span>brea</span>
+              </div>
+            </label>
+
+            <div className="flex flex-col gap-2 pt-2 border-t border-zinc-200">
+              <label className="flex items-center gap-2 text-sm text-brand-dark cursor-pointer">
+                <input type="checkbox" checked={solids} onChange={(e) => setSolids(e.target.checked)}
+                  className="accent-brand-yellow-dark" />
+                Fluido con sólidos en suspensión
+              </label>
+              <label className="flex items-center gap-2 text-sm text-brand-dark cursor-pointer">
+                <input type="checkbox" checked={needsSmooth} onChange={(e) => setNeedsSmooth(e.target.checked)}
+                  className="accent-brand-yellow-dark" />
+                Se requiere flujo sin pulsaciones
+              </label>
+            </div>
+
+            {/* Presets */}
+            <div className="pt-2 border-t border-zinc-200">
+              <p className="text-xs text-brand-gray mb-1.5 font-semibold uppercase">Casos típicos</p>
+              <div className="flex flex-wrap gap-1.5">
+                {[
+                  { name: 'Agua de proceso', Q: 80, H: 35, mu: 1, solids: false, smooth: false },
+                  { name: 'Crudo viscoso', Q: 25, H: 80, mu: 5000, solids: false, smooth: false },
+                  { name: 'Dosificación química', Q: 0.5, H: 60, mu: 5, solids: false, smooth: false },
+                  { name: 'Lodos', Q: 8, H: 20, mu: 200, solids: true, smooth: false },
+                  { name: 'Inyección de pozo', Q: 15, H: 800, mu: 10, solids: false, smooth: false },
+                ].map((p) => (
+                  <button
+                    key={p.name}
+                    onClick={() => { setQ(p.Q); setH(p.H); setMu(p.mu); setSolids(p.solids); setNeedsSmooth(p.smooth); }}
+                    className="px-2 py-1 text-xs rounded-md bg-zinc-50 border border-zinc-200 text-brand-gray hover:bg-yellow-50 hover:border-brand-yellow hover:text-brand-dark transition-colors"
+                  >
+                    {p.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Recomendación */}
+        <div className="mt-6 grid sm:grid-cols-3 gap-3">
+          <div className={`rounded-lg p-3 border ${recommended.length ? 'bg-emerald-50 border-emerald-200' : 'bg-zinc-50 border-zinc-200'}`}>
+            <div className="text-xs uppercase font-semibold text-emerald-700 mb-1">Recomendadas</div>
+            {recommended.length === 0 ? (
+              <div className="text-sm text-brand-gray italic">Ninguna familia entra en su rango óptimo. Revisa los rangos marginales.</div>
+            ) : (
+              <ul className="text-sm text-brand-dark space-y-0.5">
+                {recommended.map((e) => (
+                  <li key={e.family.id} className="flex items-center gap-1.5">
+                    <span className="inline-block w-2 h-2 rounded-full" style={{ backgroundColor: e.family.color }} />
+                    {e.family.name}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+
+          <div className={`rounded-lg p-3 border ${marginalList.length ? 'bg-amber-50 border-amber-200' : 'bg-zinc-50 border-zinc-200'}`}>
+            <div className="text-xs uppercase font-semibold text-amber-700 mb-1">Marginales</div>
+            {marginalList.length === 0 ? (
+              <div className="text-sm text-brand-gray italic">—</div>
+            ) : (
+              <ul className="text-sm text-brand-dark space-y-0.5">
+                {marginalList.map((e) => (
+                  <li key={e.family.id} className="flex flex-col">
+                    <span className="flex items-center gap-1.5">
+                      <span className="inline-block w-2 h-2 rounded-full" style={{ backgroundColor: e.family.color }} />
+                      {e.family.name}
+                    </span>
+                    {e.reasons.length > 0 && (
+                      <span className="text-xs text-brand-gray ml-3.5">{e.reasons.join('; ')}</span>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+
+          <div className="rounded-lg p-3 border bg-red-50 border-red-200">
+            <div className="text-xs uppercase font-semibold text-red-700 mb-1">Excluidas</div>
+            {excluded.length === 0 ? (
+              <div className="text-sm text-brand-gray italic">—</div>
+            ) : (
+              <ul className="text-sm text-brand-dark space-y-0.5">
+                {excluded.map((e) => (
+                  <li key={e.family.id} className="flex flex-col">
+                    <span className="flex items-center gap-1.5 opacity-70">
+                      <span className="inline-block w-2 h-2 rounded-full" style={{ backgroundColor: e.family.color }} />
+                      {e.family.name}
+                    </span>
+                    <span className="text-xs text-brand-gray ml-3.5">{e.reasons[0]}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+
+        <p className="text-xs text-brand-gray mt-3 italic">
+          Los rangos son orientativos: cada fabricante publica el mapa exacto de sus modelos. La
+          decisión final también pondera costo, mantenimiento, seguridad y disponibilidad de repuestos.
+        </p>
+      </div>
+    </div>
+  );
+};
+
 /* ─── Componente principal ─── */
 const Bombas: React.FC = () => {
   const course = getCourseBySlug('iqya-2031');
@@ -912,6 +1232,18 @@ const Bombas: React.FC = () => {
               </WarningCallout>
 
               <SubTitle>¿Centrífuga o desplazamiento positivo?</SubTitle>
+              <p>
+                La elección depende del cruce entre el <strong>punto de operación</strong> ($Q$, $H$),
+                la <strong>viscosidad</strong> del fluido y restricciones del proceso (sólidos,
+                tolerancia a pulsación). El siguiente selector permite explorar visualmente cómo se
+                acomodan las distintas familias en el plano $Q$–$H$:
+              </p>
+
+              <PumpSelector />
+
+              <p className="text-sm text-brand-gray mt-2">
+                Para fijar la comparación rápido, esta es la versión tabular:
+              </p>
               <div className="my-4 overflow-x-auto not-prose">
                 <table className="min-w-full text-sm border-collapse">
                   <thead>
