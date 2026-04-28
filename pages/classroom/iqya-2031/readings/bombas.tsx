@@ -1151,12 +1151,10 @@ const Bombas: React.FC = () => {
                 químicos complejos o hidrocarburos a través de extensos ductos.
               </p>
               <p>
-                En el episodio del podcast <em>Gradiente de Ideas</em>, el Ing. Andrés Correa de
-                Cenit recuerda que un sistema de transporte de líquidos sin la bomba correcta es
-                como un cuerpo sin corazón: <em>«la tubería puede ser perfecta, pero si no tienes
-                quien empuje el fluido, no pasa nada»</em>. La elección de la bomba —y de su punto
-                de operación— determina la confiabilidad, el consumo energético y, en última
-                instancia, el costo del proceso.
+                Un sistema de transporte de líquidos sin la bomba correcta es como un cuerpo sin
+                corazón: la tubería puede ser perfecta, pero si no hay quien empuje el fluido, no
+                pasa nada. La elección de la bomba —y de su punto de operación— determina la
+                confiabilidad, el consumo energético y, en última instancia, el costo del proceso.
               </p>
             </>
           )}
@@ -1519,7 +1517,7 @@ const Bombas: React.FC = () => {
 
           {isVisible('desafios') && (
             <>
-              <SectionTitle id="desafios">Desafíos clave (mencionados por el Ing. Correa)</SectionTitle>
+              <SectionTitle id="desafios">Desafíos clave en operación</SectionTitle>
               <p>
                 Operar bombas en la práctica es mucho más que aplicar las ecuaciones anteriores.
                 Estos son los frentes que un ingeniero de procesos debe atender:
@@ -1617,10 +1615,6 @@ const Bombas: React.FC = () => {
                   Rotodynamic (Centrifugal and Vertical) Pump Performance</em>.
                 </li>
               </ul>
-              <p className="text-sm text-brand-gray italic mt-6">
-                Lectura complementaria al Episodio 4 de <em>Gradiente de Ideas</em> con el Ing.
-                Andrés Correa (Cenit). Impulsando el conocimiento, una operación a la vez.
-              </p>
             </>
           )}
         </div>
