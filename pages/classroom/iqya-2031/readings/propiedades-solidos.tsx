@@ -1003,9 +1003,60 @@ const SieveSimulator: React.FC = () => {
             ))}
           </div>
 
-          {/* Curva PSD acumulada */}
+          {/* Curvas PSD: relativa (barras) y acumulada (línea) */}
           <div>
+            {/* Frecuencia relativa (barras) */}
             <div className="flex justify-center">
+              <svg viewBox={`0 0 ${W} ${H}`} className="w-full" role="img" aria-label="Frecuencia relativa por malla">
+                <rect x={margin.left} y={margin.top} width={plotW} height={plotH} fill="#fafafa" />
+                {[0, 0.25, 0.5, 0.75, 1.0].map((c) => (
+                  <line key={c} x1={margin.left} y1={margin.top + plotH - c * plotH} x2={margin.left + plotW} y2={margin.top + plotH - c * plotH} stroke="#e4e4e7" strokeWidth="0.5" strokeDasharray="2 2" />
+                ))}
+                {(() => {
+                  const maxFrac = Math.max(...frac, 0.01);
+                  const yBar = (v: number) => margin.top + plotH - (v / maxFrac) * plotH;
+                  // Barras: una por cada fracción (mallas con tamaño > 0). El colector queda como barra extra a la izquierda.
+                  const barEntries = sieves.map((s, i) => ({ size: s.size, frac: frac[i], i }));
+                  return barEntries.map((b) => {
+                    // Posición x: para malla con tamaño>0 usa xScale; para colector ponla justo antes del límite izquierdo del eje.
+                    const cx = b.size > 0 ? xScale(b.size) : margin.left + 12;
+                    const barW = 22;
+                    const y = yBar(b.frac);
+                    return (
+                      <g key={`bar-${b.i}`}>
+                        <rect x={cx - barW / 2} y={y} width={barW} height={margin.top + plotH - y} fill="#FFBF00" stroke="#1A1A1A" strokeWidth="0.6" opacity="0.85" />
+                        {b.frac > 0.04 && (
+                          <text x={cx} y={y - 3} textAnchor="middle" fontSize="9" fontWeight="700" fill="#1A1A1A">
+                            {(b.frac * 100).toFixed(0)}%
+                          </text>
+                        )}
+                      </g>
+                    );
+                  });
+                })()}
+
+                <line x1={margin.left} y1={margin.top + plotH} x2={margin.left + plotW} y2={margin.top + plotH} stroke="#27272a" strokeWidth="1.2" />
+                <line x1={margin.left} y1={margin.top} x2={margin.left} y2={margin.top + plotH} stroke="#27272a" strokeWidth="1.2" />
+
+                {xAxisSizes.map((s) => (
+                  <g key={`xb-${s}`}>
+                    <line x1={xScale(s)} y1={margin.top + plotH} x2={xScale(s)} y2={margin.top + plotH + 3} stroke="#27272a" strokeWidth="1" />
+                    <text x={xScale(s)} y={margin.top + plotH + 16} textAnchor="middle" fontSize="9" fill="#27272a">
+                      {s >= 1000 ? `${s / 1000}mm` : `${s}μm`}
+                    </text>
+                  </g>
+                ))}
+                <text x={margin.left + plotW / 2} y={H - 8} textAnchor="middle" fontSize="11" fontWeight="700" fill="#27272a">
+                  Apertura de malla (log)
+                </text>
+                <text x={14} y={margin.top + plotH / 2} transform={`rotate(-90 14 ${margin.top + plotH / 2})`} textAnchor="middle" fontSize="11" fontWeight="700" fill="#b45309">
+                  Frecuencia relativa
+                </text>
+              </svg>
+            </div>
+
+            {/* Acumulada que pasa */}
+            <div className="flex justify-center mt-3">
               <svg viewBox={`0 0 ${W} ${H}`} className="w-full" role="img" aria-label="Curva acumulada de tamizado">
                 <rect x={margin.left} y={margin.top} width={plotW} height={plotH} fill="#fafafa" />
                 {[0, 0.25, 0.5, 0.75, 1.0].map((c) => (
@@ -1039,15 +1090,16 @@ const SieveSimulator: React.FC = () => {
                 <text x={margin.left + plotW / 2} y={H - 8} textAnchor="middle" fontSize="11" fontWeight="700" fill="#27272a">
                   Apertura de malla (log)
                 </text>
-                <text x={14} y={margin.top + plotH / 2} transform={`rotate(-90 14 ${margin.top + plotH / 2})`} textAnchor="middle" fontSize="11" fontWeight="700" fill="#27272a">
+                <text x={14} y={margin.top + plotH / 2} transform={`rotate(-90 14 ${margin.top + plotH / 2})`} textAnchor="middle" fontSize="11" fontWeight="700" fill="#1d4ed8">
                   % que pasa (acumulado)
                 </text>
               </svg>
             </div>
             <p className="text-xs text-brand-gray italic text-center mt-2">
-              La curva se mueve hacia la izquierda cuando hay más finos y hacia la derecha cuando hay más
-              gruesos. Las distribuciones bimodales (dos picos de peso) producen curvas con forma de S
-              doble.
+              <strong className="text-amber-700">Arriba</strong>: cuánto peso quedó retenido en cada malla (frecuencia relativa).
+              {' '}<strong className="text-blue-700">Abajo</strong>: porcentaje acumulado que <em>pasa</em> cada malla. La acumulada se desplaza
+              hacia la izquierda con más finos, hacia la derecha con más gruesos; una distribución bimodal
+              produce dos picos en la barra y una S doble en la acumulada.
             </p>
           </div>
         </div>
@@ -1894,7 +1946,20 @@ const SizingMethodsTabs: React.FC = () => {
               caption="Sedimentación: a t₀ todas las partículas están dispersas; a t₁ las gruesas (amarillas) ya alcanzaron el fondo; a t₂ se observa una estratificación clara — gruesas abajo, medianas (verdes) en el centro y finas (rojas) aún en suspensión. La distancia 'd' recorrida en un tiempo dado se invierte con la Ley de Stokes para obtener el diámetro."
               maxWidth="520px"
             />
-            <SedimentationJarsAnim />
+            <p className="text-brand-gray leading-relaxed mt-3">
+              <strong>¿Por qué se separan en orden de tamaño?</strong> En la Ley de Stokes la
+              velocidad terminal $v_t$ depende del <strong>cuadrado del diámetro</strong>. Una
+              partícula el doble de grande cae unas <strong>4 veces más rápido</strong> que otra
+              de la mitad de tamaño en el mismo fluido. Por eso aparece la estratificación: a un
+              tiempo dado, las gruesas ya recorrieron toda la columna mientras las finas apenas
+              comienzan a bajar.
+            </p>
+            <p className="text-brand-gray leading-relaxed mt-2">
+              En la práctica se mide la <strong>concentración a una altura fija</strong> (por
+              transmitancia, rayos X o pesaje del sedimento) en función del tiempo. Cada
+              instante <em>t</em> corresponde, por Stokes, a una clase de tamaño {String.raw`$d(t)$`} — y
+              la curva concentración–tiempo se invierte para reconstruir la DTP.
+            </p>
           </div>
         )}
         {tab === 'laser' && (
@@ -1918,7 +1983,22 @@ const SizingMethodsTabs: React.FC = () => {
               caption="Equipo de difracción láser: la muestra se dispersa, atraviesa una celda donde el láser genera un patrón de difracción, y los detectores anulares registran el patrón. El computador invierte (Mie/Fraunhofer) y entrega la DTP con d₁₀, d₅₀ y d₉₀ en menos de un minuto."
               maxWidth="640px"
             />
-            <LaserDiffractionAnim />
+            <p className="text-brand-gray leading-relaxed mt-3">
+              <strong>¿Cómo "lee" el equipo el tamaño?</strong> Cuando un haz coherente de luz
+              atraviesa una nube de partículas, cada una <em>dispersa</em> luz en un patrón
+              angular característico. El resultado clave es: las <strong>partículas grandes
+              dispersan principalmente hacia adelante</strong> (ángulos pequeños), mientras que
+              las <strong>pequeñas dispersan en ángulos mayores</strong> y de forma más
+              isotrópica. Esa es la huella óptica de cada tamaño.
+            </p>
+            <p className="text-brand-gray leading-relaxed mt-2">
+              Un anillo de detectores fotosensibles registra simultáneamente la intensidad en
+              decenas de ángulos. El computador invierte el patrón usando la <strong>teoría de
+              Mie</strong> (rigurosa, requiere conocer el índice de refracción complejo) o la
+              aproximación de <strong>Fraunhofer</strong> (válida para $d \gg \lambda$). El
+              resultado es una DTP en cuestión de segundos — sin tocar la muestra y con miles de
+              partículas medidas en paralelo.
+            </p>
           </div>
         )}
         {tab === 'coulter' && (
@@ -1943,7 +2023,22 @@ const SizingMethodsTabs: React.FC = () => {
               caption="Contador Coulter: las partículas suspendidas en electrolito cruzan una apertura entre dos electrodos. Cada paso desplaza electrolito y genera un pulso eléctrico proporcional al volumen — directamente d_v, sin asunción de forma."
               maxWidth="420px"
             />
-            <CoulterAnim />
+            <p className="text-brand-gray leading-relaxed mt-3">
+              <strong>¿Qué se mide exactamente?</strong> Entre los dos electrodos circula una
+              corriente constante a través de la apertura llena de electrolito conductor. Cada
+              vez que una partícula <em>no conductora</em> cruza el orificio, desplaza un
+              volumen equivalente de electrolito y la <strong>resistencia eléctrica sube
+              brevemente</strong>. Eso genera un pulso de voltaje cuya amplitud es directamente
+              proporcional al volumen de la partícula.
+            </p>
+            <p className="text-brand-gray leading-relaxed mt-2">
+              El sistema cuenta y digitaliza decenas de miles de pulsos por segundo. Como cada
+              pulso = una partícula y su altura = su volumen, el equipo entrega <strong>número
+              de partículas y $d_v$</strong> sin asumir forma ni propiedades ópticas — algo que
+              ningún otro método logra al mismo tiempo. Es el estándar para hemogramas
+              (contadores de glóbulos), polvos farmacéuticos finos y partículas en
+              microelectrónica.
+            </p>
           </div>
         )}
       </div>
@@ -2676,8 +2771,6 @@ const PropiedadesSolidos: React.FC = () => {
                   humedad</strong> y fuerzas interparticulares.
                 </li>
               </ul>
-
-              <AngleOfReposeSvg />
 
               <Figure
                 src="/classroom/iqya-2031/readings/propiedades-solidos-reposo.jpeg"
