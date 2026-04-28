@@ -257,116 +257,6 @@ const ImpellerStepper: React.FC = () => {
   );
 };
 
-/* ─── Comparación con/sin bafles ─── */
-const VortexComparison: React.FC = () => {
-  return (
-    <div className="grid md:grid-cols-2 gap-4 my-6 not-prose">
-      <div className="rounded-xl bg-white border border-zinc-200 p-4 text-center">
-        <h5 className="text-sm font-semibold text-brand-dark mb-2">Sin bafles</h5>
-        <svg viewBox="0 0 280 240" className="w-full max-w-[280px] mx-auto" aria-label="Vórtice sin bafles">
-          <line x1="40" y1="20" x2="40" y2="220" stroke="#1A1A1A" strokeWidth="3" />
-          <line x1="240" y1="20" x2="240" y2="220" stroke="#1A1A1A" strokeWidth="3" />
-          <path d="M 40 220 Q 140 240 240 220" stroke="#1A1A1A" strokeWidth="3" fill="none" />
-          <path d="M 40 60 Q 140 100 140 130 Q 140 100 240 60 L 240 220 Q 140 240 40 220 Z" fill="#dbeafe" opacity="0.6" />
-          <path d="M 40 60 Q 140 100 140 130 Q 140 100 240 60" stroke="#1d4ed8" strokeWidth="2" fill="none" />
-          <line x1="140" y1="10" x2="140" y2="160" stroke="#1A1A1A" strokeWidth="3" />
-          <rect x="105" y="156" width="70" height="10" fill="#FFBF00" stroke="#1A1A1A" strokeWidth="1.5" />
-          <text x="140" y="232" textAnchor="middle" fontSize="11" fill="#7f1d1d" fontWeight="700">vórtice profundo</text>
-        </svg>
-        <p className="text-xs text-brand-gray mt-1">El fluido rota como cuerpo rígido y forma un vórtice central.</p>
-      </div>
-
-      <div className="rounded-xl bg-white border border-zinc-200 p-4 text-center">
-        <h5 className="text-sm font-semibold text-brand-dark mb-2">Con 4 bafles</h5>
-        <svg viewBox="0 0 280 240" className="w-full max-w-[280px] mx-auto" aria-label="Tanque con bafles">
-          <line x1="40" y1="20" x2="40" y2="220" stroke="#1A1A1A" strokeWidth="3" />
-          <line x1="240" y1="20" x2="240" y2="220" stroke="#1A1A1A" strokeWidth="3" />
-          <path d="M 40 220 Q 140 240 240 220" stroke="#1A1A1A" strokeWidth="3" fill="none" />
-          <path d="M 40 50 L 240 50 L 240 220 Q 140 240 40 220 Z" fill="#dbeafe" opacity="0.6" />
-          <line x1="40" y1="50" x2="240" y2="50" stroke="#1d4ed8" strokeWidth="2" />
-          {/* Baffles */}
-          <rect x="44" y="50" width="12" height="160" fill="#1A1A1A" />
-          <rect x="224" y="50" width="12" height="160" fill="#1A1A1A" />
-          {/* Shaft + impeller */}
-          <line x1="140" y1="10" x2="140" y2="160" stroke="#1A1A1A" strokeWidth="3" />
-          <rect x="105" y="156" width="70" height="10" fill="#FFBF00" stroke="#1A1A1A" strokeWidth="1.5" />
-          <text x="140" y="232" textAnchor="middle" fontSize="11" fill="#047857" fontWeight="700">superficie plana</text>
-        </svg>
-        <p className="text-xs text-brand-gray mt-1">Los bafles cortan el remolino y crean turbulencia tridimensional efectiva.</p>
-      </div>
-    </div>
-  );
-};
-
-/* ─── Diagrama de geometría estándar de tanque ─── */
-const TankGeometryDiagram: React.FC = () => {
-  const Dt = 240;       // tank diameter SVG units
-  const W = 360;
-  const H = 360;
-  const tankX = (W - Dt) / 2;
-  const tankYTop = 50;
-  const tankYBot = H - 30;
-  const liquidH = Dt;          // H = Dt
-  const liquidY = tankYBot - liquidH;
-  const Da = Dt / 3;
-  const E = Dt / 3;
-  const baffleW = Dt / 12;
-  const impellerY = tankYBot - E;
-
-  const dim = '#7f1d1d';
-  const txt = '#1A1A1A';
-  return (
-    <div className="my-6 not-prose flex justify-center">
-      <svg viewBox={`0 0 ${W} ${H}`} className="w-full max-w-[440px]" aria-label="Geometría estándar del tanque">
-        {/* Tank walls */}
-        <line x1={tankX} y1={tankYTop} x2={tankX} y2={tankYBot} stroke={txt} strokeWidth="3" />
-        <line x1={tankX + Dt} y1={tankYTop} x2={tankX + Dt} y2={tankYBot} stroke={txt} strokeWidth="3" />
-        <path d={`M ${tankX} ${tankYBot} Q ${W / 2} ${tankYBot + 20} ${tankX + Dt} ${tankYBot}`} stroke={txt} strokeWidth="3" fill="none" />
-        {/* Liquid */}
-        <path d={`M ${tankX} ${liquidY} L ${tankX} ${tankYBot} Q ${W / 2} ${tankYBot + 20} ${tankX + Dt} ${tankYBot} L ${tankX + Dt} ${liquidY} Z`}
-          fill="#dbeafe" opacity="0.55" />
-        <line x1={tankX} y1={liquidY} x2={tankX + Dt} y2={liquidY} stroke="#1d4ed8" strokeWidth="1.5" />
-        {/* Baffles */}
-        <rect x={tankX + 4} y={liquidY} width={baffleW} height={tankYBot - liquidY} fill="#1A1A1A" opacity="0.85" />
-        <rect x={tankX + Dt - 4 - baffleW} y={liquidY} width={baffleW} height={tankYBot - liquidY} fill="#1A1A1A" opacity="0.85" />
-        {/* Shaft + impeller */}
-        <line x1={W / 2} y1={20} x2={W / 2} y2={impellerY} stroke={txt} strokeWidth="3" />
-        <rect x={W / 2 - Da / 2} y={impellerY} width={Da} height={10} fill="#FFBF00" stroke={txt} strokeWidth="1.5" />
-        {/* Dimensions */}
-        {/* Dt */}
-        <line x1={tankX} y1={tankYTop - 14} x2={tankX + Dt} y2={tankYTop - 14} stroke={dim} strokeWidth="1" markerStart="url(#dl)" markerEnd="url(#dr)" />
-        <text x={W / 2} y={tankYTop - 18} textAnchor="middle" fontSize="13" fill={dim} fontWeight="700">D_t</text>
-        {/* Da */}
-        <line x1={W / 2 - Da / 2} y1={impellerY + 26} x2={W / 2 + Da / 2} y2={impellerY + 26} stroke={dim} strokeWidth="1" markerStart="url(#dl)" markerEnd="url(#dr)" />
-        <text x={W / 2} y={impellerY + 22} textAnchor="middle" fontSize="12" fill={dim} fontWeight="700">D_a</text>
-        {/* H */}
-        <line x1={tankX + Dt + 14} y1={liquidY} x2={tankX + Dt + 14} y2={tankYBot} stroke={dim} strokeWidth="1" markerStart="url(#du)" markerEnd="url(#dd)" />
-        <text x={tankX + Dt + 18} y={(liquidY + tankYBot) / 2 + 4} fontSize="13" fill={dim} fontWeight="700">H</text>
-        {/* E */}
-        <line x1={W / 2 + Da / 2 + 14} y1={impellerY + 5} x2={W / 2 + Da / 2 + 14} y2={tankYBot} stroke={dim} strokeWidth="1" markerStart="url(#du)" markerEnd="url(#dd)" />
-        <text x={W / 2 + Da / 2 + 18} y={(impellerY + tankYBot) / 2 + 4} fontSize="13" fill={dim} fontWeight="700">E</text>
-        {/* W (baffle width) */}
-        <text x={tankX + 4} y={liquidY - 6} fontSize="11" fill={dim} fontWeight="700">W=Dt/12</text>
-
-        <defs>
-          <marker id="dl" markerWidth="8" markerHeight="8" refX="2" refY="4" orient="auto">
-            <path d="M8 0 L0 4 L8 8 z" fill={dim} />
-          </marker>
-          <marker id="dr" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
-            <path d="M0 0 L8 4 L0 8 z" fill={dim} />
-          </marker>
-          <marker id="du" markerWidth="8" markerHeight="8" refX="4" refY="2" orient="auto">
-            <path d="M0 8 L4 0 L8 8 z" fill={dim} />
-          </marker>
-          <marker id="dd" markerWidth="8" markerHeight="8" refX="4" refY="6" orient="auto">
-            <path d="M0 0 L4 8 L8 0 z" fill={dim} />
-          </marker>
-        </defs>
-      </svg>
-    </div>
-  );
-};
-
 /* ─── Curva Np vs Re interactiva ─── */
 const NpReChart: React.FC = () => {
   const [showImpeller, setShowImpeller] = useState<string>('rushton');
@@ -1031,7 +921,23 @@ const Agitacion: React.FC = () => {
                 convirtiendo la rotación en patrones axiales y radiales más efectivos.
               </p>
 
-              <VortexComparison />
+              <div className="my-6 not-prose">
+                <div className="rounded-xl bg-zinc-50 border border-zinc-200 p-3 max-w-2xl mx-auto">
+                  <div className="aspect-video">
+                    <iframe
+                      className="w-full h-full rounded-md"
+                      src="https://www.youtube.com/embed/aydQpBSRaGA"
+                      title="Efecto de los bafles en un tanque agitado"
+                      frameBorder={0}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  </div>
+                  <p className="text-xs text-brand-gray italic mt-2 text-center">
+                    Comparación experimental del flujo en un tanque sin bafles (vórtice profundo) y con bafles (superficie plana, mezcla efectiva).
+                  </p>
+                </div>
+              </div>
 
               <SubTitle>Beneficios</SubTitle>
               <ul>
@@ -1070,8 +976,6 @@ const Agitacion: React.FC = () => {
                 trabaja con tanques que cumplen <strong>similitud geométrica</strong>. Las relaciones
                 típicas (configuración estándar) son:
               </p>
-
-              <TankGeometryDiagram />
 
               <Figure
                 src="/classroom/iqya-2031/readings/agitacion-similitud-geometrica.png"
