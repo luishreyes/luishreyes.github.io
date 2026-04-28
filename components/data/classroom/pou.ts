@@ -869,6 +869,16 @@ export const pouCourse: Course = {
       tags: ['bombas', 'centrífuga', 'NPSH', 'cavitación', 'potencia'],
       category: 'lectura',
     },
+    {
+      slug: 'agitacion',
+      title: 'Fundamentos de agitación',
+      summary:
+        'Agitación vs. mezclado, patrones de flujo (axial, radial), tipos de impulsores (hélice, PBT, Rushton, paletas, ancla, cinta helicoidal), bafles, geometría estándar del tanque, números adimensionales (Reynolds de agitación, número de potencia), cálculo de potencia y criterios de escalado (P/V, V_tip, Re, t_mix).',
+      date: '2026-02-24',
+      readingMinutes: 25,
+      tags: ['agitación', 'mezclado', 'impulsores', 'escalado', 'cosmética'],
+      category: 'lectura',
+    },
   ],
   presentations: [
     {
