@@ -144,6 +144,7 @@ type ImpellerSpec = {
   id: string;
   family: 'axial' | 'radial' | 'viscoso';
   name: string;
+  image: string;
   Np: number;             // turbulento, baffled
   rpmRange: [number, number];
   flow: 'axial' | 'radial' | 'mixto' | 'cercano-pared';
@@ -152,141 +153,42 @@ type ImpellerSpec = {
 };
 
 const impellers: ImpellerSpec[] = [
-  { id: 'helice', family: 'axial', name: 'Hélice marina (3 palas)', Np: 0.35, rpmRange: [400, 1750], flow: 'axial',
+  { id: 'helice', family: 'axial', name: 'Hélice marina (3 palas)',
+    image: '/classroom/iqya-2031/readings/agitacion-helice.gif',
+    Np: 0.35, rpmRange: [400, 1750], flow: 'axial',
     uses: 'Homogeneización de líquidos miscibles, suspensión de sólidos finos, transferencia de calor.',
     description: 'Tres o cuatro palas helicoidales similares a las de un barco. Alto bombeo axial, bajo cizallamiento. Eficaz solo para fluidos de baja viscosidad.' },
-  { id: 'pbt', family: 'axial', name: 'Turbina de palas inclinadas (PBT 45°)', Np: 1.5, rpmRange: [60, 400], flow: 'mixto',
+  { id: 'pbt', family: 'axial', name: 'Turbina de palas inclinadas (PBT 45°)',
+    image: '/classroom/iqya-2031/readings/agitacion-pbt.gif',
+    Np: 1.5, rpmRange: [60, 400], flow: 'mixto',
     uses: 'Versátil: suspensión, mezcla líquido-líquido, transferencia de calor.',
     description: 'Cuatro o seis palas planas inclinadas a 45°. Combina flujo axial y radial; el ángulo determina el reparto. La opción más usada en mezcla general.' },
-  { id: 'rushton', family: 'radial', name: 'Turbina Rushton (6 palas en disco)', Np: 5.5, rpmRange: [50, 400], flow: 'radial',
+  { id: 'rushton', family: 'radial', name: 'Turbina Rushton (6 palas en disco)',
+    image: '/classroom/iqya-2031/readings/agitacion-rushton.gif',
+    Np: 5.5, rpmRange: [50, 400], flow: 'radial',
     uses: 'Dispersión de gas (fermentadores), reacciones limitadas por transferencia de masa.',
     description: 'Disco horizontal con 6 palas verticales rectas. Alto cizallamiento, alto consumo de potencia. Estándar industrial para procesos gas-líquido.' },
-  { id: 'curved', family: 'radial', name: 'Turbina de palas curvas (Smith)', Np: 3.5, rpmRange: [50, 400], flow: 'radial',
+  { id: 'curved', family: 'radial', name: 'Turbina de palas curvas (Smith)',
+    image: '/classroom/iqya-2031/readings/agitacion-curvas.gif',
+    Np: 3.5, rpmRange: [50, 400], flow: 'radial',
     uses: 'Dispersión de gas con menor consumo energético que Rushton.',
-    description: 'Variante de Rushton con palas cóncavas hacia adelante. Mantiene el flujo radial pero reduce la zona de baja presión detrás de las palas, bajando $N_P$.' },
-  { id: 'paddle', family: 'radial', name: 'Paletas (paddle)', Np: 2.0, rpmRange: [20, 150], flow: 'radial',
+    description: 'Variante de Rushton con palas cóncavas hacia adelante. Mantiene el flujo radial pero reduce la zona de baja presión detrás de las palas, bajando el número de potencia.' },
+  { id: 'paddle', family: 'radial', name: 'Paletas (paddle)',
+    image: '/classroom/iqya-2031/readings/agitacion-paletas.gif',
+    Np: 2.0, rpmRange: [20, 150], flow: 'radial',
     uses: 'Agitación suave en fluidos viscosos, mezcla de polvos o pastas.',
     description: 'Dos o más palas planas grandes, baja velocidad. Cubre buena parte del diámetro del tanque.' },
-  { id: 'anchor', family: 'viscoso', name: 'Ancla', Np: 0.5, rpmRange: [10, 50], flow: 'cercano-pared',
+  { id: 'anchor', family: 'viscoso', name: 'Ancla',
+    image: '/classroom/iqya-2031/readings/agitacion-ancla.jpeg',
+    Np: 0.5, rpmRange: [10, 50], flow: 'cercano-pared',
     uses: 'Fluidos muy viscosos (μ > 5000 cP), transferencia de calor con paredes encamisadas.',
     description: 'Sigue el contorno del tanque a baja velocidad. Barre la pared para evitar acumulaciones y mejorar la transferencia de calor.' },
-  { id: 'helical', family: 'viscoso', name: 'Cinta helicoidal', Np: 0.3, rpmRange: [5, 30], flow: 'axial',
+  { id: 'helical', family: 'viscoso', name: 'Cinta helicoidal',
+    image: '/classroom/iqya-2031/readings/agitacion-helicoidal.gif',
+    Np: 0.3, rpmRange: [5, 30], flow: 'axial',
     uses: 'Fluidos muy viscosos donde se requiere mezcla axial (polímeros, mieles, geles).',
     description: 'Cinta enrollada en hélice alrededor del eje. Levanta material desde el fondo hacia la superficie en régimen laminar.' },
 ];
-
-const ImpellerSVG: React.FC<{ id: string; size?: number }> = ({ id, size = 220 }) => {
-  const cx = size / 2;
-  const cy = size / 2;
-  const stroke = '#1A1A1A';
-  switch (id) {
-    case 'helice':
-      return (
-        <svg viewBox={`0 0 ${size} ${size}`} width={size} height={size} aria-hidden>
-          <line x1={cx} y1="20" x2={cx} y2={size - 20} stroke={stroke} strokeWidth="3" />
-          {[0, 120, 240].map((a) => (
-            <path key={a}
-              d={`M ${cx} ${cy} q ${Math.cos((a * Math.PI) / 180) * 60} ${Math.sin((a * Math.PI) / 180) * 60} ${Math.cos(((a + 30) * Math.PI) / 180) * 80} ${Math.sin(((a + 30) * Math.PI) / 180) * 80} q ${Math.cos(((a + 90) * Math.PI) / 180) * 14} ${Math.sin(((a + 90) * Math.PI) / 180) * 14} ${Math.cos(((a + 150) * Math.PI) / 180) * 28} ${Math.sin(((a + 150) * Math.PI) / 180) * 28} z`}
-              fill="#FFBF00" stroke={stroke} strokeWidth="1.5" opacity="0.9" />
-          ))}
-          <circle cx={cx} cy={cy} r="10" fill={stroke} />
-        </svg>
-      );
-    case 'pbt':
-      return (
-        <svg viewBox={`0 0 ${size} ${size}`} width={size} height={size} aria-hidden>
-          <line x1={cx} y1="20" x2={cx} y2={size - 20} stroke={stroke} strokeWidth="3" />
-          {[0, 90, 180, 270].map((a) => {
-            const rad = (a * Math.PI) / 180;
-            const x1 = cx + Math.cos(rad) * 18;
-            const y1 = cy + Math.sin(rad) * 18;
-            const x2 = cx + Math.cos(rad) * 80;
-            const y2 = cy + Math.sin(rad) * 80;
-            return <line key={a} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#FFBF00" strokeWidth="14" strokeLinecap="round" />;
-          })}
-          {[0, 90, 180, 270].map((a) => {
-            const rad = (a * Math.PI) / 180;
-            const x1 = cx + Math.cos(rad) * 18;
-            const y1 = cy + Math.sin(rad) * 18;
-            const x2 = cx + Math.cos(rad) * 80;
-            const y2 = cy + Math.sin(rad) * 80;
-            return <line key={`b-${a}`} x1={x1} y1={y1} x2={x2} y2={y2} stroke={stroke} strokeWidth="1.5" />;
-          })}
-          <circle cx={cx} cy={cy} r="14" fill={stroke} />
-        </svg>
-      );
-    case 'rushton':
-      return (
-        <svg viewBox={`0 0 ${size} ${size}`} width={size} height={size} aria-hidden>
-          <line x1={cx} y1="20" x2={cx} y2={size - 20} stroke={stroke} strokeWidth="3" />
-          <circle cx={cx} cy={cy} r="46" fill="#fff" stroke={stroke} strokeWidth="1.5" />
-          {[0, 60, 120, 180, 240, 300].map((a) => {
-            const rad = (a * Math.PI) / 180;
-            const x = cx + Math.cos(rad) * 46;
-            const y = cy + Math.sin(rad) * 46;
-            const x2 = cx + Math.cos(rad) * 80;
-            const y2 = cy + Math.sin(rad) * 80;
-            return <rect key={a} x={x} y={y - 12} width={x2 - x} height={24} fill="#FFBF00" stroke={stroke} strokeWidth="1.2"
-              transform={`rotate(${a} ${x} ${y})`} />;
-          })}
-          <circle cx={cx} cy={cy} r="14" fill={stroke} />
-        </svg>
-      );
-    case 'curved':
-      return (
-        <svg viewBox={`0 0 ${size} ${size}`} width={size} height={size} aria-hidden>
-          <line x1={cx} y1="20" x2={cx} y2={size - 20} stroke={stroke} strokeWidth="3" />
-          <circle cx={cx} cy={cy} r="46" fill="#fff" stroke={stroke} strokeWidth="1.5" />
-          {[0, 60, 120, 180, 240, 300].map((a) => {
-            const rad = (a * Math.PI) / 180;
-            const x = cx + Math.cos(rad) * 46;
-            const y = cy + Math.sin(rad) * 46;
-            const x2 = cx + Math.cos(rad) * 80;
-            const y2 = cy + Math.sin(rad) * 80;
-            const cmx = (x + x2) / 2 + Math.cos(rad + Math.PI / 2) * 10;
-            const cmy = (y + y2) / 2 + Math.sin(rad + Math.PI / 2) * 10;
-            return <path key={a} d={`M ${x} ${y} Q ${cmx} ${cmy} ${x2} ${y2}`} stroke="#FFBF00" strokeWidth="14" fill="none" strokeLinecap="round" />;
-          })}
-          <circle cx={cx} cy={cy} r="14" fill={stroke} />
-        </svg>
-      );
-    case 'paddle':
-      return (
-        <svg viewBox={`0 0 ${size} ${size}`} width={size} height={size} aria-hidden>
-          <line x1={cx} y1="20" x2={cx} y2={size - 20} stroke={stroke} strokeWidth="3" />
-          <rect x={cx - 90} y={cy - 14} width={180} height={28} fill="#FFBF00" stroke={stroke} strokeWidth="1.5" rx="3" />
-          <circle cx={cx} cy={cy} r="14" fill={stroke} />
-        </svg>
-      );
-    case 'anchor':
-      return (
-        <svg viewBox={`0 0 ${size} ${size}`} width={size} height={size} aria-hidden>
-          <line x1={cx} y1="20" x2={cx} y2={cy - 10} stroke={stroke} strokeWidth="3" />
-          <path d={`M ${cx - 80} ${cy + 20} L ${cx - 80} ${cy + 60} A 60 60 0 0 0 ${cx + 80} ${cy + 60} L ${cx + 80} ${cy + 20}`}
-            fill="none" stroke="#FFBF00" strokeWidth="14" strokeLinecap="round" />
-          <line x1={cx - 80} y1={cy + 20} x2={cx + 80} y2={cy + 20} stroke="#FFBF00" strokeWidth="14" strokeLinecap="round" />
-          <line x1={cx} y1={cy + 20} x2={cx} y2={cy - 10} stroke={stroke} strokeWidth="3" />
-        </svg>
-      );
-    case 'helical':
-      return (
-        <svg viewBox={`0 0 ${size} ${size}`} width={size} height={size} aria-hidden>
-          <line x1={cx} y1="20" x2={cx} y2={size - 20} stroke={stroke} strokeWidth="3" />
-          {[0, 1, 2, 3].map((i) => {
-            const y = 35 + i * 40;
-            return (
-              <ellipse key={i} cx={cx} cy={y} rx="65" ry="14" fill="none" stroke="#FFBF00" strokeWidth="6"
-                strokeDasharray="60 50" />
-            );
-          })}
-          <line x1={cx - 65} y1={35} x2={cx - 65} y2={size - 35} stroke="#FFBF00" strokeWidth="4" />
-          <line x1={cx + 65} y1={35} x2={cx + 65} y2={size - 35} stroke="#FFBF00" strokeWidth="4" />
-        </svg>
-      );
-    default:
-      return null;
-  }
-};
 
 const ImpellerStepper: React.FC = () => {
   const [active, setActive] = useState(0);
@@ -320,7 +222,12 @@ const ImpellerStepper: React.FC = () => {
 
       <div className="grid md:grid-cols-2 gap-6 items-start">
         <div className="rounded-xl bg-zinc-50 border border-zinc-200 p-4 flex items-center justify-center min-h-[280px]">
-          <ImpellerSVG id={i.id} />
+          <img
+            src={i.image}
+            alt={`Impulsor ${i.name}`}
+            className="block max-w-full h-auto"
+            style={{ maxHeight: 320 }}
+          />
         </div>
         <div>
           <p className="text-xs uppercase tracking-wider font-semibold text-brand-yellow-dark mb-1">
@@ -347,65 +254,6 @@ const ImpellerStepper: React.FC = () => {
         </div>
       </div>
     </div>
-  );
-};
-
-/* ─── Diagrama de patrones de flujo ─── */
-const FlowPatternDiagram: React.FC<{ pattern: 'axial' | 'radial' }> = ({ pattern }) => {
-  const W = 360;
-  const H = 280;
-  const cx = W / 2;
-  const wallTop = 30;
-  const wallBot = H - 30;
-
-  return (
-    <svg viewBox={`0 0 ${W} ${H}`} width="100%" className="max-w-full" role="img"
-      aria-label={`Patrón de flujo ${pattern}`}>
-      {/* Tank */}
-      <line x1={70} y1={wallTop} x2={70} y2={wallBot} stroke="#1A1A1A" strokeWidth="3" />
-      <line x1={W - 70} y1={wallTop} x2={W - 70} y2={wallBot} stroke="#1A1A1A" strokeWidth="3" />
-      <path d={`M 70 ${wallBot} Q ${cx} ${wallBot + 20} ${W - 70} ${wallBot}`} stroke="#1A1A1A" strokeWidth="3" fill="none" />
-      {/* Liquid */}
-      <path d={`M 70 ${wallTop + 20} L 70 ${wallBot} Q ${cx} ${wallBot + 20} ${W - 70} ${wallBot} L ${W - 70} ${wallTop + 20} Z`}
-        fill="#dbeafe" opacity="0.5" />
-      {/* Shaft */}
-      <line x1={cx} y1={10} x2={cx} y2={H / 2 + 30} stroke="#1A1A1A" strokeWidth="3" />
-      {/* Impeller */}
-      <rect x={cx - 35} y={H / 2 + 26} width={70} height={10} fill="#FFBF00" stroke="#1A1A1A" strokeWidth="1.5" />
-
-      {/* Arrows */}
-      {pattern === 'axial' ? (
-        <>
-          <path d={`M ${cx - 20} ${H / 2 + 50} L ${cx - 20} ${wallBot - 20} L ${cx - 70} ${wallBot - 30} L ${cx - 100} ${wallBot - 60} L ${cx - 100} ${wallTop + 50} L ${cx - 50} ${wallTop + 30} L ${cx - 30} ${H / 2 + 25}`}
-            fill="none" stroke="#1d4ed8" strokeWidth="2.5" markerEnd="url(#arrowAx)" />
-          <path d={`M ${cx + 20} ${H / 2 + 50} L ${cx + 20} ${wallBot - 20} L ${cx + 70} ${wallBot - 30} L ${cx + 100} ${wallBot - 60} L ${cx + 100} ${wallTop + 50} L ${cx + 50} ${wallTop + 30} L ${cx + 30} ${H / 2 + 25}`}
-            fill="none" stroke="#1d4ed8" strokeWidth="2.5" markerEnd="url(#arrowAx)" />
-          <defs>
-            <marker id="arrowAx" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
-              <path d="M0 0 L8 4 L0 8 z" fill="#1d4ed8" />
-            </marker>
-          </defs>
-          <text x={cx} y={H - 6} textAnchor="middle" fontSize="13" fontWeight="700" fill="#1d4ed8">Patrón axial</text>
-        </>
-      ) : (
-        <>
-          <path d={`M ${cx + 35} ${H / 2 + 31} L ${W - 80} ${H / 2 + 31} L ${W - 80} ${wallBot - 30}`}
-            fill="none" stroke="#b45309" strokeWidth="2.5" markerEnd="url(#arrowR)" />
-          <path d={`M ${cx + 35} ${H / 2 + 31} L ${W - 80} ${H / 2 + 31} L ${W - 80} ${wallTop + 30}`}
-            fill="none" stroke="#b45309" strokeWidth="2.5" markerEnd="url(#arrowR)" />
-          <path d={`M ${cx - 35} ${H / 2 + 31} L 80 ${H / 2 + 31} L 80 ${wallBot - 30}`}
-            fill="none" stroke="#b45309" strokeWidth="2.5" markerEnd="url(#arrowR)" />
-          <path d={`M ${cx - 35} ${H / 2 + 31} L 80 ${H / 2 + 31} L 80 ${wallTop + 30}`}
-            fill="none" stroke="#b45309" strokeWidth="2.5" markerEnd="url(#arrowR)" />
-          <defs>
-            <marker id="arrowR" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
-              <path d="M0 0 L8 4 L0 8 z" fill="#b45309" />
-            </marker>
-          </defs>
-          <text x={cx} y={H - 6} textAnchor="middle" fontSize="13" fontWeight="700" fill="#b45309">Patrón radial</text>
-        </>
-      )}
-    </svg>
   );
 };
 
@@ -996,18 +844,18 @@ const Agitacion: React.FC = () => {
           {activeSection === null && (
             <>
               <p className="text-lg leading-relaxed text-brand-gray">
-                Esta lectura acompaña al Episodio 5 de <em>Gradiente de Ideas</em>, donde Luis H. Reyes
-                conversa con la <strong>Ing. Sofía Vargas (Belcorp)</strong> sobre los principios y
-                aplicaciones de la agitación. Es una de las operaciones unitarias más extendidas en la
-                industria —cosmética, farmacéutica, alimentos, química y bioprocesos— y la base para
-                que el resto del proceso (transferencia de masa, calor, reacción) ocurra de forma
-                eficiente y reproducible.
+                Esta lectura cubre los fundamentos de la <strong>agitación</strong>, una de las
+                operaciones unitarias más extendidas en la industria —cosmética, farmacéutica,
+                alimentos, química y bioprocesos— y la base para que el resto del proceso
+                (transferencia de masa, calor, reacción) ocurra de forma eficiente y reproducible.
+                Veremos los patrones de flujo, los tipos de impulsores, los bafles, los números
+                adimensionales que gobiernan la potencia y los criterios de escalado.
               </p>
 
               <Figure
-                src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?q=80&w=1400&auto=format&fit=crop"
-                alt="Tanques agitados en planta industrial"
-                caption="Tanques agitados industriales — el corazón de procesos cosméticos, farmacéuticos y bioquímicos."
+                src="/classroom/iqya-2031/readings/agitacion-intro.png"
+                alt="Tanque agitado con patrón de flujo visible"
+                caption="La agitación crea patrones de flujo característicos que determinan la calidad del mezclado, la transferencia de masa y la estabilidad del producto."
                 maxWidth="720px"
               />
 
@@ -1063,11 +911,11 @@ const Agitacion: React.FC = () => {
               </ul>
 
               <TipCallout title="¿Por qué importa en cosmética?">
-                Como cuenta la Ing. Vargas en el episodio, en cosmética la agitación define la
-                <strong> textura, apariencia y eficacia</strong> del producto: el tamaño de gota de una
-                emulsión determina si una crema se siente sedosa o pesada, y la calidad de la dispersión
-                de pigmentos define si un labial es uniforme o granuloso. Un mismo formula con dos
-                agitaciones distintas puede dar productos comercialmente incompatibles.
+                En cosmética la agitación define la <strong>textura, apariencia y eficacia</strong> del
+                producto: el tamaño de gota de una emulsión determina si una crema se siente sedosa o
+                pesada, y la calidad de la dispersión de pigmentos define si un labial es uniforme o
+                granuloso. Una misma fórmula con dos agitaciones distintas puede dar productos
+                comercialmente incompatibles.
               </TipCallout>
             </>
           )}
@@ -1082,8 +930,13 @@ const Agitacion: React.FC = () => {
               </p>
 
               <div className="grid md:grid-cols-2 gap-4 my-6 not-prose">
-                <div className="rounded-xl bg-white border border-zinc-200 p-4">
-                  <FlowPatternDiagram pattern="axial" />
+                <div className="rounded-xl bg-white border border-zinc-200 p-4 flex flex-col items-center">
+                  <img
+                    src="/classroom/iqya-2031/readings/agitacion-flujo-axial.jpeg"
+                    alt="Patrón de flujo axial en tanque agitado"
+                    className="block max-w-full h-auto rounded-md"
+                    style={{ maxHeight: 280 }}
+                  />
                   <p className="text-sm text-brand-gray leading-relaxed mt-3">
                     <strong className="text-brand-dark">Flujo axial:</strong> el fluido se desplaza
                     paralelo al eje del agitador (hacia abajo o arriba), choca contra el fondo o la
@@ -1091,8 +944,13 @@ const Agitacion: React.FC = () => {
                     cizallamiento.</strong>
                   </p>
                 </div>
-                <div className="rounded-xl bg-white border border-zinc-200 p-4">
-                  <FlowPatternDiagram pattern="radial" />
+                <div className="rounded-xl bg-white border border-zinc-200 p-4 flex flex-col items-center">
+                  <img
+                    src="/classroom/iqya-2031/readings/agitacion-flujo-radial.jpeg"
+                    alt="Patrón de flujo radial en tanque agitado"
+                    className="block max-w-full h-auto rounded-md"
+                    style={{ maxHeight: 280 }}
+                  />
                   <p className="text-sm text-brand-gray leading-relaxed mt-3">
                     <strong className="text-brand-dark">Flujo radial:</strong> el fluido sale
                     perpendicular al eje hacia las paredes, donde se divide en corrientes ascendente y
@@ -1215,6 +1073,13 @@ const Agitacion: React.FC = () => {
 
               <TankGeometryDiagram />
 
+              <Figure
+                src="/classroom/iqya-2031/readings/agitacion-similitud-geometrica.png"
+                alt="Diagrama de similitud geométrica en tanque agitado con todas las cotas"
+                caption="Diagrama clásico de similitud geométrica: relaciones entre diámetro de tanque, diámetro de impulsor, altura de líquido, ancho y offset de bafle, posición vertical del impulsor."
+                maxWidth="520px"
+              />
+
               <div className="my-4 overflow-x-auto not-prose">
                 <table className="min-w-full text-sm border-collapse">
                   <thead>
@@ -1289,6 +1154,26 @@ const Agitacion: React.FC = () => {
 
               <NpReChart />
 
+              <p className="text-sm text-brand-gray">
+                Las curvas anteriores son un modelo simplificado. Las curvas reales de fabricantes
+                y libros de texto se ven así:
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-4 my-4 not-prose">
+                <Figure
+                  src="/classroom/iqya-2031/readings/agitacion-np-vs-re.jpeg"
+                  alt="Curva Np vs Re para hélice y cinta helicoidal"
+                  caption="Hélice y cinta helicoidal: efecto del bafle en la transición turbulenta."
+                  maxWidth="100%"
+                />
+                <Figure
+                  src="/classroom/iqya-2031/readings/agitacion-np-regimenes.jpeg"
+                  alt="Curvas Np vs Re para varios impulsores"
+                  caption="Comparación de cinco geometrías de impulsor: turbinas de disco, CD-6, pala inclinada, A310 y HE-3."
+                  maxWidth="100%"
+                />
+              </div>
+
               <SubTitle>Cálculo de la potencia</SubTitle>
               <p>
                 Conocido $N_P$ (de la curva o correlación), se despeja la potencia entregada al fluido:
@@ -1336,6 +1221,45 @@ const Agitacion: React.FC = () => {
               <p>Cada criterio fija una variable y deja que las demás se ajusten. La elección importa
                 porque cambia drásticamente la potencia, la cizalladura y el tiempo de mezclado en la
                 escala industrial.</p>
+
+              <div className="grid sm:grid-cols-2 gap-4 my-6 not-prose">
+                <div className="rounded-xl bg-white border border-zinc-200 p-3 flex flex-col items-center">
+                  <img src="/classroom/iqya-2031/readings/agitacion-escalado-pv.jpeg"
+                    alt="Distribución de aire en bioreactor — escalado por P/V"
+                    className="block max-w-full h-auto rounded-md" style={{ maxHeight: 220 }} />
+                  <p className="text-xs text-brand-gray italic text-center mt-2">
+                    <strong>P/V constante</strong> — distribución de gas en fermentador. Útil cuando la
+                    transferencia de oxígeno controla.
+                  </p>
+                </div>
+                <div className="rounded-xl bg-white border border-zinc-200 p-3 flex flex-col items-center">
+                  <img src="/classroom/iqya-2031/readings/agitacion-escalado-vtip.jpeg"
+                    alt="Crema agitada — emulsión sensible a cizalladura"
+                    className="block max-w-full h-auto rounded-md" style={{ maxHeight: 220 }} />
+                  <p className="text-xs text-brand-gray italic text-center mt-2">
+                    <strong>V_tip constante</strong> — emulsiones cosméticas, cultivos celulares: la
+                    cizalladura periférica define la calidad del producto.
+                  </p>
+                </div>
+                <div className="rounded-xl bg-white border border-zinc-200 p-3 flex flex-col items-center">
+                  <img src="/classroom/iqya-2031/readings/agitacion-escalado-re.jpeg"
+                    alt="Patrón de flujo en tanque — escalado por Re"
+                    className="block max-w-full h-auto rounded-md" style={{ maxHeight: 220 }} />
+                  <p className="text-xs text-brand-gray italic text-center mt-2">
+                    <strong>Re_ag constante</strong> — solo aplicable cuando macromezcla y circulación
+                    general dominan.
+                  </p>
+                </div>
+                <div className="rounded-xl bg-white border border-zinc-200 p-3 flex flex-col items-center">
+                  <img src="/classroom/iqya-2031/readings/agitacion-escalado-tmix.jpeg"
+                    alt="Mezclado rápido — escalado por t_mix"
+                    className="block max-w-full h-auto rounded-md" style={{ maxHeight: 220 }} />
+                  <p className="text-xs text-brand-gray italic text-center mt-2">
+                    <strong>t_mix constante</strong> — exige aumentar la potencia con la escala. Crítico
+                    en reacciones rápidas.
+                  </p>
+                </div>
+              </div>
 
               <div className="my-4 overflow-x-auto not-prose">
                 <table className="min-w-full text-sm border-collapse">
@@ -1432,10 +1356,6 @@ const Agitacion: React.FC = () => {
                   McGraw-Hill.
                 </li>
               </ul>
-              <p className="text-sm text-brand-gray italic mt-6">
-                Notas complementarias al Episodio 5 de <em>Gradiente de Ideas</em> con la Ing. Sofía
-                Vargas (Belcorp). ¡Que la agitación les sea propicia!
-              </p>
             </>
           )}
         </div>
