@@ -859,6 +859,16 @@ export const pouCourse: Course = {
       tags: ['fluidos', 'tuberías', 'bombas', 'hidráulica'],
       category: 'lectura',
     },
+    {
+      slug: 'bombas',
+      title: 'Bombas',
+      summary:
+        'Equipo que aporta la energía al sistema de transporte de líquidos: bombas centrífugas y de desplazamiento positivo, curvas características y punto de operación, cavitación y NPSH (disponible vs. requerido), cálculo de potencia hidráulica, BHP y selección del motor eléctrico.',
+      date: '2026-02-23',
+      readingMinutes: 22,
+      tags: ['bombas', 'centrífuga', 'NPSH', 'cavitación', 'potencia'],
+      category: 'lectura',
+    },
   ],
   presentations: [
     {
