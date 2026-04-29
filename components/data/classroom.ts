@@ -21,6 +21,13 @@ export interface Presentation {
   date?: string;
   description?: string;
   file: string;
+  /**
+   * Si está presente, la presentación se puede consultar también vía
+   * `/classroom/{courseSlug}/share/{id}` introduciendo este código (independiente
+   * del `accessCode` del curso). Útil para compartir una sola presentación con
+   * estudiantes sin darles acceso al landing del curso.
+   */
+  shareCode?: string;
 }
 
 export interface TeamMember {
@@ -74,6 +81,47 @@ export interface CronogramaEntry {
   proyecto?: string;  // Deliverable or coevaluation
 }
 
+export interface EdcoSession {
+  date: string;          // ISO: '2026-05-04'
+  day: string;           // 'Lunes', 'Miércoles', 'Viernes'
+  time: string;          // '6:30 pm – 8:30 pm'
+  module: string;        // 'M1', 'M2.1', etc.
+  topic: string;
+  instructor: string;    // 'Luis H. Reyes' | 'Francisco Moya' | …
+  hours: number;
+  isMine?: boolean;      // true si la dicta Luis
+}
+
+export interface EdcoCourseModule {
+  code: string;          // 'M1', 'M2', …
+  title: string;
+  hours: number;
+  topics?: string[];
+  instructor?: string;   // Quién dicta el módulo (si es uno solo)
+}
+
+export interface EdcoCourse {
+  id: string;                      // 'curso-2-ia-mayo-2026'
+  title: string;
+  edition: string;                 // 'Curso 2 · Edición Mayo 2026'
+  status: 'active' | 'upcoming' | 'past';
+  termLabel: string;               // 'Mayo–Junio 2026'
+  modality: string;                // 'Virtual', 'Presencial', 'Híbrido'
+  totalHours: number;
+  description: string;
+  externalUrl?: string;            // Página oficial de EDCO Uniandes
+  zoom?: {
+    url: string;
+    meetingId?: string;
+    note?: string;
+  };
+  team: { name: string; role: string }[];
+  modules: EdcoCourseModule[];
+  sessions: EdcoSession[];
+  presentationIds?: string[];      // IDs de Presentation (en course.presentations) que pertenecen a este curso EDCO
+  notes?: string[];                // Notas adicionales (certificación, asistencia, etc.)
+}
+
 export interface Course {
   slug: string;
   code: string;
@@ -86,6 +134,15 @@ export interface Course {
   tagline?: string;
   accessCode: string;
   bannerUrl: string;
+  /**
+   * Tipo de curso:
+   * - 'academic'      → curso regular (POU, SPDP, IQYA, DPRO). Usa el CourseLandingPage estándar.
+   * - 'professional'  → espacio de Educación Continua (EDCO Uniandes y similares). Usa un landing custom (EduProLandingPage).
+   * Si no se especifica, se asume 'academic'.
+   */
+  kind?: 'academic' | 'professional';
+  /** Solo aplica si `kind === 'professional'`. Lista de cursos EDCO/charlas que componen el espacio. */
+  edcoCourses?: EdcoCourse[];
   cronograma?: CronogramaEntry[];
   pillars?: { title: string; description: string }[];
   team: TeamMember[];
@@ -146,8 +203,9 @@ export interface Course {
 import { pouCourse } from './classroom/pou';
 import { spdpCourse } from './classroom/spdp';
 import { dpro4300Course } from './classroom/dpro-4300';
+import { eduProCourse } from './classroom/edu-pro';
 
-export const classroomData: Course[] = [pouCourse, spdpCourse, dpro4300Course];
+export const classroomData: Course[] = [pouCourse, spdpCourse, dpro4300Course, eduProCourse];
 
 export const getCourseBySlug = (slug: string): Course | undefined =>
   classroomData.find((c) => c.slug === slug);

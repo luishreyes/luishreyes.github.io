@@ -44,6 +44,7 @@ import { CourseLandingPage } from './pages/classroom/CourseLandingPage';
 import { ReadingsIndexPage } from './pages/classroom/ReadingsIndexPage';
 import { ReadingPage } from './pages/classroom/ReadingPage';
 import { PresentationsIndexPage } from './pages/classroom/PresentationsIndexPage';
+import { PresentationSharePage } from './pages/classroom/PresentationSharePage';
 import { RetosPage } from './pages/classroom/RetosPage';
 import { startSequentialImagePreloading } from './services/preloader';
 import { AppDataContext } from './context/AppDataContext';
@@ -182,6 +183,7 @@ const App: React.FC = () => {
               <Route path="/classroom/:courseSlug/readings" element={<ReadingsIndexPage />} />
               <Route path="/classroom/:courseSlug/readings/:slug" element={<ReadingPage />} />
               <Route path="/classroom/:courseSlug/presentations" element={<PresentationsIndexPage />} />
+              <Route path="/classroom/:courseSlug/share/:presentationId" element={<PresentationSharePage />} />
               <Route path="/classroom/:courseSlug/retos" element={<RetosPage />} />
               <Route path="*" element={<AboutPage />} />
             </Routes>

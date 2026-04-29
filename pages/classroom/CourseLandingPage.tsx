@@ -7,12 +7,17 @@ import { CourseHero } from '../../components/classroom/CourseHero';
 import { Section } from '../../components/classroom/Section';
 import { TodayButton } from '../../components/classroom/TodayButton';
 import { NotFoundInClassroom } from './NotFoundInClassroom';
+import { EduProLandingPage } from './EduProLandingPage';
 
 export const CourseLandingPage: React.FC = () => {
   const { courseSlug } = useParams<{ courseSlug: string }>();
   const course = courseSlug ? getCourseBySlug(courseSlug) : undefined;
 
   if (!course) return <NotFoundInClassroom />;
+
+  if (course.kind === 'professional') {
+    return <EduProLandingPage course={course} />;
+  }
 
   return (
     <CourseAccessGate course={course}>

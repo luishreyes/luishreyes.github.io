@@ -48,9 +48,18 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
 
           <div className="mt-4 flex items-center justify-between text-xs text-brand-gray">
             <div className="flex items-center gap-3">
-              <span>{course.readings.length} {course.readings.length === 1 ? 'entrada' : 'entradas'}</span>
-              <span className="text-zinc-300">·</span>
-              <span>{course.presentations.length} presentaciones</span>
+              {course.kind === 'professional' ? (
+                <span>
+                  {(course.edcoCourses?.length ?? 0)}{' '}
+                  {(course.edcoCourses?.length ?? 0) === 1 ? 'curso' : 'cursos'} EDCO
+                </span>
+              ) : (
+                <>
+                  <span>{course.readings.length} {course.readings.length === 1 ? 'entrada' : 'entradas'}</span>
+                  <span className="text-zinc-300">·</span>
+                  <span>{course.presentations.length} presentaciones</span>
+                </>
+              )}
             </div>
             <span className="inline-flex items-center gap-1 font-medium text-brand-dark group-hover:text-brand-yellow-dark transition-colors">
               Ingresar
