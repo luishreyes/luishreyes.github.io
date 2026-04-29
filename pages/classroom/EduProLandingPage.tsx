@@ -61,9 +61,9 @@ export const EduProLandingPage: React.FC<EduProLandingPageProps> = ({ course }) 
 
 const Hero: React.FC<{ course: Course }> = ({ course }) => (
   <div
-    className="relative pt-28 pb-20 overflow-hidden"
+    className="relative pt-24 pb-12 sm:pt-28 sm:pb-14 overflow-hidden"
     style={{
-      backgroundImage: `linear-gradient(135deg, rgba(26,26,26,0.85), rgba(26,26,26,0.55)), url(${course.bannerUrl})`,
+      backgroundImage: `linear-gradient(135deg, rgba(26,26,26,0.9), rgba(26,26,26,0.7)), url(${course.bannerUrl})`,
       backgroundSize: 'cover',
       backgroundPosition: 'center',
     }}
@@ -87,13 +87,13 @@ const Hero: React.FC<{ course: Course }> = ({ course }) => (
         <p className="text-xs sm:text-sm font-semibold tracking-widest uppercase text-brand-yellow">
           {course.term}
         </p>
-        <h1 className="mt-3 text-3xl sm:text-5xl font-bold tracking-tight text-white [text-shadow:0_2px_4px_rgba(0,0,0,0.4)]">
+        <h1 className="mt-2 text-2xl sm:text-4xl font-bold tracking-tight text-white [text-shadow:0_2px_4px_rgba(0,0,0,0.4)]">
           {course.title}
         </h1>
         {course.tagline && (
-          <p className="mt-3 text-lg text-zinc-100 font-medium">{course.tagline}</p>
+          <p className="mt-2 text-base sm:text-lg text-zinc-100 font-medium">{course.tagline}</p>
         )}
-        <p className="mt-4 text-sm sm:text-base text-zinc-200 leading-relaxed">
+        <p className="mt-3 text-sm text-zinc-200 leading-relaxed">
           {course.description}
         </p>
       </motion.div>

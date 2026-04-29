@@ -191,6 +191,7 @@ const cursoIaMayo2026: EdcoCourse = {
     'Certificación: asistencia ≥ 80% de las sesiones magistrales y ≥ 60% de los ejercicios aprobados.',
     'Soporte estudiantes EDCO: estudiantesedco@uniandes.edu.co',
   ],
+  presentationIds: ['m1-introduccion-ia'],
 };
 
 export const eduProCourse: Course = {
@@ -208,6 +209,18 @@ export const eduProCourse: Course = {
   bannerUrl: '/classroom/edu-pro/banner.jpg',
   kind: 'professional',
   edcoCourses: [cursoIaMayo2026],
+  presentations: [
+    {
+      id: 'm1-introduccion-ia',
+      title: 'M1 — Introducción a IA y los modelos de lenguaje',
+      sessionNumber: 1,
+      date: '2026-05-04',
+      description:
+        'Recorrido por los hitos de la IA (Deep Blue, Watson, AlphaGo, autos autoconducidos, ChatGPT, multimodal y agentes 2024–2026), aprendizaje de máquina y profundo (perceptrón → CNN/RNN → Transformers), vulnerabilidades (ataques adversariales, out-of-distribution, sesgo) y antropomorfización (Sophia, conciencia, el submarino que «nada»).',
+      file: 'm1-introduccion-ia.html',
+      shareCode: 'IADCO-M1',
+    },
+  ],
   // Campos académicos no aplican; se dejan con stubs vacíos para satisfacer el tipo Course.
   team: [
     {
@@ -225,5 +238,4 @@ export const eduProCourse: Course = {
   policies: [],
   community: [],
   readings: [],
-  presentations: [],
 };

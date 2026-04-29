@@ -1,0 +1,1193 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="/classroom-fonts.css" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>M1 — Introducción a IA y los modelos de lenguaje · Dominando la IA</title>
+  <style>
+    :root {
+      --brand-dark: #1A1A1A;
+      --brand-yellow: #FFBF00;
+      --brand-yellow-dark: #E6AC00;
+      --brand-gray: #555555;
+      --surface: #ffffff;
+      --muted: #f4f4f5;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0; padding: 0; height: 100%; width: 100%;
+      background: var(--brand-dark); color: var(--brand-dark);
+      font-family: 'Manrope Variable', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      overflow: hidden; -webkit-text-size-adjust: 100%;
+    }
+    .deck { position: relative; width: 100vw; height: 100vh; height: 100dvh; }
+    .slide {
+      position: absolute; inset: 0;
+      display: none; align-items: center; justify-content: center;
+      padding: clamp(1rem, 4vw, 3.5rem);
+      background: var(--surface);
+      opacity: 0; transition: opacity 260ms ease; overflow-y: auto;
+    }
+    .slide.active { display: flex; opacity: 1; }
+    .slide .content {
+      width: 100%; max-width: 92rem; margin: auto 0;
+      display: flex; flex-direction: column;
+      gap: clamp(0.75rem, 1.5vw, 1.5rem);
+    }
+    .eyebrow {
+      text-transform: uppercase; letter-spacing: 0.2em;
+      font-size: clamp(0.65rem, 1vw, 1rem);
+      color: var(--brand-yellow-dark); font-weight: 600;
+    }
+    h1 {
+      font-size: clamp(1.75rem, 5.5vw, 5.75rem);
+      line-height: 1.05; margin: 0;
+      color: var(--brand-dark); font-weight: 700; letter-spacing: -0.02em;
+    }
+    h2 { font-size: clamp(1.25rem, 3.4vw, 3.25rem); line-height: 1.15; margin: 0; font-weight: 700; color: var(--brand-dark); }
+    h2 .sub { display: block; font-size: 0.55em; font-weight: 500; color: var(--brand-gray); margin-top: 0.15em; }
+    p, li { font-size: clamp(0.95rem, 1.6vw, 1.6rem); line-height: 1.55; color: var(--brand-gray); margin: 0; }
+    ul, ol { padding-left: 1.25em; margin: 0; display: flex; flex-direction: column; gap: 0.45em; }
+    li::marker { color: var(--brand-yellow-dark); }
+    .slide.title-slide {
+      background: linear-gradient(135deg, #141414 0%, #1A1A1A 50%, #2a2a2a 100%);
+      color: #fff;
+    }
+    .slide.title-slide h1, .slide.title-slide h2 { color: #fff; }
+    .slide.title-slide p, .slide.title-slide li { color: #d4d4d8; }
+    .slide.title-slide .eyebrow { color: var(--brand-yellow); }
+    .slide.title-slide .card { color: var(--brand-dark); }
+    .slide.title-slide .card p, .slide.title-slide .card li { color: var(--brand-gray); }
+    .slide.title-slide .card h3 { color: var(--brand-dark); }
+    .slide.cover {
+      background-color: #0a0a0a;
+      background-blend-mode: multiply;
+      background-size: cover;
+      background-position: center;
+    }
+    .slide.cover::after {
+      content:''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(10,10,10,0.86) 0%, rgba(20,20,20,0.7) 50%, rgba(20,20,20,0.6) 100%);
+      pointer-events: none;
+    }
+    .slide.cover .content { position: relative; z-index: 2; }
+    .pill-row { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 0.5rem; }
+    .pill {
+      display: inline-flex; align-items: center;
+      padding: 0.32em 0.85em; border-radius: 999px;
+      background: var(--muted); color: var(--brand-dark);
+      font-size: clamp(0.75rem, 1.1vw, 1.1rem); font-weight: 500;
+    }
+    .slide.title-slide .pill, .slide.cover .pill {
+      background: rgba(255,255,255,0.1); color: #fff;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .grid { display: grid; gap: clamp(0.75rem, 1.5vw, 1.25rem); }
+    .grid.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid.cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    @media (max-width: 768px) { .grid.cols-2, .grid.cols-3, .grid.cols-4 { grid-template-columns: 1fr; } }
+    .card {
+      background: var(--muted); border-radius: 0.75rem;
+      padding: clamp(0.9rem, 1.5vw, 1.35rem);
+      transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+    }
+    .card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
+    .card h3 {
+      font-size: clamp(1rem, 1.7vw, 1.5rem); margin: 0 0 0.35em;
+      color: var(--brand-dark); font-weight: 700;
+    }
+    .card p { font-size: clamp(0.8rem, 1.3vw, 1.2rem); }
+    .card .eyebrow { margin-bottom: 0.25em; }
+    .two-col {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: clamp(1rem, 2.5vw, 2.25rem);
+      align-items: center;
+    }
+    @media (max-width: 768px) { .two-col { grid-template-columns: 1fr; } }
+    .two-col img.diagram { width: 100%; }
+    img.diagram {
+      max-width: 100%; height: auto;
+      border-radius: 0.6rem; box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+      background: #fff;
+    }
+    img.portrait {
+      width: 100%; aspect-ratio: 1/1; object-fit: cover;
+      border-radius: 0.75rem; box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    }
+    .news-card {
+      background: #fff;
+      border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 0.75rem;
+      overflow: hidden;
+      display: flex; flex-direction: column;
+      transition: transform 220ms, box-shadow 220ms;
+    }
+    .news-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+    .news-card img { width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block; }
+    .news-card .body { padding: clamp(0.9rem, 1.4vw, 1.2rem); }
+    .news-card .src {
+      display: inline-block;
+      font-size: clamp(0.7rem, 1vw, 0.95rem);
+      color: var(--brand-yellow-dark); font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      margin-bottom: 0.4em;
+    }
+    .news-card h3 {
+      margin: 0; font-size: clamp(0.95rem, 1.5vw, 1.3rem);
+      color: var(--brand-dark); font-weight: 700; line-height: 1.25;
+    }
+    .news-card p { font-size: clamp(0.8rem, 1.2vw, 1.05rem); margin-top: 0.4em; }
+    .timeline {
+      display: grid; grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 0.5rem; position: relative;
+    }
+    @media (max-width: 1024px) { .timeline { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 640px)  { .timeline { grid-template-columns: repeat(2, 1fr); } }
+    .timeline .dot {
+      background: #fff; border: 1px solid rgba(0,0,0,0.08);
+      border-top: 3px solid var(--brand-yellow-dark);
+      border-radius: 0.6rem; padding: 0.85rem 0.9rem;
+      transition: transform 220ms, box-shadow 220ms;
+    }
+    .timeline .dot:hover { transform: translateY(-3px); box-shadow: 0 8px 18px rgba(0,0,0,0.08); }
+    .timeline .yr {
+      display: block; font-size: clamp(0.95rem, 1.4vw, 1.25rem);
+      font-weight: 800; color: var(--brand-yellow-dark);
+      letter-spacing: 0.04em;
+    }
+    .timeline .ev {
+      display: block; margin-top: 0.25em;
+      font-size: clamp(0.75rem, 1.1vw, 1rem);
+      color: var(--brand-dark); font-weight: 600; line-height: 1.2;
+    }
+    .quote {
+      border-left: 4px solid var(--brand-yellow);
+      padding: 0.5em 0 0.5em 1.1em;
+      font-size: clamp(1.05rem, 2vw, 1.85rem);
+      color: var(--brand-dark); font-weight: 500;
+      line-height: 1.35;
+    }
+    .quote .attribution {
+      display: block; margin-top: 0.5em;
+      font-size: clamp(0.8rem, 1.2vw, 1.1rem);
+      color: var(--brand-gray); font-weight: 400;
+    }
+    .big-quote {
+      text-align: center; padding: 0 clamp(1rem, 4vw, 4rem);
+    }
+    .big-quote h2 {
+      font-size: clamp(2rem, 6vw, 5.5rem);
+      line-height: 1.05; color: var(--brand-dark);
+    }
+    .big-quote h2 .accent { color: var(--brand-yellow-dark); }
+    .big-quote p { margin-top: 1em; font-style: italic; }
+    .vs-cols {
+      display: grid; grid-template-columns: 1fr auto 1fr;
+      gap: clamp(0.75rem, 2vw, 2rem);
+      align-items: stretch;
+    }
+    @media (max-width: 768px) { .vs-cols { grid-template-columns: 1fr; } .vs-cols .vs-divider { display: none; } }
+    .vs-cols .col {
+      background: #fff; border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 0.75rem; padding: clamp(1rem, 1.6vw, 1.6rem);
+      display: flex; flex-direction: column; gap: 0.5rem;
+    }
+    .vs-cols .col.left  { border-top: 4px solid #94a3b8; }
+    .vs-cols .col.right { border-top: 4px solid var(--brand-yellow-dark); }
+    .vs-cols .col h3 { margin: 0; font-size: clamp(1rem, 1.7vw, 1.5rem); color: var(--brand-dark); }
+    .vs-cols .vs-divider {
+      align-self: center; background: var(--brand-yellow);
+      color: var(--brand-dark); font-weight: 800; font-size: 0.9rem;
+      width: 2.4em; height: 2.4em; border-radius: 999px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .banner {
+      background: #fef3c7; border-left: 4px solid var(--brand-yellow-dark);
+      padding: 0.9rem 1.1rem; border-radius: 0.5rem;
+      color: #78350f; font-size: clamp(0.85rem, 1.4vw, 1.25rem);
+    }
+    .banner.info { background: #e0f2fe; border-left-color: #0284c7; color: #0c4a6e; }
+    .banner.warn { background: #fee2e2; border-left-color: #dc2626; color: #7f1d1d; }
+    .banner svg { vertical-align: -0.18em; margin-right: 0.4em; }
+    .hud {
+      position: fixed; left: 0; right: 0; bottom: 0;
+      padding: 0.5rem 1rem;
+      display: flex; justify-content: space-between; align-items: center;
+      color: rgba(255,255,255,0.75); font-size: 0.75rem;
+      pointer-events: none; z-index: 10;
+    }
+    .controls {
+      position: fixed; right: 1rem; bottom: 2.5rem;
+      display: flex; gap: 0.5rem; z-index: 11;
+    }
+    .controls button {
+      -webkit-appearance: none; appearance: none;
+      border: 1px solid rgba(0,0,0,0.1);
+      background: rgba(255,255,255,0.9); color: var(--brand-dark);
+      width: 2.5rem; height: 2.5rem; border-radius: 999px;
+      font-size: 1rem; cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    }
+    .controls button:active { transform: scale(0.96); }
+    .progress {
+      position: fixed; top: 0; left: 0;
+      height: 3px; background: var(--brand-yellow);
+      transition: width 260ms ease; z-index: 20;
+    }
+    .progress.pulsing { animation: progPulse 0.5s ease; }
+    @keyframes progPulse {
+      0%   { box-shadow: 0 0 0 0 rgba(255,191,0,0.0); }
+      50%  { box-shadow: 0 0 12px 3px rgba(255,191,0,0.8); }
+      100% { box-shadow: 0 0 0 0 rgba(255,191,0,0.0); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .slide { transition: none; }
+      .progress { transition: none; }
+      .progress.pulsing { animation: none; }
+      .stagger-in > * { animation: none !important; }
+      .card, .news-card, .timeline .dot { transition: none; }
+    }
+    @media (max-width: 480px) {
+      .controls { right: 0.5rem; bottom: 1.25rem; }
+      .hud { font-size: 0.65rem; }
+    }
+    .slide:not(.title-slide):not(.cover)::before {
+      content: ''; position: absolute;
+      top: clamp(1rem, 3vw, 2.5rem); right: clamp(1rem, 3vw, 2.5rem);
+      width: clamp(2rem, 5vw, 4rem); height: clamp(2rem, 5vw, 4rem);
+      border-top: 2.5px solid var(--brand-yellow);
+      border-right: 2.5px solid var(--brand-yellow);
+      pointer-events: none; z-index: 1;
+    }
+    .slide.title-slide::before, .slide.cover::before {
+      content: ''; position: absolute;
+      bottom: clamp(1rem, 3vw, 2.5rem); left: clamp(1rem, 3vw, 2.5rem);
+      width: clamp(2rem, 5vw, 4rem); height: clamp(2rem, 5vw, 4rem);
+      border-bottom: 2.5px solid var(--brand-yellow);
+      border-left: 2.5px solid var(--brand-yellow);
+      opacity: 0.5;
+      pointer-events: none; z-index: 3;
+    }
+    .slide-number {
+      position: absolute; bottom: clamp(0.5rem, 2vw, 1.5rem);
+      left: clamp(1rem, 3vw, 2.5rem);
+      font-size: clamp(4rem, 12vw, 10rem);
+      font-weight: 800; line-height: 1;
+      color: rgba(0, 0, 0, 0.04); pointer-events: none;
+      z-index: 0; user-select: none; letter-spacing: -0.04em;
+    }
+    .slide.title-slide .slide-number, .slide.cover .slide-number {
+      color: rgba(255, 255, 255, 0.05);
+    }
+
+    a.platform-link {
+      color: var(--brand-dark); text-decoration: none;
+      border-bottom: 2px solid var(--brand-yellow);
+      padding-bottom: 0.05em;
+      transition: color 180ms, border-color 180ms;
+    }
+    a.platform-link:hover { color: var(--brand-yellow-dark); border-bottom-color: var(--brand-yellow-dark); }
+    a.platform-link::after { content: " ↗"; font-size: 0.65em; opacity: 0.5; margin-left: 0.12em; vertical-align: 0.3em; }
+    .slide.title-slide a.platform-link, .slide.cover a.platform-link { color: #fff; }
+    .slide.title-slide a.platform-link:hover, .slide.cover a.platform-link:hover { color: var(--brand-yellow); border-bottom-color: var(--brand-yellow); }
+
+    h2 svg, h3 svg, .eyebrow svg, .pill svg {
+      vertical-align: -0.18em; margin-right: 0.4em;
+      color: var(--brand-yellow-dark);
+    }
+    .news-card .body svg { color: var(--brand-yellow-dark); vertical-align: -0.18em; margin-right: 0.3em; }
+
+    a:focus-visible, button:focus-visible {
+      outline: 3px solid var(--brand-yellow-dark);
+      outline-offset: 2px; border-radius: 0.35rem;
+    }
+
+    .slide.active .stagger-in > * { animation: fadeInUp 0.4s ease both; }
+    .slide.active .stagger-in > *:nth-child(1) { animation-delay: 0.05s; }
+    .slide.active .stagger-in > *:nth-child(2) { animation-delay: 0.15s; }
+    .slide.active .stagger-in > *:nth-child(3) { animation-delay: 0.25s; }
+    .slide.active .stagger-in > *:nth-child(4) { animation-delay: 0.35s; }
+    .slide.active .stagger-in > *:nth-child(5) { animation-delay: 0.45s; }
+    .slide.active .stagger-in > *:nth-child(6) { animation-delay: 0.55s; }
+    .slide.active .stagger-in > *:nth-child(7) { animation-delay: 0.65s; }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body>
+  <div class="progress" style="width:0"></div>
+  <div class="deck" id="deck">
+
+    <!-- 1. Portada con título del CURSO (no del PDF) -->
+    <section class="slide cover active" data-slide style="background-image: linear-gradient(135deg, rgba(10,10,10,0.55), rgba(20,20,20,0.35)), url('img/cover-datacenter.jpg');">
+      <div class="content">
+        <p class="eyebrow">EDCO Uniandes · Curso 2 · Mayo 2026</p>
+        <h1>Dominando la<br/>Inteligencia Artificial</h1>
+        <p style="font-size: clamp(1rem, 2vw, 1.7rem); max-width: 50rem;">Más allá de ChatGPT y los modelos generativos.</p>
+        <div class="pill-row">
+          <span class="pill">Módulo 1</span>
+          <span class="pill">Introducción a IA y modelos de lenguaje</span>
+          <span class="pill">2 horas · Lunes 4 de mayo de 2026</span>
+        </div>
+        <p style="margin-top: 1.5em; font-size: clamp(0.85rem, 1.3vw, 1.1rem); opacity: 0.8;">Luis H. Reyes · Profesor Asociado, Departamento de Ingeniería Química y de Alimentos · Universidad de los Andes</p>
+      </div>
+    </section>
+
+    <!-- 2. ¿Cómo nace este curso? -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bienvenida</p>
+        <h2>¿Cómo nace este curso?</h2>
+        <div class="grid cols-2 stagger-in" style="align-items: stretch;">
+          <div class="card">
+            <h3>Una tecnología disruptiva más</h3>
+            <p>No es la primera vez que una tecnología disruptiva aparece para quedarse. Las economías y sociedades más participativas son históricamente las más beneficiadas <span style="opacity:0.7;">(Ikhlaq Sidhu, <em>Artificial Intelligence and Job Loss</em>).</span></p>
+          </div>
+          <div class="card">
+            <h3>Los modelos de lenguaje son una realidad</h3>
+            <p>Modelos como <a class="platform-link" href="https://chatgpt.com" target="_blank" rel="noopener">ChatGPT</a>, <a class="platform-link" href="https://claude.ai" target="_blank" rel="noopener">Claude</a> y <a class="platform-link" href="https://gemini.google.com" target="_blank" rel="noopener">Gemini</a> son herramientas masivas. Han surgido —y seguirán surgiendo— miles de startups que dependen de ellos.</p>
+          </div>
+        </div>
+        <div class="banner" style="margin-top: 0.5em;">
+          <strong>Visión del curso:</strong> la IA como dinamizador de la economía. Cualquier persona que pueda <em>escribir</em> puede usar las IA generativas.
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Metodología (1/2): teóricas vs teórico-prácticas + objetivo -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Metodología</p>
+        <h2>Cómo está armado el curso</h2>
+        <div class="vs-cols stagger-in">
+          <div class="col left">
+            <h3>Sesiones teóricas</h3>
+            <p style="opacity:0.85;">Las menos. Marco conceptual, hitos históricos, fundamentos.</p>
+            <p><strong>Hoy es una de ellas</strong> — pero ya con ejemplos reales.</p>
+          </div>
+          <div class="vs-divider">vs</div>
+          <div class="col right">
+            <h3>Sesiones teórico-prácticas</h3>
+            <p style="opacity:0.85;">La mayoría. Dos modos:</p>
+            <ol>
+              <li><strong>Sistemas compartidos</strong> — exploramos juntos.</li>
+              <li><strong>Tu propia cuenta</strong> de OpenAI / Anthropic / etc.</li>
+            </ol>
+          </div>
+        </div>
+        <div class="banner info" style="margin-top: 0.5em;">
+          <strong>Objetivo del curso:</strong> utilizar adecuadamente herramientas como
+          <a class="platform-link" href="https://chatgpt.com" target="_blank" rel="noopener">ChatGPT</a>,
+          <a class="platform-link" href="https://claude.ai" target="_blank" rel="noopener">Claude</a> y modelos de imagen
+          (<a class="platform-link" href="https://openai.com/dall-e-3" target="_blank" rel="noopener">DALL-E 3</a>,
+          <a class="platform-link" href="https://www.midjourney.com" target="_blank" rel="noopener">Midjourney</a>,
+          <a class="platform-link" href="https://stability.ai/news/stable-diffusion-3" target="_blank" rel="noopener">Stable Diffusion</a>),
+          y aplicar las mejores prácticas en construcción de prompts para mejorar las salidas generadas.
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Metodología (2/2): plataforma + certificación -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Metodología</p>
+        <h2>Plataforma y certificación</h2>
+        <div class="grid cols-3 stagger-in">
+          <div class="card">
+            <p class="eyebrow">
+              <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+              Sesiones en vivo
+            </p>
+            <h3>Zoom · 6:30 – 8:30 pm</h3>
+            <p>Lunes, miércoles y viernes (sin clase los días festivos).</p>
+            <p style="font-family: monospace; font-size: 0.9em; margin-top: 0.5em;">ID 889 9952 1589</p>
+          </div>
+          <div class="card">
+            <p class="eyebrow">
+              <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
+              Material y comunicación
+            </p>
+            <h3><a class="platform-link" href="https://bloqueneon.uniandes.edu.co" target="_blank" rel="noopener">BloqueNeón</a></h3>
+            <p>Acceso al iniciar el curso. Incluye instructivo de inicio de sesión.</p>
+          </div>
+          <div class="card">
+            <p class="eyebrow">
+              <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>
+              Certificación
+            </p>
+            <h3>≥ 80% asistencia</h3>
+            <p>+ aprobar el 60% (2/3) de los ejercicios. La Universidad de los Andes otorga certificado de participación.</p>
+          </div>
+        </div>
+        <p style="margin-top: 0.5em; font-size: clamp(0.8rem, 1.1vw, 1rem); opacity: 0.7;">Soporte estudiantes EDCO: <a class="platform-link" href="mailto:estudiantesedco@uniandes.edu.co">estudiantesedco@uniandes.edu.co</a></p>
+      </div>
+    </section>
+
+    <!-- 5. Equipo -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Equipo</p>
+        <h2>Con quién vas a aprender</h2>
+        <div class="grid cols-2 stagger-in">
+          <div class="card" style="background: #fff; border: 1px solid rgba(0,0,0,0.08);">
+            <div class="two-col" style="align-items: center;">
+              <img class="portrait" src="img/luis-portrait.jpg" alt="Luis H. Reyes" />
+              <div>
+                <p class="eyebrow">M1, M2.1, M3 (3 sesiones), M6</p>
+                <h3 style="font-size: clamp(1.1rem, 1.8vw, 1.6rem);">Luis H. Reyes</h3>
+                <p>Profesor Asociado · Departamento de Ingeniería Química y de Alimentos.</p>
+                <p style="margin-top: 0.4em;"><a class="platform-link" href="mailto:lh.reyes@uniandes.edu.co">lh.reyes@uniandes.edu.co</a></p>
+              </div>
+            </div>
+          </div>
+          <div class="card" style="background: #fff; border: 1px solid rgba(0,0,0,0.08);">
+            <div class="two-col" style="align-items: center;">
+              <img class="portrait" src="img/francisco-portrait.jpg" alt="Francisco J. Moya" />
+              <div>
+                <p class="eyebrow">M2 (3 sesiones), M4, M5</p>
+                <h3 style="font-size: clamp(1.1rem, 1.8vw, 1.6rem);">Francisco J. Moya</h3>
+                <p>Analista de datos. Master en Ciencia y Analítica de Datos. Ingeniero Biomédico.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. Definición de IA -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Fundamentos</p>
+        <h2>¿Qué es la inteligencia artificial?</h2>
+        <div class="grid cols-2 stagger-in" style="align-items: stretch;">
+          <div class="quote">
+            «The art of creating machines that perform functions that require intelligence when performed by people».
+            <span class="attribution">— Raymond Kurzweil, 1990</span>
+          </div>
+          <div class="quote" style="border-left-color: var(--brand-yellow-dark);">
+            Una visión moderna: sistemas que <strong>aprenden patrones de datos</strong> para tomar decisiones, generar contenido o actuar en entornos complejos —sin reglas codificadas explícitamente.
+            <span class="attribution">— marco operativo del curso</span>
+          </div>
+        </div>
+        <div class="banner info" style="margin-top: 0.4em;">
+          La IA <strong>no es una sola cosa.</strong> Es un paraguas que cubre desde sistemas expertos basados en reglas hasta los modelos de lenguaje multimodales actuales. En este curso nos enfocamos en la rama que más explosión ha tenido: el <strong>aprendizaje profundo aplicado a generación</strong>.
+        </div>
+      </div>
+    </section>
+
+    <!-- 7-12. Hitos en una sola vista timeline + slides individuales -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">
+          <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/></svg>
+          Línea de tiempo
+        </p>
+        <h2>Hitos que cambiaron la conversación</h2>
+        <div class="timeline stagger-in">
+          <div class="dot"><span class="yr">1997</span><span class="ev">Deep Blue vence a Kasparov en ajedrez.</span></div>
+          <div class="dot"><span class="yr">2011</span><span class="ev">Watson gana <em>Jeopardy!</em></span></div>
+          <div class="dot"><span class="yr">2016</span><span class="ev">AlphaGo derrota a Lee Sedol 4–1.</span></div>
+          <div class="dot"><span class="yr">2018</span><span class="ev">Autos autoconducidos en carreteras.</span></div>
+          <div class="dot"><span class="yr">2022</span><span class="ev">ChatGPT alcanza 1 M de usuarios en 5 días.</span></div>
+          <div class="dot"><span class="yr">2024-26</span><span class="ev">Multimodal y agentes autónomos.</span></div>
+        </div>
+        <p style="opacity: 0.7; font-size: clamp(0.8rem, 1.1vw, 1rem); margin-top: 0.4em;">Cada hito desbloquea una nueva pregunta. Vamos uno por uno.</p>
+      </div>
+    </section>
+
+    <!-- 7. Deep Blue -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">1997 · IBM Deep Blue</p>
+        <h2>La IA empieza a ganar a humanos en su propio juego</h2>
+        <div class="two-col">
+          <div>
+            <p>El supercomputador <strong>Deep Blue</strong> de <a class="platform-link" href="https://www.ibm.com/history/deep-blue" target="_blank" rel="noopener">IBM</a> venció al campeón mundial de ajedrez <strong>Garry Kasparov</strong> 3½ – 2½ en una serie a 6 partidas en mayo de 1997.</p>
+            <ul>
+              <li>Evaluaba ~200 millones de posiciones por segundo.</li>
+              <li>Ganó por <em>fuerza bruta</em>, no por intuición ni aprendizaje.</li>
+              <li>Marcó el inicio del cuestionamiento público sobre la inteligencia de las máquinas.</li>
+            </ul>
+          </div>
+          <img class="diagram" src="img/deep-blue-kasparov.jpg" alt="Kasparov frente al monitor que muestra los movimientos de Deep Blue" />
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. Watson -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">2011 · IBM Watson</p>
+        <h2>Comprensión del lenguaje natural en TV</h2>
+        <div class="two-col">
+          <div>
+            <p>Watson venció a <strong>Ken Jennings</strong> y <strong>Brad Rutter</strong> —los dos campeones más legendarios de <a class="platform-link" href="https://www.research.ibm.com/articles/wins-on-jeopardy.shtml" target="_blank" rel="noopener">Jeopardy!</a></p>
+            <ul>
+              <li>Procesaba pistas en lenguaje natural —juegos de palabras, dobles sentidos, referencias culturales.</li>
+              <li>15 TB de información en memoria, ~2 880 núcleos POWER7.</li>
+              <li>Hito de <strong>NLP estructurado</strong>, todavía pre-deep-learning para texto.</li>
+            </ul>
+          </div>
+          <img class="diagram" src="img/watson-jeopardy.jpg" alt="Watson compitiendo contra los campeones de Jeopardy" />
+        </div>
+      </div>
+    </section>
+
+    <!-- 9. AlphaGo -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">2016 · DeepMind AlphaGo</p>
+        <h2>Aprendizaje profundo + auto-juego derrotan al Go</h2>
+        <div class="grid cols-2" style="align-items: start;">
+          <div>
+            <p><strong>Lee Sedol</strong>, campeón mundial de <em>Go</em>, perdió <strong>4–1</strong> contra AlphaGo de <a class="platform-link" href="https://deepmind.google/discover/blog/alphago-the-first-machine-to-beat-a-worldwide-champion-at-go/" target="_blank" rel="noopener">DeepMind</a> en Seúl, marzo de 2016.</p>
+            <ul>
+              <li>El Go tiene más posiciones legales que átomos en el universo observable: la fuerza bruta no funciona.</li>
+              <li>Combinó <strong>redes neuronales profundas</strong> + <strong>Monte Carlo Tree Search</strong> + <strong>refuerzo</strong>.</li>
+              <li>El <em>movimiento 37</em> de la partida 2 fue tan no-humano que reescribió la teoría del juego.</li>
+            </ul>
+          </div>
+          <div class="banner info" style="align-self: center;">
+            <strong>Insight clave:</strong> los humanos pueden aprender de la IA, no solo al revés. AlphaGo abrió aperturas y secuencias que los maestros adoptaron después.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10. Autos autoconducidos -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">2018 · Visión por computador en producción</p>
+        <h2>Los autos autoconducidos llegan a las carreteras</h2>
+        <div class="two-col">
+          <div>
+            <p><a class="platform-link" href="https://waymo.com" target="_blank" rel="noopener">Waymo</a> (filial de Alphabet) lanzó el primer servicio comercial de robotaxi en Phoenix, Arizona en diciembre de 2018.</p>
+            <ul>
+              <li>Combina <strong>LiDAR</strong> + <strong>cámaras</strong> + <strong>radares</strong> + redes neuronales convolucionales.</li>
+              <li>Para 2025 ofrece servicio público en San Francisco, Phoenix, Los Ángeles y Austin.</li>
+              <li><strong>Tesla Autopilot</strong> y <strong>FSD</strong> popularizaron el concepto en autos personales.</li>
+            </ul>
+          </div>
+          <img class="diagram" src="img/waymo-car.jpg" alt="Waymo robotaxi en carretera" />
+        </div>
+      </div>
+    </section>
+
+    <!-- 11. ChatGPT -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">30 de noviembre de 2022 · El día que la IA se volvió mainstream</p>
+        <h2>Masificación de los modelos de lenguaje</h2>
+        <div class="two-col">
+          <div>
+            <p><a class="platform-link" href="https://openai.com/blog/chatgpt" target="_blank" rel="noopener">OpenAI</a> lanza <strong>ChatGPT</strong> (basado en GPT-3.5) como demo pública gratuita.</p>
+            <ul>
+              <li>El primer LLM de uso general que cualquiera podía probar sin saber programar.</li>
+              <li><strong>1 millón de usuarios en 5 días</strong> — un récord absoluto en software de consumo.</li>
+              <li>Forzó la respuesta de Google (Gemini), Meta (Llama), Anthropic (Claude), xAI (Grok) y miles de startups.</li>
+            </ul>
+          </div>
+          <img class="diagram" src="img/chatgpt-launch.jpg" alt="Captura de la página de lanzamiento de ChatGPT en un teléfono" />
+        </div>
+      </div>
+    </section>
+
+    <!-- 12. 1 millón de usuarios -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">¿Qué tan rápido es 5 días?</p>
+        <h2>Tiempo para alcanzar el primer millón de usuarios</h2>
+        <div class="two-col" style="align-items: center;">
+          <img class="diagram" src="img/million-users-chart.jpg" alt="Gráfico comparando cuánto tardó cada plataforma en alcanzar 1 millón de usuarios — ChatGPT en 5 días" />
+          <div>
+            <ul>
+              <li><strong>Netflix</strong>: 3.5 años</li>
+              <li><strong>Twitter</strong>: 2 años</li>
+              <li><strong>Facebook</strong>: 10 meses</li>
+              <li><strong>Spotify</strong>: 5 meses</li>
+              <li><strong>Instagram</strong>: 75 días</li>
+              <li><strong>ChatGPT</strong>: <span style="color: var(--brand-yellow-dark); font-weight: 700;">5 días</span></li>
+              <li><strong>Threads</strong>: 1 hora (2023, plataforma ya con red de Instagram)</li>
+            </ul>
+            <p style="margin-top: 0.7em; opacity: 0.75; font-size: 0.85em;">Fuente: <a class="platform-link" href="https://www.tooltester.com/en/blog/chatgpt-statistics/" target="_blank" rel="noopener">Tooltester · ChatGPT statistics</a>.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 13. Hitos 2024-2026 (NUEVO) -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">2024 – 2026 · Lo que pasó después</p>
+        <h2>De ChatGPT a los modelos multimodales y agentes</h2>
+        <div class="grid cols-3 stagger-in">
+          <div class="card">
+            <p class="eyebrow">Mayo 2024</p>
+            <h3><a class="platform-link" href="https://openai.com/index/hello-gpt-4o/" target="_blank" rel="noopener">GPT-4o</a></h3>
+            <p>Modelo multimodal nativo (texto + imagen + audio) en tiempo real. Conversación por voz indistinguible de una llamada.</p>
+          </div>
+          <div class="card">
+            <p class="eyebrow">Febrero 2024</p>
+            <h3><a class="platform-link" href="https://openai.com/sora" target="_blank" rel="noopener">Sora</a></h3>
+            <p>Generación de video por IA de alta fidelidad a partir de texto. La frontera se mueve de imagen a video.</p>
+          </div>
+          <div class="card">
+            <p class="eyebrow">Diciembre 2024</p>
+            <h3><a class="platform-link" href="https://blog.google/technology/google-deepmind/google-gemini-ai-update-december-2024/" target="_blank" rel="noopener">Gemini 2.0</a></h3>
+            <p>«Era de los agentes»: modelos que ejecutan tareas en navegadores y aplicaciones, no solo conversan.</p>
+          </div>
+          <div class="card">
+            <p class="eyebrow">2025 – 2026</p>
+            <h3><a class="platform-link" href="https://www.anthropic.com/claude" target="_blank" rel="noopener">Claude</a> · razonamiento extendido</h3>
+            <p>Modelos que «piensan» antes de responder, con ventanas de contexto de un millón de tokens.</p>
+          </div>
+          <div class="card">
+            <p class="eyebrow">2024 – 2026</p>
+            <h3>Agentes que actúan</h3>
+            <p>Computer use, browser use, code agents. La IA pasa de ser un chat a ser un colaborador que ejecuta.</p>
+          </div>
+          <div class="card">
+            <p class="eyebrow">2024 – 2026</p>
+            <h3>Open source competitivo</h3>
+            <p><a class="platform-link" href="https://ai.meta.com/llama/" target="_blank" rel="noopener">Llama</a>, <a class="platform-link" href="https://www.deepseek.com" target="_blank" rel="noopener">DeepSeek</a>, <a class="platform-link" href="https://mistral.ai" target="_blank" rel="noopener">Mistral</a> — modelos abiertos a un costo radicalmente menor.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 14. IA es la nueva electricidad -->
+    <section class="slide title-slide" data-slide>
+      <div class="content big-quote">
+        <p class="eyebrow" style="text-align:center;">Andrew Ng · 2017</p>
+        <h2 style="color:#fff;">«La IA es la <span style="color: var(--brand-yellow);">nueva electricidad</span>».</h2>
+        <p>Así como la electricidad transformó casi todas las industrias hace cien años, la IA transformará todas las industrias en los próximos años.</p>
+      </div>
+    </section>
+
+    <!-- 15. Aprendizaje de máquina habilitó esto -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Detrás de los hitos</p>
+        <h2>El aprendizaje de máquina habilitó todos estos hallazgos</h2>
+        <div class="two-col" style="align-items: center;">
+          <div>
+            <p><strong>Aprendizaje de máquina (ML)</strong>: una rama de la inteligencia artificial donde la regresión, las inferencias y las reglas de clasificación están <strong>determinadas por los datos</strong> en lugar de estar programadas explícitamente.</p>
+            <p style="margin-top: 0.6em;">El <strong>aprendizaje profundo</strong> (Deep Learning) es una sub-rama: redes neuronales con muchas capas. La <strong>IA generativa</strong> es una capa más adentro: modelos profundos diseñados para producir contenido nuevo (texto, imagen, audio, video).</p>
+          </div>
+          <img class="diagram" src="img/ai-hierarchy.jpg" alt="Diagrama de círculos concéntricos: Inteligencia Artificial > Machine Learning > Deep Learning > Generative AI" />
+        </div>
+      </div>
+    </section>
+
+    <!-- 16. NLP tradicional vs moderno -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Cambio de paradigma</p>
+        <h2>NLP tradicional <span class="sub">vs.</span> NLP moderno</h2>
+        <div class="vs-cols stagger-in">
+          <div class="col left">
+            <h3>Enfoque tradicional</h3>
+            <p style="opacity:0.85;">Programador escribe <strong>reglas explícitas</strong>. Por cada caso nuevo, una regla nueva.</p>
+            <img class="diagram" src="img/nlp-traditional.jpg" alt="Esquema NLP tradicional: Data + Reglas → Salida" />
+          </div>
+          <div class="vs-divider">vs</div>
+          <div class="col right">
+            <h3>Enfoque moderno (ML)</h3>
+            <p style="opacity:0.85;">El modelo <strong>infiere la regla a partir de ejemplos</strong>. Especialmente potente con grandes volúmenes de datos y aprendizaje profundo.</p>
+            <img class="diagram" src="img/nlp-modern.jpg" alt="Esquema NLP moderno: Data + Salida → Reglas inferidas" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 17. Discriminación: ejemplo intuitivo -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Cómo aprenden los modelos</p>
+        <h2>Imitamos el enfoque discriminativo del cerebro</h2>
+        <p>Mostremos al modelo dos grupos: <strong>NON-ACEROUS</strong> y <strong>ACEROUS</strong>. No le decimos qué los distingue, solo le mostramos ejemplos. Cuando aparece uno nuevo, el modelo decide a cuál grupo pertenece.</p>
+        <p>Ese es —en esencia— el corazón del aprendizaje supervisado. El truco está en que el modelo nunca conoce la regla; solo aproxima un patrón que minimiza el error en los ejemplos.</p>
+        <div class="banner info">
+          <strong>Acerous</strong> = «sin cuernos». La palabra es absurda a propósito: tu cerebro deduce el patrón aunque no sepas español ni inglés.
+        </div>
+      </div>
+    </section>
+
+    <!-- 18. Portmanteau exercise -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ejercicio</p>
+        <h2>Determinar si <em>«eduentretenimiento»</em> es un portmanteau</h2>
+        <div class="vs-cols stagger-in">
+          <div class="col left">
+            <h3>Sí — son portmanteau</h3>
+            <ul>
+              <li>boquiabierto</li>
+              <li>spanglish</li>
+              <li>pelirrojo</li>
+              <li>ofimática</li>
+              <li>medianoche</li>
+              <li>emoticón</li>
+            </ul>
+          </div>
+          <div class="vs-divider">?</div>
+          <div class="col right">
+            <h3>No — no son portmanteau</h3>
+            <ul>
+              <li>bandera</li>
+              <li>alumno</li>
+              <li>aburrido</li>
+              <li>carro</li>
+              <li>aprendizaje</li>
+              <li>libertad</li>
+            </ul>
+          </div>
+        </div>
+        <div class="banner">
+          <strong>Reflexión:</strong> tu cerebro detecta que un portmanteau es <em>la fusión fonética de dos palabras</em> sin que nadie te haya escrito la regla. Eso es justamente lo que aprende un modelo: una regla implícita en los ejemplos.
+        </div>
+      </div>
+    </section>
+
+    <!-- 19. Searle Chinese Room -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Filosofía de la IA · 1980</p>
+        <h2>El cuarto chino de John Searle</h2>
+        <div class="two-col">
+          <div>
+            <p>Una persona dentro de un cuarto recibe símbolos chinos por la puerta «IN». Sigue un manual de reglas (en español) que le indica qué símbolos devolver. Quien está afuera concluye: «el del cuarto entiende chino».</p>
+            <p><strong>Pero la persona del cuarto <em>no entiende chino</em>.</strong> Solo manipula símbolos según reglas.</p>
+            <p>El <a class="platform-link" href="https://plato.stanford.edu/entries/chinese-room/" target="_blank" rel="noopener">argumento del cuarto chino</a> de Searle pregunta: ¿pasar el test no implica entender?</p>
+          </div>
+          <img class="diagram" src="img/searle-chinese-room.jpg" alt="Ilustración del experimento mental del cuarto chino de Searle" />
+        </div>
+        <div class="banner warn">
+          La pregunta sigue abierta. <strong>Los LLM modernos pasan tests que requieren razonamiento aparente</strong> — pero el debate sobre si <em>entienden</em> es exactamente el mismo de 1980, con apuestas mucho más altas.
+        </div>
+      </div>
+    </section>
+
+    <!-- 20. Perceptron -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Modelo matemático</p>
+        <h2>Redes neuronales artificiales <span class="sub">de la neurona biológica al perceptrón</span></h2>
+        <div class="grid cols-3 stagger-in" style="align-items: center;">
+          <div>
+            <p style="font-size: 0.95em;"><strong>Inspiración biológica.</strong> Una neurona recibe señales por sus dendritas, las integra en el soma y dispara una señal por el axón.</p>
+            <img class="diagram" src="img/neuron-bio.jpg" alt="Diagrama de una neurona biológica" />
+          </div>
+          <div>
+            <p style="font-size: 0.95em;"><strong>Modelo matemático: el <em>perceptrón</em>.</strong> Inputs $x_i$, pesos $w_i$, salida $y$.</p>
+            <img class="diagram" src="img/perceptron.jpg" alt="Diagrama del perceptrón con tres entradas, pesos y una salida" />
+            <p style="font-size: 0.8em; opacity: 0.75; margin-top: 0.5em;">Frank Rosenblatt, 1958 — inspirado en el trabajo de McCulloch y Pitts.</p>
+          </div>
+          <div>
+            <p style="font-size: 0.95em;"><strong>Multiples capas.</strong> Apilando perceptrones aparece el <em>multilayer perceptron</em> (1965): capa de entrada, capas ocultas, capa de salida.</p>
+            <img class="diagram" src="img/multilayer-perceptron.jpg" alt="Multilayer Perceptron con tres capas" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 21. Red neuronal clasificando -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Cómo aprende una red</p>
+        <h2>Las redes neuronales aprenden a clasificar</h2>
+        <div class="two-col">
+          <div>
+            <p>Una red bien entrenada toma una imagen de entrada (caballo o vaca) y, por la activación de sus capas, llega a la categoría correcta.</p>
+            <ul>
+              <li><strong>Capa de entrada</strong>: pixeles o características.</li>
+              <li><strong>Capas ocultas</strong>: combinaciones cada vez más abstractas.</li>
+              <li><strong>Capa de salida</strong>: probabilidades por clase.</li>
+            </ul>
+          </div>
+          <img class="diagram" src="img/nn-classification.jpg" alt="Red neuronal clasificando imágenes de caballos y vacas" />
+        </div>
+      </div>
+    </section>
+
+    <!-- 22. Backpropagation -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Entrenar = ajustar pesos</p>
+        <h2>Forward pass + backpropagation</h2>
+        <div class="two-col">
+          <img class="diagram" src="img/backpropagation.jpg" alt="Diagrama de forward pass y backpropagation" />
+          <div>
+            <p>Cada peso $w_{ij}$ recibe una actualización proporcional a la <strong>derivada parcial del error</strong> con respecto a ese peso, en cada iteración del entrenamiento:</p>
+            <p style="text-align:center; font-size: clamp(0.9rem, 1.4vw, 1.3rem);">$$w_{ij} \leftarrow w_{ij} - \eta\,\frac{\partial \mathcal{L}}{\partial w_{ij}}$$</p>
+            <div class="banner warn">
+              <strong>Problema histórico:</strong> el <strong>gradiente desvaneciente</strong>. Cuando hay muchas capas, las derivadas se vuelven minúsculas y las primeras capas dejan de aprender.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 23. Construir redes neuronales grandes -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Mediados de los 2000s</p>
+        <h2>La idea radical: <span class="sub">construir redes neuronales <em>grandes</em></span></h2>
+        <p>Cuando la comunidad encontró formas de mitigar el gradiente desvaneciente —ReLU, normalización por lotes, inicializaciones inteligentes, conexiones residuales— el camino se abrió: <strong>más capas, más datos, más cómputo</strong>.</p>
+        <p>El término <strong>«deep learning»</strong> empezó a ganar popularidad a mediados de los 2000s con el trabajo de Geoffrey Hinton, Yann LeCun y Yoshua Bengio (premio Turing 2018).</p>
+        <div class="banner info">
+          <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.287 1.288L3 12l5.813 1.9a2 2 0 0 1 1.288 1.288L12 21l1.9-5.813a2 2 0 0 1 1.287-1.288L21 12l-5.813-1.9a2 2 0 0 1-1.288-1.287Z"/></svg>
+          <strong>Insight contraintuitivo:</strong> a veces el problema no era el algoritmo —era el tamaño. Las mismas ideas básicas + más cómputo desbloquearon una década de avances.
+        </div>
+      </div>
+    </section>
+
+    <!-- 24. APRENDIZAJE PROFUNDO separator -->
+    <section class="slide title-slide" data-slide>
+      <div class="content big-quote">
+        <p class="eyebrow" style="text-align:center;">Sección II</p>
+        <h2 style="color:#fff;">Aprendizaje <span class="accent">profundo</span></h2>
+        <p>Más avances en 10 años que en los 60 anteriores.</p>
+      </div>
+    </section>
+
+    <!-- 25. Razones del éxito del DL -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Por qué funcionó esta vez</p>
+        <h2>Tres ingredientes que hicieron explotar el DL</h2>
+        <div class="grid cols-3 stagger-in">
+          <div class="card">
+            <p class="eyebrow">1 · Datos</p>
+            <h3>Datasets masivos</h3>
+            <p>Ubuntu Dialogue Corpus (2016): 1 M de diálogos. BlenderBot (2020): 9.4 B de parámetros sobre 1.5 B de conversaciones de Reddit.</p>
+            <p style="margin-top: 0.4em;">Hoy: trillones de tokens de internet, código y libros.</p>
+          </div>
+          <div class="card">
+            <p class="eyebrow">2 · Cómputo</p>
+            <h3>GPUs</h3>
+            <p><a class="platform-link" href="https://www.nvidia.com" target="_blank" rel="noopener">NVIDIA</a> popularizó procesadores que ejecutan miles de operaciones simultáneamente —exactamente lo que necesitan las redes neuronales.</p>
+            <p style="margin-top: 0.4em;">Hoy: clusters con decenas de miles de H100 / B200.</p>
+          </div>
+          <div class="card">
+            <p class="eyebrow">3 · Algoritmos</p>
+            <h3>Mejores ideas</h3>
+            <p>ReLU, dropout, batch norm, residual connections, attention. Cada idea quitó un cuello de botella distinto.</p>
+            <p style="margin-top: 0.4em;">2017: <em>«Attention is all you need»</em> — la arquitectura Transformer.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 26. CNN -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ejemplo · Redes profundas</p>
+        <h2>Convolucionales (CNN) <span class="sub">entrada: imágenes y video</span></h2>
+        <div class="two-col">
+          <img class="diagram" src="img/cnn-dermoscopy.jpg" alt="CNN clasificando una lesión dermatológica con probabilidades por categoría" />
+          <div>
+            <p>Las CNN aprenden filtros que detectan patrones locales (bordes → texturas → formas → conceptos) y los combinan jerárquicamente.</p>
+            <ul>
+              <li><strong>Capas convolucionales</strong> + <strong>pooling</strong> extraen características.</li>
+              <li><strong>Capas totalmente conectadas</strong> hacen la clasificación final.</li>
+              <li>Aplicación clínica: clasificación de lesiones dermatológicas con precisión comparable a dermatólogos (Esteva et al., <em>Nature</em> 2017).</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 27. RNN -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ejemplo · Redes profundas</p>
+        <h2>Recurrentes (RNN, LSTM) <span class="sub">entrada: secuencias</span></h2>
+        <div class="two-col">
+          <div>
+            <p>Las RNN procesan secuencias <strong>un paso a la vez</strong>, manteniendo un estado oculto que «recuerda» lo que vino antes.</p>
+            <ul>
+              <li>Series de tiempo (precios, sensores).</li>
+              <li>Lenguaje escrito o hablado.</li>
+              <li>Música, ADN, cualquier secuencia.</li>
+            </ul>
+            <p style="margin-top: 0.5em;"><strong>Limitación:</strong> el estado se «olvida» de cosas lejanas. Las <strong>LSTM</strong> (1997) y <strong>GRU</strong> mitigan esto.</p>
+            <p><strong>Hoy</strong>: para texto, los <em>Transformers</em> reemplazaron a las RNN —pero las RNN siguen siendo útiles en tiempo real y bajo cómputo.</p>
+          </div>
+          <img class="diagram" src="img/rnn-architecture.jpg" alt="Diagrama de una red recurrente con celdas h y c" />
+        </div>
+      </div>
+    </section>
+
+    <!-- 28. DL desbloqueó muchas soluciones -->
+    <section class="slide title-slide" data-slide>
+      <div class="content big-quote">
+        <p class="eyebrow" style="text-align:center;">Síntesis</p>
+        <h2 style="color:#fff;">El deep learning <span class="accent">desbloqueó</span> muchas soluciones en muchos dominios.</h2>
+        <p>Visión por computador, traducción automática, reconocimiento de voz, descubrimiento de fármacos, plegamiento de proteínas (<a class="platform-link" href="https://deepmind.google/discover/blog/alphafold-a-solution-to-a-50-year-old-grand-challenge-in-biology/" target="_blank" rel="noopener">AlphaFold</a>), generación de código, conducción autónoma…</p>
+      </div>
+    </section>
+
+    <!-- 29. Vulnerabilidades -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Limitaciones</p>
+        <h2>Apenas empezamos a entender los riesgos</h2>
+        <p>Los modelos son <strong>poderosos pero frágiles</strong>. Tres clases de problemas que son tema obligado en este curso:</p>
+        <div class="grid cols-3 stagger-in" style="margin-top: 0.4em;">
+          <div class="card">
+            <p class="eyebrow">A · Adversarial</p>
+            <h3>Ataques sutiles</h3>
+            <p>Cambios imperceptibles para humanos engañan al modelo (ej.: pegatinas en señales de tráfico que confunden al Autopilot).</p>
+          </div>
+          <div class="card">
+            <p class="eyebrow">B · Out-of-distribution</p>
+            <h3>Lo no entrenado</h3>
+            <p>Frente a escenas que no están en los datos de entrenamiento, el modelo extrapola mal —a veces de forma catastrófica.</p>
+          </div>
+          <div class="card">
+            <p class="eyebrow">C · Sesgo y alineación</p>
+            <h3>Lo aprendido refleja sesgos</h3>
+            <p>El modelo hereda los sesgos de los datos. Si los datos vienen de internet, el modelo hereda lo bueno y lo malo.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 30. Tesla autopilot hack -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ataque adversarial · 2019</p>
+        <h2>Tres pegatinas hicieron que un Tesla cambiara de carril</h2>
+        <div class="two-col">
+          <div>
+            <p>Investigadores de <strong>Tencent Keen Security Lab</strong> colocaron tres pequeñas pegatinas blancas sobre el asfalto. Para un humano: invisibles. Para el Autopilot de Tesla: un patrón que indicaba cambiar al carril de tráfico contrario.</p>
+            <p>Es un ataque <strong>adversarial físico</strong>: explota cómo el modelo «ve» el mundo, no cómo lo vemos nosotros.</p>
+            <p style="margin-top: 0.5em;"><a class="platform-link" href="https://www.cnbc.com/2019/04/03/chinese-hackers-tricked-tesla-autopilot-into-switching-lanes.html" target="_blank" rel="noopener">Reportaje · CNBC, abril 2019</a></p>
+          </div>
+          <img class="diagram" src="img/news-tesla-hack.jpg" alt="Titular de CNBC sobre el hack del Autopilot de Tesla" />
+        </div>
+      </div>
+    </section>
+
+    <!-- 31. Waymo crash -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Out-of-distribution · 2018</p>
+        <h2>El algoritmo no estaba entrenado para esto</h2>
+        <div class="two-col">
+          <img class="diagram" src="img/news-waymo-crash.jpg" alt="Captura de noticia: Waymo libera el video del accidente" />
+          <div>
+            <p>Un Waymo se vio involucrado en una colisión cuando otro auto se cruzó violentamente. La maniobra de evasión del sistema fue lenta —el escenario no estaba representado adecuadamente en sus datos de entrenamiento.</p>
+            <p><strong>Lección:</strong> los sistemas que dependen de datos heredan los <em>huecos</em> de esos datos. Si nunca aprendieron a reaccionar a una situación, simplemente no la verán.</p>
+          </div>
+        </div>
+        <div class="banner warn">
+          Esta limitación aplica a todos los modelos profundos —incluyendo a los LLM. <strong>Es la razón por la que un humano-en-el-loop sigue siendo crítico</strong> en aplicaciones de alto riesgo.
+        </div>
+      </div>
+    </section>
+
+    <!-- 32. Antropomorfización (Sophia) -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Cuidado con la antropomorfización</p>
+        <h2>Le atribuimos características humanas</h2>
+        <div class="grid cols-2 stagger-in">
+          <a class="news-card" href="https://www.bbc.com/news/technology-41761856" target="_blank" rel="noopener" style="text-decoration: none; color: inherit;">
+            <img src="img/news-sophia-citizen.jpg" alt="Titular: la historia detrás de Sophia, el primer robot en obtener ciudadanía" />
+            <div class="body">
+              <span class="src">Hanson Robotics · 2017</span>
+              <h3>Sophia obtiene ciudadanía de Arabia Saudita</h3>
+              <p>El primer robot humanoide en recibir ciudadanía de un país. ¿Es un avance? ¿O una jugada de marketing?</p>
+            </div>
+          </a>
+          <a class="news-card" href="https://www.elcolombiano.com/tecnologia/sophia-llega-a-medellin-MM10081083" target="_blank" rel="noopener" style="text-decoration: none; color: inherit;">
+            <img src="img/news-sophia-medellin.jpg" alt="Titular: Sophia en Medellín, ya tiene paisaporte" />
+            <div class="body">
+              <span class="src">El Colombiano · 2018</span>
+              <h3>Sophia, la robot más famosa del mundo, ya tiene «paisaporte»</h3>
+              <p>Visita a Medellín en el evento <em>Hiperrealidades Humanas</em>. La portada del periódico la nombra como una persona.</p>
+            </div>
+          </a>
+        </div>
+        <div class="banner">
+          La <strong>antropomorfización</strong> —proyectar mente, intenciones y emociones en algo que no las tiene— es uno de los sesgos cognitivos más antiguos y peligrosos al pensar en IA. Lo veremos repetido con los LLM.
+        </div>
+      </div>
+    </section>
+
+    <!-- 33. Conciencia -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">La pregunta abierta</p>
+        <h2>¿Podemos construir una máquina con conciencia?</h2>
+        <div class="two-col">
+          <div>
+            <p>Conciencia: el conocimiento que el ser humano tiene de su propia existencia, sus estados y sus actos.</p>
+            <p>Stanislas Dehaene (<a class="platform-link" href="https://www.science.org/doi/10.1126/science.aan8871" target="_blank" rel="noopener">Science, 2017</a>) plantea que <strong>no se sabe si la conciencia es solo el resultado de la complejidad neuronal, o un fenómeno emergente</strong> de la interacción de la materia. Hay diversos niveles de conciencia.</p>
+            <p style="margin-top: 0.5em;"><a class="platform-link" href="https://www.technologyreview.com/2017/10/26/148506/could-we-build-a-machine-with-consciousness/" target="_blank" rel="noopener">MIT Technology Review · 2017</a> exploró exactamente esta pregunta. Sigue sin respuesta.</p>
+          </div>
+          <img class="diagram" src="img/mit-consciousness.jpg" alt="Portada de MIT Technology Review: Could We Build a Machine with Consciousness?" />
+        </div>
+      </div>
+    </section>
+
+    <!-- 34. Submarino que nada -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Edsger Dijkstra · adaptado</p>
+        <h2>¿Un submarino <em>nada</em>?</h2>
+        <div class="quote" style="font-size: clamp(1.2rem, 2.5vw, 2.5rem);">
+          «Preguntar si una computadora <strong>piensa</strong> es como preguntar si un submarino <strong>nada</strong>».
+          <span class="attribution">— Edsger Dijkstra (versión original sobre <em>think</em>; aplicable también a <em>inteligencia</em>).</span>
+        </div>
+        <div class="grid cols-2 stagger-in" style="margin-top: 0.4em;">
+          <div class="card">
+            <h3>Submarino</h3>
+            <p>Buque capaz de trasladarse sobre o debajo de la superficie del agua.</p>
+          </div>
+          <div class="card">
+            <h3>Nadar</h3>
+            <p>Acción de trasladarse en el agua ayudándose de los movimientos necesarios.</p>
+          </div>
+        </div>
+        <div class="banner info">
+          <strong>Que el objetivo o el resultado sean similares no los hace totalmente comparables.</strong> El submarino se desplaza en el agua —pero no nada como un pez. La IA produce respuestas inteligentes —pero no piensa como un humano.
+        </div>
+      </div>
+    </section>
+
+    <!-- 35. Lo que viene: imágenes y texto + más allá -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Hacia el resto del curso</p>
+        <h2>De texto a imágenes, audio, video y agentes</h2>
+        <div class="grid cols-2 stagger-in">
+          <div class="card">
+            <h3>Lo que ya vimos en este módulo</h3>
+            <ul>
+              <li>Qué es la IA y por qué importa.</li>
+              <li>Hitos hasta llegar a los modelos de lenguaje.</li>
+              <li>Cómo aprenden las redes (perceptrón → DL).</li>
+              <li>CNN para imágenes, RNN para secuencias.</li>
+              <li>Vulnerabilidades y antropomorfización.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Lo que viene en M2 – M6</h3>
+            <ul>
+              <li><strong>M2</strong>: modelos generativos de lenguaje, Transformers, ingeniería de prompts.</li>
+              <li><strong>M3</strong>: modelos generativos de imágenes (Midjourney, DALL-E, Stable Diffusion).</li>
+              <li><strong>M4</strong>: evaluación crítica y limitaciones.</li>
+              <li><strong>M5</strong>: consideraciones éticas y legales.</li>
+              <li><strong>M6</strong>: tendencias y futuro.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 36. Cierre -->
+    <section class="slide title-slide" data-slide>
+      <div class="content big-quote">
+        <p class="eyebrow" style="text-align:center;">Próxima sesión · Miércoles 6 de mayo</p>
+        <h2 style="color:#fff;">M2.1 — Fundamentos de los <span class="accent">modelos generativos de lenguaje</span>.</h2>
+        <p>Antes de entrar a prompts, vamos al motor: qué hay dentro de un Transformer, por qué generan texto coherente y cuáles son sus límites estructurales.</p>
+        <div class="pill-row" style="justify-content: center; margin-top: 1.5em;">
+          <span class="pill"><a class="platform-link" href="mailto:lh.reyes@uniandes.edu.co" style="color:inherit; border-bottom:none;">lh.reyes@uniandes.edu.co</a></span>
+          <span class="pill">Soporte EDCO: estudiantesedco@uniandes.edu.co</span>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="hud">
+    <span id="hud-title">M1 · Introducción a IA · Dominando la IA · EDCO Uniandes</span>
+    <span id="hud-counter">1 / 1</span>
+  </div>
+
+  <div class="controls">
+    <button aria-label="Anterior" id="prev">‹</button>
+    <button aria-label="Pantalla completa" id="fs">⛶</button>
+    <button aria-label="Siguiente" id="next">›</button>
+  </div>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+
+  <script>
+    (function () {
+      var slides = Array.prototype.slice.call(document.querySelectorAll('[data-slide]'));
+      var i = 0;
+      var counter = document.getElementById('hud-counter');
+      var progress = document.querySelector('.progress');
+
+      function render() {
+        slides.forEach(function (s, idx) { s.classList.toggle('active', idx === i); });
+        if (counter) counter.textContent = (i + 1) + ' / ' + slides.length;
+        if (progress) {
+          progress.style.width = ((i + 1) / slides.length * 100) + '%';
+          progress.classList.remove('pulsing');
+          void progress.offsetWidth;
+          progress.classList.add('pulsing');
+        }
+        var isDark = slides[i] && (slides[i].classList.contains('title-slide') || slides[i].classList.contains('cover'));
+        document.body.style.background = isDark ? '#1A1A1A' : '#ffffff';
+      }
+      function go(n) { i = Math.max(0, Math.min(slides.length - 1, n)); render(); }
+
+      document.addEventListener('keydown', function (e) {
+        if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
+        if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); go(i + 1); }
+        else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(i - 1); }
+        else if (e.key === 'Home') { e.preventDefault(); go(0); }
+        else if (e.key === 'End') { e.preventDefault(); go(slides.length - 1); }
+        else if (e.key === 'f' || e.key === 'F') { toggleFs(); }
+      });
+
+      document.getElementById('prev').addEventListener('click', function () { go(i - 1); });
+      document.getElementById('next').addEventListener('click', function () { go(i + 1); });
+      document.getElementById('fs').addEventListener('click', toggleFs);
+
+      function toggleFs() {
+        var el = document.documentElement;
+        if (!document.fullscreenElement) {
+          (el.requestFullscreen || el.webkitRequestFullscreen || function(){}).call(el);
+        } else {
+          (document.exitFullscreen || document.webkitExitFullscreen || function(){}).call(document);
+        }
+      }
+
+      var tx = 0, ty = 0;
+      document.addEventListener('touchstart', function (e) {
+        if (!e.changedTouches[0]) return;
+        tx = e.changedTouches[0].clientX; ty = e.changedTouches[0].clientY;
+      }, { passive: true });
+      document.addEventListener('touchend', function (e) {
+        if (!e.changedTouches[0]) return;
+        var dx = e.changedTouches[0].clientX - tx;
+        var dy = e.changedTouches[0].clientY - ty;
+        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+          if (dx < 0) go(i + 1); else go(i - 1);
+        }
+      }, { passive: true });
+
+      slides.forEach(function (s, idx) {
+        var num = document.createElement('div');
+        num.className = 'slide-number';
+        num.setAttribute('aria-hidden', 'true');
+        num.textContent = String(idx + 1).padStart(2, '0');
+        s.appendChild(num);
+      });
+
+      render();
+    })();
+  </script>
+</body>
+</html>
