@@ -258,20 +258,31 @@ const ActionRow: React.FC<{
             Sesiones en vivo
           </p>
           <h3 className="mt-1 text-xl font-bold text-zinc-100 flex items-center gap-2">
-            <svg
-              className="w-5 h-5"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={2}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <polygon points="23 7 16 12 23 17 23 7" />
-              <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
-            </svg>
-            Entrar a Zoom
+            {edcoCourse.zoom.platform === 'teams' ? (
+              <svg
+                className="w-5 h-5"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path d="M20.625 8.127c1.31 0 2.371-1.061 2.371-2.371S21.935 3.385 20.625 3.385s-2.371 1.061-2.371 2.371 1.061 2.371 2.371 2.371zm-3.752 1.123h6.06c.589 0 1.067.478 1.067 1.067v5.527c0 1.94-1.572 3.512-3.512 3.512-.81 0-1.553-.275-2.146-.736-.476 1.94-2.224 3.38-4.31 3.38-1.49 0-2.81-.738-3.612-1.866H2.875A1.875 1.875 0 0 1 1 18.259V7.741c0-1.036.84-1.875 1.875-1.875h11.396c.59 0 1.066.478 1.066 1.067v3.317h2.536zM7.875 9.317v6.466h-1.71v-6.466H4.213v-1.45h5.625v1.45H7.875z" />
+              </svg>
+            ) : (
+              <svg
+                className="w-5 h-5"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <polygon points="23 7 16 12 23 17 23 7" />
+                <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
+              </svg>
+            )}
+            {edcoCourse.zoom.platform === 'teams' ? 'Entrar a Teams' : 'Entrar a Zoom'}
           </h3>
           <p className="mt-2 text-sm text-zinc-300">
             {edcoCourse.zoom.meetingId && (
