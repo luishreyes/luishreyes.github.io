@@ -343,6 +343,87 @@
     table.data-table tr:nth-child(even) td {
       background: var(--muted);
     }
+    /* Print: link clickeable para reemplazar iframes de YouTube */
+    .video-print-link { display: none; }
+
+    /* ─── Print: linealizar todos los slides como un documento ─── */
+    @media print {
+      @page { size: A4 portrait; margin: 12mm; }
+      *, *::before, *::after {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      html, body {
+        background: #fff !important;
+        height: auto !important;
+        overflow: visible !important;
+      }
+      .deck { width: 100% !important; height: auto !important; position: static !important; }
+      .controls, .hud, .progress, .slide-number { display: none !important; }
+      .slide:not(.title-slide):not(.cover)::before,
+      .slide.title-slide::before,
+      .slide.cover::before,
+      .slide.cover::after { display: none !important; }
+      .slide {
+        position: static !important;
+        display: flex !important;
+        opacity: 1 !important;
+        width: 100% !important;
+        height: auto !important;
+        inset: auto !important;
+        overflow: visible !important;
+        padding: 1.2rem 0.5rem !important;
+        min-height: 0 !important;
+        page-break-after: always;
+        break-after: page;
+        page-break-inside: avoid;
+      }
+      .slide:last-child { page-break-after: auto; break-after: auto; }
+      .slide .content { max-width: 100% !important; margin: 0 !important; gap: 0.6rem !important; }
+      h1 { font-size: 26pt !important; line-height: 1.1 !important; }
+      h2 { font-size: 18pt !important; line-height: 1.2 !important; }
+      h3 { font-size: 13pt !important; line-height: 1.25 !important; }
+      p, li { font-size: 10.5pt !important; line-height: 1.45 !important; }
+      .eyebrow, .pill { font-size: 9pt !important; }
+      .slide.title-slide, .slide.cover {
+        background: linear-gradient(135deg, #141414 0%, #1A1A1A 50%, #2a2a2a 100%) !important;
+        color: #fff !important;
+      }
+      .slide.title-slide h1, .slide.title-slide h2, .slide.title-slide h3,
+      .slide.cover h1, .slide.cover h2 { color: #fff !important; }
+      .slide.title-slide p, .slide.title-slide li,
+      .slide.cover p, .slide.cover li { color: #e4e4e7 !important; }
+      .slide.title-slide .eyebrow, .slide.cover .eyebrow { color: #FFBF00 !important; }
+      .stagger-in > * { animation: none !important; opacity: 1 !important; transform: none !important; }
+      .card, .vs-cols .col, .news-card, .timeline .dot, .stepper-nav button {
+        transition: none !important; transform: none !important;
+        box-shadow: none !important;
+      }
+      .card, .vs-cols .col, .news-card, .stepper-panel { page-break-inside: avoid; break-inside: avoid; }
+      img.diagram, .svg-frame { page-break-inside: avoid; break-inside: avoid; max-height: none !important; }
+      .svg-frame svg { max-height: none !important; }
+      table { page-break-inside: avoid; }
+      /* Stepper expandido */
+      .stepper-nav { display: none !important; }
+      .stepper-content { display: block !important; opacity: 1 !important; transform: none !important; animation: none !important; }
+      .stepper-panel { border-left: 4px solid var(--brand-yellow, #FFBF00) !important; padding: 0.8rem 1rem !important; }
+      .stepper-content + .stepper-content { margin-top: 1rem; padding-top: 0.8rem; border-top: 1px dashed #ccc; }
+      /* Iframes (YouTube) */
+      iframe { display: none !important; }
+      .video-print-link {
+        display: block !important;
+        background: #fef3c7 !important;
+        border-left: 4px solid #E6AC00 !important;
+        padding: 0.6rem 0.8rem !important;
+        border-radius: 0.4rem !important;
+        font-size: 10pt !important;
+        color: #1A1A1A !important;
+        page-break-inside: avoid; break-inside: avoid;
+      }
+      .video-print-link a { color: #1A1A1A !important; text-decoration: underline !important; word-break: break-all; }
+      .video-print-link strong { color: #78350f !important; margin-right: 0.3em; }
+    }
+  
   </style>
 </head>
 <body>
@@ -1103,6 +1184,13 @@
 
   <div class="controls">
     <button aria-label="Anterior" id="prev">&#x2039;</button>
+    <button aria-label="Descargar como PDF" id="dl-pdf" title="Descargar como PDF">
+      <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="7 10 12 15 17 10"/>
+        <line x1="12" x2="12" y1="15" y2="3"/>
+      </svg>
+    </button>
     <button aria-label="Pantalla completa" id="fs">&#x26F6;</button>
     <button aria-label="Siguiente" id="next">&#x203A;</button>
   </div>
@@ -1134,6 +1222,27 @@
       });
 
       document.getElementById('prev').addEventListener('click', function () { go(i - 1); });
+      var dlBtn = document.getElementById('dl-pdf');
+      if (dlBtn) dlBtn.addEventListener('click', function () {
+        // Inyectar links a YouTube para la versión imprimible (una sola vez)
+        document.querySelectorAll('iframe[src*="youtube"], iframe[src*="youtu.be"]').forEach(function (iframe) {
+          if (iframe.dataset.printLinkInjected === '1') return;
+          var src = iframe.getAttribute('src') || '';
+          var m = src.match(/(?:youtube\.com\/embed\/|youtu\.be\/)([\w-]+)/);
+          var url = m ? 'https://www.youtube.com/watch?v=' + m[1] : src;
+          var title = iframe.getAttribute('title') || 'Video';
+          var p = document.createElement('p');
+          p.className = 'video-print-link';
+          p.innerHTML = '<strong>▶ Video:</strong> ' + title + ' — <a href="' + url + '" target="_blank" rel="noopener">' + url + '</a>';
+          var host = iframe.parentNode;
+          host.parentNode.insertBefore(p, host.nextSibling);
+          iframe.dataset.printLinkInjected = '1';
+        });
+        var prevTitle = document.title;
+        document.title = 'iqya-2031--clase-13-filtracion';
+        window.print();
+        setTimeout(function(){ document.title = prevTitle; }, 200);
+      });
       document.getElementById('next').addEventListener('click', function () { go(i + 1); });
       document.getElementById('fs').addEventListener('click', toggleFs);
 
