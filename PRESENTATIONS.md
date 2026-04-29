@@ -562,7 +562,60 @@ Cualquier patrón interactivo que oculta contenido por defecto **debe expandirse
 | Stepper (tabs por año/módulo) | `.stepper-nav { display: none } .stepper-content { display: block }` |
 | `<details>/<summary>` (acordeón) | `details { open } details > * { display: block !important; }` (o forzar `details[open]` por JS antes de imprimir) |
 | Interactive card flip (`.is-open`) | Mostrar `.detail` siempre: `.interactive-card .detail { opacity: 1 !important }` |
-| Iframes de YouTube | `iframe { display: none }` (o reemplazar por screenshot) |
+| Iframes de YouTube | El handler inyecta automáticamente un `.video-print-link` con el URL — ver más abajo |
+
+### YouTube en print: link clickeable automático
+
+Como un iframe no aparece en un PDF impreso, el handler de descarga **detecta cualquier iframe de YouTube y le inserta un párrafo hermano** con el URL clickeable. Solo aparece en la versión imprimible (en pantalla está oculto vía `.video-print-link { display: none }`).
+
+CSS (va dentro y fuera del `@media print`):
+
+```css
+.video-print-link { display: none; }
+
+@media print {
+  iframe { display: none !important; }
+  .video-print-link {
+    display: block !important;
+    background: #fef3c7 !important;
+    border-left: 4px solid #E6AC00 !important;
+    padding: 0.6rem 0.8rem !important;
+    border-radius: 0.4rem !important;
+    font-size: 10pt !important;
+    color: #1A1A1A !important;
+    page-break-inside: avoid; break-inside: avoid;
+  }
+  .video-print-link a { color: #1A1A1A !important; text-decoration: underline !important; word-break: break-all; }
+  .video-print-link strong { color: #78350f !important; margin-right: 0.3em; }
+}
+```
+
+JS (parte del handler `dl-pdf`):
+
+```js
+document.getElementById('dl-pdf').addEventListener('click', function () {
+  // Inyectar links de YouTube una sola vez
+  document.querySelectorAll('iframe[src*="youtube"], iframe[src*="youtu.be"]').forEach(function (iframe) {
+    if (iframe.dataset.printLinkInjected === '1') return;
+    var src = iframe.getAttribute('src') || '';
+    var m = src.match(/(?:youtube\.com\/embed\/|youtu\.be\/)([\w-]+)/);
+    var url = m ? 'https://www.youtube.com/watch?v=' + m[1] : src;
+    var title = iframe.getAttribute('title') || 'Video';
+    var p = document.createElement('p');
+    p.className = 'video-print-link';
+    p.innerHTML = '<strong>▶ Video:</strong> ' + title + ' — <a href="' + url + '" target="_blank" rel="noopener">' + url + '</a>';
+    var host = iframe.parentNode;
+    host.parentNode.insertBefore(p, host.nextSibling);
+    iframe.dataset.printLinkInjected = '1';
+  });
+  var prevTitle = document.title;
+  document.title = 'mi-presentacion';
+  window.print();
+  setTimeout(function(){ document.title = prevTitle; }, 200);
+});
+```
+
+Así, **autores no necesitan escribir el link manualmente**. Solo el `<iframe>` de YouTube con `title="..."` significativo (que se reusa en el PDF).
 
 ### Cuándo NO usar window.print()
 
