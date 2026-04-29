@@ -107,6 +107,7 @@ export interface EdcoCourse {
     url: string;
     meetingId?: string;
     note?: string;
+    platform?: 'zoom' | 'teams';   // default 'zoom' si se omite
   };
   team: { name: string; role: string }[];
   modules: EdcoCourseModule[];
