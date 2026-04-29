@@ -460,6 +460,118 @@ h2 a:hover { color: var(--brand-yellow-dark); border-bottom-color: var(--brand-y
 
 Si no hay URL confiable para algo nombrado en un slide, dejarlo como texto plano en vez de inventarla.
 
+## Descarga como PDF (botón "Descargar PDF")
+
+Toda presentación debe llevar un botón en `.controls` que dispare `window.print()`. El usuario elige "Guardar como PDF" en el diálogo del navegador. Es la solución más simple y compatible con GitHub Pages (sin servidor).
+
+### Botón
+
+```html
+<div class="controls">
+  <button aria-label="Anterior" id="prev">‹</button>
+  <button aria-label="Descargar como PDF" id="dl-pdf" title="Descargar como PDF">
+    <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+      <polyline points="7 10 12 15 17 10"/>
+      <line x1="12" x2="12" y1="15" y2="3"/>
+    </svg>
+  </button>
+  <button aria-label="Pantalla completa" id="fs">⛶</button>
+  <button aria-label="Siguiente" id="next">›</button>
+</div>
+```
+
+### JS handler (renombra el archivo descargado)
+
+```js
+document.getElementById('dl-pdf').addEventListener('click', function () {
+  var prevTitle = document.title;
+  document.title = 'M1-Introduccion-IA-Dominando-la-IA';  // ← nombre del PDF
+  window.print();
+  setTimeout(function(){ document.title = prevTitle; }, 200);
+});
+```
+
+### CSS `@media print` (linealiza el deck)
+
+Bloque que va al final del `<style>` interno. Convierte los slides absolutos en bloques apilados verticalmente, expande los steppers, oculta navegación/decoraciones y obliga a imprimir colores de fondo:
+
+```css
+@media print {
+  @page { size: A4 portrait; margin: 12mm; }
+  *, *::before, *::after {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  html, body { background: #fff !important; height: auto !important; overflow: visible !important; }
+  .deck { width: 100% !important; height: auto !important; position: static !important; }
+  .controls, .hud, .progress, .slide-number { display: none !important; }
+  .slide:not(.title-slide):not(.cover)::before,
+  .slide.title-slide::before,
+  .slide.cover::before,
+  .slide.cover::after { display: none !important; }
+  .slide {
+    position: static !important; display: flex !important; opacity: 1 !important;
+    width: 100% !important; height: auto !important; inset: auto !important;
+    overflow: visible !important; padding: 1.2rem 0.5rem !important; min-height: 0 !important;
+    page-break-after: always; break-after: page; page-break-inside: avoid;
+  }
+  .slide:last-child { page-break-after: auto; break-after: auto; }
+  .slide .content { max-width: 100% !important; margin: 0 !important; gap: 0.6rem !important; }
+  h1 { font-size: 26pt !important; }
+  h2 { font-size: 18pt !important; }
+  h3 { font-size: 13pt !important; }
+  p, li { font-size: 10.5pt !important; line-height: 1.45 !important; }
+  .eyebrow, .pill { font-size: 9pt !important; }
+
+  /* Slides oscuras conservan fondo + texto blanco */
+  .slide.title-slide, .slide.cover {
+    background: linear-gradient(135deg, #141414 0%, #1A1A1A 50%, #2a2a2a 100%) !important;
+    color: #fff !important;
+  }
+  .slide.title-slide h1, .slide.title-slide h2, .slide.title-slide h3,
+  .slide.cover h1, .slide.cover h2 { color: #fff !important; }
+  .slide.title-slide p, .slide.title-slide li,
+  .slide.cover p, .slide.cover li { color: #e4e4e7 !important; }
+  .slide.title-slide .eyebrow, .slide.cover .eyebrow { color: #FFBF00 !important; }
+
+  /* Sin animaciones */
+  .stagger-in > * { animation: none !important; opacity: 1 !important; transform: none !important; }
+  .card, .vs-cols .col, .news-card, .timeline .dot, .stepper-nav button {
+    transition: none !important; transform: none !important; box-shadow: none !important;
+  }
+  .card, .vs-cols .col, .news-card, .stepper-panel { page-break-inside: avoid; break-inside: avoid; }
+  img.diagram, .svg-frame { page-break-inside: avoid; break-inside: avoid; max-height: none !important; }
+  .svg-frame svg { max-height: none !important; }
+  iframe { display: none !important; }
+
+  /* Stepper expandido: oculta nav, muestra todos los paneles */
+  .stepper-nav { display: none !important; }
+  .stepper-content { display: block !important; opacity: 1 !important; transform: none !important; animation: none !important; }
+  .stepper-panel { border-left: 4px solid var(--brand-yellow) !important; padding: 0.8rem 1rem !important; }
+  .stepper-content + .stepper-content { margin-top: 1rem; padding-top: 0.8rem; border-top: 1px dashed #ccc; }
+}
+```
+
+### Reglas extra para componentes interactivos
+
+Cualquier patrón interactivo que oculta contenido por defecto **debe expandirse en print**. Patrones a tener en cuenta:
+
+| Patrón | Regla print |
+|---|---|
+| Stepper (tabs por año/módulo) | `.stepper-nav { display: none } .stepper-content { display: block }` |
+| `<details>/<summary>` (acordeón) | `details { open } details > * { display: block !important; }` (o forzar `details[open]` por JS antes de imprimir) |
+| Interactive card flip (`.is-open`) | Mostrar `.detail` siempre: `.interactive-card .detail { opacity: 1 !important }` |
+| Iframes de YouTube | `iframe { display: none }` (o reemplazar por screenshot) |
+
+### Cuándo NO usar window.print()
+
+- Si el deck depende de iframes (videos) que el usuario quiere ver embebidos en el PDF.
+- Si necesitas un nombre de archivo garantizado (algunos navegadores ignoran `document.title`).
+- Si necesitas paginación con headers/footers personalizados → considerar `@page :first` y `@page :left/:right`.
+
+Para esos casos: introducir `jsPDF + html2canvas` con un costo de bundle de ~200 KB, o usar Puppeteer offline.
+
 ## Patrones interactivos (dynamic HTML)
 
 Las presentaciones HTML deben sentirse dinámicas. El set mínimo que lleva cada presentación:
