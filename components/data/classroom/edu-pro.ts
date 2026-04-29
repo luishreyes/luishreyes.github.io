@@ -204,7 +204,7 @@ export const eduProCourse: Course = {
   duration: 'Por curso',
   tagline: 'Cursos abiertos de Educación Continua que dicto en Uniandes',
   description:
-    'Espacio personal donde reúno los cursos abiertos de la Dirección de Educación Continua (EDCO) de la Universidad de los Andes en los que participo como conferencista. Cada curso tiene su propio cronograma, equipo docente, material y enlace de Zoom. Las presentaciones se comparten individualmente con los estudiantes mediante un código único por sesión.',
+    'Espacio personal donde reúno los cursos abiertos de la Dirección de Educación Continua (EDCO) de la Universidad de los Andes en los que participo como conferencista. Cada curso tiene su propio cronograma, equipo docente, material y enlace de Zoom.',
   accessCode: 'EDCOLHR',
   bannerUrl: '/classroom/edu-pro/banner.jpg',
   kind: 'professional',
@@ -218,7 +218,6 @@ export const eduProCourse: Course = {
       description:
         'Recorrido por los hitos de la IA (Deep Blue, Watson, AlphaGo, autos autoconducidos, ChatGPT, multimodal y agentes 2024–2026), aprendizaje de máquina y profundo (perceptrón → CNN/RNN → Transformers), vulnerabilidades (ataques adversariales, out-of-distribution, sesgo) y antropomorfización (Sophia, conciencia, el submarino que «nada»).',
       file: 'm1-introduccion-ia.html',
-      shareCode: 'IADCO-M1',
     },
     {
       id: 'm2-1-fundamentos-modelos-generativos',
@@ -228,7 +227,6 @@ export const eduProCourse: Course = {
       description:
         'Cómo funcionan los LLM por dentro: discriminativo vs generativo, el modelo como ruleta probabilística («Lima es la capital de…»), atención y autoregresión, alucinaciones. Timeline interactivo de la evolución 2021–2026 (de GPT-3 a Claude Opus 4.7), iceberg ChatGPT vs LLM, anatomía de un prompt, panorama de modelos líderes 2026, scaling laws, fluido vs fáctico y limitaciones.',
       file: 'm2-1-fundamentos-modelos-generativos.html',
-      shareCode: 'IADCO-M2-1',
     },
   ],
   // Campos académicos no aplican; se dejan con stubs vacíos para satisfacer el tipo Course.
