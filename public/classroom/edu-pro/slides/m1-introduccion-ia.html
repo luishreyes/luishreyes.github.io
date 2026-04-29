@@ -341,6 +341,9 @@
     .backprop-svg .lbl-sub { font-size: 12px; font-weight: 500; }
     .backprop-svg .layer-label { font-size: 12px; font-weight: 600; fill: #555; }
 
+    /* Print: link clickeable para reemplazar iframes de YouTube */
+    .video-print-link { display: none; }
+
     /* ─── Print: linealizar todos los slides como un documento ─── */
     @media print {
       @page { size: A4 portrait; margin: 12mm; }
@@ -397,7 +400,21 @@
       .card, .vs-cols .col, .news-card, .stepper-panel { page-break-inside: avoid; break-inside: avoid; }
       img.diagram, .svg-frame { page-break-inside: avoid; break-inside: avoid; max-height: none !important; }
       .svg-frame svg { max-height: none !important; }
+
+      /* Iframes (YouTube, etc.) se ocultan; el JS inserta un .video-print-link al lado */
       iframe { display: none !important; }
+      .video-print-link {
+        display: block !important;
+        background: #fef3c7 !important;
+        border-left: 4px solid #E6AC00 !important;
+        padding: 0.6rem 0.8rem !important;
+        border-radius: 0.4rem !important;
+        font-size: 10pt !important;
+        color: #1A1A1A !important;
+        page-break-inside: avoid; break-inside: avoid;
+      }
+      .video-print-link a { color: #1A1A1A !important; text-decoration: underline !important; word-break: break-all; }
+      .video-print-link strong { color: #78350f !important; margin-right: 0.3em; }
     }
   </style>
 </head>
@@ -1353,6 +1370,20 @@
       document.getElementById('next').addEventListener('click', function () { go(i + 1); });
       document.getElementById('fs').addEventListener('click', toggleFs);
       document.getElementById('dl-pdf').addEventListener('click', function () {
+        // Inyectar links a YouTube para la versión imprimible (una sola vez)
+        document.querySelectorAll('iframe[src*="youtube"], iframe[src*="youtu.be"]').forEach(function (iframe) {
+          if (iframe.dataset.printLinkInjected === '1') return;
+          var src = iframe.getAttribute('src') || '';
+          var m = src.match(/(?:youtube\.com\/embed\/|youtu\.be\/)([\w-]+)/);
+          var url = m ? 'https://www.youtube.com/watch?v=' + m[1] : src;
+          var title = iframe.getAttribute('title') || 'Video';
+          var p = document.createElement('p');
+          p.className = 'video-print-link';
+          p.innerHTML = '<strong>▶ Video:</strong> ' + title + ' — <a href="' + url + '" target="_blank" rel="noopener">' + url + '</a>';
+          var host = iframe.parentNode; // el wrapper con aspect-ratio
+          host.parentNode.insertBefore(p, host.nextSibling);
+          iframe.dataset.printLinkInjected = '1';
+        });
         var prevTitle = document.title;
         document.title = 'M1-Introduccion-IA-Dominando-la-IA';
         window.print();
