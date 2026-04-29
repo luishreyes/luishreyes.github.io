@@ -582,3 +582,124 @@ Para migrar una lectura desde una página pública de Notion (`pou-uniandes.noti
 - El proyecto usa React Router — usar `Link` de `react-router-dom` para navegación interna
 - Los errores de TypeScript en `components/data/students/**/*.ts` son pre-existentes — ignorar
 - Siempre hacer commit y push frecuentes para evitar perder trabajo
+
+## Patrones de lecturas técnicas (POU 2026: bombas, agitación, etc.)
+
+Las lecturas de operaciones unitarias se diferencian de las guías porque son densas en figuras técnicas, fórmulas y ejemplos de cálculo. Los patrones probados en `bombas.tsx`, `agitacion.tsx`, `transporte-liquidos.tsx`, `propiedades-solidos.tsx` y `reduccion-tamano.tsx` valen la pena.
+
+### Stepper de equipos / familias con imágenes reales
+
+Cuando hay un set finito (5–8) de variantes de un mismo objeto (5 tipos de bomba, 7 tipos de impulsor, 3 tipos de molino), no listarlas como cards en grid: hacer un **stepper** con tabs que cambia la imagen y los datos al hacer click.
+
+```tsx
+type ImpellerSpec = {
+  id: string;
+  family: 'axial' | 'radial' | 'viscoso';
+  name: string;
+  image: string;        // ruta absoluta /classroom/{slug}/readings/...
+  Np: number;           // datos numéricos del tipo
+  uses: string[];
+};
+const impellers: ImpellerSpec[] = [/* ... */];
+const ImpellerStepper: React.FC = () => {
+  const [active, setActive] = useState(0);
+  const i = impellers[active];
+  return (
+    <div className="my-6 not-prose">
+      <div className="flex flex-wrap gap-2">
+        {impellers.map((t, k) => (
+          <button key={t.id} onClick={() => setActive(k)}
+            className={`px-3 py-1.5 text-xs ${active===k ? 'bg-brand-dark text-white' : 'bg-white text-brand-gray'}`}>
+            {t.name}
+          </button>
+        ))}
+      </div>
+      <div className="grid md:grid-cols-2 gap-4 mt-4">
+        <img src={i.image} alt={i.name} className="rounded-md shadow-md" />
+        <div>
+          <h4>{i.name}</h4>
+          <p>Np = {i.Np}</p>
+          <ul>{i.uses.map(u => <li key={u}>{u}</li>)}</ul>
+        </div>
+      </div>
+    </div>
+  );
+};
+```
+
+Lo importante: usar **imágenes reales** (GIFs animados, fotos del fabricante, recortes de libro) — los SVGs dibujados a mano de equipos industriales se ven amateur. Para descargar de Notion público, ver sección "Fetch de contenido desde Notion".
+
+### Calculadoras interactivas
+
+Cuando una lectura tiene una fórmula cerrada útil (NPSH disponible, potencia de bomba, criterios de escalado, BHP, factor de fricción), construir una calculadora de UN slide con sliders/inputs + display en vivo. Probado: NPSH, potencia, escalado de tanques agitados, índice de Bond.
+
+Patrón:
+- Estado React con cada parámetro de entrada.
+- `const result = useMemo(() => formula(params), [params])` para recalcular sin lag.
+- Inputs `<input type="range">` para variables continuas; `<select>` para fluidos predefinidos (agua, aceite, lodo).
+- Resultado destacado en una card amarilla con la fórmula KaTeX al lado y un mini-callout de interpretación («margen positivo → operación segura»).
+
+### Selector visual con mapa Q-H y recomendación
+
+Para problemas de selección de equipo (¿qué bomba para Q=200 m³/h, H=80 m?), el patrón más efectivo es un canvas SVG log-log donde:
+1. Cada familia de equipo es una región semi-transparente con borde de color.
+2. Sliders de Q, H, viscosidad mueven un **punto del usuario** sobre el mapa.
+3. Toggles binarios (sólidos sí/no, pulsación sí/no) eliminan familias.
+4. Panel lateral con tres listas reactivas: **recomendadas** / **marginales** / **excluidas**.
+5. Presets con casos típicos (agua limpia, crudo viscoso, dosificación, lodos, inyección de pozo).
+
+Implementado en [bombas.tsx](pages/classroom/iqya-2031/readings/bombas.tsx) — usar como referencia.
+
+### Curvas con cursor móvil (Np–Re, McCabe-Thiele, etc.)
+
+Para correlaciones log-log (Np vs Re en agitación, factor de fricción vs Re en flujo), una curva inerte enseña poco; agregar un cursor que se mueve por la curva y muestra el valor numérico. Ya hay implementaciones reutilizables en [agitacion.tsx](pages/classroom/iqya-2031/readings/agitacion.tsx) (`NpReChart`).
+
+### YouTube embedido > SVG dibujado a mano (para fenómenos físicos)
+
+Para mostrar **fenómenos físicos reales** (cavitación, vórtice de remolino, patrones de flujo en mezclado, llenado/vaciado de tanque, salto hidráulico), siempre prefiero un video YouTube embedido que un SVG dibujado. Los SVGs decorativos no comunican el comportamiento dinámico, y se ven amateur frente al stack visual del resto de la lectura. Patrón:
+
+```tsx
+<div className="my-6 not-prose">
+  <div className="rounded-xl bg-zinc-50 border border-zinc-200 p-3 max-w-2xl mx-auto">
+    <div className="aspect-video">
+      <iframe className="w-full h-full rounded-md"
+        src="https://www.youtube.com/embed/VIDEO_ID"
+        title="Descripción"
+        frameBorder={0}
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen />
+    </div>
+    <p className="text-xs text-brand-gray italic mt-2 text-center">
+      Caption breve y descriptivo del video.
+    </p>
+  </div>
+</div>
+```
+
+### Eliminar SVG dummy cuando hay imagen del libro al lado
+
+Si la lectura ya muestra un diagrama clásico del libro (un PNG escaneado o limpio) para cierto concepto, **NO** acompañarlo de un SVG inline dibujado a mano que reproduzca lo mismo. Es redundancia visual y el SVG dummy siempre se ve peor. Caso real: la sección "Geometría estándar" de [agitacion.tsx](pages/classroom/iqya-2031/readings/agitacion.tsx) tenía ambos al inicio; quitar el SVG y dejar solo la imagen mejoró la sección.
+
+Regla práctica: si dos visuales contiguos cuentan la misma historia, uno sobra. Conservar el de mejor calidad de información.
+
+### Re-render de KaTeX al filtrar con TOC
+
+Al hacer click en un ítem del TOC, las secciones se desmontan/montan. KaTeX necesita re-renderizar las fórmulas. Si las fórmulas aparecen como texto plano `$\rho_b$` en pantalla después de filtrar, falta el `useEffect`:
+
+```tsx
+useEffect(() => {
+  const id = setTimeout(() => {
+    if (window.renderMathInElement) {
+      window.renderMathInElement(document.body, {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '$',  right: '$',  display: false },
+        ],
+      });
+    }
+  }, 50);
+  return () => clearTimeout(id);
+}, [activeSection]);
+```
+
+El delay de 50 ms da tiempo a que React monte el DOM antes de que KaTeX lo escanee.

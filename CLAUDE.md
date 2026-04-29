@@ -43,6 +43,17 @@ El Classroom es la sección de cursos. Cada curso tiene:
 - **Presentaciones** HTML autocontenidas responsivas
 - **Acceso por código** (localStorage, sin backend)
 
+### Cursos registrados
+
+Los datos de cada curso viven en `components/data/classroom/{slug}.ts` y se importan en `components/data/classroom.ts`:
+
+| Slug | Curso | Notas |
+|---|---|---|
+| `iqya-2031` | Proyecto de Operaciones Unitarias (POU) | Curso pesado en lecturas técnicas y presentaciones (clases 02 a 18+) |
+| `iqya-3050` | Seminario de IQ | Lecturas tipo guía y presentaciones de seminario |
+| `dpro-4300` | Diseño Sistémico de Bioproductos | Curso más reciente, agregado a inicios del semestre |
+| `spdp` / `spdp-retos` | Servicio de Práctica | Catálogo de retos, sin presentaciones */ Solo placeholder |
+
 **⚠️ Terminología:** la UI pública dice "Material del curso", no "Lecturas". Los objetos de datos siguen llamándose `readings` / `Reading` en el código por compatibilidad. La URL sigue siendo `/classroom/{slug}/readings/...`.
 
 ### Tipo `Reading` — campo `category` obligatorio en readings nuevos
@@ -112,6 +123,10 @@ Cada curso tiene un `accessCode`. Se guarda en `localStorage` con key `classroom
 - Banners siempre en **blanco y negro** (convertir con `sips -m` y perfil Gray Gamma 2.2)
 - Redimensionar a 1920px de ancho para web
 - Iconos de redes sociales en grayscale con hover a color
+
+### Tipografía
+- Las fuentes **Manrope Variable** (sans) y **JetBrains Mono Variable** (mono) van **autoalojadas** vía `@fontsource-variable/manrope` y `@fontsource-variable/jetbrains-mono` (NPM). Importadas desde `index.tsx`. No usar Google Fonts CDN — el portafolio funciona offline y el load es más rápido.
+- El CSS extra `public/classroom-fonts.css` declara las mismas familias para los archivos HTML autocontenidos del Classroom (presentaciones).
 
 ### Idioma
 - **Portafolio principal y Classroom index:** Inglés
