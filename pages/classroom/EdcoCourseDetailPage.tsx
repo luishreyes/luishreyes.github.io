@@ -173,9 +173,9 @@ const Hero: React.FC<{
   edcoCourse: EdcoCourse;
 }> = ({ course, edcoCourse }) => (
   <div
-    className="relative pt-28 pb-20 overflow-hidden"
+    className="relative pt-24 pb-14 sm:pt-28 sm:pb-16 overflow-hidden"
     style={{
-      backgroundImage: `linear-gradient(135deg, rgba(26,26,26,0.85), rgba(26,26,26,0.55)), url(${course?.bannerUrl ?? ''})`,
+      backgroundImage: `linear-gradient(135deg, rgba(26,26,26,0.9), rgba(26,26,26,0.7)), url(${course?.bannerUrl ?? ''})`,
       backgroundSize: 'cover',
       backgroundPosition: 'center',
     }}
@@ -207,10 +207,10 @@ const Hero: React.FC<{
         <p className="text-xs sm:text-sm font-semibold tracking-widest uppercase text-brand-yellow">
           {edcoCourse.edition}
         </p>
-        <h1 className="mt-3 text-3xl sm:text-5xl font-bold tracking-tight text-white [text-shadow:0_2px_4px_rgba(0,0,0,0.4)]">
+        <h1 className="mt-2 text-2xl sm:text-4xl font-bold tracking-tight text-white [text-shadow:0_2px_4px_rgba(0,0,0,0.4)]">
           {edcoCourse.title}
         </h1>
-        <p className="mt-4 text-sm sm:text-base text-zinc-200 leading-relaxed">
+        <p className="mt-3 text-sm text-zinc-200 leading-relaxed">
           {edcoCourse.description}
         </p>
       </motion.div>
