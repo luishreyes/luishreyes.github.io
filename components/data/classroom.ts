@@ -21,13 +21,6 @@ export interface Presentation {
   date?: string;
   description?: string;
   file: string;
-  /**
-   * Si está presente, la presentación se puede consultar también vía
-   * `/classroom/{courseSlug}/share/{id}` introduciendo este código (independiente
-   * del `accessCode` del curso). Útil para compartir una sola presentación con
-   * estudiantes sin darles acceso al landing del curso.
-   */
-  shareCode?: string;
 }
 
 export interface TeamMember {

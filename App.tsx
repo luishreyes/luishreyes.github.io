@@ -44,7 +44,6 @@ import { CourseLandingPage } from './pages/classroom/CourseLandingPage';
 import { ReadingsIndexPage } from './pages/classroom/ReadingsIndexPage';
 import { ReadingPage } from './pages/classroom/ReadingPage';
 import { PresentationsIndexPage } from './pages/classroom/PresentationsIndexPage';
-import { PresentationSharePage } from './pages/classroom/PresentationSharePage';
 import { EdcoCourseDetailPage } from './pages/classroom/EdcoCourseDetailPage';
 import { EdcoCoursePresentationsPage } from './pages/classroom/EdcoCoursePresentationsPage';
 import { RetosPage } from './pages/classroom/RetosPage';
@@ -185,7 +184,6 @@ const App: React.FC = () => {
               <Route path="/classroom/:courseSlug/readings" element={<ReadingsIndexPage />} />
               <Route path="/classroom/:courseSlug/readings/:slug" element={<ReadingPage />} />
               <Route path="/classroom/:courseSlug/presentations" element={<PresentationsIndexPage />} />
-              <Route path="/classroom/:courseSlug/share/:presentationId" element={<PresentationSharePage />} />
               <Route path="/classroom/:courseSlug/cursos/:edcoCourseId" element={<EdcoCourseDetailPage />} />
               <Route path="/classroom/:courseSlug/cursos/:edcoCourseId/presentations" element={<EdcoCoursePresentationsPage />} />
               <Route path="/classroom/:courseSlug/retos" element={<RetosPage />} />

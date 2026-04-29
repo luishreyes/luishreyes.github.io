@@ -67,8 +67,8 @@ export const EdcoCoursePresentationsPage: React.FC = () => {
             </h1>
             <p className="mt-3 text-brand-gray leading-relaxed max-w-2xl">
               Slides de las sesiones que dicto en este curso. Abren en pestaña nueva.
-              Cuando comparto una presentación con un estudiante usa un código único
-              independiente del acceso al curso.
+              Para compartir una presentación con un estudiante, basta con enviarle el
+              enlace directo del slide.
             </p>
           </header>
 
@@ -118,25 +118,17 @@ export const EdcoCoursePresentationsPage: React.FC = () => {
                       </a>
                     </div>
 
-                    {p.shareCode && (
-                      <div className="mt-4 pt-4 border-t border-zinc-100 text-[11px] text-brand-gray">
-                        <p className="font-semibold tracking-widest uppercase text-brand-yellow-dark">
-                          Compartir con estudiantes
-                        </p>
-                        <p className="mt-1">
-                          Enlace:{' '}
-                          <code className="px-1.5 py-0.5 bg-zinc-50 rounded border border-zinc-200 break-all">
-                            /classroom/{course.slug}/share/{p.id}
-                          </code>
-                        </p>
-                        <p className="mt-1">
-                          Código:{' '}
-                          <code className="px-1.5 py-0.5 bg-zinc-50 rounded border border-zinc-200 font-mono">
-                            {p.shareCode}
-                          </code>
-                        </p>
-                      </div>
-                    )}
+                    <div className="mt-4 pt-4 border-t border-zinc-100 text-[11px] text-brand-gray">
+                      <p className="font-semibold tracking-widest uppercase text-brand-yellow-dark">
+                        Compartir con estudiantes
+                      </p>
+                      <p className="mt-1">
+                        Enlace directo:{' '}
+                        <code className="px-1.5 py-0.5 bg-zinc-50 rounded border border-zinc-200 break-all">
+                          /classroom/{course.slug}/slides/{p.file}
+                        </code>
+                      </p>
+                    </div>
                   </article>
                 </li>
               ))}
