@@ -191,7 +191,7 @@ const cursoIaMayo2026: EdcoCourse = {
     'Certificación: asistencia ≥ 80% de las sesiones magistrales y ≥ 60% de los ejercicios aprobados.',
     'Soporte estudiantes EDCO: estudiantesedco@uniandes.edu.co',
   ],
-  presentationIds: ['m1-introduccion-ia'],
+  presentationIds: ['m1-introduccion-ia', 'm2-1-fundamentos-modelos-generativos'],
 };
 
 export const eduProCourse: Course = {
@@ -219,6 +219,16 @@ export const eduProCourse: Course = {
         'Recorrido por los hitos de la IA (Deep Blue, Watson, AlphaGo, autos autoconducidos, ChatGPT, multimodal y agentes 2024–2026), aprendizaje de máquina y profundo (perceptrón → CNN/RNN → Transformers), vulnerabilidades (ataques adversariales, out-of-distribution, sesgo) y antropomorfización (Sophia, conciencia, el submarino que «nada»).',
       file: 'm1-introduccion-ia.html',
       shareCode: 'IADCO-M1',
+    },
+    {
+      id: 'm2-1-fundamentos-modelos-generativos',
+      title: 'M2.1 — Fundamentos de los modelos generativos de lenguaje',
+      sessionNumber: 2,
+      date: '2026-05-06',
+      description:
+        'Cómo funcionan los LLM por dentro: discriminativo vs generativo, el modelo como ruleta probabilística («Lima es la capital de…»), atención y autoregresión, alucinaciones. Timeline interactivo de la evolución 2021–2026 (de GPT-3 a Claude Opus 4.7), iceberg ChatGPT vs LLM, anatomía de un prompt, panorama de modelos líderes 2026, scaling laws, fluido vs fáctico y limitaciones.',
+      file: 'm2-1-fundamentos-modelos-generativos.html',
+      shareCode: 'IADCO-M2-1',
     },
   ],
   // Campos académicos no aplican; se dejan con stubs vacíos para satisfacer el tipo Course.

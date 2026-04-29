@@ -1,0 +1,1287 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="/classroom-fonts.css" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>M2.1 — Fundamentos de los modelos generativos de lenguaje · Dominando la IA</title>
+  <style>
+    :root {
+      --brand-dark: #1A1A1A;
+      --brand-yellow: #FFBF00;
+      --brand-yellow-dark: #E6AC00;
+      --brand-gray: #555555;
+      --surface: #ffffff;
+      --muted: #f4f4f5;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0; padding: 0; height: 100%; width: 100%;
+      background: var(--brand-dark); color: var(--brand-dark);
+      font-family: 'Manrope Variable', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      overflow: hidden; -webkit-text-size-adjust: 100%;
+    }
+    .deck { position: relative; width: 100vw; height: 100vh; height: 100dvh; }
+    .slide {
+      position: absolute; inset: 0;
+      display: none; align-items: center; justify-content: center;
+      padding: clamp(1rem, 4vw, 3.5rem);
+      background: var(--surface);
+      opacity: 0; transition: opacity 260ms ease; overflow-y: auto;
+    }
+    .slide.active { display: flex; opacity: 1; }
+    .slide .content {
+      width: 100%; max-width: 92rem; margin: auto 0;
+      display: flex; flex-direction: column;
+      gap: clamp(0.75rem, 1.5vw, 1.5rem);
+    }
+    .eyebrow {
+      text-transform: uppercase; letter-spacing: 0.2em;
+      font-size: clamp(0.65rem, 1vw, 1rem);
+      color: var(--brand-yellow-dark); font-weight: 600;
+    }
+    h1 {
+      font-size: clamp(1.75rem, 5.5vw, 5.75rem);
+      line-height: 1.05; margin: 0;
+      color: var(--brand-dark); font-weight: 700; letter-spacing: -0.02em;
+    }
+    h2 { font-size: clamp(1.25rem, 3.4vw, 3.25rem); line-height: 1.15; margin: 0; font-weight: 700; color: var(--brand-dark); }
+    h2 .sub { display: block; font-size: 0.55em; font-weight: 500; color: var(--brand-gray); margin-top: 0.15em; }
+    p, li { font-size: clamp(0.95rem, 1.6vw, 1.6rem); line-height: 1.55; color: var(--brand-gray); margin: 0; }
+    ul, ol { padding-left: 1.25em; margin: 0; display: flex; flex-direction: column; gap: 0.45em; }
+    li::marker { color: var(--brand-yellow-dark); }
+    .slide.title-slide {
+      background: linear-gradient(135deg, #141414 0%, #1A1A1A 50%, #2a2a2a 100%);
+      color: #fff;
+    }
+    .slide.title-slide h1, .slide.title-slide h2, .slide.title-slide h3 { color: #fff; }
+    .slide.title-slide p, .slide.title-slide li { color: #e4e4e7; }
+    .slide.title-slide strong { color: #fff; }
+    .slide.title-slide .eyebrow { color: var(--brand-yellow); }
+    .slide.title-slide .card { color: var(--brand-dark); }
+    .slide.title-slide .card p, .slide.title-slide .card li { color: var(--brand-gray); }
+    .slide.title-slide .card h3, .slide.title-slide .card strong { color: var(--brand-dark); }
+    .slide.cover {
+      background-color: #0a0a0a;
+      background-blend-mode: multiply;
+      background-size: cover;
+      background-position: center;
+    }
+    .slide.cover::after {
+      content:''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(10,10,10,0.86) 0%, rgba(20,20,20,0.7) 50%, rgba(20,20,20,0.6) 100%);
+      pointer-events: none;
+    }
+    .slide.cover .content { position: relative; z-index: 2; }
+    .slide.cover h1, .slide.cover h2 { color: #fff; }
+    .slide.cover p, .slide.cover li { color: #e4e4e7; }
+    .slide.cover strong { color: #fff; }
+    .slide.cover .eyebrow { color: var(--brand-yellow); }
+    .pill-row { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 0.5rem; }
+    .pill {
+      display: inline-flex; align-items: center;
+      padding: 0.32em 0.85em; border-radius: 999px;
+      background: var(--muted); color: var(--brand-dark);
+      font-size: clamp(0.75rem, 1.1vw, 1.1rem); font-weight: 500;
+    }
+    .slide.title-slide .pill, .slide.cover .pill {
+      background: rgba(255,255,255,0.1); color: #fff;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .grid { display: grid; gap: clamp(0.75rem, 1.5vw, 1.25rem); }
+    .grid.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid.cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    @media (max-width: 768px) { .grid.cols-2, .grid.cols-3, .grid.cols-4 { grid-template-columns: 1fr; } }
+    .card {
+      background: var(--muted); border-radius: 0.75rem;
+      padding: clamp(0.9rem, 1.5vw, 1.35rem);
+      transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+    }
+    .card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
+    .card h3 {
+      font-size: clamp(1rem, 1.7vw, 1.5rem); margin: 0 0 0.35em;
+      color: var(--brand-dark); font-weight: 700;
+    }
+    .card p { font-size: clamp(0.8rem, 1.3vw, 1.2rem); }
+    .card .eyebrow { margin-bottom: 0.25em; }
+    .two-col {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: clamp(1rem, 2.5vw, 2.25rem);
+      align-items: center;
+    }
+    @media (max-width: 768px) { .two-col { grid-template-columns: 1fr; } }
+    .two-col img.diagram { width: 100%; }
+    img.diagram {
+      max-width: 100%; height: auto;
+      border-radius: 0.6rem; box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+      background: #fff;
+    }
+    .vs-cols {
+      display: grid; grid-template-columns: 1fr auto 1fr;
+      gap: clamp(0.75rem, 2vw, 2rem);
+      align-items: stretch;
+    }
+    @media (max-width: 768px) { .vs-cols { grid-template-columns: 1fr; } .vs-cols .vs-divider { display: none; } }
+    .vs-cols .col {
+      background: #fff; border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 0.75rem; padding: clamp(1rem, 1.6vw, 1.6rem);
+      display: flex; flex-direction: column; gap: 0.5rem;
+    }
+    .vs-cols .col.left  { border-top: 4px solid #94a3b8; }
+    .vs-cols .col.right { border-top: 4px solid var(--brand-yellow-dark); }
+    .vs-cols .col h3 { margin: 0; font-size: clamp(1rem, 1.7vw, 1.5rem); color: var(--brand-dark); }
+    .vs-cols .vs-divider {
+      align-self: center; background: var(--brand-yellow);
+      color: var(--brand-dark); font-weight: 800; font-size: 0.9rem;
+      width: 2.4em; height: 2.4em; border-radius: 999px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .banner {
+      background: #fef3c7; border-left: 4px solid var(--brand-yellow-dark);
+      padding: 0.9rem 1.1rem; border-radius: 0.5rem;
+      color: #78350f; font-size: clamp(0.85rem, 1.4vw, 1.25rem);
+    }
+    .banner.info { background: #e0f2fe; border-left-color: #0284c7; color: #0c4a6e; }
+    .banner.warn { background: #fee2e2; border-left-color: #dc2626; color: #7f1d1d; }
+    .banner svg { vertical-align: -0.18em; margin-right: 0.4em; }
+    .big-quote { text-align: center; padding: 0 clamp(1rem, 4vw, 4rem); }
+    .big-quote h2 { font-size: clamp(2rem, 6vw, 5.5rem); line-height: 1.05; color: var(--brand-dark); }
+    .big-quote h2 .accent { color: var(--brand-yellow-dark); }
+    .big-quote p { margin-top: 1em; font-style: italic; }
+    .hud {
+      position: fixed; left: 0; right: 0; bottom: 0;
+      padding: 0.5rem 1rem;
+      display: flex; justify-content: space-between; align-items: center;
+      color: rgba(255,255,255,0.75); font-size: 0.75rem;
+      pointer-events: none; z-index: 10;
+    }
+    .controls {
+      position: fixed; right: 1rem; bottom: 2.5rem;
+      display: flex; gap: 0.5rem; z-index: 11;
+    }
+    .controls button {
+      -webkit-appearance: none; appearance: none;
+      border: 1px solid rgba(0,0,0,0.1);
+      background: rgba(255,255,255,0.9); color: var(--brand-dark);
+      width: 2.5rem; height: 2.5rem; border-radius: 999px;
+      font-size: 1rem; cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    }
+    .progress {
+      position: fixed; top: 0; left: 0;
+      height: 3px; background: var(--brand-yellow);
+      transition: width 260ms ease; z-index: 20;
+    }
+    .progress.pulsing { animation: progPulse 0.5s ease; }
+    @keyframes progPulse {
+      0%   { box-shadow: 0 0 0 0 rgba(255,191,0,0.0); }
+      50%  { box-shadow: 0 0 12px 3px rgba(255,191,0,0.8); }
+      100% { box-shadow: 0 0 0 0 rgba(255,191,0,0.0); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .slide { transition: none; }
+      .progress { transition: none; }
+      .progress.pulsing { animation: none; }
+      .stagger-in > * { animation: none !important; }
+      .card { transition: none; }
+    }
+    @media (max-width: 480px) {
+      .controls { right: 0.5rem; bottom: 1.25rem; }
+      .hud { font-size: 0.65rem; }
+    }
+    .slide:not(.title-slide):not(.cover)::before {
+      content: ''; position: absolute;
+      top: clamp(1rem, 3vw, 2.5rem); right: clamp(1rem, 3vw, 2.5rem);
+      width: clamp(2rem, 5vw, 4rem); height: clamp(2rem, 5vw, 4rem);
+      border-top: 2.5px solid var(--brand-yellow);
+      border-right: 2.5px solid var(--brand-yellow);
+      pointer-events: none; z-index: 1;
+    }
+    .slide.title-slide::before, .slide.cover::before {
+      content: ''; position: absolute;
+      bottom: clamp(1rem, 3vw, 2.5rem); left: clamp(1rem, 3vw, 2.5rem);
+      width: clamp(2rem, 5vw, 4rem); height: clamp(2rem, 5vw, 4rem);
+      border-bottom: 2.5px solid var(--brand-yellow);
+      border-left: 2.5px solid var(--brand-yellow);
+      opacity: 0.5;
+      pointer-events: none; z-index: 3;
+    }
+    .slide-number {
+      position: absolute; bottom: clamp(0.5rem, 2vw, 1.5rem);
+      left: clamp(1rem, 3vw, 2.5rem);
+      font-size: clamp(4rem, 12vw, 10rem);
+      font-weight: 800; line-height: 1;
+      color: rgba(0, 0, 0, 0.04); pointer-events: none;
+      z-index: 0; user-select: none; letter-spacing: -0.04em;
+    }
+    .slide.title-slide .slide-number, .slide.cover .slide-number {
+      color: rgba(255, 255, 255, 0.05);
+    }
+
+    a.platform-link {
+      color: var(--brand-dark); text-decoration: none;
+      border-bottom: 2px solid var(--brand-yellow);
+      padding-bottom: 0.05em;
+      transition: color 180ms, border-color 180ms;
+    }
+    a.platform-link:hover { color: var(--brand-yellow-dark); border-bottom-color: var(--brand-yellow-dark); }
+    a.platform-link::after { content: " ↗"; font-size: 0.65em; opacity: 0.5; margin-left: 0.12em; vertical-align: 0.3em; }
+    .slide.title-slide a.platform-link, .slide.cover a.platform-link { color: #fff; }
+    .slide.title-slide a.platform-link:hover, .slide.cover a.platform-link:hover { color: var(--brand-yellow); border-bottom-color: var(--brand-yellow); }
+
+    h2 svg, h3 svg, .eyebrow svg, .pill svg {
+      vertical-align: -0.18em; margin-right: 0.4em;
+      color: var(--brand-yellow-dark);
+    }
+
+    a:focus-visible, button:focus-visible {
+      outline: 3px solid var(--brand-yellow-dark);
+      outline-offset: 2px; border-radius: 0.35rem;
+    }
+
+    .slide.active .stagger-in > * { animation: fadeInUp 0.4s ease both; }
+    .slide.active .stagger-in > *:nth-child(1) { animation-delay: 0.05s; }
+    .slide.active .stagger-in > *:nth-child(2) { animation-delay: 0.15s; }
+    .slide.active .stagger-in > *:nth-child(3) { animation-delay: 0.25s; }
+    .slide.active .stagger-in > *:nth-child(4) { animation-delay: 0.35s; }
+    .slide.active .stagger-in > *:nth-child(5) { animation-delay: 0.45s; }
+    .slide.active .stagger-in > *:nth-child(6) { animation-delay: 0.55s; }
+    .slide.active .stagger-in > *:nth-child(7) { animation-delay: 0.65s; }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+    .svg-frame {
+      background: #fff; border: 1px solid rgba(0,0,0,0.06);
+      border-radius: 0.75rem; padding: clamp(0.6rem, 1.2vw, 1rem);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .svg-frame svg { width: 100%; height: auto; max-height: 60vh; display: block; }
+    .ai-hierarchy-svg .ring-label { font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; font-size: 18px; }
+    .ai-hierarchy-svg .ring-sub { font-size: 13px; font-weight: 500; opacity: 0.85; }
+
+    /* ---- Probability bars (next-token visualization) ---- */
+    .prob-row {
+      display: grid; grid-template-columns: minmax(6em, 8em) 1fr minmax(3.5em, 4em);
+      align-items: center; gap: 0.5rem 0.7rem;
+      font-size: clamp(0.85rem, 1.4vw, 1.15rem);
+    }
+    .prob-row .word { font-weight: 600; color: var(--brand-dark); text-align: right; }
+    .prob-row .bar {
+      height: 1.4em; background: var(--muted); border-radius: 0.4em;
+      overflow: hidden; position: relative;
+    }
+    .prob-row .bar > span {
+      display: block; height: 100%;
+      background: linear-gradient(90deg, var(--brand-yellow), var(--brand-yellow-dark));
+      border-radius: 0.4em;
+      animation: barFill 1.2s ease-out both;
+    }
+    .prob-row .bar.muted > span { background: linear-gradient(90deg, #d4d4d8, #a1a1aa); }
+    .prob-row .pct { font-family: 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, monospace; color: var(--brand-gray); font-size: 0.9em; }
+    @keyframes barFill { from { width: 0; } }
+    .slide.active .prob-row .bar > span { animation: barFill 1.2s ease-out both; }
+    .ctx-line {
+      font-family: 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, monospace;
+      font-size: clamp(0.95rem, 1.6vw, 1.4rem);
+      color: var(--brand-dark); padding: 0.5em 0.8em;
+      background: var(--muted); border-radius: 0.5em;
+    }
+    .ctx-line .blank {
+      color: var(--brand-yellow-dark); font-weight: 700; letter-spacing: 0.05em;
+    }
+
+    /* ---- Stepper for evolution timeline ---- */
+    .stepper { display: flex; flex-direction: column; gap: 1rem; }
+    .stepper-nav {
+      display: grid; grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 0.4rem; padding-bottom: 0.3rem;
+    }
+    @media (max-width: 768px) { .stepper-nav { grid-template-columns: repeat(3, 1fr); } }
+    .stepper-nav button {
+      background: #fff; border: 1.5px solid rgba(0,0,0,0.08);
+      padding: 0.7em 0.4em; border-radius: 0.6rem;
+      display: flex; flex-direction: column; align-items: center; gap: 0.15em;
+      cursor: pointer; font-family: inherit;
+      transition: all 220ms ease;
+    }
+    .stepper-nav button .yr {
+      font-size: clamp(0.95rem, 1.4vw, 1.3rem);
+      font-weight: 800; letter-spacing: 0.04em;
+      color: var(--brand-dark);
+    }
+    .stepper-nav button .tag {
+      font-size: clamp(0.65rem, 0.9vw, 0.85rem);
+      color: var(--brand-gray); text-transform: uppercase; letter-spacing: 0.1em;
+    }
+    .stepper-nav button:hover { border-color: var(--brand-yellow); transform: translateY(-2px); }
+    .stepper-nav button.is-active {
+      background: var(--brand-dark); border-color: var(--brand-dark);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+    }
+    .stepper-nav button.is-active .yr { color: var(--brand-yellow); }
+    .stepper-nav button.is-active .tag { color: rgba(255,255,255,0.75); }
+    .stepper-panel {
+      background: #fff; border: 1px solid rgba(0,0,0,0.08);
+      border-left: 6px solid var(--brand-yellow);
+      border-radius: 0.75rem;
+      padding: clamp(1rem, 2vw, 1.6rem);
+      min-height: 14rem;
+    }
+    .stepper-content { display: none; animation: stepFade 0.3s ease; }
+    .stepper-content.is-active { display: block; }
+    @keyframes stepFade { from { opacity: 0; transform: translateX(8px); } to { opacity: 1; transform: translateX(0); } }
+    .stepper-content h3 { margin: 0 0 0.6em; font-size: clamp(1rem, 1.6vw, 1.4rem); color: var(--brand-dark); }
+    .stepper-content .panel-eyebrow { font-size: clamp(0.75rem, 1.1vw, 1rem); color: var(--brand-yellow-dark); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.4em; }
+    .model-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+      gap: 0.6rem;
+    }
+    .model-item {
+      background: var(--muted); border-radius: 0.5rem;
+      padding: 0.6rem 0.75rem;
+      border-left: 3px solid var(--brand-yellow-dark);
+      transition: transform 220ms ease, box-shadow 220ms;
+    }
+    .model-item:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+    .model-item.open { border-left-color: #16a34a; }
+    .model-item.closed { border-left-color: #6366f1; }
+    .model-item .name { font-weight: 700; color: var(--brand-dark); font-size: clamp(0.85rem, 1.2vw, 1.05rem); display: flex; align-items: center; gap: 0.3em; }
+    .model-item .org { font-size: clamp(0.7rem, 1vw, 0.85rem); color: var(--brand-gray); margin-top: 0.1em; }
+    .model-item .when { font-size: clamp(0.65rem, 0.95vw, 0.8rem); color: var(--brand-yellow-dark); font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; }
+    .model-item .note { font-size: clamp(0.7rem, 1.05vw, 0.95rem); color: var(--brand-gray); margin-top: 0.3em; }
+    .legend { display: flex; gap: 1rem; flex-wrap: wrap; font-size: clamp(0.75rem, 1.1vw, 1rem); margin-bottom: 0.5em; }
+    .legend .chip { display: inline-flex; align-items: center; gap: 0.4em; }
+    .legend .chip .swatch { width: 0.8em; height: 0.8em; border-radius: 0.2em; }
+    .legend .chip.open .swatch { background: #16a34a; }
+    .legend .chip.closed .swatch { background: #6366f1; }
+
+    /* Leaderboard table */
+    table.leaderboard {
+      width: 100%; border-collapse: collapse;
+      background: #fff; border-radius: 0.5rem; overflow: hidden;
+      font-size: clamp(0.75rem, 1.1vw, 1rem);
+      border: 1px solid rgba(0,0,0,0.08);
+    }
+    table.leaderboard th {
+      background: var(--brand-dark); color: #fff;
+      text-align: left; padding: 0.6em 0.8em;
+      font-size: clamp(0.7rem, 1vw, 0.95rem);
+      font-weight: 600; letter-spacing: 0.05em;
+    }
+    table.leaderboard td {
+      padding: 0.55em 0.8em;
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+      vertical-align: middle;
+    }
+    table.leaderboard tbody tr:nth-child(even) { background: #fafafa; }
+    table.leaderboard td.col-name { font-weight: 700; color: var(--brand-dark); }
+    table.leaderboard td.col-tag { font-size: 0.85em; }
+    table.leaderboard td.col-tag .tag {
+      display: inline-block; padding: 0.15em 0.6em; border-radius: 999px;
+      background: var(--muted); color: var(--brand-dark); font-weight: 600;
+      font-size: 0.85em;
+    }
+    table.leaderboard td.col-tag .tag.open { background: #dcfce7; color: #166534; }
+    table.leaderboard td.col-tag .tag.closed { background: #e0e7ff; color: #3730a3; }
+    table.leaderboard tr.row-highlight { background: #fef9c3 !important; }
+
+    /* Iceberg */
+    .iceberg {
+      position: relative; width: 100%; max-height: 60vh;
+      aspect-ratio: 4/3; overflow: hidden; border-radius: 0.6rem;
+    }
+    .iceberg img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  </style>
+</head>
+<body>
+  <div class="progress" style="width:0"></div>
+  <div class="deck" id="deck">
+
+    <!-- 1. Cover -->
+    <section class="slide cover active" data-slide style="background-image: linear-gradient(135deg, rgba(10,10,10,0.55), rgba(20,20,20,0.35)), url('img/m2-cover.jpg');">
+      <div class="content">
+        <p class="eyebrow">EDCO Uniandes · Curso 2 · Mayo 2026</p>
+        <h1>Fundamentos de los<br/>modelos generativos<br/>de lenguaje</h1>
+        <p style="font-size: clamp(1rem, 1.8vw, 1.5rem); max-width: 50rem;">De la ruleta de probabilidades a los modelos líderes de 2026.</p>
+        <div class="pill-row">
+          <span class="pill">Módulo 2.1</span>
+          <span class="pill">2 horas · Miércoles 6 de mayo de 2026</span>
+        </div>
+        <p style="margin-top: 1.5em; font-size: clamp(0.85rem, 1.3vw, 1.1rem); opacity: 0.8;">Luis H. Reyes · Profesor Asociado, Departamento de Ingeniería Química y de Alimentos · Universidad de los Andes</p>
+      </div>
+    </section>
+
+    <!-- 2. Contenido -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Agenda</p>
+        <h2>Lo que veremos hoy</h2>
+        <div class="grid cols-3 stagger-in">
+          <div class="card"><p class="eyebrow">1</p><h3>IA generativa</h3><p>Qué es, qué la diferencia, dónde encaja en la jerarquía de la IA.</p></div>
+          <div class="card"><p class="eyebrow">2</p><h3>Generativos vs discriminativos</h3><p>Dos formas distintas de aprender de los mismos datos.</p></div>
+          <div class="card"><p class="eyebrow">3</p><h3>Lenguaje + imágenes</h3><p>Las dos grandes familias generativas hoy.</p></div>
+          <div class="card"><p class="eyebrow">4</p><h3>Doble click a los LLM</h3><p>Cómo predicen palabras: contexto, atención, autoregresión, alucinaciones.</p></div>
+          <div class="card"><p class="eyebrow">5</p><h3>Cuenta y herramientas</h3><p>Crear cuentas en plataformas líderes de IA.</p></div>
+          <div class="card"><p class="eyebrow">6</p><h3>ChatGPT y similares</h3><p>El producto, no el modelo. Qué es un prompt.</p></div>
+          <div class="card"><p class="eyebrow">7</p><h3>Limitaciones</h3><p>Veracidad, sesgos, desactualización, lenguaje ofensivo, textos largos.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Taller Parte 1 -->
+    <section class="slide title-slide" data-slide>
+      <div class="content big-quote">
+        <p class="eyebrow" style="text-align:center;">Antes de entrar en teoría</p>
+        <h2 style="color:#fff;">Taller <span class="accent">parte 1</span></h2>
+        <p>Pruébalo en tus manos. Lo entendido se asienta cuando se toca.</p>
+      </div>
+    </section>
+
+    <!-- 4. ¿Qué son modelos generativos? -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Sección 1 · IA generativa</p>
+        <h2>¿Qué son los modelos generativos?</h2>
+        <p>Antes de definirlos formalmente, contrastemos dos formas distintas de aprender de un mismo conjunto de datos: la <strong>discriminativa</strong> y la <strong>generativa</strong>.</p>
+        <div class="banner info">
+          <strong>La intuición rápida:</strong> los modelos discriminativos aprenden a <em>distinguir</em>. Los generativos aprenden a <em>producir</em>.
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. Discriminativo: ¡Mira los perros tienen collar! -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Discriminativo</p>
+        <h2>«¡Mira!, los perros tienen collar; los gatos, no»</h2>
+        <div class="two-col">
+          <img class="diagram" src="img/dogs-grid.jpg" alt="Mosaico de fotos de perros de distintas razas" />
+          <div>
+            <p>Un modelo discriminativo se enfoca en <strong>la frontera</strong> entre clases. Para distinguir perro vs. gato, busca el rasgo más útil para separar y descarta lo demás.</p>
+            <ul>
+              <li>El collar discrimina aquí. <strong>No</strong> describe al perro completo.</li>
+              <li>Si llega un perro sin collar, el modelo se confunde.</li>
+              <li>Salida: <strong>una etiqueta</strong> (perro / gato).</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. Generativo: corpus -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Generativo</p>
+        <h2>«Miremos grandes corpus de información sobre perros»</h2>
+        <p>Un modelo generativo no busca una frontera —busca <strong>la distribución completa</strong> de cómo «se ven» los perros. Necesita <em>mucha más información</em>.</p>
+        <div class="grid cols-2 stagger-in" style="margin-top: 0.5em;">
+          <div class="card">
+            <p class="eyebrow">Corpus textual</p>
+            <h3>Documentos sobre perros</h3>
+            <p>Wikipedia, libros, artículos, posts: descripciones, anatomía, comportamiento, historia. Millones de oraciones.</p>
+          </div>
+          <div class="card">
+            <p class="eyebrow">Corpus gráfico</p>
+            <h3>Imágenes de perros</h3>
+            <p>Fotos en distintos ángulos, razas, edades, tamaños. Capturan la <strong>distribución visual</strong> completa de la categoría.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. Generativo: ¿qué es un perro? -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Generativo</p>
+        <h2>Ahora que aprendiste sobre perros: ¿qué es un perro?</h2>
+        <div class="two-col">
+          <div>
+            <div class="banner info" style="font-size: clamp(0.95rem, 1.5vw, 1.3rem); line-height: 1.5;">
+              «Mamífero carnívoro doméstico de la familia de los cánidos que se caracteriza por tener los sentidos del olfato y el oído muy finos…»
+            </div>
+            <p style="margin-top: 1em;">Un modelo generativo de <strong>texto</strong> (como <a class="platform-link" href="https://chatgpt.com" target="_blank" rel="noopener">ChatGPT</a>, <a class="platform-link" href="https://claude.ai" target="_blank" rel="noopener">Claude</a> o <a class="platform-link" href="https://gemini.google.com" target="_blank" rel="noopener">Gemini</a>) puede <em>describirlo</em>.</p>
+            <p style="margin-top: 0.5em;">Un modelo generativo de <strong>imagen</strong> (<a class="platform-link" href="https://openai.com/dall-e-3" target="_blank" rel="noopener">DALL-E</a>, <a class="platform-link" href="https://stability.ai" target="_blank" rel="noopener">Stable Diffusion</a>, <a class="platform-link" href="https://www.midjourney.com" target="_blank" rel="noopener">Midjourney</a>) puede <em>dibujarlo</em>.</p>
+          </div>
+          <img class="diagram" src="img/dog-drawing.jpg" alt="Dibujo a línea de un perro generado por IA" style="max-width: 75%; margin: 0 auto;" />
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. Comparación de técnicas -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Mismos datos, dos preguntas distintas</p>
+        <h2>Discriminar <span class="sub">vs.</span> generar</h2>
+        <div class="vs-cols stagger-in">
+          <div class="col left">
+            <h3>Técnica discriminativa</h3>
+            <p style="opacity:0.85;"><strong>Entrada:</strong> imágenes etiquetadas «perro» o «gato».</p>
+            <p style="opacity:0.85;"><strong>Pregunta:</strong> ¿esta imagen nueva es un perro?</p>
+            <p style="opacity:0.85;"><strong>Salida:</strong> una etiqueta o probabilidad por clase.</p>
+            <p style="margin-top: 0.5em;">Ejemplo: la CNN del módulo M1 que vimos.</p>
+          </div>
+          <div class="vs-divider">vs</div>
+          <div class="col right">
+            <h3>Técnica generativa</h3>
+            <p style="opacity:0.85;"><strong>Entrada:</strong> el patrón completo de cómo lucen los perros.</p>
+            <p style="opacity:0.85;"><strong>Pregunta:</strong> dado «perro», dame una nueva instancia.</p>
+            <p style="opacity:0.85;"><strong>Salida:</strong> una imagen, un texto, un audio.</p>
+            <p style="margin-top: 0.5em;">Ejemplo: ChatGPT, Midjourney, Sora.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9. ¿Qué es la IA Generativa? -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Definición operativa</p>
+        <h2>¿Qué es la IA generativa?</h2>
+        <div class="grid cols-3 stagger-in">
+          <div class="card">
+            <p class="eyebrow">1 · Qué hace</p>
+            <h3>Crea contenido nuevo</h3>
+            <p>La <strong>IA generativa (GenAI)</strong> es un tipo de inteligencia artificial que crea contenido nuevo en base en lo que aprendió de contenido existente.</p>
+          </div>
+          <div class="card">
+            <p class="eyebrow">2 · Cómo aprende</p>
+            <h3>Entrenamiento</h3>
+            <p>El proceso de aprender de contenido existente se le conoce como <strong>entrenamiento</strong>, y el resultado es un <strong>modelo probabilístico</strong>.</p>
+          </div>
+          <div class="card">
+            <p class="eyebrow">3 · Cómo se usa</p>
+            <h3>Prompt → predicción</h3>
+            <p>Dada una instrucción (a.k.a. <em>prompt</em>), la GenAI usa este modelo probabilístico para predecir cómo una respuesta esperada podría ser.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10. Lenguaje vs Imágenes -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Las dos grandes familias generativas</p>
+        <h2>Lenguaje <span class="sub">vs.</span> imágenes</h2>
+        <div class="vs-cols stagger-in">
+          <div class="col left">
+            <h3>Modelos de lenguaje generativos (LLMs)</h3>
+            <p style="opacity:0.85;">Aprenden patrones del lenguaje usando grandes corpus documentales digitales.</p>
+            <p>Dado un texto de entrada, predicen <strong>qué viene luego</strong> (siguiente palabra).</p>
+            <p style="margin-top: 0.5em;"><strong>Ejemplos:</strong> GPT, Claude, Gemini, Llama, DeepSeek.</p>
+          </div>
+          <div class="vs-divider">+</div>
+          <div class="col right">
+            <h3>Modelos generativos de imágenes</h3>
+            <p style="opacity:0.85;">Producen nuevas imágenes usando técnicas como <strong>difusión</strong>.</p>
+            <p>Dado un prompt, transforman <strong>ruido aleatorio</strong> en imágenes coherentes.</p>
+            <p style="margin-top: 0.5em;"><strong>Ejemplos:</strong> DALL-E, Stable Diffusion, Midjourney, FLUX.</p>
+          </div>
+        </div>
+        <div class="banner info" style="margin-top: 0.4em;">
+          <strong>Hoy 2026:</strong> los modelos modernos son <em>multimodales</em> — un mismo modelo entiende y genera texto, imagen, audio y video. Pero conceptualmente las arquitecturas siguen siendo distintas.
+        </div>
+      </div>
+    </section>
+
+    <!-- 11. Donde encaja en la jerarquía (onion SVG) -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Recordemos la jerarquía</p>
+        <h2>Dónde encaja la IA generativa</h2>
+        <div class="two-col">
+          <div class="svg-frame">
+            <svg class="ai-hierarchy-svg" viewBox="0 0 520 520" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Jerarquía: IA contiene aprendizaje de máquina, que contiene aprendizaje profundo, que contiene IA generativa">
+              <defs>
+                <radialGradient id="g-ai" cx="35%" cy="30%" r="80%"><stop offset="0%" stop-color="#2a2a2a"/><stop offset="100%" stop-color="#0f0f0f"/></radialGradient>
+                <radialGradient id="g-ml" cx="40%" cy="35%" r="80%"><stop offset="0%" stop-color="#3f3f46"/><stop offset="100%" stop-color="#27272a"/></radialGradient>
+                <radialGradient id="g-dl" cx="40%" cy="35%" r="80%"><stop offset="0%" stop-color="#71717a"/><stop offset="100%" stop-color="#52525b"/></radialGradient>
+                <radialGradient id="g-gen" cx="40%" cy="35%" r="80%"><stop offset="0%" stop-color="#FFD24A"/><stop offset="100%" stop-color="#E6AC00"/></radialGradient>
+              </defs>
+              <circle cx="260" cy="260" r="245" fill="url(#g-ai)"/>
+              <circle cx="260" cy="260" r="190" fill="url(#g-ml)"/>
+              <circle cx="260" cy="260" r="135" fill="url(#g-dl)"/>
+              <circle cx="260" cy="260" r="80"  fill="url(#g-gen)"/>
+              <text class="ring-label" x="260" y="55"  text-anchor="middle" fill="#fff">Inteligencia Artificial</text>
+              <text class="ring-sub"   x="260" y="74"  text-anchor="middle" fill="#FFBF00">Sistemas que imitan la inteligencia humana</text>
+              <text class="ring-label" x="260" y="103" text-anchor="middle" fill="#fff" style="font-size:14px;">Aprendizaje de máquina</text>
+              <text class="ring-sub"   x="260" y="120" text-anchor="middle" fill="#d4d4d8">Aprende reglas a partir de datos</text>
+              <text class="ring-label" x="260" y="155" text-anchor="middle" fill="#fff" style="font-size:13px;">Aprendizaje profundo</text>
+              <text class="ring-sub"   x="260" y="172" text-anchor="middle" fill="#e4e4e7">Redes neuronales con muchas capas</text>
+              <text class="ring-label" x="260" y="252" text-anchor="middle" fill="#1A1A1A" style="font-size:13px;">IA generativa</text>
+              <text class="ring-sub"   x="260" y="270" text-anchor="middle" fill="#1A1A1A" style="font-weight:600;">ChatGPT · Claude</text>
+              <text class="ring-sub"   x="260" y="286" text-anchor="middle" fill="#1A1A1A" style="font-weight:600;">Midjourney · Sora</text>
+              <text class="ring-sub"   x="260" y="302" text-anchor="middle" fill="#1A1A1A" style="font-weight:600;">Stable Diffusion</text>
+            </svg>
+          </div>
+          <div>
+            <ul>
+              <li><strong>IA</strong> es el paraguas amplio.</li>
+              <li><strong>Aprendizaje de máquina</strong>: aprende reglas de los datos.</li>
+              <li><strong>Aprendizaje profundo</strong>: redes neuronales grandes.</li>
+              <li><strong>IA generativa</strong>: redes profundas <em>diseñadas para producir contenido nuevo</em>.</li>
+            </ul>
+            <div class="banner" style="margin-top: 0.7em;">
+              <strong>Importante:</strong> no todo lo generativo usa redes profundas (también hay HMM, GMM, autoencoders…), pero <strong>los modelos que dominan hoy</strong> sí son aprendizaje profundo.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 12. Modelos generativos de lenguaje (separator) -->
+    <section class="slide title-slide" data-slide>
+      <div class="content big-quote">
+        <p class="eyebrow" style="text-align:center;">Sección 2</p>
+        <h2 style="color:#fff;">Modelos generativos<br/>de <span class="accent">lenguaje</span></h2>
+        <p>Cómo funcionan por dentro: la ruleta probabilística de la siguiente palabra.</p>
+      </div>
+    </section>
+
+    <!-- 13. Modelos de Lenguaje: Lima es la capital de ___ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Definición técnica</p>
+        <h2>Modelo de lenguaje</h2>
+        <p>Un modelo construido para predecir la <strong>distribución de probabilidad de la siguiente palabra</strong> en una secuencia, dadas las palabras anteriores.</p>
+        <div class="ctx-line"><strong>Lima es la capital de</strong> <span class="blank">_______</span></div>
+        <div style="display: flex; flex-direction: column; gap: 0.4rem; margin-top: 0.4em;" class="stagger-in">
+          <div class="prob-row"><span class="word">Perú</span><div class="bar"><span style="width: 88%;"></span></div><span class="pct">0.88</span></div>
+          <div class="prob-row"><span class="word">Ecuador</span><div class="bar muted"><span style="width: 5%;"></span></div><span class="pct">0.05</span></div>
+          <div class="prob-row"><span class="word">Colombia</span><div class="bar muted"><span style="width: 3%;"></span></div><span class="pct">0.03</span></div>
+          <div class="prob-row"><span class="word">España</span><div class="bar muted"><span style="width: 2%;"></span></div><span class="pct">0.02</span></div>
+          <div class="prob-row"><span class="word">México</span><div class="bar muted"><span style="width: 1%;"></span></div><span class="pct">0.01</span></div>
+          <div class="prob-row"><span class="word">Canadá</span><div class="bar muted"><span style="width: 0.5%;"></span></div><span class="pct">0.005</span></div>
+        </div>
+        <div class="banner info" style="margin-top: 0.5em;">
+          El modelo no «sabe» geografía. Aprendió que <strong>la siguiente palabra después de «Lima es la capital de»</strong> es, casi siempre, <em>Perú</em> en su corpus de entrenamiento.
+        </div>
+      </div>
+    </section>
+
+    <!-- 14. Procesos de entrenamiento -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Cómo se entrena</p>
+        <h2>La ruleta se afina con atención + corpus</h2>
+        <p>Aprender a crear esta «ruleta de probabilidades» de manera efectiva requiere dos cosas:</p>
+        <div class="grid cols-2 stagger-in">
+          <div class="card">
+            <p class="eyebrow">1 · Atención</p>
+            <h3>Modelos de atención (Transformer)</h3>
+            <p>Cuando el modelo procesa <em>«Lima es la capital de _____»</em>, los <strong>mecanismos de atención</strong> le dicen cuáles palabras del contexto son las más importantes para predecir lo que sigue.</p>
+            <p style="margin-top: 0.5em;">En este caso: <strong>«Lima»</strong> y <strong>«capital»</strong> pesan más que «es» o «de».</p>
+          </div>
+          <div class="card">
+            <p class="eyebrow">2 · Corpus</p>
+            <h3>Datasets cada vez más grandes</h3>
+            <p>Cuanto más texto haya visto el modelo (libros, web, código, papers, conversaciones), mejor afina la ruleta. La ruleta «mala» da 50/50 entre Perú y Ecuador; la ruleta «buena» le da 88% a Perú.</p>
+          </div>
+        </div>
+        <div class="banner">
+          La arquitectura clave detrás de esto se llama <strong>Transformer</strong> (<a class="platform-link" href="https://arxiv.org/abs/1706.03762" target="_blank" rel="noopener">«Attention is all you need», Vaswani et al., 2017</a>) — la veremos en detalle más adelante.
+        </div>
+      </div>
+    </section>
+
+    <!-- 15. Predicción autoregresiva -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Cómo se predice</p>
+        <h2>Aplico la ruleta una y otra vez</h2>
+        <p>El modelo predice <strong>una palabra a la vez</strong>. Luego usa lo que generó como nueva entrada y vuelve a predecir. A esto se le llama <strong>generación autoregresiva</strong>.</p>
+        <div style="display: flex; flex-direction: column; gap: 0.5rem;" class="stagger-in">
+          <div class="ctx-line">Lima es la capital de <span class="blank">_______</span></div>
+          <div class="ctx-line">Lima es la capital de <strong>Perú</strong> <span class="blank">_______</span></div>
+          <div class="ctx-line">Lima es la capital de Perú<strong>.</strong> Se <span class="blank">_______</span></div>
+          <div class="ctx-line">Lima es la capital de Perú. Se <strong>encuentra</strong> <span class="blank">_______</span></div>
+          <div class="ctx-line">Lima es la capital de Perú. Se encuentra <strong>situada</strong> <span class="blank">_______</span></div>
+          <div class="ctx-line" style="background: var(--brand-yellow); color: var(--brand-dark); font-weight: 500;">Lima es la capital de Perú. Se encuentra situada en la costa central del país, a orillas del océano Pacífico…</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 16. Alucinaciones -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">El efecto secundario</p>
+        <h2>Alucinaciones</h2>
+        <p style="font-size: clamp(1.1rem, 2vw, 1.7rem);">
+          <strong>Alucinaciones</strong> son palabras o frases generadas por el modelo que <em>carecen de veracidad</em>, no tienen sentido o son gramaticalmente incorrectas.
+        </p>
+        <div class="grid cols-3 stagger-in" style="margin-top: 0.5em;">
+          <div class="card">
+            <p class="eyebrow">Causa raíz</p>
+            <h3>La ruleta no verifica</h3>
+            <p>El modelo solo busca «la siguiente palabra más probable». No pregunta si es cierto. Si su corpus tiene errores —o si la pregunta lleva a una zona de probabilidad poco entrenada— inventa con confianza.</p>
+          </div>
+          <div class="card">
+            <p class="eyebrow">Dónde aparece</p>
+            <h3>Datos, fechas, citas</h3>
+            <p>Hechos específicos (fechas, nombres, cifras), citas a papers que no existen, atribuciones falsas, código que parece correcto pero usa funciones inventadas.</p>
+          </div>
+          <div class="card">
+            <p class="eyebrow">Cómo mitigarla</p>
+            <h3>RAG, herramientas, validación</h3>
+            <p>Conectar el modelo a búsqueda real (RAG), darle herramientas para ejecutar código y verificar, y siempre <strong>contrastar la respuesta</strong> con una fuente externa cuando importa.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 17. Evolución interactiva -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Cinco años, una ola</p>
+        <h2>La evolución de los modelos generativos <span class="sub">click un año para ver los lanzamientos</span></h2>
+        <div class="legend" style="justify-content: flex-end; margin-top: -0.2em;">
+          <span class="chip closed"><span class="swatch"></span>Cerrado / propietario</span>
+          <span class="chip open"><span class="swatch"></span>Open source / abierto</span>
+        </div>
+        <div class="stepper" data-stepper>
+          <div class="stepper-nav" role="tablist">
+            <button type="button" role="tab" class="is-active" data-step="1" aria-selected="true">
+              <span class="yr">2021</span><span class="tag">Foundation</span>
+            </button>
+            <button type="button" role="tab" data-step="2" aria-selected="false">
+              <span class="yr">2022</span><span class="tag">Era chat</span>
+            </button>
+            <button type="button" role="tab" data-step="3" aria-selected="false">
+              <span class="yr">2023</span><span class="tag">Gold rush</span>
+            </button>
+            <button type="button" role="tab" data-step="4" aria-selected="false">
+              <span class="yr">2024</span><span class="tag">Multimodal</span>
+            </button>
+            <button type="button" role="tab" data-step="5" aria-selected="false">
+              <span class="yr">2025</span><span class="tag">Razonamiento</span>
+            </button>
+            <button type="button" role="tab" data-step="6" aria-selected="false">
+              <span class="yr">2026</span><span class="tag">Agentes</span>
+            </button>
+          </div>
+          <div class="stepper-panel" role="tabpanel">
+
+            <div class="stepper-content is-active" data-content="1">
+              <p class="panel-eyebrow">2021 · La era pre-chat</p>
+              <h3>Modelos fundacionales — el escalado se vuelve serio</h3>
+              <div class="model-grid">
+                <div class="model-item closed"><div class="when">Mar 2021</div><div class="name">GPT-Neo 2.7B</div><div class="org">EleutherAI</div></div>
+                <div class="model-item open"><div class="when">Jun 2021</div><div class="name">GPT-J 6B</div><div class="org">EleutherAI</div><div class="note">Primer LLM abierto competitivo.</div></div>
+                <div class="model-item closed"><div class="when">Ago 2021</div><div class="name">Jurassic-1 178B</div><div class="org">AI21 Labs</div></div>
+                <div class="model-item closed"><div class="when">Oct 2021</div><div class="name">Megatron-Turing NLG 530B</div><div class="org">NVIDIA × Microsoft</div></div>
+                <div class="model-item closed"><div class="when">Oct 2021</div><div class="name">Cohere</div><div class="org">Cohere</div></div>
+                <div class="model-item closed"><div class="when">Dic 2021</div><div class="name">Gopher 280B</div><div class="org">DeepMind</div></div>
+              </div>
+            </div>
+
+            <div class="stepper-content" data-content="2">
+              <p class="panel-eyebrow">2022 · Llega el chat</p>
+              <h3>30 de noviembre: ChatGPT cambia todo</h3>
+              <div class="model-grid">
+                <div class="model-item open"><div class="when">Feb 2022</div><div class="name">GPT-NeoX 20B</div><div class="org">EleutherAI</div></div>
+                <div class="model-item closed"><div class="when">Mar 2022</div><div class="name">Chinchilla 70B</div><div class="org">DeepMind</div><div class="note">Datos &gt; tamaño.</div></div>
+                <div class="model-item closed"><div class="when">Abr 2022</div><div class="name">PaLM 540B</div><div class="org">Google</div></div>
+                <div class="model-item open"><div class="when">May 2022</div><div class="name">OPT 175B</div><div class="org">Meta</div></div>
+                <div class="model-item open"><div class="when">Jul 2022</div><div class="name">BLOOM 176B</div><div class="org">BigScience</div></div>
+                <div class="model-item closed"><div class="when">Nov 2022</div><div class="name">Galactica</div><div class="org">Meta</div><div class="note">Retirado en 3 días.</div></div>
+                <div class="model-item closed"><div class="when">30 nov 2022</div><div class="name">ChatGPT (GPT-3.5)</div><div class="org">OpenAI</div><div class="note">1 M de usuarios en 5 días.</div></div>
+              </div>
+            </div>
+
+            <div class="stepper-content" data-content="3">
+              <p class="panel-eyebrow">2023 · El gold rush</p>
+              <h3>Cada laboratorio lanza su modelo cada mes</h3>
+              <div class="model-grid">
+                <div class="model-item open"><div class="when">Feb 2023</div><div class="name">LLaMA</div><div class="org">Meta</div><div class="note">Filtrada en 4chan, abre la era open.</div></div>
+                <div class="model-item closed"><div class="when">Mar 2023</div><div class="name">GPT-4</div><div class="org">OpenAI</div><div class="note">Multimodal con imagen.</div></div>
+                <div class="model-item closed"><div class="when">Mar 2023</div><div class="name">Claude</div><div class="org">Anthropic</div></div>
+                <div class="model-item closed"><div class="when">Mar 2023</div><div class="name">Bard</div><div class="org">Google</div></div>
+                <div class="model-item open"><div class="when">Mar 2023</div><div class="name">Alpaca</div><div class="org">Stanford</div><div class="note">LLaMA fine-tuned.</div></div>
+                <div class="model-item open"><div class="when">Jul 2023</div><div class="name">Llama 2</div><div class="org">Meta</div></div>
+                <div class="model-item closed"><div class="when">Jul 2023</div><div class="name">Claude 2</div><div class="org">Anthropic</div><div class="note">100k de contexto.</div></div>
+                <div class="model-item open"><div class="when">Sep 2023</div><div class="name">Mistral 7B</div><div class="org">Mistral AI</div></div>
+                <div class="model-item closed"><div class="when">Nov 2023</div><div class="name">GPT-4 Turbo</div><div class="org">OpenAI</div></div>
+                <div class="model-item closed"><div class="when">Dic 2023</div><div class="name">Gemini 1.0</div><div class="org">Google</div></div>
+              </div>
+            </div>
+
+            <div class="stepper-content" data-content="4">
+              <p class="panel-eyebrow">2024 · Multimodal nativo</p>
+              <h3>Texto, imagen, audio y video en un solo modelo</h3>
+              <div class="model-grid">
+                <div class="model-item closed"><div class="when">Feb 2024</div><div class="name">Gemini 1.5 Pro</div><div class="org">Google</div><div class="note">1 M de tokens.</div></div>
+                <div class="model-item closed"><div class="when">Feb 2024</div><div class="name">Sora</div><div class="org">OpenAI</div><div class="note">Generación de video.</div></div>
+                <div class="model-item closed"><div class="when">Mar 2024</div><div class="name">Claude 3 (Opus, Sonnet, Haiku)</div><div class="org">Anthropic</div></div>
+                <div class="model-item open"><div class="when">Abr 2024</div><div class="name">Llama 3</div><div class="org">Meta</div></div>
+                <div class="model-item closed"><div class="when">May 2024</div><div class="name">GPT-4o</div><div class="org">OpenAI</div><div class="note">Voz en tiempo real.</div></div>
+                <div class="model-item closed"><div class="when">Jun 2024</div><div class="name">Claude 3.5 Sonnet</div><div class="org">Anthropic</div></div>
+                <div class="model-item open"><div class="when">Jul 2024</div><div class="name">Llama 3.1 405B</div><div class="org">Meta</div><div class="note">Open competitivo con GPT-4.</div></div>
+                <div class="model-item closed"><div class="when">Sep 2024</div><div class="name">o1-preview</div><div class="org">OpenAI</div><div class="note">Razonamiento por chain-of-thought.</div></div>
+                <div class="model-item closed"><div class="when">Oct 2024</div><div class="name">Claude 3.5 + Computer Use</div><div class="org">Anthropic</div></div>
+                <div class="model-item closed"><div class="when">Dic 2024</div><div class="name">Gemini 2.0</div><div class="org">Google</div><div class="note">«Era de los agentes».</div></div>
+              </div>
+            </div>
+
+            <div class="stepper-content" data-content="5">
+              <p class="panel-eyebrow">2025 · El año del razonamiento</p>
+              <h3>Pensar antes de responder + open-source compite de tú a tú</h3>
+              <div class="model-grid">
+                <div class="model-item open"><div class="when">Ene 2025</div><div class="name">DeepSeek R1</div><div class="org">DeepSeek</div><div class="note">Razonamiento abierto, costo radicalmente bajo.</div></div>
+                <div class="model-item closed"><div class="when">Feb 2025</div><div class="name">Claude 3.7 Sonnet</div><div class="org">Anthropic</div><div class="note">Razonamiento híbrido.</div></div>
+                <div class="model-item closed"><div class="when">Feb 2025</div><div class="name">GPT-4.5</div><div class="org">OpenAI</div></div>
+                <div class="model-item closed"><div class="when">Mar 2025</div><div class="name">Gemini 2.5 Pro</div><div class="org">Google</div><div class="note">1 M de contexto.</div></div>
+                <div class="model-item open"><div class="when">Abr 2025</div><div class="name">Llama 4 Maverick / Scout</div><div class="org">Meta</div><div class="note">Hasta 10 M de tokens.</div></div>
+                <div class="model-item closed"><div class="when">May 2025</div><div class="name">Claude Opus 4</div><div class="org">Anthropic</div></div>
+                <div class="model-item closed"><div class="when">Ago 2025</div><div class="name">GPT-5</div><div class="org">OpenAI</div><div class="note">Razonamiento integrado.</div></div>
+                <div class="model-item closed"><div class="when">Sep 2025</div><div class="name">Claude Sonnet 4.5</div><div class="org">Anthropic</div><div class="note">Mejor para código.</div></div>
+                <div class="model-item closed"><div class="when">Oct 2025</div><div class="name">Claude Haiku 4.5</div><div class="org">Anthropic</div><div class="note">Rápido y económico.</div></div>
+                <div class="model-item closed"><div class="when">2025</div><div class="name">Grok 4</div><div class="org">xAI</div><div class="note">2 M de contexto, búsqueda en X.</div></div>
+              </div>
+            </div>
+
+            <div class="stepper-content" data-content="6">
+              <p class="panel-eyebrow">2026 · La era de los agentes</p>
+              <h3>De chatbots a colaboradores que ejecutan</h3>
+              <div class="model-grid">
+                <div class="model-item closed"><div class="when">Mar 2026</div><div class="name">Claude Opus 4.7</div><div class="org">Anthropic</div><div class="note">1 M de contexto, razonamiento extendido.</div></div>
+                <div class="model-item closed"><div class="when">2026</div><div class="name">GPT-5.x · o-series</div><div class="org">OpenAI</div><div class="note">Modelos con planificación de tareas largas.</div></div>
+                <div class="model-item closed"><div class="when">2026</div><div class="name">Gemini 3.x</div><div class="org">Google</div></div>
+                <div class="model-item open"><div class="when">2026</div><div class="name">Llama 5 (esperado)</div><div class="org">Meta</div></div>
+                <div class="model-item open"><div class="when">2026</div><div class="name">DeepSeek R2 / V4</div><div class="org">DeepSeek</div></div>
+                <div class="model-item closed"><div class="when">2026</div><div class="name">Computer use & browser agents</div><div class="org">Varios</div><div class="note">Modelos que controlan navegadores y aplicaciones de escritorio.</div></div>
+              </div>
+              <div class="banner info" style="margin-top: 0.7em;">
+                <strong>Tendencia 2026:</strong> ya no se trata solo de «mejor chatbot». La pregunta es qué tareas <em>de varias horas</em> puede ejecutar un agente sin supervisión humana, y cuándo confiar en su salida.
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 18. Más grande es mejor (scaling) -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Por qué tantos modelos cada vez más grandes</p>
+        <h2>«Más grande es mejor» <span class="sub">scaling laws, Kaplan et al. 2020</span></h2>
+        <div class="two-col">
+          <img class="diagram" src="img/scaling-laws.jpg" alt="Crecimiento exponencial del tamaño de los LLM entre 2018 y 2020, de ELMo a T-NLG" />
+          <div>
+            <p>Hasta 2020, la comunidad encontró una regularidad: <strong>al duplicar parámetros, duplicar datos y aumentar cómputo, la pérdida del modelo baja predeciblemente</strong>.</p>
+            <ul>
+              <li>ELMo (2018): 94 M parámetros.</li>
+              <li>BERT-Large (2018): 340 M.</li>
+              <li>GPT-2 (2019): 1.5 B.</li>
+              <li>MegatronLM (2019): 8.3 B.</li>
+              <li>T-NLG (2020): 17 B.</li>
+              <li>GPT-3 (2020): 175 B.</li>
+              <li>Llama 4 Scout (2025): contexto de 10 M.</li>
+            </ul>
+            <p style="margin-top: 0.5em; font-size: 0.85em;"><a class="platform-link" href="https://arxiv.org/abs/2001.08361" target="_blank" rel="noopener">Kaplan et al. (2020) · Scaling Laws for Neural Language Models</a></p>
+          </div>
+        </div>
+        <div class="banner">
+          <strong>2022–2024:</strong> <a class="platform-link" href="https://arxiv.org/abs/2203.15556" target="_blank" rel="noopener">Chinchilla (DeepMind, 2022)</a> mostró que <em>los datos importan tanto como los parámetros</em> — y esto rebalanceó la carrera. <strong>2025:</strong> el énfasis viró a <em>cómputo en inferencia</em> (razonamiento) y a <em>data quality</em>, no solo cantidad.
+        </div>
+      </div>
+    </section>
+
+    <!-- 19. ChatGPT in education separator -->
+    <section class="slide title-slide" data-slide>
+      <div class="content big-quote">
+        <p class="eyebrow" style="text-align:center;">Sección 3</p>
+        <h2 style="color:#fff;">ChatGPT y los <span class="accent">grandes modelos de lenguaje</span></h2>
+        <p>Pasamos del modelo (motor) al producto (la cosa con la que hablas).</p>
+      </div>
+    </section>
+
+    <!-- 20. ¿Qué es ChatGPT? -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Punto de vista del usuario</p>
+        <h2>¿Qué es ChatGPT?</h2>
+        <div class="two-col">
+          <div>
+            <p><strong>Sistema conversacional (chatbot)</strong> que puede generar respuestas coherentes (sintáctica y gramaticalmente válidas) y naturales (como lo haría un humano) a instrucciones (a.k.a. <em>prompts</em>) dadas.</p>
+            <ul>
+              <li><strong>Contexto</strong>: lo que el usuario ya escribió en la conversación.</li>
+              <li><strong>Prompt</strong>: el mensaje actual del usuario.</li>
+              <li><strong>Respuesta</strong>: la salida del modelo.</li>
+              <li>Cada turno se concatena al contexto y vuelve a entrar al modelo.</li>
+            </ul>
+          </div>
+          <img class="diagram" src="img/chatgpt-example.jpg" alt="Captura de una conversación con ChatGPT preguntando qué hace un ingeniero de sistemas" />
+        </div>
+      </div>
+    </section>
+
+    <!-- 21. Iceberg ChatGPT vs LLM -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">No confundir el producto con el motor</p>
+        <h2>ChatGPT es la punta del iceberg</h2>
+        <div class="two-col">
+          <div class="svg-frame" style="padding: 0;">
+            <svg viewBox="0 0 480 480" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Iceberg: encima del agua ChatGPT (la interfaz), debajo el modelo de lenguaje (GPT)" style="background: linear-gradient(180deg, #87ceeb 0%, #87ceeb 33%, #1e3a8a 33.1%, #0c4a6e 100%); border-radius: 0.6rem;">
+              <!-- Sea line -->
+              <line x1="0" y1="160" x2="480" y2="160" stroke="rgba(255,255,255,0.4)" stroke-width="1" stroke-dasharray="4 6"/>
+              <!-- Top of iceberg (above water) -->
+              <polygon points="180,30 240,80 290,40 330,90 300,140 220,150 160,140 140,90" fill="#fff" stroke="#0c4a6e" stroke-width="2"/>
+              <text x="240" y="100" text-anchor="middle" fill="#0c4a6e" font-weight="700" font-size="20">ChatGPT</text>
+              <text x="240" y="125" text-anchor="middle" fill="#0c4a6e" font-size="13">la interfaz</text>
+              <!-- Underwater iceberg -->
+              <polygon points="160,160 320,160 380,260 360,360 280,440 200,450 130,400 80,310 100,220" fill="#bae6fd" fill-opacity="0.8" stroke="#0c4a6e" stroke-width="1"/>
+              <text x="245" y="240" text-anchor="middle" fill="#0c4a6e" font-weight="800" font-size="22">GPT</text>
+              <text x="245" y="265" text-anchor="middle" fill="#0c4a6e" font-weight="600" font-size="14">Modelo de lenguaje</text>
+              <text x="245" y="305" text-anchor="middle" fill="#1e3a8a" font-size="11">— pesos del modelo —</text>
+              <text x="245" y="325" text-anchor="middle" fill="#1e3a8a" font-size="11">— datos de entrenamiento —</text>
+              <text x="245" y="345" text-anchor="middle" fill="#1e3a8a" font-size="11">— RLHF / fine-tuning —</text>
+              <text x="245" y="365" text-anchor="middle" fill="#1e3a8a" font-size="11">— infraestructura GPU —</text>
+              <text x="245" y="395" text-anchor="middle" fill="#1e3a8a" font-size="11">— evaluaciones · seguridad —</text>
+            </svg>
+          </div>
+          <div>
+            <p><strong>ChatGPT</strong> es una <em>interfaz de chat</em>. Lo que ves arriba es solo el envoltorio: caja de texto, historial, botones.</p>
+            <p>Debajo del agua está <strong>GPT</strong> —el modelo de lenguaje en sí— con todo lo que lo hace funcionar:</p>
+            <ul>
+              <li>Pesos (cientos de gigas).</li>
+              <li>Datos de entrenamiento (trillones de tokens).</li>
+              <li>RLHF: refuerzo con feedback humano.</li>
+              <li>Clusters de GPU para servirlo.</li>
+              <li>Evaluaciones, filtros y guardrails de seguridad.</li>
+            </ul>
+            <div class="banner info" style="margin-top: 0.5em;">
+              Por eso una compañía puede tener <em>varios productos</em> (chat, asistente de voz, API) sobre <strong>el mismo modelo</strong>.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 22. ¿Qué es un prompt? -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">La herramienta del usuario</p>
+        <h2>¿Qué es un prompt?</h2>
+        <p>Las instrucciones o <strong>prompts</strong> son tu herramienta para obtener los resultados que deseas. Piensa en ellas como una forma de comunicarte con un colega muy capaz, pero que solo tiene la información que tú le des.</p>
+        <p>En lugar de escribir código, puedes usar <strong>palabras y texto sencillo</strong>. De esta forma, el modelo sabe exactamente qué intentas lograr.</p>
+        <div class="banner">
+          La <strong>ingeniería de prompts</strong> exitosa se trata de combinar correctamente los elementos que veremos a continuación. Es —junto a la evaluación— la habilidad práctica más importante de este curso.
+        </div>
+      </div>
+    </section>
+
+    <!-- 23. ¿Qué considera un prompt? -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Anatomía de un prompt</p>
+        <h2>¿Qué debe considerar un prompt?</h2>
+        <p>El prompt más simple puede tener cualquiera de los siguientes:</p>
+        <div class="grid cols-4 stagger-in">
+          <div class="card">
+            <p class="eyebrow">1</p>
+            <h3>Instrucciones</h3>
+            <p>Qué quieres que haga el modelo. Verbos claros: «resume», «traduce», «compara».</p>
+          </div>
+          <div class="card">
+            <p class="eyebrow">2</p>
+            <h3>Pregunta</h3>
+            <p>Qué información buscas. «¿Cuáles son las 3 razones principales…?»</p>
+          </div>
+          <div class="card">
+            <p class="eyebrow">3</p>
+            <h3>Datos de entrada</h3>
+            <p>El material sobre el que debe trabajar: un texto, una tabla, código.</p>
+          </div>
+          <div class="card">
+            <p class="eyebrow">4</p>
+            <h3>Ejemplos</h3>
+            <p>Cómo se ven una o varias respuestas correctas (<em>few-shot prompting</em>).</p>
+          </div>
+        </div>
+        <p style="margin-top: 0.5em; opacity: 0.8; font-size: 0.85em;">En la <strong>Sesión 3 (Francisco Moya)</strong> profundizaremos en cada uno y veremos plantillas reutilizables.</p>
+      </div>
+    </section>
+
+    <!-- 24. Bard / JWST falló -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Caso real · Febrero 2023</p>
+        <h2>Bard se equivocó… en su anuncio de lanzamiento</h2>
+        <div class="two-col">
+          <img class="diagram" src="img/jwst-bard-error.jpg" alt="Captura del demo de Google Bard respondiendo sobre el James Webb Space Telescope" />
+          <div>
+            <p>En el demo público de Bard (hoy <a class="platform-link" href="https://gemini.google.com" target="_blank" rel="noopener">Gemini</a>), Google le pidió hablar de descubrimientos del telescopio James Webb. Una de las afirmaciones —«JWST tomó las primeras fotos de un exoplaneta»— era <strong>falsa</strong>.</p>
+            <p>Las acciones de Alphabet cayeron <strong>~9% en un día</strong>, perdiendo cerca de USD 100 mil millones de capitalización.</p>
+            <p style="margin-top: 0.5em;"><a class="platform-link" href="https://www.reuters.com/technology/google-ai-chatbot-bard-offers-inaccurate-information-company-ad-2023-02-08/" target="_blank" rel="noopener">Reportaje · Reuters, 8 feb 2023</a></p>
+            <div class="banner warn" style="margin-top: 0.5em;">
+              <strong>Lección:</strong> ni siquiera el demo de la propia compañía se valida solo. Los modelos suenan seguros incluso cuando inventan.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 25. Modelos líderes 2026 -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Panorama actual · Marzo 2026</p>
+        <h2>Modelos de IA generativa líderes <span class="sub">precios típicos por millón de tokens entrada / salida</span></h2>
+        <div style="overflow-x: auto;">
+          <table class="leaderboard">
+            <thead>
+              <tr>
+                <th>Proveedor</th><th>Modelo</th><th>Contexto</th><th>Precio I/O</th><th>Tipo</th><th>Destacado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="row-highlight"><td class="col-name">Anthropic</td><td>Claude Opus 4.7 (1M)</td><td>1 M</td><td>—</td><td class="col-tag"><span class="tag closed">Cerrado</span></td><td>Razonamiento extendido, mejor para tareas largas.</td></tr>
+              <tr><td class="col-name">Anthropic</td><td>Claude Sonnet 4.5</td><td>200 K</td><td>$3 / $15</td><td class="col-tag"><span class="tag closed">Cerrado</span></td><td>Mejor para código.</td></tr>
+              <tr><td class="col-name">Anthropic</td><td>Claude Haiku 4.5</td><td>200 K</td><td>$1 / $5</td><td class="col-tag"><span class="tag closed">Cerrado</span></td><td>Rápido y económico.</td></tr>
+              <tr><td class="col-name">OpenAI</td><td>GPT-5</td><td>272 K</td><td>$1.25 / $10</td><td class="col-tag"><span class="tag closed">Cerrado</span></td><td>Razonamiento integrado.</td></tr>
+              <tr><td class="col-name">OpenAI</td><td>GPT-5 Mini</td><td>272 K</td><td>—</td><td class="col-tag"><span class="tag closed">Cerrado</span></td><td>Balance calidad–costo.</td></tr>
+              <tr><td class="col-name">Google</td><td>Gemini 2.5 Pro</td><td>1 M</td><td>$1.25 / $10</td><td class="col-tag"><span class="tag closed">Cerrado</span></td><td>Contexto masivo.</td></tr>
+              <tr><td class="col-name">Google</td><td>Gemini 2.5 Flash</td><td>1 M</td><td>$0.30 / $2.50</td><td class="col-tag"><span class="tag closed">Cerrado</span></td><td>Mejor precio–calidad.</td></tr>
+              <tr><td class="col-name">DeepSeek</td><td>V3.1 (671 B / 37 B activos)</td><td>128 K</td><td>$0.27 / $1.10</td><td class="col-tag"><span class="tag open">Open</span></td><td>MoE, costo ultra bajo.</td></tr>
+              <tr><td class="col-name">DeepSeek</td><td>R1</td><td>128 K</td><td>$0.55 / $2.19</td><td class="col-tag"><span class="tag open">Open</span></td><td>Razonamiento avanzado abierto.</td></tr>
+              <tr><td class="col-name">xAI</td><td>Grok 4</td><td>2 M</td><td>$3 / $15</td><td class="col-tag"><span class="tag closed">Cerrado</span></td><td>Búsqueda en X en tiempo real.</td></tr>
+              <tr><td class="col-name">Meta</td><td>Llama 4 Maverick</td><td>1 M</td><td>Gratis</td><td class="col-tag"><span class="tag open">Open</span></td><td>400 B params, abierto.</td></tr>
+              <tr><td class="col-name">Meta</td><td>Llama 4 Scout</td><td>10 M</td><td>Gratis</td><td class="col-tag"><span class="tag open">Open</span></td><td>Mayor contexto del mercado.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="margin-top: 0.5em; opacity: 0.7; font-size: 0.85em;">Tendencia 2025–2026: open source compite de tú a tú con propietarios. Razonamiento nativo. Contextos masivos hasta 10 M tokens. Multimodal por defecto.</p>
+      </div>
+    </section>
+
+    <!-- 26. Fluido pero no fáctico -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Característica fundamental</p>
+        <h2>Fluido, <span style="color: var(--brand-yellow-dark);">pero no fáctico</span></h2>
+        <div class="grid cols-2 stagger-in">
+          <div class="card">
+            <p class="eyebrow">Lo que sí garantiza</p>
+            <h3>Sintaxis y gramática</h3>
+            <p>Construye sentencias <strong>sintáctica y gramaticalmente correctas</strong> en múltiples idiomas. Domina estilos: informal, formal, académico, periodístico, jurídico…</p>
+          </div>
+          <div class="card">
+            <p class="eyebrow">Lo que NO garantiza</p>
+            <h3>Verdad</h3>
+            <p>No necesariamente basado en hechos. <strong>No necesariamente veraz.</strong> Puede sonar igual de confiado al decir algo cierto que algo inventado.</p>
+          </div>
+        </div>
+        <p style="margin-top: 0.5em; font-size: 0.85em; opacity: 0.8;">Stokel-Walker, C., &amp; Van Noorden, R. (2023). <a class="platform-link" href="https://www.nature.com/articles/d41586-023-00340-6" target="_blank" rel="noopener">What ChatGPT and generative AI mean for science</a>. <em>Nature</em>.</p>
+      </div>
+    </section>
+
+    <!-- 27. Limitaciones -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Cinco límites a tener presentes</p>
+        <h2>Limitaciones</h2>
+        <div class="grid cols-3 stagger-in">
+          <div class="card">
+            <p class="eyebrow">1</p>
+            <h3>Veracidad</h3>
+            <p>No se puede dar por hecho que el texto generado es verdad. Verificar siempre los datos críticos.</p>
+          </div>
+          <div class="card">
+            <p class="eyebrow">2</p>
+            <h3>Desactualización</h3>
+            <p>Cada modelo tiene una <em>knowledge cutoff</em>. En 2026, los modelos cierre 2024–2025 ya no saben de eventos recientes salvo que los conectemos a búsqueda.</p>
+          </div>
+          <div class="card">
+            <p class="eyebrow">3</p>
+            <h3>Sesgos y estereotipos</h3>
+            <p>El modelo hereda los sesgos presentes en su corpus. Si la web tiene un sesgo, el modelo lo refleja.</p>
+          </div>
+          <div class="card">
+            <p class="eyebrow">4</p>
+            <h3>Lenguaje ofensivo / tóxico</h3>
+            <p>Los principales modelos comerciales tienen filtros, pero no hay garantía a futuro. Modelos abiertos pueden no tenerlos.</p>
+          </div>
+          <div class="card">
+            <p class="eyebrow">5</p>
+            <h3>Textos largos</h3>
+            <p>A medida que crecen, pueden perder estructura, cohesión y coherencia. Para resultados largos: trocear y revisar por bloques.</p>
+          </div>
+          <div class="card" style="background: var(--brand-yellow); color: var(--brand-dark);">
+            <p class="eyebrow" style="color: var(--brand-dark);">Regla de oro</p>
+            <h3>Verifica lo que importa</h3>
+            <p style="color: var(--brand-dark);">Si una respuesta tiene consecuencias (médicas, legales, financieras), <strong>contrástala con una fuente externa.</strong></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 28. ¿Solo grandes compañías pueden entrenar? -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">¿Es esto solo para Big Tech?</p>
+        <h2>¿Solo las grandes compañías pueden entrenar estos modelos?</h2>
+        <div class="grid cols-2 stagger-in">
+          <div class="card">
+            <p class="eyebrow">Antes (2020–2023)</p>
+            <h3>Casi sí</h3>
+            <p>Entrenar GPT-3 desde cero costaba ~USD 4–12 M. Solo OpenAI, Google, Meta, Microsoft podían pagarlo.</p>
+            <ul>
+              <li>Hardware: miles de GPUs A100/H100.</li>
+              <li>Datos: scraping a escala industrial.</li>
+              <li>Talento: ML researchers escasos.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <p class="eyebrow">Ahora (2024–2026)</p>
+            <h3>Cada vez menos</h3>
+            <p>El ecosistema cambió radicalmente:</p>
+            <ul>
+              <li><strong>Open source competitivo</strong>: Llama, Mistral, DeepSeek, Qwen.</li>
+              <li><strong>Fine-tuning barato</strong>: LoRA, QLoRA — adaptas un modelo grande con una sola GPU.</li>
+              <li><strong>Eficiencia radical</strong>: <a class="platform-link" href="https://www.deepseek.com" target="_blank" rel="noopener">DeepSeek V3</a> entrenado por ~USD 6 M (vs. ~USD 100 M para GPT-4).</li>
+              <li><strong>APIs accesibles</strong>: usar el modelo cuesta centavos por consulta.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="banner info">
+          <strong>2026:</strong> entrenar un modelo frontera sigue siendo de Big Tech, pero <em>usar uno excelente y adaptarlo a tu dominio</em> está al alcance de cualquier estudiante o equipo pequeño.
+        </div>
+      </div>
+    </section>
+
+    <!-- 29. Taller Parte 2 -->
+    <section class="slide title-slide" data-slide>
+      <div class="content big-quote">
+        <p class="eyebrow" style="text-align:center;">Hands-on</p>
+        <h2 style="color:#fff;">Taller <span class="accent">parte 2</span></h2>
+        <p>Crear cuenta · primer prompt · evaluar la respuesta. Los detalles de prompting vienen en M2.2.</p>
+      </div>
+    </section>
+
+    <!-- 30. Cierre -->
+    <section class="slide title-slide" data-slide>
+      <div class="content big-quote">
+        <p class="eyebrow" style="text-align:center;">Próxima sesión · Viernes 8 de mayo</p>
+        <h2 style="color:#fff;">M2.2 — <span class="accent">Introducción a prompts</span></h2>
+        <p>Con Francisco Moya. De los 4 elementos básicos a plantillas reutilizables que producen respuestas confiables.</p>
+        <div class="pill-row" style="justify-content: center; margin-top: 1.5em;">
+          <span class="pill"><a class="platform-link" href="mailto:lh.reyes@uniandes.edu.co" style="color:inherit; border-bottom:none;">lh.reyes@uniandes.edu.co</a></span>
+          <span class="pill">Soporte EDCO: estudiantesedco@uniandes.edu.co</span>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="hud">
+    <span id="hud-title">M2.1 · Fundamentos LLM · Dominando la IA · EDCO Uniandes</span>
+    <span id="hud-counter">1 / 1</span>
+  </div>
+
+  <div class="controls">
+    <button aria-label="Anterior" id="prev">‹</button>
+    <button aria-label="Pantalla completa" id="fs">⛶</button>
+    <button aria-label="Siguiente" id="next">›</button>
+  </div>
+
+  <script>
+    (function () {
+      var slides = Array.prototype.slice.call(document.querySelectorAll('[data-slide]'));
+      var i = 0;
+      var counter = document.getElementById('hud-counter');
+      var progress = document.querySelector('.progress');
+
+      function render() {
+        slides.forEach(function (s, idx) { s.classList.toggle('active', idx === i); });
+        if (counter) counter.textContent = (i + 1) + ' / ' + slides.length;
+        if (progress) {
+          progress.style.width = ((i + 1) / slides.length * 100) + '%';
+          progress.classList.remove('pulsing');
+          void progress.offsetWidth;
+          progress.classList.add('pulsing');
+        }
+        var isDark = slides[i] && (slides[i].classList.contains('title-slide') || slides[i].classList.contains('cover'));
+        document.body.style.background = isDark ? '#1A1A1A' : '#ffffff';
+      }
+      function go(n) { i = Math.max(0, Math.min(slides.length - 1, n)); render(); }
+
+      document.addEventListener('keydown', function (e) {
+        if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'BUTTON')) {
+          if (/^[1-9]$/.test(e.key)) return; // let stepper handle
+        }
+        if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); go(i + 1); }
+        else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(i - 1); }
+        else if (e.key === 'Home') { e.preventDefault(); go(0); }
+        else if (e.key === 'End') { e.preventDefault(); go(slides.length - 1); }
+        else if (e.key === 'f' || e.key === 'F') { toggleFs(); }
+      });
+
+      document.getElementById('prev').addEventListener('click', function () { go(i - 1); });
+      document.getElementById('next').addEventListener('click', function () { go(i + 1); });
+      document.getElementById('fs').addEventListener('click', toggleFs);
+
+      function toggleFs() {
+        var el = document.documentElement;
+        if (!document.fullscreenElement) {
+          (el.requestFullscreen || el.webkitRequestFullscreen || function(){}).call(el);
+        } else {
+          (document.exitFullscreen || document.webkitExitFullscreen || function(){}).call(document);
+        }
+      }
+
+      var tx = 0, ty = 0;
+      document.addEventListener('touchstart', function (e) {
+        if (!e.changedTouches[0]) return;
+        tx = e.changedTouches[0].clientX; ty = e.changedTouches[0].clientY;
+      }, { passive: true });
+      document.addEventListener('touchend', function (e) {
+        if (!e.changedTouches[0]) return;
+        var dx = e.changedTouches[0].clientX - tx;
+        var dy = e.changedTouches[0].clientY - ty;
+        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+          if (dx < 0) go(i + 1); else go(i - 1);
+        }
+      }, { passive: true });
+
+      slides.forEach(function (s, idx) {
+        var num = document.createElement('div');
+        num.className = 'slide-number';
+        num.setAttribute('aria-hidden', 'true');
+        num.textContent = String(idx + 1).padStart(2, '0');
+        s.appendChild(num);
+      });
+
+      // Stepper for evolution timeline
+      document.querySelectorAll('[data-stepper]').forEach(function (stepper) {
+        var buttons = stepper.querySelectorAll('.stepper-nav button');
+        var panels = stepper.querySelectorAll('.stepper-content');
+        function setStep(n) {
+          buttons.forEach(function (b) {
+            var active = b.getAttribute('data-step') === String(n);
+            b.classList.toggle('is-active', active);
+            b.setAttribute('aria-selected', active ? 'true' : 'false');
+          });
+          panels.forEach(function (p) {
+            p.classList.toggle('is-active', p.getAttribute('data-content') === String(n));
+          });
+        }
+        buttons.forEach(function (b) {
+          b.addEventListener('click', function () { setStep(b.getAttribute('data-step')); });
+        });
+        document.addEventListener('keydown', function (e) {
+          var slide = stepper.closest('.slide');
+          if (!slide || !slide.classList.contains('active')) return;
+          if (/^[1-6]$/.test(e.key)) {
+            if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
+            e.preventDefault();
+            setStep(e.key);
+          }
+        });
+      });
+
+      render();
+    })();
+  </script>
+</body>
+</html>
