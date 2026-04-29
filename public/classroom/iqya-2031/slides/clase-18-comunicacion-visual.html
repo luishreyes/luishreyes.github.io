@@ -153,6 +153,90 @@
     }
     .slide.title-slide .quote-large { color: #fff; }
 
+    /* ─── Flip-group: stepper / toggle interactivo (slides 19, 23) ─── */
+    .flip-group {
+      display: flex; flex-direction: column;
+      gap: 1rem;
+    }
+    .flip-tabs {
+      display: flex; flex-wrap: wrap; gap: 0.4rem;
+      padding: 0;
+    }
+    .flip-tabs button {
+      background: #fff;
+      border: 1.5px solid rgba(0,0,0,0.08);
+      color: var(--brand-gray);
+      padding: 0.55em 1.1em;
+      border-radius: 999px;
+      font-family: inherit;
+      font-size: clamp(0.8rem, 1.25vw, 1.05rem);
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 200ms, color 200ms, border-color 200ms, transform 160ms;
+    }
+    .flip-tabs button:hover {
+      color: var(--brand-dark);
+      border-color: var(--brand-yellow-dark);
+      transform: translateY(-1px);
+    }
+    .flip-tabs button.is-active {
+      background: var(--brand-dark);
+      color: #fff;
+      border-color: var(--brand-dark);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+    }
+    .flip-tabs button:focus-visible {
+      outline: 3px solid var(--brand-yellow-dark);
+      outline-offset: 2px;
+    }
+    /* Toggle binario (Bad / Good): pill grupo central */
+    .flip-tabs--toggle {
+      display: inline-flex; gap: 0;
+      padding: 0.3rem; background: var(--muted);
+      border-radius: 999px; align-self: center;
+    }
+    .flip-tabs--toggle button {
+      background: transparent; border: 0;
+      padding: 0.5em 1.4em;
+    }
+    .flip-tabs--toggle button.is-active.is-bad {
+      background: var(--accent-red); color: #fff; box-shadow: 0 4px 10px rgba(220,38,38,0.25);
+    }
+    .flip-tabs--toggle button.is-active.is-good {
+      background: var(--accent-green); color: #fff; box-shadow: 0 4px 10px rgba(5,150,105,0.25);
+    }
+
+    .flip-panels { width: 100%; }
+    .flip-panel {
+      display: none;
+      animation: flipFade 0.32s ease;
+    }
+    .flip-panel.is-active { display: grid; grid-template-columns: 7fr 5fr; gap: clamp(0.8rem, 1.6vw, 1.6rem); align-items: center; }
+    @media (max-width: 720px) {
+      .flip-panel.is-active { grid-template-columns: 1fr; }
+    }
+    .flip-panel img {
+      display: block;
+      width: 100%; max-height: 56vh; height: auto;
+      object-fit: contain;
+      background: #fafafa;
+      border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 0.55rem;
+      padding: 0.4rem;
+    }
+    .flip-caption h3 {
+      font-size: clamp(1.1rem, 2vw, 1.6rem);
+      margin: 0 0 0.4em 0; color: var(--brand-dark);
+    }
+    .flip-caption p {
+      font-size: clamp(0.9rem, 1.45vw, 1.25rem);
+      line-height: 1.5;
+    }
+    @keyframes flipFade {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
     /* Generic diagram image (matplotlib PNGs) */
     img.diagram {
       display: block; max-width: 100%; height: auto;
@@ -1044,35 +1128,63 @@
       <div class="content">
         <p class="eyebrow">Bloque 2 · Visual correcto</p>
         <h2>Visualizaciones específicas de operaciones unitarias</h2>
-        <div class="grid cols-3 stagger-in" style="margin-top: 0.6rem;">
-          <div class="vis-cell">
-            <img class="diagram" src="img/clase-18-19-mccabe.png" alt="Diagrama McCabe-Thiele con escalones destacados" />
-            <span class="name">McCabe-Thiele</span>
+        <p class="small-text" style="text-align: left; margin: 0.2rem 0 0.4rem 0; font-style: normal;">
+          Haga clic sobre cada visualización para ver el ejemplo correspondiente.
+        </p>
+        <div class="flip-group" data-flip-group>
+          <div class="flip-tabs" role="tablist" aria-label="Tipos de visualizaciones POU">
+            <button type="button" role="tab" class="is-active" data-target="mccabe" aria-selected="true">McCabe-Thiele</button>
+            <button type="button" role="tab" data-target="txy" aria-selected="false">Diagrama T-x-y</button>
+            <button type="button" role="tab" data-target="profile" aria-selected="false">Perfil de columna</button>
+            <button type="button" role="tab" data-target="qt" aria-selected="false">Perfil Q-T</button>
+            <button type="button" role="tab" data-target="pump" aria-selected="false">Curva de bomba</button>
+            <button type="button" role="tab" data-target="parity" aria-selected="false">Paridad modelo–dato</button>
           </div>
-          <div class="vis-cell">
-            <img class="diagram" src="img/clase-18-19-txy.png" alt="Diagrama T-x-y mostrando curvas de líquido y vapor" />
-            <span class="name">Diagrama T-x-y</span>
-          </div>
-          <div class="vis-cell">
-            <img class="diagram" src="img/clase-18-19-profile.png" alt="Perfil de composición a lo largo de las etapas; componente clave destacado" />
-            <span class="name">Perfil de columna</span>
-          </div>
-          <div class="vis-cell">
-            <img class="diagram" src="img/clase-18-19-qt.png" alt="Perfil Q-T con curva caliente y curva fría; ΔT mínimo etiquetado" />
-            <span class="name">Perfil Q-T</span>
-          </div>
-          <div class="vis-cell">
-            <img class="diagram" src="img/clase-18-19-pump.png" alt="Curvas de la bomba y del sistema con punto de operación marcado" />
-            <span class="name">Curva de bomba</span>
-          </div>
-          <div class="vis-cell">
-            <img class="diagram" src="img/clase-18-19-parity.png" alt="Diagrama de paridad modelo-experimento con R² en una caja" />
-            <span class="name">Paridad modelo–dato</span>
+          <div class="flip-panels">
+            <div class="flip-panel is-active" data-panel="mccabe" role="tabpanel">
+              <img src="img/clase-18-19-mccabe.png" alt="Diagrama McCabe-Thiele con escalones destacados" />
+              <div class="flip-caption">
+                <h3>McCabe-Thiele</h3>
+                <p>Línea de equilibrio fina, líneas de operación con peso medio, escalones destacados con color. El número de etapas teóricas es lo que el ojo debe encontrar primero.</p>
+              </div>
+            </div>
+            <div class="flip-panel" data-panel="txy" role="tabpanel" hidden>
+              <img src="img/clase-18-19-txy.png" alt="Diagrama T-x-y mostrando curvas de líquido y vapor" />
+              <div class="flip-caption">
+                <h3>Diagrama T-x-y</h3>
+                <p>Dos curvas suavizadas, etiquetas directas en cada curva (vapor / líquido) en lugar de leyenda aparte. La región entre curvas es el dominio de la separación.</p>
+              </div>
+            </div>
+            <div class="flip-panel" data-panel="profile" role="tabpanel" hidden>
+              <img src="img/clase-18-19-profile.png" alt="Perfil de composición a lo largo de las etapas; componente clave destacado" />
+              <div class="flip-caption">
+                <h3>Perfil de composición / temperatura vs. etapa</h3>
+                <p>Línea gruesa para el componente clave; el resto en gris. La transición «por dónde» se puede ver de un vistazo.</p>
+              </div>
+            </div>
+            <div class="flip-panel" data-panel="qt" role="tabpanel" hidden>
+              <img src="img/clase-18-19-qt.png" alt="Perfil Q-T con curva caliente y curva fría; ΔT mínimo etiquetado" />
+              <div class="flip-caption">
+                <h3>Perfil Q-T (intercambiadores)</h3>
+                <p>Curva caliente y curva fría. ΔT mínimo etiquetado <em>directamente</em> en el punto crítico, no en una leyenda separada.</p>
+              </div>
+            </div>
+            <div class="flip-panel" data-panel="pump" role="tabpanel" hidden>
+              <img src="img/clase-18-19-pump.png" alt="Curvas de la bomba y del sistema con punto de operación marcado" />
+              <div class="flip-caption">
+                <h3>Curva de bomba</h3>
+                <p>El punto de operación marcado claramente sobre la intersección de la curva del sistema y la curva de la bomba. Si no se ve el punto, falta lo más importante.</p>
+              </div>
+            </div>
+            <div class="flip-panel" data-panel="parity" role="tabpanel" hidden>
+              <img src="img/clase-18-19-parity.png" alt="Diagrama de paridad modelo-experimento con R² en una caja" />
+              <div class="flip-caption">
+                <h3>Diagrama de paridad</h3>
+                <p>Línea $y = x$ punteada en gris, datos sólidos. R² o RMSE anclados en una caja en una esquina, no flotando sobre los puntos.</p>
+              </div>
+            </div>
           </div>
         </div>
-        <p class="small-text" style="text-align: left; margin-top: 1rem;">
-          Cada uno tiene convenciones aceptadas. No las reinventen. Sí pueden mejorar la limpieza, los colores, los tamaños y el etiquetado.
-        </p>
       </div>
     </section>
 
@@ -1138,23 +1250,31 @@
       <div class="content">
         <p class="eyebrow">Bloque 3 · Data-tinta</p>
         <h2>La razón data-tinta de Tufte</h2>
-        <div class="big-example" style="background: var(--muted); border-radius: 0.6rem; padding: 0.85rem 1.15rem; max-width: 40rem;">
+        <div class="big-example" style="background: var(--muted); border-radius: 0.6rem; padding: 0.85rem 1.15rem; max-width: 42rem;">
           <p style="text-align: center; color: var(--brand-dark); font-weight: 600;">$$\text{razón data-tinta} = \dfrac{\text{tinta que comunica datos}}{\text{tinta total}}$$</p>
         </div>
-        <div class="grid cols-2 stagger-in" style="margin-top: 0.8rem;">
-          <div class="fig">
-            <span class="fig-label bad">Razón baja</span>
-            <img class="diagram" src="img/clase-18-23-bad.png" alt="Gráfica antes: bordes pesados, sombra, rejilla densa, fondo gris" style="max-height: 52vh; width: auto;" />
-            <figcaption>Mucha tinta no comunica datos.</figcaption>
+        <div class="flip-group flip-group--toggle" data-flip-group style="margin-top: 0.8rem;">
+          <div class="flip-tabs flip-tabs--toggle" role="tablist" aria-label="Razón data-tinta">
+            <button type="button" role="tab" class="is-active is-bad" data-target="dt-bad" aria-selected="true">Razón baja</button>
+            <button type="button" role="tab" class="is-good" data-target="dt-good" aria-selected="false">Razón alta</button>
           </div>
-          <div class="fig">
-            <span class="fig-label good">Razón alta</span>
-            <img class="diagram" src="img/clase-18-23-good.png" alt="Gráfica después: solo ejes finos, datos al frente" style="max-height: 52vh; width: auto;" />
-            <figcaption>Toda la tinta sirve.</figcaption>
+          <div class="flip-panels">
+            <div class="flip-panel is-active" data-panel="dt-bad" role="tabpanel">
+              <img src="img/clase-18-23-bad.png" alt="Gráfica con bordes pesados, sombra, rejilla densa, fondo gris" />
+              <div class="flip-caption">
+                <p><strong>Mucha tinta no comunica datos:</strong> bordes pesados, fondo gris, sombras, rejilla densa, decimales innecesarios. Cada raya compite con los datos por la atención.</p>
+              </div>
+            </div>
+            <div class="flip-panel" data-panel="dt-good" role="tabpanel" hidden>
+              <img src="img/clase-18-23-good.png" alt="Gráfica limpia, solo ejes y datos" />
+              <div class="flip-caption">
+                <p><strong>Toda la tinta sirve:</strong> ejes finos, dos referencias en cada eje, una sola línea con los datos. Mismo mensaje, sin fricción.</p>
+              </div>
+            </div>
           </div>
         </div>
-        <p class="small-text" style="text-align: left; margin-top: 1rem;">
-          Edward Tufte, hace cuarenta años. La idea es simple: cada raya, cada color, cada borde compite con los datos por la atención del lector. Si esa raya no comunica datos, está estorbando.
+        <p class="small-text" style="text-align: left; margin-top: 0.8rem;">
+          Edward Tufte, hace cuarenta años. La idea es simple: cada raya, cada color, cada borde compite con los datos por la atención. Si no comunica datos, está estorbando.
         </p>
       </div>
     </section>
@@ -1778,6 +1898,40 @@
         s.appendChild(num);
       });
 
+
+      // Flip-groups (stepper / toggle) — slides 19 y 23
+      document.querySelectorAll('[data-flip-group]').forEach(function (group) {
+        var tabs = group.querySelectorAll('.flip-tabs button');
+        var panels = group.querySelectorAll('.flip-panel');
+        function activate(target) {
+          tabs.forEach(function (b) {
+            var on = b.getAttribute('data-target') === target;
+            b.classList.toggle('is-active', on);
+            b.setAttribute('aria-selected', on ? 'true' : 'false');
+          });
+          panels.forEach(function (p) {
+            var on = p.getAttribute('data-panel') === target;
+            p.classList.toggle('is-active', on);
+            if (on) p.removeAttribute('hidden');
+            else p.setAttribute('hidden', '');
+          });
+        }
+        tabs.forEach(function (b) {
+          b.addEventListener('click', function () {
+            activate(b.getAttribute('data-target'));
+          });
+          b.addEventListener('keydown', function (e) {
+            if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+              e.preventDefault();
+              var arr = Array.from(tabs);
+              var idx = arr.indexOf(b);
+              var next = e.key === 'ArrowRight' ? (idx + 1) % arr.length : (idx - 1 + arr.length) % arr.length;
+              arr[next].focus();
+              activate(arr[next].getAttribute('data-target'));
+            }
+          });
+        });
+      });
 
       // Interactive vis-cells (slides 14 y 20)
       document.querySelectorAll('.vis-cell.interactive').forEach(function (card) {
