@@ -378,7 +378,7 @@ const cursoGeneralidadesIaG2: EdcoCourse = {
     'Trabajo autónomo (5 h) en Bloque Neón: lecturas, análisis de casos y trabajo final estratégico.',
     'Monitor EDCO por confirmar — apoyo CEF: Cirley Dayanna Sánchez Parra (cirley.sanchez@contraloria.gov.co).',
   ],
-  presentationIds: [],
+  presentationIds: ['cgr-s01-fundamentos-ia', 'cgr-s02-como-aprenden'],
 };
 
 const cursoModelosIa: EdcoCourse = {
@@ -567,7 +567,7 @@ const cursoModelosIa: EdcoCourse = {
     'Trabajo autónomo (5 h) en Bloque Neón: ejercicios comparativos, lecturas técnicas y proyecto final.',
     'Monitor EDCO por confirmar — apoyo CEF: Cirley Dayanna Sánchez Parra (cirley.sanchez@contraloria.gov.co).',
   ],
-  presentationIds: [],
+  presentationIds: ['modelos-m1s1-fundamentos-ia', 'modelos-m1s2-aprendizaje'],
 };
 
 export const eduProCourse: Course = {
@@ -603,6 +603,42 @@ export const eduProCourse: Course = {
       description:
         'Cómo funcionan los LLM por dentro: discriminativo vs generativo, el modelo como ruleta probabilística («Lima es la capital de…»), atención y autoregresión, alucinaciones. Timeline interactivo de la evolución 2021–2026 (de GPT-3 a Claude Opus 4.7), iceberg ChatGPT vs LLM, anatomía de un prompt, panorama de modelos líderes 2026, scaling laws, fluido vs fáctico y limitaciones.',
       file: 'm2-1-fundamentos-modelos-generativos.html',
+    },
+    {
+      id: 'cgr-s01-fundamentos-ia',
+      title: 'CGR S1 — ¿Qué es la Inteligencia Artificial? Historia, definiciones y mitos',
+      sessionNumber: 1,
+      date: '2026-05-04',
+      description:
+        'Primera sesión del curso Generalidades de la IA para la CGR. Recorrido por la historia de la IA (1950–hoy), mitos y realidades, ecosistema de modelos líderes y ecosistema de herramientas. Dictada por Juan Carlos Cruz.',
+      file: 'cgr-s01-fundamentos-ia.html',
+    },
+    {
+      id: 'cgr-s02-como-aprenden',
+      title: 'CGR S2 — Cómo aprenden las máquinas: datos, algoritmos y modelos',
+      sessionNumber: 2,
+      date: '2026-05-07',
+      description:
+        'Segunda sesión del curso Generalidades de la IA para la CGR. Cómo aprenden las máquinas: datos, algoritmos, modelos, tres paradigmas de aprendizaje, tipos de modelos y calidad/sesgos en los datos. Dictada por Luis H. Reyes.',
+      file: 'cgr-s02-como-aprenden.html',
+    },
+    {
+      id: 'modelos-m1s1-fundamentos-ia',
+      title: 'Modelos M1.1 — Fundamentos de los modelos de IA',
+      sessionNumber: 1,
+      date: '2026-05-04',
+      description:
+        'Primera sesión del curso Modelos de la IA para la CGR. Historia de la IA, definiciones, mitos, ecosistema de modelos y categorías. Adaptación de la sesión de Juan Carlos Cruz con enfoque en tipología de modelos.',
+      file: 'modelos-m1s1-fundamentos-ia.html',
+    },
+    {
+      id: 'modelos-m1s2-aprendizaje',
+      title: 'Modelos M1.2 — Cómo aprenden los modelos: datos, algoritmos y evaluación',
+      sessionNumber: 2,
+      date: '2026-05-06',
+      description:
+        'Segunda sesión del curso Modelos de la IA para la CGR. Datos, algoritmos y modelos; tres paradigmas de aprendizaje; tipos de modelos; calidad de datos y sesgos. Dictada por Luis H. Reyes.',
+      file: 'modelos-m1s2-aprendizaje.html',
     },
   ],
   // Campos académicos no aplican; se dejan con stubs vacíos para satisfacer el tipo Course.
