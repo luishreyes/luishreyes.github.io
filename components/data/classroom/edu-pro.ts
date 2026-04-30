@@ -47,7 +47,7 @@ const cursoIaMayo2026: EdcoCourse = {
       topics: [
         'Fundamentos de la generación de imágenes por IA (2h)',
         'Exploración de principales herramientas (2h)',
-        'Laboratorio práctico (2h)',
+        'Análisis de datos con IA generativa (2h)',
       ],
     },
     {
@@ -151,7 +151,7 @@ const cursoIaMayo2026: EdcoCourse = {
       day: 'Lunes',
       time: '6:30 pm – 8:30 pm',
       module: 'M3.3',
-      topic: 'Laboratorio práctico (imágenes)',
+      topic: 'Análisis de datos con IA generativa',
       instructor: 'Luis H. Reyes',
       hours: 2,
       isMine: true,
