@@ -38,10 +38,10 @@ export const ServicePurposePage: React.FC = () => {
                     className="text-left max-w-3xl"
                 >
                     <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white [text-shadow:0_2px_4px_rgba(0,0,0,0.5)]">
-                        Cultivating Our Ecosystem
+                        Cultivating the Ecosystem
                     </h1>
                     <p className="mt-6 text-xl text-zinc-200 leading-relaxed [text-shadow:0_1px_2px_rgba(0,0,0,0.5)]">
-                        My service purpose is to strengthen the academic and scientific communities that foster growth and create pathways for future generations.
+                        Cultivating the structures that made my growth possible, and building paths the next generation can use to go further than we did.
                     </p>
                 </motion.div>
             </div>
@@ -63,25 +63,25 @@ export const ServicePurposePage: React.FC = () => {
                 <h2 className="text-3xl font-bold tracking-tight text-brand-dark text-left mb-8">My Service Purpose</h2>
                 <div className="space-y-6 text-lg text-brand-gray leading-relaxed">
                     <p>
-                        I serve because I believe institutions and communities are ecosystems that require active cultivation. My purpose is to strengthen the structures that enabled my growth while creating pathways for future generations to surpass what we’ve achieved.
+                        Institutions and communities are ecosystems. They do not maintain themselves. My purpose in serving is to keep cultivating the structures that made my own growth possible, and to build paths the next generation can use to go further than we did.
                     </p>
                     <p>
-                        Service became meaningful when I realized that Uniandes, which I genuinely believe is the best university in Colombia, gave me opportunities I needed to reciprocate. This isn’t obligation born from debt but recognition that healthy ecosystems require active participants, not passive beneficiaries. Every committee I join, every manuscript I review, every high school student I inspire through outreach represents an investment in a system larger than myself. This isn’t about recognition; it’s about ensuring the ecosystem thrives.
+                        Service stopped feeling abstract once I understood what Uniandes had actually given me. I think it is the best university in the country, and that judgment carries an obligation, though obligation is the wrong word. Healthy ecosystems do not run on passive gratitude. They run on participation. Every committee, every manuscript I review, every conversation with a high-school student deciding whether engineering is for them: each is an investment in a system that exceeds me. The point is not the recognition. The point is the ecosystem staying alive.
                     </p>
                     <p>
-                        When I co-founded the Augmented Intelligence Initiative, it wasn’t to follow AI trends but because I recognized how generative AI could transform engineering education if we evolved our methods thoughtfully. This exemplifies my service approach: identifying where emerging capabilities meet institutional needs, then building bridges between them. Service means seeing connections others might miss and creating structures that benefit the entire community.
+                        Co-founding the Augmented Intelligence Initiative was not a bet on a trend. Generative AI is going to remake engineering education whether we plan for it or not, and I would rather we evolve our methods on purpose than have them eroded by accident. That move captures how I read service in general. Notice where new capabilities meet a real institutional need, and build the bridge. Service is the discipline of seeing connections most people walk past and turning them into structures the rest of the community can use.
                     </p>
                     <p>
-                        Leading the GDPP, serving on editorial boards, visiting schools: these aren’t checkboxes on an academic service report. They’re opportunities to be a connector node in different networks. When I review a manuscript, I’m helping another researcher strengthen their work. When I visit a high school, I’m opening possibilities students hadn’t imagined. When I serve on committees, I’m ensuring our institution evolves to serve new generations effectively.
+                        Leading the GDPP, sitting on editorial boards, visiting schools, none of these are checkboxes on a service report. They are different networks where I get to be a connector node. A manuscript review helps another researcher sharpen their argument. A school visit cracks open possibilities a student had not yet allowed themselves to imagine. Committee work, for all its slowness, is how an institution keeps adapting to the generations it has not yet met.
                     </p>
                     <p>
-                        What drives me is both simple and complex. Simple: I can contribute. I have ideas, creativity, honesty, and genuine interest in student wellbeing. Complex: I understand that service creates ripple effects beyond immediate impact. Working sustains my family, yes, but it also keeps me intellectually active and conscious of my role in larger systems. A student I mentor today becomes a node in tomorrow’s network. A program I’m working to establish could serve hundreds of students I’ll never meet. An editorial decision shapes knowledge that influences researchers worldwide.
+                        What sustains me here has two layers. The first is straightforward. I have something to give: ideas, creativity, honesty, and a real concern for whether students are doing okay. The second takes longer to articulate. Service produces effects that travel further than the act itself. The work supports my family, yes. It also keeps me intellectually awake and aware of my position inside larger systems. The student I mentor today becomes a node in tomorrow&rsquo;s network. The program I am building now could serve students I will never meet. An editorial decision shapes knowledge that travels to researchers I will never know.
                     </p>
                     <p>
-                        Following stoic principles, when I can’t control outcomes, I focus on what I can influence. Service multiplies that influence exponentially. Individual achievement has limits; ecosystem cultivation has none. The best research paper I could write impacts dozens. The programs I’m working to create could impact thousands. The best student I mentor becomes a multiplier themselves.
+                        Stoic practice taught me to put my attention on what I can actually move. Service is the form that practice takes inside an institution. Individual achievement has a ceiling. Ecosystem cultivation does not. The best paper I could write reaches dozens. The programs I am building could reach thousands. The strongest student I mentor becomes a multiplier in their own right, and the chain keeps extending.
                     </p>
                     <p>
-                        The ecosystem metaphor isn’t just poetic; it’s practical. Ecosystems require diversity, adaptation, and interconnection. My service ensures our academic ecosystem maintains all three: diverse perspectives through inclusive programs, adaptation through initiatives like AI integration, and interconnection through the networks I help weave between academia, industry, and society. This is how institutions evolve, how communities strengthen, how future generations find paths we couldn’t have imagined.
+                        The ecosystem metaphor is more than ornament. Real ecosystems persist on three properties: diversity, adaptation, and interconnection. Service is how I help our academic ecosystem hold all three, by widening who gets in, by pushing initiatives that meet actual change in the world, and by weaving the connections between academia, industry, and society that make any of it durable. This is how institutions evolve. This is how the next generation finds paths we never had the imagination to draw.
                     </p>
                 </div>
             </motion.div>

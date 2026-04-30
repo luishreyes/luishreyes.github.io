@@ -12,17 +12,17 @@ const frameworkItems = [
     {
         title: "The Constructivist Foundation",
         icon: "https://png.pngtree.com/png-clipart/20230429/original/pngtree-scaffolding-line-icon-png-image_9119622.png",
-        description: "Like traditional constructivism, I recognize that students build rather than receive knowledge. Starting with fundamental principles, they construct their own frameworks for understanding. When they derive heat transfer equations rather than memorize them, when they discover why a process works rather than just learn that it does, they’re actively constructing knowledge that becomes truly theirs. This construction process creates understanding that survives beyond exams into professional practice."
+        description: "Students build knowledge rather than receive it. This much is settled. Starting from fundamental principles, they construct their own frameworks for understanding. When a student derives a heat transfer equation instead of memorizing it, when they figure out why a process works rather than accept that it does, the understanding becomes structurally theirs. It survives the exam and shows up again in professional practice years later, which is the only test of teaching that finally matters."
     },
     {
         title: "The Co-adaptive Element",
         icon: "https://www.svgrepo.com/show/335231/infinity.svg",
-        description: "Where my approach diverges is in recognizing that educators must also adapt and learn. Students arrive shaped by their generation’s tools, contexts, and ways of knowing. Static teaching in a dynamic world creates misalignment. We adapt together, maintaining rigor while evolving methods. This isn’t pedagogical relativism; it’s pedagogical realism."
+        description: "The departure from classical constructivism is small in formulation and large in consequence. Educators have to learn and adapt too. Students arrive shaped by the tools, contexts, and habits of knowing that their generation produced. Teaching frozen in a previous decade creates predictable misalignment with the students actually in the room. We adapt alongside them, holding rigor steady while letting methods change. This is not pedagogical relativism. It is pedagogical realism."
     },
     {
         title: "Core Principle: Vectorial Alignment",
         icon: "https://icons.veryicon.com/png/o/miscellaneous/xdh-font-graphics-library/direction-17.png",
-        description: "Think of education as vector addition. Students arrive with their own direction and magnitude, their own trajectory shaped by background, goals, and context. Traditional education often tries to redirect them entirely. Instead, I view my role as adding my vector to theirs: my knowledge, guidance, and methods combine with their existing momentum to create a new resultant direction. The goal is optimization of this combined vector, not replacement of theirs with mine. We achieve more through alignment and addition than through redirection."
+        description: "I picture education as vector addition. Each student arrives with their own direction and magnitude, a trajectory shaped by background, goals, and context. Conventional teaching tries to overwrite that vector with the instructor's own. My approach is to add mine to theirs: knowledge, guidance, and method combine with the momentum the student already carries, and the result is a new direction neither of us could have produced alone. The goal is the optimization of the combined vector, not the replacement of theirs by mine. Alignment outperforms redirection in almost every case I have seen."
     }
 ];
 
@@ -85,7 +85,7 @@ export const TeachingPhilosophyPage = () => {
                         Teaching Philosophy
                     </h1>
                     <p className="mt-6 text-xl text-zinc-200 leading-relaxed [text-shadow:0_1px_2px_rgba(0,0,0,0.5)]">
-                        My approach of Co-adaptive Constructivism extends established pedagogical principles, recognizing that effective education requires mutual adaptation between educators and students—not just student adaptation to fixed academic structures.
+                        Co-adaptive Constructivism builds on a constructivist tradition that is no longer in dispute, and adds the recognition that effective teaching demands mutual adaptation. Standards held high, paths to reach them multiplied.
                     </p>
                 </motion.div>
             </div>
@@ -105,6 +105,9 @@ export const TeachingPhilosophyPage = () => {
                 className="text-left space-y-12 text-lg text-brand-gray leading-relaxed"
             >
                 <div>
+                    <p className="mb-10">
+                        My approach, which I call Co-adaptive Constructivism, builds on a constructivist tradition that is no longer in dispute, and adds the recognition that effective teaching demands mutual adaptation. Students adapting to fixed academic structures is not enough. The structures, and those of us who keep them, have to adapt as well.
+                    </p>
                     <h3 className="text-3xl font-bold tracking-tight text-brand-dark mb-8">Core Framework: Co-adaptive Constructivism</h3>
                     <motion.div 
                         className="mt-8 flex flex-col gap-8"
@@ -133,27 +136,27 @@ export const TeachingPhilosophyPage = () => {
                 <div>
                     <h3 className="text-3xl font-bold tracking-tight text-brand-dark mb-4">Addressing Equity Through Co-adaptation</h3>
                     <p>
-                        This framework explicitly acknowledges that students arrive with different starting points, resources, and challenges. Co-adaptation means recognizing these differences without lowering expectations. For students with fewer resources, I adapt by providing more scaffolding. For those with different learning approaches, I adapt my explanation methods. The destination remains rigorous; the paths multiply.
+                        The framework names something most pedagogical models avoid: students do not arrive at the same starting point. Resources, preparation, and prior obstacles differ. Co-adaptation is how the framework responds to that fact without lowering the bar. A student with fewer resources gets more scaffolding. A student who learns differently gets a different route into the same idea. The destination stays rigorous. The paths multiply.
                     </p>
                 </div>
 
                 <div className="mt-12 bg-white rounded-lg shadow-xl border border-yellow-400/40 p-8 md:p-12">
-                    <h2 className="text-3xl font-bold tracking-tight text-brand-dark mb-8 text-center">Five Pillars of Practice</h2>
+                    <h2 className="text-3xl font-bold tracking-tight text-brand-dark mb-8 text-center">Five Practices</h2>
                     <ol className="space-y-8 text-lg text-brand-gray leading-relaxed list-decimal list-outside ml-5">
                         <li>
-                            <strong>Fundamentals as Foundation:</strong> I invest intensive time ensuring students understand core principles: conservation laws, thermodynamic principles, transport phenomena. When students grasp these fundamentals, they can derive what they need, recognize patterns, and build solutions. This aligns with conceptual pedagogy’s emphasis on deep understanding over surface learning.
+                            <strong>Principles Before Recipes.</strong> I spend serious time on the foundations: conservation laws, thermodynamics, transport phenomena. Once a student holds these properly, they can derive what they need, recognize patterns across contexts, and build their own solutions. Conceptual pedagogy has been making this argument for decades. I am simply trying to honor it.
                         </li>
                         <li>
-                            <strong>Bidirectional Learning:</strong> Following dialogic principles, I explicitly acknowledge learning alongside my students. Their questions reveal new angles; their approaches challenge my assumptions. This isn’t false modesty but recognition that knowledge construction happens through dialogue. I model intellectual humility while maintaining academic rigor.
+                            <strong>Bidirectional Learning.</strong> In keeping with dialogic principles, I name out loud that I am learning alongside my students. Their questions surface angles I had not considered. Their approaches challenge assumptions I had stopped examining. This is not staged humility. Knowledge construction is dialogic by nature, and pretending otherwise teaches students the wrong thing about expertise.
                         </li>
                         <li>
-                            <strong>Networks as Knowledge Architecture:</strong> Real-world problem-solving happens through networks, not in isolation. I connect students with peers, industry professionals, researchers, and alumni. This reflects both social constructivist principles and professional reality: knowing how to build and activate knowledge networks matters as much as individual expertise.
+                            <strong>Networks as Architecture.</strong> Problems in professional practice rarely yield to the lone expert. They yield to networks. I connect students with peers, alumni, industry contacts, and active researchers, because building and activating a knowledge network is itself a skill. Social constructivism has the theory. The profession has the evidence.
                         </li>
                         <li>
-                            <strong>Adaptive Pressure Through Collaboration:</strong> Team-based learning with rotating compositions creates productive adaptation pressure. Students develop flexibility in collaboration styles, communication methods, and problem-solving approaches. This mirrors professional environments where adaptability determines success.
+                            <strong>Adaptive Pressure Through Collaboration.</strong> I run team-based work with rotating membership. The result is productive friction. Students learn to flex their collaboration style, their communication mode, their default approach to a problem. Professional environments demand exactly this kind of adaptability, and the classroom is the safest place to develop it.
                         </li>
                         <li>
-                            <strong>Transparent Evolution:</strong> I make our co-adaptation visible. Students see me adjust methods based on their feedback, try new approaches when something isn’t working, acknowledge when their solutions surpass mine. This transparency demystifies expertise and models professional growth. They witness that even professors are works in progress, constantly refining their practice. When I discover a better explanation through their questions, I tell them. When their approach teaches me something new, I acknowledge it. This visibility transforms the classroom into a living demonstration of lifelong learning.
+                            <strong>Transparent Evolution.</strong> I make the co-adaptation visible. Students see me change a method based on their feedback, try a new approach when an old one fails, concede that a student&rsquo;s solution beats the one I had prepared. The point is to demystify expertise. Professors are works in progress, and watching that progress in real time teaches students more about professional life than any monologue on lifelong learning could.
                         </li>
                     </ol>
                 </div>
@@ -162,27 +165,27 @@ export const TeachingPhilosophyPage = () => {
                     <div>
                         <h3 className="text-3xl font-bold tracking-tight text-brand-dark mb-4">The Stoic Foundation</h3>
                         <p>
-                            Underlying this philosophy is focus on what we can control. I cannot control students’ starting conditions: their preparation, circumstances, or initial motivation. I can control the environment I create, the trust I extend, and my own continuous adaptation. This isn’t passive acceptance of inequity but strategic focus on actionable change.
+                            Underneath the framework is a discipline of attention. I cannot control the conditions a student brings on day one: preparation, circumstance, motivation, the rest. I can control the environment I build, the trust I extend, and the steadiness of my own adaptation. This is not passive acceptance of inequity. It is the strategic concentration of effort on what will actually move.
                         </p>
                     </div>
                      <div>
                         <h3 className="text-3xl font-bold tracking-tight text-brand-dark mb-4">Philosophy in Practice</h3>
                         <ul className="space-y-4 text-lg text-brand-gray leading-relaxed list-disc list-outside ml-5">
-                            <li><strong>Assessment:</strong> Multiple formats acknowledging different strengths while maintaining standards.</li>
-                            <li><strong>Content Delivery:</strong> Core principles taught through varied contexts relevant to current students.</li>
-                            <li><strong>Feedback:</strong> Continuous dialogue about what works, what doesn’t, and why.</li>
-                            <li><strong>Evolution Tracking:</strong> Regular documentation of successful and failed adaptations, building institutional knowledge.</li>
+                            <li><strong>Assessment.</strong> Multiple formats that recognize different strengths without softening the standard.</li>
+                            <li><strong>Content delivery.</strong> Core principles taught through contexts that the current cohort can recognize.</li>
+                            <li><strong>Feedback.</strong> Continuous dialogue about what is working, what is not, and why.</li>
+                            <li><strong>Evolution tracking.</strong> Documentation of adaptations that succeeded and adaptations that failed, so the lessons accumulate instead of evaporating each semester.</li>
                         </ul>
                     </div>
                 </div>
-                
+
                 <div className="mt-12 p-8 bg-zinc-100 border-l-4 border-yellow-400 rounded-r-lg">
                     <h3 className="text-3xl font-bold tracking-tight text-brand-dark mb-4">The Transformation</h3>
                     <p>
-                        This philosophy transforms the classroom into a co-adaptive learning system where all participants emerge changed. Students gain not just engineering knowledge but the meta-skill of adaptive learning. Educators gain continuously refreshed understanding of how knowledge construction happens across generations. The classroom becomes a living laboratory of mutual transformation, preparing all participants for a world that demands both deep expertise and continuous adaptation.
+                        The classroom turns into a co-adaptive system in which everyone present, students and educator alike, leaves changed. Students walk out with engineering knowledge and with the meta-skill of adaptive learning, which has the longer half-life. Educators walk out with a continually refreshed sense of how knowledge construction is happening across generations that are not their own. The classroom becomes a living laboratory of mutual transformation, and that is the rehearsal a graduate needs for a world that will demand deep expertise and continuous adaptation in the same breath.
                     </p>
                     <p className="mt-4 font-semibold text-brand-dark">
-                        Rather than choosing between rigor and relevance, co-adaptive constructivism achieves both through dynamic alignment. We maintain high standards while recognizing that the paths to reach them must multiply and evolve. This isn’t compromise; it’s optimization for actual impact.
+                        Co-adaptive constructivism does not ask anyone to choose between rigor and relevance. It produces both through dynamic alignment. The standard stays high. The paths to reach it multiply and keep evolving. The framework is not a compromise. It is what optimization for real impact actually looks like.
                     </p>
                 </div>
               </motion.div>

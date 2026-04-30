@@ -39,10 +39,10 @@ export const TeachingPurposePage: React.FC = () => {
                     className="text-left max-w-3xl"
                 >
                     <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white [text-shadow:0_2px_4px_rgba(0,0,0,0.5)]">
-                        A Place to Learn and Grow
+                        Fundamentals, Held with Rigor
                     </h1>
                     <p className="mt-6 text-xl text-zinc-200 leading-relaxed [text-shadow:0_1px_2px_rgba(0,0,0,0.5)]">
-                        My teaching purpose is to guide students in mastering fundamental principles while we co-adapt our methods, discovering together how to solve real-world problems creatively.
+                        Teaching the fundamentals deeply enough that students can build their own solutions, and evolving alongside each cohort to find out what they can actually do.
                     </p>
                 </motion.div>
             </div>
@@ -64,28 +64,28 @@ export const TeachingPurposePage: React.FC = () => {
                 <h2 className="text-3xl font-bold tracking-tight text-brand-dark text-left mb-8">My Teaching Purpose</h2>
                 <div className="space-y-6 text-lg text-brand-gray leading-relaxed">
                     <p>
-                        Every morning, I’m driven to teach by a fundamental belief: when students truly understand core principles rather than just memorize them, they can solve any problem they encounter. My purpose is to rigorously teach these foundations while continuously evolving alongside my students, discovering together what we’re each capable of achieving.
+                        I teach because students who understand a principle can solve problems no one prepared them for. Memorization is a finite toolkit. Understanding generates new tools as the problems change. My purpose is to teach the fundamentals with the rigor they deserve, and to keep evolving alongside the students I teach, because finding out what each cohort can actually do is part of what teaching is for.
                     </p>
                     <p>
-                        I discovered my calling in 11th grade chemistry when Professor Martha Rondón trusted me to teach my peers. Years later, Professor Álvaro Ramírez crystallized the philosophy that guides me still: “There’s no problem staying with the fundamentals because once you understand them, the rest of the profession falls into place naturally.” This became my north star: teaching students to understand principles deeply enough to build their own solutions, rather than memorizing formulas for specific contexts.
+                        The vocation announced itself in eleventh-grade chemistry, when Professor Martha Rondón trusted me to teach my classmates. Years later, Professor Álvaro Ramírez gave me the sentence I still teach by: &ldquo;There is no problem staying with the fundamentals, because once you understand them, the rest of the profession falls into place naturally.&rdquo; That became the compass. Teach principles deeply enough that students can build their own solutions, instead of feeding them formulas tied to whatever context happens to be in vogue.
                     </p>
                     <p>
-                        I visualize teaching through a vectorial metaphor. Students arrive as vectors with magnitude (their energy and potential), direction (their interests and goals), and sense (positive or negative orientation toward learning), shaped by their generation’s tools and experiences. As educators, we too are vectors. The resulting education is a vectorial sum: when our vectors point in similar directions with the same positive sense toward academic excellence, our contributions add constructively. When we oppose their sense, we create destructive interference. When we insist on orthogonal directions, we pull students sideways without advancing their forward momentum.
+                        I organize my teaching around a vectorial metaphor. Students arrive as vectors with magnitude (their energy and potential), direction (their interests and goals), and sense (positive or negative orientation toward learning), each shaped by the tools and experiences of their generation. Educators are vectors too. The education that actually emerges is a vectorial sum. Aligned vectors with shared positive sense produce constructive interference and forward motion. Opposed senses cancel each other out. Orthogonal insistence, the most common failure mode, pulls students sideways without advancing them at all.
                     </p>
                     <p>
-                        This is why I fundamentally reject the tired complaint that “students today aren’t like they used to be.” Of course they aren’t. Students have always evolved with their times, their tools, their contexts. This isn’t a decline; it’s evolution. The real problem emerges when educators refuse to adapt their own vectors, insisting on teaching as if students still arrive with slide rules instead of smartphones, with library cards instead of infinite digital access. When we complain about student evolution while refusing our own, we’re the ones creating misalignment. We’re the ones reducing our potential impact through stubborn orthogonality.
+                        This is why I reject the well-worn complaint that &ldquo;students today are not like they used to be.&rdquo; Of course they are not. Students have always evolved with their times, their tools, their contexts. The shift is not decline. It is evolution. The real problem appears when educators refuse to evolve their own vectors, teaching as if students still arrived with slide rules in their pockets and library cards as their only research tool. When we complain about student evolution while refusing our own, the misalignment is ours, not theirs. The orthogonality we lament, we are creating.
                     </p>
                     <p>
-                        When we adapt our vector to align with theirs while maintaining positive sense toward rigorous learning, we maximize the resultant vector’s magnitude. We create powerful educational momentum rather than wasted orthogonal forces. Their evolution isn’t a problem to solve; it’s an opportunity for mutual growth.
+                        The corrective is alignment, not lowered standards. We adjust our vector to meet theirs while keeping the sense pointed firmly at rigorous learning. Done well, the resultant vector grows in magnitude rather than canceling out. Their evolution stops being a problem to manage and starts being the condition that makes serious learning possible.
                     </p>
                     <p>
-                        What drives me is witnessing transformation through transparency. Students see me adjust my teaching when their questions reveal better approaches. They watch me acknowledge when their solutions surpass mine. This visible co-adaptation shows them that expertise means continuous learning, not fixed knowledge. A student who once memorized Q=UA∆T now grasps heat transfer deeply enough to solve problems I never taught. Years later, they thank me for teaching them how to think in fundamentals while adapting to new challenges.
+                        What I want my students to see is the adaptation itself. They watch me change a method when a question reveals a better one. They watch me concede that a student&rsquo;s solution beats mine. That visible co-adaptation is the whole curriculum on what expertise really is: a practice of continuous learning, not a stockpile of fixed knowledge. A student who once memorized Q=UA∆T now reasons about heat transfer well enough to solve problems I never set. Some come back years later to say so.
                     </p>
                     <p>
-                        My commitment extends beyond individual classrooms. I strengthen our institution through often unrecognized work because I focus on what I can control: the environment I create, the trust I extend, the continuous refinement of my practice. This same principle shapes how I approach each student’s unique starting point. I cannot control how they arrive, but I can control how we adapt together to achieve rigorous learning outcomes.
+                        My work outside the classroom rests on the same logic. I invest in institutional repair, often invisibly, because I focus on what I can shape: the environment, the trust I extend to colleagues and students, the steady refinement of my own practice. The same applies to how I receive each student. I cannot control the vector they bring on day one. I can control how we align ours from there.
                     </p>
                     <p>
-                        The classroom becomes a space where both students and educator evolve, where fundamental principles meet contemporary applications, where academic rigor coexists with methodological flexibility. This is co-adaptive constructivism in action: maintaining high standards while multiplying the paths to reach them.
+                        The classroom I want is a space where students and educator evolve in parallel, where fundamental principles meet contemporary applications, where rigor and methodological flexibility reinforce each other instead of fighting. This is co-adaptive constructivism in action: standards held high, paths to reach them multiplied.
                     </p>
                 </div>
             </motion.div>
