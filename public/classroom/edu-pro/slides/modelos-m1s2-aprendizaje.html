@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <link rel="stylesheet" href="/classroom-fonts.css" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Modelos M1.2 — Cómo aprenden los modelos</title>
+  <title>Modelos M1.2 — Cómo aprenden los modelos: datos, algoritmos y evaluación</title>
   <style>
     :root {
       --brand-dark: #1A1A1A;
@@ -42,13 +42,10 @@
     p, li { font-size: clamp(0.95rem, 1.6vw, 1.6rem); line-height: 1.55; color: var(--brand-gray); margin: 0; }
     ul, ol { padding-left: 1.25em; margin: 0; display: flex; flex-direction: column; gap: 0.45em; }
     li::marker { color: var(--brand-yellow-dark); }
-    .slide.title-slide { background: linear-gradient(135deg, #141414 0%, #1A1A1A 50%, #2a2a2a 100%); color: #fff; }
-    .slide.title-slide h1, .slide.title-slide h2, .slide.title-slide h3 { color: #fff; }
-    .slide.title-slide p, .slide.title-slide li { color: #e4e4e7; }
     .slide.cover { background-color: #0a0a0a; background-blend-mode: multiply; background-size: cover; background-position: center; }
     .slide.cover::after { content:''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(10,10,10,0.86) 0%, rgba(20,20,20,0.7) 50%, rgba(20,20,20,0.6) 100%); pointer-events: none; }
     .slide.cover .content { position: relative; z-index: 2; }
-    .slide.cover h1, .slide.cover h2 { color: #fff; }
+    .slide.cover h1, .slide.cover h2, .slide.cover h3 { color: #fff; }
     .slide.cover p, .slide.cover li { color: #e4e4e7; }
     .slide.cover .eyebrow { color: var(--brand-yellow); }
     .pill-row { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 0.5rem; }
@@ -60,33 +57,82 @@
     .grid.cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
     .grid.cols-5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
     @media (max-width: 768px) { .grid.cols-2, .grid.cols-3, .grid.cols-4, .grid.cols-5 { grid-template-columns: 1fr; } }
-    .card { background: var(--muted); border-radius: 0.75rem; padding: clamp(0.9rem, 1.5vw, 1.35rem); transition: transform 220ms ease, box-shadow 220ms ease; }
+    .card { background: var(--muted); border-radius: 0.75rem; padding: clamp(0.9rem, 1.5vw, 1.35rem); transition: transform 220ms, box-shadow 220ms; }
     .card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
     .card h3 { font-size: clamp(1rem, 1.7vw, 1.5rem); margin: 0 0 0.35em; color: var(--brand-dark); font-weight: 700; }
     .card p { font-size: clamp(0.8rem, 1.3vw, 1.2rem); }
+    .card.callout { background: #fef3c7; border-left: 4px solid var(--brand-yellow-dark); }
+    .card.callout p { color: #78350f; }
+    .card.info-box { background: #2563eb; color: #fff; border-radius: 0.75rem; padding: clamp(0.9rem, 1.5vw, 1.35rem); }
+    .card.info-box h3 { color: #fff; }
+    .card.info-box p { color: #dbeafe; }
     .card.accent { background: #fff; border: 1px solid rgba(0,0,0,0.06); border-top: 4px solid var(--brand-yellow-dark); }
     .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(1rem, 2.5vw, 2.25rem); align-items: center; }
     @media (max-width: 768px) { .two-col { grid-template-columns: 1fr; } }
-    .two-col.left-narrow { grid-template-columns: 0.7fr 1.3fr; }
-    @media (max-width: 768px) { .two-col.left-narrow { grid-template-columns: 1fr; } }
     img.diagram { max-width: 100%; height: auto; border-radius: 0.6rem; box-shadow: 0 4px 14px rgba(0,0,0,0.08); background: #fff; }
-    .vs-cols { display: grid; grid-template-columns: 1fr auto 1fr; gap: clamp(0.75rem, 2vw, 2rem); align-items: stretch; }
-    @media (max-width: 768px) { .vs-cols { grid-template-columns: 1fr; } .vs-cols .vs-divider { display: none; } }
-    .vs-cols .col { background: #fff; border: 1px solid rgba(0,0,0,0.08); border-radius: 0.75rem; padding: clamp(1rem, 1.6vw, 1.6rem); display: flex; flex-direction: column; gap: 0.5rem; }
-    .vs-cols .col.left  { border-top: 4px solid #94a3b8; }
-    .vs-cols .col.right { border-top: 4px solid var(--brand-yellow-dark); }
-    .vs-cols .col h3 { margin: 0; font-size: clamp(1rem, 1.7vw, 1.5rem); color: var(--brand-dark); }
-    .vs-cols .vs-divider { align-self: center; background: var(--brand-yellow); color: var(--brand-dark); font-weight: 800; font-size: 0.9rem; width: 2.4em; height: 2.4em; border-radius: 999px; display: flex; align-items: center; justify-content: center; }
+
     .banner { background: #fef3c7; border-left: 4px solid var(--brand-yellow-dark); padding: 0.9rem 1.1rem; border-radius: 0.5rem; color: #78350f; font-size: clamp(0.85rem, 1.4vw, 1.25rem); }
     .banner.info { background: #e0f2fe; border-left-color: #0284c7; color: #0c4a6e; }
     .banner.warn { background: #fee2e2; border-left-color: #dc2626; color: #7f1d1d; }
-    .quote { border-left: 4px solid var(--brand-yellow); padding: 0.5em 0 0.5em 1.1em; font-size: clamp(1.05rem, 2vw, 1.85rem); color: var(--brand-dark); font-weight: 500; line-height: 1.35; }
-    .quote .attribution { display: block; margin-top: 0.5em; font-size: clamp(0.8rem, 1.2vw, 1.1rem); color: var(--brand-gray); font-weight: 400; }
+    .banner.note { background: #fef3c7; border-left-color: var(--brand-yellow-dark); color: #78350f; display: flex; align-items: flex-start; gap: 0.55em; }
+
+    /* Numbered cards */
     .num-card { background: #fff; border: 1px solid rgba(0,0,0,0.08); border-radius: 0.75rem; padding: clamp(0.9rem, 1.5vw, 1.4rem); display: flex; gap: 1rem; align-items: flex-start; transition: transform 220ms, box-shadow 220ms; }
     .num-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
     .num-card .num { font-size: clamp(1.4rem, 2.5vw, 2.3rem); font-weight: 800; color: var(--brand-yellow-dark); line-height: 1; min-width: 1.4em; }
     .num-card h3 { margin: 0 0 0.25em; font-size: clamp(0.95rem, 1.45vw, 1.3rem); color: var(--brand-dark); }
     .num-card p { font-size: clamp(0.75rem, 1.15vw, 1.05rem); }
+
+    /* Numbered objectives style — top border + small num */
+    .obj-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: clamp(0.6rem, 1.2vw, 1.1rem) clamp(1.5rem, 3vw, 3rem); }
+    @media (max-width: 768px) { .obj-grid { grid-template-columns: 1fr; } }
+    .obj-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+    @media (max-width: 1024px) { .obj-grid.cols-3 { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 768px) { .obj-grid.cols-3 { grid-template-columns: 1fr; } }
+    .obj-item { padding-top: 1rem; border-top: 1.5px solid rgba(0,0,0,0.08); }
+    .obj-item .num-tag { font-size: clamp(0.7rem, 1vw, 0.95rem); font-weight: 700; color: var(--brand-gray); letter-spacing: 0.08em; }
+    .obj-item h3 { margin: 0.15em 0 0.25em; font-size: clamp(1rem, 1.55vw, 1.4rem); color: var(--brand-dark); font-weight: 700; }
+    .obj-item p { font-size: clamp(0.8rem, 1.2vw, 1.1rem); }
+
+    /* Pipeline — horizontal numbered timeline (6 or 7 steps) */
+    .h-pipe { position: relative; display: grid; grid-template-columns: repeat(var(--n, 6), 1fr); gap: 0; align-items: flex-start; padding: 1rem 0; }
+    .h-pipe::before { content:''; position: absolute; left: 5%; right: 5%; top: calc(1rem + 1.4rem); height: 2px; background: linear-gradient(to right, var(--brand-yellow-dark), var(--brand-yellow), var(--brand-yellow-dark)); border-radius: 2px; z-index: 0; }
+    .h-pipe .pstep { position: relative; display: flex; flex-direction: column; align-items: center; gap: 0.4rem; padding: 0 0.3rem; z-index: 1; transition: transform 220ms; }
+    .h-pipe .pstep:hover { transform: translateY(-3px); }
+    .h-pipe .pstep:nth-child(odd) { padding-top: 0; }
+    .h-pipe .pstep:nth-child(even) { padding-top: 4.5rem; }
+    .h-pipe .pstep:nth-child(even) .pdot { position: absolute; top: 1rem; }
+    .h-pipe .pdot { width: 2.4rem; height: 2.4rem; border-radius: 0.4rem; background: #fef3c7; color: var(--brand-dark); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: clamp(0.95rem, 1.4vw, 1.2rem); border: 1.5px solid var(--brand-yellow-dark); z-index: 2; }
+    .h-pipe .ptitle { font-size: clamp(0.78rem, 1.15vw, 1rem); font-weight: 700; color: var(--brand-dark); text-transform: uppercase; letter-spacing: 0.05em; text-align: center; }
+    .h-pipe .pdesc { font-size: clamp(0.7rem, 1vw, 0.9rem); color: var(--brand-gray); text-align: center; line-height: 1.3; }
+    @media (max-width: 1024px) {
+      .h-pipe { grid-template-columns: 1fr; gap: 0.5rem; }
+      .h-pipe::before { display: none; }
+      .h-pipe .pstep, .h-pipe .pstep:nth-child(even) { padding-top: 0; flex-direction: row; align-items: flex-start; gap: 0.7rem; text-align: left; }
+      .h-pipe .pstep:nth-child(even) .pdot { position: static; }
+      .h-pipe .ptitle, .h-pipe .pdesc { text-align: left; }
+    }
+
+    /* Three big circles connected (datos+algoritmo → entrenamiento → modelo) */
+    .threeCircles { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; align-items: center; justify-items: center; }
+    @media (max-width: 768px) { .threeCircles { grid-template-columns: 1fr; gap: 1rem; } }
+    .threeCircles .tc-wrap { display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
+    .threeCircles .tc { width: clamp(5rem, 10vw, 8rem); aspect-ratio: 1/1; border-radius: 50%; background: #fff; border: 4px solid var(--brand-yellow); display: flex; align-items: center; justify-content: center; transition: transform 280ms; box-shadow: 0 4px 14px rgba(255,191,0,0.18); }
+    .threeCircles .tc-wrap:hover .tc { transform: scale(1.05); }
+    .threeCircles .tc svg { width: 50%; height: 50%; color: var(--brand-yellow-dark); }
+    .threeCircles .tc-lab { font-weight: 800; color: var(--brand-dark); font-size: clamp(0.85rem, 1.3vw, 1.15rem); text-align: center; text-transform: uppercase; letter-spacing: 0.04em; }
+    .threeCircles .tc-arrow { font-size: 2rem; color: var(--brand-yellow-dark); align-self: center; }
+    @media (max-width: 768px) { .threeCircles .tc-arrow { transform: rotate(90deg); } }
+
+    /* Arrow steps (2 or 3 wide) */
+    .arrow-steps { display: grid; grid-template-columns: repeat(var(--n, 3), 1fr); gap: 0.55rem; }
+    @media (max-width: 768px) { .arrow-steps { grid-template-columns: 1fr; } }
+    .arrow-step { background: #fef3c7; padding: 0.85rem 1rem 0.85rem 1.4rem; clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 0 100%, 14px 50%); transition: transform 220ms; }
+    .arrow-step:first-child { clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 0 100%); padding-left: 1rem; }
+    .arrow-step:hover { transform: translateY(-3px); }
+    .arrow-step .step-num { font-weight: 800; color: var(--brand-yellow-dark); font-size: clamp(1rem, 1.5vw, 1.4rem); }
+    .arrow-step h3 { margin: 0.1em 0 0.2em; font-size: clamp(0.9rem, 1.35vw, 1.2rem); color: var(--brand-dark); }
+    .arrow-step p { font-size: clamp(0.75rem, 1.1vw, 1rem); color: #78350f; }
 
     /* Tabs (3 paradigmas) */
     .tabs { display: flex; flex-direction: column; gap: 1rem; }
@@ -103,43 +149,63 @@
     @keyframes stepFade { from { opacity: 0; transform: translateX(8px); } to { opacity: 1; transform: translateX(0); } }
     .tab-content h3 { margin: 0 0 0.6em; font-size: clamp(1rem, 1.6vw, 1.4rem); color: var(--brand-dark); }
 
-    /* Tabla con row hover */
-    table.cmp-table { width: 100%; border-collapse: collapse; font-size: clamp(0.75rem, 1.05vw, 1.05rem); background: #fff; border-radius: 0.6rem; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.04); }
+    /* cmp table */
+    table.cmp-table { width: 100%; border-collapse: collapse; font-size: clamp(0.78rem, 1.1vw, 1.1rem); background: #fff; border-radius: 0.6rem; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.04); }
     table.cmp-table th { background: var(--brand-dark); color: #fff; text-align: left; padding: 0.7em 0.9em; font-size: clamp(0.7rem, 1vw, 1rem); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
     table.cmp-table td { padding: 0.65em 0.9em; border-bottom: 1px solid rgba(0,0,0,0.05); color: var(--brand-dark); }
     table.cmp-table tr { transition: background 180ms; }
     table.cmp-table tr:hover td { background: #fffbe6; }
+    table.cmp-table tr:nth-child(even) td { background: #fafafa; }
+    table.cmp-table tr:nth-child(even):hover td { background: #fffbe6; }
 
-    /* Process / pipeline */
-    .pipeline { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 0.4rem; align-items: stretch; }
-    @media (max-width: 1024px) { .pipeline { grid-template-columns: repeat(4, 1fr); } }
-    @media (max-width: 640px)  { .pipeline { grid-template-columns: repeat(2, 1fr); } }
-    .pipeline .step { background: #fff; border: 1px solid rgba(0,0,0,0.08); border-top: 3px solid var(--brand-yellow-dark); border-radius: 0.5rem; padding: 0.7rem 0.6rem; transition: transform 220ms; }
-    .pipeline .step:hover { transform: translateY(-3px); box-shadow: 0 6px 14px rgba(0,0,0,0.08); }
-    .pipeline .step .yr { display: block; font-size: clamp(0.85rem, 1.3vw, 1.1rem); font-weight: 800; color: var(--brand-yellow-dark); }
-    .pipeline .step .ev { display: block; margin-top: 0.2em; font-size: clamp(0.7rem, 1vw, 0.9rem); color: var(--brand-dark); font-weight: 600; line-height: 1.25; }
+    /* VS cols */
+    .vs-cols { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(0.75rem, 2vw, 2rem); }
+    @media (max-width: 768px) { .vs-cols { grid-template-columns: 1fr; } }
+    .vs-col { background: #fff; border: 1px solid rgba(0,0,0,0.08); border-radius: 0.75rem; padding: clamp(1rem, 1.6vw, 1.6rem); }
+    .vs-col.left { background: #2563eb; color: #fff; }
+    .vs-col.left h3, .vs-col.left strong { color: #fff; }
+    .vs-col.left p, .vs-col.left li { color: #dbeafe; }
+    .vs-col.left li::marker { color: #fff; }
+    .vs-col.right { border-top: 4px solid var(--brand-yellow-dark); }
+    .vs-col h3 { margin: 0 0 0.4em; font-size: clamp(1rem, 1.55vw, 1.4rem); }
 
     /* Stat */
-    .stat { background: #fff; border: 1px solid rgba(0,0,0,0.08); border-radius: 0.75rem; padding: clamp(0.85rem, 1.4vw, 1.3rem); text-align: center; transition: transform 220ms; }
+    .stat { background: #fef3c7; border-radius: 0.6rem; padding: clamp(0.85rem, 1.4vw, 1.3rem); text-align: center; transition: transform 220ms; border: 1px solid rgba(230,172,0,0.3); }
     .stat:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
-    .stat .big { display: block; font-size: clamp(1.8rem, 4vw, 3.2rem); font-weight: 800; color: var(--brand-yellow-dark); line-height: 1; }
-    .stat .lab { display: block; margin-top: 0.4em; font-size: clamp(0.75rem, 1.1vw, 1rem); color: var(--brand-gray); font-weight: 600; }
+    .stat .big { display: block; font-size: clamp(1.6rem, 3.2vw, 2.6rem); font-weight: 800; color: var(--brand-yellow-dark); line-height: 1; }
+    .stat .lab { display: block; margin-top: 0.4em; font-size: clamp(0.78rem, 1.1vw, 1rem); color: #78350f; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+    .stat p { font-size: clamp(0.78rem, 1.1vw, 1rem); color: #78350f; margin-top: 0.3em; }
 
+    /* Mapa de modelos - 6 boxes with icon */
+    .map-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(0.7rem, 1.4vw, 1.2rem); }
+    @media (max-width: 768px) { .map-grid { grid-template-columns: 1fr; } }
+    .map-item { display: flex; gap: 0.7rem; align-items: flex-start; padding: 0.55rem; transition: transform 220ms; }
+    .map-item:hover { transform: translateY(-3px); }
+    .map-item .micon { width: 2.2rem; height: 2.2rem; min-width: 2.2rem; border-radius: 0.4rem; background: #fef3c7; color: var(--brand-yellow-dark); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.95rem; }
+    .map-item .micon svg { width: 60%; height: 60%; }
+    .map-item h3 { margin: 0 0 0.15em; font-size: clamp(0.85rem, 1.3vw, 1.15rem); color: var(--brand-dark); text-transform: uppercase; letter-spacing: 0.05em; }
+    .map-item p { font-size: clamp(0.75rem, 1.1vw, 1rem); }
+
+    /* Decision tree small svg + cards */
+    .dt-grid { display: grid; grid-template-columns: 1fr 1.4fr; gap: 1.5rem; align-items: center; }
+    @media (max-width: 768px) { .dt-grid { grid-template-columns: 1fr; } }
+
+    /* HUD/controls */
     .hud { position: fixed; left: 0; right: 0; bottom: 0; padding: 0.5rem 1rem; display: flex; justify-content: space-between; align-items: center; color: rgba(255,255,255,0.75); font-size: 0.75rem; pointer-events: none; z-index: 10; }
     .controls { position: fixed; right: 1rem; bottom: 2.5rem; display: flex; gap: 0.5rem; z-index: 11; }
     .controls button { -webkit-appearance: none; appearance: none; border: 1px solid rgba(0,0,0,0.1); background: rgba(255,255,255,0.9); color: var(--brand-dark); width: 2.5rem; height: 2.5rem; border-radius: 999px; font-size: 1rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0,0,0,0.12); }
     .controls button:active { transform: scale(0.96); }
     .progress { position: fixed; top: 0; left: 0; height: 3px; background: var(--brand-yellow); transition: width 260ms ease; z-index: 20; }
     .progress.pulsing { animation: progPulse 0.5s ease; }
-    @keyframes progPulse { 0% { box-shadow: 0 0 0 0 rgba(255,191,0,0.0); } 50% { box-shadow: 0 0 12px 3px rgba(255,191,0,0.8); } 100% { box-shadow: 0 0 0 0 rgba(255,191,0,0.0); } }
+    @keyframes progPulse { 0% { box-shadow: 0 0 0 0 rgba(255,191,0,0); } 50% { box-shadow: 0 0 12px 3px rgba(255,191,0,0.8); } 100% { box-shadow: 0 0 0 0 rgba(255,191,0,0); } }
     @media (prefers-reduced-motion: reduce) {
       .slide, .progress { transition: none; }
       .progress.pulsing { animation: none; }
       .stagger-in > * { animation: none !important; }
-      .card, .num-card, .pipeline .step, .tabs-nav button, .stat { transition: none; }
+      .card, .num-card, .stat, .h-pipe .pstep, .map-item, .arrow-step, .threeCircles .tc-wrap:hover .tc { transition: none; transform: none !important; }
     }
-    .slide:not(.title-slide):not(.cover)::before { content: ''; position: absolute; top: clamp(1rem, 3vw, 2.5rem); right: clamp(1rem, 3vw, 2.5rem); width: clamp(2rem, 5vw, 4rem); height: clamp(2rem, 5vw, 4rem); border-top: 2.5px solid var(--brand-yellow); border-right: 2.5px solid var(--brand-yellow); pointer-events: none; z-index: 1; }
-    .slide.title-slide::before, .slide.cover::before { content: ''; position: absolute; bottom: clamp(1rem, 3vw, 2.5rem); left: clamp(1rem, 3vw, 2.5rem); width: clamp(2rem, 5vw, 4rem); height: clamp(2rem, 5vw, 4rem); border-bottom: 2.5px solid var(--brand-yellow); border-left: 2.5px solid var(--brand-yellow); opacity: 0.5; pointer-events: none; z-index: 3; }
+    .slide:not(.cover)::before { content: ''; position: absolute; top: clamp(1rem, 3vw, 2.5rem); right: clamp(1rem, 3vw, 2.5rem); width: clamp(2rem, 5vw, 4rem); height: clamp(2rem, 5vw, 4rem); border-top: 2.5px solid var(--brand-yellow); border-right: 2.5px solid var(--brand-yellow); pointer-events: none; z-index: 1; }
+    .slide.cover::before { content: ''; position: absolute; bottom: clamp(1rem, 3vw, 2.5rem); left: clamp(1rem, 3vw, 2.5rem); width: clamp(2rem, 5vw, 4rem); height: clamp(2rem, 5vw, 4rem); border-bottom: 2.5px solid var(--brand-yellow); border-left: 2.5px solid var(--brand-yellow); opacity: 0.5; pointer-events: none; z-index: 3; }
     .slide-number { position: absolute; bottom: clamp(0.5rem, 2vw, 1.5rem); left: clamp(1rem, 3vw, 2.5rem); font-size: clamp(4rem, 12vw, 10rem); font-weight: 800; line-height: 1; color: rgba(0, 0, 0, 0.04); pointer-events: none; z-index: 0; user-select: none; letter-spacing: -0.04em; }
     .slide.cover .slide-number { color: rgba(255, 255, 255, 0.05); }
 
@@ -154,11 +220,12 @@
 
     .slide.active .stagger-in > * { animation: fadeInUp 0.4s ease both; }
     .slide.active .stagger-in > *:nth-child(1) { animation-delay: 0.05s; }
-    .slide.active .stagger-in > *:nth-child(2) { animation-delay: 0.15s; }
-    .slide.active .stagger-in > *:nth-child(3) { animation-delay: 0.25s; }
-    .slide.active .stagger-in > *:nth-child(4) { animation-delay: 0.35s; }
-    .slide.active .stagger-in > *:nth-child(5) { animation-delay: 0.45s; }
-    .slide.active .stagger-in > *:nth-child(6) { animation-delay: 0.55s; }
+    .slide.active .stagger-in > *:nth-child(2) { animation-delay: 0.13s; }
+    .slide.active .stagger-in > *:nth-child(3) { animation-delay: 0.21s; }
+    .slide.active .stagger-in > *:nth-child(4) { animation-delay: 0.29s; }
+    .slide.active .stagger-in > *:nth-child(5) { animation-delay: 0.37s; }
+    .slide.active .stagger-in > *:nth-child(6) { animation-delay: 0.45s; }
+    .slide.active .stagger-in > *:nth-child(7) { animation-delay: 0.53s; }
     @keyframes fadeInUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
     @media print {
@@ -167,7 +234,7 @@
       html, body { background: #fff !important; height: auto !important; overflow: visible !important; }
       .deck { width: 100% !important; height: auto !important; position: static !important; }
       .controls, .hud, .progress, .slide-number { display: none !important; }
-      .slide:not(.title-slide):not(.cover)::before, .slide.cover::before, .slide.cover::after { display: none !important; }
+      .slide:not(.cover)::before, .slide.cover::before, .slide.cover::after { display: none !important; }
       .slide { position: static !important; display: flex !important; opacity: 1 !important; width: 100% !important; height: auto !important; inset: auto !important; overflow: visible !important; padding: 1.2rem 0.5rem !important; min-height: 0 !important; page-break-after: always; break-after: page; page-break-inside: avoid; }
       .slide:last-child { page-break-after: auto; break-after: auto; }
       .slide .content { max-width: 100% !important; margin: 0 !important; gap: 0.6rem !important; }
@@ -181,11 +248,13 @@
       .slide.cover p, .slide.cover li { color: #e4e4e7 !important; }
       .slide.cover .eyebrow { color: #FFBF00 !important; }
       .stagger-in > * { animation: none !important; opacity: 1 !important; transform: none !important; }
-      .card, .num-card, .vs-cols .col, .pipeline .step, .stat { transition: none !important; transform: none !important; box-shadow: none !important; page-break-inside: avoid; break-inside: avoid; }
-      img.diagram { page-break-inside: avoid; break-inside: avoid; }
+      .card, .num-card, .vs-col, .stat, .h-pipe .pstep, .arrow-step, .map-item { transition: none !important; transform: none !important; box-shadow: none !important; page-break-inside: avoid; break-inside: avoid; }
       .tabs-nav { display: none !important; }
       .tab-content { display: block !important; opacity: 1 !important; transform: none !important; animation: none !important; }
       .tab-content + .tab-content { margin-top: 1rem; padding-top: 0.8rem; border-top: 1px dashed #ccc; }
+      .h-pipe::before { display: none !important; }
+      .h-pipe .pstep:nth-child(even) { padding-top: 0 !important; }
+      .h-pipe .pstep:nth-child(even) .pdot { position: static !important; }
     }
   </style>
 </head>
@@ -194,53 +263,45 @@
   <div class="deck" id="deck">
 
     <!-- 1. Portada -->
-    <section class="slide cover active" data-slide style="background-image: linear-gradient(135deg, rgba(10,10,10,0.55), rgba(20,20,20,0.35)), url('img/multilayer-perceptron.jpg');">
+    <section class="slide cover active" data-slide style="background-image: linear-gradient(135deg, rgba(10,10,10,0.55), rgba(20,20,20,0.35)), url('img/cover-datacenter.jpg');">
       <div class="content">
-        <p class="eyebrow">EDCO Uniandes · CGR · Mayo 2026</p>
-        <h1>¿Cómo aprenden<br/>los modelos?</h1>
-        <p style="font-size: clamp(1rem, 2vw, 1.7rem); max-width: 56rem;">Módulo 1 · Sesión 2 — Datos, algoritmos, modelos · paradigmas de aprendizaje · familias y métricas.</p>
+        <p class="eyebrow">Modelos de la Inteligencia Artificial</p>
+        <h1>M1 · Sesión 2:<br/>Cómo aprenden<br/>los modelos</h1>
+        <p style="font-size: clamp(1rem, 2vw, 1.7rem); max-width: 56rem;">Datos, algoritmos, modelos y evaluación.</p>
         <div class="pill-row">
-          <span class="pill">Modelos de la IA · M1 · Sesión 2</span>
+          <span class="pill">Módulo 1 · Sesión 2</span>
           <span class="pill">1.5 horas · Miércoles 6 de mayo de 2026</span>
-          <span class="pill">Luis H. Reyes</span>
+          <span class="pill">Luis H. Reyes, Ph.D.</span>
         </div>
+        <p style="margin-top: 1.5em; font-size: clamp(0.85rem, 1.3vw, 1.1rem); opacity: 0.8;">Universidad de los Andes · Educación Continua · Centro de Estudios Fiscales · Contraloría General de la República</p>
       </div>
     </section>
 
     <!-- 2. Recapitulación -->
     <section class="slide" data-slide>
       <div class="content">
-        <p class="eyebrow">Recapitulación · M1.1</p>
-        <h2>Lo que vimos el lunes</h2>
-        <div class="grid cols-5 stagger-in">
-          <div class="num-card" style="flex-direction: column; align-items: flex-start;"><span class="num">1</span><div><h3>Modelo de IA</h3><p>Software estadístico, no magia ni consciencia.</p></div></div>
-          <div class="num-card" style="flex-direction: column; align-items: flex-start;"><span class="num">2</span><div><h3>Historia</h3><p>De Turing (1950) a los Transformers (2017).</p></div></div>
-          <div class="num-card" style="flex-direction: column; align-items: flex-start;"><span class="num">3</span><div><h3>Mitos</h3><p>Seis ideas erróneas frecuentes sobre los modelos.</p></div></div>
-          <div class="num-card" style="flex-direction: column; align-items: flex-start;"><span class="num">4</span><div><h3>Ecosistema</h3><p>Gigantes, modelos líderes, abierto vs. propietario.</p></div></div>
-          <div class="num-card" style="flex-direction: column; align-items: flex-start;"><span class="num">5</span><div><h3>Tipologías</h3><p>Familias de modelos visibles en el mercado.</p></div></div>
+        <h2>Recapitulación: ¿qué vimos en M1 Sesión 1?</h2>
+        <p style="max-width: 80rem;">Antes de avanzar, recordemos los conceptos fundamentales que establecimos el lunes.</p>
+        <div class="grid cols-3 stagger-in">
+          <div class="card callout"><h3>Historia de la IA</h3><p>Más de 70 años de evolución en olas sucesivas.</p></div>
+          <div class="card callout"><h3>IA estrecha</h3><p>Excelente en tareas específicas, sin conciencia real.</p></div>
+          <div class="card callout"><h3>Ecosistema diverso</h3><p>OpenAI, Anthropic, Google, Meta, DeepSeek.</p></div>
+          <div class="card callout"><h3>Uso cotidiano</h3><p>Correo, navegación, recomendaciones.</p></div>
+          <div class="card callout"><h3>No es magia</h3><p>Matemáticas, datos y poder computacional.</p></div>
         </div>
+        <div class="banner">Hoy abrimos la caja y entendemos <strong>CÓMO</strong> funcionan estos sistemas por dentro.</div>
       </div>
     </section>
 
     <!-- 3. Comentarios trabajo autónomo -->
     <section class="slide" data-slide>
       <div class="content">
-        <p class="eyebrow">Trabajo autónomo</p>
-        <h2>Comentarios sobre lo leído</h2>
-        <div class="two-col stagger-in">
-          <img src="img/iceberg-llm.jpg" alt="Iceberg de la IA" class="diagram" />
-          <div>
-            <p style="margin-bottom: 0.5em;">¿Qué llamó la atención del trabajo autónomo? Lo abrimos al diálogo:</p>
-            <ul>
-              <li>¿Identificaron un caso real de IA en su trabajo?</li>
-              <li>¿Qué riesgos detectaron?</li>
-              <li>¿Hubo alguna lectura que les cambió la perspectiva?</li>
-              <li>¿Quedaron dudas conceptuales por resolver?</li>
-            </ul>
-            <div class="banner info" style="margin-top: 0.6em;">
-              Hoy profundizamos en <em>cómo</em> aprenden estos modelos — la mecánica detrás de lo que ya entendimos por encima.
-            </div>
-          </div>
+        <h2>Comentarios sobre el trabajo autónomo</h2>
+        <p style="max-width: 80rem;">Espacio para compartir reflexiones de la lectura OCDE sobre IA en el sector público.</p>
+        <div class="grid stagger-in" style="grid-template-columns: 1fr; gap: 0.55rem;">
+          <div class="card callout"><h3>① ¿Qué les llamó la atención?</h3></div>
+          <div class="card callout"><h3>② ¿Qué aplicación identificaron como más relevante para su dependencia?</h3></div>
+          <div class="card callout"><h3>③ ¿Algún concepto nuevo o sorprendente?</h3></div>
         </div>
       </div>
     </section>
@@ -248,72 +309,79 @@
     <!-- 4. Agenda -->
     <section class="slide" data-slide>
       <div class="content">
-        <p class="eyebrow">Hoy</p>
-        <h2>Agenda · Sesión 2</h2>
-        <div class="grid cols-3 stagger-in">
-          <div class="num-card"><span class="num">1</span><div><h3>Datos, algoritmo, modelo</h3><p>La trinidad del aprendizaje automático.</p></div></div>
-          <div class="num-card"><span class="num">2</span><div><h3>Tres formas de aprender</h3><p>Supervisado, no supervisado y por refuerzo.</p></div></div>
-          <div class="num-card"><span class="num">3</span><div><h3>Tipos de modelos</h3><p>Árboles, redes, LLMs, visión, difusión.</p></div></div>
-          <div class="num-card"><span class="num">4</span><div><h3>Calidad de datos</h3><p>GIGO, sesgos, casos Amazon y COMPAS.</p></div></div>
-          <div class="num-card"><span class="num">5</span><div><h3>Métricas</h3><p>Precisión, exhaustividad, falsos positivos/negativos.</p></div></div>
-          <div class="num-card"><span class="num">6</span><div><h3>Cierre y reflexión</h3><p>Aterrizaje al rol del fiscalizador.</p></div></div>
+        <h2>Agenda de hoy<span class="sub">Cómo aprenden las máquinas: datos, algoritmos y modelos</span></h2>
+        <div class="h-pipe stagger-in" style="--n: 6;">
+          <div class="pstep"><div class="pdot">1</div><div class="ptitle">Recapitulación</div><div class="pdesc">y trabajo autónomo</div></div>
+          <div class="pstep"><div class="pdot">2</div><div class="ptitle">¿Cómo «aprende»?</div><div class="pdesc">una máquina</div></div>
+          <div class="pstep"><div class="pdot">3</div><div class="ptitle">Tipos de modelos</div><div class="pdesc">y aplicaciones</div></div>
+          <div class="pstep"><div class="pdot">4</div><div class="ptitle">Calidad de datos</div><div class="pdesc">lo es todo</div></div>
+          <div class="pstep"><div class="pdot">5</div><div class="ptitle">Ejercicio</div><div class="pdesc">participativo</div></div>
+          <div class="pstep"><div class="pdot">6</div><div class="ptitle">Cierre</div><div class="pdesc">y trabajo autónomo</div></div>
         </div>
       </div>
     </section>
 
-    <!-- 5. Section break -->
+    <!-- 5. Section break: ¿Cómo aprende? -->
     <section class="slide cover" data-slide style="background-image: linear-gradient(135deg, rgba(10,10,10,0.7), rgba(20,20,20,0.4)), url('img/cover-datacenter.jpg');">
       <div class="content">
-        <p class="eyebrow">Parte 1 · 25 minutos</p>
-        <h1>¿Cómo aprende<br/>una máquina?</h1>
-        <p style="font-size: clamp(1rem, 2vw, 1.7rem); max-width: 56rem;">La trinidad sobre la que descansa todo el aprendizaje automático.</p>
+        <p class="eyebrow">Parte 1</p>
+        <h1>¿Cómo «aprende»<br/>una máquina?</h1>
+        <p style="font-size: clamp(1rem, 2vw, 1.7rem);">El ciclo completo del aprendizaje automático.</p>
       </div>
     </section>
 
     <!-- 6. La pregunta central -->
     <section class="slide" data-slide>
       <div class="content">
-        <p class="eyebrow">La pregunta central</p>
-        <h2>Tres ingredientes, una receta</h2>
+        <h2>La pregunta central</h2>
+        <p style="max-width: 80rem;">¿Cómo logra una máquina «aprender» sin que le programen cada regla?</p>
         <div class="grid cols-3 stagger-in" style="align-items: stretch;">
-          <div class="card accent">
-            <h3>① Datos</h3>
-            <p>La <strong>materia prima</strong>. Sin datos relevantes y suficientes, no hay aprendizaje posible.</p>
+          <div class="card callout">
+            <h3>
+              <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/></svg>
+              DATOS
+            </h3>
+            <p>La materia prima, las experiencias de las que aprende.</p>
           </div>
-          <div class="card accent">
-            <h3>② Algoritmo</h3>
-            <p>El <strong>proceso de cocción</strong>. Define <em>cómo</em> el modelo extrae patrones de los datos.</p>
+          <div class="card callout">
+            <h3>
+              <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              ALGORITMO
+            </h3>
+            <p>El método de estudio, la estrategia para encontrar patrones.</p>
           </div>
-          <div class="card accent">
-            <h3>③ Modelo</h3>
-            <p>El <strong>resultado</strong>. La función matemática entrenada que ya puede hacer predicciones.</p>
+          <div class="card callout">
+            <h3>
+              <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="2" x2="12" y2="22"/></svg>
+              MODELO
+            </h3>
+            <p>El resultado del aprendizaje, el conocimiento listo para usarse.</p>
           </div>
         </div>
-        <div class="quote" style="margin-top: 0.6em;">
-          «Un modelo de IA no es más que un programa cuyas reglas no fueron escritas por un humano, sino aprendidas a partir de ejemplos.»
-        </div>
+        <div class="banner note"><svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Sin datos no hay aprendizaje. Sin algoritmo no hay método. Sin modelo no hay aplicación.</div>
       </div>
     </section>
 
-    <!-- 7. Datos -->
+    <!-- 7. Los datos: la materia prima -->
     <section class="slide" data-slide>
       <div class="content">
-        <p class="eyebrow">Ingrediente 1</p>
-        <h2>Datos: la materia prima</h2>
-        <div class="two-col stagger-in">
+        <h2>Los datos: la materia prima</h2>
+        <p style="max-width: 80rem;">Los datos son para la IA lo que las experiencias son para un humano. Sin experiencias, no hay aprendizaje posible.</p>
+        <div class="two-col stagger-in" style="align-items: flex-start;">
           <div>
-            <p style="margin-bottom: 0.5em;"><strong>Tipos de datos:</strong></p>
+            <h3 style="margin-bottom: 0.5em;">Tipos de datos que la IA puede procesar</h3>
             <ul>
-              <li><strong>Estructurados</strong> — tablas, números, fechas (transacciones, contratos).</li>
-              <li><strong>No estructurados</strong> — textos, imágenes, audio, video.</li>
-              <li><strong>Etiquetados</strong> — cada ejemplo viene con la respuesta correcta.</li>
-              <li><strong>Sin etiquetar</strong> — ejemplos sin respuesta predefinida.</li>
+              <li><strong>Texto:</strong> documentos, correos, contratos, leyes</li>
+              <li><strong>Números:</strong> tablas financieras, estadísticas, mediciones</li>
+              <li><strong>Imágenes:</strong> fotografías, documentos escaneados, radiografías</li>
+              <li><strong>Audio:</strong> grabaciones de voz, llamadas, música</li>
+              <li><strong>Video:</strong> grabaciones, reuniones, contenido multimedia</li>
             </ul>
           </div>
-          <img src="img/dogs-grid.jpg" alt="Datos etiquetados — perros" class="diagram" />
-        </div>
-        <div class="banner">
-          <strong>Dato clave:</strong> los modelos modernos requieren <strong>millones</strong> de ejemplos. <a class="platform-link" href="https://www.image-net.org" target="_blank" rel="noopener">ImageNet</a> tiene 14 M de imágenes etiquetadas; GPT-4 fue entrenado con cientos de miles de millones de palabras.
+          <div class="card info-box">
+            <h3>Dato clave</h3>
+            <p><a class="platform-link" href="https://openai.com" target="_blank" rel="noopener" style="color:#fff;border-bottom-color:rgba(255,255,255,0.6);">GPT-4</a> fue entrenado con aproximadamente <strong>13 billones de tokens</strong>. Equivale a leer la biblioteca del Congreso de EE. UU. unas 80 veces.</p>
+          </div>
         </div>
       </div>
     </section>
@@ -321,58 +389,64 @@
     <!-- 8. El algoritmo -->
     <section class="slide" data-slide>
       <div class="content">
-        <p class="eyebrow">Ingrediente 2</p>
-        <h2>El algoritmo: el proceso</h2>
-        <div class="two-col stagger-in">
-          <img src="img/perceptron.jpg" alt="Perceptrón" class="diagram" />
-          <div>
-            <p style="margin-bottom: 0.5em;">El algoritmo es <strong>la receta matemática</strong> que ajusta el modelo. Tiene tres partes:</p>
-            <div class="grid stagger-in" style="grid-template-columns: 1fr; gap: 0.5rem;">
-              <div class="card"><h3>① Función hipótesis</h3><p>La forma matemática que el modelo asume (lineal, polinómica, red neuronal).</p></div>
-              <div class="card"><h3>② Función de pérdida</h3><p>Mide cuánto se equivoca el modelo en cada predicción.</p></div>
-              <div class="card"><h3>③ Optimizador</h3><p>Ajusta los parámetros para reducir la pérdida — millones de pequeñas correcciones.</p></div>
-            </div>
+        <h2>El algoritmo: el método de estudio</h2>
+        <p style="max-width: 80rem;">Si los datos son los libros de texto, el algoritmo es la estrategia de estudio. Diferentes estrategias funcionan mejor para diferentes tipos de exámenes.</p>
+        <div class="grid cols-3 stagger-in">
+          <div class="card callout">
+            <h3>Resúmenes</h3>
+            <p>Algunas aprenden mejor haciendo resúmenes (árbol de decisión).</p>
+          </div>
+          <div class="card callout">
+            <h3>Ejercicios</h3>
+            <p>Otros prefieren resolver muchos ejercicios (red neuronal).</p>
+          </div>
+          <div class="card callout">
+            <h3>Grupo</h3>
+            <p>Algunos funcionan mejor en grupo, comparando respuestas (ensemble).</p>
           </div>
         </div>
+        <div class="banner">El algoritmo <strong>NO</strong> es la respuesta. Es el <strong>PROCESO</strong> para encontrarla. Es la receta de cocina, no el plato terminado.</div>
       </div>
     </section>
 
     <!-- 9. El modelo -->
     <section class="slide" data-slide>
       <div class="content">
-        <p class="eyebrow">Ingrediente 3</p>
-        <h2>El modelo: el resultado entrenado</h2>
-        <div class="two-col stagger-in">
-          <div>
-            <p style="margin-bottom: 0.5em;">Un modelo es la <strong>configuración final de parámetros</strong> que mejor explica los datos:</p>
-            <ul>
-              <li>Es una función matemática <span style="white-space: nowrap;">$f(x) = y$</span> con millones (o miles de millones) de parámetros ajustados.</li>
-              <li>Una vez entrenado, hace <strong>inferencia</strong>: recibe entrada nueva, produce salida.</li>
-              <li>El entrenamiento es caro y lento; la inferencia es barata y rápida.</li>
-              <li>El modelo no «sabe» nada — recuerda patrones estadísticos.</li>
-            </ul>
+        <h2>El modelo: el conocimiento adquirido</h2>
+        <p style="max-width: 80rem;">Cuando el algoritmo termina de procesar los datos, el resultado es un modelo: patrones y relaciones aprendidas, listo para aplicarse a situaciones nuevas. El modelo es <strong>portátil</strong>: una vez entrenado, se puede usar millones de veces sin repetir el entrenamiento.</p>
+        <div class="threeCircles stagger-in">
+          <div class="tc-wrap">
+            <div class="tc"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/></svg></div>
+            <div class="tc-lab">Datos +<br/>Algoritmo</div>
           </div>
-          <img src="img/multilayer-perceptron.jpg" alt="Red neuronal multicapa" class="diagram" />
+          <div class="tc-arrow">→</div>
+          <div class="tc-wrap">
+            <div class="tc"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.01a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
+            <div class="tc-lab">Entrenamiento</div>
+          </div>
+          <div class="tc-arrow">→</div>
+          <div class="tc-wrap">
+            <div class="tc"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2z"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2z"/></svg></div>
+            <div class="tc-lab">Modelo</div>
+          </div>
         </div>
+        <div class="banner note" style="margin-top: 0.4em;"><svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><strong>GPT es un modelo.</strong> Fue entrenado una vez (proceso de meses), y ahora millones lo usan a diario.</div>
       </div>
     </section>
 
-    <!-- 10. Ciclo completo (pipeline 7 pasos) -->
+    <!-- 10. El ciclo completo (7 pasos) -->
     <section class="slide" data-slide>
       <div class="content">
-        <p class="eyebrow">El proceso end-to-end</p>
-        <h2>El ciclo completo del aprendizaje</h2>
-        <div class="pipeline stagger-in">
-          <div class="step"><span class="yr">1</span><span class="ev">Definir el problema</span></div>
-          <div class="step"><span class="yr">2</span><span class="ev">Recolectar datos</span></div>
-          <div class="step"><span class="yr">3</span><span class="ev">Limpiar y preparar</span></div>
-          <div class="step"><span class="yr">4</span><span class="ev">Elegir algoritmo</span></div>
-          <div class="step"><span class="yr">5</span><span class="ev">Entrenar el modelo</span></div>
-          <div class="step"><span class="yr">6</span><span class="ev">Evaluar y validar</span></div>
-          <div class="step"><span class="yr">7</span><span class="ev">Desplegar y monitorear</span></div>
-        </div>
-        <div class="banner info" style="margin-top: 0.5em;">
-          En la práctica, el 60–80 % del tiempo se gasta en los pasos 1 a 3. La mayor parte del trabajo de un proyecto de IA es <strong>preparar los datos</strong>, no entrenar modelos.
+        <h2>El ciclo completo</h2>
+        <p style="max-width: 80rem;">El aprendizaje automático sigue un ciclo similar a prepararse para un examen.</p>
+        <div class="h-pipe stagger-in" style="--n: 7;">
+          <div class="pstep"><div class="pdot">1</div><div class="ptitle">Recolección</div><div class="pdesc">Conseguir libros y material de estudio.</div></div>
+          <div class="pstep"><div class="pdot">2</div><div class="ptitle">Preparación</div><div class="pdesc">Organizar, descartar lo irrelevante, llenar vacíos.</div></div>
+          <div class="pstep"><div class="pdot">3</div><div class="ptitle">Entrenamiento</div><div class="pdesc">Estudiar intensivamente, encontrar patrones.</div></div>
+          <div class="pstep"><div class="pdot">4</div><div class="ptitle">Validación</div><div class="pdesc">Simulacros de examen para verificar aprendizaje.</div></div>
+          <div class="pstep"><div class="pdot">5</div><div class="ptitle">Prueba</div><div class="pdesc">Examen final con preguntas completamente nuevas.</div></div>
+          <div class="pstep"><div class="pdot">6</div><div class="ptitle">Despliegue</div><div class="pdesc">Graduarse y aplicar en el mundo real.</div></div>
+          <div class="pstep"><div class="pdot">7</div><div class="ptitle">Monitoreo</div><div class="pdesc">Verificar que sigue funcionando con el tiempo.</div></div>
         </div>
       </div>
     </section>
@@ -380,534 +454,609 @@
     <!-- 11. Tres conjuntos de datos -->
     <section class="slide" data-slide>
       <div class="content">
-        <p class="eyebrow">Cómo se prueba un modelo</p>
         <h2>Tres conjuntos de datos</h2>
+        <p style="max-width: 80rem;">Práctica fundamental: dividir los datos en tres conjuntos separados.</p>
         <div class="grid cols-3 stagger-in">
-          <div class="stat"><span class="big">~70 %</span><span class="lab">Entrenamiento — el modelo ajusta sus parámetros aquí.</span></div>
-          <div class="stat"><span class="big">~15 %</span><span class="lab">Validación — usado para afinar hiperparámetros.</span></div>
-          <div class="stat"><span class="big">~15 %</span><span class="lab">Prueba — datos jamás vistos por el modelo, mide desempeño real.</span></div>
+          <div class="stat"><span class="big">70 – 80%</span><span class="lab">Entrenamiento</span><p>Ejercicios de práctica. El modelo aprende de estos.</p></div>
+          <div class="stat"><span class="big">10 – 15%</span><span class="lab">Validación</span><p>Simulacros de examen. Ajustan la estrategia durante el aprendizaje.</p></div>
+          <div class="stat"><span class="big">10 – 15%</span><span class="lab">Prueba</span><p>Examen final. Datos que el modelo <strong>NUNCA</strong> ha visto.</p></div>
         </div>
-        <div class="banner warn" style="margin-top: 0.5em;">
-          <strong>Regla de oro:</strong> nunca medir desempeño con los mismos datos del entrenamiento — siempre se ven mejores de lo que son. La separación es lo que da credibilidad al modelo.
-        </div>
+        <div class="banner">¿Por qué importa? Si un estudiante estudia solo con preguntas del examen final, sacará 10 en ese examen pero no sabrá nada realmente. Eso se llama <strong>SOBREAJUSTE</strong>.</div>
       </div>
     </section>
 
     <!-- 12. Sobreajuste -->
     <section class="slide" data-slide>
       <div class="content">
-        <p class="eyebrow">El error más común</p>
-        <h2>Sobreajuste vs. generalización</h2>
-        <div class="two-col stagger-in">
-          <img src="img/dog-drawing.jpg" alt="Sobreajuste" class="diagram" />
-          <div>
-            <div class="grid stagger-in" style="grid-template-columns: 1fr; gap: 0.5rem;">
-              <div class="card"><h3>Sobreajuste (overfitting)</h3><p>El modelo memoriza los datos de entrenamiento y falla con datos nuevos. Aprende ruido en lugar de señal.</p></div>
-              <div class="card"><h3>Generalización</h3><p>Captura el patrón verdadero y predice bien sobre datos jamás vistos. Esto es lo que queremos.</p></div>
-            </div>
-            <div class="banner" style="margin-top: 0.5em;">
-              Por eso necesitamos los tres conjuntos: el de prueba es la única forma honesta de saber si el modelo generaliza.
-            </div>
+        <h2>Sobreajuste: memorizar no es aprender</h2>
+        <p style="max-width: 80rem;">El sobreajuste ocurre cuando el modelo memoriza los datos de entrenamiento en vez de aprender patrones generalizables.</p>
+        <p style="max-width: 80rem;"><strong>Analogía:</strong> Estudiante que memoriza 50 preguntas exactas del examen anterior. Saca 10, pero si cambian una sola pregunta, no sabe responder.</p>
+        <div class="grid cols-2 stagger-in">
+          <div class="card" style="border-left: 4px solid #dc2626; background: #fff;">
+            <h3>Modelo sobreajustado</h3>
+            <p>Perfecto con datos conocidos, terrible con datos nuevos.</p>
           </div>
+          <div class="card" style="border-left: 4px solid #16a34a; background: #fff;">
+            <h3>Modelo bien entrenado</h3>
+            <p>Bueno con datos conocidos <strong>Y</strong> con datos nuevos.</p>
+          </div>
+        </div>
+        <div class="banner info">Se detecta comparando rendimiento en entrenamiento vs. prueba. Diferencia enorme = sobreajuste.</div>
+      </div>
+    </section>
+
+    <!-- 13. Section break: Tres formas de aprender -->
+    <section class="slide cover" data-slide style="background-image: linear-gradient(135deg, rgba(10,10,10,0.7), rgba(20,20,20,0.4)), url('img/cover-datacenter.jpg');">
+      <div class="content">
+        <p class="eyebrow">Parte 2</p>
+        <h1>Tres formas<br/>de aprender</h1>
+        <p style="font-size: clamp(1rem, 2vw, 1.7rem);">Supervisado, no supervisado y por refuerzo.</p>
+      </div>
+    </section>
+
+    <!-- 14. Aprendizaje supervisado -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <h2>Aprendizaje supervisado: aprender con profesor</h2>
+        <p style="max-width: 80rem;">El más común. Funciona como aprender con un profesor que tiene las respuestas correctas.</p>
+        <div class="arrow-steps stagger-in" style="--n: 3;">
+          <div class="arrow-step"><span class="step-num">1</span><h3>Paso 1</h3><p>Se dan miles de ejemplos con respuestas correctas (etiquetas).</p></div>
+          <div class="arrow-step"><span class="step-num">2</span><h3>Paso 2</h3><p>El modelo encuentra patrones.</p></div>
+          <div class="arrow-step"><span class="step-num">3</span><h3>Paso 3</h3><p>Con datos nuevos, aplica esos patrones para predecir.</p></div>
+        </div>
+        <div class="card callout">
+          <h3>Ejemplo: Filtro de spam</h3>
+          <ul>
+            <li>Miles de correos etiquetados «spam» o «no spam»</li>
+            <li>El modelo aprende qué ciertas palabras y patrones indican spam</li>
+            <li>Cuando llega un correo nuevo, predice si es spam</li>
+          </ul>
+          <p style="margin-top: 0.5em; font-style: italic;">Como enseñarle a un niño qué es un perro mostrándole cientos de fotos: «esto es un perro», «esto no».</p>
         </div>
       </div>
     </section>
 
-    <!-- 13. Section break: Tres formas -->
-    <section class="slide cover" data-slide style="background-image: linear-gradient(135deg, rgba(10,10,10,0.7), rgba(20,20,20,0.4)), url('img/scaling-laws.jpg');">
-      <div class="content">
-        <p class="eyebrow">Parte 2 · 20 minutos</p>
-        <h1>Tres formas de<br/>aprender</h1>
-        <p style="font-size: clamp(1rem, 2vw, 1.7rem); max-width: 56rem;">Supervisado, no supervisado y por refuerzo — los tres paradigmas que componen casi toda la IA actual.</p>
-      </div>
-    </section>
-
-    <!-- 14. Tabs: Tres formas -->
+    <!-- 15. Supervisado: dos tareas -->
     <section class="slide" data-slide>
       <div class="content">
-        <p class="eyebrow">Paradigmas de aprendizaje</p>
-        <h2>Las tres formas</h2>
-        <div class="tabs" data-tabs>
-          <div class="tabs-nav">
-            <button class="is-active" data-tab="1"><span class="tab-tag">Paradigma 1</span>Aprendizaje supervisado</button>
-            <button data-tab="2"><span class="tab-tag">Paradigma 2</span>No supervisado</button>
-            <button data-tab="3"><span class="tab-tag">Paradigma 3</span>Por refuerzo</button>
-          </div>
-          <div class="tabs-panel">
-            <div class="tab-content is-active" data-tab-content="1">
-              <div class="two-col">
-                <img src="img/dogs-grid.jpg" alt="Aprendizaje supervisado" class="diagram" />
-                <div>
-                  <h3>El estudiante con un libro de respuestas</h3>
-                  <p style="margin-bottom: 0.4em;">El modelo aprende de <strong>ejemplos etiquetados</strong>: cada entrada viene acompañada de la respuesta correcta.</p>
-                  <ul>
-                    <li><strong>Tareas:</strong> clasificación (spam/no spam), regresión (predecir precio).</li>
-                    <li><strong>Ejemplos:</strong> detección de fraude bancario, diagnóstico médico, scoring crediticio.</li>
-                    <li><strong>Costo:</strong> el etiquetado es caro y lento — requiere expertos humanos.</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-            <div class="tab-content" data-tab-content="2">
-              <div class="two-col">
-                <img src="img/nn-classification.jpg" alt="No supervisado" class="diagram" />
-                <div>
-                  <h3>El detective sin pistas previas</h3>
-                  <p style="margin-bottom: 0.4em;">El modelo descubre <strong>estructura oculta</strong> en datos sin etiquetas.</p>
-                  <ul>
-                    <li><strong>Tareas:</strong> clustering (grupos), reducción de dimensionalidad, detección de anomalías.</li>
-                    <li><strong>Ejemplos:</strong> segmentación de clientes, detección de transacciones inusuales, organización de documentos.</li>
-                    <li><strong>Útil:</strong> cuando hay muchos datos y poco tiempo (o presupuesto) para etiquetarlos.</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-            <div class="tab-content" data-tab-content="3">
-              <div class="two-col">
-                <img src="img/rnn-architecture.jpg" alt="Por refuerzo" class="diagram" />
-                <div>
-                  <h3>El niño aprendiendo a caminar</h3>
-                  <p style="margin-bottom: 0.4em;">El modelo aprende por <strong>ensayo y error</strong>: recibe recompensas y castigos según sus acciones.</p>
-                  <ul>
-                    <li><strong>Tareas:</strong> control, juego, robótica, optimización secuencial.</li>
-                    <li><strong>Ejemplos:</strong> AlphaGo, autos autónomos, robots, optimización de inventarios.</li>
-                    <li><strong>RLHF:</strong> ChatGPT y Claude usan refuerzo con retroalimentación humana para alinearse con preferencias.</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 15. Tabla comparativa -->
-    <section class="slide" data-slide>
-      <div class="content">
-        <p class="eyebrow">Comparación</p>
-        <h2>Las tres formas, lado a lado</h2>
-        <table class="cmp-table">
-          <thead>
-            <tr><th>Paradigma</th><th>¿Hay respuestas?</th><th>Analogía</th><th>Ejemplo típico</th></tr>
-          </thead>
-          <tbody>
-            <tr><td><strong>Supervisado</strong></td><td>Sí — etiquetadas por humanos</td><td>Estudiante con libro de respuestas</td><td>Detección de fraude, clasificación de correos</td></tr>
-            <tr><td><strong>No supervisado</strong></td><td>No</td><td>Detective sin pistas</td><td>Segmentación de clientes, anomalías</td></tr>
-            <tr><td><strong>Por refuerzo</strong></td><td>No, pero hay recompensas</td><td>Niño aprendiendo a caminar</td><td>AlphaGo, robótica, RLHF en LLMs</td></tr>
-            <tr><td><strong>Auto-supervisado</strong></td><td>Datos generan sus propias etiquetas</td><td>Adivinar palabra faltante en un texto</td><td>GPT, BERT, modelos fundacionales</td></tr>
-          </tbody>
-        </table>
-        <div class="banner info">
-          <strong>Bonus:</strong> los LLMs modernos usan <strong>auto-supervisado</strong> en pre-entrenamiento (predecir la siguiente palabra) y <strong>refuerzo con retroalimentación humana</strong> para alinear su comportamiento.
-        </div>
-      </div>
-    </section>
-
-    <!-- 16. Section break: Tipos de modelos -->
-    <section class="slide cover" data-slide style="background-image: linear-gradient(135deg, rgba(10,10,10,0.7), rgba(20,20,20,0.4)), url('img/cnn-network.png');">
-      <div class="content">
-        <p class="eyebrow">Parte 3 · 25 minutos</p>
-        <h1>Tipos de<br/>modelos</h1>
-        <p style="font-size: clamp(1rem, 2vw, 1.7rem); max-width: 56rem;">No hay un modelo universal — cada problema pide una arquitectura diferente.</p>
-      </div>
-    </section>
-
-    <!-- 17. No hay modelo universal -->
-    <section class="slide" data-slide>
-      <div class="content">
-        <p class="eyebrow">Diversidad</p>
-        <h2>No hay un modelo universal</h2>
-        <div class="two-col stagger-in">
-          <div>
+        <h2>Supervisado: dos tareas principales</h2>
+        <div class="grid cols-2 stagger-in">
+          <div class="card callout">
+            <h3>Clasificación</h3>
+            <p style="margin-bottom: 0.5em;"><strong>Predecir una categoría.</strong></p>
             <ul>
-              <li><strong>«No free lunch theorem»</strong> — ningún modelo es óptimo para todos los problemas.</li>
-              <li>La elección depende del <strong>tipo de datos</strong>, del <strong>tamaño del dataset</strong> y del <strong>tipo de salida</strong> esperada.</li>
-              <li>Modelos sencillos a veces ganan: un árbol bien afinado puede vencer a una red neuronal sobre datos tabulares pequeños.</li>
+              <li>¿Este correo es spam?</li>
+              <li>¿Esta transacción es fraudulenta?</li>
+              <li>¿Qué tipo de documento es?</li>
+            </ul>
+            <p style="margin-top: 0.5em;"><strong>Clasificación responde con una etiqueta.</strong></p>
+          </div>
+          <div class="card callout">
+            <h3>Regresión</h3>
+            <p style="margin-bottom: 0.5em;"><strong>Predecir un número.</strong></p>
+            <ul>
+              <li>¿Cuánto valdrá esta casa?</li>
+              <li>¿Cuál será la temperatura mañana?</li>
+              <li>¿Cuánto tardará este proceso?</li>
+            </ul>
+            <p style="margin-top: 0.5em;"><strong>Regresión responde con un número.</strong></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 16. No supervisado: descubrir sin profesor -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <h2>No supervisado: descubrir sin profesor</h2>
+        <p style="max-width: 80rem;">No hay respuestas correctas. El modelo encuentra estructura y patrones ocultos por sí mismo.</p>
+        <div class="card callout">
+          <h3>Ejemplo: <a class="platform-link" href="https://spotify.com" target="_blank" rel="noopener">Spotify</a> Discover Weekly</h3>
+          <p style="margin-bottom: 0.4em;">Spotify analiza patrones de escucha de millones de usuarios.</p>
+          <div class="arrow-steps" style="--n: 2; margin-top: 0.6em;">
+            <div class="arrow-step"><h3>Descubre que…</h3><p>personas con gustos similares a los tuyos escuchan cierta canción.</p></div>
+            <div class="arrow-step"><h3>Te la recomienda</h3><p>aunque tú no la habías oído.</p></div>
+          </div>
+        </div>
+        <div class="banner">Nadie le dijo a Spotify que creara ese grupo. <strong>Lo descubrió solo.</strong></div>
+      </div>
+    </section>
+
+    <!-- 17. No supervisado: aplicaciones -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <h2>No supervisado: aplicaciones</h2>
+        <div class="grid cols-3 stagger-in">
+          <div class="card accent">
+            <h3>
+              <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"/><circle cx="18" cy="6" r="3"/><circle cx="12" cy="18" r="3"/><line x1="9" y1="6" x2="15" y2="6"/><line x1="7" y1="9" x2="11" y2="15"/><line x1="17" y1="9" x2="13" y2="15"/></svg>
+              Clustering
+            </h3>
+            <p style="margin-bottom: 0.4em;"><strong>Organizar datos en grupos naturales.</strong></p>
+            <ul>
+              <li>Segmentación de clientes</li>
+              <li>Agrupar documentos por tema</li>
+              <li>Identificar comunidades en redes</li>
             </ul>
           </div>
           <div class="card accent">
-            <h3>Pregunta clave</h3>
-            <p>«¿Qué modelo es mejor?» casi siempre es la <strong>pregunta equivocada</strong>. La buena es: «¿qué modelo encaja con mi problema, mis datos y mis restricciones?»</p>
+            <h3>
+              <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+              Detección de anomalías
+            </h3>
+            <p style="margin-bottom: 0.4em;"><strong>Encontrar lo inusual.</strong></p>
+            <ul>
+              <li>Transacciones bancarias sospechosas</li>
+              <li>Comportamiento atípico en redes</li>
+              <li>Valores fuera de rango</li>
+            </ul>
+          </div>
+          <div class="card accent">
+            <h3>
+              <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 14 4 4 14 4"/><polyline points="20 10 20 20 10 20"/><line x1="14" y1="4" x2="20" y2="10"/><line x1="10" y1="20" x2="4" y2="14"/></svg>
+              Reducción de dimensionalidad
+            </h3>
+            <p style="margin-bottom: 0.4em;"><strong>Simplificar datos complejos.</strong></p>
+            <ul>
+              <li>Comprimir miles de variables a las esenciales</li>
+              <li>Visualizar datos complejos en gráficos comprensibles</li>
+            </ul>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- 18. Árboles de decisión -->
+    <!-- 18. Por refuerzo -->
     <section class="slide" data-slide>
       <div class="content">
-        <p class="eyebrow">Familia 1</p>
+        <h2>Por refuerzo: ensayo y error</h2>
+        <p style="max-width: 80rem;">El modelo aprende como un niño que toca una estufa caliente: probando, recibiendo consecuencias, ajustando.</p>
+        <p style="max-width: 80rem;">Un agente toma acciones, recibe recompensas o castigos, y optimiza su estrategia.</p>
+        <div class="card callout">
+          <h3>Ejemplo icónico: <a class="platform-link" href="https://deepmind.google/research/highlighted-research/alphago" target="_blank" rel="noopener">AlphaGo</a> (2016)</h3>
+          <ul>
+            <li>DeepMind entrenó una IA para Go, el juego más complejo del mundo</li>
+            <li>Jugó millones de partidas contra sí misma</li>
+            <li>Aprendió estrategias que nadie había descubierto en 3.000 años</li>
+            <li>Venció al campeón mundial Lee Sedol</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 19. Comparación tabla -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <h2>Comparación: tres formas de aprender</h2>
+        <table class="cmp-table">
+          <thead>
+            <tr><th>Tipo</th><th>Respuestas</th><th>Analogía</th><th>Ejemplo</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Supervisado</strong></td><td>Sí</td><td>Estudiante con profesor</td><td>Filtro de spam</td></tr>
+            <tr><td><strong>No supervisado</strong></td><td>No</td><td>Explorador sin mapa</td><td>Segmentación de clientes</td></tr>
+            <tr><td><strong>Por refuerzo</strong></td><td>Parcialmente</td><td>Niño aprendiendo a caminar</td><td>AlphaGo</td></tr>
+          </tbody>
+        </table>
+        <div class="banner">Muchos sistemas combinan enfoques. <strong><a class="platform-link" href="https://chat.openai.com" target="_blank" rel="noopener">ChatGPT</a> usa supervisado Y por refuerzo (RLHF).</strong></div>
+      </div>
+    </section>
+
+    <!-- 20. Section break: Tipos de modelos -->
+    <section class="slide cover" data-slide style="background-image: linear-gradient(135deg, rgba(10,10,10,0.7), rgba(20,20,20,0.4)), url('img/cover-datacenter.jpg');">
+      <div class="content">
+        <p class="eyebrow">Parte 3</p>
+        <h1>Tipos de modelos<br/>y sus aplicaciones</h1>
+        <p style="font-size: clamp(1rem, 2vw, 1.7rem);">¿Qué herramienta para qué tarea?</p>
+      </div>
+    </section>
+
+    <!-- 21. No hay modelo universal -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <h2>No hay modelo universal</h2>
+        <p style="max-width: 80rem;">Como no existe una herramienta única para toda la construcción, en IA no hay modelo que sirva para todo.</p>
+        <div class="two-col stagger-in" style="align-items: flex-start;">
+          <div>
+            <p style="margin-bottom: 0.5em;">Un martillo es excelente para clavar, terrible para atornillar. Igualmente:</p>
+            <ul>
+              <li>Un clasificador es excelente categorizando documentos, pero no genera texto</li>
+              <li>Un modelo de lenguaje redacta informes, pero no detecta fraude numérico</li>
+            </ul>
+          </div>
+          <div class="card info-box">
+            <h3>Decisión crítica</h3>
+            <p>Elegir el modelo correcto es una de las decisiones más importantes en cualquier proyecto de IA.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 22. Árboles de decisión -->
+    <section class="slide" data-slide>
+      <div class="content">
         <h2>Árboles de decisión</h2>
-        <div class="two-col stagger-in">
-          <div class="svg-frame" style="background: #fff; border: 1px solid rgba(0,0,0,0.06); border-radius: 0.75rem; padding: 1rem; display: flex; align-items: center; justify-content: center;">
-            <svg viewBox="0 0 320 240" style="width: 100%; max-width: 24rem; height: auto;" xmlns="http://www.w3.org/2000/svg">
+        <p style="max-width: 80rem;">Uno de los modelos más intuitivos. Funciona como un diagrama de flujo.</p>
+        <div class="dt-grid stagger-in">
+          <div>
+            <div class="grid stagger-in" style="grid-template-columns: 1fr; gap: 0.5rem;">
+              <div class="card accent"><h3>Ventajas</h3><ul><li>Fáciles de entender y explicar</li><li>Transparentes</li></ul></div>
+              <div class="card accent"><h3>Desventajas</h3><ul><li>Pueden ser demasiado simples para problemas complejos</li></ul></div>
+              <div class="card accent"><h3>Usos</h3><ul><li>Diagnóstico médico</li><li>Evaluación crediticia</li><li>Triage de solicitudes</li></ul></div>
+            </div>
+          </div>
+          <div style="background: #fff; border: 1px solid rgba(0,0,0,0.06); border-radius: 0.75rem; padding: 1.2rem;">
+            <svg viewBox="0 0 380 300" xmlns="http://www.w3.org/2000/svg" style="width: 100%; max-width: 24rem; margin: 0 auto; display: block;">
               <g fill="none" stroke="#1A1A1A" stroke-width="1.5">
-                <line x1="160" y1="50" x2="80"  y2="120"/>
-                <line x1="160" y1="50" x2="240" y2="120"/>
-                <line x1="80"  y1="120" x2="40"  y2="200"/>
-                <line x1="80"  y1="120" x2="120" y2="200"/>
-                <line x1="240" y1="120" x2="200" y2="200"/>
-                <line x1="240" y1="120" x2="280" y2="200"/>
+                <line x1="100" y1="60" x2="50"  y2="160"/>
+                <line x1="100" y1="60" x2="190" y2="160"/>
+                <line x1="190" y1="160" x2="140" y2="240"/>
+                <line x1="190" y1="160" x2="290" y2="240"/>
               </g>
               <g>
-                <circle cx="160" cy="40" r="22" fill="#FFBF00" stroke="#1A1A1A" stroke-width="1.5"/>
-                <circle cx="80"  cy="120" r="20" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
-                <circle cx="240" cy="120" r="20" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
-                <circle cx="40"  cy="210" r="16" fill="#dcfce7" stroke="#1A1A1A" stroke-width="1.5"/>
-                <circle cx="120" cy="210" r="16" fill="#fee2e2" stroke="#1A1A1A" stroke-width="1.5"/>
-                <circle cx="200" cy="210" r="16" fill="#dcfce7" stroke="#1A1A1A" stroke-width="1.5"/>
-                <circle cx="280" cy="210" r="16" fill="#fee2e2" stroke="#1A1A1A" stroke-width="1.5"/>
+                <circle cx="100" cy="60" r="28" fill="#FFBF00" stroke="#1A1A1A" stroke-width="1.5"/>
+                <circle cx="50"  cy="170" r="22" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
+                <circle cx="190" cy="170" r="28" fill="#FFBF00" stroke="#1A1A1A" stroke-width="1.5"/>
+                <circle cx="140" cy="250" r="22" fill="#fff" stroke="#1A1A1A" stroke-width="1.5"/>
+                <circle cx="290" cy="250" r="22" fill="#dcfce7" stroke="#1A1A1A" stroke-width="1.5"/>
               </g>
-              <g font-family="inherit" font-size="11" font-weight="600" fill="#1A1A1A" text-anchor="middle">
-                <text x="160" y="44">¿X &gt; 5?</text>
-                <text x="80"  y="124">¿Y &lt; 3?</text>
-                <text x="240" y="124">¿Z &gt; 1?</text>
-                <text x="40"  y="214">Sí</text>
-                <text x="120" y="214">No</text>
-                <text x="200" y="214">Sí</text>
-                <text x="280" y="214">No</text>
+              <g font-family="inherit" font-weight="700" fill="#1A1A1A" text-anchor="middle">
+                <text x="100" y="35" font-size="11">¿Nublado?</text>
+                <text x="100" y="65" font-size="9">Comprobar cielo</text>
+                <text x="50"  y="200" font-size="10">No llevar</text>
+                <text x="190" y="135" font-size="11">¿Prob. lluvia &gt;60%?</text>
+                <text x="190" y="173" font-size="9">Ver previsión</text>
+                <text x="140" y="280" font-size="10">No llevar</text>
+                <text x="290" y="280" font-size="10">Llevar paraguas</text>
               </g>
             </svg>
           </div>
-          <div>
-            <p style="margin-bottom: 0.4em;"><strong>Cómo funcionan:</strong> hacen preguntas binarias en cascada hasta llegar a una decisión.</p>
-            <ul>
-              <li><strong>Ventajas:</strong> interpretables, rápidos, no requieren preparación compleja de datos.</li>
-              <li><strong>Desventajas:</strong> sobreajustan fácil, frágiles ante cambios pequeños.</li>
-              <li><strong>Variantes potentes:</strong> Random Forest, XGBoost, LightGBM — combinan muchos árboles.</li>
-              <li><strong>Usos:</strong> scoring crediticio, detección de fraude tabular, diagnósticos basados en reglas.</li>
-            </ul>
-          </div>
         </div>
       </div>
     </section>
 
-    <!-- 19. Redes neuronales -->
+    <!-- 23. Redes neuronales -->
     <section class="slide" data-slide>
       <div class="content">
-        <p class="eyebrow">Familia 2</p>
         <h2>Redes neuronales</h2>
-        <div class="two-col stagger-in">
-          <img src="img/multilayer-perceptron.jpg" alt="Red neuronal multicapa" class="diagram" />
-          <div>
-            <p style="margin-bottom: 0.4em;">Inspiradas <em>libremente</em> en las neuronas biológicas: capas de unidades simples conectadas que aprenden representaciones jerárquicas.</p>
-            <div class="grid stagger-in" style="grid-template-columns: 1fr; gap: 0.4rem;">
-              <div class="card"><h3>Capa de entrada</h3><p>Recibe los datos crudos (píxeles, palabras, números).</p></div>
-              <div class="card"><h3>Capas ocultas</h3><p>Aprenden representaciones cada vez más abstractas — bordes → formas → objetos.</p></div>
-              <div class="card"><h3>Capa de salida</h3><p>Produce la predicción final (clase, número, texto).</p></div>
-            </div>
+        <p style="max-width: 80rem;">El modelo detrás de la revolución actual. Se inspiran vagamente en las conexiones neuronales del cerebro.</p>
+        <p style="max-width: 80rem;">Capas de neuronas artificiales interconectadas. Cada una recibe información, la procesa y la pasa a la siguiente capa.</p>
+        <div class="h-pipe stagger-in" style="--n: 3;">
+          <div class="pstep"><div class="pdot">1</div><div class="ptitle">Capa 1</div><div class="pdesc">Detecta características simples (bordes, formas).</div></div>
+          <div class="pstep"><div class="pdot">2</div><div class="ptitle">Capa 2</div><div class="pdesc">Combina en patrones (ojos, nariz).</div></div>
+          <div class="pstep"><div class="pdot">3</div><div class="ptitle">Capa 3</div><div class="pdesc">Identifica objetos (es un gato).</div></div>
+        </div>
+        <div class="banner note"><svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><strong>«Deep Learning»</strong> = redes con MUCHAS capas (decenas o cientos).</div>
+      </div>
+    </section>
+
+    <!-- 24. Modelos de Lenguaje -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <h2>Modelos de Lenguaje (LLMs)</h2>
+        <p style="max-width: 80rem;">La tecnología detrás de <a class="platform-link" href="https://chat.openai.com" target="_blank" rel="noopener">ChatGPT</a>, <a class="platform-link" href="https://claude.ai" target="_blank" rel="noopener">Claude</a>, <a class="platform-link" href="https://gemini.google.com" target="_blank" rel="noopener">Gemini</a>. Redes neuronales enormes especializadas en texto.</p>
+        <p style="max-width: 80rem;">Funcionan prediciendo la siguiente palabra más probable. Como el autocompletado del celular, pero a escala incomparablemente mayor.</p>
+        <div class="card callout">
+          <h3>«El gato se sentó en el ___»</h3>
+          <ul>
+            <li><strong>«tejado»</strong> (30%)</li>
+            <li><strong>«sofá»</strong> (25%)</li>
+            <li><strong>«jardín»</strong> (15%)</li>
+          </ul>
+        </div>
+        <div class="banner">Este proceso simple, repetido miles de veces, produce textos coherentes y aparentemente inteligentes. Pero es <strong>predicción estadística, no comprensión real</strong>.</div>
+      </div>
+    </section>
+
+    <!-- 25. Cómo se entrenó ChatGPT -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <h2>Cómo se entrenó <a class="platform-link" href="https://chat.openai.com" target="_blank" rel="noopener">ChatGPT</a>: tres etapas</h2>
+        <div class="grid cols-3 stagger-in">
+          <div class="card callout">
+            <p style="font-size: clamp(0.75rem, 1.05vw, 0.95rem); font-weight: 700; color: var(--brand-yellow-dark); letter-spacing: 0.08em; margin-bottom: 0.3em;">ETAPA 1</p>
+            <h3>Pre-entrenamiento</h3>
+            <p>Cantidades masivas de texto. Aprende gramática, hechos, razonamiento. Como leer toda una biblioteca.</p>
+          </div>
+          <div class="card callout">
+            <p style="font-size: clamp(0.75rem, 1.05vw, 0.95rem); font-weight: 700; color: var(--brand-yellow-dark); letter-spacing: 0.08em; margin-bottom: 0.3em;">ETAPA 2</p>
+            <h3>Ajuste fino</h3>
+            <p>Ejemplos de conversaciones bien hechas. Aprende a seguir instrucciones. Como un curso de comunicación profesional.</p>
+          </div>
+          <div class="card callout">
+            <p style="font-size: clamp(0.75rem, 1.05vw, 0.95rem); font-weight: 700; color: var(--brand-yellow-dark); letter-spacing: 0.08em; margin-bottom: 0.3em;">ETAPA 3</p>
+            <h3>RLHF</h3>
+            <p>Evaluadores humanos califican respuestas. El modelo aprende qué prefieren los humanos. Como un pasante recibiendo retroalimentación.</p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- 20. LLMs -->
+    <!-- 26. Modelos de visión -->
     <section class="slide" data-slide>
       <div class="content">
-        <p class="eyebrow">Familia 3</p>
-        <h2>Modelos de lenguaje (LLMs)</h2>
-        <div class="two-col stagger-in">
-          <div>
-            <p style="margin-bottom: 0.4em;">Un LLM es una red neuronal gigantesca entrenada para <strong>predecir la siguiente palabra</strong>.</p>
+        <h2>Modelos de visión</h2>
+        <p style="max-width: 80rem;">Permiten a las máquinas interpretar imágenes y videos. Para una computadora, una imagen es una tabla de números (píxeles).</p>
+        <div class="grid cols-2 stagger-in">
+          <div class="card accent">
+            <h3>Aplicaciones cotidianas</h3>
             <ul>
-              <li>Arquitectura: <strong>Transformers</strong> con mecanismo de atención.</li>
-              <li>Tamaño: cientos de miles de millones de parámetros.</li>
-              <li>Datos: cientos de miles de millones de palabras de internet, libros, código.</li>
-              <li>Comportamiento: surge la capacidad de responder, traducir, programar, razonar.</li>
+              <li>Face ID</li>
+              <li>Google Photos</li>
+              <li>Cámaras de tránsito</li>
+              <li>Filtros de redes sociales</li>
             </ul>
-            <div class="banner info" style="margin-top: 0.5em;">
-              Ejemplos: <a class="platform-link" href="https://chat.openai.com" target="_blank" rel="noopener">ChatGPT</a>, <a class="platform-link" href="https://claude.ai" target="_blank" rel="noopener">Claude</a>, <a class="platform-link" href="https://gemini.google.com" target="_blank" rel="noopener">Gemini</a>, <a class="platform-link" href="https://llama.com" target="_blank" rel="noopener">Llama</a>.
-            </div>
           </div>
-          <img src="img/nlp-modern.jpg" alt="LLM moderno" class="diagram" />
+          <div class="card accent">
+            <h3>Aplicaciones profesionales</h3>
+            <ul>
+              <li>Diagnóstico de cáncer en radiografías</li>
+              <li>Control de calidad industrial</li>
+              <li>OCR para digitalizar documentos</li>
+              <li>Clasificación de imágenes satelitales</li>
+            </ul>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- 21. ChatGPT — 3 etapas -->
+    <!-- 27. Modelos de difusión -->
     <section class="slide" data-slide>
       <div class="content">
-        <p class="eyebrow">Caso de estudio</p>
-        <h2>Cómo se entrenó <a class="platform-link" href="https://chat.openai.com" target="_blank" rel="noopener">ChatGPT</a></h2>
+        <h2>Modelos de difusión</h2>
+        <p style="max-width: 80rem;">Estos modelos generativos aprenden a crear datos nuevos y realistas (imágenes, audio, video) a partir de ruido aleatorio. Se inspiran en la termodinámica, donde un proceso de difusión gradual transforma el caos en orden, «deshaciendo» el ruido para revelar la estructura deseada.</p>
         <div class="grid cols-3 stagger-in">
-          <div class="num-card"><span class="num">1</span><div><h3>Pre-entrenamiento</h3><p>Aprendizaje auto-supervisado: predecir la siguiente palabra sobre cientos de miles de millones de tokens. Aprende lenguaje, hechos y patrones.</p></div></div>
-          <div class="num-card"><span class="num">2</span><div><h3>Ajuste fino supervisado</h3><p>Humanos escriben respuestas ideales a prompts. El modelo aprende a comportarse como asistente útil.</p></div></div>
-          <div class="num-card"><span class="num">3</span><div><h3>RLHF</h3><p>Refuerzo con retroalimentación humana — humanos califican respuestas, el modelo aprende a preferir las mejores.</p></div></div>
-        </div>
-        <div class="banner">
-          <strong>Por qué importa:</strong> es la combinación de los tres paradigmas de aprendizaje en un solo sistema. La «personalidad» del modelo viene del paso 3.
-        </div>
-      </div>
-    </section>
-
-    <!-- 22. Modelos de visión -->
-    <section class="slide" data-slide>
-      <div class="content">
-        <p class="eyebrow">Familia 4</p>
-        <h2>Modelos de visión por computador</h2>
-        <div class="two-col stagger-in">
-          <img src="img/nn-classification.jpg" alt="Clasificación de imágenes" class="diagram" />
-          <div>
-            <div class="grid stagger-in" style="grid-template-columns: 1fr; gap: 0.5rem;">
-              <div class="card"><h3>Usos cotidianos</h3><p>Reconocimiento facial, búsqueda de imágenes, etiquetado automático en fotos.</p></div>
-              <div class="card"><h3>Usos profesionales</h3><p>Lectura de radiografías, inspección de calidad industrial, análisis satelital, conducción autónoma.</p></div>
-              <div class="card"><h3>Usos en sector público</h3><p>Análisis de imágenes satelitales para uso del suelo, detección de cultivos ilícitos, control de obra pública por imágenes drone.</p></div>
-            </div>
+          <div class="card callout">
+            <h3>Generación de imágenes</h3>
+            <p>Creación de arte y fotografía fotorrealista a partir de descripciones de texto (<a class="platform-link" href="https://openai.com/dall-e" target="_blank" rel="noopener">DALL-E</a>, <a class="platform-link" href="https://midjourney.com" target="_blank" rel="noopener">Midjourney</a>).</p>
+          </div>
+          <div class="card callout">
+            <h3>Edición de contenido</h3>
+            <p>Modificación y expansión de imágenes existentes, cambios de estilo y eliminación inteligente de objetos (<a class="platform-link" href="https://www.adobe.com/products/firefly.html" target="_blank" rel="noopener">Adobe Firefly</a>).</p>
+          </div>
+          <div class="card callout">
+            <h3>Creación multimodal</h3>
+            <p>Generación de audio, video y otros tipos de datos complejos con alta coherencia (<a class="platform-link" href="https://openai.com/sora" target="_blank" rel="noopener">Sora</a>, Seedance 2.0).</p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- 23. Modelos de difusión -->
+    <!-- 28. Mapa de modelos -->
     <section class="slide" data-slide>
       <div class="content">
-        <p class="eyebrow">Familia 5</p>
-        <h2>Modelos de difusión (generación de imagen)</h2>
+        <h2>Mapa de modelos</h2>
+        <p style="max-width: 80rem;">Un resumen visual de las grandes familias y para qué tarea sirve cada una.</p>
+        <div class="map-grid stagger-in">
+          <div class="map-item">
+            <div class="micon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg></div>
+            <div><h3>Categorizar</h3><p>Clasificación. ¿Es spam? ¿Qué tipo de documento es?</p></div>
+          </div>
+          <div class="map-item">
+            <div class="micon"><span style="font-size: 0.85rem;">10</span></div>
+            <div><h3>Predecir número</h3><p>Regresión. ¿Cuánto costará? ¿Cuánto tardará?</p></div>
+          </div>
+          <div class="map-item">
+            <div class="micon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/></svg></div>
+            <div><h3>Encontrar grupos</h3><p>Clustering. ¿Qué segmentos existen?</p></div>
+          </div>
+          <div class="map-item">
+            <div class="micon"><strong>T</strong></div>
+            <div><h3>Generar texto</h3><p>LLM. Redactar, resumir, traducir.</p></div>
+          </div>
+          <div class="map-item">
+            <div class="micon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+            <div><h3>Interpretar imágenes</h3><p>Visión. OCR, reconocimiento facial.</p></div>
+          </div>
+          <div class="map-item">
+            <div class="micon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+            <div><h3>Detectar lo raro</h3><p>Anomalías. Fraude, fallas, comportamiento inusual.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 29. Section break: Calidad de datos -->
+    <section class="slide cover" data-slide style="background-image: linear-gradient(135deg, rgba(10,10,10,0.7), rgba(20,20,20,0.4)), url('img/cover-datacenter.jpg');">
+      <div class="content">
+        <p class="eyebrow">Parte 4</p>
+        <h1>La calidad de los<br/>datos lo es todo</h1>
+        <p style="font-size: clamp(1rem, 2vw, 1.7rem);">Basura entra, basura sale.</p>
+      </div>
+    </section>
+
+    <!-- 30. GIGO -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <h2>GIGO: Garbage In, Garbage Out</h2>
+        <p style="max-width: 80rem;">Este principio clásico es aún más crítico en IA. Datos malos producen resultados malos, sin importar cuán sofisticado sea el algoritmo.</p>
+        <div class="banner note"><svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21c0-9 8-12 8-12V3l5 6 5-6v6s-5 4-5 12"/></svg><strong>Analogía:</strong> Un chef extraordinario con ingredientes frescos produce un plato espectacular. Con ingredientes podridos, el plato será incomible. No importa cuán bueno sea el chef.</div>
+        <div class="grid cols-2 stagger-in">
+          <div class="card info-box">
+            <h3>Los datos son los ingredientes</h3>
+          </div>
+          <div class="card accent" style="border-top-color: var(--brand-yellow-dark);">
+            <h3>El algoritmo es el chef</h3>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 31. ¿Qué hace buenos a los datos? -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <h2>¿Qué hace buenos a los datos?</h2>
         <div class="grid cols-3 stagger-in">
-          <div class="card accent">
-            <h3>Generación</h3>
-            <p>De texto a imagen: <a class="platform-link" href="https://openai.com/dall-e" target="_blank" rel="noopener">DALL-E</a>, <a class="platform-link" href="https://midjourney.com" target="_blank" rel="noopener">Midjourney</a>, <a class="platform-link" href="https://stability.ai" target="_blank" rel="noopener">Stable Diffusion</a>.</p>
+          <div class="card callout">
+            <h3>Representatividad</h3>
+            <p>Reflejar la realidad completa. Modelo de reconocimiento facial entrenado solo con pieles claras fallará con pieles oscuras.</p>
           </div>
-          <div class="card accent">
-            <h3>Edición</h3>
-            <p>Inpainting (rellenar), outpainting (extender), modificación de estilo, eliminación de objetos.</p>
+          <div class="card callout">
+            <h3>Completitud</h3>
+            <p>Cubrir los casos importantes sin vacíos.</p>
           </div>
-          <div class="card accent">
-            <h3>Multimodal</h3>
-            <p>De texto a video (<a class="platform-link" href="https://openai.com/sora" target="_blank" rel="noopener">Sora</a>, <a class="platform-link" href="https://runwayml.com" target="_blank" rel="noopener">Runway</a>), texto a 3D, audio a imagen.</p>
+          <div class="card callout">
+            <h3>Actualización</h3>
+            <p>Datos recientes y relevantes. Modelo de 2015 no conoce el COVID.</p>
           </div>
-        </div>
-        <div class="banner warn">
-          <strong>Riesgo público crítico:</strong> deepfakes y evidencia falsificada con costo casi nulo. La fiscalización de evidencia visual y video tendrá que cambiar radicalmente.
+          <div class="card callout">
+            <h3>Etiquetado correcto</h3>
+            <p>Respuestas asociadas deben ser correctas.</p>
+          </div>
+          <div class="card callout">
+            <h3>Volumen suficiente</h3>
+            <p>Más datos suelen ayudar, pero la calidad supera a la cantidad.</p>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- 24. Mapa de modelos -->
+    <!-- 32. ¿Qué es un sesgo? -->
     <section class="slide" data-slide>
       <div class="content">
-        <p class="eyebrow">Mapa</p>
-        <h2>El zoológico de modelos en una pantalla</h2>
-        <div class="grid cols-3 stagger-in">
-          <div class="num-card"><span class="num">①</span><div><h3>Árboles y bosques</h3><p>Decisiones tabulares interpretables — XGBoost, Random Forest.</p></div></div>
-          <div class="num-card"><span class="num">②</span><div><h3>Redes profundas</h3><p>Patrones complejos en datos altamente dimensionales.</p></div></div>
-          <div class="num-card"><span class="num">③</span><div><h3>Convolucionales (CNN)</h3><p>Visión por computador — radiografías, imágenes satelitales.</p></div></div>
-          <div class="num-card"><span class="num">④</span><div><h3>Transformers</h3><p>Lenguaje, código, multimodal — los reyes desde 2017.</p></div></div>
-          <div class="num-card"><span class="num">⑤</span><div><h3>Difusión</h3><p>Generación de imagen y video desde texto.</p></div></div>
-          <div class="num-card"><span class="num">⑥</span><div><h3>Refuerzo</h3><p>Robótica, juegos, optimización secuencial, alineación de LLMs.</p></div></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 25. Section break: Calidad de datos -->
-    <section class="slide cover" data-slide style="background-image: linear-gradient(135deg, rgba(10,10,10,0.7), rgba(20,20,20,0.4)), url('img/news-sophia-medellin.jpg');">
-      <div class="content">
-        <p class="eyebrow">Parte 4 · 20 minutos</p>
-        <h1>Calidad de datos<br/>y sesgos</h1>
-        <p style="font-size: clamp(1rem, 2vw, 1.7rem); max-width: 56rem;">El cuello de botella real de cualquier proyecto serio de IA — y la fuente principal de sus fallos en lo público.</p>
-      </div>
-    </section>
-
-    <!-- 26. GIGO -->
-    <section class="slide" data-slide>
-      <div class="content">
-        <p class="eyebrow">El principio fundamental</p>
-        <h2>GIGO — <em>Garbage in, garbage out</em></h2>
-        <div class="two-col stagger-in">
-          <div>
-            <div class="quote" style="font-size: clamp(1.15rem, 2.2vw, 2rem);">
-              «Si entrenas un modelo con datos basura, obtendrás un modelo basura — sin importar qué tan sofisticado sea el algoritmo.»
-            </div>
-            <p style="margin-top: 0.6em;">El 80 % de los problemas de un sistema de IA en producción provienen de los <strong>datos</strong>, no del modelo.</p>
-          </div>
-          <div class="card accent">
-            <h3>En el sector público</h3>
-            <p>Los datos públicos suelen estar fragmentados, desactualizados y con sesgos históricos. <strong>Antes de pensar en IA, hay que pensar en datos</strong>.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 27. Qué hace buenos los datos -->
-    <section class="slide" data-slide>
-      <div class="content">
-        <p class="eyebrow">Cinco propiedades</p>
-        <h2>¿Qué hace buenos los datos?</h2>
-        <div class="grid cols-5 stagger-in">
-          <div class="card"><h3>1. Cantidad</h3><p>Suficientes ejemplos para que el patrón emerja.</p></div>
-          <div class="card"><h3>2. Calidad</h3><p>Limpios, sin errores, sin valores faltantes ni duplicados.</p></div>
-          <div class="card"><h3>3. Relevancia</h3><p>Capturan el problema real, no uno parecido.</p></div>
-          <div class="card"><h3>4. Diversidad</h3><p>Cubren los casos minoritarios, no solo los típicos.</p></div>
-          <div class="card"><h3>5. Actualidad</h3><p>Reflejan el mundo de hoy, no el de hace cinco años.</p></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 28. ¿Qué es un sesgo? -->
-    <section class="slide" data-slide>
-      <div class="content">
-        <p class="eyebrow">Sesgos</p>
         <h2>¿Qué es un sesgo en IA?</h2>
-        <p style="max-width: 60rem;">Un <strong>sesgo</strong> es una desviación sistemática que hace que el modelo trate a ciertos grupos peor que a otros, o que infiera patrones que no son ciertos en general.</p>
-        <div class="grid cols-2 stagger-in" style="align-items: stretch;">
-          <div class="card"><h3>① Sesgo de selección</h3><p>Los datos no son representativos de la población real.</p></div>
-          <div class="card"><h3>② Sesgo histórico</h3><p>Los datos reflejan decisiones discriminatorias del pasado.</p></div>
-          <div class="card"><h3>③ Sesgo de medición</h3><p>Las variables no miden lo que creemos que miden.</p></div>
-          <div class="card"><h3>④ Sesgo de confirmación</h3><p>Quienes diseñan el modelo proyectan sus propias suposiciones.</p></div>
+        <p style="max-width: 80rem;">Errores sistemáticos causados por suposiciones incorrectas. Son patrones de error que afectan a ciertos grupos de manera desproporcionada.</p>
+        <div class="grid cols-2 stagger-in">
+          <div class="card callout"><h3>Sesgo en datos</h3><p>Reflejan desigualdades históricas.</p></div>
+          <div class="card callout"><h3>Sesgo de selección</h3><p>Datos no representan a toda la población.</p></div>
+          <div class="card callout"><h3>Sesgo de medición</h3><p>Variables no capturan lo que queremos predecir.</p></div>
+          <div class="card callout"><h3>Sesgo de confirmación</h3><p>Se seleccionan datos que confirman hipótesis previas.</p></div>
         </div>
+        <div class="banner warn">La IA <strong>no crea sesgos nuevos</strong>: amplifica los que ya existen en los datos.</div>
       </div>
     </section>
 
-    <!-- 29. Caso Amazon -->
+    <!-- 33. Caso Amazon -->
     <section class="slide" data-slide>
       <div class="content">
-        <p class="eyebrow">Caso 1 · 2014 – 2018</p>
-        <h2>Amazon: el modelo que discriminaba mujeres</h2>
-        <div class="grid cols-3 stagger-in">
-          <div class="num-card"><span class="num">1</span><div><h3>El proyecto</h3><p>Amazon construyó un modelo para puntuar hojas de vida y automatizar el reclutamiento técnico.</p></div></div>
-          <div class="num-card"><span class="num">2</span><div><h3>Los datos</h3><p>Lo entrenaron con 10 años de hojas de vida — la mayoría hombres, porque la industria fue dominada por hombres.</p></div></div>
-          <div class="num-card"><span class="num">3</span><div><h3>El resultado</h3><p>El modelo penalizaba palabras como «mujeres» o «captain of women's chess club». Amazon canceló el proyecto en 2018.</p></div></div>
+        <h2>Caso: Amazon y contratación</h2>
+        <p style="max-width: 80rem;">En 2018 se reveló que Amazon desarrolló un sistema para filtrar hojas de vida que resultó sexista.</p>
+        <div class="arrow-steps stagger-in" style="--n: 3;">
+          <div class="arrow-step"><span class="step-num">1</span><h3>El problema</h3><p>La industria tech ha sido dominada por hombres. El modelo aprendió que ser hombre era «positivo».</p></div>
+          <div class="arrow-step"><span class="step-num">2</span><h3>El resultado</h3><p>Penalizaba menciones de «mujeres» (ej: «capitana del equipo femenino»).</p></div>
+          <div class="arrow-step"><span class="step-num">3</span><h3>La decisión</h3><p>Amazon canceló el sistema.</p></div>
         </div>
-        <div class="banner warn">
-          <strong>Lección:</strong> el modelo aprendió un patrón estadísticamente cierto en los datos (los contratados eran hombres) pero <strong>moralmente inaceptable</strong>. La estadística no es ética.
-        </div>
+        <div class="banner note"><svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Los datos históricos reflejan el mundo como fue, no como debería ser.</div>
       </div>
     </section>
 
-    <!-- 30. Caso COMPAS -->
+    <!-- 34. Caso COMPAS -->
     <section class="slide" data-slide>
       <div class="content">
-        <p class="eyebrow">Caso 2 · ProPublica 2016</p>
-        <h2>COMPAS: predicción de reincidencia criminal en EE.UU.</h2>
-        <div class="two-col stagger-in">
-          <img src="img/jwst-bard-error.jpg" alt="Caso de sesgo en IA" class="diagram" />
-          <div>
-            <div class="grid stagger-in" style="grid-template-columns: 1fr; gap: 0.5rem;">
-              <div class="card"><h3>Qué hacía</h3><p>Asignaba un puntaje de riesgo de reincidencia que jueces usaban en sentencias y libertad condicional.</p></div>
-              <div class="card"><h3>Qué descubrió ProPublica</h3><p>El modelo tenía el doble de falsos positivos para personas negras que para blancas, aunque la «precisión global» era similar.</p></div>
-              <div class="card"><h3>El debate</h3><p>¿Qué métrica de «justicia» debe optimizar un modelo público? La respuesta no es técnica — es política y ética.</p></div>
-            </div>
+        <h2>Caso: COMPAS y justicia penal</h2>
+        <p style="max-width: 80rem;">Sistema usado en tribunales de EE. UU. para predecir reincidencia criminal. <a class="platform-link" href="https://www.propublica.org/article/machine-bias-risk-assessments-in-criminal-sentencing" target="_blank" rel="noopener">ProPublica</a> (2016) reveló sesgos raciales.</p>
+        <div class="grid cols-2 stagger-in">
+          <div class="card callout">
+            <p>Dos veces más propenso a etiquetar falsamente a acusados afroamericanos como futuros criminales.</p>
+          </div>
+          <div class="card callout">
+            <p>Más propenso a etiquetar falsamente a acusados blancos como bajo riesgo.</p>
           </div>
         </div>
-        <div class="banner info" style="margin-top: 0.5em;">
-          <strong>Pregunta para la CGR:</strong> ¿qué entidades del Estado colombiano están usando hoy modelos cuyos sesgos no han sido auditados?
-        </div>
+        <div class="banner">El algoritmo no era «racista» a propósito. Los datos reflejaban disparidades históricas del sistema de justicia.</div>
+        <div class="banner info"><strong>Pregunta:</strong> ¿qué sesgos históricos podrían existir en datos del sector público colombiano?</div>
       </div>
     </section>
 
-    <!-- 31. Métricas -->
+    <!-- 35. Métricas de evaluación -->
     <section class="slide" data-slide>
       <div class="content">
-        <p class="eyebrow">Cómo medimos un modelo</p>
-        <h2>Precisión y exhaustividad</h2>
-        <div class="two-col stagger-in">
-          <div class="card accent">
-            <h3>Precisión <em>(precision)</em></h3>
-            <p>De todo lo que el modelo marcó como «positivo», ¿qué fracción <em>realmente</em> lo era?</p>
-            <p style="margin-top: 0.4em; font-size: clamp(0.85rem, 1.3vw, 1.15rem);">$$P = \frac{VP}{VP + FP}$$</p>
+        <h2>Métricas de evaluación</h2>
+        <div class="grid cols-2 stagger-in">
+          <div class="card callout">
+            <h3 style="text-align: center;">Precisión</h3>
+            <p style="text-align: center;">De lo que el modelo marcó como positivo, ¿cuánto realmente lo era?</p>
+            <p style="text-align: center; font-style: italic; margin-top: 0.4em;">(De las alarmas que sonaron, ¿cuántas eran incendios reales?)</p>
           </div>
-          <div class="card accent">
-            <h3>Exhaustividad <em>(recall)</em></h3>
-            <p>De todos los positivos reales, ¿qué fracción detectó el modelo?</p>
-            <p style="margin-top: 0.4em; font-size: clamp(0.85rem, 1.3vw, 1.15rem);">$$R = \frac{VP}{VP + FN}$$</p>
+          <div class="card callout">
+            <h3 style="text-align: center;">Exhaustividad</h3>
+            <p style="text-align: center;">De todos los casos positivos reales, ¿cuántos detectó?</p>
+            <p style="text-align: center; font-style: italic; margin-top: 0.4em;">(De todos los incendios, ¿cuántos activaron la alarma?)</p>
           </div>
         </div>
-        <div class="banner">
-          <strong>Trade-off:</strong> casi siempre que subes una, baja la otra. El equilibrio depende del contexto — y en lo público, esa decisión es <strong>ética antes que técnica</strong>.
-        </div>
+        <h3 style="margin-top: 0.4em;">El equilibrio depende del contexto</h3>
+        <ul>
+          <li><strong>Detección de cáncer:</strong> alta exhaustividad (no dejar escapar ningún caso)</li>
+          <li><strong>Filtro de spam:</strong> alta precisión (no mover correos legítimos a spam)</li>
+        </ul>
       </div>
     </section>
 
-    <!-- 32. FP vs FN -->
+    <!-- 36. Falsos positivos vs negativos -->
     <section class="slide" data-slide>
       <div class="content">
-        <p class="eyebrow">El costo de equivocarse</p>
         <h2>Falsos positivos vs. falsos negativos</h2>
         <div class="vs-cols stagger-in">
-          <div class="col left">
-            <h3>Falso positivo (FP)</h3>
-            <p>El modelo dice «sí» cuando la verdad es «no».</p>
+          <div class="vs-col left">
+            <h3>Falso positivo</h3>
+            <p style="margin-bottom: 0.4em;"><strong>El modelo dice SÍ cuando es NO.</strong></p>
             <ul>
-              <li><strong>Detección de fraude:</strong> bloqueamos a un ciudadano honesto.</li>
-              <li><strong>Selección de auditoría:</strong> auditamos a una entidad sin razón.</li>
-              <li><strong>Riesgo:</strong> daño injusto, pérdida de confianza.</li>
+              <li>La alarma suena sin fuego</li>
+              <li>El filtro marca correo legítimo como spam</li>
             </ul>
           </div>
-          <div class="vs-divider">vs</div>
-          <div class="col right">
-            <h3>Falso negativo (FN)</h3>
-            <p>El modelo dice «no» cuando la verdad es «sí».</p>
+          <div class="vs-col right">
+            <h3>Falso negativo</h3>
+            <p style="margin-bottom: 0.4em;"><strong>El modelo dice NO cuando es SÍ.</strong></p>
             <ul>
-              <li><strong>Detección de fraude:</strong> dejamos pasar el fraude.</li>
-              <li><strong>Selección de auditoría:</strong> no auditamos donde había irregularidad.</li>
-              <li><strong>Riesgo:</strong> impunidad, pérdida fiscal, daño reputacional.</li>
+              <li>Hay incendio pero la alarma no suena</li>
+              <li>Phishing pasa el filtro</li>
             </ul>
           </div>
         </div>
-        <div class="banner info">
-          <strong>Pregunta de la sesión:</strong> en un sistema de selección de contratos a auditar, ¿qué error es peor para la CGR? La respuesta determina cómo se debe calibrar el modelo.
+        <div class="banner">¿Cuál es peor? Depende del contexto. En medicina, un falso negativo puede ser fatal. En spam, un falso positivo es más molesto.</div>
+        <div class="banner info"><strong>Para el sector público:</strong> ¿es peor señalar erróneamente a una entidad, o no detectar una irregularidad real?</div>
+      </div>
+    </section>
+
+    <!-- 37. Section break: Ejercicio -->
+    <section class="slide cover" data-slide style="background-image: linear-gradient(135deg, rgba(10,10,10,0.7), rgba(20,20,20,0.4)), url('img/cover-datacenter.jpg');">
+      <div class="content">
+        <p class="eyebrow">Parte 5</p>
+        <h1>Ejercicio<br/>participativo</h1>
+        <p style="font-size: clamp(1rem, 2vw, 1.7rem);">Conectando conceptos con su realidad.</p>
+      </div>
+    </section>
+
+    <!-- 38. Ejercicio: pensando como científicos de datos -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <h2>Ejercicio: pensando como científicos de datos</h2>
+        <div class="obj-grid stagger-in">
+          <div class="obj-item"><span class="num-tag">01</span><h3>Identificar</h3><p>Elijan un proceso repetitivo o con grandes volúmenes de información en su dependencia.</p></div>
+          <div class="obj-item"><span class="num-tag">02</span><h3>Clasificar</h3><p>¿Qué tipo de aprendizaje necesita? ¿Clasificación, descubrimiento de patrones o decisiones secuenciales?</p></div>
+          <div class="obj-item"><span class="num-tag">03</span><h3>Evaluar datos</h3><p>¿Qué datos necesitarían? ¿Existen? ¿En qué formato? ¿Buena calidad? ¿Sesgos posibles?</p></div>
+          <div class="obj-item"><span class="num-tag">04</span><h3>Analizar errores</h3><p>¿Qué errores serían más graves? ¿Falso positivo o falso negativo?</p></div>
+        </div>
+        <div class="banner note"><svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>5 minutos individuales, luego compartimos en grupo.</div>
+      </div>
+    </section>
+
+    <!-- 39. Resumen -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <h2>Resumen de la sesión</h2>
+        <div class="obj-grid cols-3 stagger-in">
+          <div class="obj-item"><span class="num-tag">01</span><h3>Datos + Algoritmo = Modelo</h3><p>El ciclo fundamental del aprendizaje automático.</p></div>
+          <div class="obj-item"><span class="num-tag">02</span><h3>Tres tipos de aprendizaje</h3><p>Supervisado, no supervisado y por refuerzo.</p></div>
+          <div class="obj-item"><span class="num-tag">03</span><h3>Modelos especializados</h3><p>Cada tarea tiene su herramienta apropiada.</p></div>
+          <div class="obj-item"><span class="num-tag">04</span><h3>Datos son críticos</h3><p>La calidad determina el resultado. Basura entra, basura sale.</p></div>
+          <div class="obj-item"><span class="num-tag">05</span><h3>Sesgos son reales</h3><p>Los modelos amplifican sesgos de sus datos.</p></div>
+          <div class="obj-item"><span class="num-tag">06</span><h3>Métricas importan</h3><p>Precisión, exhaustividad, falsos positivos y negativos dependen del contexto.</p></div>
         </div>
       </div>
     </section>
 
-    <!-- 33. Ejercicio participativo -->
+    <!-- 40. Cierre -->
     <section class="slide" data-slide>
-      <div class="content">
-        <p class="eyebrow">Manos a la obra</p>
-        <h2>Ejercicio participativo</h2>
-        <div class="grid cols-4 stagger-in">
-          <div class="num-card"><span class="num">1</span><div><h3>Escojan un caso</h3><p>Una decisión real de la CGR que podría apoyarse en un modelo.</p></div></div>
-          <div class="num-card"><span class="num">2</span><div><h3>Identifiquen los datos</h3><p>¿De dónde vendrían? ¿Tienen sesgos históricos?</p></div></div>
-          <div class="num-card"><span class="num">3</span><div><h3>Definan FP y FN</h3><p>¿Cuál error es más costoso para el ciudadano? ¿Cuál para la CGR?</p></div></div>
-          <div class="num-card"><span class="num">4</span><div><h3>Decisión humana</h3><p>¿Qué partes del proceso deben quedarse, sí o sí, en manos humanas?</p></div></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 34. Resumen -->
-    <section class="slide" data-slide>
-      <div class="content">
-        <p class="eyebrow">Cierre</p>
-        <h2>Lo que llevamos de hoy</h2>
-        <div class="grid cols-3 stagger-in">
-          <div class="num-card"><span class="num">1</span><div><h3>La trinidad</h3><p>Datos, algoritmo, modelo — y un ciclo de 7 pasos para entrenarlo.</p></div></div>
-          <div class="num-card"><span class="num">2</span><div><h3>Tres formas de aprender</h3><p>Supervisado, no supervisado y por refuerzo (más auto-supervisado en LLMs).</p></div></div>
-          <div class="num-card"><span class="num">3</span><div><h3>Familias de modelos</h3><p>Árboles, redes neuronales, LLMs, visión, difusión — cada uno para su problema.</p></div></div>
-          <div class="num-card"><span class="num">4</span><div><h3>GIGO</h3><p>El 80 % del problema está en los datos — calidad, diversidad y actualidad.</p></div></div>
-          <div class="num-card"><span class="num">5</span><div><h3>Sesgos reales</h3><p>Casos Amazon y COMPAS — la estadística no es ética por sí sola.</p></div></div>
-          <div class="num-card"><span class="num">6</span><div><h3>FP vs. FN</h3><p>Toda métrica esconde una decisión política sobre qué error es peor.</p></div></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 35. Próxima sesión -->
-    <section class="slide" data-slide>
-      <div class="content">
-        <p class="eyebrow">Antes de la próxima sesión</p>
-        <h2>Trabajo autónomo · Próxima sesión</h2>
-        <div class="two-col stagger-in">
-          <div class="card accent">
-            <h3>Trabajo autónomo (Bloque Neón)</h3>
-            <ul>
-              <li>Lectura: «Aprendizaje supervisado vs. no supervisado» (15 min).</li>
-              <li>Caso de estudio: análisis del sesgo en COMPAS y Amazon.</li>
-              <li>Reflexión escrita: ¿qué decisión de su área <em>nunca</em> debería ser delegada a una IA?</li>
-              <li>Acceso por <a class="platform-link" href="https://bloqueneon.uniandes.edu.co" target="_blank" rel="noopener">Bloque Neón</a>.</li>
-            </ul>
-          </div>
-          <div class="card accent">
-            <h3>Próxima sesión · Lunes 11 de mayo</h3>
-            <p style="margin-bottom: 0.5em;"><strong>M2.1 — Modelos generativos de lenguaje</strong> · Juan Carlos Cruz</p>
-            <ul>
-              <li>Comparativa profunda entre LLMs líderes.</li>
-              <li>Arquitectura Transformer y cómo se entrena un LLM.</li>
-              <li>Casos de uso para análisis de información pública.</li>
-              <li>Costos, riesgos y criterios para elegir un modelo.</li>
-            </ul>
-          </div>
-        </div>
-        <div class="banner info" style="margin-top: 0.5em;">
-          ¡Gracias por la energía y las preguntas! Nos vemos el lunes.
+      <div class="content" style="justify-content: center; min-height: 70vh;">
+        <div class="banner" style="font-size: clamp(1.05rem, 2vw, 1.85rem); font-style: italic;">«La IA no es magia: es matemáticas aprendiendo de datos. Entender esto les da el poder de evaluar con criterio cualquier propuesta de IA que llegue a su escritorio.»</div>
+        <h2 style="margin-top: 0.5em;">¡Gracias por su participación!</h2>
+        <p>Generalidades de la Inteligencia Artificial · Universidad de los Andes</p>
+        <div class="card accent" style="margin-top: 0.8em; max-width: 60rem;">
+          <h3>Próxima sesión · Lunes 11 de mayo de 2026</h3>
+          <p style="margin-bottom: 0.5em;"><strong>M2 Sesión 3 — Modelos generativos de lenguaje</strong> · Juan Carlos Cruz</p>
+          <p>Nos vemos el lunes a las 9:00 am.</p>
         </div>
       </div>
     </section>
@@ -915,8 +1064,8 @@
   </div>
 
   <div class="hud">
-    <span id="hud-counter">1 / 35</span>
-    <span>Modelos de la IA · CGR · M1S2</span>
+    <span id="hud-counter">1 / 40</span>
+    <span>Modelos de la IA · CGR · M1 Sesión 2</span>
   </div>
 
   <div class="controls">
@@ -1000,26 +1149,6 @@
         num.setAttribute('aria-hidden', 'true');
         num.textContent = String(idx + 1).padStart(2, '0');
         s.appendChild(num);
-      });
-
-      // Tabs (3 paradigmas)
-      document.querySelectorAll('[data-tabs]').forEach(function (tabs) {
-        var buttons = tabs.querySelectorAll('.tabs-nav button');
-        var panels = tabs.querySelectorAll('.tab-content');
-        function setTab(n) {
-          buttons.forEach(function (b) { b.classList.toggle('is-active', b.getAttribute('data-tab') === String(n)); });
-          panels.forEach(function (p) { p.classList.toggle('is-active', p.getAttribute('data-tab-content') === String(n)); });
-        }
-        buttons.forEach(function (b) { b.addEventListener('click', function () { setTab(b.getAttribute('data-tab')); }); });
-        document.addEventListener('keydown', function (e) {
-          var slide = tabs.closest('.slide');
-          if (!slide || !slide.classList.contains('active')) return;
-          if (/^[1-3]$/.test(e.key)) {
-            if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
-            e.preventDefault();
-            setTab(e.key);
-          }
-        });
       });
 
       render();
