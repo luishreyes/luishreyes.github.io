@@ -109,10 +109,17 @@
     }
     .card p { font-size: clamp(0.8rem, 1.3vw, 1.2rem); }
     .card .eyebrow { margin-bottom: 0.25em; }
-    /* Tight thumbnail cards used in PDF-style gallery slides */
-    .grid.cols-3 .card > img:first-child,
+    /* Tight thumbnail cards used in PDF-style gallery slides — preserve image aspect ratio,
+       cap height so multi-row galleries fit a 900px viewport */
+    .grid.cols-3 .card > img:first-child {
+      width: 100%; aspect-ratio: 16 / 9; max-height: 9rem; object-fit: cover;
+      border-radius: 0.4rem;
+    }
     .grid.cols-4 .card > img:first-child,
-    .grid.cols-5 .card > img:first-child { max-height: 9rem; width: 100%; object-fit: cover; }
+    .grid.cols-5 .card > img:first-child {
+      width: 100%; aspect-ratio: 4 / 3; max-height: 7rem; object-fit: cover;
+      border-radius: 0.4rem;
+    }
     .grid.cols-3 .card .prompt-snippet,
     .grid.cols-4 .card .prompt-snippet,
     .grid.cols-5 .card .prompt-snippet { font-size: clamp(0.65rem, 0.95vw, 0.78rem); padding: 0.4rem 0.55rem; line-height: 1.3; max-height: 6.5em; overflow: hidden; }
@@ -120,13 +127,20 @@
     .grid.cols-4 .card h3, .grid.cols-5 .card h3 { font-size: clamp(0.78rem, 1.05vw, 0.95rem); margin: 0.3em 0 0.15em; }
     .grid.cols-4 .card p:not(.prompt-snippet),
     .grid.cols-5 .card p:not(.prompt-snippet) { font-size: clamp(0.65rem, 0.9vw, 0.78rem); line-height: 1.35; }
+    /* Gallery figures (slide 22) — 4:3 aspect ratio matching the PDF's display, capped */
+    .gallery-grid .gallery-figure img {
+      width: 100%; aspect-ratio: 4 / 3; max-height: 13rem; object-fit: cover;
+    }
     .two-col {
       display: grid; grid-template-columns: 1fr 1fr;
       gap: clamp(1rem, 2.5vw, 2.25rem);
       align-items: center;
     }
     @media (max-width: 768px) { .two-col { grid-template-columns: 1fr; } }
-    .two-col img.diagram { width: 100%; }
+    /* Single-image example slides — keep image moderate so it doesn't push content */
+    .two-col img.diagram {
+      width: 100%; height: auto; max-height: 60vh; object-fit: contain;
+    }
     img.diagram {
       max-width: 100%; height: auto;
       border-radius: 0.6rem; box-shadow: 0 4px 14px rgba(0,0,0,0.08);
@@ -588,8 +602,7 @@
         <h2>Yo soy fotógrafo</h2>
         <div class="two-col">
           <div style="display:flex;flex-direction:column;gap:0.75rem;">
-            <p>Antes de hablar de lo que hace la IA con las imágenes, quiero situarme: <strong>la fotografía es parte de mi práctica personal</strong> — no solo un caso de uso académico.</p>
-            <p>El blanco y negro que mostraba en este slide era de mi propio portafolio. Hay algo en eliminar el color que obliga a la imagen a sostenerse por su luz, su geometría y su momento.</p>
+            <p>Antes de hablar de lo que hace la IA con las imágenes, quiero situarme: <strong>la fotografía es parte de mi práctica personal</strong> — no solo un caso de uso académico. Es parte de la razón por la que doy este curso.</p>
             <div class="banner info" style="font-size:clamp(0.85rem,1.3vw,1.15rem);">
               <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
               Puedes ver mi trabajo fotográfico en <a class="platform-link" href="https://luishreyes.myportfolio.com" target="_blank" rel="noopener">luishreyes.myportfolio.com</a>
@@ -611,23 +624,6 @@
         <p class="eyebrow">El denominador común</p>
         <h2>Todas estas imágenes son <span style="color:var(--brand-yellow-dark);">generadas</span></h2>
         <p>Ninguna de las imágenes que vimos es una fotografía real. Todas fueron sintetizadas píxel a píxel por <strong>modelos de difusión</strong>.</p>
-        <div class="grid cols-3 stagger-in">
-          <div class="card">
-            <p class="eyebrow">Abeja macro</p>
-            <h3>Ruido → Naturaleza</h3>
-            <p>50 pasos de denoising guiados por el texto del prompt. Resultado: textura de pelusa, reflejos de luz en el néctar, bokeh suave.</p>
-          </div>
-          <div class="card">
-            <p class="eyebrow">Husky al atardecer</p>
-            <h3>Texto → Píxeles</h3>
-            <p>El modelo no «dibujó» el perro. Aprendió la distribución visual de millones de imágenes y sintetizó una nueva instancia coherente.</p>
-          </div>
-          <div class="card">
-            <p class="eyebrow">Castillo en invierno</p>
-            <h3>Concepto → Imagen</h3>
-            <p>«Medieval + snow + B&W + misty» son palabras. El modelo las convirtió en geometría, texturas y luz física simulada.</p>
-          </div>
-        </div>
         <div class="banner">
           <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
           Ahora entendamos cómo funciona este proceso internamente.
@@ -944,7 +940,7 @@
           <div class="stepper-nav">
             <button data-step="1" class="is-active" aria-selected="true">
               <span class="yr">Nano B. 2</span>
-              <span class="tag">BloqueNeón</span>
+              <span class="tag">Google</span>
             </button>
             <button data-step="2" aria-selected="false">
               <span class="yr">DALL·E 3</span>
@@ -969,14 +965,14 @@
           </div>
           <div class="stepper-panel">
             <div class="stepper-content is-active" data-content="1">
-              <div class="panel-eyebrow">Nano Banana 2 · BloqueNeón / Universidad de los Andes</div>
+              <div class="panel-eyebrow">Nano Banana 2 · Google</div>
               <h3>El modelo que usamos en este curso</h3>
-              <p>Disponible en <a class="platform-link" href="https://bloqueneon.uniandes.edu.co" target="_blank" rel="noopener">BloqueNeón</a>, la plataforma de IA de la Universidad de los Andes. Acceso gratuito para toda la comunidad Uniandes.</p>
+              <p>Basado en Gemini 3.1 Flash Image. Disponible en <a class="platform-link" href="https://gemini.google.com" target="_blank" rel="noopener">Gemini App</a>, Google Search (AI Mode), AI Studio, API y Google Ads.</p>
               <ul style="margin-top:0.5em;">
-                <li>Sin necesidad de cuenta externa — entra con tu correo universitario.</li>
-                <li>Interfaz simple, resultados en segundos.</li>
-                <li>Soporta prompts en español e inglés.</li>
-                <li>Es el modelo que exploraremos en los talleres prácticos de este módulo.</li>
+                <li>Velocidad de generación con calidad de estudio profesional.</li>
+                <li>Renderizado de texto preciso dentro de imágenes.</li>
+                <li>Preserva consistencia de personajes en múltiples generaciones.</li>
+                <li>Lo usamos por su calidad, no por dónde está hospedado.</li>
               </ul>
             </div>
             <div class="stepper-content" data-content="2">
@@ -1041,26 +1037,23 @@
         <h2>Nano Banana 2 — el modelo del curso</h2>
         <div class="two-col">
           <div style="display:flex;flex-direction:column;gap:0.75rem;">
-            <p>A lo largo de este módulo exploraremos Nano Banana 2 a través de <a class="platform-link" href="https://bloqueneon.uniandes.edu.co" target="_blank" rel="noopener">BloqueNeón</a> — la plataforma de inteligencia artificial de la Universidad de los Andes.</p>
-            <div class="banner info" style="font-size:clamp(0.8rem,1.2vw,1.05rem);">
-              <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-              Acceso gratuito con tu cuenta de correo @uniandes.edu.co
-            </div>
+            <p>A lo largo de este módulo exploraremos <strong>Nano Banana 2</strong> de <a class="platform-link" href="https://gemini.google.com" target="_blank" rel="noopener">Google</a> — actualmente uno de los modelos más poderosos del mercado, basado en Gemini 3.1 Flash Image.</p>
             <ul>
-              <li>Interfaz web directa — sin instalaciones.</li>
-              <li>Resultados en segundos desde cualquier dispositivo.</li>
-              <li>Soporta prompts en <strong>español e inglés</strong>.</li>
-              <li>Ideal para explorar conceptos de este módulo en tiempo real.</li>
+              <li><strong>Conocimiento avanzado:</strong> usa la base de Gemini y búsqueda web en tiempo real.</li>
+              <li><strong>Preservación de sujetos:</strong> mantiene consistencia de personajes entre generaciones.</li>
+              <li><strong>Renderizado de texto preciso:</strong> textos nítidos y correctos dentro de imágenes.</li>
+              <li><strong>Velocidad:</strong> genera en segundos gracias a la arquitectura Flash.</li>
+              <li><strong>Edición natural:</strong> describes los cambios en texto y el modelo los aplica.</li>
             </ul>
           </div>
           <div class="dark-box">
-            <h3>¿Por qué empezar aquí?</h3>
-            <p>Antes de explorar modelos de pago como <a class="platform-link" href="https://www.midjourney.com" target="_blank" rel="noopener">Midjourney</a> o <a class="platform-link" href="https://openai.com/dall-e-3" target="_blank" rel="noopener">DALL·E 3</a>, BloqueNeón te permite:</p>
+            <h3>¿Por qué este modelo?</h3>
+            <p>No por dónde está hospedado, sino porque <strong>combina velocidad con calidad de estudio profesional</strong>. Es accesible desde:</p>
             <ul>
-              <li>Experimentar sin costo.</li>
-              <li>Iterar rápidamente con prompts.</li>
-              <li>Comparar resultados en clase.</li>
-              <li>Aprender el vocabulario del prompt antes de invertir en suscripciones.</li>
+              <li><a class="platform-link" href="https://gemini.google.com" target="_blank" rel="noopener">Gemini App</a> y Google Search (AI Mode).</li>
+              <li>AI Studio y la API de Google.</li>
+              <li>Soporte nativo de relaciones de aspecto 4:1, 1:4, 8:1, 1:8.</li>
+              <li>Resoluciones 1K / 2K / 4K.</li>
             </ul>
           </div>
         </div>
@@ -1344,7 +1337,7 @@
                   </div>
                   <p style="margin-top:0.6em; font-size:clamp(0.78rem,1.1vw,0.95rem);"><strong>Ejemplo:</strong> «A serene oil painting of a child in a red coat, peaceful, soft lighting, pastel tones, tender atmosphere»</p>
                 </div>
-                <img class="diagram" src="img/m3-1-p25-1.jpeg" alt="Niño en una pintura serena y tranquila, colores suaves" style="max-height:18rem;object-fit:cover;" />
+                <img class="diagram" src="img/m3-1-p25-1.jpeg" alt="Niño en una pintura serena y tranquila, colores suaves" style="max-height:42vh;object-fit:contain;" />
               </div>
             </div>
             <div class="stepper-content" data-content="2">
@@ -1357,7 +1350,7 @@
                   </div>
                   <p style="margin-top:0.6em; font-size:clamp(0.78rem,1.1vw,0.95rem);"><strong>Ejemplo:</strong> «A vibrant, energetic oil painting of a child in a red coat, bright colors, dynamic composition, joyful atmosphere»</p>
                 </div>
-                <img class="diagram" src="img/m3-1-p26-1.jpeg" alt="Niño en una pintura colorida y vibrante, llena de energía" style="max-height:18rem;object-fit:cover;" />
+                <img class="diagram" src="img/m3-1-p26-1.jpeg" alt="Niño en una pintura colorida y vibrante, llena de energía" style="max-height:42vh;object-fit:contain;" />
               </div>
             </div>
             <div class="stepper-content" data-content="3">
@@ -1370,7 +1363,7 @@
                   </div>
                   <p style="margin-top:0.6em; font-size:clamp(0.78rem,1.1vw,0.95rem);"><strong>Ejemplo:</strong> «A melancholic oil painting of a child in a red coat, muted tones, gloomy, washed-out, somber atmosphere»</p>
                 </div>
-                <img class="diagram" src="img/m3-1-p27-1.jpeg" alt="Niño en una pintura lúgubre y melancólica, colores apagados" style="max-height:18rem;object-fit:cover;" />
+                <img class="diagram" src="img/m3-1-p27-1.jpeg" alt="Niño en una pintura lúgubre y melancólica, colores apagados" style="max-height:42vh;object-fit:contain;" />
               </div>
             </div>
             <div class="stepper-content" data-content="4">
@@ -1383,7 +1376,7 @@
                   </div>
                   <p style="margin-top:0.6em; font-size:clamp(0.78rem,1.1vw,0.95rem);"><strong>Ejemplo:</strong> «A dark, ominous oil painting of a child in a red coat, threatening atmosphere, sinister shadows, harrowing mood»</p>
                 </div>
-                <img class="diagram" src="img/m3-1-p28-1.jpeg" alt="Niño en un ambiente oscuro y amenazante, bosque nocturno" style="max-height:18rem;object-fit:cover;" />
+                <img class="diagram" src="img/m3-1-p28-1.jpeg" alt="Niño en un ambiente oscuro y amenazante, bosque nocturno" style="max-height:42vh;object-fit:contain;" />
               </div>
             </div>
           </div>
@@ -1399,7 +1392,7 @@
         <p class="eyebrow">Sección 3 · Tamaño y estructura</p>
         <h2>Palabras de tamaño y estructura</h2>
         <div class="two-col" style="align-items:flex-start;">
-          <img class="diagram" src="img/m3-1-p29-1.jpeg" alt="Árbol Banyan ancestral en bosque, formas orgánicas y libres" style="max-height:24rem;object-fit:cover;" />
+          <img class="diagram" src="img/m3-1-p29-1.jpeg" alt="Árbol Banyan ancestral en bosque, formas orgánicas y libres" style="max-height:48vh;object-fit:contain;" />
           <div style="display:flex;flex-direction:column;gap:0.6rem;">
             <div class="panel-eyebrow">Grande y Libre</div>
             <div class="emo-words">
@@ -1417,7 +1410,7 @@
         <p class="eyebrow">Sección 3 · Tamaño y estructura</p>
         <h2>Palabras de tamaño y estructura</h2>
         <div class="two-col" style="align-items:flex-start;">
-          <img class="diagram" src="img/m3-1-p30-1.jpeg" alt="Edificio modernista de concreto, geometría imponente y estructurada" style="max-height:24rem;object-fit:cover;" />
+          <img class="diagram" src="img/m3-1-p30-1.jpeg" alt="Edificio modernista de concreto, geometría imponente y estructurada" style="max-height:48vh;object-fit:contain;" />
           <div style="display:flex;flex-direction:column;gap:0.6rem;">
             <div class="panel-eyebrow">Grande y Estructurado</div>
             <div class="emo-words">
@@ -1435,7 +1428,7 @@
         <p class="eyebrow">Sección 3 · Tamaño y estructura</p>
         <h2>Palabras de tamaño y estructura</h2>
         <div class="two-col" style="align-items:flex-start;">
-          <img class="diagram" src="img/m3-1-p31-1.jpeg" alt="Macro de mecanismo de reloj de lujo con engranajes y rubíes" style="max-height:24rem;object-fit:cover;" />
+          <img class="diagram" src="img/m3-1-p31-1.jpeg" alt="Macro de mecanismo de reloj de lujo con engranajes y rubíes" style="max-height:48vh;object-fit:contain;" />
           <div style="display:flex;flex-direction:column;gap:0.6rem;">
             <div class="panel-eyebrow">Pequeño y Estructurado</div>
             <div class="emo-words">
@@ -1453,7 +1446,7 @@
         <p class="eyebrow">Sección 3 · Tamaño y estructura</p>
         <h2>Palabras de tamaño y estructura</h2>
         <div class="two-col" style="align-items:flex-start;">
-          <img class="diagram" src="img/m3-1-p32-1.jpeg" alt="Ilustración suelta y expresiva de una flor margarita" style="max-height:24rem;object-fit:cover;" />
+          <img class="diagram" src="img/m3-1-p32-1.jpeg" alt="Ilustración suelta y expresiva de una flor margarita" style="max-height:48vh;object-fit:contain;" />
           <div style="display:flex;flex-direction:column;gap:0.6rem;">
             <div class="panel-eyebrow">Pequeño y Libre</div>
             <div class="emo-words">
@@ -1527,7 +1520,7 @@
         <p class="eyebrow">Sección 4 · Fotografía</p>
         <h2>Preguntas clave para construir tu prompt</h2>
         <div class="two-col" style="align-items:flex-start;">
-          <img class="diagram" src="img/m3-1-p34-1.jpeg" alt="Persona sosteniendo una cámara analógica vintage" style="max-height:24rem;object-fit:cover;" />
+          <img class="diagram" src="img/m3-1-p34-1.jpeg" alt="Persona sosteniendo una cámara analógica vintage" style="max-height:48vh;object-fit:contain;" />
           <ul style="font-size:clamp(0.85rem,1.3vw,1.15rem);">
             <li>¿Cómo está compuesta la foto?</li>
             <li>¿Cuál es el vibe emocional?</li>
@@ -1549,7 +1542,7 @@
         <p class="eyebrow">Sección 4 · Fórmulas</p>
         <h2>Fórmula 1 — retrato editorial vintage</h2>
         <div class="two-col" style="align-items:flex-start;">
-          <img class="diagram" src="img/m3-1-p35-1.jpeg" alt="Caballo blanco con melena al viento, retrato dramático en blanco y negro" style="max-height:24rem;object-fit:cover;" />
+          <img class="diagram" src="img/m3-1-p35-1.jpeg" alt="Caballo blanco con melena al viento, retrato dramático en blanco y negro" style="max-height:48vh;object-fit:contain;" />
           <div style="display:flex;flex-direction:column;gap:0.6rem;">
             <p class="prompt-snippet">A close-up, black and white studio photographic portrait of SUBJECT, dramatic backlighting, 1973 photo from Life Magazine</p>
             <p style="font-size:0.85rem; font-style:italic;">encuadre + tipo película + contexto + iluminación + año y uso</p>
@@ -1566,7 +1559,7 @@
         <p class="eyebrow">Sección 4 · Fórmulas</p>
         <h2>Fórmula 2 — paisaje urbano vibrante</h2>
         <div class="two-col" style="align-items:flex-start;">
-          <img class="diagram" src="img/m3-1-p36-1.jpeg" alt="Vista panorámica de Nueva York al atardecer, golden hour" style="max-height:24rem;object-fit:cover;" />
+          <img class="diagram" src="img/m3-1-p36-1.jpeg" alt="Vista panorámica de Nueva York al atardecer, golden hour" style="max-height:48vh;object-fit:contain;" />
           <div style="display:flex;flex-direction:column;gap:0.6rem;">
             <p class="prompt-snippet">A vibrant photograph of SUBJECT, wide shot, outdoors, sunset photo at golden hour, wide-angle lens, soft focus, shot on iPhone 6, on Flickr in 2007</p>
             <p style="font-size:0.85rem; font-style:italic;">vibe + encuadre + contexto + iluminación + lente y cámara + año y uso</p>
