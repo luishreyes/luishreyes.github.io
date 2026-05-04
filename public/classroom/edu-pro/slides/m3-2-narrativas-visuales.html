@@ -1,0 +1,1194 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="/classroom-fonts.css" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>M3.2 — Narrativas visuales con IA: ver, crear y contar historias con imágenes · Dominando la IA</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" crossorigin="anonymous"
+    onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]})"></script>
+  <style>
+    :root {
+      --brand-dark: #1A1A1A;
+      --brand-yellow: #FFBF00;
+      --brand-yellow-dark: #E6AC00;
+      --brand-gray: #555555;
+      --surface: #ffffff;
+      --muted: #f4f4f5;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0; padding: 0; height: 100%; width: 100%;
+      background: var(--brand-dark); color: var(--brand-dark);
+      font-family: 'Manrope Variable', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      overflow: hidden; -webkit-text-size-adjust: 100%;
+    }
+    .deck { position: relative; width: 100vw; height: 100vh; height: 100dvh; }
+    .slide {
+      position: absolute; inset: 0;
+      display: none; align-items: center; justify-content: center;
+      padding: clamp(1rem, 4vw, 3.5rem);
+      background: var(--surface);
+      opacity: 0; transition: opacity 260ms ease; overflow-y: auto;
+    }
+    .slide.active { display: flex; opacity: 1; }
+    .slide .content {
+      width: 100%; max-width: 92rem; margin: auto 0;
+      display: flex; flex-direction: column;
+      gap: clamp(0.75rem, 1.5vw, 1.5rem);
+    }
+    .eyebrow {
+      text-transform: uppercase; letter-spacing: 0.2em;
+      font-size: clamp(0.65rem, 1vw, 1rem);
+      color: var(--brand-yellow-dark); font-weight: 600;
+    }
+    h1 {
+      font-size: clamp(1.75rem, 5.5vw, 5.75rem);
+      line-height: 1.05; margin: 0;
+      color: var(--brand-dark); font-weight: 700; letter-spacing: -0.02em;
+    }
+    h2 { font-size: clamp(1.25rem, 3.4vw, 3.25rem); line-height: 1.15; margin: 0; font-weight: 700; color: var(--brand-dark); }
+    h2 .sub { display: block; font-size: 0.55em; font-weight: 500; color: var(--brand-gray); margin-top: 0.15em; }
+    p, li { font-size: clamp(0.95rem, 1.6vw, 1.6rem); line-height: 1.55; color: var(--brand-gray); margin: 0; }
+    ul, ol { padding-left: 1.25em; margin: 0; display: flex; flex-direction: column; gap: 0.45em; }
+    li::marker { color: var(--brand-yellow-dark); }
+    .slide.title-slide {
+      background: linear-gradient(135deg, #141414 0%, #1A1A1A 50%, #2a2a2a 100%);
+      color: #fff;
+    }
+    .slide.title-slide h1, .slide.title-slide h2, .slide.title-slide h3 { color: #fff; }
+    .slide.title-slide p, .slide.title-slide li { color: #e4e4e7; }
+    .slide.title-slide strong { color: #fff; }
+    .slide.title-slide .eyebrow { color: var(--brand-yellow); }
+    .slide.title-slide .card { color: var(--brand-dark); }
+    .slide.title-slide .card p, .slide.title-slide .card li { color: var(--brand-gray); }
+    .slide.title-slide .card h3, .slide.title-slide .card strong { color: var(--brand-dark); }
+    .slide.cover {
+      background-color: #0a0a0a;
+      background-blend-mode: multiply;
+      background-size: cover;
+      background-position: center;
+    }
+    .slide.cover::after {
+      content:''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(10,10,10,0.86) 0%, rgba(20,20,20,0.7) 50%, rgba(20,20,20,0.6) 100%);
+      pointer-events: none;
+    }
+    .slide.cover .content { position: relative; z-index: 2; }
+    .slide.cover h1, .slide.cover h2 { color: #fff; }
+    .slide.cover p, .slide.cover li { color: #e4e4e7; }
+    .slide.cover strong { color: #fff; }
+    .slide.cover .eyebrow { color: var(--brand-yellow); }
+    .pill-row { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 0.5rem; }
+    .pill {
+      display: inline-flex; align-items: center;
+      padding: 0.32em 0.85em; border-radius: 999px;
+      background: var(--muted); color: var(--brand-dark);
+      font-size: clamp(0.75rem, 1.1vw, 1.1rem); font-weight: 500;
+    }
+    .slide.title-slide .pill, .slide.cover .pill {
+      background: rgba(255,255,255,0.1); color: #fff;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .grid { display: grid; gap: clamp(0.75rem, 1.5vw, 1.25rem); }
+    .grid.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid.cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    @media (max-width: 768px) { .grid.cols-2, .grid.cols-3, .grid.cols-4 { grid-template-columns: 1fr; } }
+    .card {
+      background: var(--muted); border-radius: 0.75rem;
+      padding: clamp(0.9rem, 1.5vw, 1.35rem);
+      transition: transform 220ms ease, box-shadow 220ms ease;
+    }
+    .card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
+    .card h3 {
+      font-size: clamp(1rem, 1.7vw, 1.5rem); margin: 0 0 0.35em;
+      color: var(--brand-dark); font-weight: 700;
+    }
+    .card p { font-size: clamp(0.8rem, 1.3vw, 1.2rem); }
+    .card .eyebrow { margin-bottom: 0.25em; }
+    /* Tight thumbnail cards used in PDF-style gallery slides — preserve NATURAL aspect ratio
+       of the source images (mostly 1:1 from the PDF). object-fit: contain letterboxes any
+       odd-ratio source rather than cropping it. max-height caps multi-row grids. */
+    .grid.cols-3 .card > img:first-child,
+    .grid.cols-4 .card > img:first-child,
+    .grid.cols-5 .card > img:first-child {
+      display: block;
+      width: auto;
+      max-width: 100%;
+      max-height: 9rem;
+      margin: 0 auto;
+      object-fit: contain;
+      border-radius: 0.4rem;
+      background: #f4f4f5;
+    }
+    .grid.cols-3 .card .prompt-snippet,
+    .grid.cols-4 .card .prompt-snippet,
+    .grid.cols-5 .card .prompt-snippet { font-size: clamp(0.65rem, 0.95vw, 0.78rem); padding: 0.4rem 0.55rem; line-height: 1.3; max-height: 6.5em; overflow: hidden; }
+    .grid.cols-4 .card, .grid.cols-5 .card { padding: 0.45rem; }
+    .grid.cols-4 .card h3, .grid.cols-5 .card h3 { font-size: clamp(0.78rem, 1.05vw, 0.95rem); margin: 0.3em 0 0.15em; }
+    .grid.cols-4 .card p:not(.prompt-snippet),
+    .grid.cols-5 .card p:not(.prompt-snippet) { font-size: clamp(0.65rem, 0.9vw, 0.78rem); line-height: 1.35; }
+    /* Cols-2 thumbnails (e.g. shutter speed) — wider native ratio, allow more height */
+    .grid.cols-2 .card > img:first-child {
+      display: block;
+      width: auto;
+      max-width: 100%;
+      max-height: 14rem;
+      margin: 0 auto;
+      object-fit: contain;
+      border-radius: 0.5rem;
+      background: #f4f4f5;
+    }
+    /* Gallery figures (slide 22) — preserve natural aspect ratio of the source */
+    .gallery-grid .gallery-figure img {
+      display: block;
+      width: auto;
+      max-width: 100%;
+      max-height: 13rem;
+      margin: 0 auto;
+      object-fit: contain;
+    }
+    .two-col {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: clamp(1rem, 2.5vw, 2.25rem);
+      align-items: center;
+    }
+    @media (max-width: 768px) { .two-col { grid-template-columns: 1fr; } }
+    /* Single-image example slides — keep image moderate so it doesn't push content */
+    .two-col img.diagram {
+      width: 100%; height: auto; max-height: 60vh; object-fit: contain;
+    }
+    img.diagram {
+      max-width: 100%; height: auto;
+      border-radius: 0.6rem; box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+      background: #fff;
+    }
+    .vs-cols {
+      display: grid; grid-template-columns: 1fr auto 1fr;
+      gap: clamp(0.75rem, 2vw, 2rem);
+      align-items: stretch;
+    }
+    @media (max-width: 768px) { .vs-cols { grid-template-columns: 1fr; } .vs-cols .vs-divider { display: none; } }
+    .vs-cols .col {
+      background: #fff; border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 0.75rem; padding: clamp(1rem, 1.6vw, 1.6rem);
+      display: flex; flex-direction: column; gap: 0.5rem;
+    }
+    .vs-cols .col.left  { border-top: 4px solid #94a3b8; }
+    .vs-cols .col.right { border-top: 4px solid var(--brand-yellow-dark); }
+    .vs-cols .col h3 { margin: 0; font-size: clamp(1rem, 1.7vw, 1.5rem); color: var(--brand-dark); }
+    .vs-cols .vs-divider {
+      align-self: center; background: var(--brand-yellow);
+      color: var(--brand-dark); font-weight: 800; font-size: 0.9rem;
+      width: 2.4em; height: 2.4em; border-radius: 999px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .banner {
+      background: #fef3c7; border-left: 4px solid var(--brand-yellow-dark);
+      padding: 0.9rem 1.1rem; border-radius: 0.5rem;
+      color: #78350f; font-size: clamp(0.85rem, 1.4vw, 1.25rem);
+    }
+    .banner.info { background: #e0f2fe; border-left-color: #0284c7; color: #0c4a6e; }
+    .banner.warn { background: #fee2e2; border-left-color: #dc2626; color: #7f1d1d; }
+    .banner svg { vertical-align: -0.18em; margin-right: 0.4em; }
+    .big-quote { text-align: center; padding: 0 clamp(1rem, 4vw, 4rem); }
+    .big-quote h2 { font-size: clamp(2rem, 6vw, 5.5rem); line-height: 1.05; color: var(--brand-dark); }
+    .big-quote h2 .accent { color: var(--brand-yellow-dark); }
+    .big-quote p { margin-top: 1em; font-style: italic; }
+    .hud {
+      position: fixed; left: 0; right: 0; bottom: 0;
+      padding: 0.5rem 1rem;
+      display: flex; justify-content: space-between; align-items: center;
+      color: rgba(255,255,255,0.75); font-size: 0.75rem;
+      pointer-events: none; z-index: 10;
+    }
+    .controls {
+      position: fixed; right: 1rem; bottom: 2.5rem;
+      display: flex; gap: 0.5rem; z-index: 11;
+    }
+    .controls button {
+      -webkit-appearance: none; appearance: none;
+      border: 1px solid rgba(0,0,0,0.1);
+      background: rgba(255,255,255,0.9); color: var(--brand-dark);
+      width: 2.5rem; height: 2.5rem; border-radius: 999px;
+      font-size: 1rem; cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    }
+    .progress {
+      position: fixed; top: 0; left: 0;
+      height: 3px; background: var(--brand-yellow);
+      transition: width 260ms ease; z-index: 20;
+    }
+    .progress.pulsing { animation: progPulse 0.5s ease; }
+    @keyframes progPulse {
+      0%   { box-shadow: 0 0 0 0 rgba(255,191,0,0.0); }
+      50%  { box-shadow: 0 0 12px 3px rgba(255,191,0,0.8); }
+      100% { box-shadow: 0 0 0 0 rgba(255,191,0,0.0); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .slide { transition: none; }
+      .progress { transition: none; }
+      .progress.pulsing { animation: none; }
+      .stagger-in > * { animation: none !important; }
+      .card { transition: none; }
+      .gallery-figure img { transition: none; }
+      .gallery-figure figcaption { transition: none; transform: translateY(0) !important; }
+    }
+    @media (max-width: 480px) {
+      .controls { right: 0.5rem; bottom: 1.25rem; }
+      .hud { font-size: 0.65rem; }
+    }
+    .slide:not(.title-slide):not(.cover)::before {
+      content: ''; position: absolute;
+      top: clamp(1rem, 3vw, 2.5rem); right: clamp(1rem, 3vw, 2.5rem);
+      width: clamp(2rem, 5vw, 4rem); height: clamp(2rem, 5vw, 4rem);
+      border-top: 2.5px solid var(--brand-yellow);
+      border-right: 2.5px solid var(--brand-yellow);
+      pointer-events: none; z-index: 1;
+    }
+    .slide.title-slide::before, .slide.cover::before {
+      content: ''; position: absolute;
+      bottom: clamp(1rem, 3vw, 2.5rem); left: clamp(1rem, 3vw, 2.5rem);
+      width: clamp(2rem, 5vw, 4rem); height: clamp(2rem, 5vw, 4rem);
+      border-bottom: 2.5px solid var(--brand-yellow);
+      border-left: 2.5px solid var(--brand-yellow);
+      opacity: 0.5; pointer-events: none; z-index: 3;
+    }
+    .slide-number {
+      position: absolute; bottom: clamp(0.5rem, 2vw, 1.5rem);
+      left: clamp(1rem, 3vw, 2.5rem);
+      font-size: clamp(4rem, 12vw, 10rem);
+      font-weight: 800; line-height: 1;
+      color: rgba(0, 0, 0, 0.04); pointer-events: none;
+      z-index: 0; user-select: none; letter-spacing: -0.04em;
+    }
+    .slide.title-slide .slide-number, .slide.cover .slide-number {
+      color: rgba(255, 255, 255, 0.05);
+    }
+    a.platform-link {
+      color: var(--brand-dark); text-decoration: none;
+      border-bottom: 2px solid var(--brand-yellow);
+      padding-bottom: 0.05em;
+      transition: color 180ms, border-color 180ms;
+    }
+    a.platform-link:hover { color: var(--brand-yellow-dark); border-bottom-color: var(--brand-yellow-dark); }
+    a.platform-link::after { content: " ↗"; font-size: 0.65em; opacity: 0.5; margin-left: 0.12em; vertical-align: 0.3em; }
+    .slide.title-slide a.platform-link, .slide.cover a.platform-link { color: #fff; }
+    .slide.title-slide a.platform-link:hover, .slide.cover a.platform-link:hover { color: var(--brand-yellow); border-bottom-color: var(--brand-yellow); }
+    h2 svg, h3 svg, .eyebrow svg, .pill svg {
+      vertical-align: -0.18em; margin-right: 0.4em;
+      color: var(--brand-yellow-dark);
+    }
+    a:focus-visible, button:focus-visible {
+      outline: 3px solid var(--brand-yellow-dark);
+      outline-offset: 2px; border-radius: 0.35rem;
+    }
+    .slide.active .stagger-in > * { animation: fadeInUp 0.4s ease both; }
+    .slide.active .stagger-in > *:nth-child(1) { animation-delay: 0.05s; }
+    .slide.active .stagger-in > *:nth-child(2) { animation-delay: 0.15s; }
+    .slide.active .stagger-in > *:nth-child(3) { animation-delay: 0.25s; }
+    .slide.active .stagger-in > *:nth-child(4) { animation-delay: 0.35s; }
+    .slide.active .stagger-in > *:nth-child(5) { animation-delay: 0.45s; }
+    .slide.active .stagger-in > *:nth-child(6) { animation-delay: 0.55s; }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* === Stepper === */
+    .stepper { display: flex; flex-direction: column; gap: 1rem; }
+    .stepper-nav {
+      display: grid; grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 0.4rem; padding-bottom: 0.3rem;
+    }
+    @media (max-width: 768px) { .stepper-nav { grid-template-columns: repeat(3, 1fr) !important; } }
+    .stepper-nav button {
+      background: #fff; border: 1.5px solid rgba(0,0,0,0.08);
+      padding: 0.7em 0.4em; border-radius: 0.6rem;
+      display: flex; flex-direction: column; align-items: center; gap: 0.15em;
+      cursor: pointer; font-family: inherit;
+      transition: all 220ms ease;
+    }
+    .stepper-nav button .yr {
+      font-size: clamp(0.85rem, 1.3vw, 1.15rem);
+      font-weight: 800; letter-spacing: 0.02em; color: var(--brand-dark);
+    }
+    .stepper-nav button .tag {
+      font-size: clamp(0.6rem, 0.85vw, 0.8rem);
+      color: var(--brand-gray); text-transform: uppercase; letter-spacing: 0.08em;
+    }
+    .stepper-nav button:hover { border-color: var(--brand-yellow); transform: translateY(-2px); }
+    .stepper-nav button.is-active {
+      background: var(--brand-dark); border-color: var(--brand-dark);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+    }
+    .stepper-nav button.is-active .yr { color: var(--brand-yellow); }
+    .stepper-nav button.is-active .tag { color: rgba(255,255,255,0.75); }
+    .stepper-panel {
+      background: #fff; border: 1px solid rgba(0,0,0,0.08);
+      border-left: 6px solid var(--brand-yellow);
+      border-radius: 0.75rem;
+      padding: clamp(1rem, 2vw, 1.6rem);
+      min-height: 12rem;
+    }
+    .stepper-content { display: none; animation: stepFade 0.3s ease; }
+    .stepper-content.is-active { display: block; }
+    @keyframes stepFade { from { opacity: 0; transform: translateX(8px); } to { opacity: 1; transform: translateX(0); } }
+    .stepper-content h3 { margin: 0 0 0.5em; font-size: clamp(1rem, 1.6vw, 1.4rem); color: var(--brand-dark); }
+    .stepper-content .panel-eyebrow { font-size: clamp(0.7rem, 1vw, 0.95rem); color: var(--brand-yellow-dark); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.4em; }
+
+    /* === Diffusion timeline === */
+    .diff-timeline {
+      display: flex; align-items: stretch; gap: 0.25rem;
+    }
+    .diff-step {
+      flex: 1; background: var(--muted); border-radius: 0.5rem;
+      padding: 0.7rem 0.4rem; text-align: center;
+      display: flex; flex-direction: column; gap: 0.2rem;
+    }
+    .diff-step h4 { margin: 0; font-size: clamp(0.7rem, 1.1vw, 0.95rem); color: var(--brand-dark); font-weight: 700; }
+    .diff-step .sub { font-size: clamp(0.6rem, 0.9vw, 0.78rem); color: var(--brand-gray); }
+    .diff-step.dark { background: var(--brand-dark); }
+    .diff-step.dark h4 { color: var(--brand-yellow); }
+    .diff-step.dark .sub { color: rgba(255,255,255,0.6); }
+    .diff-step.med { background: #d4d4d8; }
+    .diff-step.med h4 { color: var(--brand-dark); }
+    .diff-arrow {
+      display: flex; align-items: center; justify-content: center;
+      color: var(--brand-yellow-dark); font-size: 1.2rem; flex-shrink: 0;
+      padding: 0 0.1rem;
+    }
+    .katex-box {
+      background: #fff; border: 1px solid rgba(0,0,0,0.08);
+      border-left: 4px solid var(--brand-yellow-dark);
+      border-radius: 0.5rem; padding: 0.75rem 1rem;
+      text-align: center; font-size: clamp(0.95rem, 1.5vw, 1.3rem);
+    }
+
+    /* === Training steps === */
+    .training-steps { display: flex; flex-direction: column; gap: 0.5rem; }
+    .t-step { display: flex; align-items: flex-start; gap: 0.75rem; }
+    .t-step-num {
+      flex-shrink: 0; width: clamp(1.6rem, 2.5vw, 2rem); height: clamp(1.6rem, 2.5vw, 2rem);
+      background: var(--brand-yellow); border-radius: 999px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: clamp(0.75rem, 1.1vw, 0.95rem); color: var(--brand-dark);
+      margin-top: 0.1em;
+    }
+    .t-step h4 { margin: 0 0 0.15em; font-size: clamp(0.85rem, 1.35vw, 1.15rem); color: var(--brand-dark); }
+    .t-step p { font-size: clamp(0.78rem, 1.15vw, 1rem); color: var(--brand-gray); }
+
+    /* === CLIP diagram === */
+    .clip-col { display: flex; flex-direction: column; gap: 0.6rem; }
+    .clip-row {
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .clip-box {
+      flex: 1; padding: 0.6rem 0.8rem; border-radius: 0.5rem;
+      font-size: clamp(0.78rem, 1.15vw, 1rem); font-weight: 600;
+    }
+    .clip-box.text-b { background: #e0f2fe; color: #0c4a6e; }
+    .clip-box.img-b  { background: #f0fdf4; color: #166534; }
+    .clip-box.vec    { background: var(--muted); color: var(--brand-dark); font-family: 'JetBrains Mono Variable', monospace; font-size: 0.85em; }
+    .clip-arrow { color: var(--brand-yellow-dark); font-size: 1.1rem; flex-shrink: 0; }
+    .clip-sim {
+      text-align: center; background: var(--brand-yellow);
+      border-radius: 0.5rem; padding: 0.5rem 0.75rem;
+      font-weight: 800; font-size: clamp(0.8rem, 1.2vw, 1rem); color: var(--brand-dark);
+    }
+    .dark-box {
+      background: var(--brand-dark); border-radius: 0.75rem;
+      padding: clamp(0.9rem, 1.5vw, 1.35rem); color: #e4e4e7;
+      display: flex; flex-direction: column; gap: 0.5rem;
+    }
+    .dark-box h3 { color: var(--brand-yellow); margin: 0 0 0.35em; font-size: clamp(0.95rem, 1.5vw, 1.3rem); }
+    .dark-box p, .dark-box li { font-size: clamp(0.8rem, 1.25vw, 1.1rem); color: #d4d4d8; }
+
+    /* === Gallery === */
+    .gallery-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 0.6rem;
+    }
+    @media (max-width: 768px) { .gallery-grid { grid-template-columns: repeat(2, 1fr); } }
+    .gallery-figure {
+      position: relative; overflow: hidden; border-radius: 0.6rem;
+      cursor: default; margin: 0;
+    }
+    .gallery-figure img {
+      width: 100%; height: clamp(7rem, 12vw, 11rem); object-fit: cover; display: block;
+      transition: transform 350ms ease;
+    }
+    .gallery-figure:hover img { transform: scale(1.04); }
+    .gallery-figure figcaption {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.6) 55%, transparent 100%);
+      color: #fff; padding: 0.5rem 0.45rem 0.4rem;
+      font-family: 'JetBrains Mono Variable', monospace;
+      font-size: clamp(0.5rem, 0.78vw, 0.7rem); line-height: 1.4;
+      transform: translateY(35%); transition: transform 350ms ease;
+    }
+    .gallery-figure:hover figcaption { transform: translateY(0); }
+
+    /* === Emotion words === */
+    .emo-words { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.4em; }
+    .emo-word {
+      padding: 0.22em 0.6em; border-radius: 0.35rem;
+      font-family: 'JetBrains Mono Variable', monospace;
+      font-size: clamp(0.7rem, 1vw, 0.88rem); font-weight: 600;
+    }
+    .emo-word.pos { background: #dcfce7; color: #166534; }
+    .emo-word.neg { background: #fee2e2; color: #991b1b; }
+
+    /* === Prompt snippet === */
+    .prompt-snippet {
+      font-family: 'JetBrains Mono Variable', monospace;
+      font-size: clamp(0.72rem, 1.1vw, 0.95rem);
+      background: var(--muted); border-radius: 0.4rem;
+      padding: 0.5em 0.75em; color: var(--brand-dark);
+      line-height: 1.5;
+    }
+
+    /* === Model item (panorama) === */
+    .model-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: 0.5rem; }
+    .model-item {
+      background: var(--muted); border-radius: 0.5rem;
+      padding: 0.6rem 0.75rem; border-left: 3px solid var(--brand-yellow-dark);
+      transition: transform 220ms ease, box-shadow 220ms;
+    }
+    .model-item:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+    .model-item .name { font-weight: 700; color: var(--brand-dark); font-size: clamp(0.82rem, 1.15vw, 1rem); }
+    .model-item .org { font-size: clamp(0.68rem, 0.95vw, 0.82rem); color: var(--brand-gray); margin-top: 0.1em; }
+    .model-item .note { font-size: clamp(0.68rem, 1vw, 0.9rem); color: var(--brand-gray); margin-top: 0.3em; }
+
+    /* === Video print link === */
+    .video-print-link { display: none; }
+
+    /* === Print === */
+    @media print {
+      @page { size: A4 portrait; margin: 12mm; }
+      *, *::before, *::after {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      html, body { background: #fff !important; height: auto !important; overflow: visible !important; }
+      .deck { width: 100% !important; height: auto !important; position: static !important; }
+      .controls, .hud, .progress, .slide-number { display: none !important; }
+      .slide:not(.title-slide):not(.cover)::before,
+      .slide.title-slide::before, .slide.cover::before,
+      .slide.cover::after { display: none !important; }
+      .slide {
+        position: static !important; display: flex !important;
+        opacity: 1 !important; width: 100% !important;
+        height: auto !important; inset: auto !important;
+        overflow: visible !important; padding: 1.2rem 0.5rem !important;
+        min-height: 0 !important; page-break-after: always; break-after: page;
+        page-break-inside: avoid;
+      }
+      .slide:last-child { page-break-after: auto; break-after: auto; }
+      .slide .content { max-width: 100% !important; margin: 0 !important; gap: 0.6rem !important; }
+      h1 { font-size: 26pt !important; } h2 { font-size: 18pt !important; }
+      h3 { font-size: 13pt !important; } p, li { font-size: 10.5pt !important; }
+      .eyebrow, .pill { font-size: 9pt !important; }
+      .slide.title-slide, .slide.cover {
+        background: linear-gradient(135deg, #141414 0%, #1A1A1A 50%, #2a2a2a 100%) !important; color: #fff !important;
+      }
+      .slide.title-slide h1, .slide.title-slide h2, .slide.cover h1, .slide.cover h2 { color: #fff !important; }
+      .slide.title-slide p, .slide.cover p { color: #e4e4e7 !important; }
+      .slide.title-slide .eyebrow, .slide.cover .eyebrow { color: #FFBF00 !important; }
+      .stagger-in > * { animation: none !important; opacity: 1 !important; transform: none !important; }
+      .card, .vs-cols .col { transition: none !important; transform: none !important; box-shadow: none !important; page-break-inside: avoid; }
+      img.diagram { page-break-inside: avoid; max-height: none !important; }
+      .stepper-nav { display: none !important; }
+      .stepper-content { display: block !important; opacity: 1 !important; animation: none !important; }
+      .stepper-panel { border-left: 4px solid var(--brand-yellow) !important; page-break-inside: avoid; }
+      .stepper-content + .stepper-content { margin-top: 0.8rem; padding-top: 0.8rem; border-top: 1px dashed #ccc; }
+      .gallery-figure img { height: auto !important; max-height: 8rem !important; transition: none !important; }
+      .gallery-figure figcaption { transform: translateY(0) !important; position: static !important; background: #222 !important; padding: 0.3rem 0.4rem !important; }
+      .dark-box { background: #1A1A1A !important; }
+      .diff-step.dark { background: #1A1A1A !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="progress" style="width:0"></div>
+  <div class="deck" id="deck">
+
+    <!-- 1. Cover -->
+    <section class="slide cover active" data-slide style="background-image: url('img/m3-2-p01-1.jpeg');">
+      <div class="content">
+        <p class="eyebrow">EDCO Uniandes · Dominando la IA · M3.2 · Mayo 2026</p>
+        <h1>Narrativas visuales<br/>con IA</h1>
+        <p style="font-size: clamp(1rem, 1.8vw, 1.5rem); max-width: 52rem;">Ver, crear y contar historias con imágenes — de analizar a comunicar.</p>
+        <div class="pill-row">
+          <span class="pill">Módulo 3.2 · Clase 7</span>
+          <span class="pill">2 horas · Viernes 22 de mayo de 2026</span>
+        </div>
+        <p style="margin-top: 1.5em; font-size: clamp(0.85rem, 1.3vw, 1.1rem); opacity: 0.8;">Luis H. Reyes · Profesor Asociado, Departamento de Ingeniería Química y de Alimentos · Universidad de los Andes</p>
+      </div>
+    </section>
+
+    <!-- 2. La semana pasada: recap -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Recapitulación rápida</p>
+        <h2>La semana pasada: texto → imagen</h2>
+        <div class="two-col" style="align-items:center;">
+          <img class="diagram" src="img/m3-2-p02-1.jpeg" alt="Pasillo abstracto con luces de colores que representa generación de imágenes por IA" />
+          <div style="display:flex;flex-direction:column;gap:0.8rem;">
+            <div class="dark-box">
+              <h3>Lo que aprendimos</h3>
+              <p>Exploramos cómo los modelos de difusión generan imágenes a partir de texto. Aprendimos sobre <strong>prompt engineering visual</strong>: emociones, estilos, fotografía, ilustración, historia del arte.</p>
+            </div>
+            <div>
+              <h3 style="margin:0 0 0.4em;">El giro de hoy</h3>
+              <p>Hoy damos un giro fundamental: la IA también puede <strong>VER e INTERPRETAR</strong> imágenes. El camino inverso nos abre posibilidades completamente nuevas para el trabajo institucional.</p>
+              <div class="grid cols-2" style="gap:0.5rem; margin-top:0.6rem;">
+                <div class="card" style="padding:0.7rem;"><h3 style="font-size:1rem;">Antes</h3><p style="font-size:0.9rem;">Texto → Imagen</p></div>
+                <div class="card" style="padding:0.7rem;"><h3 style="font-size:1rem;">Hoy</h3><p style="font-size:0.9rem;">Imagen → Texto</p></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Bloque 1 título -->
+    <section class="slide cover" data-slide style="background-image: url('img/m3-2-p03-1.jpeg');">
+      <div class="content">
+        <p class="eyebrow">Bloque 1</p>
+        <h2 style="color:#fff;">La IA que ve</h2>
+        <h1 style="font-size:clamp(1.6rem, 4.5vw, 4.5rem); margin-top:0.3em;">Modelos multimodales<br/>y análisis de imágenes</h1>
+        <p style="font-size:clamp(1rem,1.6vw,1.4rem); max-width:52rem; margin-top:0.6em;">Descubramos cómo la inteligencia artificial procesa, interpreta y razona sobre el mundo visual.</p>
+      </div>
+    </section>
+
+    <!-- 4. El cambio de dirección -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Sección 1 · Cambio de dirección</p>
+        <h2>El cambio de dirección</h2>
+        <p>Los mismos modelos que generan imágenes también pueden analizarlas. Estos modelos se llaman <strong>«multimodales»</strong> porque trabajan con múltiples tipos de información.</p>
+        <div class="grid cols-3 stagger-in" style="margin-top:0.8rem;">
+          <div class="card" style="background:#fef3c7;">
+            <p class="eyebrow">Paso 1</p>
+            <h3>Generación</h3>
+            <p>Texto → Imagen</p>
+            <p style="font-size:0.85rem; color:var(--brand-gray); margin-top:0.4em;">El modelo crea una imagen a partir de tu descripción textual.</p>
+          </div>
+          <div class="card" style="background:#fef3c7;">
+            <p class="eyebrow">Paso 2</p>
+            <h3>Comprensión</h3>
+            <p>Imagen → Texto</p>
+            <p style="font-size:0.85rem; color:var(--brand-gray); margin-top:0.4em;">El modelo lee, describe y razona sobre lo que ve en una imagen.</p>
+          </div>
+          <div class="card" style="background:#fef3c7;">
+            <p class="eyebrow">Paso 3</p>
+            <h3>Multimodal</h3>
+            <p>Texto + Imágenes + Documentos + Gráficas</p>
+            <p style="font-size:0.85rem; color:var(--brand-gray); margin-top:0.4em;">El modelo combina varios tipos de entrada para razonar y responder.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. Principales modelos multimodales -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Sección 1 · Modelos disponibles</p>
+        <h2>Principales modelos multimodales disponibles hoy</h2>
+        <div class="grid cols-3 stagger-in" style="margin-top:0.8rem;">
+          <div class="card" style="background:#fef3c7;">
+            <h3>GPT</h3>
+            <p><a class="platform-link" href="https://openai.com" target="_blank" rel="noopener">OpenAI</a> — integrado en <a class="platform-link" href="https://chatgpt.com" target="_blank" rel="noopener">ChatGPT</a> y <a class="platform-link" href="https://copilot.microsoft.com" target="_blank" rel="noopener">Copilot</a></p>
+          </div>
+          <div class="card" style="background:#fef3c7;">
+            <h3>Claude</h3>
+            <p><a class="platform-link" href="https://www.anthropic.com" target="_blank" rel="noopener">Anthropic</a> — análisis profundo de documentos e imágenes</p>
+          </div>
+          <div class="card" style="background:#fef3c7;">
+            <h3>Gemini</h3>
+            <p><a class="platform-link" href="https://gemini.google.com" target="_blank" rel="noopener">Google</a> — integración con el ecosistema Google Workspace</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. ¿Cómo ve una IA? -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Sección 1 · Intuición técnica</p>
+        <h2>¿Cómo «ve» una IA?</h2>
+        <div class="two-col" style="align-items:flex-start;">
+          <div style="display:flex;flex-direction:column;gap:0.8rem;">
+            <p>Los modelos multimodales no ven como nosotros. Su proceso es matemático e interesante.</p>
+            <div class="banner">
+              <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              <strong>Clave conceptual:</strong> No tiene ojos, tiene matemáticas. Es como si la IA tradujera la imagen a un idioma interno que ya sabe leer. Recordemos el modelo CLIP de la clase pasada: ese puente entre imagen y texto es exactamente lo que hace posible todo esto.
+            </div>
+          </div>
+          <div class="diff-timeline" style="display:flex;align-items:stretch;gap:0.4rem;">
+            <div class="diff-step" style="flex:1; text-align:center; padding:0.8rem 0.4rem; border:2px solid var(--brand-yellow); border-radius:50%; aspect-ratio:1/1; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+              <svg width="2.2em" height="2.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              <h4 style="font-size:0.85rem; margin:0.4em 0 0;">Tokens visuales</h4>
+            </div>
+            <div class="diff-step" style="flex:1; text-align:center; padding:0.8rem 0.4rem; border:2px solid var(--brand-yellow); border-radius:50%; aspect-ratio:1/1; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+              <svg width="2.2em" height="2.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              <h4 style="font-size:0.85rem; margin:0.4em 0 0;">Codificación</h4>
+            </div>
+            <div class="diff-step" style="flex:1; text-align:center; padding:0.8rem 0.4rem; border:2px solid var(--brand-yellow); border-radius:50%; aspect-ratio:1/1; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+              <svg width="2.2em" height="2.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.72-1.71"/></svg>
+              <h4 style="font-size:0.85rem; margin:0.4em 0 0;">Proyección CLIP</h4>
+            </div>
+            <div class="diff-step" style="flex:1; text-align:center; padding:0.8rem 0.4rem; border:2px solid var(--brand-yellow); border-radius:50%; aspect-ratio:1/1; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+              <svg width="2.2em" height="2.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2z"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2z"/></svg>
+              <h4 style="font-size:0.85rem; margin:0.4em 0 0;">Razonamiento LM</h4>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. ¿Qué puede hacer la IA con una imagen? -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Sección 1 · Capacidades</p>
+        <h2>¿Qué puede hacer la IA con una imagen?</h2>
+        <p>Seis capacidades fundamentales que transforman el trabajo con documentos e imágenes institucionales:</p>
+        <div class="grid cols-3 stagger-in" style="margin-top:0.6rem;">
+          <div class="card" style="background:#fef3c7;">
+            <svg width="1.6em" height="1.6em" viewBox="0 0 24 24" fill="var(--brand-yellow-dark)" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="background:var(--brand-yellow); border-radius:50%; padding:0.4em; box-sizing:content-box; margin-bottom:0.5em;" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3" fill="white"/></svg>
+            <h3>Describir</h3>
+            <p>Generar una descripción detallada de lo que aparece en una fotografía.</p>
+          </div>
+          <div class="card" style="background:#fef3c7;">
+            <svg width="1.6em" height="1.6em" viewBox="0 0 24 24" fill="var(--brand-yellow-dark)" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="background:var(--brand-yellow); border-radius:50%; padding:0.4em; box-sizing:content-box; margin-bottom:0.5em;" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <h3>Extraer texto (OCR)</h3>
+            <p>Leer documentos escaneados, recibos, actas manuscritas con OCR inteligente.</p>
+          </div>
+          <div class="card" style="background:#fef3c7;">
+            <svg width="1.6em" height="1.6em" viewBox="0 0 24 24" fill="var(--brand-yellow-dark)" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="background:var(--brand-yellow); border-radius:50%; padding:0.4em; box-sizing:content-box; margin-bottom:0.5em;" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            <h3>Interpretar gráficas</h3>
+            <p>Analizar gráficos de barras o líneas y explicar tendencias automáticamente.</p>
+          </div>
+          <div class="card" style="background:#fef3c7;">
+            <svg width="1.6em" height="1.6em" viewBox="0 0 24 24" fill="var(--brand-yellow-dark)" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="background:var(--brand-yellow); border-radius:50%; padding:0.4em; box-sizing:content-box; margin-bottom:0.5em;" aria-hidden="true"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg>
+            <h3>Comparar</h3>
+            <p>Identificar diferencias entre dos imágenes: antes y después de una intervención.</p>
+          </div>
+          <div class="card" style="background:#fef3c7;">
+            <svg width="1.6em" height="1.6em" viewBox="0 0 24 24" fill="var(--brand-yellow-dark)" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="background:var(--brand-yellow); border-radius:50%; padding:0.4em; box-sizing:content-box; margin-bottom:0.5em;" aria-hidden="true"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+            <h3>Clasificar</h3>
+            <p>Determinar el tipo de documento y categorizar contenido visual automáticamente.</p>
+          </div>
+          <div class="card" style="background:#fef3c7;">
+            <svg width="1.6em" height="1.6em" viewBox="0 0 24 24" fill="var(--brand-yellow-dark)" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="background:var(--brand-yellow); border-radius:50%; padding:0.4em; box-sizing:content-box; margin-bottom:0.5em;" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <h3>Responder preguntas</h3>
+            <p>Contestar preguntas específicas sobre lo que aparece en la imagen.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. Demostraciones en vivo -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Sección 1 · Práctica</p>
+        <h2>Demostraciones en vivo: análisis de imágenes</h2>
+        <p>Tres ejercicios prácticos para explorar las capacidades de análisis visual de la IA en contextos institucionales reales.</p>
+        <div class="grid cols-3 stagger-in" style="margin-top:0.6rem;">
+          <div class="card" style="background:#fef3c7;">
+            <p class="eyebrow">Ejercicio 1</p>
+            <h3>Descripción de una fotografía</h3>
+            <p style="margin-top:0.4em;"><strong>Prompt de ejemplo:</strong></p>
+            <p class="prompt-snippet">Describe esta imagen en detalle. Incluye: qué aparece en la foto, el contexto probable, las condiciones de iluminación, y cualquier detalle relevante que puedas identificar.</p>
+            <p style="font-size:0.85rem; margin-top:0.4em;">La clave es mostrar la riqueza del análisis que la IA puede producir.</p>
+          </div>
+          <div class="card" style="background:#fef3c7;">
+            <p class="eyebrow">Ejercicio 2</p>
+            <h3>Análisis de documento escaneado</h3>
+            <p style="margin-top:0.4em;"><strong>Prompt de ejemplo:</strong></p>
+            <p class="prompt-snippet">Extrae todo el texto que puedas leer, organízalo en un formato estructurado, e identifica los datos clave: fechas, montos, nombres, entidades.</p>
+            <p style="font-size:0.85rem; margin-top:0.4em;"><strong>Aplicación directa:</strong> digitalización de actas, extracción de formularios, lectura de tablas en PDFs escaneados.</p>
+          </div>
+          <div class="card" style="background:#fef3c7;">
+            <p class="eyebrow">Ejercicio 3</p>
+            <h3>Interpretación de una gráfica</h3>
+            <p style="margin-top:0.4em;"><strong>Prompt de ejemplo:</strong></p>
+            <p class="prompt-snippet">Identifica: qué muestra la gráfica, las tendencias principales, datos atípicos o anomalías, y conclusiones preliminares.</p>
+            <p style="font-size:0.85rem; margin-top:0.4em;">La IA puede ser un primer filtro analítico que ahorra tiempo, pero el juicio profesional del funcionario sigue siendo indispensable.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9. Prompts para visión -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Sección 1 · Anatomía del prompt visual</p>
+        <h2>Prompts para visión: cómo preguntarle a la IA sobre una imagen</h2>
+        <p>La anatomía de un buen prompt de análisis visual tiene cuatro componentes esenciales:</p>
+        <div class="grid cols-2 stagger-in" style="margin-top:0.6rem;">
+          <div class="card" style="background:#fff; border-top:4px solid var(--brand-yellow);">
+            <svg width="1.5em" height="1.5em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--brand-yellow-dark); margin-bottom:0.4em;" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <h3>Contexto</h3>
+            <p>Dile a la IA quién eres y por qué analizas la imagen.</p>
+            <p class="prompt-snippet">Eres un auditor fiscal revisando evidencia fotográfica de una visita de campo.</p>
+          </div>
+          <div class="card" style="background:#fff; border-top:4px solid var(--brand-yellow);">
+            <svg width="1.5em" height="1.5em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--brand-yellow-dark); margin-bottom:0.4em;" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+            <h3>Instrucción específica</h3>
+            <p>No digas «describe la imagen», di exactamente qué necesitas.</p>
+            <p class="prompt-snippet">Identifica el estado de avance de la obra y compáralo con lo esperado.</p>
+          </div>
+          <div class="card" style="background:#fff; border-top:4px solid var(--brand-yellow);">
+            <svg width="1.5em" height="1.5em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--brand-yellow-dark); margin-bottom:0.4em;" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="3" y1="9" x2="21" y2="9"/></svg>
+            <h3>Formato de salida</h3>
+            <p>Pide la respuesta como la necesitas.</p>
+            <p class="prompt-snippet">Presenta tus hallazgos en una tabla con columnas: elemento observado, estado, observaciones.</p>
+          </div>
+          <div class="card" style="background:#fff; border-top:4px solid var(--brand-yellow);">
+            <svg width="1.5em" height="1.5em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--brand-yellow-dark); margin-bottom:0.4em;" aria-hidden="true"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+            <h3>Capas de análisis</h3>
+            <p>Pide primero lo general, luego los detalles.</p>
+            <p class="prompt-snippet">Primero describe el panorama general. Luego analiza cada elemento individualmente.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10. Limitaciones -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Sección 1 · Lo que NO puede hacer</p>
+        <h2>Limitaciones: lo que la IA NO puede hacer bien</h2>
+        <div class="two-col" style="align-items:center;">
+          <img class="diagram" src="img/m3-2-p10-1.jpeg" alt="Señal de advertencia roja con signo de exclamación que representa las limitaciones de la IA" />
+          <div style="display:flex;flex-direction:column;gap:0.6rem;">
+            <div class="grid cols-2" style="gap:0.5rem;">
+              <div class="card" style="border-left:4px solid #dc2626; padding:0.7rem;">
+                <h3 style="font-size:1rem; color:#dc2626;">● Alucinaciones visuales</h3>
+                <p style="font-size:0.85rem;">La IA puede describir detalles que no existen. A veces «inventa» texto en letreros o números en documentos.</p>
+              </div>
+              <div class="card" style="border-left:4px solid #dc2626; padding:0.7rem;">
+                <h3 style="font-size:1rem; color:#dc2626;">● Contexto local</h3>
+                <p style="font-size:0.85rem;">Puede malinterpretar elementos culturales o geográficos específicos de Colombia.</p>
+              </div>
+              <div class="card" style="border-left:4px solid #dc2626; padding:0.7rem;">
+                <h3 style="font-size:1rem; color:#dc2626;">● Reconocimiento de personas</h3>
+                <p style="font-size:0.85rem;">No es confiable para identificar individuos específicos.</p>
+              </div>
+              <div class="card" style="border-left:4px solid #dc2626; padding:0.7rem;">
+                <h3 style="font-size:1rem; color:#dc2626;">● Precisión numérica</h3>
+                <p style="font-size:0.85rem;">Puede cometer errores al leer cifras en documentos complejos.</p>
+              </div>
+            </div>
+            <div class="banner">
+              <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              <strong>Regla de oro:</strong> La IA asiste, el funcionario verifica y decide. Nunca aceptar una interpretación visual sin verificación.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 11. Bloque 2 título -->
+    <section class="slide cover" data-slide style="background-image: url('img/m3-2-p11-1.jpeg');">
+      <div class="content">
+        <p class="eyebrow">Bloque 2</p>
+        <h2 style="color:#fff;">Narrativa visual: el puente</h2>
+        <h1 style="font-size:clamp(1.6rem, 4.5vw, 4.5rem); margin-top:0.3em;">De analizar imágenes<br/>a crear historias visuales</h1>
+        <p style="font-size:clamp(0.95rem,1.5vw,1.3rem); max-width:52rem; margin-top:0.6em;">Conectamos las dos capacidades de la IA en un ciclo poderoso para el trabajo institucional.</p>
+        <div class="grid cols-2" style="margin-top:0.8rem; gap:0.6rem;">
+          <div class="card">
+            <h3>Aplicaciones en la Contraloría</h3>
+            <p style="font-size:0.9rem;">Evidencia fotográfica de auditorías, documentos escaneados, tablas en PDFs, comparación visual antes/después, accesibilidad de documentos.</p>
+          </div>
+          <div class="card">
+            <h3>El ciclo completo</h3>
+            <p style="font-size:0.9rem;">Ver → Narrar → Crear → Integrar. Un flujo de trabajo que transforma datos en comprensión visual.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 12. ¿Qué es una narrativa visual? -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Sección 2 · Definición</p>
+        <h2>¿Qué es una narrativa visual?</h2>
+        <p>Una narrativa visual es una secuencia de imágenes que cuenta una historia con intención comunicativa. <strong>No es decoración, es argumento.</strong></p>
+        <p style="font-size:0.95rem; color:var(--brand-gray);">Pensemos en ejemplos cotidianos:</p>
+        <div class="grid cols-4 stagger-in" style="margin-top:0.5rem;">
+          <div class="card" style="background:#fef3c7;">
+            <h3>Reportajes fotográficos</h3>
+            <p>Imágenes <strong>ordenadas deliberadamente</strong> para contar una historia.</p>
+          </div>
+          <div class="card" style="background:#fef3c7;">
+            <h3>Informes «antes y después»</h3>
+            <p>Argumentan visualmente un <strong>cambio</strong> (o su ausencia) en una intervención.</p>
+          </div>
+          <div class="card" style="background:#fef3c7;">
+            <h3>Presentaciones con infografías</h3>
+            <p>Guían al lector a través de un <strong>razonamiento</strong> paso a paso.</p>
+          </div>
+          <div class="card" style="background:#fef3c7;">
+            <h3>Campañas institucionales</h3>
+            <p>Usan imágenes <strong>estratégicamente</strong> para transmitir un mensaje al ciudadano.</p>
+          </div>
+        </div>
+        <div class="banner" style="margin-top:0.6rem; background:#fef9c3; border-left-color:var(--brand-yellow-dark);">
+          <p style="margin:0; font-size:clamp(0.85rem,1.3vw,1.1rem);">La diferencia entre «poner imágenes» y «narrar visualmente» es la <strong>intención</strong>. En una narrativa visual, cada imagen tiene un propósito dentro de la secuencia: prepara, revela, contrasta o concluye.</p>
+          <p style="margin:0.4em 0 0; font-size:clamp(0.85rem,1.3vw,1.1rem);">La pregunta clave: <strong>si elimino esta imagen, ¿se pierde parte del argumento?</strong> Si la respuesta es sí, es narrativa. Si no, es decoración.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 13. Puntos de partida -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Sección 2 · Puntos de partida</p>
+        <h2>Puntos de partida de una narrativa visual</h2>
+        <p>Una narrativa visual puede comenzar desde lugares muy diferentes, pero el proceso de construcción es universal.</p>
+        <div class="grid cols-2 stagger-in" style="gap:0.7rem; margin-top:0.5rem;">
+          <div class="card" style="background:#fff; border-left:4px solid var(--brand-yellow);">
+            <svg width="1.5em" height="1.5em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--brand-yellow-dark); margin-bottom:0.3em;" aria-hidden="true"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.7.7 1 1.7 1 2.7V18h6v-.6c0-1 .3-2 1-2.7A7 7 0 0 0 12 2z"/></svg>
+            <h3>Desde una idea o mensaje</h3>
+            <p style="font-size:0.9rem;">«Quiero explicar por qué la transparencia fiscal importa.»<br/>«Necesito que los ciudadanos entiendan cómo funciona una auditoría.»</p>
+          </div>
+          <div class="card" style="background:#fff; border-left:4px solid var(--brand-yellow);">
+            <svg width="1.5em" height="1.5em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--brand-yellow-dark); margin-bottom:0.3em;" aria-hidden="true"><circle cx="6" cy="14" r="3"/><circle cx="18" cy="14" r="3"/><path d="M9 14h6"/></svg>
+            <h3>Desde un hallazgo o dato</h3>
+            <p style="font-size:0.9rem;">«La ejecución presupuestal fue del 23% cuando debía ser del 80%.»<br/>«Encontramos una diferencia significativa entre lo contratado y lo entregado.»</p>
+          </div>
+          <div class="card" style="background:#fff; border-left:4px solid var(--brand-yellow);">
+            <svg width="1.5em" height="1.5em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--brand-yellow-dark); margin-bottom:0.3em;" aria-hidden="true"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+            <h3>Desde una evidencia visual</h3>
+            <p style="font-size:0.9rem;">«Tengo esta fotografía de la visita de campo y necesito que hable por sí misma.»<br/>«Este documento escaneado contiene información que debo presentar con claridad.»</p>
+          </div>
+          <div class="card" style="background:#fff; border-left:4px solid var(--brand-yellow);">
+            <svg width="1.5em" height="1.5em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--brand-yellow-dark); margin-bottom:0.3em;" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M5 21v-2a7 7 0 0 1 14 0v2"/></svg>
+            <h3>Desde un proceso o flujo</h3>
+            <p style="font-size:0.9rem;">«Quiero mostrar las etapas de una auditoría para capacitación interna.»<br/>«Necesito ilustrar el ciclo de contratación pública.»</p>
+          </div>
+        </div>
+        <p style="margin-top:0.5rem; text-align:center; font-style:italic;">El punto de partida cambia. El método para construir la narrativa es el mismo.</p>
+      </div>
+    </section>
+
+    <!-- 14. Estructura de 3 momentos -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Sección 2 · Estructura</p>
+        <h2>La estructura de una narrativa visual efectiva</h2>
+        <p>Toda narrativa visual efectiva se puede organizar en tres momentos clave que guían al lector a través de la historia.</p>
+        <div class="grid cols-3 stagger-in" style="margin-top:0.6rem;">
+          <div class="card" style="background:#fef3c7;">
+            <svg width="1.8em" height="1.8em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--brand-yellow-dark); margin-bottom:0.4em;" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            <h3>1. Establecer</h3>
+            <p>¿Cuál es el punto de partida? ¿Qué necesita saber el lector antes de todo lo demás?</p>
+            <ul style="margin-top:0.4em; font-size:0.88rem;">
+              <li>El contexto o el plan original</li>
+              <li>La situación esperada</li>
+              <li>La pregunta inicial</li>
+            </ul>
+          </div>
+          <div class="card" style="background:#fef3c7;">
+            <svg width="1.8em" height="1.8em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--brand-yellow-dark); margin-bottom:0.4em;" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <h3>2. Desarrollar</h3>
+            <p>¿Cuál es el corazón de la historia? ¿Qué ocurrió, qué se descubrió, qué cambió?</p>
+            <ul style="margin-top:0.4em; font-size:0.88rem;">
+              <li>El hallazgo o el contraste</li>
+              <li>El dato revelador</li>
+              <li>El problema central</li>
+            </ul>
+          </div>
+          <div class="card" style="background:#fef3c7;">
+            <svg width="1.8em" height="1.8em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--brand-yellow-dark); margin-bottom:0.4em;" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <h3>3. Resolver</h3>
+            <p>¿Hacia dónde vamos? ¿Qué se concluye, qué se propone, qué se pide?</p>
+            <ul style="margin-top:0.4em; font-size:0.88rem;">
+              <li>La recomendación o la solución</li>
+              <li>El llamado a la acción</li>
+              <li>La proyección futura</li>
+            </ul>
+          </div>
+        </div>
+        <p style="font-size:0.92rem; margin-top:0.5rem;">Esta estructura es flexible y se adapta a casi cualquier situación, como vemos en estos ejemplos:</p>
+        <div class="grid cols-3" style="gap:0.5rem;">
+          <div class="card" style="padding:0.6rem;"><h3 style="font-size:0.95rem;">Informe de auditoría</h3><p style="font-size:0.82rem;">Lo planeado → Lo encontrado → Lo recomendado</p></div>
+          <div class="card" style="padding:0.6rem;"><h3 style="font-size:0.95rem;">Campaña institucional</h3><p style="font-size:0.82rem;">El problema → El impacto → La solución</p></div>
+          <div class="card" style="padding:0.6rem;"><h3 style="font-size:0.95rem;">Capacitación</h3><p style="font-size:0.82rem;">El concepto → La demostración → La práctica</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 15. Cómo estructurar con IA — De la idea a la narrativa -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Sección 2 · Estructurar con IA</p>
+        <h2>Cómo estructurar con IA: De la idea a la narrativa</h2>
+        <p>Antes de generar cualquier imagen, el primer paso es definir y estructurar claramente el mensaje que queremos comunicar. La Inteligencia Artificial es una herramienta poderosa para transformar una idea inicial o un hallazgo en una narrativa visual coherente de tres momentos.</p>
+        <div class="grid cols-3 stagger-in" style="margin-top:0.7rem;">
+          <div class="card" style="background:#fef3c7;">
+            <svg width="1.8em" height="1.8em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--brand-yellow-dark); margin-bottom:0.4em;" aria-hidden="true"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.7.7 1 1.7 1 2.7V18h6v-.6c0-1 .3-2 1-2.7A7 7 0 0 0 12 2z"/></svg>
+            <h3>Define tu mensaje</h3>
+            <p>Comienza con una idea, un hallazgo o un dato clave que quieras comunicar.</p>
+          </div>
+          <div class="card" style="background:#fef3c7;">
+            <svg width="1.8em" height="1.8em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--brand-yellow-dark); margin-bottom:0.4em;" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/></svg>
+            <h3>Pide ayuda a la IA</h3>
+            <p>Usa un prompt para que la IA lo convierta en una estructura de 3 momentos (Establecer, Desarrollar, Resolver).</p>
+          </div>
+          <div class="card" style="background:#fef3c7;">
+            <svg width="1.8em" height="1.8em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--brand-yellow-dark); margin-bottom:0.4em;" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+            <h3>Crea la narrativa</h3>
+            <p>Obtén títulos, descripciones de imágenes y tonos emocionales para cada momento.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 16. Cómo estructurar con IA — Prompts ejemplo -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Sección 2 · Prompts</p>
+        <h2>Cómo estructurar con IA: prompts de ejemplo</h2>
+        <p>Así, el punto de partida puede ser cualquier cosa, pero la estructura de tres momentos organiza cualquier mensaje de manera efectiva:</p>
+        <div class="banner" style="margin-top:0.5rem;">
+          <p style="margin:0 0 0.4em; font-weight:700;">📝 Prompt de ejemplo (partiendo de un hallazgo):</p>
+          <p class="prompt-snippet" style="white-space:pre-wrap;">Soy funcionario de la Contraloría. Encontré que un parque público inaugurado en 1983 presenta deterioro severo a pesar de haber recibido presupuesto de mantenimiento durante 40 años. Necesito construir una narrativa visual de tres momentos para un informe. Momento 1, ESTABLECER: ¿qué contexto necesita el lector? Momento 2, DESARROLLAR: ¿cuál es el hallazgo central? Momento 3, RESOLVER: ¿cuál es la recomendación? Para cada momento dame un título corto, una descripción de lo que la imagen debería comunicar, y el tono emocional sugerido.</p>
+        </div>
+        <div class="banner" style="margin-top:0.6rem;">
+          <p style="margin:0 0 0.4em; font-weight:700;">📝 Prompt de ejemplo (partiendo de una idea):</p>
+          <p class="prompt-snippet" style="white-space:pre-wrap;">Quiero crear una pieza visual para explicar a ciudadanos cómo funciona el proceso de auditoría de la Contraloría. Constrúyeme una narrativa de tres momentos: Momento 1, ESTABLECER: lo que el ciudadano necesita saber primero. Momento 2, DESARROLLAR: cómo funciona el proceso. Momento 3, RESOLVER: qué resulta de la auditoría y por qué le importa al ciudadano.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 17. Cómo crear prompts para imágenes con IA -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Sección 2 · Estilo coherente</p>
+        <h2>Cómo crear prompts para imágenes con IA</h2>
+        <div class="two-col" style="align-items:flex-start;">
+          <div style="display:flex;flex-direction:column;gap:0.7rem;">
+            <p>Con los tres momentos de tu narrativa visual definidos —Establecer, Desarrollar, Resolver—, cada uno se transforma en un prompt específico para generar una imagen. El secreto para una narrativa visual <strong>coherente</strong> reside en asegurar que las tres imágenes compartan un «universo visual» consistente.</p>
+            <p>Para lograr esta coherencia visual, recomendamos definir un <strong>estilo base</strong> y una <strong>paleta de colores</strong> que se repita en todos los prompts. Esto garantiza que, aunque las imágenes representen momentos diferentes, visualmente se sientan parte de la misma historia.</p>
+            <p style="font-size:0.9rem; font-style:italic;">Este <em>estilo base</em> es flexible y puede adaptarse según las necesidades de tu mensaje, desde una infografía corporativa hasta una ilustración periodística.</p>
+          </div>
+          <div class="banner" style="background:#f4f4f5; border-left-color:var(--brand-gray);">
+            <p class="prompt-snippet" style="white-space:pre-wrap; font-size:0.78rem; background:transparent; padding:0;">Genera tres prompts de imagen en inglés, uno para cada momento de mi narrativa. Los tres deben compartir este estilo base:
+
+Estilo: professional flat design digital illustration
+Paleta: institutional blue (#1B3A5C) with gold accents (#C9A84C), white background
+Composición: clean, modern, centered subject, minimal elements
+
+Momento 1: [pegar descripción del momento 1: ¿qué contexto necesita el lector? ¿Cuál es el punto de partida o la situación esperada?]
+Momento 2: [pegar descripción del momento 2: ¿cuál es el hallazgo central, el dato revelador o el problema principal?]
+Momento 3: [pegar descripción del momento 3: ¿cuál es la recomendación, la solución o la proyección futura?]
+
+Cada prompt debe incluir detalles de composición, iluminación y elementos específicos. Mínimo 2 líneas por prompt.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 18. El idioma de los prompts: por qué inglés es clave -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Sección 2 · Idioma del prompt</p>
+        <h2>El idioma de los prompts: por qué el inglés es clave</h2>
+        <p>Los modelos de generación de imágenes más potentes (<a class="platform-link" href="https://openai.com/dall-e-3" target="_blank" rel="noopener">DALL·E</a>, <a class="platform-link" href="https://www.midjourney.com" target="_blank" rel="noopener">Midjourney</a>, <a class="platform-link" href="https://stability.ai" target="_blank" rel="noopener">Stable Diffusion</a>, <a class="platform-link" href="https://gemini.google.com" target="_blank" rel="noopener">Nano Banana</a>) fueron entrenados principalmente con datos en inglés. Esto significa que, aunque un prompt en español pueda funcionar, uno en inglés tiende a producir resultados significativamente más <strong>precisos y controlables</strong>.</p>
+        <p>La buena noticia es que no necesitas ser un experto en inglés. Puedes apoyarte en la misma Inteligencia Artificial para <strong>traducir y enriquecer</strong> tus descripciones, añadiendo los detalles técnicos de composición y estilo necesarios para cada momento de tu narrativa.</p>
+        <div class="banner" style="margin-top:0.5rem;">
+          <p style="margin:0 0 0.4em; font-weight:700;">📝 Puedes pedirle a la IA:</p>
+          <p class="prompt-snippet">Traduce este concepto a un prompt de imagen en inglés con detalles técnicos de composición y estilo: [Tu concepto en español aquí]</p>
+          <p class="prompt-snippet" style="margin-top:0.4em;">Genera un prompt de imagen en inglés para el «Momento 1: [tu descripción del momento en español]» utilizando el «Estilo base» que hemos definido previamente.</p>
+        </div>
+        <p style="font-size:0.9rem; margin-top:0.5rem; font-style:italic;">Este enfoque nos permite mantener la claridad de nuestras ideas en español y optimizar la generación de imágenes con prompts de alta calidad en inglés. Es el método que aplicaremos en la práctica durante el taller.</p>
+      </div>
+    </section>
+
+    <!-- 19. Aplicando la estructura de 3 momentos: ejemplo práctico -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Sección 2 · Ejemplo práctico</p>
+        <h2>Aplicando la estructura de 3 momentos: ejemplo práctico</h2>
+        <p>Con la estructura clara, cada momento se convierte en una potente descripción para generar imágenes coherentes y persuasivas, manteniendo un estilo visual consistente a través de toda la narrativa.</p>
+        <div class="grid cols-3 stagger-in" style="margin-top:0.6rem;">
+          <div class="card">
+            <h3>Momento 1: Establecer</h3>
+            <p style="font-weight:700; margin-top:0.3em;">Inversión pública en espacios recreativos</p>
+            <p class="prompt-snippet" style="margin-top:0.5em;">query="Professional flat design illustration of a vibrant public park project blueprint, showing planned playground equipment, fountain, green areas, institutional blue and gold palette, clean modern style, architectural rendering feel"</p>
+          </div>
+          <div class="card">
+            <h3>Momento 2: Desarrollar</h3>
+            <p style="font-weight:700; margin-top:0.3em;">40 años después: deterioro visible</p>
+            <p class="prompt-snippet" style="margin-top:0.5em;">query="Professional flat design illustration showing contrast between planned and actual state of a public park, split composition, left side colorful and maintained, right side faded and deteriorated, same institutional blue and gold palette, clean modern style"</p>
+          </div>
+          <div class="card">
+            <h3>Momento 3: Resolver</h3>
+            <p style="font-weight:700; margin-top:0.3em;">Recomendación: plan de recuperación integral</p>
+            <p class="prompt-snippet" style="margin-top:0.5em;">query="Professional flat design illustration of a park renovation plan, showing community engagement, new equipment installation, timeline with checkpoints, optimistic but professional tone, institutional blue and gold palette, clean modern style"</p>
+          </div>
+        </div>
+        <p style="margin-top:0.5rem; font-style:italic; text-align:center;">Tres imágenes. Un argumento. Una historia clara.</p>
+      </div>
+    </section>
+
+    <!-- 20. Puntos de partida para tu narrativa visual -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Sección 2 · Tu turno</p>
+        <h2>Puntos de partida para tu narrativa visual</h2>
+        <p>La herramienta de IA es versátil, y aunque hoy usaremos una imagen como inicio, las narrativas visuales pueden nacer de diversas fuentes según tu necesidad:</p>
+        <div class="grid cols-2 stagger-in" style="gap:0.7rem; margin-top:0.6rem;">
+          <div class="card" style="background:#fff; border-left:4px solid var(--brand-yellow);">
+            <h3>Desde un Documento</h3>
+            <p style="font-style:italic;">«Tengo un informe de 50 páginas. Necesito una presentación visual de los hallazgos principales.»</p>
+            <p style="font-size:0.9rem; margin-top:0.4em;">Sube el documento a la IA y pide que identifique los 3 momentos narrativos clave para la síntesis.</p>
+          </div>
+          <div class="card" style="background:#fff; border-left:4px solid var(--brand-yellow);">
+            <h3>Desde Datos</h3>
+            <p style="font-style:italic;">«Tengo una tabla de ejecución presupuestal con cifras alarmantes.»</p>
+            <p style="font-size:0.9rem; margin-top:0.4em;">Pide a la IA que convierta los datos en una narrativa visual: contexto, hallazgo y recomendación.</p>
+          </div>
+          <div class="card" style="background:#fff; border-left:4px solid var(--brand-yellow);">
+            <h3>Desde una Directriz</h3>
+            <p style="font-style:italic;">«Mi jefe me pidió una pieza sobre rendición de cuentas para ciudadanos.»</p>
+            <p style="font-size:0.9rem; margin-top:0.4em;">Pide a la IA que proponga una narrativa de tres momentos para una audiencia no técnica.</p>
+          </div>
+          <div class="card" style="background:#fff; border-left:4px solid var(--brand-yellow);">
+            <h3>Desde una Imagen</h3>
+            <p style="font-style:italic;">«Tomé esta foto en la visita de campo y necesito que cuente la historia del hallazgo.»</p>
+            <p style="font-size:0.9rem; margin-top:0.4em;">Este es el ejercicio que haremos hoy en el taller: analizar una imagen para construir una historia.</p>
+          </div>
+        </div>
+        <p style="margin-top:0.6rem; text-align:center; font-weight:700;">La herramienta de IA es la misma, el punto de partida es adaptable.</p>
+      </div>
+    </section>
+
+  </div><!-- /deck -->
+  </div><!-- /deck -->
+
+  <div class="hud"><span></span><span id="hud-counter"></span></div>
+
+  <div class="controls">
+    <button aria-label="Anterior" id="prev">‹</button>
+    <button aria-label="Descargar como PDF" id="dl-pdf" title="Descargar como PDF">
+      <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="7 10 12 15 17 10"/>
+        <line x1="12" x2="12" y1="15" y2="3"/>
+      </svg>
+    </button>
+    <button aria-label="Pantalla completa" id="fs">⛶</button>
+    <button aria-label="Siguiente" id="next">›</button>
+  </div>
+
+  <script>
+    (function () {
+      var slides = Array.prototype.slice.call(document.querySelectorAll('[data-slide]'));
+      var i = 0;
+      var counter = document.getElementById('hud-counter');
+      var progress = document.querySelector('.progress');
+
+      function render() {
+        slides.forEach(function (s, idx) { s.classList.toggle('active', idx === i); });
+        if (counter) counter.textContent = (i + 1) + ' / ' + slides.length;
+        if (progress) {
+          progress.style.width = ((i + 1) / slides.length * 100) + '%';
+          progress.classList.remove('pulsing');
+          void progress.offsetWidth;
+          progress.classList.add('pulsing');
+        }
+        var isDark = slides[i] && (slides[i].classList.contains('title-slide') || slides[i].classList.contains('cover'));
+        document.body.style.background = isDark ? '#1A1A1A' : '#ffffff';
+      }
+      function go(n) { i = Math.max(0, Math.min(slides.length - 1, n)); render(); }
+
+      document.addEventListener('keydown', function (e) {
+        if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'BUTTON')) {
+          if (/^[1-9]$/.test(e.key)) return;
+        }
+        if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); go(i + 1); }
+        else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(i - 1); }
+        else if (e.key === 'Home') { e.preventDefault(); go(0); }
+        else if (e.key === 'End') { e.preventDefault(); go(slides.length - 1); }
+        else if (e.key === 'f' || e.key === 'F') { toggleFs(); }
+      });
+
+      document.getElementById('prev').addEventListener('click', function () { go(i - 1); });
+      document.getElementById('next').addEventListener('click', function () { go(i + 1); });
+      document.getElementById('fs').addEventListener('click', toggleFs);
+      document.getElementById('dl-pdf').addEventListener('click', function () {
+        var prevTitle = document.title;
+        document.title = 'M3-2-Narrativas-Visuales-IA-Dominando-la-IA';
+        window.print();
+        setTimeout(function(){ document.title = prevTitle; }, 200);
+      });
+
+      function toggleFs() {
+        var el = document.documentElement;
+        if (!document.fullscreenElement) {
+          (el.requestFullscreen || el.webkitRequestFullscreen || function(){}).call(el);
+        } else {
+          (document.exitFullscreen || document.webkitExitFullscreen || function(){}).call(document);
+        }
+      }
+
+      var tx = 0, ty = 0;
+      document.addEventListener('touchstart', function (e) {
+        if (!e.changedTouches[0]) return;
+        tx = e.changedTouches[0].clientX; ty = e.changedTouches[0].clientY;
+      }, { passive: true });
+      document.addEventListener('touchend', function (e) {
+        if (!e.changedTouches[0]) return;
+        var dx = e.changedTouches[0].clientX - tx;
+        var dy = e.changedTouches[0].clientY - ty;
+        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+          if (dx < 0) go(i + 1); else go(i - 1);
+        }
+      }, { passive: true });
+
+      slides.forEach(function (s, idx) {
+        var num = document.createElement('div');
+        num.className = 'slide-number';
+        num.setAttribute('aria-hidden', 'true');
+        num.textContent = String(idx + 1).padStart(2, '0');
+        s.appendChild(num);
+      });
+
+      document.querySelectorAll('[data-stepper]').forEach(function (stepper) {
+        var buttons = stepper.querySelectorAll('.stepper-nav button');
+        var panels = stepper.querySelectorAll('.stepper-content');
+        function setStep(n) {
+          buttons.forEach(function (b) {
+            var active = b.getAttribute('data-step') === String(n);
+            b.classList.toggle('is-active', active);
+            b.setAttribute('aria-selected', active ? 'true' : 'false');
+          });
+          panels.forEach(function (p) {
+            p.classList.toggle('is-active', p.getAttribute('data-content') === String(n));
+          });
+        }
+        buttons.forEach(function (b) {
+          b.addEventListener('click', function () { setStep(b.getAttribute('data-step')); });
+        });
+        document.addEventListener('keydown', function (e) {
+          var slide = stepper.closest('.slide');
+          if (!slide || !slide.classList.contains('active')) return;
+          if (/^[1-6]$/.test(e.key)) {
+            if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
+            e.preventDefault();
+            setStep(e.key);
+          }
+        });
+      });
+
+      render();
+    })();
+  </script>
+</body>
+</html>

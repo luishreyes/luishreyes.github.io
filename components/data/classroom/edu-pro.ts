@@ -191,7 +191,7 @@ const cursoIaMayo2026: EdcoCourse = {
     'Certificación: asistencia ≥ 80% de las sesiones magistrales y ≥ 60% de los ejercicios aprobados.',
     'Soporte estudiantes EDCO: estudiantesedco@uniandes.edu.co',
   ],
-  presentationIds: ['m1-introduccion-ia', 'm2-1-fundamentos-modelos-generativos', 'm3-1-fundamentos-imagenes'],
+  presentationIds: ['m1-introduccion-ia', 'm2-1-fundamentos-modelos-generativos', 'm3-1-fundamentos-imagenes', 'm3-2-narrativas-visuales'],
 };
 
 const cursoGeneralidadesIaG2: EdcoCourse = {
@@ -612,6 +612,15 @@ export const eduProCourse: Course = {
       description:
         'Introducción a los modelos generativos de imágenes: ejemplos reales con modelos de difusión (abeja macro, husky al atardecer, castillo B&N), teoría de forward/backward diffusion, entrenamiento de la red, CLIP y guía por texto, panorama de herramientas 2026 (Nano Banana 2 en BloqueNeón, DALL·E 3, Midjourney v6.1, Stable Diffusion 3.5, Flux 1.1 Pro, Firefly/Ideogram) y principios del arte del prompt: terminología fotográfica, adjetivos multidimensionales, épocas, equipo y vocabulario emocional.',
       file: 'm3-1-fundamentos-imagenes.html',
+    },
+    {
+      id: 'm3-2-narrativas-visuales',
+      title: 'M3.2 — Narrativas visuales con IA: ver, crear y contar historias con imágenes',
+      sessionNumber: 8,
+      date: '2026-05-22',
+      description:
+        'Del análisis de imágenes a la creación de narrativas visuales coherentes. Bloque 1 (La IA que ve): modelos multimodales (GPT, Claude, Gemini), cómo «ve» una IA (tokens visuales, codificación, proyección CLIP, razonamiento LM), seis capacidades fundamentales (describir, OCR, interpretar gráficas, comparar, clasificar, responder), demostraciones en vivo, anatomía del prompt visual y limitaciones. Bloque 2 (Narrativa visual: el puente): qué es una narrativa visual, puntos de partida, estructura de tres momentos (Establecer, Desarrollar, Resolver), uso de IA para estructurar y crear prompts coherentes con estilo base y paleta institucional, importancia del inglés para prompts de imagen, ejemplo práctico aplicado al contexto de la Contraloría.',
+      file: 'm3-2-narrativas-visuales.html',
     },
     {
       id: 'cgr-s01-fundamentos-ia',
