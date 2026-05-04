@@ -191,7 +191,7 @@ const cursoIaMayo2026: EdcoCourse = {
     'Certificación: asistencia ≥ 80% de las sesiones magistrales y ≥ 60% de los ejercicios aprobados.',
     'Soporte estudiantes EDCO: estudiantesedco@uniandes.edu.co',
   ],
-  presentationIds: ['m1-introduccion-ia', 'm2-1-fundamentos-modelos-generativos', 'm3-1-fundamentos-imagenes', 'm3-2-narrativas-visuales'],
+  presentationIds: ['m1-introduccion-ia', 'm2-1-fundamentos-modelos-generativos', 'm3-1-fundamentos-imagenes', 'm3-2-narrativas-visuales', 'm3-3-analisis-datos'],
 };
 
 const cursoGeneralidadesIaG2: EdcoCourse = {
@@ -621,6 +621,15 @@ export const eduProCourse: Course = {
       description:
         'Del análisis de imágenes a la creación de narrativas visuales coherentes. Bloque 1 (La IA que ve): modelos multimodales (GPT, Claude, Gemini), cómo «ve» una IA (tokens visuales, codificación, proyección CLIP, razonamiento LM), seis capacidades fundamentales (describir, OCR, interpretar gráficas, comparar, clasificar, responder), demostraciones en vivo, anatomía del prompt visual y limitaciones. Bloque 2 (Narrativa visual: el puente): qué es una narrativa visual, puntos de partida, estructura de tres momentos (Establecer, Desarrollar, Resolver), uso de IA para estructurar y crear prompts coherentes con estilo base y paleta institucional, importancia del inglés para prompts de imagen, ejemplo práctico aplicado al contexto de la Contraloría.',
       file: 'm3-2-narrativas-visuales.html',
+    },
+    {
+      id: 'm3-3-analisis-datos',
+      title: 'M3.3 — Uso de IA generativa para el análisis de datos',
+      sessionNumber: 9,
+      date: '2026-05-25',
+      description:
+        'Un enfoque iterativo con human-in-the-loop para transformar datos en insights accionables. Fundamentos de datos estructurados vs no estructurados, importancia y desafíos del análisis tradicional (limitaciones manuales, brecha estructurada/no estructurada, brecha de habilidades). El poder del código y limitaciones de Excel/SQL. Los LLM como asistentes inteligentes para datos: generación de código, comprensión de datos, razonamiento. Datos como texto: CSV, JSON, YAML, descripciones de tablas. Aproximación human-in-the-loop: flujo de cinco etapas (Diagnóstico, Ideación, Alineación, Navegación, Evolución), tres roles clave (IA procesador, humano director, colaboración como motor), principios fundamentales y ventajas frente al enfoque tradicional. Demostración práctica con dataset Salary_Data.csv y tres prompts (EDA, plan estratégico, ejecución iterativa) accesibles vía QR y enlaces directos.',
+      file: 'm3-3-analisis-datos.html',
     },
     {
       id: 'cgr-s01-fundamentos-ia',
