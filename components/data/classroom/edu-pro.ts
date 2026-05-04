@@ -191,7 +191,7 @@ const cursoIaMayo2026: EdcoCourse = {
     'Certificación: asistencia ≥ 80% de las sesiones magistrales y ≥ 60% de los ejercicios aprobados.',
     'Soporte estudiantes EDCO: estudiantesedco@uniandes.edu.co',
   ],
-  presentationIds: ['m1-introduccion-ia', 'm2-1-fundamentos-modelos-generativos'],
+  presentationIds: ['m1-introduccion-ia', 'm2-1-fundamentos-modelos-generativos', 'm3-1-fundamentos-imagenes'],
 };
 
 const cursoGeneralidadesIaG2: EdcoCourse = {
@@ -603,6 +603,15 @@ export const eduProCourse: Course = {
       description:
         'Cómo funcionan los LLM por dentro: discriminativo vs generativo, el modelo como ruleta probabilística («Lima es la capital de…»), atención y autoregresión, alucinaciones. Timeline interactivo de la evolución 2021–2026 (de GPT-3 a Claude Opus 4.7), iceberg ChatGPT vs LLM, anatomía de un prompt, panorama de modelos líderes 2026, scaling laws, fluido vs fáctico y limitaciones.',
       file: 'm2-1-fundamentos-modelos-generativos.html',
+    },
+    {
+      id: 'm3-1-fundamentos-imagenes',
+      title: 'M3.1 — Fundamentos de la generación de imágenes por IA',
+      sessionNumber: 7,
+      date: '2026-05-20',
+      description:
+        'Introducción a los modelos generativos de imágenes: ejemplos reales con modelos de difusión (abeja macro, husky al atardecer, castillo B&N), teoría de forward/backward diffusion, entrenamiento de la red, CLIP y guía por texto, panorama de herramientas 2026 (Nano Banana 2 en BloqueNeón, DALL·E 3, Midjourney v6.1, Stable Diffusion 3.5, Flux 1.1 Pro, Firefly/Ideogram) y principios del arte del prompt: terminología fotográfica, adjetivos multidimensionales, épocas, equipo y vocabulario emocional.',
+      file: 'm3-1-fundamentos-imagenes.html',
     },
     {
       id: 'cgr-s01-fundamentos-ia',

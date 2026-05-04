@@ -1,0 +1,1535 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="/classroom-fonts.css" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>M3.1 — Fundamentos de la generación de imágenes por IA · Dominando la IA</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" crossorigin="anonymous"
+    onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]})"></script>
+  <style>
+    :root {
+      --brand-dark: #1A1A1A;
+      --brand-yellow: #FFBF00;
+      --brand-yellow-dark: #E6AC00;
+      --brand-gray: #555555;
+      --surface: #ffffff;
+      --muted: #f4f4f5;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0; padding: 0; height: 100%; width: 100%;
+      background: var(--brand-dark); color: var(--brand-dark);
+      font-family: 'Manrope Variable', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      overflow: hidden; -webkit-text-size-adjust: 100%;
+    }
+    .deck { position: relative; width: 100vw; height: 100vh; height: 100dvh; }
+    .slide {
+      position: absolute; inset: 0;
+      display: none; align-items: center; justify-content: center;
+      padding: clamp(1rem, 4vw, 3.5rem);
+      background: var(--surface);
+      opacity: 0; transition: opacity 260ms ease; overflow-y: auto;
+    }
+    .slide.active { display: flex; opacity: 1; }
+    .slide .content {
+      width: 100%; max-width: 92rem; margin: auto 0;
+      display: flex; flex-direction: column;
+      gap: clamp(0.75rem, 1.5vw, 1.5rem);
+    }
+    .eyebrow {
+      text-transform: uppercase; letter-spacing: 0.2em;
+      font-size: clamp(0.65rem, 1vw, 1rem);
+      color: var(--brand-yellow-dark); font-weight: 600;
+    }
+    h1 {
+      font-size: clamp(1.75rem, 5.5vw, 5.75rem);
+      line-height: 1.05; margin: 0;
+      color: var(--brand-dark); font-weight: 700; letter-spacing: -0.02em;
+    }
+    h2 { font-size: clamp(1.25rem, 3.4vw, 3.25rem); line-height: 1.15; margin: 0; font-weight: 700; color: var(--brand-dark); }
+    h2 .sub { display: block; font-size: 0.55em; font-weight: 500; color: var(--brand-gray); margin-top: 0.15em; }
+    p, li { font-size: clamp(0.95rem, 1.6vw, 1.6rem); line-height: 1.55; color: var(--brand-gray); margin: 0; }
+    ul, ol { padding-left: 1.25em; margin: 0; display: flex; flex-direction: column; gap: 0.45em; }
+    li::marker { color: var(--brand-yellow-dark); }
+    .slide.title-slide {
+      background: linear-gradient(135deg, #141414 0%, #1A1A1A 50%, #2a2a2a 100%);
+      color: #fff;
+    }
+    .slide.title-slide h1, .slide.title-slide h2, .slide.title-slide h3 { color: #fff; }
+    .slide.title-slide p, .slide.title-slide li { color: #e4e4e7; }
+    .slide.title-slide strong { color: #fff; }
+    .slide.title-slide .eyebrow { color: var(--brand-yellow); }
+    .slide.title-slide .card { color: var(--brand-dark); }
+    .slide.title-slide .card p, .slide.title-slide .card li { color: var(--brand-gray); }
+    .slide.title-slide .card h3, .slide.title-slide .card strong { color: var(--brand-dark); }
+    .slide.cover {
+      background-color: #0a0a0a;
+      background-blend-mode: multiply;
+      background-size: cover;
+      background-position: center;
+    }
+    .slide.cover::after {
+      content:''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(10,10,10,0.86) 0%, rgba(20,20,20,0.7) 50%, rgba(20,20,20,0.6) 100%);
+      pointer-events: none;
+    }
+    .slide.cover .content { position: relative; z-index: 2; }
+    .slide.cover h1, .slide.cover h2 { color: #fff; }
+    .slide.cover p, .slide.cover li { color: #e4e4e7; }
+    .slide.cover strong { color: #fff; }
+    .slide.cover .eyebrow { color: var(--brand-yellow); }
+    .pill-row { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 0.5rem; }
+    .pill {
+      display: inline-flex; align-items: center;
+      padding: 0.32em 0.85em; border-radius: 999px;
+      background: var(--muted); color: var(--brand-dark);
+      font-size: clamp(0.75rem, 1.1vw, 1.1rem); font-weight: 500;
+    }
+    .slide.title-slide .pill, .slide.cover .pill {
+      background: rgba(255,255,255,0.1); color: #fff;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .grid { display: grid; gap: clamp(0.75rem, 1.5vw, 1.25rem); }
+    .grid.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid.cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    @media (max-width: 768px) { .grid.cols-2, .grid.cols-3, .grid.cols-4 { grid-template-columns: 1fr; } }
+    .card {
+      background: var(--muted); border-radius: 0.75rem;
+      padding: clamp(0.9rem, 1.5vw, 1.35rem);
+      transition: transform 220ms ease, box-shadow 220ms ease;
+    }
+    .card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
+    .card h3 {
+      font-size: clamp(1rem, 1.7vw, 1.5rem); margin: 0 0 0.35em;
+      color: var(--brand-dark); font-weight: 700;
+    }
+    .card p { font-size: clamp(0.8rem, 1.3vw, 1.2rem); }
+    .card .eyebrow { margin-bottom: 0.25em; }
+    .two-col {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: clamp(1rem, 2.5vw, 2.25rem);
+      align-items: center;
+    }
+    @media (max-width: 768px) { .two-col { grid-template-columns: 1fr; } }
+    .two-col img.diagram { width: 100%; }
+    img.diagram {
+      max-width: 100%; height: auto;
+      border-radius: 0.6rem; box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+      background: #fff;
+    }
+    .vs-cols {
+      display: grid; grid-template-columns: 1fr auto 1fr;
+      gap: clamp(0.75rem, 2vw, 2rem);
+      align-items: stretch;
+    }
+    @media (max-width: 768px) { .vs-cols { grid-template-columns: 1fr; } .vs-cols .vs-divider { display: none; } }
+    .vs-cols .col {
+      background: #fff; border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 0.75rem; padding: clamp(1rem, 1.6vw, 1.6rem);
+      display: flex; flex-direction: column; gap: 0.5rem;
+    }
+    .vs-cols .col.left  { border-top: 4px solid #94a3b8; }
+    .vs-cols .col.right { border-top: 4px solid var(--brand-yellow-dark); }
+    .vs-cols .col h3 { margin: 0; font-size: clamp(1rem, 1.7vw, 1.5rem); color: var(--brand-dark); }
+    .vs-cols .vs-divider {
+      align-self: center; background: var(--brand-yellow);
+      color: var(--brand-dark); font-weight: 800; font-size: 0.9rem;
+      width: 2.4em; height: 2.4em; border-radius: 999px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .banner {
+      background: #fef3c7; border-left: 4px solid var(--brand-yellow-dark);
+      padding: 0.9rem 1.1rem; border-radius: 0.5rem;
+      color: #78350f; font-size: clamp(0.85rem, 1.4vw, 1.25rem);
+    }
+    .banner.info { background: #e0f2fe; border-left-color: #0284c7; color: #0c4a6e; }
+    .banner.warn { background: #fee2e2; border-left-color: #dc2626; color: #7f1d1d; }
+    .banner svg { vertical-align: -0.18em; margin-right: 0.4em; }
+    .big-quote { text-align: center; padding: 0 clamp(1rem, 4vw, 4rem); }
+    .big-quote h2 { font-size: clamp(2rem, 6vw, 5.5rem); line-height: 1.05; color: var(--brand-dark); }
+    .big-quote h2 .accent { color: var(--brand-yellow-dark); }
+    .big-quote p { margin-top: 1em; font-style: italic; }
+    .hud {
+      position: fixed; left: 0; right: 0; bottom: 0;
+      padding: 0.5rem 1rem;
+      display: flex; justify-content: space-between; align-items: center;
+      color: rgba(255,255,255,0.75); font-size: 0.75rem;
+      pointer-events: none; z-index: 10;
+    }
+    .controls {
+      position: fixed; right: 1rem; bottom: 2.5rem;
+      display: flex; gap: 0.5rem; z-index: 11;
+    }
+    .controls button {
+      -webkit-appearance: none; appearance: none;
+      border: 1px solid rgba(0,0,0,0.1);
+      background: rgba(255,255,255,0.9); color: var(--brand-dark);
+      width: 2.5rem; height: 2.5rem; border-radius: 999px;
+      font-size: 1rem; cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    }
+    .progress {
+      position: fixed; top: 0; left: 0;
+      height: 3px; background: var(--brand-yellow);
+      transition: width 260ms ease; z-index: 20;
+    }
+    .progress.pulsing { animation: progPulse 0.5s ease; }
+    @keyframes progPulse {
+      0%   { box-shadow: 0 0 0 0 rgba(255,191,0,0.0); }
+      50%  { box-shadow: 0 0 12px 3px rgba(255,191,0,0.8); }
+      100% { box-shadow: 0 0 0 0 rgba(255,191,0,0.0); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .slide { transition: none; }
+      .progress { transition: none; }
+      .progress.pulsing { animation: none; }
+      .stagger-in > * { animation: none !important; }
+      .card { transition: none; }
+      .gallery-figure img { transition: none; }
+      .gallery-figure figcaption { transition: none; transform: translateY(0) !important; }
+    }
+    @media (max-width: 480px) {
+      .controls { right: 0.5rem; bottom: 1.25rem; }
+      .hud { font-size: 0.65rem; }
+    }
+    .slide:not(.title-slide):not(.cover)::before {
+      content: ''; position: absolute;
+      top: clamp(1rem, 3vw, 2.5rem); right: clamp(1rem, 3vw, 2.5rem);
+      width: clamp(2rem, 5vw, 4rem); height: clamp(2rem, 5vw, 4rem);
+      border-top: 2.5px solid var(--brand-yellow);
+      border-right: 2.5px solid var(--brand-yellow);
+      pointer-events: none; z-index: 1;
+    }
+    .slide.title-slide::before, .slide.cover::before {
+      content: ''; position: absolute;
+      bottom: clamp(1rem, 3vw, 2.5rem); left: clamp(1rem, 3vw, 2.5rem);
+      width: clamp(2rem, 5vw, 4rem); height: clamp(2rem, 5vw, 4rem);
+      border-bottom: 2.5px solid var(--brand-yellow);
+      border-left: 2.5px solid var(--brand-yellow);
+      opacity: 0.5; pointer-events: none; z-index: 3;
+    }
+    .slide-number {
+      position: absolute; bottom: clamp(0.5rem, 2vw, 1.5rem);
+      left: clamp(1rem, 3vw, 2.5rem);
+      font-size: clamp(4rem, 12vw, 10rem);
+      font-weight: 800; line-height: 1;
+      color: rgba(0, 0, 0, 0.04); pointer-events: none;
+      z-index: 0; user-select: none; letter-spacing: -0.04em;
+    }
+    .slide.title-slide .slide-number, .slide.cover .slide-number {
+      color: rgba(255, 255, 255, 0.05);
+    }
+    a.platform-link {
+      color: var(--brand-dark); text-decoration: none;
+      border-bottom: 2px solid var(--brand-yellow);
+      padding-bottom: 0.05em;
+      transition: color 180ms, border-color 180ms;
+    }
+    a.platform-link:hover { color: var(--brand-yellow-dark); border-bottom-color: var(--brand-yellow-dark); }
+    a.platform-link::after { content: " ↗"; font-size: 0.65em; opacity: 0.5; margin-left: 0.12em; vertical-align: 0.3em; }
+    .slide.title-slide a.platform-link, .slide.cover a.platform-link { color: #fff; }
+    .slide.title-slide a.platform-link:hover, .slide.cover a.platform-link:hover { color: var(--brand-yellow); border-bottom-color: var(--brand-yellow); }
+    h2 svg, h3 svg, .eyebrow svg, .pill svg {
+      vertical-align: -0.18em; margin-right: 0.4em;
+      color: var(--brand-yellow-dark);
+    }
+    a:focus-visible, button:focus-visible {
+      outline: 3px solid var(--brand-yellow-dark);
+      outline-offset: 2px; border-radius: 0.35rem;
+    }
+    .slide.active .stagger-in > * { animation: fadeInUp 0.4s ease both; }
+    .slide.active .stagger-in > *:nth-child(1) { animation-delay: 0.05s; }
+    .slide.active .stagger-in > *:nth-child(2) { animation-delay: 0.15s; }
+    .slide.active .stagger-in > *:nth-child(3) { animation-delay: 0.25s; }
+    .slide.active .stagger-in > *:nth-child(4) { animation-delay: 0.35s; }
+    .slide.active .stagger-in > *:nth-child(5) { animation-delay: 0.45s; }
+    .slide.active .stagger-in > *:nth-child(6) { animation-delay: 0.55s; }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* === Stepper === */
+    .stepper { display: flex; flex-direction: column; gap: 1rem; }
+    .stepper-nav {
+      display: grid; grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 0.4rem; padding-bottom: 0.3rem;
+    }
+    @media (max-width: 768px) { .stepper-nav { grid-template-columns: repeat(3, 1fr) !important; } }
+    .stepper-nav button {
+      background: #fff; border: 1.5px solid rgba(0,0,0,0.08);
+      padding: 0.7em 0.4em; border-radius: 0.6rem;
+      display: flex; flex-direction: column; align-items: center; gap: 0.15em;
+      cursor: pointer; font-family: inherit;
+      transition: all 220ms ease;
+    }
+    .stepper-nav button .yr {
+      font-size: clamp(0.85rem, 1.3vw, 1.15rem);
+      font-weight: 800; letter-spacing: 0.02em; color: var(--brand-dark);
+    }
+    .stepper-nav button .tag {
+      font-size: clamp(0.6rem, 0.85vw, 0.8rem);
+      color: var(--brand-gray); text-transform: uppercase; letter-spacing: 0.08em;
+    }
+    .stepper-nav button:hover { border-color: var(--brand-yellow); transform: translateY(-2px); }
+    .stepper-nav button.is-active {
+      background: var(--brand-dark); border-color: var(--brand-dark);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+    }
+    .stepper-nav button.is-active .yr { color: var(--brand-yellow); }
+    .stepper-nav button.is-active .tag { color: rgba(255,255,255,0.75); }
+    .stepper-panel {
+      background: #fff; border: 1px solid rgba(0,0,0,0.08);
+      border-left: 6px solid var(--brand-yellow);
+      border-radius: 0.75rem;
+      padding: clamp(1rem, 2vw, 1.6rem);
+      min-height: 12rem;
+    }
+    .stepper-content { display: none; animation: stepFade 0.3s ease; }
+    .stepper-content.is-active { display: block; }
+    @keyframes stepFade { from { opacity: 0; transform: translateX(8px); } to { opacity: 1; transform: translateX(0); } }
+    .stepper-content h3 { margin: 0 0 0.5em; font-size: clamp(1rem, 1.6vw, 1.4rem); color: var(--brand-dark); }
+    .stepper-content .panel-eyebrow { font-size: clamp(0.7rem, 1vw, 0.95rem); color: var(--brand-yellow-dark); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.4em; }
+
+    /* === Diffusion timeline === */
+    .diff-timeline {
+      display: flex; align-items: stretch; gap: 0.25rem;
+    }
+    .diff-step {
+      flex: 1; background: var(--muted); border-radius: 0.5rem;
+      padding: 0.7rem 0.4rem; text-align: center;
+      display: flex; flex-direction: column; gap: 0.2rem;
+    }
+    .diff-step h4 { margin: 0; font-size: clamp(0.7rem, 1.1vw, 0.95rem); color: var(--brand-dark); font-weight: 700; }
+    .diff-step .sub { font-size: clamp(0.6rem, 0.9vw, 0.78rem); color: var(--brand-gray); }
+    .diff-step.dark { background: var(--brand-dark); }
+    .diff-step.dark h4 { color: var(--brand-yellow); }
+    .diff-step.dark .sub { color: rgba(255,255,255,0.6); }
+    .diff-step.med { background: #d4d4d8; }
+    .diff-step.med h4 { color: var(--brand-dark); }
+    .diff-arrow {
+      display: flex; align-items: center; justify-content: center;
+      color: var(--brand-yellow-dark); font-size: 1.2rem; flex-shrink: 0;
+      padding: 0 0.1rem;
+    }
+    .katex-box {
+      background: #fff; border: 1px solid rgba(0,0,0,0.08);
+      border-left: 4px solid var(--brand-yellow-dark);
+      border-radius: 0.5rem; padding: 0.75rem 1rem;
+      text-align: center; font-size: clamp(0.95rem, 1.5vw, 1.3rem);
+    }
+
+    /* === Training steps === */
+    .training-steps { display: flex; flex-direction: column; gap: 0.5rem; }
+    .t-step { display: flex; align-items: flex-start; gap: 0.75rem; }
+    .t-step-num {
+      flex-shrink: 0; width: clamp(1.6rem, 2.5vw, 2rem); height: clamp(1.6rem, 2.5vw, 2rem);
+      background: var(--brand-yellow); border-radius: 999px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: clamp(0.75rem, 1.1vw, 0.95rem); color: var(--brand-dark);
+      margin-top: 0.1em;
+    }
+    .t-step h4 { margin: 0 0 0.15em; font-size: clamp(0.85rem, 1.35vw, 1.15rem); color: var(--brand-dark); }
+    .t-step p { font-size: clamp(0.78rem, 1.15vw, 1rem); color: var(--brand-gray); }
+
+    /* === CLIP diagram === */
+    .clip-col { display: flex; flex-direction: column; gap: 0.6rem; }
+    .clip-row {
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .clip-box {
+      flex: 1; padding: 0.6rem 0.8rem; border-radius: 0.5rem;
+      font-size: clamp(0.78rem, 1.15vw, 1rem); font-weight: 600;
+    }
+    .clip-box.text-b { background: #e0f2fe; color: #0c4a6e; }
+    .clip-box.img-b  { background: #f0fdf4; color: #166534; }
+    .clip-box.vec    { background: var(--muted); color: var(--brand-dark); font-family: 'JetBrains Mono Variable', monospace; font-size: 0.85em; }
+    .clip-arrow { color: var(--brand-yellow-dark); font-size: 1.1rem; flex-shrink: 0; }
+    .clip-sim {
+      text-align: center; background: var(--brand-yellow);
+      border-radius: 0.5rem; padding: 0.5rem 0.75rem;
+      font-weight: 800; font-size: clamp(0.8rem, 1.2vw, 1rem); color: var(--brand-dark);
+    }
+    .dark-box {
+      background: var(--brand-dark); border-radius: 0.75rem;
+      padding: clamp(0.9rem, 1.5vw, 1.35rem); color: #e4e4e7;
+      display: flex; flex-direction: column; gap: 0.5rem;
+    }
+    .dark-box h3 { color: var(--brand-yellow); margin: 0 0 0.35em; font-size: clamp(0.95rem, 1.5vw, 1.3rem); }
+    .dark-box p, .dark-box li { font-size: clamp(0.8rem, 1.25vw, 1.1rem); color: #d4d4d8; }
+
+    /* === Gallery === */
+    .gallery-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 0.6rem;
+    }
+    @media (max-width: 768px) { .gallery-grid { grid-template-columns: repeat(2, 1fr); } }
+    .gallery-figure {
+      position: relative; overflow: hidden; border-radius: 0.6rem;
+      cursor: default; margin: 0;
+    }
+    .gallery-figure img {
+      width: 100%; height: clamp(7rem, 12vw, 11rem); object-fit: cover; display: block;
+      transition: transform 350ms ease;
+    }
+    .gallery-figure:hover img { transform: scale(1.04); }
+    .gallery-figure figcaption {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.6) 55%, transparent 100%);
+      color: #fff; padding: 0.5rem 0.45rem 0.4rem;
+      font-family: 'JetBrains Mono Variable', monospace;
+      font-size: clamp(0.5rem, 0.78vw, 0.7rem); line-height: 1.4;
+      transform: translateY(35%); transition: transform 350ms ease;
+    }
+    .gallery-figure:hover figcaption { transform: translateY(0); }
+
+    /* === Emotion words === */
+    .emo-words { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.4em; }
+    .emo-word {
+      padding: 0.22em 0.6em; border-radius: 0.35rem;
+      font-family: 'JetBrains Mono Variable', monospace;
+      font-size: clamp(0.7rem, 1vw, 0.88rem); font-weight: 600;
+    }
+    .emo-word.pos { background: #dcfce7; color: #166534; }
+    .emo-word.neg { background: #fee2e2; color: #991b1b; }
+
+    /* === Prompt snippet === */
+    .prompt-snippet {
+      font-family: 'JetBrains Mono Variable', monospace;
+      font-size: clamp(0.72rem, 1.1vw, 0.95rem);
+      background: var(--muted); border-radius: 0.4rem;
+      padding: 0.5em 0.75em; color: var(--brand-dark);
+      line-height: 1.5;
+    }
+
+    /* === Model item (panorama) === */
+    .model-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: 0.5rem; }
+    .model-item {
+      background: var(--muted); border-radius: 0.5rem;
+      padding: 0.6rem 0.75rem; border-left: 3px solid var(--brand-yellow-dark);
+      transition: transform 220ms ease, box-shadow 220ms;
+    }
+    .model-item:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+    .model-item .name { font-weight: 700; color: var(--brand-dark); font-size: clamp(0.82rem, 1.15vw, 1rem); }
+    .model-item .org { font-size: clamp(0.68rem, 0.95vw, 0.82rem); color: var(--brand-gray); margin-top: 0.1em; }
+    .model-item .note { font-size: clamp(0.68rem, 1vw, 0.9rem); color: var(--brand-gray); margin-top: 0.3em; }
+
+    /* === Video print link === */
+    .video-print-link { display: none; }
+
+    /* === Print === */
+    @media print {
+      @page { size: A4 portrait; margin: 12mm; }
+      *, *::before, *::after {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      html, body { background: #fff !important; height: auto !important; overflow: visible !important; }
+      .deck { width: 100% !important; height: auto !important; position: static !important; }
+      .controls, .hud, .progress, .slide-number { display: none !important; }
+      .slide:not(.title-slide):not(.cover)::before,
+      .slide.title-slide::before, .slide.cover::before,
+      .slide.cover::after { display: none !important; }
+      .slide {
+        position: static !important; display: flex !important;
+        opacity: 1 !important; width: 100% !important;
+        height: auto !important; inset: auto !important;
+        overflow: visible !important; padding: 1.2rem 0.5rem !important;
+        min-height: 0 !important; page-break-after: always; break-after: page;
+        page-break-inside: avoid;
+      }
+      .slide:last-child { page-break-after: auto; break-after: auto; }
+      .slide .content { max-width: 100% !important; margin: 0 !important; gap: 0.6rem !important; }
+      h1 { font-size: 26pt !important; } h2 { font-size: 18pt !important; }
+      h3 { font-size: 13pt !important; } p, li { font-size: 10.5pt !important; }
+      .eyebrow, .pill { font-size: 9pt !important; }
+      .slide.title-slide, .slide.cover {
+        background: linear-gradient(135deg, #141414 0%, #1A1A1A 50%, #2a2a2a 100%) !important; color: #fff !important;
+      }
+      .slide.title-slide h1, .slide.title-slide h2, .slide.cover h1, .slide.cover h2 { color: #fff !important; }
+      .slide.title-slide p, .slide.cover p { color: #e4e4e7 !important; }
+      .slide.title-slide .eyebrow, .slide.cover .eyebrow { color: #FFBF00 !important; }
+      .stagger-in > * { animation: none !important; opacity: 1 !important; transform: none !important; }
+      .card, .vs-cols .col { transition: none !important; transform: none !important; box-shadow: none !important; page-break-inside: avoid; }
+      img.diagram { page-break-inside: avoid; max-height: none !important; }
+      .stepper-nav { display: none !important; }
+      .stepper-content { display: block !important; opacity: 1 !important; animation: none !important; }
+      .stepper-panel { border-left: 4px solid var(--brand-yellow) !important; page-break-inside: avoid; }
+      .stepper-content + .stepper-content { margin-top: 0.8rem; padding-top: 0.8rem; border-top: 1px dashed #ccc; }
+      .gallery-figure img { height: auto !important; max-height: 8rem !important; transition: none !important; }
+      .gallery-figure figcaption { transform: translateY(0) !important; position: static !important; background: #222 !important; padding: 0.3rem 0.4rem !important; }
+      .dark-box { background: #1A1A1A !important; }
+      .diff-step.dark { background: #1A1A1A !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="progress" style="width:0"></div>
+  <div class="deck" id="deck">
+
+    <!-- 1. Cover -->
+    <section class="slide cover active" data-slide style="background-image: url('img/m3-1-p01-1.jpeg');">
+      <div class="content">
+        <p class="eyebrow">EDCO Uniandes · Dominando la IA · M3.1 · Mayo 2026</p>
+        <h1>Generación de<br/>imágenes con IA</h1>
+        <p style="font-size: clamp(1rem, 1.8vw, 1.5rem); max-width: 52rem;">De los modelos de difusión al arte del prompt: cómo las máquinas aprendieron a pintar.</p>
+        <div class="pill-row">
+          <span class="pill">Módulo 3.1</span>
+          <span class="pill">2 horas · Miércoles 20 de mayo de 2026</span>
+        </div>
+        <p style="margin-top: 1.5em; font-size: clamp(0.85rem, 1.3vw, 1.1rem); opacity: 0.8;">Luis H. Reyes · Profesor Asociado, Departamento de Ingeniería Química y de Alimentos · Universidad de los Andes</p>
+      </div>
+    </section>
+
+    <!-- 2. Agenda -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Agenda</p>
+        <h2>Lo que veremos hoy</h2>
+        <div class="grid cols-3 stagger-in">
+          <div class="card">
+            <p class="eyebrow">Sección 1</p>
+            <h3>Modelos de difusión</h3>
+            <p>Qué son, cómo aprenden, cómo generan. Forward diffusion, backward diffusion, entrenamiento, CLIP.</p>
+          </div>
+          <div class="card">
+            <p class="eyebrow">Sección 2</p>
+            <h3>Panorama actual</h3>
+            <p>Los modelos líderes de 2026: <a class="platform-link" href="https://openai.com/dall-e-3" target="_blank" rel="noopener">DALL·E 3</a>, <a class="platform-link" href="https://www.midjourney.com" target="_blank" rel="noopener">Midjourney</a>, <a class="platform-link" href="https://blackforestlabs.ai" target="_blank" rel="noopener">Flux</a>, <a class="platform-link" href="https://bloqueneon.uniandes.edu.co" target="_blank" rel="noopener">BloqueNeón</a> y más.</p>
+          </div>
+          <div class="card">
+            <p class="eyebrow">Sección 3</p>
+            <h3>Arte del prompt</h3>
+            <p>Vocabulario fotográfico, adjetivos multidimensionales, épocas, equipo y palabras emocionales.</p>
+          </div>
+        </div>
+        <div class="banner info">
+          <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          Comenzamos con ejemplos reales — imágenes que parecen fotografías pero son 100 % generadas por IA.
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Ejemplo 1 — Abeja macro -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ejemplo real · Abeja macro</p>
+        <h2>Una abeja en flor, con luz dorada</h2>
+        <div class="two-col">
+          <img class="diagram" src="img/m3-1-p02-1.jpeg" alt="Fotografía macro de una abeja sobre una flor con luz de hora dorada, generada por IA" />
+          <div style="display:flex;flex-direction:column;gap:0.75rem;">
+            <p>Esta imagen <strong>no es una fotografía real</strong>. Fue generada completamente por un modelo de difusión a partir del siguiente prompt:</p>
+            <p class="prompt-snippet">A macro photograph of a honeybee collecting pollen from a wildflower, golden hour light, shallow depth of field, bokeh background, National Geographic style, photorealistic, 100mm macro lens</p>
+            <ul>
+              <li>El modelo nunca vio esta abeja específica.</li>
+              <li>Sintetizó la imagen desde <strong>ruido aleatorio</strong>, guiado por el texto.</li>
+              <li>Generada con <a class="platform-link" href="https://openai.com/dall-e-3" target="_blank" rel="noopener">DALL·E 3</a> en &lt;30 segundos.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Ejemplo 2 — Husky -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ejemplo real · Perro al atardecer</p>
+        <h2>Husky siberiano con cielo dramático</h2>
+        <div class="two-col">
+          <img class="diagram" src="img/m3-1-p04-1.jpeg" alt="Husky siberiano al atardecer con cielo dorado dramático, generado por IA" />
+          <div style="display:flex;flex-direction:column;gap:0.75rem;">
+            <p>El modelo entendió «Husky siberiano», «atardecer dramático», «fotografía épica» y los combinó en píxeles coherentes:</p>
+            <p class="prompt-snippet">Siberian Husky sitting on a rocky hilltop at sunset, dramatic golden and orange sky, epic cinematic lighting, wildlife photography, 85mm portrait lens, photorealistic</p>
+            <div class="banner">
+              <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              ¿Cómo sabe el modelo cómo «se ve» un Husky al atardecer? Lo aprendió de millones de imágenes y sus descripciones.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. Ejemplo 3 — Castillo B&N -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ejemplo real · Castillo en invierno</p>
+        <h2>Un castillo medieval en blanco y negro</h2>
+        <div class="two-col">
+          <img class="diagram" src="img/m3-1-p06-1.jpeg" alt="Castillo medieval rodeado de nieve en blanco y negro, generado por IA" />
+          <div style="display:flex;flex-direction:column;gap:0.75rem;">
+            <p>Estética monocromática, niebla invernal, arquitectura medieval — todo en una instrucción de texto:</p>
+            <p class="prompt-snippet">Medieval castle surrounded by snow-covered pine trees in winter, black and white fine art photography, dramatic clouds, misty atmosphere, architectural detail, long exposure</p>
+            <ul>
+              <li>«Black and white» no es un filtro aplicado después — <strong>el modelo generó directamente en escala de grises</strong>.</li>
+              <li>Aprendió el concepto de fotografía B&N del corpus de entrenamiento.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. Más ejemplos B&N -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Más ejemplos reales · Blanco y negro</p>
+        <h2>El modelo aprendió a «ver» en B&amp;N</h2>
+        <div class="grid cols-2 stagger-in">
+          <div class="card">
+            <p class="eyebrow">Prompt</p>
+            <h3>Torre Eiffel nocturna</h3>
+            <p class="prompt-snippet" style="margin-top:0.5em;">Eiffel Tower at night, black and white long exposure photography, light trails on streets below, fine art, Leica aesthetic, dramatic clouds</p>
+            <p style="margin-top:0.5em;">Generada con <a class="platform-link" href="https://openai.com/dall-e-3" target="_blank" rel="noopener">DALL·E 3</a>. Cielo con nubes dramáticas, rastros de luz en las calles, arquitectura nítida.</p>
+          </div>
+          <div class="card">
+            <p class="eyebrow">Prompt</p>
+            <h3>Camión de bomberos</h3>
+            <p class="prompt-snippet" style="margin-top:0.5em;">American fire truck on a city street, high contrast black and white documentary photography, dramatic shadows, wide angle</p>
+            <p style="margin-top:0.5em;">El modelo conoce «fire truck», «high contrast» y «documentary photography» como conceptos separados — y los fusiona.</p>
+          </div>
+        </div>
+        <div class="banner info">
+          <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          Blanco y negro no es post-procesamiento — el modelo <strong>genera directamente sin color</strong> porque aprendió qué significa esa estética.
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. El denominador común: modelos de difusión -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">El denominador común</p>
+        <h2>Todas estas imágenes son <span style="color:var(--brand-yellow-dark);">generadas</span></h2>
+        <p>Ninguna de las imágenes que vimos es una fotografía real. Todas fueron sintetizadas píxel a píxel por <strong>modelos de difusión</strong>.</p>
+        <div class="grid cols-3 stagger-in">
+          <div class="card">
+            <p class="eyebrow">Abeja macro</p>
+            <h3>Ruido → Naturaleza</h3>
+            <p>50 pasos de denoising guiados por el texto del prompt. Resultado: textura de pelusa, reflejos de luz en el néctar, bokeh suave.</p>
+          </div>
+          <div class="card">
+            <p class="eyebrow">Husky al atardecer</p>
+            <h3>Texto → Píxeles</h3>
+            <p>El modelo no «dibujó» el perro. Aprendió la distribución visual de millones de imágenes y sintetizó una nueva instancia coherente.</p>
+          </div>
+          <div class="card">
+            <p class="eyebrow">Castillo en invierno</p>
+            <h3>Concepto → Imagen</h3>
+            <p>«Medieval + snow + B&W + misty» son palabras. El modelo las convirtió en geometría, texturas y luz física simulada.</p>
+          </div>
+        </div>
+        <div class="banner">
+          <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          Ahora entendamos cómo funciona este proceso internamente.
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. Título Sección 1 -->
+    <section class="slide title-slide" data-slide>
+      <div class="content big-quote">
+        <p class="eyebrow" style="text-align:center;">Sección 1 de 3</p>
+        <h2 style="color:#fff;">¿Cómo funcionan los<br/><span class="accent">modelos de difusión</span>?</h2>
+        <p>Del ruido aleatorio a la imagen coherente — el proceso paso a paso.</p>
+      </div>
+    </section>
+
+    <!-- 9. ¿Cómo funcionan? -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Sección 1 · Intuición</p>
+        <h2>La metáfora del televisor analógico</h2>
+        <div class="two-col">
+          <img class="diagram" src="img/m3-1-p09-1.png" alt="Ruido estático de televisión analógica — punto de partida de la difusión" />
+          <div style="display:flex;flex-direction:column;gap:0.75rem;">
+            <p>Los modelos de difusión comienzan exactamente así: <strong>ruido estático puro</strong>. Desde ahí, eliminan el ruido en pasos pequeños hasta revelar una imagen coherente.</p>
+            <div class="grid cols-2" style="gap:0.5rem;">
+              <div class="card" style="padding:0.7rem;">
+                <h3 style="font-size:clamp(0.85rem,1.3vw,1.1rem);">Hacia adelante</h3>
+                <p style="font-size:clamp(0.75rem,1.1vw,0.95rem);">Tomar una imagen real y <strong>agregarle ruido</strong> gradualmente hasta destruirla. Este proceso se puede calcular matemáticamente.</p>
+              </div>
+              <div class="card" style="padding:0.7rem;">
+                <h3 style="font-size:clamp(0.85rem,1.3vw,1.1rem);">Hacia atrás</h3>
+                <p style="font-size:clamp(0.75rem,1.1vw,0.95rem);"><strong>Aprender a revertir ese proceso</strong>. Dado ruido, predecir qué hay debajo. Esto es lo que entrena la red neuronal.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10. La complicación -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Sección 1 · La asimetría</p>
+        <h2>Lo sencillo vs. lo difícil</h2>
+        <div class="vs-cols stagger-in">
+          <div class="col left">
+            <h3>
+              <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3l14 9-14 9V3z"/></svg>
+              Difusión hacia adelante
+            </h3>
+            <p><strong>Agregar ruido es trivial.</strong> En cada paso se suma una pequeña cantidad de ruido gaussiano.</p>
+            <p>La fórmula es explícita: en T pasos, cualquier imagen queda convertida en ruido puro.</p>
+            <p style="margin-top:0.4em;">No hay nada que aprender aquí — es matemática directa.</p>
+          </div>
+          <div class="vs-divider">!</div>
+          <div class="col right">
+            <h3>
+              <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+              Difusión hacia atrás
+            </h3>
+            <p><strong>Eliminar ruido es extraordinariamente difícil.</strong> Hay infinitas imágenes posibles que podrían dar origen al mismo ruido.</p>
+            <p>La red neuronal aprende una <em>distribución probabilística</em> del ruido a eliminar en cada paso.</p>
+            <p style="margin-top:0.4em;">Esto requiere entrenamiento con millones de imágenes.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 11. Difusión hacia adelante -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Sección 1 · Forward diffusion</p>
+        <h2>Difusión hacia adelante: destruir la imagen</h2>
+        <div class="diff-timeline stagger-in">
+          <div class="diff-step">
+            <h4>$\mathbf{x}_0$</h4>
+            <div class="sub">Imagen original</div>
+            <div class="sub">limpia, real</div>
+          </div>
+          <div class="diff-arrow">→</div>
+          <div class="diff-step med">
+            <h4>$\mathbf{x}_1$</h4>
+            <div class="sub">Leve ruido</div>
+            <div class="sub">aún reconocible</div>
+          </div>
+          <div class="diff-arrow">→</div>
+          <div class="diff-step" style="background:#a1a1aa;">
+            <h4 style="color:#fff;">$\mathbf{x}_2$</h4>
+            <div class="sub" style="color:rgba(255,255,255,0.7);">Ruido moderado</div>
+            <div class="sub" style="color:rgba(255,255,255,0.7);">difícil de ver</div>
+          </div>
+          <div class="diff-arrow">···</div>
+          <div class="diff-step dark">
+            <h4>$\mathbf{x}_T$</h4>
+            <div class="sub">Ruido puro</div>
+            <div class="sub">imagen destruida</div>
+          </div>
+        </div>
+        <div class="katex-box">
+          $q(\mathbf{x}_T \mid \mathbf{x}_{T-1}) = \mathcal{N}\!\left(\mathbf{x}_T;\,\sqrt{1-\beta_T}\,\mathbf{x}_{T-1},\; \beta_T \mathbf{I}\right)$
+        </div>
+        <div class="banner info">
+          <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          En cada paso se agrega un pequeño ruido gaussiano controlado por $\beta_T$ (schedule de ruido). Con T ≈ 1000 pasos, cualquier imagen queda irreconocible.
+        </div>
+      </div>
+    </section>
+
+    <!-- 12. Difusión hacia atrás -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Sección 1 · Backward diffusion</p>
+        <h2>Difusión hacia atrás: reconstruir desde el ruido</h2>
+        <div class="diff-timeline stagger-in">
+          <div class="diff-step dark">
+            <h4>$\mathbf{x}_T$</h4>
+            <div class="sub">Ruido puro</div>
+            <div class="sub">punto de partida</div>
+          </div>
+          <div class="diff-arrow">→</div>
+          <div class="diff-step" style="background:#a1a1aa;">
+            <h4 style="color:#fff;">Denoising 1</h4>
+            <div class="sub" style="color:rgba(255,255,255,0.7);">red predice ruido</div>
+            <div class="sub" style="color:rgba(255,255,255,0.7);">y lo resta</div>
+          </div>
+          <div class="diff-arrow">→</div>
+          <div class="diff-step med">
+            <h4>Denoising 2</h4>
+            <div class="sub">estructura emergente</div>
+            <div class="sub">formas visibles</div>
+          </div>
+          <div class="diff-arrow">···</div>
+          <div class="diff-step">
+            <h4>$\mathbf{x}_0$</h4>
+            <div class="sub">Imagen clara</div>
+            <div class="sub">generación completa</div>
+          </div>
+        </div>
+        <div class="katex-box">
+          $p_\theta(\mathbf{x}_{T-1} \mid \mathbf{x}_T) = \mathcal{N}\!\left(\mathbf{x}_{T-1};\;\mu_\theta(\mathbf{x}_T, T),\;\Sigma_\theta(\mathbf{x}_T, T)\right)$
+        </div>
+        <div class="banner info">
+          $\theta$ representa los parámetros aprendidos de la red neuronal. La red no adivina la imagen completa de una sola vez — <strong>predice el ruido a eliminar en cada paso</strong>.
+        </div>
+      </div>
+    </section>
+
+    <!-- 13. ¿Cómo se entrena? -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Sección 1 · Entrenamiento</p>
+        <h2>¿Cómo aprende la red a eliminar ruido?</h2>
+        <div class="training-steps stagger-in">
+          <div class="t-step">
+            <div class="t-step-num">1</div>
+            <div>
+              <h4>Tomar una imagen del dataset</h4>
+              <p>Se selecciona aleatoriamente una imagen real del corpus de entrenamiento (millones de imágenes con texto).</p>
+            </div>
+          </div>
+          <div class="t-step">
+            <div class="t-step-num">2</div>
+            <div>
+              <h4>Aplicar ruido en un paso t aleatorio</h4>
+              <p>Se usa la fórmula forward para agregar exactamente t pasos de ruido. El modelo recibe la imagen ruidosa y el valor de t.</p>
+            </div>
+          </div>
+          <div class="t-step">
+            <div class="t-step-num">3</div>
+            <div>
+              <h4>La red predice el ruido añadido</h4>
+              <p>La red neuronal (U-Net) intenta predecir el ruido exacto que se agregó en el paso anterior.</p>
+            </div>
+          </div>
+          <div class="t-step">
+            <div class="t-step-num">4</div>
+            <div>
+              <h4>Calcular la pérdida</h4>
+              <p>Se compara el ruido predicho con el ruido real. La diferencia es la función de pérdida: $\mathcal{L} = \|\epsilon - \epsilon_\theta(\mathbf{x}_t, t)\|^2$</p>
+            </div>
+          </div>
+          <div class="t-step">
+            <div class="t-step-num">5</div>
+            <div>
+              <h4>Backpropagation — actualizar pesos $\theta$</h4>
+              <p>Los gradientes fluyen de vuelta por la red. Con millones de imágenes y muchas iteraciones, la red aprende a predecir el ruido con gran precisión.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 14. Resultados del entrenamiento -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Sección 1 · Resultados</p>
+        <h2>¿Qué aprende el modelo?</h2>
+        <div class="vs-cols stagger-in">
+          <div class="col left">
+            <h3>
+              <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+              Dataset — flores reales
+            </h3>
+            <p>El modelo se entrena con miles de fotografías de flores reales: rosas, tulipanes, girasoles, orquídeas.</p>
+            <ul>
+              <li>Aprende la distribución de colores, formas y texturas.</li>
+              <li>Aprende qué es «natural» en una flor (proporciones, curvas, variaciones de color).</li>
+              <li>Aprende también los textos que acompañan esas imágenes.</li>
+            </ul>
+          </div>
+          <div class="vs-divider">→</div>
+          <div class="col right">
+            <h3>
+              <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72Z"/><path d="m14 7 3 3"/></svg>
+              Generadas — flores sintéticas
+            </h3>
+            <p>Con el modelo entrenado, se pueden generar flores que <strong>no existen en ningún dataset</strong>.</p>
+            <ul>
+              <li>Rosa azul imposible en la naturaleza.</li>
+              <li>Orquídea con patrones geométricos.</li>
+              <li>Girasol doble con pétalos de cristal.</li>
+            </ul>
+            <p style="margin-top:0.5em;">Las flores generadas son indistinguibles de las reales para el ojo humano — y a veces más perfectas.</p>
+          </div>
+        </div>
+        <div class="banner info">
+          <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          El modelo no «copia» flores del dataset — aprendió la <em>esencia estadística</em> de cómo se ven las flores y sintetiza nuevas instancias.
+        </div>
+      </div>
+    </section>
+
+    <!-- 15. CLIP — guía por texto -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Sección 1 · CLIP</p>
+        <h2>¿Cómo guía el texto a la imagen?</h2>
+        <div class="two-col">
+          <div class="clip-col">
+            <p style="font-size:clamp(0.85rem,1.3vw,1.1rem);">CLIP (Contrastive Language–Image Pretraining) aprendió a medir qué tan «parecidos» son un texto y una imagen mediante <strong>similitud coseno</strong>:</p>
+            <div class="clip-row">
+              <div class="clip-box text-b">«una abeja en flor»</div>
+              <div class="clip-arrow">→</div>
+              <div class="clip-box vec">vector T</div>
+            </div>
+            <div class="clip-row">
+              <div class="clip-box img-b">imagen de abeja</div>
+              <div class="clip-arrow">→</div>
+              <div class="clip-box vec">vector I</div>
+            </div>
+            <div class="clip-sim">cos(T, I) ≈ 1 si coinciden · ≈ −1 si no</div>
+            <p style="font-size:clamp(0.8rem,1.2vw,1rem);">CLIP fue entrenado con 400 millones de pares texto–imagen para aprender este espacio de similitud.</p>
+          </div>
+          <div class="dark-box">
+            <h3>¿Cómo guía la generación?</h3>
+            <p>Durante la difusión hacia atrás, en cada paso de denoising, el gradiente de CLIP empuja la imagen generada hacia la dirección que <strong>maximiza la similitud con el texto del prompt</strong>.</p>
+            <ul>
+              <li>Sin CLIP: ruido → imagen aleatoria.</li>
+              <li>Con CLIP: ruido → imagen que coincide con el texto.</li>
+            </ul>
+            <p>Es como tener un crítico que en cada paso de 1000 dice: «más parecido a la abeja, menos ruido en esta zona».</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 16. ¿Hasta dónde pueden llegar? -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Sección 1 · Capacidades</p>
+        <h2>¿Hasta dónde pueden llegar?</h2>
+        <div class="two-col">
+          <img class="diagram" src="img/m3-1-p16-1.jpeg" alt="Relojes derretidos en un desierto, estilo surrealista inspirado en Dalí, generado por IA" />
+          <div style="display:flex;flex-direction:column;gap:0.6rem;">
+            <p>«Relojes derretidos sobre la arena, estilo Salvador Dalí, 3D render hiperrealista» — <strong>algo imposible de fotografiar</strong>.</p>
+            <div class="grid cols-3" style="gap:0.45rem;">
+              <div class="card" style="padding:0.6rem;">
+                <h3 style="font-size:clamp(0.8rem,1.1vw,0.95rem);">Variaciones</h3>
+                <p style="font-size:clamp(0.7rem,1vw,0.85rem);">Generar 100 versiones ligeramente distintas del mismo prompt.</p>
+              </div>
+              <div class="card" style="padding:0.6rem;">
+                <h3 style="font-size:clamp(0.8rem,1.1vw,0.95rem);">Edición dirigida</h3>
+                <p style="font-size:clamp(0.7rem,1vw,0.85rem);">Cambiar «un reloj de arena» por «un reloj de cristal» manteniendo el resto.</p>
+              </div>
+              <div class="card" style="padding:0.6rem;">
+                <h3 style="font-size:clamp(0.8rem,1.1vw,0.95rem);">Inpainting</h3>
+                <p style="font-size:clamp(0.7rem,1vw,0.85rem);">Rellenar una región de la imagen con contenido nuevo consistente.</p>
+              </div>
+            </div>
+            <div class="banner info" style="font-size:clamp(0.75rem,1.1vw,0.95rem);">
+              <a class="platform-link" href="https://openai.com/dall-e-3" target="_blank" rel="noopener">DALL·E 2</a> fue el primero en mostrar inpainting y edición dirigida de alta calidad (2022).
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 17. Título Sección 2 -->
+    <section class="slide title-slide" data-slide>
+      <div class="content big-quote">
+        <p class="eyebrow" style="text-align:center;">Sección 2 de 3</p>
+        <h2 style="color:#fff;">Panorama actual:<br/><span class="accent">los modelos de hoy</span></h2>
+        <p>¿Qué herramientas existen en 2026 y cómo se comparan?</p>
+      </div>
+    </section>
+
+    <!-- 18. Panorama 2026 -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Sección 2 · Modelos 2026</p>
+        <h2>El ecosistema de generación de imágenes</h2>
+        <div class="stepper" data-stepper>
+          <div class="stepper-nav">
+            <button data-step="1" class="is-active" aria-selected="true">
+              <span class="yr">Nano B. 2</span>
+              <span class="tag">BloqueNeón</span>
+            </button>
+            <button data-step="2" aria-selected="false">
+              <span class="yr">DALL·E 3</span>
+              <span class="tag">OpenAI</span>
+            </button>
+            <button data-step="3" aria-selected="false">
+              <span class="yr">MJ v6.1</span>
+              <span class="tag">Midjourney</span>
+            </button>
+            <button data-step="4" aria-selected="false">
+              <span class="yr">SD 3.5</span>
+              <span class="tag">Stability</span>
+            </button>
+            <button data-step="5" aria-selected="false">
+              <span class="yr">Flux 1.1</span>
+              <span class="tag">BFL</span>
+            </button>
+            <button data-step="6" aria-selected="false">
+              <span class="yr">Firefly</span>
+              <span class="tag">Adobe</span>
+            </button>
+          </div>
+          <div class="stepper-panel">
+            <div class="stepper-content is-active" data-content="1">
+              <div class="panel-eyebrow">Nano Banana 2 · BloqueNeón / Universidad de los Andes</div>
+              <h3>El modelo que usamos en este curso</h3>
+              <p>Disponible en <a class="platform-link" href="https://bloqueneon.uniandes.edu.co" target="_blank" rel="noopener">BloqueNeón</a>, la plataforma de IA de la Universidad de los Andes. Acceso gratuito para toda la comunidad Uniandes.</p>
+              <ul style="margin-top:0.5em;">
+                <li>Sin necesidad de cuenta externa — entra con tu correo universitario.</li>
+                <li>Interfaz simple, resultados en segundos.</li>
+                <li>Soporta prompts en español e inglés.</li>
+                <li>Es el modelo que exploraremos en los talleres prácticos de este módulo.</li>
+              </ul>
+            </div>
+            <div class="stepper-content" data-content="2">
+              <div class="panel-eyebrow">DALL·E 3 · OpenAI</div>
+              <h3>El más accesible para el público general</h3>
+              <p>Integrado directamente en <a class="platform-link" href="https://chatgpt.com" target="_blank" rel="noopener">ChatGPT</a> Plus. Se le puede pedir a ChatGPT que genere imágenes con lenguaje natural.</p>
+              <ul style="margin-top:0.5em;">
+                <li>Excelente comprensión de instrucciones complejas y texto en imágenes.</li>
+                <li>Fuerte en composiciones narrativas y conceptos abstractos.</li>
+                <li>Moderación activa — evita contenido inapropiado.</li>
+              </ul>
+            </div>
+            <div class="stepper-content" data-content="3">
+              <div class="panel-eyebrow">Midjourney v6.1 · Midjourney Inc.</div>
+              <h3>El estándar de calidad fotorrealista y artística</h3>
+              <p>Accesible vía <a class="platform-link" href="https://www.midjourney.com" target="_blank" rel="noopener">Midjourney.com</a>. Históricamente el modelo más usado por diseñadores y artistas.</p>
+              <ul style="margin-top:0.5em;">
+                <li>Calidad visual premium: texturas, iluminación, coherencia estética.</li>
+                <li>Parámetros avanzados: --ar (aspect ratio), --stylize, --chaos.</li>
+                <li>Requiere suscripción de pago; interfaz vía Discord.</li>
+              </ul>
+            </div>
+            <div class="stepper-content" data-content="4">
+              <div class="panel-eyebrow">Stable Diffusion 3.5 · Stability AI</div>
+              <h3>El referente open source</h3>
+              <p>Modelo de código abierto disponible en <a class="platform-link" href="https://stability.ai" target="_blank" rel="noopener">Stability AI</a>. Puede ejecutarse localmente sin conexión a internet.</p>
+              <ul style="margin-top:0.5em;">
+                <li>Completamente personalizable: fine-tuning, LoRA, ControlNet.</li>
+                <li>Comunidad enorme de modelos derivados (Civitai, Hugging Face).</li>
+                <li>Requiere GPU potente para uso local; alternativas en la nube.</li>
+              </ul>
+            </div>
+            <div class="stepper-content" data-content="5">
+              <div class="panel-eyebrow">Flux 1.1 Pro · Black Forest Labs</div>
+              <h3>Alta eficiencia y resolución excepcional</h3>
+              <p>Desarrollado por los creadores originales de Stable Diffusion. Disponible en <a class="platform-link" href="https://blackforestlabs.ai" target="_blank" rel="noopener">Black Forest Labs</a>.</p>
+              <ul style="margin-top:0.5em;">
+                <li>Generación más rápida que modelos equivalentes.</li>
+                <li>Excelente en texto dentro de imágenes (letras, carteles).</li>
+                <li>Versión open source (Flux.1 Dev) disponible en Hugging Face.</li>
+              </ul>
+            </div>
+            <div class="stepper-content" data-content="6">
+              <div class="panel-eyebrow">Firefly 3 · Adobe · Ideogram · Ideogram AI</div>
+              <h3>Diseño y texto en imágenes</h3>
+              <p><a class="platform-link" href="https://firefly.adobe.com" target="_blank" rel="noopener">Adobe Firefly</a> está integrado en Photoshop y Illustrator. <a class="platform-link" href="https://ideogram.ai" target="_blank" rel="noopener">Ideogram</a> es el líder en generación de tipografía.</p>
+              <ul style="margin-top:0.5em;">
+                <li>Firefly: legalmente seguro — entrenado solo con contenido Adobe Stock.</li>
+                <li>Ideogram: único en generar texto coherente dentro de imágenes.</li>
+                <li>Ambos orientados a diseño gráfico y comunicación visual.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 19. Nano Banana 2 en detalle -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Sección 2 · Nuestro modelo</p>
+        <h2>Nano Banana 2 — el modelo del curso</h2>
+        <div class="two-col">
+          <div style="display:flex;flex-direction:column;gap:0.75rem;">
+            <p>A lo largo de este módulo exploraremos Nano Banana 2 a través de <a class="platform-link" href="https://bloqueneon.uniandes.edu.co" target="_blank" rel="noopener">BloqueNeón</a> — la plataforma de inteligencia artificial de la Universidad de los Andes.</p>
+            <div class="banner info" style="font-size:clamp(0.8rem,1.2vw,1.05rem);">
+              <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+              Acceso gratuito con tu cuenta de correo @uniandes.edu.co
+            </div>
+            <ul>
+              <li>Interfaz web directa — sin instalaciones.</li>
+              <li>Resultados en segundos desde cualquier dispositivo.</li>
+              <li>Soporta prompts en <strong>español e inglés</strong>.</li>
+              <li>Ideal para explorar conceptos de este módulo en tiempo real.</li>
+            </ul>
+          </div>
+          <div class="dark-box">
+            <h3>¿Por qué empezar aquí?</h3>
+            <p>Antes de explorar modelos de pago como <a class="platform-link" href="https://www.midjourney.com" target="_blank" rel="noopener">Midjourney</a> o <a class="platform-link" href="https://openai.com/dall-e-3" target="_blank" rel="noopener">DALL·E 3</a>, BloqueNeón te permite:</p>
+            <ul>
+              <li>Experimentar sin costo.</li>
+              <li>Iterar rápidamente con prompts.</li>
+              <li>Comparar resultados en clase.</li>
+              <li>Aprender el vocabulario del prompt antes de invertir en suscripciones.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 20. Título Sección 3 -->
+    <section class="slide title-slide" data-slide>
+      <div class="content big-quote">
+        <p class="eyebrow" style="text-align:center;">Sección 3 de 3</p>
+        <h2 style="color:#fff;">El arte del <span class="accent">prompt</span></h2>
+        <p>La imagen es el nuevo lenguaje — y el prompt es tu pincel.</p>
+      </div>
+    </section>
+
+    <!-- 21. El prompt es tu pincel -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Sección 3 · Fundamentos</p>
+        <h2>El prompt es tu pincel</h2>
+        <div class="two-col">
+          <img class="diagram" src="img/m3-1-p19-1.jpeg" alt="Word cloud con términos relacionados con prompt engineering" />
+          <div style="display:flex;flex-direction:column;gap:0.65rem;">
+            <p>El prompt no es solo una descripción — es un <strong>lenguaje técnico</strong> que el modelo traduce a píxeles. Hay tres niveles:</p>
+            <div class="grid cols-3" style="gap:0.45rem;">
+              <div class="card" style="padding:0.65rem;">
+                <h3 style="font-size:clamp(0.82rem,1.2vw,1.05rem);">Corto y claro</h3>
+                <p style="font-size:clamp(0.72rem,1.05vw,0.9rem);">Una frase puede bastar. «A bee on a flower» funciona — el modelo completa los detalles.</p>
+              </div>
+              <div class="card" style="padding:0.65rem;">
+                <h3 style="font-size:clamp(0.82rem,1.2vw,1.05rem);">Largo y detallado</h3>
+                <p style="font-size:clamp(0.72rem,1.05vw,0.9rem);">Más términos = más control. Sujetar estilo, luz, composición, cámara y emoción.</p>
+              </div>
+              <div class="card" style="padding:0.65rem;">
+                <h3 style="font-size:clamp(0.82rem,1.2vw,1.05rem);">Experimental</h3>
+                <p style="font-size:clamp(0.72rem,1.05vw,0.9rem);">Combinar estilos inesperados produce resultados únicos. «Bauhaus + cyberpunk».</p>
+              </div>
+            </div>
+            <div class="banner info" style="font-size:clamp(0.78rem,1.15vw,1rem);">
+              No existe un prompt perfecto universal. La calidad del resultado depende de la <strong>iteración</strong> — prueba, ajusta, repite.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 22. Galería de prompts -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Sección 3 · Galería</p>
+        <h2>Cada imagen, un prompt diferente</h2>
+        <div class="gallery-grid">
+          <figure class="gallery-figure">
+            <img src="img/m3-1-p29-1.jpeg" alt="Árbol antiguo enorme en bosque mágico con rayos de luz dorada" />
+            <figcaption>Ancient mystical tree in enchanted forest, golden light rays, epic scale, photorealistic, Unreal Engine 5</figcaption>
+          </figure>
+          <figure class="gallery-figure">
+            <img src="img/m3-1-p30-1.jpeg" alt="Edificio modernista con patrones geométricos" />
+            <figcaption>Modernist concrete building, geometric patterns, architectural photography, dramatic angle, blue hour</figcaption>
+          </figure>
+          <figure class="gallery-figure">
+            <img src="img/m3-1-p31-1.jpeg" alt="Macro de mecanismo de reloj vintage con engranajes dorados" />
+            <figcaption>Macro photograph of vintage watch clockwork, intricate golden gears, shallow DOF, studio lighting, hyper detailed</figcaption>
+          </figure>
+          <figure class="gallery-figure">
+            <img src="img/m3-1-p32-1.jpeg" alt="Flor margarita en estilo acuarela con colores suaves" />
+            <figcaption>Watercolor daisy, soft pastel tones, delicate brush strokes on textured paper, fine art, minimalist</figcaption>
+          </figure>
+          <figure class="gallery-figure">
+            <img src="img/m3-1-p34-1.jpeg" alt="Persona sosteniendo cámara fotográfica vintage" />
+            <figcaption>Person holding vintage Schneider-Kreuznach film camera, moody dark background, cinematic portrait photography</figcaption>
+          </figure>
+          <figure class="gallery-figure">
+            <img src="img/m3-1-p35-1.jpeg" alt="Caballo blanco árabe con melena al viento en blanco y negro" />
+            <figcaption>White Arabian horse portrait, flowing mane in wind, dramatic black and white, fine art equine photography</figcaption>
+          </figure>
+        </div>
+        <p style="font-size:clamp(0.72rem,1.05vw,0.9rem); text-align:center; opacity:0.7;">Pasa el cursor sobre cada imagen para ver el prompt completo.</p>
+      </div>
+    </section>
+
+    <!-- 23. Largos vs cortos -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Sección 3 · Prompts largos vs. cortos</p>
+        <h2>¿Cuánto texto necesita el modelo?</h2>
+        <div class="stepper" data-stepper>
+          <div class="stepper-nav" style="grid-template-columns: repeat(2, minmax(0, 1fr));">
+            <button data-step="1" class="is-active" aria-selected="true">
+              <span class="yr">Prompt largo</span>
+              <span class="tag">control total</span>
+            </button>
+            <button data-step="2" aria-selected="false">
+              <span class="yr">Prompt corto</span>
+              <span class="tag">libertad creativa</span>
+            </button>
+          </div>
+          <div class="stepper-panel">
+            <div class="stepper-content is-active" data-content="1">
+              <div class="two-col" style="align-items:flex-start;">
+                <img class="diagram" src="img/m3-1-p21-1.jpeg" alt="Mujer con vestido rojo bajo la lluvia en una ciudad, estilo fotográfico Saul Leiter" />
+                <div style="display:flex;flex-direction:column;gap:0.5rem;">
+                  <div class="panel-eyebrow">Saul Leiter style · 47 palabras</div>
+                  <p class="prompt-snippet">A woman in a red dress talking on a phone in the rain, viewed through a rain-covered window, blurred city lights in background, Saul Leiter photography style, analog film, warm tones, bokeh, impressionistic, emotional, street photography</p>
+                  <p style="font-size:clamp(0.78rem,1.15vw,1rem);">Cada término añade una capa de control: estilo fotográfico, condición climática, composición, emoción, textura del film.</p>
+                </div>
+              </div>
+            </div>
+            <div class="stepper-content" data-content="2">
+              <div class="two-col" style="align-items:flex-start;">
+                <img class="diagram" src="img/m3-1-p22-1.jpeg" alt="Cohete arcoíris en un cielo colorido con planetas y nubes de colores" />
+                <div style="display:flex;flex-direction:column;gap:0.5rem;">
+                  <div class="panel-eyebrow">Prompt simple · 8 palabras</div>
+                  <p class="prompt-snippet">Rainbow rocket launch, colorful planets, octane render, vibrant</p>
+                  <p style="font-size:clamp(0.78rem,1.15vw,1rem);">El modelo interpretó «rainbow rocket» literalmente y expandió el escenario por cuenta propia. <strong>Menos palabras = más creatividad del modelo</strong>.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="banner" style="font-size:clamp(0.78rem,1.15vw,1rem);">
+          <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          Consejo práctico: empieza corto, evalúa el resultado y añade términos específicos solo donde el modelo «falló».
+        </div>
+      </div>
+    </section>
+
+    <!-- 24. Principios básicos -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Sección 3 · Principios</p>
+        <h2>Tres principios básicos del prompting</h2>
+        <div class="grid cols-3 stagger-in">
+          <div class="card">
+            <p class="eyebrow">Principio 1</p>
+            <h3>A veces menos es más</h3>
+            <p>Un prompt de 5 palabras bien elegidas puede superar a uno de 50 palabras genéricas. La calidad de los términos importa más que la cantidad.</p>
+            <p style="margin-top:0.5em; font-size:clamp(0.75rem,1.1vw,0.95rem);">Incorrecto: «a nice beautiful stunning amazing dog in the park»</p>
+            <p style="font-size:clamp(0.75rem,1.1vw,0.95rem);">Correcto: «golden retriever, bokeh, 85mm, golden hour»</p>
+          </div>
+          <div class="card">
+            <p class="eyebrow">Principio 2</p>
+            <h3>Frases «amuleto»</h3>
+            <p>Ciertos términos funcionan como amplificadores universales de calidad visual:</p>
+            <div class="emo-words" style="margin-top:0.5em;">
+              <span class="emo-word pos">photorealistic</span>
+              <span class="emo-word pos">8K resolution</span>
+              <span class="emo-word pos">cinematic</span>
+              <span class="emo-word pos">hyper detailed</span>
+              <span class="emo-word pos">award winning</span>
+              <span class="emo-word pos">dramatic lighting</span>
+            </div>
+            <p style="margin-top:0.5em; font-size:clamp(0.75rem,1.1vw,0.95rem);">Úsalos al final del prompt para elevar la calidad general.</p>
+          </div>
+          <div class="card">
+            <p class="eyebrow">Principio 3</p>
+            <h3>Vocabulario del dominio</h3>
+            <p>El modelo fue entrenado con texto de expertos. Usar terminología especializada activa ese conocimiento:</p>
+            <ul style="margin-top:0.4em; font-size:clamp(0.75rem,1.1vw,0.95rem);">
+              <li>Fotografía: «Leica M6», «f/1.4», «medium format»</li>
+              <li>Arte: «chiaroscuro», «impasto», «sfumato»</li>
+              <li>3D: «octane render», «subsurface scattering»</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 25. Consejos avanzados -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Sección 3 · Técnicas avanzadas</p>
+        <h2>Cinco categorías de modificadores</h2>
+        <div class="stepper" data-stepper>
+          <div class="stepper-nav" style="grid-template-columns: repeat(5, minmax(0, 1fr));">
+            <button data-step="1" class="is-active" aria-selected="true">
+              <span class="yr">
+                <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>
+                Fotografía
+              </span>
+              <span class="tag">terminología</span>
+            </button>
+            <button data-step="2" aria-selected="false">
+              <span class="yr">Adjetivos</span>
+              <span class="tag">multidimensional</span>
+            </button>
+            <button data-step="3" aria-selected="false">
+              <span class="yr">Épocas</span>
+              <span class="tag">años y décadas</span>
+            </button>
+            <button data-step="4" aria-selected="false">
+              <span class="yr">Equipo</span>
+              <span class="tag">cámara y lente</span>
+            </button>
+            <button data-step="5" aria-selected="false">
+              <span class="yr">Estilos</span>
+              <span class="tag">referencias</span>
+            </button>
+          </div>
+          <div class="stepper-panel">
+            <div class="stepper-content is-active" data-content="1">
+              <h3>Terminología fotográfica</h3>
+              <p>El vocabulario fotográfico actúa como modificador universal. Cualquier imagen mejora con estos términos:</p>
+              <div class="emo-words" style="margin-top:0.5em;">
+                <span class="emo-word pos">wide angle</span><span class="emo-word pos">macro photography</span><span class="emo-word pos">bokeh</span><span class="emo-word pos">shallow depth of field</span><span class="emo-word pos">long exposure</span><span class="emo-word pos">HDR</span><span class="emo-word pos">golden hour</span><span class="emo-word pos">aerial view</span><span class="emo-word pos">portrait lens</span><span class="emo-word pos">telephoto</span><span class="emo-word pos">fisheye</span><span class="emo-word pos">tilt-shift</span>
+              </div>
+            </div>
+            <div class="stepper-content" data-content="2">
+              <h3>Adjetivos multidimensionales</h3>
+              <p>La calidad visual se construye capa por capa. Un buen prompt combina luz, textura, material y atmósfera:</p>
+              <div class="grid cols-4" style="gap:0.4rem; margin-top:0.5em;">
+                <div class="card" style="padding:0.5rem;"><h3 style="font-size:0.85rem;">Luz</h3><p style="font-size:0.78rem;">cinematic · dramatic · rim light · soft diffused · neon glow · candlelight</p></div>
+                <div class="card" style="padding:0.5rem;"><h3 style="font-size:0.85rem;">Textura</h3><p style="font-size:0.78rem;">weathered · polished · rough · translucent · iridescent · crystalline</p></div>
+                <div class="card" style="padding:0.5rem;"><h3 style="font-size:0.85rem;">Material</h3><p style="font-size:0.78rem;">marble · chrome · fabric · frosted glass · aged wood · liquid metal</p></div>
+                <div class="card" style="padding:0.5rem;"><h3 style="font-size:0.85rem;">Atmósfera</h3><p style="font-size:0.78rem;">misty · foggy · hazy · smoky · ethereal · otherworldly</p></div>
+              </div>
+            </div>
+            <div class="stepper-content" data-content="3">
+              <h3>Años y décadas</h3>
+              <p>Mencionar una era activa un conjunto completo de estilos visuales implícitos — colores, grano, paleta, moda:</p>
+              <div class="emo-words" style="margin-top:0.5em;">
+                <span class="emo-word pos">1920s Art Deco</span><span class="emo-word pos">1950s Americana</span><span class="emo-word pos">1970s film grain</span><span class="emo-word pos">1980s neon noir</span><span class="emo-word pos">1990s grunge</span><span class="emo-word pos">early 2000s Y2K</span><span class="emo-word pos">medieval</span><span class="emo-word pos">Victorian era</span><span class="emo-word pos">Renaissance</span><span class="emo-word pos">futuristic 2077</span><span class="emo-word pos">ancient Roman</span>
+              </div>
+              <p style="margin-top:0.5em; font-size:clamp(0.78rem,1.1vw,0.95rem);">Ejemplo: «1970s film grain, Kodachrome colors, analog photo» → resultado con colores saturados, grano visible y estética de diapositiva de los 70s.</p>
+            </div>
+            <div class="stepper-content" data-content="4">
+              <h3>Equipo fotográfico</h3>
+              <p>Nombrar la cámara establece el bokeh, la profundidad de campo y la estética general del resultado:</p>
+              <div class="grid cols-3" style="gap:0.4rem; margin-top:0.5em;">
+                <div class="card" style="padding:0.5rem;"><p class="eyebrow">Formato medio</p><h3 style="font-size:0.9rem;">Hasselblad 500C</h3><p style="font-size:0.78rem;">Cuadrado, bokeh esférico suave, ideal para retratos de alta gama.</p></div>
+                <div class="card" style="padding:0.5rem;"><p class="eyebrow">Street photo</p><h3 style="font-size:0.9rem;">Leica M6</h3><p style="font-size:0.78rem;">Grano fino, composición íntima, color sutil. Estética documental.</p></div>
+                <div class="card" style="padding:0.5rem;"><p class="eyebrow">Épico</p><h3 style="font-size:0.9rem;">IMAX camera</h3><p style="font-size:0.78rem;">Ultra-nítido, escala monumental, sensación cinematográfica.</p></div>
+              </div>
+            </div>
+            <div class="stepper-content" data-content="5">
+              <h3>Reforzar estilos — referencias cruzadas</h3>
+              <p>Mezclar referencias cruzadas produce resultados únicos. El modelo combina lo que conoce de cada referencia:</p>
+              <div class="grid cols-3" style="gap:0.4rem; margin-top:0.5em;">
+                <div class="card" style="padding:0.5rem;"><p class="eyebrow">Por artista</p><p style="font-size:0.82rem;">«in the style of Rembrandt» · «inspired by Ansel Adams» · «Alphonse Mucha illustration»</p></div>
+                <div class="card" style="padding:0.5rem;"><p class="eyebrow">Por movimiento</p><p style="font-size:0.82rem;">Bauhaus · Art Nouveau · Cyberpunk · Surrealism · Impressionism · Brutalism</p></div>
+                <div class="card" style="padding:0.5rem;"><p class="eyebrow">Cruzado</p><p style="font-size:0.82rem;">«Bauhaus meets cyberpunk» · «Dalí + National Geographic» · «Art Deco sci-fi»</p></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 26. Palabras emocionales -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Sección 3 · Emoción en el prompt</p>
+        <h2>El modelo entiende emociones</h2>
+        <div class="stepper" data-stepper>
+          <div class="stepper-nav" style="grid-template-columns: repeat(4, minmax(0, 1fr));">
+            <button data-step="1" class="is-active" aria-selected="true">
+              <span class="yr">+ / Baja</span>
+              <span class="tag">calma · paz</span>
+            </button>
+            <button data-step="2" aria-selected="false">
+              <span class="yr">+ / Alta</span>
+              <span class="tag">energía · alegría</span>
+            </button>
+            <button data-step="3" aria-selected="false">
+              <span class="yr">− / Baja</span>
+              <span class="tag">tristeza · soledad</span>
+            </button>
+            <button data-step="4" aria-selected="false">
+              <span class="yr">− / Alta</span>
+              <span class="tag">caos · drama</span>
+            </button>
+          </div>
+          <div class="stepper-panel">
+            <div class="stepper-content is-active" data-content="1">
+              <div class="two-col" style="align-items:flex-start;">
+                <div>
+                  <div class="panel-eyebrow">Positivo · Baja energía</div>
+                  <h3>Tranquilidad y armonía</h3>
+                  <div class="emo-words">
+                    <span class="emo-word pos">serene</span><span class="emo-word pos">calm</span><span class="emo-word pos">peaceful</span><span class="emo-word pos">gentle</span><span class="emo-word pos">tranquil</span><span class="emo-word pos">soft</span><span class="emo-word pos">quiet</span><span class="emo-word pos">harmonious</span><span class="emo-word pos">soothing</span><span class="emo-word pos">contemplative</span><span class="emo-word pos">meditative</span>
+                  </div>
+                  <p style="margin-top:0.6em; font-size:clamp(0.78rem,1.1vw,0.95rem);">Paleta suave, luz difusa, composiciones equilibradas, sin elementos en tensión.</p>
+                </div>
+                <img class="diagram" src="img/m3-1-p25-1.jpeg" alt="Niño en una pintura serena y tranquila, colores suaves" style="max-height:18rem;object-fit:cover;" />
+              </div>
+            </div>
+            <div class="stepper-content" data-content="2">
+              <div class="two-col" style="align-items:flex-start;">
+                <div>
+                  <div class="panel-eyebrow">Positivo · Alta energía</div>
+                  <h3>Celebración y vitalidad</h3>
+                  <div class="emo-words">
+                    <span class="emo-word pos">vibrant</span><span class="emo-word pos">energetic</span><span class="emo-word pos">joyful</span><span class="emo-word pos">lively</span><span class="emo-word pos">dynamic</span><span class="emo-word pos">radiant</span><span class="emo-word pos">brilliant</span><span class="emo-word pos">exciting</span><span class="emo-word pos">festive</span><span class="emo-word pos">exuberant</span><span class="emo-word pos">playful</span>
+                  </div>
+                  <p style="margin-top:0.6em; font-size:clamp(0.78rem,1.1vw,0.95rem);">Colores saturados, composición dinámica, líneas diagonales, abundancia de elementos.</p>
+                </div>
+                <img class="diagram" src="img/m3-1-p26-1.jpeg" alt="Niño en una pintura colorida y vibrante, llena de energía" style="max-height:18rem;object-fit:cover;" />
+              </div>
+            </div>
+            <div class="stepper-content" data-content="3">
+              <div class="two-col" style="align-items:flex-start;">
+                <div>
+                  <div class="panel-eyebrow">Negativo · Baja energía</div>
+                  <h3>Melancolía y soledad</h3>
+                  <div class="emo-words">
+                    <span class="emo-word neg">somber</span><span class="emo-word neg">melancholic</span><span class="emo-word neg">gloomy</span><span class="emo-word neg">desolate</span><span class="emo-word neg">lonely</span><span class="emo-word neg">bleak</span><span class="emo-word neg">muted</span><span class="emo-word neg">dim</span><span class="emo-word neg">dreary</span><span class="emo-word neg">forlorn</span><span class="emo-word neg">melancholy</span>
+                  </div>
+                  <p style="margin-top:0.6em; font-size:clamp(0.78rem,1.1vw,0.95rem);">Paleta desaturada, fondos vacíos, composición dispersa, luz baja y difusa.</p>
+                </div>
+                <img class="diagram" src="img/m3-1-p27-1.jpeg" alt="Niño en una pintura lúgubre y melancólica, colores apagados" style="max-height:18rem;object-fit:cover;" />
+              </div>
+            </div>
+            <div class="stepper-content" data-content="4">
+              <div class="two-col" style="align-items:flex-start;">
+                <div>
+                  <div class="panel-eyebrow">Negativo · Alta energía</div>
+                  <h3>Tensión y drama</h3>
+                  <div class="emo-words">
+                    <span class="emo-word neg">intense</span><span class="emo-word neg">chaotic</span><span class="emo-word neg">harsh</span><span class="emo-word neg">dramatic</span><span class="emo-word neg">turbulent</span><span class="emo-word neg">aggressive</span><span class="emo-word neg">ominous</span><span class="emo-word neg">threatening</span><span class="emo-word neg">fierce</span><span class="emo-word neg">violent</span><span class="emo-word neg">stormy</span>
+                  </div>
+                  <p style="margin-top:0.6em; font-size:clamp(0.78rem,1.1vw,0.95rem);">Contraste extremo, composiciones fragmentadas, colores oscuros con toques de rojo o naranja.</p>
+                </div>
+                <img class="diagram" src="img/m3-1-p28-1.jpeg" alt="Niño en un ambiente oscuro y amenazante, bosque nocturno" style="max-height:18rem;object-fit:cover;" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 27. Cierre -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow" style="text-align:center;">M3.1 · Resumen</p>
+        <h2 style="color:#fff; text-align:center;">«La imagen es el<br/><span class="accent">nuevo lenguaje</span>»</h2>
+        <div class="grid cols-3" style="margin-top:0.5rem;">
+          <div class="card">
+            <p class="eyebrow">Sección 1</p>
+            <h3>Modelos de difusión</h3>
+            <p>Forward + backward diffusion, entrenamiento, CLIP. El ruido como punto de partida creativo.</p>
+          </div>
+          <div class="card">
+            <p class="eyebrow">Sección 2</p>
+            <h3>Panorama 2026</h3>
+            <p><a class="platform-link" href="https://bloqueneon.uniandes.edu.co" target="_blank" rel="noopener">BloqueNeón</a>, <a class="platform-link" href="https://openai.com/dall-e-3" target="_blank" rel="noopener">DALL·E 3</a>, <a class="platform-link" href="https://www.midjourney.com" target="_blank" rel="noopener">Midjourney</a>, <a class="platform-link" href="https://blackforestlabs.ai" target="_blank" rel="noopener">Flux</a>, <a class="platform-link" href="https://stability.ai" target="_blank" rel="noopener">Stable Diffusion</a>, <a class="platform-link" href="https://firefly.adobe.com" target="_blank" rel="noopener">Firefly</a>, <a class="platform-link" href="https://ideogram.ai" target="_blank" rel="noopener">Ideogram</a>.</p>
+          </div>
+          <div class="card">
+            <p class="eyebrow">Sección 3</p>
+            <h3>Arte del prompt</h3>
+            <p>Terminología fotográfica, adjetivos multidimensionales, épocas, equipo, referencias y palabras emocionales.</p>
+          </div>
+        </div>
+        <div class="banner" style="margin-top:0.5rem; background:rgba(255,191,0,0.12); border-left-color: var(--brand-yellow); color:#fff;">
+          <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          Próximo paso: taller práctico en <a class="platform-link" href="https://bloqueneon.uniandes.edu.co" target="_blank" rel="noopener">BloqueNeón</a> — genera tu propia imagen desde cero aplicando los principios de hoy.
+        </div>
+      </div>
+    </section>
+
+  </div><!-- /deck -->
+
+  <div class="hud"><span></span><span id="hud-counter"></span></div>
+
+  <div class="controls">
+    <button aria-label="Anterior" id="prev">‹</button>
+    <button aria-label="Descargar como PDF" id="dl-pdf" title="Descargar como PDF">
+      <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="7 10 12 15 17 10"/>
+        <line x1="12" x2="12" y1="15" y2="3"/>
+      </svg>
+    </button>
+    <button aria-label="Pantalla completa" id="fs">⛶</button>
+    <button aria-label="Siguiente" id="next">›</button>
+  </div>
+
+  <script>
+    (function () {
+      var slides = Array.prototype.slice.call(document.querySelectorAll('[data-slide]'));
+      var i = 0;
+      var counter = document.getElementById('hud-counter');
+      var progress = document.querySelector('.progress');
+
+      function render() {
+        slides.forEach(function (s, idx) { s.classList.toggle('active', idx === i); });
+        if (counter) counter.textContent = (i + 1) + ' / ' + slides.length;
+        if (progress) {
+          progress.style.width = ((i + 1) / slides.length * 100) + '%';
+          progress.classList.remove('pulsing');
+          void progress.offsetWidth;
+          progress.classList.add('pulsing');
+        }
+        var isDark = slides[i] && (slides[i].classList.contains('title-slide') || slides[i].classList.contains('cover'));
+        document.body.style.background = isDark ? '#1A1A1A' : '#ffffff';
+      }
+      function go(n) { i = Math.max(0, Math.min(slides.length - 1, n)); render(); }
+
+      document.addEventListener('keydown', function (e) {
+        if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'BUTTON')) {
+          if (/^[1-9]$/.test(e.key)) return;
+        }
+        if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); go(i + 1); }
+        else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(i - 1); }
+        else if (e.key === 'Home') { e.preventDefault(); go(0); }
+        else if (e.key === 'End') { e.preventDefault(); go(slides.length - 1); }
+        else if (e.key === 'f' || e.key === 'F') { toggleFs(); }
+      });
+
+      document.getElementById('prev').addEventListener('click', function () { go(i - 1); });
+      document.getElementById('next').addEventListener('click', function () { go(i + 1); });
+      document.getElementById('fs').addEventListener('click', toggleFs);
+      document.getElementById('dl-pdf').addEventListener('click', function () {
+        var prevTitle = document.title;
+        document.title = 'M3-1-Fundamentos-Imagenes-IA-Dominando-la-IA';
+        window.print();
+        setTimeout(function(){ document.title = prevTitle; }, 200);
+      });
+
+      function toggleFs() {
+        var el = document.documentElement;
+        if (!document.fullscreenElement) {
+          (el.requestFullscreen || el.webkitRequestFullscreen || function(){}).call(el);
+        } else {
+          (document.exitFullscreen || document.webkitExitFullscreen || function(){}).call(document);
+        }
+      }
+
+      var tx = 0, ty = 0;
+      document.addEventListener('touchstart', function (e) {
+        if (!e.changedTouches[0]) return;
+        tx = e.changedTouches[0].clientX; ty = e.changedTouches[0].clientY;
+      }, { passive: true });
+      document.addEventListener('touchend', function (e) {
+        if (!e.changedTouches[0]) return;
+        var dx = e.changedTouches[0].clientX - tx;
+        var dy = e.changedTouches[0].clientY - ty;
+        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+          if (dx < 0) go(i + 1); else go(i - 1);
+        }
+      }, { passive: true });
+
+      slides.forEach(function (s, idx) {
+        var num = document.createElement('div');
+        num.className = 'slide-number';
+        num.setAttribute('aria-hidden', 'true');
+        num.textContent = String(idx + 1).padStart(2, '0');
+        s.appendChild(num);
+      });
+
+      document.querySelectorAll('[data-stepper]').forEach(function (stepper) {
+        var buttons = stepper.querySelectorAll('.stepper-nav button');
+        var panels = stepper.querySelectorAll('.stepper-content');
+        function setStep(n) {
+          buttons.forEach(function (b) {
+            var active = b.getAttribute('data-step') === String(n);
+            b.classList.toggle('is-active', active);
+            b.setAttribute('aria-selected', active ? 'true' : 'false');
+          });
+          panels.forEach(function (p) {
+            p.classList.toggle('is-active', p.getAttribute('data-content') === String(n));
+          });
+        }
+        buttons.forEach(function (b) {
+          b.addEventListener('click', function () { setStep(b.getAttribute('data-step')); });
+        });
+        document.addEventListener('keydown', function (e) {
+          var slide = stepper.closest('.slide');
+          if (!slide || !slide.classList.contains('active')) return;
+          if (/^[1-6]$/.test(e.key)) {
+            if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
+            e.preventDefault();
+            setStep(e.key);
+          }
+        });
+      });
+
+      render();
+    })();
+  </script>
+</body>
+</html>
