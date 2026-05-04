@@ -1,0 +1,1325 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="/classroom-fonts.css" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>M3.3 — Uso de IA generativa para el análisis de datos · Dominando la IA</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" crossorigin="anonymous"
+    onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]})"></script>
+  <style>
+    :root {
+      --brand-dark: #1A1A1A;
+      --brand-yellow: #FFBF00;
+      --brand-yellow-dark: #E6AC00;
+      --brand-gray: #555555;
+      --surface: #ffffff;
+      --muted: #f4f4f5;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0; padding: 0; height: 100%; width: 100%;
+      background: var(--brand-dark); color: var(--brand-dark);
+      font-family: 'Manrope Variable', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      overflow: hidden; -webkit-text-size-adjust: 100%;
+    }
+    .deck { position: relative; width: 100vw; height: 100vh; height: 100dvh; }
+    .slide {
+      position: absolute; inset: 0;
+      display: none; align-items: center; justify-content: center;
+      padding: clamp(1rem, 4vw, 3.5rem);
+      background: var(--surface);
+      opacity: 0; transition: opacity 260ms ease; overflow-y: auto;
+    }
+    .slide.active { display: flex; opacity: 1; }
+    .slide .content {
+      width: 100%; max-width: 92rem; margin: auto 0;
+      display: flex; flex-direction: column;
+      gap: clamp(0.75rem, 1.5vw, 1.5rem);
+    }
+    .eyebrow {
+      text-transform: uppercase; letter-spacing: 0.2em;
+      font-size: clamp(0.65rem, 1vw, 1rem);
+      color: var(--brand-yellow-dark); font-weight: 600;
+    }
+    h1 {
+      font-size: clamp(1.75rem, 5.5vw, 5.75rem);
+      line-height: 1.05; margin: 0;
+      color: var(--brand-dark); font-weight: 700; letter-spacing: -0.02em;
+    }
+    h2 { font-size: clamp(1.25rem, 3.4vw, 3.25rem); line-height: 1.15; margin: 0; font-weight: 700; color: var(--brand-dark); }
+    h2 .sub { display: block; font-size: 0.55em; font-weight: 500; color: var(--brand-gray); margin-top: 0.15em; }
+    p, li { font-size: clamp(0.95rem, 1.6vw, 1.6rem); line-height: 1.55; color: var(--brand-gray); margin: 0; }
+    ul, ol { padding-left: 1.25em; margin: 0; display: flex; flex-direction: column; gap: 0.45em; }
+    li::marker { color: var(--brand-yellow-dark); }
+    .slide.title-slide {
+      background: linear-gradient(135deg, #141414 0%, #1A1A1A 50%, #2a2a2a 100%);
+      color: #fff;
+    }
+    .slide.title-slide h1, .slide.title-slide h2, .slide.title-slide h3 { color: #fff; }
+    .slide.title-slide p, .slide.title-slide li { color: #e4e4e7; }
+    .slide.title-slide strong { color: #fff; }
+    .slide.title-slide .eyebrow { color: var(--brand-yellow); }
+    .slide.title-slide .card { color: var(--brand-dark); }
+    .slide.title-slide .card p, .slide.title-slide .card li { color: var(--brand-gray); }
+    .slide.title-slide .card h3, .slide.title-slide .card strong { color: var(--brand-dark); }
+    .slide.cover {
+      background-color: #0a0a0a;
+      background-blend-mode: multiply;
+      background-size: cover;
+      background-position: center;
+    }
+    .slide.cover::after {
+      content:''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(10,10,10,0.86) 0%, rgba(20,20,20,0.7) 50%, rgba(20,20,20,0.6) 100%);
+      pointer-events: none;
+    }
+    .slide.cover .content { position: relative; z-index: 2; }
+    .slide.cover h1, .slide.cover h2 { color: #fff; }
+    .slide.cover p, .slide.cover li { color: #e4e4e7; }
+    .slide.cover strong { color: #fff; }
+    .slide.cover .eyebrow { color: var(--brand-yellow); }
+    .pill-row { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 0.5rem; }
+    .pill {
+      display: inline-flex; align-items: center;
+      padding: 0.32em 0.85em; border-radius: 999px;
+      background: var(--muted); color: var(--brand-dark);
+      font-size: clamp(0.75rem, 1.1vw, 1.1rem); font-weight: 500;
+    }
+    .slide.title-slide .pill, .slide.cover .pill {
+      background: rgba(255,255,255,0.1); color: #fff;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .grid { display: grid; gap: clamp(0.75rem, 1.5vw, 1.25rem); }
+    .grid.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid.cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    @media (max-width: 768px) { .grid.cols-2, .grid.cols-3, .grid.cols-4 { grid-template-columns: 1fr; } }
+    .card {
+      background: var(--muted); border-radius: 0.75rem;
+      padding: clamp(0.9rem, 1.5vw, 1.35rem);
+      transition: transform 220ms ease, box-shadow 220ms ease;
+    }
+    .card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
+    .card h3 {
+      font-size: clamp(1rem, 1.7vw, 1.5rem); margin: 0 0 0.35em;
+      color: var(--brand-dark); font-weight: 700;
+    }
+    .card p { font-size: clamp(0.8rem, 1.3vw, 1.2rem); }
+    .card .eyebrow { margin-bottom: 0.25em; }
+    /* Tight thumbnail cards used in PDF-style gallery slides — preserve NATURAL aspect ratio
+       of the source images (mostly 1:1 from the PDF). object-fit: contain letterboxes any
+       odd-ratio source rather than cropping it. max-height caps multi-row grids. */
+    .grid.cols-3 .card > img:first-child,
+    .grid.cols-4 .card > img:first-child,
+    .grid.cols-5 .card > img:first-child {
+      display: block;
+      width: auto;
+      max-width: 100%;
+      max-height: 9rem;
+      margin: 0 auto;
+      object-fit: contain;
+      border-radius: 0.4rem;
+      background: #f4f4f5;
+    }
+    .grid.cols-3 .card .prompt-snippet,
+    .grid.cols-4 .card .prompt-snippet,
+    .grid.cols-5 .card .prompt-snippet { font-size: clamp(0.65rem, 0.95vw, 0.78rem); padding: 0.4rem 0.55rem; line-height: 1.3; max-height: 6.5em; overflow: hidden; }
+    .grid.cols-4 .card, .grid.cols-5 .card { padding: 0.45rem; }
+    .grid.cols-4 .card h3, .grid.cols-5 .card h3 { font-size: clamp(0.78rem, 1.05vw, 0.95rem); margin: 0.3em 0 0.15em; }
+    .grid.cols-4 .card p:not(.prompt-snippet),
+    .grid.cols-5 .card p:not(.prompt-snippet) { font-size: clamp(0.65rem, 0.9vw, 0.78rem); line-height: 1.35; }
+    /* Cols-2 thumbnails (e.g. shutter speed) — wider native ratio, allow more height */
+    .grid.cols-2 .card > img:first-child {
+      display: block;
+      width: auto;
+      max-width: 100%;
+      max-height: 14rem;
+      margin: 0 auto;
+      object-fit: contain;
+      border-radius: 0.5rem;
+      background: #f4f4f5;
+    }
+    /* Gallery figures (slide 22) — preserve natural aspect ratio of the source */
+    .gallery-grid .gallery-figure img {
+      display: block;
+      width: auto;
+      max-width: 100%;
+      max-height: 13rem;
+      margin: 0 auto;
+      object-fit: contain;
+    }
+    .two-col {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: clamp(1rem, 2.5vw, 2.25rem);
+      align-items: center;
+    }
+    @media (max-width: 768px) { .two-col { grid-template-columns: 1fr; } }
+    /* Single-image example slides — keep image moderate so it doesn't push content */
+    .two-col img.diagram {
+      width: 100%; height: auto; max-height: 60vh; object-fit: contain;
+    }
+    img.diagram {
+      max-width: 100%; height: auto;
+      border-radius: 0.6rem; box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+      background: #fff;
+    }
+    .vs-cols {
+      display: grid; grid-template-columns: 1fr auto 1fr;
+      gap: clamp(0.75rem, 2vw, 2rem);
+      align-items: stretch;
+    }
+    @media (max-width: 768px) { .vs-cols { grid-template-columns: 1fr; } .vs-cols .vs-divider { display: none; } }
+    .vs-cols .col {
+      background: #fff; border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 0.75rem; padding: clamp(1rem, 1.6vw, 1.6rem);
+      display: flex; flex-direction: column; gap: 0.5rem;
+    }
+    .vs-cols .col.left  { border-top: 4px solid #94a3b8; }
+    .vs-cols .col.right { border-top: 4px solid var(--brand-yellow-dark); }
+    .vs-cols .col h3 { margin: 0; font-size: clamp(1rem, 1.7vw, 1.5rem); color: var(--brand-dark); }
+    .vs-cols .vs-divider {
+      align-self: center; background: var(--brand-yellow);
+      color: var(--brand-dark); font-weight: 800; font-size: 0.9rem;
+      width: 2.4em; height: 2.4em; border-radius: 999px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .banner {
+      background: #fef3c7; border-left: 4px solid var(--brand-yellow-dark);
+      padding: 0.9rem 1.1rem; border-radius: 0.5rem;
+      color: #78350f; font-size: clamp(0.85rem, 1.4vw, 1.25rem);
+    }
+    .banner.info { background: #e0f2fe; border-left-color: #0284c7; color: #0c4a6e; }
+    .banner.warn { background: #fee2e2; border-left-color: #dc2626; color: #7f1d1d; }
+    .banner svg { vertical-align: -0.18em; margin-right: 0.4em; }
+    .big-quote { text-align: center; padding: 0 clamp(1rem, 4vw, 4rem); }
+    .big-quote h2 { font-size: clamp(2rem, 6vw, 5.5rem); line-height: 1.05; color: var(--brand-dark); }
+    .big-quote h2 .accent { color: var(--brand-yellow-dark); }
+    .big-quote p { margin-top: 1em; font-style: italic; }
+    .hud {
+      position: fixed; left: 0; right: 0; bottom: 0;
+      padding: 0.5rem 1rem;
+      display: flex; justify-content: space-between; align-items: center;
+      color: rgba(255,255,255,0.75); font-size: 0.75rem;
+      pointer-events: none; z-index: 10;
+    }
+    .controls {
+      position: fixed; right: 1rem; bottom: 2.5rem;
+      display: flex; gap: 0.5rem; z-index: 11;
+    }
+    .controls button {
+      -webkit-appearance: none; appearance: none;
+      border: 1px solid rgba(0,0,0,0.1);
+      background: rgba(255,255,255,0.9); color: var(--brand-dark);
+      width: 2.5rem; height: 2.5rem; border-radius: 999px;
+      font-size: 1rem; cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    }
+    .progress {
+      position: fixed; top: 0; left: 0;
+      height: 3px; background: var(--brand-yellow);
+      transition: width 260ms ease; z-index: 20;
+    }
+    .progress.pulsing { animation: progPulse 0.5s ease; }
+    @keyframes progPulse {
+      0%   { box-shadow: 0 0 0 0 rgba(255,191,0,0.0); }
+      50%  { box-shadow: 0 0 12px 3px rgba(255,191,0,0.8); }
+      100% { box-shadow: 0 0 0 0 rgba(255,191,0,0.0); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .slide { transition: none; }
+      .progress { transition: none; }
+      .progress.pulsing { animation: none; }
+      .stagger-in > * { animation: none !important; }
+      .card { transition: none; }
+      .gallery-figure img { transition: none; }
+      .gallery-figure figcaption { transition: none; transform: translateY(0) !important; }
+    }
+    @media (max-width: 480px) {
+      .controls { right: 0.5rem; bottom: 1.25rem; }
+      .hud { font-size: 0.65rem; }
+    }
+    .slide:not(.title-slide):not(.cover)::before {
+      content: ''; position: absolute;
+      top: clamp(1rem, 3vw, 2.5rem); right: clamp(1rem, 3vw, 2.5rem);
+      width: clamp(2rem, 5vw, 4rem); height: clamp(2rem, 5vw, 4rem);
+      border-top: 2.5px solid var(--brand-yellow);
+      border-right: 2.5px solid var(--brand-yellow);
+      pointer-events: none; z-index: 1;
+    }
+    .slide.title-slide::before, .slide.cover::before {
+      content: ''; position: absolute;
+      bottom: clamp(1rem, 3vw, 2.5rem); left: clamp(1rem, 3vw, 2.5rem);
+      width: clamp(2rem, 5vw, 4rem); height: clamp(2rem, 5vw, 4rem);
+      border-bottom: 2.5px solid var(--brand-yellow);
+      border-left: 2.5px solid var(--brand-yellow);
+      opacity: 0.5; pointer-events: none; z-index: 3;
+    }
+    .slide-number {
+      position: absolute; bottom: clamp(0.5rem, 2vw, 1.5rem);
+      left: clamp(1rem, 3vw, 2.5rem);
+      font-size: clamp(4rem, 12vw, 10rem);
+      font-weight: 800; line-height: 1;
+      color: rgba(0, 0, 0, 0.04); pointer-events: none;
+      z-index: 0; user-select: none; letter-spacing: -0.04em;
+    }
+    .slide.title-slide .slide-number, .slide.cover .slide-number {
+      color: rgba(255, 255, 255, 0.05);
+    }
+    a.platform-link {
+      color: var(--brand-dark); text-decoration: none;
+      border-bottom: 2px solid var(--brand-yellow);
+      padding-bottom: 0.05em;
+      transition: color 180ms, border-color 180ms;
+    }
+    a.platform-link:hover { color: var(--brand-yellow-dark); border-bottom-color: var(--brand-yellow-dark); }
+    a.platform-link::after { content: " ↗"; font-size: 0.65em; opacity: 0.5; margin-left: 0.12em; vertical-align: 0.3em; }
+    .slide.title-slide a.platform-link, .slide.cover a.platform-link { color: #fff; }
+    .slide.title-slide a.platform-link:hover, .slide.cover a.platform-link:hover { color: var(--brand-yellow); border-bottom-color: var(--brand-yellow); }
+    h2 svg, h3 svg, .eyebrow svg, .pill svg {
+      vertical-align: -0.18em; margin-right: 0.4em;
+      color: var(--brand-yellow-dark);
+    }
+    a:focus-visible, button:focus-visible {
+      outline: 3px solid var(--brand-yellow-dark);
+      outline-offset: 2px; border-radius: 0.35rem;
+    }
+    .slide.active .stagger-in > * { animation: fadeInUp 0.4s ease both; }
+    .slide.active .stagger-in > *:nth-child(1) { animation-delay: 0.05s; }
+    .slide.active .stagger-in > *:nth-child(2) { animation-delay: 0.15s; }
+    .slide.active .stagger-in > *:nth-child(3) { animation-delay: 0.25s; }
+    .slide.active .stagger-in > *:nth-child(4) { animation-delay: 0.35s; }
+    .slide.active .stagger-in > *:nth-child(5) { animation-delay: 0.45s; }
+    .slide.active .stagger-in > *:nth-child(6) { animation-delay: 0.55s; }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* === Stepper === */
+    .stepper { display: flex; flex-direction: column; gap: 1rem; }
+    .stepper-nav {
+      display: grid; grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 0.4rem; padding-bottom: 0.3rem;
+    }
+    @media (max-width: 768px) { .stepper-nav { grid-template-columns: repeat(3, 1fr) !important; } }
+    .stepper-nav button {
+      background: #fff; border: 1.5px solid rgba(0,0,0,0.08);
+      padding: 0.7em 0.4em; border-radius: 0.6rem;
+      display: flex; flex-direction: column; align-items: center; gap: 0.15em;
+      cursor: pointer; font-family: inherit;
+      transition: all 220ms ease;
+    }
+    .stepper-nav button .yr {
+      font-size: clamp(0.85rem, 1.3vw, 1.15rem);
+      font-weight: 800; letter-spacing: 0.02em; color: var(--brand-dark);
+    }
+    .stepper-nav button .tag {
+      font-size: clamp(0.6rem, 0.85vw, 0.8rem);
+      color: var(--brand-gray); text-transform: uppercase; letter-spacing: 0.08em;
+    }
+    .stepper-nav button:hover { border-color: var(--brand-yellow); transform: translateY(-2px); }
+    .stepper-nav button.is-active {
+      background: var(--brand-dark); border-color: var(--brand-dark);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+    }
+    .stepper-nav button.is-active .yr { color: var(--brand-yellow); }
+    .stepper-nav button.is-active .tag { color: rgba(255,255,255,0.75); }
+    .stepper-panel {
+      background: #fff; border: 1px solid rgba(0,0,0,0.08);
+      border-left: 6px solid var(--brand-yellow);
+      border-radius: 0.75rem;
+      padding: clamp(1rem, 2vw, 1.6rem);
+      min-height: 12rem;
+    }
+    .stepper-content { display: none; animation: stepFade 0.3s ease; }
+    .stepper-content.is-active { display: block; }
+    @keyframes stepFade { from { opacity: 0; transform: translateX(8px); } to { opacity: 1; transform: translateX(0); } }
+    .stepper-content h3 { margin: 0 0 0.5em; font-size: clamp(1rem, 1.6vw, 1.4rem); color: var(--brand-dark); }
+    .stepper-content .panel-eyebrow { font-size: clamp(0.7rem, 1vw, 0.95rem); color: var(--brand-yellow-dark); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.4em; }
+
+    /* === Diffusion timeline === */
+    .diff-timeline {
+      display: flex; align-items: stretch; gap: 0.25rem;
+    }
+    .diff-step {
+      flex: 1; background: var(--muted); border-radius: 0.5rem;
+      padding: 0.7rem 0.4rem; text-align: center;
+      display: flex; flex-direction: column; gap: 0.2rem;
+    }
+    .diff-step h4 { margin: 0; font-size: clamp(0.7rem, 1.1vw, 0.95rem); color: var(--brand-dark); font-weight: 700; }
+    .diff-step .sub { font-size: clamp(0.6rem, 0.9vw, 0.78rem); color: var(--brand-gray); }
+    .diff-step.dark { background: var(--brand-dark); }
+    .diff-step.dark h4 { color: var(--brand-yellow); }
+    .diff-step.dark .sub { color: rgba(255,255,255,0.6); }
+    .diff-step.med { background: #d4d4d8; }
+    .diff-step.med h4 { color: var(--brand-dark); }
+    .diff-arrow {
+      display: flex; align-items: center; justify-content: center;
+      color: var(--brand-yellow-dark); font-size: 1.2rem; flex-shrink: 0;
+      padding: 0 0.1rem;
+    }
+    .katex-box {
+      background: #fff; border: 1px solid rgba(0,0,0,0.08);
+      border-left: 4px solid var(--brand-yellow-dark);
+      border-radius: 0.5rem; padding: 0.75rem 1rem;
+      text-align: center; font-size: clamp(0.95rem, 1.5vw, 1.3rem);
+    }
+
+    /* === Training steps === */
+    .training-steps { display: flex; flex-direction: column; gap: 0.5rem; }
+    .t-step { display: flex; align-items: flex-start; gap: 0.75rem; }
+    .t-step-num {
+      flex-shrink: 0; width: clamp(1.6rem, 2.5vw, 2rem); height: clamp(1.6rem, 2.5vw, 2rem);
+      background: var(--brand-yellow); border-radius: 999px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: clamp(0.75rem, 1.1vw, 0.95rem); color: var(--brand-dark);
+      margin-top: 0.1em;
+    }
+    .t-step h4 { margin: 0 0 0.15em; font-size: clamp(0.85rem, 1.35vw, 1.15rem); color: var(--brand-dark); }
+    .t-step p { font-size: clamp(0.78rem, 1.15vw, 1rem); color: var(--brand-gray); }
+
+    /* === CLIP diagram === */
+    .clip-col { display: flex; flex-direction: column; gap: 0.6rem; }
+    .clip-row {
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .clip-box {
+      flex: 1; padding: 0.6rem 0.8rem; border-radius: 0.5rem;
+      font-size: clamp(0.78rem, 1.15vw, 1rem); font-weight: 600;
+    }
+    .clip-box.text-b { background: #e0f2fe; color: #0c4a6e; }
+    .clip-box.img-b  { background: #f0fdf4; color: #166534; }
+    .clip-box.vec    { background: var(--muted); color: var(--brand-dark); font-family: 'JetBrains Mono Variable', monospace; font-size: 0.85em; }
+    .clip-arrow { color: var(--brand-yellow-dark); font-size: 1.1rem; flex-shrink: 0; }
+    .clip-sim {
+      text-align: center; background: var(--brand-yellow);
+      border-radius: 0.5rem; padding: 0.5rem 0.75rem;
+      font-weight: 800; font-size: clamp(0.8rem, 1.2vw, 1rem); color: var(--brand-dark);
+    }
+    .dark-box {
+      background: var(--brand-dark); border-radius: 0.75rem;
+      padding: clamp(0.9rem, 1.5vw, 1.35rem); color: #e4e4e7;
+      display: flex; flex-direction: column; gap: 0.5rem;
+    }
+    .dark-box h3 { color: var(--brand-yellow); margin: 0 0 0.35em; font-size: clamp(0.95rem, 1.5vw, 1.3rem); }
+    .dark-box p, .dark-box li { font-size: clamp(0.8rem, 1.25vw, 1.1rem); color: #d4d4d8; }
+
+    /* === Gallery === */
+    .gallery-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 0.6rem;
+    }
+    @media (max-width: 768px) { .gallery-grid { grid-template-columns: repeat(2, 1fr); } }
+    .gallery-figure {
+      position: relative; overflow: hidden; border-radius: 0.6rem;
+      cursor: default; margin: 0;
+    }
+    .gallery-figure img {
+      width: 100%; height: clamp(7rem, 12vw, 11rem); object-fit: cover; display: block;
+      transition: transform 350ms ease;
+    }
+    .gallery-figure:hover img { transform: scale(1.04); }
+    .gallery-figure figcaption {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.6) 55%, transparent 100%);
+      color: #fff; padding: 0.5rem 0.45rem 0.4rem;
+      font-family: 'JetBrains Mono Variable', monospace;
+      font-size: clamp(0.5rem, 0.78vw, 0.7rem); line-height: 1.4;
+      transform: translateY(35%); transition: transform 350ms ease;
+    }
+    .gallery-figure:hover figcaption { transform: translateY(0); }
+
+    /* === Emotion words === */
+    .emo-words { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.4em; }
+    .emo-word {
+      padding: 0.22em 0.6em; border-radius: 0.35rem;
+      font-family: 'JetBrains Mono Variable', monospace;
+      font-size: clamp(0.7rem, 1vw, 0.88rem); font-weight: 600;
+    }
+    .emo-word.pos { background: #dcfce7; color: #166534; }
+    .emo-word.neg { background: #fee2e2; color: #991b1b; }
+
+    /* === Prompt snippet === */
+    .prompt-snippet {
+      font-family: 'JetBrains Mono Variable', monospace;
+      font-size: clamp(0.72rem, 1.1vw, 0.95rem);
+      background: var(--muted); border-radius: 0.4rem;
+      padding: 0.5em 0.75em; color: var(--brand-dark);
+      line-height: 1.5;
+    }
+
+    /* === Model item (panorama) === */
+    .model-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: 0.5rem; }
+    .model-item {
+      background: var(--muted); border-radius: 0.5rem;
+      padding: 0.6rem 0.75rem; border-left: 3px solid var(--brand-yellow-dark);
+      transition: transform 220ms ease, box-shadow 220ms;
+    }
+    .model-item:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+    .model-item .name { font-weight: 700; color: var(--brand-dark); font-size: clamp(0.82rem, 1.15vw, 1rem); }
+    .model-item .org { font-size: clamp(0.68rem, 0.95vw, 0.82rem); color: var(--brand-gray); margin-top: 0.1em; }
+    .model-item .note { font-size: clamp(0.68rem, 1vw, 0.9rem); color: var(--brand-gray); margin-top: 0.3em; }
+
+    /* === Video print link === */
+    .video-print-link { display: none; }
+
+    /* === Print === */
+    @media print {
+      @page { size: A4 portrait; margin: 12mm; }
+      *, *::before, *::after {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      html, body { background: #fff !important; height: auto !important; overflow: visible !important; }
+      .deck { width: 100% !important; height: auto !important; position: static !important; }
+      .controls, .hud, .progress, .slide-number { display: none !important; }
+      .slide:not(.title-slide):not(.cover)::before,
+      .slide.title-slide::before, .slide.cover::before,
+      .slide.cover::after { display: none !important; }
+      .slide {
+        position: static !important; display: flex !important;
+        opacity: 1 !important; width: 100% !important;
+        height: auto !important; inset: auto !important;
+        overflow: visible !important; padding: 1.2rem 0.5rem !important;
+        min-height: 0 !important; page-break-after: always; break-after: page;
+        page-break-inside: avoid;
+      }
+      .slide:last-child { page-break-after: auto; break-after: auto; }
+      .slide .content { max-width: 100% !important; margin: 0 !important; gap: 0.6rem !important; }
+      h1 { font-size: 26pt !important; } h2 { font-size: 18pt !important; }
+      h3 { font-size: 13pt !important; } p, li { font-size: 10.5pt !important; }
+      .eyebrow, .pill { font-size: 9pt !important; }
+      .slide.title-slide, .slide.cover {
+        background: linear-gradient(135deg, #141414 0%, #1A1A1A 50%, #2a2a2a 100%) !important; color: #fff !important;
+      }
+      .slide.title-slide h1, .slide.title-slide h2, .slide.cover h1, .slide.cover h2 { color: #fff !important; }
+      .slide.title-slide p, .slide.cover p { color: #e4e4e7 !important; }
+      .slide.title-slide .eyebrow, .slide.cover .eyebrow { color: #FFBF00 !important; }
+      .stagger-in > * { animation: none !important; opacity: 1 !important; transform: none !important; }
+      .card, .vs-cols .col { transition: none !important; transform: none !important; box-shadow: none !important; page-break-inside: avoid; }
+      img.diagram { page-break-inside: avoid; max-height: none !important; }
+      .stepper-nav { display: none !important; }
+      .stepper-content { display: block !important; opacity: 1 !important; animation: none !important; }
+      .stepper-panel { border-left: 4px solid var(--brand-yellow) !important; page-break-inside: avoid; }
+      .stepper-content + .stepper-content { margin-top: 0.8rem; padding-top: 0.8rem; border-top: 1px dashed #ccc; }
+      .gallery-figure img { height: auto !important; max-height: 8rem !important; transition: none !important; }
+      .gallery-figure figcaption { transform: translateY(0) !important; position: static !important; background: #222 !important; padding: 0.3rem 0.4rem !important; }
+      .dark-box { background: #1A1A1A !important; }
+      .diff-step.dark { background: #1A1A1A !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="progress" style="width:0"></div>
+  <div class="deck" id="deck">
+
+    <!-- 1. Cover -->
+    <section class="slide cover active" data-slide style="background-image: url('img/m3-3-p01-1.jpeg');">
+      <div class="content">
+        <p class="eyebrow">EDCO Uniandes · Dominando la IA · M3.3 · Mayo 2026</p>
+        <h1>Uso de IA generativa<br/>para el análisis de datos</h1>
+        <p style="font-size: clamp(1rem, 1.8vw, 1.5rem); max-width: 52rem;">Un enfoque iterativo con <em>human-in-the-loop</em> — transformando datos en insights accionables mediante la colaboración humano-IA.</p>
+        <div class="pill-row">
+          <span class="pill">Módulo 3.3 · Clase 9</span>
+          <span class="pill">2 horas · Lunes 25 de mayo de 2026</span>
+        </div>
+        <p style="margin-top: 1.5em; font-size: clamp(0.85rem, 1.3vw, 1.1rem); opacity: 0.8;">Luis H. Reyes · Profesor Asociado, Departamento de Ingeniería Química y de Alimentos · Universidad de los Andes</p>
+      </div>
+    </section>
+
+    <!-- 2. ¿Qué son los datos estructurados? -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 1 · Fundamentos</p>
+        <h2>¿Qué son los datos estructurados?<span class="sub">La base de la información organizada</span></h2>
+        <p>Los datos estructurados son información organizada en un formato predefinido. Piense en ello como una tabla bien organizada, con datos dispuestos en filas y columnas.</p>
+        <p style="font-size:0.95rem; color:var(--brand-gray);">Algunos ejemplos comunes de datos estructurados son:</p>
+        <div class="grid cols-2 stagger-in" style="margin-top:0.6rem;">
+          <div class="card" style="background:#fef3c7;"><h3>1. Bases de datos</h3><p style="font-size:0.9rem;">(p. ej., bases de datos SQL)</p></div>
+          <div class="card" style="background:#fef3c7;"><h3>2. Hojas de cálculo</h3><p style="font-size:0.9rem;">(p. ej., Excel, Hojas de cálculo de Google)</p></div>
+          <div class="card" style="background:#fef3c7;"><h3>3. Archivos CSV</h3><p style="font-size:0.9rem;">(Valores separados por comas)</p></div>
+          <div class="card" style="background:#fef3c7;"><h3>4. Archivos JSON</h3><p style="font-size:0.9rem;">(Notación de objetos de JavaScript: estructurada, no anidada profundamente)</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Estructurados vs no estructurados -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 1 · Comparación</p>
+        <h2>Datos estructurados vs. no estructurados<span class="sub">Dos caras de la moneda de la información</span></h2>
+        <div class="vs-cols" style="margin-top:0.8rem;">
+          <div class="col left">
+            <h3>Datos estructurados</h3>
+            <ul>
+              <li>Organizados en un formato predefinido (filas y columnas).</li>
+              <li>Fácilmente buscables y analizables.</li>
+              <li><strong>Ejemplos:</strong> Tablas de bases de datos, hojas de cálculo.</li>
+            </ul>
+          </div>
+          <div class="vs-divider">VS</div>
+          <div class="col right">
+            <h3>Datos no estructurados</h3>
+            <ul>
+              <li>Sin formato predefinido.</li>
+              <li>Requiere más procesamiento para extraer el significado.</li>
+              <li><strong>Ejemplos:</strong> Documentos de texto, imágenes, archivos de audio, videos.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. La importancia de los datos estructurados -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 1 · Importancia</p>
+        <h2>La importancia de los datos estructurados<span class="sub">Impulsando las decisiones en todas las industrias</span></h2>
+        <p>Los datos estructurados son la columna vertebral de muchas operaciones comerciales. Permiten el almacenamiento, la recuperación y el análisis eficientes de los datos.</p>
+        <div class="grid cols-2 stagger-in" style="margin-top:0.6rem;">
+          <div class="card" style="background:#fef3c7;"><h3>1. Seguimiento de ventas e inventario</h3></div>
+          <div class="card" style="background:#fef3c7;"><h3>2. Gestión de relaciones con los clientes (CRM)</h3></div>
+          <div class="card" style="background:#fef3c7;"><h3>3. Informes y análisis financieros</h3></div>
+          <div class="card" style="background:#fef3c7;"><h3>4. Investigación científica y recopilación de datos</h3></div>
+        </div>
+        <p style="margin-top:0.6rem;">¡Y mucho más! Los datos estructurados impulsan la toma de decisiones críticas en una amplia gama de industrias.</p>
+      </div>
+    </section>
+
+    <!-- 5. Desafíos del análisis tradicional — limitaciones manuales -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 1 · Desafíos</p>
+        <h2>Desafíos del análisis tradicional<span class="sub">Las limitaciones de los enfoques manuales</span></h2>
+        <p><strong>Análisis manual:</strong> Analizar grandes conjuntos de datos a mano (por ejemplo, en Excel) es:</p>
+        <div class="grid cols-2 stagger-in" style="margin-top:0.6rem;">
+          <div class="card" style="background:#fef3c7;">
+            <h3>Lleva mucho tiempo</h3>
+            <p>Lleva una cantidad significativa de tiempo, especialmente con volúmenes de datos crecientes.</p>
+          </div>
+          <div class="card" style="background:#fef3c7;">
+            <h3>Propenso a errores</h3>
+            <p>El error humano es inevitable al procesar manualmente grandes cantidades de datos.</p>
+          </div>
+          <div class="card" style="background:#fef3c7;">
+            <h3>Difícil de escalar</h3>
+            <p>Se vuelve cada vez más impráctico a medida que crecen los conjuntos de datos.</p>
+          </div>
+          <div class="card" style="background:#fef3c7;">
+            <h3>Perspectivas limitadas</h3>
+            <p>Dificulta la detección de tendencias sutiles o relaciones complejas.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. La brecha estructurada/no estructurada -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 1 · Brecha</p>
+        <h2>La brecha estructurada/no estructurada<span class="sub">Perdiendo la imagen completa</span></h2>
+        <div class="two-col" style="align-items:center;">
+          <div style="display:flex;flex-direction:column;gap:0.7rem;">
+            <p>A menudo, información valiosa está bloqueada en una combinación de datos estructurados y no estructurados.</p>
+            <p><strong>Ejemplo:</strong> Combinar datos de ventas (estructurados) con reseñas de clientes (no estructuradas) para comprender por qué cambian las ventas.</p>
+            <div class="banner">
+              <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              <strong>Las herramientas tradicionales a menudo tienen dificultades para cerrar esta brecha de manera efectiva.</strong>
+            </div>
+          </div>
+          <img class="diagram" src="img/m3-3-p06-1.jpeg" alt="Ilustración de tablet con encuesta online y manos interactuando" />
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. Desafíos del análisis tradicional — brecha de habilidades -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 1 · Brecha de habilidades</p>
+        <h2>Desafíos del análisis tradicional<span class="sub">Brecha de habilidades</span></h2>
+        <p>El análisis de datos tradicional a menudo requiere habilidades especializadas:</p>
+        <div class="grid cols-2 stagger-in" style="margin-top:0.6rem;">
+          <div class="card" style="background:#fef3c7;"><h3>Ciencia de datos</h3></div>
+          <div class="card" style="background:#fef3c7;"><h3>Administración de bases de datos (SQL)</h3></div>
+          <div class="card" style="background:#fef3c7;"><h3>Análisis estadístico</h3></div>
+          <div class="card" style="background:#fef3c7;"><h3>Programación (Python, R)</h3></div>
+        </div>
+        <p style="margin-top:0.6rem;"><strong>Esto crea una barrera de entrada para muchos usuarios que necesitan analizar datos.</strong></p>
+      </div>
+    </section>
+
+    <!-- 8. La necesidad de una mejor manera (transición) -->
+    <section class="slide title-slide" data-slide>
+      <div class="content big-quote">
+        <p class="eyebrow" style="text-align:center;">Sección · Transición</p>
+        <h2 style="color:#fff; text-align:center;">La necesidad de una <span class="accent">mejor manera</span></h2>
+        <p style="text-align:center;">Presentamos los LLM como solución</p>
+      </div>
+    </section>
+
+    <!-- 9. Bloque 2 título -->
+    <section class="slide title-slide" data-slide style="background:linear-gradient(135deg, #f4d03f 0%, #e8c547 100%);">
+      <div class="content big-quote">
+        <p class="eyebrow" style="text-align:center; color:var(--brand-dark);">Bloque 2</p>
+        <h2 style="color:var(--brand-dark); text-align:center;">El poder del código y el<br/><span style="color:#3a2e0f;">auge de los LLM</span></h2>
+        <p style="text-align:center; color:#1a1a1a;">Cerrando la brecha entre datos e información valiosa</p>
+      </div>
+    </section>
+
+    <!-- 10. Limitaciones de las herramientas existentes -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 2 · Herramientas existentes</p>
+        <h2>Desafíos del análisis tradicional<span class="sub">Limitaciones de las herramientas existentes</span></h2>
+        <p>Herramientas tradicionales (Excel, SQL):</p>
+        <div class="grid cols-2 stagger-in" style="margin-top:0.6rem;">
+          <div class="card" style="background:#fef3c7;"><h3>1. Potentes pero limitadas</h3><p>Tienen limitaciones con conjuntos de datos extremadamente grandes o complejos.</p></div>
+          <div class="card" style="background:#fef3c7;"><h3>2. SQL especializado</h3><p>SQL requiere conocimientos especializados.</p></div>
+          <div class="card" style="background:#fef3c7;"><h3>3. Excel se vuelve lento</h3><p>Difícil de manejar con millones de filas.</p></div>
+          <div class="card" style="background:#fef3c7;"><h3>4. Unión compleja</h3><p>Unir datos de diferentes fuentes puede ser complejo.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 11. El poder del código -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 2 · Poder del código</p>
+        <h2>El poder del código<span class="sub">Por qué el código es importante</span></h2>
+        <p><strong>Es el lenguaje de la manipulación de datos.</strong> El código es la herramienta fundamental para interactuar y transformar datos.</p>
+        <p style="font-size:0.95rem;">Nos permite:</p>
+        <div class="grid cols-3 stagger-in" style="margin-top:0.5rem;">
+          <div class="card" style="background:#fef3c7;"><h3>1. Automatizar tareas repetitivas</h3></div>
+          <div class="card" style="background:#fef3c7;"><h3>2. Realizar cálculos complejos y análisis estadísticos</h3></div>
+          <div class="card" style="background:#fef3c7;"><h3>3. Personalizar el análisis para necesidades específicas</h3></div>
+          <div class="card" style="background:#fef3c7;"><h3>4. Ampliar el análisis para manejar conjuntos de datos masivos</h3></div>
+          <div class="card" style="background:#fef3c7;"><h3>5. Crear flujos de trabajo reproducibles</h3></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 12. Desafíos de codificación tradicionales -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 2 · Desafíos de codificación</p>
+        <h2>Desafíos de codificación tradicionales<span class="sub">Barreras de entrada y eficiencia</span></h2>
+        <p>Si bien la codificación es poderosa, puede ser un desafío:</p>
+        <div class="grid cols-2 stagger-in" style="margin-top:0.6rem;">
+          <div class="card" style="background:#fef3c7;"><h3>1. Curva de aprendizaje</h3><p>Requiere aprender sintaxis específica y lógica de programación.</p></div>
+          <div class="card" style="background:#fef3c7;"><h3>2. Inversión de tiempo</h3><p>Escribir código, especialmente para tareas complejas, puede llevar mucho tiempo.</p></div>
+          <div class="card" style="background:#fef3c7;"><h3>3. Depuración</h3><p>Identificar y corregir errores en el código puede ser frustrante e iterativo.</p></div>
+          <div class="card" style="background:#fef3c7;"><h3>4. Mantenimiento</h3><p>Mantener el código actualizado y funcionando correctamente puede requerir un esfuerzo continuo.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 13. Presentación de los LLM -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 2 · LLM al rescate</p>
+        <h2>Presentación de los LLM: más allá del texto<span class="sub">Más que solo procesamiento de texto</span></h2>
+        <p>Los modelos de lenguaje grande (LLM) son modelos de IA avanzados.</p>
+        <p>Principalmente conocidos por su capacidad para comprender y generar texto similar al humano.</p>
+        <p><strong>Pero:</strong> Los LLM tienen capacidades que van <em>más allá</em> del texto:</p>
+        <div class="grid cols-3 stagger-in" style="margin-top:0.6rem;">
+          <div class="card" style="background:#fef3c7;"><h3>Generación de código</h3><p>Pueden escribir código en varios lenguajes de programación.</p></div>
+          <div class="card" style="background:#fef3c7;"><h3>Comprensión de datos</h3><p>Pueden interpretar el significado y la estructura de los datos.</p></div>
+          <div class="card" style="background:#fef3c7;"><h3>Razonamiento y resolución de problemas</h3><p>Pueden ayudar a planificar y ejecutar tareas de análisis de datos.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 14. LLM: sus asistentes inteligentes -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 2 · Asistentes inteligentes</p>
+        <h2>LLM: sus asistentes de datos inteligentes<span class="sub">Un nuevo paradigma para el análisis de datos</span></h2>
+        <p>Los LLM pueden actuar como «asistentes inteligentes» para tareas relacionadas con los datos:</p>
+        <ul style="margin-top:0.5rem; font-size:clamp(0.95rem,1.5vw,1.3rem);">
+          <li><strong>Simplificación</strong> de procesos complejos.</li>
+          <li><strong>Automatización</strong> de la generación de código.</li>
+          <li><strong>Reducción de la barrera de entrada</strong> para los no programadores.</li>
+          <li><strong>Aceleración</strong> del flujo de trabajo de análisis de datos.</li>
+        </ul>
+        <p style="margin-top:0.6rem;">Piense en ellos como <strong>«compañeros de pensamiento»</strong> que pueden ayudarle a planificar y ejecutar análisis.</p>
+      </div>
+    </section>
+
+    <!-- 15. Cerrando la brecha (transición) -->
+    <section class="slide title-slide" data-slide>
+      <div class="content big-quote">
+        <p class="eyebrow" style="text-align:center;">Sección · Transición</p>
+        <h2 style="color:#fff; text-align:center;">LLM: cerrando la brecha entre las<br/><span class="accent">ideas y el análisis</span></h2>
+        <p style="text-align:center;">De conceptos a planes concretos</p>
+      </div>
+    </section>
+
+    <!-- 16. Datos como texto — comunicación con LLM -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 2 · Datos como texto</p>
+        <h2>Datos como texto<span class="sub">Comunicación con LLM</span></h2>
+        <p>Los LLM funcionan principalmente con texto. Para usar LLM con datos estructurados, necesitamos representarlos en un formato de texto.</p>
+        <p style="font-size:0.95rem;"><strong>Métodos comunes:</strong></p>
+        <ul style="font-size:clamp(0.85rem,1.3vw,1.1rem);">
+          <li><strong>CSV como texto:</strong> Representación de datos CSV como una cadena separada por comas.</li>
+          <li><strong>JSON como texto:</strong> Uso del formato JSON (que ya está basado en texto).</li>
+          <li><strong>Descripciones de tablas:</strong> Proporcionar descripciones de texto del esquema de datos (nombres de columna, tipos de datos).</li>
+        </ul>
+        <table style="width:100%; margin-top:0.6rem; border-collapse:collapse; font-size:clamp(0.78rem,1.15vw,1rem);">
+          <thead style="background:#f4f4f5;">
+            <tr><th style="text-align:left; padding:0.55rem 0.75rem; border-bottom:2px solid #e4e4e7;">Marca</th><th style="text-align:left; padding:0.55rem 0.75rem; border-bottom:2px solid #e4e4e7;">Costo</th><th style="text-align:left; padding:0.55rem 0.75rem; border-bottom:2px solid #e4e4e7;">Descripción</th></tr>
+          </thead>
+          <tbody>
+            <tr><td style="padding:0.5rem 0.75rem; border-bottom:1px solid #e4e4e7;"><strong>Toyota Corolla</strong></td><td style="padding:0.5rem 0.75rem; border-bottom:1px solid #e4e4e7;">$22,000</td><td style="padding:0.5rem 0.75rem; border-bottom:1px solid #e4e4e7;">Un sedán compacto confiable y de bajo consumo de combustible con un interior cómodo y características de seguridad avanzadas. Ideal para viajes diarios.</td></tr>
+            <tr><td style="padding:0.5rem 0.75rem; border-bottom:1px solid #e4e4e7;"><strong>Tesla Model 3</strong></td><td style="padding:0.5rem 0.75rem; border-bottom:1px solid #e4e4e7;">$42,000</td><td style="padding:0.5rem 0.75rem; border-bottom:1px solid #e4e4e7;">Un sedán totalmente eléctrico con tecnología de vanguardia, aceleración rápida y opciones de batería de largo alcance. Ideal para conductores con conciencia ecológica.</td></tr>
+            <tr><td style="padding:0.5rem 0.75rem;"><strong>BMW X5</strong></td><td style="padding:0.5rem 0.75rem;">$65,000</td><td style="padding:0.5rem 0.75rem;">Un SUV de lujo de tamaño mediano con un motor potente, interior premium y sistemas avanzados de asistencia al conductor. Perfecto para aquellos que buscan rendimiento y comodidad.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 17. Datos como texto — JSON -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 2 · Datos como texto</p>
+        <h2>Datos como texto<span class="sub">JSON</span></h2>
+        <pre class="prompt-snippet" style="white-space:pre; overflow-x:auto; font-size:clamp(0.7rem,1vw,0.9rem); padding:1rem;">[
+  {
+    "Brand": "Toyota Corolla",
+    "Cost": 22000,
+    "Description": "Un sedán compacto confiable y de bajo consumo de combustible con un interior cómodo y características de seguridad avanzadas. Ideal para viajes diarios."
+  },
+  {
+    "Brand": "Tesla Model 3",
+    "Cost": 42000,
+    "Description": "Un sedán totalmente eléctrico con tecnología de vanguardia, aceleración rápida y opciones de batería de largo alcance. Ideal para conductores con conciencia ecológica."
+  },
+  {
+    "Brand": "BMW X5",
+    "Cost": 65000,
+    "Description": "Un SUV de lujo de tamaño mediano con un motor potente, interior premium y sistemas avanzados de asistencia al conductor. Perfecto para aquellos que buscan rendimiento y comodidad."
+  }
+]</pre>
+      </div>
+    </section>
+
+    <!-- 18. Datos como texto — CSV y YAML -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 2 · Datos como texto</p>
+        <h2>Datos como texto<span class="sub">CSV y YAML</span></h2>
+        <h3 style="margin-bottom:0.3em;">CSV</h3>
+        <pre class="prompt-snippet" style="white-space:pre-wrap; font-size:clamp(0.7rem,1vw,0.9rem); padding:1rem;">Brand,Cost,Description
+Toyota Corolla,22000,"Un sedán compacto confiable y de bajo consumo de combustible con un interior cómodo y características de seguridad avanzadas. Ideal para viajes diarios."
+Tesla Model 3,42000,"Un sedán totalmente eléctrico con tecnología de vanguardia, aceleración rápida y opciones de batería de largo alcance. Ideal para conductores con conciencia ecológica."
+BMW X5,65000,"Un SUV de lujo de tamaño mediano con un motor potente, interior premium y sistemas avanzados de asistencia al conductor. Perfecto para aquellos que buscan rendimiento y comodidad."</pre>
+        <h3 style="margin:0.6rem 0 0.3em;">YAML</h3>
+        <pre class="prompt-snippet" style="white-space:pre; overflow-x:auto; font-size:clamp(0.7rem,1vw,0.9rem); padding:1rem;">cars:
+  - Brand: "Toyota Corolla"
+    Cost: 22000
+    Description: "Un sedán compacto confiable y de bajo consumo de combustible con un interior cómodo y características de seguridad avanzadas. Ideal para viajes diarios."
+  - Brand: "Tesla Model 3"
+    Cost: 42000
+    Description: "Un sedán totalmente eléctrico con tecnología de vanguardia, aceleración rápida y opciones de batería de largo alcance. Ideal para conductores con conciencia ecológica."
+  - Brand: "BMW X5"
+    Cost: 65000
+    Description: "Un SUV de lujo de tamaño mediano con un motor potente, interior premium y sistemas avanzados de asistencia al conductor. Perfecto para aquellos que buscan rendimiento y comodidad."</pre>
+      </div>
+    </section>
+
+    <!-- 19. Aproximación human-in-the-loop -->
+    <section class="slide title-slide" data-slide style="background:linear-gradient(135deg, #f4d03f 0%, #e8c547 100%);">
+      <div class="content big-quote">
+        <p class="eyebrow" style="text-align:center; color:var(--brand-dark);">Bloque 3</p>
+        <h2 style="color:var(--brand-dark); text-align:center;">Aproximación <em style="color:#3a2e0f;">human-in-the-loop</em></h2>
+        <p style="text-align:center; color:#1a1a1a;">Colaboración entre analistas humanos e IA generativa</p>
+      </div>
+    </section>
+
+    <!-- 20. De la idea al plan -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 3 · De la idea al plan</p>
+        <h2>De la idea al plan<span class="sub">LLM como su socio de lluvia de ideas para el análisis de datos</span></h2>
+        <div class="two-col" style="align-items:center;">
+          <img class="diagram" src="img/m3-3-p24-1.jpeg" alt="Persona pensando con bombillo encendido — concepto de lluvia de ideas" />
+          <div style="display:flex;flex-direction:column;gap:0.6rem;">
+            <p>Los LLM pueden ayudar a refinar sus ideas iniciales de análisis de datos.</p>
+            <p>En lugar de escribir código directamente, comienza con un <em>concepto</em> o una <em>pregunta</em>.</p>
+            <p><strong>El LLM puede sugerir:</strong></p>
+            <ul>
+              <li>Análisis específicos para realizar.</li>
+              <li>Variables relevantes a considerar.</li>
+              <li>Posibles perspectivas para buscar.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 21. El flujo de trabajo básico -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 3 · Flujo metodológico</p>
+        <h2>El flujo de trabajo básico</h2>
+        <div class="two-col" style="align-items:center;">
+          <div style="display:flex;flex-direction:column;gap:0.7rem;">
+            <p>Un marco metodológico de <strong>cinco etapas</strong> que facilita la colaboración entre analistas humanos e IA generativa para maximizar el valor de los datos empresariales.</p>
+            <p>Cada etapa se construye sobre la anterior, creando un ciclo de retroalimentación que asegura resultados relevantes y accionables para el negocio.</p>
+          </div>
+          <div class="grid cols-1" style="gap:0.4rem;">
+            <div class="card" style="background:#fef3c7; padding:0.6rem;"><p class="eyebrow">Etapa 1</p><h3 style="font-size:1rem;">Diagnóstico</h3><p style="font-size:0.85rem;">Análisis exploratorio inicial del dataset.</p></div>
+            <div class="card" style="background:#fef3c7; padding:0.6rem;"><p class="eyebrow">Etapa 2</p><h3 style="font-size:1rem;">Ideación</h3><p style="font-size:0.85rem;">Generación colaborativa de hipótesis.</p></div>
+            <div class="card" style="background:#fef3c7; padding:0.6rem;"><p class="eyebrow">Etapa 3</p><h3 style="font-size:1rem;">Alineación</h3><p style="font-size:0.85rem;">Validación del plan estratégico.</p></div>
+            <div class="card" style="background:#fef3c7; padding:0.6rem;"><p class="eyebrow">Etapa 4</p><h3 style="font-size:1rem;">Navegación</h3><p style="font-size:0.85rem;">Ejecución iterativa guiada.</p></div>
+            <div class="card" style="background:#fef3c7; padding:0.6rem;"><p class="eyebrow">Etapa 5</p><h3 style="font-size:1rem;">Evolución</h3><p style="font-size:0.85rem;">Refinamiento y mejora continua.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 22. Flujo detallado del proceso -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 3 · Flujo detallado</p>
+        <h2>Flujo detallado del proceso</h2>
+        <div class="grid cols-2 stagger-in" style="gap:0.7rem;">
+          <div class="card" style="background:#fff; border-left:4px solid var(--brand-yellow); padding:0.8rem;">
+            <p class="eyebrow">01</p>
+            <h3>Diagnóstico inicial</h3>
+            <ul style="font-size:0.88rem;">
+              <li>Dimensiones del dataset</li>
+              <li>Tipos de variables</li>
+              <li>Calidad de datos</li>
+              <li>Valores faltantes</li>
+            </ul>
+          </div>
+          <div class="card" style="background:#fff; border-left:4px solid var(--brand-yellow); padding:0.8rem;">
+            <p class="eyebrow">02</p>
+            <h3>Ideación humana</h3>
+            <ul style="font-size:0.88rem;">
+              <li>Revisar hallazgos de IA</li>
+              <li>Identificar patrones relevantes</li>
+              <li>Generar hipótesis de negocio</li>
+              <li>Definir objetivos específicos</li>
+            </ul>
+          </div>
+          <div class="card" style="background:#fff; border-left:4px solid var(--brand-yellow); padding:0.8rem;">
+            <p class="eyebrow">03</p>
+            <h3>Plan estratégico</h3>
+            <ul style="font-size:0.88rem;">
+              <li>Análisis prioritarios</li>
+              <li>Visualizaciones clave</li>
+              <li>Preguntas de negocio</li>
+              <li>Validación de viabilidad</li>
+            </ul>
+          </div>
+          <div class="card" style="background:#fff; border-left:4px solid var(--brand-yellow); padding:0.8rem;">
+            <p class="eyebrow">04</p>
+            <h3>Ejecución iterativa</h3>
+            <ul style="font-size:0.88rem;">
+              <li>Análisis paso a paso</li>
+              <li>Validación humana continua</li>
+              <li>Ajustes en tiempo real</li>
+              <li>Documentación automática</li>
+            </ul>
+          </div>
+        </div>
+        <div class="banner" style="margin-top:0.5rem;">
+          <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          <strong>Punto de control crítico:</strong> Antes de la ejecución, validamos que el plan esté alineado con los objetivos de negocio. Si no, iteramos en las etapas de ideación y planificación.
+        </div>
+      </div>
+    </section>
+
+    <!-- 23. Para más avanzados -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 3 · Para más avanzados</p>
+        <h2>Para más avanzados</h2>
+        <div class="grid cols-3 stagger-in" style="gap:0.5rem;">
+          <div class="card" style="background:#fef3c7; padding:0.7rem;">
+            <h3>Preparación de datos</h3>
+            <ul style="font-size:0.78rem;">
+              <li><strong>Cargar</strong> datos (CSV, base de datos, API).</li>
+              <li><strong>Explorar</strong> la estructura (tipos de columnas, valores faltantes, valores atípicos).</li>
+              <li><strong>Limpiar</strong> datos (manejar valores faltantes, duplicados, inconsistencias).</li>
+              <li><strong>Manipular</strong> y preprocesar (normalizar, estandarizar, codificar variables categóricas).</li>
+            </ul>
+          </div>
+          <div class="card" style="background:#fef3c7; padding:0.7rem;">
+            <h3>Análisis exploratorio (EDA)</h3>
+            <ul style="font-size:0.78rem;">
+              <li><strong>Visualizar</strong> distribuciones (histogramas, diagramas de dispersión, diagramas de pares).</li>
+              <li><strong>Verificar</strong> las correlaciones entre las características.</li>
+              <li><strong>Seleccionar</strong> características (descartar las irrelevantes, crear nuevas si es necesario).</li>
+              <li><strong>Aplicar la reducción de dimensionalidad</strong> (PCA, t-SNE, UMAP si es necesario).</li>
+            </ul>
+          </div>
+          <div class="card" style="background:#fef3c7; padding:0.7rem;">
+            <h3>Elegir y aplicar la agrupación</h3>
+            <ul style="font-size:0.78rem;">
+              <li><strong>Elegir un método de agrupación</strong> (K-Means, jerárquico, DBSCAN, etc.).</li>
+              <li><strong>Encontrar el número óptimo de clústeres</strong> (método del codo, puntuación de silueta, dendrogramas).</li>
+              <li><strong>Ejecutar el algoritmo de agrupación</strong> y asignar etiquetas.</li>
+            </ul>
+          </div>
+          <div class="card" style="background:#fef3c7; padding:0.7rem;">
+            <h3>Evaluación e interpretación</h3>
+            <ul style="font-size:0.78rem;">
+              <li><strong>Evaluar la calidad del clúster</strong> (puntuación de silueta, índice de Davies-Bouldin, varianza dentro del clúster).</li>
+              <li><strong>Interpretar los clústeres</strong> (analizar las características, comparar con el conocimiento del dominio).</li>
+              <li><strong>Validar los resultados</strong> (verificar si los clústeres tienen sentido y se alinean con las perspectivas del mundo real).</li>
+            </ul>
+          </div>
+          <div class="card" style="background:#fef3c7; padding:0.7rem;">
+            <h3>Visualización y comunicación</h3>
+            <ul style="font-size:0.78rem;">
+              <li><strong>Trazar clústeres</strong> (diagramas de dispersión, proyecciones PCA, dendrogramas).</li>
+              <li><strong>Resumir los hallazgos clave</strong> (explicar las características del clúster).</li>
+              <li><strong>Presentar ideas</strong> y hacer recomendaciones.</li>
+            </ul>
+          </div>
+          <div class="card" style="background:#fef3c7; padding:0.7rem;">
+            <h3>Refinamiento e iteración</h3>
+            <ul style="font-size:0.78rem;">
+              <li><strong>Ajustar los parámetros de agrupación</strong> (probar diferentes métricas de distancia, inicializaciones).</li>
+              <li><strong>Probar métodos alternativos</strong> (por ejemplo, cambiar de K-Means a DBSCAN).</li>
+              <li><strong>Mejorar la selección de características</strong> si es necesario para una mejor separación.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 24. Los 3 roles clave -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 3 · Roles</p>
+        <h2>Los 3 roles clave en el proceso</h2>
+        <div class="two-col" style="align-items:center;">
+          <img class="diagram" src="img/m3-3-p24-1.jpeg" alt="Tres personas colaborando con datos en una mesa" style="display:none;" />
+          <p>La efectividad del enfoque <em>Human-in-the-Loop</em> depende de una clara definición de responsabilidades entre la IA, el humano, y su colaboración activa.</p>
+          <div style="display:flex;flex-direction:column;gap:0.5rem;">
+            <div class="card" style="background:#fef3c7;">
+              <h3>La IA como procesador</h3>
+              <ul style="font-size:0.85rem;">
+                <li>Analista técnico que procesa grandes volúmenes</li>
+                <li>Generador ágil de hipótesis múltiples</li>
+                <li>Ejecutor preciso de código y cálculos</li>
+                <li>Documentador automático de procesos</li>
+              </ul>
+            </div>
+            <div class="card" style="background:#fef3c7;">
+              <h3>El humano como director</h3>
+              <ul style="font-size:0.85rem;">
+                <li>Director estratégico que define objetivos</li>
+                <li>Validador experto del contexto de negocio</li>
+                <li>Tomador final de decisiones críticas</li>
+                <li>Guardián de la calidad y relevancia</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="background:#fef3c7; margin-top:0.5rem;">
+          <h3>La colaboración como motor</h3>
+          <ul style="font-size:0.88rem; columns:2; column-gap:1.5rem;">
+            <li>Iteración continua y retroalimentación</li>
+            <li>Refinamiento progresivo de resultados</li>
+            <li>Aprendizaje mutuo y optimización</li>
+            <li>Sinergia que supera capacidades individuales</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 25. Principios del human-in-the-loop -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 3 · Principios</p>
+        <h2>Principios del <em>human-in-the-loop</em></h2>
+        <div class="grid cols-2 stagger-in" style="gap:0.6rem; margin-top:0.5rem;">
+          <div class="card" style="background:#fff; border-left:4px solid var(--brand-yellow);">
+            <h3>No es automatización total</h3>
+            <p style="font-size:0.9rem;">El humano mantiene control estratégico y guía cada decisión importante, mientras la IA acelera la ejecución técnica.</p>
+          </div>
+          <div class="card" style="background:#fff; border-left:4px solid var(--brand-yellow);">
+            <h3>Conocimiento contextual crítico</h3>
+            <p style="font-size:0.9rem;">Solo el humano comprende completamente el contexto empresarial, las restricciones del negocio, y las implicaciones políticas de los hallazgos.</p>
+          </div>
+          <div class="card" style="background:#fff; border-left:4px solid var(--brand-yellow);">
+            <h3>Iteración inmediata y ágil</h3>
+            <p style="font-size:0.9rem;">Permite corrección y ajuste en tiempo real, evitando análisis extensos en direcciones incorrectas o irrelevantes.</p>
+          </div>
+          <div class="card" style="background:#fff; border-left:4px solid var(--brand-yellow);">
+            <h3>Escalamiento inteligente</h3>
+            <p style="font-size:0.9rem;">Progresión natural de análisis simples a complejos, construyendo confianza y comprensión gradualmente.</p>
+          </div>
+          <div class="card" style="background:#fff; border-left:4px solid var(--brand-yellow); grid-column: span 2;">
+            <h3>Documentación viva integrada</h3>
+            <p style="font-size:0.9rem;">El diálogo colaborativo se convierte automáticamente en documentación comprensible y reutilizable del proceso analítico.</p>
+          </div>
+        </div>
+        <div class="banner" style="margin-top:0.5rem;">
+          <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          Estos principios aseguran que la tecnología <strong>amplifique las capacidades humanas</strong> sin reemplazar el juicio crítico y la experiencia del dominio.
+        </div>
+      </div>
+    </section>
+
+    <!-- 26. Ventajas del enfoque human-in-the-loop -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 3 · Ventajas</p>
+        <h2>Ventajas del enfoque <em>human-in-the-loop</em></h2>
+        <p>La transformación en velocidad, calidad, y escalabilidad del análisis de datos es significativa cuando comparamos metodologías tradicionales con este enfoque colaborativo.</p>
+        <table style="width:100%; margin-top:0.6rem; border-collapse:collapse; font-size:clamp(0.85rem,1.3vw,1.1rem);">
+          <thead style="background:#f4f4f5;">
+            <tr><th style="text-align:left; padding:0.6rem 0.8rem; border-bottom:2px solid #e4e4e7;">Aspecto</th><th style="text-align:left; padding:0.6rem 0.8rem; border-bottom:2px solid #e4e4e7;">Enfoque Tradicional</th><th style="text-align:left; padding:0.6rem 0.8rem; border-bottom:2px solid #e4e4e7;">Con IA Generativa</th></tr>
+          </thead>
+          <tbody>
+            <tr><td style="padding:0.55rem 0.8rem; border-bottom:1px solid #e4e4e7;">Tiempo de análisis</td><td style="padding:0.55rem 0.8rem; border-bottom:1px solid #e4e4e7;">Semanas de desarrollo</td><td style="padding:0.55rem 0.8rem; border-bottom:1px solid #e4e4e7;"><strong>Horas de iteración</strong></td></tr>
+            <tr><td style="padding:0.55rem 0.8rem; border-bottom:1px solid #e4e4e7;">Desarrollo de código</td><td style="padding:0.55rem 0.8rem; border-bottom:1px solid #e4e4e7;">Programación desde cero</td><td style="padding:0.55rem 0.8rem; border-bottom:1px solid #e4e4e7;"><strong>Código generado y validado</strong></td></tr>
+            <tr><td style="padding:0.55rem 0.8rem; border-bottom:1px solid #e4e4e7;">Ciclo de retroalimentación</td><td style="padding:0.55rem 0.8rem; border-bottom:1px solid #e4e4e7;">Iteración lenta y costosa</td><td style="padding:0.55rem 0.8rem; border-bottom:1px solid #e4e4e7;"><strong>Iteración inmediata</strong></td></tr>
+            <tr><td style="padding:0.55rem 0.8rem; border-bottom:1px solid #e4e4e7;">Recursos humanos</td><td style="padding:0.55rem 0.8rem; border-bottom:1px solid #e4e4e7;">Un analista trabajando solo</td><td style="padding:0.55rem 0.8rem; border-bottom:1px solid #e4e4e7;"><strong>Analista + IA colaborando</strong></td></tr>
+            <tr><td style="padding:0.55rem 0.8rem; border-bottom:1px solid #e4e4e7;">Documentación</td><td style="padding:0.55rem 0.8rem; border-bottom:1px solid #e4e4e7;">Creada posteriormente</td><td style="padding:0.55rem 0.8rem; border-bottom:1px solid #e4e4e7;"><strong>Generada simultáneamente</strong></td></tr>
+            <tr><td style="padding:0.55rem 0.8rem;">Escalabilidad</td><td style="padding:0.55rem 0.8rem;">Limitada por recursos humanos</td><td style="padding:0.55rem 0.8rem;"><strong>Escalable con IA como acelerador</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 27. Demostración (transición) -->
+    <section class="slide title-slide" data-slide style="background:linear-gradient(135deg, #f4d03f 0%, #e8c547 100%);">
+      <div class="content big-quote">
+        <p class="eyebrow" style="text-align:center; color:var(--brand-dark);">Bloque 4</p>
+        <h2 style="color:var(--brand-dark); text-align:center;">Demostración</h2>
+        <p style="text-align:center; color:#1a1a1a;">Apliquemos lo aprendido a un caso real</p>
+      </div>
+    </section>
+
+    <!-- 28. Dataset -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 4 · Recursos</p>
+        <h2 style="text-align:center;">Dataset</h2>
+        <div class="two-col" style="align-items:center; margin-top:1rem;">
+          <div style="display:flex; justify-content:center;">
+            <img src="img/m3-3-p28-1.png" alt="Código QR para descargar el dataset Salary_Data.csv" style="max-width:24rem; width:100%; background:#fff; padding:1rem; border-radius:0.6rem; box-shadow:0 4px 14px rgba(0,0,0,0.08);" />
+          </div>
+          <div style="display:flex; flex-direction:column; gap:0.7rem;">
+            <div class="card" style="background:#fef3c7;">
+              <p class="eyebrow">Google Drive</p>
+              <h3>Salary_Data.csv</h3>
+              <p style="font-size:0.9rem; margin-top:0.4em;">Escanea el QR o abre el enlace directo:</p>
+              <p style="margin-top:0.4em; word-break:break-all;"><a class="platform-link" href="https://drive.google.com/file/d/1tm_23c7EzXoVbovOV6NZu9BQE8uuG_Pv/view?usp=sharing" target="_blank" rel="noopener">drive.google.com/file/d/1tm_23c7EzXoVbovOV6NZu9BQE8uuG_Pv</a></p>
+            </div>
+            <p style="font-size:0.85rem; color:var(--brand-gray);">Descarga el archivo CSV y súbelo a la herramienta LLM de tu preferencia (ChatGPT, Claude, Gemini) para comenzar la práctica.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 29. Primer prompt: EDA -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 4 · Prompt 1 · Diagnóstico</p>
+        <h2 style="text-align:center;">Primer prompt: EDA</h2>
+        <div class="two-col" style="align-items:center; margin-top:0.8rem;">
+          <div style="display:flex; justify-content:center;">
+            <img src="img/m3-3-p29-2.png" alt="Código QR para abrir el Prompt 1 EDA en Google Docs" style="max-width:22rem; width:100%; background:#fff; padding:1rem; border-radius:0.6rem; box-shadow:0 4px 14px rgba(0,0,0,0.08);" />
+          </div>
+          <div style="display:flex; flex-direction:column; gap:0.7rem;">
+            <div class="card" style="background:#fef3c7;">
+              <p class="eyebrow">Google Docs</p>
+              <h3>Prompt 1 — EDA</h3>
+              <p style="font-size:0.9rem; font-style:italic; margin-top:0.4em;">«Actúa como un analista de datos senior especializado en diagnóstico inicial de datasets. Tu objetivo es identificar rápidamente las características, calidad y potencial analítico de los datos…»</p>
+              <p style="margin-top:0.5em; word-break:break-all;"><a class="platform-link" href="https://docs.google.com/document/d/1L-JA0zQF2b8vx6_iDl9ph1FwIHZ93GlUcRL7GPG-NzM/edit?usp=sharing" target="_blank" rel="noopener">docs.google.com/document/d/1L-JA0zQF2b8vx6_iDl9ph1FwIHZ93GlUcRL7GPG-NzM</a></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 30. Segundo prompt: plan -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 4 · Prompt 2 · Plan estratégico</p>
+        <h2 style="text-align:center;">Segundo prompt: plan</h2>
+        <div class="two-col" style="align-items:center; margin-top:0.8rem;">
+          <div style="display:flex; justify-content:center;">
+            <img src="img/m3-3-p30-2.png" alt="Código QR para abrir el Prompt 2 Plan en Google Docs" style="max-width:22rem; width:100%; background:#fff; padding:1rem; border-radius:0.6rem; box-shadow:0 4px 14px rgba(0,0,0,0.08);" />
+          </div>
+          <div style="display:flex; flex-direction:column; gap:0.7rem;">
+            <div class="card" style="background:#fef3c7;">
+              <p class="eyebrow">Google Docs</p>
+              <h3>Prompt 2 — Plan</h3>
+              <p style="font-size:0.9rem; font-style:italic; margin-top:0.4em;">«Actúa como un líder de equipo de data science diseñando la estrategia analítica para un proyecto importante. Debes pensar tanto en el valor de negocio como en la viabilidad técnica…»</p>
+              <p style="margin-top:0.5em; word-break:break-all;"><a class="platform-link" href="https://docs.google.com/document/d/1aiTGkt3Gf2qZkFeM0cszei22yMWZVj_K7wp4CfnbPq0/edit?usp=sharing" target="_blank" rel="noopener">docs.google.com/document/d/1aiTGkt3Gf2qZkFeM0cszei22yMWZVj_K7wp4CfnbPq0</a></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 31. Reflexión -->
+    <section class="slide" data-slide>
+      <div class="content big-quote" style="justify-content:center;">
+        <h2 style="text-align:center; max-width:60rem; margin:0 auto;">«Piensen en sus objetivos de análisis. ¿Qué quieren observar? ¿Qué análisis complementaría lo sugerido?»</h2>
+      </div>
+    </section>
+
+    <!-- 32. Tercer prompt: ejecución -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 4 · Prompt 3 · Ejecución iterativa</p>
+        <h2 style="text-align:center;">Tercer prompt: ejecución</h2>
+        <div class="two-col" style="align-items:center; margin-top:0.8rem;">
+          <div style="display:flex; justify-content:center;">
+            <img src="img/m3-3-p32-2.png" alt="Código QR para abrir el Prompt 3 Ejecución en Google Docs" style="max-width:22rem; width:100%; background:#fff; padding:1rem; border-radius:0.6rem; box-shadow:0 4px 14px rgba(0,0,0,0.08);" />
+          </div>
+          <div style="display:flex; flex-direction:column; gap:0.7rem;">
+            <div class="card" style="background:#fef3c7;">
+              <p class="eyebrow">Google Docs</p>
+              <h3>Prompt 3 — Ejecución</h3>
+              <p style="font-size:0.9rem; font-style:italic; margin-top:0.4em;">«Actúa como un analista de business intelligence presentando hallazgos a stakeholders ejecutivos. Tu análisis debe ser riguroso pero accesible, con foco en implicaciones de negocio…»</p>
+              <p style="margin-top:0.5em; word-break:break-all;"><a class="platform-link" href="https://docs.google.com/document/d/1UxWjNyn-kDEFOADTyvAkt9-tpslFczp_-7ZjDyYCVa0/edit?usp=sharing" target="_blank" rel="noopener">docs.google.com/document/d/1UxWjNyn-kDEFOADTyvAkt9-tpslFczp_-7ZjDyYCVa0</a></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 33. Cierre -->
+    <section class="slide" data-slide>
+      <div class="content big-quote" style="justify-content:center; align-items:center;">
+        <h2 style="text-align:center; max-width:60rem; margin:0 auto;">La única forma de aprender es <span style="color:var(--brand-yellow-dark);">cacharreando</span></h2>
+        <p style="text-align:center; font-size:clamp(1.2rem,2vw,1.8rem); letter-spacing:0.15em; margin-top:1.5em;">GRACIAS</p>
+      </div>
+    </section>
+
+  </div><!-- /deck -->
+  </div><!-- /deck -->
+
+  <div class="hud"><span></span><span id="hud-counter"></span></div>
+
+  <div class="controls">
+    <button aria-label="Anterior" id="prev">‹</button>
+    <button aria-label="Descargar como PDF" id="dl-pdf" title="Descargar como PDF">
+      <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="7 10 12 15 17 10"/>
+        <line x1="12" x2="12" y1="15" y2="3"/>
+      </svg>
+    </button>
+    <button aria-label="Pantalla completa" id="fs">⛶</button>
+    <button aria-label="Siguiente" id="next">›</button>
+  </div>
+
+  <script>
+    (function () {
+      var slides = Array.prototype.slice.call(document.querySelectorAll('[data-slide]'));
+      var i = 0;
+      var counter = document.getElementById('hud-counter');
+      var progress = document.querySelector('.progress');
+
+      function render() {
+        slides.forEach(function (s, idx) { s.classList.toggle('active', idx === i); });
+        if (counter) counter.textContent = (i + 1) + ' / ' + slides.length;
+        if (progress) {
+          progress.style.width = ((i + 1) / slides.length * 100) + '%';
+          progress.classList.remove('pulsing');
+          void progress.offsetWidth;
+          progress.classList.add('pulsing');
+        }
+        var isDark = slides[i] && (slides[i].classList.contains('title-slide') || slides[i].classList.contains('cover'));
+        document.body.style.background = isDark ? '#1A1A1A' : '#ffffff';
+      }
+      function go(n) { i = Math.max(0, Math.min(slides.length - 1, n)); render(); }
+
+      document.addEventListener('keydown', function (e) {
+        if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'BUTTON')) {
+          if (/^[1-9]$/.test(e.key)) return;
+        }
+        if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); go(i + 1); }
+        else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(i - 1); }
+        else if (e.key === 'Home') { e.preventDefault(); go(0); }
+        else if (e.key === 'End') { e.preventDefault(); go(slides.length - 1); }
+        else if (e.key === 'f' || e.key === 'F') { toggleFs(); }
+      });
+
+      document.getElementById('prev').addEventListener('click', function () { go(i - 1); });
+      document.getElementById('next').addEventListener('click', function () { go(i + 1); });
+      document.getElementById('fs').addEventListener('click', toggleFs);
+      document.getElementById('dl-pdf').addEventListener('click', function () {
+        var prevTitle = document.title;
+        document.title = 'M3-3-Analisis-Datos-IA-Dominando-la-IA';
+        window.print();
+        setTimeout(function(){ document.title = prevTitle; }, 200);
+      });
+
+      function toggleFs() {
+        var el = document.documentElement;
+        if (!document.fullscreenElement) {
+          (el.requestFullscreen || el.webkitRequestFullscreen || function(){}).call(el);
+        } else {
+          (document.exitFullscreen || document.webkitExitFullscreen || function(){}).call(document);
+        }
+      }
+
+      var tx = 0, ty = 0;
+      document.addEventListener('touchstart', function (e) {
+        if (!e.changedTouches[0]) return;
+        tx = e.changedTouches[0].clientX; ty = e.changedTouches[0].clientY;
+      }, { passive: true });
+      document.addEventListener('touchend', function (e) {
+        if (!e.changedTouches[0]) return;
+        var dx = e.changedTouches[0].clientX - tx;
+        var dy = e.changedTouches[0].clientY - ty;
+        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+          if (dx < 0) go(i + 1); else go(i - 1);
+        }
+      }, { passive: true });
+
+      slides.forEach(function (s, idx) {
+        var num = document.createElement('div');
+        num.className = 'slide-number';
+        num.setAttribute('aria-hidden', 'true');
+        num.textContent = String(idx + 1).padStart(2, '0');
+        s.appendChild(num);
+      });
+
+      document.querySelectorAll('[data-stepper]').forEach(function (stepper) {
+        var buttons = stepper.querySelectorAll('.stepper-nav button');
+        var panels = stepper.querySelectorAll('.stepper-content');
+        function setStep(n) {
+          buttons.forEach(function (b) {
+            var active = b.getAttribute('data-step') === String(n);
+            b.classList.toggle('is-active', active);
+            b.setAttribute('aria-selected', active ? 'true' : 'false');
+          });
+          panels.forEach(function (p) {
+            p.classList.toggle('is-active', p.getAttribute('data-content') === String(n));
+          });
+        }
+        buttons.forEach(function (b) {
+          b.addEventListener('click', function () { setStep(b.getAttribute('data-step')); });
+        });
+        document.addEventListener('keydown', function (e) {
+          var slide = stepper.closest('.slide');
+          if (!slide || !slide.classList.contains('active')) return;
+          if (/^[1-6]$/.test(e.key)) {
+            if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
+            e.preventDefault();
+            setStep(e.key);
+          }
+        });
+      });
+
+      render();
+    })();
+  </script>
+</body>
+</html>
