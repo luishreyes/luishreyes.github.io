@@ -31,6 +31,15 @@ export const edcoCoursesData: EdcoCourse[] = [
   },
   {
     year: 2026,
+    title: 'Dominando la Inteligencia Artificial: Más Allá de ChatGPT y los Modelos Generativos - Promoción 2',
+    titleEn: 'Mastering Artificial Intelligence: Beyond ChatGPT and Generative Models - 2nd Cohort',
+    type: 'Open Course',
+    client: 'EDCO',
+    attendees: 29,
+    role: 'Instructor'
+  },
+  {
+    year: 2026,
     title: 'Dominando la Inteligencia Artificial: Más Allá de ChatGPT y los Modelos Generativos',
     titleEn: 'Mastering Artificial Intelligence: Beyond ChatGPT and Generative Models',
     type: 'Open Course',
@@ -44,9 +53,37 @@ export const edcoCoursesData: EdcoCourse[] = [
     titleEn: 'Fundamentals of Using Generative AI',
     type: 'Open Course',
     client: 'Coursera (MOOC)',
-    attendees: 87,
+    attendees: 105,
     role: 'Instructor',
     url: 'https://www.coursera.org/learn/fundamentals-of-using-generative-ai'
+  },
+
+  {
+    year: 2026,
+    title: 'Fundamentos de Ingeniería de Prompts',
+    titleEn: 'Prompt Engineering Fundamentals',
+    type: 'Corporate Course',
+    client: 'Produbanco Ecuador',
+    attendees: 27,
+    role: 'Instructor'
+  },
+  {
+    year: 2026,
+    title: 'Herramientas en IA: Generalidades 2/8',
+    titleEn: 'AI Tools: Overview 2/8',
+    type: 'Corporate Course',
+    client: 'Contraloría General de la República de Colombia',
+    attendees: 28,
+    role: 'Instructor'
+  },
+  {
+    year: 2026,
+    title: 'Herramientas en IA: Criterios de Selección y Uso de Modelos',
+    titleEn: 'AI Tools: Model Selection and Usage Criteria',
+    type: 'Corporate Course',
+    client: 'Contraloría General de la República de Colombia',
+    attendees: 28,
+    role: 'Instructor'
   },
 
   // 2025
@@ -92,7 +129,7 @@ export const edcoCoursesData: EdcoCourse[] = [
     titleEn: 'Fundamentals of Generative AI Usage',
     type: 'Open Course',
     client: 'Coursera (MOOC)',
-    attendees: 5876,
+    attendees: 8302,
     role: 'Instructor',
     url: 'https://www.coursera.org/learn/fundamentos-del-uso-de-ia-generativa'
   },
