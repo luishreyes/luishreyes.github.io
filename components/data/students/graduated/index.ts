@@ -39,6 +39,8 @@ import camilaOcasion from './ms/camila-ocasion-martinez';
 import carlosRamirez from './ms/carlos-manuel-ramirez-acosta';
 import carlosTorres from './ms/carlos-emilio-torres-garay';
 import yiovannArce from './ms/yiovann-alirio-arce-portilla';
+import jesusAcevedo from './ms/jesus-rafael-acevedo-mastrogiacomo';
+import lauraDanielLeon from './ms/laura-daniela-leon';
 
 export const graduatedStudentsData: {
     phd: GraduatedStudent[];
@@ -51,6 +53,8 @@ export const graduatedStudentsData: {
         julianTorres,
     ],
     ms: [
+        jesusAcevedo,
+        lauraDanielLeon,
         lauraSalgado,
         davidArango,
         arielColi,
