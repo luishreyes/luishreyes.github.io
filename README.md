@@ -1,20 +1,22 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Luis H. Reyes — Academic Portfolio
 
-# Run and deploy your AI Studio app
+Personal academic and teaching portfolio, live at **[luishreyes.github.io](https://luishreyes.github.io)**.
 
-This contains everything you need to run your app locally.
+## What's inside
 
-View your app in AI Studio: https://ai.studio/apps/drive/1ONL2F1AUu4bqocgxAETnnvNeISBZVpCy
+- **Research** — Publications, ongoing projects, and research areas in bioprocesses, bioproducts, and applied biotechnology.
+- **Teaching** — Courses taught at Universidad de los Andes, including syllabi, reading materials, and interactive slide decks.
+- **Classroom** — A private intranet for enrolled students: course content, guides, quizzes, and presentations organized by course.
+- **Students** — Current and graduated M.S./Ph.D. advisees, with thesis summaries.
+- **Continuing Education** — Corporate courses, open workshops, and MOOCs on AI, bioprocesses, and innovation.
 
-## Run Locally
+## Stack
 
-**Prerequisites:**  Node.js
+React 19 · TypeScript · Vite · React Router 7 · Tailwind CSS · Framer Motion
 
+## Run locally
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+```bash
+npm install
+npm run dev
+```
