@@ -23,7 +23,7 @@ const student: GraduatedStudent = {
             answer: 'The engineered nanocarriers were highly successful. They proved to be very safe and biocompatible, and demonstrated excellent cell penetration and the ability to escape cellular traps. This work provides a promising new platform for creating more effective and targeted drug delivery systems.'
         }
     ],
-    imageUrl: 'https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5726.JPG',
+    imageUrl: 'https://luishreyes.github.io/images/students/ariel-coli.jpg',
 };
 
 export default student;
