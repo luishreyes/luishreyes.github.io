@@ -8,7 +8,7 @@ const student: GraduatedStudent = {
     startedYear: 2024,
     currentPosition: '',
     linkedinUrl: '',
-    thesisTitle: 'Diseño de una metodología de evaluación de herramientas de IA generativa en educación universitaria',
+    thesisTitle: 'Design of an Evaluation Methodology for Generative AI Tools in University Education',
     laymanSummary: [
         {
             question: 'What was the problem?',
