@@ -8,7 +8,7 @@ const student: GraduatedStudent = {
     startedYear: 2024,
     currentPosition: '',
     linkedinUrl: '',
-    thesisTitle: 'Optimización adaptativa mediante Extremum Seeking Control para la operación de un sistema biológico de tratamiento de H₂S',
+    thesisTitle: 'Adaptive Optimization via Extremum Seeking Control for the Operation of a Biological H₂S Treatment System',
     laymanSummary: [
         {
             question: 'What was the problem?',
