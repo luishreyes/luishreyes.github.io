@@ -13,6 +13,15 @@ export const edcoCoursesData: EdcoCourse[] = [
   // 2026
   {
     year: 2026,
+    title: 'CoCrea: IA Aplicada a la Productividad',
+    titleEn: 'CoCrea: AI Applied to Productivity',
+    type: 'Corporate Course',
+    client: 'Colombia Crea',
+    attendees: 40,
+    role: 'Instructor'
+  },
+  {
+    year: 2026,
     title: 'Generalidades de la IA',
     titleEn: 'AI Fundamentals',
     type: 'Corporate Course',
