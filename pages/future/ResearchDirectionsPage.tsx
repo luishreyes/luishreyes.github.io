@@ -15,7 +15,7 @@ export const ResearchDirectionsPage: React.FC = () => {
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
                 <div className="bg-white p-12 rounded-lg shadow-lg border border-yellow-400/40">
                 <p className="text-brand-gray leading-relaxed text-lg">
-                    My future research will focus on the intersection of synthetic biology and machine learning to design intelligent microbial cell factories. We aim to develop self-regulating biosystems capable of adapting to environmental changes for the sustainable and efficient production of next-generation chemicals and therapeutics. Key areas include developing robust genetic circuits, exploring non-model organisms, and creating predictive models of cell metabolism.
+                    {t('future.research.body')}
                 </p>
                 </div>
             </div>

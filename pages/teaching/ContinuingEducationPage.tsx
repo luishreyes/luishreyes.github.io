@@ -3,11 +3,17 @@
 import React, { useState, useMemo } from 'react';
 import { PageWrapper } from '../../components/PageWrapper';
 import { edcoCoursesData, type EdcoCourse } from '../../components/data/edco';
-import { useI18n } from '../../context/i18n';
+import { useI18n, type UIKey } from '../../context/i18n';
 import { motion } from 'framer-motion';
 
 type FilterType = 'All' | EdcoCourse['type'];
 const filterOptions: FilterType[] = ['All', 'Open Course', 'Corporate Course', 'Summer School'];
+const filterLabelKey: Record<string, UIKey> = {
+    'All': 'contEd.filter.all',
+    'Open Course': 'contEd.filter.open',
+    'Corporate Course': 'contEd.filter.corporate',
+    'Summer School': 'contEd.filter.summer',
+};
 
 export const ContinuingEducationPage = () => {
     const { t } = useI18n();
@@ -51,7 +57,7 @@ export const ContinuingEducationPage = () => {
                                             : 'bg-white text-brand-gray hover:bg-zinc-100 border border-zinc-200'
                                     }`}
                                 >
-                                    {filter}
+                                    {t(filterLabelKey[filter])}
                                 </button>
                             ))}
                         </div>

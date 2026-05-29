@@ -87,7 +87,7 @@ export const AugmentedIntelligencePage: React.FC = () => {
             >
                 <h2 className="text-2xl font-semibold tracking-tight text-brand-dark mt-8">{t('ai.transforming')}</h2>
                 <p className="mt-6 text-lg text-brand-gray leading-relaxed">
-                    As a co-founder of the <strong>Augmented Intelligence Uniandes</strong> initiative, alongside Dean Rubby Casallas and Professor Juan Carlos Cruz, I have actively participated in the strategic integration of Generative Artificial Intelligence in the School of Engineering at Universidad de los Andes. This pioneering initiative, launched in June 2024, represents a paradigm shift in how we conceive teaching and learning in engineering.
+                    {t('ai.summary.pre')}<strong>Augmented Intelligence Uniandes</strong>{t('ai.summary.post')}
                 </p>
             </motion.div>
             
@@ -105,18 +105,18 @@ export const AugmentedIntelligencePage: React.FC = () => {
                     <motion.div {...{variants: cardVariants}}>
                         <h3 className="text-2xl font-semibold text-brand-dark mb-4">{t('ai.leadership')}</h3>
                         <ul className="space-y-3 text-brand-gray">
-                            <li><strong>Co-creator</strong> of the Augmented Intelligence strategy.</li>
-                            <li><strong>Co-designer</strong> of the "augmented intelligence" conceptual framework.</li>
-                            <li><strong>Coordinator</strong> of the IAU team of students and graduate assistants.</li>
-                            <li><strong>Co-designer of workshops</strong> for training in generative AI.</li>
+                            <li><strong>{t('ai.lead.1.strong')}</strong>{t('ai.lead.1.text')}</li>
+                            <li><strong>{t('ai.lead.2.strong')}</strong>{t('ai.lead.2.text')}</li>
+                            <li><strong>{t('ai.lead.3.strong')}</strong>{t('ai.lead.3.text')}</li>
+                            <li><strong>{t('ai.lead.4.strong')}</strong>{t('ai.lead.4.text')}</li>
                         </ul>
                     </motion.div>
                     <motion.div {...{variants: cardVariants}}>
                         <h3 className="text-2xl font-semibold text-brand-dark mb-4">{t('ai.management')}</h3>
                         <ul className="space-y-3 text-brand-gray">
-                            <li>Operational coordination of the multidisciplinary team.</li>
-                            <li>Co-development of the three-phase training program.</li>
-                            <li>Support in the management and monitoring of selected projects.</li>
+                            <li>{t('ai.mgmt.1')}</li>
+                            <li>{t('ai.mgmt.2')}</li>
+                            <li>{t('ai.mgmt.3')}</li>
                         </ul>
                     </motion.div>
                  </motion.div>
@@ -124,7 +124,7 @@ export const AugmentedIntelligencePage: React.FC = () => {
 
             <Section title={t('ai.impact')}>
                 <motion.div {...{variants: cardVariants}}>
-                    <h3 className="text-2xl font-semibold text-brand-dark text-left mb-6">First IAGen Call 2025-1: A Resounding Success</h3>
+                    <h3 className="text-2xl font-semibold text-brand-dark text-left mb-6">{t('ai.call.title')}</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-center">
                         <div className="bg-white p-6 rounded-lg shadow-md border border-yellow-400/40">
                             <p className="text-4xl font-bold text-yellow-400">30</p>
@@ -142,16 +142,16 @@ export const AugmentedIntelligencePage: React.FC = () => {
                      <h3 className="text-2xl font-semibold text-brand-dark text-left mb-6">{t('ai.categories')}</h3>
                      <div className="grid sm:grid-cols-3 gap-6 text-center">
                         <div className="bg-white p-4 rounded-lg shadow-sm border border-yellow-400/40">
-                            <p className="font-bold text-brand-dark">Process Optimization</p>
-                            <p className="text-sm text-brand-gray">(15 projects)</p>
+                            <p className="font-bold text-brand-dark">{t('ai.cat.optimization')}</p>
+                            <p className="text-sm text-brand-gray">(15 {t('ai.cat.projects')})</p>
                         </div>
                         <div className="bg-white p-4 rounded-lg shadow-sm border border-yellow-400/40">
-                            <p className="font-bold text-brand-dark">Contribution to Learning</p>
-                            <p className="text-sm text-brand-gray">(11 projects)</p>
+                            <p className="font-bold text-brand-dark">{t('ai.cat.learning')}</p>
+                            <p className="text-sm text-brand-gray">(11 {t('ai.cat.projects')})</p>
                         </div>
                         <div className="bg-white p-4 rounded-lg shadow-sm border border-yellow-400/40">
-                           <p className="font-bold text-brand-dark">Skills Enhancement</p>
-                           <p className="text-sm text-brand-gray">(4 projects)</p>
+                           <p className="font-bold text-brand-dark">{t('ai.cat.skills')}</p>
+                           <p className="text-sm text-brand-gray">(4 {t('ai.cat.projects')})</p>
                         </div>
                      </div>
                 </motion.div>
@@ -167,7 +167,7 @@ export const AugmentedIntelligencePage: React.FC = () => {
                             </div>
                         </div>
                         <p className="text-brand-gray">
-                            In 2025, my work on AI in engineering education was recognized through selection into OpenAI's inaugural Global Faculty AI Project. This distinction, awarded to only 50 academics worldwide, validates our approach at Uniandes and connects our local initiative to a global network of innovators, further amplifying our impact.
+                            {t('ai.openai.text')}
                         </p>
 
                         <div className="w-full aspect-video rounded-lg overflow-hidden mt-2 shadow-inner border border-zinc-200">
@@ -197,16 +197,16 @@ export const AugmentedIntelligencePage: React.FC = () => {
                  <motion.div {...{variants: cardVariants}}>
                     <h3 className="text-2xl font-semibold text-brand-dark mb-4">{t('ai.framework')}</h3>
                     <blockquote className="mt-4 p-6 bg-zinc-100 border-l-4 border-yellow-400 rounded-r-lg italic text-brand-dark text-lg">
-                        "Augmented Intelligence does not seek to replace human intelligence, but to amplify it, enabling students, teachers, and researchers to address complex problems, generate innovative ideas, and develop creative solutions more effectively."
+                        {t('ai.framework.quote')}
                     </blockquote>
                  </motion.div>
                  <motion.div {...{variants: cardVariants}} className="mt-12">
                      <h3 className="text-2xl font-semibold text-brand-dark mb-6">{t('ai.principles')}</h3>
                      <ol className="space-y-3 text-brand-gray list-decimal list-inside">
-                        <li><strong>Disciplinary Contextualization:</strong> Each solution is aligned with the specific needs of the course.</li>
-                        <li><strong>Restricted to Course Material:</strong> Assistants operate within defined pedagogical limits.</li>
-                        <li><strong>Pre-established Parameters:</strong> Full instructor control over the system's behavior.</li>
-                        <li><strong>Ethics and Responsibility:</strong> Strict adherence to institutional AI guidelines.</li>
+                        <li><strong>{t('ai.prin.1.strong')}</strong>{t('ai.prin.1.text')}</li>
+                        <li><strong>{t('ai.prin.2.strong')}</strong>{t('ai.prin.2.text')}</li>
+                        <li><strong>{t('ai.prin.3.strong')}</strong>{t('ai.prin.3.text')}</li>
+                        <li><strong>{t('ai.prin.4.strong')}</strong>{t('ai.prin.4.text')}</li>
                      </ol>
                  </motion.div>
             </Section>
@@ -224,29 +224,29 @@ export const AugmentedIntelligencePage: React.FC = () => {
                  >
                     <motion.div {...{variants: timelineItemVariants}} className="relative pl-8 pb-8">
                         <div className="absolute left-0 top-1.5 w-4 h-4 bg-yellow-400 rounded-full -translate-x-1/2 border-4 border-white"></div>
-                        <p className="font-bold text-lg text-brand-dark">Stage 1: Expression of Interest <span className="text-sm font-normal text-brand-gray">(February 2025)</span></p>
+                        <p className="font-bold text-lg text-brand-dark">{t('ai.stage1.title')} <span className="text-sm font-normal text-brand-gray">{t('ai.stage1.date')}</span></p>
                         <ul className="list-disc list-inside mt-2 text-brand-gray">
-                            <li>Reception and categorization of 30 proposals.</li>
-                            <li>Organization of focus meetings.</li>
-                            <li>Technical feasibility assessment.</li>
+                            <li>{t('ai.stage1.1')}</li>
+                            <li>{t('ai.stage1.2')}</li>
+                            <li>{t('ai.stage1.3')}</li>
                         </ul>
                     </motion.div>
                     <motion.div {...{variants: timelineItemVariants}} className="relative pl-8 pb-8">
                          <div className="absolute left-0 top-1.5 w-4 h-4 bg-yellow-400 rounded-full -translate-x-1/2 border-4 border-white"></div>
-                        <p className="font-bold text-lg text-brand-dark">Stage 2: Project Definition <span className="text-sm font-normal text-brand-gray">(March 2025)</span></p>
+                        <p className="font-bold text-lg text-brand-dark">{t('ai.stage2.title')} <span className="text-sm font-normal text-brand-gray">{t('ai.stage2.date')}</span></p>
                         <ul className="list-disc list-inside mt-2 text-brand-gray">
-                            <li>Individual meetings with each project.</li>
-                            <li>Definition of scopes and resources.</li>
-                            <li>Assignment of IAU team students.</li>
+                            <li>{t('ai.stage2.1')}</li>
+                            <li>{t('ai.stage2.2')}</li>
+                            <li>{t('ai.stage2.3')}</li>
                         </ul>
                     </motion.div>
                      <motion.div {...{variants: timelineItemVariants}} className="relative pl-8">
                          <div className="absolute left-0 top-1.5 w-4 h-4 bg-yellow-400 rounded-full -translate-x-1/2 border-4 border-white"></div>
-                        <p className="font-bold text-lg text-brand-dark">Stage 3: Development and Implementation <span className="text-sm font-normal text-brand-gray">(April 2025 - Present)</span></p>
+                        <p className="font-bold text-lg text-brand-dark">{t('ai.stage3.title')} <span className="text-sm font-normal text-brand-gray">{t('ai.stage3.date')}</span></p>
                          <ul className="list-disc list-inside mt-2 text-brand-gray">
-                            <li>Weekly progress monitoring.</li>
-                            <li>Resolution of technical challenges.</li>
-                            <li>Documentation of best practices.</li>
+                            <li>{t('ai.stage3.1')}</li>
+                            <li>{t('ai.stage3.2')}</li>
+                            <li>{t('ai.stage3.3')}</li>
                         </ul>
                     </motion.div>
                  </motion.div>
@@ -264,7 +264,7 @@ export const AugmentedIntelligencePage: React.FC = () => {
                  >
                     <h3 className="text-2xl font-semibold text-brand-dark mb-4">{t('ai.futureVision')}</h3>
                     <p className="text-brand-gray leading-relaxed">
-                        The Augmented Intelligence Uniandes initiative is designed to be a sustainable and evolving program. Our vision is to establish a permanent center of excellence for AI in education, continuously exploring new pedagogical models and technologies. Future plans include expanding the program to other faculties, securing long-term strategic partnerships with industry leaders, and developing a repository of open-source educational AI tools to benefit the broader academic community.
+                        {t('ai.futureVision.text')}
                     </p>
                  </motion.div>
             </Section>

@@ -51,7 +51,7 @@ export const ResearchOverviewPage: React.FC = () => {
         >
           <img 
               src="https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/Generated%20Image%20September%2002,%202025%20-%201_07PM.jpeg" 
-              alt="Abstract visualization of biological and AI concepts"
+              alt={t('research.overview.hero.alt')}
               className="absolute inset-0 w-full h-full object-cover object-center"
           />
           <div className="absolute inset-0 bg-white mix-blend-saturation pointer-events-none"></div>

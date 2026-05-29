@@ -15,7 +15,7 @@ export const CollaborationPage: React.FC = () => {
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
                 <div className="bg-white p-12 rounded-lg shadow-lg border border-yellow-400/40">
                     <p className="text-brand-gray leading-relaxed text-lg">
-                        I am always open to new collaborations with academic and industry partners who share a passion for tackling grand challenges in health and sustainability. My goal is to build interdisciplinary teams to accelerate scientific discovery and its translation into impactful technologies. Furthermore, I am committed to mentoring a diverse group of students and postdoctoral researchers, providing them with the skills and support needed to become independent scientific leaders.
+                        {t('future.collaboration.body')}
                     </p>
                 </div>
             </div>

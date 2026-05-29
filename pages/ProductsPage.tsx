@@ -274,7 +274,7 @@ export const ProductsPage = () => {
                                     animate={{ opacity: 1 }}
                                     exit={{ opacity: 0 }}
                                     className="w-10 h-10 flex items-center justify-center bg-white border border-zinc-300 rounded-md text-sm font-semibold text-brand-gray hover:bg-zinc-100 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                                    aria-label="Open search"
+                                    aria-label={t('products.aria.search')}
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                         <path fillRule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clipRule="evenodd" />
@@ -287,7 +287,7 @@ export const ProductsPage = () => {
                     <button
                         onClick={() => setIsFilterModalOpen(true)}
                         className="relative flex-shrink-0 w-10 h-10 flex items-center justify-center bg-white border border-zinc-300 rounded-md text-sm font-semibold text-brand-gray hover:bg-zinc-100 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-yellow-400"
-                        aria-label="Open advanced filters"
+                        aria-label={t('products.aria.filters')}
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                             <path fillRule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clipRule="evenodd" />

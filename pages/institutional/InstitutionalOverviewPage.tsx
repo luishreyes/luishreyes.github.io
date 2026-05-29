@@ -156,7 +156,7 @@ export const InstitutionalOverviewPage: React.FC = () => {
                       <Link
                           to={item.link}
                           className="bg-white p-8 rounded-lg shadow-lg border border-zinc-100 text-center flex flex-col items-center h-full w-full transition-all duration-300 hover:-translate-y-2 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-400"
-                          aria-label={`Learn more about ${item.title}`}
+                          aria-label={`${t('service.learnAbout')} ${item.title}`}
                       >
                           <div className="bg-yellow-400/20 p-4 rounded-full mb-4">
                               {item.icon}

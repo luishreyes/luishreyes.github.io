@@ -1,10 +1,18 @@
 import React, { useState, useMemo } from 'react';
 import { PageWrapper } from '../../components/PageWrapper';
 import { teachingData } from '../../components/data/teaching';
-import { useI18n } from '../../context/i18n';
+import { useI18n, type UIKey } from '../../context/i18n';
 
 type FilterType = 'All' | 'Core' | 'Elective' | 'CBU' | 'Undergraduate' | 'Graduate';
 const filterOptions: FilterType[] = ['All', 'Core', 'Elective', 'CBU', 'Undergraduate', 'Graduate'];
+const filterLabelKey: Record<FilterType, UIKey> = {
+    'All': 'courses.filter.all',
+    'Core': 'courses.filter.core',
+    'Elective': 'courses.filter.elective',
+    'CBU': 'courses.filter.cbu',
+    'Undergraduate': 'courses.filter.undergraduate',
+    'Graduate': 'courses.filter.graduate',
+};
 
 export const CoursesPage: React.FC = () => {
     const { t } = useI18n();
@@ -51,7 +59,7 @@ export const CoursesPage: React.FC = () => {
                                             : 'bg-white text-brand-gray hover:bg-zinc-100 border border-zinc-200'
                                     }`}
                                 >
-                                    {filter}
+                                    {t(filterLabelKey[filter])}
                                 </button>
                             ))}
                         </div>

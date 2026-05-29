@@ -64,27 +64,13 @@ export const ServicePurposePage: React.FC = () => {
             >
                 <h2 className="text-3xl font-bold tracking-tight text-brand-dark text-left mb-8">{t('purpose.service.h2')}</h2>
                 <div className="space-y-6 text-lg text-brand-gray leading-relaxed">
-                    <p>
-                        Institutions and communities are ecosystems. They do not maintain themselves. My purpose in serving is to keep cultivating the structures that made my own growth possible, and to build paths the next generation can use to go further than we did.
-                    </p>
-                    <p>
-                        Service stopped feeling abstract once I understood what Uniandes had actually given me. I think it is the best university in the country, and that judgment carries an obligation, though obligation is the wrong word. Healthy ecosystems do not run on passive gratitude. They run on participation. Every committee, every manuscript I review, every conversation with a high-school student deciding whether engineering is for them: each is an investment in a system that exceeds me. The point is not the recognition. The point is the ecosystem staying alive.
-                    </p>
-                    <p>
-                        Co-founding the Augmented Intelligence Initiative was not a bet on a trend. Generative AI is going to remake engineering education whether we plan for it or not, and I would rather we evolve our methods on purpose than have them eroded by accident. That move captures how I read service in general. Notice where new capabilities meet a real institutional need, and build the bridge. Service is the discipline of seeing connections most people walk past and turning them into structures the rest of the community can use.
-                    </p>
-                    <p>
-                        Leading the GDPP, sitting on editorial boards, visiting schools, none of these are checkboxes on a service report. They are different networks where I get to be a connector node. A manuscript review helps another researcher sharpen their argument. A school visit cracks open possibilities a student had not yet allowed themselves to imagine. Committee work, for all its slowness, is how an institution keeps adapting to the generations it has not yet met.
-                    </p>
-                    <p>
-                        What sustains me here has two layers. The first is straightforward. I have something to give: ideas, creativity, honesty, and a real concern for whether students are doing okay. The second takes longer to articulate. Service produces effects that travel further than the act itself. The work supports my family, yes. It also keeps me intellectually awake and aware of my position inside larger systems. The student I mentor today becomes a node in tomorrow&rsquo;s network. The program I am building now could serve students I will never meet. An editorial decision shapes knowledge that travels to researchers I will never know.
-                    </p>
-                    <p>
-                        Stoic practice taught me to put my attention on what I can actually move. Service is the form that practice takes inside an institution. Individual achievement has a ceiling. Ecosystem cultivation does not. The best paper I could write reaches dozens. The programs I am building could reach thousands. The strongest student I mentor becomes a multiplier in their own right, and the chain keeps extending.
-                    </p>
-                    <p>
-                        The ecosystem metaphor is more than ornament. Real ecosystems persist on three properties: diversity, adaptation, and interconnection. Service is how I help our academic ecosystem hold all three, by widening who gets in, by pushing initiatives that meet actual change in the world, and by weaving the connections between academia, industry, and society that make any of it durable. This is how institutions evolve. This is how the next generation finds paths we never had the imagination to draw.
-                    </p>
+                    <p>{t('purpose.service.p1')}</p>
+                    <p>{t('purpose.service.p2')}</p>
+                    <p>{t('purpose.service.p3')}</p>
+                    <p>{t('purpose.service.p4')}</p>
+                    <p>{t('purpose.service.p5')}</p>
+                    <p>{t('purpose.service.p6')}</p>
+                    <p>{t('purpose.service.p7')}</p>
                 </div>
             </motion.div>
         </div>

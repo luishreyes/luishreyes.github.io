@@ -65,30 +65,14 @@ export const ResearchPurposePage: React.FC = () => {
             >
                 <h2 className="text-3xl font-bold tracking-tight text-brand-dark text-left mb-8">{t('purpose.research.h2')}</h2>
                 <div className="space-y-6 text-lg text-brand-gray leading-relaxed">
-                    <p>
-                        Research, for me, lives in the overlap of two commitments that most academics treat as separate. The first is scientific: engineering principles, applied to biological systems, can address real problems in medicine, sustainability, and human experience. The second is formative. Every project I lead is also a classroom without walls, a space where students develop resourcefulness, the reflex to improvise when things break, the ability to move across disciplines without losing technical seriousness, and the discipline of thinking critically about their own work. The publications and the discoveries matter, sometimes spectacularly so. The deepest outcome of any project I run, however, is the person who walks out of the laboratory transformed.
-                    </p>
-                    <p>
-                        After my internship at Ecopetrol, I did another at Texas A&amp;M University. Both were demanding, but only one rearranged the way I saw problems. In academia, every answered question fractured into a dozen unanswered ones, and that fracture was the point rather than the problem. Professor Katy Kao, my PhD advisor, taught me what technical excellence alone cannot teach: that delegation is a form of trust, that the student in front of you is a whole human being before they are a researcher, and that their success becomes yours. That lesson runs my group today.
-                    </p>
-                    <p>
-                        I approach research through the same vectorial philosophy that organizes my teaching. Every collaborator and every student arrives as a vector with magnitude, direction, and sense. My job is not to bend their vectors toward my agenda but to find the alignment where ours sum to maximum impact. Gene therapies for lysosomal diseases have won awards and spawned startups in our group, but only because molecular biology, clinical specialty, and nanoparticle chemistry agreed to share authorship of the question. Sustainable food choices rarely lose on nutrition. They lose on texture, on sound, on the unconscious cues that tell a consumer this product is somehow lesser, and working with food designers, computing engineers, and sonic seasoning researchers, we have learned to design those cues back in. When microbiologists bring deep mechanistic understanding and bioprocess engineers bring optimization expertise, our vectors add constructively to improve the air, the health, and the daily life of an entire municipality. This is the throughline across everything I do: engineering microbes as microscopic factories, designing multisensory experiences that shape behavior, using AI to compress the distance between hypothesis and biological design, and learning from how evolution already solved the problem.
-                    </p>
-                    <p>
-                        The same alignment work happens with my students, on a longer clock and with different stakes. A master&rsquo;s student learning to design an experiment is also learning to defend an idea against criticism, to recover from failure without abandoning the question, to translate the work into language a non-specialist can follow. The doctoral candidate fighting a contaminated bioreactor late at night is learning resourcefulness and improvisation in ways no syllabus can deliver. Whatever the research advances in the field, it is also pretext. The formation is the point.
-                    </p>
-                    <p>
-                        Real innovation happens at interfaces, in conversations, through networks. The most useful epistemic position is rarely the lone expert, however brilliant. It is the dense intersection of people who each know something the others do not. I do not aspire to be the most renowned specialist. I want to be a connector node in a wide network of discovery, and to train students who will become connector nodes in their own. Philosophy and strategy align here.
-                    </p>
-                    <p>
-                        What drives me, in the end, is a quiet conviction: that one act, done well, serves both horizons at once. The science advances precisely because the person grows, not despite it. A community breathes cleaner air because a student learned to think rigorously under uncertainty. A graduate finds her voice because she had to defend a real result against real critique. The work and the formation are not parallel tracks but the same track, viewed from two angles.
-                    </p>
-                    <p>
-                        Each publication is more than a CV line. It is knowledge made public, a contribution to our shared understanding of how the world works, and very often the artifact of a student finding their professional voice for the first time. I am a &ldquo;social animal&rdquo; in research by judgment, not by temperament. Complex problems give themselves up to networks, never to lone genius.
-                    </p>
-                    <p>
-                        The laboratory I want is a space where biological systems meet engineering principles, where evolution inspires the next design, and where diverse expertise converges into something none of us could have produced alone. It is also where students learn the unglamorous skills no syllabus teaches: how to fail well, how to keep going, how to matter to the people they work with. Research is not territory. It is the deliberate alignment of our collective vectors toward problems worth solving, and toward the people who will solve the next ones.
-                    </p>
+                    <p>{t('purpose.research.p1')}</p>
+                    <p>{t('purpose.research.p2')}</p>
+                    <p>{t('purpose.research.p3')}</p>
+                    <p>{t('purpose.research.p4')}</p>
+                    <p>{t('purpose.research.p5')}</p>
+                    <p>{t('purpose.research.p6')}</p>
+                    <p>{t('purpose.research.p7')}</p>
+                    <p>{t('purpose.research.p8')}</p>
                 </div>
             </motion.div>
         </div>
