@@ -1,0 +1,13 @@
+export const future = {
+  'future.overview.title':   { en: 'Future Plans',            es: 'Planes a Futuro' },
+  'future.overview.sub':     { en: 'Looking ahead to the boundaries of biological engineering, focusing on pioneering research, fostering dynamic collaborations, and mentoring innovators.', es: 'Mirando hacia las fronteras de la ingeniería biológica, con foco en investigación pionera, colaboraciones dinámicas y mentoría de innovadores.' },
+  'future.overview.text':    { en: 'My work will continue to push the boundaries of biological engineering. My focus is centered on pioneering new research directions, fostering dynamic collaborations, and mentoring the next generation of scientific innovators to tackle the grand challenges in health and sustainability.', es: 'Mi trabajo seguirá empujando las fronteras de la ingeniería biológica. Mi foco está en abrir nuevas direcciones de investigación, fomentar colaboraciones dinámicas y mentorizar a la próxima generación de innovadores científicos para abordar los grandes desafíos en salud y sostenibilidad.' },
+  'future.pioneering.title': { en: 'Pioneering Research',     es: 'Investigación Pionera' },
+  'future.pioneering.desc':  { en: 'Focusing on the convergence of synthetic biology and AI to create intelligent, self-regulating microbial systems for sustainable bioproduction.', es: 'Con foco en la convergencia de biología sintética e IA para crear sistemas microbianos inteligentes y autorregulados para la bioproducción sostenible.' },
+  'future.collab.title':     { en: 'Building Collaborations', es: 'Construyendo Colaboraciones' },
+  'future.collab.desc':      { en: 'Actively seeking partnerships with academic and industrial leaders to build interdisciplinary teams and accelerate the translation of research into real-world impact.', es: 'Buscando activamente alianzas con líderes académicos e industriales para construir equipos interdisciplinarios y acelerar la traslación de la investigación en impacto real.' },
+  'future.mentoring.title':  { en: 'Mentoring Leaders',       es: 'Formando Líderes' },
+  'future.mentoring.desc':   { en: 'Committing to the mentorship of a diverse group of students and postdocs, empowering them with the skills to become the next generation of scientific leaders.', es: 'Comprometido con la mentoría de un grupo diverso de estudiantes y postdoctorandos, dotándoles de las habilidades para convertirse en la próxima generación de líderes científicos.' },
+  'future.research.title':   { en: 'Future Research Directions', es: 'Direcciones Futuras de Investigación' },
+  'future.collaboration.title': { en: 'Collaboration & Mentorship', es: 'Colaboración y Mentoría' },
+} as const;
