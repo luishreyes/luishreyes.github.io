@@ -3,7 +3,7 @@
 import React from 'react';
 import { PageWrapper } from '../../components/PageWrapper';
 import { outreachData } from '../../components/data/outreach';
-import { useI18n } from '../../context/i18n';
+import { useI18n, localize } from '../../context/i18n';
 // FIX: Removed 'Variants' from framer-motion import to resolve module export error.
 import { motion } from 'framer-motion';
 
@@ -48,8 +48,15 @@ const getTypeIcon = (type: string) => {
   }
 };
 
+const typeLabels: Record<string, { en: string; es: string }> = {
+  'School Visit': { en: 'School Visit', es: 'Visita a colegio' },
+  'University Event': { en: 'University Event', es: 'Evento universitario' },
+  'Virtual Event': { en: 'Virtual Event', es: 'Evento virtual' },
+  'Fair': { en: 'Fair', es: 'Feria' },
+};
+
 export const OutreachPage: React.FC = () => {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   return (
     <PageWrapper noPadding>
         <div className="pt-16">
@@ -84,7 +91,7 @@ export const OutreachPage: React.FC = () => {
                             
                             <div className="ml-2">
                                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2">
-                                    <h3 className="font-bold text-xl text-brand-dark">{activity.title}</h3>
+                                    <h3 className="font-bold text-xl text-brand-dark">{localize(activity.title, lang)}</h3>
                                     <span className="text-sm font-semibold text-yellow-800 bg-yellow-100 inline-block px-2 py-1 rounded-md mt-2 sm:mt-0">{activity.year}</span>
                                 </div>
                                 
@@ -97,12 +104,12 @@ export const OutreachPage: React.FC = () => {
                                     </div>
                                     <div className="flex items-center gap-2">
                                         {getTypeIcon(activity.type)}
-                                        <span>{activity.type}</span>
+                                        <span>{localize(typeLabels[activity.type], lang)}</span>
                                     </div>
                                 </div>
 
-                                <p className="font-medium text-brand-dark">{activity.location}</p>
-                                <p className="mt-2 text-brand-gray">{activity.description}</p>
+                                <p className="font-medium text-brand-dark">{localize(activity.location, lang)}</p>
+                                <p className="mt-2 text-brand-gray">{localize(activity.description, lang)}</p>
                             </div>
                         </motion.div>
                     ))}

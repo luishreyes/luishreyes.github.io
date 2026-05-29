@@ -24,6 +24,17 @@ const ui = {
 
 export type UIKey = keyof typeof ui;
 
+// ── Localized data helper ───────────────────────────────────
+// A data field that may be bilingual ({ en, es }) or a plain string
+// (used for content that stays identical in both languages, e.g.
+// thesis titles, foreign-university course names, Supabase publications).
+export type Localized = string | { en: string; es: string };
+
+export function localize(value: Localized | undefined | null, lang: Lang): string {
+  if (value == null) return '';
+  return typeof value === 'string' ? value : value[lang];
+}
+
 interface I18nValue {
   lang: Lang;
   setLang: (l: Lang) => void;

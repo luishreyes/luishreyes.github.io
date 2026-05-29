@@ -4,15 +4,18 @@ import type { Education, Specialization, Credential } from '../../types';
 
 export const educationData: Education[] = [
     {
-        degree: 'Ph.D.',
-        field: 'Chemical Engineering (Emphasis in Biology and Evolutionary Engineering)',
+        degree: { en: 'Ph.D.', es: 'Doctorado' },
+        field: {
+            en: 'Chemical Engineering (Emphasis in Biology and Evolutionary Engineering)',
+            es: 'Ingeniería Química (énfasis en Biología e Ingeniería Evolutiva)',
+        },
         institution: 'Texas A&M University',
         location: 'College Station, TX, USA',
         year: '2008 - 2013',
     },
     {
-        degree: 'B.S.',
-        field: 'Chemical Engineering',
+        degree: { en: 'B.S.', es: 'Pregrado' },
+        field: { en: 'Chemical Engineering', es: 'Ingeniería Química' },
         institution: 'Universidad Industrial de Santander',
         location: 'Bucaramanga, Colombia',
         year: '2001 - 2007',

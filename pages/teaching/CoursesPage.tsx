@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { PageWrapper } from '../../components/PageWrapper';
 import { teachingData } from '../../components/data/teaching';
-import { useI18n, type UIKey } from '../../context/i18n';
+import { useI18n, localize, type UIKey } from '../../context/i18n';
 
 type FilterType = 'All' | 'Core' | 'Elective' | 'CBU' | 'Undergraduate' | 'Graduate';
 const filterOptions: FilterType[] = ['All', 'Core', 'Elective', 'CBU', 'Undergraduate', 'Graduate'];
@@ -14,8 +14,21 @@ const filterLabelKey: Record<FilterType, UIKey> = {
     'Graduate': 'courses.filter.graduate',
 };
 
+const typeLabel: Record<string, { en: string; es: string }> = {
+    'Core': { en: 'Core', es: 'Obligatorio' },
+    'Elective': { en: 'Elective', es: 'Electivo' },
+    'CBU': { en: 'CBU', es: 'CBU' },
+    'EDCO': { en: 'EDCO', es: 'EDCO' },
+    'Corporate': { en: 'Corporate', es: 'Corporativo' },
+    'Coursera': { en: 'Coursera', es: 'Coursera' },
+};
+const levelLabel: Record<string, { en: string; es: string }> = {
+    'Undergraduate': { en: 'Undergraduate', es: 'Pregrado' },
+    'Graduate': { en: 'Graduate', es: 'Posgrado' },
+};
+
 export const CoursesPage: React.FC = () => {
-    const { t } = useI18n();
+    const { t, lang } = useI18n();
     const [activeFilter, setActiveFilter] = useState<FilterType>('All');
 
     // Sort courses by term in descending order to show the latest first.
@@ -83,7 +96,7 @@ export const CoursesPage: React.FC = () => {
                                     <tr key={`${course.term}-${course.code}-${index}`} className="hover:bg-zinc-50 transition-colors duration-150">
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-brand-gray">{course.term}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-brand-dark">
-                                            <div className="font-medium">{course.title}</div>
+                                            <div className="font-medium">{localize(course.title, lang)}</div>
                                             <div className="text-brand-gray">{course.code}</div>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-brand-gray">{course.students}</td>
@@ -94,11 +107,11 @@ export const CoursesPage: React.FC = () => {
                                                     course.type === 'CBU' ? 'bg-sky-100 text-sky-800' :
                                                     'bg-green-100 text-green-800'
                                                 }`}>
-                                                    {course.type}
+                                                    {localize(typeLabel[course.type], lang)}
                                                 </span>
                                                 {course.level && (
                                                     <span className="mt-1 text-xs text-zinc-500">
-                                                        {course.level}
+                                                        {localize(levelLabel[course.level], lang)}
                                                     </span>
                                                 )}
                                             </div>

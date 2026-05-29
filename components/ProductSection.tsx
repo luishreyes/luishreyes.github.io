@@ -6,6 +6,7 @@ import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
 import type { Product } from '../types';
 import { CitationCounter } from './CitationCounter';
 import { researchLinesMap } from './data/research';
+import { useI18n, localize } from '../context/i18n';
 
 interface ProductSectionProps {
   product: Product;
@@ -34,6 +35,7 @@ const ChevronIcon = ({ open }: { open: boolean }) => (
 
 export const ProductSection = ({ product, index, citationCount, isLoadingCitations }: ProductSectionProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const { lang } = useI18n();
   const containerRef = useRef<HTMLDivElement>(null);
 
   const { scrollYProgress } = useScroll({
@@ -97,7 +99,7 @@ export const ProductSection = ({ product, index, citationCount, isLoadingCitatio
                                             {React.isValidElement(researchLine.icon) && React.cloneElement(researchLine.icon as React.ReactElement<{ className: string }>, { className: "h-6 w-6" })}
                                           </span>
                                           <span className="absolute bottom-full mb-2 w-max max-w-xs px-3 py-1.5 text-xs font-semibold text-brand-dark bg-zinc-200 rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 -translate-x-1/2 left-1/2">
-                                            {researchLine.title}
+                                            {localize(researchLine.title, lang)}
                                           </span>
                                         </div>
                                     )

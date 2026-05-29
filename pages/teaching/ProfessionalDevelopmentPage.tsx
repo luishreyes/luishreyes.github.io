@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { PageWrapper } from '../../components/PageWrapper';
-import { useI18n } from '../../context/i18n';
+import { useI18n, localize } from '../../context/i18n';
 import { professionalDevelopmentData } from '../../components/data/professionalDevelopment';
 // FIX: Removed 'Variants' from framer-motion import to resolve module export error.
 import { motion } from 'framer-motion';
@@ -39,7 +39,7 @@ const ListIcon = () => (
 );
 
 export const ProfessionalDevelopmentPage = () => {
-    const { t } = useI18n();
+    const { t, lang } = useI18n();
     return (
         <PageWrapper noPadding>
             <div className="pt-16">
@@ -76,11 +76,11 @@ export const ProfessionalDevelopmentPage = () => {
                                     <p className="md:absolute md:-left-36 md:top-0 md:text-right md:w-28 mb-2 md:mb-0">
                                         <span className="text-sm font-semibold text-yellow-800 bg-yellow-100 inline-block px-2 py-1 rounded-md">{activity.period}</span>
                                     </p>
-                                    <h3 className="font-bold text-xl text-brand-dark">{activity.title}</h3>
+                                    <h3 className="font-bold text-xl text-brand-dark">{localize(activity.title, lang)}</h3>
                                     {activity.institution && (
-                                        <p className="text-brand-gray font-medium">{activity.institution}</p>
+                                        <p className="text-brand-gray font-medium">{localize(activity.institution, lang)}</p>
                                     )}
-                                    <p className="mt-2 text-brand-gray">{activity.description}</p>
+                                    <p className="mt-2 text-brand-gray">{localize(activity.description, lang)}</p>
                                     {activity.details && (
                                         <ul className="mt-4 space-y-2">
                                             {activity.details.map((detail, i) => (
@@ -88,7 +88,7 @@ export const ProfessionalDevelopmentPage = () => {
                                                     <div className="flex-shrink-0 pt-1">
                                                         <ListIcon />
                                                     </div>
-                                                    <span className="text-brand-gray text-sm">{detail}</span>
+                                                    <span className="text-brand-gray text-sm">{localize(detail, lang)}</span>
                                                 </li>
                                             ))}
                                         </ul>

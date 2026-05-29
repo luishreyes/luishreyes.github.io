@@ -3,7 +3,7 @@
 
 import React, { useMemo, useState } from 'react';
 import { PageWrapper } from '../../components/PageWrapper';
-import { useI18n, type UIKey } from '../../context/i18n';
+import { useI18n, localize, type UIKey, type Lang } from '../../context/i18n';
 import { testimonials, type Testimonial } from '../../components/data/teaching';
 // FIX: Removed 'Variants' from framer-motion import to resolve module export error.
 import { motion } from 'framer-motion';
@@ -32,8 +32,8 @@ const itemVariants = {
 };
 
 // FIX: Changed component to React.FC to resolve TypeScript error with the 'key' prop.
-const TestimonialCard: React.FC<{ testimonial: Testimonial }> = ({ testimonial }) => (
-    <motion.div 
+const TestimonialCard: React.FC<{ testimonial: Testimonial; lang: Lang }> = ({ testimonial, lang }) => (
+    <motion.div
         className="w-full h-full bg-white rounded-lg shadow-lg border border-yellow-400/40 flex flex-col p-8"
         // FIX: Spread motion props to avoid TypeScript type errors.
         {...{variants: itemVariants}}
@@ -46,14 +46,14 @@ const TestimonialCard: React.FC<{ testimonial: Testimonial }> = ({ testimonial }
             />
             <div className="ml-4 text-left">
                 <p className="font-semibold text-brand-dark text-lg">{testimonial.name}</p>
-                <p className="text-sm text-brand-gray">{testimonial.info}</p>
-                <p className="text-xs text-zinc-500 mt-1 font-medium uppercase tracking-wider">{testimonial.context}</p>
+                <p className="text-sm text-brand-gray">{localize(testimonial.info, lang)}</p>
+                <p className="text-xs text-zinc-500 mt-1 font-medium uppercase tracking-wider">{localize(testimonial.context, lang)}</p>
             </div>
         </div>
-        
+
         <div className="w-full text-left flex-grow">
             <blockquote className="space-y-4">
-                {testimonial.quote.split('\n\n').map((paragraph, index, arr) => (
+                {localize(testimonial.quote, lang).split('\n\n').map((paragraph, index, arr) => (
                     <p key={index} className="text-brand-gray italic text-sm leading-relaxed">
                         {index === 0 && `"`}
                         {paragraph}
@@ -74,7 +74,7 @@ const categoryLabelKey: Record<string, UIKey> = {
 };
 
 export const TestimonialsPage = () => {
-    const { t } = useI18n();
+    const { t, lang } = useI18n();
     const [activeFilter, setActiveFilter] = useState<FilterCategory>('All');
 
     // FIX: Added explicit type annotation to resolve 'unknown' type errors.
@@ -140,7 +140,7 @@ export const TestimonialsPage = () => {
                                     }}
                                 >
                                     {list.map((testimonial, index) => (
-                                        <TestimonialCard key={`${testimonial.name}-${testimonial.category}-${index}`} testimonial={testimonial} />
+                                        <TestimonialCard key={`${testimonial.name}-${testimonial.category}-${index}`} testimonial={testimonial} lang={lang} />
                                     ))}
                                 </motion.div>
                             </div>

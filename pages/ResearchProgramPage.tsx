@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { PageWrapper } from '../components/PageWrapper';
-import { useI18n } from '../context/i18n';
+import { useI18n, localize } from '../context/i18n';
 // FIX: Removed 'Variants' from framer-motion import to resolve module export error.
 import { motion } from 'framer-motion';
 import { researchLines } from '../components/data/research';
@@ -31,7 +31,7 @@ const itemVariants = {
 };
 
 export const ResearchProgramPage = () => {
-    const { t } = useI18n();
+    const { t, lang } = useI18n();
     return (
         <PageWrapper noPadding>
             <div className="pt-16">
@@ -71,7 +71,7 @@ export const ResearchProgramPage = () => {
                     >
                         {researchLines.map((line) => (
                             <motion.div
-                                key={line.title}
+                                key={line.id}
                                 // FIX: Spread motion props to avoid TypeScript type errors.
                                 {...{variants: itemVariants}}
                                 className="bg-white rounded-lg shadow-lg border border-zinc-100 p-8 flex flex-col items-center text-center transition-transform duration-300 hover:-translate-y-2"
@@ -79,8 +79,8 @@ export const ResearchProgramPage = () => {
                                 <div className="bg-yellow-400/20 p-4 rounded-full mb-6">
                                     {line.icon}
                                 </div>
-                                <h3 className="text-xl font-bold text-brand-dark mb-3">{line.title}</h3>
-                                <p className="text-brand-gray leading-relaxed text-sm">{line.description}</p>
+                                <h3 className="text-xl font-bold text-brand-dark mb-3">{localize(line.title, lang)}</h3>
+                                <p className="text-brand-gray leading-relaxed text-sm">{localize(line.description, lang)}</p>
                             </motion.div>
                         ))}
                     </motion.div>

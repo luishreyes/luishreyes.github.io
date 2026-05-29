@@ -3,7 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import { PageWrapper } from '../components/PageWrapper';
 import { grantsData } from '../components/data/grants';
-import { useI18n } from '../context/i18n';
+import { useI18n, localize } from '../context/i18n';
 // FIX: Removed 'Variants' from framer-motion import to resolve module export error.
 import { motion } from 'framer-motion';
 
@@ -31,7 +31,7 @@ const itemVariants = {
 };
 
 export const GrantsPage = () => {
-    const { t } = useI18n();
+    const { t, lang } = useI18n();
     const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
 
     const sortedGrants = useMemo(() => {
@@ -133,7 +133,7 @@ export const GrantsPage = () => {
                                     </div>
                                     <p className="text-md text-brand-gray">{grant.organization}</p>
                                     <div className="mt-4 flex justify-between items-center text-sm">
-                                        <span className="text-brand-dark font-medium">{grant.role}</span>
+                                        <span className="text-brand-dark font-medium">{localize(grant.role, lang)}</span>
                                         <span className={`px-3 py-1 text-xs font-semibold rounded-full ${
                                             grant.status === 'Concluded' ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'
                                         }`}>

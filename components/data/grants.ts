@@ -6,7 +6,7 @@ export const grantsData: Grant[] = [
     startYear: 2025,
     endYear: 2027,
     organization: 'Novus Triada 2025',
-    role: 'Co-investigator',
+    role: { en: 'Co-investigator', es: 'Coinvestigador' },
     status: 'In Progress'
   },
   {
@@ -14,7 +14,7 @@ export const grantsData: Grant[] = [
     startYear: 2025,
     endYear: 2025,
     organization: 'ENEL S.A.',
-    role: 'Principal Investigator',
+    role: { en: 'Principal Investigator', es: 'Investigador principal' },
     status: 'In Progress'
   },
   {
@@ -22,7 +22,7 @@ export const grantsData: Grant[] = [
     startYear: 2025,
     endYear: 2026,
     organization: 'ENEL S.A.',
-    role: 'Principal Investigator',
+    role: { en: 'Principal Investigator', es: 'Investigador principal' },
     status: 'In Progress'
   },
   {
@@ -30,7 +30,7 @@ export const grantsData: Grant[] = [
     startYear: 2025,
     endYear: 2026,
     organization: 'ENEL S.A.',
-    role: 'Principal Investigator',
+    role: { en: 'Principal Investigator', es: 'Investigador principal' },
     status: 'In Progress'
   },
   {
@@ -38,7 +38,7 @@ export const grantsData: Grant[] = [
     startYear: 2025,
     endYear: 2026,
     organization: 'Universidad de los Andes (Horizontes Conectados)',
-    role: 'Co-investigator',
+    role: { en: 'Co-investigator', es: 'Coinvestigador' },
     status: 'In Progress'
   },
   {
@@ -46,7 +46,7 @@ export const grantsData: Grant[] = [
     startYear: 2024,
     endYear: 2025,
     organization: 'ENEL S.A.',
-    role: 'Principal Investigator',
+    role: { en: 'Principal Investigator', es: 'Investigador principal' },
     status: 'Concluded'
   },
   {
@@ -54,7 +54,7 @@ export const grantsData: Grant[] = [
     startYear: 2023,
     endYear: 2024,
     organization: 'ENEL S.A.',
-    role: 'Principal Investigator',
+    role: { en: 'Principal Investigator', es: 'Investigador principal' },
     status: 'Concluded'
   },
   {
@@ -62,7 +62,7 @@ export const grantsData: Grant[] = [
     startYear: 2022,
     endYear: 2022,
     organization: 'ENEL S.A.',
-    role: 'Principal Investigator',
+    role: { en: 'Principal Investigator', es: 'Investigador principal' },
     status: 'Concluded'
   },
   {
@@ -70,7 +70,7 @@ export const grantsData: Grant[] = [
     startYear: 2022,
     endYear: 2022,
     organization: 'Technifarm',
-    role: 'Co-investigator',
+    role: { en: 'Co-investigator', es: 'Coinvestigador' },
     status: 'Concluded'
   },
   {
@@ -78,7 +78,7 @@ export const grantsData: Grant[] = [
     startYear: 2020,
     endYear: 2023,
     organization: 'Uniandes, Pontificia Universidad Javeriana, Universidad del Rosario',
-    role: 'Co-investigator',
+    role: { en: 'Co-investigator', es: 'Coinvestigador' },
     status: 'Concluded'
   },
   {
@@ -86,14 +86,14 @@ export const grantsData: Grant[] = [
     startYear: 2020,
     endYear: 2021,
     organization: 'Rescale: Tech Against COVID',
-    role: 'Co-Principal Investigator',
+    role: { en: 'Co-Principal Investigator', es: 'Coinvestigador principal' },
     status: 'Concluded'
   },
   {
     title: 'Modular bioreactor with interchangeable parts',
     startYear: 2020,
     organization: 'Minciencias',
-    role: 'Inventor',
+    role: { en: 'Inventor', es: 'Inventor' },
     status: 'Concluded'
   },
   {
@@ -101,7 +101,7 @@ export const grantsData: Grant[] = [
     startYear: 2019,
     endYear: 2021,
     organization: 'Joint investigation - FSFB (Fundación Santa Fé de Bogotá) / Uniandes',
-    role: 'Principal Investigator',
+    role: { en: 'Principal Investigator', es: 'Investigador principal' },
     status: 'Concluded'
   },
   {
@@ -109,7 +109,7 @@ export const grantsData: Grant[] = [
     startYear: 2019,
     endYear: 2023,
     organization: 'Minciencias',
-    role: 'Principal Investigator',
+    role: { en: 'Principal Investigator', es: 'Investigador principal' },
     status: 'Concluded'
   },
   {
@@ -117,7 +117,7 @@ export const grantsData: Grant[] = [
     startYear: 2019,
     endYear: 2023,
     organization: 'Minciencias',
-    role: 'Co-investigator',
+    role: { en: 'Co-investigator', es: 'Coinvestigador' },
     status: 'Concluded'
   },
   {
@@ -125,7 +125,7 @@ export const grantsData: Grant[] = [
     startYear: 2019,
     endYear: 2021,
     organization: 'Vicerrectoría de Investigaciones Uniandes',
-    role: 'Principal Investigator',
+    role: { en: 'Principal Investigator', es: 'Investigador principal' },
     status: 'Concluded'
   },
   {
@@ -133,7 +133,7 @@ export const grantsData: Grant[] = [
     startYear: 2018,
     endYear: 2021,
     organization: 'Minciencias',
-    role: 'Co-investigator (Uniandes’ PI)',
+    role: { en: 'Co-investigator (Uniandes’ PI)', es: 'Coinvestigador (IP por Uniandes)' },
     status: 'Concluded'
   },
   {
@@ -141,7 +141,7 @@ export const grantsData: Grant[] = [
     startYear: 2018,
     endYear: 2019,
     organization: 'ENEL-Emgesa',
-    role: 'Co-investigator',
+    role: { en: 'Co-investigator', es: 'Coinvestigador' },
     status: 'Concluded'
   }
 ];
