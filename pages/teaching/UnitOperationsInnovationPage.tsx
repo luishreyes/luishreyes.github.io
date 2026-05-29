@@ -46,6 +46,7 @@ const scholarlyPapers = [
 ];
 
 const ScoreChart = () => {
+  const { t } = useI18n();
   const chartRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(0);
   const height = 350;

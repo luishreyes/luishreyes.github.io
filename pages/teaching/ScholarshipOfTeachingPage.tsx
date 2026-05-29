@@ -9,8 +9,10 @@ import { motion } from 'framer-motion';
 import { useAppData } from '../../context/AppDataContext';
 
 // FIX: Changed component to React.FC to resolve TypeScript error with the 'key' prop.
-const PublicationCard: React.FC<{ product: Product }> = ({ product }) => (
-  <motion.div 
+const PublicationCard: React.FC<{ product: Product }> = ({ product }) => {
+  const { t } = useI18n();
+  return (
+  <motion.div
     // FIX: Spread motion props to avoid TypeScript type errors.
     {...{
       variants: {
@@ -33,7 +35,8 @@ const PublicationCard: React.FC<{ product: Product }> = ({ product }) => (
       {t('sotl.readMore')}
     </a>
   </motion.div>
-);
+  );
+};
 
 const containerVariants = {
     hidden: {},
