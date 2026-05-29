@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { researchLinesMap } from './data/research';
+import { useI18n, localize } from '../context/i18n';
 import type { ResearchArea, Product } from '../types';
 
 interface ResearchConnectionsGraphProps {
@@ -65,6 +66,7 @@ const describeThickArc = (x: number, y: number, innerRadius: number, outerRadius
 };
 
 export const ResearchConnectionsGraph: React.FC<ResearchConnectionsGraphProps> = ({ products }) => {
+    const { lang } = useI18n();
     const svgContainerRef = useRef<HTMLDivElement>(null);
     const [dimensions, setDimensions] = useState({ width: 400, height: 400 });
     const [hoveredArea, setHoveredArea] = useState<ResearchArea | null>(null);
@@ -258,7 +260,7 @@ export const ResearchConnectionsGraph: React.FC<ResearchConnectionsGraphProps> =
                                     onMouseLeave={() => setHoveredArea(null)}
                                 >
                                     <div className="w-4 h-4 rounded-full flex-shrink-0" style={{ backgroundColor: area.color }}></div>
-                                    <span className="text-sm text-brand-dark font-medium">{area.title}</span>
+                                    <span className="text-sm text-brand-dark font-medium">{localize(area.title, lang)}</span>
                                 </div>
                             ))}
                         </div>

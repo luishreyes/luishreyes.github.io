@@ -4,6 +4,7 @@
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import type { Product, Grant, Recognition, Education, WorkExperience, ProductType } from '../types';
+import { localize } from '../context/i18n';
 
 // --- Constants ---
 const MARGIN = 15;
@@ -136,13 +137,13 @@ export const generateCvPdf = (
     addSectionHeader(doc, 'WORK EXPERIENCE');
     const sortedExperience = [...experience].sort((a, b) => getStartDate(b.period).getTime() - getStartDate(a.period).getTime());
     sortedExperience.forEach(exp => {
-        addTwoColumnEntry(doc, [exp.role, `${exp.company}, ${exp.location}`], exp.period);
+        addTwoColumnEntry(doc, [localize(exp.role, 'en'), `${exp.company}, ${exp.location}`], exp.period);
     });
 
     // --- EDUCATION ---
     addSectionHeader(doc, 'EDUCATION');
     education.forEach(edu => {
-        const degreeLine = `${edu.degree}, ${edu.field}`;
+        const degreeLine = `${localize(edu.degree, 'en')}, ${localize(edu.field, 'en')}`;
         const institutionLine = `${edu.institution}, ${edu.location}`;
         addTwoColumnEntry(doc, [degreeLine, institutionLine], edu.year);
     });
@@ -199,7 +200,7 @@ export const generateCvPdf = (
             const yearDisplay = (g.endYear && g.endYear !== g.startYear)
                 ? `${g.startYear} - ${g.endYear}`
                 : g.startYear.toString();
-            return [yearDisplay, g.title, g.organization, g.role];
+            return [yearDisplay, g.title, g.organization, localize(g.role, 'en')];
         }),
         theme: 'grid',
         headStyles: { fillColor: [85, 85, 85], textColor: 255 },

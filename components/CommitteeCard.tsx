@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { Committee } from '../types';
+import { useI18n, localize } from '../context/i18n';
 
 const ChevronIcon = ({ open }: { open: boolean }) => (
     <motion.svg
@@ -23,16 +24,18 @@ const ChevronIcon = ({ open }: { open: boolean }) => (
 );
 
 export const CommitteeCard = ({ committee }: { committee: Committee }) => {
+    const { lang } = useI18n();
     const [isExpanded, setIsExpanded] = useState(false);
     const hasDetails = committee.description.length > 0;
     const yearDisplay = committee.endYear ? `${committee.startYear} - ${committee.endYear}` : committee.startYear.toString();
+    const titleText = localize(committee.title, lang);
 
     const cardContent = (
         <div className="flex justify-between items-start gap-4">
             <div>
-                <h3 className="text-lg font-bold text-brand-dark">{committee.title}</h3>
+                <h3 className="text-lg font-bold text-brand-dark">{titleText}</h3>
                 {committee.role && (
-                    <p className="text-sm font-semibold text-yellow-500 mt-1">{committee.role}</p>
+                    <p className="text-sm font-semibold text-yellow-500 mt-1">{localize(committee.role, lang)}</p>
                 )}
             </div>
             <span className="flex-shrink-0 bg-amber-100 text-amber-800 text-xs font-semibold px-2.5 py-1 rounded-full mt-1">{yearDisplay}</span>
@@ -53,13 +56,13 @@ export const CommitteeCard = ({ committee }: { committee: Committee }) => {
                 onClick={() => setIsExpanded(!isExpanded)}
                 className="w-full text-left p-6 hover:bg-zinc-50 transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400"
                 aria-expanded={isExpanded}
-                aria-controls={`committee-details-${committee.title.replace(/\s/g, '')}`}
+                aria-controls={`committee-details-${titleText.replace(/\s/g, '')}`}
             >
                 <div className="flex justify-between items-start gap-4">
                     <div className="flex-grow">
-                        <h3 className="text-lg font-bold text-brand-dark">{committee.title}</h3>
+                        <h3 className="text-lg font-bold text-brand-dark">{titleText}</h3>
                         {committee.role && (
-                            <p className="text-sm font-semibold text-yellow-500 mt-1">{committee.role}</p>
+                            <p className="text-sm font-semibold text-yellow-500 mt-1">{localize(committee.role, lang)}</p>
                         )}
                     </div>
                     <div className="flex-shrink-0 flex items-center gap-4">
@@ -74,7 +77,7 @@ export const CommitteeCard = ({ committee }: { committee: Committee }) => {
             <AnimatePresence initial={false}>
                 {isExpanded && (
                     <motion.section
-                        id={`committee-details-${committee.title.replace(/\s/g, '')}`}
+                        id={`committee-details-${titleText.replace(/\s/g, '')}`}
                         key="content"
                         // FIX: Spread motion props to avoid TypeScript type errors.
                         {...{
@@ -92,7 +95,7 @@ export const CommitteeCard = ({ committee }: { committee: Committee }) => {
                         <div className="px-6 pb-6 pt-4 border-t border-zinc-200">
                             <div className="space-y-4 text-brand-gray text-base leading-relaxed">
                                 {committee.description.map((paragraph, index) => (
-                                    <p key={index}>{paragraph}</p>
+                                    <p key={index}>{localize(paragraph, lang)}</p>
                                 ))}
                             </div>
                         </div>

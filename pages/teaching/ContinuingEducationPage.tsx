@@ -3,7 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import { PageWrapper } from '../../components/PageWrapper';
 import { edcoCoursesData, type EdcoCourse } from '../../components/data/edco';
-import { useI18n, type UIKey } from '../../context/i18n';
+import { useI18n, localize, type UIKey } from '../../context/i18n';
 import { motion } from 'framer-motion';
 
 type FilterType = 'All' | EdcoCourse['type'];
@@ -15,8 +15,18 @@ const filterLabelKey: Record<string, UIKey> = {
     'Summer School': 'contEd.filter.summer',
 };
 
+const typeLabel: Record<string, { en: string; es: string }> = {
+    'Open Course': { en: 'Open Course', es: 'Curso Abierto' },
+    'Corporate Course': { en: 'Corporate Course', es: 'Curso Corporativo' },
+    'Summer School': { en: 'Summer School', es: 'Escuela de Verano' },
+};
+const roleLabel: Record<string, { en: string; es: string }> = {
+    'Instructor': { en: 'Instructor', es: 'Instructor' },
+    'Coordinator': { en: 'Coordinator', es: 'Coordinador' },
+};
+
 export const ContinuingEducationPage = () => {
-    const { t } = useI18n();
+    const { t, lang } = useI18n();
     const [activeFilter, setActiveFilter] = useState<FilterType>('All');
 
     const filteredCourses = useMemo(() => {
@@ -88,20 +98,25 @@ export const ContinuingEducationPage = () => {
                                     <tr key={`${course.year}-${course.title}-${index}`} className="hover:bg-zinc-50 transition-colors duration-150">
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-brand-gray">{course.year}</td>
                                         <td className="px-6 py-4 text-sm text-brand-dark">
-                                            {course.url ? (
-                                                <a href={course.url} target="_blank" rel="noopener noreferrer" className="font-medium text-brand-dark hover:text-yellow-500 hover:underline transition-colors">
-                                                    {course.title}
-                                                    {course.titleEn && <div className="text-brand-gray italic text-xs mt-1 font-normal">({course.titleEn})</div>}
-                                                </a>
-                                            ) : (
-                                                <>
-                                                    <div className="font-medium">{course.title}</div>
-                                                    {course.titleEn && <div className="text-brand-gray italic text-xs mt-1 font-normal">({course.titleEn})</div>}
-                                                </>
-                                            )}
+                                            {(() => {
+                                                const primary = lang === 'en' && course.titleEn ? course.titleEn : course.title;
+                                                const secondary = lang === 'en' ? course.title : course.titleEn;
+                                                const showSecondary = secondary && secondary !== primary;
+                                                return course.url ? (
+                                                    <a href={course.url} target="_blank" rel="noopener noreferrer" className="font-medium text-brand-dark hover:text-yellow-500 hover:underline transition-colors">
+                                                        {primary}
+                                                        {showSecondary && <div className="text-brand-gray italic text-xs mt-1 font-normal">({secondary})</div>}
+                                                    </a>
+                                                ) : (
+                                                    <>
+                                                        <div className="font-medium">{primary}</div>
+                                                        {showSecondary && <div className="text-brand-gray italic text-xs mt-1 font-normal">({secondary})</div>}
+                                                    </>
+                                                );
+                                            })()}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-brand-gray">
-                                            <div>{course.type}</div>
+                                            <div>{localize(typeLabel[course.type], lang)}</div>
                                             {course.client && <div className="text-xs text-zinc-500 italic">{course.client}</div>}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-brand-gray">{course.attendees}</td>
@@ -109,7 +124,7 @@ export const ContinuingEducationPage = () => {
                                              <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
                                                 course.role === 'Instructor' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'
                                             }`}>
-                                                {course.role}
+                                                {localize(roleLabel[course.role], lang)}
                                             </span>
                                         </td>
                                     </tr>

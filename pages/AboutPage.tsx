@@ -4,7 +4,7 @@
 import React, { useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { SocialLinks } from '../components/SocialLinks';
-import { useI18n } from '../context/i18n';
+import { useI18n, localize } from '../context/i18n';
 // FIX: Removed 'Variants' from framer-motion import to resolve module export error.
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { educationData, specializationsData, credentialsData } from '../components/data/education';
@@ -91,7 +91,7 @@ const heroChildVariants = {
 };
 
 export const AboutPage = () => {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -317,7 +317,7 @@ export const AboutPage = () => {
                                   className="relative pl-8 pb-8 last:pb-0"
                               >
                                   <div className="absolute left-0 top-1.5 w-4 h-4 bg-yellow-400 rounded-full -translate-x-1/2 border-4 border-white"></div>
-                                  <p className="font-bold text-lg text-brand-dark">{edu.degree}, {edu.field}</p>
+                                  <p className="font-bold text-lg text-brand-dark">{localize(edu.degree, lang)}, {localize(edu.field, lang)}</p>
                                   <p className="text-brand-gray">{edu.institution} <span className="font-normal text-brand-gray">({edu.year})</span></p>
                                   <p className="text-sm text-zinc-500">{edu.location}</p>
                               </motion.div>
@@ -358,7 +358,7 @@ export const AboutPage = () => {
                                   className="relative pl-8 pb-8 last:pb-0"
                               >
                                   <div className="absolute left-0 top-1.5 w-4 h-4 bg-yellow-400 rounded-full -translate-x-1/2 border-4 border-white"></div>
-                                  <p className="font-bold text-lg text-brand-dark">{exp.role}</p>
+                                  <p className="font-bold text-lg text-brand-dark">{localize(exp.role, lang)}</p>
                                   <p className="text-brand-gray">{exp.company} <span className="font-normal text-brand-gray">({exp.period})</span></p>
                                   <p className="text-sm text-zinc-500">{exp.location}</p>
                               </motion.div>

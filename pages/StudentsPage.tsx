@@ -3,7 +3,7 @@
 
 import React, { useState, useMemo, useRef } from 'react';
 import { PageWrapper } from '../components/PageWrapper';
-import { useI18n } from '../context/i18n';
+import { useI18n, localize } from '../context/i18n';
 import { studentsData, graduatedStudentsData } from '../components/data/students';
 import type { GraduatedStudent } from '../types';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
@@ -29,7 +29,7 @@ const ChevronIcon = ({ open }: { open: boolean }) => (
 // FIX: Changed component to React.FC to resolve TypeScript error with the 'key' prop.
 const GraduatedStudentCard: React.FC<{ student: GraduatedStudent }> = ({ student }) => {
     const [isExpanded, setIsExpanded] = useState(false);
-    const { t } = useI18n();
+    const { t, lang } = useI18n();
     const showLabel = t('students.thesis.show');
     const hideLabel = t('students.thesis.hide');
     const imageContainerRef = useRef<HTMLDivElement>(null);
@@ -84,10 +84,10 @@ const GraduatedStudentCard: React.FC<{ student: GraduatedStudent }> = ({ student
                     
                     {(student.program || student.currentPosition) && (
                         <div className="mt-2 text-brand-gray space-y-1">
-                            {student.program && <p>{student.program}</p>}
+                            {student.program && <p>{localize(student.program, lang)}</p>}
                             {student.currentPosition && (
                                 <p className="flex items-center gap-2 justify-center md:justify-start flex-wrap">
-                                    <span>{student.currentPosition}</span>
+                                    <span>{localize(student.currentPosition, lang)}</span>
                                     {student.linkedinUrl && (
                                         <a
                                             href={student.linkedinUrl}
@@ -169,8 +169,8 @@ const GraduatedStudentCard: React.FC<{ student: GraduatedStudent }> = ({ student
                                     <div className="mt-4 space-y-4 pt-4 border-t border-zinc-200">
                                         {student.laymanSummary.map((item, i) => (
                                             <div key={i}>
-                                                <h4 className="font-semibold text-brand-dark">{item.question}</h4>
-                                                <p className="mt-1 text-brand-gray">{item.answer}</p>
+                                                <h4 className="font-semibold text-brand-dark">{localize(item.question, lang)}</h4>
+                                                <p className="mt-1 text-brand-gray">{localize(item.answer, lang)}</p>
                                             </div>
                                         ))}
                                     </div>
@@ -190,8 +190,8 @@ const sortGraduatedStudents = (a: GraduatedStudent, b: GraduatedStudent): number
     return b.graduationYear - a.graduationYear;
   }
   // 2. Sort by program (alphabetical, treating undefined as first)
-  const programA = a.program ?? '';
-  const programB = b.program ?? '';
+  const programA = localize(a.program, 'en');
+  const programB = localize(b.program, 'en');
   const programCompare = programA.localeCompare(programB);
   if (programCompare !== 0) {
     return programCompare;
@@ -202,7 +202,7 @@ const sortGraduatedStudents = (a: GraduatedStudent, b: GraduatedStudent): number
 
 
 export const StudentsPage = () => {
-    const { t } = useI18n();
+    const { t, lang } = useI18n();
     const [activeFilter, setActiveFilter] = useState<'All' | 'Current' | 'Alumni'>('All');
 
     const sortedPhdGraduates = useMemo(() => 
@@ -256,7 +256,7 @@ export const StudentsPage = () => {
                                             <div className="bg-white p-8 rounded-lg shadow-lg border border-yellow-400/40">
                                                 <ul className="space-y-4 text-brand-gray text-lg list-disc list-inside">
                                                     {studentsData.phd.map(student => (
-                                                        <li key={student.name}><span className="font-medium text-brand-dark">{student.name}</span> - {student.info}</li>
+                                                        <li key={student.name}><span className="font-medium text-brand-dark">{student.name}</span> - {localize(student.info, lang)}</li>
                                                     ))}
                                                 </ul>
                                             </div>
@@ -269,7 +269,7 @@ export const StudentsPage = () => {
                                             <div className="bg-white p-8 rounded-lg shadow-lg border border-yellow-400/40">
                                                 <ul className="space-y-4 text-brand-gray text-lg list-disc list-inside">
                                                     {studentsData.ms.map(student => (
-                                                        <li key={student.name}><span className="font-medium text-brand-dark">{student.name}</span> - {student.info}</li>
+                                                        <li key={student.name}><span className="font-medium text-brand-dark">{student.name}</span> - {localize(student.info, lang)}</li>
                                                     ))}
                                                 </ul>
                                             </div>

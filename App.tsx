@@ -49,7 +49,7 @@ import { EdcoCoursePresentationsPage } from './pages/classroom/EdcoCoursePresent
 import { RetosPage } from './pages/classroom/RetosPage';
 import { startSequentialImagePreloading } from './services/preloader';
 import { AppDataContext } from './context/AppDataContext';
-import { I18nProvider } from './context/i18n';
+import { I18nProvider, localize } from './context/i18n';
 
 const App: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -129,7 +129,7 @@ const App: React.FC = () => {
       alert("Citation data is still loading. Please wait a moment and try again.");
       return;
     }
-    const researchAreaTitles = researchLines.map(line => line.title);
+    const researchAreaTitles = researchLines.map(line => localize(line.title, 'en'));
     generateCvPdf(
         products,
         grantsData,

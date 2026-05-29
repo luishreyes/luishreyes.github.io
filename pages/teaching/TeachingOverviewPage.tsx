@@ -30,7 +30,8 @@ const averageEvaluationDisplay = averageEvaluation !== null
     ? averageEvaluation.toFixed(1)
     : 'N/A';
 
-const uniqueCourses = new Set([...teachingData.map(c => c.title), ...edcoCoursesData.map(c => c.title)]).size;
+const titleKey = (t: string | { en: string; es: string }): string => typeof t === 'string' ? t : t.en;
+const uniqueCourses = new Set([...teachingData.map(c => titleKey(c.title)), ...edcoCoursesData.map(c => c.title)]).size;
 
 export const TeachingOverviewPage: React.FC = () => {
   const { t } = useI18n();

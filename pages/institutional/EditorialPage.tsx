@@ -3,7 +3,7 @@
 import React from 'react';
 import { PageWrapper } from '../../components/PageWrapper';
 import { editorialData } from '../../components/data/institutional';
-import { useI18n } from '../../context/i18n';
+import { useI18n, localize } from '../../context/i18n';
 
 const eceIcons = [
   <img src="https://cdn-icons-png.flaticon.com/512/8998/8998530.png" alt="Subject Editor in Biotechnology & Bioprocessing Icon" className="w-8 h-8" />,
@@ -18,7 +18,7 @@ const discoverBiotechIcons = [
 ];
 
 export const EditorialPage: React.FC = () => {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   return (
     <PageWrapper noPadding>
         <div className="pt-16">
@@ -47,9 +47,9 @@ export const EditorialPage: React.FC = () => {
                                     <div className="flex flex-col sm:flex-row justify-between sm:items-baseline gap-2 mb-2">
                                         <h3 className="text-2xl font-bold text-brand-dark leading-tight">{role.journal}</h3>
                                     </div>
-                                    <p className="block text-sm font-semibold text-yellow-500 uppercase tracking-wide">{role.role} ({role.startDate} - {role.endDate})</p>
-                                    
-                                    <p className="mt-4 text-brand-gray text-base">{role.description}</p>
+                                    <p className="block text-sm font-semibold text-yellow-500 uppercase tracking-wide">{localize(role.role, lang)} ({role.startDate} - {role.endDate})</p>
+
+                                    <p className="mt-4 text-brand-gray text-base">{localize(role.description, lang)}</p>
 
                                     <ul className="mt-5 list-none space-y-4 text-brand-gray">
                                         {role.responsibilities.map((resp, i) => (
@@ -57,7 +57,7 @@ export const EditorialPage: React.FC = () => {
                                                 <div className="flex-shrink-0 mr-4 w-8 h-8 flex items-center justify-center">
                                                     {icons[i % icons.length]}
                                                 </div>
-                                                <span className="leading-relaxed text-sm">{resp}</span>
+                                                <span className="leading-relaxed text-sm">{localize(resp, lang)}</span>
                                             </li>
                                         ))}
                                     </ul>

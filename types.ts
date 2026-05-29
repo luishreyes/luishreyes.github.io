@@ -1,3 +1,4 @@
+import type { Localized } from './context/i18n';
 
 export type ProductType =
   | 'Research Paper'
@@ -42,28 +43,33 @@ export interface Product {
   researchAreas?: ResearchArea[];
 }
 
+export interface StudentLaymanSummaryPoint {
+  question: Localized;
+  answer: Localized;
+}
+
 export interface GraduatedStudent {
   name: string;
   degree: 'Ph.D.' | 'M.S.' | 'Doctor';
-  program?: string;
+  program?: Localized;
   graduationYear: number;
   startedYear: number;
-  currentPosition?: string;
+  currentPosition?: Localized;
   linkedinUrl?: string;
   thesisTitle: string;
-  laymanSummary: LaymanSummaryPoint[];
+  laymanSummary: StudentLaymanSummaryPoint[];
   imageUrl: string;
 }
 
 export interface CurrentStudent {
     name: string;
     degree: 'Ph.D.' | 'M.S.';
-    info: string;
+    info: Localized;
 }
 
 export interface Education {
-  degree: string;
-  field: string;
+  degree: Localized;
+  field: Localized;
   institution: string;
   location: string;
   year: string; // Changed to string to accommodate ranges
@@ -84,18 +90,18 @@ export interface Credential {
 }
 
 export interface WorkExperience {
-  role: string;
+  role: Localized;
   company: string;
   period: string;
   location: string;
 }
 
 export interface Committee {
-  title: string;
-  role?: string;
+  title: Localized;
+  role?: Localized;
   startYear: number;
   endYear?: number | 'Present';
-  description: string[]; // Each string is a paragraph
+  description: Localized[]; // Each string is a paragraph
   level?: 'National' | 'University' | 'Faculty' | 'Department';
 }
 
@@ -104,18 +110,18 @@ export interface Grant {
   startYear: number;
   endYear?: number;
   organization: string;
-  role: string;
+  role: Localized;
   status: string;
 }
 
 export interface Recognition {
   title: string;
   awarder: string;
-  category: string;
+  category: Localized;
   year: number;
   projectTitle: string;
   authors: string[];
-  summary: string[];
+  summary: Localized[];
   url: string;
   imageUrl: string;
 }

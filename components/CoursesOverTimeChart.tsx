@@ -1,6 +1,17 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { TaughtCourse } from '../components/data/teaching';
+import { useI18n, localize } from '../context/i18n';
+
+const typeLabel: Record<string, { en: string; es: string }> = {
+  'All': { en: 'All', es: 'Todos' },
+  'Core': { en: 'Core', es: 'Obligatorio' },
+  'Elective': { en: 'Elective', es: 'Electivo' },
+  'CBU': { en: 'CBU', es: 'CBU' },
+  'EDCO': { en: 'EDCO', es: 'EDCO' },
+  'Corporate': { en: 'Corporate', es: 'Corporativo' },
+  'Coursera': { en: 'Coursera', es: 'Coursera' },
+};
 
 type CourseType = TaughtCourse['type'];
 
@@ -29,6 +40,7 @@ const processData = (courses: TaughtCourse[], filter: CourseType | 'All'): Chart
 };
 
 export const CoursesOverTimeChart = ({ courses }: { courses: TaughtCourse[] }) => {
+  const { lang } = useI18n();
   const [activeFilter, setActiveFilter] = useState<CourseType | 'All'>('All');
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const [chartWidth, setChartWidth] = useState(800);
@@ -110,7 +122,7 @@ export const CoursesOverTimeChart = ({ courses }: { courses: TaughtCourse[] }) =
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-lg border border-zinc-100 max-w-5xl mx-auto">
-      <h2 className="text-2xl font-semibold text-brand-dark text-center mb-4">Courses Taught Over Time</h2>
+      <h2 className="text-2xl font-semibold text-brand-dark text-center mb-4">{lang === 'es' ? 'Cursos dictados a lo largo del tiempo' : 'Courses Taught Over Time'}</h2>
       {/* Filter Buttons */}
       <div className="flex flex-wrap gap-2 justify-center mb-6">
         {uniqueTypes.map(type => (
@@ -123,7 +135,7 @@ export const CoursesOverTimeChart = ({ courses }: { courses: TaughtCourse[] }) =
                 : 'bg-white text-brand-gray hover:bg-zinc-100 border border-zinc-200'
             }`}
           >
-            {type}
+            {localize(typeLabel[type], lang)}
           </button>
         ))}
       </div>

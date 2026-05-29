@@ -4,7 +4,7 @@
 import React, { useRef } from 'react';
 import { PageWrapper } from '../components/PageWrapper';
 import { awardsData } from '../components/data/awards';
-import { useI18n } from '../context/i18n';
+import { useI18n, localize } from '../context/i18n';
 // FIX: Removed 'Variants' from framer-motion import to resolve module export error.
 import { motion, useScroll, useTransform } from 'framer-motion';
 
@@ -34,7 +34,7 @@ const itemVariants = {
 
 // FIX: Changed component to React.FC to resolve TypeScript error with the 'key' prop.
 const RecognitionCard: React.FC<{ recognition: typeof awardsData[0] }> = ({ recognition }) => {
-    const { t } = useI18n();
+    const { t, lang } = useI18n();
     const imageContainerRef = useRef<HTMLDivElement>(null);
 
     const { scrollYProgress } = useScroll({
@@ -80,7 +80,7 @@ const RecognitionCard: React.FC<{ recognition: typeof awardsData[0] }> = ({ reco
                             <h2 className="text-2xl font-bold text-brand-dark leading-tight">{recognition.title}</h2>
                             <span className="text-sm font-semibold bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full whitespace-nowrap flex-shrink-0">{recognition.year}</span>
                         </div>
-                        <p className="block text-sm font-semibold text-yellow-500 uppercase tracking-wide">{recognition.awarder} - {recognition.category}</p>
+                        <p className="block text-sm font-semibold text-yellow-500 uppercase tracking-wide">{recognition.awarder} - {localize(recognition.category, lang)}</p>
                         
                         <p className="mt-4 text-brand-dark italic font-medium">{t('awards.work')} "{recognition.projectTitle}"</p>
 
@@ -95,7 +95,7 @@ const RecognitionCard: React.FC<{ recognition: typeof awardsData[0] }> = ({ reco
 
                         <div className="mt-4 space-y-3 text-brand-gray text-base">
                             {recognition.summary.map((paragraph, i) => (
-                                <p key={i}>{paragraph}</p>
+                                <p key={i}>{localize(paragraph, lang)}</p>
                             ))}
                         </div>
                     </div>
