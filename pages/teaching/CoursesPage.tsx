@@ -1,11 +1,13 @@
 import React, { useState, useMemo } from 'react';
 import { PageWrapper } from '../../components/PageWrapper';
 import { teachingData } from '../../components/data/teaching';
+import { useI18n } from '../../context/i18n';
 
 type FilterType = 'All' | 'Core' | 'Elective' | 'CBU' | 'Undergraduate' | 'Graduate';
 const filterOptions: FilterType[] = ['All', 'Core', 'Elective', 'CBU', 'Undergraduate', 'Graduate'];
 
 export const CoursesPage: React.FC = () => {
+    const { t } = useI18n();
     const [activeFilter, setActiveFilter] = useState<FilterType>('All');
 
     // Sort courses by term in descending order to show the latest first.
@@ -32,9 +34,9 @@ export const CoursesPage: React.FC = () => {
                 <div className="sticky top-16 bg-zinc-50/95 backdrop-blur-sm z-20 py-6 border-b border-zinc-200">
                      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="max-w-4xl mx-auto text-left">
-                            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-brand-dark">Courses Taught</h1>
+                            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-brand-dark">{t('courses.title')}</h1>
                             <p className="mt-4 text-brand-gray leading-relaxed">
-                                Below is a comprehensive list of courses I have taught since 2017, detailing student engagement, course type, and my role in their design.
+                                {t('courses.sub')}
                             </p>
                         </div>
                         
@@ -61,11 +63,11 @@ export const CoursesPage: React.FC = () => {
                         <table className="min-w-full divide-y divide-zinc-200">
                             <thead className="bg-zinc-50">
                                 <tr className="text-left text-xs font-medium text-brand-gray uppercase tracking-wider">
-                                    <th scope="col" className="px-6 py-3">Term</th>
-                                    <th scope="col" className="px-6 py-3">Course</th>
-                                    <th scope="col" className="px-6 py-3">Students</th>
-                                    <th scope="col" className="px-6 py-3">Type</th>
-                                    <th scope="col" className="px-6 py-3 text-center">Student Evaluation</th>
+                                    <th scope="col" className="px-6 py-3">{t('courses.col.term')}</th>
+                                    <th scope="col" className="px-6 py-3">{t('courses.col.course')}</th>
+                                    <th scope="col" className="px-6 py-3">{t('courses.col.students')}</th>
+                                    <th scope="col" className="px-6 py-3">{t('courses.col.type')}</th>
+                                    <th scope="col" className="px-6 py-3 text-center">{t('courses.col.evaluation')}</th>
                                 </tr>
                             </thead>
                             <tbody className="bg-white divide-y divide-zinc-200">

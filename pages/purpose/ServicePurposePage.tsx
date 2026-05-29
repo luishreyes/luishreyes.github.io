@@ -5,8 +5,10 @@
 import React from 'react';
 import { PageWrapper } from '../../components/PageWrapper';
 import { motion } from 'framer-motion';
+import { useI18n } from '../../context/i18n';
 
 export const ServicePurposePage: React.FC = () => {
+  const { t } = useI18n();
   return (
     <PageWrapper noPadding>
       {/* Header Section */}
@@ -38,10 +40,10 @@ export const ServicePurposePage: React.FC = () => {
                     className="text-left max-w-3xl"
                 >
                     <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white [text-shadow:0_2px_4px_rgba(0,0,0,0.5)]">
-                        Cultivating the Ecosystem
+                        {t('purpose.service.title')}
                     </h1>
                     <p className="mt-6 text-xl text-zinc-200 leading-relaxed [text-shadow:0_1px_2px_rgba(0,0,0,0.5)]">
-                        Cultivating the structures that made my growth possible, and building paths the next generation can use to go further than we did.
+                        {t('purpose.service.sub')}
                     </p>
                 </motion.div>
             </div>
@@ -60,7 +62,7 @@ export const ServicePurposePage: React.FC = () => {
                 }}
                 className="text-left"
             >
-                <h2 className="text-3xl font-bold tracking-tight text-brand-dark text-left mb-8">My Service Purpose</h2>
+                <h2 className="text-3xl font-bold tracking-tight text-brand-dark text-left mb-8">{t('purpose.service.h2')}</h2>
                 <div className="space-y-6 text-lg text-brand-gray leading-relaxed">
                     <p>
                         Institutions and communities are ecosystems. They do not maintain themselves. My purpose in serving is to keep cultivating the structures that made my own growth possible, and to build paths the next generation can use to go further than we did.

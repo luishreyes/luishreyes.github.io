@@ -1,12 +1,13 @@
 import React, { useRef } from 'react';
 import { PageWrapper } from '../../components/PageWrapper';
 import { StatsSection } from '../../components/StatsSection';
+import { useI18n } from '../../context/i18n';
 import { teachingData, type TaughtCourse } from '../../components/data/teaching';
 import { edcoCoursesData } from '../../components/data/edco';
 import { CoursesOverTimeChart } from '../../components/CoursesOverTimeChart';
 import { motion, useScroll, useTransform } from 'framer-motion';
 
-// Calculate stats from data
+// Calculate stats from data (values computed at module level, labels translated inside component)
 const universityCoursesCount = teachingData.length;
 const edcoCoursesCount = edcoCoursesData.length;
 const totalCourses = universityCoursesCount + edcoCoursesCount;
@@ -15,7 +16,7 @@ const universityStudentsCount = teachingData.reduce((sum, course) => sum + (cour
 const edcoStudentsCount = edcoCoursesData.reduce((sum, course) => sum + course.attendees, 0);
 const totalStudents = universityStudentsCount + edcoStudentsCount;
 
-// Note: Averaging mixed scales (e.g. 5.0 and 200.0) isn't perfectly meaningful 
+// Note: Averaging mixed scales (e.g. 5.0 and 200.0) isn't perfectly meaningful
 // but we keep a generic metric for now.
 const evaluations = teachingData
     .map(c => c.evaluation)
@@ -24,23 +25,25 @@ const evaluations = teachingData
 const averageEvaluation = evaluations.length > 0
     ? (evaluations.reduce((sum, e) => sum + e, 0) / evaluations.length)
     : null;
-    
+
 const averageEvaluationDisplay = averageEvaluation !== null
     ? averageEvaluation.toFixed(1)
     : 'N/A';
-    
+
 const uniqueCourses = new Set([...teachingData.map(c => c.title), ...edcoCoursesData.map(c => c.title)]).size;
 
-const stats = [
-    { label: 'Total Courses Taught', value: totalCourses },
-    { label: 'Total Students', value: totalStudents },
-    { label: `Avg. Evaluation Score`, value: averageEvaluationDisplay },
-    { label: 'Unique Course Titles', value: uniqueCourses },
-    { label: 'University Courses', value: universityCoursesCount },
-    { label: 'Continuing Ed. Courses', value: edcoCoursesCount },
-];
-
 export const TeachingOverviewPage: React.FC = () => {
+  const { t } = useI18n();
+
+  const stats = [
+    { label: t('stats.totalCourses'), value: totalCourses },
+    { label: t('stats.totalStudents'), value: totalStudents },
+    { label: t('stats.avgEvaluation'), value: averageEvaluationDisplay },
+    { label: t('stats.uniqueCourses'), value: uniqueCourses },
+    { label: t('stats.uniCourses'), value: universityCoursesCount },
+    { label: t('stats.contEdCourses'), value: edcoCoursesCount },
+  ];
+
   // Map continuing education courses to the TaughtCourse type for the chart
   const mappedEdcoCourses: TaughtCourse[] = edcoCoursesData.map(course => {
     let courseType: TaughtCourse['type'] = 'EDCO';
@@ -105,10 +108,10 @@ export const TeachingOverviewPage: React.FC = () => {
                   className="text-left max-w-3xl"
               >
                   <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white [text-shadow:0_2px_4px_rgba(0,0,0,0.5)]">
-                      Teaching Overview
+                      {t('teaching.overview.title')}
                   </h1>
                   <p className="mt-6 text-xl text-zinc-200 leading-relaxed [text-shadow:0_1px_2px_rgba(0,0,0,0.5)]">
-                      Fostering the next generation of innovators through project-based learning and real-world challenges.
+                      {t('teaching.overview.subtitle')}
                   </p>
               </motion.div>
           </div>
@@ -130,9 +133,9 @@ export const TeachingOverviewPage: React.FC = () => {
               }}
               className="mt-16 max-w-4xl mx-auto text-center"
             >
-              <h2 className="text-2xl font-semibold text-brand-dark">My Teaching Approach</h2>
+              <h2 className="text-2xl font-semibold text-brand-dark">{t('teaching.overview.approach.title')}</h2>
               <p className="mt-4 text-brand-gray leading-relaxed text-lg">
-                My teaching portfolio reflects a deep commitment to engineering education across all levels, from core undergraduate courses to specialized graduate seminars and professional development programs. My courses are designed to be dynamic, hands-on learning environments where students tackle real-world challenges. I emphasize a project-based approach that not only builds strong technical foundations but also cultivates essential professional skills like critical thinking, teamwork, and communication. Through my involvement in curriculum design, continuing education, and corporate training, I strive to create impactful learning experiences that bridge the gap between academic theory and industry practice, empowering the next generation of engineers to innovate and lead.
+                {t('teaching.overview.approach.text')}
               </p>
             </motion.div>
             

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { PageWrapper } from '../../components/PageWrapper';
 // FIX: Removed 'Variants' from framer-motion import to resolve module export error.
 import { motion } from 'framer-motion';
+import { useI18n } from '../../context/i18n';
 
 const cardVariants = {
   offscreen: { y: 50, opacity: 0 },
@@ -62,14 +63,15 @@ const CheckIcon = () => (
 );
 
 export const AugmentedIntelligencePage: React.FC = () => {
+  const { t } = useI18n();
   return (
     <PageWrapper noPadding>
       <div className="pt-16">
         <div className="sticky top-16 bg-zinc-50/95 backdrop-blur-sm z-20 py-6 border-b border-zinc-200">
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-brand-dark text-left">Augmented Intelligence Uniandes</h1>
+                <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-brand-dark text-left">{t('ai.title')}</h1>
                 <p className="mt-4 text-brand-gray leading-relaxed">
-                    A pioneering initiative to transform engineering education by strategically integrating Generative AI, co-founded and co-designed to amplify human intelligence.
+                    {t('ai.sub')}
                 </p>
             </div>
         </div>
@@ -83,13 +85,13 @@ export const AugmentedIntelligencePage: React.FC = () => {
                     transition: { duration: 0.5, delay: 0.1 }
                 }}
             >
-                <h2 className="text-2xl font-semibold tracking-tight text-brand-dark mt-8">Transforming Engineering Education with AI</h2>
+                <h2 className="text-2xl font-semibold tracking-tight text-brand-dark mt-8">{t('ai.transforming')}</h2>
                 <p className="mt-6 text-lg text-brand-gray leading-relaxed">
                     As a co-founder of the <strong>Augmented Intelligence Uniandes</strong> initiative, alongside Dean Rubby Casallas and Professor Juan Carlos Cruz, I have actively participated in the strategic integration of Generative Artificial Intelligence in the School of Engineering at Universidad de los Andes. This pioneering initiative, launched in June 2024, represents a paradigm shift in how we conceive teaching and learning in engineering.
                 </p>
             </motion.div>
             
-            <Section title="My Role and Contribution" bg="bg-transparent">
+            <Section title={t('ai.myRole')} bg="bg-transparent">
                  <motion.div 
                     // FIX: Spread motion props to avoid TypeScript type errors.
                     {...{
@@ -101,7 +103,7 @@ export const AugmentedIntelligencePage: React.FC = () => {
                     className="grid md:grid-cols-2 gap-12"
                  >
                     <motion.div {...{variants: cardVariants}}>
-                        <h3 className="text-2xl font-semibold text-brand-dark mb-4">Leadership and Conceptual Design</h3>
+                        <h3 className="text-2xl font-semibold text-brand-dark mb-4">{t('ai.leadership')}</h3>
                         <ul className="space-y-3 text-brand-gray">
                             <li><strong>Co-creator</strong> of the Augmented Intelligence strategy.</li>
                             <li><strong>Co-designer</strong> of the "augmented intelligence" conceptual framework.</li>
@@ -110,7 +112,7 @@ export const AugmentedIntelligencePage: React.FC = () => {
                         </ul>
                     </motion.div>
                     <motion.div {...{variants: cardVariants}}>
-                        <h3 className="text-2xl font-semibold text-brand-dark mb-4">Management and Implementation</h3>
+                        <h3 className="text-2xl font-semibold text-brand-dark mb-4">{t('ai.management')}</h3>
                         <ul className="space-y-3 text-brand-gray">
                             <li>Operational coordination of the multidisciplinary team.</li>
                             <li>Co-development of the three-phase training program.</li>
@@ -120,24 +122,24 @@ export const AugmentedIntelligencePage: React.FC = () => {
                  </motion.div>
             </Section>
 
-            <Section title="Impact and Results">
+            <Section title={t('ai.impact')}>
                 <motion.div {...{variants: cardVariants}}>
                     <h3 className="text-2xl font-semibold text-brand-dark text-left mb-6">First IAGen Call 2025-1: A Resounding Success</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-center">
                         <div className="bg-white p-6 rounded-lg shadow-md border border-yellow-400/40">
                             <p className="text-4xl font-bold text-yellow-400">30</p>
-                            <p className="text-brand-gray">projects submitted</p>
+                            <p className="text-brand-gray">{t('ai.impact.projects')}</p>
                         </div>
                         <div className="bg-white p-6 rounded-lg shadow-md border border-yellow-400/40">
                             <p className="text-4xl font-bold text-yellow-400">20</p>
-                            <p className="text-brand-gray">projects selected</p>
+                            <p className="text-brand-gray">{t('ai.impact.selected')}</p>
                         </div>
                     </div>
-                    <p className="text-center mt-6 text-brand-gray">The call achieved participation from <strong>all departments</strong> of the School.</p>
+                    <p className="text-center mt-6 text-brand-gray">{t('ai.impact.all')} <strong>{t('ai.impact.all2')}</strong></p>
                 </motion.div>
                 
                 <motion.div {...{variants: cardVariants}} className="mt-12">
-                     <h3 className="text-2xl font-semibold text-brand-dark text-left mb-6">Innovation Categories Developed</h3>
+                     <h3 className="text-2xl font-semibold text-brand-dark text-left mb-6">{t('ai.categories')}</h3>
                      <div className="grid sm:grid-cols-3 gap-6 text-center">
                         <div className="bg-white p-4 rounded-lg shadow-sm border border-yellow-400/40">
                             <p className="font-bold text-brand-dark">Process Optimization</p>
@@ -155,13 +157,13 @@ export const AugmentedIntelligencePage: React.FC = () => {
                 </motion.div>
             </Section>
 
-            <Section title="Global Recognition" bg="bg-transparent">
+            <Section title={t('ai.global')} bg="bg-transparent">
                  <motion.div {...{variants: cardVariants}}>
                     <div className="bg-white p-8 rounded-lg shadow-lg border border-yellow-400/40 flex flex-col items-start gap-6">
                         <div className="flex items-center gap-4 w-full">
                             <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/OpenAI_Logo.svg/1200px-OpenAI_Logo.svg.png" alt="OpenAI Logo" className="h-12 w-auto object-contain flex-shrink-0" />
                             <div className="flex-grow">
-                                <h3 className="text-xl font-semibold text-brand-dark">Selected for OpenAI's Global Faculty AI Project</h3>
+                                <h3 className="text-xl font-semibold text-brand-dark">{t('ai.openai')}</h3>
                             </div>
                         </div>
                         <p className="text-brand-gray">
@@ -184,22 +186,22 @@ export const AugmentedIntelligencePage: React.FC = () => {
                                 to="/recognition"
                                 className="text-yellow-500 font-medium hover:underline hover:text-yellow-400 transition-colors"
                             >
-                                See the recognition details &rarr;
+                                {t('ai.recognition.link')}
                             </Link>
                         </div>
                     </div>
                 </motion.div>
             </Section>
 
-            <Section title="Pedagogical and Technological Innovation" bg="bg-transparent">
+            <Section title={t('ai.pedagogical')} bg="bg-transparent">
                  <motion.div {...{variants: cardVariants}}>
-                    <h3 className="text-2xl font-semibold text-brand-dark mb-4">Conceptual Framework: Augmented Intelligence</h3>
+                    <h3 className="text-2xl font-semibold text-brand-dark mb-4">{t('ai.framework')}</h3>
                     <blockquote className="mt-4 p-6 bg-zinc-100 border-l-4 border-yellow-400 rounded-r-lg italic text-brand-dark text-lg">
                         "Augmented Intelligence does not seek to replace human intelligence, but to amplify it, enabling students, teachers, and researchers to address complex problems, generate innovative ideas, and develop creative solutions more effectively."
                     </blockquote>
                  </motion.div>
                  <motion.div {...{variants: cardVariants}} className="mt-12">
-                     <h3 className="text-2xl font-semibold text-brand-dark mb-6">Guiding Principles Implemented</h3>
+                     <h3 className="text-2xl font-semibold text-brand-dark mb-6">{t('ai.principles')}</h3>
                      <ol className="space-y-3 text-brand-gray list-decimal list-inside">
                         <li><strong>Disciplinary Contextualization:</strong> Each solution is aligned with the specific needs of the course.</li>
                         <li><strong>Restricted to Course Material:</strong> Assistants operate within defined pedagogical limits.</li>
@@ -209,7 +211,7 @@ export const AugmentedIntelligencePage: React.FC = () => {
                  </motion.div>
             </Section>
 
-            <Section title="Implementation Process">
+            <Section title={t('ai.implementation')}>
                  <motion.div 
                     // FIX: Spread motion props to avoid TypeScript type errors.
                     {...{
@@ -251,7 +253,7 @@ export const AugmentedIntelligencePage: React.FC = () => {
             </Section>
 
             {/* FIX: Completed the truncated Section component, added children to resolve the missing prop error, and added necessary closing tags. */}
-            <Section title="Projection and Sustainability" bg="bg-zinc-50">
+            <Section title={t('ai.projection')} bg="bg-zinc-50">
                  <motion.div 
                     {...{
                         initial: "offscreen",
@@ -260,7 +262,7 @@ export const AugmentedIntelligencePage: React.FC = () => {
                         variants: cardVariants,
                     }}
                  >
-                    <h3 className="text-2xl font-semibold text-brand-dark mb-4">Future Vision</h3>
+                    <h3 className="text-2xl font-semibold text-brand-dark mb-4">{t('ai.futureVision')}</h3>
                     <p className="text-brand-gray leading-relaxed">
                         The Augmented Intelligence Uniandes initiative is designed to be a sustainable and evolving program. Our vision is to establish a permanent center of excellence for AI in education, continuously exploring new pedagogical models and technologies. Future plans include expanding the program to other faculties, securing long-term strategic partnerships with industry leaders, and developing a repository of open-source educational AI tools to benefit the broader academic community.
                     </p>

@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { PageWrapper } from '../components/PageWrapper';
+import { useI18n } from '../context/i18n';
 // FIX: Removed 'Variants' from framer-motion import to resolve module export error.
 import { motion } from 'framer-motion';
 import { researchLines } from '../components/data/research';
@@ -30,14 +31,15 @@ const itemVariants = {
 };
 
 export const ResearchProgramPage = () => {
+    const { t } = useI18n();
     return (
         <PageWrapper noPadding>
             <div className="pt-16">
                 <div className="sticky top-16 bg-zinc-50/95 backdrop-blur-sm z-20 py-6 border-b border-zinc-200">
                     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-brand-dark text-left">Research Program: Biological Engineering</h1>
+                        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-brand-dark text-left">{t('research.program.title')}</h1>
                         <p className="mt-4 text-brand-gray leading-relaxed">
-                            Our research group applies engineering principles to design, build, and optimize living systems, addressing critical challenges across biomedical, food, and environmental engineering.
+                            {t('research.program.sub')}
                         </p>
                     </div>
                 </div>
@@ -50,10 +52,10 @@ export const ResearchProgramPage = () => {
                         className="text-left max-w-4xl mx-auto mb-16"
                     >
                         <p className="text-brand-gray text-lg leading-relaxed">
-                            My research group is dedicated to engineering biology for a better life and creating a sustainable future. We operate at the convergence of biotechnology, nanotechnology, and artificial intelligence, applying engineering principles to design, build, and optimize living systems. Our work addresses critical challenges across biomedical, food, and environmental engineering, transforming microorganisms into microscopic factories that produce high-value products for medicine, food, and sustainable industry.
+                            {t('research.program.para1')}
                         </p>
                         <p className="mt-4 text-brand-gray text-lg leading-relaxed">
-                            This work is driven by a deeply interdisciplinary approach. We use synthetic biology to write new genetic programs for cells, and employ computational biology and AI to predict and accelerate our designs. Our expertise in bioprocess engineering allows us to scale these solutions from the lab to industrial production. In parallel, we engineer smart biomaterials and nanocarriers for targeted drug and gene therapies. By integrating these advanced tools with nature's own design process—adaptive laboratory evolution—we rapidly innovate robust solutions that advance a circular economy.
+                            {t('research.program.para2')}
                         </p>
                     </motion.div>
 

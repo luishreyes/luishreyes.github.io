@@ -3,6 +3,7 @@
 
 import React, { useMemo } from 'react';
 import { PageWrapper } from '../../components/PageWrapper';
+import { useI18n } from '../../context/i18n';
 import type { Product } from '../../types';
 import { motion } from 'framer-motion';
 import { useAppData } from '../../context/AppDataContext';
@@ -29,7 +30,7 @@ const PublicationCard: React.FC<{ product: Product }> = ({ product }) => (
         rel="noopener noreferrer" 
         className="text-yellow-500 font-medium hover:underline text-sm mt-4 inline-block"
     >
-      Read More &rarr;
+      {t('sotl.readMore')}
     </a>
   </motion.div>
 );
@@ -66,6 +67,7 @@ const editorialRole = {
 
 export const ScholarshipOfTeachingPage: React.FC = () => {
   const { products } = useAppData();
+  const { t } = useI18n();
     const sotlPublications = useMemo(() => 
         products
             .filter(p => p.researchAreas?.includes('Scholarship of Teaching & Learning'))
@@ -77,9 +79,9 @@ export const ScholarshipOfTeachingPage: React.FC = () => {
             <div className="pt-16">
                 <div className="sticky top-16 bg-zinc-50/95 backdrop-blur-sm z-20 py-6 border-b border-zinc-200">
                     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-brand-dark text-left">Scholarship of Teaching & Learning (SOTL)</h1>
+                        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-brand-dark text-left">{t('sotl.title')}</h1>
                         <p className="mt-4 text-brand-gray leading-relaxed">
-                            Applying rigorous research skills to improve pedagogical practices in engineering, enhancing student learning and professional development.
+                            {t('sotl.sub')}
                         </p>
                     </div>
                 </div>
@@ -112,7 +114,7 @@ export const ScholarshipOfTeachingPage: React.FC = () => {
                       }}
                       className="my-16"
                     >
-                        <h2 className="text-3xl font-bold tracking-tight text-brand-dark text-left mb-8">Editorial Contributions</h2>
+                        <h2 className="text-3xl font-bold tracking-tight text-brand-dark text-left mb-8">{t('sotl.editorial')}</h2>
                         <div className="bg-white rounded-xl shadow-lg border border-yellow-400/40 overflow-hidden flex flex-col md:flex-row">
                             <div className="md:w-1/3 flex items-center justify-center p-6 bg-zinc-50">
                                 <img className="h-48 w-auto object-contain" src={editorialRole.imageUrl} alt={`Cover image for ${editorialRole.journal}`} />
@@ -144,14 +146,14 @@ export const ScholarshipOfTeachingPage: React.FC = () => {
                                         rel="noopener noreferrer"
                                         className="inline-block bg-yellow-400 text-brand-dark font-semibold px-6 py-2 rounded-lg shadow-md hover:bg-yellow-500 transition-colors duration-300 text-sm"
                                     >
-                                        Visit Journal
+                                        {t('sotl.visitJournal')}
                                     </a>
                                 </div>
                             </div>
                         </div>
                     </motion.div>
 
-                    <h2 className="text-3xl font-bold tracking-tight text-brand-dark text-left mb-8">Related Publications</h2>
+                    <h2 className="text-3xl font-bold tracking-tight text-brand-dark text-left mb-8">{t('sotl.publications')}</h2>
                     <motion.div 
                         // FIX: Spread motion props to avoid TypeScript type errors.
                         {...{

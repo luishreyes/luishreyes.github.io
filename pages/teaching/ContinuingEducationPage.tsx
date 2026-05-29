@@ -3,12 +3,14 @@
 import React, { useState, useMemo } from 'react';
 import { PageWrapper } from '../../components/PageWrapper';
 import { edcoCoursesData, type EdcoCourse } from '../../components/data/edco';
+import { useI18n } from '../../context/i18n';
 import { motion } from 'framer-motion';
 
 type FilterType = 'All' | EdcoCourse['type'];
 const filterOptions: FilterType[] = ['All', 'Open Course', 'Corporate Course', 'Summer School'];
 
 export const ContinuingEducationPage = () => {
+    const { t } = useI18n();
     const [activeFilter, setActiveFilter] = useState<FilterType>('All');
 
     const filteredCourses = useMemo(() => {
@@ -25,7 +27,7 @@ export const ContinuingEducationPage = () => {
                  <div className="sticky top-16 bg-zinc-50/95 backdrop-blur-sm z-20 py-6 border-b border-zinc-200">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="max-w-4xl mx-auto text-left">
-                            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-brand-dark">Continuing Education</h1>
+                            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-brand-dark">{t('contEd.title')}</h1>
                             <motion.p 
                                 {...{
                                     initial: { opacity: 0, y: 20 },
@@ -34,7 +36,7 @@ export const ContinuingEducationPage = () => {
                                 }}
                                 className="mt-4 text-brand-gray leading-relaxed"
                             >
-                                Beyond traditional university courses, I am actively involved in designing and delivering continuing education programs and corporate training. These courses aim to bridge the gap between academia and industry, providing professionals with cutting-edge skills in areas like artificial intelligence, biotechnology, and innovation management.
+                                {t('contEd.sub')}
                             </motion.p>
                         </div>
                         
@@ -68,11 +70,11 @@ export const ContinuingEducationPage = () => {
                         <table className="min-w-full divide-y divide-zinc-200">
                             <thead className="bg-zinc-50">
                                 <tr className="text-left text-xs font-medium text-brand-gray uppercase tracking-wider">
-                                    <th scope="col" className="px-6 py-3">Year</th>
-                                    <th scope="col" className="px-6 py-3">Course Title</th>
-                                    <th scope="col" className="px-6 py-3">Type / Client</th>
-                                    <th scope="col" className="px-6 py-3 text-center">Attendees</th>
-                                    <th scope="col" className="px-6 py-3 text-center">Role</th>
+                                    <th scope="col" className="px-6 py-3">{t('contEd.col.year')}</th>
+                                    <th scope="col" className="px-6 py-3">{t('contEd.col.title')}</th>
+                                    <th scope="col" className="px-6 py-3">{t('contEd.col.type')}</th>
+                                    <th scope="col" className="px-6 py-3 text-center">{t('contEd.col.attendees')}</th>
+                                    <th scope="col" className="px-6 py-3 text-center">{t('contEd.col.role')}</th>
                                 </tr>
                             </thead>
                             <tbody className="bg-white divide-y divide-zinc-200">

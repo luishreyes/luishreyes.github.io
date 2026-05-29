@@ -4,6 +4,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { PageWrapper } from '../../components/PageWrapper';
+import { useI18n } from '../../context/i18n';
 import { CommitteeCard } from '../../components/CommitteeCard';
 import { committeesData, leadershipRolesData } from '../../components/data/institutional';
 // FIX: Removed 'Variants' from framer-motion import to resolve module export error.
@@ -34,6 +35,7 @@ const itemVariants = {
 };
 
 export const CommitteesPage: React.FC = () => {
+    const { t } = useI18n();
 
     // FIX: Changed component to React.FC to resolve TypeScript error with the 'key' prop.
     const CommitteeSection: React.FC<{ title: string; committees: Committee[] }> = ({ title, committees }) => {
@@ -60,16 +62,16 @@ export const CommitteesPage: React.FC = () => {
                         <motion.div {...{variants: itemVariants}}>
                             <div className="bg-white p-6 rounded-lg shadow-lg border border-zinc-200 w-full flex flex-col sm:flex-row items-center justify-between gap-4 transition-transform duration-300 hover:-translate-y-1">
                                 <div className="flex-grow text-center sm:text-left">
-                                    <h3 className="text-lg font-bold text-brand-dark">Augmented Intelligence Uniandes Initiative</h3>
-                                    <p className="text-sm font-semibold text-yellow-500 mt-1">Co-founder (Jun 2024 - Present)</p>
-                                    <p className="mt-2 text-sm text-brand-gray">A strategic initiative to transform engineering education with Generative AI. For more details on my role and its impact, visit the dedicated page.</p>
+                                    <h3 className="text-lg font-bold text-brand-dark">{t('committees.ai.title')}</h3>
+                                    <p className="text-sm font-semibold text-yellow-500 mt-1">{t('committees.ai.role')}</p>
+                                    <p className="mt-2 text-sm text-brand-gray">{t('committees.ai.desc')}</p>
                                 </div>
                                 <div className="flex-shrink-0">
                                     <Link
                                         to="/service/augmented-intelligence"
                                         className="inline-block bg-yellow-400 text-brand-dark font-semibold px-6 py-2 rounded-lg shadow-md hover:bg-yellow-500 transition-colors duration-300 text-sm"
                                     >
-                                        Learn More
+                                        {t('committees.learnMore')}
                                     </Link>
                                 </div>
                             </div>
@@ -96,9 +98,9 @@ export const CommitteesPage: React.FC = () => {
             <div className="pt-16">
                 <div className="sticky top-16 bg-zinc-50/95 backdrop-blur-sm z-20 py-6 border-b border-zinc-200">
                     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-brand-dark text-left">Service & Leadership</h1>
+                        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-brand-dark text-left">{t('committees.title')}</h1>
                         <p className="mt-4 text-brand-gray leading-relaxed text-left">
-                            I am dedicated to contributing to the academic community and shaping the future of our institution through active service in various leadership roles and committees.
+                            {t('committees.sub')}
                         </p>
                     </div>
                 </div>
@@ -106,17 +108,17 @@ export const CommitteesPage: React.FC = () => {
                 <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                     <div className="space-y-16">
                         {/* Leadership Roles Section */}
-                        <CommitteeSection title="Administrative & Leadership Roles" committees={leadershipRolesData} />
+                        <CommitteeSection title={t('committees.leadership')} committees={leadershipRolesData} />
 
                         {/* Committee Service Section */}
                         <div>
-                            <h2 className="text-3xl font-bold tracking-tight text-brand-dark text-left mb-10">Committee Service</h2>
+                            <h2 className="text-3xl font-bold tracking-tight text-brand-dark text-left mb-10">{t('committees.committee')}</h2>
                             {order.map(level => (
                                 level && groupedCommittees[level] && (
-                                    <CommitteeSection 
+                                    <CommitteeSection
                                         key={level}
-                                        title={`${level} Level`} 
-                                        committees={groupedCommittees[level]} 
+                                        title={level === 'National' ? t('committees.national') : level === 'University' ? t('committees.university') : level === 'Faculty' ? t('committees.faculty') : t('committees.department')}
+                                        committees={groupedCommittees[level]}
                                     />
                                 )
                             ))}

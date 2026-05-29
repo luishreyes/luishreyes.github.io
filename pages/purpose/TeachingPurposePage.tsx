@@ -6,8 +6,10 @@
 import React from 'react';
 import { PageWrapper } from '../../components/PageWrapper';
 import { motion } from 'framer-motion';
+import { useI18n } from '../../context/i18n';
 
 export const TeachingPurposePage: React.FC = () => {
+  const { t } = useI18n();
   return (
     <PageWrapper noPadding>
       {/* Header Section */}
@@ -39,10 +41,10 @@ export const TeachingPurposePage: React.FC = () => {
                     className="text-left max-w-3xl"
                 >
                     <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white [text-shadow:0_2px_4px_rgba(0,0,0,0.5)]">
-                        Fundamentals, Held with Rigor
+                        {t('purpose.teaching.title')}
                     </h1>
                     <p className="mt-6 text-xl text-zinc-200 leading-relaxed [text-shadow:0_1px_2px_rgba(0,0,0,0.5)]">
-                        Teaching the fundamentals deeply enough that students can build their own solutions, and evolving alongside each cohort to find out what they can actually do.
+                        {t('purpose.teaching.sub')}
                     </p>
                 </motion.div>
             </div>
@@ -61,7 +63,7 @@ export const TeachingPurposePage: React.FC = () => {
                 }}
                 className="text-left"
             >
-                <h2 className="text-3xl font-bold tracking-tight text-brand-dark text-left mb-8">My Teaching Purpose</h2>
+                <h2 className="text-3xl font-bold tracking-tight text-brand-dark text-left mb-8">{t('purpose.teaching.h2')}</h2>
                 <div className="space-y-6 text-lg text-brand-gray leading-relaxed">
                     <p>
                         I teach because students who understand a principle can solve problems no one prepared them for. Memorization is a finite toolkit. Understanding generates new tools as the problems change. My purpose is to teach the fundamentals with the rigor they deserve, and to keep evolving alongside the students I teach, because finding out what each cohort can actually do is part of what teaching is for.

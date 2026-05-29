@@ -3,6 +3,7 @@
 import React from 'react';
 import { PageWrapper } from '../../components/PageWrapper';
 import { outreachData } from '../../components/data/outreach';
+import { useI18n } from '../../context/i18n';
 // FIX: Removed 'Variants' from framer-motion import to resolve module export error.
 import { motion } from 'framer-motion';
 
@@ -48,14 +49,15 @@ const getTypeIcon = (type: string) => {
 };
 
 export const OutreachPage: React.FC = () => {
+  const { t } = useI18n();
   return (
     <PageWrapper noPadding>
         <div className="pt-16">
             <div className="sticky top-16 bg-zinc-50/95 backdrop-blur-sm z-20 py-6 border-b border-zinc-200">
                 <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-brand-dark text-left">Outreach & Scouting</h1>
+                    <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-brand-dark text-left">{t('outreach.title')}</h1>
                     <p className="mt-4 text-brand-gray leading-relaxed">
-                        I am actively involved in science communication, outreach events, and scouting activities to promote STEM education, disseminate our work, and inspire the next generation of scientists and engineers. These activities are a core part of my commitment to bridging the gap between academia and the community.
+                        {t('outreach.sub')}
                     </p>
                 </div>
             </div>

@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { PageWrapper } from '../../components/PageWrapper';
+import { useI18n } from '../../context/i18n';
 import { professionalDevelopmentData } from '../../components/data/professionalDevelopment';
 // FIX: Removed 'Variants' from framer-motion import to resolve module export error.
 import { motion } from 'framer-motion';
@@ -38,14 +39,15 @@ const ListIcon = () => (
 );
 
 export const ProfessionalDevelopmentPage = () => {
+    const { t } = useI18n();
     return (
         <PageWrapper noPadding>
             <div className="pt-16">
                 <div className="sticky top-16 bg-zinc-50/95 backdrop-blur-sm z-20 py-6 border-b border-zinc-200">
                     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-brand-dark text-left">Improving My Teaching Performance</h1>
+                        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-brand-dark text-left">{t('profdev.title')}</h1>
                         <p className="mt-4 text-brand-gray leading-relaxed">
-                            Since I arrived at the university, I have focused on improving and deepening my understanding of how to teach effectively and create lasting impact. For this reason, I have taken various workshops and courses to continually refine my pedagogical approach.
+                            {t('profdev.sub')}
                         </p>
                     </div>
                 </div>

@@ -3,6 +3,7 @@
 
 import React, { useState, useMemo, useRef } from 'react';
 import { PageWrapper } from '../components/PageWrapper';
+import { useI18n } from '../context/i18n';
 import { studentsData, graduatedStudentsData } from '../components/data/students';
 import type { GraduatedStudent } from '../types';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
@@ -28,6 +29,9 @@ const ChevronIcon = ({ open }: { open: boolean }) => (
 // FIX: Changed component to React.FC to resolve TypeScript error with the 'key' prop.
 const GraduatedStudentCard: React.FC<{ student: GraduatedStudent }> = ({ student }) => {
     const [isExpanded, setIsExpanded] = useState(false);
+    const { t } = useI18n();
+    const showLabel = t('students.thesis.show');
+    const hideLabel = t('students.thesis.hide');
     const imageContainerRef = useRef<HTMLDivElement>(null);
 
     const { scrollYProgress } = useScroll({
@@ -75,7 +79,7 @@ const GraduatedStudentCard: React.FC<{ student: GraduatedStudent }> = ({ student
                     </div>
                 </div>
                 <div className="p-8 pt-0 md:pt-8 md:pl-0 flex-grow text-center md:text-left">
-                    <div className="uppercase tracking-wide text-sm text-yellow-500 font-semibold">{student.degree} - Graduated {student.graduationYear}</div>
+                    <div className="uppercase tracking-wide text-sm text-yellow-500 font-semibold">{student.degree} - {t('students.graduated')} {student.graduationYear}</div>
                     <h3 className="block mt-1 text-2xl leading-tight font-bold text-brand-dark">{student.name}</h3>
                     
                     {(student.program || student.currentPosition) && (
@@ -142,7 +146,7 @@ const GraduatedStudentCard: React.FC<{ student: GraduatedStudent }> = ({ student
                             className="flex items-center font-semibold text-yellow-500 hover:text-yellow-400 transition-colors duration-200 mx-auto md:mx-0"
                             aria-expanded={isExpanded}
                         >
-                            {isExpanded ? 'Hide' : 'Show'} Thesis Summary
+                            {isExpanded ? hideLabel : showLabel}
                             <ChevronIcon open={isExpanded} />
                         </button>
                         <AnimatePresence initial={false}>
@@ -198,6 +202,7 @@ const sortGraduatedStudents = (a: GraduatedStudent, b: GraduatedStudent): number
 
 
 export const StudentsPage = () => {
+    const { t } = useI18n();
     const [activeFilter, setActiveFilter] = useState<'All' | 'Current' | 'Alumni'>('All');
 
     const sortedPhdGraduates = useMemo(() => 
@@ -217,7 +222,7 @@ export const StudentsPage = () => {
             <div className="pt-16">
                  <div className="sticky top-16 bg-zinc-50/95 backdrop-blur-sm z-20 py-6 border-b border-zinc-200">
                     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-brand-dark text-left">Grad Students</h1>
+                        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-brand-dark text-left">{t('students.title')}</h1>
                          <div className="flex items-center justify-center mt-4 space-x-4">
                             <div className="flex gap-2">
                                 {filterOptions.map(filter => (
@@ -230,7 +235,7 @@ export const StudentsPage = () => {
                                             : 'bg-white text-brand-gray hover:bg-zinc-100 border border-zinc-200'
                                         }`}
                                     >
-                                        {filter} Students
+                                        {filter === 'All' ? t('students.filter.all') : filter === 'Current' ? t('students.filter.current') : t('students.filter.alumni')}
                                     </button>
                                 ))}
                             </div>
@@ -243,11 +248,11 @@ export const StudentsPage = () => {
                         <AnimatePresence>
                             { (activeFilter === 'All' || activeFilter === 'Current') && (
                                 <motion.div layout initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                                    <h2 className="text-3xl font-bold tracking-tight text-brand-dark text-left mb-10">Current Students</h2>
-                                    
+                                    <h2 className="text-3xl font-bold tracking-tight text-brand-dark text-left mb-10">{t('students.current')}</h2>
+
                                     {studentsData.phd.length > 0 && (
                                         <div className="mb-12">
-                                            <h3 className="text-2xl font-semibold text-brand-dark mb-6">Ph.D. Students</h3>
+                                            <h3 className="text-2xl font-semibold text-brand-dark mb-6">{t('students.phd')}</h3>
                                             <div className="bg-white p-8 rounded-lg shadow-lg border border-yellow-400/40">
                                                 <ul className="space-y-4 text-brand-gray text-lg list-disc list-inside">
                                                     {studentsData.phd.map(student => (
@@ -260,7 +265,7 @@ export const StudentsPage = () => {
 
                                     {studentsData.ms.length > 0 && (
                                          <div>
-                                            <h3 className="text-2xl font-semibold text-brand-dark mb-6">Master's Students</h3>
+                                            <h3 className="text-2xl font-semibold text-brand-dark mb-6">{t('students.ms')}</h3>
                                             <div className="bg-white p-8 rounded-lg shadow-lg border border-yellow-400/40">
                                                 <ul className="space-y-4 text-brand-gray text-lg list-disc list-inside">
                                                     {studentsData.ms.map(student => (
@@ -277,11 +282,11 @@ export const StudentsPage = () => {
                         <AnimatePresence>
                             { (activeFilter === 'All' || activeFilter === 'Alumni') && (
                                 <motion.div layout initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                                    <h2 className="text-3xl font-bold tracking-tight text-brand-dark text-left mb-10">Alumni</h2>
-                                    
+                                    <h2 className="text-3xl font-bold tracking-tight text-brand-dark text-left mb-10">{t('students.alumni')}</h2>
+
                                     {graduatedStudentsData.phd.length > 0 && (
                                         <div className="mb-12">
-                                             <h3 className="text-2xl font-semibold text-brand-dark mb-6">Ph.D. Graduates</h3>
+                                             <h3 className="text-2xl font-semibold text-brand-dark mb-6">{t('students.phd.graduates')}</h3>
                                             <motion.div layout className="space-y-8">
                                                 {sortedPhdGraduates.map(student => (
                                                     <GraduatedStudentCard key={student.name} student={student} />
@@ -292,7 +297,7 @@ export const StudentsPage = () => {
 
                                     {graduatedStudentsData.ms.length > 0 && (
                                          <div>
-                                             <h3 className="text-2xl font-semibold text-brand-dark mb-6">Master's Graduates</h3>
+                                             <h3 className="text-2xl font-semibold text-brand-dark mb-6">{t('students.ms.graduates')}</h3>
                                             <motion.div layout className="space-y-8">
                                                 {sortedMsGraduates.map(student => (
                                                     <GraduatedStudentCard key={student.name} student={student} />

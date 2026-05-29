@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { PageWrapper } from '../../components/PageWrapper';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useI18n } from '../../context/i18n';
 
 const evaluationScores = [
   { term: '17-20', score: 160 },
@@ -72,8 +73,8 @@ const ScoreChart = () => {
 
   return (
     <div ref={chartRef} className="bg-white p-6 rounded-lg shadow-lg border border-yellow-400/40 overflow-hidden relative">
-      <h3 className="text-xl font-bold text-brand-dark mb-2 text-center">Score Evolution: The Reform Journey</h3>
-      <p className="text-xs text-brand-gray text-center mb-8 uppercase tracking-widest">Institutional 100–200 Scale</p>
+      <h3 className="text-xl font-bold text-brand-dark mb-2 text-center">{t('unitops.chart.title')}</h3>
+      <p className="text-xs text-brand-gray text-center mb-8 uppercase tracking-widest">{t('unitops.chart.scale')}</p>
       
       <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} className="overflow-visible">
         {/* Phase backgrounds - following site's subtle palette */}
@@ -142,14 +143,15 @@ const ScoreChart = () => {
 };
 
 export const UnitOperationsInnovationPage: React.FC = () => {
+  const { t } = useI18n();
   return (
     <PageWrapper noPadding>
       <div className="pt-16">
         <div className="sticky top-16 bg-zinc-50/95 backdrop-blur-sm z-20 py-6 border-b border-zinc-200">
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-brand-dark text-left">Unit Operations Innovation</h1>
+                <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-brand-dark text-left">{t('unitops.title')}</h1>
                 <p className="mt-4 text-brand-gray leading-relaxed font-medium">
-                    A Seven-Year Journey: From Theory and Problem-Sets to Project-Based Synthesis.
+                    {t('unitops.sub')}
                 </p>
             </div>
         </div>

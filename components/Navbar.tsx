@@ -1,77 +1,104 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useI18n } from '../context/i18n';
 
 interface NavbarProps {
   onDownloadCv: () => void;
 }
 
-const navItems = [
+function LangToggle({ className = '' }: { className?: string }) {
+  const { lang, setLang } = useI18n();
+  return (
+    <div className={`flex items-center gap-1 text-xs font-semibold tracking-wide ${className}`}>
+      <button
+        onClick={() => setLang('en')}
+        className={lang === 'en' ? 'text-brand-dark' : 'text-brand-gray hover:text-brand-dark transition-colors'}
+        aria-label="English"
+      >
+        EN
+      </button>
+      <span className="text-brand-gray/40">/</span>
+      <button
+        onClick={() => setLang('es')}
+        className={lang === 'es' ? 'text-brand-dark' : 'text-brand-gray hover:text-brand-dark transition-colors'}
+        aria-label="Español"
+      >
+        ES
+      </button>
+    </div>
+  );
+}
+
+const navItems = (t: (key: import('../context/i18n').UIKey) => string) => [
   {
     id: 'principles',
-    title: 'Guiding Principles',
+    title: t('nav.principles'),
     defaultPath: '/principles/teaching',
     pathPrefix: '/principles',
     subItems: [
-      { title: 'Teaching Purpose', path: '/principles/teaching' },
-      { title: 'Research Purpose', path: '/principles/research' },
-      { title: 'Service Purpose', path: '/principles/service' },
-      { title: 'Teaching Philosophy', path: '/principles/philosophy' },
+      { title: t('nav.principles.teaching'), path: '/principles/teaching' },
+      { title: t('nav.principles.research'), path: '/principles/research' },
+      { title: t('nav.principles.service'), path: '/principles/service' },
+      { title: t('nav.principles.philosophy'), path: '/principles/philosophy' },
     ],
   },
   {
     id: 'research',
-    title: 'Research',
+    title: t('nav.research'),
     defaultPath: '/research',
     pathPrefix: '/research',
     subItems: [
-      { title: 'Overview', path: '/research' },
-      { title: 'Research Program', path: '/research/program' },
-      { title: 'Products', path: '/research/products' },
-      { title: 'Grants', path: '/research/grants' },
-      { title: 'Grad Students', path: '/research/students' },
+      { title: t('nav.research.overview'), path: '/research' },
+      { title: t('nav.research.program'), path: '/research/program' },
+      { title: t('nav.research.products'), path: '/research/products' },
+      { title: t('nav.research.grants'), path: '/research/grants' },
+      { title: t('nav.research.students'), path: '/research/students' },
     ],
   },
   {
     id: 'teaching',
-    title: 'Teaching',
+    title: t('nav.teaching'),
     defaultPath: '/teaching',
     pathPrefix: '/teaching',
     subItems: [
-      { title: 'Overview', path: '/teaching' },
-      { title: 'Courses Taught', path: '/teaching/courses' },
-      { title: 'Unit Ops Innovation', path: '/teaching/unit-ops' },
-      { title: 'Continuing Education', path: '/teaching/continuing-education' },
-      { title: 'Testimonials', path: '/teaching/testimonials' },
-      { title: 'Scholarship of Teaching', path: '/teaching/scholarship' },
-      { title: 'Professional Development', path: '/teaching/professional-development' },
+      { title: t('nav.teaching.overview'), path: '/teaching' },
+      { title: t('nav.teaching.courses'), path: '/teaching/courses' },
+      { title: t('nav.teaching.unitops'), path: '/teaching/unit-ops' },
+      { title: t('nav.teaching.continuing'), path: '/teaching/continuing-education' },
+      { title: t('nav.teaching.testimonials'), path: '/teaching/testimonials' },
+      { title: t('nav.teaching.scholarship'), path: '/teaching/scholarship' },
+      { title: t('nav.teaching.profdev'), path: '/teaching/professional-development' },
     ],
   },
   {
     id: 'institutional',
-    title: 'Service',
+    title: t('nav.service'),
     defaultPath: '/service',
     pathPrefix: '/service',
     subItems: [
-      { title: 'Overview', path: '/service' },
-      { title: 'Augmented Intelligence', path: '/service/augmented-intelligence' },
-      { title: 'Service & Leadership', path: '/service/committees' },
-      { title: 'Editorial Boards', path: '/service/editorial' },
-      { title: 'Outreach & Scouting', path: '/service/outreach' },
+      { title: t('nav.service.overview'), path: '/service' },
+      { title: t('nav.service.ai'), path: '/service/augmented-intelligence' },
+      { title: t('nav.service.leadership'), path: '/service/committees' },
+      { title: t('nav.service.editorial'), path: '/service/editorial' },
+      { title: t('nav.service.outreach'), path: '/service/outreach' },
     ],
   },
-  { id: 'recognition', title: 'Recognition', defaultPath: '/recognition', pathPrefix: '/recognition' },
-  { id: 'classroom', title: 'Classroom', defaultPath: '/classroom', pathPrefix: '/classroom' },
+  { id: 'recognition', title: t('nav.recognition'), defaultPath: '/recognition', pathPrefix: '/recognition' },
+  { id: 'classroom', title: t('nav.classroom'), defaultPath: '/classroom', pathPrefix: '/classroom' },
 ];
 
 
 export const Navbar = ({ onDownloadCv }: NavbarProps) => {
+  const { t } = useI18n();
   const [openDesktopMenu, setOpenDesktopMenu] = useState<string | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [openMobileSubMenu, setOpenMobileSubMenu] = useState<string | null>(null);
   const navRef = useRef<HTMLElement>(null);
   const location = useLocation();
   const navigate = useNavigate();
+
+  const items = navItems(t);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -118,7 +145,7 @@ export const Navbar = ({ onDownloadCv }: NavbarProps) => {
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center justify-center">
             <div className="flex items-baseline space-x-2 md:space-x-4">
-                {navItems.map((item) => {
+                {items.map((item) => {
                 const isParentActive = item.pathPrefix === '/recognition'
                   ? location.pathname === '/recognition'
                   : location.pathname.startsWith(item.pathPrefix);
@@ -201,10 +228,12 @@ export const Navbar = ({ onDownloadCv }: NavbarProps) => {
                 )
                 })}
             </div>
+            <span className="w-px h-4 bg-brand-gray/20 mx-3" />
+            <LangToggle />
             <button
                 onClick={onDownloadCv}
-                className="hidden md:flex items-center ml-6 text-brand-gray hover:text-brand-dark transition-colors duration-200 focus:outline-none"
-                aria-label="Download CV"
+                className="hidden md:flex items-center ml-4 text-brand-gray hover:text-brand-dark transition-colors duration-200 focus:outline-none"
+                aria-label={t('nav.downloadCv')}
             >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
@@ -214,10 +243,11 @@ export const Navbar = ({ onDownloadCv }: NavbarProps) => {
 
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center gap-2">
+            <LangToggle />
             <button
               onClick={onDownloadCv}
               className="p-2 rounded-md text-brand-gray hover:text-brand-dark transition-colors duration-200 focus:outline-none"
-              aria-label="Download CV"
+              aria-label={t('nav.downloadCv')}
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
@@ -267,7 +297,7 @@ export const Navbar = ({ onDownloadCv }: NavbarProps) => {
             id="mobile-menu"
           >
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-              {navItems.map(item => {
+              {items.map(item => {
                 const isParentActive = item.pathPrefix === '/recognition'
                   ? location.pathname === '/recognition'
                   : location.pathname.startsWith(item.pathPrefix);

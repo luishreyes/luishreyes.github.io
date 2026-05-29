@@ -3,43 +3,11 @@
 import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { PageWrapper } from '../../components/PageWrapper';
+import { useI18n } from '../../context/i18n';
 // FIX: Removed 'Variants' from framer-motion import to resolve module export error.
 import { motion, useScroll, useTransform } from 'framer-motion';
 
-const serviceItems = [
-  {
-    title: 'Service & Leadership',
-    description: "Shaping academic and scientific direction at national and institutional levels through leadership roles and service on key strategic committees.",
-    icon: (
-        <img src="https://cdn-icons-png.flaticon.com/512/9942/9942521.png" alt="Service & Leadership Icon" className="h-8 w-8" />
-    ),
-    link: '/service/committees'
-  },
-  {
-    title: 'Augmented Intelligence Initiative',
-    description: "Co-founding and leading the 'Augmented Intelligence Uniandes' initiative to strategically integrate Generative AI into the engineering curriculum, revolutionizing our pedagogical models.",
-    icon: (
-        <img src="https://icons.veryicon.com/png/o/education-technology/alibaba-cloud-iot-business-department/ai-27.png" alt="Augmented Intelligence Icon" className="h-8 w-8" />
-    ),
-    link: '/service/augmented-intelligence'
-  },
-  {
-    title: 'Editorial Contributions',
-    description: "Contributing to the global scientific community by upholding the quality and integrity of research through service on the editorial boards of prestigious international journals.",
-    icon: (
-        <img src="https://cdn-icons-png.flaticon.com/512/4598/4598321.png" alt="Editorial Contributions Icon" className="h-8 w-8" />
-    ),
-    link: '/service/editorial'
-  },
-  {
-    title: 'Outreach & Scouting',
-    description: "Engaging with the broader community to promote STEM education, scout and recruit new talent, and inspire the next generation of scientists and engineers through talks, fairs, and hands-on workshops.",
-    icon: (
-        <img src="https://cdn-icons-png.flaticon.com/512/2112/2112735.png" alt="Outreach Icon" className="h-8 w-8" />
-    ),
-    link: '/service/outreach'
-  }
-];
+// serviceItems defined inside component to use translations
 
 const containerVariants = {
     hidden: { opacity: 0 },
@@ -66,7 +34,43 @@ const itemVariants = {
 };
 
 export const InstitutionalOverviewPage: React.FC = () => {
+  const { t } = useI18n();
   const headerRef = useRef<HTMLDivElement>(null);
+
+  const serviceItems = [
+    {
+      title: t('service.leadership.title'),
+      description: t('service.leadership.desc'),
+      icon: (
+          <img src="https://cdn-icons-png.flaticon.com/512/9942/9942521.png" alt="Service & Leadership Icon" className="h-8 w-8" />
+      ),
+      link: '/service/committees'
+    },
+    {
+      title: t('service.ai.title'),
+      description: t('service.ai.desc'),
+      icon: (
+          <img src="https://icons.veryicon.com/png/o/education-technology/alibaba-cloud-iot-business-department/ai-27.png" alt="Augmented Intelligence Icon" className="h-8 w-8" />
+      ),
+      link: '/service/augmented-intelligence'
+    },
+    {
+      title: t('service.editorial.title'),
+      description: t('service.editorial.desc'),
+      icon: (
+          <img src="https://cdn-icons-png.flaticon.com/512/4598/4598321.png" alt="Editorial Contributions Icon" className="h-8 w-8" />
+      ),
+      link: '/service/editorial'
+    },
+    {
+      title: t('service.outreach.title'),
+      description: t('service.outreach.desc'),
+      icon: (
+          <img src="https://cdn-icons-png.flaticon.com/512/2112/2112735.png" alt="Outreach Icon" className="h-8 w-8" />
+      ),
+      link: '/service/outreach'
+    }
+  ];
   const { scrollYProgress } = useScroll({
     target: headerRef,
     offset: ["start end", "end start"]
@@ -106,10 +110,10 @@ export const InstitutionalOverviewPage: React.FC = () => {
                   className="text-left max-w-3xl"
               >
                   <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white [text-shadow:0_2px_4px_rgba(0,0,0,0.5)]">
-                      Service Overview
+                      {t('service.overview.title')}
                   </h1>
                   <p className="mt-6 text-xl text-zinc-200 leading-relaxed [text-shadow:0_1px_2px_rgba(0,0,0,0.5)]">
-                      Strengthening our academic community and connecting our work with the wider public through leadership, educational innovation, and outreach.
+                      {t('service.overview.sub')}
                   </p>
               </motion.div>
           </div>
@@ -129,7 +133,7 @@ export const InstitutionalOverviewPage: React.FC = () => {
               className="text-center max-w-4xl mx-auto mb-16"
             >
               <p className="text-brand-gray text-lg leading-relaxed">
-                Beyond research and teaching, I am deeply committed to service that strengthens our academic community and connects our work with the wider public. My service activities are focused on institutional governance and leadership, upholding the integrity of scientific publishing, driving educational innovation with new technologies, and inspiring future generations through outreach and scouting.
+                {t('service.overview.text')}
               </p>
             </motion.div>
             <motion.div
