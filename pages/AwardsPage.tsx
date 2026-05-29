@@ -4,6 +4,7 @@
 import React, { useRef } from 'react';
 import { PageWrapper } from '../components/PageWrapper';
 import { awardsData } from '../components/data/awards';
+import { useI18n } from '../context/i18n';
 // FIX: Removed 'Variants' from framer-motion import to resolve module export error.
 import { motion, useScroll, useTransform } from 'framer-motion';
 
@@ -33,6 +34,7 @@ const itemVariants = {
 
 // FIX: Changed component to React.FC to resolve TypeScript error with the 'key' prop.
 const RecognitionCard: React.FC<{ recognition: typeof awardsData[0] }> = ({ recognition }) => {
+    const { t } = useI18n();
     const imageContainerRef = useRef<HTMLDivElement>(null);
 
     const { scrollYProgress } = useScroll({
@@ -80,10 +82,10 @@ const RecognitionCard: React.FC<{ recognition: typeof awardsData[0] }> = ({ reco
                         </div>
                         <p className="block text-sm font-semibold text-yellow-500 uppercase tracking-wide">{recognition.awarder} - {recognition.category}</p>
                         
-                        <p className="mt-4 text-brand-dark italic font-medium">Work: "{recognition.projectTitle}"</p>
-                        
+                        <p className="mt-4 text-brand-dark italic font-medium">{t('awards.work')} "{recognition.projectTitle}"</p>
+
                         <p className="mt-2 text-sm text-brand-gray">
-                            Authors: {recognition.authors.map((author, i) => (
+                            {t('awards.authors')} {recognition.authors.map((author, i) => (
                                 <React.Fragment key={i}>
                                     {author.includes('Reyes') ? <strong className="font-semibold text-brand-dark">{author}</strong> : author}
                                     {i < recognition.authors.length - 1 ? ', ' : ''}
@@ -104,7 +106,7 @@ const RecognitionCard: React.FC<{ recognition: typeof awardsData[0] }> = ({ reco
                             rel="noopener noreferrer"
                             className="inline-block bg-yellow-400 text-brand-dark font-semibold px-6 py-2 rounded-lg shadow-md hover:bg-yellow-500 transition-colors duration-300 text-sm"
                         >
-                            Learn More
+                            {t('awards.learnMore')}
                         </a>
                     </div>
                 </div>
@@ -114,6 +116,7 @@ const RecognitionCard: React.FC<{ recognition: typeof awardsData[0] }> = ({ reco
 };
 
 export const AwardsPage = () => {
+    const { t } = useI18n();
     const headerRef = useRef<HTMLDivElement>(null);
     const { scrollYProgress } = useScroll({
       target: headerRef,
@@ -155,10 +158,10 @@ export const AwardsPage = () => {
                       className="text-left max-w-3xl"
                   >
                       <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white [text-shadow:0_2px_4px_rgba(0,0,0,0.5)]">
-                          Recognition & Honors
+                          {t('awards.title')}
                       </h1>
                       <p className="mt-6 text-xl text-zinc-200 leading-relaxed [text-shadow:0_1px_2px_rgba(0,0,0,0.5)]">
-                          Highlighting recognitions for significant contributions to science, education, and engineering from esteemed international and national bodies.
+                          {t('awards.subtitle')}
                       </p>
                   </motion.div>
               </div>

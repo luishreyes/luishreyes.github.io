@@ -3,6 +3,7 @@
 import React from 'react';
 import { PageWrapper } from '../../components/PageWrapper';
 import { editorialData } from '../../components/data/institutional';
+import { useI18n } from '../../context/i18n';
 
 const eceIcons = [
   <img src="https://cdn-icons-png.flaticon.com/512/8998/8998530.png" alt="Subject Editor in Biotechnology & Bioprocessing Icon" className="w-8 h-8" />,
@@ -17,14 +18,15 @@ const discoverBiotechIcons = [
 ];
 
 export const EditorialPage: React.FC = () => {
+  const { t } = useI18n();
   return (
     <PageWrapper noPadding>
         <div className="pt-16">
             <div className="sticky top-16 bg-zinc-50/95 backdrop-blur-sm z-20 py-6 border-b border-zinc-200">
                 <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-brand-dark text-left">Editorial Contributions</h1>
+                    <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-brand-dark text-left">{t('editorial.title')}</h1>
                     <p className="mt-4 text-lg text-left text-brand-gray">
-                        I contribute to the academic publishing community by serving on editorial boards, ensuring the quality and integrity of scientific research.
+                        {t('editorial.sub')}
                     </p>
                 </div>
             </div>
@@ -67,7 +69,7 @@ export const EditorialPage: React.FC = () => {
                                         rel="noopener noreferrer"
                                         className="inline-block bg-yellow-400 text-brand-dark font-semibold px-6 py-2 rounded-lg shadow-md hover:bg-yellow-500 transition-colors duration-300 text-sm"
                                     >
-                                        Visit Journal
+                                        {t('editorial.visitJournal')}
                                     </a>
                                 </div>
                             </div>

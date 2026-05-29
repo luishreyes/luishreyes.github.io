@@ -6,8 +6,10 @@
 import React from 'react';
 import { PageWrapper } from '../../components/PageWrapper';
 import { motion } from 'framer-motion';
+import { useI18n } from '../../context/i18n';
 
 export const ResearchPurposePage: React.FC = () => {
+  const { t } = useI18n();
   return (
     <PageWrapper noPadding>
       {/* Header Section */}
@@ -39,10 +41,10 @@ export const ResearchPurposePage: React.FC = () => {
                     className="text-left max-w-3xl"
                 >
                     <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white [text-shadow:0_2px_4px_rgba(0,0,0,0.5)]">
-                        Engineering Biology, Forming People
+                        {t('purpose.research.title')}
                     </h1>
                     <p className="mt-6 text-xl text-zinc-200 leading-relaxed [text-shadow:0_1px_2px_rgba(0,0,0,0.5)]">
-                        Research lives in the overlap of two commitments: engineering biological systems to solve real problems in medicine, sustainability, and human experience, and forming the people who will solve the next ones.
+                        {t('purpose.research.sub')}
                     </p>
                 </motion.div>
             </div>
@@ -61,7 +63,7 @@ export const ResearchPurposePage: React.FC = () => {
                 }}
                 className="text-left"
             >
-                <h2 className="text-3xl font-bold tracking-tight text-brand-dark text-left mb-8">My Research Purpose</h2>
+                <h2 className="text-3xl font-bold tracking-tight text-brand-dark text-left mb-8">{t('purpose.research.h2')}</h2>
                 <div className="space-y-6 text-lg text-brand-gray leading-relaxed">
                     <p>
                         Research, for me, lives in the overlap of two commitments that most academics treat as separate. The first is scientific: engineering principles, applied to biological systems, can address real problems in medicine, sustainability, and human experience. The second is formative. Every project I lead is also a classroom without walls, a space where students develop resourcefulness, the reflex to improvise when things break, the ability to move across disciplines without losing technical seriousness, and the discipline of thinking critically about their own work. The publications and the discoveries matter, sometimes spectacularly so. The deepest outcome of any project I run, however, is the person who walks out of the laboratory transformed.

@@ -7,6 +7,7 @@
 import React from 'react';
 import { PageWrapper } from '../../components/PageWrapper';
 import { motion } from 'framer-motion';
+import { useI18n } from '../../context/i18n';
 
 const frameworkItems = [
     {
@@ -51,6 +52,7 @@ const itemVariants = {
 
 
 export const TeachingPhilosophyPage = () => {
+  const { t } = useI18n();
   return (
     <PageWrapper noPadding>
       {/* Header Section */}
@@ -82,10 +84,10 @@ export const TeachingPhilosophyPage = () => {
                     className="text-left max-w-3xl"
                 >
                     <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white [text-shadow:0_2px_4px_rgba(0,0,0,0.5)]">
-                        Teaching Philosophy
+                        {t('philosophy.title')}
                     </h1>
                     <p className="mt-6 text-xl text-zinc-200 leading-relaxed [text-shadow:0_1px_2px_rgba(0,0,0,0.5)]">
-                        Co-adaptive Constructivism builds on a constructivist tradition that is no longer in dispute, and adds the recognition that effective teaching demands mutual adaptation. Standards held high, paths to reach them multiplied.
+                        {t('philosophy.sub')}
                     </p>
                 </motion.div>
             </div>

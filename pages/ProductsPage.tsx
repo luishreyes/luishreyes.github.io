@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FilterModal, type AdvancedFiltersState } from '../components/FilterModal';
 import { PageWrapper } from '../components/PageWrapper';
 import { useAppData } from '../context/AppDataContext';
+import { useI18n } from '../context/i18n';
 
 const ChevronIcon = ({ open }: { open: boolean }) => (
     <motion.svg
@@ -29,6 +30,7 @@ const ChevronIcon = ({ open }: { open: boolean }) => (
 
 export const ProductsPage = () => {
   const { products, productsLoading: isLoadingProducts, citationData } = useAppData();
+  const { t } = useI18n();
   const citationCounts = citationData.counts;
   const isLoadingCitations = citationData.isLoading;
   const [sortBy, setSortBy] = useState<'date' | 'citations'>('date');
@@ -189,16 +191,16 @@ export const ProductsPage = () => {
       <div className="pt-16">
         <div className="sticky top-16 bg-zinc-50/95 backdrop-blur-sm z-20 py-6 border-b border-zinc-200">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-brand-dark text-left">Products</h1>
+            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-brand-dark text-left">{t('products.title')}</h1>
             <p className="mt-2 text-sm text-left text-brand-gray">
-              {isLoadingProducts ? 'Loading products...' : `Showing ${sortedAndFilteredProducts.length} of ${products.length} total products.`}
+              {isLoadingProducts ? t('products.loading') : `${t('products.showing')} ${sortedAndFilteredProducts.length} ${t('products.of')} ${products.length} ${t('products.total')}`}
             </p>
             
             <div className="flex flex-wrap items-center justify-end gap-2 mt-6">
                 {/* Right side: Sort, Search, Advanced Filters */}
                 <div className="flex items-center gap-2">
                     <div className="flex items-center space-x-2">
-                        <span className="text-sm font-medium text-brand-gray hidden md:inline">Sort by:</span>
+                        <span className="text-sm font-medium text-brand-gray hidden md:inline">{t('products.sortBy')}</span>
                         <div className="flex gap-2">
                             <button
                                 onClick={handleDateSortClick}
@@ -208,7 +210,7 @@ export const ProductsPage = () => {
                                     : 'bg-white text-brand-gray hover:bg-zinc-100 border border-zinc-200'
                                 }`}
                             >
-                                Date
+                                {t('products.sortDate')}
                                 {sortBy === 'date' && (
                                     sortOrder === 'desc' ? (
                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -230,7 +232,7 @@ export const ProductsPage = () => {
                                     : 'bg-white text-brand-gray hover:bg-zinc-100 border border-zinc-200'
                                 }`}
                             >
-                                Citations
+                                {t('products.sortCitations')}
                             </button>
                         </div>
                     </div>
@@ -259,7 +261,7 @@ export const ProductsPage = () => {
                                             onChange={(e) => setSearchQuery(e.target.value)}
                                             onBlur={() => { if (searchQuery === '') setIsSearchExpanded(false) }}
                                             onKeyDown={(e) => { if (e.key === 'Escape') { e.preventDefault(); setIsSearchExpanded(false); } }}
-                                            placeholder="Search..."
+                                            placeholder={t('products.search')}
                                             className="w-full h-10 bg-white border border-zinc-300 rounded-md py-2 pl-10 pr-3 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-400"
                                         />
                                     </form>
@@ -314,8 +316,8 @@ export const ProductsPage = () => {
         <motion.div layout className="bg-zinc-50">
           {isLoadingProducts ? (
             <div className="text-center py-20 px-4">
-               <h3 className="text-xl font-semibold text-zinc-700">Loading Products...</h3>
-               <p className="mt-2 text-zinc-500">Fetching the latest data from the database.</p>
+               <h3 className="text-xl font-semibold text-zinc-700">{t('products.loading.title')}</h3>
+               <p className="mt-2 text-zinc-500">{t('products.loading.sub')}</p>
              </div>
           ) : sortedAndFilteredProducts.length > 0 ? (
             sortedAndFilteredProducts.map((prod: Product, index: number) => (
@@ -340,8 +342,8 @@ export const ProductsPage = () => {
             ))
           ) : (
             <div className="text-center py-20 px-4">
-              <h3 className="text-xl font-semibold text-zinc-700">No Products Found</h3>
-              <p className="mt-2 text-zinc-500">Try adjusting your search or filters.</p>
+              <h3 className="text-xl font-semibold text-zinc-700">{t('products.empty.title')}</h3>
+              <p className="mt-2 text-zinc-500">{t('products.empty.sub')}</p>
             </div>
           )}
         </motion.div>

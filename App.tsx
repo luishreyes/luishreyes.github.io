@@ -49,6 +49,7 @@ import { EdcoCoursePresentationsPage } from './pages/classroom/EdcoCoursePresent
 import { RetosPage } from './pages/classroom/RetosPage';
 import { startSequentialImagePreloading } from './services/preloader';
 import { AppDataContext } from './context/AppDataContext';
+import { I18nProvider } from './context/i18n';
 
 const App: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -147,6 +148,7 @@ const App: React.FC = () => {
   }), [products, productsLoading, citationData]);
 
   return (
+    <I18nProvider>
     <AppDataContext.Provider value={contextValue}>
       <main className="relative">
         <Navbar onDownloadCv={handleDownloadCv} />
@@ -194,6 +196,7 @@ const App: React.FC = () => {
         <ScrollToTopButton />
       </main>
     </AppDataContext.Provider>
+    </I18nProvider>
   );
 };
 

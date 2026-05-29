@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import { PageWrapper } from '../components/PageWrapper';
 import { grantsData } from '../components/data/grants';
+import { useI18n } from '../context/i18n';
 // FIX: Removed 'Variants' from framer-motion import to resolve module export error.
 import { motion } from 'framer-motion';
 
@@ -30,6 +31,7 @@ const itemVariants = {
 };
 
 export const GrantsPage = () => {
+    const { t } = useI18n();
     const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
 
     const sortedGrants = useMemo(() => {
@@ -71,9 +73,9 @@ export const GrantsPage = () => {
             <div className="pt-16">
                 <div className="sticky top-16 bg-zinc-50/95 backdrop-blur-sm z-20 py-6 border-b border-zinc-200">
                     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-brand-dark text-left">Funded Grants</h1>
+                        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-brand-dark text-left">{t('grants.title')}</h1>
                         <div className="flex items-center justify-center mt-4 space-x-4">
-                            <span className="text-sm font-medium text-brand-gray">Sort by:</span>
+                            <span className="text-sm font-medium text-brand-gray">{t('grants.sortBy')}</span>
                             <div className="flex gap-2">
                                 <button
                                     onClick={() => setSortOrder('newest')}
@@ -83,7 +85,7 @@ export const GrantsPage = () => {
                                         : 'bg-white text-brand-gray hover:bg-zinc-100 border border-zinc-200'
                                     }`}
                                 >
-                                    Newest First
+                                    {t('grants.newest')}
                                 </button>
                                 <button
                                     onClick={() => setSortOrder('oldest')}
@@ -93,7 +95,7 @@ export const GrantsPage = () => {
                                         : 'bg-white text-brand-gray hover:bg-zinc-100 border border-zinc-200'
                                     }`}
                                 >
-                                    Oldest First
+                                    {t('grants.oldest')}
                                 </button>
                             </div>
                         </div>

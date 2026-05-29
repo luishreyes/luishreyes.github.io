@@ -4,6 +4,7 @@
 import React, { useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { SocialLinks } from '../components/SocialLinks';
+import { useI18n } from '../context/i18n';
 // FIX: Removed 'Variants' from framer-motion import to resolve module export error.
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { educationData, specializationsData, credentialsData } from '../components/data/education';
@@ -90,6 +91,7 @@ const heroChildVariants = {
 };
 
 export const AboutPage = () => {
+  const { t } = useI18n();
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -141,7 +143,7 @@ export const AboutPage = () => {
                   {...{ variants: heroChildVariants }}
                   className="font-mono text-base md:text-lg tracking-widest text-brand-gray"
                 >
-                  Hi, my name is
+                  {t('about.hero.greeting')}
                 </motion.p>
                 <motion.h1
                   {...{ variants: heroChildVariants }}
@@ -153,13 +155,13 @@ export const AboutPage = () => {
                   {...{ variants: heroChildVariants }}
                   className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tighter text-brand-dark mt-4"
                 >
-                  I engineer biology for a better future.
+                  {t('about.hero.tagline')}
                 </motion.h2>
                 <motion.p
                   {...{ variants: heroChildVariants }}
                   className="mt-8 max-w-3xl text-lg text-brand-gray leading-relaxed"
                 >
-                  I am an Associate Professor at Universidad de los Andes, leading research at the convergence of biotechnology, nanotechnology, and AI to transform complex challenges into sustainable, high-impact solutions.
+                  {t('about.hero.bio')}
                 </motion.p>
                 <motion.div
                   {...{ variants: heroChildVariants }}
@@ -169,7 +171,7 @@ export const AboutPage = () => {
                     to="/teaching"
                     className="inline-block bg-yellow-400 text-brand-dark font-semibold px-8 py-3 rounded-lg shadow-md hover:bg-yellow-500 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-zinc-50 focus:ring-yellow-400"
                   >
-                    Explore My Work
+                    {t('about.hero.cta')}
                   </Link>
                 </motion.div>
                 <motion.div
@@ -251,34 +253,34 @@ export const AboutPage = () => {
                       </div>
                   </motion.div>
                   <motion.div {...{variants: cardVariants}} className="md:col-span-8 text-center md:text-left">
-                      <h2 className="text-3xl font-bold tracking-tight text-brand-dark">My Professional Purpose</h2>
+                      <h2 className="text-3xl font-bold tracking-tight text-brand-dark">{t('about.purpose.title')}</h2>
                       <p className="mt-6 text-brand-gray leading-relaxed text-lg">
-                          I am dedicated to driving innovation in biotechnology, nanotechnology, and generative AI. My professional purpose is to transform complex challenges into practical solutions that enhance quality of life and promote sustainable development.
+                          {t('about.purpose.text')}
                       </p>
                   </motion.div>
               </motion.div>
 
               {/* Mission & Approach Section */}
               <div className="mt-24">
-                  <h2 className="text-3xl font-bold tracking-tight text-brand-dark text-center">Mission & Approach</h2>
+                  <h2 className="text-3xl font-bold tracking-tight text-brand-dark text-center">{t('about.mission.title')}</h2>
                   <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
-                      
+
                       <motion.div {...{initial:"offscreen", whileInView:"onscreen", viewport:{ once: true, amount: 0.5 }, variants:cardVariants}} className="flex flex-col items-center">
                           <IconWrapper><ResearchersIcon /></IconWrapper>
-                          <h3 className="text-xl font-semibold text-brand-dark">For Researchers & Academics</h3>
-                          <p className="mt-2 text-brand-gray">Leading and collaborating on applied, interdisciplinary research projects that address real-world problems.</p>
+                          <h3 className="text-xl font-semibold text-brand-dark">{t('about.mission.researchers.title')}</h3>
+                          <p className="mt-2 text-brand-gray">{t('about.mission.researchers.text')}</p>
                       </motion.div>
-                      
+
                       <motion.div {...{initial:"offscreen", whileInView:"onscreen", viewport:{ once: true, amount: 0.5 }, variants:cardVariants}} className="flex flex-col items-center">
                           <IconWrapper><StudentsIcon /></IconWrapper>
-                          <h3 className="text-xl font-semibold text-brand-dark">For Engineering Students</h3>
-                          <p className="mt-2 text-brand-gray">Providing mentorship and specialized training to deepen knowledge and foster the next generation of innovators.</p>
+                          <h3 className="text-xl font-semibold text-brand-dark">{t('about.mission.students.title')}</h3>
+                          <p className="mt-2 text-brand-gray">{t('about.mission.students.text')}</p>
                       </motion.div>
-                      
+
                       <motion.div {...{initial:"offscreen", whileInView:"onscreen", viewport:{ once: true, amount: 0.5 }, variants:cardVariants}} className="flex flex-col items-center">
                           <IconWrapper><IndustryIcon /></IconWrapper>
-                          <h3 className="text-xl font-semibold text-brand-dark">For Companies & Startups</h3>
-                          <p className="mt-2 text-brand-gray">Advising on the implementation of advanced technologies to improve processes, products, and solutions.</p>
+                          <h3 className="text-xl font-semibold text-brand-dark">{t('about.mission.industry.title')}</h3>
+                          <p className="mt-2 text-brand-gray">{t('about.mission.industry.text')}</p>
                       </motion.div>
                   </div>
               </div>
@@ -295,7 +297,7 @@ export const AboutPage = () => {
                       }}
                       className="text-3xl font-bold tracking-tight text-brand-dark text-center"
                   >
-                      Academic Background
+                      {t('about.education.title')}
                   </motion.h2>
                   <div className="mt-12 max-w-3xl mx-auto">
                       <motion.div 
@@ -336,7 +338,7 @@ export const AboutPage = () => {
                       }}
                       className="text-3xl font-bold tracking-tight text-brand-dark text-center"
                   >
-                      Work Experience
+                      {t('about.experience.title')}
                   </motion.h2>
                   <div className="mt-12 max-w-3xl mx-auto">
                       <motion.div 
@@ -377,7 +379,7 @@ export const AboutPage = () => {
                       }}
                       className="text-3xl font-bold tracking-tight text-brand-dark text-center"
                   >
-                      Continuing Education & Specializations
+                      {t('about.continuing.title')}
                   </motion.h2>
                   <div className="mt-12 max-w-3xl mx-auto">
                       <motion.div 
@@ -417,7 +419,7 @@ export const AboutPage = () => {
                       }}
                       className="text-3xl font-bold tracking-tight text-brand-dark text-center"
                   >
-                      Licenses & Certifications
+                      {t('about.licenses.title')}
                   </motion.h2>
                   <div className="mt-12 overflow-hidden relative">
                      {/* Gradient Fades for seamless effect */}
@@ -466,13 +468,13 @@ export const AboutPage = () => {
                 }}
                 className="mt-24 text-center max-w-3xl mx-auto"
               >
-                  <h2 className="text-3xl font-bold tracking-tight text-brand-dark">Let's Collaborate</h2>
+                  <h2 className="text-3xl font-bold tracking-tight text-brand-dark">{t('about.collab.title')}</h2>
                   <p className="mt-6 text-brand-gray leading-relaxed text-lg">
-                      I am always looking to connect with professionals and organizations that share my passion for technological innovation. If you are looking for collaboration or expert advice in biotechnology, nanotechnology, or generative AI, feel free to reach out. I am here to help turn your ideas into tangible realities.
+                      {t('about.collab.text')}
                   </p>
                   <div className="mt-8">
                        <a href="mailto:lh.reyes@uniandes.edu.co?subject=I%20saw%20your%20teaching%20portfolio.%20Let's%20talk." className="inline-block bg-yellow-400 text-brand-dark font-semibold px-8 py-3 rounded-lg shadow-md hover:bg-yellow-500 transition-colors duration-300">
-                          Get in Touch
+                          {t('about.collab.cta')}
                        </a>
                   </div>
               </motion.div>

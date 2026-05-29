@@ -3,6 +3,7 @@
 
 import React, { useMemo, useState } from 'react';
 import { PageWrapper } from '../../components/PageWrapper';
+import { useI18n } from '../../context/i18n';
 import { testimonials, type Testimonial } from '../../components/data/teaching';
 // FIX: Removed 'Variants' from framer-motion import to resolve module export error.
 import { motion } from 'framer-motion';
@@ -68,6 +69,7 @@ type FilterCategory = 'All' | 'Teaching & Mentorship' | 'Research Advising';
 const filterOptions: FilterCategory[] = ['All', 'Teaching & Mentorship', 'Research Advising'];
 
 export const TestimonialsPage = () => {
+    const { t } = useI18n();
     const [activeFilter, setActiveFilter] = useState<FilterCategory>('All');
 
     // FIX: Added explicit type annotation to resolve 'unknown' type errors.
@@ -96,9 +98,9 @@ export const TestimonialsPage = () => {
             <div className="pt-16">
                 <div className="sticky top-16 bg-zinc-50/95 backdrop-blur-sm z-20 py-6 border-b border-zinc-200">
                     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-brand-dark text-left">Student Testimonials</h1>
+                        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-brand-dark text-left">{t('testimonials.title')}</h1>
                         <p className="mt-4 text-brand-gray leading-relaxed text-left">
-                            Hearing from students is the most meaningful measure of teaching success. Here is what some of my past and present students have to say about their learning experiences.
+                            {t('testimonials.sub')}
                         </p>
                         <div className="flex flex-wrap gap-2 justify-center mt-6">
                             {filterOptions.map(option => (
