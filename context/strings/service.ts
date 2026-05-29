@@ -12,6 +12,7 @@ export const service = {
   'service.editorial.title':  { en: 'Editorial Contributions', es: 'Contribuciones Editoriales' },
   'service.editorial.desc':   { en: 'Contributing to the global scientific community by upholding the quality and integrity of research through service on the editorial boards of prestigious international journals.', es: 'Contribuyendo a la comunidad científica global manteniendo la calidad e integridad de la investigación a través del servicio en los comités editoriales de revistas internacionales de prestigio.' },
   'service.outreach.title':   { en: 'Outreach & Scouting',   es: 'Divulgación y Scouting' },
+  'service.learnAbout':       { en: 'Learn more about',       es: 'Saber más sobre' },
   'service.outreach.desc':    { en: 'Engaging with the broader community to promote STEM education, scout and recruit new talent, and inspire the next generation of scientists and engineers through talks, fairs, and hands-on workshops.', es: 'Interactuando con la comunidad en general para promover la educación STEM, identificar y reclutar nuevos talentos, e inspirar a la próxima generación de científicos e ingenieros a través de charlas, ferias y talleres prácticos.' },
 
   // Committees / Leadership
@@ -59,4 +60,66 @@ export const service = {
   'ai.implementation':       { en: 'Implementation Process',  es: 'Proceso de Implementación' },
   'ai.projection':           { en: 'Projection and Sustainability', es: 'Proyección y Sostenibilidad' },
   'ai.futureVision':         { en: 'Future Vision',           es: 'Visión de Futuro' },
+
+  // AI - Executive summary
+  'ai.summary.pre':          { en: 'As a co-founder of the ', es: 'Como cofundador de la iniciativa ' },
+  'ai.summary.post':         { en: ' initiative, alongside Dean Rubby Casallas and Professor Juan Carlos Cruz, I have actively participated in the strategic integration of Generative Artificial Intelligence in the School of Engineering at Universidad de los Andes. This pioneering initiative, launched in June 2024, represents a paradigm shift in how we conceive teaching and learning in engineering.', es: ', junto a la Decana Rubby Casallas y el Profesor Juan Carlos Cruz, he participado activamente en la integración estratégica de la Inteligencia Artificial Generativa en la Facultad de Ingeniería de la Universidad de los Andes. Esta iniciativa pionera, lanzada en junio de 2024, representa un cambio de paradigma en la manera en que concebimos la enseñanza y el aprendizaje en ingeniería.' },
+
+  // AI - Leadership list
+  'ai.lead.1.strong':        { en: 'Co-creator',  es: 'Cocreador' },
+  'ai.lead.1.text':          { en: ' of the Augmented Intelligence strategy.', es: ' de la estrategia de Inteligencia Aumentada.' },
+  'ai.lead.2.strong':        { en: 'Co-designer', es: 'Codiseñador' },
+  'ai.lead.2.text':          { en: ' of the "augmented intelligence" conceptual framework.', es: ' del marco conceptual de "inteligencia aumentada".' },
+  'ai.lead.3.strong':        { en: 'Coordinator', es: 'Coordinador' },
+  'ai.lead.3.text':          { en: ' of the IAU team of students and graduate assistants.', es: ' del equipo IAU de estudiantes y asistentes de posgrado.' },
+  'ai.lead.4.strong':        { en: 'Co-designer of workshops', es: 'Codiseñador de talleres' },
+  'ai.lead.4.text':          { en: ' for training in generative AI.', es: ' para la formación en IA generativa.' },
+
+  // AI - Management list
+  'ai.mgmt.1':               { en: 'Operational coordination of the multidisciplinary team.', es: 'Coordinación operativa del equipo multidisciplinario.' },
+  'ai.mgmt.2':               { en: 'Co-development of the three-phase training program.', es: 'Codesarrollo del programa de formación en tres fases.' },
+  'ai.mgmt.3':               { en: 'Support in the management and monitoring of selected projects.', es: 'Apoyo en la gestión y el seguimiento de los proyectos seleccionados.' },
+
+  // AI - Impact
+  'ai.call.title':           { en: 'First IAGen Call 2025-1: A Resounding Success', es: 'Primera Convocatoria IAGen 2025-1: Un Éxito Rotundo' },
+  'ai.cat.optimization':     { en: 'Process Optimization',   es: 'Optimización de Procesos' },
+  'ai.cat.learning':         { en: 'Contribution to Learning', es: 'Contribución al Aprendizaje' },
+  'ai.cat.skills':           { en: 'Skills Enhancement',     es: 'Fortalecimiento de Habilidades' },
+  'ai.cat.projects':         { en: 'projects',               es: 'proyectos' },
+
+  // AI - Global recognition
+  'ai.openai.text':          { en: "In 2025, my work on AI in engineering education was recognized through selection into OpenAI's inaugural Global Faculty AI Project. This distinction, awarded to only 50 academics worldwide, validates our approach at Uniandes and connects our local initiative to a global network of innovators, further amplifying our impact.", es: 'En 2025, mi trabajo sobre IA en la educación en ingeniería fue reconocido mediante mi selección en el primer Global Faculty AI Project de OpenAI. Esta distinción, otorgada a solo 50 académicos en todo el mundo, valida nuestro enfoque en Uniandes y conecta nuestra iniciativa local con una red global de innovadores, amplificando aún más nuestro impacto.' },
+
+  // AI - Framework quote
+  'ai.framework.quote':      { en: '"Augmented Intelligence does not seek to replace human intelligence, but to amplify it, enabling students, teachers, and researchers to address complex problems, generate innovative ideas, and develop creative solutions more effectively."', es: '«La Inteligencia Aumentada no busca reemplazar la inteligencia humana, sino amplificarla, permitiendo que estudiantes, docentes e investigadores aborden problemas complejos, generen ideas innovadoras y desarrollen soluciones creativas de manera más eficaz.»' },
+
+  // AI - Principles
+  'ai.prin.1.strong':        { en: 'Disciplinary Contextualization:', es: 'Contextualización Disciplinar:' },
+  'ai.prin.1.text':          { en: ' Each solution is aligned with the specific needs of the course.', es: ' Cada solución se alinea con las necesidades específicas del curso.' },
+  'ai.prin.2.strong':        { en: 'Restricted to Course Material:', es: 'Restringido al Material del Curso:' },
+  'ai.prin.2.text':          { en: ' Assistants operate within defined pedagogical limits.', es: ' Los asistentes operan dentro de límites pedagógicos definidos.' },
+  'ai.prin.3.strong':        { en: 'Pre-established Parameters:', es: 'Parámetros Preestablecidos:' },
+  'ai.prin.3.text':          { en: " Full instructor control over the system's behavior.", es: ' Control total del docente sobre el comportamiento del sistema.' },
+  'ai.prin.4.strong':        { en: 'Ethics and Responsibility:', es: 'Ética y Responsabilidad:' },
+  'ai.prin.4.text':          { en: ' Strict adherence to institutional AI guidelines.', es: ' Estricto apego a los lineamientos institucionales sobre IA.' },
+
+  // AI - Implementation timeline
+  'ai.stage1.title':         { en: 'Stage 1: Expression of Interest', es: 'Etapa 1: Manifestación de Interés' },
+  'ai.stage1.date':          { en: '(February 2025)', es: '(Febrero de 2025)' },
+  'ai.stage1.1':             { en: 'Reception and categorization of 30 proposals.', es: 'Recepción y categorización de 30 propuestas.' },
+  'ai.stage1.2':             { en: 'Organization of focus meetings.', es: 'Organización de reuniones focalizadas.' },
+  'ai.stage1.3':             { en: 'Technical feasibility assessment.', es: 'Evaluación de viabilidad técnica.' },
+  'ai.stage2.title':         { en: 'Stage 2: Project Definition', es: 'Etapa 2: Definición de Proyectos' },
+  'ai.stage2.date':          { en: '(March 2025)', es: '(Marzo de 2025)' },
+  'ai.stage2.1':             { en: 'Individual meetings with each project.', es: 'Reuniones individuales con cada proyecto.' },
+  'ai.stage2.2':             { en: 'Definition of scopes and resources.', es: 'Definición de alcances y recursos.' },
+  'ai.stage2.3':             { en: 'Assignment of IAU team students.', es: 'Asignación de estudiantes del equipo IAU.' },
+  'ai.stage3.title':         { en: 'Stage 3: Development and Implementation', es: 'Etapa 3: Desarrollo e Implementación' },
+  'ai.stage3.date':          { en: '(April 2025 - Present)', es: '(Abril de 2025 - Presente)' },
+  'ai.stage3.1':             { en: 'Weekly progress monitoring.', es: 'Seguimiento semanal del avance.' },
+  'ai.stage3.2':             { en: 'Resolution of technical challenges.', es: 'Resolución de retos técnicos.' },
+  'ai.stage3.3':             { en: 'Documentation of best practices.', es: 'Documentación de buenas prácticas.' },
+
+  // AI - Future vision
+  'ai.futureVision.text':    { en: 'The Augmented Intelligence Uniandes initiative is designed to be a sustainable and evolving program. Our vision is to establish a permanent center of excellence for AI in education, continuously exploring new pedagogical models and technologies. Future plans include expanding the program to other faculties, securing long-term strategic partnerships with industry leaders, and developing a repository of open-source educational AI tools to benefit the broader academic community.', es: 'La iniciativa Augmented Intelligence Uniandes está diseñada para ser un programa sostenible y en constante evolución. Nuestra visión es establecer un centro de excelencia permanente para la IA en la educación, explorando continuamente nuevos modelos pedagógicos y tecnologías. Los planes futuros incluyen extender el programa a otras facultades, asegurar alianzas estratégicas de largo plazo con líderes de la industria, y desarrollar un repositorio de herramientas educativas de IA de código abierto en beneficio de la comunidad académica en general.' },
 } as const;

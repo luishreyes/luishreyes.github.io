@@ -38,8 +38,8 @@ export const CommitteesPage: React.FC = () => {
     const { t } = useI18n();
 
     // FIX: Changed component to React.FC to resolve TypeScript error with the 'key' prop.
-    const CommitteeSection: React.FC<{ title: string; committees: Committee[] }> = ({ title, committees }) => {
-        if (committees.length === 0 && title !== "Administrative & Leadership Roles") return null;
+    const CommitteeSection: React.FC<{ title: string; committees: Committee[]; isLeadership?: boolean }> = ({ title, committees, isLeadership = false }) => {
+        if (committees.length === 0 && !isLeadership) return null;
         return (
             <div className="mb-12">
                 <h2 className="text-2xl font-semibold text-brand-dark mb-6 pb-2 border-b-2 border-yellow-400">{title}</h2>
@@ -58,7 +58,7 @@ export const CommitteesPage: React.FC = () => {
                         </motion.div>
                     ))}
 
-                    {title === "Administrative & Leadership Roles" && (
+                    {isLeadership && (
                         <motion.div {...{variants: itemVariants}}>
                             <div className="bg-white p-6 rounded-lg shadow-lg border border-zinc-200 w-full flex flex-col sm:flex-row items-center justify-between gap-4 transition-transform duration-300 hover:-translate-y-1">
                                 <div className="flex-grow text-center sm:text-left">
@@ -108,7 +108,7 @@ export const CommitteesPage: React.FC = () => {
                 <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                     <div className="space-y-16">
                         {/* Leadership Roles Section */}
-                        <CommitteeSection title={t('committees.leadership')} committees={leadershipRolesData} />
+                        <CommitteeSection title={t('committees.leadership')} committees={leadershipRolesData} isLeadership />
 
                         {/* Committee Service Section */}
                         <div>

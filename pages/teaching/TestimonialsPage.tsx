@@ -3,7 +3,7 @@
 
 import React, { useMemo, useState } from 'react';
 import { PageWrapper } from '../../components/PageWrapper';
-import { useI18n } from '../../context/i18n';
+import { useI18n, type UIKey } from '../../context/i18n';
 import { testimonials, type Testimonial } from '../../components/data/teaching';
 // FIX: Removed 'Variants' from framer-motion import to resolve module export error.
 import { motion } from 'framer-motion';
@@ -67,6 +67,11 @@ const TestimonialCard: React.FC<{ testimonial: Testimonial }> = ({ testimonial }
 
 type FilterCategory = 'All' | 'Teaching & Mentorship' | 'Research Advising';
 const filterOptions: FilterCategory[] = ['All', 'Teaching & Mentorship', 'Research Advising'];
+const categoryLabelKey: Record<string, UIKey> = {
+    'All': 'testimonials.filter.all',
+    'Teaching & Mentorship': 'testimonials.filter.teaching',
+    'Research Advising': 'testimonials.filter.research',
+};
 
 export const TestimonialsPage = () => {
     const { t } = useI18n();
@@ -113,7 +118,7 @@ export const TestimonialsPage = () => {
                                         : 'bg-white text-brand-gray hover:bg-zinc-100 border border-zinc-200'
                                     }`}
                                 >
-                                    {option}
+                                    {t(categoryLabelKey[option])}
                                 </button>
                             ))}
                         </div>
@@ -124,7 +129,7 @@ export const TestimonialsPage = () => {
                     {Object.entries(filteredTestimonials).map(([category, list]) => (
                         list.length > 0 && (
                             <div key={category} className="mb-16">
-                                <h2 className="text-3xl font-bold tracking-tight text-brand-dark text-left mb-8 pb-2 border-b-2 border-yellow-400">{category}</h2>
+                                <h2 className="text-3xl font-bold tracking-tight text-brand-dark text-left mb-8 pb-2 border-b-2 border-yellow-400">{t(categoryLabelKey[category])}</h2>
                                 <motion.div
                                     className="grid grid-cols-1 lg:grid-cols-2 gap-8"
                                     // FIX: Spread motion props to avoid TypeScript type errors.

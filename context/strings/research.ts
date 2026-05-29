@@ -5,6 +5,7 @@ export const research = {
   'research.overview.vision.title': { en: 'Research Vision', es: 'Visión de Investigación' },
   'research.overview.vision.text':  { en: 'My research group is dedicated to engineering biology for a better life and creating a sustainable future. We operate at the convergence of biotechnology, nanotechnology, and artificial intelligence, applying engineering principles to design, build, and optimize living systems. Our work addresses critical challenges across biomedical, food, and environmental engineering, transforming microorganisms into microscopic factories that produce high-value products for medicine, food, and sustainable industry.', es: 'Mi grupo de investigación se dedica a la ingeniería biológica para una vida mejor y un futuro sostenible. Operamos en la convergencia de biotecnología, nanotecnología e inteligencia artificial, aplicando principios de ingeniería para diseñar, construir y optimizar sistemas vivos. Nuestro trabajo aborda desafíos críticos en ingeniería biomédica, alimentaria y ambiental, transformando microorganismos en fábricas microscópicas que producen productos de alto valor para la medicina, la alimentación y la industria sostenible.' },
   'research.overview.vision.cta': { en: 'Explore Our Research Program', es: 'Explorar nuestro programa de investigación' },
+  'research.overview.hero.alt': { en: 'Abstract visualization of biological and AI concepts', es: 'Visualización abstracta de conceptos biológicos y de IA' },
 
   // Stats labels
   'stats.products':         { en: 'Products',               es: 'Productos' },
@@ -40,12 +41,16 @@ export const research = {
   'products.loading.sub':    { en: 'Fetching the latest data from the database.', es: 'Obteniendo los datos más recientes de la base de datos.' },
   'products.empty.title':    { en: 'No Products Found',     es: 'No se encontraron productos' },
   'products.empty.sub':      { en: 'Try adjusting your search or filters.', es: 'Intenta ajustar tu búsqueda o los filtros.' },
+  'products.aria.search':    { en: 'Open search',           es: 'Abrir búsqueda' },
+  'products.aria.filters':   { en: 'Open advanced filters', es: 'Abrir filtros avanzados' },
 
   // Grants
   'grants.title':            { en: 'Funded Grants',          es: 'Proyectos Financiados' },
   'grants.sortBy':           { en: 'Sort by:',              es: 'Ordenar por:' },
   'grants.newest':           { en: 'Newest First',           es: 'Más recientes primero' },
   'grants.oldest':           { en: 'Oldest First',           es: 'Más antiguos primero' },
+  'grants.status.concluded': { en: 'Concluded',              es: 'Concluido' },
+  'grants.status.inProgress':{ en: 'In Progress',            es: 'En curso' },
 
   // Students
   'students.title':          { en: 'Grad Students',          es: 'Estudiantes de Posgrado' },
@@ -61,4 +66,6 @@ export const research = {
   'students.thesis.show':    { en: 'Show Thesis Summary',    es: 'Ver resumen de tesis' },
   'students.thesis.hide':    { en: 'Hide Thesis Summary',    es: 'Ocultar resumen de tesis' },
   'students.graduated':      { en: 'Graduated',              es: 'Graduado/a' },
+  'students.linkedin.title': { en: 'on LinkedIn',            es: 'en LinkedIn' },
+  'students.photo.alt':      { en: 'Photo or thesis cover for', es: 'Foto o portada de tesis de' },
 } as const;

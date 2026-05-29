@@ -84,9 +84,9 @@ const ScoreChart = () => {
         <rect x={xScale(11.5)} y={margin.top} width={width - margin.right - xScale(11.5)} height={innerHeight} fill="#fefce8" />
 
         {/* Phase Labels */}
-        <text x={margin.left + (xScale(6.5) - margin.left)/2} y={margin.top - 20} textAnchor="middle" className="text-[10px] font-bold fill-zinc-400 uppercase tracking-widest">Traditional</text>
-        <text x={xScale(6.5) + (xScale(11.5) - xScale(6.5))/2} y={margin.top - 20} textAnchor="middle" className="text-[10px] font-bold fill-orange-400 uppercase tracking-widest">Reform Era</text>
-        <text x={xScale(11.5) + (width - margin.right - xScale(11.5))/2} y={margin.top - 20} textAnchor="middle" className="text-[10px] font-bold fill-yellow-600 uppercase tracking-widest">Synthesis</text>
+        <text x={margin.left + (xScale(6.5) - margin.left)/2} y={margin.top - 20} textAnchor="middle" className="text-[10px] font-bold fill-zinc-400 uppercase tracking-widest">{t('unitops.phase.traditional')}</text>
+        <text x={xScale(6.5) + (xScale(11.5) - xScale(6.5))/2} y={margin.top - 20} textAnchor="middle" className="text-[10px] font-bold fill-orange-400 uppercase tracking-widest">{t('unitops.phase.reform')}</text>
+        <text x={xScale(11.5) + (width - margin.right - xScale(11.5))/2} y={margin.top - 20} textAnchor="middle" className="text-[10px] font-bold fill-yellow-600 uppercase tracking-widest">{t('unitops.phase.synthesis')}</text>
 
         {/* Horizontal Grid */}
         {[130, 140, 150, 160, 170].map(val => (
@@ -98,7 +98,7 @@ const ScoreChart = () => {
 
         {/* Ref Benchmark */}
         <line x1={margin.left} y1={yScale(157.6)} x2={width - margin.right} y2={yScale(157.6)} stroke="#94a3b8" strokeWidth="1.5" strokeDasharray="4 4" />
-        <text x={width - margin.right + 5} y={yScale(157.6) + 3} className="text-[8px] fill-slate-500 font-bold uppercase">Ref Benchmark (157.6)</text>
+        <text x={width - margin.right + 5} y={yScale(157.6) + 3} className="text-[8px] fill-slate-500 font-bold uppercase">{t('unitops.chart.benchmark')}</text>
 
         {/* Main path */}
         <motion.polyline
@@ -159,15 +159,15 @@ export const UnitOperationsInnovationPage: React.FC = () => {
 
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-20">
           <section>
-            <h2 className="text-2xl font-bold tracking-tight text-brand-dark mb-6">Context</h2>
+            <h2 className="text-2xl font-bold tracking-tight text-brand-dark mb-6">{t('unitops.context')}</h2>
             <p className="text-lg text-brand-gray leading-relaxed">
-              Unit Operations is the foundational course in chemical engineering curricula worldwide. In 2021, following a mandate from the <span className="font-semibold text-brand-dark">School of Engineering</span> for greater experiential learning, the <span className="font-semibold text-brand-dark">Department of Chemical and Food Engineering</span> undertook a comprehensive curriculum reform. This documentation chronicles the transformation of Unit Operations under that reform, the challenges encountered, and the pedagogical synthesis that eventually emerged.
+              {t('unitops.context.text1')}<span className="font-semibold text-brand-dark">{t('unitops.context.school')}</span>{t('unitops.context.text2')}<span className="font-semibold text-brand-dark">{t('unitops.context.dept')}</span>{t('unitops.context.text3')}
             </p>
           </section>
 
           <section className="space-y-12">
             <h2 className="text-2xl font-bold tracking-tight text-brand-dark uppercase tracking-widest flex items-center gap-4">
-               The Evolution
+               {t('unitops.evolution')}
                <span className="flex-grow h-px bg-zinc-200"></span>
             </h2>
             
@@ -179,11 +179,11 @@ export const UnitOperationsInnovationPage: React.FC = () => {
                 className="bg-white p-8 rounded-lg shadow-md border border-zinc-100 border-l-4 border-l-zinc-800"
               >
                 <div className="flex justify-between items-start mb-4">
-                  <h3 className="text-xl font-bold text-brand-dark">Phase 1: Traditional Approach (2017–2021)</h3>
-                  <span className="text-xs font-bold uppercase bg-zinc-100 px-2 py-1 rounded">Stable</span>
+                  <h3 className="text-xl font-bold text-brand-dark">{t('unitops.phase1.title')}</h3>
+                  <span className="text-xs font-bold uppercase bg-zinc-100 px-2 py-1 rounded">{t('unitops.phase1.tag')}</span>
                 </div>
                 <p className="text-brand-gray leading-relaxed">
-                  The original course followed the standard model: comprehensive lectures covering theoretical foundations, worked examples, and traditional homework assignments. Evaluations were stable, averaging 153.9. While effective, the format offered limited opportunity for students to integrate concepts through authentic engineering problems.
+                  {t('unitops.phase1.text')}
                 </p>
               </motion.div>
 
@@ -194,14 +194,14 @@ export const UnitOperationsInnovationPage: React.FC = () => {
                 className="bg-white p-8 rounded-lg shadow-md border border-zinc-100 border-l-4 border-l-red-500"
               >
                 <div className="flex justify-between items-start mb-4">
-                  <h3 className="text-xl font-bold text-brand-dark">Phase 2: Curriculum Reform and PO-PBL (2021–2023)</h3>
-                  <span className="text-xs font-bold uppercase bg-red-50 text-red-600 px-2 py-1 rounded">Declined</span>
+                  <h3 className="text-xl font-bold text-brand-dark">{t('unitops.phase2.title')}</h3>
+                  <span className="text-xs font-bold uppercase bg-red-50 text-red-600 px-2 py-1 rounded">{t('unitops.phase2.tag')}</span>
                 </div>
                 <p className="text-brand-gray leading-relaxed mb-4">
-                  The course became <span className="font-medium text-brand-dark">Integrated Project 2</span> under a pure Project-Oriented Problem-Based Learning format. Theory was minimized as students learned through semester-long design projects.
+                  {t('unitops.phase2.text1').split('{ip2}')[0]}<span className="font-medium text-brand-dark">{t('unitops.phase2.ip2')}</span>{t('unitops.phase2.text1').split('{ip2}')[1]}
                 </p>
                 <p className="text-brand-gray leading-relaxed">
-                  The magnitude of change was severe. Student response was challenging; evaluations dropped sharply to a <span className="text-red-600 font-bold">low of 135 in 2022-20</span>. Students expressed frustration with the cognitive load of learning new concepts while simultaneously applying them without structured theoretical guidance.
+                  {t('unitops.phase2.text2pre')}<span className="text-red-600 font-bold">{t('unitops.phase2.text2low')}</span>{t('unitops.phase2.text2post')}
                 </p>
               </motion.div>
 
@@ -212,11 +212,11 @@ export const UnitOperationsInnovationPage: React.FC = () => {
                 className="bg-white p-8 rounded-lg shadow-md border border-zinc-100 border-l-4 border-l-yellow-400"
               >
                 <div className="flex justify-between items-start mb-4">
-                  <h3 className="text-xl font-bold text-brand-dark">Phase 3: Finding the Balance (2024–Present)</h3>
-                  <span className="text-xs font-bold uppercase bg-yellow-50 text-yellow-600 px-2 py-1 rounded">Recovered</span>
+                  <h3 className="text-xl font-bold text-brand-dark">{t('unitops.phase3.title')}</h3>
+                  <span className="text-xs font-bold uppercase bg-yellow-50 text-yellow-600 px-2 py-1 rounded">{t('unitops.phase3.tag')}</span>
                 </div>
                 <p className="text-brand-gray leading-relaxed">
-                  The transition to Unit Operations Project in 2024 marked a new synthesis. I integrated <span className="font-semibold text-brand-dark">Generative AI</span> tools and added theoretical content back. The final breakthrough came in 2025-20 with a deliberate <span className="font-bold text-brand-dark">50-50 structure</span>: half dedicated to theory and problem-solving, and half to a semester-long <span className="font-medium text-brand-dark italic">in silico</span> design project using <span className="font-semibold text-brand-dark">ASPEN simulation</span>. Evaluations recovered to <span className="font-bold text-brand-dark">156</span>, matching institutional benchmarks.
+                  {t('unitops.phase3.text1')}<span className="font-semibold text-brand-dark">{t('unitops.phase3.genai')}</span>{t('unitops.phase3.text2')}<span className="font-bold text-brand-dark">{t('unitops.phase3.fifty')}</span>{t('unitops.phase3.text3')}<span className="font-medium text-brand-dark italic">{t('unitops.phase3.insilico')}</span>{t('unitops.phase3.text4')}<span className="font-semibold text-brand-dark">{t('unitops.phase3.aspen')}</span>{t('unitops.phase3.text5')}<span className="font-bold text-brand-dark">156</span>{t('unitops.phase3.text6')}
                 </p>
               </motion.div>
             </div>
@@ -224,22 +224,22 @@ export const UnitOperationsInnovationPage: React.FC = () => {
 
           <section className="bg-zinc-50 -mx-4 px-4 py-16 sm:-mx-8 sm:px-8 lg:-mx-12 lg:px-12 rounded-xl">
             <div className="max-w-4xl mx-auto">
-              <h2 className="text-2xl font-bold tracking-tight text-brand-dark mb-10 text-center uppercase tracking-widest">Impact on Student Experience</h2>
+              <h2 className="text-2xl font-bold tracking-tight text-brand-dark mb-10 text-center uppercase tracking-widest">{t('unitops.impact')}</h2>
               <ScoreChart />
               <p className="mt-8 text-xs text-center text-brand-gray italic">
-                Note: Pandora's Laboratory maintained a consistent 157.6 average as a reference benchmark across the same period.
+                {t('unitops.chart.note')}
               </p>
             </div>
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold tracking-tight text-brand-dark mb-8">Lessons Learned</h2>
+            <h2 className="text-2xl font-bold tracking-tight text-brand-dark mb-8">{t('unitops.lessons')}</h2>
             <div className="grid md:grid-cols-2 gap-x-12 gap-y-8">
               {[
-                { title: "Theoretical Foundations", desc: "Even in project-based contexts, students value theoretical frameworks. Explicit instruction provides the scaffolding needed to tackle complex problems confidently." },
-                { title: "Iterative Refinement", desc: "Pedagogical innovation requires sustaining and documenting each phase. The evaluation recovery from 135 to 156 occurred over six semesters of sustainment." },
-                { title: "In Silico Bridging", desc: "ASPEN simulation addresses physical laboratory constraints, allowing students to see immediate consequences of engineering decisions in larger scopes." },
-                { title: "AI-Assisted Rigor", desc: "GenAI tools support learning when properly scaffolded. Structured AI integration (AIAS framework) improved literature review quality while maintaining rigor." }
+                { title: t('unitops.lesson1.title'), desc: t('unitops.lesson1.desc') },
+                { title: t('unitops.lesson2.title'), desc: t('unitops.lesson2.desc') },
+                { title: t('unitops.lesson3.title'), desc: t('unitops.lesson3.desc') },
+                { title: t('unitops.lesson4.title'), desc: t('unitops.lesson4.desc') }
               ].map((lesson, idx) => (
                 <div key={idx} className="space-y-2">
                   <h4 className="font-bold text-brand-dark flex items-center gap-2">
@@ -254,7 +254,7 @@ export const UnitOperationsInnovationPage: React.FC = () => {
 
           <section className="pt-10">
             <h2 className="text-2xl font-bold tracking-tight text-brand-dark mb-8 uppercase tracking-widest flex items-center gap-4">
-              Scholarly Foundation
+              {t('unitops.scholarly')}
               <span className="flex-grow h-px bg-zinc-200"></span>
             </h2>
             <div className="space-y-6">
@@ -277,7 +277,7 @@ export const UnitOperationsInnovationPage: React.FC = () => {
 
           <section className="text-center py-12 border-t border-zinc-100">
             <p className="text-2xl font-bold tracking-tighter text-brand-dark max-w-3xl mx-auto leading-relaxed">
-              "The result speaks for itself. The course now combines the rigor students expect with the authentic design experience that motivated the original transformation."
+              {t('unitops.quote')}
             </p>
           </section>
         </div>

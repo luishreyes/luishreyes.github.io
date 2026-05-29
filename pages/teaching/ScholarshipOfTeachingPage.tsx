@@ -100,10 +100,10 @@ export const ScholarshipOfTeachingPage: React.FC = () => {
                       className="mb-12"
                     >
                         <p className="text-lg text-brand-gray leading-relaxed">
-                            My commitment to education extends beyond the classroom into the systematic study of teaching and learning itself. I am an active participant in the Scholarship of Teaching and Learning (SOTL) community, where I apply my research skills to improve pedagogical practices in engineering.
+                            {t('sotl.intro1')}
                         </p>
                         <p className="mt-4 text-lg text-brand-gray leading-relaxed">
-                            This work involves designing, implementing, and rigorously assessing innovative teaching strategies to enhance student learning and professional development. My SOTL research often focuses on integrating real-world industry challenges into the curriculum, fostering essential skills like teamwork and creativity, and leveraging new technologies to create more engaging and effective learning environments. Below are some of the products of this research.
+                            {t('sotl.intro2')}
                         </p>
                     </motion.div>
                     

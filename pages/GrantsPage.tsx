@@ -137,7 +137,7 @@ export const GrantsPage = () => {
                                         <span className={`px-3 py-1 text-xs font-semibold rounded-full ${
                                             grant.status === 'Concluded' ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'
                                         }`}>
-                                            {grant.status}
+                                            {grant.status === 'Concluded' ? t('grants.status.concluded') : t('grants.status.inProgress')}
                                         </span>
                                     </div>
                                 </motion.div>
