@@ -135,6 +135,12 @@ export interface Course {
    * Si no se especifica, se asume 'academic'.
    */
   kind?: 'academic' | 'professional';
+  /**
+   * Si `true`, el curso pertenece a un semestre pasado: NO aparece en el índice de Aula
+   * sino en la página de Archivo (`/classroom/archive`). Sus páginas internas (landing,
+   * lecturas, presentaciones) siguen siendo accesibles con normalidad.
+   */
+  archived?: boolean;
   /** Solo aplica si `kind === 'professional'`. Lista de cursos EDCO/charlas que componen el espacio. */
   edcoCourses?: EdcoCourse[];
   cronograma?: CronogramaEntry[];

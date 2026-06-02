@@ -7,6 +7,7 @@ import { recognition } from './strings/recognition';
 import { service } from './strings/service';
 import { future } from './strings/future';
 import { principles } from './strings/principles';
+import { classroom } from './strings/classroom';
 
 export type Lang = 'en' | 'es';
 
@@ -20,6 +21,7 @@ const ui = {
   ...service,
   ...future,
   ...principles,
+  ...classroom,
 };
 
 export type UIKey = keyof typeof ui;

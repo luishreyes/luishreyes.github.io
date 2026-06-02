@@ -2,12 +2,14 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import type { Course } from '../data/classroom';
+import { useI18n } from '../../context/i18n';
 
 interface CourseCardProps {
   course: Course;
 }
 
 export const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
+  const { t } = useI18n();
   return (
     <motion.div
       {...{
@@ -51,18 +53,18 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
               {course.kind === 'professional' ? (
                 <span>
                   {(course.edcoCourses?.length ?? 0)}{' '}
-                  {(course.edcoCourses?.length ?? 0) === 1 ? 'curso' : 'cursos'} EDCO
+                  {t((course.edcoCourses?.length ?? 0) === 1 ? 'classroom.card.courseEdco' : 'classroom.card.coursesEdco')}
                 </span>
               ) : (
                 <>
-                  <span>{course.readings.length} {course.readings.length === 1 ? 'entrada' : 'entradas'}</span>
+                  <span>{course.readings.length} {t(course.readings.length === 1 ? 'classroom.card.entry' : 'classroom.card.entries')}</span>
                   <span className="text-zinc-300">·</span>
-                  <span>{course.presentations.length} presentaciones</span>
+                  <span>{course.presentations.length} {t(course.presentations.length === 1 ? 'classroom.card.presentation' : 'classroom.card.presentations')}</span>
                 </>
               )}
             </div>
             <span className="inline-flex items-center gap-1 font-medium text-brand-dark group-hover:text-brand-yellow-dark transition-colors">
-              Ingresar
+              {t('classroom.card.enter')}
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>

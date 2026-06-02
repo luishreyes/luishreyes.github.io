@@ -356,6 +356,7 @@ export const pouCourse: Course = {
   code: 'IQYA-2031',
   title: 'Proyecto de Operaciones Unitarias',
   term: '2026-10',
+  archived: true,
   credits: 3,
   modality: 'Presencial',
   duration: '16 semanas',
