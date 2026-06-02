@@ -40,6 +40,7 @@ import { TeachingPurposePage } from './pages/purpose/TeachingPurposePage';
 import { ResearchPurposePage } from './pages/purpose/ResearchPurposePage';
 import { ServicePurposePage } from './pages/purpose/ServicePurposePage';
 import { ClassroomIndexPage } from './pages/classroom/ClassroomIndexPage';
+import { ClassroomArchivePage } from './pages/classroom/ClassroomArchivePage';
 import { CourseLandingPage } from './pages/classroom/CourseLandingPage';
 import { ReadingsIndexPage } from './pages/classroom/ReadingsIndexPage';
 import { ReadingPage } from './pages/classroom/ReadingPage';
@@ -182,6 +183,7 @@ const App: React.FC = () => {
               <Route path="/future/collaboration" element={<CollaborationPage />} />
               <Route path="/recognition" element={<AwardsPage />} />
               <Route path="/classroom" element={<ClassroomIndexPage />} />
+              <Route path="/classroom/archive" element={<ClassroomArchivePage />} />
               <Route path="/classroom/:courseSlug" element={<CourseLandingPage />} />
               <Route path="/classroom/:courseSlug/readings" element={<ReadingsIndexPage />} />
               <Route path="/classroom/:courseSlug/readings/:slug" element={<ReadingPage />} />

@@ -26,6 +26,7 @@ export const ROUTES: Record<string, string> = {
   'future.collaboration':                 '/future/collaboration',
   'recognition':                          '/recognition',
   'classroom.index':                      '/classroom',
+  'classroom.archive':                    '/classroom/archive',
   'classroom.course':                     '/classroom/:courseSlug',
   'classroom.readings':                   '/classroom/:courseSlug/readings',
   'classroom.reading':                    '/classroom/:courseSlug/readings/:slug',

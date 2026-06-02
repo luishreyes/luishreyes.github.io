@@ -1,26 +1,29 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { PageWrapper } from '../../components/PageWrapper';
 import { classroomData } from '../../components/data/classroom';
 import { CourseCard } from '../../components/classroom/CourseCard';
+import { useI18n } from '../../context/i18n';
 
 export const ClassroomIndexPage: React.FC = () => {
-  const academicCourses = classroomData.filter((c) => c.kind !== 'professional');
-  const professionalCourses = classroomData.filter((c) => c.kind === 'professional');
+  const { t } = useI18n();
+
+  const activeCourses = classroomData.filter((c) => !c.archived);
+  const academicCourses = activeCourses.filter((c) => c.kind !== 'professional');
+  const professionalCourses = activeCourses.filter((c) => c.kind === 'professional');
+  const hasArchived = classroomData.some((c) => c.archived);
 
   return (
     <PageWrapper maxWidth="max-w-7xl">
       <div className="max-w-3xl">
         <p className="text-sm font-semibold tracking-widest uppercase text-brand-yellow-dark">
-          Classroom
+          {t('classroom.eyebrow')}
         </p>
         <h1 className="mt-2 text-3xl sm:text-4xl font-bold tracking-tight text-brand-dark">
-          Classroom
+          {t('classroom.title')}
         </h1>
         <p className="mt-4 text-brand-gray leading-relaxed">
-          A dedicated space for each of my courses. Here you will find the syllabus,
-          weekly readings, and class presentations — everything you need to prepare
-          before, during, and after each session. Access is protected by a course code
-          provided at the beginning of the semester.
+          {t('classroom.intro')}
         </p>
       </div>
 
@@ -38,15 +41,13 @@ export const ClassroomIndexPage: React.FC = () => {
         <section className="mt-16">
           <div className="max-w-3xl">
             <p className="text-sm font-semibold tracking-widest uppercase text-brand-yellow-dark">
-              Professional Education
+              {t('classroom.profEd.eyebrow')}
             </p>
             <h2 className="mt-2 text-2xl sm:text-3xl font-bold tracking-tight text-brand-dark">
-              Continuing education at Uniandes
+              {t('classroom.profEd.title')}
             </h2>
             <p className="mt-3 text-brand-gray leading-relaxed">
-              Open courses I teach through the Dirección de Educación Continua (EDCO).
-              This is a personal hub — full access is restricted, but individual sessions
-              can be shared via dedicated links.
+              {t('classroom.profEd.intro')}
             </p>
           </div>
 
@@ -58,10 +59,27 @@ export const ClassroomIndexPage: React.FC = () => {
         </section>
       )}
 
-      {classroomData.length === 0 && (
+      {activeCourses.length === 0 && (
         <p className="mt-10 text-brand-gray">
-          Aún no hay cursos publicados. Vuelve pronto.
+          {t('classroom.empty')}
         </p>
+      )}
+
+      {hasArchived && (
+        <div className="mt-16 pt-8 border-t border-zinc-200">
+          <Link
+            to="/classroom/archive"
+            className="inline-flex items-center gap-2 text-sm font-medium text-brand-gray hover:text-brand-dark transition-colors"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8M10 12h4" />
+            </svg>
+            {t('classroom.archive.link')}
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </Link>
+        </div>
       )}
     </PageWrapper>
   );
