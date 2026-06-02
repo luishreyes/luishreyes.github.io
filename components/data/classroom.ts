@@ -201,11 +201,12 @@ export interface Course {
 }
 
 import { pouCourse } from './classroom/pou';
+import { pou202620Course } from './classroom/pou-2026-20';
 import { spdpCourse } from './classroom/spdp';
 import { dpro4300Course } from './classroom/dpro-4300';
 import { eduProCourse } from './classroom/edu-pro';
 
-export const classroomData: Course[] = [pouCourse, spdpCourse, dpro4300Course, eduProCourse];
+export const classroomData: Course[] = [pou202620Course, pouCourse, spdpCourse, dpro4300Course, eduProCourse];
 
 export const getCourseBySlug = (slug: string): Course | undefined =>
   classroomData.find((c) => c.slug === slug);
