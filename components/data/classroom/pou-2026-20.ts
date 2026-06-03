@@ -439,6 +439,17 @@ export const pou202620Course: Course = {
       href: '/classroom/iqya-2031-2026-20/programa.html',
     },
     {
+      slug: 'trabajo-en-equipo',
+      title: 'Trabajo en equipo: guía práctica para el proyecto',
+      summary:
+        'Los fundamentos, herramientas y compromisos que construyen equipos que funcionan de verdad. Cubre el Proyecto Aristóteles de Google, bienestar y seguridad psicológica, normas y contrato de equipo, roles, matriz de evaluación, resolución de conflictos y plantillas de registro semanal.',
+      date: '2026-06-03',
+      readingMinutes: 35,
+      tags: ['trabajo en equipo', 'contrato', 'roles', 'normas', 'evaluación'],
+      category: 'guia',
+      href: '/classroom/iqya-2031-2026-20/guias/Guia_Trabajo_en_Equipo/Guia_Trabajo_en_Equipo.html',
+    },
+    {
       slug: 'reto-pectina',
       title: 'Guía del reto: la cáscara que vale más que la fruta',
       summary:
