@@ -461,6 +461,17 @@ export const pou202620Course: Course = {
       href: '/classroom/iqya-2031-2026-20/reto-pectina.html',
     },
     {
+      slug: 'informe-final',
+      title: 'Guía de elaboración del informe final',
+      summary:
+        'Estructura, formato y criterios de evaluación del documento final del proyecto. Cubre las diferencias con las bitácoras, los 12 capítulos del cuerpo del informe, las hojas de especificación de equipos, los errores más comunes y cómo preparar la sustentación.',
+      date: '2026-06-03',
+      readingMinutes: 15,
+      tags: ['informe final', 'documento', 'estructura', 'evaluación'],
+      category: 'guia',
+      href: '/classroom/iqya-2031-2026-20/guias/Guia_Informe_Final/Guia_Informe_Final.html',
+    },
+    {
       slug: 'lectura-01-operaciones-unitarias',
       title: 'Las operaciones unitarias: historia de un concepto y formas de clasificarlo',
       summary:
