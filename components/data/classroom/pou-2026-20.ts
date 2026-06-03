@@ -450,6 +450,17 @@ export const pou202620Course: Course = {
       href: '/classroom/iqya-2031-2026-20/guias/Guia_Trabajo_en_Equipo/Guia_Trabajo_en_Equipo.html',
     },
     {
+      slug: 'busqueda-bibliografica',
+      title: 'Búsqueda bibliográfica y herramientas de IA',
+      summary:
+        'Once plataformas para encontrar, analizar y sintetizar literatura científica — desde Google Scholar, Web of Science y Scopus hasta ChatGPT, Claude, Perplexity, SciSpace, Consensus y Connected Papers. Incluye estrategias de búsqueda avanzada y un flujo de trabajo recomendado para el proyecto.',
+      date: '2026-06-03',
+      readingMinutes: 35,
+      tags: ['búsqueda bibliográfica', 'herramientas de IA', 'Google Scholar', 'ChatGPT', 'bases de datos'],
+      category: 'guia',
+      href: '/classroom/iqya-2031-2026-20/guias/Guia_Busqueda_Bibliografica/Guia_Busqueda_Bibliografica.html',
+    },
+    {
       slug: 'reto-pectina',
       title: 'Guía del reto: la cáscara que vale más que la fruta',
       summary:
