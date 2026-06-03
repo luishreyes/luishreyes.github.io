@@ -12,6 +12,12 @@ export interface Reading {
    * Si no se especifica, se asume 'guia'.
    */
   category?: 'guia' | 'lectura';
+  /**
+   * Si se define, la entrada enlaza a este documento (p. ej. un HTML
+   * autocontenido hospedado en `public/`) y abre en pestaña nueva, en lugar
+   * de la lectura TSX interna (`/classroom/{slug}/readings/{slug}`).
+   */
+  href?: string;
 }
 
 export interface Presentation {
