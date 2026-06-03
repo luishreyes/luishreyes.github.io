@@ -181,6 +181,16 @@ export interface Course {
   challenges?: {
     label: string;
     term: string;
+    /** Etiqueta pequeña sobre el título. Por defecto "Retos". */
+    eyebrow?: string;
+    /** Texto descriptivo del botón. Si se omite, usa el texto por defecto de la página de Retos. */
+    description?: string;
+    /**
+     * Si se define, el botón enlaza a este documento (p. ej. una guía HTML
+     * autocontenida) y abre en pestaña nueva, en lugar de la página interna
+     * de Retos (`/classroom/{slug}/retos`).
+     */
+    href?: string;
   };
   aias: {
     intro: string;
