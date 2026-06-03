@@ -449,6 +449,28 @@ export const pou202620Course: Course = {
       category: 'guia',
       href: '/classroom/iqya-2031-2026-20/reto-pectina.html',
     },
+    {
+      slug: 'lectura-01-operaciones-unitarias',
+      title: 'Las operaciones unitarias: historia de un concepto y formas de clasificarlo',
+      summary:
+        'Cómo una sola idea ordenó toda la ingeniería química. Origen del concepto con Arthur D. Little (MIT, 1915), evolución a lo largo del siglo XX y las dos clasificaciones complementarias: por tipo de operación y por fenómeno de transporte predominante.',
+      date: '2026-06-03',
+      readingMinutes: 12,
+      tags: ['operaciones unitarias', 'historia', 'Little', 'fenómenos de transporte', 'clasificación'],
+      category: 'lectura',
+      href: '/classroom/iqya-2031-2026-20/lecturas/Lectura_01/Lectura_01_Operaciones_Unitarias.html',
+    },
+    {
+      slug: 'lectura-02-diagramas-ingenieria',
+      title: 'Los diagramas de ingeniería como lenguaje de la profesión',
+      summary:
+        'Por qué los ingenieros de proceso no describen sus plantas: las dibujan. Los tres niveles de representación (BFD, PFD, P&ID), qué exige cada uno al ingeniero y la simbología ISO/ISA como convención universal de la disciplina.',
+      date: '2026-06-03',
+      readingMinutes: 14,
+      tags: ['diagramas', 'BFD', 'PFD', 'P&ID', 'simbología', 'ISO', 'ISA'],
+      category: 'lectura',
+      href: '/classroom/iqya-2031-2026-20/lecturas/Lectura_02/Lectura_02_Diagramas_Ingenieria.html',
+    },
   ],
   presentations: [
     {
