@@ -84,25 +84,38 @@ export const CourseLandingPage: React.FC = () => {
             </Link>
           </div>
 
-          {course.challenges && (
-            <Link
-              to={`/classroom/${course.slug}/retos`}
-              className="mt-4 group bg-brand-dark rounded-xl shadow-md border border-brand-dark p-6 hover:shadow-lg transition-shadow flex items-start justify-between"
-            >
-              <div>
-                <p className="text-xs font-semibold tracking-widest uppercase text-brand-yellow">Retos</p>
-                <h3 className="mt-1 text-xl font-bold text-zinc-100">{course.challenges.label}</h3>
-                <p className="mt-2 text-sm text-zinc-300">
-                  Explora los proyectos disponibles para {course.challenges.term} con estadísticas y filtros por línea temática.
-                </p>
-              </div>
-              <span className="text-brand-yellow group-hover:text-zinc-100 transition-colors">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                </svg>
-              </span>
-            </Link>
-          )}
+          {course.challenges && (() => {
+            const ch = course.challenges;
+            const eyebrow = ch.eyebrow ?? 'Retos';
+            const description =
+              ch.description ??
+              `Explora los proyectos disponibles para ${ch.term} con estadísticas y filtros por línea temática.`;
+            const cardClass =
+              'mt-4 group bg-brand-dark rounded-xl shadow-md border border-brand-dark p-6 hover:shadow-lg transition-shadow flex items-start justify-between';
+            const inner = (
+              <>
+                <div>
+                  <p className="text-xs font-semibold tracking-widest uppercase text-brand-yellow">{eyebrow}</p>
+                  <h3 className="mt-1 text-xl font-bold text-zinc-100">{ch.label}</h3>
+                  <p className="mt-2 text-sm text-zinc-300">{description}</p>
+                </div>
+                <span className="text-brand-yellow group-hover:text-zinc-100 transition-colors">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  </svg>
+                </span>
+              </>
+            );
+            return ch.href ? (
+              <a href={ch.href} target="_blank" rel="noopener noreferrer" className={cardClass}>
+                {inner}
+              </a>
+            ) : (
+              <Link to={`/classroom/${course.slug}/retos`} className={cardClass}>
+                {inner}
+              </Link>
+            );
+          })()}
         </div>
 
         {course.pillars && course.pillars.length > 0 && (

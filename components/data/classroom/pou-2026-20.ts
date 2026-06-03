@@ -417,6 +417,14 @@ export const pou202620Course: Course = {
       ],
     },
   ],
+  challenges: {
+    label: 'La cáscara que vale más que la fruta',
+    term: '2026-20',
+    eyebrow: 'Reto del semestre',
+    description:
+      'Diseña y dimensiona una planta que extrae pectina de grado alimentario a partir de cáscara de fruta colombiana. Abre la guía completa del proyecto.',
+    href: '/classroom/iqya-2031-2026-20/reto-pectina.html',
+  },
   readings: [],
   presentations: [
     {
