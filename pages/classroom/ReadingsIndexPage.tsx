@@ -102,18 +102,23 @@ const Section: React.FC<SectionProps> = ({ title, description, count, courseSlug
       <p className="mt-6 text-sm text-brand-gray italic">{emptyLabel}</p>
     ) : (
       <ul className="mt-6 space-y-4">
-        {items.map((r) => (
-          <li key={r.slug}>
-            <Link
-              to={`/classroom/${courseSlug}/readings/${r.slug}`}
-              className="block bg-white rounded-xl border border-zinc-200 p-6 shadow-sm hover:shadow-md hover:border-brand-yellow transition-all group"
-            >
+        {items.map((r) => {
+          const cardClass =
+            'block bg-white rounded-xl border border-zinc-200 p-6 shadow-sm hover:shadow-md hover:border-brand-yellow transition-all group';
+          const content = (
+            <>
               <div className="flex flex-wrap items-center gap-2 text-xs text-brand-gray">
                 <time dateTime={r.date}>{formatDate(r.date)}</time>
                 {r.readingMinutes && (
                   <>
                     <span aria-hidden="true">·</span>
                     <span>{r.readingMinutes} min</span>
+                  </>
+                )}
+                {r.href && (
+                  <>
+                    <span aria-hidden="true">·</span>
+                    <span>Documento ↗</span>
                   </>
                 )}
               </div>
@@ -135,9 +140,22 @@ const Section: React.FC<SectionProps> = ({ title, description, count, courseSlug
                   ))}
                 </ul>
               )}
-            </Link>
-          </li>
-        ))}
+            </>
+          );
+          return (
+            <li key={r.slug}>
+              {r.href ? (
+                <a href={r.href} target="_blank" rel="noopener noreferrer" className={cardClass}>
+                  {content}
+                </a>
+              ) : (
+                <Link to={`/classroom/${courseSlug}/readings/${r.slug}`} className={cardClass}>
+                  {content}
+                </Link>
+              )}
+            </li>
+          );
+        })}
       </ul>
     )}
   </section>

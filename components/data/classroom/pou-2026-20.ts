@@ -425,7 +425,30 @@ export const pou202620Course: Course = {
       'Diseña y dimensiona una planta que extrae pectina de grado alimentario a partir de cáscara de fruta colombiana. Abre la guía completa del proyecto.',
     href: '/classroom/iqya-2031-2026-20/reto-pectina.html',
   },
-  readings: [],
+  readings: [
+    {
+      slug: 'programa-del-curso',
+      title: 'Programa del curso',
+      summary:
+        'El programa completo de IQYA-2031 para 2026-20: horarios y equipo, descripción y metodología (PO-PBL + aula invertida), el reto de la planta de pectina, resultados ABET, contenido por módulo, distribución de la nota, calendario y fechas de entrega, escala AIAS de uso de IA y políticas del curso.',
+      date: '2026-08-04',
+      readingMinutes: 12,
+      tags: ['programa', 'syllabus', 'logística'],
+      category: 'guia',
+      href: '/classroom/iqya-2031-2026-20/programa.html',
+    },
+    {
+      slug: 'reto-pectina',
+      title: 'Guía del reto: la cáscara que vale más que la fruta',
+      summary:
+        'La guía del proyecto semestral: diseñar y dimensionar una planta que extrae pectina de grado alimentario a partir de cáscara de cítricos o maracuyá. Las ocho operaciones a integrar, cómo elegir la materia prima, qué validar en ASPEN Plus y dónde no confiar, los entregables y la rúbrica de cada bitácora.',
+      date: '2026-08-03',
+      readingMinutes: 8,
+      tags: ['proyecto', 'reto', 'pectina', 'guía'],
+      category: 'guia',
+      href: '/classroom/iqya-2031-2026-20/reto-pectina.html',
+    },
+  ],
   presentations: [
     {
       id: 'diagramas-ingenieria',

@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Programa del curso · Proyecto de Operaciones Unitarias · IQYA-2031 · 2026-20</title>
+<style>
+/* ===================================================================
+   deloitte.css — Sistema de diseño del curso
+   Narrativas Visuales de Datos con IA Generativa
+   ADN Deloitte. Tokens compartidos por presentación y guía.
+   =================================================================== */
+
+/* Fuente cercana a Aptos: Source Sans 3 (humanista, limpia) */
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;0,900;1,400&display=swap');
+
+:root {
+  /* Paleta Deloitte */
+  --verde:        #86BC24;
+  --verde-osc:    #5E8A12;
+  --verde-claro:  #EAF3DA;
+  --teal:         #0076A8;
+  --teal-claro:   #E1EEF4;
+  --negro:        #000000;
+  --gris-1:       #333333;   /* texto principal */
+  --gris-2:       #666666;   /* texto secundario */
+  --gris-3:       #9A9A9A;
+  --gris-4:       #D0D0D0;   /* bordes */
+  --gris-5:       #E4E4E4;
+  --papel:        #F2F2F2;   /* fondo muy claro */
+  --blanco:       #FFFFFF;
+  --ambar:        #E0922F;   /* solo con etiqueta — accesibilidad */
+
+  --tipo: 'Source Sans 3', 'Aptos', 'Segoe UI', system-ui, -apple-system, sans-serif;
+
+  --radio: 4px;
+  --sombra: 0 1px 3px rgba(0,0,0,.08), 0 8px 24px rgba(0,0,0,.06);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+/* ---------- Gráficos (compartido) ---------- */
+.ndv-chart {
+  font-family: var(--tipo);
+  margin: 0;
+}
+.ndv-chart__title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--gris-1);
+  margin: 0 0 .15em;
+  line-height: 1.25;
+}
+.ndv-chart__note {
+  font-size: .8rem;
+  color: var(--gris-2);
+  margin: 0 0 .6em;
+  line-height: 1.4;
+}
+.ndv-chart__plot { width: 100%; }
+.ndv-svg { width: 100%; height: auto; display: block; overflow: visible; }
+.ndv-axislabel, .ndv-valuelabel { font-family: var(--tipo); }
+
+/* Control segmentado del toggle antes/después */
+.ndv-toggle {
+  display: inline-flex;
+  gap: 0;
+  border: 1.5px solid var(--gris-4);
+  border-radius: 999px;
+  padding: 3px;
+  margin: 0 0 1em;
+  background: var(--blanco);
+}
+.ndv-toggle__btn {
+  font-family: var(--tipo);
+  font-size: .82rem;
+  font-weight: 600;
+  color: var(--gris-2);
+  background: transparent;
+  border: none;
+  padding: .42em 1.1em;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background .2s ease, color .2s ease;
+  white-space: nowrap;
+}
+.ndv-toggle__btn:hover { color: var(--gris-1); }
+.ndv-toggle__btn.is-active { background: var(--verde); color: #fff; }
+.ndv-chart__state { will-change: opacity; }
+
+</style>
+<style>
+
+  body {
+    margin: 0;
+    background: var(--gris-5);
+    font-family: var(--tipo);
+    color: var(--gris-1);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.6;
+  }
+  .page {
+    max-width: 940px;
+    margin: 40px auto 80px;
+    background: var(--blanco);
+    box-shadow: var(--sombra);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  /* ---------- Encabezado ---------- */
+  .doc-head {
+    background: var(--papel);
+    border-bottom: 5px solid var(--verde);
+    padding: 44px 56px 40px;
+  }
+  .doc-head .org {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    font-size: 14px; font-weight: 700; letter-spacing: .03em; color: var(--gris-1);
+  }
+  .doc-head .org span { color: var(--gris-3); font-weight: 600; }
+  .doc-head .badge {
+    display: inline-block; background: var(--verde); color: #fff;
+    font-size: 13px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+    padding: 6px 14px; border-radius: 999px; margin: 26px 0 16px; white-space: nowrap;
+  }
+  .doc-head h1 { font-size: 40px; line-height: 1.12; margin: 0 0 6px; letter-spacing: -.01em; }
+  .doc-head .subtitle { font-size: 20px; color: var(--gris-2); margin: 0; font-weight: 500; }
+  .doc-meta {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px;
+    margin-top: 32px; padding-top: 26px; border-top: 1px solid var(--gris-4);
+  }
+  .doc-meta div { font-size: 15px; color: var(--gris-2); }
+  .doc-meta b { display: block; color: var(--gris-1); font-size: 16px; font-weight: 700; margin-bottom: 2px; }
+
+  /* ---------- Cuerpo ---------- */
+  .doc-body { padding: 8px 56px 56px; }
+  .doc-body section { padding-top: 40px; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--verde-osc); margin-bottom: 12px;
+  }
+  .eyebrow::before { content: ""; width: 26px; height: 4px; background: var(--verde); border-radius: 2px; }
+  h2.sec { font-size: 27px; line-height: 1.2; margin: 0 0 14px; letter-spacing: -.01em; }
+  h3.sub { font-size: 19px; margin: 28px 0 8px; }
+  .doc-body p { font-size: 16.5px; color: var(--gris-1); margin: 0 0 14px; }
+  .lead { font-size: 18.5px; color: var(--gris-2); line-height: 1.55; }
+
+  /* Objetivos */
+  .objectives { list-style: none; padding: 0; margin: 8px 0 0; display: grid; gap: 14px; }
+  .objectives li {
+    display: grid; grid-template-columns: 30px 1fr; gap: 16px; align-items: start;
+    font-size: 16.5px;
+  }
+  .objectives li::before {
+    content: "✓"; display: inline-flex; align-items: center; justify-content: center;
+    width: 30px; height: 30px; border-radius: 50%; background: var(--verde-claro);
+    color: var(--verde-osc); font-weight: 700; font-size: 15px;
+  }
+
+  /* Tres preguntas */
+  .qcards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 8px; }
+  .qcard { background: var(--papel); border-radius: 8px; padding: 24px 22px; border-top: 5px solid var(--verde); display: flex; flex-direction: column; gap: 8px; }
+  .qcard .qn { font-size: 13px; font-weight: 700; color: var(--verde-osc); letter-spacing: .08em; }
+  .qcard b { font-size: 17px; line-height: 1.25; }
+  .qcard span { font-size: 14.5px; color: var(--gris-2); line-height: 1.45; }
+
+  /* Figura / gráfico */
+  figure.fig { margin: 26px 0 8px; padding: 26px 28px; border: 1px solid var(--gris-4); border-radius: 8px; background: var(--blanco); }
+  figure.fig .ndv-chart__title { font-size: 18px; }
+  figure.fig .ndv-chart__note { font-size: 14px; }
+
+  /* Callouts */
+  .callout {
+    display: grid; grid-template-columns: 44px 1fr; gap: 18px;
+    border-radius: 8px; padding: 20px 24px; margin: 22px 0; align-items: start;
+  }
+  .callout .ic {
+    width: 44px; height: 44px; border-radius: 50%; display: inline-flex;
+    align-items: center; justify-content: center; font-size: 22px; font-weight: 700;
+  }
+  .callout b { display: block; font-size: 16px; margin-bottom: 4px; }
+  .callout p { font-size: 15.5px; margin: 0; color: var(--gris-1); }
+  .callout--tip { background: var(--verde-claro); }
+  .callout--tip .ic { background: var(--verde); color: #fff; }
+  .callout--tip b { color: var(--verde-osc); }
+  .callout--etica { background: #FBEEDD; }
+  .callout--etica .ic { background: var(--ambar); color: #fff; }
+  .callout--etica b { color: #B16A14; }
+  .callout--nota { background: var(--teal-claro); }
+  .callout--nota .ic { background: var(--teal); color: #fff; }
+  .callout--nota b { color: var(--teal); }
+
+  /* Pasos del taller */
+  .steps { display: grid; gap: 16px; margin-top: 12px; counter-reset: paso; }
+  .stepc {
+    display: grid; grid-template-columns: 54px 1fr auto; gap: 20px; align-items: center;
+    border: 1px solid var(--gris-4); border-radius: 8px; padding: 18px 22px;
+  }
+  .stepc .pnum {
+    width: 46px; height: 46px; border-radius: 50%; background: var(--verde); color: #fff;
+    display: inline-flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700;
+  }
+  .stepc .ptext b { font-size: 17px; }
+  .stepc .ptext p { font-size: 15px; color: var(--gris-2); margin: 4px 0 0; }
+  .stepc .ptime { font-size: 13px; font-weight: 700; color: var(--teal); white-space: nowrap; letter-spacing: .04em; }
+
+  /* Tabla de rúbrica */
+  table.rubrica { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 15px; }
+  table.rubrica th, table.rubrica td { text-align: left; padding: 14px 16px; border-bottom: 1px solid var(--gris-4); vertical-align: top; }
+  table.rubrica thead th { background: var(--gris-1); color: #fff; font-weight: 700; font-size: 14px; letter-spacing: .02em; }
+  table.rubrica thead th:first-child { border-top-left-radius: 6px; }
+  table.rubrica thead th:last-child { border-top-right-radius: 6px; }
+  table.rubrica td:first-child { font-weight: 700; color: var(--gris-1); width: 32%; }
+  table.rubrica .peso { color: var(--verde-osc); font-weight: 700; }
+  table.rubrica tbody tr:nth-child(even) { background: var(--papel); }
+
+  /* Entregable */
+  .deliverable {
+    margin-top: 16px; background: var(--gris-1); color: #fff; border-radius: 8px;
+    padding: 34px 36px; border-left: 8px solid var(--verde);
+  }
+  .deliverable .badge { display: inline-block; background: var(--verde); color: #fff; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; padding: 5px 13px; border-radius: 999px; margin-bottom: 16px; white-space: nowrap; }
+  .deliverable h2 { font-size: 25px; margin: 0 0 10px; color: #fff; }
+  .deliverable p { color: rgba(255,255,255,.82); font-size: 16px; margin: 0 0 18px; }
+  .deliverable ul { margin: 0; padding-left: 1.2em; color: rgba(255,255,255,.9); font-size: 15.5px; }
+  .deliverable li { margin-bottom: 8px; }
+  .deliverable li::marker { color: var(--verde); }
+
+  /* Footer */
+  .doc-foot {
+    border-top: 1px solid var(--gris-4); margin-top: 44px; padding-top: 22px;
+    display: flex; justify-content: space-between; font-size: 13px; color: var(--gris-3);
+  }
+
+  @media print {
+    body { background: #fff; }
+    .page { box-shadow: none; margin: 0; max-width: none; border-radius: 0; }
+    section { break-inside: avoid; }
+    figure.fig, .stepc, .callout, .deliverable, table.rubrica { break-inside: avoid; }
+  }
+  @media (max-width: 720px) {
+    .doc-head, .doc-body { padding-left: 24px; padding-right: 24px; }
+    .doc-meta, .qcards { grid-template-columns: 1fr 1fr; }
+    .stepc { grid-template-columns: 46px 1fr; }
+    .stepc .ptime { grid-column: 2; }
+  }
+
+
+  /* Extras para el programa */
+  .twocol { display:grid; grid-template-columns:1fr 1fr; gap:22px; margin-top:8px; }
+  .infobox { background:var(--papel); border-radius:8px; padding:22px 24px; border-top:5px solid var(--verde); }
+  .infobox h3 { font-size:17px; margin:0 0 10px; }
+  .infobox p { font-size:15px; margin:0 0 6px; color:var(--gris-1); }
+  .infobox p span { color:var(--gris-2); }
+  .gradelist { display:grid; gap:11px; margin-top:10px; }
+  .gradeitem { display:grid; grid-template-columns:230px 1fr 54px; gap:14px; align-items:center; font-size:15px; }
+  .gradeitem .glabel { color:var(--gris-1); font-weight:600; }
+  .gradeitem .gbar { background:var(--gris-5); border-radius:999px; height:14px; overflow:hidden; }
+  .gradeitem .gbar > i { display:block; height:100%; background:var(--verde); border-radius:999px; }
+  .gradeitem .gpct { font-weight:700; color:var(--verde-osc); text-align:right; }
+  @media (max-width:720px){ .twocol{grid-template-columns:1fr;} .gradeitem{grid-template-columns:140px 1fr 46px;} }
+
+</style>
+</head>
+<body>
+
+<article class="page">
+
+  <header class="doc-head">
+    <div class="org">
+      Universidad de los Andes
+      <span>Ingeniería Química y de Alimentos</span>
+    </div>
+    <div class="badge">Programa del curso · 2026-20</div>
+    <h1>Proyecto de Operaciones Unitarias</h1>
+    <p class="subtitle">Diseño integrado de productos y procesos: una planta de pectina a partir de residuo agroindustrial</p>
+    <div class="doc-meta">
+      <div><b>Código</b>IQYA-2031</div>
+      <div><b>Créditos</b>3</div>
+      <div><b>Modalidad</b>Presencial · 16 semanas</div>
+      <div><b>Profesor</b>Luis H. Reyes</div>
+    </div>
+  </header>
+
+  <div class="doc-body">
+
+    <!-- GENERALIDADES -->
+    <section>
+      <div class="eyebrow">Generalidades</div>
+      <h2 class="sec">Horarios y equipo</h2>
+      <div class="twocol">
+        <div class="infobox">
+          <h3>Horarios</h3>
+          <p>Magistral: <span>Martes 11:00 a.m. a 12:20 p.m.</span></p>
+          <p>Magistral: <span>Jueves 11:00 a.m. a 12:20 p.m.</span></p>
+          <p>Taller: <span>Lunes 3:30 p.m. a 4:50 p.m. y viernes 9:30 a 10:50 a.m.</span></p>
+          <p>Salones: <span>según asignación en BloqueNeón</span></p>
+        </div>
+        <div class="infobox">
+          <h3>Equipo docente</h3>
+          <p>Profesor: <span>Luis H. Reyes · lh.reyes@uniandes.edu.co</span></p>
+          <p>Atención: <span>viernes 8 a.m. a 12 m., con cita previa</span></p>
+          <p>Asistente: <span>Andrés F. Infante · af.infante@uniandes.edu.co</span></p>
+          <p>Monitora: <span>Dana Catalina Mora · dc.morat1@uniandes.edu.co</span></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- DESCRIPCIÓN -->
+    <section>
+      <div class="eyebrow">De qué trata el curso</div>
+      <h2 class="sec">Descripción del curso</h2>
+      <p class="lead">Proyecto de Operaciones Unitarias enseña a diseñar procesos, no a memorizarlos. El curso adopta el Diseño Integrado de Productos y Procesos, una metodología que une las propiedades del producto, su ruta de producción y los elementos de innovación y emprendimiento en un mismo ejercicio.</p>
+      <p>Ese enfoque responde a dónde estamos. Bogotá se asienta sobre la cordillera, lejos de los puertos, y por eso nuestra ventaja no está en producir a gran escala sino en innovar en procesos y productos. La creatividad sostiene esa ventaja, acompañada de ingenio, adaptabilidad y la capacidad de improvisar cuando el tiempo y los recursos aprietan. Para construir ese músculo, el Departamento diseñó cinco cursos. Este es el segundo, y pone el peso en el diseño en ingeniería con énfasis en el procesamiento.</p>
+      <div class="qcards">
+        <div class="qcard"><span class="qn">01</span><b>Creatividad</b><span>Motor de la identificación de oportunidades y la generación de ideas.</span></div>
+        <div class="qcard"><span class="qn">02</span><b>Innovación</b><span>Desarrollo ágil de prototipos viables con un enfoque multiescala.</span></div>
+        <div class="qcard"><span class="qn">03</span><b>Emprendimiento</b><span>El modelo de negocio y el desarrollo de la planta de producción.</span></div>
+      </div>
+    </section>
+
+    <!-- OBJETIVOS -->
+    <section>
+      <div class="eyebrow">Al terminar el curso, usted podrá</div>
+      <h2 class="sec">Objetivos del curso</h2>
+      <ul class="objectives">
+        <li>Diseñar y dimensionar las operaciones unitarias de un proceso químico completo, que abarca el manejo de sólidos, el transporte de fluidos y la separación final por destilación.</li>
+        <li>Elaborar e interpretar diagramas de ingeniería profesionales (PBD, PFD, P&amp;ID) según estándares industriales.</li>
+        <li>Calcular y especificar equipos de proceso con criterios técnicos, económicos y de sostenibilidad.</li>
+        <li>Simular procesos completos en ASPEN Plus y validar con ellos los cálculos manuales.</li>
+        <li>Documentar el diseño en bitácoras de cálculo profesionales y reportes ejecutivos.</li>
+        <li>Trabajar en equipo, gestionando el tiempo y los recursos con eficacia.</li>
+        <li>Aplicar pensamiento crítico al elegir alternativas de diseño y resolver problemas.</li>
+        <li>Comunicar resultados técnicos a audiencias distintas mediante informes y presentaciones.</li>
+      </ul>
+    </section>
+
+    <!-- METODOLOGÍA -->
+    <section>
+      <div class="eyebrow">Cómo se trabaja</div>
+      <h2 class="sec">Metodología: PO-PBL y aula invertida</h2>
+      <p>El curso combina aprendizaje basado en proyectos con aula invertida. Durante el semestre su equipo desarrolla un proyecto real: el diseño completo de una planta de producción de pectina de grado alimentario a partir de cáscaras de fruta colombianas. El proyecto da contexto a cada tema. Las lecturas no son teoría abstracta, sino lo que usted necesita para avanzar el diseño, y los temas llegan en el momento en que su equipo los va a usar.</p>
+      <p>Cada tema sigue un ciclo en tres momentos. Antes de clase, usted estudia una lectura que el profesor prepara para cada tema y llega con una comprensión básica. El quiz que abre la sesión evalúa esa preparación. Durante la clase profundiza con ejemplos industriales y aplica los conceptos en un taller en parejas. Después, lleva esos conceptos al diseño del proyecto, busca información en bases de datos técnicas y documenta sus cálculos en la bitácora.</p>
+      <div class="callout callout--tip">
+        <span class="ic">★</span>
+        <div><b>Por qué funciona</b><p>Refleja cómo trabaja un ingeniero real: aprende conceptos nuevos mientras saca adelante un proyecto, y no al revés.</p></div>
+      </div>
+    </section>
+
+    <!-- EL RETO -->
+    <section>
+      <div class="eyebrow">El proyecto del semestre</div>
+      <h2 class="sec">El reto: una planta de pectina</h2>
+      <p>La industria de alimentos en Colombia importa la mayor parte de la pectina que utiliza, mientras descarta cada año miles de toneladas de cáscara de cítricos y maracuyá. Su equipo diseñará la planta que aprovecha ese residuo y entrega pectina de grado alimentario, dimensionada operación por operación y validada en ASPEN Plus. No es un cálculo aislado: es un sistema, donde la decisión que toma en la molienda reaparece en el consumo de vapor de la columna.</p>
+
+      <h3 class="sub">Opciones de materia prima</h3>
+      <p>Todas son buenas fuentes de pectina. La idea es que cada equipo trabaje una materia prima distinta y justifique su elección con datos de disponibilidad regional y contenido de pectina:</p>
+      <ul class="objectives">
+        <li>Cáscara de naranja: la fuente clásica, alto rendimiento y pectina de alta esterificación.</li>
+        <li>Cáscara de limón o lima: el mayor contenido de pectina, calidad premium para gelificación.</li>
+        <li>Cáscara de mandarina o toronja: otra variante cítrica de buen rendimiento, según disponibilidad regional.</li>
+        <li>Cáscara de maracuyá: residuo abundante de la industria de jugos, buena gelificación y alternativa no cítrica.</li>
+      </ul>
+
+      <h3 class="sub">Las ocho etapas del diseño</h3>
+      <p>Cada etapa corresponde a un módulo del curso y ninguna se diseña en el vacío:</p>
+      <div class="steps">
+        <div class="stepc"><span class="pnum">1</span><div class="ptext"><b>Selección y justificación de la materia prima</b><p>Caracterización por humedad, contenido de pectina y volumen disponible en la región.</p></div><span class="ptime">Módulo 1</span></div>
+        <div class="stepc"><span class="pnum">2</span><div class="ptext"><b>Diseño del proceso de extracción (simplificado)</b><p>Balance de masa de la hidrólisis ácida que libera la pectina, con conversión supuesta.</p></div><span class="ptime">Módulo 1</span></div>
+        <div class="stepc"><span class="pnum">3</span><div class="ptext"><b>Manejo de sólidos: molienda de la cáscara</b><p>Secado, distribución de partícula y cálculo de potencia del molino.</p></div><span class="ptime">Módulo 2</span></div>
+        <div class="stepc"><span class="pnum">4</span><div class="ptext"><b>Sistema completo de transporte de fluidos</b><p>Bombeo del agua de proceso, el extracto y el etanol, con pérdidas y NPSH.</p></div><span class="ptime">Módulo 3</span></div>
+        <div class="stepc"><span class="pnum">5</span><div class="ptext"><b>Diseño del agitador del reactor de extracción</b><p>Impulsor, patrón de flujo y criterio de escalado del tanque de hidrólisis.</p></div><span class="ptime">Módulo 4</span></div>
+        <div class="stepc"><span class="pnum">6</span><div class="ptext"><b>Red de intercambiadores de calor</b><p>Calentamiento de la extracción, condensador y rehervidor, con integración energética.</p></div><span class="ptime">Módulo 5</span></div>
+        <div class="stepc"><span class="pnum">7</span><div class="ptext"><b>Separación sólido-líquido</b><p>Filtración del bagazo agotado para clarificar el extracto rico en pectina.</p></div><span class="ptime">Módulo 6</span></div>
+        <div class="stepc"><span class="pnum">8</span><div class="ptext"><b>Columna de recuperación de etanol</b><p>Destilación del solvente de precipitación por el método McCabe-Thiele.</p></div><span class="ptime">Módulo 7</span></div>
+      </div>
+
+      <div class="callout callout--nota">
+        <span class="ic">i</span>
+        <div><b>Sobre la simulación en ASPEN Plus</b><p>El simulador reproduce con rigor la columna de etanol, los intercambiadores, las bombas, la molienda y la filtración. La pectina no está en sus bases de datos y la extracción sólido-líquido no tiene bloque riguroso: el equipo la modela como componente definido por el usuario y un separador de partición supuesta. Reconocer ese límite es parte del criterio que se evalúa.</p></div>
+      </div>
+
+      <h3 class="sub">Trabajo en equipo</h3>
+      <p>Grupos fijos de cuatro a cinco personas durante todo el semestre, con sesiones de retroalimentación programadas y autoevaluación y coevaluación del desempeño.</p>
+    </section>
+
+    <!-- ABET -->
+    <section>
+      <div class="eyebrow">Acreditación</div>
+      <h2 class="sec">Resultados de aprendizaje (ABET)</h2>
+      <p>El curso evalúa cinco resultados del estudiante, con indicadores específicos por cada uno:</p>
+      <div class="qcards">
+        <div class="qcard"><span class="qn">1</span><b>Resolver problemas complejos de ingeniería</b><span>Define el problema de diseño del proceso de extracción y recuperación de etanol; formula los modelos de cada operación y evalúa la viabilidad de las soluciones.</span></div>
+        <div class="qcard"><span class="qn">2</span><b>Aplicar diseño en ingeniería</b><span>Identifica necesidades, aplica metodologías de diseño en cada operación y considera factores económicos, ambientales y de seguridad.</span></div>
+        <div class="qcard"><span class="qn">3</span><b>Comunicar con audiencias diversas</b><span>Comunica ideas en bitácoras, redacta informes técnicos, presenta el proyecto y cita las fuentes apropiadamente.</span></div>
+        <div class="qcard"><span class="qn">5</span><b>Funcionar en equipo</b><span>Participa activamente, contribuye al proyecto, entrega productos de calidad y maneja los conflictos de forma constructiva.</span></div>
+        <div class="qcard"><span class="qn">7</span><b>Adquirir conocimiento nuevo</b><span>Busca información en bases especializadas, domina herramientas nuevas y aplica lo aprendido al proyecto de forma autónoma.</span></div>
+      </div>
+    </section>
+
+    <!-- CONTENIDO -->
+    <section>
+      <div class="eyebrow">Qué se ve, módulo a módulo</div>
+      <h2 class="sec">Contenido programático</h2>
+      <p>El detalle semanal se publica en BloqueNeón. Los siete módulos siguen el flujo de la planta:</p>
+      <div class="qcards">
+        <div class="qcard"><span class="qn">M1</span><b>Fundamentos y diagramación</b><span>PBD, PFD y P&amp;ID; simbología y estándares ISA; alcance del proyecto.</span></div>
+        <div class="qcard"><span class="qn">M2</span><b>Manejo de sólidos</b><span>Propiedades y caracterización; distribución de tamaños; molienda y selección de molinos.</span></div>
+        <div class="qcard"><span class="qn">M3</span><b>Transporte de fluidos</b><span>Bernoulli; pérdidas mayores y menores; bombas centrífugas, curvas y NPSH.</span></div>
+        <div class="qcard"><span class="qn">M4</span><b>Agitación y mezclado</b><span>Impulsores, patrones de flujo, número de potencia, escalado y mezclado del reactor de extracción.</span></div>
+        <div class="qcard"><span class="qn">M5</span><b>Transferencia de calor</b><span>Intercambiadores, LMTD y Efectividad-NTU, selección e integración energética.</span></div>
+        <div class="qcard"><span class="qn">M6</span><b>Procesos de filtración</b><span>Teoría de filtración, filtros rotatorios y prensa, separación del bagazo agotado.</span></div>
+        <div class="qcard"><span class="qn">M7</span><b>Destilación</b><span>Equilibrio líquido-vapor, flash y diferencial, McCabe-Thiele, platos, empaques y operación.</span></div>
+      </div>
+    </section>
+
+    <!-- EVALUACIÓN -->
+    <section>
+      <div class="eyebrow">Cómo se califica</div>
+      <h2 class="sec">Distribución de la nota</h2>
+      <div class="gradelist">
+        <div class="gradeitem"><span class="glabel">Quices semanales</span><span class="gbar"><i style="width:50%"></i></span><span class="gpct">10%</span></div>
+        <div class="gradeitem"><span class="glabel">Complementarias</span><span class="gbar"><i style="width:50%"></i></span><span class="gpct">10%</span></div>
+        <div class="gradeitem"><span class="glabel">Talleres en clase</span><span class="gbar"><i style="width:100%"></i></span><span class="gpct">20%</span></div>
+        <div class="gradeitem"><span class="glabel">Bitácoras de cálculo</span><span class="gbar"><i style="width:100%"></i></span><span class="gpct">20%</span></div>
+        <div class="gradeitem"><span class="glabel">Sustentaciones de seguimiento</span><span class="gbar"><i style="width:50%"></i></span><span class="gpct">10%</span></div>
+        <div class="gradeitem"><span class="glabel">Proyecto final</span><span class="gbar"><i style="width:100%"></i></span><span class="gpct">20%</span></div>
+        <div class="gradeitem"><span class="glabel">Presentación final</span><span class="gbar"><i style="width:50%"></i></span><span class="gpct">10%</span></div>
+      </div>
+      <table class="rubrica">
+        <thead><tr><th>Componente</th><th>Descripción</th><th>Peso</th></tr></thead>
+        <tbody>
+          <tr><td>Quices semanales</td><td>Individual. Comprensión del material previo.</td><td class="peso">10%</td></tr>
+          <tr><td>Complementarias</td><td>Variado. Aplicación práctica.</td><td class="peso">10%</td></tr>
+          <tr><td>Talleres en clase</td><td>En parejas. Aplicación de conceptos.</td><td class="peso">20%</td></tr>
+          <tr><td>Bitácoras de cálculo</td><td>En grupo. Cuatro entregas durante el semestre.</td><td class="peso">20%</td></tr>
+          <tr><td>Sustentaciones de seguimiento</td><td>En grupo. Cuatro durante el semestre.</td><td class="peso">10%</td></tr>
+          <tr><td>Proyecto final</td><td>En grupo. Documento técnico.</td><td class="peso">20%</td></tr>
+          <tr><td>Presentación final</td><td>En grupo. Presentación ejecutiva del proyecto.</td><td class="peso">10%</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- CALENDARIO 2026-20 -->
+    <section>
+      <div class="eyebrow">Calendario del semestre</div>
+      <h2 class="sec">Fechas clave de 2026-20</h2>
+      <table class="rubrica">
+        <thead><tr><th>Hito</th><th>Fecha</th><th>Nota</th></tr></thead>
+        <tbody>
+          <tr><td>Inicio de clases</td><td>Lunes 3 de agosto</td><td class="peso">Semana 1</td></tr>
+          <tr><td>Semana de receso</td><td>28 de septiembre al 3 de octubre</td><td class="peso">Sin clases</td></tr>
+          <tr><td>Fecha límite de retiro</td><td>Semana 11 (19 al 23 de octubre)</td><td class="peso">Más del 50% de notas publicadas</td></tr>
+          <tr><td>Último día de clases</td><td>Sábado 28 de noviembre</td><td class="peso">Magistrales cierran el jueves 26</td></tr>
+          <tr><td>Exámenes finales</td><td>30 de noviembre al 5 de diciembre</td><td class="peso">Pósters y documento final</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout callout--nota">
+        <span class="ic">i</span>
+        <div><b>Festivos del semestre</b><p>Las sesiones magistrales de martes y jueves no tienen festivos este semestre. El taller sí pierde cinco sesiones: los lunes 17 de agosto (Asunción), 12 de octubre (Día de la Raza), 2 de noviembre (Todos los Santos) y 16 de noviembre (Independencia de Cartagena), y el viernes 7 de agosto (Batalla de Boyacá).</p></div>
+      </div>
+
+      <h3 class="sub">Entregas del proyecto</h3>
+      <p>Las bitácoras se entregan el domingo a las 11:59 p.m. La coevaluación correspondiente cierra el lunes siguiente a las 11:59 p.m.</p>
+      <table class="rubrica">
+        <thead><tr><th>Hito</th><th>Bitácora</th><th>Coevaluación</th><th>Retroalimentación</th></tr></thead>
+        <tbody>
+          <tr><td>Entrega 1</td><td>Dom 23 de agosto</td><td>Lun 24 de agosto</td><td>Jue 27 de agosto</td></tr>
+          <tr><td>Entrega 2</td><td>Dom 20 de septiembre</td><td>Lun 21 de septiembre</td><td>Jue 24 de septiembre</td></tr>
+          <tr><td>Entrega 3</td><td>Dom 18 de octubre</td><td>Lun 19 de octubre</td><td>Jue 22 de octubre</td></tr>
+          <tr><td>Entrega 4</td><td>Dom 22 de noviembre</td><td>Lun 23 de noviembre</td><td>Mar 24 y jue 26 de noviembre</td></tr>
+          <tr><td>Documento final y pósters</td><td>Mar 1 de diciembre</td><td>Coevaluación 5 (finales)</td><td></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- COEVALUACIÓN -->
+    <section>
+      <div class="eyebrow">Evaluación entre pares</div>
+      <h2 class="sec">Coevaluación y autoevaluación</h2>
+      <p>Se realizan cinco evaluaciones durante el semestre: una después de cada bitácora y una después del documento final y la sustentación de pósters. Cada estudiante evalúa su desempeño y el de sus compañeros, con criterios que el equipo fija al inicio del semestre. La coevaluación afecta únicamente la nota de la entrega correspondiente.</p>
+      <p>La nota se asigna por rendimiento relativo. La coevaluación más alta del equipo equivale al 100% y las demás se ajustan en proporción. Si la bitácora grupal obtiene 4.2, el estudiante con la mejor coevaluación conserva 4.2; uno con el 85.7% del máximo recibe 3.6, y otro con el 94.3% recibe 4.0.</p>
+      <div class="callout callout--etica">
+        <span class="ic">!</span>
+        <div><b>Reglas firmes</b><p>Cada coevaluación no realizada descuenta 1.0 punto de esa evaluación. La coevaluación es autónoma, sin intervención docente, y por eso no se modifica bajo ninguna circunstancia.</p></div>
+      </div>
+    </section>
+
+    <!-- IA -->
+    <section>
+      <div class="eyebrow">Inteligencia artificial generativa</div>
+      <h2 class="sec">Escala AIAS de uso de IA</h2>
+      <p>Cada actividad indica el nivel de IA permitido. El objetivo es desarrollar criterio sobre lo que la herramienta produce, no delegar el pensamiento en ella.</p>
+      <table class="rubrica">
+        <thead><tr><th>Nivel</th><th>Qué permite</th><th>Dónde aplica</th></tr></thead>
+        <tbody>
+          <tr><td>1 · Sin IA</td><td>No se permite uso de IA.</td><td class="peso">Quices semanales</td></tr>
+          <tr><td>2 · IA para ideas</td><td>Generar ideas y estructurar.</td><td class="peso">Talleres en clase</td></tr>
+          <tr><td>3 · IA para edición</td><td>Refinar y mejorar la claridad.</td><td class="peso">Bitácoras y proyecto</td></tr>
+        </tbody>
+      </table>
+      <div class="callout callout--nota">
+        <span class="ic">i</span>
+        <div><b>Declaración obligatoria</b><p>En cada entrega el estudiante declara las herramientas que usó, con qué propósito y cómo evaluó críticamente los resultados.</p></div>
+      </div>
+    </section>
+
+    <!-- POLÍTICAS -->
+    <section>
+      <div class="eyebrow">Reglas de juego</div>
+      <h2 class="sec">Políticas del curso</h2>
+      <div class="twocol">
+        <div class="infobox">
+          <h3>Asistencia y quices</h3>
+          <p><span>La asistencia a las magistrales es obligatoria, con control diario.</span></p>
+          <p><span>Los quices se realizan al inicio de la clase, sin excepción. No hay supletorio: con excusa válida, el siguiente quiz vale el doble.</span></p>
+        </div>
+        <div class="infobox">
+          <h3>Entregas</h3>
+          <p><span>Todo se entrega por BloqueNeón. Los quices tardíos se penalizan al 100%.</span></p>
+          <p><span>Talleres y documento final pierden 1 unidad de la nota por cada 15 minutos de demora.</span></p>
+        </div>
+        <div class="infobox">
+          <h3>Trabajo en equipo</h3>
+          <p><span>Grupos fijos todo el semestre. Los problemas internos se reportan primero al asistente y luego al profesor.</span></p>
+          <p><span>La coevaluación afecta la nota individual del proyecto.</span></p>
+        </div>
+        <div class="infobox">
+          <h3>Integridad académica</h3>
+          <p><span>Todo trabajo es original del equipo, con fuentes citadas (IEEE o APA) y declaración de uso de IA.</span></p>
+          <p><span>El plagio resulta en nota de 0 y reporte al comité disciplinario.</span></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMUNIDAD -->
+    <section>
+      <div class="eyebrow">Apoyo y convivencia</div>
+      <h2 class="sec">Mensaje a la comunidad</h2>
+      <p>Este curso valora la diversidad y se compromete con un ambiente de aprendizaje respetuoso, inclusivo y seguro. Si tiene alguna discapacidad, visible o no, y necesita ajustes razonables, informe al profesor en las primeras dos semanas; los ajustes se implementan de forma confidencial. Puede solicitar ser identificado con el nombre y los pronombres de su elección escribiendo a cade@uniandes.edu.co.</p>
+      <p>Ante situaciones de maltrato, acoso, amenaza, discriminación o violencia sexual o de género, los canales de apoyo son la Línea MAAD (lineamaad@uniandes.edu.co), la Ombudsperson (ombudsperson@uniandes.edu.co), la Decanatura de Estudiantes (centrodeapoyo@uniandes.edu.co), la Red PACA (paca@uniandes.edu.co) y el CEU (comiteacosoceu@uniandes.edu.co).</p>
+    </section>
+
+    <footer class="doc-foot">
+      <span>Proyecto de Operaciones Unitarias · IQYA-2031 · Semestre 2026-20</span>
+      <span>Profesor: Luis H. Reyes · Asistente: Andrés F. Infante</span>
+    </footer>
+
+  </div>
+</article>
+
+</body>
+</html>
