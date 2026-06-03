@@ -854,11 +854,43 @@
         </button>
         <span class="divider"></span>
         <button class="btn reset" type="button" aria-label="Reset to first slide" title="Reset (R)">Reset<span class="kbd">R</span></button>
+        <span class="divider"></span>
+        <button class="btn fs" type="button" aria-label="Toggle fullscreen" title="Fullscreen (F)">
+          <svg class="fs-enter" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2H2v4M14 6V2h-4M6 14H2v-4M10 14h4v-4"/></svg>
+          <svg class="fs-exit" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none"><path d="M2 5h3V2M14 5h-3V2M2 11h3v3M14 11h-3v3"/></svg>
+        </button>
       `;
 
       overlay.querySelector('.prev').addEventListener('click', () => this._advance(-1, 'click'));
       overlay.querySelector('.next').addEventListener('click', () => this._advance(1, 'click'));
       overlay.querySelector('.reset').addEventListener('click', () => this._go(0, 'click'));
+
+      // Fullscreen toggle (con fallback webkit para Safari/iPad).
+      this._toggleFs = () => {
+        const el = this;
+        const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+        if (fsEl) {
+          const exit = document.exitFullscreen || document.webkitExitFullscreen;
+          if (exit) { try { exit.call(document); } catch (err) {} }
+        } else {
+          const req = el.requestFullscreen || el.webkitRequestFullscreen;
+          if (req) { try { const p = req.call(el); if (p && p.catch) p.catch(() => {}); } catch (err) {} }
+        }
+      };
+      const fsBtn = overlay.querySelector('.fs');
+      if (fsBtn) fsBtn.addEventListener('click', () => this._toggleFs());
+      const onFsChange = () => {
+        const on = (document.fullscreenElement || document.webkitFullscreenElement) === this;
+        if (fsBtn) {
+          const en = fsBtn.querySelector('.fs-enter');
+          const ex = fsBtn.querySelector('.fs-exit');
+          if (en) en.style.display = on ? 'none' : '';
+          if (ex) ex.style.display = on ? '' : 'none';
+        }
+        if (this._fit) this._fit();
+      };
+      document.addEventListener('fullscreenchange', onFsChange);
+      document.addEventListener('webkitfullscreenchange', onFsChange);
 
       // Thumbnail rail + context menu. Thumbnails are populated in
       // _renderRail() after _collectSlides().
@@ -1310,6 +1342,8 @@
         this._go(this._slides.length - 1, 'keyboard');
       } else if (key === 'r' || key === 'R') {
         this._go(0, 'keyboard');
+      } else if (key === 'f' || key === 'F') {
+        if (this._toggleFs) this._toggleFs();
       } else if (/^[0-9]$/.test(key)) {
         // 1..9 jump to that slide; 0 jumps to 10.
         const n = key === '0' ? 9 : parseInt(key, 10) - 1;
