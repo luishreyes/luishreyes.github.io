@@ -461,6 +461,17 @@ export const pou202620Course: Course = {
       href: '/classroom/iqya-2031-2026-20/reto-pectina.html',
     },
     {
+      slug: 'bitacoras-de-calculo',
+      title: 'Guía de elaboración de bitácoras de cálculo',
+      summary:
+        'Qué va en cada una de las cuatro bitácoras del proyecto y cómo se evalúan. Estructura general, contenidos requeridos por entrega, formato LaTeX/Word, fuentes de ingeniería, errores más comunes y consejos prácticos.',
+      date: '2026-06-03',
+      readingMinutes: 20,
+      tags: ['bitácoras', 'cálculo', 'formato', 'documentación'],
+      category: 'guia',
+      href: '/classroom/iqya-2031-2026-20/guias/Guia_Bitacoras_Calculo/Guia_Bitacoras_Calculo.html',
+    },
+    {
       slug: 'informe-final',
       title: 'Guía de elaboración del informe final',
       summary:
