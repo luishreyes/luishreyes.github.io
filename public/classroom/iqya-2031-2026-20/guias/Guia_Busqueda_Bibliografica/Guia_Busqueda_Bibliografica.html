@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Búsqueda bibliográfica y herramientas de IA — POU 2026-20</title>
+  <link rel="stylesheet" href="assets/deloitte.css">
+  <style>
+    /* --- Layout --- */
+    body { margin: 0; background: var(--papel); }
+    .page { margin: 0; }
+    .outer-layout { max-width: 1160px; margin: 40px auto 90px; display: grid; grid-template-columns: 210px minmax(0,1fr); gap: 24px; padding: 0 20px; align-items: start; }
+
+    /* --- Progress bar --- */
+    #progress { position: fixed; top: 0; left: 0; height: 3px; width: 0%; background: var(--verde); z-index: 200; transition: width .1s; }
+
+    /* --- Side nav --- */
+    .side-nav { position: sticky; top: 28px; max-height: calc(100vh - 56px); overflow-y: auto; background: var(--blanco); border: 1px solid var(--gris-4); border-radius: 8px; padding: 16px 14px; box-shadow: var(--sombra); scrollbar-width: thin; }
+    .sn-label { font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--gris-3); margin: 12px 0 6px; padding: 0 4px; }
+    .sn-label:first-child { margin-top: 0; }
+    .sn-divider { border: none; border-top: 1px solid var(--gris-5); margin: 10px 0; }
+    .sn-item { display: flex; align-items: flex-start; gap: 6px; font-family: var(--tipo); font-size: 12.5px; color: var(--gris-2); text-decoration: none; padding: 5px 7px; border-radius: 5px; line-height: 1.3; transition: all .15s; margin-bottom: 2px; border: none; background: none; cursor: pointer; width: 100%; text-align: left; }
+    .sn-item:hover { color: var(--gris-1); background: var(--gris-5); }
+    .sn-item.is-active { color: var(--verde-osc); background: var(--verde-claro); font-weight: 600; border-left: 3px solid var(--verde); padding-left: 4px; }
+    .sn-show-all { display: none; font-family: var(--tipo); font-size: 12px; color: var(--verde-osc); font-weight: 700; border: none; background: none; cursor: pointer; padding: 4px 7px; margin-bottom: 8px; }
+    .sn-show-all:hover { text-decoration: underline; }
+
+    /* --- Doc structure --- */
+    .doc-head { background: var(--negro); color: var(--blanco); padding: 48px 48px 40px; border-radius: 12px 12px 0 0; }
+    .doc-head .kicker { font-size: .75rem; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; color: var(--verde); margin: 0 0 10px; }
+    .doc-head h1 { font-size: clamp(1.6rem,3vw,2.4rem); font-weight: 900; line-height: 1.18; margin: 0 0 14px; color: var(--blanco); }
+    .doc-head .lead { font-size: 1.05rem; color: #ccc; line-height: 1.65; margin: 0 0 24px; max-width: 680px; }
+    .doc-meta { display: flex; flex-wrap: wrap; gap: 18px; font-size: .8rem; color: var(--gris-3); padding-top: 20px; border-top: 1px solid #333; }
+    .doc-meta span { display: flex; align-items: center; gap: 6px; }
+    .doc-body { background: var(--blanco); border-radius: 0 0 12px 12px; padding: 40px 48px 60px; }
+
+    /* --- Section styles --- */
+    .eyebrow { font-size: .7rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--verde); margin: 0 0 6px; }
+    h2.sec { font-size: 1.6rem; font-weight: 800; color: var(--gris-1); margin: 0 0 18px; line-height: 1.25; }
+    h3.sub { font-size: 1.05rem; font-weight: 700; color: var(--gris-1); margin: 28px 0 10px; padding-bottom: 4px; border-bottom: 2px solid var(--verde-claro); }
+
+    /* --- Paragraphs / lists --- */
+    .doc-body p { color: var(--gris-1); line-height: 1.72; margin: 0 0 1em; font-size: .97rem; }
+    .doc-body ul, .doc-body ol { color: var(--gris-1); line-height: 1.7; margin: 0 0 1em; padding-left: 1.5em; font-size: .97rem; }
+    .doc-body li { margin-bottom: .45em; }
+
+    /* --- Tool logo --- */
+    .tool-logo { margin: 0 0 20px; }
+    .tool-logo img { max-height: 44px; width: auto; object-fit: contain; }
+
+    /* --- Callouts --- */
+    .callout { display: flex; gap: 14px; border-radius: 8px; padding: 16px 18px; margin: 20px 0; font-size: .92rem; line-height: 1.6; }
+    .callout .ic { display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 50%; font-size: .7rem; font-weight: 800; flex-shrink: 0; margin-top: 1px; }
+    .callout--tip { background: var(--verde-claro); border-left: 4px solid var(--verde); }
+    .callout--tip .ic { background: var(--verde); color: #fff; }
+    .callout--warn { background: #FFF4E5; border-left: 4px solid var(--ambar); }
+    .callout--warn .ic { background: var(--ambar); color: #fff; }
+    .callout--nota { background: var(--teal-claro); border-left: 4px solid var(--teal); }
+    .callout--nota .ic { background: var(--teal); color: #fff; }
+    .callout b { color: var(--gris-1); }
+    .callout p { margin: .3em 0 0; color: var(--gris-2); font-size: .92rem; }
+
+    /* --- Tables --- */
+    .tbl-wrap { overflow-x: auto; margin: 18px 0; }
+    table.ou { width: 100%; border-collapse: collapse; font-size: .88rem; font-family: var(--tipo); }
+    table.ou th { background: var(--gris-1); color: #fff; padding: 9px 12px; text-align: left; font-weight: 700; font-size: .83rem; }
+    table.ou td { padding: 8px 12px; border-bottom: 1px solid var(--gris-5); color: var(--gris-2); vertical-align: top; }
+    table.ou tr:hover td { background: var(--papel); }
+    table.ou td:first-child { font-weight: 600; color: var(--gris-1); }
+    table.ou td.mag { color: var(--verde-osc); font-weight: 700; }
+
+    /* --- Block grids --- */
+    .blocks { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap: 14px; margin: 18px 0; }
+    .blocks-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px,1fr)); gap: 14px; margin: 18px 0; }
+    .blocks-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px,1fr)); gap: 14px; margin: 18px 0; }
+    .block { background: var(--papel); border: 1px solid var(--gris-4); border-radius: 8px; padding: 16px 18px; font-size: .9rem; line-height: 1.55; }
+    .block b { display: block; margin-bottom: 6px; color: var(--gris-1); font-size: .88rem; }
+    .block span, .block p { color: var(--gris-2); font-size: .88rem; margin: 0; }
+    .block ul { margin: 4px 0 0; padding-left: 1.1em; color: var(--gris-2); font-size: .86rem; }
+    .block.bad { border-color: #f0b8b8; background: #fff5f5; }
+    .block.bad b { color: #c0392b; }
+    .block.good { border-color: #b8d8b0; background: #f5fff4; }
+    .block.good b { color: #1e7a34; }
+    .block code { font-family: 'JetBrains Mono', monospace; font-size: .82rem; background: rgba(0,0,0,.06); padding: 1px 4px; border-radius: 3px; word-break: break-all; }
+
+    /* --- Details/summary collapsibles --- */
+    details { border: 1px solid var(--gris-4); border-radius: 8px; margin: 10px 0; overflow: hidden; }
+    summary { padding: 13px 16px; font-weight: 600; color: var(--gris-1); cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; font-size: .93rem; background: var(--papel); }
+    summary::-webkit-details-marker { display: none; }
+    summary::after { content: '+'; font-size: 1.1rem; color: var(--verde); font-weight: 700; }
+    details[open] summary::after { content: '−'; }
+    .detail-body { padding: 16px 20px 20px; background: var(--blanco); }
+    .detail-body p, .detail-body ul, .detail-body ol { font-size: .9rem; color: var(--gris-2); line-height: 1.65; }
+
+    /* --- TOC (inline in #s0) --- */
+    .toc { background: var(--papel); border: 1px solid var(--gris-4); border-radius: 8px; padding: 20px 24px; margin: 24px 0; }
+    .toc-part-label { font-size: .7rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--verde); margin: 14px 0 8px; }
+    .toc-part-label:first-child { margin-top: 0; }
+    .toc-list { list-style: none; padding: 0; margin: 0 0 8px; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); gap: 4px; }
+    .toc-list li a { font-family: var(--tipo); font-size: .88rem; color: var(--gris-2); text-decoration: none; padding: 4px 8px; border-radius: 4px; display: block; }
+    .toc-list li a:hover { color: var(--verde-osc); background: var(--verde-claro); }
+    .toc-list li a[data-sec] { cursor: pointer; }
+
+    /* --- Part overview cards in #s0 --- */
+    .part-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 24px 0; }
+    .part-card { border: 1px solid var(--gris-4); border-radius: 10px; padding: 20px 22px; background: var(--blanco); }
+    .part-card .part-num { font-size: .68rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--verde); margin: 0 0 6px; }
+    .part-card h4 { font-size: 1rem; font-weight: 800; color: var(--gris-1); margin: 0 0 12px; }
+    .part-card .part-items { list-style: none; padding: 0; margin: 0; }
+    .part-card .part-items li { margin-bottom: 4px; }
+    .part-card .part-items button { font-family: var(--tipo); font-size: .85rem; color: var(--teal); background: none; border: none; cursor: pointer; padding: 2px 0; text-decoration: underline; text-underline-offset: 2px; text-align: left; }
+    .part-card .part-items button:hover { color: var(--verde-osc); }
+
+    /* --- Code inline --- */
+    code { font-family: 'JetBrains Mono', 'Courier New', monospace; font-size: .82rem; background: var(--gris-5); padding: 2px 5px; border-radius: 3px; }
+
+    /* --- Platform link --- */
+    a.platform-link { color: var(--teal); font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
+    a.platform-link::after { content: ' ↗'; font-size: .8em; }
+    .doc-body a { color: var(--teal); text-decoration: underline; }
+
+    /* --- Footer --- */
+    .doc-foot { text-align: center; font-size: .78rem; color: var(--gris-3); margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--gris-5); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px; }
+
+    /* --- Responsive --- */
+    @media (max-width: 880px) {
+      .outer-layout { grid-template-columns: 1fr; padding: 0 12px; }
+      .side-nav { display: none; }
+      .doc-head { padding: 32px 24px 28px; border-radius: 8px 8px 0 0; }
+      .doc-body { padding: 28px 24px 40px; border-radius: 0 0 8px 8px; }
+      .part-cards { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<div class="outer-layout">
+
+  <!-- === SIDEBAR === -->
+  <nav class="side-nav" aria-label="Secciones">
+    <button class="sn-show-all" id="show-all-btn">← Ver todo</button>
+
+    <p class="sn-label">Parte I · Clásicas</p>
+    <button class="sn-item" data-sec="google-scholar">Google Scholar</button>
+    <button class="sn-item" data-sec="web-of-science">Web of Science</button>
+    <button class="sn-item" data-sec="scopus">Scopus</button>
+    <button class="sn-item" data-sec="comparativa-clasicas">Comparativa</button>
+    <button class="sn-item" data-sec="estrategias">Estrategias</button>
+
+    <hr class="sn-divider">
+
+    <p class="sn-label">Parte II · IA</p>
+    <button class="sn-item" data-sec="chatgpt">ChatGPT</button>
+    <button class="sn-item" data-sec="gemini">Google Gemini</button>
+    <button class="sn-item" data-sec="notebooklm">NotebookLM</button>
+    <button class="sn-item" data-sec="claude">Claude</button>
+    <button class="sn-item" data-sec="perplexity">Perplexity</button>
+    <button class="sn-item" data-sec="scispace">SciSpace</button>
+    <button class="sn-item" data-sec="consensus">Consensus</button>
+    <button class="sn-item" data-sec="connected-papers">Connected Papers</button>
+    <button class="sn-item" data-sec="comparativa-ia">Comparativa IA</button>
+    <button class="sn-item" data-sec="flujo-trabajo">Flujo de trabajo</button>
+    <button class="sn-item" data-sec="conclusiones">Conclusiones</button>
+  </nav>
+
+  <!-- === DOCUMENT === -->
+  <article class="page">
+    <header class="doc-head">
+      <p class="kicker">IQYA-2031 · Proyecto de Operaciones Unitarias · 2026-20</p>
+      <h1>Búsqueda bibliográfica<br>y herramientas de IA</h1>
+      <p class="lead">Once plataformas para encontrar, analizar y sintetizar literatura científica — desde las bases de datos académicas clásicas hasta los nuevos agentes de investigación con inteligencia artificial.</p>
+      <div class="doc-meta">
+        <span>Parte I — Búsqueda clásica</span>
+        <span>·</span>
+        <span>Parte II — Herramientas de IA</span>
+        <span>·</span>
+        <span>~35 min de lectura</span>
+        <span>·</span>
+        <span>Actualizado junio 2026</span>
+      </div>
+    </header>
+
+    <div class="doc-body">
+
+      <!-- ═══════════ s0 — INTRO + TOC (always visible) ═══════════ -->
+      <section id="s0">
+        <p>Las plataformas de búsqueda académica son fundamentalmente diferentes de los motores de búsqueda generales. Mientras que un buscador web indexa páginas de todo tipo, las bases de datos académicas se enfocan exclusivamente en <strong>artículos de revistas científicas, tesis doctorales, actas de conferencias, patentes y libros técnicos</strong>. Esta guía cubre tanto las <strong>plataformas clásicas</strong> como las nuevas <strong>herramientas potenciadas por inteligencia artificial</strong> que están transformando la manera en que buscamos, analizamos y sintetizamos la literatura científica.</p>
+
+        <!-- Part overview cards -->
+        <div class="part-cards">
+          <div class="part-card">
+            <p class="part-num">Parte I</p>
+            <h4>Búsqueda clásica</h4>
+            <ul class="part-items">
+              <li><button data-sec="google-scholar">Google Scholar</button></li>
+              <li><button data-sec="web-of-science">Web of Science</button></li>
+              <li><button data-sec="scopus">Scopus</button></li>
+              <li><button data-sec="comparativa-clasicas">Comparativa de plataformas</button></li>
+              <li><button data-sec="estrategias">Estrategias de búsqueda</button></li>
+            </ul>
+          </div>
+          <div class="part-card">
+            <p class="part-num">Parte II</p>
+            <h4>Herramientas de IA</h4>
+            <ul class="part-items">
+              <li><button data-sec="chatgpt">ChatGPT (OpenAI)</button></li>
+              <li><button data-sec="gemini">Google Gemini</button></li>
+              <li><button data-sec="notebooklm">Google NotebookLM</button></li>
+              <li><button data-sec="claude">Claude (Anthropic)</button></li>
+              <li><button data-sec="perplexity">Perplexity</button></li>
+              <li><button data-sec="scispace">SciSpace</button></li>
+              <li><button data-sec="consensus">Consensus</button></li>
+              <li><button data-sec="connected-papers">Connected Papers</button></li>
+              <li><button data-sec="comparativa-ia">Comparativa de herramientas de IA</button></li>
+              <li><button data-sec="flujo-trabajo">Flujo de trabajo recomendado</button></li>
+              <li><button data-sec="conclusiones">Conclusiones y recordatorios</button></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="callout callout--tip">
+          <span class="ic">i</span>
+          <div><b>Cómo usar esta guía</b><p>Usa el índice de arriba o la barra lateral para ir directamente a la sección que necesitas. Haz clic en una sección para verla sola; vuelve a hacer clic (o usa «← Ver todo») para mostrar todo el contenido.</p></div>
+        </div>
+      </section>
+
+      <!-- ═══════════ PARTE I ═══════════ -->
+
+      <!-- GOOGLE SCHOLAR -->
+      <section class="filterable" data-id="google-scholar">
+        <div class="eyebrow">Parte I · Plataformas clásicas</div>
+        <h2 class="sec">Google Scholar</h2>
+        <div class="tool-logo"><img src="assets/img/google-scholar.png" alt="Google Scholar"></div>
+
+        <p><strong>Google Scholar</strong> es un motor de búsqueda académico gratuito lanzado por Google en noviembre de 2004. Indexa el texto completo y los metadatos de literatura científica proveniente de una amplia variedad de fuentes: <strong>editoriales académicas, bibliotecas universitarias, repositorios institucionales, servidores de preprints y sitios web académicos</strong>. Su objetivo es organizar la información académica del mundo y hacerla universalmente accesible.</p>
+
+        <h3 class="sub">Cómo funciona el ranking</h3>
+        <p>Google Scholar ordena los resultados incorporando señales específicas del ámbito académico: el <strong>número de citas</strong> (posiblemente el factor más importante), la <strong>relevancia del texto completo</strong> respecto a la consulta, el <strong>prestigio de la fuente</strong>, y la <strong>fecha de publicación</strong>. Un artículo altamente citado y publicado en una revista reconocida aparecerá típicamente en las primeras posiciones.</p>
+
+        <h3 class="sub">Actualizaciones 2025-2026</h3>
+        <ul>
+          <li><strong>Scholar Metrics:</strong> Rankings mejorados de publicaciones académicas con métricas de impacto más granulares, incluyendo índice h5 e índice h5-mediana por áreas temáticas.</li>
+          <li><strong>Scholar Updates (extensión de Chrome):</strong> Notificaciones personalizadas sobre nuevas publicaciones relevantes basadas en tu perfil de investigación y artículos previos.</li>
+          <li><strong>Perfiles de autor mejorados:</strong> Páginas de autor con gráficas de citas por año, co-autores frecuentes y métricas de impacto actualizadas automáticamente.</li>
+          <li><strong>Códigos QR:</strong> Generación de códigos QR para compartir perfiles de autor y artículos específicos de manera rápida.</li>
+        </ul>
+
+        <h3 class="sub">Acceso y costo</h3>
+        <p>Google Scholar es completamente <strong>gratuito</strong> y no requiere suscripción institucional. Sin embargo, muchos de los artículos que indexa están detrás de <strong>muros de pago</strong> (paywalls). Scholar intenta encontrar versiones de acceso abierto (open access) — busca en repositorios institucionales, páginas personales de autores y servidores de preprints.</p>
+
+        <h3 class="sub">Uso en revisiones de literatura</h3>
+        <p>Google Scholar es excelente como <strong>punto de partida</strong> para una revisión bibliográfica. Sus funcionalidades más valiosas incluyen:</p>
+        <ul>
+          <li><strong>«Citado por X»:</strong> Permite ver todos los artículos que han citado una publicación específica. Invaluable para rastrear cómo una idea o metodología ha evolucionado.</li>
+          <li><strong>«Artículos relacionados»:</strong> Sugiere publicaciones temáticamente similares al artículo que estás consultando.</li>
+          <li><strong>Alertas por correo:</strong> Configura alertas para recibir notificaciones cuando se publiquen nuevos artículos sobre tus términos de búsqueda.</li>
+          <li><strong>Biblioteca personal:</strong> Guarda artículos para consultarlos después y exportar las citas.</li>
+        </ul>
+
+        <h3 class="sub">Limitaciones</h3>
+        <ul>
+          <li>No soporta <strong>truncamiento</strong> con asterisco (a diferencia de WoS y Scopus).</li>
+          <li>Los <strong>filtros de búsqueda</strong> son básicos: solo permite filtrar por fecha, idioma, tipo de búsqueda y excluir patentes/citas.</li>
+          <li>Los <strong>metadatos</strong> pueden ser inconsistentes — a veces los títulos, autores o fechas tienen errores porque Scholar indexa automáticamente sin curación manual.</li>
+          <li>No ofrece análisis bibliométrico avanzado.</li>
+        </ul>
+
+        <p><strong>Enlace:</strong> <a class="platform-link" href="https://scholar.google.com" target="_blank" rel="noopener">scholar.google.com</a></p>
+
+        <div class="callout callout--tip">
+          <span class="ic">i</span>
+          <div><b>Cuándo usarlo</b><p>Google Scholar es excelente como punto de partida para explorar un tema nuevo o para rastrear citas de un artículo específico. Úsalo para obtener una visión amplia antes de refinar tu búsqueda en bases de datos más especializadas.</p></div>
+        </div>
+      </section>
+
+      <!-- WEB OF SCIENCE -->
+      <section class="filterable" data-id="web-of-science">
+        <div class="eyebrow">Parte I · Plataformas clásicas</div>
+        <h2 class="sec">Web of Science (WoS)</h2>
+        <div class="tool-logo"><img src="assets/img/web-of-science.jpg" alt="Web of Science — Clarivate"></div>
+
+        <p><strong>Web of Science</strong> es una plataforma de indexación académica de pago desarrollada y mantenida por <strong>Clarivate Analytics</strong>. Es considerada el estándar de oro para la investigación científica de alto impacto gracias a su riguroso proceso de selección de revistas. Su historia se remonta a los años 1960, cuando el <strong>Institute for Scientific Information (ISI)</strong>, fundado por Eugene Garfield, creó el <em>Science Citation Index</em> — la primera base de datos que rastreaba sistemáticamente las citas entre publicaciones científicas.</p>
+
+        <h3 class="sub">Cobertura</h3>
+        <p>Web of Science contiene millones de registros que se remontan hasta <strong>1900</strong>, organizados en varios índices principales:</p>
+        <ul>
+          <li><strong>Science Citation Index Expanded (SCIE):</strong> Ciencias naturales, ingeniería, medicina y tecnología.</li>
+          <li><strong>Social Sciences Citation Index (SSCI):</strong> Ciencias sociales, economía, psicología y educación.</li>
+          <li><strong>Arts &amp; Humanities Citation Index (AHCI):</strong> Artes, humanidades, filosofía y literatura.</li>
+          <li><strong>Emerging Sources Citation Index (ESCI):</strong> Revistas emergentes que aún no cumplen todos los criterios para los índices principales.</li>
+        </ul>
+
+        <h3 class="sub">Actualizaciones 2025-2026</h3>
+        <ul>
+          <li><strong>Research Assistant con IA conversacional:</strong> Permite hacer preguntas en lenguaje natural. <strong>Literature Review 2.0</strong> incorpora IA agéntica con memoria de sesión — recuerda el contexto de la conversación y puede refinar búsquedas iterativamente.</li>
+          <li><strong>Policy Citation Index:</strong> Nuevo índice que rastrea cómo la investigación científica es citada en documentos de políticas públicas gubernamentales.</li>
+          <li><strong>Preprint Citation Index:</strong> Indexación de preprints de arXiv, bioRxiv y medRxiv, con seguimiento de citas.</li>
+          <li><strong>Grants Index:</strong> Base de datos de financiamiento que conecta publicaciones con las becas que las financiaron.</li>
+          <li><strong>ProQuest Dissertations:</strong> Integración de tesis doctorales y de maestría de universidades de todo el mundo.</li>
+          <li><strong>Retraction Watch:</strong> Integración directa con la base de datos de artículos retractados, alertando cuando un artículo citado ha sido retirado.</li>
+          <li><strong>Visualización interactiva de co-autores:</strong> Mapas de redes de colaboración entre investigadores.</li>
+          <li><strong>Análisis de ODS:</strong> Clasificación automática de publicaciones según su contribución a los Objetivos de Desarrollo Sostenible de la ONU.</li>
+          <li><strong>Actualizaciones bisemanales:</strong> Nuevos registros y citas se actualizan cada dos semanas.</li>
+        </ul>
+
+        <h3 class="sub">Acceso</h3>
+        <p>Web of Science requiere una <strong>suscripción institucional</strong>. Los estudiantes de la Universidad de los Andes pueden acceder a través del portal de la biblioteca. Para acceder desde fuera del campus, es necesario usar la VPN institucional o el proxy de la biblioteca.</p>
+
+        <h3 class="sub">Búsqueda avanzada</h3>
+        <p>WoS ofrece un sistema de búsqueda avanzada muy potente que permite combinar operadores booleanos con campos específicos:</p>
+        <ul>
+          <li><strong><code>TS=</code></strong> (Topic): Busca en título, resumen, palabras clave del autor y KeyWords Plus.</li>
+          <li><strong><code>TI=</code></strong> (Title): Solo en el título.</li>
+          <li><strong><code>AU=</code></strong> (Author): Por nombre de autor.</li>
+          <li><strong><code>SO=</code></strong> (Source): Por nombre de la revista.</li>
+          <li><strong>Comodines:</strong> Asterisco <code>*</code> para truncamiento, <code>?</code> para un carácter, <code>$</code> para cero o un carácter.</li>
+          <li><strong>Operadores de proximidad:</strong> <code>NEAR/n</code> para encontrar términos cercanos entre sí.</li>
+        </ul>
+
+        <p><strong>Enlace:</strong> Acceso a través del <a href="https://biblioteca.uniandes.edu.co" target="_blank" rel="noopener" class="platform-link">portal de la Biblioteca de la Universidad de los Andes</a></p>
+      </section>
+
+      <!-- SCOPUS -->
+      <section class="filterable" data-id="scopus">
+        <div class="eyebrow">Parte I · Plataformas clásicas</div>
+        <h2 class="sec">Scopus</h2>
+        <div class="tool-logo"><img src="assets/img/scopus.webp" alt="Scopus — Elsevier"></div>
+
+        <p><strong>Scopus</strong> es una base de datos bibliográfica desarrollada por <strong>Elsevier</strong>, lanzada en 2004 como competidora directa de Web of Science. Desde su inicio, Scopus adoptó una estrategia de cobertura más amplia, indexando una mayor cantidad de revistas, conferencias y libros. Actualmente contiene más de <strong>100 millones de documentos</strong> provenientes de más de <strong>25.000 revistas activas</strong> y <strong>240.000 libros</strong>.</p>
+
+        <h3 class="sub">Scopus AI Discovery</h3>
+        <p>Scopus ha rebautizado su herramienta de IA como <strong>«AI Discovery»</strong>. Esta plataforma integrada permite interactuar con la base de datos usando lenguaje natural:</p>
+        <ul>
+          <li><strong>Consultas en lenguaje natural:</strong> Haz preguntas como «¿Cuáles son los avances recientes en membranas para desalinización?» y obtén respuestas estructuradas con referencias.</li>
+          <li><strong>Topic Summaries:</strong> Resúmenes automáticos de temas basados en la literatura más citada y reciente.</li>
+          <li><strong>Expanded Summaries:</strong> Análisis más profundos que sintetizan hallazgos de múltiples publicaciones.</li>
+        </ul>
+
+        <h3 class="sub">Nuevas funcionalidades 2025-2026</h3>
+        <ul>
+          <li><strong>Deep Research:</strong> IA agéntica que desarrolla planes de investigación, conduce búsquedas extensivas y refina su estrategia de manera autónoma. Genera reportes detallados con bibliografía verificada.</li>
+          <li><strong>Emerging Themes:</strong> Escanea los documentos publicados en los últimos 2 años para identificar tendencias emergentes dentro de un campo específico.</li>
+          <li><strong>Capa de transparencia Copilot:</strong> Cada respuesta de la IA muestra exactamente qué documentos consultó y cómo llegó a sus conclusiones.</li>
+          <li><strong>Historial de conversaciones:</strong> Las sesiones de IA se guardan para retomar investigaciones previas.</li>
+          <li><strong>Optimización móvil:</strong> Interfaz completamente responsiva para usar desde dispositivos móviles.</li>
+        </ul>
+
+        <h3 class="sub">Acceso</h3>
+        <p>Al igual que Web of Science, Scopus requiere una <strong>suscripción institucional</strong>. Los estudiantes de Uniandes pueden acceder a través del portal de la biblioteca.</p>
+
+        <h3 class="sub">Análisis bibliométrico</h3>
+        <p>Scopus es particularmente fuerte en análisis bibliométrico. Después de realizar una búsqueda, puedes analizar los resultados por:</p>
+        <div class="blocks-3">
+          <div class="block"><b>Publicaciones por año</b><span>Tendencia temporal del campo de investigación.</span></div>
+          <div class="block"><b>Autores más productivos</b><span>Quiénes son los líderes del área.</span></div>
+          <div class="block"><b>Instituciones líderes</b><span>Dónde se concentra la investigación.</span></div>
+          <div class="block"><b>Índice h</b><span>Métrica de impacto de investigadores individuales.</span></div>
+          <div class="block"><b>Países y financiadores</b><span>Distribución geográfica y fuentes de financiamiento.</span></div>
+        </div>
+
+        <p><strong>Enlace:</strong> <a class="platform-link" href="https://www.scopus.com" target="_blank" rel="noopener">scopus.com</a></p>
+      </section>
+
+      <!-- COMPARATIVA CLÁSICAS -->
+      <section class="filterable" data-id="comparativa-clasicas">
+        <div class="eyebrow">Parte I · Síntesis</div>
+        <h2 class="sec">Comparativa de plataformas clásicas</h2>
+
+        <p>La siguiente tabla resume las diferencias clave entre las tres plataformas académicas clásicas, actualizada con las funcionalidades de 2026:</p>
+
+        <div class="tbl-wrap">
+          <table class="ou">
+            <thead><tr><th>Característica</th><th>Google Scholar</th><th>Web of Science</th><th>Scopus</th></tr></thead>
+            <tbody>
+              <tr><td>Acceso</td><td>Gratuito</td><td>Suscripción institucional</td><td>Suscripción institucional</td></tr>
+              <tr><td>Cobertura</td><td>Muy amplia, sin curación</td><td>Selectiva, revistas de alto impacto</td><td>Amplia, 100M+ documentos, 25.000+ revistas</td></tr>
+              <tr><td>Calidad de metadatos</td><td>Variable, indexación automática</td><td>Alta, curación manual</td><td>Alta, curación editorial</td></tr>
+              <tr><td>Búsqueda avanzada</td><td>Básica (sin truncamiento)</td><td>Muy avanzada (booleanos, comodines, proximidad)</td><td>Muy avanzada (booleanos, comodines, campos)</td></tr>
+              <tr><td>Análisis de citas</td><td>Básico («Citado por»)</td><td>Avanzado (Citation Report, h-index)</td><td>Avanzado (bibliometría, h-index, tendencias)</td></tr>
+              <tr><td>Alertas</td><td>Por correo electrónico</td><td>Alertas de citas y búsquedas guardadas</td><td>Alertas de citas, autores y búsquedas</td></tr>
+              <tr><td>Exportación</td><td>BibTeX, EndNote, RefMan</td><td>Múltiples formatos, integración con gestores</td><td>Múltiples formatos, RIS, BibTeX, CSV</td></tr>
+              <tr><td>IA integrada</td><td>No</td><td>Research Assistant con IA agéntica</td><td>AI Discovery con Deep Research</td></tr>
+              <tr><td>Fortaleza principal</td><td>Amplitud, gratuidad, facilidad de uso</td><td>Calidad, historial desde 1900, Journal Impact Factor</td><td>Cobertura amplia + curada, AI Discovery, bibliometría</td></tr>
+              <tr><td>Debilidad principal</td><td>Metadatos inconsistentes, sin filtros avanzados</td><td>Cobertura más limitada, costosa</td><td>Costosa, algunas revistas no indexadas</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ESTRATEGIAS -->
+      <section class="filterable" data-id="estrategias">
+        <div class="eyebrow">Parte I · Técnica</div>
+        <h2 class="sec">Estrategias de búsqueda</h2>
+
+        <p>Saber usar una plataforma de búsqueda es tan importante como elegir la correcta. Las estrategias de búsqueda avanzada te permiten encontrar exactamente lo que necesitas en menos tiempo, reduciendo el ruido y aumentando la relevancia de los resultados.</p>
+
+        <h3 class="sub">Operadores booleanos</h3>
+        <ul>
+          <li><strong>AND:</strong> Combina dos términos para que ambos aparezcan en los resultados. En Google Scholar, el AND está implícito entre palabras. Ejemplo: <code>membrane AND wastewater</code>.</li>
+          <li><strong>OR:</strong> Busca artículos que contengan al menos uno de los términos. Ideal para sinónimos. Ejemplo: <code>wastewater OR "agua residual"</code>.</li>
+          <li><strong>NOT (o signo menos -):</strong> Excluye artículos que contengan un término. Ejemplo: <code>bioplastic NOT packaging</code> o en Google Scholar: <code>bioplastic -packaging</code>.</li>
+        </ul>
+
+        <h3 class="sub">Técnicas avanzadas</h3>
+        <ul>
+          <li><strong>Paréntesis para agrupación:</strong> Controlan el orden de evaluación. Ejemplo: <code>(fungi OR fungal) AND membrane</code>.</li>
+          <li><strong>Frase exacta con comillas:</strong> Busca la secuencia exacta de palabras. Ejemplo: <code>"reverse osmosis"</code>.</li>
+          <li><strong>Truncamiento con asterisco (<code>*</code>):</strong> Busca todas las variaciones de una raíz. Ejemplo: <code>membran*</code> encuentra membrane, membranes, membranas. <em>Solo funciona en WoS y Scopus.</em></li>
+          <li><strong>Búsqueda por campos específicos:</strong>
+            <ul>
+              <li><code>TI=</code> — Título del artículo (WoS)</li>
+              <li><code>AU=</code> — Nombre del autor</li>
+              <li><code>SO=</code> — Nombre de la revista (Source)</li>
+              <li><code>TITLE-ABS-KEY()</code> — Título, resumen y palabras clave (Scopus)</li>
+            </ul>
+          </li>
+        </ul>
+
+        <h3 class="sub">Ejemplo: búsqueda deficiente vs. avanzada</h3>
+        <div class="blocks-2">
+          <div class="block bad"><b>Búsqueda deficiente</b><code>membrana hongo aguas residuales</code><p style="margin-top:10px">Mezcla idiomas, no usa operadores, no incluye sinónimos, no usa truncamiento. Resultados impredecibles y poco relevantes.</p></div>
+          <div class="block good"><b>Búsqueda avanzada</b><code>TITLE-ABS-KEY((fungi OR fungal OR hongo*) AND (wastewater OR "agua residual") AND membrane*)</code><p style="margin-top:10px">Incluye sinónimos (OR), truncamiento (*), frase exacta, y búsqueda en título, resumen y palabras clave.</p></div>
+        </div>
+
+        <h3 class="sub">Recomendaciones prácticas</h3>
+        <div class="blocks">
+          <div class="block"><b>1. Empieza amplio, luego refina</b><span>Comienza con una búsqueda general para entender el volumen de literatura. Luego añade filtros y operadores para acotar los resultados.</span></div>
+          <div class="block"><b>2. Usa vocabulario controlado</b><span>Consulta tesauros especializados para identificar los términos estándar que usan los autores en tu campo.</span></div>
+          <div class="block"><b>3. Guarda tus ecuaciones de búsqueda</b><span>Documenta cada búsqueda: la ecuación exacta, la plataforma, la fecha y el número de resultados. Esencial para la reproducibilidad.</span></div>
+          <div class="block"><b>4. Combina búsquedas</b><span>WoS y Scopus permiten combinar búsquedas previas usando sus identificadores (ej: #1 AND #2). Facilita construir ecuaciones complejas paso a paso.</span></div>
+          <div class="block"><b>5. Aprovecha los filtros</b><span>Usa los filtros de la plataforma: año de publicación, tipo de documento, área temática, idioma, acceso abierto, entre otros.</span></div>
+        </div>
+      </section>
+
+      <!-- ═══════════ PARTE II ═══════════ -->
+
+      <!-- CHATGPT -->
+      <section class="filterable" data-id="chatgpt">
+        <div class="eyebrow">Parte II · Herramientas de IA</div>
+        <h2 class="sec">ChatGPT (OpenAI)</h2>
+        <div class="tool-logo"><img src="assets/img/chat-gpt.webp" alt="ChatGPT"></div>
+
+        <p><strong>ChatGPT</strong> de OpenAI es el chatbot de inteligencia artificial más utilizado del mundo y ha evolucionado significativamente como herramienta para la investigación académica. A abril de 2026, ChatGPT cuenta con capacidades avanzadas de búsqueda, análisis de documentos y generación de reportes de investigación.</p>
+
+        <h3 class="sub">Modelo actual: GPT-5.4</h3>
+        <p>El modelo insignia actual es <strong>GPT-5.4</strong>, lanzado el 5 de marzo de 2026. Ofrece una ventana de contexto de <strong>1 millón de tokens</strong> y capacidad nativa de uso de computadora (computer-use). <strong>GPT-5.3</strong> está disponible para todos los usuarios, incluyendo el plan gratuito. Los modelos anteriores (GPT-4o, GPT-4.1, GPT-5 Instant/Thinking) fueron <strong>retirados el 13 de febrero de 2026</strong>.</p>
+
+        <h3 class="sub">Planes y precios (abril 2026)</h3>
+        <div class="tbl-wrap">
+          <table class="ou">
+            <thead><tr><th>Plan</th><th>Precio</th><th>Características clave</th></tr></thead>
+            <tbody>
+              <tr><td>Free</td><td>$0/mes</td><td>GPT-5.3 con límites; incluye publicidad en EE.UU.</td></tr>
+              <tr><td>Go</td><td>$8/mes</td><td>Más volumen de mensajes; incluye publicidad</td></tr>
+              <tr><td>Plus</td><td>$20/mes</td><td>Suite completa, Deep Research (10 runs/mes), sin publicidad</td></tr>
+              <tr><td>Pro ($100)</td><td>$100/mes</td><td>Nivel intermedio entre Plus y Pro $200 (nuevo abril 2026)</td></tr>
+              <tr><td>Pro ($200)</td><td>$200/mes</td><td>GPT-5.4 Pro, 250 Deep Research/mes, doble contexto</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 class="sub">Deep Research</h3>
+        <p>Deep Research es la funcionalidad más poderosa de ChatGPT para investigación académica. Cada consulta toma entre <strong>5 y 30 minutos</strong>, durante los cuales el sistema realiza búsquedas iterativas y autónomas en la web, lee y analiza múltiples fuentes, y genera un <strong>reporte estructurado con citas</strong>. Es especialmente útil para obtener una visión panorámica de un tema complejo.</p>
+
+        <h3 class="sub">Study Mode</h3>
+        <p>ChatGPT incluye un <strong>Study Mode</strong> diseñado como experiencia de aprendizaje. En lugar de dar respuestas directas, formula preguntas, fomenta la participación activa y promueve la metacognición — ideal para preparar exámenes o profundizar en conceptos.</p>
+
+        <div class="callout callout--warn">
+          <span class="ic">!</span>
+          <div><b>Alucinaciones de referencias</b><p>ChatGPT puede inventar referencias que suenan plausibles pero no existen. Siempre verifica las fuentes con Google Scholar, Scopus u otras bases de datos. Nunca cites una referencia proporcionada por ChatGPT sin confirmar que el artículo realmente existe.</p></div>
+        </div>
+
+        <h3 class="sub">Cómo usar ChatGPT para revisiones de literatura</h3>
+        <ol>
+          <li><strong>Exploración inicial:</strong> Pide que te explique un tema nuevo, identifique los subtemas principales y te sugiera autores clave.</li>
+          <li><strong>Generación de palabras clave:</strong> Solicita listas de términos de búsqueda en inglés y español para usar en WoS o Scopus.</li>
+          <li><strong>Estructuración del trabajo:</strong> Pide esquemas, índices tentativos y marcos conceptuales para organizar tu revisión.</li>
+          <li><strong>Deep Research para temas específicos:</strong> Usa Deep Research para investigaciones profundas. Revisa siempre las fuentes citadas.</li>
+          <li><strong>Redacción y parafraseo:</strong> Usa ChatGPT para mejorar la redacción de tus textos, pero siempre citando fuentes reales verificadas por ti.</li>
+        </ol>
+
+        <p><strong>Enlace:</strong> <a class="platform-link" href="https://chatgpt.com" target="_blank" rel="noopener">chatgpt.com</a></p>
+      </section>
+
+      <!-- GEMINI -->
+      <section class="filterable" data-id="gemini">
+        <div class="eyebrow">Parte II · Herramientas de IA</div>
+        <h2 class="sec">Google Gemini</h2>
+        <div class="tool-logo"><img src="assets/img/gemini.webp" alt="Google Gemini"></div>
+
+        <p><strong>Google Gemini</strong> es la familia de modelos de inteligencia artificial de Google, integrada profundamente con el ecosistema de productos de la compañía (Google Scholar, Workspace, Drive, NotebookLM). A abril de 2026, Gemini se posiciona como una alternativa poderosa para la investigación académica, especialmente por su capacidad multimodal.</p>
+
+        <h3 class="sub">Modelo actual: Gemini 3.1 Pro</h3>
+        <p>El modelo actual es <strong>Gemini 3.1 Pro</strong>, lanzado el 19 de febrero de 2026, que obtuvo un puntaje de <strong>77,1% en ARC-AGI-2</strong>. Incluye un <strong>modo Deep Think</strong> para razonamiento STEM complejo. Para tareas rápidas, está disponible <strong>Gemini 3.1 Flash-Lite</strong>. Gemini es <strong>multimodal</strong>: puede procesar y generar texto, audio, imágenes, video y código.</p>
+
+        <h3 class="sub">Planes y precios (abril 2026)</h3>
+        <div class="tbl-wrap">
+          <table class="ou">
+            <thead><tr><th>Plan</th><th>Precio</th><th>Modelo / límites</th></tr></thead>
+            <tbody>
+              <tr><td>Free</td><td>$0</td><td>1.500 solicitudes/día</td></tr>
+              <tr><td>AI Pro</td><td>$19,99/mes</td><td>Gemini 3, 1.000 créditos IA</td></tr>
+              <tr><td>AI Ultra</td><td>~$125/3 meses</td><td>Gemini 3.1 Pro, Deep Think, 25.000 créditos</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 class="sub">Deep Research</h3>
+        <p>Similar a ChatGPT, Gemini ofrece <strong>Deep Research</strong>: explora temas en profundidad, genera reportes organizados con enlaces a las fuentes, y permite exportar directamente a <strong>Google Docs</strong>. La integración con el ecosistema de Google es una ventaja significativa — puede acceder a documentos en Drive y colaborar en tiempo real a través de Workspace.</p>
+
+        <h3 class="sub">Gems</h3>
+        <p>Los <strong>Gems</strong> son versiones personalizadas de Gemini especializadas para tareas específicas. Puedes crear un Gem configurado para buscar literatura en tu campo, con instrucciones sobre el tipo de fuentes que prefieres, el formato de las citas, y el nivel de detalle de los resúmenes.</p>
+
+        <p><strong>Enlace:</strong> <a class="platform-link" href="https://gemini.google.com" target="_blank" rel="noopener">gemini.google.com</a></p>
+      </section>
+
+      <!-- NOTEBOOKLM -->
+      <section class="filterable" data-id="notebooklm">
+        <div class="eyebrow">Parte II · Herramientas de IA</div>
+        <h2 class="sec">Google NotebookLM</h2>
+        <div class="tool-logo"><img src="assets/img/notebooklm.webp" alt="NotebookLM"></div>
+
+        <p><a class="platform-link" href="https://notebooklm.google/" target="_blank" rel="noopener">NotebookLM</a> es la herramienta de investigación y toma de notas de Google, construida sobre los modelos Gemini. Su principio fundamental es el <strong>source-grounding</strong> (RAG — Retrieval Augmented Generation): opera estrictamente dentro de los límites de las fuentes que tú subes, reduciendo drásticamente las alucinaciones comparado con chatbots de propósito general.</p>
+
+        <h3 class="sub">Interfaz de tres paneles (rediseño marzo 2026)</h3>
+        <div class="blocks-3">
+          <div class="block"><b>Panel de fuentes</b><span>Sube y gestiona documentos: PDFs, Google Docs, Slides, Sheets, Word, PowerPoint, texto plano, Markdown, CSV, EPUB, URLs, videos de YouTube, archivos de audio y más.</span></div>
+          <div class="block"><b>Panel de chat</b><span>Interactúa con tus fuentes mediante conversación. Las respuestas están ancladas exclusivamente a lo que subiste — las citas son trazables.</span></div>
+          <div class="block"><b>Panel de estudio</b><span>Genera entregables: reportes, presentaciones (exportables a PPTX), infografías con 10 estilos predefinidos, mapas mentales.</span></div>
+        </div>
+
+        <h3 class="sub">Funciones destacadas para investigación</h3>
+        <div class="blocks-2">
+          <div class="block"><b>Audio Overview</b><span>Genera un podcast conversacional con dos presentadores a partir de tus fuentes. Ideal para revisar literatura o material de clase mientras te desplazas. 3 por día (gratis) o 20 por día (Plus).</span></div>
+          <div class="block"><b>Video Overviews cinemáticos</b><span>Nuevo en 2026: genera videos con animaciones fluidas y visuales ricos a partir de tus documentos.</span></div>
+          <div class="block"><b>Flashcards y quizzes</b><span>Genera tarjetas de estudio con seguimiento («Lo sé» / «No lo sé»), quizzes con progreso guardado entre sesiones, y modo Learning Guide que actúa como tutor personal.</span></div>
+          <div class="block"><b>Deep Research</b><span>Capacidad de investigación multi-paso agregada a finales de 2025. Realiza búsquedas iterativas dentro y fuera de tus fuentes.</span></div>
+        </div>
+
+        <h3 class="sub">Planes y precios</h3>
+        <div class="tbl-wrap">
+          <table class="ou">
+            <thead><tr><th>Característica</th><th>Gratis</th><th>Plus ($19,99/mes)</th></tr></thead>
+            <tbody>
+              <tr><td>Notebooks</td><td>100</td><td>500</td></tr>
+              <tr><td>Fuentes por notebook</td><td>50</td><td>300</td></tr>
+              <tr><td>Consultas de chat por día</td><td>50</td><td>500</td></tr>
+              <tr><td>Audio Overviews por día</td><td>3</td><td>20</td></tr>
+              <tr><td>Video Overviews</td><td>Limitado</td><td>Sí</td></tr>
+              <tr><td>Exportar a PPTX</td><td>Sí</td><td>Sí</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout callout--tip">
+          <span class="ic">i</span>
+          <div><b>Descuento estudiantil</b><p>NotebookLM Plus está incluido en Google One AI Premium ($19,99/mes), que también incluye Gemini Advanced y 2 TB de almacenamiento. Instituciones con Google Workspace for Education Plus tienen límites expandidos sin costo adicional desde abril 2026.</p></div>
+        </div>
+
+        <h3 class="sub">¿Cómo usarlo para revisión bibliográfica?</h3>
+        <ol>
+          <li><strong>Revisiones de literatura:</strong> Sube múltiples artículos (PDFs) a un notebook y pídele que sintetice hallazgos, identifique contradicciones o compare metodologías entre papers.</li>
+          <li><strong>Comprensión de lecturas:</strong> Sube grabaciones de clase (audio) o diapositivas y usa el chat para hacer preguntas de aclaración.</li>
+          <li><strong>Audio para repasar:</strong> Convierte tus notas de termodinámica o fenómenos de transporte en un podcast para escuchar en el bus.</li>
+          <li><strong>Preparación de exámenes:</strong> Genera flashcards y quizzes a partir de tus apuntes, capítulos de libros o lecturas del curso.</li>
+          <li><strong>Colaboración en equipo:</strong> Comparte notebooks con tu equipo; todas las conversaciones y contenido generado permanecen dentro del notebook.</li>
+        </ol>
+
+        <div class="callout callout--warn">
+          <span class="ic">!</span>
+          <div><b>Limitaciones</b><p>NotebookLM solo conoce lo que tú subes — no busca en la web abierta por sí solo (excepto con Deep Research). Las fuentes de YouTube solo importan la transcripción, no el contenido visual. El límite por fuente es de 500.000 palabras o 200 MB.</p></div>
+        </div>
+      </section>
+
+      <!-- CLAUDE -->
+      <section class="filterable" data-id="claude">
+        <div class="eyebrow">Parte II · Herramientas de IA</div>
+        <h2 class="sec">Claude (Anthropic)</h2>
+        <div class="tool-logo"><img src="assets/img/claude.jpg" alt="Claude — Anthropic"></div>
+
+        <p><strong>Claude</strong> es la familia de modelos de inteligencia artificial desarrollada por <strong>Anthropic</strong>. A diferencia de ChatGPT y Gemini, Claude se distingue por su énfasis en la seguridad, la precisión y el razonamiento científico riguroso. Es una herramienta particularmente valiosa para el análisis profundo de documentos académicos.</p>
+
+        <h3 class="sub">Modelos disponibles (abril 2026)</h3>
+        <ul>
+          <li><strong>Claude Opus 4.7</strong> (lanzado el 16 de abril de 2026): El modelo más capaz de Anthropic, con capacidad de auto-verificación que le permite revisar y corregir sus propias respuestas.</li>
+          <li><strong>Claude Sonnet 4.6:</strong> El mejor equilibrio entre capacidad y velocidad, con ventana de contexto de <strong>1 millón de tokens</strong>.</li>
+          <li><strong>Claude Haiku 4.5:</strong> El modelo más rápido y económico, ideal para tareas rutinarias.</li>
+        </ul>
+
+        <h3 class="sub">Planes y precios (abril 2026)</h3>
+        <div class="tbl-wrap">
+          <table class="ou">
+            <thead><tr><th>Plan</th><th>Precio</th><th>Características</th></tr></thead>
+            <tbody>
+              <tr><td>Free</td><td>$0</td><td>Acceso básico con límites</td></tr>
+              <tr><td>Pro</td><td>$20/mes</td><td>Límites más altos, acceso prioritario</td></tr>
+              <tr><td>Max</td><td>$100/mes</td><td>Uso muy alto, todas las funciones</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 class="sub">Funcionalidades clave para investigación</h3>
+        <ul>
+          <li><strong>Ventana de contexto de 1 millón de tokens:</strong> Permite subir y analizar múltiples papers completos simultáneamente. Puedes cargar 5-10 artículos y pedirle que compare metodologías, extraiga datos, o identifique contradicciones entre los estudios.</li>
+          <li><strong>Modo de pensamiento extendido:</strong> Para razonamiento complejo de múltiples pasos, Claude puede «pensar en voz alta», mostrando su proceso de razonamiento paso a paso antes de dar una respuesta final.</li>
+          <li><strong>Razonamiento científico:</strong> Fuerte capacidad para interpretar datos experimentales, evaluar diseños experimentales y analizar resultados estadísticos.</li>
+          <li><strong>Generación de gráficos y visualizaciones:</strong> Puede crear visualizaciones en línea para representar datos y conceptos.</li>
+          <li><strong>Sin búsqueda web integrada:</strong> A diferencia de ChatGPT y Gemini, Claude no tiene búsqueda web nativa. Esto lo hace ideal para <em>análisis</em> de documentos que tú le proporcionas, pero no para <em>descubrimiento</em> de nueva literatura.</li>
+        </ul>
+
+        <div class="callout callout--tip">
+          <span class="ic">i</span>
+          <div><b>Fortaleza principal</b><p>Claude es especialmente útil para analizar documentos largos gracias a su ventana de contexto de 1 millón de tokens. Puedes subir varios papers completos y pedirle que compare metodologías, extraiga datos o identifique contradicciones entre los estudios.</p></div>
+        </div>
+
+        <p><strong>Enlace:</strong> <a class="platform-link" href="https://claude.ai" target="_blank" rel="noopener">claude.ai</a></p>
+      </section>
+
+      <!-- PERPLEXITY -->
+      <section class="filterable" data-id="perplexity">
+        <div class="eyebrow">Parte II · Herramientas de IA</div>
+        <h2 class="sec">Perplexity</h2>
+        <div class="tool-logo"><img src="assets/img/perplexity.webp" alt="Perplexity"></div>
+
+        <p><strong>Perplexity</strong> es un motor de búsqueda potenciado por inteligencia artificial que combina la capacidad de búsqueda web con la generación de respuestas en lenguaje natural. Su principal diferenciador es que <strong>cada afirmación incluye citas a las fuentes</strong>, lo que facilita la verificación de la información.</p>
+
+        <p>Para investigación académica, Perplexity indexa más de <strong>200 millones de papers</strong> a través de Semantic Scholar y OpenAlex. Su función <strong>Deep Research</strong> utiliza <strong>Claude Opus 4.5/4.6</strong> como modelo base, visita más de <strong>100 páginas por consulta</strong>, toma entre 2 y 5 minutos, y alcanza un <strong>93,9% de factualidad en SimpleQA</strong> — una de las tasas más altas disponibles.</p>
+
+        <h3 class="sub">Planes y precios (abril 2026)</h3>
+        <div class="tbl-wrap">
+          <table class="ou">
+            <thead><tr><th>Plan</th><th>Precio</th><th>Características</th></tr></thead>
+            <tbody>
+              <tr><td>Free</td><td>$0</td><td>Búsquedas básicas, límites en features premium</td></tr>
+              <tr><td>Education Pro</td><td>$10/mes</td><td>Para estudiantes/educadores verificados</td></tr>
+              <tr><td>Pro</td><td>$20/mes</td><td>Búsquedas Pro ilimitadas, múltiples modelos IA</td></tr>
+              <tr><td>Max</td><td>$200/mes</td><td>Todo ilimitado</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 class="sub">Funcionalidades académicas</h3>
+        <ul>
+          <li><strong>Academic Focus mode:</strong> Prioriza fuentes revisadas por pares (peer-reviewed), filtrando blogs, noticias y contenido no académico.</li>
+          <li><strong>Citas en línea:</strong> Cada afirmación incluye referencias numeradas con enlaces clicables a las fuentes originales.</li>
+          <li><strong>Seguimiento de preguntas:</strong> Sugiere preguntas relacionadas para profundizar en el tema.</li>
+        </ul>
+
+        <div class="callout callout--nota">
+          <span class="ic">i</span>
+          <div><b>Descuento estudiantil</b><p>Perplexity ofrece un plan Education Pro a $10/mes para estudiantes verificados, y algunas instituciones ofrecen el primer año gratis. Consulta si la Universidad de los Andes tiene convenio vigente.</p></div>
+        </div>
+
+        <p><strong>Enlace:</strong> <a class="platform-link" href="https://www.perplexity.ai" target="_blank" rel="noopener">perplexity.ai</a></p>
+      </section>
+
+      <!-- SCISPACE -->
+      <section class="filterable" data-id="scispace">
+        <div class="eyebrow">Parte II · Herramientas de IA</div>
+        <h2 class="sec">SciSpace</h2>
+        <div class="tool-logo"><img src="assets/img/scispace.jpg" alt="SciSpace"></div>
+
+        <p><strong>SciSpace</strong> (anteriormente Typeset) es una plataforma de investigación con IA que aloja más de <strong>280 millones de artículos académicos</strong>. Su enfoque principal es facilitar la lectura, comprensión y análisis de papers científicos, haciendo que la revisión de literatura sea más eficiente. Su función <strong>Deep Review</strong> utiliza IA multi-agente y promete reducir el tiempo de revisión de literatura hasta en un <strong>70%</strong>.</p>
+
+        <h3 class="sub">Funcionalidades principales</h3>
+        <div class="blocks">
+          <div class="block"><b>Chat with PDF</b><span>Haz preguntas sobre artículos específicos y obtén respuestas con citas exactas al texto del paper. Ideal para comprender metodologías complejas.</span></div>
+          <div class="block"><b>AI Agent</b><span>Flujos de trabajo automatizados: búsquedas, resúmenes listos para PRISMA, identificación de vacíos de investigación y análisis comparativo.</span></div>
+          <div class="block"><b>AI Writer</b><span>Genera borradores de esquemas y secciones de manuscritos basados en la literatura analizada.</span></div>
+          <div class="block"><b>Citation Generator</b><span>Genera citas en APA, MLA y más de 9.000 estilos diferentes. Compatible con todos los formatos de revistas importantes.</span></div>
+          <div class="block"><b>AI Detector</b><span>Identifica contenido generado por inteligencia artificial. Útil para verificar la originalidad de textos académicos.</span></div>
+          <div class="block"><b>Citation Booster</b><span>Convierte papers en video abstracts para aumentar la visibilidad y las citas de tus publicaciones.</span></div>
+        </div>
+
+        <h3 class="sub">Precios</h3>
+        <p>SciSpace ofrece un plan <strong>gratuito con límites diarios</strong> y un plan <strong>Premium a $12/mes</strong> con acceso ilimitado a todas las funcionalidades.</p>
+
+        <div class="callout callout--warn">
+          <span class="ic">!</span>
+          <div><b>Usa los resúmenes como punto de partida</b><p>Como todas las herramientas de IA, SciSpace puede alucinar e interpretar en exceso los hallazgos. Siempre verifica las afirmaciones clave contra las fuentes originales. No confíes ciegamente en los resúmenes generados — léelos como un punto de partida, no como un sustituto de la lectura del paper.</p></div>
+        </div>
+
+        <p><strong>Enlace:</strong> <a class="platform-link" href="https://scispace.com" target="_blank" rel="noopener">scispace.com</a></p>
+      </section>
+
+      <!-- CONSENSUS -->
+      <section class="filterable" data-id="consensus">
+        <div class="eyebrow">Parte II · Herramientas de IA</div>
+        <h2 class="sec">Consensus</h2>
+        <div class="tool-logo"><img src="assets/img/consensus.png" alt="Consensus"></div>
+
+        <p><strong>Consensus</strong> es un motor de búsqueda académico con IA que se distingue por usar <strong>exclusivamente literatura revisada por pares</strong>. No indexa blogs, noticias ni contenido web general — solo artículos de revistas científicas. Con más de <strong>200 millones de papers</strong> indexados, es una fuente confiable para obtener el consenso científico sobre preguntas específicas.</p>
+
+        <h3 class="sub">Funcionalidades principales</h3>
+        <ul>
+          <li><strong>Consensus Meter:</strong> Para preguntas de tipo sí/no, muestra un gráfico visual con el porcentaje de acuerdo y desacuerdo en la literatura científica. Ejemplo: «¿Los bioplásticos a base de almidón son biodegradables en condiciones marinas?»</li>
+          <li><strong>Deep Search (nuevo):</strong> Revisa más de <strong>1.000 papers</strong>, selecciona los ~50 más relevantes, y genera un reporte detallado con citas. Ideal para revisiones de literatura enfocadas.</li>
+          <li><strong>Ask Paper:</strong> Chat individual con PDFs — haz preguntas sobre un artículo específico y obtén respuestas con citas exactas al texto.</li>
+          <li><strong>Study Snapshot:</strong> Vista rápida de las características de un estudio: población, tamaño de muestra, métodos utilizados y hallazgos principales.</li>
+        </ul>
+
+        <h3 class="sub">Precios (abril 2026)</h3>
+        <ul>
+          <li><strong>Free:</strong> 10 análisis/mes</li>
+          <li><strong>Premium:</strong> $8,99/mes — análisis ilimitados</li>
+          <li><strong>Pro:</strong> $15/mes — 15 Deep Searches por mes</li>
+        </ul>
+
+        <details>
+          <summary>Ejemplo de uso para Ingeniería Química</summary>
+          <div class="detail-body">
+            <p>Pregunta: <em>«¿Los bioplásticos a base de almidón son biodegradables en condiciones marinas?»</em></p>
+            <p>Consensus analizará la literatura peer-reviewed y mostrará:</p>
+            <ul>
+              <li>El porcentaje de estudios que confirman o niegan la biodegradabilidad marina.</li>
+              <li>Resúmenes de los hallazgos principales de cada estudio relevante.</li>
+              <li>Referencias completas para que puedas acceder a los artículos originales.</li>
+            </ul>
+            <p>Este tipo de consultas son perfectas para establecer el estado del arte en tu proyecto de investigación.</p>
+          </div>
+        </details>
+
+        <p><strong>Enlace:</strong> <a class="platform-link" href="https://consensus.app" target="_blank" rel="noopener">consensus.app</a></p>
+      </section>
+
+      <!-- CONNECTED PAPERS -->
+      <section class="filterable" data-id="connected-papers">
+        <div class="eyebrow">Parte II · Herramientas de IA</div>
+        <h2 class="sec">Connected Papers</h2>
+        <div class="tool-logo"><img src="assets/img/connected-papers.png" alt="Connected Papers"></div>
+
+        <p><strong>Connected Papers</strong> es una herramienta visual para mapear redes de literatura científica. A partir de un artículo semilla (<em>seed paper</em>), genera un grafo interactivo que muestra los artículos más relacionados usando análisis de <strong>co-citación y acoplamiento bibliográfico</strong>. Cada grafo analiza aproximadamente <strong>50.000 papers</strong> para identificar las conexiones más relevantes.</p>
+
+        <h3 class="sub">Cómo leer el grafo</h3>
+        <div class="blocks-2">
+          <div class="block"><b>Tamaño del nodo</b><span>Indica el número de citas — nodos más grandes representan artículos más citados.</span></div>
+          <div class="block"><b>Color del nodo</b><span>Indica el año de publicación — tonos más oscuros para publicaciones más recientes.</span></div>
+          <div class="block"><b>Proximidad entre nodos</b><span>Artículos cercanos en el grafo son temáticamente similares (layout de fuerzas dirigidas que agrupa papers similares).</span></div>
+          <div class="block"><b>Conexiones (aristas)</b><span>Líneas que conectan artículos que comparten muchas citas en común.</span></div>
+        </div>
+
+        <h3 class="sub">Funcionalidades</h3>
+        <ul>
+          <li><strong>Prior Works:</strong> Artículos fundacionales anteriores al paper semilla — los «ancestros» intelectuales de tu investigación.</li>
+          <li><strong>Derivative Works:</strong> Artículos posteriores que construyen sobre el paper semilla — las «ramificaciones» de la investigación.</li>
+          <li><strong>Multi-origin graphs (nuevo):</strong> Permite usar múltiples papers como semilla para comparar y encontrar intersecciones entre diferentes líneas de investigación.</li>
+          <li><strong>Exportación:</strong> Exporta listas de artículos a gestores de referencias como Zotero, Mendeley o EndNote.</li>
+        </ul>
+
+        <h3 class="sub">Base de datos y precios</h3>
+        <p>Connected Papers obtiene sus datos de <strong>Semantic Scholar, arXiv y PubMed</strong>. La cobertura es extensa en ciencias naturales, ingeniería, informática y biomedicina.</p>
+        <ul>
+          <li><strong>Free:</strong> 5 grafos/mes</li>
+          <li><strong>Academic:</strong> ~$3-6/mes — grafos ilimitados para investigadores</li>
+          <li><strong>Business:</strong> ~$20/mes — funcionalidades empresariales</li>
+        </ul>
+
+        <p><strong>Enlace:</strong> <a class="platform-link" href="https://www.connectedpapers.com" target="_blank" rel="noopener">connectedpapers.com</a></p>
+      </section>
+
+      <!-- COMPARATIVA IA -->
+      <section class="filterable" data-id="comparativa-ia">
+        <div class="eyebrow">Parte II · Síntesis</div>
+        <h2 class="sec">Comparativa de herramientas de IA</h2>
+
+        <p>La siguiente tabla compara las ocho herramientas de IA cubiertas en esta guía, con información actualizada a abril de 2026:</p>
+
+        <div class="tbl-wrap">
+          <table class="ou">
+            <thead><tr><th>Plataforma</th><th>Fortalezas</th><th>Debilidades</th><th>Ideal para</th></tr></thead>
+            <tbody>
+              <tr><td>ChatGPT</td><td>Deep Research potente, Study Mode, GPT-5.4 con 1M tokens, ecosistema extenso</td><td>Alucinaciones frecuentes en referencias, plan gratuito con publicidad</td><td>Exploración inicial, generación de ideas, estructuración de trabajos</td></tr>
+              <tr><td>Google Gemini</td><td>Integración con Google Scholar/Docs/Drive, multimodal, Deep Think para STEM</td><td>Menos preciso que Claude en razonamiento, dependencia del ecosistema Google</td><td>Usuarios del ecosistema Google, análisis multimodal, exportación a Docs</td></tr>
+              <tr><td>Claude</td><td>1M tokens de contexto, razonamiento científico superior, auto-verificación (Opus 4.7), pensamiento extendido</td><td>Sin búsqueda web integrada, requiere subir documentos manualmente</td><td>Análisis profundo de papers, comparación de metodologías, interpretación de datos</td></tr>
+              <tr><td>Perplexity</td><td>93,9% factualidad, citas en línea, Academic Focus, 200M+ papers, Deep Research con Claude</td><td>Análisis menos profundo que ChatGPT/Claude, plan Max costoso</td><td>Verificación de datos, búsqueda con fuentes, respuestas rápidas con citas</td></tr>
+              <tr><td>SciSpace</td><td>280M+ papers, Chat with PDF, AI Agent, generador de citas en 9.000+ estilos</td><td>Puede sobre-interpretar hallazgos, cobertura desigual fuera de ciencias</td><td>Lectura y comprensión de papers, generación de citas, revisiones PRISMA</td></tr>
+              <tr><td>Consensus</td><td>Solo peer-reviewed, Consensus Meter visual, Deep Search de 1.000+ papers</td><td>Solo preguntas de investigación, sin análisis de documentos propios</td><td>Estado del arte, preguntas sí/no sobre evidencia científica</td></tr>
+              <tr><td>Connected Papers</td><td>Visualización de redes, Prior/Derivative Works, multi-origin graphs</td><td>Solo mapeo, sin análisis de contenido, limitado a Semantic Scholar/arXiv/PubMed</td><td>Descubrir literatura relacionada, mapear campos de investigación, encontrar seminal papers</td></tr>
+              <tr><td>NotebookLM</td><td>Source-grounding (sin alucinaciones), Audio Overviews, flashcards, quizzes, infografías, PPTX export</td><td>Solo analiza lo que subes, no busca en la web por sí solo, límite de 500K palabras por fuente</td><td>Sintetizar múltiples papers, preparar exámenes, repasar material en formato podcast</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 class="sub">Referencia rápida</h3>
+        <div class="tbl-wrap">
+          <table class="ou">
+            <thead><tr><th>Herramienta</th><th>Mejor para</th><th>Plan gratuito</th><th>Desde</th><th>Fuentes peer-reviewed</th></tr></thead>
+            <tbody>
+              <tr><td>ChatGPT</td><td>Exploración, estructuración</td><td>Sí (con publicidad)</td><td>$8/mes</td><td>No exclusivo</td></tr>
+              <tr><td>Gemini</td><td>Ecosistema Google, multimodal</td><td>Sí</td><td>$19,99/mes</td><td>No exclusivo</td></tr>
+              <tr><td>NotebookLM</td><td>Sintetizar papers, estudio</td><td>Sí (50 consultas/día)</td><td>$19,99/mes</td><td>Solo tus fuentes</td></tr>
+              <tr><td>Claude</td><td>Análisis de documentos</td><td>Sí</td><td>$20/mes</td><td>No exclusivo</td></tr>
+              <tr><td>Perplexity</td><td>Búsqueda con citas</td><td>Sí</td><td>$10/mes</td><td>Academic Focus</td></tr>
+              <tr><td>SciSpace</td><td>Lectura de papers, citas</td><td>Sí (límites diarios)</td><td>$12/mes</td><td>Sí (280M+)</td></tr>
+              <tr><td>Consensus</td><td>Consenso científico</td><td>Sí (10 análisis/mes)</td><td>$8,99/mes</td><td>Sí (exclusivo)</td></tr>
+              <tr><td>Connected Papers</td><td>Mapeo de literatura</td><td>Sí (5 grafos/mes)</td><td>~$3/mes</td><td>Sí (Semantic Scholar)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- FLUJO DE TRABAJO -->
+      <section class="filterable" data-id="flujo-trabajo">
+        <div class="eyebrow">Parte II · Metodología</div>
+        <h2 class="sec">Flujo de trabajo recomendado</h2>
+
+        <p>Combinar múltiples herramientas es la estrategia más efectiva para una revisión bibliográfica completa. El siguiente flujo de trabajo integra plataformas clásicas y herramientas de IA:</p>
+
+        <ol>
+          <li><strong>Inicia con Google Scholar para una visión amplia:</strong> Busca tu tema con términos generales para entender el volumen de literatura, identificar los artículos más citados y descubrir autores clave. Usa la función «Citado por» para rastrear la evolución de ideas importantes.</li>
+          <li><strong>Refina en Web of Science o Scopus con operadores booleanos y sus capacidades de IA:</strong> Construye ecuaciones de búsqueda avanzadas con truncamiento, operadores de proximidad y filtros por campo. Aprovecha el Research Assistant de WoS o AI Discovery de Scopus para explorar la literatura de forma conversacional.</li>
+          <li><strong>Usa Connected Papers para mapear redes de investigación:</strong> Toma los artículos más relevantes de tu búsqueda y úsalos como semilla para descubrir papers relacionados que podrías haber pasado por alto. Explora tanto Prior Works como Derivative Works.</li>
+          <li><strong>Emplea SciSpace o Consensus para analizar contenido:</strong> Usa Chat with PDF de SciSpace para comprender papers complejos, o Consensus para verificar el estado del consenso científico sobre preguntas específicas.</li>
+          <li><strong>Sintetiza con NotebookLM:</strong> Sube los papers más relevantes a un notebook. Pídele que compare metodologías, identifique contradicciones y sintetice hallazgos. Genera un Audio Overview para repasar tus conclusiones mientras te desplazas.</li>
+          <li><strong>Usa ChatGPT Deep Research, Gemini Deep Research o Claude para investigaciones profundas:</strong> Para temas que requieren síntesis de múltiples fuentes, utiliza Deep Research de ChatGPT o Gemini. Para análisis detallado de documentos que ya tienes, sube los PDFs a Claude y solicita comparaciones, extracción de datos o identificación de contradicciones.</li>
+          <li><strong>Verifica datos específicos con Perplexity, revisando las fuentes citadas:</strong> Para cualquier dato, cifra o afirmación que necesites confirmar, usa Perplexity en modo Academic Focus. Siempre haz clic en las fuentes citadas para verificar que dicen lo que Perplexity afirma.</li>
+        </ol>
+
+        <div class="callout callout--tip">
+          <span class="ic">i</span>
+          <div><b>Consejo para el proyecto POU</b><p>Para el proyecto de Operaciones Unitarias, este flujo de trabajo te ayudará a encontrar datos de diseño, correlaciones empíricas y casos de estudio de procesos similares. Documenta cada búsqueda en tu bitácora de cálculo incluyendo la ecuación, la plataforma y la fecha.</p></div>
+        </div>
+      </section>
+
+      <!-- CONCLUSIONES -->
+      <section class="filterable" data-id="conclusiones">
+        <div class="eyebrow">Cierre</div>
+        <h2 class="sec">Conclusiones y recordatorios</h2>
+
+        <p>Las herramientas de búsqueda bibliográfica están viviendo una transformación sin precedentes. Las plataformas clásicas — Google Scholar, Web of Science y Scopus — siguen siendo esenciales para acceder a la literatura indexada de alta calidad, pero ahora integran capacidades de inteligencia artificial que hacen las búsquedas más eficientes y los análisis más profundos.</p>
+
+        <p>Por su parte, las herramientas de IA han evolucionado más allá de ser simples chatbots: hoy son <strong>agentes de investigación</strong> capaces de buscar, leer, analizar y sintetizar literatura científica de forma autónoma. Deep Research de ChatGPT, AI Discovery de Scopus, y el análisis documental de Claude representan un cambio fundamental en cómo hacemos investigación.</p>
+
+        <div class="callout callout--warn">
+          <span class="ic">!</span>
+          <div><b>Recordatorios esenciales</b>
+            <ul style="margin:.6em 0 0; padding-left:1.3em;">
+              <li style="margin-bottom:.5em"><strong>Siempre verifica las referencias generadas por IA.</strong> Las alucinaciones son un riesgo real — confirma que cada artículo citado existe realmente en Google Scholar, WoS o Scopus.</li>
+              <li style="margin-bottom:.5em"><strong>No todas las herramientas de IA tienen acceso a literatura reciente.</strong> Los modelos de lenguaje tienen fechas de corte de entrenamiento. Para lo más actual, usa las bases de datos directamente.</li>
+              <li style="margin-bottom:.5em"><strong>La IA complementa pero no reemplaza el análisis crítico.</strong> Tú eres responsable de evaluar la calidad de las fuentes, la validez de las metodologías y la relevancia de los hallazgos para tu investigación.</li>
+              <li style="margin-bottom:.5em"><strong>Combina múltiples herramientas para cobertura completa.</strong> Ninguna herramienta individual tiene toda la literatura. Usa al menos 2-3 plataformas diferentes.</li>
+              <li style="margin-bottom:.5em"><strong>Documenta tus búsquedas sistemáticamente.</strong> Registra las ecuaciones de búsqueda, las plataformas utilizadas, las fechas y el número de resultados. Esencial para la reproducibilidad y la transparencia.</li>
+              <li><strong>Declara el uso de herramientas de IA.</strong> Siguiendo la política AIAS del curso, siempre declara qué herramientas utilizaste y con qué propósito.</li>
+            </ul>
+          </div>
+        </div>
+
+        <p>La capacidad de realizar búsquedas bibliográficas efectivas es una habilidad que te acompañará durante toda tu carrera profesional. Las herramientas cambiarán y evolucionarán, pero los principios fundamentales permanecen: <strong>buscar con rigor, evaluar con criterio y documentar con transparencia</strong>. Dominar estas competencias hoy te dará una ventaja significativa como ingeniero químico.</p>
+      </section>
+
+      <footer class="doc-foot">
+        <span>Luis H. Reyes · Universidad de los Andes</span>
+        <span>Proyecto de Operaciones Unitarias · IQYA-2031 · 2026-20</span>
+      </footer>
+
+    </div><!-- /doc-body -->
+  </article>
+
+</div><!-- /outer-layout -->
+
+<script>
+(function() {
+  /* Reading progress bar */
+  var bar = document.getElementById('progress');
+  function onScroll() {
+    var h = document.documentElement;
+    var max = h.scrollHeight - h.clientHeight;
+    bar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  /* Click-to-filter */
+  var sects = Array.from(document.querySelectorAll('.doc-body section.filterable'));
+  var links = Array.from(document.querySelectorAll('.sn-item[data-sec]'));
+  var showAllBtn = document.getElementById('show-all-btn');
+  var partBtns = Array.from(document.querySelectorAll('.part-card .part-items button[data-sec]'));
+  var current = null;
+
+  function showAll() {
+    sects.forEach(function(s) { s.style.display = ''; });
+    links.forEach(function(a) { a.classList.remove('is-active'); });
+    if (showAllBtn) showAllBtn.style.display = 'none';
+    current = null;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function filterTo(id) {
+    sects.forEach(function(s) { s.style.display = s.getAttribute('data-id') === id ? '' : 'none'; });
+    links.forEach(function(a) { a.classList.toggle('is-active', a.getAttribute('data-sec') === id); });
+    if (showAllBtn) showAllBtn.style.display = '';
+    current = id;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  links.forEach(function(a) {
+    a.addEventListener('click', function() {
+      var id = a.getAttribute('data-sec');
+      if (current === id) showAll(); else filterTo(id);
+    });
+  });
+
+  partBtns.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var id = btn.getAttribute('data-sec');
+      if (current === id) showAll(); else filterTo(id);
+    });
+  });
+
+  if (showAllBtn) showAllBtn.addEventListener('click', showAll);
+})();
+</script>
+
+</body>
+</html>
