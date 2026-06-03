@@ -10,10 +10,12 @@ export default {
   theme: {
     extend: {
       colors: {
-        'brand-yellow': '#FFBF00',
-        'brand-yellow-dark': '#E6AC00',
-        'brand-dark': '#1A1A1A',
-        'brand-gray': '#555555',
+        // Definidos como canales RGB en index.css (:root) para permitir
+        // re-tematizar por curso (p. ej. .theme-deloitte) sin tocar las clases.
+        'brand-yellow': 'rgb(var(--brand-yellow) / <alpha-value>)',
+        'brand-yellow-dark': 'rgb(var(--brand-yellow-dark) / <alpha-value>)',
+        'brand-dark': 'rgb(var(--brand-dark) / <alpha-value>)',
+        'brand-gray': 'rgb(var(--brand-gray) / <alpha-value>)',
       },
       fontFamily: {
         sans: ['"Manrope Variable"', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],

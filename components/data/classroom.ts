@@ -142,6 +142,13 @@ export interface Course {
    */
   kind?: 'academic' | 'professional';
   /**
+   * Tema visual del curso. Si es `'deloitte'`, las páginas del curso (landing,
+   * Material, Presentaciones, lecturas, gate de acceso) y su tarjeta en el Aula
+   * usan la paleta verde Deloitte + Source Sans 3. Si se omite, usa el tema
+   * amarillo del portafolio.
+   */
+  theme?: 'deloitte';
+  /**
    * Si `true`, el curso pertenece a un semestre pasado: NO aparece en el índice de Aula
    * sino en la página de Archivo (`/classroom/archive`). Sus páginas internas (landing,
    * lecturas, presentaciones) siguen siendo accesibles con normalidad.
