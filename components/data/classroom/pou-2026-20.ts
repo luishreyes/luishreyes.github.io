@@ -11,6 +11,7 @@ export const pou202620Course: Course = {
   credits: 3,
   modality: 'Presencial',
   duration: '16 semanas',
+  theme: 'deloitte',
   tagline: 'Diseña una planta de pectina a partir de cáscara de fruta colombiana',
   description:
     'En este curso diseñarás, dimensionarás y simularás una planta completa de producción de pectina de grado alimentario a partir de cáscara de cítricos o maracuyá — un residuo agroindustrial colombiano. Bajo el enfoque de Diseño Integrado de Productos y Procesos, cada semana aplicas lo aprendido directamente en tu proyecto: manejo de sólidos, transporte de fluidos, agitación, intercambio de calor, filtración y la columna que recupera el etanol de precipitación. El modelo es híbrido: aula invertida con lecturas previas, quices al iniciar clase, talleres prácticos en parejas y trabajo autónomo en equipos de 4-5 personas a lo largo de las 16 semanas.',

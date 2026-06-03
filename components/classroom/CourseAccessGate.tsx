@@ -58,11 +58,13 @@ export const CourseAccessGate: React.FC<CourseAccessGateProps> = ({ course, chil
     }
   };
 
+  const themeClass = course.theme === 'deloitte' ? 'theme-deloitte' : undefined;
+
   if (unlocked === null) return null;
-  if (unlocked) return <>{children}</>;
+  if (unlocked) return themeClass ? <div className={themeClass}>{children}</div> : <>{children}</>;
 
   return (
-    <div className="min-h-screen bg-zinc-50 pt-24 pb-16 px-4 sm:px-6 lg:px-8">
+    <div className={`min-h-screen bg-zinc-50 pt-24 pb-16 px-4 sm:px-6 lg:px-8${themeClass ? ` ${themeClass}` : ''}`}>
       <div className="max-w-md mx-auto">
         <motion.div
           {...{

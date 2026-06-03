@@ -1,5 +1,6 @@
 import '@fontsource-variable/manrope';
 import '@fontsource-variable/jetbrains-mono';
+import '@fontsource-variable/source-sans-3';
 import './index.css';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
