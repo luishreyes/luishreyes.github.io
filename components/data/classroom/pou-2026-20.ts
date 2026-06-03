@@ -1,9 +1,8 @@
 import type { Course } from '../classroom';
 
 // ── POU · semestre 2026-20 ──────────────────────────────────────
-// Base (esqueleto) copiada del curso 2026-10. Estructura completa lista
-// para construir: readings y presentations vacíos, sin cronograma ni
-// fechas de entrega del semestre anterior. Llenar durante el semestre.
+// Proyecto del semestre: planta de pectina de grado alimentario a partir
+// de cáscara de cítricos o maracuyá (residuo agroindustrial colombiano).
 export const pou202620Course: Course = {
   slug: 'iqya-2031-2026-20',
   code: 'IQYA-2031',
@@ -12,21 +11,21 @@ export const pou202620Course: Course = {
   credits: 3,
   modality: 'Presencial',
   duration: '16 semanas',
-  tagline: 'Diseño integral de una planta de producción de alcohol',
+  tagline: 'Diseña una planta de pectina a partir de cáscara de fruta colombiana',
   description:
-    'En este curso diseñarás, dimensionarás y simularás una planta completa de producción de alcohol a partir de materias primas renovables colombianas. Desde los diagramas de ingeniería hasta la torre de destilación, pasando por manejo de sólidos, transporte de fluidos, agitación, intercambio de calor y filtración — cada semana aplicas lo aprendido directamente en tu proyecto. El modelo es híbrido: aula invertida con podcasts y lecturas previas, quices al iniciar clase, talleres prácticos en parejas y trabajo autónomo en equipos de 4-5 personas a lo largo de las 16 semanas.',
+    'En este curso diseñarás, dimensionarás y simularás una planta completa de producción de pectina de grado alimentario a partir de cáscara de cítricos o maracuyá — un residuo agroindustrial colombiano. Bajo el enfoque de Diseño Integrado de Productos y Procesos, cada semana aplicas lo aprendido directamente en tu proyecto: manejo de sólidos, transporte de fluidos, agitación, intercambio de calor, filtración y la columna que recupera el etanol de precipitación. El modelo es híbrido: aula invertida con lecturas previas, quices al iniciar clase, talleres prácticos en parejas y trabajo autónomo en equipos de 4-5 personas a lo largo de las 16 semanas.',
   accessCode: 'POU202620',
   bannerUrl: '/classroom/iqya-2031-2026-20/banner.jpg',
   pillars: [
     {
+      title: 'Creatividad',
+      description:
+        'Motor de la identificación de oportunidades y la generación de ideas.',
+    },
+    {
       title: 'Innovación',
       description:
         'Desarrollo ágil de prototipos viables, aplicando un enfoque multiescala.',
-    },
-    {
-      title: 'Creatividad',
-      description:
-        'Motor de la identificación de oportunidades y generación de ideas.',
     },
     {
       title: 'Emprendimiento',
@@ -40,35 +39,46 @@ export const pou202620Course: Course = {
       role: 'Profesor',
       email: 'lh.reyes@uniandes.edu.co',
       officeHours:
-        'Viernes 8 am - 12 m, con cita previa por correo electrónico',
+        'Viernes 8 a.m. a 12 m., con cita previa por correo electrónico',
+    },
+    {
+      name: 'Andrés F. Infante',
+      role: 'Asistente',
+      email: 'af.infante@uniandes.edu.co',
+    },
+    {
+      name: 'Dana Catalina Mora',
+      role: 'Monitora',
+      email: 'dc.morat1@uniandes.edu.co',
     },
   ],
   schedule: [
-    { label: 'Magistral', detail: 'Por definir' },
-    { label: 'Magistral', detail: 'Por definir' },
-    { label: 'Trabajo asistido', detail: 'Por definir' },
+    { label: 'Magistral', detail: 'Martes 11:00 a.m. - 12:20 p.m. · Salón según BloqueNeón' },
+    { label: 'Magistral', detail: 'Jueves 11:00 a.m. - 12:20 p.m. · Salón según BloqueNeón' },
+    { label: 'Taller', detail: 'Lunes 3:30 p.m. - 4:50 p.m. · Salón según BloqueNeón' },
+    { label: 'Taller', detail: 'Viernes 9:30 a.m. - 10:50 a.m. · Salón según BloqueNeón' },
   ],
   objectives: [
-    'Diseñar y dimensionar operaciones unitarias básicas para un proceso químico integral, desde el manejo de sólidos hasta la separación final por destilación.',
-    'Elaborar e interpretar diagramas de ingeniería profesionales (PBD, PFD, P&ID) siguiendo estándares industriales.',
-    'Calcular y especificar equipos de proceso considerando criterios técnicos, económicos y de sostenibilidad.',
-    'Simular procesos completos utilizando ASPEN Plus, validando los cálculos manuales realizados.',
-    'Documentar técnicamente el diseño mediante bitácoras de cálculo profesionales y reportes ejecutivos.',
-    'Trabajar colaborativamente en equipos, gestionando el tiempo y los recursos efectivamente.',
-    'Aplicar pensamiento crítico en la selección de alternativas de diseño y solución de problemas.',
-    'Comunicar efectivamente resultados técnicos a audiencias diversas mediante informes escritos y presentaciones orales.',
+    'Diseñar y dimensionar las operaciones unitarias de un proceso químico completo, que abarca el manejo de sólidos, el transporte de fluidos y la separación final por destilación.',
+    'Elaborar e interpretar diagramas de ingeniería profesionales (PBD, PFD, P&ID) según estándares industriales.',
+    'Calcular y especificar equipos de proceso con criterios técnicos, económicos y de sostenibilidad.',
+    'Simular procesos completos en ASPEN Plus y validar con ellos los cálculos manuales.',
+    'Documentar el diseño en bitácoras de cálculo profesionales y reportes ejecutivos.',
+    'Trabajar en equipo, gestionando el tiempo y los recursos con eficacia.',
+    'Aplicar pensamiento crítico al elegir alternativas de diseño y resolver problemas.',
+    'Comunicar resultados técnicos a audiencias distintas mediante informes y presentaciones.',
   ],
   methodology: {
     summary:
-      'Modelo híbrido Project Oriented-Problem Based Learning (PO-PBL) + aula invertida. Los estudiantes desarrollan durante todo el semestre el diseño completo de una planta de producción de alcohol por destilación.',
+      'Modelo híbrido Project Oriented-Problem Based Learning (PO-PBL) + aula invertida. Durante todo el semestre tu equipo desarrolla un proyecto real: el diseño completo de una planta de producción de pectina de grado alimentario a partir de cáscaras de fruta colombianas. El proyecto da contexto a cada tema, que llega justo cuando tu equipo lo va a usar.',
     phases: [
       {
         label: 'Antes (3 h semanales)',
         title: 'Preparación individual',
         items: [
-          'Podcast: material audiovisual del profesor sobre el tema.',
-          'Lectura complementaria al podcast.',
-          'Llegar a clase con comprensión básica del tema.',
+          'Lectura que el profesor prepara para cada tema.',
+          'Material audiovisual complementario.',
+          'Llegar a clase con una comprensión básica del tema.',
         ],
       },
       {
@@ -84,14 +94,14 @@ export const pou202620Course: Course = {
         label: 'Después (3 h semanales)',
         title: 'Trabajo autónomo',
         items: [
-          'Aplicación de conceptos al diseño del proceso del proyecto.',
+          'Aplicación de los conceptos al diseño de la planta de pectina.',
           'Búsqueda de información en bases de datos técnicas.',
-          'Documentación y desarrollo de bitácoras de cálculo.',
+          'Documentación y desarrollo de las bitácoras de cálculo.',
         ],
       },
     ],
     synergies: [
-      'El proyecto da contexto al contenido: podcasts y lecturas están ligados al avance del diseño.',
+      'El proyecto da contexto al contenido: las lecturas están ligadas al avance del diseño de la planta.',
       'Aprendizaje just-in-time: los temas se presentan cuando se necesitan para el proyecto.',
       'Retroalimentación continua sobre lo teórico y lo práctico.',
       'Desarrollo de autonomía para gestionar el tiempo entre preparación y proyecto.',
@@ -110,7 +120,7 @@ export const pou202620Course: Course = {
         title:
           'Identify, formulate, and solve complex engineering problems',
         indicators: [
-          '1.1.1 Define el problema de diseño del proceso de fermentación-destilación.',
+          '1.1.1 Define el problema de diseño del proceso de extracción de pectina y recuperación de etanol.',
           '1.2.1 Formula modelos matemáticos apropiados para cada operación unitaria.',
           '1.2.2 Resuelve los problemas de diseño y evalúa la viabilidad de las soluciones.',
         ],
@@ -152,25 +162,24 @@ export const pou202620Course: Course = {
     ],
   },
   project: {
-    title: 'Planta de producción de alcohol por destilación',
+    title: 'Planta de producción de pectina de grado alimentario',
     overview:
-      'Diseño integral de una planta a partir de la fermentación de materias primas renovables colombianas.',
+      'Diseño integral de una planta que aprovecha cáscara de cítricos o maracuyá — residuo agroindustrial colombiano — para extraer pectina de grado alimentario, dimensionada operación por operación y validada en ASPEN Plus. No es un cálculo aislado: es un sistema, donde la decisión que se toma en la molienda reaparece en el consumo de vapor de la columna.',
     rawMaterials: [
-      { name: 'Arroz (de rechazo o partido)', outcome: 'Shochu o alcohol neutro' },
-      { name: 'Ñame', outcome: 'Alcohol industrial' },
-      { name: 'Mucílago y pulpa de café', outcome: 'Bioetanol de residuos cafeteros' },
-      { name: 'Piña (corazones y cáscaras)', outcome: 'Destilado tropical' },
-      { name: 'Remolacha forrajera', outcome: 'Alcohol industrial' },
+      { name: 'Cáscara de naranja', outcome: 'Fuente clásica · alto rendimiento, pectina de alta esterificación' },
+      { name: 'Cáscara de limón o lima', outcome: 'Mayor contenido de pectina · calidad premium para gelificación' },
+      { name: 'Cáscara de mandarina o toronja', outcome: 'Variante cítrica de buen rendimiento, según disponibilidad regional' },
+      { name: 'Cáscara de maracuyá', outcome: 'Residuo abundante de la industria de jugos · alternativa no cítrica' },
     ],
     scope: [
-      'Selección y justificación de materia prima.',
-      'Diseño del proceso de fermentación (simplificado).',
-      'Dimensionamiento de equipos de manejo de sólidos.',
-      'Sistema completo de transporte de fluidos.',
-      'Diseño de agitadores para fermentadores.',
-      'Red de intercambiadores de calor.',
-      'Sistema de separación sólido-líquido.',
-      'Torre de destilación para purificación final.',
+      'Selección y justificación de la materia prima (humedad, contenido de pectina, volumen regional).',
+      'Diseño del proceso de extracción simplificado (hidrólisis ácida, conversión supuesta).',
+      'Manejo de sólidos: secado y molienda de la cáscara, con cálculo de potencia del molino.',
+      'Sistema completo de transporte de fluidos (agua de proceso, extracto y etanol) con pérdidas y NPSH.',
+      'Diseño del agitador del reactor de extracción (impulsor, patrón de flujo, escalado).',
+      'Red de intercambiadores de calor (calentamiento, condensador y rehervidor) con integración energética.',
+      'Separación sólido-líquido: filtración del bagazo agotado para clarificar el extracto.',
+      'Columna de recuperación de etanol por destilación (método McCabe-Thiele).',
     ],
     teamwork: [
       'Grupos fijos de 4-5 personas durante todo el semestre.',
@@ -194,7 +203,7 @@ export const pou202620Course: Course = {
         'Caracterización y propiedades de sólidos.',
         'Distribución de tamaños de partícula.',
         'Teoría y equipos de molienda.',
-        'Cálculos de potencia y selección de molinos.',
+        'Cálculos de potencia y selección de molinos para la cáscara.',
       ],
     },
     {
@@ -212,7 +221,7 @@ export const pou202620Course: Course = {
         'Teoría de agitación y tipos de impulsores.',
         'Patrones de flujo y número de potencia.',
         'Criterios de escalado.',
-        'Diseño de sistemas de mezclado para fermentadores.',
+        'Diseño del mezclado del reactor de extracción.',
       ],
     },
     {
@@ -229,7 +238,7 @@ export const pou202620Course: Course = {
       topics: [
         'Teoría de filtración.',
         'Diseño de filtros rotatorios y prensa.',
-        'Separación de biomasa fermentada.',
+        'Separación del bagazo agotado.',
       ],
     },
     {
@@ -240,7 +249,7 @@ export const pou202620Course: Course = {
         'Método McCabe-Thiele.',
         'Diseño de platos y eficiencias.',
         'Columnas empacadas.',
-        'Control y operación de torres.',
+        'Recuperación del etanol de precipitación.',
       ],
     },
   ],
@@ -253,6 +262,27 @@ export const pou202620Course: Course = {
     { component: 'Proyecto final', percentage: 20, description: 'Grupos · Documento técnico.' },
     { component: 'Presentación final', percentage: 10, description: 'Grupos · Presentación ejecutiva del proyecto.' },
   ],
+  deliveries: {
+    bitacoras: [
+      { label: 'Entrega 1', date: 'Domingo 23 de agosto' },
+      { label: 'Entrega 2', date: 'Domingo 20 de septiembre' },
+      { label: 'Entrega 3', date: 'Domingo 18 de octubre' },
+      { label: 'Entrega 4', date: 'Domingo 22 de noviembre' },
+    ],
+    coevaluations: [
+      { label: 'Coevaluación 1', date: 'Lunes 24 de agosto' },
+      { label: 'Coevaluación 2', date: 'Lunes 21 de septiembre' },
+      { label: 'Coevaluación 3', date: 'Lunes 19 de octubre' },
+      { label: 'Coevaluación 4', date: 'Lunes 23 de noviembre' },
+      { label: 'Coevaluación 5', date: 'Finales · documento y pósters' },
+    ],
+    feedback: [
+      { label: 'Retroalimentación 1', date: 'Jueves 27 de agosto' },
+      { label: 'Retroalimentación 2', date: 'Jueves 24 de septiembre' },
+      { label: 'Retroalimentación 3', date: 'Jueves 22 de octubre' },
+      { label: 'Retroalimentación 4', date: 'Martes 24 y jueves 26 de noviembre' },
+    ],
+  },
   coevaluation: {
     importance: [
       'Componente clave en la evaluación del curso.',
@@ -262,7 +292,7 @@ export const pou202620Course: Course = {
     ],
     application: [
       'Se realiza una coevaluación y autoevaluación dentro de los dos días siguientes a cada entrega relacionada con el proyecto.',
-      'En total, 5 evaluaciones durante el semestre (una por bitácora y una tras el documento final y sustentación).',
+      'En total, 5 evaluaciones durante el semestre (una por bitácora y una tras el documento final y la sustentación de pósters).',
       'Cada estudiante evalúa su desempeño y el de sus compañeros.',
       'Los criterios los establece cada equipo al inicio del semestre.',
     ],
@@ -281,7 +311,7 @@ export const pou202620Course: Course = {
   },
   aias: {
     intro:
-      'El curso utiliza la Escala de Evaluación de Inteligencia Artificial (AIAS) para integrar éticamente las herramientas de IA en el aprendizaje. Cada actividad indica explícitamente el nivel permitido.',
+      'El curso utiliza la Escala de Evaluación de Inteligencia Artificial (AIAS) para integrar éticamente las herramientas de IA en el aprendizaje. Cada actividad indica explícitamente el nivel permitido. El objetivo es desarrollar criterio sobre lo que la herramienta produce, no delegar el pensamiento en ella.',
     levels: [
       { level: 1, title: 'Sin IA', description: 'No se permite uso de IA.', application: 'Quices semanales.' },
       { level: 2, title: 'IA para ideas', description: 'IA para generar ideas y estructurar.', application: 'Talleres en clase.' },
@@ -307,15 +337,14 @@ export const pou202620Course: Course = {
       items: [
         'La asistencia a las sesiones magistrales es obligatoria (control diario).',
         'Los quices se realizan al inicio de clase sin excepción.',
-        'Ausencias justificadas deben reportarse con anticipación.',
+        'No hay supletorio de quices. Con excusa válida, el siguiente quiz vale el doble.',
       ],
     },
     {
       category: 'Entregas',
       items: [
-        'Todas las entregas se realizan a través de Bloque Neón.',
+        'Todas las entregas se realizan a través de BloqueNeón.',
         'No se aceptan entregas tardías en quices (penalización del 100%).',
-        'No hay supletorio de quices. Con excusa válida, el siguiente quiz vale el doble.',
         'Talleres y documento final: -1 unidad por cada 15 minutos de demora.',
         'Las bitácoras y la entrega final deben seguir el formato establecido.',
       ],
@@ -323,7 +352,7 @@ export const pou202620Course: Course = {
     {
       category: 'Comunicación',
       items: [
-        'Correo del curso: lh.reyes@uniandes.edu.co.',
+        'Correo del curso: lh.reyes@uniandes.edu.co, af.infante@uniandes.edu.co, dc.morat1@uniandes.edu.co.',
         'El asunto del correo debe incluir: [IQYA-2031] – Tema.',
         'Tiempo de respuesta: 48 horas hábiles.',
       ],
@@ -352,7 +381,7 @@ export const pou202620Course: Course = {
     {
       category: 'Política de retiros',
       items: [
-        'La fecha límite para retirarse del curso es la semana 11.',
+        'La fecha límite para retirarse del curso es la semana 11 (19 al 23 de octubre).',
         'Para esa fecha se habrá publicado más del 50% de las calificaciones.',
       ],
     },
@@ -389,5 +418,22 @@ export const pou202620Course: Course = {
     },
   ],
   readings: [],
-  presentations: [],
+  presentations: [
+    {
+      id: 'diagramas-ingenieria',
+      title: 'Diagramas de ingeniería',
+      description:
+        'PBD, PFD y P&ID: el lenguaje visual de la ingeniería química. Simbología ISA, codificación de equipos, balance de masa y mejores prácticas.',
+      sessionNumber: 1,
+      file: 'Diagramas_de_Ingenieria/Presentacion_Diagramas_de_Ingenieria.html',
+    },
+    {
+      id: 'pid-instrumentacion',
+      title: 'Diagramas P&ID e instrumentación',
+      description:
+        'Simbología ISA para instrumentación, lazos de control, seguridad (PSV) y construcción profesional de P&ID.',
+      sessionNumber: 2,
+      file: 'PID_Instrumentacion/Presentacion_Diagramas_PID.html',
+    },
+  ],
 };
