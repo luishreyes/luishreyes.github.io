@@ -12,9 +12,17 @@ export const ReadingsIndexPage: React.FC = () => {
 
   if (!course) return <NotFoundInClassroom />;
 
-  const sorted = [...course.readings].sort((a, b) => b.date.localeCompare(a.date));
-  const lecturas = sorted.filter((r) => r.category === 'lectura');
-  const guias = sorted.filter((r) => r.category !== 'lectura');
+  // Las lecturas se numeran según el programa; las guías por importancia
+  // editorial. Cuando `order` está definido se respeta; si no, las entradas
+  // sin número caen al final por fecha descendente.
+  const byOrderThenDate = (a: Reading, b: Reading) => {
+    const ao = a.order ?? Number.POSITIVE_INFINITY;
+    const bo = b.order ?? Number.POSITIVE_INFINITY;
+    if (ao !== bo) return ao - bo;
+    return b.date.localeCompare(a.date);
+  };
+  const lecturas = course.readings.filter((r) => r.category === 'lectura').sort(byOrderThenDate);
+  const guias = course.readings.filter((r) => r.category !== 'lectura').sort(byOrderThenDate);
 
   return (
     <CourseAccessGate course={course}>
@@ -47,7 +55,7 @@ export const ReadingsIndexPage: React.FC = () => {
             </p>
           </header>
 
-          {sorted.length === 0 ? (
+          {course.readings.length === 0 ? (
             <p className="mt-10 text-brand-gray">
               Aún no hay material publicado. Vuelve pronto.
             </p>
@@ -59,6 +67,7 @@ export const ReadingsIndexPage: React.FC = () => {
                 count={lecturas.length}
                 courseSlug={course.slug}
                 items={lecturas}
+                numberPrefix="Lectura"
                 emptyLabel="Aún no hay lecturas publicadas para este semestre."
               />
               <Section
@@ -67,6 +76,7 @@ export const ReadingsIndexPage: React.FC = () => {
                 count={guias.length}
                 courseSlug={course.slug}
                 items={guias}
+                numberPrefix="Guía"
                 emptyLabel="Aún no hay guías publicadas."
               />
             </>
@@ -84,9 +94,11 @@ interface SectionProps {
   courseSlug: string;
   items: Reading[];
   emptyLabel: string;
+  /** Prefijo del badge numérico de cada tarjeta — "Lectura" o "Guía". */
+  numberPrefix?: string;
 }
 
-const Section: React.FC<SectionProps> = ({ title, description, count, courseSlug, items, emptyLabel }) => (
+const Section: React.FC<SectionProps> = ({ title, description, count, courseSlug, items, emptyLabel, numberPrefix }) => (
   <section className="mt-12">
     <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-zinc-200 pb-3">
       <div>
@@ -102,12 +114,20 @@ const Section: React.FC<SectionProps> = ({ title, description, count, courseSlug
       <p className="mt-6 text-sm text-brand-gray italic">{emptyLabel}</p>
     ) : (
       <ul className="mt-6 space-y-4">
-        {items.map((r) => {
+        {items.map((r, i) => {
           const cardClass =
             'block bg-white rounded-xl border border-zinc-200 p-6 shadow-sm hover:shadow-md hover:border-brand-yellow transition-all group';
+          const numberLabel = numberPrefix
+            ? `${numberPrefix} ${String(r.order ?? i + 1).padStart(2, '0')}`
+            : null;
           const content = (
             <>
-              <div className="flex flex-wrap items-center gap-2 text-xs text-brand-gray">
+              {numberLabel && (
+                <p className="text-xs font-semibold tracking-widest uppercase text-brand-yellow-dark">
+                  {numberLabel}
+                </p>
+              )}
+              <div className={`${numberLabel ? 'mt-1.5 ' : ''}flex flex-wrap items-center gap-2 text-xs text-brand-gray`}>
                 <time dateTime={r.date}>{formatDate(r.date)}</time>
                 {r.readingMinutes && (
                   <>

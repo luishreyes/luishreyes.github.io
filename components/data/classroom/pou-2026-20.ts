@@ -429,6 +429,7 @@ export const pou202620Course: Course = {
   readings: [
     {
       slug: 'programa-del-curso',
+      order: 1,
       title: 'Programa del curso',
       summary:
         'El programa completo de IQYA-2031 para 2026-20: horarios y equipo, descripción y metodología (PO-PBL + aula invertida), el reto de la planta de pectina, resultados ABET, contenido por módulo, distribución de la nota, calendario y fechas de entrega, escala AIAS de uso de IA y políticas del curso.',
@@ -440,6 +441,7 @@ export const pou202620Course: Course = {
     },
     {
       slug: 'trabajo-en-equipo',
+      order: 3,
       title: 'Trabajo en equipo: guía práctica para el proyecto',
       summary:
         'Los fundamentos, herramientas y compromisos que construyen equipos que funcionan de verdad. Cubre el Proyecto Aristóteles de Google, bienestar y seguridad psicológica, normas y contrato de equipo, roles, matriz de evaluación, resolución de conflictos y plantillas de registro semanal.',
@@ -451,6 +453,7 @@ export const pou202620Course: Course = {
     },
     {
       slug: 'busqueda-bibliografica',
+      order: 5,
       title: 'Búsqueda bibliográfica y herramientas de IA',
       summary:
         'Once plataformas para encontrar, analizar y sintetizar literatura científica — desde Google Scholar, Web of Science y Scopus hasta ChatGPT, Claude, Perplexity, SciSpace, Consensus y Connected Papers. Incluye estrategias de búsqueda avanzada y un flujo de trabajo recomendado para el proyecto.',
@@ -462,6 +465,7 @@ export const pou202620Course: Course = {
     },
     {
       slug: 'reto-pectina',
+      order: 2,
       title: 'Guía del reto: la cáscara que vale más que la fruta',
       summary:
         'La guía del proyecto semestral: diseñar y dimensionar una planta que extrae pectina de grado alimentario a partir de cáscara de cítricos o maracuyá. Las ocho operaciones a integrar, cómo elegir la materia prima, qué validar en ASPEN Plus y dónde no confiar, los entregables y la rúbrica de cada bitácora.',
@@ -473,6 +477,7 @@ export const pou202620Course: Course = {
     },
     {
       slug: 'bitacoras-de-calculo',
+      order: 4,
       title: 'Guía de elaboración de bitácoras de cálculo',
       summary:
         'Qué va en cada una de las cuatro bitácoras del proyecto y cómo se evalúan. Estructura general, contenidos requeridos por entrega, formato LaTeX/Word, fuentes de ingeniería, errores más comunes y consejos prácticos.',
@@ -484,6 +489,7 @@ export const pou202620Course: Course = {
     },
     {
       slug: 'informe-final',
+      order: 6,
       title: 'Guía de elaboración del informe final',
       summary:
         'Estructura, formato y criterios de evaluación del documento final del proyecto. Cubre las diferencias con las bitácoras, los 12 capítulos del cuerpo del informe, las hojas de especificación de equipos, los errores más comunes y cómo preparar la sustentación.',
@@ -495,6 +501,7 @@ export const pou202620Course: Course = {
     },
     {
       slug: 'lectura-01-operaciones-unitarias',
+      order: 1,
       title: 'Las operaciones unitarias: historia de un concepto y formas de clasificarlo',
       summary:
         'Cómo una sola idea ordenó toda la ingeniería química. Origen del concepto con Arthur D. Little (MIT, 1915), evolución a lo largo del siglo XX y las dos clasificaciones complementarias: por tipo de operación y por fenómeno de transporte predominante.',
@@ -506,6 +513,7 @@ export const pou202620Course: Course = {
     },
     {
       slug: 'lectura-02-diagramas-ingenieria',
+      order: 2,
       title: 'Los diagramas de ingeniería como lenguaje de la profesión',
       summary:
         'Por qué los ingenieros de proceso no describen sus plantas: las dibujan. Los tres niveles de representación (BFD, PFD, P&ID), qué exige cada uno al ingeniero y la simbología ISO/ISA como convención universal de la disciplina.',
@@ -517,6 +525,7 @@ export const pou202620Course: Course = {
     },
     {
       slug: 'lectura-03-reduccion-tamano',
+      order: 3,
       title: 'Reducción de tamaño',
       summary:
         'Conminución, mecanismos de fractura y leyes energéticas. Por qué la molienda es una de las operaciones más comunes en la industria y, a la vez, una de las menos eficientes. Bond, Rittinger, Kick, Hukki — y un ejemplo resuelto para caliza.',
