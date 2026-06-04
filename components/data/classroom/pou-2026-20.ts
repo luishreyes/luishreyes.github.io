@@ -515,6 +515,17 @@ export const pou202620Course: Course = {
       category: 'lectura',
       href: '/classroom/iqya-2031-2026-20/lecturas/Lectura_02/Lectura_02_Diagramas_Ingenieria.html',
     },
+    {
+      slug: 'lectura-03-reduccion-tamano',
+      title: 'Reducción de tamaño',
+      summary:
+        'Conminución, mecanismos de fractura y leyes energéticas. Por qué la molienda es una de las operaciones más comunes en la industria y, a la vez, una de las menos eficientes. Bond, Rittinger, Kick, Hukki — y un ejemplo resuelto para caliza.',
+      date: '2026-06-04',
+      readingMinutes: 25,
+      tags: ['conminución', 'molienda', 'trituración', 'Bond', 'mecanismos de fractura', 'sólidos'],
+      category: 'lectura',
+      href: '/classroom/iqya-2031-2026-20/lecturas/Lectura_03/Lectura_03_Reduccion_de_Tamano.html',
+    },
   ],
   presentations: [
     {
