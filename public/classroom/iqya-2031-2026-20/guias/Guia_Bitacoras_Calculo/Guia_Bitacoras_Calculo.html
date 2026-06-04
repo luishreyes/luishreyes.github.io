@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía · Bitácoras de cálculo · Proyecto de Operaciones Unitarias</title>
+<link rel="stylesheet" href="assets/deloitte.css">
+<style>
+  body {
+    margin: 0;
+    background: var(--gris-5);
+    font-family: var(--tipo);
+    color: var(--gris-1);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.62;
+  }
+
+  /* ---- Barra de progreso de lectura ---- */
+  .progress {
+    position: fixed; top: 0; left: 0; height: 4px; width: 0;
+    background: var(--verde); z-index: 200; transition: width .08s linear;
+  }
+
+  .page {
+    max-width: 940px;
+    margin: 40px auto 90px;
+    background: var(--blanco);
+    box-shadow: var(--sombra);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  /* ===================== ENCABEZADO ===================== */
+  .doc-head {
+    background: var(--papel);
+    border-bottom: 5px solid var(--verde);
+    padding: 46px 64px 40px;
+    position: relative;
+  }
+  .doc-head .org {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    font-size: 14px; font-weight: 700; letter-spacing: .03em; color: var(--gris-1);
+  }
+  .doc-head .org span { color: var(--gris-3); font-weight: 600; }
+  .doc-head .badge {
+    display: inline-block; background: var(--verde); color: #fff;
+    font-size: 13px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+    padding: 6px 14px; border-radius: 999px; margin: 28px 0 18px; white-space: nowrap;
+  }
+  .doc-head h1 { font-size: 43px; line-height: 1.1; margin: 0 0 10px; letter-spacing: -.015em; max-width: 22ch; }
+  .doc-head .subtitle { font-size: 20px; color: var(--gris-2); margin: 0; font-weight: 500; max-width: 52ch; }
+  .doc-meta {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px;
+    margin-top: 34px; padding-top: 26px; border-top: 1px solid var(--gris-4);
+  }
+  .doc-meta div { font-size: 15px; color: var(--gris-2); }
+  .doc-meta b { display: block; color: var(--gris-1); font-size: 16px; font-weight: 700; margin-bottom: 2px; }
+
+  /* ===================== CUERPO ===================== */
+  .doc-body { padding: 8px 64px 60px; }
+  .doc-body section { padding-top: 46px; scroll-margin-top: 24px; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--verde-osc); margin-bottom: 12px;
+  }
+  .eyebrow::before { content: ""; width: 26px; height: 4px; background: var(--verde); border-radius: 2px; }
+  h2.sec { font-size: 30px; line-height: 1.18; margin: 0 0 18px; letter-spacing: -.01em; }
+  h2.sec .secnum { color: var(--verde); font-weight: 700; }
+  h3.sub { font-size: 21px; margin: 34px 0 10px; letter-spacing: -.005em; }
+  .doc-body p { font-size: 17px; color: var(--gris-1); margin: 0 0 16px; text-wrap: pretty; }
+  .lead { font-size: 20px; color: var(--gris-2); line-height: 1.55; font-weight: 400; }
+  .lead b { color: var(--gris-1); font-weight: 600; }
+
+  /* ---- Índice / sumario ---- */
+  .toc {
+    background: var(--papel); border-radius: 8px; padding: 26px 30px;
+    margin-top: 30px; border-left: 5px solid var(--verde);
+  }
+  .toc .toc-t { font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--gris-2); margin: 0 0 14px; }
+  .toc ol { margin: 0; padding: 0; list-style: none; counter-reset: toc; display: grid; gap: 9px; }
+  .toc li { counter-increment: toc; }
+  .toc a {
+    display: flex; align-items: baseline; gap: 14px; text-decoration: none;
+    color: var(--gris-1); font-size: 16.5px; font-weight: 600; padding: 4px 0;
+    border-bottom: 1px solid transparent; transition: color .18s ease; cursor: pointer;
+  }
+  .toc a::before { content: counter(toc, decimal-leading-zero); color: var(--verde-osc); font-weight: 700; font-size: 14px; min-width: 26px; }
+  .toc a:hover { color: var(--verde-osc); }
+
+  /* ---- Blocks / cards ---- */
+  .blocks { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin: 22px 0 6px; }
+  .blocks-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 22px 0 6px; }
+  .block {
+    background: var(--papel); border-radius: 8px; padding: 22px 24px;
+    border-top: 5px solid var(--verde); display: flex; flex-direction: column; gap: 6px;
+  }
+  .block .bn { font-size: 12px; font-weight: 700; color: var(--verde-osc); letter-spacing: .08em; }
+  .block b { font-size: 18px; line-height: 1.2; }
+  .block span { font-size: 14.5px; color: var(--gris-2); line-height: 1.45; }
+  .block ul { font-size: 14.5px; color: var(--gris-2); line-height: 1.45; margin: 4px 0 0; padding-left: 18px; }
+  .block ul li { margin-bottom: 4px; }
+
+  /* ===================== TABLAS ===================== */
+  .tbl-wrap { margin: 0 0 8px; overflow-x: auto; border-radius: 8px; }
+  table.ou { width: 100%; border-collapse: collapse; font-size: 15px; min-width: 560px; }
+  table.ou th, table.ou td { text-align: left; padding: 14px 16px; border-bottom: 1px solid var(--gris-4); vertical-align: top; line-height: 1.4; }
+  table.ou thead th { background: var(--gris-1); color: #fff; font-weight: 700; font-size: 13.5px; letter-spacing: .02em; }
+  table.ou thead th:first-child { border-top-left-radius: 6px; }
+  table.ou thead th:last-child { border-top-right-radius: 6px; }
+  table.ou td:first-child { font-weight: 700; color: var(--gris-1); width: 40%; }
+  table.ou .mag { color: var(--verde-osc); font-weight: 600; }
+  table.ou tbody tr:nth-child(even) { background: var(--papel); }
+  table.ou tbody tr:last-child td { border-bottom: none; }
+  .tbl-cap { font-size: 13.5px; color: var(--gris-2); margin: 24px 0 11px; padding-left: 14px; border-left: 3px solid var(--verde); line-height: 1.5; }
+  .tbl-cap b { color: var(--gris-1); }
+
+  /* ===================== CALLOUTS ===================== */
+  .callout {
+    display: grid; grid-template-columns: 42px 1fr; gap: 18px;
+    border-radius: 8px; padding: 20px 24px; margin: 24px 0; align-items: start;
+  }
+  .callout .ic {
+    width: 42px; height: 42px; border-radius: 50%; display: inline-flex;
+    align-items: center; justify-content: center; font-size: 21px; font-weight: 700;
+  }
+  .callout > div > b { display: block; font-size: 15.5px; margin-bottom: 4px; }
+  .callout p { font-size: 15.5px; margin: 0; color: var(--gris-1); line-height: 1.5; }
+  .callout p b { display: inline; color: inherit; font-size: inherit; }
+  .callout--nota { background: var(--teal-claro); }
+  .callout--nota .ic { background: var(--teal); color: #fff; }
+  .callout--nota b { color: var(--teal); }
+  .callout--tip { background: var(--verde-claro); }
+  .callout--tip .ic { background: var(--verde); color: #fff; }
+  .callout--tip b { color: var(--verde-osc); }
+  .callout--warn { background: #FEF2F2; }
+  .callout--warn .ic { background: #DC2626; color: #fff; }
+  .callout--warn b { color: #991B1B; }
+
+  /* ===================== COLLAPSIBLES ===================== */
+  details { margin: 18px 0; }
+  details summary {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 14px 18px; border-radius: 8px; background: var(--papel);
+    border: 1px solid var(--gris-4); cursor: pointer; list-style: none;
+    font-size: 15.5px; font-weight: 600; color: var(--gris-1);
+    transition: background .15s;
+  }
+  details summary::-webkit-details-marker { display: none; }
+  details summary::after { content: "+"; font-size: 18px; color: var(--verde); font-weight: 700; }
+  details[open] summary::after { content: "−"; }
+  details summary:hover { background: var(--gris-5); }
+  details[open] summary { border-radius: 8px 8px 0 0; border-bottom-color: transparent; }
+  details .detail-body {
+    padding: 18px 22px 20px; border: 1px solid var(--gris-4); border-top: none;
+    border-radius: 0 0 8px 8px; background: var(--blanco);
+    font-size: 15px; color: var(--gris-1); line-height: 1.55;
+  }
+  .detail-body p { margin: 0 0 12px; font-size: 15px; }
+  .detail-body ol, .detail-body ul { margin: 0 0 12px; padding-left: 22px; }
+  .detail-body li { margin-bottom: 6px; }
+  .detail-body h4 { font-size: 15px; font-weight: 700; color: var(--gris-1); margin: 16px 0 6px; }
+
+  /* ===================== FOOTER ===================== */
+  .doc-foot {
+    border-top: 1px solid var(--gris-4); margin-top: 50px; padding-top: 22px;
+    display: flex; justify-content: space-between; font-size: 13px; color: var(--gris-3);
+  }
+
+  /* ===================== RESPONSIVE ===================== */
+  @media (max-width: 720px) {
+    .doc-head, .doc-body { padding-left: 26px; padding-right: 26px; }
+    .doc-meta, .blocks, .blocks-3 { grid-template-columns: 1fr 1fr; }
+    .doc-head h1 { font-size: 33px; }
+  }
+  @media (max-width: 520px) {
+    .blocks-3 { grid-template-columns: 1fr; }
+  }
+  @media print {
+    body { background: #fff; }
+    .page { box-shadow: none; margin: 0; max-width: none; border-radius: 0; }
+    .progress { display: none; }
+    section, .blocks, .blocks-3, .tbl-wrap, .callout { break-inside: avoid; }
+  }
+
+  /* ---- Outer layout with sticky side nav ---- */
+  .page { margin: 0; }
+  .outer-layout {
+    max-width: 1160px;
+    margin: 40px auto 90px;
+    display: grid;
+    grid-template-columns: 200px minmax(0, 1fr);
+    gap: 24px;
+    padding: 0 20px;
+    align-items: start;
+  }
+  .side-nav {
+    position: sticky;
+    top: 28px;
+    max-height: calc(100vh - 56px);
+    overflow-y: auto;
+    background: var(--blanco);
+    border: 1px solid var(--gris-4);
+    border-radius: 8px;
+    padding: 20px 16px;
+    box-shadow: var(--sombra);
+    scrollbar-width: thin;
+  }
+  .sn-label { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--gris-3); margin: 0 0 10px; padding: 0 4px; }
+  .sn-item { display: flex; align-items: flex-start; gap: 7px; font-family: var(--tipo); font-size: 13px; color: var(--gris-2); text-decoration: none; padding: 6px 8px; border-radius: 5px; line-height: 1.3; transition: all .15s; margin-bottom: 2px; border: none; background: none; cursor: pointer; width: 100%; text-align: left; }
+  .sn-item:hover { color: var(--gris-1); background: var(--gris-5); }
+  .sn-num { font-size: 11px; font-weight: 700; color: var(--verde-osc); min-width: 16px; padding-top: 1px; flex-shrink: 0; }
+  html { scroll-behavior: smooth; }
+  @media (max-width: 880px) {
+    .outer-layout { grid-template-columns: 1fr; padding: 0 12px; }
+    .side-nav { display: none; }
+    .page { margin: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<div class="outer-layout">
+
+<nav class="side-nav" aria-label="Secciones">
+  <p class="sn-label">En esta guía</p>
+  <a class="sn-item" href="#introduccion"><span class="sn-num">01</span>Introducción</a>
+  <a class="sn-item" href="#estructura"><span class="sn-num">02</span>Estructura general</a>
+  <a class="sn-item" href="#bitacora-1"><span class="sn-num">03</span>Bitácora 1</a>
+  <a class="sn-item" href="#bitacora-2"><span class="sn-num">04</span>Bitácora 2</a>
+  <a class="sn-item" href="#bitacora-3"><span class="sn-num">05</span>Bitácora 3</a>
+  <a class="sn-item" href="#bitacora-4"><span class="sn-num">06</span>Bitácora 4</a>
+  <a class="sn-item" href="#formato"><span class="sn-num">07</span>Formato y estilo</a>
+  <a class="sn-item" href="#fuentes"><span class="sn-num">08</span>Manejo de fuentes</a>
+  <a class="sn-item" href="#errores"><span class="sn-num">09</span>Errores comunes</a>
+  <a class="sn-item" href="#tips"><span class="sn-num">10</span>Tips para el éxito</a>
+  <a class="sn-item" href="#preguntas"><span class="sn-num">11</span>Preguntas frecuentes</a>
+</nav>
+
+<article class="page">
+
+  <!-- ENCABEZADO -->
+  <header class="doc-head">
+    <div class="org">
+      Universidad de los Andes
+      <span>Ingeniería Química y de Alimentos</span>
+    </div>
+    <div class="badge">Guía · Proyecto de Operaciones Unitarias</div>
+    <h1>Guía de elaboración de bitácoras de cálculo</h1>
+    <p class="subtitle">Cómo documentar el diseño de un proceso químico con el rigor técnico que se espera en la industria.</p>
+    <div class="doc-meta">
+      <div><b>Curso</b>Proyecto de Operaciones Unitarias · IQYA-2031</div>
+      <div><b>Autor</b>Luis H. Reyes</div>
+      <div><b>Fecha</b>3 de junio de 2026</div>
+      <div><b>Lectura</b>Aproximadamente 20 minutos</div>
+    </div>
+  </header>
+
+  <div class="doc-body">
+
+    <!-- INTRO + TOC — siempre visible -->
+    <section id="s0">
+      <p class="lead">Las bitácoras de cálculo son documentos técnicos fundamentales en la práctica de la ingeniería química. En este curso desarrollarán 4 bitácoras parciales que documentarán el diseño completo de su planta de producción de pectina, culminando en un documento técnico integral.</p>
+
+      <div class="toc">
+        <p class="toc-t">En esta guía</p>
+        <ol>
+          <li><a href="#introduccion">Introducción</a></li>
+          <li><a href="#estructura">Estructura general de una bitácora</a></li>
+          <li><a href="#bitacora-1">Bitácora 1: Diagramas y definición del proceso</a></li>
+          <li><a href="#bitacora-2">Bitácora 2: Manejo de sólidos y transporte de fluidos</a></li>
+          <li><a href="#bitacora-3">Bitácora 3: Agitación, mezclado e intercambiadores</a></li>
+          <li><a href="#bitacora-4">Bitácora 4: Procesos de separación</a></li>
+          <li><a href="#formato">Formato y estilo</a></li>
+          <li><a href="#fuentes">Manejo de fuentes y datos</a></li>
+          <li><a href="#errores">Errores comunes por evitar</a></li>
+          <li><a href="#tips">Tips para el éxito</a></li>
+          <li><a href="#preguntas">Preguntas frecuentes</a></li>
+        </ol>
+      </div>
+
+      <div class="callout callout--tip">
+        <span class="ic">i</span>
+        <div><b>Sobre esta guía</b><p>«Esta es una guía de proceso, no una lectura de clase. No hay quiz sobre este material.»</p></div>
+      </div>
+    </section>
+
+    <!-- 01. INTRODUCCIÓN -->
+    <section id="introduccion">
+      <div class="eyebrow">Por qué importan</div>
+      <h2 class="sec"><span class="secnum">1.</span> Introducción</h2>
+
+      <p>Las bitácoras de cálculo son documentos técnicos fundamentales en la práctica de la ingeniería química. En el contexto profesional, estas bitácoras sirven como:</p>
+
+      <div class="blocks">
+        <div class="block">
+          <b>Registro permanente</b>
+          <span>Documentación del proceso de diseño que queda como referencia a lo largo de la vida del proyecto.</span>
+        </div>
+        <div class="block">
+          <b>Documentación legal</b>
+          <span>Base para auditorías y certificaciones en entornos regulados.</span>
+        </div>
+        <div class="block">
+          <b>Herramienta de comunicación</b>
+          <span>Medio de comunicación efectiva entre equipos de ingeniería multidisciplinarios.</span>
+        </div>
+        <div class="block">
+          <b>Mejora continua</b>
+          <span>Base para la mejora continua de procesos y la optimización del diseño.</span>
+        </div>
+      </div>
+
+      <div class="callout callout--tip">
+        <span class="ic">i</span>
+        <div><b>Cuatro entregas este semestre</b><p>En este curso, desarrollarán <strong>4 bitácoras parciales</strong> que documentarán el diseño completo de su planta de producción de pectina, culminando en un documento técnico integral.</p></div>
+      </div>
+    </section>
+
+    <!-- 02. ESTRUCTURA GENERAL -->
+    <section id="estructura">
+      <div class="eyebrow">Anatomía de una bitácora</div>
+      <h2 class="sec"><span class="secnum">2.</span> Estructura general de una bitácora</h2>
+
+      <p>Cada bitácora debe contener las siguientes secciones:</p>
+
+      <h3 class="sub">Portada</h3>
+      <ul style="font-size:17px; margin: 0 0 20px; padding-left: 22px; line-height: 1.7;">
+        <li>Título del proyecto</li>
+        <li>Número de bitácora (1–4)</li>
+        <li>Nombres completos y código de los integrantes del equipo</li>
+        <li>Fecha de entrega</li>
+        <li>Logos institucionales</li>
+      </ul>
+
+      <h3 class="sub">Resumen ejecutivo (1 página máximo)</h3>
+      <ul style="font-size:17px; margin: 0 0 20px; padding-left: 22px; line-height: 1.7;">
+        <li>Objetivo de la bitácora</li>
+        <li>Alcance del diseño presentado</li>
+        <li>Resultados principales</li>
+        <li>Conclusiones clave</li>
+      </ul>
+
+      <h3 class="sub">Introducción</h3>
+      <ul style="font-size:17px; margin: 0 0 20px; padding-left: 22px; line-height: 1.7;">
+        <li>Contexto del proyecto</li>
+        <li>Objetivos específicos de esta etapa</li>
+        <li>Conexión con entregas anteriores (si aplica)</li>
+      </ul>
+
+      <h3 class="sub">Bases de diseño</h3>
+      <ul style="font-size:17px; margin: 0 0 20px; padding-left: 22px; line-height: 1.7;">
+        <li>Capacidad de producción</li>
+        <li>Especificaciones de materias primas</li>
+        <li>Especificaciones de productos</li>
+        <li>Condiciones de operación</li>
+        <li>Restricciones y consideraciones especiales</li>
+      </ul>
+
+      <h3 class="sub">Memoria de cálculo</h3>
+      <ul style="font-size:17px; margin: 0 0 20px; padding-left: 22px; line-height: 1.7;">
+        <li>Ecuaciones principales utilizadas (numeradas)</li>
+        <li>Variables de entrada con sus valores y fuentes</li>
+        <li>Resultados finales de cada cálculo</li>
+        <li>Justificación de supuestos y decisiones de diseño</li>
+        <li>Análisis de sensibilidad cuando sea relevante</li>
+      </ul>
+
+      <h3 class="sub">Resultados y especificaciones</h3>
+      <ul style="font-size:17px; margin: 0 0 20px; padding-left: 22px; line-height: 1.7;">
+        <li>Tablas resumen de resultados</li>
+        <li>Especificaciones finales de equipos</li>
+        <li>Diagramas y esquemas relevantes</li>
+      </ul>
+
+      <h3 class="sub">Análisis y discusión</h3>
+      <ul style="font-size:17px; margin: 0 0 20px; padding-left: 22px; line-height: 1.7;">
+        <li>Interpretación de resultados</li>
+        <li>Comparación con valores típicos industriales</li>
+        <li>Identificación de cuellos de botella</li>
+        <li>Oportunidades de mejora</li>
+      </ul>
+
+      <h3 class="sub">Conclusiones</h3>
+      <ul style="font-size:17px; margin: 0 0 20px; padding-left: 22px; line-height: 1.7;">
+        <li>Logro de objetivos</li>
+        <li>Decisiones clave de diseño</li>
+        <li>Recomendaciones para siguientes etapas</li>
+      </ul>
+
+      <h3 class="sub">Referencias</h3>
+      <ul style="font-size:17px; margin: 0 0 20px; padding-left: 22px; line-height: 1.7;">
+        <li>Formato IEEE o APA consistente</li>
+        <li>Todas las fuentes citadas en el texto</li>
+        <li>Incluir datasheets y catálogos consultados</li>
+      </ul>
+
+      <h3 class="sub">Anexos</h3>
+      <ul style="font-size:17px; margin: 0 0 20px; padding-left: 22px; line-height: 1.7;">
+        <li>Desarrollo completo de cálculos (paso a paso)</li>
+        <li>Hojas de cálculo con fórmulas visibles</li>
+        <li>Código de programación documentado</li>
+        <li>Iteraciones y convergencia de métodos numéricos</li>
+        <li>Hojas de datos y catálogos consultados</li>
+      </ul>
+
+      <div class="callout callout--warn">
+        <span class="ic">!</span>
+        <div><b>Los anexos no reemplazan el cuerpo del documento</b><p>Los anexos <strong>no serán revisados con el mismo detalle</strong> que el cuerpo principal del documento. No incluyan información relevante para la bitácora en esa sección. Todo lo importante debe estar en la memoria de cálculo y en los resultados.</p></div>
+      </div>
+    </section>
+
+    <!-- 03. BITÁCORA 1 -->
+    <section id="bitacora-1">
+      <div class="eyebrow">Primera entrega</div>
+      <h2 class="sec"><span class="secnum">3.</span> Bitácora 1: Diagramas y definición del proceso</h2>
+
+      <h3 class="sub">Objetivos</h3>
+      <ul style="font-size:17px; margin: 0 0 20px; padding-left: 22px; line-height: 1.7;">
+        <li>Definir el alcance completo del proyecto</li>
+        <li>Establecer las bases de diseño</li>
+        <li>Presentar los diagramas de proceso</li>
+      </ul>
+
+      <h3 class="sub">Contenido requerido</h3>
+
+      <details>
+        <summary>Selección y justificación de materia prima</summary>
+        <div class="detail-body">
+          <ul>
+            <li>Análisis de disponibilidad en Colombia</li>
+            <li>Composición química detallada</li>
+            <li>Ventajas y desventajas</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>Definición del proceso</summary>
+        <div class="detail-body">
+          <ul>
+            <li>Descripción general del proceso</li>
+            <li>Justificación de la ruta seleccionada</li>
+            <li>Capacidad de producción objetivo</li>
+            <li>Balance de masa preliminar</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>Diagramas de ingeniería</summary>
+        <div class="detail-body">
+          <ul>
+            <li>Diagrama de bloques (PBD) completo</li>
+            <li>Lista de equipos principales</li>
+            <li>Nomenclatura y simbología utilizada</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>Plan de trabajo</summary>
+        <div class="detail-body">
+          <ul>
+            <li>Cronograma del proyecto</li>
+            <li>Distribución de responsabilidades</li>
+            <li>Identificación de información faltante</li>
+          </ul>
+        </div>
+      </details>
+
+      <h3 class="sub">Criterios de evaluación</h3>
+      <div class="tbl-wrap">
+        <table class="ou">
+          <thead>
+            <tr><th>Criterio</th><th>Peso</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Claridad en la definición del proyecto</td><td>25%</td></tr>
+            <tr><td>Calidad técnica de los diagramas</td><td>30%</td></tr>
+            <tr><td>Justificación de decisiones</td><td>25%</td></tr>
+            <tr><td>Presentación y formato</td><td>20%</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 04. BITÁCORA 2 -->
+    <section id="bitacora-2">
+      <div class="eyebrow">Segunda entrega</div>
+      <h2 class="sec"><span class="secnum">4.</span> Bitácora 2: Manejo de sólidos y transporte de fluidos</h2>
+
+      <h3 class="sub">Objetivos</h3>
+      <ul style="font-size:17px; margin: 0 0 20px; padding-left: 22px; line-height: 1.7;">
+        <li>Diseñar el sistema de preparación de materia prima</li>
+        <li>Dimensionar el sistema de transporte de fluidos</li>
+        <li>Seleccionar y especificar bombas</li>
+      </ul>
+
+      <h3 class="sub">Contenido requerido</h3>
+
+      <details>
+        <summary>Diagramas de ingeniería</summary>
+        <div class="detail-body">
+          <p>Diagrama de flujo (PFD) completo.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>Manejo de sólidos (si aplica al proceso)</summary>
+        <div class="detail-body">
+          <ul>
+            <li>Caracterización de la materia prima sólida</li>
+            <li>Distribución de tamaños objetivo</li>
+            <li>Selección del tipo de molino</li>
+            <li>Cálculos de potencia (Leyes de Rittinger, Kick, Bond)</li>
+            <li>Especificaciones del equipo</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>Sistema de tuberías</summary>
+        <div class="detail-body">
+          <ul>
+            <li>Velocidades de flujo recomendadas</li>
+            <li>Material de construcción</li>
+            <li>Pérdidas de presión:
+              <ul>
+                <li>Pérdidas por fricción (Darcy-Weisbach)</li>
+                <li>Pérdidas por accesorios</li>
+                <li>Perfil de presiones del sistema</li>
+              </ul>
+            </li>
+            <li>Factor de seguridad aplicado</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>Selección de bombas</summary>
+        <div class="detail-body">
+          <ul>
+            <li>Cálculo del cabezal total</li>
+            <li>Determinación del NPSH disponible y requerido</li>
+            <li>Selección de bomba de catálogo real</li>
+            <li>Punto de operación en la curva</li>
+            <li>Análisis de eficiencia</li>
+          </ul>
+        </div>
+      </details>
+
+      <h3 class="sub">Criterios de evaluación</h3>
+      <div class="tbl-wrap">
+        <table class="ou">
+          <thead>
+            <tr><th>Criterio</th><th>Peso</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Exactitud de cálculos</td><td>35%</td></tr>
+            <tr><td>Uso apropiado de correlaciones</td><td>20%</td></tr>
+            <tr><td>Selección justificada de equipos</td><td>25%</td></tr>
+            <tr><td>Calidad de diagramas técnicos</td><td>20%</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 05. BITÁCORA 3 -->
+    <section id="bitacora-3">
+      <div class="eyebrow">Tercera entrega</div>
+      <h2 class="sec"><span class="secnum">5.</span> Bitácora 3: Agitación, mezclado e intercambiadores</h2>
+
+      <h3 class="sub">Objetivos</h3>
+      <ul style="font-size:17px; margin: 0 0 20px; padding-left: 22px; line-height: 1.7;">
+        <li>Diseñar el sistema de agitación para fermentadores</li>
+        <li>Dimensionar la red de intercambiadores de calor</li>
+        <li>Optimizar la integración energética</li>
+      </ul>
+
+      <h3 class="sub">Contenido requerido</h3>
+
+      <details>
+        <summary>Sistema de agitación</summary>
+        <div class="detail-body">
+          <ul>
+            <li>Volumen y geometría del fermentador</li>
+            <li>Selección del tipo de impulsor</li>
+            <li>Cálculo del número de Reynolds</li>
+            <li>Determinación del número de potencia</li>
+            <li>Potencia requerida y motor</li>
+            <li>Tiempo de mezclado</li>
+            <li>Consideraciones para fermentación</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>Intercambiadores de calor</summary>
+        <div class="detail-body">
+          <ul>
+            <li>Balance de energía del proceso</li>
+            <li>Identificación de corrientes calientes y frías</li>
+            <li>Selección del tipo de intercambiador</li>
+            <li>Cálculo por método LMTD</li>
+            <li>Verificación por efectividad-NTU</li>
+            <li>Especificaciones finales</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>Integración energética</summary>
+        <div class="detail-body">
+          <ul>
+            <li>Oportunidades de recuperación de calor</li>
+            <li>Servicios auxiliares requeridos</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>Avances en el desarrollo del modelo en ASPEN</summary>
+        <div class="detail-body">
+          <p>Avances basados en lo desarrollado en la clase complementaria.</p>
+        </div>
+      </details>
+
+      <h3 class="sub">Criterios de evaluación</h3>
+      <div class="tbl-wrap">
+        <table class="ou">
+          <thead>
+            <tr><th>Criterio</th><th>Peso</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Diseño apropiado de sistema de agitación</td><td>25%</td></tr>
+            <tr><td>Correcta aplicación de métodos térmicos</td><td>25%</td></tr>
+            <tr><td>Integración energética</td><td>20%</td></tr>
+            <tr><td>Avances de ASPEN</td><td>10%</td></tr>
+            <tr><td>Documentación técnica</td><td>20%</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 06. BITÁCORA 4 -->
+    <section id="bitacora-4">
+      <div class="eyebrow">Cuarta entrega</div>
+      <h2 class="sec"><span class="secnum">6.</span> Bitácora 4: Procesos de separación</h2>
+
+      <h3 class="sub">Objetivos</h3>
+      <ul style="font-size:17px; margin: 0 0 20px; padding-left: 22px; line-height: 1.7;">
+        <li>Diseñar el sistema de filtración</li>
+        <li>Diseñar la torre de destilación principal</li>
+        <li>Integrar todos los sistemas del proceso</li>
+      </ul>
+
+      <h3 class="sub">Contenido requerido</h3>
+
+      <details>
+        <summary>Sistema de filtración</summary>
+        <div class="detail-body">
+          <ul>
+            <li>Selección del tipo de filtro</li>
+            <li>Cálculos de área de filtración</li>
+            <li>Ciclo de operación</li>
+            <li>Especificaciones del equipo</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>Torre de destilación</summary>
+        <div class="detail-body">
+          <ul>
+            <li>Datos de equilibrio líquido-vapor</li>
+            <li>Condiciones de alimentación</li>
+            <li>Especificaciones de productos</li>
+            <li>Método McCabe-Thiele completo</li>
+            <li>Número de etapas teóricas</li>
+            <li>Eficiencia y etapas reales</li>
+            <li>Diseño hidráulico de platos</li>
+            <li>Dimensiones de la torre</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>Integración del proceso</summary>
+        <div class="detail-body">
+          <ul>
+            <li>PFD final completo</li>
+            <li>Balance de masa global</li>
+            <li>Balance de energía global</li>
+            <li>Lista maestra de equipos</li>
+            <li>Estimación preliminar de costos (CAPEX)</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>Avances en el desarrollo del modelo en ASPEN</summary>
+        <div class="detail-body">
+          <p>Avances basados en lo desarrollado en la clase complementaria.</p>
+        </div>
+      </details>
+
+      <h3 class="sub">Criterios de evaluación</h3>
+      <div class="tbl-wrap">
+        <table class="ou">
+          <thead>
+            <tr><th>Criterio</th><th>Peso</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Complejidad del diseño de destilación</td><td>30%</td></tr>
+            <tr><td>Integración con etapas anteriores</td><td>25%</td></tr>
+            <tr><td>Viabilidad técnica</td><td>15%</td></tr>
+            <tr><td>Avances de ASPEN</td><td>10%</td></tr>
+            <tr><td>Calidad del documento</td><td>20%</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout--nota">
+        <span class="ic">i</span>
+        <div><b>Énfasis en destilación</b><p>La evaluación de la bitácora 4 pone mayor énfasis en el diseño de la torre de destilación, que representa el componente más complejo del proyecto.</p></div>
+      </div>
+    </section>
+
+    <!-- 07. FORMATO Y ESTILO -->
+    <section id="formato">
+      <div class="eyebrow">Presentación profesional</div>
+      <h2 class="sec"><span class="secnum">7.</span> Formato y estilo</h2>
+
+      <h3 class="sub">Formato del documento</h3>
+      <ul style="font-size:17px; margin: 0 0 20px; padding-left: 22px; line-height: 1.7;">
+        <li>Tamaño carta (Letter)</li>
+        <li>Márgenes de 2.5 cm en todos los lados</li>
+        <li>Times New Roman 12</li>
+        <li>Interlineado: 1.5 líneas</li>
+        <li>Páginas numeradas (inferior derecha)</li>
+      </ul>
+
+      <h3 class="sub">Ecuaciones</h3>
+      <ul style="font-size:17px; margin: 0 0 20px; padding-left: 22px; line-height: 1.7;">
+        <li>Numeradas consecutivamente: (1), (2), (3)…</li>
+        <li>Centradas en la página</li>
+        <li>Definir TODAS las variables después de cada ecuación</li>
+        <li>Incluir unidades en la definición</li>
+        <li>Las ecuaciones deben ser citadas previamente en el documento</li>
+      </ul>
+
+      <details>
+        <summary>Ejemplo de ecuación correctamente formateada</summary>
+        <div class="detail-body">
+          <div style="background:var(--papel);border-radius:8px;padding:16px 20px;margin-bottom:14px;">
+            <p style="text-align:center;font-family:monospace;font-size:16px;color:var(--gris-1);margin:0 0 12px">Re = ρvD / μ &nbsp;&nbsp;&nbsp; (1)</p>
+            <p style="font-weight:600;color:var(--gris-1);margin:0 0 8px">Donde:</p>
+            <ul style="margin:0;padding-left:20px;">
+              <li><strong>Re</strong> = Número de Reynolds (adimensional)</li>
+              <li><strong>ρ</strong> = Densidad del fluido (kg/m³)</li>
+              <li><strong>v</strong> = Velocidad del fluido (m/s)</li>
+              <li><strong>D</strong> = Diámetro de la tubería (m)</li>
+              <li><strong>μ</strong> = Viscosidad dinámica del fluido (Pa·s)</li>
+            </ul>
+          </div>
+        </div>
+      </details>
+
+      <h3 class="sub">Figuras y tablas</h3>
+      <ul style="font-size:17px; margin: 0 0 20px; padding-left: 22px; line-height: 1.7;">
+        <li>Numeradas consecutivamente</li>
+        <li>Título descriptivo</li>
+        <li>Fuente si no es propia</li>
+        <li>Referenciadas en el texto</li>
+      </ul>
+
+      <h3 class="sub">Unidades</h3>
+      <ul style="font-size:17px; margin: 0 0 20px; padding-left: 22px; line-height: 1.7;">
+        <li>Sistema Internacional (SI) preferentemente</li>
+        <li>Consistencia en todo el documento</li>
+      </ul>
+
+      <h3 class="sub">Números y cifras significativas</h3>
+      <ul style="font-size:17px; margin: 0 0 20px; padding-left: 22px; line-height: 1.7;">
+        <li>3–4 cifras significativas para resultados finales, siempre dependiendo de las cifras de los datos originales</li>
+        <li>Notación científica para números muy grandes o pequeños</li>
+      </ul>
+
+      <h3 class="sub">Declaración de uso de IA generativa</h3>
+      <p>Cada entrega debe incluir una sección al final donde se declare el uso de herramientas de IA generativa, según lo establecido en el programa del curso (Escala AIAS). La declaración debe especificar:</p>
+      <ul style="font-size:17px; margin: 0 0 20px; padding-left: 22px; line-height: 1.7;">
+        <li>Herramientas utilizadas (ej. ChatGPT, Claude, Copilot)</li>
+        <li>Propósito del uso (ej. generación de ideas, revisión de redacción, verificación de cálculos)</li>
+        <li>Cómo se evaluaron críticamente los resultados generados por la IA</li>
+      </ul>
+
+      <h3 class="sub">Extensión</h3>
+      <div class="callout callout--warn">
+        <span class="ic">!</span>
+        <div><b>Máximo 12 páginas</b><p>La máxima extensión permitida es de <strong>12 páginas</strong>, sin contar los anexos. Recuerden que los anexos no serán revisados con el mismo detalle, así que no incluyan información relevante para la bitácora en esa sección.</p></div>
+      </div>
+    </section>
+
+    <!-- 08. MANEJO DE FUENTES -->
+    <section id="fuentes">
+      <div class="eyebrow">Trazabilidad técnica</div>
+      <h2 class="sec"><span class="secnum">8.</span> Manejo de fuentes y datos</h2>
+
+      <div class="blocks-3">
+        <div class="block">
+          <b>Fuentes confiables</b>
+          <ul>
+            <li>Libros de texto reconocidos</li>
+            <li>Perry's Handbook</li>
+            <li>Artículos revisados por pares</li>
+            <li>Catálogos de fabricantes</li>
+            <li>Normas técnicas (ASME, API, etc.)</li>
+          </ul>
+        </div>
+        <div class="block">
+          <b>Citación de fuentes</b>
+          <ul>
+            <li>Citar TODAS las correlaciones utilizadas</li>
+            <li>Indicar origen de datos termodinámicos</li>
+            <li>Referenciar catálogos consultados</li>
+          </ul>
+        </div>
+        <div class="block">
+          <b>Manejo de incertidumbre</b>
+          <ul>
+            <li>Indicar cuando se hacen suposiciones</li>
+            <li>Justificar valores asumidos</li>
+            <li>Análisis de sensibilidad para parámetros críticos</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="callout callout--tip">
+        <span class="ic">i</span>
+        <div><b>Responsabilidad profesional</b><p>La documentación adecuada de fuentes no solo es una buena práctica académica, sino también una responsabilidad profesional que permite la verificación y reproducibilidad de los cálculos de ingeniería.</p></div>
+      </div>
+
+      <div class="callout callout--nota">
+        <span class="ic">i</span>
+        <div><b>Calidad de las fuentes</b><p>Recuerda que la calidad de tus fuentes afecta directamente la confiabilidad de tu diseño. Siempre prioriza fuentes reconocidas en la industria y la academia, y documenta completamente el origen de todos los datos utilizados en tus cálculos.</p></div>
+      </div>
+    </section>
+
+    <!-- 09. ERRORES COMUNES -->
+    <section id="errores">
+      <div class="eyebrow">Qué no hacer</div>
+      <h2 class="sec"><span class="secnum">9.</span> Errores comunes por evitar</h2>
+
+      <div class="tbl-wrap">
+        <table class="ou">
+          <thead>
+            <tr><th>Error</th><th style="color:#DC2626">Incorrecto</th><th style="color:var(--verde-osc)">Correcto</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Cálculos sin contexto</td><td>Presentar solo números</td><td>Explicar el propósito de cada cálculo</td></tr>
+            <tr><td>Unidades inconsistentes</td><td>Mezclar sistemas de unidades</td><td>Verificar dimensionalmente en cada paso</td></tr>
+            <tr><td>Resultados no realistas</td><td>Velocidades de 50 m/s en tuberías</td><td>Comparar con valores industriales típicos</td></tr>
+            <tr><td>Falta de iteración</td><td>Asumir valores sin verificar</td><td>Mostrar proceso iterativo cuando aplique</td></tr>
+            <tr><td>Diagramas incompletos</td><td>PFD sin información de flujos</td><td>Incluir toda la información relevante</td></tr>
+            <tr><td>Referencias inadecuadas</td><td>«Dato de internet»</td><td>Fuente específica con fecha de acceso</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout--warn">
+        <span class="ic">!</span>
+        <div><b>Los errores más costosos</b><p>Los errores más graves en las bitácoras de cálculo suelen estar relacionados con <strong>inconsistencias en las unidades</strong> y <strong>resultados no realistas</strong> que no son identificados por el equipo. Siempre verifica la coherencia física de tus resultados.</p></div>
+      </div>
+    </section>
+
+    <!-- 10. TIPS PARA EL ÉXITO -->
+    <section id="tips">
+      <div class="eyebrow">Buenas prácticas</div>
+      <h2 class="sec"><span class="secnum">10.</span> Tips para el éxito</h2>
+
+      <div class="blocks">
+        <div class="block">
+          <b>Antes de empezar</b>
+          <ul>
+            <li>Revisar ejemplos de bitácoras profesionales</li>
+            <li>Distribuir trabajo equitativamente</li>
+            <li>Establecer formato común desde el inicio</li>
+            <li>Crear plantilla para mantener consistencia</li>
+          </ul>
+        </div>
+        <div class="block">
+          <b>Durante el desarrollo</b>
+          <ul>
+            <li>Documentar MIENTRAS se calcula, no después</li>
+            <li>Guardar versiones intermedias</li>
+            <li>Revisar unidades constantemente</li>
+            <li>Comparar resultados con valores esperados</li>
+          </ul>
+        </div>
+        <div class="block">
+          <b>Antes de entregar</b>
+          <ul>
+            <li>Revisión cruzada entre miembros del equipo</li>
+            <li>Verificar que todas las figuras/tablas estén referenciadas</li>
+            <li>Correr spell-check y revisar gramática</li>
+            <li>Imprimir y revisar formato final</li>
+          </ul>
+        </div>
+        <div class="block">
+          <b>Para la retroalimentación</b>
+          <ul>
+            <li>Preparar lista de dudas específicas</li>
+            <li>Llevar cálculos organizados</li>
+            <li>Identificar áreas problemáticas</li>
+            <li>Tomar notas de las sugerencias</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="callout callout--tip">
+        <span class="ic">i</span>
+        <div><b>Clave del éxito</b><p>La clave para una bitácora de cálculo exitosa es la <strong>organización meticulosa</strong> y la <strong>documentación continua</strong> durante todo el proceso de diseño, no como una tarea posterior.</p></div>
+      </div>
+    </section>
+
+    <!-- 11. PREGUNTAS FRECUENTES -->
+    <section id="preguntas">
+      <div class="eyebrow">Consultas frecuentes</div>
+      <h2 class="sec"><span class="secnum">11.</span> Preguntas frecuentes</h2>
+
+      <details>
+        <summary>¿Puedo incluir cálculos hechos en Excel?</summary>
+        <div class="detail-body">
+          <p>Sí, pero deben estar explicados en el texto principal. Incluir las hojas de cálculo como anexo.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>¿Qué tan detallados deben ser los cálculos?</summary>
+        <div class="detail-body">
+          <p>Suficientemente detallados para que otro ingeniero pueda reproducirlos sin información adicional.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>¿Puedo usar correlaciones diferentes a las vistas en clase?</summary>
+        <div class="detail-body">
+          <p>Sí, siempre que estén bien justificadas y sean de fuentes confiables.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>¿Es necesario incluir cálculos que no convergieron?</summary>
+        <div class="detail-body">
+          <p>Sí, brevemente, explicando por qué no funcionaron y qué alternativa se usó.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>¿Cómo manejo datos confidenciales de empresas?</summary>
+        <div class="detail-body">
+          <p>Indicar que son «basados en datos industriales» y citar apropiadamente.</p>
+        </div>
+      </details>
+
+      <div class="callout callout--nota">
+        <span class="ic">i</span>
+        <div><b>Preparación profesional</b><p>Recuerda que estas bitácoras son una preparación para tu futuro profesional. La habilidad de documentar adecuadamente cálculos de ingeniería es fundamental en la industria y será evaluada en tu desempeño laboral.</p></div>
+      </div>
+    </section>
+
+    <footer class="doc-foot">
+      <span>Luis H. Reyes · Universidad de los Andes</span>
+      <span>Proyecto de Operaciones Unitarias · IQYA-2031 · 2026-20</span>
+    </footer>
+
+  </div>
+</article>
+
+</div>
+
+<script>
+(function () {
+  /* ---- Barra de progreso de lectura ---- */
+  var bar = document.getElementById('progress');
+  function onScroll() {
+    var h = document.documentElement;
+    var max = h.scrollHeight - h.clientHeight;
+    bar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+})();
+
+</script>
+
+</body>
+</html>

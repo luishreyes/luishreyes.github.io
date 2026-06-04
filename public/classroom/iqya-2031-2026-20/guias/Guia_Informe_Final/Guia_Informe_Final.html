@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía · Informe final · Proyecto de Operaciones Unitarias</title>
+<link rel="stylesheet" href="assets/deloitte.css">
+<style>
+  body {
+    margin: 0;
+    background: var(--gris-5);
+    font-family: var(--tipo);
+    color: var(--gris-1);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.62;
+  }
+
+  /* ---- Barra de progreso de lectura ---- */
+  .progress {
+    position: fixed; top: 0; left: 0; height: 4px; width: 0;
+    background: var(--verde); z-index: 200; transition: width .08s linear;
+  }
+
+  .page {
+    max-width: 940px;
+    margin: 40px auto 90px;
+    background: var(--blanco);
+    box-shadow: var(--sombra);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  /* ===================== ENCABEZADO ===================== */
+  .doc-head {
+    background: var(--papel);
+    border-bottom: 5px solid var(--verde);
+    padding: 46px 64px 40px;
+    position: relative;
+  }
+  .doc-head .org {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    font-size: 14px; font-weight: 700; letter-spacing: .03em; color: var(--gris-1);
+  }
+  .doc-head .org span { color: var(--gris-3); font-weight: 600; }
+  .doc-head .badge {
+    display: inline-block; background: var(--verde); color: #fff;
+    font-size: 13px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+    padding: 6px 14px; border-radius: 999px; margin: 28px 0 18px; white-space: nowrap;
+  }
+  .doc-head h1 { font-size: 43px; line-height: 1.1; margin: 0 0 10px; letter-spacing: -.015em; max-width: 22ch; }
+  .doc-head .subtitle { font-size: 20px; color: var(--gris-2); margin: 0; font-weight: 500; max-width: 52ch; }
+  .doc-meta {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px;
+    margin-top: 34px; padding-top: 26px; border-top: 1px solid var(--gris-4);
+  }
+  .doc-meta div { font-size: 15px; color: var(--gris-2); }
+  .doc-meta b { display: block; color: var(--gris-1); font-size: 16px; font-weight: 700; margin-bottom: 2px; }
+
+  /* ===================== CUERPO ===================== */
+  .doc-body { padding: 8px 64px 60px; }
+  .doc-body section { padding-top: 46px; scroll-margin-top: 24px; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--verde-osc); margin-bottom: 12px;
+  }
+  .eyebrow::before { content: ""; width: 26px; height: 4px; background: var(--verde); border-radius: 2px; }
+  h2.sec { font-size: 30px; line-height: 1.18; margin: 0 0 18px; letter-spacing: -.01em; }
+  h2.sec .secnum { color: var(--verde); font-weight: 700; }
+  h3.sub { font-size: 21px; margin: 34px 0 10px; letter-spacing: -.005em; }
+  .doc-body p { font-size: 17px; color: var(--gris-1); margin: 0 0 16px; text-wrap: pretty; }
+  .lead { font-size: 20px; color: var(--gris-2); line-height: 1.55; font-weight: 400; }
+  .lead b { color: var(--gris-1); font-weight: 600; }
+
+  /* ---- Índice / sumario ---- */
+  .toc {
+    background: var(--papel); border-radius: 8px; padding: 26px 30px;
+    margin-top: 30px; border-left: 5px solid var(--verde);
+  }
+  .toc .toc-t { font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--gris-2); margin: 0 0 14px; }
+  .toc ol { margin: 0; padding: 0; list-style: none; counter-reset: toc; display: grid; gap: 9px; }
+  .toc li { counter-increment: toc; }
+  .toc a {
+    display: flex; align-items: baseline; gap: 14px; text-decoration: none;
+    color: var(--gris-1); font-size: 16.5px; font-weight: 600; padding: 4px 0;
+    border-bottom: 1px solid transparent; transition: color .18s ease; cursor: pointer;
+  }
+  .toc a::before { content: counter(toc, decimal-leading-zero); color: var(--verde-osc); font-weight: 700; font-size: 14px; min-width: 26px; }
+  .toc a:hover { color: var(--verde-osc); }
+
+  /* ---- Blocks / cards ---- */
+  .blocks { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin: 22px 0 6px; }
+  .blocks-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 22px 0 6px; }
+  .block {
+    background: var(--papel); border-radius: 8px; padding: 22px 24px;
+    border-top: 5px solid var(--verde); display: flex; flex-direction: column; gap: 6px;
+  }
+  .block .bn { font-size: 12px; font-weight: 700; color: var(--verde-osc); letter-spacing: .08em; }
+  .block b { font-size: 18px; line-height: 1.2; }
+  .block span { font-size: 14.5px; color: var(--gris-2); line-height: 1.45; }
+  .block ul { font-size: 14.5px; color: var(--gris-2); line-height: 1.45; margin: 4px 0 0; padding-left: 18px; }
+  .block ul li { margin-bottom: 4px; }
+  .block-full { grid-column: 1 / -1; }
+
+  /* ===================== CITA / PULL-QUOTE ===================== */
+  blockquote.pull {
+    margin: 30px 0; padding: 34px 38px 30px 40px; position: relative;
+    background: var(--gris-1); color: #fff; border-radius: 8px; border-left: 8px solid var(--verde);
+  }
+  blockquote.pull p { font-size: 21px; line-height: 1.5; color: #fff; margin: 0 0 14px; font-weight: 500; }
+  blockquote.pull p:last-child { margin-bottom: 0; }
+  blockquote.pull .qmark {
+    position: absolute; top: 6px; left: 20px; font-size: 80px; line-height: 1;
+    color: var(--verde); font-family: Georgia, serif; opacity: .5;
+  }
+  blockquote.pull cite { display: block; font-style: normal; font-size: 14.5px; color: rgba(255,255,255,.6); margin-top: 16px; }
+  blockquote.pull cite b { color: var(--verde); font-weight: 600; }
+
+  /* ===================== TABLAS ===================== */
+  .tbl-wrap { margin: 0 0 8px; overflow-x: auto; border-radius: 8px; }
+  table.ou { width: 100%; border-collapse: collapse; font-size: 15px; min-width: 560px; }
+  table.ou th, table.ou td { text-align: left; padding: 14px 16px; border-bottom: 1px solid var(--gris-4); vertical-align: top; line-height: 1.4; }
+  table.ou thead th { background: var(--gris-1); color: #fff; font-weight: 700; font-size: 13.5px; letter-spacing: .02em; }
+  table.ou thead th:first-child { border-top-left-radius: 6px; }
+  table.ou thead th:last-child { border-top-right-radius: 6px; }
+  table.ou td:first-child { font-weight: 700; color: var(--gris-1); width: 30%; }
+  table.ou .mag { color: var(--verde-osc); font-weight: 600; }
+  table.ou tbody tr:nth-child(even) { background: var(--papel); }
+  table.ou tbody tr:last-child td { border-bottom: none; }
+
+  /* ===================== CALLOUTS ===================== */
+  .callout {
+    display: grid; grid-template-columns: 42px 1fr; gap: 18px;
+    border-radius: 8px; padding: 20px 24px; margin: 24px 0; align-items: start;
+  }
+  .callout .ic {
+    width: 42px; height: 42px; border-radius: 50%; display: inline-flex;
+    align-items: center; justify-content: center; font-size: 21px; font-weight: 700;
+  }
+  .callout > div > b { display: block; font-size: 15.5px; margin-bottom: 4px; }
+  .callout p { font-size: 15.5px; margin: 0; color: var(--gris-1); line-height: 1.5; }
+  .callout p b { display: inline; color: inherit; font-size: inherit; }
+  .callout--nota { background: var(--teal-claro); }
+  .callout--nota .ic { background: var(--teal); color: #fff; }
+  .callout--nota b { color: var(--teal); }
+  .callout--tip { background: var(--verde-claro); }
+  .callout--tip .ic { background: var(--verde); color: #fff; }
+  .callout--tip b { color: var(--verde-osc); }
+  .callout--warn { background: #FEF2F2; }
+  .callout--warn .ic { background: #DC2626; color: #fff; }
+  .callout--warn b { color: #991B1B; }
+
+  /* ===================== COLLAPSIBLES ===================== */
+  details { margin: 18px 0; }
+  details summary {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 14px 18px; border-radius: 8px; background: var(--papel);
+    border: 1px solid var(--gris-4); cursor: pointer; list-style: none;
+    font-size: 15.5px; font-weight: 600; color: var(--gris-1);
+    transition: background .15s;
+  }
+  details summary::-webkit-details-marker { display: none; }
+  details summary::after { content: "+"; font-size: 18px; color: var(--verde); font-weight: 700; }
+  details[open] summary::after { content: "−"; }
+  details summary:hover { background: var(--gris-5); }
+  details[open] summary { border-radius: 8px 8px 0 0; border-bottom-color: transparent; }
+  details .detail-body {
+    padding: 18px 22px 20px; border: 1px solid var(--gris-4); border-top: none;
+    border-radius: 0 0 8px 8px; background: var(--blanco);
+    font-size: 15px; color: var(--gris-1); line-height: 1.55;
+  }
+  .detail-body p { margin: 0 0 12px; font-size: 15px; }
+  .detail-body ol, .detail-body ul { margin: 0 0 12px; padding-left: 22px; }
+  .detail-body li { margin-bottom: 6px; }
+  .detail-body h4 { font-size: 15px; font-weight: 700; color: var(--gris-1); margin: 16px 0 6px; }
+
+  /* ===================== FOOTER ===================== */
+  .doc-foot {
+    border-top: 1px solid var(--gris-4); margin-top: 50px; padding-top: 22px;
+    display: flex; justify-content: space-between; font-size: 13px; color: var(--gris-3);
+  }
+
+  /* ===================== RESPONSIVE ===================== */
+  @media (max-width: 720px) {
+    .doc-head, .doc-body { padding-left: 26px; padding-right: 26px; }
+    .doc-meta, .blocks, .blocks-3 { grid-template-columns: 1fr 1fr; }
+    .doc-head h1 { font-size: 33px; }
+  }
+  @media (max-width: 520px) {
+    .blocks-3 { grid-template-columns: 1fr; }
+  }
+  @media print {
+    body { background: #fff; }
+    .page { box-shadow: none; margin: 0; max-width: none; border-radius: 0; }
+    .progress { display: none; }
+    section, .blocks, .blocks-3, .tbl-wrap, blockquote.pull, .callout { break-inside: avoid; }
+  }
+
+  /* ---- Outer layout with sticky side nav ---- */
+  .page { margin: 0; }
+  .outer-layout {
+    max-width: 1160px;
+    margin: 40px auto 90px;
+    display: grid;
+    grid-template-columns: 200px minmax(0, 1fr);
+    gap: 24px;
+    padding: 0 20px;
+    align-items: start;
+  }
+  .side-nav {
+    position: sticky;
+    top: 28px;
+    max-height: calc(100vh - 56px);
+    overflow-y: auto;
+    background: var(--blanco);
+    border: 1px solid var(--gris-4);
+    border-radius: 8px;
+    padding: 20px 16px;
+    box-shadow: var(--sombra);
+    scrollbar-width: thin;
+  }
+  .sn-label { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--gris-3); margin: 0 0 10px; padding: 0 4px; }
+  .sn-item { display: flex; align-items: flex-start; gap: 7px; font-family: var(--tipo); font-size: 13px; color: var(--gris-2); text-decoration: none; padding: 6px 8px; border-radius: 5px; line-height: 1.3; transition: all .15s; margin-bottom: 2px; border: none; background: none; cursor: pointer; width: 100%; text-align: left; }
+  .sn-item:hover { color: var(--gris-1); background: var(--gris-5); }
+  .sn-num { font-size: 11px; font-weight: 700; color: var(--verde-osc); min-width: 16px; padding-top: 1px; flex-shrink: 0; }
+  html { scroll-behavior: smooth; }
+  @media (max-width: 880px) {
+    .outer-layout { grid-template-columns: 1fr; padding: 0 12px; }
+    .side-nav { display: none; }
+    .page { margin: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<div class="outer-layout">
+
+<nav class="side-nav" aria-label="Secciones">
+  <p class="sn-label">En esta guía</p>
+  <a class="sn-item" href="#introduccion"><span class="sn-num">01</span>Introducción</a>
+  <a class="sn-item" href="#diferencias"><span class="sn-num">02</span>Bitácoras vs Documento final</a>
+  <a class="sn-item" href="#estructura"><span class="sn-num">03</span>Estructura del documento</a>
+  <a class="sn-item" href="#formato"><span class="sn-num">04</span>Formato y estilo</a>
+  <a class="sn-item" href="#hojas-especificacion"><span class="sn-num">05</span>Hojas de especificación</a>
+  <a class="sn-item" href="#evaluacion"><span class="sn-num">06</span>Criterios de evaluación</a>
+  <a class="sn-item" href="#errores"><span class="sn-num">07</span>Errores comunes</a>
+  <a class="sn-item" href="#sustentacion"><span class="sn-num">08</span>Preparación sustentación</a>
+  <a class="sn-item" href="#preguntas"><span class="sn-num">09</span>Preguntas frecuentes</a>
+</nav>
+
+<article class="page">
+
+  <!-- ENCABEZADO -->
+  <header class="doc-head">
+    <div class="org">
+      Universidad de los Andes
+      <span>Ingeniería Química y de Alimentos</span>
+    </div>
+    <div class="badge">Guía · Proyecto de Operaciones Unitarias</div>
+    <h1>Guía de elaboración del informe final</h1>
+    <p class="subtitle">Cómo transformar las cuatro bitácoras parciales en un documento técnico integrado y profesional.</p>
+    <div class="doc-meta">
+      <div><b>Curso</b>Proyecto de Operaciones Unitarias · IQYA-2031</div>
+      <div><b>Autor</b>Luis H. Reyes</div>
+      <div><b>Fecha</b>3 de junio de 2026</div>
+      <div><b>Lectura</b>Aproximadamente 15 minutos</div>
+    </div>
+  </header>
+
+  <div class="doc-body">
+
+    <!-- INTRO + TOC (siempre visible) -->
+    <section id="s0">
+      <p class="lead">El documento final representa la culminación del trabajo semestral y constituye un reporte técnico integral del diseño de la planta de producción. A diferencia de las bitácoras parciales, este documento debe presentar el proyecto como un todo coherente, integrando y actualizando los diseños desarrollados durante el semestre.</p>
+
+      <div class="toc">
+        <p class="toc-t">En esta guía</p>
+        <ol>
+          <li><a href="#introduccion">Introducción</a></li>
+          <li><a href="#diferencias">Diferencias entre bitácoras y documento final</a></li>
+          <li><a href="#estructura">Estructura del documento final</a></li>
+          <li><a href="#formato">Formato y estilo</a></li>
+          <li><a href="#hojas-especificacion">Hojas de especificación de equipos</a></li>
+          <li><a href="#evaluacion">Criterios de evaluación</a></li>
+          <li><a href="#errores">Errores comunes por evitar</a></li>
+          <li><a href="#sustentacion">Preparación para la sustentación</a></li>
+          <li><a href="#preguntas">Preguntas frecuentes</a></li>
+        </ol>
+      </div>
+
+      <div class="callout callout--tip">
+        <span class="ic">i</span>
+        <div><b>Sobre esta guía</b><p>«Esta es una guía de proceso, no una lectura de clase. No hay quiz sobre este material.»</p></div>
+      </div>
+    </section>
+
+    <!-- 1. INTRODUCCIÓN -->
+    <section id="introduccion">
+      <div class="eyebrow">Contexto profesional</div>
+      <h2 class="sec"><span class="secnum">1.</span> Introducción</h2>
+
+      <p>El documento final representa la culminación del trabajo semestral y constituye un reporte técnico integral del diseño de la planta de producción. A diferencia de las bitácoras parciales, este documento debe presentar el proyecto como un todo coherente, integrando y actualizando los diseños desarrollados durante el semestre.</p>
+
+      <p>En el contexto profesional, este tipo de documento equivale a un «Design Report» o «Basis of Design Document», que sirve como referencia técnica principal para la construcción, operación y futuras modificaciones de una planta.</p>
+
+      <blockquote class="pull">
+        <span class="qmark">&ldquo;</span>
+        <p>«El documento final es su carta de presentación como ingenieros de proceso. Debe demostrar capacidad técnica, pensamiento crítico y profesionalismo en la documentación.»</p>
+      </blockquote>
+    </section>
+
+    <!-- 2. DIFERENCIAS -->
+    <section id="diferencias">
+      <div class="eyebrow">No es la unión de las bitácoras</div>
+      <h2 class="sec"><span class="secnum">2.</span> Diferencias entre bitácoras y documento final</h2>
+
+      <p>Es fundamental comprender que el documento final <strong>no</strong> es simplemente la unión de las cuatro bitácoras. Debe ser un documento nuevo que presenta el diseño de manera integrada, incorporando las correcciones recibidas durante las retroalimentaciones.</p>
+
+      <div class="tbl-wrap">
+        <table class="ou">
+          <thead>
+            <tr><th>Aspecto</th><th>Bitácoras</th><th>Documento final</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Enfoque</td><td>Diseño por secciones</td><td>Integración del proceso completo</td></tr>
+            <tr><td>Cálculos</td><td>Desarrollo detallado paso a paso</td><td>Resumen de resultados principales</td></tr>
+            <tr><td>Diagramas</td><td>PBD, PFD parciales</td><td>PFD y P&amp;ID completos e integrados</td></tr>
+            <tr><td>Anexos</td><td>Cálculos completos de la sección</td><td>Todos los cálculos del proyecto</td></tr>
+            <tr><td>Extensión</td><td>12 páginas máximo por entrega</td><td>25 páginas máximo (sin anexos)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout--warn">
+        <span class="ic">!</span>
+        <div><b>Atención</b><p>El documento final <strong>NO</strong> es simplemente la unión de las cuatro bitácoras. Debe ser un documento nuevo que presenta el diseño de manera integrada, incorporando las correcciones recibidas durante las retroalimentaciones.</p></div>
+      </div>
+    </section>
+
+    <!-- 3. ESTRUCTURA -->
+    <section id="estructura">
+      <div class="eyebrow">De portada a anexos</div>
+      <h2 class="sec"><span class="secnum">3.</span> Estructura del documento final</h2>
+
+      <p>El documento final debe contener las siguientes secciones, organizadas de forma lógica y coherente:</p>
+
+      <h3 class="sub">Portada</h3>
+      <ul style="font-size:17px; margin: 0 0 20px; padding-left: 22px; line-height: 1.7;">
+        <li>Título del proyecto</li>
+        <li>Nombre de la empresa ficticia (opcional)</li>
+        <li>Nombres completos y códigos de los integrantes</li>
+        <li>Fecha de entrega</li>
+        <li>Logos institucionales</li>
+      </ul>
+
+      <h3 class="sub">Resumen ejecutivo (máximo 1 página)</h3>
+      <ul style="font-size:17px; margin: 0 0 20px; padding-left: 22px; line-height: 1.7;">
+        <li>Descripción breve del proyecto</li>
+        <li>Capacidad de producción y producto final</li>
+        <li>Principales resultados de diseño</li>
+        <li>Inversión estimada (CAPEX)</li>
+        <li>Conclusiones y recomendaciones clave</li>
+      </ul>
+
+      <div class="callout callout--tip">
+        <span class="ic">i</span>
+        <div><b>El resumen ejecutivo es lo primero que leerá el evaluador</b><p>Debe ser autosuficiente: alguien que lea solo esta página debe entender el alcance y los resultados principales del proyecto.</p></div>
+      </div>
+
+      <h3 class="sub">Tabla de contenido</h3>
+      <ul style="font-size:17px; margin: 0 0 20px; padding-left: 22px; line-height: 1.7;">
+        <li>Generada automáticamente</li>
+        <li>Incluir lista de figuras</li>
+        <li>Incluir lista de tablas</li>
+      </ul>
+
+      <h3 class="sub">Secciones principales del cuerpo</h3>
+
+      <details>
+        <summary>1. Introducción</summary>
+        <div class="detail-body">
+          <ul>
+            <li>Contexto del proyecto</li>
+            <li>Objetivos del diseño</li>
+            <li>Alcance y limitaciones</li>
+            <li>Estructura del documento</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>2. Bases de diseño</summary>
+        <div class="detail-body">
+          <ul>
+            <li>Capacidad de producción</li>
+            <li>Especificaciones de materia prima (composición, disponibilidad, costo)</li>
+            <li>Especificaciones de producto (pureza, normas aplicables)</li>
+            <li>Condiciones de operación generales</li>
+            <li>Horas de operación anuales</li>
+            <li>Factores de seguridad aplicados</li>
+            <li>Normas y estándares utilizados</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>3. Descripción del proceso</summary>
+        <div class="detail-body">
+          <ul>
+            <li>Descripción narrativa del proceso completo</li>
+            <li>Justificación de la ruta de proceso seleccionada</li>
+            <li>Condiciones de operación por sección</li>
+            <li>Variables críticas de control</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>4. Diagramas de proceso</summary>
+        <div class="detail-body">
+          <ul>
+            <li>Diagrama de bloques (PBD) final</li>
+            <li>Diagrama de flujo de proceso (PFD) completo con tablas de corrientes</li>
+            <li>Todos los diagramas deben seguir simbología ISA</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>5. Balances de materia y energía</summary>
+        <div class="detail-body">
+          <ul>
+            <li>Balance de masa global</li>
+            <li>Balance de masa por sección</li>
+            <li>Balance de energía global</li>
+            <li>Tabla resumen de corrientes principales</li>
+            <li>Diagrama Sankey (opcional)</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>6. Diseño de equipos</summary>
+        <div class="detail-body">
+          <h4>6.1 Sistema de preparación de materia prima</h4>
+          <ul>
+            <li>Especificaciones del molino (si aplica)</li>
+            <li>Equipos auxiliares</li>
+          </ul>
+          <h4>6.2 Sistema de transporte de fluidos</h4>
+          <ul>
+            <li>Resumen de tuberías principales</li>
+            <li>Especificaciones de bombas</li>
+            <li>Tabla de líneas</li>
+          </ul>
+          <h4>6.3 Sistema de fermentación</h4>
+          <ul>
+            <li>Dimensiones del fermentador</li>
+            <li>Sistema de agitación</li>
+            <li>Sistema de control de temperatura</li>
+          </ul>
+          <h4>6.4 Intercambiadores de calor</h4>
+          <ul>
+            <li>Especificaciones de cada intercambiador</li>
+            <li>Red de integración energética</li>
+            <li>Servicios auxiliares</li>
+          </ul>
+          <h4>6.5 Sistema de separación sólido/líquido</h4>
+          <ul>
+            <li>Especificaciones del filtro</li>
+            <li>Manejo de sólidos residuales</li>
+          </ul>
+          <h4>6.6 Sistema de destilación</h4>
+          <ul>
+            <li>Especificaciones de la columna</li>
+            <li>Número de etapas y eficiencia</li>
+            <li>Condensador y rehervidor</li>
+            <li>Sistema de reflujo</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>7. Lista de equipos</summary>
+        <div class="detail-body">
+          <ul>
+            <li>Tabla maestra con todos los equipos</li>
+            <li>Incluir: tag, descripción, material, dimensiones principales, capacidad, potencia</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>8. Servicios auxiliares</summary>
+        <div class="detail-body">
+          <ul>
+            <li>Requerimientos de vapor</li>
+            <li>Requerimientos de agua de enfriamiento</li>
+            <li>Requerimientos eléctricos</li>
+            <li>Tratamiento de efluentes</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>9. Estimación de costos</summary>
+        <div class="detail-body">
+          <ul>
+            <li>Metodología utilizada (factorial, correlaciones)</li>
+            <li>Costo de equipos principales</li>
+            <li>Factor de Lang o similar</li>
+            <li>CAPEX total estimado</li>
+            <li>Limitaciones de la estimación</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>10. Simulación en ASPEN</summary>
+        <div class="detail-body">
+          <ul>
+            <li>Descripción del modelo</li>
+            <li>Paquete termodinámico seleccionado y justificación</li>
+            <li>Comparación de resultados: cálculos manuales vs. simulación</li>
+            <li>Capturas de pantalla relevantes</li>
+            <li>Análisis de sensibilidad (si aplica)</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>11. Análisis y discusión</summary>
+        <div class="detail-body">
+          <ul>
+            <li>Evaluación del cumplimiento de especificaciones</li>
+            <li>Comparación con procesos industriales similares</li>
+            <li>Identificación de cuellos de botella</li>
+            <li>Oportunidades de mejora</li>
+            <li>Consideraciones de seguridad</li>
+            <li>Aspectos ambientales</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>12. Conclusiones y recomendaciones</summary>
+        <div class="detail-body">
+          <ul>
+            <li>Resumen de logros del diseño</li>
+            <li>Decisiones críticas tomadas</li>
+            <li>Recomendaciones para etapas posteriores</li>
+            <li>Áreas que requieren mayor desarrollo</li>
+          </ul>
+        </div>
+      </details>
+
+      <h3 class="sub">Referencias</h3>
+      <ul style="font-size:17px; margin: 0 0 20px; padding-left: 22px; line-height: 1.7;">
+        <li>Formato IEEE o APA consistente</li>
+        <li>Mínimo 15 referencias técnicas</li>
+        <li>Incluir libros, artículos, normas, catálogos</li>
+      </ul>
+
+      <h3 class="sub">Anexos</h3>
+      <div class="blocks">
+        <div class="block">
+          <b>Anexo A</b>
+          <span>Memoria de cálculo detallada por sección</span>
+        </div>
+        <div class="block">
+          <b>Anexo B</b>
+          <span>Hojas de especificación de equipos</span>
+        </div>
+        <div class="block">
+          <b>Anexo C</b>
+          <span>Archivos de simulación (descripción)</span>
+        </div>
+        <div class="block">
+          <b>Anexo D</b>
+          <span>Catálogos y datasheets consultados</span>
+        </div>
+        <div class="block block-full">
+          <b>Anexo E</b>
+          <span>Declaración de uso de IA generativa</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. FORMATO -->
+    <section id="formato">
+      <div class="eyebrow">Presentación profesional</div>
+      <h2 class="sec"><span class="secnum">4.</span> Formato y estilo</h2>
+
+      <h3 class="sub">Formato del documento</h3>
+      <ul style="font-size:17px; margin: 0 0 20px; padding-left: 22px; line-height: 1.7;">
+        <li>Tamaño carta (Letter)</li>
+        <li>Márgenes de 2.5 cm en todos los lados</li>
+        <li>Fuente Times New Roman 12</li>
+        <li>Interlineado 1.5 líneas</li>
+        <li>Páginas numeradas (inferior derecha)</li>
+        <li>Encabezado con título del proyecto y número de página</li>
+      </ul>
+
+      <h3 class="sub">Extensión</h3>
+      <ul style="font-size:17px; margin: 0 0 20px; padding-left: 22px; line-height: 1.7;">
+        <li>Máximo <strong>25 páginas</strong> para el cuerpo del documento (sin anexos)</li>
+        <li>Los anexos no tienen límite de extensión pero deben ser pertinentes</li>
+      </ul>
+
+      <h3 class="sub">Ecuaciones</h3>
+      <ul style="font-size:17px; margin: 0 0 20px; padding-left: 22px; line-height: 1.7;">
+        <li>Numeradas consecutivamente en todo el documento</li>
+        <li>En el cuerpo principal incluir solo las ecuaciones fundamentales</li>
+        <li>Desarrollo detallado en anexos</li>
+      </ul>
+
+      <h3 class="sub">Figuras y tablas</h3>
+      <ul style="font-size:17px; margin: 0 0 20px; padding-left: 22px; line-height: 1.7;">
+        <li>Numeradas por sección (ej. Figura 6.1, Tabla 4.2)</li>
+        <li>Título descriptivo</li>
+        <li>Fuente si no es propia</li>
+        <li>Calidad suficiente para lectura clara</li>
+      </ul>
+
+      <h3 class="sub">Diagramas de ingeniería</h3>
+      <ul style="font-size:17px; margin: 0 0 20px; padding-left: 22px; line-height: 1.7;">
+        <li>Tamaño mínimo A3 o que permita lectura clara</li>
+        <li>Pueden incluirse como páginas desplegables o en anexos</li>
+        <li>Deben seguir estándares ISA</li>
+        <li>Incluir leyenda de simbología</li>
+      </ul>
+
+      <h3 class="sub">Declaración de uso de IA generativa</h3>
+      <ul style="font-size:17px; margin: 0 0 20px; padding-left: 22px; line-height: 1.7;">
+        <li>Incluir como último anexo</li>
+        <li>Seguir los lineamientos de la Escala AIAS (Nivel 3)</li>
+        <li>Especificar: herramientas utilizadas, propósito del uso, evaluación crítica de resultados</li>
+      </ul>
+
+      <div class="callout callout--nota">
+        <span class="ic">i</span>
+        <div><b>Uso de IA generativa</b><p>El uso de herramientas de IA generativa está permitido bajo el Nivel 3 de la escala AIAS. Lo importante es la transparencia: documentar qué herramientas usaron, para qué las usaron y cómo evaluaron críticamente los resultados obtenidos.</p></div>
+      </div>
+    </section>
+
+    <!-- 5. HOJAS DE ESPECIFICACIÓN -->
+    <section id="hojas-especificacion">
+      <div class="eyebrow">Data sheets de equipos</div>
+      <h2 class="sec"><span class="secnum">5.</span> Hojas de especificación de equipos</h2>
+
+      <p>Cada equipo principal debe tener una hoja de especificación que incluya la siguiente información:</p>
+
+      <div class="blocks-3">
+        <div class="block">
+          <b>Información general</b>
+          <ul>
+            <li>Tag del equipo</li>
+            <li>Servicio/función</li>
+            <li>Cantidad</li>
+          </ul>
+        </div>
+        <div class="block">
+          <b>Condiciones de operación</b>
+          <ul>
+            <li>Temperatura de diseño y operación</li>
+            <li>Presión de diseño y operación</li>
+            <li>Fluido manejado</li>
+          </ul>
+        </div>
+        <div class="block">
+          <b>Características del equipo</b>
+          <ul>
+            <li>Tipo y modelo</li>
+            <li>Dimensiones principales</li>
+            <li>Material de construcción</li>
+            <li>Capacidad/potencia</li>
+            <li>Fabricante sugerido (si aplica)</li>
+          </ul>
+        </div>
+        <div class="block block-full">
+          <b>Notas adicionales</b>
+          <ul>
+            <li>Consideraciones especiales</li>
+            <li>Referencias a cálculos</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="callout callout--tip">
+        <span class="ic">i</span>
+        <div><b>Referencia de formato industrial</b><p>Las hojas de especificación son documentos estándar de la industria. Un buen ejercicio es buscar plantillas reales de «equipment datasheet» para usar como referencia de formato.</p></div>
+      </div>
+    </section>
+
+    <!-- 6. EVALUACIÓN -->
+    <section id="evaluacion">
+      <div class="eyebrow">Cómo se califica</div>
+      <h2 class="sec"><span class="secnum">6.</span> Criterios de evaluación</h2>
+
+      <p>El documento final será evaluado de acuerdo con los siguientes criterios y ponderaciones:</p>
+
+      <div class="tbl-wrap">
+        <table class="ou">
+          <thead>
+            <tr><th>Criterio</th><th style="width:18%">Porcentaje</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Integración y coherencia del diseño</td><td class="mag">20%</td></tr>
+            <tr><td>Calidad técnica de los cálculos</td><td class="mag">20%</td></tr>
+            <tr><td>Diagramas de ingeniería (PFD, P&amp;ID)</td><td class="mag">15%</td></tr>
+            <tr><td>Simulación en ASPEN y validación</td><td class="mag">15%</td></tr>
+            <tr><td>Análisis crítico y discusión</td><td class="mag">10%</td></tr>
+            <tr><td>Estimación de costos</td><td class="mag">10%</td></tr>
+            <tr><td>Presentación, formato y redacción</td><td class="mag">10%</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout--tip">
+        <span class="ic">i</span>
+        <div><b>Lo que más pesa</b><p>Noten que <strong>integración y coherencia</strong> y <strong>calidad técnica</strong> suman el 40% de la nota. El documento final se trata fundamentalmente de demostrar que el proceso funciona como un todo, no como partes aisladas.</p></div>
+      </div>
+    </section>
+
+    <!-- 7. ERRORES COMUNES -->
+    <section id="errores">
+      <div class="eyebrow">Qué no hacer</div>
+      <h2 class="sec"><span class="secnum">7.</span> Errores comunes por evitar</h2>
+
+      <div class="blocks">
+        <div class="block">
+          <b style="color:#DC2626">Falta de integración</b>
+          <p style="font-size:14.5px; color:var(--gris-2); margin:6px 0 0; line-height:1.45;"><span style="color:#DC2626;font-weight:600">Error:</span> Copiar y pegar secciones de bitácoras sin actualizar.</p>
+          <p style="font-size:14.5px; color:var(--gris-2); margin:4px 0 0; line-height:1.45;"><span style="color:var(--verde-osc);font-weight:600">Solución:</span> Reescribir con visión integrada del proceso.</p>
+        </div>
+        <div class="block">
+          <b style="color:#DC2626">Inconsistencias entre secciones</b>
+          <p style="font-size:14.5px; color:var(--gris-2); margin:6px 0 0; line-height:1.45;"><span style="color:#DC2626;font-weight:600">Error:</span> Flujos diferentes en PFD y balances.</p>
+          <p style="font-size:14.5px; color:var(--gris-2); margin:4px 0 0; line-height:1.45;"><span style="color:var(--verde-osc);font-weight:600">Solución:</span> Verificar coherencia de datos en todo el documento.</p>
+        </div>
+        <div class="block">
+          <b style="color:#DC2626">Diagramas incompletos</b>
+          <p style="font-size:14.5px; color:var(--gris-2); margin:6px 0 0; line-height:1.45;"><span style="color:#DC2626;font-weight:600">Error:</span> PFD sin tabla de corrientes.</p>
+          <p style="font-size:14.5px; color:var(--gris-2); margin:4px 0 0; line-height:1.45;"><span style="color:var(--verde-osc);font-weight:600">Solución:</span> Incluir toda la información requerida por estándares.</p>
+        </div>
+        <div class="block">
+          <b style="color:#DC2626">Ignorar retroalimentación</b>
+          <p style="font-size:14.5px; color:var(--gris-2); margin:6px 0 0; line-height:1.45;"><span style="color:#DC2626;font-weight:600">Error:</span> Mantener errores señalados en bitácoras.</p>
+          <p style="font-size:14.5px; color:var(--gris-2); margin:4px 0 0; line-height:1.45;"><span style="color:var(--verde-osc);font-weight:600">Solución:</span> Incorporar todas las correcciones recibidas.</p>
+        </div>
+        <div class="block">
+          <b style="color:#DC2626">Simulación desconectada</b>
+          <p style="font-size:14.5px; color:var(--gris-2); margin:6px 0 0; line-height:1.45;"><span style="color:#DC2626;font-weight:600">Error:</span> Resultados de ASPEN sin análisis comparativo.</p>
+          <p style="font-size:14.5px; color:var(--gris-2); margin:4px 0 0; line-height:1.45;"><span style="color:var(--verde-osc);font-weight:600">Solución:</span> Discutir diferencias entre cálculos manuales y simulación.</p>
+        </div>
+        <div class="block">
+          <b style="color:#DC2626">Costos sin sustento</b>
+          <p style="font-size:14.5px; color:var(--gris-2); margin:6px 0 0; line-height:1.45;"><span style="color:#DC2626;font-weight:600">Error:</span> Números sin metodología clara.</p>
+          <p style="font-size:14.5px; color:var(--gris-2); margin:4px 0 0; line-height:1.45;"><span style="color:var(--verde-osc);font-weight:600">Solución:</span> Documentar fuentes y método de estimación.</p>
+        </div>
+      </div>
+
+      <div class="callout callout--warn">
+        <span class="ic">!</span>
+        <div><b>El error más frecuente</b><p>El error más frecuente y costoso es <strong>no integrar</strong>. Si el documento final lee como cuatro bitácoras pegadas, la nota de «Integración y coherencia del diseño» (20%) se verá severamente afectada. Dediquen tiempo a reescribir cada sección pensando en el proceso completo.</p></div>
+      </div>
+    </section>
+
+    <!-- 8. SUSTENTACIÓN -->
+    <section id="sustentacion">
+      <div class="eyebrow">La presentación oral</div>
+      <h2 class="sec"><span class="secnum">8.</span> Preparación para la sustentación</h2>
+
+      <p>El documento final se complementa con una presentación oral tipo póster. Algunas recomendaciones:</p>
+
+      <ul style="font-size:17px; margin: 0 0 24px; padding-left: 22px; line-height: 1.7;">
+        <li>Conocer <strong>todos</strong> los aspectos del proyecto, no solo la sección que cada quien desarrolló</li>
+        <li>Preparar respuestas para preguntas típicas sobre decisiones de diseño</li>
+        <li>Tener claridad sobre las limitaciones y supuestos del diseño</li>
+        <li>Poder explicar diferencias entre cálculos manuales y simulación</li>
+        <li>Dominar los órdenes de magnitud de las variables principales</li>
+      </ul>
+
+      <div class="callout callout--nota">
+        <span class="ic">i</span>
+        <div><b>Dominio completo del proyecto</b><p>Durante la sustentación se evaluará que <strong>todos</strong> los miembros del equipo dominen el proyecto completo. No es suficiente conocer solo «tu parte». Cada persona debe ser capaz de responder preguntas sobre cualquier sección del diseño.</p></div>
+      </div>
+    </section>
+
+    <!-- 9. PREGUNTAS FRECUENTES -->
+    <section id="preguntas">
+      <div class="eyebrow">Consultas frecuentes</div>
+      <h2 class="sec"><span class="secnum">9.</span> Preguntas frecuentes</h2>
+
+      <details>
+        <summary>¿Debo incluir todos los cálculos de las bitácoras?</summary>
+        <div class="detail-body">
+          <p>En el cuerpo del documento solo los resultados principales. El desarrollo detallado va en anexos, actualizado según las correcciones recibidas.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>¿Puedo cambiar decisiones de diseño respecto a las bitácoras?</summary>
+        <div class="detail-body">
+          <p>Sí, siempre que esté justificado. El documento final debe presentar la mejor versión del diseño.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>¿Qué nivel de detalle debe tener el PFD?</summary>
+        <div class="detail-body">
+          <p>Debe incluir todos los equipos principales con sus tags, las corrientes numeradas con sus condiciones de operación (temperatura, presión, flujo), y una tabla de corrientes completa. También deben mostrarse los servicios auxiliares (vapor, agua de enfriamiento) y los lazos de control principales de manera simplificada.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>¿Cómo presento los resultados de ASPEN?</summary>
+        <div class="detail-body">
+          <p>Incluir capturas de pantalla del flowsheet, tablas de resultados principales y una comparación cuantitativa con los cálculos manuales.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>¿Es obligatorio el análisis económico?</summary>
+        <div class="detail-body">
+          <p>Sí, aunque sea una estimación de orden de magnitud (±30–50%). Utilizar metodologías reconocidas como factores de Lang o correlaciones de Turton.</p>
+        </div>
+      </details>
+    </section>
+
+    <footer class="doc-foot">
+      <span>Luis H. Reyes · Universidad de los Andes</span>
+      <span>Proyecto de Operaciones Unitarias · IQYA-2031 · 2026-20</span>
+    </footer>
+
+  </div>
+</article>
+
+</div>
+
+<script>
+(function () {
+  /* ---- Barra de progreso de lectura ---- */
+  var bar = document.getElementById('progress');
+  function onScroll() {
+    var h = document.documentElement;
+    var max = h.scrollHeight - h.clientHeight;
+    bar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+})();
+
+</script>
+
+</body>
+</html>

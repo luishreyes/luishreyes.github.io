@@ -439,6 +439,28 @@ export const pou202620Course: Course = {
       href: '/classroom/iqya-2031-2026-20/programa.html',
     },
     {
+      slug: 'trabajo-en-equipo',
+      title: 'Trabajo en equipo: guía práctica para el proyecto',
+      summary:
+        'Los fundamentos, herramientas y compromisos que construyen equipos que funcionan de verdad. Cubre el Proyecto Aristóteles de Google, bienestar y seguridad psicológica, normas y contrato de equipo, roles, matriz de evaluación, resolución de conflictos y plantillas de registro semanal.',
+      date: '2026-06-03',
+      readingMinutes: 35,
+      tags: ['trabajo en equipo', 'contrato', 'roles', 'normas', 'evaluación'],
+      category: 'guia',
+      href: '/classroom/iqya-2031-2026-20/guias/Guia_Trabajo_en_Equipo/Guia_Trabajo_en_Equipo.html',
+    },
+    {
+      slug: 'busqueda-bibliografica',
+      title: 'Búsqueda bibliográfica y herramientas de IA',
+      summary:
+        'Once plataformas para encontrar, analizar y sintetizar literatura científica — desde Google Scholar, Web of Science y Scopus hasta ChatGPT, Claude, Perplexity, SciSpace, Consensus y Connected Papers. Incluye estrategias de búsqueda avanzada y un flujo de trabajo recomendado para el proyecto.',
+      date: '2026-06-03',
+      readingMinutes: 35,
+      tags: ['búsqueda bibliográfica', 'herramientas de IA', 'Google Scholar', 'ChatGPT', 'bases de datos'],
+      category: 'guia',
+      href: '/classroom/iqya-2031-2026-20/guias/Guia_Busqueda_Bibliografica/Guia_Busqueda_Bibliografica.html',
+    },
+    {
       slug: 'reto-pectina',
       title: 'Guía del reto: la cáscara que vale más que la fruta',
       summary:
@@ -448,6 +470,28 @@ export const pou202620Course: Course = {
       tags: ['proyecto', 'reto', 'pectina', 'guía'],
       category: 'guia',
       href: '/classroom/iqya-2031-2026-20/reto-pectina.html',
+    },
+    {
+      slug: 'bitacoras-de-calculo',
+      title: 'Guía de elaboración de bitácoras de cálculo',
+      summary:
+        'Qué va en cada una de las cuatro bitácoras del proyecto y cómo se evalúan. Estructura general, contenidos requeridos por entrega, formato LaTeX/Word, fuentes de ingeniería, errores más comunes y consejos prácticos.',
+      date: '2026-06-03',
+      readingMinutes: 20,
+      tags: ['bitácoras', 'cálculo', 'formato', 'documentación'],
+      category: 'guia',
+      href: '/classroom/iqya-2031-2026-20/guias/Guia_Bitacoras_Calculo/Guia_Bitacoras_Calculo.html',
+    },
+    {
+      slug: 'informe-final',
+      title: 'Guía de elaboración del informe final',
+      summary:
+        'Estructura, formato y criterios de evaluación del documento final del proyecto. Cubre las diferencias con las bitácoras, los 12 capítulos del cuerpo del informe, las hojas de especificación de equipos, los errores más comunes y cómo preparar la sustentación.',
+      date: '2026-06-03',
+      readingMinutes: 15,
+      tags: ['informe final', 'documento', 'estructura', 'evaluación'],
+      category: 'guia',
+      href: '/classroom/iqya-2031-2026-20/guias/Guia_Informe_Final/Guia_Informe_Final.html',
     },
     {
       slug: 'lectura-01-operaciones-unitarias',

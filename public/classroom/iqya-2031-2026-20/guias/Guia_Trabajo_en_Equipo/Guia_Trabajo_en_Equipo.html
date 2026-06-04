@@ -1,0 +1,1528 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía: Trabajo en equipo · Proyecto de Operaciones Unitarias</title>
+<link rel="stylesheet" href="assets/deloitte.css">
+<style>
+  body {
+    margin: 0;
+    background: var(--gris-5);
+    font-family: var(--tipo);
+    color: var(--gris-1);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.62;
+  }
+
+  /* ---- Barra de progreso de lectura ---- */
+  .progress {
+    position: fixed; top: 0; left: 0; height: 4px; width: 0;
+    background: var(--verde); z-index: 200; transition: width .08s linear;
+  }
+
+  .page {
+    max-width: 940px;
+    margin: 40px auto 90px;
+    background: var(--blanco);
+    box-shadow: var(--sombra);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  /* ===================== ENCABEZADO ===================== */
+  .doc-head {
+    background: var(--papel);
+    border-bottom: 5px solid var(--verde);
+    padding: 46px 64px 40px;
+    position: relative;
+  }
+  .doc-head .org {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    font-size: 14px; font-weight: 700; letter-spacing: .03em; color: var(--gris-1);
+  }
+  .doc-head .org span { color: var(--gris-3); font-weight: 600; }
+  .doc-head .badge {
+    display: inline-block; background: var(--verde); color: #fff;
+    font-size: 13px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+    padding: 6px 14px; border-radius: 999px; margin: 28px 0 18px; white-space: nowrap;
+  }
+  .doc-head h1 { font-size: 43px; line-height: 1.1; margin: 0 0 10px; letter-spacing: -.015em; max-width: 22ch; }
+  .doc-head .subtitle { font-size: 20px; color: var(--gris-2); margin: 0; font-weight: 500; max-width: 52ch; }
+  .doc-meta {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px;
+    margin-top: 34px; padding-top: 26px; border-top: 1px solid var(--gris-4);
+  }
+  .doc-meta div { font-size: 15px; color: var(--gris-2); }
+  .doc-meta b { display: block; color: var(--gris-1); font-size: 16px; font-weight: 700; margin-bottom: 2px; }
+
+  /* ===================== CUERPO ===================== */
+  .doc-body { padding: 8px 64px 60px; }
+  .doc-body section { padding-top: 46px; scroll-margin-top: 24px; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--verde-osc); margin-bottom: 12px;
+  }
+  .eyebrow::before { content: ""; width: 26px; height: 4px; background: var(--verde); border-radius: 2px; }
+  h2.sec { font-size: 30px; line-height: 1.18; margin: 0 0 18px; letter-spacing: -.01em; }
+  h2.sec .secnum { color: var(--verde); font-weight: 700; }
+  h3.sub { font-size: 21px; margin: 34px 0 10px; letter-spacing: -.005em; }
+  .doc-body p { font-size: 17px; color: var(--gris-1); margin: 0 0 16px; text-wrap: pretty; }
+  .lead { font-size: 20px; color: var(--gris-2); line-height: 1.55; font-weight: 400; }
+  .lead b { color: var(--gris-1); font-weight: 600; }
+
+  /* ---- Índice / sumario ---- */
+  .toc {
+    background: var(--papel); border-radius: 8px; padding: 26px 30px;
+    margin-top: 30px; border-left: 5px solid var(--verde);
+  }
+  .toc .toc-t { font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--gris-2); margin: 0 0 14px; }
+  .toc ol { margin: 0; padding: 0; list-style: none; counter-reset: toc; display: grid; gap: 9px; }
+  .toc li { counter-increment: toc; }
+  .toc a {
+    display: flex; align-items: baseline; gap: 14px; text-decoration: none;
+    color: var(--gris-1); font-size: 16.5px; font-weight: 600; padding: 4px 0;
+    border-bottom: 1px solid transparent; transition: color .18s ease;
+  }
+  .toc a::before { content: counter(toc, decimal-leading-zero); color: var(--verde-osc); font-weight: 700; font-size: 14px; min-width: 26px; }
+  .toc a:hover { color: var(--verde-osc); }
+
+  /* ---- Blocks / cards ---- */
+  .blocks { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin: 22px 0 6px; }
+  .blocks-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 22px 0 6px; }
+  .block {
+    background: var(--papel); border-radius: 8px; padding: 22px 24px;
+    border-top: 5px solid var(--verde); display: flex; flex-direction: column; gap: 6px;
+  }
+  .block .bn { font-size: 12px; font-weight: 700; color: var(--verde-osc); letter-spacing: .08em; }
+  .block b { font-size: 18px; line-height: 1.2; }
+  .block span { font-size: 14.5px; color: var(--gris-2); line-height: 1.45; }
+  .block ul { font-size: 14.5px; color: var(--gris-2); line-height: 1.45; margin: 4px 0 0; padding-left: 18px; }
+  .block ul li { margin-bottom: 4px; }
+
+  /* Block con acento lateral (roles) */
+  .block-role {
+    background: var(--papel); border-radius: 8px; padding: 22px 24px;
+    display: flex; flex-direction: column; gap: 6px;
+    border-left: 5px solid var(--verde);
+    margin-bottom: 16px;
+  }
+  .block-role b { font-size: 18px; line-height: 1.2; }
+  .block-role ul { font-size: 15px; color: var(--gris-2); line-height: 1.5; margin: 8px 0 0; padding-left: 20px; }
+  .block-role ul li { margin-bottom: 5px; }
+
+  /* Badges pill */
+  .badge-pill {
+    display: inline-block; background: var(--verde-claro); color: var(--verde-osc);
+    font-size: 13px; font-weight: 700; letter-spacing: .05em;
+    padding: 5px 14px; border-radius: 999px; margin: 4px 4px 4px 0;
+    border: 1px solid var(--verde);
+  }
+  .badge-pill-green {
+    display: inline-block; background: #D1FAE5; color: #065F46;
+    font-size: 13px; font-weight: 700; letter-spacing: .05em;
+    padding: 5px 14px; border-radius: 999px; margin: 4px 4px 4px 0;
+    border: 1px solid #6EE7B7;
+  }
+
+  /* ===================== CITA / PULL-QUOTE ===================== */
+  blockquote.pull {
+    margin: 30px 0; padding: 34px 38px 30px 40px; position: relative;
+    background: var(--gris-1); color: #fff; border-radius: 8px; border-left: 8px solid var(--verde);
+  }
+  blockquote.pull p { font-size: 21px; line-height: 1.5; color: #fff; margin: 0 0 14px; font-weight: 500; }
+  blockquote.pull p:last-child { margin-bottom: 0; }
+  blockquote.pull .qmark {
+    position: absolute; top: 6px; left: 20px; font-size: 80px; line-height: 1;
+    color: var(--verde); font-family: Georgia, serif; opacity: .5;
+  }
+  blockquote.pull cite { display: block; font-style: normal; font-size: 14.5px; color: rgba(255,255,255,.6); margin-top: 16px; }
+  blockquote.pull cite b { color: var(--verde); font-weight: 600; }
+
+  /* ===================== TIMELINE ===================== */
+  .timeline { margin: 26px 0 10px; position: relative; padding-left: 6px; }
+  .timeline::before {
+    content: ""; position: absolute; left: 78px; top: 8px; bottom: 8px; width: 2px; background: var(--gris-4);
+  }
+  .tl-item { display: grid; grid-template-columns: 70px 1fr; gap: 26px; padding: 12px 0; position: relative; }
+  .tl-year { font-size: 21px; font-weight: 700; color: var(--verde-osc); text-align: right; line-height: 1.3; }
+  .tl-dot {
+    position: absolute; left: 73px; top: 18px; width: 13px; height: 13px; border-radius: 50%;
+    background: var(--verde); border: 3px solid var(--blanco); box-shadow: 0 0 0 1px var(--gris-4);
+  }
+  .tl-body { padding-left: 22px; }
+  .tl-body b { font-size: 16.5px; line-height: 1.25; display: block; }
+  .tl-body span { font-size: 14.5px; color: var(--gris-2); line-height: 1.45; }
+
+  /* ===================== TABLAS ===================== */
+  .tbl-wrap { margin: 0 0 8px; overflow-x: auto; border-radius: 8px; }
+  table.ou { width: 100%; border-collapse: collapse; font-size: 15px; min-width: 560px; }
+  table.ou th, table.ou td { text-align: left; padding: 14px 16px; border-bottom: 1px solid var(--gris-4); vertical-align: top; line-height: 1.4; }
+  table.ou thead th { background: var(--gris-1); color: #fff; font-weight: 700; font-size: 13.5px; letter-spacing: .02em; }
+  table.ou thead th:first-child { border-top-left-radius: 6px; }
+  table.ou thead th:last-child { border-top-right-radius: 6px; }
+  table.ou td:first-child { font-weight: 700; color: var(--gris-1); width: 30%; }
+  table.ou .mag { color: var(--verde-osc); font-weight: 600; }
+  table.ou tbody tr:nth-child(even) { background: var(--papel); }
+  table.ou tbody tr:last-child td { border-bottom: none; }
+  .tbl-cap { font-size: 13.5px; color: var(--gris-2); margin: 24px 0 11px; padding-left: 14px; border-left: 3px solid var(--verde); line-height: 1.5; }
+  .tbl-cap b { color: var(--gris-1); }
+
+  /* ===================== CALLOUTS ===================== */
+  .callout {
+    display: grid; grid-template-columns: 42px 1fr; gap: 18px;
+    border-radius: 8px; padding: 20px 24px; margin: 24px 0; align-items: start;
+  }
+  .callout .ic {
+    width: 42px; height: 42px; border-radius: 50%; display: inline-flex;
+    align-items: center; justify-content: center; font-size: 21px; font-weight: 700;
+  }
+  .callout > div > b { display: block; font-size: 15.5px; margin-bottom: 4px; }
+  .callout p { font-size: 15.5px; margin: 0; color: var(--gris-1); line-height: 1.5; }
+  .callout p b { display: inline; color: inherit; font-size: inherit; }
+  .callout--nota { background: var(--teal-claro); }
+  .callout--nota .ic { background: var(--teal); color: #fff; }
+  .callout--nota b { color: var(--teal); }
+  .callout--tip { background: var(--verde-claro); }
+  .callout--tip .ic { background: var(--verde); color: #fff; }
+  .callout--tip b { color: var(--verde-osc); }
+  .callout--warn { background: #FEF2F2; }
+  .callout--warn .ic { background: #DC2626; color: #fff; }
+  .callout--warn b { color: #991B1B; }
+
+  /* ===================== COLLAPSIBLES ===================== */
+  details { margin: 18px 0; }
+  details summary {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 14px 18px; border-radius: 8px; background: var(--papel);
+    border: 1px solid var(--gris-4); cursor: pointer; list-style: none;
+    font-size: 15.5px; font-weight: 600; color: var(--gris-1);
+    transition: background .15s;
+  }
+  details summary::-webkit-details-marker { display: none; }
+  details summary::after { content: "+"; font-size: 18px; color: var(--verde); font-weight: 700; }
+  details[open] summary::after { content: "−"; }
+  details summary:hover { background: var(--gris-5); }
+  details[open] summary { border-radius: 8px 8px 0 0; border-bottom-color: transparent; }
+  details .detail-body {
+    padding: 18px 22px 20px; border: 1px solid var(--gris-4); border-top: none;
+    border-radius: 0 0 8px 8px; background: var(--blanco);
+    font-size: 15px; color: var(--gris-1); line-height: 1.55;
+  }
+  .detail-body p { margin: 0 0 12px; font-size: 15px; }
+  .detail-body ol, .detail-body ul { margin: 0 0 12px; padding-left: 22px; }
+  .detail-body li { margin-bottom: 6px; }
+  .detail-body h4 { font-size: 15px; font-weight: 700; color: var(--gris-1); margin: 16px 0 6px; }
+  .detail-body table.ou { font-size: 13.5px; }
+  .detail-body .tbl-wrap { margin: 12px 0; }
+
+  /* ===================== VIDEO EMBED ===================== */
+  .video-wrap {
+    margin: 28px 0 8px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--gris-4);
+    box-shadow: var(--sombra);
+    aspect-ratio: 16 / 9;
+    background: #000;
+  }
+  .video-wrap iframe { width: 100%; height: 100%; display: block; border: none; }
+
+  /* ===================== FOOTER ===================== */
+  .doc-foot {
+    border-top: 1px solid var(--gris-4); margin-top: 50px; padding-top: 22px;
+    display: flex; justify-content: space-between; font-size: 13px; color: var(--gris-3);
+  }
+
+  /* ===================== RESPONSIVE ===================== */
+  @media (max-width: 720px) {
+    .doc-head, .doc-body { padding-left: 26px; padding-right: 26px; }
+    .doc-meta, .blocks, .blocks-3 { grid-template-columns: 1fr 1fr; }
+    .doc-head h1 { font-size: 33px; }
+  }
+  @media (max-width: 520px) {
+    .blocks-3 { grid-template-columns: 1fr; }
+  }
+  @media print {
+    body { background: #fff; }
+    .page { box-shadow: none; margin: 0; max-width: none; border-radius: 0; }
+    .progress { display: none; }
+    section, .blocks, .blocks-3, .timeline, .tbl-wrap, blockquote.pull, .callout { break-inside: avoid; }
+  }
+
+  /* ---- Outer layout with sticky side nav ---- */
+  .page { margin: 0; }
+  .outer-layout {
+    max-width: 1160px;
+    margin: 40px auto 90px;
+    display: grid;
+    grid-template-columns: 200px minmax(0, 1fr);
+    gap: 24px;
+    padding: 0 20px;
+    align-items: start;
+  }
+  .side-nav {
+    position: sticky;
+    top: 28px;
+    max-height: calc(100vh - 56px);
+    overflow-y: auto;
+    background: var(--blanco);
+    border: 1px solid var(--gris-4);
+    border-radius: 8px;
+    padding: 20px 16px;
+    box-shadow: var(--sombra);
+    scrollbar-width: thin;
+  }
+  .sn-label { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--gris-3); margin: 0 0 10px; padding: 0 4px; }
+  .sn-item { display: flex; align-items: flex-start; gap: 7px; font-family: var(--tipo); font-size: 13px; color: var(--gris-2); text-decoration: none; padding: 6px 8px; border-radius: 5px; line-height: 1.3; transition: all .15s; margin-bottom: 2px; border: none; background: none; cursor: pointer; width: 100%; text-align: left; }
+  .sn-item:hover { color: var(--gris-1); background: var(--gris-5); }
+  .sn-item.is-active { color: var(--verde-osc); background: var(--verde-claro); font-weight: 600; border-left: 3px solid var(--verde); padding-left: 5px; }
+  .sn-num { font-size: 11px; font-weight: 700; color: var(--verde-osc); min-width: 16px; padding-top: 1px; flex-shrink: 0; }
+  @media (max-width: 880px) {
+    .outer-layout { grid-template-columns: 1fr; padding: 0 12px; }
+    .side-nav { display: none; }
+    .page { margin: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<div class="outer-layout">
+
+<nav class="side-nav" aria-label="Secciones">
+  <p class="sn-label">En esta guía</p>
+  <a href="#s1" class="sn-item"><span class="sn-num">01</span>Fundamentos</a>
+  <a href="#s2" class="sn-item"><span class="sn-num">02</span>Proyecto Aristóteles</a>
+  <a href="#s3" class="sn-item"><span class="sn-num">03</span>Bienestar del equipo</a>
+  <a href="#s4" class="sn-item"><span class="sn-num">04</span>Organización</a>
+  <a href="#s5" class="sn-item"><span class="sn-num">05</span>Normas y compromisos</a>
+  <a href="#s6" class="sn-item"><span class="sn-num">06</span>Seguridad psicológica</a>
+  <a href="#s7" class="sn-item"><span class="sn-num">07</span>Resolución de conflictos</a>
+  <a href="#s8" class="sn-item"><span class="sn-num">08</span>Roles del proyecto</a>
+  <a href="#s9" class="sn-item"><span class="sn-num">09</span>Matriz de evaluación</a>
+  <a href="#s10" class="sn-item"><span class="sn-num">10</span>Entregables</a>
+  <a href="#s11" class="sn-item"><span class="sn-num">11</span>Documentación</a>
+  <a href="#s12" class="sn-item"><span class="sn-num">12</span>Integración profesional</a>
+  <a href="#s13" class="sn-item"><span class="sn-num">13</span>Reflexión final</a>
+  <a href="#s14" class="sn-item"><span class="sn-num">14</span>Plantillas</a>
+</nav>
+
+<article class="page">
+
+  <!-- ENCABEZADO -->
+  <header class="doc-head">
+    <div class="org">
+      Universidad de los Andes
+      <span>Ingeniería Química y de Alimentos</span>
+    </div>
+    <div class="badge">Guía · Proyecto de Operaciones Unitarias</div>
+    <h1>Trabajo en equipo: guía práctica para el proyecto</h1>
+    <p class="subtitle">Los fundamentos, herramientas y compromisos que construyen equipos que funcionan de verdad.</p>
+    <div class="doc-meta">
+      <div><b>Curso</b>Proyecto de Operaciones Unitarias · IQYA-2031</div>
+      <div><b>Autor</b>Luis H. Reyes</div>
+      <div><b>Fecha</b>3 de junio de 2026</div>
+      <div><b>Lectura</b>Aproximadamente 35 minutos</div>
+    </div>
+  </header>
+
+  <div class="doc-body">
+
+    <!-- INTRO + TOC -->
+    <section id="s0">
+      <p class="lead">En los proyectos de ingeniería, el trabajo en equipo no es opcional. Ninguna planta química se diseña, construye u opera por una sola persona. Sin embargo, reunir personas talentosas en un mismo grupo no garantiza resultados superiores.</p>
+
+      <div class="toc">
+        <p class="toc-t">En esta guía</p>
+        <ol>
+          <li><a href="#s1">Fundamentos del trabajo en equipo: definición y diferenciación</a></li>
+          <li><a href="#s2">El Proyecto Aristóteles: la ciencia detrás de los equipos efectivos</a></li>
+          <li><a href="#s3">Bienestar del equipo: la base del rendimiento sostenible</a></li>
+          <li><a href="#s4">Organización metodológica del trabajo en equipo</a></li>
+          <li><a href="#s5">Definición de normas y compromisos de equipo</a></li>
+          <li><a href="#s6">Seguridad psicológica: fundamento de equipos innovadores</a></li>
+          <li><a href="#s7">Mecanismos de resolución de conflictos</a></li>
+          <li><a href="#s8">Roles específicos para el proyecto</a></li>
+          <li><a href="#s9">Matriz de evaluación: diseño y aplicación</a></li>
+          <li><a href="#s10">Entregables del componente de trabajo en equipo</a></li>
+          <li><a href="#s11">Buenas prácticas para la documentación</a></li>
+          <li><a href="#s12">Integración final: del aula al entorno profesional</a></li>
+          <li><a href="#s13">Reflexión final: más allá de las herramientas</a></li>
+          <li><a href="#s14">Plantillas</a></li>
+        </ol>
+      </div>
+
+      <div class="callout callout--tip">
+        <span class="ic">i</span>
+        <div><b>Sobre esta guía</b><p>Esta es una guía de proceso, no una lectura de clase. No hay quiz sobre este material. Léala antes de la primera reunión de equipo y vuelva a ella cuando el equipo enfrente dificultades.</p></div>
+      </div>
+    </section>
+
+    <!-- 1. FUNDAMENTOS -->
+    <section id="s1">
+      <div class="eyebrow">Punto de partida</div>
+      <h2 class="sec"><span class="secnum">1.</span> Fundamentos del trabajo en equipo: definición y diferenciación</h2>
+
+      <p>En los proyectos de ingeniería, el trabajo en equipo no es opcional. Ninguna planta química se diseña, construye u opera por una sola persona. Sin embargo, reunir personas talentosas en un mismo grupo no garantiza resultados superiores. Existe una diferencia fundamental entre un grupo de trabajo y un equipo, y comprender esta distinción es el primer paso para construir una colaboración efectiva.</p>
+
+      <div class="blocks">
+        <div class="block">
+          <b>Grupo de trabajo</b>
+          <ul>
+            <li>Menor interdependencia entre miembros</li>
+            <li>Jerarquía organizacional predefinida</li>
+            <li>Se reúne para compartir información</li>
+            <li>Responsabilidad individual por resultados</li>
+            <li>Éxito medido por desempeño individual</li>
+          </ul>
+        </div>
+        <div class="block">
+          <b>Equipo</b>
+          <ul>
+            <li>Alta interdependencia entre miembros</li>
+            <li>Planifica trabajo conjunto de manera colaborativa</li>
+            <li>Resuelve problemas colaborativamente</li>
+            <li>Toma decisiones de forma consensuada</li>
+            <li>Responsabilidad compartida por resultados</li>
+            <li>Éxito medido por resultados del equipo</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3 class="sub">Cuatro tipos de interdependencia</h3>
+
+      <div class="blocks">
+        <div class="block">
+          <b>De objetivos</b>
+          <span>Todos los miembros comparten las mismas metas finales. El logro del objetivo depende del aporte coordinado de cada integrante.</span>
+        </div>
+        <div class="block">
+          <b>De recursos</b>
+          <span>Cada miembro aporta conocimientos y habilidades específicas que complementan las del resto del equipo.</span>
+        </div>
+        <div class="block">
+          <b>De tareas</b>
+          <span>El trabajo de cada miembro afecta y depende del trabajo de los demás. Las contribuciones individuales están entrelazadas.</span>
+        </div>
+        <div class="block">
+          <b>De reconocimiento</b>
+          <span>El éxito o fracaso es atribuible al equipo en su conjunto, no a individuos aislados.</span>
+        </div>
+      </div>
+
+      <div class="callout callout--tip">
+        <span class="ic">i</span>
+        <div><b>Por qué importa la interdependencia</b><p>Esta interdependencia positiva es el fundamento sobre el cual se construyen los demás aspectos del trabajo en equipo efectivo. Sin ella, no importa cuán talentosos sean los miembros individuales, el resultado colectivo siempre estará por debajo del potencial del grupo.</p></div>
+      </div>
+    </section>
+
+    <!-- 2. PROYECTO ARISTÓTELES -->
+    <section id="s2">
+      <div class="eyebrow">Evidencia científica</div>
+      <h2 class="sec"><span class="secnum">2.</span> El Proyecto Aristóteles: la ciencia detrás de los equipos efectivos</h2>
+
+      <p>En 2012, Google lanzó el Proyecto Aristóteles, un estudio que durante dos años analizó más de 180 equipos internos, realizó más de 200 entrevistas y evaluó más de 250 atributos. El objetivo era responder una pregunta aparentemente simple: ¿qué hace que un equipo sea efectivo?</p>
+
+      <p>La conclusión fue contraintuitiva: la composición del equipo — quiénes son sus miembros — importa mucho menos que cómo interactúan. Equipos con perfiles aparentemente perfectos fracasaban, mientras que otros aparentemente dispares producían resultados excepcionales. La clave estaba en las normas de equipo (<em>team norms</em>): tradiciones, estándares de comportamiento y reglas que gobiernan la convivencia.</p>
+
+      <blockquote class="pull">
+        <span class="qmark">&ldquo;</span>
+        <p>«No encontramos evidencia de que la composición del equipo (combinación de rasgos de personalidad, habilidades o antecedentes) impacte significativamente en la efectividad del equipo... Lo que más importa es cómo los miembros del equipo interactúan, estructuran su trabajo y ven sus contribuciones.»</p>
+        <cite><b>Google re:Work — Project Aristotle (2016)</b></cite>
+      </blockquote>
+
+      <div class="video-wrap">
+        <iframe src="https://www.youtube.com/embed/v2PaZ8Nl2T4" title="Re:Work — The five keys to a successful Google team" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+
+      <p style="margin-top:20px;">El estudio identificó cuatro características que distinguen a los equipos de alto rendimiento:</p>
+
+      <div class="blocks">
+        <div class="block">
+          <span class="bn">CARACTERÍSTICA 01</span>
+          <b>Confiabilidad</b>
+          <span>Los miembros cumplen sus tareas a tiempo y satisfacen las expectativas establecidas. Representa el compromiso, primer paso para un equipo exitoso y base fundamental para la cooperación.</span>
+        </div>
+        <div class="block">
+          <span class="bn">CARACTERÍSTICA 02</span>
+          <b>Estructura y claridad</b>
+          <span>Objetivos claramente definidos y roles bien delimitados. Los miembros comprenden las expectativas del proyecto y los procesos para satisfacerlas.</span>
+        </div>
+        <div class="block">
+          <span class="bn">CARACTERÍSTICA 03</span>
+          <b>Propósito</b>
+          <span>El trabajo tiene un significado personal para cada miembro. Puede variar: éxito del equipo, calificación, interés científico, autoexpresión.</span>
+        </div>
+        <div class="block">
+          <span class="bn">CARACTERÍSTICA 04</span>
+          <b>Seguridad psicológica</b>
+          <span>Los miembros se sienten seguros tomando riesgos y mostrando vulnerabilidad sin temor a consecuencias negativas. Permite la comunicación abierta y la cooperación genuina.</span>
+        </div>
+      </div>
+
+      <div class="callout callout--tip">
+        <span class="ic">i</span>
+        <div><b>Aplicación práctica</b><p>La aplicación consciente de estos principios aumenta significativamente la probabilidad de conformar un equipo que no solo cumpla con los objetivos académicos, sino que también proporcione una experiencia formativa valiosa para la futura vida profesional.</p></div>
+      </div>
+    </section>
+
+    <!-- 3. BIENESTAR -->
+    <section id="s3">
+      <div class="eyebrow">Sostenibilidad del equipo</div>
+      <h2 class="sec"><span class="secnum">3.</span> Bienestar del equipo: la base del rendimiento sostenible</h2>
+
+      <p>El bienestar constituye un pilar fundamental para el rendimiento sostenible, especialmente en proyectos académicos de alta exigencia. La empatía no es solo cordialidad, sino un elemento estratégico para la cohesión y la productividad del equipo.</p>
+
+      <h3 class="sub">Tres dimensiones del bienestar</h3>
+
+      <div class="blocks-3">
+        <div class="block">
+          <b>Bienestar emocional</b>
+          <span>Ambiente donde todos se sientan valorados y emocionalmente seguros. Incluye la validación de preocupaciones, la celebración de logros y el apoyo durante períodos de estrés.</span>
+        </div>
+        <div class="block">
+          <b>Bienestar físico</b>
+          <span>Atención a la fatiga por sobrecarga, condiciones de salud y necesidades específicas de cada miembro. Ajustes razonables en la distribución de tareas cuando sea necesario.</span>
+        </div>
+        <div class="block">
+          <b>Bienestar social</b>
+          <span>Calidad de las relaciones interpersonales dentro del equipo. Integración de todos los miembros, prevención del aislamiento y construcción de un sentido de pertenencia.</span>
+        </div>
+      </div>
+
+      <details>
+        <summary>Prácticas para situaciones desafiantes</summary>
+        <div class="detail-body">
+          <ul>
+            <li>Protocolo claro para comunicar ausencias por enfermedad o situaciones personales graves.</li>
+            <li>Sistema de «compañero de respaldo» donde cada miembro tiene un par designado que puede asumir temporalmente sus responsabilidades en caso de emergencia.</li>
+            <li>Mecanismos para redistribuir equitativamente la carga de trabajo cuando algún miembro atraviese dificultades temporales.</li>
+            <li>Plataformas digitales para mantener informados a quienes no puedan asistir presencialmente.</li>
+          </ul>
+        </div>
+      </details>
+
+      <details>
+        <summary>Prácticas de reconocimiento y celebración</summary>
+        <div class="detail-body">
+          <ul>
+            <li>Reservar espacio al inicio o final de cada reunión para reconocer logros individuales o colectivos.</li>
+            <li>Sistema rotativo donde cada semana un miembro diferente reciba retroalimentación positiva específica sobre sus contribuciones.</li>
+            <li>Celebrar hitos importantes del proyecto con actividades breves pero significativas.</li>
+            <li>Documentar los éxitos del equipo para construir un sentido de logro compartido.</li>
+          </ul>
+        </div>
+      </details>
+
+      <div class="callout callout--tip">
+        <span class="ic">i</span>
+        <div><b>El bienestar es estratégico</b><p>El bienestar no debe considerarse un elemento secundario o un «lujo», sino un componente esencial para la sostenibilidad del equipo. Los equipos que priorizan el bienestar demuestran mayor resiliencia, mejor comunicación y resultados académicos superiores a largo plazo.</p></div>
+      </div>
+    </section>
+
+    <!-- 4. ORGANIZACIÓN METODOLÓGICA -->
+    <section id="s4">
+      <div class="eyebrow">Estructura operativa</div>
+      <h2 class="sec"><span class="secnum">4.</span> Organización metodológica del trabajo en equipo</h2>
+
+      <p>La organización metodológica constituye el esqueleto operativo que permite al equipo funcionar de manera eficiente y predecible. Sin estructura, la buena intención se diluye.</p>
+
+      <h3 class="sub">Frecuencia y estructura de reuniones</h3>
+
+      <div class="tbl-wrap">
+        <table class="ou">
+          <thead>
+            <tr><th>Tipo</th><th>Duración</th><th>Descripción</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Reunión semanal de seguimiento</td><td>60–90 min</td><td>Revisar avances, resolver bloqueantes, asignar nuevas tareas. Día y hora fijos.</td></tr>
+            <tr><td>Sesiones técnicas específicas</td><td>Variable</td><td>Resolver problemas técnicos concretos. Participan los miembros directamente involucrados.</td></tr>
+            <tr><td>Revisión pre-entrega</td><td>120 min</td><td>2–3 días antes de cada entrega. Verificar completitud, coherencia y calidad. Todo el equipo.</td></tr>
+            <tr><td>Retrospectiva</td><td>60 min</td><td>Después de cada hito: analizar qué funcionó bien, qué puede mejorar, ajustar procesos.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="sub">Herramientas y canales de comunicación</h3>
+
+      <div class="blocks-3">
+        <div class="block">
+          <b>Mensajería instantánea</b>
+          <span>Comunicaciones rápidas, coordinación logística y alertas. WhatsApp, Telegram, Teams.</span>
+        </div>
+        <div class="block">
+          <b>Plataforma de gestión de proyectos</b>
+          <span>Seguimiento de tareas, plazos y responsabilidades. Trello, Asana, Notion, Planner.</span>
+        </div>
+        <div class="block">
+          <b>Repositorio de documentos</b>
+          <span>Almacenar y versionar entregables, referencias y datos. Google Drive, OneDrive, GitHub.</span>
+        </div>
+        <div class="block">
+          <b>Plataforma de videoconferencia</b>
+          <span>Reuniones virtuales cuando no sea posible la presencialidad. Zoom, Teams, Google Meet.</span>
+        </div>
+        <div class="block">
+          <b>Tablero de visualización</b>
+          <span>Lluvia de ideas y organización visual de información. Miro, Mural, Lucidchart.</span>
+        </div>
+      </div>
+
+      <div class="callout callout--tip">
+        <span class="ic">i</span>
+        <div><b>Rol de coordinación</b><p>Se recomienda designar un responsable de seguimiento metodológico (rol de Scrum Master o Coordinador) que vele por el cumplimiento de los procesos acordados, especialmente durante las primeras semanas hasta que se conviertan en hábitos del equipo.</p></div>
+      </div>
+    </section>
+
+    <!-- 5. NORMAS Y COMPROMISOS -->
+    <section id="s5">
+      <div class="eyebrow">El contrato social del equipo</div>
+      <h2 class="sec"><span class="secnum">5.</span> Definición de normas y compromisos de equipo</h2>
+
+      <p>Las normas constituyen el contrato social que regula la interacción del equipo. Representan acuerdos explícitos sobre comportamientos esperados, estándares de calidad y procedimientos operativos. Su definición clara y consensuada es fundamental para prevenir conflictos y establecer expectativas compartidas.</p>
+
+      <h3 class="sub">Categorías de normas</h3>
+
+      <div class="blocks">
+        <div class="block">
+          <b>Temporales</b>
+          <span>Plazos, puntualidad, gestión del tiempo. Horarios de reuniones, margen de tiempo para entregas internas, protocolos para notificar retrasos.</span>
+        </div>
+        <div class="block">
+          <b>Calidad</b>
+          <span>Estándares mínimos para entregables aceptables. Formato de documentos, nivel de detalle en cálculos, criterios de validación experimental.</span>
+        </div>
+        <div class="block">
+          <b>Comunicación</b>
+          <span>Protocolos para intercambio de información. Tiempos de respuesta, canales para diferentes tipos de mensajes, estructura de actas.</span>
+        </div>
+        <div class="block">
+          <b>Interpersonales</b>
+          <span>Directrices para interacción respetuosa. Escucha activa, valoración de perspectivas, comunicación asertiva de desacuerdos.</span>
+        </div>
+      </div>
+
+      <h3 class="sub">Características de normas efectivas</h3>
+      <p>
+        <span class="badge-pill">Específicas</span>
+        <span class="badge-pill">Medibles</span>
+        <span class="badge-pill">Consensuadas</span>
+        <span class="badge-pill">Realistas</span>
+        <span class="badge-pill">Relevantes</span>
+      </p>
+
+      <div class="callout callout--tip">
+        <span class="ic">i</span>
+        <div><b>Documentar y revisar</b><p>Las normas deben documentarse formalmente en el Contrato de Equipo, revisarse periódicamente y actualizarse según la evolución de las necesidades del proyecto. Cada norma debe incluir indicadores observables que faciliten su evaluación posterior.</p></div>
+      </div>
+
+      <h3 class="sub">Ejemplos de normas con indicadores</h3>
+
+      <div class="tbl-wrap">
+        <table class="ou">
+          <thead>
+            <tr><th>Norma</th><th>Indicador observable</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Puntualidad en reuniones</td><td>Asistencia dentro de los 5 minutos posteriores a la hora acordada en ≥90% de las reuniones</td></tr>
+            <tr><td>Comunicación de avances</td><td>Actualización semanal del estado de tareas asignadas en la plataforma de gestión antes del viernes a las 18:00</td></tr>
+            <tr><td>Calidad técnica</td><td>Documentos con referencias bibliográficas apropiadas y cálculos verificables mediante procedimiento estandarizado</td></tr>
+            <tr><td>Retroalimentación constructiva</td><td>Comentarios que incluyen aspectos positivos y oportunidades de mejora específicas, nunca dirigidos a la persona sino al trabajo</td></tr>
+            <tr><td>Seguridad en laboratorio</td><td>100% de cumplimiento de protocolos de seguridad establecidos y reporte inmediato de cualquier incidente</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout--warn">
+        <span class="ic">!</span>
+        <div><b>Normas sin seguimiento no funcionan</b><p>La simple definición de normas no garantiza su cumplimiento. Es fundamental establecer mecanismos de seguimiento regular y procedimientos claros para abordar desviaciones.</p></div>
+      </div>
+
+      <h3 class="sub">Normas efectivas para equipos de ingeniería</h3>
+      <p>
+        <span class="badge-pill-green">Verificables</span>
+        <span class="badge-pill-green">Relevantes</span>
+        <span class="badge-pill-green">Documentadas</span>
+        <span class="badge-pill-green">Específicas</span>
+        <span class="badge-pill-green">Consensuadas</span>
+      </p>
+
+      <details>
+        <summary>Ejemplos de normas por categoría</summary>
+        <div class="detail-body">
+          <h4>Puntualidad y preparación</h4>
+          <ul>
+            <li>Llegamos 5 minutos antes a todas las reuniones.</li>
+            <li>Revisamos todos los materiales previos antes de cada reunión.</li>
+          </ul>
+          <h4>Calidad y rigor técnico</h4>
+          <ul>
+            <li>Todo entregable interno debe pasar checklist de calidad.</li>
+            <li>Los cálculos incluyen unidades, referencias y análisis de sensibilidad.</li>
+          </ul>
+          <h4>Comunicación</h4>
+          <ul>
+            <li>Respondemos mensajes dentro de las 12 horas en días hábiles.</li>
+            <li>Las críticas se dirigen al trabajo, nunca a la persona.</li>
+          </ul>
+          <h4>Gestión de tareas</h4>
+          <ul>
+            <li>Actualizamos el estado de nuestras tareas en la plataforma cada 48 horas.</li>
+            <li>Comunicamos inmediatamente si anticipamos un retraso.</li>
+          </ul>
+          <h4>Normas específicas para POU</h4>
+          <ul>
+            <li><strong>24h:</strong> Publicación de actas y actualización de repositorios dentro de las 24 horas posteriores a cada reunión.</li>
+            <li><strong>48h:</strong> Entrega de documentos internos para revisión al menos 48 horas antes de los plazos formales.</li>
+          </ul>
+        </div>
+      </details>
+
+      <div class="callout callout--tip">
+        <span class="ic">i</span>
+        <div><b>Revisión periódica</b><p>Se recomienda revisar periódicamente la efectividad de las normas establecidas, aproximadamente cada 3–4 semanas, para determinar si requieren ajustes.</p></div>
+      </div>
+    </section>
+
+    <!-- 6. SEGURIDAD PSICOLÓGICA -->
+    <section id="s6">
+      <div class="eyebrow">Factor #1 según Google</div>
+      <h2 class="sec"><span class="secnum">6.</span> Seguridad psicológica: fundamento de equipos innovadores</h2>
+
+      <p>La seguridad psicológica, identificada por el Proyecto Aristóteles como el factor más determinante para la efectividad de los equipos, se refiere a la creencia compartida de que el equipo es un espacio seguro para asumir riesgos interpersonales.</p>
+
+      <h3 class="sub">Seis dimensiones de la seguridad psicológica</h3>
+
+      <div class="blocks-3">
+        <div class="block">
+          <span class="bn">DIMENSIÓN 01</span>
+          <b>Apertura a la experimentación</b>
+          <span>Libertad para proponer ideas no convencionales y explorar soluciones innovadoras sin temor al ridículo o la crítica destructiva.</span>
+        </div>
+        <div class="block">
+          <span class="bn">DIMENSIÓN 02</span>
+          <b>Disposición a preguntar</b>
+          <span>Confianza para expresar dudas, solicitar clarificaciones y reconocer límites en el conocimiento propio sin miedo a parecer incompetente.</span>
+        </div>
+        <div class="block">
+          <span class="bn">DIMENSIÓN 03</span>
+          <b>Comunicación de errores</b>
+          <span>Capacidad para admitir errores, compartir fallas y analizar colectivamente las lecciones aprendidas sin temor a represalias.</span>
+        </div>
+        <div class="block">
+          <span class="bn">DIMENSIÓN 04</span>
+          <b>Aceptación de diferencias</b>
+          <span>Valoración de perspectivas diversas y estilos de trabajo distintos como fuentes de fortaleza para el equipo.</span>
+        </div>
+        <div class="block">
+          <span class="bn">DIMENSIÓN 05</span>
+          <b>Retroalimentación constructiva</b>
+          <span>Intercambio de opiniones honestas centradas en la mejora continua y expresadas con respeto.</span>
+        </div>
+        <div class="block">
+          <span class="bn">DIMENSIÓN 06</span>
+          <b>Apoyo mutuo</b>
+          <span>Disposición para ofrecer ayuda, compartir recursos y colaborar para superar obstáculos.</span>
+        </div>
+      </div>
+
+      <div class="video-wrap">
+        <iframe src="https://www.youtube.com/embed/LhoLuui9gX8" title="Amy Edmondson — Building a psychologically safe workplace (TED)" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+
+      <h3 class="sub" style="margin-top:34px;">Prácticas para fomentar la seguridad psicológica</h3>
+
+      <div class="blocks">
+        <div class="block">
+          <b>A nivel de liderazgo</b>
+          <ul>
+            <li><strong>Modelar la vulnerabilidad:</strong> El coordinador o líderes técnicos deben ser los primeros en reconocer sus dudas, errores o limitaciones.</li>
+            <li><strong>Normalizar la incertidumbre:</strong> Enfatizar que las preguntas y la exploración son parte inherente del proceso científico e ingenieril.</li>
+            <li><strong>Reconocer contribuciones:</strong> Visibilizar y valorar explícitamente los aportes de todos, especialmente los tradicionalmente menos escuchados.</li>
+            <li><strong>Intervenir constructivamente:</strong> Reorientar con tacto las interacciones que puedan socavar la seguridad psicológica.</li>
+          </ul>
+        </div>
+        <div class="block">
+          <b>A nivel de equipo</b>
+          <ul>
+            <li><strong>Establecer normas explícitas:</strong> Definir colectivamente cómo se abordarán los errores y cómo se expresará el desacuerdo.</li>
+            <li><strong>Practicar la escucha activa:</strong> Demostrar atención plena, evitar interrupciones y validar las perspectivas.</li>
+            <li><strong>Separar ideas de identidades:</strong> Evaluar propuestas por sus méritos, no por quién las presenta.</li>
+            <li><strong>Implementar check-ins periódicos:</strong> Iniciar reuniones con rondas breves donde cada miembro comparte su estado actual.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="callout callout--tip">
+        <span class="ic">i</span>
+        <div><b>Conflicto productivo vs. conformidad</b><p>La seguridad psicológica no implica ausencia de conflictos o conformidad obligada. Por el contrario, permite que los desacuerdos productivos emerjan y se aborden constructivamente.</p></div>
+      </div>
+
+      <h3 class="sub">Indicadores de seguridad psicológica</h3>
+
+      <div class="tbl-wrap">
+        <table class="ou">
+          <thead>
+            <tr><th>Indicador positivo</th><th>Señal de alerta</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Distribución equilibrada de participación en discusiones</td><td>Monopolización de la palabra por algunos miembros</td></tr>
+            <tr><td>Preguntas frecuentes y exploración de alternativas</td><td>Aceptación acrítica de la primera solución propuesta</td></tr>
+            <tr><td>Reconocimiento explícito de errores como oportunidades</td><td>Ocultamiento de problemas hasta que escalan</td></tr>
+            <tr><td>Solicitudes espontáneas de ayuda y retroalimentación</td><td>Trabajo aislado sin integración hasta entregas finales</td></tr>
+            <tr><td>Discusiones animadas con respeto a perspectivas diversas</td><td>Conformidad superficial o conflictos personalizados</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 7. RESOLUCIÓN DE CONFLICTOS -->
+    <section id="s7">
+      <div class="eyebrow">Cuando el desacuerdo emerge</div>
+      <h2 class="sec"><span class="secnum">7.</span> Mecanismos de resolución de conflictos</h2>
+
+      <p>Los conflictos son inherentes a todo proceso de trabajo en equipo y, manejados adecuadamente, pueden convertirse en oportunidades para fortalecer al grupo.</p>
+
+      <h3 class="sub">Tres tipos de conflictos</h3>
+
+      <div class="blocks-3">
+        <div class="block">
+          <b>Conflictos de tarea</b>
+          <span>Desacuerdos sobre cómo realizar el trabajo, interpretaciones técnicas divergentes o estándares de calidad diferentes. <em>Ejemplos: discrepancias sobre metodologías experimentales, criterios de análisis de datos o enfoques de diseño.</em></span>
+        </div>
+        <div class="block">
+          <b>Conflictos de proceso</b>
+          <span>Desacuerdos sobre procedimientos, asignación de recursos o coordinación. <em>Ejemplos: incumplimiento de plazos, ausencias en reuniones, distribución inequitativa de tareas.</em></span>
+        </div>
+        <div class="block">
+          <b>Conflictos interpersonales</b>
+          <span>Tensiones personales, estilos de comunicación incompatibles o cuestiones de valores. <em>Ejemplos: faltas de respeto, microagresiones, acaparamiento de protagonismo, desvalorización de aportes.</em></span>
+        </div>
+      </div>
+
+      <h3 class="sub">Protocolo escalonado de resolución</h3>
+
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-year">1</div>
+          <span class="tl-dot"></span>
+          <div class="tl-body">
+            <b>Diálogo directo</b>
+            <span>Los involucrados conversan directamente, sin intermediarios, enfocándose en comportamientos observables y su impacto, no en interpretaciones o juicios.</span>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">2</div>
+          <span class="tl-dot"></span>
+          <div class="tl-body">
+            <b>Mediación interna</b>
+            <span>Si el diálogo directo no resuelve, un compañero neutral (preferiblemente el Coordinador) facilita una conversación estructurada.</span>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">3</div>
+          <span class="tl-dot"></span>
+          <div class="tl-body">
+            <b>Reunión de equipo</b>
+            <span>Para conflictos que afectan al grupo completo, sesión específica donde se aborda el tema con todos los miembros.</span>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">4</div>
+          <span class="tl-dot"></span>
+          <div class="tl-body">
+            <b>Intervención externa</b>
+            <span>Cuando los mecanismos internos resultan insuficientes, se solicita apoyo del asistente o profesor, presentando evidencia del problema y de los intentos previos de resolución.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout callout--nota">
+        <span class="ic">i</span>
+        <div><b>Documentación de acuerdos</b><p>Todos los acuerdos alcanzados durante el proceso de resolución deben documentarse por escrito, especificando acciones concretas, responsables y plazos.</p></div>
+      </div>
+
+      <h3 class="sub">Técnicas de comunicación</h3>
+
+      <div class="blocks-3">
+        <div class="block">
+          <b>Mensajes-Yo</b>
+          <span>Expresar perspectivas en primera persona («Cuando ocurre X, yo siento Y porque Z») en lugar de acusaciones directas.</span>
+        </div>
+        <div class="block">
+          <b>Escucha activa</b>
+          <span>Prestar atención plena, parafrasear para verificar comprensión y demostrar que se valora genuinamente la perspectiva del otro.</span>
+        </div>
+        <div class="block">
+          <b>Enfoque en intereses</b>
+          <span>Identificar necesidades subyacentes de cada parte en lugar de aferrarse a posiciones específicas.</span>
+        </div>
+      </div>
+
+      <h3 class="sub">Casos prácticos: escenarios comunes</h3>
+
+      <details>
+        <summary>Escenario 1: Incumplimiento de plazos y compromisos</summary>
+        <div class="detail-body">
+          <p><strong>Situación:</strong> Un miembro ha incumplido repetidamente con las fechas de entrega, afectando el avance general del proyecto.</p>
+          <p><strong>Estrategia:</strong></p>
+          <ol>
+            <li>Identificar causas subyacentes mediante conversación privada y no acusatoria: «He notado que los últimos entregables han llegado después de lo acordado. ¿Estás enfrentando alguna dificultad con la que podamos ayudar?»</li>
+            <li>Evaluar necesidad de redistribución temporal de tareas o ajuste de plazos intermedios.</li>
+            <li>Implementar puntos de control más frecuentes para identificar tempranamente posibles retrasos.</li>
+            <li>Si persiste sin justificación válida, aplicar mecanismo escalonado definido en el contrato de equipo.</li>
+          </ol>
+        </div>
+      </details>
+
+      <details>
+        <summary>Escenario 2: Desacuerdos técnicos sobre metodologías o diseños</summary>
+        <div class="detail-body">
+          <p><strong>Situación:</strong> Dos integrantes mantienen posiciones opuestas sobre la metodología experimental, cada uno defendiendo su enfoque.</p>
+          <p><strong>Estrategia:</strong></p>
+          <ol>
+            <li>Establecer sesión dedicada exclusivamente a este tema, con tiempo equitativo para presentación de argumentos técnicos.</li>
+            <li>Solicitar que cada posición se sustente con referencias bibliográficas específicas.</li>
+            <li>Identificar criterios objetivos para evaluación de alternativas (precisión, factibilidad, seguridad, costo, tiempo).</li>
+            <li>Considerar la posibilidad de una aproximación híbrida o implementación de un piloto comparativo.</li>
+            <li>En caso de persistir, someter a votación documentada del equipo completo.</li>
+          </ol>
+        </div>
+      </details>
+
+      <details>
+        <summary>Escenario 3: Problemas de comunicación y malentendidos</summary>
+        <div class="detail-body">
+          <p><strong>Situación:</strong> Se han producido interpretaciones divergentes sobre acuerdos previos, generando confusión y trabajo duplicado.</p>
+          <p><strong>Estrategia:</strong></p>
+          <ol>
+            <li>Revisar y mejorar el sistema de documentación de decisiones y acuerdos.</li>
+            <li>Implementar confirmaciones explícitas: «Para asegurar que estamos alineados, ¿podrías resumir cómo entiendes lo que acabamos de acordar?»</li>
+            <li>Establecer un glosario técnico compartido para términos con interpretaciones múltiples.</li>
+            <li>Reforzar la práctica de preguntas aclaratorias sin juicio.</li>
+          </ol>
+        </div>
+      </details>
+
+      <div class="callout callout--tip">
+        <span class="ic">i</span>
+        <div><b>Madurez del equipo</b><p>La capacidad de un equipo para resolver conflictos internamente es un indicador de su madurez y constituye una habilidad profesional altamente valorada.</p></div>
+      </div>
+    </section>
+
+    <!-- 8. ROLES -->
+    <section id="s8">
+      <div class="eyebrow">Quién hace qué</div>
+      <h2 class="sec"><span class="secnum">8.</span> Roles específicos para el proyecto</h2>
+
+      <h3 class="sub">Principios para la asignación de roles</h3>
+
+      <ul style="font-size:17px; margin: 0 0 20px; padding-left: 22px; line-height: 1.7;">
+        <li><strong>Alineación con competencias:</strong> Aprovechar fortalezas y experiencias previas de cada miembro.</li>
+        <li><strong>Equilibrio de carga:</strong> Distribuir considerando complejidad y demanda temporal de cada rol.</li>
+        <li><strong>Desarrollo profesional:</strong> Permitir que los estudiantes adquieran experiencia en áreas de interés.</li>
+        <li><strong>Rotación estratégica:</strong> Planificar cambios en momentos clave para aprendizaje integral.</li>
+        <li><strong>Responsabilidad compartida:</strong> Mantener colaboración y apoyo mutuo más allá de los roles específicos.</li>
+      </ul>
+
+      <div class="callout callout--tip">
+        <span class="ic">i</span>
+        <div><b>Roles sin compartimentos</b><p>Los roles no constituyen compartimentos estancos. Todos los miembros mantienen responsabilidad sobre el proyecto en su conjunto y deben estar preparados para apoyar a sus compañeros cuando sea necesario.</p></div>
+      </div>
+
+      <h3 class="sub">Roles fundamentales</h3>
+
+      <div class="block-role" style="border-left-color: #0076A8;">
+        <b>Coordinación general</b>
+        <ul>
+          <li>Planificación y convocatoria de reuniones con agenda previa</li>
+          <li>Seguimiento de tareas y plazos en la herramienta de gestión</li>
+          <li>Facilitación de sesiones de trabajo y resolución de bloqueos</li>
+          <li>Mantenimiento del clima de equipo y mediación en conflictos</li>
+        </ul>
+      </div>
+
+      <div class="block-role" style="border-left-color: #86BC24;">
+        <b>Líder(es) técnico(s) de proceso unitario</b>
+        <ul>
+          <li>Profundización en la teoría, diseño y operación del proceso asignado</li>
+          <li>Orientación de decisiones técnicas y validación de metodologías</li>
+          <li>Identificación de referencias bibliográficas relevantes</li>
+          <li>Verificación de coherencia técnica entre componentes del proyecto</li>
+        </ul>
+      </div>
+
+      <div class="block-role" style="border-left-color: #7C3AED;">
+        <b>Gestor(a) de documentación y calidad</b>
+        <ul>
+          <li>Estructuración de plantillas y control de versiones</li>
+          <li>Verificación de trazabilidad y completitud de referencias</li>
+          <li>Consolidación de matrices de evaluación y actas</li>
+          <li>Aseguramiento de coherencia estilística en entregables</li>
+        </ul>
+      </div>
+
+      <h3 class="sub">Roles complementarios</h3>
+
+      <div class="blocks">
+        <div class="block">
+          <b>Analista de datos / Modelamiento</b>
+          <span>Estandariza datos, ejecuta modelos, reporta supuestos y análisis de sensibilidad. Asegura validez estadística de los resultados.</span>
+        </div>
+        <div class="block">
+          <b>Gestor(a) de compras y logística</b>
+          <span>Coordina requerimientos de insumos, equipos y tiempos de laboratorio. Mantiene inventario y gestiona permisos necesarios.</span>
+        </div>
+        <div class="block">
+          <b>Vocería y relacionamiento</b>
+          <span>Prepara presentaciones, gestiona comunicación con monitoría y profesorado. Asegura que los mensajes sean claros y consistentes.</span>
+        </div>
+        <div class="block">
+          <b>Gestor(a) de riesgos</b>
+          <span>Mantiene registro de riesgos (técnicos, de cronograma, HSE) con planes de mitigación y contingencia actualizados.</span>
+        </div>
+      </div>
+
+      <div class="callout callout--tip">
+        <span class="ic">i</span>
+        <div><b>Para equipos pequeños</b><p>Para equipos de 4–5 integrantes, es recomendable combinar algunos roles complementarios con los fundamentales, asegurando que todas las áreas críticas queden cubiertas.</p></div>
+      </div>
+    </section>
+
+    <!-- 9. MATRIZ DE EVALUACIÓN -->
+    <section id="s9">
+      <div class="eyebrow">Cómo medir el desempeño</div>
+      <h2 class="sec"><span class="secnum">9.</span> Matriz de evaluación: diseño y aplicación</h2>
+
+      <p>La evaluación del desempeño en equipos académicos cumple un doble propósito: proporcionar retroalimentación constructiva para el mejoramiento continuo y asignar calificaciones que reflejen justamente la contribución de cada miembro.</p>
+
+      <div class="callout callout--tip">
+        <span class="ic">i</span>
+        <div><b>Coherencia normas–evaluación</b><p>La matriz de evaluación debe derivarse directamente de las normas acordadas por el equipo, garantizando coherencia entre las expectativas establecidas y los criterios utilizados para la valoración. Este alineamiento fortalece la percepción de justicia en el proceso evaluativo.</p></div>
+      </div>
+
+      <h3 class="sub">Escala Likert recomendada</h3>
+
+      <div class="tbl-wrap">
+        <table class="ou">
+          <thead>
+            <tr><th style="width:15%">Valor</th><th>Descripción</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>Nunca cumple con el criterio</td></tr>
+            <tr><td>2</td><td>Rara vez cumple con el criterio</td></tr>
+            <tr><td>3</td><td>A veces cumple con el criterio</td></tr>
+            <tr><td>4</td><td>Casi siempre cumple con el criterio</td></tr>
+            <tr><td>5</td><td>Siempre cumple con el criterio</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>La matriz debe utilizarse para autoevaluación (cada miembro evalúa su propio desempeño) y coevaluación (cada miembro evalúa a sus compañeros). La combinación de ambas perspectivas proporciona una visión completa y equilibrada del desempeño.</p>
+
+      <h3 class="sub">Ejemplo de estructura para la matriz</h3>
+
+      <div class="tbl-wrap">
+        <table class="ou">
+          <thead>
+            <tr><th>Criterio</th><th>Indicador observable</th><th style="width:12%">Peso (%)</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Puntualidad y preparación</td><td>Asiste y comparte lectura previa en >80% de reuniones</td><td>10</td></tr>
+            <tr><td>Cumplimiento de tareas</td><td>Entrega a tiempo y con condición de satisfacción acordada</td><td>20</td></tr>
+            <tr><td>Calidad técnica</td><td>Propone y justifica decisiones con fundamentos teóricos</td><td>20</td></tr>
+            <tr><td>Seguridad y HSE</td><td>Reporta riesgos y cumple protocolos establecidos</td><td>15</td></tr>
+            <tr><td>Colaboración y respeto</td><td>Demuestra escucha activa y ofrece feedback constructivo</td><td>15</td></tr>
+            <tr><td>Documentación</td><td>Actualiza actas, matrices y repositorios oportunamente</td><td>10</td></tr>
+            <tr><td>Liderazgo / Apoyo al equipo</td><td>Toma iniciativa y ayuda a destrabar bloqueos</td><td>10</td></tr>
+            <tr><td><strong>Total</strong></td><td></td><td><strong>100</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout--warn">
+        <span class="ic">!</span>
+        <div><b>Objetividad en la evaluación</b><p>La matriz de evaluación debe aplicarse de forma honesta y objetiva, evitando tanto sobrevaloraciones complacientes como subvaloraciones injustas. Para ello, es fundamental basar las calificaciones en evidencias concretas y documentadas a lo largo del proceso.</p></div>
+      </div>
+
+      <p>Se harán cinco ciclos de evaluación durante el semestre con fines formativos que permitan ajustes. En todos los casos, es valioso complementar las calificaciones numéricas con comentarios cualitativos que orienten específicamente las oportunidades de mejora.</p>
+    </section>
+
+    <!-- 10. ENTREGABLES -->
+    <section id="s10">
+      <div class="eyebrow">Qué hay que entregar</div>
+      <h2 class="sec"><span class="secnum">10.</span> Entregables del componente de trabajo en equipo</h2>
+
+      <h3 class="sub">Contrato de equipo</h3>
+
+      <div class="blocks-3">
+        <div class="block">
+          <b>Contenido</b>
+          <ul>
+            <li>Normas acordadas por el equipo</li>
+            <li>Roles definidos con responsables y suplentes</li>
+            <li>Cronograma de reuniones regulares</li>
+            <li>Mecanismos de resolución de conflictos</li>
+            <li>Criterios de evaluación derivados de las normas</li>
+          </ul>
+        </div>
+        <div class="block">
+          <b>Formato</b>
+          <ul>
+            <li>Documento «Contrato de Equipo — POI Uniandes»</li>
+            <li>Versión digital en PDF</li>
+            <li>Firmado por todos los integrantes</li>
+            <li>Actualizable mediante adendas documentadas</li>
+          </ul>
+        </div>
+        <div class="block">
+          <b>Entrega</b>
+          <ul>
+            <li>Semana 2 del curso</li>
+            <li>Carga en BloqueNeón</li>
+            <li>Revisión por asistente/profesor</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3 class="sub">Actas semanales</h3>
+
+      <p>Documentos de seguimiento continuo que capturan la evolución del trabajo colaborativo, las decisiones tomadas y los compromisos adquiridos. El registro se hará a través de documentos de Word subidos a BloqueNeón.</p>
+
+      <h3 class="sub">Estructura del registro semanal</h3>
+
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-year">1</div>
+          <span class="tl-dot"></span>
+          <div class="tl-body">
+            <b>Fecha, hora y participantes</b>
+            <span>Documentación básica de la reunión.</span>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">2</div>
+          <span class="tl-dot"></span>
+          <div class="tl-body">
+            <b>Objetivo de la reunión</b>
+            <span>Propósito específico que orientó la sesión.</span>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">3</div>
+          <span class="tl-dot"></span>
+          <div class="tl-body">
+            <b>Decisiones tomadas</b>
+            <span>Acuerdos alcanzados con justificación resumida.</span>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">4</div>
+          <span class="tl-dot"></span>
+          <div class="tl-body">
+            <b>Tareas y responsables</b>
+            <span>Compromisos específicos con fecha límite y criterios de satisfacción.</span>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">5</div>
+          <span class="tl-dot"></span>
+          <div class="tl-body">
+            <b>Riesgos identificados</b>
+            <span>Nuevas amenazas o actualizaciones, con valoración y plan de mitigación.</span>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">6</div>
+          <span class="tl-dot"></span>
+          <div class="tl-body">
+            <b>Reconocimientos</b>
+            <span>Mención de contribuciones destacadas y aprendizajes significativos.</span>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">7</div>
+          <span class="tl-dot"></span>
+          <div class="tl-body">
+            <b>Próxima reunión</b>
+            <span>Fecha programada, enfoque previsto y entregables intermedios.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 11. DOCUMENTACIÓN -->
+    <section id="s11">
+      <div class="eyebrow">Memoria colectiva</div>
+      <h2 class="sec"><span class="secnum">11.</span> Buenas prácticas para la documentación</h2>
+
+      <div class="blocks">
+        <div class="block">
+          <b>Rotación del registro</b>
+          <span>Aunque el Gestor de Documentación supervisa, la responsabilidad de completar el registro puede rotar para desarrollar esta habilidad en todos los miembros.</span>
+        </div>
+        <div class="block">
+          <b>Actualización inmediata</b>
+          <span>El registro debe completarse dentro de las 24 horas posteriores a la reunión, cuando los detalles están frescos.</span>
+        </div>
+        <div class="block">
+          <b>Revisión colectiva</b>
+          <span>Antes de finalizarse, el registro debe circular entre los asistentes para verificar precisión y completar detalles omitidos.</span>
+        </div>
+        <div class="block">
+          <b>Accesibilidad</b>
+          <span>Repositorio centralizado, con formato y nomenclatura estandarizados que faciliten la consulta posterior.</span>
+        </div>
+      </div>
+
+      <div class="callout callout--tip">
+        <span class="ic">i</span>
+        <div><b>El registro como herramienta viva</b><p>El registro semanal no es solo un requisito administrativo, sino una herramienta viva que apoya la continuidad del proyecto, la transparencia interna y la construcción de memoria colectiva.</p></div>
+      </div>
+    </section>
+
+    <!-- 12. INTEGRACIÓN FINAL -->
+    <section id="s12">
+      <div class="eyebrow">Del aula al entorno profesional</div>
+      <h2 class="sec"><span class="secnum">12.</span> Integración final: del aula al entorno profesional</h2>
+
+      <p>Las competencias de trabajo en equipo desarrolladas durante los proyectos de operaciones unitarias trascienden el ámbito académico y constituyen un activo profesional valioso. La industria química, alimentaria y biotecnológica opera fundamentalmente a través de equipos multidisciplinarios donde la colaboración efectiva es tan importante como el conocimiento técnico especializado.</p>
+
+      <p>El Proyecto Aristóteles de Google demuestra que las organizaciones líderes en innovación tecnológica valoran y estudian sistemáticamente los factores que hacen efectivo el trabajo en equipo.</p>
+
+      <blockquote class="pull">
+        <span class="qmark">&ldquo;</span>
+        <p>«La capacidad de trabajar efectivamente en equipo no es un talento innato, sino una competencia desarrollable a través de la práctica reflexiva y la aplicación de principios fundamentados en evidencia. Los ingenieros que dominan esta competencia multiplican su impacto profesional.»</p>
+      </blockquote>
+    </section>
+
+    <!-- 13. REFLEXIÓN FINAL -->
+    <section id="s13">
+      <div class="eyebrow">Más allá de las herramientas</div>
+      <h2 class="sec"><span class="secnum">13.</span> Reflexión final: más allá de las herramientas</h2>
+
+      <div class="timeline">
+        <div class="tl-item">
+          <div class="tl-year">1</div>
+          <span class="tl-dot"></span>
+          <div class="tl-body">
+            <b>Interdependencia positiva</b>
+            <span>Reconocer que el éxito individual está indisolublemente ligado al éxito colectivo.</span>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">2</div>
+          <span class="tl-dot"></span>
+          <div class="tl-body">
+            <b>Responsabilidad individual y grupal</b>
+            <span>Asumir compromisos personales mientras se mantiene la corresponsabilidad por el resultado conjunto.</span>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">3</div>
+          <span class="tl-dot"></span>
+          <div class="tl-body">
+            <b>Interacción promotora</b>
+            <span>Crear un ambiente donde los miembros activamente facilitan el éxito de sus compañeros.</span>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">4</div>
+          <span class="tl-dot"></span>
+          <div class="tl-body">
+            <b>Desarrollo de habilidades sociales</b>
+            <span>Cultivar conscientemente competencias interpersonales como la comunicación asertiva, la empatía y la gestión constructiva del desacuerdo.</span>
+          </div>
+        </div>
+        <div class="tl-item">
+          <div class="tl-year">5</div>
+          <span class="tl-dot"></span>
+          <div class="tl-body">
+            <b>Procesamiento grupal</b>
+            <span>Reflexionar regularmente sobre el funcionamiento del equipo para preservar lo que funciona bien y mejorar lo perfectible.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout callout--tip">
+        <span class="ic">i</span>
+        <div><b>La verdadera medida del éxito</b><p>La verdadera medida del éxito en el componente de trabajo en equipo no es simplemente completar el proyecto académico, sino desarrollar competencias transferibles que potenciarán su efectividad como profesionales en un mundo donde la innovación y la resolución de problemas complejos son inherentemente colaborativas.</p></div>
+      </div>
+
+      <p>Los invitamos a considerar esta experiencia como un laboratorio de aprendizaje no solo sobre operaciones unitarias, sino también sobre las dinámicas humanas que determinan cómo las organizaciones transforman conocimiento especializado en soluciones efectivas.</p>
+    </section>
+
+    <!-- 14. PLANTILLAS -->
+    <section id="s14">
+      <div class="eyebrow">Para usar directamente</div>
+      <h2 class="sec"><span class="secnum">14.</span> Plantillas</h2>
+
+      <details>
+        <summary>Plantilla: Registro semanal de trabajo en equipo</summary>
+        <div class="detail-body">
+          <div class="tbl-wrap">
+            <table class="ou" style="min-width:400px;">
+              <tbody>
+                <tr><td style="width:35%">Equipo</td><td>[Nombre del equipo]</td></tr>
+                <tr><td>Fecha y hora</td><td>[DD/MM/AAAA — HH:MM]</td></tr>
+                <tr><td>Modalidad</td><td>[Presencial / Virtual / Híbrida]</td></tr>
+                <tr><td>Asistentes</td><td>[Nombres]</td></tr>
+                <tr><td>Ausencias justificadas</td><td>[Nombres y motivo]</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4>1. Objetivo de la reunión</h4>
+          <p>[Describir el propósito específico de la sesión]</p>
+
+          <h4>2. Temas tratados</h4>
+          <p>[Lista de temas abordados durante la reunión]</p>
+
+          <h4>3. Decisiones tomadas</h4>
+          <p>[Acuerdos alcanzados con justificación resumida]</p>
+
+          <h4>4. Compromisos establecidos</h4>
+          <div class="tbl-wrap">
+            <table class="ou" style="min-width:400px;">
+              <thead>
+                <tr><th>Tarea</th><th>Responsable</th><th>Fecha límite</th><th>Criterio de satisfacción</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>[Describir tarea]</td><td>[Nombre]</td><td>[Fecha]</td><td>[Condición de aceptación]</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4>5. Riesgos identificados</h4>
+          <p>[Nuevas amenazas o actualizaciones con valoración y plan de mitigación]</p>
+
+          <h4>6. Seguimiento de compromisos anteriores</h4>
+          <p>[Estado de tareas asignadas en reuniones previas]</p>
+
+          <h4>7. Reconocimientos</h4>
+          <p>[Contribuciones destacadas y aprendizajes significativos]</p>
+
+          <h4>8. Próxima reunión</h4>
+          <p>[Fecha programada, enfoque previsto y entregables intermedios]</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>Plantilla: Contrato de equipo</summary>
+        <div class="detail-body">
+
+          <h4>Sección 1: Propósito, misión y valores del equipo</h4>
+          <div class="tbl-wrap">
+            <table class="ou" style="min-width:400px;">
+              <tbody>
+                <tr><td style="width:35%">Propósito del proyecto</td><td>[Descripción del proyecto y su alcance]</td></tr>
+                <tr><td>Misión del equipo</td><td>[Por qué trabajan juntos y qué quieren lograr]</td></tr>
+                <tr><td>Valores del equipo (3–5)</td><td>[Ej: Rigor técnico, Respeto mutuo, Transparencia, Puntualidad, Seguridad]</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4>Sección 2: Roles del equipo</h4>
+          <div class="tbl-wrap">
+            <table class="ou" style="min-width:600px;">
+              <thead>
+                <tr><th>Rol</th><th>Responsable</th><th>Suplente</th><th>Responsabilidades clave</th><th>Indicadores de cumplimiento</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Coordinación general</td><td></td><td></td><td></td><td></td></tr>
+                <tr><td>Líder técnico de proceso</td><td></td><td></td><td></td><td></td></tr>
+                <tr><td>Gestor(a) de documentación y calidad</td><td></td><td></td><td></td><td></td></tr>
+                <tr><td>Analista de datos / Modelamiento</td><td></td><td></td><td></td><td></td></tr>
+                <tr><td>Gestor(a) de compras y logística</td><td></td><td></td><td></td><td></td></tr>
+                <tr><td>Gestor(a) de riesgos</td><td></td><td></td><td></td><td></td></tr>
+                <tr><td>Vocería</td><td></td><td></td><td></td><td></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4>Sección 3: Normas del equipo</h4>
+          <div class="tbl-wrap">
+            <table class="ou" style="min-width:560px;">
+              <thead>
+                <tr><th style="width:8%">#</th><th>Norma acordada</th><th>Indicador observable / Evidencia</th><th>Consecuencia ante incumplimiento</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>1</td><td></td><td></td><td></td></tr>
+                <tr><td>2</td><td></td><td></td><td></td></tr>
+                <tr><td>3</td><td></td><td></td><td></td></tr>
+                <tr><td>4</td><td></td><td></td><td></td></tr>
+                <tr><td>5</td><td></td><td></td><td></td></tr>
+                <tr><td>6</td><td></td><td></td><td></td></tr>
+                <tr><td>7</td><td></td><td></td><td></td></tr>
+                <tr><td>8</td><td></td><td></td><td></td></tr>
+                <tr><td>9</td><td></td><td></td><td></td></tr>
+                <tr><td>10</td><td></td><td></td><td></td></tr>
+                <tr><td>11</td><td></td><td></td><td></td></tr>
+                <tr><td>12</td><td></td><td></td><td></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4>Sección 4: Plan de reuniones y canales de comunicación</h4>
+          <div class="tbl-wrap">
+            <table class="ou" style="min-width:400px;">
+              <tbody>
+                <tr><td style="width:35%">Periodicidad</td><td>[Ej: Reunión semanal los martes a las 18:00]</td></tr>
+                <tr><td>Modalidad preferida</td><td>[Presencial / Virtual / Híbrida]</td></tr>
+                <tr><td>Plazo para actas</td><td>[Ej: 24 horas después de cada reunión]</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="tbl-wrap" style="margin-top:12px;">
+            <table class="ou" style="min-width:400px;">
+              <thead>
+                <tr><th>Canal</th><th>Uso acordado</th><th>Tiempo de respuesta</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>WhatsApp / Telegram</td><td>Coordinación rápida y alertas</td><td>[Ej: 4 horas]</td></tr>
+                <tr><td>Correo electrónico</td><td>Comunicaciones formales</td><td>[Ej: 24 horas]</td></tr>
+                <tr><td>Plataforma de gestión</td><td>Seguimiento de tareas</td><td>[Ej: 48 horas]</td></tr>
+                <tr><td>Repositorio compartido</td><td>Documentos y entregables</td><td>[N/A]</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4>Sección 5: Mecanismos de resolución de conflictos</h4>
+          <p><strong>Conflictos de tarea:</strong></p>
+          <ol>
+            <li>Diálogo técnico con argumentos bibliográficos</li>
+            <li>Votación documentada del equipo</li>
+            <li>Consulta al asistente o profesor</li>
+          </ol>
+          <p><strong>Conflictos de proceso:</strong></p>
+          <ol>
+            <li>Conversación directa entre partes</li>
+            <li>Mediación del Coordinador</li>
+            <li>Reunión de equipo</li>
+            <li>Escalonamiento al docente</li>
+          </ol>
+          <p><strong>Conflictos interpersonales:</strong></p>
+          <ol>
+            <li>Diálogo privado entre involucrados</li>
+            <li>Mediación interna</li>
+            <li>Reunión con todo el equipo</li>
+            <li>Intervención docente</li>
+          </ol>
+          <p><strong>Seguridad:</strong></p>
+          <ol>
+            <li>Reporte inmediato al Coordinador y al docente</li>
+            <li>Registro en el acta y en la matriz de riesgos</li>
+          </ol>
+
+          <h4>Sección 6: Criterios y ponderaciones para co/autoevaluación</h4>
+          <div class="tbl-wrap">
+            <table class="ou" style="min-width:400px;">
+              <thead>
+                <tr><th>Criterio</th><th>Indicador observable</th><th style="width:15%">Peso (%)</th></tr>
+              </thead>
+              <tbody>
+                <tr><td></td><td></td><td></td></tr>
+                <tr><td></td><td></td><td></td></tr>
+                <tr><td></td><td></td><td></td></tr>
+                <tr><td></td><td></td><td></td></tr>
+                <tr><td></td><td></td><td></td></tr>
+                <tr><td></td><td></td><td></td></tr>
+                <tr><td></td><td></td><td></td></tr>
+                <tr><td><strong>Total</strong></td><td></td><td><strong>100%</strong></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4>Sección 7: Sanciones y medidas restaurativas</h4>
+          <div class="tbl-wrap">
+            <table class="ou" style="min-width:400px;">
+              <thead>
+                <tr><th>Nivel</th><th>Descripción</th><th>Consecuencia</th><th>Medida restaurativa</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Leve</td><td>[Ej: Retraso puntual, comunicación tardía]</td><td>[Ej: Llamado de atención verbal]</td><td>[Ej: Compromiso público de mejora]</td></tr>
+                <tr><td>Moderado</td><td>[Ej: Incumplimiento repetido, impacto en entregables]</td><td>[Ej: Notificación al docente]</td><td>[Ej: Plan de mejora escrito]</td></tr>
+                <tr><td>Grave</td><td>[Ej: Falta de respeto, plagio, violación de seguridad]</td><td>[Ej: Reporte formal al docente]</td><td>[Ej: Intervención docente y ajuste de nota]</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4>Sección 8: Firmas</h4>
+          <div class="tbl-wrap">
+            <table class="ou" style="min-width:400px;">
+              <thead>
+                <tr><th>Nombre</th><th>Firma</th><th>Fecha</th></tr>
+              </thead>
+              <tbody>
+                <tr><td style="height:40px;"></td><td></td><td></td></tr>
+                <tr><td style="height:40px;"></td><td></td><td></td></tr>
+                <tr><td style="height:40px;"></td><td></td><td></td></tr>
+                <tr><td style="height:40px;"></td><td></td><td></td></tr>
+                <tr><td style="height:40px;"></td><td></td><td></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+      </details>
+
+    </section>
+
+    <footer class="doc-foot">
+      <span>Luis H. Reyes · Universidad de los Andes</span>
+      <span>Proyecto de Operaciones Unitarias · IQYA-2031 · 2026-20</span>
+    </footer>
+
+  </div>
+</article>
+
+</div>
+
+<script>
+(function () {
+  /* ---- Barra de progreso de lectura ---- */
+  var bar = document.getElementById('progress');
+  function onScroll() {
+    var h = document.documentElement;
+    var max = h.scrollHeight - h.clientHeight;
+    bar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  /* ---- Navegación suave del índice ---- */
+  document.querySelectorAll('.toc a, .doc-body a[href^="#"]').forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      var id = a.getAttribute('href').slice(1);
+      var el = document.getElementById(id);
+      if (el) {
+        e.preventDefault();
+        var y = el.getBoundingClientRect().top + window.scrollY - 24;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+      }
+    });
+  });
+})();
+
+/* ---- Sticky side-nav: resaltado de sección activa ---- */
+(function() {
+  var sects = Array.from(document.querySelectorAll('.doc-body section[id]')).filter(function(s){ return s.id !== 's0'; });
+  if (!sects.length) return;
+  function update() {
+    var y = window.scrollY + 180;
+    var cur = sects[0].id;
+    for (var i = 0; i < sects.length; i++) { if (sects[i].offsetTop <= y) cur = sects[i].id; }
+    document.querySelectorAll('.sn-item').forEach(function(a) {
+      a.classList.toggle('is-active', a.getAttribute('href') === '#' + cur);
+    });
+  }
+  window.addEventListener('scroll', update, { passive: true });
+  update();
+})();
+</script>
+
+</body>
+</html>
