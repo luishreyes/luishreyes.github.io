@@ -13,6 +13,14 @@ export interface Reading {
    */
   category?: 'guia' | 'lectura';
   /**
+   * Posición dentro de su categoría. Las lecturas se numeran según el orden
+   * del programa del curso; las guías, por importancia editorial (decidida
+   * por el profesor). El índice las muestra ordenadas ascendentemente y
+   * añade el prefijo "Lectura NN" / "Guía NN" en la tarjeta.
+   * Si se omite, la entrada cae al final de su grupo.
+   */
+  order?: number;
+  /**
    * Si se define, la entrada enlaza a este documento (p. ej. un HTML
    * autocontenido hospedado en `public/`) y abre en pestaña nueva, en lugar
    * de la lectura TSX interna (`/classroom/{slug}/readings/{slug}`).
