@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lectura 03 · Reducción de tamaño · Proyecto de Operaciones Unitarias</title>
+<link rel="stylesheet" href="assets/deloitte.css">
+
+<!-- KaTeX para fórmulas -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],throwOnError:false});"></script>
+
+<style>
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--gris-5);
+    font-family: var(--tipo);
+    color: var(--gris-1);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.62;
+  }
+
+  /* ---- Barra de progreso de lectura ---- */
+  .progress {
+    position: fixed; top: 0; left: 0; height: 4px; width: 0;
+    background: var(--verde); z-index: 200; transition: width .08s linear;
+  }
+
+  .page {
+    max-width: 940px;
+    margin: 40px auto 90px;
+    background: var(--blanco);
+    box-shadow: var(--sombra);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  /* ===================== ENCABEZADO ===================== */
+  .doc-head {
+    background: var(--papel);
+    border-bottom: 5px solid var(--verde);
+    padding: 46px 64px 40px;
+    position: relative;
+  }
+  .doc-head .org {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    font-size: 14px; font-weight: 700; letter-spacing: .03em; color: var(--gris-1);
+  }
+  .doc-head .org span { color: var(--gris-3); font-weight: 600; }
+  .doc-head .badge {
+    display: inline-block; background: var(--verde); color: #fff;
+    font-size: 13px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+    padding: 6px 14px; border-radius: 999px; margin: 28px 0 18px; white-space: nowrap;
+  }
+  .doc-head h1 { font-size: 43px; line-height: 1.1; margin: 0 0 10px; letter-spacing: -.015em; max-width: 22ch; }
+  .doc-head .subtitle { font-size: 20px; color: var(--gris-2); margin: 0; font-weight: 500; max-width: 60ch; }
+  .doc-meta {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px;
+    margin-top: 34px; padding-top: 26px; border-top: 1px solid var(--gris-4);
+  }
+  .doc-meta div { font-size: 15px; color: var(--gris-2); }
+  .doc-meta b { display: block; color: var(--gris-1); font-size: 16px; font-weight: 700; margin-bottom: 2px; }
+
+  /* ===================== CUERPO ===================== */
+  .doc-body { padding: 8px 64px 60px; }
+  .doc-body section { padding-top: 46px; scroll-margin-top: 24px; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--verde-osc); margin-bottom: 12px;
+  }
+  .eyebrow::before { content: ""; width: 26px; height: 4px; background: var(--verde); border-radius: 2px; }
+  h2.sec { font-size: 30px; line-height: 1.18; margin: 0 0 18px; letter-spacing: -.01em; }
+  h2.sec .secnum { color: var(--verde); font-weight: 700; }
+  h3.sub { font-size: 21px; margin: 34px 0 10px; letter-spacing: -.005em; }
+  h4.subsub { font-size: 17px; margin: 22px 0 6px; letter-spacing: -.003em; color: var(--gris-1); }
+  .doc-body p { font-size: 17px; color: var(--gris-1); margin: 0 0 16px; text-wrap: pretty; }
+  .doc-body ul, .doc-body ol { font-size: 17px; color: var(--gris-1); margin: 0 0 16px; padding-left: 22px; }
+  .doc-body li { margin-bottom: 6px; text-wrap: pretty; }
+  .lead { font-size: 20px; color: var(--gris-2); line-height: 1.55; font-weight: 400; }
+  .lead b { color: var(--gris-1); font-weight: 600; }
+
+  /* ---- Índice / sumario ---- */
+  .toc {
+    background: var(--papel); border-radius: 8px; padding: 26px 30px;
+    margin-top: 30px; border-left: 5px solid var(--verde);
+  }
+  .toc .toc-t { font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--gris-2); margin: 0 0 14px; }
+  .toc ol { margin: 0; padding: 0; list-style: none; counter-reset: toc; display: grid; gap: 9px; }
+  .toc li { counter-increment: toc; margin: 0; }
+  .toc a {
+    display: flex; align-items: baseline; gap: 14px; text-decoration: none;
+    color: var(--gris-1); font-size: 16.5px; font-weight: 600; padding: 4px 0;
+    border-bottom: 1px solid transparent; transition: color .18s ease;
+  }
+  .toc a::before { content: counter(toc, decimal-leading-zero); color: var(--verde-osc); font-weight: 700; font-size: 14px; min-width: 26px; }
+  .toc a:hover { color: var(--verde-osc); }
+
+  /* ---- Bloques / cards ---- */
+  .blocks { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 22px 0 6px; }
+  .blocks.cols-2 { grid-template-columns: repeat(2, 1fr); }
+  .blocks.cols-4 { grid-template-columns: repeat(4, 1fr); }
+  .block {
+    background: var(--papel); border-radius: 8px; padding: 22px 24px;
+    border-top: 5px solid var(--verde); display: flex; flex-direction: column; gap: 6px;
+  }
+  .block .bn { font-size: 12px; font-weight: 700; color: var(--verde-osc); letter-spacing: .08em; text-transform: uppercase; }
+  .block b { font-size: 18px; line-height: 1.2; }
+  .block span { font-size: 14.5px; color: var(--gris-2); line-height: 1.5; }
+  .block ul { font-size: 14.5px; color: var(--gris-2); line-height: 1.5; padding-left: 18px; margin: 4px 0 0; }
+  .block ul li { margin-bottom: 3px; }
+
+  /* ===================== FIGURAS ===================== */
+  figure.fig { margin: 30px 0 8px; }
+  figure.fig.full img { width: 100%; height: auto; display: block; }
+  .fig-frame {
+    border: 1px solid var(--gris-4); border-radius: 8px; padding: 22px; background: var(--blanco);
+    box-shadow: var(--sombra);
+  }
+  .fig-frame img { display: block; max-width: 100%; height: auto; margin: 0 auto; border-radius: 4px; }
+  figure.fig figcaption {
+    font-size: 14px; color: var(--gris-2); line-height: 1.55; margin-top: 12px;
+    padding-left: 16px; border-left: 3px solid var(--verde);
+  }
+  figure.fig figcaption b { color: var(--gris-1); }
+  .equip-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px; margin: 26px 0 6px;
+  }
+  .equip-grid figure.fig { margin: 0; }
+  .equip-grid .fig-frame { padding: 14px; }
+  .equip-grid figcaption dl { margin: 8px 0 0; }
+  .equip-grid figcaption dt {
+    font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--verde-osc); margin-top: 6px;
+  }
+  .equip-grid figcaption dd { margin: 1px 0 4px; font-size: 13.5px; color: var(--gris-2); }
+  .equip-noimg .fig-frame {
+    display: flex; align-items: center; justify-content: center; min-height: 180px;
+    background: var(--papel); color: var(--gris-3); font-size: 14px; text-align: center; padding: 22px;
+  }
+
+  /* ===================== CITA / PULL-QUOTE ===================== */
+  blockquote.pull {
+    margin: 30px 0; padding: 34px 38px 30px 40px; position: relative;
+    background: var(--gris-1); color: #fff; border-radius: 8px; border-left: 8px solid var(--verde);
+  }
+  blockquote.pull p { font-size: 21px; line-height: 1.5; color: #fff; margin: 0 0 14px; font-weight: 500; }
+  blockquote.pull p:last-child { margin-bottom: 0; }
+  blockquote.pull .qmark {
+    position: absolute; top: 6px; left: 20px; font-size: 80px; line-height: 1;
+    color: var(--verde); font-family: Georgia, serif; opacity: .5;
+  }
+  blockquote.pull cite { display: block; font-style: normal; font-size: 14.5px; color: rgba(255,255,255,.6); margin-top: 16px; }
+  blockquote.pull cite b { color: var(--verde); font-weight: 600; }
+
+  /* ===================== TABLAS ===================== */
+  .tbl-wrap { margin: 0 0 8px; overflow-x: auto; border-radius: 8px; }
+  table.ou { width: 100%; border-collapse: collapse; font-size: 15px; min-width: 620px; }
+  table.ou th, table.ou td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--gris-4); vertical-align: top; line-height: 1.4; }
+  table.ou thead th { background: var(--gris-1); color: #fff; font-weight: 700; font-size: 13px; letter-spacing: .02em; }
+  table.ou thead th:first-child { border-top-left-radius: 6px; }
+  table.ou thead th:last-child { border-top-right-radius: 6px; }
+  table.ou td:first-child { font-weight: 700; color: var(--gris-1); }
+  table.ou tbody tr:nth-child(even) { background: var(--papel); }
+  table.ou.compact th, table.ou.compact td { padding: 8px 12px; font-size: 13.5px; }
+  .tbl-cap { font-size: 13.5px; color: var(--gris-2); margin: 24px 0 11px; padding-left: 14px; border-left: 3px solid var(--verde); line-height: 1.5; }
+  .tbl-cap b { color: var(--gris-1); }
+
+  /* ===================== CALLOUTS ===================== */
+  .callout {
+    display: grid; grid-template-columns: 42px 1fr; gap: 18px;
+    border-radius: 8px; padding: 20px 24px; margin: 24px 0; align-items: start;
+  }
+  .callout .ic {
+    width: 42px; height: 42px; border-radius: 50%; display: inline-flex;
+    align-items: center; justify-content: center; font-size: 21px; font-weight: 700;
+  }
+  .callout > div > b { display: block; font-size: 15.5px; margin-bottom: 4px; }
+  .callout p { font-size: 15.5px; margin: 0; color: var(--gris-1); line-height: 1.55; }
+  .callout p + p { margin-top: 8px; }
+  .callout p b { display: inline; color: inherit; font-size: inherit; }
+  .callout--nota { background: var(--teal-claro); }
+  .callout--nota .ic { background: var(--teal); color: #fff; }
+  .callout--nota b { color: var(--teal); }
+  .callout--tip { background: var(--verde-claro); }
+  .callout--tip .ic { background: var(--verde); color: #fff; }
+  .callout--tip b { color: var(--verde-osc); }
+
+  /* ===================== DETALLE PLEGABLE ===================== */
+  details.bonddata {
+    margin: 24px 0; border: 1px solid var(--gris-4); border-radius: 8px;
+    background: var(--papel); overflow: hidden;
+  }
+  details.bonddata > summary {
+    list-style: none; cursor: pointer; padding: 16px 22px; font-weight: 700;
+    font-size: 15.5px; color: var(--gris-1); display: flex; align-items: center; gap: 12px;
+    background: var(--papel); transition: background .15s ease;
+  }
+  details.bonddata > summary::-webkit-details-marker { display: none; }
+  details.bonddata > summary::before {
+    content: "+"; display: inline-flex; align-items: center; justify-content: center;
+    width: 24px; height: 24px; border-radius: 50%; background: var(--verde); color: #fff;
+    font-size: 18px; font-weight: 700; line-height: 1; flex-shrink: 0;
+  }
+  details.bonddata[open] > summary::before { content: "–"; }
+  details.bonddata > summary:hover { background: var(--verde-claro); }
+  details.bonddata > summary small { color: var(--gris-2); font-weight: 500; font-size: 13px; margin-left: auto; }
+  .bond-inner { padding: 4px 22px 22px; background: var(--blanco); }
+  .bond-inner p { font-size: 14.5px; color: var(--gris-2); margin: 14px 0; }
+
+  /* ===================== EJEMPLO RESUELTO ===================== */
+  .worked {
+    margin: 24px 0; border: 1px solid var(--gris-4); border-radius: 8px; overflow: hidden;
+    background: var(--blanco); box-shadow: var(--sombra);
+  }
+  .worked .step { padding: 18px 24px; border-top: 1px solid var(--gris-4); }
+  .worked .step:first-child { background: var(--verde-claro); border-top: none; }
+  .worked .step h4 {
+    font-size: 15px; font-weight: 700; color: var(--gris-1); margin: 0 0 8px;
+    letter-spacing: .01em;
+  }
+  .worked .step h4 .stepn {
+    display: inline-block; min-width: 22px; height: 22px; padding: 0 6px;
+    border-radius: 999px; background: var(--verde); color: #fff;
+    font-size: 12px; line-height: 22px; text-align: center; margin-right: 8px;
+    vertical-align: 1px;
+  }
+  .worked .step p { font-size: 15.5px; color: var(--gris-1); margin: 0 0 10px; }
+  .worked .step ul { font-size: 15.5px; color: var(--gris-1); margin: 0 0 10px; padding-left: 20px; }
+  .worked .step .note { font-size: 13.5px; color: var(--gris-2); font-style: italic; }
+
+  /* ===================== ENLACES ===================== */
+  .doc-body a { color: var(--teal); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color .15s ease; }
+  .doc-body a:hover { border-bottom-color: var(--teal); }
+
+  /* ===================== BIBLIOGRAFÍA ===================== */
+  ol.refs { list-style: none; counter-reset: ref; padding: 0; margin: 18px 0 0; display: grid; gap: 4px; }
+  ol.refs li {
+    counter-increment: ref; position: relative; padding: 12px 16px 12px 58px; border-radius: 8px;
+    font-size: 15px; line-height: 1.5; color: var(--gris-1);
+    background: var(--papel);
+  }
+  ol.refs li::before {
+    content: counter(ref); position: absolute; left: 14px; top: 11px;
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px; border-radius: 999px; background: var(--blanco); color: var(--verde-osc);
+    font-size: 13px; font-weight: 700;
+  }
+  ol.refs li em { color: var(--gris-2); }
+
+  /* ===================== FOOTER ===================== */
+  .doc-foot {
+    border-top: 1px solid var(--gris-4); margin-top: 50px; padding-top: 22px;
+    display: flex; justify-content: space-between; font-size: 13px; color: var(--gris-3);
+  }
+
+  /* ===================== RESPONSIVE ===================== */
+  @media (max-width: 720px) {
+    .doc-head, .doc-body { padding-left: 26px; padding-right: 26px; }
+    .doc-meta { grid-template-columns: 1fr 1fr; }
+    .blocks, .blocks.cols-2, .blocks.cols-4 { grid-template-columns: 1fr; }
+    .equip-grid { grid-template-columns: 1fr; }
+    .doc-head h1 { font-size: 32px; }
+  }
+  @media print {
+    body { background: #fff; }
+    .page { box-shadow: none; margin: 0; max-width: none; border-radius: 0; }
+    .progress { display: none; }
+    section, figure.fig, .blocks, .tbl-wrap, blockquote.pull, .callout, .worked, details.bonddata { break-inside: avoid; }
+    details.bonddata[open] .bond-inner { display: block !important; }
+  }
+
+  /* ---- Outer layout with sticky side nav ---- */
+  .page { margin: 0; }
+  .outer-layout {
+    max-width: 1160px;
+    margin: 40px auto 90px;
+    display: grid;
+    grid-template-columns: 200px minmax(0, 1fr);
+    gap: 24px;
+    padding: 0 20px;
+    align-items: start;
+  }
+  .side-nav {
+    position: sticky;
+    top: 28px;
+    max-height: calc(100vh - 56px);
+    overflow-y: auto;
+    background: var(--blanco);
+    border: 1px solid var(--gris-4);
+    border-radius: 8px;
+    padding: 20px 16px;
+    box-shadow: var(--sombra);
+    scrollbar-width: thin;
+  }
+  .sn-label { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--gris-3); margin: 0 0 10px; padding: 0 4px; }
+  .sn-item { display: flex; align-items: flex-start; gap: 7px; font-family: var(--tipo); font-size: 13px; color: var(--gris-2); text-decoration: none; padding: 6px 8px; border-radius: 5px; line-height: 1.3; transition: all .15s; margin-bottom: 2px; border: none; background: none; cursor: pointer; width: 100%; text-align: left; }
+  .sn-item:hover { color: var(--gris-1); background: var(--gris-5); }
+  .sn-item.is-active { color: var(--verde-osc); background: var(--verde-claro); font-weight: 600; border-left: 3px solid var(--verde); padding-left: 5px; }
+  .sn-num { font-size: 11px; font-weight: 700; color: var(--verde-osc); min-width: 16px; padding-top: 1px; flex-shrink: 0; }
+  @media (max-width: 880px) {
+    .outer-layout { grid-template-columns: 1fr; padding: 0 12px; }
+    .side-nav { display: none; }
+    .page { margin: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<div class="outer-layout">
+
+<nav class="side-nav" aria-label="Secciones">
+  <p class="sn-label">En esta lectura</p>
+  <a href="#s1" class="sn-item"><span class="sn-num">01</span>¿Por qué rompemos las cosas?</a>
+  <a href="#s2" class="sn-item"><span class="sn-num">02</span>Mecanismos de fractura</a>
+  <a href="#s3" class="sn-item"><span class="sn-num">03</span>Equipos de reducción de tamaño</a>
+  <a href="#s4" class="sn-item"><span class="sn-num">04</span>Eficiencia energética y leyes de la conminución</a>
+  <a href="#s5" class="sn-item"><span class="sn-num">05</span>Ejemplo resuelto con Bond</a>
+  <a href="#s6" class="sn-item"><span class="sn-num">06</span>Factores operativos y selección</a>
+  <a href="#s7" class="sn-item"><span class="sn-num">07</span>Consejos prácticos para el proyecto</a>
+  <a href="#s8" class="sn-item"><span class="sn-num">08</span>Bibliografía</a>
+</nav>
+
+<article class="page">
+
+  <!-- ENCABEZADO -->
+  <header class="doc-head">
+    <div class="org">
+      Universidad de los Andes
+      <span>Ingeniería Química y de Alimentos</span>
+    </div>
+    <div class="badge">Lectura 03 · Proyecto de Operaciones Unitarias</div>
+    <h1>Reducción de tamaño</h1>
+    <p class="subtitle">Conminución, mecanismos de fractura, equipos y leyes energéticas — por qué triturar es una de las operaciones más comunes de la industria y, paradójicamente, una de las menos eficientes.</p>
+    <div class="doc-meta">
+      <div><b>Curso</b>Proyecto de Operaciones Unitarias · IQYA-2031</div>
+      <div><b>Autor</b>Luis H. Reyes</div>
+      <div><b>Fecha</b>4 de junio de 2026</div>
+      <div><b>Lectura</b>Aproximadamente 25 minutos</div>
+    </div>
+  </header>
+
+  <div class="doc-body">
+
+    <!-- INTRO + TOC -->
+    <section id="s0">
+      <p class="lead">La <i>reducción de tamaño</i> &mdash;o, en lenguaje técnico, <i>conminución</i>&mdash; es el conjunto de operaciones que transforman bloques grandes de sólido en partículas controladas. <b>Es una de las operaciones mecánicas más extendidas de la industria y, a la vez, una de las menos eficientes en términos energéticos: en una planta minera típica concentra entre el 30% y el 60% del consumo eléctrico total.</b> Esta lectura recorre por qué se rompe, cómo se rompe, con qué se rompe y cuánto cuesta romper.</p>
+
+      <div class="toc">
+        <p class="toc-t">En esta lectura</p>
+        <ol>
+          <li><a href="#s1">¿Por qué rompemos las cosas?</a></li>
+          <li><a href="#s2">Mecanismos de fractura</a></li>
+          <li><a href="#s3">Equipos de reducción de tamaño</a></li>
+          <li><a href="#s4">Eficiencia energética y leyes de la conminución</a></li>
+          <li><a href="#s5">Ejemplo resuelto con Bond</a></li>
+          <li><a href="#s6">Factores operativos y criterios de selección</a></li>
+          <li><a href="#s7">Consejos prácticos para el proyecto</a></li>
+          <li><a href="#s8">Bibliografía</a></li>
+        </ol>
+      </div>
+
+      <figure class="fig full">
+        <div class="fig-frame">
+          <img src="assets/img/hero.jpeg" alt="Operación industrial de reducción de tamaño: trituradoras y molinos en una planta de procesamiento de minerales.">
+        </div>
+        <figcaption><b>Figura 1.</b> Conminución industrial. Las trituradoras gruesas alimentan los molinos finos en una cascada de etapas; cada equipo trabaja en su rango óptimo de relación de reducción y, juntos, logran el salto de tamaño que ninguna máquina aislada puede conseguir.</figcaption>
+      </figure>
+
+      <div class="callout callout--tip">
+        <span class="ic">i</span>
+        <div><b>Aplicación al proyecto del curso</b><p>Si su proyecto involucra reducir el tamaño de un material, deberá investigar sus propiedades, justificar la elección del equipo y, en lo posible, <b>estimar la energía requerida</b> con alguna de las leyes de conminución. La ley de <b>Bond</b> es la más recomendada para estimaciones preliminares siempre que pueda obtenerse o asumirse un valor del índice de trabajo $W_i$.</p></div>
+      </div>
+    </section>
+
+    <!-- 1. ¿POR QUÉ ROMPEMOS LAS COSAS? -->
+    <section id="s1">
+      <div class="eyebrow">Punto de partida</div>
+      <h2 class="sec"><span class="secnum">1.</span> ¿Por qué rompemos las cosas?</h2>
+      <p>La <i>reducción de tamaño</i> es una operación unitaria con un objetivo aparentemente trivial: convertir un sólido grande en sólidos más pequeños. La aparente trivialidad se desvanece apenas se pregunta para qué. La industria no muele por gusto; muele porque varios procesos posteriores no son viables sin esa transformación previa.</p>
+
+      <p>El primer objetivo, y el más profundo, es <b>aumentar el área superficial disponible</b>. Toda reacción heterogénea entre un sólido y un fluido &mdash;una lixiviación de mineral, una hidrogenación catalítica, una disolución farmacéutica, una combustión de carbón pulverizado&mdash; ocurre en la interfase. La velocidad del proceso depende, antes que de cualquier otra cosa, de cuánta interfase está disponible. Para una partícula esférica, el área específica por unidad de volumen escala como $a_v \propto 1/D$, de manera que reducir el diámetro de <b>50 mm a 100 µm</b> &mdash;un factor de 500 en tamaño lineal&mdash; multiplica la superficie disponible por un factor del orden de <b>500 veces</b>. Sin esa amplificación, la cinética de la mayoría de los procesos hidrometalúrgicos y catalíticos sería prohibitivamente lenta.</p>
+
+      <p>El segundo objetivo es <b>obtener un tamaño de partícula específico</b>. Muchos productos finales o intermedios requieren un tamaño definido para cumplir con la especificación comercial, con un requisito de calidad o con la entrada de la siguiente etapa de proceso. El cemento Portland necesita una finura precisa para hidratarse correctamente; los pigmentos exigen un tamaño definido para dar el color y el poder cubriente esperados; las harinas industriales se cotizan por su distribución granulométrica; los activos farmacéuticos se muelen para garantizar biodisponibilidad. En todos estos casos, el tamaño no es un subproducto del proceso: es el producto.</p>
+
+      <p>El tercer objetivo &mdash;central en minería&mdash; es <b>liberar componentes valiosos</b>. La roca extraída contiene el mineral de interés disperso en una matriz estéril llamada ganga; mientras los dos permanezcan físicamente entrelazados, ninguna operación de concentración (flotación, separación magnética, gravimétrica) puede separarlos. La molienda quiebra esa unión hasta que las partículas de mineral quedan mayoritariamente sueltas. El tamaño al que esto ocurre se llama <i>tamaño de liberación</i> y es propio de cada yacimiento.</p>
+
+      <p>A esto se suman dos objetivos más, menos espectaculares pero igualmente reales. El primero es <b>facilitar el manejo y transporte</b>: las partículas pequeñas y uniformes se transportan neumáticamente, se dosifican con tornillo, se mezclan sin segregación. El segundo es <b>mejorar propiedades del producto</b> que dependen del tamaño: la textura en alimentos, la capacidad de compactación en tabletas farmacéuticas, la velocidad de combustión en un carbón pulverizado.</p>
+
+      <div class="callout callout--tip">
+        <span class="ic">!</span>
+        <div><b>El producto siempre es una distribución</b><p>La reducción de tamaño raramente produce partículas de un solo tamaño. El producto es siempre una <b>distribución</b> que debe caracterizarse &mdash;por tamizado, análisis de imagen o difracción láser&mdash; para saber si cumple la especificación. Pensar en términos de un único «tamaño de producto» es una simplificación útil para el diseño preliminar, pero la realidad granulométrica es siempre estadística.</p></div>
+      </div>
+
+      <blockquote class="pull">
+        <span class="qmark">&ldquo;</span>
+        <p>La conminución es la operación más costosa de una planta concentradora, y la más difícil de optimizar: el grueso de la energía se disipa como calor y la fracción útil &mdash;la que efectivamente crea superficie&mdash; rara vez supera el 2%.</p>
+        <cite>Wills &amp; Finch, <b>Mineral Processing Technology</b></cite>
+      </blockquote>
+    </section>
+
+    <!-- 2. MECANISMOS -->
+    <section id="s2">
+      <div class="eyebrow">Cómo se rompe un sólido</div>
+      <h2 class="sec"><span class="secnum">2.</span> Mecanismos de fractura</h2>
+      <p>Para reducir el tamaño de un sólido es preciso aplicarle un esfuerzo que supere su resistencia a la fractura. Toda la diversidad del catálogo industrial de equipos &mdash;cientos de modelos, decenas de fabricantes, varias generaciones tecnológicas&mdash; se reduce, en el fondo, a cuatro mecanismos elementales: <i>compresión</i>, <i>impacto</i>, <i>atrición</i> y <i>corte</i>. Cada uno se acomoda a un tipo distinto de material y a un rango distinto de tamaños. Ningún equipo industrial actúa por un solo mecanismo &mdash;casi siempre hay combinación&mdash;, pero entender los cuatro por separado es la base para reconocer cuál predomina en cada máquina y por qué.</p>
+
+      <div class="blocks cols-2">
+        <div class="block">
+          <span class="bn">Mecanismo 01</span>
+          <b>Compresión</b>
+          <span>Fuerzas <b>opuestas y lentas</b> aplastan el sólido hasta que su resistencia a la compresión se supera. Es el mecanismo dominante en la <b>reducción gruesa</b> de materiales duros y frágiles, típicamente la etapa primaria de una planta de conminución.</span>
+          <ul>
+            <li><b>Equipos:</b> trituradoras de mandíbula (jaw), giratorias (gyratory), de rodillos.</li>
+            <li><b>Material ideal:</b> rocas duras, frágiles y no demasiado abrasivas &mdash;caliza, cuarzo, mineral de hierro.</li>
+            <li><b>Ejemplos industriales:</b> minería primaria, canteras, cemento (primera etapa), reciclaje de concreto.</li>
+            <li><b>Relación de reducción típica:</b> 3:1 a 8:1 por etapa.</li>
+          </ul>
+        </div>
+        <div class="block">
+          <span class="bn">Mecanismo 02</span>
+          <b>Impacto</b>
+          <span>Un <b>golpe súbito</b> y de alta velocidad transfiere energía cinética a la partícula y genera fracturas por propagación rápida de grietas. La partícula se rompe por la inercia de su propia masa frente al impacto.</span>
+          <ul>
+            <li><b>Equipos:</b> molinos de martillos, molinos de impacto, pulverizadores.</li>
+            <li><b>Material ideal:</b> frágiles y de dureza media &mdash;carbón, fosfatos, piedra caliza, granos secos.</li>
+            <li><b>Ejemplos industriales:</b> molienda de carbón en plantas térmicas, harina industrial, fertilizantes.</li>
+            <li><b>Relación de reducción típica:</b> 10:1 a 40:1.</li>
+          </ul>
+        </div>
+        <div class="block">
+          <span class="bn">Mecanismo 03</span>
+          <b>Atrición</b>
+          <span><b>Fuerzas de cizalla</b> entre las partículas y las superficies del equipo (o entre las partículas mismas) degradan progresivamente el material por rozamiento. Es el mecanismo dominante en la <b>molienda fina</b>, donde lo decisivo es crear mucha nueva área superficial.</span>
+          <ul>
+            <li><b>Equipos:</b> molinos de discos (atrición), molinos de bolas, molinos de barras, molinos coloidales.</li>
+            <li><b>Material ideal:</b> amplio &mdash;desde duros hasta semiduros&mdash;: cementos, pigmentos, minerales metálicos.</li>
+            <li><b>Ejemplos industriales:</b> molienda de clínker a cemento, beneficio de minerales, activos farmacéuticos.</li>
+            <li><b>Relación de reducción típica:</b> 20:1 a 100:1 (molinos de bolas largos).</li>
+          </ul>
+        </div>
+        <div class="block">
+          <span class="bn">Mecanismo 04</span>
+          <b>Corte</b>
+          <span>Una <b>cuchilla</b> aplica una fuerza concentrada en una línea estrecha para seccionar el material. A diferencia de la fractura frágil, el corte es el mecanismo apropiado para materiales que <b>deforman plásticamente</b> o son <b>fibrosos</b>.</span>
+          <ul>
+            <li><b>Equipos:</b> cortadoras rotativas (knife mills), granuladores, picadoras.</li>
+            <li><b>Material ideal:</b> blandos, elásticos, fibrosos o tenaces &mdash;plásticos, caucho, papel, textiles, biomasa.</li>
+            <li><b>Ejemplos industriales:</b> reciclaje de plásticos, alimentos (carnes, vegetales), preparación de pulpa.</li>
+            <li><b>Relación de reducción típica:</b> 5:1 a 20:1, según el tamaño de la malla.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="callout callout--nota">
+        <span class="ic">i</span>
+        <div><b>Los mecanismos se combinan</b><p>En la mayoría de los equipos industriales los cuatro mecanismos actúan en combinación, aunque uno suele predominar según el diseño y las propiedades del material. Un molino de martillos rompe por impacto pero también por atrición contra la rejilla; un molino de bolas combina impacto (cuando las bolas caen) con cizalla (cuando ruedan unas sobre otras). Etiquetar un equipo por su mecanismo dominante es una simplificación útil; no es una caracterización exhaustiva.</p></div>
+      </div>
+
+      <div class="callout callout--tip">
+        <span class="ic">!</span>
+        <div><b>Liberación mineralógica: el criterio para parar</b><p>En minería no se muele hasta un tamaño arbitrario sino hasta el <b>tamaño de liberación</b>, aquel al que las partículas de mineral valioso quedan mayoritariamente separadas de la ganga. Moler <i>más fino</i> que ese tamaño desperdicia energía sin aportar beneficio metalúrgico y, peor, incrementa la generación de <i>slimes</i> &mdash;ultrafinos difíciles de recuperar por flotación&mdash;. La decisión de hasta dónde moler es, por eso, una de las más importantes del diseño económico de una planta concentradora.</p></div>
+      </div>
+    </section>
+
+    <!-- 3. EQUIPOS -->
+    <section id="s3">
+      <div class="eyebrow">Catálogo industrial</div>
+      <h2 class="sec"><span class="secnum">3.</span> Equipos de reducción de tamaño</h2>
+      <p>La elección del equipo adecuado depende de varios factores simultáneos: tipo y dureza del material, tamaño de alimentación y de producto deseado, capacidad de proceso, humedad, sensibilidad al calor. Una forma operativa de organizar el catálogo es por el <b>tamaño de producto</b> que cada equipo es capaz de entregar. Aparecen así tres familias: las <i>trituradoras</i> para reducción gruesa, los <i>molinos</i> para reducción intermedia y fina, y los <i>ultrafinos y cortadoras</i> para casos especiales &mdash;producto micrónico, materiales sensibles al calor, sólidos fibrosos o plásticos.</p>
+
+      <h3 class="sub">3.1 · Trituradoras (reducción gruesa)</h3>
+      <p>La trituración primaria es la primera etapa del proceso: recibe el material directamente de la mina o del recibo de planta, en trozos de hasta más de un metro, y lo lleva a un tamaño manejable para las etapas siguientes. El mecanismo dominante es la compresión, lenta y robusta, sobre rocas duras.</p>
+
+      <div class="equip-grid">
+        <figure class="fig">
+          <div class="fig-frame"><img src="assets/img/jaw.gif" alt="Animación de una trituradora de mandíbula en operación, mostrando la mandíbula móvil oscilando contra la fija."></div>
+          <figcaption>
+            <b>Trituradora de mandíbula (<i>jaw crusher</i>).</b> Una mandíbula fija y una móvil; el material se comprime entre ambas a medida que la móvil oscila.
+            <dl>
+              <dt>Mecanismo</dt><dd>Compresión.</dd>
+              <dt>Aplicaciones</dt><dd>Trituración primaria en minería, canteras, escorias, reciclaje de concreto.</dd>
+              <dt>Material ideal</dt><dd>Rocas duras y abrasivas; bloques grandes (hasta 1.5 m).</dd>
+              <dt>Relación de reducción</dt><dd>3:1 a 7:1.</dd>
+            </dl>
+          </figcaption>
+        </figure>
+
+        <figure class="fig">
+          <div class="fig-frame"><img src="assets/img/gyratory.gif" alt="Animación de una trituradora giratoria, mostrando el cono interior girando excéntricamente dentro de la carcasa cónica."></div>
+          <figcaption>
+            <b>Trituradora giratoria (<i>gyratory crusher</i>).</b> Un cono de trituración gira excéntricamente dentro de una carcasa cónica; el material entra por arriba y descarga por abajo.
+            <dl>
+              <dt>Mecanismo</dt><dd>Compresión continua.</dd>
+              <dt>Aplicaciones</dt><dd>Minería primaria de muy alta capacidad; operación continua sin tiempos muertos.</dd>
+              <dt>Material ideal</dt><dd>Rocas muy duras y masivas: cobre, hierro, oro primario.</dd>
+              <dt>Relación de reducción</dt><dd>Hasta 8:1.</dd>
+            </dl>
+          </figcaption>
+        </figure>
+
+        <figure class="fig">
+          <div class="fig-frame"><img src="assets/img/rolls.gif" alt="Animación de dos rodillos girando en direcciones opuestas, atrapando y triturando el material en el nip entre ellos."></div>
+          <figcaption>
+            <b>Trituradora de rodillos (<i>crushing rolls</i>).</b> Dos rodillos giran en direcciones opuestas; el material es atrapado y comprimido en el <i>nip</i> entre ambos.
+            <dl>
+              <dt>Mecanismo</dt><dd>Compresión (y algo de cizalla si los rodillos son dentados).</dd>
+              <dt>Aplicaciones</dt><dd>Carbón, yeso, arcilla, sal, roca fosfórica; alimentación a molinos.</dd>
+              <dt>Material ideal</dt><dd>Dureza media-baja, no muy abrasivos.</dd>
+              <dt>Relación de reducción</dt><dd>2:1 a 4:1.</dd>
+            </dl>
+          </figcaption>
+        </figure>
+      </div>
+
+      <h3 class="sub">3.2 · Molinos (reducción intermedia y fina)</h3>
+      <p>El término <i>molino</i> agrupa los equipos que llevan el producto desde el rango de centímetros y milímetros hacia las decenas o centenas de micrómetros. Aquí dominan los mecanismos de impacto y atrición, y aquí está concentrado el grueso del consumo eléctrico de cualquier planta de conminución industrial.</p>
+
+      <div class="equip-grid">
+        <figure class="fig">
+          <div class="fig-frame"><img src="assets/img/hammer.gif" alt="Animación de un molino de martillos: rotor con martillos pivotantes a alta velocidad golpeando el material contra la carcasa y la rejilla de descarga."></div>
+          <figcaption>
+            <b>Molino de martillos (<i>hammer mill</i>).</b> Un rotor con martillos pivotantes a alta velocidad; las partículas se rompen al golpear los martillos, las placas y la rejilla.
+            <dl>
+              <dt>Mecanismo</dt><dd>Impacto (principal) y atrición.</dd>
+              <dt>Aplicaciones</dt><dd>Carbón, piedra caliza, fosfatos, alimentos secos, biomasa, madera.</dd>
+              <dt>Material ideal</dt><dd>Frágiles, fibrosos, dureza baja a media.</dd>
+              <dt>Relación de reducción</dt><dd>10:1 a 40:1.</dd>
+            </dl>
+          </figcaption>
+        </figure>
+
+        <figure class="fig">
+          <div class="fig-frame"><img src="assets/img/disc.jpeg" alt="Molino de discos: dos discos rotatorios enfrentados con superficies abrasivas que muelen el material en el gap entre ambos."></div>
+          <figcaption>
+            <b>Molino de discos / atrición.</b> Uno o dos discos rotatorios con superficies abrasivas o dentadas; el material se muele en el <i>gap</i> entre los discos.
+            <dl>
+              <dt>Mecanismo</dt><dd>Atrición (cizalla entre superficies).</dd>
+              <dt>Aplicaciones</dt><dd>Granos, especias, pigmentos, pulpa de papel.</dd>
+              <dt>Material ideal</dt><dd>Blandos a semiduros; tolera algo de humedad.</dd>
+              <dt>Relación de reducción</dt><dd>5:1 a 10:1.</dd>
+            </dl>
+          </figcaption>
+        </figure>
+
+        <figure class="fig">
+          <div class="fig-frame"><img src="assets/img/ball.gif" alt="Molino de bolas: cilindro horizontal rotatorio cargado con bolas de acero que caen y muelen el material por impacto y cizalla."></div>
+          <figcaption>
+            <b>Molino de bolas / barras (<i>tumbling mill</i>).</b> Un cilindro horizontal rotatorio; los medios &mdash;bolas de acero o cerámica, o barras&mdash; caen y muelen el material por impacto y cizalla.
+            <dl>
+              <dt>Mecanismo</dt><dd>Impacto y atrición.</dd>
+              <dt>Aplicaciones</dt><dd>Molienda fina de minerales, cemento, cerámica, pigmentos; <i>workhorse</i> de la minería.</dd>
+              <dt>Material ideal</dt><dd>Duros y abrasivos; apto para operación húmeda o seca.</dd>
+              <dt>Relación de reducción</dt><dd>20:1 a 100:1 (configurables en circuito cerrado).</dd>
+            </dl>
+          </figcaption>
+        </figure>
+      </div>
+
+      <h3 class="sub">3.3 · Ultrafinos y cortadoras</h3>
+      <p>El tercer grupo agrupa equipos especializados: por un lado, los <i>jet mills</i> que llevan el producto al rango submicrónico sin contaminación metálica ni calentamiento apreciable; por otro, las <i>cortadoras</i> que trabajan por corte sobre materiales blandos, elásticos o fibrosos donde la fractura frágil simplemente no funciona.</p>
+
+      <div class="equip-grid">
+        <figure class="fig equip-noimg">
+          <div class="fig-frame">Vea un <i>jet mill</i> en operación buscando «<b>jet mill operation</b>» en YouTube; la animación muestra cómo los chorros de gas aceleran las partículas y las hacen chocar entre sí.</div>
+          <figcaption>
+            <b>Molino de chorro (<i>jet mill</i>).</b> Chorros de gas a alta velocidad aceleran las partículas, que chocan entre sí. No hay medios de molienda, por lo que el producto sale libre de contaminación metálica.
+            <dl>
+              <dt>Mecanismo</dt><dd>Impacto partícula-partícula.</dd>
+              <dt>Aplicaciones</dt><dd>Productos farmacéuticos, pigmentos, cerámicas finas, tóneres, cosméticos.</dd>
+              <dt>Material ideal</dt><dd>Sensibles al calor (el gas enfría), alta pureza.</dd>
+              <dt>Relación de reducción</dt><dd>Producto submicrónico ($d_{50} < 10$ µm).</dd>
+            </dl>
+          </figcaption>
+        </figure>
+
+        <figure class="fig equip-noimg">
+          <div class="fig-frame">Vea una <i>knife mill</i> en operación buscando «<b>knife mill operation</b>» en YouTube; el rotor con cuchillas montadas seccciona el material contra cuchillas fijas y lo descarga por una malla.</div>
+          <figcaption>
+            <b>Cortadora rotativa (<i>knife mill</i>).</b> Cuchillas montadas en un rotor cortan el material contra cuchillas fijas; el tamaño de producto se define por una malla de descarga.
+            <dl>
+              <dt>Mecanismo</dt><dd>Corte.</dd>
+              <dt>Aplicaciones</dt><dd>Reciclaje de plásticos, caucho, textiles; alimentos (carnes, vegetales).</dd>
+              <dt>Material ideal</dt><dd>Blandos, elásticos, fibrosos, tenaces.</dd>
+              <dt>Relación de reducción</dt><dd>5:1 a 20:1, según la malla.</dd>
+            </dl>
+          </figcaption>
+        </figure>
+      </div>
+
+      <h3 class="sub">3.4 · Tabla resumen de relación de reducción por equipo</h3>
+      <p class="tbl-cap"><b>Tabla 1.</b> Rangos típicos de relación de reducción y tamaño de producto por tipo de equipo. Sirve para acotar qué equipos considerar a partir del salto $F/P$ que el proyecto necesita resolver.</p>
+      <div class="tbl-wrap">
+        <table class="ou">
+          <thead>
+            <tr><th>Equipo</th><th>Relación de reducción</th><th>Tamaño de producto</th><th>Notas</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Trituradora de mandíbula</td><td>3:1 &ndash; 7:1</td><td>50 &ndash; 300 mm</td><td>Primaria.</td></tr>
+            <tr><td>Trituradora giratoria</td><td>4:1 &ndash; 8:1</td><td>25 &ndash; 200 mm</td><td>Primaria de alta capacidad.</td></tr>
+            <tr><td>Rodillos lisos</td><td>2:1 &ndash; 4:1</td><td>5 &ndash; 50 mm</td><td>Secundaria suave.</td></tr>
+            <tr><td>Molino de martillos</td><td>10:1 &ndash; 40:1</td><td>0.5 &ndash; 25 mm</td><td>Frágiles y fibrosos.</td></tr>
+            <tr><td>Molino de bolas</td><td>20:1 &ndash; 100:1</td><td>10 &ndash; 200 µm</td><td><i>Workhorse</i> industrial.</td></tr>
+            <tr><td>Molino de barras</td><td>15:1 &ndash; 50:1</td><td>0.3 &ndash; 2 mm</td><td>Menos finos que bolas.</td></tr>
+            <tr><td>Jet mill</td><td>n/a</td><td>&lt; 10 µm</td><td>Submicrónico, sin contaminación.</td></tr>
+            <tr><td>Knife mill</td><td>5:1 &ndash; 20:1</td><td>1 &ndash; 20 mm</td><td>Fibrosos, plásticos.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout--nota">
+        <span class="ic">i</span>
+        <div><b>Por qué se necesitan varias etapas</b><p>Ningún equipo lleva un bloque de un metro directamente a cien micras: relaciones de reducción del orden de $10^4{:}1$ son inalcanzables en una sola máquina. Por eso las plantas industriales se diseñan en <b>cascada</b>: trituración primaria, luego secundaria, luego molienda gruesa con barras, después molienda fina con bolas y, eventualmente, una etapa ultrafina con jet mill o molino agitado. Cada etapa aplica una relación de reducción que cae en su rango óptimo.</p></div>
+      </div>
+    </section>
+
+    <!-- 4. LEYES -->
+    <section id="s4">
+      <div class="eyebrow">Cuánto cuesta romper</div>
+      <h2 class="sec"><span class="secnum">4.</span> Eficiencia energética y leyes de la conminución</h2>
+      <p>La reducción de tamaño es una operación con eficiencia energética sorprendentemente baja: en la práctica industrial, la fracción de energía que efectivamente se invierte en crear nueva superficie &mdash;el producto $\gamma \cdot \Delta A$ entre la energía superficial específica del material y el incremento de área&mdash; es <b>inferior al 2%</b>. El resto se disipa como calor, vibración y deformación elástica del sólido y del equipo. Esa ineficiencia explica por qué la conminución concentra el mayor consumo eléctrico de las plantas que dependen de ella. También explica por qué, durante más de un siglo, varios autores han intentado fórmulas que predigan razonablemente la energía requerida para una molienda dada.</p>
+
+      <p>Tres leyes empíricas clásicas dominan el campo, junto con una formulación generalizada posterior que las reconcilia. Las tres clásicas se proponen como casos particulares de una misma idea: la energía es proporcional a una potencia del tamaño. La diferencia entre ellas está en el exponente y en el rango donde funcionan razonablemente.</p>
+
+      <h3 class="sub">4.1 · La ley de Rittinger (1867): la energía como nueva superficie</h3>
+      <p>Rittinger postuló que la energía requerida es proporcional a la <b>nueva área superficial creada</b> durante la molienda. Es la formulación más antigua, y resulta razonable en el rango fino, donde el costo dominante es crear superficie:</p>
+      <p>$$E = K_R\left(\dfrac{1}{x_2} - \dfrac{1}{x_1}\right)$$</p>
+      <p>Aquí $x_1$ y $x_2$ son los tamaños promedio de alimentación y producto, y $K_R$ es una constante empírica que depende del material y del equipo. La ley ajusta bien la <b>molienda fina</b> &mdash;por debajo de unos 100 µm&mdash;, donde la creación de superficie domina el costo energético. Sus limitaciones son las propias de cualquier modelo de un solo término: sobreestima la energía en trituración gruesa y la constante depende del equipo, no solo del material.</p>
+
+      <h3 class="sub">4.2 · La ley de Kick (1885): la energía como relación de reducción</h3>
+      <p>Kick partió de una intuición geométrica distinta: si la fractura ocurre de manera similar a todas las escalas, romper una partícula debe requerir el mismo trabajo específico que partirla en fragmentos geométricamente similares. La energía resulta entonces proporcional al logaritmo de la <b>relación de reducción</b>:</p>
+      <p>$$E = K_K \log\dfrac{x_1}{x_2}$$</p>
+      <p>$K_K$ es una constante empírica del material. La ley de Kick ajusta bien la <b>trituración gruesa</b> &mdash;del orden de centímetros a milímetros&mdash; pero subestima fuertemente la energía requerida en molienda fina, porque ignora la generación de superficie nueva.</p>
+
+      <h3 class="sub">4.3 · La ley de Bond (1952): la formulación intermedia que funciona</h3>
+      <p>Bond propuso una formulación intermedia entre Rittinger y Kick, postulando que la energía es proporcional a la <b>diferencia de longitudes de grieta</b> creadas en la fractura. La ecuación resultante &mdash;la más usada en la práctica industrial&mdash; toma la forma:</p>
+      <p>$$E = W_i \left[\dfrac{10}{\sqrt{P_{80}}} - \dfrac{10}{\sqrt{F_{80}}}\right]$$</p>
+      <p>donde $W_i$ es el <i>Índice de Trabajo de Bond</i> en kWh/t, una propiedad del material que se mide en un ensayo estandarizado, y $F_{80}$ y $P_{80}$ son los tamaños por los que pasa el 80% en peso de la alimentación y del producto, expresados en micrómetros. La ley de Bond cubre razonablemente el rango industrial de la molienda intermedia &mdash;de milímetros a 100 µm&mdash; y se usa rutinariamente para dimensionar molinos de bolas y de barras y para comparar circuitos.</p>
+
+      <h3 class="sub">4.4 · La ley de Hukki (1961): la generalización</h3>
+      <p>Hukki observó algo que la práctica industrial ya sabía: ninguna de las tres leyes clásicas es universal, y cada una funciona razonablemente solo en su propio rango. Propuso entonces una <b>forma generalizada</b> en la que el exponente depende del tamaño de partícula:</p>
+      <p>$$\dfrac{dE}{dx} = -\dfrac{K}{x^{n(x)}}$$</p>
+      <p>donde $n \approx 1$ recupera Kick en trituración gruesa, $n \approx 1.5$ recupera Bond en molienda intermedia y $n \approx 2$ recupera Rittinger en molienda fina. La ecuación de Hukki reconcilia las tres leyes como casos particulares de la misma idea diferencial y deja claro por qué ninguna ley clásica funciona en todos los rangos: <b>la fenomenología cambia con el tamaño</b>. Esa observación también explica por qué la industria segmenta el proceso en etapas: cada etapa opera en el rango donde una ley diferente domina y, con ella, un equipo diferente.</p>
+
+      <div class="callout callout--tip">
+        <span class="ic">!</span>
+        <div><b>Tres palancas para mejorar la eficiencia</b><p><b>Primera:</b> no moler de más. Clasificar y separar el fino antes de moler, para no gastar energía en partículas que ya están en especificación. <b>Segunda:</b> elegir el mecanismo correcto &mdash;compresión para duros frágiles, impacto para frágiles de dureza media, atrición para finos, corte para blandos o fibrosos&mdash;. <b>Tercera:</b> integrar etapas en cascada, cada equipo trabajando en su rango óptimo de reducción, sin forzar relaciones extremas.</p></div>
+      </div>
+
+      <details class="bonddata">
+        <summary>Tabla completa del Índice de Trabajo de Bond (Perry's, 9.ª ed.) <small>76 materiales · click para expandir</small></summary>
+        <div class="bond-inner">
+          <p>Esta tabla recopila los índices de trabajo de Bond reportados en el <i>Perry's Chemical Engineers' Handbook</i>, 9.ª ed., para una colección amplia de materiales industriales. El valor de $W_i$ se expresa en kJ/kg en la fuente original y se convierte a kWh/t mediante $1\ \text{kWh/t} = 3.6\ \text{kJ/kg}$. La gravedad específica se incluye porque interviene en cualquier cálculo de potencia que necesite pasar de masa a volumen. Estos valores son <b>referenciales</b>: para el diseño definitivo de una planta se recomienda un ensayo de Bond específico para el mineral del yacimiento, ya que la variabilidad mineralógica puede ser apreciable.</p>
+          <div class="tbl-wrap">
+            <table class="ou compact">
+              <thead>
+                <tr><th>Material (es)</th><th>EN</th><th>SG</th><th>$W_i$ (kJ/kg)</th><th>$W_i$ (kWh/t)</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Andesita</td><td>Andesite</td><td>2.84</td><td>87.75</td><td>24.38</td></tr>
+                <tr><td>Baritina</td><td>Barite</td><td>4.28</td><td>24.74</td><td>6.87</td></tr>
+                <tr><td>Basalto</td><td>Basalt</td><td>2.89</td><td>80.93</td><td>22.48</td></tr>
+                <tr><td>Bauxita</td><td>Bauxite</td><td>2.38</td><td>37.47</td><td>10.41</td></tr>
+                <tr><td>Clínker de cemento</td><td>Cement clinker</td><td>3.09</td><td>53.49</td><td>14.86</td></tr>
+                <tr><td>Materia prima de cemento</td><td>Cement raw material</td><td>2.67</td><td>41.91</td><td>11.64</td></tr>
+                <tr><td>Mineral de cromo</td><td>Chrome ore</td><td>4.06</td><td>38.06</td><td>10.57</td></tr>
+                <tr><td>Arcilla</td><td>Clay</td><td>2.23</td><td>28.15</td><td>7.82</td></tr>
+                <tr><td>Arcilla calcinada</td><td>Clay, calcined</td><td>2.32</td><td>5.67</td><td>1.58</td></tr>
+                <tr><td>Carbón</td><td>Coal</td><td>1.63</td><td>45.08</td><td>12.52</td></tr>
+                <tr><td>Coque</td><td>Coke</td><td>1.51</td><td>82.08</td><td>22.80</td></tr>
+                <tr><td>Coque fluido de petróleo</td><td>Fluid petroleum coke</td><td>1.63</td><td>153.05</td><td>42.51</td></tr>
+                <tr><td>Coque de petróleo</td><td>Petroleum coke</td><td>1.78</td><td>292.62</td><td>81.28</td></tr>
+                <tr><td>Mineral de cobre</td><td>Copper ore</td><td>3.02</td><td>52.06</td><td>14.46</td></tr>
+                <tr><td>Coral</td><td>Coral</td><td>2.70</td><td>40.28</td><td>11.19</td></tr>
+                <tr><td>Diorita</td><td>Diorite</td><td>2.78</td><td>76.92</td><td>21.37</td></tr>
+                <tr><td>Dolomita</td><td>Dolomite</td><td>2.82</td><td>44.84</td><td>12.46</td></tr>
+                <tr><td>Esmeril</td><td>Emery</td><td>3.48</td><td>230.68</td><td>64.08</td></tr>
+                <tr><td>Feldespato</td><td>Feldspar</td><td>2.59</td><td>46.27</td><td>12.85</td></tr>
+                <tr><td>Ferrocromo</td><td>Ferrochrome</td><td>6.75</td><td>35.17</td><td>9.77</td></tr>
+                <tr><td>Ferromanganeso</td><td>Ferromanganese</td><td>5.91</td><td>30.81</td><td>8.56</td></tr>
+                <tr><td>Ferrosilicio</td><td>Ferrosilicon</td><td>4.91</td><td>50.87</td><td>14.13</td></tr>
+                <tr><td>Pedernal</td><td>Flint</td><td>2.65</td><td>103.72</td><td>28.81</td></tr>
+                <tr><td>Fluorita</td><td>Fluorspar</td><td>2.98</td><td>38.70</td><td>10.75</td></tr>
+                <tr><td>Gabro</td><td>Gabbro</td><td>2.83</td><td>73.15</td><td>20.32</td></tr>
+                <tr><td>Galena</td><td>Galena</td><td>5.39</td><td>40.40</td><td>11.22</td></tr>
+                <tr><td>Granate</td><td>Garnet</td><td>3.30</td><td>49.05</td><td>13.63</td></tr>
+                <tr><td>Vidrio</td><td>Glass</td><td>2.58</td><td>12.21</td><td>3.39</td></tr>
+                <tr><td>Gneis</td><td>Gneiss</td><td>2.71</td><td>79.82</td><td>22.17</td></tr>
+                <tr><td>Mineral de oro</td><td>Gold ore</td><td>2.86</td><td>58.80</td><td>16.33</td></tr>
+                <tr><td>Granito</td><td>Granite</td><td>2.68</td><td>57.06</td><td>15.85</td></tr>
+                <tr><td>Grafito</td><td>Graphite</td><td>1.75</td><td>178.54</td><td>49.59</td></tr>
+                <tr><td>Grava</td><td>Gravel</td><td>2.70</td><td>99.80</td><td>27.72</td></tr>
+                <tr><td>Roca yesera</td><td>Gypsum rock</td><td>2.69</td><td>32.35</td><td>8.99</td></tr>
+                <tr><td>Ilmenita</td><td>Ilmenite</td><td>4.27</td><td>51.98</td><td>14.44</td></tr>
+                <tr><td>Mineral de hierro</td><td>Iron ore (genérico)</td><td>3.96</td><td>61.22</td><td>17.01</td></tr>
+                <tr><td>Hematita</td><td>Hematite</td><td>3.76</td><td>50.28</td><td>13.97</td></tr>
+                <tr><td>Hematita especular</td><td>Hematite-specular</td><td>3.29</td><td>61.06</td><td>16.96</td></tr>
+                <tr><td>Hematita oolítica</td><td>Oolitic hematite</td><td>3.32</td><td>44.92</td><td>12.48</td></tr>
+                <tr><td>Limonita</td><td>Limonite</td><td>2.53</td><td>33.50</td><td>9.31</td></tr>
+                <tr><td>Magnetita</td><td>Magnetite</td><td>3.88</td><td>40.48</td><td>11.24</td></tr>
+                <tr><td>Taconita</td><td>Taconite</td><td>3.52</td><td>58.96</td><td>16.38</td></tr>
+                <tr><td>Cianita</td><td>Kyanite</td><td>3.23</td><td>74.82</td><td>20.78</td></tr>
+                <tr><td>Mineral de plomo</td><td>Lead ore</td><td>3.44</td><td>45.20</td><td>12.56</td></tr>
+                <tr><td>Mineral de plomo-zinc</td><td>Lead-zinc ore</td><td>3.37</td><td>45.00</td><td>12.50</td></tr>
+                <tr><td>Caliza</td><td>Limestone</td><td>2.69</td><td>46.03</td><td>12.79</td></tr>
+                <tr><td>Caliza para cemento</td><td>Limestone for cement</td><td>2.68</td><td>40.36</td><td>11.21</td></tr>
+                <tr><td>Mineral de manganeso</td><td>Manganese ore</td><td>3.74</td><td>49.40</td><td>13.72</td></tr>
+                <tr><td>Magnesita calcinada</td><td>Dead burned magnesite</td><td>5.22</td><td>66.61</td><td>18.50</td></tr>
+                <tr><td>Mica</td><td>Mica</td><td>2.89</td><td>533.29</td><td>148.14</td></tr>
+                <tr><td>Molibdeno</td><td>Molybdenum</td><td>2.70</td><td>51.43</td><td>14.29</td></tr>
+                <tr><td>Mineral de níquel</td><td>Nickel ore</td><td>3.32</td><td>47.10</td><td>13.08</td></tr>
+                <tr><td>Esquisto bituminoso</td><td>Oil shale</td><td>1.76</td><td>71.77</td><td>19.94</td></tr>
+                <tr><td>Fertilizante fosfatado</td><td>Phosphate fertilizer</td><td>2.65</td><td>51.66</td><td>14.35</td></tr>
+                <tr><td>Roca fosfórica</td><td>Phosphate rock</td><td>2.66</td><td>40.17</td><td>11.16</td></tr>
+                <tr><td>Mineral de potasa</td><td>Potash ore</td><td>2.37</td><td>35.21</td><td>9.78</td></tr>
+                <tr><td>Sal de potasa</td><td>Potash salt</td><td>2.18</td><td>32.63</td><td>9.06</td></tr>
+                <tr><td>Piedra pómez</td><td>Pumice</td><td>1.96</td><td>47.30</td><td>13.14</td></tr>
+                <tr><td>Pirita</td><td>Pyrite ore</td><td>3.48</td><td>35.29</td><td>9.80</td></tr>
+                <tr><td>Pirrotita</td><td>Pyrrhotite ore</td><td>4.04</td><td>37.95</td><td>10.54</td></tr>
+                <tr><td>Cuarcita</td><td>Quartzite</td><td>2.71</td><td>48.29</td><td>13.41</td></tr>
+                <tr><td>Cuarzo</td><td>Quartz</td><td>2.64</td><td>50.63</td><td>14.06</td></tr>
+                <tr><td>Rutilo</td><td>Rutile ore</td><td>2.84</td><td>48.06</td><td>13.35</td></tr>
+                <tr><td>Arenisca</td><td>Sandstone</td><td>2.68</td><td>45.72</td><td>12.70</td></tr>
+                <tr><td>Lutita</td><td>Shale</td><td>2.58</td><td>65.03</td><td>18.06</td></tr>
+                <tr><td>Sílice</td><td>Silica</td><td>2.71</td><td>53.65</td><td>14.90</td></tr>
+                <tr><td>Arena de sílice</td><td>Silica sand</td><td>2.65</td><td>65.26</td><td>18.13</td></tr>
+                <tr><td>Carburo de silicio</td><td>Silicon carbide (SiC)</td><td>2.73</td><td>103.76</td><td>28.82</td></tr>
+                <tr><td>Mineral de plata</td><td>Silver ore</td><td>2.72</td><td>68.59</td><td>19.05</td></tr>
+                <tr><td>Sínter</td><td>Sinter</td><td>3.00</td><td>34.77</td><td>9.66</td></tr>
+                <tr><td>Escoria</td><td>Slag</td><td>2.93</td><td>62.49</td><td>17.36</td></tr>
+                <tr><td>Escoria de alto horno</td><td>Iron blast furnace slag</td><td>2.39</td><td>48.21</td><td>13.39</td></tr>
+                <tr><td>Pizarra</td><td>Slate</td><td>2.48</td><td>54.84</td><td>15.23</td></tr>
+                <tr><td>Silicato de sodio</td><td>Sodium silicate</td><td>2.10</td><td>51.55</td><td>14.32</td></tr>
+                <tr><td>Espodumeno</td><td>Spodumene ore (litio)</td><td>2.75</td><td>54.32</td><td>15.09</td></tr>
+                <tr><td>Sienita</td><td>Syenite</td><td>2.73</td><td>59.08</td><td>16.41</td></tr>
+                <tr><td>Arcilla para tejas</td><td>Tile clay</td><td>2.59</td><td>61.58</td><td>17.11</td></tr>
+                <tr><td>Mineral de estaño</td><td>Tin ore</td><td>3.94</td><td>42.86</td><td>11.91</td></tr>
+                <tr><td>Mineral de titanio</td><td>Titanium ore</td><td>4.23</td><td>47.10</td><td>13.08</td></tr>
+                <tr><td>Roca trampa</td><td>Trap rock</td><td>2.86</td><td>83.66</td><td>23.24</td></tr>
+                <tr><td>Mineral de uranio</td><td>Uranium ore</td><td>2.70</td><td>71.09</td><td>19.75</td></tr>
+                <tr><td>Mineral de zinc</td><td>Zinc ore</td><td>3.68</td><td>49.25</td><td>13.68</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p>Promedio reportado por Perry's para todos los materiales ensayados: $W_i \approx 54.76$ kJ/kg ($\approx 15.2$ kWh/t). Los extremos van desde la arcilla calcinada (1.58 kWh/t, extraordinariamente fácil de moler) hasta la mica (148 kWh/t, prácticamente irrompible por molienda convencional), con la mayoría de los minerales industriales entre 10 y 25 kWh/t.</p>
+        </div>
+      </details>
+    </section>
+
+    <!-- 5. EJEMPLO -->
+    <section id="s5">
+      <div class="eyebrow">Cálculo paso a paso</div>
+      <h2 class="sec"><span class="secnum">5.</span> Ejemplo resuelto: energía de molienda con Bond</h2>
+      <p>Apliquemos la ley de Bond a un caso típico de cementera o cantera. El ejercicio combina lectura de tabla, aplicación de la fórmula y una interpretación del resultado a la luz de la eficiencia real de la conminución.</p>
+
+      <div class="worked">
+        <div class="step">
+          <h4>Enunciado</h4>
+          <p>Se desea moler <b>100 t/h de caliza</b> desde $F_{80} = 10$ mm hasta $P_{80} = 100$ µm en un molino de bolas. Para la caliza, el Índice de Trabajo de Bond es $W_i = 11.6$ kWh/t.</p>
+          <p><b>Objetivo:</b> calcular la energía específica $E$ y la potencia total que debe entregar el molino.</p>
+        </div>
+
+        <div class="step">
+          <h4><span class="stepn">1</span>Datos y unidades</h4>
+          <ul>
+            <li>Caudal másico: $\dot m = 100$ t/h.</li>
+            <li>$F_{80} = 10$ mm $= 10\,000$ µm.</li>
+            <li>$P_{80} = 100$ µm.</li>
+            <li>$W_i = 11.6$ kWh/t (caliza, valor referencial de Perry's).</li>
+          </ul>
+          <p class="note">La ecuación de Bond exige que $F_{80}$ y $P_{80}$ se expresen en <b>micrómetros</b>; equivocarse en la unidad es uno de los errores más frecuentes del cálculo.</p>
+        </div>
+
+        <div class="step">
+          <h4><span class="stepn">2</span>Plantear la ecuación de Bond</h4>
+          <p>$$E = W_i \left[\dfrac{10}{\sqrt{P_{80}}} - \dfrac{10}{\sqrt{F_{80}}}\right]$$</p>
+        </div>
+
+        <div class="step">
+          <h4><span class="stepn">3</span>Calcular la energía específica $E$</h4>
+          <p>$$E = 11.6 \left[\dfrac{10}{\sqrt{100}} - \dfrac{10}{\sqrt{10\,000}}\right] = 11.6 \times (1 - 0.1) = 10.44\ \text{kWh/t}$$</p>
+          <p class="note">El resultado, del orden de <b>10 kWh/t</b>, es un valor típico para la molienda fina de caliza en la industria cementera; la coincidencia con valores de planta es la razón por la que la ley de Bond se usa rutinariamente para dimensionamiento.</p>
+        </div>
+
+        <div class="step">
+          <h4><span class="stepn">4</span>Calcular la potencia total del molino</h4>
+          <p>$$P = E \times \dot m = 10.44\ \text{kWh/t} \times 100\ \text{t/h} = 1\,044\ \text{kW} \approx 1.04\ \text{MW}$$</p>
+          <p class="note">Esta es la potencia <b>útil</b> que entra al proceso de fractura. El motor del molino deberá ser más grande, porque la transmisión y las pérdidas mecánicas introducen factores de seguridad del orden de 1.3 a 1.5 veces sobre la potencia útil.</p>
+        </div>
+
+        <div class="step">
+          <h4><span class="stepn">5</span>Interpretación: ¿dónde se va realmente la energía?</h4>
+          <p>La eficiencia energética real de la conminución es del orden de <b>1 a 2%</b>: la energía efectivamente invertida en crear nueva superficie es una fracción mínima del total. Casi toda la energía se convierte en <b>calor</b> &mdash;el molino sube de temperatura y a veces requiere enfriamiento&mdash; y en <b>deformación elástica</b> de la carga molturante. Por eso la conminución es el <b>mayor consumidor eléctrico</b> de una planta minera típica, con porcentajes que oscilan entre el 30% y el 60% del consumo total.</p>
+          <p class="note"><b>Lección práctica:</b> hay dos estrategias para reducir el consumo. Primero, no moler más fino de lo necesario; segundo, clasificar y reciclar agresivamente el grueso para no remoler el fino que ya está en especificación. Ambas decisiones se toman en el diseño del circuito, no en la operación del molino.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. FACTORES OPERATIVOS -->
+    <section id="s6">
+      <div class="eyebrow">Selección de equipo</div>
+      <h2 class="sec"><span class="secnum">6.</span> Factores operativos y criterios de selección</h2>
+      <p>Más allá de las leyes energéticas, varias <b>propiedades del material</b> y varias <b>variables de proceso</b> influyen fuertemente en cuál equipo es el adecuado para una aplicación dada. La energía específica calculada con Bond da una primera cifra; las propiedades que siguen deciden si esa cifra es alcanzable con el equipo elegido y a qué costo de mantenimiento.</p>
+
+      <h3 class="sub">6.1 · Propiedades del material</h3>
+      <p>Seis propiedades del material concentran la mayor parte de las decisiones de selección. Conviene revisarlas una por una, porque no son intercambiables: dos materiales pueden compartir dureza y diferir radicalmente en friabilidad, o ser igualmente abrasivos y comportarse de manera opuesta frente al calor.</p>
+
+      <div class="blocks">
+        <div class="block">
+          <span class="bn">Propiedad 01</span>
+          <b>Dureza</b>
+          <span><b>Métrica:</b> Mohs 1&ndash;10 · $W_i$ de Bond en kWh/t.<br>Define qué tan agresivo debe ser el equipo para iniciar la fractura. La escala de Mohs sirve de referencia mineralógica rápida; el índice de Bond da la energía específica. <b>Ejemplo:</b> el cuarzo (Mohs 7) exige molinos de bolas con <i>liners</i> de Cr-Mo; el talco (Mohs 1) se procesa cómodamente en un molino de martillos.</span>
+        </div>
+        <div class="block">
+          <span class="bn">Propiedad 02</span>
+          <b>Friabilidad</b>
+          <span><b>Métrica:</b> friable frente a tenaz.<br>Un material duro puede ser <i>friable</i> &mdash;se rompe bien por impacto&mdash; o <i>tenaz</i> &mdash;absorbe energía sin fracturar&mdash;. Dureza y friabilidad son propiedades independientes. <b>Ejemplo:</b> el carbón es duro pero friable, ideal para molino de martillos; el caucho es blando pero tenaz y exige una cortadora rotativa.</span>
+        </div>
+        <div class="block">
+          <span class="bn">Propiedad 03</span>
+          <b>Abrasividad</b>
+          <span><b>Métrica:</b> índice de abrasión de Bond ($A_i$).<br>Causa desgaste de revestimientos, medios de molienda y piezas de repuesto. En minería, el costo de <i>liners</i> y bolas puede ser comparable al costo energético. <b>Ejemplo:</b> el cuarzo y la alúmina son altamente abrasivos ($A_i > 0.5$) y obligan a usar revestimientos de caucho o acero al manganeso.</span>
+        </div>
+        <div class="block">
+          <span class="bn">Propiedad 04</span>
+          <b>Humedad</b>
+          <span><b>Métrica:</b> % p/p de agua libre.<br>Puede causar <b>apelmazamiento</b>, adherencia en revestimientos y obstrucción de tamices. A veces se opta por <b>molienda húmeda</b> o por un secado previo. <b>Regla práctica:</b> por encima del 5% de humedad conviene considerar molienda húmeda o un secado <i>upstream</i>; arenas de playa, harinas y algunos minerales requieren tratamiento específico.</span>
+        </div>
+        <div class="block">
+          <span class="bn">Propiedad 05</span>
+          <b>Sensibilidad al calor</b>
+          <span><b>Métrica:</b> temperatura máxima admisible (°C).<br>Materiales farmacéuticos, alimenticios, polímeros y explosivos se degradan con el calor generado en la molienda. Requieren <b>enfriamiento</b> (agua fría, N$_2$ líquido para molienda criogénica) o <b>jet mills</b> que expanden gas y enfrían. <b>Ejemplo:</b> las especias se muelen criogénicamente con N$_2$ para preservar el aroma volátil; los pigmentos orgánicos se procesan en jet mill.</span>
+        </div>
+        <div class="block">
+          <span class="bn">Propiedad 06</span>
+          <b>Pegajosidad</b>
+          <span><b>Métrica:</b> cualitativa.<br>Causa obstrucción del equipo, adherencia al revestimiento y apelmazamiento en tamices. Requiere limpieza frecuente, revestimientos no adherentes como PTFE o aditivos antiaglomerantes. <b>Ejemplo:</b> resinas, algunos polímeros y ciertos productos farmacéuticos se procesan en jet mill o en molino con revestimiento liso y control de humedad.</span>
+        </div>
+      </div>
+
+      <figure class="fig">
+        <div class="fig-frame"><img src="assets/img/dureza.jpeg" alt="Escala visual de dureza Mohs con minerales de referencia, desde talco a diamante, para apoyar la selección del equipo."></div>
+        <figcaption><b>Figura 2.</b> Referencia de dureza. La escala de Mohs proporciona el primer criterio de selección del equipo: a mayor dureza, mayor exigencia mecánica del molino y mayor desgaste de medios y revestimientos.</figcaption>
+      </figure>
+
+      <h3 class="sub">6.2 · Molienda seca frente a molienda húmeda</h3>
+      <p>Una decisión transversal de gran impacto es si la molienda se realiza en seco o con el material suspendido en agua &mdash;o, ocasionalmente, en otro líquido&mdash;. Cada modo tiene ventajas y limitaciones que vale la pena contrastar lado a lado:</p>
+
+      <div class="blocks cols-2">
+        <div class="block">
+          <span class="bn">Modo 01</span>
+          <b>Molienda seca</b>
+          <span><b>Ventajas:</b> producto seco listo para empaque o transporte; sin efluentes líquidos; útil cuando el material es sensible al agua, como el cemento o la cal.</span>
+          <span><b>Desventajas:</b> requiere captación de polvo; mayor desgaste; menor eficiencia de impacto porque las partículas rebotan; calentamiento del molino.</span>
+        </div>
+        <div class="block">
+          <span class="bn">Modo 02</span>
+          <b>Molienda húmeda</b>
+          <span><b>Ventajas:</b> mayor eficiencia energética &mdash;el agua amortigua y evacúa los finos&mdash;; sin emisión de polvo; se acopla naturalmente con flotación o lixiviación aguas abajo.</span>
+          <span><b>Desventajas:</b> exige manejo de pulpa y desaguado (filtros, espesadores); corrosión de internos; el producto sale húmedo y debe secarse si la siguiente operación lo requiere.</span>
+        </div>
+      </div>
+
+      <h3 class="sub">6.3 · Variables de proceso</h3>
+      <p>Cuatro variables resumen la información operativa que el diseñador debe fijar antes de elegir equipo:</p>
+      <ul>
+        <li><b>Tamaño de alimentación y de producto deseado.</b> Define la relación de reducción y, con ella, el tipo y número de etapas necesarias.</li>
+        <li><b>Capacidad requerida</b> en toneladas por hora, que condiciona el dimensionamiento del molino y el motor.</li>
+        <li><b>Especificaciones del producto:</b> distribución de tamaño ($d_{50}$, $d_{80}$, porcentaje pasante en una malla determinada) y forma de partícula.</li>
+        <li><b>Costos:</b> de capital (equipo) y operativos (energía, mantenimiento, medios de molienda, revestimientos), evaluados sobre la vida útil del proyecto.</li>
+      </ul>
+    </section>
+
+    <!-- 7. CONSEJOS -->
+    <section id="s7">
+      <div class="eyebrow">Para el proyecto del curso</div>
+      <h2 class="sec"><span class="secnum">7.</span> Consejos prácticos para el proyecto</h2>
+      <p>A partir de la práctica industrial, tres recomendaciones transversales resultan especialmente útiles cuando uno enfrenta por primera vez un problema de conminución en el marco del proyecto del curso.</p>
+
+      <div class="blocks">
+        <div class="block">
+          <span class="bn">Consejo 01</span>
+          <b>Caracterizar bien el material</b>
+          <span>Es fundamental conocer la <b>dureza</b>, la estructura y, si es posible, el <b>Índice de Trabajo de Bond</b> de la alimentación. Sin esa información, cualquier estimación energética es solo una conjetura. Cuando el dato no existe para el material exacto del proyecto, conviene tomar un valor de referencia de Perry's para un material análogo y dejar explícita esa suposición en el informe.</span>
+        </div>
+        <div class="block">
+          <span class="bn">Consejo 02</span>
+          <b>Selección inteligente del equipo</b>
+          <span>No basta con buscar algo que «rompa» el material. Hay que considerar la <b>eficiencia</b>, el producto final deseado y los <b>costos</b> totales sumados a lo largo de la vida útil: capital más operación más mantenimiento. Un equipo más barato que consume el doble de energía no es la opción económica.</span>
+        </div>
+        <div class="block">
+          <span class="bn">Consejo 03</span>
+          <b>Pensar en el circuito completo</b>
+          <span>La reducción de tamaño casi nunca viaja sola: suele ir acompañada de etapas de <b>clasificación</b> (tamizado, ciclones) que reciclan el material grueso y dejan salir solo el fino que cumple especificación. El diseño debe ser <b>integral</b> &mdash;equipo de reducción, clasificador, recirculación&mdash;: piense la conminución como un sistema, no como un equipo aislado.</span>
+        </div>
+      </div>
+
+      <div class="callout callout--tip">
+        <span class="ic">i</span>
+        <div><b>Tres preguntas para chequear su diseño</b><p>Cuando termine de elegir equipo y de calcular potencia, vuelva sobre el diagrama y pregúntese: ¿cómo llega el material al equipo y cómo se alimenta?, ¿cómo sale y cómo se clasifica?, ¿qué se hace con el rechazo que recircula? Si las tres respuestas no están explícitas en el diagrama, el diseño todavía no está terminado.</p></div>
+      </div>
+    </section>
+
+    <!-- 8. BIBLIOGRAFÍA -->
+    <section id="s8">
+      <div class="eyebrow">Fuentes</div>
+      <h2 class="sec"><span class="secnum">8.</span> Bibliografía recomendada</h2>
+      <p>Las referencias siguientes cubren el material desarrollado en esta lectura y son el punto natural de profundización para el proyecto. Las dos primeras son obras de texto comprehensivas; las dos últimas son los artículos seminales donde nacen las leyes de Bond y de Hukki.</p>
+      <ol class="refs">
+        <li>McCabe, W. L., Smith, J. C., &amp; Harriott, P. (2005). <em>Unit Operations of Chemical Engineering</em> (7.ª ed.). McGraw-Hill. Capítulo 28: <em>Size reduction</em>.</li>
+        <li>Wills, B. A., &amp; Finch, J. A. (2015). <em>Wills' Mineral Processing Technology</em> (8.ª ed.). Butterworth-Heinemann.</li>
+        <li>Geankoplis, C. J. (2003). <em>Transport Processes and Separation Process Principles</em> (4.ª ed.). Prentice Hall.</li>
+        <li>Bond, F. C. (1952). The third theory of comminution. <em>Transactions AIME, 193,</em> 484&ndash;494.</li>
+        <li>Hukki, R. T. (1961). Proposal for a solomonic settlement between the theories of von Rittinger, Kick and Bond. <em>Transactions AIME, 220,</em> 403&ndash;408.</li>
+        <li>Perry, R. H., Green, D. W., &amp; Southard, M. Z. (Eds.). (2019). <em>Perry's Chemical Engineers' Handbook</em> (9.ª ed.). McGraw-Hill. Fuente de la tabla del Índice de Trabajo de Bond.</li>
+      </ol>
+    </section>
+
+    <footer class="doc-foot">
+      <span>Proyecto de Operaciones Unitarias · IQYA-2031</span>
+      <span>Universidad de los Andes · Ingeniería Química y de Alimentos</span>
+    </footer>
+
+  </div>
+</article>
+
+</div>
+
+<script>
+/* ---- Barra de progreso de lectura ---- */
+(function () {
+  var bar = document.getElementById('progress');
+  function onScroll() {
+    var h = document.documentElement;
+    var max = h.scrollHeight - h.clientHeight;
+    bar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  /* ---- Sticky side-nav active section ---- */
+  var sects = Array.from(document.querySelectorAll('.doc-body section[id]')).filter(function (s) { return s.id !== 's0'; });
+  if (!sects.length) return;
+  function update() {
+    var y = window.scrollY + 180;
+    var cur = sects[0].id;
+    for (var i = 0; i < sects.length; i++) { if (sects[i].offsetTop <= y) cur = sects[i].id; }
+    document.querySelectorAll('.sn-item').forEach(function (a) {
+      a.classList.toggle('is-active', a.getAttribute('href') === '#' + cur);
+    });
+  }
+  window.addEventListener('scroll', update, { passive: true });
+  update();
+})();
+</script>
+
+</body>
+</html>
