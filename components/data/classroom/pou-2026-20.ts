@@ -540,10 +540,10 @@ export const pou202620Course: Course = {
       order: 4,
       title: 'Transporte de líquidos en la industria',
       summary:
-        'Flujo en tuberías, pérdidas de energía y bombas. Reynolds, Moody, Darcy-Weisbach y un procedimiento de cálculo completo. Tipos de bombas, curvas características, NPSH y potencia de bombeo — todo integrado en un ejemplo resuelto paso a paso.',
+        'Flujo en tuberías y pérdidas de energía. Número de Reynolds, diagrama de Moody interactivo, Darcy-Weisbach y pérdidas menores con coeficientes K_L. Un procedimiento de cálculo paso a paso y un ejemplo resuelto que culmina en la cabeza del sistema — el dato de partida para seleccionar la bomba en la Lectura 05.',
       date: '2026-06-05',
-      readingMinutes: 35,
-      tags: ['transporte de fluidos', 'bombas', 'Reynolds', 'Moody', 'Darcy-Weisbach', 'NPSH', 'pérdidas', 'tubería'],
+      readingMinutes: 22,
+      tags: ['transporte de fluidos', 'Reynolds', 'Moody', 'Darcy-Weisbach', 'pérdidas', 'tubería', 'cabeza del sistema'],
       category: 'lectura',
       href: '/classroom/iqya-2031-2026-20/lecturas/Lectura_04/Lectura_04_Transporte_Liquidos.html',
     },
