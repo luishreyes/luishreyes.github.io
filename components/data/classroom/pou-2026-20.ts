@@ -547,6 +547,18 @@ export const pou202620Course: Course = {
       category: 'lectura',
       href: '/classroom/iqya-2031-2026-20/lecturas/Lectura_04/Lectura_04_Transporte_Liquidos.html',
     },
+    {
+      slug: 'lectura-05-bombas',
+      order: 5,
+      title: 'Bombas industriales',
+      summary:
+        'El equipo que suministra energía al fluido. Tipos de bombas (centrífugas y desplazamiento positivo), selector visual Q–H, curvas características interactivas, cavitación, NPSH disponible con calculadora reactiva y cálculo de potencia paso a paso.',
+      date: '2026-06-05',
+      readingMinutes: 30,
+      tags: ['bombas', 'centrífuga', 'desplazamiento positivo', 'curvas características', 'NPSH', 'cavitación', 'potencia de bombeo', 'BEP'],
+      category: 'lectura',
+      href: '/classroom/iqya-2031-2026-20/lecturas/Lectura_05/Lectura_05_Bombas.html',
+    },
   ],
   presentations: [
     {
