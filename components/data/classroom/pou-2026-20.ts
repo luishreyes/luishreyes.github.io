@@ -559,6 +559,18 @@ export const pou202620Course: Course = {
       category: 'lectura',
       href: '/classroom/iqya-2031-2026-20/lecturas/Lectura_05/Lectura_05_Bombas.html',
     },
+    {
+      slug: 'lectura-06-agitacion',
+      order: 6,
+      title: 'Fundamentos de agitación',
+      summary:
+        'Agitación vs. mezclado, patrones de flujo (axial, radial), tipos de impulsores con visor interactivo (hélice, PBT, Rushton, Smith, paletas, ancla, cinta helicoidal), bafles, geometría estándar del tanque, números adimensionales (Reynolds de agitación, número de potencia), curva interactiva Np vs Re, calculadora de potencia y calculadora de escalado con cuatro criterios (P/V, Vtip, Re, tmix).',
+      date: '2026-06-05',
+      readingMinutes: 25,
+      tags: ['agitación', 'mezclado', 'impulsores', 'Rushton', 'PBT', 'bafles', 'número de potencia', 'escalado', 'Reynolds'],
+      category: 'lectura',
+      href: '/classroom/iqya-2031-2026-20/lecturas/Lectura_06/Lectura_06_Agitacion.html',
+    },
   ],
   presentations: [
     {
