@@ -1,0 +1,1421 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lectura 04 — Transporte de Líquidos · POU 2026-20</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<link rel="stylesheet" href="assets/deloitte.css">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;0,900;1,400&display=swap');
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;scroll-behavior:smooth}
+body{font-family:'Source Sans 3','Aptos','Segoe UI',system-ui,sans-serif;color:var(--gris-1);background:var(--blanco);line-height:1.6}
+
+/* Progress bar */
+.progress{position:fixed;top:0;left:0;height:3px;width:0%;background:var(--verde);z-index:1000;transition:width .1s linear}
+
+/* Layout */
+.outer-layout{display:grid;grid-template-columns:200px 1fr;gap:0;max-width:1180px;margin:0 auto;padding:2rem 1.5rem 4rem;align-items:start}
+@media(max-width:860px){.outer-layout{grid-template-columns:1fr;padding:1.2rem 1rem 3rem}}
+
+/* Side nav */
+.side-nav{position:sticky;top:28px;max-height:calc(100vh - 56px);overflow-y:auto;padding:1rem .75rem;border:1px solid var(--gris-4);border-radius:8px;background:var(--blanco);margin-right:1.5rem}
+.side-nav::-webkit-scrollbar{width:4px}
+.side-nav::-webkit-scrollbar-thumb{background:var(--gris-4);border-radius:2px}
+.sn-label{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gris-3);padding:0 .25rem .5rem;border-bottom:1px solid var(--gris-5);margin-bottom:.5rem}
+.sn-item{display:flex;align-items:baseline;gap:.4rem;padding:.35rem .5rem;border-radius:4px;font-size:.78rem;color:var(--gris-2);text-decoration:none;transition:background .15s,color .15s;border-left:3px solid transparent;line-height:1.3}
+.sn-item:hover{color:var(--gris-1);background:var(--papel)}
+.sn-item.is-active{color:var(--verde-osc);background:var(--verde-claro);font-weight:600;border-left:3px solid var(--verde)}
+.sn-num{font-size:.7rem;font-weight:700;color:var(--gris-3);flex-shrink:0;font-variant-numeric:tabular-nums}
+.sn-item.is-active .sn-num{color:var(--verde-osc)}
+@media(max-width:860px){.side-nav{position:static;margin-right:0;margin-bottom:1.5rem;max-height:none}}
+
+/* Article */
+.page{min-width:0}
+
+/* Doc header */
+.doc-head{background:var(--papel);border:1px solid var(--gris-4);border-radius:8px;padding:2rem 2.25rem 1.75rem;margin-bottom:2rem}
+.org{font-size:.78rem;color:var(--gris-2);margin-bottom:.75rem;line-height:1.4}
+.org span{display:block;color:var(--gris-3)}
+.badge{display:inline-block;background:var(--verde);color:#fff;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:.25rem .7rem;border-radius:3px;margin-bottom:.9rem}
+.doc-head h1{font-size:1.85rem;font-weight:900;line-height:1.15;color:var(--negro);margin-bottom:.6rem}
+.subtitle{font-size:1rem;color:var(--gris-2);line-height:1.5;max-width:680px;margin-bottom:1.25rem}
+.doc-meta{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:.4rem .75rem;padding-top:1rem;border-top:1px solid var(--gris-4);font-size:.8rem;color:var(--gris-2)}
+.doc-meta b{color:var(--gris-1);display:block;font-weight:600}
+
+/* Sections */
+.doc-body section{padding-top:2.25rem;padding-bottom:.75rem;border-top:2px solid var(--papel)}
+.doc-body section:first-child{border-top:none;padding-top:0}
+.eyebrow{font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--verde-osc);margin-bottom:.35rem}
+h2.sec{font-size:1.45rem;font-weight:800;color:var(--negro);margin-bottom:1rem;display:flex;align-items:baseline;gap:.5rem}
+.secnum{font-size:1rem;font-weight:900;color:var(--verde);min-width:1.8rem}
+h3.sub{font-size:1.05rem;font-weight:700;color:var(--gris-1);margin:1.5rem 0 .6rem;border-left:3px solid var(--verde);padding-left:.65rem}
+.lead{font-size:1.02rem;color:var(--gris-2);line-height:1.65;margin-bottom:1.1rem}
+
+/* Callouts */
+.callout{border-left:4px solid var(--verde);background:var(--verde-claro);border-radius:0 6px 6px 0;padding:.85rem 1rem;margin:1.2rem 0;font-size:.9rem;display:flex;gap:.75rem;align-items:flex-start}
+.callout svg{flex-shrink:0;margin-top:.1rem;color:var(--verde-osc)}
+.callout-body{flex:1}
+.callout-body strong{display:block;font-weight:700;color:var(--verde-osc);margin-bottom:.2rem}
+.callout.tip{border-color:var(--teal);background:var(--teal-claro)}
+.callout.tip svg{color:var(--teal)}
+.callout.tip .callout-body strong{color:var(--teal)}
+.callout.warn{border-color:var(--ambar);background:#FFF7EE}
+.callout.warn svg{color:var(--ambar)}
+.callout.warn .callout-body strong{color:#B86E00}
+
+/* Blocks grid (cards over bullets) */
+.blocks{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem;margin:1rem 0}
+.blocks-3{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+.block{background:var(--blanco);border:1px solid var(--gris-4);border-radius:6px;padding:1rem 1.1rem;transition:box-shadow .2s,transform .2s}
+.block:hover{box-shadow:var(--sombra);transform:translateY(-2px)}
+.block-icon{width:32px;height:32px;background:var(--verde-claro);border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:.6rem;color:var(--verde-osc)}
+.block h4{font-size:.88rem;font-weight:700;color:var(--gris-1);margin-bottom:.35rem}
+.block p{font-size:.82rem;color:var(--gris-2);line-height:1.45}
+
+/* Tables */
+table.ou{width:100%;border-collapse:collapse;font-size:.85rem;margin:1rem 0}
+table.ou th{background:var(--verde);color:#fff;text-align:left;padding:.55rem .75rem;font-weight:700}
+table.ou td{padding:.5rem .75rem;border-bottom:1px solid var(--gris-5);vertical-align:top}
+table.ou tr:hover td{background:var(--verde-claro)}
+table.ou td code{background:var(--papel);padding:.1rem .3rem;border-radius:3px;font-size:.82rem;font-family:monospace}
+
+/* Figures */
+.fig-frame{background:var(--papel);border:1px solid var(--gris-4);border-radius:6px;padding:.75rem;margin:1.2rem 0;text-align:center}
+.fig-frame img{max-width:100%;height:auto;border-radius:4px;display:block;margin:0 auto}
+figcaption{font-size:.78rem;color:var(--gris-2);margin-top:.5rem;text-align:center;line-height:1.4}
+.img-row{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin:1rem 0}
+@media(max-width:600px){.img-row{grid-template-columns:1fr}}
+
+/* Tabs */
+.tabs-wrap{margin:1.2rem 0}
+.tab-bar{display:flex;gap:.25rem;border-bottom:2px solid var(--gris-5);margin-bottom:1rem;flex-wrap:wrap}
+.tab-btn{font-family:inherit;font-size:.82rem;font-weight:600;color:var(--gris-2);background:none;border:none;padding:.5rem 1rem;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:color .15s,border-color .15s}
+.tab-btn:hover{color:var(--gris-1)}
+.tab-btn.active{color:var(--verde-osc);border-bottom-color:var(--verde)}
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+/* Calc card */
+.calc-card{background:var(--negro);border-radius:8px;padding:1.5rem;color:#fff;margin:1.2rem 0}
+.calc-card h4{font-size:.88rem;font-weight:700;color:var(--verde);margin-bottom:1rem;letter-spacing:.05em;text-transform:uppercase}
+.calc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.75rem;margin-bottom:1rem}
+.calc-field label{display:block;font-size:.75rem;color:var(--gris-3);margin-bottom:.3rem;font-weight:600;letter-spacing:.04em}
+.calc-field input{width:100%;background:#1e1e1e;border:1px solid #444;border-radius:4px;padding:.45rem .6rem;color:#fff;font-family:inherit;font-size:.88rem}
+.calc-field input:focus{outline:none;border-color:var(--verde)}
+.calc-result{background:#1e1e1e;border-radius:6px;padding:.85rem 1rem;font-size:.9rem;color:var(--gris-4);min-height:2.4rem;line-height:1.5}
+.calc-result b{color:var(--verde);font-size:1.05rem}
+.calc-result .re-ok{color:#7dcb6e}
+.calc-result .re-trans{color:#f5c842}
+.calc-result .re-turb{color:#e87c5b}
+.calc-btn{margin-top:.75rem;background:var(--verde);color:#fff;border:none;border-radius:4px;padding:.5rem 1.25rem;font-family:inherit;font-size:.85rem;font-weight:700;cursor:pointer;transition:background .15s}
+.calc-btn:hover{background:var(--verde-osc)}
+
+/* Stepper */
+.stepper{margin:1.2rem 0}
+.step-track{display:flex;gap:0;margin-bottom:1.25rem;overflow-x:auto;padding-bottom:.25rem}
+.step-pip{display:flex;align-items:center;flex-shrink:0}
+.step-dot{width:30px;height:30px;border-radius:50%;border:2px solid var(--gris-4);display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:var(--gris-3);background:var(--blanco);cursor:pointer;transition:all .2s;flex-shrink:0}
+.step-dot.done{border-color:var(--verde);background:var(--verde-claro);color:var(--verde-osc)}
+.step-dot.active{border-color:var(--verde);background:var(--verde);color:#fff}
+.step-line{flex:1;height:2px;background:var(--gris-5);min-width:18px}
+.step-line.done{background:var(--verde)}
+.step-panel{display:none;animation:fadeInUp .3s ease}
+.step-panel.active{display:block}
+.step-header{display:flex;align-items:center;gap:.75rem;margin-bottom:.8rem}
+.step-num{font-size:1.8rem;font-weight:900;color:var(--verde);line-height:1}
+.step-title{font-size:1.05rem;font-weight:700;color:var(--negro)}
+.step-body{font-size:.9rem;color:var(--gris-1);line-height:1.6}
+.step-body p{margin-bottom:.6rem}
+.step-body ul{padding-left:1.25rem;margin-bottom:.6rem}
+.step-body li{margin-bottom:.3rem}
+.step-nav{display:flex;gap:.5rem;margin-top:1rem;justify-content:space-between}
+.step-nav button{font-family:inherit;font-size:.82rem;font-weight:600;padding:.45rem 1rem;border-radius:4px;cursor:pointer;border:1.5px solid var(--verde);transition:all .15s}
+.step-prev{background:var(--blanco);color:var(--verde-osc)}
+.step-prev:hover{background:var(--verde-claro)}
+.step-next{background:var(--verde);color:#fff;border-color:var(--verde)}
+.step-next:hover{background:var(--verde-osc)}
+
+/* Worked example */
+.we-wrap{margin:1.2rem 0}
+.we-steps{counter-reset:we}
+.we-step{background:var(--blanco);border:1px solid var(--gris-4);border-radius:6px;margin-bottom:.75rem;overflow:hidden}
+.we-step summary{display:flex;align-items:center;gap:.75rem;padding:.8rem 1rem;cursor:pointer;font-weight:600;font-size:.9rem;color:var(--gris-1);list-style:none;user-select:none}
+.we-step summary::-webkit-details-marker{display:none}
+.we-step-num{counter-increment:we;background:var(--verde);color:#fff;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;flex-shrink:0}
+.we-step[open] summary{background:var(--verde-claro);color:var(--verde-osc)}
+.we-body{padding:.75rem 1rem 1rem 3.25rem;font-size:.88rem;line-height:1.6;border-top:1px solid var(--gris-5)}
+.we-body p{margin-bottom:.5rem}
+.we-body .val{font-family:monospace;background:var(--papel);padding:.1rem .35rem;border-radius:3px}
+.we-result{background:var(--verde-claro);border-radius:4px;padding:.5rem .75rem;margin-top:.5rem;font-weight:700;color:var(--verde-osc)}
+
+/* Pump gallery */
+.pump-gallery{margin:1.2rem 0}
+.pump-bar{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:1rem}
+.pump-btn{font-family:inherit;font-size:.8rem;font-weight:600;padding:.4rem .9rem;border:1.5px solid var(--gris-4);border-radius:99px;cursor:pointer;background:var(--blanco);color:var(--gris-2);transition:all .2s}
+.pump-btn:hover{border-color:var(--verde);color:var(--verde-osc)}
+.pump-btn.active{background:var(--verde);color:#fff;border-color:var(--verde)}
+.pump-panel{display:none}
+.pump-panel.active{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;align-items:start}
+@media(max-width:600px){.pump-panel.active{grid-template-columns:1fr}}
+.pump-gif{border:1px solid var(--gris-4);border-radius:6px;overflow:hidden;background:var(--papel)}
+.pump-gif img{width:100%;height:auto;display:block}
+.pump-info h4{font-size:1rem;font-weight:800;color:var(--negro);margin-bottom:.35rem}
+.pump-family{font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--verde-osc);background:var(--verde-claro);padding:.15rem .5rem;border-radius:2px;display:inline-block;margin-bottom:.6rem}
+.pump-desc{font-size:.88rem;color:var(--gris-2);line-height:1.55;margin-bottom:.75rem}
+.pump-feats{list-style:none;padding:0;margin-bottom:.75rem}
+.pump-feats li{font-size:.84rem;color:var(--gris-1);padding:.2rem 0 .2rem 1.2rem;position:relative;border-bottom:1px solid var(--gris-5)}
+.pump-feats li::before{content:'';position:absolute;left:0;top:.55rem;width:7px;height:7px;border-radius:50%;background:var(--verde)}
+.pump-apps{font-size:.8rem;color:var(--gris-2);font-style:italic}
+
+/* SVG chart helpers */
+.chart-wrap{background:var(--papel);border:1px solid var(--gris-4);border-radius:6px;padding:1rem;margin:1rem 0}
+.chart-svg{width:100%;height:auto;display:block;overflow:visible}
+.axis-label{font-size:11px;fill:var(--gris-2);font-family:inherit}
+.axis-tick{font-size:10px;fill:var(--gris-3);font-family:inherit}
+.chart-title-el{font-size:13px;font-weight:700;fill:var(--gris-1);font-family:inherit}
+.chart-legend{display:flex;flex-wrap:wrap;gap:.5rem 1rem;font-size:.78rem;color:var(--gris-2);margin-top:.5rem;justify-content:center}
+.legend-dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:.3rem;vertical-align:middle}
+
+/* Range slider */
+.slider-row{display:flex;align-items:center;gap:.75rem;margin:.5rem 0;font-size:.82rem;color:var(--gris-1)}
+.slider-row label{min-width:90px;color:var(--gris-2);font-weight:600}
+.slider-row input[type=range]{flex:1;accent-color:var(--verde)}
+.slider-val{min-width:55px;text-align:right;font-variant-numeric:tabular-nums;color:var(--negro);font-weight:700;font-size:.85rem}
+
+/* Obj list */
+.obj-list{list-style:none;padding:0;margin:1rem 0;display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:.6rem}
+.obj-list li{display:flex;align-items:flex-start;gap:.6rem;font-size:.88rem;padding:.5rem .75rem;background:var(--verde-claro);border-radius:5px;color:var(--gris-1);line-height:1.45}
+.obj-list li::before{content:'';display:block;width:8px;height:8px;border-radius:50%;background:var(--verde);flex-shrink:0;margin-top:.38rem}
+
+/* Platform links */
+a.pl{color:inherit;border-bottom:2px solid var(--verde);text-decoration:none;white-space:nowrap}
+a.pl::after{content:'↗';font-size:.75em;margin-left:.2em;color:var(--verde)}
+a.pl:hover{color:var(--verde-osc)}
+
+/* NPSH indicator */
+.npsh-bar{height:12px;border-radius:6px;background:var(--gris-5);margin:.35rem 0;overflow:hidden}
+.npsh-fill{height:100%;border-radius:6px;background:var(--verde);transition:width .4s ease}
+.npsh-status{font-size:.82rem;font-weight:700;padding:.3rem .75rem;border-radius:4px;display:inline-block;margin-top:.35rem}
+.npsh-ok{background:#d6f0d0;color:#1e6e1a}
+.npsh-warn{background:#fff3cc;color:#7a5a00}
+.npsh-bad{background:#fde8e8;color:#9b1c1c}
+
+/* Footer */
+.doc-foot{border-top:2px solid var(--verde-claro);margin-top:3rem;padding-top:1.5rem}
+.refs-title{font-size:.85rem;font-weight:700;color:var(--gris-2);letter-spacing:.06em;text-transform:uppercase;margin-bottom:.75rem}
+ol.refs{padding-left:1.4rem;font-size:.82rem;color:var(--gris-2);line-height:1.6}
+ol.refs li{margin-bottom:.5rem}
+ol.refs b{color:var(--gris-1)}
+.foot-note{margin-top:1.5rem;font-size:.75rem;color:var(--gris-3);border-top:1px solid var(--gris-5);padding-top:.75rem}
+
+/* Animations */
+@keyframes fadeInUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.stagger-in>*{opacity:0;animation:fadeInUp .35s ease forwards}
+.stagger-in>*:nth-child(1){animation-delay:.05s}
+.stagger-in>*:nth-child(2){animation-delay:.1s}
+.stagger-in>*:nth-child(3){animation-delay:.15s}
+.stagger-in>*:nth-child(4){animation-delay:.2s}
+.stagger-in>*:nth-child(5){animation-delay:.25s}
+.stagger-in>*:nth-child(6){animation-delay:.3s}
+
+/* Design challenges */
+.challenges{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem;margin:1rem 0}
+.challenge{border:1px solid var(--gris-4);border-radius:8px;padding:1.1rem;background:var(--blanco);transition:box-shadow .2s,transform .2s;cursor:default}
+.challenge:hover{box-shadow:var(--sombra);transform:translateY(-3px)}
+.challenge .ch-num{font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--verde-osc);margin-bottom:.3rem}
+.challenge h4{font-size:.9rem;font-weight:700;color:var(--negro);margin-bottom:.4rem}
+.challenge p{font-size:.82rem;color:var(--gris-2);line-height:1.45}
+
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media(max-width:600px){.calc-grid{grid-template-columns:1fr}.img-row{grid-template-columns:1fr}.pump-panel.active{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<div class="outer-layout">
+
+<!-- Side navigation -->
+<nav class="side-nav" aria-label="Secciones">
+  <p class="sn-label">En esta lectura</p>
+  <a href="#s1" class="sn-item"><span class="sn-num">01</span>Propiedades del fluido</a>
+  <a href="#s2" class="sn-item"><span class="sn-num">02</span>Número de Reynolds</a>
+  <a href="#s3" class="sn-item"><span class="sn-num">03</span>Pérdidas de energía</a>
+  <a href="#s4" class="sn-item"><span class="sn-num">04</span>Diagrama de Moody</a>
+  <a href="#s5" class="sn-item"><span class="sn-num">05</span>Procedimiento</a>
+  <a href="#s6" class="sn-item"><span class="sn-num">06</span>Tipos de bombas</a>
+  <a href="#s7" class="sn-item"><span class="sn-num">07</span>Curvas características</a>
+  <a href="#s8" class="sn-item"><span class="sn-num">08</span>Cavitación y NPSH</a>
+  <a href="#s9" class="sn-item"><span class="sn-num">09</span>Potencia de bombeo</a>
+  <a href="#s10" class="sn-item"><span class="sn-num">10</span>Ejemplo resuelto</a>
+  <a href="#s11" class="sn-item"><span class="sn-num">11</span>Bibliografía</a>
+</nav>
+
+<!-- Main article -->
+<article class="page">
+<header class="doc-head">
+  <div class="org">Universidad de los Andes<span>Ingeniería Química y de Alimentos · Facultad de Ingeniería</span></div>
+  <div class="badge">Lectura 04 · Proyecto de Operaciones Unitarias</div>
+  <h1>Transporte de líquidos en la industria</h1>
+  <p class="subtitle">Flujo en tuberías, pérdidas de energía y bombas. Del número de Reynolds al diagrama de Moody, con un procedimiento de cálculo paso a paso y el análisis completo de sistemas de bombeo.</p>
+  <div class="doc-meta">
+    <div><b>Curso</b>IQYA 2031 — Proyecto de Operaciones Unitarias</div>
+    <div><b>Semestre</b>2026-20</div>
+    <div><b>Autor</b>Luis H. Reyes</div>
+    <div><b>Fecha</b>5 de junio de 2026</div>
+    <div><b>Lectura</b>Aproximadamente 35 minutos</div>
+  </div>
+</header>
+
+<div class="doc-body">
+
+<!-- ── s0: Intro ─────────────────────────────────────────── -->
+<section id="s0">
+  <p class="lead">El transporte de fluidos es uno de los problemas de ingeniería más frecuentes en la industria química, farmacéutica y de alimentos. Cada proceso que involucra un líquido — desde alimentar un reactor hasta envasar un producto — requiere mover ese fluido de un punto a otro superando resistencias. Esta lectura integra los dos elementos centrales del transporte: la <strong>tubería</strong> (donde ocurre el flujo) y la <strong>bomba</strong> (que suministra la energía).</p>
+  <div class="callout">
+    <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+    <div class="callout-body"><strong>Objetivo de la lectura</strong>Al terminar deberás poder calcular la cabeza de sistema de una tubería con pérdidas mayores y menores, seleccionar una bomba compatible con esa curva, verificar NPSH y estimar la potencia eléctrica requerida.</div>
+  </div>
+  <ul class="obj-list" aria-label="Objetivos de aprendizaje">
+    <li>Identificar propiedades del fluido relevantes para el cálculo de flujo</li>
+    <li>Determinar el régimen de flujo mediante el número de Reynolds</li>
+    <li>Calcular pérdidas mayores con Darcy-Weisbach y el diagrama de Moody</li>
+    <li>Estimar pérdidas menores con coeficientes K<sub>L</sub></li>
+    <li>Aplicar el balance de energía de Bernoulli con bomba</li>
+    <li>Distinguir los tipos de bombas y sus rangos de aplicación</li>
+    <li>Interpretar curvas características de bomba y punto de operación</li>
+    <li>Verificar disponibilidad de NPSH y prevenir cavitación</li>
+    <li>Calcular potencia hidráulica, BHP y potencia eléctrica</li>
+  </ul>
+</section>
+
+<!-- ── s1: Propiedades del fluido ────────────────────────── -->
+<section id="s1">
+  <div class="eyebrow">Sección 1</div>
+  <h2 class="sec"><span class="secnum">1.</span>Propiedades del fluido</h2>
+  <p class="lead">Antes de calcular cualquier flujo se deben conocer las propiedades físicas del líquido. Las dos más importantes son la <strong>densidad</strong> (ρ) y la <strong>viscosidad dinámica</strong> (μ). Ambas dependen de la temperatura y determinan directamente el régimen de flujo y las pérdidas de energía.</p>
+
+  <h3 class="sub">Densidad y viscosidad</h3>
+  <div class="blocks stagger-in">
+    <div class="block">
+      <div class="block-icon" aria-hidden="true">
+        <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      </div>
+      <h4>Densidad (ρ)</h4>
+      <p>Masa por unidad de volumen [kg/m³]. Disminuye con la temperatura en la mayoría de líquidos. Impacta la presión hidrostática y la energía cinética del flujo.</p>
+    </div>
+    <div class="block">
+      <div class="block-icon" aria-hidden="true">
+        <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+      </div>
+      <h4>Viscosidad dinámica (μ)</h4>
+      <p>Resistencia interna al flujo [Pa·s]. Para líquidos <em>disminuye</em> marcadamente con la temperatura — el opuesto a los gases. Gobierna el régimen (laminar vs turbulento).</p>
+    </div>
+    <div class="block">
+      <div class="block-icon" aria-hidden="true">
+        <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+      </div>
+      <h4>Viscosidad cinemática (ν)</h4>
+      <p>Razón μ/ρ [m²/s]. Se usa directamente en el cálculo del número de Reynolds. Es la medida de viscosidad más conveniente cuando ya se conoce la densidad.</p>
+    </div>
+    <div class="block">
+      <div class="block-icon" aria-hidden="true">
+        <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg>
+      </div>
+      <h4>Presión de vapor (P<sub>v</sub>)</h4>
+      <p>Presión a la que el líquido hierve a una temperatura dada. Crítica para diseñar sistemas de bombeo y evitar cavitación. Aumenta con la temperatura.</p>
+    </div>
+  </div>
+
+  <h3 class="sub">Efecto de la temperatura — gráficos interactivos</h3>
+  <div class="tabs-wrap" id="prop-tabs">
+    <div class="tab-bar">
+      <button class="tab-btn active" data-tab="dens">Densidad</button>
+      <button class="tab-btn" data-tab="visc">Viscosidad</button>
+      <button class="tab-btn" data-tab="pvap">Presión de vapor</button>
+    </div>
+    <div id="tab-dens" class="tab-panel active">
+      <div class="chart-wrap">
+        <svg id="chart-density" class="chart-svg" viewBox="0 0 540 260" aria-label="Densidad vs temperatura para tres fluidos industriales"></svg>
+        <div class="chart-legend">
+          <span><span class="legend-dot" style="background:#0076A8"></span>Agua</span>
+          <span><span class="legend-dot" style="background:#86BC24"></span>Queroseno</span>
+          <span><span class="legend-dot" style="background:#E0922F"></span>Crudo pesado</span>
+        </div>
+        <figcaption>Densidad vs temperatura. Los líquidos se dilatan al calentarse — densidad siempre disminuye.</figcaption>
+      </div>
+    </div>
+    <div id="tab-visc" class="tab-panel">
+      <div class="chart-wrap">
+        <svg id="chart-visc" class="chart-svg" viewBox="0 0 540 260" aria-label="Viscosidad vs temperatura — escala logarítmica"></svg>
+        <div class="chart-legend">
+          <span><span class="legend-dot" style="background:#0076A8"></span>Agua</span>
+          <span><span class="legend-dot" style="background:#86BC24"></span>Queroseno</span>
+          <span><span class="legend-dot" style="background:#E0922F"></span>Crudo pesado</span>
+        </div>
+        <figcaption>Viscosidad en escala logarítmica. La caída con temperatura es dramática para el crudo pesado — razón por la que se calienta antes de bombear.</figcaption>
+      </div>
+    </div>
+    <div id="tab-pvap" class="tab-panel">
+      <div class="chart-wrap">
+        <svg id="chart-pvap" class="chart-svg" viewBox="0 0 540 260" aria-label="Presión de vapor del agua vs temperatura"></svg>
+        <figcaption>Presión de vapor del agua. El aumento exponencial cerca de 100 °C es la razón por la que se exige mayor NPSH disponible en sistemas de agua caliente.</figcaption>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout tip">
+    <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/></svg>
+    <div class="callout-body"><strong>Regla práctica</strong>Para el crudo pesado a temperatura ambiente (μ ~ 200 mPa·s) se requieren bombas de desplazamiento positivo. Si se calienta a 60–80 °C, la viscosidad cae a ~10–15 mPa·s y una bomba centrífuga puede manejarlo. Siempre consultar las curvas del fabricante para el fluido real a la temperatura de proceso.</div>
+  </div>
+</section>
+
+<!-- ── s2: Reynolds ──────────────────────────────────────── -->
+<section id="s2">
+  <div class="eyebrow">Sección 2</div>
+  <h2 class="sec"><span class="secnum">2.</span>Número de Reynolds y régimen de flujo</h2>
+  <p class="lead">El número de Reynolds (Re) clasifica el régimen de flujo en una tubería. Es la razón entre las fuerzas inerciales y las fuerzas viscosas. Determina qué ecuaciones aplican para calcular la fricción.</p>
+
+  <div class="blocks-3 blocks stagger-in">
+    <div class="block">
+      <h4>Re &lt; 2 100 — Laminar</h4>
+      <p>El fluido se mueve en capas paralelas sin mezcla transversal. Perfil parabólico. Factor de fricción: <em>f = 64/Re</em> (exacto).</p>
+    </div>
+    <div class="block">
+      <h4>2 100 &lt; Re &lt; 4 000 — Transición</h4>
+      <p>Zona inestable. Puede ser laminar o turbulento según perturbaciones. Evitar operar aquí en diseño — el comportamiento no es predecible.</p>
+    </div>
+    <div class="block">
+      <h4>Re &gt; 4 000 — Turbulento</h4>
+      <p>Mezcla caótica. Perfil casi plano. La fricción depende de Re <em>y</em> de la rugosidad relativa ε/D. Se usa el diagrama de Moody o Swamee-Jain.</p>
+    </div>
+  </div>
+
+  <h3 class="sub">Fórmula</h3>
+  <div class="fig-frame">
+    <p style="font-size:1.1rem;padding:.5rem 0">$$\text{Re} = \frac{\rho\, V\, D}{\mu} = \frac{V\, D}{\nu}$$</p>
+    <figcaption>ρ = densidad [kg/m³] · V = velocidad media [m/s] · D = diámetro interno [m] · μ = viscosidad dinámica [Pa·s] · ν = μ/ρ [m²/s]</figcaption>
+  </div>
+
+  <div class="callout tip">
+    <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m16 12-4-4-4 4"/><path d="M12 16V8"/></svg>
+    <div class="callout-body"><strong>Velocidad desde caudal</strong>Si se conoce el caudal volumétrico Q [m³/s] y el diámetro D [m], la velocidad media es $$V = \frac{4Q}{\pi D^2}$$</div>
+  </div>
+
+  <h3 class="sub">Calculadora de Reynolds</h3>
+  <div class="calc-card" id="re-card">
+    <h4>Número de Reynolds</h4>
+    <div class="calc-grid">
+      <div class="calc-field">
+        <label>Caudal Q [m³/s]</label>
+        <input type="number" id="re-Q" value="0.01" step="0.001" min="0">
+      </div>
+      <div class="calc-field">
+        <label>Diámetro interno D [m]</label>
+        <input type="number" id="re-D" value="0.0525" step="0.001" min="0">
+      </div>
+      <div class="calc-field">
+        <label>Densidad ρ [kg/m³]</label>
+        <input type="number" id="re-rho" value="997" step="1" min="0">
+      </div>
+      <div class="calc-field">
+        <label>Viscosidad μ [Pa·s]</label>
+        <input type="number" id="re-mu" value="0.00089" step="0.0001" min="0">
+      </div>
+    </div>
+    <button class="calc-btn" onclick="calcRe()">Calcular</button>
+    <div class="calc-result" id="re-result">— presiona Calcular —</div>
+  </div>
+</section>
+
+<!-- ── s3: Pérdidas de energía ───────────────────────────── -->
+<section id="s3">
+  <div class="eyebrow">Sección 3</div>
+  <h2 class="sec"><span class="secnum">3.</span>Pérdidas de energía en tuberías</h2>
+  <p class="lead">En todo sistema de tuberías la energía se disipa por dos mecanismos: las <strong>pérdidas mayores</strong> (fricción en tramos rectos) y las <strong>pérdidas menores</strong> (accesorios, válvulas, entradas, salidas). La suma es la cabeza de fricción total que debe vencer la bomba.</p>
+
+  <h3 class="sub">Pérdidas mayores — Darcy-Weisbach</h3>
+  <div class="fig-frame">
+    <p style="font-size:1.1rem;padding:.5rem 0">$$h_f = f \cdot \frac{L}{D} \cdot \frac{V^2}{2g}$$</p>
+    <figcaption><em>f</em> = factor de fricción de Darcy-Weisbach (adimensional) · <em>L</em> = longitud [m] · <em>D</em> = diámetro [m] · <em>V</em> = velocidad [m/s] · <em>g</em> = 9.81 m/s²</figcaption>
+  </div>
+
+  <h3 class="sub">Factor de fricción según régimen</h3>
+  <div class="blocks blocks-3 stagger-in">
+    <div class="block">
+      <h4>Régimen laminar</h4>
+      <p>$$f = \frac{64}{\text{Re}}$$</p>
+      <p style="font-size:.82rem;color:var(--gris-2)">Exacto, no depende de rugosidad. Válido sólo para Re &lt; 2 100.</p>
+    </div>
+    <div class="block">
+      <h4>Colebrook-White (implícita)</h4>
+      <p>$$\frac{1}{\sqrt{f}} = -2\log\!\left(\frac{\varepsilon/D}{3.7} + \frac{2.51}{\text{Re}\sqrt{f}}\right)$$</p>
+      <p style="font-size:.82rem;color:var(--gris-2)">Ecuación fundacional para flujo turbulento. Requiere iteración.</p>
+    </div>
+    <div class="block">
+      <h4>Swamee-Jain (explícita)</h4>
+      <p>$$f = \frac{0.25}{\left[\log_{10}\!\left(\dfrac{\varepsilon/D}{3.7} + \dfrac{5.74}{\text{Re}^{0.9}}\right)\right]^2}$$</p>
+      <p style="font-size:.82rem;color:var(--gris-2)">Error &lt; 3 % respecto a Colebrook. Ideal para cálculo directo.</p>
+    </div>
+  </div>
+
+  <h3 class="sub">Rugosidad absoluta de materiales comunes</h3>
+  <table class="ou" aria-label="Rugosidad de materiales">
+    <thead><tr><th>Material</th><th>ε (mm)</th><th>ε (pies)</th><th>Aplicación típica</th></tr></thead>
+    <tbody>
+      <tr><td>PVC / polietileno</td><td>0.0015</td><td>0.000005</td><td>Agua potable, químicos</td></tr>
+      <tr><td>Vidrio / fibra de vidrio</td><td>0.003</td><td>0.00001</td><td>Laboratorio, procesos corrosivos</td></tr>
+      <tr><td>Acero inoxidable (liso)</td><td>0.015</td><td>0.00005</td><td>Alimentos, farmacéutica</td></tr>
+      <tr><td>Acero comercial / soldado</td><td>0.046</td><td>0.00015</td><td>Procesos generales</td></tr>
+      <tr><td>Hierro galvanizado</td><td>0.15</td><td>0.0005</td><td>Instalaciones antiguas</td></tr>
+      <tr><td>Hierro fundido</td><td>0.26</td><td>0.00085</td><td>Agua, vapor</td></tr>
+      <tr><td>Concreto</td><td>0.3–3.0</td><td>0.001–0.01</td><td>Alcantarillado, irrigación</td></tr>
+      <tr><td>Acero remachado</td><td>0.9–9.0</td><td>0.003–0.03</td><td>Tuberías industriales antiguas</td></tr>
+    </tbody>
+  </table>
+
+  <h3 class="sub">Pérdidas menores — método K<sub>L</sub></h3>
+  <p>Las pérdidas menores se calculan con coeficientes adimensionales K<sub>L</sub> que multiplican la cabeza de velocidad:</p>
+  <div class="fig-frame">
+    <p style="font-size:1.05rem;padding:.35rem 0">$$h_m = \sum K_L \cdot \frac{V^2}{2g}$$</p>
+    <figcaption>La suma recorre todos los accesorios de la línea. K<sub>L</sub> se busca en tablas según el tipo y apertura del accesorio.</figcaption>
+  </div>
+  <div class="img-row" aria-label="Tablas de coeficientes K_L">
+    <figure class="fig-frame" style="margin:0">
+      <img src="/classroom/iqya-2031/readings/transporte-liquidos-07.png" alt="Coeficientes K_L — codos, tees y reducciones" loading="lazy">
+      <figcaption>Codos, tees y reducciones</figcaption>
+    </figure>
+    <figure class="fig-frame" style="margin:0">
+      <img src="/classroom/iqya-2031/readings/transporte-liquidos-08.png" alt="Coeficientes K_L — válvulas" loading="lazy">
+      <figcaption>Válvulas y accesorios de control</figcaption>
+    </figure>
+    <figure class="fig-frame" style="margin:0">
+      <img src="/classroom/iqya-2031/readings/transporte-liquidos-09.png" alt="Coeficientes K_L — entradas y salidas" loading="lazy">
+      <figcaption>Entradas, salidas y expansiones</figcaption>
+    </figure>
+  </div>
+
+  <div class="callout">
+    <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+    <div class="callout-body"><strong>Nota sobre K<sub>L</sub></strong>Los valores de la tabla son para flujo completamente turbulento (zona de rugosidad completa). En flujo laminar o de transición las pérdidas menores pueden ser significativamente diferentes. Para diseño conservador, siempre usar los valores tabulados de la zona turbulenta.</div>
+  </div>
+
+  <h3 class="sub">Balance de energía — Ecuación de Bernoulli con bomba</h3>
+  <div class="fig-frame">
+    <p style="font-size:1.05rem;padding:.5rem 0">$$\frac{P_1}{\rho g} + \frac{V_1^2}{2g} + z_1 + h_A = \frac{P_2}{\rho g} + \frac{V_2^2}{2g} + z_2 + h_f + h_m$$</p>
+    <figcaption>h<sub>A</sub> = cabeza suministrada por la bomba [m]. La diferencia entre el lado derecho y el izquierdo (sin h<sub>A</sub>) define la cabeza de sistema H<sub>S</sub> que la bomba debe proporcionar.</figcaption>
+  </div>
+</section>
+
+<!-- ── s4: Diagrama de Moody ─────────────────────────────── -->
+<section id="s4">
+  <div class="eyebrow">Sección 4</div>
+  <h2 class="sec"><span class="secnum">4.</span>Diagrama de Moody interactivo</h2>
+  <p class="lead">El diagrama de Moody es la herramienta gráfica que relaciona el factor de fricción de Darcy-Weisbach con el número de Reynolds y la rugosidad relativa ε/D. Cada curva corresponde a un valor de rugosidad relativa; las líneas representan la ecuación de Colebrook-White (aproximada aquí con Swamee-Jain).</p>
+
+  <div class="chart-wrap" id="moody-wrap">
+    <svg id="moody-svg" class="chart-svg" viewBox="0 0 620 360" aria-label="Diagrama de Moody interactivo"></svg>
+    <div style="margin-top:.75rem">
+      <div class="slider-row">
+        <label>Re</label>
+        <input type="range" id="moody-re" min="3" max="8" step="0.05" value="5">
+        <span class="slider-val" id="moody-re-val">10⁵</span>
+      </div>
+      <div class="slider-row">
+        <label>ε/D</label>
+        <input type="range" id="moody-ed" min="0" max="15" step="1" value="3">
+        <span class="slider-val" id="moody-ed-val">—</span>
+      </div>
+    </div>
+    <div id="moody-result" class="calc-result" style="margin-top:.5rem">Mueve los sliders para leer f</div>
+    <figcaption>Las curvas se generan con la aproximación de Swamee &amp; Jain (1976). Error &lt; 3 % respecto a Colebrook-White para 10⁴ &lt; Re &lt; 10⁸ y 10⁻⁶ &lt; ε/D &lt; 5×10⁻².</figcaption>
+  </div>
+</section>
+
+<!-- ── s5: Procedimiento ─────────────────────────────────── -->
+<section id="s5">
+  <div class="eyebrow">Sección 5</div>
+  <h2 class="sec"><span class="secnum">5.</span>Procedimiento de cálculo</h2>
+  <p class="lead">Los siete pasos siguientes convierten los datos de proceso (fluido, caudal, geometría) en la cabeza de sistema requerida. Sigue el stepper para ver cada paso con detalle.</p>
+
+  <div class="stepper" id="stepper-proc">
+    <div class="step-track" id="proc-track"></div>
+    <div id="proc-panels"></div>
+    <div class="step-nav">
+      <button class="step-prev" onclick="procStep(-1)">← Anterior</button>
+      <span id="proc-counter" style="font-size:.8rem;color:var(--gris-2);align-self:center"></span>
+      <button class="step-next" onclick="procStep(1)">Siguiente →</button>
+    </div>
+  </div>
+
+  <div class="callout warn">
+    <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    <div class="callout-body"><strong>Velocidades recomendadas</strong>En la mayoría de aplicaciones industriales la velocidad en tuberías de proceso se diseña entre 1 y 3 m/s. Velocidades menores aumentan el diámetro innecesariamente; mayores generan erosión, ruido y pérdidas excesivas. En succión de bombas: máximo 1.5 m/s para evitar cavitación.</div>
+  </div>
+</section>
+
+
+<!-- ── s6: Tipos de bombas ──────────────────────────────── -->
+<section id="s6">
+  <div class="eyebrow">Sección 6</div>
+  <h2 class="sec"><span class="secnum">6.</span>Tipos de bombas industriales</h2>
+  <p class="lead">Las bombas se clasifican en dos grandes familias: las <strong>cinéticas</strong> (transfieren energía por efecto de la velocidad — centrífugas) y las de <strong>desplazamiento positivo</strong> (confinan y desplazan volúmenes definidos de fluido). La selección depende del caudal, la cabeza, la viscosidad y las características del fluido.</p>
+
+  <div class="pump-gallery" id="pump-gallery">
+    <div class="pump-bar">
+      <button class="pump-btn active" data-pump="cent">Centrífuga</button>
+      <button class="pump-btn" data-pump="pist">Pistón</button>
+      <button class="pump-btn" data-pump="diaf">Diafragma</button>
+      <button class="pump-btn" data-pump="torn">Tornillo</button>
+      <button class="pump-btn" data-pump="pale">Paletas</button>
+    </div>
+
+    <div class="pump-panel active" id="pump-cent">
+      <div class="pump-gif"><img src="/classroom/iqya-2031/readings/bombas-centrifuga_anim.gif" alt="Animación bomba centrífuga" loading="lazy"></div>
+      <div class="pump-info">
+        <span class="pump-family">Cinética</span>
+        <h4>Bomba centrífuga</h4>
+        <p class="pump-desc">El tipo más común en la industria. Un impulsor rotatorio acelera el fluido en dirección radial; la carcasa convierte la energía cinética en presión. Flujo continuo y suave, fácil de mantener.</p>
+        <ul class="pump-feats">
+          <li>Caudal: 3 – 2 000 m³/h</li>
+          <li>Cabeza: 3 – 300 m (etapas múltiples hasta 3 000 m)</li>
+          <li>Viscosidad máxima: ~500 mPa·s (pérdida de eficiencia &gt; 50 mPa·s)</li>
+          <li>Flujo uniforme, sin pulsaciones</li>
+          <li>No autocebante — requiere cebado previo</li>
+        </ul>
+        <p class="pump-apps">Aplicaciones: agua de proceso, enfriamiento, transferencia de solventes, sistemas de circulación.</p>
+      </div>
+    </div>
+
+    <div class="pump-panel" id="pump-pist">
+      <div class="pump-gif"><img src="/classroom/iqya-2031/readings/bombas-piston.gif" alt="Animación bomba de pistón" loading="lazy"></div>
+      <div class="pump-info">
+        <span class="pump-family">Desplazamiento positivo — Reciprocante</span>
+        <h4>Bomba de pistón / émbolo</h4>
+        <p class="pump-desc">Un pistón alternante desplaza el fluido a través de válvulas de retención. Produce presiones muy elevadas. El caudal es pulsante (se atenúa con acumuladores de presión).</p>
+        <ul class="pump-feats">
+          <li>Caudal: 0.1 – 100 m³/h</li>
+          <li>Cabeza: hasta 2 000+ m</li>
+          <li>Viscosidad: hasta 50 000 mPa·s</li>
+          <li>Caudal pulsante — requiere amortiguadores</li>
+          <li>Alta eficiencia volumétrica (&gt; 95 %)</li>
+        </ul>
+        <p class="pump-apps">Aplicaciones: inyección química de alta presión, limpieza industrial, dosificación de aditivos.</p>
+      </div>
+    </div>
+
+    <div class="pump-panel" id="pump-diaf">
+      <div class="pump-gif"><img src="/classroom/iqya-2031/readings/bombas-diafragma.gif" alt="Animación bomba de diafragma" loading="lazy"></div>
+      <div class="pump-info">
+        <span class="pump-family">Desplazamiento positivo — Reciprocante</span>
+        <h4>Bomba de diafragma</h4>
+        <p class="pump-desc">Una membrana flexible (diafragma) separa el fluido del mecanismo de accionamiento. No hay sellos mecánicos en contacto con el proceso. Ideal para fluidos corrosivos, abrasivos o con sólidos.</p>
+        <ul class="pump-feats">
+          <li>Caudal: 0.1 – 50 m³/h</li>
+          <li>Cabeza: 1 – 200 m</li>
+          <li>Viscosidad: hasta 20 000 mPa·s</li>
+          <li>Sin contaminación mecánica del fluido</li>
+          <li>Maneja pastas y lodos con sólidos en suspensión</li>
+        </ul>
+        <p class="pump-apps">Aplicaciones: dosificación de reactivos corrosivos, tratamiento de aguas residuales, pigmentos y pinturas.</p>
+      </div>
+    </div>
+
+    <div class="pump-panel" id="pump-torn">
+      <div class="pump-gif"><img src="/classroom/iqya-2031/readings/bombas-tornillo.gif" alt="Animación bomba de tornillo" loading="lazy"></div>
+      <div class="pump-info">
+        <span class="pump-family">Desplazamiento positivo — Rotativo</span>
+        <h4>Bomba de tornillo</h4>
+        <p class="pump-desc">Uno o más helicoides rotativos atrapan el fluido axialmente y lo desplazan sin pulsaciones. Excelente para fluidos viscosos. Operación silenciosa y eficiente.</p>
+        <ul class="pump-feats">
+          <li>Caudal: 0.5 – 500 m³/h</li>
+          <li>Cabeza: 1 – 150 m</li>
+          <li>Viscosidad: hasta 100 000 mPa·s</li>
+          <li>Flujo prácticamente sin pulsaciones</li>
+          <li>Alta eficiencia con fluidos viscosos</li>
+        </ul>
+        <p class="pump-apps">Aplicaciones: aceites lubricantes, crudos pesados, betún, asfalto, chocolate, adhesivos.</p>
+      </div>
+    </div>
+
+    <div class="pump-panel" id="pump-pale">
+      <div class="pump-gif"><img src="/classroom/iqya-2031/readings/bombas-paletas.gif" alt="Animación bomba de paletas" loading="lazy"></div>
+      <div class="pump-info">
+        <span class="pump-family">Desplazamiento positivo — Rotativo</span>
+        <h4>Bomba de paletas</h4>
+        <p class="pump-desc">Paletas deslizantes dentro de un rotor excéntrico crean cámaras de volumen variable que atrapan y desplazan el fluido. Compacta y de diseño simple.</p>
+        <ul class="pump-feats">
+          <li>Caudal: 1 – 300 m³/h</li>
+          <li>Cabeza: 1 – 100 m</li>
+          <li>Viscosidad: hasta 50 000 mPa·s</li>
+          <li>Requiere fluido con propiedades lubricantes mínimas</li>
+          <li>Bajo costo de mantenimiento</li>
+        </ul>
+        <p class="pump-apps">Aplicaciones: solventes, gasolina, aceites ligeros, fluidos hidráulicos.</p>
+      </div>
+    </div>
+  </div>
+
+  <h3 class="sub">Tabla comparativa de selección</h3>
+  <table class="ou" aria-label="Comparación de tipos de bombas">
+    <thead>
+      <tr><th>Tipo</th><th>Q (m³/h)</th><th>H máx (m)</th><th>μ máx (mPa·s)</th><th>Flujo</th><th>Fortaleza principal</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Centrífuga</td><td>3 – 2 000</td><td>300</td><td>500</td><td>Continuo</td><td>Bajo costo, alta confiabilidad, amplio rango Q</td></tr>
+      <tr><td>Pistón</td><td>0.1 – 100</td><td>2 000+</td><td>50 000</td><td>Pulsante</td><td>Altísimas presiones, dosificación exacta</td></tr>
+      <tr><td>Diafragma</td><td>0.1 – 50</td><td>200</td><td>20 000</td><td>Pulsante</td><td>Sin sellos mecánicos — corrosivos/abrasivos</td></tr>
+      <tr><td>Tornillo</td><td>0.5 – 500</td><td>150</td><td>100 000</td><td>Suave</td><td>Fluidos muy viscosos sin degradación</td></tr>
+      <tr><td>Engranajes</td><td>0.1 – 100</td><td>200</td><td>20 000</td><td>Suave</td><td>Aceites y lubricantes, alto ΔP</td></tr>
+      <tr><td>Paletas</td><td>1 – 300</td><td>100</td><td>50 000</td><td>Suave</td><td>Solventes y combustibles ligeros</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout tip">
+    <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/></svg>
+    <div class="callout-body"><strong>Regla del 80 % en la industria</strong>Las bombas centrífugas representan más del 80 % de las instalaciones industriales. Son el primer tipo a considerar; sólo se descarta cuando la viscosidad es &gt; 500 mPa·s, la cabeza requerida es mayor de lo que pueden proveer en una etapa, o el caudal es tan bajo que la eficiencia cae por debajo del 30 %.</div>
+  </div>
+</section>
+
+<!-- ── s7: Curvas características ────────────────────────── -->
+<section id="s7">
+  <div class="eyebrow">Sección 7</div>
+  <h2 class="sec"><span class="secnum">7.</span>Curvas características de la bomba</h2>
+  <p class="lead">La curva H-Q de la bomba describe la cabeza que entrega en función del caudal. La curva del sistema describe la cabeza que la tubería demanda a cada caudal. El <strong>punto de operación</strong> es la intersección de ambas curvas — ahí opera el sistema en equilibrio.</p>
+
+  <div class="blocks blocks-3 stagger-in">
+    <div class="block">
+      <h4>Curva H-Q de la bomba</h4>
+      <p>A caudal cero (válvula cerrada) la bomba alcanza su cabeza máxima (H<sub>shut</sub>). A mayor Q, la cabeza disminuye. La forma depende del diseño del impulsor.</p>
+    </div>
+    <div class="block">
+      <h4>Curva de eficiencia (η)</h4>
+      <p>La eficiencia tiene un máximo en el <em>best efficiency point</em> (BEP). Operar lejos del BEP aumenta el calentamiento, la vibración y el desgaste de sellos y rodamientos.</p>
+    </div>
+    <div class="block">
+      <h4>Curva de sistema H<sub>S</sub></h4>
+      <p>H<sub>S</sub> = H<sub>estático</sub> + pérdidas (∝ Q²). La diferencia de elevaciones es la parte fija; las pérdidas crecen con el cuadrado del caudal.</p>
+    </div>
+  </div>
+
+  <div class="chart-wrap">
+    <svg id="pump-curve-svg" class="chart-svg" viewBox="0 0 560 300" aria-label="Curvas H-Q bomba centrífuga con punto de operación"></svg>
+    <div class="slider-row" style="margin-top:.75rem">
+      <label>Caudal Q</label>
+      <input type="range" id="pc-q" min="0" max="115" step="5" value="65">
+      <span class="slider-val" id="pc-q-val">65 m³/h</span>
+    </div>
+    <div id="pc-result" class="calc-result" style="margin-top:.5rem">Mueve el slider para leer la curva</div>
+    <figcaption>Ejemplo: H<sub>shut</sub> = 50 m · Q<sub>max</sub> ≈ 110 m³/h · η<sub>BEP</sub> ≈ 78 % a Q = 70 m³/h · H<sub>estático</sub> = 12 m.</figcaption>
+  </div>
+
+  <div class="callout warn">
+    <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    <div class="callout-body"><strong>Zona de operación estable</strong>Operar a caudales muy bajos (&lt; 30 % Q<sub>BEP</sub>) genera recirculación interna, pulsaciones y calentamiento excesivo. Operar a caudales muy altos produce cavitación por baja presión a la entrada del impulsor. La zona segura de operación es típicamente 70–120 % del Q<sub>BEP</sub>.</div>
+  </div>
+</section>
+
+<!-- ── s8: Cavitación y NPSH ─────────────────────────────── -->
+<section id="s8">
+  <div class="eyebrow">Sección 8</div>
+  <h2 class="sec"><span class="secnum">8.</span>Cavitación y NPSH</h2>
+  <p class="lead">La <strong>cavitación</strong> ocurre cuando la presión local en el impulsor cae por debajo de la presión de vapor del líquido. Se forman burbujas de vapor que al colapsar generan ondas de choque microscópicas que erosionan el metal y producen vibración, ruido y pérdida de caudal.</p>
+
+  <figure class="fig-frame">
+    <img src="/classroom/iqya-2031/readings/bombas-npsh_a.png" alt="NPSH disponible vs requerido — esquema del sistema de succión" loading="lazy">
+    <figcaption>El NPSH disponible (NPSHa) se calcula a partir de las condiciones del sistema; el NPSH requerido (NPSHr) lo especifica el fabricante. El sistema opera sin cavitación cuando NPSHa &gt; NPSHr + margen de seguridad.</figcaption>
+  </figure>
+
+  <div class="blocks stagger-in">
+    <div class="block">
+      <h4>NPSH requerido (NPSHr)</h4>
+      <p>Especificado por el fabricante para cada caudal. Aumenta con Q. Define la presión mínima absoluta que el fluido debe tener a la entrada de la bomba.</p>
+    </div>
+    <div class="block">
+      <h4>NPSH disponible (NPSHa)</h4>
+      <p>Determinado por el sistema de succión. $$\text{NPSHa} = \frac{P_{\text{tank}} - P_v}{\rho g} + z_{\text{neto}} - h_{L,\text{suc}}$$</p>
+    </div>
+    <div class="block">
+      <h4>Margen de seguridad</h4>
+      <p>El estándar <a class="pl" href="https://www.pumps.org" target="_blank" rel="noopener">ANSI/HI 9.6.7</a> recomienda NPSHa ≥ NPSHr + 0.5 m como mínimo (preferiblemente 1–2 m para agua caliente o servicios críticos).</p>
+    </div>
+  </div>
+
+  <figure class="fig-frame">
+    <img src="/classroom/iqya-2031/readings/bombas-npsh_marg.png" alt="Curva de margen NPSH vs caudal" loading="lazy">
+    <figcaption>El margen NPSHa – NPSHr disminuye al aumentar el caudal, porque NPSHr crece y las pérdidas de succión también aumentan. El punto de operación debe estar a la izquierda del caudal donde el margen se vuelve cero.</figcaption>
+  </figure>
+
+  <h3 class="sub">Calculadora de NPSH disponible</h3>
+  <div class="calc-card" id="npsh-card">
+    <h4>NPSH disponible</h4>
+    <div class="calc-grid">
+      <div class="calc-field">
+        <label>P<sub>tank</sub> [kPa abs]</label>
+        <input type="number" id="npsh-pt" value="101.3" step="1">
+      </div>
+      <div class="calc-field">
+        <label>P<sub>vapor</sub> [kPa abs]</label>
+        <input type="number" id="npsh-pv" value="3.17" step="0.1">
+      </div>
+      <div class="calc-field">
+        <label>z<sub>neto</sub> [m] (+ si bomba abajo del tanque)</label>
+        <input type="number" id="npsh-z" value="3.0" step="0.1">
+      </div>
+      <div class="calc-field">
+        <label>h<sub>L,suc</sub> [m] (pérdidas de succión)</label>
+        <input type="number" id="npsh-hl" value="1.2" step="0.1">
+      </div>
+      <div class="calc-field">
+        <label>ρ [kg/m³]</label>
+        <input type="number" id="npsh-rho" value="997" step="1">
+      </div>
+      <div class="calc-field">
+        <label>NPSHr [m] (datos del fabricante)</label>
+        <input type="number" id="npsh-req" value="2.5" step="0.1">
+      </div>
+    </div>
+    <button class="calc-btn" onclick="calcNpsh()">Calcular</button>
+    <div class="calc-result" id="npsh-result">— presiona Calcular —</div>
+    <div class="npsh-bar"><div class="npsh-fill" id="npsh-fill" style="width:0%"></div></div>
+  </div>
+</section>
+
+<!-- ── s9: Potencia ──────────────────────────────────────── -->
+<section id="s9">
+  <div class="eyebrow">Sección 9</div>
+  <h2 class="sec"><span class="secnum">9.</span>Potencia de bombeo</h2>
+  <p class="lead">La potencia se calcula en tres etapas: potencia hidráulica (ideal), potencia al freno (BHP) que entrega el motor al eje, y potencia eléctrica consumida de la red. Cada paso divide por una eficiencia.</p>
+
+  <div class="blocks blocks-3 stagger-in">
+    <div class="block">
+      <h4>Potencia hidráulica P<sub>h</sub></h4>
+      <p>$$P_h = \rho g Q H_A$$</p>
+      <p style="font-size:.8rem;color:var(--gris-2)">[W] con ρ [kg/m³], g = 9.81 m/s², Q [m³/s], H<sub>A</sub> [m]. Es la potencia útil transferida al fluido.</p>
+    </div>
+    <div class="block">
+      <h4>Potencia al freno (BHP)</h4>
+      <p>$$\text{BHP} = \frac{P_h}{\eta_{\text{bomba}}}$$</p>
+      <p style="font-size:.8rem;color:var(--gris-2)">η<sub>bomba</sub> incluye pérdidas hidráulicas, volumétricas y mecánicas internas. Típicamente 0.65–0.85 para centrífugas.</p>
+    </div>
+    <div class="block">
+      <h4>Potencia eléctrica</h4>
+      <p>$$P_{\text{elec}} = \frac{\text{BHP}}{\eta_{\text{motor}}}$$</p>
+      <p style="font-size:.8rem;color:var(--gris-2)">η<sub>motor</sub> ≈ 0.90–0.97 para motores de inducción modernos. P<sub>elec</sub> es lo que se paga al operador de red.</p>
+    </div>
+  </div>
+
+  <div class="calc-card">
+    <h4>Calculadora de potencia</h4>
+    <div class="calc-grid">
+      <div class="calc-field">
+        <label>ρ [kg/m³]</label>
+        <input type="number" id="pw-rho" value="997" step="1">
+      </div>
+      <div class="calc-field">
+        <label>Q [m³/s]</label>
+        <input type="number" id="pw-q" value="0.01" step="0.001">
+      </div>
+      <div class="calc-field">
+        <label>H<sub>A</sub> [m]</label>
+        <input type="number" id="pw-h" value="50" step="1">
+      </div>
+      <div class="calc-field">
+        <label>η bomba (0–1)</label>
+        <input type="number" id="pw-eb" value="0.75" step="0.01" min="0.01" max="1">
+      </div>
+      <div class="calc-field">
+        <label>η motor (0–1)</label>
+        <input type="number" id="pw-em" value="0.92" step="0.01" min="0.01" max="1">
+      </div>
+    </div>
+    <button class="calc-btn" onclick="calcPower()">Calcular</button>
+    <div class="calc-result" id="pw-result">— presiona Calcular —</div>
+  </div>
+</section>
+
+<!-- ── s10: Ejemplo resuelto ─────────────────────────────── -->
+<section id="s10">
+  <div class="eyebrow">Sección 10</div>
+  <h2 class="sec"><span class="secnum">10.</span>Ejemplo resuelto — sistema completo</h2>
+  <p class="lead">Se diseña un sistema para transportar agua a 25 °C desde un tanque de almacenamiento hasta un reactor elevado. Se calcula la cabeza del sistema, se verifica el NPSH y se estima la potencia eléctrica.</p>
+
+  <div class="callout">
+    <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+    <div class="callout-body"><strong>Datos del problema</strong>Fluido: agua a 25 °C (ρ = 997 kg/m³, μ = 8.9×10⁻⁴ Pa·s). Caudal Q = 0.01 m³/s. Tubería: acero comercial, D = 0.0525 m, L = 120 m, ε = 0.046 mm. Accesorios: 6 codos suaves 90° (K<sub>L</sub> = 0.30), 2 válvulas compuerta abiertas (K<sub>L</sub> = 0.15), 1 entrada boca aguda (K<sub>L</sub> = 0.50), 1 salida (K<sub>L</sub> = 1.0). Diferencia de elevación: z<sub>2</sub> – z<sub>1</sub> = 18 m. Presiones iguales en superficie (tanque y reactor abiertos).</div>
+  </div>
+
+  <div class="we-wrap">
+    <details class="we-step" open>
+      <summary><span class="we-step-num"></span>Propiedades y velocidad</summary>
+      <div class="we-body">
+        <p>ρ = 997 kg/m³ · μ = 8.9×10⁻⁴ Pa·s · A = π(0.0525)²/4 = 2.165×10⁻³ m²</p>
+        <p>Velocidad media: V = Q/A = 0.01 / 2.165×10⁻³</p>
+        <div class="we-result">V = 4.62 m/s</div>
+        <p style="margin-top:.5rem;font-size:.82rem;color:var(--gris-2)">Nota: esta velocidad es algo elevada para una línea de proceso general; en la práctica se evaluaría aumentar el diámetro a 2" o 2½".</p>
+      </div>
+    </details>
+
+    <details class="we-step">
+      <summary><span class="we-step-num"></span>Número de Reynolds y régimen</summary>
+      <div class="we-body">
+        <p>Re = ρVD/μ = (997 × 4.62 × 0.0525) / (8.9×10⁻⁴)</p>
+        <div class="we-result">Re = 2.72 × 10⁵ → Flujo turbulento</div>
+      </div>
+    </details>
+
+    <details class="we-step">
+      <summary><span class="we-step-num"></span>Factor de fricción (Swamee-Jain)</summary>
+      <div class="we-body">
+        <p>ε/D = 0.046×10⁻³ / 0.0525 = 8.76×10⁻⁴</p>
+        <p>f = 0.25 / [log₁₀(8.76×10⁻⁴/3.7 + 5.74/Re⁰·⁹)]²</p>
+        <p>= 0.25 / [log₁₀(2.37×10⁻⁴ + 8.54×10⁻⁶)]²</p>
+        <p>= 0.25 / [log₁₀(2.46×10⁻⁴)]²</p>
+        <p>= 0.25 / (−3.609)² = 0.25 / 13.02</p>
+        <div class="we-result">f = 0.0192</div>
+      </div>
+    </details>
+
+    <details class="we-step">
+      <summary><span class="we-step-num"></span>Pérdidas mayores (Darcy-Weisbach)</summary>
+      <div class="we-body">
+        <p>h<sub>f</sub> = f × (L/D) × V²/(2g)</p>
+        <p>= 0.0192 × (120/0.0525) × (4.62)²/(2×9.81)</p>
+        <p>= 0.0192 × 2 285.7 × 1.087</p>
+        <div class="we-result">h<sub>f</sub> = 47.7 m</div>
+      </div>
+    </details>
+
+    <details class="we-step">
+      <summary><span class="we-step-num"></span>Pérdidas menores (K<sub>L</sub>)</summary>
+      <div class="we-body">
+        <p>ΣK<sub>L</sub> = 6×0.30 + 2×0.15 + 1×0.50 + 1×1.0 = 1.80 + 0.30 + 0.50 + 1.0 = 3.60</p>
+        <p>h<sub>m</sub> = ΣK<sub>L</sub> × V²/(2g) = 3.60 × (4.62)²/(2×9.81) = 3.60 × 1.087</p>
+        <div class="we-result">h<sub>m</sub> = 3.91 m</div>
+      </div>
+    </details>
+
+    <details class="we-step">
+      <summary><span class="we-step-num"></span>Cabeza del sistema (Bernoulli)</summary>
+      <div class="we-body">
+        <p>Superficies abiertas → ΔP/ρg = 0. Velocidades en superficie ≈ 0 → ΔV²/2g ≈ 0.</p>
+        <p>H<sub>A</sub> = (z<sub>2</sub> − z<sub>1</sub>) + h<sub>f</sub> + h<sub>m</sub></p>
+        <p>= 18 + 47.7 + 3.91</p>
+        <div class="we-result">H<sub>A</sub> = 69.6 m ← cabeza requerida al sistema</div>
+      </div>
+    </details>
+
+    <details class="we-step">
+      <summary><span class="we-step-num"></span>Potencia eléctrica (η<sub>b</sub> = 0.72, η<sub>m</sub> = 0.93)</summary>
+      <div class="we-body">
+        <p>P<sub>h</sub> = ρgQH<sub>A</sub> = 997 × 9.81 × 0.01 × 69.6 = 6 806 W = 6.81 kW</p>
+        <p>BHP = P<sub>h</sub> / η<sub>b</sub> = 6.81 / 0.72 = 9.46 kW</p>
+        <p>P<sub>elec</sub> = BHP / η<sub>m</sub> = 9.46 / 0.93</p>
+        <div class="we-result">P<sub>eléc</sub> = 10.2 kW → seleccionar motor estándar de 11 kW (15 HP)</div>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ── Retos de diseño ────────────────────────────────────── -->
+<section id="s10b">
+  <h3 class="sub">Retos de diseño</h3>
+  <p>Aplica lo aprendido en estos escenarios industriales:</p>
+  <div class="challenges">
+    <div class="challenge">
+      <div class="ch-num">Reto 01</div>
+      <h4>Rediseño por cambio de fluido</h4>
+      <p>El sistema del ejemplo se usará para queroseno a 40 °C (ρ = 800 kg/m³, μ = 1.5×10⁻³ Pa·s) al mismo caudal. ¿Cuánto cambia la cabeza del sistema? ¿La bomba seleccionada sigue siendo válida?</p>
+    </div>
+    <div class="challenge">
+      <div class="ch-num">Reto 02</div>
+      <h4>Verificación de NPSH</h4>
+      <p>La bomba del ejemplo se instala con 2.5 m de succión positiva (z<sub>neto</sub> = 2.5 m), tubo de succión de 0.8 m de pérdida. El fabricante indica NPSHr = 3.5 m a Q = 36 m³/h. ¿Existe riesgo de cavitación? Usa la calculadora de NPSH.</p>
+    </div>
+    <div class="challenge">
+      <div class="ch-num">Reto 03</div>
+      <h4>Operación en paralelo</h4>
+      <p>Se instalan dos bombas idénticas en paralelo sobre el mismo sistema. Con la curva H-Q del ejemplo, ¿cuál es el nuevo punto de operación? ¿Las pérdidas aumentan o disminuyen?</p>
+    </div>
+    <div class="challenge">
+      <div class="ch-num">Reto 04</div>
+      <h4>Crudo pesado a temperatura ambiente</h4>
+      <p>Se requiere transportar 15 m³/h de crudo pesado (ρ = 970 kg/m³, μ = 250 mPa·s) por 80 m de tubería de 2". ¿Qué tipo de bomba seleccionarías y por qué? ¿Cuál sería el régimen de flujo?</p>
+    </div>
+    <div class="challenge">
+      <div class="ch-num">Reto 05</div>
+      <h4>Optimización de diámetro</h4>
+      <p>Para el sistema del ejemplo calcula la cabeza del sistema para D = 1.5" (0.038 m), 2" (0.0525 m) y 2.5" (0.063 m). Grafica H<sub>A</sub> vs D y comenta el trade-off costo de tubería vs potencia.</p>
+    </div>
+    <div class="challenge">
+      <div class="ch-num">Reto 06</div>
+      <h4>Impacto de la temperatura</h4>
+      <p>El sistema transporta agua. Compara la cabeza del sistema a 20 °C (ρ = 998, μ = 1.0×10⁻³) vs 80 °C (ρ = 972, μ = 3.5×10⁻⁴). Explica por qué la potencia puede <em>bajar</em> aunque la viscosidad sea menor.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── s11: Bibliografía ──────────────────────────────────── -->
+<section id="s11">
+  <div class="doc-foot">
+    <p class="refs-title">Referencias</p>
+    <ol class="refs">
+      <li><b>McCabe, W. L., Smith, J. C., &amp; Harriott, P.</b> (2005). <em>Unit Operations of Chemical Engineering</em> (7th ed.). McGraw-Hill. [Capítulos 4–6: Flujo de fluidos y transporte de fluidos]</li>
+      <li><b>Perry, R. H., &amp; Green, D. W.</b> (Eds.). (2019). <em>Perry's Chemical Engineers' Handbook</em> (9th ed.). McGraw-Hill. [Sección 6: Dinámica de fluidos y sección 10: Bombas y compresores]</li>
+      <li><b>Çengel, Y. A., &amp; Cimbala, J. M.</b> (2018). <em>Fluid Mechanics: Fundamentals and Applications</em> (4th ed.). McGraw-Hill. [Capítulo 8: Flujo en tuberías y capítulo 14: Turbomaquinaria]</li>
+      <li><b>Crane Co.</b> (2013). <em>Flow of Fluids Through Valves, Fittings, and Pipe</em> (Technical Paper 410). Crane Valve Group. [Referencia estándar para coeficientes K<sub>L</sub>]</li>
+      <li><b>Karassik, I. J., Messina, J. P., Cooper, P., &amp; Heald, C. C.</b> (Eds.). (2008). <em>Pump Handbook</em> (4th ed.). McGraw-Hill. [Referencia completa sobre selección y diseño de bombas]</li>
+      <li><b>Lobanoff, V. S., &amp; Ross, R. R.</b> (2013). <em>Centrifugal Pumps: Design and Application</em> (2nd ed.). Elsevier. [Curvas características, NPSH y cavitación]</li>
+      <li><b>Swamee, P. K., &amp; Jain, A. K.</b> (1976). Explicit equations for pipe-flow problems. <em>Journal of the Hydraulics Division ASCE</em>, 102(5), 657–664. [Fórmula explícita para el factor de fricción]</li>
+      <li><b>Moody, L. F.</b> (1944). Friction factors for pipe flow. <em>Transactions of the ASME</em>, 66(8), 671–684. [Diagrama de Moody original]</li>
+      <li><b>Hydraulic Institute.</b> (2009). <em>ANSI/HI 9.6.7: Rotodynamic Pumps — Guideline for the Effects of Liquid Viscosity on Performance</em>. Hydraulic Institute. [Correcciones de viscosidad para bombas centrífugas]</li>
+    </ol>
+    <p class="foot-note">Lectura preparada para uso exclusivo del curso IQYA 2031 — Proyecto de Operaciones Unitarias, Universidad de los Andes. Las imágenes de los tipos de bombas son animaciones vectoriales de dominio público. El diagrama de Moody se genera matemáticamente con la aproximación de Swamee-Jain.</p>
+  </div>
+</section>
+
+</div><!-- /doc-body -->
+</article>
+</div><!-- /outer-layout -->
+
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+<script>
+// ── KaTeX ────────────────────────────────────────────────
+function renderMath(el){
+  renderMathInElement(el||document.body,{delimiters:[
+    {left:'$$',right:'$$',display:true},
+    {left:'$',right:'$',display:false}
+  ],throwOnError:false});
+}
+document.addEventListener('DOMContentLoaded',()=>renderMath());
+
+// ── Progress bar ─────────────────────────────────────────
+(function(){
+  const bar=document.getElementById('progress');
+  window.addEventListener('scroll',()=>{
+    const h=document.documentElement;
+    const pct=(h.scrollTop/(h.scrollHeight-h.clientHeight))*100;
+    bar.style.width=Math.min(pct,100)+'%';
+  },{passive:true});
+})();
+
+// ── Scroll-spy ───────────────────────────────────────────
+(function(){
+  const ids=['s1','s2','s3','s4','s5','s6','s7','s8','s9','s10','s11'];
+  const links={};
+  ids.forEach(id=>{
+    const el=document.querySelector('.side-nav a[href="#'+id+'"]');
+    if(el) links[id]=el;
+  });
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting&&links[e.target.id]){
+        Object.values(links).forEach(l=>l.classList.remove('is-active'));
+        links[e.target.id].classList.add('is-active');
+      }
+    });
+  },{rootMargin:'-20% 0px -70% 0px'});
+  ids.forEach(id=>{const s=document.getElementById(id);if(s)obs.observe(s);});
+})();
+
+// ── Property tabs ────────────────────────────────────────
+(function(){
+  const wrap=document.getElementById('prop-tabs');
+  if(!wrap)return;
+  wrap.querySelectorAll('.tab-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      wrap.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+      wrap.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+      btn.classList.add('active');
+      const panel=document.getElementById('tab-'+btn.dataset.tab);
+      if(panel){panel.classList.add('active');renderMath(panel);}
+    });
+  });
+})();
+
+// ── Density chart ────────────────────────────────────────
+(function(){
+  const svg=document.getElementById('chart-density');
+  if(!svg)return;
+  const temps=[0,10,25,40,60,80,100];
+  const data={
+    'Agua':     {vals:[1000,999,997,992,983,971,958],color:'#0076A8'},
+    'Queroseno':{vals:[820,815,808,800,790,778,765],color:'#86BC24'},
+    'Crudo':{vals:[970,955,940,923,905,892,878],color:'#E0922F'}
+  };
+  const W=540,H=260,ml=52,mr=20,mt=20,mb=40;
+  const pw=W-ml-mr,ph=H-mt-mb;
+  const tx=t=>ml+t/100*pw;
+  const allV=Object.values(data).flatMap(d=>d.vals);
+  const vMin=Math.min(...allV)-15,vMax=Math.max(...allV)+15;
+  const ty=v=>mt+ph-(v-vMin)/(vMax-vMin)*ph;
+  let html='';
+  // Grid
+  [800,850,900,950,1000].forEach(v=>{
+    if(v>=vMin&&v<=vMax){
+      const y=ty(v);
+      html+=`<line x1="${ml}" y1="${y}" x2="${W-mr}" y2="${y}" stroke="#e4e4e4" stroke-width="1"/>`;
+      html+=`<text x="${ml-5}" y="${y+4}" text-anchor="end" class="axis-tick">${v}</text>`;
+    }
+  });
+  [0,25,50,75,100].forEach(t=>{
+    const x=tx(t);
+    html+=`<line x1="${x}" y1="${mt}" x2="${x}" y2="${H-mb}" stroke="#e4e4e4" stroke-width="1"/>`;
+    html+=`<text x="${x}" y="${H-mb+14}" text-anchor="middle" class="axis-tick">${t}</text>`;
+  });
+  // Axes labels
+  html+=`<text x="${ml+pw/2}" y="${H-2}" text-anchor="middle" class="axis-label">Temperatura (°C)</text>`;
+  html+=`<text x="12" y="${mt+ph/2}" text-anchor="middle" class="axis-label" transform="rotate(-90,12,${mt+ph/2})">Densidad (kg/m³)</text>`;
+  // Lines
+  Object.entries(data).forEach(([name,d])=>{
+    const pts=temps.map((t,i)=>`${tx(t)},${ty(d.vals[i])}`).join(' ');
+    html+=`<polyline points="${pts}" fill="none" stroke="${d.color}" stroke-width="2.5" stroke-linejoin="round"/>`;
+    temps.forEach((t,i)=>html+=`<circle cx="${tx(t)}" cy="${ty(d.vals[i])}" r="3.5" fill="${d.color}"/>`);
+  });
+  svg.innerHTML=html;
+})();
+
+// ── Viscosity chart ──────────────────────────────────────
+(function(){
+  const svg=document.getElementById('chart-visc');
+  if(!svg)return;
+  const temps=[0,10,25,40,60,80,100];
+  const data={
+    'Agua':     {vals:[1.79,1.31,0.89,0.65,0.47,0.35,0.28],color:'#0076A8'},
+    'Queroseno':{vals:[3.20,2.50,1.92,1.50,1.15,0.90,0.72],color:'#86BC24'},
+    'Crudo':{vals:[250,120,60,30,16,9,5.5],color:'#E0922F'}
+  };
+  const W=540,H=260,ml=60,mr=20,mt=20,mb=40;
+  const pw=W-ml-mr,ph=H-mt-mb;
+  const tx=t=>ml+t/100*pw;
+  const logMin=Math.log10(0.2),logMax=Math.log10(300);
+  const ty=v=>mt+ph-(Math.log10(v)-logMin)/(logMax-logMin)*ph;
+  let html='';
+  [0.3,1,3,10,30,100,300].forEach(v=>{
+    if(Math.log10(v)>=logMin&&Math.log10(v)<=logMax){
+      const y=ty(v);
+      html+=`<line x1="${ml}" y1="${y}" x2="${W-mr}" y2="${y}" stroke="#e4e4e4" stroke-width="1"/>`;
+      html+=`<text x="${ml-5}" y="${y+4}" text-anchor="end" class="axis-tick">${v}</text>`;
+    }
+  });
+  [0,25,50,75,100].forEach(t=>{
+    const x=tx(t);
+    html+=`<line x1="${x}" y1="${mt}" x2="${x}" y2="${H-mb}" stroke="#e4e4e4" stroke-width="1"/>`;
+    html+=`<text x="${x}" y="${H-mb+14}" text-anchor="middle" class="axis-tick">${t}</text>`;
+  });
+  html+=`<text x="${ml+pw/2}" y="${H-2}" text-anchor="middle" class="axis-label">Temperatura (°C)</text>`;
+  html+=`<text x="12" y="${mt+ph/2}" text-anchor="middle" class="axis-label" transform="rotate(-90,12,${mt+ph/2})">Viscosidad (mPa·s) — escala log</text>`;
+  Object.entries(data).forEach(([name,d])=>{
+    const pts=temps.map((t,i)=>`${tx(t)},${ty(d.vals[i])}`).join(' ');
+    html+=`<polyline points="${pts}" fill="none" stroke="${d.color}" stroke-width="2.5" stroke-linejoin="round"/>`;
+    temps.forEach((t,i)=>html+=`<circle cx="${tx(t)}" cy="${ty(d.vals[i])}" r="3.5" fill="${d.color}"/>`);
+  });
+  svg.innerHTML=html;
+})();
+
+// ── Vapor pressure chart ─────────────────────────────────
+(function(){
+  const svg=document.getElementById('chart-pvap');
+  if(!svg)return;
+  const temps=[0,10,20,30,40,50,60,70,80,90,100];
+  const pvap=[0.61,1.23,2.34,4.24,7.38,12.35,19.94,31.19,47.39,70.14,101.32];
+  const W=540,H=260,ml=55,mr=20,mt=20,mb=40;
+  const pw=W-ml-mr,ph=H-mt-mb;
+  const tx=t=>ml+t/100*pw;
+  const vMax=110;
+  const ty=v=>mt+ph-(v/vMax)*ph;
+  let html='';
+  [0,25,50,75,100].forEach(v=>{
+    const y=ty(v);
+    html+=`<line x1="${ml}" y1="${y}" x2="${W-mr}" y2="${y}" stroke="#e4e4e4" stroke-width="1"/>`;
+    html+=`<text x="${ml-5}" y="${y+4}" text-anchor="end" class="axis-tick">${v}</text>`;
+  });
+  [0,25,50,75,100].forEach(t=>{
+    const x=tx(t);
+    html+=`<line x1="${x}" y1="${mt}" x2="${x}" y2="${H-mb}" stroke="#e4e4e4" stroke-width="1"/>`;
+    html+=`<text x="${x}" y="${H-mb+14}" text-anchor="middle" class="axis-tick">${t}</text>`;
+  });
+  html+=`<text x="${ml+pw/2}" y="${H-2}" text-anchor="middle" class="axis-label">Temperatura (°C)</text>`;
+  html+=`<text x="12" y="${mt+ph/2}" text-anchor="middle" class="axis-label" transform="rotate(-90,12,${mt+ph/2})">P<tspan dy="4" font-size="9">v</tspan><tspan dy="-4"> (kPa)</tspan></text>`;
+  const pts=temps.map((t,i)=>`${tx(t)},${ty(pvap[i])}`).join(' ');
+  html+=`<polyline points="${pts}" fill="none" stroke="#0076A8" stroke-width="2.5" stroke-linejoin="round"/>`;
+  // Fill area
+  const fillPts=`${tx(0)},${ty(0)} `+pts+` ${tx(100)},${ty(0)}`;
+  html+=`<polygon points="${fillPts}" fill="#0076A8" fill-opacity="0.08"/>`;
+  temps.forEach((t,i)=>html+=`<circle cx="${tx(t)}" cy="${ty(pvap[i])}" r="3.5" fill="#0076A8"/>`);
+  // Boiling point annotation
+  html+=`<line x1="${tx(100)}" y1="${ty(101.32)}" x2="${tx(100)}" y2="${ty(0)}" stroke="#0076A8" stroke-dasharray="4,3" stroke-width="1"/>`;
+  html+=`<text x="${tx(96)}" y="${ty(50)}" class="axis-tick" fill="#0076A8">100 °C = 1 atm</text>`;
+  svg.innerHTML=html;
+})();
+
+// ── Reynolds calculator ───────────────────────────────────
+function calcRe(){
+  const Q=parseFloat(document.getElementById('re-Q').value);
+  const D=parseFloat(document.getElementById('re-D').value);
+  const rho=parseFloat(document.getElementById('re-rho').value);
+  const mu=parseFloat(document.getElementById('re-mu').value);
+  if([Q,D,rho,mu].some(v=>isNaN(v)||v<=0)){
+    document.getElementById('re-result').innerHTML='<span style="color:#e87c5b">Verifica que todos los valores sean positivos.</span>';
+    return;
+  }
+  const A=Math.PI*D*D/4;
+  const V=Q/A;
+  const Re=rho*V*D/mu;
+  let cls,reg;
+  if(Re<2100){cls='re-ok';reg='Laminar';}
+  else if(Re<4000){cls='re-trans';reg='Transición';}
+  else{cls='re-turb';reg='Turbulento';}
+  document.getElementById('re-result').innerHTML=
+    `V = <b>${V.toFixed(3)} m/s</b> &nbsp;|&nbsp; Re = <b class="${cls}">${Re.toLocaleString('es-CO',{maximumFractionDigits:0})}</b> → <b class="${cls}">${reg}</b>`;
+}
+
+// ── Moody diagram ─────────────────────────────────────────
+(function(){
+  const svg=document.getElementById('moody-svg');
+  if(!svg)return;
+  const edOpts=[0,1e-6,5e-6,1e-5,5e-5,1e-4,2e-4,4e-4,1e-3,2e-3,4e-3,1e-2,1.5e-2,2e-2,3e-2,5e-2];
+  const edLabels=['0','1×10⁻⁶','5×10⁻⁶','10⁻⁵','5×10⁻⁵','10⁻⁴','2×10⁻⁴','4×10⁻⁴','10⁻³','2×10⁻³','4×10⁻³','0.01','0.015','0.02','0.03','0.05'];
+  const edColors=['#aaa','#9ab','#8bc','#7cd','#6ce','#5df','#4c0','#86BC24','#6ba','#5a9','#497','#384','#273','#162','#051','#040'];
+  const W=620,H=360,ml=55,mr=20,mt=20,mb=45;
+  const pw=W-ml-mr,ph=H-mt-mb;
+  const logReMin=3,logReMax=8;
+  const fMin=0.005,fMax=0.1;
+  const tx=re=>ml+(Math.log10(re)-logReMin)/(logReMax-logReMin)*pw;
+  const ty=f=>mt+ph-(Math.log10(f)-Math.log10(fMin))/(Math.log10(fMax)-Math.log10(fMin))*ph;
+  function sj(Re,ed){
+    if(Re<2100)return 64/Re;
+    if(ed===0)return 0.25/Math.pow(Math.log10(5.74/Math.pow(Re,0.9)),2);
+    return 0.25/Math.pow(Math.log10(ed/3.7+5.74/Math.pow(Re,0.9)),2);
+  }
+  let html='';
+  // Grid
+  [1e3,1e4,1e5,1e6,1e7,1e8].forEach(re=>{
+    if(re>=1e3&&re<=1e8){const x=tx(re);html+=`<line x1="${x}" y1="${mt}" x2="${x}" y2="${H-mb}" stroke="#e4e4e4" stroke-width="1"/>`;html+=`<text x="${x}" y="${H-mb+14}" text-anchor="middle" class="axis-tick">10${re===1e3?'³':re===1e4?'⁴':re===1e5?'⁵':re===1e6?'⁶':re===1e7?'⁷':'⁸'}</text>`;}
+  });
+  [0.01,0.02,0.03,0.04,0.05,0.06,0.07,0.08,0.09,0.1].forEach(f=>{
+    if(f>=fMin&&f<=fMax){const y=ty(f);html+=`<line x1="${ml}" y1="${y}" x2="${W-mr}" y2="${y}" stroke="#e4e4e4" stroke-width="1"/>`;html+=`<text x="${ml-5}" y="${y+4}" text-anchor="end" class="axis-tick">${f.toFixed(2)}</text>`;}
+  });
+  html+=`<text x="${ml+pw/2}" y="${H-5}" text-anchor="middle" class="axis-label">Número de Reynolds (Re)</text>`;
+  html+=`<text x="12" y="${mt+ph/2}" text-anchor="middle" class="axis-label" transform="rotate(-90,12,${mt+ph/2})">Factor de fricción f</text>`;
+  // Laminar line
+  const reLam=[];for(let r=1000;r<=2100;r+=100)reLam.push(r);
+  const lamPts=reLam.map(r=>`${tx(r)},${ty(64/r)}`).join(' ');
+  html+=`<polyline points="${lamPts}" fill="none" stroke="#555" stroke-width="1.5" stroke-dasharray="5,3"/>`;
+  // Turbulent curves
+  const reRange=[];for(let e=3;e<=8;e+=0.05)reRange.push(Math.pow(10,e));
+  edOpts.forEach((ed,i)=>{
+    const pts=reRange.map(r=>{const f=sj(r,ed);if(f<fMin||f>fMax||isNaN(f))return null;return`${tx(r)},${ty(f)}`;}).filter(Boolean).join(' ');
+    if(pts)html+=`<polyline points="${pts}" fill="none" stroke="${edColors[i]||'#86BC24'}" stroke-width="${i===0?1.5:1.2}" opacity="0.75"/>`;
+  });
+  // Cursor elements
+  html+=`<line id="moody-vline" x1="0" y1="${mt}" x2="0" y2="${H-mb}" stroke="var(--verde)" stroke-width="1.5" stroke-dasharray="4,3" opacity="0"/>`;
+  html+=`<circle id="moody-dot" cx="0" cy="0" r="5" fill="var(--verde)" stroke="#fff" stroke-width="1.5" opacity="0"/>`;
+  svg.innerHTML=html;
+  // Slider logic
+  const reSl=document.getElementById('moody-re');
+  const edSl=document.getElementById('moody-ed');
+  const reVal=document.getElementById('moody-re-val');
+  const edVal=document.getElementById('moody-ed-val');
+  const res=document.getElementById('moody-result');
+  function update(){
+    const Re=Math.pow(10,parseFloat(reSl.value));
+    const idx=Math.round(parseFloat(edSl.value));
+    const ed=edOpts[idx]||0;
+    reVal.textContent='10^'+parseFloat(reSl.value).toFixed(2);
+    edVal.textContent=edLabels[idx]||'0';
+    const f=sj(Re,ed);
+    const vl=svg.getElementById('moody-vline');
+    const dot=svg.getElementById('moody-dot');
+    const x=tx(Re),y=ty(f);
+    if(vl){vl.setAttribute('x1',x);vl.setAttribute('x2',x);vl.setAttribute('opacity','1');}
+    if(dot&&f>=fMin&&f<=fMax){dot.setAttribute('cx',x);dot.setAttribute('cy',y);dot.setAttribute('opacity','1');}
+    res.innerHTML=`Re = <b>${Re.toLocaleString('es-CO',{maximumFractionDigits:0})}</b> &nbsp;|&nbsp; ε/D = <b>${edLabels[idx]}</b> &nbsp;|&nbsp; <b>f = ${f.toFixed(4)}</b>`;
+  }
+  reSl.addEventListener('input',update);
+  edSl.addEventListener('input',update);
+  update();
+})();
+
+// ── Procedure stepper ────────────────────────────────────
+(function(){
+  const steps=[
+    {title:'Caracterizar el fluido',body:`<p>Obtener ρ y μ (o ν) del fluido a la temperatura de proceso. Buscar en tablas termodinámicas o con el proveedor. Registrar también la presión de vapor P<sub>v</sub> si hay riesgo de cavitación.</p><ul><li>Agua a 25 °C: ρ = 997 kg/m³, μ = 8.9×10⁻⁴ Pa·s</li><li>Si varía la temperatura, usar la propiedad en el punto más crítico</li><li>Para mezclas, estimar con modelos de mezcla o datos experimentales</li></ul>`},
+    {title:'Estimar la velocidad',body:`<p>Con el caudal de diseño Q y el diámetro tentativo D:</p><p>$$V = \\frac{4Q}{\\pi D^2}$$</p><p>Verificar que V esté en el rango recomendado (1–3 m/s en descarga, ≤ 1.5 m/s en succión). Si no, ajustar D.</p>`},
+    {title:'Calcular Re y f',body:`<p>$$\\text{Re} = \\frac{\\rho V D}{\\mu}$$</p><ul><li>Si Re &lt; 2 100: f = 64/Re</li><li>Si Re &gt; 4 000: usar Swamee-Jain o leer el diagrama de Moody con ε/D del material</li><li>Si Re ∈ [2 100, 4 000]: zona de transición — diseñar para turbulento conservador</li></ul>`},
+    {title:'Calcular pérdidas mayores',body:`<p>$$h_f = f \\cdot \\frac{L}{D} \\cdot \\frac{V^2}{2g}$$</p><p>Si la línea tiene varios diámetros o materiales, calcular h<sub>f</sub> tramo a tramo y sumar.</p>`},
+    {title:'Calcular pérdidas menores',body:`<p>Inventariar todos los accesorios y buscar K<sub>L</sub> en tablas (Crane TP-410 o similar):</p><p>$$h_m = \\sum K_L \\cdot \\frac{V^2}{2g}$$</p><p>En sistemas cortos o con muchos accesorios, h<sub>m</sub> puede superar h<sub>f</sub>. No omitir la entrada y la salida de la línea.</p>`},
+    {title:'Aplicar Bernoulli con bomba',body:`<p>$$H_A = (z_2 - z_1) + \\frac{P_2 - P_1}{\\rho g} + \\frac{V_2^2 - V_1^2}{2g} + h_f + h_m$$</p><p>H<sub>A</sub> es la cabeza que la bomba debe suministrar. Esta es la <em>cabeza de sistema</em> que se cruza con la curva H-Q de la bomba para encontrar el punto de operación.</p>`},
+    {title:'Seleccionar bomba y verificar NPSH',body:`<p>Con (Q<sub>diseño</sub>, H<sub>A</sub>) ubicar una bomba cuyo punto de operación esté dentro de su zona eficiente (70–120 % del Q<sub>BEP</sub>). Luego:</p><ul><li>Calcular NPSHa con la geometría de succión</li><li>Verificar NPSHa ≥ NPSHr + 0.5 m</li><li>Calcular BHP y potencia eléctrica</li><li>Seleccionar motor con potencia nominal ≥ 1.15 × P<sub>elec</sub></li></ul>`}
+  ];
+  const track=document.getElementById('proc-track');
+  const panels=document.getElementById('proc-panels');
+  const counter=document.getElementById('proc-counter');
+  if(!track||!panels)return;
+  let cur=0;
+  // Build track
+  steps.forEach((s,i)=>{
+    const pip=document.createElement('div');pip.className='step-pip';
+    const dot=document.createElement('div');dot.className='step-dot'+(i===0?' active':'');dot.textContent=i+1;
+    dot.addEventListener('click',()=>{cur=i;render();});
+    pip.appendChild(dot);
+    if(i<steps.length-1){const line=document.createElement('div');line.className='step-line';pip.appendChild(line);}
+    track.appendChild(pip);
+  });
+  // Build panels
+  steps.forEach((s,i)=>{
+    const p=document.createElement('div');
+    p.className='step-panel'+(i===0?' active':'');
+    p.innerHTML=`<div class="step-header"><div class="step-num">${String(i+1).padStart(2,'0')}</div><div class="step-title">${s.title}</div></div><div class="step-body">${s.body}</div>`;
+    panels.appendChild(p);
+    renderMath(p);
+  });
+  function render(){
+    const dots=track.querySelectorAll('.step-dot');
+    const lines=track.querySelectorAll('.step-line');
+    const ps=panels.querySelectorAll('.step-panel');
+    dots.forEach((d,i)=>{d.className='step-dot'+(i<cur?' done':i===cur?' active':'');});
+    lines.forEach((l,i)=>{l.className='step-line'+(i<cur?' done':'');});
+    ps.forEach((p,i)=>{p.className='step-panel'+(i===cur?' active':'');});
+    counter.textContent=`Paso ${cur+1} de ${steps.length}`;
+    renderMath(panels.querySelectorAll('.step-panel.active')[0]);
+  }
+  render();
+  window.procStep=function(d){cur=Math.max(0,Math.min(steps.length-1,cur+d));render();};
+})();
+
+// ── Pump gallery tabs ─────────────────────────────────────
+(function(){
+  const gallery=document.getElementById('pump-gallery');
+  if(!gallery)return;
+  gallery.querySelectorAll('.pump-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      gallery.querySelectorAll('.pump-btn').forEach(b=>b.classList.remove('active'));
+      gallery.querySelectorAll('.pump-panel').forEach(p=>p.classList.remove('active'));
+      btn.classList.add('active');
+      const panel=document.getElementById('pump-'+btn.dataset.pump);
+      if(panel)panel.classList.add('active');
+    });
+  });
+})();
+
+// ── Pump curves chart ─────────────────────────────────────
+(function(){
+  const svg=document.getElementById('pump-curve-svg');
+  if(!svg)return;
+  const W=560,H=300,ml=55,mr=20,mt=20,mb=45;
+  const pw=W-ml-mr,ph=H-mt-mb;
+  const Qmax=120,Hmax=60,etaMax=100;
+  const tx=q=>ml+q/Qmax*pw;
+  const ty=h=>mt+ph-(h/Hmax)*ph;
+  const tyE=e=>mt+ph-(e/etaMax)*ph;
+  // Pump curve: H = 50 - 50/120^2 * Q^2
+  function Hpump(q){return 50-50/(120*120)*q*q;}
+  // System curve: H = 12 + 0.003*Q^2
+  function Hsys(q){return 12+0.003*q*q;}
+  // Efficiency curve (parabola peak ~78% at Q=70)
+  function eta(q){return 78*Math.exp(-Math.pow((q-70)/38,2));}
+  // NPSHr
+  function npshR(q){return 1.5+0.0009*q*q;}
+  let html='';
+  // Grid
+  [0,10,20,30,40,50,60].forEach(h=>{
+    const y=ty(h);
+    html+=`<line x1="${ml}" y1="${y}" x2="${W-mr}" y2="${y}" stroke="#e4e4e4" stroke-width="1"/>`;
+    html+=`<text x="${ml-5}" y="${y+4}" text-anchor="end" class="axis-tick">${h}</text>`;
+  });
+  [0,20,40,60,80,100,120].forEach(q=>{
+    const x=tx(q);
+    html+=`<line x1="${x}" y1="${mt}" x2="${x}" y2="${H-mb}" stroke="#e4e4e4" stroke-width="1"/>`;
+    html+=`<text x="${x}" y="${H-mb+14}" text-anchor="middle" class="axis-tick">${q}</text>`;
+  });
+  html+=`<text x="${ml+pw/2}" y="${H-5}" text-anchor="middle" class="axis-label">Caudal Q (m³/h)</text>`;
+  html+=`<text x="12" y="${mt+ph/2}" text-anchor="middle" class="axis-label" transform="rotate(-90,12,${mt+ph/2})">Cabeza H (m)</text>`;
+  // Efficiency axis label
+  html+=`<text x="${W-5}" y="${mt+ph/2}" text-anchor="middle" class="axis-label" transform="rotate(90,${W-5},${mt+ph/2})">Eficiencia η (%)</text>`;
+  // System curve
+  const sysQs=[];for(let q=0;q<=Qmax;q+=2)sysQs.push(q);
+  const sysPts=sysQs.map(q=>`${tx(q)},${ty(Hsys(q))}`).join(' ');
+  html+=`<polyline points="${sysPts}" fill="none" stroke="#E0922F" stroke-width="2" stroke-dasharray="6,3"/>`;
+  // Pump H-Q curve
+  const pumpQs=[];for(let q=0;q<=Qmax;q+=2)pumpQs.push(q);
+  const pumpPts=pumpQs.map(q=>`${tx(q)},${ty(Hpump(q))}`).join(' ');
+  html+=`<polyline points="${pumpPts}" fill="none" stroke="#0076A8" stroke-width="2.5"/>`;
+  // Efficiency curve (scaled to H axis for overlay — /100*Hmax)
+  const etaQs=[];for(let q=5;q<=Qmax;q+=2)etaQs.push(q);
+  const etaPts=etaQs.map(q=>`${tx(q)},${tyE(eta(q))}`).join(' ');
+  html+=`<polyline points="${etaPts}" fill="none" stroke="#86BC24" stroke-width="2" stroke-dasharray="4,2"/>`;
+  // Operating point
+  let qOp=65;
+  for(let q=0;q<=Qmax;q+=0.1){if(Math.abs(Hpump(q)-Hsys(q))<0.05){qOp=q;break;}}
+  const xOp=tx(qOp),yOp=ty(Hpump(qOp));
+  html+=`<circle cx="${xOp}" cy="${yOp}" r="7" fill="var(--verde)" stroke="#fff" stroke-width="2"/>`;
+  html+=`<line x1="${xOp}" y1="${yOp}" x2="${xOp}" y2="${H-mb}" stroke="var(--verde)" stroke-width="1" stroke-dasharray="3,2"/>`;
+  html+=`<text x="${xOp+8}" y="${yOp-8}" class="axis-tick" fill="var(--verde-osc)" font-weight="600">PO (${qOp.toFixed(0)} m³/h, ${Hpump(qOp).toFixed(1)} m)</text>`;
+  // Cursor dot
+  html+=`<circle id="pc-dot" cx="${tx(65)}" cy="${ty(Hpump(65))}" r="5" fill="#E0922F" stroke="#fff" stroke-width="1.5" opacity="0"/>`;
+  // Legend
+  html+=`<rect x="${ml}" y="${mt+3}" width="10" height="3" fill="#0076A8"/>`;
+  html+=`<text x="${ml+13}" y="${mt+8}" class="axis-tick">H-Q bomba</text>`;
+  html+=`<rect x="${ml+85}" y="${mt+3}" width="10" height="3" fill="#E0922F"/>`;
+  html+=`<text x="${ml+98}" y="${mt+8}" class="axis-tick">H<tspan dy="3" font-size="8">S</tspan><tspan dy="-3"> sistema</tspan></text>`;
+  html+=`<rect x="${ml+175}" y="${mt+3}" width="10" height="3" fill="#86BC24"/>`;
+  html+=`<text x="${ml+188}" y="${mt+8}" class="axis-tick">η eficiencia</text>`;
+  svg.innerHTML=html;
+  const qs=document.getElementById('pc-q');
+  const qv=document.getElementById('pc-q-val');
+  const res=document.getElementById('pc-result');
+  if(qs){
+    qs.addEventListener('input',()=>{
+      const q=parseFloat(qs.value);
+      const H=Hpump(q),Hs=Hsys(q),e=eta(q);
+      qv.textContent=q+' m³/h';
+      const dot=svg.getElementById('pc-dot');
+      if(dot){dot.setAttribute('cx',tx(q));dot.setAttribute('cy',ty(H));dot.setAttribute('opacity','1');}
+      res.innerHTML=`Q = <b>${q} m³/h</b> &nbsp;|&nbsp; H<sub>bomba</sub> = <b>${H.toFixed(1)} m</b> &nbsp;|&nbsp; H<sub>sistema</sub> = <b>${Hs.toFixed(1)} m</b> &nbsp;|&nbsp; η = <b>${e.toFixed(0)} %</b>`;
+    });
+  }
+})();
+
+// ── NPSH calculator ───────────────────────────────────────
+function calcNpsh(){
+  const pt=parseFloat(document.getElementById('npsh-pt').value)*1000;
+  const pv=parseFloat(document.getElementById('npsh-pv').value)*1000;
+  const z=parseFloat(document.getElementById('npsh-z').value);
+  const hl=parseFloat(document.getElementById('npsh-hl').value);
+  const rho=parseFloat(document.getElementById('npsh-rho').value);
+  const req=parseFloat(document.getElementById('npsh-req').value);
+  const g=9.81;
+  const npsha=(pt-pv)/(rho*g)+z-hl;
+  const margin=npsha-req;
+  const fill=document.getElementById('npsh-fill');
+  const pct=Math.max(0,Math.min(100,npsha/(req+3)*100));
+  if(fill)fill.style.width=pct+'%';
+  let statusHtml,cls;
+  if(margin>=1){cls='npsh-ok';statusHtml=`✓ Sin riesgo de cavitación (margen = ${margin.toFixed(2)} m)`;}
+  else if(margin>=0.5){cls='npsh-warn';statusHtml=`⚠ Margen justo (${margin.toFixed(2)} m) — revisar condiciones extremas`;}
+  else{cls='npsh-bad';statusHtml=`✗ Riesgo de cavitación — NPSHa (${npsha.toFixed(2)} m) < NPSHr + 0.5 m`;}
+  document.getElementById('npsh-result').innerHTML=
+    `NPSHa = <b>${npsha.toFixed(2)} m</b> &nbsp;|&nbsp; NPSHr = <b>${req.toFixed(2)} m</b><br><span class="npsh-status ${cls}">${statusHtml}</span>`;
+}
+
+// ── Power calculator ──────────────────────────────────────
+function calcPower(){
+  const rho=parseFloat(document.getElementById('pw-rho').value);
+  const q=parseFloat(document.getElementById('pw-q').value);
+  const h=parseFloat(document.getElementById('pw-h').value);
+  const eb=parseFloat(document.getElementById('pw-eb').value);
+  const em=parseFloat(document.getElementById('pw-em').value);
+  const g=9.81;
+  const Ph=rho*g*q*h;
+  const BHP=Ph/eb;
+  const Pe=BHP/em;
+  document.getElementById('pw-result').innerHTML=
+    `P<sub>h</sub> = <b>${(Ph/1000).toFixed(2)} kW</b> &nbsp;|&nbsp; BHP = <b>${(BHP/1000).toFixed(2)} kW</b> &nbsp;|&nbsp; P<sub>elec</sub> = <b>${(Pe/1000).toFixed(2)} kW</b>`;
+}
+</script>
+</body>
+</html>

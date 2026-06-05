@@ -535,6 +535,18 @@ export const pou202620Course: Course = {
       category: 'lectura',
       href: '/classroom/iqya-2031-2026-20/lecturas/Lectura_03/Lectura_03_Reduccion_de_Tamano.html',
     },
+    {
+      slug: 'lectura-04-transporte-liquidos',
+      order: 4,
+      title: 'Transporte de líquidos en la industria',
+      summary:
+        'Flujo en tuberías, pérdidas de energía y bombas. Reynolds, Moody, Darcy-Weisbach y un procedimiento de cálculo completo. Tipos de bombas, curvas características, NPSH y potencia de bombeo — todo integrado en un ejemplo resuelto paso a paso.',
+      date: '2026-06-05',
+      readingMinutes: 35,
+      tags: ['transporte de fluidos', 'bombas', 'Reynolds', 'Moody', 'Darcy-Weisbach', 'NPSH', 'pérdidas', 'tubería'],
+      category: 'lectura',
+      href: '/classroom/iqya-2031-2026-20/lecturas/Lectura_04/Lectura_04_Transporte_Liquidos.html',
+    },
   ],
   presentations: [
     {
