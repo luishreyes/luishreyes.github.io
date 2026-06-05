@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lectura 05 — Bombas · POU 2026-20</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<link rel="stylesheet" href="assets/deloitte.css">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;scroll-behavior:smooth}
+body{font-family:'Source Sans 3','Aptos','Segoe UI',system-ui,sans-serif;color:var(--gris-1);background:var(--blanco);line-height:1.6}
+
+/* Progress bar */
+.progress{position:fixed;top:0;left:0;height:3px;width:0%;background:var(--verde);z-index:1000;transition:width .1s linear}
+
+/* Layout */
+.outer-layout{display:grid;grid-template-columns:200px 1fr;gap:0;max-width:1180px;margin:0 auto;padding:2rem 1.5rem 4rem;align-items:start}
+@media(max-width:860px){.outer-layout{grid-template-columns:1fr;padding:1.2rem 1rem 3rem}}
+
+/* Side nav */
+.side-nav{position:sticky;top:28px;max-height:calc(100vh - 56px);overflow-y:auto;padding:1rem .75rem;border:1px solid var(--gris-4);border-radius:8px;background:var(--blanco);margin-right:1.5rem}
+.side-nav::-webkit-scrollbar{width:4px}
+.side-nav::-webkit-scrollbar-thumb{background:var(--gris-4);border-radius:2px}
+.sn-label{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gris-3);padding:0 .25rem .5rem;border-bottom:1px solid var(--gris-5);margin-bottom:.5rem}
+.sn-item{display:flex;align-items:baseline;gap:.4rem;padding:.35rem .5rem;border-radius:4px;font-size:.78rem;color:var(--gris-2);text-decoration:none;transition:background .15s,color .15s;border-left:3px solid transparent;line-height:1.3}
+.sn-item:hover{color:var(--gris-1);background:var(--papel)}
+.sn-item.is-active{color:var(--verde-osc);background:var(--verde-claro);font-weight:600;border-left:3px solid var(--verde)}
+.sn-num{font-size:.7rem;font-weight:700;color:var(--gris-3);flex-shrink:0;font-variant-numeric:tabular-nums}
+.sn-item.is-active .sn-num{color:var(--verde-osc)}
+@media(max-width:860px){.side-nav{position:static;margin-right:0;margin-bottom:1.5rem;max-height:none}}
+
+/* Article */
+.page{min-width:0}
+
+/* Doc header */
+.doc-head{background:var(--papel);border:1px solid var(--gris-4);border-radius:8px;padding:2rem 2.25rem 1.75rem;margin-bottom:2rem}
+.org{font-size:.78rem;color:var(--gris-2);margin-bottom:.75rem;line-height:1.4}
+.org span{display:block;color:var(--gris-3)}
+.badge{display:inline-block;background:var(--verde);color:#fff;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:.25rem .7rem;border-radius:3px;margin-bottom:.9rem}
+.doc-head h1{font-size:1.85rem;font-weight:900;line-height:1.15;color:var(--negro);margin-bottom:.6rem}
+.subtitle{font-size:1rem;color:var(--gris-2);line-height:1.5;max-width:680px;margin-bottom:1.25rem}
+.doc-meta{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:.4rem .75rem;padding-top:1rem;border-top:1px solid var(--gris-4);font-size:.8rem;color:var(--gris-2)}
+.doc-meta b{color:var(--gris-1);display:block;font-weight:600}
+
+/* Sections */
+.doc-body section{padding-top:2.25rem;padding-bottom:.75rem;border-top:2px solid var(--papel)}
+.doc-body section:first-child{border-top:none;padding-top:0}
+.eyebrow{font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--verde-osc);margin-bottom:.35rem}
+h2.sec{font-size:1.45rem;font-weight:800;color:var(--negro);margin-bottom:1rem;display:flex;align-items:baseline;gap:.5rem}
+.secnum{font-size:1rem;font-weight:900;color:var(--verde);min-width:1.8rem}
+h3.sub{font-size:1.05rem;font-weight:700;color:var(--gris-1);margin:1.5rem 0 .6rem;border-left:3px solid var(--verde);padding-left:.65rem}
+.lead{font-size:1.02rem;color:var(--gris-2);line-height:1.65;margin-bottom:1.1rem}
+p.body{font-size:.9rem;color:var(--gris-1);line-height:1.7;margin-bottom:.85rem}
+ul.body-list{font-size:.9rem;color:var(--gris-1);line-height:1.6;padding-left:1.4rem;margin-bottom:.85rem}
+ul.body-list li{margin-bottom:.35rem}
+
+/* Callouts */
+.callout{border-left:4px solid var(--verde);background:var(--verde-claro);border-radius:0 6px 6px 0;padding:.85rem 1rem;margin:1.2rem 0;font-size:.9rem;display:flex;gap:.75rem;align-items:flex-start}
+.callout svg{flex-shrink:0;margin-top:.1rem;color:var(--verde-osc)}
+.callout-body{flex:1}
+.callout-body strong{display:block;font-weight:700;color:var(--verde-osc);margin-bottom:.2rem}
+.callout.tip{border-color:var(--teal);background:var(--teal-claro)}
+.callout.tip svg{color:var(--teal)}
+.callout.tip .callout-body strong{color:var(--teal)}
+.callout.warn{border-color:var(--ambar);background:#FFF7EE}
+.callout.warn svg{color:var(--ambar)}
+.callout.warn .callout-body strong{color:#B86E00}
+.callout-list{margin:.4rem 0 0;padding-left:1.2rem}
+.callout-list li{margin-bottom:.3rem}
+
+/* Obj list */
+.obj-list{list-style:none;padding:0;margin:1rem 0;display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:.6rem}
+.obj-list li{display:flex;align-items:flex-start;gap:.6rem;font-size:.88rem;padding:.5rem .75rem;background:var(--verde-claro);border-radius:5px;color:var(--gris-1);line-height:1.45}
+.obj-list li::before{content:'';display:block;width:8px;height:8px;border-radius:50%;background:var(--verde);flex-shrink:0;margin-top:.38rem}
+
+/* Figures */
+.fig-frame{background:var(--papel);border:1px solid var(--gris-4);border-radius:6px;padding:.75rem;margin:1.2rem 0;text-align:center}
+.fig-frame img{max-width:100%;height:auto;border-radius:4px;display:block;margin:0 auto}
+figcaption{font-size:.78rem;color:var(--gris-2);margin-top:.5rem;text-align:center;line-height:1.4;font-style:italic}
+
+/* Tables */
+table.ou{width:100%;border-collapse:collapse;font-size:.85rem;margin:1rem 0}
+table.ou th{background:var(--verde);color:#fff;text-align:left;padding:.55rem .75rem;font-weight:700}
+table.ou td{padding:.5rem .75rem;border-bottom:1px solid var(--gris-5);vertical-align:top}
+table.ou tr:hover td{background:var(--verde-claro)}
+
+/* Pump gallery (PumpTypesStepper) */
+.pump-gallery{margin:1.2rem 0}
+.pump-bar{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:1rem}
+.pump-btn{font-family:inherit;font-size:.8rem;font-weight:600;padding:.4rem .9rem;border:1.5px solid var(--gris-4);border-radius:99px;cursor:pointer;background:var(--blanco);color:var(--gris-2);transition:all .2s}
+.pump-btn:hover{border-color:var(--verde);color:var(--verde-osc)}
+.pump-btn.active{background:var(--verde);color:#fff;border-color:var(--verde)}
+.pump-panel{display:none}
+.pump-panel.active{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;align-items:start}
+@media(max-width:600px){.pump-panel.active{grid-template-columns:1fr}}
+.pump-gif{border:1px solid var(--gris-4);border-radius:6px;overflow:hidden;background:var(--papel)}
+.pump-gif img{width:100%;height:auto;display:block}
+.pump-info h4{font-size:1rem;font-weight:800;color:var(--negro);margin-bottom:.35rem}
+.pump-family{font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--verde-osc);background:var(--verde-claro);padding:.15rem .5rem;border-radius:2px;display:inline-block;margin-bottom:.6rem}
+.pump-desc{font-size:.88rem;color:var(--gris-2);line-height:1.55;margin-bottom:.75rem}
+.pump-feats{list-style:none;padding:0;margin-bottom:.75rem}
+.pump-feats li{font-size:.84rem;color:var(--gris-1);padding:.2rem 0 .2rem 1.2rem;position:relative;border-bottom:1px solid var(--gris-5)}
+.pump-feats li::before{content:'';position:absolute;left:0;top:.55rem;width:7px;height:7px;border-radius:50%;background:var(--verde)}
+.pump-apps{font-size:.8rem;color:var(--gris-2);font-style:italic}
+
+/* Pump Selector widget */
+.selector-wrap{border:1px solid var(--gris-4);border-radius:8px;background:var(--blanco);padding:1.25rem;margin:1.2rem 0;box-shadow:var(--sombra)}
+.selector-layout{display:grid;grid-template-columns:1fr 280px;gap:1.5rem;margin-top:1rem}
+@media(max-width:700px){.selector-layout{grid-template-columns:1fr}}
+.selector-controls{display:flex;flex-direction:column;gap:.85rem}
+.selector-controls .ctrl-label{display:flex;justify-content:space-between;font-size:.78rem;margin-bottom:.25rem}
+.selector-controls .ctrl-label span{color:var(--gris-2);font-weight:600}
+.selector-controls .ctrl-label b{color:var(--negro);font-family:monospace;font-size:.84rem}
+.selector-controls input[type=range]{width:100%;accent-color:var(--verde-osc)}
+.ctrl-scale{display:flex;justify-content:space-between;font-size:.7rem;color:var(--gris-3);margin-top:.15rem}
+.selector-checks{display:flex;flex-direction:column;gap:.5rem;padding-top:.75rem;border-top:1px solid var(--gris-5)}
+.selector-checks label{display:flex;align-items:center;gap:.5rem;font-size:.85rem;cursor:pointer}
+.selector-checks input{accent-color:var(--verde-osc)}
+.selector-presets-label{font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gris-2);margin-bottom:.5rem;padding-top:.75rem;border-top:1px solid var(--gris-5)}
+.selector-presets{display:flex;flex-wrap:wrap;gap:.4rem}
+.preset-btn{font-family:inherit;font-size:.74rem;padding:.3rem .7rem;border:1px solid var(--gris-4);border-radius:99px;cursor:pointer;background:var(--blanco);color:var(--gris-2);transition:all .15s}
+.preset-btn:hover{border-color:var(--verde);color:var(--verde-osc);background:var(--verde-claro)}
+.selector-result{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-top:1.25rem}
+.res-panel{border-radius:6px;padding:.75rem;border:1px solid var(--gris-5)}
+.res-panel.ok{background:#f0faf0;border-color:#a3d9a5}
+.res-panel.marginal{background:#fffbeb;border-color:#fcd34d}
+.res-panel.excl{background:#fff1f1;border-color:#fca5a5}
+.res-panel-label{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:.4rem}
+.res-panel.ok .res-panel-label{color:#15803d}
+.res-panel.marginal .res-panel-label{color:#b45309}
+.res-panel.excl .res-panel-label{color:#b91c1c}
+.res-item{font-size:.8rem;color:var(--gris-1);display:flex;align-items:flex-start;gap:.5rem;margin-bottom:.3rem;line-height:1.35}
+.res-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:.25rem}
+.res-reason{font-size:.72rem;color:var(--gris-2);margin-left:1.1rem}
+.res-empty{font-size:.8rem;color:var(--gris-3);font-style:italic}
+.selector-note{font-size:.75rem;color:var(--gris-3);font-style:italic;margin-top:.75rem}
+
+/* Pump curves chart */
+.curves-wrap{border:1px solid var(--gris-4);border-radius:8px;background:var(--blanco);padding:1.25rem;margin:1.2rem 0;box-shadow:var(--sombra)}
+.curves-header{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:.5rem;margin-bottom:.75rem}
+.curves-header h4{font-size:.95rem;font-weight:700;color:var(--negro)}
+.curves-q-display{font-size:.9rem;color:var(--gris-2)}
+.curves-q-display b{color:var(--negro);font-family:monospace}
+.curves-q-display span{font-size:.78rem;color:var(--gris-3)}
+.curves-slider{width:100%;accent-color:var(--verde-osc);margin:.75rem 0 .5rem}
+.curves-live{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;margin-top:.75rem}
+@media(max-width:600px){.curves-live{grid-template-columns:repeat(2,1fr)}}
+.live-card{border:1.5px solid var(--gris-4);border-radius:5px;padding:.5rem .75rem}
+.live-card-label{font-size:.7rem;text-transform:uppercase;font-weight:700;color:var(--gris-3);letter-spacing:.05em;margin-bottom:.15rem}
+.live-card-value{font-family:monospace;font-size:1rem;font-weight:700}
+.live-card.blue .live-card-value{color:#1d4ed8}
+.live-card.amber .live-card-value{color:#b45309}
+.live-card.dark .live-card-value{color:var(--negro)}
+.live-card.red .live-card-value{color:#7f1d1d}
+.curves-legend{display:flex;flex-wrap:wrap;gap:.5rem 1.25rem;font-size:.75rem;color:var(--gris-2);margin-top:.5rem;justify-content:center}
+.leg-line{display:inline-block;width:18px;height:2px;vertical-align:middle;margin-right:.3rem}
+.leg-line-dash{display:inline-block;width:18px;height:2px;vertical-align:middle;margin-right:.3rem;background:repeating-linear-gradient(90deg,currentColor 0 4px,transparent 4px 7px)}
+
+/* NPSH calculator (reactive sliders) */
+.calc-reactive{border:1px solid var(--gris-4);border-radius:8px;background:var(--blanco);padding:1.25rem;margin:1.2rem 0;box-shadow:var(--sombra)}
+.calc-reactive h4{font-size:.92rem;font-weight:700;color:var(--negro);margin-bottom:1rem}
+.cr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.85rem 1.5rem}
+.cr-field{display:flex;flex-direction:column;gap:.2rem}
+.cr-field-header{display:flex;justify-content:space-between;font-size:.78rem}
+.cr-field-header span{color:var(--gris-2);font-weight:600}
+.cr-field-header b{color:var(--negro);font-family:monospace}
+.cr-field input[type=range]{width:100%;accent-color:var(--verde-osc)}
+.cr-results{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-top:1rem}
+@media(max-width:600px){.cr-results{grid-template-columns:1fr}}
+.cr-card{border-radius:6px;padding:.75rem 1rem;border:1px solid var(--gris-5)}
+.cr-card.neutral{background:var(--papel)}
+.cr-card.good{background:#f0faf0;border-color:#a3d9a5}
+.cr-card.warn{background:#fffbeb;border-color:#fcd34d}
+.cr-card.bad{background:#fff1f1;border-color:#fca5a5}
+.cr-card-label{font-size:.7rem;text-transform:uppercase;font-weight:700;color:var(--gris-3);letter-spacing:.05em}
+.cr-card-value{font-family:monospace;font-size:1.15rem;font-weight:700;color:var(--negro);margin:.15rem 0}
+.cr-card-note{font-size:.75rem;color:var(--gris-2)}
+.cr-note{font-size:.78rem;color:var(--gris-3);font-style:italic;margin-top:.75rem}
+
+/* Power calculator (reactive sliders) */
+.power-wrap{border:1px solid var(--gris-4);border-radius:8px;background:var(--blanco);padding:1.25rem;margin:1.2rem 0;box-shadow:var(--sombra)}
+.power-wrap h4{font-size:.92rem;font-weight:700;color:var(--negro);margin-bottom:1rem}
+.pw-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.85rem 1.5rem}
+.pw-field{display:flex;flex-direction:column;gap:.2rem}
+.pw-field-header{display:flex;justify-content:space-between;font-size:.78rem}
+.pw-field-header span{color:var(--gris-2);font-weight:600}
+.pw-field-header b{color:var(--negro);font-family:monospace}
+.pw-field input[type=range]{width:100%;accent-color:var(--verde-osc)}
+.pw-results{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-top:1rem}
+@media(max-width:600px){.pw-results{grid-template-columns:1fr}}
+.pw-card{border-radius:6px;padding:.75rem 1rem;border:1px solid var(--gris-5);background:var(--papel)}
+.pw-card.highlight{background:var(--verde-claro);border-color:var(--verde)}
+.pw-card-label{font-size:.7rem;text-transform:uppercase;font-weight:700;color:var(--gris-3);letter-spacing:.05em}
+.pw-card-value{font-family:monospace;font-size:1.15rem;font-weight:700;color:var(--negro);margin:.15rem 0}
+.pw-card-sub{font-size:.75rem;color:var(--gris-2)}
+.pw-note{font-size:.78rem;color:var(--gris-3);font-style:italic;margin-top:.75rem}
+
+/* Friction equation list */
+.feq-list{margin:1rem 0;display:flex;flex-direction:column;gap:.75rem}
+.feq{border:1px solid var(--gris-4);border-radius:6px;overflow:hidden}
+.feq-tag{font-size:.72rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:.35rem .8rem}
+.feq-ph{background:#d6f0d0;color:#1e6e1a}
+.feq-bhp{background:var(--teal-claro);color:var(--teal)}
+.feq-elec{background:var(--verde-claro);color:var(--verde-osc)}
+.feq-body{padding:.6rem 1rem .75rem}
+.feq-formula{text-align:center;font-size:1rem;padding:.25rem 0 .4rem;overflow-x:auto}
+.feq-note{font-size:.82rem;color:var(--gris-2);line-height:1.5;margin-top:.25rem}
+
+/* Design challenge cards */
+.challenges{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem;margin:1rem 0}
+.challenge{border:1px solid var(--gris-4);border-radius:8px;padding:1.1rem;background:var(--blanco);transition:box-shadow .2s,transform .2s;cursor:default}
+.challenge:hover{box-shadow:var(--sombra);transform:translateY(-3px)}
+.challenge .ch-num{font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--verde-osc);margin-bottom:.3rem}
+.challenge h4{font-size:.9rem;font-weight:700;color:var(--negro);margin-bottom:.4rem}
+.challenge p{font-size:.82rem;color:var(--gris-2);line-height:1.45}
+
+/* Platform links */
+a.pl{color:inherit;border-bottom:2px solid var(--verde);text-decoration:none;white-space:nowrap}
+a.pl::after{content:'↗';font-size:.75em;margin-left:.2em;color:var(--verde)}
+a.pl:hover{color:var(--verde-osc)}
+
+/* Footer */
+.doc-foot{border-top:2px solid var(--verde-claro);margin-top:3rem;padding-top:1.5rem}
+.refs-title{font-size:.85rem;font-weight:700;color:var(--gris-2);letter-spacing:.06em;text-transform:uppercase;margin-bottom:.75rem}
+ol.refs{padding-left:1.4rem;font-size:.82rem;color:var(--gris-2);line-height:1.6}
+ol.refs li{margin-bottom:.5rem}
+ol.refs b{color:var(--gris-1)}
+.foot-note{margin-top:1.5rem;font-size:.75rem;color:var(--gris-3);border-top:1px solid var(--gris-5);padding-top:.75rem}
+
+/* YouTube embed */
+.yt-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1.2rem 0;align-items:start}
+@media(max-width:620px){.yt-grid{grid-template-columns:1fr}}
+.yt-frame{border:1px solid var(--gris-4);border-radius:6px;overflow:hidden;background:var(--papel)}
+.yt-frame .aspect{position:relative;padding-top:56.25%}
+.yt-frame iframe{position:absolute;inset:0;width:100%;height:100%}
+.yt-caption{font-size:.75rem;color:var(--gris-2);font-style:italic;padding:.5rem .75rem .75rem}
+
+/* Animations */
+@keyframes fadeInUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.stagger-in>*{opacity:0;animation:fadeInUp .35s ease forwards}
+.stagger-in>*:nth-child(1){animation-delay:.05s}
+.stagger-in>*:nth-child(2){animation-delay:.1s}
+.stagger-in>*:nth-child(3){animation-delay:.15s}
+.stagger-in>*:nth-child(4){animation-delay:.2s}
+.stagger-in>*:nth-child(5){animation-delay:.25s}
+.stagger-in>*:nth-child(6){animation-delay:.3s}
+
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<div class="outer-layout">
+
+<!-- ── Side navigation ─────────────────────────────────────── -->
+<nav class="side-nav" aria-label="Secciones">
+  <p class="sn-label">En esta lectura</p>
+  <a href="#s1" class="sn-item"><span class="sn-num">01</span>Introducción</a>
+  <a href="#s2" class="sn-item"><span class="sn-num">02</span>Tipos de bombas</a>
+  <a href="#s3" class="sn-item"><span class="sn-num">03</span>Curvas características</a>
+  <a href="#s4" class="sn-item"><span class="sn-num">04</span>Cavitación y NPSH</a>
+  <a href="#s5" class="sn-item"><span class="sn-num">05</span>Potencia de bombeo</a>
+  <a href="#s6" class="sn-item"><span class="sn-num">06</span>Desafíos de operación</a>
+  <a href="#s7" class="sn-item"><span class="sn-num">07</span>Bibliografía</a>
+</nav>
+
+<!-- ── Main article ─────────────────────────────────────────── -->
+<article class="page">
+<header class="doc-head">
+  <div class="org">Universidad de los Andes<span>Ingeniería Química y de Alimentos · Facultad de Ingeniería</span></div>
+  <div class="badge">Lectura 05 · Proyecto de Operaciones Unitarias</div>
+  <h1>Bombas industriales</h1>
+  <p class="subtitle">El equipo que suministra energía al fluido. Tipos de bombas, curvas características, selección del punto de operación, NPSH y cálculo de potencia — todo lo que necesitas para diseñar el sistema de bombeo de tu proyecto.</p>
+  <div class="doc-meta">
+    <div><b>Curso</b>IQYA 2031 — Proyecto de Operaciones Unitarias</div>
+    <div><b>Semestre</b>2026-20</div>
+    <div><b>Autor</b>Luis H. Reyes</div>
+    <div><b>Fecha</b>5 de junio de 2026</div>
+    <div><b>Lectura</b>Aproximadamente 30 minutos</div>
+  </div>
+</header>
+
+<div class="doc-body">
+
+<!-- ── s0: Hero ───────────────────────────────────────────────── -->
+<section id="s0">
+  <p class="lead">Esta lectura es la continuación natural de <em>Transporte de líquidos</em>. Una vez conocemos las propiedades del fluido, las pérdidas en la tubería y la cabeza total que el sistema demanda, llega el turno del equipo que <strong>aporta la energía</strong>: la bomba. Aquí veremos los grandes tipos de bombas, cómo se leen sus curvas de rendimiento, qué es la cavitación y cómo evitarla con el NPSH, y cómo se calcula la potencia eléctrica que el motor debe entregar.</p>
+
+  <figure style="margin:1.2rem 0">
+    <div class="fig-frame" style="padding:1rem">
+      <img src="/classroom/iqya-2031/readings/bombas-centrifuga_b.png"
+           alt="Bomba centrífuga industrial con motor acoplado"
+           style="max-width:720px;width:100%;border-radius:4px;display:block;margin:0 auto">
+    </div>
+    <figcaption>Bomba centrífuga industrial — el caballo de batalla del transporte de líquidos en plantas químicas y refinerías.</figcaption>
+  </figure>
+
+  <div class="callout">
+    <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/><path d="M12 22s7-7.6 7-13a7 7 0 0 0-14 0c0 5.4 7 13 7 13Z"/></svg>
+    <div class="callout-body">
+      <strong>Aplicación al proyecto del curso</strong>
+      Continuando con el diseño del sistema de transporte de líquidos:
+      <ul class="callout-list">
+        <li>Con la cabeza total del sistema calculada en la lectura previa, <strong>seleccionar un tipo de bomba</strong> (centrífuga o de desplazamiento positivo) justificando la elección en función del fluido y las condiciones de operación.</li>
+        <li>Usando curvas características (genéricas, de catálogo o las del curso), <strong>determinar un modelo o tamaño</strong> que cumpla con el caudal y la cabeza requeridos.</li>
+        <li>Identificar el <strong>punto de operación</strong>, la eficiencia \(\eta\) y el <strong>NPSH requerido</strong> en dicho punto.</li>
+        <li>Calcular el <strong>NPSH disponible</strong> de la succión y verificar que supere al requerido con margen de seguridad.</li>
+        <li>Estimar la <strong>potencia al freno (BHP)</strong> y seleccionar un motor eléctrico comercial considerando un factor de servicio.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ── s1: Introducción ───────────────────────────────────────── -->
+<section id="s1">
+  <p class="eyebrow">Sección 01</p>
+  <h2 class="sec"><span class="secnum">1</span>El corazón del sistema de transporte</h2>
+
+  <p class="body">Las bombas son dispositivos mecánicos que <strong>transfieren energía a un fluido</strong> para aumentar su presión y/o producir flujo. Son indispensables en la gran mayoría de procesos industriales: desde el suministro de agua hasta el bombeo de productos químicos complejos o hidrocarburos a través de extensos ductos.</p>
+
+  <p class="body">Un sistema de transporte de líquidos sin la bomba correcta es como un cuerpo sin corazón: la tubería puede ser perfecta, pero si no hay quien empuje el fluido, no pasa nada. La elección de la bomba —y de su punto de operación— determina la confiabilidad, el consumo energético y, en última instancia, el costo del proceso.</p>
+</section>
+
+<!-- ── s2: Tipos de bombas ────────────────────────────────────── -->
+<section id="s2">
+  <p class="eyebrow">Sección 02</p>
+  <h2 class="sec"><span class="secnum">2</span>Tipos principales de bombas</h2>
+
+  <p class="body">La selección del tipo de bomba adecuado es una decisión de ingeniería fundamental que depende de múltiples factores: características del fluido (viscosidad, temperatura, sólidos en suspensión, corrosividad), caudal requerido, cabeza a desarrollar, eficiencia deseada y consideraciones económicas. Las dos grandes familias son las <strong>cinéticas</strong> (centrífugas) y las de <strong>desplazamiento positivo (DP)</strong>.</p>
+
+  <h3 class="sub">Bombas centrífugas</h3>
+  <p class="body">Utilizan un elemento rotatorio llamado <strong>impulsor</strong> (o rodete), provisto de álabes, que gira a alta velocidad dentro de una carcasa estacionaria (voluta o difusor). El fluido entra axialmente al ojo del impulsor, es acelerado radialmente por la fuerza centrífuga, y esa energía cinética se convierte parcialmente en energía de presión en la voluta —una cámara con forma espiral que desacelera el flujo— antes de la descarga.</p>
+
+  <h3 class="sub">Bombas de desplazamiento positivo (DP)</h3>
+  <p class="body">Operan <strong>atrapando un volumen fijo</strong> de líquido en una cavidad mecánica y forzándolo (desplazándolo) hacia la tubería de descarga. A diferencia de las centrífugas, el caudal es casi directamente proporcional a la velocidad de operación (rpm) e idealmente independiente de la presión de descarga, dentro de los límites mecánicos de la bomba.</p>
+
+  <p class="body">Se subdividen en dos familias:</p>
+  <ul class="body-list">
+    <li><strong>Reciprocantes:</strong> un elemento se mueve alternativamente (vaivén) dentro de una cámara — pistón, émbolo o diafragma.</li>
+    <li><strong>Rotatorias:</strong> elementos rotatorios forman sellos móviles con la carcasa para atrapar y mover el fluido — tornillos, engranajes, lóbulos, paletas.</li>
+  </ul>
+
+  <p class="body" style="color:var(--gris-3);font-size:.85rem">Explora cada tipo en el visor interactivo:</p>
+
+  <!-- PumpTypesStepper -->
+  <div class="pump-gallery" id="pump-gallery">
+    <div class="pump-bar" id="pump-bar"></div>
+    <div id="pump-panels"></div>
+  </div>
+
+  <div class="callout tip" style="margin-top:1.5rem">
+    <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V18h6v-1.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2Z"/></svg>
+    <div class="callout-body">
+      <strong>Características generales de las bombas DP</strong>
+      <ul class="callout-list">
+        <li>Capaces de generar <strong>presiones muy altas</strong>.</li>
+        <li>Adecuadas para fluidos de <strong>alta viscosidad</strong>.</li>
+        <li>Algunos tipos manejan fluidos con sólidos en suspensión o sensibles al cizallamiento.</li>
+        <li>Caudal relativamente <strong>constante</strong> incluso con variaciones de presión.</li>
+        <li>Son <strong>autocebantes</strong>.</li>
+      </ul>
+      <p style="margin-top:.5rem;font-size:.84rem"><strong>Aplicaciones típicas:</strong> dosificación precisa de químicos, lodos, fluidos muy viscosos (aceites pesados, polímeros, melazas, pastas alimenticias), hidráulica de alta presión y muestreo.</p>
+    </div>
+  </div>
+
+  <div class="callout warn">
+    <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10.3 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+    <div class="callout-body">
+      <strong>Válvula de alivio obligatoria en bombas DP</strong>
+      Las bombas de desplazamiento positivo seguirán intentando desplazar el fluido aunque la descarga se bloquee. Esto puede romper la tubería, los sellos o la propia bomba. <strong>Toda instalación con bomba DP requiere una válvula de alivio de presión</strong> aguas arriba del primer punto de cierre, dimensionada para el caudal y la presión máxima que la bomba pueda generar.
+    </div>
+  </div>
+
+  <h3 class="sub">¿Centrífuga o desplazamiento positivo?</h3>
+  <p class="body">La elección depende del cruce entre el <strong>punto de operación</strong> (\(Q\), \(H\)), la <strong>viscosidad</strong> del fluido y restricciones del proceso (sólidos, tolerancia a pulsación). El siguiente selector permite explorar visualmente cómo se acomodan las distintas familias en el plano \(Q\)–\(H\):</p>
+
+  <!-- PumpSelector -->
+  <div class="selector-wrap">
+    <h4 style="font-size:.95rem;font-weight:700;color:var(--negro);margin-bottom:.25rem">Selector visual de bomba</h4>
+    <p style="font-size:.82rem;color:var(--gris-2);margin-bottom:0">Mueve los controles para ver qué familias de bomba caben en tu punto de operación. El rectángulo de cada familia es su rango típico (orientativo).</p>
+    <div class="selector-layout">
+      <div>
+        <svg id="selector-svg" viewBox="0 0 560 380" style="width:100%" role="img" aria-label="Mapa de selección de bomba Q vs H"></svg>
+      </div>
+      <div class="selector-controls">
+        <div>
+          <div class="ctrl-label"><span>Caudal <em>Q</em></span><b id="q-disp">50,0 m³/h</b></div>
+          <input type="range" id="sel-q" min="-1" max="3.3" step="0.05" value="1.699">
+        </div>
+        <div>
+          <div class="ctrl-label"><span>Cabeza <em>H</em></span><b id="h-disp">40,0 m</b></div>
+          <input type="range" id="sel-h" min="0" max="3.3" step="0.05" value="1.602">
+        </div>
+        <div>
+          <div class="ctrl-label"><span>Viscosidad <em>μ</em></span><b id="mu-disp">1,0 cP</b></div>
+          <input type="range" id="sel-mu" min="0" max="5" step="0.05" value="0">
+          <div class="ctrl-scale"><span>agua</span><span>aceite</span><span>melaza</span><span>brea</span></div>
+        </div>
+        <div class="selector-checks">
+          <label><input type="checkbox" id="sel-solids"> Fluido con sólidos en suspensión</label>
+          <label><input type="checkbox" id="sel-smooth"> Se requiere flujo sin pulsaciones</label>
+        </div>
+        <div>
+          <p class="selector-presets-label">Casos típicos</p>
+          <div class="selector-presets" id="selector-presets"></div>
+        </div>
+      </div>
+    </div>
+    <div class="selector-result" id="selector-result"></div>
+    <p class="selector-note">Los rangos son orientativos: cada fabricante publica el mapa exacto de sus modelos. La decisión final también pondera costo, mantenimiento, seguridad y disponibilidad de repuestos.</p>
+  </div>
+
+  <p class="body" style="font-size:.85rem;color:var(--gris-2);margin-top:1.5rem">Para fijar la comparación rápido, esta es la versión tabular:</p>
+
+  <div style="overflow-x:auto;margin:1rem 0">
+    <table class="ou">
+      <thead>
+        <tr>
+          <th>Criterio</th>
+          <th>Centrífuga</th>
+          <th>Desplazamiento positivo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Caudal</strong></td><td>Alto (decenas a miles de m³/h)</td><td>Bajo a moderado, muy controlable</td></tr>
+        <tr><td><strong>Presión / cabeza</strong></td><td>Moderada (típicamente &lt; 100–200 m)</td><td>Muy alta posible (&gt; 1000 bar)</td></tr>
+        <tr><td><strong>Viscosidad</strong></td><td>Baja a media (degrada con μ alta)</td><td>Maneja viscosidades muy altas</td></tr>
+        <tr><td><strong>Pulsación</strong></td><td>Flujo suave</td><td>Pulsante (mitigable con varios cilindros)</td></tr>
+        <tr><td><strong>Autocebado</strong></td><td>No (requiere cebado)</td><td>Sí</td></tr>
+        <tr><td><strong>Costo / mantenimiento</strong></td><td>Más bajo</td><td>Mayor (más componentes móviles)</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ── s3: Curvas características ─────────────────────────────── -->
+<section id="s3">
+  <p class="eyebrow">Sección 03</p>
+  <h2 class="sec"><span class="secnum">3</span>Curvas características de las bombas centrífugas</h2>
+
+  <p class="body">Las <strong>curvas características</strong> (o curvas de rendimiento) son gráficos proporcionados por el fabricante que describen el comportamiento de una bomba centrífuga específica a una velocidad de rotación dada y para un fluido de referencia (usualmente agua). Son fundamentales para la selección y predicción del comportamiento de la bomba en un sistema.</p>
+
+  <ul class="body-list">
+    <li><strong>Cabeza vs. caudal (\(H\) vs. \(Q\)):</strong> es la curva principal. Muestra la cabeza total que la bomba puede desarrollar (m de columna de líquido) en función del caudal. Generalmente la cabeza disminuye al aumentar \(Q\). El punto \(Q = 0\) se conoce como <em>«cabeza de cierre»</em> (shut-off head).</li>
+    <li><strong>Eficiencia vs. caudal (\(\eta\) vs. \(Q\)):</strong> la eficiencia es cero a \(Q=0\) y a \(Q_{\max}\), y alcanza un máximo en el <strong>BEP (Best Efficiency Point)</strong>. Es deseable operar tan cerca del BEP como sea posible.</li>
+    <li><strong>Potencia al freno vs. caudal (BHP vs. \(Q\)):</strong> potencia que el motor debe entregar al eje de la bomba para cada caudal.</li>
+    <li><strong>NPSH requerido vs. caudal (\(\text{NPSH}_r\) vs. \(Q\)):</strong> cabeza mínima de succión que la bomba necesita para operar sin cavitación. Suele aumentar con \(Q\).</li>
+  </ul>
+
+  <p class="body">El <strong>punto de operación</strong> de una bomba dentro de un sistema se determina gráficamente por la intersección de la curva \(H\text{-}Q\) de la bomba con la <strong>curva del sistema</strong>. La curva del sistema representa la cabeza total que la bomba debe vencer (cabeza estática neta + pérdidas por fricción \(h_L\)) para cada caudal.</p>
+
+  <!-- PumpCurvesChart -->
+  <div class="curves-wrap">
+    <div class="curves-header">
+      <h4>Curvas características de una bomba centrífuga</h4>
+      <div class="curves-q-display">Caudal: <b id="q-val">60</b> <span>m³/h</span></div>
+    </div>
+    <div id="curves-svg-wrap"></div>
+    <input type="range" id="curves-q-slider" class="curves-slider" min="0" max="120" step="1" value="60">
+    <div class="curves-live">
+      <div class="live-card blue"><div class="live-card-label">Cabeza H</div><div class="live-card-value" id="lc-h">—</div></div>
+      <div class="live-card amber"><div class="live-card-label">Eficiencia η</div><div class="live-card-value" id="lc-eta">—</div></div>
+      <div class="live-card dark"><div class="live-card-label">BHP</div><div class="live-card-value" id="lc-bhp">—</div></div>
+      <div class="live-card red"><div class="live-card-label">NPSHr</div><div class="live-card-value" id="lc-npsh">—</div></div>
+    </div>
+    <div class="curves-legend">
+      <span><span class="leg-line" style="background:#1d4ed8"></span>Cabeza bomba</span>
+      <span><span class="leg-line-dash" style="color:#16a34a"></span>Curva del sistema</span>
+      <span><span class="leg-line" style="background:#b45309"></span>Eficiencia η</span>
+      <span><span class="leg-line-dash" style="color:#7f1d1d"></span>NPSHr</span>
+    </div>
+    <p style="font-size:.75rem;color:var(--gris-3);text-align:center;margin-top:.4rem">El punto de operación es la intersección de la curva H–Q con la curva del sistema. Lo deseable es que coincida (o esté cerca) del BEP.</p>
+  </div>
+
+  <figure style="margin:1.2rem 0">
+    <div class="fig-frame">
+      <img src="/classroom/iqya-2031/readings/bombas-curvas.png"
+           alt="Curvas características típicas de una bomba centrífuga"
+           style="max-width:700px;width:100%">
+    </div>
+    <figcaption>Curvas características típicas de una bomba centrífuga (referencia del fabricante).</figcaption>
+  </figure>
+
+  <div class="callout tip">
+    <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V18h6v-1.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2Z"/></svg>
+    <div class="callout-body">
+      <strong>Cómo seleccionar el tamaño correcto</strong>
+      Una bomba sobredimensionada operará lejos del BEP — generalmente a la izquierda, con baja eficiencia, recirculación interna y vibraciones. Una subdimensionada operará a la derecha del BEP, con NPSHr alto y riesgo de cavitación. La regla práctica es seleccionar la bomba de modo que el punto de operación caiga dentro de la <strong>ventana del 70 %–110 %</strong> del caudal del BEP.
+    </div>
+  </div>
+</section>
+
+<!-- ── s4: Cavitación y NPSH ──────────────────────────────────── -->
+<section id="s4">
+  <p class="eyebrow">Sección 04</p>
+  <h2 class="sec"><span class="secnum">4</span>Cavitación y NPSH</h2>
+
+  <p class="body">La <strong>cavitación</strong> es la formación y colapso implosivo de burbujas de vapor dentro de una bomba. Ocurre cuando la presión local del líquido en algún punto —típicamente a la entrada del impulsor— cae por debajo de la presión de vapor del líquido a la temperatura de bombeo.</p>
+
+  <h3 class="sub">Efectos de la cavitación</h3>
+  <ul class="body-list">
+    <li>Ruido característico (como si la bomba moviera grava) y vibraciones intensas.</li>
+    <li>Daño erosivo a los componentes, especialmente el impulsor.</li>
+    <li>Reducción de la cabeza desarrollada y del caudal.</li>
+    <li>Disminución de la eficiencia.</li>
+    <li>En casos severos, falla catastrófica de la bomba.</li>
+  </ul>
+
+  <div class="yt-grid">
+    <div class="yt-frame">
+      <div class="aspect">
+        <iframe src="https://www.youtube.com/embed/FBapRUolruM"
+                title="Inertial collapse of a bubble"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>
+      </div>
+      <p class="yt-caption">Simulación numérica del colapso de una burbuja cerca de una superficie sólida. El colapso asimétrico genera un chorro y ondas de choque que erosionan el metal (Beig &amp; Johnson).</p>
+    </div>
+    <div>
+      <p class="body">El daño en bombas reales se concentra en los <strong>bordes de ataque de los álabes</strong>, donde la presión es mínima. Cada burbuja que colapsa contra el metal libera un chorro micro-supersónico que arranca pequeñas cantidades de material. Sumado en miles de millones de eventos por hora, el impulsor se perfora — a veces en cuestión de semanas.</p>
+      <p class="body">Para prevenirla, la ingeniería usa el concepto de <strong>NPSH</strong> (Net Positive Suction Head, carga neta positiva en la succión).</p>
+    </div>
+  </div>
+
+  <h3 class="sub">NPSH disponible (NPSHa)</h3>
+  <p class="body">Es una característica del <strong>sistema de succión</strong> e indica la energía absoluta (expresada como cabeza de líquido) en la brida de succión de la bomba por encima de la presión de vapor del líquido:</p>
+
+  <div style="overflow-x:auto;text-align:center;padding:.5rem 0">
+    $$\text{NPSH}_a = \frac{P_{\text{abs,succión}}}{\rho g} - \frac{P_{\text{vap}}}{\rho g}$$
+  </div>
+
+  <p class="body">O, en términos prácticos del sistema (tanque de succión):</p>
+
+  <div style="overflow-x:auto;text-align:center;padding:.5rem 0">
+    $$\text{NPSH}_a = \frac{P_{\text{tanque}}}{\rho g} + (z_{\text{tanque}} - z_{\text{bomba}}) - h_{L,\text{succión}} - \frac{P_{\text{vap}}}{\rho g}$$
+  </div>
+
+  <ul class="body-list">
+    <li>\(P_{\text{abs,succión}}\): presión absoluta en la brida de succión de la bomba.</li>
+    <li>\(P_{\text{tanque}}\): presión absoluta sobre la superficie del líquido en el tanque de succión.</li>
+    <li>\((z_{\text{tanque}} - z_{\text{bomba}})\): diferencia de elevación, positiva si el nivel del líquido está por encima de la bomba.</li>
+    <li>\(h_{L,\text{succión}}\): pérdidas totales de cabeza en la tubería de succión.</li>
+    <li>\(P_{\text{vap}}\): presión de vapor del líquido a la temperatura de bombeo.</li>
+    <li>\(\rho\): densidad del líquido. \(g\): aceleración de la gravedad.</li>
+  </ul>
+
+  <figure style="margin:1.2rem 0">
+    <div class="fig-frame">
+      <img src="/classroom/iqya-2031/readings/bombas-npsh_a.png"
+           alt="Diagrama de cálculo del NPSH disponible"
+           style="max-width:640px;width:100%">
+    </div>
+    <figcaption>Diagrama de los términos del NPSHa para una bomba en succión inundada.</figcaption>
+  </figure>
+
+  <h3 class="sub">NPSH requerido (NPSHr)</h3>
+  <p class="body">Es una <strong>característica intrínseca de la bomba</strong>, determinada experimentalmente por el fabricante y reportada en sus curvas. Representa la cabeza mínima necesaria en la brida de succión para superar las pérdidas internas de la bomba y evitar que la presión en el ojo del impulsor caiga por debajo de la presión de vapor. Suele <strong>aumentar con el caudal</strong>.</p>
+
+  <h3 class="sub">Condición para evitar cavitación</h3>
+  <p class="body">El NPSH disponible debe ser <strong>mayor</strong> que el requerido, con un margen de seguridad razonable (típicamente 0,5–1 m, o 10–25 % por encima de NPSHr):</p>
+
+  <div style="overflow-x:auto;text-align:center;padding:.5rem 0">
+    $$\text{NPSH}_a \;>\; \text{NPSH}_r + \text{margen de seguridad}$$
+  </div>
+
+  <figure style="margin:1.2rem 0">
+    <div class="fig-frame">
+      <img src="/classroom/iqya-2031/readings/bombas-npsh_marg.png"
+           alt="Margen entre NPSH disponible y NPSH requerido"
+           style="max-width:640px;width:100%">
+    </div>
+    <figcaption>El margen de seguridad entre NPSHa y NPSHr es lo que separa una operación confiable de un impulsor erosionado.</figcaption>
+  </figure>
+
+  <!-- NPSHCalculator -->
+  <div class="calc-reactive">
+    <h4>Calculadora interactiva de NPSH disponible</h4>
+    <div class="cr-grid">
+      <div class="cr-field">
+        <div class="cr-field-header"><span>Presión sobre el líquido (P<sub>tanque</sub>)</span><b id="npsh-ptank-val">101,30 kPa</b></div>
+        <input type="range" id="npsh-ptank" min="20" max="500" step="0.1" value="101.3">
+      </div>
+      <div class="cr-field">
+        <div class="cr-field-header"><span>Dif. de elevación (z<sub>tanque</sub> − z<sub>bomba</sub>)</span><b id="npsh-z-val">2,00 m</b></div>
+        <input type="range" id="npsh-z" min="-8" max="10" step="0.1" value="2">
+      </div>
+      <div class="cr-field">
+        <div class="cr-field-header"><span>Pérdidas en succión (h<sub>L</sub>)</span><b id="npsh-hl-val">1,50 m</b></div>
+        <input type="range" id="npsh-hl" min="0" max="8" step="0.1" value="1.5">
+      </div>
+      <div class="cr-field">
+        <div class="cr-field-header"><span>Presión de vapor (P<sub>vap</sub>)</span><b id="npsh-pvap-val">2,34 kPa</b></div>
+        <input type="range" id="npsh-pvap" min="0.5" max="150" step="0.1" value="2.34">
+      </div>
+      <div class="cr-field">
+        <div class="cr-field-header"><span>NPSH requerido por la bomba</span><b id="npsh-r-val">3,50 m</b></div>
+        <input type="range" id="npsh-r" min="0.5" max="10" step="0.1" value="3.5">
+      </div>
+    </div>
+    <div class="cr-results">
+      <div class="cr-card neutral" id="cr-a"><div class="cr-card-label">NPSH disponible</div><div class="cr-card-value" id="cr-a-val">—</div></div>
+      <div class="cr-card neutral" id="cr-m"><div class="cr-card-label">Margen (NPSHa − NPSHr)</div><div class="cr-card-value" id="cr-m-val">—</div></div>
+      <div class="cr-card neutral" id="cr-s"><div class="cr-card-label" id="cr-s-label">Estado</div><div class="cr-card-value" id="cr-s-val" style="font-size:.88rem"></div><div class="cr-card-note" id="cr-s-note"></div></div>
+    </div>
+    <p class="cr-note">Modelo simplificado con \(\rho = 1000\) kg/m³ y \(g = 9{,}81\) m/s². Para fluidos distintos al agua, ajusta \(\rho\) y \(P_{\text{vap}}\) a la temperatura de operación.</p>
+  </div>
+
+  <div class="callout">
+    <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+    <div class="callout-body">
+      <strong>Estrategias para subir el NPSHa</strong>
+      <ul class="callout-list">
+        <li><strong>Subir el tanque</strong> de succión (aumenta \(z_{\text{tanque}}\)).</li>
+        <li><strong>Bajar la bomba</strong> respecto al nivel del líquido.</li>
+        <li><strong>Reducir pérdidas</strong> en la línea de succión: tuberías más cortas y de mayor diámetro, menos accesorios, menos curvas.</li>
+        <li><strong>Enfriar el líquido</strong> para disminuir \(P_{\text{vap}}\).</li>
+        <li><strong>Presurizar el tanque</strong> (cuando es viable, con gas inerte por ejemplo).</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ── s5: Potencia de bombeo ──────────────────────────────────── -->
+<section id="s5">
+  <p class="eyebrow">Sección 05</p>
+  <h2 class="sec"><span class="secnum">5</span>Potencia de bombeo</h2>
+
+  <div class="feq-list">
+    <div class="feq">
+      <div class="feq-tag feq-ph">① Potencia hidráulica</div>
+      <div class="feq-body">
+        <div class="feq-formula">$$P_h = \rho \cdot g \cdot Q \cdot H$$</div>
+        <div class="feq-note">
+          Es la energía útil transferida por la bomba al fluido por unidad de tiempo.
+          \(\rho\) = densidad (kg/m³), \(g = 9{,}81\) m/s², \(Q\) = caudal (m³/s), \(H\) = cabeza total (m).
+          Resultado en watts (W); dividir por 1000 para kW.
+        </div>
+      </div>
+    </div>
+    <div class="feq">
+      <div class="feq-tag feq-bhp">② Potencia al freno (BHP)</div>
+      <div class="feq-body">
+        <div class="feq-formula">$$\text{BHP} = \frac{P_h}{\eta_{\text{bomba}}}$$</div>
+        <div class="feq-note">
+          Potencia real que el motor debe suministrar al <strong>eje</strong> de la bomba, considerando las pérdidas hidromecánicas.
+          \(\eta_{\text{bomba}}\) se obtiene de la curva característica en el punto de operación (típicamente 0,55–0,85).
+        </div>
+      </div>
+    </div>
+    <div class="feq">
+      <div class="feq-tag feq-elec">③ Potencia eléctrica del motor</div>
+      <div class="feq-body">
+        <div class="feq-formula">$$P_{\text{eléctrica}} = \frac{\text{BHP}}{\eta_{\text{motor}}} \qquad P_{\text{nominal}} \geq f_s \cdot P_{\text{eléctrica}}$$</div>
+        <div class="feq-note">
+          \(\eta_{\text{motor}}\) típicamente 0,85–0,95 según tamaño y clase de eficiencia.
+          Factor de servicio \(f_s = 1{,}15\text{–}1{,}25\) para selección del motor comercial.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PowerCalculator -->
+  <div class="power-wrap">
+    <h4>Calculadora de potencia de bombeo</h4>
+    <div class="pw-grid">
+      <div class="pw-field">
+        <div class="pw-field-header"><span>Caudal <em>Q</em></span><b id="pw-q-val">50 m³/h</b></div>
+        <input type="range" id="pw-q" min="1" max="500" step="1" value="50">
+      </div>
+      <div class="pw-field">
+        <div class="pw-field-header"><span>Cabeza total <em>H</em></span><b id="pw-h-val">35 m</b></div>
+        <input type="range" id="pw-h" min="1" max="200" step="1" value="35">
+      </div>
+      <div class="pw-field">
+        <div class="pw-field-header"><span>Densidad <em>ρ</em></span><b id="pw-rho-val">1000 kg/m³</b></div>
+        <input type="range" id="pw-rho" min="600" max="1600" step="10" value="1000">
+      </div>
+      <div class="pw-field">
+        <div class="pw-field-header"><span>Eficiencia bomba <em>η</em></span><b id="pw-eta-val">70 %</b></div>
+        <input type="range" id="pw-eta" min="0.3" max="0.9" step="0.01" value="0.7">
+      </div>
+      <div class="pw-field">
+        <div class="pw-field-header"><span>Eficiencia motor <em>η<sub>m</sub></em></span><b id="pw-etam-val">92 %</b></div>
+        <input type="range" id="pw-etam" min="0.7" max="0.97" step="0.01" value="0.92">
+      </div>
+    </div>
+    <div class="pw-results">
+      <div class="pw-card"><div class="pw-card-label">Potencia hidráulica P<sub>h</sub></div><div class="pw-card-value" id="pw-ph">—</div></div>
+      <div class="pw-card"><div class="pw-card-label">Potencia al freno (BHP)</div><div class="pw-card-value" id="pw-bhp">—</div></div>
+      <div class="pw-card highlight"><div class="pw-card-label">Potencia eléctrica</div><div class="pw-card-value" id="pw-elec">—</div><div class="pw-card-sub" id="pw-hp">—</div></div>
+    </div>
+    <p class="pw-note">\(P_h = \rho g Q H\), \(\text{BHP} = P_h / \eta_{\text{bomba}}\), \(P_{\text{eléctrica}} = \text{BHP} / \eta_{\text{motor}}\). Para selección comercial añadir un factor de servicio típico de 1,15–1,25.</p>
+  </div>
+
+  <div class="callout tip">
+    <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V18h6v-1.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2Z"/></svg>
+    <div class="callout-body">
+      <strong>Ejemplo numérico</strong>
+      Bomba que mueve agua a \(Q = 50\) m³/h con \(H = 35\) m, \(\eta_{\text{bomba}} = 0{,}70\), \(\eta_{\text{motor}} = 0{,}92\):
+      <ul class="callout-list" style="margin-top:.4rem">
+        <li>\(P_h = 1000 \cdot 9{,}81 \cdot (50/3600) \cdot 35 \approx 4{,}77\) kW</li>
+        <li>\(\text{BHP} = 4{,}77 / 0{,}70 \approx 6{,}81\) kW</li>
+        <li>\(P_{\text{eléctrica}} = 6{,}81 / 0{,}92 \approx 7{,}40\) kW</li>
+        <li>Con \(f_s = 1{,}20\): \(P_{\text{nominal}} \geq 8{,}88\) kW \(\Rightarrow\) motor comercial de \(\mathbf{11}\) kW (15 HP).</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ── s6: Desafíos clave ──────────────────────────────────────── -->
+<section id="s6">
+  <p class="eyebrow">Sección 06</p>
+  <h2 class="sec"><span class="secnum">6</span>Desafíos clave en operación</h2>
+
+  <p class="body">Operar bombas en la práctica es mucho más que aplicar las ecuaciones anteriores. Estos son los frentes que un ingeniero de procesos debe atender:</p>
+
+  <div class="challenges stagger-in">
+    <div class="challenge">
+      <div class="ch-num">Desafío 01</div>
+      <h4>Selección adecuada</h4>
+      <p>Escoger el tipo y tamaño de bomba correcto para la aplicación específica es fundamental para la eficiencia operativa y la vida útil del equipo.</p>
+    </div>
+    <div class="challenge">
+      <div class="ch-num">Desafío 02</div>
+      <h4>Optimización energética</h4>
+      <p>Operar cerca del BEP es clave para minimizar el consumo de energía, con impacto económico y ambiental significativo a lo largo de la vida útil de la planta.</p>
+    </div>
+    <div class="challenge">
+      <div class="ch-num">Desafío 03</div>
+      <h4>Control del sistema</h4>
+      <p>Estrategias como variadores de frecuencia (VFD), válvulas de control y operación en paralelo o serie permiten adaptar el rendimiento a las necesidades variables del proceso.</p>
+    </div>
+    <div class="challenge">
+      <div class="ch-num">Desafío 04</div>
+      <h4>Prevención de cavitación</h4>
+      <p>Diseño cuidadoso del sistema de succión: tuberías cortas y amplias, baja elevación de la bomba, NPSHa con margen razonable.</p>
+    </div>
+    <div class="challenge">
+      <div class="ch-num">Desafío 05</div>
+      <h4>Mantenimiento y confiabilidad</h4>
+      <p>Las bombas son equipos rotativos que requieren plan preventivo y predictivo: sellos, rodamientos, alineación, vibraciones y consumo de potencia.</p>
+    </div>
+    <div class="challenge">
+      <div class="ch-num">Desafío 06</div>
+      <h4>Manejo de fluidos complejos</h4>
+      <p>Desafíos adicionales con fluidos viscosos, corrosivos, con sólidos o a altas temperaturas — pueden cambiar por completo la familia de bomba elegida.</p>
+    </div>
+  </div>
+
+  <div class="callout">
+    <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+    <div class="callout-body">
+      <strong>Operación en paralelo y en serie</strong>
+      <ul class="callout-list">
+        <li><strong>En paralelo</strong> (dos bombas idénticas con succión y descarga comunes): se <em>suman caudales</em> a la misma cabeza. Útil cuando la demanda de \(Q\) es variable y se quiere apagar una bomba en horas de baja carga.</li>
+        <li><strong>En serie</strong> (descarga de una alimenta la succión de otra): se <em>suman cabezas</em> al mismo caudal. Útil cuando una sola bomba no llega a la presión requerida (por ejemplo, edificios altos, oleoductos).</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+</div><!-- /doc-body -->
+
+<!-- ── Bibliografía / footer ──────────────────────────────────── -->
+<div class="doc-foot" id="s7">
+  <p class="refs-title">07 — Bibliografía recomendada</p>
+  <ol class="refs">
+    <li><b>McCabe, W. L., Smith, J. C., &amp; Harriott, P.</b> (2005). <em>Unit Operations of Chemical Engineering</em> (7th ed.). McGraw-Hill. (Capítulo 9: Transportation of Fluids).</li>
+    <li><b>Perry, R. H., &amp; Green, D. W.</b> (Eds.). (2019). <em>Perry's Chemical Engineers' Handbook</em> (9th ed.). McGraw-Hill. (Sección 10: Transport and Storage of Fluids — Pumps and Compressors).</li>
+    <li><b>Karassik, I. J., Messina, J. P., Cooper, P., &amp; Heald, C. C.</b> (2008). <em>Pump Handbook</em> (4th ed.). McGraw-Hill. — La referencia más completa y detallada sobre bombas.</li>
+    <li><b>Lobanoff, V. S., &amp; Ross, R. R.</b> (1992). <em>Centrifugal Pumps: Design and Application</em> (2nd ed.). Gulf Professional Publishing.</li>
+    <li><b>Hydraulic Institute.</b> (2010). ANSI/HI 9.6.7 — <em>Effects of Liquid Viscosity on Rotodynamic (Centrifugal and Vertical) Pump Performance</em>.</li>
+  </ol>
+  <p class="foot-note">Material de uso académico — IQYA 2031 · POU 2026-20 · Universidad de los Andes</p>
+</div>
+</article>
+</div><!-- /outer-layout -->
+
+<!-- ── KaTeX ──────────────────────────────────────────────────── -->
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" defer
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false},{left:'\\(',right:'\\)',display:false},{left:'\\[',right:'\\]',display:true}],throwOnError:false})"></script>
+
+<script>
+/* ── Progress bar ────────────────────────────────────────────── */
+(function(){
+  const bar=document.getElementById('progress');
+  document.addEventListener('scroll',function(){
+    const el=document.documentElement;
+    const pct=(el.scrollTop||document.body.scrollTop)/(el.scrollHeight-el.clientHeight)*100;
+    bar.style.width=Math.min(100,pct)+'%';
+  },{passive:true});
+})();
+
+/* ── Scroll-spy ──────────────────────────────────────────────── */
+(function(){
+  const items=document.querySelectorAll('.sn-item');
+  const secs=Array.from(document.querySelectorAll('#s1,#s2,#s3,#s4,#s5,#s6,#s7'));
+  function spy(){
+    let active=null;
+    secs.forEach(function(s){
+      if(s.getBoundingClientRect().top<=120)active=s.id;
+    });
+    items.forEach(function(a){
+      const href=a.getAttribute('href').slice(1);
+      a.classList.toggle('is-active',href===active);
+    });
+  }
+  document.addEventListener('scroll',spy,{passive:true});
+  spy();
+})();
+
+/* ── PumpTypesStepper ────────────────────────────────────────── */
+(function(){
+  const pumps=[
+    {id:'centrifuga',family:'Cinética',name:'Centrífuga',
+     image:'/classroom/iqya-2031/readings/bombas-centrifuga_anim.gif',
+     description:'Utilizan un impulsor (rodete) provisto de álabes que gira a alta velocidad dentro de una carcasa estacionaria (voluta o difusor). El fluido entra axialmente al ojo del impulsor, es acelerado radialmente por la fuerza centrífuga, y esa energía cinética se convierte parcialmente en energía de presión en la voluta antes de la descarga.',
+     features:['Flujo relativamente suave y continuo.','Robustas, de diseño simple y económicas para caudales altos.','Manejan amplio rango de caudales con cabezas moderadas.','Eficiencia varía con el punto de operación.','Sensibles a la viscosidad del fluido (degradación de cabeza y eficiencia).','No son autocebantes (salvo diseños especiales sumergibles o autocebantes).'],
+     applications:'Bombeo de agua, soluciones acuosas, productos químicos de baja a media viscosidad, hidrocarburos ligeros y medianos, sistemas de enfriamiento, alimentación a calderas.'},
+    {id:'piston',family:'Desplazamiento positivo · Reciprocante',name:'Pistón / émbolo',
+     image:'/classroom/iqya-2031/readings/bombas-piston.gif',
+     description:'Reciprocante: un pistón o émbolo se mueve alternativamente (vaivén) dentro de un cilindro, con válvulas de succión y descarga. Pueden generar presiones muy altas.',
+     features:['Generan presiones muy altas.','Caudal pulsante (mitigado con cámaras de amortiguación o varios cilindros).','Autocebantes.','Adecuadas para fluidos limpios y sin sólidos.'],
+     applications:'Inyección de químicos, pruebas hidrostáticas, sistemas hidráulicos de alta presión.'},
+    {id:'diafragma',family:'Desplazamiento positivo · Reciprocante',name:'Diafragma',
+     image:'/classroom/iqya-2031/readings/bombas-diafragma.gif',
+     description:'Reciprocante: un diafragma flexible es accionado mecánica o neumáticamente, aislando el fluido del mecanismo de accionamiento. Buenas para fluidos corrosivos o con sólidos.',
+     features:['Aislamiento total entre fluido y mecanismo.','Tolerantes a corrosivos, abrasivos y lodos.','Autocebantes y capaces de operar en seco brevemente.','Caudal pulsante.'],
+     applications:'Bombeo de químicos corrosivos, lodos, dosificación precisa.'},
+    {id:'tornillo',family:'Desplazamiento positivo · Rotatoria',name:'Tornillo',
+     image:'/classroom/iqya-2031/readings/bombas-tornillo.gif',
+     description:'Rotatoria: uno o más tornillos rotan en una carcasa ajustada, moviendo el fluido axialmente. Adecuadas para altas viscosidades y pueden manejar algunos sólidos.',
+     features:['Flujo casi continuo y suave (baja pulsación).','Manejan fluidos muy viscosos y con sólidos blandos.','Bajo cizallamiento (aptas para fluidos sensibles).','Autocebantes.'],
+     applications:'Aceites pesados, polímeros, lodos, alimentos viscosos.'},
+    {id:'paletas',family:'Desplazamiento positivo · Rotatoria',name:'Paletas (vane)',
+     image:'/classroom/iqya-2031/readings/bombas-paletas.gif',
+     description:'Rotatoria: paletas deslizantes en un rotor excéntrico atrapan y desplazan el fluido entre los álabes y la carcasa.',
+     features:['Caudal estable a presión variable.','Buenas para fluidos limpios de baja a media viscosidad.','Autocebantes.','Compactas, bajo costo en su rango.'],
+     applications:'Combustibles, aceites lubricantes, refrigerantes, sistemas hidráulicos ligeros.'}
+  ];
+
+  const bar=document.getElementById('pump-bar');
+  const panels=document.getElementById('pump-panels');
+
+  pumps.forEach(function(p,i){
+    const btn=document.createElement('button');
+    btn.className='pump-btn'+(i===0?' active':'');
+    btn.textContent=p.name;
+    btn.onclick=function(){
+      document.querySelectorAll('.pump-btn').forEach(function(b){b.classList.remove('active')});
+      document.querySelectorAll('.pump-panel').forEach(function(pl){pl.classList.remove('active')});
+      btn.classList.add('active');
+      document.getElementById('pump-panel-'+p.id).classList.add('active');
+    };
+    bar.appendChild(btn);
+
+    const featsHtml=p.features.map(function(f){return '<li>'+f+'</li>'}).join('');
+    const panel=document.createElement('div');
+    panel.className='pump-panel'+(i===0?' active':'');
+    panel.id='pump-panel-'+p.id;
+    panel.innerHTML='<div class="pump-gif"><img src="'+p.image+'" alt="Animación de bomba '+p.name.toLowerCase()+'"></div>'
+      +'<div class="pump-info"><p class="pump-family">'+p.family+'</p>'
+      +'<h4>Bomba de '+p.name.toLowerCase()+'</h4>'
+      +'<p class="pump-desc">'+p.description+'</p>'
+      +'<p style="font-size:.84rem;font-weight:700;color:var(--gris-1);margin-bottom:.4rem">Características</p>'
+      +'<ul class="pump-feats">'+featsHtml+'</ul>'
+      +'<p class="pump-apps"><strong>Aplicaciones típicas:</strong> '+p.applications+'</p>'
+      +'</div>';
+    panels.appendChild(panel);
+  });
+})();
+
+/* ── PumpSelector ────────────────────────────────────────────── */
+(function(){
+  const families=[
+    {id:'centrifuga',name:'Centrífuga',         qRange:[3,2000],  hRange:[3,300],  muMax:500,    solids:false,pulsates:false,color:'#1d4ed8'},
+    {id:'piston',    name:'Pistón / émbolo',    qRange:[0.1,100], hRange:[20,2000],muMax:50000,  solids:false,pulsates:true, color:'#7f1d1d'},
+    {id:'diafragma', name:'Diafragma',          qRange:[0.1,50],  hRange:[1,200],  muMax:20000,  solids:true, pulsates:true, color:'#b45309'},
+    {id:'tornillo',  name:'Tornillo',           qRange:[0.5,500], hRange:[1,150],  muMax:100000, solids:true, pulsates:false,color:'#15803d'},
+    {id:'engranajes',name:'Engranajes',         qRange:[0.1,100], hRange:[1,200],  muMax:20000,  solids:false,pulsates:true, color:'#9333ea'},
+    {id:'lobulos',   name:'Lóbulos',            qRange:[1,300],   hRange:[1,100],  muMax:50000,  solids:true, pulsates:true, color:'#0e7490'}
+  ];
+
+  const W=560,HSVG=380,mg={top:20,right:20,bottom:50,left:60};
+  const plotW=W-mg.left-mg.right,plotH=HSVG-mg.top-mg.bottom;
+  const qMin=0.1,qMax=3000,hMin=0.5,hMax=3000;
+  const logQMin=Math.log10(qMin),logQMax=Math.log10(qMax);
+  const logHMin=Math.log10(hMin),logHMax=Math.log10(hMax);
+
+  function xS(q){return mg.left+(Math.log10(Math.max(qMin,q))-logQMin)/(logQMax-logQMin)*plotW;}
+  function yS(h){return mg.top+plotH-(Math.log10(Math.max(hMin,h))-logHMin)/(logHMax-logHMin)*plotH;}
+
+  const xTicks=[0.1,1,10,100,1000];
+  const yTicks=[1,10,100,1000];
+
+  const NS='http://www.w3.org/2000/svg';
+  function el(tag,attrs){
+    const e=document.createElementNS(NS,tag);
+    Object.entries(attrs||{}).forEach(function([k,v]){e.setAttribute(k,v)});
+    return e;
+  }
+  function txt(content,attrs){
+    const t=el('text',attrs);
+    t.textContent=content;
+    return t;
+  }
+
+  const svg=document.getElementById('selector-svg');
+
+  // Background
+  svg.appendChild(el('rect',{x:mg.left,y:mg.top,width:plotW,height:plotH,fill:'#fafafa'}));
+
+  // Grid + ticks
+  xTicks.forEach(function(t){
+    const x=xS(t);
+    svg.appendChild(el('line',{x1:x,y1:mg.top,x2:x,y2:mg.top+plotH,stroke:'#e4e4e7','stroke-width':'0.5','stroke-dasharray':'2 2'}));
+    svg.appendChild(txt(t<1?t.toString():t.toFixed(0),{x:x,y:mg.top+plotH+18,'text-anchor':'middle','font-size':'11','fill':'#52525b'}));
+  });
+  yTicks.forEach(function(t){
+    const y=yS(t);
+    svg.appendChild(el('line',{x1:mg.left,y1:y,x2:mg.left+plotW,y2:y,stroke:'#e4e4e7','stroke-width':'0.5','stroke-dasharray':'2 2'}));
+    svg.appendChild(txt(t.toString(),{x:mg.left-8,y:y+4,'text-anchor':'end','font-size':'11','fill':'#52525b'}));
+  });
+
+  // Family rectangles (stored for update)
+  const familyRects=[];
+  const familyLabels=[];
+  families.forEach(function(f){
+    const x1=xS(f.qRange[0]),x2=xS(f.qRange[1]);
+    const y1=yS(f.hRange[1]),y2=yS(f.hRange[0]);
+    const r=el('rect',{x:x1,y:y1,width:x2-x1,height:y2-y1,fill:f.color,'fill-opacity':'0.16',stroke:f.color,'stroke-opacity':'0.85','stroke-width':'1.6'});
+    svg.appendChild(r);
+    familyRects.push({rect:r,color:f.color});
+    const lbl=txt(f.name,{x:(x1+x2)/2,y:y1+14,'text-anchor':'middle','font-size':'11','font-weight':'700',fill:f.color,opacity:'0.95'});
+    svg.appendChild(lbl);
+    familyLabels.push(lbl);
+  });
+
+  // Axes
+  svg.appendChild(el('line',{x1:mg.left,y1:mg.top+plotH,x2:mg.left+plotW,y2:mg.top+plotH,stroke:'#27272a','stroke-width':'1.2'}));
+  svg.appendChild(el('line',{x1:mg.left,y1:mg.top,x2:mg.left,y2:mg.top+plotH,stroke:'#27272a','stroke-width':'1.2'}));
+
+  // Axis labels
+  const xLabel=txt('Caudal Q (m³/h, escala log)',{x:mg.left+plotW/2,y:HSVG-8,'text-anchor':'middle','font-size':'12','fill':'#27272a','font-weight':'600'});
+  svg.appendChild(xLabel);
+  const yLabelEl=txt('Cabeza H (m, escala log)',{x:'14',y:mg.top+plotH/2,'text-anchor':'middle','font-size':'12','fill':'#27272a','font-weight':'600',transform:'rotate(-90 14 '+(mg.top+plotH/2)+')'});
+  svg.appendChild(yLabelEl);
+
+  // User crosshairs + point
+  const crossV=el('line',{x1:0,y1:mg.top,x2:0,y2:mg.top+plotH,stroke:'#1A1A1A','stroke-width':'1','stroke-dasharray':'3 2',opacity:'0.5'});
+  const crossH=el('line',{x1:mg.left,y1:0,x2:mg.left+plotW,y2:0,stroke:'#1A1A1A','stroke-width':'1','stroke-dasharray':'3 2',opacity:'0.5'});
+  const userDot=el('circle',{r:'8',fill:'#FFBF00',stroke:'#1A1A1A','stroke-width':'2'});
+  svg.appendChild(crossV);
+  svg.appendChild(crossH);
+  svg.appendChild(userDot);
+
+  // State
+  let Q=50,H=40,mu=1,solids=false,smooth=false;
+
+  function fmt(v){return v<10?v.toFixed(1):v.toFixed(0);}
+  function fmt2(v){return v.toFixed(2);}
+
+  function evaluate(f){
+    const reasons=[];
+    let ok=true;
+    if(Q<f.qRange[0]||Q>f.qRange[1]){ok=false;reasons.push('Q fuera de rango ('+f.qRange[0]+'–'+f.qRange[1]+' m³/h)');}
+    if(H<f.hRange[0]||H>f.hRange[1]){ok=false;reasons.push('H fuera de rango ('+f.hRange[0]+'–'+f.hRange[1]+' m)');}
+    if(mu>f.muMax){ok=false;reasons.push('viscosidad excesiva (máx '+f.muMax+' cP)');}
+    if(solids&&!f.solids){ok=false;reasons.push('no tolera sólidos');}
+    if(smooth&&f.pulsates){ok=false;reasons.push('flujo pulsante');}
+    let marginal=false;
+    if(ok){
+      const nearQ=Q<f.qRange[0]*1.5||Q>f.qRange[1]*0.7;
+      const nearH=H<f.hRange[0]*1.5||H>f.hRange[1]*0.7;
+      const nearMu=mu>f.muMax*0.5;
+      if(nearQ||nearH||nearMu){marginal=true;if(nearMu)reasons.push('viscosidad cercana al límite');}
+    }
+    return{ok,marginal,reasons};
+  }
+
+  function update(){
+    // Move crosshair + dot
+    const cx=xS(Q),cy=yS(H);
+    crossV.setAttribute('x1',cx);crossV.setAttribute('x2',cx);
+    crossH.setAttribute('y1',cy);crossH.setAttribute('y2',cy);
+    userDot.setAttribute('cx',cx);userDot.setAttribute('cy',cy);
+
+    // Update family visuals
+    families.forEach(function(f,i){
+      const ev=evaluate(f);
+      const dim=!ev.ok;
+      familyRects[i].rect.setAttribute('fill-opacity',dim?'0.06':'0.16');
+      familyRects[i].rect.setAttribute('stroke-opacity',dim?'0.25':'0.85');
+      familyRects[i].rect.setAttribute('stroke-width',dim?'1':'1.6');
+      familyRects[i].rect.setAttribute('stroke-dasharray',dim?'4 3':'0');
+      familyLabels[i].setAttribute('opacity',dim?'0.4':'0.95');
+    });
+
+    // Result panels
+    const evals=families.map(function(f){return{f,ev:evaluate(f)};});
+    const rec=evals.filter(function(e){return e.ev.ok&&!e.ev.marginal;});
+    const marg=evals.filter(function(e){return e.ev.ok&&e.ev.marginal;});
+    const excl=evals.filter(function(e){return!e.ev.ok;});
+
+    function panelHtml(list,emptyText){
+      if(list.length===0)return '<div class="res-empty">'+emptyText+'</div>';
+      return list.map(function(e){
+        return '<div class="res-item"><span class="res-dot" style="background:'+e.f.color+'"></span><div><div>'+e.f.name+'</div>'+(e.ev.reasons.length?'<div class="res-reason">'+e.ev.reasons.join('; ')+'</div>':'')+'</div></div>';
+      }).join('');
+    }
+
+    const res=document.getElementById('selector-result');
+    res.innerHTML='<div class="res-panel ok"><div class="res-panel-label">Recomendadas</div>'+panelHtml(rec,'Ninguna en rango óptimo. Ver marginales.')+'</div>'
+      +'<div class="res-panel marginal"><div class="res-panel-label">Marginales</div>'+panelHtml(marg,'—')+'</div>'
+      +'<div class="res-panel excl"><div class="res-panel-label">Excluidas</div>'+panelHtml(excl,'—')+'</div>';
+  }
+
+  // Slider event handlers
+  document.getElementById('sel-q').addEventListener('input',function(){
+    Q=Math.pow(10,parseFloat(this.value));
+    document.getElementById('q-disp').textContent=fmt(Q).replace('.',',')+' m³/h';
+    update();
+  });
+  document.getElementById('sel-h').addEventListener('input',function(){
+    H=Math.pow(10,parseFloat(this.value));
+    document.getElementById('h-disp').textContent=fmt(H).replace('.',',')+' m';
+    update();
+  });
+  document.getElementById('sel-mu').addEventListener('input',function(){
+    mu=Math.pow(10,parseFloat(this.value));
+    document.getElementById('mu-disp').textContent=fmt(mu).replace('.',',')+' cP';
+    update();
+  });
+  document.getElementById('sel-solids').addEventListener('change',function(){solids=this.checked;update();});
+  document.getElementById('sel-smooth').addEventListener('change',function(){smooth=this.checked;update();});
+
+  // Presets
+  const presets=[
+    {name:'Agua de proceso',Q:80,H:35,mu:1,solids:false,smooth:false},
+    {name:'Crudo viscoso',Q:25,H:80,mu:5000,solids:false,smooth:false},
+    {name:'Dosificación química',Q:0.5,H:60,mu:5,solids:false,smooth:false},
+    {name:'Lodos',Q:8,H:20,mu:200,solids:true,smooth:false},
+    {name:'Inyección de pozo',Q:15,H:800,mu:10,solids:false,smooth:false}
+  ];
+  const presetsDiv=document.getElementById('selector-presets');
+  presets.forEach(function(p){
+    const btn=document.createElement('button');
+    btn.className='preset-btn';
+    btn.textContent=p.name;
+    btn.onclick=function(){
+      Q=p.Q;H=p.H;mu=p.mu;solids=p.solids;smooth=p.smooth;
+      document.getElementById('sel-q').value=Math.log10(Q).toFixed(3);
+      document.getElementById('sel-h').value=Math.log10(H).toFixed(3);
+      document.getElementById('sel-mu').value=Math.log10(mu).toFixed(3);
+      document.getElementById('sel-solids').checked=solids;
+      document.getElementById('sel-smooth').checked=smooth;
+      document.getElementById('q-disp').textContent=fmt(Q).replace('.',',')+' m³/h';
+      document.getElementById('h-disp').textContent=fmt(H).replace('.',',')+' m';
+      document.getElementById('mu-disp').textContent=fmt(mu).replace('.',',')+' cP';
+      update();
+    };
+    presetsDiv.appendChild(btn);
+  });
+
+  update();
+})();
+
+/* ── PumpCurvesChart ─────────────────────────────────────────── */
+(function(){
+  const Qmax=120,Hshut=50,Qbep=70,etaMax=0.78,Hest=12;
+  const k=Hshut/(Qmax*Qmax);
+  const sysCoef=(Hshut-Hest)/(Qbep*Qbep+100);
+
+  const Qop_sq=(Hshut-Hest)/(k+sysCoef);
+  const Qop=Math.sqrt(Math.max(0,Qop_sq));
+  const Hop=Math.max(0,Hshut-k*Qop*Qop);
+
+  function headFn(q){return Math.max(0,Hshut-k*q*q);}
+  function etaFn(q){return Math.max(0,etaMax*(1-Math.pow((q-Qbep)/Qbep,2)));}
+  function bhpFn(q){var eta=Math.max(0.05,etaFn(q));var h=Math.max(0.1,headFn(q));return 1000*9.81*(q/3600)*h/eta/1000;}
+  function npshrFn(q){return 1.5+0.0009*q*q;}
+  function sysFn(q){return Math.min(60,Hest+sysCoef*q*q);}
+
+  const CW=600,CH=360,mg={top:20,right:70,bottom:50,left:60};
+  const plotW=CW-mg.left-mg.right,plotH=CH-mg.top-mg.bottom;
+
+  function xS(q){return mg.left+(q/Qmax)*plotW;}
+  function yLS(h){return mg.top+plotH-(Math.min(60,h)/60)*plotH;}  // left: 0..60 m
+  function yRS(e){return mg.top+plotH-(Math.min(1,e))*plotH;}      // right: 0..1
+
+  function buildPath(fn,yscale,step){
+    step=step||2;
+    var d='';
+    for(var q=0;q<=Qmax;q+=step){
+      d+=(q===0?'M':'L')+xS(q).toFixed(1)+' '+yscale(fn(q)).toFixed(1)+' ';
+    }
+    return d;
+  }
+
+  const NS='http://www.w3.org/2000/svg';
+  function el(tag,attrs){var e=document.createElementNS(NS,tag);Object.entries(attrs||{}).forEach(function([k,v]){e.setAttribute(k,v)});return e;}
+  function txt(content,attrs){var t=el('text',attrs);t.textContent=content;return t;}
+  function path(d,attrs){var p=el('path',{d:d});Object.entries(attrs||{}).forEach(function([k,v]){p.setAttribute(k,v)});return p;}
+
+  const svg=el('svg',{viewBox:'0 0 '+CW+' '+CH,style:'width:100%',role:'img','aria-label':'Curvas características de una bomba centrífuga'});
+
+  // Background
+  svg.appendChild(el('rect',{x:mg.left,y:mg.top,width:plotW,height:plotH,fill:'#fafafa'}));
+
+  // Grid
+  [0,10,20,30,40,50,60].forEach(function(v){
+    var y=yLS(v);
+    svg.appendChild(el('line',{x1:mg.left,y1:y,x2:mg.left+plotW,y2:y,stroke:'#e4e4e7','stroke-width':'0.5','stroke-dasharray':'2 2'}));
+    svg.appendChild(txt(v,{x:mg.left-8,y:y+4,'text-anchor':'end','font-size':'11','fill':'#52525b'}));
+  });
+  [0,0.2,0.4,0.6,0.8,1].forEach(function(v){
+    var y=yRS(v);
+    svg.appendChild(txt(v.toFixed(1),{x:mg.left+plotW+8,y:y+4,'text-anchor':'start','font-size':'11','fill':'#52525b'}));
+  });
+  [0,20,40,60,80,100,120].forEach(function(t){
+    var x=xS(t);
+    svg.appendChild(el('line',{x1:x,y1:mg.top,x2:x,y2:mg.top+plotH,stroke:'#e4e4e7','stroke-width':'0.5','stroke-dasharray':'2 2'}));
+    svg.appendChild(txt(t,{x:x,y:mg.top+plotH+18,'text-anchor':'middle','font-size':'11','fill':'#52525b'}));
+  });
+
+  // Axes
+  svg.appendChild(el('line',{x1:mg.left,y1:mg.top+plotH,x2:mg.left+plotW,y2:mg.top+plotH,stroke:'#27272a','stroke-width':'1.2'}));
+  svg.appendChild(el('line',{x1:mg.left,y1:mg.top,x2:mg.left,y2:mg.top+plotH,stroke:'#27272a','stroke-width':'1.2'}));
+  svg.appendChild(el('line',{x1:mg.left+plotW,y1:mg.top,x2:mg.left+plotW,y2:mg.top+plotH,stroke:'#27272a','stroke-width':'1.2'}));
+
+  // Axis labels
+  svg.appendChild(txt('Caudal Q (m³/h)',{x:mg.left+plotW/2,y:CH-8,'text-anchor':'middle','font-size':'12','fill':'#27272a','font-weight':'600'}));
+  var yLbl=txt('Cabeza H (m), NPSHr (m)',{x:'14',y:mg.top+plotH/2,'text-anchor':'middle','font-size':'12','fill':'#27272a','font-weight':'600'});
+  yLbl.setAttribute('transform','rotate(-90 14 '+(mg.top+plotH/2)+')');
+  svg.appendChild(yLbl);
+  var yRLbl=txt('Eficiencia η',{x:CW-14,y:mg.top+plotH/2,'text-anchor':'middle','font-size':'12','fill':'#27272a','font-weight':'600'});
+  yRLbl.setAttribute('transform','rotate(90 '+(CW-14)+' '+(mg.top+plotH/2)+')');
+  svg.appendChild(yRLbl);
+
+  // Static curves
+  svg.appendChild(path(buildPath(headFn,yLS),{stroke:'#1d4ed8','stroke-width':'2.5',fill:'none'}));
+  svg.appendChild(path(buildPath(sysFn,yLS),{stroke:'#16a34a','stroke-width':'2.5',fill:'none','stroke-dasharray':'6 3'}));
+  svg.appendChild(path(buildPath(etaFn,yRS),{stroke:'#b45309','stroke-width':'2.5',fill:'none'}));
+  svg.appendChild(path(buildPath(npshrFn,yLS),{stroke:'#7f1d1d','stroke-width':'2.5',fill:'none','stroke-dasharray':'3 3'}));
+
+  // Operating point
+  var opX=xS(Qop),opY=yLS(Hop);
+  svg.appendChild(el('circle',{cx:opX,cy:opY,r:'6',fill:'#FFBF00',stroke:'#1A1A1A','stroke-width':'1.5'}));
+  svg.appendChild(txt('Punto op.',{x:opX+10,y:opY-8,'font-size':'10','fill':'#1A1A1A','font-weight':'700'}));
+
+  // BEP
+  var bepX=xS(Qbep),bepY=yRS(etaMax);
+  svg.appendChild(el('circle',{cx:bepX,cy:bepY,r:'5',fill:'#b45309',stroke:'white','stroke-width':'1.5'}));
+  svg.appendChild(txt('BEP',{x:bepX,y:bepY-10,'text-anchor':'middle','font-size':'10','fill':'#b45309','font-weight':'700'}));
+
+  // Cursor elements
+  var curLine=el('line',{x1:0,y1:mg.top,x2:0,y2:mg.top+plotH,stroke:'#1A1A1A','stroke-width':'1.2','stroke-dasharray':'4 2',opacity:'0.7'});
+  var curDotH=el('circle',{r:'4',fill:'#1d4ed8',stroke:'white','stroke-width':'1.5'});
+  var curDotEta=el('circle',{r:'4',fill:'#b45309',stroke:'white','stroke-width':'1.5'});
+  var curDotN=el('circle',{r:'4',fill:'#7f1d1d',stroke:'white','stroke-width':'1.5'});
+  svg.appendChild(curLine);svg.appendChild(curDotH);svg.appendChild(curDotEta);svg.appendChild(curDotN);
+
+  document.getElementById('curves-svg-wrap').appendChild(svg);
+
+  function updateCursor(Q){
+    var x=xS(Q);
+    curLine.setAttribute('x1',x);curLine.setAttribute('x2',x);
+    curDotH.setAttribute('cx',x);curDotH.setAttribute('cy',yLS(headFn(Q)));
+    curDotEta.setAttribute('cx',x);curDotEta.setAttribute('cy',yRS(etaFn(Q)));
+    curDotN.setAttribute('cx',x);curDotN.setAttribute('cy',yLS(npshrFn(Q)));
+    document.getElementById('lc-h').textContent=headFn(Q).toFixed(1)+' m';
+    document.getElementById('lc-eta').textContent=(etaFn(Q)*100).toFixed(0)+' %';
+    document.getElementById('lc-bhp').textContent=bhpFn(Q).toFixed(1)+' kW';
+    document.getElementById('lc-npsh').textContent=npshrFn(Q).toFixed(1)+' m';
+  }
+
+  document.getElementById('curves-q-slider').addEventListener('input',function(){
+    var Q=parseFloat(this.value);
+    document.getElementById('q-val').textContent=Q.toFixed(0);
+    updateCursor(Q);
+  });
+
+  updateCursor(60);
+})();
+
+/* ── NPSHCalculator ──────────────────────────────────────────── */
+(function(){
+  var rho=1000,g=9.81;
+  function head(kPa){return kPa*1000/(rho*g);}
+  function fmt(v){return v.toFixed(2);}
+
+  function calc(){
+    var Ptank=parseFloat(document.getElementById('npsh-ptank').value);
+    var zNet=parseFloat(document.getElementById('npsh-z').value);
+    var hL=parseFloat(document.getElementById('npsh-hl').value);
+    var Pvap=parseFloat(document.getElementById('npsh-pvap').value);
+    var npshR=parseFloat(document.getElementById('npsh-r').value);
+
+    document.getElementById('npsh-ptank-val').textContent=Ptank.toFixed(2).replace('.',',')+' kPa';
+    document.getElementById('npsh-z-val').textContent=zNet.toFixed(2).replace('.',',')+' m';
+    document.getElementById('npsh-hl-val').textContent=hL.toFixed(2).replace('.',',')+' m';
+    document.getElementById('npsh-pvap-val').textContent=Pvap.toFixed(2).replace('.',',')+' kPa';
+    document.getElementById('npsh-r-val').textContent=npshR.toFixed(2).replace('.',',')+' m';
+
+    var NPSHa=head(Ptank)+zNet-hL-head(Pvap);
+    var margen=NPSHa-npshR;
+    var ok=margen>=0.5;
+    var warn=margen>=0&&margen<0.5;
+
+    document.getElementById('cr-a-val').textContent=NPSHa.toFixed(2)+' m';
+    document.getElementById('cr-a').className='cr-card neutral';
+
+    document.getElementById('cr-m-val').textContent=(margen>=0?'+':'')+margen.toFixed(2)+' m';
+    document.getElementById('cr-m').className='cr-card '+(ok?'good':warn?'warn':'bad');
+
+    document.getElementById('cr-s-val').textContent=ok?'Operación segura':warn?'Margen insuficiente':'Cavitación inminente';
+    document.getElementById('cr-s-note').textContent=ok?'NPSHa supera al NPSHr en al menos 0,5 m.':warn?'NPSHa apenas supera al NPSHr — bomba propensa a cavitar.':'NPSHa por debajo del NPSHr — habrá cavitación.';
+    document.getElementById('cr-s').className='cr-card '+(ok?'good':warn?'warn':'bad');
+  }
+
+  ['npsh-ptank','npsh-z','npsh-hl','npsh-pvap','npsh-r'].forEach(function(id){
+    document.getElementById(id).addEventListener('input',calc);
+  });
+  calc();
+})();
+
+/* ── PowerCalculator ─────────────────────────────────────────── */
+(function(){
+  var g=9.81;
+  function calc(){
+    var Q=parseFloat(document.getElementById('pw-q').value);
+    var H=parseFloat(document.getElementById('pw-h').value);
+    var rho=parseFloat(document.getElementById('pw-rho').value);
+    var eta=parseFloat(document.getElementById('pw-eta').value);
+    var etaM=parseFloat(document.getElementById('pw-etam').value);
+
+    document.getElementById('pw-q-val').textContent=Q.toFixed(0)+' m³/h';
+    document.getElementById('pw-h-val').textContent=H.toFixed(0)+' m';
+    document.getElementById('pw-rho-val').textContent=rho.toFixed(0)+' kg/m³';
+    document.getElementById('pw-eta-val').textContent=(eta*100).toFixed(0)+' %';
+    document.getElementById('pw-etam-val').textContent=(etaM*100).toFixed(0)+' %';
+
+    var Qsi=Q/3600;
+    var Ph=rho*g*Qsi*H;
+    var BHP=Ph/Math.max(0.05,eta);
+    var Pelec=BHP/Math.max(0.05,etaM);
+
+    document.getElementById('pw-ph').textContent=(Ph/1000).toFixed(2)+' kW';
+    document.getElementById('pw-bhp').textContent=(BHP/1000).toFixed(2)+' kW';
+    document.getElementById('pw-elec').textContent=(Pelec/1000).toFixed(2)+' kW';
+    document.getElementById('pw-hp').textContent='≈ '+(Pelec/1000*1.341).toFixed(1)+' HP';
+  }
+
+  ['pw-q','pw-h','pw-rho','pw-eta','pw-etam'].forEach(function(id){
+    document.getElementById(id).addEventListener('input',calc);
+  });
+  calc();
+})();
+</script>
+</body>
+</html>
