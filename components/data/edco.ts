@@ -62,9 +62,18 @@ export const edcoCoursesData: EdcoCourse[] = [
     titleEn: 'Fundamentals of Using Generative AI',
     type: 'Open Course',
     client: 'Coursera (MOOC)',
-    attendees: 105,
+    attendees: 143,
     role: 'Instructor',
     url: 'https://www.coursera.org/learn/fundamentals-of-using-generative-ai'
+  },
+  {
+    year: 2026,
+    title: 'IA Generativa para el Análisis de Datos Estructurados',
+    titleEn: 'Generative AI for Structured Data Analysis',
+    type: 'Open Course',
+    client: 'Coursera (MOOC)',
+    attendees: 0,
+    role: 'Instructor'
   },
 
   {
@@ -138,7 +147,7 @@ export const edcoCoursesData: EdcoCourse[] = [
     titleEn: 'Fundamentals of Generative AI Usage',
     type: 'Open Course',
     client: 'Coursera (MOOC)',
-    attendees: 8302,
+    attendees: 11026,
     role: 'Instructor',
     url: 'https://www.coursera.org/learn/fundamentos-del-uso-de-ia-generativa'
   },
