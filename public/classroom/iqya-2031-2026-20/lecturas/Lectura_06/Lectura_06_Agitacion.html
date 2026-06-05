@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lectura 06 — Fundamentos de agitación · POU 2026-20</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<link rel="stylesheet" href="assets/deloitte.css">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;scroll-behavior:smooth}
+body{font-family:'Source Sans 3','Aptos','Segoe UI',system-ui,sans-serif;color:var(--gris-1);background:var(--blanco);line-height:1.6}
+
+/* Progress bar */
+.progress{position:fixed;top:0;left:0;height:3px;width:0%;background:var(--verde);z-index:1000;transition:width .1s linear}
+
+/* Layout */
+.outer-layout{display:grid;grid-template-columns:200px 1fr;gap:0;max-width:1180px;margin:0 auto;padding:2rem 1.5rem 4rem;align-items:start}
+@media(max-width:860px){.outer-layout{grid-template-columns:1fr;padding:1.2rem 1rem 3rem}}
+
+/* Side nav */
+.side-nav{position:sticky;top:28px;max-height:calc(100vh - 56px);overflow-y:auto;padding:1rem .75rem;border:1px solid var(--gris-4);border-radius:8px;background:var(--blanco);margin-right:1.5rem}
+.side-nav::-webkit-scrollbar{width:4px}
+.side-nav::-webkit-scrollbar-thumb{background:var(--gris-4);border-radius:2px}
+.sn-label{font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gris-3);padding:0 .25rem .5rem;border-bottom:1px solid var(--gris-5);margin-bottom:.5rem}
+.sn-item{display:flex;align-items:baseline;gap:.4rem;padding:.35rem .5rem;border-radius:4px;font-size:.78rem;color:var(--gris-2);text-decoration:none;transition:background .15s,color .15s;border-left:3px solid transparent;line-height:1.3}
+.sn-item:hover{color:var(--gris-1);background:var(--papel)}
+.sn-item.is-active{color:var(--verde-osc);background:var(--verde-claro);font-weight:600;border-left:3px solid var(--verde)}
+.sn-num{font-size:.7rem;font-weight:700;color:var(--gris-3);flex-shrink:0;font-variant-numeric:tabular-nums}
+.sn-item.is-active .sn-num{color:var(--verde-osc)}
+@media(max-width:860px){.side-nav{position:static;margin-right:0;margin-bottom:1.5rem;max-height:none}}
+
+/* Article */
+.page{min-width:0}
+
+/* Doc header */
+.doc-head{background:var(--papel);border:1px solid var(--gris-4);border-radius:8px;padding:2rem 2.25rem 1.75rem;margin-bottom:2rem}
+.org{font-size:.78rem;color:var(--gris-2);margin-bottom:.75rem;line-height:1.4}
+.org span{display:block;color:var(--gris-3)}
+.badge{display:inline-block;background:var(--verde);color:#fff;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:.25rem .7rem;border-radius:3px;margin-bottom:.9rem}
+.doc-head h1{font-size:1.85rem;font-weight:900;line-height:1.15;color:var(--negro);margin-bottom:.6rem}
+.subtitle{font-size:1rem;color:var(--gris-2);line-height:1.5;max-width:680px;margin-bottom:1.25rem}
+.doc-meta{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:.4rem .75rem;padding-top:1rem;border-top:1px solid var(--gris-4);font-size:.8rem;color:var(--gris-2)}
+.doc-meta b{color:var(--gris-1);display:block;font-weight:600}
+
+/* Sections */
+.doc-body section{padding-top:2.25rem;padding-bottom:.75rem;border-top:2px solid var(--papel)}
+.doc-body section:first-child{border-top:none;padding-top:0}
+.eyebrow{font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--verde-osc);margin-bottom:.35rem}
+h2.sec{font-size:1.45rem;font-weight:800;color:var(--negro);margin-bottom:1rem;display:flex;align-items:baseline;gap:.5rem}
+.secnum{font-size:1rem;font-weight:900;color:var(--verde);min-width:1.8rem}
+h3.sub{font-size:1.05rem;font-weight:700;color:var(--gris-1);margin:1.5rem 0 .6rem;border-left:3px solid var(--verde);padding-left:.65rem}
+.lead{font-size:1.02rem;color:var(--gris-2);line-height:1.65;margin-bottom:1.1rem}
+p.body{font-size:.9rem;color:var(--gris-1);line-height:1.7;margin-bottom:.85rem}
+ul.body-list{font-size:.9rem;color:var(--gris-1);line-height:1.6;padding-left:1.4rem;margin-bottom:.85rem}
+ul.body-list li{margin-bottom:.35rem}
+ol.body-list{font-size:.9rem;color:var(--gris-1);line-height:1.6;padding-left:1.4rem;margin-bottom:.85rem}
+ol.body-list li{margin-bottom:.35rem}
+
+/* Callouts */
+.callout{border-left:4px solid var(--verde);background:var(--verde-claro);border-radius:0 6px 6px 0;padding:.85rem 1rem;margin:1.2rem 0;font-size:.9rem;display:flex;gap:.75rem;align-items:flex-start}
+.callout svg{flex-shrink:0;margin-top:.1rem;color:var(--verde-osc)}
+.callout-body{flex:1}
+.callout-body strong{display:block;font-weight:700;color:var(--verde-osc);margin-bottom:.2rem}
+.callout.tip{border-color:var(--teal);background:var(--teal-claro)}
+.callout.tip svg{color:var(--teal)}
+.callout.tip .callout-body strong{color:var(--teal)}
+.callout.warn{border-color:var(--ambar);background:#FFF7EE}
+.callout.warn svg{color:var(--ambar)}
+.callout.warn .callout-body strong{color:#B86E00}
+.callout-list{margin:.4rem 0 0;padding-left:1.2rem}
+.callout-list li{margin-bottom:.3rem}
+
+/* Figures */
+.fig-frame{background:var(--papel);border:1px solid var(--gris-4);border-radius:6px;padding:.75rem;margin:1.2rem 0;text-align:center}
+.fig-frame img{max-width:100%;height:auto;border-radius:4px;display:block;margin:0 auto}
+figcaption{font-size:.78rem;color:var(--gris-2);margin-top:.5rem;text-align:center;line-height:1.4;font-style:italic}
+
+/* Tables */
+table.ou{width:100%;border-collapse:collapse;font-size:.85rem;margin:1rem 0}
+table.ou th{background:var(--verde);color:#fff;text-align:left;padding:.55rem .75rem;font-weight:700}
+table.ou td{padding:.5rem .75rem;border-bottom:1px solid var(--gris-5);vertical-align:top}
+table.ou tr:hover td{background:var(--verde-claro)}
+
+/* Impeller stepper */
+.imp-gallery{margin:1.2rem 0}
+.imp-bar{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:1rem}
+.imp-btn{font-family:inherit;font-size:.8rem;font-weight:600;padding:.4rem .9rem;border:1.5px solid var(--gris-4);border-radius:99px;cursor:pointer;background:var(--blanco);color:var(--gris-2);transition:all .2s}
+.imp-btn:hover{border-color:var(--verde);color:var(--verde-osc)}
+.imp-btn.active{background:var(--verde);color:#fff;border-color:var(--verde)}
+.imp-panel{display:none}
+.imp-panel.active{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;align-items:start}
+@media(max-width:600px){.imp-panel.active{grid-template-columns:1fr}}
+.imp-gif{border:1px solid var(--gris-4);border-radius:6px;overflow:hidden;background:var(--papel);display:flex;align-items:center;justify-content:center;min-height:280px}
+.imp-gif img{width:100%;height:auto;display:block;max-height:320px;object-fit:contain}
+.imp-info h4{font-size:1rem;font-weight:800;color:var(--negro);margin-bottom:.35rem}
+.imp-family{font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--verde-osc);background:var(--verde-claro);padding:.15rem .5rem;border-radius:2px;display:inline-block;margin-bottom:.6rem}
+.imp-desc{font-size:.88rem;color:var(--gris-2);line-height:1.55;margin-bottom:.75rem}
+.imp-specs{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.75rem}
+.imp-spec{border:1px solid var(--gris-5);border-radius:5px;padding:.5rem .65rem;background:var(--papel)}
+.imp-spec-label{font-size:.68rem;text-transform:uppercase;font-weight:700;color:var(--gris-3);letter-spacing:.05em}
+.imp-spec-value{font-family:monospace;font-size:.92rem;font-weight:700;color:var(--negro)}
+.imp-apps{font-size:.8rem;color:var(--gris-2);font-style:italic}
+
+/* Flow pattern cards */
+.flow-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1.2rem 0}
+@media(max-width:600px){.flow-grid{grid-template-columns:1fr}}
+.flow-card{border:1px solid var(--gris-4);border-radius:6px;overflow:hidden;background:var(--blanco)}
+.flow-card img{width:100%;height:auto;display:block;max-height:280px;object-fit:contain}
+.flow-card-body{padding:.75rem 1rem}
+.flow-card-body p{font-size:.88rem;color:var(--gris-2);line-height:1.55}
+
+/* Scaleup images grid */
+.scaleup-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1.2rem 0}
+@media(max-width:600px){.scaleup-grid{grid-template-columns:1fr}}
+.scaleup-card{border:1px solid var(--gris-4);border-radius:6px;overflow:hidden;background:var(--blanco)}
+.scaleup-card img{width:100%;height:auto;display:block;max-height:220px;object-fit:contain}
+.scaleup-card .sc-caption{padding:.5rem .75rem;font-size:.78rem;color:var(--gris-2);font-style:italic;text-align:center}
+
+/* NpRe chart */
+.chart-wrap{border:1px solid var(--gris-4);border-radius:8px;background:var(--blanco);padding:1.25rem;margin:1.2rem 0;box-shadow:var(--sombra)}
+.chart-wrap h4{font-size:.95rem;font-weight:700;color:var(--negro);margin-bottom:.75rem}
+.chart-header{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:.5rem;margin-bottom:.75rem}
+.chart-live{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem;margin-top:.75rem}
+@media(max-width:600px){.chart-live{grid-template-columns:1fr}}
+.live-card{border:1.5px solid var(--gris-4);border-radius:5px;padding:.5rem .75rem}
+.live-card-label{font-size:.7rem;text-transform:uppercase;font-weight:700;color:var(--gris-3);letter-spacing:.05em;margin-bottom:.15rem}
+.live-card-value{font-family:monospace;font-size:1rem;font-weight:700}
+.live-card.green .live-card-value{color:#15803d}
+.live-card.amber .live-card-value{color:#b45309}
+.live-card.red .live-card-value{color:#7f1d1d}
+.live-card.dark .live-card-value{color:var(--negro)}
+.chart-legend{display:flex;flex-wrap:wrap;gap:.5rem 1.25rem;font-size:.75rem;color:var(--gris-2);margin-top:.5rem;justify-content:center}
+
+/* Calculators */
+.calc-wrap{border:1px solid var(--gris-4);border-radius:8px;background:var(--blanco);padding:1.25rem;margin:1.2rem 0;box-shadow:var(--sombra)}
+.calc-wrap h4{font-size:.92rem;font-weight:700;color:var(--negro);margin-bottom:1rem}
+.calc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.85rem 1.5rem}
+.calc-field{display:flex;flex-direction:column;gap:.2rem}
+.calc-field-header{display:flex;justify-content:space-between;font-size:.78rem}
+.calc-field-header span{color:var(--gris-2);font-weight:600}
+.calc-field-header b{color:var(--negro);font-family:monospace}
+.calc-field input[type=range]{width:100%;accent-color:var(--verde-osc)}
+.calc-field select{width:100%;border:1px solid var(--gris-4);border-radius:4px;padding:.35rem .5rem;font-family:inherit;font-size:.85rem;color:var(--gris-1);background:var(--blanco)}
+.calc-results{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;margin-top:1rem}
+@media(max-width:700px){.calc-results{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:400px){.calc-results{grid-template-columns:1fr}}
+.calc-card{border-radius:6px;padding:.75rem 1rem;border:1px solid var(--gris-5);background:var(--papel)}
+.calc-card.highlight{background:var(--verde-claro);border-color:var(--verde)}
+.calc-card-label{font-size:.7rem;text-transform:uppercase;font-weight:700;color:var(--gris-3);letter-spacing:.05em}
+.calc-card-value{font-family:monospace;font-size:1.15rem;font-weight:700;color:var(--negro);margin:.15rem 0}
+.calc-card-sub{font-size:.75rem;color:var(--gris-2)}
+.calc-note{font-size:.78rem;color:var(--gris-3);font-style:italic;margin-top:.75rem}
+
+/* Scaleup calculator */
+.su-criteria{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:1rem}
+.su-btn{font-family:inherit;font-size:.8rem;font-weight:600;padding:.4rem .9rem;border:1.5px solid var(--gris-4);border-radius:99px;cursor:pointer;background:var(--blanco);color:var(--gris-2);transition:all .2s}
+.su-btn:hover{border-color:var(--verde);color:var(--verde-osc)}
+.su-btn.active{background:var(--verde);color:#fff;border-color:var(--verde)}
+.su-desc{font-size:.82rem;color:var(--gris-2);font-style:italic;margin-bottom:1rem}
+
+/* YouTube embed */
+.yt-wrap{margin:1.2rem 0}
+.yt-frame{border:1px solid var(--gris-4);border-radius:6px;overflow:hidden;background:var(--papel);max-width:640px;margin:0 auto}
+.yt-frame .aspect{position:relative;padding-top:56.25%}
+.yt-frame iframe{position:absolute;inset:0;width:100%;height:100%}
+.yt-caption{font-size:.75rem;color:var(--gris-2);font-style:italic;padding:.5rem .75rem .75rem;text-align:center}
+
+/* Platform links */
+a.pl{color:inherit;border-bottom:2px solid var(--verde);text-decoration:none;white-space:nowrap}
+a.pl::after{content:'↗';font-size:.75em;margin-left:.2em;color:var(--verde)}
+a.pl:hover{color:var(--verde-osc)}
+
+/* Footer */
+.doc-foot{border-top:2px solid var(--verde-claro);margin-top:3rem;padding-top:1.5rem}
+.refs-title{font-size:.85rem;font-weight:700;color:var(--gris-2);letter-spacing:.06em;text-transform:uppercase;margin-bottom:.75rem}
+ol.refs{padding-left:1.4rem;font-size:.82rem;color:var(--gris-2);line-height:1.6}
+ol.refs li{margin-bottom:.5rem}
+ol.refs b{color:var(--gris-1)}
+.foot-note{margin-top:1.5rem;font-size:.75rem;color:var(--gris-3);border-top:1px solid var(--gris-5);padding-top:.75rem}
+
+/* Animations */
+@keyframes fadeInUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.stagger-in>*{opacity:0;animation:fadeInUp .35s ease forwards}
+.stagger-in>*:nth-child(1){animation-delay:.05s}
+.stagger-in>*:nth-child(2){animation-delay:.1s}
+.stagger-in>*:nth-child(3){animation-delay:.15s}
+.stagger-in>*:nth-child(4){animation-delay:.2s}
+.stagger-in>*:nth-child(5){animation-delay:.25s}
+.stagger-in>*:nth-child(6){animation-delay:.3s}
+
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<div class="outer-layout">
+
+<!-- ── Side navigation ─────────────────────────────────────── -->
+<nav class="side-nav" aria-label="Secciones">
+  <p class="sn-label">En esta lectura</p>
+  <a href="#s1" class="sn-item"><span class="sn-num">01</span>Agitación vs. mezclado</a>
+  <a href="#s2" class="sn-item"><span class="sn-num">02</span>Patrones de flujo</a>
+  <a href="#s3" class="sn-item"><span class="sn-num">03</span>Tipos de impulsores</a>
+  <a href="#s4" class="sn-item"><span class="sn-num">04</span>Bafles</a>
+  <a href="#s5" class="sn-item"><span class="sn-num">05</span>Geometría estándar</a>
+  <a href="#s6" class="sn-item"><span class="sn-num">06</span>Potencia y adimensionales</a>
+  <a href="#s7" class="sn-item"><span class="sn-num">07</span>Escalado</a>
+  <a href="#s8" class="sn-item"><span class="sn-num">08</span>Bibliografía</a>
+</nav>
+
+<!-- ── Main article ─────────────────────────────────────────── -->
+<article class="page">
+<header class="doc-head">
+  <div class="org">Universidad de los Andes<span>Ingeniería Química y de Alimentos · Facultad de Ingeniería</span></div>
+  <div class="badge">Lectura 06 · Proyecto de Operaciones Unitarias</div>
+  <h1>Fundamentos de agitación</h1>
+  <p class="subtitle">Patrones de flujo, tipos de impulsores, bafles, geometría estándar del tanque, números adimensionales, cálculo de potencia y criterios de escalado — los fundamentos para diseñar el sistema de agitación de tu proyecto.</p>
+  <div class="doc-meta">
+    <div><b>Curso</b>IQYA 2031 — Proyecto de Operaciones Unitarias</div>
+    <div><b>Semestre</b>2026-20</div>
+    <div><b>Autor</b>Luis H. Reyes</div>
+    <div><b>Fecha</b>5 de junio de 2026</div>
+    <div><b>Lectura</b>Aproximadamente 25 minutos</div>
+  </div>
+</header>
+
+<div class="doc-body">
+
+<!-- ── s0: Hero ───────────────────────────────────────────────── -->
+<section id="s0">
+  <p class="lead">Esta lectura cubre los fundamentos de la <strong>agitación</strong>, una de las operaciones unitarias más extendidas en la industria —cosmética, farmacéutica, alimentos, química y bioprocesos— y la base para que el resto del proceso (transferencia de masa, calor, reacción) ocurra de forma eficiente y reproducible. Veremos los patrones de flujo, los tipos de impulsores, los bafles, los números adimensionales que gobiernan la potencia y los criterios de escalado.</p>
+
+  <figure style="margin:1.2rem 0">
+    <div class="fig-frame" style="padding:1rem">
+      <img src="/classroom/iqya-2031/readings/agitacion-intro.png"
+           alt="Tanque agitado con patrón de flujo visible"
+           style="max-width:720px;width:100%;border-radius:4px;display:block;margin:0 auto">
+    </div>
+    <figcaption>La agitación crea patrones de flujo característicos que determinan la calidad del mezclado, la transferencia de masa y la estabilidad del producto.</figcaption>
+  </figure>
+
+  <div class="callout">
+    <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/><path d="M12 22s7-7.6 7-13a7 7 0 0 0-14 0c0 5.4 7 13 7 13Z"/></svg>
+    <div class="callout-body">
+      <strong>Aplicación al proyecto del curso</strong>
+      Si tu proyecto incluye un tanque agitado (mezcla, reacción, suspensión, dispersión), debes:
+      <ol class="callout-list">
+        <li>Definir claramente el <strong>objetivo</strong> de la agitación (homogeneizar, suspender, dispersar gas, transferir calor, etc.).</li>
+        <li>Seleccionar un <strong>tipo de impulsor</strong> apropiado y justificarlo.</li>
+        <li>Estimar las <strong>dimensiones</strong> del tanque y del impulsor con relaciones geométricas estándar.</li>
+        <li>Calcular el \(\text{Re}_{ag}\) a las condiciones de operación.</li>
+        <li>Determinar el \(N_P\) usando la curva \(N_P\) vs \(\text{Re}_{ag}\).</li>
+        <li>Calcular la potencia requerida y la potencia del motor (con eficiencia y factor de servicio).</li>
+        <li>Decidir si lleva <strong>bafles</strong>.</li>
+        <li>Si parten de un diseño de laboratorio, discutir qué <strong>criterio de escalado</strong> aplicaría a su proceso.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- ── s1: Agitación vs. mezclado ─────────────────────────────── -->
+<section id="s1">
+  <p class="eyebrow">Sección 01</p>
+  <h2 class="sec"><span class="secnum">1</span>Agitación vs. mezclado</h2>
+
+  <p class="body">Es importante diferenciar dos términos relacionados pero distintos:</p>
+  <ul class="body-list">
+    <li><strong>Agitación:</strong> movimiento inducido en un material —típicamente un fluido o mezcla de fluidos— dentro de un recipiente, para crear un patrón de flujo específico.</li>
+    <li><strong>Mezclado:</strong> proceso que busca una distribución aleatoria y uniforme de dos o más componentes o fases inicialmente separadas, hasta alcanzar un grado deseado de homogeneidad.</li>
+  </ul>
+  <p class="body">La agitación es a menudo el <em>medio</em> para lograr el mezclado, pero se puede agitar sin mezclar (mantener agua en movimiento) y se puede mezclar sin un patrón de agitación clásico (mezcla por impacto en líneas).</p>
+
+  <h3 class="sub">Para qué se agita</h3>
+  <ul class="body-list">
+    <li>Suspender partículas sólidas.</li>
+    <li>Dispersar un gas en un líquido (burbujeo, fermentación).</li>
+    <li>Promover transferencia de calor (paredes encamisadas, serpentines).</li>
+    <li>Mantener homogeneidad o evitar sedimentación.</li>
+    <li>Aumentar la velocidad de reacciones químicas (reduciendo resistencia a la transferencia de masa).</li>
+    <li>Formar y estabilizar emulsiones (cremas, lociones), suspensiones (maquillajes), incorporar activos.</li>
+  </ul>
+
+  <div class="callout tip">
+    <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V18h6v-1.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2Z"/></svg>
+    <div class="callout-body">
+      <strong>¿Por qué importa en el proyecto de pectina?</strong>
+      En el proceso de extracción de pectina la agitación define la <strong>eficiencia de la hidrólisis ácida</strong>: el contacto entre la solución ácida y la cáscara triturada determina cuánta pectina se libera, la uniformidad de la temperatura en el reactor y si el material sedimenta o queda en suspensión. Una misma formulación con dos agitaciones distintas puede dar rendimientos drásticamente diferentes.
+    </div>
+  </div>
+</section>
+
+<!-- ── s2: Patrones de flujo ──────────────────────────────────── -->
+<section id="s2">
+  <p class="eyebrow">Sección 02</p>
+  <h2 class="sec"><span class="secnum">2</span>Patrones de flujo</h2>
+
+  <p class="body">El <strong>impulsor</strong> (o agitador) es el corazón del sistema. Al rotar imparte energía al fluido y genera un patrón de flujo característico. Los dos patrones primarios son:</p>
+
+  <div class="flow-grid">
+    <div class="flow-card">
+      <img src="/classroom/iqya-2031/readings/agitacion-flujo-axial.jpeg"
+           alt="Patrón de flujo axial en tanque agitado">
+      <div class="flow-card-body">
+        <p><strong style="color:var(--negro)">Flujo axial:</strong> el fluido se desplaza paralelo al eje del agitador (hacia abajo o arriba), choca contra el fondo o la superficie y vuelve a las paredes para recircular. <strong>Buen bombeo, bajo cizallamiento.</strong></p>
+      </div>
+    </div>
+    <div class="flow-card">
+      <img src="/classroom/iqya-2031/readings/agitacion-flujo-radial.jpeg"
+           alt="Patrón de flujo radial en tanque agitado">
+      <div class="flow-card-body">
+        <p><strong style="color:var(--negro)">Flujo radial:</strong> el fluido sale perpendicular al eje hacia las paredes, donde se divide en corrientes ascendente y descendente. Crea zonas de <strong>alta turbulencia y cizalladura</strong> cerca del impulsor.</p>
+      </div>
+    </div>
+  </div>
+
+  <p class="body">Algunos impulsores combinan ambos comportamientos en proporciones variables (las turbinas de palas inclinadas son el ejemplo clásico), y los agitadores para fluidos viscosos —como anclas o cintas helicoidales— no se ajustan al esquema axial/radial sino que tienen patrones cercanos a la pared o flujos forzados muy controlados.</p>
+</section>
+
+<!-- ── s3: Tipos de impulsores ────────────────────────────────── -->
+<section id="s3">
+  <p class="eyebrow">Sección 03</p>
+  <h2 class="sec"><span class="secnum">3</span>Tipos de impulsores</h2>
+
+  <p class="body">La selección del impulsor depende del régimen (laminar, transicional, turbulento), la viscosidad, el tipo de mezcla deseada (gas-líquido, líquido-líquido, sólido-líquido), y las restricciones del proceso (cizallamiento permitido, sensibilidad biológica, etc.). Estos son los más comunes:</p>
+
+  <p class="body" style="color:var(--gris-3);font-size:.85rem">Explora cada tipo en el visor interactivo:</p>
+
+  <div class="imp-gallery" id="imp-gallery">
+    <div class="imp-bar" id="imp-bar"></div>
+    <div id="imp-panels"></div>
+  </div>
+
+  <h3 class="sub">Cómo elegir</h3>
+  <div style="overflow-x:auto;margin:1rem 0">
+    <table class="ou">
+      <thead>
+        <tr>
+          <th>Si necesitas…</th>
+          <th>Impulsor recomendado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Mezcla rápida de líquidos miscibles, \(\mu\) baja</strong></td><td>Hélice marina o PBT 45°</td></tr>
+        <tr><td><strong>Suspensión de sólidos finos</strong></td><td>Hélice o PBT (axial)</td></tr>
+        <tr><td><strong>Dispersión de gas (fermentación, oxigenación)</strong></td><td>Turbina Rushton (o Smith curva)</td></tr>
+        <tr><td><strong>Emulsiones (alto cizallamiento puntual)</strong></td><td>Rushton + alta velocidad / molinos coloidales en línea</td></tr>
+        <tr><td><strong>Fluidos viscosos (\(\mu > 1000\) cP)</strong></td><td>Cinta helicoidal o ancla</td></tr>
+        <tr><td><strong>Transferencia de calor con paredes</strong></td><td>Ancla o cinta helicoidal</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ── s4: Bafles ─────────────────────────────────────────────── -->
+<section id="s4">
+  <p class="eyebrow">Sección 04</p>
+  <h2 class="sec"><span class="secnum">4</span>Bafles (deflectores)</h2>
+
+  <p class="body">Los <strong>bafles</strong> son placas verticales montadas en las paredes internas del tanque. Su función es <strong>romper el remolino</strong> (movimiento de masa rotacional) que produce el impulsor en líquidos de baja a moderada viscosidad, convirtiendo la rotación en patrones axiales y radiales más efectivos.</p>
+
+  <div class="yt-wrap">
+    <div class="yt-frame">
+      <div class="aspect">
+        <iframe src="https://www.youtube.com/embed/aydQpBSRaGA"
+                title="Efecto de los bafles en un tanque agitado"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen></iframe>
+      </div>
+      <p class="yt-caption">Comparación experimental del flujo en un tanque sin bafles (vórtice profundo) y con bafles (superficie plana, mezcla efectiva).</p>
+    </div>
+  </div>
+
+  <h3 class="sub">Beneficios</h3>
+  <ul class="body-list">
+    <li>Convierten el movimiento rotacional en flujo axial/radial efectivo.</li>
+    <li>Aumentan la turbulencia.</li>
+    <li>Evitan la incorporación no deseada de gas desde el espacio superior (vórtice profundo).</li>
+    <li>Estandarizan el comportamiento (los \(N_P\) tabulados asumen tanque con bafles).</li>
+  </ul>
+
+  <h3 class="sub">Diseño típico</h3>
+  <ul class="body-list">
+    <li>Cuatro bafles distribuidos a 90° alrededor del tanque.</li>
+    <li>Ancho \(W_b \approx D_t / 12\) (a veces hasta \(D_t/10\)).</li>
+    <li>Separados ligeramente de la pared (pequeño <em>gap</em>) para evitar zonas muertas.</li>
+    <li>Que cubran al menos la zona del impulsor en altura.</li>
+  </ul>
+
+  <div class="callout warn">
+    <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10.3 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+    <div class="callout-body">
+      <strong>Cuándo NO poner bafles</strong>
+      <ul class="callout-list">
+        <li>En líquidos muy viscosos: el fluido mismo resiste el remolino y los bafles son innecesarios o crean zonas muertas.</li>
+        <li>Con agitadores excéntricos o angulares: el desbalance ya rompe el patrón rotacional.</li>
+        <li>En tanques muy pequeños donde el bafle ocupa una fracción importante del diámetro.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ── s5: Geometría estándar ──────────────────────────────────── -->
+<section id="s5">
+  <p class="eyebrow">Sección 05</p>
+  <h2 class="sec"><span class="secnum">5</span>Geometría estándar de un tanque agitado</h2>
+
+  <p class="body">Para que las correlaciones —y, sobre todo, los criterios de escalado— sean válidos, se trabaja con tanques que cumplen <strong>similitud geométrica</strong>. Las relaciones típicas (configuración estándar) son:</p>
+
+  <figure style="margin:1.2rem 0">
+    <div class="fig-frame" style="padding:1rem">
+      <img src="/classroom/iqya-2031/readings/agitacion-similitud-geometrica.png"
+           alt="Diagrama de similitud geométrica en tanque agitado con todas las cotas"
+           style="max-width:520px;width:100%;border-radius:4px;display:block;margin:0 auto">
+    </div>
+    <figcaption>Diagrama clásico de similitud geométrica: relaciones entre diámetro de tanque, diámetro de impulsor, altura de líquido, ancho y offset de bafle, posición vertical del impulsor.</figcaption>
+  </figure>
+
+  <div style="overflow-x:auto;margin:1rem 0">
+    <table class="ou">
+      <thead>
+        <tr>
+          <th>Relación</th>
+          <th>Valor estándar</th>
+          <th>Comentario</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td style="font-family:monospace;color:var(--negro)">\(D_a / D_t\)</td><td>1/3</td><td>Diámetro de impulsor un tercio del tanque.</td></tr>
+        <tr><td style="font-family:monospace;color:var(--negro)">\(H / D_t\)</td><td>1</td><td>Altura de líquido igual al diámetro.</td></tr>
+        <tr><td style="font-family:monospace;color:var(--negro)">\(E / D_t\)</td><td>1/3</td><td>Altura del impulsor sobre el fondo.</td></tr>
+        <tr><td style="font-family:monospace;color:var(--negro)">\(W_b / D_t\)</td><td>1/12</td><td>Ancho de bafle.</td></tr>
+        <tr><td style="font-family:monospace;color:var(--negro)">\(L / D_a\)</td><td>1/4</td><td>Longitud de pala (en turbinas con disco).</td></tr>
+        <tr><td style="font-family:monospace;color:var(--negro)">\(W / D_a\)</td><td>1/5</td><td>Ancho de pala.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="body">Cuando un proceso requiere algo distinto (tanques alargados, impulsores múltiples, etc.) hay que tener especial cuidado al usar correlaciones tabuladas: la geometría deja de ser similar y los \(N_P\) publicados pueden no aplicar.</p>
+</section>
+
+<!-- ── s6: Potencia y adimensionales ──────────────────────────── -->
+<section id="s6">
+  <p class="eyebrow">Sección 06</p>
+  <h2 class="sec"><span class="secnum">6</span>Potencia y números adimensionales</h2>
+
+  <p class="body">Estimar la potencia consumida por el agitador es fundamental para dimensionar el motor y evaluar el costo operativo. Se usan dos números adimensionales clave.</p>
+
+  <h3 class="sub">Número de Reynolds de agitación</h3>
+  <p class="body">Caracteriza el régimen de flujo en el tanque:</p>
+  <p class="body" style="text-align:center;font-size:1.1rem">$$\text{Re}_{ag} = \frac{D_a^2 \cdot N \cdot \rho}{\mu}$$</p>
+  <ul class="body-list">
+    <li>\(D_a\): diámetro del impulsor (m).</li>
+    <li>\(N\): velocidad de rotación (rev/s — atención a las unidades).</li>
+    <li>\(\rho\): densidad del fluido (kg/m³).</li>
+    <li>\(\mu\): viscosidad dinámica (Pa·s).</li>
+  </ul>
+
+  <div class="callout">
+    <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/><path d="M12 22s7-7.6 7-13a7 7 0 0 0-14 0c0 5.4 7 13 7 13Z"/></svg>
+    <div class="callout-body">
+      <strong>Los regímenes en agitación NO son los de tubería</strong>
+      <ul class="callout-list">
+        <li>Laminar: \(\text{Re}_{ag} \lesssim 10\).</li>
+        <li>Transicional: \(10 \lesssim \text{Re}_{ag} \lesssim 10^4\).</li>
+        <li>Turbulento: \(\text{Re}_{ag} \gtrsim 10^4\).</li>
+      </ul>
+      <p style="margin-top:.5rem;font-size:.84rem">Es la pista número uno para la mayoría de cálculos: marca dónde leer la curva \(N_P\), si los bafles son útiles, y qué correlaciones aplican.</p>
+    </div>
+  </div>
+
+  <h3 class="sub">Número de potencia</h3>
+  <p class="body">Relaciona la potencia consumida con las propiedades del fluido y la geometría:</p>
+  <p class="body" style="text-align:center;font-size:1.1rem">$$N_P = \frac{P}{\rho \cdot N^3 \cdot D_a^5}$$</p>
+  <ul class="body-list">
+    <li>\(P\): potencia consumida por el agitador (W).</li>
+    <li>\(N_P\) depende de la geometría (tipo de impulsor, \(D_a/D_t\), presencia de bafles…) y de \(\text{Re}_{ag}\).</li>
+  </ul>
+
+  <p class="body">Para un sistema geométricamente similar se obtienen <strong>curvas log-log</strong> de \(N_P\) vs \(\text{Re}_{ag}\) con dos comportamientos asintóticos:</p>
+  <ul class="body-list">
+    <li>En <strong>régimen laminar</strong> (\(\text{Re}_{ag} < 10\)): \(N_P \cdot \text{Re}_{ag} = K_l\) (constante), por lo que \(N_P \propto 1/\text{Re}_{ag}\).</li>
+    <li>En <strong>régimen turbulento con bafles</strong> (\(\text{Re}_{ag} > 10^4\)): \(N_P\) tiende a un valor <strong>constante</strong> \(K_t\) característico de cada impulsor.</li>
+    <li>Entre ambos hay una zona transicional donde \(N_P\) depende suavemente de \(\text{Re}_{ag}\).</li>
+  </ul>
+
+  <!-- NpRe interactive chart -->
+  <div class="chart-wrap" id="npre-chart">
+    <div class="chart-header">
+      <h4>Curva \(N_P\) vs \(\text{Re}_{ag}\) — log-log</h4>
+      <span style="font-size:.9rem;color:var(--gris-2)">\(\text{Re}_{ag}\): <b id="re-disp" style="font-family:monospace;color:var(--negro)">10k</b> · <b id="regime-disp" style="font-weight:600"></b></span>
+    </div>
+    <div id="npre-btns" style="display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:.75rem"></div>
+    <div style="text-align:center">
+      <svg id="npre-svg" viewBox="0 0 600 360" style="width:100%;max-width:680px" role="img" aria-label="Np vs Re"></svg>
+    </div>
+    <input type="range" id="re-slider" min="0" max="6" step="0.05" value="4" style="width:100%;accent-color:var(--verde-osc);margin:.75rem 0 .5rem" aria-label="Reynolds de agitación">
+    <div class="chart-live" id="npre-live"></div>
+  </div>
+
+  <p class="body" style="font-size:.85rem;color:var(--gris-2)">Las curvas anteriores son un modelo simplificado. Las curvas reales de fabricantes y libros de texto se ven así:</p>
+
+  <div class="flow-grid" style="margin:1rem 0">
+    <figure>
+      <div class="fig-frame">
+        <img src="/classroom/iqya-2031/readings/agitacion-np-vs-re.jpeg"
+             alt="Curva Np vs Re para hélice y cinta helicoidal" style="max-width:100%">
+      </div>
+      <figcaption>Hélice y cinta helicoidal: efecto del bafle en la transición turbulenta.</figcaption>
+    </figure>
+    <figure>
+      <div class="fig-frame">
+        <img src="/classroom/iqya-2031/readings/agitacion-np-regimenes.jpeg"
+             alt="Curvas Np vs Re para varios impulsores" style="max-width:100%">
+      </div>
+      <figcaption>Comparación de cinco geometrías de impulsor: turbinas de disco, CD-6, pala inclinada, A310 y HE-3.</figcaption>
+    </figure>
+  </div>
+
+  <h3 class="sub">Cálculo de la potencia</h3>
+  <p class="body">Conocido \(N_P\) (de la curva o correlación), se despeja la potencia entregada al fluido:</p>
+  <p class="body" style="text-align:center;font-size:1.1rem">$$P = N_P \cdot \rho \cdot N^3 \cdot D_a^5$$</p>
+  <p class="body">La <strong>potencia del motor</strong> debe ser mayor que \(P\) para cubrir las pérdidas mecánicas en transmisión y motor — típicamente se divide entre \(\eta_{\text{motor}} \approx 0{,}85{-}0{,}95\) y se aplica un factor de servicio de 1,15–1,25.</p>
+
+  <!-- Agitation power calculator -->
+  <div class="calc-wrap" id="power-calc">
+    <h4>Calculadora de potencia de agitación</h4>
+    <div class="calc-grid" id="power-sliders"></div>
+    <div class="calc-results" id="power-results"></div>
+    <p class="calc-note" id="power-note"></p>
+  </div>
+
+  <div class="callout tip">
+    <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V18h6v-1.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2Z"/></svg>
+    <div class="callout-body">
+      <strong>Ejemplo numérico rápido</strong>
+      Tanque con turbina Rushton (\(N_P \approx 5{,}5\)) en régimen turbulento, \(D_a = 0{,}5\) m, \(N = 120\) rpm \(= 2\) rev/s, \(\rho = 1000\) kg/m³:
+      <ul class="callout-list">
+        <li>\(P = 5{,}5 \cdot 1000 \cdot 2^3 \cdot 0{,}5^5 = 5{,}5 \cdot 1000 \cdot 8 \cdot 0{,}03125 \approx 1375\) W.</li>
+        <li>Con \(\eta_{\text{motor}} = 0{,}9\): \(P_{\text{motor}} \approx 1{,}53\) kW.</li>
+        <li>Aplicando \(f_s = 1{,}2\): motor comercial de \(\approx 2{,}2\) kW (3 HP).</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ── s7: Escalado ───────────────────────────────────────────── -->
+<section id="s7">
+  <p class="eyebrow">Sección 07</p>
+  <h2 class="sec"><span class="secnum">7</span>Escalado de sistemas de agitación</h2>
+
+  <p class="body">El <strong>escalado</strong> (scale-up) es el proceso de diseñar un equipo a gran escala (industrial) basándose en los resultados obtenidos en un equipo más pequeño (laboratorio o planta piloto). Es uno de los desafíos más importantes en ingeniería de procesos: <strong>no todos los parámetros se pueden mantener constantes simultáneamente</strong> al cambiar de tamaño. La elección del criterio depende del mecanismo o fenómeno que controla el proceso de agitación deseado.</p>
+
+  <h3 class="sub">Similitud geométrica</h3>
+  <p class="body">Para que las correlaciones y criterios sean válidos se busca mantener la <strong>similitud geométrica</strong> entre el modelo (subíndice 1, escala pequeña) y el prototipo (subíndice 2, escala grande): se conservan las relaciones \(D_a/D_t\), \(H/D_t\), \(E/D_t\), \(W_b/D_t\), etc. Si esto se cumple, el cambio de escala se reduce a un único factor \(R = D_2 / D_1 = (V_2 / V_1)^{1/3}\).</p>
+
+  <h3 class="sub">Criterios comunes</h3>
+  <p class="body">Cada criterio fija una variable y deja que las demás se ajusten. La elección importa porque cambia drásticamente la potencia, la cizalladura y el tiempo de mezclado en la escala industrial.</p>
+
+  <div class="scaleup-grid">
+    <div class="scaleup-card">
+      <img src="/classroom/iqya-2031/readings/agitacion-escalado-pv.jpeg" alt="Distribución de aire en bioreactor — escalado por P/V">
+      <div class="sc-caption"><strong>P/V constante</strong> — distribución de gas en fermentador. Útil cuando la transferencia de oxígeno controla.</div>
+    </div>
+    <div class="scaleup-card">
+      <img src="/classroom/iqya-2031/readings/agitacion-escalado-vtip.jpeg" alt="Crema agitada — emulsión sensible a cizalladura">
+      <div class="sc-caption"><strong>\(V_{tip}\) constante</strong> — emulsiones cosméticas, cultivos celulares: la cizalladura periférica define la calidad del producto.</div>
+    </div>
+    <div class="scaleup-card">
+      <img src="/classroom/iqya-2031/readings/agitacion-escalado-re.jpeg" alt="Patrón de flujo en tanque — escalado por Re">
+      <div class="sc-caption"><strong>\(\text{Re}_{ag}\) constante</strong> — solo aplicable cuando macromezcla y circulación general dominan.</div>
+    </div>
+    <div class="scaleup-card">
+      <img src="/classroom/iqya-2031/readings/agitacion-escalado-tmix.jpeg" alt="Mezclado rápido — escalado por t_mix">
+      <div class="sc-caption"><strong>\(t_{mix}\) constante</strong> — exige aumentar la potencia con la escala. Crítico en reacciones rápidas.</div>
+    </div>
+  </div>
+
+  <div style="overflow-x:auto;margin:1rem 0">
+    <table class="ou">
+      <thead>
+        <tr>
+          <th>Criterio</th>
+          <th>\(N_2/N_1\) (geometría similar)</th>
+          <th>Cuándo usarlo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>P/V constante</strong></td><td style="font-family:monospace">\(R^{-2/3}\)</td><td>Dispersiones gas-líquido, fermentaciones (transferencia de O₂), suspensión de finos.</td></tr>
+        <tr><td><strong>\(V_{tip}\) constante</strong></td><td style="font-family:monospace">\(R^{-1}\)</td><td>Procesos sensibles a cizalladura: emulsiones, cultivos celulares, dispersiones líquido-líquido.</td></tr>
+        <tr><td><strong>\(\text{Re}_{ag}\) constante</strong></td><td style="font-family:monospace">\(R^{-2}\)</td><td>Procesos limitados por macromezcla o circulación general; transferencia de calor dependiente de Re.</td></tr>
+        <tr><td><strong>\(t_{mix}\) constante (\(\approx N\) constante)</strong></td><td style="font-family:monospace">\(\approx 1\)</td><td>Procesos donde la rapidez de homogeneización es crítica; reacciones rápidas.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="body">El selector siguiente permite explorar las consecuencias numéricas — cómo cambian \(N\), \(P\), \(P/V\), \(V_{tip}\) y \(\text{Re}_{ag}\) al pasar de la escala 1 a la escala 2 según el criterio elegido:</p>
+
+  <!-- Scaleup calculator -->
+  <div class="calc-wrap" id="scaleup-calc">
+    <h4>Calculadora de escalado (similitud geométrica)</h4>
+    <div class="calc-grid" id="su-sliders"></div>
+    <div style="margin-top:1rem">
+      <p style="font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gris-2);margin-bottom:.5rem">Criterio de escalado</p>
+      <div class="su-criteria" id="su-criteria"></div>
+      <p class="su-desc" id="su-desc"></p>
+    </div>
+    <div style="overflow-x:auto" id="su-table-wrap"></div>
+    <p class="calc-note" id="su-note"></p>
+  </div>
+
+  <h3 class="sub">Estrategia general</h3>
+  <ol class="body-list">
+    <li><strong>Identificar el mecanismo controlante:</strong> ¿qué fenómeno físico (transferencia de masa, cizalladura, suspensión, homogeneización rápida, transferencia de calor) es crítico para el éxito del proceso?</li>
+    <li><strong>Seleccionar el criterio de escalado</strong> según ese mecanismo.</li>
+    <li><strong>Mantener similitud geométrica</strong> tanto como se pueda.</li>
+    <li><strong>Calcular los parámetros del prototipo</strong> con el criterio seleccionado.</li>
+    <li><strong>Verificar otros parámetros:</strong> ¿la cizalladura sigue aceptable? ¿la potencia es razonable? Casi siempre hay que llegar a un compromiso.</li>
+    <li><strong>Considerar limitaciones prácticas:</strong> motores comerciales, velocidades estándar, restricciones mecánicas, espacio, costos.</li>
+  </ol>
+
+  <div class="callout warn">
+    <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10.3 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+    <div class="callout-body">
+      <strong>El escalado no es una ciencia exacta</strong>
+      Para procesos críticos siempre se valida en una <strong>planta piloto a escala intermedia</strong> antes de pasar a escala industrial. Quien escala en un solo paso desde matraz a 10 000 L suele descubrir tarde —y caro— que el criterio elegido no era el correcto.
+    </div>
+  </div>
+</section>
+
+</div><!-- /doc-body -->
+
+<!-- ── Bibliografía / footer ──────────────────────────────────── -->
+<div class="doc-foot" id="s8">
+  <p class="refs-title">08 — Bibliografía recomendada</p>
+  <ol class="refs">
+    <li><b>McCabe, W. L., Smith, J. C., &amp; Harriott, P.</b> (2005). <em>Unit Operations of Chemical Engineering</em> (7th ed.). McGraw-Hill. (Capítulo 9: Agitation and Mixing of Liquids).</li>
+    <li><b>Perry, R. H., &amp; Green, D. W.</b> (Eds.). (2019). <em>Perry's Chemical Engineers' Handbook</em> (9th ed.). McGraw-Hill. (Sección 21: Liquid-Solid Operations and Equipment — Agitation and Mixing of Liquids).</li>
+    <li><b>Geankoplis, C. J.</b> (2003). <em>Transport Processes and Separation Process Principles</em> (4th ed.). Prentice Hall. (Capítulo 3, secciones de agitación).</li>
+    <li><b>Paul, E. L., Atiemo-Obeng, V. A., &amp; Kresta, S. M.</b> (Eds.). (2004). <em>Handbook of Industrial Mixing: Science and Practice</em>. Wiley-Interscience. — Referencia muy completa y avanzada sobre mezclado industrial, con capítulos detallados sobre escalado.</li>
+    <li><b>Tatterson, G. B.</b> (1991). <em>Fluid Mixing and Gas Dispersion in Agitated Tanks</em>. McGraw-Hill.</li>
+  </ol>
+  <p class="foot-note">Material de uso académico — IQYA 2031 · POU 2026-20 · Universidad de los Andes</p>
+</div>
+</article>
+</div><!-- /outer-layout -->
+
+<!-- ── KaTeX ──────────────────────────────────────────────────── -->
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" defer
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false},{left:'\\(',right:'\\)',display:false},{left:'\\[',right:'\\]',display:true}],throwOnError:false})"></script>
+
+<script>
+/* ── Progress bar ────────────────────────────────────────────── */
+(function(){
+  var bar=document.getElementById('progress');
+  document.addEventListener('scroll',function(){
+    var el=document.documentElement;
+    var pct=(el.scrollTop||document.body.scrollTop)/(el.scrollHeight-el.clientHeight)*100;
+    bar.style.width=Math.min(100,pct)+'%';
+  },{passive:true});
+})();
+
+/* ── Scroll-spy ──────────────────────────────────────────────── */
+(function(){
+  var items=document.querySelectorAll('.sn-item');
+  var secs=Array.from(document.querySelectorAll('#s1,#s2,#s3,#s4,#s5,#s6,#s7,#s8'));
+  function spy(){
+    var active=null;
+    secs.forEach(function(s){
+      if(s.getBoundingClientRect().top<=120)active=s.id;
+    });
+    items.forEach(function(a){
+      var href=a.getAttribute('href').slice(1);
+      a.classList.toggle('is-active',href===active);
+    });
+  }
+  document.addEventListener('scroll',spy,{passive:true});
+  spy();
+})();
+
+/* ── Helpers ─────────────────────────────────────────────────── */
+function renderMath(){
+  if(typeof renderMathInElement==='function'){
+    renderMathInElement(document.body,{
+      delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false},{left:'\\(',right:'\\)',display:false},{left:'\\[',right:'\\]',display:true}],
+      throwOnError:false
+    });
+  }
+}
+
+/* ── ImpellerStepper ─────────────────────────────────────────── */
+(function(){
+  var impellers=[
+    {id:'helice',label:'Hélice marina',family:'Flujo axial',name:'Hélice marina (3 palas)',
+     image:'/classroom/iqya-2031/readings/agitacion-helice.gif',
+     Np:0.35,rpmRange:'400–1 750',flow:'axial',
+     uses:'Homogeneización de líquidos miscibles, suspensión de sólidos finos, transferencia de calor.',
+     desc:'Tres o cuatro palas helicoidales similares a las de un barco. Alto bombeo axial, bajo cizallamiento. Eficaz solo para fluidos de baja viscosidad.'},
+    {id:'pbt',label:'PBT 45°',family:'Flujo axial/mixto',name:'Turbina de palas inclinadas (PBT 45°)',
+     image:'/classroom/iqya-2031/readings/agitacion-pbt.gif',
+     Np:1.5,rpmRange:'60–400',flow:'mixto',
+     uses:'Versátil: suspensión, mezcla líquido-líquido, transferencia de calor.',
+     desc:'Cuatro o seis palas planas inclinadas a 45°. Combina flujo axial y radial; el ángulo determina el reparto. La opción más usada en mezcla general.'},
+    {id:'rushton',label:'Rushton',family:'Flujo radial',name:'Turbina Rushton (6 palas en disco)',
+     image:'/classroom/iqya-2031/readings/agitacion-rushton.gif',
+     Np:5.5,rpmRange:'50–400',flow:'radial',
+     uses:'Dispersión de gas (fermentadores), reacciones limitadas por transferencia de masa.',
+     desc:'Disco horizontal con 6 palas verticales rectas. Alto cizallamiento, alto consumo de potencia. Estándar industrial para procesos gas-líquido.'},
+    {id:'curved',label:'Smith (curvas)',family:'Flujo radial',name:'Turbina de palas curvas (Smith)',
+     image:'/classroom/iqya-2031/readings/agitacion-curvas.gif',
+     Np:3.5,rpmRange:'50–400',flow:'radial',
+     uses:'Dispersión de gas con menor consumo energético que Rushton.',
+     desc:'Variante de Rushton con palas cóncavas hacia adelante. Mantiene el flujo radial pero reduce la zona de baja presión detrás de las palas, bajando el número de potencia.'},
+    {id:'paddle',label:'Paletas',family:'Flujo radial',name:'Paletas (paddle)',
+     image:'/classroom/iqya-2031/readings/agitacion-paletas.gif',
+     Np:2.0,rpmRange:'20–150',flow:'radial',
+     uses:'Agitación suave en fluidos viscosos, mezcla de polvos o pastas.',
+     desc:'Dos o más palas planas grandes, baja velocidad. Cubre buena parte del diámetro del tanque.'},
+    {id:'anchor',label:'Ancla',family:'Para fluidos viscosos',name:'Ancla',
+     image:'/classroom/iqya-2031/readings/agitacion-ancla.jpeg',
+     Np:0.5,rpmRange:'10–50',flow:'cercano-pared',
+     uses:'Fluidos muy viscosos (μ > 5000 cP), transferencia de calor con paredes encamisadas.',
+     desc:'Sigue el contorno del tanque a baja velocidad. Barre la pared para evitar acumulaciones y mejorar la transferencia de calor.'},
+    {id:'helical',label:'Cinta helicoidal',family:'Para fluidos viscosos',name:'Cinta helicoidal',
+     image:'/classroom/iqya-2031/readings/agitacion-helicoidal.gif',
+     Np:0.3,rpmRange:'5–30',flow:'axial',
+     uses:'Fluidos muy viscosos donde se requiere mezcla axial (polímeros, mieles, geles).',
+     desc:'Cinta enrollada en hélice alrededor del eje. Levanta material desde el fondo hacia la superficie en régimen laminar.'}
+  ];
+
+  var cur=0;
+  var bar=document.getElementById('imp-bar');
+  var panels=document.getElementById('imp-panels');
+
+  impellers.forEach(function(imp,i){
+    var btn=document.createElement('button');
+    btn.className='imp-btn'+(i===0?' active':'');
+    btn.textContent=imp.label;
+    btn.onclick=function(){
+      cur=i;
+      bar.querySelectorAll('.imp-btn').forEach(function(b,j){b.classList.toggle('active',j===i)});
+      panels.querySelectorAll('.imp-panel').forEach(function(p,j){p.classList.toggle('active',j===i)});
+    };
+    bar.appendChild(btn);
+
+    var panel=document.createElement('div');
+    panel.className='imp-panel'+(i===0?' active':'');
+    panel.innerHTML=
+      '<div class="imp-gif"><img src="'+imp.image+'" alt="Impulsor '+imp.name+'"></div>'+
+      '<div class="imp-info">'+
+        '<div class="imp-family">'+imp.family+' · Patrón '+imp.flow+'</div>'+
+        '<h4>'+imp.name+'</h4>'+
+        '<p class="imp-desc">'+imp.desc+'</p>'+
+        '<div class="imp-specs">'+
+          '<div class="imp-spec"><div class="imp-spec-label">N<sub>P</sub> (turbulento, con bafles)</div><div class="imp-spec-value">'+imp.Np+'</div></div>'+
+          '<div class="imp-spec"><div class="imp-spec-label">Velocidad típica</div><div class="imp-spec-value">'+imp.rpmRange+' rpm</div></div>'+
+        '</div>'+
+        '<p class="imp-apps"><strong style="color:var(--negro)">Aplicaciones:</strong> '+imp.uses+'</p>'+
+      '</div>';
+    panels.appendChild(panel);
+  });
+})();
+
+/* ── NpRe interactive chart ──────────────────────────────────── */
+(function(){
+  var W=600,H=360;
+  var margin={top:20,right:24,bottom:56,left:64};
+  var plotW=W-margin.left-margin.right;
+  var plotH=H-margin.top-margin.bottom;
+  var reMin=1,reMax=1e6,npMin=0.1,npMax=100;
+
+  function xScale(re){return margin.left+((Math.log10(re)-Math.log10(reMin))/(Math.log10(reMax)-Math.log10(reMin)))*plotW}
+  function yScale(np){return margin.top+plotH-((Math.log10(np)-Math.log10(npMin))/(Math.log10(npMax)-Math.log10(npMin)))*plotH}
+
+  var curves=[
+    {id:'rushton',name:'Rushton',Kl:65,Kt:5.5,color:'#7f1d1d'},
+    {id:'pbt',name:'PBT 45°',Kl:50,Kt:1.5,color:'#b45309'},
+    {id:'helice',name:'Hélice marina',Kl:41,Kt:0.35,color:'#1d4ed8'},
+    {id:'paddle',name:'Paletas',Kl:70,Kt:2.0,color:'#15803d'},
+    {id:'anchor',name:'Ancla',Kl:300,Kt:0.5,color:'#9333ea'}
+  ];
+
+  var showId='rushton';
+  var Re=1e4;
+
+  function npFn(c,re){return c.Kl/re+c.Kt}
+
+  function pathFor(c){
+    var pts=[];
+    for(var lr=0;lr<=6;lr+=0.04){
+      var re=Math.pow(10,lr);
+      var np=Math.max(npMin,Math.min(npMax,npFn(c,re)));
+      pts.push((pts.length===0?'M':'L')+xScale(re).toFixed(1)+' '+yScale(np).toFixed(1));
+    }
+    return pts.join(' ');
+  }
+
+  var svg=document.getElementById('npre-svg');
+  var ns='http://www.w3.org/2000/svg';
+
+  function el(tag,attrs){
+    var e=document.createElementNS(ns,tag);
+    for(var k in attrs)e.setAttribute(k,attrs[k]);
+    return e;
+  }
+
+  // Background
+  svg.appendChild(el('rect',{x:margin.left,y:margin.top,width:plotW,height:plotH,fill:'#fafafa'}));
+  // Regime bands
+  svg.appendChild(el('rect',{x:xScale(reMin),y:margin.top,width:xScale(10)-xScale(reMin),height:plotH,fill:'#fee2e2',opacity:'0.35'}));
+  svg.appendChild(el('rect',{x:xScale(10),y:margin.top,width:xScale(1e4)-xScale(10),height:plotH,fill:'#fef3c7',opacity:'0.4'}));
+  svg.appendChild(el('rect',{x:xScale(1e4),y:margin.top,width:xScale(reMax)-xScale(1e4),height:plotH,fill:'#dcfce7',opacity:'0.35'}));
+
+  // Grid + ticks
+  var xTicks=[1,10,100,1000,10000,1e5,1e6];
+  var yTicks=[0.1,1,10,100];
+  xTicks.forEach(function(t){
+    var x=xScale(t);
+    svg.appendChild(el('line',{x1:x,y1:margin.top,x2:x,y2:margin.top+plotH,stroke:'#e4e4e7','stroke-width':'0.5','stroke-dasharray':'2 2'}));
+    var txt=document.createElementNS(ns,'text');
+    txt.setAttribute('x',x);txt.setAttribute('y',margin.top+plotH+18);
+    txt.setAttribute('text-anchor','middle');txt.setAttribute('font-size','11');txt.setAttribute('fill','#52525b');
+    txt.textContent=t<1000?t:t<1e6?(t/1000)+'k':(t/1e6)+'M';
+    svg.appendChild(txt);
+  });
+  yTicks.forEach(function(t){
+    var y=yScale(t);
+    svg.appendChild(el('line',{x1:margin.left,y1:y,x2:margin.left+plotW,y2:y,stroke:'#e4e4e7','stroke-width':'0.5','stroke-dasharray':'2 2'}));
+    var txt=document.createElementNS(ns,'text');
+    txt.setAttribute('x',margin.left-8);txt.setAttribute('y',y+4);
+    txt.setAttribute('text-anchor','end');txt.setAttribute('font-size','11');txt.setAttribute('fill','#52525b');
+    txt.textContent=t;
+    svg.appendChild(txt);
+  });
+
+  // Axes
+  svg.appendChild(el('line',{x1:margin.left,y1:margin.top+plotH,x2:margin.left+plotW,y2:margin.top+plotH,stroke:'#27272a','stroke-width':'1.2'}));
+  svg.appendChild(el('line',{x1:margin.left,y1:margin.top,x2:margin.left,y2:margin.top+plotH,stroke:'#27272a','stroke-width':'1.2'}));
+
+  // Axis labels
+  var xLbl=document.createElementNS(ns,'text');
+  xLbl.setAttribute('x',margin.left+plotW/2);xLbl.setAttribute('y',H-8);
+  xLbl.setAttribute('text-anchor','middle');xLbl.setAttribute('font-size','12');xLbl.setAttribute('fill','#27272a');xLbl.setAttribute('font-weight','600');
+  xLbl.textContent='Reynolds de agitación (Re_ag)';
+  svg.appendChild(xLbl);
+  var yLbl=document.createElementNS(ns,'text');
+  yLbl.setAttribute('x','14');yLbl.setAttribute('y',margin.top+plotH/2);
+  yLbl.setAttribute('text-anchor','middle');yLbl.setAttribute('font-size','12');yLbl.setAttribute('fill','#27272a');yLbl.setAttribute('font-weight','600');
+  yLbl.setAttribute('transform','rotate(-90 14 '+(margin.top+plotH/2)+')');
+  yLbl.textContent='Número de potencia (N_P)';
+  svg.appendChild(yLbl);
+
+  // Regime labels
+  var regLabels=[
+    {x:(xScale(reMin)+xScale(10))/2,text:'Laminar',fill:'#7f1d1d'},
+    {x:(xScale(10)+xScale(1e4))/2,text:'Transicional',fill:'#b45309'},
+    {x:(xScale(1e4)+xScale(reMax))/2,text:'Turbulento',fill:'#15803d'}
+  ];
+  regLabels.forEach(function(r){
+    var t=document.createElementNS(ns,'text');
+    t.setAttribute('x',r.x);t.setAttribute('y',margin.top+14);
+    t.setAttribute('text-anchor','middle');t.setAttribute('font-size','10');t.setAttribute('fill',r.fill);t.setAttribute('font-weight','700');
+    t.textContent=r.text;
+    svg.appendChild(t);
+  });
+
+  // Curve paths
+  var pathEls={};
+  curves.forEach(function(c){
+    var p=el('path',{d:pathFor(c),stroke:c.color,'stroke-width':'1.5',opacity:'0.35',fill:'none'});
+    pathEls[c.id]=p;
+    svg.appendChild(p);
+  });
+
+  // Cursor line + dot
+  var cursorLine=el('line',{x1:xScale(Re),y1:margin.top,x2:xScale(Re),y2:margin.top+plotH,stroke:'#1A1A1A','stroke-width':'1.2','stroke-dasharray':'4 2',opacity:'0.7'});
+  svg.appendChild(cursorLine);
+  var cursorDot=el('circle',{cx:xScale(Re),cy:yScale(5.5),r:'6',fill:'#7f1d1d',stroke:'white','stroke-width':'2'});
+  svg.appendChild(cursorDot);
+
+  // Buttons
+  var btnsDiv=document.getElementById('npre-btns');
+  curves.forEach(function(c){
+    var btn=document.createElement('button');
+    btn.style.cssText='font-family:inherit;font-size:.8rem;font-weight:600;padding:.4rem .9rem;border-radius:99px;cursor:pointer;transition:all .2s;border:2px solid '+c.color;
+    btn.textContent=c.name;
+    btn.onclick=function(){showId=c.id;update()};
+    btnsDiv.appendChild(btn);
+  });
+
+  function fmtRe(re){
+    if(re<1)return re.toFixed(2);
+    if(re<1000)return re.toFixed(0);
+    if(re<1e6)return(re/1000).toFixed(0)+'k';
+    return(re/1e6).toFixed(1)+'M';
+  }
+
+  function update(){
+    var slider=document.getElementById('re-slider');
+    Re=Math.pow(10,parseFloat(slider.value));
+
+    var regime=Re<10?'Laminar':Re<1e4?'Transicional':'Turbulento';
+    var regimeColor=Re<10?'#7f1d1d':Re<1e4?'#b45309':'#15803d';
+
+    document.getElementById('re-disp').textContent=fmtRe(Re);
+    var rd=document.getElementById('regime-disp');
+    rd.textContent=regime;rd.style.color=regimeColor;
+
+    cursorLine.setAttribute('x1',xScale(Re));cursorLine.setAttribute('x2',xScale(Re));
+
+    curves.forEach(function(c){
+      var isActive=c.id===showId;
+      pathEls[c.id].setAttribute('stroke-width',isActive?'3':'1.5');
+      pathEls[c.id].setAttribute('opacity',isActive?'1':'0.35');
+    });
+
+    var ac=curves.find(function(c){return c.id===showId});
+    var np=Math.max(npMin,Math.min(npMax,npFn(ac,Re)));
+    cursorDot.setAttribute('cx',xScale(Re));
+    cursorDot.setAttribute('cy',yScale(np));
+    cursorDot.setAttribute('fill',ac.color);
+
+    btnsDiv.querySelectorAll('button').forEach(function(btn,i){
+      var isActive=curves[i].id===showId;
+      btn.style.background=isActive?'var(--negro)':'var(--blanco)';
+      btn.style.color=isActive?'#fff':'var(--gris-2)';
+    });
+
+    var liveDiv=document.getElementById('npre-live');
+    liveDiv.innerHTML=
+      '<div class="live-card dark"><div class="live-card-label">Re<sub>ag</sub></div><div class="live-card-value">'+fmtRe(Re)+'</div></div>'+
+      '<div class="live-card dark"><div class="live-card-label">N<sub>P</sub> (impulsor activo)</div><div class="live-card-value">'+np.toFixed(2)+'</div></div>'+
+      '<div class="live-card" style="background:'+(regimeColor+'22')+';border-color:'+(regimeColor+'88')+'"><div class="live-card-label" style="color:'+regimeColor+'">Régimen</div><div class="live-card-value" style="color:'+regimeColor+'">'+regime+'</div></div>';
+  }
+
+  document.getElementById('re-slider').addEventListener('input',update);
+  update();
+})();
+
+/* ── Power calculator ────────────────────────────────────────── */
+(function(){
+  var Da=0.5,N=120,rho=1000,mu=1,impId='rushton',etaMot=0.92;
+
+  var impCurves={
+    rushton:{Kl:65,Kt:5.5,label:'Turbina Rushton (Np_t ≈ 5,5)'},
+    pbt:{Kl:50,Kt:1.5,label:'PBT 45° (Np_t ≈ 1,5)'},
+    helice:{Kl:41,Kt:0.35,label:'Hélice marina (Np_t ≈ 0,35)'},
+    paddle:{Kl:70,Kt:2.0,label:'Paletas (Np_t ≈ 2,0)'}
+  };
+
+  var slidersDiv=document.getElementById('power-sliders');
+  var resultsDiv=document.getElementById('power-results');
+  var noteDiv=document.getElementById('power-note');
+
+  function slider(label,id,min,max,step,val,unit){
+    return '<div class="calc-field"><div class="calc-field-header"><span>'+label+'</span><b id="'+id+'-disp"></b></div><input type="range" id="'+id+'" min="'+min+'" max="'+max+'" step="'+step+'" value="'+val+'"></div>';
+  }
+
+  slidersDiv.innerHTML=
+    slider('Diámetro impulsor D<sub>a</sub>','pw-da',0.05,2.5,0.01,Da)+
+    slider('Velocidad N','pw-n',5,1500,1,N)+
+    slider('Densidad ρ','pw-rho',600,1600,10,rho)+
+    slider('Viscosidad μ (log)','pw-mu',0,5,0.05,Math.log10(mu))+
+    '<div class="calc-field"><div class="calc-field-header"><span>Impulsor</span></div><select id="pw-imp">'+
+      Object.keys(impCurves).map(function(k){return'<option value="'+k+'"'+(k===impId?' selected':'')+'>'+impCurves[k].label+'</option>'}).join('')+
+    '</select></div>'+
+    slider('η motor','pw-eta',0.7,0.97,0.01,etaMot);
+
+  function update(){
+    Da=parseFloat(document.getElementById('pw-da').value);
+    N=parseFloat(document.getElementById('pw-n').value);
+    rho=parseFloat(document.getElementById('pw-rho').value);
+    mu=Math.pow(10,parseFloat(document.getElementById('pw-mu').value));
+    impId=document.getElementById('pw-imp').value;
+    etaMot=parseFloat(document.getElementById('pw-eta').value);
+
+    document.getElementById('pw-da-disp').textContent=Da.toFixed(2)+' m';
+    document.getElementById('pw-n-disp').textContent=N.toFixed(0)+' rpm';
+    document.getElementById('pw-rho-disp').textContent=rho.toFixed(0)+' kg/m³';
+    document.getElementById('pw-mu-disp').textContent=(mu<10?mu.toFixed(1):mu.toFixed(0))+' cP';
+    document.getElementById('pw-eta-disp').textContent=(etaMot*100).toFixed(0)+' %';
+
+    var muSI=mu*1e-3;
+    var Nrps=N/60;
+    var Re=(Da*Da*Nrps*rho)/muSI;
+    var c=impCurves[impId];
+    var Np=c.Kl/Re+c.Kt;
+    var P=Np*rho*Math.pow(Nrps,3)*Math.pow(Da,5);
+    var Pmotor=P/etaMot;
+
+    function fmtP(p){return p>1000?(p/1000).toFixed(2)+' kW':p.toFixed(0)+' W'}
+    function fmtRe(re){return re<1e4?re.toFixed(0):(re/1000).toFixed(0)+'k'}
+
+    resultsDiv.innerHTML=
+      '<div class="calc-card"><div class="calc-card-label">Re<sub>ag</sub></div><div class="calc-card-value">'+fmtRe(Re)+'</div></div>'+
+      '<div class="calc-card"><div class="calc-card-label">N<sub>P</sub></div><div class="calc-card-value">'+(isFinite(Np)?Np.toFixed(2):'—')+'</div></div>'+
+      '<div class="calc-card"><div class="calc-card-label">P al fluido</div><div class="calc-card-value">'+fmtP(P)+'</div></div>'+
+      '<div class="calc-card highlight"><div class="calc-card-label">P motor</div><div class="calc-card-value">'+fmtP(Pmotor)+'</div></div>';
+
+    noteDiv.innerHTML='\\(\\text{Re}_{ag} = D_a^2 N \\rho / \\mu\\), \\(P = N_P \\rho N^3 D_a^5\\), con \\(N\\) en rev/s y \\(D_a\\) en m. La curva \\(N_P(\\text{Re})\\) se modela como \\(K_l/\\text{Re} + K_t\\).';
+    renderMath();
+  }
+
+  ['pw-da','pw-n','pw-rho','pw-mu','pw-eta'].forEach(function(id){
+    document.getElementById(id).addEventListener('input',update);
+  });
+  document.getElementById('pw-imp').addEventListener('change',update);
+  update();
+})();
+
+/* ── Scaleup calculator ──────────────────────────────────────── */
+(function(){
+  var N1=300,Da1=0.2,scaleVol=125,criterion='pv',Np=5.5;
+  var rho=1000;
+
+  var criteriaInfo={
+    pv:{name:'P/V constante',desc:'Mantiene la disipación específica de potencia. Útil para dispersión gas-líquido y fermentaciones.'},
+    vtip:{name:'V_tip constante',desc:'Mantiene la cizalladura periférica. Crítico para emulsiones y bioprocesos con células sensibles.'},
+    re:{name:'Re_ag constante',desc:'Mantiene el patrón hidrodinámico. Solo aplicable cuando macromezcla domina.'},
+    tmix:{name:'t_mix constante (≈ N constante)',desc:'Mantiene el tiempo de homogeneización — exige aumentar mucho la potencia con la escala.'}
+  };
+
+  var slidersDiv=document.getElementById('su-sliders');
+  slidersDiv.innerHTML=
+    '<div class="calc-field"><div class="calc-field-header"><span>D<sub>a</sub> (modelo, escala 1)</span><b id="su-da1-disp"></b></div><input type="range" id="su-da1" min="0.05" max="1" step="0.01" value="'+Da1+'"></div>'+
+    '<div class="calc-field"><div class="calc-field-header"><span>N (modelo)</span><b id="su-n1-disp"></b></div><input type="range" id="su-n1" min="50" max="1200" step="5" value="'+N1+'"></div>'+
+    '<div class="calc-field"><div class="calc-field-header"><span>Factor de escalado V₂/V₁</span><b id="su-sv-disp"></b></div><input type="range" id="su-sv" min="2" max="1000" step="1" value="'+scaleVol+'"></div>'+
+    '<div class="calc-field"><div class="calc-field-header"><span>N<sub>P</sub> (turbulento)</span><b id="su-np-disp"></b></div><input type="range" id="su-np" min="0.3" max="6" step="0.1" value="'+Np+'"></div>';
+
+  var critDiv=document.getElementById('su-criteria');
+  ['pv','vtip','re','tmix'].forEach(function(k){
+    var btn=document.createElement('button');
+    btn.className='su-btn'+(k===criterion?' active':'');
+    btn.textContent=criteriaInfo[k].name;
+    btn.onclick=function(){criterion=k;update()};
+    critDiv.appendChild(btn);
+  });
+
+  function update(){
+    Da1=parseFloat(document.getElementById('su-da1').value);
+    N1=parseFloat(document.getElementById('su-n1').value);
+    scaleVol=parseFloat(document.getElementById('su-sv').value);
+    Np=parseFloat(document.getElementById('su-np').value);
+
+    document.getElementById('su-da1-disp').textContent=Da1.toFixed(2)+' m';
+    document.getElementById('su-n1-disp').textContent=N1.toFixed(0)+' rpm';
+    document.getElementById('su-sv-disp').textContent='×'+scaleVol.toFixed(0);
+    document.getElementById('su-np-disp').textContent=Np.toFixed(1);
+
+    var R=Math.pow(scaleVol,1/3);
+    var Da2=Da1*R;
+
+    var nRatio=1;
+    if(criterion==='pv')nRatio=Math.pow(R,-2/3);
+    else if(criterion==='vtip')nRatio=Math.pow(R,-1);
+    else if(criterion==='re')nRatio=Math.pow(R,-2);
+    else if(criterion==='tmix')nRatio=1;
+
+    var N2=N1*nRatio;
+    var N1rps=N1/60;
+    var N2rps=N2/60;
+
+    var P1=Np*rho*Math.pow(N1rps,3)*Math.pow(Da1,5);
+    var P2=Np*rho*Math.pow(N2rps,3)*Math.pow(Da2,5);
+    var V1=(Math.PI/4)*Math.pow(Da1*3,2)*(Da1*3);
+    var V2=V1*scaleVol;
+    var PV1=P1/V1;
+    var PV2=P2/V2;
+    var vtip1=Math.PI*Da1*N1rps;
+    var vtip2=Math.PI*Da2*N2rps;
+    var Re1=(Da1*Da1*N1rps*rho)/1e-3;
+    var Re2=(Da2*Da2*N2rps*rho)/1e-3;
+
+    function fmt(v,d){d=d||1;return isFinite(v)?v.toFixed(d):'—'}
+    function fmtP(P){return P>1000?(P/1000).toFixed(2)+' kW':P.toFixed(0)+' W'}
+
+    critDiv.querySelectorAll('.su-btn').forEach(function(btn,i){
+      btn.classList.toggle('active',['pv','vtip','re','tmix'][i]===criterion);
+    });
+    document.getElementById('su-desc').textContent=criteriaInfo[criterion].desc;
+
+    var rows=[
+      ['\\(D_a\\) (m)',fmt(Da1,3),fmt(Da2,3),'×'+R.toFixed(2)],
+      ['\\(N\\) (rpm)',fmt(N1,0),fmt(N2,0),'×'+nRatio.toFixed(3)],
+      ['Volumen (m³)',fmt(V1,3),fmt(V2,2),'×'+scaleVol.toFixed(0)],
+      ['Potencia \\(P\\) (W)',fmtP(P1),fmtP(P2),'×'+(P2/P1).toFixed(1)],
+      ['\\(P/V\\) (W/m³)',fmt(PV1,0),fmt(PV2,0),'×'+(PV2/PV1).toFixed(2)],
+      ['\\(V_{tip}\\) (m/s)',fmt(vtip1,2),fmt(vtip2,2),'×'+(vtip2/vtip1).toFixed(2)],
+      ['\\(\\text{Re}_{ag}\\)',fmt(Re1,0),fmt(Re2,0),'×'+(Re2/Re1).toFixed(2)]
+    ];
+
+    var html='<table class="ou"><thead><tr><th>Parámetro</th><th style="text-align:right">Modelo (escala 1)</th><th style="text-align:right">Prototipo (escala 2)</th><th style="text-align:right">Razón 2/1</th></tr></thead><tbody>';
+    rows.forEach(function(r){
+      html+='<tr><td>'+r[0]+'</td><td style="text-align:right;font-family:monospace">'+r[1]+'</td><td style="text-align:right;font-family:monospace">'+r[2]+'</td><td style="text-align:right;font-family:monospace;font-weight:600;color:var(--verde-osc)">'+r[3]+'</td></tr>';
+    });
+    html+='</tbody></table>';
+    document.getElementById('su-table-wrap').innerHTML=html;
+
+    document.getElementById('su-note').innerHTML='Asumiendo similitud geométrica completa (\\(D_t = 3 D_a\\), \\(H = D_t\\)) y agua como fluido. La razón \\(D_2/D_1 = (V_2/V_1)^{1/3}\\) implica relaciones predecibles entre \\(N\\), \\(P\\), \\(P/V\\) y \\(V_{tip}\\) según el criterio.';
+    renderMath();
+  }
+
+  ['su-da1','su-n1','su-sv','su-np'].forEach(function(id){
+    document.getElementById(id).addEventListener('input',update);
+  });
+  update();
+})();
+</script>
+</body>
+</html>
