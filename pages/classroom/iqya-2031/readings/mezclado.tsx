@@ -479,7 +479,7 @@ const tocItems = [
 const MezcladoReading: React.FC = () => {
   const course = getCourseBySlug('iqya-2031');
   if (!course) return null;
-  const reading = course.readings.find((r) => r.slug === 'lectura-07-mezclado');
+  const reading = course.readings.find((r) => r.slug === 'mezclado');
   if (!reading) return null;
 
   useKatex();
