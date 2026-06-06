@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lectura 08 · Intercambiadores de calor · Proyecto de Operaciones Unitarias</title>
+<link rel="stylesheet" href="assets/deloitte.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<style>
+  body {
+    margin: 0;
+    background: var(--gris-5);
+    font-family: var(--tipo);
+    color: var(--gris-1);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.62;
+  }
+
+  /* ---- Barra de progreso de lectura ---- */
+  .progress {
+    position: fixed; top: 0; left: 0; height: 4px; width: 0;
+    background: var(--verde); z-index: 200; transition: width .08s linear;
+  }
+
+  .page {
+    max-width: 940px;
+    margin: 40px auto 90px;
+    background: var(--blanco);
+    box-shadow: var(--sombra);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  /* ===================== ENCABEZADO ===================== */
+  .doc-head {
+    background: var(--papel);
+    border-bottom: 5px solid var(--verde);
+    padding: 46px 64px 40px;
+    position: relative;
+  }
+  .doc-head .org {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    font-size: 14px; font-weight: 700; letter-spacing: .03em; color: var(--gris-1);
+  }
+  .doc-head .org span { color: var(--gris-3); font-weight: 600; }
+  .doc-head .badge {
+    display: inline-block; background: var(--verde); color: #fff;
+    font-size: 13px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+    padding: 6px 14px; border-radius: 999px; margin: 28px 0 18px; white-space: nowrap;
+  }
+  .doc-head h1 { font-size: 43px; line-height: 1.1; margin: 0 0 10px; letter-spacing: -.015em; max-width: 22ch; }
+  .doc-head .subtitle { font-size: 20px; color: var(--gris-2); margin: 0; font-weight: 500; max-width: 52ch; }
+  .doc-meta {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px;
+    margin-top: 34px; padding-top: 26px; border-top: 1px solid var(--gris-4);
+  }
+  .doc-meta div { font-size: 15px; color: var(--gris-2); }
+  .doc-meta b { display: block; color: var(--gris-1); font-size: 16px; font-weight: 700; margin-bottom: 2px; }
+
+  /* ===================== CUERPO ===================== */
+  .doc-body { padding: 8px 64px 60px; }
+  .doc-body section { padding-top: 46px; scroll-margin-top: 24px; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--verde-osc); margin-bottom: 12px;
+  }
+  .eyebrow::before { content: ""; width: 26px; height: 4px; background: var(--verde); border-radius: 2px; }
+  h2.sec { font-size: 30px; line-height: 1.18; margin: 0 0 18px; letter-spacing: -.01em; }
+  h2.sec .secnum { color: var(--verde); font-weight: 700; }
+  h3.sub { font-size: 21px; margin: 34px 0 10px; letter-spacing: -.005em; }
+  .doc-body p { font-size: 17px; color: var(--gris-1); margin: 0 0 16px; text-wrap: pretty; }
+  .doc-body ul, .doc-body ol { font-size: 17px; color: var(--gris-1); margin: 0 0 16px; padding-left: 24px; }
+  .doc-body li { margin-bottom: 6px; line-height: 1.55; }
+  .lead { font-size: 20px; color: var(--gris-2); line-height: 1.55; font-weight: 400; }
+  .lead b { color: var(--gris-1); font-weight: 600; }
+
+  /* ===================== FIGURAS ===================== */
+  figure.fig { margin: 30px 0 8px; }
+  figure.fig.full img { width: 100%; height: auto; display: block; }
+  .fig-frame {
+    border: 1px solid var(--gris-4); border-radius: 8px; padding: 22px; background: var(--blanco);
+    box-shadow: var(--sombra); display: flex; align-items: center; justify-content: center;
+  }
+  .fig-frame img { max-width: 100%; height: auto; display: block; border-radius: 4px; }
+  figure.fig figcaption {
+    font-size: 14px; color: var(--gris-2); line-height: 1.5; margin-top: 12px;
+    padding-left: 16px; border-left: 3px solid var(--verde);
+  }
+  figure.fig figcaption b { color: var(--gris-1); }
+
+  /* ===================== TABLAS ===================== */
+  .tbl-wrap { margin: 0 0 8px; overflow-x: auto; border-radius: 8px; }
+  table.ou { width: 100%; border-collapse: collapse; font-size: 15px; min-width: 560px; }
+  table.ou th, table.ou td { text-align: left; padding: 14px 16px; border-bottom: 1px solid var(--gris-4); vertical-align: top; line-height: 1.4; }
+  table.ou thead th { background: var(--gris-1); color: #fff; font-weight: 700; font-size: 13.5px; letter-spacing: .02em; }
+  table.ou thead th:first-child { border-top-left-radius: 6px; }
+  table.ou thead th:last-child { border-top-right-radius: 6px; }
+  table.ou td:first-child { font-weight: 700; color: var(--gris-1); }
+  table.ou tbody tr:nth-child(even) { background: var(--papel); }
+  table.ou tbody tr:hover { background: var(--verde-claro); }
+  .tbl-cap { font-size: 13.5px; color: var(--gris-2); margin: 24px 0 11px; padding-left: 14px; border-left: 3px solid var(--verde); line-height: 1.5; }
+  .tbl-cap b { color: var(--gris-1); }
+
+  /* ===================== CALLOUTS ===================== */
+  .callout {
+    display: grid; grid-template-columns: 42px 1fr; gap: 18px;
+    border-radius: 8px; padding: 20px 24px; margin: 24px 0; align-items: start;
+  }
+  .callout .ic {
+    width: 42px; height: 42px; border-radius: 50%; display: inline-flex;
+    align-items: center; justify-content: center; font-size: 21px; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .callout > div > b { display: block; font-size: 15.5px; margin-bottom: 4px; }
+  .callout p { font-size: 15.5px; margin: 0 0 8px; color: var(--gris-1); line-height: 1.5; }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout p b { display: inline; color: inherit; font-size: inherit; }
+  .callout ul, .callout ol { font-size: 15.5px; margin: 8px 0 0; padding-left: 22px; }
+  .callout li { margin-bottom: 4px; line-height: 1.5; }
+  .callout--nota { background: var(--teal-claro); }
+  .callout--nota .ic { background: var(--teal); color: #fff; }
+  .callout--nota b { color: var(--teal); }
+  .callout--tip { background: var(--verde-claro); }
+  .callout--tip .ic { background: var(--verde); color: #fff; }
+  .callout--tip b { color: var(--verde-osc); }
+  .callout--warn { background: #fdecec; }
+  .callout--warn .ic { background: #c0392b; color: #fff; }
+  .callout--warn b { color: #c0392b; }
+
+  /* ===================== EQUIPMENT GALLERY ===================== */
+  .imp-gallery { margin: 26px 0 8px; }
+  .imp-bar { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px; }
+  .imp-btn {
+    font-family: var(--tipo); font-size: 13px; font-weight: 600;
+    padding: 7px 16px; border: 1.5px solid var(--gris-4); border-radius: 999px;
+    cursor: pointer; background: var(--blanco); color: var(--gris-2);
+    transition: all .18s ease;
+  }
+  .imp-btn:hover { border-color: var(--verde); color: var(--verde-osc); }
+  .imp-btn.active { background: var(--verde); color: #fff; border-color: var(--verde); }
+  .imp-panel { display: none; }
+  .imp-panel.active { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+  @media (max-width: 640px) { .imp-panel.active { grid-template-columns: 1fr; } }
+  .imp-gif {
+    border: 1px solid var(--gris-4); border-radius: 8px; overflow: hidden;
+    background: var(--papel); display: flex; align-items: center; justify-content: center;
+    min-height: 280px; box-shadow: var(--sombra);
+  }
+  .imp-gif img { width: 100%; height: auto; display: block; max-height: 340px; object-fit: contain; }
+  .imp-gif .aspect { position: relative; width: 100%; padding-top: 56.25%; }
+  .imp-gif .aspect iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .imp-info h4 { font-size: 18px; font-weight: 800; color: var(--gris-1); margin: 0 0 6px; }
+  .imp-family {
+    font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--verde-osc); background: var(--verde-claro); padding: 3px 10px;
+    border-radius: 999px; display: inline-block; margin-bottom: 10px;
+  }
+  .imp-desc { font-size: 15px; color: var(--gris-2); line-height: 1.55; margin-bottom: 14px; }
+  .imp-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 12px; }
+  @media (max-width: 420px) { .imp-cols { grid-template-columns: 1fr; } }
+  .imp-cols h5 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; margin: 0 0 5px; }
+  .imp-cols ul { font-size: 13.5px; color: var(--gris-2); margin: 0; padding-left: 18px; }
+  .imp-cols li { margin-bottom: 3px; line-height: 1.4; }
+  .imp-pro h5 { color: var(--verde-osc); }
+  .imp-con h5 { color: #c0392b; }
+  .imp-apps { font-size: 14px; color: var(--gris-2); }
+
+  /* ===================== LMTD CALCULATOR ===================== */
+  .calc-wrap {
+    margin: 26px 0 8px; border: 1px solid var(--gris-4); border-radius: 10px;
+    background: var(--blanco); padding: 22px 24px; box-shadow: var(--sombra);
+  }
+  .calc-wrap h4 { font-size: 17px; font-weight: 700; color: var(--gris-1); margin: 0 0 18px; }
+  .calc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px 22px; }
+  .calc-field { display: flex; flex-direction: column; gap: 4px; }
+  .calc-field-header { display: flex; justify-content: space-between; font-size: 14px; }
+  .calc-field-header span { color: var(--gris-2); font-weight: 600; }
+  .calc-field-header b { color: var(--gris-1); font-family: 'JetBrains Mono Variable', ui-monospace, monospace; }
+  .calc-field input[type=range] { width: 100%; accent-color: var(--verde); }
+  .calc-note { font-size: 13.5px; color: var(--gris-3); font-style: italic; margin-top: 14px; }
+  .flow-criteria { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+  .flow-btn {
+    font-family: var(--tipo); font-size: 13px; font-weight: 600;
+    padding: 7px 16px; border: 1.5px solid var(--gris-4); border-radius: 999px;
+    cursor: pointer; background: var(--blanco); color: var(--gris-2);
+    transition: all .18s ease;
+  }
+  .flow-btn:hover { border-color: var(--verde); color: var(--verde-osc); }
+  .flow-btn.active { background: var(--verde); color: #fff; border-color: var(--verde); }
+
+  /* ===================== YOUTUBE EMBED ===================== */
+  .yt-wrap { margin: 26px 0 8px; }
+  .yt-frame {
+    border: 1px solid var(--gris-4); border-radius: 8px; overflow: hidden;
+    background: var(--papel); max-width: 640px; box-shadow: var(--sombra);
+  }
+  .yt-frame .aspect { position: relative; padding-top: 56.25%; }
+  .yt-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .yt-caption { font-size: 13.5px; color: var(--gris-2); padding: 10px 16px 14px; text-align: center; line-height: 1.45; }
+
+  /* ===================== PLATFORM LINKS ===================== */
+  a.pl { color: inherit; border-bottom: 2px solid var(--verde); text-decoration: none; white-space: nowrap; }
+  a.pl::after { content: '\2197'; font-size: .75em; margin-left: .2em; color: var(--verde); }
+  a.pl:hover { color: var(--verde-osc); }
+
+  /* ===================== FOOTER ===================== */
+  .doc-foot {
+    border-top: 1px solid var(--gris-4); margin-top: 50px; padding-top: 22px;
+    display: flex; justify-content: space-between; font-size: 13px; color: var(--gris-3);
+  }
+
+  /* ===================== BIBLIOGRAFÍA ===================== */
+  ol.refs { list-style: none; counter-reset: ref; padding: 0; margin: 18px 0 0; display: grid; gap: 4px; }
+  ol.refs li {
+    counter-increment: ref; position: relative; padding: 12px 16px 12px 58px; border-radius: 8px;
+    font-size: 15px; line-height: 1.5; color: var(--gris-1);
+  }
+  ol.refs li::before {
+    content: counter(ref); position: absolute; left: 14px; top: 11px;
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px; border-radius: 999px; background: var(--papel); color: var(--verde-osc);
+    font-size: 13px; font-weight: 700;
+  }
+  ol.refs li em { color: var(--gris-2); font-style: italic; }
+
+  /* ===================== RESPONSIVE ===================== */
+  @media (max-width: 720px) {
+    .doc-head, .doc-body { padding-left: 26px; padding-right: 26px; }
+    .doc-meta { grid-template-columns: 1fr 1fr; }
+    .doc-head h1 { font-size: 32px; }
+  }
+  @media print {
+    body { background: #fff; }
+    .page { box-shadow: none; margin: 0; max-width: none; border-radius: 0; }
+    .progress, .side-nav { display: none; }
+    section, figure.fig, .tbl-wrap, .callout, .imp-gallery, .calc-wrap { break-inside: avoid; }
+  }
+
+  /* ---- Outer layout with sticky side nav ---- */
+  .page { margin: 0; }
+  .outer-layout {
+    max-width: 1160px;
+    margin: 40px auto 90px;
+    display: grid;
+    grid-template-columns: 200px minmax(0, 1fr);
+    gap: 24px;
+    padding: 0 20px;
+    align-items: start;
+  }
+  .side-nav {
+    position: sticky;
+    top: 28px;
+    max-height: calc(100vh - 56px);
+    overflow-y: auto;
+    background: var(--blanco);
+    border: 1px solid var(--gris-4);
+    border-radius: 8px;
+    padding: 20px 16px;
+    box-shadow: var(--sombra);
+    scrollbar-width: thin;
+  }
+  .sn-label { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--gris-3); margin: 0 0 10px; padding: 0 4px; }
+  .sn-item { display: flex; align-items: flex-start; gap: 7px; font-family: var(--tipo); font-size: 13px; color: var(--gris-2); text-decoration: none; padding: 6px 8px; border-radius: 5px; line-height: 1.3; transition: all .15s; margin-bottom: 2px; border: none; background: none; cursor: pointer; width: 100%; text-align: left; }
+  .sn-item:hover { color: var(--gris-1); background: var(--gris-5); }
+  .sn-item.is-active { color: var(--verde-osc); background: var(--verde-claro); font-weight: 600; border-left: 3px solid var(--verde); padding-left: 5px; }
+  .sn-num { font-size: 11px; font-weight: 700; color: var(--verde-osc); min-width: 16px; padding-top: 1px; flex-shrink: 0; }
+  @media (max-width: 880px) {
+    .outer-layout { grid-template-columns: 1fr; padding: 0 12px; }
+    .side-nav { display: none; }
+    .page { margin: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<div class="outer-layout">
+
+<nav class="side-nav" aria-label="Secciones">
+  <p class="sn-label">En esta lectura</p>
+  <a href="#s1" class="sn-item"><span class="sn-num">01</span>Transferencia de calor</a>
+  <a href="#s2" class="sn-item"><span class="sn-num">02</span>Mecanismos fundamentales</a>
+  <a href="#s3" class="sn-item"><span class="sn-num">03</span>Tipos de intercambiadores</a>
+  <a href="#s4" class="sn-item"><span class="sn-num">04</span>Diseño y operación</a>
+  <a href="#s5" class="sn-item"><span class="sn-num">05</span>Método LMTD</a>
+  <a href="#s6" class="sn-item"><span class="sn-num">06</span>Método &epsilon;-NTU</a>
+  <a href="#s7" class="sn-item"><span class="sn-num">07</span>Ensuciamiento</a>
+  <a href="#s8" class="sn-item"><span class="sn-num">08</span>Bibliografía</a>
+</nav>
+
+<article class="page">
+
+  <!-- ENCABEZADO -->
+  <header class="doc-head">
+    <div class="org">
+      Universidad de los Andes
+      <span>Ingeniería Química y de Alimentos</span>
+    </div>
+    <div class="badge">Lectura 08 · Proyecto de Operaciones Unitarias</div>
+    <h1>Intercambiadores de calor</h1>
+    <p class="subtitle">Mecanismos de transferencia de calor, tipos de intercambiadores industriales, ecuación de diseño, LMTD, método &epsilon;-NTU, ensuciamiento y criterios de selección.</p>
+    <div class="doc-meta">
+      <div><b>Curso</b>Proyecto de Operaciones Unitarias · IQYA-2031</div>
+      <div><b>Autor</b>Luis H. Reyes</div>
+      <div><b>Fecha</b>6 de junio de 2026</div>
+      <div><b>Lectura</b>Aproximadamente 30 minutos</div>
+    </div>
+  </header>
+
+  <div class="doc-body">
+
+    <!-- ── s0: Intro ────────────────────────────────────────────── -->
+    <section id="s0">
+      <p class="lead">Los <b>intercambiadores de calor</b> son dispositivos diseñados para <b>transferir energía térmica entre dos o más fluidos</b> que se encuentran a diferentes temperaturas, sin que estos fluidos se mezclen directamente (en la mayoría de los casos). Son equipos fundamentales en refinerías, plantas químicas, generación de energía, sistemas de refrigeración, industria alimentaria y prácticamente cualquier proceso que involucre manejo de energía térmica. Esta lectura cubre los fundamentos de la transferencia de calor, los principales tipos de intercambiadores, las ecuaciones de diseño y el fenómeno del ensuciamiento.</p>
+
+      <figure class="fig">
+        <div class="fig-frame">
+          <img src="/classroom/iqya-2031/readings/intercambiadores-tubo-coraza-partes.jpeg"
+               alt="Vista en corte de un intercambiador de tubo y coraza con componentes etiquetados: coraza, bafles, haz de tubos, cabezales, placa tubular"
+               style="max-width:700px">
+        </div>
+        <figcaption><b>Figura 1.</b> Vista en corte de un intercambiador de tubo y coraza. Se identifican los componentes principales: coraza (<em>shell</em>), haz de tubos (<em>tube bundle</em>), bafles, placa tubular (<em>tubesheet</em>), cabezales y conexiones. Es el tipo de intercambiador más versátil y ampliamente utilizado en la industria de procesos.</figcaption>
+      </figure>
+
+      <div class="callout callout--tip">
+        <span class="ic">i</span>
+        <div>
+          <b>Aplicación al proyecto del curso</b>
+          <p>Si tu proyecto requiere calentar o enfriar una corriente de proceso (en la planta de pectina es muy probable), debes:</p>
+          <ol>
+            <li>Realizar los <b>balances de materia y energía</b> para determinar la carga térmica \(Q\) requerida.</li>
+            <li>Seleccionar un <b>tipo de intercambiador de calor</b> adecuado, justificando la elección.</li>
+            <li>Estimar un <b>coeficiente global de transferencia de calor</b> \(U\) apropiado para los fluidos y el tipo de equipo (considerando ensuciamiento).</li>
+            <li>Calcular la <b>Diferencia de Temperatura Media Logarítmica</b> (LMTD) y el factor de corrección \(F_T\) si es necesario.</li>
+            <li>Estimar el <b>área de transferencia de calor</b> \(A\) requerida.</li>
+            <li>(Opcional) Explorar el método \(\varepsilon\text{-NTU}\) como alternativa.</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── s1: La importancia de la transferencia de calor ──────── -->
+    <section id="s1">
+      <div class="eyebrow">Punto de partida</div>
+      <h2 class="sec"><span class="secnum">1.</span> La importancia de la transferencia de calor</h2>
+
+      <p>Los intercambiadores de calor cumplen funciones esenciales en la industria de procesos. Cada vez que una corriente de proceso necesita cambiar su temperatura, o que se requiere aprovechar la energía térmica de una corriente residual, interviene un intercambiador.</p>
+
+      <p class="tbl-cap"><b>Tabla 1.</b> Funciones principales de los intercambiadores de calor en la industria.</p>
+      <div class="tbl-wrap">
+        <table class="ou">
+          <thead>
+            <tr><th>Función</th><th>Descripción</th><th>Ejemplo</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Calentar</td><td>Elevar la temperatura de un fluido frío utilizando uno caliente.</td><td>Precalentar la alimentación a un reactor con vapor de proceso.</td></tr>
+            <tr><td>Enfriar</td><td>Reducir la temperatura de un fluido caliente utilizando uno más frío.</td><td>Enfriar el efluente de un reactor exotérmico con agua de enfriamiento.</td></tr>
+            <tr><td>Condensar</td><td>Cambiar de fase un vapor utilizando un fluido refrigerante.</td><td>Condensar el destilado en la cabeza de una columna de destilación.</td></tr>
+            <tr><td>Evaporar</td><td>Cambiar de fase un líquido utilizando un fluido caliente.</td><td>Generar vapor en un reboiler de una columna de destilación.</td></tr>
+            <tr><td>Recuperar calor</td><td>Utilizar el calor de corrientes calientes para precalentar corrientes frías, mejorando la eficiencia energética de la planta (integración energética).</td><td>Red de intercambio de calor diseñada con la metodología pinch.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout--nota">
+        <span class="ic">i</span>
+        <div>
+          <b>Ubicuidad del intercambio de calor</b>
+          <p>Prácticamente toda planta de procesos tiene intercambiadores de calor. En una refinería típica pueden representar hasta el 30% del costo total de los equipos. Diseñarlos bien (tipo correcto, área adecuada, previsión del ensuciamiento) tiene un impacto directo en la rentabilidad de la operación.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── s2: Mecanismos fundamentales de transferencia de calor ── -->
+    <section id="s2">
+      <div class="eyebrow">Fundamentos</div>
+      <h2 class="sec"><span class="secnum">2.</span> Mecanismos fundamentales de transferencia de calor</h2>
+
+      <p>La transferencia de calor ocurre a través de tres mecanismos básicos. En la mayoría de los intercambiadores, la transferencia entre los dos fluidos involucra una combinación de <b>convección</b> (del fluido caliente a la pared), <b>conducción</b> (a través de la pared) y nuevamente <b>convección</b> (de la pared al fluido frío).</p>
+
+      <figure class="fig">
+        <div class="fig-frame">
+          <img src="/classroom/iqya-2031/readings/intercambiadores-mecanismos-transferencia.png"
+               alt="Diagrama de los tres mecanismos de transferencia de calor: conducción a través de un sólido, convección desde una superficie a un fluido en movimiento, y radiación entre dos superficies"
+               style="max-width:620px">
+        </div>
+        <figcaption><b>Figura 2.</b> Los tres mecanismos fundamentales de transferencia de calor: conducción (a través de un medio estacionario), convección (entre una superficie y un fluido en movimiento) y radiación (intercambio neto de energía electromagnética entre superficies).</figcaption>
+      </figure>
+
+      <h3 class="sub">Conducción</h3>
+      <p>Transferencia de energía a través de un medio estacionario (sólido, líquido o gas) debido a un gradiente de temperatura. A nivel molecular, es la transferencia de energía cinética entre partículas adyacentes. Se rige por la <b>Ley de Fourier</b>:</p>
+
+      $$q_k = -kA\frac{dT}{dx}$$
+
+      <p>Donde:</p>
+      <ul>
+        <li>\(q_k\): tasa de transferencia de calor por conducción (W)</li>
+        <li>\(k\): conductividad térmica del material (W/m·K)</li>
+        <li>\(A\): área normal a la dirección del flujo de calor (m²)</li>
+        <li>\(\frac{dT}{dx}\): gradiente de temperatura (K/m)</li>
+      </ul>
+
+      <h3 class="sub">Convección</h3>
+      <p>Transferencia de calor entre una superficie y un fluido en movimiento adyacente, que combina los efectos de la conducción dentro del fluido y el movimiento macroscópico del mismo (advección).</p>
+      <ul>
+        <li><b>Convección forzada:</b> el movimiento del fluido es causado por medios externos (bombas, ventiladores, agitadores).</li>
+        <li><b>Convección natural (o libre):</b> el movimiento del fluido es causado por diferencias de densidad debidas a variaciones de temperatura.</li>
+      </ul>
+
+      <p>Se describe con la <b>Ley de enfriamiento de Newton</b>:</p>
+
+      $$q_{\text{conv}} = hA_s(T_s - T_\infty)$$
+
+      <p>Donde:</p>
+      <ul>
+        <li>\(h\): coeficiente de transferencia de calor por convección (W/m²·K)</li>
+        <li>\(A_s\): área superficial de transferencia (m²)</li>
+        <li>\(T_s\): temperatura de la superficie; \(T_\infty\): temperatura del fluido lejos de la superficie</li>
+      </ul>
+
+      <h3 class="sub">Radiación</h3>
+      <p>Transferencia de energía mediante ondas electromagnéticas (o fotones) emitidas por una superficie debido a su temperatura. No requiere un medio material para propagarse. Para un cuerpo negro, la <b>Ley de Stefan-Boltzmann</b> establece:</p>
+
+      $$q_{\text{rad,max}} = \sigma A_s T_s^4$$
+
+      <p>Donde \(\sigma = 5{,}67 \times 10^{-8}\) W/m²·K⁴ es la constante de Stefan-Boltzmann. Para superficies reales (cuerpos grises), se introduce la <b>emisividad</b> \(\varepsilon\):</p>
+
+      $$q_{\text{rad}} = \varepsilon\sigma A_s T_s^4$$
+
+      <div class="callout callout--nota">
+        <span class="ic">i</span>
+        <div>
+          <b>En un intercambiador típico</b>
+          <p>La radiación es generalmente despreciable salvo en equipos que operan a temperaturas muy altas (hornos, calderas). En la inmensa mayoría de los intercambiadores, la transferencia dominante es la secuencia <b>convección → conducción → convección</b>.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── s3: Tipos comunes de intercambiadores de calor ──────── -->
+    <section id="s3">
+      <div class="eyebrow">Equipos</div>
+      <h2 class="sec"><span class="secnum">3.</span> Tipos comunes de intercambiadores de calor en la industria</h2>
+
+      <p>Existe una gran variedad de diseños, cada uno adecuado para diferentes aplicaciones y condiciones operativas. Los tres más importantes se presentan en el visor interactivo a continuación, seguidos de otros tipos relevantes.</p>
+
+      <div class="imp-gallery" id="hx-gallery">
+        <div class="imp-bar" id="hx-bar"></div>
+        <div id="hx-panels"></div>
+      </div>
+
+      <h3 class="sub">Estándares TEMA para intercambiadores de tubo y coraza</h3>
+      <p>La <a class="pl" href="https://www.tema.org" target="_blank" rel="noopener">TEMA</a> (Tubular Exchanger Manufacturers Association) clasifica los intercambiadores de tubo y coraza según tres letras que indican el tipo de cabezal frontal, el tipo de coraza y el tipo de cabezal posterior (por ejemplo, BEM, AES, NEN). Esta nomenclatura es esencial para la especificación técnica de estos equipos.</p>
+
+      <figure class="fig">
+        <div class="fig-frame">
+          <img src="/classroom/iqya-2031/readings/intercambiadores-tema-clasificacion.jpeg"
+               alt="Tabla TEMA de clasificación de intercambiadores de tubo y coraza: tipos de cabezal estacionario (A, B, C, N, D), tipos de coraza (E, F, G, H, J, K, X), tipos de cabezal posterior (L, M, N, P, S, T, U, W)"
+               style="max-width:560px">
+        </div>
+        <figcaption><b>Figura 3.</b> Clasificación <b>TEMA</b> de intercambiadores de tubo y coraza. La designación de tres letras describe: cabezal estacionario (columna izquierda), tipo de coraza (columna central) y cabezal posterior (columna derecha). Por ejemplo, un «AES» tiene cabezal de canal removible (A), coraza de un paso (E) y cabezal flotante con dispositivo de respaldo (S).</figcaption>
+      </figure>
+
+      <h3 class="sub">Otros tipos de intercambiadores</h3>
+      <p>Además de los tres tipos principales, existen diseños para aplicaciones específicas:</p>
+      <ul>
+        <li><b>Doble tubo (tubo-en-tubo):</b> un tubo interior dentro de otro exterior. Sencillos, baratos y útiles para cargas térmicas pequeñas o fluidos a muy alta presión. Se pueden conectar en serie para aumentar el área.</li>
+        <li><b>Serpentín de media caña:</b> un medio tubo soldado en espiral sobre la pared exterior de un reactor o tanque. Proporciona calentamiento o enfriamiento sin modificar el interior del recipiente.</li>
+        <li><b>Espiral:</b> dos canales en espiral enrollados alrededor de un núcleo central. Compactos, auto-limpiantes y excelentes para fluidos viscosos o con sólidos en suspensión.</li>
+        <li><b>Bobina enrollada (<em>coil wound</em>):</b> miles de tubos enrollados helicoidalmente dentro de una carcasa vertical. Usados en la industria criogénica (licuefacción de gas natural).</li>
+      </ul>
+
+      <div class="yt-wrap">
+        <div class="yt-frame">
+          <div class="aspect">
+            <iframe src="https://www.youtube.com/embed/gtxryoHbBrM?rel=0"
+                    title="Double Pipe Heat Exchanger Basics Explained"
+                    frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          </div>
+          <p class="yt-caption">Funcionamiento de un intercambiador de <em>doble tubo</em>: construcción sencilla, flujo en contracorriente y aplicaciones típicas.</p>
+        </div>
+      </div>
+
+      <div class="yt-wrap">
+        <div class="yt-frame">
+          <div class="aspect">
+            <iframe src="https://www.youtube.com/embed/R5QPOM95ELA?rel=0"
+                    title="Serpentín de media caña: funcionamiento y aplicaciones en reactores"
+                    frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          </div>
+          <p class="yt-caption">Serpentín de media caña: cómo funciona y por qué es clave en el control térmico de reactores encamisados.</p>
+        </div>
+      </div>
+
+      <div class="yt-wrap">
+        <div class="yt-frame">
+          <div class="aspect">
+            <iframe src="https://www.youtube.com/embed/hMC-lcumpSM?rel=0"
+                    title="Coil wound heat exchanger - 3D demonstration"
+                    frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          </div>
+          <p class="yt-caption">Intercambiador de <em>bobina enrollada</em> (coil wound): demostración 3D del equipo utilizado en plantas de licuefacción de gas natural.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── s4: Parámetros fundamentales de diseño y operación ───── -->
+    <section id="s4">
+      <div class="eyebrow">Diseño</div>
+      <h2 class="sec"><span class="secnum">4.</span> Parámetros fundamentales de diseño y operación</h2>
+
+      <p>La ecuación básica que gobierna el diseño de un intercambiador de calor es:</p>
+
+      $$Q = U \cdot A \cdot \Delta T_{lm} \cdot F_T$$
+
+      <p>Cada término de esta ecuación resume un aspecto fundamental del diseño:</p>
+
+      <h3 class="sub">Carga térmica \(Q\)</h3>
+      <p>Cantidad de calor transferido por unidad de tiempo (W). Se calcula a partir del balance de energía de uno de los fluidos:</p>
+      <ul>
+        <li>Fluido caliente: \(Q = \dot{m}_h \, c_{p,h} (T_{h,\text{ent}} - T_{h,\text{sal}})\)</li>
+        <li>Fluido frío: \(Q = \dot{m}_c \, c_{p,c} (T_{c,\text{sal}} - T_{c,\text{ent}})\)</li>
+      </ul>
+      <p>Donde \(\dot{m}\) es el flujo másico (kg/s) y \(c_p\) el calor específico (J/kg·K).</p>
+
+      <h3 class="sub">Coeficiente global de transferencia de calor \(U\)</h3>
+      <p>Medida de la facilidad con que el calor se transfiere entre los dos fluidos a través de la pared que los separa (W/m²·K). Considera todas las resistencias térmicas en serie:</p>
+
+      $$\frac{1}{U} = \frac{1}{h_h} + R_{f,h} + R_w + R_{f,c} + \frac{1}{h_c}$$
+
+      <p>Donde:</p>
+      <ul>
+        <li>\(h_h, h_c\): coeficientes de transferencia de calor por convección de los fluidos caliente y frío</li>
+        <li>\(R_{f,h}, R_{f,c}\): resistencias por ensuciamiento en los lados caliente y frío</li>
+        <li>\(R_w\): resistencia térmica de la pared (por ejemplo, \(x/k\) para pared plana, \(\frac{\ln(D_o/D_i)}{2\pi kL}\) para tubo)</li>
+      </ul>
+
+      <p class="tbl-cap"><b>Tabla 2.</b> Valores típicos de \(U\) para distintas combinaciones de fluidos y tipos de intercambiadores.</p>
+      <div class="tbl-wrap">
+        <table class="ou">
+          <thead>
+            <tr><th>Combinación de fluidos</th><th>Tipo de intercambiador</th><th>\(U\) típico (W/m²·K)</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Agua – Agua</td><td>Tubo y coraza</td><td>850 – 1 700</td></tr>
+            <tr><td>Agua – Agua</td><td>Placas</td><td>1 000 – 4 000</td></tr>
+            <tr><td>Vapor – Agua</td><td>Tubo y coraza</td><td>1 000 – 3 500</td></tr>
+            <tr><td>Aceite orgánico – Agua</td><td>Tubo y coraza</td><td>350 – 900</td></tr>
+            <tr><td>Gas – Gas</td><td>Tubo y coraza</td><td>10 – 50</td></tr>
+            <tr><td>Vapor condensando – Agua</td><td>Condensador</td><td>1 500 – 5 000</td></tr>
+            <tr><td>Agua – Aire</td><td>Aeroenfriador</td><td>25 – 50</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="sub">Área de transferencia de calor \(A\)</h3>
+      <p>Área superficial a través de la cual ocurre la transferencia de calor (m²). Es la variable de diseño principal: de ella dependen el tamaño, el peso y el costo del equipo. Se despeja de la ecuación de diseño una vez conocidos \(Q\), \(U\) y \(\Delta T_{lm}\).</p>
+
+      <div class="callout callout--tip">
+        <span class="ic">i</span>
+        <div>
+          <b>El flujo de cálculo típico en el proyecto</b>
+          <p>1. Balance de energía → \(Q\). 2. Seleccionar tipo de intercambiador y estimar \(U\) (de tablas). 3. Calcular \(\Delta T_{lm}\) y \(F_T\). 4. Despejar \(A = Q / (U \cdot \Delta T_{lm} \cdot F_T)\). 5. Convertir \(A\) en dimensiones de equipo (número y longitud de tubos, o número de placas).</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── s5: Método LMTD ─────────────────────────────────────── -->
+    <section id="s5">
+      <div class="eyebrow">Método de diseño</div>
+      <h2 class="sec"><span class="secnum">5.</span> Diferencia de temperatura media logarítmica (LMTD)</h2>
+
+      <p>La LMTD es la diferencia de temperatura promedio efectiva entre los dos fluidos a lo largo del intercambiador. Su cálculo depende de la configuración de flujo.</p>
+
+      <figure class="fig">
+        <div class="fig-frame">
+          <img src="/classroom/iqya-2031/readings/intercambiadores-paralelo-contraflujo.jpeg"
+               alt="Diagrama comparativo de intercambiadores en flujo paralelo y en contraflujo, mostrando perfiles de temperatura y fórmulas de ΔT₁ y ΔT₂"
+               style="max-width:620px">
+        </div>
+        <figcaption><b>Figura 4.</b> Perfiles de temperatura en intercambiadores de calor. <b>(a)</b> Flujo paralelo (cocorriente): ambos fluidos entran por el mismo extremo. <b>(b)</b> Contraflujo (contracorriente): los fluidos circulan en direcciones opuestas. El contraflujo es generalmente más eficiente (mayor \(\Delta T_{lm}\) para las mismas temperaturas).</figcaption>
+      </figure>
+
+      <p>Para flujo puramente en contracorriente o cocorriente:</p>
+
+      $$\Delta T_{lm} = \frac{\Delta T_1 - \Delta T_2}{\ln\left(\frac{\Delta T_1}{\Delta T_2}\right)}$$
+
+      <p>Donde:</p>
+      <ul>
+        <li><b>Contracorriente:</b> \(\Delta T_1 = T_{h,\text{ent}} - T_{c,\text{sal}}\) y \(\Delta T_2 = T_{h,\text{sal}} - T_{c,\text{ent}}\)</li>
+        <li><b>Cocorriente:</b> \(\Delta T_1 = T_{h,\text{ent}} - T_{c,\text{ent}}\) y \(\Delta T_2 = T_{h,\text{sal}} - T_{c,\text{sal}}\)</li>
+      </ul>
+
+      <div class="calc-wrap" id="lmtd-calc">
+        <h4>Calculadora de LMTD y área de transferencia</h4>
+        <div class="calc-grid" id="lmtd-sliders"></div>
+
+        <div style="margin-top:18px">
+          <p style="font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gris-3);margin-bottom:8px">Configuración de flujo</p>
+          <div class="flow-criteria" id="flow-criteria"></div>
+        </div>
+
+        <div style="overflow-x:auto" id="lmtd-table-wrap"></div>
+        <p class="calc-note" id="lmtd-note"></p>
+      </div>
+
+      <h3 class="sub">Factor de corrección \(F_T\)</h3>
+      <p>Para configuraciones de flujo más complejas que no son puramente contracorriente o cocorriente (por ejemplo, intercambiadores de tubo y coraza con múltiples pasos por tubos y/o coraza), el LMTD calculado para contracorriente se corrige con un factor \(F_T \leq 1\). Este factor depende de la geometría del intercambiador y de dos parámetros adimensionales de temperatura:</p>
+
+      $$P = \frac{T_{c,\text{sal}} - T_{c,\text{ent}}}{T_{h,\text{ent}} - T_{c,\text{ent}}} \qquad R = \frac{T_{h,\text{ent}} - T_{h,\text{sal}}}{T_{c,\text{sal}} - T_{c,\text{ent}}}$$
+
+      <figure class="fig">
+        <div class="fig-frame">
+          <img src="/classroom/iqya-2031/readings/intercambiadores-factor-correccion.jpeg"
+               alt="Gráficos del factor de corrección F_T para distintas configuraciones de intercambiadores de tubo y coraza: 1 paso de coraza, 2 pasos de coraza, flujo cruzado no mezclado y flujo cruzado mezclado"
+               style="max-width:540px">
+        </div>
+        <figcaption><b>Figura 5.</b> Gráficos de \(F_T\) para distintas configuraciones: <b>(a)</b> un paso por la coraza con múltiples pasos por tubos, <b>(b)</b> dos pasos por la coraza, <b>(c)</b> flujo cruzado con ambos fluidos no mezclados y <b>(d)</b> flujo cruzado con un fluido mezclado y otro no mezclado. Se busca que \(F_T \geq 0{,}75\); valores menores indican una configuración ineficiente.</figcaption>
+      </figure>
+
+      <div class="callout callout--warn">
+        <span class="ic">!</span>
+        <div>
+          <b>Cuidado con \(F_T\) bajo</b>
+          <p>Si el factor de corrección resulta menor a 0,75, la configuración del intercambiador es ineficiente y debe revisarse. Posibles soluciones: aumentar el número de pasos por la coraza, usar un arreglo en contracorriente puro o reconsiderar las temperaturas de operación.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── s6: Método ε-NTU ─────────────────────────────────────── -->
+    <section id="s6">
+      <div class="eyebrow">Método alternativo</div>
+      <h2 class="sec"><span class="secnum">6.</span> Método de la efectividad-NTU (\(\varepsilon\)-NTU)</h2>
+
+      <p>El método \(\varepsilon\)-NTU es una alternativa al LMTD, especialmente útil cuando <b>no se conocen todas las temperaturas de salida</b> (problemas de «rating»: se tiene un intercambiador existente y se quiere saber qué temperaturas se alcanzan).</p>
+
+      <h3 class="sub">Efectividad \(\varepsilon\)</h3>
+      <p>Relación entre la tasa de transferencia de calor real y la máxima posible:</p>
+
+      $$\varepsilon = \frac{Q}{Q_{\max}} \qquad Q_{\max} = C_{\min}(T_{h,\text{ent}} - T_{c,\text{ent}})$$
+
+      <p>Donde \(C_{\min}\) es la <b>capacidad calorífica mínima</b> (\(\dot{m}c_p\)) entre los dos fluidos. \(\varepsilon\) toma valores entre 0 y 1; un valor de 1 significaría que el intercambiador aprovecha toda la fuerza impulsora disponible.</p>
+
+      <h3 class="sub">Número de unidades de transferencia (NTU)</h3>
+      <p>Parámetro adimensional que relaciona \(U\), \(A\) y \(C_{\min}\):</p>
+
+      $$\text{NTU} = \frac{U \cdot A}{C_{\min}}$$
+
+      <p>Existen relaciones \(\varepsilon = f(\text{NTU}, C_{\min}/C_{\max}, \text{configuración de flujo})\) en forma de ecuaciones o gráficos. Por ejemplo, para un intercambiador en contracorriente:</p>
+
+      $$\varepsilon = \frac{1 - \exp\left[-\text{NTU}(1 - C_r)\right]}{1 - C_r\exp\left[-\text{NTU}(1 - C_r)\right]}$$
+
+      <p>Donde \(C_r = C_{\min}/C_{\max}\).</p>
+
+      <figure class="fig">
+        <div class="fig-frame">
+          <img src="/classroom/iqya-2031/readings/intercambiadores-efectividad-ntu.png"
+               alt="Gráficos de efectividad ε vs NTU para cuatro configuraciones: contraflujo, flujo paralelo, flujo cruzado y 1 paso de coraza con múltiples pasos de tubos"
+               style="max-width:620px">
+        </div>
+        <figcaption><b>Figura 6.</b> Gráficos de \(\varepsilon\) vs NTU para cuatro configuraciones de flujo, con \(C_{\min}/C_{\max}\) como parámetro. Para NTU alto, la efectividad se satura: agregar más área ya no mejora significativamente la transferencia. Nótese que el contraflujo siempre alcanza la mayor efectividad para un NTU dado.</figcaption>
+      </figure>
+
+      <div class="callout callout--nota">
+        <span class="ic">i</span>
+        <div>
+          <b>¿LMTD o \(\varepsilon\)-NTU?</b>
+          <p>Ambos métodos son equivalentes y dan el mismo resultado. El LMTD es más directo para <b>problemas de diseño</b> (conocidas las 4 temperaturas, hallar \(A\)). El \(\varepsilon\)-NTU es más conveniente para <b>problemas de rating</b> (conocidos \(U\), \(A\) y las temperaturas de entrada, hallar las temperaturas de salida) porque evita la iteración.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── s7: Ensuciamiento (fouling) ─────────────────────────── -->
+    <section id="s7">
+      <div class="eyebrow">Operación</div>
+      <h2 class="sec"><span class="secnum">7.</span> Ensuciamiento (fouling): el enemigo de la eficiencia</h2>
+
+      <p>El ensuciamiento es la acumulación de depósitos no deseados (incrustaciones, sedimentos, productos de corrosión, material biológico) sobre las superficies de transferencia de calor. Es uno de los problemas más costosos en la operación de intercambiadores.</p>
+
+      <figure class="fig">
+        <div class="fig-frame">
+          <img src="/classroom/iqya-2031/readings/intercambiadores-fouling-efectos.jpeg"
+               alt="Fotografías reales de tubos con distintos grados de ensuciamiento: desde parcialmente obstruidos hasta completamente tapados por incrustaciones"
+               style="max-width:540px">
+        </div>
+        <figcaption><b>Figura 7.</b> Ensuciamiento real en intercambiadores de tubo y coraza. Desde leve acumulación (arriba izquierda) hasta obstrucción casi total de los tubos (abajo derecha). Cada imagen muestra la placa tubular vista desde el lado del cabezal: los círculos oscuros son tubos parcial o totalmente tapados.</figcaption>
+      </figure>
+
+      <h3 class="sub">Consecuencias</h3>
+      <ul>
+        <li><b>Aumenta la resistencia térmica total</b>, disminuyendo el coeficiente global \(U\).</li>
+        <li>Puede llevar a <b>paradas no programadas</b> para limpieza.</li>
+        <li><b>Reduce la eficiencia</b> del intercambiador: menor \(Q\) para el mismo \(\Delta T\), o necesidad de mayor \(\Delta T\) para el mismo \(Q\).</li>
+        <li><b>Aumenta la caída de presión</b> a través del equipo (los depósitos reducen el área de paso del flujo).</li>
+      </ul>
+
+      <h3 class="sub">Factores de ensuciamiento \(R_f\)</h3>
+      <p>Son resistencias térmicas adicionales que se incluyen en el cálculo de \(U\) para tener en cuenta el efecto del ensuciamiento esperado durante la operación. Se obtienen de tablas (por ejemplo, <a class="pl" href="https://www.tema.org" target="_blank" rel="noopener">TEMA</a>) para diferentes fluidos y condiciones.</p>
+
+      <figure class="fig">
+        <div class="fig-frame">
+          <img src="/classroom/iqya-2031/readings/intercambiadores-factores-ensuciamiento.png"
+               alt="Tabla de factores de ensuciamiento (fouling resistances) para corrientes de refinería de petróleo, según los estándares TEMA"
+               style="max-width:620px">
+        </div>
+        <figcaption><b>Figura 8.</b> Factores de ensuciamiento (resistencias, en m²·K/W) para corrientes típicas de refinería de petróleo, tomados de los estándares TEMA. Valores más altos indican mayor tendencia al ensuciamiento y, por tanto, mayor sobredimensionamiento requerido del intercambiador.</figcaption>
+      </figure>
+
+      <h3 class="sub">Mitigación y control</h3>
+      <p class="tbl-cap"><b>Tabla 3.</b> Estrategias para mitigar el ensuciamiento en intercambiadores de calor.</p>
+      <div class="tbl-wrap">
+        <table class="ou">
+          <thead>
+            <tr><th>Estrategia</th><th>Descripción</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Diseño adecuado</td><td>Seleccionar velocidades de flujo suficientes para mantener turbulencia y minimizar zonas muertas. Elegir materiales resistentes a la corrosión.</td></tr>
+            <tr><td>Limpieza periódica</td><td>Programar paradas de mantenimiento para limpieza mecánica (cepillado, hidroblasting) o química (ácidos, solventes, detergentes).</td></tr>
+            <tr><td>Tratamiento de fluidos</td><td>Filtración previa para remover partículas, uso de inhibidores químicos (anti-incrustantes, biocidas) para prevenir la formación de depósitos.</td></tr>
+            <tr><td>Monitoreo del desempeño</td><td>Seguimiento continuo de temperaturas y caídas de presión para detectar tendencias de ensuciamiento y planificar la limpieza antes de una degradación excesiva.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout--warn">
+        <span class="ic">!</span>
+        <div>
+          <b>Sobredimensionar no es gratis</b>
+          <p>Es tentador usar factores de ensuciamiento muy altos «por seguridad», pero esto sobredimensiona el intercambiador (más área → más caro, más pesado, más espacio). Un intercambiador limpio y sobredimensionado puede operar con velocidades demasiado bajas, lo que paradójicamente <b>acelera el ensuciamiento</b>. El diseño óptimo balancea el margen de ensuciamiento con la eficiencia hidráulica.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── s8: Bibliografía ─────────────────────────────────────── -->
+    <section id="s8">
+      <div class="eyebrow">Fuentes</div>
+      <h2 class="sec"><span class="secnum">8.</span> Bibliografía recomendada</h2>
+
+      <ol class="refs">
+        <li><b>McCabe, W. L., Smith, J. C., &amp; Harriott, P.</b> (2005). <em>Unit Operations of Chemical Engineering</em> (7th ed.). McGraw-Hill. (Capítulos 10-13 sobre mecanismos y equipos de transferencia de calor).</li>
+        <li><b>Perry, R. H., &amp; Green, D. W.</b> (Eds.). (2019). <em>Perry's Chemical Engineers' Handbook</em> (9th ed.). McGraw-Hill. (Sección 11: Heat-Transfer Equipment).</li>
+        <li><b>Incropera, F. P., DeWitt, D. P., Bergman, T. L., &amp; Lavine, A. S.</b> (2013). <em>Fundamentals of Heat and Mass Transfer</em> (7th ed.). Wiley. — Referencia clásica sobre los fundamentos de transferencia de calor.</li>
+        <li><b>Kakac, S., &amp; Liu, H.</b> (2002). <em>Heat Exchangers: Selection, Rating, and Thermal Design</em> (2nd ed.). CRC Press.</li>
+        <li><b>TEMA Standards</b> (Tubular Exchanger Manufacturers Association). — Estándares de referencia para el diseño detallado de intercambiadores de tubo y coraza.</li>
+      </ol>
+    </section>
+
+    <footer class="doc-foot">
+      <span>Proyecto de Operaciones Unitarias · IQYA-2031</span>
+      <span>Universidad de los Andes · Ingeniería Química y de Alimentos</span>
+    </footer>
+
+  </div><!-- /doc-body -->
+</article>
+</div><!-- /outer-layout -->
+
+<!-- ── KaTeX ──────────────────────────────────────────────────── -->
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" defer
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false},{left:'\\(',right:'\\)',display:false},{left:'\\[',right:'\\]',display:true}],throwOnError:false})"></script>
+
+<script>
+/* ── Progress bar ────────────────────────────────────────────── */
+(function(){
+  var bar=document.getElementById('progress');
+  document.addEventListener('scroll',function(){
+    var el=document.documentElement;
+    var pct=(el.scrollTop||document.body.scrollTop)/(el.scrollHeight-el.clientHeight)*100;
+    bar.style.width=Math.min(100,pct)+'%';
+  },{passive:true});
+})();
+
+/* ── Scroll-spy ──────────────────────────────────────────────── */
+(function(){
+  var items=document.querySelectorAll('.sn-item');
+  var secs=Array.from(document.querySelectorAll('#s1,#s2,#s3,#s4,#s5,#s6,#s7,#s8'));
+  function spy(){
+    var active=null;
+    secs.forEach(function(s){
+      if(s.getBoundingClientRect().top<=120)active=s.id;
+    });
+    items.forEach(function(a){
+      var href=a.getAttribute('href').slice(1);
+      a.classList.toggle('is-active',href===active);
+    });
+  }
+  document.addEventListener('scroll',spy,{passive:true});
+  spy();
+})();
+
+/* ── Helpers ─────────────────────────────────────────────────── */
+function renderMath(){
+  if(typeof renderMathInElement==='function'){
+    renderMathInElement(document.body,{
+      delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false},{left:'\\(',right:'\\)',display:false},{left:'\\[',right:'\\]',display:true}],
+      throwOnError:false
+    });
+  }
+}
+
+/* ── Equipment gallery (intercambiadores) ───────────────────── */
+(function(){
+  var equipos=[
+    {id:'tubo-coraza',label:'Tubo y coraza',family:'Tubulares',name:'Intercambiador de tubo y coraza (S&THE)',
+     video:'7_XvczeCRfY',
+     desc:'Un haz de tubos se dispone dentro de una carcasa cilíndrica. Un fluido circula por el interior de los tubos (lado tubos) y el otro por el exterior, a través de la coraza (lado coraza). Los bafles dirigen el flujo del lado coraza, aumentan la turbulencia y soportan los tubos.',
+     pros:['Robusto: maneja altas presiones y temperaturas','Diseño flexible para diversas aplicaciones','Procedimientos de diseño y fabricación estandarizados (TEMA)','Bien entendido: décadas de experiencia industrial'],
+     cons:['Puede ser voluminoso y pesado','La limpieza del lado coraza puede ser compleja','Menor eficiencia térmica que los de placas'],
+     uses:'Refinerías, plantas químicas, generación de energía, condensadores, reboilers. Es el tipo más versátil y ampliamente utilizado.'},
+    {id:'placas',label:'Placas',family:'Compactos',name:'Intercambiador de placas (PHE)',
+     video:'uEInVVcc6Sc',
+     desc:'Un paquete de placas metálicas delgadas y corrugadas, con empaques que sellan los canales y dirigen los fluidos alternadamente entre los espacios. Las corrugaciones promueven la turbulencia y aumentan el área superficial.',
+     pros:['Muy compacto: alta área por unidad de volumen','Alta eficiencia térmica (coeficientes U elevados)','Fácil de desmontar para limpieza e inspección','Capacidad flexible: se pueden añadir o quitar placas'],
+     cons:['Limitaciones de presión y temperatura (por las juntas)','Sensible a ensuciamiento por partículas grandes','No adecuado para fluidos muy viscosos'],
+     uses:'Industria alimentaria, farmacéutica, HVAC, pasteurización, procesos con fluidos limpios a presiones y temperaturas moderadas.'},
+    {id:'aeroenfriador',label:'Aeroenfriador',family:'Enfriados por aire',name:'Aeroenfriador (Air Cooler / Fin-Fan)',
+     video:'bgX_ooLIcZM',
+     desc:'Un haz de tubos con aletas extendidas para aumentar el área del lado aire (ya que el coeficiente h del aire es bajo). Grandes ventiladores axiales fuerzan el paso de aire a través del haz de tubos aletados.',
+     pros:['No requiere agua de enfriamiento','Elimina costos de tratamiento de agua y torres de enfriamiento','Bajo mantenimiento: no hay corrosión por agua','Útil donde el agua es escasa o ambientalmente restringida'],
+     cons:['Menor eficiencia que los enfriados por agua','Ocupa más espacio (footprint grande)','Rendimiento depende de la temperatura ambiente del aire','Pueden ser ruidosos'],
+     uses:'Refinerías, plantas petroquímicas, compresión de gas, cualquier aplicación donde el agua de enfriamiento sea costosa o no esté disponible.'}
+  ];
+
+  var bar=document.getElementById('hx-bar');
+  var panels=document.getElementById('hx-panels');
+
+  equipos.forEach(function(eq,i){
+    var btn=document.createElement('button');
+    btn.className='imp-btn'+(i===0?' active':'');
+    btn.textContent=eq.label;
+    btn.onclick=function(){
+      bar.querySelectorAll('.imp-btn').forEach(function(b,j){b.classList.toggle('active',j===i)});
+      panels.querySelectorAll('.imp-panel').forEach(function(p,j){p.classList.toggle('active',j===i)});
+    };
+    bar.appendChild(btn);
+
+    var media=eq.video
+      ? '<div class="imp-gif"><div class="aspect"><iframe src="https://www.youtube.com/embed/'+eq.video+'?rel=0" title="'+eq.name+'" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></div>'
+      : '<div class="imp-gif"><img src="'+eq.image+'" alt="'+eq.name+'"></div>';
+
+    var panel=document.createElement('div');
+    panel.className='imp-panel'+(i===0?' active':'');
+    panel.innerHTML=
+      media+
+      '<div class="imp-info">'+
+        '<div class="imp-family">'+eq.family+'</div>'+
+        '<h4>'+eq.name+'</h4>'+
+        '<p class="imp-desc">'+eq.desc+'</p>'+
+        '<div class="imp-cols">'+
+          '<div class="imp-pro"><h5>Ventajas</h5><ul>'+eq.pros.map(function(p){return'<li>'+p+'</li>'}).join('')+'</ul></div>'+
+          '<div class="imp-con"><h5>Desventajas</h5><ul>'+eq.cons.map(function(c){return'<li>'+c+'</li>'}).join('')+'</ul></div>'+
+        '</div>'+
+        '<p class="imp-apps"><strong style="color:var(--gris-1)">Aplicaciones:</strong> '+eq.uses+'</p>'+
+      '</div>';
+    panels.appendChild(panel);
+  });
+})();
+
+/* ── LMTD Calculator ───────────────────────────────────────── */
+(function(){
+  var Th_in=150, Th_out=90, Tc_in=25, Tc_out=70, U=500, flowMode='counter';
+
+  var slidersDiv=document.getElementById('lmtd-sliders');
+  slidersDiv.innerHTML=
+    '<div class="calc-field"><div class="calc-field-header"><span>T<sub>h,ent</sub></span><b id="lmtd-thin-disp"></b></div><input type="range" id="lmtd-thin" min="50" max="300" step="1" value="'+Th_in+'"></div>'+
+    '<div class="calc-field"><div class="calc-field-header"><span>T<sub>h,sal</sub></span><b id="lmtd-thout-disp"></b></div><input type="range" id="lmtd-thout" min="30" max="250" step="1" value="'+Th_out+'"></div>'+
+    '<div class="calc-field"><div class="calc-field-header"><span>T<sub>c,ent</sub></span><b id="lmtd-tcin-disp"></b></div><input type="range" id="lmtd-tcin" min="5" max="100" step="1" value="'+Tc_in+'"></div>'+
+    '<div class="calc-field"><div class="calc-field-header"><span>T<sub>c,sal</sub></span><b id="lmtd-tcout-disp"></b></div><input type="range" id="lmtd-tcout" min="20" max="200" step="1" value="'+Tc_out+'"></div>'+
+    '<div class="calc-field"><div class="calc-field-header"><span>U (W/m²·K)</span><b id="lmtd-u-disp"></b></div><input type="range" id="lmtd-u" min="10" max="5000" step="10" value="'+U+'"></div>';
+
+  var critDiv=document.getElementById('flow-criteria');
+  [{k:'counter',n:'Contracorriente'},{k:'parallel',n:'Cocorriente'}].forEach(function(o){
+    var btn=document.createElement('button');
+    btn.className='flow-btn'+(o.k===flowMode?' active':'');
+    btn.textContent=o.n;
+    btn.onclick=function(){flowMode=o.k;update()};
+    critDiv.appendChild(btn);
+  });
+
+  function update(){
+    Th_in=parseFloat(document.getElementById('lmtd-thin').value);
+    Th_out=parseFloat(document.getElementById('lmtd-thout').value);
+    Tc_in=parseFloat(document.getElementById('lmtd-tcin').value);
+    Tc_out=parseFloat(document.getElementById('lmtd-tcout').value);
+    U=parseFloat(document.getElementById('lmtd-u').value);
+
+    document.getElementById('lmtd-thin-disp').textContent=Th_in+' °C';
+    document.getElementById('lmtd-thout-disp').textContent=Th_out+' °C';
+    document.getElementById('lmtd-tcin-disp').textContent=Tc_in+' °C';
+    document.getElementById('lmtd-tcout-disp').textContent=Tc_out+' °C';
+    document.getElementById('lmtd-u-disp').textContent=U+' W/m²·K';
+
+    var dT1, dT2;
+    if(flowMode==='counter'){
+      dT1=Th_in-Tc_out;
+      dT2=Th_out-Tc_in;
+    } else {
+      dT1=Th_in-Tc_in;
+      dT2=Th_out-Tc_out;
+    }
+
+    var lmtd, valid=true, msg='';
+    if(dT1<=0||dT2<=0){
+      valid=false;
+      msg='Las diferencias de temperatura deben ser positivas. Verifique que las temperaturas sean consistentes.';
+      lmtd=0;
+    } else if(Math.abs(dT1-dT2)<0.01){
+      lmtd=dT1;
+    } else {
+      lmtd=(dT1-dT2)/Math.log(dT1/dT2);
+    }
+
+    var Qh=(Th_in-Th_out);
+    var Qc=(Tc_out-Tc_in);
+    var A=valid&&lmtd>0?(1000*Qh)/(U*lmtd):0;
+
+    critDiv.querySelectorAll('.flow-btn').forEach(function(btn,i){
+      btn.classList.toggle('active',['counter','parallel'][i]===flowMode);
+    });
+
+    function fmt(v,d){d=d||1;return isFinite(v)&&valid?v.toFixed(d):'—'}
+
+    var rows=[
+      ['\\(\\Delta T_1\\) (°C)',fmt(dT1,1)],
+      ['\\(\\Delta T_2\\) (°C)',fmt(dT2,1)],
+      ['\\(\\Delta T_{lm}\\) (°C)',fmt(lmtd,2)],
+      ['\\(A\\) requerida (m²)',valid&&lmtd>0?fmt(A,2):'—']
+    ];
+
+    var html='<table class="ou"><thead><tr><th>Parámetro</th><th style="text-align:right">Valor</th></tr></thead><tbody>';
+    rows.forEach(function(r){
+      html+='<tr><td>'+r[0]+'</td><td style="text-align:right;font-family:monospace;font-weight:600">'+r[1]+'</td></tr>';
+    });
+    html+='</tbody></table>';
+    document.getElementById('lmtd-table-wrap').innerHTML=html;
+
+    if(!valid){
+      document.getElementById('lmtd-note').innerHTML='<span style="color:#c0392b;font-style:normal;font-weight:600">'+msg+'</span>';
+    } else {
+      document.getElementById('lmtd-note').innerHTML='\\(A\\) calculada asumiendo \\(F_T = 1\\) (flujo puro en '+
+        (flowMode==='counter'?'contracorriente':'cocorriente')+
+        ') y \\(Q = 1\\,000 \\times (T_{h,\\text{ent}} - T_{h,\\text{sal}})\\) W como carga térmica de referencia. Ajuste \\(U\\) según el tipo de intercambiador y los fluidos (ver Tabla 2).';
+    }
+    renderMath();
+  }
+
+  ['lmtd-thin','lmtd-thout','lmtd-tcin','lmtd-tcout','lmtd-u'].forEach(function(id){
+    document.getElementById(id).addEventListener('input',update);
+  });
+  update();
+})();
+</script>
+</body>
+</html>
