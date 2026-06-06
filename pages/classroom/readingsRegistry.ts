@@ -16,9 +16,6 @@ export const readingsRegistry: Record<string, Record<string, LazyComponent>> = {
     'bombas': React.lazy(() => import('./iqya-2031/readings/bombas')),
     'agitacion': React.lazy(() => import('./iqya-2031/readings/agitacion')),
   },
-  'iqya-2031-2026-20': {
-    'lectura-07-mezclado': React.lazy(() => import('./iqya-2031/readings/mezclado')),
-  },
   'iqya-3050': {
     'propuesta-valor': React.lazy(() => import('./iqya-3050/readings/propuesta-valor')),
     'flujogramas': React.lazy(() => import('./iqya-3050/readings/flujogramas')),

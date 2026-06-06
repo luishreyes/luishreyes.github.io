@@ -581,6 +581,7 @@ export const pou202620Course: Course = {
       readingMinutes: 28,
       tags: ['mezclado', 'escalado', 'tumble blender', 'ribbon blender', 'mezclador estático', 'homogeneizador', 'PAT', 'scale-up'],
       category: 'lectura',
+      href: '/classroom/iqya-2031-2026-20/lecturas/Lectura_07/Lectura_07_Mezclado.html',
     },
   ],
   presentations: [

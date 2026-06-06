@@ -21,12 +21,14 @@ components/           ← Componentes React reutilizables
 pages/                ← Páginas por sección
   classroom/          ← Páginas del Classroom (index, landing, readings, presentations)
     {courseSlug}/      ← Contenido por curso
-      readings/       ← Componentes TSX de lecturas
+      readings/       ← Componentes TSX de lecturas (sistema React DEPRECADO, solo curso 2026-10)
 public/
   classroom/          ← Assets estáticos del Classroom
     _template-slides.html  ← Plantilla base de presentaciones
     {courseSlug}/
       banner.jpg      ← Banner del curso (B&W)
+      lecturas/       ← Lecturas HTML autocontenidas (SISTEMA VIGENTE) — ver LECTURAS-HTML.md
+        Lectura_NN/   ← {Lectura_NN_Tema.html, assets/deloitte.css}
       slides/         ← Presentaciones HTML autocontenidas
         img/          ← Imágenes de las presentaciones
 routes.ts             ← Definición de rutas
@@ -78,7 +80,8 @@ Para crear o editar contenido del Classroom, lee la guía correspondiente:
 
 | Tipo de contenido | Guía | Descripción |
 |---|---|---|
-| **Material del curso** (readings — guías y lecturas) | [LECTURES.md](LECTURES.md) | Guías interactivas con TOC click-to-filter, callouts, cards, tablas, videos, KaTeX |
+| **Lecturas del curso actual** (POU 2026-20 y cursos nuevos) | [LECTURAS-HTML.md](LECTURAS-HTML.md) | **SISTEMA VIGENTE.** Documentos HTML autocontenidos que abren en pestaña nueva (`href`), con `assets/deloitte.css`, side-nav + scroll-spy, callouts, tablas, galerías y calculadoras en JS vanilla, KaTeX. Plantilla canónica: `Lectura_06_Agitacion.html`. |
+| **Lecturas React** (POU 2026-10 — `iqya-2031`) | [LECTURES.md](LECTURES.md) | ⚠️ **DEPRECADO** para cursos nuevos. Componentes `.tsx` con TOC click-to-filter. Solo aplica a las lecturas ya publicadas del curso 2026-10. |
 | **Presentaciones** (slides) | [PRESENTATIONS.md](PRESENTATIONS.md) | Diapositivas HTML autocontenidas con íconos SVG Lucide, navegación, imágenes, interactividad |
 | **"Qué hay para hoy"** | [HOY.md](HOY.md) | Popup con cronograma de próximos 7 días |
 
@@ -93,10 +96,10 @@ Para crear o editar contenido del Classroom, lee la guía correspondiente:
    - `slides/` — Directorio para presentaciones
    - `slides/img/` — Imágenes de las presentaciones
 
-3. **Crear lecturas** siguiendo [LECTURES.md](LECTURES.md):
-   - Componentes TSX en `pages/classroom/{slug}/readings/`
-   - Registrar en `pages/classroom/readingsRegistry.ts`
-   - Agregar metadata al array `readings` del curso
+3. **Crear lecturas** siguiendo [LECTURAS-HTML.md](LECTURAS-HTML.md) (sistema vigente):
+   - Documento HTML autocontenido en `public/classroom/{slug}/lecturas/Lectura_NN/`, partiendo de copiar la lectura anterior
+   - Copiar `assets/deloitte.css` a la carpeta de la lectura
+   - Agregar metadata al array `readings` del curso **con el campo `href`** (abre en pestaña nueva). NO se crea `.tsx` ni se toca `readingsRegistry.ts`
 
 4. **Crear presentaciones** siguiendo [PRESENTATIONS.md](PRESENTATIONS.md):
    - Archivos HTML en `public/classroom/{slug}/slides/`
