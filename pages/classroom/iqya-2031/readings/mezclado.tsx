@@ -477,9 +477,9 @@ const tocItems = [
 
 /* ─── Componente principal ─── */
 const MezcladoReading: React.FC = () => {
-  const course = getCourseBySlug('iqya-2031');
+  const course = getCourseBySlug('iqya-2031-2026-20');
   if (!course) return null;
-  const reading = course.readings.find((r) => r.slug === 'mezclado');
+  const reading = course.readings.find((r) => r.slug === 'lectura-07-mezclado');
   if (!reading) return null;
 
   useKatex();

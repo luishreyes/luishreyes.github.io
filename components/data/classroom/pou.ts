@@ -880,16 +880,6 @@ export const pouCourse: Course = {
       tags: ['agitación', 'mezclado', 'impulsores', 'escalado', 'cosmética'],
       category: 'lectura',
     },
-    {
-      slug: 'mezclado',
-      title: 'Mezclado y escalado',
-      summary:
-        'Mecanismos fundamentales del mezclado (convectivo, cizalladura, difusivo), equipos para sólidos con visor interactivo (doble cono, V-blender, ribbon blender, paletas, tornillo cónico, granulador de alta cizalla), equipos para líquidos (rotor-estator, mezclador estático, homogeneizador de alta presión), criterios de escalado con calculadora reactiva (P/V, v_tip, N·t, Froude), tecnología PAT y errores comunes.',
-      date: '2026-02-25',
-      readingMinutes: 28,
-      tags: ['mezclado', 'escalado', 'tumble blender', 'ribbon blender', 'homogeneizador', 'PAT', 'scale-up'],
-      category: 'lectura',
-    },
   ],
   presentations: [
     {
