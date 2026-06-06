@@ -571,6 +571,18 @@ export const pou202620Course: Course = {
       category: 'lectura',
       href: '/classroom/iqya-2031-2026-20/lecturas/Lectura_06/Lectura_06_Agitacion.html',
     },
+    {
+      slug: 'lectura-07-mezclado',
+      order: 7,
+      title: 'Mezclado y escalado',
+      summary:
+        'Mecanismos fundamentales del mezclado (convectivo, cizalladura, difusivo), equipos para sólidos con visor interactivo (doble cono, V-blender, ribbon blender, paletas, tornillo cónico, granulador de alta cizalla), equipos para líquidos (rotor-estator, mezclador estático, homogeneizador de alta presión), criterios de escalado con calculadora reactiva (P/V, v_tip, N·t, Froude), tecnología PAT y errores comunes.',
+      date: '2026-06-06',
+      readingMinutes: 28,
+      tags: ['mezclado', 'escalado', 'tumble blender', 'ribbon blender', 'mezclador estático', 'homogeneizador', 'PAT', 'scale-up'],
+      category: 'lectura',
+      href: '/classroom/iqya-2031-2026-20/lecturas/Lectura_07/Lectura_07_Mezclado.html',
+    },
   ],
   presentations: [
     {
