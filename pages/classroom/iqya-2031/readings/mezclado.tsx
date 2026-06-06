@@ -161,7 +161,8 @@ type SolidsEquipment = {
   id: string;
   family: 'volteo' | 'convectivo' | 'alta-cizalla';
   name: string;
-  image: string;
+  image?: string;
+  youtubeThumb?: string;
   mechanism: string;
   advantages: string[];
   disadvantages: string[];
@@ -172,7 +173,7 @@ type SolidsEquipment = {
 const solidsEquipment: SolidsEquipment[] = [
   {
     id: 'doble-cono', family: 'volteo', name: 'Doble cono',
-    image: '/classroom/iqya-2031/readings/mezclado-doble-cono.gif',
+    youtubeThumb: 'C1dTSgNuaeI',
     mechanism: 'El recipiente cerrado rota sobre un eje horizontal; el material cae en cascada, se divide y recombina, promoviendo mezclado convectivo y difusivo.',
     advantages: [
       'Mezclado suave (bajo cizallamiento).',
@@ -223,7 +224,7 @@ const solidsEquipment: SolidsEquipment[] = [
   },
   {
     id: 'paddle', family: 'convectivo', name: 'Mezclador de paletas (Paddle Mixer)',
-    image: '/classroom/iqya-2031/readings/mezclado-paddle-mixer.gif',
+    youtubeThumb: 'qh7TOi0YBGU',
     mechanism: 'Paletas montadas en uno o dos ejes horizontales levantan y hacen caer el material, creando una acción de fluidización mecánica que combina mezclado convectivo y difusivo.',
     advantages: [
       'Acción de mezclado suave pero eficiente.',
@@ -239,7 +240,7 @@ const solidsEquipment: SolidsEquipment[] = [
   },
   {
     id: 'tornillo-conico', family: 'convectivo', name: 'Tornillo cónico (Nauta Mixer)',
-    image: '/classroom/iqya-2031/readings/mezclado-tornillo-conico.gif',
+    youtubeThumb: 'mqbM6URncbY',
     mechanism: 'Un tornillo vertical orbita alrededor del interior de un cono. El tornillo eleva el material desde el fondo; la gravedad lo devuelve por las paredes del cono. El movimiento orbital garantiza que todo el volumen participe.',
     advantages: [
       'Excelente para mezclar polvos con grandes diferencias de densidad o tamaño.',
@@ -305,7 +306,7 @@ const SolidsEquipmentStepper: React.FC = () => {
       <div className="grid md:grid-cols-2 gap-6 items-start">
         <div className="rounded-xl bg-zinc-50 border border-zinc-200 p-4 flex items-center justify-center min-h-[280px]">
           <img
-            src={eq.image}
+            src={eq.image ?? `https://img.youtube.com/vi/${eq.youtubeThumb}/hqdefault.jpg`}
             alt={`Equipo: ${eq.name}`}
             className="block max-w-full h-auto"
             style={{ maxHeight: 320 }}
