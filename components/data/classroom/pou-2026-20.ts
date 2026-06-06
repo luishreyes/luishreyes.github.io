@@ -583,6 +583,18 @@ export const pou202620Course: Course = {
       category: 'lectura',
       href: '/classroom/iqya-2031-2026-20/lecturas/Lectura_07/Lectura_07_Mezclado.html',
     },
+    {
+      slug: 'lectura-08-intercambiadores-de-calor',
+      order: 8,
+      title: 'Intercambiadores de calor',
+      summary:
+        'Mecanismos de transferencia de calor (conducción, convección, radiación), tipos de intercambiadores con visor interactivo (tubo y coraza, placas, aeroenfriador), otros tipos (doble tubo, serpentín, espiral, bobina enrollada), ecuación de diseño Q = UA·ΔTlm·FT, coeficiente global U, calculadora LMTD reactiva, factor de corrección FT, método ε-NTU, ensuciamiento (fouling) y estrategias de mitigación.',
+      date: '2026-06-06',
+      readingMinutes: 30,
+      tags: ['intercambiadores de calor', 'transferencia de calor', 'LMTD', 'NTU', 'tubo y coraza', 'placas', 'aeroenfriador', 'ensuciamiento', 'fouling', 'TEMA'],
+      category: 'lectura',
+      href: '/classroom/iqya-2031-2026-20/lecturas/Lectura_08/Lectura_08_Intercambiadores_de_Calor.html',
+    },
   ],
   presentations: [
     {
