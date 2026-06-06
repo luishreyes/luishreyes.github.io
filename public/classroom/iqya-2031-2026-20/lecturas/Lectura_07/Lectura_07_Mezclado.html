@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lectura 07 · Mezclado y escalado · Proyecto de Operaciones Unitarias</title>
+<link rel="stylesheet" href="assets/deloitte.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<style>
+  body {
+    margin: 0;
+    background: var(--gris-5);
+    font-family: var(--tipo);
+    color: var(--gris-1);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.62;
+  }
+
+  /* ---- Barra de progreso de lectura ---- */
+  .progress {
+    position: fixed; top: 0; left: 0; height: 4px; width: 0;
+    background: var(--verde); z-index: 200; transition: width .08s linear;
+  }
+
+  .page {
+    max-width: 940px;
+    margin: 40px auto 90px;
+    background: var(--blanco);
+    box-shadow: var(--sombra);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  /* ===================== ENCABEZADO ===================== */
+  .doc-head {
+    background: var(--papel);
+    border-bottom: 5px solid var(--verde);
+    padding: 46px 64px 40px;
+    position: relative;
+  }
+  .doc-head .org {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    font-size: 14px; font-weight: 700; letter-spacing: .03em; color: var(--gris-1);
+  }
+  .doc-head .org span { color: var(--gris-3); font-weight: 600; }
+  .doc-head .badge {
+    display: inline-block; background: var(--verde); color: #fff;
+    font-size: 13px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+    padding: 6px 14px; border-radius: 999px; margin: 28px 0 18px; white-space: nowrap;
+  }
+  .doc-head h1 { font-size: 43px; line-height: 1.1; margin: 0 0 10px; letter-spacing: -.015em; max-width: 22ch; }
+  .doc-head .subtitle { font-size: 20px; color: var(--gris-2); margin: 0; font-weight: 500; max-width: 52ch; }
+  .doc-meta {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px;
+    margin-top: 34px; padding-top: 26px; border-top: 1px solid var(--gris-4);
+  }
+  .doc-meta div { font-size: 15px; color: var(--gris-2); }
+  .doc-meta b { display: block; color: var(--gris-1); font-size: 16px; font-weight: 700; margin-bottom: 2px; }
+
+  /* ===================== CUERPO ===================== */
+  .doc-body { padding: 8px 64px 60px; }
+  .doc-body section { padding-top: 46px; scroll-margin-top: 24px; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--verde-osc); margin-bottom: 12px;
+  }
+  .eyebrow::before { content: ""; width: 26px; height: 4px; background: var(--verde); border-radius: 2px; }
+  h2.sec { font-size: 30px; line-height: 1.18; margin: 0 0 18px; letter-spacing: -.01em; }
+  h2.sec .secnum { color: var(--verde); font-weight: 700; }
+  h3.sub { font-size: 21px; margin: 34px 0 10px; letter-spacing: -.005em; }
+  .doc-body p { font-size: 17px; color: var(--gris-1); margin: 0 0 16px; text-wrap: pretty; }
+  .doc-body ul, .doc-body ol { font-size: 17px; color: var(--gris-1); margin: 0 0 16px; padding-left: 24px; }
+  .doc-body li { margin-bottom: 6px; line-height: 1.55; }
+  .lead { font-size: 20px; color: var(--gris-2); line-height: 1.55; font-weight: 400; }
+  .lead b { color: var(--gris-1); font-weight: 600; }
+
+  /* ===================== FIGURAS ===================== */
+  figure.fig { margin: 30px 0 8px; }
+  figure.fig.full img { width: 100%; height: auto; display: block; }
+  .fig-frame {
+    border: 1px solid var(--gris-4); border-radius: 8px; padding: 22px; background: var(--blanco);
+    box-shadow: var(--sombra); display: flex; align-items: center; justify-content: center;
+  }
+  .fig-frame img { max-width: 100%; height: auto; display: block; border-radius: 4px; }
+  figure.fig figcaption {
+    font-size: 14px; color: var(--gris-2); line-height: 1.5; margin-top: 12px;
+    padding-left: 16px; border-left: 3px solid var(--verde);
+  }
+  figure.fig figcaption b { color: var(--gris-1); }
+
+  /* ===================== TABLAS ===================== */
+  .tbl-wrap { margin: 0 0 8px; overflow-x: auto; border-radius: 8px; }
+  table.ou { width: 100%; border-collapse: collapse; font-size: 15px; min-width: 560px; }
+  table.ou th, table.ou td { text-align: left; padding: 14px 16px; border-bottom: 1px solid var(--gris-4); vertical-align: top; line-height: 1.4; }
+  table.ou thead th { background: var(--gris-1); color: #fff; font-weight: 700; font-size: 13.5px; letter-spacing: .02em; }
+  table.ou thead th:first-child { border-top-left-radius: 6px; }
+  table.ou thead th:last-child { border-top-right-radius: 6px; }
+  table.ou td:first-child { font-weight: 700; color: var(--gris-1); }
+  table.ou tbody tr:nth-child(even) { background: var(--papel); }
+  table.ou tbody tr:hover { background: var(--verde-claro); }
+  .tbl-cap { font-size: 13.5px; color: var(--gris-2); margin: 24px 0 11px; padding-left: 14px; border-left: 3px solid var(--verde); line-height: 1.5; }
+  .tbl-cap b { color: var(--gris-1); }
+
+  /* ===================== CALLOUTS ===================== */
+  .callout {
+    display: grid; grid-template-columns: 42px 1fr; gap: 18px;
+    border-radius: 8px; padding: 20px 24px; margin: 24px 0; align-items: start;
+  }
+  .callout .ic {
+    width: 42px; height: 42px; border-radius: 50%; display: inline-flex;
+    align-items: center; justify-content: center; font-size: 21px; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .callout > div > b { display: block; font-size: 15.5px; margin-bottom: 4px; }
+  .callout p { font-size: 15.5px; margin: 0 0 8px; color: var(--gris-1); line-height: 1.5; }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout p b { display: inline; color: inherit; font-size: inherit; }
+  .callout ul, .callout ol { font-size: 15.5px; margin: 8px 0 0; padding-left: 22px; }
+  .callout li { margin-bottom: 4px; line-height: 1.5; }
+  .callout--nota { background: var(--teal-claro); }
+  .callout--nota .ic { background: var(--teal); color: #fff; }
+  .callout--nota b { color: var(--teal); }
+  .callout--tip { background: var(--verde-claro); }
+  .callout--tip .ic { background: var(--verde); color: #fff; }
+  .callout--tip b { color: var(--verde-osc); }
+  .callout--warn { background: #fdecec; }
+  .callout--warn .ic { background: #c0392b; color: #fff; }
+  .callout--warn b { color: #c0392b; }
+
+  /* ===================== EQUIPMENT GALLERY ===================== */
+  .imp-gallery { margin: 26px 0 8px; }
+  .imp-bar { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px; }
+  .imp-btn {
+    font-family: var(--tipo); font-size: 13px; font-weight: 600;
+    padding: 7px 16px; border: 1.5px solid var(--gris-4); border-radius: 999px;
+    cursor: pointer; background: var(--blanco); color: var(--gris-2);
+    transition: all .18s ease;
+  }
+  .imp-btn:hover { border-color: var(--verde); color: var(--verde-osc); }
+  .imp-btn.active { background: var(--verde); color: #fff; border-color: var(--verde); }
+  .imp-panel { display: none; }
+  .imp-panel.active { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+  @media (max-width: 640px) { .imp-panel.active { grid-template-columns: 1fr; } }
+  .imp-gif {
+    border: 1px solid var(--gris-4); border-radius: 8px; overflow: hidden;
+    background: var(--papel); display: flex; align-items: center; justify-content: center;
+    min-height: 280px; box-shadow: var(--sombra);
+  }
+  .imp-gif img { width: 100%; height: auto; display: block; max-height: 340px; object-fit: contain; }
+  .imp-gif .aspect { position: relative; width: 100%; padding-top: 56.25%; }
+  .imp-gif .aspect iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .imp-info h4 { font-size: 18px; font-weight: 800; color: var(--gris-1); margin: 0 0 6px; }
+  .imp-family {
+    font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--verde-osc); background: var(--verde-claro); padding: 3px 10px;
+    border-radius: 999px; display: inline-block; margin-bottom: 10px;
+  }
+  .imp-desc { font-size: 15px; color: var(--gris-2); line-height: 1.55; margin-bottom: 14px; }
+  .imp-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 12px; }
+  @media (max-width: 420px) { .imp-cols { grid-template-columns: 1fr; } }
+  .imp-cols h5 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; margin: 0 0 5px; }
+  .imp-cols ul { font-size: 13.5px; color: var(--gris-2); margin: 0; padding-left: 18px; }
+  .imp-cols li { margin-bottom: 3px; line-height: 1.4; }
+  .imp-pro h5 { color: var(--verde-osc); }
+  .imp-con h5 { color: #c0392b; }
+  .imp-apps { font-size: 14px; color: var(--gris-2); }
+
+  /* ===================== SCALEUP CRITERIA + CALC ===================== */
+  .calc-wrap {
+    margin: 26px 0 8px; border: 1px solid var(--gris-4); border-radius: 10px;
+    background: var(--blanco); padding: 22px 24px; box-shadow: var(--sombra);
+  }
+  .calc-wrap h4 { font-size: 17px; font-weight: 700; color: var(--gris-1); margin: 0 0 18px; }
+  .calc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px 22px; }
+  .calc-field { display: flex; flex-direction: column; gap: 4px; }
+  .calc-field-header { display: flex; justify-content: space-between; font-size: 14px; }
+  .calc-field-header span { color: var(--gris-2); font-weight: 600; }
+  .calc-field-header b { color: var(--gris-1); font-family: 'JetBrains Mono Variable', ui-monospace, monospace; }
+  .calc-field input[type=range] { width: 100%; accent-color: var(--verde); }
+  .calc-note { font-size: 13.5px; color: var(--gris-3); font-style: italic; margin-top: 14px; }
+  .su-criteria { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+  .su-btn {
+    font-family: var(--tipo); font-size: 13px; font-weight: 600;
+    padding: 7px 16px; border: 1.5px solid var(--gris-4); border-radius: 999px;
+    cursor: pointer; background: var(--blanco); color: var(--gris-2);
+    transition: all .18s ease;
+  }
+  .su-btn:hover { border-color: var(--verde); color: var(--verde-osc); }
+  .su-btn.active { background: var(--verde); color: #fff; border-color: var(--verde); }
+  .su-desc { font-size: 15px; color: var(--gris-2); font-style: italic; margin-bottom: 14px; }
+
+  /* ===================== YOUTUBE EMBED ===================== */
+  .yt-wrap { margin: 26px 0 8px; }
+  .yt-frame {
+    border: 1px solid var(--gris-4); border-radius: 8px; overflow: hidden;
+    background: var(--papel); max-width: 640px; box-shadow: var(--sombra);
+  }
+  .yt-frame .aspect { position: relative; padding-top: 56.25%; }
+  .yt-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .yt-caption { font-size: 13.5px; color: var(--gris-2); padding: 10px 16px 14px; text-align: center; line-height: 1.45; }
+
+  /* ===================== PLATFORM LINKS ===================== */
+  a.pl { color: inherit; border-bottom: 2px solid var(--verde); text-decoration: none; white-space: nowrap; }
+  a.pl::after { content: '↗'; font-size: .75em; margin-left: .2em; color: var(--verde); }
+  a.pl:hover { color: var(--verde-osc); }
+
+  /* ===================== FOOTER ===================== */
+  .doc-foot {
+    border-top: 1px solid var(--gris-4); margin-top: 50px; padding-top: 22px;
+    display: flex; justify-content: space-between; font-size: 13px; color: var(--gris-3);
+  }
+
+  /* ===================== BIBLIOGRAFÍA ===================== */
+  ol.refs { list-style: none; counter-reset: ref; padding: 0; margin: 18px 0 0; display: grid; gap: 4px; }
+  ol.refs li {
+    counter-increment: ref; position: relative; padding: 12px 16px 12px 58px; border-radius: 8px;
+    font-size: 15px; line-height: 1.5; color: var(--gris-1);
+  }
+  ol.refs li::before {
+    content: counter(ref); position: absolute; left: 14px; top: 11px;
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px; border-radius: 999px; background: var(--papel); color: var(--verde-osc);
+    font-size: 13px; font-weight: 700;
+  }
+  ol.refs li em { color: var(--gris-2); font-style: italic; }
+
+  /* ===================== RESPONSIVE ===================== */
+  @media (max-width: 720px) {
+    .doc-head, .doc-body { padding-left: 26px; padding-right: 26px; }
+    .doc-meta { grid-template-columns: 1fr 1fr; }
+    .doc-head h1 { font-size: 32px; }
+  }
+  @media print {
+    body { background: #fff; }
+    .page { box-shadow: none; margin: 0; max-width: none; border-radius: 0; }
+    .progress, .side-nav { display: none; }
+    section, figure.fig, .tbl-wrap, .callout, .imp-gallery, .calc-wrap { break-inside: avoid; }
+  }
+
+  /* ---- Outer layout with sticky side nav ---- */
+  .page { margin: 0; }
+  .outer-layout {
+    max-width: 1160px;
+    margin: 40px auto 90px;
+    display: grid;
+    grid-template-columns: 200px minmax(0, 1fr);
+    gap: 24px;
+    padding: 0 20px;
+    align-items: start;
+  }
+  .side-nav {
+    position: sticky;
+    top: 28px;
+    max-height: calc(100vh - 56px);
+    overflow-y: auto;
+    background: var(--blanco);
+    border: 1px solid var(--gris-4);
+    border-radius: 8px;
+    padding: 20px 16px;
+    box-shadow: var(--sombra);
+    scrollbar-width: thin;
+  }
+  .sn-label { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--gris-3); margin: 0 0 10px; padding: 0 4px; }
+  .sn-item { display: flex; align-items: flex-start; gap: 7px; font-family: var(--tipo); font-size: 13px; color: var(--gris-2); text-decoration: none; padding: 6px 8px; border-radius: 5px; line-height: 1.3; transition: all .15s; margin-bottom: 2px; border: none; background: none; cursor: pointer; width: 100%; text-align: left; }
+  .sn-item:hover { color: var(--gris-1); background: var(--gris-5); }
+  .sn-item.is-active { color: var(--verde-osc); background: var(--verde-claro); font-weight: 600; border-left: 3px solid var(--verde); padding-left: 5px; }
+  .sn-num { font-size: 11px; font-weight: 700; color: var(--verde-osc); min-width: 16px; padding-top: 1px; flex-shrink: 0; }
+  @media (max-width: 880px) {
+    .outer-layout { grid-template-columns: 1fr; padding: 0 12px; }
+    .side-nav { display: none; }
+    .page { margin: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<div class="outer-layout">
+
+<nav class="side-nav" aria-label="Secciones">
+  <p class="sn-label">En esta lectura</p>
+  <a href="#s1" class="sn-item"><span class="sn-num">01</span>Objetivo del mezclado</a>
+  <a href="#s2" class="sn-item"><span class="sn-num">02</span>Mecanismos fundamentales</a>
+  <a href="#s3" class="sn-item"><span class="sn-num">03</span>Equipos para sólidos</a>
+  <a href="#s4" class="sn-item"><span class="sn-num">04</span>Equipos para líquidos</a>
+  <a href="#s5" class="sn-item"><span class="sn-num">05</span>Escalado</a>
+  <a href="#s6" class="sn-item"><span class="sn-num">06</span>Tecnología PAT</a>
+  <a href="#s7" class="sn-item"><span class="sn-num">07</span>Errores comunes</a>
+  <a href="#s8" class="sn-item"><span class="sn-num">08</span>Bibliografía</a>
+</nav>
+
+<article class="page">
+
+  <!-- ENCABEZADO -->
+  <header class="doc-head">
+    <div class="org">
+      Universidad de los Andes
+      <span>Ingeniería Química y de Alimentos</span>
+    </div>
+    <div class="badge">Lectura 07 · Proyecto de Operaciones Unitarias</div>
+    <h1>Mezclado y escalado</h1>
+    <p class="subtitle">Mecanismos del mezclado, equipos para sólidos y líquidos, criterios de escalado, tecnología PAT y los errores que más cuestan al pasar del laboratorio a la planta.</p>
+    <div class="doc-meta">
+      <div><b>Curso</b>Proyecto de Operaciones Unitarias · IQYA-2031</div>
+      <div><b>Autor</b>Luis H. Reyes</div>
+      <div><b>Fecha</b>6 de junio de 2026</div>
+      <div><b>Lectura</b>Aproximadamente 28 minutos</div>
+    </div>
+  </header>
+
+  <div class="doc-body">
+
+    <!-- ── s0: Intro ────────────────────────────────────────────── -->
+    <section id="s0">
+      <p class="lead">El <b>mezclado</b> es una de las operaciones unitarias más frecuentes en la industria de procesos. Mientras la <em>agitación</em> (lectura anterior) se enfoca en inducir movimiento, el mezclado se enfoca en el <b>resultado</b>: lograr una distribución uniforme de dos o más componentes inicialmente separados, hasta el grado de homogeneidad que el producto exige. Esta lectura cubre los mecanismos del mezclado, los equipos típicos para sólidos y líquidos, y el reto del escalado.</p>
+
+      <figure class="fig">
+        <div class="fig-frame">
+          <img src="/classroom/iqya-2031/readings/mezclado-difusion-fluorescencia.gif"
+               alt="Fluoresceína difundiéndose en un líquido bajo luz UV"
+               style="max-width:420px">
+        </div>
+        <figcaption><b>Figura 1.</b> Difusión de un trazador fluorescente bajo luz UV. El mezclado a escala molecular es elegante pero lento: por eso casi siempre se acelera con un mecanismo mecánico.</figcaption>
+      </figure>
+
+      <div class="callout callout--tip">
+        <span class="ic">i</span>
+        <div>
+          <b>Aplicación al proyecto del curso</b>
+          <p>Si tu proyecto incluye una etapa de mezclado (en la planta de pectina, muy probablemente la hay), debes:</p>
+          <ol>
+            <li>Definir claramente el <b>objetivo</b> de la operación (homogeneizar, disolver, dispersar, suspender).</li>
+            <li>Seleccionar un <b>tipo de equipo</b> apropiado y justificarlo según las fases y propiedades de los materiales.</li>
+            <li>Estimar los <b>parámetros operativos</b> clave (tiempo de mezclado, velocidad de rotación).</li>
+            <li>Identificar el <b>mecanismo crítico</b> de mezclado para tu producto.</li>
+            <li>Si parten de una formulación de laboratorio, proponer un <b>criterio de escalado</b> (\(P/V\), \(v_{tip}\), \(N\cdot t\), \(\text{Fr}\)) y justificarlo.</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── s1: Objetivo del mezclado ────────────────────────────── -->
+    <section id="s1">
+      <div class="eyebrow">Punto de partida</div>
+      <h2 class="sec"><span class="secnum">1.</span> El objetivo del mezclado y su criticidad</h2>
+
+      <p>El mezclado busca una distribución uniforme de componentes en un sistema. Pero «uniforme» depende del contexto: puede significar que cada miligramo de una tableta contenga la misma proporción de ingrediente activo, o que la viscosidad de una emulsión sea consistente en cada lote de 5 000 L.</p>
+
+      <p>A diferencia de la agitación —que es el acto de inducir movimiento— el mezclado se mide por el <b>resultado final de uniformidad</b>. Un sistema puede estar muy agitado y aun así mal mezclado si los patrones de flujo no promueven la distribución de los componentes.</p>
+
+      <h3 class="sub">¿Por qué es tan crítico?</h3>
+      <p class="tbl-cap"><b>Tabla 1.</b> Impacto del mezclado en la calidad del producto, con énfasis en la industria farmacéutica y de alimentos.</p>
+      <div class="tbl-wrap">
+        <table class="ou">
+          <thead>
+            <tr><th>Dimensión</th><th>Por qué depende del mezclado</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Uniformidad de contenido</td><td>Cada dosis unitaria (tableta, cápsula, volumen) debe contener la cantidad correcta del ingrediente activo. Desviaciones generan problemas de eficacia o seguridad.</td></tr>
+            <tr><td>Propiedades del producto</td><td>Afecta la biodisponibilidad, la tasa de disolución, la compresibilidad de polvos y la textura de semisólidos.</td></tr>
+            <tr><td>Estabilidad</td><td>En emulsiones y suspensiones, un mezclado adecuado logra la dispersión correcta y previene la separación de fases durante la vida útil.</td></tr>
+            <tr><td>Cumplimiento (cGMP)</td><td>Los procesos de mezclado deben validarse para demostrar que producen consistentemente un producto homogéneo. La FDA y el INVIMA lo exigen.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout--tip">
+        <span class="ic">i</span>
+        <div>
+          <b>Agitación ≠ mezclado</b>
+          <p>La agitación es el <em>medio</em> (inducir movimiento); el mezclado es el <em>fin</em> (lograr homogeneidad). Recordarlo evita el error de creer que «más rpm» siempre significa «mejor mezcla».</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── s2: Mecanismos fundamentales ─────────────────────────── -->
+    <section id="s2">
+      <div class="eyebrow">Cómo ocurre</div>
+      <h2 class="sec"><span class="secnum">2.</span> Mecanismos fundamentales del mezclado</h2>
+
+      <p>Independientemente del tipo de materiales (polvos, líquidos, pastas), el mezclado ocurre por una combinación de tres mecanismos que actúan a diferentes escalas. Entender cuál predomina en tu sistema es la clave para seleccionar el equipo correcto y diseñar el escalado.</p>
+
+      <h3 class="sub">Mezclado convectivo (macro-mezclado)</h3>
+      <p>Movimiento de <b>grandes grupos</b> de partículas o porciones de fluido de una localización a otra dentro del mezclador. Es el mecanismo de gran escala y el más rápido.</p>
+      <ul>
+        <li>Las cintas de un mezclador de cinta que transportan material de un extremo a otro.</li>
+        <li>La circulación generada por un impulsor en un tanque agitado.</li>
+        <li>El movimiento de cascada en un V-blender.</li>
+      </ul>
+      <p><b>Efecto:</b> reduce rápidamente las diferencias de concentración a gran escala, pero no garantiza la homogeneidad a nivel de partícula individual.</p>
+
+      <h3 class="sub">Mezclado por cizalladura (shear mixing)</h3>
+      <p>Se generan <b>gradientes de velocidad</b> dentro del material, haciendo que capas adyacentes se deslicen unas sobre otras. La cizalla reduce el tamaño de aglomerados (en polvos) o de gotas (en emulsiones).</p>
+      <ul>
+        <li>La zona de alta velocidad cerca de las palas de un impulsor.</li>
+        <li>La acción del <em>chopper</em> en un mezclador-granulador de alta cizalla.</li>
+        <li>El flujo a través de regiones de constricción (rotor-estator, válvula de homogeneizador).</li>
+      </ul>
+      <p><b>Efecto:</b> clave para la deaglomeración, la dispersión y la reducción de la «escala de segregación» (el tamaño de las regiones no mezcladas).</p>
+
+      <h3 class="sub">Mezclado difusivo (micro-mezclado)</h3>
+      <p>Opera a la escala más pequeña, eliminando las diferencias de concentración entre partículas o moléculas adyacentes.</p>
+      <ul>
+        <li><b>En líquidos:</b> difusión molecular impulsada por gradientes de concentración.</li>
+        <li><b>En polvos:</b> movimiento aleatorio de partículas individuales por turbulencia, percolación o vibración.</li>
+      </ul>
+      <p><b>Efecto:</b> esencial para la homogeneidad microscópica. Es el mecanismo más lento, especialmente en sólidos.</p>
+
+      <p class="tbl-cap"><b>Tabla 2.</b> Los tres mecanismos según su escala, velocidad y ejemplos representativos.</p>
+      <div class="tbl-wrap">
+        <table class="ou">
+          <thead>
+            <tr><th>Mecanismo</th><th>Escala</th><th>Velocidad</th><th>Ejemplo</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Convectivo</td><td>Macro (cm – m)</td><td>Rápido</td><td>Cascada en V-blender, cinta helicoidal</td></tr>
+            <tr><td>Cizalladura</td><td>Meso (μm – cm)</td><td>Medio</td><td>Chopper, rotor-estator</td></tr>
+            <tr><td>Difusivo</td><td>Micro (nm – μm)</td><td>Lento</td><td>Difusión molecular, percolación de partículas</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout--nota">
+        <span class="ic">i</span>
+        <div>
+          <b>Los tres trabajan juntos</b>
+          <p>La efectividad de cualquier proceso de mezclado depende de la contribución relativa de estos tres mecanismos, que a su vez depende del tipo de mezclador, las propiedades del material y las condiciones de operación. Un buen diseño los maximiza en la proporción adecuada.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── s3: Equipos para sólidos ─────────────────────────────── -->
+    <section id="s3">
+      <div class="eyebrow">Mezcla de polvos</div>
+      <h2 class="sec"><span class="secnum">3.</span> Equipos de mezclado para sólidos</h2>
+
+      <p>La selección del equipo depende de las propiedades de los polvos (flujo libre vs. cohesivo, fragilidad, tamaño de partícula) y del objetivo (homogeneización simple, granulación). Se organizan en tres familias: de <b>volteo</b>, <b>convectivos</b> y de <b>alta cizalladura</b>.</p>
+
+      <p style="font-size:14px;color:var(--gris-3)">Explora cada equipo en el visor interactivo:</p>
+
+      <div class="imp-gallery" id="solid-gallery">
+        <div class="imp-bar" id="solid-bar"></div>
+        <div id="solid-panels"></div>
+      </div>
+
+      <h3 class="sub">Cómo elegir</h3>
+      <p class="tbl-cap"><b>Tabla 3.</b> Guía rápida de selección de mezcladores de sólidos.</p>
+      <div class="tbl-wrap">
+        <table class="ou">
+          <thead>
+            <tr><th>Si tienes…</th><th>Equipo recomendado</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Polvos de flujo libre, componentes frágiles</td><td>Volteo: doble cono o V-blender</td></tr>
+            <tr><td>Polvos cohesivos o premezclas con líquido</td><td>Convectivo: mezclador de cinta o paletas</td></tr>
+            <tr><td>Grandes diferencias de densidad/tamaño</td><td>Tornillo cónico (Nauta)</td></tr>
+            <tr><td>Deaglomeración rápida o granulación húmeda</td><td>Granulador de alta cizalladura</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout--warn">
+        <span class="ic">!</span>
+        <div>
+          <b>Segregación: el enemigo del mezclado de sólidos</b>
+          <p>En polvos, a diferencia de los líquidos, el mezclado compite con la <b>segregación</b>: la tendencia de partículas con propiedades distintas (tamaño, densidad, forma) a separarse. Un mezclado <em>excesivo</em> puede empeorar la homogeneidad si domina la percolación de finos. La curva de uniformidad vs. tiempo tiene un <b>óptimo</b> que se determina experimentalmente.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── s4: Equipos para líquidos ────────────────────────────── -->
+    <section id="s4">
+      <div class="eyebrow">Líquidos y semisólidos</div>
+      <h2 class="sec"><span class="secnum">4.</span> Equipos de mezclado para líquidos</h2>
+
+      <p>Para soluciones, suspensiones, emulsiones, geles, cremas y ungüentos. La selección depende de la viscosidad, la relación de fases y el objetivo (disolución, dispersión, emulsificación).</p>
+
+      <h3 class="sub">Tanques agitados</h3>
+      <p>Como se estudió en la lectura de agitación, un impulsor rota dentro de un tanque generando patrones de flujo. La selección del impulsor depende de la aplicación:</p>
+      <p class="tbl-cap"><b>Tabla 4.</b> Impulsores según la aplicación de mezclado de líquidos.</p>
+      <div class="tbl-wrap">
+        <table class="ou">
+          <thead>
+            <tr><th>Impulsor</th><th>Aplicación de mezclado</th><th>Viscosidad</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Hélice / PBT (axial)</td><td>Líquidos miscibles, disolución, suspensión diluida</td><td>Baja a media</td></tr>
+            <tr><td>Turbina Rushton (radial)</td><td>Dispersión gas-líquido, transferencia de masa</td><td>Baja a media</td></tr>
+            <tr><td>Ancla / cinta helicoidal</td><td>Cremas, ungüentos, polímeros</td><td>Alta (\(\mu > 5000\) cP)</td></tr>
+            <tr><td>Rotor-estator (alta cizalla)</td><td>Emulsiones finas, dispersión de polvos hidrofóbicos</td><td>Baja a media</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="sub">Dispersores de alta cizalladura (rotor-estator)</h3>
+      <p>El rotor gira a alta velocidad dentro de un estator estacionario con ranuras, generando una intensa cizalladura mecánica. Son indispensables para crear emulsiones finas y dispersar polvos difíciles de humectar.</p>
+      <div class="yt-wrap">
+        <div class="yt-frame">
+          <div class="aspect">
+            <iframe src="https://www.youtube.com/embed/cep81yJlgDk"
+                    title="Silverson High Shear In-Tank Batch Mixer"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen></iframe>
+          </div>
+          <p class="yt-caption">Mezclador rotor-estator tipo Silverson: la cizalladura intensa en el <em>gap</em> rotor-estator genera emulsiones finas dentro del tanque.</p>
+        </div>
+      </div>
+
+      <h3 class="sub">Mezcladores estáticos (en línea)</h3>
+      <p>Elementos fijos dentro de una tubería dividen y recombinan repetidamente las corrientes de fluido, logrando el mezclado <b>sin partes móviles</b>. Ideales para procesos continuos.</p>
+      <ul>
+        <li><b>Ventajas:</b> bajo mantenimiento, sin motor, compactos, buena eficiencia para líquidos de viscosidad similar.</li>
+        <li><b>Aplicaciones:</b> ajuste de pH en línea, diluciones, mezclado de corrientes antes de un reactor.</li>
+      </ul>
+      <div class="yt-wrap">
+        <div class="yt-frame">
+          <div class="aspect">
+            <iframe src="https://www.youtube.com/embed/4H2Vk7_cCCc"
+                    title="Static Mixer"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen></iframe>
+          </div>
+          <p class="yt-caption">Mezclador estático: los elementos helicoidales fijos dividen y recombinan el fluido a medida que avanza por la tubería.</p>
+        </div>
+      </div>
+
+      <h3 class="sub">Homogeneizadores de alta presión</h3>
+      <p>Fuerzan el fluido a pasar a alta velocidad por una válvula muy estrecha, causando intensa cizalladura, turbulencia, cavitación e impacto. Reducen el tamaño de gota en emulsiones o producen disrupción celular.</p>
+      <ul>
+        <li><b>Aplicaciones:</b> emulsiones y suspensiones muy finas y estables (liposomas, nanoemulsiones, leches UHT).</li>
+        <li>Presiones de operación típicas: 200–2 000 bar.</li>
+      </ul>
+      <div class="yt-wrap">
+        <div class="yt-frame">
+          <div class="aspect">
+            <iframe src="https://www.youtube.com/embed/bb0vRcl0U9s"
+                    title="High Pressure Homogenizers — BEE International"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen></iframe>
+          </div>
+          <p class="yt-caption">Homogeneizador de alta presión: la cizalladura y la cavitación en la válvula reducen el tamaño de gota a escala nanométrica.</p>
+        </div>
+      </div>
+
+      <div class="callout callout--tip">
+        <span class="ic">i</span>
+        <div>
+          <b>¿Cómo elegir el equipo de líquidos?</b>
+          <p>Considera las fases presentes, las propiedades del material (viscosidad, tensión interfacial), el resultado deseado (disolución, suspensión, emulsificación), los requerimientos de limpieza y esterilización (cGMP) y la capacidad de escalado.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── s5: Escalado ─────────────────────────────────────────── -->
+    <section id="s5">
+      <div class="eyebrow">De laboratorio a planta</div>
+      <h2 class="sec"><span class="secnum">5.</span> Escalado del mezclado</h2>
+
+      <p>El <b>escalado</b> (scale-up) transfiere una operación de mezclado desde la escala de laboratorio o piloto a la producción comercial, manteniendo las características críticas del producto. Es un paso desafiante porque los mecanismos de mezclado cambian con la escala: al aumentar el volumen, la relación superficie/volumen disminuye, los tiempos de circulación aumentan y los gradientes locales se hacen más difíciles de eliminar.</p>
+
+      <h3 class="sub">Principios fundamentales</h3>
+      <ol>
+        <li><b>Comprender el mecanismo crítico:</b> ¿qué aspecto del mezclado es el más importante para la calidad? ¿La uniformidad de contenido del API? ¿El tamaño de gota? ¿La tasa de disolución? Esto guía la elección del criterio.</li>
+        <li><b>Similitud geométrica:</b> mantener constantes las relaciones entre dimensiones clave (\(D_a/D_t\), \(H/D_t\)). Sin esto, las correlaciones pierden validez.</li>
+        <li><b>Caracterización del material:</b> tamaño de partícula, densidad, cohesividad y viscosidad pueden cambiar el comportamiento a otra escala. Un polvo que fluye bien a 5 kg puede aglomerarse a 500 kg.</li>
+      </ol>
+
+      <h3 class="sub">Criterios comunes</h3>
+      <p>Cada criterio fija una variable y deja que las demás se ajusten. La elección importa porque cambia drásticamente la potencia, la cizalladura y el tiempo de mezclado en la escala industrial.</p>
+      <p class="tbl-cap"><b>Tabla 5.</b> Criterios de escalado más usados con similitud geométrica.</p>
+      <div class="tbl-wrap">
+        <table class="ou">
+          <thead>
+            <tr><th>Criterio</th><th>Se mantiene constante</th><th>Cuándo usarlo</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>\(P/V\)</td><td>Potencia por volumen</td><td>Turbulencia y transferencia de masa clave (disolución, dispersión gas-líquido)</td></tr>
+            <tr><td>\(v_{tip}\)</td><td>Cizalladura máxima</td><td>Emulsiones, suspensiones, productos sensibles a la cizalla</td></tr>
+            <tr><td>\(N\cdot t\)</td><td>Revoluciones totales</td><td>Mezcladores de volteo (empírico, polvos de flujo libre)</td></tr>
+            <tr><td>\(\text{Fr}\)</td><td>Número de Froude</td><td>Cuando la gravedad gobierna la trayectoria (tumble blenders, vórtice)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>El selector siguiente permite explorar las consecuencias numéricas — cómo cambian \(N\), \(P\), \(P/V\) y \(v_{tip}\) al pasar de la escala 1 a la escala 2 según el criterio elegido:</p>
+
+      <!-- Scaleup calculator -->
+      <div class="calc-wrap" id="scaleup-calc">
+        <h4>Calculadora de escalado (similitud geométrica)</h4>
+        <div class="calc-grid" id="su-sliders"></div>
+        <div style="margin-top:18px">
+          <p style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gris-2);margin-bottom:8px">Criterio de escalado</p>
+          <div class="su-criteria" id="su-criteria"></div>
+          <p class="su-desc" id="su-desc"></p>
+        </div>
+        <div style="overflow-x:auto" id="su-table-wrap"></div>
+        <p class="calc-note" id="su-note"></p>
+      </div>
+
+      <div class="callout callout--warn">
+        <span class="ic">!</span>
+        <div>
+          <b>No se puede mantener todo constante</b>
+          <p>Al escalar con similitud geométrica es físicamente imposible mantener simultáneamente \(P/V\), \(v_{tip}\), \(\text{Re}\) y \(t_m\) constantes. Siempre hay un compromiso. El arte del escalado está en identificar cuál de estos parámetros es el más relevante para la calidad del producto específico — y, para procesos críticos, validar en una <b>planta piloto intermedia</b> antes de la escala industrial.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── s6: PAT ──────────────────────────────────────────────── -->
+    <section id="s6">
+      <div class="eyebrow">Control en tiempo real</div>
+      <h2 class="sec"><span class="secnum">6.</span> Process Analytical Technology (PAT)</h2>
+
+      <p>La tecnología analítica de procesos (PAT) permite monitorear el progreso del mezclado <b>en tiempo real</b>, reemplazando el enfoque tradicional de «mezclar X minutos y esperar» por un control basado en datos.</p>
+
+      <p class="tbl-cap"><b>Tabla 6.</b> Herramientas PAT aplicadas al monitoreo del mezclado.</p>
+      <div class="tbl-wrap">
+        <table class="ou">
+          <thead>
+            <tr><th>Herramienta</th><th>Qué mide y para qué sirve</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>NIR en línea</td><td>Espectroscopía de infrarrojo cercano. Mide composición y homogeneidad sin contacto; detecta el punto final del mezclado y la distribución del API.</td></tr>
+            <tr><td>FBRM</td><td><em>Focused Beam Reflectance Measurement.</em> Distribución de tamaño de partícula o gota en tiempo real; útil en granulación húmeda y emulsificación.</td></tr>
+            <tr><td>Torque y potencia</td><td>La potencia consumida por el motor refleja cambios reológicos de la mezcla; clave para detectar el punto final de la granulación húmeda.</td></tr>
+            <tr><td>Imagen en línea</td><td>Cámaras de alta velocidad y análisis de imagen para forma, tamaño y distribución de partículas.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="sub">¿Por qué PAT facilita el escalado?</h3>
+      <ul>
+        <li>Permite definir el punto final del mezclado por <b>calidad del producto</b>, no por tiempo fijo.</li>
+        <li>Proporciona datos para justificar y validar el escalado ante agencias regulatorias (FDA, INVIMA).</li>
+        <li>Facilita comprender cómo los parámetros del proceso afectan la calidad de la mezcla.</li>
+        <li>Reduce el número de lotes fallidos durante el escalado.</li>
+      </ul>
+
+      <div class="callout callout--nota">
+        <span class="ic">i</span>
+        <div>
+          <b>PAT y Quality by Design (QbD)</b>
+          <p>PAT es un pilar del enfoque <b>Quality by Design</b> promovido por la FDA (ICH Q8). En lugar de verificar la calidad al final (análisis del producto terminado), se diseña el proceso para que la calidad esté integrada desde el inicio. Para el mezclado, esto significa conocer el espacio de diseño (velocidad, tiempo, carga) que garantiza la homogeneidad.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── s7: Errores comunes ──────────────────────────────────── -->
+    <section id="s7">
+      <div class="eyebrow">Lecciones costosas</div>
+      <h2 class="sec"><span class="secnum">7.</span> Errores comunes en el escalado</h2>
+
+      <p>El escalado del mezclado es donde más frecuentemente fallan los proyectos de transferencia tecnológica. Estos son los errores más recurrentes:</p>
+
+      <ol>
+        <li><b>Subestimar la caracterización física.</b> No medir las propiedades de los polvos (flujo, cohesividad, distribución de tamaño) a la escala de producción. Un polvo que fluye en un vaso de 500 mL puede arquearse en una tolva de 2 000 L.</li>
+        <li><b>Estrategia de escalado incorrecta.</b> Mantener las mismas rpm o el mismo tiempo sin considerar la física. Al duplicar el diámetro y mantener las rpm, la velocidad de punta se duplica y el \(P/V\) se multiplica por 32.</li>
+        <li><b>Mezclador inadecuado para la escala.</b> Un V-blender que funciona a 10 L puede segregar a 1 000 L por la mayor distancia de caída libre.</li>
+        <li><b>Plan de muestreo inválido.</b> Tomar 3 muestras del centro no demuestra homogeneidad. Se necesitan muestras de múltiples ubicaciones y profundidades, estadísticamente representativas.</li>
+        <li><b>Ignorar la segregación post-mezclado.</b> Lograr una mezcla homogénea y luego perderla durante la transferencia, el transporte neumático o el llenado de la tolva de la compresora.</li>
+      </ol>
+
+      <div class="callout callout--tip">
+        <span class="ic">i</span>
+        <div>
+          <b>El consejo de oro</b>
+          <p>Entender los materiales, el objetivo del mezclado y el mecanismo crítico que lo gobierna. Experimentar a pequeña escala para entender sensibilidades. Documentar todo meticulosamente. Y siempre verificar la uniformidad con un plan de muestreo robusto a cada escala.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── s8: Bibliografía ─────────────────────────────────────── -->
+    <section id="s8">
+      <div class="eyebrow">Fuentes</div>
+      <h2 class="sec"><span class="secnum">8.</span> Bibliografía recomendada</h2>
+
+      <ol class="refs">
+        <li><b>McCabe, W. L., Smith, J. C., &amp; Harriott, P.</b> (2005). <em>Unit Operations of Chemical Engineering</em> (7th ed.). McGraw-Hill. (Capítulo 9: Agitation and Mixing of Liquids; Capítulo 21: Mixing of Solids and Pastes).</li>
+        <li><b>Perry, R. H., &amp; Green, D. W.</b> (Eds.). (2019). <em>Perry's Chemical Engineers' Handbook</em> (9th ed.). McGraw-Hill. (Sección 21: Liquid-Solid Operations and Equipment).</li>
+        <li><b>Harnby, N., Edwards, M. F., &amp; Nienow, A. W.</b> (Eds.). (1997). <em>Mixing in the Process Industries</em> (2nd ed.). Butterworth-Heinemann.</li>
+        <li><b>Paul, E. L., Atiemo-Obeng, V. A., &amp; Kresta, S. M.</b> (Eds.). (2004). <em>Handbook of Industrial Mixing: Science and Practice</em>. Wiley-Interscience. — Referencia muy completa, con capítulos dedicados al mezclado en la industria farmacéutica y al escalado.</li>
+        <li><b>Levin, M.</b> (Ed.). (2011). <em>Pharmaceutical Process Scale-Up</em> (3rd ed.). Informa Healthcare. — Capítulos específicos sobre escalado de mezclado de sólidos y granulación.</li>
+      </ol>
+    </section>
+
+    <footer class="doc-foot">
+      <span>Proyecto de Operaciones Unitarias · IQYA-2031</span>
+      <span>Universidad de los Andes · Ingeniería Química y de Alimentos</span>
+    </footer>
+
+  </div><!-- /doc-body -->
+</article>
+</div><!-- /outer-layout -->
+
+<!-- ── KaTeX ──────────────────────────────────────────────────── -->
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" defer
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false},{left:'\\(',right:'\\)',display:false},{left:'\\[',right:'\\]',display:true}],throwOnError:false})"></script>
+
+<script>
+/* ── Progress bar ────────────────────────────────────────────── */
+(function(){
+  var bar=document.getElementById('progress');
+  document.addEventListener('scroll',function(){
+    var el=document.documentElement;
+    var pct=(el.scrollTop||document.body.scrollTop)/(el.scrollHeight-el.clientHeight)*100;
+    bar.style.width=Math.min(100,pct)+'%';
+  },{passive:true});
+})();
+
+/* ── Scroll-spy ──────────────────────────────────────────────── */
+(function(){
+  var items=document.querySelectorAll('.sn-item');
+  var secs=Array.from(document.querySelectorAll('#s1,#s2,#s3,#s4,#s5,#s6,#s7,#s8'));
+  function spy(){
+    var active=null;
+    secs.forEach(function(s){
+      if(s.getBoundingClientRect().top<=120)active=s.id;
+    });
+    items.forEach(function(a){
+      var href=a.getAttribute('href').slice(1);
+      a.classList.toggle('is-active',href===active);
+    });
+  }
+  document.addEventListener('scroll',spy,{passive:true});
+  spy();
+})();
+
+/* ── Helpers ─────────────────────────────────────────────────── */
+function renderMath(){
+  if(typeof renderMathInElement==='function'){
+    renderMathInElement(document.body,{
+      delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false},{left:'\\(',right:'\\)',display:false},{left:'\\[',right:'\\]',display:true}],
+      throwOnError:false
+    });
+  }
+}
+
+/* ── Equipment gallery (sólidos) ─────────────────────────────── */
+(function(){
+  var equipos=[
+    {id:'doble-cono',label:'Doble cono',family:'Volteo',name:'Mezclador de doble cono',
+     video:'C1dTSgNuaeI',
+     desc:'El recipiente cerrado rota sobre un eje horizontal; el material cae en cascada, se divide y recombina, promoviendo mezclado convectivo y difusivo.',
+     pros:['Mezclado suave, bajo cizallamiento','Bueno para polvos de flujo libre y frágiles','Fácil de limpiar, buena contención','Descarga completa por gravedad'],
+     cons:['Menos efectivo en polvos cohesivos','Puede segregar si el tiempo es excesivo'],
+     uses:'Mezclas de polvos farmacéuticos de flujo libre, mezcla de excipientes antes de la compresión.'},
+    {id:'v-blender',label:'V-Blender',family:'Volteo',name:'V-Blender (Twin Shell)',
+     image:'/classroom/iqya-2031/readings/mezclado-v-blender.gif',
+     desc:'Dos tubos cilíndricos en forma de V giran sobre su eje. El material se divide en dos lotes en cada revolución y luego se recombina, una acción de dividir-y-recombinar muy eficiente.',
+     pros:['División y recombinación eficiente','Menor segregación que el doble cono','Admite un intensificador interno'],
+     cons:['Más voluminoso a igual capacidad','Limpieza algo más compleja por la geometría en V'],
+     uses:'Polvos farmacéuticos, alimentos en polvo, productos químicos finos.'},
+    {id:'ribbon',label:'Cinta',family:'Convectivo',name:'Mezclador de cinta (Ribbon Blender)',
+     image:'/classroom/iqya-2031/readings/mezclado-ribbon-blender.gif',
+     desc:'Cintas helicoidales dobles giran en direcciones opuestas: la exterior mueve el material hacia el centro y la interior hacia los extremos, generando fuerte mezclado axial y radial.',
+     pros:['Efectivo para polvos cohesivos','Admite pequeñas cantidades de líquido','Buena acción axial y radial','Alta capacidad (hasta 20 000 L)'],
+     cons:['Puede tener zonas muertas en los extremos','Más difícil de limpiar','Genera más cizalladura'],
+     uses:'Polvos cohesivos, premezclas con aditivos líquidos, industria alimentaria y de fertilizantes.'},
+    {id:'paddle',label:'Paletas',family:'Convectivo',name:'Mezclador de paletas (Paddle Mixer)',
+     video:'qh7TOi0YBGU',
+     desc:'Paletas montadas en uno o dos ejes horizontales levantan y dejan caer el material, creando una fluidización mecánica que combina mezclado convectivo y difusivo.',
+     pros:['Acción suave pero eficiente','Versátil: polvos, pastas y materiales frágiles','Doble eje reduce puntos muertos'],
+     cons:['Menor cizalladura que los de alta velocidad','Más lento que los de cinta'],
+     uses:'Industria cerámica, alimentaria y química; mezcla de polvos con fibras o materiales frágiles.'},
+    {id:'tornillo',label:'Tornillo cónico',family:'Convectivo',name:'Tornillo cónico (Nauta Mixer)',
+     video:'mqbM6URncbY',
+     desc:'Un tornillo vertical orbita por el interior de un cono: eleva el material desde el fondo y la gravedad lo devuelve por las paredes. El movimiento orbital hace que todo el volumen participe.',
+     pros:['Excelente con grandes diferencias de densidad o tamaño','Mezclado suave: bajo cizallamiento y poco calor','Descarga total por la válvula inferior'],
+     cons:['Tiempos de mezclado más largos','Geometría compleja para limpieza/validación'],
+     uses:'Farmacéutica (APIs de bajo dosaje), pigmentos, químicos especiales.'},
+    {id:'alta-cizalla',label:'Alta cizalla',family:'Alta cizalladura',name:'Granulador de alta cizalladura',
+     image:'/classroom/iqya-2031/readings/mezclado-granulador.gif',
+     desc:'Un impulsor principal de alta velocidad fluidiza el polvo y crea un vórtice, mientras un chopper secundario rompe aglomerados e intensifica la densificación. Usado en granulación húmeda y mezclado en seco de polvos cohesivos.',
+     pros:['Tiempos de mezclado muy cortos (2–5 min)','Excelente deaglomeración','Produce mezclas densas para compresión directa'],
+     cons:['Alto consumo de energía','Puede sobrecalentar APIs termosensibles','Equipo complejo, difícil de escalar'],
+     uses:'Granulación húmeda farmacéutica, mezcla de polvos cohesivos con APIs de baja dosis.'}
+  ];
+
+  var bar=document.getElementById('solid-bar');
+  var panels=document.getElementById('solid-panels');
+
+  equipos.forEach(function(eq,i){
+    var btn=document.createElement('button');
+    btn.className='imp-btn'+(i===0?' active':'');
+    btn.textContent=eq.label;
+    btn.onclick=function(){
+      bar.querySelectorAll('.imp-btn').forEach(function(b,j){b.classList.toggle('active',j===i)});
+      panels.querySelectorAll('.imp-panel').forEach(function(p,j){p.classList.toggle('active',j===i)});
+    };
+    bar.appendChild(btn);
+
+    var media=eq.video
+      ? '<div class="imp-gif"><div class="aspect"><iframe src="https://www.youtube.com/embed/'+eq.video+'?rel=0" title="'+eq.name+'" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></div>'
+      : '<div class="imp-gif"><img src="'+eq.image+'" alt="'+eq.name+'"></div>';
+
+    var panel=document.createElement('div');
+    panel.className='imp-panel'+(i===0?' active':'');
+    panel.innerHTML=
+      media+
+      '<div class="imp-info">'+
+        '<div class="imp-family">'+eq.family+'</div>'+
+        '<h4>'+eq.name+'</h4>'+
+        '<p class="imp-desc">'+eq.desc+'</p>'+
+        '<div class="imp-cols">'+
+          '<div class="imp-pro"><h5>Ventajas</h5><ul>'+eq.pros.map(function(p){return'<li>'+p+'</li>'}).join('')+'</ul></div>'+
+          '<div class="imp-con"><h5>Desventajas</h5><ul>'+eq.cons.map(function(c){return'<li>'+c+'</li>'}).join('')+'</ul></div>'+
+        '</div>'+
+        '<p class="imp-apps"><strong style="color:var(--gris-1)">Aplicaciones:</strong> '+eq.uses+'</p>'+
+      '</div>';
+    panels.appendChild(panel);
+  });
+})();
+
+/* ── Scaleup calculator ──────────────────────────────────────── */
+(function(){
+  var N1=120,Da1=0.2,scaleVol=125,criterion='pv',Np=2.0;
+  var rho=1000;
+
+  var criteriaInfo={
+    pv:{name:'P/V constante',desc:'Mantiene la disipación específica de potencia. Útil para disolución, dispersión y procesos limitados por transferencia de masa.'},
+    vtip:{name:'V_tip constante',desc:'Mantiene la cizalladura periférica. Crítico para emulsiones, suspensiones y productos sensibles a la cizalla.'},
+    nrev:{name:'N·t constante',desc:'Mantiene el número total de revoluciones. Enfoque empírico para mezcladores de volteo con polvos de flujo libre (se ajusta el tiempo).'},
+    froude:{name:'Fr constante',desc:'Mantiene el número de Froude. Aplicable cuando la gravedad gobierna la trayectoria de las partículas (tumble blenders, formación de vórtice).'}
+  };
+
+  var slidersDiv=document.getElementById('su-sliders');
+  slidersDiv.innerHTML=
+    '<div class="calc-field"><div class="calc-field-header"><span>D<sub>a</sub> (modelo, escala 1)</span><b id="su-da1-disp"></b></div><input type="range" id="su-da1" min="0.05" max="1" step="0.01" value="'+Da1+'"></div>'+
+    '<div class="calc-field"><div class="calc-field-header"><span>N (modelo)</span><b id="su-n1-disp"></b></div><input type="range" id="su-n1" min="20" max="600" step="5" value="'+N1+'"></div>'+
+    '<div class="calc-field"><div class="calc-field-header"><span>Factor de escalado V₂/V₁</span><b id="su-sv-disp"></b></div><input type="range" id="su-sv" min="2" max="1000" step="1" value="'+scaleVol+'"></div>'+
+    '<div class="calc-field"><div class="calc-field-header"><span>N<sub>P</sub> (turbulento)</span><b id="su-np-disp"></b></div><input type="range" id="su-np" min="0.3" max="6" step="0.1" value="'+Np+'"></div>';
+
+  var critDiv=document.getElementById('su-criteria');
+  ['pv','vtip','nrev','froude'].forEach(function(k){
+    var btn=document.createElement('button');
+    btn.className='su-btn'+(k===criterion?' active':'');
+    btn.textContent=criteriaInfo[k].name;
+    btn.onclick=function(){criterion=k;update()};
+    critDiv.appendChild(btn);
+  });
+
+  function update(){
+    Da1=parseFloat(document.getElementById('su-da1').value);
+    N1=parseFloat(document.getElementById('su-n1').value);
+    scaleVol=parseFloat(document.getElementById('su-sv').value);
+    Np=parseFloat(document.getElementById('su-np').value);
+
+    document.getElementById('su-da1-disp').textContent=Da1.toFixed(2)+' m';
+    document.getElementById('su-n1-disp').textContent=N1.toFixed(0)+' rpm';
+    document.getElementById('su-sv-disp').textContent='×'+scaleVol.toFixed(0);
+    document.getElementById('su-np-disp').textContent=Np.toFixed(1);
+
+    var R=Math.pow(scaleVol,1/3);
+    var Da2=Da1*R;
+
+    var nRatio=1;
+    if(criterion==='pv')nRatio=Math.pow(R,-2/3);
+    else if(criterion==='vtip')nRatio=Math.pow(R,-1);
+    else if(criterion==='nrev')nRatio=1;
+    else if(criterion==='froude')nRatio=Math.pow(R,-0.5);
+
+    var N2=N1*nRatio;
+    var N1rps=N1/60;
+    var N2rps=N2/60;
+
+    var P1=Np*rho*Math.pow(N1rps,3)*Math.pow(Da1,5);
+    var P2=Np*rho*Math.pow(N2rps,3)*Math.pow(Da2,5);
+    var V1=(Math.PI/4)*Math.pow(Da1*3,2)*(Da1*3);
+    var V2=V1*scaleVol;
+    var PV1=P1/V1;
+    var PV2=P2/V2;
+    var vtip1=Math.PI*Da1*N1rps;
+    var vtip2=Math.PI*Da2*N2rps;
+
+    function fmt(v,d){d=d||1;return isFinite(v)?v.toFixed(d):'—'}
+    function fmtP(P){return P>1000?(P/1000).toFixed(2)+' kW':P.toFixed(0)+' W'}
+
+    critDiv.querySelectorAll('.su-btn').forEach(function(btn,i){
+      btn.classList.toggle('active',['pv','vtip','nrev','froude'][i]===criterion);
+    });
+    document.getElementById('su-desc').textContent=criteriaInfo[criterion].desc;
+
+    var rows=[
+      ['\\(D_a\\) (m)',fmt(Da1,3),fmt(Da2,3),'×'+R.toFixed(2)],
+      ['\\(N\\) (rpm)',fmt(N1,0),fmt(N2,0),'×'+nRatio.toFixed(3)],
+      ['Volumen (m³)',fmt(V1,3),fmt(V2,2),'×'+scaleVol.toFixed(0)],
+      ['Potencia \\(P\\) (W)',fmtP(P1),fmtP(P2),'×'+(P2/P1).toFixed(1)],
+      ['\\(P/V\\) (W/m³)',fmt(PV1,0),fmt(PV2,0),'×'+(PV2/PV1).toFixed(2)],
+      ['\\(v_{tip}\\) (m/s)',fmt(vtip1,2),fmt(vtip2,2),'×'+(vtip2/vtip1).toFixed(2)]
+    ];
+
+    var html='<table class="ou"><thead><tr><th>Parámetro</th><th style="text-align:right">Modelo (escala 1)</th><th style="text-align:right">Prototipo (escala 2)</th><th style="text-align:right">Razón 2/1</th></tr></thead><tbody>';
+    rows.forEach(function(r){
+      html+='<tr><td>'+r[0]+'</td><td style="text-align:right;font-family:monospace">'+r[1]+'</td><td style="text-align:right;font-family:monospace">'+r[2]+'</td><td style="text-align:right;font-family:monospace;font-weight:600;color:var(--verde-osc)">'+r[3]+'</td></tr>';
+    });
+    html+='</tbody></table>';
+    document.getElementById('su-table-wrap').innerHTML=html;
+
+    document.getElementById('su-note').innerHTML='Asumiendo similitud geométrica completa (\\(D_t = 3 D_a\\), \\(H = D_t\\)). La razón \\(D_2/D_1 = (V_2/V_1)^{1/3}\\) implica relaciones predecibles entre \\(N\\), \\(P\\), \\(P/V\\) y \\(v_{tip}\\) según el criterio.';
+    renderMath();
+  }
+
+  ['su-da1','su-n1','su-sv','su-np'].forEach(function(id){
+    document.getElementById(id).addEventListener('input',update);
+  });
+  update();
+})();
+</script>
+</body>
+</html>
