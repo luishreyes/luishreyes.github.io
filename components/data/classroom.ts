@@ -150,12 +150,22 @@ export interface Course {
    */
   kind?: 'academic' | 'professional';
   /**
-   * Tema visual del curso. Si es `'deloitte'`, las páginas del curso (landing,
-   * Material, Presentaciones, lecturas, gate de acceso) y su tarjeta en el Aula
-   * usan la paleta verde Deloitte + Source Sans 3. Si se omite, usa el tema
-   * amarillo del portafolio.
+   * Acento de color del curso. Sobreescribe `--brand-yellow` en todas las
+   * páginas del curso (landing, Material, Presentaciones, lecturas, gate) y en
+   * su tarjeta del Aula. Si se omite, usa el amarillo del portafolio.
+   *
+   * La tipografía Source Sans 3 + el escalado tipográfico se aplican a TODOS
+   * los cursos activos (no archivados) de forma independiente al acento — ver
+   * `.classroom-typeset` en `index.css` y `CourseAccessGate`.
+   *
+   * Paleta disponible (definida en `index.css` como `.accent-*`):
+   * - `green`     → #86BC24 (POU)
+   * - `violet`    → #7C5CFF (Narrativas Visuales de Datos)
+   * - `blue`      → #0E7CD8 (Seminario · SPDP)
+   * - `terracota` → #E06C2A (Diseño Sistémico de Bioproductos)
+   * - `magenta`   → #C03B6E (Biotecnología Industrial)
    */
-  theme?: 'deloitte';
+  accent?: 'green' | 'violet' | 'blue' | 'terracota' | 'magenta';
   /**
    * Si `true`, el curso pertenece a un semestre pasado: NO aparece en el índice de Aula
    * sino en la página de Archivo (`/classroom/archive`). Sus páginas internas (landing,

@@ -117,6 +117,7 @@ export const dpro4300Course: Course = {
   code: 'DPRO-4300',
   title: 'Diseño Sistémico de Bioproductos',
   term: '2026-10',
+  accent: 'terracota',
   archived: true,
   credits: 4,
   modality: 'Presencial intensiva',

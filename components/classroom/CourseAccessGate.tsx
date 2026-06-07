@@ -58,7 +58,15 @@ export const CourseAccessGate: React.FC<CourseAccessGateProps> = ({ course, chil
     }
   };
 
-  const themeClass = course.theme === 'deloitte' ? 'theme-deloitte' : undefined;
+  // Acento de color (siempre, incluso archivados) + tipografía de curso
+  // (Source Sans 3 + escalado) solo para cursos activos.
+  const themeClass =
+    [
+      course.accent ? `accent-${course.accent}` : null,
+      course.archived ? null : 'classroom-typeset',
+    ]
+      .filter(Boolean)
+      .join(' ') || undefined;
 
   if (unlocked === null) return null;
   if (unlocked) return themeClass ? <div className={themeClass}>{children}</div> : <>{children}</>;
