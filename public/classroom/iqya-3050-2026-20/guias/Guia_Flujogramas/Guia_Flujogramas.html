@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía · Flujogramas · Seminario de Proyecto</title>
+<link rel="stylesheet" href="assets/deloitte.css">
+<!-- KaTeX -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
+<style>
+  /* ===== Acento azul del curso (override de tokens deloitte) ===== */
+  :root {
+    --brand-yellow: #0E7CD8;
+    --brand-yellow-dark: #0A5EA6;
+    --verde:       #0E7CD8;
+    --verde-osc:   #0A5EA6;
+    --verde-claro: #E2EFFB;
+  }
+
+  body {
+    margin: 0;
+    background: var(--gris-5);
+    font-family: var(--tipo);
+    color: var(--gris-1);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.62;
+  }
+
+  .progress {
+    position: fixed; top: 0; left: 0; height: 4px; width: 0;
+    background: var(--verde); z-index: 200; transition: width .08s linear;
+  }
+
+  .page {
+    max-width: 940px;
+    margin: 40px auto 90px;
+    background: var(--blanco);
+    box-shadow: var(--sombra);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  /* ===================== ENCABEZADO ===================== */
+  .doc-head {
+    background: var(--papel);
+    border-bottom: 5px solid var(--verde);
+    padding: 46px 64px 40px;
+    position: relative;
+  }
+  .doc-head .org {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    font-size: 14px; font-weight: 700; letter-spacing: .03em; color: var(--gris-1);
+  }
+  .doc-head .org span { color: var(--gris-3); font-weight: 600; }
+  .doc-head .badge {
+    display: inline-block; background: var(--verde); color: #fff;
+    font-size: 13px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+    padding: 6px 14px; border-radius: 999px; margin: 28px 0 18px; white-space: nowrap;
+  }
+  .doc-head h1 { font-size: 43px; line-height: 1.1; margin: 0 0 10px; letter-spacing: -.015em; max-width: 22ch; }
+  .doc-head .subtitle { font-size: 20px; color: var(--gris-2); margin: 0; font-weight: 500; max-width: 52ch; }
+  .doc-meta {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px;
+    margin-top: 34px; padding-top: 26px; border-top: 1px solid var(--gris-4);
+  }
+  .doc-meta div { font-size: 15px; color: var(--gris-2); }
+  .doc-meta b { display: block; color: var(--gris-1); font-size: 16px; font-weight: 700; margin-bottom: 2px; }
+
+  /* ===================== CUERPO ===================== */
+  .doc-body { padding: 8px 64px 60px; }
+  .doc-body section { padding-top: 46px; scroll-margin-top: 24px; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--verde-osc); margin-bottom: 12px;
+  }
+  .eyebrow::before { content: ""; width: 26px; height: 4px; background: var(--verde); border-radius: 2px; }
+  h2.sec { font-size: 30px; line-height: 1.18; margin: 0 0 18px; letter-spacing: -.01em; }
+  h2.sec .secnum { color: var(--verde); font-weight: 700; }
+  h3.sub { font-size: 21px; margin: 34px 0 10px; letter-spacing: -.005em; }
+  .doc-body p { font-size: 17px; color: var(--gris-1); margin: 0 0 16px; text-wrap: pretty; }
+  .doc-body p.note { font-size: 15px; font-style: italic; color: var(--gris-2); }
+  .lead { font-size: 20px; color: var(--gris-2); line-height: 1.55; font-weight: 400; }
+  .lead b { color: var(--gris-1); font-weight: 600; }
+
+  /* ---- Índice / sumario ---- */
+  .toc {
+    background: var(--papel); border-radius: 8px; padding: 26px 30px;
+    margin-top: 30px; border-left: 5px solid var(--verde);
+  }
+  .toc .toc-t { font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--gris-2); margin: 0 0 14px; }
+  .toc ol { margin: 0; padding: 0; list-style: none; counter-reset: toc; display: grid; gap: 9px; }
+  .toc li { counter-increment: toc; }
+  .toc a {
+    display: flex; align-items: baseline; gap: 14px; text-decoration: none;
+    color: var(--gris-1); font-size: 16.5px; font-weight: 600; padding: 4px 0;
+    border-bottom: 1px solid transparent; transition: color .18s ease; cursor: pointer;
+  }
+  .toc a::before { content: counter(toc, decimal-leading-zero); color: var(--verde-osc); font-weight: 700; font-size: 14px; min-width: 26px; }
+  .toc a:hover { color: var(--verde-osc); }
+
+  /* ---- Blocks / cards ---- */
+  .blocks { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin: 22px 0 6px; }
+  .blocks-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 22px 0 6px; }
+  .block {
+    background: var(--papel); border-radius: 8px; padding: 22px 24px;
+    border-top: 5px solid var(--verde); display: flex; flex-direction: column; gap: 6px;
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .block:hover { transform: translateY(-3px); box-shadow: var(--sombra); }
+  .block .bn { font-size: 12px; font-weight: 700; color: var(--verde-osc); letter-spacing: .08em; }
+  .block b { font-size: 18px; line-height: 1.2; }
+  .block span { font-size: 14.5px; color: var(--gris-2); line-height: 1.45; }
+  .block .ic-top { color: var(--verde-osc); margin-bottom: 2px; }
+  .block .ic-top svg { width: 28px; height: 28px; }
+
+  /* ---- Tarjetas de orientación (lineal vertical/horizontal/panorámico) ---- */
+  .orient { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 22px 0; }
+  .orient .card {
+    border: 1px solid var(--gris-4); border-radius: 10px; padding: 20px 18px; text-align: center;
+    background: var(--blanco); transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+  }
+  .orient .card:hover { transform: translateY(-3px); border-color: var(--verde); box-shadow: var(--sombra); }
+  .orient .card .ic-top { color: var(--verde-osc); display: flex; justify-content: center; margin-bottom: 8px; }
+  .orient .card .ic-top svg { width: 30px; height: 30px; }
+  .orient .card h4 { margin: 0 0 4px; font-size: 17px; color: var(--gris-1); }
+  .orient .card p { font-size: 14.5px; color: var(--gris-2); margin: 0; }
+
+  /* ===================== FIGURAS ===================== */
+  figure.fig { margin: 30px 0 8px; }
+  .fig-frame {
+    background: var(--papel); border: 1px solid var(--gris-4); border-radius: 10px;
+    padding: 18px; display: flex; justify-content: center;
+  }
+  .fig-frame img { max-width: 100%; height: auto; display: block; border-radius: 4px; }
+  figure.fig figcaption {
+    font-size: 13.5px; color: var(--gris-2); margin-top: 11px; padding-left: 14px;
+    border-left: 3px solid var(--verde); line-height: 1.5;
+  }
+  figure.fig figcaption b { color: var(--gris-1); }
+  figure.fig figcaption a.pl { white-space: normal; }
+
+  /* ===================== EXPLORADOR DE SÍMBOLOS ===================== */
+  .sym-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 22px 0; }
+  .sym-btn {
+    appearance: none; cursor: pointer; text-align: left; font-family: var(--tipo);
+    border: 2px solid var(--gris-4); border-radius: 10px; padding: 12px; background: var(--blanco);
+    transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+  }
+  .sym-btn:hover { transform: translateY(-2px); border-color: var(--verde); }
+  .sym-btn.active { border-color: var(--verde); background: var(--verde-claro); box-shadow: var(--sombra); }
+  .sym-btn:focus-visible { outline: 3px solid var(--verde-claro); outline-offset: 1px; }
+  .sym-btn .sym-svg { width: 100%; aspect-ratio: 12 / 7; margin-bottom: 8px; }
+  .sym-btn .sym-svg svg { width: 100%; height: 100%; }
+  .sym-btn .sym-name { font-size: 13px; font-weight: 700; color: var(--gris-1); display: block; line-height: 1.2; }
+  .sym-btn .sym-shape { font-size: 11.5px; color: var(--gris-2); font-style: italic; display: block; }
+  .sym-detail {
+    display: grid; grid-template-columns: 110px 1fr; gap: 18px; align-items: center;
+    background: var(--gris-1); border-radius: 10px; padding: 22px 26px; margin: 18px 0;
+  }
+  .sym-detail .sym-preview { background: var(--blanco); border-radius: 8px; padding: 8px; aspect-ratio: 12 / 7; }
+  .sym-detail .sym-preview svg { width: 100%; height: 100%; }
+  .sym-detail .sym-shape-tag { font-size: 11px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: #6FB7F0; margin: 0 0 4px; }
+  .sym-detail h4 { color: #fff; font-size: 19px; margin: 0 0 8px; }
+  .sym-detail p { color: #DADADA; font-size: 15px; margin: 0; line-height: 1.5; }
+
+  /* ===================== STEPPER ===================== */
+  .stepper { display: flex; gap: 6px; flex-wrap: wrap; margin: 24px 0 18px; }
+  .step-btn {
+    appearance: none; cursor: pointer; font-family: var(--tipo); display: inline-flex; align-items: center; gap: 10px;
+    border: none; background: var(--papel); color: var(--gris-2); font-weight: 700; font-size: 14.5px;
+    padding: 11px 16px; border-radius: 8px; transition: background .15s ease, color .15s ease;
+  }
+  .step-btn:hover { background: var(--gris-5); color: var(--gris-1); }
+  .step-btn.active { background: var(--gris-1); color: #fff; }
+  .step-btn:focus-visible { outline: 3px solid var(--verde-claro); outline-offset: 1px; }
+  .step-btn .step-dot {
+    width: 24px; height: 24px; border-radius: 50%; background: var(--blanco); color: var(--gris-1);
+    font-size: 13px; font-weight: 800; display: inline-flex; align-items: center; justify-content: center;
+  }
+  .step-btn.active .step-dot { background: var(--verde); color: #fff; }
+  .step-pane {
+    display: none; border-left: 4px solid var(--verde); background: var(--blanco); box-shadow: var(--sombra);
+    border-radius: 0 10px 10px 0; padding: 24px 26px; animation: fadeInUp .35s ease both;
+  }
+  .step-pane.active { display: block; }
+  .step-kicker { font-size: 11px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--verde-osc); margin: 0 0 6px; }
+  .step-pane h3 { font-size: 21px; color: var(--gris-1); margin: 0 0 10px; }
+  .step-pane p { font-size: 16px; color: var(--gris-2); margin: 0 0 16px; line-height: 1.55; }
+  .step-pane .q-label { font-size: 11px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--gris-3); margin: 0 0 8px; }
+  .step-pane ul.guia { list-style: none; padding: 0; margin: 0; }
+  .step-pane ul.guia li { display: flex; gap: 10px; align-items: flex-start; font-size: 15px; color: var(--gris-1); margin-bottom: 7px; line-height: 1.45; }
+  .step-pane ul.guia li::before { content: "›"; color: var(--verde-osc); font-weight: 800; flex-shrink: 0; }
+
+  @keyframes fadeInUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+  /* ===================== CALLOUTS ===================== */
+  .callout {
+    display: grid; grid-template-columns: 42px 1fr; gap: 18px;
+    border-radius: 8px; padding: 20px 24px; margin: 24px 0; align-items: start;
+  }
+  .callout .ic {
+    width: 42px; height: 42px; border-radius: 50%; display: inline-flex;
+    align-items: center; justify-content: center; color: #fff; flex-shrink: 0;
+  }
+  .callout .ic svg { width: 22px; height: 22px; }
+  .callout > div > b { display: block; font-size: 15.5px; margin-bottom: 4px; }
+  .callout p { font-size: 15.5px; margin: 0 0 8px; color: var(--gris-1); line-height: 1.5; }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout p b { display: inline; color: inherit; font-size: inherit; }
+  .callout ul, .callout ol { font-size: 15.5px; color: var(--gris-1); margin: 6px 0 0; padding-left: 20px; line-height: 1.5; }
+  .callout li { margin-bottom: 5px; }
+  .callout--nota { background: var(--teal-claro); }
+  .callout--nota .ic { background: var(--teal); }
+  .callout--nota b { color: var(--teal); }
+  .callout--tip { background: var(--verde-claro); }
+  .callout--tip .ic { background: var(--verde); }
+  .callout--tip b { color: var(--verde-osc); }
+  .callout--warn { background: #FEF2F2; }
+  .callout--warn .ic { background: #DC2626; }
+  .callout--warn b { color: #991B1B; }
+
+  /* ===================== ENLACES DE PLATAFORMA ===================== */
+  a.pl { color: inherit; border-bottom: 2px solid var(--verde); text-decoration: none; white-space: nowrap; font-weight: 600; }
+  a.pl::after { content: '↗'; font-size: .75em; margin-left: .2em; color: var(--verde); }
+  a.pl:hover { color: var(--verde-osc); }
+
+  /* ===================== HERRAMIENTAS (tarjetas-enlace) ===================== */
+  .tools { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin: 22px 0; }
+  a.tool {
+    display: block; text-decoration: none; color: inherit;
+    border: 1px solid var(--gris-4); border-radius: 10px; padding: 20px 22px; background: var(--blanco);
+    transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+  }
+  a.tool:hover { transform: translateY(-3px); border-color: var(--verde); box-shadow: var(--sombra); }
+  a.tool h4 { margin: 0 0 8px; font-size: 17px; color: var(--gris-1); }
+  a.tool:hover h4 { color: var(--verde-osc); }
+  a.tool h4 .arr { font-size: 13px; color: var(--verde); }
+  a.tool p { margin: 0; font-size: 14.5px; color: var(--gris-2); line-height: 1.5; }
+
+  /* ===================== STEPS / PASOS (entrega) ===================== */
+  ol.steps { counter-reset: step; list-style: none; padding: 0; margin: 22px 0; }
+  ol.steps > li {
+    position: relative; padding: 4px 0 18px 52px; margin: 0;
+    border-left: 2px solid var(--gris-4); margin-left: 16px; font-size: 16px;
+  }
+  ol.steps > li:last-child { border-left-color: transparent; padding-bottom: 0; }
+  ol.steps > li::before {
+    counter-increment: step; content: counter(step);
+    position: absolute; left: -17px; top: 0; width: 32px; height: 32px;
+    background: var(--verde); color: #fff; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 15px;
+  }
+
+  /* ===================== FOOTER ===================== */
+  .doc-foot {
+    border-top: 1px solid var(--gris-4); margin-top: 50px; padding-top: 22px;
+    display: flex; justify-content: space-between; font-size: 13px; color: var(--gris-3);
+  }
+
+  /* ===================== RESPONSIVE ===================== */
+  @media (max-width: 720px) {
+    .doc-head, .doc-body { padding-left: 26px; padding-right: 26px; }
+    .doc-meta, .blocks { grid-template-columns: 1fr 1fr; }
+    .orient { grid-template-columns: 1fr; }
+    .sym-grid { grid-template-columns: repeat(2, 1fr); }
+    .tools { grid-template-columns: 1fr; }
+    .doc-head h1 { font-size: 33px; }
+  }
+  @media (max-width: 520px) {
+    .blocks { grid-template-columns: 1fr; }
+    .sym-detail { grid-template-columns: 1fr; }
+  }
+  @media print {
+    body { background: #fff; }
+    .page { box-shadow: none; margin: 0; max-width: none; border-radius: 0; }
+    .progress { display: none; }
+    .step-pane { display: block !important; }
+    section, .blocks, .orient, .tools, .tbl-wrap, .callout, figure.fig { break-inside: avoid; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+    .block:hover, .orient .card:hover, .sym-btn:hover, a.tool:hover { transform: none; }
+  }
+
+  /* ---- Outer layout with sticky side nav ---- */
+  .page { margin: 0; }
+  .outer-layout {
+    max-width: 1160px;
+    margin: 40px auto 90px;
+    display: grid;
+    grid-template-columns: 200px minmax(0, 1fr);
+    gap: 24px;
+    padding: 0 20px;
+    align-items: start;
+  }
+  .side-nav {
+    position: sticky;
+    top: 28px;
+    max-height: calc(100vh - 56px);
+    overflow-y: auto;
+    background: var(--blanco);
+    border: 1px solid var(--gris-4);
+    border-radius: 8px;
+    padding: 20px 16px;
+    box-shadow: var(--sombra);
+    scrollbar-width: thin;
+  }
+  .sn-label { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--gris-3); margin: 0 0 10px; padding: 0 4px; }
+  .sn-item { display: flex; align-items: flex-start; gap: 7px; font-family: var(--tipo); font-size: 13px; color: var(--gris-2); text-decoration: none; padding: 6px 8px; border-radius: 5px; line-height: 1.3; transition: all .15s; margin-bottom: 2px; border: none; background: none; cursor: pointer; width: 100%; text-align: left; }
+  .sn-item:hover { color: var(--gris-1); background: var(--gris-5); }
+  .sn-item.is-active { color: var(--verde-osc); background: var(--verde-claro); font-weight: 600; border-left: 3px solid var(--verde); padding-left: 5px; }
+  .sn-num { font-size: 11px; font-weight: 700; color: var(--verde-osc); min-width: 16px; padding-top: 1px; flex-shrink: 0; }
+  html { scroll-behavior: smooth; }
+  @media (max-width: 880px) {
+    .outer-layout { grid-template-columns: 1fr; padding: 0 12px; }
+    .side-nav { display: none; }
+    .page { margin: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<div class="outer-layout">
+
+<nav class="side-nav" aria-label="Secciones">
+  <p class="sn-label">En esta guía</p>
+  <a class="sn-item" href="#s1"><span class="sn-num">01</span>¿Qué es un flujograma?</a>
+  <a class="sn-item" href="#s2"><span class="sn-num">02</span>Características</a>
+  <a class="sn-item" href="#s3"><span class="sn-num">03</span>Tipos de flujograma</a>
+  <a class="sn-item" href="#s4"><span class="sn-num">04</span>Símbolos estándar</a>
+  <a class="sn-item" href="#s5"><span class="sn-num">05</span>Cómo hacer un flujograma</a>
+  <a class="sn-item" href="#s6"><span class="sn-num">06</span>Ejemplo académico</a>
+  <a class="sn-item" href="#s7"><span class="sn-num">07</span>Herramientas recomendadas</a>
+  <a class="sn-item" href="#s8"><span class="sn-num">08</span>Entrega</a>
+</nav>
+
+<article class="page">
+
+  <!-- ENCABEZADO -->
+  <header class="doc-head">
+    <div class="org">
+      Universidad de los Andes
+      <span>Ingeniería Química y de Alimentos</span>
+    </div>
+    <div class="badge">Guía · Seminario de Proyecto</div>
+    <h1>Flujogramas: el prototipo de papel de su proyecto</h1>
+    <p class="subtitle">Cómo representar gráficamente el proceso experimental o metodológico para detectar inconsistencias antes de invertir tiempo en laboratorio.</p>
+    <div class="doc-meta">
+      <div><b>Curso</b>Seminario de Proyecto · IQYA-3050</div>
+      <div><b>Autor</b>Luis H. Reyes</div>
+      <div><b>Tipo</b>Guía de proceso</div>
+      <div><b>Lectura</b>Aproximadamente 15 minutos</div>
+    </div>
+  </header>
+
+  <div class="doc-body">
+
+    <!-- INTRO + TOC -->
+    <section id="s0">
+      <p class="lead">Esta guía acompaña la entrega del <b>flujograma</b> del proyecto — el prototipo de papel que describe gráficamente el proceso experimental o metodológico que su equipo va a ejecutar. Además de ser un entregable, es la herramienta que les va a permitir detectar inconsistencias y callejones sin salida antes de invertir tiempo en laboratorio.</p>
+
+      <div class="toc">
+        <p class="toc-t">En esta guía</p>
+        <ol>
+          <li><a href="#s1">¿Qué es un flujograma?</a></li>
+          <li><a href="#s2">Características</a></li>
+          <li><a href="#s3">Tipos de flujograma</a></li>
+          <li><a href="#s4">Símbolos estándar</a></li>
+          <li><a href="#s5">Cómo hacer un flujograma</a></li>
+          <li><a href="#s6">Ejemplo académico</a></li>
+          <li><a href="#s7">Herramientas recomendadas</a></li>
+          <li><a href="#s8">Entrega</a></li>
+        </ol>
+      </div>
+
+      <div class="callout callout--tip">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/></svg></span>
+        <div><b>Sobre esta guía</b><p>Esta es una guía de proceso, no una lectura de clase. No hay quiz sobre este material: su objetivo es ayudarles a producir un entregable sólido.</p></div>
+      </div>
+    </section>
+
+    <!-- 01. QUÉ ES -->
+    <section id="s1">
+      <div class="eyebrow">Definición</div>
+      <h2 class="sec"><span class="secnum">1.</span> ¿Qué es un flujograma?</h2>
+
+      <p>Un <strong>flujograma</strong> o <strong>diagrama de flujo</strong> es una herramienta gráfica que representa visualmente un proceso o algoritmo. Se usa ampliamente en informática, economía, ingeniería e incluso psicología, para organizar de manera simple las decisiones involucradas en un proceso.</p>
+
+      <p>Los diagramas de flujo se construyen, por convención, mediante un conjunto de <strong>símbolos determinados</strong>, acompañados de texto y unidos por flechas. Al observar el diagrama se puede comprender el sentido específico en el cual «fluye» — qué cosas ocurren primero y qué cosas ocurren después, entendiendo que las últimas dependen siempre de las primeras.</p>
+
+      <p class="note">El nombre <em>flujograma</em> es un neologismo creado a partir del término anglosajón <em>flow chart</em> o <em>flow diagram</em>, y es sinónimo de «diagrama de flujo».</p>
+    </section>
+
+    <!-- 02. CARACTERÍSTICAS -->
+    <section id="s2">
+      <div class="eyebrow">Rasgos definitorios</div>
+      <h2 class="sec"><span class="secnum">2.</span> Características</h2>
+
+      <p>Un diagrama de flujo se caracteriza por:</p>
+
+      <div class="blocks">
+        <div class="block">
+          <b>Sintético, secuencial, estructurado</b>
+          <span>Gráfico compuesto por figuras geométricas y líneas, acompañadas de texto. Organiza la información con un inicio y final claramente reconocibles.</span>
+        </div>
+        <div class="block">
+          <b>Representa procesos complejos</b>
+          <span>Su rol principal es representar de manera fácil y concreta procesos complejos, describiendo la toma de decisiones y guiando visualmente a quienes lo llevan a cabo.</span>
+        </div>
+        <div class="block">
+          <b>Más rápido de leer que un texto</b>
+          <span>Permite captar la estructura general y las decisiones clave de un proceso en segundos, donde un texto completo tomaría minutos.</span>
+        </div>
+        <div class="block">
+          <b>Transversal a muchas disciplinas</b>
+          <span>Se usa desde la informática y la organización industrial, hasta la psicología y el diseño organizacional.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 03. TIPOS -->
+    <section id="s3">
+      <div class="eyebrow">Familias de diagramas</div>
+      <h2 class="sec"><span class="secnum">3.</span> Tipos de flujograma</h2>
+
+      <h3 class="sub">Flujograma lineal</h3>
+      <p>Aquellos cuyo proceso puede seguirse de manera simple y secuencial — los pasos o instancias se encuentran uno después del otro. Es el tipo más sencillo y rápido, pero abarca una cantidad de información moderada. Puede ser de tres tipos:</p>
+
+      <div class="orient">
+        <div class="card">
+          <div class="ic-top"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg></div>
+          <h4>Vertical</h4>
+          <p>De arriba hacia abajo.</p>
+        </div>
+        <div class="card">
+          <div class="ic-top"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></div>
+          <h4>Horizontal</h4>
+          <p>De izquierda a derecha.</p>
+        </div>
+        <div class="card">
+          <div class="ic-top"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg></div>
+          <h4>Panorámico</h4>
+          <p>Combinación de los anteriores.</p>
+        </div>
+      </div>
+
+      <figure class="fig">
+        <div class="fig-frame">
+          <img src="img/flujograma-vertical.jpeg" alt="Ejemplo de flujograma vertical con Start, Process 1, 2 y 3, decisiones Yes/No, y End">
+        </div>
+        <figcaption><b>Figura 1.</b> Ejemplo de flujograma vertical. El flujo se lee de arriba hacia abajo, con decisiones binarias (Yes/No) que redirigen la ejecución.</figcaption>
+      </figure>
+
+      <h3 class="sub">Flujograma matricial</h3>
+      <p>Aquellos en los que se establecen visualmente puntos de conexión lógica entre los elementos de un proceso (características, funciones, actividades) empleando <strong>matrices</strong> en lugar de secuencias lineales. Son ideales cuando hay múltiples actores o roles involucrados, porque cada columna de la matriz corresponde a uno de ellos.</p>
+
+      <figure class="fig">
+        <div class="fig-frame">
+          <img src="img/flujograma-matricial.png" alt="Ejemplo de flujograma matricial con swim lanes: Human Resources, Employee, Manager, Payroll, Payroll Vendor">
+        </div>
+        <figcaption><b>Figura 2.</b> Ejemplo de flujograma matricial. Cada columna representa un actor distinto; el flujo pasa de una a otra cuando cambia la responsabilidad.</figcaption>
+      </figure>
+
+      <div class="callout callout--tip">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/></svg></span>
+        <div><b>Idea clave</b><p>Para proyectos de investigación en el departamento, el <strong>flujograma vertical</strong> es el más común porque la secuencia experimental tiende a ser lineal. Si el proceso involucra varios laboratorios o roles, considere el <strong>matricial</strong>.</p></div>
+      </div>
+    </section>
+
+    <!-- 04. SÍMBOLOS -->
+    <section id="s4">
+      <div class="eyebrow">Lenguaje gráfico</div>
+      <h2 class="sec"><span class="secnum">4.</span> Símbolos estándar</h2>
+
+      <p>El flujograma usa un conjunto estandarizado de símbolos. Pase el cursor sobre cada uno (o haga clic) para ver su descripción detallada.</p>
+
+      <div class="sym-grid" id="sym-grid"></div>
+      <div class="sym-detail" id="sym-detail"></div>
+    </section>
+
+    <!-- 05. CÓMO HACER -->
+    <section id="s5">
+      <div class="eyebrow">Construcción paso a paso</div>
+      <h2 class="sec"><span class="secnum">5.</span> Cómo hacer un flujograma</h2>
+
+      <p>Para construir un flujograma de manera simple y correcta, siga estos cuatro pasos. Use las pestañas para navegar entre ellos.</p>
+
+      <div class="stepper" id="stepper" role="tablist" aria-label="Pasos para hacer un flujograma"></div>
+      <div id="step-panes"></div>
+
+      <div class="callout callout--warn">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></span>
+        <div><b>Error común al construir</b><p>Dibujar el diagrama «en lineal» sin pensar en el layout de la hoja. En procesos complejos, planee primero las ramas en papel — a mano alzada — antes de empezar a dibujar en la herramienta digital. Si el diagrama termina siendo difícil de seguir a simple vista, algo quedó mal en esta etapa.</p></div>
+      </div>
+    </section>
+
+    <!-- 06. EJEMPLO ACADÉMICO -->
+    <section id="s6">
+      <div class="eyebrow">Un caso real</div>
+      <h2 class="sec"><span class="secnum">6.</span> Ejemplo académico</h2>
+
+      <p>Así se ve un flujograma real publicado en un artículo científico. Nótese la claridad en la agrupación por etapas (Initialization, Generations, Termination), el uso sistemático de decisiones con salidas Yes/No, y el código de colores que diferencia tipos de operación.</p>
+
+      <figure class="fig">
+        <div class="fig-frame">
+          <img src="img/flujograma-academico.png" alt="Flujograma académico publicado: algoritmo de encriptación con fases Initialization, Generations (One/Two Molecular Structure Chosen, colisiones, decomposition, synthesis) y Termination">
+        </div>
+        <figcaption>Alzubi, J., Alzubi, O., Beseiso, M., Budati, A. &amp; Shankar, K. (2021). Optimal multiple key-based homomorphic encryption with deep neural networks to secure medical data transmission and diagnosis. <em>Expert Systems</em>, 39. <a class="pl" href="https://doi.org/10.1111/exsy.12879" target="_blank" rel="noopener">10.1111/exsy.12879</a></figcaption>
+      </figure>
+
+      <div class="callout callout--tip">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/></svg></span>
+        <div><b>Qué copiarle a este ejemplo</b>
+          <ul>
+            <li><strong>Llaves de agrupación</strong> a la izquierda que marcan fases macro del proceso.</li>
+            <li><strong>Etiquetas Yes/No</strong> sobre cada flecha que sale de un rombo, sin ambigüedad.</li>
+            <li><strong>Un solo punto de entrada y uno de salida</strong> (Start / End en rojo).</li>
+            <li>Código de <strong>color consistente</strong> por tipo de bloque.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 07. HERRAMIENTAS -->
+    <section id="s7">
+      <div class="eyebrow">Con qué dibujarlo</div>
+      <h2 class="sec"><span class="secnum">7.</span> Herramientas recomendadas</h2>
+
+      <p>Para construir su flujograma puede usar cualquiera de estas herramientas. Todas permiten exportar a PDF para la entrega.</p>
+
+      <div class="tools">
+        <a class="tool" href="https://app.diagrams.net" target="_blank" rel="noopener">
+          <h4>draw.io (diagrams.net) <span class="arr">↗</span></h4>
+          <p>Gratuita, potente, con biblioteca completa de símbolos de flujograma. Guarda en Drive, GitHub o local. La más recomendada.</p>
+        </a>
+        <a class="tool" href="https://www.lucidchart.com" target="_blank" rel="noopener">
+          <h4>Lucidchart <span class="arr">↗</span></h4>
+          <p>Colaborativa, interfaz pulida. Versión gratuita limitada; plan estudiantil con cuenta institucional.</p>
+        </a>
+        <a class="tool" href="https://miro.com" target="_blank" rel="noopener">
+          <h4>Miro <span class="arr">↗</span></h4>
+          <p>Pizarra infinita, excelente para flujogramas colaborativos en tiempo real. Ideal si el equipo trabaja en línea.</p>
+        </a>
+        <a class="tool" href="https://www.canva.com" target="_blank" rel="noopener">
+          <h4>Canva <span class="arr">↗</span></h4>
+          <p>Buena opción si priorizan estética sobre precisión técnica. Biblioteca de plantillas extensa.</p>
+        </a>
+      </div>
+
+      <div class="callout callout--nota">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg></span>
+        <div><b>Sugerencia</b><p>Para la primera versión use <strong>papel y lápiz</strong> — literalmente. Es la forma más rápida de iterar el layout antes de pasar a una herramienta digital.</p></div>
+      </div>
+    </section>
+
+    <!-- 08. ENTREGA -->
+    <section id="s8">
+      <div class="eyebrow">Cierre del entregable</div>
+      <h2 class="sec"><span class="secnum">8.</span> Entrega</h2>
+
+      <p>Para completar esta actividad, los estudiantes deben desarrollar el <strong>prototipo de papel de su proyecto</strong>, representado en un flujograma. La entrega debe mostrar de manera clara y evidente que se hizo un esfuerzo importante para desarrollar el diseño experimental en detalle.</p>
+
+      <div class="callout callout--nota">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg></span>
+        <div><b>Pasos de entrega</b>
+          <ol>
+            <li>Construyan el flujograma en la herramienta de su elección, siguiendo los cuatro pasos de esta guía.</li>
+            <li>Verifiquen que no hay callejones sin salida ni decisiones incompletas.</li>
+            <li>Exporten el flujograma a PDF.</li>
+            <li>Envíen el PDF al <strong>asesor principal</strong> para revisión.</li>
+            <li>Una vez aprobado, el asesor <strong>firma digitalmente</strong> el PDF.</li>
+            <li>Cada integrante sube el <strong>PDF firmado</strong> a <a class="pl" href="https://bloqueneon.uniandes.edu.co" target="_blank" rel="noopener">BloqueNeón</a> antes de la fecha límite establecida.</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="callout callout--tip">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/></svg></span>
+        <div><b>Criterio de calidad</b><p>Un buen flujograma es el que alguien <strong>que no trabajó en el proyecto</strong> puede entender sin necesidad de explicación adicional. Antes de entregar, pruébenlo con un compañero de otro equipo — si lo entiende, están listos.</p></div>
+      </div>
+    </section>
+
+    <footer class="doc-foot">
+      <span>Luis H. Reyes · Universidad de los Andes</span>
+      <span>Seminario de Proyecto · IQYA-3050 · 2026-20</span>
+    </footer>
+
+  </div>
+</article>
+
+</div>
+
+<!-- KaTeX -->
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hh1HrFW7TI/o+gT1jTV/qSXKwm3PiF3eD2H56qiP" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous" onload="renderMath()"></script>
+
+<script>
+/* ── Barra de progreso ───────────────────────────────────────── */
+(function () {
+  var bar = document.getElementById('progress');
+  function onScroll() {
+    var h = document.documentElement;
+    var max = h.scrollHeight - h.clientHeight;
+    bar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+})();
+
+/* ── Scroll-spy ──────────────────────────────────────────────── */
+(function () {
+  var items = document.querySelectorAll('.sn-item');
+  var secs = Array.prototype.slice.call(document.querySelectorAll('#s1,#s2,#s3,#s4,#s5,#s6,#s7,#s8'));
+  function spy() {
+    var active = null;
+    secs.forEach(function (s) {
+      if (s.getBoundingClientRect().top <= 120) active = s.id;
+    });
+    items.forEach(function (a) {
+      var href = a.getAttribute('href').slice(1);
+      a.classList.toggle('is-active', href === active);
+    });
+  }
+  document.addEventListener('scroll', spy, { passive: true });
+  spy();
+})();
+
+/* ── Explorador de símbolos ─────────────────────────────────── */
+(function () {
+  var blue = '#0E7CD8', dark = '#1A1A1A', fill = '#E2EFFB';
+  function svg(inner) {
+    return '<svg viewBox="0 0 120 70">' + inner + '</svg>';
+  }
+  var shapes = {
+    flecha: svg('<defs><marker id="ah" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><polygon points="0 0, 10 4, 0 8" fill="' + dark + '"/></marker></defs><line x1="10" y1="35" x2="105" y2="35" stroke="' + dark + '" stroke-width="2" marker-end="url(#ah)"/>'),
+    terminal: svg('<rect x="15" y="15" width="90" height="40" rx="20" ry="20" stroke-width="2" stroke="' + dark + '" fill="' + fill + '"/><text x="60" y="40" font-size="12" text-anchor="middle" fill="' + dark + '">Inicio / Fin</text>'),
+    proceso: svg('<rect x="15" y="15" width="90" height="40" stroke-width="2" stroke="' + dark + '" fill="' + fill + '"/><text x="60" y="40" font-size="12" text-anchor="middle" fill="' + dark + '">Proceso</text>'),
+    decision: svg('<polygon points="60,10 110,35 60,60 10,35" stroke-width="2" stroke="' + dark + '" fill="' + fill + '"/><text x="60" y="40" font-size="11" text-anchor="middle" fill="' + dark + '">¿Decisión?</text>'),
+    entrada: svg('<polygon points="25,15 110,15 95,55 10,55" stroke-width="2" stroke="' + dark + '" fill="' + fill + '"/><text x="60" y="40" font-size="12" text-anchor="middle" fill="' + dark + '">Entrada</text>'),
+    salida: svg('<path d="M 15 15 H 105 V 55 Q 105 47, 95 50 Q 85 53, 75 50 Q 65 47, 55 50 Q 45 53, 35 50 Q 25 47, 15 50 Z" stroke-width="2" stroke="' + dark + '" fill="' + fill + '"/><text x="60" y="37" font-size="12" text-anchor="middle" fill="' + dark + '">Salida</text>'),
+    conectorPag: svg('<circle cx="60" cy="35" r="18" stroke-width="2" stroke="' + dark + '" fill="' + fill + '"/><text x="60" y="40" font-size="14" text-anchor="middle" fill="' + dark + '" font-weight="bold">A</text>'),
+    conectorFuera: svg('<polygon points="25,15 95,15 110,35 95,55 25,55" stroke-width="2" stroke="' + dark + '" fill="' + fill + '"/><text x="60" y="40" font-size="11" text-anchor="middle" fill="' + dark + '">Otra pág.</text>')
+  };
+  var simbolos = [
+    { id: 'flecha', nombre: 'Líneas de flujo', forma: 'Flechas', descripcion: 'Indican la dirección del flujo: marcan qué símbolo le sigue al otro. Pueden ser verticales, horizontales o diagonales.' },
+    { id: 'terminal', nombre: 'Terminales', forma: 'Rectángulos de esquinas romas', descripcion: 'Marcan el inicio y el cierre del flujograma: el punto de comienzo y de fin del proceso.' },
+    { id: 'proceso', nombre: 'Proceso', forma: 'Rectángulo ordinario', descripcion: 'Representa un conjunto específico de operaciones, o sea, el cambio de forma, valor o ubicación de los datos.' },
+    { id: 'decision', nombre: 'Decisión', forma: 'Rombo', descripcion: 'Introduce una toma de decisión, usualmente con dos respuestas posibles: sí (flujo en un sentido) y no (flujo en otro sentido).' },
+    { id: 'entrada', nombre: 'Entrada', forma: 'Paralelogramo inclinado', descripcion: 'Representa la necesidad de ingresar algún tipo de información en el proceso.' },
+    { id: 'salida', nombre: 'Salida', forma: 'Símbolo de hoja de papel', descripcion: 'Representa la forma de extraer datos del proceso: imprimiéndolos en papel o exhibiéndolos en un monitor.' },
+    { id: 'conectorPag', nombre: 'Conector de página', forma: 'Círculo', descripcion: 'Permite vincular el flujo de un punto a otro cuando hacerlo con una línea resultaría confuso. Suele tener dentro una letra para indicar con qué otro conector se enlaza.' },
+    { id: 'conectorFuera', nombre: 'Conector fuera de página', forma: 'Pentágono', descripcion: 'Permite vincular un punto con otro cuando el punto de destino se encuentra en una página distinta a la actual.' }
+  ];
+
+  var grid = document.getElementById('sym-grid');
+  var detail = document.getElementById('sym-detail');
+
+  function showDetail(s) {
+    detail.innerHTML =
+      '<div class="sym-preview">' + shapes[s.id] + '</div>' +
+      '<div><p class="sym-shape-tag">' + s.forma + '</p><h4>' + s.nombre + '</h4><p>' + s.descripcion + '</p></div>';
+  }
+
+  simbolos.forEach(function (s, i) {
+    var btn = document.createElement('button');
+    btn.className = 'sym-btn' + (i === 0 ? ' active' : '');
+    btn.setAttribute('aria-label', 'Símbolo: ' + s.nombre);
+    btn.innerHTML = '<div class="sym-svg">' + shapes[s.id] + '</div><span class="sym-name">' + s.nombre + '</span><span class="sym-shape">' + s.forma + '</span>';
+    function activate() {
+      grid.querySelectorAll('.sym-btn').forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      showDetail(s);
+    }
+    btn.addEventListener('click', activate);
+    btn.addEventListener('mouseenter', activate);
+    grid.appendChild(btn);
+  });
+  showDetail(simbolos[0]);
+})();
+
+/* ── Stepper (4 pasos) ──────────────────────────────────────── */
+(function () {
+  var pasos = [
+    {
+      titulo: 'Comprender el proceso',
+      descripcion: 'El paso inicial es elegir y comprender el proceso que se quiere describir gráficamente. Conviene entender cuál es el propósito del flujograma y a qué público apunta.',
+      preguntas: [
+        '¿Cuál es el proceso que estoy representando?',
+        '¿Quién va a usar este flujograma?',
+        '¿Qué decisiones debe poder tomar esa persona después de leerlo?'
+      ]
+    },
+    {
+      titulo: 'Identificar los elementos',
+      descripcion: 'Una vez comprendido el proceso, identifique sus pasos, los puntos de inicio y fin, las decisiones clave, y elija los símbolos adecuados para cada uno.',
+      preguntas: [
+        '¿Dónde empieza el proceso? ¿Dónde termina?',
+        '¿Qué decisiones hay en el camino? ¿Cuáles son las opciones en cada una?',
+        '¿Qué información entra y qué información sale?'
+      ]
+    },
+    {
+      titulo: 'Construcción',
+      descripcion: 'Establezca paso a paso cada símbolo y cada línea conectora. Tenga en cuenta la superficie (hoja o pantalla) disponible — para procesos complejos, conviene planear el layout antes de empezar a dibujar.',
+      preguntas: [
+        '¿El flujo va vertical u horizontal?',
+        '¿Cuáles son las ramas principales? ¿Caben en una sola página?',
+        '¿Necesito conectores para saltar entre secciones?'
+      ]
+    },
+    {
+      titulo: 'Verificación',
+      descripcion: 'Vuelva al inicio y recorra el flujo entero. Verifique que no existan callejones sin salida, ambigüedades ni errores procedimentales. Alguien que no conoce el proceso debe poder seguirlo sin ayuda.',
+      preguntas: [
+        '¿Todos los caminos llegan a un terminal de fin?',
+        '¿Cada decisión tiene todas sus salidas cubiertas?',
+        '¿Si le paso este diagrama a un compañero sin explicarle, lo entiende?'
+      ]
+    }
+  ];
+
+  var stepper = document.getElementById('stepper');
+  var panes = document.getElementById('step-panes');
+
+  pasos.forEach(function (p, i) {
+    var btn = document.createElement('button');
+    btn.className = 'step-btn' + (i === 0 ? ' active' : '');
+    btn.setAttribute('role', 'tab');
+    btn.setAttribute('aria-selected', i === 0 ? 'true' : 'false');
+    btn.innerHTML = '<span class="step-dot">' + (i + 1) + '</span>' + p.titulo;
+    stepper.appendChild(btn);
+
+    var pane = document.createElement('div');
+    pane.className = 'step-pane' + (i === 0 ? ' active' : '');
+    var qs = p.preguntas.map(function (q) { return '<li>' + q + '</li>'; }).join('');
+    pane.innerHTML =
+      '<p class="step-kicker">Paso ' + (i + 1) + ' de 4</p>' +
+      '<h3>' + p.titulo + '</h3>' +
+      '<p>' + p.descripcion + '</p>' +
+      '<p class="q-label">Preguntas guía</p>' +
+      '<ul class="guia">' + qs + '</ul>';
+    panes.appendChild(pane);
+
+    btn.addEventListener('click', function () {
+      stepper.querySelectorAll('.step-btn').forEach(function (b, j) {
+        var on = j === i;
+        b.classList.toggle('active', on);
+        b.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
+      panes.querySelectorAll('.step-pane').forEach(function (pn, j) {
+        pn.classList.toggle('active', j === i);
+      });
+    });
+  });
+})();
+
+/* ── KaTeX helper ────────────────────────────────────────────── */
+function renderMath() {
+  if (typeof renderMathInElement === 'function') {
+    renderMathInElement(document.body, {
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$', right: '$', display: false },
+        { left: '\\(', right: '\\)', display: false },
+        { left: '\\[', right: '\\]', display: true }
+      ],
+      throwOnError: false
+    });
+  }
+}
+</script>
+
+</body>
+</html>
