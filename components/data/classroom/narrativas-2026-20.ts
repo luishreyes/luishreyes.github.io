@@ -16,7 +16,7 @@ export const narrativas202620Course: Course = {
   tagline: 'Por definir',
   description:
     'Contenido por publicar. Este espacio mostrará el programa completo del curso de Narrativas Visuales de Datos con IA generativa.',
-  accessCode: 'NVD202620',
+  accessCode: 'NARRATIVAS202620',
   bannerUrl: '/classroom/iqya-3751-2026-20/banner.jpg',
 
   team: [

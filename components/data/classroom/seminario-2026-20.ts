@@ -16,7 +16,7 @@ export const seminario202620Course: Course = {
   tagline: 'Por definir',
   description:
     'Contenido por publicar. Este espacio mostrará el programa completo del Seminario de Proyecto del periodo 8B.',
-  accessCode: 'SEM202620',
+  accessCode: 'SPDP202620',
   bannerUrl: '/classroom/iqya-3050-2026-20/banner.jpg',
 
   team: [
