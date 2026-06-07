@@ -451,7 +451,25 @@
       .video-print-link strong { color: #78350f !important; margin-right: 0.3em; }
     }
   
-  </style>
+      /* ── FS_NAV · en pantalla completa solo se ve la diapositiva ──
+       Oculta HUD + barra de progreso y convierte los controles en
+       flechas flotantes que reaparecen al mover el mouse (clase
+       .show-controls que añade el script de abajo con un timeout). */
+    .is-fs .hud,
+    .is-fs .progress { display: none !important; }
+    .is-fs .controls {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 220ms ease;
+    }
+    .is-fs.show-controls .controls {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .is-fs .controls { transition: none; }
+    }
+</style>
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
@@ -1714,6 +1732,28 @@
       });
 
       render();
+    })();
+  </script>
+  <!-- FS_NAV · flechas flotantes + ocultar carrete en pantalla completa -->
+  <script>
+    (function () {
+      var root = document.documentElement;
+      var t;
+      function reveal() {
+        root.classList.add('show-controls');
+        clearTimeout(t);
+        t = setTimeout(function () { root.classList.remove('show-controls'); }, 2200);
+      }
+      function syncFs() {
+        var on = !!(document.fullscreenElement || document.webkitFullscreenElement);
+        root.classList.toggle('is-fs', on);
+        if (on) reveal();
+      }
+      document.addEventListener('fullscreenchange', syncFs);
+      document.addEventListener('webkitfullscreenchange', syncFs);
+      document.addEventListener('mousemove', function () {
+        if (root.classList.contains('is-fs')) reveal();
+      });
     })();
   </script>
 </body>
