@@ -16,7 +16,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course }) => {
         whileHover: { y: -4 },
         transition: { type: 'spring', stiffness: 300, damping: 20 },
       }}
-      className="group"
+      className={`group${course.accent ? ` accent-${course.accent}` : ''}`}
     >
       <Link
         to={`/classroom/${course.slug}`}

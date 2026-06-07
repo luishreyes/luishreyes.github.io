@@ -1,14 +1,54 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { PageWrapper } from '../../components/PageWrapper';
-import { classroomData } from '../../components/data/classroom';
+import { classroomData, type Course } from '../../components/data/classroom';
 import { CourseCard } from '../../components/classroom/CourseCard';
-import { useI18n } from '../../context/i18n';
+import { useI18n, type Lang } from '../../context/i18n';
+
+/**
+ * Deriva el semestre académico (`YYYY-NN`) a partir del campo `term` del curso.
+ * Acepta variantes como `2026-10` o `2026-10 · Periodo 8B` quedándose con el
+ * primer token `YYYY-NN`. En Uniandes `NN = 10` es el primer semestre (ene–jun)
+ * y `NN = 20` el segundo (ago–nov). Devuelve una clave ordenable + una etiqueta
+ * legible y bilingüe. Si el `term` no encaja, agrupa por el `term` crudo.
+ */
+function semesterGroup(term: string, lang: Lang): { key: string; label: string; sort: number } {
+  const m = term.match(/(\d{4})-(\d{2})/);
+  if (!m) {
+    return { key: term, label: term, sort: -1 };
+  }
+  const [, year, period] = m;
+  const name =
+    period === '10'
+      ? (lang === 'es' ? 'Primer semestre' : 'First semester')
+      : period === '20'
+        ? (lang === 'es' ? 'Segundo semestre' : 'Second semester')
+        : (lang === 'es' ? `Periodo ${period}` : `Term ${period}`);
+  return {
+    key: `${year}-${period}`,
+    label: `${name} ${year}`,
+    // Orden descendente: año*100 + periodo → el más reciente primero.
+    sort: Number(year) * 100 + Number(period),
+  };
+}
 
 export const ClassroomArchivePage: React.FC = () => {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
 
   const archivedCourses = classroomData.filter((c) => c.archived);
+
+  // Agrupa por semestre y ordena los grupos del más reciente al más antiguo.
+  const groupsMap = new Map<string, { label: string; sort: number; courses: Course[] }>();
+  for (const course of archivedCourses) {
+    const g = semesterGroup(course.term, lang);
+    const entry = groupsMap.get(g.key);
+    if (entry) {
+      entry.courses.push(course);
+    } else {
+      groupsMap.set(g.key, { label: g.label, sort: g.sort, courses: [course] });
+    }
+  }
+  const groups = [...groupsMap.values()].sort((a, b) => b.sort - a.sort);
 
   return (
     <PageWrapper maxWidth="max-w-7xl">
@@ -34,14 +74,22 @@ export const ClassroomArchivePage: React.FC = () => {
         </p>
       </div>
 
-      {archivedCourses.length > 0 ? (
-        <section className="mt-10">
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {archivedCourses.map((course) => (
-              <CourseCard key={course.slug} course={course} />
-            ))}
-          </div>
-        </section>
+      {groups.length > 0 ? (
+        <div className="mt-10 space-y-12">
+          {groups.map((group) => (
+            <section key={group.label}>
+              <h2 className="flex items-center gap-3 text-lg font-semibold text-brand-dark">
+                {group.label}
+                <span className="flex-1 h-px bg-zinc-200" aria-hidden="true" />
+              </h2>
+              <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {group.courses.map((course) => (
+                  <CourseCard key={course.slug} course={course} />
+                ))}
+              </div>
+            </section>
+          ))}
+        </div>
       ) : (
         <p className="mt-10 text-brand-gray">
           {t('classroom.archive.empty')}

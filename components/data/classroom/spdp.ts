@@ -96,6 +96,7 @@ export const spdpCourse: Course = {
   code: 'IQYA-3050',
   title: 'Seminario de Proyecto de Desarrollo Profesional',
   term: '2026-10 · Periodo 8B',
+  accent: 'blue',
   archived: true,
   credits: 1,
   modality: 'Presencial',
