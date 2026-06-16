@@ -40,7 +40,7 @@ export const narrativas202620Course: Course = {
 
   schedule: [
     { label: 'Sesión semanal', detail: 'Jueves · 9:00 – 10:50 a.m. · Grupo 2' },
-    { label: 'Modalidad', detail: 'Presencial · cupo de 16 estudiantes' },
+    { label: 'Modalidad', detail: 'Presencial' },
     { label: 'Duración', detail: '16 semanas (calendario 2026-20)' },
   ],
 
