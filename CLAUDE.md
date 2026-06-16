@@ -80,6 +80,7 @@ Para crear o editar contenido del Classroom, lee la guía correspondiente:
 
 | Tipo de contenido | Guía | Descripción |
 |---|---|---|
+| **Programa del curso** (syllabus `programa.html`) | [PROGRAMA.md](PROGRAMA.md) | HTML autocontenido (CSS inline, sin `deloitte.css`) que abre en pestaña nueva y se registra como guía con `href`. Side-nav + scroll-spy, secciones canónicas, acento por curso. Plantilla canónica: `iqya-2031-2026-20/programa.html`. |
 | **Lecturas del curso actual** (POU 2026-20 y cursos nuevos) | [LECTURAS-HTML.md](LECTURAS-HTML.md) | **SISTEMA VIGENTE.** Documentos HTML autocontenidos que abren en pestaña nueva (`href`), con `assets/deloitte.css`, side-nav + scroll-spy, callouts, tablas, galerías y calculadoras en JS vanilla, KaTeX. Plantilla canónica: `Lectura_06_Agitacion.html`. |
 | **Lecturas React** (POU 2026-10 — `iqya-2031`) | [LECTURES.md](LECTURES.md) | ⚠️ **DEPRECADO** para cursos nuevos. Componentes `.tsx` con TOC click-to-filter. Solo aplica a las lecturas ya publicadas del curso 2026-10. |
 | **Presentaciones** (slides) | [PRESENTATIONS.md](PRESENTATIONS.md) | Diapositivas HTML autocontenidas con íconos SVG Lucide, navegación, imágenes, interactividad |
@@ -96,17 +97,21 @@ Para crear o editar contenido del Classroom, lee la guía correspondiente:
    - `slides/` — Directorio para presentaciones
    - `slides/img/` — Imágenes de las presentaciones
 
-3. **Crear lecturas** siguiendo [LECTURAS-HTML.md](LECTURAS-HTML.md) (sistema vigente):
+3. **Crear el programa del curso** (syllabus) siguiendo [PROGRAMA.md](PROGRAMA.md):
+   - HTML autocontenido en `public/classroom/{slug}/programa.html`, copiando el de un curso existente y cambiando el acento en `:root`
+   - Registrarlo en el array `readings` con `category: 'guia'`, `order: 1` y `href: '/classroom/{slug}/programa.html'`
+
+4. **Crear lecturas** siguiendo [LECTURAS-HTML.md](LECTURAS-HTML.md) (sistema vigente):
    - Documento HTML autocontenido en `public/classroom/{slug}/lecturas/Lectura_NN/`, partiendo de copiar la lectura anterior
    - Copiar `assets/deloitte.css` a la carpeta de la lectura
    - Agregar metadata al array `readings` del curso **con el campo `href`** (abre en pestaña nueva). NO se crea `.tsx` ni se toca `readingsRegistry.ts`
 
-4. **Crear presentaciones** siguiendo [PRESENTATIONS.md](PRESENTATIONS.md):
+5. **Crear presentaciones** siguiendo [PRESENTATIONS.md](PRESENTATIONS.md):
    - Archivos HTML en `public/classroom/{slug}/slides/`
    - Agregar metadata al array `presentations` del curso
    - `file` = solo nombre del archivo, NO ruta completa
 
-5. **Agregar cronograma** siguiendo [HOY.md](HOY.md):
+6. **Agregar cronograma** siguiendo [HOY.md](HOY.md):
    - Definir el array `cronograma` en los datos del curso
    - El componente `TodayButton` se activa automáticamente si hay cronograma
 
