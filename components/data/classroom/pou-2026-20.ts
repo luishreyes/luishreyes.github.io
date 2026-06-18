@@ -595,6 +595,18 @@ export const pou202620Course: Course = {
       category: 'lectura',
       href: '/classroom/iqya-2031-2026-20/lecturas/Lectura_08/Lectura_08_Intercambiadores_de_Calor.html',
     },
+    {
+      slug: 'lectura-09-filtracion',
+      order: 9,
+      title: 'Filtración industrial',
+      summary:
+        'La barrera porosa que separa sólidos de fluidos. Mecanismos de retención con visor interactivo, teoría basada en la ley de Darcy (resistencia de torta y del medio), linealización t/V–V con gráfica interactiva, compresibilidad de la torta, calculadora de tiempo de ciclo, los cinco grandes tipos de filtros industriales (lecho granular, prensa, tambor rotatorio al vacío, cartucho, membranas), medios filtrantes y ciclo de operación.',
+      date: '2026-06-06',
+      readingMinutes: 28,
+      tags: ['filtración', 'separación sólido-líquido', 'torta', 'ley de Darcy', 'resistencia específica', 'filtro prensa', 'tambor rotatorio', 'membranas', 'medios filtrantes', 'retrolavado'],
+      category: 'lectura',
+      href: '/classroom/iqya-2031-2026-20/lecturas/Lectura_09/Lectura_09_Filtracion.html',
+    },
   ],
   presentations: [
     {
