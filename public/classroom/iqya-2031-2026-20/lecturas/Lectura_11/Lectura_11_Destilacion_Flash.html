@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lectura 11 · Destilación flash · Proyecto de Operaciones Unitarias</title>
+<link rel="stylesheet" href="assets/deloitte.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<style>
+  body {
+    margin: 0;
+    background: var(--gris-5);
+    font-family: var(--tipo);
+    color: var(--gris-1);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.62;
+  }
+
+  /* ---- Barra de progreso de lectura ---- */
+  .progress {
+    position: fixed; top: 0; left: 0; height: 4px; width: 0;
+    background: var(--verde); z-index: 200; transition: width .08s linear;
+  }
+
+  .page {
+    max-width: 940px;
+    margin: 40px auto 90px;
+    background: var(--blanco);
+    box-shadow: var(--sombra);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  /* ===================== ENCABEZADO ===================== */
+  .doc-head {
+    background: var(--papel);
+    border-bottom: 5px solid var(--verde);
+    padding: 46px 64px 40px;
+    position: relative;
+  }
+  .doc-head .org {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    font-size: 14px; font-weight: 700; letter-spacing: .03em; color: var(--gris-1);
+  }
+  .doc-head .org span { color: var(--gris-3); font-weight: 600; }
+  .doc-head .badge {
+    display: inline-block; background: var(--verde); color: #fff;
+    font-size: 13px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+    padding: 6px 14px; border-radius: 999px; margin: 28px 0 18px; white-space: nowrap;
+  }
+  .doc-head h1 { font-size: 43px; line-height: 1.1; margin: 0 0 10px; letter-spacing: -.015em; max-width: 22ch; }
+  .doc-head .subtitle { font-size: 20px; color: var(--gris-2); margin: 0; font-weight: 500; max-width: 52ch; }
+  .doc-meta {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px;
+    margin-top: 34px; padding-top: 26px; border-top: 1px solid var(--gris-4);
+  }
+  .doc-meta div { font-size: 15px; color: var(--gris-2); }
+  .doc-meta b { display: block; color: var(--gris-1); font-size: 16px; font-weight: 700; margin-bottom: 2px; }
+
+  /* ===================== CUERPO ===================== */
+  .doc-body { padding: 8px 64px 60px; }
+  .doc-body section { padding-top: 46px; scroll-margin-top: 24px; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--verde-osc); margin-bottom: 12px;
+  }
+  .eyebrow::before { content: ""; width: 26px; height: 4px; background: var(--verde); border-radius: 2px; }
+  h2.sec { font-size: 30px; line-height: 1.18; margin: 0 0 18px; letter-spacing: -.01em; }
+  h2.sec .secnum { color: var(--verde); font-weight: 700; }
+  h3.sub { font-size: 21px; margin: 34px 0 10px; letter-spacing: -.005em; }
+  .doc-body p { font-size: 17px; color: var(--gris-1); margin: 0 0 16px; text-wrap: pretty; }
+  .doc-body ul, .doc-body ol { font-size: 17px; color: var(--gris-1); margin: 0 0 16px; padding-left: 24px; }
+  .doc-body li { margin-bottom: 6px; line-height: 1.55; }
+  .lead { font-size: 20px; color: var(--gris-2); line-height: 1.55; font-weight: 400; }
+  .lead b { color: var(--gris-1); font-weight: 600; }
+
+  /* ===================== FIGURAS ===================== */
+  figure.fig { margin: 30px 0 8px; }
+  figure.fig.full img { width: 100%; height: auto; display: block; }
+  .fig-frame {
+    border: 1px solid var(--gris-4); border-radius: 8px; padding: 22px; background: var(--blanco);
+    box-shadow: var(--sombra); display: flex; align-items: center; justify-content: center;
+  }
+  .fig-frame img { max-width: 100%; height: auto; display: block; border-radius: 4px; }
+  figure.fig figcaption {
+    font-size: 14px; color: var(--gris-2); line-height: 1.5; margin-top: 12px;
+    padding-left: 16px; border-left: 3px solid var(--verde);
+  }
+  figure.fig figcaption b { color: var(--gris-1); }
+
+  /* ===================== TABLAS ===================== */
+  .tbl-wrap { margin: 0 0 8px; overflow-x: auto; border-radius: 8px; }
+  table.ou { width: 100%; border-collapse: collapse; font-size: 15px; min-width: 560px; }
+  table.ou th, table.ou td { text-align: left; padding: 14px 16px; border-bottom: 1px solid var(--gris-4); vertical-align: top; line-height: 1.4; }
+  table.ou thead th { background: var(--gris-1); color: #fff; font-weight: 700; font-size: 13.5px; letter-spacing: .02em; }
+  table.ou thead th:first-child { border-top-left-radius: 6px; }
+  table.ou thead th:last-child { border-top-right-radius: 6px; }
+  table.ou td:first-child { font-weight: 700; color: var(--gris-1); }
+  table.ou tbody tr:nth-child(even) { background: var(--papel); }
+  table.ou tbody tr:hover { background: var(--verde-claro); }
+  .tbl-cap { font-size: 13.5px; color: var(--gris-2); margin: 24px 0 11px; padding-left: 14px; border-left: 3px solid var(--verde); line-height: 1.5; }
+  .tbl-cap b { color: var(--gris-1); }
+
+  /* ===================== CALLOUTS ===================== */
+  .callout {
+    display: grid; grid-template-columns: 42px 1fr; gap: 18px;
+    border-radius: 8px; padding: 20px 24px; margin: 24px 0; align-items: start;
+  }
+  .callout .ic {
+    width: 42px; height: 42px; border-radius: 50%; display: inline-flex;
+    align-items: center; justify-content: center; font-size: 21px; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .callout > div > b { display: block; font-size: 15.5px; margin-bottom: 4px; }
+  .callout p { font-size: 15.5px; margin: 0 0 8px; color: var(--gris-1); line-height: 1.5; }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout p b { display: inline; color: inherit; font-size: inherit; }
+  .callout ul, .callout ol { font-size: 15.5px; margin: 8px 0 0; padding-left: 22px; }
+  .callout li { margin-bottom: 4px; line-height: 1.5; }
+  .callout--nota { background: var(--teal-claro); }
+  .callout--nota .ic { background: var(--teal); color: #fff; }
+  .callout--nota b { color: var(--teal); }
+  .callout--tip { background: var(--verde-claro); }
+  .callout--tip .ic { background: var(--verde); color: #fff; }
+  .callout--tip b { color: var(--verde-osc); }
+  .callout--warn { background: #fdecec; }
+  .callout--warn .ic { background: #c0392b; color: #fff; }
+  .callout--warn b { color: #c0392b; }
+
+  /* ===================== EQUIPMENT GALLERY ===================== */
+  .imp-gallery { margin: 26px 0 8px; }
+  .imp-bar { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px; }
+  .imp-btn {
+    font-family: var(--tipo); font-size: 13px; font-weight: 600;
+    padding: 7px 16px; border: 1.5px solid var(--gris-4); border-radius: 999px;
+    cursor: pointer; background: var(--blanco); color: var(--gris-2);
+    transition: all .18s ease;
+  }
+  .imp-btn:hover { border-color: var(--verde); color: var(--verde-osc); }
+  .imp-btn.active { background: var(--verde); color: #fff; border-color: var(--verde); }
+  .imp-panel { display: none; }
+  .imp-panel.active { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+  @media (max-width: 640px) { .imp-panel.active { grid-template-columns: 1fr; } }
+  .imp-gif {
+    border: 1px solid var(--gris-4); border-radius: 8px; overflow: hidden;
+    background: var(--papel); display: flex; align-items: center; justify-content: center;
+    min-height: 280px; box-shadow: var(--sombra);
+  }
+  .imp-gif img { width: 100%; height: auto; display: block; max-height: 340px; object-fit: contain; cursor: zoom-in; }
+  .imp-gif .aspect { position: relative; width: 100%; padding-top: 56.25%; }
+  .imp-gif .aspect iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .imp-info h4 { font-size: 18px; font-weight: 800; color: var(--gris-1); margin: 0 0 6px; }
+  .imp-family {
+    font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--verde-osc); background: var(--verde-claro); padding: 3px 10px;
+    border-radius: 999px; display: inline-block; margin-bottom: 10px;
+  }
+  .imp-desc { font-size: 15px; color: var(--gris-2); line-height: 1.55; margin-bottom: 14px; }
+  .imp-feats h5 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; margin: 0 0 5px; color: var(--verde-osc); }
+  .imp-feats ul { font-size: 13.5px; color: var(--gris-2); margin: 0 0 12px; padding-left: 18px; }
+  .imp-feats li { margin-bottom: 3px; line-height: 1.4; }
+  .imp-apps { font-size: 14px; color: var(--gris-2); }
+
+  /* ===================== CALCULADORAS / GRÁFICAS ===================== */
+  .calc-wrap {
+    margin: 26px 0 8px; border: 1px solid var(--gris-4); border-radius: 10px;
+    background: var(--blanco); padding: 22px 24px; box-shadow: var(--sombra);
+  }
+  .calc-wrap h4 { font-size: 17px; font-weight: 700; color: var(--gris-1); margin: 0 0 4px; }
+  .calc-sub { font-size: 14px; color: var(--gris-2); margin: 0 0 16px; }
+  .calc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px 22px; }
+  .calc-field { display: flex; flex-direction: column; gap: 4px; }
+  .calc-field-header { display: flex; justify-content: space-between; font-size: 14px; }
+  .calc-field-header span { color: var(--gris-2); font-weight: 600; }
+  .calc-field-header em { font-style: italic; }
+  .calc-field-header b { color: var(--gris-1); font-family: 'JetBrains Mono Variable', ui-monospace, monospace; font-size: 12.5px; }
+  .calc-field input[type=range] { width: 100%; accent-color: var(--verde); }
+  .calc-note { font-size: 13.5px; color: var(--gris-3); font-style: italic; margin-top: 14px; }
+
+  /* Gráficas SVG con panel de control lateral */
+  .chart-layout { display: grid; grid-template-columns: 1fr 270px; gap: 24px; align-items: start; margin-bottom: 14px; }
+  @media (max-width: 680px) { .chart-layout { grid-template-columns: 1fr; } }
+  .chart-controls { display: flex; flex-direction: column; gap: 12px; }
+
+  /* Tarjetas de resultados en vivo */
+  .live-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 4px 0 6px; }
+  @media (max-width: 560px) { .live-grid { grid-template-columns: 1fr; } }
+  .live-card { border-radius: 8px; padding: 13px 16px; }
+  .live-card-label { font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--gris-2); margin-bottom: 4px; }
+  .live-card-value { font-size: 18px; font-weight: 700; color: var(--gris-1); font-family: 'JetBrains Mono Variable', ui-monospace, monospace; line-height: 1.2; }
+  .live-card-note { font-size: 11.5px; color: var(--gris-3); margin-top: 3px; }
+  .live-card.blue { background: var(--teal-claro); }
+  .live-card.teal { background: var(--teal-claro); }
+  .live-card.green { background: var(--verde-claro); }
+  .live-card.highlight { background: var(--verde-claro); border: 1px solid var(--verde); }
+
+  /* ===================== YOUTUBE EMBED ===================== */
+  .yt-wrap { margin: 26px 0 8px; }
+  .yt-frame {
+    border: 1px solid var(--gris-4); border-radius: 8px; overflow: hidden;
+    background: var(--papel); max-width: 640px; box-shadow: var(--sombra);
+  }
+  .yt-frame .aspect { position: relative; padding-top: 56.25%; }
+  .yt-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .yt-caption { font-size: 13.5px; color: var(--gris-2); padding: 10px 16px 14px; text-align: center; line-height: 1.45; }
+
+  /* ===================== PLATFORM LINKS ===================== */
+  a.pl { color: inherit; border-bottom: 2px solid var(--verde); text-decoration: none; white-space: nowrap; }
+  a.pl::after { content: '\2197'; font-size: .75em; margin-left: .2em; color: var(--verde); }
+  a.pl:hover { color: var(--verde-osc); }
+
+  /* ===================== FOOTER ===================== */
+  .doc-foot {
+    border-top: 1px solid var(--gris-4); margin-top: 50px; padding-top: 22px;
+    display: flex; justify-content: space-between; font-size: 13px; color: var(--gris-3);
+  }
+
+  /* ===================== BIBLIOGRAFÍA ===================== */
+  ol.refs { list-style: none; counter-reset: ref; padding: 0; margin: 18px 0 0; display: grid; gap: 4px; }
+  ol.refs li {
+    counter-increment: ref; position: relative; padding: 12px 16px 12px 58px; border-radius: 8px;
+    font-size: 15px; line-height: 1.5; color: var(--gris-1);
+  }
+  ol.refs li::before {
+    content: counter(ref); position: absolute; left: 14px; top: 11px;
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px; border-radius: 999px; background: var(--papel); color: var(--verde-osc);
+    font-size: 13px; font-weight: 700;
+  }
+  ol.refs li em { color: var(--gris-2); font-style: italic; }
+
+  /* ===================== RESPONSIVE ===================== */
+  @media (max-width: 720px) {
+    .doc-head, .doc-body { padding-left: 26px; padding-right: 26px; }
+    .doc-meta { grid-template-columns: 1fr 1fr; }
+    .doc-head h1 { font-size: 28px; max-width: none; }
+    .doc-head .subtitle { font-size: 17px; }
+    .doc-head .badge { font-size: 11px; padding: 5px 11px; }
+    .fig-frame { padding: 10px; }
+  }
+
+  @media (max-width: 480px) {
+    .doc-head { padding: 28px 16px 28px; }
+    .doc-body { padding-left: 16px; padding-right: 16px; }
+    .doc-head h1 { font-size: 24px; }
+    .doc-head .subtitle { font-size: 15px; }
+    .doc-meta { grid-template-columns: 1fr; gap: 10px; }
+    .fig-frame { padding: 4px; }
+    .callout { grid-template-columns: 32px 1fr; gap: 12px; padding: 14px 16px; }
+    .callout .ic { width: 32px; height: 32px; font-size: 16px; }
+  }
+
+  /* ---- Lightbox (tap-to-zoom) ---- */
+  .lightbox-overlay {
+    position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,.88);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity .25s ease;
+    cursor: zoom-out; padding: 12px; -webkit-tap-highlight-color: transparent;
+  }
+  .lightbox-overlay.is-open { opacity: 1; pointer-events: auto; }
+  .lightbox-overlay img {
+    max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 4px;
+    transform: scale(.95); transition: transform .25s ease;
+  }
+  .lightbox-overlay.is-open img { transform: scale(1); }
+  .fig-frame img { cursor: zoom-in; }
+
+  @media print {
+    body { background: #fff; }
+    .page { box-shadow: none; margin: 0; max-width: none; border-radius: 0; }
+    .progress, .side-nav { display: none; }
+    section, figure.fig, .tbl-wrap, .callout, .imp-gallery, .calc-wrap { break-inside: avoid; }
+  }
+
+  /* ---- Outer layout with sticky side nav ---- */
+  .page { margin: 0; }
+  .outer-layout {
+    max-width: 1160px;
+    margin: 40px auto 90px;
+    display: grid;
+    grid-template-columns: 200px minmax(0, 1fr);
+    gap: 24px;
+    padding: 0 20px;
+    align-items: start;
+  }
+  .side-nav {
+    position: sticky;
+    top: 28px;
+    max-height: calc(100vh - 56px);
+    overflow-y: auto;
+    background: var(--blanco);
+    border: 1px solid var(--gris-4);
+    border-radius: 8px;
+    padding: 20px 16px;
+    box-shadow: var(--sombra);
+    scrollbar-width: thin;
+  }
+  .sn-label { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--gris-3); margin: 0 0 10px; padding: 0 4px; }
+  .sn-item { display: flex; align-items: flex-start; gap: 7px; font-family: var(--tipo); font-size: 13px; color: var(--gris-2); text-decoration: none; padding: 6px 8px; border-radius: 5px; line-height: 1.3; transition: all .15s; margin-bottom: 2px; border: none; background: none; cursor: pointer; width: 100%; text-align: left; }
+  .sn-item:hover { color: var(--gris-1); background: var(--gris-5); }
+  .sn-item.is-active { color: var(--verde-osc); background: var(--verde-claro); font-weight: 600; border-left: 3px solid var(--verde); padding-left: 5px; }
+  .sn-num { font-size: 11px; font-weight: 700; color: var(--verde-osc); min-width: 16px; padding-top: 1px; flex-shrink: 0; }
+  @media (max-width: 880px) {
+    .outer-layout { grid-template-columns: 1fr; padding: 0 12px; }
+    .side-nav { display: none; }
+    .page { margin: 0; }
+  }
+</style>
+
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<div class="outer-layout">
+
+<nav class="side-nav" aria-label="Secciones">
+  <p class="sn-label">En esta lectura</p>
+  <a href="#s1" class="sn-item"><span class="sn-num">01</span>¿Qué es la destilación flash?</a>
+  <a href="#s2" class="sn-item"><span class="sn-num">02</span>El tambor flash</a>
+  <a href="#s3" class="sn-item"><span class="sn-num">03</span>Balances de materia</a>
+  <a href="#s4" class="sn-item"><span class="sn-num">04</span>Ecuación de Rachford-Rice</a>
+  <a href="#s5" class="sn-item"><span class="sn-num">05</span>Bibliografía</a>
+</nav>
+
+<article class="page">
+
+  <!-- ENCABEZADO -->
+  <header class="doc-head">
+    <div class="org">
+      Universidad de los Andes
+      <span>Ingeniería Química y de Alimentos</span>
+    </div>
+    <div class="badge">Lectura 11 · Proyecto de Operaciones Unitarias</div>
+    <h1>Destilación flash</h1>
+    <p class="subtitle">Separación de una etapa por vaporización parcial: principio físico, tambor flash, balances de materia y energía, ecuación de Rachford-Rice y calculadora interactiva para mezclas binarias ideales.</p>
+    <div class="doc-meta">
+      <div><b>Curso</b>Proyecto de Operaciones Unitarias · IQYA-2031 · 2026-20</div>
+      <div><b>Autor</b>Luis H. Reyes</div>
+      <div><b>Fecha</b>20 de junio de 2026</div>
+      <div><b>Lectura</b>Aproximadamente 18 minutos</div>
+    </div>
+  </header>
+
+  <div class="doc-body">
+
+    <!-- ── s0: Intro ────────────────────────────────────────────── -->
+    <section id="s0">
+      <p class="lead">Antes de diseñar una columna de destilación de múltiples platos, es fundamental comprender el caso más simple: <b>una única etapa de equilibrio</b>. La destilación flash — o <em>vaporización flash</em> — es exactamente eso: una alimentación líquida (o bifásica) que, al reducir súbitamente su presión o aumentar su temperatura, se separa en una fase vapor enriquecida en el componente volátil y una fase líquida empobrecida. Una sola etapa de equilibrio no logra la pureza de una columna, pero es un proceso rápido, continuo y de muy bajo capital que cumple roles estratégicos en la industria.</p>
+
+      <!-- SVG del tambor flash -->
+      <figure class="fig">
+        <div class="fig-frame" style="padding:32px;">
+          <svg viewBox="0 0 520 260" width="100%" style="max-width:520px;display:block;overflow:visible;" aria-label="Esquema de un tambor flash">
+            <!-- válvula de expansión -->
+            <line x1="60" y1="130" x2="120" y2="130" stroke="#555" stroke-width="2.5"/>
+            <polygon points="90,118 90,142 108,130" fill="#555"/>
+            <polygon points="92,118 92,142 76,130" fill="#555"/>
+            <!-- label válvula -->
+            <text x="84" y="112" text-anchor="middle" font-size="11" fill="#666">Válvula</text>
+            <!-- Tambor flash (cilindro vertical) -->
+            <rect x="140" y="60" width="180" height="170" rx="20" fill="#F2F2F2" stroke="#D0D0D0" stroke-width="2"/>
+            <ellipse cx="230" cy="60" rx="90" ry="18" fill="#E4E4E4" stroke="#D0D0D0" stroke-width="2"/>
+            <ellipse cx="230" cy="230" rx="90" ry="18" fill="#E4E4E4" stroke="#D0D0D0" stroke-width="2"/>
+            <!-- Nivel líquido (zona azul) -->
+            <rect x="142" y="160" width="176" height="68" rx="0" fill="#BDE3F7" opacity="0.7"/>
+            <line x1="142" y1="160" x2="318" y2="160" stroke="#0076A8" stroke-width="1.5" stroke-dasharray="6 3"/>
+            <text x="232" y="195" text-anchor="middle" font-size="12" fill="#0076A8" font-weight="600">Fase líquida (L)</text>
+            <!-- Zona vapor (gris claro) -->
+            <text x="232" y="118" text-anchor="middle" font-size="12" fill="#5E8A12" font-weight="600">Fase vapor (V)</text>
+            <!-- Flechas de corrientes -->
+            <!-- Alimentación (F) -->
+            <line x1="20" y1="130" x2="140" y2="130" stroke="#333" stroke-width="2.5" marker-end="url(#arr)"/>
+            <text x="10" y="120" text-anchor="middle" font-size="13" fill="#333" font-weight="700">F</text>
+            <text x="75" y="147" text-anchor="middle" font-size="11" fill="#666">z_F, T_F, P_F</text>
+            <!-- Vapor sale por arriba (V) -->
+            <line x1="230" y1="60" x2="230" y2="10" stroke="#86BC24" stroke-width="2.5" marker-end="url(#arrgn)"/>
+            <text x="270" y="25" font-size="13" fill="#5E8A12" font-weight="700">V, y</text>
+            <!-- Líquido sale por abajo (L) -->
+            <line x1="230" y1="248" x2="230" y2="260" stroke="#0076A8" stroke-width="2.5"/>
+            <line x1="230" y1="260" x2="340" y2="260" stroke="#0076A8" stroke-width="2.5" marker-end="url(#arrtl)"/>
+            <text x="355" y="264" font-size="13" fill="#0076A8" font-weight="700">L, x</text>
+            <!-- P_flash label -->
+            <text x="232" y="88" text-anchor="middle" font-size="11" fill="#9A9A9A">P_flash, T_flash</text>
+            <!-- Flechas markers -->
+            <defs>
+              <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L8,3 z" fill="#333"/>
+              </marker>
+              <marker id="arrgn" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L8,3 z" fill="#86BC24"/>
+              </marker>
+              <marker id="arrtl" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L8,3 z" fill="#0076A8"/>
+              </marker>
+            </defs>
+            <!-- Label: tambor flash -->
+            <text x="230" y="24" text-anchor="middle" font-size="11" fill="#9A9A9A">↑ vapor</text>
+            <!-- Etiqueta equipo -->
+            <text x="340" y="148" font-size="12" fill="#333" font-weight="600">Tambor flash</text>
+          </svg>
+        </div>
+        <figcaption><b>Figura 1.</b> Esquema de un tambor flash. La alimentación (F) a alta presión pasa por una válvula de expansión y entra al tambor a presión flash más baja. Se forman dos fases en equilibrio: vapor (V, composición y) que sale por la parte superior y líquido (L, composición x) por la inferior.</figcaption>
+      </figure>
+
+      <div class="callout callout--tip">
+        <span class="ic">i</span>
+        <div>
+          <b>Aplicación al proyecto del curso</b>
+          <p>Si en la planta de pectina se dispone de una corriente de etanol a alta presión, una válvula de expansión puede separar parcialmente el etanol del agua antes de ingresar a la columna de destilación, reduciendo la carga de esa columna. También es relevante para pre-flash en columnas de destilación con múltiples corrientes de alimentación.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── s1: ¿Qué es la destilación flash? ───────────────────── -->
+    <section id="s1">
+      <div class="eyebrow">Concepto</div>
+      <h2 class="sec"><span class="secnum">1.</span> ¿Qué es la destilación flash?</h2>
+
+      <p>La <b>destilación flash</b> (o <em>vaporización flash</em>) es un proceso de separación de una sola etapa en el que una corriente de alimentación líquida (o bifásica) se somete a una reducción abrupta de presión — al pasar por una válvula de expansión o un orificio — lo que provoca una vaporización parcial. La mezcla resultante, a la presión y temperatura flash, alcanza el equilibrio líquido-vapor y luego se separa físicamente en un tambor (flash drum) en dos corrientes:</p>
+      <ul>
+        <li><b>Vapor (V):</b> corriente de vapor enriquecida en el componente más volátil (fracción molar \(y\)).</li>
+        <li><b>Líquido (L):</b> corriente de líquido empobrecida en el componente más volátil (fracción molar \(x\)).</li>
+      </ul>
+
+      <h3 class="sub">Diferencia con la destilación convencional</h3>
+      <div class="tbl-wrap">
+        <table class="ou">
+          <thead>
+            <tr><th>Característica</th><th>Flash (una etapa)</th><th>Columna de destilación</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Etapas de contacto</td><td>Una</td><td>Varias (5 – 100+)</td></tr>
+            <tr><td>Grado de separación</td><td>Parcial — limitado por ELV de una etapa</td><td>Alto — control por diseño</td></tr>
+            <tr><td>Capital</td><td>Muy bajo (solo un tambor)</td><td>Medio a alto</td></tr>
+            <tr><td>Operación</td><td>Continua; sin partes móviles en el tambor</td><td>Continua con rehervidor y condensador</td></tr>
+            <tr><td>Usos típicos</td><td>Pre-separación, eliminación de gas disuelto, ajuste de punto de rocío</td><td>Purificación a alta especificación</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="sub">Posición en el diagrama T-x-y</h3>
+      <p>El proceso flash puede visualizarse en el diagrama T-x-y de la mezcla: si la alimentación a composición \(z_F\) entra a la región bifásica (entre la curva de burbuja y la curva de rocío a la presión flash), la mezcla se separte en líquido de composición \(x\) (curva de burbuja) y vapor de composición \(y\) (curva de rocío) conectados por una línea de amarre horizontal (isoterma).</p>
+
+      <div class="callout callout--nota">
+        <span class="ic">i</span>
+        <div>
+          <b>Flash isotérmico vs. adiabático</b>
+          <p><b>Flash isotérmico:</b> se especifica la temperatura del tambor (T<sub>flash</sub>). Con T<sub>flash</sub> y P<sub>flash</sub> conocidas, el problema es algebraico directo para mezclas ideales (Raoult). Requiere intercambiador de calor para controlar T. <b>Flash adiabático:</b> no hay intercambio de calor con el entorno; la entalpía de la alimentación determina la temperatura de flash resultante. El cálculo es iterativo: suponer T<sub>flash</sub>, calcular V/F, verificar balance de energía, iterar.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── s2: El tambor flash ──────────────────────────────────── -->
+    <section id="s2">
+      <div class="eyebrow">Equipo</div>
+      <h2 class="sec"><span class="secnum">2.</span> El tambor flash</h2>
+
+      <p>El <b>tambor flash</b> (flash drum) es un recipiente vertical u horizontal en el que se permite que las dos fases creadas por la expansión alcancen el equilibrio termodinámico y se separen por gravedad. Los elementos principales son:</p>
+      <ul>
+        <li><b>Válvula de control de presión:</b> aguas arriba del tambor; la expansión a través de la válvula genera la vaporización.</li>
+        <li><b>Cuerpo del tambor:</b> proporciona el tiempo de residencia y el espacio para la separación. Suele tener una longitud 3-5 veces su diámetro.</li>
+        <li><b>Deflector o demister:</b> elemento interno que elimina gotas de líquido arrastradas por el vapor antes de la salida superior.</li>
+        <li><b>Control de nivel:</b> mantiene la interfase líquido-vapor a la altura correcta mediante una válvula de control en la salida del líquido.</li>
+      </ul>
+
+      <h3 class="sub">Aplicaciones industriales</h3>
+      <div class="tbl-wrap">
+        <table class="ou">
+          <thead>
+            <tr><th>Aplicación</th><th>Descripción</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Pre-flash en refinerías</td><td>Separa los gases livianos del crudo antes de la torre de destilación atmosférica</td></tr>
+            <tr><td>Eliminación de gases disueltos</td><td>CO₂ y O₂ disueltos en agua se eliminan por flash a vacío</td></tr>
+            <tr><td>Separación gas-líquido en yacimientos</td><td>El gas natural se separa del petróleo al reducir la presión aguas arriba del oleoducto</td></tr>
+            <tr><td>Generación de vapor (flash steam)</td><td>Condensado caliente de calderas produce vapor a presión más baja para aprovechar energía</td></tr>
+            <tr><td>Ciclos de refrigeración</td><td>El fluido refrigerante pasa por una válvula de expansión antes del evaporador</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ── s3: Balances de materia ────────────────────────────────── -->
+    <section id="s3">
+      <div class="eyebrow">Matemática del proceso</div>
+      <h2 class="sec"><span class="secnum">3.</span> Balances de materia y condición de equilibrio</h2>
+
+      <h3 class="sub">Variables del sistema</h3>
+      <p>Para una alimentación de flujo molar \(F\) y composición \(z\) (fracción molar del componente más volátil) en un sistema binario a (T<sub>flash</sub>, P<sub>flash</sub>), las corrientes de salida son \(V\) (vapor, composición \(y\)) y \(L\) (líquido, composición \(x\)). Se define la <b>fracción vaporizada</b> como:</p>
+      $$\Psi = \frac{V}{F} \qquad (0 \leq \Psi \leq 1)$$
+
+      <h3 class="sub">Balance global y por componente</h3>
+      $$F = V + L = \Psi F + (1-\Psi)F$$
+      $$F z = V y + L x = \Psi F y + (1-\Psi) F x$$
+      <p>Dividiendo entre F:</p>
+      $$z = \Psi y + (1-\Psi) x$$
+      <p>Esta es la <b>ecuación de la palanca (lever rule)</b>: si conocemos \(x\) e \(y\) del equilibrio (a T<sub>flash</sub>, P<sub>flash</sub>), podemos calcular \(\Psi\) directamente.</p>
+
+      <h3 class="sub">Condición de equilibrio (mezcla ideal)</h3>
+      <p>Para una mezcla binaria ideal que sigue la Ley de Raoult:</p>
+      $$y = K \cdot x \qquad \text{donde} \quad K = \frac{P^{sat}(T_{flash})}{P_{flash}}$$
+      <p>La constante de equilibrio \(K\) (también llamada constante de distribución o factor de equilibrio) depende de la temperatura flash y de la presión. Para el componente A (el más volátil):</p>
+      $$K_A = \frac{P_A^{sat}(T_{flash})}{P_{flash}} \quad;\quad K_B = \frac{P_B^{sat}(T_{flash})}{P_{flash}}$$
+      <p>Nótese que \(K_A > 1 > K_B\) cuando el sistema está en la región bifásica.</p>
+
+      <h3 class="sub">Solución analítica para mezcla binaria ideal</h3>
+      <p>Combinando el balance de materia y el equilibrio para el binario A-B:</p>
+      $$x_A = \frac{z_A(1 - K_B)}{K_A - K_B + \Psi(K_A + K_B - 2) + (1+K_B - 2z_A\cdot\text{(ver deducción)})}$$
+      <p>La forma más conveniente es la <b>ecuación de Rachford-Rice</b>, que se detalla en la Sección 4. Para el caso binario, también se puede resolver analíticamente a partir del sistema de dos ecuaciones:</p>
+      $$z = \Psi y + (1-\Psi) x$$
+      $$y = K_A \cdot x$$
+      $$1 = x + (1-x) \quad (\text{normalización})$$
+      <p>Resultando en:</p>
+      $$x = \frac{z}{K_A + (1 - K_A)(1 - \Psi) \cdot \frac{1-K_B}{...}}$$
+      <p class="calc-note">Ver Sección 4 para la forma compacta y directamente computable.</p>
+    </section>
+
+    <!-- ── s4: Rachford-Rice ──────────────────────────────────────── -->
+    <section id="s4">
+      <div class="eyebrow">Cálculo flash</div>
+      <h2 class="sec"><span class="secnum">4.</span> Ecuación de Rachford-Rice y calculadora</h2>
+
+      <h3 class="sub">La ecuación de Rachford-Rice</h3>
+      <p>Para un sistema multicomponente, la ecuación de Rachford-Rice es la forma canónica de resolver el flash isotérmico. Para un sistema de \(N_c\) componentes:</p>
+      $$\sum_{i=1}^{N_c} \frac{z_i (K_i - 1)}{1 + \Psi(K_i - 1)} = 0$$
+      <p>Para el caso <b>binario</b> (A más volátil, B menos volátil):</p>
+      $$\frac{z_A(K_A - 1)}{1 + \Psi(K_A - 1)} + \frac{z_B(K_B - 1)}{1 + \Psi(K_B - 1)} = 0$$
+      <p>Despejando \(\Psi\):</p>
+      $$\Psi = \frac{K_B(z_A + z_B) - z_A K_A K_B^{-1} - z_B}{(K_A - 1)(K_B - 1)/(K_B - K_A)}$$
+      <p>O en forma compacta directamente resoluble para binario:</p>
+      $$\Psi = \frac{z_A(K_A - K_B) - (1 - K_B)}{(K_A - 1)(1 - K_B) - (K_B - 1)(K_A - 1)} \cdot \frac{1}{...}$$
+
+      <p>En la práctica se resuelve numéricamente (bisección o Newton-Raphson) encontrando la raíz en \(0 &lt; \Psi &lt; 1\), y luego se calculan las composiciones:</p>
+      $$x_i = \frac{z_i}{1 + \Psi(K_i - 1)} \qquad;\qquad y_i = K_i \cdot x_i$$
+
+      <h3 class="sub">Algoritmo de cálculo flash isotérmico</h3>
+      <ol>
+        <li>Conocidos: \(T_{flash}\), \(P_{flash}\), \(z_i\).</li>
+        <li>Calcular \(K_i = P_i^{sat}(T_{flash}) / P_{flash}\) para cada componente con la ecuación de Antoine.</li>
+        <li>Verificar que la alimentación esté en la región bifásica: \(\sum K_i z_i > 1\) (punto de burbuja) y \(\sum z_i/K_i > 1\) (punto de rocío). Si ambas se cumplen, hay dos fases.</li>
+        <li>Resolver la ecuación de Rachford-Rice por bisección para obtener \(\Psi\).</li>
+        <li>Calcular \(x_i\) e \(y_i\) con las ecuaciones anteriores.</li>
+        <li>Normalizar: \(\sum x_i = 1\), \(\sum y_i = 1\) (verificación).</li>
+      </ol>
+
+      <!-- Calculadora Flash binaria -->
+      <div class="calc-wrap">
+        <h4>Calculadora flash binaria isotérmica</h4>
+        <p class="calc-sub">Sistema etanol (A) – agua (B). Ajuste T y P de flash para ver la fracción vaporizada y las composiciones de vapor y líquido. Usa constantes de Antoine: etanol A=8,112 B=1592,9 C=226,2; agua A=8,071 B=1730,6 C=233,4.</p>
+        <div class="calc-grid">
+          <div class="calc-field">
+            <div class="calc-field-header"><span>T<sub>flash</sub> (°C)</span><b id="fl-t-val">80 °C</b></div>
+            <input type="range" id="fl-t" min="40" max="120" step="1" value="80">
+          </div>
+          <div class="calc-field">
+            <div class="calc-field-header"><span>P<sub>flash</sub> (mmHg)</span><b id="fl-p-val">760 mmHg</b></div>
+            <input type="range" id="fl-p" min="200" max="1500" step="10" value="760">
+          </div>
+          <div class="calc-field">
+            <div class="calc-field-header"><span>z<sub>etanol</sub></span><b id="fl-z-val">0,40</b></div>
+            <input type="range" id="fl-z" min="0.01" max="0.99" step="0.01" value="0.4">
+          </div>
+        </div>
+        <div class="live-grid" style="margin-top:16px; grid-template-columns:repeat(3,1fr);">
+          <div class="live-card blue">
+            <div class="live-card-label">K<sub>etanol</sub></div>
+            <div class="live-card-value" id="fl-ka">—</div>
+            <div class="live-card-note">Psat/P flash</div>
+          </div>
+          <div class="live-card blue">
+            <div class="live-card-label">K<sub>agua</sub></div>
+            <div class="live-card-value" id="fl-kb">—</div>
+            <div class="live-card-note">Psat/P flash</div>
+          </div>
+          <div class="live-card highlight">
+            <div class="live-card-label">Ψ = V/F</div>
+            <div class="live-card-value" id="fl-psi">—</div>
+            <div class="live-card-note">fracción vaporizada</div>
+          </div>
+          <div class="live-card green">
+            <div class="live-card-label">y<sub>etanol</sub></div>
+            <div class="live-card-value" id="fl-y">—</div>
+            <div class="live-card-note">en la fase vapor</div>
+          </div>
+          <div class="live-card teal">
+            <div class="live-card-label">x<sub>etanol</sub></div>
+            <div class="live-card-value" id="fl-x">—</div>
+            <div class="live-card-note">en la fase líquida</div>
+          </div>
+          <div class="live-card">
+            <div class="live-card-label">Estado</div>
+            <div class="live-card-value" id="fl-state" style="font-size:14px;">—</div>
+            <div class="live-card-note">fase del sistema</div>
+          </div>
+        </div>
+        <p class="calc-note">Si y<sub>etanol</sub> = z = x<sub>etanol</sub>, la alimentación está fuera de la región bifásica (líquido o vapor puro a esas condiciones).</p>
+      </div>
+    </section>
+
+    <!-- ── s5: Bibliografía ───────────────────────────────────────── -->
+    <section id="s5">
+      <div class="eyebrow">Fuentes</div>
+      <h2 class="sec"><span class="secnum">5.</span> Bibliografía</h2>
+      <ol class="refs">
+        <li>McCabe, W. L., Smith, J. C., &amp; Harriott, P. (2005). <em>Unit Operations of Chemical Engineering</em> (7.ª ed.). McGraw-Hill. (Cap. 18: Equilibrium Separations, sección Flash Distillation).</li>
+        <li>Seader, J. D., Henley, E. J., &amp; Roper, D. K. (2011). <em>Separation Process Principles</em> (3.ª ed.). Wiley. (Cap. 5: Cascades and Hybrid Systems).</li>
+        <li>Rachford, H. H., &amp; Rice, J. D. (1952). Procedure for use of electronic digital computers in calculating flash vaporization hydrocarbon equilibrium. <em>Journal of Petroleum Technology, 4</em>(10), 19–3.</li>
+        <li>Smith, J. M., Van Ness, H. C., &amp; Abbott, M. M. (2005). <em>Introduction to Chemical Engineering Thermodynamics</em> (7.ª ed.). McGraw-Hill. (Cap. 10: vapor-liquid equilibrium).</li>
+        <li>Perry, R. H., &amp; Green, D. W. (Eds.) (2019). <em>Perry's Chemical Engineers' Handbook</em> (9.ª ed.). McGraw-Hill. (Sección 4: Thermodynamics; Sección 13: Distillation).</li>
+      </ol>
+    </section>
+
+    <div class="doc-foot">
+      <span>IQYA-2031 · Proyecto de Operaciones Unitarias · 2026-20</span>
+      <span>Lectura 11 · Universidad de los Andes</span>
+    </div>
+
+  </div><!-- .doc-body -->
+</article>
+
+</div><!-- .outer-layout -->
+
+<!-- KaTeX auto-render -->
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+  onload="renderMath()"></script>
+<script>
+function renderMath(){
+  renderMathInElement(document.body,{
+    delimiters:[
+      {left:'$$',right:'$$',display:true},
+      {left:'$',right:'$',display:false}
+    ],
+    throwOnError:false
+  });
+}
+</script>
+<script>
+/* ── Progress bar ─────────────────────────────────────────────── */
+(function(){
+  var bar=document.getElementById('progress');
+  function upd(){
+    var s=document.documentElement,st=s.scrollTop||document.body.scrollTop,
+        h=s.scrollHeight-s.clientHeight;
+    bar.style.width=(h>0?(st/h*100):0)+'%';
+  }
+  window.addEventListener('scroll',upd,{passive:true});
+  upd();
+})();
+
+/* ── Scroll-spy ───────────────────────────────────────────────── */
+(function(){
+  var items=document.querySelectorAll('.sn-item');
+  var secs=Array.from(document.querySelectorAll('section[id]'));
+  function spy(){
+    var y=window.scrollY+120;
+    var cur=secs.reduce(function(a,s){return s.offsetTop<=y?s:a},secs[0]);
+    if(!cur)return;
+    items.forEach(function(it){
+      it.classList.toggle('is-active',it.getAttribute('href')==='#'+cur.id);
+    });
+  }
+  window.addEventListener('scroll',spy,{passive:true});
+  spy();
+})();
+
+/* ── Flash binary calculator ──────────────────────────────────── */
+(function(){
+  function antoine(A,B,C,T){ return Math.pow(10, A - B/(T+C)); }
+  function calc(){
+    var T=parseFloat(document.getElementById('fl-t').value);
+    var P=parseFloat(document.getElementById('fl-p').value);
+    var z=parseFloat(document.getElementById('fl-z').value);
+    document.getElementById('fl-t-val').textContent=T.toFixed(0)+' °C';
+    document.getElementById('fl-p-val').textContent=P.toFixed(0)+' mmHg';
+    document.getElementById('fl-z-val').textContent=z.toFixed(2).replace('.',',');
+
+    // Antoine constants (mmHg, °C)
+    var PsatA=antoine(8.112,1592.864,226.184,T); // ethanol
+    var PsatB=antoine(8.07131,1730.63,233.426,T); // water
+    var KA=PsatA/P, KB=PsatB/P;
+    document.getElementById('fl-ka').textContent=KA.toFixed(3).replace('.',',');
+    document.getElementById('fl-kb').textContent=KB.toFixed(3).replace('.',',');
+
+    // Check phase region
+    var zA=z, zB=1-z;
+    var bubblePt=zA*KA+zB*KB;  // > 1 means above bubble point
+    var dewPt=zA/KA+zB/KB;     // > 1 means below dew point
+    if(bubblePt<=1){
+      document.getElementById('fl-psi').textContent='0,000';
+      document.getElementById('fl-y').textContent=z.toFixed(3).replace('.',',');
+      document.getElementById('fl-x').textContent=z.toFixed(3).replace('.',',');
+      document.getElementById('fl-state').textContent='Líquido';
+      return;
+    }
+    if(dewPt<=1){
+      document.getElementById('fl-psi').textContent='1,000';
+      document.getElementById('fl-y').textContent=z.toFixed(3).replace('.',',');
+      document.getElementById('fl-x').textContent=z.toFixed(3).replace('.',',');
+      document.getElementById('fl-state').textContent='Vapor';
+      return;
+    }
+    // Two-phase: solve Rachford-Rice by bisection
+    function rr(psi){ return zA*(KA-1)/(1+psi*(KA-1)) + zB*(KB-1)/(1+psi*(KB-1)); }
+    var lo=0.0001,hi=0.9999;
+    for(var i=0;i<80;i++){
+      var mid=(lo+hi)/2;
+      if(rr(mid)>0)lo=mid;else hi=mid;
+    }
+    var psi=(lo+hi)/2;
+    var xA=zA/(1+psi*(KA-1));
+    var xB=zB/(1+psi*(KB-1));
+    var yA=KA*xA;
+    document.getElementById('fl-psi').textContent=psi.toFixed(3).replace('.',',');
+    document.getElementById('fl-y').textContent=yA.toFixed(3).replace('.',',');
+    document.getElementById('fl-x').textContent=xA.toFixed(3).replace('.',',');
+    document.getElementById('fl-state').textContent='Bifásico';
+  }
+  ['fl-t','fl-p','fl-z'].forEach(function(id){
+    document.getElementById(id).addEventListener('input',calc);
+  });
+  calc();
+})();
+</script>
+<script>
+/* ── Lightbox (tap-to-zoom on figures) ─────────────────────── */
+(function(){
+  var ov=document.createElement('div');
+  ov.className='lightbox-overlay';
+  ov.innerHTML='<img alt="">';
+  document.body.appendChild(ov);
+  var ovImg=ov.querySelector('img');
+  document.querySelectorAll('.fig-frame img, .imp-gif img').forEach(function(img){
+    img.addEventListener('click',function(){
+      ovImg.src=this.src; ovImg.alt=this.alt;
+      ov.classList.add('is-open');
+    });
+  });
+  ov.addEventListener('click',function(){ ov.classList.remove('is-open'); });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape') ov.classList.remove('is-open'); });
+})();
+</script>
+</body>
+</html>

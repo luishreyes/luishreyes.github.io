@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lectura 12 · Destilación por lotes · Proyecto de Operaciones Unitarias</title>
+<link rel="stylesheet" href="assets/deloitte.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<style>
+  body {
+    margin: 0;
+    background: var(--gris-5);
+    font-family: var(--tipo);
+    color: var(--gris-1);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.62;
+  }
+
+  /* ---- Barra de progreso de lectura ---- */
+  .progress {
+    position: fixed; top: 0; left: 0; height: 4px; width: 0;
+    background: var(--verde); z-index: 200; transition: width .08s linear;
+  }
+
+  .page {
+    max-width: 940px;
+    margin: 40px auto 90px;
+    background: var(--blanco);
+    box-shadow: var(--sombra);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  /* ===================== ENCABEZADO ===================== */
+  .doc-head {
+    background: var(--papel);
+    border-bottom: 5px solid var(--verde);
+    padding: 46px 64px 40px;
+    position: relative;
+  }
+  .doc-head .org {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    font-size: 14px; font-weight: 700; letter-spacing: .03em; color: var(--gris-1);
+  }
+  .doc-head .org span { color: var(--gris-3); font-weight: 600; }
+  .doc-head .badge {
+    display: inline-block; background: var(--verde); color: #fff;
+    font-size: 13px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+    padding: 6px 14px; border-radius: 999px; margin: 28px 0 18px; white-space: nowrap;
+  }
+  .doc-head h1 { font-size: 43px; line-height: 1.1; margin: 0 0 10px; letter-spacing: -.015em; max-width: 22ch; }
+  .doc-head .subtitle { font-size: 20px; color: var(--gris-2); margin: 0; font-weight: 500; max-width: 52ch; }
+  .doc-meta {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px;
+    margin-top: 34px; padding-top: 26px; border-top: 1px solid var(--gris-4);
+  }
+  .doc-meta div { font-size: 15px; color: var(--gris-2); }
+  .doc-meta b { display: block; color: var(--gris-1); font-size: 16px; font-weight: 700; margin-bottom: 2px; }
+
+  /* ===================== CUERPO ===================== */
+  .doc-body { padding: 8px 64px 60px; }
+  .doc-body section { padding-top: 46px; scroll-margin-top: 24px; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--verde-osc); margin-bottom: 12px;
+  }
+  .eyebrow::before { content: ""; width: 26px; height: 4px; background: var(--verde); border-radius: 2px; }
+  h2.sec { font-size: 30px; line-height: 1.18; margin: 0 0 18px; letter-spacing: -.01em; }
+  h2.sec .secnum { color: var(--verde); font-weight: 700; }
+  h3.sub { font-size: 21px; margin: 34px 0 10px; letter-spacing: -.005em; }
+  .doc-body p { font-size: 17px; color: var(--gris-1); margin: 0 0 16px; text-wrap: pretty; }
+  .doc-body ul, .doc-body ol { font-size: 17px; color: var(--gris-1); margin: 0 0 16px; padding-left: 24px; }
+  .doc-body li { margin-bottom: 6px; line-height: 1.55; }
+  .lead { font-size: 20px; color: var(--gris-2); line-height: 1.55; font-weight: 400; }
+  .lead b { color: var(--gris-1); font-weight: 600; }
+
+  /* ===================== FIGURAS ===================== */
+  figure.fig { margin: 30px 0 8px; }
+  figure.fig.full img { width: 100%; height: auto; display: block; }
+  .fig-frame {
+    border: 1px solid var(--gris-4); border-radius: 8px; padding: 22px; background: var(--blanco);
+    box-shadow: var(--sombra); display: flex; align-items: center; justify-content: center;
+  }
+  .fig-frame img { max-width: 100%; height: auto; display: block; border-radius: 4px; }
+  figure.fig figcaption {
+    font-size: 14px; color: var(--gris-2); line-height: 1.5; margin-top: 12px;
+    padding-left: 16px; border-left: 3px solid var(--verde);
+  }
+  figure.fig figcaption b { color: var(--gris-1); }
+
+  /* ===================== TABLAS ===================== */
+  .tbl-wrap { margin: 0 0 8px; overflow-x: auto; border-radius: 8px; }
+  table.ou { width: 100%; border-collapse: collapse; font-size: 15px; min-width: 560px; }
+  table.ou th, table.ou td { text-align: left; padding: 14px 16px; border-bottom: 1px solid var(--gris-4); vertical-align: top; line-height: 1.4; }
+  table.ou thead th { background: var(--gris-1); color: #fff; font-weight: 700; font-size: 13.5px; letter-spacing: .02em; }
+  table.ou thead th:first-child { border-top-left-radius: 6px; }
+  table.ou thead th:last-child { border-top-right-radius: 6px; }
+  table.ou td:first-child { font-weight: 700; color: var(--gris-1); }
+  table.ou tbody tr:nth-child(even) { background: var(--papel); }
+  table.ou tbody tr:hover { background: var(--verde-claro); }
+  .tbl-cap { font-size: 13.5px; color: var(--gris-2); margin: 24px 0 11px; padding-left: 14px; border-left: 3px solid var(--verde); line-height: 1.5; }
+  .tbl-cap b { color: var(--gris-1); }
+
+  /* ===================== CALLOUTS ===================== */
+  .callout {
+    display: grid; grid-template-columns: 42px 1fr; gap: 18px;
+    border-radius: 8px; padding: 20px 24px; margin: 24px 0; align-items: start;
+  }
+  .callout .ic {
+    width: 42px; height: 42px; border-radius: 50%; display: inline-flex;
+    align-items: center; justify-content: center; font-size: 21px; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .callout > div > b { display: block; font-size: 15.5px; margin-bottom: 4px; }
+  .callout p { font-size: 15.5px; margin: 0 0 8px; color: var(--gris-1); line-height: 1.5; }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout p b { display: inline; color: inherit; font-size: inherit; }
+  .callout ul, .callout ol { font-size: 15.5px; margin: 8px 0 0; padding-left: 22px; }
+  .callout li { margin-bottom: 4px; line-height: 1.5; }
+  .callout--nota { background: var(--teal-claro); }
+  .callout--nota .ic { background: var(--teal); color: #fff; }
+  .callout--nota b { color: var(--teal); }
+  .callout--tip { background: var(--verde-claro); }
+  .callout--tip .ic { background: var(--verde); color: #fff; }
+  .callout--tip b { color: var(--verde-osc); }
+  .callout--warn { background: #fdecec; }
+  .callout--warn .ic { background: #c0392b; color: #fff; }
+  .callout--warn b { color: #c0392b; }
+
+  /* ===================== EQUIPMENT GALLERY ===================== */
+  .imp-gallery { margin: 26px 0 8px; }
+  .imp-bar { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px; }
+  .imp-btn {
+    font-family: var(--tipo); font-size: 13px; font-weight: 600;
+    padding: 7px 16px; border: 1.5px solid var(--gris-4); border-radius: 999px;
+    cursor: pointer; background: var(--blanco); color: var(--gris-2);
+    transition: all .18s ease;
+  }
+  .imp-btn:hover { border-color: var(--verde); color: var(--verde-osc); }
+  .imp-btn.active { background: var(--verde); color: #fff; border-color: var(--verde); }
+  .imp-panel { display: none; }
+  .imp-panel.active { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+  @media (max-width: 640px) { .imp-panel.active { grid-template-columns: 1fr; } }
+  .imp-gif {
+    border: 1px solid var(--gris-4); border-radius: 8px; overflow: hidden;
+    background: var(--papel); display: flex; align-items: center; justify-content: center;
+    min-height: 280px; box-shadow: var(--sombra);
+  }
+  .imp-gif img { width: 100%; height: auto; display: block; max-height: 340px; object-fit: contain; cursor: zoom-in; }
+  .imp-gif .aspect { position: relative; width: 100%; padding-top: 56.25%; }
+  .imp-gif .aspect iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .imp-info h4 { font-size: 18px; font-weight: 800; color: var(--gris-1); margin: 0 0 6px; }
+  .imp-family {
+    font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--verde-osc); background: var(--verde-claro); padding: 3px 10px;
+    border-radius: 999px; display: inline-block; margin-bottom: 10px;
+  }
+  .imp-desc { font-size: 15px; color: var(--gris-2); line-height: 1.55; margin-bottom: 14px; }
+  .imp-feats h5 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; margin: 0 0 5px; color: var(--verde-osc); }
+  .imp-feats ul { font-size: 13.5px; color: var(--gris-2); margin: 0 0 12px; padding-left: 18px; }
+  .imp-feats li { margin-bottom: 3px; line-height: 1.4; }
+  .imp-apps { font-size: 14px; color: var(--gris-2); }
+
+  /* ===================== CALCULADORAS / GRÁFICAS ===================== */
+  .calc-wrap {
+    margin: 26px 0 8px; border: 1px solid var(--gris-4); border-radius: 10px;
+    background: var(--blanco); padding: 22px 24px; box-shadow: var(--sombra);
+  }
+  .calc-wrap h4 { font-size: 17px; font-weight: 700; color: var(--gris-1); margin: 0 0 4px; }
+  .calc-sub { font-size: 14px; color: var(--gris-2); margin: 0 0 16px; }
+  .calc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px 22px; }
+  .calc-field { display: flex; flex-direction: column; gap: 4px; }
+  .calc-field-header { display: flex; justify-content: space-between; font-size: 14px; }
+  .calc-field-header span { color: var(--gris-2); font-weight: 600; }
+  .calc-field-header em { font-style: italic; }
+  .calc-field-header b { color: var(--gris-1); font-family: 'JetBrains Mono Variable', ui-monospace, monospace; font-size: 12.5px; }
+  .calc-field input[type=range] { width: 100%; accent-color: var(--verde); }
+  .calc-note { font-size: 13.5px; color: var(--gris-3); font-style: italic; margin-top: 14px; }
+
+  /* Gráficas SVG con panel de control lateral */
+  .chart-layout { display: grid; grid-template-columns: 1fr 270px; gap: 24px; align-items: start; margin-bottom: 14px; }
+  @media (max-width: 680px) { .chart-layout { grid-template-columns: 1fr; } }
+  .chart-controls { display: flex; flex-direction: column; gap: 12px; }
+
+  /* Tarjetas de resultados en vivo */
+  .live-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 4px 0 6px; }
+  @media (max-width: 560px) { .live-grid { grid-template-columns: 1fr; } }
+  .live-card { border-radius: 8px; padding: 13px 16px; }
+  .live-card-label { font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--gris-2); margin-bottom: 4px; }
+  .live-card-value { font-size: 18px; font-weight: 700; color: var(--gris-1); font-family: 'JetBrains Mono Variable', ui-monospace, monospace; line-height: 1.2; }
+  .live-card-note { font-size: 11.5px; color: var(--gris-3); margin-top: 3px; }
+  .live-card.blue { background: var(--teal-claro); }
+  .live-card.teal { background: var(--teal-claro); }
+  .live-card.green { background: var(--verde-claro); }
+  .live-card.highlight { background: var(--verde-claro); border: 1px solid var(--verde); }
+
+  /* ===================== YOUTUBE EMBED ===================== */
+  .yt-wrap { margin: 26px 0 8px; }
+  .yt-frame {
+    border: 1px solid var(--gris-4); border-radius: 8px; overflow: hidden;
+    background: var(--papel); max-width: 640px; box-shadow: var(--sombra);
+  }
+  .yt-frame .aspect { position: relative; padding-top: 56.25%; }
+  .yt-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .yt-caption { font-size: 13.5px; color: var(--gris-2); padding: 10px 16px 14px; text-align: center; line-height: 1.45; }
+
+  /* ===================== PLATFORM LINKS ===================== */
+  a.pl { color: inherit; border-bottom: 2px solid var(--verde); text-decoration: none; white-space: nowrap; }
+  a.pl::after { content: '\2197'; font-size: .75em; margin-left: .2em; color: var(--verde); }
+  a.pl:hover { color: var(--verde-osc); }
+
+  /* ===================== FOOTER ===================== */
+  .doc-foot {
+    border-top: 1px solid var(--gris-4); margin-top: 50px; padding-top: 22px;
+    display: flex; justify-content: space-between; font-size: 13px; color: var(--gris-3);
+  }
+
+  /* ===================== BIBLIOGRAFÍA ===================== */
+  ol.refs { list-style: none; counter-reset: ref; padding: 0; margin: 18px 0 0; display: grid; gap: 4px; }
+  ol.refs li {
+    counter-increment: ref; position: relative; padding: 12px 16px 12px 58px; border-radius: 8px;
+    font-size: 15px; line-height: 1.5; color: var(--gris-1);
+  }
+  ol.refs li::before {
+    content: counter(ref); position: absolute; left: 14px; top: 11px;
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px; border-radius: 999px; background: var(--papel); color: var(--verde-osc);
+    font-size: 13px; font-weight: 700;
+  }
+  ol.refs li em { color: var(--gris-2); font-style: italic; }
+
+  /* ===================== RESPONSIVE ===================== */
+  @media (max-width: 720px) {
+    .doc-head, .doc-body { padding-left: 26px; padding-right: 26px; }
+    .doc-meta { grid-template-columns: 1fr 1fr; }
+    .doc-head h1 { font-size: 28px; max-width: none; }
+    .doc-head .subtitle { font-size: 17px; }
+    .doc-head .badge { font-size: 11px; padding: 5px 11px; }
+    .fig-frame { padding: 10px; }
+  }
+
+  @media (max-width: 480px) {
+    .doc-head { padding: 28px 16px 28px; }
+    .doc-body { padding-left: 16px; padding-right: 16px; }
+    .doc-head h1 { font-size: 24px; }
+    .doc-head .subtitle { font-size: 15px; }
+    .doc-meta { grid-template-columns: 1fr; gap: 10px; }
+    .fig-frame { padding: 4px; }
+    .callout { grid-template-columns: 32px 1fr; gap: 12px; padding: 14px 16px; }
+    .callout .ic { width: 32px; height: 32px; font-size: 16px; }
+  }
+
+  /* ---- Lightbox (tap-to-zoom) ---- */
+  .lightbox-overlay {
+    position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,.88);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity .25s ease;
+    cursor: zoom-out; padding: 12px; -webkit-tap-highlight-color: transparent;
+  }
+  .lightbox-overlay.is-open { opacity: 1; pointer-events: auto; }
+  .lightbox-overlay img {
+    max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 4px;
+    transform: scale(.95); transition: transform .25s ease;
+  }
+  .lightbox-overlay.is-open img { transform: scale(1); }
+  .fig-frame img { cursor: zoom-in; }
+
+  @media print {
+    body { background: #fff; }
+    .page { box-shadow: none; margin: 0; max-width: none; border-radius: 0; }
+    .progress, .side-nav { display: none; }
+    section, figure.fig, .tbl-wrap, .callout, .imp-gallery, .calc-wrap { break-inside: avoid; }
+  }
+
+  /* ---- Outer layout with sticky side nav ---- */
+  .page { margin: 0; }
+  .outer-layout {
+    max-width: 1160px;
+    margin: 40px auto 90px;
+    display: grid;
+    grid-template-columns: 200px minmax(0, 1fr);
+    gap: 24px;
+    padding: 0 20px;
+    align-items: start;
+  }
+  .side-nav {
+    position: sticky;
+    top: 28px;
+    max-height: calc(100vh - 56px);
+    overflow-y: auto;
+    background: var(--blanco);
+    border: 1px solid var(--gris-4);
+    border-radius: 8px;
+    padding: 20px 16px;
+    box-shadow: var(--sombra);
+    scrollbar-width: thin;
+  }
+  .sn-label { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--gris-3); margin: 0 0 10px; padding: 0 4px; }
+  .sn-item { display: flex; align-items: flex-start; gap: 7px; font-family: var(--tipo); font-size: 13px; color: var(--gris-2); text-decoration: none; padding: 6px 8px; border-radius: 5px; line-height: 1.3; transition: all .15s; margin-bottom: 2px; border: none; background: none; cursor: pointer; width: 100%; text-align: left; }
+  .sn-item:hover { color: var(--gris-1); background: var(--gris-5); }
+  .sn-item.is-active { color: var(--verde-osc); background: var(--verde-claro); font-weight: 600; border-left: 3px solid var(--verde); padding-left: 5px; }
+  .sn-num { font-size: 11px; font-weight: 700; color: var(--verde-osc); min-width: 16px; padding-top: 1px; flex-shrink: 0; }
+  @media (max-width: 880px) {
+    .outer-layout { grid-template-columns: 1fr; padding: 0 12px; }
+    .side-nav { display: none; }
+    .page { margin: 0; }
+  }
+</style>
+
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<div class="outer-layout">
+
+<nav class="side-nav" aria-label="Secciones">
+  <p class="sn-label">En esta lectura</p>
+  <a href="#s1" class="sn-item"><span class="sn-num">01</span>Destilación simple (alambique)</a>
+  <a href="#s2" class="sn-item"><span class="sn-num">02</span>Ecuación de Rayleigh</a>
+  <a href="#s3" class="sn-item"><span class="sn-num">03</span>Destilación por lotes rectificada</a>
+  <a href="#s4" class="sn-item"><span class="sn-num">04</span>Los «cortes» en la destilería</a>
+  <a href="#s5" class="sn-item"><span class="sn-num">05</span>Bibliografía</a>
+</nav>
+
+<article class="page">
+
+  <!-- ENCABEZADO -->
+  <header class="doc-head">
+    <div class="org">
+      Universidad de los Andes
+      <span>Ingeniería Química y de Alimentos</span>
+    </div>
+    <div class="badge">Lectura 12 · Proyecto de Operaciones Unitarias</div>
+    <h1>Destilación por lotes</h1>
+    <p class="subtitle">Operación discontinua de destilación: alambique simple, ecuación de Rayleigh, destilación rectificada por lotes, los «cortes» de la destilería artesanal y comparación con la destilación continua.</p>
+    <div class="doc-meta">
+      <div><b>Curso</b>Proyecto de Operaciones Unitarias · IQYA-2031 · 2026-20</div>
+      <div><b>Autor</b>Luis H. Reyes</div>
+      <div><b>Fecha</b>27 de junio de 2026</div>
+      <div><b>Lectura</b>Aproximadamente 20 minutos</div>
+    </div>
+  </header>
+
+  <div class="doc-body">
+
+    <!-- ── s0: Intro ────────────────────────────────────────────── -->
+    <section id="s0">
+      <p class="lead">La destilación continua (Lectura 13) no es siempre la respuesta: cuando los volúmenes son pequeños, cuando la mezcla cambia de lote a lote, o cuando se requiere una flexibilidad operacional que la columna continua no puede proveer, la <b>destilación por lotes</b> — también llamada destilación discontinua o destilación simple — es la alternativa natural. Es, además, la técnica más antigua: el alambique de cobre del que nació el whisky, el coñac y el ron de alta gama no es sino una destilación por lotes mejorada.</p>
+
+      <!-- SVG del alambique (pot still) -->
+      <figure class="fig">
+        <div class="fig-frame" style="padding:32px;">
+          <svg viewBox="0 0 500 280" width="100%" style="max-width:500px;display:block;overflow:visible;" aria-label="Esquema de un alambique de destilación simple">
+            <!-- Caldero (still pot) -->
+            <ellipse cx="130" cy="200" rx="90" ry="30" fill="#D0D0D0" stroke="#9A9A9A" stroke-width="2"/>
+            <rect x="42" y="135" width="176" height="68" rx="0" fill="#E4E4E4" stroke="#9A9A9A" stroke-width="2"/>
+            <ellipse cx="130" cy="135" rx="90" ry="30" fill="#C8C8C8" stroke="#9A9A9A" stroke-width="2"/>
+            <!-- líquido en caldero -->
+            <ellipse cx="130" cy="175" rx="82" ry="24" fill="#BDE3F7" opacity="0.7"/>
+            <text x="130" y="178" text-anchor="middle" font-size="12" fill="#0076A8" font-weight="600">Mezcla (L, x)</text>
+            <!-- Cuello de cisne (swan neck) -->
+            <path d="M160,135 Q200,90 250,70 Q290,55 320,80 Q350,100 370,130" fill="none" stroke="#9A9A9A" stroke-width="18" stroke-linecap="round"/>
+            <path d="M160,135 Q200,90 250,70 Q290,55 320,80 Q350,100 370,130" fill="none" stroke="#D0D0D0" stroke-width="12" stroke-linecap="round"/>
+            <!-- Condensador (serpentín) -->
+            <rect x="370" y="110" width="80" height="140" rx="10" fill="#E1EEF4" stroke="#0076A8" stroke-width="2"/>
+            <text x="410" y="148" text-anchor="middle" font-size="11" fill="#0076A8" font-weight="700">Con-</text>
+            <text x="410" y="162" text-anchor="middle" font-size="11" fill="#0076A8" font-weight="700">den-</text>
+            <text x="410" y="176" text-anchor="middle" font-size="11" fill="#0076A8" font-weight="700">sador</text>
+            <!-- Salida destilado -->
+            <line x1="450" y1="210" x2="480" y2="210" stroke="#86BC24" stroke-width="2.5"/>
+            <line x1="480" y1="210" x2="480" y2="260" stroke="#86BC24" stroke-width="2.5" marker-end="url(#arrgn12)"/>
+            <rect x="465" y="258" width="30" height="20" rx="4" fill="#F2F2F2" stroke="#86BC24" stroke-width="1.5"/>
+            <text x="480" y="272" text-anchor="middle" font-size="10" fill="#5E8A12">D(t), y(t)</text>
+            <!-- Calentamiento -->
+            <text x="130" y="245" text-anchor="middle" font-size="11" fill="#E0922F" font-weight="700">↑ Calor Q(t)</text>
+            <!-- Labels corrientes -->
+            <text x="130" y="108" text-anchor="middle" font-size="11" fill="#666">Pot still / caldero</text>
+            <text x="250" y="45" text-anchor="middle" font-size="11" fill="#666">Cuello de cisne</text>
+            <!-- Arrow -->
+            <defs>
+              <marker id="arrgn12" markerWidth="8" markerHeight="8" refX="4" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L8,3 z" fill="#86BC24"/>
+              </marker>
+            </defs>
+          </svg>
+        </div>
+        <figcaption><b>Figura 1.</b> Esquema de una destilación simple por lotes (alambique). El caldero (pot still) se calienta con una fuente de calor; el vapor generado sube por el cuello de cisne, se condensa en el condensador y el destilado D(t) se recoge. La composición del destilado cambia con el tiempo.</figcaption>
+      </figure>
+
+      <div class="callout callout--tip">
+        <span class="ic">i</span>
+        <div>
+          <b>Aplicación al proyecto del curso</b>
+          <p>La destilación por lotes es relevante cuando la planta opera a escala piloto o cuando los volúmenes de etanol a recuperar son pequeños (inicio de producción, pruebas de proceso). Comprender la ecuación de Rayleigh permite estimar cuánto etanol se puede recuperar en cada lote y con qué pureza promedio, sin necesidad de diseñar una columna completa.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── s1: Destilación simple ─────────────────────────────────── -->
+    <section id="s1">
+      <div class="eyebrow">Operación discontinua</div>
+      <h2 class="sec"><span class="secnum">1.</span> Destilación simple por lotes (alambique)</h2>
+
+      <p>En la <b>destilación simple por lotes</b>, una carga inicial de mezcla líquida se coloca en el caldero (pot still) y se calienta. El vapor generado en cada instante está en equilibrio con el líquido en ese instante. A diferencia de la destilación continua, <em>el sistema cambia con el tiempo</em>: a medida que el componente más volátil se evapora, el líquido en el caldero se empobrece en ese componente, y el destilado que se produce se vuelve progresivamente menos puro.</p>
+
+      <h3 class="sub">Características operacionales</h3>
+      <ul>
+        <li><b>Carga inicial:</b> \(L_0\) mol de líquido con composición \(x_0\) (fracción del componente volátil).</li>
+        <li><b>Residuo final:</b> \(L_W\) mol a composición \(x_W\).</li>
+        <li><b>Destilado acumulado:</b> \(D = L_0 - L_W\) mol con composición promedio \(\bar{y}\) (varía con el tiempo).</li>
+        <li>En cada instante \(t\), el destilado tiene composición \(y^*(x)\), donde \(y^*\) es la composición de equilibrio correspondiente al líquido de composición \(x\) en el caldero.</li>
+      </ul>
+
+      <h3 class="sub">Comparación con la destilación continua</h3>
+      <div class="tbl-wrap">
+        <table class="ou">
+          <thead>
+            <tr><th>Característica</th><th>Por lotes (discontinua)</th><th>Continua</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Régimen de operación</td><td>Transitorio: composiciones cambian con el tiempo</td><td>Estado estacionario: composiciones constantes</td></tr>
+            <tr><td>Flexibilidad</td><td>Alta: un mismo equipo procesa diferentes mezclas</td><td>Baja: diseñada para un sistema y especificaciones fijas</td></tr>
+            <tr><td>Escala</td><td>Pequeña a mediana (destilerías artesanales, laboratorio, piloto)</td><td>Mediana a grande (industria química, refinería)</td></tr>
+            <tr><td>Calidad del destilado</td><td>Varía con el tiempo; requiere recorte de fracciones</td><td>Constante si la alimentación y la operación son estables</td></tr>
+            <tr><td>Consumo energético</td><td>Mayor por unidad de producto (sin recuperación interna de calor)</td><td>Menor (calor latente de la columna se aprovecha internamente)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ── s2: Ecuación de Rayleigh ───────────────────────────────── -->
+    <section id="s2">
+      <div class="eyebrow">Modelo matemático</div>
+      <h2 class="sec"><span class="secnum">2.</span> Ecuación de Rayleigh</h2>
+
+      <h3 class="sub">Derivación</h3>
+      <p>Sea \(L\) el número de moles de líquido en el caldero en un instante dado y \(x\) su composición. Si se evapora una cantidad infinitesimal \(-dL\) (negativo porque L decrece), el vapor instantáneo tiene composición de equilibrio \(y^*(x)\). El balance diferencial de componente volátil es:</p>
+      $$d(Lx) = y^* \cdot (-dL)$$
+      $$L \, dx + x \, dL = -y^* \, dL$$
+      $$L \, dx = -(y^* - x) \, dL$$
+      $$\frac{dL}{L} = -\frac{dx}{y^* - x}$$
+      <p>Integrando desde el estado inicial \((L_0, x_0)\) al estado final \((L_W, x_W)\) con \(x_0 > x_W\):</p>
+      $$\ln\!\left(\frac{L_0}{L_W}\right) = \int_{x_W}^{x_0} \frac{dx}{y^*(x) - x}$$
+      <p>Esta es la <b>ecuación de Rayleigh</b>. La integral se puede evaluar numéricamente (cuadratura) si se conoce la curva de equilibrio \(y^* = f(x)\), o analíticamente para el caso de mezcla ideal con volatilidad relativa constante \(\alpha\):</p>
+      $$y^* - x = \frac{(\alpha - 1)x(1-x)}{1 + (\alpha-1)x}$$
+      <p>Substituyendo y evaluando la integral:</p>
+      $$\ln\!\left(\frac{L_0}{L_W}\right) = \frac{1}{\alpha-1}\left[\ln\!\frac{x_0(1-x_W)}{x_W(1-x_0)} + \alpha\ln\!\frac{(1-x_W)}{(1-x_0)}\right]$$
+
+      <h3 class="sub">Balance de componente para el destilado</h3>
+      <p>La composición promedio del destilado acumulado \(\bar{y}\) se obtiene del balance global:</p>
+      $$L_0 x_0 = L_W x_W + D \bar{y}$$
+      $$\bar{y} = \frac{L_0 x_0 - L_W x_W}{L_0 - L_W}$$
+
+      <!-- Calculadora Rayleigh -->
+      <div class="calc-wrap">
+        <h4>Calculadora Rayleigh — mezcla binaria ideal</h4>
+        <p class="calc-sub">Dado α constante, composición inicial x₀ y composición final deseada x<sub>W</sub> en el caldero, calcula la fracción de líquido remanente L<sub>W</sub>/L₀ y la composición promedio del destilado.</p>
+        <div class="calc-grid">
+          <div class="calc-field">
+            <div class="calc-field-header"><span>α (volatilidad relativa)</span><b id="rl-alpha-val">2,30</b></div>
+            <input type="range" id="rl-alpha" min="1.1" max="10" step="0.1" value="2.3">
+          </div>
+          <div class="calc-field">
+            <div class="calc-field-header"><span>x₀ (composición inicial)</span><b id="rl-x0-val">0,40</b></div>
+            <input type="range" id="rl-x0" min="0.05" max="0.95" step="0.01" value="0.4">
+          </div>
+          <div class="calc-field">
+            <div class="calc-field-header"><span>x<sub>W</sub> (composición final)</span><b id="rl-xw-val">0,10</b></div>
+            <input type="range" id="rl-xw" min="0.01" max="0.9" step="0.01" value="0.1">
+          </div>
+        </div>
+        <div class="live-grid" style="margin-top:16px;">
+          <div class="live-card blue">
+            <div class="live-card-label">L<sub>W</sub>/L₀</div>
+            <div class="live-card-value" id="rl-lratio">—</div>
+            <div class="live-card-note">fracción de líquido remanente</div>
+          </div>
+          <div class="live-card green">
+            <div class="live-card-label">ȳ (destilado promedio)</div>
+            <div class="live-card-value" id="rl-ybar">—</div>
+            <div class="live-card-note">composición promedio del destilado</div>
+          </div>
+          <div class="live-card highlight">
+            <div class="live-card-label">Recuperación</div>
+            <div class="live-card-value" id="rl-rec">—</div>
+            <div class="live-card-note">% del componente volátil en destilado</div>
+          </div>
+        </div>
+        <p class="calc-note">Requiere x<sub>W</sub> &lt; x₀. Usa integración numérica (cuadratura de Simpson) de la ecuación de Rayleigh con α constante.</p>
+      </div>
+    </section>
+
+    <!-- ── s3: Destilación rectificada por lotes ─────────────────── -->
+    <section id="s3">
+      <div class="eyebrow">Mejora del proceso</div>
+      <h2 class="sec"><span class="secnum">3.</span> Destilación rectificada por lotes</h2>
+
+      <p>La destilación simple por lotes entrega destilado de pureza moderada (limitada a la curva de equilibrio de una etapa). Para obtener purezas más altas — como el licor espirituoso de alta graduación — se usa una <b>columna de rectificación (batchcolumn)</b> colocada encima del caldero: un relleno o platos que permiten múltiples contactos vapor-líquido <em>durante el mismo lote</em>.</p>
+
+      <h3 class="sub">Modos de operación</h3>
+      <div class="tbl-wrap">
+        <table class="ou">
+          <thead>
+            <tr><th>Modo</th><th>Variable de control</th><th>Descripción</th><th>Resultado</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>R constante (reflujo fijo)</td>
+              <td>\(R = L/D = \) constante</td>
+              <td>Se mantiene la razón de reflujo fija durante todo el lote</td>
+              <td>La pureza del destilado cae con el tiempo conforme el caldero se empobrece. Se recolectan fracciones para uso diferenciado.</td>
+            </tr>
+            <tr>
+              <td>y<sub>D</sub> constante (pureza fija)</td>
+              <td>\(y_D = \) constante</td>
+              <td>Se aumenta el reflujo durante el lote para mantener la pureza del destilado</td>
+              <td>El caudal de destilado disminuye con el tiempo. Es más productivo si la especificación de pureza es estricta.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="sub">Ventajas de la rectificación por lotes</h3>
+      <ul>
+        <li>Permite obtener destilados de alta pureza (>90 % v/v alcohol) en un solo equipo.</li>
+        <li>Flexibilidad para procesar diferentes mezclas en el mismo equipo.</li>
+        <li>Posibilidad de recolectar fracciones de composición diferente a lo largo del lote.</li>
+        <li>Menor costo de capital que una columna continua equivalente a pequeña escala.</li>
+      </ul>
+
+      <div class="callout callout--nota">
+        <span class="ic">i</span>
+        <div>
+          <b>El alambique rectificador vs. el alambique simple</b>
+          <p>Un alambique simple (pot still sin columna) produce destilados de 20-30% ABV en una pasada. Necesitando varias destilaciones para alcanzar 60-70% ABV. Un alambique con columna de platos (columna de Coffey o columna de platos) puede producir en una sola pasada destilados de 90%+ ABV (alcohol de grano neutro). The Glenlivet usa el alambique simple de dos pasadas, que retiene más congéneres y define el carácter frutal del single malt.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── s4: Los cortes ─────────────────────────────────────────── -->
+    <section id="s4">
+      <div class="eyebrow">Práctica de la destilería</div>
+      <h2 class="sec"><span class="secnum">4.</span> Los «cortes» (spirit cut) en la destilería artesanal</h2>
+
+      <p>En la destilación por lotes de bebidas espirituosas, el destilado no se recoge todo junto: se divide en tres <b>fracciones o cortes</b> según la evolución temporal de la composición y la presencia de compuestos de aroma indeseables. Esta es una etapa crítica controlada por la experiencia del destilador.</p>
+
+      <div class="tbl-wrap">
+        <table class="ou">
+          <thead>
+            <tr><th>Fracción</th><th>Nombre</th><th>ABV aprox.</th><th>Compuestos presentes</th><th>Destino</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Primera</td>
+              <td>Cabezas (foreshots / têtes)</td>
+              <td>&gt; 80 % v/v</td>
+              <td>Metanol, acetaldehído, ésteres volátiles — sustancias tóxicas y acres</td>
+              <td>Se descartan o redistilan en el siguiente lote</td>
+            </tr>
+            <tr>
+              <td>Segunda</td>
+              <td>Corazón (heart / cœur)</td>
+              <td>60 – 75 % v/v</td>
+              <td>Etanol, ésteres florales y frutales deseables — el producto</td>
+              <td>El producto deseado; se recolecta para envejecimiento</td>
+            </tr>
+            <tr>
+              <td>Tercera</td>
+              <td>Colas (feints / queues)</td>
+              <td>&lt; 60 % v/v</td>
+              <td>Alcoholes fusel (propanol, butanol, amilálcohol), ácidos grasos — notas grasas y pesadas</td>
+              <td>Se añaden al siguiente lote o se redistilan para recuperar etanol</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>El arte del maestro destilador (still master) está en decidir los puntos exactos de corte: demasiado temprano para el corazón sacrifica rendimiento; demasiado tarde incorpora compuestos indeseables. En grandes destilerías estos cortes se realizan por análisis continuo de densidad, refracción o cromatografía de gases.</p>
+
+      <div class="callout callout--nota">
+        <span class="ic">i</span>
+        <div>
+          <b>El rol del cobre en la destilación</b>
+          <p>Los alambiques de cobre no son solo una tradición estética. El cobre actúa como catalizador de la eliminación de compuestos de azufre (propanediol, sulfuro de hidrógeno, sulfuro de dimetilo) producidos durante la fermentación. Estos compuestos se «atrapan» en las paredes del alambique formando sulfato de cobre, depurando el licor y evitando notas desagradables (pirita, cerilla, goma). Destilerías que han reemplazado los alambiques de cobre por acero inoxidable han reportado cambios negativos en el perfil sensorial del producto.</p>
+        </div>
+      </div>
+
+      <h3 class="sub">Doble destilación (sistema escocés)</h3>
+      <p>The Glenlivet y la mayoría de las destilerías escocesas de single malt emplean dos destilaciones por lotes en alambiques separados:</p>
+      <ol>
+        <li><b>Primer alambique (wash still):</b> destila el «wash» (mosto fermentado, ~8% ABV) hasta obtener el «low wines» (~20-25% ABV). Todo el destilado se recoge sin cortes significativos.</li>
+        <li><b>Segundo alambique (spirit still):</b> destila el «low wines» realizando los cortes de cabezas, corazón y colas. El «corazón» a ~65-70% ABV es el new make spirit que entrará al barril de roble para envejecer.</li>
+      </ol>
+    </section>
+
+    <!-- ── s5: Bibliografía ───────────────────────────────────────── -->
+    <section id="s5">
+      <div class="eyebrow">Fuentes</div>
+      <h2 class="sec"><span class="secnum">5.</span> Bibliografía</h2>
+      <ol class="refs">
+        <li>McCabe, W. L., Smith, J. C., &amp; Harriott, P. (2005). <em>Unit Operations of Chemical Engineering</em> (7.ª ed.). McGraw-Hill. (Cap. 19: Distillation, sección Batch Distillation).</li>
+        <li>Seader, J. D., Henley, E. J., &amp; Roper, D. K. (2011). <em>Separation Process Principles</em> (3.ª ed.). Wiley. (Cap. 13: Batch Distillation).</li>
+        <li>Lord Rayleigh. (1902). On the distillation of binary mixtures. <em>The London, Edinburgh, and Dublin Philosophical Magazine and Journal of Science, 4</em>(23), 521–537.</li>
+        <li>Mujumdar, A. S. (Ed.) (2006). <em>Handbook of Industrial Drying</em> (3.ª ed.). CRC Press. (referencias a destilación por lotes industrial).</li>
+        <li>Díaz, I., Rodríguez, M., &amp; Gómez, J. M. (2009). Control de la destilación discontinua. <em>Ingeniería Química</em>, 473, 92–98.</li>
+      </ol>
+    </section>
+
+    <div class="doc-foot">
+      <span>IQYA-2031 · Proyecto de Operaciones Unitarias · 2026-20</span>
+      <span>Lectura 12 · Universidad de los Andes</span>
+    </div>
+
+  </div><!-- .doc-body -->
+</article>
+
+</div><!-- .outer-layout -->
+
+<!-- KaTeX auto-render -->
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+  onload="renderMath()"></script>
+<script>
+function renderMath(){
+  renderMathInElement(document.body,{
+    delimiters:[
+      {left:'$$',right:'$$',display:true},
+      {left:'$',right:'$',display:false}
+    ],
+    throwOnError:false
+  });
+}
+</script>
+<script>
+/* ── Progress bar ─────────────────────────────────────────────── */
+(function(){
+  var bar=document.getElementById('progress');
+  function upd(){
+    var s=document.documentElement,st=s.scrollTop||document.body.scrollTop,
+        h=s.scrollHeight-s.clientHeight;
+    bar.style.width=(h>0?(st/h*100):0)+'%';
+  }
+  window.addEventListener('scroll',upd,{passive:true});
+  upd();
+})();
+
+/* ── Scroll-spy ───────────────────────────────────────────────── */
+(function(){
+  var items=document.querySelectorAll('.sn-item');
+  var secs=Array.from(document.querySelectorAll('section[id]'));
+  function spy(){
+    var y=window.scrollY+120;
+    var cur=secs.reduce(function(a,s){return s.offsetTop<=y?s:a},secs[0]);
+    if(!cur)return;
+    items.forEach(function(it){
+      it.classList.toggle('is-active',it.getAttribute('href')==='#'+cur.id);
+    });
+  }
+  window.addEventListener('scroll',spy,{passive:true});
+  spy();
+})();
+
+/* ── Rayleigh calculator ──────────────────────────────────────── */
+(function(){
+  function simpson(f, a, b, n){
+    if(n%2!==0) n++;
+    var h=(b-a)/n, s=f(a)+f(b), i;
+    for(i=1;i<n;i+=2) s+=4*f(a+i*h);
+    for(i=2;i<n-1;i+=2) s+=2*f(a+i*h);
+    return s*h/3;
+  }
+  function calc(){
+    var alpha=parseFloat(document.getElementById('rl-alpha').value);
+    var x0=parseFloat(document.getElementById('rl-x0').value);
+    var xW=parseFloat(document.getElementById('rl-xw').value);
+    document.getElementById('rl-alpha-val').textContent=alpha.toFixed(2).replace('.',',');
+    document.getElementById('rl-x0-val').textContent=x0.toFixed(2).replace('.',',');
+    document.getElementById('rl-xw-val').textContent=xW.toFixed(2).replace('.',',');
+    if(xW>=x0){
+      document.getElementById('rl-lratio').textContent='—';
+      document.getElementById('rl-ybar').textContent='—';
+      document.getElementById('rl-rec').textContent='—';
+      return;
+    }
+    // Integrand: 1/(y*(x)-x) where y*(x)=alpha*x/(1+(alpha-1)*x)
+    function integrand(x){
+      var yStar=alpha*x/(1+(alpha-1)*x);
+      var diff=yStar-x;
+      if(Math.abs(diff)<1e-12) return 0;
+      return 1/diff;
+    }
+    var integral=simpson(integrand,xW,x0,200);
+    var ratio=Math.exp(-integral); // LW/L0
+    var D_over_L0=1-ratio;
+    var ybar=D_over_L0>1e-10?(x0-ratio*xW)/D_over_L0:x0;
+    var recovery=D_over_L0>1e-10?D_over_L0*ybar/x0*100:0;
+    document.getElementById('rl-lratio').textContent=ratio.toFixed(3).replace('.',',');
+    document.getElementById('rl-ybar').textContent=ybar.toFixed(3).replace('.',',');
+    document.getElementById('rl-rec').textContent=recovery.toFixed(1).replace('.',',')+' %';
+  }
+  ['rl-alpha','rl-x0','rl-xw'].forEach(function(id){
+    document.getElementById(id).addEventListener('input',calc);
+  });
+  calc();
+})();
+</script>
+<script>
+/* ── Lightbox (tap-to-zoom on figures) ─────────────────────── */
+(function(){
+  var ov=document.createElement('div');
+  ov.className='lightbox-overlay';
+  ov.innerHTML='<img alt="">';
+  document.body.appendChild(ov);
+  var ovImg=ov.querySelector('img');
+  document.querySelectorAll('.fig-frame img, .imp-gif img').forEach(function(img){
+    img.addEventListener('click',function(){
+      ovImg.src=this.src; ovImg.alt=this.alt;
+      ov.classList.add('is-open');
+    });
+  });
+  ov.addEventListener('click',function(){ ov.classList.remove('is-open'); });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape') ov.classList.remove('is-open'); });
+})();
+</script>
+</body>
+</html>
