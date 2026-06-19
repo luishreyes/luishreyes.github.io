@@ -519,6 +519,65 @@
         </figure>
       </div>
 
+      <p>La condición térmica de la alimentación determina cómo se reparte el flujo entre las dos fases en el plato de alimentación. Las corrientes alrededor del plato cumplen el balance:</p>
+      $$\bar{L} = L + qF \qquad ; \qquad \bar{V} = V - (1-q)F$$
+      <p>donde \(L\) y \(V\) son los flujos de líquido y vapor en la sección de rectificación, y \(\bar{L}\) y \(\bar{V}\) los de la sección de agotamiento. El siguiente explorador interactivo —adaptado de la simulación <a class="pl" href="https://demonstrations.wolfram.com/FeedStagesInADistillationColumn/" target="_blank" rel="noopener">Feed Stages in a Distillation Column</a> de R. L. Baumann (Universidad de Colorado Boulder)— muestra cómo cambian estos flujos y la pendiente de la línea q al variar la calidad \(q\) de la alimentación.</p>
+
+      <!-- Explorador interactivo: calidad de la alimentación (q) -->
+      <div class="calc-wrap">
+        <h4>Explorador: calidad de la alimentación (q) y flujos en el plato</h4>
+        <p class="calc-sub">Mueva el control para cambiar la calidad \(q\) de la alimentación. El grosor de las flechas es proporcional al caudal molar: el líquido (azul) baja, el vapor (verde) sube. Observe cómo la alimentación se reparte entre ambas fases según su condición térmica.</p>
+        <div class="chart-layout">
+          <svg id="fq-svg" viewBox="0 0 360 330" width="100%" style="max-width:360px;display:block;overflow:visible;" aria-label="Esquema interactivo de un plato de alimentación"></svg>
+          <div class="chart-controls">
+            <div class="calc-field">
+              <div class="calc-field-header"><span>Calidad de la alimentación q</span><b id="fq-q-val">0,70</b></div>
+              <input type="range" id="fq-q" min="-0.5" max="1.5" step="0.05" value="0.7">
+            </div>
+            <div class="live-card highlight" style="margin-top:8px;">
+              <div class="live-card-label">Condición de la alimentación</div>
+              <div class="live-card-value" id="fq-state" style="font-size:15px;">—</div>
+              <div class="live-card-note">según el valor de q</div>
+            </div>
+            <div class="live-card green" style="margin-top:8px;">
+              <div class="live-card-label">Pendiente de la línea q</div>
+              <div class="live-card-value" id="fq-slope">—</div>
+              <div class="live-card-note">q / (q − 1)</div>
+            </div>
+            <div class="live-card blue" style="margin-top:8px;">
+              <div class="live-card-label">Reparto del flujo F</div>
+              <div class="live-card-value" id="fq-split" style="font-size:14px;">—</div>
+              <div class="live-card-note">a líquido (qF) / a vapor ((1−q)F)</div>
+            </div>
+          </div>
+        </div>
+        <p class="calc-note">Valores base normalizados: L = 2, V = 2,5, F = 1. Para q = 1 (líquido saturado) la línea q es vertical; para q = 0 (vapor saturado) es horizontal.</p>
+      </div>
+
+      <p>Las dos animaciones siguientes ilustran el concepto de etapas y de calidad de alimentación en una columna real:</p>
+
+      <div class="yt-wrap">
+        <div class="yt-frame">
+          <div class="aspect">
+            <iframe src="https://www.youtube.com/embed/N3F41ndBfwY?rel=0"
+                    title="Feed stages in a distillation column — etapas de alimentación"
+                    frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          </div>
+          <p class="yt-caption">Etapas de alimentación en una columna de destilación: cómo la ubicación del plato de alimentación afecta la separación (LearnChemE, Universidad de Colorado Boulder).</p>
+        </div>
+      </div>
+
+      <div class="yt-wrap">
+        <div class="yt-frame">
+          <div class="aspect">
+            <iframe src="https://www.youtube.com/embed/H6O54pHqn-4?rel=0"
+                    title="Efecto de la calidad de la alimentación en los flujos de la columna"
+                    frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          </div>
+          <p class="yt-caption">Cómo la calidad \(q\) de la alimentación (desde vapor sobrecalentado hasta líquido subenfriado) redistribuye los caudales de líquido y vapor alrededor del plato de alimentación.</p>
+        </div>
+      </div>
+
       <h3 class="sub">Paso 6: Línea de operación de la sección de rectificación</h3>
       <p>Esta línea recta parte del punto (\(x_D, x_D\)) en la diagonal y tiene pendiente \(R/(R+1)\):</p>
       $$\frac{L}{V} = \frac{R}{R+1}$$
@@ -810,6 +869,90 @@ function renderMath(){
     document.getElementById(id).addEventListener('input',calc);
   });
   calc();
+})();
+
+/* ── Feed-quality (q) explorer ───────────────────────────────── */
+(function(){
+  var NS='http://www.w3.org/2000/svg';
+  function el(tag,a){var e=document.createElementNS(NS,tag);Object.entries(a||{}).forEach(function(kv){e.setAttribute(kv[0],kv[1])});return e;}
+  function txt(c,a){var t=el('text',a);t.textContent=c;return t;}
+
+  var svg=document.getElementById('fq-svg');
+  if(!svg) return;
+
+  // Geometry
+  var colX1=150, colX2=240, top=24, bot=306;
+  var fbTop=156, fbBot=190;          // feed stage band
+  var liqX=178, vapX=212;            // stream x positions
+  var L=2, V=2.5, F=1;               // base molar flows (normalized)
+
+  // Static drawing: column body + feed stage band
+  svg.appendChild(el('rect',{x:colX1,y:top,width:(colX2-colX1),height:(bot-top),rx:'10',fill:'#F2F2F2',stroke:'#D0D0D0','stroke-width':'2'}));
+  svg.appendChild(el('rect',{x:colX1,y:fbTop,width:(colX2-colX1),height:(fbBot-fbTop),fill:'#EAF3DA',stroke:'#86BC24','stroke-width':'1.5'}));
+  svg.appendChild(txt('Plato de alimentación',{x:(colX1+colX2)/2,y:(fbTop+fbBot)/2+4,'text-anchor':'middle','font-size':'9.5','fill':'#5E8A12','font-weight':'700'}));
+  svg.appendChild(txt('Sección de rectificación',{x:(colX1+colX2)/2,y:top-8,'text-anchor':'middle','font-size':'10','fill':'#666'}));
+  svg.appendChild(txt('Sección de agotamiento',{x:(colX1+colX2)/2,y:bot+16,'text-anchor':'middle','font-size':'10','fill':'#666'}));
+
+  // Arrow markers
+  var defs=el('defs');
+  defs.appendChild((function(){var m=el('marker',{id:'fq-liq',markerWidth:'7',markerHeight:'7',refX:'3.5',refY:'3',orient:'auto'});m.appendChild(el('path',{d:'M0,0 L0,6 L7,3 z',fill:'#0076A8'}));return m;})());
+  defs.appendChild((function(){var m=el('marker',{id:'fq-vap',markerWidth:'7',markerHeight:'7',refX:'3.5',refY:'3',orient:'auto'});m.appendChild(el('path',{d:'M0,0 L0,6 L7,3 z',fill:'#86BC24'}));return m;})());
+  defs.appendChild((function(){var m=el('marker',{id:'fq-feed',markerWidth:'7',markerHeight:'7',refX:'3.5',refY:'3',orient:'auto'});m.appendChild(el('path',{d:'M0,0 L0,6 L7,3 z',fill:'#E0922F'}));return m;})());
+  svg.appendChild(defs);
+
+  // Dynamic stream arrows (created once, updated on input)
+  // Liquid above (L): down, from top to feed band
+  var aL =el('line',{x1:liqX,y1:top+6, x2:liqX,y2:fbTop-2, stroke:'#0076A8','marker-end':'url(#fq-liq)'});
+  // Liquid below (Lbar): down, from feed band to bottom
+  var aLb=el('line',{x1:liqX,y1:fbBot+2,x2:liqX,y2:bot-6, stroke:'#0076A8','marker-end':'url(#fq-liq)'});
+  // Vapor above (V): up, from feed band to top
+  var aV =el('line',{x1:vapX,y1:fbTop-2,x2:vapX,y2:top+6, stroke:'#86BC24','marker-end':'url(#fq-vap)'});
+  // Vapor below (Vbar): up, from bottom to feed band
+  var aVb=el('line',{x1:vapX,y1:bot-6, x2:vapX,y2:fbBot+2,stroke:'#86BC24','marker-end':'url(#fq-vap)'});
+  // Feed F: from left into feed band
+  var aF =el('line',{x1:60,y1:(fbTop+fbBot)/2,x2:colX1-2,y2:(fbTop+fbBot)/2,stroke:'#E0922F','marker-end':'url(#fq-feed)'});
+  [aL,aLb,aV,aVb,aF].forEach(function(a){svg.appendChild(a);});
+
+  // Labels
+  svg.appendChild(txt('L',{x:liqX-9,y:top+20,'text-anchor':'end','font-size':'12','fill':'#0076A8','font-weight':'700','font-style':'italic'}));
+  var lblLb=txt('L̄',{x:liqX-9,y:bot-12,'text-anchor':'end','font-size':'12','fill':'#0076A8','font-weight':'700','font-style':'italic'});svg.appendChild(lblLb);
+  var lblV=txt('V',{x:vapX+9,y:top+20,'text-anchor':'start','font-size':'12','fill':'#5E8A12','font-weight':'700','font-style':'italic'});svg.appendChild(lblV);
+  svg.appendChild(txt('V̄',{x:vapX+9,y:bot-12,'text-anchor':'start','font-size':'12','fill':'#5E8A12','font-weight':'700','font-style':'italic'}));
+  svg.appendChild(txt('F',{x:54,y:(fbTop+fbBot)/2-8,'text-anchor':'middle','font-size':'12','fill':'#E0922F','font-weight':'700','font-style':'italic'}));
+
+  function w(flow){ return Math.max(1.5, Math.abs(flow)*4.2); } // thickness scaler
+
+  function render(){
+    var q=parseFloat(document.getElementById('fq-q').value);
+    document.getElementById('fq-q-val').textContent=q.toFixed(2).replace('.',',');
+    var Lb=L+q*F;          // liquid below
+    var Vb=V-(1-q)*F;      // vapor below
+    aL.setAttribute('stroke-width',w(L));
+    aLb.setAttribute('stroke-width',w(Lb));
+    aV.setAttribute('stroke-width',w(V));
+    aVb.setAttribute('stroke-width',w(Vb));
+    aF.setAttribute('stroke-width',w(F));
+
+    // Regime
+    var state;
+    if(q<0) state='Vapor sobrecalentado';
+    else if(Math.abs(q)<1e-9) state='Vapor saturado (rocío)';
+    else if(q<1) state='Parcialmente vaporizada';
+    else if(Math.abs(q-1)<1e-9) state='Líquido saturado (burbuja)';
+    else state='Líquido subenfriado';
+    document.getElementById('fq-state').textContent=state;
+
+    // q-line slope
+    var slopeEl=document.getElementById('fq-slope');
+    if(Math.abs(q-1)<1e-9) slopeEl.textContent='vertical (∞)';
+    else slopeEl.textContent=(q/(q-1)).toFixed(2).replace('.',',');
+
+    // Split
+    document.getElementById('fq-split').textContent=
+      (q*F).toFixed(2).replace('.',',')+' / '+((1-q)*F).toFixed(2).replace('.',',');
+  }
+  document.getElementById('fq-q').addEventListener('input',render);
+  render();
 })();
 </script>
 <script>
