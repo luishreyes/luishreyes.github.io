@@ -438,6 +438,7 @@ export const pou202620Course: Course = {
       tags: ['programa', 'syllabus', 'logística'],
       category: 'guia',
       href: '/classroom/iqya-2031-2026-20/programa.html',
+      bannerImg: '/classroom/iqya-2031-2026-20/guias-banners/programa.jpg',
     },
     {
       slug: 'trabajo-en-equipo',
@@ -450,6 +451,7 @@ export const pou202620Course: Course = {
       tags: ['trabajo en equipo', 'contrato', 'roles', 'normas', 'evaluación'],
       category: 'guia',
       href: '/classroom/iqya-2031-2026-20/guias/Guia_Trabajo_en_Equipo/Guia_Trabajo_en_Equipo.html',
+      bannerImg: '/classroom/iqya-2031-2026-20/guias-banners/teamwork.jpg',
     },
     {
       slug: 'busqueda-bibliografica',
@@ -462,6 +464,7 @@ export const pou202620Course: Course = {
       tags: ['búsqueda bibliográfica', 'herramientas de IA', 'Google Scholar', 'ChatGPT', 'bases de datos'],
       category: 'guia',
       href: '/classroom/iqya-2031-2026-20/guias/Guia_Busqueda_Bibliografica/Guia_Busqueda_Bibliografica.html',
+      bannerImg: '/classroom/iqya-2031-2026-20/guias-banners/research.jpg',
     },
     {
       slug: 'reto-pectina',
@@ -474,6 +477,7 @@ export const pou202620Course: Course = {
       tags: ['proyecto', 'reto', 'pectina', 'guía'],
       category: 'guia',
       href: '/classroom/iqya-2031-2026-20/reto-pectina.html',
+      bannerImg: '/classroom/iqya-2031-2026-20/guias-banners/reto.jpg',
     },
     {
       slug: 'bitacoras-de-calculo',
@@ -486,6 +490,7 @@ export const pou202620Course: Course = {
       tags: ['bitácoras', 'cálculo', 'formato', 'documentación'],
       category: 'guia',
       href: '/classroom/iqya-2031-2026-20/guias/Guia_Bitacoras_Calculo/Guia_Bitacoras_Calculo.html',
+      bannerImg: '/classroom/iqya-2031-2026-20/guias-banners/bitacoras.jpg',
     },
     {
       slug: 'informe-final',
@@ -498,6 +503,7 @@ export const pou202620Course: Course = {
       tags: ['informe final', 'documento', 'estructura', 'evaluación'],
       category: 'guia',
       href: '/classroom/iqya-2031-2026-20/guias/Guia_Informe_Final/Guia_Informe_Final.html',
+      bannerImg: '/classroom/iqya-2031-2026-20/guias-banners/informe.jpg',
     },
     {
       slug: 'lectura-01-operaciones-unitarias',
