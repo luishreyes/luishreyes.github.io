@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reducción de tamaño — IQYA-2031</title>
+<link rel="stylesheet" href="assets/deloitte.css">
+<!-- KaTeX -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" crossorigin="anonymous"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]})"></script>
+<style>
+/* ── Base & layout ─────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; background: #0e0e0e; font-family: var(--tipo); }
+
+deck-stage section {
+  font-family: var(--tipo);
+  color: var(--gris-1);
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 64px 80px;
+  position: relative;
+}
+
+/* ── Cover ─────────────────────────────────────────────────── */
+.cover {
+  background: var(--negro);
+  color: #fff;
+  padding: 0 !important;
+  flex-direction: row !important;
+}
+.cover .cv-text {
+  flex: 0 0 52%;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 80px 72px;
+  gap: 18px;
+}
+.cover .cv-img {
+  flex: 1;
+  position: relative; overflow: hidden;
+}
+.cover .cv-img img {
+  width: 100%; height: 100%; object-fit: cover; object-position: center top;
+  filter: brightness(0.82) contrast(1.08);
+}
+.cover .eyebrow {
+  font-size: 14px; font-weight: 600; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--verde); margin: 0;
+}
+.cover h1 {
+  font-size: 72px; line-height: 1.05; font-weight: 900;
+  color: #fff; margin: 0;
+}
+.cover .sub-cover {
+  font-size: 22px; color: rgba(255,255,255,.6);
+  margin: 0; line-height: 1.4;
+}
+.cover .cover-bar {
+  width: 56px; height: 5px; border-radius: 3px;
+  background: var(--verde); margin: 4px 0 0;
+}
+
+/* ── Divider ───────────────────────────────────────────────── */
+.s--dark.divider {
+  background: var(--negro) !important;
+  color: #fff !important;
+  justify-content: center !important;
+  align-items: flex-start !important;
+}
+.s--dark.divider > div {
+  max-width: 800px;
+}
+.part {
+  font-size: 13px; font-weight: 700; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--verde); margin-bottom: 18px;
+}
+.s--dark.divider h2 {
+  font-size: 64px; line-height: 1.08; font-weight: 900;
+  color: #fff; margin: 0 0 16px;
+}
+.s--dark.divider p.sub {
+  font-size: 22px; color: rgba(255,255,255,.55);
+  margin: 0 0 28px; line-height: 1.45;
+}
+.dctx { display: flex; align-items: center; gap: 18px; }
+.dctx b { font-size: 56px; font-weight: 900; color: var(--verde); line-height: 1; }
+.dctx span { font-size: 18px; color: rgba(255,255,255,.5); max-width: 340px; line-height: 1.4; }
+
+/* ── Slide variants ────────────────────────────────────────── */
+.s { background: var(--blanco); }
+.s--tint { background: var(--papel); }
+.s--dark { background: var(--negro); color: #fff; }
+
+/* ── Headings ──────────────────────────────────────────────── */
+.kicker {
+  font-size: 13px; font-weight: 700; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--verde); margin: 0 0 10px;
+}
+h2 { font-size: 44px; font-weight: 900; color: var(--negro); margin: 0 0 20px; line-height: 1.1; }
+.s-head { font-size: 48px; margin-bottom: 22px; }
+.lead-top { font-size: 22px; color: var(--gris-2); margin: 0 0 24px; line-height: 1.4; }
+p { font-size: 26px; color: var(--gris-1); line-height: 1.5; margin: 0 0 16px; }
+ul { font-size: 24px; line-height: 1.55; color: var(--gris-1); margin: 0 0 12px; padding-left: 1.4em; }
+li { margin-bottom: 6px; }
+
+/* ── Splits ────────────────────────────────────────────────── */
+.split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 56px;
+  align-items: start;
+  height: 100%;
+}
+.split--wideL { grid-template-columns: 55% 1fr; }
+.split--wideR { grid-template-columns: 1fr 55%; }
+.split--narrow { grid-template-columns: 38% 1fr; }
+.copy { display: flex; flex-direction: column; justify-content: center; }
+
+/* ── Image panel ───────────────────────────────────────────── */
+.img-panel {
+  position: relative; border-radius: 12px; overflow: hidden;
+  background: var(--gris-5);
+  display: flex; align-items: center; justify-content: center;
+  height: 100%;
+}
+.img-panel img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+  cursor: zoom-in;
+}
+.figcap {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: rgba(0,0,0,.55); color: #fff;
+  font-size: 15px; padding: 10px 14px; margin: 0;
+  line-height: 1.35;
+}
+
+/* ── Cards ─────────────────────────────────────────────────── */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-top: 20px;
+}
+.cards.two { grid-template-columns: repeat(2, 1fr); }
+.cards.four { grid-template-columns: repeat(4, 1fr); }
+.card {
+  background: var(--papel);
+  border-radius: 10px;
+  padding: 26px 24px;
+  display: flex; flex-direction: column; gap: 8px;
+  border: 1.5px solid transparent;
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+.card:hover { transform: translateY(-3px); box-shadow: var(--sombra); }
+.card-h { font-size: 18px; font-weight: 700; color: var(--negro); margin: 0; }
+.card p { font-size: 20px; color: var(--gris-2); margin: 0; line-height: 1.4; }
+.card-n { font-size: 32px; font-weight: 900; color: var(--verde); line-height: 1; }
+.card--verde { background: var(--verde-claro); border-color: var(--verde); }
+.card--dark { background: var(--negro); color: #fff; }
+.card--dark .card-h { color: #fff; }
+.card--dark p { color: rgba(255,255,255,.65); }
+.card--amber { background: #FFF5E6; border-color: var(--ambar); }
+
+/* ── Formula block ─────────────────────────────────────────── */
+.fml {
+  background: var(--papel);
+  border-left: 4px solid var(--verde);
+  border-radius: 0 8px 8px 0;
+  padding: 18px 24px;
+  margin: 12px 0;
+  font-size: 28px;
+}
+.fml-dark {
+  background: rgba(255,255,255,.07);
+  border-left: 4px solid var(--verde);
+  border-radius: 0 8px 8px 0;
+  padding: 18px 24px;
+  margin: 12px 0;
+  font-size: 28px;
+  color: #fff;
+}
+.var-list { font-size: 21px; color: var(--gris-2); margin: 4px 0 12px; }
+.var-list li { margin-bottom: 3px; }
+
+/* ── Data chips ────────────────────────────────────────────── */
+.databar { display: flex; gap: 16px; flex-wrap: wrap; margin: 20px 0; }
+.chip {
+  background: var(--verde-claro);
+  border-radius: 999px; padding: 8px 20px;
+  font-size: 18px; font-weight: 700; color: var(--verde-osc);
+  white-space: nowrap;
+}
+.chip--teal { background: var(--teal-claro); color: var(--teal); }
+.chip--amber { background: #FFF3E0; color: #B86400; }
+
+/* ── Callout ───────────────────────────────────────────────── */
+.callout {
+  border-radius: 10px; padding: 18px 22px;
+  margin: 16px 0; display: flex; gap: 14px; align-items: flex-start;
+  font-size: 22px; line-height: 1.45;
+}
+.callout.verde { background: var(--verde-claro); color: var(--verde-osc); }
+.callout.teal  { background: var(--teal-claro); color: var(--teal); }
+.callout.amber { background: #FFF5E6; color: #7A4400; }
+.callout svg   { flex-shrink: 0; margin-top: 2px; }
+
+/* ── GIF animated image ────────────────────────────────────── */
+.gif-box {
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 12px; overflow: hidden;
+  background: #f0f0f0;
+  height: 100%;
+}
+.gif-box img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
+
+/* ── Numbered step list ────────────────────────────────────── */
+.steps { display: flex; flex-direction: column; gap: 12px; margin: 16px 0; }
+.step { display: flex; gap: 16px; align-items: flex-start; }
+.step-n {
+  flex-shrink: 0; width: 36px; height: 36px;
+  border-radius: 50%; background: var(--verde); color: #fff;
+  font-size: 18px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
+.step-body { font-size: 22px; line-height: 1.45; color: var(--gris-1); padding-top: 4px; }
+
+/* ── Table ─────────────────────────────────────────────────── */
+table { width: 100%; border-collapse: collapse; font-size: 22px; }
+th { background: var(--negro); color: #fff; padding: 12px 16px; text-align: left; font-weight: 700; }
+td { padding: 10px 16px; border-bottom: 1px solid var(--gris-4); vertical-align: top; }
+tr:hover td { background: var(--verde-claro); }
+
+/* ── Agenda ────────────────────────────────────────────────── */
+.agenda { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 28px; }
+.ag-item {
+  display: flex; align-items: center; gap: 16px;
+  background: var(--papel); border-radius: 10px;
+  padding: 18px 22px; font-size: 22px; font-weight: 600;
+}
+.ag-num {
+  font-size: 28px; font-weight: 900; color: var(--verde);
+  min-width: 36px; text-align: center;
+}
+
+/* ── Close slide ───────────────────────────────────────────── */
+.close-slide {
+  background: var(--negro) !important;
+  color: #fff !important;
+  justify-content: center !important;
+  align-items: center !important;
+  text-align: center !important;
+}
+.close-slide h2 { font-size: 56px; color: #fff; margin-bottom: 12px; }
+.close-slide p  { font-size: 24px; color: rgba(255,255,255,.55); max-width: 640px; margin: 0 auto; }
+
+/* ── Watermark text ────────────────────────────────────────── */
+.wm {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%; object-fit: cover; object-position: center;
+  opacity: .18; pointer-events: none;
+}
+
+/* ── Footer injected by JS ─────────────────────────────────── */
+.slide-footer {
+  position: absolute; bottom: 22px; left: 80px; right: 80px;
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 13px; color: var(--gris-3); pointer-events: none;
+}
+
+/* ── Animations ────────────────────────────────────────────── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+deck-stage section.active .kicker { animation: fadeInUp .35s ease both; }
+deck-stage section.active h2 { animation: fadeInUp .4s .05s ease both; }
+deck-stage section.active .lead-top { animation: fadeInUp .4s .1s ease both; }
+@media (prefers-reduced-motion: reduce) {
+  deck-stage section.active * { animation: none !important; transition: none !important; }
+}
+
+/* ── Lightbox (dialog modal — funciona en fullscreen) ──────── */
+.img-panel img, .gif-box img, .figbox img { cursor: zoom-in; }
+.zoom-badge {
+  position: absolute; top: 14px; right: 14px; width: 38px; height: 38px;
+  border-radius: 8px; background: rgba(17,17,17,.58); color: #fff;
+  display: flex; align-items: center; justify-content: center; font-size: 20px;
+  cursor: zoom-in; opacity: 0; transition: opacity .15s ease; z-index: 4;
+}
+.img-panel:hover .zoom-badge, .gif-box:hover .zoom-badge { opacity: 1; }
+.lightbox {
+  position: fixed; inset: 0; width: 100vw; height: 100vh;
+  max-width: 100vw; max-height: 100vh; margin: 0; border: 0;
+  background: rgba(0,0,0,.9);
+  display: none; align-items: center; justify-content: center;
+  z-index: 99999; cursor: zoom-out; padding: 3vmin; overflow: hidden;
+}
+.lightbox[open] { display: flex; }
+.lightbox::backdrop { background: rgba(0,0,0,.9); }
+.lightbox img { max-width: 94vw; max-height: 94vh; width: auto; height: auto; object-fit: contain; border-radius: 6px; box-shadow: 0 24px 90px rgba(0,0,0,.6); }
+.lightbox .lb-close {
+  position: fixed; top: 26px; right: 32px; width: 54px; height: 54px;
+  border-radius: 50%; background: rgba(255,255,255,.18); color: #fff;
+  border: none; font-size: 26px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .15s ease;
+}
+.lightbox .lb-close:hover { background: rgba(255,255,255,.32); }
+@media print { .zoom-badge, .lightbox { display: none !important; } }
+
+/* ── Equip comparison grid ─────────────────────────────────── */
+.equip-row {
+  display: grid; grid-template-columns: 140px 1fr 1fr;
+  gap: 0; border-radius: 10px; overflow: hidden;
+  border: 1.5px solid var(--gris-4); margin-bottom: 12px;
+}
+.equip-row .eq-label {
+  background: var(--negro); color: #fff;
+  font-size: 17px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  padding: 14px 10px; text-align: center;
+}
+.equip-row .eq-cell {
+  padding: 14px 18px; font-size: 20px; color: var(--gris-1);
+  border-left: 1.5px solid var(--gris-4);
+}
+.equip-row .eq-cell b { color: var(--negro); }
+</style>
+</head>
+<body>
+
+<deck-stage width="1920" height="1080">
+
+  <!-- 01 · Portada -->
+  <section class="s cover" data-screen-label="Portada" data-nofoot>
+    <div class="cv-text">
+      <p class="eyebrow">IQYA-2031 · Proyecto de Operaciones Unitarias</p>
+      <div class="cover-bar"></div>
+      <h1>Reducción de tamaño</h1>
+      <p class="sub-cover">Física de la fractura, leyes de la conminución, equipos industriales y clasificación de sólidos.</p>
+    </div>
+    <div class="cv-img">
+      <img src="assets/img/Portada_Reduccion.webp" alt="Granos enteros y molidos en manos">
+    </div>
+  </section>
+
+  <!-- 02 · Agenda -->
+  <section class="s s--tint" data-screen-label="Agenda">
+    <div class="kicker">Contenido de hoy</div>
+    <h2>Agenda</h2>
+    <div class="agenda">
+      <div class="ag-item"><span class="ag-num">1</span>Física de la fractura</div>
+      <div class="ag-item"><span class="ag-num">2</span>Leyes de la conminución</div>
+      <div class="ag-item"><span class="ag-num">3</span>Equipos de reducción primaria</div>
+      <div class="ag-item"><span class="ag-num">4</span>Molinos (martillos, rodillos, bolas)</div>
+      <div class="ag-item"><span class="ag-num">5</span>Clasificación y tamizado</div>
+      <div class="ag-item"><span class="ag-num">6</span>Control de polvo y emisiones</div>
+    </div>
+  </section>
+
+  <!-- 03 · ¿Por qué reducir tamaño? -->
+  <section class="s" data-screen-label="Por que reducir tamanio">
+    <div class="kicker">La motivación</div>
+    <h2>¿Por qué reducir tamaño?</h2>
+    <div class="cards">
+      <div class="card card--verde">
+        <p class="card-h">① Aumentar área superficial</p>
+        <p>Acelera transferencia de masa y calor. Moler caña aumenta superficie de 0.1 a &gt;10 m²/kg, acelerando extracción 100×.</p>
+      </div>
+      <div class="card card--verde">
+        <p class="card-h">② Liberar componentes valiosos</p>
+        <p>Azúcares en caña, almidón en granos. Romper estructura celular es prerequisito para acceso enzimático al almidón.</p>
+      </div>
+      <div class="card card--verde">
+        <p class="card-h">③ Alcanzar tamaño específico</p>
+        <p>Para operaciones posteriores (tamizado, fluidización), cumplir especificaciones de producto y facilitar manejo y transporte.</p>
+      </div>
+    </div>
+    <div class="callout amber" style="margin-top:18px;">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <span>La reducción de tamaño consume <b>1–2 % de toda la energía eléctrica mundial</b>. El arte está en moler "justo lo necesario", ni más ni menos.</span>
+    </div>
+  </section>
+
+  <!-- Divisor Parte 1 -->
+  <section class="s s--dark divider" data-screen-label="Divisor Fisica Fractura" data-nofoot>
+    <div>
+      <div class="part">Parte 1</div>
+      <h2>Física de la fractura</h2>
+      <p class="sub">Mecanismos de rotura y la teoría que explica por qué los materiales reales se fracturan con mucho menos energía de lo esperado.</p>
+      <div class="dctx"><b>4</b><span>mecanismos fundamentales que aplica cualquier equipo de reducción de tamaño</span></div>
+    </div>
+  </section>
+
+  <!-- 04 · Mecanismos de fractura -->
+  <section class="s" data-screen-label="Mecanismos de fractura">
+    <div class="split split--narrow">
+      <div class="img-panel">
+        <img src="assets/img/Mecanismos_Fractura.webp" alt="Infografía de los 4 mecanismos de reducción de tamaño">
+        <p class="figcap">Los 4 mecanismos: compresión, impacto, atrición y corte.</p>
+      </div>
+      <div class="copy">
+        <div class="kicker">Cómo se rompen los sólidos</div>
+        <h2>Mecanismos de fractura</h2>
+        <p>La fractura ocurre cuando el esfuerzo aplicado excede la resistencia del material; el mecanismo específico determina la distribución de productos y la energía requerida.</p>
+        <div class="cards two" style="margin-top:12px; gap:12px;">
+          <div class="card" style="padding:16px 18px;">
+            <p class="card-h">Compresión</p>
+            <p>Fuerza lenta, fractura a lo largo de planos de debilidad naturales.</p>
+          </div>
+          <div class="card" style="padding:16px 18px;">
+            <p class="card-h">Impacto</p>
+            <p>Fuerza súbita, propaga ondas de esfuerzo causando fractura generalizada.</p>
+          </div>
+          <div class="card" style="padding:16px 18px;">
+            <p class="card-h">Atrición</p>
+            <p>Frotamiento entre partículas o superficies, erosiona material superficial.</p>
+          </div>
+          <div class="card" style="padding:16px 18px;">
+            <p class="card-h">Corte</p>
+            <p>Fuerzas de cizalla, efectivo para materiales fibrosos.</p>
+          </div>
+        </div>
+        <p style="font-size:20px;color:var(--gris-2);margin-top:8px;">Cristales frágiles favorecen impacto; fibras requieren corte; materiales dúctiles resisten todos los mecanismos.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 · Teoría de Griffith — física de las grietas -->
+  <section class="s" data-screen-label="Teoria de Griffith">
+    <div class="split split--narrow">
+      <div class="img-panel">
+        <img src="assets/img/Teoria_Griffith.webp" alt="Infografía Teoría de Griffith — física de las grietas">
+        <p class="figcap">Griffith (1920): la resistencia real es 10–1000× menor que la teórica.</p>
+      </div>
+      <div class="copy">
+        <div class="kicker">La física de las grietas</div>
+        <h2>Teoría de Griffith (1920)</h2>
+        <p>Griffith reconoció que la resistencia real de los materiales es 10–1000× menor que la teórica, debido a defectos microscópicos.</p>
+        <p style="font-weight:700;margin-bottom:6px;">Amplificación del esfuerzo en la punta de la grieta:</p>
+        <div class="fml">$$\sigma_{\text{punta}} = \sigma_{\text{aplicado}} \times 2\sqrt{\dfrac{L}{r}}$$</div>
+        <ul class="var-list">
+          <li>$L$ = longitud de la grieta</li>
+          <li>$r$ = radio de punta</li>
+        </ul>
+        <p style="font-weight:700;margin-bottom:6px;">Criterio de fractura:</p>
+        <div class="fml">$$\sigma_{\text{fractura}} = \sqrt{\dfrac{2E\gamma}{\pi L}}$$</div>
+        <ul class="var-list">
+          <li>$E$ = módulo elástico, $\gamma$ = energía superficial</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 06 · Griffith — implicaciones prácticas -->
+  <section class="s s--tint" data-screen-label="Griffith implicaciones">
+    <div class="kicker">Implicaciones para el diseño</div>
+    <h2>Griffith: consecuencias prácticas</h2>
+    <div class="cards" style="grid-template-columns:repeat(3,1fr); margin-top:20px;">
+      <div class="card">
+        <p class="card-h">Partículas grandes</p>
+        <p>Más grietas largas → se rompen más fácilmente. Por eso la trituración primaria es menos costosa energéticamente que la molienda fina.</p>
+      </div>
+      <div class="card">
+        <p class="card-h">Pre-tratamientos</p>
+        <p>Introducen grietas internas: reducen energía de molienda 20–30%. Vapor para fibras, enzimas para ablandamiento.</p>
+      </div>
+      <div class="card">
+        <p class="card-h">Agua — efecto dual</p>
+        <p>Lubrica grietas (reduce energía) o las sella según el material. Óptimo empírico: 1–4 % minerales, 10–15 % biomasas.</p>
+      </div>
+    </div>
+    <div class="callout verde" style="margin-top:20px;">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span>Reducir el tamaño de partícula introduce más grietas y bordes, reduciendo aún más la resistencia del material y facilitando su fragmentación posterior.</span>
+    </div>
+  </section>
+
+  <!-- Divisor Parte 2 -->
+  <section class="s s--dark divider" data-screen-label="Divisor Leyes Conminucion" data-nofoot>
+    <div>
+      <div class="part">Parte 2</div>
+      <h2>Leyes de la conminución</h2>
+      <p class="sub">Tres leyes empíricas para estimar la energía de molienda según el rango de tamaños. Cada una aplica a un régimen diferente.</p>
+      <div class="dctx"><b>3</b><span>leyes clásicas: Rittinger, Kick y Bond — 150 años de ingeniería de molienda</span></div>
+    </div>
+  </section>
+
+  <!-- 07 · Ley de Rittinger -->
+  <section class="s" data-screen-label="Ley de Rittinger">
+    <div class="split split--wideR">
+      <div class="img-panel">
+        <img src="assets/img/Polvo_Fino.webp" alt="Polvo fino — producto de molienda fina">
+        <p class="figcap">Molienda fina (&lt;100 µm): la creación de superficie domina el balance energético.</p>
+      </div>
+      <div class="copy">
+        <div class="kicker">Rittinger (1867) — superficie creada</div>
+        <h2>Ley de Rittinger</h2>
+        <p>La energía requerida es proporcional a la <b>nueva superficie creada</b>:</p>
+        <div class="fml">$$E = K_R \times \left(\frac{1}{x_2} - \frac{1}{x_1}\right)$$</div>
+        <ul class="var-list">
+          <li>$x_1, x_2$ = tamaños inicial y final</li>
+          <li>$K_R$ = constante de Rittinger del material</li>
+        </ul>
+        <p>Área nueva generada: $\text{Área} = \frac{6}{\rho}\!\left(\frac{1}{x_2}-\frac{1}{x_1}\right)\ \text{m}^2/\text{kg}$</p>
+        <div class="callout verde" style="margin-top:10px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span><b>Aplicabilidad:</b> molienda fina ($x &lt; 100\ \mu\text{m}$) donde la superficie domina. 10× el ratio → 10× la energía.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 08 · Ley de Kick -->
+  <section class="s s--tint" data-screen-label="Ley de Kick">
+    <div class="split split--wideR">
+      <div class="img-panel">
+        <img src="assets/img/Coarse_Medium_Fine.webp" alt="Tres pilas: coarse, medium, fine">
+        <p class="figcap">Trituración primaria gruesa (&gt;50 mm): la deformación elástica domina antes de la fractura.</p>
+      </div>
+      <div class="copy">
+        <div class="kicker">Kick (1885) — reducción proporcional</div>
+        <h2>Ley de Kick</h2>
+        <p>La energía es proporcional al <b>logaritmo del ratio de reducción</b>:</p>
+        <div class="fml">$$E = K_K \times \log\!\left(\frac{x_1}{x_2}\right) = K_K \times \log(R)$$</div>
+        <p>Implica que la <b>misma energía reduce cualquier tamaño por el mismo ratio</b>: 100→10 mm requiere igual energía que 10→1 mm o 1→0.1 mm.</p>
+        <p>Para $R = 10$: $E = K_K$. Duplicando energía: $R = 100$.</p>
+        <div class="callout verde" style="margin-top:10px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span><b>Aplicabilidad:</b> trituración primaria gruesa ($x &gt; 50\ \text{mm}$) donde la deformación domina antes de la fractura.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 09 · Ley de Bond -->
+  <section class="s" data-screen-label="Ley de Bond">
+    <div class="split split--wideR">
+      <div class="img-panel">
+        <img src="assets/img/Coarse_Medium_Fine.webp" alt="Tres granulometrías: grueso, medio, fino">
+        <p class="figcap">Bond (1952): compromiso empírico, validado para &gt;90 % de aplicaciones industriales.</p>
+      </div>
+      <div class="copy">
+        <div class="kicker">Bond (1952) — el estándar industrial</div>
+        <h2>Ley de Bond</h2>
+        <p>Compromiso entre Rittinger y Kick. Energía varía con $x^{-3/2}$:</p>
+        <div class="fml">$$E = W_i \times 10\left(\frac{1}{\sqrt{P_{80}}} - \frac{1}{\sqrt{F_{80}}}\right)\ \frac{\text{kWh}}{\text{ton}}$$</div>
+        <ul class="var-list">
+          <li>$W_i$ = Work Index Bond (kWh/ton) — función de dureza</li>
+          <li>$F_{80}$/$P_{80}$ = tamaño 80 % pasante alimentación/producto (µm)</li>
+        </ul>
+        <p style="font-weight:700;">Ejemplo — caña 50 mm → 2 mm ($W_i = 15$):</p>
+        <div class="fml">$$E = 15 \times 10\!\left(\frac{1}{\sqrt{2000}} - \frac{1}{\sqrt{50000}}\right) = 2.91\ \text{kWh/ton}$$</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10 · Comparación de las tres leyes -->
+  <section class="s s--tint" data-screen-label="Comparacion tres leyes">
+    <div class="kicker">¿Cuándo usar cada una?</div>
+    <h2>Comparación de las tres leyes</h2>
+    <table style="margin-top:20px;">
+      <thead>
+        <tr>
+          <th>Ley</th>
+          <th>Régimen de aplicación</th>
+          <th>Energía varía con</th>
+          <th>Para su proceso</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>Kick</b></td>
+          <td>Trituración primaria &gt; 100 mm</td>
+          <td>$\log(R)$</td>
+          <td>Primera quebrada de granos duros</td>
+        </tr>
+        <tr>
+          <td><b>Bond</b></td>
+          <td>Régimen intermedio 10 mm → 1 mm</td>
+          <td>$x^{-3/2}$</td>
+          <td>Molienda de caña (50 → 2 mm)</td>
+        </tr>
+        <tr>
+          <td><b>Rittinger</b></td>
+          <td>Molienda fina &lt; 1 mm</td>
+          <td>$x^{-1}$</td>
+          <td>Azúcar glass (&lt; 100 µm)</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="callout teal" style="margin-top:22px;">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      <span>Bond está validado para &gt; 90 % de las aplicaciones industriales. Úselo como primera aproximación siempre que no tenga datos específicos del material.</span>
+    </div>
+  </section>
+
+  <!-- 11 · Work Index de Bond -->
+  <section class="s" data-screen-label="Work Index Bond">
+    <div class="split split--wideR">
+      <div class="img-panel">
+        <img src="assets/img/Molino_Bolas.gif" alt="Molino de bolas en operación (animación)">
+        <p class="figcap">El Work Index se determina en molino de bolas estándar Bond: 12″ × 12″, 285 rev, 70 rpm.</p>
+      </div>
+      <div class="copy">
+        <div class="kicker">Determinación experimental</div>
+        <h2>Work Index de Bond</h2>
+        <p>El $W_i$ se mide en un molino estándar Bond. Procedimiento iterativo hasta que los gramos netos por revolución se estabilizan ($G_{bp}$):</p>
+        <div class="fml">$$W_i = \frac{44.5}{P_t^{0.23} \times G_{bp}^{0.82} \times \!\left(\dfrac{10}{\sqrt{P_{80}}} - \dfrac{10}{\sqrt{F_{80}}}\right)}$$</div>
+        <ul class="var-list"><li>$P_t$ = apertura malla de corte (µm)</li></ul>
+        <div class="cards two" style="gap:12px; margin-top:14px;">
+          <div class="card" style="padding:14px 16px;">
+            <p class="card-h">Wi típicos (kWh/ton)</p>
+            <p>Cuarzo 13.6 · Caliza 11.6 · Caña 15 · Granos 10</p>
+          </div>
+          <div class="card card--amber" style="padding:14px 16px;">
+            <p class="card-h">Variabilidad ±20 %</p>
+            <p>Mismo material varía según origen, humedad y tratamiento previo.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 12 · Factores que modifican el consumo -->
+  <section class="s s--tint" data-screen-label="Factores consumo energetico">
+    <div class="kicker">Más allá de la ley de Bond</div>
+    <h2>Factores que modifican el consumo energético</h2>
+    <div class="cards two" style="margin-top:24px; gap:20px;">
+      <div class="card">
+        <p class="card-h">Humedad</p>
+        <p>Efecto dual: lubrica reduciendo fricción (−20 % energía) pero causa empaste y reduce eficiencia de impacto (+50 %). Óptimo: 1–4 % minerales, 10–15 % biomasas.</p>
+      </div>
+      <div class="card">
+        <p class="card-h">Temperatura</p>
+        <p>Materiales se fragilizan a baja temperatura (N₂ líquido reduce energía 50 % para plásticos); pero ablandamiento térmico aumenta consumo.</p>
+      </div>
+      <div class="card">
+        <p class="card-h">Fatiga</p>
+        <p>Impactos sub-críticos repetidos debilitan estructura. Pre-molienda reduce energía de molienda fina 20–30 %.</p>
+      </div>
+      <div class="card">
+        <p class="card-h">Aditivos de molienda</p>
+        <p>Surfactantes (&lt;0.1 %) reducen energía 10–25 % previniendo re-aglomeración y sellado de grietas.</p>
+      </div>
+    </div>
+    <p style="font-size:19px;color:var(--gris-2);margin-top:16px;">Para su proceso: evalúe pre-tratamientos (vapor para fibras, enzimas para ablandamiento), optimice humedad experimentalmente, considere molienda en etapas con clasificación intermedia.</p>
+  </section>
+
+  <!-- Divisor Parte 3 -->
+  <section class="s s--dark divider" data-screen-label="Divisor Equipos Reduccion" data-nofoot>
+    <div>
+      <div class="part">Parte 3</div>
+      <h2>Equipos de reducción</h2>
+      <p class="sub">Trituradoras para reducción primaria gruesa, y molinos para reducción secundaria y fina. Cada equipo aplica un mecanismo específico.</p>
+      <div class="dctx"><b>5</b><span>tipos de equipos cubiertos: mandíbulas, giratorias, martillos, rodillos y bolas</span></div>
+    </div>
+  </section>
+
+  <!-- 13 · Trituradoras de mandíbulas — principio -->
+  <section class="s" data-screen-label="Trituradoras mandibulas principio">
+    <div class="split split--wideR">
+      <div class="gif-box">
+        <img src="assets/img/Trituradora_Mandibulas.gif" alt="Trituradora de mandíbulas en operación (animación)">
+      </div>
+      <div class="copy">
+        <div class="kicker">Reducción primaria</div>
+        <h2>Trituradoras de mandíbulas</h2>
+        <p>Caballo de batalla para materiales duros y abrasivos. Compresión entre una mandíbula fija y una móvil.</p>
+        <p><b>Geometría crítica:</b> ángulo entre mandíbulas 20–30° para atrapar sin expulsar material.</p>
+        <p style="font-weight:700;margin-bottom:4px;">Capacidad empírica:</p>
+        <div class="fml">$$Q = 0.6 \times L \times S \times n \times \rho_b\ \text{ton/h}$$</div>
+        <ul class="var-list">
+          <li>$L$ = longitud apertura (m)</li>
+          <li>$S$ = carrera (m)</li>
+          <li>$n$ = frecuencia (Hz)</li>
+          <li>$\rho_b$ = densidad bulk</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 14 · Trituradoras de mandíbulas — tipos y selección -->
+  <section class="s s--tint" data-screen-label="Trituradoras mandibulas tipos">
+    <div class="split split--wideR">
+      <div class="gif-box">
+        <img src="assets/img/Trituradora_Mandibulas.gif" alt="Trituradora de mandíbulas">
+      </div>
+      <div class="copy">
+        <div class="kicker">Tipos y selección</div>
+        <h2>Mandíbulas — tipos principales</h2>
+        <div class="cards" style="grid-template-columns:1fr; gap:10px; margin-top:0;">
+          <div class="card" style="padding:14px 18px; flex-direction:row; align-items:start; gap:12px;">
+            <span class="card-n" style="font-size:22px;">Blake</span>
+            <p style="margin:0;font-size:20px;">Pivote arriba → producto uniforme. El más común.</p>
+          </div>
+          <div class="card" style="padding:14px 18px; flex-direction:row; align-items:start; gap:12px;">
+            <span class="card-n" style="font-size:22px;">Dodge</span>
+            <p style="margin:0;font-size:20px;">Pivote abajo → mayor reducción pero menor capacidad.</p>
+          </div>
+          <div class="card" style="padding:14px 18px; flex-direction:row; align-items:start; gap:12px;">
+            <span class="card-n" style="font-size:22px;">Universal</span>
+            <p style="margin:0;font-size:20px;">Pivote intermedio, compromiso entre ambos.</p>
+          </div>
+        </div>
+        <div class="cards two" style="gap:12px; margin-top:14px;">
+          <div class="card card--verde" style="padding:14px 16px;">
+            <p class="card-h">Ventajas</p>
+            <p>Construcción robusta, mantenimiento simple, maneja materiales muy duros.</p>
+          </div>
+          <div class="card card--amber" style="padding:14px 16px;">
+            <p class="card-h">Limitaciones</p>
+            <p>Solo reducción gruesa, vibración significativa, no para materiales pegajosos.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 15 · Trituradoras giratorias -->
+  <section class="s" data-screen-label="Trituradoras giratorias">
+    <div class="split split--wideR">
+      <div class="gif-box">
+        <img src="assets/img/Trituradora_Giratoria.gif" alt="Trituradora giratoria en operación (animación)">
+      </div>
+      <div class="copy">
+        <div class="kicker">Mayor capacidad y producto más cúbico</div>
+        <h2>Trituradoras giratorias</h2>
+        <p>Cono móvil excéntrico dentro de una carcasa fija cónica. Compresión continua, mayor capacidad que mandíbulas.</p>
+        <p><b>Geometría:</b> ángulo del cono 45–60°, mayor que mandíbulas → alimentación continua por gravedad.</p>
+        <div class="fml">$$Q = 45 \times D^2 \times A \times n \times \rho_b\ \text{ton/h}$$</div>
+        <div class="cards two" style="gap:12px;margin-top:12px;">
+          <div class="card card--verde" style="padding:14px 16px;">
+            <p class="card-h">Ventajas sobre mandíbulas</p>
+            <p>3–5× mayor capacidad/peso, continua, producto más cúbico, menor mantenimiento/ton.</p>
+          </div>
+          <div class="card card--amber" style="padding:14px 16px;">
+            <p class="card-h">Limitaciones</p>
+            <p>Mayor costo capital, instalación compleja, no maneja materiales pegajosos.</p>
+          </div>
+        </div>
+        <p style="font-size:20px;color:var(--gris-2);margin-top:10px;">Aplicación limitada en agroindustria; más común en minería de gran escala.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 16 · Molinos de martillos — principio -->
+  <section class="s s--tint" data-screen-label="Molinos martillos principio">
+    <div class="split split--wideR">
+      <div class="gif-box">
+        <img src="assets/img/Molino_Martillos.gif" alt="Molino de martillos en operación (animación)">
+      </div>
+      <div class="copy">
+        <div class="kicker">El estándar de agroindustria</div>
+        <h2>Molinos de martillos</h2>
+        <p>Dominan la reducción de tamaño en agroindustria por su versatilidad. Martillos en rotor de alta velocidad (1000–5000 rpm) impactan el material.</p>
+        <p><b>Velocidad periférica:</b> 40–120 m/s según dureza. Óptimo para caña/granos: <b>60–80 m/s</b>.</p>
+        <p style="font-weight:700;margin-bottom:4px;">Potencia empírica:</p>
+        <div class="fml">$$P = K \times Q \times \left(\frac{1}{d_2} - \frac{1}{d_1}\right)\ \text{kW}$$</div>
+        <ul class="var-list">
+          <li>$K$ = 50–150 según material</li>
+          <li>$Q$ = flujo másico (ton/h)</li>
+          <li>$d_1, d_2$ = tamaños inicial y final (mm)</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 17 · Molinos de martillos — configuración -->
+  <section class="s" data-screen-label="Molinos martillos configuracion">
+    <div class="split split--wideR">
+      <div class="gif-box">
+        <img src="assets/img/Molino_Martillos.gif" alt="Molino de martillos">
+      </div>
+      <div class="copy">
+        <div class="kicker">Configuración y control</div>
+        <h2>Martillos — diseño y selección</h2>
+        <div class="cards two" style="gap:12px;margin-top:0;">
+          <div class="card" style="padding:14px 16px;">
+            <p class="card-h">Martillos rígidos</p>
+            <p>Para materiales duros. Resistentes al desgaste abrasivo.</p>
+          </div>
+          <div class="card" style="padding:14px 16px;">
+            <p class="card-h">Martillos pivotantes</p>
+            <p>Para fibrosos, auto-limpieza al encontrar obstrucciones.</p>
+          </div>
+          <div class="card" style="padding:14px 16px;">
+            <p class="card-h">Control de tamaño</p>
+            <p>Tamiz perimetral 1–25 mm. Área abierta 35–50 % para flujo adecuado.</p>
+          </div>
+          <div class="card card--amber" style="padding:14px 16px;">
+            <p class="card-h">Limitación principal</p>
+            <p>Alto desgaste con abrasivos. Ruido extremo &gt;100 dB, requiere cabina acústica.</p>
+          </div>
+        </div>
+        <div class="callout verde" style="margin-top:16px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          <span>Maneja materiales húmedos y fibrosos — ideal para caña de azúcar, granos y biomasa lignocelulósica.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 18 · Molinos de rodillos — principio -->
+  <section class="s s--tint" data-screen-label="Molinos rodillos principio">
+    <div class="split split--wideR">
+      <div class="gif-box">
+        <img src="assets/img/Molino_Rodillos.gif" alt="Molino de rodillos en operación (animación)">
+      </div>
+      <div class="copy">
+        <div class="kicker">Compresión pura, mínimos finos</div>
+        <h2>Molinos de rodillos</h2>
+        <p>Compresión pura entre cilindros contra-rotantes. Control preciso del tamaño producto y <b>mínima generación de finos</b>.</p>
+        <p style="font-weight:700;margin-bottom:4px;">Ángulo de pellizco crítico:</p>
+        <div class="fml">$$\alpha_{\text{max}} = \arctan(\mu)$$</div>
+        <p>Típicamente 30° máximo, limita reducción a 4:1 por paso.</p>
+        <p style="font-weight:700;margin-bottom:4px;">Capacidad:</p>
+        <div class="fml">$$Q = \pi \times D \times L \times v \times \rho_b \times C\ \text{kg/s}$$</div>
+        <ul class="var-list">
+          <li>$C$ = factor de utilización (0.3–0.5)</li>
+          <li>$\mu$ = coeficiente de fricción</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 19 · Molinos de rodillos — configuración -->
+  <section class="s" data-screen-label="Molinos rodillos configuracion">
+    <div class="split split--wideR">
+      <div class="gif-box">
+        <img src="assets/img/Molino_Rodillos.gif" alt="Molino de rodillos">
+      </div>
+      <div class="copy">
+        <div class="kicker">Aplicaciones clave en alimentos y azúcar</div>
+        <h2>Rodillos — configuración y usos</h2>
+        <div class="cards" style="grid-template-columns:1fr 1fr; gap:12px; margin-top:0;">
+          <div class="card" style="padding:14px 16px;">
+            <p class="card-h">Lisos</p>
+            <p>Reducción simple, producto uniforme y lamelado.</p>
+          </div>
+          <div class="card" style="padding:14px 16px;">
+            <p class="card-h">Corrugados/dentados</p>
+            <p>Mayor agarre para granulometría más gruesa.</p>
+          </div>
+          <div class="card" style="padding:14px 16px;">
+            <p class="card-h">Diferenciales</p>
+            <p>Velocidades diferentes añaden cizalla al producto.</p>
+          </div>
+          <div class="card card--verde" style="padding:14px 16px;">
+            <p class="card-h">Eficiencia energética</p>
+            <p>Superior a martillos para materiales no fibrosos.</p>
+          </div>
+        </div>
+        <div class="callout teal" style="margin-top:14px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          <span><b>Aplicaciones ideales:</b> granos → harina, azúcar → glass, preparación de malta. Mínimo polvo y calor generado.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 20 · Molinos de bolas — velocidad crítica y potencia -->
+  <section class="s s--tint" data-screen-label="Molinos bolas velocidad critica">
+    <div class="split split--wideR">
+      <div class="img-panel">
+        <img src="assets/img/Molino_Bolas_Real.webp" alt="Molino de bolas real">
+        <p class="figcap">Molino de bolas industrial: tambor rotante con carga de acero.</p>
+      </div>
+      <div class="copy">
+        <div class="kicker">Molienda fina</div>
+        <h2>Molinos de bolas</h2>
+        <p>Impacto y atrición entre bolas en tambor rotante. Domina la molienda fina (&lt; 100 µm) en una sola etapa.</p>
+        <p style="font-weight:700;margin-bottom:4px;">Velocidad crítica (centrifugación):</p>
+        <div class="fml">$$N_c = \frac{42.3}{\sqrt{D}}\ \text{rpm}$$</div>
+        <p>Operación típica: 65–80 % de $N_c$. Carga bolas: 30–45 % volumen.</p>
+        <p style="font-weight:700;margin-bottom:4px;">Potencia:</p>
+        <div class="fml">$$P = 0.2 \times D^{2.5} \times L \times \rho_{\text{carga}} \times \%N_c\ \text{kW}$$</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 21 · Molinos de bolas — acción y limitaciones -->
+  <section class="s" data-screen-label="Molinos bolas accion">
+    <div class="split split--wideR">
+      <div class="gif-box">
+        <img src="assets/img/Molino_Bolas.gif" alt="Molino de bolas — acción interna (animación)">
+      </div>
+      <div class="copy">
+        <div class="kicker">Acción interna</div>
+        <h2>Bolas — zonas de acción</h2>
+        <div class="cards two" style="gap:14px; margin-top:0;">
+          <div class="card card--verde" style="padding:16px 18px;">
+            <p class="card-h">Zona toe (entrada)</p>
+            <p>Impacto entre bolas: tritura partículas gruesas por fractura directa.</p>
+          </div>
+          <div class="card card--verde" style="padding:16px 18px;">
+            <p class="card-h">Zona carga (centro)</p>
+            <p>Atrición entre bolas y pared: erosiona partículas finas.</p>
+          </div>
+          <div class="card" style="padding:16px 18px;">
+            <p class="card-h">Ventajas</p>
+            <p>Molienda muy fina posible (&lt;10 µm). Operación continua simple. Amplia variedad de materiales.</p>
+          </div>
+          <div class="card card--amber" style="padding:16px 18px;">
+            <p class="card-h">Limitaciones</p>
+            <p>&gt;20 kWh/ton para &lt;100 µm. Desgaste severo bolas/revestimiento. Ruido extremo.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Divisor Parte 4 -->
+  <section class="s s--dark divider" data-screen-label="Divisor Clasificacion Control" data-nofoot>
+    <div>
+      <div class="part">Parte 4</div>
+      <h2>Clasificación y control</h2>
+      <p class="sub">El tamizado es inseparable de la molienda eficiente. El control de polvo cierra el circuito de seguridad y calidad del proceso.</p>
+      <div class="dctx"><b>35–50 %</b><span>área abierta mínima del tamiz para flujo adecuado y eficiencia de clasificación</span></div>
+    </div>
+  </section>
+
+  <!-- 22 · Clasificación y tamizado industrial -->
+  <section class="s" data-screen-label="Clasificacion tamizado">
+    <div class="split split--narrow">
+      <div class="img-panel">
+        <img src="assets/img/Tamizador_Vibratorio.webp" alt="Tamizador vibratorio industrial">
+        <p class="figcap">Tamizador vibratorio: movimiento circular (compacto) o lineal (mejor transporte).</p>
+      </div>
+      <div class="copy">
+        <div class="kicker">Cierra el circuito de molienda</div>
+        <h2>Clasificación y tamizado industrial</h2>
+        <p>La clasificación por tamaños es inseparable de la molienda eficiente: determina calidad del producto y eficiencia energética.</p>
+        <div class="cards" style="grid-template-columns:1fr; gap:10px; margin-top:14px;">
+          <div class="card" style="flex-direction:row; align-items:start; gap:14px; padding:14px 18px;">
+            <span class="card-n" style="font-size:20px;">Seco</span>
+            <p style="margin:0;font-size:20px;"><b>Tamices vibratorios</b> (100 µm – 100 mm): circular, lineal o elíptico. <b>Clasificadores neumáticos</b> para &lt;100 µm: gravedad, centrífugos, impacto.</p>
+          </div>
+          <div class="card" style="flex-direction:row; align-items:start; gap:14px; padding:14px 18px;">
+            <span class="card-n" style="font-size:20px;">Húmedo</span>
+            <p style="margin:0;font-size:20px;"><b>Hidrociclones</b> (10–500 µm): sin partes móviles, alta capacidad, corte preciso.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 23 · Factores de eficiencia del tamizado -->
+  <section class="s s--tint" data-screen-label="Factores eficiencia tamizado">
+    <div class="kicker">Eficiencia de clasificación</div>
+    <h2>Factores de eficiencia del tamizado</h2>
+    <div class="cards two" style="margin-top:22px; gap:20px;">
+      <div class="card">
+        <p class="card-h">Área abierta del tamiz</p>
+        <p>Óptimo: 35–50 %. Menos → cuello de botella. Más → malla débil y vida corta.</p>
+      </div>
+      <div class="card">
+        <p class="card-h">Forma apertura vs. partícula</p>
+        <p>Partículas cúbicas → malla cuadrada. Fibras → malla oblonga para evitar obstrucción.</p>
+      </div>
+      <div class="card">
+        <p class="card-h">Carga específica</p>
+        <p>Máximo &lt;1 ton/h·m² para finos. Sobrecarga → disminuye eficiencia de separación.</p>
+      </div>
+      <div class="card">
+        <p class="card-h">Humedad</p>
+        <p>&lt;3 % para operación seca confiable. Mayor humedad → pegado de partículas, ceguera del tamiz.</p>
+      </div>
+    </div>
+    <div class="callout verde" style="margin-top:18px;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <span>El circuito cerrado molino–tamiz es más eficiente que pasos en serie: el material sub-tamiz regresa al molino evitando sobre-molienda del producto fino.</span>
+    </div>
+  </section>
+
+  <!-- 24 · Control de polvo y emisiones -->
+  <section class="s" data-screen-label="Control polvo emisiones">
+    <div class="kicker">Seguridad y calidad del aire</div>
+    <h2>Control de polvo y emisiones</h2>
+    <div class="cards" style="grid-template-columns:repeat(3,1fr); margin-top:20px;">
+      <div class="card">
+        <p class="card-h">Fuentes de emisión</p>
+        <p>Puntos de transferencia (caídas mínimas), descarga del molino (mayor velocidad aire), tamices (encapsular), transporte neumático (filtros descarga).</p>
+      </div>
+      <div class="card">
+        <p class="card-h">Velocidad de captura</p>
+        <p>0.5–2.5 m/s según tamaño de partícula para arrastre efectivo. Insuficiente: polvo escapa. Excesiva: arrastra producto valioso.</p>
+      </div>
+      <div class="card">
+        <p class="card-h">Tecnologías de filtración</p>
+        <p><b>Filtros manga</b> (99.9 % &gt;1 µm), <b>electrostáticos</b> (partículas finas, bajo ΔP), <b>scrubbers húmedos</b>, <b>ciclones</b> (pre-separación gruesos).</p>
+      </div>
+    </div>
+    <div class="callout amber" style="margin-top:18px;">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <span><b>Prevención de explosiones:</b> mantener concentración &lt;25 % LEL mediante ventilación, eliminar fuentes de ignición y monitorear continuamente el particulado. Aplica directamente a molienda de azúcar, almidón y bagazo en su proceso.</span>
+    </div>
+  </section>
+
+  <!-- 25 · Resumen y aplicación al proyecto -->
+  <section class="s s--tint" data-screen-label="Resumen aplicacion">
+    <div class="kicker">Cierre de sesión</div>
+    <h2>Aplicación al proyecto de operaciones unitarias</h2>
+    <table style="margin-top:20px;">
+      <thead>
+        <tr>
+          <th>Operación en su proceso</th>
+          <th>Equipo recomendado</th>
+          <th>Ley energía a usar</th>
+          <th>Consideración crítica</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Trituración primaria caña (50 → 10 mm)</td>
+          <td>Molino de martillos</td>
+          <td>Bond ($W_i \approx 15$)</td>
+          <td>Humedad 10–15 %, velocidad 60–80 m/s</td>
+        </tr>
+        <tr>
+          <td>Molienda granos duros (10 → 1 mm)</td>
+          <td>Rodillos corrugados</td>
+          <td>Bond / Kick</td>
+          <td>Ángulo pellizco, ratio máx. 4:1</td>
+        </tr>
+        <tr>
+          <td>Molienda fina azúcar (&lt;100 µm)</td>
+          <td>Molino de bolas o martillos finos</td>
+          <td>Rittinger</td>
+          <td>Control temperatura, aditivos molienda</td>
+        </tr>
+        <tr>
+          <td>Clasificación / circuito cerrado</td>
+          <td>Tamiz vibratorio circular</td>
+          <td>—</td>
+          <td>Área abierta 35–50 %, humedad &lt;3 %</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- 26 · Cierre -->
+  <section class="s close-slide" data-screen-label="Cierre" data-nofoot>
+    <div>
+      <h2>Reducción de tamaño</h2>
+      <p>Las leyes de Rittinger, Kick y Bond traducen la física de las grietas de Griffith en números de ingeniería. Seleccione el equipo correcto según el mecanismo de fractura del material, estime la energía con Bond como punto de partida y nunca subestime el control de polvo.</p>
+    </div>
+  </section>
+
+</deck-stage>
+
+<script src="assets/deck-stage.js"></script>
+<script>
+  /* Footer en todos los slides que no tengan data-nofoot */
+  document.querySelectorAll('deck-stage section:not([data-nofoot])').forEach(function (s) {
+    var f = document.createElement('div');
+    f.className = 'slide-footer';
+    f.innerHTML =
+      '<span>IQYA-2031 · Proyecto de Operaciones Unitarias · 2026-20</span>' +
+      '<span>Reducción de tamaño · Luis H. Reyes</span>';
+    s.appendChild(f);
+  });
+
+  /* Lightbox (<dialog> modal — funciona en fullscreen) */
+  (function () {
+    var lb = document.createElement('dialog');
+    lb.className = 'lightbox';
+    lb.innerHTML = '<button class="lb-close" aria-label="Cerrar">✕</button><div class="lb-content" style="display:flex;align-items:center;justify-content:center;"></div>';
+    document.body.appendChild(lb);
+    var content = lb.querySelector('.lb-content');
+
+    function close() { if (lb.open) lb.close(); }
+    lb.addEventListener('close', function () { content.innerHTML = ''; });
+
+    function open(img) {
+      content.innerHTML = '';
+      var im = document.createElement('img');
+      im.src = img.currentSrc || img.src;
+      content.appendChild(im);
+      if (!lb.open) lb.showModal();
+    }
+
+    lb.addEventListener('click', close);
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && lb.open) { e.stopPropagation(); close(); }
+    }, true);
+
+    document.querySelectorAll('deck-stage .img-panel img, deck-stage .gif-box img').forEach(function (img) {
+      var parent = img.parentElement;
+      if (getComputedStyle(parent).position === 'static') parent.style.position = 'relative';
+      function trigger(e) { e.stopPropagation(); open(img); }
+      img.addEventListener('click', trigger);
+      var badge = document.createElement('span');
+      badge.className = 'zoom-badge';
+      badge.setAttribute('aria-hidden', 'true');
+      badge.textContent = '⤢';
+      badge.addEventListener('click', trigger);
+      parent.appendChild(badge);
+    });
+  })();
+</script>
+
+</body>
+</html>

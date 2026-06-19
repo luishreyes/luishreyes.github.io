@@ -700,5 +700,13 @@ export const pou202620Course: Course = {
       sessionNumber: 5,
       file: 'Propiedades_Solidos_Particulados/Presentacion_Propiedades_Solidos_Particulados.html',
     },
+    {
+      id: 'reduccion-de-tamano',
+      title: 'Reducción de tamaño',
+      description:
+        'Física de la fractura (Griffith), leyes de la conminución (Rittinger, Kick, Bond), equipos de trituración y molienda, clasificación por tamizado y control de polvo.',
+      sessionNumber: 6,
+      file: 'Reduccion_de_Tamano/Presentacion_Reduccion_de_Tamano.html',
+    },
   ],
 };
