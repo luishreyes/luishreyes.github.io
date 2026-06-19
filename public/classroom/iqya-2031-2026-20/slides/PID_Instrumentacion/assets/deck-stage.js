@@ -306,6 +306,9 @@
     :host([no-rail]) .rail,
     :host([noscale]) .rail { display: none; }
     .rail[data-presenting] { display: none; }
+    /* Fullscreen: el deck ES la presentación, el carrusel sobra. */
+    :host([data-fs]) .rail,
+    :host([data-fs]) .rail-resize { display: none; }
     @media (max-width: 640px) {
       .rail, .rail-resize { display: none; }
     }
@@ -887,6 +890,11 @@
           if (en) en.style.display = on ? 'none' : '';
           if (ex) ex.style.display = on ? '' : 'none';
         }
+        // En fullscreen, ocultar el carrusel de diapositivas (el rail vive en
+        // el shadow DOM del elemento que entra a fullscreen, así que sin esto
+        // seguiría visible). data-fs dispara el CSS y fuerza stage a ancho completo.
+        if (on) this.setAttribute('data-fs', '');
+        else this.removeAttribute('data-fs');
         if (this._fit) this._fit();
       };
       document.addEventListener('fullscreenchange', onFsChange);
@@ -1178,7 +1186,7 @@
       // corrects it.
       if (!this._railEnabled || !this._railVisible || this.hasAttribute('no-rail')
           || this.hasAttribute('noscale') || this._presenting || this._previewMode
-          || NARROW_MQ.matches) return 0;
+          || this.hasAttribute('data-fs') || NARROW_MQ.matches) return 0;
       return this._railPx || 0;
     }
 
