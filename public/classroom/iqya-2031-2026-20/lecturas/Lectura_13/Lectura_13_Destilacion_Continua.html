@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lectura 13 · Destilación continua · Proyecto de Operaciones Unitarias</title>
+<link rel="stylesheet" href="assets/deloitte.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<style>
+  body {
+    margin: 0;
+    background: var(--gris-5);
+    font-family: var(--tipo);
+    color: var(--gris-1);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.62;
+  }
+
+  /* ---- Barra de progreso de lectura ---- */
+  .progress {
+    position: fixed; top: 0; left: 0; height: 4px; width: 0;
+    background: var(--verde); z-index: 200; transition: width .08s linear;
+  }
+
+  .page {
+    max-width: 940px;
+    margin: 40px auto 90px;
+    background: var(--blanco);
+    box-shadow: var(--sombra);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  /* ===================== ENCABEZADO ===================== */
+  .doc-head {
+    background: var(--papel);
+    border-bottom: 5px solid var(--verde);
+    padding: 46px 64px 40px;
+    position: relative;
+  }
+  .doc-head .org {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    font-size: 14px; font-weight: 700; letter-spacing: .03em; color: var(--gris-1);
+  }
+  .doc-head .org span { color: var(--gris-3); font-weight: 600; }
+  .doc-head .badge {
+    display: inline-block; background: var(--verde); color: #fff;
+    font-size: 13px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+    padding: 6px 14px; border-radius: 999px; margin: 28px 0 18px; white-space: nowrap;
+  }
+  .doc-head h1 { font-size: 43px; line-height: 1.1; margin: 0 0 10px; letter-spacing: -.015em; max-width: 22ch; }
+  .doc-head .subtitle { font-size: 20px; color: var(--gris-2); margin: 0; font-weight: 500; max-width: 52ch; }
+  .doc-meta {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px;
+    margin-top: 34px; padding-top: 26px; border-top: 1px solid var(--gris-4);
+  }
+  .doc-meta div { font-size: 15px; color: var(--gris-2); }
+  .doc-meta b { display: block; color: var(--gris-1); font-size: 16px; font-weight: 700; margin-bottom: 2px; }
+
+  /* ===================== CUERPO ===================== */
+  .doc-body { padding: 8px 64px 60px; }
+  .doc-body section { padding-top: 46px; scroll-margin-top: 24px; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--verde-osc); margin-bottom: 12px;
+  }
+  .eyebrow::before { content: ""; width: 26px; height: 4px; background: var(--verde); border-radius: 2px; }
+  h2.sec { font-size: 30px; line-height: 1.18; margin: 0 0 18px; letter-spacing: -.01em; }
+  h2.sec .secnum { color: var(--verde); font-weight: 700; }
+  h3.sub { font-size: 21px; margin: 34px 0 10px; letter-spacing: -.005em; }
+  .doc-body p { font-size: 17px; color: var(--gris-1); margin: 0 0 16px; text-wrap: pretty; }
+  .doc-body ul, .doc-body ol { font-size: 17px; color: var(--gris-1); margin: 0 0 16px; padding-left: 24px; }
+  .doc-body li { margin-bottom: 6px; line-height: 1.55; }
+  .lead { font-size: 20px; color: var(--gris-2); line-height: 1.55; font-weight: 400; }
+  .lead b { color: var(--gris-1); font-weight: 600; }
+
+  /* ===================== FIGURAS ===================== */
+  figure.fig { margin: 30px 0 8px; }
+  figure.fig.full img { width: 100%; height: auto; display: block; }
+  .fig-frame {
+    border: 1px solid var(--gris-4); border-radius: 8px; padding: 22px; background: var(--blanco);
+    box-shadow: var(--sombra); display: flex; align-items: center; justify-content: center;
+  }
+  .fig-frame img { max-width: 100%; height: auto; display: block; border-radius: 4px; }
+  figure.fig figcaption {
+    font-size: 14px; color: var(--gris-2); line-height: 1.5; margin-top: 12px;
+    padding-left: 16px; border-left: 3px solid var(--verde);
+  }
+  figure.fig figcaption b { color: var(--gris-1); }
+
+  /* ===================== TABLAS ===================== */
+  .tbl-wrap { margin: 0 0 8px; overflow-x: auto; border-radius: 8px; }
+  table.ou { width: 100%; border-collapse: collapse; font-size: 15px; min-width: 560px; }
+  table.ou th, table.ou td { text-align: left; padding: 14px 16px; border-bottom: 1px solid var(--gris-4); vertical-align: top; line-height: 1.4; }
+  table.ou thead th { background: var(--gris-1); color: #fff; font-weight: 700; font-size: 13.5px; letter-spacing: .02em; }
+  table.ou thead th:first-child { border-top-left-radius: 6px; }
+  table.ou thead th:last-child { border-top-right-radius: 6px; }
+  table.ou td:first-child { font-weight: 700; color: var(--gris-1); }
+  table.ou tbody tr:nth-child(even) { background: var(--papel); }
+  table.ou tbody tr:hover { background: var(--verde-claro); }
+  .tbl-cap { font-size: 13.5px; color: var(--gris-2); margin: 24px 0 11px; padding-left: 14px; border-left: 3px solid var(--verde); line-height: 1.5; }
+  .tbl-cap b { color: var(--gris-1); }
+
+  /* ===================== CALLOUTS ===================== */
+  .callout {
+    display: grid; grid-template-columns: 42px 1fr; gap: 18px;
+    border-radius: 8px; padding: 20px 24px; margin: 24px 0; align-items: start;
+  }
+  .callout .ic {
+    width: 42px; height: 42px; border-radius: 50%; display: inline-flex;
+    align-items: center; justify-content: center; font-size: 21px; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .callout > div > b { display: block; font-size: 15.5px; margin-bottom: 4px; }
+  .callout p { font-size: 15.5px; margin: 0 0 8px; color: var(--gris-1); line-height: 1.5; }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout p b { display: inline; color: inherit; font-size: inherit; }
+  .callout ul, .callout ol { font-size: 15.5px; margin: 8px 0 0; padding-left: 22px; }
+  .callout li { margin-bottom: 4px; line-height: 1.5; }
+  .callout--nota { background: var(--teal-claro); }
+  .callout--nota .ic { background: var(--teal); color: #fff; }
+  .callout--nota b { color: var(--teal); }
+  .callout--tip { background: var(--verde-claro); }
+  .callout--tip .ic { background: var(--verde); color: #fff; }
+  .callout--tip b { color: var(--verde-osc); }
+  .callout--warn { background: #fdecec; }
+  .callout--warn .ic { background: #c0392b; color: #fff; }
+  .callout--warn b { color: #c0392b; }
+
+  /* ===================== EQUIPMENT GALLERY ===================== */
+  .imp-gallery { margin: 26px 0 8px; }
+  .imp-bar { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px; }
+  .imp-btn {
+    font-family: var(--tipo); font-size: 13px; font-weight: 600;
+    padding: 7px 16px; border: 1.5px solid var(--gris-4); border-radius: 999px;
+    cursor: pointer; background: var(--blanco); color: var(--gris-2);
+    transition: all .18s ease;
+  }
+  .imp-btn:hover { border-color: var(--verde); color: var(--verde-osc); }
+  .imp-btn.active { background: var(--verde); color: #fff; border-color: var(--verde); }
+  .imp-panel { display: none; }
+  .imp-panel.active { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+  @media (max-width: 640px) { .imp-panel.active { grid-template-columns: 1fr; } }
+  .imp-gif {
+    border: 1px solid var(--gris-4); border-radius: 8px; overflow: hidden;
+    background: var(--papel); display: flex; align-items: center; justify-content: center;
+    min-height: 280px; box-shadow: var(--sombra);
+  }
+  .imp-gif img { width: 100%; height: auto; display: block; max-height: 340px; object-fit: contain; cursor: zoom-in; }
+  .imp-gif .aspect { position: relative; width: 100%; padding-top: 56.25%; }
+  .imp-gif .aspect iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .imp-info h4 { font-size: 18px; font-weight: 800; color: var(--gris-1); margin: 0 0 6px; }
+  .imp-family {
+    font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--verde-osc); background: var(--verde-claro); padding: 3px 10px;
+    border-radius: 999px; display: inline-block; margin-bottom: 10px;
+  }
+  .imp-desc { font-size: 15px; color: var(--gris-2); line-height: 1.55; margin-bottom: 14px; }
+  .imp-feats h5 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; margin: 0 0 5px; color: var(--verde-osc); }
+  .imp-feats ul { font-size: 13.5px; color: var(--gris-2); margin: 0 0 12px; padding-left: 18px; }
+  .imp-feats li { margin-bottom: 3px; line-height: 1.4; }
+  .imp-apps { font-size: 14px; color: var(--gris-2); }
+
+  /* ===================== CALCULADORAS / GRÁFICAS ===================== */
+  .calc-wrap {
+    margin: 26px 0 8px; border: 1px solid var(--gris-4); border-radius: 10px;
+    background: var(--blanco); padding: 22px 24px; box-shadow: var(--sombra);
+  }
+  .calc-wrap h4 { font-size: 17px; font-weight: 700; color: var(--gris-1); margin: 0 0 4px; }
+  .calc-sub { font-size: 14px; color: var(--gris-2); margin: 0 0 16px; }
+  .calc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px 22px; }
+  .calc-field { display: flex; flex-direction: column; gap: 4px; }
+  .calc-field-header { display: flex; justify-content: space-between; font-size: 14px; }
+  .calc-field-header span { color: var(--gris-2); font-weight: 600; }
+  .calc-field-header em { font-style: italic; }
+  .calc-field-header b { color: var(--gris-1); font-family: 'JetBrains Mono Variable', ui-monospace, monospace; font-size: 12.5px; }
+  .calc-field input[type=range] { width: 100%; accent-color: var(--verde); }
+  .calc-note { font-size: 13.5px; color: var(--gris-3); font-style: italic; margin-top: 14px; }
+
+  /* Gráficas SVG con panel de control lateral */
+  .chart-layout { display: grid; grid-template-columns: 1fr 270px; gap: 24px; align-items: start; margin-bottom: 14px; }
+  @media (max-width: 680px) { .chart-layout { grid-template-columns: 1fr; } }
+  .chart-controls { display: flex; flex-direction: column; gap: 12px; }
+
+  /* Tarjetas de resultados en vivo */
+  .live-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 4px 0 6px; }
+  @media (max-width: 560px) { .live-grid { grid-template-columns: 1fr; } }
+  .live-card { border-radius: 8px; padding: 13px 16px; }
+  .live-card-label { font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--gris-2); margin-bottom: 4px; }
+  .live-card-value { font-size: 18px; font-weight: 700; color: var(--gris-1); font-family: 'JetBrains Mono Variable', ui-monospace, monospace; line-height: 1.2; }
+  .live-card-note { font-size: 11.5px; color: var(--gris-3); margin-top: 3px; }
+  .live-card.blue { background: var(--teal-claro); }
+  .live-card.teal { background: var(--teal-claro); }
+  .live-card.green { background: var(--verde-claro); }
+  .live-card.highlight { background: var(--verde-claro); border: 1px solid var(--verde); }
+
+  /* ===================== YOUTUBE EMBED ===================== */
+  .yt-wrap { margin: 26px 0 8px; }
+  .yt-frame {
+    border: 1px solid var(--gris-4); border-radius: 8px; overflow: hidden;
+    background: var(--papel); max-width: 640px; box-shadow: var(--sombra);
+  }
+  .yt-frame .aspect { position: relative; padding-top: 56.25%; }
+  .yt-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .yt-caption { font-size: 13.5px; color: var(--gris-2); padding: 10px 16px 14px; text-align: center; line-height: 1.45; }
+
+  /* ===================== PLATFORM LINKS ===================== */
+  a.pl { color: inherit; border-bottom: 2px solid var(--verde); text-decoration: none; white-space: nowrap; }
+  a.pl::after { content: '\2197'; font-size: .75em; margin-left: .2em; color: var(--verde); }
+  a.pl:hover { color: var(--verde-osc); }
+
+  /* ===================== FOOTER ===================== */
+  .doc-foot {
+    border-top: 1px solid var(--gris-4); margin-top: 50px; padding-top: 22px;
+    display: flex; justify-content: space-between; font-size: 13px; color: var(--gris-3);
+  }
+
+  /* ===================== BIBLIOGRAFÍA ===================== */
+  ol.refs { list-style: none; counter-reset: ref; padding: 0; margin: 18px 0 0; display: grid; gap: 4px; }
+  ol.refs li {
+    counter-increment: ref; position: relative; padding: 12px 16px 12px 58px; border-radius: 8px;
+    font-size: 15px; line-height: 1.5; color: var(--gris-1);
+  }
+  ol.refs li::before {
+    content: counter(ref); position: absolute; left: 14px; top: 11px;
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px; border-radius: 999px; background: var(--papel); color: var(--verde-osc);
+    font-size: 13px; font-weight: 700;
+  }
+  ol.refs li em { color: var(--gris-2); font-style: italic; }
+
+  /* ===================== RESPONSIVE ===================== */
+  @media (max-width: 720px) {
+    .doc-head, .doc-body { padding-left: 26px; padding-right: 26px; }
+    .doc-meta { grid-template-columns: 1fr 1fr; }
+    .doc-head h1 { font-size: 28px; max-width: none; }
+    .doc-head .subtitle { font-size: 17px; }
+    .doc-head .badge { font-size: 11px; padding: 5px 11px; }
+    .fig-frame { padding: 10px; }
+  }
+
+  @media (max-width: 480px) {
+    .doc-head { padding: 28px 16px 28px; }
+    .doc-body { padding-left: 16px; padding-right: 16px; }
+    .doc-head h1 { font-size: 24px; }
+    .doc-head .subtitle { font-size: 15px; }
+    .doc-meta { grid-template-columns: 1fr; gap: 10px; }
+    .fig-frame { padding: 4px; }
+    .callout { grid-template-columns: 32px 1fr; gap: 12px; padding: 14px 16px; }
+    .callout .ic { width: 32px; height: 32px; font-size: 16px; }
+  }
+
+  /* ---- Lightbox (tap-to-zoom) ---- */
+  .lightbox-overlay {
+    position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,.88);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity .25s ease;
+    cursor: zoom-out; padding: 12px; -webkit-tap-highlight-color: transparent;
+  }
+  .lightbox-overlay.is-open { opacity: 1; pointer-events: auto; }
+  .lightbox-overlay img {
+    max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 4px;
+    transform: scale(.95); transition: transform .25s ease;
+  }
+  .lightbox-overlay.is-open img { transform: scale(1); }
+  .fig-frame img { cursor: zoom-in; }
+
+  @media print {
+    body { background: #fff; }
+    .page { box-shadow: none; margin: 0; max-width: none; border-radius: 0; }
+    .progress, .side-nav { display: none; }
+    section, figure.fig, .tbl-wrap, .callout, .imp-gallery, .calc-wrap { break-inside: avoid; }
+  }
+
+  /* ---- Outer layout with sticky side nav ---- */
+  .page { margin: 0; }
+  .outer-layout {
+    max-width: 1160px;
+    margin: 40px auto 90px;
+    display: grid;
+    grid-template-columns: 200px minmax(0, 1fr);
+    gap: 24px;
+    padding: 0 20px;
+    align-items: start;
+  }
+  .side-nav {
+    position: sticky;
+    top: 28px;
+    max-height: calc(100vh - 56px);
+    overflow-y: auto;
+    background: var(--blanco);
+    border: 1px solid var(--gris-4);
+    border-radius: 8px;
+    padding: 20px 16px;
+    box-shadow: var(--sombra);
+    scrollbar-width: thin;
+  }
+  .sn-label { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--gris-3); margin: 0 0 10px; padding: 0 4px; }
+  .sn-item { display: flex; align-items: flex-start; gap: 7px; font-family: var(--tipo); font-size: 13px; color: var(--gris-2); text-decoration: none; padding: 6px 8px; border-radius: 5px; line-height: 1.3; transition: all .15s; margin-bottom: 2px; border: none; background: none; cursor: pointer; width: 100%; text-align: left; }
+  .sn-item:hover { color: var(--gris-1); background: var(--gris-5); }
+  .sn-item.is-active { color: var(--verde-osc); background: var(--verde-claro); font-weight: 600; border-left: 3px solid var(--verde); padding-left: 5px; }
+  .sn-num { font-size: 11px; font-weight: 700; color: var(--verde-osc); min-width: 16px; padding-top: 1px; flex-shrink: 0; }
+  @media (max-width: 880px) {
+    .outer-layout { grid-template-columns: 1fr; padding: 0 12px; }
+    .side-nav { display: none; }
+    .page { margin: 0; }
+  }
+</style>
+
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<div class="outer-layout">
+
+<nav class="side-nav" aria-label="Secciones">
+  <p class="sn-label">En esta lectura</p>
+  <a href="#s1" class="sn-item"><span class="sn-num">01</span>Principios de la destilación</a>
+  <a href="#s2" class="sn-item"><span class="sn-num">02</span>Balances de materia</a>
+  <a href="#s3" class="sn-item"><span class="sn-num">03</span>Método de McCabe-Thiele</a>
+  <a href="#s4" class="sn-item"><span class="sn-num">04</span>Efectos operacionales</a>
+  <a href="#s5" class="sn-item"><span class="sn-num">05</span>Límites del diseño</a>
+  <a href="#s6" class="sn-item"><span class="sn-num">06</span>Eficiencia de etapa</a>
+  <a href="#s7" class="sn-item"><span class="sn-num">07</span>Bibliografía</a>
+</nav>
+
+<article class="page">
+
+  <!-- ENCABEZADO -->
+  <header class="doc-head">
+    <div class="org">
+      Universidad de los Andes
+      <span>Ingeniería Química y de Alimentos</span>
+    </div>
+    <div class="badge">Lectura 13 · Proyecto de Operaciones Unitarias</div>
+    <h1>Destilación continua</h1>
+    <p class="subtitle">Diseño de columnas de destilación binaria mediante el método gráfico de McCabe-Thiele: balances de materia, razón de reflujo, líneas de operación, etapas teóricas y eficiencia de platos.</p>
+    <div class="doc-meta">
+      <div><b>Curso</b>Proyecto de Operaciones Unitarias · IQYA-2031 · 2026-20</div>
+      <div><b>Autor</b>Luis H. Reyes</div>
+      <div><b>Fecha</b>4 de julio de 2026</div>
+      <div><b>Lectura</b>Aproximadamente 30 minutos</div>
+    </div>
+  </header>
+
+  <div class="doc-body">
+
+    <!-- ── s0: Intro ────────────────────────────────────────────── -->
+    <section id="s0">
+      <p class="lead">La <b>destilación continua</b> es la operación unitaria de separación más utilizada en la industria química: desde refinerías de petróleo hasta la producción de etanol, ácido acético o solventes. A diferencia del alambique por lotes, una columna continua recibe alimentación de manera permanente y produce simultáneamente un destilado enriquecido en el componente volátil y un residuo empobrecido. El <b>método gráfico de McCabe-Thiele</b> permite dimensionar esta columna — determinar el número de etapas teóricas necesarias — con una herramienta visual elegante que integra el equilibrio vapor-líquido con los balances de materia.</p>
+
+      <figure class="fig">
+        <div class="fig-frame">
+          <img src="assets/img/columna-destilacion.png"
+               alt="Esquema de una columna de destilación continua con zonas de rectificación y agotamiento, condensador y rehervidor"
+               style="max-width:480px">
+        </div>
+        <figcaption><b>Figura 1.</b> Configuración general de una columna de destilación continua. La alimentación (F) entra en un plato intermedio. Por encima, la <em>sección de rectificación</em> purifica el destilado (D); por debajo, la <em>sección de agotamiento</em> recupera el componente volátil del líquido descendente. El condensador y el rehervidor proveen el reflujo y la generación de vapor, respectivamente.</figcaption>
+      </figure>
+
+      <div class="callout callout--tip">
+        <span class="ic">i</span>
+        <div>
+          <b>Aplicación al proyecto del curso</b>
+          <p>Si su planta de pectina incluye una etapa de recuperación de etanol por destilación, debe:</p>
+          <ol>
+            <li><b>Definir el problema:</b> composiciones de alimentación (x<sub>F</sub>), destilado (x<sub>D</sub>) y fondos (x<sub>W</sub>), a la presión de operación.</li>
+            <li><b>Trazar la curva de equilibrio</b> (y-x) del sistema etanol-agua a esa presión (datos de literatura o ELV del sistema).</li>
+            <li><b>Elegir la razón de reflujo</b> R: calcular R<sub>min</sub> gráficamente y operar entre R<sub>min</sub> y 2·R<sub>min</sub>.</li>
+            <li><b>Aplicar McCabe-Thiele</b> para contar las etapas teóricas y ubicar el plato de alimentación.</li>
+            <li><b>Convertir a platos reales</b> usando una eficiencia de columna E<sub>o</sub> (típicamente 50-70 % para etanol-agua).</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── s1: Principios ────────────────────────────────────────── -->
+    <section id="s1">
+      <div class="eyebrow">Fundamentos</div>
+      <h2 class="sec"><span class="secnum">1.</span> Principios de la destilación fraccionada continua</h2>
+
+      <p>En una columna de destilación industrial el vapor ascendente y el líquido descendente se ponen en contacto repetidamente en una serie de <b>etapas de equilibrio</b> (platos o relleno). Cada etapa produce un enriquecimiento en el componente más volátil en la fase vapor y un empobrecimiento en la fase líquida.</p>
+
+      <h3 class="sub">Sección de rectificación (enriquecimiento)</h3>
+      <p>Está por encima del plato de alimentación. El vapor ascendente, progresivamente enriquecido, se pone en contacto con el <em>reflujo</em> (líquido frío que desciende desde el condensador). En cada plato el vapor entrega componentes pesados al líquido y recibe componentes ligeros: el resultado es que el vapor se enriquece aún más a medida que sube. El propósito de esta sección es <b>alcanzar la pureza especificada del destilado</b>.</p>
+
+      <h3 class="sub">Sección de agotamiento (stripping)</h3>
+      <p>Está por debajo del plato de alimentación. El líquido descendente (rico en componente ligero al llegar de la alimentación) se pone en contacto con el vapor caliente generado en el <em>rehervidor</em>. Ese vapor «despoja» (strips) el componente ligero del líquido descendente. El propósito de esta sección es <b>maximizar la recuperación del componente volátil</b>, dejando los fondos (W) tan empobrecidos como se requiera.</p>
+
+      <div class="callout callout--nota">
+        <span class="ic">i</span>
+        <div>
+          <b>Destilería The Glenlivet: arte y ciencia de la destilación</b>
+          <p>The Glenlivet, en Escocia, utiliza <em>alambiques de cobre (copper pot stills)</em> en un proceso de doble destilación <em>por lotes</em>. La forma alta de sus alambiques favorece un alto grado de reflujo interno, lo que produce un licor más ligero y frutal. Comprender los principios de la destilación continua facilita también la comprensión de por qué el diseño del alambique — su altura, forma y proporción — determina el carácter del whisky. En ambos casos, el principio físico es el mismo: enriquecimiento progresivo por contacto vapor-líquido repetido.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── s2: Balances de materia ────────────────────────────────── -->
+    <section id="s2">
+      <div class="eyebrow">Termodinámica y balances</div>
+      <h2 class="sec"><span class="secnum">2.</span> Balances de materia y razón de reflujo</h2>
+
+      <h3 class="sub">Balance global de materia</h3>
+      <p>Para la columna completa en estado estacionario:</p>
+      $$F = D + W$$
+      <p>Y para el componente más volátil:</p>
+      $$F \cdot x_F = D \cdot x_D + W \cdot x_W$$
+      <p>donde \(F\), \(D\) y \(W\) son los flujos molares de alimentación, destilado y fondos, y \(x_F\), \(x_D\), \(x_W\) sus respectivas fracciones molares del componente volátil.</p>
+
+      <h3 class="sub">Razón de reflujo (R)</h3>
+      <p>La <b>razón de reflujo</b> \(R\) es el cociente entre el flujo molar de líquido que regresa como reflujo (\(L\)) y el flujo de destilado que se extrae (\(D\)):</p>
+      $$R = \frac{L}{D}$$
+      <p>Es el parámetro de diseño y operación más importante de la columna, pues controla el balance entre inversión y operación:</p>
+
+      <div class="tbl-wrap">
+        <table class="ou">
+          <thead>
+            <tr><th>R alto</th><th>R bajo</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Menos platos teóricos necesarios → columna más corta (menor inversión)</td>
+              <td>Más platos teóricos → columna más alta (mayor inversión)</td>
+            </tr>
+            <tr>
+              <td>Mayor vapor generado y condensado → mayor consumo energético (mayor operación)</td>
+              <td>Menor consumo energético</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="tbl-cap">El diseño óptimo busca el valor de R que minimiza el costo total anualizado (inversión + operación).</p>
+
+      <h3 class="sub">Supuesto de flujos molares constantes (CMO)</h3>
+      <p>El método de McCabe-Thiele asume <b>flujos molares constantes</b> en cada sección: \(L\) y \(V\) constantes en la sección de rectificación; \(L'\) y \(V'\) constantes en la de agotamiento. Esto es válido cuando:</p>
+      <ul>
+        <li>Los calores latentes molares de los dos componentes son similares.</li>
+        <li>Las pérdidas de calor en la columna son despreciables.</li>
+        <li>El calor sensible es pequeño frente al latente.</li>
+      </ul>
+    </section>
+
+    <!-- ── s3: Método McCabe-Thiele ──────────────────────────────── -->
+    <section id="s3">
+      <div class="eyebrow">Herramienta de diseño</div>
+      <h2 class="sec"><span class="secnum">3.</span> Método gráfico de McCabe-Thiele</h2>
+
+      <p>El método proporciona una construcción gráfica para determinar el número de etapas teóricas de una columna binaria. Requiere: datos de ELV (curva y-x), composiciones de alimentación, destilado y fondos, y la razón de reflujo.</p>
+
+      <h3 class="sub">Paso 1: El diagrama y-x</h3>
+      <p>Se traza la curva de equilibrio vapor-líquido del sistema binario a la presión de operación. La curva siempre se encuentra por encima de la diagonal y = x para el componente más volátil.</p>
+
+      <figure class="fig">
+        <div class="fig-frame">
+          <img src="assets/img/diagrama-yx.png"
+               alt="Diagrama y-x de equilibrio para el sistema n-hexano/n-octano a 1 atm con la curva de equilibrio y la línea diagonal y=x"
+               style="max-width:480px">
+        </div>
+        <figcaption><b>Figura 2.</b> Diagrama y-x de equilibrio para n-hexano/n-octano a 1 atm. La curva de equilibrio está sobre la diagonal. La distancia vertical entre ambas en cada punto \(x\) es el enriquecimiento que puede lograrse en una etapa ideal. Fuente: McCabe, Smith y Harriott.</figcaption>
+      </figure>
+
+      <h3 class="sub">Paso 2: Dibujar la diagonal</h3>
+      <p>Se traza la línea de referencia \(y = x\) desde el origen (0,0) hasta la esquina superior derecha (1,1).</p>
+      <figure class="fig">
+        <div class="fig-frame">
+          <img src="assets/img/mt-paso2.png"
+               alt="Diagrama y-x con solo la diagonal y=x trazada como línea de referencia"
+               style="max-width:420px">
+        </div>
+        <figcaption><b>Figura 3.</b> Paso 2: se añade la diagonal y = x. Esta línea representa el caso límite donde vapor y líquido tienen la misma composición (sin enriquecimiento). Fuente: neutrium.net.</figcaption>
+      </figure>
+
+      <h3 class="sub">Paso 3: Agregar la curva de equilibrio</h3>
+      <p>Se grafica la curva de equilibrio y-x del sistema. Siempre se ubica por encima de la diagonal para el componente más volátil (fracción molar y > x).</p>
+      <figure class="fig">
+        <div class="fig-frame">
+          <img src="assets/img/mt-paso3.png"
+               alt="Diagrama y-x con la diagonal y la curva de equilibrio trazadas"
+               style="max-width:420px">
+        </div>
+        <figcaption><b>Figura 4.</b> Paso 3: curva de equilibrio sobre la diagonal. La separación entre ambas indica la facilidad de la separación. Fuente: neutrium.net.</figcaption>
+      </figure>
+
+      <h3 class="sub">Paso 4: Marcar las composiciones</h3>
+      <p>Se marcan en el eje x las composiciones de diseño: \(x_F\) (alimentación), \(x_D\) (destilado), \(x_B\) (fondos). Se trazan verticales hasta la diagonal para identificar los puntos de referencia.</p>
+      <figure class="fig">
+        <div class="fig-frame">
+          <img src="assets/img/mt-paso4.png"
+               alt="Diagrama y-x con las tres composiciones x_F, x_D y x_B marcadas en el eje x"
+               style="max-width:420px">
+        </div>
+        <figcaption><b>Figura 5.</b> Paso 4: se identifican \(x_F\) (centro), \(x_D\) (derecha, alta pureza en el componente volátil) y \(x_B\) (izquierda, fondos pobres en el componente volátil). Fuente: neutrium.net.</figcaption>
+      </figure>
+
+      <h3 class="sub">Paso 5: Línea de condición de alimentación (línea q)</h3>
+      <p>La <b>línea q</b> pasa por el punto (\(x_F, x_F\)) en la diagonal y su pendiente depende de la condición térmica de la alimentación:</p>
+      $$\text{pendiente} = \frac{q}{q - 1}$$
+      <p>donde \(q\) es la fracción molar de líquido en la alimentación. Para un líquido saturado \(q=1\) (línea vertical); para vapor saturado \(q=0\) (línea horizontal); para mezclas parcialmente vaporizadas \(0 &lt; q &lt; 1\). Para condiciones fuera de estas se usa:</p>
+      $$q = 1 - \frac{T_f - T_b}{T_d - T_b}$$
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+        <figure class="fig" style="margin:0;">
+          <div class="fig-frame">
+            <img src="assets/img/mt-paso5a.png"
+                 alt="Diagrama y-x mostrando la línea q trazada desde x_F"
+                 style="max-width:100%">
+          </div>
+          <figcaption><b>Figura 6a.</b> Línea q de condición de alimentación trazada desde el punto (x<sub>F</sub>, x<sub>F</sub>). Fuente: neutrium.net.</figcaption>
+        </figure>
+        <figure class="fig" style="margin:0;">
+          <div class="fig-frame">
+            <img src="assets/img/mt-paso5b.png"
+                 alt="Diagrama y-x mostrando la línea q con alimentación de líquido saturado"
+                 style="max-width:100%">
+          </div>
+          <figcaption><b>Figura 6b.</b> Línea q para el caso de alimentación de líquido saturado (q=1, línea vertical) — el punto de intersección con la curva de equilibrio define el «pinch point». Fuente: neutrium.net.</figcaption>
+        </figure>
+      </div>
+
+      <h3 class="sub">Paso 6: Línea de operación de la sección de rectificación</h3>
+      <p>Esta línea recta parte del punto (\(x_D, x_D\)) en la diagonal y tiene pendiente \(R/(R+1)\):</p>
+      $$\frac{L}{V} = \frac{R}{R+1}$$
+      <p>Se traza desde (\(x_D, x_D\)) hasta intersectar la línea q.</p>
+      <figure class="fig">
+        <div class="fig-frame">
+          <img src="assets/img/mt-paso6.png"
+               alt="Diagrama y-x con la línea de operación de la sección de rectificación trazada"
+               style="max-width:420px">
+        </div>
+        <figcaption><b>Figura 7.</b> Línea de operación de rectificación: parte de x<sub>D</sub> en la diagonal y llega al punto de intersección de la línea q con la curva de equilibrio. Su pendiente es R/(R+1). Fuente: neutrium.net.</figcaption>
+      </figure>
+
+      <h3 class="sub">Paso 7: Línea de operación de la sección de agotamiento</h3>
+      <p>Une el punto (\(x_B, x_B\)) en la diagonal con el punto donde la línea de rectificación toca la línea q. Su pendiente es \(L'/V'\) donde \(L' = L + qF\) y \(V' = V - (1-q)F\).</p>
+      <figure class="fig">
+        <div class="fig-frame">
+          <img src="assets/img/mt-paso7.png"
+               alt="Diagrama y-x con ambas líneas de operación trazadas"
+               style="max-width:420px">
+        </div>
+        <figcaption><b>Figura 8.</b> Las dos líneas de operación quedan definidas. Juntas con la curva de equilibrio, permiten contar los platos. Fuente: neutrium.net.</figcaption>
+      </figure>
+
+      <h3 class="sub">Pasos 8 y 9: Construir los escalones y contar los platos</h3>
+      <p>Desde (\(x_D, x_D\)) se trazan escalones: horizontal hasta la curva de equilibrio, luego vertical hasta la línea de operación correspondiente. Se cambia de línea de rectificación a agotamiento en el plato óptimo de alimentación (cuando hacerlo avanza más rápido hacia \(x_B\)). Se cuentan los escalones hasta cruzar \(x_B\).</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+        <figure class="fig" style="margin:0;">
+          <div class="fig-frame">
+            <img src="assets/img/mt-paso8.png"
+                 alt="Construcción de escalones en el diagrama de McCabe-Thiele"
+                 style="max-width:100%">
+          </div>
+          <figcaption><b>Figura 9.</b> Paso 8: los escalones «bajan» desde x<sub>D</sub> hasta x<sub>B</sub> alternando entre la curva de equilibrio y las líneas de operación. Fuente: neutrium.net.</figcaption>
+        </figure>
+        <figure class="fig" style="margin:0;">
+          <div class="fig-frame">
+            <img src="assets/img/mt-paso9.png"
+                 alt="Escalones numerados del 1 al 7 en el diagrama de McCabe-Thiele"
+                 style="max-width:100%">
+          </div>
+          <figcaption><b>Figura 10.</b> Paso 9: se cuentan los escalones completos — en este ejemplo 7 etapas teóricas. El escalón que abarca la transición entre líneas de operación indica la ubicación del plato de alimentación óptimo. Fuente: neutrium.net.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ── s4: Efectos operacionales ─────────────────────────────── -->
+    <section id="s4">
+      <div class="eyebrow">Análisis de sensibilidad</div>
+      <h2 class="sec"><span class="secnum">4.</span> Efectos de las variables de operación</h2>
+
+      <h3 class="sub">Razón de reflujo</h3>
+      <p>A mayor razón de reflujo \(R\), la línea de operación de rectificación se «aleja» de la diagonal y la curva de equilibrio: los escalones son más grandes y se necesitan menos platos. En la práctica, una columna más ancha (mayor caudal de vapor) compensa la reducción en altura, y los costos de rehervidor y condensador aumentan significativamente.</p>
+
+      <h3 class="sub">Pureza de productos</h3>
+      <p>Al exigir composiciones más extremas de destilado (\(x_D \to 1\)) o fondos (\(x_W \to 0\)), los escalones quedan cada vez más comprimidos en las zonas estrechas del diagrama. El número de platos aumenta exponencialmente para incrementos de pureza pequeños.</p>
+
+      <h3 class="sub">Volatilidad relativa</h3>
+      <p>A mayor separación entre la curva de equilibrio y la diagonal (mayor \(\alpha\)), los escalones son más grandes y se necesitan menos platos. Sistemas con \(\alpha\) cercano a 1 requieren columnas con cientos de platos teóricos (economía desfavorable).</p>
+
+      <h3 class="sub">Azeótropos</h3>
+      <p>Cuando la curva de ELV cruza la diagonal, hay un azeótropo y el método de McCabe-Thiele no puede trazar escalones más allá de ese punto.</p>
+      <figure class="fig">
+        <div class="fig-frame">
+          <img src="assets/img/azeotropo-yx.png"
+               alt="Diagrama y-x mostrando un azeótropo donde la curva de equilibrio cruza la diagonal"
+               style="max-width:420px">
+        </div>
+        <figcaption><b>Figura 11.</b> Azeótropo en el diagrama y-x: la curva de equilibrio cruza la diagonal en el punto azeotrópico (~x = 0,65 para propanol-agua). Los escalones de McCabe-Thiele no pueden sobrepasar ese punto con destilación ordinaria. Fuente: neutrium.net.</figcaption>
+      </figure>
+    </section>
+
+    <!-- ── s5: Límites del diseño ─────────────────────────────────── -->
+    <section id="s5">
+      <div class="eyebrow">Diseño óptimo</div>
+      <h2 class="sec"><span class="secnum">5.</span> Límites del diseño: reflujo mínimo y total</h2>
+
+      <div class="tbl-wrap">
+        <table class="ou">
+          <thead>
+            <tr><th>Condición</th><th>Definición</th><th>Etapas</th><th>Producción</th><th>Uso</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Reflujo mínimo (R<sub>min</sub>)</td>
+              <td>Menor R que permite la separación; la línea de operación pasa por el «pinch point» (intersección con la curva de equilibrio y la línea q)</td>
+              <td>Infinitas</td>
+              <td>D &gt; 0</td>
+              <td>Referencia de diseño</td>
+            </tr>
+            <tr>
+              <td>Reflujo total</td>
+              <td>Todo el condensado regresa a la columna (D = 0, R = ∞); la línea de operación coincide con y = x</td>
+              <td>Mínimas (N<sub>min</sub>)</td>
+              <td>D = 0</td>
+              <td>Arranque / pruebas</td>
+            </tr>
+            <tr>
+              <td>Reflujo óptimo</td>
+              <td>Típicamente R = 1,2 a 1,5·R<sub>min</sub></td>
+              <td>Razonable</td>
+              <td>D &gt; 0</td>
+              <td>Operación continua</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>El reflujo óptimo en operación industrial es habitualmente entre 1,2 y 1,5 veces el reflujo mínimo, lo que representa un balance económico razonable entre la altura de columna (costo de capital) y el consumo energético del rehervidor y condensador (costo operativo).</p>
+
+      <!-- Calculadora McCabe-Thiele simplificada -->
+      <div class="calc-wrap">
+        <h4>Estimador rápido: etapas teóricas de Fenske-Underwood</h4>
+        <p class="calc-sub">Para una separación binaria ideal (Raoult), el número mínimo de etapas a reflujo total se estima con la ecuación de Fenske, y el R<sub>min</sub> con la ecuación de Underwood simplificada.</p>
+        <div class="calc-grid">
+          <div class="calc-field">
+            <div class="calc-field-header"><span>α (volatilidad relativa)</span><b id="fc-alpha-val">2,50</b></div>
+            <input type="range" id="fc-alpha" min="1.05" max="10" step="0.05" value="2.5">
+          </div>
+          <div class="calc-field">
+            <div class="calc-field-header"><span>x<sub>D</sub> (fracción destilado)</span><b id="fc-xd-val">0,95</b></div>
+            <input type="range" id="fc-xd" min="0.5" max="0.999" step="0.001" value="0.95">
+          </div>
+          <div class="calc-field">
+            <div class="calc-field-header"><span>x<sub>W</sub> (fracción fondos)</span><b id="fc-xw-val">0,050</b></div>
+            <input type="range" id="fc-xw" min="0.001" max="0.4" step="0.001" value="0.05">
+          </div>
+          <div class="calc-field">
+            <div class="calc-field-header"><span>x<sub>F</sub> (fracción alimentación)</span><b id="fc-xf-val">0,40</b></div>
+            <input type="range" id="fc-xf" min="0.05" max="0.95" step="0.01" value="0.4">
+          </div>
+        </div>
+        <div class="live-grid" style="margin-top:16px;">
+          <div class="live-card blue">
+            <div class="live-card-label">N<sub>min</sub> (Fenske)</div>
+            <div class="live-card-value" id="fc-nmin">—</div>
+            <div class="live-card-note">etapas teóricas a reflujo total</div>
+          </div>
+          <div class="live-card green">
+            <div class="live-card-label">R<sub>min</sub> (Underwood aprox.)</div>
+            <div class="live-card-value" id="fc-rmin">—</div>
+            <div class="live-card-note">razón de reflujo mínima</div>
+          </div>
+          <div class="live-card highlight">
+            <div class="live-card-label">R recomendado</div>
+            <div class="live-card-value" id="fc-ropt">—</div>
+            <div class="live-card-note">1,3 × R<sub>min</sub></div>
+          </div>
+        </div>
+        <p class="calc-note">N<sub>min</sub> = log[(x<sub>D</sub>/x<sub>W</sub>)·((1-x<sub>W</sub>)/(1-x<sub>D</sub>))] / log(α) (Fenske). R<sub>min</sub> ≈ [x<sub>D</sub>/(α-1)]·[α/(α-1) - x<sub>F</sub>·(α/(α-1)·x<sub>F</sub>+1-x<sub>F</sub>)⁻¹] — aproximación para q=1.</p>
+      </div>
+    </section>
+
+    <!-- ── s6: Eficiencia de etapa ───────────────────────────────── -->
+    <section id="s6">
+      <div class="eyebrow">Del ideal al real</div>
+      <h2 class="sec"><span class="secnum">6.</span> Eficiencia de etapa</h2>
+
+      <p>Un plato físico no logra el equilibrio perfecto entre vapor y líquido porque el tiempo de contacto es finito y la transferencia de masa tiene limitaciones cinéticas. La <b>eficiencia global de la columna</b> (\(E_o\)) relaciona las etapas teóricas con los platos reales:</p>
+      $$\text{Número de platos reales} = \frac{\text{Número de etapas teóricas}}{E_o}$$
+
+      <div class="tbl-wrap">
+        <table class="ou">
+          <thead>
+            <tr><th>Sistema</th><th>E<sub>o</sub> típica</th><th>Comentario</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Mezclas orgánicas similares (hidrocarburos)</td><td>60 – 80 %</td><td>Volatilidad relativa moderada a alta</td></tr>
+            <tr><td>Etanol-agua</td><td>50 – 70 %</td><td>Alta viscosidad del agua reduce E<sub>o</sub></td></tr>
+            <tr><td>Sistemas con alta viscosidad</td><td>30 – 50 %</td><td>La correlación de O'Connell es útil</td></tr>
+            <tr><td>Columnas de relleno (HETP)</td><td>—</td><td>Se usa altura equivalente a un plato teórico (HETP)</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="tbl-cap">La correlación de O'Connell relaciona E<sub>o</sub> con la viscosidad del líquido y la volatilidad relativa. Para un diseño preliminar en la planta de pectina, asumir E<sub>o</sub> = 60 % es una estimación conservadora razonable.</p>
+
+      <div class="callout callout--nota">
+        <span class="ic">i</span>
+        <div>
+          <b>Pasos totales del diseño simplificado</b>
+          <ol>
+            <li>Trazar la curva y-x del sistema a la presión de operación.</li>
+            <li>Graficar las líneas de operación con la R elegida.</li>
+            <li>Contar etapas teóricas con McCabe-Thiele → N<sub>teo</sub>.</li>
+            <li>Platos reales = N<sub>teo</sub> / E<sub>o</sub>.</li>
+            <li>Dimensionar la columna: diámetro por la velocidad de vapor; altura = platos reales × separación entre platos (típicamente 0,5 – 0,6 m).</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── s7: Bibliografía ───────────────────────────────────────── -->
+    <section id="s7">
+      <div class="eyebrow">Fuentes</div>
+      <h2 class="sec"><span class="secnum">7.</span> Bibliografía</h2>
+      <ol class="refs">
+        <li>McCabe, W. L., Smith, J. C., &amp; Harriott, P. (2005). <em>Unit Operations of Chemical Engineering</em> (7.ª ed.). McGraw-Hill. (Caps. 18-19: Equilibrium Separations; Distillation).</li>
+        <li>Seader, J. D., Henley, E. J., &amp; Roper, D. K. (2011). <em>Separation Process Principles</em> (3.ª ed.). Wiley. (Caps. 7-10: Distillation Columns).</li>
+        <li>Perry, R. H., &amp; Green, D. W. (Eds.) (2019). <em>Perry's Chemical Engineers' Handbook</em> (9.ª ed.). McGraw-Hill. (Sección 13: Distillation).</li>
+        <li>Fenske, M. R. (1932). Fractionation of straight-run Pennsylvania gasoline. <em>Industrial &amp; Engineering Chemistry, 24</em>(5), 482–485.</li>
+        <li>Underwood, A. J. V. (1948). Fractional distillation of multicomponent mixtures. <em>Chemical Engineering Progress, 44</em>(8), 603–614.</li>
+      </ol>
+    </section>
+
+    <div class="doc-foot">
+      <span>IQYA-2031 · Proyecto de Operaciones Unitarias · 2026-20</span>
+      <span>Lectura 13 · Universidad de los Andes</span>
+    </div>
+
+  </div><!-- .doc-body -->
+</article>
+
+</div><!-- .outer-layout -->
+
+<!-- KaTeX auto-render -->
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+  onload="renderMath()"></script>
+<script>
+function renderMath(){
+  renderMathInElement(document.body,{
+    delimiters:[
+      {left:'$$',right:'$$',display:true},
+      {left:'$',right:'$',display:false}
+    ],
+    throwOnError:false
+  });
+}
+</script>
+<script>
+/* ── Progress bar ─────────────────────────────────────────────── */
+(function(){
+  var bar=document.getElementById('progress');
+  function upd(){
+    var s=document.documentElement,st=s.scrollTop||document.body.scrollTop,
+        h=s.scrollHeight-s.clientHeight;
+    bar.style.width=(h>0?(st/h*100):0)+'%';
+  }
+  window.addEventListener('scroll',upd,{passive:true});
+  upd();
+})();
+
+/* ── Scroll-spy ───────────────────────────────────────────────── */
+(function(){
+  var items=document.querySelectorAll('.sn-item');
+  var secs=Array.from(document.querySelectorAll('section[id]'));
+  function spy(){
+    var y=window.scrollY+120;
+    var cur=secs.reduce(function(a,s){return s.offsetTop<=y?s:a},secs[0]);
+    if(!cur)return;
+    items.forEach(function(it){
+      it.classList.toggle('is-active',it.getAttribute('href')==='#'+cur.id);
+    });
+  }
+  window.addEventListener('scroll',spy,{passive:true});
+  spy();
+})();
+
+/* ── Fenske-Underwood estimator ──────────────────────────────── */
+(function(){
+  function calc(){
+    var alpha=parseFloat(document.getElementById('fc-alpha').value);
+    var xD=parseFloat(document.getElementById('fc-xd').value);
+    var xW=parseFloat(document.getElementById('fc-xw').value);
+    var xF=parseFloat(document.getElementById('fc-xf').value);
+    document.getElementById('fc-alpha-val').textContent=alpha.toFixed(2).replace('.',',');
+    document.getElementById('fc-xd-val').textContent=xD.toFixed(3).replace('.',',');
+    document.getElementById('fc-xw-val').textContent=xW.toFixed(3).replace('.',',');
+    document.getElementById('fc-xf-val').textContent=xF.toFixed(2).replace('.',',');
+    // Fenske equation
+    var Nmin=Math.log((xD/xW)*((1-xW)/(1-xD)))/Math.log(alpha);
+    // Underwood approximate for q=1 (saturated liquid)
+    // theta satisfies alpha*xF/(alpha-theta) + (1-xF)/(1-theta) = 1 for q=1
+    // Numerical solve via bisection
+    var lo=1.0001,hi=alpha-0.0001;
+    for(var i=0;i<60;i++){
+      var mid=(lo+hi)/2;
+      var f=alpha*xF/(alpha-mid)+(1-xF)/(1-mid)-1;
+      if(f>0)lo=mid;else hi=mid;
+    }
+    var theta=(lo+hi)/2;
+    var Rmin=alpha*xD/(alpha-theta)+(1-xD)/(1-theta)-1;
+    var Ropt=1.3*Rmin;
+    document.getElementById('fc-nmin').textContent=Nmin.toFixed(1).replace('.',',');
+    document.getElementById('fc-rmin').textContent=Rmin.toFixed(2).replace('.',',');
+    document.getElementById('fc-ropt').textContent=Ropt.toFixed(2).replace('.',',');
+  }
+  ['fc-alpha','fc-xd','fc-xw','fc-xf'].forEach(function(id){
+    document.getElementById(id).addEventListener('input',calc);
+  });
+  calc();
+})();
+</script>
+<script>
+/* ── Lightbox (tap-to-zoom on figures) ─────────────────────── */
+(function(){
+  var ov=document.createElement('div');
+  ov.className='lightbox-overlay';
+  ov.innerHTML='<img alt="">';
+  document.body.appendChild(ov);
+  var ovImg=ov.querySelector('img');
+  document.querySelectorAll('.fig-frame img, .imp-gif img').forEach(function(img){
+    img.addEventListener('click',function(){
+      ovImg.src=this.src; ovImg.alt=this.alt;
+      ov.classList.add('is-open');
+    });
+  });
+  ov.addEventListener('click',function(){ ov.classList.remove('is-open'); });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape') ov.classList.remove('is-open'); });
+})();
+</script>
+</body>
+</html>

@@ -607,6 +607,54 @@ export const pou202620Course: Course = {
       category: 'lectura',
       href: '/classroom/iqya-2031-2026-20/lecturas/Lectura_09/Lectura_09_Filtracion.html',
     },
+    {
+      slug: 'lectura-10-equilibrio-de-fases',
+      order: 10,
+      title: 'Equilibrio de fases',
+      summary:
+        'La piedra angular de la destilación: equilibrio líquido-vapor (ELV), ley de Raoult, ley de Dalton, ecuación de Antoine con calculadora interactiva, volatilidad relativa α, diagramas T-x-y / P-x-y / y-x con tres videos explicativos y explorador interactivo de la curva de equilibrio, coeficientes de actividad y azeótropos de mínima y máxima ebullición.',
+      date: '2026-06-13',
+      readingMinutes: 24,
+      tags: ['equilibrio de fases', 'ELV', 'Raoult', 'Dalton', 'Antoine', 'volatilidad relativa', 'diagrama T-x-y', 'diagrama y-x', 'azeótropo', 'destilación'],
+      category: 'lectura',
+      href: '/classroom/iqya-2031-2026-20/lecturas/Lectura_10/Lectura_10_Equilibrio_de_Fases.html',
+    },
+    {
+      slug: 'lectura-11-destilacion-flash',
+      order: 11,
+      title: 'Destilación flash',
+      summary:
+        'Separación de una sola etapa por vaporización parcial: principio del flash, esquema del tambor flash (SVG interactivo), diferencia con la destilación convencional, balances de materia, constantes de equilibrio K, algoritmo de cálculo y ecuación de Rachford-Rice con calculadora flash binaria isotérmica para el sistema etanol-agua.',
+      date: '2026-06-20',
+      readingMinutes: 18,
+      tags: ['flash', 'vaporización', 'Rachford-Rice', 'tambor flash', 'equilibrio líquido-vapor', 'destilación', 'una etapa'],
+      category: 'lectura',
+      href: '/classroom/iqya-2031-2026-20/lecturas/Lectura_11/Lectura_11_Destilacion_Flash.html',
+    },
+    {
+      slug: 'lectura-12-destilacion-por-lotes',
+      order: 12,
+      title: 'Destilación por lotes',
+      summary:
+        'Destilación discontinua (alambique): principio de la operación, ecuación de Rayleigh con calculadora interactiva (integración numérica), destilación rectificada por lotes a R constante y a y_D constante, los tres cortes del destilado (cabezas, corazón y colas) en la destilería artesanal, sistema de doble destilación escocés y el rol del cobre.',
+      date: '2026-06-27',
+      readingMinutes: 20,
+      tags: ['destilación por lotes', 'alambique', 'ecuación de Rayleigh', 'pot still', 'cabezas', 'corazón', 'colas', 'spirit cut', 'whisky', 'discontinua'],
+      category: 'lectura',
+      href: '/classroom/iqya-2031-2026-20/lecturas/Lectura_12/Lectura_12_Destilacion_por_Lotes.html',
+    },
+    {
+      slug: 'lectura-13-destilacion-continua',
+      order: 13,
+      title: 'Destilación continua',
+      summary:
+        'Diseño de columnas de destilación binaria continua: secciones de rectificación y agotamiento, balances de materia globales, razón de reflujo R, supuesto CMO, método gráfico de McCabe-Thiele paso a paso con imágenes de construcción (9 pasos), efectos de las variables de operación, reflujo mínimo, reflujo total, y eficiencia de etapa E_o con estimador Fenske-Underwood interactivo.',
+      date: '2026-07-04',
+      readingMinutes: 30,
+      tags: ['destilación continua', 'McCabe-Thiele', 'reflujo', 'etapas teóricas', 'línea de operación', 'eficiencia', 'Fenske', 'Underwood', 'columna', 'platos'],
+      category: 'lectura',
+      href: '/classroom/iqya-2031-2026-20/lecturas/Lectura_13/Lectura_13_Destilacion_Continua.html',
+    },
   ],
   presentations: [
     {
