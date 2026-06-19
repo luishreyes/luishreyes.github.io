@@ -25,7 +25,7 @@ deck-stage section {
 
 /* ── Cover ─────────────────────────────────────────────────── */
 .cover {
-  background: var(--negro);
+  background: var(--negro) !important;
   color: #fff;
   padding: 0 !important;
   flex-direction: row !important;
@@ -109,7 +109,7 @@ li { margin-bottom: 6px; }
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 56px;
-  align-items: start;
+  align-items: stretch;   /* las columnas llenan la altura → .copy puede centrar vertical */
   height: 100%;
 }
 .split--wideL { grid-template-columns: 55% 1fr; }
@@ -120,18 +120,45 @@ li { margin-bottom: 6px; }
 /* ── Image panel ───────────────────────────────────────────── */
 .img-panel {
   position: relative; border-radius: 12px; overflow: hidden;
-  background: var(--gris-5);
+  background: #fff;
+  border: 1px solid rgba(0,0,0,.08);
   display: flex; align-items: center; justify-content: center;
   height: 100%;
 }
+/* contain por defecto: nunca recortar diagramas, infografías ni fotos de producto */
 .img-panel img {
-  width: 100%; height: 100%; object-fit: cover; display: block;
+  width: 100%; height: 100%; object-fit: contain; display: block;
+  padding: 10px;
   cursor: zoom-in;
+}
+/* fotos inmersivas (sin bordes informativos) que sí pueden llenar el panel */
+.img-panel--cover { background: var(--negro); }
+.img-panel--cover img { object-fit: cover; padding: 0; }
+/* slide a sangre completa: la imagen ES el contenido */
+.fullbleed { padding: 0 !important; background: var(--negro) !important; }
+.fullbleed .fb-img {
+  position: absolute; inset: 0; display: flex;
+  align-items: center; justify-content: center;
+  padding: 48px 64px;
+}
+.fullbleed .fb-img img {
+  max-width: 100%; max-height: 100%; width: auto; height: auto;
+  object-fit: contain; border-radius: 8px; cursor: zoom-in;
+  box-shadow: 0 18px 60px rgba(0,0,0,.45);
+}
+.fullbleed .fb-head {
+  position: absolute; top: 40px; left: 80px; z-index: 3;
+}
+.fullbleed .fb-head .kicker { margin-bottom: 4px; }
+.fullbleed .fb-head h2 { color: #fff; font-size: 34px; margin: 0; }
+.fullbleed .fb-cap {
+  position: absolute; bottom: 30px; left: 80px; right: 80px; z-index: 3;
+  font-size: 17px; color: rgba(255,255,255,.7); text-align: center; margin: 0;
 }
 .figcap {
   position: absolute; bottom: 0; left: 0; right: 0;
-  background: rgba(0,0,0,.55); color: #fff;
-  font-size: 15px; padding: 10px 14px; margin: 0;
+  background: rgba(0,0,0,.6); color: #fff;
+  font-size: 18px; padding: 12px 16px; margin: 0;
   line-height: 1.35;
 }
 
@@ -153,8 +180,8 @@ li { margin-bottom: 6px; }
   transition: transform .18s ease, box-shadow .18s ease;
 }
 .card:hover { transform: translateY(-3px); box-shadow: var(--sombra); }
-.card-h { font-size: 18px; font-weight: 700; color: var(--negro); margin: 0; }
-.card p { font-size: 20px; color: var(--gris-2); margin: 0; line-height: 1.4; }
+.card-h { font-size: 21px; font-weight: 700; color: var(--negro); margin: 0; }
+.card p { font-size: 21px; color: var(--gris-2); margin: 0; line-height: 1.45; }
 .card-n { font-size: 32px; font-weight: 900; color: var(--verde); line-height: 1; }
 .card--verde { background: var(--verde-claro); border-color: var(--verde); }
 .card--dark { background: var(--negro); color: #fff; }
@@ -180,15 +207,15 @@ li { margin-bottom: 6px; }
   font-size: 28px;
   color: #fff;
 }
-.var-list { font-size: 21px; color: var(--gris-2); margin: 4px 0 12px; }
-.var-list li { margin-bottom: 3px; }
+.var-list { font-size: 23px; color: var(--gris-2); margin: 4px 0 12px; }
+.var-list li { margin-bottom: 5px; }
 
 /* ── Data chips ────────────────────────────────────────────── */
 .databar { display: flex; gap: 16px; flex-wrap: wrap; margin: 20px 0; }
 .chip {
   background: var(--verde-claro);
-  border-radius: 999px; padding: 8px 20px;
-  font-size: 18px; font-weight: 700; color: var(--verde-osc);
+  border-radius: 999px; padding: 9px 22px;
+  font-size: 20px; font-weight: 700; color: var(--verde-osc);
   white-space: nowrap;
 }
 .chip--teal { background: var(--teal-claro); color: var(--teal); }
@@ -397,58 +424,64 @@ deck-stage section.active .lead-top { animation: fadeInUp .4s .1s ease both; }
   <section class="s" data-screen-label="Mecanismos de fractura">
     <div class="split split--narrow">
       <div class="img-panel">
-        <img src="assets/img/Mecanismos_Fractura.webp" alt="Infografía de los 4 mecanismos de reducción de tamaño">
-        <p class="figcap">Los 4 mecanismos: compresión, impacto, atrición y corte.</p>
+        <img src="assets/img/Mecanismos_Fractura.webp" alt="Infografía de los 4 mecanismos de reducción de tamaño: compresión, impacto, atrición y corte">
       </div>
       <div class="copy">
         <div class="kicker">Cómo se rompen los sólidos</div>
         <h2>Mecanismos de fractura</h2>
-        <p>La fractura ocurre cuando el esfuerzo aplicado excede la resistencia del material; el mecanismo específico determina la distribución de productos y la energía requerida.</p>
-        <div class="cards two" style="margin-top:12px; gap:12px;">
-          <div class="card" style="padding:16px 18px;">
-            <p class="card-h">Compresión</p>
-            <p>Fuerza lenta, fractura a lo largo de planos de debilidad naturales.</p>
-          </div>
-          <div class="card" style="padding:16px 18px;">
-            <p class="card-h">Impacto</p>
-            <p>Fuerza súbita, propaga ondas de esfuerzo causando fractura generalizada.</p>
-          </div>
-          <div class="card" style="padding:16px 18px;">
-            <p class="card-h">Atrición</p>
-            <p>Frotamiento entre partículas o superficies, erosiona material superficial.</p>
-          </div>
-          <div class="card" style="padding:16px 18px;">
-            <p class="card-h">Corte</p>
-            <p>Fuerzas de cizalla, efectivo para materiales fibrosos.</p>
-          </div>
+        <p>La fractura ocurre cuando el esfuerzo aplicado excede la resistencia del material. El mecanismo específico —ilustrado a la izquierda— determina la distribución de tamaños del producto y la energía requerida.</p>
+        <div class="databar" style="margin:8px 0 4px;">
+          <span class="chip">Compresión</span>
+          <span class="chip chip--teal">Impacto</span>
+          <span class="chip chip--amber">Atrición</span>
+          <span class="chip">Corte</span>
         </div>
-        <p style="font-size:20px;color:var(--gris-2);margin-top:8px;">Cristales frágiles favorecen impacto; fibras requieren corte; materiales dúctiles resisten todos los mecanismos.</p>
+        <div class="callout verde" style="margin-top:18px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span>La clave de selección: los <b>cristales frágiles</b> favorecen el impacto, las <b>fibras</b> exigen corte, y los <b>materiales dúctiles</b> resisten todos los mecanismos.</span>
+        </div>
+        <div class="callout teal" style="margin-top:14px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2v20M2 12h20"/></svg>
+          <span>La mayoría de los equipos industriales combinan <b>dos o más mecanismos</b> a la vez: un molino de martillos impacta y atriciona; una trituradora de rodillos comprime y cizalla.</span>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- 05 · Teoría de Griffith — física de las grietas -->
-  <section class="s" data-screen-label="Teoria de Griffith">
-    <div class="split split--narrow">
-      <div class="img-panel">
-        <img src="assets/img/Teoria_Griffith.webp" alt="Infografía Teoría de Griffith — física de las grietas">
-        <p class="figcap">Griffith (1920): la resistencia real es 10–1000× menor que la teórica.</p>
-      </div>
+  <!-- 05 · Teoría de Griffith — infografía a sangre completa -->
+  <section class="s fullbleed" data-screen-label="Teoria de Griffith" data-nofoot>
+    <div class="fb-img">
+      <img src="assets/img/Teoria_Griffith.webp" alt="Infografía Teoría de Griffith: defectos naturales, amplificación del esfuerzo, propagación de grietas y criterio de fractura">
+    </div>
+  </section>
+
+  <!-- 06 · Griffith — el modelo matemático -->
+  <section class="s s--tint" data-screen-label="Griffith modelo">
+    <div class="kicker">El modelo matemático</div>
+    <h2>Griffith: amplificación y criterio de fractura</h2>
+    <div class="split" style="margin-top:18px; align-items:center;">
       <div class="copy">
-        <div class="kicker">La física de las grietas</div>
-        <h2>Teoría de Griffith (1920)</h2>
-        <p>Griffith reconoció que la resistencia real de los materiales es 10–1000× menor que la teórica, debido a defectos microscópicos.</p>
         <p style="font-weight:700;margin-bottom:6px;">Amplificación del esfuerzo en la punta de la grieta:</p>
         <div class="fml">$$\sigma_{\text{punta}} = \sigma_{\text{aplicado}} \times 2\sqrt{\dfrac{L}{r}}$$</div>
         <ul class="var-list">
           <li>$L$ = longitud de la grieta</li>
-          <li>$r$ = radio de punta</li>
+          <li>$r$ = radio de la punta</li>
         </ul>
-        <p style="font-weight:700;margin-bottom:6px;">Criterio de fractura:</p>
+        <p style="font-weight:700;margin:14px 0 6px;">Criterio de fractura:</p>
         <div class="fml">$$\sigma_{\text{fractura}} = \sqrt{\dfrac{2E\gamma}{\pi L}}$$</div>
         <ul class="var-list">
-          <li>$E$ = módulo elástico, $\gamma$ = energía superficial</li>
+          <li>$E$ = módulo elástico &nbsp;·&nbsp; $\gamma$ = energía superficial</li>
         </ul>
+      </div>
+      <div class="copy">
+        <div class="callout verde">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span>Una grieta más larga ($L\uparrow$) o más afilada ($r\downarrow$) dispara la concentración de esfuerzo: el material rompe muy por debajo de su resistencia teórica.</span>
+        </div>
+        <div class="callout teal" style="margin-top:14px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          <span>Consecuencia de ingeniería: <b>introducir grietas a propósito</b> (impacto previo, choque térmico, pretratamiento) reduce la energía de molienda posterior.</span>
+        </div>
       </div>
     </div>
   </section>
@@ -536,22 +569,23 @@ deck-stage section.active .lead-top { animation: fadeInUp .4s .1s ease both; }
 
   <!-- 09 · Ley de Bond -->
   <section class="s" data-screen-label="Ley de Bond">
-    <div class="split split--wideR">
-      <div class="img-panel">
-        <img src="assets/img/Coarse_Medium_Fine.webp" alt="Tres granulometrías: grueso, medio, fino">
-        <p class="figcap">Bond (1952): compromiso empírico, validado para &gt;90 % de aplicaciones industriales.</p>
+    <div class="kicker">Bond (1952) — el estándar industrial</div>
+    <h2>Ley de Bond</h2>
+    <p class="lead-top" style="max-width:1180px;">Compromiso entre Rittinger y Kick: la energía varía con $x^{-3/2}$. Es la correlación validada para más del <b>90 % de las aplicaciones industriales</b>, y la primera aproximación por defecto cuando no hay datos específicos del material.</p>
+    <div class="split" style="align-items:center; gap:48px; margin-top:8px;">
+      <div class="copy">
+        <div class="fml" style="font-size:30px;">$$E = W_i \times 10\left(\frac{1}{\sqrt{P_{80}}} - \frac{1}{\sqrt{F_{80}}}\right)\ \frac{\text{kWh}}{\text{ton}}$$</div>
+        <ul class="var-list" style="font-size:23px;">
+          <li>$W_i$ = Work Index de Bond (kWh/ton) — función de la dureza</li>
+          <li>$F_{80}\,/\,P_{80}$ = tamaño con 80 % pasante en alimentación / producto (µm)</li>
+        </ul>
       </div>
       <div class="copy">
-        <div class="kicker">Bond (1952) — el estándar industrial</div>
-        <h2>Ley de Bond</h2>
-        <p>Compromiso entre Rittinger y Kick. Energía varía con $x^{-3/2}$:</p>
-        <div class="fml">$$E = W_i \times 10\left(\frac{1}{\sqrt{P_{80}}} - \frac{1}{\sqrt{F_{80}}}\right)\ \frac{\text{kWh}}{\text{ton}}$$</div>
-        <ul class="var-list">
-          <li>$W_i$ = Work Index Bond (kWh/ton) — función de dureza</li>
-          <li>$F_{80}$/$P_{80}$ = tamaño 80 % pasante alimentación/producto (µm)</li>
-        </ul>
-        <p style="font-weight:700;">Ejemplo — caña 50 mm → 2 mm ($W_i = 15$):</p>
-        <div class="fml">$$E = 15 \times 10\!\left(\frac{1}{\sqrt{2000}} - \frac{1}{\sqrt{50000}}\right) = 2.91\ \text{kWh/ton}$$</div>
+        <div class="card card--verde" style="padding:26px 28px;">
+          <p class="card-h" style="font-size:22px;">Ejemplo — caña de azúcar 50 mm → 2 mm, con $W_i = 15$</p>
+          <div class="fml" style="background:#fff; font-size:26px; margin:14px 0 8px;">$$E = 15 \times 10\!\left(\frac{1}{\sqrt{2000}} - \frac{1}{\sqrt{50000}}\right)$$</div>
+          <p style="font-size:30px; font-weight:900; color:var(--verde-osc); margin:6px 0 0;">E = 2.91 kWh/ton</p>
+        </div>
       </div>
     </div>
   </section>
@@ -645,7 +679,7 @@ deck-stage section.active .lead-top { animation: fadeInUp .4s .1s ease both; }
         <p>Surfactantes (&lt;0.1 %) reducen energía 10–25 % previniendo re-aglomeración y sellado de grietas.</p>
       </div>
     </div>
-    <p style="font-size:19px;color:var(--gris-2);margin-top:16px;">Para su proceso: evalúe pre-tratamientos (vapor para fibras, enzimas para ablandamiento), optimice humedad experimentalmente, considere molienda en etapas con clasificación intermedia.</p>
+    <p style="font-size:22px;color:var(--gris-2);margin-top:16px;">Para su proceso: evalúe pre-tratamientos (vapor para fibras, enzimas para ablandamiento), optimice humedad experimentalmente, considere molienda en etapas con clasificación intermedia.</p>
   </section>
 
   <!-- Divisor Parte 3 -->
@@ -693,15 +727,15 @@ deck-stage section.active .lead-top { animation: fadeInUp .4s .1s ease both; }
         <div class="cards" style="grid-template-columns:1fr; gap:10px; margin-top:0;">
           <div class="card" style="padding:14px 18px; flex-direction:row; align-items:start; gap:12px;">
             <span class="card-n" style="font-size:22px;">Blake</span>
-            <p style="margin:0;font-size:20px;">Pivote arriba → producto uniforme. El más común.</p>
+            <p style="margin:0;font-size:22px;">Pivote arriba → producto uniforme. El más común.</p>
           </div>
           <div class="card" style="padding:14px 18px; flex-direction:row; align-items:start; gap:12px;">
             <span class="card-n" style="font-size:22px;">Dodge</span>
-            <p style="margin:0;font-size:20px;">Pivote abajo → mayor reducción pero menor capacidad.</p>
+            <p style="margin:0;font-size:22px;">Pivote abajo → mayor reducción pero menor capacidad.</p>
           </div>
           <div class="card" style="padding:14px 18px; flex-direction:row; align-items:start; gap:12px;">
             <span class="card-n" style="font-size:22px;">Universal</span>
-            <p style="margin:0;font-size:20px;">Pivote intermedio, compromiso entre ambos.</p>
+            <p style="margin:0;font-size:22px;">Pivote intermedio, compromiso entre ambos.</p>
           </div>
         </div>
         <div class="cards two" style="gap:12px; margin-top:14px;">
@@ -740,7 +774,7 @@ deck-stage section.active .lead-top { animation: fadeInUp .4s .1s ease both; }
             <p>Mayor costo capital, instalación compleja, no maneja materiales pegajosos.</p>
           </div>
         </div>
-        <p style="font-size:20px;color:var(--gris-2);margin-top:10px;">Aplicación limitada en agroindustria; más común en minería de gran escala.</p>
+        <p style="font-size:22px;color:var(--gris-2);margin-top:10px;">Aplicación limitada en agroindustria; más común en minería de gran escala.</p>
       </div>
     </div>
   </section>
@@ -934,12 +968,12 @@ deck-stage section.active .lead-top { animation: fadeInUp .4s .1s ease both; }
         <p>La clasificación por tamaños es inseparable de la molienda eficiente: determina calidad del producto y eficiencia energética.</p>
         <div class="cards" style="grid-template-columns:1fr; gap:10px; margin-top:14px;">
           <div class="card" style="flex-direction:row; align-items:start; gap:14px; padding:14px 18px;">
-            <span class="card-n" style="font-size:20px;">Seco</span>
-            <p style="margin:0;font-size:20px;"><b>Tamices vibratorios</b> (100 µm – 100 mm): circular, lineal o elíptico. <b>Clasificadores neumáticos</b> para &lt;100 µm: gravedad, centrífugos, impacto.</p>
+            <span class="card-n" style="font-size:22px;">Seco</span>
+            <p style="margin:0;font-size:22px;"><b>Tamices vibratorios</b> (100 µm – 100 mm): circular, lineal o elíptico. <b>Clasificadores neumáticos</b> para &lt;100 µm: gravedad, centrífugos, impacto.</p>
           </div>
           <div class="card" style="flex-direction:row; align-items:start; gap:14px; padding:14px 18px;">
-            <span class="card-n" style="font-size:20px;">Húmedo</span>
-            <p style="margin:0;font-size:20px;"><b>Hidrociclones</b> (10–500 µm): sin partes móviles, alta capacidad, corte preciso.</p>
+            <span class="card-n" style="font-size:22px;">Húmedo</span>
+            <p style="margin:0;font-size:22px;"><b>Hidrociclones</b> (10–500 µm): sin partes móviles, alta capacidad, corte preciso.</p>
           </div>
         </div>
       </div>
