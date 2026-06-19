@@ -415,10 +415,11 @@
       $$\frac{dL}{L} = -\frac{dx}{y^* - x}$$
       <p>Integrando desde el estado inicial \((L_0, x_0)\) al estado final \((L_W, x_W)\) con \(x_0 > x_W\):</p>
       $$\ln\!\left(\frac{L_0}{L_W}\right) = \int_{x_W}^{x_0} \frac{dx}{y^*(x) - x}$$
-      <p>Esta es la <b>ecuación de Rayleigh</b>. La integral se puede evaluar numéricamente (cuadratura) si se conoce la curva de equilibrio \(y^* = f(x)\), o analíticamente para el caso de mezcla ideal con volatilidad relativa constante \(\alpha\):</p>
-      $$y^* - x = \frac{(\alpha - 1)x(1-x)}{1 + (\alpha-1)x}$$
-      <p>Substituyendo y evaluando la integral:</p>
-      $$\ln\!\left(\frac{L_0}{L_W}\right) = \frac{1}{\alpha-1}\left[\ln\!\frac{x_0(1-x_W)}{x_W(1-x_0)} + \alpha\ln\!\frac{(1-x_W)}{(1-x_0)}\right]$$
+      <p>Esta es la <b>ecuación de Rayleigh</b>. La integral se puede evaluar numéricamente (cuadratura) si se conoce la curva de equilibrio \(y^* = f(x)\), o analíticamente para el caso de mezcla ideal con volatilidad relativa constante \(\alpha\). Con \(y^* = \dfrac{\alpha x}{1+(\alpha-1)x}\) se obtiene:</p>
+      $$y^* - x = \frac{(\alpha - 1)\,x\,(1-x)}{1 + (\alpha-1)x}$$
+      <p>El integrando \(\dfrac{1}{y^*-x}\) se descompone en fracciones parciales como \(\dfrac{1}{\alpha-1}\left(\dfrac{1}{x} + \dfrac{\alpha}{1-x}\right)\); integrando entre \(x_W\) y \(x_0\) resulta la forma cerrada:</p>
+      $$\ln\!\left(\frac{L_0}{L_W}\right) = \frac{1}{\alpha-1}\left[\ln\!\frac{x_0}{x_W} - \alpha\ln\!\frac{1-x_0}{1-x_W}\right]$$
+      <p>que de forma equivalente puede escribirse \(\ln\!\left(\dfrac{L_0}{L_W}\right) = \dfrac{1}{\alpha-1}\ln\!\left[\dfrac{x_0}{x_W}\left(\dfrac{1-x_W}{1-x_0}\right)^{\!\alpha}\right]\). Esta expresión analítica coincide exactamente con la cuadratura numérica que emplea la calculadora de abajo.</p>
 
       <h3 class="sub">Balance de componente para el destilado</h3>
       <p>La composición promedio del destilado acumulado \(\bar{y}\) se obtiene del balance global:</p>
@@ -460,7 +461,25 @@
             <div class="live-card-note">% del componente volátil en destilado</div>
           </div>
         </div>
-        <p class="calc-note">Requiere x<sub>W</sub> &lt; x₀. Usa integración numérica (cuadratura de Simpson) de la ecuación de Rayleigh con α constante.</p>
+        <p class="calc-note">Requiere x<sub>W</sub> &lt; x₀. Usa integración numérica (cuadratura de Simpson) de la ecuación de Rayleigh con α constante; el resultado coincide con la forma cerrada analítica de arriba.</p>
+      </div>
+
+      <div class="callout callout--tip">
+        <span class="ic">i</span>
+        <div>
+          <b>Ejemplo resuelto</b>
+          <p>Se cargan \(L_0 = 100\) mol de una mezcla con \(x_0 = 0{,}40\) (fracción molar del volátil) y \(\alpha = 2{,}3\). Se destila hasta dejar el caldero en \(x_W = 0{,}10\). Aplicando la forma cerrada:</p>
+          <p>\(\ln(L_0/L_W) = \frac{1}{1{,}3}\left[\ln\frac{0{,}40}{0{,}10} - 2{,}3\,\ln\frac{0{,}60}{0{,}90}\right] = \frac{1}{1{,}3}\left[1{,}386 - 2{,}3(-0{,}405)\right] \approx 1{,}784\).</p>
+          <p>Entonces \(L_W/L_0 = e^{-1{,}784} \approx 0{,}168\), es decir, queda el 16,8 % de la carga (16,8 mol) en el caldero y se destilan 83,2 mol. La composición promedio del destilado es \(\bar{y} = \frac{0{,}40 - 0{,}168\times 0{,}10}{1-0{,}168} \approx 0{,}461\), y la recuperación del volátil es \(\frac{83{,}2\times 0{,}461}{100\times 0{,}40}\approx 95{,}8\,\%\). Verifica estos valores moviendo los deslizadores de la calculadora a α = 2,30, x₀ = 0,40 y x<sub>W</sub> = 0,10.</p>
+        </div>
+      </div>
+
+      <div class="callout callout--warn">
+        <span class="ic">!</span>
+        <div>
+          <b>Alcance y supuestos de la ecuación de Rayleigh</b>
+          <p>La ecuación de Rayleigh describe la destilación <b>simple de una sola etapa de equilibrio</b> (alambique sin columna ni reflujo). Supone que en todo instante el vapor que sale está en equilibrio con el líquido del caldero, que la retención de vapor es despreciable y, en su forma cerrada, que \(\alpha\) es constante en todo el rango de composición. Para columnas con reflujo (sección 3) deja de aplicar: allí el destilado es mucho más rico que \(y^*\) del caldero y se requiere el análisis multietapa.</p>
+        </div>
       </div>
     </section>
 
@@ -469,7 +488,7 @@
       <div class="eyebrow">Mejora del proceso</div>
       <h2 class="sec"><span class="secnum">3.</span> Destilación rectificada por lotes</h2>
 
-      <p>La destilación simple por lotes entrega destilado de pureza moderada (limitada a la curva de equilibrio de una etapa). Para obtener purezas más altas — como el licor espirituoso de alta graduación — se usa una <b>columna de rectificación (batchcolumn)</b> colocada encima del caldero: un relleno o platos que permiten múltiples contactos vapor-líquido <em>durante el mismo lote</em>.</p>
+      <p>La destilación simple por lotes entrega destilado de pureza moderada (limitada a la curva de equilibrio de una etapa). Para obtener purezas más altas — como el licor espirituoso de alta graduación — se usa una <b>columna de rectificación (batch column)</b> colocada encima del caldero: un relleno o platos que permiten múltiples contactos vapor-líquido <em>durante el mismo lote</em>.</p>
 
       <h3 class="sub">Modos de operación</h3>
       <div class="tbl-wrap">
@@ -506,7 +525,7 @@
         <span class="ic">i</span>
         <div>
           <b>El alambique rectificador vs. el alambique simple</b>
-          <p>Un alambique simple (pot still sin columna) produce destilados de 20-30% ABV en una pasada. Necesitando varias destilaciones para alcanzar 60-70% ABV. Un alambique con columna de platos (columna de Coffey o columna de platos) puede producir en una sola pasada destilados de 90%+ ABV (alcohol de grano neutro). The Glenlivet usa el alambique simple de dos pasadas, que retiene más congéneres y define el carácter frutal del single malt.</p>
+          <p>Un alambique simple (pot still sin columna) produce destilados de 20-30 % ABV en una sola pasada, por lo que se necesitan varias destilaciones sucesivas para alcanzar 60-70 % ABV. Un alambique equipado con una columna de platos puede producir, en una sola pasada, destilados de 90 %+ ABV (alcohol de grano neutro); la <b>columna de Coffey (column still o patent still)</b> lleva esta idea al extremo operando de forma <em>continua</em>. The Glenlivet, en cambio, usa el alambique simple de dos pasadas, que retiene más congéneres y define el carácter frutal del single malt.</p>
         </div>
       </div>
 
@@ -514,7 +533,7 @@
       <p>Cuando el alambique se equipa con una columna de varias <b>etapas de equilibrio</b> (platos), la destilación por lotes se vuelve <em>multietapa</em>: el vapor que asciende se enriquece sucesivamente en cada plato gracias al contacto con el reflujo que desciende. El balance global del lote es:</p>
       $$F = W_{final} + D_{total} \qquad ; \qquad F\,x_F = W_{final}\,x_{W,final} + D_{total}\,\bar{x}_{D}$$
       <p>donde \(F\) es la carga inicial, \(W_{final}\) el residuo en el caldero, \(D_{total}\) el destilado total recolectado y \(\bar{x}_D\) su composición promedio. Cada plato se asume en equilibrio vapor-líquido (\(y = f(x)\)), y la línea de operación de la sección de rectificación tiene pendiente \(R/(R+1)\):</p>
-      $$y_n = \frac{R}{R+1}\,x_{n+1} + \left(1 - \frac{R}{R+1}\right)x_D \qquad ; \qquad R = \frac{L}{D}$$
+      $$y_n = \frac{R}{R+1}\,x_{n+1} + \frac{1}{R+1}\,x_D \qquad ; \qquad R = \frac{L}{D}$$
       <p>A diferencia de la destilación continua, en la destilación por lotes <b>el caldero se empobrece con el tiempo</b>: para mantener la pureza del destilado hay que aumentar progresivamente la razón de reflujo \(R\), o aceptar que la composición del destilado caiga a lo largo del lote (modos descritos arriba).</p>
 
       <div class="yt-wrap">
@@ -592,7 +611,7 @@
         <span class="ic">i</span>
         <div>
           <b>El rol del cobre en la destilación</b>
-          <p>Los alambiques de cobre no son solo una tradición estética. El cobre actúa como catalizador de la eliminación de compuestos de azufre (propanediol, sulfuro de hidrógeno, sulfuro de dimetilo) producidos durante la fermentación. Estos compuestos se «atrapan» en las paredes del alambique formando sulfato de cobre, depurando el licor y evitando notas desagradables (pirita, cerilla, goma). Destilerías que han reemplazado los alambiques de cobre por acero inoxidable han reportado cambios negativos en el perfil sensorial del producto.</p>
+          <p>Los alambiques de cobre no son solo una tradición estética. El cobre reacciona con los compuestos azufrados volátiles (sulfuro de hidrógeno, sulfuro de dimetilo, disulfuro de dimetilo) producidos durante la fermentación, fijándolos en las paredes del alambique como sulfuros de cobre insolubles. Así se depura el licor y se evitan notas desagradables (cerilla quemada, vegetal cocido, goma). Las destilerías que han reemplazado los alambiques de cobre por acero inoxidable han reportado cambios negativos en el perfil sensorial del producto, lo que confirma el papel químico —no solo histórico— del cobre.</p>
         </div>
       </div>
 
