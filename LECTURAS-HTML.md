@@ -152,10 +152,24 @@ En `components/data/classroom/pou-2026-20.ts`, dentro del array `readings`, agre
   tags: ['mezclado', 'escalado', '…'],
   category: 'lectura',                   // 'lectura' (clase) o 'guia' (proceso)
   href: '/classroom/iqya-2031-2026-20/lecturas/Lectura_07/Lectura_07_Mezclado.html',
+  bannerImg: '/classroom/iqya-2031-2026-20/lecturas-banners/l07.jpg', // foto B&W de la tarjeta
 }
 ```
 
 > **NO** se toca `readingsRegistry.ts`. **NO** se crea ningún `.tsx`. El `href` es lo único que conecta la tarjeta del índice con el documento.
+
+### Banner de la tarjeta (`bannerImg`)
+
+El índice de Material del curso (`ReadingsIndexPage.tsx`) muestra cada entrada como una tarjeta horizontal con **foto a la izquierda** y el número de la lectura como marca de agua. La foto se declara con `bannerImg` y vive en:
+
+- **Lecturas:** `public/classroom/{courseSlug}/lecturas-banners/lNN.jpg`
+- **Guías:** `public/classroom/{courseSlug}/guias-banners/{nombre}.jpg`
+
+Reglas para las imágenes (igual que los banners de curso):
+
+- **Blanco y negro** y **800px de ancho** máx. — convertir con `sips`/Pillow a escala de grises, calidad JPEG ~75, peso objetivo < 100 KB.
+- Una imagen representativa del tema (el equipo o fenómeno de la operación unitaria).
+- `bannerImg` es **opcional**: si se omite, la tarjeta cae al estilo plano (sin foto). No dejar lecturas a medias — todas las del curso deberían tener su banner.
 
 ---
 
@@ -174,6 +188,7 @@ En `components/data/classroom/pou-2026-20.ts`, dentro del array `readings`, agre
 10. [ ] Adaptar/duplicar los IIFE de JS (galería, calculadora) con los datos de esta lectura.
 11. [ ] Verificar TODOS los acentos.
 12. [ ] Agregar la entrada en `pou-2026-20.ts` con `href` (sin tocar el registry ni crear `.tsx`).
+12b. [ ] Procesar la foto del banner (B&W, 800px, < 100 KB) en `lecturas-banners/lNN.jpg` y declararla con `bannerImg`.
 13. [ ] **Chequeo de divergencia (bloqueante):** confirmar que la lectura nueva NO introduce clases/estilos que ninguna otra lectura del curso tenga. Si aparece algo propio, se desvió del shell → volver al Paso 0. Ejemplo:
     ```bash
     # No debe haber NINGUNA coincidencia de patrones ajenos al shell canónico:

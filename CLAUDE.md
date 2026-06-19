@@ -69,10 +69,15 @@ interface Reading {
   readingMinutes?: number;
   tags?: string[];
   category?: 'guia' | 'lectura'; // si se omite se asume 'guia'
+  order?: number;                // posición dentro de su categoría
+  href?: string;                 // si se define, abre el HTML autocontenido en pestaña nueva
+  bannerImg?: string;            // foto B&W de la tarjeta del índice (ver abajo)
 }
 ```
 
-En `ReadingsIndexPage.tsx` las entradas se separan en dos secciones automáticamente según `category`.
+En `ReadingsIndexPage.tsx` las entradas se separan en dos secciones automáticamente según `category`. Cada tarjeta se muestra con **foto a la izquierda** (`bannerImg`) y el número de la entrada como marca de agua; si `bannerImg` se omite, la tarjeta cae al estilo plano sin foto.
+
+**Banners de las tarjetas (`bannerImg`):** imágenes representativas del tema, en **blanco y negro** y **800px de ancho** (peso objetivo < 100 KB). Viven en `public/classroom/{slug}/lecturas-banners/lNN.jpg` (lecturas) y `public/classroom/{slug}/guias-banners/{nombre}.jpg` (guías). Mismo criterio que los banners de curso. Ver [LECTURAS-HTML.md](LECTURAS-HTML.md) sección "Banner de la tarjeta".
 
 ### Cómo crear contenido para un curso
 
@@ -96,6 +101,7 @@ Para crear o editar contenido del Classroom, lee la guía correspondiente:
    - `banner.jpg` — Imagen B&W del curso (1920px ancho, grayscale con `sips`)
    - `slides/` — Directorio para presentaciones
    - `slides/img/` — Imágenes de las presentaciones
+   - `lecturas-banners/` y `guias-banners/` — Fotos B&W (800px, < 100 KB) de las tarjetas del índice (`bannerImg`)
 
 3. **Crear el programa del curso** (syllabus) siguiendo [PROGRAMA.md](PROGRAMA.md):
    - HTML autocontenido en `public/classroom/{slug}/programa.html`, copiando el de un curso existente y cambiando el acento en `:root`
@@ -105,6 +111,7 @@ Para crear o editar contenido del Classroom, lee la guía correspondiente:
    - Documento HTML autocontenido en `public/classroom/{slug}/lecturas/Lectura_NN/`, partiendo de copiar la lectura anterior
    - Copiar `assets/deloitte.css` a la carpeta de la lectura
    - Agregar metadata al array `readings` del curso **con el campo `href`** (abre en pestaña nueva). NO se crea `.tsx` ni se toca `readingsRegistry.ts`
+   - Procesar la foto del banner (B&W, 800px) en `lecturas-banners/lNN.jpg` y declararla con `bannerImg`
 
 5. **Crear presentaciones** siguiendo [PRESENTATIONS.md](PRESENTATIONS.md):
    - Archivos HTML en `public/classroom/{slug}/slides/`

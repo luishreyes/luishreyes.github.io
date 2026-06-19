@@ -33,6 +33,7 @@ readings: [
     tags: ['programa', 'syllabus', 'logística'],
     category: 'guia',
     href: '/classroom/{slug}/programa.html',
+    bannerImg: '/classroom/{slug}/guias-banners/programa.jpg', // foto B&W de la tarjeta
   },
   // … resto de guías y lecturas
 ],
