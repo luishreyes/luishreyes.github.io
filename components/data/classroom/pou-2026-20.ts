@@ -692,5 +692,13 @@ export const pou202620Course: Course = {
       sessionNumber: 2,
       file: 'PID_Instrumentacion/Presentacion_Diagramas_PID.html',
     },
+    {
+      id: 'propiedades-solidos-particulados',
+      title: 'Propiedades de sólidos particulados',
+      description:
+        'Densidad, porosidad, tamaño y forma, flujo, cohesión, segregación, propiedades térmicas, explosividad de polvos y aplicaciones a molienda, tolvas, transporte y mezclado.',
+      sessionNumber: 5,
+      file: 'Propiedades_Solidos_Particulados/Presentacion_Propiedades_Solidos_Particulados.html',
+    },
   ],
 };

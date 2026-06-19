@@ -1,0 +1,1361 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Propiedades de sólidos particulados · Proyecto de Operaciones Unitarias (IQYA-2031)</title>
+<link rel="stylesheet" href="assets/deloitte.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}], throwOnError: false});"></script>
+<style>
+  html, body { margin: 0; height: 100%; background: #000; }
+  deck-stage:not(:defined) { visibility: hidden; }
+
+  /* ====== Lienzo base de la diapositiva (1920×1080) ====== */
+  .s {
+    font-family: var(--tipo);
+    color: var(--gris-1);
+    background: var(--blanco);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 90px 120px 96px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .s * { box-sizing: border-box; }
+
+  .kicker {
+    display: inline-flex; align-items: center; gap: 14px;
+    font-size: 24px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--verde-osc); margin: 0 0 26px;
+  }
+  .kicker::before { content: ""; width: 46px; height: 5px; background: var(--verde); border-radius: 3px; }
+  .s--dark .kicker { color: var(--verde); }
+
+  h1.s-title { font-size: 92px; line-height: 1.02; font-weight: 700; margin: 0; letter-spacing: -.015em; }
+  h2.s-head  { font-size: 58px; line-height: 1.06; font-weight: 700; margin: 0 0 14px; letter-spacing: -.01em; }
+  .s-lead { font-size: 32px; line-height: 1.45; color: var(--gris-2); max-width: 40ch; font-weight: 400; }
+  .s p { font-size: 30px; line-height: 1.5; }
+
+  .s-foot {
+    position: absolute; left: 120px; right: 120px; bottom: 44px;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 19px; color: var(--gris-3); letter-spacing: .02em;
+  }
+  .s-foot .tag { display: inline-flex; align-items: center; gap: 12px; }
+  .s-foot .tag::before { content: ""; width: 24px; height: 3px; background: var(--gris-4); }
+  .s-foot .num { font-weight: 700; color: var(--gris-2); }
+  .s--dark .s-foot { color: rgba(255,255,255,.45); }
+  .s--dark .s-foot .num { color: rgba(255,255,255,.8); }
+  .s--dark .s-foot .tag::before { background: rgba(255,255,255,.3); }
+
+  /* ====== Variantes de fondo ====== */
+  .s--dark { background: #111; color: #fff; }
+  .s--dark h1.s-title, .s--dark h2.s-head { color: #fff; }
+  .s--tint { background: var(--papel); }
+
+  /* ====== Portada ====== */
+  .cover { justify-content: space-between; position: relative; overflow: hidden; }
+  .cover-top { display: flex; justify-content: space-between; align-items: flex-start; }
+  .cover-org { font-size: 26px; font-weight: 700; letter-spacing: .04em; color: var(--gris-1); }
+  .cover-org span { color: var(--gris-3); font-weight: 600; display: block; font-size: 21px; letter-spacing: .12em; text-transform: uppercase; margin-top: 6px; }
+  .cover-bar { width: 120px; height: 12px; background: var(--verde); border-radius: 4px; }
+  .cover .course { font-size: 26px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--verde-osc); margin: 0 0 22px; }
+  .cover h1 { font-size: 116px; line-height: .96; letter-spacing: -.02em; max-width: 16ch; }
+  .cover .session { font-size: 36px; color: var(--gris-2); margin: 30px 0 0; font-weight: 600; max-width: 30ch; }
+  .cover-meta { display: flex; gap: 56px; margin-top: 10px; position: relative; z-index: 2; }
+  .cover-meta div { font-size: 24px; color: var(--gris-2); }
+  .cover-meta b { display: block; color: var(--gris-1); font-size: 26px; font-weight: 700; margin-bottom: 4px; }
+  .cover .wm { position: absolute; right: -60px; top: 0; height: 100%; width: 760px; object-fit: cover; opacity: .16; pointer-events: none; z-index: 0; mix-blend-mode: multiply; }
+
+  /* ====== Agenda ====== */
+  .agenda-list { list-style: none; padding: 0; margin: 22px 0 0; display: grid; grid-template-columns: 1fr 1fr; gap: 16px 60px; max-width: 1560px; }
+  .agenda-list li { display: flex; align-items: baseline; gap: 28px; padding-bottom: 14px; border-bottom: 2px solid var(--gris-5); }
+  .agenda-list .n { font-size: 28px; font-weight: 700; color: var(--verde-osc); min-width: 48px; }
+  .agenda-list .t { display: flex; flex-direction: column; gap: 3px; }
+  .agenda-list .t b { font-size: 30px; font-weight: 700; color: var(--gris-1); }
+  .agenda-list .t span { font-size: 22px; color: var(--gris-2); line-height: 1.3; }
+  .agenda-note { margin-top: 26px; display: inline-flex; align-items: flex-start; gap: 16px; background: var(--verde-claro); border-left: 6px solid var(--verde); padding: 20px 28px; border-radius: 4px; max-width: 1300px; }
+  .agenda-note p { font-size: 24px; margin: 0; color: var(--gris-1); line-height: 1.4; }
+  .agenda-note b { color: var(--verde-osc); }
+
+  /* ====== Tarjetas ====== */
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 34px; margin-top: 38px; }
+  .cards.two { grid-template-columns: repeat(2, 1fr); }
+  .cards.four { grid-template-columns: repeat(2, 1fr); }
+  .card {
+    background: var(--blanco); border: 2px solid var(--gris-5);
+    border-top: 7px solid var(--verde); border-radius: var(--radio);
+    padding: 32px 30px; display: flex; flex-direction: column; gap: 12px;
+  }
+  .card .card-n { font-size: 24px; font-weight: 700; color: var(--verde-osc); }
+  .card h3 { font-size: 32px; line-height: 1.12; margin: 0; font-weight: 700; }
+  .card p { font-size: 24px; line-height: 1.42; color: var(--gris-2); margin: 0; }
+  .card ul { margin: 4px 0 0; padding-left: 1.1em; font-size: 23px; color: var(--gris-2); line-height: 1.4; }
+  .card li { margin-bottom: 6px; }
+  .card li::marker { color: var(--verde); }
+  .card--teal { border-top-color: var(--teal); }
+  .card--teal .card-n { color: var(--teal); }
+  .card--amber { border-top-color: var(--ambar); }
+  .card--amber .card-n { color: var(--ambar); }
+
+  /* ====== Mitad y mitad ====== */
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 70px; align-items: center; flex: 1; }
+  .split--wideR { grid-template-columns: 0.82fr 1.18fr; }
+  .split--wideL { grid-template-columns: 1.18fr 0.82fr; }
+  .split .copy h2 { font-size: 50px; line-height: 1.08; margin: 0 0 22px; }
+  .split .copy p { font-size: 28px; color: var(--gris-2); line-height: 1.5; }
+  .split .copy ul { font-size: 26px; color: var(--gris-1); line-height: 1.45; padding-left: 1.1em; margin: 16px 0 0; }
+  .split .copy li { margin-bottom: 11px; }
+  .split .copy li::marker { color: var(--verde); }
+  .split .copy li b { color: var(--gris-1); }
+
+  /* ====== Paneles de imagen ====== */
+  .img-panel { background: var(--blanco); border: 2px solid var(--gris-5); border-radius: var(--radio); padding: 22px; box-shadow: var(--sombra); }
+  .img-panel img { width: 100%; height: auto; display: block; border-radius: 3px; }
+  .img-panel .figcap { font-size: 22px; color: var(--gris-3); margin: 14px 4px 0; line-height: 1.35; }
+
+  .figbox { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; margin-top: 14px; }
+  .figbox img { max-width: 100%; max-height: 700px; width: auto; height: auto; object-fit: contain; border: 2px solid var(--gris-5); border-radius: var(--radio); box-shadow: var(--sombra); background: #fff; }
+  .figbox .figcap { font-size: 22px; color: var(--gris-2); text-align: center; max-width: 70ch; line-height: 1.4; }
+
+  /* ====== Diagrama anotado (pines + leyenda) ====== */
+  .annot { position: relative; align-self: center; }
+  .annot img { width: 100%; height: auto; display: block; border: 2px solid var(--gris-5); border-radius: var(--radio); box-shadow: var(--sombra); background: #fff; }
+  .annot .pin { position: absolute; transform: translate(-50%, -50%); width: 50px; height: 50px; border-radius: 50%; background: var(--verde); color: #fff; font-weight: 700; font-size: 26px; display: flex; align-items: center; justify-content: center; border: 4px solid #fff; box-shadow: 0 3px 10px rgba(0,0,0,.35); }
+  .leglist { list-style: none; padding: 0; margin: 22px 0 0; display: flex; flex-direction: column; gap: 16px; }
+  .leglist li { display: grid; grid-template-columns: auto 1fr; gap: 20px; align-items: start; }
+  .leglist .ln { width: 46px; height: 46px; border-radius: 50%; background: var(--verde); color: #fff; font-weight: 700; font-size: 24px; display: flex; align-items: center; justify-content: center; }
+  .leglist b { font-size: 27px; display: block; color: var(--gris-1); margin-bottom: 3px; }
+  .leglist .tx { font-size: 22px; color: var(--gris-2); line-height: 1.38; display: block; }
+
+  /* ====== Lista en dos columnas ====== */
+  .collist { display: grid; grid-template-columns: 1fr 1fr; gap: 22px 60px; margin-top: 30px; }
+  .collist .it { display: grid; grid-template-columns: auto 1fr; gap: 18px; align-items: start; }
+  .collist .it .ic { width: 15px; height: 15px; background: var(--verde); border-radius: 3px; margin-top: 9px; }
+  .collist .it.warn .ic { background: var(--ambar); }
+  .collist .it b { font-size: 27px; display: block; margin-bottom: 5px; color: var(--gris-1); }
+  .collist .it span { font-size: 23px; color: var(--gris-2); line-height: 1.4; }
+
+  /* ====== Callout ====== */
+  .callout { background: var(--papel); border-radius: var(--radio); padding: 34px 40px; border-left: 8px solid var(--teal); }
+  .callout.verde { border-left-color: var(--verde); }
+  .callout h4 { font-size: 26px; margin: 0 0 16px; color: var(--gris-1); letter-spacing: .02em; }
+  .callout p { font-size: 26px; color: var(--gris-2); line-height: 1.45; margin: 0 0 10px; }
+  .callout .eq { font-size: 25px; color: var(--gris-1); background: #fff; border: 1px solid var(--gris-5); border-radius: 4px; padding: 14px 20px; margin-bottom: 14px; font-weight: 600; line-height: 1.4; }
+  .callout .eq small { display: block; font-size: 19px; color: var(--gris-2); font-weight: 400; margin-top: 6px; }
+
+  /* ====== Pasos ====== */
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; margin-top: 34px; }
+  .steps.five { grid-template-columns: repeat(5, 1fr); }
+  .steps.four { grid-template-columns: repeat(4, 1fr); }
+  .step { padding: 0 30px; border-left: 3px solid var(--gris-5); }
+  .step:first-child { padding-left: 0; border-left: none; }
+  .steps.five .step { padding: 0 22px; }
+  .step .st-n { display: inline-flex; align-items: center; justify-content: center; width: 60px; height: 60px; border-radius: 50%; background: var(--verde); color: #fff; font-size: 28px; font-weight: 700; margin-bottom: 18px; }
+  .step h3 { font-size: 28px; margin: 0 0 11px; line-height: 1.14; }
+  .step p { font-size: 23px; color: var(--gris-2); line-height: 1.4; margin: 0; }
+
+  /* ====== Stat callout ====== */
+  .stat-wrap { display: grid; grid-template-columns: auto 1fr; gap: 80px; align-items: center; flex: 1; }
+  .stat-num { font-size: 300px; font-weight: 900; line-height: .82; color: var(--verde); letter-spacing: -.03em; }
+  .stat-num small { font-size: 84px; font-weight: 700; color: var(--gris-1); }
+  .stat-side h2 { font-size: 50px; line-height: 1.1; margin: 0 0 20px; }
+  .stat-side p { font-size: 28px; color: var(--gris-2); line-height: 1.5; max-width: 32ch; }
+
+  /* ====== Divisor ====== */
+  .divider { justify-content: center; }
+  .divider .part { font-size: 26px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--verde); margin-bottom: 28px; }
+  .divider h2 { font-size: 86px; line-height: 1.04; max-width: 22ch; letter-spacing: -.015em; }
+  .divider .sub { font-size: 30px; color: rgba(255,255,255,.7); margin-top: 30px; max-width: 46ch; line-height: 1.5; }
+  .divider .dctx { margin-top: 46px; display: inline-flex; gap: 16px; align-items: center; font-size: 24px; color: rgba(255,255,255,.85); border-top: 2px solid rgba(255,255,255,.18); padding-top: 26px; }
+  .divider .dctx b { color: var(--verde); font-size: 34px; }
+
+  /* ====== Cierre ====== */
+  .close { justify-content: center; }
+  .close h2 { font-size: 70px; line-height: 1.08; max-width: 26ch; letter-spacing: -.015em; }
+  .close .next { margin-top: 50px; display: inline-flex; gap: 18px; align-items: center; font-size: 28px; color: rgba(255,255,255,.85); }
+  .close .next .pill { background: var(--verde); color: #fff; font-weight: 700; padding: 8px 20px; border-radius: 999px; font-size: 24px; }
+
+  .lead-top { font-size: 30px; color: var(--gris-2); line-height: 1.45; max-width: 96ch; margin: 0 0 6px; }
+  .foot-note { margin-top: 28px; font-size: 25px; color: var(--gris-3); line-height: 1.4; max-width: 100ch; }
+  .foot-note b { color: var(--verde-osc); }
+
+  /* ====== Fórmulas (KaTeX) ====== */
+  .fml { background: #fff; border: 1px solid var(--gris-5); border-radius: 4px; padding: 16px 22px; margin: 16px 0 4px; text-align: center; }
+  .card .fml, .callout .fml { margin: 12px 0 4px; }
+  .fml .katex { color: var(--gris-1); }
+  .katex { font-size: 1.04em; }
+  .katex-display { margin: .2em 0; }
+  .fml .katex-display > .katex { font-size: 1.18em; }
+  .card .fml .katex-display > .katex { font-size: 1.05em; }
+  .inl .katex { font-size: 1em; }
+
+  /* ====== Forma de partícula (grid de 4 microfotografías) ====== */
+  .shape-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; margin-top: 34px; }
+  .shape { display: flex; flex-direction: column; gap: 10px; }
+  .shape .ph { background: #fff; border: 2px solid var(--gris-5); border-radius: var(--radio); padding: 10px; box-shadow: var(--sombra); }
+  .shape .ph img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 3px; display: block; }
+  .shape b { font-size: 30px; color: var(--gris-1); }
+  .shape .phi { color: var(--verde-osc); font-weight: 700; font-size: 24px; }
+  .shape span { font-size: 21px; color: var(--gris-2); line-height: 1.32; }
+
+  /* ====== Videos ====== */
+  .vid-grid { display: flex; gap: 56px; align-items: center; justify-content: center; flex: 1; margin-top: 8px; }
+  .vid-16 { width: 1040px; max-width: 58%; aspect-ratio: 16/9; border-radius: 8px; overflow: hidden; box-shadow: var(--sombra); background: #000; }
+  .vid-9 { width: 348px; aspect-ratio: 9/16; border-radius: 8px; overflow: hidden; box-shadow: var(--sombra); background: #000; }
+  .vid-grid iframe { width: 100%; height: 100%; border: 0; display: block; }
+  .vid-cap { font-size: 22px; color: var(--gris-2); text-align: center; margin: 4px auto 0; max-width: 90ch; line-height: 1.4; }
+  .vid-cap b { color: var(--verde-osc); }
+
+  /* ====== Datos en fila (densidad bulk, etc.) ====== */
+  .databar { display: flex; gap: 18px; flex-wrap: wrap; margin: 18px 0 4px; }
+  .databar .chip { background: var(--verde-claro); border: 1.5px solid var(--verde); border-radius: 999px; padding: 10px 22px; font-size: 24px; font-weight: 600; color: var(--verde-osc); }
+  .bigstat { font-size: 30px; color: var(--gris-1); font-weight: 700; margin: 14px 0 0; }
+  .bigstat b { color: var(--verde-osc); }
+
+  /* ====== Ampliar imágenes (lightbox) ====== */
+  .img-panel img, .annot img, .figbox img, .shape .ph img { cursor: zoom-in; }
+  .annot .pin { pointer-events: none; }
+  .zoom-badge {
+    position: absolute; top: 30px; right: 30px; width: 44px; height: 44px;
+    border-radius: 9px; background: rgba(17,17,17,.6); color: #fff;
+    display: flex; align-items: center; justify-content: center; font-size: 23px;
+    cursor: zoom-in; opacity: 0; transition: opacity .15s ease; z-index: 4;
+  }
+  .annot .zoom-badge { top: 16px; right: 16px; }
+  .img-panel:hover .zoom-badge, .annot:hover .zoom-badge, .figbox:hover .zoom-badge, .shape .ph:hover .zoom-badge { opacity: 1; }
+
+  .lightbox {
+    position: fixed; inset: 0; background: rgba(0,0,0,.9);
+    display: none; align-items: center; justify-content: center;
+    z-index: 99999; cursor: zoom-out; padding: 3vmin;
+  }
+  .lightbox.is-open { display: flex; }
+  .lightbox .lb-content { display: flex; align-items: center; justify-content: center; }
+  .lightbox img { max-width: 94vw; max-height: 94vh; width: auto; height: auto; object-fit: contain; border-radius: 6px; box-shadow: 0 24px 90px rgba(0,0,0,.6); background: #fff; }
+  .lightbox .lb-annot { position: relative; }
+  .lightbox .lb-annot img { display: block; width: 100%; max-width: none; max-height: none; border-radius: 6px; }
+  .lightbox .lb-annot .pin { box-shadow: 0 3px 10px rgba(0,0,0,.45); }
+  .lightbox .lb-close {
+    position: fixed; top: 26px; right: 32px; width: 58px; height: 58px;
+    border-radius: 50%; background: rgba(255,255,255,.16); color: #fff;
+    border: none; font-size: 28px; cursor: pointer; display: flex;
+    align-items: center; justify-content: center; transition: background .15s ease;
+  }
+  .lightbox .lb-close:hover { background: rgba(255,255,255,.3); }
+  @media print { .zoom-badge, .lightbox { display: none !important; } }
+</style>
+</head>
+<body>
+
+<deck-stage width="1920" height="1080">
+
+  <!-- 01 · Portada -->
+  <section class="s cover" data-screen-label="Portada" data-nofoot>
+    <img class="wm" src="assets/img/Portada_Solidos_Particulados.webp" alt="">
+    <div class="cover-top">
+      <div class="cover-org">Universidad de los Andes<span>Ingeniería Química y de Alimentos</span></div>
+      <div class="cover-bar"></div>
+    </div>
+    <div>
+      <div class="course">IQYA-2031 · Proyecto de Operaciones Unitarias</div>
+      <h1 class="s-title">Propiedades de sólidos particulados</h1>
+      <p class="session">El polvo no es un líquido: por qué caracterizar antes de diseñar tolvas, molinos y silos</p>
+    </div>
+    <div class="cover-meta">
+      <div><b>Profesor</b>Luis H. Reyes</div>
+      <div><b>Asignatura</b>Proyecto de Operaciones Unitarias</div>
+      <div><b>Código</b>IQYA-2031</div>
+      <div><b>Proyecto</b>Producción de alcohol a partir de caña</div>
+    </div>
+  </section>
+
+  <!-- 02 · Agenda -->
+  <section class="s" data-screen-label="Agenda">
+    <div class="kicker">Agenda de la sesión</div>
+    <h2 class="s-head">De la partícula a la planta</h2>
+    <ul class="agenda-list">
+      <li><span class="n">01</span><span class="t"><b>Caracterización física</b><span>Densidad, porosidad y los volúmenes que confundimos.</span></span></li>
+      <li><span class="n">02</span><span class="t"><b>Tamaño y forma</b><span>Diámetros equivalentes, distribución, tamizado y láser.</span></span></li>
+      <li><span class="n">03</span><span class="t"><b>Comportamiento de flujo</b><span>Cohesión, ángulo de reposo, humedad y segregación.</span></span></li>
+      <li><span class="n">04</span><span class="t"><b>Propiedades mecánicas y térmicas</b><span>Dureza, friabilidad, conductividad e higroscopicidad.</span></span></li>
+      <li><span class="n">05</span><span class="t"><b>Seguridad: explosividad de polvos</b><span>El pentágono de explosión y la clase Kst.</span></span></li>
+      <li><span class="n">06</span><span class="t"><b>Aplicaciones al proceso</b><span>Molienda, tolvas, transporte y mezclado.</span></span></li>
+    </ul>
+    <div class="agenda-note"><p>Cada propiedad que veremos hoy alimenta una decisión concreta de su <b>proyecto de alcohol a partir de caña</b>: diseño de tolvas, potencia de molinos, eficiencia de filtración y manejo de bagazo.</p></div>
+  </section>
+
+  <!-- 03 · ¿Por qué importan? -->
+  <section class="s" data-screen-label="Por que importan">
+    <div class="split split--wideR">
+      <div class="copy">
+        <div class="kicker">El polvo engaña</div>
+        <h2>¿Por qué importan las propiedades de sólidos?</h2>
+        <p>Son determinantes críticos del diseño industrial; pequeñas diferencias cambian por completo el comportamiento del material.</p>
+        <ul>
+          <li>Un cambio de <b>2 % en humedad</b> puede convertir un polvo de flujo libre en masa cohesiva.</li>
+          <li>Una distribución de tamaño mal caracterizada resulta en <b>segregación</b> del producto.</li>
+          <li>El <b>colapso de silos</b> es uno de los accidentes más importantes con material particulado, y muchos son prevenibles.</li>
+        </ul>
+      </div>
+      <div class="img-panel">
+        <img src="assets/img/Colapso_Silo.webp" alt="Ilustración del colapso de un silo de almacenamiento">
+        <p class="figcap">En su proyecto de producción de alcohol, estas propiedades determinarán el diseño de tolvas, la potencia de los molinos, la eficiencia de filtración y la calidad de la fermentación.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 · Divisor Parte 1 -->
+  <section class="s s--dark divider" data-screen-label="Divisor Caracterizacion" data-nofoot>
+    <div>
+      <div class="part">Parte 1</div>
+      <h2>Caracterización física</h2>
+      <p class="sub">Densidad y porosidad: tres densidades distintas que medimos con tres volúmenes distintos, y que casi todos confunden.</p>
+      <div class="dctx"><b>3</b><span>densidades diferentes para el mismo material, cada una para un cálculo distinto</span></div>
+    </div>
+  </section>
+
+  <!-- 05 · Densidad -->
+  <section class="s" data-screen-label="Densidad">
+    <div class="kicker">Mismo material, tres volúmenes</div>
+    <h2 class="s-head">Densidad: verdadera, aparente y bulk</h2>
+    <div class="cards">
+      <div class="card">
+        <span class="card-n">Densidad verdadera ($\rho_t$)</span>
+        <h3>Solo material sólido</h3>
+        <p>Densidad del material sólido puro, excluyendo absolutamente todos los poros. Se mide por picnometría con helio, que penetra hasta los poros nanométricos.</p>
+        <div class="fml">$$\rho_t = \dfrac{m_{\text{sólido}}}{V_{\text{sólido (sin poros)}}}$$</div>
+        <p>Para azúcar cristalina: $\rho_t \approx 1{,}587\ \text{kg/m}^3$.</p>
+      </div>
+      <div class="card card--teal">
+        <span class="card-n">Densidad aparente ($\rho_p$)</span>
+        <h3>Material + poros internos</h3>
+        <p>Incluye los poros cerrados internos pero excluye los espacios entre partículas. Relevante para cálculos de sedimentación.</p>
+        <div class="fml">$$\rho_p = \dfrac{m_{\text{partícula}}}{V_{\text{partícula con poros}}}$$</div>
+        <p>Para un grano de caña: $\rho_p \approx 1{,}200\ \text{kg/m}^3$.</p>
+      </div>
+      <div class="card card--amber">
+        <span class="card-n">Densidad bulk ($\rho_b$)</span>
+        <h3>Todos los vacíos</h3>
+        <p>Material + poros + espacios entre partículas. Es la densidad crítica para dimensionar tolvas, silos y equipos.</p>
+        <div class="fml">$$\rho_b = \dfrac{m_{\text{total}}}{V_{\text{total ocupado}}}$$</div>
+        <p>Para caña molida suelta: $\rho_b \approx 150\ \text{kg/m}^3$.</p>
+      </div>
+    </div>
+    <p class="foot-note">Cada densidad se utiliza para cálculos específicos en el diseño de procesos industriales: <b>elegir la equivocada puede multiplicar por diez el error de volumen.</b></p>
+  </section>
+
+  <!-- 06 · Densidad bulk: estados -->
+  <section class="s" data-screen-label="Densidad bulk estados">
+    <div class="split split--wideL">
+      <div class="copy">
+        <div class="kicker">La más práctica, la más variable</div>
+        <h2>Densidad bulk: dos estados críticos</h2>
+        <p>La densidad bulk ($\rho_b$) es la propiedad más práctica pero más variable de los sólidos. Define cuánto material cabe en un silo, tolva o contenedor.</p>
+        <div class="cards two" style="margin-top:30px;">
+          <div class="card"><span class="card-n">Suelta</span><h3>Poured density</h3><p>Cuando el material se vierte suavemente, sin compactar.</p></div>
+          <div class="card card--teal"><span class="card-n">Compactada</span><h3>Tapped density</h3><p>Después de vibración estandarizada que reacomoda las partículas.</p></div>
+        </div>
+      </div>
+      <div class="img-panel">
+        <img src="assets/img/Tester_Densidad_Bulk.webp" alt="Equipo de medición de densidad bulk con cilindros graduados">
+        <p class="figcap">Probador automático de densidad aparente: golpea el cilindro graduado un número normalizado de veces para medir la densidad compactada.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 07 · Densidad bulk: factores -->
+  <section class="s" data-screen-label="Densidad bulk factores">
+    <div class="split split--wideL">
+      <div class="copy">
+        <div class="kicker">El mismo polvo, dos volúmenes</div>
+        <h2>Hasta 60 % más material en el mismo volumen</h2>
+        <div class="databar">
+          <span class="chip">Harina suelta: $\rho_b \approx 450\ \text{kg/m}^3$</span>
+          <span class="chip">Harina compactada: $\rho_b \approx 720\ \text{kg/m}^3$</span>
+        </div>
+        <p class="bigstat">Para harina de trigo eso es <b>+60 % de masa</b> en el mismo volumen.</p>
+        <p style="margin-top:18px;font-weight:700;color:var(--gris-1);">Factores que afectan $\rho_b$:</p>
+        <ul>
+          <li><b>Distribución de tamaños:</b> los finos llenan los huecos entre gruesos.</li>
+          <li><b>Forma de partícula.</b></li>
+          <li><b>Humedad:</b> aumenta la cohesión.</li>
+          <li><b>Historia de manejo:</b> vibración y compresión durante el transporte.</li>
+        </ul>
+      </div>
+      <div class="img-panel">
+        <img src="assets/img/Tester_Densidad_Bulk.webp" alt="Equipo de medición de densidad bulk con cilindros graduados">
+        <p class="figcap">La diferencia suelta/compactada es la base de los índices de Carr y Hausner que veremos en flujo.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 08 · Porosidad -->
+  <section class="s" data-screen-label="Porosidad">
+    <div class="split split--wideR">
+      <div class="img-panel">
+        <img src="assets/img/MicroCT_Porosidad.webp" alt="Microtomografía de partículas porosas (a, b, c, d)">
+        <p class="figcap">Micro-CT de partículas: los poros internos (claros) cambian densidad, transporte de masa y secado. Escala: 2&nbsp;mm.</p>
+      </div>
+      <div class="copy">
+        <div class="kicker">El espacio que no vemos</div>
+        <h2>Porosidad: de partícula y de lecho</h2>
+        <div class="cards two" style="margin-top:8px;">
+          <div class="card">
+            <span class="card-n">Porosidad de partícula ($\varepsilon_p$)</span>
+            <p>Espacios (poros) internos dentro de cada partícula individual.</p>
+            <div class="fml">$$\varepsilon_p = 1 - \dfrac{\rho_p}{\rho_t}$$</div>
+            <p>Para carbón activado puede alcanzar 0.8 (80 % vacío).</p>
+          </div>
+          <div class="card card--teal">
+            <span class="card-n">Porosidad del lecho ($\varepsilon_b$)</span>
+            <p>Espacios entre partículas en un lecho empacado.</p>
+            <div class="fml">$$\varepsilon_b = 1 - \dfrac{\rho_b}{\rho_p}$$</div>
+            <p>Esferas uniformes, empaque aleatorio: $\varepsilon_b \approx 0.4$.</p>
+          </div>
+        </div>
+        <p class="foot-note">El bagazo tiene $\varepsilon_p \approx 0.5$ (estructura fibrosa) y $\varepsilon_b \approx 0.6$ (empaquetamiento suelto), dando una densidad bulk de apenas <b>120 kg/m³</b>. Esa alta porosidad complica el transporte pero facilita el secado.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 09 · Divisor Parte 2 -->
+  <section class="s s--dark divider" data-screen-label="Divisor Tamano y forma" data-nofoot>
+    <div>
+      <div class="part">Parte 2</div>
+      <h2>Tamaño y forma de partícula</h2>
+      <p class="sub">Para una esfera el diámetro es inequívoco. Para todo lo demás, hay que decidir qué "diámetro" queremos medir.</p>
+      <div class="dctx"><b>8</b><span>diámetros equivalentes distintos para la misma partícula irregular</span></div>
+    </div>
+  </section>
+
+  <!-- 10 · Tamaño de partícula -->
+  <section class="s" data-screen-label="Tamano de particula">
+    <div class="split">
+      <div class="figbox">
+        <img src="assets/img/Diametros_Equivalentes.webp" alt="Diagrama de diámetros equivalentes de una partícula irregular">
+        <p class="figcap">Una misma partícula irregular tiene tantos diámetros como propiedades queramos igualar a una esfera.</p>
+      </div>
+      <div class="copy">
+        <div class="kicker">¿Cuál diámetro?</div>
+        <h2>El diámetro de una esfera es inequívoco; el de un polvo, no</h2>
+        <p>Para esferas, el diámetro es inequívoco. Para partículas irregulares debemos definir <b>diámetros equivalentes</b> específicos: el de la esfera que tiene el mismo volumen, la misma área, la misma velocidad de sedimentación, etc.</p>
+        <p style="margin-top:18px;">Una partícula acicular (en forma de aguja) puede tener $d_{\max} \approx 0.5\ \text{mm}$ pero una longitud de 5&nbsp;mm: el "tamaño" depende de qué medimos.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11 · Diámetros equivalentes -->
+  <section class="s" data-screen-label="Diametros equivalentes">
+    <div class="kicker">Cuatro definiciones de uso frecuente</div>
+    <h2 class="s-head">Diámetros equivalentes</h2>
+    <div class="cards four">
+      <div class="card">
+        <span class="card-n">$d_v$ · volumétrico</span>
+        <h3>Mismo volumen</h3>
+        <p>Diámetro de la esfera con el mismo volumen que la partícula.</p>
+        <div class="fml">$$d_v = \left(\dfrac{6V}{\pi}\right)^{1/3}$$</div>
+      </div>
+      <div class="card card--teal">
+        <span class="card-n">$d_s$ · superficial</span>
+        <h3>Misma área</h3>
+        <p>Diámetro de la esfera con la misma área superficial.</p>
+        <div class="fml">$$d_s = \sqrt{\dfrac{A}{\pi}}$$</div>
+      </div>
+      <div class="card">
+        <span class="card-n">$d_{St}$ · de Stokes</span>
+        <h3>Misma sedimentación</h3>
+        <p>Diámetro de la esfera con la misma velocidad de sedimentación.</p>
+      </div>
+      <div class="card card--teal">
+        <span class="card-n">$d_{\text{tamiz}}$ · de tamiz</span>
+        <h3>Apertura mínima</h3>
+        <p>Apertura cuadrada mínima que permite el paso de la partícula.</p>
+      </div>
+    </div>
+    <p class="foot-note">Para cristales de azúcar, la diferencia entre diámetros equivalentes puede ser del <b>20–30 %</b>, afectando cálculos de área superficial y comportamiento en suspensión.</p>
+  </section>
+
+  <!-- 12 · Distribución de tamaño: representaciones -->
+  <section class="s" data-screen-label="Distribucion representaciones">
+    <div class="split">
+      <div class="img-panel">
+        <img src="assets/img/Curva_Granulometrica.webp" alt="Curva granulométrica acumulativa con D10, D50 y D90">
+        <p class="figcap">Curva acumulativa $Q_3$: leyendo en 10 %, 50 % y 90 % se obtienen $D_{10}$, $D_{50}$ y $D_{90}$.</p>
+      </div>
+      <div class="copy">
+        <div class="kicker">Nunca un solo número</div>
+        <h2>Distribución de tamaño</h2>
+        <p>Los procesos siempre generan una <b>distribución</b> de tamaños que caracteriza al material; jamás un único tamaño.</p>
+        <p style="margin-top:14px;font-weight:700;color:var(--gris-1);">Dos representaciones:</p>
+        <ul>
+          <li><b>Curva diferencial:</b> muestra qué fracción tiene cada tamaño específico.</li>
+          <li><b>Curva acumulativa:</b> indica qué fracción es menor (o mayor) que cada tamaño.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 13 · Distribución de tamaño: parámetros -->
+  <section class="s" data-screen-label="Distribucion parametros">
+    <div class="split">
+      <div class="img-panel">
+        <img src="assets/img/Curva_Granulometrica.webp" alt="Curva granulométrica acumulativa con percentiles">
+        <p class="figcap">$D_{10}=83\ \mu m$, $D_{50}=330\ \mu m$, $D_{90}=1600\ \mu m$ en este ejemplo.</p>
+      </div>
+      <div class="copy">
+        <div class="kicker">Cómo se resume</div>
+        <h2>Parámetros característicos</h2>
+        <ul>
+          <li><b>$D_{10}$, $D_{50}$, $D_{90}$:</b> percentiles ($D_{50}$ es la mediana).</li>
+          <li><b>Span</b> (medida de amplitud de la distribución):</li>
+        </ul>
+        <div class="fml">$$\text{Span} = \dfrac{D_{90} - D_{10}}{D_{50}}$$</div>
+        <p style="margin-top:14px;">Para caña molida típica: $D_{10}=0.5\ \text{mm}$, $D_{50}=2\ \text{mm}$, $D_{90}=5\ \text{mm}$, dando $\text{Span}=2.25$, lo que indica una <b>distribución amplia</b>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 14 · Tamizado: procedimiento -->
+  <section class="s" data-screen-label="Tamizado procedimiento">
+    <div class="split split--wideR">
+      <div class="img-panel">
+        <img src="assets/img/Torre_Tamices.webp" alt="Torre de tamices sobre vibrador mecánico">
+        <p class="figcap">Columna de tamices en orden decreciente sobre un vibrador mecánico, con bandeja colectora al fondo.</p>
+      </div>
+      <div class="copy">
+        <div class="kicker">El método de referencia</div>
+        <h2>Análisis granulométrico por tamizado</h2>
+        <p>El tamizado sigue siendo el método más usado industrialmente para partículas entre <b>45 µm y 10 mm</b>, por su simplicidad, robustez y relevancia directa para operaciones.</p>
+        <ul style="font-size:24px;">
+          <li>Secar la muestra a 105 °C si contiene humedad.</li>
+          <li>Pesar muestra inicial (100–500 g según tamaño máximo).</li>
+          <li>Apilar tamices en orden decreciente, bandeja al fondo.</li>
+          <li>Tamizar 10–15 minutos en vibrador mecánico.</li>
+          <li>Pesar el retenido en cada tamiz.</li>
+          <li>Verificar el cierre de balance de masa a ±1 %.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 15 · Tamizado: cálculos -->
+  <section class="s" data-screen-label="Tamizado calculos">
+    <div class="split split--wideR">
+      <div class="img-panel">
+        <img src="assets/img/Torre_Tamices.webp" alt="Torre de tamices sobre vibrador mecánico">
+        <p class="figcap">Cada tamiz aporta una fracción retenida; su suma acumulada reconstruye la curva.</p>
+      </div>
+      <div class="copy">
+        <div class="kicker">De pesos a fracciones</div>
+        <h2>Cálculos del tamizado</h2>
+        <p style="font-weight:700;color:var(--gris-1);">Fracción retenida en el tamiz $i$:</p>
+        <div class="fml">$$f_i = \dfrac{m_{\text{tamiz},\,i}}{m_{\text{total}}}$$</div>
+        <p style="font-weight:700;color:var(--gris-1);margin-top:14px;">Fracción acumulativa pasante:</p>
+        <div class="fml">$$F_i = \sum_{j>i} f_j$$</div>
+        <div class="callout" style="margin-top:20px;">
+          <p><b>Limitaciones:</b> no aplicable a materiales cohesivos, aglomerantes o muy frágiles que se rompan durante el tamizado.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 16 · Difracción láser: principio -->
+  <section class="s" data-screen-label="Difraccion laser principio">
+    <div class="split split--wideL">
+      <div class="copy">
+        <div class="kicker">Métodos modernos de análisis</div>
+        <h2>Difracción láser</h2>
+        <p>Mide partículas de <b>0.1 a 3000 µm</b> en minutos y con alta reproducibilidad.</p>
+        <p style="margin-top:14px;font-weight:700;color:var(--gris-1);">Principio:</p>
+        <p>Un haz láser atraviesa una suspensión diluida de partículas que dispersan la luz según su tamaño:</p>
+        <ul>
+          <li>Partículas <b>grandes</b> dispersan a ángulos <b>pequeños</b>.</li>
+          <li>Partículas <b>pequeñas</b> dispersan a ángulos <b>grandes</b>.</li>
+        </ul>
+        <p style="margin-top:14px;">Detectores concéntricos miden la intensidad angular; los algoritmos invierten el patrón para obtener la distribución.</p>
+      </div>
+      <div class="img-panel">
+        <img src="assets/img/Difraccion_Laser.webp" alt="Esquema de un analizador de difracción láser">
+        <p class="figcap">Flujo del equipo: dispersión de la muestra, medición óptica, análisis de datos y autolimpieza.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 17 · Difracción láser: ventajas -->
+  <section class="s" data-screen-label="Difraccion laser ventajas">
+    <div class="split split--wideL">
+      <div class="copy">
+        <div class="kicker">Por qué desplaza al tamizado</div>
+        <h2>Ventajas sobre el tamizado</h2>
+        <ul>
+          <li>Rango amplio en una sola medición.</li>
+          <li>Incluye finos por debajo de 45 µm.</li>
+          <li>Automatización completa.</li>
+          <li>Rapidez: 2–3 minutos por muestra.</li>
+        </ul>
+        <div class="callout verde" style="margin-top:24px;">
+          <p>Para su proyecto es ideal para caracterizar <b>azúcar, levadura y auxiliares de filtración</b>, donde los finos importan.</p>
+        </div>
+      </div>
+      <div class="img-panel">
+        <img src="assets/img/Difraccion_Laser.webp" alt="Esquema de un analizador de difracción láser">
+        <p class="figcap">El reporte entrega directamente $D_{10}$, $D_{50}$ y $D_{90}$ junto con la curva completa.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 18 · Forma de partícula -->
+  <section class="s" data-screen-label="Forma de particula">
+    <div class="kicker">La esfericidad lo cambia todo</div>
+    <h2 class="s-head">Forma de partícula</h2>
+    <div class="shape-grid">
+      <div class="shape">
+        <div class="ph"><img src="assets/img/Forma_Esferas.webp" alt="Microfotografía de esferas (perlas de vidrio)"></div>
+        <b>Esferas</b><span class="phi">Φ = 1.0</span>
+        <span>Perlas de vidrio. Excelente fluidez, empaquetamiento predecible.</span>
+      </div>
+      <div class="shape">
+        <div class="ph"><img src="assets/img/Forma_Agujas.webp" alt="Microfotografía de agujas (cristales de lactosa)"></div>
+        <b>Agujas</b><span class="phi">Φ = 0.5</span>
+        <span>Cristales de lactosa. Se entrelazan causando puenteo en tolvas.</span>
+      </div>
+      <div class="shape">
+        <div class="ph"><img src="assets/img/Forma_Fibras.webp" alt="Microfotografía de fibras (bagazo de caña)"></div>
+        <b>Fibras</b><span class="phi">Φ = 0.3</span>
+        <span>Bagazo de caña. Forman matas cohesivas, flujo difícil.</span>
+      </div>
+      <div class="shape">
+        <div class="ph"><img src="assets/img/Forma_Prismaticos.webp" alt="Microfotografía de cristales prismáticos de azúcar"></div>
+        <b>Prismáticos</b><span class="phi">Φ = 0.7</span>
+        <span>Cristales de azúcar. Buen flujo, cohesión moderada.</span>
+      </div>
+    </div>
+    <p class="foot-note">La esfericidad ($\Phi$) cuantifica la desviación de la esfera perfecta: &nbsp; <span class="inl">$\Phi = \dfrac{A_{\text{esfera de igual volumen}}}{A_{\text{real de la partícula}}}$</span></p>
+  </section>
+
+  <!-- 19 · Área superficial específica -->
+  <section class="s" data-screen-label="Area superficial">
+    <div class="split split--wideR">
+      <div class="img-panel">
+        <img src="assets/img/SEM_Area_Superficial.webp" alt="Microfotografía SEM de una estructura porosa">
+        <p class="figcap">Estructura porosa al SEM (15 kV, 5 µm, 3000×): cada poro multiplica la superficie disponible.</p>
+      </div>
+      <div class="copy">
+        <div class="kicker">Donde ocurren las interfases</div>
+        <h2>Área superficial específica</h2>
+        <p>El área superficial específica ($A_s$) representa los metros cuadrados de superficie por kilogramo de material, gobernando todas las interacciones interfaciales: disolución, adsorción, reacción y sinterización.</p>
+        <div class="fml">$$A_s = \dfrac{6}{\rho_p \cdot d_p}$$</div>
+        <p style="margin-top:8px;">Para esferas uniformes, donde $d_p$ es el diámetro de partícula:</p>
+        <ul style="font-size:24px;">
+          <li>Partícula de 1 mm: $A_s = 5\ \text{m}^2/\text{kg}$.</li>
+          <li>Partícula de 1 µm: $A_s = 5{,}000\ \text{m}^2/\text{kg}$.</li>
+        </ul>
+        <p style="margin-top:8px;font-weight:700;color:var(--verde-osc);">¡Reducir el tamaño 1000× aumenta el área 1000×!</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 20 · Área superficial: BET -->
+  <section class="s" data-screen-label="Area superficial BET">
+    <div class="split split--wideL">
+      <div class="copy">
+        <div class="kicker">Cómo se mide</div>
+        <h2>Medición por adsorción BET</h2>
+        <p>Nitrógeno a 77 K forma una monocapa sobre la superficie; el volumen adsorbido indica el área real, incluyendo poros internos.</p>
+        <p style="margin-top:14px;font-weight:700;color:var(--gris-1);">Aplicaciones críticas para su proyecto:</p>
+        <ul>
+          <li>Velocidad de disolución de azúcar proporcional a $A_s$.</li>
+          <li>Actividad de la levadura depende de $A_s$ para el intercambio.</li>
+          <li>Eficiencia de auxiliares de filtración directamente relacionada con $A_s$.</li>
+        </ul>
+      </div>
+      <div class="img-panel">
+        <img src="assets/img/Equipo_BET.webp" alt="Equipo de adsorción BET">
+        <p class="figcap">Analizador de área superficial por fisisorción de nitrógeno (BET).</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 21 · Divisor Parte 3 -->
+  <section class="s s--dark divider" data-screen-label="Divisor Flujo" data-nofoot>
+    <div>
+      <div class="part">Parte 3</div>
+      <h2>Comportamiento de flujo</h2>
+      <p class="sub">Los polvos fluyen como líquidos pero transmiten esfuerzos como sólidos: ese carácter dual es lo que paraliza plantas enteras.</p>
+      <div class="dctx"><b>2 %</b><span>de humedad puede ser la frontera entre un polvo free-flowing y uno que no fluye</span></div>
+    </div>
+  </section>
+
+  <!-- 22 · Propiedades de flujo: carácter -->
+  <section class="s" data-screen-label="Propiedades de flujo">
+    <div class="split split--wideR">
+      <div class="img-panel">
+        <img src="assets/img/Pilas_Polvo_Flujo.webp" alt="Pilas de polvo con distinto comportamiento de flujo">
+        <p class="figcap">El mismo material forma pilas distintas según su carácter de flujo.</p>
+      </div>
+      <div class="copy">
+        <div class="kicker">Líquidos que no lo son</div>
+        <h2>Propiedades de flujo</h2>
+        <p>Los polvos exhiben un comportamiento fascinante: fluyen como líquidos pero transmiten esfuerzos como sólidos, creando desafíos únicos de manejo.</p>
+        <p style="margin-top:12px;font-weight:700;color:var(--gris-1);">Carácter de flujo:</p>
+        <ul style="font-size:24px;">
+          <li><b>Free-flowing:</b> arena seca; azúcar cristalina facilita la dosificación.</li>
+          <li><b>Flujo fácil:</b> azúcar granulada.</li>
+          <li><b>Cohesivo:</b> harina; bagazo húmedo requiere diseño especial de tolvas.</li>
+          <li><b>Muy cohesivo:</b> harina húmeda; levadura húmeda forma pasta.</li>
+        </ul>
+        <p style="margin-top:10px;">Entender estas diferencias previene costosos problemas de <b>"no-flujo"</b> que paran plantas enteras.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 23 · Propiedades de flujo: factores -->
+  <section class="s" data-screen-label="Flujo factores">
+    <div class="split split--wideR">
+      <div class="img-panel">
+        <img src="assets/img/Pilas_Polvo_Flujo.webp" alt="Pilas de polvo con distinto comportamiento de flujo">
+        <p class="figcap">Cuatro palancas controlan si un polvo fluye o se atasca.</p>
+      </div>
+      <div class="copy">
+        <div class="kicker">Qué controla el flujo</div>
+        <h2>Factores determinantes</h2>
+        <ul>
+          <li><b>Tamaño:</b> los finos (&lt; 100 µm) son típicamente cohesivos.</li>
+          <li><b>Humedad:</b> los puentes líquidos causan cohesión.</li>
+          <li><b>Forma:</b> las esferas fluyen mejor que las agujas.</li>
+          <li><b>Superficie:</b> la rugosidad incrementa la fricción.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 24 · Ángulo de reposo -->
+  <section class="s" data-screen-label="Angulo de reposo">
+    <div class="split split--wideR">
+      <div class="img-panel">
+        <img src="assets/img/Angulo_Reposo_Arenas.webp" alt="Ángulo de reposo de distintas arenas">
+        <p class="figcap">El movimiento de masa depende de la naturaleza del material, su humedad y la pendiente del talud.</p>
+      </div>
+      <div class="copy">
+        <div class="kicker">Una medida simple y poderosa</div>
+        <h2>Ángulo de reposo</h2>
+        <p>El ángulo de reposo ($\alpha_r$) es la pendiente del cono que forma un polvo al verterse libremente sobre una superficie horizontal.</p>
+        <div class="fml">$$\alpha_r = \arctan\!\left(\dfrac{h}{r}\right)$$</div>
+        <div class="cards two" style="margin-top:18px;">
+          <div class="card">
+            <span class="card-n">Interpretación</span>
+            <ul>
+              <li>$\alpha_r &lt; 30^\circ$: excelente flujo (arena seca).</li>
+              <li>$30\text{–}35^\circ$: buen flujo (azúcar granulada).</li>
+              <li>$35\text{–}40^\circ$: flujo aceptable (sal de mesa).</li>
+              <li>$40\text{–}45^\circ$: flujo pobre (harina).</li>
+              <li>$&gt; 45^\circ$: muy pobre (cacao).</li>
+            </ul>
+          </div>
+          <div class="card card--teal">
+            <span class="card-n">Aplicación</span>
+            <p>Diseño del ángulo de tolvas: la pared debe ser al menos <b>10° mayor</b> que $\alpha_r$ para garantizar el deslizamiento.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 25 · Carr / Hausner -->
+  <section class="s" data-screen-label="Suelta vs compactada">
+    <div class="kicker">De la densidad al pronóstico de flujo</div>
+    <h2 class="s-head">Densidad suelta vs. compactada: Carr y Hausner</h2>
+    <div class="cards">
+      <div class="card">
+        <span class="card-n">Medición estandarizada</span>
+        <h3>ASTM D7481</h3>
+        <p>Para $\rho_{\text{suelta}}$: verter 100 mL en probeta sin vibración. Para $\rho_{\text{comp}}$: someter la probeta a 100 golpes normalizados.</p>
+      </div>
+      <div class="card card--teal">
+        <span class="card-n">Índices derivados</span>
+        <div class="fml">$$IC = \dfrac{\rho_{\text{comp}} - \rho_{\text{suelta}}}{\rho_{\text{comp}}}\times 100\%$$</div>
+        <div class="fml">$$RH = \dfrac{\rho_{\text{comp}}}{\rho_{\text{suelta}}}$$</div>
+        <p>IC = índice de Carr · RH = razón de Hausner.</p>
+      </div>
+      <div class="card card--amber">
+        <span class="card-n">Interpretación</span>
+        <ul>
+          <li>IC ≤ 10 % (RH 1.11): flujo excelente.</li>
+          <li>11–15 % (1.12–1.18): bueno.</li>
+          <li>16–20 % (1.19–1.25): aceptable.</li>
+          <li>21–25 % (1.26–1.34): pasable.</li>
+          <li>26–31 % (1.35–1.45): pobre.</li>
+          <li>&gt; 32 % (&gt; 1.46): muy pobre.</li>
+        </ul>
+      </div>
+    </div>
+    <p class="foot-note">Ejemplo: harina con IC = 35 %, RH = 1.54 predice flujo problemático, confirmado en la práctica. Azúcar granulada con IC = 12 %, RH = 1.14 indica <b>buen flujo</b>.</p>
+  </section>
+
+  <!-- 26 · Cohesión: fuerzas -->
+  <section class="s" data-screen-label="Cohesion fuerzas">
+    <div class="split split--wideR">
+      <div class="img-panel">
+        <img src="assets/img/Fuerzas_Particula.webp" alt="Fuerzas entre partículas: cohesión vs peso">
+        <p class="figcap">Cuando la fuerza cohesiva ($F_{\text{coh}}$) supera el peso ($W$), el polvo deja de fluir.</p>
+      </div>
+      <div class="copy">
+        <div class="kicker">Por qué se pegan las partículas</div>
+        <h2>Cohesión: fuentes entre partículas</h2>
+        <div class="cards two" style="margin-top:4px;">
+          <div class="card"><span class="card-n">Van der Waals</span><p>Dominan en partículas &lt; 100 µm, superando su propio peso.</p></div>
+          <div class="card card--teal"><span class="card-n">Puentes líquidos</span><p>Generan fuerzas 10–1000× mayores que Van der Waals. Críticos entre 20–80 % de saturación.</p></div>
+          <div class="card"><span class="card-n">Electrostáticas</span><p>Por fricción/contacto, especialmente en ambientes secos.</p></div>
+          <div class="card card--teal"><span class="card-n">Entrelazamiento mecánico</span><p>En partículas fibrosas o angulares.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 27 · Cohesión: problemas -->
+  <section class="s" data-screen-label="Cohesion problemas">
+    <div class="split split--wideR">
+      <div class="img-panel">
+        <img src="assets/img/Problemas_Cohesion.webp" alt="Problemas de flujo por cohesión: bridging, arching, ratholing, clinging">
+        <p class="figcap">Bridging, arching, rat-holing y material adherido: las cuatro caras del no-flujo.</p>
+      </div>
+      <div class="copy">
+        <div class="kicker">Lo que pasa en la tolva</div>
+        <h2>Problemas causados por la cohesión</h2>
+        <ul>
+          <li>Formación de <b>arcos estables</b> en las salidas de tolvas.</li>
+          <li><b>Rat-holing:</b> solo fluye un canal central y el resto queda estancado.</li>
+          <li>Adherencia a paredes que reduce la capacidad efectiva.</li>
+          <li>Aglomeración durante el almacenamiento.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 28 · Contenido de humedad -->
+  <section class="s" data-screen-label="Contenido de humedad">
+    <div class="split split--wideL">
+      <div class="copy">
+        <div class="kicker">La variable que todo lo cambia</div>
+        <h2>Contenido de humedad</h2>
+        <div class="cards two" style="margin-top:6px;">
+          <div class="card"><span class="card-n">0–0.1 %</span><h3>Material seco</h3><p>Posibles cargas electrostáticas; problemas de electricidad estática con plásticos y polvos orgánicos.</p></div>
+          <div class="card card--teal"><span class="card-n">0.1–2 %</span><h3>Ligera cohesión</h3><p>Puentes pendulares. Rango óptimo para azúcar (máx. 0.5 %) y sal (máx. 2 %).</p></div>
+          <div class="card card--amber"><span class="card-n">2–20 %</span><h3>Cohesión severa</h3><p>Puentes funiculares; harina problemática sobre 14 % de humedad.</p></div>
+          <div class="card card--amber"><span class="card-n">&gt; 20 %</span><h3>Transición a suspensión</h3><p>Comportamiento líquido. Bagazo post-molienda (+50 %) requiere manejo especializado.</p></div>
+        </div>
+      </div>
+      <div class="img-panel">
+        <img src="assets/img/Contenido_Humedad.webp" alt="Comportamiento del polvo a baja, media y alta humedad">
+        <p class="figcap">A mayor humedad, más cohesión: el mismo polvo pasa de fluir a apelmazarse.</p>
+      </div>
+    </div>
+    <p class="foot-note" style="margin-top:14px;">Métodos de medición: pérdida por secado (105 °C hasta peso constante), Karl Fischer para trazas, NIR para monitoreo continuo.</p>
+  </section>
+
+  <!-- 29 · Segregación: mecanismos -->
+  <section class="s" data-screen-label="Segregacion mecanismos">
+    <div class="split split--wideR">
+      <div class="img-panel">
+        <img src="assets/img/Segregacion_Cono.webp" alt="Segregación: finos al centro, gruesos a la periferia">
+        <p class="figcap">Al formar una pila, los finos caen al centro y los gruesos ruedan a la periferia.</p>
+      </div>
+      <div class="copy">
+        <div class="kicker">La mezcla que se deshace sola</div>
+        <h2>Segregación: mecanismos</h2>
+        <ul style="font-size:24px;">
+          <li><b>Percolación:</b> los finos caen entre los gruesos.</li>
+          <li><b>Trayectoria:</b> partículas con distinta fricción/rebote siguen rutas distintas.</li>
+          <li><b>Fluidización:</b> el aire arrastra los finos selectivamente.</li>
+          <li><b>Vibración:</b> efecto "Brazil nut", los gruesos suben.</li>
+        </ul>
+        <p style="margin-top:12px;font-weight:700;color:var(--gris-1);">Ocurre cuando los componentes difieren en:</p>
+        <ul style="font-size:24px;">
+          <li>Tamaño (lo más crítico: los finos migran al centro).</li>
+          <li>Densidad (los pesados sedimentan).</li>
+          <li>Forma (las esferas ruedan, las agujas se quedan) y propiedades superficiales.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 30 · Segregación: soluciones -->
+  <section class="s" data-screen-label="Segregacion soluciones">
+    <div class="split split--wideR">
+      <div class="img-panel">
+        <img src="assets/img/Segregacion_Cono.webp" alt="Segregación en una pila de material particulado">
+        <p class="figcap">La segregación nunca se elimina por completo: se controla con diseño.</p>
+      </div>
+      <div class="copy">
+        <div class="kicker">Cómo se controla</div>
+        <h2>Segregación: soluciones</h2>
+        <ul>
+          <li><b>Granulación</b> para uniformizar el tamaño.</li>
+          <li>Diseño de equipos <b>anti-segregación</b> (tolvas de flujo másico).</li>
+          <li>Minimizar los puntos de transferencia.</li>
+          <li>Orden de adición estratégico.</li>
+        </ul>
+        <div class="callout verde" style="margin-top:22px;">
+          <p>La segregación <b>nunca se elimina</b> completamente, solo se controla.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 31 · Divisor Parte 4 -->
+  <section class="s s--dark divider" data-screen-label="Divisor Mecanicas y termicas" data-nofoot>
+    <div>
+      <div class="part">Parte 4</div>
+      <h2>Propiedades mecánicas y térmicas</h2>
+      <p class="sub">Dureza, friabilidad, conductividad e higroscopicidad: lo que decide cuánta energía cuesta moler y cómo se almacena sin apelmazar.</p>
+      <div class="dctx"><b>5–10 %</b><span>de la conductividad del sólido puro: eso conduce un lecho de partículas</span></div>
+    </div>
+  </section>
+
+  <!-- 32 · Dureza y friabilidad -->
+  <section class="s" data-screen-label="Dureza y friabilidad">
+    <div class="split split--wideR">
+      <div class="img-panel">
+        <img src="assets/img/Escala_Mohs.webp" alt="Escala de dureza de Mohs">
+        <p class="figcap">Escala de Mohs (1–10): del talco al diamante, una referencia rápida de resistencia.</p>
+      </div>
+      <div class="copy">
+        <div class="kicker">Cuánto cuesta moler</div>
+        <h2>Dureza y friabilidad</h2>
+        <p><b>Dureza:</b> resistencia a la deformación, en escalas mineralógicas (Mohs 1–10) o por indentación (Vickers, Brinell).</p>
+        <ul style="font-size:24px;">
+          <li>Azúcar: Mohs 2 (similar al yeso), fácil de moler.</li>
+          <li>Cuarzo en cenizas: Mohs 7, abrasivo severo.</li>
+        </ul>
+        <p style="margin-top:12px;"><b>Friabilidad:</b> tendencia a fragmentarse; se mide sometiendo la muestra a abrasión controlada y midiendo finos generados.</p>
+        <ul style="font-size:24px;">
+          <li><b>Alta friabilidad:</b> genera polvo (riesgos de salud/explosión), cambia la distribución granulométrica y obstruye filtros.</li>
+          <li><b>Baja friabilidad:</b> difícil de moler, aumenta el consumo energético.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 33 · Propiedades térmicas: conductividad -->
+  <section class="s" data-screen-label="Termicas conductividad">
+    <div class="kicker">El aire entre partículas aísla</div>
+    <h2 class="s-head">Conductividad térmica efectiva</h2>
+    <div class="callout verde" style="margin-top:10px;">
+      <h4>CONDUCTIVIDAD TÉRMICA EFECTIVA ($k_{\text{eff}}$)</h4>
+      <p>La de un lecho es típicamente <b>5–10 %</b> de la del sólido puro, por los contactos puntuales limitados entre partículas.</p>
+      <p>Azúcar granulada: $k_{\text{sólido}} = 0.5\ \text{W/m·K}$ pero $k_{\text{lecho}} = 0.05\ \text{W/m·K}$.</p>
+      <div class="fml">$$k_{\text{eff}} = k_{\text{sólido}}\,(1-\varepsilon_b)\,F + k_{\text{aire}}\,\varepsilon_b$$</div>
+      <p>Donde $F$ es el factor de contacto entre partículas ($\approx 0.1\text{–}0.2$).</p>
+    </div>
+    <p class="foot-note">Consecuencia práctica: calentar o enfriar un lecho de polvo es <b>lento</b>; hay que diseñar para tiempos de residencia largos o agitar.</p>
+  </section>
+
+  <!-- 34 · Propiedades térmicas: Cp y difusividad -->
+  <section class="s" data-screen-label="Termicas Cp difusividad">
+    <div class="kicker">Cuánto calor y qué tan rápido</div>
+    <h2 class="s-head">Capacidad calorífica y difusividad térmica</h2>
+    <div class="cards two">
+      <div class="card">
+        <span class="card-n">Capacidad calorífica</span>
+        <p>Incluye las contribuciones del sólido y de la humedad.</p>
+        <div class="fml">$$Cp_{\text{total}} = Cp_{\text{sólido}}(1-X) + Cp_{\text{agua}}\,X$$</div>
+        <p>Donde $X$ = fracción másica de humedad.</p>
+      </div>
+      <div class="card card--teal">
+        <span class="card-n">Difusividad térmica</span>
+        <p>Gobierna la velocidad de cambio térmico, crítica en secado y calentamiento.</p>
+        <div class="fml">$$\alpha = \dfrac{k}{\rho \cdot Cp}$$</div>
+        <p>Para lechos: $\alpha_{\text{lecho}} \ll \alpha_{\text{sólido}}$, requiriendo tiempos largos para el equilibrio.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 35 · Higroscopicidad: tipos -->
+  <section class="s" data-screen-label="Higroscopicidad tipos">
+    <div class="split split--wideR">
+      <div class="img-panel">
+        <img src="assets/img/Higroscopicidad.webp" alt="Polvo higroscópico absorbiendo humedad del aire">
+        <p class="figcap">Algunos polvos absorben humedad del aire hasta deliquescer.</p>
+      </div>
+      <div class="copy">
+        <div class="kicker">El polvo respira agua</div>
+        <h2>Higroscopicidad</h2>
+        <p>Describe la tendencia de los materiales a absorber o desorber humedad del aire circundante, estableciendo un equilibrio dinámico crítico para la estabilidad.</p>
+        <ul>
+          <li><b>No higroscópico:</b> plásticos, mantienen su humedad independiente de la HR.</li>
+          <li><b>Moderadamente higroscópico:</b> azúcar, equilibra 0.5 % a 70 % HR.</li>
+          <li><b>Altamente higroscópico:</b> sal, cloruro de calcio; pueden deliquescer.</li>
+        </ul>
+        <p style="margin-top:12px;">Las isotermas típicamente muestran <b>histéresis</b>: la curva de adsorción ≠ desorción por efectos capilares.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 36 · Higroscopicidad: HRC -->
+  <section class="s" data-screen-label="Higroscopicidad HRC">
+    <div class="split split--wideR">
+      <div class="img-panel">
+        <img src="assets/img/Higroscopicidad.webp" alt="Polvo higroscópico absorbiendo humedad">
+        <p class="figcap">Sobre la HR crítica, la aglomeración es irreversible.</p>
+      </div>
+      <div class="copy">
+        <div class="kicker">El umbral que no se cruza</div>
+        <h2>Humedad relativa crítica (HRC)</h2>
+        <p>Es la humedad relativa sobre la cual ocurre aglomeración irreversible:</p>
+        <div class="databar">
+          <span class="chip">Azúcar: HRC ≈ 85 %</span>
+          <span class="chip">Sal: HRC ≈ 75 %</span>
+          <span class="chip">Leche en polvo: HRC ≈ 50 %</span>
+        </div>
+        <div class="callout verde" style="margin-top:20px;">
+          <p>Para su proceso: almacenar azúcar bajo <b>60 % HR</b> previene la aglomeración; la levadura seca requiere empaque barrera a <b>&lt; 40 % HR</b>.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 37 · Divisor Parte 5 -->
+  <section class="s s--dark divider" data-screen-label="Divisor Explosividad" data-nofoot>
+    <div>
+      <div class="part">Parte 5</div>
+      <h2>Seguridad: explosividad de polvos</h2>
+      <p class="sub">Un polvo combustible suspendido en aire, dentro de un volumen confinado, con una chispa, es una bomba. Y muchos alimentos lo son.</p>
+      <div class="dctx"><b>5</b><span>condiciones simultáneas: el pentágono de explosión de polvos</span></div>
+    </div>
+  </section>
+
+  <!-- 38 · Explosividad de polvos -->
+  <section class="s" data-screen-label="Explosividad de polvos">
+    <div class="split split--wideL">
+      <div class="copy">
+        <div class="kicker">El pentágono de explosión</div>
+        <h2>Explosividad de polvos</h2>
+        <p style="font-weight:700;color:var(--gris-1);">Requiere cinco condiciones a la vez:</p>
+        <ul style="font-size:24px;">
+          <li>Combustible (el polvo).</li>
+          <li>Oxidante (aire).</li>
+          <li>Concentración en rango explosivo.</li>
+          <li>Fuente de ignición.</li>
+          <li>Confinamiento.</li>
+        </ul>
+        <p style="margin-top:10px;font-weight:700;color:var(--gris-1);">Parámetros críticos:</p>
+        <ul style="font-size:23px;">
+          <li><b>CME</b> (Conc. Mínima Explosiva): típicamente 30–60 g/m³ para orgánicos.</li>
+          <li><b>Kst</b> (índice de explosividad): velocidad máxima de aumento de presión.</li>
+          <li><b>EMI</b> (Energía Mínima de Ignición): azúcar 30 mJ, almidón 20 mJ.</li>
+          <li><b>Temperatura de ignición:</b> nube 400–500 °C, capa 200–300 °C.</li>
+        </ul>
+      </div>
+      <div>
+        <div class="img-panel">
+          <img src="assets/img/Explosion_Polvo_Silo.webp" alt="Explosión de polvo en un silo">
+          <p class="figcap">Dust explosion en un silo de almacenamiento.</p>
+        </div>
+        <div class="cards" style="grid-template-columns:repeat(3,1fr);gap:18px;margin-top:24px;">
+          <div class="card" style="padding:22px 20px;"><span class="card-n">St1</span><p>Kst &lt; 200 — débilmente explosivo.</p></div>
+          <div class="card card--amber" style="padding:22px 20px;"><span class="card-n">St2</span><p>200 &lt; Kst &lt; 300 — fuertemente explosivo.</p></div>
+          <div class="card card--amber" style="padding:22px 20px;"><span class="card-n">St3</span><p>Kst &gt; 300 — muy fuertemente explosivo.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 39 · Explosión de polvo en acción (videos) -->
+  <section class="s" data-screen-label="Explosion de polvo en accion">
+    <div class="kicker">Verlo para entender el riesgo</div>
+    <h2 class="s-head">Explosión de polvo en acción</h2>
+    <div class="vid-grid">
+      <div class="vid-16">
+        <iframe src="https://www.youtube.com/embed/0k3fsPgRhJ0" title="Cómo ocurre una explosión de polvo"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+      </div>
+      <div class="vid-9">
+        <iframe src="https://www.youtube.com/embed/PEZDAjIrNZk" title="Explosión de polvo — demostración"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+      </div>
+    </div>
+    <p class="vid-cap">Una nube de polvo finamente dividido encierra una superficie inmensa: la combustión se propaga en milisegundos. <b>Por eso el housekeeping (mantener limpio de polvo acumulado) es una medida de seguridad de primer orden</b> en plantas que manejan azúcar, almidón o harinas.</p>
+  </section>
+
+  <!-- 40 · Divisor Parte 6 -->
+  <section class="s s--dark divider" data-screen-label="Divisor Aplicaciones" data-nofoot>
+    <div>
+      <div class="part">Parte 6</div>
+      <h2>Aplicaciones al proceso</h2>
+      <p class="sub">Todo lo anterior se vuelve número: potencia de molienda, ángulo de tolva, velocidad de transporte y tiempo de mezclado.</p>
+      <div class="dctx"><b>15</b><span>kWh/ton: el índice de trabajo aproximado de la caña en la Ley de Bond</span></div>
+    </div>
+  </section>
+
+  <!-- 41 · Molienda: Ley de Bond -->
+  <section class="s" data-screen-label="Molienda Bond">
+    <div class="split split--wideR">
+      <div class="img-panel">
+        <img src="assets/img/Molienda_Bagazo.webp" alt="Molienda de caña / bagazo en molino industrial">
+        <p class="figcap">La energía de molienda depende de la dureza, la tenacidad y la distribución de tamaño deseada.</p>
+      </div>
+      <div class="copy">
+        <div class="kicker">Cuánta energía cuesta moler</div>
+        <h2>Aplicación a operaciones de molienda</h2>
+        <p style="font-weight:700;color:var(--gris-1);">Ley de Bond:</p>
+        <div class="fml">$$W = W_i \cdot 10 \left(\dfrac{1}{\sqrt{P_{80}}} - \dfrac{1}{\sqrt{F_{80}}}\right)\ \dfrac{\text{kWh}}{\text{ton}}$$</div>
+        <p style="margin-top:8px;">Donde:</p>
+        <ul style="font-size:24px;">
+          <li>$W_i$ = índice de trabajo (función de dureza/estructura).</li>
+          <li>$P_{80}$ / $F_{80}$ = tamaños 80 % pasante de producto/alimentación.</li>
+        </ul>
+        <p style="margin-top:10px;">Caña: $W_i \approx 15\ \text{kWh/ton}$, relativamente fácil por su estructura fibrosa.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 42 · Molienda: factores -->
+  <section class="s" data-screen-label="Molienda factores">
+    <div class="split split--wideR">
+      <div class="img-panel">
+        <img src="assets/img/Molienda_Bagazo.webp" alt="Molienda de caña en molino industrial">
+        <p class="figcap">El tipo de molino se elige según la forma y la humedad del material.</p>
+      </div>
+      <div class="copy">
+        <div class="kicker">Lo que decide el resultado</div>
+        <h2>Factores críticos de molienda</h2>
+        <ul>
+          <li><b>Friabilidad:</b> determina la generación de finos indeseados.</li>
+          <li><b>Contenido de humedad:</b> muy seco causa polvo explosivo; muy húmedo empasta el molino (óptimo 10–15 %).</li>
+          <li><b>Forma de partícula:</b> las fibras requieren corte (molino de cuchillas); los cristales, fractura (molino de martillos).</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 43 · Diseño de tolvas y silos -->
+  <section class="s" data-screen-label="Tolvas y silos">
+    <div class="kicker">Donde todo se aplica</div>
+    <h2 class="s-head">Diseño de tolvas y silos</h2>
+    <p class="lead-top">El diseño de tolvas ilustra la aplicación directa de las propiedades de flujo para garantizar una descarga confiable.</p>
+    <div class="cards two" style="margin-top:24px;">
+      <div class="card">
+        <span class="card-n">Flujo másico</span>
+        <h3>First-in, first-out</h3>
+        <p>Todo el material se mueve: ideal, sin zonas muertas.</p>
+      </div>
+      <div class="card card--amber">
+        <span class="card-n">Flujo embudo</span>
+        <h3>Canal central</h3>
+        <p>Solo fluye un canal central; el material se estanca en las paredes.</p>
+      </div>
+    </div>
+    <div class="collist" style="margin-top:30px;">
+      <div class="it"><div class="ic"></div><div><b>Harina cohesiva</b><span>ff = 2 → requiere $\theta &lt; 20^\circ$ desde la vertical y $D &gt; 1$ m.</span></div></div>
+      <div class="it"><div class="ic"></div><div><b>Azúcar free-flowing</b><span>ff = 10 → permite $\theta &lt; 40^\circ$ y $D = 0.2$ m.</span></div></div>
+    </div>
+    <p class="foot-note">Diferencia dramática en volumen muerto y costo construido. Su proyecto debe especificar geometría precisa basada en <b>propiedades medidas, no en reglas empíricas obsoletas.</b></p>
+  </section>
+
+  <!-- 44 · Transporte mecánico -->
+  <section class="s" data-screen-label="Transporte mecanico">
+    <div class="split split--wideR">
+      <div class="img-panel">
+        <img src="assets/img/Transporte_Solidos.webp" alt="Transporte de sólidos por bandas y tornillos">
+        <p class="figcap">Tornillos, bandas y cangilones mueven el sólido entre operaciones.</p>
+      </div>
+      <div class="copy">
+        <div class="kicker">Mover el sólido</div>
+        <h2>Transporte mecánico</h2>
+        <p>Tornillos, bandas y cangilones. Apropiado para materiales abrasivos, frágiles o de alta densidad bulk.</p>
+        <div class="fml">$$Q_{\text{tornillo}} = \dfrac{\pi}{4}\,(D^2 - d^2)\cdot \text{paso}\cdot rpm \cdot \rho_b \cdot \varphi$$</div>
+        <p style="margin-top:8px;">Donde $\varphi$ = factor de llenado (0.3–0.5).</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 45 · Transporte neumático -->
+  <section class="s" data-screen-label="Transporte neumatico">
+    <div class="split split--wideR">
+      <div class="img-panel">
+        <img src="assets/img/Transporte_Solidos.webp" alt="Transporte neumático de sólidos">
+        <p class="figcap">El transporte neumático lleva el sólido en una corriente de aire por tuberías.</p>
+      </div>
+      <div class="copy">
+        <div class="kicker">Mover con aire</div>
+        <h2>Transporte neumático</h2>
+        <p>Fase diluida o densa. Ideal para distancias largas y múltiples destinos.</p>
+        <div class="fml">$$v_{\min} = (1.5\text{–}2)\times v_{\text{sedimentación}}$$</div>
+        <ul style="font-size:24px;margin-top:12px;">
+          <li><b>Fase diluida:</b> 15–30 m/s, $\mu$ = 2–15 kg sólido/kg aire.</li>
+          <li><b>Fase densa:</b> 1–10 m/s, $\mu$ = 15–100, menor desgaste.</li>
+        </ul>
+        <p style="margin-top:10px;">Para su proceso: bagazo húmedo es problemático en neumático (apelmazamiento), mejor mecánico. El azúcar es compatible con ambos; el neumático es preferible por higiene.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 46 · Mezclado: mecanismos y tipos -->
+  <section class="s" data-screen-label="Mezclado mecanismos">
+    <div class="split split--wideR">
+      <div class="img-panel">
+        <img src="assets/img/Mezclado_Solidos.webp" alt="Mezclador de sólidos">
+        <p class="figcap">El tipo de mezclador se elige según el mecanismo dominante.</p>
+      </div>
+      <div class="copy">
+        <div class="kicker">Homogeneizar el sólido</div>
+        <h2>Mezclado de sólidos</h2>
+        <p style="font-weight:700;color:var(--gris-1);">Mecanismos de mezclado:</p>
+        <ul style="font-size:24px;">
+          <li><b>Convección:</b> movimiento de grupos de partículas.</li>
+          <li><b>Difusión:</b> movimiento aleatorio individual.</li>
+          <li><b>Corte:</b> deslizamiento entre capas.</li>
+        </ul>
+        <p style="margin-top:10px;font-weight:700;color:var(--gris-1);">Tipos de mezcladores:</p>
+        <ul style="font-size:24px;">
+          <li><b>Tambor rotatorio:</b> convección dominante, suave.</li>
+          <li><b>Ribbon blender:</b> alto corte, versátil.</li>
+          <li><b>Mezclador de arado:</b> muy alto corte, rápido.</li>
+          <li><b>Lecho fluidizado:</b> excelente para recubrimiento.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 47 · Mezclado: eficiencia -->
+  <section class="s" data-screen-label="Mezclado eficiencia">
+    <div class="split split--wideL">
+      <div class="copy">
+        <div class="kicker">Cuándo parar de mezclar</div>
+        <h2>Eficiencia de mezclado</h2>
+        <p>La eficiencia de mezclado se puede modelar con:</p>
+        <div class="fml">$$M = e^{-kt}$$</div>
+        <p style="margin-top:8px;">Donde $M$ es un índice de mezclado, $k$ una constante de velocidad dependiente del equipo y $t$ el tiempo.</p>
+        <p style="margin-top:12px;">Validación por muestreo estadístico: <b>CV &lt; 5 %</b> es típicamente aceptable.</p>
+      </div>
+      <div class="callout verde">
+        <h4>RECUERDEN</h4>
+        <p>La homogeneidad perfecta es <b>inalcanzable</b>. Especifiquen "suficientemente bueno" para la aplicación: el sobre-mezclado gasta energía y puede <b>re-segregar</b> el material.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 48 · Integración al proyecto -->
+  <section class="s s--tint" data-screen-label="Integracion al proyecto">
+    <div class="kicker">El hilo conductor</div>
+    <h2 class="s-head">Integración al proyecto del curso</h2>
+    <div class="cards">
+      <div class="card">
+        <span class="card-n">01</span>
+        <h3>Caracterización completa</h3>
+        <p>Para cada sólido del proceso deben reportar:</p>
+        <ul>
+          <li>Densidades (verdadera, partícula, bulk suelta/compactada).</li>
+          <li>Distribución de tamaño (D10, D50, D90) y curva.</li>
+          <li>Forma y área superficial aproximada.</li>
+          <li>Propiedades de flujo (ángulo de reposo, Carr/Hausner).</li>
+          <li>Contenido de humedad e higroscopicidad.</li>
+        </ul>
+      </div>
+      <div class="card card--teal">
+        <span class="card-n">02</span>
+        <h3>Dimensionamiento de equipos</h3>
+        <p>Usar los datos para calcular:</p>
+        <div class="fml">$$V_{\text{equipo}} = \dfrac{m_{\text{material}}}{\rho_b}\times \text{f. seguridad}$$</div>
+        <p>Para tolvas y silos, aplicar el método Jenike: geometría óptima para evitar arcos, dimensión mínima de salida y ángulo de tolva requerido.</p>
+      </div>
+      <div class="card card--amber">
+        <span class="card-n">03</span>
+        <h3>Especificaciones de seguridad</h3>
+        <p>Para materiales combustibles:</p>
+        <ul>
+          <li>Evaluar el potencial explosivo (Kst).</li>
+          <li>Diseñar sistemas de supresión o venteo.</li>
+          <li>Especificar housekeeping para prevención.</li>
+        </ul>
+      </div>
+    </div>
+    <p class="foot-note">No subestimen esta etapa: <b>el 50 % de los problemas operacionales</b> se rastrean a una caracterización inadecuada de los sólidos.</p>
+  </section>
+
+  <!-- 49 · Cierre -->
+  <section class="s s--dark close" data-screen-label="Cierre" data-nofoot>
+    <div>
+      <div class="kicker">Para recordar</div>
+      <h2>El polvo no es un líquido ni un sólido continuo: caractérícenlo antes de diseñar, o el proceso los corregirá a la fuerza.</h2>
+      <div class="next"><span class="pill">A trabajar</span><span>Caractericen cada sólido de su proyecto de alcohol y conviertan esos números en geometría de equipos</span></div>
+    </div>
+  </section>
+
+</deck-stage>
+
+<script src="assets/deck-stage.js"></script>
+<script>
+  /* Pie con etiqueta del curso + número de diapositiva (esquina inferior derecha) */
+  (function () {
+    var stage = document.querySelector('deck-stage');
+    var slides = Array.prototype.filter.call(stage.children, function (n) { return n.tagName === 'SECTION'; });
+    var total = slides.length;
+    slides.forEach(function (s, i) {
+      var f = document.createElement('div');
+      f.className = 's-foot';
+      var label = s.hasAttribute('data-nofoot')
+        ? 'Propiedades de sólidos particulados · IQYA-2031'
+        : 'Propiedades de sólidos particulados · Proyecto de Operaciones Unitarias';
+      f.innerHTML = '<span class="tag">' + label + '</span><span class="num">' + (i + 1) + ' / ' + total + '</span>';
+      s.appendChild(f);
+    });
+  })();
+</script>
+
+<script>
+  /* Ampliar imágenes a pantalla completa (lightbox) */
+  (function () {
+    var lb = document.createElement('div');
+    lb.className = 'lightbox';
+    lb.innerHTML = '<button class="lb-close" aria-label="Cerrar">✕</button><div class="lb-content"></div>';
+    document.body.appendChild(lb);
+    var content = lb.querySelector('.lb-content');
+
+    function close() { lb.classList.remove('is-open'); content.innerHTML = ''; }
+
+    function open(img) {
+      content.innerHTML = '';
+      var annot = img.closest('.annot');
+      if (annot) {
+        var clone = annot.cloneNode(true);
+        clone.classList.add('lb-annot');
+        clone.querySelectorAll('.zoom-badge').forEach(function (b) { b.remove(); });
+        var ar = (img.naturalWidth || 16) / (img.naturalHeight || 9);
+        var w = Math.min(window.innerWidth * 0.94, window.innerHeight * 0.94 * ar);
+        clone.style.width = Math.round(w) + 'px';
+        content.appendChild(clone);
+      } else {
+        var im = document.createElement('img');
+        im.src = img.currentSrc || img.src;
+        content.appendChild(im);
+      }
+      lb.classList.add('is-open');
+    }
+
+    lb.addEventListener('click', close);
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && lb.classList.contains('is-open')) { e.stopPropagation(); close(); }
+    }, true);
+
+    document.querySelectorAll('deck-stage .img-panel img, deck-stage .annot img, deck-stage .figbox img, deck-stage .shape .ph img').forEach(function (img) {
+      var parent = img.parentElement;
+      if (getComputedStyle(parent).position === 'static') parent.style.position = 'relative';
+      function trigger(e) { e.stopPropagation(); open(img); }
+      img.addEventListener('click', trigger);
+      var badge = document.createElement('span');
+      badge.className = 'zoom-badge';
+      badge.setAttribute('aria-hidden', 'true');
+      badge.textContent = '⤢';
+      badge.addEventListener('click', trigger);
+      parent.appendChild(badge);
+    });
+  })();
+</script>
+
+</body>
+</html>
