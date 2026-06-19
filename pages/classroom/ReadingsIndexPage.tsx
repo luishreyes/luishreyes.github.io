@@ -12,9 +12,6 @@ export const ReadingsIndexPage: React.FC = () => {
 
   if (!course) return <NotFoundInClassroom />;
 
-  // Las lecturas se numeran según el programa; las guías por importancia
-  // editorial. Cuando `order` está definido se respeta; si no, las entradas
-  // sin número caen al final por fecha descendente.
   const byOrderThenDate = (a: Reading, b: Reading) => {
     const ao = a.order ?? Number.POSITIVE_INFINITY;
     const bo = b.order ?? Number.POSITIVE_INFINITY;
@@ -94,7 +91,6 @@ interface SectionProps {
   courseSlug: string;
   items: Reading[];
   emptyLabel: string;
-  /** Prefijo del badge numérico de cada tarjeta — "Lectura" o "Guía". */
   numberPrefix?: string;
 }
 
@@ -113,73 +109,134 @@ const Section: React.FC<SectionProps> = ({ title, description, count, courseSlug
     {items.length === 0 ? (
       <p className="mt-6 text-sm text-brand-gray italic">{emptyLabel}</p>
     ) : (
-      <ul className="mt-6 space-y-4">
+      <ul className="mt-6 space-y-3">
         {items.map((r, i) => {
-          const cardClass =
-            'block bg-white rounded-xl border border-zinc-200 p-6 shadow-sm hover:shadow-md hover:border-brand-yellow transition-all group';
           const numberLabel = numberPrefix
             ? `${numberPrefix} ${String(r.order ?? i + 1).padStart(2, '0')}`
             : null;
-          const content = (
-            <>
-              {numberLabel && (
-                <p className="text-xs font-semibold tracking-widest uppercase text-brand-yellow-dark">
-                  {numberLabel}
-                </p>
-              )}
-              <div className={`${numberLabel ? 'mt-1.5 ' : ''}flex flex-wrap items-center gap-2 text-xs text-brand-gray`}>
-                <time dateTime={r.date}>{formatDate(r.date)}</time>
-                {r.readingMinutes && (
-                  <>
-                    <span aria-hidden="true">·</span>
-                    <span>{r.readingMinutes} min</span>
-                  </>
-                )}
-                {r.href && (
-                  <>
-                    <span aria-hidden="true">·</span>
-                    <span>Documento ↗</span>
-                  </>
-                )}
-              </div>
-              <h3 className="mt-2 text-lg sm:text-xl font-bold text-brand-dark group-hover:text-brand-yellow-dark transition-colors">
-                {r.title}
-              </h3>
-              <p className="mt-2 text-sm text-brand-gray leading-relaxed">
-                {r.summary}
-              </p>
-              {r.tags && r.tags.length > 0 && (
-                <ul className="mt-3 flex flex-wrap gap-1.5">
-                  {r.tags.map((t) => (
-                    <li
-                      key={t}
-                      className="px-2 py-0.5 rounded-full bg-zinc-100 text-brand-gray text-[11px] font-medium"
-                    >
-                      {t}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </>
-          );
           return (
-            <li key={r.slug}>
-              {r.href ? (
-                <a href={r.href} target="_blank" rel="noopener noreferrer" className={cardClass}>
-                  {content}
-                </a>
-              ) : (
-                <Link to={`/classroom/${courseSlug}/readings/${r.slug}`} className={cardClass}>
-                  {content}
-                </Link>
-              )}
-            </li>
+            <ReadingCard
+              key={r.slug}
+              r={r}
+              courseSlug={courseSlug}
+              numberLabel={numberLabel}
+            />
           );
         })}
       </ul>
     )}
   </section>
 );
+
+interface ReadingCardProps {
+  r: Reading;
+  courseSlug: string;
+  numberLabel: string | null;
+}
+
+const ReadingCard: React.FC<ReadingCardProps> = ({ r, courseSlug, numberLabel }) => {
+  const num = r.order ? String(r.order).padStart(2, '0') : null;
+  const hasBanner = !!r.bannerImg;
+
+  const wrapClass = [
+    'block bg-white rounded-xl border border-zinc-200 shadow-sm',
+    'hover:shadow-md hover:border-brand-yellow transition-all group overflow-hidden',
+    hasBanner ? 'flex flex-col sm:flex-row' : 'p-6',
+  ].join(' ');
+
+  const photoPanel = hasBanner ? (
+    <div
+      className="relative flex-shrink-0 h-40 sm:h-auto sm:w-52 overflow-hidden"
+      aria-hidden="true"
+    >
+      <img
+        src={r.bannerImg}
+        alt=""
+        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+        style={{ filter: 'grayscale(100%)' }}
+        loading="lazy"
+      />
+      {/* number watermark */}
+      {num && (
+        <span
+          className="absolute inset-0 flex items-end justify-start font-black text-white select-none pointer-events-none leading-none"
+          style={{ fontSize: '7rem', opacity: 0.55, paddingLeft: '0.15em', paddingBottom: '0.02em' }}
+          aria-hidden="true"
+        >
+          {num}
+        </span>
+      )}
+      {/* subtle gradient to blend watermark number with content side */}
+      <div className="absolute inset-0 bg-gradient-to-r from-black/10 to-transparent pointer-events-none" />
+    </div>
+  ) : null;
+
+  const textContent = (
+    <div className={hasBanner ? 'flex-1 p-5 flex flex-col justify-between min-w-0' : ''}>
+      <div>
+        {numberLabel && (
+          <p className="text-xs font-semibold tracking-widest uppercase text-brand-yellow-dark">
+            {numberLabel}
+          </p>
+        )}
+        <div className={`${numberLabel ? 'mt-1.5 ' : ''}flex flex-wrap items-center gap-2 text-xs text-brand-gray`}>
+          <time dateTime={r.date}>{formatDate(r.date)}</time>
+          {r.readingMinutes && (
+            <>
+              <span aria-hidden="true">·</span>
+              <span>{r.readingMinutes} min</span>
+            </>
+          )}
+          {r.href && (
+            <>
+              <span aria-hidden="true">·</span>
+              <span>Documento ↗</span>
+            </>
+          )}
+        </div>
+        <h3 className="mt-2 text-lg sm:text-xl font-bold text-brand-dark group-hover:text-brand-yellow-dark transition-colors line-clamp-2">
+          {r.title}
+        </h3>
+        <p className="mt-2 text-sm text-brand-gray leading-relaxed line-clamp-3">
+          {r.summary}
+        </p>
+      </div>
+      {r.tags && r.tags.length > 0 && (
+        <ul className="mt-3 flex flex-wrap gap-1.5">
+          {r.tags.map((t) => (
+            <li
+              key={t}
+              className="px-2 py-0.5 rounded-full bg-zinc-100 text-brand-gray text-[11px] font-medium"
+            >
+              {t}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+
+  const inner = (
+    <>
+      {photoPanel}
+      {textContent}
+    </>
+  );
+
+  return (
+    <li>
+      {r.href ? (
+        <a href={r.href} target="_blank" rel="noopener noreferrer" className={wrapClass}>
+          {inner}
+        </a>
+      ) : (
+        <Link to={`/classroom/${courseSlug}/readings/${r.slug}`} className={wrapClass}>
+          {inner}
+        </Link>
+      )}
+    </li>
+  );
+};
 
 const formatDate = (iso: string): string => {
   const d = new Date(iso + 'T12:00:00');
