@@ -510,6 +510,7 @@ export const pou202620Course: Course = {
       tags: ['operaciones unitarias', 'historia', 'Little', 'fenómenos de transporte', 'clasificación'],
       category: 'lectura',
       href: '/classroom/iqya-2031-2026-20/lecturas/Lectura_01/Lectura_01_Operaciones_Unitarias.html',
+      bannerImg: '/classroom/iqya-2031-2026-20/lecturas-banners/l01.jpg',
     },
     {
       slug: 'lectura-02-diagramas-ingenieria',
@@ -522,6 +523,7 @@ export const pou202620Course: Course = {
       tags: ['diagramas', 'BFD', 'PFD', 'P&ID', 'simbología', 'ISO', 'ISA'],
       category: 'lectura',
       href: '/classroom/iqya-2031-2026-20/lecturas/Lectura_02/Lectura_02_Diagramas_Ingenieria.html',
+      bannerImg: '/classroom/iqya-2031-2026-20/lecturas-banners/l02.jpg',
     },
     {
       slug: 'lectura-03-reduccion-tamano',
@@ -534,6 +536,7 @@ export const pou202620Course: Course = {
       tags: ['conminución', 'molienda', 'trituración', 'Bond', 'mecanismos de fractura', 'sólidos'],
       category: 'lectura',
       href: '/classroom/iqya-2031-2026-20/lecturas/Lectura_03/Lectura_03_Reduccion_de_Tamano.html',
+      bannerImg: '/classroom/iqya-2031-2026-20/lecturas-banners/l03.jpg',
     },
     {
       slug: 'lectura-04-transporte-liquidos',
@@ -546,6 +549,7 @@ export const pou202620Course: Course = {
       tags: ['transporte de fluidos', 'Reynolds', 'Moody', 'Darcy-Weisbach', 'pérdidas', 'tubería', 'cabeza del sistema'],
       category: 'lectura',
       href: '/classroom/iqya-2031-2026-20/lecturas/Lectura_04/Lectura_04_Transporte_Liquidos.html',
+      bannerImg: '/classroom/iqya-2031-2026-20/lecturas-banners/l04.jpg',
     },
     {
       slug: 'lectura-05-bombas',
@@ -558,6 +562,7 @@ export const pou202620Course: Course = {
       tags: ['bombas', 'centrífuga', 'desplazamiento positivo', 'curvas características', 'NPSH', 'cavitación', 'potencia de bombeo', 'BEP'],
       category: 'lectura',
       href: '/classroom/iqya-2031-2026-20/lecturas/Lectura_05/Lectura_05_Bombas.html',
+      bannerImg: '/classroom/iqya-2031-2026-20/lecturas-banners/l05.jpg',
     },
     {
       slug: 'lectura-06-agitacion',
@@ -570,6 +575,7 @@ export const pou202620Course: Course = {
       tags: ['agitación', 'mezclado', 'impulsores', 'Rushton', 'PBT', 'bafles', 'número de potencia', 'escalado', 'Reynolds'],
       category: 'lectura',
       href: '/classroom/iqya-2031-2026-20/lecturas/Lectura_06/Lectura_06_Agitacion.html',
+      bannerImg: '/classroom/iqya-2031-2026-20/lecturas-banners/l06.jpg',
     },
     {
       slug: 'lectura-07-mezclado',
@@ -582,6 +588,7 @@ export const pou202620Course: Course = {
       tags: ['mezclado', 'escalado', 'tumble blender', 'ribbon blender', 'mezclador estático', 'homogeneizador', 'PAT', 'scale-up'],
       category: 'lectura',
       href: '/classroom/iqya-2031-2026-20/lecturas/Lectura_07/Lectura_07_Mezclado.html',
+      bannerImg: '/classroom/iqya-2031-2026-20/lecturas-banners/l07.jpg',
     },
     {
       slug: 'lectura-08-intercambiadores-de-calor',
@@ -594,6 +601,7 @@ export const pou202620Course: Course = {
       tags: ['intercambiadores de calor', 'transferencia de calor', 'LMTD', 'NTU', 'tubo y coraza', 'placas', 'aeroenfriador', 'ensuciamiento', 'fouling', 'TEMA'],
       category: 'lectura',
       href: '/classroom/iqya-2031-2026-20/lecturas/Lectura_08/Lectura_08_Intercambiadores_de_Calor.html',
+      bannerImg: '/classroom/iqya-2031-2026-20/lecturas-banners/l08.jpg',
     },
     {
       slug: 'lectura-09-filtracion',
@@ -606,6 +614,7 @@ export const pou202620Course: Course = {
       tags: ['filtración', 'separación sólido-líquido', 'torta', 'ley de Darcy', 'resistencia específica', 'filtro prensa', 'tambor rotatorio', 'membranas', 'medios filtrantes', 'retrolavado'],
       category: 'lectura',
       href: '/classroom/iqya-2031-2026-20/lecturas/Lectura_09/Lectura_09_Filtracion.html',
+      bannerImg: '/classroom/iqya-2031-2026-20/lecturas-banners/l09.jpg',
     },
     {
       slug: 'lectura-10-equilibrio-de-fases',
@@ -618,6 +627,7 @@ export const pou202620Course: Course = {
       tags: ['equilibrio de fases', 'ELV', 'Raoult', 'Dalton', 'Antoine', 'volatilidad relativa', 'diagrama T-x-y', 'diagrama y-x', 'azeótropo', 'destilación'],
       category: 'lectura',
       href: '/classroom/iqya-2031-2026-20/lecturas/Lectura_10/Lectura_10_Equilibrio_de_Fases.html',
+      bannerImg: '/classroom/iqya-2031-2026-20/lecturas-banners/l10.jpg',
     },
     {
       slug: 'lectura-11-destilacion-flash',
@@ -630,6 +640,7 @@ export const pou202620Course: Course = {
       tags: ['flash', 'vaporización', 'Rachford-Rice', 'tambor flash', 'equilibrio líquido-vapor', 'destilación', 'una etapa'],
       category: 'lectura',
       href: '/classroom/iqya-2031-2026-20/lecturas/Lectura_11/Lectura_11_Destilacion_Flash.html',
+      bannerImg: '/classroom/iqya-2031-2026-20/lecturas-banners/l11.jpg',
     },
     {
       slug: 'lectura-12-destilacion-por-lotes',
@@ -642,6 +653,7 @@ export const pou202620Course: Course = {
       tags: ['destilación por lotes', 'alambique', 'ecuación de Rayleigh', 'pot still', 'multietapa', 'simulación', 'cabezas', 'corazón', 'colas', 'spirit cut', 'whisky', 'discontinua'],
       category: 'lectura',
       href: '/classroom/iqya-2031-2026-20/lecturas/Lectura_12/Lectura_12_Destilacion_por_Lotes.html',
+      bannerImg: '/classroom/iqya-2031-2026-20/lecturas-banners/l12.jpg',
     },
     {
       slug: 'lectura-13-destilacion-continua',
@@ -654,6 +666,7 @@ export const pou202620Course: Course = {
       tags: ['destilación continua', 'McCabe-Thiele', 'reflujo', 'etapas teóricas', 'línea de operación', 'calidad de alimentación', 'línea q', 'eficiencia', 'Fenske', 'Underwood', 'columna', 'platos'],
       category: 'lectura',
       href: '/classroom/iqya-2031-2026-20/lecturas/Lectura_13/Lectura_13_Destilacion_Continua.html',
+      bannerImg: '/classroom/iqya-2031-2026-20/lecturas-banners/l13.jpg',
     },
   ],
   presentations: [

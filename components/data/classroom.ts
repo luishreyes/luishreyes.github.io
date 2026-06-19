@@ -26,6 +26,8 @@ export interface Reading {
    * de la lectura TSX interna (`/classroom/{slug}/readings/{slug}`).
    */
   href?: string;
+  /** Ruta relativa a la imagen de banner de la tarjeta (B&W, 800px). */
+  bannerImg?: string;
 }
 
 export interface Presentation {
