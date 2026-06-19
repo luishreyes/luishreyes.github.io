@@ -888,88 +888,132 @@ function renderMath(){
   calc();
 })();
 
-/* ── Feed-quality (q) explorer ───────────────────────────────── */
+/* ── Feed-quality (q) explorer — y-x diagram ─────────────────── */
 (function(){
+  var ALPHA=2.5;
   var NS='http://www.w3.org/2000/svg';
-  function el(tag,a){var e=document.createElementNS(NS,tag);Object.entries(a||{}).forEach(function(kv){e.setAttribute(kv[0],kv[1])});return e;}
-  function txt(c,a){var t=el('text',a);t.textContent=c;return t;}
+  function mkEl(tag,attrs){
+    var e=document.createElementNS(NS,tag);
+    Object.keys(attrs||{}).forEach(function(k){e.setAttribute(k,attrs[k]);});
+    return e;
+  }
+  function mkTxt(str,attrs){var e=mkEl('text',attrs);e.textContent=str;return e;}
+
+  // Plot margins & transforms
+  var ml=42,mr=16,mt=16,mb=38,W=300,H=300;
+  var pw=W-ml-mr,ph=H-mt-mb;
+  function tx(x){return ml+x*pw;}
+  function ty(y){return H-mb-y*ph;}
+  function yeq(x){return ALPHA*x/(1+(ALPHA-1)*x);}
 
   var svg=document.getElementById('fq-svg');
-  if(!svg) return;
+  if(!svg)return;
 
-  // Geometry
-  var colX1=150, colX2=240, top=24, bot=306;
-  var fbTop=156, fbBot=190;          // feed stage band
-  var liqX=178, vapX=212;            // stream x positions
-  var L=2, V=2.5, F=1;               // base molar flows (normalized)
-
-  // Static drawing: column body + feed stage band
-  svg.appendChild(el('rect',{x:colX1,y:top,width:(colX2-colX1),height:(bot-top),rx:'10',fill:'#F2F2F2',stroke:'#D0D0D0','stroke-width':'2'}));
-  svg.appendChild(el('rect',{x:colX1,y:fbTop,width:(colX2-colX1),height:(fbBot-fbTop),fill:'#EAF3DA',stroke:'#86BC24','stroke-width':'1.5'}));
-  svg.appendChild(txt('Plato de alimentación',{x:(colX1+colX2)/2,y:(fbTop+fbBot)/2+4,'text-anchor':'middle','font-size':'9.5','fill':'#5E8A12','font-weight':'700'}));
-  svg.appendChild(txt('Sección de rectificación',{x:(colX1+colX2)/2,y:top-8,'text-anchor':'middle','font-size':'10','fill':'#666'}));
-  svg.appendChild(txt('Sección de agotamiento',{x:(colX1+colX2)/2,y:bot+16,'text-anchor':'middle','font-size':'10','fill':'#666'}));
-
-  // Arrow markers
-  var defs=el('defs');
-  defs.appendChild((function(){var m=el('marker',{id:'fq-liq',markerWidth:'7',markerHeight:'7',refX:'3.5',refY:'3',orient:'auto'});m.appendChild(el('path',{d:'M0,0 L0,6 L7,3 z',fill:'#0076A8'}));return m;})());
-  defs.appendChild((function(){var m=el('marker',{id:'fq-vap',markerWidth:'7',markerHeight:'7',refX:'3.5',refY:'3',orient:'auto'});m.appendChild(el('path',{d:'M0,0 L0,6 L7,3 z',fill:'#86BC24'}));return m;})());
-  defs.appendChild((function(){var m=el('marker',{id:'fq-feed',markerWidth:'7',markerHeight:'7',refX:'3.5',refY:'3',orient:'auto'});m.appendChild(el('path',{d:'M0,0 L0,6 L7,3 z',fill:'#E0922F'}));return m;})());
+  // ── Static layer ────────────────────────────────────────────
+  // Plot area background
+  svg.appendChild(mkEl('rect',{x:ml,y:mt,width:pw,height:ph,fill:'#fff',stroke:'#D0D0D0','stroke-width':'1'}));
+  // Grid
+  [0.2,0.4,0.6,0.8].forEach(function(v){
+    svg.appendChild(mkEl('line',{x1:tx(v),y1:mt,x2:tx(v),y2:H-mb,stroke:'#EBEBEB','stroke-width':'1'}));
+    svg.appendChild(mkEl('line',{x1:ml,y1:ty(v),x2:W-mr,y2:ty(v),stroke:'#EBEBEB','stroke-width':'1'}));
+  });
+  // Axes
+  svg.appendChild(mkEl('line',{x1:tx(0),y1:ty(0),x2:tx(1.03),y2:ty(0),stroke:'#555','stroke-width':'1.5','marker-end':'url(#fq-arr)'}));
+  svg.appendChild(mkEl('line',{x1:tx(0),y1:ty(0),x2:tx(0),y2:ty(1.03),stroke:'#555','stroke-width':'1.5','marker-end':'url(#fq-arr)'}));
+  // Arrow marker
+  var defs=mkEl('defs',{});
+  var arrMk=mkEl('marker',{id:'fq-arr',markerWidth:'6',markerHeight:'6',refX:'3',refY:'3',orient:'auto'});
+  arrMk.appendChild(mkEl('path',{d:'M0,0 L0,6 L6,3 z',fill:'#555'}));
+  defs.appendChild(arrMk);
   svg.appendChild(defs);
+  // Tick labels
+  [0,0.2,0.4,0.6,0.8,1.0].forEach(function(v){
+    svg.appendChild(mkTxt(v.toFixed(1),{x:tx(v),y:H-mb+13,'text-anchor':'middle','font-size':'9','fill':'#777'}));
+    if(v>0) svg.appendChild(mkTxt(v.toFixed(1),{x:ml-5,y:ty(v)+3.5,'text-anchor':'end','font-size':'9','fill':'#777'}));
+  });
+  // Axis labels
+  svg.appendChild(mkTxt('x',{x:tx(0.5),y:H-2,'text-anchor':'middle','font-size':'11','fill':'#555','font-weight':'600'}));
+  svg.appendChild(mkTxt('y',{x:8,y:ty(0.5),'text-anchor':'middle','font-size':'11','fill':'#555','font-weight':'600','transform':'rotate(-90,8,'+ty(0.5)+')'}));
+  // Diagonal y=x
+  svg.appendChild(mkEl('line',{x1:tx(0),y1:ty(0),x2:tx(1),y2:ty(1),stroke:'#AAAAAA','stroke-width':'1.5','stroke-dasharray':'5,3'}));
+  svg.appendChild(mkTxt('y = x',{x:tx(0.85),y:ty(0.85)-7,'font-size':'9','fill':'#AAAAAA'}));
+  // Equilibrium curve
+  var eqPts=[];
+  for(var i=0;i<=100;i++){var xi=i/100;eqPts.push(tx(xi)+','+ty(yeq(xi)));}
+  svg.appendChild(mkEl('polyline',{points:eqPts.join(' '),fill:'none',stroke:'#0076A8','stroke-width':'2.5','stroke-linejoin':'round','stroke-linecap':'round'}));
+  svg.appendChild(mkTxt('Equilibrio (α=2,5)',{x:tx(0.22),y:ty(yeq(0.22))-9,'font-size':'9','fill':'#0076A8','font-weight':'700'}));
 
-  // Dynamic stream arrows (created once, updated on input)
-  // Liquid above (L): down, from top to feed band
-  var aL =el('line',{x1:liqX,y1:top+6, x2:liqX,y2:fbTop-2, stroke:'#0076A8','marker-end':'url(#fq-liq)'});
-  // Liquid below (Lbar): down, from feed band to bottom
-  var aLb=el('line',{x1:liqX,y1:fbBot+2,x2:liqX,y2:bot-6, stroke:'#0076A8','marker-end':'url(#fq-liq)'});
-  // Vapor above (V): up, from feed band to top
-  var aV =el('line',{x1:vapX,y1:fbTop-2,x2:vapX,y2:top+6, stroke:'#86BC24','marker-end':'url(#fq-vap)'});
-  // Vapor below (Vbar): up, from bottom to feed band
-  var aVb=el('line',{x1:vapX,y1:bot-6, x2:vapX,y2:fbBot+2,stroke:'#86BC24','marker-end':'url(#fq-vap)'});
-  // Feed F: from left into feed band
-  var aF =el('line',{x1:60,y1:(fbTop+fbBot)/2,x2:colX1-2,y2:(fbTop+fbBot)/2,stroke:'#E0922F','marker-end':'url(#fq-feed)'});
-  [aL,aLb,aV,aVb,aF].forEach(function(a){svg.appendChild(a);});
+  // ── Dynamic layer ─────────────────────────────────────────────
+  var dynG=mkEl('g',{});
+  svg.appendChild(dynG);
 
-  // Labels
-  svg.appendChild(txt('L',{x:liqX-9,y:top+20,'text-anchor':'end','font-size':'12','fill':'#0076A8','font-weight':'700','font-style':'italic'}));
-  var lblLb=txt('L̄',{x:liqX-9,y:bot-12,'text-anchor':'end','font-size':'12','fill':'#0076A8','font-weight':'700','font-style':'italic'});svg.appendChild(lblLb);
-  var lblV=txt('V',{x:vapX+9,y:top+20,'text-anchor':'start','font-size':'12','fill':'#5E8A12','font-weight':'700','font-style':'italic'});svg.appendChild(lblV);
-  svg.appendChild(txt('V̄',{x:vapX+9,y:bot-12,'text-anchor':'start','font-size':'12','fill':'#5E8A12','font-weight':'700','font-style':'italic'}));
-  svg.appendChild(txt('F',{x:54,y:(fbTop+fbBot)/2-8,'text-anchor':'middle','font-size':'12','fill':'#E0922F','font-weight':'700','font-style':'italic'}));
-
-  function w(flow){ return Math.max(1.5, Math.abs(flow)*4.2); } // thickness scaler
-
-  function render(){
+  function update(){
     var q=parseFloat(document.getElementById('fq-q').value);
-    document.getElementById('fq-q-val').textContent=q.toFixed(2).replace('.',',');
-    var Lb=L+q*F;          // liquid below
-    var Vb=V-(1-q)*F;      // vapor below
-    aL.setAttribute('stroke-width',w(L));
-    aLb.setAttribute('stroke-width',w(Lb));
-    aV.setAttribute('stroke-width',w(V));
-    aVb.setAttribute('stroke-width',w(Vb));
-    aF.setAttribute('stroke-width',w(F));
+    var xF=parseFloat(document.getElementById('fq-xf').value);
+    document.getElementById('fq-q-val').textContent=(Math.round(q*100)/100).toFixed(2).replace('.',',');
+    document.getElementById('fq-xf-val').textContent=xF.toFixed(2).replace('.',',');
 
-    // Regime
-    var state;
-    if(q<0) state='Vapor sobrecalentado';
-    else if(Math.abs(q)<1e-9) state='Vapor saturado (rocío)';
-    else if(q<1) state='Parcialmente vaporizada';
-    else if(Math.abs(q-1)<1e-9) state='Líquido saturado (burbuja)';
-    else state='Líquido subenfriado';
-    document.getElementById('fq-state').textContent=state;
+    // State label
+    var stTxt;
+    if(q>1.02) stTxt='Líquido subenfriado (q > 1)';
+    else if(q>0.98) stTxt='Líquido saturado (q = 1)';
+    else if(q>0.02) stTxt='Bifásico (0 < q < 1)';
+    else if(q>=-0.02) stTxt='Vapor saturado (q = 0)';
+    else stTxt='Vapor sobrecalentado (q < 0)';
+    document.getElementById('fq-state').textContent=stTxt;
 
-    // q-line slope
-    var slopeEl=document.getElementById('fq-slope');
-    if(Math.abs(q-1)<1e-9) slopeEl.textContent='vertical (∞)';
-    else slopeEl.textContent=(q/(q-1)).toFixed(2).replace('.',',');
+    var slope=(Math.abs(q-1)<0.01)?Infinity:q/(q-1);
+    document.getElementById('fq-slope').textContent=isFinite(slope)?(Math.round(slope*100)/100).toFixed(2).replace('.',','):'∞ (línea vertical)';
 
-    // Split
-    document.getElementById('fq-split').textContent=
-      (q*F).toFixed(2).replace('.',',')+' / '+((1-q)*F).toFixed(2).replace('.',',');
+    // Clear dynamic elements
+    while(dynG.firstChild)dynG.removeChild(dynG.firstChild);
+
+    // Draw q-line
+    var linePts=[];
+    if(!isFinite(slope)){
+      linePts=[{x:xF,y:0},{x:xF,y:1}];
+    } else {
+      // y = slope*(x-xF)+xF; scan x, clip y to [-0.05,1.05]
+      for(var xi2=0;xi2<=1.001;xi2+=0.01){
+        var yi2=slope*(xi2-xF)+xF;
+        if(yi2>=-0.05&&yi2<=1.05)linePts.push({x:xi2,y:yi2});
+      }
+    }
+    if(linePts.length>=2){
+      var lsvg=linePts.map(function(p){return tx(Math.max(0,Math.min(1,p.x)))+','+ty(Math.max(0,Math.min(1,p.y)));}).join(' ');
+      dynG.appendChild(mkEl('polyline',{points:lsvg,fill:'none',stroke:'#E0922F','stroke-width':'2','stroke-dasharray':'6,3','stroke-linecap':'round'}));
+    }
+
+    // xF marker on diagonal
+    dynG.appendChild(mkEl('circle',{cx:tx(xF),cy:ty(xF),r:'4',fill:'#E0922F',stroke:'#fff','stroke-width':'1.5'}));
+    dynG.appendChild(mkTxt('(xF,xF)',{x:tx(xF)+7,y:ty(xF)-5,'font-size':'9','fill':'#B8651A','font-weight':'700'}));
+
+    // Find intersection q-line ∩ equilibrium curve
+    var xi_s=null,yi_s=null;
+    if(!isFinite(slope)){
+      xi_s=xF; yi_s=yeq(xF);
+    } else {
+      function fRR(x){return yeq(x)-(slope*(x-xF)+xF);}
+      var lo=0.001,hi=0.999,flo=fRR(lo),fhi=fRR(hi);
+      if(flo*fhi<0){
+        for(var iter=0;iter<60;iter++){var mid2=(lo+hi)/2;if(fRR(mid2)*flo>0){lo=mid2;flo=fRR(mid2);}else hi=mid2;}
+        xi_s=(lo+hi)/2; yi_s=yeq(xi_s);
+      }
+    }
+    if(xi_s!==null&&xi_s>=0&&xi_s<=1){
+      // Dashed lines to axes
+      dynG.appendChild(mkEl('line',{x1:tx(xi_s),y1:ty(yi_s),x2:tx(xi_s),y2:ty(0),stroke:'#E0922F','stroke-width':'1','stroke-dasharray':'3,3','opacity':'0.6'}));
+      dynG.appendChild(mkEl('line',{x1:tx(0),y1:ty(yi_s),x2:tx(xi_s),y2:ty(yi_s),stroke:'#E0922F','stroke-width':'1','stroke-dasharray':'3,3','opacity':'0.6'}));
+      // Intersection dot
+      dynG.appendChild(mkEl('circle',{cx:tx(xi_s),cy:ty(yi_s),r:'5.5',fill:'#E0922F',stroke:'#fff','stroke-width':'2'}));
+      document.getElementById('fq-split').textContent='x* = '+xi_s.toFixed(3).replace('.',',')+' ; y* = '+yi_s.toFixed(3).replace('.',',');
+    } else {
+      document.getElementById('fq-split').textContent='Sin intersección en [0,1]';
+    }
   }
-  document.getElementById('fq-q').addEventListener('input',render);
-  render();
+
+  ['fq-q','fq-xf'].forEach(function(id){document.getElementById(id).addEventListener('input',update);});
+  update();
 })();
 </script>
 <script>
