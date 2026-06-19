@@ -744,6 +744,57 @@
       <h3 class="sub">El «pinch point» y el reflujo mínimo</h3>
       <p>A medida que se reduce \(R\), la línea de operación de rectificación gira hacia la curva de equilibrio. En el <b>reflujo mínimo</b> \(R_{min}\) ambas se tocan: aparece un punto de tangencia o intersección — el <b>«pinch point»</b> (zona de pellizco) — donde la línea de operación y la curva de equilibrio coinciden. Allí la fuerza impulsora de transferencia de masa se anula y los escalones de McCabe-Thiele se acumulan sin avanzar: se requiere un <b>número infinito de etapas</b>. Por eso \(R_{min}\) es el límite inferior absoluto: ninguna columna real puede operar por debajo de él. Para sistemas con curva de equilibrio normal, el pinch ocurre justo donde la línea q corta la curva de equilibrio; para sistemas con curvatura pronunciada (o azeótropos cercanos) puede ser un punto de tangencia interior.</p>
 
+      <!-- Explorador interactivo: etapas y altura vs. razón de reflujo -->
+      <p>El siguiente explorador construye los escalones de McCabe-Thiele <em>en vivo</em>: ajusta la razón de reflujo \(R\) y la pureza del destilado \(x_D\), y cuenta las etapas teóricas reales paso a paso (no es una correlación, es la misma construcción gráfica de los Pasos 8-9). La <b>altura de la columna es una consecuencia</b> del número de etapas — no una variable independiente: surge de los platos reales, la eficiencia global y el espaciamiento entre platos.</p>
+
+      <div class="calc-wrap">
+        <h4>Explorador: etapas teóricas y altura de columna vs. razón de reflujo</h4>
+        <p class="calc-sub">Sistema binario ideal con \(\alpha = 2{,}5\), alimentación de líquido saturado (\(q=1\)) en \(x_F = 0{,}50\) y fondos \(x_W = 0{,}05\). Los escalones se trazan con la construcción exacta de McCabe-Thiele; la última etapa corresponde al rehervidor.</p>
+        <div class="chart-layout">
+          <svg id="mt-svg" viewBox="0 0 300 300" width="100%" style="display:block;border-radius:6px;background:#F9FAFB;" aria-label="Diagrama de McCabe-Thiele interactivo con escalones de etapas"></svg>
+          <div class="chart-controls">
+            <div class="calc-field">
+              <div class="calc-field-header"><span>Razón de reflujo R</span><b id="mt-r-val">1,65</b></div>
+              <input type="range" id="mt-r" min="0.6" max="8" step="0.05" value="1.65">
+            </div>
+            <div class="calc-field" style="margin-top:6px;">
+              <div class="calc-field-header"><span>x<sub>D</sub> (pureza destilado)</span><b id="mt-xd-val">0,95</b></div>
+              <input type="range" id="mt-xd" min="0.7" max="0.995" step="0.005" value="0.95">
+            </div>
+            <div class="calc-field" style="margin-top:6px;">
+              <div class="calc-field-header"><span>Eficiencia global E<sub>o</sub></span><b id="mt-eff-val">70 %</b></div>
+              <input type="range" id="mt-eff" min="0.3" max="1" step="0.01" value="0.7">
+            </div>
+            <div class="calc-field" style="margin-top:6px;">
+              <div class="calc-field-header"><span>Espaciamiento de platos</span><b id="mt-ts-val">0,60 m</b></div>
+              <input type="range" id="mt-ts" min="0.3" max="0.9" step="0.05" value="0.6">
+            </div>
+            <div class="live-card highlight" style="margin-top:12px;">
+              <div class="live-card-label">Etapas teóricas N</div>
+              <div class="live-card-value" id="mt-n">—</div>
+              <div class="live-card-note" id="mt-n-note">incluye el rehervidor</div>
+            </div>
+            <div class="live-card green" style="margin-top:8px;">
+              <div class="live-card-label">R / R<sub>min</sub></div>
+              <div class="live-card-value" id="mt-ratio">—</div>
+              <div class="live-card-note" id="mt-rmin-note">R<sub>min</sub> = —</div>
+            </div>
+            <div class="live-card blue" style="margin-top:8px;">
+              <div class="live-card-label">Plato de alimentación</div>
+              <div class="live-card-value" id="mt-feed">—</div>
+              <div class="live-card-note">contado desde el tope</div>
+            </div>
+            <div class="live-card" style="margin-top:8px;background:var(--teal-claro);">
+              <div class="live-card-label">Altura de columna (consecuencia)</div>
+              <div class="live-card-value" id="mt-height">—</div>
+              <div class="live-card-note" id="mt-height-note">platos reales × espaciamiento</div>
+            </div>
+          </div>
+        </div>
+        <p class="calc-note"><b>Cómo se obtiene la altura:</b> platos reales $= \lceil (N-1)/E_o \rceil$ (el rehervidor no es un plato de la torre); altura $\approx \text{platos reales}\times t_s + 3$ m (margen para desprendimiento de vapor en el tope y bóveda de líquido en el fondo). Al bajar $R$ hacia $R_{min}$ el número de etapas — y por tanto la altura — crece sin cota; al subir $R$ hacia reflujo total, $N$ tiende al mínimo de Fenske. El óptimo económico (1,2-1,5·$R_{min}$) equilibra esta altura contra el consumo del rehervidor y el condensador.</p>
+      </div>
+
+
       <h3 class="sub">Estimación analítica: Fenske y Underwood</h3>
       <p>Cuando se dispone de una volatilidad relativa \(\alpha\) aproximadamente constante, los dos límites se estiman sin gráfica. El <b>número mínimo de etapas a reflujo total</b> se obtiene con la ecuación de <b>Fenske</b>:</p>
       $$N_{min} = \frac{\ln\!\left[\dfrac{x_D}{1-x_D}\cdot\dfrac{1-x_W}{x_W}\right]}{\ln \alpha}$$
@@ -1090,6 +1141,155 @@ function renderMath(){
   }
 
   ['fq-q','fq-xf'].forEach(function(id){document.getElementById(id).addEventListener('input',update);});
+  update();
+})();
+</script>
+<script>
+/* ── McCabe-Thiele: etapas y altura vs. razón de reflujo ───────── */
+(function(){
+  var ALPHA=2.5, xB=0.05, xF=0.50;          // q=1 (líquido saturado)
+  function yeq(x){return ALPHA*x/(1+(ALPHA-1)*x);}
+  function xeq(y){return y/(ALPHA-(ALPHA-1)*y);}   // equilibrio inverso
+
+  function mkEl(tag,attrs){
+    var e=document.createElementNS('http://www.w3.org/2000/svg',tag);
+    for(var k in attrs)e.setAttribute(k,attrs[k]);
+    return e;
+  }
+  function mkTxt(str,attrs){var e=mkEl('text',attrs);e.textContent=str;return e;}
+
+  var ml=42,mr=16,mt=16,mb=38,W=300,H=300;
+  var pw=W-ml-mr,ph=H-mt-mb;
+  function tx(x){return ml+x*pw;}
+  function ty(y){return H-mb-y*ph;}
+
+  var svg=document.getElementById('mt-svg');
+  if(!svg)return;
+
+  // ── Capa estática ──────────────────────────────────────────
+  svg.appendChild(mkEl('rect',{x:ml,y:mt,width:pw,height:ph,fill:'#fff',stroke:'#D0D0D0','stroke-width':'1'}));
+  [0.2,0.4,0.6,0.8].forEach(function(v){
+    svg.appendChild(mkEl('line',{x1:tx(v),y1:mt,x2:tx(v),y2:H-mb,stroke:'#EBEBEB','stroke-width':'1'}));
+    svg.appendChild(mkEl('line',{x1:ml,y1:ty(v),x2:W-mr,y2:ty(v),stroke:'#EBEBEB','stroke-width':'1'}));
+  });
+  svg.appendChild(mkEl('line',{x1:tx(0),y1:ty(0),x2:tx(1.03),y2:ty(0),stroke:'#555','stroke-width':'1.5','marker-end':'url(#mt-arr)'}));
+  svg.appendChild(mkEl('line',{x1:tx(0),y1:ty(0),x2:tx(0),y2:ty(1.03),stroke:'#555','stroke-width':'1.5','marker-end':'url(#mt-arr)'}));
+  var defs=mkEl('defs',{});
+  var arrMk=mkEl('marker',{id:'mt-arr',markerWidth:'6',markerHeight:'6',refX:'3',refY:'3',orient:'auto'});
+  arrMk.appendChild(mkEl('path',{d:'M0,0 L0,6 L6,3 z',fill:'#555'}));
+  defs.appendChild(arrMk);
+  svg.appendChild(defs);
+  [0,0.2,0.4,0.6,0.8,1.0].forEach(function(v){
+    svg.appendChild(mkTxt(v.toFixed(1),{x:tx(v),y:H-mb+13,'text-anchor':'middle','font-size':'9','fill':'#777'}));
+    if(v>0) svg.appendChild(mkTxt(v.toFixed(1),{x:ml-5,y:ty(v)+3.5,'text-anchor':'end','font-size':'9','fill':'#777'}));
+  });
+  svg.appendChild(mkTxt('x',{x:tx(0.5),y:H-2,'text-anchor':'middle','font-size':'11','fill':'#555','font-weight':'600'}));
+  svg.appendChild(mkTxt('y',{x:8,y:ty(0.5),'text-anchor':'middle','font-size':'11','fill':'#555','font-weight':'600','transform':'rotate(-90,8,'+ty(0.5)+')'}));
+  // Diagonal
+  svg.appendChild(mkEl('line',{x1:tx(0),y1:ty(0),x2:tx(1),y2:ty(1),stroke:'#AAAAAA','stroke-width':'1.5','stroke-dasharray':'5,3'}));
+  // Curva de equilibrio
+  var eqPts=[];
+  for(var i=0;i<=100;i++){var xi=i/100;eqPts.push(tx(xi)+','+ty(yeq(xi)));}
+  svg.appendChild(mkEl('polyline',{points:eqPts.join(' '),fill:'none',stroke:'#0076A8','stroke-width':'2.5','stroke-linejoin':'round','stroke-linecap':'round'}));
+  svg.appendChild(mkTxt('Equilibrio (α=2,5)',{x:tx(0.20),y:ty(yeq(0.20))-9,'font-size':'9','fill':'#0076A8','font-weight':'700'}));
+
+  var dynG=mkEl('g',{});
+  svg.appendChild(dynG);
+
+  // R mínimo para q=1: pinch en (xF, yeq(xF))
+  function rmin(xD){
+    var yp=yeq(xF);
+    var s=(xD-yp)/(xD-xF);        // = Rmin/(Rmin+1)
+    return s/(1-s);
+  }
+
+  function fmt(v){return (Math.round(v*100)/100).toFixed(2).replace('.',',');}
+
+  function update(){
+    var R=parseFloat(document.getElementById('mt-r').value);
+    var xD=parseFloat(document.getElementById('mt-xd').value);
+    var Eo=parseFloat(document.getElementById('mt-eff').value);
+    var ts=parseFloat(document.getElementById('mt-ts').value);
+    document.getElementById('mt-r-val').textContent=fmt(R);
+    document.getElementById('mt-xd-val').textContent=fmt(xD);
+    document.getElementById('mt-eff-val').textContent=Math.round(Eo*100)+' %';
+    document.getElementById('mt-ts-val').textContent=ts.toFixed(2).replace('.',',')+' m';
+
+    var Rm=rmin(xD);
+    document.getElementById('mt-rmin-note').innerHTML='R<sub>min</sub> = '+fmt(Rm);
+
+    while(dynG.firstChild)dynG.removeChild(dynG.firstChild);
+
+    // Líneas de operación
+    var a=R/(R+1), b=xD/(R+1);
+    var yInt=a*xF+b;                          // ROL en xF (= SOL en xF)
+    var sSOL=(yInt-xB)/(xF-xB);
+    function opLine(x){return (x>=xF)? (a*x+b) : (sSOL*(x-xB)+xB);}
+
+    var feasible=(R>Rm+1e-4) && (yInt<yeq(xF)-1e-6);
+
+    // Dibujar ROL (de xF a xD) y SOL (de xB a xF)
+    dynG.appendChild(mkEl('line',{x1:tx(xF),y1:ty(yInt),x2:tx(xD),y2:ty(xD),stroke:'#7A4FB5','stroke-width':'1.8','stroke-linecap':'round'}));
+    dynG.appendChild(mkEl('line',{x1:tx(xB),y1:ty(xB),x2:tx(xF),y2:ty(yInt),stroke:'#1E8E5A','stroke-width':'1.8','stroke-linecap':'round'}));
+    // Línea q (vertical en xF, q=1)
+    dynG.appendChild(mkEl('line',{x1:tx(xF),y1:ty(xF),x2:tx(xF),y2:ty(yInt),stroke:'#E0922F','stroke-width':'1.4','stroke-dasharray':'4,3','opacity':'0.8'}));
+    // Marcadores xD, xB
+    [[xD,'x_D'],[xB,'x_W']].forEach(function(p){
+      dynG.appendChild(mkEl('circle',{cx:tx(p[0]),cy:ty(p[0]),r:'3.2',fill:'#555','stroke':'#fff','stroke-width':'1.2'}));
+    });
+
+    if(!feasible){
+      document.getElementById('mt-n').textContent='∞';
+      document.getElementById('mt-n-note').textContent='R ≤ R_min: reflujo insuficiente';
+      document.getElementById('mt-ratio').textContent=fmt(R/Rm);
+      document.getElementById('mt-feed').textContent='—';
+      document.getElementById('mt-height').textContent='∞';
+      document.getElementById('mt-height-note').textContent='se requieren infinitas etapas';
+      return;
+    }
+
+    // Escalonado McCabe-Thiele (construcción exacta)
+    var x=xD, y=xD, n=0, feed=null, maxN=80;
+    var segs=[];
+    while(x>xB+1e-9 && n<maxN){
+      var xn=xeq(y);
+      if(xn<0||xn>1){break;}
+      n++;
+      if(feed===null && xn<xF) feed=n;
+      // segmento horizontal (x,y)->(xn,y)
+      segs.push(['h',x,y,xn,y]);
+      var yn=opLine(xn);
+      // segmento vertical (xn,y)->(xn,yn)  (si llega al fondo, baja hasta xn en diagonal)
+      var yStop=(xn<=xB)? xn : yn;
+      segs.push(['v',xn,y,xn,yStop]);
+      // etiqueta de número de etapa en el codo
+      segs.push(['t',(x+xn)/2,y,n]);
+      if(xn<=xB) break;
+      x=xn; y=yn;
+    }
+
+    // Render escalones
+    segs.forEach(function(s){
+      if(s[0]==='t'){
+        dynG.appendChild(mkTxt(String(s[3]),{x:tx(s[1]),y:ty(s[2])-2,'text-anchor':'middle','font-size':'7.5','fill':'#B23A48','font-weight':'700'}));
+      } else {
+        dynG.appendChild(mkEl('line',{x1:tx(s[1]),y1:ty(s[2]),x2:tx(s[3]),y2:ty(s[4]),stroke:'#B23A48','stroke-width':'1','stroke-linecap':'round'}));
+      }
+    });
+
+    // Resultados
+    document.getElementById('mt-n').textContent=String(n)+(n>=maxN?'+':'');
+    document.getElementById('mt-n-note').textContent='incluye el rehervidor';
+    document.getElementById('mt-ratio').textContent=fmt(R/Rm);
+    document.getElementById('mt-feed').textContent=(feed||'—')+' / '+n;
+    // Altura como consecuencia (el rehervidor no es un plato de la torre)
+    var trays=Math.ceil((n-1)/Eo);            // platos reales, redondeo al entero
+    var height=trays*ts+3;                     // + 3 m de margen tope/fondo
+    document.getElementById('mt-height').textContent=height.toFixed(1).replace('.',',')+' m';
+    document.getElementById('mt-height-note').innerHTML=trays+' platos reales × '+ts.toFixed(2).replace('.',',')+' m + 3 m';
+  }
+
+  ['mt-r','mt-xd','mt-eff','mt-ts'].forEach(function(id){document.getElementById(id).addEventListener('input',update);});
   update();
 })();
 </script>
