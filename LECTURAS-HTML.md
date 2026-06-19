@@ -16,7 +16,30 @@ La **plantilla canónica** es:
 public/classroom/iqya-2031-2026-20/lecturas/Lectura_06/Lectura_06_Agitacion.html
 ```
 
-**Para crear una lectura nueva, SIEMPRE se parte de copiar la lectura anterior** (la de número más alto) y se reemplaza el contenido. Nunca se inventa una estructura nueva, ni se usan componentes React, ni Tailwind, ni `ReadingLayout`.
+---
+
+## ⛔ PASO 0 OBLIGATORIO Y BLOQUEANTE — copiar, nunca crear desde cero
+
+> **Antes de escribir una sola línea de una lectura nueva, el primer comando SIEMPRE es copiar una lectura existente.** No se autora el shell desde cero. No se "recrea" la estructura de memoria. Se parte de un archivo real que ya está en producción.
+
+```bash
+cp -r public/classroom/{curso}/lecturas/Lectura_{NN-1} \
+      public/classroom/{curso}/lecturas/Lectura_{NN}
+# luego renombrar el .html y reemplazar SOLO el contenido
+```
+
+**Y no basta con mirar "la anterior" — hay que mirar LAS ANTERIORES (todas).** La colección es la fuente de verdad, no la última lectura sola:
+
+1. **Lista todas las lecturas existentes** del curso antes de empezar:
+   ```bash
+   ls public/classroom/{curso}/lecturas/
+   ```
+2. **Copia la de número más alto** como base (es la más reciente y ya validada).
+3. **Compara tu archivo nuevo contra el conjunto** para detectar cualquier desviación. Las clases, el `<head>`, el `<style>` y los scripts deben ser un subconjunto de lo que ya usan las demás. Si aparece una clase, una fuente o un bloque de estilo que **ninguna otra lectura tiene**, te desviaste — vuelve al Paso 0.
+
+> **El error real que motivó esta regla:** una lectura se generó con un sistema de diseño propio (otra fuente, otro fondo, clases inventadas como `.gal-*`, `.feq-*`, `.chart-wrap`, `.challenges`). El `deloitte.css` era idéntico, pero todo el `<style>` interno y el markup eran otros, así que se veía **distinta a todas las demás**. Hubo que reescribirla entera. Copiar desde el Paso 0 lo habría evitado por completo.
+
+Nunca se inventa una estructura nueva, ni se usan componentes React, ni Tailwind, ni `ReadingLayout`.
 
 ---
 
@@ -138,8 +161,9 @@ En `components/data/classroom/pou-2026-20.ts`, dentro del array `readings`, agre
 
 ## Checklist al crear una lectura
 
+0. [ ] **PASO 0 (bloqueante):** `ls` de todas las lecturas existentes del curso → `cp -r Lectura_{NN-1} Lectura_{NN}` y renombrar el `.html`. **Partir SIEMPRE de copiar; jamás autorar el shell desde cero.**
 1. [ ] Leer TODO el material fuente completo.
-2. [ ] `cp -r Lectura_{NN-1} Lectura_{NN}` y renombrar el `.html` (parte de la plantilla anterior, nunca de cero).
+2. [ ] Confirmar que el `<head>`, el `<style>` y los scripts quedan **idénticos** a la base copiada (solo se reemplaza contenido, no el shell).
 3. [ ] Confirmar que `Lectura_NN/assets/deloitte.css` existe (copiarlo si no).
 4. [ ] Reemplazar `<title>`, `.badge`, `<h1>`, `.subtitle`, `.doc-meta`.
 5. [ ] Reescribir el `nav.side-nav` con las secciones reales (01…NN).
@@ -150,9 +174,19 @@ En `components/data/classroom/pou-2026-20.ts`, dentro del array `readings`, agre
 10. [ ] Adaptar/duplicar los IIFE de JS (galería, calculadora) con los datos de esta lectura.
 11. [ ] Verificar TODOS los acentos.
 12. [ ] Agregar la entrada en `pou-2026-20.ts` con `href` (sin tocar el registry ni crear `.tsx`).
-13. [ ] `npx vite build` para confirmar que nada se rompe.
-14. [ ] Abrir el `.html` y verificar: barra de progreso, side-nav con scroll-spy, KaTeX renderizado, galería y calculadora funcionando.
-15. [ ] Commit y push (deploy automático a GitHub Pages).
+13. [ ] **Chequeo de divergencia (bloqueante):** confirmar que la lectura nueva NO introduce clases/estilos que ninguna otra lectura del curso tenga. Si aparece algo propio, se desvió del shell → volver al Paso 0. Ejemplo:
+    ```bash
+    # No debe haber NINGUNA coincidencia de patrones ajenos al shell canónico:
+    grep -nE 'Source Sans|\.gal-|feq-|chart-wrap|calc-reactive|cr-grid|challenges|background:var\(--blanco\)' \
+      public/classroom/{curso}/lecturas/Lectura_{NN}/*.html
+    # Y las clases canónicas SÍ deben estar presentes:
+    grep -c 'callout--tip\|imp-gallery\|calc-wrap\|table class="ou"\|figure class="fig"\|ol class="refs"' \
+      public/classroom/{curso}/lecturas/Lectura_{NN}/*.html
+    ```
+14. [ ] `npx vite build` para confirmar que nada se rompe.
+15. [ ] Abrir el `.html` y verificar: barra de progreso, side-nav con scroll-spy, KaTeX renderizado, galería y calculadora funcionando.
+16. [ ] **Comparación visual lado a lado** contra al menos otras dos lecturas del curso: header, tarjeta blanca sobre fondo gris, side-nav, callouts, tablas y figuras deben ser indistinguibles.
+17. [ ] Commit y push (deploy automático a GitHub Pages).
 
 ---
 
