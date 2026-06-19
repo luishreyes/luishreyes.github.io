@@ -214,6 +214,44 @@
   a.pl::after { content: '\2197'; font-size: .75em; margin-left: .2em; color: var(--verde); }
   a.pl:hover { color: var(--verde-osc); }
 
+  /* ===================== STEPPER ===================== */
+  .stepper { margin: 26px 0 8px; }
+  .step-track { display: flex; gap: 0; margin-bottom: 22px; overflow-x: auto; padding-bottom: 4px; }
+  .step-pip { display: flex; align-items: center; flex-shrink: 0; }
+  .step-dot {
+    width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--gris-4);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; color: var(--gris-3); background: var(--blanco);
+    cursor: pointer; transition: all .2s; flex-shrink: 0;
+  }
+  .step-dot.done { border-color: var(--verde); background: var(--verde-claro); color: var(--verde-osc); }
+  .step-dot.active { border-color: var(--verde); background: var(--verde); color: #fff; }
+  .step-line { flex: 1; height: 2px; background: var(--gris-5); min-width: 18px; }
+  .step-line.done { background: var(--verde); }
+  .step-panel { display: none; animation: fadeInUp .3s ease; }
+  .step-panel.active { display: block; }
+  .step-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .step-num { font-size: 28px; font-weight: 900; color: var(--verde); line-height: 1; }
+  .step-title { font-size: 18px; font-weight: 700; color: var(--gris-1); }
+  .step-body { font-size: 15px; color: var(--gris-1); line-height: 1.6; }
+  .step-body p { margin-bottom: 10px; font-size: 15px; }
+  .step-body ul, .step-body ol { padding-left: 22px; margin-bottom: 10px; font-size: 15px; }
+  .step-body li { margin-bottom: 5px; }
+  .step-nav { display: flex; gap: 8px; margin-top: 14px; justify-content: space-between; }
+  .step-nav button {
+    font-family: var(--tipo); font-size: 14px; font-weight: 600;
+    padding: 8px 18px; border-radius: 6px; cursor: pointer; border: 1.5px solid var(--verde);
+    transition: all .15s;
+  }
+  .step-prev { background: var(--blanco); color: var(--verde-osc); }
+  .step-prev:hover { background: var(--verde-claro); }
+  .step-next { background: var(--verde); color: #fff; border-color: var(--verde); }
+  .step-next:hover { background: var(--verde-osc); }
+  .we-result {
+    background: var(--verde-claro); border-radius: 6px; padding: 10px 14px;
+    margin-top: 8px; font-weight: 700; color: var(--verde-osc); font-size: 15px;
+  }
+
   /* ===================== FOOTER ===================== */
   .doc-foot {
     border-top: 1px solid var(--gris-4); margin-top: 50px; padding-top: 22px;
@@ -558,14 +596,15 @@
       $$x_i = \frac{z_i}{1 + \Psi(K_i - 1)} \qquad;\qquad y_i = K_i \cdot x_i$$
 
       <h3 class="sub">Algoritmo de cálculo flash isotérmico</h3>
-      <ol>
-        <li>Conocidos: \(T_{flash}\), \(P_{flash}\), \(z_i\).</li>
-        <li>Calcular \(K_i = P_i^{sat}(T_{flash}) / P_{flash}\) para cada componente con la ecuación de Antoine.</li>
-        <li>Verificar que la alimentación esté en la región bifásica: \(\sum K_i z_i > 1\) (punto de burbuja) y \(\sum z_i/K_i > 1\) (punto de rocío). Si ambas se cumplen, hay dos fases.</li>
-        <li>Resolver la ecuación de Rachford-Rice por bisección para obtener \(\Psi\).</li>
-        <li>Calcular \(x_i\) e \(y_i\) con las ecuaciones anteriores.</li>
-        <li>Normalizar: \(\sum x_i = 1\), \(\sum y_i = 1\) (verificación).</li>
-      </ol>
+      <div class="stepper" id="stepper-flash">
+        <div class="step-track" id="flash-track"></div>
+        <div id="flash-panels"></div>
+        <div class="step-nav">
+          <button class="step-prev" onclick="flashStep(-1)">← Anterior</button>
+          <span id="flash-counter" style="font-size:13px;color:var(--gris-2);align-self:center">Paso 1 de 6</span>
+          <button class="step-next" onclick="flashStep(1)">Siguiente →</button>
+        </div>
+      </div>
 
       <!-- Calculadora Flash binaria -->
       <div class="calc-wrap">
@@ -645,21 +684,24 @@
 </div><!-- .outer-layout -->
 
 <!-- KaTeX auto-render -->
+<script>
+function renderMath(el){
+  if(typeof renderMathInElement==='function'){
+    renderMathInElement(el||document.body,{
+      delimiters:[
+        {left:'$$',right:'$$',display:true},
+        {left:'$',right:'$',display:false},
+        {left:'\\(',right:'\\)',display:false},
+        {left:'\\[',right:'\\]',display:true}
+      ],
+      throwOnError:false
+    });
+  }
+}
+</script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
   onload="renderMath()"></script>
-<script>
-function renderMath(){
-  renderMathInElement(document.body,{
-    delimiters:[
-      {left:'$$',right:'$$',display:true},
-      {left:'$',right:'$',display:false},
-      {left:'\\(',right:'\\)',display:false}
-    ],
-    throwOnError:false
-  });
-}
-</script>
 <script>
 /* ── Progress bar ─────────────────────────────────────────────── */
 (function(){
@@ -748,6 +790,68 @@ function renderMath(){
 })();
 </script>
 <script>
+/* ── Flash algorithm stepper ────────────────────────────────── */
+(function(){
+  var steps=[
+    {
+      title:'Datos de entrada',
+      body:'<p>Se especifican tres variables de diseño:</p><ul><li>$T_{flash}$ — temperatura del tambor flash (fija o resultado del balance de energía)</li><li>$P_{flash}$ — presión de operación en el tambor</li><li>$z_i$ — fracción molar de cada componente $i$ en la alimentación</li></ul><p>Con estas tres se determinan todos los demás: $K_i$, $\\Psi$, $x_i$, $y_i$.</p>'
+    },
+    {
+      title:'Calcular constantes de equilibrio K<sub>i</sub>',
+      body:'<p>Para cada componente se obtiene la presión de saturación $P_i^{sat}$ a $T_{flash}$ usando la ecuación de Antoine:</p>$$\\log_{10}P_i^{sat} = A_i - \\frac{B_i}{C_i + T}$$<p>y la razón de equilibrio es:</p>$$K_i = \\frac{P_i^{sat}(T_{flash})}{P_{flash}}$$<p>$K_i > 1$ indica que el componente prefiere la fase vapor; $K_i < 1$, la fase líquida.</p>'
+    },
+    {
+      title:'Verificar que existen dos fases',
+      body:'<p>Antes de resolver el flash, se confirma que la mezcla realmente se separa. Las dos condiciones son:</p><ul><li><b>Burbuja:</b> $\\displaystyle\\sum_i K_i z_i > 1$ (la mezcla supera su punto de burbuja)</li><li><b>Rocío:</b> $\\displaystyle\\sum_i \\frac{z_i}{K_i} > 1$ (la mezcla no ha alcanzado su punto de rocío)</li></ul><p>Si solo se cumple la primera, la mezcla es vapor supercalentado ($\\Psi = 1$). Si ninguna se cumple, es líquido subenfriado ($\\Psi = 0$). Solo cuando <em>ambas</em> se cumplen hay coexistencia de fases y $0 < \\Psi < 1$.</p><div class="we-result">Condición de dos fases: $\\sum K_i z_i > 1$ <b>y</b> $\\sum z_i/K_i > 1$</div>'
+    },
+    {
+      title:'Resolver la ecuación de Rachford-Rice para Ψ',
+      body:'<p>Se busca $\\Psi = V/F$ (fracción vaporizada) que satisface:</p>$$\\sum_{i=1}^{N_c} \\frac{z_i(K_i-1)}{1 + \\Psi(K_i-1)} = 0$$<p>Para un sistema <b>binario</b> esta suma es lineal en $\\Psi$ y tiene solución cerrada:</p>$$\\Psi = \\frac{z_A(K_A-K_B)-(1-K_B)}{(K_A-1)(1-K_B)}$$<p>Para <b>multicomponente</b> ($N_c > 2$) la función es monótona decreciente de $\\Psi$; se resuelve numéricamente por bisección entre $\\Psi \\in (0,1)$.</p>'
+    },
+    {
+      title:'Calcular composiciones x<sub>i</sub> e y<sub>i</sub>',
+      body:'<p>Con $\\Psi$ conocido, las composiciones de cada fase se obtienen directamente:</p>$$x_i = \\frac{z_i}{1 + \\Psi(K_i-1)}$$$$y_i = K_i \\cdot x_i$$<p>Estas ecuaciones garantizan que el equilibrio vapor-líquido se satisface simultáneamente con el balance de materia.</p>'
+    },
+    {
+      title:'Normalizar y verificar',
+      body:'<p>Como verificación, las fracciones molares de cada fase deben sumar exactamente 1:</p>$$\\sum_i x_i = 1 \\qquad \\sum_i y_i = 1$$<p>Un error numérico significativo (> 10⁻⁶) indica que la bisección no convergió o que los $K_i$ son inconsistentes con la condición de dos fases. En ese caso volver al Paso 3 y revisar los datos de entrada.</p><div class="we-result">Con $\\Psi$, $x_i$ e $y_i$ se completa el balance total: $V = \\Psi F$, $L = (1-\\Psi)F$.</div>'
+    }
+  ];
+  var track=document.getElementById('flash-track');
+  var panels=document.getElementById('flash-panels');
+  var counter=document.getElementById('flash-counter');
+  if(!track||!panels)return;
+  var cur=0;
+  steps.forEach(function(s,i){
+    var pip=document.createElement('div');pip.className='step-pip';
+    var dot=document.createElement('div');dot.className='step-dot'+(i===0?' active':'');dot.textContent=i+1;
+    dot.addEventListener('click',function(){cur=i;render();});
+    pip.appendChild(dot);
+    if(i<steps.length-1){var line=document.createElement('div');line.className='step-line';pip.appendChild(line);}
+    track.appendChild(pip);
+  });
+  steps.forEach(function(s,i){
+    var p=document.createElement('div');
+    p.className='step-panel'+(i===0?' active':'');
+    p.innerHTML='<div class="step-header"><div class="step-num">0'+(i+1)+'</div><div class="step-title">'+s.title+'</div></div><div class="step-body">'+s.body+'</div>';
+    panels.appendChild(p);
+    renderMath(p);
+  });
+  function render(){
+    var dots=track.querySelectorAll('.step-dot');
+    var lines=track.querySelectorAll('.step-line');
+    var ps=panels.querySelectorAll('.step-panel');
+    dots.forEach(function(d,i){d.className='step-dot'+(i<cur?' done':i===cur?' active':'');});
+    lines.forEach(function(l,i){l.className='step-line'+(i<cur?' done':'');});
+    ps.forEach(function(p,i){p.className='step-panel'+(i===cur?' active':'');});
+    counter.textContent='Paso '+(cur+1)+' de '+steps.length;
+    renderMath(panels.querySelectorAll('.step-panel.active')[0]);
+  }
+  render();
+  window.flashStep=function(d){cur=Math.max(0,Math.min(steps.length-1,cur+d));render();};
+})();
+
 /* ── Lightbox (tap-to-zoom on figures) ─────────────────────── */
 (function(){
   var ov=document.createElement('div');

@@ -211,6 +211,44 @@
   /* ===================== PLATFORM LINKS ===================== */
   a.pl { color: inherit; border-bottom: 2px solid var(--verde); text-decoration: none; white-space: nowrap; }
   a.pl::after { content: '\2197'; font-size: .75em; margin-left: .2em; color: var(--verde); }
+
+  /* ===================== STEPPER ===================== */
+  .stepper { margin: 26px 0 8px; }
+  .step-track { display: flex; gap: 0; margin-bottom: 22px; overflow-x: auto; padding-bottom: 4px; }
+  .step-pip { display: flex; align-items: center; flex-shrink: 0; }
+  .step-dot {
+    width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--gris-4);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; color: var(--gris-3); background: var(--blanco);
+    cursor: pointer; transition: all .2s; flex-shrink: 0;
+  }
+  .step-dot.done { border-color: var(--verde); background: var(--verde-claro); color: var(--verde-osc); }
+  .step-dot.active { border-color: var(--verde); background: var(--verde); color: #fff; }
+  .step-line { flex: 1; height: 2px; background: var(--gris-5); min-width: 18px; }
+  .step-line.done { background: var(--verde); }
+  .step-panel { display: none; animation: fadeInUp .3s ease; }
+  .step-panel.active { display: block; }
+  .step-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .step-num { font-size: 28px; font-weight: 900; color: var(--verde); line-height: 1; }
+  .step-title { font-size: 18px; font-weight: 700; color: var(--gris-1); }
+  .step-body { font-size: 15px; color: var(--gris-1); line-height: 1.6; }
+  .step-body p { margin-bottom: 10px; font-size: 15px; }
+  .step-body ul, .step-body ol { padding-left: 22px; margin-bottom: 10px; font-size: 15px; }
+  .step-body li { margin-bottom: 5px; }
+  .step-nav { display: flex; gap: 8px; margin-top: 14px; justify-content: space-between; }
+  .step-nav button {
+    font-family: var(--tipo); font-size: 14px; font-weight: 600;
+    padding: 8px 18px; border-radius: 6px; cursor: pointer; border: 1.5px solid var(--verde);
+    transition: all .15s;
+  }
+  .step-prev { background: var(--blanco); color: var(--verde-osc); }
+  .step-prev:hover { background: var(--verde-claro); }
+  .step-next { background: var(--verde); color: #fff; border-color: var(--verde); }
+  .step-next:hover { background: var(--verde-osc); }
+  .we-result {
+    background: var(--verde-claro); border-radius: 6px; padding: 10px 14px;
+    margin-top: 8px; font-weight: 700; color: var(--verde-osc); font-size: 15px;
+  }
   a.pl:hover { color: var(--verde-osc); }
 
   /* ===================== FOOTER ===================== */
@@ -476,13 +514,14 @@
         <p class="calc-note">Requiere x<sub>W</sub> &lt; x₀. Usa integración numérica (cuadratura de Simpson) de la ecuación de Rayleigh con α constante; el resultado coincide con la forma cerrada analítica de arriba.</p>
       </div>
 
-      <div class="callout callout--tip">
-        <span class="ic">i</span>
-        <div>
-          <b>Ejemplo resuelto</b>
-          <p>Se cargan \(L_0 = 100\) mol de una mezcla con \(x_0 = 0{,}40\) (fracción molar del volátil) y \(\alpha = 2{,}3\). Se destila hasta dejar el caldero en \(x_W = 0{,}10\). Aplicando la forma cerrada:</p>
-          <p>\(\ln(L_0/L_W) = \frac{1}{1{,}3}\left[\ln\frac{0{,}40}{0{,}10} - 2{,}3\,\ln\frac{0{,}60}{0{,}90}\right] = \frac{1}{1{,}3}\left[1{,}386 - 2{,}3(-0{,}405)\right] \approx 1{,}784\).</p>
-          <p>Entonces \(L_W/L_0 = e^{-1{,}784} \approx 0{,}168\), es decir, queda el 16,8 % de la carga (16,8 mol) en el caldero y se destilan 83,2 mol. La composición promedio del destilado es \(\bar{y} = \frac{0{,}40 - 0{,}168\times 0{,}10}{1-0{,}168} \approx 0{,}461\), y la recuperación del volátil es \(\frac{83{,}2\times 0{,}461}{100\times 0{,}40}\approx 95{,}8\,\%\). Verifica estos valores moviendo los deslizadores de la calculadora a α = 2,30, x₀ = 0,40 y x<sub>W</sub> = 0,10.</p>
+      <h3 class="sub">Ejemplo resuelto — ecuación de Rayleigh</h3>
+      <div class="stepper" id="stepper-rayleigh">
+        <div class="step-track" id="rayleigh-track"></div>
+        <div id="rayleigh-panels"></div>
+        <div class="step-nav">
+          <button class="step-prev" onclick="rayleighStep(-1)">← Anterior</button>
+          <span id="rayleigh-counter" style="font-size:13px;color:var(--gris-2);align-self:center">Paso 1 de 5</span>
+          <button class="step-next" onclick="rayleighStep(1)">Siguiente →</button>
         </div>
       </div>
 
@@ -659,21 +698,24 @@
 </div><!-- .outer-layout -->
 
 <!-- KaTeX auto-render -->
+<script>
+function renderMath(el){
+  if(typeof renderMathInElement==='function'){
+    renderMathInElement(el||document.body,{
+      delimiters:[
+        {left:'$$',right:'$$',display:true},
+        {left:'$',right:'$',display:false},
+        {left:'\\(',right:'\\)',display:false},
+        {left:'\\[',right:'\\]',display:true}
+      ],
+      throwOnError:false
+    });
+  }
+}
+</script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
   onload="renderMath()"></script>
-<script>
-function renderMath(){
-  renderMathInElement(document.body,{
-    delimiters:[
-      {left:'$$',right:'$$',display:true},
-      {left:'$',right:'$',display:false},
-      {left:'\\(',right:'\\)',display:false}
-    ],
-    throwOnError:false
-  });
-}
-</script>
 <script>
 /* ── Progress bar ─────────────────────────────────────────────── */
 (function(){
@@ -748,6 +790,64 @@ function renderMath(){
 })();
 </script>
 <script>
+/* ── Rayleigh worked-example stepper ────────────────────────── */
+(function(){
+  var steps=[
+    {
+      title:'Datos del problema',
+      body:'<p>Se plantea un sistema de destilación simple por lotes (alambique sin reflujo, una etapa de equilibrio). Los parámetros son:</p><ul><li>$L_0 = 100$ mol — carga inicial en el caldero</li><li>$x_0 = 0{,}40$ — fracción molar del componente volátil en la carga</li><li>$x_W = 0{,}10$ — fracción molar objetivo al final de la destilación</li><li>$\\alpha = 2{,}3$ — volatilidad relativa (constante durante el proceso)</li></ul><p>Se quiere calcular cuántos moles quedan en el caldero ($L_W$) y la composición promedio del destilado recolectado.</p>'
+    },
+    {
+      title:'Aplicar la forma cerrada de Rayleigh',
+      body:'<p>Para $\\alpha$ constante, la ecuación de Rayleigh se integra analíticamente:</p>$$\\ln\\frac{L_0}{L_W} = \\frac{1}{\\alpha-1}\\left[\\ln\\frac{x_0}{x_W} - \\alpha\\,\\ln\\frac{1-x_0}{1-x_W}\\right]$$<p>Sustituyendo los valores numéricos ($\\alpha - 1 = 1{,}3$):</p>$$\\ln\\frac{L_0}{L_W} = \\frac{1}{1{,}3}\\left[\\ln\\frac{0{,}40}{0{,}10} - 2{,}3\\,\\ln\\frac{0{,}60}{0{,}90}\\right]$$$$= \\frac{1}{1{,}3}\\left[\\ln 4 - 2{,}3\\,\\ln(0{,}\\overline{6})\\right]$$$$= \\frac{1}{1{,}3}\\bigl[1{,}386 - 2{,}3\\times(-0{,}405)\\bigr]$$<div class="we-result">$\\ln(L_0/L_W) \\approx 1{,}784$</div>'
+    },
+    {
+      title:'Calcular L<sub>W</sub> y moles destilados',
+      body:'<p>Despejando $L_W$ desde el resultado anterior:</p>$$\\frac{L_W}{L_0} = e^{-1{,}784} \\approx 0{,}168$$$$L_W = 0{,}168 \\times 100 = 16{,}8 \\text{ mol}$$<p>Los moles destilados (recogidos en el receptor) son:</p>$$D = L_0 - L_W = 100 - 16{,}8$$<div class="we-result">$D = 83{,}2$ mol &nbsp;(el 83,2 % de la carga se destila)</div><p style="font-size:13px;color:var(--gris-2);margin-top:6px">El 16,8 % restante permanece en el caldero con $x_W = 0{,}10$, empobrecido en el componente volátil.</p>'
+    },
+    {
+      title:'Composición promedio del destilado',
+      body:'<p>La composición promedio del destilado $\\bar{y}$ se obtiene por balance global de materia del componente volátil:</p>$$L_0 x_0 = L_W x_W + D \\bar{y}$$$$\\bar{y} = \\frac{L_0 x_0 - L_W x_W}{D} = \\frac{100\\times 0{,}40 - 16{,}8\\times 0{,}10}{83{,}2}$$$$= \\frac{40 - 1{,}68}{83{,}2}$$<div class="we-result">$\\bar{y} \\approx 0{,}461$ &nbsp;(fracción molar promedio del destilado)</div><p style="font-size:13px;color:var(--gris-2);margin-top:6px">Nótese que $\\bar{y} > x_0$: el destilado está enriquecido respecto a la carga original. Sin embargo, $\\bar{y}$ es solo el promedio acumulado — al inicio de la destilación el vapor era más rico, y al final más pobre.</p>'
+    },
+    {
+      title:'Verificar la recuperación del componente volátil',
+      body:'<p>La fracción del volátil originalmente cargado que queda en el destilado:</p>$$\\text{Recuperación} = \\frac{D\\,\\bar{y}}{L_0\\,x_0} = \\frac{83{,}2\\times 0{,}461}{100\\times 0{,}40}$$<div class="we-result">Recuperación $\\approx 95{,}8\\,\\%$</div><p>Este es un resultado típico de una destilación sencilla: con $\\alpha = 2{,}3$ y bajando el caldero de $x = 0{,}40$ a $x = 0{,}10$, se logra recuperar el 95,8 % del volátil en el destilado con pureza promedio de 46,1 %.</p><p style="font-size:13px;color:var(--gris-2)">Verifica estos valores moviendo los deslizadores de la calculadora de arriba a $\\alpha = 2{,}30$, $x_0 = 0{,}40$ y $x_W = 0{,}10$.</p>'
+    }
+  ];
+  var track=document.getElementById('rayleigh-track');
+  var panels=document.getElementById('rayleigh-panels');
+  var counter=document.getElementById('rayleigh-counter');
+  if(!track||!panels)return;
+  var cur=0;
+  steps.forEach(function(s,i){
+    var pip=document.createElement('div');pip.className='step-pip';
+    var dot=document.createElement('div');dot.className='step-dot'+(i===0?' active':'');dot.textContent=i+1;
+    dot.addEventListener('click',function(){cur=i;render();});
+    pip.appendChild(dot);
+    if(i<steps.length-1){var line=document.createElement('div');line.className='step-line';pip.appendChild(line);}
+    track.appendChild(pip);
+  });
+  steps.forEach(function(s,i){
+    var p=document.createElement('div');
+    p.className='step-panel'+(i===0?' active':'');
+    p.innerHTML='<div class="step-header"><div class="step-num">0'+(i+1)+'</div><div class="step-title">'+s.title+'</div></div><div class="step-body">'+s.body+'</div>';
+    panels.appendChild(p);
+    renderMath(p);
+  });
+  function render(){
+    var dots=track.querySelectorAll('.step-dot');
+    var lines=track.querySelectorAll('.step-line');
+    var ps=panels.querySelectorAll('.step-panel');
+    dots.forEach(function(d,i){d.className='step-dot'+(i<cur?' done':i===cur?' active':'');});
+    lines.forEach(function(l,i){l.className='step-line'+(i<cur?' done':'');});
+    ps.forEach(function(p,i){p.className='step-panel'+(i===cur?' active':'');});
+    counter.textContent='Paso '+(cur+1)+' de '+steps.length;
+    renderMath(panels.querySelectorAll('.step-panel.active')[0]);
+  }
+  render();
+  window.rayleighStep=function(d){cur=Math.max(0,Math.min(steps.length-1,cur+d));render();};
+})();
+
 /* ── Lightbox (tap-to-zoom on figures) ─────────────────────── */
 (function(){
   var ov=document.createElement('div');
