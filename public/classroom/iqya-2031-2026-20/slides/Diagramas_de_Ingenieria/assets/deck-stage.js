@@ -556,6 +556,43 @@
       ::slotted([data-deck-skip]) { display: none !important; }
       .overlay, .rail, .rail-resize, .ctxmenu, .confirm-backdrop { display: none !important; }
     }
+
+    /* ── Mobile responsive (≤768px): break out of fixed-canvas, reflow all slides ── */
+    @media (max-width: 768px) {
+      :host {
+        position: static !important;
+        overflow-y: auto;
+        height: auto;
+        background: #f2f2f2;
+      }
+      .stage {
+        position: static !important;
+        display: block !important;
+      }
+      .canvas {
+        transform: none !important;
+        width: 100% !important;
+        height: auto !important;
+        position: static !important;
+        background: transparent !important;
+      }
+      ::slotted(*) {
+        position: static !important;
+        inset: auto !important;
+        width: 100% !important;
+        height: auto !important;
+        min-height: 0 !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        pointer-events: auto !important;
+        overflow: visible !important;
+        box-shadow: 0 2px 12px rgba(0,0,0,.10) !important;
+        border-radius: 6px !important;
+        margin-bottom: 12px !important;
+      }
+      .rail, .rail-resize { display: none !important; }
+      .overlay { display: none !important; }
+    }
   `;
 
   class DeckStage extends HTMLElement {
@@ -1202,6 +1239,15 @@
         if (this._overlay) this._overlay.style.marginLeft = '0';
         return;
       }
+      // Mobile: CSS @media handles layout; skip JS scaling so the canvas
+      // can flow naturally as a block-level element.
+      if (window.innerWidth <= 768) {
+        this._canvas.style.transform = 'none';
+        if (stage) stage.style.left = '0';
+        if (this._overlay) this._overlay.style.display = 'none';
+        return;
+      }
+      if (this._overlay) this._overlay.style.display = '';
       const rw = this._railWidth();
       if (stage) stage.style.left = rw + 'px';
       // Overlay is centred on the viewport via left:50% + translate(-50%);
