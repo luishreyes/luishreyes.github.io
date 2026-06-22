@@ -262,6 +262,89 @@ CSS necesario en `<style>`:
 
 **Regla: los videos siempre a la DERECHA** en un split, nunca debajo del contenido.
 
+Para **un solo video** en un split (el caso más común), usar `.vid-16` directamente dentro de la columna `.copy` derecha:
+
+```html
+<section class="s s--tint" data-screen-label="Nombre slide video">
+  <div class="split split--wideR" style="align-items:center;">
+    <div class="copy"><!-- contenido izquierda --></div>
+    <div class="copy">
+      <div class="vid-16">
+        <iframe src="https://www.youtube.com/embed/VIDEO_ID" title="Título"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen></iframe>
+      </div>
+      <p class="vid-cap">Descripción breve. Si no abre, ver en
+        <a class="platform-link" href="https://www.youtube.com/watch?v=VIDEO_ID" target="_blank" rel="noopener">YouTube</a>.
+      </p>
+    </div>
+  </div>
+</section>
+```
+
+CSS requerido:
+```css
+.vid-16 { aspect-ratio: 16/9; border-radius: 12px; overflow: hidden; background: #000; position: relative; }
+.vid-16 iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.vid-cap { font-size: 22px; color: var(--gris-3); margin: 10px 0 0; line-height: 1.4; }
+.platform-link { color: inherit; text-decoration: none; border-bottom: 2px solid var(--verde); font-weight: 600; }
+.platform-link::after { content: " ↗"; }
+```
+
+---
+
+## Componente interactivo: `.lossmenu` (menú de pestañas A/B/C)
+
+Para slides con varias opciones/categorías de imágenes que se quieren mostrar una a la vez en clase:
+
+```html
+<section class="s s--tint" data-screen-label="Nombre slide lossmenu">
+  <div class="kicker">Subtítulo</div>
+  <h2 class="s-head">Título del slide</h2>
+  <div class="lossmenu" id="lm1">
+    <div class="tabs">
+      <button class="tab is-active" data-panel="a">A — Nombre A</button>
+      <button class="tab" data-panel="b">B — Nombre B</button>
+      <button class="tab" data-panel="c">C — Nombre C</button>
+    </div>
+    <div class="panel is-active" id="lm1-a">
+      <div class="img-panel"><img src="assets/img/ImagenA.webp" alt="Descripción A"></div>
+      <div class="copy"><h3>Título panel A</h3><p>Descripción A...</p></div>
+    </div>
+    <div class="panel" id="lm1-b"><!-- panel B --></div>
+    <div class="panel" id="lm1-c"><!-- panel C --></div>
+  </div>
+</section>
+```
+
+CSS del componente:
+```css
+.lossmenu .tabs { display: inline-flex; gap: 6px; border: 2px solid var(--gris-4); border-radius: 999px; padding: 6px; background: #fff; margin-bottom: 32px; }
+.lossmenu .tab { font-size: 24px; font-weight: 600; padding: 10px 28px; border-radius: 999px; border: none; background: transparent; cursor: pointer; color: var(--gris-2); transition: background .2s, color .2s; }
+.lossmenu .tab.is-active { background: var(--verde); color: #fff; }
+.lossmenu .panel { display: none; }
+.lossmenu .panel.is-active { display: grid; grid-template-columns: 1.25fr 0.75fr; gap: 56px; animation: fadeInUp .35s ease both; }
+```
+
+JS (IIFE al final del `<body>`, antes del lightbox):
+```js
+(function () {
+  document.querySelectorAll('.lossmenu').forEach(function (menu) {
+    var tabs = Array.prototype.slice.call(menu.querySelectorAll('.tab'));
+    var panels = Array.prototype.slice.call(menu.querySelectorAll('.panel'));
+    tabs.forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        tabs.forEach(function (t) { t.classList.remove('is-active'); });
+        panels.forEach(function (p) { p.classList.remove('is-active'); });
+        tab.classList.add('is-active');
+        var target = menu.querySelector('#' + menu.id + '-' + tab.dataset.panel);
+        if (target) target.classList.add('is-active');
+      });
+    });
+  });
+})();
+```
+
 ---
 
 ## Imágenes: reglas de oro
@@ -342,6 +425,17 @@ Luego ver cada PNG con `Read` tool y decidir qué contenido pertenece a cada sli
 <div class="fml">
   $$E = W_i \times 10\left(\frac{1}{\sqrt{P_{80}}} - \frac{1}{\sqrt{F_{80}}}\right)\ \frac{\text{kWh}}{\text{ton}}$$
 </div>
+```
+
+### Tamaño de fuente KaTeX
+
+Siempre incluir en el `<style>` estas tres reglas para que las fórmulas se vean bien en el canvas 1920×1080:
+
+```css
+.katex { font-size: 1.2em; }
+.katex-display { margin: .2em 0; }
+.fml .katex-display > .katex { font-size: 1.4em; }
+.card .fml .katex-display > .katex { font-size: 1.2em; }
 ```
 
 ### Trampas comunes
@@ -523,6 +617,7 @@ El `deck-stage.js` ya tiene el parche para ocultar el carrusel (rail) al entrar 
 5. **Lightbox como `<dialog>`.** Un `<div>` con `position:fixed` no funciona en fullscreen.
 6. **GIFs animados conservan la animación.** No convertir a WebP.
 7. **No emojis — SVG Lucide.**
+8. **Pill "A trabajar"**: el CSS de `.close .next .pill` siempre debe incluir `white-space: nowrap; flex-shrink: 0;` para que el texto nunca se parta en dos líneas en el canvas 1920×1080.
 
 ---
 
@@ -530,9 +625,9 @@ El `deck-stage.js` ya tiene el parche para ocultar el carrusel (rail) al entrar 
 
 Copiar la presentación más reciente como punto de partida:
 ```
-public/classroom/iqya-2031-2026-20/slides/Reduccion_de_Tamano/Presentacion_Reduccion_de_Tamano.html
+public/classroom/iqya-2031-2026-20/slides/Flujo_de_Fluidos/Presentacion_Flujo_de_Fluidos.html
 ```
-Incluye: portada, agenda, divisores, slides con split, cards, fórmulas KaTeX, GIFs, lightbox `<dialog>`, footer JS, CSS completo.
+Incluye: portada, agenda, divisores, slides con split, cards, fórmulas KaTeX, GIFs, lightbox `<dialog>`, footer JS, CSS completo, lossmenu interactivo, video embebido en split.
 
 ---
 
