@@ -708,5 +708,13 @@ export const pou202620Course: Course = {
       sessionNumber: 6,
       file: 'Reduccion_de_Tamano/Presentacion_Reduccion_de_Tamano.html',
     },
+    {
+      id: 'flujo-de-fluidos',
+      title: 'Flujo de fluidos',
+      description:
+        'Ecuación de Bernoulli y energía mecánica, medidor Venturi, pérdidas mayores (Darcy-Weisbach, Moody, Colebrook) y menores, redes en serie y paralelo, punto de operación, velocidades económicas y selección de diámetros, fluidos no-newtonianos, cavitación y golpe de ariete.',
+      sessionNumber: 7,
+      file: 'Flujo_de_Fluidos/Presentacion_Flujo_de_Fluidos.html',
+    },
   ],
 };
