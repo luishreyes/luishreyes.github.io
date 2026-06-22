@@ -724,5 +724,13 @@ export const pou202620Course: Course = {
       sessionNumber: 8,
       file: 'Bombas_Centrifugas/Presentacion_Bombas_Centrifugas.html',
     },
+    {
+      id: 'agitacion',
+      title: 'Agitación',
+      description:
+        'Objetivos de la agitación en IQ (mezcla, suspensión, dispersión, reacción, calefacción), tipos de impulsores (flujo axial: hélice marina, PBT, hidrofoil; flujo radial: Rushton RT-6, CD-6, Smith, Cowles; especializados: helicoidal, inducción de gas, ancla), geometría estándar del tanque, patrones de flujo, número de Reynolds y regímenes, número de potencia y curvas Np–Re, efecto de baffles, tiempo de mezclado, suspensión de sólidos (Zwietering), dispersión gas-líquido y kLa, escalamiento (P/V, tip speed, Re), transferencia de calor (Nu), instrumentación y control.',
+      sessionNumber: 9,
+      file: 'Agitacion/Presentacion_Agitacion.html',
+    },
   ],
 };
