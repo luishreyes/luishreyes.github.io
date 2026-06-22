@@ -716,5 +716,13 @@ export const pou202620Course: Course = {
       sessionNumber: 7,
       file: 'Flujo_de_Fluidos/Presentacion_Flujo_de_Fluidos.html',
     },
+    {
+      id: 'bombas-centrifugas',
+      title: 'Bombas centrífugas',
+      description:
+        'Principio centrífugo y anatomía, tipos de impulsores y velocidad específica, curvas características (H–Q, eficiencia, potencia) y BEP, NPSH disponible y requerido, mecanismo de cavitación y soluciones, curva del sistema y punto de operación, operación en serie y paralelo, eficiencia energética, materiales, sellos mecánicos, especificación y mantenimiento predictivo.',
+      sessionNumber: 8,
+      file: 'Bombas_Centrifugas/Presentacion_Bombas_Centrifugas.html',
+    },
   ],
 };
