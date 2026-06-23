@@ -118,7 +118,7 @@
       display: block;
       width: auto;
       max-width: 100%;
-      max-height: 9rem;
+      max-height: 13rem;
       margin: 0 auto;
       object-fit: contain;
       border-radius: 0.4rem;
@@ -136,7 +136,7 @@
       display: block;
       width: auto;
       max-width: 100%;
-      max-height: 14rem;
+      max-height: 19rem;
       margin: 0 auto;
       object-fit: contain;
       border-radius: 0.5rem;
@@ -147,7 +147,7 @@
       display: block;
       width: auto;
       max-width: 100%;
-      max-height: 13rem;
+      max-height: 17rem;
       margin: 0 auto;
       object-fit: contain;
     }
@@ -157,15 +157,42 @@
       align-items: center;
     }
     @media (max-width: 768px) { .two-col { grid-template-columns: 1fr; } }
-    /* Single-image example slides — keep image moderate so it doesn't push content */
+    /* Curso sobre IMÁGENES → la imagen debe dominar la pantalla */
     .two-col img.diagram {
-      width: 100%; height: auto; max-height: 60vh; object-fit: contain;
+      width: 100%; height: auto; max-height: 80vh; object-fit: contain;
+    }
+    /* Cuando un two-col EMPIEZA con la imagen (showcase o galería del stepper),
+       le damos el protagonismo: ~62% del ancho para la imagen. */
+    .two-col:has(> img.diagram:first-child) {
+      grid-template-columns: 1.6fr 1fr;
+      gap: clamp(1.25rem, 3vw, 2.75rem);
     }
     img.diagram {
       max-width: 100%; height: auto;
       border-radius: 0.6rem; box-shadow: 0 4px 14px rgba(0,0,0,0.08);
       background: #fff;
     }
+    /* === Click-to-reveal (¿adivinas el prompt? → descubrir) === */
+    .reveal-wrap { display: flex; flex-direction: column; gap: 0.7rem; align-items: flex-start; width: 100%; }
+    .reveal-btn {
+      display: inline-flex; align-items: center; gap: 0.5em;
+      background: var(--brand-dark); color: #fff; border: none;
+      border-radius: 999px; padding: 0.6em 1.25em;
+      font-family: inherit; font-weight: 700;
+      font-size: clamp(0.85rem, 1.2vw, 1.15rem); cursor: pointer;
+      transition: transform .18s ease, background .18s ease;
+    }
+    .reveal-btn:hover { transform: translateY(-2px); background: #000; }
+    .reveal-btn svg { transition: transform .28s ease; color: var(--brand-yellow); }
+    .reveal-wrap.is-open .reveal-btn { background: var(--brand-yellow-dark); color: #1A1A1A; }
+    .reveal-wrap.is-open .reveal-btn svg { transform: rotate(90deg); color: #1A1A1A; }
+    .reveal-target {
+      width: 100%;
+      display: grid; grid-template-rows: 0fr; opacity: 0;
+      transition: grid-template-rows .42s ease, opacity .42s ease;
+    }
+    .reveal-target > .reveal-inner { overflow: hidden; min-height: 0; }
+    .reveal-wrap.is-open .reveal-target { grid-template-rows: 1fr; opacity: 1; }
     .vs-cols {
       display: grid; grid-template-columns: 1fr auto 1fr;
       gap: clamp(0.75rem, 2vw, 2rem);
@@ -237,6 +264,7 @@
       .card { transition: none; }
       .gallery-figure img { transition: none; }
       .gallery-figure figcaption { transition: none; transform: translateY(0) !important; }
+      .reveal-btn, .reveal-btn svg, .reveal-target { transition: none !important; }
     }
     @media (max-width: 480px) {
       .controls { right: 0.5rem; bottom: 1.25rem; }
@@ -503,6 +531,8 @@
       .stepper-content { display: block !important; opacity: 1 !important; animation: none !important; }
       .stepper-panel { border-left: 4px solid var(--brand-yellow) !important; page-break-inside: avoid; }
       .stepper-content + .stepper-content { margin-top: 0.8rem; padding-top: 0.8rem; border-top: 1px dashed #ccc; }
+      .reveal-btn { display: none !important; }
+      .reveal-target { grid-template-rows: 1fr !important; opacity: 1 !important; }
       .gallery-figure img { height: auto !important; max-height: 8rem !important; transition: none !important; }
       .gallery-figure figcaption { transform: translateY(0) !important; position: static !important; background: #222 !important; padding: 0.3rem 0.4rem !important; }
       .dark-box { background: #1A1A1A !important; }
@@ -583,8 +613,16 @@
         <div class="two-col">
           <img class="diagram" src="img/m3-1-p02-1.jpeg" alt="Fotografía macro de una abeja sobre una flor con luz de hora dorada, generada por IA" />
           <div style="display:flex;flex-direction:column;gap:0.75rem;">
-            <p>Esta imagen <strong>no es una fotografía real</strong>. Fue generada completamente por un modelo de difusión a partir del siguiente prompt:</p>
-            <p class="prompt-snippet">A extreme close-up, outdoor macro photography of a bee in a flower, at golden hour</p>
+            <p>Esta imagen <strong>no es una fotografía real</strong>: la generó por completo un modelo de difusión. <strong>¿Qué prompt crees que la produjo?</strong></p>
+            <div class="reveal-wrap">
+              <button class="reveal-btn" data-reveal aria-expanded="false">
+                <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+                Revelar el prompt
+              </button>
+              <div class="reveal-target"><div class="reveal-inner">
+                <p class="prompt-snippet">A extreme close-up, outdoor macro photography of a bee in a flower, at golden hour</p>
+              </div></div>
+            </div>
             <ul>
               <li>El modelo nunca vio esta abeja específica.</li>
               <li>Sintetizó la imagen desde <strong>ruido aleatorio</strong>, guiado por el texto.</li>
@@ -603,8 +641,16 @@
         <div class="two-col">
           <img class="diagram" src="img/m3-1-p04-1.jpeg" alt="Husky siberiano al atardecer con cielo dorado dramático, generado por IA" />
           <div style="display:flex;flex-direction:column;gap:0.75rem;">
-            <p>El modelo entendió «Husky siberiano», «atardecer dramático», «fotografía épica» y los combinó en píxeles coherentes:</p>
-            <p class="prompt-snippet">A vibrant photograph of a husky, wide shot, outdoors, sunset photo at golden hour, wide-angle lens, soft focus</p>
+            <p>El modelo entendió «Husky siberiano», «atardecer dramático» y «fotografía épica», y los combinó en píxeles coherentes. <strong>¿Adivinas el prompt?</strong></p>
+            <div class="reveal-wrap">
+              <button class="reveal-btn" data-reveal aria-expanded="false">
+                <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+                Revelar el prompt
+              </button>
+              <div class="reveal-target"><div class="reveal-inner">
+                <p class="prompt-snippet">A vibrant photograph of a husky, wide shot, outdoors, sunset photo at golden hour, wide-angle lens, soft focus</p>
+              </div></div>
+            </div>
             <div class="banner">
               <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
               ¿Cómo sabe el modelo cómo «se ve» un Husky al atardecer? Lo aprendió de millones de imágenes y sus descripciones.
@@ -622,8 +668,16 @@
         <div class="two-col">
           <img class="diagram" src="img/m3-1-p06-1.jpeg" alt="Castillo medieval rodeado de nieve en blanco y negro, generado por IA" />
           <div style="display:flex;flex-direction:column;gap:0.75rem;">
-            <p>Estética monocromática, niebla invernal, arquitectura medieval — todo en una instrucción de texto:</p>
-            <p class="prompt-snippet">A black and white photograph of a castle in the middle of a hill, landscape shot, outdoors, winter tundra, wide-angle lens</p>
+            <p>Estética monocromática, niebla invernal, arquitectura medieval — todo en una instrucción de texto. <strong>¿Cómo lo pedirías tú?</strong></p>
+            <div class="reveal-wrap">
+              <button class="reveal-btn" data-reveal aria-expanded="false">
+                <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+                Revelar el prompt
+              </button>
+              <div class="reveal-target"><div class="reveal-inner">
+                <p class="prompt-snippet">A black and white photograph of a castle in the middle of a hill, landscape shot, outdoors, winter tundra, wide-angle lens</p>
+              </div></div>
+            </div>
             <ul>
               <li>«Black and white» no es un filtro aplicado después — <strong>el modelo generó directamente en escala de grises</strong>.</li>
               <li>Aprendió el concepto de fotografía B&N del corpus de entrenamiento.</li>
@@ -4360,6 +4414,16 @@
             e.preventDefault();
             setStep(e.key);
           }
+        });
+      });
+
+      // Click-to-reveal: descubrir el prompt / la respuesta
+      document.querySelectorAll('[data-reveal]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var wrap = btn.closest('.reveal-wrap');
+          if (!wrap) return;
+          var open = wrap.classList.toggle('is-open');
+          btn.setAttribute('aria-expanded', open ? 'true' : 'false');
         });
       });
 
