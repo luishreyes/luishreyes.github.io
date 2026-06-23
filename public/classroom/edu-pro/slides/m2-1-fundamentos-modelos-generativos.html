@@ -1,1443 +1,1075 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <link rel="stylesheet" href="/classroom-fonts.css" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>M2.1 — Fundamentos de los modelos generativos de lenguaje · Dominando la IA</title>
-  <style>
-    :root {
-      --brand-dark: #1A1A1A;
-      --brand-yellow: #FFBF00;
-      --brand-yellow-dark: #E6AC00;
-      --brand-gray: #555555;
-      --surface: #ffffff;
-      --muted: #f4f4f5;
-    }
-    * { box-sizing: border-box; }
-    html, body {
-      margin: 0; padding: 0; height: 100%; width: 100%;
-      background: var(--brand-dark); color: var(--brand-dark);
-      font-family: 'Manrope Variable', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      overflow: hidden; -webkit-text-size-adjust: 100%;
-    }
-    .deck { position: relative; width: 100vw; height: 100vh; height: 100dvh; }
-    .slide {
-      position: absolute; inset: 0;
-      display: none; align-items: center; justify-content: center;
-      padding: clamp(1rem, 4vw, 3.5rem);
-      background: var(--surface);
-      opacity: 0; transition: opacity 260ms ease; overflow-y: auto;
-    }
-    .slide.active { display: flex; opacity: 1; }
-    .slide .content {
-      width: 100%; max-width: 92rem; margin: auto 0;
-      display: flex; flex-direction: column;
-      gap: clamp(0.75rem, 1.5vw, 1.5rem);
-    }
-    .eyebrow {
-      text-transform: uppercase; letter-spacing: 0.2em;
-      font-size: clamp(0.65rem, 1vw, 1rem);
-      color: var(--brand-yellow-dark); font-weight: 600;
-    }
-    h1 {
-      font-size: clamp(1.75rem, 5.5vw, 5.75rem);
-      line-height: 1.05; margin: 0;
-      color: var(--brand-dark); font-weight: 700; letter-spacing: -0.02em;
-    }
-    h2 { font-size: clamp(1.25rem, 3.4vw, 3.25rem); line-height: 1.15; margin: 0; font-weight: 700; color: var(--brand-dark); }
-    h2 .sub { display: block; font-size: 0.55em; font-weight: 500; color: var(--brand-gray); margin-top: 0.15em; }
-    p, li { font-size: clamp(0.95rem, 1.6vw, 1.6rem); line-height: 1.55; color: var(--brand-gray); margin: 0; }
-    ul, ol { padding-left: 1.25em; margin: 0; display: flex; flex-direction: column; gap: 0.45em; }
-    li::marker { color: var(--brand-yellow-dark); }
-    .slide.title-slide {
-      background: linear-gradient(135deg, #141414 0%, #1A1A1A 50%, #2a2a2a 100%);
-      color: #fff;
-    }
-    .slide.title-slide h1, .slide.title-slide h2, .slide.title-slide h3 { color: #fff; }
-    .slide.title-slide p, .slide.title-slide li { color: #e4e4e7; }
-    .slide.title-slide strong { color: #fff; }
-    .slide.title-slide .eyebrow { color: var(--brand-yellow); }
-    .slide.title-slide .card { color: var(--brand-dark); }
-    .slide.title-slide .card p, .slide.title-slide .card li { color: var(--brand-gray); }
-    .slide.title-slide .card h3, .slide.title-slide .card strong { color: var(--brand-dark); }
-    .slide.cover {
-      background-color: #0a0a0a;
-      background-blend-mode: multiply;
-      background-size: cover;
-      background-position: center;
-    }
-    .slide.cover::after {
-      content:''; position: absolute; inset: 0;
-      background: linear-gradient(135deg, rgba(10,10,10,0.86) 0%, rgba(20,20,20,0.7) 50%, rgba(20,20,20,0.6) 100%);
-      pointer-events: none;
-    }
-    .slide.cover .content { position: relative; z-index: 2; }
-    .slide.cover h1, .slide.cover h2 { color: #fff; }
-    .slide.cover p, .slide.cover li { color: #e4e4e7; }
-    .slide.cover strong { color: #fff; }
-    .slide.cover .eyebrow { color: var(--brand-yellow); }
-    .pill-row { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 0.5rem; }
-    .pill {
-      display: inline-flex; align-items: center;
-      padding: 0.32em 0.85em; border-radius: 999px;
-      background: var(--muted); color: var(--brand-dark);
-      font-size: clamp(0.75rem, 1.1vw, 1.1rem); font-weight: 500;
-    }
-    .slide.title-slide .pill, .slide.cover .pill {
-      background: rgba(255,255,255,0.1); color: #fff;
-      border: 1px solid rgba(255,255,255,0.2);
-    }
-    .grid { display: grid; gap: clamp(0.75rem, 1.5vw, 1.25rem); }
-    .grid.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-    .grid.cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-    @media (max-width: 768px) { .grid.cols-2, .grid.cols-3, .grid.cols-4 { grid-template-columns: 1fr; } }
-    .card {
-      background: var(--muted); border-radius: 0.75rem;
-      padding: clamp(0.9rem, 1.5vw, 1.35rem);
-      transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
-    }
-    .card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
-    .card h3 {
-      font-size: clamp(1rem, 1.7vw, 1.5rem); margin: 0 0 0.35em;
-      color: var(--brand-dark); font-weight: 700;
-    }
-    .card p { font-size: clamp(0.8rem, 1.3vw, 1.2rem); }
-    .card .eyebrow { margin-bottom: 0.25em; }
-    .two-col {
-      display: grid; grid-template-columns: 1fr 1fr;
-      gap: clamp(1rem, 2.5vw, 2.25rem);
-      align-items: center;
-    }
-    @media (max-width: 768px) { .two-col { grid-template-columns: 1fr; } }
-    .two-col img.diagram { width: 100%; }
-    img.diagram {
-      max-width: 100%; height: auto;
-      border-radius: 0.6rem; box-shadow: 0 4px 14px rgba(0,0,0,0.08);
-      background: #fff;
-    }
-    .vs-cols {
-      display: grid; grid-template-columns: 1fr auto 1fr;
-      gap: clamp(0.75rem, 2vw, 2rem);
-      align-items: stretch;
-    }
-    @media (max-width: 768px) { .vs-cols { grid-template-columns: 1fr; } .vs-cols .vs-divider { display: none; } }
-    .vs-cols .col {
-      background: #fff; border: 1px solid rgba(0,0,0,0.08);
-      border-radius: 0.75rem; padding: clamp(1rem, 1.6vw, 1.6rem);
-      display: flex; flex-direction: column; gap: 0.5rem;
-    }
-    .vs-cols .col.left  { border-top: 4px solid #94a3b8; }
-    .vs-cols .col.right { border-top: 4px solid var(--brand-yellow-dark); }
-    .vs-cols .col h3 { margin: 0; font-size: clamp(1rem, 1.7vw, 1.5rem); color: var(--brand-dark); }
-    .vs-cols .vs-divider {
-      align-self: center; background: var(--brand-yellow);
-      color: var(--brand-dark); font-weight: 800; font-size: 0.9rem;
-      width: 2.4em; height: 2.4em; border-radius: 999px;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .banner {
-      background: #fef3c7; border-left: 4px solid var(--brand-yellow-dark);
-      padding: 0.9rem 1.1rem; border-radius: 0.5rem;
-      color: #78350f; font-size: clamp(0.85rem, 1.4vw, 1.25rem);
-    }
-    .banner.info { background: #e0f2fe; border-left-color: #0284c7; color: #0c4a6e; }
-    .banner.warn { background: #fee2e2; border-left-color: #dc2626; color: #7f1d1d; }
-    .banner svg { vertical-align: -0.18em; margin-right: 0.4em; }
-    .big-quote { text-align: center; padding: 0 clamp(1rem, 4vw, 4rem); }
-    .big-quote h2 { font-size: clamp(2rem, 6vw, 5.5rem); line-height: 1.05; color: var(--brand-dark); }
-    .big-quote h2 .accent { color: var(--brand-yellow-dark); }
-    .big-quote p { margin-top: 1em; font-style: italic; }
-    .hud {
-      position: fixed; left: 0; right: 0; bottom: 0;
-      padding: 0.5rem 1rem;
-      display: flex; justify-content: space-between; align-items: center;
-      color: rgba(255,255,255,0.75); font-size: 0.75rem;
-      pointer-events: none; z-index: 10;
-    }
-    .controls {
-      position: fixed; right: 1rem; bottom: 2.5rem;
-      display: flex; gap: 0.5rem; z-index: 11;
-    }
-    .controls button {
-      -webkit-appearance: none; appearance: none;
-      border: 1px solid rgba(0,0,0,0.1);
-      background: rgba(255,255,255,0.9); color: var(--brand-dark);
-      width: 2.5rem; height: 2.5rem; border-radius: 999px;
-      font-size: 1rem; cursor: pointer;
-      display: inline-flex; align-items: center; justify-content: center;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
-    }
-    .progress {
-      position: fixed; top: 0; left: 0;
-      height: 3px; background: var(--brand-yellow);
-      transition: width 260ms ease; z-index: 20;
-    }
-    .progress.pulsing { animation: progPulse 0.5s ease; }
-    @keyframes progPulse {
-      0%   { box-shadow: 0 0 0 0 rgba(255,191,0,0.0); }
-      50%  { box-shadow: 0 0 12px 3px rgba(255,191,0,0.8); }
-      100% { box-shadow: 0 0 0 0 rgba(255,191,0,0.0); }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .slide { transition: none; }
-      .progress { transition: none; }
-      .progress.pulsing { animation: none; }
-      .stagger-in > * { animation: none !important; }
-      .card { transition: none; }
-    }
-    @media (max-width: 480px) {
-      .controls { right: 0.5rem; bottom: 1.25rem; }
-      .hud { font-size: 0.65rem; }
-    }
-    .slide:not(.title-slide):not(.cover)::before {
-      content: ''; position: absolute;
-      top: clamp(1rem, 3vw, 2.5rem); right: clamp(1rem, 3vw, 2.5rem);
-      width: clamp(2rem, 5vw, 4rem); height: clamp(2rem, 5vw, 4rem);
-      border-top: 2.5px solid var(--brand-yellow);
-      border-right: 2.5px solid var(--brand-yellow);
-      pointer-events: none; z-index: 1;
-    }
-    .slide.title-slide::before, .slide.cover::before {
-      content: ''; position: absolute;
-      bottom: clamp(1rem, 3vw, 2.5rem); left: clamp(1rem, 3vw, 2.5rem);
-      width: clamp(2rem, 5vw, 4rem); height: clamp(2rem, 5vw, 4rem);
-      border-bottom: 2.5px solid var(--brand-yellow);
-      border-left: 2.5px solid var(--brand-yellow);
-      opacity: 0.5;
-      pointer-events: none; z-index: 3;
-    }
-    .slide-number {
-      position: absolute; bottom: clamp(0.5rem, 2vw, 1.5rem);
-      left: clamp(1rem, 3vw, 2.5rem);
-      font-size: clamp(4rem, 12vw, 10rem);
-      font-weight: 800; line-height: 1;
-      color: rgba(0, 0, 0, 0.04); pointer-events: none;
-      z-index: 0; user-select: none; letter-spacing: -0.04em;
-    }
-    .slide.title-slide .slide-number, .slide.cover .slide-number {
-      color: rgba(255, 255, 255, 0.05);
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>M2.1 — Fundamentos de los modelos generativos de lenguaje · Dominando la IA · EDCO Uniandes</title>
+<link rel="stylesheet" href="assets/edco.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}], throwOnError: false});"></script>
+<style>
+  /* ── Token visualizer ── */
+  .token-row { display:flex; flex-wrap:wrap; gap:7px; margin:18px 0; align-items:center; }
+  .tok { font-family:var(--mono); font-size:22px; padding:5px 13px; border-radius:5px; font-weight:600; line-height:1.2; }
+  .tok-a { background:#FFF3CC; border:2px solid var(--amarillo); color:#5A4500; }
+  .tok-b { background:#E8F4FE; border:2px solid #5BA8E5; color:#0A3A6E; }
+  .tok-c { background:#F0F7EE; border:2px solid #5BA87D; color:#1A4D2E; }
+  .tok-d { background:#F9ECFF; border:2px solid #9B59B6; color:#4A1A6E; }
+  .tok-e { background:#FFECEC; border:2px solid #E57373; color:#6E1A1A; }
+  .tok-sp { font-family:var(--mono); font-size:18px; color:var(--gris-3); margin:0 1px; }
 
-    a.platform-link {
-      color: var(--brand-dark); text-decoration: none;
-      border-bottom: 2px solid var(--brand-yellow);
-      padding-bottom: 0.05em;
-      transition: color 180ms, border-color 180ms;
-    }
-    a.platform-link:hover { color: var(--brand-yellow-dark); border-bottom-color: var(--brand-yellow-dark); }
-    a.platform-link::after { content: " ↗"; font-size: 0.65em; opacity: 0.5; margin-left: 0.12em; vertical-align: 0.3em; }
-    .slide.title-slide a.platform-link, .slide.cover a.platform-link { color: #fff; }
-    .slide.title-slide a.platform-link:hover, .slide.cover a.platform-link:hover { color: var(--brand-yellow); border-bottom-color: var(--brand-yellow); }
+  /* ── Probability bar chart ── */
+  .prob-chart { display:flex; flex-direction:column; gap:14px; margin:18px 0; }
+  .prob-row { display:grid; grid-template-columns:140px 1fr 72px; gap:14px; align-items:center; }
+  .prob-label { font-family:var(--display); font-size:26px; font-weight:700; color:var(--ink); text-align:right; }
+  .prob-bar-wrap { background:var(--gris-5); border-radius:999px; height:26px; overflow:hidden; }
+  .prob-bar { height:100%; border-radius:999px; background:var(--amarillo); }
+  .prob-bar.dim { background:var(--gris-4); }
+  .prob-pct { font-family:var(--mono); font-size:22px; font-weight:700; color:var(--gris-2); }
+  .prob-pct.hi { color:var(--negro); font-size:24px; }
 
-    h2 svg, h3 svg, .eyebrow svg, .pill svg {
-      vertical-align: -0.18em; margin-right: 0.4em;
-      color: var(--brand-yellow-dark);
-    }
+  /* ── Context window bars ── */
+  .cw-list { display:flex; flex-direction:column; gap:16px; margin:16px 0; }
+  .cw-row-item { display:grid; grid-template-columns:190px 1fr 165px; gap:14px; align-items:center; }
+  .cw-model { font-family:var(--display); font-size:24px; font-weight:700; color:var(--ink); }
+  .cw-bwrap { background:var(--gris-5); border-radius:999px; height:22px; overflow:hidden; }
+  .cw-bar { height:100%; border-radius:999px; background:var(--amarillo); }
+  .cw-tokens { font-family:var(--mono); font-size:20px; color:var(--gris-2); font-weight:600; text-align:right; }
 
-    a:focus-visible, button:focus-visible {
-      outline: 3px solid var(--brand-yellow-dark);
-      outline-offset: 2px; border-radius: 0.35rem;
-    }
+  /* ── Prompt anatomy code block ── */
+  .pa-block { font-family:var(--mono); font-size:19px; line-height:1.85; background:#0D1117; color:#C9D1D9; border-radius:var(--radio); padding:28px 36px; }
+  .pa-k { color:#79C0FF; font-weight:600; }
+  .pa-v { color:#E3B341; }
+  .pa-s { color:#7EE787; }
+  .pa-c { color:#FFDCD7; }
+  .pa-dim { color:#6E7681; }
 
-    .slide.active .stagger-in > * { animation: fadeInUp 0.4s ease both; }
-    .slide.active .stagger-in > *:nth-child(1) { animation-delay: 0.05s; }
-    .slide.active .stagger-in > *:nth-child(2) { animation-delay: 0.15s; }
-    .slide.active .stagger-in > *:nth-child(3) { animation-delay: 0.25s; }
-    .slide.active .stagger-in > *:nth-child(4) { animation-delay: 0.35s; }
-    .slide.active .stagger-in > *:nth-child(5) { animation-delay: 0.45s; }
-    .slide.active .stagger-in > *:nth-child(6) { animation-delay: 0.55s; }
-    .slide.active .stagger-in > *:nth-child(7) { animation-delay: 0.65s; }
-    @keyframes fadeInUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  /* ── RLHF steps ── */
+  .rlhf-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:28px; margin-top:24px; }
+  .rlhf-step { background:var(--blanco); border:1.5px solid var(--gris-5); border-top:7px solid var(--amarillo); border-radius:var(--radio); padding:28px 26px; display:flex; flex-direction:column; gap:10px; transition:transform .18s ease, box-shadow .18s ease; }
+  .rlhf-step:hover { transform:translateY(-3px); box-shadow:var(--sombra); }
+  .rlhf-n { width:52px; height:52px; border-radius:50%; background:var(--amarillo); display:flex; align-items:center; justify-content:center; font-family:var(--display); font-size:24px; font-weight:800; color:var(--negro); flex-shrink:0; }
+  .rlhf-step h4 { font-family:var(--display); font-size:27px; font-weight:700; color:var(--ink); margin:0; }
+  .rlhf-step p { font-size:22px; color:var(--gris-2); line-height:1.4; margin:0; }
 
-    .svg-frame {
-      background: #fff; border: 1px solid rgba(0,0,0,0.06);
-      border-radius: 0.75rem; padding: clamp(0.6rem, 1.2vw, 1rem);
-      display: flex; align-items: center; justify-content: center;
-    }
-    .svg-frame svg { width: 100%; height: auto; max-height: 60vh; display: block; }
-    .ai-hierarchy-svg .ring-label { font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; font-size: 18px; }
-    .ai-hierarchy-svg .ring-sub { font-size: 13px; font-weight: 500; opacity: 0.85; }
+  /* ── Models table ── */
+  .models-table { width:100%; border-collapse:collapse; font-size:23px; margin-top:22px; }
+  .models-table th { font-family:var(--display); font-size:21px; font-weight:700; text-align:left; padding:12px 18px; border-bottom:3px solid var(--amarillo); background:var(--gris-6); color:var(--negro); }
+  .models-table td { padding:13px 18px; border-bottom:1px solid var(--gris-5); color:var(--gris-2); vertical-align:top; line-height:1.35; }
+  .models-table tr:hover td { background:var(--gris-6); }
+  .models-table td:first-child { font-family:var(--display); font-weight:700; color:var(--ink); }
 
-    /* ---- Probability bars (next-token visualization) ---- */
-    .prob-row {
-      display: grid; grid-template-columns: minmax(6em, 8em) 1fr minmax(3.5em, 4em);
-      align-items: center; gap: 0.5rem 0.7rem;
-      font-size: clamp(0.85rem, 1.4vw, 1.15rem);
-    }
-    .prob-row .word { font-weight: 600; color: var(--brand-dark); text-align: right; }
-    .prob-row .bar {
-      height: 1.4em; background: var(--muted); border-radius: 0.4em;
-      overflow: hidden; position: relative;
-    }
-    .prob-row .bar > span {
-      display: block; height: 100%;
-      background: linear-gradient(90deg, var(--brand-yellow), var(--brand-yellow-dark));
-      border-radius: 0.4em;
-      animation: barFill 1.2s ease-out both;
-    }
-    .prob-row .bar.muted > span { background: linear-gradient(90deg, #d4d4d8, #a1a1aa); }
-    .prob-row .pct { font-family: 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, monospace; color: var(--brand-gray); font-size: 0.9em; }
-    @keyframes barFill { from { width: 0; } }
-    .slide.active .prob-row .bar > span { animation: barFill 1.2s ease-out both; }
-    .ctx-line {
-      font-family: 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, monospace;
-      font-size: clamp(0.95rem, 1.6vw, 1.4rem);
-      color: var(--brand-dark); padding: 0.5em 0.8em;
-      background: var(--muted); border-radius: 0.5em;
-    }
-    .ctx-line .blank {
-      color: var(--brand-yellow-dark); font-weight: 700; letter-spacing: 0.05em;
-    }
-
-    /* ---- Stepper for evolution timeline ---- */
-    .stepper { display: flex; flex-direction: column; gap: 1rem; }
-    .stepper-nav {
-      display: grid; grid-template-columns: repeat(6, minmax(0, 1fr));
-      gap: 0.4rem; padding-bottom: 0.3rem;
-    }
-    @media (max-width: 768px) { .stepper-nav { grid-template-columns: repeat(3, 1fr); } }
-    .stepper-nav button {
-      background: #fff; border: 1.5px solid rgba(0,0,0,0.08);
-      padding: 0.7em 0.4em; border-radius: 0.6rem;
-      display: flex; flex-direction: column; align-items: center; gap: 0.15em;
-      cursor: pointer; font-family: inherit;
-      transition: all 220ms ease;
-    }
-    .stepper-nav button .yr {
-      font-size: clamp(0.95rem, 1.4vw, 1.3rem);
-      font-weight: 800; letter-spacing: 0.04em;
-      color: var(--brand-dark);
-    }
-    .stepper-nav button .tag {
-      font-size: clamp(0.65rem, 0.9vw, 0.85rem);
-      color: var(--brand-gray); text-transform: uppercase; letter-spacing: 0.1em;
-    }
-    .stepper-nav button:hover { border-color: var(--brand-yellow); transform: translateY(-2px); }
-    .stepper-nav button.is-active {
-      background: var(--brand-dark); border-color: var(--brand-dark);
-      box-shadow: 0 6px 14px rgba(0,0,0,0.15);
-    }
-    .stepper-nav button.is-active .yr { color: var(--brand-yellow); }
-    .stepper-nav button.is-active .tag { color: rgba(255,255,255,0.75); }
-    .stepper-panel {
-      background: #fff; border: 1px solid rgba(0,0,0,0.08);
-      border-left: 6px solid var(--brand-yellow);
-      border-radius: 0.75rem;
-      padding: clamp(1rem, 2vw, 1.6rem);
-      min-height: 14rem;
-    }
-    .stepper-content { display: none; animation: stepFade 0.3s ease; }
-    .stepper-content.is-active { display: block; }
-    @keyframes stepFade { from { opacity: 0; transform: translateX(8px); } to { opacity: 1; transform: translateX(0); } }
-    .stepper-content h3 { margin: 0 0 0.6em; font-size: clamp(1rem, 1.6vw, 1.4rem); color: var(--brand-dark); }
-    .stepper-content .panel-eyebrow { font-size: clamp(0.75rem, 1.1vw, 1rem); color: var(--brand-yellow-dark); font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.4em; }
-    .model-grid {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
-      gap: 0.6rem;
-    }
-    .model-item {
-      background: var(--muted); border-radius: 0.5rem;
-      padding: 0.6rem 0.75rem;
-      border-left: 3px solid var(--brand-yellow-dark);
-      transition: transform 220ms ease, box-shadow 220ms;
-    }
-    .model-item:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
-    .model-item.open { border-left-color: #16a34a; }
-    .model-item.closed { border-left-color: #6366f1; }
-    .model-item .name { font-weight: 700; color: var(--brand-dark); font-size: clamp(0.85rem, 1.2vw, 1.05rem); display: flex; align-items: center; gap: 0.3em; }
-    .model-item .org { font-size: clamp(0.7rem, 1vw, 0.85rem); color: var(--brand-gray); margin-top: 0.1em; }
-    .model-item .when { font-size: clamp(0.65rem, 0.95vw, 0.8rem); color: var(--brand-yellow-dark); font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; }
-    .model-item .note { font-size: clamp(0.7rem, 1.05vw, 0.95rem); color: var(--brand-gray); margin-top: 0.3em; }
-    .legend { display: flex; gap: 1rem; flex-wrap: wrap; font-size: clamp(0.75rem, 1.1vw, 1rem); margin-bottom: 0.5em; }
-    .legend .chip { display: inline-flex; align-items: center; gap: 0.4em; }
-    .legend .chip .swatch { width: 0.8em; height: 0.8em; border-radius: 0.2em; }
-    .legend .chip.open .swatch { background: #16a34a; }
-    .legend .chip.closed .swatch { background: #6366f1; }
-
-    /* Leaderboard table */
-    table.leaderboard {
-      width: 100%; border-collapse: collapse;
-      background: #fff; border-radius: 0.5rem; overflow: hidden;
-      font-size: clamp(0.75rem, 1.1vw, 1rem);
-      border: 1px solid rgba(0,0,0,0.08);
-    }
-    table.leaderboard th {
-      background: var(--brand-dark); color: #fff;
-      text-align: left; padding: 0.6em 0.8em;
-      font-size: clamp(0.7rem, 1vw, 0.95rem);
-      font-weight: 600; letter-spacing: 0.05em;
-    }
-    table.leaderboard td {
-      padding: 0.55em 0.8em;
-      border-bottom: 1px solid rgba(0,0,0,0.06);
-      vertical-align: middle;
-    }
-    table.leaderboard tbody tr:nth-child(even) { background: #fafafa; }
-    table.leaderboard td.col-name { font-weight: 700; color: var(--brand-dark); }
-    table.leaderboard td.col-tag { font-size: 0.85em; }
-    table.leaderboard td.col-tag .tag {
-      display: inline-block; padding: 0.15em 0.6em; border-radius: 999px;
-      background: var(--muted); color: var(--brand-dark); font-weight: 600;
-      font-size: 0.85em;
-    }
-    table.leaderboard td.col-tag .tag.open { background: #dcfce7; color: #166534; }
-    table.leaderboard td.col-tag .tag.closed { background: #e0e7ff; color: #3730a3; }
-    table.leaderboard tr.row-highlight { background: #fef9c3 !important; }
-
-    /* Iceberg */
-    .iceberg {
-      position: relative; width: 100%; max-height: 60vh;
-      aspect-ratio: 4/3; overflow: hidden; border-radius: 0.6rem;
-    }
-    .iceberg img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-
-    /* Print: link clickeable para reemplazar iframes de YouTube */
-    .video-print-link { display: none; }
-
-    /* ─── Print: linealizar todos los slides como un documento ─── */
-    @media print {
-      @page { size: A4 portrait; margin: 12mm; }
-      *, *::before, *::after {
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-      }
-      html, body {
-        background: #fff !important;
-        height: auto !important;
-        overflow: visible !important;
-      }
-      .deck { width: 100% !important; height: auto !important; position: static !important; }
-      .controls, .hud, .progress, .slide-number { display: none !important; }
-      .slide:not(.title-slide):not(.cover)::before,
-      .slide.title-slide::before,
-      .slide.cover::before,
-      .slide.cover::after { display: none !important; }
-      .slide {
-        position: static !important;
-        display: flex !important;
-        opacity: 1 !important;
-        width: 100% !important;
-        height: auto !important;
-        inset: auto !important;
-        overflow: visible !important;
-        padding: 1.2rem 0.5rem !important;
-        min-height: 0 !important;
-        page-break-after: always;
-        break-after: page;
-        page-break-inside: avoid;
-      }
-      .slide:last-child { page-break-after: auto; break-after: auto; }
-      .slide .content { max-width: 100% !important; margin: 0 !important; gap: 0.6rem !important; }
-      h1 { font-size: 26pt !important; line-height: 1.1 !important; }
-      h2 { font-size: 18pt !important; line-height: 1.2 !important; }
-      h3 { font-size: 13pt !important; line-height: 1.25 !important; }
-      p, li { font-size: 10.5pt !important; line-height: 1.45 !important; }
-      .eyebrow, .pill { font-size: 9pt !important; }
-      .slide.title-slide, .slide.cover {
-        background: linear-gradient(135deg, #141414 0%, #1A1A1A 50%, #2a2a2a 100%) !important;
-        color: #fff !important;
-      }
-      .slide.title-slide h1, .slide.title-slide h2, .slide.title-slide h3,
-      .slide.cover h1, .slide.cover h2 { color: #fff !important; }
-      .slide.title-slide p, .slide.title-slide li,
-      .slide.cover p, .slide.cover li { color: #e4e4e7 !important; }
-      .slide.title-slide .eyebrow, .slide.cover .eyebrow { color: #FFBF00 !important; }
-      .stagger-in > * { animation: none !important; opacity: 1 !important; transform: none !important; }
-      .prob-row .bar > span { animation: none !important; }
-      .card, .vs-cols .col, .news-card, .timeline .dot, .stepper-nav button {
-        transition: none !important; transform: none !important;
-        box-shadow: none !important;
-      }
-      .card, .vs-cols .col, .news-card, .stepper-panel { page-break-inside: avoid; break-inside: avoid; }
-      img.diagram, .svg-frame { page-break-inside: avoid; break-inside: avoid; max-height: none !important; }
-      .svg-frame svg { max-height: none !important; }
-      table.leaderboard { font-size: 9pt !important; page-break-inside: avoid; }
-      table.leaderboard th { font-size: 9pt !important; }
-
-      /* Iframes (YouTube, etc.) se ocultan; el JS inserta un .video-print-link al lado */
-      iframe { display: none !important; }
-      .video-print-link {
-        display: block !important;
-        background: #fef3c7 !important;
-        border-left: 4px solid #E6AC00 !important;
-        padding: 0.6rem 0.8rem !important;
-        border-radius: 0.4rem !important;
-        font-size: 10pt !important;
-        color: #1A1A1A !important;
-        page-break-inside: avoid; break-inside: avoid;
-      }
-      .video-print-link a { color: #1A1A1A !important; text-decoration: underline !important; word-break: break-all; }
-      .video-print-link strong { color: #78350f !important; margin-right: 0.3em; }
-
-      /* Stepper expandido: ocultar nav, mostrar todos los paneles apilados */
-      .stepper-nav { display: none !important; }
-      .stepper-content { display: block !important; opacity: 1 !important; transform: none !important; animation: none !important; }
-      .stepper-panel { border-left: 4px solid var(--brand-yellow) !important; padding: 0.8rem 1rem !important; }
-      .stepper-content + .stepper-content { margin-top: 1rem; padding-top: 0.8rem; border-top: 1px dashed #ccc; }
-      .model-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 0.4rem !important; }
-      .model-item { padding: 0.4rem 0.55rem !important; }
-      .model-item .name { font-size: 10pt !important; }
-      .model-item .org, .model-item .when, .model-item .note { font-size: 8.5pt !important; }
-    }
-      /* ── FS_NAV · en pantalla completa solo se ve la diapositiva ──
-       Oculta HUD + barra de progreso y convierte los controles en
-       flechas flotantes que reaparecen al mover el mouse (clase
-       .show-controls que añade el script de abajo con un timeout). */
-    .is-fs .hud,
-    .is-fs .progress { display: none !important; }
-    .is-fs .controls {
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 220ms ease;
-    }
-    .is-fs.show-controls .controls {
-      opacity: 1;
-      pointer-events: auto;
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .is-fs .controls { transition: none; }
-    }
+  /* ── Embedding analogy ── */
+  .emb-eq { display:flex; gap:16px; align-items:center; flex-wrap:wrap; margin:16px 0; }
+  .emb-token { font-family:var(--mono); font-size:24px; font-weight:700; background:var(--gris-6); border:2px solid var(--gris-5); border-radius:6px; padding:6px 18px; color:var(--ink); }
+  .emb-op { font-family:var(--display); font-size:30px; font-weight:700; color:var(--amarillo); }
+  .emb-result { font-family:var(--mono); font-size:24px; font-weight:700; background:#FFF3CC; border:2px solid var(--amarillo); border-radius:6px; padding:6px 18px; color:#5A4500; }
 </style>
 </head>
 <body>
-  <div class="progress" style="width:0"></div>
-  <div class="deck" id="deck">
 
-    <!-- 1. Cover -->
-    <section class="slide cover active" data-slide style="background-image: linear-gradient(135deg, rgba(10,10,10,0.55), rgba(20,20,20,0.35)), url('img/m2-cover.jpg');">
-      <div class="content">
-        <p class="eyebrow">EDCO Uniandes · Curso 2 · Mayo 2026</p>
-        <h1>Fundamentos de los<br/>modelos generativos<br/>de lenguaje</h1>
-        <p style="font-size: clamp(1rem, 1.8vw, 1.5rem); max-width: 50rem;">De la ruleta de probabilidades a los modelos líderes de 2026.</p>
-        <div class="pill-row">
-          <span class="pill">Módulo 2.1</span>
-          <span class="pill">2 horas · Miércoles 6 de mayo de 2026</span>
+<deck-stage width="1920" height="1080">
+
+  <!-- 01 · Portada -->
+  <section class="s cover cover--photo" data-label="Portada" data-nofoot
+    style="background-image:url('img/m2-cover.jpg');background-size:cover;background-position:center;">
+    <div class="cover-top">
+      <div class="cover-org">
+        <img src="assets/img/uniandes-escudo.png" alt="Universidad de los Andes">
+        <div class="org-txt">Universidad de los Andes<span>Educación Continua · EDCO</span></div>
+      </div>
+      <div class="cover-bar"></div>
+    </div>
+    <div class="cover-mid">
+      <p class="course">Módulo 2.1</p>
+      <h1>Dominando la Inteligencia Artificial</h1>
+      <p class="session">Fundamentos de los modelos generativos de lenguaje</p>
+    </div>
+    <div class="cover-meta">
+      <div><b>Conferencista</b>Luis H. Reyes · Profesor Asociado, IQ y de Alimentos</div>
+    </div>
+  </section>
+
+  <!-- 02 · Agenda -->
+  <section class="s s--tint" data-label="Agenda">
+    <div class="kicker">Hoja de ruta</div>
+    <h2 class="s-head">Qué cubrimos hoy</h2>
+    <ol class="agenda-list stagger-in" style="margin-top:28px;">
+      <li><b>Discriminativo vs generativo</b> — dos maneras de ver los datos</li>
+      <li><b>Tokens, embeddings y la ruleta probabilística</b> — cómo un modelo predice la siguiente palabra</li>
+      <li><b>El Transformer y la atención</b> — autoregresión paso a paso</li>
+      <li><b>Las tres fases del entrenamiento</b> — pre-entrenamiento, SFT y RLHF</li>
+      <li><b>Escala, contexto y razonamiento</b> — scaling laws y modelos de pensamiento</li>
+      <li><b>El paisaje actual y los límites estructurales</b> — modelos líderes 2026, fluido vs fáctico, alucinaciones</li>
+    </ol>
+  </section>
+
+  <!-- 03 · Puente M1 → M2 -->
+  <section class="s" data-label="Puente M1 → M2">
+    <div class="kicker">Recapitulación</div>
+    <h2 class="s-head">De M1 a M2: ¿dónde estamos?</h2>
+    <div class="vs-cols stagger-in" style="margin-top:28px;">
+      <div class="col left">
+        <h3>Lo que ya sabemos (M1)</h3>
+        <ul style="font-size:25px;color:var(--gris-2);padding-left:1.2em;line-height:1.7;">
+          <li>Perceptrón → Deep Learning</li>
+          <li>CNN para imágenes · RNN para secuencias</li>
+          <li>Modelos discriminativos: clasifican, no generan</li>
+          <li>IA estrecha vs IA general</li>
+        </ul>
+      </div>
+      <div class="vs-divider">→</div>
+      <div class="col right">
+        <h3>La pregunta de hoy</h3>
+        <p style="font-size:28px;color:var(--gris-2);line-height:1.5;margin-bottom:16px;">¿Cómo pasa un modelo de <em>clasificar</em> texto a <em>generarlo</em>? ¿Qué hay dentro de <a class="platform-link" href="https://chatgpt.com" target="_blank" rel="noopener">ChatGPT</a> que le permite responder con tanta fluidez?</p>
+        <div class="callout" style="margin-top:0;">
+          <p><b>Objetivo M2.1:</b> entender el motor. Antes de aprender a conducir, conviene saber que el auto tiene motor, transmisión y frenos — y qué hace cada uno.</p>
         </div>
-        <p style="margin-top: 1.5em; font-size: clamp(0.85rem, 1.3vw, 1.1rem); opacity: 0.8;">Luis H. Reyes · Profesor Asociado, Departamento de Ingeniería Química y de Alimentos · Universidad de los Andes</p>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- 2. Contenido -->
-    <section class="slide" data-slide>
-      <div class="content">
-        <p class="eyebrow">Agenda</p>
-        <h2>Lo que veremos hoy</h2>
-        <div class="grid cols-3 stagger-in">
-          <div class="card"><p class="eyebrow">1</p><h3>IA generativa</h3><p>Qué es, qué la diferencia, dónde encaja en la jerarquía de la IA.</p></div>
-          <div class="card"><p class="eyebrow">2</p><h3>Generativos vs discriminativos</h3><p>Dos formas distintas de aprender de los mismos datos.</p></div>
-          <div class="card"><p class="eyebrow">3</p><h3>Lenguaje + imágenes</h3><p>Las dos grandes familias generativas hoy.</p></div>
-          <div class="card"><p class="eyebrow">4</p><h3>Doble click a los LLM</h3><p>Cómo predicen palabras: contexto, atención, autoregresión, alucinaciones.</p></div>
-          <div class="card"><p class="eyebrow">5</p><h3>Cuenta y herramientas</h3><p>Crear cuentas en plataformas líderes de IA.</p></div>
-          <div class="card"><p class="eyebrow">6</p><h3>ChatGPT y similares</h3><p>El producto, no el modelo. Qué es un prompt.</p></div>
-          <div class="card"><p class="eyebrow">7</p><h3>Limitaciones</h3><p>Veracidad, sesgos, desactualización, lenguaje ofensivo, textos largos.</p></div>
+  <!-- DIVISOR §01 -->
+  <section class="s s--dark divider" data-label="§01 Discriminativo vs Generativo">
+    <div class="num">01</div>
+    <h2>Discriminativo<br>vs Generativo</h2>
+    <div class="yellow-underline"></div>
+  </section>
+
+  <!-- 04 · Clasificar vs Generar -->
+  <section class="s" data-label="Clasificar vs Generar">
+    <div class="kicker">§01 · Discriminativo vs Generativo</div>
+    <h2 class="s-head">Dos maneras de ver los datos</h2>
+    <div class="vs-cols stagger-in" style="margin-top:26px;">
+      <div class="col left">
+        <h3>Modelo discriminativo</h3>
+        <p style="font-size:25px;color:var(--gris-2);line-height:1.5;margin-bottom:12px;">Aprende la frontera entre clases. Dado un input, predice una etiqueta.</p>
+        <div style="text-align:center;margin:18px 0;font-size:22px;color:var(--gris-2);">$P(\text{etiqueta} \mid \text{datos})$</div>
+        <div class="callout" style="margin-top:12px;">
+          <p><b>Ejemplos:</b> detector de spam, clasificador de imágenes (¿gato o perro?), análisis de sentimiento.</p>
         </div>
       </div>
-    </section>
-
-    <!-- 3. Taller Parte 1 -->
-    <section class="slide title-slide" data-slide>
-      <div class="content big-quote">
-        <p class="eyebrow" style="text-align:center;">Antes de entrar en teoría</p>
-        <h2 style="color:#fff;">Taller <span class="accent">parte 1</span></h2>
-        <p>Pruébalo en tus manos. Lo entendido se asienta cuando se toca.</p>
-      </div>
-    </section>
-
-    <!-- 4. ¿Qué son modelos generativos? -->
-    <section class="slide" data-slide>
-      <div class="content">
-        <p class="eyebrow">Sección 1 · IA generativa</p>
-        <h2>¿Qué son los modelos generativos?</h2>
-        <p>Antes de definirlos formalmente, contrastemos dos formas distintas de aprender de un mismo conjunto de datos: la <strong>discriminativa</strong> y la <strong>generativa</strong>.</p>
-        <div class="banner info">
-          <strong>La intuición rápida:</strong> los modelos discriminativos aprenden a <em>distinguir</em>. Los generativos aprenden a <em>producir</em>.
+      <div class="vs-divider">vs</div>
+      <div class="col right">
+        <h3>Modelo generativo</h3>
+        <p style="font-size:25px;color:var(--gris-2);line-height:1.5;margin-bottom:12px;">Aprende la distribución completa de los datos. Puede <em>muestrear</em> ejemplos nuevos.</p>
+        <div style="text-align:center;margin:18px 0;font-size:22px;color:var(--gris-2);">$P(\text{datos})$ — luego $P(\text{texto siguiente} \mid \text{contexto})$</div>
+        <div class="callout" style="margin-top:12px;">
+          <p><b>Ejemplos:</b> <a class="platform-link" href="https://chatgpt.com" target="_blank" rel="noopener">ChatGPT</a>, <a class="platform-link" href="https://claude.ai" target="_blank" rel="noopener">Claude</a>, <a class="platform-link" href="https://gemini.google.com" target="_blank" rel="noopener">Gemini</a>, <a class="platform-link" href="https://www.midjourney.com" target="_blank" rel="noopener">Midjourney</a>, <a class="platform-link" href="https://openai.com/sora" target="_blank" rel="noopener">Sora</a>.</p>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- 5. Discriminativo: ¡Mira los perros tienen collar! -->
-    <section class="slide" data-slide>
-      <div class="content">
-        <p class="eyebrow">Discriminativo</p>
-        <h2>«¡Mira!, los perros tienen collar; los gatos, no»</h2>
-        <div class="two-col">
-          <img class="diagram" src="img/dogs-grid.jpg" alt="Mosaico de fotos de perros de distintas razas" />
-          <div>
-            <p>Un modelo discriminativo se enfoca en <strong>la frontera</strong> entre clases. Para distinguir perro vs. gato, busca el rasgo más útil para separar y descarta lo demás.</p>
-            <ul>
-              <li>El collar discrimina aquí. <strong>No</strong> describe al perro completo.</li>
-              <li>Si llega un perro sin collar, el modelo se confunde.</li>
-              <li>Salida: <strong>una etiqueta</strong> (perro / gato).</li>
+  <!-- 05 · La ruleta probabilística -->
+  <section class="s" data-label="La ruleta probabilística">
+    <div class="kicker">§01 · Discriminativo vs Generativo</div>
+    <h2 class="s-head">El modelo como ruleta probabilística</h2>
+    <div class="split split--wideR stagger-in" style="margin-top:24px;">
+      <div class="l">
+        <p style="font-size:26px;color:var(--gris-2);line-height:1.55;margin-bottom:16px;">El modelo no <em>sabe</em> qué viene después — asigna probabilidades a cada token posible y <strong>muestrea</strong>.</p>
+        <div style="background:var(--gris-6);border-radius:var(--radio);padding:20px 24px;margin-bottom:18px;">
+          <p style="font-family:var(--mono);font-size:22px;color:var(--ink);margin:0 0 8px;"><b>Prompt:</b> «Lima es la capital de»</p>
+          <p style="font-size:21px;color:var(--gris-2);margin:0;">¿Cuál es la siguiente palabra más probable?</p>
+        </div>
+        <div class="callout teal" style="margin-top:0;">
+          <p><b>Temperatura:</b> controla qué tan «plana» es la distribución. Alta temperatura → respuestas más variadas (creativas); baja temperatura → respuestas más predecibles (precisas).</p>
+        </div>
+      </div>
+      <div class="r">
+        <p style="font-family:var(--display);font-size:22px;font-weight:700;color:var(--gris-2);margin-bottom:14px;">Probabilidad del siguiente token</p>
+        <div class="prob-chart">
+          <div class="prob-row">
+            <span class="prob-label">Perú</span>
+            <div class="prob-bar-wrap"><div class="prob-bar" style="width:84%;"></div></div>
+            <span class="prob-pct hi">84 %</span>
+          </div>
+          <div class="prob-row">
+            <span class="prob-label">Perú,</span>
+            <div class="prob-bar-wrap"><div class="prob-bar dim" style="width:9%;"></div></div>
+            <span class="prob-pct">9 %</span>
+          </div>
+          <div class="prob-row">
+            <span class="prob-label">Peru</span>
+            <div class="prob-bar-wrap"><div class="prob-bar dim" style="width:4%;"></div></div>
+            <span class="prob-pct">4 %</span>
+          </div>
+          <div class="prob-row">
+            <span class="prob-label">Perú.</span>
+            <div class="prob-bar-wrap"><div class="prob-bar dim" style="width:2%;"></div></div>
+            <span class="prob-pct">2 %</span>
+          </div>
+          <div class="prob-row">
+            <span class="prob-label">Otros</span>
+            <div class="prob-bar-wrap"><div class="prob-bar dim" style="width:1%;"></div></div>
+            <span class="prob-pct">1 %</span>
+          </div>
+        </div>
+        <p style="font-size:20px;color:var(--gris-3);margin-top:10px;">* Distribución ilustrativa. El modelo real usa softmax sobre decenas de miles de tokens.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- DIVISOR §02 -->
+  <section class="s s--dark divider" data-label="§02 Tokens y Embeddings">
+    <div class="num">02</div>
+    <h2>Tokens<br>y Embeddings</h2>
+    <div class="yellow-underline"></div>
+  </section>
+
+  <!-- 06 · Tokens -->
+  <section class="s" data-label="Tokens — la unidad mínima">
+    <div class="kicker">§02 · Tokens y Embeddings</div>
+    <h2 class="s-head">Tokens — la unidad mínima del lenguaje</h2>
+    <div class="split stagger-in" style="margin-top:22px;">
+      <div class="l">
+        <p style="font-size:26px;color:var(--gris-2);line-height:1.55;margin-bottom:18px;">Un token no es necesariamente una palabra completa. Los modelos dividen el texto en subpalabras usando algoritmos como <b>BPE</b> (Byte Pair Encoding). Esto permite manejar vocabularios finitos con palabras casi infinitas.</p>
+        <div class="callout" style="margin-top:0;">
+          <p><b>GPT-4</b> usa aprox. <strong>100 000</strong> tokens únicos. En español, las palabras largas se dividen en más tokens que en inglés — los modelos en inglés son ligeramente más eficientes.</p>
+        </div>
+        <p style="font-size:22px;color:var(--gris-3);margin-top:16px;">Prueba el tokenizador oficial: <a class="platform-link" href="https://platform.openai.com/tokenizer" target="_blank" rel="noopener">platform.openai.com/tokenizer</a></p>
+      </div>
+      <div class="r">
+        <p style="font-family:var(--display);font-size:22px;font-weight:700;color:var(--gris-2);margin-bottom:8px;">«Tokenización del lenguaje natural»</p>
+        <div class="token-row">
+          <span class="tok tok-a">Token</span>
+          <span class="tok-sp">|</span>
+          <span class="tok tok-b">iza</span>
+          <span class="tok-sp">|</span>
+          <span class="tok tok-c">ción</span>
+          <span class="tok-sp">|</span>
+          <span class="tok tok-d"> del</span>
+          <span class="tok-sp">|</span>
+          <span class="tok tok-e"> len</span>
+          <span class="tok-sp">|</span>
+          <span class="tok tok-a">gu</span>
+          <span class="tok-sp">|</span>
+          <span class="tok tok-b">aje</span>
+          <span class="tok-sp">|</span>
+          <span class="tok tok-c"> nat</span>
+          <span class="tok-sp">|</span>
+          <span class="tok tok-d">ur</span>
+          <span class="tok-sp">|</span>
+          <span class="tok tok-e">al</span>
+        </div>
+        <p style="font-size:21px;color:var(--gris-3);margin-bottom:20px;">10 tokens para 3 palabras.</p>
+        <p style="font-family:var(--display);font-size:22px;font-weight:700;color:var(--gris-2);margin-bottom:8px;">«AI is amazing!»</p>
+        <div class="token-row">
+          <span class="tok tok-a">AI</span>
+          <span class="tok-sp">|</span>
+          <span class="tok tok-b"> is</span>
+          <span class="tok-sp">|</span>
+          <span class="tok tok-c"> amazing</span>
+          <span class="tok-sp">|</span>
+          <span class="tok tok-d">!</span>
+        </div>
+        <p style="font-size:21px;color:var(--gris-3);">4 tokens para 3 palabras. El inglés tokeniza más eficientemente.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 07 · Embeddings -->
+  <section class="s" data-label="Embeddings — geometría del significado">
+    <div class="kicker">§02 · Tokens y Embeddings</div>
+    <h2 class="s-head">Embeddings — geometría del significado</h2>
+    <div class="split stagger-in" style="margin-top:22px;">
+      <div class="l">
+        <p style="font-size:26px;color:var(--gris-2);line-height:1.55;margin-bottom:16px;">Cada token se convierte en un vector de miles de dimensiones. Palabras con <b>significados similares</b> tienen vectores cercanos en ese espacio.</p>
+        <div class="emb-eq">
+          <span class="emb-token">rey</span>
+          <span class="emb-op">−</span>
+          <span class="emb-token">hombre</span>
+          <span class="emb-op">+</span>
+          <span class="emb-token">mujer</span>
+          <span class="emb-op">≈</span>
+          <span class="emb-result">reina</span>
+        </div>
+        <p style="font-size:22px;color:var(--gris-3);margin-bottom:16px;">Esto no es magia — es álgebra lineal aplicada al lenguaje.</p>
+        <div class="callout teal">
+          <p>GPT-4 usa vectores de <b>12 288 dimensiones</b>. Dimensiones altas = más matices semánticos capturados. Imposible visualizar directamente; se reducen a 2D/3D con t-SNE o PCA para ilustrar.</p>
+        </div>
+      </div>
+      <div class="r" style="display:flex;flex-direction:column;gap:18px;justify-content:center;">
+        <div style="background:var(--gris-6);border-radius:var(--radio);padding:22px 26px;">
+          <p style="font-family:var(--display);font-size:21px;font-weight:700;color:var(--gris-2);margin-bottom:10px;">Similitud coseno — dos tokens cercanos:</p>
+          <div style="text-align:center;margin:10px 0;">$$\cos(\theta) = \frac{\vec{u} \cdot \vec{v}}{|\vec{u}||\vec{v}|}$$</div>
+          <p style="font-size:20px;color:var(--gris-3);text-align:center;margin:0;">«médico» · «doctor» → cos ≈ 0.92</p>
+        </div>
+        <div class="callout warn">
+          <p><b>Atención:</b> los embeddings capturan correlaciones estadísticas del texto de entrenamiento, no «comprensión» semántica. Pueden heredar sesgos del corpus.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DIVISOR §03 -->
+  <section class="s s--dark divider" data-label="§03 El Transformer">
+    <div class="num">03</div>
+    <h2>El Transformer<br>y la Atención</h2>
+    <div class="yellow-underline"></div>
+  </section>
+
+  <!-- 08 · Attention is all you need -->
+  <section class="s" data-label="Attention is all you need">
+    <div class="kicker">§03 · El Transformer</div>
+    <h2 class="s-head">«Attention is all you need» — Vaswani et al., 2017</h2>
+    <div class="split stagger-in" style="margin-top:22px;">
+      <div class="l">
+        <p style="font-size:26px;color:var(--gris-2);line-height:1.55;margin-bottom:16px;">El paper que lo cambió todo. Antes, los modelos de lenguaje dependían de RNN que procesaban el texto de izquierda a derecha, con memoria limitada. El Transformer elimina la recurrencia y procesa <b>toda la secuencia en paralelo</b>.</p>
+        <div class="callout" style="margin-bottom:16px;">
+          <p><b>Ventaja clave:</b> permite escalar masivamente con hardware de <a class="platform-link" href="https://www.nvidia.com" target="_blank" rel="noopener">NVIDIA</a> (GPUs) y TPUs. El modelo puede ver relaciones entre cualquier par de tokens sin importar la distancia entre ellos.</p>
+        </div>
+        <div class="callout teal">
+          <p><b>Nota de nomenclatura:</b> «LLM» = Large Language Model. Casi todos los LLM actuales son Transformers. <a class="platform-link" href="https://chatgpt.com" target="_blank" rel="noopener">ChatGPT</a> está construido sobre GPT-4o, un Transformer de cientos de miles de millones de parámetros.</p>
+        </div>
+      </div>
+      <div class="r">
+        <div style="background:var(--gris-6);border-radius:var(--radio);padding:24px 28px;">
+          <p style="font-family:var(--display);font-size:22px;font-weight:700;color:var(--gris-2);margin-bottom:18px;">Arquitectura simplificada</p>
+          <div class="steps three" style="font-size:22px;">
+            <div class="step">
+              <span class="step-n">1</span>
+              <div><b>Tokenización + Embedding</b><br><span style="color:var(--gris-2);">Texto → vectores numéricos</span></div>
+            </div>
+            <div class="step">
+              <span class="step-n">2</span>
+              <div><b>Capas de Atención</b><br><span style="color:var(--gris-2);">Cada token «mira» a todos los demás</span></div>
+            </div>
+            <div class="step">
+              <span class="step-n">3</span>
+              <div><b>Cabeza de predicción</b><br><span style="color:var(--gris-2);">Vector → distribución sobre vocabulario</span></div>
+            </div>
+          </div>
+        </div>
+        <p style="font-size:20px;color:var(--gris-3);margin-top:12px;">GPT-4 apila ~96 capas de atención. Cada capa refina la representación del contexto.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 09 · Mecanismo de atención -->
+  <section class="s" data-label="Mecanismo de atención Q·K·V">
+    <div class="kicker">§03 · El Transformer</div>
+    <h2 class="s-head">Mecanismo de atención — Queries, Keys y Values</h2>
+    <div class="split stagger-in" style="margin-top:22px;">
+      <div class="l">
+        <p style="font-size:25px;color:var(--gris-2);line-height:1.5;margin-bottom:16px;">Para cada token, el modelo genera tres vectores y pregunta: <em>«¿A qué otros tokens debo prestarle atención para completar mi representación?»</em></p>
+        <div class="steps three" style="font-size:21px;margin-bottom:16px;">
+          <div class="step">
+            <span class="step-n" style="background:var(--amarillo);color:var(--negro);">Q</span>
+            <div><b>Query</b><br><span style="color:var(--gris-2);">«¿Qué busco?»</span></div>
+          </div>
+          <div class="step">
+            <span class="step-n" style="background:#5BA8E5;color:#fff;">K</span>
+            <div><b>Key</b><br><span style="color:var(--gris-2);">«¿Qué ofrezco?»</span></div>
+          </div>
+          <div class="step">
+            <span class="step-n" style="background:#5BA87D;color:#fff;">V</span>
+            <div><b>Value</b><br><span style="color:var(--gris-2);">«Lo que aporto»</span></div>
+          </div>
+        </div>
+        <div style="text-align:center;padding:14px;background:var(--gris-6);border-radius:var(--radio);">
+          $$\text{Atención}(Q,K,V)=\text{softmax}\!\left(\frac{QK^T}{\sqrt{d_k}}\right)V$$
+        </div>
+      </div>
+      <div class="r">
+        <p style="font-family:var(--display);font-size:22px;font-weight:700;color:var(--gris-2);margin-bottom:14px;">Ejemplo: «El banco estaba vacío»</p>
+        <div style="background:var(--gris-6);border-radius:var(--radio);padding:20px 24px;">
+          <p style="font-size:23px;color:var(--gris-2);line-height:1.6;margin-bottom:12px;">El token «<b>banco</b>» atiende fuertemente a «<b>vacío</b>» → eso le ayuda a desambiguar entre banco financiero o banco de plaza.</p>
+          <p style="font-size:21px;color:var(--gris-3);margin:0;">La atención es <b>multi-cabeza</b>: varias cabezas capturan distintos tipos de relación (sintaxis, semántica, correferencia) en paralelo.</p>
+        </div>
+        <div class="callout teal" style="margin-top:18px;">
+          <p><b>Multi-head attention:</b> GPT-4 usa ~128 cabezas de atención por capa. Cada cabeza aprende a «mirar» aspectos distintos del contexto.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10 · Autoregresión -->
+  <section class="s" data-label="Autoregresión paso a paso">
+    <div class="kicker">§03 · El Transformer</div>
+    <h2 class="s-head">Autoregresión — generar un token a la vez</h2>
+    <div class="split split--wideL stagger-in" style="margin-top:24px;">
+      <div class="l">
+        <p style="font-size:26px;color:var(--gris-2);line-height:1.55;margin-bottom:18px;">El modelo genera texto de forma <b>autoregresiva</b>: produce un token, lo agrega al contexto, y repite. Cada token generado se convierte en parte del input para el siguiente.</p>
+        <div class="callout" style="margin-bottom:18px;">
+          <p><b>Secuencia de generación:</b></p>
+          <pre style="font-family:var(--mono);font-size:20px;line-height:1.9;margin:10px 0 0;color:var(--ink);">Prompt:   «La capital de Francia es»
+→ Token 1:  «París»
+→ Token 2:  «,»
+→ Token 3:  « una»
+→ Token 4:  « ciudad»  ...
+<span style="color:var(--amarillo);">■</span> Token de fin de secuencia (EOS)</pre>
+        </div>
+        <div class="callout warn">
+          <p><b>Implicación:</b> el modelo no puede «corregirse» — si genera un token incorrecto, los siguientes se condicionan sobre ese error. El error se propaga hacia adelante.</p>
+        </div>
+      </div>
+      <div class="r">
+        <div style="background:var(--gris-6);border-radius:var(--radio);padding:22px 26px;">
+          <p style="font-family:var(--display);font-size:22px;font-weight:700;color:var(--gris-2);margin-bottom:14px;">¿Por qué es costoso generar texto?</p>
+          <div class="cards two" style="gap:16px;margin-top:12px;">
+            <div class="card">
+              <h3 style="font-size:23px;">Latencia</h3>
+              <p style="font-size:21px;">Cada token requiere una pasada completa por todas las capas. Respuestas largas = muchas pasadas.</p>
+            </div>
+            <div class="card">
+              <h3 style="font-size:23px;">Costo</h3>
+              <p style="font-size:21px;">Los proveedores cobran por tokens de <em>entrada</em> y de <em>salida</em>. Los de salida son más caros.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11 · El Iceberg -->
+  <section class="s" data-label="El Iceberg — ChatGPT vs LLM">
+    <div class="kicker">§03 · El Transformer</div>
+    <h2 class="s-head">ChatGPT es la punta del iceberg</h2>
+    <div class="split stagger-in" style="margin-top:22px;">
+      <div class="l">
+        <p style="font-size:26px;color:var(--gris-2);line-height:1.55;margin-bottom:16px;"><a class="platform-link" href="https://chatgpt.com" target="_blank" rel="noopener">ChatGPT</a> es una <b>interfaz de chat</b> construida sobre un LLM (actualmente <a class="platform-link" href="https://openai.com/gpt-4o" target="_blank" rel="noopener">GPT-4o</a>). La mayor parte de la tecnología es invisible al usuario.</p>
+        <div class="cards two" style="gap:18px;margin-top:14px;">
+          <div class="card">
+            <h3>Lo visible (producto)</h3>
+            <ul style="font-size:21px;color:var(--gris-2);padding-left:1.1em;line-height:1.7;">
+              <li>Interfaz de chat</li>
+              <li>Memoria de conversaciones</li>
+              <li>GPTs / plugins</li>
+              <li>Búsqueda web integrada</li>
+            </ul>
+          </div>
+          <div class="card card--ink">
+            <h3>Lo invisible (modelo)</h3>
+            <ul style="font-size:21px;padding-left:1.1em;line-height:1.7;">
+              <li>Transformer con cientos de miles de millones de parámetros</li>
+              <li>Pre-entrenamiento en billones de tokens</li>
+              <li>RLHF y alineación de valores</li>
+              <li>Infraestructura de inferencia masiva</li>
+            </ul>
+          </div>
+        </div>
+        <div class="callout teal" style="margin-top:18px;">
+          <p>El mismo LLM se puede usar vía API para construir <em>cualquier</em> producto: asistentes de código, RAG, agentes, chatbots de atención al cliente, análisis de documentos, etc.</p>
+        </div>
+      </div>
+      <div class="r">
+        <div class="img-panel" style="height:560px;">
+          <img src="img/iceberg-llm.jpg" alt="Iceberg ChatGPT vs LLM" style="width:100%;height:100%;object-fit:cover;border-radius:var(--radio);">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DIVISOR §04 -->
+  <section class="s s--dark divider" data-label="§04 Entrenamiento">
+    <div class="num">04</div>
+    <h2>Las tres fases<br>del entrenamiento</h2>
+    <div class="yellow-underline"></div>
+  </section>
+
+  <!-- 12 · Pre-entrenamiento -->
+  <section class="s" data-label="Fase 1: Pre-entrenamiento">
+    <div class="kicker">§04 · Entrenamiento</div>
+    <h2 class="s-head">Fase 1 — Pre-entrenamiento: aprender el lenguaje</h2>
+    <div class="split stagger-in" style="margin-top:24px;">
+      <div class="l">
+        <p style="font-size:26px;color:var(--gris-2);line-height:1.55;margin-bottom:16px;">El modelo se entrena con <b>billones de tokens</b> de texto en internet (Common Crawl, Wikipedia, libros, código, artículos científicos). La tarea es simple: predecir el siguiente token.</p>
+        <div class="callout" style="margin-bottom:16px;">
+          <p><b>Escala de GPT-4:</b> ~13 billones de tokens de entrenamiento, cientos de miles de millones de parámetros, semanas de cómputo en miles de GPUs. Costo estimado: <b>USD &gt; 100 M</b>.</p>
+        </div>
+        <div class="callout teal">
+          <p><b>Resultado:</b> el modelo aprende gramática, hechos del mundo, razonamiento, código — todo emergente de la predicción de tokens. No fue explícitamente programado para nada de esto.</p>
+        </div>
+      </div>
+      <div class="r">
+        <div class="cards three" style="gap:18px;margin-top:8px;">
+          <div class="card">
+            <span class="card-n">
+              <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            </span>
+            <h3>Datos</h3>
+            <p style="font-size:21px;">Texto de internet, libros digitalizados, GitHub, Wikipedia en 100+ idiomas.</p>
+          </div>
+          <div class="card">
+            <span class="card-n">
+              <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </span>
+            <h3>Objetivo</h3>
+            <p style="font-size:21px;">Maximizar la probabilidad del siguiente token (cross-entropy loss sobre el corpus).</p>
+          </div>
+          <div class="card">
+            <span class="card-n">
+              <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            </span>
+            <h3>Resultado</h3>
+            <p style="font-size:21px;">«Base model» — muy capaz, pero no sigue instrucciones ni es seguro para uso directo.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 13 · Instruction Tuning (SFT) -->
+  <section class="s" data-label="Fase 2: Instruction Tuning">
+    <div class="kicker">§04 · Entrenamiento</div>
+    <h2 class="s-head">Fase 2 — Instruction Tuning (SFT): enseñar a obedecer</h2>
+    <div class="split stagger-in" style="margin-top:24px;">
+      <div class="l">
+        <p style="font-size:26px;color:var(--gris-2);line-height:1.55;margin-bottom:16px;"><b>Supervised Fine-Tuning</b>: el modelo base se ajusta sobre miles de pares (instrucción → respuesta ideal) escritos por humanos. Aprende el formato de asistente: seguir instrucciones, responder preguntas, mantener el hilo.</p>
+        <div class="callout" style="margin-bottom:16px;">
+          <p><b>Ejemplo de par de entrenamiento:</b></p>
+          <pre style="font-family:var(--mono);font-size:19px;line-height:1.8;margin:10px 0 0;color:var(--ink);">Instrucción: «Resume este artículo en 3 puntos.»
+Respuesta ideal: «1. ... 2. ... 3. ...»</pre>
+        </div>
+        <div class="callout teal">
+          <p>El SFT transforma un «completador de texto» en un «asistente que sigue instrucciones». Este fue el salto que hizo a <a class="platform-link" href="https://openai.com/research/instruction-following" target="_blank" rel="noopener">InstructGPT</a> radicalmente más útil que GPT-3.</p>
+        </div>
+      </div>
+      <div class="r">
+        <div style="background:var(--gris-6);border-radius:var(--radio);padding:24px 28px;">
+          <p style="font-family:var(--display);font-size:22px;font-weight:700;color:var(--gris-2);margin-bottom:16px;">Antes vs después del SFT</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:12px;">
+            <div style="background:var(--blanco);border-radius:var(--radio);padding:16px 18px;">
+              <p style="font-family:var(--display);font-size:19px;font-weight:700;color:var(--gris-2);margin-bottom:8px;">GPT-3 base</p>
+              <p style="font-size:20px;color:var(--gris-2);font-family:var(--mono);line-height:1.6;">Prompt: «¿Cómo hago una torta?»<br><br>Salida: «¿Cómo hago una pizza? ¿Cómo hago galletas?...»</p>
+            </div>
+            <div style="background:var(--blanco);border-radius:var(--radio);padding:16px 18px;">
+              <p style="font-family:var(--display);font-size:19px;font-weight:700;color:#1A4D2E;margin-bottom:8px;">InstructGPT</p>
+              <p style="font-size:20px;color:var(--gris-2);font-family:var(--mono);line-height:1.6;">Prompt: «¿Cómo hago una torta?»<br><br>Salida: «Para hacer una torta básica necesitas...»</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 14 · RLHF -->
+  <section class="s" data-label="Fase 3: RLHF">
+    <div class="kicker">§04 · Entrenamiento</div>
+    <h2 class="s-head">Fase 3 — RLHF: alinear con preferencias humanas</h2>
+    <div class="stagger-in" style="margin-top:22px;">
+      <div class="rlhf-grid">
+        <div class="rlhf-step">
+          <div class="rlhf-n">1</div>
+          <h4>Generar respuestas múltiples</h4>
+          <p>Para el mismo prompt, el modelo genera varias respuestas candidatas con distintas formulaciones y niveles de detalle.</p>
+        </div>
+        <div class="rlhf-step">
+          <div class="rlhf-n">2</div>
+          <h4>Evaluadores humanos las rankean</h4>
+          <p>Anotadores humanos comparan pares de respuestas y señalan cuál prefieren según criterios de utilidad, honestidad y seguridad.</p>
+        </div>
+        <div class="rlhf-step">
+          <div class="rlhf-n">3</div>
+          <h4>Reward model + PPO</h4>
+          <p>Se entrena un modelo de recompensa sobre esos rankings; el LLM se optimiza con <b>PPO</b> para maximizar la recompensa esperada.</p>
+        </div>
+      </div>
+      <div class="cards two" style="margin-top:20px;gap:20px;">
+        <div class="callout" style="margin:0;">
+          <p><b>Resultado del RLHF:</b> respuestas más útiles, más seguras y mejor alineadas con preferencias humanas. Redujo drásticamente comportamientos dañinos en <a class="platform-link" href="https://chatgpt.com" target="_blank" rel="noopener">ChatGPT</a>.</p>
+        </div>
+        <div class="callout warn" style="margin:0;">
+          <p><b>Limitación:</b> los evaluadores humanos también tienen sesgos. El modelo puede aprender a «parecer» útil y seguro sin serlo — el problema del «reward hacking».</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DIVISOR §05 -->
+  <section class="s s--dark divider" data-label="§05 Escala, Contexto y Razonamiento">
+    <div class="num">05</div>
+    <h2>Escala, Contexto<br>y Razonamiento</h2>
+    <div class="yellow-underline"></div>
+  </section>
+
+  <!-- 15 · Scaling Laws -->
+  <section class="s" data-label="Scaling Laws">
+    <div class="kicker">§05 · Escala, Contexto y Razonamiento</div>
+    <h2 class="s-head">Scaling Laws — más parámetros, mejor rendimiento</h2>
+    <div class="split stagger-in" style="margin-top:22px;">
+      <div class="l">
+        <p style="font-size:26px;color:var(--gris-2);line-height:1.55;margin-bottom:16px;">El rendimiento de un LLM mejora de forma predecible con tres variables: número de <b>parámetros</b>, volumen de <b>datos</b> de entrenamiento y <b>cómputo</b> (FLOPs).</p>
+        <div class="callout" style="margin-bottom:16px;">
+          <p><b><a class="platform-link" href="https://arxiv.org/abs/2001.08361" target="_blank" rel="noopener">Kaplan et al. 2020</a>:</b> las leyes de escala siguen potencias. Duplicar el cómputo → mejora constante en la pérdida. Sin señales claras de saturación.</p>
+        </div>
+        <div class="callout teal">
+          <p><b><a class="platform-link" href="https://arxiv.org/abs/2203.15556" target="_blank" rel="noopener">Chinchilla (DeepMind, 2022)</a>:</b> reveló que los modelos grandes estaban sub-entrenados en datos. El ratio óptimo es ~20 tokens de entrenamiento por parámetro.</p>
+        </div>
+      </div>
+      <div class="r">
+        <div class="img-panel" style="height:500px;">
+          <img src="img/scaling-laws.jpg" alt="Scaling laws — loss vs compute" style="width:100%;height:100%;object-fit:contain;background:var(--gris-6);border-radius:var(--radio);padding:8px;">
+        </div>
+        <p style="font-size:19px;color:var(--gris-3);margin-top:8px;text-align:center;">Loss vs cómputo: relación de ley de potencia. A mayor inversión computacional, menor error del modelo.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 16 · Ventana de contexto -->
+  <section class="s" data-label="Ventana de contexto">
+    <div class="kicker">§05 · Escala, Contexto y Razonamiento</div>
+    <h2 class="s-head">Ventana de contexto — cuánto puede «ver» el modelo</h2>
+    <div class="split stagger-in" style="margin-top:22px;">
+      <div class="l">
+        <p style="font-size:26px;color:var(--gris-2);line-height:1.55;margin-bottom:16px;">La ventana de contexto define el máximo de tokens que el modelo puede procesar en una sola llamada (prompt + respuesta). Ha crecido enormemente en pocos años.</p>
+        <div class="cw-list">
+          <div class="cw-row-item">
+            <span class="cw-model">GPT-3.5</span>
+            <div class="cw-bwrap"><div class="cw-bar" style="width:2%;"></div></div>
+            <span class="cw-tokens">16 K tokens</span>
+          </div>
+          <div class="cw-row-item">
+            <span class="cw-model">GPT-4o</span>
+            <div class="cw-bwrap"><div class="cw-bar" style="width:13%;"></div></div>
+            <span class="cw-tokens">128 K tokens</span>
+          </div>
+          <div class="cw-row-item">
+            <span class="cw-model">Claude Opus</span>
+            <div class="cw-bwrap"><div class="cw-bar" style="width:20%;"></div></div>
+            <span class="cw-tokens">200 K tokens</span>
+          </div>
+          <div class="cw-row-item">
+            <span class="cw-model">Gemini 1.5 Pro</span>
+            <div class="cw-bwrap"><div class="cw-bar" style="width:100%;"></div></div>
+            <span class="cw-tokens">1 M tokens</span>
+          </div>
+        </div>
+        <p style="font-size:20px;color:var(--gris-3);">1 M tokens ≈ 750 000 palabras ≈ el libro «Guerra y Paz» × 2.</p>
+      </div>
+      <div class="r" style="display:flex;flex-direction:column;gap:18px;justify-content:center;">
+        <div class="callout" style="margin:0;">
+          <p><b>Context window ≠ memoria permanente.</b> Al cerrar la conversación, el modelo olvida todo. No tiene memoria persistente entre sesiones (salvo que el producto la implemente explícitamente).</p>
+        </div>
+        <div class="callout teal" style="margin:0;">
+          <p><b>Lost in the middle:</b> con contextos muy largos, los modelos tienden a ignorar información en el centro. La información crítica rinde mejor al inicio o al final del prompt.</p>
+        </div>
+        <div class="callout warn" style="margin:0;">
+          <p><b>Costo:</b> tokens de entrada se cobran. Contextos de 1 M tokens pueden costar decenas de dólares por llamada en producción.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 17 · Modelos de razonamiento -->
+  <section class="s" data-label="Modelos de razonamiento">
+    <div class="kicker">§05 · Escala, Contexto y Razonamiento</div>
+    <h2 class="s-head">Modelos de razonamiento — pensar antes de responder</h2>
+    <div class="stagger-in" style="margin-top:28px;">
+      <p style="font-size:26px;color:var(--gris-2);line-height:1.5;margin-bottom:24px;max-width:900px;">Los modelos «base» generan tokens inmediatamente. Los <b>«thinking models»</b> producen una cadena de pensamiento interna antes de dar la respuesta final — mejoran drásticamente en matemáticas, código y lógica.</p>
+      <div class="cards three stagger-in" style="gap:22px;">
+        <div class="card">
+          <span class="card-n">
+            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+          </span>
+          <h3><a class="platform-link" href="https://openai.com/o1" target="_blank" rel="noopener">o1 / o3</a> — OpenAI</h3>
+          <p style="font-size:21px;">Usa cadenas de razonamiento internas («scratchpad»). Primer modelo en superar a humanos expertos en benchmarks de matemáticas olímpicas.</p>
+        </div>
+        <div class="card">
+          <span class="card-n">
+            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.663 17h4.673M12 3v1m6.364 1.636-.707.707M21 12h-1M4 12H3m3.343-5.657-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+          </span>
+          <h3><a class="platform-link" href="https://www.deepseek.com" target="_blank" rel="noopener">DeepSeek-R1</a> — China</h3>
+          <p style="font-size:21px;">Open-source, razonamiento explícito. Rendimiento comparable a o1 a una fracción del costo. Sacudió la industria en enero 2025.</p>
+        </div>
+        <div class="card">
+          <span class="card-n">
+            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+          </span>
+          <h3><a class="platform-link" href="https://claude.ai" target="_blank" rel="noopener">Claude Opus 4.7</a> — Anthropic</h3>
+          <p style="font-size:21px;">Modo «extended thinking» — razonamiento explícito con cientos de miles de tokens de pensamiento visible al usuario.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DIVISOR §06 -->
+  <section class="s s--dark divider" data-label="§06 El Paisaje Actual">
+    <div class="num">06</div>
+    <h2>El Paisaje<br>Actual — 2026</h2>
+    <div class="yellow-underline"></div>
+  </section>
+
+  <!-- 18 · Timeline -->
+  <section class="s" data-label="Timeline 2020–2026">
+    <div class="kicker">§06 · El Paisaje Actual</div>
+    <h2 class="s-head">De GPT-3 a los modelos actuales — 6 años que lo cambiaron todo</h2>
+    <div class="timeline stagger-in" style="margin-top:28px;">
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-body">
+          <span class="tl-date">2020</span>
+          <span class="tl-title"><a class="platform-link" href="https://openai.com/research/gpt-3-apps" target="_blank" rel="noopener">GPT-3</a> — OpenAI</span>
+          <span class="tl-desc">175 B parámetros. Primer modelo que impresionó al público general con generación de texto fluido. API de acceso limitado.</span>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-body">
+          <span class="tl-date">2022</span>
+          <span class="tl-title"><a class="platform-link" href="https://openai.com/research/instruction-following" target="_blank" rel="noopener">InstructGPT</a> + <a class="platform-link" href="https://chatgpt.com" target="_blank" rel="noopener">ChatGPT</a></span>
+          <span class="tl-desc">RLHF aplicado a gran escala. ChatGPT alcanza 100 M usuarios en 2 meses — el producto de adopción más rápida en la historia.</span>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-body">
+          <span class="tl-date">2023</span>
+          <span class="tl-title"><a class="platform-link" href="https://openai.com/gpt-4" target="_blank" rel="noopener">GPT-4</a> · <a class="platform-link" href="https://claude.ai" target="_blank" rel="noopener">Claude 2</a> · <a class="platform-link" href="https://gemini.google.com" target="_blank" rel="noopener">Bard/Gemini</a> · <a class="platform-link" href="https://ai.meta.com/llama/" target="_blank" rel="noopener">Llama 2</a></span>
+          <span class="tl-desc">La carrera se abre. GPT-4 multimodal. Meta libera Llama 2 como open-source. Anthropic lanza Claude con énfasis en seguridad.</span>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-body">
+          <span class="tl-date">2024</span>
+          <span class="tl-title"><a class="platform-link" href="https://openai.com/o1" target="_blank" rel="noopener">o1</a> · <a class="platform-link" href="https://openai.com/gpt-4o" target="_blank" rel="noopener">GPT-4o</a> · <a class="platform-link" href="https://gemini.google.com" target="_blank" rel="noopener">Gemini 1.5 Pro</a></span>
+          <span class="tl-desc">Modelos de razonamiento (o1). Contextos de 1 M tokens. Velocidad e integración nativa de voz e imagen.</span>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-body">
+          <span class="tl-date">Ene 2025</span>
+          <span class="tl-title"><a class="platform-link" href="https://www.deepseek.com" target="_blank" rel="noopener">DeepSeek-R1</a></span>
+          <span class="tl-desc">China lanza modelo open-source de razonamiento comparable a o1. Costo de entrenamiento ~$6 M vs ~$100 M+ de OpenAI. Sacude el mercado bursátil de IA.</span>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-body">
+          <span class="tl-date">2025 – 2026</span>
+          <span class="tl-title"><a class="platform-link" href="https://openai.com/gpt-5" target="_blank" rel="noopener">GPT-5</a> · <a class="platform-link" href="https://ai.meta.com/llama/" target="_blank" rel="noopener">Llama 4</a> · <a class="platform-link" href="https://claude.ai" target="_blank" rel="noopener">Claude Opus 4.7</a></span>
+          <span class="tl-desc">Modelos agénticos. Razonamiento extendido. Integración con herramientas del mundo real. Competencia global intensa.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 19 · Panorama modelos líderes 2026 -->
+  <section class="s" data-label="Modelos líderes 2026">
+    <div class="kicker">§06 · El Paisaje Actual</div>
+    <h2 class="s-head">Panorama de modelos líderes — 2026</h2>
+    <div class="stagger-in" style="margin-top:20px;">
+      <table class="models-table">
+        <thead>
+          <tr>
+            <th>Modelo</th>
+            <th>Proveedor</th>
+            <th>Contexto</th>
+            <th>Fortaleza principal</th>
+            <th>Acceso</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><a class="platform-link" href="https://openai.com/gpt-4o" target="_blank" rel="noopener">GPT-4o</a></td>
+            <td>OpenAI</td>
+            <td style="font-family:var(--mono);">128 K</td>
+            <td>Multimodal (texto, imagen, voz), velocidad, ecosistema de plugins</td>
+            <td>API + ChatGPT</td>
+          </tr>
+          <tr>
+            <td><a class="platform-link" href="https://openai.com/o1" target="_blank" rel="noopener">o3 / o4-mini</a></td>
+            <td>OpenAI</td>
+            <td style="font-family:var(--mono);">200 K</td>
+            <td>Razonamiento avanzado, matemáticas, código</td>
+            <td>API + ChatGPT Pro</td>
+          </tr>
+          <tr>
+            <td><a class="platform-link" href="https://claude.ai" target="_blank" rel="noopener">Claude Opus 4.7</a></td>
+            <td>Anthropic</td>
+            <td style="font-family:var(--mono);">200 K</td>
+            <td>Extended thinking, escritura, alineación, análisis de documentos largos</td>
+            <td>API + Claude.ai</td>
+          </tr>
+          <tr>
+            <td><a class="platform-link" href="https://gemini.google.com" target="_blank" rel="noopener">Gemini 2.5 Pro</a></td>
+            <td>Google DeepMind</td>
+            <td style="font-family:var(--mono);">1 M</td>
+            <td>Contexto ultra-largo, integración Google Workspace, multimodal</td>
+            <td>API + Gemini</td>
+          </tr>
+          <tr>
+            <td><a class="platform-link" href="https://ai.meta.com/llama/" target="_blank" rel="noopener">Llama 4</a></td>
+            <td>Meta</td>
+            <td style="font-family:var(--mono);">128 K</td>
+            <td>Open-source, despliegue local, fine-tuning personalizado</td>
+            <td>Open-source</td>
+          </tr>
+          <tr>
+            <td><a class="platform-link" href="https://www.deepseek.com" target="_blank" rel="noopener">DeepSeek-R1</a></td>
+            <td>DeepSeek</td>
+            <td style="font-family:var(--mono);">64 K</td>
+            <td>Razonamiento, open-source, bajo costo de inferencia</td>
+            <td>Open-source / API</td>
+          </tr>
+        </tbody>
+      </table>
+      <p style="font-size:20px;color:var(--gris-3);margin-top:12px;">Comparar modelos en tiempo real: <a class="platform-link" href="https://lmarena.ai" target="_blank" rel="noopener">lmarena.ai</a> · <a class="platform-link" href="https://huggingface.co/spaces/open-llm-leaderboard/open_llm_leaderboard" target="_blank" rel="noopener">Open LLM Leaderboard</a></p>
+    </div>
+  </section>
+
+  <!-- DIVISOR §07 -->
+  <section class="s s--dark divider" data-label="§07 Límites Estructurales">
+    <div class="num">07</div>
+    <h2>Límites<br>Estructurales</h2>
+    <div class="yellow-underline"></div>
+  </section>
+
+  <!-- 20 · Fluido vs Fáctico -->
+  <section class="s" data-label="Fluido vs Fáctico">
+    <div class="kicker">§07 · Límites Estructurales</div>
+    <h2 class="s-head">Fluido vs Fáctico — la tensión central</h2>
+    <div class="split stagger-in" style="margin-top:24px;">
+      <div class="l">
+        <div class="big-quote" style="margin-bottom:20px;">
+          «Los LLM son expertos en sonar bien.<br>No en tener razón.»
+        </div>
+        <p style="font-size:26px;color:var(--gris-2);line-height:1.55;margin-bottom:16px;">El objetivo de entrenamiento fue maximizar la <b>coherencia estadística</b> del texto, no la <b>veracidad factual</b>. Un modelo puede generar texto perfectamente fluido sobre algo completamente incorrecto.</p>
+        <div class="callout teal">
+          <p><b>Analogía:</b> como un estudiante brillante que puede escribir una tesis convincente sobre cualquier tema — aunque no sepa nada de él. La confianza retórica es independiente de la precisión factual.</p>
+        </div>
+      </div>
+      <div class="r">
+        <div class="cards two" style="gap:18px;flex-direction:column;">
+          <div class="card">
+            <h3>Lo que hace bien</h3>
+            <ul style="font-size:22px;color:var(--gris-2);padding-left:1.1em;line-height:1.7;">
+              <li>Estructurar y resumir información</li>
+              <li>Editar y reescribir textos</li>
+              <li>Generar código a partir de especificaciones</li>
+              <li>Brainstorming e ideación</li>
+              <li>Traducción y explicación</li>
+            </ul>
+          </div>
+          <div class="card card--ink">
+            <h3>Lo que hace con riesgo</h3>
+            <ul style="font-size:22px;padding-left:1.1em;line-height:1.7;">
+              <li>Citar fuentes (puede inventarlas)</li>
+              <li>Afirmar fechas y estadísticas específicas</li>
+              <li>Cálculos numéricos complejos</li>
+              <li>Información legal o médica específica</li>
             </ul>
           </div>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- 6. Generativo: corpus -->
-    <section class="slide" data-slide>
-      <div class="content">
-        <p class="eyebrow">Generativo</p>
-        <h2>«Miremos grandes corpus de información sobre perros»</h2>
-        <p>Un modelo generativo no busca una frontera —busca <strong>la distribución completa</strong> de cómo «se ven» los perros. Necesita <em>mucha más información</em>.</p>
-        <div class="grid cols-2 stagger-in" style="margin-top: 0.5em;">
-          <div class="card">
-            <p class="eyebrow">Corpus textual</p>
-            <h3>Documentos sobre perros</h3>
-            <p>Wikipedia, libros, artículos, posts: descripciones, anatomía, comportamiento, historia. Millones de oraciones.</p>
-          </div>
-          <div class="card">
-            <p class="eyebrow">Corpus gráfico</p>
-            <h3>Imágenes de perros</h3>
-            <p>Fotos en distintos ángulos, razas, edades, tamaños. Capturan la <strong>distribución visual</strong> completa de la categoría.</p>
+  <!-- 21 · Las cuatro limitaciones -->
+  <section class="s" data-label="Las cuatro limitaciones estructurales">
+    <div class="kicker">§07 · Límites Estructurales</div>
+    <h2 class="s-head">Las cuatro limitaciones estructurales</h2>
+    <div class="cards four stagger-in" style="margin-top:28px;">
+      <div class="card">
+        <span class="card-n">
+          <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </span>
+        <h3>Alucinaciones</h3>
+        <p style="font-size:21px;">Genera afirmaciones falsas con alta confianza aparente. Citas, estadísticas, casos legales y código inventados son frecuentes.</p>
+      </div>
+      <div class="card">
+        <span class="card-n">
+          <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </span>
+        <h3>Corte de conocimiento</h3>
+        <p style="font-size:21px;">El conocimiento está «congelado» en la fecha de corte del entrenamiento. No sabe nada de lo que ocurrió después sin búsqueda web.</p>
+      </div>
+      <div class="card">
+        <span class="card-n">
+          <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </span>
+        <h3>Sesgos del corpus</h3>
+        <p style="font-size:21px;">El modelo refleja los sesgos del texto con que fue entrenado: sobrerepresentación del inglés, perspectivas occidentales, estereotipos de género y raza.</p>
+      </div>
+      <div class="card">
+        <span class="card-n">
+          <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 0-2-2V9m0 0h18"/></svg>
+        </span>
+        <h3>Sin agencia real</h3>
+        <p style="font-size:21px;">No «entiende» en sentido humano. No tiene objetivos propios, no verifica hechos, no puede actuar en el mundo sin herramientas externas.</p>
+      </div>
+    </div>
+    <div class="callout warn stagger-in" style="margin-top:20px;">
+      <p><b>Regla práctica:</b> usa el LLM como un <em>primer borrador muy rápido</em>. Verifica siempre cifras, fechas, citas y código antes de publicar o usar en producción.</p>
+    </div>
+  </section>
+
+  <!-- 22 · Alucinaciones — Nebraska -->
+  <section class="s" data-label="Alucinaciones — Caso Nebraska">
+    <div class="kicker">§07 · Límites Estructurales</div>
+    <h2 class="s-head">Alucinaciones en el mundo real — caso Nebraska</h2>
+    <div class="split split--wideL stagger-in" style="margin-top:24px;">
+      <div class="l">
+        <p style="font-size:26px;color:var(--gris-2);line-height:1.55;margin-bottom:18px;">En 2023, un chatbot de IA usado por el estado de Nebraska para orientación en beneficios de desempleo dio <b>información legalmente incorrecta</b> a residentes que tomaron decisiones basándose en ella.</p>
+        <div class="callout warn" style="margin-bottom:18px;">
+          <p><b>Lo que pasó:</b> el chatbot inventó reglas de elegibilidad que no existían y omitió requisitos reales. Los usuarios presentaron solicitudes incorrectas y fueron rechazados. Fuente: <a class="platform-link" href="https://nebraskapublicmedia.org" target="_blank" rel="noopener">Nebraska Public Media</a>, 2023.</p>
+        </div>
+        <div class="callout teal">
+          <p><b>Patrón sistemático:</b> las alucinaciones no son errores aleatorios — ocurren más frecuentemente cuando el modelo no tiene información sólida pero el contexto «lo empuja» a completar una respuesta con confianza.</p>
+        </div>
+      </div>
+      <div class="r">
+        <div style="background:var(--gris-6);border-radius:var(--radio);padding:24px 28px;height:100%;display:flex;flex-direction:column;gap:16px;justify-content:center;">
+          <p style="font-family:var(--display);font-size:22px;font-weight:700;color:var(--gris-2);margin:0;">¿Por qué el modelo no sabe que se equivoca?</p>
+          <p style="font-size:24px;color:var(--gris-2);line-height:1.55;margin:0;">El modelo no tiene acceso a su propio proceso de generación. No «siente» incertidumbre — asigna probabilidades, pero no hay un meta-monitor que diga «esto es inventado».</p>
+          <p style="font-size:24px;color:var(--gris-2);line-height:1.55;margin:0;">La confianza verbal («por supuesto», «definitivamente») no correlaciona con la precisión factual.</p>
+          <div class="callout" style="margin:0;">
+            <p><b>Mitigación:</b> RAG (Retrieval Augmented Generation), verificación de fuentes, grounding en documentos propios, temperatura baja, chain-of-thought con citas explícitas.</p>
           </div>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- 7. Generativo: ¿qué es un perro? -->
-    <section class="slide" data-slide>
-      <div class="content">
-        <p class="eyebrow">Generativo</p>
-        <h2>Ahora que aprendiste sobre perros: ¿qué es un perro?</h2>
-        <div class="two-col">
-          <div>
-            <div class="banner info" style="font-size: clamp(0.95rem, 1.5vw, 1.3rem); line-height: 1.5;">
-              «Mamífero carnívoro doméstico de la familia de los cánidos que se caracteriza por tener los sentidos del olfato y el oído muy finos…»
-            </div>
-            <p style="margin-top: 1em;">Un modelo generativo de <strong>texto</strong> (como <a class="platform-link" href="https://chatgpt.com" target="_blank" rel="noopener">ChatGPT</a>, <a class="platform-link" href="https://claude.ai" target="_blank" rel="noopener">Claude</a> o <a class="platform-link" href="https://gemini.google.com" target="_blank" rel="noopener">Gemini</a>) puede <em>describirlo</em>.</p>
-            <p style="margin-top: 0.5em;">Un modelo generativo de <strong>imagen</strong> (<a class="platform-link" href="https://openai.com/dall-e-3" target="_blank" rel="noopener">DALL-E</a>, <a class="platform-link" href="https://stability.ai" target="_blank" rel="noopener">Stable Diffusion</a>, <a class="platform-link" href="https://www.midjourney.com" target="_blank" rel="noopener">Midjourney</a>) puede <em>dibujarlo</em>.</p>
-          </div>
-          <img class="diagram" src="img/dog-drawing.jpg" alt="Dibujo a línea de un perro generado por IA" style="max-width: 75%; margin: 0 auto;" />
+  <!-- 23 · Anatomía de un prompt -->
+  <section class="s" data-label="Anatomía de un prompt">
+    <div class="kicker">§07 · Límites Estructurales</div>
+    <h2 class="s-head">Anatomía de un prompt bien estructurado</h2>
+    <div class="split stagger-in" style="margin-top:22px;">
+      <div class="l">
+        <div class="pa-block">
+<span class="pa-k">[SISTEMA / ROL]</span>
+<span class="pa-v">Eres un asesor financiero senior especializado
+en pymes latinoamericanas. Respondes en español,
+con rigor técnico pero lenguaje accesible.</span>
+
+<span class="pa-k">[CONTEXTO]</span>
+<span class="pa-v">Mi empresa factura $500 M COP/año, sector
+retail, 12 empleados. Buscamos financiación
+para expansión a segunda ciudad.</span>
+
+<span class="pa-k">[TAREA]</span>
+<span class="pa-s">Analiza las tres mejores opciones de
+financiación disponibles en Colombia 2026.
+Incluye pros, contras y rangos de tasa.</span>
+
+<span class="pa-k">[RESTRICCIONES]</span>
+<span class="pa-c">Máximo 400 palabras. No recomendes acciones
+sin antes preguntar por el flujo de caja.
+Cita fuentes verificables si las hay.</span>
         </div>
       </div>
-    </section>
-
-    <!-- 8. Comparación de técnicas -->
-    <section class="slide" data-slide>
-      <div class="content">
-        <p class="eyebrow">Mismos datos, dos preguntas distintas</p>
-        <h2>Discriminar <span class="sub">vs.</span> generar</h2>
-        <div class="vs-cols stagger-in">
-          <div class="col left">
-            <h3>Técnica discriminativa</h3>
-            <p style="opacity:0.85;"><strong>Entrada:</strong> imágenes etiquetadas «perro» o «gato».</p>
-            <p style="opacity:0.85;"><strong>Pregunta:</strong> ¿esta imagen nueva es un perro?</p>
-            <p style="opacity:0.85;"><strong>Salida:</strong> una etiqueta o probabilidad por clase.</p>
-            <p style="margin-top: 0.5em;">Ejemplo: la CNN del módulo M1 que vimos.</p>
+      <div class="r">
+        <div class="steps three" style="font-size:21px;margin-bottom:16px;gap:18px;">
+          <div class="step">
+            <span class="step-n">1</span>
+            <div><b>Rol / Sistema</b><br><span style="color:var(--gris-2);">Define identidad y estilo de respuesta. El modelo ajusta su «voz».</span></div>
           </div>
-          <div class="vs-divider">vs</div>
-          <div class="col right">
-            <h3>Técnica generativa</h3>
-            <p style="opacity:0.85;"><strong>Entrada:</strong> el patrón completo de cómo lucen los perros.</p>
-            <p style="opacity:0.85;"><strong>Pregunta:</strong> dado «perro», dame una nueva instancia.</p>
-            <p style="opacity:0.85;"><strong>Salida:</strong> una imagen, un texto, un audio.</p>
-            <p style="margin-top: 0.5em;">Ejemplo: ChatGPT, Midjourney, Sora.</p>
+          <div class="step">
+            <span class="step-n">2</span>
+            <div><b>Contexto</b><br><span style="color:var(--gris-2);">Información de base que el modelo necesita y no tiene por defecto.</span></div>
+          </div>
+          <div class="step">
+            <span class="step-n">3</span>
+            <div><b>Tarea + Restricciones</b><br><span style="color:var(--gris-2);">Qué debe hacer exactamente, en qué formato y qué NO hacer.</span></div>
           </div>
         </div>
+        <div class="callout teal">
+          <p><b>Restricciones:</b> acotan el espacio de respuestas. Largo, formato, tono, qué no hacer — evitan divagaciones y reducen alucinaciones al forzar citas explícitas.</p>
+        </div>
+        <p style="font-size:20px;color:var(--gris-3);margin-top:12px;">En M2.2 profundizaremos en técnicas: few-shot, chain-of-thought, zero-shot CoT y prompts de sistema para producción.</p>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- 9. ¿Qué es la IA Generativa? -->
-    <section class="slide" data-slide>
-      <div class="content">
-        <p class="eyebrow">Definición operativa</p>
-        <h2>¿Qué es la IA generativa?</h2>
-        <div class="grid cols-3 stagger-in">
-          <div class="card">
-            <p class="eyebrow">1 · Qué hace</p>
-            <h3>Crea contenido nuevo</h3>
-            <p>La <strong>IA generativa (GenAI)</strong> es un tipo de inteligencia artificial que crea contenido nuevo en base en lo que aprendió de contenido existente.</p>
-          </div>
-          <div class="card">
-            <p class="eyebrow">2 · Cómo aprende</p>
-            <h3>Entrenamiento</h3>
-            <p>El proceso de aprender de contenido existente se le conoce como <strong>entrenamiento</strong>, y el resultado es un <strong>modelo probabilístico</strong>.</p>
-          </div>
-          <div class="card">
-            <p class="eyebrow">3 · Cómo se usa</p>
-            <h3>Prompt → predicción</h3>
-            <p>Dada una instrucción (a.k.a. <em>prompt</em>), la GenAI usa este modelo probabilístico para predecir cómo una respuesta esperada podría ser.</p>
-          </div>
-        </div>
+  <!-- 24 · Síntesis -->
+  <section class="s s--tint" data-label="Síntesis">
+    <div class="kicker">Síntesis de la sesión</div>
+    <h2 class="s-head">Lo esencial de M2.1 — 6 ideas para recordar</h2>
+    <div class="cards two stagger-in" style="margin-top:26px;gap:22px;">
+      <div class="card">
+        <span class="card-n" style="font-family:var(--mono);font-size:28px;font-weight:700;">01</span>
+        <h3>Generativo ≠ Clasificador</h3>
+        <p style="font-size:22px;">Un LLM modela $P(\text{texto})$ y muestrea la siguiente palabra — no clasifica. La ruleta probabilística es su mecanismo central.</p>
       </div>
-    </section>
-
-    <!-- 10. Lenguaje vs Imágenes -->
-    <section class="slide" data-slide>
-      <div class="content">
-        <p class="eyebrow">Las dos grandes familias generativas</p>
-        <h2>Lenguaje <span class="sub">vs.</span> imágenes</h2>
-        <div class="vs-cols stagger-in">
-          <div class="col left">
-            <h3>Modelos de lenguaje generativos (LLMs)</h3>
-            <p style="opacity:0.85;">Aprenden patrones del lenguaje usando grandes corpus documentales digitales.</p>
-            <p>Dado un texto de entrada, predicen <strong>qué viene luego</strong> (siguiente palabra).</p>
-            <p style="margin-top: 0.5em;"><strong>Ejemplos:</strong> GPT, Claude, Gemini, Llama, DeepSeek.</p>
-          </div>
-          <div class="vs-divider">+</div>
-          <div class="col right">
-            <h3>Modelos generativos de imágenes</h3>
-            <p style="opacity:0.85;">Producen nuevas imágenes usando técnicas como <strong>difusión</strong>.</p>
-            <p>Dado un prompt, transforman <strong>ruido aleatorio</strong> en imágenes coherentes.</p>
-            <p style="margin-top: 0.5em;"><strong>Ejemplos:</strong> DALL-E, Stable Diffusion, Midjourney, FLUX.</p>
-          </div>
-        </div>
-        <div class="banner info" style="margin-top: 0.4em;">
-          <strong>Hoy 2026:</strong> los modelos modernos son <em>multimodales</em> — un mismo modelo entiende y genera texto, imagen, audio y video. Pero conceptualmente las arquitecturas siguen siendo distintas.
-        </div>
+      <div class="card">
+        <span class="card-n" style="font-family:var(--mono);font-size:28px;font-weight:700;">02</span>
+        <h3>Tokens + Embeddings + Atención</h3>
+        <p style="font-size:22px;">El Transformer tokeniza, proyecta a vectores y usa atención multi-cabeza para capturar relaciones a larga distancia en el texto.</p>
       </div>
-    </section>
-
-    <!-- 11. Donde encaja en la jerarquía (onion SVG) -->
-    <section class="slide" data-slide>
-      <div class="content">
-        <p class="eyebrow">Recordemos la jerarquía</p>
-        <h2>Dónde encaja la IA generativa</h2>
-        <div class="two-col">
-          <div class="svg-frame">
-            <svg class="ai-hierarchy-svg" viewBox="0 0 520 520" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Jerarquía: IA contiene aprendizaje de máquina, que contiene aprendizaje profundo, que contiene IA generativa">
-              <defs>
-                <radialGradient id="g-ai" cx="35%" cy="30%" r="80%"><stop offset="0%" stop-color="#2a2a2a"/><stop offset="100%" stop-color="#0f0f0f"/></radialGradient>
-                <radialGradient id="g-ml" cx="40%" cy="35%" r="80%"><stop offset="0%" stop-color="#3f3f46"/><stop offset="100%" stop-color="#27272a"/></radialGradient>
-                <radialGradient id="g-dl" cx="40%" cy="35%" r="80%"><stop offset="0%" stop-color="#71717a"/><stop offset="100%" stop-color="#52525b"/></radialGradient>
-                <radialGradient id="g-gen" cx="40%" cy="35%" r="80%"><stop offset="0%" stop-color="#FFD24A"/><stop offset="100%" stop-color="#E6AC00"/></radialGradient>
-              </defs>
-              <circle cx="260" cy="260" r="245" fill="url(#g-ai)"/>
-              <circle cx="260" cy="260" r="190" fill="url(#g-ml)"/>
-              <circle cx="260" cy="260" r="135" fill="url(#g-dl)"/>
-              <circle cx="260" cy="260" r="80"  fill="url(#g-gen)"/>
-              <text class="ring-label" x="260" y="55"  text-anchor="middle" fill="#fff">Inteligencia Artificial</text>
-              <text class="ring-sub"   x="260" y="74"  text-anchor="middle" fill="#FFBF00">Sistemas que imitan la inteligencia humana</text>
-              <text class="ring-label" x="260" y="103" text-anchor="middle" fill="#fff" style="font-size:14px;">Aprendizaje de máquina</text>
-              <text class="ring-sub"   x="260" y="120" text-anchor="middle" fill="#d4d4d8">Aprende reglas a partir de datos</text>
-              <text class="ring-label" x="260" y="155" text-anchor="middle" fill="#fff" style="font-size:13px;">Aprendizaje profundo</text>
-              <text class="ring-sub"   x="260" y="172" text-anchor="middle" fill="#e4e4e7">Redes neuronales con muchas capas</text>
-              <text class="ring-label" x="260" y="252" text-anchor="middle" fill="#1A1A1A" style="font-size:13px;">IA generativa</text>
-              <text class="ring-sub"   x="260" y="270" text-anchor="middle" fill="#1A1A1A" style="font-weight:600;">ChatGPT · Claude</text>
-              <text class="ring-sub"   x="260" y="286" text-anchor="middle" fill="#1A1A1A" style="font-weight:600;">Midjourney · Sora</text>
-              <text class="ring-sub"   x="260" y="302" text-anchor="middle" fill="#1A1A1A" style="font-weight:600;">Stable Diffusion</text>
-            </svg>
-          </div>
-          <div>
-            <ul>
-              <li><strong>IA</strong> es el paraguas amplio.</li>
-              <li><strong>Aprendizaje de máquina</strong>: aprende reglas de los datos.</li>
-              <li><strong>Aprendizaje profundo</strong>: redes neuronales grandes.</li>
-              <li><strong>IA generativa</strong>: redes profundas <em>diseñadas para producir contenido nuevo</em>.</li>
-            </ul>
-            <div class="banner" style="margin-top: 0.7em;">
-              <strong>Importante:</strong> no todo lo generativo usa redes profundas (también hay HMM, GMM, autoencoders…), pero <strong>los modelos que dominan hoy</strong> sí son aprendizaje profundo.
-            </div>
-          </div>
-        </div>
+      <div class="card">
+        <span class="card-n" style="font-family:var(--mono);font-size:28px;font-weight:700;">03</span>
+        <h3>Tres fases de entrenamiento</h3>
+        <p style="font-size:22px;">Pre-entrenamiento (escala), SFT (instrucciones) y RLHF (alineación) transforman un predictor de tokens en un asistente útil.</p>
       </div>
-    </section>
-
-    <!-- 12. Modelos generativos de lenguaje (separator) -->
-    <section class="slide title-slide" data-slide>
-      <div class="content big-quote">
-        <p class="eyebrow" style="text-align:center;">Sección 2</p>
-        <h2 style="color:#fff;">Modelos generativos<br/>de <span class="accent">lenguaje</span></h2>
-        <p>Cómo funcionan por dentro: la ruleta probabilística de la siguiente palabra.</p>
+      <div class="card">
+        <span class="card-n" style="font-family:var(--mono);font-size:28px;font-weight:700;">04</span>
+        <h3>Fluido no implica verdadero</h3>
+        <p style="font-size:22px;">La fluidez retórica y la veracidad factual son independientes. Verifica siempre cifras, fuentes y código generado por el modelo.</p>
       </div>
-    </section>
+    </div>
+    <div class="callout" style="margin-top:20px;">
+      <p><b>Analogía unificadora:</b> un LLM es como un estudiante que leyó toda internet pero nunca la verificó — brillante para estructurar y articular, pero capaz de inventar con confianza absoluta. Saber esto es la diferencia entre usarlo bien y mal.</p>
+    </div>
+  </section>
 
-    <!-- 13. Modelos de Lenguaje: Lima es la capital de ___ -->
-    <section class="slide" data-slide>
-      <div class="content">
-        <p class="eyebrow">Definición técnica</p>
-        <h2>Modelo de lenguaje</h2>
-        <p>Un modelo construido para predecir la <strong>distribución de probabilidad de la siguiente palabra</strong> en una secuencia, dadas las palabras anteriores.</p>
-        <div class="ctx-line"><strong>Lima es la capital de</strong> <span class="blank">_______</span></div>
-        <div style="display: flex; flex-direction: column; gap: 0.4rem; margin-top: 0.4em;" class="stagger-in">
-          <div class="prob-row"><span class="word">Perú</span><div class="bar"><span style="width: 88%;"></span></div><span class="pct">0.88</span></div>
-          <div class="prob-row"><span class="word">Ecuador</span><div class="bar muted"><span style="width: 5%;"></span></div><span class="pct">0.05</span></div>
-          <div class="prob-row"><span class="word">Colombia</span><div class="bar muted"><span style="width: 3%;"></span></div><span class="pct">0.03</span></div>
-          <div class="prob-row"><span class="word">España</span><div class="bar muted"><span style="width: 2%;"></span></div><span class="pct">0.02</span></div>
-          <div class="prob-row"><span class="word">México</span><div class="bar muted"><span style="width: 1%;"></span></div><span class="pct">0.01</span></div>
-          <div class="prob-row"><span class="word">Canadá</span><div class="bar muted"><span style="width: 0.5%;"></span></div><span class="pct">0.005</span></div>
-        </div>
-        <div class="banner info" style="margin-top: 0.5em;">
-          El modelo no «sabe» geografía. Aprendió que <strong>la siguiente palabra después de «Lima es la capital de»</strong> es, casi siempre, <em>Perú</em> en su corpus de entrenamiento.
-        </div>
-      </div>
-    </section>
+  <!-- 25 · Cierre -->
+  <section class="s s--dark close" data-label="Cierre" data-nofoot>
+    <div class="kicker">Próxima sesión</div>
+    <h2>M2.2 — <span style="color:var(--amarillo);">Ingeniería de prompts</span>: cómo sacarle el máximo a los modelos que ya entendemos por dentro.</h2>
+    <div class="mid">Armados con el modelo mental de hoy — tokens, atención, alucinaciones, contexto — pasamos a la práctica: técnicas de prompting, cadenas de pensamiento y los primeros flujos de trabajo con IA.</div>
+    <div class="contact">
+      <div><span class="k">Conferencista</span>Luis H. Reyes<br>lh.reyes@uniandes.edu.co</div>
+      <div><span class="k">Soporte EDCO</span>estudiantesedco@uniandes.edu.co</div>
+      <div><span class="k">Curso</span>Dominando la IA · EDCO Uniandes</div>
+    </div>
+  </section>
 
-    <!-- 14. Procesos de entrenamiento -->
-    <section class="slide" data-slide>
-      <div class="content">
-        <p class="eyebrow">Cómo se entrena</p>
-        <h2>La ruleta se afina con atención + corpus</h2>
-        <p>Aprender a crear esta «ruleta de probabilidades» de manera efectiva requiere dos cosas:</p>
-        <div class="grid cols-2 stagger-in">
-          <div class="card">
-            <p class="eyebrow">1 · Atención</p>
-            <h3>Modelos de atención (Transformer)</h3>
-            <p>Cuando el modelo procesa <em>«Lima es la capital de _____»</em>, los <strong>mecanismos de atención</strong> le dicen cuáles palabras del contexto son las más importantes para predecir lo que sigue.</p>
-            <p style="margin-top: 0.5em;">En este caso: <strong>«Lima»</strong> y <strong>«capital»</strong> pesan más que «es» o «de».</p>
-          </div>
-          <div class="card">
-            <p class="eyebrow">2 · Corpus</p>
-            <h3>Datasets cada vez más grandes</h3>
-            <p>Cuanto más texto haya visto el modelo (libros, web, código, papers, conversaciones), mejor afina la ruleta. La ruleta «mala» da 50/50 entre Perú y Ecuador; la ruleta «buena» le da 88% a Perú.</p>
-          </div>
-        </div>
-        <div class="banner">
-          La arquitectura clave detrás de esto se llama <strong>Transformer</strong> (<a class="platform-link" href="https://arxiv.org/abs/1706.03762" target="_blank" rel="noopener">«Attention is all you need», Vaswani et al., 2017</a>) — la veremos en detalle más adelante.
-        </div>
-      </div>
-    </section>
+</deck-stage>
 
-    <!-- 15. Predicción autoregresiva -->
-    <section class="slide" data-slide>
-      <div class="content">
-        <p class="eyebrow">Cómo se predice</p>
-        <h2>Aplico la ruleta una y otra vez</h2>
-        <p>El modelo predice <strong>una palabra a la vez</strong>. Luego usa lo que generó como nueva entrada y vuelve a predecir. A esto se le llama <strong>generación autoregresiva</strong>.</p>
-        <div style="display: flex; flex-direction: column; gap: 0.5rem;" class="stagger-in">
-          <div class="ctx-line">Lima es la capital de <span class="blank">_______</span></div>
-          <div class="ctx-line">Lima es la capital de <strong>Perú</strong> <span class="blank">_______</span></div>
-          <div class="ctx-line">Lima es la capital de Perú<strong>.</strong> Se <span class="blank">_______</span></div>
-          <div class="ctx-line">Lima es la capital de Perú. Se <strong>encuentra</strong> <span class="blank">_______</span></div>
-          <div class="ctx-line">Lima es la capital de Perú. Se encuentra <strong>situada</strong> <span class="blank">_______</span></div>
-          <div class="ctx-line" style="background: var(--brand-yellow); color: var(--brand-dark); font-weight: 500;">Lima es la capital de Perú. Se encuentra situada en la costa central del país, a orillas del océano Pacífico…</div>
-        </div>
-      </div>
-    </section>
+<script src="assets/deck-stage.js"></script>
 
-    <!-- 16. Alucinaciones -->
-    <section class="slide" data-slide>
-      <div class="content">
-        <p class="eyebrow">El efecto secundario</p>
-        <h2>Alucinaciones</h2>
-        <p style="font-size: clamp(1.1rem, 2vw, 1.7rem);">
-          <strong>Alucinaciones</strong> son palabras o frases generadas por el modelo que <em>carecen de veracidad</em>, no tienen sentido o son gramaticalmente incorrectas.
-        </p>
-        <div class="grid cols-3 stagger-in" style="margin-top: 0.5em;">
-          <div class="card">
-            <p class="eyebrow">Causa raíz</p>
-            <h3>La ruleta no verifica</h3>
-            <p>El modelo solo busca «la siguiente palabra más probable». No pregunta si es cierto. Si su corpus tiene errores —o si la pregunta lleva a una zona de probabilidad poco entrenada— inventa con confianza.</p>
-          </div>
-          <div class="card">
-            <p class="eyebrow">Dónde aparece</p>
-            <h3>Datos, fechas, citas</h3>
-            <p>Hechos específicos (fechas, nombres, cifras), citas a papers que no existen, atribuciones falsas, código que parece correcto pero usa funciones inventadas.</p>
-          </div>
-          <div class="card">
-            <p class="eyebrow">Cómo mitigarla</p>
-            <h3>RAG, herramientas, validación</h3>
-            <p>Conectar el modelo a búsqueda real (RAG), darle herramientas para ejecutar código y verificar, y siempre <strong>contrastar la respuesta</strong> con una fuente externa cuando importa.</p>
-          </div>
-        </div>
-      </div>
-    </section>
+<!-- Pie de slide automático -->
+<script>
+  (function () {
+    var stage = document.querySelector('deck-stage');
+    var slides = Array.prototype.filter.call(stage.children, function (n) { return n.tagName === 'SECTION'; });
+    var total = slides.length;
+    slides.forEach(function (s, i) {
+      if (s.hasAttribute('data-nofoot') || s.querySelector('.s-foot')) return;
+      var f = document.createElement('div');
+      f.className = 's-foot';
+      f.innerHTML = '<span class="tag">M2.1 · Fundamentos de los LLM · Dominando la IA</span><span class="num">' + (i + 1) + ' / ' + total + '</span>';
+      s.appendChild(f);
+    });
+  })();
+</script>
 
-    <!-- 17. Evolución interactiva -->
-    <section class="slide" data-slide>
-      <div class="content">
-        <p class="eyebrow">Cinco años, una ola</p>
-        <h2>La evolución de los modelos generativos <span class="sub">click un año para ver los lanzamientos</span></h2>
-        <div class="legend" style="justify-content: flex-end; margin-top: -0.2em;">
-          <span class="chip closed"><span class="swatch"></span>Cerrado / propietario</span>
-          <span class="chip open"><span class="swatch"></span>Open source / abierto</span>
-        </div>
-        <div class="stepper" data-stepper>
-          <div class="stepper-nav" role="tablist">
-            <button type="button" role="tab" class="is-active" data-step="1" aria-selected="true">
-              <span class="yr">2021</span><span class="tag">Foundation</span>
-            </button>
-            <button type="button" role="tab" data-step="2" aria-selected="false">
-              <span class="yr">2022</span><span class="tag">Era chat</span>
-            </button>
-            <button type="button" role="tab" data-step="3" aria-selected="false">
-              <span class="yr">2023</span><span class="tag">Gold rush</span>
-            </button>
-            <button type="button" role="tab" data-step="4" aria-selected="false">
-              <span class="yr">2024</span><span class="tag">Multimodal</span>
-            </button>
-            <button type="button" role="tab" data-step="5" aria-selected="false">
-              <span class="yr">2025</span><span class="tag">Razonamiento</span>
-            </button>
-            <button type="button" role="tab" data-step="6" aria-selected="false">
-              <span class="yr">2026</span><span class="tag">Agentes</span>
-            </button>
-          </div>
-          <div class="stepper-panel" role="tabpanel">
+<!-- Lightbox para imágenes -->
+<script>
+  (function () {
+    var lb = document.createElement('dialog');
+    lb.className = 'lightbox';
+    lb.innerHTML = '<button class="lb-close" aria-label="Cerrar">&#x2715;</button><div class="lb-content"></div>';
+    document.body.appendChild(lb);
+    var content = lb.querySelector('.lb-content');
+    function close() { if (lb.open) lb.close(); }
+    lb.addEventListener('close', function () { content.innerHTML = ''; });
+    function open(img) {
+      content.innerHTML = '';
+      var im = document.createElement('img');
+      im.src = img.currentSrc || img.src;
+      content.appendChild(im);
+      if (!lb.open) lb.showModal();
+    }
+    lb.addEventListener('click', close);
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && lb.open) { e.stopPropagation(); close(); }
+    }, true);
+    document.querySelectorAll('deck-stage .img-panel img, deck-stage .figbox img').forEach(function (img) {
+      var parent = img.closest('.img-panel') || img.closest('.figbox');
+      if (parent && getComputedStyle(parent).position === 'static') parent.style.position = 'relative';
+      function trigger(e) { e.stopPropagation(); open(img); }
+      img.addEventListener('click', trigger);
+      img.style.cursor = 'zoom-in';
+    });
+  })();
+</script>
 
-            <div class="stepper-content is-active" data-content="1">
-              <p class="panel-eyebrow">2021 · La era pre-chat</p>
-              <h3>Modelos fundacionales — el escalado se vuelve serio</h3>
-              <div class="model-grid">
-                <div class="model-item closed"><div class="when">Mar 2021</div><div class="name">GPT-Neo 2.7B</div><div class="org">EleutherAI</div></div>
-                <div class="model-item open"><div class="when">Jun 2021</div><div class="name">GPT-J 6B</div><div class="org">EleutherAI</div><div class="note">Primer LLM abierto competitivo.</div></div>
-                <div class="model-item closed"><div class="when">Ago 2021</div><div class="name">Jurassic-1 178B</div><div class="org">AI21 Labs</div></div>
-                <div class="model-item closed"><div class="when">Oct 2021</div><div class="name">Megatron-Turing NLG 530B</div><div class="org">NVIDIA × Microsoft</div></div>
-                <div class="model-item closed"><div class="when">Oct 2021</div><div class="name">Cohere</div><div class="org">Cohere</div></div>
-                <div class="model-item closed"><div class="when">Dic 2021</div><div class="name">Gopher 280B</div><div class="org">DeepMind</div></div>
-              </div>
-            </div>
-
-            <div class="stepper-content" data-content="2">
-              <p class="panel-eyebrow">2022 · Llega el chat</p>
-              <h3>30 de noviembre: ChatGPT cambia todo</h3>
-              <div class="model-grid">
-                <div class="model-item open"><div class="when">Feb 2022</div><div class="name">GPT-NeoX 20B</div><div class="org">EleutherAI</div></div>
-                <div class="model-item closed"><div class="when">Mar 2022</div><div class="name">Chinchilla 70B</div><div class="org">DeepMind</div><div class="note">Datos &gt; tamaño.</div></div>
-                <div class="model-item closed"><div class="when">Abr 2022</div><div class="name">PaLM 540B</div><div class="org">Google</div></div>
-                <div class="model-item open"><div class="when">May 2022</div><div class="name">OPT 175B</div><div class="org">Meta</div></div>
-                <div class="model-item open"><div class="when">Jul 2022</div><div class="name">BLOOM 176B</div><div class="org">BigScience</div></div>
-                <div class="model-item closed"><div class="when">Nov 2022</div><div class="name">Galactica</div><div class="org">Meta</div><div class="note">Retirado en 3 días.</div></div>
-                <div class="model-item closed"><div class="when">30 nov 2022</div><div class="name">ChatGPT (GPT-3.5)</div><div class="org">OpenAI</div><div class="note">1 M de usuarios en 5 días.</div></div>
-              </div>
-            </div>
-
-            <div class="stepper-content" data-content="3">
-              <p class="panel-eyebrow">2023 · El gold rush</p>
-              <h3>Cada laboratorio lanza su modelo cada mes</h3>
-              <div class="model-grid">
-                <div class="model-item open"><div class="when">Feb 2023</div><div class="name">LLaMA</div><div class="org">Meta</div><div class="note">Filtrada en 4chan, abre la era open.</div></div>
-                <div class="model-item closed"><div class="when">Mar 2023</div><div class="name">GPT-4</div><div class="org">OpenAI</div><div class="note">Multimodal con imagen.</div></div>
-                <div class="model-item closed"><div class="when">Mar 2023</div><div class="name">Claude</div><div class="org">Anthropic</div></div>
-                <div class="model-item closed"><div class="when">Mar 2023</div><div class="name">Bard</div><div class="org">Google</div></div>
-                <div class="model-item open"><div class="when">Mar 2023</div><div class="name">Alpaca</div><div class="org">Stanford</div><div class="note">LLaMA fine-tuned.</div></div>
-                <div class="model-item open"><div class="when">Jul 2023</div><div class="name">Llama 2</div><div class="org">Meta</div></div>
-                <div class="model-item closed"><div class="when">Jul 2023</div><div class="name">Claude 2</div><div class="org">Anthropic</div><div class="note">100k de contexto.</div></div>
-                <div class="model-item open"><div class="when">Sep 2023</div><div class="name">Mistral 7B</div><div class="org">Mistral AI</div></div>
-                <div class="model-item closed"><div class="when">Nov 2023</div><div class="name">GPT-4 Turbo</div><div class="org">OpenAI</div></div>
-                <div class="model-item closed"><div class="when">Dic 2023</div><div class="name">Gemini 1.0</div><div class="org">Google</div></div>
-              </div>
-            </div>
-
-            <div class="stepper-content" data-content="4">
-              <p class="panel-eyebrow">2024 · Multimodal nativo</p>
-              <h3>Texto, imagen, audio y video en un solo modelo</h3>
-              <div class="model-grid">
-                <div class="model-item closed"><div class="when">Feb 2024</div><div class="name">Gemini 1.5 Pro</div><div class="org">Google</div><div class="note">1 M de tokens.</div></div>
-                <div class="model-item closed"><div class="when">Feb 2024</div><div class="name">Sora</div><div class="org">OpenAI</div><div class="note">Generación de video.</div></div>
-                <div class="model-item closed"><div class="when">Mar 2024</div><div class="name">Claude 3 (Opus, Sonnet, Haiku)</div><div class="org">Anthropic</div></div>
-                <div class="model-item open"><div class="when">Abr 2024</div><div class="name">Llama 3</div><div class="org">Meta</div></div>
-                <div class="model-item closed"><div class="when">May 2024</div><div class="name">GPT-4o</div><div class="org">OpenAI</div><div class="note">Voz en tiempo real.</div></div>
-                <div class="model-item closed"><div class="when">Jun 2024</div><div class="name">Claude 3.5 Sonnet</div><div class="org">Anthropic</div></div>
-                <div class="model-item open"><div class="when">Jul 2024</div><div class="name">Llama 3.1 405B</div><div class="org">Meta</div><div class="note">Open competitivo con GPT-4.</div></div>
-                <div class="model-item closed"><div class="when">Sep 2024</div><div class="name">o1-preview</div><div class="org">OpenAI</div><div class="note">Razonamiento por chain-of-thought.</div></div>
-                <div class="model-item closed"><div class="when">Oct 2024</div><div class="name">Claude 3.5 + Computer Use</div><div class="org">Anthropic</div></div>
-                <div class="model-item closed"><div class="when">Dic 2024</div><div class="name">Gemini 2.0</div><div class="org">Google</div><div class="note">«Era de los agentes».</div></div>
-              </div>
-            </div>
-
-            <div class="stepper-content" data-content="5">
-              <p class="panel-eyebrow">2025 · El año del razonamiento</p>
-              <h3>Pensar antes de responder + open-source compite de tú a tú</h3>
-              <div class="model-grid">
-                <div class="model-item open"><div class="when">Ene 2025</div><div class="name">DeepSeek R1</div><div class="org">DeepSeek</div><div class="note">Razonamiento abierto, costo radicalmente bajo.</div></div>
-                <div class="model-item closed"><div class="when">Feb 2025</div><div class="name">Claude 3.7 Sonnet</div><div class="org">Anthropic</div><div class="note">Razonamiento híbrido.</div></div>
-                <div class="model-item closed"><div class="when">Feb 2025</div><div class="name">GPT-4.5</div><div class="org">OpenAI</div></div>
-                <div class="model-item closed"><div class="when">Mar 2025</div><div class="name">Gemini 2.5 Pro</div><div class="org">Google</div><div class="note">1 M de contexto.</div></div>
-                <div class="model-item open"><div class="when">Abr 2025</div><div class="name">Llama 4 Maverick / Scout</div><div class="org">Meta</div><div class="note">Hasta 10 M de tokens.</div></div>
-                <div class="model-item closed"><div class="when">May 2025</div><div class="name">Claude Opus 4</div><div class="org">Anthropic</div></div>
-                <div class="model-item closed"><div class="when">Ago 2025</div><div class="name">GPT-5</div><div class="org">OpenAI</div><div class="note">Razonamiento integrado.</div></div>
-                <div class="model-item closed"><div class="when">Sep 2025</div><div class="name">Claude Sonnet 4.5</div><div class="org">Anthropic</div><div class="note">Mejor para código.</div></div>
-                <div class="model-item closed"><div class="when">Oct 2025</div><div class="name">Claude Haiku 4.5</div><div class="org">Anthropic</div><div class="note">Rápido y económico.</div></div>
-                <div class="model-item closed"><div class="when">2025</div><div class="name">Grok 4</div><div class="org">xAI</div><div class="note">2 M de contexto, búsqueda en X.</div></div>
-              </div>
-            </div>
-
-            <div class="stepper-content" data-content="6">
-              <p class="panel-eyebrow">2026 · La era de los agentes</p>
-              <h3>De chatbots a colaboradores que ejecutan</h3>
-              <div class="model-grid">
-                <div class="model-item closed"><div class="when">Mar 2026</div><div class="name">Claude Opus 4.7</div><div class="org">Anthropic</div><div class="note">1 M de contexto, razonamiento extendido.</div></div>
-                <div class="model-item closed"><div class="when">2026</div><div class="name">GPT-5.x · o-series</div><div class="org">OpenAI</div><div class="note">Modelos con planificación de tareas largas.</div></div>
-                <div class="model-item closed"><div class="when">2026</div><div class="name">Gemini 3.x</div><div class="org">Google</div></div>
-                <div class="model-item open"><div class="when">2026</div><div class="name">Llama 5 (esperado)</div><div class="org">Meta</div></div>
-                <div class="model-item open"><div class="when">2026</div><div class="name">DeepSeek R2 / V4</div><div class="org">DeepSeek</div></div>
-                <div class="model-item closed"><div class="when">2026</div><div class="name">Computer use & browser agents</div><div class="org">Varios</div><div class="note">Modelos que controlan navegadores y aplicaciones de escritorio.</div></div>
-              </div>
-              <div class="banner info" style="margin-top: 0.7em;">
-                <strong>Tendencia 2026:</strong> ya no se trata solo de «mejor chatbot». La pregunta es qué tareas <em>de varias horas</em> puede ejecutar un agente sin supervisión humana, y cuándo confiar en su salida.
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 18. Más grande es mejor (scaling) -->
-    <section class="slide" data-slide>
-      <div class="content">
-        <p class="eyebrow">Por qué tantos modelos cada vez más grandes</p>
-        <h2>«Más grande es mejor» <span class="sub">scaling laws, Kaplan et al. 2020</span></h2>
-        <div class="two-col">
-          <img class="diagram" src="img/scaling-laws.jpg" alt="Crecimiento exponencial del tamaño de los LLM entre 2018 y 2020, de ELMo a T-NLG" />
-          <div>
-            <p>Hasta 2020, la comunidad encontró una regularidad: <strong>al duplicar parámetros, duplicar datos y aumentar cómputo, la pérdida del modelo baja predeciblemente</strong>.</p>
-            <ul>
-              <li>ELMo (2018): 94 M parámetros.</li>
-              <li>BERT-Large (2018): 340 M.</li>
-              <li>GPT-2 (2019): 1.5 B.</li>
-              <li>MegatronLM (2019): 8.3 B.</li>
-              <li>T-NLG (2020): 17 B.</li>
-              <li>GPT-3 (2020): 175 B.</li>
-              <li>Llama 4 Scout (2025): contexto de 10 M.</li>
-            </ul>
-            <p style="margin-top: 0.5em; font-size: 0.85em;"><a class="platform-link" href="https://arxiv.org/abs/2001.08361" target="_blank" rel="noopener">Kaplan et al. (2020) · Scaling Laws for Neural Language Models</a></p>
-          </div>
-        </div>
-        <div class="banner">
-          <strong>2022–2024:</strong> <a class="platform-link" href="https://arxiv.org/abs/2203.15556" target="_blank" rel="noopener">Chinchilla (DeepMind, 2022)</a> mostró que <em>los datos importan tanto como los parámetros</em> — y esto rebalanceó la carrera. <strong>2025:</strong> el énfasis viró a <em>cómputo en inferencia</em> (razonamiento) y a <em>data quality</em>, no solo cantidad.
-        </div>
-      </div>
-    </section>
-
-    <!-- 19. ChatGPT in education separator -->
-    <section class="slide title-slide" data-slide>
-      <div class="content big-quote">
-        <p class="eyebrow" style="text-align:center;">Sección 3</p>
-        <h2 style="color:#fff;">ChatGPT y los <span class="accent">grandes modelos de lenguaje</span></h2>
-        <p>Pasamos del modelo (motor) al producto (la cosa con la que hablas).</p>
-      </div>
-    </section>
-
-    <!-- 20. ¿Qué es ChatGPT? -->
-    <section class="slide" data-slide>
-      <div class="content">
-        <p class="eyebrow">Punto de vista del usuario</p>
-        <h2>¿Qué es ChatGPT?</h2>
-        <div class="two-col">
-          <div>
-            <p><strong>Sistema conversacional (chatbot)</strong> que puede generar respuestas coherentes (sintáctica y gramaticalmente válidas) y naturales (como lo haría un humano) a instrucciones (a.k.a. <em>prompts</em>) dadas.</p>
-            <ul>
-              <li><strong>Contexto</strong>: lo que el usuario ya escribió en la conversación.</li>
-              <li><strong>Prompt</strong>: el mensaje actual del usuario.</li>
-              <li><strong>Respuesta</strong>: la salida del modelo.</li>
-              <li>Cada turno se concatena al contexto y vuelve a entrar al modelo.</li>
-            </ul>
-          </div>
-          <img class="diagram" src="img/chatgpt-example.jpg" alt="Captura de una conversación con ChatGPT preguntando qué hace un ingeniero de sistemas" />
-        </div>
-      </div>
-    </section>
-
-    <!-- 21. Iceberg ChatGPT vs LLM -->
-    <section class="slide" data-slide>
-      <div class="content">
-        <p class="eyebrow">No confundir el producto con el motor</p>
-        <h2>ChatGPT es la punta del iceberg</h2>
-        <div class="two-col">
-          <div class="svg-frame" style="padding: 0;">
-            <svg viewBox="0 0 480 480" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Iceberg: encima del agua ChatGPT (la interfaz), debajo el modelo de lenguaje (GPT)" style="background: linear-gradient(180deg, #87ceeb 0%, #87ceeb 33%, #1e3a8a 33.1%, #0c4a6e 100%); border-radius: 0.6rem;">
-              <!-- Sea line -->
-              <line x1="0" y1="160" x2="480" y2="160" stroke="rgba(255,255,255,0.4)" stroke-width="1" stroke-dasharray="4 6"/>
-              <!-- Top of iceberg (above water) -->
-              <polygon points="180,30 240,80 290,40 330,90 300,140 220,150 160,140 140,90" fill="#fff" stroke="#0c4a6e" stroke-width="2"/>
-              <text x="240" y="100" text-anchor="middle" fill="#0c4a6e" font-weight="700" font-size="20">ChatGPT</text>
-              <text x="240" y="125" text-anchor="middle" fill="#0c4a6e" font-size="13">la interfaz</text>
-              <!-- Underwater iceberg -->
-              <polygon points="160,160 320,160 380,260 360,360 280,440 200,450 130,400 80,310 100,220" fill="#bae6fd" fill-opacity="0.8" stroke="#0c4a6e" stroke-width="1"/>
-              <text x="245" y="240" text-anchor="middle" fill="#0c4a6e" font-weight="800" font-size="22">GPT</text>
-              <text x="245" y="265" text-anchor="middle" fill="#0c4a6e" font-weight="600" font-size="14">Modelo de lenguaje</text>
-              <text x="245" y="305" text-anchor="middle" fill="#1e3a8a" font-size="11">— pesos del modelo —</text>
-              <text x="245" y="325" text-anchor="middle" fill="#1e3a8a" font-size="11">— datos de entrenamiento —</text>
-              <text x="245" y="345" text-anchor="middle" fill="#1e3a8a" font-size="11">— RLHF / fine-tuning —</text>
-              <text x="245" y="365" text-anchor="middle" fill="#1e3a8a" font-size="11">— infraestructura GPU —</text>
-              <text x="245" y="395" text-anchor="middle" fill="#1e3a8a" font-size="11">— evaluaciones · seguridad —</text>
-            </svg>
-          </div>
-          <div>
-            <p><strong>ChatGPT</strong> es una <em>interfaz de chat</em>. Lo que ves arriba es solo el envoltorio: caja de texto, historial, botones.</p>
-            <p>Debajo del agua está <strong>GPT</strong> —el modelo de lenguaje en sí— con todo lo que lo hace funcionar:</p>
-            <ul>
-              <li>Pesos (cientos de gigas).</li>
-              <li>Datos de entrenamiento (trillones de tokens).</li>
-              <li>RLHF: refuerzo con feedback humano.</li>
-              <li>Clusters de GPU para servirlo.</li>
-              <li>Evaluaciones, filtros y guardrails de seguridad.</li>
-            </ul>
-            <div class="banner info" style="margin-top: 0.5em;">
-              Por eso una compañía puede tener <em>varios productos</em> (chat, asistente de voz, API) sobre <strong>el mismo modelo</strong>.
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 22. ¿Qué es un prompt? -->
-    <section class="slide" data-slide>
-      <div class="content">
-        <p class="eyebrow">La herramienta del usuario</p>
-        <h2>¿Qué es un prompt?</h2>
-        <p>Las instrucciones o <strong>prompts</strong> son tu herramienta para obtener los resultados que deseas. Piensa en ellas como una forma de comunicarte con un colega muy capaz, pero que solo tiene la información que tú le des.</p>
-        <p>En lugar de escribir código, puedes usar <strong>palabras y texto sencillo</strong>. De esta forma, el modelo sabe exactamente qué intentas lograr.</p>
-        <div class="banner">
-          La <strong>ingeniería de prompts</strong> exitosa se trata de combinar correctamente los elementos que veremos a continuación. Es —junto a la evaluación— la habilidad práctica más importante de este curso.
-        </div>
-      </div>
-    </section>
-
-    <!-- 23. ¿Qué considera un prompt? -->
-    <section class="slide" data-slide>
-      <div class="content">
-        <p class="eyebrow">Anatomía de un prompt</p>
-        <h2>¿Qué debe considerar un prompt?</h2>
-        <p>El prompt más simple puede tener cualquiera de los siguientes:</p>
-        <div class="grid cols-4 stagger-in">
-          <div class="card">
-            <p class="eyebrow">1</p>
-            <h3>Instrucciones</h3>
-            <p>Qué quieres que haga el modelo. Verbos claros: «resume», «traduce», «compara».</p>
-          </div>
-          <div class="card">
-            <p class="eyebrow">2</p>
-            <h3>Pregunta</h3>
-            <p>Qué información buscas. «¿Cuáles son las 3 razones principales…?»</p>
-          </div>
-          <div class="card">
-            <p class="eyebrow">3</p>
-            <h3>Datos de entrada</h3>
-            <p>El material sobre el que debe trabajar: un texto, una tabla, código.</p>
-          </div>
-          <div class="card">
-            <p class="eyebrow">4</p>
-            <h3>Ejemplos</h3>
-            <p>Cómo se ven una o varias respuestas correctas (<em>few-shot prompting</em>).</p>
-          </div>
-        </div>
-        <p style="margin-top: 0.5em; opacity: 0.8; font-size: 0.85em;">En la <strong>Sesión 3 (Francisco Moya)</strong> profundizaremos en cada uno y veremos plantillas reutilizables.</p>
-      </div>
-    </section>
-
-    <!-- 24. Bard / JWST falló -->
-    <section class="slide" data-slide>
-      <div class="content">
-        <p class="eyebrow">Caso real · Febrero 2023</p>
-        <h2>Bard se equivocó… en su anuncio de lanzamiento</h2>
-        <div class="two-col">
-          <img class="diagram" src="img/jwst-bard-error.jpg" alt="Captura del demo de Google Bard respondiendo sobre el James Webb Space Telescope" />
-          <div>
-            <p>En el demo público de Bard (hoy <a class="platform-link" href="https://gemini.google.com" target="_blank" rel="noopener">Gemini</a>), Google le pidió hablar de descubrimientos del telescopio James Webb. Una de las afirmaciones —«JWST tomó las primeras fotos de un exoplaneta»— era <strong>falsa</strong>.</p>
-            <p>Las acciones de Alphabet cayeron <strong>~9% en un día</strong>, perdiendo cerca de USD 100 mil millones de capitalización.</p>
-            <p style="margin-top: 0.5em;"><a class="platform-link" href="https://www.reuters.com/technology/google-ai-chatbot-bard-offers-inaccurate-information-company-ad-2023-02-08/" target="_blank" rel="noopener">Reportaje · Reuters, 8 feb 2023</a></p>
-            <div class="banner warn" style="margin-top: 0.5em;">
-              <strong>Lección:</strong> ni siquiera el demo de la propia compañía se valida solo. Los modelos suenan seguros incluso cuando inventan.
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 25. Modelos líderes 2026 -->
-    <section class="slide" data-slide>
-      <div class="content">
-        <p class="eyebrow">Panorama actual · Marzo 2026</p>
-        <h2>Modelos de IA generativa líderes <span class="sub">precios típicos por millón de tokens entrada / salida</span></h2>
-        <div style="overflow-x: auto;">
-          <table class="leaderboard">
-            <thead>
-              <tr>
-                <th>Proveedor</th><th>Modelo</th><th>Contexto</th><th>Precio I/O</th><th>Tipo</th><th>Destacado</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr class="row-highlight"><td class="col-name">Anthropic</td><td>Claude Opus 4.7 (1M)</td><td>1 M</td><td>—</td><td class="col-tag"><span class="tag closed">Cerrado</span></td><td>Razonamiento extendido, mejor para tareas largas.</td></tr>
-              <tr><td class="col-name">Anthropic</td><td>Claude Sonnet 4.5</td><td>200 K</td><td>$3 / $15</td><td class="col-tag"><span class="tag closed">Cerrado</span></td><td>Mejor para código.</td></tr>
-              <tr><td class="col-name">Anthropic</td><td>Claude Haiku 4.5</td><td>200 K</td><td>$1 / $5</td><td class="col-tag"><span class="tag closed">Cerrado</span></td><td>Rápido y económico.</td></tr>
-              <tr><td class="col-name">OpenAI</td><td>GPT-5</td><td>272 K</td><td>$1.25 / $10</td><td class="col-tag"><span class="tag closed">Cerrado</span></td><td>Razonamiento integrado.</td></tr>
-              <tr><td class="col-name">OpenAI</td><td>GPT-5 Mini</td><td>272 K</td><td>—</td><td class="col-tag"><span class="tag closed">Cerrado</span></td><td>Balance calidad–costo.</td></tr>
-              <tr><td class="col-name">Google</td><td>Gemini 2.5 Pro</td><td>1 M</td><td>$1.25 / $10</td><td class="col-tag"><span class="tag closed">Cerrado</span></td><td>Contexto masivo.</td></tr>
-              <tr><td class="col-name">Google</td><td>Gemini 2.5 Flash</td><td>1 M</td><td>$0.30 / $2.50</td><td class="col-tag"><span class="tag closed">Cerrado</span></td><td>Mejor precio–calidad.</td></tr>
-              <tr><td class="col-name">DeepSeek</td><td>V3.1 (671 B / 37 B activos)</td><td>128 K</td><td>$0.27 / $1.10</td><td class="col-tag"><span class="tag open">Open</span></td><td>MoE, costo ultra bajo.</td></tr>
-              <tr><td class="col-name">DeepSeek</td><td>R1</td><td>128 K</td><td>$0.55 / $2.19</td><td class="col-tag"><span class="tag open">Open</span></td><td>Razonamiento avanzado abierto.</td></tr>
-              <tr><td class="col-name">xAI</td><td>Grok 4</td><td>2 M</td><td>$3 / $15</td><td class="col-tag"><span class="tag closed">Cerrado</span></td><td>Búsqueda en X en tiempo real.</td></tr>
-              <tr><td class="col-name">Meta</td><td>Llama 4 Maverick</td><td>1 M</td><td>Gratis</td><td class="col-tag"><span class="tag open">Open</span></td><td>400 B params, abierto.</td></tr>
-              <tr><td class="col-name">Meta</td><td>Llama 4 Scout</td><td>10 M</td><td>Gratis</td><td class="col-tag"><span class="tag open">Open</span></td><td>Mayor contexto del mercado.</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <p style="margin-top: 0.5em; opacity: 0.7; font-size: 0.85em;">Tendencia 2025–2026: open source compite de tú a tú con propietarios. Razonamiento nativo. Contextos masivos hasta 10 M tokens. Multimodal por defecto.</p>
-      </div>
-    </section>
-
-    <!-- 26. Fluido pero no fáctico -->
-    <section class="slide" data-slide>
-      <div class="content">
-        <p class="eyebrow">Característica fundamental</p>
-        <h2>Fluido, <span style="color: var(--brand-yellow-dark);">pero no fáctico</span></h2>
-        <div class="grid cols-2 stagger-in">
-          <div class="card">
-            <p class="eyebrow">Lo que sí garantiza</p>
-            <h3>Sintaxis y gramática</h3>
-            <p>Construye sentencias <strong>sintáctica y gramaticalmente correctas</strong> en múltiples idiomas. Domina estilos: informal, formal, académico, periodístico, jurídico…</p>
-          </div>
-          <div class="card">
-            <p class="eyebrow">Lo que NO garantiza</p>
-            <h3>Verdad</h3>
-            <p>No necesariamente basado en hechos. <strong>No necesariamente veraz.</strong> Puede sonar igual de confiado al decir algo cierto que algo inventado.</p>
-          </div>
-        </div>
-        <p style="margin-top: 0.5em; font-size: 0.85em; opacity: 0.8;">Stokel-Walker, C., &amp; Van Noorden, R. (2023). <a class="platform-link" href="https://www.nature.com/articles/d41586-023-00340-6" target="_blank" rel="noopener">What ChatGPT and generative AI mean for science</a>. <em>Nature</em>.</p>
-      </div>
-    </section>
-
-    <!-- 27. Limitaciones -->
-    <section class="slide" data-slide>
-      <div class="content">
-        <p class="eyebrow">Cinco límites a tener presentes</p>
-        <h2>Limitaciones</h2>
-        <div class="grid cols-3 stagger-in">
-          <div class="card">
-            <p class="eyebrow">1</p>
-            <h3>Veracidad</h3>
-            <p>No se puede dar por hecho que el texto generado es verdad. Verificar siempre los datos críticos.</p>
-          </div>
-          <div class="card">
-            <p class="eyebrow">2</p>
-            <h3>Desactualización</h3>
-            <p>Cada modelo tiene una <em>knowledge cutoff</em>. En 2026, los modelos cierre 2024–2025 ya no saben de eventos recientes salvo que los conectemos a búsqueda.</p>
-          </div>
-          <div class="card">
-            <p class="eyebrow">3</p>
-            <h3>Sesgos y estereotipos</h3>
-            <p>El modelo hereda los sesgos presentes en su corpus. Si la web tiene un sesgo, el modelo lo refleja.</p>
-          </div>
-          <div class="card">
-            <p class="eyebrow">4</p>
-            <h3>Lenguaje ofensivo / tóxico</h3>
-            <p>Los principales modelos comerciales tienen filtros, pero no hay garantía a futuro. Modelos abiertos pueden no tenerlos.</p>
-          </div>
-          <div class="card">
-            <p class="eyebrow">5</p>
-            <h3>Textos largos</h3>
-            <p>A medida que crecen, pueden perder estructura, cohesión y coherencia. Para resultados largos: trocear y revisar por bloques.</p>
-          </div>
-          <div class="card" style="background: var(--brand-yellow); color: var(--brand-dark);">
-            <p class="eyebrow" style="color: var(--brand-dark);">Regla de oro</p>
-            <h3>Verifica lo que importa</h3>
-            <p style="color: var(--brand-dark);">Si una respuesta tiene consecuencias (médicas, legales, financieras), <strong>contrástala con una fuente externa.</strong></p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 28. ¿Solo grandes compañías pueden entrenar? -->
-    <section class="slide" data-slide>
-      <div class="content">
-        <p class="eyebrow">¿Es esto solo para Big Tech?</p>
-        <h2>¿Solo las grandes compañías pueden entrenar estos modelos?</h2>
-        <div class="grid cols-2 stagger-in">
-          <div class="card">
-            <p class="eyebrow">Antes (2020–2023)</p>
-            <h3>Casi sí</h3>
-            <p>Entrenar GPT-3 desde cero costaba ~USD 4–12 M. Solo OpenAI, Google, Meta, Microsoft podían pagarlo.</p>
-            <ul>
-              <li>Hardware: miles de GPUs A100/H100.</li>
-              <li>Datos: scraping a escala industrial.</li>
-              <li>Talento: ML researchers escasos.</li>
-            </ul>
-          </div>
-          <div class="card">
-            <p class="eyebrow">Ahora (2024–2026)</p>
-            <h3>Cada vez menos</h3>
-            <p>El ecosistema cambió radicalmente:</p>
-            <ul>
-              <li><strong>Open source competitivo</strong>: Llama, Mistral, DeepSeek, Qwen.</li>
-              <li><strong>Fine-tuning barato</strong>: LoRA, QLoRA — adaptas un modelo grande con una sola GPU.</li>
-              <li><strong>Eficiencia radical</strong>: <a class="platform-link" href="https://www.deepseek.com" target="_blank" rel="noopener">DeepSeek V3</a> entrenado por ~USD 6 M (vs. ~USD 100 M para GPT-4).</li>
-              <li><strong>APIs accesibles</strong>: usar el modelo cuesta centavos por consulta.</li>
-            </ul>
-          </div>
-        </div>
-        <div class="banner info">
-          <strong>2026:</strong> entrenar un modelo frontera sigue siendo de Big Tech, pero <em>usar uno excelente y adaptarlo a tu dominio</em> está al alcance de cualquier estudiante o equipo pequeño.
-        </div>
-      </div>
-    </section>
-
-    <!-- 29. Taller Parte 2 -->
-    <section class="slide title-slide" data-slide>
-      <div class="content big-quote">
-        <p class="eyebrow" style="text-align:center;">Hands-on</p>
-        <h2 style="color:#fff;">Taller <span class="accent">parte 2</span></h2>
-        <p>Crear cuenta · primer prompt · evaluar la respuesta. Los detalles de prompting vienen en M2.2.</p>
-      </div>
-    </section>
-
-    <!-- 30. Cierre -->
-    <section class="slide title-slide" data-slide>
-      <div class="content big-quote">
-        <p class="eyebrow" style="text-align:center;">Próxima sesión · Viernes 8 de mayo</p>
-        <h2 style="color:#fff;">M2.2 — <span class="accent">Introducción a prompts</span></h2>
-        <p>Con Francisco Moya. De los 4 elementos básicos a plantillas reutilizables que producen respuestas confiables.</p>
-        <div class="pill-row" style="justify-content: center; margin-top: 1.5em;">
-          <span class="pill"><a class="platform-link" href="mailto:lh.reyes@uniandes.edu.co" style="color:inherit; border-bottom:none;">lh.reyes@uniandes.edu.co</a></span>
-          <span class="pill">Soporte EDCO: estudiantesedco@uniandes.edu.co</span>
-        </div>
-      </div>
-    </section>
-
-  </div>
-
-  <div class="hud">
-    <span id="hud-title">M2.1 · Fundamentos LLM · Dominando la IA · EDCO Uniandes</span>
-    <span id="hud-counter">1 / 1</span>
-  </div>
-
-  <div class="controls">
-    <button aria-label="Anterior" id="prev">‹</button>
-    <button aria-label="Descargar como PDF" id="dl-pdf" title="Descargar como PDF">
-      <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-        <polyline points="7 10 12 15 17 10"/>
-        <line x1="12" x2="12" y1="15" y2="3"/>
-      </svg>
-    </button>
-    <button aria-label="Pantalla completa" id="fs">⛶</button>
-    <button aria-label="Siguiente" id="next">›</button>
-  </div>
-
-  <script>
-    (function () {
-      var slides = Array.prototype.slice.call(document.querySelectorAll('[data-slide]'));
-      var i = 0;
-      var counter = document.getElementById('hud-counter');
-      var progress = document.querySelector('.progress');
-
-      function render() {
-        slides.forEach(function (s, idx) { s.classList.toggle('active', idx === i); });
-        if (counter) counter.textContent = (i + 1) + ' / ' + slides.length;
-        if (progress) {
-          progress.style.width = ((i + 1) / slides.length * 100) + '%';
-          progress.classList.remove('pulsing');
-          void progress.offsetWidth;
-          progress.classList.add('pulsing');
-        }
-        var isDark = slides[i] && (slides[i].classList.contains('title-slide') || slides[i].classList.contains('cover'));
-        document.body.style.background = isDark ? '#1A1A1A' : '#ffffff';
-      }
-      function go(n) { i = Math.max(0, Math.min(slides.length - 1, n)); render(); }
-
-      document.addEventListener('keydown', function (e) {
-        if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'BUTTON')) {
-          if (/^[1-9]$/.test(e.key)) return; // let stepper handle
-        }
-        if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); go(i + 1); }
-        else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(i - 1); }
-        else if (e.key === 'Home') { e.preventDefault(); go(0); }
-        else if (e.key === 'End') { e.preventDefault(); go(slides.length - 1); }
-        else if (e.key === 'f' || e.key === 'F') { toggleFs(); }
-      });
-
-      document.getElementById('prev').addEventListener('click', function () { go(i - 1); });
-      document.getElementById('next').addEventListener('click', function () { go(i + 1); });
-      document.getElementById('fs').addEventListener('click', toggleFs);
-      document.getElementById('dl-pdf').addEventListener('click', function () {
-        // Inyectar links a YouTube para la versión imprimible (una sola vez)
-        document.querySelectorAll('iframe[src*="youtube"], iframe[src*="youtu.be"]').forEach(function (iframe) {
-          if (iframe.dataset.printLinkInjected === '1') return;
-          var src = iframe.getAttribute('src') || '';
-          var m = src.match(/(?:youtube\.com\/embed\/|youtu\.be\/)([\w-]+)/);
-          var url = m ? 'https://www.youtube.com/watch?v=' + m[1] : src;
-          var title = iframe.getAttribute('title') || 'Video';
-          var p = document.createElement('p');
-          p.className = 'video-print-link';
-          p.innerHTML = '<strong>▶ Video:</strong> ' + title + ' — <a href="' + url + '" target="_blank" rel="noopener">' + url + '</a>';
-          var host = iframe.parentNode;
-          host.parentNode.insertBefore(p, host.nextSibling);
-          iframe.dataset.printLinkInjected = '1';
-        });
-        var prevTitle = document.title;
-        document.title = 'M2-1-Fundamentos-LLM-Dominando-la-IA';
-        window.print();
-        setTimeout(function(){ document.title = prevTitle; }, 200);
-      });
-
-      function toggleFs() {
-        var el = document.documentElement;
-        if (!document.fullscreenElement) {
-          (el.requestFullscreen || el.webkitRequestFullscreen || function(){}).call(el);
-        } else {
-          (document.exitFullscreen || document.webkitExitFullscreen || function(){}).call(document);
-        }
-      }
-
-      var tx = 0, ty = 0;
-      document.addEventListener('touchstart', function (e) {
-        if (!e.changedTouches[0]) return;
-        tx = e.changedTouches[0].clientX; ty = e.changedTouches[0].clientY;
-      }, { passive: true });
-      document.addEventListener('touchend', function (e) {
-        if (!e.changedTouches[0]) return;
-        var dx = e.changedTouches[0].clientX - tx;
-        var dy = e.changedTouches[0].clientY - ty;
-        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
-          if (dx < 0) go(i + 1); else go(i - 1);
-        }
-      }, { passive: true });
-
-      slides.forEach(function (s, idx) {
-        var num = document.createElement('div');
-        num.className = 'slide-number';
-        num.setAttribute('aria-hidden', 'true');
-        num.textContent = String(idx + 1).padStart(2, '0');
-        s.appendChild(num);
-      });
-
-      // Stepper for evolution timeline
-      document.querySelectorAll('[data-stepper]').forEach(function (stepper) {
-        var buttons = stepper.querySelectorAll('.stepper-nav button');
-        var panels = stepper.querySelectorAll('.stepper-content');
-        function setStep(n) {
-          buttons.forEach(function (b) {
-            var active = b.getAttribute('data-step') === String(n);
-            b.classList.toggle('is-active', active);
-            b.setAttribute('aria-selected', active ? 'true' : 'false');
-          });
-          panels.forEach(function (p) {
-            p.classList.toggle('is-active', p.getAttribute('data-content') === String(n));
-          });
-        }
-        buttons.forEach(function (b) {
-          b.addEventListener('click', function () { setStep(b.getAttribute('data-step')); });
-        });
-        document.addEventListener('keydown', function (e) {
-          var slide = stepper.closest('.slide');
-          if (!slide || !slide.classList.contains('active')) return;
-          if (/^[1-6]$/.test(e.key)) {
-            if (e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
-            e.preventDefault();
-            setStep(e.key);
-          }
-        });
-      });
-
-      render();
-    })();
-  </script>
-  <!-- FS_NAV · flechas flotantes + ocultar carrete en pantalla completa -->
-  <script>
-    (function () {
-      var root = document.documentElement;
-      var t;
-      function reveal() {
-        root.classList.add('show-controls');
-        clearTimeout(t);
-        t = setTimeout(function () { root.classList.remove('show-controls'); }, 2200);
-      }
-      function syncFs() {
-        var on = !!(document.fullscreenElement || document.webkitFullscreenElement);
-        root.classList.toggle('is-fs', on);
-        if (on) reveal();
-      }
-      document.addEventListener('fullscreenchange', syncFs);
-      document.addEventListener('webkitfullscreenchange', syncFs);
-      document.addEventListener('mousemove', function () {
-        if (root.classList.contains('is-fs')) reveal();
-      });
-    })();
-  </script>
 </body>
 </html>
