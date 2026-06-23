@@ -88,7 +88,8 @@ Para crear o editar contenido del Classroom, lee la guía correspondiente:
 | **Programa del curso** (syllabus `programa.html`) | [PROGRAMA.md](PROGRAMA.md) | HTML autocontenido (CSS inline, sin `deloitte.css`) que abre en pestaña nueva y se registra como guía con `href`. Side-nav + scroll-spy, secciones canónicas, acento por curso. Plantilla canónica: `iqya-2031-2026-20/programa.html`. |
 | **Lecturas del curso actual** (POU 2026-20 y cursos nuevos) | [LECTURAS-HTML.md](LECTURAS-HTML.md) | **SISTEMA VIGENTE.** Documentos HTML autocontenidos que abren en pestaña nueva (`href`), con `assets/deloitte.css`, side-nav + scroll-spy, callouts, tablas, galerías y calculadoras en JS vanilla, KaTeX. Plantilla canónica: `Lectura_06_Agitacion.html`. |
 | **Lecturas React** (POU 2026-10 — `iqya-2031`) | [LECTURES.md](LECTURES.md) | ⚠️ **DEPRECADO** para cursos nuevos. Componentes `.tsx` con TOC click-to-filter. Solo aplica a las lecturas ya publicadas del curso 2026-10. |
-| **Presentaciones** (slides) | [PRESENTATIONS.md](PRESENTATIONS.md) | Diapositivas HTML autocontenidas con íconos SVG Lucide, navegación, imágenes, interactividad |
+| **Presentaciones EDCO** (`edu-pro`) | [EDCO-SLIDES.md](EDCO-SLIDES.md) | **⚠️ OBLIGATORIO para `edu-pro`.** Sistema de diseño completo: motor `deck-stage`, tokens CSS, pesos Dax, HTML canónico de cada componente (agenda, timeline, steps, cards, split, callout, etc.), errores comunes. Leer antes de crear cualquier slide de "Dominando la IA". |
+| **Presentaciones** (otros cursos) | [PRESENTATIONS.md](PRESENTATIONS.md) | Diapositivas HTML autocontenidas con íconos SVG Lucide, navegación, imágenes, interactividad |
 | **"Qué hay para hoy"** | [HOY.md](HOY.md) | Popup con cronograma de próximos 7 días |
 
 ### Cómo crear un curso nuevo
