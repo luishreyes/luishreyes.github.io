@@ -13,48 +13,46 @@ export const EduProLandingPage: React.FC<EduProLandingPageProps> = ({ course }) 
 
   return (
     <CourseAccessGate course={course}>
-      <motion.div
-        {...{
-          initial: { opacity: 0 },
-          animate: { opacity: 1 },
-          transition: { duration: 0.4 },
-        }}
-        className="bg-zinc-50 min-h-screen"
-      >
-        <Hero course={course} />
+    <motion.div
+      {...{
+        initial: { opacity: 0 },
+        animate: { opacity: 1 },
+        transition: { duration: 0.4 },
+      }}
+      className="bg-zinc-50 min-h-screen"
+    >
+      <Hero course={course} />
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-4">
-          <header className="mb-6">
-            <p className="text-xs font-semibold tracking-widest uppercase text-brand-yellow-dark">
-              Cursos
-            </p>
-            <h2 className="mt-1 text-2xl sm:text-3xl font-bold text-brand-dark">
-              Selecciona un curso
-            </h2>
-            <p className="mt-2 text-sm text-brand-gray max-w-2xl">
-              Cada curso abre su propio espacio con el cronograma completo,
-              módulos, equipo docente, enlace de Zoom y las presentaciones que
-              he dictado.
-            </p>
-          </header>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-4">
+        <header className="mb-6">
+          <p className="text-xs font-semibold tracking-widest uppercase text-brand-yellow-dark">
+            Material
+          </p>
+          <h2 className="mt-1 text-2xl sm:text-3xl font-bold text-brand-dark">
+            Repositorios de curso
+          </h2>
+          <p className="mt-2 text-sm text-brand-gray max-w-2xl">
+            Presentaciones, talleres y material de apoyo de los cursos que dicto en EDCO.
+          </p>
+        </header>
 
-          {edcoCourses.length === 0 ? (
-            <div className="bg-white rounded-xl shadow-md border border-zinc-200 p-8 text-center text-brand-gray">
-              Aún no hay cursos publicados en este espacio.
-            </div>
-          ) : (
-            <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {edcoCourses.map((ec) => (
-                <li key={ec.id}>
-                  <EdcoCourseHubCard courseSlug={course.slug} edcoCourse={ec} />
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+        {edcoCourses.length === 0 ? (
+          <div className="bg-white rounded-xl shadow-md border border-zinc-200 p-8 text-center text-brand-gray">
+            Aún no hay material publicado en este espacio.
+          </div>
+        ) : (
+          <ul className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {edcoCourses.map((ec) => (
+              <li key={ec.id}>
+                <EdcoCourseHubCard courseSlug={course.slug} edcoCourse={ec} />
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
 
-        <div className="pb-20" />
-      </motion.div>
+      <div className="pb-20" />
+    </motion.div>
     </CourseAccessGate>
   );
 };
@@ -93,38 +91,16 @@ const Hero: React.FC<{ course: Course }> = ({ course }) => (
         {course.tagline && (
           <p className="mt-2 text-base sm:text-lg text-zinc-100 font-medium">{course.tagline}</p>
         )}
-        <p className="mt-3 text-sm text-zinc-200 leading-relaxed">
-          {course.description}
-        </p>
       </motion.div>
     </div>
   </div>
 );
 
-const StatusBadge: React.FC<{ status: EdcoCourse['status'] }> = ({ status }) => {
-  const map: Record<EdcoCourse['status'], { label: string; className: string }> = {
-    upcoming: { label: 'Próximamente', className: 'bg-brand-yellow text-brand-dark' },
-    active: { label: 'En curso', className: 'bg-emerald-100 text-emerald-800 border border-emerald-200' },
-    past: { label: 'Finalizado', className: 'bg-zinc-200 text-brand-gray' },
-  };
-  const { label, className } = map[status];
-  return (
-    <span
-      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold uppercase tracking-wider ${className}`}
-    >
-      {label}
-    </span>
-  );
-};
-
 const EdcoCourseHubCard: React.FC<{ courseSlug: string; edcoCourse: EdcoCourse }> = ({
   courseSlug,
   edcoCourse,
 }) => {
-  const myHours = edcoCourse.sessions
-    .filter((s) => s.isMine)
-    .reduce((sum, s) => sum + s.hours, 0);
-  const mySessions = edcoCourse.sessions.filter((s) => s.isMine).length;
+  const presentationCount = (edcoCourse.presentationIds ?? []).length;
 
   return (
     <motion.div
@@ -138,14 +114,7 @@ const EdcoCourseHubCard: React.FC<{ courseSlug: string; edcoCourse: EdcoCourse }
         to={`/classroom/${courseSlug}/cursos/${edcoCourse.id}`}
         className="block h-full bg-white rounded-xl border border-zinc-200 shadow-sm hover:shadow-lg hover:border-brand-yellow transition-all p-6 group"
       >
-        <div className="flex items-start justify-between gap-3">
-          <p className="text-xs font-semibold tracking-widest uppercase text-brand-yellow-dark">
-            {edcoCourse.edition}
-          </p>
-          <StatusBadge status={edcoCourse.status} />
-        </div>
-
-        <h3 className="mt-2 text-lg font-bold text-brand-dark leading-tight group-hover:text-brand-yellow-dark transition-colors">
+        <h3 className="text-lg font-bold text-brand-dark leading-tight group-hover:text-brand-yellow-dark transition-colors">
           {edcoCourse.title}
         </h3>
 
@@ -153,15 +122,14 @@ const EdcoCourseHubCard: React.FC<{ courseSlug: string; edcoCourse: EdcoCourse }
           {edcoCourse.description}
         </p>
 
-        <dl className="mt-5 grid grid-cols-2 gap-3 text-xs">
-          <Stat label="Periodo" value={edcoCourse.termLabel} />
-          <Stat label="Modalidad" value={edcoCourse.modality} />
-          <Stat label="Total" value={`${edcoCourse.totalHours} h`} />
-          <Stat label="Mis sesiones" value={`${myHours} h · ${mySessions}`} />
-        </dl>
+        <p className="mt-4 text-xs text-brand-gray">
+          {presentationCount === 0
+            ? 'Sin presentaciones aún'
+            : `${presentationCount} ${presentationCount === 1 ? 'presentación' : 'presentaciones'}`}
+        </p>
 
         <div className="mt-5 pt-4 border-t border-zinc-100 flex items-center justify-end text-sm font-medium text-brand-dark group-hover:text-brand-yellow-dark transition-colors">
-          Entrar
+          Ver material
           <svg className="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
@@ -170,12 +138,3 @@ const EdcoCourseHubCard: React.FC<{ courseSlug: string; edcoCourse: EdcoCourse }
     </motion.div>
   );
 };
-
-const Stat: React.FC<{ label: string; value: string }> = ({ label, value }) => (
-  <div>
-    <dt className="text-[10px] font-semibold uppercase tracking-wider text-brand-yellow-dark">
-      {label}
-    </dt>
-    <dd className="mt-0.5 text-brand-dark">{value}</dd>
-  </div>
-);
