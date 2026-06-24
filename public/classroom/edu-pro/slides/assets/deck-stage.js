@@ -590,6 +590,14 @@
         border-radius: 6px !important;
         margin-bottom: 12px !important;
       }
+      /* Slides con overlay absoluto (p.ej. .cover--photo::after, inset:0)
+         necesitan un contexto de posicionamiento propio; sin él el overlay
+         se ancla al viewport y cubre toda la página de negro en móvil.
+         Esta regla debe vivir aquí (shadow tree) porque un !important del
+         shadow gana sobre el mismo !important del documento externo. */
+      ::slotted(.cover), ::slotted(.s--dark), ::slotted(.divider) {
+        position: relative !important;
+      }
       .rail, .rail-resize { display: none !important; }
       .overlay { display: none !important; }
     }
