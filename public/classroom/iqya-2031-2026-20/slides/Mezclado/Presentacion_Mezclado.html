@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mezclado de fluidos · Proyecto de Operaciones Unitarias (IQYA-2031)</title>
+<link rel="stylesheet" href="assets/deloitte.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],throwOnError:false});"></script>
+<style>
+  html,body{margin:0;height:100%;background:#000;}
+  deck-stage:not(:defined){visibility:hidden;}
+  .s{font-family:var(--tipo);color:var(--gris-1);background:var(--blanco);display:flex;flex-direction:column;justify-content:center;padding:90px 120px 96px;-webkit-font-smoothing:antialiased;}
+  .s *{box-sizing:border-box;}
+  .kicker{display:inline-flex;align-items:center;gap:14px;font-size:24px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--verde-osc);margin:0 0 26px;}
+  .kicker::before{content:"";width:46px;height:5px;background:var(--verde);border-radius:3px;}
+  .s--dark .kicker{color:var(--verde);}
+  h1.s-title{font-size:92px;line-height:1.02;font-weight:700;margin:0;letter-spacing:-.015em;}
+  h2.s-head{font-size:58px;line-height:1.06;font-weight:700;margin:0 0 14px;letter-spacing:-.01em;}
+  .s-lead{font-size:32px;line-height:1.45;color:var(--gris-2);max-width:40ch;font-weight:400;}
+  .s p{font-size:30px;line-height:1.5;}
+  .s ul{font-size:26px;line-height:1.45;color:var(--gris-1);padding-left:1.2em;margin:16px 0 0;}
+  .s li{margin-bottom:10px;}
+  .s li::marker{color:var(--verde);}
+  .s li b{color:var(--gris-1);}
+  .s-foot{position:absolute;left:120px;right:120px;bottom:44px;display:flex;justify-content:space-between;align-items:center;font-size:19px;color:var(--gris-3);letter-spacing:.02em;}
+  .s-foot .tag{display:inline-flex;align-items:center;gap:12px;}
+  .s-foot .tag::before{content:"";width:24px;height:3px;background:var(--gris-4);}
+  .s-foot .num{font-weight:700;color:var(--gris-2);}
+  .s--dark .s-foot{color:rgba(255,255,255,.45);}
+  .s--dark .s-foot .num{color:rgba(255,255,255,.8);}
+  .s--dark .s-foot .tag::before{background:rgba(255,255,255,.3);}
+  .s--dark{background:#111;color:#fff;}
+  .s--dark h1.s-title,.s--dark h2.s-head,.s--dark h2{color:#fff;}
+  .s--tint{background:var(--papel);}
+  /* Portada */
+  .cover{justify-content:space-between;position:relative;overflow:hidden;}
+  .cover-top{display:flex;justify-content:space-between;align-items:flex-start;}
+  .cover-org{font-size:26px;font-weight:700;letter-spacing:.04em;color:var(--gris-1);}
+  .cover-org span{color:var(--gris-3);font-weight:600;display:block;font-size:21px;letter-spacing:.12em;text-transform:uppercase;margin-top:6px;}
+  .cover-bar{width:120px;height:12px;background:var(--verde);border-radius:4px;}
+  .cover .course{font-size:26px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--verde-osc);margin:0 0 22px;}
+  .cover h1{font-size:116px;line-height:.96;letter-spacing:-.02em;max-width:16ch;}
+  .cover .session{font-size:36px;color:var(--gris-2);margin:30px 0 0;font-weight:600;max-width:34ch;}
+  .cover-meta{display:flex;gap:56px;margin-top:10px;position:relative;z-index:2;}
+  .cover-meta div{font-size:24px;color:var(--gris-2);}
+  .cover-meta b{display:block;color:var(--gris-1);font-size:26px;font-weight:700;margin-bottom:4px;}
+  .cover .wm{position:absolute;right:-60px;top:0;height:100%;width:760px;object-fit:cover;opacity:.13;pointer-events:none;z-index:0;mix-blend-mode:multiply;}
+  /* Agenda */
+  .agenda-list{list-style:none;padding:0;margin:22px 0 0;display:grid;grid-template-columns:1fr 1fr;gap:16px 60px;max-width:1560px;}
+  .agenda-list li{display:flex;align-items:baseline;gap:28px;padding-bottom:14px;border-bottom:2px solid var(--gris-5);}
+  .agenda-list .n{font-size:28px;font-weight:700;color:var(--verde-osc);min-width:48px;}
+  .agenda-list .t{display:flex;flex-direction:column;gap:3px;}
+  .agenda-list .t b{font-size:30px;font-weight:700;color:var(--gris-1);}
+  .agenda-list .t span{font-size:22px;color:var(--gris-2);line-height:1.3;}
+  .agenda-note{margin-top:26px;display:inline-flex;align-items:flex-start;gap:16px;background:var(--verde-claro);border-left:6px solid var(--verde);padding:20px 28px;border-radius:4px;max-width:1400px;}
+  .agenda-note p{font-size:24px;margin:0;color:var(--gris-1);line-height:1.4;}
+  .agenda-note b{color:var(--verde-osc);}
+  /* Tarjetas */
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:34px;margin-top:38px;}
+  .cards.two{grid-template-columns:repeat(2,1fr);}
+  .cards.four{grid-template-columns:repeat(4,1fr);}
+  .card{background:var(--blanco);border:2px solid var(--gris-5);border-top:7px solid var(--verde);border-radius:var(--radio);padding:32px 30px;display:flex;flex-direction:column;gap:12px;transition:transform .18s ease,box-shadow .18s ease;}
+  .card:hover{transform:translateY(-3px);box-shadow:var(--sombra);}
+  .card .card-n{font-size:24px;font-weight:700;color:var(--verde-osc);}
+  .card h3{font-size:30px;line-height:1.12;margin:0;font-weight:700;}
+  .card p{font-size:24px;line-height:1.42;color:var(--gris-2);margin:0;}
+  .card ul{margin:4px 0 0;padding-left:1.1em;font-size:23px;color:var(--gris-2);line-height:1.4;}
+  .card li{margin-bottom:6px;}
+  .card li::marker{color:var(--verde);}
+  .card--teal{border-top-color:var(--teal);}
+  .card--teal .card-n{color:var(--teal);}
+  .card--amber{border-top-color:var(--ambar);}
+  .card--amber .card-n{color:var(--ambar);}
+  /* Split */
+  .split{display:grid;grid-template-columns:1fr 1fr;gap:70px;align-items:center;flex:1;}
+  .split--wideR{grid-template-columns:0.82fr 1.18fr;}
+  .split--wideL{grid-template-columns:1.18fr 0.82fr;}
+  .split--narrow{grid-template-columns:0.72fr 1fr;}
+  .split .copy h2{font-size:50px;line-height:1.08;margin:0 0 22px;}
+  .split .copy p{font-size:28px;color:var(--gris-2);line-height:1.5;}
+  .split .copy ul{font-size:26px;color:var(--gris-1);line-height:1.45;padding-left:1.1em;margin:16px 0 0;}
+  .split .copy li{margin-bottom:11px;}
+  .split .copy li::marker{color:var(--verde);}
+  .split .copy li b{color:var(--gris-1);}
+  /* Imagen */
+  .img-panel{background:var(--blanco);border:2px solid var(--gris-5);border-radius:var(--radio);padding:22px;box-shadow:var(--sombra);position:relative;}
+  .img-panel img{width:100%;height:auto;display:block;border-radius:3px;cursor:zoom-in;}
+  .img-panel .figcap{font-size:22px;color:var(--gris-3);margin:14px 4px 0;line-height:1.35;}
+  .figbox{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;margin-top:14px;}
+  .figbox img{max-width:100%;max-height:660px;width:auto;height:auto;object-fit:contain;border:2px solid var(--gris-5);border-radius:var(--radio);box-shadow:var(--sombra);background:#fff;cursor:zoom-in;}
+  .figbox .figcap{font-size:22px;color:var(--gris-2);text-align:center;max-width:70ch;line-height:1.4;}
+  /* Fullbleed */
+  .fullbleed{padding:0 !important;background:var(--negro) !important;position:relative;}
+  .fullbleed .fb-img{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:48px 64px;}
+  .fullbleed .fb-img img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;border-radius:8px;cursor:zoom-in;box-shadow:0 18px 60px rgba(0,0,0,.45);}
+  .fullbleed .s-foot{color:rgba(255,255,255,.5) !important;z-index:10;}
+  .fullbleed .s-foot .tag::before{background:rgba(255,255,255,.25) !important;}
+  .fullbleed .s-foot .num{color:rgba(255,255,255,.8) !important;}
+  /* Callout */
+  .callout{background:var(--papel);border-radius:var(--radio);padding:34px 40px;border-left:8px solid var(--teal);}
+  .callout.verde{border-left-color:var(--verde);}
+  .callout.amber{border-left-color:var(--ambar);}
+  .callout.rojo{border-left-color:#c0392b;background:#fff5f5;}
+  .callout h4{font-size:26px;margin:0 0 16px;color:var(--gris-1);letter-spacing:.02em;}
+  .callout p{font-size:26px;color:var(--gris-2);line-height:1.45;margin:0 0 10px;}
+  .callout p:last-child{margin-bottom:0;}
+  .callout b{color:var(--verde-osc);}
+  .callout.amber p{color:#7A4400;}
+  .callout.amber b{color:#7A4400;}
+  .callout.rojo p{color:#7A1010;}
+  .callout.rojo b{color:#c0392b;}
+  /* Fórmulas */
+  .fml{background:#fff;border:1px solid var(--gris-5);border-radius:4px;padding:16px 22px;margin:16px 0 4px;text-align:center;overflow-x:auto;}
+  .card .fml,.callout .fml{margin:12px 0 4px;}
+  .fml .katex{color:var(--gris-1);}
+  .katex{font-size:1.2em;}
+  .katex-display{margin:.2em 0;}
+  .fml .katex-display > .katex{font-size:1.4em;}
+  .card .fml .katex-display > .katex{font-size:1.2em;}
+  .var-list{font-size:23px;color:var(--gris-2);margin:4px 0 12px;padding-left:1.2em;}
+  .var-list li{margin-bottom:5px;}
+  /* Chips */
+  .databar{display:flex;gap:18px;flex-wrap:wrap;margin:18px 0 4px;}
+  .databar .chip{background:var(--verde-claro);border:1.5px solid var(--verde);border-radius:999px;padding:10px 22px;font-size:24px;font-weight:600;color:var(--verde-osc);}
+  .databar .chip--teal{background:var(--teal-claro);border-color:var(--teal);color:var(--teal);}
+  .databar .chip--amber{background:#FFF3E0;border-color:var(--ambar);color:#B86400;}
+  /* Divisor */
+  .divider{justify-content:center;}
+  .divider .part{font-size:26px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--verde);margin-bottom:28px;}
+  .divider h2{font-size:86px;line-height:1.04;max-width:22ch;letter-spacing:-.015em;}
+  .divider .sub{font-size:30px;color:rgba(255,255,255,.7);margin-top:30px;max-width:46ch;line-height:1.5;}
+  .divider .dctx{margin-top:46px;display:inline-flex;gap:16px;align-items:center;font-size:24px;color:rgba(255,255,255,.85);border-top:2px solid rgba(255,255,255,.18);padding-top:26px;}
+  .divider .dctx b{color:var(--verde);font-size:34px;}
+  /* Cierre */
+  .close{justify-content:center;}
+  .close h2{font-size:70px;line-height:1.08;max-width:26ch;letter-spacing:-.015em;}
+  .close .next{margin-top:50px;display:inline-flex;gap:18px;align-items:center;font-size:28px;color:rgba(255,255,255,.85);}
+  .close .next .pill{background:var(--verde);color:#fff;font-weight:700;padding:8px 20px;border-radius:999px;font-size:24px;white-space:nowrap;flex-shrink:0;}
+  /* Accesorios */
+  .foot-note{margin-top:28px;font-size:25px;color:var(--gris-3);line-height:1.4;max-width:100ch;}
+  .foot-note b{color:var(--verde-osc);}
+  .lead-top{font-size:30px;color:var(--gris-2);line-height:1.45;max-width:96ch;margin:0 0 6px;}
+  /* Tabla */
+  table{width:100%;border-collapse:collapse;font-size:24px;margin-top:20px;}
+  th{background:var(--negro);color:#fff;padding:16px 20px;text-align:left;font-weight:700;font-size:22px;}
+  td{padding:14px 20px;border-bottom:1px solid var(--gris-5);vertical-align:top;}
+  tr:hover td{background:var(--verde-claro);}
+  .tbl-sm{font-size:21px !important;margin-top:10px !important;}
+  .tbl-sm th{padding:10px 14px !important;font-size:19px !important;}
+  .tbl-sm td{padding:9px 14px !important;}
+  /* Collist */
+  .collist{display:grid;grid-template-columns:1fr 1fr;gap:22px 60px;margin-top:30px;}
+  .collist .it{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:start;}
+  .collist .it .ic{width:15px;height:15px;background:var(--verde);border-radius:3px;margin-top:9px;}
+  .collist .it b{font-size:27px;display:block;margin-bottom:5px;color:var(--gris-1);}
+  .collist .it span{font-size:23px;color:var(--gris-2);line-height:1.4;}
+  /* Steps */
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:34px;margin-top:34px;}
+  .steps.four{grid-template-columns:repeat(4,1fr);}
+  .step{display:flex;flex-direction:column;gap:12px;}
+  .step .st-n{width:62px;height:62px;min-width:62px;border-radius:50%;background:var(--verde);color:#fff;font-size:30px;font-weight:800;display:flex;align-items:center;justify-content:center;margin-bottom:6px;}
+  .step b{font-size:26px;color:var(--gris-1);line-height:1.15;}
+  .step span{font-size:22px;color:var(--gris-2);line-height:1.4;}
+  /* Lightbox */
+  .img-panel img,.figbox img,.fullbleed .fb-img img{cursor:zoom-in;}
+  .zoom-badge{position:absolute;top:14px;right:14px;width:44px;height:44px;border-radius:9px;background:rgba(17,17,17,.6);color:#fff;display:flex;align-items:center;justify-content:center;font-size:23px;cursor:zoom-in;opacity:0;transition:opacity .15s ease;z-index:4;}
+  .img-panel:hover .zoom-badge,.figbox:hover .zoom-badge{opacity:1;}
+  .lightbox{position:fixed;inset:0;width:100vw;height:100vh;max-width:100vw;max-height:100vh;margin:0;border:0;background:rgba(0,0,0,.9);display:none;align-items:center;justify-content:center;z-index:99999;cursor:zoom-out;padding:3vmin;overflow:hidden;}
+  .lightbox[open]{display:flex;}
+  .lightbox::backdrop{background:rgba(0,0,0,.9);}
+  .lightbox .lb-content{display:flex;align-items:center;justify-content:center;}
+  .lightbox img{max-width:94vw;max-height:94vh;width:auto;height:auto;object-fit:contain;border-radius:6px;box-shadow:0 24px 90px rgba(0,0,0,.6);background:#fff;}
+  .lightbox .lb-close{position:fixed;top:26px;right:32px;width:58px;height:58px;border-radius:50%;background:rgba(255,255,255,.16);color:#fff;border:none;font-size:28px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s ease;}
+  .lightbox .lb-close:hover{background:rgba(255,255,255,.3);}
+  /* Animaciones */
+  @keyframes fadeInUp{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
+  deck-stage section.active .kicker{animation:fadeInUp .35s ease both;}
+  deck-stage section.active h2{animation:fadeInUp .4s .05s ease both;}
+  deck-stage section.active .lead-top{animation:fadeInUp .4s .1s ease both;}
+  @media (prefers-reduced-motion:reduce){deck-stage section.active *{animation:none !important;transition:none !important;}}
+  /* Mobile */
+  @media (max-width:768px){
+    html,body{height:auto;background:#f2f2f2;overflow-x:hidden;max-width:100vw;}
+    .s{padding:28px 20px 36px !important;min-height:0 !important;overflow:visible !important;width:100% !important;box-sizing:border-box !important;}
+    h1.s-title{font-size:24px !important;line-height:1.15 !important;}
+    .s h2,h2.s-head{font-size:22px !important;line-height:1.2 !important;letter-spacing:normal !important;}
+    .s-lead{font-size:16px !important;max-width:100% !important;}
+    .s p{font-size:16px !important;}
+    .s ul,.s ol{font-size:15px !important;}
+    .s h3{font-size:20px !important;line-height:1.25 !important;}
+    .lead-top{font-size:16px !important;}
+    .foot-note{font-size:12px !important;}
+    .kicker{font-size:13px !important;margin-bottom:10px !important;letter-spacing:.08em !important;}
+    .s-foot{position:static !important;left:auto !important;right:auto !important;bottom:auto !important;margin-top:20px !important;font-size:11px !important;}
+    .cover h1{font-size:24px !important;line-height:1.15 !important;}
+    .cover .session{font-size:14px !important;}
+    .cover-meta{flex-direction:column !important;gap:10px !important;}
+    .cover .wm{display:none !important;}
+    .cover .course{font-size:11px !important;letter-spacing:.05em !important;margin-bottom:12px !important;}
+    .cover-org{font-size:16px !important;}
+    .cover-org span{font-size:11px !important;}
+    .cover-bar{display:none !important;}
+    .cover-meta div{font-size:14px !important;}
+    .cover-meta b{font-size:15px !important;}
+    .divider .part{font-size:12px !important;margin-bottom:12px !important;}
+    .divider h2{font-size:32px !important;}
+    .divider .sub{font-size:13px !important;margin-top:16px !important;}
+    .dctx b{font-size:26px !important;}
+    .dctx span{font-size:12px !important;}
+    .agenda-list{grid-template-columns:1fr !important;}
+    .agenda-list .n{font-size:16px !important;min-width:28px !important;}
+    .agenda-list .t b{font-size:15px !important;}
+    .agenda-list .t span{font-size:12px !important;}
+    .agenda-note p{font-size:15px !important;}
+    .split,.split--wideR,.split--wideL,.split--narrow{grid-template-columns:1fr !important;gap:18px !important;}
+    .cards,.cards.two,.cards.four{grid-template-columns:1fr !important;gap:12px !important;margin-top:16px !important;}
+    .card{padding:18px 16px !important;}
+    .card h3{font-size:20px !important;}
+    .card p{font-size:15px !important;}
+    .card .card-n{font-size:13px !important;}
+    .card ul{font-size:13px !important;}
+    .fml{font-size:14px !important;overflow-x:auto !important;padding:8px 4px !important;max-width:calc(100vw - 40px) !important;box-sizing:border-box !important;display:block !important;}
+    .callout .fml{max-width:calc(100vw - 76px) !important;}
+    .card .fml{max-width:calc(100vw - 40px) !important;}
+    .img-panel{padding:12px !important;}
+    .img-panel .figcap{font-size:12px !important;}
+    .figbox .figcap{font-size:12px !important;}
+    .callout,.callout.verde,.callout.amber,.callout.rojo{padding:16px 18px !important;}
+    .callout p{font-size:15px !important;}
+    .callout h4{font-size:15px !important;}
+    .var-list{font-size:12px !important;}
+    .databar .chip{font-size:12px !important;}
+    table{font-size:12px !important;display:block !important;overflow-x:auto !important;-webkit-overflow-scrolling:touch !important;max-width:calc(100vw - 40px) !important;box-sizing:border-box !important;}
+    th,td{padding:6px 8px !important;white-space:nowrap !important;}
+    .collist{grid-template-columns:1fr !important;gap:14px !important;}
+    .collist .it b{font-size:15px !important;}
+    .collist .it span{font-size:13px !important;}
+    .steps,.steps.four{grid-template-columns:1fr !important;gap:14px !important;}
+    .step .st-n{width:40px !important;height:40px !important;min-width:40px !important;font-size:20px !important;}
+    .step b{font-size:16px !important;}
+    .step span{font-size:14px !important;}
+    .fullbleed .fb-img{position:static !important;inset:auto !important;padding:12px !important;}
+    .fullbleed .fb-img img{max-height:none !important;width:100% !important;height:auto !important;}
+    .fullbleed .s-foot{color:rgba(255,255,255,.5) !important;}
+    .close .next{display:flex !important;align-items:center !important;gap:16px !important;margin-top:20px !important;font-size:15px !important;}
+    .close .next .pill{font-size:11px !important;width:62px !important;min-width:62px !important;height:62px !important;padding:6px !important;text-align:center !important;white-space:normal !important;border-radius:50% !important;display:flex !important;align-items:center !important;justify-content:center !important;line-height:1.3 !important;flex-shrink:0 !important;}
+  }
+</style>
+</head>
+<body>
+
+<deck-stage width="1920" height="1080">
+
+<!-- 01 · Portada -->
+<section class="s cover" data-screen-label="Portada" data-nofoot>
+  <img class="wm" src="assets/img/equipos.webp" alt="">
+  <div class="cover-top">
+    <div class="cover-org">Universidad de los Andes<span>Ingeniería Química y de Alimentos</span></div>
+    <div class="cover-bar"></div>
+  </div>
+  <div style="position:relative;z-index:2;">
+    <p class="course">IQYA-2031 · Sesión 10</p>
+    <h1 class="s-title">Mezclado<br>de fluidos</h1>
+    <p class="session">Mecanismos, tiempo de mezclado y retos del mezclado en la planta de pectina</p>
+    <div class="cover-meta">
+      <div><b>Curso</b>Proyecto de Operaciones Unitarias</div>
+      <div><b>Proyecto del semestre</b>Planta de pectina de grado alimentario</div>
+    </div>
+  </div>
+</section>
+
+<!-- 02 · Objetivos -->
+<section class="s s--tint" data-screen-label="Objetivos">
+  <div class="kicker">Sesión 10</div>
+  <h2 class="s-head">Objetivos</h2>
+  <ol class="agenda-list">
+    <li><span class="n">01</span><span class="t"><b>Diferenciar agitación y mezclado</b><span>Causa vs. efecto — cuál es el input y cuál es el resultado del proceso</span></span></li>
+    <li><span class="n">02</span><span class="t"><b>Identificar los mecanismos de mezclado</b><span>Convección, dispersión turbulenta y difusión molecular — escala e importancia de cada uno</span></span></li>
+    <li><span class="n">03</span><span class="t"><b>Cuantificar la eficiencia con $t_m$</b><span>Definición, métodos de medición, factores que influyen y costo energético de reducirlo</span></span></li>
+    <li><span class="n">04</span><span class="t"><b>Analizar los retos de mezclado real</b><span>Alta viscosidad (laminar) y líquidos inmiscibles — soluciones de diseño para cada caso</span></span></li>
+  </ol>
+  <div class="agenda-note">
+    <p>Esta sesión complementa la <b>Sesión 09 de Agitación</b>: allí diseñamos el impulsor; aquí evaluamos qué tan bien distribuye lo que mezcla.</p>
+  </div>
+</section>
+
+<!-- 03 · ¿Agitación o mezclado? -->
+<section class="s" data-screen-label="Agitación vs. mezclado">
+  <div class="kicker">Conceptos clave</div>
+  <h2 class="s-head">¿Agitación o mezclado?</h2>
+  <p class="lead-top">Son términos relacionados pero distintos — confundirlos lleva a especificaciones incorrectas.</p>
+  <div class="cards two" style="margin-top:36px;">
+    <div class="card">
+      <span class="card-n">CAUSA</span>
+      <h3>Agitación</h3>
+      <p>Input de <b>energía mecánica</b> al fluido mediante un impulsor en movimiento. Es la acción que inicia el proceso.</p>
+      <ul>
+        <li>Se cuantifica con velocidad de giro <b>N</b> y potencia <b>P</b></li>
+        <li>Genera un patrón de flujo (axial, radial, tangencial)</li>
+        <li>Existe aunque no haya mezcla neta (tanque de un solo componente)</li>
+      </ul>
+    </div>
+    <div class="card card--teal">
+      <span class="card-n" style="color:var(--teal);">EFECTO</span>
+      <h3>Mezclado</h3>
+      <p>Reducción de la <b>no-uniformidad</b> en composición, temperatura o fase de un sistema. Es el resultado del proceso.</p>
+      <ul>
+        <li>Se cuantifica con el <b>tiempo de mezclado $t_m$</b></li>
+        <li>Depende de cómo se distribuye la energía de agitación en el fluido</li>
+        <li>Es el objetivo de diseño del sistema de agitación</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout verde" style="margin-top:30px;">
+    <p><b>Principio rector:</b> La agitación es la <b>causa</b>; el mezclado es el <b>efecto</b>. Un sistema bien agitado no garantiza un buen mezclado si la energía no se distribuye correctamente en el volumen del tanque.</p>
+  </div>
+</section>
+
+<!-- 04 · Equipos de mezclado -->
+<section class="s" data-screen-label="Equipos de mezclado">
+  <div class="kicker">Clasificación</div>
+  <h2 class="s-head">Equipos de mezclado</h2>
+  <div class="split split--wideL" style="flex:1;margin-top:24px;">
+    <div class="img-panel" style="position:relative;">
+      <img src="assets/img/equipos.webp" alt="Mezcladores industriales de tambor horizontal con motores eléctricos azules">
+      <div class="figcap">Mezcladores de tambor / ribbon blender — usados en pastas y sólidos de alta viscosidad</div>
+    </div>
+    <div class="copy">
+      <p style="font-size:26px;color:var(--gris-2);line-height:1.5;">Los equipos de mezclado se clasifican según la geometría, el principio de operación y la viscosidad del fluido a manejar.</p>
+      <ul style="margin-top:18px;font-size:25px;">
+        <li><b>Tanques agitados mecánicamente</b> — los más comunes en IQ; impulsor rotatorio sumergido en el fluido</li>
+        <li><b>Mezcladores estáticos (in-line)</b> — sin partes móviles; elementos fijos que dividen y recombinan el flujo</li>
+        <li><b>Mezcladores de tambor / ribbon blender</b> — cinta helicoidal en recipiente horizontal; pastas y sólidos</li>
+        <li><b>Mezcladores de alta cizalla (rotor-estátor)</b> — emulsiones finas y dispersiones</li>
+        <li><b>Kneaders y amasadoras</b> — polímeros fundidos, cauchos y masas de viscosidad muy alta</li>
+      </ul>
+      <div class="callout verde" style="margin-top:24px;">
+        <p style="font-size:23px;"><b>En este curso:</b> nos enfocamos en tanques agitados mecánicamente, que son los equipos del reactor de extracción y los tanques de precipitación de la planta de pectina.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 05 · Los tres mecanismos del mezclado -->
+<section class="s s--tint" data-screen-label="Mecanismos del mezclado">
+  <div class="kicker">Mecanismos</div>
+  <h2 class="s-head">Los tres mecanismos del mezclado</h2>
+  <div class="split" style="flex:1;margin-top:20px;">
+    <div class="copy">
+      <p style="font-size:27px;color:var(--gris-2);line-height:1.5;">El mezclado en un tanque agitado no ocurre por un único mecanismo sino por la <b>acción combinada en cascada</b> de tres procesos que operan a escalas espaciales distintas.</p>
+      <div style="margin-top:24px;display:flex;flex-direction:column;gap:18px;">
+        <div style="display:flex;gap:20px;align-items:flex-start;">
+          <div style="width:14px;height:14px;background:var(--verde);border-radius:3px;margin-top:8px;flex-shrink:0;"></div>
+          <div><b style="font-size:26px;color:var(--gris-1);">Convección (bulk flow)</b><br><span style="font-size:23px;color:var(--gris-2);">Movimiento a gran escala generado directamente por el impulsor — es el mecanismo más rápido y dominante</span></div>
+        </div>
+        <div style="display:flex;gap:20px;align-items:flex-start;">
+          <div style="width:14px;height:14px;background:var(--teal);border-radius:3px;margin-top:8px;flex-shrink:0;"></div>
+          <div><b style="font-size:26px;color:var(--gris-1);">Dispersión turbulenta (eddy diffusion)</b><br><span style="font-size:23px;color:var(--gris-2);">Remolinos (eddies) a escala intermedia — actúa cuando Re &gt; 10⁴ y distribuye la materia a nivel de milímetros</span></div>
+        </div>
+        <div style="display:flex;gap:20px;align-items:flex-start;">
+          <div style="width:14px;height:14px;background:var(--ambar);border-radius:3px;margin-top:8px;flex-shrink:0;"></div>
+          <div><b style="font-size:26px;color:var(--gris-1);">Difusión molecular</b><br><span style="font-size:23px;color:var(--gris-2);">Escala molecular — muy lento; completa el mezclado final pero es secundario a escala industrial</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="figbox">
+      <img src="assets/img/mecanismos_tipos.webp" alt="Diagrama comparativo de los tres tipos de mecanismos de mezclado: bulk flow, convective mixing y diffusive mixing">
+      <div class="figcap">Los tres mecanismos actúan secuencialmente: la convección distribuye el material a gran escala; la turbulencia lo divide a escala media; la difusión molecular completa la homogeneización a escala atómica.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 06 · Mecanismo 1: Convección -->
+<section class="s" data-screen-label="Mecanismo 1: Convección">
+  <div class="kicker">Mecanismo 1 de 3</div>
+  <h2 class="s-head">Convección (bulk flow)</h2>
+  <p class="lead-top">El impulsor genera corrientes a gran escala que mueven el fluido en todo el volumen del tanque.</p>
+  <div class="cards" style="margin-top:28px;">
+    <div class="card">
+      <span class="card-n">Escala</span>
+      <h3>Gran escala — el tanque completo</h3>
+      <p>El flujo convectivo abarca todo el volumen útil del recipiente. Un impulsor axial genera una columna de descarga desde el impulsor hasta el fondo y retorno por las paredes (o viceversa).</p>
+    </div>
+    <div class="card">
+      <span class="card-n">Velocidad</span>
+      <h3>El más rápido y dominante</h3>
+      <p>La convección distribuye el trazador en el tanque en segundos. Determina el <b>tiempo mínimo posible</b> de mezclado: sin convección suficiente, los otros mecanismos no pueden compensar.</p>
+    </div>
+    <div class="card">
+      <span class="card-n">Diseño</span>
+      <h3>Determinado por el tipo de impulsor</h3>
+      <p>Impulsores axiales (hélice, PBT, hidrofoil) son superiores para homogenización: generan más caudal de descarga $Q$ con menos potencia $P$ que los radiales.</p>
+      <ul>
+        <li>Mayor $Q/P$ → menor $t_m$ por unidad de energía</li>
+        <li>Los baffles convierten flujo tangencial en axial-radial y amplifican la convección</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout verde" style="margin-top:28px;">
+    <p>La relación entre caudal de descarga $Q$ y el cubo del diámetro del impulsor $D^3$ define el <b>número de caudal</b> $N_Q = Q / (N D^3)$, que cuantifica la efectividad convectiva de cada tipo de impulsor.</p>
+  </div>
+</section>
+
+<!-- 07 · Mecanismo 2: Dispersión turbulenta -->
+<section class="s s--tint" data-screen-label="Mecanismo 2: Dispersión turbulenta">
+  <div class="kicker">Mecanismo 2 de 3</div>
+  <h2 class="s-head">Dispersión turbulenta (eddy diffusion)</h2>
+  <p class="lead-top">La turbulencia genera remolinos (eddies) a escala intermedia que distribuyen la materia de forma caótica y eficiente.</p>
+  <div class="split" style="flex:1;margin-top:22px;">
+    <div class="copy">
+      <ul>
+        <li><b>Escala:</b> entre milímetros y centímetros — intermedia entre la escala del tanque y la molecular</li>
+        <li><b>Mecanismo:</b> la cascada de Kolmogorov — los vórtices grandes se dividen en vórtices más pequeños, transfiriendo energía cinética hacia abajo hasta alcanzar la escala de Kolmogorov $\eta = (\nu^3/\varepsilon)^{1/4}$</li>
+        <li><b>Activación:</b> requiere Re &gt; 10⁴ para ser verdaderamente turbulento. Por debajo de este valor, la dispersión turbulenta disminuye drásticamente</li>
+        <li><b>Importancia industrial:</b> en fluidos de baja viscosidad (agua, soluciones diluidas) es el mecanismo más importante después de la convección</li>
+        <li><b>Limitación:</b> no opera en fluidos de alta viscosidad (laminares) — allí, la difusión molecular queda como único mecanismo de mezcla a pequeña escala</li>
+      </ul>
+    </div>
+    <div class="copy">
+      <div class="callout">
+        <h4>Escala de Kolmogorov $\eta$</h4>
+        <div class="fml">$$\eta = \left(\frac{\nu^3}{\varepsilon}\right)^{1/4}$$</div>
+        <ul class="var-list">
+          <li>$\nu$ — viscosidad cinemática (m²/s)</li>
+          <li>$\varepsilon$ — tasa de disipación de energía turbulenta (m²/s³)</li>
+        </ul>
+        <p style="font-size:23px;">Los eddies de tamaño $\eta$ son los más pequeños que genera la turbulencia. La difusión molecular completa el mezclado por debajo de esta escala.</p>
+      </div>
+      <div class="callout verde" style="margin-top:20px;">
+        <p style="font-size:23px;"><b>En la planta de pectina:</b> el reactor de extracción opera con soluciones ácidas diluidas de baja viscosidad → Re &gt; 10⁴ → la dispersión turbulenta es activa y el tm será corto.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 08 · Mecanismo 3: Difusión molecular -->
+<section class="s" data-screen-label="Mecanismo 3: Difusión molecular">
+  <div class="kicker">Mecanismo 3 de 3</div>
+  <h2 class="s-head">Difusión molecular</h2>
+  <p class="lead-top">La difusión molecular es el mecanismo más lento — actúa a escala atómica y completa el mezclado final.</p>
+  <div class="split" style="flex:1;margin-top:22px;">
+    <div class="copy">
+      <ul style="font-size:26px;">
+        <li><b>Escala:</b> molecular — nanómetros a micrómetros</li>
+        <li><b>Fuerza impulsora:</b> el gradiente de concentración (segunda ley de Fick)</li>
+        <li><b>Velocidad:</b> muy lenta — los coeficientes de difusión en líquidos son del orden de $D_{AB} \sim 10^{-9}$ m²/s</li>
+        <li><b>Papel industrial:</b> secundario en reactores de gran escala; la convección y la turbulencia lo reducen a ser un mecanismo de "último kilómetro"</li>
+        <li><b>Relevancia en viscosos:</b> cuando Re &lt; 10 (laminar), la dispersión turbulenta desaparece y la difusión molecular queda como el <b>único</b> mecanismo de pequeña escala → mezcla muy lenta</li>
+      </ul>
+      <div class="callout amber" style="margin-top:22px;">
+        <p>Segunda ley de Fick:</p>
+        <div class="fml">$$\frac{\partial c}{\partial t} = D_{AB}\,\nabla^2 c$$</div>
+        <p style="font-size:22px;margin-top:8px;">El tiempo de igualación de concentración por difusión pura escala como $t \sim L^2 / D_{AB}$. Para $L = 1$ mm, $t \approx 1000$ s — por eso la convección es esencial.</p>
+      </div>
+    </div>
+    <div class="copy">
+      <table class="tbl-sm">
+        <thead><tr><th>Escala</th><th>Mecanismo dominante</th><th>Velocidad típica</th></tr></thead>
+        <tbody>
+          <tr><td>Tanque (0.1–10 m)</td><td>Convección</td><td>Segundos</td></tr>
+          <tr><td>Meso (0.001–0.1 m)</td><td>Dispersión turbulenta</td><td>Segundos a minutos</td></tr>
+          <tr><td>Molecular (&lt;1 μm)</td><td>Difusión molecular</td><td>Minutos a horas</td></tr>
+        </tbody>
+      </table>
+      <div class="callout verde" style="margin-top:22px;">
+        <p style="font-size:23px;">Los tres mecanismos actúan en <b>cascada</b>: la convección lleva el material al vecindario, la turbulencia lo entrega a los eddies más pequeños, y la difusión molecular completa la homogeneización.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 09 · DIVIDER: Tiempo de mezclado -->
+<section class="s s--dark divider" data-screen-label="→ Tiempo de mezclado" data-nofoot>
+  <div class="part">Parte II</div>
+  <h2>Tiempo de mezclado: la métrica de rendimiento</h2>
+  <p class="sub">¿Qué tan rápido se distribuye lo que se mezcla? El tiempo de mezclado $t_m$ cuantifica la eficiencia del proceso y tiene implicaciones directas sobre el consumo energético.</p>
+</section>
+
+<!-- 10 · Definición de tm -->
+<section class="s" data-screen-label="Definición de θ₉₅">
+  <div class="kicker">Tiempo de mezclado</div>
+  <h2 class="s-head">Definición: $\theta_{95}$ o $t_{95}$</h2>
+  <p class="lead-top">El tiempo de mezclado es un parámetro empírico que se mide experimentalmente.</p>
+  <div class="cards two" style="margin-top:28px;">
+    <div class="card">
+      <span class="card-n">Definición</span>
+      <h3>$\theta_{95}$ — el tiempo para el 95% de homogeneidad</h3>
+      <p>Tiempo requerido para que una perturbación (trazador) se distribuya en el volumen del tanque hasta alcanzar el <b>95% del valor de equilibrio final</b>.</p>
+      <p style="margin-top:12px;">El 95% es una convención práctica: llegar al 99% requeriría 3–5 veces más tiempo y energía.</p>
+    </div>
+    <div class="card card--teal">
+      <span class="card-n" style="color:var(--teal);">Impulsores y $t_m$</span>
+      <h3>Axiales vs. radiales para homogenización</h3>
+      <p>Para mezclado de fases miscibles (homogenización), los impulsores de flujo axial producen $t_m$ más cortos que los radiales con la misma potencia.</p>
+      <ul>
+        <li>Axiales (PBT, hidrofoil): mayor caudal $Q$ → mejor circulación → menor $t_m$</li>
+        <li>Radiales (Rushton): mayor cizalla → mejor para dispersión gas-líquido e inmiscibles, pero mayor $t_m$ para homogenización</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout" style="margin-top:28px;">
+    <h4>Número de mezclado $N_m$ (Mixing number)</h4>
+    <div class="fml">$$N_m = N \cdot t_m = \text{cte}$$</div>
+    <p style="font-size:24px;">A las mismas condiciones geométricas, el producto de la velocidad de agitación $N$ y el tiempo de mezclado $t_m$ es aproximadamente constante para un tipo de impulsor dado. Esto permite escalar $t_m$ cuando se cambia $N$.</p>
+  </div>
+</section>
+
+<!-- 11 · Métodos de medición -->
+<section class="s s--tint" data-screen-label="Métodos de medición">
+  <div class="kicker">Medición de $t_m$</div>
+  <h2 class="s-head">Cómo se mide $\theta_{95}$</h2>
+  <p class="lead-top">Existen tres métodos experimentales principales, cada uno con ventajas y limitaciones según el fluido y la escala.</p>
+  <div class="split" style="flex:1;margin-top:16px;">
+    <div class="figbox">
+      <img src="assets/img/medicion_tm.webp" alt="Infografía del proceso de medición del tiempo de mezclado: inyección, monitoreo, determinación y gráfica de datos en tiempo real">
+      <div class="figcap">El proceso de medición sigue tres pasos: inyección del trazador → monitoreo continuo → determinación del $t_m$ cuando todas las sondas se estabilizan dentro de ±5%</div>
+    </div>
+    <div class="copy">
+      <div class="cards" style="grid-template-columns:1fr;gap:18px;margin-top:0;">
+        <div class="card">
+          <span class="card-n">Método 1</span>
+          <h3>Conductividad eléctrica</h3>
+          <p>Se inyecta una solución salina concentrada como trazador. Sondas de conductividad miden en tiempo real la distribución del trazador. <b>Ventaja:</b> cuantitativo y no invasivo. El más usado en escala piloto e industrial.</p>
+        </div>
+        <div class="card card--teal">
+          <span class="card-n" style="color:var(--teal);">Método 2</span>
+          <h3>Colorimétrico (procesamiento digital)</h3>
+          <p>Se inyecta un colorante y se captura video del tanque. El procesamiento de imágenes calcula la varianza de color hasta que es uniforme. <b>Ventaja:</b> visualización directa del patrón de mezclado.</p>
+        </div>
+        <div class="card card--amber">
+          <span class="card-n" style="color:var(--ambar);">Método 3</span>
+          <h3>Indicador de pH (decoloración)</h3>
+          <p>Se usa un indicador ácido-base que decolora al neutralizarse. Útil especialmente en fluidos <b>viscosos</b> donde los otros métodos son difíciles de implementar.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 12 · Proceso de medición paso a paso -->
+<section class="s" data-screen-label="Proceso de medición">
+  <div class="kicker">Medición — detalle del proceso</div>
+  <h2 class="s-head">El proceso paso a paso</h2>
+  <p class="lead-top">Los tres pasos del protocolo de medición experimental son siempre los mismos, independiente del método de detección elegido.</p>
+  <div class="steps" style="margin-top:34px;">
+    <div class="step">
+      <div class="st-n">1</div>
+      <b>Inyección del trazador</b>
+      <span>Se introduce una pequeña cantidad de trazador en un <b>punto específico del tanque</b>. El trazador puede ser: sal (conductividad), colorante (colorimétrico) o ácido/base (pH). La cantidad debe ser suficiente para detectar pero no alterar las propiedades del fluido.</span>
+    </div>
+    <div class="step">
+      <div class="st-n">2</div>
+      <b>Monitoreo continuo</b>
+      <span>Se colocan sensores en <b>uno o varios puntos del tanque</b>, preferiblemente en las zonas donde se espera que el mezclado sea más lento: esquinas, lejos del impulsor, cerca del fondo o en zonas de bajo flujo. Se registra la señal continuamente.</span>
+    </div>
+    <div class="step">
+      <div class="st-n">3</div>
+      <b>Determinación del $t_m$</b>
+      <span>Se registra la propiedad (color, conductividad, pH) a lo largo del tiempo. El $t_m$ se alcanza cuando <b>todas las lecturas</b> de los sensores se estabilizan dentro de un rango de <b>±5% del valor de equilibrio final</b>.</span>
+    </div>
+  </div>
+  <div class="callout verde" style="margin-top:32px;">
+    <p><b>Criterio del ±5%:</b> es la convención estándar para $\theta_{95}$. El punto de muestreo más desfavorable (el que tarda más en igualarse) determina el $t_m$ del sistema — por eso los sensores se ubican estratégicamente en zonas de mezclado lento.</p>
+  </div>
+</section>
+
+<!-- 13 · Factores que influyen en tm -->
+<section class="s s--tint" data-screen-label="Factores que influyen en tm">
+  <div class="kicker">Factores</div>
+  <h2 class="s-head">¿Qué determina el tiempo de mezclado?</h2>
+  <p class="lead-top">Cinco grupos de variables controlan $t_m$ — conocerlas permite optimizar el diseño.</p>
+  <div class="collist" style="margin-top:26px;">
+    <div class="it">
+      <div class="ic"></div>
+      <div>
+        <b>Velocidad de agitación (N)</b>
+        <span>Inversamente proporcional: a mayor $N$, menor $t_m$. Relación directa con el número de mezclado $N \cdot t_m = \text{cte}$. El factor de control más accesible en operación.</span>
+      </div>
+    </div>
+    <div class="it">
+      <div class="ic"></div>
+      <div>
+        <b>Viscosidad del fluido (μ)</b>
+        <span>A mayor viscosidad, mayor $t_m$. En fluidos viscosos se pierde la dispersión turbulenta y solo queda la difusión molecular — el proceso es mucho más lento.</span>
+      </div>
+    </div>
+    <div class="it">
+      <div class="ic"></div>
+      <div>
+        <b>Tipo y tamaño del impulsor</b>
+        <span>La geometría afecta la distribución de flujo. Los impulsores axiales producen mayor caudal de circulación $Q$ a igual potencia → menor $t_m$ para homogenización de miscibles.</span>
+      </div>
+    </div>
+    <div class="it">
+      <div class="ic"></div>
+      <div>
+        <b>Geometría del recipiente</b>
+        <span>La forma del tanque, la relación $H/T$ y el número, ancho y altura de los baffles afectan los patrones de flujo y, en consecuencia, la eficiencia del mezclado en todo el volumen.</span>
+      </div>
+    </div>
+    <div class="it">
+      <div class="ic"></div>
+      <div>
+        <b>Ubicación de la alimentación</b>
+        <span>El punto de inyección del trazador o del reactivo afecta la medición y la operación real. Inyectar cerca del impulsor puede subestimar el $t_m$; lejos del impulsor, sobreestimarlo.</span>
+      </div>
+    </div>
+    <div class="it">
+      <div class="ic" style="background:var(--teal);"></div>
+      <div>
+        <b>Régimen de flujo (Re)</b>
+        <span>El número de Reynolds determina qué mecanismos están activos. Re &gt; 10⁴: convección + turbulencia + difusión (rápido). Re &lt; 10: solo convección + difusión (muy lento).</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 14 · Relación tm y potencia -->
+<section class="s" data-screen-label="Relación tm–potencia">
+  <div class="kicker">Costo energético</div>
+  <h2 class="s-head">Relación entre $t_m$ y potencia</h2>
+  <p class="lead-top">Reducir el tiempo de mezclado tiene un <b>costo energético desproporcionado</b> — una relación con implicaciones directas para el diseño del reactor de extracción.</p>
+  <div class="split" style="flex:1;margin-top:22px;">
+    <div class="copy">
+      <div class="callout">
+        <h4>Correlación empírica</h4>
+        <div class="fml">$$t_m \propto \left(\frac{T^3}{P}\right)^{1/3}$$</div>
+        <ul class="var-list">
+          <li>$T$ — diámetro del tanque (m)</li>
+          <li>$P$ — potencia del agitador (W)</li>
+          <li>La relación $T^3/P$ representa el volumen del tanque dividido por la densidad de potencia</li>
+        </ul>
+      </div>
+      <div class="callout amber" style="margin-top:22px;">
+        <h4>Implicación energética clave</h4>
+        <p>Despejando: $P \propto T^3 / t_m^3$</p>
+        <p style="margin-top:8px;">Reducir $t_m$ en un <b>20%</b> (factor 0.8) requiere aumentar la potencia en un factor $1/0.8^3 \approx 1.95$, es decir, <b>casi duplicar la potencia</b>.</p>
+      </div>
+    </div>
+    <div class="copy">
+      <div class="callout verde">
+        <h4>Principio de diseño</h4>
+        <p>En ingeniería química, el $t_m$ <b>no se minimiza por sí solo</b>, sino que se diseña al valor mínimo que requiere el proceso — la cinética de reacción, la transferencia de calor o la calidad del producto imponen el valor objetivo.</p>
+        <p style="margin-top:12px;">Diseñar para un $t_m$ más corto del necesario desperdicia energía sin beneficio en el producto.</p>
+      </div>
+      <div class="callout" style="margin-top:22px;">
+        <h4>Ejemplo de escala</h4>
+        <p>Si el reactor de extracción de pectina requiere $t_m \leq 30$ s y el diseño actual da 36 s:</p>
+        <ul style="font-size:23px;padding-left:1.1em;margin-top:8px;">
+          <li>Reducir 17% → necesita $\approx$ 60% más de potencia</li>
+          <li>Alternativa: optimizar la posición de los baffles o cambiar al tipo de impulsor axial</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 15 · DIVIDER: Retos del mezclado -->
+<section class="s s--dark divider" data-screen-label="→ Retos del mezclado" data-nofoot>
+  <div class="part">Parte III</div>
+  <h2>Retos del mezclado en fluidos reales</h2>
+  <p class="sub">No todos los fluidos mezclan igual. Dos casos especiales rompen los supuestos del mezclado ideal y exigen soluciones de diseño particulares.</p>
+  <div class="dctx">
+    <b>2</b><span>retos: alta viscosidad y líquidos inmiscibles</span>
+  </div>
+</section>
+
+<!-- 16 · Alta viscosidad — comportamiento -->
+<section class="s" data-screen-label="Alta viscosidad: comportamiento">
+  <div class="kicker">Reto 1 de 2</div>
+  <h2 class="s-head">Retos: alta viscosidad</h2>
+  <p class="lead-top">Cuando la viscosidad del fluido es alta, el régimen de flujo cambia de turbulento a laminar (Re &lt; 10) y los mecanismos de mezclado disponibles se reducen drásticamente.</p>
+  <div class="split split--narrow" style="flex:1;margin-top:20px;">
+    <div class="img-panel" style="position:relative;">
+      <img src="assets/img/alta_viscosidad.webp" alt="Close-up de mezclado en fluido viscoso — remolinos de colorante azul en fluido blanco viscoso mostrando patrón laminar">
+      <div class="figcap">Patrón de mezclado laminar en un fluido de alta viscosidad. Los filamentos del colorante persisten mucho tiempo: la turbulencia no existe para dispersarlos.</div>
+    </div>
+    <div class="copy">
+      <div class="callout amber" style="margin-bottom:22px;">
+        <p>Cuando Re &lt; 10: el régimen es <b>completamente laminar</b>. La dispersión turbulenta desaparece — solo quedan convección (lenta y ordenada) y difusión molecular (muy lenta).</p>
+      </div>
+      <p style="font-size:26px;color:var(--gris-1);font-weight:700;margin:0 0 12px;">Comportamiento del fluido:</p>
+      <ul>
+        <li>El flujo es <b>ordenado y predecible</b>; el fluido se "adhiere" a las palas del impulsor</li>
+        <li><b>No hay dispersión turbulenta</b> — desaparece con la turbulencia</li>
+        <li>La <b>difusión molecular</b> es el único mecanismo de mezcla a pequeña escala</li>
+        <li>Se pueden crear <b>"zonas muertas"</b> cerca de las paredes donde el fluido apenas se mueve</li>
+        <li>El $t_m$ puede ser <b>órdenes de magnitud mayor</b> que en condiciones turbulentas equivalentes</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 17 · Alta viscosidad — soluciones de diseño -->
+<section class="s s--tint" data-screen-label="Alta viscosidad: soluciones">
+  <div class="kicker">Reto 1 de 2 — Soluciones</div>
+  <h2 class="s-head">Alta viscosidad: soluciones de diseño</h2>
+  <p class="lead-top">Los impulsores convencionales no funcionan en fluidos laminares. Se requieren geometrías especializadas que recorran todo el volumen del tanque.</p>
+  <div class="cards" style="margin-top:28px;">
+    <div class="card">
+      <span class="card-n">Principio de diseño</span>
+      <h3>Grandes diámetros a baja velocidad</h3>
+      <p>Se requieren impulsores con una relación diámetro-tanque $D/T &gt; 0.5$ (a veces hasta $D/T \approx 0.95$). Operan a baja velocidad para no sobresaturar la potencia, pero cubren todo el diámetro del tanque.</p>
+      <ul>
+        <li>Mayor área de barrido → reduce zonas muertas</li>
+        <li>Baja velocidad → menor desgaste mecánico</li>
+        <li>Sin baffles (crean resistencia innecesaria en laminar)</li>
+      </ul>
+    </div>
+    <div class="card card--teal">
+      <span class="card-n" style="color:var(--teal);">Impulsor 1</span>
+      <h3>Cinta helicoidal (helical ribbon)</h3>
+      <p>Cinta continua enrollada helicoidalmente alrededor del eje, que recorre desde el fondo hasta la superficie. Genera un flujo axial-toroidal que asciende por el centro y desciende por las paredes (o viceversa).</p>
+      <ul>
+        <li>Mueve material cerca de las paredes y el fondo</li>
+        <li>Excelente para $D/T \approx 0.9$ y $Re &lt; 100$</li>
+        <li>Usada en: polímeros, betún, almidones</li>
+      </ul>
+    </div>
+    <div class="card card--amber">
+      <span class="card-n" style="color:var(--ambar);">Impulsor 2</span>
+      <h3>Impulsor ancla</h3>
+      <p>Sigue la forma interna del fondo y las paredes del tanque, con un espacio mínimo (&lt;5 mm). "Raspa" continuamente las superficies para impedir la formación de costras y zonas muertas.</p>
+      <ul>
+        <li>Ideal cuando hay transferencia de calor por chaqueta</li>
+        <li>El raspado mejora el coeficiente $h$ en la pared</li>
+        <li>Usada en: jarabes, cremas cosméticas, salsas</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout verde" style="margin-top:26px;">
+    <p>En polímeros, látex, jarabes concentrados y cualquier fluido con $\mu &gt; 10$ Pa·s, los impulsores convencionales (PBT, Rushton) son <b>inútiles</b> para el mezclado. La cinta helicoidal y el ancla son las únicas soluciones viables.</p>
+  </div>
+</section>
+
+<!-- 18 · Líquidos inmiscibles -->
+<section class="s" data-screen-label="Líquidos inmiscibles">
+  <div class="kicker">Reto 2 de 2</div>
+  <h2 class="s-head">Mezclado de líquidos inmiscibles</h2>
+  <p class="lead-top">El objetivo <b>no</b> es crear una solución, sino una <b>dispersión o emulsión</b> estable. Las fuerzas involucradas son diferentes a las del mezclado de miscibles.</p>
+  <div class="split split--narrow" style="flex:1;margin-top:20px;">
+    <div class="copy">
+      <div class="callout" style="margin-bottom:20px;">
+        <h4>El reto: coalescencia</h4>
+        <p>La tensión interfacial entre las fases busca minimizar el área de contacto → las gotas se <b>reagrupan (coalescen)</b> espontáneamente. El impulsor debe combatir este fenómeno continuamente.</p>
+      </div>
+      <p style="font-size:27px;color:var(--gris-1);font-weight:700;margin:0 0 12px;">Proceso de dispersión:</p>
+      <ul>
+        <li><b>Alta cizalla (high shear)</b> es indispensable para <b>romper las gotas</b> de la fase dispersa a un tamaño controlado</li>
+        <li>El tamaño de gota $d$ disminuye a mayor densidad de potencia: $d \propto (P/V)^{-0.4}$</li>
+        <li>El número de Weber interfacial $We = \rho N^2 D^3 / \sigma$ cuantifica la capacidad de romper gotas frente a la tensión superficial $\sigma$</li>
+        <li>Se requiere $We$ suficientemente alto para superar la tensión interfacial</li>
+      </ul>
+    </div>
+    <div class="img-panel" style="position:relative;">
+      <img src="assets/img/dispersor_alta_cizalla.webp" alt="Dispersor de alta cizalla (rotor-estátor) sumergido en líquido, generando burbujas y dispersión intensa">
+      <div class="figcap">Dispersor de alta cizalla (tipo rotor-estátor): el cabezal genera una zona de altísima cizalla localizada que rompe gotas y dispersa burbujas. La $P/V$ en esa zona supera en 10–100× la del tanque agitado.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 19 · Diseño para líquidos inmiscibles -->
+<section class="s s--tint" data-screen-label="Diseño para inmiscibles">
+  <div class="kicker">Reto 2 de 2 — Diseño</div>
+  <h2 class="s-head">Diseño del sistema para líquidos inmiscibles</h2>
+  <p class="lead-top">La selección del impulsor y el parámetro $P/V$ son las decisiones de diseño críticas para emulsiones y dispersiones.</p>
+  <div class="cards" style="margin-top:28px;">
+    <div class="card">
+      <span class="card-n">Dispersión gruesa</span>
+      <h3>Turbina Rushton (RT-6)</h3>
+      <p>Los impulsores de <b>flujo radial</b> como la turbina Rushton son efectivos para dispersión líquido-líquido. La zona de descarga del impulsor genera una cizalla muy alta que rompe las gotas de la fase dispersa.</p>
+      <ul>
+        <li>Gotas de tamaño: 0.5–5 mm típicamente</li>
+        <li>Buena para dispersión aceite-agua, extracción líquido-líquido</li>
+        <li>La potencia por unidad de volumen ($P/V$) controla el tamaño de gota</li>
+      </ul>
+    </div>
+    <div class="card card--teal">
+      <span class="card-n" style="color:var(--teal);">Emulsiones finas</span>
+      <h3>Turbinas de alta cizalla (multi-palas)</h3>
+      <p>Para emulsiones finas, se utilizan <b>turbinas de alta cizalla</b> con múltiples palas (8–16) y alta velocidad de rotación. El principio rotor-estátor maximiza la cizalla por unidad de volumen.</p>
+      <ul>
+        <li>Gotas de tamaño: 1–100 μm</li>
+        <li>Usadas en: mayonesa, cremas, pinturas, emulsiones farmacéuticas</li>
+        <li>P/V muy alto → alto consumo energético</li>
+      </ul>
+    </div>
+    <div class="card card--amber">
+      <span class="card-n" style="color:var(--ambar);">Parámetro clave</span>
+      <h3>Potencia por unidad de volumen ($P/V$)</h3>
+      <p>Para dispersiones, no es la potencia total sino la densidad de potencia lo que determina el tamaño de gota.</p>
+      <div class="fml" style="margin-top:12px;">$$\frac{P}{V} = \frac{N_p \rho N^3 D^5}{V}$$</div>
+      <p style="margin-top:8px;font-size:22px;color:var(--gris-2);">A mayor $P/V$, gotas más pequeñas y emulsión más estable.</p>
+    </div>
+  </div>
+  <div class="callout" style="margin-top:26px;">
+    <p><b>Parámetro de escala para inmiscibles:</b> mientras que para homogenización se escala manteniendo $N \cdot t_m = \text{cte}$, para dispersiones el escalamiento correcto es mantener $P/V = \text{cte}$ entre la escala piloto y la escala industrial.</p>
+  </div>
+</section>
+
+<!-- 20 · Aplicación al proyecto -->
+<section class="s" data-screen-label="Aplicación al proyecto">
+  <div class="kicker">Proyecto de pectina</div>
+  <h2 class="s-head">Aplicación al proyecto</h2>
+  <p class="lead-top">En los reactores de extracción ácida, un mezclado eficaz es fundamental para la calidad y el rendimiento de la pectina producida.</p>
+  <div class="cards" style="margin-top:28px;">
+    <div class="card">
+      <span class="card-n">
+        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.1em;margin-right:6px;"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg>
+        Distribución de ácido
+      </span>
+      <h3>Hidrólisis homogénea del protopectina</h3>
+      <p>El ácido (HCl o H₂SO₄ diluido) debe distribuirse uniformemente en toda la corteza de cítrico para garantizar una hidrólisis homogénea del protopectina.</p>
+      <ul>
+        <li>Gradientes de concentración de ácido → extracción incompleta en zonas de baja concentración</li>
+        <li>El impulsor axial genera la convección necesaria para distribuir el ácido desde el punto de adición</li>
+      </ul>
+    </div>
+    <div class="card card--teal">
+      <span class="card-n" style="color:var(--teal);">
+        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.1em;margin-right:6px;"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"/></svg>
+        Temperatura homogénea
+      </span>
+      <h3>Evitar degradación de la pectina</h3>
+      <p>La extracción ocurre a 70–85°C. La pectina se degrada (β-eliminación) si existen puntos calientes superiores a 90°C.</p>
+      <ul>
+        <li>El mezclado distribuye el calor de la chaqueta uniformemente en el volumen</li>
+        <li>Un buen $t_m$ garantiza que no haya estratificación térmica</li>
+      </ul>
+    </div>
+    <div class="card card--amber">
+      <span class="card-n" style="color:var(--ambar);">
+        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-.1em;margin-right:6px;"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+        Suspensión de sólidos
+      </span>
+      <h3>Extracción completa del bagazo de cítrico</h3>
+      <p>La corteza de cítrico particulada tiende a sedimentar. Debe mantenerse en suspensión completa para maximizar el área de transferencia de masa entre el ácido y los sólidos.</p>
+      <ul>
+        <li>Velocidad $N_{js}$ (Zwietering) debe superarse en operación</li>
+        <li>Sedimentación → extracción incompleta y variabilidad en la calidad del producto</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout rojo" style="margin-top:26px;">
+    <p><b>Riesgo de un mezclado deficiente:</b> extracción incompleta e inhomogénea de la pectina, variabilidad en el grado de metoxilación (DM), mayor consumo de ácido y reducción del rendimiento másico. El diseño del agitador es crítico para la calidad del producto final.</p>
+  </div>
+</section>
+
+<!-- 21 · Conclusiones -->
+<section class="s s--tint" data-screen-label="Conclusiones">
+  <div class="kicker">Cierre</div>
+  <h2 class="s-head">Conclusiones</h2>
+  <div class="cards" style="margin-top:38px;">
+    <div class="card">
+      <span class="card-n">Conclusión 1</span>
+      <h3>Mezclado = objetivo final de la agitación</h3>
+      <p>El mezclado se logra a través de una <b>cascada de tres mecanismos</b> que actúan en escalas decrecientes: convección (gran escala, dominante) → dispersión turbulenta (escala intermedia, activa solo si Re &gt; 10⁴) → difusión molecular (escala molecular, siempre activa pero muy lenta).</p>
+    </div>
+    <div class="card card--teal">
+      <span class="card-n" style="color:var(--teal);">Conclusión 2</span>
+      <h3>El $t_m$ es la métrica de rendimiento</h3>
+      <p>El tiempo de mezclado $\theta_{95}$ cuantifica la eficiencia del sistema. <b>Reducirlo es energéticamente costoso</b>: reducir $t_m$ un 20% requiere casi duplicar la potencia ($P \propto t_m^{-3}$). El diseño debe establecer el valor mínimo que requiere el proceso, no el mínimo posible.</p>
+    </div>
+    <div class="card card--amber">
+      <span class="card-n" style="color:var(--ambar);">Conclusión 3</span>
+      <h3>El diseño debe adaptarse al fluido</h3>
+      <p>Los fluidos reales plantean retos específicos: <b>alta viscosidad</b> (Re &lt; 10) requiere impulsores de gran diámetro como cinta helicoidal o ancla; <b>fases inmiscibles</b> requieren alta cizalla y el parámetro $P/V$ como criterio de diseño y escalamiento.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 22 · Cierre -->
+<section class="s s--dark close" data-screen-label="Cierre" data-nofoot>
+  <div class="kicker">Sesión 10</div>
+  <h2>Ahora tiene las herramientas para evaluar la calidad del mezclado en su reactor de extracción.</h2>
+  <div class="next">
+    <span class="pill">A trabajar</span>
+    <span>Para el reactor de extracción: estime el régimen de flujo (Re), seleccione el impulsor adecuado y calcule el $t_m$ requerido para garantizar la homogeneización del ácido antes de que la reacción de hidrólisis avance significativamente.</span>
+  </div>
+</section>
+
+</deck-stage>
+
+<script src="assets/deck-stage.js"></script>
+<script>
+(function(){
+  var stage=document.querySelector('deck-stage');
+  var slides=Array.prototype.filter.call(stage.children,function(n){return n.tagName==='SECTION';});
+  var total=slides.length;
+  slides.forEach(function(s,i){
+    if(s.querySelector('.s-foot'))return;
+    var f=document.createElement('div');
+    f.className='s-foot';
+    var label=s.hasAttribute('data-nofoot')?'Mezclado de fluidos · IQYA-2031':'Mezclado de fluidos · Proyecto de Operaciones Unitarias';
+    f.innerHTML='<span class="tag">'+label+'</span><span class="num">'+(i+1)+' / '+total+'</span>';
+    s.appendChild(f);
+  });
+})();
+</script>
+<script>
+(function(){
+  var lb=document.createElement('dialog');
+  lb.className='lightbox';
+  lb.innerHTML='<button class="lb-close" aria-label="Cerrar">✕</button><div class="lb-content"></div>';
+  document.body.appendChild(lb);
+  var content=lb.querySelector('.lb-content');
+  function close(){if(lb.open)lb.close();}
+  lb.addEventListener('close',function(){content.innerHTML='';});
+  function open(img){
+    content.innerHTML='';
+    var im=document.createElement('img');
+    im.src=img.currentSrc||img.src;
+    content.appendChild(im);
+    if(!lb.open)lb.showModal();
+  }
+  lb.addEventListener('click',close);
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape'&&lb.open){e.stopPropagation();close();}
+  },true);
+  document.querySelectorAll('deck-stage .img-panel img,deck-stage .figbox img').forEach(function(img){
+    var parent=img.closest('.img-panel')||img.closest('.figbox');
+    if(parent&&getComputedStyle(parent).position==='static')parent.style.position='relative';
+    function trigger(e){e.stopPropagation();open(img);}
+    img.addEventListener('click',trigger);
+    if(parent){
+      var badge=document.createElement('span');
+      badge.className='zoom-badge';
+      badge.setAttribute('aria-hidden','true');
+      badge.textContent='⤢';
+      badge.addEventListener('click',trigger);
+      parent.appendChild(badge);
+    }
+  });
+})();
+</script>
+
+</body>
+</html>

@@ -732,5 +732,13 @@ export const pou202620Course: Course = {
       sessionNumber: 9,
       file: 'Agitacion/Presentacion_Agitacion.html',
     },
+    {
+      id: 'mezclado-de-fluidos',
+      title: 'Mezclado de fluidos',
+      description:
+        'Diferencia entre agitación (causa) y mezclado (efecto). Equipos de mezclado. Tres mecanismos: convección (bulk flow), dispersión turbulenta (eddy diffusion) y difusión molecular — escala, velocidad e importancia industrial de cada uno. Tiempo de mezclado θ₉₅: definición, métodos de medición (conductividad, colorimétrico, pH), factores que lo determinan y relación con potencia (P ∝ tm⁻³). Retos: alta viscosidad (Re < 10, impulsores cinta helicoidal y ancla) y líquidos inmiscibles (high shear, P/V como parámetro de diseño). Aplicación al reactor de extracción ácida de pectina.',
+      sessionNumber: 10,
+      file: 'Mezclado/Presentacion_Mezclado.html',
+    },
   ],
 };
