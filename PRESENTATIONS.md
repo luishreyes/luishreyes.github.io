@@ -582,6 +582,128 @@ El `deck-stage.js` ya tiene el parche para ocultar el carrusel (rail) al entrar 
 
 ---
 
+## Mobile responsive — reglas críticas
+
+Las presentaciones se ven en celular y tablet en modo bloque (el `deck-stage` pasa a layout lineal en ≤768px). El bloque `@media (max-width:768px)` al final del `<style>` es obligatorio en TODA presentación.
+
+### Jerarquía de `overflow` — la regla más importante
+
+```
+html, body { overflow-x: hidden; max-width: 100vw; }   ← contención a nivel viewport
+.s          { overflow: visible; width: 100%; box-sizing: border-box; }   ← NUNCA hidden
+.fml        { overflow-x: auto; display: block; max-width: calc(100vw - 40px); }
+table       { display: block; overflow-x: auto; max-width: calc(100vw - 40px); }
+```
+
+**Regla absoluta:** `overflow-x:hidden` en `.s` suprime el scroll interno de cualquier hijo con `overflow-x:auto` — las fórmulas KaTeX y las tablas quedan clippeadas sin poder scrollar. **Nunca poner `overflow-x:hidden` en `.s`.**
+
+### Cálculo de `max-width` para fórmulas anidadas
+
+El `max-width` de `.fml` debe restar el padding de TODOS los contenedores padres:
+
+| Contexto | `max-width` del `.fml` |
+|---|---|
+| Directo en `.s` | `calc(100vw - 40px)` — padding del slide (20px × 2) |
+| Dentro de `.callout` | `calc(100vw - 76px)` — slide 40px + callout 36px (18px × 2) |
+| Dentro de `.card` | `calc(100vw - 72px)` — slide 40px + card 32px (16px × 2) |
+
+### Bloque mobile canónico completo
+
+Copiar EXACTAMENTE este bloque en cada presentación nueva (actualizarlo si hay clases nuevas):
+
+```css
+@media (max-width:768px){
+  html,body{height:auto;background:#f2f2f2;overflow-x:hidden;max-width:100vw;}
+  .s{padding:28px 20px 36px !important;min-height:0 !important;overflow:visible !important;width:100% !important;box-sizing:border-box !important;}
+  h1.s-title{font-size:24px !important;line-height:1.15 !important;}
+  .s h2,h2.s-head{font-size:22px !important;line-height:1.2 !important;letter-spacing:normal !important;}
+  .s-lead{font-size:16px !important;max-width:100% !important;}
+  .s p{font-size:16px !important;}
+  .s ul,.s ol{font-size:15px !important;}
+  .s h3{font-size:20px !important;line-height:1.25 !important;}
+  .lead-top{font-size:16px !important;}
+  .foot-note{font-size:12px !important;}
+  .kicker{font-size:13px !important;margin-bottom:10px !important;letter-spacing:.08em !important;}
+  .s-foot{position:static !important;left:auto !important;right:auto !important;bottom:auto !important;margin-top:20px !important;font-size:11px !important;}
+  .cover h1{font-size:24px !important;line-height:1.15 !important;}
+  .cover .session{font-size:14px !important;}
+  .cover-meta{flex-direction:column !important;gap:10px !important;}
+  .cover .wm{display:none !important;}
+  .cover .course{font-size:11px !important;letter-spacing:.05em !important;margin-bottom:12px !important;}
+  .cover-org{font-size:16px !important;}
+  .cover-org span{font-size:11px !important;}
+  .cover-bar{display:none !important;}
+  .cover-meta div{font-size:14px !important;}
+  .cover-meta b{font-size:15px !important;}
+  .divider .part{font-size:12px !important;margin-bottom:12px !important;}
+  .divider h2{font-size:32px !important;}
+  .divider .sub{font-size:13px !important;margin-top:16px !important;}
+  .dctx b{font-size:26px !important;}
+  .dctx span{font-size:12px !important;}
+  .agenda-list{grid-template-columns:1fr !important;}
+  .agenda-list .n{font-size:16px !important;min-width:28px !important;}
+  .agenda-list .t b{font-size:15px !important;}
+  .agenda-list .t span{font-size:12px !important;}
+  .agenda-note p{font-size:15px !important;}
+  .split,.split--wideR,.split--wideL,.split--narrow{grid-template-columns:1fr !important;gap:18px !important;}
+  .cards,.cards.two,.cards.four{grid-template-columns:1fr !important;gap:12px !important;margin-top:16px !important;}
+  .card{padding:18px 16px !important;}
+  .card h3{font-size:20px !important;}
+  .card p{font-size:15px !important;}
+  .card .card-n{font-size:13px !important;}
+  .card ul{font-size:13px !important;}
+  .card-gif{height:140px !important;}
+  .fml{font-size:14px !important;overflow-x:auto !important;padding:8px 4px !important;max-width:calc(100vw - 40px) !important;box-sizing:border-box !important;display:block !important;}
+  .callout .fml{max-width:calc(100vw - 76px) !important;}
+  .card .fml{max-width:calc(100vw - 72px) !important;}
+  .img-panel{padding:12px !important;}
+  .img-panel .figcap{font-size:12px !important;}
+  .figbox .figcap{font-size:12px !important;}
+  .callout,.callout.verde,.callout.amber{padding:16px 18px !important;}
+  .callout p{font-size:15px !important;}
+  .callout h4{font-size:15px !important;}
+  .var-list{font-size:12px !important;}
+  .databar .chip{font-size:12px !important;}
+  table{font-size:12px !important;display:block !important;overflow-x:auto !important;-webkit-overflow-scrolling:touch !important;max-width:calc(100vw - 40px) !important;box-sizing:border-box !important;}
+  th,td{padding:6px 8px !important;white-space:nowrap !important;}
+  .collist{grid-template-columns:1fr !important;gap:14px !important;}
+  .collist .it b{font-size:15px !important;}
+  .collist .it span{font-size:13px !important;}
+  .steps,.steps.four{grid-template-columns:1fr !important;gap:14px !important;}
+  .step .st-n{width:40px !important;height:40px !important;min-width:40px !important;font-size:20px !important;}
+  .step b{font-size:16px !important;}
+  .step span{font-size:14px !important;}
+  .fullbleed .fb-img{position:static !important;inset:auto !important;padding:12px !important;}
+  .fullbleed .fb-img img{max-height:none !important;width:100% !important;height:auto !important;}
+  .fullbleed .s-foot{color:rgba(255,255,255,.5) !important;}
+  .lossmenu .tabs{width:100% !important;flex-direction:column !important;border-radius:14px !important;}
+  .lossmenu .tab{font-size:14px !important;padding:10px 14px !important;justify-content:center !important;}
+  .lossmenu .panel.is-active{grid-template-columns:1fr !important;gap:16px !important;}
+  .lossmenu .panel .img-panel img{max-height:none !important;}
+  .lossmenu .panel .pcopy h3{font-size:20px !important;}
+  .lossmenu .panel .pcopy p{font-size:14px !important;}
+  .lossmenu .panel .pcopy ul{font-size:13px !important;}
+  .close .next{display:flex !important;align-items:center !important;gap:16px !important;margin-top:20px !important;font-size:15px !important;}
+  .close .next .pill{font-size:11px !important;width:62px !important;min-width:62px !important;height:62px !important;padding:6px !important;text-align:center !important;white-space:normal !important;border-radius:50% !important;display:flex !important;align-items:center !important;justify-content:center !important;line-height:1.3 !important;flex-shrink:0 !important;}
+}
+```
+
+### Presupuesto de altura por slide (desktop 1920×1080)
+
+El canvas tiene 1080px. Con `padding: 90px 120px 96px` del `.s`, la altura útil disponible es **894px**. Si el contenido la supera, el slide hace scroll en vez de mostrar todo visible en clase.
+
+Estimaciones orientativas:
+- `.kicker` + `h2.s-head`: ~70px + ~75px = **145px**
+- Fila de cards (`.cards`): ~380px para 3 cards de altura media
+- Tabla de 7 filas (`.tbl-sm`): ~330px
+- `.callout`: ~120px
+- `.fml` con fórmula larga: ~80px
+- Margen `split`: 14–20px
+
+**Regla práctica:** si un slide tiene tabla + fórmula + callout + imagen, dividirlo en dos.
+
+---
+
 ## Checklist para nueva presentación
 
 1. [ ] Leer TODO el PDF fuente (renderizar páginas con pdftoppm si no tiene texto)
@@ -604,7 +726,9 @@ El `deck-stage.js` ya tiene el parche para ocultar el carrusel (rail) al entrar 
 18. [ ] Registrar en `presentations` del curso: `id`, `title`, `description`, `sessionNumber`, `file`
 19. [ ] Campo `file` = ruta relativa dentro de `slides/` (ej: `Reduccion_de_Tamano/Presentacion_Reduccion_de_Tamano.html`)
 20. [ ] Eliminar el ZIP de imágenes de la raíz del repo tras procesar (`git rm imagenes.zip`)
-21. [ ] Commit descriptivo y `git push origin HEAD:main`
+21. [ ] **Mobile**: bloque `@media (max-width:768px)` copiado del canónico — nunca `overflow-x:hidden` en `.s`
+22. [ ] **Mobile**: slides con tabla o fórmula larga verificados — `.fml` y `table` tienen `max-width:calc(100vw - Xpx)` correcto según nivel de anidación
+23. [ ] Commit descriptivo y `git push origin HEAD:main`
 
 ---
 
@@ -618,6 +742,8 @@ El `deck-stage.js` ya tiene el parche para ocultar el carrusel (rail) al entrar 
 6. **GIFs animados conservan la animación.** No convertir a WebP.
 7. **No emojis — SVG Lucide.**
 8. **Pill "A trabajar"**: el CSS de `.close .next .pill` siempre debe incluir `white-space: nowrap; flex-shrink: 0;` para que el texto nunca se parta en dos líneas en el canvas 1920×1080.
+9. **`overflow-x:hidden` NUNCA en `.s`**: suprime el scroll interno de `.fml` y `table` dentro del slide. La contención de viewport va en `html,body`, no en el slide.
+10. **GIFs: verificar visualmente antes de asignar**: el nombre del archivo no garantiza el contenido. Siempre `Read` el GIF (la herramienta muestra el primer frame) y confirmar que el impulsor/equipo es el correcto antes de ponerlo en el card.
 
 ---
 
@@ -625,9 +751,14 @@ El `deck-stage.js` ya tiene el parche para ocultar el carrusel (rail) al entrar 
 
 Copiar la presentación más reciente como punto de partida:
 ```
+public/classroom/iqya-2031-2026-20/slides/Agitacion/Presentacion_Agitacion.html
+```
+Incluye: portada, agenda, lossmenu (5 tabs), divisores, splits, cards con GIF (`card-gif`), fullbleed, fórmulas KaTeX, callouts, collist, steps, tabla compacta (`tbl-sm`), lightbox `<dialog>`, footer JS, CSS completo con bloque mobile corregido.
+
+Para presentaciones sin fórmulas ni card-gifs, la alternativa más limpia:
+```
 public/classroom/iqya-2031-2026-20/slides/Flujo_de_Fluidos/Presentacion_Flujo_de_Fluidos.html
 ```
-Incluye: portada, agenda, divisores, slides con split, cards, fórmulas KaTeX, GIFs, lightbox `<dialog>`, footer JS, CSS completo, lossmenu interactivo, video embebido en split.
 
 ---
 
