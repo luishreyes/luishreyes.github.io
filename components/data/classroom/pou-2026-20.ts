@@ -708,5 +708,37 @@ export const pou202620Course: Course = {
       sessionNumber: 6,
       file: 'Reduccion_de_Tamano/Presentacion_Reduccion_de_Tamano.html',
     },
+    {
+      id: 'flujo-de-fluidos',
+      title: 'Flujo de fluidos',
+      description:
+        'Ecuación de Bernoulli y energía mecánica, medidor Venturi, pérdidas mayores (Darcy-Weisbach, Moody, Colebrook) y menores, redes en serie y paralelo, punto de operación, velocidades económicas y selección de diámetros, fluidos no-newtonianos, cavitación y golpe de ariete.',
+      sessionNumber: 7,
+      file: 'Flujo_de_Fluidos/Presentacion_Flujo_de_Fluidos.html',
+    },
+    {
+      id: 'bombas-centrifugas',
+      title: 'Bombas centrífugas',
+      description:
+        'Principio centrífugo y anatomía, tipos de impulsores y velocidad específica, curvas características (H–Q, eficiencia, potencia) y BEP, NPSH disponible y requerido, mecanismo de cavitación y soluciones, curva del sistema y punto de operación, operación en serie y paralelo, eficiencia energética, materiales, sellos mecánicos, especificación y mantenimiento predictivo.',
+      sessionNumber: 8,
+      file: 'Bombas_Centrifugas/Presentacion_Bombas_Centrifugas.html',
+    },
+    {
+      id: 'agitacion',
+      title: 'Agitación',
+      description:
+        'Objetivos de la agitación en IQ (mezcla, suspensión, dispersión, reacción, calefacción), tipos de impulsores (flujo axial: hélice marina, PBT, hidrofoil; flujo radial: Rushton RT-6, CD-6, Smith, Cowles; especializados: helicoidal, inducción de gas, ancla), geometría estándar del tanque, patrones de flujo, número de Reynolds y regímenes, número de potencia y curvas Np–Re, efecto de baffles, tiempo de mezclado, suspensión de sólidos (Zwietering), dispersión gas-líquido y kLa, escalamiento (P/V, tip speed, Re), transferencia de calor (Nu), instrumentación y control.',
+      sessionNumber: 9,
+      file: 'Agitacion/Presentacion_Agitacion.html',
+    },
+    {
+      id: 'mezclado-de-fluidos',
+      title: 'Mezclado de fluidos',
+      description:
+        'Diferencia entre agitación (causa) y mezclado (efecto). Equipos de mezclado. Tres mecanismos: convección (bulk flow), dispersión turbulenta (eddy diffusion) y difusión molecular — escala, velocidad e importancia industrial de cada uno. Tiempo de mezclado θ₉₅: definición, métodos de medición (conductividad, colorimétrico, pH), factores que lo determinan y relación con potencia (P ∝ tm⁻³). Retos: alta viscosidad (Re < 10, impulsores cinta helicoidal y ancla) y líquidos inmiscibles (high shear, P/V como parámetro de diseño). Aplicación al reactor de extracción ácida de pectina.',
+      sessionNumber: 10,
+      file: 'Mezclado/Presentacion_Mezclado.html',
+    },
   ],
 };
