@@ -712,7 +712,7 @@ export const pou202620Course: Course = {
       id: 'flujo-de-fluidos',
       title: 'Flujo de fluidos',
       description:
-        'Ecuación de Bernoulli y energía mecánica, medidor Venturi, pérdidas mayores (Darcy-Weisbach, Moody, Colebrook) y menores, redes en serie y paralelo, punto de operación, velocidades económicas y selección de diámetros, fluidos no-newtonianos, cavitación y golpe de ariete.',
+        'Ecuación de Bernoulli, pérdidas de carga (Darcy-Weisbach, Moody) en redes de tuberías, selección de diámetros, fluidos no-newtonianos, cavitación y golpe de ariete.',
       sessionNumber: 7,
       file: 'Flujo_de_Fluidos/Presentacion_Flujo_de_Fluidos.html',
     },
@@ -720,7 +720,7 @@ export const pou202620Course: Course = {
       id: 'bombas-centrifugas',
       title: 'Bombas centrífugas',
       description:
-        'Principio centrífugo y anatomía, tipos de impulsores y velocidad específica, curvas características (H–Q, eficiencia, potencia) y BEP, NPSH disponible y requerido, mecanismo de cavitación y soluciones, curva del sistema y punto de operación, operación en serie y paralelo, eficiencia energética, materiales, sellos mecánicos, especificación y mantenimiento predictivo.',
+        'Curvas características (H–Q, eficiencia, potencia) y punto de operación, NPSH y cavitación, operación en serie y paralelo, y criterios de especificación y mantenimiento.',
       sessionNumber: 8,
       file: 'Bombas_Centrifugas/Presentacion_Bombas_Centrifugas.html',
     },
@@ -728,7 +728,7 @@ export const pou202620Course: Course = {
       id: 'agitacion',
       title: 'Agitación',
       description:
-        'Objetivos de la agitación en IQ (mezcla, suspensión, dispersión, reacción, calefacción), tipos de impulsores (flujo axial: hélice marina, PBT, hidrofoil; flujo radial: Rushton RT-6, CD-6, Smith, Cowles; especializados: helicoidal, inducción de gas, ancla), geometría estándar del tanque, patrones de flujo, número de Reynolds y regímenes, número de potencia y curvas Np–Re, efecto de baffles, tiempo de mezclado, suspensión de sólidos (Zwietering), dispersión gas-líquido y kLa, escalamiento (P/V, tip speed, Re), transferencia de calor (Nu), instrumentación y control.',
+        'Tipos de impulsores (axiales y radiales), geometría del tanque, número de potencia y curvas Np–Re, suspensión de sólidos y escalamiento (P/V, tip speed, Re).',
       sessionNumber: 9,
       file: 'Agitacion/Presentacion_Agitacion.html',
     },
@@ -736,7 +736,7 @@ export const pou202620Course: Course = {
       id: 'mezclado-de-fluidos',
       title: 'Mezclado de fluidos',
       description:
-        'Diferencia entre agitación (causa) y mezclado (efecto). Equipos de mezclado. Tres mecanismos: convección (bulk flow), dispersión turbulenta (eddy diffusion) y difusión molecular — escala, velocidad e importancia industrial de cada uno. Tiempo de mezclado θ₉₅: definición, métodos de medición (conductividad, colorimétrico, pH), factores que lo determinan y relación con potencia (P ∝ tm⁻³). Retos: alta viscosidad (Re < 10, impulsores cinta helicoidal y ancla) y líquidos inmiscibles (high shear, P/V como parámetro de diseño). Aplicación al reactor de extracción ácida de pectina.',
+        'Agitación (causa) vs. mezclado (efecto): los tres mecanismos de mezclado, tiempo de mezclado θ₉₅ y su costo energético, y los retos de alta viscosidad y líquidos inmiscibles.',
       sessionNumber: 10,
       file: 'Mezclado/Presentacion_Mezclado.html',
     },
@@ -744,7 +744,7 @@ export const pou202620Course: Course = {
       id: 'intercambiadores-i',
       title: 'Intercambiadores de calor I',
       description:
-        'Mecanismos de transferencia de calor (conducción, convección) y coeficiente global U. Ensuciamiento (fouling): factores Rf y sus 5 mecanismos (cristalización, reacción química, oxidación, biológico, partículas sólidas). Tipos de intercambiadores: tubos y coraza (uno y dos pasos), placas y empaques, espiral, tubos aletados y plate-fin. Diseño por el método LMTD: derivación conceptual, flujo paralelo vs. contraflujo, factor de corrección F y sus gráficas, limitaciones frente al método ε-NTU. Ejemplo completo paso a paso y criterios de selección del intercambiador adecuado.',
+        'Coeficiente global U y ensuciamiento (fouling), tipos de intercambiadores (tubos y coraza, placas, espiral, aletados) y diseño por el método LMTD con factor de corrección F.',
       sessionNumber: 11,
       file: 'Intercambiadores/Presentacion_Intercambiadores.html',
     },
