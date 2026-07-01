@@ -185,7 +185,10 @@
   .lossmenu .panels{flex:1;margin-top:24px;}
   .lossmenu .panel{display:none;}
   .lossmenu .panel.is-active{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start;animation:fadeInUp .35s ease both;}
-  .lossmenu .panel[data-panel="cascade"].is-active{display:flex;align-items:center;justify-content:center;}
+  .lossmenu .panel[data-panel="cascade"].is-active{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;}
+  .lossmenu .panel[data-panel="cascade"] .callout{width:100%;max-width:1400px;}
+  .lossmenu .panel.panel--stack.is-active{display:block;animation:fadeInUp .35s ease both;}
+  .lossmenu .panel--stack .collist{margin-top:0;grid-template-columns:1fr;gap:18px;max-width:1500px;}
   /* Cascada de Kolmogorov — animación */
   @keyframes eddy-cw{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
   @keyframes eddy-ccw{from{transform:rotate(0deg);}to{transform:rotate(-360deg);}}
@@ -512,13 +515,16 @@
           </div>
 
         </div>
+        <div class="callout verde" style="padding:20px 32px;">
+          <p style="font-size:22px;line-height:1.4;"><b>Cómo leer la animación:</b> los vórtices grandes (verde) giran <b>lento</b> y concentran casi toda la energía. Al fragmentarse en remolinos menores (teal → ámbar) giran <b>cada vez más rápido</b> — así viaja la energía sin perderse, hasta que en $\eta$ la viscosidad los frena y la convierte en calor.</p>
+        </div>
       </div>
 
       <!-- Panel B: Espectro de Kolmogorov -->
       <div class="panel" data-panel="spectrum">
         <div>
           <!-- SVG del espectro E(k) -->
-          <svg viewBox="0 0 680 300" style="width:100%;height:auto;max-height:450px;" xmlns="http://www.w3.org/2000/svg">
+          <svg viewBox="0 0 680 320" style="width:100%;height:auto;max-height:450px;" xmlns="http://www.w3.org/2000/svg">
             <!-- Regiones coloreadas -->
             <polygon points="68,248 68,172 110,90 155,50 195,44 195,248" fill="rgba(0,144,94,.13)"/>
             <polygon points="195,248 195,44 515,186 515,248" fill="rgba(0,165,180,.13)"/>
@@ -549,14 +555,15 @@
             <text x="515" y="19" font-size="15" fill="#555" text-anchor="middle" font-style="italic">k&#x03B7;</text>
             <!-- Label eje X -->
             <text x="670" y="252" font-size="17" fill="#333" font-style="italic">k</text>
-            <text x="580" y="270" font-size="14" fill="#888" text-anchor="middle">escala pequeña →</text>
-            <text x="130" y="270" font-size="14" fill="#888" text-anchor="middle">← escala grande</text>
             <!-- Label eje Y (rotado) -->
             <text x="28" y="136" font-size="17" fill="#333" font-style="italic" text-anchor="middle" transform="rotate(-90 28 136)">E(k)</text>
             <!-- Etiquetas de regiones -->
             <text x="107" y="268" font-size="15" fill="#007040" font-weight="600" text-anchor="middle">Inyección</text>
             <text x="355" y="268" font-size="15" fill="#006C89" font-weight="600" text-anchor="middle">Subrrango inercial</text>
             <text x="590" y="268" font-size="15" fill="#C87800" font-weight="600" text-anchor="middle">Disipación</text>
+            <!-- Dirección de escala (fila separada para no chocar con las etiquetas de región) -->
+            <text x="130" y="296" font-size="14" fill="#888" text-anchor="middle">← escala grande</text>
+            <text x="580" y="296" font-size="14" fill="#888" text-anchor="middle">escala pequeña →</text>
           </svg>
         </div>
         <div class="copy">
@@ -741,47 +748,67 @@
   <div class="kicker">Factores</div>
   <h2 class="s-head">¿Qué determina el tiempo de mezclado?</h2>
   <p class="lead-top">Seis grupos de variables controlan $t_m$ — conocerlas permite optimizar el diseño.</p>
-  <div class="collist" style="margin-top:26px;">
-    <div class="it">
-      <div class="ic"></div>
-      <div>
-        <b>Velocidad de agitación (N)</b>
-        <span>Inversamente proporcional: a mayor $N$, menor $t_m$. Relación directa con el número de mezclado $N \cdot t_m = \text{cte}$. El factor de control más accesible en operación.</span>
-      </div>
+  <div class="lossmenu">
+    <div class="tabs" role="tablist">
+      <button class="tab is-active" data-panel="factores-operacion" role="tab" aria-selected="true">
+        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></svg>
+        Variables de operación
+      </button>
+      <button class="tab" data-panel="factores-diseno" role="tab" aria-selected="false">
+        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        Variables de diseño
+      </button>
     </div>
-    <div class="it">
-      <div class="ic"></div>
-      <div>
-        <b>Viscosidad del fluido (μ)</b>
-        <span>A mayor viscosidad, mayor $t_m$. En fluidos viscosos se pierde la dispersión turbulenta y solo queda la difusión molecular — el proceso es mucho más lento.</span>
+    <div class="panels">
+      <div class="panel panel--stack is-active" data-panel="factores-operacion">
+        <div class="collist">
+          <div class="it">
+            <div class="ic"></div>
+            <div>
+              <b>Velocidad de agitación (N)</b>
+              <span>Inversamente proporcional: a mayor $N$, menor $t_m$. Relación directa con el número de mezclado $N \cdot t_m = \text{cte}$. El factor de control más accesible en operación.</span>
+            </div>
+          </div>
+          <div class="it">
+            <div class="ic"></div>
+            <div>
+              <b>Viscosidad del fluido (μ)</b>
+              <span>A mayor viscosidad, mayor $t_m$. En fluidos viscosos se pierde la dispersión turbulenta y solo queda la difusión molecular — el proceso es mucho más lento.</span>
+            </div>
+          </div>
+          <div class="it">
+            <div class="ic" style="background:var(--teal);"></div>
+            <div>
+              <b>Régimen de flujo (Re)</b>
+              <span>El número de Reynolds determina qué mecanismos están activos. Re &gt; 10⁴: convección + turbulencia + difusión (rápido). Re &lt; 10: solo convección + difusión (muy lento).</span>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="it">
-      <div class="ic"></div>
-      <div>
-        <b>Tipo y tamaño del impulsor</b>
-        <span>La geometría afecta la distribución de flujo. Los impulsores axiales producen mayor caudal de circulación $Q$ a igual potencia → menor $t_m$ para homogenización de miscibles.</span>
-      </div>
-    </div>
-    <div class="it">
-      <div class="ic"></div>
-      <div>
-        <b>Geometría del recipiente</b>
-        <span>La forma del tanque, la relación $H/T$ y el número, ancho y altura de los baffles afectan los patrones de flujo y, en consecuencia, la eficiencia del mezclado en todo el volumen.</span>
-      </div>
-    </div>
-    <div class="it">
-      <div class="ic"></div>
-      <div>
-        <b>Ubicación de la alimentación</b>
-        <span>El punto de inyección del trazador o del reactivo afecta la medición y la operación real. Inyectar cerca del impulsor puede subestimar el $t_m$; lejos del impulsor, sobreestimarlo.</span>
-      </div>
-    </div>
-    <div class="it">
-      <div class="ic" style="background:var(--teal);"></div>
-      <div>
-        <b>Régimen de flujo (Re)</b>
-        <span>El número de Reynolds determina qué mecanismos están activos. Re &gt; 10⁴: convección + turbulencia + difusión (rápido). Re &lt; 10: solo convección + difusión (muy lento).</span>
+      <div class="panel panel--stack" data-panel="factores-diseno">
+        <div class="collist">
+          <div class="it">
+            <div class="ic"></div>
+            <div>
+              <b>Tipo y tamaño del impulsor</b>
+              <span>La geometría afecta la distribución de flujo. Los impulsores axiales producen mayor caudal de circulación $Q$ a igual potencia → menor $t_m$ para homogenización de miscibles.</span>
+            </div>
+          </div>
+          <div class="it">
+            <div class="ic"></div>
+            <div>
+              <b>Geometría del recipiente</b>
+              <span>La forma del tanque, la relación $H/T$ y el número, ancho y altura de los baffles afectan los patrones de flujo y, en consecuencia, la eficiencia del mezclado en todo el volumen.</span>
+            </div>
+          </div>
+          <div class="it">
+            <div class="ic"></div>
+            <div>
+              <b>Ubicación de la alimentación</b>
+              <span>El punto de inyección del trazador o del reactivo afecta la medición y la operación real. Inyectar cerca del impulsor puede subestimar el $t_m$; lejos del impulsor, sobreestimarlo.</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -792,35 +819,55 @@
   <div class="kicker">Costo energético</div>
   <h2 class="s-head">Relación entre $t_m$ y potencia</h2>
   <p class="lead-top">Reducir el tiempo de mezclado tiene un <b>costo energético desproporcionado</b> — implicación directa para el diseño del reactor de extracción.</p>
-  <div class="split" style="flex:1;margin-top:14px;">
-    <div class="copy">
-      <div class="callout" style="padding:24px 32px;">
-        <h4>Correlación empírica</h4>
-        <div class="fml">$$t_m \propto \left(\frac{T^3}{P}\right)^{1/3}$$</div>
-        <ul class="var-list" style="font-size:21px;">
-          <li>$T$ — diámetro del tanque (m)</li>
-          <li>$P$ — potencia del agitador (W)</li>
-        </ul>
-      </div>
-      <div class="callout amber" style="margin-top:14px;padding:24px 32px;">
-        <h4>Implicación energética clave</h4>
-        <p style="font-size:24px;">Despejando: $P \propto T^3 / t_m^3$</p>
-        <p style="margin-top:8px;font-size:24px;">Reducir $t_m$ en un <b>20%</b> (factor 0.8) requiere aumentar la potencia en $1/0.8^3 \approx 1.95$ — <b>casi duplicarla</b>.</p>
-      </div>
+  <div class="lossmenu">
+    <div class="tabs" role="tablist">
+      <button class="tab is-active" data-panel="tm-formula" role="tab" aria-selected="true">
+        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+        Relación matemática
+      </button>
+      <button class="tab" data-panel="tm-diseno" role="tab" aria-selected="false">
+        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+        Aplicación al diseño
+      </button>
     </div>
-    <div class="copy">
-      <div class="callout verde" style="padding:24px 32px;">
-        <h4>Principio de diseño</h4>
-        <p style="font-size:24px;">En ingeniería química, el $t_m$ <b>no se minimiza por sí solo</b>: se diseña al valor mínimo que exige el proceso. La cinética de reacción, la transferencia de calor o la calidad del producto imponen ese valor.</p>
-        <p style="margin-top:10px;font-size:24px;">Diseñar para un $t_m$ más corto del necesario desperdicia energía sin beneficio en el producto.</p>
+    <div class="panels">
+      <div class="panel is-active" data-panel="tm-formula">
+        <div class="copy">
+          <div class="callout" style="padding:24px 32px;">
+            <h4>Correlación empírica</h4>
+            <div class="fml">$$t_m \propto \left(\frac{T^3}{P}\right)^{1/3}$$</div>
+            <ul class="var-list" style="font-size:21px;">
+              <li>$T$ — diámetro del tanque (m)</li>
+              <li>$P$ — potencia del agitador (W)</li>
+            </ul>
+          </div>
+        </div>
+        <div class="copy">
+          <div class="callout amber" style="padding:24px 32px;">
+            <h4>Implicación energética clave</h4>
+            <p style="font-size:24px;">Despejando: $P \propto T^3 / t_m^3$</p>
+            <p style="margin-top:8px;font-size:24px;">Reducir $t_m$ en un <b>20%</b> (factor 0.8) requiere aumentar la potencia en $1/0.8^3 \approx 1.95$ — <b>casi duplicarla</b>.</p>
+          </div>
+        </div>
       </div>
-      <div class="callout" style="margin-top:14px;padding:24px 32px;">
-        <h4>Ejemplo — reactor de pectina</h4>
-        <p style="font-size:24px;">Si se requiere $t_m \leq 30$ s y el diseño da 36 s (17% exceso):</p>
-        <ul style="font-size:22px;padding-left:1.1em;margin-top:8px;">
-          <li>Aumentar solo potencia → +60% consumo energético</li>
-          <li>Alternativa eficiente: optimizar baffles o cambiar a impulsor axial</li>
-        </ul>
+      <div class="panel" data-panel="tm-diseno">
+        <div class="copy">
+          <div class="callout verde" style="padding:24px 32px;">
+            <h4>Principio de diseño</h4>
+            <p style="font-size:24px;">En ingeniería química, el $t_m$ <b>no se minimiza por sí solo</b>: se diseña al valor mínimo que exige el proceso. La cinética de reacción, la transferencia de calor o la calidad del producto imponen ese valor.</p>
+            <p style="margin-top:10px;font-size:24px;">Diseñar para un $t_m$ más corto del necesario desperdicia energía sin beneficio en el producto.</p>
+          </div>
+        </div>
+        <div class="copy">
+          <div class="callout" style="padding:24px 32px;">
+            <h4>Ejemplo — reactor de pectina</h4>
+            <p style="font-size:24px;">Si se requiere $t_m \leq 30$ s y el diseño da 36 s (17% exceso):</p>
+            <ul style="font-size:22px;padding-left:1.1em;margin-top:8px;">
+              <li>Aumentar solo potencia → +60% consumo energético</li>
+              <li>Alternativa eficiente: optimizar baffles o cambiar a impulsor axial</li>
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
   </div>
