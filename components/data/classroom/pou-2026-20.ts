@@ -740,5 +740,13 @@ export const pou202620Course: Course = {
       sessionNumber: 10,
       file: 'Mezclado/Presentacion_Mezclado.html',
     },
+    {
+      id: 'intercambiadores-i',
+      title: 'Intercambiadores de calor I',
+      description:
+        'Mecanismos de transferencia de calor (conducción, convección) y coeficiente global U. Ensuciamiento (fouling): factores Rf y sus 5 mecanismos (cristalización, reacción química, oxidación, biológico, partículas sólidas). Tipos de intercambiadores: tubos y coraza (uno y dos pasos), placas y empaques, espiral, tubos aletados y plate-fin. Diseño por el método LMTD: derivación conceptual, flujo paralelo vs. contraflujo, factor de corrección F y sus gráficas, limitaciones frente al método ε-NTU. Ejemplo completo paso a paso y criterios de selección del intercambiador adecuado.',
+      sessionNumber: 11,
+      file: 'Intercambiadores/Presentacion_Intercambiadores.html',
+    },
   ],
 };
