@@ -594,6 +594,7 @@ export const eduProCourse: Course = {
       description:
         'Recorrido por los hitos de la IA (Deep Blue, Watson, AlphaGo, autos autoconducidos, ChatGPT, multimodal y agentes 2024–2026), aprendizaje de máquina y profundo (perceptrón → CNN/RNN → Transformers), vulnerabilidades (ataques adversariales, out-of-distribution, sesgo) y antropomorfización (Sophia, conciencia, el submarino que «nada»).',
       file: 'm1-introduccion-ia.html',
+      theme: 'Fundamentos e historia de la IA',
     },
     {
       id: 'm2-1-fundamentos-modelos-generativos',
@@ -603,6 +604,7 @@ export const eduProCourse: Course = {
       description:
         'Cómo funcionan los LLM por dentro: discriminativo vs generativo, el modelo como ruleta probabilística («Lima es la capital de…»), atención y autoregresión, alucinaciones. Timeline interactivo de la evolución 2021–2026 (de GPT-3 a Claude Opus 4.7), iceberg ChatGPT vs LLM, anatomía de un prompt, panorama de modelos líderes 2026, scaling laws, fluido vs fáctico y limitaciones.',
       file: 'm2-1-fundamentos-modelos-generativos.html',
+      theme: 'Modelos generativos de lenguaje (LLMs)',
     },
     {
       id: 'm3-1-fundamentos-imagenes',
@@ -612,6 +614,7 @@ export const eduProCourse: Course = {
       description:
         'Introducción a los modelos generativos de imágenes: ejemplos reales con modelos de difusión (abeja macro, husky al atardecer, castillo B&N), teoría de forward/backward diffusion, entrenamiento de la red, CLIP y guía por texto, panorama de herramientas 2026 (Nano Banana 2 en BloqueNeón, DALL·E 3, Midjourney v6.1, Stable Diffusion 3.5, Flux 1.1 Pro, Firefly/Ideogram) y principios del arte del prompt: terminología fotográfica, adjetivos multidimensionales, épocas, equipo y vocabulario emocional.',
       file: 'm3-1-fundamentos-imagenes.html',
+      theme: 'Generación de imágenes por IA',
     },
     {
       id: 'm3-2-narrativas-visuales',
@@ -621,6 +624,7 @@ export const eduProCourse: Course = {
       description:
         'Del análisis de imágenes a la creación de narrativas visuales coherentes. Bloque 1 (La IA que ve): modelos multimodales (GPT, Claude, Gemini), cómo «ve» una IA (tokens visuales, codificación, proyección CLIP, razonamiento LM), seis capacidades fundamentales (describir, OCR, interpretar gráficas, comparar, clasificar, responder), demostraciones en vivo, anatomía del prompt visual y limitaciones. Bloque 2 (Narrativa visual: el puente): qué es una narrativa visual, puntos de partida, estructura de tres momentos (Establecer, Desarrollar, Resolver), uso de IA para estructurar y crear prompts coherentes con estilo base y paleta institucional, importancia del inglés para prompts de imagen, ejemplo práctico aplicado al contexto de la Contraloría.',
       file: 'm3-2-narrativas-visuales.html',
+      theme: 'IA multimodal y narrativas visuales',
     },
     {
       id: 'm3-3-analisis-datos',
@@ -630,6 +634,7 @@ export const eduProCourse: Course = {
       description:
         'Un enfoque iterativo con human-in-the-loop para transformar datos en insights accionables. Fundamentos de datos estructurados vs no estructurados, importancia y desafíos del análisis tradicional (limitaciones manuales, brecha estructurada/no estructurada, brecha de habilidades). El poder del código y limitaciones de Excel/SQL. Los LLM como asistentes inteligentes para datos: generación de código, comprensión de datos, razonamiento. Datos como texto: CSV, JSON, YAML, descripciones de tablas. Aproximación human-in-the-loop: flujo de cinco etapas (Diagnóstico, Ideación, Alineación, Navegación, Evolución), tres roles clave (IA procesador, humano director, colaboración como motor), principios fundamentales y ventajas frente al enfoque tradicional. Demostración práctica con dataset Salary_Data.csv y tres prompts (EDA, plan estratégico, ejecución iterativa) accesibles vía QR y enlaces directos.',
       file: 'm3-3-analisis-datos.html',
+      theme: 'Análisis de datos con IA generativa',
     },
     {
       id: 'cgr-s01-fundamentos-ia',
@@ -639,6 +644,7 @@ export const eduProCourse: Course = {
       description:
         'Primera sesión del curso Generalidades de la IA para la CGR. Recorrido por la historia de la IA (1950–hoy), mitos y realidades, ecosistema de modelos líderes y ecosistema de herramientas. Dictada por Juan Carlos Cruz.',
       file: 'cgr-s01-fundamentos-ia.html',
+      theme: 'Fundamentos e historia de la IA',
     },
     {
       id: 'cgr-s02-como-aprenden',
@@ -648,6 +654,7 @@ export const eduProCourse: Course = {
       description:
         'Segunda sesión del curso Generalidades de la IA para la CGR. Cómo aprenden las máquinas: datos, algoritmos, modelos, tres paradigmas de aprendizaje, tipos de modelos y calidad/sesgos en los datos. Dictada por Luis H. Reyes.',
       file: 'cgr-s02-como-aprenden.html',
+      theme: 'Cómo aprenden las máquinas',
     },
     {
       id: 'modelos-m1s1-fundamentos-ia',
@@ -657,6 +664,7 @@ export const eduProCourse: Course = {
       description:
         'Primera sesión del curso Modelos de la IA para la CGR. Historia de la IA, definiciones, mitos, ecosistema de modelos y categorías. Adaptación de la sesión de Juan Carlos Cruz con enfoque en tipología de modelos.',
       file: 'modelos-m1s1-fundamentos-ia.html',
+      theme: 'Fundamentos e historia de la IA',
     },
     {
       id: 'modelos-m1s2-aprendizaje',
@@ -666,6 +674,7 @@ export const eduProCourse: Course = {
       description:
         'Segunda sesión del curso Modelos de la IA para la CGR. Datos, algoritmos y modelos; tres paradigmas de aprendizaje; tipos de modelos; calidad de datos y sesgos. Dictada por Luis H. Reyes.',
       file: 'modelos-m1s2-aprendizaje.html',
+      theme: 'Cómo aprenden las máquinas',
     },
   ],
   // Campos académicos no aplican; se dejan con stubs vacíos para satisfacer el tipo Course.

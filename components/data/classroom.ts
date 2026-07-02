@@ -37,6 +37,10 @@ export interface Presentation {
   date?: string;
   description?: string;
   file: string;
+  /** Temática agnóstica al curso — agrupa presentaciones de distintas cohortes EDCO
+   *  que tratan el mismo tema (ver EduProLandingPage). Opcional: solo lo usan
+   *  las presentaciones de Professional Education (course.kind === 'professional'). */
+  theme?: string;
 }
 
 export interface TeamMember {
