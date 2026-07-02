@@ -232,6 +232,14 @@
       gap: 6px;
       color: rgba(255,255,255,0.72);
     }
+    .btn.pdf {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      padding: 0 12px 0 10px;
+      gap: 6px;
+      color: rgba(255,255,255,0.72);
+    }
     .btn.reset .kbd {
       display: inline-flex;
       align-items: center;
@@ -899,6 +907,11 @@
           <svg class="fs-enter" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2H2v4M14 6V2h-4M6 14H2v-4M10 14h4v-4"/></svg>
           <svg class="fs-exit" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none"><path d="M2 5h3V2M14 5h-3V2M2 11h3v3M14 11h-3v3"/></svg>
         </button>
+        <span class="divider"></span>
+        <button class="btn pdf" type="button" aria-label="Descargar como PDF" title="Descargar como PDF (Ctrl/Cmd+P)">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 1.5v7.5m0 0L5.2 6.2M8 9l2.8-2.8M2.5 11v1.5A1.5 1.5 0 004 14h8a1.5 1.5 0 001.5-1.5V11"/></svg>
+          PDF
+        </button>
       `;
 
       overlay.querySelector('.prev').addEventListener('click', () => this._advance(-1, 'click'));
@@ -919,6 +932,8 @@
       };
       const fsBtn = overlay.querySelector('.fs');
       if (fsBtn) fsBtn.addEventListener('click', () => this._toggleFs());
+      const pdfBtn = overlay.querySelector('.pdf');
+      if (pdfBtn) pdfBtn.addEventListener('click', () => window.print());
       const onFsChange = () => {
         const on = (document.fullscreenElement || document.webkitFullscreenElement) === this;
         if (fsBtn) {
