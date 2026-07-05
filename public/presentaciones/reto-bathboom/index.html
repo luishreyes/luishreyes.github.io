@@ -50,24 +50,42 @@
 </button>
 
 <script>
-  var stage = document.getElementById('stage');
+  // El carrusel de miniaturas y la barra de navegación viven dentro del
+  // componente <deck-stage> del iframe, y ese componente solo se esconde
+  // a sí mismo cuando ÉL es el elemento en fullscreen (compara
+  // document.fullscreenElement === this, dentro de SU PROPIO documento).
+  // Poner en fullscreen el <iframe> o el wrapper no dispara esa lógica —
+  // hay que apuntar el fullscreen directo al <deck-stage> interno.
+  var iframe = document.getElementById('deck');
   var btn = document.getElementById('fs-btn');
   var iconEnter = btn.querySelector('.icon-enter');
   var iconExit = btn.querySelector('.icon-exit');
   var label = btn.querySelector('.label');
 
+  function getDeckDoc() {
+    try { return iframe.contentDocument || iframe.contentWindow.document; } catch (e) { return null; }
+  }
+  function getDeckEl() {
+    var doc = getDeckDoc();
+    return doc ? doc.querySelector('deck-stage') : null;
+  }
   function isFullscreen() {
-    return !!(document.fullscreenElement || document.webkitFullscreenElement);
+    var doc = getDeckDoc();
+    return !!(doc && (doc.fullscreenElement || doc.webkitFullscreenElement));
   }
 
   btn.addEventListener('click', function () {
+    var doc = getDeckDoc();
+    if (!doc) return;
     if (isFullscreen()) {
-      var exit = document.exitFullscreen || document.webkitExitFullscreen;
-      if (exit) exit.call(document);
+      var exit = doc.exitFullscreen || doc.webkitExitFullscreen;
+      if (exit) exit.call(doc);
     } else {
-      var req = stage.requestFullscreen || stage.webkitRequestFullscreen;
+      var el = getDeckEl();
+      if (!el) return;
+      var req = el.requestFullscreen || el.webkitRequestFullscreen;
       if (req) {
-        var p = req.call(stage);
+        var p = req.call(el);
         if (p && p.catch) p.catch(function () {});
       }
     }
@@ -78,9 +96,26 @@
     iconEnter.style.display = on ? 'none' : '';
     iconExit.style.display = on ? '' : 'none';
     label.textContent = on ? 'Salir de pantalla completa' : 'Pantalla completa';
+
+    // El deck-stage empaquetado en este bundle no tiene su propio manejo de
+    // fullscreen (versión previa a esa función), así que el carrusel de
+    // miniaturas se esconde a mano con su atributo no-rail — soportado
+    // nativamente por el componente (ver observedAttributes / _railWidth).
+    var el = getDeckEl();
+    if (el) {
+      if (on) el.setAttribute('no-rail', '');
+      else el.removeAttribute('no-rail');
+    }
   }
-  document.addEventListener('fullscreenchange', onFsChange);
-  document.addEventListener('webkitfullscreenchange', onFsChange);
+
+  function attachFsListener() {
+    var doc = getDeckDoc();
+    if (!doc) { setTimeout(attachFsListener, 300); return; }
+    doc.addEventListener('fullscreenchange', onFsChange);
+    doc.addEventListener('webkitfullscreenchange', onFsChange);
+  }
+  iframe.addEventListener('load', attachFsListener);
+  attachFsListener();
 </script>
 
 </body>
