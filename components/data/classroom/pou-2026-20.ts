@@ -748,5 +748,13 @@ export const pou202620Course: Course = {
       sessionNumber: 11,
       file: 'Intercambiadores/Presentacion_Intercambiadores.html',
     },
+    {
+      id: 'intercambiadores-ii',
+      title: 'Intercambiadores de calor II',
+      description:
+        'Método ε-NTU para evaluar equipos existentes: efectividad, número de unidades de transferencia, relaciones por geometría y casos límite. Dimensionamiento físico de tubos y coraza, velocidades y caída de presión, método de Kern y verificación con software.',
+      sessionNumber: 12,
+      file: 'Intercambiadores_II/Presentacion_Intercambiadores_II.html',
+    },
   ],
 };
