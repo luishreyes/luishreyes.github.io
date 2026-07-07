@@ -668,13 +668,13 @@ export const eduProCourse: Course = {
     },
     {
       id: 'modelos-m1s2-aprendizaje',
-      title: 'Modelos M1.2 — Cómo aprenden los modelos: datos, algoritmos y evaluación',
+      title: 'Modelos M1.2 — Cómo aprenden los modelos: datos, algoritmos, modelos y evaluación',
       sessionNumber: 2,
       date: '2026-05-06',
       description:
-        'Segunda sesión del curso Modelos de la IA para la CGR. Datos, algoritmos y modelos; tres paradigmas de aprendizaje; tipos de modelos; calidad de datos y sesgos. Dictada por Luis H. Reyes.',
+        'Segunda sesión del curso Modelos de la IA para la CGR. El ciclo datos–algoritmo–modelo; tres paradigmas de aprendizaje; tipos de modelos; calidad de datos, sesgos y evaluación. Dictada por Luis H. Reyes.',
       file: 'modelos-m1s2-aprendizaje.html',
-      theme: 'Cómo aprenden las máquinas',
+      theme: 'Cómo aprenden los modelos',
     },
   ],
   // Campos académicos no aplican; se dejan con stubs vacíos para satisfacer el tipo Course.
