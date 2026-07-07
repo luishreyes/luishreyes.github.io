@@ -570,6 +570,52 @@ const cursoModelosIa: EdcoCourse = {
   presentationIds: ['modelos-m1s1-fundamentos-ia', 'modelos-m1s2-aprendizaje'],
 };
 
+const cursoDaviviendaCucuta: EdcoCourse = {
+  id: 'curso-5-davivienda-cucuta',
+  title: 'Dominando la IA: Google Workspace y Gemini',
+  edition: 'Curso corporativo · Davivienda Cúcuta · Julio–Agosto 2026',
+  status: 'active',
+  termLabel: '7 de julio – 13 de agosto de 2026',
+  modality: 'Virtual',
+  totalHours: 24,
+  description:
+    'Curso corporativo cerrado para Davivienda Cúcuta (colaboradores y familiares). Recorrido práctico por la IA generativa aplicada a la productividad con Google Workspace y Gemini: fundamentos de IA generativa, ingeniería de prompts, Workspace potenciado con Gemini, NotebookLM y análisis documental, contenido multimodal con ChatGPT y Copilot, y AppSheet + Gemma. Co-dictado con Juan Carlos Cruz.',
+  team: [
+    { name: 'Luis H. Reyes', role: 'Conferencista' },
+    { name: 'Juan Carlos Cruz', role: 'Conferencista' },
+    { name: 'Por confirmar', role: 'Monitor EDCO' },
+  ],
+  modules: [
+    { code: 'M1', title: 'Fundamentos de IA Generativa y Gemini', hours: 4, instructor: 'Luis H. Reyes' },
+    { code: 'M2', title: 'Ingeniería de Prompts y Productividad', hours: 4, instructor: 'Juan Carlos Cruz' },
+    { code: 'M3', title: 'Google Workspace Potenciado con Gemini', hours: 4, instructor: 'Luis H. Reyes' },
+    { code: 'M4', title: 'NotebookLM y Análisis Documental', hours: 4, instructor: 'Juan Carlos Cruz' },
+    { code: 'M5', title: 'ChatGPT, Copilot y Contenido Multimodal', hours: 4, instructor: 'Luis H. Reyes' },
+    { code: 'M6', title: 'AppSheet, Gemma e Integración Final', hours: 4, instructor: 'Juan Carlos Cruz' },
+  ],
+  sessions: [
+    { date: '2026-07-07', day: 'Martes', time: '6:30 pm – 8:30 pm', module: 'M1', topic: 'Fundamentos de IA Generativa y Gemini', instructor: 'Luis H. Reyes', hours: 2, isMine: true },
+    { date: '2026-07-09', day: 'Jueves', time: '6:30 pm – 8:30 pm', module: 'M1', topic: 'Fundamentos de IA Generativa y Gemini', instructor: 'Luis H. Reyes', hours: 2, isMine: true },
+    { date: '2026-07-14', day: 'Martes', time: '6:30 pm – 8:30 pm', module: 'M2', topic: 'Ingeniería de Prompts y Productividad', instructor: 'Juan Carlos Cruz', hours: 2 },
+    { date: '2026-07-16', day: 'Jueves', time: '6:30 pm – 8:30 pm', module: 'M2', topic: 'Ingeniería de Prompts y Productividad', instructor: 'Juan Carlos Cruz', hours: 2 },
+    { date: '2026-07-21', day: 'Martes', time: '6:30 pm – 8:30 pm', module: 'M3', topic: 'Google Workspace Potenciado con Gemini', instructor: 'Luis H. Reyes', hours: 2, isMine: true },
+    { date: '2026-07-23', day: 'Jueves', time: '6:30 pm – 8:30 pm', module: 'M3', topic: 'Google Workspace Potenciado con Gemini', instructor: 'Luis H. Reyes', hours: 2, isMine: true },
+    { date: '2026-07-28', day: 'Martes', time: '6:30 pm – 8:30 pm', module: 'M4', topic: 'NotebookLM y Análisis Documental', instructor: 'Juan Carlos Cruz', hours: 2 },
+    { date: '2026-07-30', day: 'Jueves', time: '6:30 pm – 8:30 pm', module: 'M4', topic: 'NotebookLM y Análisis Documental', instructor: 'Juan Carlos Cruz', hours: 2 },
+    { date: '2026-08-04', day: 'Martes', time: '6:30 pm – 8:30 pm', module: 'M5', topic: 'ChatGPT, Copilot y Contenido Multimodal', instructor: 'Luis H. Reyes', hours: 2, isMine: true },
+    { date: '2026-08-06', day: 'Jueves', time: '6:30 pm – 8:30 pm', module: 'M5', topic: 'ChatGPT, Copilot y Contenido Multimodal', instructor: 'Luis H. Reyes', hours: 2, isMine: true },
+    { date: '2026-08-11', day: 'Martes', time: '6:30 pm – 8:30 pm', module: 'M6', topic: 'AppSheet, Gemma e Integración Final', instructor: 'Juan Carlos Cruz', hours: 2 },
+    { date: '2026-08-13', day: 'Jueves', time: '6:30 pm – 8:30 pm', module: 'M6', topic: 'AppSheet, Gemma e Integración Final', instructor: 'Juan Carlos Cruz', hours: 2 },
+  ],
+  notes: [
+    'Curso corporativo cerrado para Davivienda Cúcuta: colaboradores y algunos familiares (11 participantes).',
+    'Modalidad virtual sincrónica · Martes y jueves · 6:30 – 8:30 pm (Bogotá).',
+    'El enlace de la sesión en vivo se comparte al iniciar el curso.',
+    'Monitor EDCO por confirmar.',
+  ],
+  presentationIds: ['dav-m1-fundamentos-gemini'],
+};
+
 export const eduProCourse: Course = {
   slug: 'edu-pro',
   code: 'EDCO',
@@ -584,7 +630,7 @@ export const eduProCourse: Course = {
   accessCode: 'EDCOLHR',
   bannerUrl: '/classroom/edu-pro/banner.jpg',
   kind: 'professional',
-  edcoCourses: [cursoIaMayo2026, cursoGeneralidadesIaG2, cursoModelosIa],
+  edcoCourses: [cursoIaMayo2026, cursoGeneralidadesIaG2, cursoModelosIa, cursoDaviviendaCucuta],
   presentations: [
     {
       id: 'm1-introduccion-ia',
@@ -675,6 +721,16 @@ export const eduProCourse: Course = {
         'Segunda sesión del curso Modelos de la IA para la CGR. El ciclo datos–algoritmo–modelo; tres paradigmas de aprendizaje; tipos de modelos; calidad de datos, sesgos y evaluación. Dictada por Luis H. Reyes.',
       file: 'modelos-m1s2-aprendizaje.html',
       theme: 'Cómo aprenden los modelos',
+    },
+    {
+      id: 'dav-m1-fundamentos-gemini',
+      title: 'M1 — Fundamentos de IA generativa y Gemini',
+      sessionNumber: 1,
+      date: '2026-07-07',
+      description:
+        'Primera sesión del curso Dominando la IA (Google Workspace y Gemini) para Davivienda Cúcuta. Introducción a la IA generativa y los modelos de lenguaje: qué es la IA, hitos históricos hasta ChatGPT y Gemini, cómo aprenden las redes (perceptrón → aprendizaje profundo), CNN y RNN, y las limitaciones y riesgos de los modelos. Adaptación de la introducción de «Dominando la IA» al contexto de Google Workspace y Gemini.',
+      file: 'dav-m1-fundamentos-gemini.html',
+      theme: 'Fundamentos e historia de la IA',
     },
   ],
   // Campos académicos no aplican; se dejan con stubs vacíos para satisfacer el tipo Course.
