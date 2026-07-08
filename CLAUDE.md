@@ -162,6 +162,7 @@ Cada curso tiene un `accessCode`. Se guarda en `localStorage` con key `classroom
 - Cuando el usuario dice "imagen recortada" o "la subí", buscar también en `~/Desktop/` y `~/Downloads/` — no solo en `temp/`
 - GIFs animados, imágenes generadas con IA (Gemini) y fotos de laboratorio también suelen estar aquí
 - Siempre copiar/mover a `public/classroom/{slug}/slides/img/` antes de referenciarlas
+- ⚠️ **Las caricaturas/ilustraciones IA embebidas en los PDFs NO se usan** en las conversiones (ver Principio #9). Solo se usan las imágenes limpias que el usuario sube aparte y los videos que provee.
 
 ### Errores pre-existentes
 - Los archivos en `components/data/students/**/*.ts` tienen errores de TypeScript por imports rotos — **ignorar**, no son del Classroom
@@ -206,3 +207,10 @@ Las presentaciones HTML deben sentirse **dinámicas**. Patrones mínimos en cada
 - Row hover highlight en tablas
 - `<details>/<summary>` para casos de estudio o contenido extenso
 - Comillas tipográficas «...» en citas (no `"..."`)
+
+### #9: Nada de caricaturas de los PDFs fuente
+Los PDFs originales de clase suelen traer **ilustraciones tipo caricatura generadas por IA** (equipos dibujados a mano alzada, escenas de laboratorio, etc.). **NUNCA** recortarlas del PDF ni reutilizarlas en las presentaciones/lecturas que construimos. En su lugar:
+- Usar las **imágenes limpias que el usuario provee aparte** (ZIP, `~/Desktop`, `~/Downloads`) — fotos reales, esquemas vectoriales, micrografías. Estas sí se usan **tal cual vienen**.
+- Cuando el usuario da un **video** de un equipo, el **video es el recurso principal** de esa diapositiva (no una caricatura). Consolidar en una sola diapositiva con el video grande + pestañas/botones (Construcción / Cómo funciona / Ventajas) en vez de repartir caricaturas en varias diapositivas.
+- Si no hay imagen limpia ni video para un tema, preferir un **esquema propio (SVG/HTML)** o una diapositiva tipográfica limpia; **jamás** rellenar con la caricatura del PDF.
+- Reemplazar contenido obsoleto cuando el usuario lo pida (p. ej. «elimine la filtración centrífuga y ponga la decantadora centrífuga»).
