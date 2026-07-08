@@ -756,5 +756,13 @@ export const pou202620Course: Course = {
       sessionNumber: 12,
       file: 'Intercambiadores_II/Presentacion_Intercambiadores_II.html',
     },
+    {
+      id: 'filtracion',
+      title: 'Filtración',
+      description:
+        'Mecanismos (filtración con torta, profunda y tangencial), Ley de Darcy y modelo de resistencias en serie (R_c = αw, R_m), compresibilidad de la torta. Ecuaciones de diseño a presión y a caudal constante con simulador interactivo del ciclo real (Fase 1–2–3). Determinación experimental de α y R_m, ayudas de filtración (diatomeas, perlita, celulosa, pre-capa, body feed), equipos (filtro prensa, filtro rotatorio de vacío, decantadora centrífuga) con videos, criterios de selección y cosecha de células en biotecnología.',
+      sessionNumber: 13,
+      file: 'Filtracion/Presentacion_Filtracion.html',
+    },
   ],
 };
