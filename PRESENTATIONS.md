@@ -349,9 +349,9 @@ JS (IIFE al final del `<body>`, antes del lightbox):
 
 ## Imágenes: reglas de oro
 
-### 1. Las imágenes del usuario van primero
+### 1. Las imágenes del usuario van primero — nada de caricaturas del PDF
 
-Cuando el usuario sube un ZIP de imágenes curadas, **esas son las definitivas**. NO usar imágenes extraídas del PDF si el usuario ya proporcionó las suyas.
+Cuando el usuario sube un ZIP de imágenes curadas, **esas son las definitivas** y se usan **tal cual vienen**. **NUNCA** recortar ni reutilizar las **caricaturas/ilustraciones IA que trae el PDF fuente** (equipos dibujados, escenas de laboratorio). Si el usuario dio un **video** de un equipo, ese video es el recurso principal de la diapositiva (video grande + pestañas/botones para Construcción / Cómo funciona / Ventajas), no una caricatura. Si no hay imagen limpia ni video, usar un esquema propio (SVG) o una diapositiva tipográfica limpia. Ver Principio #9 en CLAUDE.md.
 
 ### 2. Ver visualmente CADA imagen antes de asignarla
 
