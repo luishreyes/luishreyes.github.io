@@ -162,12 +162,12 @@
   .sim-btn:focus-visible{outline:3px solid var(--verde-osc);outline-offset:2px;}
   .sim-readout{display:flex;gap:12px;}
   .sim-stat{flex:1;background:var(--papel);border-radius:var(--radio);border-left:5px solid var(--gris-4);padding:11px 16px;}
-  .sim-stat.dp{border-left-color:var(--teal);}
-  .sim-stat.q{border-left-color:var(--ambar);}
+  .sim-stat.dp{border-left-color:#1D5273;}
+  .sim-stat.q{border-left-color:#B77A2B;}
   .sim-stat .k{font-size:17px;color:var(--gris-2);font-weight:700;}
   .sim-stat .v{font-size:30px;font-weight:800;color:var(--gris-1);font-variant-numeric:tabular-nums;line-height:1.05;}
-  .sim-stat.dp .v{color:var(--teal);}
-  .sim-stat.q .v{color:#B86400;}
+  .sim-stat.dp .v{color:#1D5273;}
+  .sim-stat.q .v{color:#8A5E1E;}
   .sim-plot{position:relative;background:var(--blanco);border:2px solid var(--gris-5);
     border-radius:var(--radio);box-shadow:var(--sombra);padding:14px 16px 10px;display:flex;flex-direction:column;min-height:0;}
   .sim-plot canvas{width:100%;flex:1;display:block;}
@@ -422,8 +422,10 @@
   .mat-card .mat-tag{font-size:19px;margin-top:10px;}
 
   /* Simulador: que la gráfica llene el espacio */
-  .sim-plot{min-height:560px;}
-  .sim-plot canvas{min-height:470px;}
+  /* Tarjeta de la gráfica con alto determinado + envoltorio que el canvas llena por completo */
+  .sim-plot{min-height:600px;}
+  .sim-canvas{flex:1;min-height:480px;position:relative;}
+  .sim-canvas canvas{position:absolute;inset:0;width:100%;height:100%;display:block;}
 
   /* Pestañas de equipos (video + botones, todo en una diapositiva) */
   .eqtabs{display:flex;flex-direction:column;min-width:0;}
@@ -738,8 +740,8 @@
     </div>
     <div class="sim-plot">
       <div class="sim-phase">Fase 1 · caudal constante</div>
-      <canvas></canvas>
-      <div class="sim-legend"><span><i style="background:#0076A8;"></i>ΔP</span><span><i style="background:#E0922F;"></i>Q</span></div>
+      <div class="sim-canvas"><canvas></canvas></div>
+      <div class="sim-legend"><span><i style="background:#1D5273;"></i>ΔP</span><span><i style="background:#B77A2B;"></i>Q</span></div>
     </div>
   </div>
   <p class="sim-note"></p>
@@ -1117,7 +1119,7 @@
    para que al cambiar parámetros el cambio sea visible. Animación lenta.
    Modos: presion · caudal · ciclo (Fase 1→2→3). No toca deck-stage.js. */
 (function(){
-  var TEAL='#0076A8', AMBER='#E0922F', GRIS='#9A9A9A';
+  var TEAL='#1D5273', AMBER='#B77A2B', GRIS='#8C8C8C';
   document.querySelectorAll('.sim').forEach(function(sim){
     var canvas=sim.querySelector('canvas'), ctx=canvas.getContext('2d');
     var phaseEl=sim.querySelector('.sim-phase');
@@ -1173,8 +1175,10 @@
     var DPR=function(){return Math.min(2,window.devicePixelRatio||1);};
 
     function resize(){
-      var r=canvas.parentNode.getBoundingClientRect();
-      var w=Math.max(320,r.width-32), h=Math.max(300,r.height-70), d=DPR();
+      // clientWidth/Height del envoltorio: tamaño de layout REAL (en px de diseño),
+      // no afectado por el transform:scale del deck-stage (getBoundingClientRect sí lo estaba).
+      var wrap=canvas.parentNode; // .sim-canvas
+      var w=Math.max(320,wrap.clientWidth), h=Math.max(300,wrap.clientHeight), d=DPR();
       canvas.width=w*d; canvas.height=h*d; canvas.style.width=w+'px'; canvas.style.height=h+'px';
       ctx.setTransform(d,0,0,d,0,0); draw();
     }
@@ -1202,12 +1206,12 @@
 
       // bandas de fase (ciclo)
       if(model.mode==='ciclo'){
-        ctx.fillStyle='rgba(0,118,168,0.06)'; ctx.fillRect(X(0),y1,X(model.t1)-X(0),y0-y1);
-        ctx.fillStyle='rgba(224,146,47,0.07)'; ctx.fillRect(X(model.t1),y1,X(model.t2)-X(model.t1),y0-y1);
-        ctx.fillStyle='rgba(120,120,120,0.10)'; ctx.fillRect(X(model.t2),y1,X(T)-X(model.t2),y0-y1);
+        ctx.fillStyle='rgba(29,82,115,0.055)'; ctx.fillRect(X(0),y1,X(model.t1)-X(0),y0-y1);
+        ctx.fillStyle='rgba(183,122,43,0.06)'; ctx.fillRect(X(model.t1),y1,X(model.t2)-X(model.t1),y0-y1);
+        ctx.fillStyle='rgba(110,110,110,0.08)'; ctx.fillRect(X(model.t2),y1,X(T)-X(model.t2),y0-y1);
         ctx.font='800 16px system-ui,sans-serif'; ctx.textAlign='center';
         ctx.fillStyle=TEAL; ctx.fillText('Fase 1',(X(0)+X(model.t1))/2,y1+18);
-        ctx.fillStyle='#B86400'; ctx.fillText('Fase 2',(X(model.t1)+X(model.t2))/2,y1+18);
+        ctx.fillStyle='#8A5E1E'; ctx.fillText('Fase 2',(X(model.t1)+X(model.t2))/2,y1+18);
         ctx.fillStyle=GRIS; ctx.fillText('Fase 3',(X(model.t2)+X(T))/2,y1+18);
       }
       // ejes
@@ -1224,7 +1228,7 @@
       if(model.mode==='ciclo'){
         ctx.strokeStyle=AMBER; ctx.setLineDash([5,5]); ctx.lineWidth=2; ctx.beginPath();
         ctx.moveTo(x0,YQ(model.Qmin)); ctx.lineTo(x1,YQ(model.Qmin)); ctx.stroke(); ctx.setLineDash([]);
-        ctx.fillStyle='#B86400'; ctx.font='800 15px system-ui,sans-serif'; ctx.textAlign='right';
+        ctx.fillStyle='#8A5E1E'; ctx.font='800 15px system-ui,sans-serif'; ctx.textAlign='right';
         ctx.fillText('parada económica', x1-8, YQ(model.Qmin)-8);
       }
       // curvas
@@ -1233,7 +1237,7 @@
       plot('dp',YP,TEAL); plot('q',YQ,AMBER);
       // etiquetas ejes
       ctx.fillStyle=TEAL; ctx.font='800 17px system-ui,sans-serif'; ctx.textAlign='left'; ctx.fillText('ΔP', x0-52, y1+8);
-      ctx.fillStyle='#B86400'; ctx.textAlign='right'; ctx.fillText('Q', x1+50, y1+8);
+      ctx.fillStyle='#8A5E1E'; ctx.textAlign='right'; ctx.fillText('Q', x1+50, y1+8);
       ctx.fillStyle=GRIS; ctx.font='700 16px system-ui,sans-serif'; ctx.textAlign='center'; ctx.fillText('tiempo →',(x0+x1)/2,y0+38);
 
       // cursor + lecturas
