@@ -772,5 +772,13 @@ export const pou202620Course: Course = {
       sessionNumber: 14,
       file: 'Equilibrio_de_Fases/Presentacion_Equilibrio_de_Fases.html',
     },
+    {
+      id: 'destilacion-flash',
+      title: 'Destilación flash: principios y fundamentos',
+      description:
+        'Vaporización parcial súbita y equilibrio de una sola etapa: el fenómeno del flasheo, el tambor separador, diagramas P-x-y y T-x-y, balances de materia y energía, la línea de operación flash y el flash multicomponente (Rachford-Rice) con algoritmo interactivo y solucionador en vivo. Aplicaciones en refinación y desalinización.',
+      sessionNumber: 15,
+      file: 'Destilacion_Flash/Presentacion_Destilacion_Flash.html',
+    },
   ],
 };
