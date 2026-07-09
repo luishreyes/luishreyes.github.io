@@ -996,7 +996,7 @@ export const pouCourse: Course = {
         'Equilibrio líquido-vapor, ley de Raoult, volatilidad relativa, diagramas T-xy y x-y, y fundamentos de destilación.',
       date: '2026-04-14',
       sessionNumber: 14,
-      file: 'clase-14-equilibrio-fases.html',
+      file: 'Equilibrio_de_Fases/Presentacion_Equilibrio_de_Fases.html',
     },
     {
       id: 'clase-15-destilacion-flash',
