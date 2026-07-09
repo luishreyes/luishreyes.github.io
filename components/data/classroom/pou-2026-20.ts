@@ -764,5 +764,13 @@ export const pou202620Course: Course = {
       sessionNumber: 13,
       file: 'Filtracion/Presentacion_Filtracion.html',
     },
+    {
+      id: 'equilibrio-de-fases',
+      title: 'Equilibrio de fases y destilación',
+      description:
+        'Equilibrio líquido-vapor, ley de Raoult, volatilidad relativa, diagramas T-xy y x-y con datos reales, azeótropos, modelos termodinámicos (Wilson, NRTL, UNIQUAC) y tipos de destilación.',
+      sessionNumber: 14,
+      file: 'Equilibrio_de_Fases/Presentacion_Equilibrio_de_Fases.html',
+    },
   ],
 };
