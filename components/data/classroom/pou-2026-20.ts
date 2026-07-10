@@ -788,5 +788,13 @@ export const pou202620Course: Course = {
       sessionNumber: 16,
       file: 'Destilacion_Diferencial/Presentacion_Destilacion_Diferencial.html',
     },
+    {
+      id: 'destilacion-continua',
+      title: 'Diseño y análisis de columnas de destilación continua',
+      description:
+        'Volatilidad relativa, curva de equilibrio líquido-vapor interactiva, anatomía de la columna y el método de McCabe-Thiele: zonas, balances, líneas de operación (LOS/LOI) y línea q, condición térmica de la alimentación (parámetro q), y un ejemplo completo n-hexano/p-xileno con construcción gráfica interactiva paso a paso (línea q, punto pinch, R mínimo, escalonado de etapas). Eficiencia de platos, diseño hidráulico, limitaciones, azeótropos y control.',
+      sessionNumber: 17,
+      file: 'Destilacion_Continua/Presentacion_Destilacion_Continua.html',
+    },
   ],
 };
