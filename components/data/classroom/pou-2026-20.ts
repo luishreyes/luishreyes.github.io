@@ -780,5 +780,13 @@ export const pou202620Course: Course = {
       sessionNumber: 15,
       file: 'Destilacion_Flash/Presentacion_Destilacion_Flash.html',
     },
+    {
+      id: 'destilacion-diferencial',
+      title: 'Destilación diferencial',
+      description:
+        'Destilación por lotes y su naturaleza transitoria: recorrido interactivo en el diagrama T-x-y (A→B→C→…), aparato y anatomía de un destilador, columnas multietapa y reflujo, derivación de la ecuación de Rayleigh, algoritmo de solución y calculadora en vivo (metanol-agua), operación y aplicaciones en bebidas, perfumería y química fina.',
+      sessionNumber: 16,
+      file: 'Destilacion_Diferencial/Presentacion_Destilacion_Diferencial.html',
+    },
   ],
 };
