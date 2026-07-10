@@ -73,7 +73,7 @@
   .card--dark h3{color:#fff;}
   .card--dark p{color:rgba(255,255,255,.7);}
   /* Split */
-  .split{display:grid;grid-template-columns:1fr 1fr;gap:70px;align-items:center;flex:1;}
+  .split{display:grid;grid-template-columns:1fr 1fr;gap:70px;align-items:center;width:100%;}
   .split--wideR{grid-template-columns:0.82fr 1.18fr;}
   .split--wideL{grid-template-columns:1.18fr 0.82fr;}
   .split--narrow{grid-template-columns:0.72fr 1fr;}
@@ -234,6 +234,38 @@
   .rr-fbar .lab{font-size:24px;font-weight:700;color:var(--gris-1);min-width:220px;}
   .rr table{font-size:23px;}
   .rr th,.rr td{padding:11px 16px;}
+  /* ══ Flujo de cálculo interactivo ══ */
+  .calc-wrap{display:grid;grid-template-columns:1fr;justify-items:center;align-items:center;gap:36px;margin-top:22px;width:100%;transition:grid-template-columns .55s cubic-bezier(.4,0,.2,1);}
+  .calc-wrap.detail{grid-template-columns:0.40fr 0.60fr;justify-items:stretch;gap:60px;}
+  .calc-diagram{display:flex;flex-direction:column;align-items:center;width:100%;max-width:720px;transition:max-width .55s ease;}
+  .calc-wrap.detail .calc-diagram{max-width:none;}
+  .calc-node{position:relative;background:#fff;border:2.5px solid var(--gris-5);border-radius:16px;padding:20px 28px;text-align:center;width:100%;cursor:pointer;transition:padding .45s ease,border-color .3s,box-shadow .3s,background .3s,transform .3s;}
+  .calc-node:hover{border-color:var(--verde);}
+  .calc-node .cn-n{position:absolute;left:-16px;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;background:var(--gris-4);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:22px;transition:all .4s ease;}
+  .calc-node .cn-t{font-size:29px;font-weight:700;color:var(--gris-1);line-height:1.12;transition:font-size .45s ease;}
+  .calc-node .cn-s{font-size:21px;color:var(--gris-2);margin-top:6px;line-height:1.25;transition:font-size .35s ease,opacity .3s,margin .35s;}
+  .calc-wrap.detail .calc-node{padding:13px 16px 13px 22px;border-radius:12px;text-align:left;}
+  .calc-wrap.detail .calc-node .cn-n{width:34px;height:34px;font-size:17px;left:-12px;}
+  .calc-wrap.detail .calc-node .cn-t{font-size:21px;}
+  .calc-wrap.detail .calc-node .cn-s{font-size:0;opacity:0;margin:0;height:0;overflow:hidden;}
+  .calc-node.is-active{border-color:var(--verde);background:#fff;box-shadow:0 0 0 5px rgba(0,166,81,.16),var(--sombra);transform:scale(1.02);}
+  .calc-node.is-active .cn-n{background:var(--verde);}
+  .calc-node.is-active .cn-t{color:var(--verde-osc);}
+  .calc-node.is-done .cn-n{background:var(--verde);}
+  .calc-arrow{width:3px;height:30px;background:var(--gris-4);position:relative;transition:height .45s ease;}
+  .calc-wrap.detail .calc-arrow{height:16px;}
+  .calc-arrow::after{content:"";position:absolute;bottom:-1px;left:50%;transform:translateX(-50%);border-left:7px solid transparent;border-right:7px solid transparent;border-top:9px solid var(--gris-4);}
+  .calc-detail{display:none;}
+  .calc-wrap.detail .calc-detail{display:flex;flex-direction:column;justify-content:center;animation:fadeInUp .45s ease both;}
+  .calc-detail .fc-body{min-height:210px;}
+  .calc-detail .fc-body .fml{text-align:left;}
+  .calc-ctrl{display:flex;align-items:center;gap:18px;margin-top:30px;width:100%;justify-content:center;}
+  .calc-ctrl .fc-count{margin-left:0;}
+  .calc-branch{display:flex;gap:22px;margin-top:26px;flex-wrap:wrap;justify-content:center;}
+  .calc-branch .bch{flex:1;min-width:260px;background:var(--papel);border-radius:12px;border:2px solid var(--gris-5);border-top:5px solid var(--verde);padding:18px 22px;}
+  .calc-branch .bch.amber{border-top-color:var(--ambar);}
+  .calc-branch .bch b{font-size:23px;color:var(--gris-1);}
+  .calc-branch .bch p{font-size:20px;color:var(--gris-2);margin:6px 0 0;line-height:1.35;}
   @media (max-width:768px){
     html,body{height:auto;background:#f2f2f2;overflow-x:hidden;max-width:100vw;}
     .s{padding:28px 20px 36px !important;min-height:0 !important;overflow:visible !important;width:100% !important;box-sizing:border-box !important;}
@@ -586,30 +618,6 @@
   </div>
 </section>
 
-<!-- 11 · El rol del reflujo -->
-<section class="s" data-screen-label="Rol del reflujo">
-  <div class="split split--wideL">
-    <div class="copy">
-      <div class="kicker">Rectificación</div>
-      <h2>El rol del reflujo</h2>
-      <p>La <b>relación de reflujo</b> $R$ es el parámetro operativo clave:</p>
-      <div class="fml">$$R = \frac{L}{D}$$</div>
-      <ul class="var-list">
-        <li>$L$: flujo de líquido devuelto a la columna</li>
-        <li>$D$: flujo de producto retirado como destilado</li>
-      </ul>
-      <div class="callout verde compact" style="margin-top:18px;">
-        <p><b>$R \to \infty$</b> (reflujo total): máxima separación, sin producción neta.</p>
-        <p><b>$R = 0$</b> (reflujo cero): equivale a la destilación simple sin columna.</p>
-      </div>
-    </div>
-    <div class="img-panel">
-      <img src="img/10-reflujo.webp" alt="Ilustración del reflujo en una columna de destilación">
-      <p class="figcap">El reflujo devuelve líquido a la columna para enriquecer el vapor ascendente.</p>
-    </div>
-  </div>
-</section>
-
 <!-- ═══ DIVISOR 3 ═══ -->
 <section class="s s--dark divider" data-screen-label="Divisor Modelado" data-nofoot>
   <div>
@@ -669,7 +677,7 @@
 <section class="s" data-screen-label="Derivacion Rayleigh I">
   <div class="kicker">Derivación · pasos 1-3</div>
   <h2 class="s-head">De balance a variables separadas</h2>
-  <div class="split" style="margin-top:16px;align-items:start;gap:80px;">
+  <div class="split" style="margin-top:16px;align-items:center;gap:80px;">
     <div class="copy">
       <h3 style="font-size:28px;">Paso 1 · expandir</h3>
       <div class="fml">$$W x_W = W x_W - W\,dx_W - x_W\,dW + dx_W\,dW + y^\ast dW$$</div>
@@ -738,55 +746,33 @@
   </div>
 </section>
 
-<!-- 17 · ¿Qué se conoce? -->
-<section class="s s--tint" data-screen-label="Que se conoce">
-  <div class="kicker">Dos problemas</div>
-  <h2 class="s-head">¿Qué se conoce y qué se calcula?</h2>
-  <div class="cards two" style="margin-top:26px;">
-    <div class="card">
-      <span class="card-n">Directo</span>
-      <h3>Calcular la fracción vaporizada</h3>
-      <p>Se conocen $x_0$ y $x_f$. Se integra la ecuación de Rayleigh por <b>cuadratura numérica</b> (trapecio, Simpson) para hallar $f$.</p>
+<!-- 17-18 · ★ FLUJO DE CÁLCULO INTERACTIVO -->
+<section class="s s--tint" data-screen-label="Flujo de calculo">
+  <div class="kicker">Metodología · visión completa</div>
+  <h2 class="s-head" style="margin-bottom:2px;">El flujo completo del cálculo</h2>
+  <div class="calc-wrap" id="calc-wrap">
+    <div class="calc-diagram" id="calc-diagram">
+      <div class="calc-node" data-i="0"><span class="cn-n">1</span><div class="cn-t">Entrada de datos</div><div class="cn-s">x₀, tipo de sistema y objetivo</div></div>
+      <div class="calc-arrow"></div>
+      <div class="calc-node" data-i="1"><span class="cn-n">2</span><div class="cn-t">Modelo de equilibrio</div><div class="cn-s">definir y* = f(x)</div></div>
+      <div class="calc-arrow"></div>
+      <div class="calc-node" data-i="2"><span class="cn-n">3</span><div class="cn-t">Integración numérica</div><div class="cn-s">I = ∫ dx/(y*−x)</div></div>
+      <div class="calc-arrow"></div>
+      <div class="calc-node" data-i="3"><span class="cn-n">4</span><div class="cn-t">Cálculos finales</div><div class="cn-s">W_f, D, ȳ</div></div>
+      <div class="calc-arrow"></div>
+      <div class="calc-node" data-i="4"><span class="cn-n">5</span><div class="cn-t">Análisis y verificación</div><div class="cn-s">trayectoria, balance, gráficos</div></div>
     </div>
-    <div class="card card--amber">
-      <span class="card-n">Inverso</span>
-      <h3>Calcular $x_f$</h3>
-      <p>Se conocen $x_0$ y la fracción $f$ deseada. Se resuelve con un método <b>iterativo</b> ($\texttt{fsolve}$) hasta cumplir la ecuación.</p>
-    </div>
-  </div>
-  <div class="callout verde" style="margin-top:26px;">
-    <p><b>Análisis de resultados:</b> trayectoria del proceso, balance de materia, gráficos y verificaciones ($0 < x_f < x_0 < 1$).</p>
-  </div>
-</section>
-
-<!-- 18 · Algoritmo detallado -->
-<section class="s" data-screen-label="Algoritmo">
-  <div class="kicker">Paso a paso</div>
-  <h2 class="s-head">Algoritmo de solución</h2>
-  <div class="steps stagger" style="grid-template-columns:repeat(4,1fr);margin-top:30px;">
-    <div class="step">
-      <div class="st-n">1</div>
-      <b>Entrada de datos</b>
-      <span>$x_0$, sistema ($\alpha$ o datos $x$-$y$) y objetivo ($x_f$ o $f$).</span>
-    </div>
-    <div class="step" style="border-top-color:var(--teal);">
-      <div class="st-n" style="background:var(--teal);">2</div>
-      <b>Modelo de equilibrio</b>
-      <span>Ideal: $y^\ast=\alpha x/(1+(\alpha-1)x)$. Real: interpolar datos $x$-$y$.</span>
-    </div>
-    <div class="step" style="border-top-color:var(--ambar);">
-      <div class="st-n" style="background:var(--ambar);">3</div>
-      <b>Integración numérica</b>
-      <span>Resolver $I=\int_{x_f}^{x_0} dx/(y^\ast-x)$ por cuadratura, trapecio o Simpson.</span>
-    </div>
-    <div class="step">
-      <div class="st-n">4</div>
-      <b>Cálculos finales</b>
-      <span>$W_0/W_f=e^{I}$, $\; f=1-W_f/W_0$, $\; \bar{y}=(x_0-x_f(1-f))/f$.</span>
+    <div class="calc-detail" id="calc-detail">
+      <div class="fc-step-head"><div class="fc-badge" id="calc-badge">1</div><h3 id="calc-title">Entrada de datos</h3></div>
+      <div class="fc-body" id="calc-body"></div>
     </div>
   </div>
-  <div class="callout amber compact" style="margin-top:30px;">
-    <p><b>Casos especiales:</b> singularidad en $y^\ast=x$ (usar tolerancia, evitar dividir por cero); azeótropos ($y^\ast=x$ en $x_{az}$) que limitan la separación máxima; el problema inverso requiere estimación inicial.</p>
+  <div class="calc-ctrl" id="calc-ctrl">
+    <button class="fc-btn" id="calc-start">Ver el cálculo paso a paso ▶</button>
+    <button class="fc-btn ghost" id="calc-prev" style="display:none;">◀ Anterior</button>
+    <button class="fc-btn" id="calc-next" style="display:none;">Siguiente ▶</button>
+    <button class="fc-btn ghost" id="calc-reset" style="display:none;">↺ Ver el flujo completo</button>
+    <span class="fc-count" id="calc-count" style="display:none;"></span>
   </div>
 </section>
 
@@ -855,7 +841,7 @@
 <section class="s s--tint" data-screen-label="Solucion I">
   <div class="kicker">Solución · integración</div>
   <h2 class="s-head">Preparar e integrar</h2>
-  <div class="split" style="margin-top:14px;align-items:start;gap:70px;">
+  <div class="split" style="margin-top:14px;align-items:center;gap:70px;">
     <div class="copy">
       <h3 style="font-size:28px;">Paso 1 · integrando $1/(y-x)$</h3>
       <div class="tbl-wrap" style="margin-top:8px;">
@@ -917,7 +903,31 @@
   <div>
     <div class="part">Operación</div>
     <h2>Reflujo, control y comparación</h2>
-    <p class="sub">Modos de operación, consideraciones industriales y cómo se compara con la destilación flash.</p>
+    <p class="sub">El papel del reflujo, modos de operación, consideraciones industriales y cómo se compara con la destilación flash.</p>
+  </div>
+</section>
+
+<!-- El rol del reflujo -->
+<section class="s" data-screen-label="Rol del reflujo">
+  <div class="split split--wideL">
+    <div class="copy">
+      <div class="kicker">Rectificación</div>
+      <h2>El rol del reflujo</h2>
+      <p>La <b>relación de reflujo</b> $R$ es el parámetro operativo clave:</p>
+      <div class="fml">$$R = \frac{L}{D}$$</div>
+      <ul class="var-list">
+        <li>$L$: flujo de líquido devuelto a la columna</li>
+        <li>$D$: flujo de producto retirado como destilado</li>
+      </ul>
+      <div class="callout verde compact" style="margin-top:18px;">
+        <p><b>$R \to \infty$</b> (reflujo total): máxima separación, sin producción neta.</p>
+        <p><b>$R = 0$</b> (reflujo cero): equivale a la destilación simple sin columna.</p>
+      </div>
+    </div>
+    <div class="img-panel">
+      <img src="img/10-reflujo.webp" alt="Ilustración del reflujo en una columna de destilación">
+      <p class="figcap">El reflujo devuelve líquido a la columna para enriquecer el vapor ascendente.</p>
+    </div>
   </div>
 </section>
 
@@ -1293,6 +1303,60 @@ document.querySelectorAll('deck-stage section:not([data-nofoot])').forEach(funct
   }
   [w0El,x0El,xfEl].forEach(function(el){el.addEventListener('input',solve);});
   solve();
+})();
+</script>
+
+<!-- Flujo de cálculo interactivo (diagrama que se encoge y resalta la parte activa) -->
+<script>
+(function(){
+  var wrap=document.getElementById('calc-wrap');if(!wrap)return;
+  var diagram=document.getElementById('calc-diagram');
+  var nodes=[].slice.call(diagram.querySelectorAll('.calc-node'));
+  var badge=document.getElementById('calc-badge'),title=document.getElementById('calc-title'),body=document.getElementById('calc-body');
+  var start=document.getElementById('calc-start'),prev=document.getElementById('calc-prev'),next=document.getElementById('calc-next'),reset=document.getElementById('calc-reset'),count=document.getElementById('calc-count');
+  var steps=[
+    {t:'Entrada de datos',h:'<p>Se especifican la composición inicial $x_0$, el <b>tipo de sistema</b> (ideal con $\\alpha$ constante, o real con datos $x$-$y$) y el <b>objetivo</b> del cálculo. Hay dos caminos:</p>'
+      +'<div class="calc-branch"><div class="bch"><b>Directo</b><p>Se conocen $x_0$ y $x_f$ → se calcula la fracción vaporizada $f$ por cuadratura numérica.</p></div>'
+      +'<div class="bch amber"><b>Inverso</b><p>Se conocen $x_0$ y la $f$ deseada → se calcula $x_f$ con un método iterativo (fsolve).</p></div></div>'},
+    {t:'Modelo de equilibrio',h:'<p>Se define la relación $y^\\ast = f(x)$ que necesitará el integrando.</p>'
+      +'<div class="fml">$$\\text{Ideal:}\\quad y^\\ast = \\frac{\\alpha x}{1+(\\alpha-1)x}$$</div>'
+      +'<p style="font-size:24px;">Para un <b>sistema real</b> se construye un interpolador de los datos experimentales $x$-$y$ (lineal, cúbico o spline).</p>'},
+    {t:'Integración numérica',h:'<p>Se resuelve numéricamente la integral de Rayleigh:</p>'
+      +'<div class="fml">$$I = \\int_{x_f}^{x_0} \\frac{dx}{y^\\ast - x}$$</div>'
+      +'<p style="font-size:24px;">Métodos: cuadratura adaptativa, regla del <b>trapecio</b> o de <b>Simpson</b>. Cerca de $y^\\ast = x$ hay una singularidad: se usa una tolerancia para evitar dividir por cero.</p>'},
+    {t:'Cálculos finales',h:'<p>Con $I$ se obtienen las cantidades del lote:</p>'
+      +'<div class="fml">$$\\frac{W_0}{W_f}=e^{I},\\qquad f = 1-\\frac{W_f}{W_0}$$</div>'
+      +'<div class="fml">$$\\bar{y}=\\frac{x_0 - x_f\\,(1-f)}{f}$$</div>'
+      +'<p style="font-size:23px;">$W_f$ = líquido remanente, $f$ = fracción vaporizada, $\\bar{y}$ = composición promedio del destilado.</p>'},
+    {t:'Análisis y verificación',h:'<p>Se interpretan y comprueban los resultados:</p>'
+      +'<ul style="font-size:26px;line-height:1.5;"><li><b>Trayectoria</b> del proceso sobre el diagrama</li><li><b>Balance de materia</b> global de cierre</li><li><b>Gráficos</b> del integrando y del recorrido</li><li><b>Verificación:</b> debe cumplirse $0 < x_f < x_0 < 1$</li></ul>'}
+  ];
+  var mode='overview', i=0;
+  function paintNodes(){
+    nodes.forEach(function(n,idx){
+      n.classList.remove('is-active','is-done');
+      if(mode==='detail'){ if(idx<i)n.classList.add('is-done'); else if(idx===i)n.classList.add('is-active'); }
+    });
+  }
+  function renderDetail(){
+    badge.textContent=(i+1);title.textContent=steps[i].t;body.innerHTML=steps[i].h;
+    if(window.renderMathInElement)renderMathInElement(body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],throwOnError:false});
+    count.textContent='Paso '+(i+1)+' / '+steps.length;
+    prev.disabled=(i===0);next.disabled=(i===steps.length-1);
+    paintNodes();
+  }
+  function toDetail(k){mode='detail';i=k;wrap.classList.add('detail');
+    start.style.display='none';prev.style.display='';next.style.display='';reset.style.display='';count.style.display='';
+    renderDetail();}
+  function toOverview(){mode='overview';wrap.classList.remove('detail');
+    start.style.display='';prev.style.display='none';next.style.display='none';reset.style.display='none';count.style.display='none';
+    paintNodes();}
+  start.addEventListener('click',function(){toDetail(0);});
+  reset.addEventListener('click',toOverview);
+  next.addEventListener('click',function(){if(i<steps.length-1){i++;renderDetail();}});
+  prev.addEventListener('click',function(){if(i>0){i--;renderDetail();}});
+  nodes.forEach(function(n){n.addEventListener('click',function(){toDetail(parseInt(n.getAttribute('data-i'),10));});});
+  toOverview();
 })();
 </script>
 
