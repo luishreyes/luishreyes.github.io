@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Destilación diferencial · Proyecto de Operaciones Unitarias (IQYA-2031)</title>
+<link rel="stylesheet" href="assets/deloitte.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],throwOnError:false});"></script>
+<style>
+  html,body{margin:0;height:100%;background:#000;}
+  deck-stage:not(:defined){visibility:hidden;}
+  .s{font-family:var(--tipo);color:var(--gris-1);background:var(--blanco);display:flex;flex-direction:column;justify-content:center;padding:90px 120px 96px;-webkit-font-smoothing:antialiased;}
+  .s *{box-sizing:border-box;}
+  .kicker{display:inline-flex;align-items:center;gap:14px;font-size:24px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--verde-osc);margin:0 0 26px;}
+  .kicker::before{content:"";width:46px;height:5px;background:var(--verde);border-radius:3px;}
+  .s--dark .kicker{color:var(--verde);}
+  h1.s-title{font-size:92px;line-height:1.02;font-weight:700;margin:0;letter-spacing:-.015em;}
+  h2.s-head{font-size:58px;line-height:1.06;font-weight:700;margin:0 0 14px;letter-spacing:-.01em;}
+  h2{font-size:44px;line-height:1.1;font-weight:700;margin:0 0 14px;}
+  .s-lead{font-size:32px;line-height:1.45;color:var(--gris-2);max-width:40ch;font-weight:400;}
+  .lead-top{font-size:27px;line-height:1.45;color:var(--gris-2);margin:0 0 18px;}
+  .s p{font-size:30px;line-height:1.5;}
+  .s ul,.s ol{font-size:26px;line-height:1.45;color:var(--gris-1);padding-left:1.2em;margin:16px 0 0;}
+  .s li{margin-bottom:10px;}
+  .s li::marker{color:var(--verde);}
+  .s li b{color:var(--gris-1);}
+  .s h3{font-size:34px;line-height:1.15;margin:0 0 10px;font-weight:700;}
+  .s-foot{position:absolute;left:120px;right:120px;bottom:44px;display:flex;justify-content:space-between;align-items:center;font-size:19px;color:var(--gris-3);letter-spacing:.02em;}
+  .s-foot .tag{display:inline-flex;align-items:center;gap:12px;}
+  .s-foot .tag::before{content:"";width:24px;height:3px;background:var(--gris-4);}
+  .s-foot .num{font-weight:700;color:var(--gris-2);}
+  .s--dark{background:#111;color:#fff;}
+  .s--dark h1.s-title,.s--dark h2.s-head,.s--dark h2{color:#fff;}
+  .s--tint{background:var(--papel);}
+  /* Portada */
+  .cover{justify-content:space-between;position:relative;overflow:hidden;}
+  .cover-top{display:flex;justify-content:space-between;align-items:flex-start;}
+  .cover-org{font-size:26px;font-weight:700;letter-spacing:.04em;color:var(--gris-1);text-align:right;}
+  .cover-org span{color:var(--gris-3);font-weight:600;display:block;font-size:21px;letter-spacing:.12em;text-transform:uppercase;margin-top:6px;}
+  .cover-bar{width:120px;height:12px;background:var(--verde);border-radius:4px;}
+  .cover .course{font-size:26px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--verde-osc);margin:0 0 22px;}
+  .cover h1{font-size:104px;line-height:.98;letter-spacing:-.02em;max-width:17ch;}
+  .cover .session{font-size:36px;color:var(--gris-2);margin:30px 0 0;font-weight:600;max-width:34ch;}
+  .cover-meta{display:flex;gap:56px;margin-top:10px;position:relative;z-index:2;}
+  .cover-meta div{font-size:24px;color:var(--gris-2);}
+  .cover-meta b{display:block;color:var(--gris-1);font-size:26px;font-weight:700;margin-bottom:4px;}
+  .cover .wm{position:absolute;right:-60px;top:0;height:100%;width:720px;object-fit:cover;object-position:center;opacity:.13;pointer-events:none;z-index:0;mix-blend-mode:multiply;}
+  /* Divisor */
+  .divider{align-items:flex-start;text-align:left;}
+  .divider .part{font-size:22px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--verde);margin-bottom:28px;}
+  .divider h2{font-size:72px;line-height:1.04;letter-spacing:-.01em;margin:0 0 16px;max-width:20ch;}
+  .divider .sub{font-size:28px;color:rgba(255,255,255,.6);margin:22px 0 0;max-width:44ch;line-height:1.45;}
+  /* Tarjetas */
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:38px;margin-top:40px;}
+  .cards.two{grid-template-columns:repeat(2,1fr);}
+  .cards.four{grid-template-columns:repeat(4,1fr);gap:28px;}
+  .card{background:var(--blanco);border:2px solid var(--gris-5);border-top:7px solid var(--verde);border-radius:var(--radio);padding:38px 34px;display:flex;flex-direction:column;gap:16px;transition:transform .18s ease,box-shadow .18s ease;}
+  .card:hover{transform:translateY(-3px);box-shadow:var(--sombra);}
+  .card .card-n{font-size:25px;font-weight:700;color:var(--verde-osc);}
+  .card h3{font-size:33px;line-height:1.12;margin:0;font-weight:700;}
+  .card p{font-size:27px;line-height:1.45;color:var(--gris-2);margin:0;}
+  .card ul{margin:4px 0 0;padding-left:1.1em;font-size:25px;color:var(--gris-2);line-height:1.45;}
+  .card li{margin-bottom:6px;}
+  .card li::marker{color:var(--verde);}
+  .card--teal{border-top-color:var(--teal);}
+  .card--teal .card-n{color:var(--teal);}
+  .card--amber{border-top-color:var(--ambar);}
+  .card--amber .card-n{color:var(--ambar);}
+  .card--dark{background:#1a1a1a;border-color:#333;color:#fff;}
+  .card--dark h3{color:#fff;}
+  .card--dark p{color:rgba(255,255,255,.7);}
+  /* Split */
+  .split{display:grid;grid-template-columns:1fr 1fr;gap:70px;align-items:center;flex:1;}
+  .split--wideR{grid-template-columns:0.82fr 1.18fr;}
+  .split--wideL{grid-template-columns:1.18fr 0.82fr;}
+  .split--narrow{grid-template-columns:0.72fr 1fr;}
+  .split--narrowL{grid-template-columns:1fr 0.72fr;}
+  .split .copy h2{font-size:50px;line-height:1.08;margin:0 0 22px;}
+  .split .copy p{font-size:28px;color:var(--gris-2);line-height:1.5;}
+  .split .copy ul{font-size:26px;color:var(--gris-1);line-height:1.45;padding-left:1.1em;margin:16px 0 0;}
+  .split .copy li{margin-bottom:11px;}
+  .split .copy li::marker{color:var(--verde);}
+  .split .copy li b{color:var(--gris-1);}
+  /* Imagen */
+  .img-panel{background:var(--blanco);border:2px solid var(--gris-5);border-radius:var(--radio);padding:22px;box-shadow:var(--sombra);position:relative;}
+  .img-panel img{width:100%;height:auto;display:block;border-radius:3px;cursor:zoom-in;}
+  .img-panel img.tall{max-height:640px;object-fit:contain;}
+  .img-panel .figcap{font-size:22px;color:var(--gris-3);margin:14px 4px 0;line-height:1.35;}
+  /* Chart container */
+  .chart-panel{background:var(--blanco);border:2px solid var(--gris-5);border-radius:var(--radio);padding:16px;box-shadow:var(--sombra);position:relative;cursor:zoom-in;}
+  .chart-panel canvas{width:100%;height:auto;display:block;border-radius:3px;}
+  .chart-panel .figcap{font-size:20px;color:var(--gris-3);margin:8px 4px 0;line-height:1.35;}
+  .chart-panel:hover .zoom-badge{opacity:1;}
+  /* Callout */
+  .callout{background:var(--papel);border-radius:var(--radio);padding:34px 40px;border-left:8px solid var(--teal);}
+  .callout.verde{border-left-color:var(--verde);}
+  .callout.amber{border-left-color:var(--ambar);}
+  .callout.rojo{border-left-color:#c0392b;background:#fff5f5;}
+  .callout h4{font-size:28px;margin:0 0 16px;color:var(--gris-1);letter-spacing:.02em;}
+  .callout p{font-size:28px;color:var(--gris-2);line-height:1.48;margin:0 0 10px;}
+  .callout p:last-child{margin-bottom:0;}
+  .callout b{color:var(--verde-osc);}
+  .callout.amber p{color:#7A4400;}
+  .callout.amber b{color:#7A4400;}
+  .callout.rojo p{color:#7A1010;}
+  .callout.rojo b{color:#c0392b;}
+  .callout.compact{padding:24px 30px;}
+  .callout.compact p{font-size:26px;}
+  /* Fórmulas */
+  .fml{background:#fff;border:1px solid var(--gris-5);border-radius:4px;padding:20px 26px;margin:16px 0 4px;text-align:center;overflow-x:auto;}
+  .card .fml,.callout .fml{margin:12px 0 4px;}
+  .fml .katex{color:var(--gris-1);}
+  .katex{font-size:1.35em;}
+  .katex-display{margin:.2em 0;}
+  .fml .katex-display > .katex{font-size:1.85em;}
+  .card .fml{padding:22px 20px;}
+  .card .fml .katex-display > .katex{font-size:1.62em;}
+  .var-list{list-style:none;padding:0;margin:8px 0 0;font-size:26px;color:var(--gris-2);line-height:1.55;}
+  .var-list li{margin-bottom:4px;}
+  /* Steps */
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;margin-top:28px;}
+  .step{display:flex;flex-direction:column;gap:14px;padding:28px 24px;background:var(--papel);border-radius:var(--radio);border:2px solid var(--gris-5);border-top:6px solid var(--verde);}
+  .step .st-n{width:56px;height:56px;min-width:56px;border-radius:50%;background:var(--verde);color:#fff;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;}
+  .step b{font-size:27px;color:var(--gris-1);}
+  .step span{font-size:23px;color:var(--gris-2);line-height:1.4;}
+  /* Timeline */
+  .timeline{display:flex;align-items:flex-start;gap:0;margin-top:40px;position:relative;}
+  .timeline::before{content:"";position:absolute;top:36px;left:6%;right:6%;height:4px;background:var(--verde);border-radius:2px;z-index:0;}
+  .tl-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:12px;position:relative;z-index:1;text-align:center;}
+  .tl-dot{width:72px;height:72px;border-radius:50%;background:var(--verde-claro);border:4px solid var(--verde);display:flex;align-items:center;justify-content:center;}
+  .tl-dot svg{width:32px;height:32px;stroke:var(--verde-osc);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+  .tl-item b{font-size:24px;color:var(--gris-1);max-width:20ch;}
+  .tl-item span{font-size:20px;color:var(--gris-2);max-width:22ch;line-height:1.35;}
+  /* Table */
+  .tbl-wrap{overflow-x:auto;margin-top:28px;}
+  table{width:100%;border-collapse:collapse;font-size:24px;}
+  th{background:var(--verde);color:#fff;padding:16px 20px;text-align:left;font-weight:700;white-space:nowrap;}
+  td{padding:14px 20px;border-bottom:1px solid var(--gris-5);}
+  tr:hover td{background:var(--verde-claro);}
+  td .katex{font-size:1.05em;}
+  /* Close */
+  .close-slide{align-items:center;text-align:center;background:#111;color:#fff;}
+  .close-slide h2{color:#fff;font-size:64px;margin-bottom:16px;}
+  .close-slide p{color:rgba(255,255,255,.6);font-size:28px;}
+  /* Lightbox */
+  .img-panel img,.gif-box img{cursor:zoom-in;}
+  .zoom-badge{position:absolute;top:14px;right:14px;width:38px;height:38px;border-radius:8px;background:rgba(17,17,17,.58);color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:zoom-in;opacity:0;transition:opacity .15s ease;z-index:4;}
+  .img-panel:hover .zoom-badge,.gif-box:hover .zoom-badge{opacity:1;}
+  .lightbox{position:fixed;inset:0;width:100vw;height:100vh;max-width:100vw;max-height:100vh;margin:0;border:0;background:rgba(0,0,0,.9);display:none;align-items:center;justify-content:center;z-index:99999;cursor:zoom-out;padding:3vmin;overflow:hidden;}
+  .lightbox[open]{display:flex;}
+  .lightbox::backdrop{background:rgba(0,0,0,.9);}
+  .lightbox img{max-width:94vw;max-height:94vh;width:auto;height:auto;object-fit:contain;border-radius:6px;box-shadow:0 24px 90px rgba(0,0,0,.6);}
+  .lightbox .lb-close{position:fixed;top:26px;right:32px;width:54px;height:54px;border-radius:50%;background:rgba(255,255,255,.18);color:#fff;border:none;font-size:26px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+  @media print{.zoom-badge,.lightbox{display:none !important;}}
+  /* Slide footer */
+  .slide-footer{position:absolute;bottom:22px;left:80px;right:80px;display:flex;align-items:center;justify-content:space-between;font-size:13px;color:var(--gris-3);pointer-events:none;}
+  /* Video */
+  .video-box{position:relative;width:100%;aspect-ratio:16/9;border-radius:var(--radio);overflow:hidden;box-shadow:var(--sombra);border:2px solid var(--gris-5);background:#000;}
+  .video-box iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
+  /* Lossmenu (tabs) */
+  .lossmenu .tabs{display:inline-flex;gap:6px;border:2px solid var(--gris-4);border-radius:999px;padding:6px;background:#fff;margin-bottom:28px;flex-wrap:wrap;}
+  .lossmenu .tab{font-size:23px;font-weight:600;padding:10px 26px;border-radius:999px;border:none;background:transparent;cursor:pointer;color:var(--gris-2);transition:background .2s,color .2s;}
+  .lossmenu .tab.is-active{background:var(--verde);color:#fff;}
+  .lossmenu .panel{display:none;}
+  .lossmenu .panel.is-active{display:block;animation:fadeInUp .35s ease both;}
+  /* Stagger animation */
+  @keyframes fadeInUp{from{opacity:0;transform:translateY(28px);}to{opacity:1;transform:translateY(0);}}
+  .stagger > *{opacity:0;animation:fadeInUp .45s ease both;}
+  section.active .stagger > *:nth-child(1){animation-delay:.08s;}
+  section.active .stagger > *:nth-child(2){animation-delay:.16s;}
+  section.active .stagger > *:nth-child(3){animation-delay:.24s;}
+  section.active .stagger > *:nth-child(4){animation-delay:.32s;}
+  section.active .stagger > *:nth-child(5){animation-delay:.4s;}
+  section.active .stagger > *:nth-child(6){animation-delay:.48s;}
+  @media (prefers-reduced-motion:reduce){
+    .stagger > *{animation:none !important;opacity:1 !important;}
+    .fc-node,.fc-arrow{transition:none !important;}
+  }
+  /* Collist */
+  .collist{display:grid;grid-template-columns:1fr 1fr;gap:20px 50px;margin-top:22px;}
+  .collist .it{display:flex;flex-direction:column;gap:4px;padding:14px 0;border-bottom:2px solid var(--gris-5);}
+  .collist .it b{font-size:26px;color:var(--gris-1);}
+  .collist .it span{font-size:22px;color:var(--gris-2);line-height:1.35;}
+  /* Platform link */
+  .platform-link{color:inherit;text-decoration:none;border-bottom:2px solid var(--verde);font-weight:600;}
+  .platform-link::after{content:" \2197";}
+  /* ══ Flowchart interactivo ══ */
+  .fc-wrap{display:grid;grid-template-columns:0.92fr 1.08fr;gap:56px;align-items:stretch;margin-top:14px;flex:1;}
+  .fc-diagram{position:relative;height:700px;}
+  .fc-svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;}
+  .fc-arrow{stroke:var(--gris-4);stroke-width:3;fill:none;transition:stroke .3s;}
+  .fc-arrow.loop{stroke-dasharray:9 7;}
+  .fc-arrow.hot{stroke:var(--verde);stroke-width:4.5;}
+  .fc-node{position:absolute;left:50%;transform:translateX(-50%);background:#fff;border:2.5px solid var(--gris-4);border-radius:12px;padding:12px 22px;text-align:center;cursor:pointer;z-index:1;transition:border-color .25s,box-shadow .25s,background .25s,transform .25s;width:82%;}
+  .fc-node .n-t{font-size:23px;font-weight:700;color:var(--gris-1);line-height:1.15;}
+  .fc-node .n-s{font-size:19px;color:var(--gris-2);margin-top:3px;line-height:1.2;}
+  .fc-node.diamond{width:66%;border-radius:12px;border-style:dashed;}
+  .fc-node.io{border-radius:999px;background:var(--papel);}
+  .fc-node.is-done{border-color:var(--verde);background:var(--verde-claro);}
+  .fc-node.is-current{border-color:var(--verde);background:#fff;box-shadow:0 0 0 5px rgba(0,166,81,.18),var(--sombra);transform:translateX(-50%) scale(1.04);}
+  .fc-node.is-current .n-t{color:var(--verde-osc);}
+  .fc-explain{display:flex;flex-direction:column;gap:0;justify-content:center;}
+  .fc-step-head{display:flex;align-items:center;gap:18px;margin-bottom:14px;}
+  .fc-badge{width:64px;height:64px;min-width:64px;border-radius:50%;background:var(--verde);color:#fff;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:700;}
+  .fc-step-head h3{font-size:34px;margin:0;line-height:1.1;}
+  .fc-body{font-size:26px;color:var(--gris-2);line-height:1.5;min-height:150px;}
+  .fc-body .fml{text-align:left;padding:16px 22px;}
+  .fc-ctrl{display:flex;align-items:center;gap:18px;margin-top:26px;}
+  .fc-btn{font-size:24px;font-weight:700;padding:14px 34px;border-radius:999px;border:2px solid var(--verde);background:var(--verde);color:#fff;cursor:pointer;transition:background .2s,transform .1s;}
+  .fc-btn.ghost{background:#fff;color:var(--verde-osc);}
+  .fc-btn:disabled{opacity:.4;cursor:not-allowed;}
+  .fc-btn:not(:disabled):active{transform:translateY(1px);}
+  .fc-count{font-size:22px;color:var(--gris-3);font-weight:600;margin-left:auto;}
+  .fc-loopnote{margin-top:16px;font-size:22px;color:var(--ambar);font-weight:700;display:none;align-items:center;gap:10px;}
+  .fc-loopnote.show{display:flex;}
+  /* ══ Solucionador Rachford-Rice ══ */
+  .rr{display:grid;grid-template-columns:0.82fr 1.18fr;gap:50px;align-items:start;margin-top:14px;flex:1;}
+  .rr-controls{background:var(--papel);border:2px solid var(--gris-5);border-radius:var(--radio);padding:28px 30px;}
+  .rr-controls h3{font-size:28px;margin:0 0 18px;}
+  .rr-field{margin-bottom:22px;}
+  .rr-field label{display:flex;justify-content:space-between;font-size:23px;font-weight:600;color:var(--gris-1);margin-bottom:8px;}
+  .rr-field label b{color:var(--verde-osc);}
+  .rr-field input[type=range]{width:100%;accent-color:var(--verde);height:6px;}
+  .rr-hint{font-size:19px;color:var(--gris-3);margin-top:16px;line-height:1.4;}
+  .rr-out{display:flex;flex-direction:column;gap:18px;}
+  .rr-status{font-size:25px;font-weight:700;padding:16px 24px;border-radius:var(--radio);background:var(--verde-claro);color:var(--verde-osc);border-left:6px solid var(--verde);}
+  .rr-status.warn{background:#FFF7E6;color:#7A4400;border-left-color:var(--ambar);}
+  .rr-fbar{display:flex;align-items:center;gap:18px;}
+  .rr-fbar .track{flex:1;height:34px;border-radius:8px;background:linear-gradient(90deg,var(--teal),var(--verde));position:relative;overflow:hidden;border:2px solid var(--gris-5);}
+  .rr-fbar .fill{position:absolute;top:0;bottom:0;right:0;background:rgba(255,255,255,.72);}
+  .rr-fbar .lab{font-size:24px;font-weight:700;color:var(--gris-1);min-width:220px;}
+  .rr table{font-size:23px;}
+  .rr th,.rr td{padding:11px 16px;}
+  @media (max-width:768px){
+    html,body{height:auto;background:#f2f2f2;overflow-x:hidden;max-width:100vw;}
+    .s{padding:28px 20px 36px !important;min-height:0 !important;overflow:visible !important;width:100% !important;box-sizing:border-box !important;}
+    h1.s-title{font-size:24px !important;line-height:1.15 !important;}
+    .s h2,h2.s-head{font-size:22px !important;line-height:1.2 !important;letter-spacing:normal !important;}
+    .s-lead{font-size:16px !important;max-width:100% !important;}
+    .s p{font-size:16px !important;}
+    .s ul,.s ol{font-size:15px !important;}
+    .s h3{font-size:20px !important;line-height:1.25 !important;}
+    .lead-top{font-size:16px !important;}
+    .kicker{font-size:13px !important;margin-bottom:10px !important;letter-spacing:.08em !important;}
+    .cover h1{font-size:24px !important;line-height:1.15 !important;}
+    .cover .session{font-size:14px !important;}
+    .cover-meta{flex-direction:column !important;gap:10px !important;}
+    .cover .wm{display:none !important;}
+    .cover .course{font-size:11px !important;letter-spacing:.05em !important;margin-bottom:12px !important;}
+    .cover-org{font-size:16px !important;}
+    .cover-org span{font-size:11px !important;}
+    .cover-bar{display:none !important;}
+    .cover-meta div{font-size:14px !important;}
+    .cover-meta b{font-size:15px !important;}
+    .divider .part{font-size:12px !important;margin-bottom:12px !important;}
+    .divider h2{font-size:32px !important;}
+    .divider .sub{font-size:13px !important;margin-top:16px !important;}
+    .split,.split--wideR,.split--wideL,.split--narrow,.split--narrowL{grid-template-columns:1fr !important;gap:18px !important;}
+    .cards,.cards.two,.cards.four{grid-template-columns:1fr !important;gap:12px !important;margin-top:16px !important;}
+    .card{padding:18px 16px !important;}
+    .card h3{font-size:20px !important;}
+    .card p{font-size:15px !important;}
+    .card .card-n{font-size:13px !important;}
+    .card ul{font-size:13px !important;}
+    .fml{font-size:14px !important;overflow-x:auto !important;padding:8px 4px !important;max-width:calc(100vw - 40px) !important;box-sizing:border-box !important;display:block !important;}
+    .callout .fml{max-width:calc(100vw - 76px) !important;}
+    .card .fml{max-width:calc(100vw - 72px) !important;}
+    .img-panel{padding:12px !important;}
+    .img-panel img.tall{max-height:none !important;}
+    .img-panel .figcap{font-size:12px !important;}
+    .chart-panel{padding:8px !important;}
+    .chart-panel .figcap{font-size:12px !important;}
+    .callout,.callout.verde,.callout.amber,.callout.compact{padding:16px 18px !important;}
+    .callout p{font-size:15px !important;}
+    .callout h4{font-size:15px !important;}
+    .var-list{font-size:12px !important;}
+    .steps{grid-template-columns:1fr !important;gap:14px !important;}
+    .step .st-n{width:40px !important;height:40px !important;min-width:40px !important;font-size:20px !important;}
+    .step b{font-size:16px !important;}
+    .step span{font-size:14px !important;}
+    .timeline{flex-direction:column !important;gap:20px !important;}
+    .timeline::before{display:none !important;}
+    .tl-item{flex-direction:row !important;text-align:left !important;gap:16px !important;}
+    .tl-dot{width:48px !important;height:48px !important;min-width:48px !important;}
+    .tl-dot svg{width:22px !important;height:22px !important;}
+    .tl-item b{font-size:15px !important;}
+    .tl-item span{font-size:13px !important;}
+    table{font-size:12px !important;display:block !important;overflow-x:auto !important;-webkit-overflow-scrolling:touch !important;max-width:calc(100vw - 40px) !important;box-sizing:border-box !important;}
+    th,td{padding:6px 8px !important;white-space:nowrap !important;}
+    .collist{grid-template-columns:1fr !important;gap:14px !important;}
+    .collist .it b{font-size:15px !important;}
+    .collist .it span{font-size:13px !important;}
+    .video-box{margin-top:14px !important;}
+    .lossmenu .tabs{width:100% !important;flex-direction:column !important;border-radius:14px !important;}
+    .lossmenu .tab{font-size:14px !important;padding:10px 14px !important;justify-content:center !important;}
+    .fc-wrap{grid-template-columns:1fr !important;gap:24px !important;}
+    .fc-diagram{height:560px !important;}
+    .fc-node .n-t{font-size:14px !important;}
+    .fc-node .n-s{font-size:11px !important;}
+    .fc-badge{width:44px !important;height:44px !important;min-width:44px !important;font-size:20px !important;}
+    .fc-step-head h3{font-size:20px !important;}
+    .fc-body{font-size:15px !important;min-height:0 !important;}
+    .fc-btn{font-size:15px !important;padding:10px 20px !important;}
+    .fc-count{font-size:14px !important;}
+    .rr{grid-template-columns:1fr !important;gap:20px !important;}
+    .rr-controls h3{font-size:18px !important;}
+    .rr-field label{font-size:15px !important;}
+    .rr-status{font-size:16px !important;}
+    .rr-fbar .lab{font-size:15px !important;min-width:0 !important;}
+    .rr table{font-size:13px !important;}
+  }
+</style>
+</head>
+<body>
+<deck-stage width="1920" height="1080">
+
+<!-- 01 · Portada -->
+<section class="s cover" data-screen-label="Portada" data-nofoot>
+  <div class="cover-top">
+    <div>
+      <p class="course">IQYA-2031 · Proyecto de Operaciones Unitarias</p>
+      <div class="cover-bar"></div>
+    </div>
+    <div class="cover-org">Universidad de los Andes<span>Departamento de Ingeniería Química</span></div>
+  </div>
+  <div>
+    <h1>Destilación diferencial</h1>
+    <p class="session">Destilación por lotes, naturaleza transitoria y la ecuación de Rayleigh.</p>
+  </div>
+  <div class="cover-meta">
+    <div><b>Sesión 16</b>2026-20</div>
+    <div><b>Luis H. Reyes</b>Profesor</div>
+  </div>
+  <img class="wm" src="img/12-perfumeria.png" alt="">
+</section>
+
+<!-- 02 · Agenda -->
+<section class="s s--tint" data-screen-label="Agenda">
+  <div class="kicker">Agenda</div>
+  <h2 class="s-head">Contenido de la sesión</h2>
+  <ol class="agenda-list" style="list-style:none;padding:0;margin:26px 0 0;display:grid;grid-template-columns:1fr 1fr;gap:20px 60px;max-width:1560px;">
+    <li style="display:flex;align-items:baseline;gap:28px;padding-bottom:18px;border-bottom:2px solid var(--gris-5);"><span style="font-size:36px;font-weight:700;color:var(--verde-osc);min-width:48px;">01</span><div style="display:flex;flex-direction:column;gap:4px;"><b style="font-size:36px;">Fundamentos y principios</b><span style="font-size:26px;color:var(--gris-2);">Conceptos básicos, naturaleza transitoria y balance de materia</span></div></li>
+    <li style="display:flex;align-items:baseline;gap:28px;padding-bottom:18px;border-bottom:2px solid var(--gris-5);"><span style="font-size:36px;font-weight:700;color:var(--verde-osc);min-width:48px;">02</span><div style="display:flex;flex-direction:column;gap:4px;"><b style="font-size:36px;">Modelado matemático</b><span style="font-size:26px;color:var(--gris-2);">Ecuación de Rayleigh y métodos de solución</span></div></li>
+    <li style="display:flex;align-items:baseline;gap:28px;padding-bottom:18px;border-bottom:2px solid var(--gris-5);"><span style="font-size:36px;font-weight:700;color:var(--verde-osc);min-width:48px;">03</span><div style="display:flex;flex-direction:column;gap:4px;"><b style="font-size:36px;">Equipamiento y diseño</b><span style="font-size:26px;color:var(--gris-2);">Componentes, columnas multietapa y reflujo</span></div></li>
+    <li style="display:flex;align-items:baseline;gap:28px;padding-bottom:18px;border-bottom:2px solid var(--gris-5);"><span style="font-size:36px;font-weight:700;color:var(--verde-osc);min-width:48px;">04</span><div style="display:flex;flex-direction:column;gap:4px;"><b style="font-size:36px;">Aplicaciones industriales</b><span style="font-size:26px;color:var(--gris-2);">Farmacéutica, química fina, bebidas y desarrollo</span></div></li>
+  </ol>
+  <div style="margin-top:34px;display:inline-flex;align-items:flex-start;gap:16px;background:var(--verde-claro);border-left:6px solid var(--verde);padding:22px 30px;border-radius:4px;max-width:1500px;">
+    <p style="font-size:26px;margin:0;color:var(--gris-1);line-height:1.4;"><b style="color:var(--verde-osc);">Objetivo:</b> comprender la destilación diferencial como un proceso transitorio, dominar la ecuación de Rayleigh y su resolución, y reconocer su papel en la producción de alto valor.</p>
+  </div>
+</section>
+
+<!-- ═══ DIVISOR 1 ═══ -->
+<section class="s s--dark divider" data-screen-label="Divisor Fundamentos" data-nofoot>
+  <div>
+    <div class="part">Parte 1</div>
+    <h2>Fundamentos y principios</h2>
+    <p class="sub">Qué es la destilación por lotes, su naturaleza transitoria y cómo se visualiza en el diagrama T-x-y.</p>
+  </div>
+</section>
+
+<!-- 03 · Definición y proceso básico -->
+<section class="s" data-screen-label="Definicion">
+  <div class="split split--narrow">
+    <div class="img-panel">
+      <img src="img/02-proceso-pid.png" class="tall" alt="Diagrama P&amp;ID de un sistema de destilación por lotes: calderín, columna, condensador y receptores de destilado">
+      <p class="figcap">Sistema industrial de destilación por lotes: calderín, columna, condensador y receptores de destilado.</p>
+    </div>
+    <div class="copy">
+      <div class="kicker">Definición</div>
+      <h2>Destilación por lotes</h2>
+      <p>Es un proceso donde:</p>
+      <ul>
+        <li>Se carga una cantidad <b>finita</b> de mezcla líquida en un recipiente (calderín).</li>
+        <li>Se aporta energía térmica hasta llevar la mezcla a ebullición.</li>
+        <li>El vapor generado, <b>enriquecido en el componente más volátil</b>, se retira continuamente.</li>
+        <li>Ese vapor se condensa y el líquido resultante (destilado) se recolecta.</li>
+        <li>El proceso se detiene al alcanzar el grado de separación deseado.</li>
+      </ul>
+      <div class="callout verde compact" style="margin-top:20px;">
+        <p>La ecuación fundamental que describe el proceso es la <b>ecuación de Rayleigh</b>, que deduciremos en el Módulo 2.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 04 · Aparato de destilación simple -->
+<section class="s s--tint" data-screen-label="Aparato simple">
+  <div class="split split--wideR">
+    <div class="img-panel">
+      <img src="img/03-aparato-lab.png" alt="Montaje de laboratorio de destilación simple con matraz, termómetro, condensador y matraz receptor">
+      <p class="figcap">Montaje de laboratorio: cada componente rotulado con su función.</p>
+    </div>
+    <div class="copy">
+      <div class="kicker">Equipo</div>
+      <h2>Aparato de destilación simple</h2>
+      <p>Un montaje básico de destilación diferencial consta de:</p>
+      <div class="collist" style="grid-template-columns:1fr 1fr;">
+        <div class="it"><b>Fuente de calor</b><span>Mechero o manta que lleva la mezcla a ebullición</span></div>
+        <div class="it"><b>Calderín / matraz</b><span>Contiene la carga líquida inicial</span></div>
+        <div class="it"><b>Cabeza de destilación</b><span>Dirige el vapor hacia el condensador</span></div>
+        <div class="it"><b>Termómetro</b><span>Mide la temperatura del vapor</span></div>
+        <div class="it"><b>Condensador</b><span>Enfría el vapor y lo vuelve líquido</span></div>
+        <div class="it"><b>Receptor de destilado</b><span>Recoge el líquido condensado</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 05 · Naturaleza transitoria -->
+<section class="s" data-screen-label="Naturaleza transitoria">
+  <div class="kicker">Proceso no estacionario</div>
+  <h2 class="s-head">La naturaleza transitoria del proceso</h2>
+  <div class="cards stagger">
+    <div class="card">
+      <span class="card-n">Estado inicial</span>
+      <h3>Mezcla rica en volátil</h3>
+      <ul>
+        <li>Temperatura de ebullición relativamente <b>baja</b></li>
+        <li>Alta concentración del componente volátil ($x_{W0}$)</li>
+      </ul>
+    </div>
+    <div class="card card--teal">
+      <span class="card-n">Evolución continua</span>
+      <h3>Las variables cambian</h3>
+      <ul>
+        <li>La composición del líquido ($x_W$) <b>disminuye</b></li>
+        <li>La composición del vapor ($y$) también disminuye</li>
+        <li>La temperatura de ebullición <b>aumenta</b></li>
+      </ul>
+    </div>
+    <div class="card card--amber">
+      <span class="card-n">Estado final</span>
+      <h3>Mezcla empobrecida</h3>
+      <ul>
+        <li>Temperatura de ebullición más <b>alta</b></li>
+        <li>Baja concentración del componente volátil ($x_{Wf}$)</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout verde" style="margin-top:32px;">
+    <p><b>Evolución temporal:</b> la composición del volátil en el calderín ($x_W$) y en el destilado instantáneo ($y_D$) <b>disminuyen</b>, mientras la temperatura ($T_W$) <b>aumenta</b> continuamente.</p>
+  </div>
+</section>
+
+<!-- 06 · ★ VISUALIZACIÓN T-x-y INTERACTIVA -->
+<section class="s s--tint" data-screen-label="Visualizacion T-x-y">
+  <div class="kicker">Diagrama T-x-y · recorrido paso a paso</div>
+  <h2 class="s-head" style="margin-bottom:4px;">El proceso sobre el diagrama T-x-y</h2>
+  <div class="fc-wrap" style="grid-template-columns:1.16fr 0.84fr;align-items:center;">
+    <div class="chart-panel" style="cursor:default;">
+      <canvas id="txy-canvas" width="900" height="660"></canvas>
+    </div>
+    <div class="fc-explain">
+      <div class="fc-step-head">
+        <div class="fc-badge" id="txy-badge">1</div>
+        <h3 id="txy-title">Carga inicial</h3>
+      </div>
+      <div class="fc-body" id="txy-body"><p>Cargamos el líquido inicial.</p></div>
+      <div class="fc-ctrl">
+        <button class="fc-btn ghost" id="txy-prev" disabled>◀ Anterior</button>
+        <button class="fc-btn" id="txy-next">Siguiente ▶</button>
+        <span class="fc-count" id="txy-count">Paso 1 / 7</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 07 · Ventajas y limitaciones -->
+<section class="s" data-screen-label="Ventajas y limitaciones">
+  <div class="kicker">Balance operativo</div>
+  <h2 class="s-head">Ventajas y limitaciones</h2>
+  <div class="cards two" style="margin-top:34px;">
+    <div class="card">
+      <h3>Ventajas</h3>
+      <ul>
+        <li><b>Flexibilidad</b> para procesar diferentes mezclas</li>
+        <li>Menor inversión inicial de capital</li>
+        <li>Ideal para <b>pequeñas escalas</b> de producción</li>
+        <li>Capacidad para alcanzar <b>altas purezas</b></li>
+        <li>Adecuada para producción intermitente o estacional</li>
+      </ul>
+    </div>
+    <div class="card card--amber">
+      <h3>Limitaciones</h3>
+      <ul>
+        <li><b>Ineficiente</b> para grandes volúmenes</li>
+        <li>Mayores costos operativos por unidad de producto</li>
+        <li>Tiempos muertos entre cargas</li>
+        <li>Dificultad para mantener consistencia entre lotes</li>
+        <li>Mayor consumo energético por kg de producto</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout verde" style="margin-top:30px;">
+    <p>La elección entre destilación por lotes y continua es una <b>decisión estratégica y económica</b> impulsada por la escala de producción, la variedad de productos y el valor de mercado.</p>
+  </div>
+</section>
+
+<!-- 08 · Contexto industrial -->
+<section class="s s--tint" data-screen-label="Contexto industrial">
+  <div class="kicker">¿Dónde se usa?</div>
+  <h2 class="s-head">Contexto industrial y aplicaciones</h2>
+  <div class="cards four stagger" style="margin-top:32px;">
+    <div class="card" style="padding:0;overflow:hidden;">
+      <img src="img/04-farmaceutica.jpg" alt="Industria farmacéutica" style="width:100%;height:190px;object-fit:cover;display:block;">
+      <div style="padding:22px 24px;"><h3 style="font-size:27px;">Industria farmacéutica</h3><p style="font-size:22px;margin-top:8px;">Purificación de APIs, separación de intermediarios y recuperación de disolventes de alto costo.</p></div>
+    </div>
+    <div class="card card--teal" style="padding:0;overflow:hidden;">
+      <img src="img/05-bebidas.jpg" alt="Bebidas alcohólicas" style="width:100%;height:190px;object-fit:cover;display:block;">
+      <div style="padding:22px 24px;"><h3 style="font-size:27px;">Bebidas alcohólicas</h3><p style="font-size:22px;margin-top:8px;">Whisky, coñac, ron y tequila en alambiques; «cortes» de cabezas, corazón y colas.</p></div>
+    </div>
+    <div class="card card--amber" style="padding:0;overflow:hidden;">
+      <img src="img/06-quimicos.webp" alt="Químicos de especialidad" style="width:100%;height:190px;object-fit:cover;display:block;">
+      <div style="padding:22px 24px;"><h3 style="font-size:27px;">Químicos de especialidad</h3><p style="font-size:22px;margin-top:8px;">Saborizantes, fragancias, aceites esenciales y solventes de alta pureza para electrónica.</p></div>
+    </div>
+    <div class="card" style="padding:0;overflow:hidden;">
+      <img src="img/07-id.jpeg" alt="Investigación y desarrollo" style="width:100%;height:190px;object-fit:cover;display:block;">
+      <div style="padding:22px 24px;"><h3 style="font-size:27px;">Investigación y desarrollo</h3><p style="font-size:22px;margin-top:8px;">Plantas piloto, purificación de pequeñas cantidades y obtención de datos de equilibrio.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ DIVISOR 2 ═══ -->
+<section class="s s--dark divider" data-screen-label="Divisor Equipo" data-nofoot>
+  <div>
+    <div class="part">Parte 3</div>
+    <h2>Equipamiento y diseño</h2>
+    <p class="sub">Componentes de un destilador real, columnas multietapa y el papel del reflujo.</p>
+  </div>
+</section>
+
+<!-- 09 · Anatomía de un destilador simple (leyenda = imagen) -->
+<section class="s" data-screen-label="Anatomia destilador">
+  <div class="kicker">Equipo real</div>
+  <h2 class="s-head" style="margin-bottom:6px;">Anatomía de un destilador simple</h2>
+  <div class="split split--narrow" style="align-items:center;">
+    <div class="img-panel">
+      <img src="img/08-anatomia.png" alt="Alambique tipo pot still con sus 13 componentes numerados">
+      <p class="figcap">Alambique tipo <em>pot still</em> con barril «thumper». Cada número corresponde a la leyenda.</p>
+    </div>
+    <div class="copy">
+      <div class="collist" style="grid-template-columns:1fr 1fr;gap:12px 40px;">
+        <div class="it"><b>1 · Válvula de escape</b></div>
+        <div class="it"><b>2 · Serpentín de cobre</b></div>
+        <div class="it"><b>3 · Salida de agua</b></div>
+        <div class="it"><b>4 · Entrada de agua</b></div>
+        <div class="it"><b>5 · Salida de líquido</b></div>
+        <div class="it"><b>6 · Condensador</b></div>
+        <div class="it"><b>7 · Mango</b></div>
+        <div class="it"><b>8 · Tubería de acero inox.</b></div>
+        <div class="it"><b>9 · Barril «thumper»</b></div>
+        <div class="it"><b>10 · Serpentín de cobre</b></div>
+        <div class="it"><b>11 · Termómetro de metal</b></div>
+        <div class="it"><b>12 · Hebilla</b></div>
+        <div class="it"><b>13 · Barril (calderín)</b></div>
+      </div>
+      <div class="callout compact" style="margin-top:18px;">
+        <p>El <b>calderín</b> (13) recibe la carga y el calor; el vapor sube por la tubería (8) al barril «thumper» (9) —una etapa extra de equilibrio— y luego al <b>condensador</b> (6), que lo licúa.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 10 · Columnas multietapa -->
+<section class="s s--tint" data-screen-label="Columnas multietapa">
+  <div class="split split--wideR">
+    <div class="img-panel">
+      <img src="img/09-columnas.png" class="tall" alt="Columna de fraccionamiento multietapa con reflujo">
+      <p class="figcap">Columna de fraccionamiento entre el calderín y el condensador.</p>
+    </div>
+    <div class="copy">
+      <div class="kicker">Mejorando la separación</div>
+      <h2>Columnas multietapa</h2>
+      <p>Para mejorar la eficiencia se usan columnas de fraccionamiento con el principio de <b>reflujo</b>:</p>
+      <ul>
+        <li>Se instala una columna vertical entre el calderín y el condensador.</li>
+        <li>Contiene <b>platos o empaque</b> que aportan área de contacto.</li>
+        <li>Cada plato funciona como una <b>etapa de equilibrio</b> adicional.</li>
+        <li>Parte del condensado (reflujo) se devuelve a la columna.</li>
+        <li>El reflujo <b>enriquece</b> el vapor en el componente más volátil.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 11 · El rol del reflujo -->
+<section class="s" data-screen-label="Rol del reflujo">
+  <div class="split split--wideL">
+    <div class="copy">
+      <div class="kicker">Rectificación</div>
+      <h2>El rol del reflujo</h2>
+      <p>La <b>relación de reflujo</b> $R$ es el parámetro operativo clave:</p>
+      <div class="fml">$$R = \frac{L}{D}$$</div>
+      <ul class="var-list">
+        <li>$L$: flujo de líquido devuelto a la columna</li>
+        <li>$D$: flujo de producto retirado como destilado</li>
+      </ul>
+      <div class="callout verde compact" style="margin-top:18px;">
+        <p><b>$R \to \infty$</b> (reflujo total): máxima separación, sin producción neta.</p>
+        <p><b>$R = 0$</b> (reflujo cero): equivale a la destilación simple sin columna.</p>
+      </div>
+    </div>
+    <div class="img-panel">
+      <img src="img/10-reflujo.webp" alt="Ilustración del reflujo en una columna de destilación">
+      <p class="figcap">El reflujo devuelve líquido a la columna para enriquecer el vapor ascendente.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ DIVISOR 3 ═══ -->
+<section class="s s--dark divider" data-screen-label="Divisor Modelado" data-nofoot>
+  <div>
+    <div class="part">Parte 2</div>
+    <h2>Modelado matemático</h2>
+    <p class="sub">De las suposiciones al balance diferencial, y de allí a la ecuación de Rayleigh.</p>
+  </div>
+</section>
+
+<!-- 12 · Suposiciones -->
+<section class="s" data-screen-label="Suposiciones">
+  <div class="kicker">Modelo</div>
+  <h2 class="s-head">Suposiciones del modelo</h2>
+  <div class="cards two stagger" style="margin-top:30px;">
+    <div class="card">
+      <span class="card-n">01</span>
+      <h3>Equilibrio vapor-líquido</h3>
+      <p>El vapor retirado en cada instante está en <b>equilibrio termodinámico</b> con el líquido del calderín: $y^\ast$ y $x_W$ se relacionan por los datos de equilibrio.</p>
+    </div>
+    <div class="card card--teal">
+      <span class="card-n">02</span>
+      <h3>Operación diferencial</h3>
+      <p>La vaporización se modela como un proceso continuo donde, en cada instante, una cantidad <b>infinitesimal</b> de vapor ($dW$) se forma y se retira.</p>
+    </div>
+    <div class="card card--amber">
+      <span class="card-n">03</span>
+      <h3>Ausencia de retención</h3>
+      <p>El material retenido en el espacio de vapor, tuberías y condensador es <b>despreciable</b> frente al líquido del calderín.</p>
+    </div>
+    <div class="card">
+      <span class="card-n">04</span>
+      <h3>Mezcla perfecta</h3>
+      <p>El líquido del calderín está <b>perfectamente agitado</b>: composición uniforme en todo el volumen en cualquier instante.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 13 · Balance de materia diferencial -->
+<section class="s s--tint" data-screen-label="Balance diferencial">
+  <div class="kicker">Componente más volátil (CMV)</div>
+  <h2 class="s-head">Balance de materia diferencial</h2>
+  <p class="lead-top" style="margin-top:6px;">Balance sobre el CMV en un intervalo de tiempo infinitesimal:</p>
+  <div class="fml">$$(\text{Acumulación}) = (\text{Entrada}) - (\text{Salida}) + (\text{Generación})$$</div>
+  <div class="collist" style="grid-template-columns:1fr 1fr;margin-top:20px;">
+    <div class="it"><b>Entrada</b><span>No hay entrada durante la operación $(= 0)$</span></div>
+    <div class="it"><b>Salida</b><span>Sale $dW$ con composición $y^\ast$ $(= y^\ast\, dW)$</span></div>
+    <div class="it"><b>Generación</b><span>No hay reacción química $(= 0)$</span></div>
+    <div class="it"><b>Acumulación</b><span>Cambio de CMV en el calderín $(= d(W x_W))$</span></div>
+  </div>
+  <div class="callout verde" style="margin-top:22px;">
+    <p>La ecuación de balance diferencial queda:</p>
+    <div class="fml" style="margin-top:8px;">$$d(W\,x_W) = -\,y^\ast\, dW$$</div>
+  </div>
+</section>
+
+<!-- 14 · Derivación Rayleigh (1) -->
+<section class="s" data-screen-label="Derivacion Rayleigh I">
+  <div class="kicker">Derivación · pasos 1-3</div>
+  <h2 class="s-head">De balance a variables separadas</h2>
+  <div class="split" style="margin-top:16px;align-items:start;gap:80px;">
+    <div class="copy">
+      <h3 style="font-size:28px;">Paso 1 · expandir</h3>
+      <div class="fml">$$W x_W = W x_W - W\,dx_W - x_W\,dW + dx_W\,dW + y^\ast dW$$</div>
+      <h3 style="font-size:28px;margin-top:20px;">Paso 2 · simplificar</h3>
+      <p style="font-size:24px;">Cancelamos $W x_W$ y eliminamos $dx_W\,dW$ (segundo orden):</p>
+      <div class="fml">$$0 = -W\,dx_W - x_W\,dW + y^\ast dW$$</div>
+    </div>
+    <div class="copy">
+      <h3 style="font-size:28px;">Paso 3 · separar variables</h3>
+      <div class="fml">$$W\,dx_W = (y^\ast - x_W)\,dW$$</div>
+      <div class="fml">$$\frac{dW}{W} = \frac{dx_W}{y^\ast - x_W}$$</div>
+      <div class="callout verde compact" style="margin-top:18px;">
+        <p>Ya tenemos las variables separadas: un lado depende solo de $W$ y el otro solo de $x_W$. Listo para integrar.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 15 · Derivación Rayleigh (2) -->
+<section class="s s--tint" data-screen-label="Derivacion Rayleigh II">
+  <div class="kicker">Derivación · pasos 4-5</div>
+  <h2 class="s-head">La ecuación de Rayleigh</h2>
+  <div class="split" style="margin-top:16px;align-items:center;gap:80px;">
+    <div class="copy">
+      <h3 style="font-size:28px;">Paso 4 · integrar</h3>
+      <p style="font-size:24px;">Entre las condiciones inicial y final:</p>
+      <div class="fml">$$\int_{W_0}^{W_f}\frac{dW}{W} = \int_{x_{W0}}^{x_{Wf}}\frac{dx_W}{y^\ast - x_W}$$</div>
+      <h3 style="font-size:28px;margin-top:18px;">Paso 5 · invertir límites</h3>
+      <p style="font-size:24px;">Para eliminar el signo negativo del logaritmo:</p>
+    </div>
+    <div class="copy">
+      <div class="callout verde">
+        <h4>Forma final de la ecuación de Rayleigh</h4>
+        <div class="fml">$$\ln\!\left(\frac{W_0}{W_f}\right) = \int_{x_{Wf}}^{x_{W0}}\frac{dx_W}{y^\ast - x_W}$$</div>
+        <p style="font-size:23px;">Conecta la cantidad de líquido evaporada con el cambio de composición del calderín.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ DIVISOR 4 ═══ -->
+<section class="s s--dark divider" data-screen-label="Divisor Metodologia" data-nofoot>
+  <div>
+    <div class="part">Metodología</div>
+    <h2>Resolución de la ecuación</h2>
+    <p class="sub">Estrategias según el sistema, el algoritmo numérico y un ejemplo completo resuelto en vivo.</p>
+  </div>
+</section>
+
+<!-- 16 · Estrategias de solución -->
+<section class="s" data-screen-label="Estrategias">
+  <div class="kicker">¿Ideal o real?</div>
+  <h2 class="s-head">Estrategias de solución</h2>
+  <p class="lead-top" style="margin-top:6px;">La resolución depende del tipo de sistema que se modela.</p>
+  <div class="cards two" style="margin-top:24px;">
+    <div class="card">
+      <h3>Sistemas ideales ($\alpha$ = cte)</h3>
+      <p>Se asume volatilidad relativa constante, lo que da una función de equilibrio explícita:</p>
+      <div class="fml">$$y^\ast = \frac{\alpha x}{1 + (\alpha - 1)x}$$</div>
+      <p>Esto simplifica la integración.</p>
+    </div>
+    <div class="card card--teal">
+      <h3>Sistemas reales (datos $x$-$y$)</h3>
+      <p>Se usan datos experimentales de equilibrio líquido-vapor. Se construye un <b>interpolador</b> $y^\ast = f(x)$ (lineal, cúbico o spline) para relacionar las composiciones a lo largo del proceso.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 17 · ¿Qué se conoce? -->
+<section class="s s--tint" data-screen-label="Que se conoce">
+  <div class="kicker">Dos problemas</div>
+  <h2 class="s-head">¿Qué se conoce y qué se calcula?</h2>
+  <div class="cards two" style="margin-top:26px;">
+    <div class="card">
+      <span class="card-n">Directo</span>
+      <h3>Calcular la fracción vaporizada</h3>
+      <p>Se conocen $x_0$ y $x_f$. Se integra la ecuación de Rayleigh por <b>cuadratura numérica</b> (trapecio, Simpson) para hallar $f$.</p>
+    </div>
+    <div class="card card--amber">
+      <span class="card-n">Inverso</span>
+      <h3>Calcular $x_f$</h3>
+      <p>Se conocen $x_0$ y la fracción $f$ deseada. Se resuelve con un método <b>iterativo</b> ($\texttt{fsolve}$) hasta cumplir la ecuación.</p>
+    </div>
+  </div>
+  <div class="callout verde" style="margin-top:26px;">
+    <p><b>Análisis de resultados:</b> trayectoria del proceso, balance de materia, gráficos y verificaciones ($0 < x_f < x_0 < 1$).</p>
+  </div>
+</section>
+
+<!-- 18 · Algoritmo detallado -->
+<section class="s" data-screen-label="Algoritmo">
+  <div class="kicker">Paso a paso</div>
+  <h2 class="s-head">Algoritmo de solución</h2>
+  <div class="steps stagger" style="grid-template-columns:repeat(4,1fr);margin-top:30px;">
+    <div class="step">
+      <div class="st-n">1</div>
+      <b>Entrada de datos</b>
+      <span>$x_0$, sistema ($\alpha$ o datos $x$-$y$) y objetivo ($x_f$ o $f$).</span>
+    </div>
+    <div class="step" style="border-top-color:var(--teal);">
+      <div class="st-n" style="background:var(--teal);">2</div>
+      <b>Modelo de equilibrio</b>
+      <span>Ideal: $y^\ast=\alpha x/(1+(\alpha-1)x)$. Real: interpolar datos $x$-$y$.</span>
+    </div>
+    <div class="step" style="border-top-color:var(--ambar);">
+      <div class="st-n" style="background:var(--ambar);">3</div>
+      <b>Integración numérica</b>
+      <span>Resolver $I=\int_{x_f}^{x_0} dx/(y^\ast-x)$ por cuadratura, trapecio o Simpson.</span>
+    </div>
+    <div class="step">
+      <div class="st-n">4</div>
+      <b>Cálculos finales</b>
+      <span>$W_0/W_f=e^{I}$, $\; f=1-W_f/W_0$, $\; \bar{y}=(x_0-x_f(1-f))/f$.</span>
+    </div>
+  </div>
+  <div class="callout amber compact" style="margin-top:30px;">
+    <p><b>Casos especiales:</b> singularidad en $y^\ast=x$ (usar tolerancia, evitar dividir por cero); azeótropos ($y^\ast=x$ en $x_{az}$) que limitan la separación máxima; el problema inverso requiere estimación inicial.</p>
+  </div>
+</section>
+
+<!-- 19 · ★ CALCULADORA RAYLEIGH EN VIVO -->
+<section class="s s--tint" data-screen-label="Calculadora Rayleigh">
+  <div class="kicker">Interactivo · resuelve en vivo</div>
+  <h2 class="s-head" style="margin-bottom:4px;">Ecuación de Rayleigh: metanol-agua</h2>
+  <p class="lead-top" style="margin-bottom:10px;">Ajusta la composición inicial $x_0$ y la final $x_f$. Se interpola el equilibrio metanol-agua y se integra $\int dx/(y-x)$ por el método del trapecio.</p>
+  <div class="rr">
+    <div class="rr-controls">
+      <h3>Condiciones del lote</h3>
+      <div class="rr-field">
+        <label><span>Carga inicial $W_0$</span> <b><span id="ry-w0v">100</span> kmol</b></label>
+        <input type="range" id="ry-w0" min="50" max="200" value="100" step="10">
+      </div>
+      <div class="rr-field">
+        <label><span>Composición inicial $x_0$</span> <b><span id="ry-x0v">0.75</span></b></label>
+        <input type="range" id="ry-x0" min="0.55" max="0.80" value="0.75" step="0.01">
+      </div>
+      <div class="rr-field">
+        <label><span>Composición final $x_f$</span> <b><span id="ry-xfv">0.55</span></b></label>
+        <input type="range" id="ry-xf" min="0.50" max="0.75" value="0.55" step="0.01">
+      </div>
+      <div class="rr-hint">Datos de equilibrio metanol-agua a 1 atm: $x=[0{,}50;\,0{,}60;\,0{,}70;\,0{,}80]$, $y=[0{,}779;\,0{,}825;\,0{,}870;\,0{,}915]$ (interpolación lineal). Debe cumplirse $x_f < x_0$.</div>
+    </div>
+    <div class="rr-out">
+      <div class="rr-status" id="ry-status">—</div>
+      <div class="tbl-wrap" style="margin-top:2px;">
+        <table>
+          <thead><tr><th>Resultado</th><th>Valor</th></tr></thead>
+          <tbody id="ry-tbody"></tbody>
+        </table>
+      </div>
+      <p style="font-size:21px;color:var(--gris-3);margin:4px 2px 0;">$\ln(W_0/W_f)=\int_{x_f}^{x_0} dx/(y-x)$; luego $W_f=W_0 e^{-I}$, $D=W_0-W_f$ y $x_{D,\text{avg}}=(W_0 x_0 - W_f x_f)/D$.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 20 · Ejemplo metanol-agua: enunciado -->
+<section class="s" data-screen-label="Ejemplo enunciado">
+  <div class="split">
+    <div class="copy">
+      <div class="kicker">Ejemplo resuelto</div>
+      <h2>Destilación de metanol-agua</h2>
+      <p>Se carga un destilador por lotes con <b>100 kmol</b> de mezcla metanol-agua al <b>75% molar</b> de metanol, a presión atmosférica. El proceso se detiene cuando el líquido del calderín baja a <b>55% molar</b>.</p>
+      <div class="callout verde compact" style="margin-top:18px;">
+        <p><b>Objetivos:</b> (1) líquido final $W_f$; (2) destilado total $D$; (3) composición promedio del destilado $x_{D,\text{avg}}$.</p>
+      </div>
+    </div>
+    <div class="chart-panel" style="cursor:default;">
+      <table style="font-size:26px;">
+        <thead><tr><th>$x_{\text{MeOH}}$ (líquido)</th><th>$y_{\text{MeOH}}$ (vapor)</th></tr></thead>
+        <tbody>
+          <tr><td>0,50</td><td>0,779</td></tr>
+          <tr><td>0,60</td><td>0,825</td></tr>
+          <tr><td>0,70</td><td>0,870</td></tr>
+          <tr><td>0,80</td><td>0,915</td></tr>
+        </tbody>
+      </table>
+      <p class="figcap">Datos de equilibrio metanol-agua a 1 atm.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 21 · Solución pasos 1-2 -->
+<section class="s s--tint" data-screen-label="Solucion I">
+  <div class="kicker">Solución · integración</div>
+  <h2 class="s-head">Preparar e integrar</h2>
+  <div class="split" style="margin-top:14px;align-items:start;gap:70px;">
+    <div class="copy">
+      <h3 style="font-size:28px;">Paso 1 · integrando $1/(y-x)$</h3>
+      <div class="tbl-wrap" style="margin-top:8px;">
+        <table style="font-size:23px;">
+          <thead><tr><th>$x$</th><th>$y$</th><th>$1/(y-x)$</th></tr></thead>
+          <tbody>
+            <tr><td>0,50</td><td>0,779</td><td>3,584</td></tr>
+            <tr><td>0,55*</td><td>0,802*</td><td>3,984</td></tr>
+            <tr><td>0,60</td><td>0,825</td><td>4,444</td></tr>
+            <tr><td>0,70</td><td>0,870</td><td>5,882</td></tr>
+            <tr><td>0,75*</td><td>0,893*</td><td>7,042</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-size:20px;color:var(--gris-3);margin-top:6px;">* Valores obtenidos por interpolación lineal.</p>
+    </div>
+    <div class="copy">
+      <h3 style="font-size:28px;">Paso 2 · regla del trapecio</h3>
+      <p style="font-size:24px;">Entre $x=0{,}55$ y $x=0{,}75$:</p>
+      <div class="fml" style="font-size:.8em;">$$\int_{0.55}^{0.75}\!\frac{dx}{y-x} \approx 0{,}211 + 0{,}516 + 0{,}323 \approx 1{,}05$$</div>
+      <div class="callout verde compact" style="margin-top:14px;">
+        <p>Con un valor más preciso: $\ln(W_0/W_f) \approx 1{,}07$.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 22 · Solución pasos 3-5 -->
+<section class="s" data-screen-label="Solucion II">
+  <div class="kicker">Solución · resultados</div>
+  <h2 class="s-head">Líquido, destilado y composición</h2>
+  <div class="cards" style="margin-top:28px;">
+    <div class="card">
+      <span class="card-n">Paso 3</span>
+      <h3>Líquido remanente</h3>
+      <div class="fml">$$\frac{W_0}{W_f}=e^{1{,}07}\approx 2{,}915$$</div>
+      <div class="fml">$$W_f=\frac{100}{2{,}915}\approx 34{,}3\ \text{kmol}$$</div>
+    </div>
+    <div class="card card--teal">
+      <span class="card-n">Paso 4</span>
+      <h3>Destilado total</h3>
+      <div class="fml">$$W_0 = W_f + D$$</div>
+      <div class="fml">$$D = 100 - 34{,}3 = 65{,}7\ \text{kmol}$$</div>
+    </div>
+    <div class="card card--amber">
+      <span class="card-n">Paso 5</span>
+      <h3>Composición promedio</h3>
+      <div class="fml">$$W_0 x_{W0}=W_f x_{Wf}+D\,x_{D,\text{avg}}$$</div>
+      <div class="fml">$$x_{D,\text{avg}}\approx 0{,}854$$</div>
+    </div>
+  </div>
+  <div class="callout verde" style="margin-top:28px;">
+    <p>El destilado (<b>85,4%</b>) está enriquecido respecto a la carga (75%) y el residuo (55%) empobrecido: la ecuación de Rayleigh predice el comportamiento de la destilación diferencial.</p>
+  </div>
+</section>
+
+<!-- ═══ DIVISOR 5 ═══ -->
+<section class="s s--dark divider" data-screen-label="Divisor Operacion" data-nofoot>
+  <div>
+    <div class="part">Operación</div>
+    <h2>Reflujo, control y comparación</h2>
+    <p class="sub">Modos de operación, consideraciones industriales y cómo se compara con la destilación flash.</p>
+  </div>
+</section>
+
+<!-- 23 · Reflujo constante vs variable -->
+<section class="s" data-screen-label="Reflujo modos">
+  <div class="kicker">Modos de operación</div>
+  <h2 class="s-head">Reflujo constante vs. composición constante</h2>
+  <div class="cards two" style="margin-top:28px;">
+    <div class="card">
+      <h3>Reflujo constante ($R$ = cte)</h3>
+      <ul>
+        <li>Se fija $R$ durante toda la destilación</li>
+        <li>La composición del destilado ($x_D$) <b>disminuye</b> con el tiempo</li>
+        <li>Tasa de producción aproximadamente constante</li>
+        <li>Útil para fraccionar en varios <b>cortes</b> de distinta pureza</li>
+        <li>Común en recuperación de solventes y bebidas alcohólicas</li>
+      </ul>
+    </div>
+    <div class="card card--teal">
+      <h3>Composición constante ($x_D$ = cte)</h3>
+      <ul>
+        <li>Se ajusta $R$ para mantener una pureza fija</li>
+        <li>La relación de reflujo <b>aumenta</b> continuamente</li>
+        <li>La tasa de producción disminuye progresivamente</li>
+        <li>Preferida cuando se exige una <b>especificación estricta</b></li>
+        <li>Común en industria farmacéutica y química fina</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 24 · Consideraciones industriales -->
+<section class="s s--tint" data-screen-label="Consideraciones industriales">
+  <div class="kicker">Diseño y operación</div>
+  <h2 class="s-head">Consideraciones industriales</h2>
+  <div class="cards four stagger" style="margin-top:30px;">
+    <div class="card"><span class="card-n">Control de T</span><p>La temperatura aumenta durante el proceso; el control debe ajustar la energía para mantener la vaporización y evitar sobrecalentamiento.</p></div>
+    <div class="card card--teal"><span class="card-n">Perturbaciones</span><p>Los lotes son más sensibles que los procesos continuos: cambios en calor, reflujo o presión afectan la calidad.</p></div>
+    <div class="card card--amber"><span class="card-n">Automatización</span><p>Control avanzado y sensores en línea de composición permiten ajustar el reflujo en tiempo real.</p></div>
+    <div class="card"><span class="card-n">Tiempo de ciclo</span><p>Carga, calentamiento, operación, enfriamiento y descarga: optimizarlos es clave para la productividad.</p></div>
+  </div>
+</section>
+
+<!-- 25 · Flash vs diferencial -->
+<section class="s" data-screen-label="Flash vs diferencial">
+  <div class="kicker">Comparación</div>
+  <h2 class="s-head">Destilación flash vs. diferencial</h2>
+  <div class="tbl-wrap" style="margin-top:26px;">
+    <table>
+      <thead><tr><th>Aspecto</th><th>Destilación flash</th><th>Destilación diferencial</th></tr></thead>
+      <tbody>
+        <tr><td><b>Termodinámica</b></td><td>Una etapa, dos corrientes en equilibrio</td><td>Composición variable en el tiempo</td></tr>
+        <tr><td><b>Escala ideal</b></td><td>Grandes caudales</td><td>Lotes pequeños</td></tr>
+        <tr><td><b>Producto</b></td><td>Separaciones moderadas</td><td>Productos de alto valor</td></tr>
+        <tr><td><b>Operación</b></td><td>Continua</td><td>Por lotes, permite cortes selectivos</td></tr>
+        <tr><td><b>Economía</b></td><td>Mayor economía de escala</td><td>Mayor flexibilidad operativa</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="callout amber compact" style="margin-top:24px;">
+    <p>Parámetro clave para ambos: la <b>volatilidad relativa promedio</b> $\alpha$. Si $\alpha < 1{,}3$ ambos métodos tienen dificultades, pero el lote permite cortes selectivos que mejoran la pureza final.</p>
+  </div>
+</section>
+
+<!-- ═══ DIVISOR 6 ═══ -->
+<section class="s s--dark divider" data-screen-label="Divisor Aplicaciones" data-nofoot>
+  <div>
+    <div class="part">Parte 4</div>
+    <h2>Aplicaciones industriales</h2>
+    <p class="sub">Bebidas espirituosas, perfumería y química fina: donde el lote y la ecuación de Rayleigh brillan.</p>
+  </div>
+</section>
+
+<!-- 26 · Aplicación a alcoholes -->
+<section class="s" data-screen-label="Aplicacion alcoholes">
+  <div class="split split--wideL">
+    <div class="copy">
+      <div class="kicker">Bebidas espirituosas</div>
+      <h2>Aplicación a alcoholes</h2>
+      <div class="steps" style="grid-template-columns:1fr;gap:16px;margin-top:16px;">
+        <div class="step" style="flex-direction:row;align-items:flex-start;gap:18px;"><div class="st-n">1</div><div><b>Cabezas</b><br><span>Primera fracción, rica en volátiles como aldehídos y metanol. Se separa por seguridad y calidad.</span></div></div>
+        <div class="step" style="flex-direction:row;align-items:flex-start;gap:18px;border-top-color:var(--teal);"><div class="st-n" style="background:var(--teal);">2</div><div><b>Corazón</b><br><span>Fracción principal con etanol de alta pureza (70-80% v/v). Es la parte valiosa que se recolecta.</span></div></div>
+        <div class="step" style="flex-direction:row;align-items:flex-start;gap:18px;border-top-color:var(--ambar);"><div class="st-n" style="background:var(--ambar);">3</div><div><b>Colas</b><br><span>Última fracción con compuestos menos volátiles (furfural, ácidos grasos). Se descarta o recicla.</span></div></div>
+      </div>
+    </div>
+    <div class="img-panel">
+      <img src="img/11-alcoholes.jpg" alt="Producción de bebidas alcohólicas en alambiques" class="tall">
+      <p class="figcap">La ecuación de Rayleigh predice cuándo el metanol superará los límites legales, optimizando el corte.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 27 · Perfumería -->
+<section class="s s--tint" data-screen-label="Perfumeria">
+  <div class="split split--wideR">
+    <div class="img-panel">
+      <img src="img/12-perfumeria.png" class="tall" alt="Alambiques de cobre para destilación de aceites esenciales">
+      <p class="figcap">Destilación de aceites esenciales en alambiques de cobre.</p>
+    </div>
+    <div class="copy">
+      <div class="kicker">Caso · aceites esenciales</div>
+      <h2>Perfumería</h2>
+      <p><b>Problema:</b> los terpenos y compuestos aromáticos son termosensibles y se degradan a altas temperaturas.</p>
+      <p><b>Solución:</b> destilación diferencial a <b>baja presión</b> (0,85 bar) para bajar la ebullición a 95 °C y preservar los aromas.</p>
+      <div class="callout verde compact" style="margin-top:16px;">
+        <p><b>Resultados:</b> −18% en consumo de vapor, +6% absoluto en recuperación de linalool y mayor calidad sensorial, con el modelo de Rayleigh ajustado a datos de laboratorio.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 28 · Resumen -->
+<section class="s" data-screen-label="Resumen">
+  <div class="kicker">Resumen</div>
+  <h2 class="s-head">Conceptos clave</h2>
+  <div class="cards two stagger" style="margin-top:28px;">
+    <div class="card">
+      <h3>Naturaleza transitoria</h3>
+      <p>Proceso en estado <b>no estacionario</b>: composición y temperatura cambian continuamente a lo largo del tiempo.</p>
+    </div>
+    <div class="card card--teal">
+      <h3>Ecuación de Rayleigh</h3>
+      <p>Herramienta matemática fundamental:</p>
+      <div class="fml" style="font-size:.72em;">$$\ln\!\left(\tfrac{W_0}{W_f}\right)=\int_{x_{Wf}}^{x_{W0}}\tfrac{dx}{y^\ast - x}$$</div>
+      <p>Conecta lo evaporado con el cambio de composición.</p>
+    </div>
+    <div class="card card--amber">
+      <h3>Rectificación y reflujo</h3>
+      <p>Columnas multietapa y reflujo <b>mejoran drásticamente</b> la separación, permitiendo mayor pureza.</p>
+    </div>
+    <div class="card">
+      <h3>Aplicaciones</h3>
+      <p>Ideal para químicos de especialidad, fármacos, bebidas y I+D, donde la flexibilidad y la alta pureza compensan la menor eficiencia energética.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 29 · Cierre -->
+<section class="s close-slide" data-screen-label="Cierre" data-nofoot>
+  <h2>Una operación versátil y poderosa</h2>
+  <p style="max-width:46ch;">Dominar la destilación por lotes exige comprender la interacción dinámica entre <b style="color:var(--verde);">balances de materia y equilibrio de fases</b> en un sistema transitorio — un concepto central en la ingeniería química.</p>
+  <p style="margin-top:30px;color:rgba(255,255,255,.4);font-size:22px;">IQYA-2031 · Proyecto de Operaciones Unitarias · 2026-20 · Luis H. Reyes</p>
+</section>
+
+</deck-stage>
+
+<script src="assets/deck-stage.js"></script>
+
+<!-- Footer -->
+<script>
+document.querySelectorAll('deck-stage section:not([data-nofoot])').forEach(function(s){
+  var f=document.createElement('div');f.className='slide-footer';
+  f.innerHTML='<span>IQYA-2031 · Proyecto de Operaciones Unitarias · 2026-20</span><span>Destilación diferencial · Luis H. Reyes</span>';
+  s.appendChild(f);
+});
+</script>
+
+<!-- Lightbox (images + canvas) -->
+<script>
+(function(){
+  var lb=document.createElement('dialog');lb.className='lightbox';
+  lb.innerHTML='<button class="lb-close" aria-label="Cerrar">✕</button><div class="lb-content" style="display:flex;align-items:center;justify-content:center;"></div>';
+  document.body.appendChild(lb);var ct=lb.querySelector('.lb-content');
+  function close(){if(lb.open)lb.close();}
+  lb.addEventListener('close',function(){ct.innerHTML='';});
+  function openSrc(src){ct.innerHTML='';var im=document.createElement('img');im.src=src;ct.appendChild(im);if(!lb.open)lb.showModal();}
+  lb.addEventListener('click',close);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&lb.open){e.stopPropagation();close();}},true);
+  document.querySelectorAll('deck-stage .img-panel img, deck-stage .gif-box img').forEach(function(img){
+    var p=img.parentElement;if(getComputedStyle(p).position==='static')p.style.position='relative';
+    function trigger(e){e.stopPropagation();openSrc(img.currentSrc||img.src);}
+    img.addEventListener('click',trigger);
+    var b=document.createElement('span');b.className='zoom-badge';b.setAttribute('aria-hidden','true');b.textContent='⤢';b.addEventListener('click',trigger);p.appendChild(b);
+  });
+  document.querySelectorAll('deck-stage .chart-panel canvas').forEach(function(cv){
+    var p=cv.closest('.chart-panel');if(getComputedStyle(p).position==='static')p.style.position='relative';
+    function trigger(e){e.stopPropagation();openSrc(cv.toDataURL('image/png'));}
+    cv.addEventListener('click',trigger);
+    p.addEventListener('click',function(e){if(e.target===p)trigger(e);});
+    var b=document.createElement('span');b.className='zoom-badge';b.setAttribute('aria-hidden','true');b.textContent='⤢';b.addEventListener('click',trigger);p.appendChild(b);
+  });
+})();
+</script>
+
+<!-- Tab switcher -->
+<script>
+(function(){
+  document.querySelectorAll('.lossmenu').forEach(function(menu){
+    menu.querySelectorAll('.tab').forEach(function(tab){
+      tab.addEventListener('click',function(){
+        menu.querySelectorAll('.tab').forEach(function(t){t.classList.remove('is-active');});
+        menu.querySelectorAll('.panel').forEach(function(p){p.classList.remove('is-active');});
+        tab.classList.add('is-active');
+        var target=document.getElementById(tab.getAttribute('data-panel'));
+        if(target)target.classList.add('is-active');
+      });
+    });
+  });
+})();
+</script>
+
+
+<!-- Diagrama T-x-y interactivo (recorrido A -> B -> C -> ...) -->
+<script>
+(function(){
+  var cv=document.getElementById('txy-canvas');if(!cv)return;
+  var C={verde:'#00A651',verdeOsc:'#007A3D',teal:'#009688',ambar:'#F59E0B',gris1:'#1A1A1A',gris2:'#555',gris3:'#999',gris4:'#ccc',gris5:'#e5e5e5',rojo:'#DC2626',azul:'#0F62FE'};
+  var dpr=2, W=cv.width, H=cv.height;
+  cv.width=W*dpr; cv.height=H*dpr; cv.style.width=W+'px'; cv.style.height=H+'px';
+  var ctx=cv.getContext('2d'); ctx.scale(dpr,dpr);
+  // modelo: volatil a la derecha. Tb_heavy=100 (x=0), Tb_light=64.7 (x=1)
+  var alpha=2.4, TbH=100, TbL=64.7;
+  function yEq(x){return alpha*x/(1+(alpha-1)*x);}
+  function Tbub(x){return TbL+(TbH-TbL)*Math.pow(1-x,1.35);}
+  var pad={l:96,r:40,t:44,b:84};
+  var plotL=pad.l,plotR=W-pad.r,plotT=pad.t,plotB=H-pad.b,pw=plotR-plotL,ph=plotB-plotT;
+  var Tmin=60,Tmax=104;
+  function PX(x){return plotL+x*pw;}
+  function PY(T){return plotB-(T-Tmin)/(Tmax-Tmin)*ph;}
+  // puntos del recorrido
+  var x1=0.60, x2=0.42, x3=0.28, xf=0.20;
+  var TA=Tbub(x1)-10;
+  function arrow(x1p,y1p,x2p,y2p,color,lw){
+    ctx.strokeStyle=color;ctx.fillStyle=color;ctx.lineWidth=lw||3;ctx.setLineDash([]);
+    ctx.beginPath();ctx.moveTo(x1p,y1p);ctx.lineTo(x2p,y2p);ctx.stroke();
+    var ang=Math.atan2(y2p-y1p,x2p-x1p),h=13;
+    ctx.beginPath();ctx.moveTo(x2p,y2p);
+    ctx.lineTo(x2p-h*Math.cos(ang-0.4),y2p-h*Math.sin(ang-0.4));
+    ctx.lineTo(x2p-h*Math.cos(ang+0.4),y2p-h*Math.sin(ang+0.4));
+    ctx.closePath();ctx.fill();
+  }
+  function dot(x,T,color,r){ctx.fillStyle=color;ctx.beginPath();ctx.arc(PX(x),PY(T),r||6,0,Math.PI*2);ctx.fill();}
+  function label(txt,x,T,color,dx,dy,align){ctx.fillStyle=color;ctx.textAlign=align||'left';ctx.textBaseline='middle';ctx.fillText(txt,PX(x)+(dx||0),PY(T)+(dy||0));}
+  function base(){
+    ctx.clearRect(0,0,W,H);
+    // grid + axes
+    ctx.strokeStyle=C.gris5;ctx.lineWidth=1;ctx.fillStyle=C.gris3;ctx.font='19px sans-serif';
+    ctx.textAlign='center';ctx.textBaseline='top';
+    for(var xi=0;xi<=1.0001;xi+=0.2){ctx.beginPath();ctx.moveTo(PX(xi),plotT);ctx.lineTo(PX(xi),plotB);ctx.stroke();ctx.fillText(xi.toFixed(1),PX(xi),plotB+9);}
+    ctx.textAlign='right';ctx.textBaseline='middle';
+    for(var T=60;T<=104;T+=8){ctx.beginPath();ctx.moveTo(plotL,PY(T)),ctx.lineTo(plotR,PY(T));ctx.stroke();ctx.fillText(T+'°',plotL-12,PY(T));}
+    ctx.strokeStyle=C.gris1;ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(plotL,plotT);ctx.lineTo(plotL,plotB);ctx.lineTo(plotR,plotB);ctx.stroke();
+    ctx.fillStyle=C.gris1;ctx.font='bold 21px sans-serif';ctx.textAlign='center';ctx.textBaseline='top';
+    ctx.fillText('Fracción molar del componente volátil  (x, y)',(plotL+plotR)/2,plotB+38);
+    ctx.save();ctx.translate(24,(plotT+plotB)/2);ctx.rotate(-Math.PI/2);ctx.fillText('Temperatura (°C)',0,0);ctx.restore();
+    // curvas burbuja y rocio + lente
+    var bub=[],dew=[];
+    for(var i=0;i<=120;i++){var x=i/120;var T=Tbub(x);bub.push([x,T]);dew.push([yEq(x),T]);}
+    ctx.fillStyle='rgba(0,166,81,.07)';ctx.beginPath();
+    for(var j=0;j<bub.length;j++){var p=bub[j];if(j===0)ctx.moveTo(PX(p[0]),PY(p[1]));else ctx.lineTo(PX(p[0]),PY(p[1]));}
+    for(var k=dew.length-1;k>=0;k--){var q=dew[k];ctx.lineTo(PX(q[0]),PY(q[1]));}
+    ctx.closePath();ctx.fill();
+    function curve(data,color){ctx.strokeStyle=color;ctx.lineWidth=3;ctx.setLineDash([]);ctx.beginPath();for(var i=0;i<data.length;i++){var p=data[i];if(i===0)ctx.moveTo(PX(p[0]),PY(p[1]));else ctx.lineTo(PX(p[0]),PY(p[1]));}ctx.stroke();}
+    curve(bub,C.rojo);curve(dew,C.azul);
+    ctx.font='bold 18px sans-serif';
+    ctx.fillStyle=C.rojo;ctx.textAlign='left';ctx.fillText('Burbuja (líquido)',PX(0.30),PY(Tbub(0.30))+22);
+    ctx.fillStyle=C.azul;ctx.fillText('Rocío (vapor)',PX(0.52),PY(Tbub(0.30))-8);
+    ctx.fillStyle=C.gris3;ctx.font='15px sans-serif';ctx.textAlign='left';ctx.textBaseline='top';
+    ctx.fillText('Tᵇ pesado',PX(0.045),PY(TbH)+10);
+    ctx.textAlign='right';ctx.textBaseline='bottom';ctx.fillText('Tᵇ volátil',PX(0.955),PY(TbL)-8);
+  }
+  function draw(step){
+    base();
+    // step0: A
+    dot(x1,TA,C.gris1,6); label('A',x1,TA,C.gris1,10,10);
+    if(step>=1){ // A->B heating
+      arrow(PX(x1),PY(TA),PX(x1),PY(Tbub(x1)),C.rojo,3.5);
+      dot(x1,Tbub(x1),C.rojo,7); label('B',x1,Tbub(x1),C.rojo,-20,-2,'right');
+      ctx.fillStyle=C.rojo;ctx.font='14px sans-serif';ctx.textAlign='left';ctx.fillText('calentar',PX(x1)+8,PY((TA+Tbub(x1))/2));
+    }
+    if(step>=2){ // B->C first vapor
+      arrow(PX(x1),PY(Tbub(x1)),PX(yEq(x1)),PY(Tbub(x1)),C.rojo,3.5);
+      dot(yEq(x1),Tbub(x1),C.azul,7); label('C',yEq(x1),Tbub(x1),C.azul,10,-2);
+      // drops
+      ctx.strokeStyle=C.gris4;ctx.lineWidth=1.4;ctx.setLineDash([5,4]);
+      ctx.beginPath();ctx.moveTo(PX(x1),PY(Tbub(x1)));ctx.lineTo(PX(x1),plotB);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(PX(yEq(x1)),PY(Tbub(x1)));ctx.lineTo(PX(yEq(x1)),plotB);ctx.stroke();ctx.setLineDash([]);
+      ctx.fillStyle=C.rojo;ctx.font='bold 15px sans-serif';ctx.textAlign='center';ctx.fillText('x₁',PX(x1),plotB-16);
+      ctx.fillStyle=C.azul;ctx.fillText('y₁',PX(yEq(x1)),plotB-16);
+    }
+    if(step>=3){ // D-E
+      dot(x2,Tbub(x2),C.rojo,7); label('D',x2,Tbub(x2),C.rojo,-20,-2,'right');
+      arrow(PX(x2),PY(Tbub(x2)),PX(yEq(x2)),PY(Tbub(x2)),C.rojo,3);
+      dot(yEq(x2),Tbub(x2),C.azul,7); label('E',yEq(x2),Tbub(x2),C.azul,10,-2);
+    }
+    if(step>=4){ // G-H
+      dot(x3,Tbub(x3),C.rojo,7); label('G',x3,Tbub(x3),C.rojo,-20,-2,'right');
+      arrow(PX(x3),PY(Tbub(x3)),PX(yEq(x3)),PY(Tbub(x3)),C.rojo,3);
+      dot(yEq(x3),Tbub(x3),C.azul,7); label('H',yEq(x3),Tbub(x3),C.azul,10,-2);
+      // trayectoria del liquido a lo largo de la burbuja
+      ctx.strokeStyle=C.verdeOsc;ctx.lineWidth=2.5;ctx.setLineDash([2,6]);ctx.beginPath();
+      for(var i=0;i<=40;i++){var x=x1+(x3-x1)*i/40;var pt=[x,Tbub(x)];if(i===0)ctx.moveTo(PX(pt[0]),PY(pt[1]));else ctx.lineTo(PX(pt[0]),PY(pt[1]));}
+      ctx.stroke();ctx.setLineDash([]);
+    }
+    if(step>=5){ // xf final
+      dot(xf,Tbub(xf),C.verde,8); label('x_f',xf,Tbub(xf),C.verdeOsc,-16,-4,'right');
+      ctx.strokeStyle=C.verde;ctx.lineWidth=1.4;ctx.setLineDash([4,4]);
+      ctx.beginPath();ctx.moveTo(PX(xf),PY(Tbub(xf)));ctx.lineTo(PX(xf),plotB);ctx.stroke();ctx.setLineDash([]);
+      ctx.fillStyle=C.verdeOsc;ctx.font='bold 15px sans-serif';ctx.textAlign='center';ctx.fillText('x_f',PX(xf),plotB-16);
+    }
+    if(step>=6){
+      ctx.fillStyle=C.gris2;ctx.font='bold 17px sans-serif';ctx.textAlign='left';
+      ctx.fillText('x ↓   T ↑   y ↓',PX(0.05),PY(70));
+    }
+  }
+  var steps=[
+    {t:'Carga inicial (A)',h:'<p>Comenzamos con líquido de composición $x_1$ a una temperatura <b>por debajo</b> del punto de burbuja (punto <b>A</b>): líquido subenfriado.</p>'},
+    {t:'Etapa inicial (A → B)',h:'<p>Al calentar, subimos verticalmente hasta el punto de burbuja <b>B</b> a la temperatura $T_1$. <b>Aquí comienza la ebullición.</b></p>'},
+    {t:'Primera vaporización (B → C)',h:'<p>El primer vapor formado tiene la composición del punto <b>C</b> sobre la curva de rocío. Note que $y_1 > x_1$: el vapor es <b>más rico</b> en el componente volátil. La línea horizontal <b>BC</b> es el equilibrio a $T_1$.</p>'},
+    {t:'Evolución (D → E)',h:'<p>Al retirar vapor, el líquido se <b>empobrece</b> en volátil: su composición baja a <b>D</b> y la temperatura sube a $T_2 > T_1$ para seguir hirviendo. El nuevo vapor en equilibrio es <b>E</b>.</p>'},
+    {t:'Evolución (G → H)',h:'<p>El proceso continúa: nuevas isotermas <b>G-H</b> a temperatura cada vez mayor. El líquido recorre la curva de burbuja hacia menor $x$ (línea punteada verde) y el vapor se vuelve menos rico.</p>'},
+    {t:'Composición final ($x_f$)',h:'<p>El proceso se detiene al alcanzar la <b>composición final deseada</b> $x_f$ en el calderín. Todo el recorrido va de $x_1$ hasta $x_f$, con $T$ creciente.</p>'},
+    {t:'Características del recorrido',h:'<p>Las líneas horizontales (isotermas) conectan las composiciones en <b>equilibrio</b>. A medida que avanza el proceso: $x$ <b>disminuye</b> (líquido se empobrece), $T$ <b>aumenta</b> y $y$ <b>disminuye</b> (vapor menos rico que al inicio).</p>'}
+  ];
+  var i=0;
+  var badge=document.getElementById('txy-badge'),title=document.getElementById('txy-title'),body=document.getElementById('txy-body');
+  var prev=document.getElementById('txy-prev'),next=document.getElementById('txy-next'),count=document.getElementById('txy-count');
+  function render(){
+    draw(i);
+    badge.textContent=(i+1);title.textContent=steps[i].t;body.innerHTML=steps[i].h;
+    if(window.renderMathInElement)renderMathInElement(body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],throwOnError:false});
+    count.textContent='Paso '+(i+1)+' / '+steps.length;
+    prev.disabled=(i===0);next.disabled=(i===steps.length-1);
+  }
+  next.addEventListener('click',function(){if(i<steps.length-1){i++;render();}});
+  prev.addEventListener('click',function(){if(i>0){i--;render();}});
+  render();
+})();
+</script>
+
+
+<!-- Calculadora Rayleigh en vivo (metanol-agua) -->
+<script>
+(function(){
+  var w0El=document.getElementById('ry-w0');if(!w0El)return;
+  var x0El=document.getElementById('ry-x0'),xfEl=document.getElementById('ry-xf');
+  var w0v=document.getElementById('ry-w0v'),x0v=document.getElementById('ry-x0v'),xfv=document.getElementById('ry-xfv');
+  var status=document.getElementById('ry-status'),tbody=document.getElementById('ry-tbody');
+  var dx=[0.50,0.60,0.70,0.80], dy=[0.779,0.825,0.870,0.915];
+  function yInterp(x){
+    if(x<=dx[0])return dy[0]+(dy[1]-dy[0])/(dx[1]-dx[0])*(x-dx[0]);
+    if(x>=dx[dx.length-1])return dy[dy.length-1];
+    for(var i=0;i<dx.length-1;i++){if(x>=dx[i]&&x<=dx[i+1]){var t=(x-dx[i])/(dx[i+1]-dx[i]);return dy[i]+t*(dy[i+1]-dy[i]);}}
+    return dy[dy.length-1];
+  }
+  function integ(xf,x0){ // trapecio fino de 1/(y-x) entre xf y x0
+    var n=400,h=(x0-xf)/n,s=0;
+    for(var k=0;k<=n;k++){var x=xf+k*h;var f=1/(yInterp(x)-x);s+=(k===0||k===n)?0.5*f:f;}
+    return s*h;
+  }
+  function solve(){
+    var W0=parseFloat(w0El.value),x0=parseFloat(x0El.value),xf=parseFloat(xfEl.value);
+    w0v.textContent=W0;x0v.textContent=x0.toFixed(2);xfv.textContent=xf.toFixed(2);
+    status.classList.remove('warn');
+    if(xf>=x0){
+      status.classList.add('warn');
+      status.textContent='La composición final debe ser menor que la inicial (x_f < x_0). Ajusta los deslizadores.';
+      tbody.innerHTML='';return;
+    }
+    var I=integ(xf,x0);
+    var Wf=W0/Math.exp(I);
+    var D=W0-Wf;
+    var xD=(W0*x0-Wf*xf)/D;
+    status.textContent='Lote válido: el destilado queda enriquecido en el componente volátil.';
+    var rows='';
+    function row(k,v){rows+='<tr><td><b>'+k+'</b></td><td>'+v+'</td></tr>';}
+    row('Integral  I = ln(W₀/W_f)', I.toFixed(3));
+    row('Líquido final  W_f', Wf.toFixed(1)+' kmol');
+    row('Destilado total  D', D.toFixed(1)+' kmol');
+    row('Fracción destilada  D/W₀', (100*D/W0).toFixed(1)+' %');
+    row('Composición promedio  x_D,avg', xD.toFixed(3)+'  ('+(100*xD).toFixed(1)+'% molar)');
+    tbody.innerHTML=rows;
+  }
+  [w0El,x0El,xfEl].forEach(function(el){el.addEventListener('input',solve);});
+  solve();
+})();
+</script>
+
+</body>
+</html>
