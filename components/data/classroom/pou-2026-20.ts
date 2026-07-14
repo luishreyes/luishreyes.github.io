@@ -799,6 +799,15 @@ export const pou202620Course: Course = {
   ],
   simulations: [
     {
+      id: 'explorador-molienda',
+      title: 'Explorador de molienda y tamizado',
+      description:
+        'Selecciona el equipo de reducción de tamaño del proyecto en vivo: elige material (caliza, carbón, maíz, azúcar, arcilla) y molino (mandíbulas, rodillos, martillos, bolas, discos), y define alimentación F₈₀, producto objetivo P₈₀ y capacidad en escala logarítmica. Calcula la energía con la Ley de Bond y compara los tres regímenes (Bond, Kick, Rittinger) calibrados en el punto de operación, dimensiona la potencia al eje y del motor, y resuelve el balance térmico adiabático (calor disipado, ΔT, temperatura de salida vs. límite del material). En seco o húmedo, con detección de atascos, daño térmico, ATEX, abrasión y sobre-reducción. La Parte 2 modela la distribución del producto con Rosin–Rammler y genera el análisis de tamizado completo de la serie Tyler.',
+      sessionNumber: 6,
+      file: 'Explorador_Molienda.html',
+      tags: ['molienda', 'conminución', 'Ley de Bond', 'Kick', 'Rittinger', 'Rosin-Rammler', 'tamizado', 'balance térmico', 'sólidos'],
+    },
+    {
       id: 'explorador-bombas-centrifugas',
       title: 'Explorador de bombas centrífugas',
       description:
