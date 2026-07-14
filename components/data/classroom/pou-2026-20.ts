@@ -797,4 +797,15 @@ export const pou202620Course: Course = {
       file: 'Destilacion_Continua/Presentacion_Destilacion_Continua.html',
     },
   ],
+  simulations: [
+    {
+      id: 'explorador-mccabe-thiele',
+      title: 'Explorador McCabe–Thiele',
+      description:
+        'Diseña la columna de destilación binaria en vivo: mueve la composición y calidad de la alimentación, la pureza de productos, el reflujo y la eficiencia de Murphree, y observa cómo se reconstruyen las rectas de operación, la línea q y el escalonado de etapas. Incluye cinco sistemas (benceno–tolueno, metanol–agua, metanol–etanol, etanol–agua no ideal con azeótropo y α personalizable), balance global de materia, Rmín, Fenske y la torre con su plato de alimentación óptimo. La herramienta del proyecto para dimensionar la recuperación de etanol.',
+      sessionNumber: 17,
+      file: 'Explorador_McCabe_Thiele.html',
+      tags: ['destilación', 'McCabe-Thiele', 'reflujo', 'línea q', 'etapas', 'etanol–agua', 'Murphree', 'Fenske'],
+    },
+  ],
 };

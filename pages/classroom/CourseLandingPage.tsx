@@ -84,6 +84,28 @@ export const CourseLandingPage: React.FC = () => {
             </Link>
           </div>
 
+          {course.simulations && course.simulations.length > 0 && (
+            <Link
+              to={`/classroom/${course.slug}/simulations`}
+              className="mt-4 group bg-white rounded-xl shadow-md border border-zinc-200 p-6 hover:shadow-lg transition-shadow flex items-start justify-between"
+            >
+              <div>
+                <p className="text-xs font-semibold tracking-widest uppercase text-brand-yellow-dark">Interactivo</p>
+                <h3 className="mt-1 text-xl font-bold text-brand-dark">Simulaciones</h3>
+                <p className="mt-2 text-sm text-brand-gray">
+                  {course.simulations.length}{' '}
+                  {course.simulations.length === 1 ? 'herramienta interactiva' : 'herramientas interactivas'}
+                  {' '}· explora el diseño en tiempo real
+                </p>
+              </div>
+              <span className="text-brand-dark group-hover:text-brand-yellow-dark transition-colors">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+              </span>
+            </Link>
+          )}
+
           {course.challenges && (() => {
             const ch = course.challenges;
             const eyebrow = ch.eyebrow ?? 'Retos';

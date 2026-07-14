@@ -43,6 +43,24 @@ export interface Presentation {
   theme?: string;
 }
 
+export interface Simulation {
+  id: string;
+  title: string;
+  /** Descripción breve de qué explora la simulación. */
+  description: string;
+  /** Sesión / clase con la que se relaciona (opcional). Ordena el índice. */
+  sessionNumber?: number;
+  /**
+   * Nombre del archivo HTML autocontenido dentro de
+   * `public/classroom/{slug}/simulaciones/`. NO es ruta completa.
+   */
+  file: string;
+  /** Etiquetas temáticas para la tarjeta del índice. */
+  tags?: string[];
+  /** Foto B&W opcional de la tarjeta (800px). */
+  bannerImg?: string;
+}
+
 export interface TeamMember {
   name: string;
   role: string;
@@ -245,6 +263,12 @@ export interface Course {
   }[];
   readings: Reading[];
   presentations: Presentation[];
+  /**
+   * Simulaciones interactivas del curso: herramientas HTML autocontenidas
+   * (exploradores, calculadoras) que abren en pestaña nueva. Si se omite o
+   * queda vacío, no aparece el espacio «Simulaciones» en la landing.
+   */
+  simulations?: Simulation[];
 }
 
 import { pouCourse } from './classroom/pou';
