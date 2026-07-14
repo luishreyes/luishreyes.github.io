@@ -31,6 +31,7 @@ export const ROUTES: Record<string, string> = {
   'classroom.readings':                   '/classroom/:courseSlug/readings',
   'classroom.reading':                    '/classroom/:courseSlug/readings/:slug',
   'classroom.presentations':              '/classroom/:courseSlug/presentations',
+  'classroom.simulations':                '/classroom/:courseSlug/simulations',
   'classroom.edco-course':                '/classroom/:courseSlug/cursos/:edcoCourseId',
   'classroom.edco-presentations':         '/classroom/:courseSlug/cursos/:edcoCourseId/presentations',
   'classroom.retos':                      '/classroom/:courseSlug/retos',

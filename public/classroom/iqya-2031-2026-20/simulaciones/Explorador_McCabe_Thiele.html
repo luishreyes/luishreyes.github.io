@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Explorador McCabe–Thiele · Proyecto de Operaciones Unitarias</title>
+<link rel="stylesheet" href="/classroom-fonts.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hh1HrFW7TI/o+gT1jTV/qSXKwm3PiF3eD2H56qiP" crossorigin="anonymous"></script>
+<style>
+  :root {
+    /* Paleta POU (verde Deloitte) sobre lienzo editorial monocromo */
+    --color-accent:      #86BC24;
+    --color-accent-100:  #eef6df;
+    --color-accent-500:  #6f9e1c;
+    --color-accent-600:  #5e8a12;
+    --color-accent-700:  #4d7210;
+    --color-accent-800:  #3c580c;
+    --color-bg:          #ffffff;
+    --color-text:        #1A1A1A;
+    --color-divider:     #1A1A1A;
+    --color-neutral-100: #f4f4f5;
+    --color-neutral-300: #d4d4d8;
+    --color-neutral-400: #a1a1aa;
+    --color-neutral-500: #71717a;
+    --color-neutral-600: #52525b;
+    --color-neutral-700: #3f3f46;
+    --color-neutral-800: #27272a;
+    --color-neutral-900: #18181b;
+    --font-heading: 'Manrope Variable', ui-sans-serif, system-ui, -apple-system, sans-serif;
+    --font-body:    'Manrope Variable', ui-sans-serif, system-ui, -apple-system, sans-serif;
+    --font-mono:    'JetBrains Mono Variable', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--color-neutral-100);
+    color: var(--color-text);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+  .app {
+    max-width: 1360px;
+    margin: 0 auto;
+    background: var(--color-bg);
+    min-height: 100vh;
+    border-left: 1px solid var(--color-neutral-300);
+    border-right: 1px solid var(--color-neutral-300);
+  }
+  a { color: var(--color-accent-700); }
+  a:hover { color: var(--color-accent-600); }
+
+  input[type="range"] {
+    -webkit-appearance: none; appearance: none; width: 100%; height: 22px;
+    background: transparent; cursor: pointer; margin: 2px 0 0;
+  }
+  input[type="range"]::-webkit-slider-runnable-track { height: 2px; background: var(--color-neutral-400); }
+  input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 18px; background: var(--color-accent); margin-top: -8px; border: none; border-radius: 0; }
+  input[type="range"]::-moz-range-track { height: 2px; background: var(--color-neutral-400); }
+  input[type="range"]::-moz-range-thumb { width: 12px; height: 18px; background: var(--color-accent); border: none; border-radius: 0; }
+  input[type="range"]:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; }
+
+  .katex { font-size: 1em; }
+  button:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header style="display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; padding: 18px 28px 16px; border-bottom: 2px solid var(--color-divider);">
+    <div style="font-family: var(--font-heading); font-weight: 800; font-size: 24px; letter-spacing: -0.015em;">Método de McCabe–Thiele</div>
+    <div style="font-size: 12px; color: var(--color-neutral-700); text-transform: uppercase; letter-spacing: 0.08em;">Proyecto de Operaciones Unitarias · Destilación binaria · <span id="sysName"></span> · P = 1 atm</div>
+  </header>
+
+  <div id="warnings" style="display: none; border-bottom: 2px solid var(--color-accent); background: var(--color-accent-100); padding: 10px 28px; flex-direction: column; gap: 4px;"></div>
+
+  <div style="display: flex; flex-wrap: wrap;">
+
+    <aside style="flex: 1 1 280px; max-width: 400px; padding: 18px 24px 28px; border-right: 2px solid var(--color-divider);">
+
+      <div class="grp-label">Sistema binario</div>
+      <div id="systems" style="display: flex; flex-direction: column; gap: 6px; padding: 12px 0 4px;"></div>
+      <div id="sysNote" style="font-size: 12px; color: var(--color-neutral-700); padding-bottom: 8px;"></div>
+
+      <div class="grp-label brd">Alimentación</div>
+
+      <div style="padding: 12px 0 6px;">
+        <div class="row"><label class="ctl">Composición zF (ligero)</label><span class="val" id="fzF"></span></div>
+        <input type="range" min="0.05" max="0.95" step="0.01" id="zF" oninput="onSlider('zF', this.value)">
+      </div>
+
+      <div style="padding: 8px 0 6px;">
+        <div class="row"><label class="ctl">Calidad de la alimentación q</label><span class="val" id="fq"></span></div>
+        <input type="range" min="-0.3" max="1.3" step="0.05" id="q" oninput="onSlider('q', this.value)">
+        <div class="hint" id="qDesc"></div>
+      </div>
+
+      <div style="padding: 8px 0 6px;">
+        <div class="row"><label class="ctl">Flujo de alimentación F</label><span class="val" id="fF"></span></div>
+        <input type="range" min="10" max="500" step="5" id="F" oninput="onSlider('F', this.value)">
+      </div>
+
+      <div class="grp-label brd">Productos</div>
+
+      <div style="padding: 12px 0 6px;">
+        <div class="row"><label class="ctl">Pureza del destilado xD</label><span class="val" id="fxD"></span></div>
+        <input type="range" min="0.5" max="0.995" step="0.005" id="xD" oninput="onSlider('xD', this.value)">
+      </div>
+
+      <div style="padding: 8px 0 6px;">
+        <div class="row"><label class="ctl">Composición de fondos xB</label><span class="val" id="fxB"></span></div>
+        <input type="range" min="0.005" max="0.5" step="0.005" id="xB" oninput="onSlider('xB', this.value)">
+      </div>
+
+      <div class="grp-label brd">Operación</div>
+
+      <div style="padding: 12px 0 6px;">
+        <div class="row"><label class="ctl">Relación de reflujo R = L/D</label><span class="val" id="fR"></span></div>
+        <input type="range" min="0.1" max="10" step="0.05" id="R" oninput="onSlider('R', this.value)">
+        <div class="hint">Rmín actual = <span id="fRminInline"></span></div>
+      </div>
+
+      <div style="padding: 8px 0 6px;">
+        <div class="row"><label class="ctl">Eficiencia de Murphree EMV</label><span class="val" id="fE"></span></div>
+        <input type="range" min="0.3" max="1" step="0.05" id="E" oninput="onSlider('E', this.value)">
+        <div class="hint">Los platos alcanzan solo esta fracción del cambio de equilibrio</div>
+      </div>
+
+      <div class="grp-label brd">Sistema</div>
+
+      <div style="padding: 12px 0 6px;">
+        <div class="row"><label class="ctl">Volatilidad relativa α</label><span class="val" id="falpha"></span></div>
+        <input type="range" min="1.1" max="4" step="0.05" id="alpha" oninput="onSlider('alpha', this.value)">
+        <div class="hint">Al moverlo, el sistema pasa a «Personalizado»</div>
+      </div>
+
+      <div class="grp-label brd">Diagrama</div>
+      <div style="display: flex; flex-direction: column; gap: 8px; padding: 12px 0 2px;">
+        <label class="chk"><input type="checkbox" id="showNums" checked onchange="state.showNums = this.checked; render();"> Números de etapa</label>
+        <label class="chk"><input type="checkbox" id="showGrid" checked onchange="state.showGrid = this.checked; render();"> Cuadrícula</label>
+      </div>
+
+    </aside>
+
+    <section style="flex: 1 1 260px; max-width: 380px; padding: 18px 20px 24px; border-right: 2px solid var(--color-divider);">
+      <div class="grp-label" style="margin-bottom: 8px;">Torre de destilación</div>
+      <svg viewBox="0 0 360 560" style="width: 100%; display: block;">
+        <rect x="132" y="96" width="88" height="352" fill="var(--color-neutral-100)" stroke="var(--color-text)" stroke-width="2"></rect>
+        <g id="towerG"></g>
+
+        <polyline points="176,96 176,48 292,48" fill="none" stroke="var(--color-text)" stroke-width="2"></polyline>
+        <rect x="216" y="36" width="56" height="24" fill="var(--color-bg)" stroke="var(--color-text)" stroke-width="2"></rect>
+        <text x="14" y="52" style="font-size: 12px; fill: var(--color-neutral-700);">Condensador total</text>
+        <text id="tV" x="182" y="78" style="font-size: 12px; fill: var(--color-neutral-700);"></text>
+
+        <line x1="292" y1="48" x2="344" y2="48" stroke="var(--color-accent)" stroke-width="2"></line>
+        <polygon points="344,43 353,48 344,53" fill="var(--color-accent)"></polygon>
+        <text id="tD" x="350" y="74" text-anchor="end" style="font-size: 13px; font-weight: 700; fill: var(--color-text);"></text>
+        <text id="txD" x="350" y="90" text-anchor="end" style="font-size: 12.5px; fill: var(--color-neutral-800);"></text>
+
+        <polyline points="292,48 292,110 228,110" fill="none" stroke="var(--color-text)" stroke-width="2"></polyline>
+        <polygon points="228,105 220,110 228,115" fill="var(--color-text)"></polygon>
+        <text id="tL" x="298" y="130" style="font-size: 12px; fill: var(--color-neutral-700);"></text>
+
+        <polyline points="176,448 176,492 232,492" fill="none" stroke="var(--color-text)" stroke-width="2"></polyline>
+        <rect x="232" y="478" width="60" height="28" fill="var(--color-bg)" stroke="var(--color-text)" stroke-width="2"></rect>
+        <text x="14" y="496" style="font-size: 12px; fill: var(--color-neutral-700);">Rehervidor parcial</text>
+        <polyline points="248,478 248,430 230,430" fill="none" stroke="var(--color-text)" stroke-width="2"></polyline>
+        <polygon points="230,425 222,430 230,435" fill="var(--color-text)"></polygon>
+
+        <polyline points="292,492 312,492 312,530 344,530" fill="none" stroke="var(--color-accent)" stroke-width="2"></polyline>
+        <polygon points="344,525 353,530 344,535" fill="var(--color-accent)"></polygon>
+        <text id="tB" x="350" y="508" text-anchor="end" style="font-size: 13px; font-weight: 700; fill: var(--color-text);"></text>
+        <text id="txB" x="350" y="522" text-anchor="end" style="font-size: 12.5px; fill: var(--color-neutral-800);"></text>
+      </svg>
+      <div id="towerCaption" style="border-top: 1px solid var(--color-neutral-300); margin-top: 10px; padding-top: 8px; font-size: 13px; color: var(--color-neutral-800);"></div>
+    </section>
+
+    <section style="flex: 1 1 480px; min-width: 0; padding: 18px 24px 24px;">
+      <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; border-top: 2px solid var(--color-divider); padding-top: 10px; margin-top: 6px; margin-bottom: 10px;">
+        <div style="display: flex; gap: 16px; flex-wrap: wrap; align-items: center; font-size: 12px; color: var(--color-neutral-800);">
+          <span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 18px; height: 3px; background: var(--color-text);"></span>Equilibrio</span>
+          <span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 18px; height: 2px; background: var(--color-accent);"></span>Líneas de operación</span>
+          <span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 18px; border-top: 2px dashed var(--color-neutral-700);"></span>Línea q</span>
+          <span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 18px; border-top: 2px dotted var(--color-accent-500);"></span>Curva efectiva (EMV)</span>
+          <span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 18px; height: 1.5px; background: var(--color-neutral-900);"></span>Etapas</span>
+        </div>
+        <div id="statusText" style="font-family: var(--font-heading); font-weight: 800; font-size: 14px;"></div>
+      </div>
+
+      <svg viewBox="0 0 720 700" style="width: 100%; max-width: 780px; display: block;">
+        <rect x="60" y="24" width="620" height="620" fill="var(--color-neutral-100)"></rect>
+        <g id="grid">
+          <line x1="122" y1="24" x2="122" y2="644" stroke="var(--color-neutral-300)" stroke-width="1"></line>
+          <line x1="184" y1="24" x2="184" y2="644" stroke="var(--color-neutral-300)" stroke-width="1"></line>
+          <line x1="246" y1="24" x2="246" y2="644" stroke="var(--color-neutral-300)" stroke-width="1"></line>
+          <line x1="308" y1="24" x2="308" y2="644" stroke="var(--color-neutral-300)" stroke-width="1"></line>
+          <line x1="370" y1="24" x2="370" y2="644" stroke="var(--color-neutral-300)" stroke-width="1"></line>
+          <line x1="432" y1="24" x2="432" y2="644" stroke="var(--color-neutral-300)" stroke-width="1"></line>
+          <line x1="494" y1="24" x2="494" y2="644" stroke="var(--color-neutral-300)" stroke-width="1"></line>
+          <line x1="556" y1="24" x2="556" y2="644" stroke="var(--color-neutral-300)" stroke-width="1"></line>
+          <line x1="618" y1="24" x2="618" y2="644" stroke="var(--color-neutral-300)" stroke-width="1"></line>
+          <line x1="60" y1="86" x2="680" y2="86" stroke="var(--color-neutral-300)" stroke-width="1"></line>
+          <line x1="60" y1="148" x2="680" y2="148" stroke="var(--color-neutral-300)" stroke-width="1"></line>
+          <line x1="60" y1="210" x2="680" y2="210" stroke="var(--color-neutral-300)" stroke-width="1"></line>
+          <line x1="60" y1="272" x2="680" y2="272" stroke="var(--color-neutral-300)" stroke-width="1"></line>
+          <line x1="60" y1="334" x2="680" y2="334" stroke="var(--color-neutral-300)" stroke-width="1"></line>
+          <line x1="60" y1="396" x2="680" y2="396" stroke="var(--color-neutral-300)" stroke-width="1"></line>
+          <line x1="60" y1="458" x2="680" y2="458" stroke="var(--color-neutral-300)" stroke-width="1"></line>
+          <line x1="60" y1="520" x2="680" y2="520" stroke="var(--color-neutral-300)" stroke-width="1"></line>
+          <line x1="60" y1="582" x2="680" y2="582" stroke="var(--color-neutral-300)" stroke-width="1"></line>
+        </g>
+        <line x1="60" y1="644" x2="680" y2="24" stroke="var(--color-neutral-400)" stroke-width="1"></line>
+
+        <path id="effPath" d="" fill="none" stroke="var(--color-accent-500)" stroke-width="1.5" stroke-dasharray="2 4"></path>
+        <path id="qPath" d="" fill="none" stroke="var(--color-neutral-700)" stroke-width="1.5" stroke-dasharray="7 5"></path>
+        <path id="rolPath" d="" fill="none" stroke="var(--color-accent)" stroke-width="2"></path>
+        <path id="solPath" d="" fill="none" stroke="var(--color-accent)" stroke-width="2"></path>
+        <path id="eqPath" d="" fill="none" stroke="var(--color-text)" stroke-width="2.5"></path>
+        <path id="stepsPath" d="" fill="none" stroke="var(--color-neutral-900)" stroke-width="1.5"></path>
+        <g id="annot"></g>
+
+        <rect x="60" y="24" width="620" height="620" fill="none" stroke="var(--color-text)" stroke-width="2"></rect>
+        <line x1="60" y1="644" x2="60" y2="651" stroke="var(--color-text)" stroke-width="1"></line>
+        <line x1="184" y1="644" x2="184" y2="651" stroke="var(--color-text)" stroke-width="1"></line>
+        <line x1="308" y1="644" x2="308" y2="651" stroke="var(--color-text)" stroke-width="1"></line>
+        <line x1="432" y1="644" x2="432" y2="651" stroke="var(--color-text)" stroke-width="1"></line>
+        <line x1="556" y1="644" x2="556" y2="651" stroke="var(--color-text)" stroke-width="1"></line>
+        <line x1="680" y1="644" x2="680" y2="651" stroke="var(--color-text)" stroke-width="1"></line>
+        <text x="60" y="668" text-anchor="middle" style="font-size: 13px; fill: var(--color-neutral-800);">0.0</text>
+        <text x="184" y="668" text-anchor="middle" style="font-size: 13px; fill: var(--color-neutral-800);">0.2</text>
+        <text x="308" y="668" text-anchor="middle" style="font-size: 13px; fill: var(--color-neutral-800);">0.4</text>
+        <text x="432" y="668" text-anchor="middle" style="font-size: 13px; fill: var(--color-neutral-800);">0.6</text>
+        <text x="556" y="668" text-anchor="middle" style="font-size: 13px; fill: var(--color-neutral-800);">0.8</text>
+        <text x="680" y="668" text-anchor="middle" style="font-size: 13px; fill: var(--color-neutral-800);">1.0</text>
+        <text x="48" y="648" text-anchor="end" style="font-size: 13px; fill: var(--color-neutral-800);">0.0</text>
+        <text x="48" y="524" text-anchor="end" style="font-size: 13px; fill: var(--color-neutral-800);">0.2</text>
+        <text x="48" y="400" text-anchor="end" style="font-size: 13px; fill: var(--color-neutral-800);">0.4</text>
+        <text x="48" y="276" text-anchor="end" style="font-size: 13px; fill: var(--color-neutral-800);">0.6</text>
+        <text x="48" y="152" text-anchor="end" style="font-size: 13px; fill: var(--color-neutral-800);">0.8</text>
+        <text x="48" y="28" text-anchor="end" style="font-size: 13px; fill: var(--color-neutral-800);">1.0</text>
+        <text x="60" y="692" style="font-size: 13.5px; fill: var(--color-neutral-800);">x — fracción molar de <tspan id="lkNameX"></tspan> en el líquido</text>
+        <text x="16" y="644" transform="rotate(-90 16 644)" style="font-size: 13.5px; fill: var(--color-neutral-800);">y — fracción molar de <tspan id="lkNameY"></tspan> en el vapor</text>
+      </svg>
+    </section>
+  </div>
+
+  <div style="border-top: 2px solid var(--color-divider); display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
+    <div class="mcell brd-r"><div class="mlbl">D · destilado</div><div class="mval" id="vD"></div><div class="munit">kmol/h</div></div>
+    <div class="mcell brd-r"><div class="mlbl">B · fondos</div><div class="mval" id="vB"></div><div class="munit">kmol/h</div></div>
+    <div class="mcell brd-r"><div class="mlbl">L · rectificación</div><div class="mval" id="vL"></div><div class="munit">kmol/h</div></div>
+    <div class="mcell brd-r"><div class="mlbl">V · rectificación</div><div class="mval" id="vV"></div><div class="munit">kmol/h</div></div>
+    <div class="mcell brd-r"><div class="mlbl">L̄ · agotamiento</div><div class="mval" id="vLb"></div><div class="munit">kmol/h</div></div>
+    <div class="mcell"><div class="mlbl">V̄ · agotamiento</div><div class="mval" id="vVb"></div><div class="munit">kmol/h</div></div>
+  </div>
+
+  <div style="border-top: 1px solid var(--color-neutral-300); display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
+    <div class="mcell brd-r"><div class="mlbl">Rmín</div><div class="mval" id="vRmin" style="color: var(--color-accent-700);"></div><div class="munit">reflujo mínimo</div></div>
+    <div class="mcell brd-r"><div class="mlbl">R / Rmín</div><div class="mval" id="vRR"></div><div class="munit">factor de operación</div></div>
+    <div class="mcell brd-r"><div class="mlbl">Nmín</div><div class="mval" id="vNmin"></div><div class="munit" id="nminCaption"></div></div>
+    <div class="mcell brd-r"><div class="mlbl">N teóricas</div><div class="mval" id="vNteo"></div><div class="munit">etapas ideales (EMV = 100 %)</div></div>
+    <div class="mcell brd-r"><div class="mlbl">Etapas reales</div><div class="mval" id="vNreal" style="color: var(--color-accent-700);"></div><div class="munit">con EMV · incluye rehervidor</div></div>
+    <div class="mcell"><div class="mlbl">Plato de alimentación</div><div class="mval" id="vFeed"></div><div class="munit">óptimo · desde arriba</div></div>
+  </div>
+
+  <div style="border-top: 2px solid var(--color-divider); display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+    <div class="ecell brd-r"><div class="mlbl">Recta de rectificación (ROL)</div><div class="eq" id="eqROL"></div><div class="enote">pendiente L/V = R/(R+1) = <span id="vLV"></span> · pasa por (xD, xD)</div></div>
+    <div class="ecell brd-r"><div class="mlbl">Recta de agotamiento (SOL)</div><div class="eq" id="eqSOL"></div><div class="enote">pendiente L̄/V̄ = <span id="vLVs"></span> · pasa por (xB, xB)</div></div>
+    <div class="ecell"><div class="mlbl">Línea q</div><div class="eq" id="eqQ"></div><div class="enote"><span id="qDesc2"></span> · pasa por (zF, zF)</div></div>
+  </div>
+  <div style="border-top: 1px solid var(--color-neutral-300); display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+    <div class="ecell brd-r"><div class="mlbl">Equilibrio líquido–vapor</div><div class="eq" id="eqEquil"></div><div class="enote" id="eqEquilNote"></div></div>
+    <div class="ecell brd-r"><div class="mlbl">Eficiencia de Murphree (vapor)</div><div class="eq" id="eqEMV"></div><div class="enote">aplicada a los platos · el rehervidor se modela como etapa de equilibrio</div></div>
+    <div class="ecell"><div class="mlbl" id="nminTitle"></div><div class="eq" id="nminExpr"></div><div class="enote">etapas mínimas a reflujo total · incluye el rehervidor</div></div>
+  </div>
+
+  <footer style="border-top: 2px solid var(--color-divider); padding: 12px 28px; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; font-size: 12px; color: var(--color-neutral-700);">
+    <div>Supuestos: flujos molares constantes (CMO) · condensador total · rehervidor parcial · alimentación en el plato óptimo · P = 1 atm</div>
+    <div><span id="sysName2"></span> · <span id="sysFoot"></span></div>
+  </footer>
+</div>
+
+<style>
+  .grp-label { font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-800); }
+  .grp-label.brd { border-top: 2px solid var(--color-divider); padding-top: 10px; margin-top: 16px; }
+  .row { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .ctl { font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--color-neutral-700); }
+  .val { font-family: var(--font-heading); font-weight: 800; font-size: 15px; }
+  .hint { font-size: 12px; color: var(--color-neutral-700); margin-top: 2px; }
+  .chk { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--color-neutral-800); cursor: pointer; user-select: none; }
+  .chk input { accent-color: var(--color-accent); width: 15px; height: 15px; }
+  .mcell { padding: 12px 18px; }
+  .ecell { padding: 14px 18px; }
+  .brd-r { border-right: 1px solid var(--color-neutral-300); }
+  .mlbl { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-neutral-600); }
+  .mval { font-family: var(--font-heading); font-weight: 800; font-size: 22px; margin-top: 1px; }
+  .munit { font-size: 11px; color: var(--color-neutral-600); }
+  .eq { font-family: var(--font-mono); font-weight: 500; font-size: 15px; margin-top: 4px; min-height: 20px; }
+  .enote { font-size: 12px; color: var(--color-neutral-600); margin-top: 3px; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<script>
+/* ────────────────────────────────────────────────────────────────────────
+   Explorador McCabe–Thiele — puerto vanilla-JS fiel del componente original.
+   Toda la física (balances, Rmín, Fenske, escalonado con eficiencia de
+   Murphree, equilibrio Van Laar del sistema etanol–agua) se conserva
+   verbatim de la lógica original.
+   ──────────────────────────────────────────────────────────────────────── */
+
+var state = { alpha: 2.4, zF: 0.5, xD: 0.95, xB: 0.05, R: 2.0, q: 1.0, E: 0.75, F: 100, sys: 'bt', showNums: true, showGrid: true };
+
+var _eqYs = null; // caché de la malla de equilibrio Van Laar
+
+function onSlider(k, raw) {
+  var v = Math.round(parseFloat(raw) * 1000) / 1000;
+  state[k] = v;
+  if (k === 'alpha') state.sys = 'custom';
+  render();
+}
+
+function systemsList() {
+  return [
+    { id: 'bt', name: 'Benceno–Tolueno', a: 2.40, lk: 'benceno', note: 'casi ideal · α ≈ 2.40 a 1 atm' },
+    { id: 'ma', name: 'Metanol–Agua', a: 3.30, lk: 'metanol', note: 'α media aproximada ≈ 3.30 a 1 atm' },
+    { id: 'me', name: 'Metanol–Etanol', a: 1.70, lk: 'metanol', note: 'α ≈ 1.70 a 1 atm' },
+    { id: 'ea', name: 'Etanol–Agua', a: null, model: 'vanlaar', lk: 'etanol', note: 'no ideal · azeótropo x ≈ 0.894 · Van Laar + Antoine a 1 atm' },
+    { id: 'custom', name: 'Personalizado', a: null, lk: 'componente ligero', note: 'define α con el deslizador' }
+  ];
+}
+
+function sysModel() {
+  var sy = systemsList().find(function (s) { return s.id === state.sys; });
+  return sy && sy.model ? sy.model : 'alpha';
+}
+
+// Etanol(1)–Agua(2): Van Laar A12 = 1.6798, A21 = 0.9227 (Perry) + Antoine (mmHg, °C).
+// Punto de burbuja a 760 mmHg resuelto por bisección; y1 = x1·γ1·P1sat/P.
+function bubbleY(x1) {
+  var A = 1.6798, B = 0.9227, x2 = 1 - x1;
+  var g1, g2;
+  if (x1 <= 1e-12) { g1 = Math.exp(A); g2 = 1; }
+  else if (x2 <= 1e-12) { g1 = 1; g2 = Math.exp(B); }
+  else {
+    var d = A * x1 + B * x2;
+    g1 = Math.exp(A * Math.pow(B * x2 / d, 2));
+    g2 = Math.exp(B * Math.pow(A * x1 / d, 2));
+  }
+  var P1 = function (T) { return Math.pow(10, 8.20417 - 1642.89 / (T + 230.3)); };
+  var P2 = function (T) { return Math.pow(10, 8.07131 - 1730.63 / (T + 233.426)); };
+  var f = function (T) { return x1 * g1 * P1(T) + x2 * g2 * P2(T) - 760; };
+  var lo = 60, hi = 110, flo = f(lo);
+  for (var i = 0; i < 60; i++) { var m = 0.5 * (lo + hi), fm = f(m); if ((flo <= 0) === (fm <= 0)) { lo = m; flo = fm; } else { hi = m; } }
+  var T = 0.5 * (lo + hi);
+  return Math.min(1, Math.max(0, x1 * g1 * P1(T) / 760));
+}
+
+function eqGrid() {
+  if (_eqYs) return _eqYs;
+  var N = 400, ys = new Array(N + 1);
+  for (var i = 0; i <= N; i++) ys[i] = bubbleY(i / N);
+  ys[0] = 0; ys[N] = 1;
+  _eqYs = ys;
+  return ys;
+}
+
+function yEq(x) {
+  if (sysModel() === 'vanlaar') {
+    var ys = eqGrid(), N = ys.length - 1;
+    var t = Math.min(Math.max(x, 0), 1) * N, i = Math.min(Math.floor(t), N - 1), f = t - i;
+    return ys[i] * (1 - f) + ys[i + 1] * f;
+  }
+  var a = state.alpha; return a * x / (1 + (a - 1) * x);
+}
+function xEqInv(y) {
+  if (sysModel() === 'vanlaar') {
+    var ys = eqGrid(), N = ys.length - 1;
+    var yy = Math.min(Math.max(y, 0), 1);
+    var lo = 0, hi = N;
+    while (hi - lo > 1) { var m = (lo + hi) >> 1; if (ys[m] <= yy) lo = m; else hi = m; }
+    var span = ys[hi] - ys[lo];
+    return (lo + (span > 1e-12 ? (yy - ys[lo]) / span : 0.5)) / N;
+  }
+  var a = state.alpha; return y / (a - (a - 1) * y);
+}
+
+function bisect(f, lo, hi) {
+  var flo = f(lo);
+  for (var i = 0; i < 80; i++) {
+    var m = 0.5 * (lo + hi), fm = f(m);
+    if ((flo <= 0) === (fm <= 0)) { lo = m; flo = fm; } else { hi = m; }
+  }
+  return 0.5 * (lo + hi);
+}
+
+function PX(x) { return 60 + 620 * x; }
+function PY(y) { return 644 - 620 * y; }
+function path(pts) { return pts.map(function (p, i) { return (i ? 'L' : 'M') + PX(p[0]).toFixed(2) + ' ' + PY(p[1]).toFixed(2); }).join(' '); }
+
+// Escalonado de McCabe-Thiele desde (xD,xD), con eficiencia de Murphree en vapor.
+// El rehervidor (última etapa) se trata como etapa de equilibrio.
+function stepStages(E, yOp, xi, xB, xD) {
+  var yEff = function (x) { var yo = yOp(x); return yo + E * (yEq(x) - yo); };
+  var pts = [[xD, xD]];
+  var corners = [];
+  var x = xD, y = xD, n = 0, feed = null, pinched = false, frac = 0, complete = false;
+  while (n < 60) {
+    if (yEq(x) <= y + 1e-12) { pinched = true; break; }
+    var xNew, reb = false;
+    var xFull = xEqInv(y);
+    if (xFull >= 0 && xFull <= xB + 1e-12) { xNew = xFull; reb = true; }
+    else {
+      var f = function (xx) { return yEff(xx) - y; };
+      if (f(0) > 0) { pinched = true; break; }
+      xNew = bisect(f, 0, x);
+    }
+    if (!reb && x - xNew < 1e-7) { pinched = true; break; }
+    n++;
+    pts.push([xNew, y]);
+    corners.push({ x: xNew, y: y, n: n });
+    if (feed === null && xNew < xi - 1e-12) feed = n;
+    if (xNew <= xB + 1e-9) {
+      frac = (n - 1) + Math.max(0, Math.min(1, (x - xB) / Math.max(1e-12, x - xNew)));
+      pts.push([xNew, xNew]);
+      complete = true;
+      break;
+    }
+    var yNew = yOp(xNew);
+    pts.push([xNew, yNew]);
+    x = xNew; y = yNew;
+  }
+  return { pts: pts, corners: corners, n: n, feed: feed, pinched: pinched, frac: complete ? frac : n, complete: complete };
+}
+
+function fmt(v, d) { return isFinite(v) ? v.toFixed(d) : '—'; }
+function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+function renderVals() {
+  var s = state;
+  var alpha = s.alpha, zF = s.zF, xD = s.xD, xB = s.xB, R = s.R, q = s.q, E = s.E, F = s.F;
+  var showNums = s.showNums, showGrid = s.showGrid;
+
+  var warnings = [];
+  var compOK = xB < zF - 1e-9 && zF < xD - 1e-9;
+  if (!compOK) warnings.push('Composiciones infactibles: se requiere xB < zF < xD. Ajusta los deslizadores de composición.');
+
+  // Balance global de materia
+  var D = compOK ? F * (zF - xB) / (xD - xB) : NaN;
+  var B = F - D;
+  var L = R * D, V = (R + 1) * D;
+  var Lb = L + q * F, Vb = V - (1 - q) * F;
+
+  // Recta de rectificación: y = R/(R+1)·x + xD/(R+1)
+  var mR = R / (R + 1), bR = xD / (R + 1);
+
+  // Intersección línea q ∩ ROL
+  var q1 = Math.abs(q - 1) < 1e-6;
+  var xi;
+  if (q1) { xi = zF; }
+  else {
+    var mQ0 = q / (q - 1), bQ0 = -zF / (q - 1);
+    xi = Math.abs(mQ0 - mR) < 1e-9 ? zF : (bR - bQ0) / (mQ0 - mR);
+  }
+  var yi = mR * xi + bR;
+
+  // Recta de agotamiento por (xB,xB) y (xi,yi)
+  var mS = (yi - xB) / Math.max(1e-12, xi - xB), bS = xB - mS * xB;
+
+  // Rmin: intersección de la línea q con la curva de equilibrio
+  var xq, yq;
+  if (q1) { xq = zF; yq = yEq(zF); }
+  else if (Math.abs(q) < 1e-6) { yq = zF; xq = xEqInv(zF); }
+  else {
+    var mQ1 = q / (q - 1), bQ1 = -zF / (q - 1);
+    var fq = function (x) { return yEq(x) - (mQ1 * x + bQ1); };
+    xq = q > 1 ? bisect(fq, zF, 1) : bisect(fq, 0, zF);
+    yq = yEq(xq);
+  }
+  var model = sysModel();
+  var azBlocked = compOK && model === 'vanlaar' && yEq(xD) <= xD + 1e-9;
+  if (azBlocked) warnings.push('xD = ' + xD.toFixed(3) + ' está en o por encima del azeótropo etanol–agua (x ≈ 0.894): esa pureza no es alcanzable por destilación simple a 1 atm. Reduce xD.');
+
+  // Rmín general: pendiente máxima de la recta por (xD,xD) hacia la curva de equilibrio
+  var Rmin;
+  if (!compOK || azBlocked) Rmin = NaN;
+  else if (yq >= xD - 1e-9) Rmin = 0;
+  else {
+    var mMax = (xD - yq) / Math.max(1e-12, xD - xq);
+    for (var i = 1; i <= 200; i++) {
+      var xx = xq + (xD - 2e-4 - xq) * i / 200;
+      if (xx <= xq || xx >= xD) continue;
+      var mm = (xD - yEq(xx)) / (xD - xx);
+      if (mm > mMax) mMax = mm;
+    }
+    Rmin = mMax >= 1 - 1e-9 ? Infinity : (mMax <= 0 ? 0 : mMax / (1 - mMax));
+  }
+
+  // Nmín: Fenske si α es constante; conteo numérico a reflujo total (y = x) si no
+  var Nmin = NaN, NminOver = false;
+  if (compOK && !azBlocked) {
+    if (model === 'alpha') Nmin = Math.log((xD / (1 - xD)) * ((1 - xB) / xB)) / Math.log(alpha);
+    else {
+      var tr = stepStages(1, function (x) { return x; }, xD + 1, xB, xD);
+      if (tr.complete) Nmin = tr.frac; else NminOver = true;
+    }
+  }
+
+  var feasible = compOK && !azBlocked && yi < yEq(xi) - 1e-9 && xi > xB + 1e-6 && xi < xD - 1e-6;
+  if (compOK && R <= Rmin) warnings.push('R = ' + R.toFixed(2) + ' ≤ Rmín = ' + Rmin.toFixed(2) + ': las líneas de operación cruzan la curva de equilibrio — separación imposible (pinch). Aumenta R.');
+  else if (compOK && !feasible) warnings.push('Las líneas de operación no son factibles con estos parámetros.');
+  else if (compOK && isFinite(Rmin) && Rmin > 0 && R < 1.15 * Rmin) warnings.push('R/Rmín = ' + (R / Rmin).toFixed(2) + ' — operación muy cercana al reflujo mínimo: el número de etapas crece rápidamente.');
+
+  var yOp = function (x) { return x >= xi ? mR * x + bR : mS * x + bS; };
+
+  var real = { pts: [], corners: [], n: 0, feed: null, pinched: false, frac: 0, complete: false };
+  var theo = real;
+  if (compOK) {
+    real = stepStages(E, yOp, xi, xB, xD);
+    theo = E >= 0.999 ? real : stepStages(1, yOp, xi, xB, xD);
+  }
+  if (compOK && feasible && real.pinched) warnings.push('Con EMV = ' + (E * 100).toFixed(0) + ' % los escalones se estancan antes de llegar a xB (> 60 etapas). Aumenta R o la eficiencia.');
+
+  // Trayectorias SVG
+  var eqPts = [];
+  for (var i2 = 0; i2 <= 100; i2++) { var xe = i2 / 100; eqPts.push([xe, yEq(xe)]); }
+  var eqPath = path(eqPts);
+  var effPath = '';
+  if (compOK && E < 0.999) {
+    var ep = [];
+    for (var i3 = 0; i3 <= 80; i3++) { var xf = xB + (xD - xB) * i3 / 80; var yo = yOp(xf); ep.push([xf, yo + E * (yEq(xf) - yo)]); }
+    effPath = path(ep);
+  }
+  var rolPath = compOK ? path([[xD, xD], [xi, yi]]) : '';
+  var solPath = compOK ? path([[xB, xB], [xi, yi]]) : '';
+  var qEnd = (compOK && R <= Rmin) ? [xi, yi] : [xq, yq];
+  var qPath = compOK ? path([[zF, zF], qEnd]) : '';
+  var stepsPath = real.pts.length > 1 ? path(real.pts) : '';
+
+  // Anotaciones dinámicas (marcadores + números de etapa) → SVG string
+  var ann = '';
+  var mk = function (x, y, label, dx, dy, anchor) {
+    ann += '<rect x="' + (PX(x) - 3.5) + '" y="' + (PY(y) - 3.5) + '" width="7" height="7" fill="var(--color-text)"></rect>';
+    ann += '<text x="' + (PX(x) + dx) + '" y="' + Math.min(PY(y) + dy, 638) + '" text-anchor="' + anchor + '" style="font-size:13px;font-weight:600;fill:var(--color-neutral-800)">' + label + '</text>';
+  };
+  if (compOK) {
+    mk(xD, xD, 'xD', -6, 20, 'end');
+    mk(zF, zF, 'zF', 14, 18, 'start');
+    mk(xB, xB, 'xB', 10, 20, 'start');
+    if (isFinite(Rmin) && feasible) {
+      ann += '<circle cx="' + PX(xq) + '" cy="' + PY(yq) + '" r="4" fill="none" stroke="var(--color-neutral-700)" stroke-width="1.5"></circle>';
+    }
+  }
+  if (showNums) {
+    var lastX = Infinity, lastY = Infinity;
+    real.corners.forEach(function (c, idx) {
+      var px = PX(c.x), py = PY(c.y);
+      var isLast = idx === real.corners.length - 1;
+      var dist = Math.hypot(px - lastX, py - lastY);
+      if (!isLast && dist < 16) return; // omite etiquetas apiladas cerca del pinch
+      lastX = px; lastY = py;
+      ann += '<text x="' + (px - 5) + '" y="' + (py - 5) + '" text-anchor="end" style="font-size:11.5px;font-weight:700;fill:var(--color-accent-700)">' + c.n + '</text>';
+    });
+  }
+
+  // Torre: platos reales, plato de alimentación y corriente F → SVG string
+  var ok0 = feasible && real.complete;
+  var yTop = 96, yBot = 448;
+  var drawTower = ok0 && real.n >= 1;
+  var nP = drawTower ? Math.max(real.n - 1, 1) : 9;
+  var fPlate = drawTower ? Math.max(1, Math.min(real.feed || nP, nP)) : 5;
+  var tw = '';
+  for (var k = 1; k <= nP; k++) {
+    var yP = yTop + (yBot - yTop) * k / (nP + 1);
+    var isFeed = drawTower && k === fPlate;
+    tw += '<line x1="132" x2="220" y1="' + yP + '" y2="' + yP + '" stroke="' + (isFeed ? 'var(--color-accent)' : (drawTower ? 'var(--color-neutral-500)' : 'var(--color-neutral-300)')) + '" stroke-width="' + (isFeed ? 2.5 : 1.5) + '"></line>';
+    if (drawTower && !isFeed) {
+      var every = nP > 24 ? 5 : (nP > 12 ? 2 : 1);
+      if (k === 1 || k === nP || k % every === 0) {
+        tw += '<text x="124" y="' + (yP + 3.5) + '" text-anchor="end" style="font-size:10.5px;fill:var(--color-neutral-600)">' + k + '</text>';
+      }
+    }
+  }
+  var yF = yTop + (yBot - yTop) * fPlate / (nP + 1);
+  var feedCol = drawTower ? 'var(--color-accent)' : 'var(--color-neutral-400)';
+  tw += '<line x1="8" y1="' + yF + '" x2="121" y2="' + yF + '" stroke="' + feedCol + '" stroke-width="2"></line>';
+  tw += '<polygon points="121,' + (yF - 5) + ' 130,' + yF + ' 121,' + (yF + 5) + '" fill="' + feedCol + '"></polygon>';
+  var baseY = Math.max(160, Math.min(yF, 424));
+  var twLab = function (yy, txt, bold, fill) {
+    tw += '<text x="8" y="' + yy + '" style="font-size:' + (bold ? 13 : 12.5) + 'px;font-weight:' + (bold ? 700 : 400) + ';fill:' + (fill || (bold ? 'var(--color-text)' : 'var(--color-neutral-800)')) + '">' + txt + '</text>';
+  };
+  twLab(baseY - 50, 'F = ' + fmt(F, 0) + ' kmol/h', true);
+  twLab(baseY - 34, 'zF = ' + zF.toFixed(3), false);
+  twLab(baseY - 18, 'q = ' + q.toFixed(2), false);
+  if (drawTower) twLab(Math.min(yF + 22, 444), '→ plato ' + fPlate, true, 'var(--color-accent-700)');
+
+  // Selector de sistemas binarios
+  var systems = systemsList().map(function (sy) {
+    var active = sy.id === s.sys;
+    return {
+      id: sy.id,
+      label: sy.name + (sy.a != null ? ' — α ' + sy.a.toFixed(2) : (sy.model === 'vanlaar' ? ' — azeótropo' : ' — α libre')),
+      a: sy.a,
+      active: active
+    };
+  });
+  var activeSys = systemsList().find(function (sy) { return sy.id === s.sys; }) || systemsList()[0];
+
+  // Descripción de q
+  var qDesc;
+  if (q > 1.001) qDesc = 'q > 1 — líquido subenfriado';
+  else if (Math.abs(q - 1) <= 0.001) qDesc = 'q = 1 — líquido saturado (punto de burbuja)';
+  else if (q > 0.001) qDesc = '0 < q < 1 — mezcla líquido–vapor';
+  else if (Math.abs(q) <= 0.001) qDesc = 'q = 0 — vapor saturado (punto de rocío)';
+  else qDesc = 'q < 0 — vapor sobrecalentado';
+
+  // Ecuaciones en LaTeX (KaTeX)
+  var lineTex = function (m, b) { return 'y = ' + m.toFixed(4) + '\\,x ' + (b < 0 ? '-' : '+') + ' ' + Math.abs(b).toFixed(4); };
+  var eqQtex;
+  if (q1) eqQtex = 'x = ' + zF.toFixed(3) + '\\ \\text{(vertical)}';
+  else if (Math.abs(q) < 1e-6) eqQtex = 'y = ' + zF.toFixed(3) + '\\ \\text{(horizontal)}';
+  else { var mQ2 = q / (q - 1), bQ2 = -zF / (q - 1); eqQtex = lineTex(mQ2, bQ2); }
+
+  var vRR = (isFinite(Rmin) && Rmin > 0) ? (R / Rmin).toFixed(2) : '—';
+  var ok = feasible && real.complete;
+  var statusText = ok
+    ? ('R/Rmín = ' + vRR + ' · ' + real.n + ' etapas reales · alimentación en el plato ' + (real.feed || 1))
+    : 'Condición infactible — revisa las advertencias';
+  var towerCaption = ok
+    ? ('La torre muestra los ' + (real.n - 1) + ' platos reales (+ rehervidor parcial como etapa ' + real.n + '). La alimentación entra en el plato ' + (real.feed || 1) + ' desde arriba, resaltado.')
+    : 'La separación no es alcanzable con los parámetros actuales. Ajusta R, EMV o las composiciones.';
+
+  var eqEquilTex = model === 'alpha'
+    ? 'y = \\dfrac{' + alpha.toFixed(2) + '\\,x}{1 + ' + (alpha - 1).toFixed(2) + '\\,x}'
+    : 'y = \\dfrac{x\\,\\gamma_1\\,P_1^{\\text{sat}}(T)}{P}\\quad\\text{Van Laar: } A_{12}=1.6798,\\ A_{21}=0.9227';
+
+  var nminExprTex = model === 'alpha'
+    ? 'N_{\\min} = \\dfrac{\\ln\\!\\left[\\dfrac{x_D/(1-x_D)}{x_B/(1-x_B)}\\right]}{\\ln\\alpha} = ' + fmt(Nmin, 1)
+    : 'N_{\\min} = \\text{conteo gráfico con } y=x\\ (\\alpha\\ \\text{no constante}) = ' + (NminOver ? '>\\,60' : fmt(Nmin, 1));
+
+  return {
+    systems: systems, towerG: tw, annot: ann,
+    sysName: activeSys.name, sysNote: activeSys.note, lkName: activeSys.lk,
+    fzF: zF.toFixed(2), fq: q.toFixed(2), fF: F.toFixed(0) + ' kmol/h',
+    fxD: xD.toFixed(3), fxB: xB.toFixed(3), fR: R.toFixed(2),
+    fE: (E * 100).toFixed(0) + ' %',
+    falpha: model === 'alpha' ? alpha.toFixed(2) : '—',
+    fRminInline: isFinite(Rmin) ? Rmin.toFixed(3) : (Rmin === Infinity ? '∞' : '—'),
+    qDesc: qDesc, warnings: warnings, hasWarnings: warnings.length > 0,
+    gridOpacity: showGrid ? 1 : 0,
+    // valores de slider (para inicializar posiciones)
+    sv: { alpha: alpha, zF: zF, xD: xD, xB: xB, R: R, q: q, E: E, F: F },
+    eqPath: eqPath, effPath: effPath, rolPath: rolPath, solPath: solPath, qPath: qPath, stepsPath: stepsPath,
+    statusText: statusText, statusColor: ok ? 'var(--color-text)' : 'var(--color-accent-700)',
+    towerCaption: towerCaption,
+    tD: 'D = ' + fmt(D, 1) + ' kmol/h', txD: 'xD = ' + xD.toFixed(3),
+    tB: 'B = ' + fmt(B, 1) + ' kmol/h', txB: 'xB = ' + xB.toFixed(3),
+    tL: 'L = ' + fmt(L, 0), tV: 'V = ' + fmt(V, 0),
+    vD: fmt(D, 1), vB: fmt(B, 1), vL: fmt(L, 1), vV: fmt(V, 1), vLb: fmt(Lb, 1), vVb: fmt(Vb, 1),
+    vRmin: isFinite(Rmin) ? Rmin.toFixed(3) : (Rmin === Infinity ? '∞' : '—'), vRR: vRR,
+    vNmin: NminOver ? '> 60' : fmt(Nmin, 1),
+    nminTitle: model === 'alpha' ? 'Ecuación de Fenske' : 'Etapas mínimas (reflujo total)',
+    nminCaption: model === 'alpha' ? 'Fenske · reflujo total' : 'reflujo total · conteo gráfico',
+    nminExprTex: nminExprTex,
+    eqEquilNote: model === 'alpha'
+      ? 'volatilidad relativa constante (sistema casi ideal)'
+      : 'coeficientes de actividad Van Laar · punto de burbuja a 760 mmHg',
+    sysFoot: model === 'alpha' ? 'α = ' + alpha.toFixed(2) : 'Van Laar + Antoine · azeótropo x ≈ 0.894',
+    vNteo: compOK ? (theo.complete ? theo.frac.toFixed(1) : '> 60') : '—',
+    vNreal: compOK ? (real.complete ? String(real.n) : '> 60') : '—',
+    vFeed: (compOK && real.feed) ? String(real.feed) : '—',
+    eqROLtex: compOK ? lineTex(mR, bR) : '—',
+    eqSOLtex: compOK ? lineTex(mS, bS) : '—',
+    eqQtex: eqQtex,
+    eqEquilTex: eqEquilTex,
+    vLV: compOK ? mR.toFixed(4) : '—', vLVs: compOK ? mS.toFixed(4) : '—'
+  };
+}
+
+// ── Render al DOM ────────────────────────────────────────────────────────
+var katexReady = false;
+function tex(id, latex) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  if (latex === '—') { el.textContent = '—'; return; }
+  if (katexReady && window.katex) {
+    try { window.katex.render(latex, el, { throwOnError: false, displayMode: false }); return; }
+    catch (e) { /* cae a texto */ }
+  }
+  el.textContent = latex;
+}
+function txt(id, v) { var el = document.getElementById(id); if (el) el.textContent = v; }
+
+var _slidersInit = false;
+function render() {
+  var v = renderVals();
+
+  // Inicializa posiciones de deslizadores una sola vez (o al cambiar de sistema α)
+  if (!_slidersInit) {
+    ['alpha', 'zF', 'xD', 'xB', 'R', 'q', 'E', 'F'].forEach(function (k) {
+      var el = document.getElementById(k); if (el) el.value = state[k];
+    });
+    _slidersInit = true;
+  }
+  // alpha puede cambiar al elegir sistema
+  var alphaEl = document.getElementById('alpha'); if (alphaEl && parseFloat(alphaEl.value) !== state.alpha) alphaEl.value = state.alpha;
+
+  txt('sysName', v.sysName); txt('sysName2', v.sysName); txt('sysNote', v.sysNote); txt('sysFoot', v.sysFoot);
+  txt('lkNameX', v.lkName); txt('lkNameY', v.lkName);
+
+  // Selector de sistemas
+  var sysWrap = document.getElementById('systems');
+  sysWrap.innerHTML = v.systems.map(function (sy) {
+    var st = 'text-align:left;font-family:var(--font-heading);font-weight:600;font-size:13px;padding:7px 10px;cursor:pointer;border-radius:0;'
+      + 'border:1px solid ' + (sy.active ? 'var(--color-accent)' : 'var(--color-neutral-400)') + ';'
+      + 'background:' + (sy.active ? 'var(--color-accent)' : 'transparent') + ';'
+      + 'color:' + (sy.active ? '#ffffff' : 'var(--color-text)') + ';';
+    return '<button type="button" style="' + st + '" onclick="selectSys(\'' + sy.id + '\')">' + esc(sy.label) + '</button>';
+  }).join('');
+
+  // Etiquetas de valor de sliders
+  txt('fzF', v.fzF); txt('fq', v.fq); txt('fF', v.fF); txt('fxD', v.fxD); txt('fxB', v.fxB);
+  txt('fR', v.fR); txt('fE', v.fE); txt('falpha', v.falpha); txt('fRminInline', v.fRminInline);
+  txt('qDesc', v.qDesc); txt('qDesc2', v.qDesc);
+
+  // Advertencias
+  var wEl = document.getElementById('warnings');
+  if (v.hasWarnings) {
+    wEl.style.display = 'flex';
+    wEl.innerHTML = v.warnings.map(function (w) {
+      return '<div style="color:var(--color-accent-800);font-size:14px;font-weight:600;">' + esc(w) + '</div>';
+    }).join('');
+  } else { wEl.style.display = 'none'; wEl.innerHTML = ''; }
+
+  // Torre
+  document.getElementById('towerG').innerHTML = v.towerG;
+  txt('tV', v.tV); txt('tD', v.tD); txt('txD', v.txD); txt('tL', v.tL); txt('tB', v.tB); txt('txB', v.txB);
+  txt('towerCaption', v.towerCaption);
+
+  // Diagrama
+  document.getElementById('grid').style.opacity = v.gridOpacity;
+  document.getElementById('effPath').setAttribute('d', v.effPath);
+  document.getElementById('qPath').setAttribute('d', v.qPath);
+  document.getElementById('rolPath').setAttribute('d', v.rolPath);
+  document.getElementById('solPath').setAttribute('d', v.solPath);
+  document.getElementById('eqPath').setAttribute('d', v.eqPath);
+  document.getElementById('stepsPath').setAttribute('d', v.stepsPath);
+  document.getElementById('annot').innerHTML = v.annot;
+  var stEl = document.getElementById('statusText');
+  stEl.textContent = v.statusText; stEl.style.color = v.statusColor;
+
+  // Métricas
+  txt('vD', v.vD); txt('vB', v.vB); txt('vL', v.vL); txt('vV', v.vV); txt('vLb', v.vLb); txt('vVb', v.vVb);
+  txt('vRmin', v.vRmin); txt('vRR', v.vRR); txt('vNmin', v.vNmin); txt('vNteo', v.vNteo);
+  txt('vNreal', v.vNreal); txt('vFeed', v.vFeed);
+  txt('nminCaption', v.nminCaption); txt('nminTitle', v.nminTitle);
+  txt('vLV', v.vLV); txt('vLVs', v.vLVs);
+  txt('eqEquilNote', v.eqEquilNote);
+
+  // Ecuaciones (KaTeX)
+  tex('eqROL', v.eqROLtex);
+  tex('eqSOL', v.eqSOLtex);
+  tex('eqQ', v.eqQtex);
+  tex('eqEquil', v.eqEquilTex);
+  tex('eqEMV', 'E_{MV} = \\dfrac{y_n - y_{n+1}}{y_n^{*} - y_{n+1}} = ' + state.E.toFixed(2));
+  tex('nminExpr', v.nminExprTex);
+}
+
+function selectSys(id) {
+  var sy = systemsList().find(function (s) { return s.id === id; });
+  state.sys = id;
+  if (sy && sy.a != null) state.alpha = sy.a;
+  var alphaEl = document.getElementById('alpha'); if (alphaEl) alphaEl.value = state.alpha;
+  render();
+}
+
+// KaTeX se carga con defer; re-renderiza fórmulas cuando esté listo.
+window.addEventListener('load', function () {
+  katexReady = !!window.katex;
+  render();
+});
+render();
+</script>
+</body>
+</html>
