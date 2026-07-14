@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Explorador de molienda y tamizado · Proyecto de Operaciones Unitarias</title>
+<link rel="stylesheet" href="/classroom-fonts.css">
+<!-- KaTeX autoalojado (woff2) — sin CDN, funciona offline. Ver public/classroom/vendor/katex -->
+<link rel="stylesheet" href="/classroom/vendor/katex/katex.min.css">
+<script defer src="/classroom/vendor/katex/katex.min.js"></script>
+<style>
+  :root {
+    --color-accent:      #86BC24;
+    --color-accent-100:  #eef6df;
+    --color-accent-200:  #d7e8b0;
+    --color-accent-500:  #6f9e1c;
+    --color-accent-600:  #5e8a12;
+    --color-accent-700:  #4d7210;
+    --color-accent-800:  #3c580c;
+    --color-bg:          #ffffff;
+    --color-text:        #1A1A1A;
+    --color-divider:     #1A1A1A;
+    --color-neutral-100: #f4f4f5;
+    --color-neutral-200: #e4e4e7;
+    --color-neutral-300: #d4d4d8;
+    --color-neutral-400: #a1a1aa;
+    --color-neutral-500: #71717a;
+    --color-neutral-600: #52525b;
+    --color-neutral-700: #3f3f46;
+    --color-neutral-800: #27272a;
+    --color-neutral-900: #18181b;
+    --font-heading: 'Manrope Variable', ui-sans-serif, system-ui, -apple-system, sans-serif;
+    --font-body:    'Manrope Variable', ui-sans-serif, system-ui, -apple-system, sans-serif;
+    --font-mono:    'JetBrains Mono Variable', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { background: var(--color-neutral-100); color: var(--color-text); font-family: var(--font-body); -webkit-font-smoothing: antialiased; }
+  .app { max-width: 1400px; margin: 0 auto; background: var(--color-bg); min-height: 100vh; border-left: 1px solid var(--color-neutral-300); border-right: 1px solid var(--color-neutral-300); }
+  a { color: var(--color-accent-700); }
+  input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; height: 22px; background: transparent; cursor: pointer; margin: 2px 0 0; }
+  input[type="range"]::-webkit-slider-runnable-track { height: 2px; background: var(--color-neutral-400); }
+  input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 18px; background: var(--color-accent); margin-top: -8px; border: none; border-radius: 0; }
+  input[type="range"]::-moz-range-track { height: 2px; background: var(--color-neutral-400); }
+  input[type="range"]::-moz-range-thumb { width: 12px; height: 18px; background: var(--color-accent); border: none; border-radius: 0; }
+  input[type="range"]:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; }
+  button:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+  .katex { font-size: 1em; }
+
+  .grp-label { font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-800); }
+  .grp-label.brd { border-top: 2px solid var(--color-divider); padding-top: 10px; margin-top: 12px; }
+  .row { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .ctl { font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--color-neutral-700); }
+  .val { font-family: var(--font-heading); font-weight: 800; font-size: 15px; }
+  .hint { font-size: 12px; color: var(--color-neutral-700); margin-top: 2px; }
+  .note { font-size: 12px; color: var(--color-neutral-700); padding-bottom: 8px; }
+  .chk { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--color-neutral-800); cursor: pointer; user-select: none; }
+  .chk input { accent-color: var(--color-accent); width: 15px; height: 15px; }
+  .btnstack { display: flex; flex-direction: column; gap: 6px; padding: 12px 0 4px; }
+  .selbtn { display: block; width: 100%; text-align: left; padding: 8px 10px; font-family: var(--font-heading); font-weight: 700; font-size: 13px; letter-spacing: 0.01em; border-radius: 0; cursor: pointer; }
+  .mcell { padding: 12px 18px; }
+  .ecell { padding: 14px 18px; }
+  .brd-r { border-right: 1px solid var(--color-neutral-300); }
+  .mlbl { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-neutral-600); }
+  .mval { font-family: var(--font-heading); font-weight: 800; font-size: 22px; margin-top: 1px; }
+  .munit { font-size: 11px; color: var(--color-neutral-600); }
+  .eq { font-family: var(--font-mono); font-size: 14px; margin-top: 4px; min-height: 20px; }
+  .enote { font-size: 12px; color: var(--color-neutral-600); margin-top: 3px; }
+  .spec { display: grid; grid-template-columns: 1fr auto; gap: 0 12px; font-size: 12.5px; margin-top: 6px; }
+  .spec > div { padding: 6px 0; border-top: 1px solid var(--color-neutral-300); }
+  .spec .k { color: var(--color-neutral-700); }
+  .spec .v { font-weight: 700; text-align: right; }
+  table.sieve { width: 100%; font-size: 13px; border-collapse: collapse; }
+  table.sieve th { text-align: right; padding: 6px 6px; border-bottom: 2px solid var(--color-text); font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--color-neutral-700); }
+  table.sieve th:first-child { text-align: left; }
+  table.sieve td { text-align: right; padding: 5px 6px; border-bottom: 1px solid var(--color-neutral-200); }
+  table.sieve td:first-child { text-align: left; font-weight: 700; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+  @media (max-width: 760px) {
+    .colpanel { border-right: none !important; border-bottom: 2px solid var(--color-divider); max-width: none !important; }
+    .grid-metrics, .grid-eq { grid-template-columns: 1fr !important; }
+    .grid-metrics .mcell, .grid-eq .ecell { border-right: none !important; }
+    .grid-metrics .mcell:not(:last-child), .grid-eq .ecell:not(:last-child) { border-bottom: 1px solid var(--color-neutral-300); }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header style="display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; padding: 18px 28px 16px; border-bottom: 2px solid var(--color-divider);">
+    <div style="font-family: var(--font-heading); font-weight: 800; font-size: 24px; letter-spacing: -0.015em;">Molienda y análisis de tamizado</div>
+    <div style="font-size: 12px; color: var(--color-neutral-700); text-transform: uppercase; letter-spacing: 0.08em;">Proyecto de Operaciones Unitarias · Reducción de tamaño · <span id="matNameHdr"></span> · <span id="millNameHdr"></span></div>
+  </header>
+
+  <div id="warnings" style="display: none; border-bottom: 2px solid var(--color-accent); background: var(--color-accent-100); padding: 10px 28px; flex-direction: column; gap: 4px;"></div>
+
+  <div style="padding: 10px 28px 0; font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-800);">Parte 1 · Molienda y selección de equipo</div>
+
+  <div style="display: flex; flex-wrap: wrap;">
+
+    <aside class="colpanel" style="flex: 1 1 280px; max-width: 400px; padding: 8px 24px 28px; border-right: 2px solid var(--color-divider);">
+
+      <div class="grp-label" style="border-top: 2px solid var(--color-divider); padding-top: 10px; margin-top: 6px;">Material</div>
+      <div id="matBtns" class="btnstack"></div>
+      <div id="matNote" class="note"></div>
+
+      <div class="grp-label brd">Equipo de reducción</div>
+      <div id="millBtns" class="btnstack"></div>
+      <div id="millNote" class="note"></div>
+
+      <div class="grp-label brd">Modo de operación</div>
+      <div style="display: flex; gap: 6px; padding: 12px 0 4px;">
+        <button type="button" id="modeSeca" class="selbtn" style="flex:1;" onclick="setMode('seca')">Molienda seca</button>
+        <button type="button" id="modeHum" class="selbtn" style="flex:1;" onclick="setMode('hum')">Molienda húmeda</button>
+      </div>
+
+      <div id="humRow" style="padding: 8px 0 6px;">
+        <div class="row"><label class="ctl">Humedad del material w</label><span class="val" id="fHum"></span></div>
+        <input type="range" min="0" max="25" step="0.5" id="hum" oninput="onSlider('hum', this.value)">
+        <div class="hint">Máx. admisible en seco para este equipo: <span id="humValA"></span></div>
+      </div>
+      <div id="solRow" style="padding: 8px 0 6px; display: none;">
+        <div class="row"><label class="ctl">Sólidos en la pulpa Cw</label><span class="val" id="fSol"></span></div>
+        <input type="range" min="30" max="80" step="1" id="sol" oninput="onSlider('sol', this.value)">
+        <div class="hint">El agua de la pulpa absorbe parte del calor generado</div>
+      </div>
+
+      <div class="grp-label brd">Corriente de proceso</div>
+      <div style="padding: 12px 0 6px;">
+        <div class="row"><label class="ctl">Alimentación F₈₀</label><span class="val" id="fF80"></span></div>
+        <input type="range" min="2.7" max="6" step="0.01" id="lF" oninput="onSlider('lF', this.value)">
+      </div>
+      <div style="padding: 8px 0 6px;">
+        <div class="row"><label class="ctl">Producto objetivo P₈₀</label><span class="val" id="fP80t"></span></div>
+        <input type="range" min="1.3" max="5.5" step="0.01" id="lP" oninput="onSlider('lP', this.value)">
+        <div class="hint">Rango alcanzable del equipo: <span id="prodValA"></span></div>
+      </div>
+      <div style="padding: 8px 0 6px;">
+        <div class="row"><label class="ctl">Capacidad (sólidos secos)</label><span class="val" id="fCap"></span></div>
+        <input type="range" min="-0.7" max="3" step="0.01" id="lC" oninput="onSlider('lC', this.value)">
+        <div class="hint">Rango típico del equipo: <span id="capValA"></span></div>
+      </div>
+
+      <div class="grp-label brd">Condiciones y diagramas</div>
+      <div style="padding: 12px 0 6px;">
+        <div class="row"><label class="ctl">Temperatura ambiente</label><span class="val" id="fTamb"></span></div>
+        <input type="range" min="5" max="40" step="1" id="Tamb" oninput="onSlider('Tamb', this.value)">
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 8px; padding: 4px 0 2px;">
+        <label class="chk"><input type="checkbox" id="grid" checked onchange="state.grid = this.checked; render();"> Cuadrícula</label>
+        <label class="chk"><input type="checkbox" id="showEq" checked onchange="state.showEq = this.checked; render();"> Mostrar ecuaciones</label>
+      </div>
+
+    </aside>
+
+    <section class="colpanel" style="flex: 1 1 260px; max-width: 380px; padding: 8px 20px 24px; border-right: 2px solid var(--color-divider);">
+      <div class="grp-label" style="border-top: 2px solid var(--color-divider); padding-top: 10px; margin-top: 6px; margin-bottom: 8px;">Equipo · <span id="millNameEq"></span></div>
+      <svg id="svgMill" viewBox="0 0 360 300" style="width: 100%; display: block;"></svg>
+      <div id="millNote2" style="border-top: 1px solid var(--color-neutral-300); margin-top: 8px; padding-top: 6px; font-size: 12.5px; color: var(--color-neutral-800);"></div>
+
+      <div class="grp-label brd">Ficha del equipo</div>
+      <div class="spec">
+        <div class="k">Mecanismo</div><div class="v" id="mechVal"></div>
+        <div class="k">Alimentación máx.</div><div class="v" id="fmaxVal"></div>
+        <div class="k">Producto alcanzable</div><div class="v" id="prodVal"></div>
+        <div class="k">Relación de reducción máx.</div><div class="v" id="rrVal"></div>
+        <div class="k">Capacidad típica</div><div class="v" id="capVal"></div>
+        <div class="k">Humedad máx. en seco</div><div class="v" id="humVal"></div>
+        <div class="k">Admite molienda húmeda</div><div class="v" id="wetVal"></div>
+        <div class="k">Uniformidad n (Rosin–Rammler)</div><div class="v" id="nVal"></div>
+      </div>
+
+      <div class="grp-label brd">Ficha del material</div>
+      <div class="spec">
+        <div class="k">Índice de trabajo de Bond Wi</div><div class="v" id="wiVal"></div>
+        <div class="k">Dureza (Mohs)</div><div class="v" id="mohsVal"></div>
+        <div class="k">Calor específico cp</div><div class="v" id="cpVal"></div>
+        <div class="k">Humedad típica</div><div class="v" id="humTipVal"></div>
+        <div class="k">Temperatura límite</div><div class="v" id="tmaxVal"></div>
+      </div>
+      <div id="matNote2" class="note" style="margin-top: 6px;"></div>
+    </section>
+
+    <section style="flex: 1 1 480px; min-width: 0; padding: 8px 24px 24px;">
+      <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; border-top: 2px solid var(--color-divider); padding-top: 10px; margin-top: 6px; margin-bottom: 10px;">
+        <div style="display: flex; gap: 16px; flex-wrap: wrap; align-items: center; font-size: 12px; color: var(--color-neutral-800);">
+          <span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 18px; height: 3px; background: var(--color-accent);"></span>Bond</span>
+          <span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 18px; border-top: 2px dashed var(--color-text);"></span>Kick</span>
+          <span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 18px; border-top: 2px dotted var(--color-neutral-700);"></span>Rittinger</span>
+          <span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 10px; height: 10px; background: var(--color-accent); border: 2px solid var(--color-bg); box-shadow: 0 0 0 1px var(--color-accent);"></span>Punto de operación</span>
+        </div>
+        <div id="statusText" style="font-family: var(--font-heading); font-weight: 800; font-size: 14px;"></div>
+      </div>
+      <svg id="svgEnergy" viewBox="0 0 720 640" style="width: 100%; max-width: 780px; display: block;"></svg>
+      <div style="border-top: 1px solid var(--color-neutral-300); margin-top: 10px; padding-top: 8px; font-size: 13px; color: var(--color-neutral-800);">Las tres leyes se calibran para coincidir en el punto de operación actual (F₈₀ fijo). Al alejarse de él divergen: Kick subestima la energía de molienda fina; Rittinger la sobreestima frente a Bond, que interpola ambos regímenes.</div>
+    </section>
+  </div>
+
+  <div class="grid-metrics" style="border-top: 2px solid var(--color-divider); display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));">
+    <div class="mcell brd-r"><div class="mlbl">E · Bond</div><div class="mval" id="vE"></div><div class="munit">kWh/t de sólido</div></div>
+    <div class="mcell brd-r"><div class="mlbl">Potencia en el eje</div><div class="mval" id="vPeje"></div><div class="munit">kW · factor del equipo k = <span id="vK"></span></div></div>
+    <div class="mcell brd-r"><div class="mlbl">Potencia del motor</div><div class="mval" id="vPmot"></div><div class="munit">kW · η transmisión = 0.95</div></div>
+    <div class="mcell brd-r"><div class="mlbl">Relación de reducción</div><div class="mval" id="vRR"></div><div class="munit">F₈₀ / P₈₀ real</div></div>
+    <div class="mcell brd-r"><div class="mlbl">P₈₀ real del producto</div><div class="mval" id="vP80"></div><div class="munit" id="p80Note"></div></div>
+    <div class="mcell"><div class="mlbl">Capacidad</div><div class="mval" id="vCapS"></div><div class="munit" id="capNote"></div></div>
+  </div>
+
+  <div class="grid-metrics" style="border-top: 1px solid var(--color-neutral-300); display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));">
+    <div class="mcell brd-r"><div class="mlbl">Calor disipado Q̇</div><div class="mval" id="vQ"></div><div class="munit">kW · ≈ 97 % de la potencia en el eje</div></div>
+    <div class="mcell brd-r"><div class="mlbl">ṁ·c̄p del flujo</div><div class="mval" id="vMcp"></div><div class="munit">kW/K · sólido + agua</div></div>
+    <div class="mcell brd-r"><div class="mlbl">ΔT del material</div><div class="mval" id="vDT"></div><div class="munit">°C · independiente del flujo</div></div>
+    <div class="mcell brd-r"><div class="mlbl">T de salida</div><div class="mval" id="vTout"></div><div class="munit">°C · T ambiente = <span id="vTamb"></span> °C</div></div>
+    <div class="mcell brd-r"><div class="mlbl">Límite del material</div><div class="mval" id="vTmax"></div><div class="munit" id="tmaxNote"></div></div>
+    <div class="mcell"><div class="mlbl">Agua en el circuito</div><div class="mval" id="vAgua"></div><div class="munit">t/h · <span id="aguaNote"></span></div></div>
+  </div>
+
+  <div style="border-top: 2px solid var(--color-divider); background: var(--color-accent); color: var(--color-bg); padding: 14px 28px; display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap;">
+    <div style="font-family: var(--font-heading); font-weight: 800; font-size: 18px; letter-spacing: -0.01em;">Parte 2 · Análisis granulométrico del producto</div>
+    <div style="font-size: 12.5px; font-weight: 600;">Rosin–Rammler · x′ = <span id="vX63"></span> · n = <span id="vN"></span> (<span id="nDesc"></span>)</div>
+  </div>
+
+  <div style="display: flex; flex-wrap: wrap;">
+    <section class="colpanel" style="flex: 1 1 480px; min-width: 0; padding: 14px 24px 24px; border-right: 2px solid var(--color-divider);">
+      <div style="display: flex; gap: 16px; flex-wrap: wrap; align-items: center; font-size: 12px; color: var(--color-neutral-800); margin-bottom: 10px;">
+        <span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 18px; height: 3px; background: var(--color-text);"></span>Pasante acumulado</span>
+        <span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 14px; height: 10px; background: var(--color-accent-200); border: 1px solid var(--color-accent-700);"></span>Retenido por malla</span>
+        <span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 18px; border-top: 2px dashed var(--color-accent);"></span>P₈₀</span>
+      </div>
+      <svg id="svgPsd" viewBox="0 0 720 640" style="width: 100%; max-width: 780px; display: block;"></svg>
+      <div style="border-top: 1px solid var(--color-neutral-300); margin-top: 10px; padding-top: 8px; font-size: 13px; color: var(--color-neutral-800);">La distribución del producto se modela con Rosin–Rammler: el parámetro n depende del mecanismo del equipo (impacto produce distribuciones amplias; compresión entre rodillos, estrechas).</div>
+    </section>
+
+    <aside style="flex: 1 1 320px; max-width: 520px; padding: 14px 24px 24px;">
+      <div class="grp-label" style="margin-bottom: 8px;">Análisis de tamizado · serie Tyler</div>
+      <table class="sieve">
+        <thead><tr><th>Malla</th><th>Abertura</th><th>Retenido %</th><th>Ret. acum. %</th><th>Pasante %</th></tr></thead>
+        <tbody id="sieveBody"></tbody>
+      </table>
+      <div id="tamizNote" style="font-size: 12px; color: var(--color-neutral-700); margin-top: 10px; border-top: 1px solid var(--color-neutral-300); padding-top: 8px;"></div>
+    </aside>
+  </div>
+
+  <div id="eqGrid" class="grid-eq" style="border-top: 2px solid var(--color-divider); display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));">
+    <div class="ecell brd-r"><div class="mlbl">Ley de Bond</div><div class="eq" id="eqBond"></div><div class="enote">Wi = <span id="wiVal2"></span> · tamaños en µm · E = <span id="vE2"></span> kWh/t</div></div>
+    <div class="ecell brd-r"><div class="mlbl">Ley de Kick</div><div class="eq" id="eqKick"></div><div class="enote">C_K = <span id="vCK"></span> kWh/t (calibrada en el punto de operación) · válida en trituración gruesa</div></div>
+    <div class="ecell brd-r"><div class="mlbl">Ley de Rittinger</div><div class="eq" id="eqRitt"></div><div class="enote">C_R = <span id="vCR"></span> kWh·µm/t (calibrada) · válida en molienda fina</div></div>
+    <div class="ecell brd-r"><div class="mlbl">Rosin–Rammler</div><div class="eq" id="eqRR"></div><div class="enote">x′ = <span id="vX63b"></span> (63.2 % pasante) · n = <span id="vNb"></span> según el equipo</div></div>
+    <div class="ecell"><div class="mlbl">Balance térmico</div><div class="eq" id="eqTerm"></div><div class="enote">Solo ~3 % de la energía crea superficie nueva; el resto se disipa como calor</div></div>
+  </div>
+
+  <footer style="border-top: 2px solid var(--color-divider); padding: 12px 28px; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; font-size: 12px; color: var(--color-neutral-700);">
+    <div>Supuestos: operación continua en estado estacionario · Wi de tabla (molino de bolas húmedo de referencia) · factor k corrige la ineficiencia relativa del equipo · sistema adiabático (todo el calor va al flujo de proceso) · distribución Rosin–Rammler con n típico del mecanismo</div>
+    <div><span id="matNameFt"></span> · Wi = <span id="wiValFt"></span></div>
+  </footer>
+</div>
+
+<script>
+/* ────────────────────────────────────────────────────────────────────────
+   Explorador de molienda y tamizado — puerto vanilla-JS fiel del componente
+   original de Claude Design. Física verbatim: Ley de Bond (energía), factor
+   de equipo k, balance térmico adiabático, distribución Rosin–Rammler y
+   análisis de tamizado serie Tyler. Leyes de Kick y Rittinger calibradas en
+   el punto de operación.
+   ──────────────────────────────────────────────────────────────────────── */
+
+var state = { mat: 'caliza', mill: 'bolas', lF: 4.30, lP: 2.18, lC: 1.30, modo: 'seca', hum: 2, sol: 65, Tamb: 25, grid: true, showEq: true };
+
+function MATERIALS() {
+  return [
+    { id: 'caliza', name: 'Caliza', Wi: 12.7, mohs: '3', cp: 0.91, hum: 2, tmax: null, fib: false, sol: false, higro: false, abr: true, atex: false, note: 'Mineral de dureza media y abrasividad moderada · sin límite térmico del producto.' },
+    { id: 'carbon', name: 'Carbón bituminoso', Wi: 11.4, mohs: '2–2.5', cp: 1.30, hum: 8, tmax: null, fib: false, sol: false, higro: false, abr: false, atex: true, note: 'Friable, fácil de moler · el polvo fino seco forma atmósferas explosivas (ATEX).' },
+    { id: 'maiz', name: 'Maíz (grano)', Wi: 9.0, mohs: '—', cp: 1.80, hum: 14, tmax: 60, fib: true, sol: false, higro: false, abr: false, atex: false, note: 'Orgánico fibroso-elástico · por encima de ~60 °C el almidón se gelatiniza y se daña.' },
+    { id: 'azucar', name: 'Azúcar cristal', Wi: 7.0, mohs: '—', cp: 1.24, hum: 0.5, tmax: 50, fib: false, sol: true, higro: true, abr: false, atex: false, note: 'Higroscópico y termosensible: se apelmaza y carameliza · soluble en agua.' },
+    { id: 'arcilla', name: 'Arcilla húmeda', Wi: 7.1, mohs: '1–2', cp: 1.10, hum: 20, tmax: null, fib: false, sol: false, higro: false, abr: false, atex: false, note: 'Blanda pero plástica y pegajosa · en seco ciega y atasca la mayoría de los equipos.' }
+  ];
+}
+function MILLS() {
+  return [
+    { id: 'mand', name: 'Trituradora de mandíbulas', mech: 'Compresión', fmax: 1000, pmin: 12, pmax: 300, rrMax: 8, capMin: 10, capMax: 800, humMax: 12, wet: false, n: 1.5, k: 1.0, note: 'Trituración primaria de material grueso y duro; no produce finos.' },
+    { id: 'rod', name: 'Molino de rodillos', mech: 'Compresión', fmax: 40, pmin: 1, pmax: 15, rrMax: 4, capMin: 5, capMax: 300, humMax: 20, wet: false, n: 2.2, k: 1.1, note: 'Producto uniforme con pocos finos; tolera material algo húmedo o pegajoso.' },
+    { id: 'mart', name: 'Molino de martillos', mech: 'Impacto', fmax: 80, pmin: 0.15, pmax: 25, rrMax: 40, capMin: 0.5, capMax: 80, humMax: 12, wet: false, n: 0.9, k: 1.4, note: 'Versátil, gran relación de reducción; distribución amplia y desgaste alto con abrasivos.' },
+    { id: 'bolas', name: 'Molino de bolas', mech: 'Impacto + atrición', fmax: 25, pmin: 0.02, pmax: 2, rrMax: 200, capMin: 1, capMax: 200, humMax: 4, wet: true, n: 1.1, k: 1.0, note: 'Molienda fina, seca o húmeda; en seco exige alimentación casi seca.' },
+    { id: 'disc', name: 'Molino de discos (atrición)', mech: 'Cizalla / fricción', fmax: 12, pmin: 0.02, pmax: 1, rrMax: 100, capMin: 0.2, capMax: 15, humMax: 10, wet: true, n: 1.2, k: 1.8, note: 'Molienda fina de blandos y fibrosos; gran generación de calor por fricción.' }
+  ];
+}
+function SIEVES() {
+  return [
+    { m: '125 mm', a: 125000 }, { m: '90 mm', a: 90000 }, { m: '63 mm', a: 63000 }, { m: '45 mm', a: 45000 }, { m: '31.5 mm', a: 31500 },
+    { m: '1.05″', a: 26500 }, { m: '0.742″', a: 19000 }, { m: '0.525″', a: 13200 }, { m: '0.371″', a: 9500 },
+    { m: '3', a: 6700 }, { m: '4', a: 4750 }, { m: '6', a: 3350 }, { m: '8', a: 2360 }, { m: '10', a: 1700 }, { m: '14', a: 1180 },
+    { m: '20', a: 850 }, { m: '28', a: 600 }, { m: '35', a: 425 }, { m: '48', a: 300 }, { m: '65', a: 212 }, { m: '100', a: 150 },
+    { m: '150', a: 106 }, { m: '200', a: 75 }, { m: '270', a: 53 }, { m: '400', a: 38 }
+  ];
+}
+
+// Diagramas de equipo (SVG estático por tipo de molino)
+var MILL_DIAGRAMS = {
+  mand: '<g><line x1="138" y1="65" x2="163" y2="238" stroke="var(--color-text)" stroke-width="4"></line><line x1="126" y1="90" x2="140" y2="82" stroke="var(--color-neutral-500)" stroke-width="2"></line><line x1="132" y1="130" x2="146" y2="122" stroke="var(--color-neutral-500)" stroke-width="2"></line><line x1="138" y1="170" x2="152" y2="162" stroke="var(--color-neutral-500)" stroke-width="2"></line><line x1="144" y1="210" x2="158" y2="202" stroke="var(--color-neutral-500)" stroke-width="2"></line><line x1="246" y1="80" x2="184" y2="238" stroke="var(--color-text)" stroke-width="4"></line><circle cx="249" cy="68" r="11" fill="var(--color-neutral-100)" stroke="var(--color-text)" stroke-width="2"></circle><circle cx="253" cy="64" r="3.5" fill="var(--color-text)"></circle><path d="M 272 52 A 26 26 0 0 1 276 76" fill="none" stroke="var(--color-neutral-700)" stroke-width="2"></path><polygon points="272,74 278,82 281,72" fill="var(--color-neutral-700)"></polygon><line x1="196" y1="18" x2="196" y2="50" stroke="var(--color-accent)" stroke-width="2.5"></line><polygon points="191,48 196,58 201,48" fill="var(--color-accent)"></polygon><line x1="174" y1="250" x2="174" y2="276" stroke="var(--color-accent)" stroke-width="2.5"></line><polygon points="169,274 174,284 179,274" fill="var(--color-accent)"></polygon><text x="14" y="150" style="font-size:12px;fill:var(--color-neutral-700);">Mandíbula fija</text><text x="252" y="150" style="font-size:12px;fill:var(--color-neutral-700);">Móvil</text><text x="208" y="30" style="font-size:12px;fill:var(--color-neutral-700);">Alimentación</text><text x="188" y="280" style="font-size:12px;fill:var(--color-neutral-700);">Producto</text></g>',
+  rod: '<g><circle cx="125" cy="155" r="52" fill="var(--color-neutral-100)" stroke="var(--color-text)" stroke-width="2.5"></circle><circle cx="235" cy="155" r="52" fill="var(--color-neutral-100)" stroke="var(--color-text)" stroke-width="2.5"></circle><circle cx="125" cy="155" r="4" fill="var(--color-text)"></circle><circle cx="235" cy="155" r="4" fill="var(--color-text)"></circle><path d="M 96 120 A 46 46 0 0 1 152 114" fill="none" stroke="var(--color-neutral-700)" stroke-width="2"></path><polygon points="148,108 158,116 146,120" fill="var(--color-neutral-700)"></polygon><path d="M 264 120 A 46 46 0 0 0 208 114" fill="none" stroke="var(--color-neutral-700)" stroke-width="2"></path><polygon points="212,108 202,116 214,120" fill="var(--color-neutral-700)"></polygon><line x1="180" y1="42" x2="180" y2="78" stroke="var(--color-accent)" stroke-width="2.5"></line><polygon points="175,76 180,86 185,76" fill="var(--color-accent)"></polygon><line x1="180" y1="218" x2="180" y2="248" stroke="var(--color-accent)" stroke-width="2.5"></line><polygon points="175,246 180,256 185,246" fill="var(--color-accent)"></polygon><text x="192" y="52" style="font-size:12px;fill:var(--color-neutral-700);">Alimentación</text><text x="192" y="252" style="font-size:12px;fill:var(--color-neutral-700);">Producto</text><text x="120" y="286" style="font-size:12px;fill:var(--color-neutral-700);">Rodillos en contrarrotación</text></g>',
+  mart: '<g><circle cx="180" cy="155" r="82" fill="var(--color-neutral-100)" stroke="var(--color-text)" stroke-width="2.5"></circle><g transform="rotate(45 180 155)"><line x1="180" y1="155" x2="180" y2="100" stroke="var(--color-text)" stroke-width="3"></line><rect x="172" y="82" width="16" height="20" fill="var(--color-text)"></rect></g><g transform="rotate(135 180 155)"><line x1="180" y1="155" x2="180" y2="100" stroke="var(--color-text)" stroke-width="3"></line><rect x="172" y="82" width="16" height="20" fill="var(--color-text)"></rect></g><g transform="rotate(225 180 155)"><line x1="180" y1="155" x2="180" y2="100" stroke="var(--color-text)" stroke-width="3"></line><rect x="172" y="82" width="16" height="20" fill="var(--color-text)"></rect></g><g transform="rotate(315 180 155)"><line x1="180" y1="155" x2="180" y2="100" stroke="var(--color-text)" stroke-width="3"></line><rect x="172" y="82" width="16" height="20" fill="var(--color-text)"></rect></g><circle cx="180" cy="155" r="14" fill="var(--color-text)"></circle><path d="M 116 208 A 82 82 0 0 0 244 208" fill="none" stroke="var(--color-accent-700)" stroke-width="2.5" stroke-dasharray="6 5"></path><polyline points="92,42 128,42 152,80" fill="none" stroke="var(--color-accent)" stroke-width="2.5"></polyline><polygon points="144,80 158,88 152,72" fill="var(--color-accent)"></polygon><line x1="180" y1="252" x2="180" y2="276" stroke="var(--color-accent)" stroke-width="2.5"></line><polygon points="175,274 180,284 185,274" fill="var(--color-accent)"></polygon><text x="66" y="30" style="font-size:12px;fill:var(--color-neutral-700);">Alimentación</text><text x="194" y="280" style="font-size:12px;fill:var(--color-neutral-700);">Producto</text><text x="252" y="238" style="font-size:12px;fill:var(--color-neutral-700);">Criba</text></g>',
+  bolas: '<g><rect x="55" y="95" width="250" height="108" fill="var(--color-neutral-100)" stroke="var(--color-text)" stroke-width="2.5"></rect><line x1="75" y1="95" x2="75" y2="203" stroke="var(--color-neutral-400)" stroke-width="2"></line><line x1="285" y1="95" x2="285" y2="203" stroke="var(--color-neutral-400)" stroke-width="2"></line><circle cx="100" cy="188" r="6" fill="var(--color-text)"></circle><circle cx="116" cy="190" r="6" fill="var(--color-text)"></circle><circle cx="132" cy="188" r="6" fill="var(--color-text)"></circle><circle cx="148" cy="190" r="6" fill="var(--color-text)"></circle><circle cx="108" cy="176" r="6" fill="var(--color-text)"></circle><circle cx="124" cy="177" r="6" fill="var(--color-text)"></circle><circle cx="140" cy="176" r="6" fill="var(--color-text)"></circle><circle cx="116" cy="164" r="6" fill="var(--color-text)"></circle><circle cx="131" cy="164" r="6" fill="var(--color-text)"></circle><circle cx="150" cy="152" r="6" fill="var(--color-neutral-600)"></circle><circle cx="172" cy="136" r="6" fill="var(--color-neutral-600)"></circle><circle cx="196" cy="150" r="6" fill="var(--color-neutral-600)"></circle><circle cx="214" cy="172" r="6" fill="var(--color-neutral-600)"></circle><path d="M 306 120 A 60 60 0 0 1 306 178" fill="none" stroke="var(--color-neutral-700)" stroke-width="2"></path><polygon points="300,174 306,186 312,172" fill="var(--color-neutral-700)"></polygon><line x1="18" y1="149" x2="48" y2="149" stroke="var(--color-accent)" stroke-width="2.5"></line><polygon points="46,144 56,149 46,154" fill="var(--color-accent)"></polygon><line x1="312" y1="149" x2="342" y2="149" stroke="var(--color-accent)" stroke-width="2.5"></line><polygon points="340,144 350,149 340,154" fill="var(--color-accent)"></polygon><text x="14" y="136" style="font-size:12px;fill:var(--color-neutral-700);">Alim.</text><text x="306" y="136" style="font-size:12px;fill:var(--color-neutral-700);">Prod.</text><text x="90" y="232" style="font-size:12px;fill:var(--color-neutral-700);">Carga de bolas en cascada · tambor rotatorio</text></g>',
+  disc: '<g><rect x="140" y="80" width="16" height="146" fill="var(--color-neutral-100)" stroke="var(--color-text)" stroke-width="2.5"></rect><rect x="204" y="80" width="16" height="146" fill="var(--color-neutral-100)" stroke="var(--color-text)" stroke-width="2.5"></rect><line x1="160" y1="96" x2="164" y2="96" stroke="var(--color-text)" stroke-width="2"></line><line x1="160" y1="126" x2="164" y2="126" stroke="var(--color-text)" stroke-width="2"></line><line x1="160" y1="156" x2="164" y2="156" stroke="var(--color-text)" stroke-width="2"></line><line x1="160" y1="186" x2="164" y2="186" stroke="var(--color-text)" stroke-width="2"></line><line x1="196" y1="111" x2="200" y2="111" stroke="var(--color-text)" stroke-width="2"></line><line x1="196" y1="141" x2="200" y2="141" stroke="var(--color-text)" stroke-width="2"></line><line x1="196" y1="171" x2="200" y2="171" stroke="var(--color-text)" stroke-width="2"></line><line x1="60" y1="153" x2="140" y2="153" stroke="var(--color-text)" stroke-width="5"></line><line x1="220" y1="153" x2="300" y2="153" stroke="var(--color-text)" stroke-width="5"></line><path d="M 262 130 A 24 24 0 0 1 286 140" fill="none" stroke="var(--color-neutral-700)" stroke-width="2"></path><polygon points="280,136 290,144 286,130" fill="var(--color-neutral-700)"></polygon><line x1="180" y1="38" x2="180" y2="70" stroke="var(--color-accent)" stroke-width="2.5"></line><polygon points="175,68 180,78 185,68" fill="var(--color-accent)"></polygon><line x1="180" y1="234" x2="180" y2="262" stroke="var(--color-accent)" stroke-width="2.5"></line><polygon points="175,260 180,270 185,260" fill="var(--color-accent)"></polygon><text x="192" y="50" style="font-size:12px;fill:var(--color-neutral-700);">Alimentación</text><text x="192" y="266" style="font-size:12px;fill:var(--color-neutral-700);">Producto</text><text x="60" y="140" style="font-size:12px;fill:var(--color-neutral-700);">Disco fijo</text><text x="238" y="120" style="font-size:12px;fill:var(--color-neutral-700);">Disco rotatorio</text></g>'
+};
+
+function fmt(v, d) { return v.toFixed(d === undefined ? 2 : d); }
+function fmtSize(um) {
+  if (um < 1000) return (um < 10 ? um.toFixed(1) : Math.round(um)) + ' µm';
+  var mm = um / 1000;
+  return (mm < 10 ? mm.toFixed(2) : mm < 100 ? mm.toFixed(1) : Math.round(mm)) + ' mm';
+}
+function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+function setT(id, v) { var el = document.getElementById(id); if (el) el.textContent = v; }
+function setColor(id, c) { var el = document.getElementById(id); if (el) el.style.color = c; }
+function selBtnStyle(sel) {
+  return 'border:2px solid ' + (sel ? 'var(--color-accent);background:var(--color-accent);color:var(--color-bg);' : 'var(--color-text);background:transparent;color:var(--color-text);');
+}
+
+function onSlider(k, raw) { state[k] = parseFloat(raw); render(); }
+function setMat(id) { var m = MATERIALS().find(function (x) { return x.id === id; }); state.mat = id; state.hum = m.hum; render(); }
+function setMill(id) { state.mill = id; render(); }
+function setMode(m) { state.modo = m; render(); }
+
+var katexReady = false;
+function tex(id, latex) {
+  var el = document.getElementById(id); if (!el) return;
+  if (katexReady && window.katex) { try { window.katex.render(latex, el, { throwOnError: false, displayMode: false }); return; } catch (e) {} }
+  el.textContent = latex;
+}
+
+function render() {
+  var s = state;
+  var mats = MATERIALS(), millsL = MILLS();
+  var mat = mats.find(function (m) { return m.id === s.mat; });
+  var mill = millsL.find(function (m) { return m.id === s.mill; });
+  var Tamb = s.Tamb;
+  var F80 = Math.pow(10, s.lF);
+  var P80t = Math.pow(10, s.lP);
+  var cap = Math.pow(10, s.lC);
+  var wet = s.modo === 'hum';
+
+  // ---- producto real alcanzable
+  var pminUm = mill.pmin * 1000, pmaxUm = mill.pmax * 1000;
+  var P80 = Math.min(Math.max(P80t, pminUm), pmaxUm);
+  P80 = Math.min(P80, F80 / 1.2);
+  var clamped = Math.abs(P80 - P80t) / P80t > 0.001;
+  var rr = F80 / P80;
+
+  // ---- energía (Bond) y potencias
+  var E = Math.max(0, 10 * mat.Wi * (1 / Math.sqrt(P80) - 1 / Math.sqrt(F80)));
+  var Peje = mill.k * E * cap;
+  var Pmot = Peje / 0.95;
+  var Q = 0.97 * Peje;
+
+  // ---- balance térmico
+  var w = wet ? (100 / s.sol - 1) : s.hum / 100; // kg agua / kg sólido
+  var cpmix = mat.cp + w * 4.18;
+  var dT = E > 0 ? 0.97 * mill.k * E * 3.6 / cpmix : 0;
+  var Tout = Tamb + dT;
+  var mcp = cap * 0.27778 * cpmix;
+  var agua = cap * w;
+
+  // ---- advertencias
+  var warns = [];
+  var crit = false;
+  if (F80 > mill.fmax * 1000) { warns.push('La alimentación F₈₀ = ' + fmtSize(F80) + ' supera la boca de entrada del equipo (' + mill.fmax + ' mm): el material no entra — se requiere trituración previa.'); crit = true; }
+  if (P80t >= F80 / 1.2) warns.push('El tamaño objetivo debe ser claramente menor que la alimentación: se calcula con P₈₀ = F₈₀/1.2.');
+  else if (P80t < pminUm) { warns.push('Producto fuera de especificación: este equipo no baja de ' + fmtSize(pminUm) + ' y el objetivo era ' + fmtSize(P80t) + '. El cálculo usa el mínimo alcanzable.'); crit = true; }
+  else if (P80t > pmaxUm) warns.push('El objetivo ' + fmtSize(P80t) + ' es más grueso que el rango del equipo (máx. ' + fmtSize(pmaxUm) + '): habrá sobre-molienda; considere un equipo de trituración.');
+  if (rr > mill.rrMax) warns.push('Relación de reducción ' + fmt(rr, 0) + ':1, mayor que la máxima típica del equipo (' + mill.rrMax + ':1): divida la reducción en varias etapas en serie.');
+  if (!wet && s.hum > mill.humMax) { warns.push('ATASCO: con humedad de ' + fmt(s.hum, 1) + ' % (máx. ' + mill.humMax + ' % en seco) el material se apelmaza, ciega las superficies de molienda y bloquea el equipo.'); crit = true; }
+  if (wet && !mill.wet) { warns.push('Este equipo no admite operación húmeda: la pulpa no puede procesarse en una ' + mill.name.toLowerCase() + '.'); crit = true; }
+  if (wet && mat.sol) { warns.push('El azúcar es soluble: en molienda húmeda el producto se disuelve en el agua — proceso inviable.'); crit = true; }
+  if (!wet && mat.higro && s.hum > 1.5) warns.push('Material higroscópico: con w > 1.5 % los cristales se apelmazan durante la molienda y el manejo posterior.');
+  if (mat.tmax && Tout > mat.tmax) { warns.push('Daño térmico: la temperatura de salida (' + fmt(Tout, 0) + ' °C) supera el límite del material (' + mat.tmax + ' °C)' + (mat.id === 'maiz' ? ' — gelatinización y daño del almidón. Considere molienda criogénica o aire de barrido.' : ' — caramelización y apelmazado del producto. Considere aire de barrido o enfriamiento.')); crit = true; }
+  if (mat.fib && (s.mill === 'bolas' || s.mill === 'mand')) warns.push('Material fibroso-elástico: la fractura por ' + mill.mech.toLowerCase() + ' es poco eficaz en maíz; prefiera impacto (martillos) o atrición (discos).');
+  if (mat.atex && !wet && P80 < 200) warns.push('Polvo de carbón < 200 µm en seco: atmósfera explosiva (ATEX) — requiere inertización y venteos de explosión.');
+  if (mat.abr && (s.mill === 'mart' || s.mill === 'disc')) warns.push('Material abrasivo en equipo de ' + (s.mill === 'mart' ? 'impacto: desgaste acelerado de martillos y criba' : 'fricción: desgaste acelerado de los discos') + ' — alto costo de mantenimiento.');
+  if (cap > mill.capMax) warns.push('Capacidad de ' + fmt(cap, 0) + ' t/h por encima del rango típico (' + mill.capMin + '–' + mill.capMax + ' t/h): use varias unidades en paralelo o un equipo mayor.');
+  else if (cap < mill.capMin) warns.push('Capacidad de ' + fmt(cap, 1) + ' t/h por debajo del rango típico (' + mill.capMin + '–' + mill.capMax + ' t/h): el equipo queda sobredimensionado.');
+
+  var statusText = crit ? 'SELECCIÓN INVIABLE' : warns.length ? 'OPERA CON ADVERTENCIAS' : 'SELECCIÓN VIABLE';
+  var statusColor = crit ? 'var(--color-accent-700)' : warns.length ? 'var(--color-accent-600)' : 'var(--color-text)';
+
+  // ---- gráfica de leyes de energía
+  var xU = function (um) { return 70 + (Math.log10(um) - 1) * 124; };
+  var yE = function (e) { return 584 - (Math.log10(e) + 2) * 140; };
+  var E0 = E;
+  var CK = E0 > 0 ? E0 / Math.log(F80 / P80) : 0;
+  var CR = E0 > 0 ? E0 / (1 / P80 - 1 / F80) : 0;
+  var mkPath = function (f) {
+    var d = '', on = false;
+    var lo = 1, hi = Math.log10(F80 * 0.995);
+    for (var i = 0; i <= 160; i++) {
+      var um = Math.pow(10, lo + (hi - lo) * i / 160);
+      var e = f(um);
+      if (e <= 0.0005) { on = false; continue; }
+      d += (on ? ' L' : ' M') + fmt(xU(um), 1) + ' ' + fmt(yE(e), 1);
+      on = true;
+    }
+    return d;
+  };
+  var bondPath = mkPath(function (p) { return 10 * mat.Wi * (1 / Math.sqrt(p) - 1 / Math.sqrt(F80)); });
+  var kickPath = E0 > 0 ? mkPath(function (p) { return CK * Math.log(F80 / p); }) : '';
+  var rittPath = E0 > 0 ? mkPath(function (p) { return CR * (1 / p - 1 / F80); }) : '';
+  var opX = xU(P80);
+  var opY = E0 > 0 ? Math.min(584, Math.max(24, yE(E0))) : 584;
+
+  // ---- Rosin–Rammler y tamizado
+  var n = mill.n;
+  var x63 = P80 / Math.pow(Math.log(5), 1 / n);
+  var Fpass = function (a) { return 1 - Math.exp(-Math.pow(a / x63, n)); };
+  var psdPath = '';
+  for (var i = 0; i <= 140; i++) {
+    var um2 = Math.pow(10, 1 + 5 * i / 140);
+    psdPath += (i ? ' L' : 'M') + fmt(xU(um2), 1) + ' ' + fmt(584 - Fpass(um2) * 560, 1);
+  }
+  var d80x = Math.min(690, Math.max(70, xU(P80)));
+  var d80anchor = d80x > 550 ? 'end' : 'start';
+  var d80lx = d80x > 550 ? d80x - 8 : d80x + 8;
+
+  var all = SIEVES();
+  var pass = all.map(function (t) { return Fpass(t.a) * 100; });
+  var i0 = pass.findIndex(function (p) { return p < 99.5; });
+  if (i0 < 0) i0 = all.length - 1;
+  i0 = Math.max(0, i0 - 1);
+  var i1 = i0;
+  while (i1 < all.length - 1 && pass[i1] > 2) i1++;
+  var idx = [];
+  for (var ii = i0; ii <= i1; ii++) idx.push(ii);
+  while (idx.length > 9) idx = idx.filter(function (_, j) { return j % 2 === 0 || j === idx.length - 1; });
+  var prev = 100;
+  var rows = [], bars = [];
+  idx.forEach(function (i, j) {
+    var p = pass[i];
+    var ret = prev - p;
+    rows.push({ m: all[i].m, a: fmtSize(all[i].a), ret: fmt(ret, 1), retAc: fmt(100 - p, 1), pas: fmt(p, 1) });
+    var hiUm = j === 0 ? Math.min(all[i].a * 2.2, 900000) : all[idx[j - 1]].a;
+    var x1 = xU(all[i].a), x2 = xU(hiUm);
+    var hh = Math.max(0, ret * 5.6);
+    bars.push({ x: fmt(x1, 1), w: fmt(Math.max(2, x2 - x1), 1), y: fmt(584 - hh, 1), h: fmt(hh, 1) });
+    prev = p;
+  });
+  var fondo = prev;
+  var sub38 = Fpass(38) * 100;
+  var tamizNote = sub38 > 15
+    ? 'Atención: ' + fmt(sub38, 0) + ' % del producto es menor de 38 µm (malla 400). El tamizado pierde resolución en ese rango: complemente con difracción láser o sedimentación.'
+    : 'Base: 100 % de sólido seco. Retenido calculado entre mallas consecutivas de la serie seleccionada.';
+  var nDesc = n < 1 ? 'distribución amplia' : n < 1.6 ? 'distribución media' : 'distribución estrecha';
+
+  var gridOpacity = s.grid ? 1 : 0;
+
+  // ============ Inyección al DOM ============
+  setT('matNameHdr', mat.name); setT('millNameHdr', mill.name); setT('millNameEq', mill.name);
+  setT('matNameFt', mat.name); setT('wiValFt', fmt(mat.Wi, 1) + ' kWh/t');
+
+  // botones material / equipo
+  document.getElementById('matBtns').innerHTML = mats.map(function (m) {
+    return '<button type="button" class="selbtn" style="' + selBtnStyle(m.id === s.mat) + '" onclick="setMat(\'' + m.id + '\')">' + esc(m.name) + '</button>';
+  }).join('');
+  document.getElementById('millBtns').innerHTML = millsL.map(function (m) {
+    return '<button type="button" class="selbtn" style="' + selBtnStyle(m.id === s.mill) + '" onclick="setMill(\'' + m.id + '\')">' + esc(m.name) + '</button>';
+  }).join('');
+  setT('matNote', mat.note); setT('millNote', mill.note); setT('millNote2', mill.note); setT('matNote2', mat.note);
+
+  // modo
+  document.getElementById('modeSeca').style.cssText = 'flex:1;' + selBtnStyle(!wet);
+  document.getElementById('modeHum').style.cssText = 'flex:1;' + selBtnStyle(wet);
+  document.getElementById('humRow').style.display = wet ? 'none' : 'block';
+  document.getElementById('solRow').style.display = wet ? 'block' : 'none';
+  setT('fHum', fmt(s.hum, 1) + ' %'); setT('humValA', '≤ ' + mill.humMax + ' %');
+  setT('fSol', fmt(s.sol, 0) + ' % sólidos');
+
+  // sliders (posición + etiqueta)
+  ['hum', 'sol', 'lF', 'lP', 'lC', 'Tamb'].forEach(function (k) { var el = document.getElementById(k); if (el && parseFloat(el.value) !== s[k]) el.value = s[k]; });
+  document.getElementById('grid').checked = s.grid;
+  document.getElementById('showEq').checked = s.showEq;
+  setT('fF80', fmtSize(F80)); setT('fP80t', fmtSize(P80t)); setT('fCap', fmt(cap, cap < 10 ? 1 : 0) + ' t/h');
+  setT('prodValA', fmtSize(pminUm) + ' – ' + fmtSize(pmaxUm)); setT('capValA', mill.capMin + ' – ' + mill.capMax + ' t/h');
+  setT('fTamb', fmt(Tamb, 0) + ' °C');
+
+  // advertencias
+  var wEl = document.getElementById('warnings');
+  if (warns.length) { wEl.style.display = 'flex'; wEl.innerHTML = warns.map(function (x) { return '<div style="color:var(--color-accent-800);font-size:14px;font-weight:600;">' + esc(x) + '</div>'; }).join(''); }
+  else { wEl.style.display = 'none'; wEl.innerHTML = ''; }
+
+  var stEl = document.getElementById('statusText'); stEl.textContent = statusText; stEl.style.color = statusColor;
+
+  // diagrama de equipo
+  document.getElementById('svgMill').innerHTML = MILL_DIAGRAMS[s.mill] || '';
+
+  // ficha equipo/material
+  setT('mechVal', mill.mech); setT('fmaxVal', '≤ ' + mill.fmax + ' mm');
+  setT('prodVal', fmtSize(pminUm) + ' – ' + fmtSize(pmaxUm)); setT('rrVal', mill.rrMax + ' : 1');
+  setT('capVal', mill.capMin + ' – ' + mill.capMax + ' t/h'); setT('humVal', '≤ ' + mill.humMax + ' %');
+  setT('wetVal', mill.wet ? 'Sí' : 'No'); setT('nVal', fmt(mill.n, 1));
+  setT('wiVal', fmt(mat.Wi, 1) + ' kWh/t'); setT('mohsVal', mat.mohs); setT('cpVal', fmt(mat.cp, 2) + ' kJ/(kg·K)');
+  setT('humTipVal', fmt(mat.hum, 1) + ' %'); setT('tmaxVal', mat.tmax ? mat.tmax + ' °C' : '—');
+
+  // ---- gráfica de energía (SVG completo)
+  var eGrid = s.grid ? (
+    '<line x1="194" y1="24" x2="194" y2="584" stroke="var(--color-neutral-300)" stroke-width="1"></line><line x1="318" y1="24" x2="318" y2="584" stroke="var(--color-neutral-300)" stroke-width="1"></line><line x1="442" y1="24" x2="442" y2="584" stroke="var(--color-neutral-300)" stroke-width="1"></line><line x1="566" y1="24" x2="566" y2="584" stroke="var(--color-neutral-300)" stroke-width="1"></line>' +
+    '<line x1="70" y1="164" x2="690" y2="164" stroke="var(--color-neutral-300)" stroke-width="1"></line><line x1="70" y1="304" x2="690" y2="304" stroke="var(--color-neutral-300)" stroke-width="1"></line><line x1="70" y1="444" x2="690" y2="444" stroke="var(--color-neutral-300)" stroke-width="1"></line>'
+  ) : '';
+  var eAxes = '<text x="66" y="588" text-anchor="end" style="font-size:13px;fill:var(--color-neutral-800);">0.01</text><text x="66" y="448" text-anchor="end" style="font-size:13px;fill:var(--color-neutral-800);">0.1</text><text x="66" y="308" text-anchor="end" style="font-size:13px;fill:var(--color-neutral-800);">1</text><text x="66" y="168" text-anchor="end" style="font-size:13px;fill:var(--color-neutral-800);">10</text><text x="66" y="28" text-anchor="end" style="font-size:13px;fill:var(--color-neutral-800);">100</text>' + xAxisLabels() + '<text x="70" y="628" style="font-size:13.5px;fill:var(--color-neutral-800);">P₈₀ del producto (escala logarítmica)</text><text x="16" y="584" transform="rotate(-90 16 584)" style="font-size:13.5px;fill:var(--color-neutral-800);">E — energía específica de conminución (kWh/t)</text>';
+  document.getElementById('svgEnergy').innerHTML =
+    '<defs><clipPath id="eclip"><rect x="70" y="24" width="620" height="560"></rect></clipPath></defs>' +
+    '<rect x="70" y="24" width="620" height="560" fill="var(--color-neutral-100)"></rect>' + eGrid +
+    '<g clip-path="url(#eclip)">' +
+    (kickPath ? '<path d="' + kickPath + '" fill="none" stroke="var(--color-text)" stroke-width="1.8" stroke-dasharray="7 5"></path>' : '') +
+    (rittPath ? '<path d="' + rittPath + '" fill="none" stroke="var(--color-neutral-700)" stroke-width="1.8" stroke-dasharray="2 4"></path>' : '') +
+    '<path d="' + bondPath + '" fill="none" stroke="var(--color-accent)" stroke-width="2.5"></path>' +
+    '<circle cx="' + fmt(opX, 1) + '" cy="' + fmt(opY, 1) + '" r="6" fill="var(--color-accent)" stroke="var(--color-bg)" stroke-width="2"></circle>' +
+    '</g>' +
+    '<rect x="70" y="24" width="620" height="560" fill="none" stroke="var(--color-text)" stroke-width="2"></rect>' + eAxes;
+
+  // ---- gráfica PSD (SVG completo)
+  var pGrid = s.grid ? (
+    '<line x1="194" y1="24" x2="194" y2="584" stroke="var(--color-neutral-300)" stroke-width="1"></line><line x1="318" y1="24" x2="318" y2="584" stroke="var(--color-neutral-300)" stroke-width="1"></line><line x1="442" y1="24" x2="442" y2="584" stroke="var(--color-neutral-300)" stroke-width="1"></line><line x1="566" y1="24" x2="566" y2="584" stroke="var(--color-neutral-300)" stroke-width="1"></line>' +
+    '<line x1="70" y1="136" x2="690" y2="136" stroke="var(--color-neutral-300)" stroke-width="1"></line><line x1="70" y1="248" x2="690" y2="248" stroke="var(--color-neutral-300)" stroke-width="1"></line><line x1="70" y1="360" x2="690" y2="360" stroke="var(--color-neutral-300)" stroke-width="1"></line><line x1="70" y1="472" x2="690" y2="472" stroke="var(--color-neutral-300)" stroke-width="1"></line>'
+  ) : '';
+  var barsSvg = bars.map(function (b) { return '<rect x="' + b.x + '" y="' + b.y + '" width="' + b.w + '" height="' + b.h + '" fill="var(--color-accent-200)" stroke="var(--color-accent-700)" stroke-width="1"></rect>'; }).join('');
+  var pAxes = '<text x="66" y="588" text-anchor="end" style="font-size:13px;fill:var(--color-neutral-800);">0</text><text x="66" y="476" text-anchor="end" style="font-size:13px;fill:var(--color-neutral-800);">20</text><text x="66" y="364" text-anchor="end" style="font-size:13px;fill:var(--color-neutral-800);">40</text><text x="66" y="252" text-anchor="end" style="font-size:13px;fill:var(--color-neutral-800);">60</text><text x="66" y="140" text-anchor="end" style="font-size:13px;fill:var(--color-neutral-800);">80</text><text x="66" y="28" text-anchor="end" style="font-size:13px;fill:var(--color-neutral-800);">100</text>' + xAxisLabels() + '<text x="70" y="628" style="font-size:13.5px;fill:var(--color-neutral-800);">Abertura del tamiz (escala logarítmica)</text><text x="16" y="584" transform="rotate(-90 16 584)" style="font-size:13.5px;fill:var(--color-neutral-800);">% en masa</text>';
+  document.getElementById('svgPsd').innerHTML =
+    '<rect x="70" y="24" width="620" height="560" fill="var(--color-neutral-100)"></rect>' + pGrid + barsSvg +
+    '<path d="' + psdPath + '" fill="none" stroke="var(--color-text)" stroke-width="2.5"></path>' +
+    '<line x1="' + fmt(d80x, 1) + '" y1="24" x2="' + fmt(d80x, 1) + '" y2="584" stroke="var(--color-accent)" stroke-width="1.5" stroke-dasharray="6 5"></line>' +
+    '<text x="' + fmt(d80lx, 1) + '" y="44" text-anchor="' + d80anchor + '" style="font-size:13px;font-weight:700;fill:var(--color-accent-700);">P₈₀ = ' + esc(fmtSize(P80)) + '</text>' +
+    '<rect x="70" y="24" width="620" height="560" fill="none" stroke="var(--color-text)" stroke-width="2"></rect>' + pAxes;
+
+  // ---- tabla de tamizado
+  document.getElementById('sieveBody').innerHTML = rows.map(function (r) {
+    return '<tr><td>' + esc(r.m) + '</td><td>' + esc(r.a) + '</td><td>' + r.ret + '</td><td>' + r.retAc + '</td><td>' + r.pas + '</td></tr>';
+  }).join('') + '<tr><td style="color:var(--color-accent-700);">Fondo (bandeja)</td><td>—</td><td style="color:var(--color-accent-700);font-weight:700;">' + fmt(fondo, 1) + '</td><td>100.0</td><td>0.0</td></tr>';
+  setT('tamizNote', tamizNote);
+
+  // ---- métricas
+  setT('vE', fmt(E, 2)); setT('vE2', fmt(E, 2)); setT('vK', fmt(mill.k, 1));
+  setT('vPeje', fmt(Peje, Peje < 100 ? 1 : 0)); setT('vPmot', fmt(Pmot, Pmot < 100 ? 1 : 0));
+  setT('vRR', fmt(rr, 1) + ' : 1');
+  setT('vP80', fmtSize(P80)); setColor('vP80', clamped ? 'var(--color-accent-700)' : 'var(--color-text)');
+  setT('p80Note', clamped ? 'limitado por el equipo (objetivo: ' + fmtSize(P80t) + ')' : 'coincide con el objetivo');
+  setT('vCapS', fmt(cap, cap < 10 ? 1 : 0)); setT('capNote', 't/h de sólidos · rango del equipo ' + mill.capMin + '–' + mill.capMax + ' t/h');
+  setT('vQ', fmt(Q, Q < 100 ? 1 : 0)); setT('vMcp', fmt(mcp, 2)); setT('vDT', fmt(dT, 1));
+  setT('vTout', fmt(Tout, 0)); setColor('vTout', mat.tmax && Tout > mat.tmax ? 'var(--color-accent-700)' : 'var(--color-text)');
+  setT('vTamb', fmt(Tamb, 0));
+  setT('vTmax', mat.tmax ? mat.tmax + ' °C' : 'sin límite');
+  setT('tmaxNote', mat.tmax ? (mat.id === 'maiz' ? 'daño del almidón' : 'caramelización / apelmazado') : 'material térmicamente estable');
+  setT('vAgua', fmt(agua, agua < 10 ? 2 : 1)); setT('aguaNote', wet ? 'agua de la pulpa' : 'humedad del material');
+
+  // ---- Parte 2 encabezado + ecuaciones
+  setT('vX63', fmtSize(x63)); setT('vX63b', fmtSize(x63)); setT('vN', fmt(n, 1)); setT('vNb', fmt(n, 1)); setT('nDesc', nDesc);
+  setT('wiVal2', fmt(mat.Wi, 1) + ' kWh/t');
+  setT('vCK', E0 > 0 ? fmt(CK, 2) : '—'); setT('vCR', E0 > 0 ? fmt(CR, 0) : '—');
+
+  document.getElementById('eqGrid').style.display = s.showEq ? 'grid' : 'none';
+  if (s.showEq) {
+    tex('eqBond', 'E = 10\\,W_i\\left(\\dfrac{1}{\\sqrt{P_{80}}} - \\dfrac{1}{\\sqrt{F_{80}}}\\right)');
+    tex('eqKick', 'E = C_K\\,\\ln\\!\\left(\\dfrac{F_{80}}{P_{80}}\\right)');
+    tex('eqRitt', 'E = C_R\\left(\\dfrac{1}{P_{80}} - \\dfrac{1}{F_{80}}\\right)');
+    tex('eqRR', 'F(x) = 1 - \\exp\\!\\left[-\\left(\\dfrac{x}{x\'}\\right)^{n}\\right]');
+    tex('eqTerm', '\\dot{Q} = 0.97\\,P_{eje} = \\dot{m}\\,\\bar{c}_p\\,\\Delta T');
+  }
+}
+
+function xAxisLabels() {
+  return '<text x="70" y="604" text-anchor="middle" style="font-size:13px;fill:var(--color-neutral-800);">10 µm</text><text x="194" y="604" text-anchor="middle" style="font-size:13px;fill:var(--color-neutral-800);">100 µm</text><text x="318" y="604" text-anchor="middle" style="font-size:13px;fill:var(--color-neutral-800);">1 mm</text><text x="442" y="604" text-anchor="middle" style="font-size:13px;fill:var(--color-neutral-800);">10 mm</text><text x="566" y="604" text-anchor="middle" style="font-size:13px;fill:var(--color-neutral-800);">100 mm</text><text x="690" y="604" text-anchor="middle" style="font-size:13px;fill:var(--color-neutral-800);">1 m</text>';
+}
+
+window.addEventListener('load', function () { katexReady = !!window.katex; render(); });
+render();
+</script>
+</body>
+</html>
