@@ -112,27 +112,27 @@
         <div class="hint">La pérdida varía con el cuadrado del caudal: h ∝ Q²</div>
       </div>
       <div style="padding: 8px 0 6px;">
-        <div class="row"><label class="ctl">Cabeza estática (descarga)</label><span class="val" id="fHstat"></span></div>
-        <input type="range" min="0" max="50" step="1" id="hstat" oninput="onSlider('hstat', this.value)">
-        <div class="hint">Diferencia de nivel entre descarga y succión (sistema abierto)</div>
+        <div class="row"><label class="ctl">Nivel de descarga z<sub>d</sub></label><span class="val" id="fZd"></span></div>
+        <input type="range" min="0" max="50" step="1" id="zd" oninput="onSlider('zd', this.value)">
+        <div class="hint">Nivel del tanque de descarga sobre el eje de la bomba (z = 0) · cabeza estática del sistema H<sub>est</sub> = z<sub>d</sub> + h<sub>s</sub> = <span id="fHstatTotal"></span></div>
       </div>
 
       <div class="grp-label brd">Succión · NPSH</div>
 
       <div style="padding: 12px 0 6px;">
-        <div class="row"><label class="ctl">Altura de succión h₅</label><span class="val" id="fHs"></span></div>
+        <div class="row"><label class="ctl">Altura de succión h<sub>s</sub></label><span class="val" id="fHs"></span></div>
         <input type="range" min="-10" max="20" step="0.5" id="hs" oninput="onSlider('hs', this.value)">
         <div class="hint" id="hsDesc"></div>
       </div>
       <div style="padding: 8px 0 6px;">
         <div class="row"><label class="ctl">Altitud del sitio</label><span class="val" id="fAlt"></span></div>
         <input type="range" min="0" max="4000" step="100" id="alt" oninput="onSlider('alt', this.value)">
-        <div class="hint">P. atmosférica = <span id="fHatm"></span> · Bogotá ≈ 2600 msnm</div>
+        <div class="hint">P. atmosférica = <span id="fHatm"></span> (≈ <span id="fPatmKpa"></span>) · Bogotá ≈ 2600 msnm</div>
       </div>
       <div style="padding: 8px 0 6px;">
         <div class="row"><label class="ctl">Fricción en la succión a Q₀</label><span class="val" id="fHfs"></span></div>
         <input type="range" min="0" max="10" step="0.5" id="hfs" oninput="onSlider('hfs', this.value)">
-        <div class="hint">Agua a 20 °C · presión de vapor = <span id="fHv"></span></div>
+        <div class="hint">Agua a 20 °C · presión de vapor = <span id="fHv"></span> (≈ <span id="fPvapPa"></span>)</div>
       </div>
 
       <div class="grp-label brd">Fluido y criterios</div>
@@ -234,7 +234,7 @@
    Modelo interno en GPM · pies · HP; referencia impulsor 7.5" a 1750 RPM.
    ──────────────────────────────────────────────────────────────────────── */
 
-var state = { unit: 'us', di: 3, rpm: 1750, Qd: 200, hf: 30, hstat: 10, hs: 5, alt: 2600, hfs: 2, sg: 1, margin: 2, showIsl: true };
+var state = { unit: 'us', di: 3, rpm: 1750, Qd: 200, hf: 30, zd: 10, hs: 5, alt: 2600, hfs: 2, sg: 1, margin: 2, showIsl: true };
 
 function onSlider(k, raw) { state[k] = +raw; render(); }
 function setUnit(u) { state.unit = u; render(); }
@@ -314,7 +314,10 @@ function render() {
   var qZero = function (d) { return Q_ZERO * d * s; };
 
   var K = st.hf / (st.Qd * st.Qd);
-  var Hsys = function (Q) { return st.hstat + K * Q * Q; };
+  // Cabeza estática total del sistema: nivel de descarga sobre la bomba (zd)
+  // más la altura de succión (hs>0 cuando el nivel está bajo la bomba).
+  var hstatT = st.zd + st.hs;
+  var Hsys = function (Q) { return hstatT + K * Q * Q; };
 
   var hatm = 33.9 * Math.exp(-st.alt / 8434);
   var hvap = 0.78;
@@ -336,14 +339,26 @@ function render() {
   var hasOp = !!op;
   var beyond = hasOp && op.beyond;
 
-  var BHPof = function (Q, d) { return Q * Hp(Q, d) * sg * 100 / (3960 * Math.max(eta(Q, d), 8)); };
+  // BHP = WHP/η es válido donde η es razonable; cerca del cierre (Q→0) la
+  // eficiencia tiende a cero y la división se dispara (artefacto). Se empalma
+  // suavemente con la potencia de cierre típica de una bomba radial
+  // (≈ 50 % de la potencia en el PME), manteniendo valor y pendiente en Qt.
+  var bhpRaw = function (Q) { return Q * Hp(Q, D) * sg * 100 / (3960 * Math.max(eta(Q, D), 8)); };
+  var bepQD = QBEP_REF * D * s;
+  var etaTrust = Math.min(25, etaMax(D) * 0.5);
+  var Qt = bepQD * (1 - Math.sqrt(Math.max(1 - etaTrust / etaMax(D), 0)));
+  var bhpT = bhpRaw(Qt);
+  var mT = (bhpRaw(Qt * 1.05) - bhpRaw(Qt * 0.95)) / (Qt * 0.1);
+  var bhp0 = 0.5 * bhpRaw(bepQD);
+  var cBlend = (bhp0 - bhpT + mT * Qt) / (Qt * Qt);
+  var BHPcurve = function (Q) { return Q >= Qt ? bhpRaw(Q) : bhpT + mT * (Q - Qt) + cBlend * (Q - Qt) * (Q - Qt); };
   var bhpMax = 0;
-  for (var i = 1; i <= 60; i++) bhpMax = Math.max(bhpMax, BHPof(qEnd(D) * i / 60, D));
+  for (var i = 0; i <= 60; i++) bhpMax = Math.max(bhpMax, BHPcurve(qEnd(D) * i / 60));
   var motors = [0.5, 0.75, 1, 1.5, 2, 3, 5, 7.5, 10, 15, 20, 25, 30, 40, 50];
   var motorNO = motors.find(function (m) { return m >= bhpMax; }) || 50;
   var etaOp = hasOp ? eta(op.Q, D) : 0;
   var whpOp = hasOp ? op.Q * op.H * sg / 3960 : 0;
-  var bhpOp = hasOp ? whpOp * 100 / Math.max(etaOp, 5) : 0;
+  var bhpOp = hasOp ? BHPcurve(op.Q) : 0;
   var motorPt = motors.find(function (m) { return m >= bhpOp; }) || 50;
 
   var naOp = hasOp ? NPSHa(op.Q) : NPSHa(0);
@@ -363,7 +378,7 @@ function render() {
   // ----- axes -----
   var qMaxI = Math.max(qEnd(1) * 1.12, st.Qd * 1.25, hasOp ? op.Q * 1.08 : 0);
   var qsc = nice(qMaxI * cQ, 6); qMaxI = qsc.max / cQ;
-  var hMaxI = Math.max(72 * s * s * 1.18, st.hstat * 1.35);
+  var hMaxI = Math.max(72 * s * s * 1.18, hstatT * 1.35, 6);
   var hsc = nice(hMaxI * cH, 6); hMaxI = hsc.max / cH;
 
   var PX0 = 64, PX1 = 694, PY0 = 16, PY1 = 472;
@@ -416,7 +431,7 @@ function render() {
 
   // system curve + design point
   var sysPath = pathOf(sample(function (Q) { return xOf(Q); }, function (Q) { return yOf(Hsys(Q)); }, 0, qMaxI, 50));
-  var designX = r1(xOf(st.Qd) - 4), designY = r1(yOf(st.hstat + st.hf) - 4);
+  var designX = r1(xOf(st.Qd) - 4), designY = r1(yOf(hstatT + st.hf) - 4);
 
   // operating + BEP markers
   var opX = hasOp ? r1(xOf(op.Q)) : 0, opY = hasOp ? r1(yOf(op.H)) : 0;
@@ -453,7 +468,7 @@ function render() {
   var bMaxI = Math.max(bhpMax, motorNO) * 1.25;
   var bsc = nice(bMaxI * cP, 4); bMaxI = bsc.max / cP;
   var by = function (P) { return BY1 - (P / bMaxI) * (BY1 - BY0); };
-  var bhpPath = pathOf(sample(xOf, function (Q) { return by(BHPof(Q, D)); }, 6, qEnd(D), 44));
+  var bhpPath = pathOf(sample(xOf, function (Q) { return by(BHPcurve(Q)); }, 0, qEnd(D), 60));
   var motorLines = motors.filter(function (m) { return m <= bMaxI * 0.98 && m >= bMaxI * 0.12; }).map(function (m) {
     var rec = m === motorNO;
     var yy = r1(by(m));
@@ -464,56 +479,64 @@ function render() {
   var bOpX = hasOp ? r1(xOf(op.Q)) : 0;
   var bOpY = hasOp ? r1(by(bhpOp)) : 0;
 
-  // ----- diagram -----
-  var ys = r1(210 + st.hs * 3);
-  var ydRaw = ys - st.hstat * 2.2;
-  var yd = r1(Math.max(ydRaw, 104));
-  var hsMid = (ys + 210) / 2;
-  var dg = {
-    ys: ys, wh: r1(Math.max(300 - ys - 2, 2)),
-    yd: yd, wdh: r1(Math.max(300 - yd - 2, 2)),
-    suctionPipe: '60,282 148,282 148,210 167,210',
-    suctionArrow: '143,231 148,222 153,231',
-    hsLabelY: r1(Math.abs(ys - 210) > 16 ? hsMid + 4 : 210 - 10),
-    hstatLabelY: r1((ys + yd) / 2 + 4)
+  // ----- diagram: tanques abiertos a la atmósfera, referencia z = 0 en el
+  // eje de la bomba (las dos cotas se miden desde la bomba, no entre niveles) --
+  var ys = r1(210 + st.hs * 3);      // nivel de succión (hs > 0: por debajo de la bomba)
+  var yd = r1(210 - st.zd * 2.2);    // nivel de descarga (por encima de la bomba)
+  var patmKpa = 994 * 9.81 * (hatm * 0.3048) / 1000;
+  var pvapPa = 994 * 9.81 * (hvap * 0.3048);
+  var hsLabY = r1(Math.abs(ys - 210) > 18 ? (ys + 210) / 2 + 4 : Math.min(ys, 210) - 8);
+  var zdLabY = r1((210 - yd) > 18 ? (yd + 210) / 2 + 4 : 198);
+  // símbolo de superficie libre (∇): tanque abierto a la atmósfera
+  var freeSurf = function (x, y) { return '<path d="M ' + (x - 6) + ' ' + (y - 10) + ' H ' + (x + 6) + ' L ' + x + ' ' + (y - 2) + ' Z" fill="none" stroke="var(--color-neutral-700)" stroke-width="1.5"></path>'; };
+  var subLabel = function (x, y, base, subs, rest, color, anchor) {
+    return '<text x="' + x + '" y="' + y + '"' + (anchor ? ' text-anchor="' + anchor + '"' : '') + ' style="font-size:11.5px;font-weight:700;fill:' + color + ';">' + base + '<tspan dy="2.5" font-size="9">' + subs + '</tspan><tspan dy="-2.5">' + esc(rest) + '</tspan></text>';
   };
 
   // ---------- Ensamble de SVGs ----------
   // Diagrama de instalación
-  var diagLabels = ''
-    + Tt(14, 22, 'P. atmosférica = ' + fH(hatm) + ' · ' + st.alt + ' msnm', { fs: 12, fill: 'var(--color-neutral-700)' })
-    + Tt(185, 214, impLabelsUS[st.di], { fs: 11, fw: 700, anchor: 'middle', fill: 'var(--color-text)' })
-    + Tt(185, 246, 'Bomba · ' + st.rpm + ' RPM', { fs: 12, anchor: 'middle', fill: 'var(--color-neutral-700)' })
-    + Tt(163, 204, 'h₅ = ' + fHvf(st.hs) + ' ' + hUnit, { fs: 11.5, fw: 700, anchor: 'end', fill: 'var(--color-accent-700)' })
-    + Tt(240, dg.hstatLabelY, 'H₆ = ' + fHvf(st.hstat) + ' ' + hUnit, { fs: 11.5, fw: 700 });
   var diagInner = ''
-    + '<rect x="16" y="120" width="110" height="180" fill="none" stroke="var(--color-text)" stroke-width="2"></rect>'
-    + '<rect x="18" y="' + dg.ys + '" width="106" height="' + dg.wh + '" fill="var(--color-neutral-200)"></rect>'
-    + svgLine(18, dg.ys, 124, dg.ys, 'var(--color-text)', 2)
-    + '<text x="16" y="316" style="font-size:12px;fill:var(--color-neutral-700);">Tanque de succión</text>'
-    + '<polyline points="' + dg.suctionPipe + '" fill="none" stroke="var(--color-text)" stroke-width="2"></polyline>'
+    // línea de referencia z = 0 por el eje de la bomba
+    + svgLine(20, 210, 146, 210, 'var(--color-neutral-500)', 1, '10 3 2 3')
+    + svgLine(204, 210, 380, 210, 'var(--color-neutral-500)', 1, '10 3 2 3')
+    + '<text x="378" y="203" text-anchor="end" style="font-size:10.5px;fill:var(--color-neutral-600);">z = 0 · eje de la bomba</text>'
+    // tanque de succión (abierto, sin tapa)
+    + '<path d="M 26 150 V 300 H 122 V 150" fill="none" stroke="var(--color-text)" stroke-width="2"></path>'
+    + '<rect x="28" y="' + ys + '" width="92" height="' + r1(Math.max(300 - ys - 1, 2)) + '" fill="var(--color-neutral-200)"></rect>'
+    + svgLine(28, ys, 120, ys, 'var(--color-text)', 2)
+    + freeSurf(62, ys)
+    + '<text x="26" y="316" style="font-size:12px;fill:var(--color-neutral-700);">Tanque de succión · abierto</text>'
+    // succión → bomba → descarga (una sola trayectoria, con flechas de flujo)
+    + '<polyline points="60,284 150,284 150,210 167,210" fill="none" stroke="var(--color-text)" stroke-width="2"></polyline>'
     + '<circle cx="185" cy="210" r="18" fill="var(--color-bg)" stroke="var(--color-text)" stroke-width="2.5"></circle>'
-    + '<polyline points="185,192 185,72 305,72 305,88" fill="none" stroke="var(--color-text)" stroke-width="2"></polyline>'
-    + '<polygon points="300,86 305,95 310,86" fill="var(--color-accent)"></polygon>'
-    + '<polygon points="243,67 252,72 243,77" fill="var(--color-accent)"></polygon>'
-    + '<polygon points="' + dg.suctionArrow + '" fill="var(--color-accent)"></polygon>'
-    + '<rect x="250" y="96" width="134" height="204" fill="none" stroke="var(--color-text)" stroke-width="2"></rect>'
-    + '<rect x="252" y="' + dg.yd + '" width="130" height="' + dg.wdh + '" fill="var(--color-neutral-200)"></rect>'
-    + svgLine(252, dg.yd, 382, dg.yd, 'var(--color-text)', 2)
-    + '<text x="250" y="316" style="font-size:12px;fill:var(--color-neutral-700);">Descarga</text>'
-    + svgLine(126, dg.ys, 236, dg.ys, 'var(--color-neutral-500)', 1, '4 4')
-    + svgLine(205, 210, 236, 210, 'var(--color-neutral-500)', 1, '4 4')
-    + svgLine(248, dg.yd, 228, dg.yd, 'var(--color-neutral-500)', 1, '4 4')
-    + svgLine(222, dg.ys, 222, 210, 'var(--color-accent-700)', 1.5)
-    + svgLine(234, dg.ys, 234, dg.yd, 'var(--color-neutral-700)', 1.5)
-    + diagLabels;
+    + '<polyline points="185,192 185,56 330,56 330,92" fill="none" stroke="var(--color-text)" stroke-width="2"></polyline>'
+    + '<polygon points="96,279 96,289 106,284" fill="var(--color-accent)"></polygon>'
+    + '<polygon points="180,140 190,140 185,130" fill="var(--color-accent)"></polygon>'
+    + '<polygon points="325,90 335,90 330,100" fill="var(--color-accent)"></polygon>'
+    // tanque de descarga (abierto; la tubería entrega por encima del nivel)
+    + '<path d="M 250 88 V 300 H 384 V 88" fill="none" stroke="var(--color-text)" stroke-width="2"></path>'
+    + '<rect x="252" y="' + yd + '" width="130" height="' + r1(Math.max(300 - yd - 1, 2)) + '" fill="var(--color-neutral-200)"></rect>'
+    + svgLine(252, yd, 382, yd, 'var(--color-text)', 2)
+    + freeSurf(295, yd)
+    + '<text x="384" y="316" text-anchor="end" style="font-size:12px;fill:var(--color-neutral-700);">Tanque de descarga · abierto</text>'
+    // cotas medidas desde el eje de la bomba
+    + svgLine(120, ys, 146, ys, 'var(--color-neutral-500)', 1, '4 4')
+    + svgLine(252, yd, 222, yd, 'var(--color-neutral-500)', 1, '4 4')
+    + svgLine(136, 210, 136, ys, 'var(--color-accent-700)', 1.5)
+    + svgLine(232, 210, 232, yd, 'var(--color-neutral-700)', 1.5)
+    + subLabel(130, hsLabY, 'h', 's', ' = ' + fHvf(st.hs) + ' ' + hUnit, 'var(--color-accent-700)', 'end')
+    + subLabel(238, zdLabY, 'z', 'd', ' = ' + fHvf(st.zd) + ' ' + hUnit, 'var(--color-neutral-800)', '')
+    // etiquetas
+    + Tt(185, 215, impLabelsUS[st.di], { fs: 11, fw: 700, anchor: 'middle', fill: 'var(--color-text)' })
+    + Tt(200, 266, 'Bomba · ' + st.rpm + ' RPM', { fs: 11.5, anchor: 'middle', fill: 'var(--color-neutral-700)' })
+    + Tt(14, 22, 'P. atmosférica = ' + fH(hatm) + ' ≈ ' + patmKpa.toFixed(0) + ' kPa · ' + st.alt + ' msnm', { fs: 12, fill: 'var(--color-neutral-700)' });
 
   // NPSH chart
   var nLabels = ''
     + nQTicks.map(function (t) { return Tt(t.x, 228, t.label, { fs: 11.5, anchor: 'middle' }); }).join('')
     + nHTicks.map(function (t) { return Tt(40, t.yText, t.label, { fs: 11.5, anchor: 'end' }); }).join('')
     + Tt(46, 248, 'Caudal — ' + qUnit, { fs: 12 })
-    + Tt(388, 248, 'NPSH — ' + hUnit, { fs: 12, anchor: 'end' });
+    + Tt(12, 208, 'NPSH — ' + hUnit, { fs: 12, transform: 'rotate(-90 12 208)' });
   var npshInner = ''
     + '<defs><clipPath id="clipNpsh"><rect x="46" y="12" width="342" height="196"></rect></clipPath></defs>'
     + '<rect x="46" y="12" width="342" height="196" fill="var(--color-neutral-100)"></rect>'
@@ -583,7 +606,7 @@ function render() {
 
   // ----- warnings & status -----
   var warnings = [];
-  if (!hasOp) warnings.push('La cabeza estática (' + fH(st.hstat) + ') supera la cabeza a caudal cero (' + fH(72 * s * s * D * D) + '): la bomba no entrega flujo. Suba la velocidad, use un impulsor mayor o reduzca la cabeza estática.');
+  if (!hasOp) warnings.push('La cabeza estática total (zd + hs = ' + fH(hstatT) + ') supera la cabeza a caudal cero (' + fH(72 * s * s * D * D) + '): la bomba no entrega flujo. Suba la velocidad, use un impulsor mayor o reduzca los niveles.');
   if (beyond) warnings.push('El punto de operación cae más allá del final de la curva publicada: operación ruidosa, cavitación y daño posibles. Seleccione un impulsor mayor o aumente la fricción del circuito.');
   if (cav) warnings.push('¡Cavitación! NPSH disponible (' + fH(naOp) + ') < NPSH requerido (' + fH(nrOp) + ') en el punto de operación. Reduzca la altura de succión, la fricción de succión o el caudal.');
   if (lowMargin) warnings.push('Margen NPSH insuficiente: ' + fH(npshMargin) + ' < ' + fH(marginReq) + ' recomendado.');
@@ -617,7 +640,10 @@ function render() {
 
   set('rpmHdr', st.rpm);
   set('fRpm', st.rpm + ' RPM'); set('fSpeedRatioA', s.toFixed(2)); set('fSpeedRatio', s.toFixed(2)); set('fDiaRatio', D.toFixed(2));
-  set('fQd', fQ(st.Qd)); set('fHf', fH(st.hf)); set('fHstat', fH(st.hstat)); set('fHs', fH(st.hs)); set('fHfs', fH(st.hfs));
+  // sincroniza la posición de los deslizadores con el estado
+  ['rpm', 'Qd', 'hf', 'zd', 'hs', 'alt', 'hfs', 'sg', 'margin'].forEach(function (k) { var el = document.getElementById(k); if (el && parseFloat(el.value) !== st[k]) el.value = st[k]; });
+  set('fQd', fQ(st.Qd)); set('fHf', fH(st.hf)); set('fZd', fH(st.zd)); set('fHstatTotal', fH(hstatT)); set('fHs', fH(st.hs)); set('fHfs', fH(st.hfs));
+  set('fPatmKpa', patmKpa.toFixed(0) + ' kPa'); set('fPvapPa', Math.round(pvapPa) + ' Pa');
   set('fAlt', st.alt + ' msnm'); set('fHatm', fH(hatm)); set('fHv', fH(hvap));
   set('fSg', st.sg.toFixed(2)); set('fMargin', fH(marginReq));
   set('hsDesc', st.hs >= 0 ? 'Positivo: la bomba está sobre el nivel del líquido (lift)' : 'Negativo: succión sumergida (el nivel está sobre la bomba)');
@@ -629,7 +655,7 @@ function render() {
   } else { wEl.style.display = 'none'; wEl.innerHTML = ''; }
 
   var stEl = document.getElementById('statusText'); stEl.textContent = statusText; stEl.style.color = statusColor;
-  set('diagCaption', 'Sistema abierto: la bomba ' + (st.hs >= 0 ? 'aspira desde ' + fH(Math.abs(st.hs)) + ' por debajo de su eje' : 'opera con ' + fH(Math.abs(st.hs)) + ' de sumergencia') + ' y descarga ' + fH(st.hstat) + ' por encima del nivel de succión.');
+  document.getElementById('diagCaption').innerHTML = 'Tanques abiertos a la atmósfera, cotas medidas desde el eje de la bomba (z = 0): la bomba ' + (st.hs >= 0 ? 'aspira desde ' + fH(Math.abs(st.hs)) + ' por debajo de su eje' : 'opera sumergida, con el nivel de succión ' + fH(Math.abs(st.hs)) + ' por encima de su eje') + ' y entrega a un tanque cuyo nivel está ' + fH(st.zd) + ' por encima del eje. Cabeza estática del sistema: H<sub>est</sub> = z<sub>d</sub> + h<sub>s</sub> = ' + fH(hstatT) + '.';
   set('npshCaption', qSafe > 1 && qSafe < qMaxI ? 'Zona sombreada: cavitación. El caudal debe mantenerse por debajo de ' + fQ(qSafe) + '.' : (qSafe <= 1 ? 'NPSHd < NPSHr en todo el rango: la succión debe rediseñarse.' : 'Sin zona de cavitación en el rango mostrado.'));
 
   // stats grid 1
@@ -653,7 +679,7 @@ function render() {
   set('npshBreakdown', dec1(hatm * cH) + ' − ' + dec1(hvap * cH) + ' − ' + dec1(st.hs * cH) + ' − ' + dec1((hasOp ? Ks * op.Q * op.Q : 0) * cH) + ' = ' + fH(naOp));
 
   // fórmulas KaTeX (estáticas)
-  tex('eqSys', 'h = H_e + kQ^2');
+  tex('eqSys', 'h = (z_d + h_s) + kQ^2');
   tex('eqAffinity', 'Q \\propto ND \\qquad H \\propto (ND)^2 \\qquad \\mathrm{BHP} \\propto (ND)^3');
   tex('eqNpshDef', '\\mathrm{NPSH}_d = h_{atm} - h_{vap} - h_s - h_{f,\\mathrm{succ}}');
 }
