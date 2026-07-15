@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import type { Course } from '../../components/data/classroom';
@@ -45,81 +45,6 @@ const Wordmark: React.FC = () => (
 const Eyebrow: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <span className="nv-eyebrow">{children}</span>
 );
-
-/* ---- Visor que sigue el scroll y «enfoca» el bloque que se lee ----
-   Marco fijo de cuatro esquinas citrón que se desliza (lerp) hacia el
-   bloque más cercano al punto de foco del viewport. Solo en el landing. */
-const ScrollViewfinder: React.FC = () => {
-  const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    // Respetamos reduce-motion suavizando: la mira sigue apareciendo y
-    // «enfocando» (el usuario la pidió), pero sin la interpolación animada.
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    // Enfocamos cada tarjeta/bloque (tamaño de caja), no secciones enteras:
-    // así la mira «enfoca lo que se está leyendo».
-    const targets = () => Array.from(document.querySelectorAll<HTMLElement>('.nv-course .nv-card, .nv-course .nv-spine'));
-    const st = { x: 0, y: 0, w: 0, h: 0, init: false };
-    let raf = 0;
-
-    const pick = () => {
-      const vh = window.innerHeight;
-      const focus = vh * 0.42; // punto de foco, un poco por encima del centro
-      let best: DOMRect | null = null;
-      let bd = Infinity;
-      for (const t of targets()) {
-        const r = t.getBoundingClientRect();
-        if (r.height === 0) continue;
-        const c = r.top + r.height / 2;
-        const d = Math.abs(c - focus);
-        if (d < bd) { bd = d; best = r; }
-      }
-      return best;
-    };
-
-    const frame = (r: DOMRect) => {
-      const vh = window.innerHeight;
-      const pad = 14;
-      let x = r.left - pad, w = r.width + 2 * pad;
-      let y = r.top - pad, h = r.height + 2 * pad;
-      const maxH = vh - 40;
-      if (h > maxH) {
-        const focus = vh * 0.42;
-        const cy = Math.min(Math.max(focus, r.top + 60), r.bottom - 60);
-        h = maxH; y = cy - maxH / 2;
-      }
-      y = Math.min(Math.max(y, 16), vh - 16 - h);
-      return { x, y, w, h };
-    };
-
-    const loop = () => {
-      const best = pick();
-      if (best) {
-        const t = frame(best);
-        if (!st.init) { st.x = t.x; st.y = t.y; st.w = t.w; st.h = t.h; st.init = true; el.classList.add('is-visible'); }
-        const k = reduce ? 1 : 0.16;
-        st.x += (t.x - st.x) * k;
-        st.y += (t.y - st.y) * k;
-        st.w += (t.w - st.w) * k;
-        st.h += (t.h - st.h) * k;
-        el.style.transform = `translate(${st.x}px, ${st.y}px)`;
-        el.style.width = `${st.w}px`;
-        el.style.height = `${st.h}px`;
-      }
-      raf = requestAnimationFrame(loop);
-    };
-    raf = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(raf);
-  }, []);
-
-  return (
-    <div ref={ref} className="nv-viewfinder" aria-hidden="true">
-      <span className="vf-tl" /><span className="vf-tr" /><span className="vf-bl" /><span className="vf-br" />
-    </div>
-  );
-};
 
 const Section: React.FC<{ eyebrow: string; title: string; description?: string; children: React.ReactNode }> = ({
   eyebrow,
@@ -239,9 +164,6 @@ export const NarrativasLandingPage: React.FC<Props> = ({ course }) => {
           </div>
         </header>
 
-        {/* Visor que enfoca el bloque que se lee al hacer scroll */}
-        <ScrollViewfinder />
-
         {/* ---------------- SPINE QUOTE ---------------- */}
         <section className="nv-section" style={{ borderTop: 'none' }}>
           <div className="nv-wrap">
@@ -263,8 +185,10 @@ export const NarrativasLandingPage: React.FC<Props> = ({ course }) => {
             <div className="nv-grid nv-grid-2">
               <Link
                 to={`/classroom/${course.slug}/readings`}
-                className="nv-card nv-card--interactive"
+                className="nv-card nv-card--interactive nv-card--framed nv-frame"
+                style={{ ['--nv-frame-corner' as string]: '16px', ['--nv-frame-inset' as string]: '9px' }}
               >
+                <span className="nv-frame-b" />
                 <p className="nv-label nv-label--accent">Material</p>
                 <h3 style={{ marginTop: 8 }}>Material del curso</h3>
                 <p style={{ marginTop: 8 }}>
@@ -426,7 +350,11 @@ export const NarrativasLandingPage: React.FC<Props> = ({ course }) => {
                 </tbody>
               </table>
             </div>
-            <div className="nv-card" style={{ textAlign: 'center' }}>
+            <div
+              className="nv-card nv-card--framed nv-frame"
+              style={{ textAlign: 'center', ['--nv-frame-corner' as string]: '16px', ['--nv-frame-inset' as string]: '9px' }}
+            >
+              <span className="nv-frame-b" />
               <p className="nv-label" style={{ justifyContent: 'center' }}>Portafolio acumulativo</p>
               <div className="nv-stat-value nv-stat-value--accent nv-num" style={{ marginTop: 14 }}>{totalPct}%</div>
               <p style={{ marginTop: 10, fontSize: 14 }}>Siete piezas más participación. La nota se construye pieza por pieza.</p>
