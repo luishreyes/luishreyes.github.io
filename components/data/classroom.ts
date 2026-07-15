@@ -189,7 +189,7 @@ export interface Course {
    * - `terracota` → #E06C2A (Diseño Sistémico de Bioproductos)
    * - `magenta`   → #C03B6E (Biotecnología Industrial)
    */
-  accent?: 'green' | 'violet' | 'blue' | 'terracota' | 'magenta';
+  accent?: 'green' | 'violet' | 'blue' | 'terracota' | 'magenta' | 'citron';
   /**
    * Si `true`, el curso pertenece a un semestre pasado: NO aparece en el índice de Aula
    * sino en la página de Archivo (`/classroom/archive`). Sus páginas internas (landing,

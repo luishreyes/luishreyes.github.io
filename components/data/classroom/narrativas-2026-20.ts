@@ -14,7 +14,7 @@ export const narrativas202620Course: Course = {
   code: 'IQYA-3751',
   title: 'Narrativas Visuales de Datos IAgen',
   term: '2026-20',
-  accent: 'violet',
+  accent: 'citron',
   credits: 2,
   modality: 'Presencial',
   duration: '16 semanas',
