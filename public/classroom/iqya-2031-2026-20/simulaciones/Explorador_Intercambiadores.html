@@ -182,7 +182,7 @@
 
       <div class="grp-label brd" style="margin-top: 16px;">Perfil de temperaturas</div>
       <svg id="svgTemp" viewBox="0 0 320 180" style="width: 100%; max-width: 420px; display: block; margin-top: 8px;"></svg>
-      <div class="hint" style="margin-top: 4px;">Perfil equivalente en contracorriente; el factor F = <span id="fFcap"></span> corrige el paso múltiple.</div>
+      <div class="hint" id="tempCaption" style="margin-top: 4px;"></div>
     </section>
 
     <section class="colpanel" style="flex: 1 1 280px; max-width: 420px; padding: 8px 22px 28px; border-right: 2px solid var(--color-divider);">
@@ -435,20 +435,28 @@ function render() {
     chain.push({ x: 30 + c * 80, tx: 36 + c * 80, t: 'Coraza ' + (c + 1), lx1: c > 0 ? 6 + c * 80 : 0, lx2: c > 0 ? 30 + c * 80 : 0 });
   }
 
-  // ---- Temperature profile
-  var kk = Math.log(dT2 / dT1);
-  var tMax = Math.max(100, thIn + 5), tMin = 20;
+  // ---- Perfil de temperaturas REAL por ε-NTU
+  // Con la geometría actual (UA = F·Ud·A) la efectividad fija cuánto se enfría
+  // el aceite de verdad; las salidas y pendientes responden a área, U,
+  // ensuciamiento, flujo y material. Diagrama T vs calor transferido: rectas.
+  var Ch = mOil * 2100, Cc = mW * 4178;
+  var Cmin = Math.min(Ch, Cc), Cmax = Math.max(Ch, Cc), Cr = Cmin / Cmax;
+  var NTU = F * Ud * Aav / Cmin;
+  var eff;
+  if (Math.abs(1 - Cr) < 1e-6) eff = NTU / (1 + NTU);
+  else { var exn = Math.exp(-NTU * (1 - Cr)); eff = (1 - exn) / (1 - Cr * exn); }
+  var Qact = eff * Cmin * (thIn - 25);
+  var thOutAct = thIn - Qact / Ch;   // salida real del aceite
+  var tcOutAct = 25 + Qact / Cc;     // salida real del agua
+  var tMax = Math.max(thIn + 6, 46), tMin = 20;
   var ty = function (T) { return 146 - (T - tMin) / (tMax - tMin) * 128; };
-  var hp = [], cp_ = [];
-  for (var j = 0; j <= 20; j++) {
-    var a = j / 20;
-    var qf = Math.abs(kk) < 1e-6 ? a : (Math.exp(kk * a) - 1) / (Math.exp(kk) - 1);
-    var px = 36 + a * 256;
-    hp.push(px.toFixed(1) + ',' + ty(thIn - (thIn - thOut) * qf).toFixed(1));
-    cp_.push(px.toFixed(1) + ',' + ty(40 - 15 * qf).toFixed(1));
-  }
+  var PXL = 40, PXR = 292;
+  // aceite (caliente): entra por la izquierda (thIn), sale por la derecha (thOutAct)
+  // agua (frío, contracorriente): entra por la derecha (25), sale por la izquierda (tcOutAct)
+  var hp = PXL + ',' + ty(thIn).toFixed(1) + ' ' + PXR + ',' + ty(thOutAct).toFixed(1);
+  var cp_ = PXL + ',' + ty(tcOutAct).toFixed(1) + ' ' + PXR + ',' + ty(25).toFixed(1);
   var axisLabels = [];
-  [[thIn, thIn + '°'], [thOut, thOut + '°'], [40, '40°'], [25, '25°']].forEach(function (pair) {
+  [[thIn, f0(thIn) + '°'], [thOutAct, f0(thOutAct) + '°'], [tcOutAct, f0(tcOutAct) + '°'], [25, '25°']].forEach(function (pair) {
     var T = pair[0], t = pair[1];
     var yl = ty(T) + 4;
     if (!axisLabels.some(function (al) { return Math.abs(al.yn - yl) < 11; })) axisLabels.push({ yn: yl, y: yl.toFixed(0), t: t });
@@ -561,7 +569,7 @@ function render() {
   ];
   document.getElementById('geoRows').innerHTML = geoRows.map(function (r) { return '<div class="rowline"><div class="rk">' + esc(r[0]) + '</div><div class="rvg">' + esc(r[1]) + '</div></div>'; }).join('');
 
-  // ---- SVG perfil de temperaturas (con flechas de dirección: contracorriente)
+  // ---- SVG perfil de temperaturas (rectas T–Q; flechas de dirección: contracorriente)
   document.getElementById('svgTemp').innerHTML = ''
     + '<defs>'
     + '<marker id="tarH" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--color-accent)"></path></marker>'
@@ -570,18 +578,22 @@ function render() {
     + '<line x1="36" y1="18" x2="36" y2="146" style="stroke:var(--color-neutral-500);stroke-width:1;"></line>'
     + '<line x1="36" y1="146" x2="296" y2="146" style="stroke:var(--color-neutral-500);stroke-width:1;"></line>'
     + axisLabels.map(function (al) { return '<text x="30" y="' + al.y + '" text-anchor="end" style="font-size:10px;fill:var(--color-neutral-700);">' + esc(al.t) + '</text>'; }).join('')
-    + '<polyline points="' + hp.join(' ') + '" style="fill:none;stroke:var(--color-accent);stroke-width:2.5;"></polyline>'
-    + '<polyline points="' + cp_.join(' ') + '" style="fill:none;stroke:var(--color-text);stroke-width:2.5;"></polyline>'
-    // el aceite (caliente) fluye en +área →; el agua (frío), en −área ← (contracorriente)
-    + '<line x1="150" y1="26" x2="188" y2="26" stroke="var(--color-accent)" stroke-width="1.5" marker-end="url(#tarH)"></line>'
-    + '<text x="146" y="30" text-anchor="end" style="font-size:9.5px;fill:var(--color-accent-700);">aceite</text>'
-    + '<line x1="188" y1="120" x2="150" y2="120" stroke="var(--color-text)" stroke-width="1.5" marker-end="url(#tarC)"></line>'
-    + '<text x="192" y="124" style="font-size:9.5px;fill:var(--color-neutral-800);">agua</text>'
-    + '<text x="60" y="42" style="font-size:11px;fill:var(--color-accent-700);">Aceite ' + f0(thIn) + ' → ' + f0(thOut) + ' °C</text>'
-    + '<text x="170" y="140" style="font-size:11px;fill:var(--color-neutral-800);">Agua 25 → 40 °C</text>'
-    + '<text x="168" y="14" text-anchor="middle" style="font-size:9.5px;font-weight:700;fill:var(--color-neutral-600);">CONTRACORRIENTE</text>'
-    + '<text x="296" y="160" text-anchor="end" style="font-size:10px;fill:var(--color-neutral-600);">Área recorrida →</text>';
-  setT('fFcap', f2(F));
+    // extremos: marcas de ΔT terminal
+    + '<circle cx="' + PXL + '" cy="' + ty(thIn).toFixed(1) + '" r="2.5" fill="var(--color-accent)"></circle>'
+    + '<circle cx="' + PXR + '" cy="' + ty(thOutAct).toFixed(1) + '" r="2.5" fill="var(--color-accent)"></circle>'
+    + '<circle cx="' + PXL + '" cy="' + ty(tcOutAct).toFixed(1) + '" r="2.5" fill="var(--color-text)"></circle>'
+    + '<circle cx="' + PXR + '" cy="' + ty(25).toFixed(1) + '" r="2.5" fill="var(--color-text)"></circle>'
+    + '<polyline points="' + hp + '" style="fill:none;stroke:var(--color-accent);stroke-width:2.5;"></polyline>'
+    + '<polyline points="' + cp_ + '" style="fill:none;stroke:var(--color-text);stroke-width:2.5;"></polyline>'
+    // dirección de flujo: aceite (caliente) → ; agua (frío) ← (contracorriente)
+    + '<line x1="120" y1="26" x2="158" y2="26" stroke="var(--color-accent)" stroke-width="1.5" marker-end="url(#tarH)"></line>'
+    + '<line x1="212" y1="120" x2="174" y2="120" stroke="var(--color-text)" stroke-width="1.5" marker-end="url(#tarC)"></line>'
+    // etiquetas fuera de las líneas
+    + '<text x="290" y="30" text-anchor="end" style="font-size:11px;fill:var(--color-accent-700);">Aceite ' + f0(thIn) + ' → ' + f0(thOutAct) + ' °C</text>'
+    + '<text x="46" y="138" style="font-size:11px;fill:var(--color-neutral-800);">Agua 25 → ' + f0(tcOutAct) + ' °C</text>'
+    + '<text x="168" y="13" text-anchor="middle" style="font-size:9.5px;font-weight:700;fill:var(--color-neutral-600);">CONTRACORRIENTE</text>'
+    + '<text x="292" y="160" text-anchor="end" style="font-size:10px;fill:var(--color-neutral-600);">Calor transferido →</text>';
+  document.getElementById('tempCaption').innerHTML = 'Perfil real por ε-NTU (NTU = ' + f2(NTU) + ', ε = ' + f0(eff * 100) + ' %): con esta geometría el aceite sale a <strong>' + f0(thOutAct) + ' °C</strong> y el agua a <strong>' + f0(tcOutAct) + ' °C</strong>. Cuando el área iguala la requerida, alcanza el objetivo (' + f0(thOut) + ' / 40 °C); si sobra área, sobre-enfría; si falta, se queda corto. F = ' + f2(F) + ' corrige el paso múltiple.';
 
   // ---- transferencia
   var regimeLabel = function (re) { return re >= 1e4 ? 'turbulento' : re >= 2100 ? 'transición' : 'LAMINAR'; };
