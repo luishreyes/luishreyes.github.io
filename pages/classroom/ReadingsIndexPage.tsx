@@ -5,12 +5,18 @@ import type { Reading } from '../../components/data/classroom';
 import { getCourseBySlug } from '../../components/data/classroom';
 import { CourseAccessGate } from '../../components/classroom/CourseAccessGate';
 import { NotFoundInClassroom } from './NotFoundInClassroom';
+import { NarrativasReadingsPage } from './NarrativasReadingsPage';
 
 export const ReadingsIndexPage: React.FC = () => {
   const { courseSlug } = useParams<{ courseSlug: string }>();
   const course = courseSlug ? getCourseBySlug(courseSlug) : undefined;
 
   if (!course) return <NotFoundInClassroom />;
+
+  // Identidad gráfica propia del curso Narrativas Visuales (IQYA-3751).
+  if (course.slug === 'iqya-3751-2026-20') {
+    return <NarrativasReadingsPage course={course} />;
+  }
 
   const byOrderThenDate = (a: Reading, b: Reading) => {
     const ao = a.order ?? Number.POSITIVE_INFINITY;
