@@ -799,6 +799,15 @@ export const pou202620Course: Course = {
   ],
   simulations: [
     {
+      id: 'manual-diagramas',
+      title: 'Manual de diagramas de ingeniería',
+      description:
+        'La referencia interactiva de BFD, PFD y P&ID del curso, hilada por un mismo proceso (hidrodesulfuración de nafta) dibujado con detalle creciente. Once secciones navegables: introducción y jerarquía de diagramas, diagrama de bloques, equipos y nomenclatura con un decodificador de tags en vivo, corrientes y servicios, lazos de control con un constructor por tipo de equipo, tablas del PFD, un PFD explorable clic-a-clic, tuberías e instrumentación (ISA-5.1), layout e isométricos, una biblioteca de símbolos buscable y filtrable, y una autoevaluación de 10 preguntas que se califica sola. La guía visual para leer y dibujar diagramas de proceso.',
+      sessionNumber: 1,
+      file: 'Manual_Diagramas.html',
+      tags: ['diagramas', 'BFD', 'PFD', 'P&ID', 'ISA-5.1', 'nomenclatura', 'lazos de control', 'símbolos', 'instrumentación'],
+    },
+    {
       id: 'explorador-intercambiadores',
       title: 'Explorador de intercambiadores de tubos y coraza',
       description:
