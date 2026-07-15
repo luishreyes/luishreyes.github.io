@@ -18,8 +18,8 @@
   --verde:        #C9C41C;   /* acento principal → citrón */
   --verde-osc:    #DCD733;   /* acento sobre fondo oscuro (texto, enlaces) */
   --verde-claro:  #23210C;   /* fondo tenue citrón (callout/tip, nav activo) */
-  --teal:         #7FB2CE;   /* callout--nota (info), claro sobre oscuro */
-  --teal-claro:   #14232B;
+  --teal:         #B8B6AE;   /* callout--nota (info) → neutral hueso (sin azul) */
+  --teal-claro:   #1A1A17;   /* fondo neutro de la nota */
   --negro:        #0A0A0A;   /* carbón — el escenario */
   --gris-1:       #E8E6E1;   /* texto principal (hueso) */
   --gris-2:       #B8B6AE;   /* texto secundario */
@@ -145,8 +145,13 @@ ul.body-list li::marker { color: var(--verde); }
 .callout--nota .ic { background: var(--teal); color: var(--negro); }
 .callout--nota b { color: var(--teal); }
 
+/* Contenedor scrolleable horizontal: en móvil la tabla se desliza de lado
+   en vez de espicharse. Ver NARRATIVAS-DESIGN.md (regla móvil). */
+.tbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-top: 12px; border-radius: 6px; }
+.tbl-wrap > table { margin-top: 0; }
+
 /* Tablas (resultados de aprendizaje, sesiones, herramientas) */
-table.tbl { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 14.5px; }
+table.tbl { width: 100%; min-width: 560px; border-collapse: collapse; margin-top: 12px; font-size: 14.5px; }
 table.tbl th, table.tbl td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--gris-4); vertical-align: top; }
 table.tbl thead th { background: var(--gris-4); color: var(--gris-1); font-weight: 700; font-size: 13.5px; letter-spacing: .02em; }
 table.tbl thead th:first-child { border-top-left-radius: 6px; }
@@ -162,7 +167,7 @@ table.tbl .ent { color: var(--verde-osc); font-weight: 700; }
 .narr::before { content: "\25B8 "; }
 
 /* Rúbrica / evaluación */
-table.rubrica { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 15px; }
+table.rubrica { width: 100%; min-width: 520px; border-collapse: collapse; margin-top: 0; font-size: 15px; }
 table.rubrica th, table.rubrica td { text-align: left; padding: 14px 16px; border-bottom: 1px solid var(--gris-4); vertical-align: top; }
 table.rubrica thead th { background: var(--gris-4); color: var(--gris-1); font-weight: 700; font-size: 14px; letter-spacing: .02em; }
 table.rubrica thead th:first-child { border-top-left-radius: 6px; }
@@ -228,7 +233,7 @@ table.rubrica tbody tr:nth-child(even) { background: var(--papel); }
      vuelve a ser blanco y el texto oscuro (el tema oscuro es solo pantalla). */
   :root {
     --verde: #7A7411; --verde-osc: #5C5709; --verde-claro: #F4F3D8;
-    --teal: #0076A8; --teal-claro: #E1EEF4;
+    --teal: #555555; --teal-claro: #EEEEEE;
     --negro: #000000; --gris-1: #333333; --gris-2: #555555; --gris-3: #888888;
     --gris-4: #CCCCCC; --gris-5: #EEEEEE; --papel: #F4F4F4; --blanco: #FFFFFF;
     --ambar: #B16A14;
@@ -248,8 +253,24 @@ table.rubrica tbody tr:nth-child(even) { background: var(--papel); }
 }
 @media (max-width: 720px) {
   .doc-head, .doc-body { padding-left: 24px; padding-right: 24px; }
-  .doc-meta, .qcards, .twocol { grid-template-columns: 1fr 1fr; }
+  .qcards { grid-template-columns: 1fr 1fr; }
+  .doc-meta { grid-template-columns: 1fr 1fr; }
   .gradeitem { grid-template-columns: 150px 1fr 46px; }
+}
+/* En móvil, una sola columna: las cajas en doble columna quedan muy angostas.
+   Ver NARRATIVAS-DESIGN.md (regla móvil: evitar dos columnas). */
+@media (max-width: 600px) {
+  .twocol, .qcards, .doc-meta { grid-template-columns: 1fr; }
+  .doc-head h1 { font-size: 42px; }
+  h2.sec { font-size: 28px; }
+  .gradeitem {
+    grid-template-columns: 1fr auto;
+    grid-template-areas: "label pct" "bar bar";
+    gap: 8px 12px;
+  }
+  .gradeitem .glabel { grid-area: label; }
+  .gradeitem .gpct { grid-area: pct; }
+  .gradeitem .gbar { grid-area: bar; }
 }
 </style>
 </head>
@@ -369,7 +390,7 @@ table.rubrica tbody tr:nth-child(even) { background: var(--papel); }
     <section id="s5">
       <div class="eyebrow">Al finalizar, el estudiante estará en capacidad de</div>
       <h2 class="sec">Resultados de aprendizaje</h2>
-      <table class="tbl">
+      <div class="tbl-wrap"><table class="tbl">
         <thead>
           <tr><th>Código</th><th>Resultado de aprendizaje</th><th>Nivel Bloom</th><th>Evaluado en</th></tr>
         </thead>
@@ -383,7 +404,7 @@ table.rubrica tbody tr:nth-child(even) { background: var(--papel); }
           <tr><td class="cod">RA7</td><td>Integrar todos los principios del curso en un dashboard interactivo con narrativa coherente, dando y recibiendo retroalimentación entre pares.</td><td class="nivel">Crear</td><td>Módulo 7</td></tr>
           <tr><td class="cod">RA8</td><td>Planificar, crear y entregar una «presentación estelar» del portafolio, argumentando las decisiones de diseño, narrativa y ética ante una audiencia.</td><td class="nivel">Crear</td><td>Módulo 8</td></tr>
         </tbody>
-      </table>
+      </table></div>
     </section>
 
     <!-- CONTENIDO -->
@@ -408,7 +429,7 @@ table.rubrica tbody tr:nth-child(even) { background: var(--papel); }
       <div class="eyebrow">Dieciséis sesiones</div>
       <h2 class="sec">Programa por sesiones</h2>
       <p>El semestre tiene 16 jueves de clase. El jueves 1 de octubre cae dentro de la semana de receso, así que no hay sesión ese día. Ningún festivo colombiano del periodo cae en jueves.</p>
-      <table class="tbl">
+      <div class="tbl-wrap"><table class="tbl">
         <thead>
           <tr><th>Sesión</th><th>Fecha</th><th>Módulo, tema y apertura narrativa</th><th>Lectura</th><th>Entregable</th></tr>
         </thead>
@@ -431,7 +452,7 @@ table.rubrica tbody tr:nth-child(even) { background: var(--papel); }
           <tr><td class="cod">15</td><td class="fecha">Nov 19</td><td><b>M8.</b> Taller integrador: armar toda la historia hacia una «presentación estelar» + ensayo</td><td>Cap. 10 · SWD You</td><td></td></tr>
           <tr><td class="cod">16</td><td class="fecha">Nov 26</td><td><b>M8.</b> Presentaciones del portafolio ante la clase y reflexión final</td><td>Cap. 10</td><td class="ent">Portafolio final</td></tr>
         </tbody>
-      </table>
+      </table></div>
     </section>
 
     <!-- EVALUACIÓN -->
@@ -449,7 +470,7 @@ table.rubrica tbody tr:nth-child(even) { background: var(--papel); }
         <div class="gradeitem"><span class="glabel">Presentación estelar del portafolio</span><span class="gbar"><i style="width:100%"></i></span><span class="gpct">15%</span></div>
         <div class="gradeitem"><span class="glabel">Participación y coevaluación</span><span class="gbar"><i style="width:67%"></i></span><span class="gpct">10%</span></div>
       </div>
-      <table class="rubrica">
+      <div class="tbl-wrap"><table class="rubrica">
         <thead><tr><th>Componente</th><th>Entrega</th><th>Tipo</th><th>Peso</th></tr></thead>
         <tbody>
           <tr><td>Pieza 1: Selección y justificación de visualizaciones</td><td>Sesión 4 (Ago 27)</td><td>Individual</td><td class="peso">10%</td></tr>
@@ -461,7 +482,7 @@ table.rubrica tbody tr:nth-child(even) { background: var(--papel); }
           <tr><td>Presentación estelar del portafolio</td><td>Sesión 16 (Nov 26)</td><td>Individual</td><td class="peso">15%</td></tr>
           <tr><td>Participación y retroalimentación entre pares</td><td>Sesiones 1 a 16</td><td>Individual</td><td class="peso">10%</td></tr>
         </tbody>
-      </table>
+      </table></div>
       <p style="margin-top:16px;">Cada pieza se evalúa con una rúbrica de tres dimensiones: claridad comunicativa (qué tan bien se entiende el mensaje), calidad del diseño visual y pensamiento crítico (la calidad de la justificación de las decisiones tomadas). Las rúbricas detalladas se entregan en la sesión 1.</p>
     </section>
 
@@ -469,7 +490,7 @@ table.rubrica tbody tr:nth-child(even) { background: var(--papel); }
     <section id="s9">
       <div class="eyebrow">Tecnología del curso</div>
       <h2 class="sec">Herramientas y recursos</h2>
-      <table class="tbl">
+      <div class="tbl-wrap"><table class="tbl">
         <thead>
           <tr><th>Herramienta</th><th>Uso en el curso</th><th>Acceso</th></tr>
         </thead>
@@ -479,7 +500,7 @@ table.rubrica tbody tr:nth-child(even) { background: var(--papel); }
           <tr><td class="cod"><a class="pl" href="https://colab.research.google.com" target="_blank" rel="noopener">Google Colab</a></td><td>Ejecución de código Python (pandas, matplotlib, plotly, seaborn)</td><td>Gratuito con cuenta Google</td></tr>
           <tr><td class="cod"><a class="pl" href="https://www.datawrapper.de" target="_blank" rel="noopener">Datawrapper</a> / <a class="pl" href="https://flourish.studio" target="_blank" rel="noopener">Flourish</a></td><td>Creación rápida de visualizaciones publicables sin código</td><td>Planes gratuitos disponibles</td></tr>
         </tbody>
-      </table>
+      </table></div>
     </section>
 
     <!-- AIAS -->
@@ -487,7 +508,7 @@ table.rubrica tbody tr:nth-child(even) { background: var(--papel); }
       <div class="eyebrow">Inteligencia artificial generativa</div>
       <h2 class="sec">Escala AIAS de uso de IA</h2>
       <p>El uso de IA generativa no solo está permitido: es parte del método. Los conceptos de IA generativa, prompt engineering y flujo human-in-the-loop se introducen en el módulo 2, antes de que los estudiantes utilicen las herramientas. Cada actividad indica el nivel permitido; el objetivo es desarrollar criterio sobre lo que la herramienta produce, no delegar el pensamiento en ella.</p>
-      <table class="tbl">
+      <div class="tbl-wrap"><table class="tbl">
         <thead><tr><th>Nivel</th><th>Qué permite</th><th>Dónde aplica</th></tr></thead>
         <tbody>
           <tr><td class="cod">1 · Sin IA</td><td>Trabajo análogo y conceptual, sin IA.</td><td class="peso">Crítica en papel, storyboards a mano</td></tr>
@@ -496,7 +517,7 @@ table.rubrica tbody tr:nth-child(even) { background: var(--papel); }
           <tr><td class="cod">4 · IA con evaluación</td><td>Generar código y artefactos, con evaluación crítica.</td><td class="peso">Visualizaciones en Python, artefactos React</td></tr>
           <tr><td class="cod">5 · Uso completo (HITL)</td><td>Flujo human-in-the-loop completo, documentado.</td><td class="peso">Notebook HITL, dashboard integrador</td></tr>
         </tbody>
-      </table>
+      </table></div>
       <div class="callout callout--tip">
         <span class="ic">&#9733;</span>
         <div><b>Principio rector</b><p>La IA amplifica las capacidades humanas sin reemplazar el juicio crítico ni la experiencia del dominio. La IA es el procesador técnico; el humano es el director estratégico. La IA propone, el estudiante decide y argumenta.</p></div>

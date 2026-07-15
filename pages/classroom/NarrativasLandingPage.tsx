@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import type { Course } from '../../components/data/classroom';
@@ -45,6 +45,77 @@ const Wordmark: React.FC = () => (
 const Eyebrow: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <span className="nv-eyebrow">{children}</span>
 );
+
+/* ---- Visor que sigue el scroll y «enfoca» el bloque que se lee ----
+   Marco fijo de cuatro esquinas citrón que se desliza (lerp) hacia el
+   bloque más cercano al punto de foco del viewport. Solo en el landing. */
+const ScrollViewfinder: React.FC = () => {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const targets = () => Array.from(document.querySelectorAll<HTMLElement>('.nv-course .nv-section > .nv-wrap'));
+    const st = { x: 0, y: 0, w: 0, h: 0, init: false };
+    let raf = 0;
+
+    const pick = () => {
+      const vh = window.innerHeight;
+      const focus = vh * 0.42; // punto de foco, un poco por encima del centro
+      let best: DOMRect | null = null;
+      let bd = Infinity;
+      for (const t of targets()) {
+        const r = t.getBoundingClientRect();
+        if (r.height === 0) continue;
+        const c = r.top + r.height / 2;
+        const d = Math.abs(c - focus);
+        if (d < bd) { bd = d; best = r; }
+      }
+      return best;
+    };
+
+    const frame = (r: DOMRect) => {
+      const vh = window.innerHeight;
+      const pad = 14;
+      let x = r.left - pad, w = r.width + 2 * pad;
+      let y = r.top - pad, h = r.height + 2 * pad;
+      const maxH = vh - 40;
+      if (h > maxH) {
+        const focus = vh * 0.42;
+        const cy = Math.min(Math.max(focus, r.top + 60), r.bottom - 60);
+        h = maxH; y = cy - maxH / 2;
+      }
+      y = Math.min(Math.max(y, 16), vh - 16 - h);
+      return { x, y, w, h };
+    };
+
+    const loop = () => {
+      const best = pick();
+      if (best) {
+        const t = frame(best);
+        if (!st.init) { st.x = t.x; st.y = t.y; st.w = t.w; st.h = t.h; st.init = true; el.classList.add('is-visible'); }
+        const k = 0.16;
+        st.x += (t.x - st.x) * k;
+        st.y += (t.y - st.y) * k;
+        st.w += (t.w - st.w) * k;
+        st.h += (t.h - st.h) * k;
+        el.style.transform = `translate(${st.x}px, ${st.y}px)`;
+        el.style.width = `${st.w}px`;
+        el.style.height = `${st.h}px`;
+      }
+      raf = requestAnimationFrame(loop);
+    };
+    raf = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  return (
+    <div ref={ref} className="nv-viewfinder" aria-hidden="true">
+      <span className="vf-tl" /><span className="vf-tr" /><span className="vf-bl" /><span className="vf-br" />
+    </div>
+  );
+};
 
 const Section: React.FC<{ eyebrow: string; title: string; description?: string; children: React.ReactNode }> = ({
   eyebrow,
@@ -163,6 +234,9 @@ export const NarrativasLandingPage: React.FC<Props> = ({ course }) => {
             </dl>
           </div>
         </header>
+
+        {/* Visor que enfoca el bloque que se lee al hacer scroll */}
+        <ScrollViewfinder />
 
         {/* ---------------- SPINE QUOTE ---------------- */}
         <section className="nv-section" style={{ borderTop: 'none' }}>
