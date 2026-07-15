@@ -98,17 +98,20 @@ Todos viven en `narrativas-theme.css` (React) y su equivalente en `programa.html
   de marca. Se usa en el wordmark, en la tarjeta de Material y en el visor de scroll.
 - **Stat**, **ProgressTrack** (arco de 16 semanas), tarjetas de material (`.nv-rc`).
 
-## El visor de scroll (scroll-focus viewfinder)
+## El visor: marco estático y estratégico
 
-Marco de visor (cuatro esquinas citrón) que **se desliza con el scroll y “enfoca” el bloque que
-se está leyendo**, como enfocar la toma con una cámara.
+El visor (cuatro esquinas citrón) es un **acento estático**, usado con moderación para enmarcar
+**solo las cajas que sostienen el foco**. No es un efecto de scroll (se probó un visor que
+seguía el scroll «enfocando» cada bloque y **se descartó**: se veía inquieto/ruidoso).
 
-- **Solo en el landing.** Componente `ScrollViewfinder` en `NarrativasLandingPage.tsx` + estilos
-  `.nv-viewfinder` en el tema. **NO** se usa en el programa ni en la página de Material.
-- Sigue (con interpolación `lerp`) el bloque `.nv-section > .nv-wrap` más cercano al punto de foco
-  del viewport (~42% de la altura). Se clampa a la altura de la pantalla para que las esquinas
-  siempre se vean. `pointer-events: none`.
-- Respeta `prefers-reduced-motion: reduce` (se oculta por completo).
+**Regla:** una o dos cajas enmarcadas por superficie, como máximo. Enmarcar de más mata el efecto.
+
+- React: clases `nv-card--framed nv-frame` + `<span class="nv-frame-b" />` en la tarjeta
+  (utilidad en `narrativas-theme.css`). Hoy: la tarjeta **«Material del curso»** (acción
+  principal) y la cifra **«100 % · portafolio»** de Evaluación.
+- Programa: clase `framed` + `<span class="fb"></span>` dentro de la caja (utilidad en
+  `programa.html`). Hoy: el callout **«Por qué importa»** (la tesis del curso).
+- El wordmark del hero también usa el visor (es la marca). Eso no cuenta como «caja enmarcada».
 
 ## Cómo extender manteniendo la identidad
 
