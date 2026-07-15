@@ -829,7 +829,7 @@ export const pou202620Course: Course = {
       id: 'explorador-bombas-centrifugas',
       title: 'Explorador de bombas centrífugas',
       description:
-        'Selecciona la bomba del circuito en vivo: elige diámetro de impulsor y velocidad de giro, define la curva del sistema (caudal de diseño, fricción y cabeza estática) y observa el punto de operación donde la curva de la bomba corta la del sistema. Reescala la familia de curvas con las leyes de afinidad, dibuja las islas de eficiencia, calcula potencia hidráulica y al freno con selección de motor estándar, y evalúa el NPSH disponible vs. requerido con la altitud del sitio (Bogotá ≈ 2600 msnm) para anticipar la cavitación. Basado en la curva B&G TEH-375A. Unidades US o SI.',
+        'Selecciona la bomba del circuito en vivo: elige diámetro de impulsor y velocidad de giro, define la curva del sistema (caudal de diseño, fricción y niveles de succión y descarga referidos al eje de la bomba, z = 0) y observa el punto de operación donde la curva de la bomba corta la del sistema. Reescala la familia de curvas con las leyes de afinidad, dibuja las islas de eficiencia, calcula potencia hidráulica y al freno con selección de motor estándar, y evalúa el NPSH disponible vs. requerido con la altitud del sitio (Bogotá ≈ 2600 msnm) para anticipar la cavitación. Basado en la curva B&G TEH-375A. Unidades US o SI.',
       sessionNumber: 8,
       file: 'Explorador_Bombas_Centrifugas.html',
       tags: ['bombas', 'curva característica', 'NPSH', 'cavitación', 'leyes de afinidad', 'punto de operación', 'BHP', 'eficiencia'],
