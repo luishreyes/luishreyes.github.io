@@ -54,9 +54,13 @@ const ScrollViewfinder: React.FC = () => {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    // Respetamos reduce-motion suavizando: la mira sigue apareciendo y
+    // «enfocando» (el usuario la pidió), pero sin la interpolación animada.
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    const targets = () => Array.from(document.querySelectorAll<HTMLElement>('.nv-course .nv-section > .nv-wrap'));
+    // Enfocamos cada tarjeta/bloque (tamaño de caja), no secciones enteras:
+    // así la mira «enfoca lo que se está leyendo».
+    const targets = () => Array.from(document.querySelectorAll<HTMLElement>('.nv-course .nv-card, .nv-course .nv-spine'));
     const st = { x: 0, y: 0, w: 0, h: 0, init: false };
     let raf = 0;
 
@@ -95,7 +99,7 @@ const ScrollViewfinder: React.FC = () => {
       if (best) {
         const t = frame(best);
         if (!st.init) { st.x = t.x; st.y = t.y; st.w = t.w; st.h = t.h; st.init = true; el.classList.add('is-visible'); }
-        const k = 0.16;
+        const k = reduce ? 1 : 0.16;
         st.x += (t.x - st.x) * k;
         st.y += (t.y - st.y) * k;
         st.w += (t.w - st.w) * k;
@@ -259,10 +263,8 @@ export const NarrativasLandingPage: React.FC<Props> = ({ course }) => {
             <div className="nv-grid nv-grid-2">
               <Link
                 to={`/classroom/${course.slug}/readings`}
-                className="nv-card nv-card--interactive nv-card--framed nv-frame"
-                style={{ ['--nv-frame-corner' as string]: '16px', ['--nv-frame-inset' as string]: '9px' }}
+                className="nv-card nv-card--interactive"
               >
-                <span className="nv-frame-b" />
                 <p className="nv-label nv-label--accent">Material</p>
                 <h3 style={{ marginTop: 8 }}>Material del curso</h3>
                 <p style={{ marginTop: 8 }}>
