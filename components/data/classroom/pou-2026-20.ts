@@ -799,6 +799,15 @@ export const pou202620Course: Course = {
   ],
   simulations: [
     {
+      id: 'explorador-intercambiadores',
+      title: 'Explorador de intercambiadores de tubos y coraza',
+      description:
+        'Diseña el intercambiador del proyecto por el método de Kern en vivo: define el requerimiento (enfriar aceite ligero con agua), asigna fluidos a tubos o coraza, elige tubo, arreglo del haz (triangular/cuadrado), pasos, corazas en serie, número y longitud de tubos, espaciado de bafles, material y factores de ensuciamiento. Calcula los coeficientes h de cada lado, U limpio y de diseño, LMTD y factor F multi-paso/multi-coraza, el área requerida vs. disponible (sobrediseño), las caídas de presión y las velocidades. Entrega un veredicto de diseño por criterio (régimen, ΔP, esbeltez, F…), la viabilidad económica (capital anualizado + energía de bombeo) y una comparación de cinco materiales. Con corte longitudinal, sección transversal del haz y perfil de temperaturas dibujados en tiempo real.',
+      sessionNumber: 11,
+      file: 'Explorador_Intercambiadores.html',
+      tags: ['intercambiadores', 'tubos y coraza', 'método de Kern', 'U', 'LMTD', 'factor F', 'bafles', 'caída de presión', 'ensuciamiento', 'economía'],
+    },
+    {
       id: 'explorador-molienda',
       title: 'Explorador de molienda y tamizado',
       description:
