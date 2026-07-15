@@ -8,6 +8,7 @@ import { Section } from '../../components/classroom/Section';
 import { TodayButton } from '../../components/classroom/TodayButton';
 import { NotFoundInClassroom } from './NotFoundInClassroom';
 import { EduProLandingPage } from './EduProLandingPage';
+import { NarrativasLandingPage } from './NarrativasLandingPage';
 
 export const CourseLandingPage: React.FC = () => {
   const { courseSlug } = useParams<{ courseSlug: string }>();
@@ -17,6 +18,11 @@ export const CourseLandingPage: React.FC = () => {
 
   if (course.kind === 'professional') {
     return <EduProLandingPage course={course} />;
+  }
+
+  // Identidad gráfica propia del curso Narrativas Visuales (IQYA-3751).
+  if (course.slug === 'iqya-3751-2026-20') {
+    return <NarrativasLandingPage course={course} />;
   }
 
   return (
