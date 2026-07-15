@@ -91,6 +91,7 @@ Para crear o editar contenido del Classroom, lee la guía correspondiente:
 | **Presentaciones EDCO** (`edu-pro`) | [EDCO-SLIDES.md](EDCO-SLIDES.md) | **⚠️ OBLIGATORIO para `edu-pro`.** Sistema de diseño completo: motor `deck-stage`, tokens CSS, pesos Dax, HTML canónico de cada componente (agenda, timeline, steps, cards, split, callout, etc.), errores comunes. Leer antes de crear cualquier slide de "Dominando la IA". |
 | **Presentaciones** (otros cursos) | [PRESENTATIONS.md](PRESENTATIONS.md) | Diapositivas HTML autocontenidas con íconos SVG Lucide, navegación, imágenes, interactividad |
 | **"Qué hay para hoy"** | [HOY.md](HOY.md) | Popup con cronograma de próximos 7 días |
+| **Identidad Narrativas Visuales** (`iqya-3751`) | [NARRATIVAS-DESIGN.md](NARRATIVAS-DESIGN.md) | **⚠️ OBLIGATORIO para `iqya-3751-2026-20`.** Identidad propia (carbón · hueso · citrón, Big Shoulders + Archivo, visor). Este curso NO usa el landing claro compartido ni el syllabus Deloitte: landing y Material tienen componente propio (ramificado por slug), y el `programa.html` va en clave oscura. Incluye reglas móvil (una columna, tablas scrolleables), la regla «nada de azul» y el visor de scroll. Leer antes de tocar cualquier superficie del curso. |
 
 ### Cómo crear un curso nuevo
 
