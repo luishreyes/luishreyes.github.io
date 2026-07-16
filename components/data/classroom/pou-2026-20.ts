@@ -826,6 +826,15 @@ export const pou202620Course: Course = {
       tags: ['molienda', 'conminución', 'Ley de Bond', 'Kick', 'Rittinger', 'Rosin-Rammler', 'tamizado', 'balance térmico', 'sólidos'],
     },
     {
+      id: 'explorador-bernoulli',
+      title: 'Explorador de Bernoulli',
+      description:
+        'Arma el circuito de flujo del proyecto en vivo y aplica el balance de energía mecánica: elige el fluido (agua, etanol, glicerina, aceite o uno personalizado con ρ y μ ajustables), el material y diámetro de la tubería, la longitud, las elevaciones y el caudal de diseño, y arma la lista de accesorios (codos, tés, válvulas de globo/compuerta/bola/check) con su apertura para estrangular. Calcula la velocidad, el número de Reynolds y el régimen, el factor de fricción por Swamee–Jain, y las pérdidas por el método K y por longitud equivalente en paralelo. Resuelve el balance de Bernoulli término a término (presión, elevación, energía cinética, bomba y pérdidas), instala o quita la bomba para hallar el punto de operación donde su curva corta la del sistema, y estima la potencia. Con el esquema del sistema dibujado a partir de tus accesorios, el diagrama de Moody con el punto de operación y las curvas de sistema y bomba en tiempo real. Descarga libre a la atmósfera o sumergida a un tanque elevado.',
+      sessionNumber: 7,
+      file: 'Explorador_Bernoulli.html',
+      tags: ['Bernoulli', 'Darcy-Weisbach', 'factor de fricción', 'diagrama de Moody', 'pérdidas menores', 'método K', 'longitud equivalente', 'punto de operación', 'bomba'],
+    },
+    {
       id: 'explorador-bombas-centrifugas',
       title: 'Explorador de bombas centrífugas',
       description:
