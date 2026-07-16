@@ -334,5 +334,15 @@ export const narrativas202620Course: Course = {
       bannerImg: '/classroom/iqya-3751-2026-20/lecturas-banners/l01.jpg',
     },
   ],
-  presentations: [],
+  presentations: [
+    {
+      id: 'presentacion-01-el-contexto',
+      title: 'Sesión 1 · El contexto lo es todo',
+      sessionNumber: 1,
+      date: '2026-08-06',
+      description:
+        'Deck de la sesión 1 (Módulo 1). Apertura «Mostrar, no contar»: por qué los datos no convencen solos, el mismo hallazgo en tabla vs. historia, las tres preguntas (quién/qué/cómo), el Big Idea, la historia de 3 minutos, el storyboard, foco vs. contexto y una diapositiva interactiva para cazar el engaño visual.',
+      file: 'presentacion-01-el-contexto.html',
+    },
+  ],
 };
