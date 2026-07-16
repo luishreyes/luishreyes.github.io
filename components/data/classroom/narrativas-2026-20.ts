@@ -308,6 +308,19 @@ export const narrativas202620Course: Course = {
       category: 'guia',
       href: '/classroom/iqya-3751-2026-20/programa.html',
     },
+    {
+      slug: 'lectura-01-el-contexto',
+      order: 1,
+      title: 'El contexto lo es todo',
+      summary:
+        'Lectura previa de la sesión 1: antes de abrir cualquier herramienta, para quién, para qué y qué decisión se va a tomar. Análisis exploratorio vs. explicativo, las tres preguntas (quién/qué/cómo), el Big Idea, la historia de 3 minutos, el storyboard como prototipo y el primer vistazo al engaño visual. De aquí sale el quiz.',
+      date: '2026-08-06',
+      readingMinutes: 12,
+      tags: ['módulo 1', 'contexto', 'storytelling', 'ética'],
+      category: 'lectura',
+      href: '/classroom/iqya-3751-2026-20/lecturas/Lectura_01/Lectura_01_El_contexto.html',
+      bannerImg: '/classroom/iqya-3751-2026-20/lecturas-banners/l01.jpg',
+    },
   ],
   presentations: [],
 };
