@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import type { Course, Reading } from '../../components/data/classroom';
+import type { Course, Reading, Presentation } from '../../components/data/classroom';
 import { CourseAccessGate } from '../../components/classroom/CourseAccessGate';
 import '../../components/classroom/narrativas-theme.css';
 
@@ -32,6 +32,25 @@ const ExternalIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true" style={{ width: '0.9em', height: '0.9em' }}>
     <path strokeLinecap="round" strokeLinejoin="round" d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3" />
   </svg>
+);
+
+const PresentationCard: React.FC<{ p: Presentation; courseSlug: string; numberLabel: string }> = ({ p, courseSlug, numberLabel }) => (
+  <li>
+    <a href={`/classroom/${courseSlug}/slides/${p.file}`} target="_blank" rel="noopener noreferrer" className="nv-rc">
+      <div className="nv-rc-body">
+        <div>
+          <p className="nv-label nv-label--accent">{numberLabel}</p>
+          <div className="nv-rc-meta">
+            {p.date && <time dateTime={p.date}>{formatDate(p.date)}</time>}
+            <span aria-hidden="true">·</span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: 'var(--nv-accent)' }}>Abrir deck <ExternalIcon /></span>
+          </div>
+          <h3 className="nv-rc-title">{p.title}</h3>
+          {p.description && <p className="nv-rc-summary">{p.description}</p>}
+        </div>
+      </div>
+    </a>
+  </li>
 );
 
 const ReadingCard: React.FC<{ r: Reading; courseSlug: string; numberLabel: string | null }> = ({ r, courseSlug, numberLabel }) => {
@@ -114,6 +133,9 @@ const ReadingSection: React.FC<{
 export const NarrativasReadingsPage: React.FC<Props> = ({ course }) => {
   const lecturas = course.readings.filter((r) => r.category === 'lectura').sort(byOrderThenDate);
   const guias = course.readings.filter((r) => r.category !== 'lectura').sort(byOrderThenDate);
+  const presentaciones = [...(course.presentations ?? [])].sort(
+    (a, b) => (a.sessionNumber ?? Infinity) - (b.sessionNumber ?? Infinity),
+  );
 
   return (
     <CourseAccessGate course={course}>
@@ -137,11 +159,12 @@ export const NarrativasReadingsPage: React.FC<Props> = ({ course }) => {
               Material del curso
             </h1>
             <p style={{ marginTop: 16, color: 'var(--nv-text-muted)', fontSize: 17, lineHeight: 1.55, maxWidth: '58ch' }}>
-              Guías de proceso para el proyecto y lecturas que acompañan cada clase presencial.
+              Todo en un solo lugar: las lecturas que preparas antes de clase, las presentaciones que
+              proyectamos en la sesión y las guías de proceso del proyecto.
             </p>
           </header>
 
-          {course.readings.length === 0 ? (
+          {course.readings.length === 0 && presentaciones.length === 0 ? (
             <p style={{ marginTop: 40, color: 'var(--nv-text-muted)' }}>Aún no hay material publicado. Vuelve pronto.</p>
           ) : (
             <>
@@ -153,6 +176,31 @@ export const NarrativasReadingsPage: React.FC<Props> = ({ course }) => {
                 numberPrefix="Lectura"
                 emptyLabel="Aún no hay lecturas publicadas para este semestre."
               />
+
+              {presentaciones.length > 0 && (
+                <section style={{ marginTop: 48 }}>
+                  <div className="nv-rc-head">
+                    <div>
+                      <h2 style={{ fontSize: 30, textTransform: 'uppercase' }}>Presentaciones</h2>
+                      <p style={{ marginTop: 6, color: 'var(--nv-text-muted)', fontSize: 15 }}>
+                        Los decks que proyectamos en clase. Abren en pantalla completa en una pestaña nueva.
+                      </p>
+                    </div>
+                    <span className="nv-label">{presentaciones.length} {presentaciones.length === 1 ? 'deck' : 'decks'}</span>
+                  </div>
+                  <ul className="nv-rc-list">
+                    {presentaciones.map((p) => (
+                      <PresentationCard
+                        key={p.id}
+                        p={p}
+                        courseSlug={course.slug}
+                        numberLabel={p.sessionNumber ? `Sesión ${String(p.sessionNumber).padStart(2, '0')}` : 'Deck'}
+                      />
+                    ))}
+                  </ul>
+                </section>
+              )}
+
               <ReadingSection
                 title="Guías del curso"
                 description="Material transversal sobre metodología, entregables y herramientas del proyecto."
