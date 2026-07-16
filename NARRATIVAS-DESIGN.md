@@ -118,6 +118,26 @@ Una tabla nunca se espicha en móvil: se desliza horizontalmente.
 - Programa: envolver cada `<table>` en `<div class="tbl-wrap">` (`overflow-x:auto`) y darle
   `min-width` a la tabla (`table.tbl` 560px, `table.rubrica` 520px).
 
+### Regla: **todo gráfico lleva ejes, escala y etiquetas**
+Es un curso de visualización de datos: un gráfico sin eje Y (con su escala), sin eje X y sin
+títulos de eje es inaceptable. Se dibujan en **SVG** con eje Y (línea + ticks + valores),
+gridlines tenues, eje X con categorías y títulos de eje en mayúscula tracked. El generador está
+en `scratchpad`/`svggen.py` (patrón de referencia); los `var(--x, fallback)` hacen los SVG
+portables entre lectura, deck y web. **Ejemplo pedagógico clave:** el demo del eje truncado
+muestra el eje Y (empieza en 96 %) al lado de la versión honesta (0 %) — el eje visible ES lo que
+revela el truco.
+
+### Material del curso unifica todo
+La página **Material del curso** es la única entrada al contenido: reúne **Lecturas de clase**,
+**Presentaciones** (decks, abren en pestaña nueva) y **Guías**. No hay página independiente de
+presentaciones ni tarjetas separadas en el landing (el acceso es el botón «Material del curso»
+del hero).
+
+### Presentaciones: deck 16:9 con pantalla completa
+Los decks siguen `templates/presentacion` del design system, son autónomos (navegación por
+teclado ← → , botones, contador, barra de progreso) y llevan **botón de pantalla completa** (⛶ /
+tecla F). Las diapositivas interactivas (p. ej. cazar el engaño) togglean con JS vanilla.
+
 ### Regla: **nada de azul**
 La paleta es carbón · hueso · citrón, con clay solo para negativos. **No introducir azul,
 teal, verde ni violeta.** El callout de tipo «nota/info» del programa es **neutro** (hueso),

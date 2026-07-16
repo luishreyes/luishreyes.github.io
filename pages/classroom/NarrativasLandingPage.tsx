@@ -66,8 +66,6 @@ const Section: React.FC<{ eyebrow: string; title: string; description?: string; 
 
 export const NarrativasLandingPage: React.FC<Props> = ({ course }) => {
   const programa = course.readings.find((r) => r.href);
-  const lecturas = course.readings.filter((r) => r.category === 'lectura').length;
-  const guias = course.readings.length - lecturas;
   const totalPct = course.evaluation.reduce((s, e) => s + e.percentage, 0);
 
   // Módulos → dos mitades (arco del curso)
@@ -176,44 +174,6 @@ export const NarrativasLandingPage: React.FC<Props> = ({ course }) => {
             <p style={{ marginTop: 24, maxWidth: '58ch', fontSize: 17, lineHeight: 1.6, color: 'var(--nv-text-muted)' }}>
               {course.description}
             </p>
-          </div>
-        </section>
-
-        {/* ---------------- ACCESS CARDS ---------------- */}
-        <section className="nv-section">
-          <div className="nv-wrap">
-            <div className="nv-grid nv-grid-2">
-              <Link
-                to={`/classroom/${course.slug}/readings`}
-                className="nv-card nv-card--interactive nv-card--framed nv-frame"
-                style={{ ['--nv-frame-corner' as string]: '16px', ['--nv-frame-inset' as string]: '9px' }}
-              >
-                <span className="nv-frame-b" />
-                <p className="nv-label nv-label--accent">Material</p>
-                <h3 style={{ marginTop: 8 }}>Material del curso</h3>
-                <p style={{ marginTop: 8 }}>
-                  {[guias > 0 ? `${guias} ${guias === 1 ? 'guía' : 'guías'}` : null, lecturas > 0 ? `${lecturas} ${lecturas === 1 ? 'lectura' : 'lecturas'}` : null]
-                    .filter(Boolean)
-                    .join(' · ') || 'Programa y guías del curso'}
-                </p>
-                <span style={{ display: 'inline-flex', marginTop: 18, color: 'var(--nv-accent)', width: 22, height: 22 }}>
-                  <ArrowRight />
-                </span>
-              </Link>
-
-              <Link to={`/classroom/${course.slug}/presentations`} className="nv-card nv-card--interactive">
-                <p className="nv-label">Para clase</p>
-                <h3 style={{ marginTop: 8 }}>Presentaciones</h3>
-                <p style={{ marginTop: 8 }}>
-                  {course.presentations.length > 0
-                    ? `${course.presentations.length} ${course.presentations.length === 1 ? 'disponible' : 'disponibles'}`
-                    : 'Próximamente'}
-                </p>
-                <span style={{ display: 'inline-flex', marginTop: 18, color: 'var(--nv-text-muted)', width: 22, height: 22 }}>
-                  <ArrowRight />
-                </span>
-              </Link>
-            </div>
           </div>
         </section>
 
