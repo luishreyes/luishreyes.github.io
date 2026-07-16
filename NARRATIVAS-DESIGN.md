@@ -85,8 +85,11 @@ el PDF hay que volver a exportarlo).
 - Titulares: **Big Shoulders Display** (`--nv-font-display` / `--display`). Pesos 300–500,
   MAYÚSCULA en héroes y títulos de sección, tracking ~0.
 - Texto/etiquetas: **Archivo** (`--nv-font-text` / `--tipo`).
-- React autoaloja las fuentes (sin CDN). El `programa.html` las carga por **Google Fonts CDN**
-  (igual que antes cargaba Source Sans). Si se requiere 100% offline, autoalojar también ahí.
+- **Todas autoalojadas, sin CDN** (convención del repo). React vía `@fontsource-variable`
+  (`index.tsx`); el `programa.html` vía `@font-face` con rutas relativas a `public/fonts/`
+  (`big-shoulders-display-*.woff2`, `archivo-*.woff2`). ⚠️ Nunca usar Google Fonts CDN: además
+  de romper la convención, el PDF se genera en un entorno sin acceso al CDN y saldría con
+  fuentes del sistema equivocadas (ya pasó una vez).
 
 ## Reglas de layout (obligatorias)
 
