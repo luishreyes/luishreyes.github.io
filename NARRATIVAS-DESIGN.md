@@ -56,7 +56,20 @@ dispositivo de marca, no un ícono; se dibuja en CSS/JSX, nunca como imagen.
 En **pantalla** es oscuro; para **PDF/impresión** el bloque `@media print` los re-mapea a la
 paleta clara (ver «PDF imprimible»).
 
-## PDF imprimible del programa (documento claro)
+## Regla: todo material guía tiene versión online + versión imprimible (PDF)
+
+**Toda guía del curso** (el programa y cualquier material guía futuro) se publica en dos
+versiones que salen del **mismo HTML**:
+
+1. **Online** — el HTML oscuro (carbón · hueso · citrón) que se abre desde Material del curso.
+2. **Imprimible** — un **PDF** en el formato «documento claro» del design system (plantilla
+   Guía), enlazado con un botón «Descargar (PDF)» dentro de la versión online.
+
+El mecanismo es el del programa: un solo archivo cuyo `@media print` re-mapea los tokens a la
+paleta clara, y un script que lo pagina a carta y exporta el PDF estático junto al HTML.
+**Nunca** dos copias del contenido; **siempre** regenerar el PDF al editar la guía.
+
+### El caso implementado: el programa
 
 El programa vive en **un solo archivo** (`programa.html`): en pantalla es oscuro y, al emular
 `print`, el mismo archivo se convierte en el **«documento claro»** del design system (plantilla
@@ -145,6 +158,9 @@ seguía el scroll «enfocando» cada bloque y **se descartó**: se veía inquiet
 - **Nuevas lecturas/guías:** se agregan al array `readings` del curso como siempre
   (ver `LECTURAS-HTML.md`); la página de Material ya las renderiza en la identidad. Las lecturas
   HTML autocontenidas deben adoptar la misma paleta carbón/hueso/citrón (no el `deloitte.css` claro).
+  **Todo material guía sale en las dos versiones** (online oscura + PDF documento claro con botón
+  de descarga) — ver la regla de arriba; copiar el patrón de `programa.html` +
+  `scripts/build-programa-pdf.mjs`.
 - **Presentaciones:** al construirlas para este curso, usar la paleta y las fuentes de aquí.
 - **Cualquier superficie nueva:** envolver en `.nv-course`, reutilizar los tokens `--nv-*`,
   aplicar las reglas móvil/tablas/nada-de-azul de arriba.
