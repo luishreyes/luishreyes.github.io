@@ -344,5 +344,14 @@ export const narrativas202620Course: Course = {
         'Deck de la sesión 1 (Módulo 1). Apertura «Mostrar, no contar»: por qué los datos no convencen solos, el mismo hallazgo en tabla vs. historia, las tres preguntas (quién/qué/cómo), el Big Idea, la historia de 3 minutos, el storyboard, foco vs. contexto y una diapositiva interactiva para cazar el engaño visual.',
       file: 'presentacion-01-el-contexto.html',
     },
+    {
+      id: 'presentacion-02-taller-critica',
+      title: 'Sesión 2 · Taller de crítica 1-2-4',
+      sessionNumber: 2,
+      date: '2026-08-13',
+      description:
+        'Deck de la sesión 2 (Módulo 1). Taller análogo de crítica con la dinámica 1-2-4 sobre gráficos honestos pero inefectivos: el lente de experiencia de usuario («¿le sirve a quien decide?»), honesto ≠ efectivo, la rúbrica de crítica de seis criterios, un ejemplo de rediseño por el foco y la reflexión de 400 palabras.',
+      file: 'presentacion-02-taller-critica.html',
+    },
   ],
 };
