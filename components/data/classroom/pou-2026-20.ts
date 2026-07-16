@@ -808,6 +808,15 @@ export const pou202620Course: Course = {
       tags: ['diagramas', 'BFD', 'PFD', 'P&ID', 'ISA-5.1', 'nomenclatura', 'lazos de control', 'símbolos', 'instrumentación'],
     },
     {
+      id: 'explorador-agitacion',
+      title: 'Explorador de agitación',
+      description:
+        'Explora el tanque agitado del proyecto en vivo: elige el impulsor (hélice marina axial, turbina Rushton radial o ancla para alta viscosidad), activa o quita los bafles, y selecciona el fluido (agua, aceite, jarabe de glucosa o uno genérico con ρ y μ ajustables) junto con la velocidad de giro y el diámetro D/T. Dibuja el campo de velocidades estilo CFD en vista lateral y superior — streamlines coloreadas por magnitud, animadas —, incluyendo el patrón clásico con bafles (giro central más remolinos entre bafles) y el vórtice central cuando faltan. Calcula Reynolds y régimen, el número de potencia sobre la curva Np–Re (con y sin bafles), la potencia y P/V, la velocidad de punta, el tiempo de mezcla θ₉₅ de Grenville y la profundidad del vórtice, con avisos de zonas muertas, arrastre de aire y daño por cizalla.',
+      sessionNumber: 9,
+      file: 'Explorador_Agitacion.html',
+      tags: ['agitación', 'mezclado', 'impulsores', 'bafles', 'número de potencia', 'Np-Re', 'vórtice', 'tiempo de mezcla', 'tanque agitado'],
+    },
+    {
       id: 'explorador-intercambiadores',
       title: 'Explorador de intercambiadores de tubos y coraza',
       description:
