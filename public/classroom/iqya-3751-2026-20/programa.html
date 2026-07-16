@@ -81,6 +81,22 @@ body {
 .doc-meta div { font-size: 15px; color: var(--gris-2); }
 .doc-meta b { display: block; color: var(--gris-1); font-size: 16px; font-weight: 700; margin-bottom: 2px; }
 
+/* Palabra en foco del título: citrón en pantalla, resaltado en el PDF. */
+.hl { color: var(--verde-osc); }
+/* Índice: solo en el PDF (documento claro). */
+.doc-index { display: none; }
+/* Botón de descarga del PDF (solo pantalla). */
+.dl-btn {
+  display: inline-flex; align-items: center; gap: 9px; margin-top: 26px;
+  background: var(--verde); color: var(--negro);
+  font-family: var(--tipo); font-weight: 700; font-size: 12px;
+  letter-spacing: .12em; text-transform: uppercase;
+  padding: 12px 20px; border-radius: 2px; text-decoration: none;
+  transition: background .15s, transform .1s;
+}
+.dl-btn:hover { background: var(--verde-osc); }
+.dl-btn:active { transform: translateY(1px); }
+
 /* ---------- Cuerpo ---------- */
 .doc-body { padding: 8px 56px 56px; }
 .doc-body section { padding-top: 40px; }
@@ -243,23 +259,118 @@ table.rubrica tbody tr:nth-child(even) { background: var(--papel); }
 .sn-item.is-active { color: var(--verde-osc); background: var(--verde-claro); font-weight: 600; border-left: 3px solid var(--verde); padding-left: 5px; }
 .sn-num { font-size: 11px; font-weight: 700; color: var(--verde-osc); min-width: 16px; padding-top: 1px; flex-shrink: 0; }
 
+/* ===================================================================
+   PDF / impresión — «documento claro» del design system (plantilla Guía):
+   tinta carbón sobre papel, citrón como resaltado, portada con visor,
+   capítulos numerados con regla citrón, callouts CLAVE/ÉTICA, cabecera/pie
+   por página (los agrega el generador de PDF). Ver NARRATIVAS-DESIGN.md.
+   =================================================================== */
+@page { size: letter; }
+
 @media print {
-  /* Al imprimir, re-mapeamos los tokens a una paleta clara: el papel
-     vuelve a ser blanco y el texto oscuro (el tema oscuro es solo pantalla). */
   :root {
-    --verde: #7A7411; --verde-osc: #5C5709; --verde-claro: #F4F3D8;
-    --teal: #555555; --teal-claro: #EEEEEE;
-    --negro: #000000; --gris-1: #333333; --gris-2: #555555; --gris-3: #888888;
-    --gris-4: #CCCCCC; --gris-5: #EEEEEE; --papel: #F4F4F4; --blanco: #FFFFFF;
-    --ambar: #B16A14;
+    --verde: #C9C41C;        /* citrón: reglas, resaltado */
+    --verde-osc: #0A0A0A;    /* acento de texto → carbón (jerarquía por tamaño/peso) */
+    --verde-claro: #F5F3DC;  /* tinte citrón (callout CLAVE) */
+    --teal: #8A887F; --teal-claro: #F3F2ED;   /* nota → neutro */
+    --negro: #0A0A0A;
+    --gris-1: #0A0A0A;       /* tinta / títulos / strong */
+    --gris-2: #4A4840;       /* cuerpo */
+    --gris-3: #8A887F;       /* apagado */
+    --gris-4: #DAD8D1;       /* bordes */
+    --gris-5: #EFEEE9;       /* fondos sutiles */
+    --papel: #FBFAF7;        /* cajas */
+    --blanco: #FFFFFF;       /* papel */
+    --ambar: #C8623A;        /* clay (ética) */
   }
-  body { background: #fff; color: #333; }
-  .callout--etica { background: #FBEEDD; }
+  body { background: #fff; color: var(--gris-2); font-size: 11pt; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .dl-btn, .side-nav, .doc-foot { display: none !important; }
   .outer-layout { display: block; max-width: none; margin: 0; padding: 0; }
-  .side-nav { display: none; }
-  .page { box-shadow: none; margin: 0; max-width: none; border-radius: 0; }
-  section { break-inside: avoid; }
-  .qcards, .callout, table.tbl, table.rubrica { break-inside: avoid; }
+  .page { box-shadow: none; margin: 0; max-width: none; border-radius: 0; background: #fff; overflow: visible; }
+
+  /* ---------- Portada ---------- */
+  .doc-head { position: relative; background: #fff; border-bottom: none; padding: 30px 0 0; break-after: page; }
+  .doc-head::before, .doc-head::after { content: ""; position: absolute; top: 6px; width: 46px; height: 46px; }
+  .doc-head::before { left: 0; border-top: 3px solid #0A0A0A; border-left: 3px solid #0A0A0A; }
+  .doc-head::after  { right: 0; border-top: 3px solid #0A0A0A; border-right: 3px solid #0A0A0A; }
+  .doc-head .org { display: none; }
+  .doc-head .badge { background: var(--verde); color: #0A0A0A; margin: 34px 0 15px; border-radius: 0; }
+  .doc-head h1 { color: #0A0A0A; font-size: 56px; line-height: 0.9; }
+  .doc-head h1 .hl { background: var(--verde); color: #0A0A0A; padding: 0 11px; }
+  .doc-head .subtitle { color: var(--gris-2); }
+  .doc-meta { border-top: 1px solid var(--gris-4); margin-top: 20px; padding-top: 16px; }
+  .doc-meta b { color: #0A0A0A; }
+  .doc-meta div { color: var(--gris-2); }
+
+  /* ---------- Índice (portada) ---------- */
+  .doc-index { display: block; margin-top: 26px; }
+  .di-label { font-family: var(--display); font-weight: 500; font-size: 15px; letter-spacing: .28em; text-transform: uppercase; color: var(--gris-3); margin: 0 0 8px; border-bottom: 2px solid #0A0A0A; padding-bottom: 8px; }
+  .doc-index ol { list-style: none; padding: 0; margin: 0; }
+  .doc-index li { display: flex; gap: 14px; padding: 6px 0; border-bottom: 1px solid var(--gris-4); font-family: var(--tipo); font-size: 12.5px; color: #0A0A0A; }
+  .doc-index li span { font-weight: 800; }
+
+  /* ---------- Cuerpo: capítulos numerados ---------- */
+  .doc-body { padding: 0; counter-reset: sec; }
+  .doc-body section { padding-top: 24px; }
+  .eyebrow { display: none; }
+  h2.sec {
+    counter-increment: sec; position: relative;
+    display: flex; align-items: baseline; gap: 14px;
+    font-family: var(--display); font-weight: 400; text-transform: uppercase;
+    font-size: 30px; line-height: 1; color: #0A0A0A; margin: 0 0 22px; padding-bottom: 12px;
+    break-after: avoid;
+  }
+  h2.sec::before { content: counter(sec, decimal-leading-zero); font-weight: 700; font-size: 34px; color: #0A0A0A; }
+  h2.sec::after { content: ""; position: absolute; left: 52px; bottom: 0; width: 64px; height: 4px; background: var(--verde); }
+  h3.sub { color: #0A0A0A; break-after: avoid; }
+  .doc-body p { color: var(--gris-2); }
+  .doc-body strong, .doc-body b { color: #0A0A0A; }
+  .lead { color: var(--gris-2); }
+  a.pl { color: #0A0A0A; border-bottom: 2px solid var(--verde); }
+
+  /* objetivos / listas */
+  .objectives li::before { background: var(--verde); color: #0A0A0A; }
+  ul.body-list li::marker { color: var(--verde); }
+
+  /* tarjetas claras */
+  .qcard, .infobox { background: var(--papel); border-top: 4px solid var(--verde); }
+  .qcard b, .infobox h3, .qcard .qn { color: #0A0A0A; }
+  .qcard span, .infobox p { color: var(--gris-2); }
+
+  /* callouts documento-claro: regla izquierda + etiqueta tracked, sin ícono */
+  .callout { grid-template-columns: 1fr; gap: 0; border-radius: 0; padding: 14px 22px; border-left: 3px solid var(--gris-4); }
+  .callout .ic { display: none; }
+  .callout b { letter-spacing: .18em; text-transform: uppercase; font-size: 11px; margin-bottom: 6px; }
+  .callout p { color: var(--gris-2); }
+  .callout--tip { background: var(--verde-claro); border-left-color: var(--verde); }
+  .callout--tip b { color: #6E6A0E; }
+  .callout--nota { background: #F3F2ED; border-left-color: var(--gris-3); }
+  .callout--nota b { color: var(--gris-3); }
+  .callout--etica { background: #F8EAE2; border-left-color: var(--ambar); }
+  .callout--etica b { color: #B4552A; }
+  /* visor (caja enmarcada) en carbón para el PDF */
+  .framed::before, .framed::after, .framed > .fb::before, .framed > .fb::after { border-color: #0A0A0A; }
+
+  /* tablas claras */
+  .tbl-wrap { overflow: visible; margin-top: 10px; }
+  table.tbl, table.rubrica { min-width: 0; width: 100%; }
+  table.tbl { font-size: 9.5pt; }
+  table.rubrica { font-size: 10pt; }
+  table.tbl th, table.tbl td { padding: 8px 10px; }
+  table.tbl thead th, table.rubrica thead th { background: var(--papel); color: #0A0A0A; border-bottom: 2px solid #0A0A0A; }
+  table.tbl tbody tr:nth-child(even), table.rubrica tbody tr:nth-child(even) { background: var(--papel); }
+  table.tbl .peso, table.tbl .nivel, table.tbl .ent, table.rubrica .peso, table.rubrica td:first-child { color: #0A0A0A; }
+  .narr { color: #0A0A0A; }
+  tr.receso td { background: var(--gris-5); color: var(--gris-2); }
+
+  /* barras de nota */
+  .gradeitem .glabel, .gradeitem .gpct { color: #0A0A0A; }
+  .gradeitem .gbar { background: var(--gris-5); }
+  .gradeitem .gbar > i { background: var(--verde); }
+
+  /* cortes de página */
+  .qcards, .callout, .gradeitem, .infobox, .qcard, figure { break-inside: avoid; }
+  table.tbl tr, table.rubrica tr { break-inside: avoid; }
   thead { display: table-header-group; }
 }
 @media (max-width: 880px) {
@@ -319,7 +430,7 @@ table.rubrica tbody tr:nth-child(even) { background: var(--papel); }
       <span>Ingeniería Química y de Alimentos</span>
     </div>
     <div class="badge">Programa del curso · 2026-20</div>
-    <h1>Narrativas Visuales de Datos con IA Generativa</h1>
+    <h1>Narrativas Visuales de <span class="hl">Datos</span> con IA Generativa</h1>
     <p class="subtitle">Cómo pasar de mostrar datos a contar historias centradas en el usuario</p>
     <div class="doc-meta">
       <div><b>Código</b>IQYA-3751 · Sección 2</div>
@@ -327,6 +438,29 @@ table.rubrica tbody tr:nth-child(even) { background: var(--papel); }
       <div><b>Modalidad</b>Presencial · jueves 9:00–10:50</div>
       <div><b>Profesores</b>Luis H. Reyes · Óscar Álvarez</div>
     </div>
+    <a class="dl-btn" href="programa.pdf" download="Programa_IQYA-3751_2026-20.pdf">
+      Descargar programa (PDF) <span aria-hidden="true">↓</span>
+    </a>
+    <!-- Índice — solo se ve en el PDF/impresión (documento claro) -->
+    <nav class="doc-index" aria-hidden="true">
+      <p class="di-label">En este programa</p>
+      <ol>
+        <li><span>01</span> Horarios y equipo</li>
+        <li><span>02</span> Descripción del curso</li>
+        <li><span>03</span> Objetivos</li>
+        <li><span>04</span> Metodología y columna narrativa</li>
+        <li><span>05</span> Resultados de aprendizaje</li>
+        <li><span>06</span> Contenido programático</li>
+        <li><span>07</span> Programa por sesiones</li>
+        <li><span>08</span> Evaluación</li>
+        <li><span>09</span> Herramientas y recursos</li>
+        <li><span>10</span> Escala AIAS de uso de IA</li>
+        <li><span>11</span> La ética es transversal</li>
+        <li><span>12</span> Prerrequisitos</li>
+        <li><span>13</span> Bibliografía</li>
+        <li><span>14</span> Mensaje a la comunidad</li>
+      </ol>
+    </nav>
   </header>
 
   <div class="doc-body">

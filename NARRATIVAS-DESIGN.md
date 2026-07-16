@@ -53,8 +53,32 @@ dispositivo de marca, no un ícono; se dibuja en CSS/JSX, nunca como imagen.
 **Programa (`programa.html`):** reutiliza los nombres heredados (`--verde`, `--gris-*`,
 `--papel`, `--blanco`, `--ambar`) **re-mapeados** a la paleta oscura. `--verde` = citrón,
 `--gris-1..5` = escala hueso→carbón, `--papel/--blanco` = superficies carbón, `--ambar` = clay.
-Al **imprimir**, un `@media print { :root { … } }` los vuelve a mapear a una paleta clara
-(papel blanco, texto oscuro): el tema oscuro es solo de pantalla.
+En **pantalla** es oscuro; para **PDF/impresión** el bloque `@media print` los re-mapea a la
+paleta clara (ver «PDF imprimible»).
+
+## PDF imprimible del programa (documento claro)
+
+El programa vive en **un solo archivo** (`programa.html`): en pantalla es oscuro y, al emular
+`print`, el mismo archivo se convierte en el **«documento claro»** del design system (plantilla
+Guía). No hay dos copias del contenido — hay un web oscuro y un PDF claro que salen del mismo HTML.
+
+**Formato del PDF** (según la plantilla Guía del design system — tinta carbón sobre papel,
+citrón como resaltado):
+- **Portada** con las esquinas del visor en carbón, badge citrón, título Big Shoulders con una
+  palabra sobre resaltado citrón (`<span class="hl">`), subtítulo, metadatos e **índice** numerado.
+- **Capítulos numerados** (contador CSS `01…14`) con una regla citrón corta bajo el título.
+- **Callouts** estilo CLAVE / ÉTICA (regla lateral + etiqueta tracked, sin ícono).
+- **Tablas** claras, caja enmarcada (visor) en carbón, barras de nota en citrón.
+- **Cabecera/pie** repetidos por página (los agrega el generador de PDF), tamaño **carta**.
+
+**Cómo se genera:** `node scripts/build-programa-pdf.mjs` (requiere `npm i -D playwright`).
+Abre `programa.html`, emula `print`, y lo pagina a carta con cabecera/pie → escribe
+`public/classroom/iqya-3751-2026-20/programa.pdf`. **Regenerar cada vez que cambie el contenido
+del programa**, porque el PDF es un artefacto estático (el web y el PDF comparten el HTML, pero
+el PDF hay que volver a exportarlo).
+
+**Descarga:** botón `.dl-btn` (solo pantalla) en el encabezado del web que apunta a
+`programa.pdf` con `download`. El índice `.doc-index` es al revés: solo impresión.
 
 ## Tipografía
 
