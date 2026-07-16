@@ -133,10 +133,14 @@ La página **Material del curso** es la única entrada al contenido: reúne **Le
 presentaciones ni tarjetas separadas en el landing (el acceso es el botón «Material del curso»
 del hero).
 
-### Presentaciones: deck 16:9 con pantalla completa
+### Presentaciones: deck 16:9 con pantalla completa y versión clara
 Los decks siguen `templates/presentacion` del design system, son autónomos (navegación por
 teclado ← → , botones, contador, barra de progreso) y llevan **botón de pantalla completa** (⛶ /
 tecla F). Las diapositivas interactivas (p. ej. cazar el engaño) togglean con JS vanilla.
+Llevan además un **toggle claro/oscuro** (☀ / tecla L) para proyectores de bajo contraste: como
+las diapositivas usan `var(--x)`, `body.light` redefine los tokens (papel + tinta carbón + citrón
+oscuro) y todo el deck —incluidos los gráficos SVG— se aclara. Diseñar siempre con variables,
+nunca con hex fijos, para que el modo claro funcione.
 
 ### Regla: **nada de azul**
 La paleta es carbón · hueso · citrón, con clay solo para negativos. **No introducir azul,
