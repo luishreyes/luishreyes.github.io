@@ -309,6 +309,18 @@ export const narrativas202620Course: Course = {
       href: '/classroom/iqya-3751-2026-20/programa.html',
     },
     {
+      slug: 'guia-rubricas',
+      order: 2,
+      title: 'El portafolio y sus rúbricas',
+      summary:
+        'Guía de evaluación: cómo se construye la nota (portafolio acumulativo, sin exámenes), las piezas y sus pesos, las tres dimensiones de la rúbrica (claridad comunicativa, calidad del diseño visual, pensamiento crítico), los cuatro niveles de logro, la declaración de uso de IA y una lista para revisar antes de entregar. Se entrega en la sesión 1.',
+      date: '2026-08-06',
+      readingMinutes: 8,
+      tags: ['evaluación', 'rúbricas', 'portafolio'],
+      category: 'guia',
+      href: '/classroom/iqya-3751-2026-20/guia-rubricas.html',
+    },
+    {
       slug: 'lectura-01-el-contexto',
       order: 1,
       title: 'El contexto lo es todo',
