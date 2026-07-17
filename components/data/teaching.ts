@@ -14,8 +14,8 @@ export interface TaughtCourse {
 
 export const teachingData: TaughtCourse[] = [
   // 2026
-  { term: '2026-10', year: 2026, code: 'IQYA-2031', title: { en: 'Unit Operations Project', es: 'Proyecto de Operaciones Unitarias' }, students: 29, type: 'Core', level: 'Undergraduate', evaluation: null },
-  { term: '2026-10', year: 2026, code: 'IQYA-4100', title: { en: 'Industrial Biotechnology', es: 'Biotecnología Industrial' }, students: 16, type: 'Elective', level: 'Graduate', evaluation: null },
+  { term: '2026-10', year: 2026, code: 'IQYA-2031', title: { en: 'Unit Operations Project', es: 'Proyecto de Operaciones Unitarias' }, students: 29, type: 'Core', level: 'Undergraduate', evaluation: 155 },
+  { term: '2026-10', year: 2026, code: 'IQYA-4100', title: { en: 'Industrial Biotechnology', es: 'Biotecnología Industrial' }, students: 16, type: 'Elective', level: 'Graduate', evaluation: 137 },
   { term: '2026-10', year: 2026, code: 'DPRO-4300', title: { en: 'Systemic Bioproducts Design', es: 'Diseño Sistémico de Bioproductos' }, students: 16, type: 'Core', level: 'Graduate', evaluation: null },
 
   // 2025
