@@ -56,8 +56,6 @@ export const pou202620Course: Course = {
   schedule: [
     { label: 'Magistral', detail: 'Martes 11:00 a.m. - 12:20 p.m. · Salón según BloqueNeón' },
     { label: 'Magistral', detail: 'Jueves 11:00 a.m. - 12:20 p.m. · Salón según BloqueNeón' },
-    { label: 'Taller', detail: 'Lunes 3:30 p.m. - 4:50 p.m. · Salón según BloqueNeón' },
-    { label: 'Taller', detail: 'Viernes 9:30 a.m. - 10:50 a.m. · Salón según BloqueNeón' },
   ],
   objectives: [
     'Diseñar y dimensionar las operaciones unitarias de un proceso químico completo, que abarca el manejo de sólidos, el transporte de fluidos y la separación final por destilación.',

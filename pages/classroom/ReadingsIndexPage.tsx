@@ -1,11 +1,14 @@
 import React from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import type { Reading } from '../../components/data/classroom';
+import type { Reading, Presentation, Simulation } from '../../components/data/classroom';
 import { getCourseBySlug } from '../../components/data/classroom';
 import { CourseAccessGate } from '../../components/classroom/CourseAccessGate';
 import { NotFoundInClassroom } from './NotFoundInClassroom';
 import { NarrativasReadingsPage } from './NarrativasReadingsPage';
+
+// Slug del cronograma: vive como tarjeta propia en la landing, no dentro de Guías.
+const CRONOGRAMA_SLUG = 'cronograma-interactivo';
 
 export const ReadingsIndexPage: React.FC = () => {
   const { courseSlug } = useParams<{ courseSlug: string }>();
@@ -24,8 +27,18 @@ export const ReadingsIndexPage: React.FC = () => {
     if (ao !== bo) return ao - bo;
     return b.date.localeCompare(a.date);
   };
-  const lecturas = course.readings.filter((r) => r.category === 'lectura').sort(byOrderThenDate);
-  const guias = course.readings.filter((r) => r.category !== 'lectura').sort(byOrderThenDate);
+  const lecturas = course.readings
+    .filter((r) => r.category === 'lectura')
+    .sort(byOrderThenDate);
+  const guias = course.readings
+    .filter((r) => r.category !== 'lectura' && r.slug !== CRONOGRAMA_SLUG)
+    .sort(byOrderThenDate);
+  const presentaciones = [...(course.presentations ?? [])].sort(
+    (a, b) => (a.sessionNumber ?? 0) - (b.sessionNumber ?? 0),
+  );
+  const simulaciones = course.simulations ?? [];
+
+  const total = lecturas.length + guias.length + presentaciones.length + simulaciones.length;
 
   return (
     <CourseAccessGate course={course}>
@@ -54,35 +67,96 @@ export const ReadingsIndexPage: React.FC = () => {
               Material del curso
             </h1>
             <p className="mt-3 text-brand-gray leading-relaxed max-w-2xl">
-              Guías de proceso para el proyecto y lecturas que acompañan cada clase presencial.
+              Todo en un solo lugar. Abre la sección que necesites: lecturas de clase,
+              presentaciones, guías del proyecto y simulaciones interactivas.
             </p>
           </header>
 
-          {course.readings.length === 0 ? (
+          {total === 0 ? (
             <p className="mt-10 text-brand-gray">
               Aún no hay material publicado. Vuelve pronto.
             </p>
           ) : (
-            <>
-              <Section
-                title="Lecturas de clase"
-                description="Una por sesión. Prepáralas antes de la clase presencial; los quices salen de aquí."
+            <div className="mt-10 space-y-4">
+              <MaterialSection
+                eyebrow="Antes de clase"
+                title="Lecturas"
+                description="Una por sesión. Los quices salen de aquí."
                 count={lecturas.length}
-                courseSlug={course.slug}
-                items={lecturas}
-                numberPrefix="Lectura"
-                emptyLabel="Aún no hay lecturas publicadas para este semestre."
-              />
-              <Section
-                title="Guías del curso"
-                description="Material transversal sobre metodología, entregables y herramientas del proyecto."
+                defaultOpen
+              >
+                <CardList>
+                  {lecturas.map((r, i) => (
+                    <ReadingCard
+                      key={r.slug}
+                      r={r}
+                      courseSlug={course.slug}
+                      numberLabel={`Lectura ${String(r.order ?? i + 1).padStart(2, '0')}`}
+                    />
+                  ))}
+                </CardList>
+              </MaterialSection>
+
+              <MaterialSection
+                eyebrow="Para clase"
+                title="Presentaciones"
+                description="Diapositivas de cada sesión. Abren en pestaña nueva."
+                count={presentaciones.length}
+              >
+                <CardList>
+                  {presentaciones.map((p) => (
+                    <SlideCard
+                      key={p.id}
+                      title={p.title}
+                      eyebrow={p.sessionNumber !== undefined ? `Sesión ${p.sessionNumber}` : undefined}
+                      meta={p.date}
+                      description={p.description}
+                      href={`/classroom/${course.slug}/slides/${p.file}`}
+                    />
+                  ))}
+                </CardList>
+              </MaterialSection>
+
+              <MaterialSection
+                eyebrow="Transversal"
+                title="Guías"
+                description="Metodología, entregables y herramientas del proyecto."
                 count={guias.length}
-                courseSlug={course.slug}
-                items={guias}
-                numberPrefix="Guía"
-                emptyLabel="Aún no hay guías publicadas."
-              />
-            </>
+              >
+                <CardList>
+                  {guias.map((r, i) => (
+                    <ReadingCard
+                      key={r.slug}
+                      r={r}
+                      courseSlug={course.slug}
+                      numberLabel={`Guía ${String(r.order ?? i + 1).padStart(2, '0')}`}
+                    />
+                  ))}
+                </CardList>
+              </MaterialSection>
+
+              {simulaciones.length > 0 && (
+                <MaterialSection
+                  eyebrow="Interactivo"
+                  title="Simulaciones"
+                  description="Explora el diseño de las operaciones en tiempo real."
+                  count={simulaciones.length}
+                >
+                  <CardList>
+                    {simulaciones.map((s) => (
+                      <SlideCard
+                        key={s.id}
+                        title={s.title}
+                        eyebrow={s.sessionNumber !== undefined ? `Sesión ${s.sessionNumber}` : undefined}
+                        description={s.description}
+                        tags={s.tags}
+                        href={`/classroom/${course.slug}/simulaciones/${s.file}`}
+                      />
+                    ))}
+                  </CardList>
+                </MaterialSection>
+              )}
+            </div>
           )}
         </div>
       </motion.div>
@@ -90,50 +164,103 @@ export const ReadingsIndexPage: React.FC = () => {
   );
 };
 
-interface SectionProps {
+// ── Sección colapsable ─────────────────────────────────────────────
+interface MaterialSectionProps {
+  eyebrow: string;
   title: string;
   description: string;
   count: number;
-  courseSlug: string;
-  items: Reading[];
-  emptyLabel: string;
-  numberPrefix?: string;
+  defaultOpen?: boolean;
+  children: React.ReactNode;
 }
 
-const Section: React.FC<SectionProps> = ({ title, description, count, courseSlug, items, emptyLabel, numberPrefix }) => (
-  <section className="mt-12">
-    <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-zinc-200 pb-3">
-      <div>
-        <h2 className="text-xl sm:text-2xl font-bold text-brand-dark">{title}</h2>
+const MaterialSection: React.FC<MaterialSectionProps> = ({
+  eyebrow, title, description, count, defaultOpen, children,
+}) => (
+  <details
+    className="group bg-white rounded-xl border border-zinc-200 shadow-sm overflow-hidden"
+    {...(defaultOpen ? { open: true } : {})}
+  >
+    <summary className="flex items-center justify-between gap-4 cursor-pointer list-none select-none px-5 sm:px-6 py-4 hover:bg-zinc-50 transition-colors [&::-webkit-details-marker]:hidden">
+      <div className="min-w-0">
+        <p className="text-xs font-semibold tracking-widest uppercase text-brand-yellow-dark">{eyebrow}</p>
+        <h2 className="mt-0.5 text-lg sm:text-xl font-bold text-brand-dark">{title}</h2>
         <p className="mt-1 text-sm text-brand-gray">{description}</p>
       </div>
-      <span className="text-xs font-semibold tracking-widest uppercase text-brand-yellow-dark">
-        {count} {count === 1 ? 'entrada' : 'entradas'}
-      </span>
+      <div className="flex items-center gap-3 flex-shrink-0">
+        <span className="text-xs font-semibold text-brand-gray tabular-nums">
+          {count} {count === 1 ? 'entrada' : 'entradas'}
+        </span>
+        <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-zinc-100 text-brand-dark group-open:bg-brand-yellow transition-colors">
+          <svg className="w-5 h-5 transition-transform duration-200 group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </span>
+      </div>
+    </summary>
+    <div className="px-5 sm:px-6 pb-6 pt-2 border-t border-zinc-100">
+      {count === 0 ? (
+        <p className="py-4 text-sm text-brand-gray italic">Aún no hay material en esta sección.</p>
+      ) : (
+        children
+      )}
     </div>
-
-    {items.length === 0 ? (
-      <p className="mt-6 text-sm text-brand-gray italic">{emptyLabel}</p>
-    ) : (
-      <ul className="mt-6 space-y-3">
-        {items.map((r, i) => {
-          const numberLabel = numberPrefix
-            ? `${numberPrefix} ${String(r.order ?? i + 1).padStart(2, '0')}`
-            : null;
-          return (
-            <ReadingCard
-              key={r.slug}
-              r={r}
-              courseSlug={courseSlug}
-              numberLabel={numberLabel}
-            />
-          );
-        })}
-      </ul>
-    )}
-  </section>
+  </details>
 );
 
+const CardList: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <ul className="space-y-3">{children}</ul>
+);
+
+// ── Tarjeta de diapositiva / simulación (link externo) ─────────────
+interface SlideCardProps {
+  title: string;
+  eyebrow?: string;
+  meta?: string;
+  description?: string;
+  tags?: string[];
+  href: string;
+}
+
+const SlideCard: React.FC<SlideCardProps> = ({ title, eyebrow, meta, description, tags, href }) => (
+  <li>
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="block bg-white rounded-xl border border-zinc-200 p-5 shadow-sm hover:shadow-md hover:border-brand-yellow transition-all group"
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex-1 min-w-0">
+          {eyebrow && (
+            <p className="text-xs font-semibold tracking-widest uppercase text-brand-yellow-dark">{eyebrow}</p>
+          )}
+          <h3 className="mt-1 text-lg font-bold text-brand-dark group-hover:text-brand-yellow-dark transition-colors">
+            {title}
+          </h3>
+          {meta && <p className="mt-1 text-xs text-brand-gray">{meta}</p>}
+          {description && (
+            <p className="mt-2 text-sm text-brand-gray leading-relaxed line-clamp-3">{description}</p>
+          )}
+          {tags && tags.length > 0 && (
+            <ul className="mt-3 flex flex-wrap gap-1.5">
+              {tags.map((t) => (
+                <li key={t} className="px-2 py-0.5 rounded-full bg-zinc-100 text-brand-gray text-[11px] font-medium">{t}</li>
+              ))}
+            </ul>
+          )}
+        </div>
+        <span className="flex-shrink-0 inline-flex items-center justify-center w-10 h-10 rounded-full bg-zinc-100 text-brand-dark group-hover:bg-brand-yellow group-hover:text-brand-dark transition-colors">
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+          </svg>
+        </span>
+      </div>
+    </a>
+  </li>
+);
+
+// ── Tarjeta de lectura / guía ──────────────────────────────────────
 interface ReadingCardProps {
   r: Reading;
   courseSlug: string;
@@ -151,10 +278,7 @@ const ReadingCard: React.FC<ReadingCardProps> = ({ r, courseSlug, numberLabel })
   ].join(' ');
 
   const photoPanel = hasBanner ? (
-    <div
-      className="relative flex-shrink-0 h-40 sm:h-auto sm:w-52 overflow-hidden"
-      aria-hidden="true"
-    >
+    <div className="relative flex-shrink-0 h-40 sm:h-auto sm:w-52 overflow-hidden" aria-hidden="true">
       <img
         src={r.bannerImg}
         alt=""
@@ -162,7 +286,6 @@ const ReadingCard: React.FC<ReadingCardProps> = ({ r, courseSlug, numberLabel })
         style={{ filter: 'grayscale(100%)' }}
         loading="lazy"
       />
-      {/* number watermark */}
       {num && (
         <span
           className="absolute inset-0 flex items-end justify-start font-black text-white select-none pointer-events-none leading-none"
@@ -172,7 +295,6 @@ const ReadingCard: React.FC<ReadingCardProps> = ({ r, courseSlug, numberLabel })
           {num}
         </span>
       )}
-      {/* subtle gradient to blend watermark number with content side */}
       <div className="absolute inset-0 bg-gradient-to-r from-black/10 to-transparent pointer-events-none" />
     </div>
   ) : null;
@@ -210,10 +332,7 @@ const ReadingCard: React.FC<ReadingCardProps> = ({ r, courseSlug, numberLabel })
       {r.tags && r.tags.length > 0 && (
         <ul className="mt-3 flex flex-wrap gap-1.5">
           {r.tags.map((t) => (
-            <li
-              key={t}
-              className="px-2 py-0.5 rounded-full bg-zinc-100 text-brand-gray text-[11px] font-medium"
-            >
+            <li key={t} className="px-2 py-0.5 rounded-full bg-zinc-100 text-brand-gray text-[11px] font-medium">
               {t}
             </li>
           ))}
