@@ -42,6 +42,33 @@ export const CourseLandingPage: React.FC = () => {
             <TodayButton course={course} />
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
+            {(() => {
+              const cronograma = course.readings.find((r) => r.slug === 'cronograma-interactivo');
+              return cronograma?.href ? (
+                <a
+                  href={cronograma.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group bg-white rounded-xl shadow-md border border-zinc-200 p-6 hover:shadow-lg transition-shadow"
+                >
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <p className="text-xs font-semibold tracking-widest uppercase text-brand-yellow-dark">Calendario</p>
+                      <h3 className="mt-1 text-xl font-bold text-brand-dark">Cronograma</h3>
+                      <p className="mt-2 text-sm text-brand-gray">
+                        Qué sigue esta semana y el timeline completo del semestre.
+                      </p>
+                    </div>
+                    <span className="text-brand-dark group-hover:text-brand-yellow-dark transition-colors">
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                      </svg>
+                    </span>
+                  </div>
+                </a>
+              ) : null;
+            })()}
+
             <Link
               to={`/classroom/${course.slug}/readings`}
               className="group bg-white rounded-xl shadow-md border border-zinc-200 p-6 hover:shadow-lg transition-shadow"
@@ -53,10 +80,14 @@ export const CourseLandingPage: React.FC = () => {
                   <p className="mt-2 text-sm text-brand-gray">
                     {(() => {
                       const lecturas = course.readings.filter((r) => r.category === 'lectura').length;
-                      const guias = course.readings.length - lecturas;
+                      const guias = course.readings.filter((r) => r.category !== 'lectura' && r.slug !== 'cronograma-interactivo').length;
+                      const pres = course.presentations?.length ?? 0;
+                      const sims = course.simulations?.length ?? 0;
                       const parts: string[] = [];
-                      if (guias > 0) parts.push(`${guias} ${guias === 1 ? 'guía' : 'guías'}`);
-                      if (lecturas > 0) parts.push(`${lecturas} ${lecturas === 1 ? 'lectura' : 'lecturas'}`);
+                      if (lecturas > 0) parts.push(`${lecturas} lecturas`);
+                      if (pres > 0) parts.push(`${pres} presentaciones`);
+                      if (guias > 0) parts.push(`${guias} guías`);
+                      if (sims > 0) parts.push(`${sims} simulaciones`);
                       return parts.length > 0 ? parts.join(' · ') : 'Sin material publicado';
                     })()}
                   </p>
@@ -68,49 +99,7 @@ export const CourseLandingPage: React.FC = () => {
                 </span>
               </div>
             </Link>
-
-            <Link
-              to={`/classroom/${course.slug}/presentations`}
-              className="group bg-white rounded-xl shadow-md border border-zinc-200 p-6 hover:shadow-lg transition-shadow"
-            >
-              <div className="flex items-start justify-between">
-                <div>
-                  <p className="text-xs font-semibold tracking-widest uppercase text-brand-yellow-dark">Para clase</p>
-                  <h3 className="mt-1 text-xl font-bold text-brand-dark">Presentaciones</h3>
-                  <p className="mt-2 text-sm text-brand-gray">
-                    {course.presentations.length} {course.presentations.length === 1 ? 'disponible' : 'disponibles'}
-                  </p>
-                </div>
-                <span className="text-brand-dark group-hover:text-brand-yellow-dark transition-colors">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                  </svg>
-                </span>
-              </div>
-            </Link>
           </div>
-
-          {course.simulations && course.simulations.length > 0 && (
-            <Link
-              to={`/classroom/${course.slug}/simulations`}
-              className="mt-4 group bg-white rounded-xl shadow-md border border-zinc-200 p-6 hover:shadow-lg transition-shadow flex items-start justify-between"
-            >
-              <div>
-                <p className="text-xs font-semibold tracking-widest uppercase text-brand-yellow-dark">Interactivo</p>
-                <h3 className="mt-1 text-xl font-bold text-brand-dark">Simulaciones</h3>
-                <p className="mt-2 text-sm text-brand-gray">
-                  {course.simulations.length}{' '}
-                  {course.simulations.length === 1 ? 'herramienta interactiva' : 'herramientas interactivas'}
-                  {' '}· explora el diseño en tiempo real
-                </p>
-              </div>
-              <span className="text-brand-dark group-hover:text-brand-yellow-dark transition-colors">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                </svg>
-              </span>
-            </Link>
-          )}
 
           {course.challenges && (() => {
             const ch = course.challenges;
