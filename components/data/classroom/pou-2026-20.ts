@@ -441,6 +441,19 @@ export const pou202620Course: Course = {
       bannerImg: '/classroom/iqya-2031-2026-20/guias-banners/programa.jpg',
     },
     {
+      slug: 'cronograma-interactivo',
+      order: 2,
+      title: 'Cronograma interactivo',
+      summary:
+        'El calendario del semestre, semana por semana. Arriba, qué sigue: el próximo quiz, taller y entrega con cuenta regresiva. Abajo, el timeline de las 16 semanas con quices, talleres, entregas de bitácora, coevaluaciones y retroalimentaciones. Se filtra por tipo y resalta la semana actual.',
+      date: '2026-08-04',
+      readingMinutes: 4,
+      tags: ['cronograma', 'calendario', 'logística'],
+      category: 'guia',
+      href: '/classroom/iqya-2031-2026-20/cronograma.html',
+      bannerImg: '/classroom/iqya-2031-2026-20/guias-banners/programa.jpg',
+    },
+    {
       slug: 'trabajo-en-equipo',
       order: 3,
       title: 'Trabajo en equipo: guía práctica para el proyecto',
