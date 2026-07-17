@@ -46,6 +46,8 @@ header.top p{font-size:18px;color:var(--gris-2);margin:0;}
 .fbtn{font-family:var(--tipo);font-size:13px;font-weight:600;color:var(--gris-2);background:var(--blanco);border:1.5px solid var(--gris-4);border-radius:999px;padding:8px 16px;cursor:pointer;transition:all .15s;}
 .fbtn:hover{border-color:var(--verde);color:var(--gris-1);}
 .fbtn.on{background:var(--verde);border-color:var(--verde);color:#fff;}
+.past-toggle{display:block;width:100%;font-family:var(--tipo);font-size:13px;font-weight:700;letter-spacing:.02em;color:var(--gris-2);background:transparent;border:1.5px dashed var(--gris-4);border-radius:var(--radio);padding:11px 16px;margin:14px 0 0;cursor:pointer;transition:all .15s;}
+.past-toggle:hover{border-color:var(--verde);color:var(--verde-osc);background:var(--blanco);}
 /* ---- timeline ---- */
 .week{background:var(--blanco);border:1px solid var(--gris-4);border-radius:var(--radio);margin-top:14px;overflow:hidden;box-shadow:var(--sombra);}
 .week.now{border-color:var(--verde);box-shadow:0 0 0 2px var(--verde-claro),var(--sombra);}
@@ -201,38 +203,60 @@ header.top p{font-size:18px;color:var(--gris-2);margin:0;}
     if(TODAY>=new Date(min-3*MS)&&TODAY<=new Date(max.getTime()+2*MS))curWeek=w;
   });
 
-  function render(filter){
-    var tl=document.getElementById('timeline');
-    tl.innerHTML = wkNums.map(function(w){
-      var evs=weeks[w].filter(function(e){return matches(e,filter);})
-                      .sort(function(a,b){return dObj(a.date)-dObj(b.date);});
-      if(!evs.length)return '';
-      var dts=weeks[w].map(function(e){return dObj(e.date);});
-      var wmin=new Date(Math.min.apply(null,dts));
-      var rows=evs.map(function(e){
-        var n=diffDays(e.date), cls=n<0?'past':(n===0?'today':'');
-        var d=dObj(e.date);
-        var chips=chipsFor(e).map(function(c){return '<span class="chip '+c[0]+'">'+esc(c[1])+'</span>';}).join('');
-        var bul=(e.bullets&&e.bullets.length)?'<ul class="bul">'+e.bullets.map(function(b){return '<li>'+esc(b)+'</li>';}).join('')+'</ul>':'';
-        return '<div class="evt '+cls+'"><div class="d">'+DIAS[d.getDay()].slice(0,3)+'<span class="dd">'+d.getDate()+'</span>'+MESES[d.getMonth()].slice(0,3)+'</div>'+
-          '<div class="body"><div class="chips">'+chips+'</div><h4>'+esc(e.title)+'</h4>'+bul+'</div></div>';
-      }).join('');
-      var isNow=(w===curWeek);
-      var lbl = w>=17?'Semana de finales':'Semana '+w;
-      return '<div class="week'+(isNow?' now':'')+'"><div class="week-head"><span class="wn">'+(w>=17?'·':w)+'</span>'+
-        '<span class="wl">'+(isNow?'Esta semana · ':'')+lbl+'</span>'+
-        '<span class="wdate">'+fmt(wmin.toISOString().slice(0,10))+'</span></div>'+rows+'</div>';
+  function weekHtml(w,filter){
+    var evs=weeks[w].filter(function(e){return matches(e,filter);})
+                    .sort(function(a,b){return dObj(a.date)-dObj(b.date);});
+    if(!evs.length)return '';
+    var dts=weeks[w].map(function(e){return dObj(e.date);});
+    var wmin=new Date(Math.min.apply(null,dts));
+    var rows=evs.map(function(e){
+      var n=diffDays(e.date), cls=n<0?'past':(n===0?'today':'');
+      var d=dObj(e.date);
+      var chips=chipsFor(e).map(function(c){return '<span class="chip '+c[0]+'">'+esc(c[1])+'</span>';}).join('');
+      var bul=(e.bullets&&e.bullets.length)?'<ul class="bul">'+e.bullets.map(function(b){return '<li>'+esc(b)+'</li>';}).join('')+'</ul>':'';
+      return '<div class="evt '+cls+'"><div class="d">'+DIAS[d.getDay()].slice(0,3)+'<span class="dd">'+d.getDate()+'</span>'+MESES[d.getMonth()].slice(0,3)+'</div>'+
+        '<div class="body"><div class="chips">'+chips+'</div><h4>'+esc(e.title)+'</h4>'+bul+'</div></div>';
     }).join('');
-    // scroll a la semana actual en la primera carga sin filtro
+    var isNow=(w===curWeek);
+    var lbl = w>=17?'Semana de finales':'Semana '+w;
+    return '<div class="week'+(isNow?' now':'')+'"><div class="week-head"><span class="wn">'+(w>=17?'·':w)+'</span>'+
+      '<span class="wl">'+(isNow?'Esta semana · ':'')+lbl+'</span>'+
+      '<span class="wdate">'+fmt(wmin.toISOString().slice(0,10))+'</span></div>'+rows+'</div>';
+  }
+  // una semana es "pasada" si todos sus eventos ya ocurrieron y no es la semana actual
+  function isPastWeek(w){
+    var max=new Date(Math.max.apply(null,weeks[w].map(function(e){return dObj(e.date);})));
+    return max<TODAY && w!==curWeek;
   }
 
+  var showPast=false, curFilter='all';
+  function render(){
+    var tl=document.getElementById('timeline');
+    var past=[], rest=[];
+    wkNums.forEach(function(w){(isPastWeek(w)?past:rest).push(w);});
+    var pastHtml=past.map(function(w){return weekHtml(w,curFilter);}).join('');
+    var restHtml=rest.map(function(w){return weekHtml(w,curFilter);}).join('');
+    var toggle = past.length
+      ? '<button class="past-toggle" id="ptoggle">'+(showPast
+          ? '▾  Ocultar '+past.length+' semana'+(past.length>1?'s':'')+' pasada'+(past.length>1?'s':'')
+          : '▸  Ver '+past.length+' semana'+(past.length>1?'s':'')+' pasada'+(past.length>1?'s':''))+'</button>'
+      : '';
+    tl.innerHTML = toggle
+      + '<div id="pastWrap" style="display:'+(showPast?'block':'none')+'">'+pastHtml+'</div>'
+      + restHtml;
+  }
+
+  // toggle de semanas pasadas (delegación: el botón se re-renderiza)
+  document.getElementById('timeline').addEventListener('click',function(e){
+    if(e.target&&e.target.id==='ptoggle'){showPast=!showPast;render();}
+  });
   // filtros
   var fbtns=document.querySelectorAll('.fbtn');
   fbtns.forEach(function(b){b.addEventListener('click',function(){
     fbtns.forEach(function(x){x.classList.toggle('on',x===b);});
-    render(b.getAttribute('data-f'));
+    curFilter=b.getAttribute('data-f');render();
   });});
-  render('all');
+  render();
 })();
 </script>
 </body>
