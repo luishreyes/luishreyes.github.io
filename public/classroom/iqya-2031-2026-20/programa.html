@@ -246,12 +246,77 @@
   .dl-btn:hover { background: var(--verde-osc); transform: translateY(-2px); }
   .dl-btn svg { width: 17px; height: 17px; }
 
+  /* Palabra en foco del título: verde en pantalla, resaltado en el PDF */
+  .hl { color: var(--verde-osc); }
+  /* Índice de portada: solo en el PDF */
+  .doc-index { display: none; }
+
+  /* ===================================================================
+     PDF / impresión — «documento claro» del programa (plantilla POU):
+     tinta sobre papel, verde como acento, portada con visor y con índice,
+     capítulos numerados con numeral y regla verde, callouts con etiqueta.
+     La cabecera/pie por página los agrega el generador (Playwright).
+     =================================================================== */
+  @page { size: letter; }
   @media print {
-    body { background: #fff; }
-    .page { box-shadow: none; margin: 0; max-width: none; border-radius: 0; }
-    section { break-inside: avoid; }
-    figure.fig, .stepc, .callout, .deliverable, table.rubrica { break-inside: avoid; }
-    .dl-btn { display: none !important; }
+    body { background: #fff; color: var(--gris-1); font-size: 11pt; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .dl-btn, .side-nav, .doc-foot { display: none !important; }
+    .outer-layout { display: block; max-width: none; margin: 0; padding: 0; }
+    .page { box-shadow: none; margin: 0; max-width: none; border-radius: 0; background: #fff; overflow: visible; }
+
+    /* ---------- Portada ---------- */
+    .doc-head { position: relative; background: #fff; border-bottom: none; padding: 30px 0 0; break-after: page; }
+    .doc-head::before, .doc-head::after { content: ""; position: absolute; top: 6px; width: 46px; height: 46px; }
+    .doc-head::before { left: 0; border-top: 3px solid var(--gris-1); border-left: 3px solid var(--gris-1); }
+    .doc-head::after  { right: 0; border-top: 3px solid var(--gris-1); border-right: 3px solid var(--gris-1); }
+    .doc-head .org { display: none; }
+    .doc-head .badge { background: var(--verde); color: #fff; margin: 34px 0 15px; border-radius: 0; }
+    .doc-head h1 { color: var(--gris-1); font-size: 62px; line-height: .98; font-weight: 900; letter-spacing: -.02em; }
+    .doc-head h1 .hl { background: var(--verde); color: #fff; padding: 0 11px; }
+    .doc-head .subtitle { color: var(--gris-2); }
+    .doc-meta { border-top: 1px solid var(--gris-4); margin-top: 22px; padding-top: 16px; }
+    .doc-meta b { color: var(--gris-1); }
+
+    /* ---------- Índice de portada ---------- */
+    .doc-index { display: block; margin-top: 24px; }
+    .di-label { font-size: 12px; font-weight: 800; letter-spacing: .22em; text-transform: uppercase; color: var(--gris-3); margin: 0 0 8px; border-bottom: 2px solid var(--gris-1); padding-bottom: 8px; }
+    .doc-index ol { list-style: none; padding: 0; margin: 0; }
+    .doc-index li { display: flex; gap: 16px; padding: 7px 0; border-bottom: 1px solid var(--gris-4); font-size: 13px; color: var(--gris-1); }
+    .doc-index li span { font-weight: 800; min-width: 22px; color: var(--verde-osc); }
+
+    /* ---------- Cuerpo: capítulos numerados ---------- */
+    .doc-body { padding: 0; counter-reset: sec; }
+    .doc-body section { padding-top: 28px; }
+    .eyebrow { display: none; }
+    h2.sec {
+      counter-increment: sec; position: relative;
+      display: flex; align-items: baseline; gap: 16px;
+      font-size: 26px; font-weight: 900; text-transform: uppercase; letter-spacing: -.005em;
+      color: var(--gris-1); margin: 0 0 22px; padding-bottom: 12px; break-after: avoid;
+    }
+    h2.sec::before { content: counter(sec, decimal-leading-zero); font-weight: 900; font-size: 30px; color: var(--verde); }
+    h2.sec::after { content: ""; position: absolute; left: 46px; bottom: 0; width: 60px; height: 4px; background: var(--verde); }
+    h3.sub { color: var(--gris-1); break-after: avoid; }
+    .doc-body p, .lead { color: var(--gris-2); }
+    .doc-body strong, .doc-body b { color: var(--gris-1); }
+
+    /* ---------- Callouts: regla lateral + etiqueta, sin ícono ---------- */
+    .callout { grid-template-columns: 1fr; gap: 0; border-radius: 0; padding: 14px 22px; border-left: 3px solid var(--gris-4); }
+    .callout .ic { display: none; }
+    .callout b { letter-spacing: .16em; text-transform: uppercase; font-size: 11px; margin-bottom: 6px; }
+    .callout p { color: var(--gris-2); }
+    .callout--tip { background: var(--verde-claro); border-left-color: var(--verde); }
+    .callout--tip b { color: var(--verde-osc); }
+    .callout--nota { background: #F3F2ED; border-left-color: var(--gris-3); }
+    .callout--nota b { color: var(--gris-3); }
+    .callout--etica { background: #FBEEDD; border-left-color: var(--ambar); }
+    .callout--etica b { color: #B16A14; }
+
+    /* ---------- Tarjetas claras y cortes de página ---------- */
+    .qcard, .infobox { background: var(--papel); border-top: 4px solid var(--verde); }
+    .qcards, .callout, .gradeitem, .infobox, .qcard, figure, .stepc, .deliverable { break-inside: avoid; }
+    table.rubrica tr, table.tbl tr, table.ou tr { break-inside: avoid; }
+    thead { display: table-header-group; }
   }
   @media (max-width: 720px) {
     .doc-head, .doc-body { padding-left: 24px; padding-right: 24px; }
@@ -348,7 +413,7 @@
       <span>Ingeniería Química y de Alimentos</span>
     </div>
     <div class="badge">Programa del curso · 2026-20</div>
-    <h1>Proyecto de Operaciones Unitarias</h1>
+    <h1>Proyecto de <span class="hl">Operaciones</span> Unitarias</h1>
     <p class="subtitle">Diseño integrado de productos y procesos: una planta de pectina a partir de residuo agroindustrial</p>
     <div class="doc-meta">
       <div><b>Código</b>IQYA-2031</div>
@@ -356,6 +421,26 @@
       <div><b>Modalidad</b>Presencial · 16 semanas</div>
       <div><b>Profesor</b>Luis H. Reyes</div>
     </div>
+
+    <!-- Índice: solo en el PDF (documento claro) -->
+    <nav class="doc-index" aria-hidden="true">
+      <p class="di-label">En este programa</p>
+      <ol>
+        <li><span>01</span> Horarios y equipo</li>
+        <li><span>02</span> Descripción del curso</li>
+        <li><span>03</span> Objetivos del curso</li>
+        <li><span>04</span> Metodología: PO-PBL y aula invertida</li>
+        <li><span>05</span> El reto: una planta de pectina</li>
+        <li><span>06</span> Resultados de aprendizaje (ABET)</li>
+        <li><span>07</span> Contenido programático</li>
+        <li><span>08</span> Distribución de la nota</li>
+        <li><span>09</span> Fechas clave de 2026-20</li>
+        <li><span>10</span> Coevaluación y autoevaluación</li>
+        <li><span>11</span> Escala AIAS de uso de IA</li>
+        <li><span>12</span> Políticas del curso</li>
+        <li><span>13</span> Mensaje a la comunidad</li>
+      </ol>
+    </nav>
   </header>
 
   <div class="doc-body">
