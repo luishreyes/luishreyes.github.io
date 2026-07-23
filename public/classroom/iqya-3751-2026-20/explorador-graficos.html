@@ -1,0 +1,1799 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>El gráfico correcto · Explorador de gráficos · Narrativas Visuales (IQYA-3751)</title>
+<meta name="description" content="Explorador de ~90 tipos de gráfico por tarea visual, con cuándo usarlos, la decisión que habilitan y la trampa ética. Narrativas Visuales de Datos, IQYA-3751.">
+<style>
+/* ===== Fuentes locales del sitio (mismas que los handouts) ===== */
+@font-face{font-family:'Big Shoulders Display';font-style:normal;font-weight:100 900;font-display:swap;
+  src:url('../../fonts/big-shoulders-display-latin-wght-normal.woff2') format('woff2-variations');
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;}
+@font-face{font-family:'Big Shoulders Display';font-style:normal;font-weight:100 900;font-display:swap;
+  src:url('../../fonts/big-shoulders-display-latin-ext-wght-normal.woff2') format('woff2-variations');
+  unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;}
+@font-face{font-family:'Archivo';font-style:normal;font-weight:100 900;font-display:swap;
+  src:url('../../fonts/archivo-latin-wght-normal.woff2') format('woff2-variations');
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+2074,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;}
+@font-face{font-family:'Archivo';font-style:normal;font-weight:100 900;font-display:swap;
+  src:url('../../fonts/archivo-latin-ext-wght-normal.woff2') format('woff2-variations');
+  unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;}
+
+/* ===== Tokens del design-system Narrativas Visuales (_ds) ===== */
+:root{
+  color-scheme:dark;
+  --carbon-1000:#0A0A0A;--carbon-950:#101010;--carbon-900:#141412;--carbon-850:#1A1A17;--carbon-800:#201F1B;--carbon-700:#2A2924;--carbon-600:#3A382F;
+  --bone-100:#F2F0EB;--bone-000:#E8E6E1;--bone-300:#B8B6AE;--bone-500:#86847C;--bone-700:#56554F;
+  --citron-000:#C9C41C;--citron-100:#DCD733;--citron-200:#EBE65A;--citron-700:#9A961A;--citron-900:#4A480F;
+  --clay-000:#C8623A;--clay-900:#3A1F13;
+  --line-soft:rgba(232,230,225,0.10);--line:rgba(232,230,225,0.16);--line-strong:rgba(232,230,225,0.30);--line-citron:rgba(201,196,28,0.55);
+  --bg:var(--carbon-1000);--bg-raised:var(--carbon-900);--surface:var(--carbon-900);--surface-2:var(--carbon-850);--surface-hover:var(--carbon-800);
+  --text:var(--bone-000);--text-muted:var(--bone-300);--text-faint:var(--bone-500);--text-disabled:var(--bone-700);--text-on-accent:var(--carbon-1000);
+  --accent:var(--citron-000);--accent-hover:var(--citron-100);--accent-active:var(--citron-700);
+  --focus:var(--citron-000);--context:var(--bone-500);
+  --border:var(--line);--border-soft:var(--line-soft);--border-strong:var(--line-strong);--border-focus:var(--line-citron);
+  --signal-negative:var(--clay-000);
+  --font-display:'Big Shoulders Display','Archivo',system-ui,sans-serif;
+  --font-text:'Archivo',system-ui,-apple-system,sans-serif;
+  --w-thin:200;--w-light:300;--w-regular:400;--w-medium:500;--w-semibold:600;--w-bold:700;
+  --tracking-label:0.28em;--tracking-eyebrow:0.22em;--tracking-wide:0.06em;--tracking-display:-0.01em;
+  --fnum:'tnum' 1,'lnum' 1;
+  --r-0:0px;--r-1:2px;--r-2:4px;--r-3:6px;--r-full:999px;--bw:1px;--bw-2:2px;
+  --shadow-pop:0 18px 50px rgba(0,0,0,0.65);
+  --ease:cubic-bezier(0.22,0.61,0.36,1);--dur:220ms;--dur-fast:120ms;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--text);font-family:var(--font-text);-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-decoration:none}
+a:hover{color:var(--accent-hover)}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-thumb{background:var(--carbon-700);border-radius:6px}
+::-webkit-scrollbar-track{background:transparent}
+@keyframes nvfade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+[data-hover]{transition:background var(--dur) var(--ease),border-color var(--dur) var(--ease),transform var(--dur) var(--ease),color var(--dur) var(--ease)}
+.nv-rowhover:hover{background:var(--surface-hover)!important}
+.nv-cardhover:hover{transform:translateY(-2px);border-color:var(--border-strong)!important}
+.nv-btnhover:hover{border-color:var(--text)!important;background:rgba(232,230,225,0.04)}
+.nv-linkhover:hover{color:var(--text)!important}
+chart-figure,.nv-fig{display:block;width:100%;height:100%}
+@media (max-width:900px){
+  .nv-inner{flex-direction:column !important}
+  .nv-rail{width:100% !important;border-right:none !important;border-bottom:var(--bw) solid var(--border) !important;padding:10px 0 !important;overflow-y:hidden !important;flex-shrink:0 !important}
+  .nv-railhdr{padding:0 16px 8px !important}
+  .nv-railfoot{display:none !important}
+  .nv-tablist{display:flex !important;overflow-x:auto !important;padding:0 10px !important;-webkit-overflow-scrolling:touch}
+  .nv-tablist > div{flex:0 0 auto !important;border-left:none !important;padding:9px 15px !important}
+  .nv-main{padding:24px 22px 52px !important}
+  .nv-detailgrid{grid-template-columns:1fr !important;gap:26px !important}
+  .nv-h1{font-size:40px !important}
+  .nv-chartname{font-size:46px !important}
+}
+@media (max-width:560px){
+  .nv-header{padding:14px 18px !important}
+  .nv-btnlabel{display:none !important}
+  .nv-decisionbtn{padding:10px !important}
+  .nv-grid{grid-template-columns:1fr !important}
+  .nv-h1{font-size:32px !important}
+  .nv-chartname{font-size:38px !important}
+  .nv-wordmark{font-size:21px !important}
+}
+</style>
+</head>
+<body>
+<div id="nv-app" style="display:flex;flex-direction:column;height:100vh;overflow:hidden;background:var(--bg)"></div>
+
+<script>
+/* chartSvg.js — motor de gráficos SVG para Narrativas Visuales.
+   window.buildChartSVG(id, {focus}) -> string SVG.
+   Paleta: gris = contexto, citrón = foco (lo que importa), arcilla = negativo. */
+(function () {
+  const G = "#86847C";        // contexto
+  const GD = "#56554F";       // contexto tenue
+  const F = "#C9C41C";        // foco (citrón)
+  const CL = "#C8623A";       // señal negativa (arcilla)
+  const B = "#E8E6E1";        // hueso / texto
+  const TX = "#86847C";       // texto tenue
+  const GRID = "rgba(232,230,225,0.09)";
+  const AX = "rgba(232,230,225,0.28)";
+  const W = 340, H = 210;
+  const PX0 = 38, PX1 = 326, PY0 = 16, PY1 = 180;
+
+  const r = (x, y, w, h, fill, o = "") => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}" ${o}/>`;
+  const ln = (x1, y1, x2, y2, s = AX, w = 1, o = "") => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${s}" stroke-width="${w}" ${o}/>`;
+  const c = (cx, cy, rad, fill, o = "") => `<circle cx="${cx}" cy="${cy}" r="${rad}" fill="${fill}" ${o}/>`;
+  const p = (d, s, fill = "none", w = 1.5, o = "") => `<path d="${d}" stroke="${s}" fill="${fill}" stroke-width="${w}" stroke-linejoin="round" stroke-linecap="round" ${o}/>`;
+  const t = (x, y, s, { fill = TX, size = 9, anchor = "middle", weight = 400, ff = "Archivo,sans-serif", ls = "0" } = {}) =>
+    `<text x="${x}" y="${y}" fill="${fill}" font-size="${size}" text-anchor="${anchor}" font-weight="${weight}" font-family="${ff}" letter-spacing="${ls}">${s}</text>`;
+  const axes = () => ln(PX0, PY0, PX0, PY1, AX) + ln(PX0, PY1, PX1, PY1, AX);
+  const gy = (n = 4) => { let s = ""; for (let i = 1; i <= n; i++) { const y = PY1 - (PY1 - PY0) * i / n; s += ln(PX0, y, PX1, y, GRID); } return s; };
+  const poly = (pts, s, fill = "none", w = 1.5) => p("M" + pts.map(a => a[0].toFixed(1) + " " + a[1].toFixed(1)).join(" L "), s, fill, w);
+  // trazo suavizado (Catmull-Rom -> Bézier). closed=true cierra la figura.
+  function smoothD(pts, closed = false) {
+    if (pts.length < 3) return "M" + pts.map(a => a[0].toFixed(1) + " " + a[1].toFixed(1)).join(" L ");
+    const P = closed ? [pts[pts.length - 1], ...pts, pts[0], pts[1]] : pts;
+    let d = "M" + P[closed ? 1 : 0][0].toFixed(1) + " " + P[closed ? 1 : 0][1].toFixed(1);
+    const start = closed ? 1 : 0, end = closed ? P.length - 2 : P.length - 1;
+    for (let i = start; i < end; i++) {
+      const p0 = P[i - 1] || P[i], p1 = P[i], p2 = P[i + 1], p3 = P[i + 2] || p2;
+      const c1x = p1[0] + (p2[0] - p0[0]) / 6, c1y = p1[1] + (p2[1] - p0[1]) / 6;
+      const c2x = p2[0] - (p3[0] - p1[0]) / 6, c2y = p2[1] - (p3[1] - p1[1]) / 6;
+      d += `C${c1x.toFixed(1)} ${c1y.toFixed(1)}, ${c2x.toFixed(1)} ${c2y.toFixed(1)}, ${p2[0].toFixed(1)} ${p2[1].toFixed(1)}`;
+    }
+    return d + (closed ? "Z" : "");
+  }
+  const spline = (pts, s, fill = "none", w = 1.5, closed = false) => p(smoothD(pts, closed), s, fill, w);
+  const map = (arr, lo, hi, a, b) => arr.map(v => a + (b - a) * (v - lo) / (hi - lo));
+  const xlab = (s) => t((PX0 + PX1) / 2, H - 3, s, { size: 8.5, ls: "0.05em" });
+  const ylab = (s) => `<text x="11" y="${(PY0 + PY1) / 2}" fill="${TX}" font-size="8.5" text-anchor="middle" font-family="Archivo,sans-serif" transform="rotate(-90 11 ${(PY0 + PY1) / 2})">${s}</text>`;
+
+  // barras verticales genéricas
+  function vbars(vals, focusIdx, opts = {}) {
+    const max = Math.max(...vals) * 1.12;
+    const n = vals.length, gap = 8, bw = (PX1 - PX0 - gap * (n + 1)) / n;
+    let s = gy() + axes();
+    vals.forEach((v, i) => {
+      const x = PX0 + gap + i * (bw + gap);
+      const h = (v / max) * (PY1 - PY0);
+      const col = (opts.neg && opts.neg.includes(i)) ? CL : (i === focusIdx ? F : G);
+      s += r(x, PY1 - h, bw, h, col);
+    });
+    return s;
+  }
+
+  const B_ = {}; // builders
+
+  /* ---------- 01 COMPARAR ---------- */
+  B_.barras = () => vbars([62, 71, 58, 88, 66, 74], 3) + ylab("Rendimiento %") + xlab("Lote");
+  B_["barras-agrupadas"] = () => {
+    const grp = [[70, 52, 38], [64, 44, 30], [58, 40, 26], [50, 33, 20]];
+    const cols = [G, GD, F]; const max = 80, gw = (PX1 - PX0) / grp.length;
+    let s = gy() + axes();
+    grp.forEach((g, i) => { const bx = PX0 + i * gw + 8, bw = (gw - 20) / 3; g.forEach((v, j) => { const h = v / max * (PY1 - PY0); s += r(bx + j * bw, PY1 - h, bw - 1.5, h, cols[j]); }); });
+    return s + ylab("Humedad %") + xlab("Tiempo de secado");
+  };
+  B_["barras-apiladas"] = () => {
+    const data = [[30, 22, 34, 8], [26, 30, 30, 10], [34, 18, 38, 6], [28, 26, 32, 9], [30, 24, 33, 8]];
+    const cols = [GD, G, F, "#3A382F"]; const gap = 12, bw = (PX1 - PX0 - gap * 6) / 5;
+    let s = axes();
+    data.forEach((st, i) => { const x = PX0 + gap + i * (bw + gap); let acc = 0; const tot = st.reduce((a, b) => a + b, 0); st.forEach((v, j) => { const h = v / (tot * 1.05) * (PY1 - PY0); s += r(x, PY1 - acc - h, bw, h, cols[j]); acc += h; }); });
+    return s + ylab("g/100g") + xlab("Producto");
+  };
+  B_["barras-100"] = () => {
+    const data = [[45, 30, 25], [38, 40, 22], [55, 20, 25], [30, 35, 35], [48, 28, 24]];
+    const cols = [G, F, GD]; const gap = 12, bw = (PX1 - PX0 - gap * 6) / 5;
+    let s = axes();
+    data.forEach((st, i) => { const x = PX0 + gap + i * (bw + gap); let acc = 0; st.forEach((v, j) => { const h = v / 100 * (PY1 - PY0); s += r(x, PY1 - acc - h, bw, h, cols[j]); acc += h; }); });
+    return s + ylab("% defectos") + xlab("Línea");
+  };
+  B_.dotplot = () => {
+    const before = [30, 42, 55, 38, 62, 48, 70, 35], after = [45, 58, 60, 52, 78, 66, 82, 50];
+    const n = before.length, step = (PY1 - PY0) / n;
+    let s = ln(PX0, PY0, PX0, PY1, AX) + ln(PX0, PY1, PX1, PY1, AX);
+    for (let i = 0; i < n; i++) { const y = PY0 + step * (i + 0.5); const xa = PX0 + before[i] / 100 * (PX1 - PX0), xb = PX0 + after[i] / 100 * (PX1 - PX0); s += ln(xa, y, xb, y, GD, 1.5) + c(xa, y, 3, G) + c(xb, y, 3.4, i === 6 ? F : B); }
+    return s + xlab("Métrica  ·  ● antes  ● después");
+  };
+  B_.lollipop = () => {
+    const vals = [82, 64, 55, 47, 40, 33, 25, 18], n = vals.length, step = (PY1 - PY0) / n;
+    let s = ln(PX0, PY0, PX0, PY1, AX);
+    vals.forEach((v, i) => { const y = PY0 + step * (i + 0.5), x = PX0 + v / 100 * (PX1 - PX0); s += ln(PX0, y, x, y, GD, 1.2) + c(x, y, 3.6, i === 0 ? F : G); });
+    return s + xlab("Merma por operación");
+  };
+  B_.diverging = () => {
+    const vals = [-40, -22, -8, 5, 30, 55, 20], n = vals.length; const mid = (PX0 + PX1) / 2, half = (PX1 - PX0) / 2 / 60;
+    const gap = 6, bh = (PY1 - PY0 - gap * (n + 1)) / n;
+    let s = ln(mid, PY0, mid, PY1, AX);
+    vals.forEach((v, i) => { const y = PY0 + gap + i * (bh + gap); const w = Math.abs(v) * half; const x = v < 0 ? mid - w : mid; s += r(x, y, w, bh, v < 0 ? CL : (i === 5 ? F : G)); });
+    return s + xlab("← desagrada    agrada →");
+  };
+  B_.bullet = () => {
+    const rows = [[70, 82, [50, 70, 95]], [62, 60, [45, 65, 90]]];
+    let s = "";
+    rows.forEach((row, i) => {
+      const y = 60 + i * 70, h = 26; const sc = x => PX0 + x / 100 * (PX1 - PX0);
+      const shades = ["#201F1B", "#2A2924", "#3A382F"]; let prev = 0;
+      row[2].forEach((band, j) => { s += r(sc(prev), y, sc(band) - sc(prev), h, shades[j]); prev = band; });
+      s += r(PX0, y + h / 2 - 4, sc(row[0]) - PX0, 8, i === 0 ? F : G);
+      s += ln(sc(row[1]), y - 3, sc(row[1]), y + h + 3, B, 2);
+    });
+    return axes() + s + xlab("Real ▮  ·  meta │  ·  rangos");
+  };
+  B_.radar = () => {
+    const cx = (PX0 + PX1) / 2, cy = 100, R = 78, ax = 6;
+    const sets = [[.9, .6, .75, .5, .8, .55], [.5, .8, .4, .7, .45, .6]];
+    const cols = [F, G]; let s = "";
+    for (let ring = 1; ring <= 3; ring++) { let pts = []; for (let i = 0; i < ax; i++) { const a = -Math.PI / 2 + i * 2 * Math.PI / ax; pts.push([cx + Math.cos(a) * R * ring / 3, cy + Math.sin(a) * R * ring / 3]); } s += poly([...pts, pts[0]], GRID, "none", 1); }
+    for (let i = 0; i < ax; i++) { const a = -Math.PI / 2 + i * 2 * Math.PI / ax; s += ln(cx, cy, cx + Math.cos(a) * R, cy + Math.sin(a) * R, GRID); }
+    sets.forEach((set, k) => { let pts = set.map((v, i) => { const a = -Math.PI / 2 + i * 2 * Math.PI / ax; return [cx + Math.cos(a) * R * v, cy + Math.sin(a) * R * v]; }); s += poly([...pts, pts[0]], cols[k], k === 0 ? "rgba(201,196,28,0.12)" : "none", 1.8); });
+    return s + t(cx, 200, "Perfil sensorial (6 atributos)", { size: 8.5 });
+  };
+
+  /* ---------- 02 DISTRIBUCIÓN ---------- */
+  B_.histograma = () => {
+    const bins = [4, 9, 18, 30, 42, 48, 40, 28, 16, 7, 3], max = 55, bw = (PX1 - PX0) / bins.length;
+    let s = gy() + axes();
+    bins.forEach((v, i) => { const h = v / max * (PY1 - PY0); s += r(PX0 + i * bw + 1, PY1 - h, bw - 2, h, i === 5 ? F : G); });
+    return s + ylab("Frecuencia") + xlab("Peso neto (g)");
+  };
+  B_.densidad = () => {
+    const curve = (mu, sd, sc) => { let pts = []; for (let x = PX0; x <= PX1; x += 4) { const z = (x - mu) / sd; pts.push([x, PY1 - Math.exp(-0.5 * z * z) * sc]); } return pts; };
+    let s = axes();
+    s += spline(curve(140, 42, 150), G, "none", 2);
+    s += spline(curve(210, 30, 150), F, "rgba(201,196,28,0.12)", 2);
+    return s + ylab("Densidad") + xlab("Tamaño de partícula (µm)");
+  };
+  B_.boxplot = () => {
+    const box = (x, q, focus) => { const sc = v => PY1 - v / 100 * (PY1 - PY0); const col = focus ? F : G; let s = ln(x, sc(q[0]), x, sc(q[4]), col, 1.2); s += r(x - 12, sc(q[3]), 24, sc(q[1]) - sc(q[3]), "none", `stroke="${col}" stroke-width="1.4"`); s += ln(x - 12, sc(q[2]), x + 12, sc(q[2]), col, 2); s += ln(x - 7, sc(q[0]), x + 7, sc(q[0]), col, 1.2) + ln(x - 7, sc(q[4]), x + 7, sc(q[4]), col, 1.2); return s; };
+    let s = gy() + axes();
+    [[70, [40, 52, 58, 66, 78]], [140, [35, 48, 55, 62, 74]], [210, [30, 42, 50, 60, 72]], [280, [18, 32, 42, 55, 70]]].forEach((b, i) => s += box(b[0], b[1], i === 3));
+    return s + ylab("Firmeza (N)") + xlab("Tiempo de almacenamiento");
+  };
+  B_.violin = () => {
+    const vio = (cx, shape, focus) => { const col = focus ? F : G; let L = [], Rr = []; shape.forEach((w, i) => { const y = PY0 + 6 + i / (shape.length - 1) * (PY1 - PY0 - 12); L.push([cx - w, y]); Rr.push([cx + w, y]); }); return spline([...L, ...Rr.reverse()], col, focus ? "rgba(201,196,28,0.12)" : "rgba(134,132,124,0.10)", 1.4, true); };
+    let s = axes();
+    s += vio(90, [2, 10, 22, 14, 8, 16, 24, 12, 3], false);
+    s += vio(210, [2, 8, 14, 20, 10, 6, 4, 2, 1], true);
+    return s + xlab("Tiempo de residencia — bimodal a la izq.");
+  };
+  B_.beeswarm = () => {
+    const groups = [[75, [55, 58, 52, 60, 57]], [160, [62, 68, 64, 71, 66, 69]], [250, [40, 45, 43, 48]]];
+    let s = axes(); groups.forEach((g, gi) => { g[1].forEach((v, i) => { const y = PY1 - v / 90 * (PY1 - PY0); const off = (i % 2 ? 1 : -1) * (4 + (i % 3) * 3); s += c(g[0] + off, y, 3, gi === 1 ? F : G); }); });
+    return s + xlab("Réplicas del piloto (n pequeño)");
+  };
+  B_.raincloud = () => {
+    let s = axes(); const cx = shape => shape;
+    const half = (y0, shape, focus) => { let pts = [[PX0, y0]]; shape.forEach((w, i) => { const x = PX0 + i / (shape.length - 1) * (PX1 - PX0); pts.push([x, y0 - w]); }); pts.push([PX1, y0]); return spline(pts, focus ? F : G, focus ? "rgba(201,196,28,0.12)" : "rgba(134,132,124,0.10)", 1.4); };
+    s += half(70, [2, 12, 26, 34, 30, 20, 10, 4], true);
+    // box + puntos debajo
+    s += r(140, 92, 90, 12, "none", `stroke="${F}" stroke-width="1.3"`) + ln(175, 92, 175, 104, F, 1.6) + ln(120, 98, 250, 98, GD, 1);
+    for (let i = 0; i < 24; i++) { const x = PX0 + 20 + Math.random() * (PX1 - PX0 - 40); s += c(x, 120 + (i % 3) * 6, 2, G); }
+    return s + xlab("Nube + resumen + datos crudos");
+  };
+  B_.ecdf = () => {
+    const xs = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]; const ys = [.02, .08, .2, .38, .55, .7, .82, .9, .96, 1];
+    let pts = xs.map((x, i) => [PX0 + x / 105 * (PX1 - PX0), PY1 - ys[i] * (PY1 - PY0)]);
+    let step = [[PX0, PY1]]; pts.forEach(pt => { step.push([pt[0], step[step.length - 1][1]]); step.push(pt); });
+    const limX = PX0 + 70 / 105 * (PX1 - PX0);
+    return gy() + axes() + ln(limX, PY0, limX, PY1, CL, 1.3, 'stroke-dasharray="4 3"') + poly(step, G, "none", 1.8) + t(limX + 3, PY0 + 10, "límite", { fill: CL, anchor: "start", size: 8 }) + ylab("Fracción ≤") + xlab("Recuento microbiano");
+  };
+  B_.qq = () => {
+    const pts = [[-2, -2.3], [-1.4, -1.5], [-1, -1.1], [-.6, -.5], [-.3, -.2], [0, .1], [.3, .3], [.6, .5], [1, 1.2], [1.4, 1.6], [2, 2.1]];
+    const sc = (v) => [(PX0 + PX1) / 2 + v[0] / 2.4 * (PX1 - PX0) / 2, (PY0 + PY1) / 2 - v[1] / 2.4 * (PY1 - PY0) / 2];
+    let s = axes() + ln(...sc([-2.2, -2.2]), ...sc([2.2, 2.2]), F, 1.4, 'stroke-dasharray="4 3"');
+    pts.forEach(pt => { const q = sc(pt); s += c(q[0], q[1], 3, G); });
+    return s + ylab("Cuantiles muestra") + xlab("Cuantiles teóricos");
+  };
+  B_.pareto = () => {
+    const vals = [42, 28, 14, 8, 5, 3], cum = []; let acc = 0; vals.forEach(v => { acc += v; cum.push(acc); });
+    const bw = (PX1 - PX0) / vals.length, max = 100;
+    let s = gy() + axes();
+    vals.forEach((v, i) => { const h = v / max * (PY1 - PY0); s += r(PX0 + i * bw + 3, PY1 - h, bw - 6, h, i < 2 ? F : G); });
+    let line = cum.map((v, i) => [PX0 + i * bw + bw / 2, PY1 - v / max * (PY1 - PY0)]);
+    s += poly(line, B, "none", 1.6); line.forEach(pt => s += c(pt[0], pt[1], 2.5, B));
+    return s + ylab("% causas") + xlab("Causa de rechazo (80/20)");
+  };
+
+  /* ---------- 03 RELACIÓN ---------- */
+  const scatterPts = (seed) => { let a = seed, out = []; for (let i = 0; i < 40; i++) { a = (a * 9301 + 49297) % 233280; out.push(a / 233280); } return out; };
+  B_.dispersion = () => {
+    let s = gy() + axes(); const rnd = scatterPts(7);
+    for (let i = 0; i < 34; i++) { const x = 0.1 + i / 40; const y = 0.15 + x * 0.7 + (rnd[i] - 0.5) * 0.28; const px = PX0 + x * (PX1 - PX0), py = PY1 - Math.min(0.98, Math.max(0.02, y)) * (PY1 - PY0); s += c(px, py, 3, x > 0.6 ? F : G); }
+    return s + ylab("Crecimiento (log)") + xlab("Actividad de agua (aw)");
+  };
+  B_["dispersion-ajuste"] = () => {
+    let s = gy() + axes(); const rnd = scatterPts(11);
+    const band = []; const top = [], bot = [];
+    for (let i = 0; i <= 20; i++) { const x = i / 20; const px = PX0 + x * (PX1 - PX0), y = 0.1 + x * 0.82; top.push([px, PY1 - (y + 0.08) * (PY1 - PY0)]); bot.push([px, PY1 - (y - 0.08) * (PY1 - PY0)]); }
+    s += poly([...top, ...bot.reverse()], "none", "rgba(201,196,28,0.10)", 0);
+    for (let i = 0; i < 24; i++) { const x = i / 24; const y = 0.1 + x * 0.82 + (rnd[i] - 0.5) * 0.1; s += c(PX0 + x * (PX1 - PX0), PY1 - y * (PY1 - PY0), 2.6, G); }
+    s += poly([[PX0, PY1 - 0.1 * (PY1 - PY0)], [PX1, PY1 - 0.92 * (PY1 - PY0)]], F, "none", 2);
+    return s + ylab("Señal") + xlab("Concentración — IC 95%");
+  };
+  B_.burbujas = () => {
+    let s = gy() + axes(); const data = [[.2, .3, 6], [.4, .5, 10], [.55, .45, 8], [.7, .72, 22], [.3, .6, 12], [.85, .6, 9], [.6, .3, 7], [.5, .85, 16]];
+    data.forEach((d, i) => s += c(PX0 + d[0] * (PX1 - PX0), PY1 - d[1] * (PY1 - PY0), d[2], i === 3 ? "rgba(201,196,28,0.5)" : "rgba(134,132,124,0.4)", `stroke="${i === 3 ? F : G}" stroke-width="1.2"`));
+    return s + ylab("Retención vit. C %") + xlab("Temperatura  ·  ○ = tiempo");
+  };
+  B_.hexbin = () => {
+    let s = axes(); const rnd = scatterPts(3);
+    for (let gx = 0; gx < 9; gx++) for (let gy_ = 0; gy_ < 6; gy_++) { const cx = PX0 + 20 + gx * 32 + (gy_ % 2) * 16, cy = PY0 + 18 + gy_ * 26; const dc = Math.hypot(gx - 4, gy_ - 3); const dens = Math.max(0, 1 - dc / 4 + (rnd[gx + gy_] - 0.5) * 0.3); if (dens <= 0.05) continue; const col = dens > 0.7 ? F : (dens > 0.4 ? G : GD); s += `<path d="${hexPath(cx, cy, 11)}" fill="${col}" opacity="${0.25 + dens * 0.6}"/>`; }
+    return s + ylab("Presión") + xlab("Temperatura del sensor");
+  };
+  function hexPath(cx, cy, R) { let d = ""; for (let i = 0; i < 6; i++) { const a = Math.PI / 6 + i * Math.PI / 3; d += (i ? "L" : "M") + (cx + Math.cos(a) * R).toFixed(1) + " " + (cy + Math.sin(a) * R).toFixed(1) + " "; } return d + "Z"; }
+  B_.splom = () => {
+    let s = ""; const n = 3, cell = 56, x0 = 60, y0 = 12;
+    for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) { const cx = x0 + j * (cell + 6), cy = y0 + i * (cell + 6); s += r(cx, cy, cell, cell, "none", `stroke="${GRID}" stroke-width="1"`); if (i === j) { s += t(cx + cell / 2, cy + cell / 2 + 3, ["pH", "°Brix", "aw"][i], { fill: B, size: 10 }); } else { const foc = (i === 1 && j === 2) || (i === 2 && j === 1); for (let k = 0; k < 12; k++) { const rx = scatterPts(i * 7 + j * 3 + k)[k % 10]; s += c(cx + 6 + rx * (cell - 12), cy + cell - 6 - ((rx + (k % 3) * .12) % 1) * (cell - 12), 1.8, foc ? F : G); } } }
+    return s;
+  };
+  B_["heatmap-corr"] = () => {
+    let s = ""; const n = 6, cell = 26, x0 = 60, y0 = 16;
+    for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) { const cx = x0 + j * cell, cy = y0 + i * cell; let v = i === j ? 1 : Math.cos((i - j) * 0.9) * 0.8; const foc = (i === 1 && j === 4) || (i === 4 && j === 1); const col = v > 0 ? `rgba(201,196,28,${Math.abs(v) * 0.75 + 0.08})` : `rgba(200,98,58,${Math.abs(v) * 0.7 + 0.08})`; s += r(cx, cy, cell - 1.5, cell - 1.5, col, foc ? `stroke="${F}" stroke-width="1.6"` : ""); }
+    return s + t((PX0 + PX1) / 2, 200, "Sensorial × instrumental (r)", { size: 8.5 });
+  };
+  B_.contornos = () => {
+    let s = axes();
+    const rProf = (a) => 1 + 0.30 * Math.sin(a + 0.6) + 0.17 * Math.sin(2 * a + 1.3) + 0.11 * Math.sin(3 * a + 2.4);
+    const cx = 198, cy = 96, xs = 1.3, R = 82, angs = 26;
+    [0.30, 0.48, 0.66, 0.84, 1.0].forEach((k, li) => {
+      const ddx = (1 - k) * 14, ddy = (1 - k) * -8; let pts = [];
+      for (let i = 0; i < angs; i++) { const a = i / angs * 2 * Math.PI; const rr = R * k * rProf(a); pts.push([cx + ddx + xs * rr * Math.cos(a), cy + ddy + rr * Math.sin(a)]); }
+      s += spline(pts, li === 0 ? F : G, li === 0 ? "rgba(201,196,28,0.12)" : "none", li === 0 ? 2 : 1.2, true);
+    });
+    const ox = cx + 0.7 * 14, oy = cy + 0.7 * -8;
+    s += ln(ox - 5, oy, ox + 5, oy, F, 1.4) + ln(ox, oy - 5, ox, oy + 5, F, 1.4);
+    return s + ylab("Temperatura") + xlab("Tiempo — óptimo ✳");
+  };
+  B_.superficie3d = () => {
+    const nx = 10, ny = 10, ox = 188, oy = 58, dx = 13.5, dy = 6.2, zc = 1.0;
+    const hgt = (i, j) => 66 * Math.exp(-(((i - 4.2) ** 2) + ((j - 4.8) ** 2)) / 7) + 16 * Math.exp(-(((i - 1) ** 2) + ((j - 8) ** 2)) / 5);
+    const proj = (i, j) => [ox + (i - j) * dx, oy + (i + j) * dy - hgt(i, j) * zc];
+    const mix = (tt) => `rgb(${Math.round(80 + 121 * tt)},${Math.round(80 + 116 * tt)},${Math.round(74 - 46 * tt)})`;
+    let cells = [];
+    for (let i = 0; i < nx - 1; i++) for (let j = 0; j < ny - 1; j++) cells.push([i, j]);
+    cells.sort((a, b) => (a[0] + a[1]) - (b[0] + b[1]));
+    let s = "";
+    cells.forEach((cc) => { const i = cc[0], j = cc[1]; const q0 = proj(i, j), q1 = proj(i + 1, j), q2 = proj(i + 1, j + 1), q3 = proj(i, j + 1); const hh = (hgt(i, j) + hgt(i + 1, j) + hgt(i + 1, j + 1) + hgt(i, j + 1)) / 4; const tt = Math.min(1, hh / 66); s += `<path d="M${q0[0].toFixed(1)} ${q0[1].toFixed(1)} L${q1[0].toFixed(1)} ${q1[1].toFixed(1)} L${q2[0].toFixed(1)} ${q2[1].toFixed(1)} L${q3[0].toFixed(1)} ${q3[1].toFixed(1)} Z" fill="${mix(tt)}" stroke="rgba(10,10,10,0.45)" stroke-width="0.5"/>`; });
+    return s + t((PX0 + PX1) / 2, 202, "Superficie de respuesta 3D", { size: 8.5 });
+  };
+
+  /* ---------- 04 COMPOSICIÓN ---------- */
+  B_.pie = () => {
+    const vals = [48, 27, 15, 10], cols = [F, G, GD, "#3A382F"]; const cx = 130, cy = 100, R = 82; let a0 = -Math.PI / 2, s = "";
+    const tot = 100; vals.forEach((v, i) => { const a1 = a0 + v / tot * 2 * Math.PI; const large = (a1 - a0) > Math.PI ? 1 : 0; const x0 = cx + Math.cos(a0) * R, y0 = cy + Math.sin(a0) * R, x1 = cx + Math.cos(a1) * R, y1 = cy + Math.sin(a1) * R; s += `<path d="M${cx} ${cy} L${x0.toFixed(1)} ${y0.toFixed(1)} A${R} ${R} 0 ${large} 1 ${x1.toFixed(1)} ${y1.toFixed(1)} Z" fill="${cols[i]}"/>`; a0 = a1; });
+    s += c(cx, cy, 40, "#101010");
+    vals.forEach((v, i) => { s += r(250, 40 + i * 26, 12, 12, cols[i]) + t(268, 50 + i * 26, ["Marca A " + v + "%", "B " + v + "%", "C", "Otros"][i], { anchor: "start", fill: B, size: 9.5 }); });
+    return s;
+  };
+  B_.treemap = () => {
+    const boxes = [[38, 16, 150, 100, F, "Aromas"], [190, 16, 100, 60, G, "Empaque"], [190, 78, 100, 38, GD, "Aditivos"], [38, 118, 90, 62, GD, "Azúcar"], [130, 118, 78, 62, G, "Ácidos"], [210, 118, 80, 62, "#3A382F", "Otros"]];
+    let s = ""; boxes.forEach(b => { s += r(b[0], b[1], b[2] - 2, b[3] - 2, b[4]) + t(b[0] + 6, b[1] + 16, b[5], { anchor: "start", fill: b[4] === F ? "#0A0A0A" : B, size: 9.5, weight: 600 }); });
+    return s;
+  };
+  B_.waterfall = () => {
+    const steps = [["Entrada", 100, "abs"], ["Merma 1", -18, "neg"], ["Merma 2", -12, "neg"], ["Reproc.", 6, "pos"], ["Producto", 76, "abs"]];
+    const bw = (PX1 - PX0) / steps.length - 8, max = 110; let acc = 0, s = axes();
+    steps.forEach((st, i) => { const x = PX0 + 10 + i * (bw + 8); const sc = v => v / max * (PY1 - PY0); let y, h, col; if (st[2] === "abs") { h = sc(st[1]); y = PY1 - h; col = i === 0 ? G : F; acc = st[1]; } else { h = sc(Math.abs(st[1])); const base = acc; acc += st[1]; y = PY1 - sc(Math.max(base, acc)); col = st[1] < 0 ? CL : G; } s += r(x, y, bw, h, col); if (i < steps.length - 1) s += ln(x, PY1 - sc(acc), x + bw + 8, PY1 - sc(acc), GRID); });
+    return s + ylab("Masa (kg)") + xlab("Balance de masa");
+  };
+  B_["area-apilada"] = () => {
+    const layers = [[20, 24, 22, 28, 30, 26], [30, 28, 34, 30, 26, 32], [15, 18, 14, 12, 16, 14]];
+    const cols = ["rgba(134,132,124,0.35)", "rgba(201,196,28,0.35)", "rgba(58,56,47,0.6)"]; const strokes = [G, F, GD];
+    const n = layers[0].length; let base = new Array(n).fill(0); let s = axes(); const max = 90;
+    layers.forEach((lay, li) => { let top = [], bot = []; for (let i = 0; i < n; i++) { const x = PX0 + i / (n - 1) * (PX1 - PX0); const yb = PY1 - base[i] / max * (PY1 - PY0); base[i] += lay[i]; const yt = PY1 - base[i] / max * (PY1 - PY0); top.push([x, yt]); bot.push([x, yb]); } s += poly([...top, ...bot.reverse()], strokes[li], cols[li], 1.5); });
+    return s + ylab("% mezcla") + xlab("Mes");
+  };
+  B_.mosaico = () => {
+    const cols_ = [[.4, [.5, .3, .2]], [.35, [.3, .45, .25]], [.25, [.6, .2, .2]]]; const shades = [G, F, GD];
+    let x = PX0, s = ""; const totW = PX1 - PX0, totH = PY1 - PY0;
+    cols_.forEach((cc, ci) => { const cw = cc[0] * totW; let y = PY0; cc[1].forEach((seg, si) => { const sh = seg * totH; s += r(x, y, cw - 2, sh - 2, si === 1 ? shades[1] : (ci === 2 && si === 0 ? "rgba(200,98,58,0.5)" : "rgba(134,132,124,0.3)")); y += sh; }); x += cw; });
+    return axes() + s + xlab("Turno (ancho = producción)");
+  };
+
+  /* ---------- 05 TIEMPO ---------- */
+  B_.linea = () => {
+    const ys = [20, 22, 35, 60, 85, 92, 93, 93, 92, 70, 45, 28];
+    let pts = ys.map((y, i) => [PX0 + i / (ys.length - 1) * (PX1 - PX0), PY1 - y / 100 * (PY1 - PY0)]);
+    let s = gy() + axes() + poly(pts, F, "none", 2);
+    const hold = pts.slice(5, 9); s += ln(hold[0][0], hold[0][1] - 6, hold[3][0], hold[3][1] - 6, B, 1, 'stroke-dasharray="3 3"');
+    return s + ylab("Temp (°C)") + xlab("Tiempo — meseta de esterilización");
+  };
+  B_["small-multiples"] = () => {
+    let s = ""; const cols = 4, rows = 3, cw = 66, ch = 50, x0 = 44, y0 = 14;
+    for (let i = 0; i < 12; i++) { const gx = i % cols, gy_ = Math.floor(i / cols); const px = x0 + gx * (cw + 4), py = y0 + gy_ * (ch + 6); s += r(px, py, cw, ch, "none", `stroke="${GRID}"`); let pts = []; for (let k = 0; k <= 8; k++) { const yy = 0.5 + 0.4 * Math.sin(k * 0.8 + i) + (i === 6 ? (k > 4 ? 0.3 : 0) : 0); pts.push([px + 3 + k / 8 * (cw - 6), py + ch - 4 - Math.max(0.05, Math.min(0.95, yy)) * (ch - 8)]); } s += poly(pts, i === 6 ? F : G, "none", 1.3); }
+    return s + t((PX0 + PX1) / 2, 200, "12 sensores — 1 panel c/u", { size: 8.5 });
+  };
+  B_.step = () => {
+    const lv = [1, 1, 2, 2, 3, 3, 2, 2, 3, 3, 1]; let s = gy() + axes(); let pts = [];
+    lv.forEach((v, i) => { const x = PX0 + i / (lv.length - 1) * (PX1 - PX0); const y = PY1 - v / 3.5 * (PY1 - PY0); if (i) pts.push([x, pts[pts.length - 1][1]]); pts.push([x, y]); });
+    s += poly(pts, F, "none", 2);
+    return s + ylab("Setpoint") + xlab("Tiempo — cambios por escalón");
+  };
+  B_["carta-control"] = () => {
+    const rnd = scatterPts(13); const ys = []; for (let i = 0; i < 22; i++) ys.push(0.5 + (rnd[i] - 0.5) * 0.4 + (i > 18 ? 0.35 : 0));
+    let s = axes(); const ucl = PY1 - 0.8 * (PY1 - PY0), lcl = PY1 - 0.2 * (PY1 - PY0), mid = PY1 - 0.5 * (PY1 - PY0);
+    s += ln(PX0, ucl, PX1, ucl, CL, 1.2, 'stroke-dasharray="4 3"') + ln(PX0, lcl, PX1, lcl, CL, 1.2, 'stroke-dasharray="4 3"') + ln(PX0, mid, PX1, mid, G, 1);
+    let pts = ys.map((y, i) => [PX0 + i / (ys.length - 1) * (PX1 - PX0), PY1 - Math.max(0.05, Math.min(0.95, y)) * (PY1 - PY0)]);
+    s += poly(pts, G, "none", 1.3); pts.forEach((pt, i) => s += c(pt[0], pt[1], 2.4, pt[1] < ucl ? G : F));
+    return s + t(PX1 - 4, ucl - 3, "LSC", { fill: CL, anchor: "end", size: 8 }) + ylab("Peso neto") + xlab("Muestra");
+  };
+  B_.cusum = () => {
+    const rnd = scatterPts(5); let acc = 0, pts = []; for (let i = 0; i < 24; i++) { acc += (rnd[i] - 0.42) + (i > 12 ? 0.18 : 0); pts.push(acc); }
+    const min = Math.min(...pts), max = Math.max(...pts);
+    let s = axes(); let P = pts.map((v, i) => [PX0 + i / 23 * (PX1 - PX0), PY1 - (v - min) / (max - min) * (PY1 - PY0)]);
+    s += poly(P, F, "none", 2);
+    return s + ylab("Suma acumulada") + xlab("Muestra — deriva sostenida ↗");
+  };
+  B_.spaghetti = () => {
+    let s = axes(); const mean = [];
+    for (let L = 0; L < 18; L++) { let pts = []; const amp = 0.7 + (L % 5) * 0.05, lag = (L % 4) * 0.4; for (let k = 0; k <= 12; k++) { const x = PX0 + k / 12 * (PX1 - PX0); const y = amp / (1 + Math.exp(-(k - 4 - lag))); pts.push([x, PY1 - Math.min(0.95, y) * (PY1 - PY0)]); if (L === 0) mean[k] = 0; mean[k] += y; } s += poly(pts, "rgba(134,132,124,0.35)", "none", 1); }
+    let mp = mean.map((v, k) => [PX0 + k / 12 * (PX1 - PX0), PY1 - Math.min(0.95, v / 18) * (PY1 - PY0)]);
+    s += poly(mp, F, "none", 2.4);
+    return s + ylab("Biomasa") + xlab("Tiempo — 18 lotes, mediana en foco");
+  };
+  B_.slope = () => {
+    const data = [[70, 88], [55, 60], [40, 30], [62, 75], [48, 44]]; const xa = PX0 + 40, xb = PX1 - 40; let s = ln(xa, PY0, xa, PY1, GRID) + ln(xb, PY0, xb, PY1, GRID);
+    data.forEach((d, i) => { const ya = PY1 - d[0] / 100 * (PY1 - PY0), yb = PY1 - d[1] / 100 * (PY1 - PY0); const up = d[1] > d[0]; s += poly([[xa, ya], [xb, yb]], i === 2 ? CL : (up ? F : G), "none", 1.8) + c(xa, ya, 2.6, G) + c(xb, yb, 2.6, i === 2 ? CL : F); });
+    return s + t(xa, PY0 - 4, "Antes", { size: 8.5 }) + t(xb, PY0 - 4, "Después", { size: 8.5 });
+  };
+  B_.gantt = () => {
+    const tasks = [[0, 4, G], [2, 5, F], [5, 4, G], [6, 5, GD], [9, 3, G]]; const unit = (PX1 - PX0) / 14, bh = 20;
+    let s = ln(PX0, PY0, PX0, PY1, AX); tasks.forEach((tk, i) => { const y = PY0 + 12 + i * (bh + 8); s += r(PX0 + tk[0] * unit, y, tk[1] * unit, bh, tk[2]); }); for (let k = 0; k <= 14; k += 2) s += ln(PX0 + k * unit, PY0, PX0 + k * unit, PY1, GRID);
+    return s + xlab("Tiempo (h) — scheduling multiproducto");
+  };
+  B_["heatmap-calendario"] = () => {
+    let s = ""; const cw = 22, ch = 22, x0 = 40, y0 = 30; const rnd = scatterPts(9);
+    for (let m = 0; m < 12; m++) for (let d = 0; d < 6; d++) { const v = rnd[(m + d) % 40]; const foc = m === 7; const col = foc ? `rgba(201,196,28,${0.3 + v * 0.6})` : `rgba(134,132,124,${0.12 + v * 0.5})`; s += r(x0 + m * cw, y0 + d * ch, cw - 2, ch - 2, col); } for (let m = 0; m < 12; m++) s += t(x0 + m * cw + 9, y0 - 4, "EFMAMJJASOND"[m], { size: 8 });
+    return s + t((PX0 + PX1) / 2, 195, "Paradas no programadas — pico en agosto", { size: 8.5 });
+  };
+  B_.horizon = () => {
+    let s = ""; const bands = 5, bh = 30, x0 = 40, y0 = 20;
+    for (let b = 0; b < bands; b++) { const py = y0 + b * (bh + 4); s += r(x0, py, PX1 - x0, bh, "rgba(20,20,18,0.6)"); let pts = [[x0, py + bh]]; for (let k = 0; k <= 24; k++) { const x = x0 + k / 24 * (PX1 - x0); const v = 0.5 + 0.45 * Math.sin(k * 0.5 + b * 1.3); pts.push([x, py + bh - v * bh]); } pts.push([PX1, py + bh]); s += poly(pts, "none", b === 2 ? "rgba(201,196,28,0.5)" : "rgba(134,132,124,0.4)", 0); }
+    return s + t((PX0 + PX1) / 2, 200, "Planta completa — series comprimidas", { size: 8.5 });
+  };
+
+  /* ---------- 06 FLUJOS ---------- */
+  B_.sankey = () => {
+    let s = "";
+    const sx = 46, dx = 286, nodeW = 13, srcTop = 24;
+    const flows = [[66, G, "Producto", 30], [42, CL, "Pérdida", 104], [26, CL, "Efluente", 152]];
+    const total = flows.reduce((a, f) => a + f[0], 0);
+    // fuente: barra citrón completa = el total que entra
+    s += r(sx - nodeW, srcTop, nodeW, total, F);
+    let srcY = srcTop;
+    flows.forEach((fl) => {
+      const h = fl[0], y0 = srcY, oy = fl[3]; srcY += h;
+      const fill = fl[1] === CL ? "rgba(200,98,58,0.30)" : "rgba(134,132,124,0.28)";
+      const d = `M${sx} ${y0} C${(sx + dx) / 2} ${y0}, ${(sx + dx) / 2} ${oy}, ${dx} ${oy} L${dx} ${oy + h} C${(sx + dx) / 2} ${oy + h}, ${(sx + dx) / 2} ${y0 + h}, ${sx} ${y0 + h} Z`;
+      s += `<path d="${d}" fill="${fill}"/>`;
+    });
+    flows.forEach((fl) => { s += r(dx, fl[3], nodeW, fl[0], fl[1]) + t(dx + nodeW + 5, fl[3] + fl[0] / 2 + 3, fl[2], { anchor: "start", fill: B, size: 9 }); });
+    s += t(sx - nodeW, srcTop - 5, "Energía in", { anchor: "start", fill: F, size: 9, weight: 600 });
+    return s;
+  };
+  B_.aluvial = () => {
+    let s = ""; const stages = [40, 160, 290]; const cats = 3; const sh = 40, gap = 14;
+    stages.forEach((x, si) => { for (let cc = 0; cc < cats; cc++) { s += r(x, 20 + cc * (sh + gap), 12, sh, cc === 0 ? F : (cc === 1 ? G : GD)); } });
+    // flujos entre etapa 0-1 y 1-2 (algunos cruzan)
+    const link = (x0, y0, x1, y1, w, col) => `<path d="M${x0} ${y0} C${(x0 + x1) / 2} ${y0}, ${(x0 + x1) / 2} ${y1}, ${x1} ${y1} L${x1} ${y1 + w} C${(x0 + x1) / 2} ${y1 + w}, ${(x0 + x1) / 2} ${y0 + w}, ${x0} ${y0 + w} Z" fill="${col}"/>`;
+    s += link(52, 20, 160, 20, 26, "rgba(201,196,28,0.25)") + link(52, 48, 160, 74, 14, "rgba(200,98,58,0.22)");
+    s += link(52, 74, 160, 120, 34, "rgba(134,132,124,0.22)");
+    s += link(172, 20, 290, 20, 30, "rgba(201,196,28,0.25)") + link(172, 74, 290, 74, 24, "rgba(134,132,124,0.22)");
+    return s + t((PX0 + PX1) / 2, 200, "Calidad de fruta por etapa", { size: 8.5 });
+  };
+  B_.cuerda = () => {
+    const cx = 175, cy = 100, R = 82; let s = "";
+    const cols = [F, G, GD, "#6E6C63", "#3A382F", "#8C8A82"];
+    const segs = [.20, .18, .17, .16, .15, .14];
+    let a0 = -Math.PI / 2;
+    const bounds = [];
+    segs.forEach((v, i) => { const a1 = a0 + v * 2 * Math.PI; bounds.push([a0, a1]); const x0 = cx + Math.cos(a0 + .02) * R, y0 = cy + Math.sin(a0 + .02) * R, x1 = cx + Math.cos(a1 - .02) * R, y1 = cy + Math.sin(a1 - .02) * R; s += `<path d="M${x0.toFixed(1)} ${y0.toFixed(1)} A${R} ${R} 0 0 1 ${x1.toFixed(1)} ${y1.toFixed(1)}" stroke="${cols[i]}" stroke-width="6" fill="none"/>`; a0 = a1; });
+    const at = (seg, f) => { const b = bounds[seg]; const a = b[0] + (b[1] - b[0]) * f; return [cx + Math.cos(a) * (R - 4), cy + Math.sin(a) * (R - 4)]; };
+    const chord = (s1, f1, s2, f2, col, w) => { const A = at(s1, f1), Bp = at(s2, f2); return `<path d="M${A[0].toFixed(1)} ${A[1].toFixed(1)} Q${cx} ${cy} ${Bp[0].toFixed(1)} ${Bp[1].toFixed(1)}" stroke="${col}" stroke-width="${w}" fill="none" opacity="0.65"/>`; };
+    const links = [[0, .3, 3, .5, F, 2.4], [0, .6, 2, .4, F, 1.8], [0, .8, 4, .3, "rgba(201,196,28,0.5)", 1.4], [1, .3, 4, .6, G, 1.6], [1, .6, 5, .4, G, 1.4], [1, .8, 3, .2, "rgba(134,132,124,0.55)", 1.2], [2, .3, 5, .5, GD, 1.4], [2, .7, 0, .1, "rgba(134,132,124,0.5)", 1.2], [3, .4, 5, .7, "rgba(134,132,124,0.5)", 1.3], [3, .7, 1, .1, "rgba(134,132,124,0.45)", 1.1], [4, .4, 2, .1, "rgba(134,132,124,0.45)", 1.2], [4, .8, 0, .5, "rgba(201,196,28,0.4)", 1.3], [5, .3, 1, .4, "rgba(134,132,124,0.45)", 1.1], [5, .8, 3, .8, "rgba(134,132,124,0.4)", 1.1]];
+    links.forEach((l) => s += chord(l[0], l[1], l[2], l[3], l[4], l[5]));
+    return s + t(cx, 200, "Comercio de commodities agrícolas", { size: 8.5 });
+  };
+  B_.dendrograma = () => {
+    let s = axes(); const leaves = [50, 90, 130, 170, 210, 250, 290]; const yb = PY1;
+    const node = (x1, x2, y) => { s += ln(x1, yb - 0, x1, y, G, 1.3) + ln(x2, yb - 0, x2, y, G, 1.3) + ln(x1, y, x2, y, G, 1.3); return (x1 + x2) / 2; };
+    // simple hierarchical merges
+    const a = node(50, 90, 130); const b = node(170, 210, 120); const cc = node(250, 290, 140);
+    const ab = node(a, b, 90); node(ab, cc, 50);
+    s = ln(PX0, PY0, PX0, PY1, AX) + s; // y axis only
+    // cut line
+    s += ln(PX0, 70, PX1, 70, CL, 1.2, 'stroke-dasharray="4 3"') + t(PX1 - 4, 66, "corte", { fill: CL, anchor: "end", size: 8 });
+    return s + ylab("Distancia") + xlab("Muestras (volátiles)");
+  };
+  B_.sunburst = () => {
+    const cx = 175, cy = 96; let s = "";
+    const bg = "#101010";
+    const ringArc = (r0, r1, a0, a1, col) => { const g = 0.015; a0 += g; a1 -= g; const x0 = cx + Math.cos(a0) * r1, y0 = cy + Math.sin(a0) * r1, x1 = cx + Math.cos(a1) * r1, y1 = cy + Math.sin(a1) * r1; const x2 = cx + Math.cos(a1) * r0, y2 = cy + Math.sin(a1) * r0, x3 = cx + Math.cos(a0) * r0, y3 = cy + Math.sin(a0) * r0; const lg = (a1 - a0) > Math.PI ? 1 : 0; return `<path d="M${x0.toFixed(1)} ${y0.toFixed(1)} A${r1} ${r1} 0 ${lg} 1 ${x1.toFixed(1)} ${y1.toFixed(1)} L${x2.toFixed(1)} ${y2.toFixed(1)} A${r0} ${r0} 0 ${lg} 0 ${x3.toFixed(1)} ${y3.toFixed(1)} Z" fill="${col}" stroke="${bg}" stroke-width="1"/>`; };
+    s += c(cx, cy, 24, F) + t(cx, cy + 4, "Total", { fill: "#0A0A0A", size: 11, weight: 700 });
+    const cat = [{ v: .5, col: G, subs: [.55, .45] }, { v: .3, col: GD, subs: [.6, .4] }, { v: .2, col: "#3A382F", subs: [.5, .5] }];
+    let a0 = -Math.PI / 2;
+    cat.forEach((cc) => {
+      const a1 = a0 + cc.v * 2 * Math.PI;
+      s += ringArc(24, 50, a0, a1, cc.col);
+      let sa = a0;
+      cc.subs.forEach((sub) => { const saa = sa + sub * cc.v * 2 * Math.PI; s += ringArc(50, 76, sa, saa, "rgba(134,132,124,0.28)"); sa = saa; });
+      a0 = a1;
+    });
+    // etiqueta la categoría mayor
+    const midA = -Math.PI / 2 + 0.25 * 2 * Math.PI;
+    s += t(cx + Math.cos(midA) * 37, cy + Math.sin(midA) * 37 + 3, "Bebidas", { fill: B, size: 8.5, weight: 600 });
+    return s + t(cx, 202, "Centro = total · anillos = niveles · arco = proporción", { size: 8.5 });
+  };
+  B_.pfd = () => {
+    let s = ""; const box = (x, y, w, h, label) => r(x, y, w, h, "none", `stroke="${G}" stroke-width="1.4"`) + t(x + w / 2, y + h / 2 + 3, label, { fill: B, size: 8.5 });
+    s += box(40, 70, 50, 40, "Mezcla") + box(150, 70, 50, 40, "Reactor") + box(260, 70, 50, 40, "Sep.");
+    s += ln(90, 90, 150, 90, G, 1.4) + ln(200, 90, 260, 90, G, 1.4);
+    s += `<path d="M144 90 l-6 -3 v6 z" fill="${G}"/><path d="M254 90 l-6 -3 v6 z" fill="${G}"/>`;
+    s += t(175, 60, "180°C", { fill: F, size: 9, weight: 600 }) + t(120, 82, "12 L/min", { fill: TX, size: 8 }) + t(285, 130, "aw 0.62", { fill: F, size: 9, weight: 600 });
+    return s + t((PX0 + PX1) / 2, 190, "PFD anotado con datos reales", { size: 8.5 });
+  };
+
+  /* ---------- 07 MULTIVARIADO ---------- */
+  B_["biplot-pca"] = () => {
+    const cx = (PX0 + PX1) / 2, cy = (PY0 + PY1) / 2; let s = ln(PX0, cy, PX1, cy, GRID) + ln(cx, PY0, cx, PY1, GRID);
+    const g1 = [[-.5, .4], [-.6, .3], [-.4, .5], [-.55, .45]], g2 = [[.5, -.3], [.6, -.4], [.45, -.25], [.55, -.35]];
+    g1.forEach(pt => s += c(cx + pt[0] * 90, cy - pt[1] * 70, 3.4, F)); g2.forEach(pt => s += c(cx + pt[0] * 90, cy - pt[1] * 70, 3.4, G));
+    [[.7, .5], [-.6, .6], [.4, -.7]].forEach(v => { s += ln(cx, cy, cx + v[0] * 70, cy - v[1] * 55, GD, 1.2) + `<path d="M${cx + v[0] * 70} ${cy - v[1] * 55}" />`; });
+    return s + t(PX1, cy + 12, "PC1 (52%)", { anchor: "end", size: 8 }) + t(cx + 3, PY0 + 8, "PC2 (23%)", { anchor: "start", size: 8 });
+  };
+  B_.plsda = () => {
+    const cx = (PX0 + PX1) / 2, cy = (PY0 + PY1) / 2; let s = ln(PX0, cy, PX1, cy, GRID) + ln(cx, PY0, cx, PY1, GRID);
+    s += `<ellipse cx="${cx - 55}" cy="${cy - 10}" rx="45" ry="34" fill="rgba(201,196,28,0.08)" stroke="${F}" stroke-width="1"/>`;
+    s += `<ellipse cx="${cx + 55}" cy="${cy + 12}" rx="45" ry="34" fill="rgba(134,132,124,0.08)" stroke="${G}" stroke-width="1"/>`;
+    const rnd = scatterPts(17); for (let i = 0; i < 8; i++) { s += c(cx - 55 + (rnd[i] - .5) * 70, cy - 10 + (rnd[i + 8] - .5) * 50, 3, F); s += c(cx + 55 + (rnd[i + 16] - .5) * 70, cy + 12 + (rnd[i + 24] - .5) * 50, 3, G); }
+    return s + t(PX1, cy + 12, "LV1", { anchor: "end", size: 8 }) + t((PX0 + PX1) / 2, 202, "Conforme vs. adulterado (NIR)", { size: 8.5 });
+  };
+  B_["heatmap-cluster"] = () => {
+    let s = ""; const n = 8, m = 8, cw = 24, ch = 18, x0 = 60, y0 = 30; const rnd = scatterPts(21);
+    for (let i = 0; i < m; i++) for (let j = 0; j < n; j++) { const v = (rnd[(i * n + j) % 40] + Math.sin(i * 0.7) * 0.3 + 0.5) % 1; const col = v > 0.6 ? `rgba(201,196,28,${v * 0.7})` : `rgba(134,132,124,${0.15 + v * 0.4})`; s += r(x0 + j * cw, y0 + i * ch, cw - 1.5, ch - 1.5, col); }
+    // mini dendrogramas
+    s += ln(x0, y0 - 12, x0 + n * cw - cw, y0 - 12, G, 1) + ln(48, y0, 48, y0 + m * ch - ch, G, 1);
+    return s + t((PX0 + PX1) / 2, 202, "GC-MS de aromas (doble clustering)", { size: 8.5 });
+  };
+  B_["coordenadas-paralelas"] = () => {
+    const axesN = 6, x0 = 44, dx = (PX1 - x0) / (axesN - 1); let s = "";
+    for (let a = 0; a < axesN; a++) s += ln(x0 + a * dx, PY0, x0 + a * dx, PY1, GRID);
+    const lines = [[.8, .3, .6, .5, .9, .4], [.6, .5, .4, .7, .5, .6], [.3, .8, .7, .3, .6, .8], [.9, .2, .5, .6, .85, .3]];
+    lines.forEach((L, i) => { let pts = L.map((v, a) => [x0 + a * dx, PY1 - v * (PY1 - PY0)]); s += poly(pts, i === 0 ? F : "rgba(134,132,124,0.5)", "none", i === 0 ? 2 : 1.2); });
+    return s + t((PX0 + PX1) / 2, 202, "8 parámetros de formulación", { size: 8.5 });
+  };
+  B_.ternario = () => {
+    const A = [175, 22], Bp = [60, 175], C = [290, 175]; let s = poly([A, Bp, C, A], AX, "none", 1.4);
+    for (let k = 1; k < 4; k++) { const f = k / 4; s += ln(A[0] + (Bp[0] - A[0]) * f, A[1] + (Bp[1] - A[1]) * f, A[0] + (C[0] - A[0]) * f, A[1] + (C[1] - A[1]) * f, GRID); }
+    const bary = (a, b, cc) => [a * A[0] + b * Bp[0] + cc * C[0], a * A[1] + b * Bp[1] + cc * C[1]];
+    [[.6, .25, .15], [.3, .5, .2], [.2, .3, .5], [.45, .3, .25]].forEach((w, i) => { const P = bary(...w); s += c(P[0], P[1], 3.4, i === 3 ? F : G); });
+    return s + t(175, 16, "A", { fill: B, size: 9 }) + t(52, 188, "B", { fill: B, size: 9 }) + t(298, 188, "C", { fill: B, size: 9 });
+  };
+  B_.roc = () => {
+    let s = gy() + axes() + poly([[PX0, PY1], [PX1, PY0]], GD, "none", 1, 'stroke-dasharray="4 3"');
+    const roc = [[0, 0], [.05, .5], [.1, .7], [.2, .82], [.35, .9], [.55, .95], [.8, .98], [1, 1]];
+    let pts = roc.map(pt => [PX0 + pt[0] * (PX1 - PX0), PY1 - pt[1] * (PY1 - PY0)]);
+    s += poly(pts, F, "none", 2.2);
+    return s + t(PX1 - 8, PY0 + 26, "AUC 0.91", { fill: F, anchor: "end", size: 9, weight: 600 }) + ylab("Sensibilidad") + xlab("1 − Especificidad");
+  };
+  B_["bland-altman"] = () => {
+    let s = axes(); const mean = PY1 - 0.5 * (PY1 - PY0), up = PY1 - 0.8 * (PY1 - PY0), lo = PY1 - 0.2 * (PY1 - PY0);
+    s += ln(PX0, mean, PX1, mean, G, 1.2) + ln(PX0, up, PX1, up, CL, 1.1, 'stroke-dasharray="4 3"') + ln(PX0, lo, PX1, lo, CL, 1.1, 'stroke-dasharray="4 3"');
+    const rnd = scatterPts(19); for (let i = 0; i < 26; i++) { const x = PX0 + 10 + rnd[i] * (PX1 - PX0 - 20); const y = mean + (rnd[(i + 13) % 26] - 0.5) * (up - lo) * 0.85; s += c(x, y, 2.6, G); }
+    return s + t(PX1 - 4, up - 3, "+1.96σ", { fill: CL, anchor: "end", size: 7.5 }) + ylab("Diferencia") + xlab("Promedio de métodos");
+  };
+  B_.forest = () => {
+    const studies = [[.7, .5, .9], [1.1, .9, 1.3], [.85, .6, 1.1], [1.3, 1.0, 1.6], [.95, .8, 1.1]]; const pooled = [.95, .85, 1.05];
+    const sc = v => PX0 + (v - 0.4) / 1.4 * (PX1 - PX0); const y0 = 24, dy = 26;
+    let s = ln(sc(1), PY0, sc(1), 170, GD, 1, 'stroke-dasharray="3 3"');
+    studies.forEach((st, i) => { const y = y0 + i * dy; s += ln(sc(st[1]), y, sc(st[2]), y, G, 1.4) + r(sc(st[0]) - 3, y - 3, 6, 6, G); });
+    const yp = y0 + 5 * dy + 6; s += `<path d="M${sc(pooled[0])} ${yp - 7} L${sc(pooled[2])} ${yp} L${sc(pooled[0])} ${yp + 7} L${sc(pooled[1])} ${yp} Z" fill="${F}"/>`;
+    return s + t(sc(1), 188, "Razón de efecto (IC 95%)", { size: 8.5 });
+  };
+  B_["kaplan-meier"] = () => {
+    let s = gy() + axes(); const km = [[0, 1], [1, 1], [1, .95], [3, .95], [3, .85], [5, .85], [5, .7], [7, .7], [7, .5], [9, .5], [9, .35], [11, .35], [11, .2]];
+    let pts = km.map(pt => [PX0 + pt[0] / 12 * (PX1 - PX0), PY1 - pt[1] * (PY1 - PY0)]);
+    s += poly(pts, F, "none", 2);
+    // censura
+    [[2, .95], [4, .85], [8, .5]].forEach(cn => { const x = PX0 + cn[0] / 12 * (PX1 - PX0), y = PY1 - cn[1] * (PY1 - PY0); s += ln(x, y - 4, x, y + 4, G, 1.4); });
+    return s + ylab("Supervivencia") + xlab("Tiempo (semanas) — vida útil");
+  };
+  B_.tornado = () => {
+    const vars = [[-30, 45], [-20, 28], [-15, 18], [-10, 12], [-6, 8]]; const mid = (PX0 + PX1) / 2, sc = 2.6, bh = 22;
+    let s = ln(mid, PY0, mid, PY1, AX);
+    vars.forEach((v, i) => { const y = PY0 + 10 + i * (bh + 6); s += r(mid + v[0] * sc, y, -v[0] * sc, bh, i === 0 ? CL : GD) + r(mid, y, v[1] * sc, bh, i === 0 ? F : G); });
+    return s + xlab("Impacto en el costo unitario");
+  };
+
+  /* ---------- 08 CANÓNICOS ---------- */
+  B_["mccabe-thiele"] = () => {
+    let s = ln(PX0, PY0, PX0, PY1, AX) + ln(PX0, PY1, PX1, PY1, AX);
+    const sc = (x, y) => [PX0 + x * (PX1 - PX0), PY1 - y * (PY1 - PY0)];
+    s += poly([sc(0, 0), sc(1, 1)], GD, "none", 1, 'stroke-dasharray="3 3"');
+    let eq = []; for (let x = 0; x <= 1.001; x += 0.05) eq.push(sc(x, (2.4 * x) / (1 + 1.4 * x)));
+    s += poly(eq, G, "none", 1.8);
+    // operating lines
+    s += poly([sc(0.15, 0.15), sc(0.5, 0.62), sc(0.9, 0.9)], F, "none", 1.6);
+    // stair steps
+    let x = 0.9, y = 0.9; for (let i = 0; i < 4; i++) { const yeq = y; const xeq = yeq / (2.4 - 1.4 * yeq); s += poly([sc(x, y), sc(xeq, y)], F, "none", 1.2); const yop = xeq < 0.5 ? 0.15 + (xeq - 0.15) * (0.62 - 0.15) / (0.5 - 0.15) : 0.62 + (xeq - 0.5) * (0.9 - 0.62) / (0.9 - 0.5); s += poly([sc(xeq, y), sc(xeq, Math.max(yop, 0.15))], F, "none", 1.2); x = xeq; y = Math.max(yop, 0.15); if (x < 0.16) break; }
+    return s + ylab("y (vapor)") + xlab("x (líquido)");
+  };
+  B_.txy = () => {
+    let s = axes(); const sc = (x, y) => [PX0 + x * (PX1 - PX0), PY1 - y * (PY1 - PY0)];
+    let bub = [], dew = []; for (let x = 0; x <= 1.001; x += 0.05) { bub.push(sc(x, 0.85 - 0.6 * x)); dew.push(sc(x, 0.95 - 0.55 * Math.pow(x, 0.6))); }
+    s += poly(bub, G, "none", 1.8) + poly(dew, F, "none", 1.8);
+    s += ln(...sc(0.5, 0.85 - 0.6 * 0.5), ...sc(0.5, 0.95 - 0.55 * Math.pow(0.5, 0.6)), GD, 1, 'stroke-dasharray="3 3"');
+    return s + ylab("Temperatura") + xlab("x, y (fracción molar)");
+  };
+  B_.moody = () => {
+    let s = gy() + axes(); const sc = (lx, f) => [PX0 + lx * (PX1 - PX0), PY1 - (f - 0.008) / 0.06 * (PY1 - PY0)];
+    // laminar
+    s += poly([[PX0 + 0.02 * (PX1 - PX0), sc(0.02, 0.05)[1]], [PX0 + 0.25 * (PX1 - PX0), sc(0.25, 0.02)[1]]], G, "none", 1.6);
+    // turbulent curves for several roughness
+    [0.055, 0.04, 0.028, 0.018].forEach((base, k) => { let pts = []; for (let lx = 0.3; lx <= 1; lx += 0.05) { const f = base * (0.5 + 0.5 * Math.exp(-(lx - 0.3) * 3)) + base * 0.4; pts.push(sc(lx, Math.min(0.062, f))); } s += poly(pts, k === 0 ? F : G, "none", k === 0 ? 1.8 : 1.2); });
+    return s + ylab("f (fricción)") + xlab("Reynolds (log)");
+  };
+  B_.psicrometrico = () => {
+    let s = ln(PX0, PY0, PX0, PY1, AX) + ln(PX0, PY1, PX1, PY1, AX);
+    // saturation curve
+    let sat = []; for (let x = 0; x <= 1.001; x += 0.05) sat.push([PX0 + x * (PX1 - PX0), PY1 - Math.pow(x, 2.2) * (PY1 - PY0) * 0.95]);
+    s += poly(sat, G, "none", 1.8);
+    // RH curves
+    [0.7, 0.4].forEach((rh, i) => { let pts = []; for (let x = 0; x <= 1.001; x += 0.05) pts.push([PX0 + x * (PX1 - PX0), PY1 - Math.pow(x, 2.2) * (PY1 - PY0) * 0.95 * rh]); s += poly(pts, GD, "none", 1); });
+    // proceso de secado (línea)
+    s += poly([[PX0 + 0.3 * (PX1 - PX0), PY1 - 0.25 * (PY1 - PY0)], [PX0 + 0.7 * (PX1 - PX0), PY1 - 0.45 * (PY1 - PY0)]], F, "none", 1.8);
+    return s + ylab("Humedad abs.") + xlab("Temperatura bulbo seco");
+  };
+  B_.mollier = () => {
+    let s = axes(); const sc = (x, y) => [PX0 + x * (PX1 - PX0), PY1 - y * (PY1 - PY0)];
+    // dome
+    let dome = []; for (let a = 0; a <= Math.PI; a += 0.2) dome.push(sc(0.5 + 0.4 * Math.cos(a), 0.35 + 0.3 * Math.sin(a))); s += poly(dome, G, "none", 1.5);
+    // isobars
+    [0.6, 0.8].forEach(b => { let pts = []; for (let x = 0.1; x <= 0.95; x += 0.05) pts.push(sc(x, b * (0.4 + x * 0.5))); s += poly(pts, GD, "none", 1); });
+    // proceso
+    s += poly([sc(0.3, 0.75), sc(0.55, 0.45)], F, "none", 1.8) + c(...sc(0.3, 0.75), 3, F) + c(...sc(0.55, 0.45), 3, F);
+    return s + ylab("Entalpía") + xlab("Entropía");
+  };
+  B_["curva-bomba"] = () => {
+    let s = gy() + axes(); const sc = (x, y) => [PX0 + x * (PX1 - PX0), PY1 - y * (PY1 - PY0)];
+    let pump = []; for (let x = 0; x <= 1.001; x += 0.05) pump.push(sc(x, 0.9 - 0.7 * x * x)); s += poly(pump, G, "none", 1.8);
+    let sys = []; for (let x = 0; x <= 1.001; x += 0.05) sys.push(sc(x, 0.2 + 0.6 * x * x)); s += poly(sys, GD, "none", 1.6);
+    s += c(...sc(0.62, 0.9 - 0.7 * 0.62 * 0.62), 4.5, F) + t(...sc(0.62, 0.9 - 0.7 * 0.62 * 0.62).map((v, i) => i === 0 ? v + 8 : v - 6), "punto op.", { fill: F, anchor: "start", size: 8 });
+    return s + ylab("Cabeza (H)") + xlab("Caudal (Q)");
+  };
+  B_.rtd = () => {
+    let s = gy() + axes(); const sc = (x, y) => [PX0 + x * (PX1 - PX0), PY1 - y * (PY1 - PY0)];
+    let pts = []; for (let x = 0; x <= 1.001; x += 0.025) { const y = 4 * x * Math.exp(-3.2 * x); pts.push(sc(x, y)); }
+    s += poly(pts, F, "rgba(201,196,28,0.10)", 2);
+    return s + ylab("E(t)") + xlab("Tiempo adimensional θ");
+  };
+  B_.arrhenius = () => {
+    let s = gy() + axes(); const pts = [[.1, .85], [.25, .72], [.4, .6], [.55, .46], [.7, .34], [.85, .2]];
+    let P = pts.map(pt => [PX0 + pt[0] * (PX1 - PX0), PY1 - pt[1] * (PY1 - PY0)]);
+    s += poly([P[0], P[5]], F, "none", 1.8); P.forEach(pt => s += c(pt[0], pt[1], 3, G));
+    return s + t(PX1 - 8, PY0 + 20, "pendiente = −Ea/R", { fill: F, anchor: "end", size: 8 }) + ylab("ln k") + xlab("1 / T");
+  };
+  B_.psd = () => {
+    const bins = [3, 8, 18, 32, 40, 30, 18, 9, 4], max = 46, bw = (PX1 - PX0) / bins.length; let s = gy() + axes(); let cum = 0, cumPts = []; const tot = bins.reduce((a, b) => a + b, 0);
+    bins.forEach((v, i) => { const h = v / max * (PY1 - PY0); s += r(PX0 + i * bw + 1, PY1 - h, bw - 2, h, G); cum += v; cumPts.push([PX0 + i * bw + bw / 2, PY1 - cum / tot * (PY1 - PY0)]); });
+    s += poly(cumPts, F, "none", 1.8);
+    return s + ylab("Frecuencia / acum.") + xlab("Tamaño (log µm)");
+  };
+  B_["muerte-termica"] = () => {
+    let s = gy() + axes(); const sc = (x, y) => [PX0 + x * (PX1 - PX0), PY1 - y * (PY1 - PY0)];
+    [[0.9, 3.4], [0.75, 2.6], [0.6, 1.8]].forEach((ln0, i) => { s += poly([sc(0.1, ln0[0]), sc(0.9, ln0[0] - ln0[1] * 0.22)].map(pt => [pt[0], Math.min(PY1, pt[1] + 40)]), i === 0 ? F : G, "none", i === 0 ? 1.8 : 1.2); });
+    return s + ylab("log (sobrevivientes)") + xlab("Tiempo — valores D y z");
+  };
+  B_.isotermas = () => {
+    let s = gy() + axes(); const sc = (x, y) => [PX0 + x * (PX1 - PX0), PY1 - y * (PY1 - PY0)];
+    let pts = []; for (let x = 0; x <= 1.001; x += 0.05) { const y = 0.15 + 0.5 * x + 0.5 * Math.pow(x, 6); pts.push(sc(x, Math.min(0.95, y))); }
+    s += poly(pts, F, "none", 2);
+    const rnd = scatterPts(23); pts.filter((_, i) => i % 3 === 0).forEach((pt, i) => s += c(pt[0] + (rnd[i] - .5) * 4, pt[1] + (rnd[i + 5] - .5) * 6, 2.4, G));
+    return s + ylab("Humedad eq.") + xlab("Actividad de agua (aw)");
+  };
+  B_.secado = () => {
+    let s = gy() + axes(); const sc = (x, y) => [PX0 + x * (PX1 - PX0), PY1 - y * (PY1 - PY0)];
+    let moist = []; for (let x = 0; x <= 1.001; x += 0.05) moist.push(sc(x, 0.9 * Math.exp(-2.5 * x) + 0.05)); s += poly(moist, G, "none", 1.8);
+    let rate = []; for (let x = 0; x <= 1.001; x += 0.05) { const y = x < 0.25 ? 0.7 : 0.7 * Math.exp(-3 * (x - 0.25)); rate.push(sc(x, y)); } s += poly(rate, F, "none", 1.8);
+    return s + t(PX1 - 6, PY0 + 14, "velocidad", { fill: F, anchor: "end", size: 8 }) + ylab("Humedad / vel.") + xlab("Tiempo");
+  };
+  B_.reograma = () => {
+    let s = gy() + axes(); const sc = (x, y) => [PX0 + x * (PX1 - PX0), PY1 - y * (PY1 - PY0)];
+    let newt = []; for (let x = 0; x <= 1.001; x += 0.05) newt.push(sc(x, 0.85 * x)); s += poly(newt, GD, "none", 1.3);
+    let shear = []; for (let x = 0; x <= 1.001; x += 0.05) shear.push(sc(x, 0.2 + 0.7 * Math.pow(x, 0.5))); s += poly(shear, F, "none", 2);
+    const rnd = scatterPts(29); shear.filter((_, i) => i % 3 === 0).forEach((pt, i) => s += c(pt[0], pt[1] + (rnd[i] - .5) * 5, 2.4, G));
+    return s + ylab("Esfuerzo τ") + xlab("Velocidad de corte γ̇");
+  };
+  B_["barrido-frecuencia"] = () => {
+    let s = gy() + axes(); const sc = (x, y) => [PX0 + x * (PX1 - PX0), PY1 - y * (PY1 - PY0)];
+    let gp = [], gpp = []; for (let x = 0; x <= 1.001; x += 0.05) { gp.push(sc(x, 0.55 + 0.15 * x)); gpp.push(sc(x, 0.28 + 0.05 * x)); }
+    s += poly(gp, F, "none", 2) + poly(gpp, G, "none", 1.6);
+    return s + t(PX1 - 6, PY0 + 16, "G′", { fill: F, anchor: "end", size: 10, weight: 600 }) + t(PX1 - 6, PY0 + 42, "G″", { fill: G, anchor: "end", size: 10 }) + ylab("Módulo (log)") + xlab("Frecuencia (log)");
+  };
+  B_.tpa = () => {
+    let s = gy() + axes(); const sc = (x, y) => [PX0 + x * (PX1 - PX0), PY1 - y * (PY1 - PY0)];
+    let pts = []; const peak = (x, c0, w, h) => h * Math.exp(-Math.pow((x - c0) / w, 2));
+    for (let x = 0; x <= 1.001; x += 0.02) { const y = peak(x, 0.25, 0.09, 0.85) + peak(x, 0.65, 0.09, 0.55); pts.push(sc(x, y)); }
+    s += poly(pts, F, "none", 2);
+    return s + t(sc(0.25, 0.85)[0], sc(0.25, 0.85)[1] - 4, "1ª", { fill: TX, size: 8 }) + t(sc(0.65, 0.55)[0], sc(0.65, 0.55)[1] - 4, "2ª", { fill: TX, size: 8 }) + ylab("Fuerza") + xlab("Tiempo — dos compresiones");
+  };
+  B_.dsc = () => {
+    let s = gy() + axes(); const sc = (x, y) => [PX0 + x * (PX1 - PX0), PY1 - y * (PY1 - PY0)];
+    let pts = []; for (let x = 0; x <= 1.001; x += 0.02) { let y = 0.5; y -= 0.25 * Math.exp(-Math.pow((x - 0.6) / 0.05, 2)); y += 0.1 * (Math.tanh((x - 0.3) * 20)); pts.push(sc(x, y)); }
+    s += poly(pts, F, "none", 2);
+    return s + t(sc(0.6, 0.25)[0], sc(0.6, 0.25)[1] + 12, "fusión", { fill: TX, size: 8 }) + ylab("Flujo de calor") + xlab("Temperatura");
+  };
+  B_.prefmap = () => {
+    const cx = (PX0 + PX1) / 2, cy = (PY0 + PY1) / 2; let s = ln(PX0, cy, PX1, cy, GRID) + ln(cx, PY0, cx, PY1, GRID);
+    [[.5, .6], [-.4, .5], [.6, -.3], [-.5, -.4], [.2, .7]].forEach((v, i) => s += c(cx + v[0] * 90, cy - v[1] * 70, 4, i === 0 ? F : G) + t(cx + v[0] * 90 + 6, cy - v[1] * 70, "P" + (i + 1), { anchor: "start", fill: B, size: 8 }));
+    // vectores de preferencia
+    [[.7, .5], [.5, .8], [.8, .2]].forEach(v => s += ln(cx, cy, cx + v[0] * 80, cy - v[1] * 60, "rgba(201,196,28,0.5)", 1.2));
+    return s + t((PX0 + PX1) / 2, 202, "Productos + vectores de preferencia", { size: 8.5 });
+  };
+  B_.cielab = () => {
+    const cx = (PX0 + PX1) / 2, cy = (PY0 + PY1) / 2; let s = ln(PX0, cy, PX1, cy, GRID) + ln(cx, PY0, cx, PY1, GRID);
+    s += t(PX1 - 4, cy - 4, "+a* (rojo)", { anchor: "end", size: 7.5 }) + t(cx + 4, PY0 + 8, "+b* (amar.)", { anchor: "start", size: 7.5 });
+    const path = [[-.3, .5], [-.1, .35], [.15, .2], [.4, .05], [.6, -.1]];
+    let P = path.map(v => [cx + v[0] * 90, cy - v[1] * 70]);
+    s += poly(P, GD, "none", 1.3); P.forEach((pt, i) => s += c(pt[0], pt[1], 3.4, i === P.length - 1 ? F : G));
+    return s + t((PX0 + PX1) / 2, 202, "Trayectoria de color en proceso", { size: 8.5 });
+  };
+  B_.espectros = () => {
+    let s = ln(PX0, PY0, PX0, PY1, AX) + ln(PX0, PY1, PX1, PY1, AX);
+    for (let k = 0; k < 4; k++) { const off = k * 34; let pts = []; for (let x = 0; x <= 1.001; x += 0.02) { const y = 0.12 + 0.2 * Math.exp(-Math.pow((x - 0.3) / 0.05, 2)) + 0.25 * Math.exp(-Math.pow((x - 0.55 - k * 0.02) / 0.04, 2)) + 0.15 * Math.exp(-Math.pow((x - 0.8) / 0.06, 2)); pts.push([PX0 + x * (PX1 - PX0), PY1 - off - y * (PY1 - PY0) * 0.5]); } s += poly(pts, k === 1 ? F : G, "none", 1.4); }
+    return s + ylab("Absorbancia + offset") + xlab("Número de onda");
+  };
+  B_["efectos-principales"] = () => {
+    let s = axes(); const sc = (x, y) => [PX0 + x * (PX1 - PX0), PY1 - y * (PY1 - PY0)];
+    s += ln(PX0, PY1 - 0.5 * (PY1 - PY0), PX1, PY1 - 0.5 * (PY1 - PY0), GRID);
+    s += poly([sc(0.15, 0.35), sc(0.4, 0.7)], F, "none", 2) + c(...sc(0.15, 0.35), 3, F) + c(...sc(0.4, 0.7), 3, F);
+    s += poly([sc(0.6, 0.55), sc(0.85, 0.5)], G, "none", 2) + c(...sc(0.6, 0.55), 3, G) + c(...sc(0.85, 0.5), 3, G);
+    return s + t(sc(0.27, 0.2)[0], 200, "Factor A", { size: 8 }) + t(sc(0.72, 0.2)[0], 200, "Factor B", { size: 8 }) + ylab("Respuesta media");
+  };
+  B_["pareto-efectos"] = () => {
+    const vals = [38, 26, 15, 9, 6, 3], n = vals.length, bh = (PY1 - PY0 - 8) / n; const sig = PX0 + 20 / 40 * (PX1 - PX0);
+    let s = ln(PX0, PY0, PX0, PY1, AX);
+    vals.forEach((v, i) => { const y = PY0 + i * bh + 3, w = v / 40 * (PX1 - PX0); s += r(PX0, y, w, bh - 6, w > sig - PX0 ? F : G); });
+    s += ln(sig, PY0, sig, PY1, CL, 1.3, 'stroke-dasharray="4 3"') + t(sig + 3, PY0 + 8, "α=0.05", { fill: CL, anchor: "start", size: 8 });
+    return s + xlab("Efecto estandarizado |t|");
+  };
+  B_.deseabilidad = () => {
+    let s = gy() + axes(); const sc = (x, y) => [PX0 + x * (PX1 - PX0), PY1 - y * (PY1 - PY0)];
+    let pts = []; for (let x = 0; x <= 1.001; x += 0.02) { const y = Math.exp(-Math.pow((x - 0.6) / 0.22, 2)); pts.push(sc(x, y)); }
+    s += poly(pts, F, "rgba(201,196,28,0.10)", 2) + ln(...sc(0.6, 0), ...sc(0.6, 0.92), GD, 1, 'stroke-dasharray="3 3"') + c(...sc(0.6, 1), 3.5, F);
+    return s + t(...sc(0.6, 1).map((v, i) => i === 0 ? v + 6 : v - 4), "D máx", { fill: F, anchor: "start", size: 8 }) + ylab("Deseabilidad D") + xlab("Condición de proceso");
+  };
+
+  window.buildChartSVG = function (id) {
+    const body = (B_[id] || (() => t(W / 2, H / 2, "—", { size: 20 })))();
+    return `<svg viewBox="0 0 ${W} ${H}" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" style="display:block">${body}</svg>`;
+  };
+})();
+
+</script>
+<script>
+// Modelo de contenido — Narrativas Visuales de Datos
+// Editá libremente los textos: cada gráfico es un objeto dentro de su tarea.
+// Campos: id, nombre, ejemplo (rótulo corto), pregunta, cuando, cuandoNo,
+//         ejemploArea, decision, etica, cleveland (nivel de codificación).
+
+const CLEV = {
+  posComun:   "Posición en escala común",
+  posAlin:    "Posición en escalas alineadas",
+  longitud:   "Longitud",
+  angulo:     "Ángulo",
+  area:       "Área",
+  color:      "Color / densidad",
+  volumen:    "Volumen",
+};
+
+const TAREAS = [
+  {
+    id: "comparar", num: "01", nombre: "Comparar magnitudes",
+    lema: "¿Cuál es mayor?",
+    desc: "Una métrica entre categorías. Casi siempre gana la posición o la longitud.",
+    charts: [
+      { id:"barras", nombre:"Barras", ejemplo:"Rendimiento por lote",
+        pregunta:"¿Cuál categoría tiene el valor más alto?",
+        cuando:"Pocas categorías y una sola métrica. Horizontal si las etiquetas son largas.",
+        cuandoNo:"Cuando hay decenas de categorías (usa dot plot) o cuando el mensaje es una proporción del total.",
+        ejemploArea:"Rendimiento (%) por lote de producción en una planta de fermentación.",
+        decision:"¿Qué lote o equipo interviene primero?",
+        etica:"Cortar el eje Y en un valor distinto de cero exagera diferencias. La barra codifica longitud desde cero.",
+        cleveland: CLEV.posComun },
+      { id:"barras-agrupadas", nombre:"Barras agrupadas", ejemplo:"Humedad por tratamiento y tiempo",
+        pregunta:"¿Cómo se comparan las categorías dentro de cada grupo?",
+        cuando:"Dos factores categóricos, con un máximo de 3 o 4 series.",
+        cuandoNo:"Con muchas series se vuelve ilegible; prueba small multiples.",
+        ejemploArea:"% de humedad por tratamiento y por tiempo de secado.",
+        decision:"¿Qué combinación de factores conviene?",
+        etica:"Demasiadas series obligan a saltar entre color y posición; se pierde la comparación.",
+        cleveland: CLEV.posAlin },
+      { id:"barras-apiladas", nombre:"Barras apiladas", ejemplo:"Composición proximal",
+        pregunta:"¿Cuánto suma el total y cómo se compone?",
+        cuando:"Interesa el total y su composición a la vez.",
+        cuandoNo:"Si comparás los segmentos internos: solo el de la base se lee bien.",
+        ejemploArea:"Composición proximal (grasa, proteína, humedad, ceniza) por producto.",
+        decision:"¿Qué producto concentra más de un componente?",
+        etica:"Los segmentos que no arrancan de una línea común no se pueden comparar entre barras.",
+        cleveland: CLEV.longitud },
+      { id:"barras-100", nombre:"Barras 100% apiladas", ejemplo:"Defectos por línea",
+        pregunta:"¿Cómo se distribuye la proporción, sin importar el total?",
+        cuando:"Solo interesa la proporción, no la magnitud absoluta.",
+        cuandoNo:"Cuando el tamaño de cada categoría también importa.",
+        ejemploArea:"Distribución de tipos de defecto por línea de producción.",
+        decision:"¿Qué línea desvía su mezcla de defectos?",
+        etica:"Oculta que una línea produce diez veces más que otra: todas se ven del mismo tamaño.",
+        cleveland: CLEV.longitud },
+      { id:"dotplot", nombre:"Dot plot / Cleveland", ejemplo:"Antes y después en 20 SKU",
+        pregunta:"¿Cómo se ordenan muchas categorías, o cómo cambian entre dos momentos?",
+        cuando:"Muchas categorías, o comparación entre dos momentos.",
+        cuandoNo:"Con pocas categorías las barras comunican igual con más presencia.",
+        ejemploArea:"Antes y después de un cambio de proceso en 20 SKU.",
+        decision:"¿Dónde el cambio fue mayor?",
+        etica:"Honesto por diseño: menos tinta, no exige empezar en cero como la barra.",
+        cleveland: CLEV.posComun },
+      { id:"lollipop", nombre:"Lollipop", ejemplo:"Ranking de mermas",
+        pregunta:"¿Cuál es el orden en una lista larga?",
+        cuando:"Como las barras pero con menos tinta; ideal para listas largas.",
+        cuandoNo:"Cuando las diferencias son mínimas y el punto es difícil de ubicar.",
+        ejemploArea:"Ranking de mermas por operación unitaria.",
+        decision:"¿Qué operación revisar primero?",
+        etica:"El punto marca el valor; la línea es solo guía. No la leas como longitud exacta.",
+        cleveland: CLEV.posComun },
+      { id:"diverging", nombre:"Barras divergentes", ejemplo:"Escala hedónica de 9 puntos",
+        pregunta:"¿Hacia qué lado de un punto neutro se inclina?",
+        cuando:"Escalas con punto neutro, tipo Likert.",
+        cuandoNo:"Cuando no hay un cero conceptual que separe lo positivo de lo negativo.",
+        ejemploArea:"Escala hedónica de 9 puntos en un panel sensorial.",
+        decision:"¿La formulación gusta o disgusta, y cuánto?",
+        etica:"El punto de anclaje (neutro) define el mensaje; muévelo y cambia la historia.",
+        cleveland: CLEV.posAlin },
+      { id:"bullet", nombre:"Bullet chart", ejemplo:"Calidad contra especificación",
+        pregunta:"¿El valor real cumple la meta y los rangos aceptables?",
+        cuando:"Un valor contra su meta y sus rangos de referencia.",
+        cuandoNo:"Cuando necesitás comparar la evolución en el tiempo.",
+        ejemploArea:"Indicador de calidad frente a la especificación del producto.",
+        decision:"¿Estamos dentro de especificación?",
+        etica:"Rangos de fondo mal calibrados hacen que 'aceptable' parezca 'excelente'.",
+        cleveland: CLEV.posComun },
+      { id:"radar", nombre:"Radar / perfil polar", ejemplo:"Perfil sensorial QDA",
+        pregunta:"¿Cómo se compara el perfil de pocas muestras en varios atributos?",
+        cuando:"Comparar de 5 a 10 atributos de pocas muestras.",
+        cuandoNo:"Para leer valores exactos o comparar muchas muestras.",
+        ejemploArea:"Perfil sensorial QDA de tres formulaciones.",
+        decision:"¿Qué formulación domina en qué atributos?",
+        etica:"Popular pero engañoso: el área crece al cuadrado y el orden de los ejes cambia la forma.",
+        cleveland: CLEV.area },
+    ],
+  },
+  {
+    id: "distribucion", num: "02", nombre: "Distribución y variabilidad",
+    lema: "¿Cómo se reparte?",
+    desc: "Una variable y su dispersión. Nunca escondas los datos crudos si son pocos.",
+    charts: [
+      { id:"histograma", nombre:"Histograma", ejemplo:"Peso neto de envasado",
+        pregunta:"¿Qué forma tiene la distribución de una variable?",
+        cuando:"Una variable continua con muestra grande.",
+        cuandoNo:"Con pocos datos: el ancho del bin inventa la forma.",
+        ejemploArea:"Peso neto de envasado en una llenadora.",
+        decision:"¿El proceso está centrado y controlado?",
+        etica:"El número de bins cambia por completo la forma percibida. Muéstralo o justifícalo.",
+        cleveland: CLEV.posComun },
+      { id:"densidad", nombre:"Densidad (KDE)", ejemplo:"Tamaño de partícula de dos molinos",
+        pregunta:"¿Cómo se comparan dos o tres distribuciones superpuestas?",
+        cuando:"Comparar 2 o 3 distribuciones en el mismo eje.",
+        cuandoNo:"Con muestras pequeñas: el suavizado sugiere precisión que no hay.",
+        ejemploArea:"Tamaño de partícula de dos molinos.",
+        decision:"¿Qué molino da un producto más uniforme?",
+        etica:"El ancho de banda suaviza o inventa picos. Es un parámetro, no un dato.",
+        cleveland: CLEV.posComun },
+      { id:"boxplot", nombre:"Boxplot", ejemplo:"Firmeza por almacenamiento",
+        pregunta:"¿Cómo se compara la dispersión entre varios grupos?",
+        cuando:"Comparar dispersión y mediana entre grupos.",
+        cuandoNo:"Con n pequeño: esconde cuántos datos hay detrás.",
+        ejemploArea:"Firmeza del producto por tiempo de almacenamiento.",
+        decision:"¿En qué punto la variabilidad se dispara?",
+        etica:"Resume cinco números; una distribución bimodal se ve idéntica a una normal.",
+        cleveland: CLEV.posComun },
+      { id:"violin", nombre:"Violín", ejemplo:"Tiempos de residencia",
+        pregunta:"¿La forma de la distribución (p. ej. bimodalidad) importa?",
+        cuando:"Como el boxplot pero cuando la forma es el mensaje.",
+        cuandoNo:"Ante audiencias que no lo conocen; el ancho confunde.",
+        ejemploArea:"Distribución de tiempos de residencia en un reactor.",
+        decision:"¿Hay dos poblaciones mezcladas?",
+        etica:"El suavizado del contorno puede sugerir modos que los datos no tienen.",
+        cleveland: CLEV.area },
+      { id:"beeswarm", nombre:"Beeswarm / strip", ejemplo:"Réplicas de un piloto",
+        pregunta:"¿Dónde cae cada dato individual cuando son pocos?",
+        cuando:"n pequeño. Nunca escondas 6 datos en un boxplot.",
+        cuandoNo:"Con miles de puntos: se apelotona (usa densidad).",
+        ejemploArea:"Réplicas de un experimento piloto.",
+        decision:"¿La réplica es confiable o hay un dato raro?",
+        etica:"Es la opción honesta con n pequeño: muestra el dato, no un resumen.",
+        cleveland: CLEV.posComun },
+      { id:"raincloud", nombre:"Raincloud", ejemplo:"Reportes de tesis",
+        pregunta:"¿Distribución, resumen y datos crudos, todo a la vez?",
+        cuando:"La versión completa: densidad, box y puntos juntos.",
+        cuandoNo:"En espacios muy pequeños o con muchos grupos.",
+        ejemploArea:"Ideal para reportes de tesis y publicaciones.",
+        decision:"¿La diferencia entre grupos es real o es ruido?",
+        etica:"El estándar más transparente: no oculta ni la forma ni los datos.",
+        cleveland: CLEV.posComun },
+      { id:"ecdf", nombre:"ECDF", ejemplo:"Límite microbiológico",
+        pregunta:"¿Qué fracción de los datos supera un límite?",
+        cuando:"Preguntas tipo '¿qué porcentaje pasa el umbral?'.",
+        cuandoNo:"Cuando la audiencia espera ver la 'campana' familiar.",
+        ejemploArea:"Cumplimiento de un límite microbiológico.",
+        decision:"¿Qué proporción del lote cumple la norma?",
+        etica:"No requiere elegir bins ni ancho de banda: no hay parámetro que manipular.",
+        cleveland: CLEV.posComun },
+      { id:"qq", nombre:"Q-Q plot", ejemplo:"Diagnóstico de residuales",
+        pregunta:"¿Los datos siguen una distribución teórica (p. ej. normal)?",
+        cuando:"Verificar normalidad antes de un ANOVA.",
+        cuandoNo:"Para comunicar a no especialistas.",
+        ejemploArea:"Diagnóstico de residuales de un modelo.",
+        decision:"¿Es válido el supuesto del test?",
+        etica:"Es diagnóstico, no decorativo: no lo uses para 'demostrar' normalidad sin criterio.",
+        cleveland: CLEV.posComun },
+      { id:"pareto", nombre:"Pareto", ejemplo:"Causas de rechazo",
+        pregunta:"¿Qué pocas causas explican la mayoría del efecto?",
+        cuando:"Priorizar causas con la regla 80/20.",
+        cuandoNo:"Cuando las causas están repartidas de forma pareja.",
+        ejemploArea:"Causas de rechazo en inspección de calidad.",
+        decision:"¿Qué dos o tres causas atacar primero?",
+        etica:"Agrupar mal las categorías fabrica o disuelve el 80/20.",
+        cleveland: CLEV.posComun },
+    ],
+  },
+  {
+    id: "relacion", num: "03", nombre: "Relacionar variables",
+    lema: "¿Qué se relaciona con qué?",
+    desc: "Dos o más variables continuas. La dispersión es la herramienta base.",
+    charts: [
+      { id:"dispersion", nombre:"Dispersión", ejemplo:"Actividad de agua vs. crecimiento",
+        pregunta:"¿Cómo se relacionan dos variables continuas?",
+        cuando:"Dos variables continuas, mostrando cada observación.",
+        cuandoNo:"Con miles de puntos que se solapan (usa hexbin).",
+        ejemploArea:"Actividad de agua frente a crecimiento microbiano.",
+        decision:"¿Existe un umbral de aw que active el crecimiento?",
+        etica:"Correlación no es causalidad: el gráfico sugiere, no prueba.",
+        cleveland: CLEV.posComun },
+      { id:"dispersion-ajuste", nombre:"Dispersión con ajuste y banda", ejemplo:"Curva de calibración",
+        pregunta:"¿Qué modelo describe la relación y con cuánta incertidumbre?",
+        cuando:"Cuando el mensaje es el modelo, no los puntos.",
+        cuandoNo:"Cuando los puntos crudos son el hallazgo.",
+        ejemploArea:"Curva de calibración con intervalo de confianza del 95%.",
+        decision:"¿Con qué precisión predice el método?",
+        etica:"Extrapolar fuera del rango calibrado es la trampa clásica.",
+        cleveland: CLEV.posComun },
+      { id:"burbujas", nombre:"Burbujas", ejemplo:"T, tiempo y retención de vitamina C",
+        pregunta:"¿Cómo entra una tercera variable en una relación bivariada?",
+        cuando:"Tercera variable en el tamaño (usa área, no radio).",
+        cuandoNo:"Cuando la tercera variable exige lectura precisa.",
+        ejemploArea:"Temperatura, tiempo y % de retención de vitamina C.",
+        decision:"¿Qué condición maximiza la retención?",
+        etica:"Escalar por radio y no por área duplica el error visual del tamaño.",
+        cleveland: CLEV.area },
+      { id:"hexbin", nombre:"Hexbin / densidad 2D", ejemplo:"Sensores en línea",
+        pregunta:"¿Dónde se concentran miles de puntos que se solapan?",
+        cuando:"Miles de puntos que tapan la nube.",
+        cuandoNo:"Con pocos datos: cada celda pierde sentido.",
+        ejemploArea:"Datos de sensores en línea, un dato por segundo.",
+        decision:"¿Cuál es el régimen de operación habitual?",
+        etica:"El tamaño del hexágono decide qué patrón emerge.",
+        cleveland: CLEV.color },
+      { id:"splom", nombre:"Matriz de dispersión (SPLOM)", ejemplo:"Caracterización de un lote",
+        pregunta:"¿Qué pares de variables se relacionan, explorando muchas a la vez?",
+        cuando:"Explorar de 4 a 8 variables simultáneamente.",
+        cuandoNo:"Para comunicar un hallazgo ya conocido (elige un solo panel).",
+        ejemploArea:"Caracterización fisicoquímica de un lote.",
+        decision:"¿Qué relación merece un análisis dedicado?",
+        etica:"Es exploración, no presentación: mostrar todo es no destacar nada.",
+        cleveland: CLEV.posComun },
+      { id:"heatmap-corr", nombre:"Heatmap de correlación", ejemplo:"Sensorial vs. instrumental",
+        pregunta:"¿Qué estructura tiene un conjunto grande de correlaciones?",
+        cuando:"Resumir muchas correlaciones de un vistazo.",
+        cuandoNo:"Para leer un coeficiente exacto (el color no es preciso).",
+        ejemploArea:"Atributos sensoriales frente a instrumentales.",
+        decision:"¿Qué medida instrumental predice el atributo sensorial?",
+        etica:"La escala de color divergente y su punto medio deciden qué salta a la vista.",
+        cleveland: CLEV.color },
+      { id:"contornos", nombre:"Contornos / superficie de respuesta", ejemplo:"RSM Box-Behnken",
+        pregunta:"¿Dónde está el óptimo de una respuesta según dos factores?",
+        cuando:"Diseños experimentales con dos factores.",
+        cuandoNo:"Con más de dos factores sin fijar los demás.",
+        ejemploArea:"RSM en Box-Behnken para optimizar una extracción.",
+        decision:"¿Qué combinación de factores maximiza el rendimiento?",
+        etica:"Interpolar el contorno más allá de los puntos experimentales es especular.",
+        cleveland: CLEV.posComun },
+      { id:"superficie3d", nombre:"Superficie 3D", ejemplo:"Solo presentaciones",
+        pregunta:"¿Cómo se ve la forma general de una respuesta (impacto visual)?",
+        cuando:"Solo para impacto visual en una presentación.",
+        cuandoNo:"Para leer valores: la perspectiva oculta y distorsiona.",
+        ejemploArea:"Presentaciones, no reportes técnicos.",
+        decision:"—  (para decidir, usa contornos).",
+        etica:"La perspectiva 3D esconde datos detrás de los picos: bonito, pero deshonesto para leer.",
+        cleveland: CLEV.volumen },
+    ],
+  },
+  {
+    id: "composicion", num: "04", nombre: "Composición (parte-todo)",
+    lema: "¿De qué está hecho?",
+    desc: "Cómo un total se reparte en partes. Cuidado con los ángulos y las áreas.",
+    charts: [
+      { id:"pie", nombre:"Pie / dona", ejemplo:"Participación de mercado",
+        pregunta:"¿Qué parte domina un todo con muy pocas categorías?",
+        cuando:"Máximo 3 o 4 categorías con diferencias grandes.",
+        cuandoNo:"Con muchas tajadas o diferencias sutiles: el ángulo no se compara.",
+        ejemploArea:"Participación de mercado de una línea de producto.",
+        decision:"¿Una categoría domina claramente?",
+        etica:"Comparar ángulos es impreciso; en duda, usa barras.",
+        cleveland: CLEV.angulo },
+      { id:"treemap", nombre:"Treemap", ejemplo:"Costos por familia de insumos",
+        pregunta:"¿Cómo se reparte un todo entre muchas categorías jerárquicas?",
+        cuando:"Muchas categorías con jerarquía.",
+        cuandoNo:"Para comparar tamaños con precisión.",
+        ejemploArea:"Costos por familia de insumos.",
+        decision:"¿Qué familia concentra el gasto?",
+        etica:"El área se estima mal; rectángulos alargados engañan más que los cuadrados.",
+        cleveland: CLEV.area },
+      { id:"waterfall", nombre:"Waterfall", ejemplo:"Balance de masa",
+        pregunta:"¿Cómo se llega de una cantidad inicial a una final, paso a paso?",
+        cuando:"Balances: entradas, pérdidas y producto final.",
+        cuandoNo:"Cuando no hay una secuencia acumulativa clara.",
+        ejemploArea:"Balance de masa: entradas, pérdidas y producto final.",
+        decision:"¿Dónde se pierde más masa o energía?",
+        etica:"El clásico olvidado en ingeniería: hace visible dónde se va el material.",
+        cleveland: CLEV.posComun },
+      { id:"area-apilada", nombre:"Área apilada", ejemplo:"Mezcla de combustibles",
+        pregunta:"¿Cómo cambia la composición a lo largo del tiempo?",
+        cuando:"Composición que cambia en el tiempo.",
+        cuandoNo:"Para seguir una serie intermedia: su base se mueve.",
+        ejemploArea:"Mezcla de combustibles de una caldera por mes.",
+        decision:"¿Qué componente crece o cae en el tiempo?",
+        etica:"Solo la banda de abajo tiene una base estable; las demás flotan.",
+        cleveland: CLEV.longitud },
+      { id:"mosaico", nombre:"Mosaico / Marimekko", ejemplo:"Defectos por turno ponderado",
+        pregunta:"¿Cómo se cruzan dos categóricas cuando el tamaño de grupo importa?",
+        cuando:"Dos categóricas donde el tamaño de cada grupo pesa.",
+        cuandoNo:"Cuando basta una tabla o barras 100%.",
+        ejemploArea:"Defectos por turno, ponderado por producción.",
+        decision:"¿Qué turno grande concentra defectos?",
+        etica:"El área combina dos dimensiones: difícil de leer con precisión.",
+        cleveland: CLEV.area },
+    ],
+  },
+  {
+    id: "tiempo", num: "05", nombre: "Series de tiempo y proceso",
+    lema: "¿Cómo cambia?",
+    desc: "Continuidad temporal y vigilancia de proceso. La línea es la opción por defecto.",
+    charts: [
+      { id:"linea", nombre:"Línea", ejemplo:"Perfil térmico de un autoclave",
+        pregunta:"¿Cómo evoluciona una variable en el tiempo?",
+        cuando:"Continuidad temporal: la opción por defecto.",
+        cuandoNo:"Con categorías sin orden temporal (usa barras).",
+        ejemploArea:"Perfil térmico de un autoclave.",
+        decision:"¿El proceso alcanzó y sostuvo la temperatura objetivo?",
+        etica:"Conectar puntos que no son continuos inventa una tendencia.",
+        cleveland: CLEV.posComun },
+      { id:"small-multiples", nombre:"Small multiples", ejemplo:"12 sensores de un reactor",
+        pregunta:"¿Cómo comparo muchas series sin que se vuelvan espagueti?",
+        cuando:"Muchas series que se enredan en un solo eje.",
+        cuandoNo:"Con dos o tres series (superponerlas es mejor).",
+        ejemploArea:"12 sensores del mismo reactor, un panel cada uno.",
+        decision:"¿Qué sensor se comporta distinto?",
+        etica:"Escalas distintas por panel hacen incomparables las magnitudes.",
+        cleveland: CLEV.posAlin },
+      { id:"step", nombre:"Step chart", ejemplo:"Estados de una válvula",
+        pregunta:"¿Cuándo y a qué nivel salta una variable discreta?",
+        cuando:"Variables que cambian por escalones.",
+        cuandoNo:"Con variables realmente continuas.",
+        ejemploArea:"Estados de una válvula o cambios de setpoint.",
+        decision:"¿Cuándo ocurrió el cambio de estado?",
+        etica:"Interpolar en diagonal falsea el instante exacto del cambio.",
+        cleveland: CLEV.posComun },
+      { id:"carta-control", nombre:"Carta de control (X̄, R, p)", ejemplo:"Peso neto en llenadora",
+        pregunta:"¿El proceso está bajo control estadístico?",
+        cuando:"Vigilancia estadística de proceso (SPC).",
+        cuandoNo:"Sin límites calculados de datos reales.",
+        ejemploArea:"Control de peso neto en una llenadora.",
+        decision:"¿Intervengo el proceso o lo dejo correr?",
+        etica:"Límites puestos 'a ojo' invitan a sobre-reaccionar al ruido normal.",
+        cleveland: CLEV.posComun },
+      { id:"cusum", nombre:"CUSUM / EWMA", ejemplo:"Deriva de un dosificador",
+        pregunta:"¿Hay un corrimiento pequeño y sostenido que la carta clásica no ve?",
+        cuando:"Detectar derivas pequeñas y persistentes.",
+        cuandoNo:"Para cambios grandes y bruscos (la carta X̄ basta).",
+        ejemploArea:"Deriva lenta de un dosificador.",
+        decision:"¿El proceso empezó a desviarse hace rato?",
+        etica:"Acumula desvíos: sensible, pero un parámetro mal fijado da falsas alarmas.",
+        cleveland: CLEV.posComun },
+      { id:"spaghetti", nombre:"Spaghetti plot", ejemplo:"40 lotes de fermentación",
+        pregunta:"¿Cómo se ve la dispersión entre muchas trayectorias individuales?",
+        cuando:"Muchos lotes individuales, mostrando su variabilidad.",
+        cuandoNo:"Cuando el mensaje es un promedio (destácalo).",
+        ejemploArea:"Curvas de fermentación de 40 lotes.",
+        decision:"¿Qué lotes se salen del comportamiento típico?",
+        etica:"Todo gris y encimado esconde el patrón; resalta la mediana o el atípico.",
+        cleveland: CLEV.posComun },
+      { id:"slope", nombre:"Slope graph", ejemplo:"Indicadores antes/después",
+        pregunta:"¿Qué subió y qué bajó entre dos momentos, en muchas categorías?",
+        cuando:"Dos momentos, muchas categorías.",
+        cuandoNo:"Con más de dos puntos temporales.",
+        ejemploArea:"Indicadores antes y después de una mejora.",
+        decision:"¿La mejora funcionó y en qué casos?",
+        etica:"La pendiente comunica dirección; cuidado con escalas que la exageran.",
+        cleveland: CLEV.posAlin },
+      { id:"gantt", nombre:"Gantt", ejemplo:"Scheduling multiproducto",
+        pregunta:"¿Cómo se solapan las operaciones en el tiempo?",
+        cuando:"Programación de operaciones por lotes.",
+        cuandoNo:"Para mostrar magnitudes, no duración.",
+        ejemploArea:"Scheduling de una planta multiproducto.",
+        decision:"¿Dónde está el cuello de botella de la agenda?",
+        etica:"Barras sin holguras reales prometen una planificación que no se cumple.",
+        cleveland: CLEV.longitud },
+      { id:"heatmap-calendario", nombre:"Heatmap de calendario", ejemplo:"Paradas no programadas",
+        pregunta:"¿Qué patrones estacionales o por día aparecen?",
+        cuando:"Patrones a lo largo del año, por día.",
+        cuandoNo:"Para leer valores exactos de cada día.",
+        ejemploArea:"Paradas no programadas durante el año.",
+        decision:"¿Hay una época o día crítico?",
+        etica:"La escala de color define qué se ve como 'crítico'.",
+        cleveland: CLEV.color },
+      { id:"horizon", nombre:"Horizon chart", ejemplo:"Monitoreo de planta completa",
+        pregunta:"¿Cómo veo muchas series largas en muy poco espacio?",
+        cuando:"Muchas series largas apiladas verticalmente.",
+        cuandoNo:"Ante una audiencia que no lo conoce.",
+        ejemploArea:"Monitoreo de una planta completa.",
+        decision:"¿Qué variable rompe su banda normal?",
+        etica:"Denso y eficiente, pero requiere entrenar el ojo: no es para el público general.",
+        cleveland: CLEV.posAlin },
+    ],
+  },
+  {
+    id: "flujos", num: "06", nombre: "Flujos, redes y jerarquías",
+    lema: "¿Cómo fluye o se conecta?",
+    desc: "Conservación de masa y energía, reasignaciones y estructuras jerárquicas.",
+    charts: [
+      { id:"sankey", nombre:"Sankey", ejemplo:"Pérdidas energéticas en planta",
+        pregunta:"¿A dónde va la masa o la energía, y cuánto se pierde en el camino?",
+        cuando:"El gráfico estrella: conservación de masa o energía.",
+        cuandoNo:"Con demasiados nodos: se vuelve una maraña.",
+        ejemploArea:"Pérdidas energéticas de una planta; pérdidas de alimento en la cadena de suministro.",
+        decision:"¿Dónde vale la pena recuperar energía o producto?",
+        etica:"El ancho debe ser proporcional al flujo; si no, miente sobre la conservación.",
+        cleveland: CLEV.longitud },
+      { id:"aluvial", nombre:"Aluvial", ejemplo:"Clasificación de fruta por etapa",
+        pregunta:"¿Cómo se reasignan las categorías entre etapas?",
+        cuando:"Reasignación de categorías entre etapas.",
+        cuandoNo:"Con muchas categorías: los cruces se enredan.",
+        ejemploArea:"Clasificación de fruta por calidad en cada etapa de selección.",
+        decision:"¿En qué etapa se pierde la calidad?",
+        etica:"El orden de las bandas cambia la cantidad de cruces y la lectura.",
+        cleveland: CLEV.longitud },
+      { id:"cuerda", nombre:"Cuerda (chord)", ejemplo:"Comercio de commodities",
+        pregunta:"¿Cómo son los flujos bidireccionales entre nodos?",
+        cuando:"Flujos bidireccionales entre pocos nodos.",
+        cuandoNo:"Con muchos nodos: ilegible.",
+        ejemploArea:"Comercio de commodities agrícolas.",
+        decision:"¿Qué par de nodos concentra el intercambio?",
+        etica:"Bello pero difícil de cuantificar: el arco no da magnitudes precisas.",
+        cleveland: CLEV.angulo },
+      { id:"dendrograma", nombre:"Dendrograma", ejemplo:"Clustering por volátiles",
+        pregunta:"¿Cómo se agrupan jerárquicamente las muestras?",
+        cuando:"Agrupamiento jerárquico.",
+        cuandoNo:"Para mostrar magnitudes en lugar de similitud.",
+        ejemploArea:"Clustering de muestras por perfil de volátiles.",
+        decision:"¿Cuántos grupos naturales hay y dónde cortarlos?",
+        etica:"El punto de corte define el número de grupos: elígelo con criterio, no para que 'salga bonito'.",
+        cleveland: CLEV.posAlin },
+      { id:"sunburst", nombre:"Sunburst", ejemplo:"Catálogo de productos",
+        pregunta:"¿Cómo se ve una jerarquía con sus proporciones?",
+        cuando:"Jerarquía con proporciones por nivel.",
+        cuandoNo:"Para comparar valores con precisión.",
+        ejemploArea:"Estructura de un catálogo de productos.",
+        decision:"¿Qué rama del catálogo pesa más?",
+        etica:"Los anillos externos exageran su tamaño por tener más radio.",
+        cleveland: CLEV.angulo },
+      { id:"pfd", nombre:"PFD anotado con datos", ejemplo:"Diagrama de flujo con caudales",
+        pregunta:"¿Cómo se ubican los datos en el contexto espacial del proceso?",
+        cuando:"Contexto espacial: valores sobre el diagrama de proceso.",
+        cuandoNo:"Cuando el layout no aporta a la decisión.",
+        ejemploArea:"Diagrama de flujo con temperaturas y caudales reales.",
+        decision:"¿Qué equipo opera fuera de rango?",
+        etica:"Datos viejos sobre un diagrama actual dan una falsa sensación de estado real.",
+        cleveland: CLEV.posComun },
+    ],
+  },
+  {
+    id: "multivariado", num: "07", nombre: "Multivariados y análisis avanzado",
+    lema: "¿Cómo se estructura lo complejo?",
+    desc: "Reducción de dimensiones, clasificación y comparación de métodos.",
+    charts: [
+      { id:"biplot-pca", nombre:"Biplot de PCA", ejemplo:"Aceites por origen",
+        pregunta:"¿Cómo reduzco muchas variables a un mapa de muestras?",
+        cuando:"Resumir muchas variables en dos componentes.",
+        cuandoNo:"Cuando los dos primeros componentes explican poca varianza.",
+        ejemploArea:"Discriminación de aceites por origen geográfico.",
+        decision:"¿Las muestras se separan por grupo?",
+        etica:"Sin reportar la varianza explicada, el mapa puede ser casi ruido.",
+        cleveland: CLEV.posComun },
+      { id:"plsda", nombre:"PLS-DA (scores y loadings)", ejemplo:"Adulteración con NIR",
+        pregunta:"¿Puedo clasificar muestras a partir de datos espectrales?",
+        cuando:"Clasificación supervisada con datos espectrales.",
+        cuandoNo:"Sin validación: sobreajusta con facilidad.",
+        ejemploArea:"Detección de adulteración con NIR.",
+        decision:"¿La muestra es conforme o adulterada?",
+        etica:"Separación perfecta sin validación cruzada suele ser sobreajuste, no hallazgo.",
+        cleveland: CLEV.posComun },
+      { id:"heatmap-cluster", nombre:"Heatmap con clustering", ejemplo:"Perfil GC-MS de aromas",
+        pregunta:"¿Qué estructura tiene una matriz grande de datos?",
+        cuando:"Matrices grandes tipo ómicas, con doble dendrograma.",
+        cuandoNo:"Con pocas variables (un heatmap simple basta).",
+        ejemploArea:"Metabolómica, perfil GC-MS de aromas.",
+        decision:"¿Qué grupos de muestras comparten qué compuestos?",
+        etica:"La normalización por fila o columna cambia por completo el patrón de color.",
+        cleveland: CLEV.color },
+      { id:"coordenadas-paralelas", nombre:"Coordenadas paralelas", ejemplo:"Formulaciones con 8 parámetros",
+        pregunta:"¿Cómo comparo perfiles multivariados sin reducir dimensiones?",
+        cuando:"Comparar perfiles con muchos ejes.",
+        cuandoNo:"Con demasiadas líneas: se satura.",
+        ejemploArea:"Formulaciones con 8 parámetros de proceso.",
+        decision:"¿Qué combinación de parámetros cumple todos los criterios?",
+        etica:"El orden de los ejes cambia qué relaciones se ven; es una elección, no un dato.",
+        cleveland: CLEV.posAlin },
+      { id:"ternario", nombre:"Diagrama ternario", ejemplo:"Mezcla de tres ingredientes",
+        pregunta:"¿Cómo represento tres componentes que suman 100%?",
+        cuando:"Tres componentes que suman el total.",
+        cuandoNo:"Con más de tres componentes.",
+        ejemploArea:"Diseño de mezclas de tres ingredientes; extracción líquido-líquido.",
+        decision:"¿Qué proporción de mezcla es óptima?",
+        etica:"Leer las tres coordenadas a la vez confunde a quien no lo conoce.",
+        cleveland: CLEV.posAlin },
+      { id:"roc", nombre:"Curva ROC", ejemplo:"Método de detección",
+        pregunta:"¿Qué tan bien discrimina un clasificador o método?",
+        cuando:"Desempeño de un clasificador o método de detección.",
+        cuandoNo:"Con clases muy desbalanceadas (mira precision-recall).",
+        ejemploArea:"Discriminación de producto conforme y no conforme.",
+        decision:"¿Qué umbral de decisión adoptar?",
+        etica:"Un AUC alto con datos desbalanceados esconde muchos falsos positivos.",
+        cleveland: CLEV.posComun },
+      { id:"bland-altman", nombre:"Bland-Altman", ejemplo:"Método rápido vs. referencia",
+        pregunta:"¿Concuerdan dos métodos de medición?",
+        cuando:"Comparar acuerdo entre dos métodos.",
+        cuandoNo:"Para ver correlación (usa dispersión).",
+        ejemploArea:"Método de referencia frente a método rápido.",
+        decision:"¿Puedo reemplazar el método de referencia?",
+        etica:"Correlación alta no es acuerdo: dos métodos correlacionados pueden diferir sistemáticamente.",
+        cleveland: CLEV.posComun },
+      { id:"forest", nombre:"Forest plot", ejemplo:"Meta-análisis de un tratamiento",
+        pregunta:"¿Cómo se comparan efectos con sus intervalos entre estudios?",
+        cuando:"Meta-análisis o efectos con intervalos de confianza.",
+        cuandoNo:"Para un solo estudio con un solo efecto.",
+        ejemploArea:"Revisión de estudios sobre un tratamiento.",
+        decision:"¿El efecto es consistente y significativo?",
+        etica:"El tamaño del cuadro (peso) importa tanto como la posición del punto.",
+        cleveland: CLEV.posComun },
+      { id:"kaplan-meier", nombre:"Kaplan-Meier", ejemplo:"Vida útil sensorial",
+        pregunta:"¿Cuánto tiempo pasa hasta que ocurre un evento?",
+        cuando:"Tiempo hasta un evento (supervivencia).",
+        cuandoNo:"Cuando todos los sujetos ya vivieron el evento.",
+        ejemploArea:"Vida útil sensorial: tiempo hasta el rechazo del consumidor.",
+        decision:"¿Qué fecha de vencimiento fijar?",
+        etica:"Ignorar los datos censurados sesga la curva hacia vidas más cortas.",
+        cleveland: CLEV.posComun },
+      { id:"tornado", nombre:"Tornado", ejemplo:"Sensibilidad del costo unitario",
+        pregunta:"¿Qué variable afecta más el resultado?",
+        cuando:"Análisis de sensibilidad.",
+        cuandoNo:"Cuando hay interacciones fuertes entre variables.",
+        ejemploArea:"Qué variable afecta más el costo unitario.",
+        decision:"¿Qué variable controlar primero?",
+        etica:"El rango elegido para cada variable define su barra: rangos injustos sesgan el orden.",
+        cleveland: CLEV.longitud },
+    ],
+  },
+  {
+    id: "canonicos", num: "08", nombre: "Canónicos de la disciplina",
+    lema: "Convenciones fuertes",
+    desc: "Gráficos con ejes transformados y reglas propias. Hacen la clase de ingenieros, no genérica.",
+    charts: [
+      { id:"mccabe-thiele", nombre:"McCabe-Thiele", ejemplo:"Etapas de destilación",
+        pregunta:"¿Cuántas etapas de equilibrio necesita una separación?",
+        cuando:"Diseño de columnas de destilación binaria.",
+        cuandoNo:"Para sistemas no ideales o multicomponente.",
+        ejemploArea:"Número de etapas teóricas en una columna de destilación.",
+        decision:"¿Cuántos platos y a qué reflujo?",
+        etica:"Supone eficiencia y equilibrio ideal: la etapa real puede diferir mucho.",
+        cleveland: CLEV.posComun, area:"Ingeniería química" },
+      { id:"txy", nombre:"Diagramas Txy / Pxy", ejemplo:"Equilibrio líquido-vapor",
+        pregunta:"¿Cómo coexisten líquido y vapor a cada composición?",
+        cuando:"Equilibrio líquido-vapor de mezclas binarias.",
+        cuandoNo:"Fuera del rango de datos experimentales.",
+        ejemploArea:"Equilibrio líquido-vapor de una mezcla binaria.",
+        decision:"¿A qué temperatura hierve y cuál es la composición del vapor?",
+        etica:"Un azeótropo mal representado invalida el diseño de la separación.",
+        cleveland: CLEV.posComun, area:"Ingeniería química" },
+      { id:"moody", nombre:"Diagrama de Moody", ejemplo:"Factor de fricción",
+        pregunta:"¿Qué factor de fricción usar según Reynolds y rugosidad?",
+        cuando:"Cálculo de pérdidas de carga en tuberías.",
+        cuandoNo:"Fuera del rango de flujo turbulento/laminar tabulado.",
+        ejemploArea:"Factor de fricción contra número de Reynolds (log-log).",
+        decision:"¿Qué caída de presión esperar en la línea?",
+        etica:"Leer mal la zona de transición da factores muy equivocados.",
+        cleveland: CLEV.posComun, area:"Ingeniería química" },
+      { id:"psicrometrico", nombre:"Diagrama psicrométrico", ejemplo:"Acondicionamiento y secado",
+        pregunta:"¿Cuál es el estado del aire húmedo y cómo cambia?",
+        cuando:"Acondicionamiento de aire y secado.",
+        cuandoNo:"Sin fijar la presión de referencia.",
+        ejemploArea:"Acondicionamiento de aire y secado de alimentos.",
+        decision:"¿Cuánta energía cuesta secar a esta humedad?",
+        etica:"Usar una carta de otra altitud (presión) desvía todos los cálculos.",
+        cleveland: CLEV.posComun, area:"Ingeniería química" },
+      { id:"mollier", nombre:"Mollier (h-s)", ejemplo:"Ciclos térmicos",
+        pregunta:"¿Cómo cambian entalpía y entropía en un ciclo?",
+        cuando:"Análisis de ciclos térmicos y turbinas.",
+        cuandoNo:"Para sistemas fuera del rango de la carta.",
+        ejemploArea:"Ciclos térmicos de vapor.",
+        decision:"¿Cuál es el trabajo o calor de cada etapa?",
+        etica:"Confundir proceso isentrópico ideal con el real sobreestima la eficiencia.",
+        cleveland: CLEV.posComun, area:"Ingeniería química" },
+      { id:"curva-bomba", nombre:"Curvas de bomba + sistema", ejemplo:"Punto de operación",
+        pregunta:"¿Dónde opera realmente la bomba en el sistema?",
+        cuando:"Selección de bombas y punto de operación.",
+        cuandoNo:"Sin la curva del sistema superpuesta.",
+        ejemploArea:"Curva característica de bomba con curva del sistema.",
+        decision:"¿La bomba entrega el caudal necesario?",
+        etica:"Ignorar el NPSH lleva a cavitación aunque el caudal 'dé'.",
+        cleveland: CLEV.posComun, area:"Ingeniería química" },
+      { id:"rtd", nombre:"Distribución de tiempos de residencia E(t)", ejemplo:"Caracterización de reactores",
+        pregunta:"¿Cómo se aleja un reactor real del flujo ideal?",
+        cuando:"Caracterización de reactores reales.",
+        cuandoNo:"Para reactores perfectamente mezclados o de flujo pistón ideal.",
+        ejemploArea:"Curva E(t) de un reactor continuo.",
+        decision:"¿Hay cortocircuitos o zonas muertas?",
+        etica:"Ajustar a un modelo ideal esconde el mal mezclado real.",
+        cleveland: CLEV.posComun, area:"Ingeniería química" },
+      { id:"arrhenius", nombre:"Arrhenius", ejemplo:"Energía de activación",
+        pregunta:"¿Cómo depende la velocidad de reacción de la temperatura?",
+        cuando:"Estimar energía de activación (ln k vs 1/T).",
+        cuandoNo:"Fuera del rango de temperatura medido.",
+        ejemploArea:"ln k contra 1/T para una reacción de deterioro.",
+        decision:"¿Cuánto acelera el proceso con la temperatura?",
+        etica:"Extrapolar la recta fuera del rango medido puede fallar por cambios de mecanismo.",
+        cleveland: CLEV.posComun, area:"Ingeniería química" },
+      { id:"psd", nombre:"Distribución de tamaño de partícula", ejemplo:"Molienda",
+        pregunta:"¿Cómo se reparten los tamaños de partícula?",
+        cuando:"Caracterización de polvos y molienda (eje logarítmico).",
+        cuandoNo:"Con eje lineal cuando el rango abarca varios órdenes.",
+        ejemploArea:"Frecuencia y acumulada del tamaño de partícula.",
+        decision:"¿La molienda cumple la especificación de tamaño?",
+        etica:"Mezclar distribución por número y por volumen cuenta historias opuestas.",
+        cleveland: CLEV.posComun, area:"Ingeniería química" },
+      { id:"muerte-termica", nombre:"Curvas de muerte térmica (D y z)", ejemplo:"Esterilización",
+        pregunta:"¿Cuánto tiempo y temperatura matan al microorganismo?",
+        cuando:"Diseño de tratamientos térmicos (semilog).",
+        cuandoNo:"Fuera del rango de temperaturas validado.",
+        ejemploArea:"Valores D y z: la base de la esterilización.",
+        decision:"¿Qué tiempo-temperatura garantiza inocuidad?",
+        etica:"Extrapolar valores D fuera del rango medido pone en riesgo la seguridad alimentaria.",
+        cleveland: CLEV.posComun, area:"Ingeniería de alimentos" },
+      { id:"isotermas", nombre:"Isotermas de sorción (GAB, BET)", ejemplo:"Actividad de agua",
+        pregunta:"¿Cómo se relaciona la actividad de agua con la humedad de equilibrio?",
+        cuando:"Estabilidad y secado de alimentos.",
+        cuandoNo:"A una temperatura distinta de la medida.",
+        ejemploArea:"Actividad de agua contra humedad de equilibrio.",
+        decision:"¿A qué humedad el producto es estable?",
+        etica:"Cada isoterma es válida solo a su temperatura: no la uses fuera de ella.",
+        cleveland: CLEV.posComun, area:"Ingeniería de alimentos" },
+      { id:"secado", nombre:"Curvas de secado", ejemplo:"Contenido y velocidad de secado",
+        pregunta:"¿Cómo pierde humedad el producto en el tiempo?",
+        cuando:"Diseño y control de secadores.",
+        cuandoNo:"Sin distinguir período constante y decreciente.",
+        ejemploArea:"Humedad y velocidad de secado contra tiempo.",
+        decision:"¿Cuánto tiempo de secado se necesita?",
+        etica:"Reportar solo el período constante subestima el tiempo real de secado.",
+        cleveland: CLEV.posComun, area:"Ingeniería de alimentos" },
+      { id:"reograma", nombre:"Reogramas", ejemplo:"Esfuerzo vs. velocidad de corte",
+        pregunta:"¿Cómo fluye el material y qué modelo lo describe?",
+        cuando:"Caracterización reológica con modelos ajustados.",
+        cuandoNo:"Sin cubrir el rango de corte del proceso.",
+        ejemploArea:"Esfuerzo cortante contra velocidad de corte.",
+        decision:"¿El fluido es newtoniano o requiere bombeo especial?",
+        etica:"Ajustar un modelo fuera de su rango de corte da parámetros ficticios.",
+        cleveland: CLEV.posComun, area:"Ingeniería de alimentos" },
+      { id:"barrido-frecuencia", nombre:"Barridos de frecuencia (G′, G″)", ejemplo:"Viscoelasticidad de geles",
+        pregunta:"¿El material se comporta más como sólido o como líquido?",
+        cuando:"Viscoelasticidad de geles y matrices.",
+        cuandoNo:"Fuera del rango viscoelástico lineal.",
+        ejemploArea:"G′ y G″ contra frecuencia en un gel.",
+        decision:"¿La estructura del gel es estable?",
+        etica:"Medir fuera del rango lineal destruye la muestra y falsea G′ y G″.",
+        cleveland: CLEV.posComun, area:"Ingeniería de alimentos" },
+      { id:"tpa", nombre:"Curva de TPA", ejemplo:"Análisis de perfil de textura",
+        pregunta:"¿Qué atributos de textura tiene el producto?",
+        cuando:"Análisis de perfil de textura (dos compresiones).",
+        cuandoNo:"Sin condiciones de ensayo estandarizadas.",
+        ejemploArea:"Fuerza contra tiempo con dos compresiones.",
+        decision:"¿La textura cumple lo esperado por el consumidor?",
+        etica:"Cambiar la velocidad o deformación del ensayo hace incomparables los resultados.",
+        cleveland: CLEV.posComun, area:"Ingeniería de alimentos" },
+      { id:"dsc", nombre:"Termogramas DSC", ejemplo:"Transiciones de fase",
+        pregunta:"¿A qué temperatura ocurren las transiciones térmicas?",
+        cuando:"Fusión, cristalización y transición vítrea.",
+        cuandoNo:"Sin controlar la velocidad de calentamiento.",
+        ejemploArea:"Flujo de calor contra temperatura.",
+        decision:"¿A qué temperatura procesar o almacenar?",
+        etica:"La línea base y la velocidad de barrido determinan qué picos aparecen.",
+        cleveland: CLEV.posComun, area:"Ingeniería de alimentos" },
+      { id:"prefmap", nombre:"Mapas de preferencia (PrefMap)", ejemplo:"Sensorial + consumidor",
+        pregunta:"¿Qué productos prefieren los consumidores y por qué?",
+        cuando:"Cruzar perfil sensorial con preferencia del consumidor.",
+        cuandoNo:"Con muy pocos consumidores o productos.",
+        ejemploArea:"PCA sensorial con vectores de preferencia del consumidor.",
+        decision:"¿Hacia qué perfil dirigir el desarrollo?",
+        etica:"Vectores de preferencia sobre pocos consumidores no representan al mercado.",
+        cleveland: CLEV.posComun, area:"Ingeniería de alimentos" },
+      { id:"cielab", nombre:"Diagrama CIELAB (a* b*)", ejemplo:"Cambios de color",
+        pregunta:"¿Cómo cambia el color durante el procesamiento?",
+        cuando:"Seguimiento de color instrumental.",
+        cuandoNo:"Sin condiciones de iluminación estandarizadas.",
+        ejemploArea:"Cambios de color a* b* durante el procesamiento.",
+        decision:"¿El color se aleja de lo aceptable?",
+        etica:"Comparar mediciones con distinto iluminante o fondo es engañoso.",
+        cleveland: CLEV.posComun, area:"Ingeniería de alimentos" },
+      { id:"espectros", nombre:"Espectros apilados (NIR, FTIR)", ejemplo:"Comparar muestras",
+        pregunta:"¿Qué diferencias hay entre espectros de varias muestras?",
+        cuando:"Comparar espectros con desplazamiento vertical.",
+        cuandoNo:"Para cuantificar sin preprocesar la señal.",
+        ejemploArea:"Espectros NIR o FTIR con desplazamiento vertical.",
+        decision:"¿Qué banda distingue las muestras?",
+        etica:"El desplazamiento vertical es artificial: no lo leas como intensidad real.",
+        cleveland: CLEV.posComun, area:"Ingeniería de alimentos" },
+      { id:"efectos-principales", nombre:"Efectos principales e interacciones", ejemplo:"DOE",
+        pregunta:"¿Qué factor mueve la respuesta y cómo interactúan?",
+        cuando:"Diseño de experimentos: leer efectos.",
+        cuandoNo:"Sin un diseño experimental detrás.",
+        ejemploArea:"Efecto de cada factor sobre la respuesta.",
+        decision:"¿Qué factores fijar y cuáles ajustar?",
+        etica:"Líneas paralelas = sin interacción; leerlas mal invierte la conclusión.",
+        cleveland: CLEV.posAlin, area:"Diseño experimental" },
+      { id:"pareto-efectos", nombre:"Pareto de efectos estandarizados", ejemplo:"DOE",
+        pregunta:"¿Qué efectos superan el umbral de significancia?",
+        cuando:"Identificar factores significativos en un DOE.",
+        cuandoNo:"Sin réplicas o estimación del error.",
+        ejemploArea:"Efectos estandarizados con línea de significancia.",
+        decision:"¿Qué factores retener en el modelo?",
+        etica:"Sin la línea de significancia bien calculada, cualquier efecto 'parece' importar.",
+        cleveland: CLEV.longitud, area:"Diseño experimental" },
+      { id:"deseabilidad", nombre:"Gráfico de deseabilidad", ejemplo:"Optimización multirespuesta",
+        pregunta:"¿Qué condiciones optimizan varias respuestas a la vez?",
+        cuando:"Optimización multirespuesta.",
+        cuandoNo:"Con una sola respuesta (usa contornos).",
+        ejemploArea:"Deseabilidad para optimizar varias respuestas juntas.",
+        decision:"¿Qué punto de operación es el mejor compromiso?",
+        etica:"Los pesos de cada respuesta son una decisión de valor, no un dato objetivo.",
+        cleveland: CLEV.posComun, area:"Diseño experimental" },
+    ],
+  },
+];
+
+// Diagrama de decisión — ¿qué quiero mostrar? -> tarea recomendada
+const DECISION = [
+  { q:"¿Cuál es mayor entre categorías?", tarea:"comparar", ej:"Barras, dot plot, lollipop" },
+  { q:"¿Cómo se distribuye una variable?", tarea:"distribucion", ej:"Histograma, boxplot, raincloud" },
+  { q:"¿Qué se relaciona con qué?", tarea:"relacion", ej:"Dispersión, burbujas, contornos" },
+  { q:"¿De qué está hecho el total?", tarea:"composicion", ej:"Waterfall, treemap, área apilada" },
+  { q:"¿Cómo cambia en el tiempo?", tarea:"tiempo", ej:"Línea, small multiples, carta de control" },
+  { q:"¿Cómo fluye o se conecta?", tarea:"flujos", ej:"Sankey, aluvial, dendrograma" },
+  { q:"¿Cómo se estructura lo complejo?", tarea:"multivariado", ej:"PCA, ROC, coordenadas paralelas" },
+  { q:"¿Necesito una convención de la disciplina?", tarea:"canonicos", ej:"McCabe-Thiele, Arrhenius, isotermas" },
+];
+
+</script>
+<script>
+// Cómo leer cada figura — descripción clara de qué se ve y qué codifican los colores.
+// Convención de color del sistema: citrón = foco (lo que importa), gris = contexto,
+// arcilla = negativo. Editá libremente.
+
+const LECTURA = {
+  /* 01 COMPARAR */
+  barras: "Cada barra es un lote; su altura es el rendimiento. En citrón, el lote de mayor rendimiento; en gris, el resto (contexto).",
+  "barras-agrupadas": "Cada grupo es un tiempo de secado; dentro, las tres barras son tratamientos. El tercer tratamiento va en citrón para seguirlo a través de los grupos.",
+  "barras-apiladas": "Cada barra es un producto y su altura total es el 100% del contenido. Los segmentos son los componentes; en citrón el que se quiere destacar.",
+  "barras-100": "Todas las barras miden lo mismo (100%). Solo cambia la proporción interna; el segmento en citrón es el defecto que se vigila. Ojo: no muestra cuánto produce cada línea.",
+  dotplot: "Cada fila es un SKU; el punto gris es el 'antes' y el claro el 'después'. La línea mide el cambio. En citrón, el SKU con el mayor salto.",
+  lollipop: "Cada línea es una operación, ordenada de mayor a menor merma; el punto marca el valor. En citrón, la merma más alta.",
+  diverging: "Las barras salen de un centro neutro: a la derecha (gris/citrón) lo que agrada, a la izquierda (arcilla) lo que desagrada. En citrón la respuesta dominante.",
+  bullet: "La barra es el valor real; la línea vertical es la meta; las franjas de fondo son los rangos (malo/aceptable/bueno). En citrón, el indicador en foco.",
+  radar: "Cada eje es un atributo; más lejos del centro, más intenso. Cada polígono es una formulación; en citrón la de interés. El área abultada engaña: no la leas como 'mejor'.",
+  /* 02 DISTRIBUCIÓN */
+  histograma: "Cada barra cuenta cuántos envases caen en un rango de peso. En citrón la clase más frecuente (la moda). La forma general es la distribución.",
+  densidad: "Cada curva es una distribución suavizada de un molino. En citrón el molino en foco, en gris el de comparación. Cuanto más angosta, más uniforme.",
+  boxplot: "La caja va del cuartil 1 al 3; la línea interna es la mediana; los bigotes, el rango. En citrón el grupo en foco. No revela cuántos datos hay.",
+  violin: "El ancho muestra dónde se concentran los datos. Dos abultamientos = dos poblaciones (bimodal). En citrón la muestra en foco.",
+  beeswarm: "Cada punto es una réplica real, separada para que no se tapen. En citrón el grupo en foco. Con pocos datos, muestra el dato, no un resumen.",
+  raincloud: "Tres capas: arriba la nube (densidad), en medio el resumen tipo caja, abajo cada dato crudo. Todo en citrón por ser la figura protagonista.",
+  ecdf: "El eje Y es la fracción acumulada de datos por debajo de cada valor. La línea de arcilla marca el límite: donde la curva lo cruza, esa fracción cumple.",
+  qq: "Cada punto compara un cuantil de los datos con el teórico. Si siguen la diagonal (citrón), la distribución es normal; desvíos en las puntas indican colas.",
+  pareto: "Barras ordenadas de mayor a menor (las dos primeras en citrón) y la línea es el acumulado. Donde el acumulado llega a ~80%, están las pocas causas que importan.",
+  /* 03 RELACIÓN */
+  dispersion: "Cada punto es una observación (aw vs. crecimiento). Los puntos en citrón superan el umbral de riesgo; en gris, el resto. La nube sugiere la relación, no la causa.",
+  "dispersion-ajuste": "Los puntos grises son los datos; la línea citrón es el modelo ajustado y la banda es su intervalo de confianza del 95%. Fuera de la banda, no hay respaldo.",
+  burbujas: "Posición = dos variables; el tamaño del círculo (por área) = una tercera. En citrón la condición de mayor retención. El área, no el radio, codifica el valor.",
+  hexbin: "Cada hexágono agrupa muchos puntos; a más color/opacidad, más densidad. En citrón la zona más densa: el régimen habitual de operación.",
+  splom: "Una rejilla de dispersiones para cada par de variables; la diagonal nombra la variable. En citrón el par con relación notable, para estudiarlo aparte.",
+  "heatmap-corr": "Cada celda es la correlación entre dos variables: citrón = positiva, arcilla = negativa, más intenso = más fuerte. En recuadro, el par en foco.",
+  contornos: "Cada línea une puntos de igual respuesta (como un mapa topográfico). Anillos más juntos = cambio más rápido. La cruz citrón marca el óptimo.",
+  superficie3d: "La malla es la respuesta según dos factores; la altura y el color (gris→citrón) indican el valor. El pico es el máximo. Bonito, pero difícil de leer con precisión.",
+  /* 04 COMPOSICIÓN */
+  pie: "Cada tajada es una parte del total; el ángulo mide la proporción. En citrón la categoría dominante. Con más de 3–4 tajadas, el ojo ya no compara bien.",
+  treemap: "Cada rectángulo es una categoría; su área es su peso en el total. En citrón la familia de mayor costo. Las áreas se estiman peor que las longitudes.",
+  waterfall: "Empieza y termina con barras completas (entrada y producto); las intermedias suben (gris) o bajan (arcilla). Las de arcilla son las pérdidas del balance.",
+  "area-apilada": "Cada banda es un componente y su grosor es su aporte a lo largo del tiempo; el total es la suma. En citrón el componente en foco. Solo la banda de abajo tiene base fija.",
+  mosaico: "El ancho de cada columna es el tamaño del turno; la altura de cada segmento, su proporción de defectos. En citrón/arcilla los bloques que saltan.",
+  /* 05 TIEMPO */
+  linea: "La línea citrón es la temperatura en el tiempo. La zona plana marcada es la meseta de esterilización: el proceso alcanzó y sostuvo el objetivo.",
+  "small-multiples": "Un panel por sensor, todos a la misma escala para poder compararlos. En citrón el panel cuyo comportamiento se sale del patrón.",
+  step: "La línea sube por escalones porque la variable cambia de golpe (no gradualmente). Cada peldaño es un cambio de estado o de setpoint.",
+  "carta-control": "Los puntos son muestras en el tiempo; las líneas de arcilla son los límites de control. Un punto fuera (citrón) señala que el proceso se salió de control.",
+  cusum: "Acumula las desviaciones respecto a la meta. Mientras el proceso está centrado, la línea es plana; cuando empieza a subir, hay una deriva sostenida.",
+  spaghetti: "Cada línea gris es un lote individual; juntas muestran la variabilidad. La línea citrón gruesa es la mediana, el comportamiento típico.",
+  slope: "Dos momentos (antes/después) unidos por una línea por categoría. Sube (citrón) o baja (arcilla): la pendiente cuenta la dirección del cambio.",
+  gantt: "Cada barra es una operación; su posición y largo son inicio y duración. Donde las barras se solapan, compiten por la planta.",
+  "heatmap-calendario": "Cada celda es un día del año; el color indica cuántas paradas hubo. En citrón el mes con más incidencias (el patrón estacional).",
+  horizon: "Cada franja es una serie comprimida: el color/altura muestra cuánto se aleja de lo normal. En citrón la variable que rompe su banda habitual.",
+  /* 06 FLUJOS */
+  sankey: "El flujo entra por la izquierda (citrón) y se reparte a la derecha: en gris lo que se aprovecha (producto), en arcilla lo que se pierde. El ancho es proporcional a la cantidad, así que entra = sale.",
+  aluvial: "Cada columna es una etapa; las bandas son categorías de calidad y su grosor, la cantidad. Cuando una banda cruza a otra franja, esa fracción se reclasificó.",
+  cuerda: "Los arcos del borde son los nodos; cada cinta interior es un flujo entre dos nodos y su grosor, la magnitud. Muchas cintas = red de intercambio densa.",
+  dendrograma: "Cada hoja es una muestra; se unen a la altura de su distancia (más abajo = más parecidas). La línea de arcilla es el corte que define cuántos grupos hay.",
+  sunburst: "Anillos concéntricos = niveles de la jerarquía: el centro (citrón) es el total, y hacia afuera se subdivide en categorías y subcategorías. El ángulo de cada arco es su proporción.",
+  pfd: "Es el diagrama de proceso con los datos reales encima: las cajas son equipos, las flechas el flujo. Los valores en citrón son las variables clave (temperatura, aw).",
+  /* 07 MULTIVARIADO */
+  "biplot-pca": "Cada punto es una muestra proyectada en dos componentes; los grupos (citrón vs. gris) se separan si difieren. Las flechas son las variables originales. Mira siempre la varianza explicada (%).",
+  plsda: "Cada punto es una muestra; las elipses agrupan cada clase. Separación limpia entre citrón (conforme) y gris (adulterado) = buena discriminación, si está validada.",
+  "heatmap-cluster": "Filas = muestras, columnas = compuestos; el color es la intensidad. Los dendrogramas de los bordes reordenan filas y columnas para que los bloques similares queden juntos.",
+  "coordenadas-paralelas": "Cada eje vertical es un parámetro; cada línea que los cruza es una formulación. En citrón la que cumple todos los criterios. El orden de los ejes cambia lo que se ve.",
+  ternario: "Cada punto es una mezcla de tres componentes que suman 100%; cada vértice es un componente puro. En citrón la mezcla óptima.",
+  roc: "Traza sensibilidad frente a falsos positivos al variar el umbral. Cuanto más arriba-izquierda la curva (citrón), mejor discrimina; la diagonal es el azar. El AUC resume el desempeño.",
+  "bland-altman": "Cada punto compara los dos métodos: X = promedio, Y = diferencia. La línea central es el sesgo medio; las de arcilla, los límites de acuerdo. Dentro de ellas, los métodos concuerdan.",
+  forest: "Cada fila es un estudio: el cuadro es su efecto y la línea su intervalo; el tamaño del cuadro es su peso. El diamante citrón es el efecto combinado. La línea vertical es 'sin efecto'.",
+  "kaplan-meier": "La curva citrón cae cada vez que ocurre el evento (rechazo); los ticks son datos censurados. La altura es la fracción que 'sobrevive' hasta ese tiempo.",
+  tornado: "Cada barra es una variable; su largo es cuánto mueve el resultado. Ordenadas de mayor a menor forman el 'tornado'; en citrón la más influyente (arcilla = efecto a la baja).",
+  /* 08 CANÓNICOS */
+  "mccabe-thiele": "La curva es el equilibrio y las rectas citrón son las líneas de operación. Los escalones entre ambas son las etapas teóricas: cada peldaño, un plato.",
+  txy: "A cada composición, la curva inferior es el líquido (burbuja) y la superior el vapor (rocío, citrón). Entre ambas coexisten las dos fases; la línea horizontal las une.",
+  moody: "El factor de fricción (Y) frente a Reynolds (X), ambos logarítmicos. Cada curva es una rugosidad; en citrón la de referencia. A la izquierda, la zona laminar.",
+  psicrometrico: "La curva superior es la saturación (100% HR); las curvas internas, humedades relativas menores. La línea citrón es el proceso (p. ej. secado) sobre la carta.",
+  mollier: "La campana es la zona de dos fases; las curvas internas son isóbaras. La línea citrón es el proceso: su recorrido da el trabajo o calor de cada etapa.",
+  "curva-bomba": "La curva descendente es la bomba (cabeza vs. caudal); la ascendente es el sistema. Se cruzan en el punto de operación (citrón): ahí trabaja la bomba de verdad.",
+  rtd: "La curva E(t) muestra cómo se reparte el tiempo que el fluido pasa en el reactor. Un pico angosto = flujo casi ideal; colas largas = zonas muertas o cortocircuitos.",
+  arrhenius: "Los puntos son ln(k) frente a 1/T; la recta citrón los ajusta. Su pendiente es −Ea/R: más inclinada, más sensible a la temperatura. No extrapoles fuera del rango.",
+  psd: "Las barras son la frecuencia por tamaño (eje logarítmico); la curva citrón es el acumulado. Con el acumulado se leen percentiles como el d50.",
+  "muerte-termica": "En escala semilog, cada recta es la muerte del microorganismo a una temperatura; su pendiente da el valor D. En citrón la de referencia. Base del cálculo de esterilización.",
+  isotermas: "La curva citrón relaciona actividad de agua (X) con humedad de equilibrio (Y) a una temperatura fija; los puntos son datos. Su forma en S define zonas de estabilidad.",
+  secado: "Dos curvas en el tiempo: la humedad del producto (gris, baja) y la velocidad de secado (citrón). La velocidad es constante y luego decrece; ahí el secado se vuelve lento.",
+  reograma: "Esfuerzo (Y) frente a velocidad de corte (X). La recta gris es un fluido newtoniano; la curva citrón, uno no newtoniano. Los puntos son datos; la curva, el modelo ajustado.",
+  "barrido-frecuencia": "Dos módulos frente a la frecuencia: G′ (citrón, elástico/sólido) y G″ (gris, viscoso/líquido). Si G′ domina, el material se comporta como gel estructurado.",
+  tpa: "Fuerza frente a tiempo con dos compresiones (los dos picos citrón). De sus alturas y áreas se derivan dureza, cohesividad y demás atributos de textura.",
+  dsc: "Flujo de calor frente a temperatura. Los picos y escalones (en citrón) son transiciones: fusión, cristalización o transición vítrea. La dirección del pico dice si absorbe o libera calor.",
+  prefmap: "Un mapa PCA de productos (puntos) con vectores de preferencia del consumidor (citrón): los productos en la dirección de los vectores son los más preferidos.",
+  cielab: "El plano de color a* (rojo-verde) y b* (amarillo-azul). Cada punto es una medición; la trayectoria (que termina en citrón) muestra cómo cambia el color durante el proceso.",
+  espectros: "Cada curva es el espectro de una muestra, desplazado hacia arriba para no encimarse. En citrón la muestra en foco. El offset es artificial: no es intensidad real.",
+  "efectos-principales": "Cada tramo une la respuesta media en los niveles de un factor. Pendiente marcada (citrón) = efecto fuerte; línea plana = sin efecto. Líneas no paralelas indicarían interacción.",
+  "pareto-efectos": "Barras de los efectos ordenados por magnitud; la línea de arcilla es el umbral de significancia. Las que lo cruzan (citrón) son los factores que importan.",
+  deseabilidad: "La curva citrón combina varias respuestas en un solo índice (0 a 1). Su máximo marca la condición de proceso que mejor concilia todos los objetivos.",
+};
+
+</script>
+<script>
+/* ============================================================
+   Explorador de gráficos — app autocontenida (JS vanilla).
+   Porte fiel del componente Claude Design (sin runtime ni React).
+   Estado: tareaId, chartId, decisionOpen. render() reconstruye el DOM.
+   ============================================================ */
+(function(){
+  "use strict";
+  var ICON = {
+    decision:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v6"/><circle cx="12" cy="12" r="3"/><path d="M6 21a6 6 0 0 1 6-6 6 6 0 0 1 6 6"/><path d="M4.5 9h3M16.5 9h3"/></svg>',
+    back:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>',
+    prev:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>',
+    next:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>',
+    search:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>',
+    chart:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-faint)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>',
+    close:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>',
+    arrow:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M5 12h14M12 5l7 7-7 7"/></svg>'
+  };
+  function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+  function fig(id){ try{ return window.buildChartSVG(id); }catch(e){ return ''; } }
+
+  var state = { tareaId: TAREAS[0].id, chartId: null, decisionOpen: false };
+  var root = document.getElementById('nv-app');
+  function tarea(id){ return TAREAS.filter(function(t){return t.id===id;})[0] || TAREAS[0]; }
+
+  function header(){
+    return ''+
+    '<header class="nv-header" style="display:flex;align-items:center;justify-content:space-between;padding:18px 32px;border-bottom:var(--bw) solid var(--border);flex-shrink:0;gap:24px;flex-wrap:wrap">'+
+      '<div style="display:flex;align-items:center;gap:18px;min-width:0">'+
+        '<div style="position:relative;width:26px;height:26px;flex-shrink:0">'+
+          '<span style="position:absolute;top:0;left:0;width:9px;height:9px;border-top:2px solid var(--accent);border-left:2px solid var(--accent)"></span>'+
+          '<span style="position:absolute;top:0;right:0;width:9px;height:9px;border-top:2px solid var(--accent);border-right:2px solid var(--accent)"></span>'+
+          '<span style="position:absolute;bottom:0;left:0;width:9px;height:9px;border-bottom:2px solid var(--accent);border-left:2px solid var(--accent)"></span>'+
+          '<span style="position:absolute;bottom:0;right:0;width:9px;height:9px;border-bottom:2px solid var(--accent);border-right:2px solid var(--accent)"></span>'+
+        '</div>'+
+        '<div style="min-width:0">'+
+          '<div style="font-family:var(--font-text);font-size:9.5px;letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--text-faint)">Narrativas Visuales · Taller</div>'+
+          '<div class="nv-wordmark" style="font-family:var(--font-display);font-size:26px;font-weight:var(--w-medium);line-height:1;letter-spacing:var(--tracking-display)">El gráfico correcto</div>'+
+        '</div>'+
+      '</div>'+
+      '<div data-act="openDecision" role="button" tabindex="0" class="nv-decisionbtn nv-btnhover" data-hover style="display:inline-flex;align-items:center;gap:9px;padding:11px 18px;border:var(--bw) solid var(--border-strong);border-radius:var(--r-1);cursor:pointer;flex-shrink:0;font-family:var(--font-text);font-size:12px;font-weight:var(--w-semibold);letter-spacing:var(--tracking-eyebrow);text-transform:uppercase;color:var(--text)">'+
+        ICON.decision+'<span class="nv-btnlabel">Diagrama de decisión</span>'+
+      '</div>'+
+    '</header>';
+  }
+
+  function rail(at){
+    var rows = TAREAS.map(function(t){
+      var active = t.id===at.id;
+      return '<div data-act="selTarea" data-id="'+t.id+'" role="button" class="nv-rowhover" data-hover style="display:flex;align-items:flex-start;gap:14px;padding:13px 24px;cursor:pointer;border-left:2px solid '+(active?'var(--accent)':'transparent')+';background:'+(active?'var(--surface-hover)':'transparent')+'">'+
+        '<span style="font-family:var(--font-display);font-size:22px;font-weight:var(--w-light);line-height:1;color:'+(active?'var(--accent)':'var(--text-faint)')+';width:26px;flex-shrink:0;font-feature-settings:var(--fnum)">'+t.num+'</span>'+
+        '<span style="flex:1;min-width:0">'+
+          '<span style="display:block;font-family:var(--font-text);font-size:14px;font-weight:var(--w-medium);line-height:1.25;color:var(--text)">'+esc(t.nombre)+'</span>'+
+          '<span style="display:block;font-family:var(--font-text);font-size:11px;color:var(--text-faint);margin-top:2px">'+t.charts.length+' gráficos</span>'+
+        '</span>'+
+      '</div>';
+    }).join('');
+    return ''+
+    '<nav class="nv-rail" style="width:270px;flex-shrink:0;border-right:var(--bw) solid var(--border);overflow-y:auto;padding:20px 0;background:var(--carbon-950)">'+
+      '<div class="nv-railhdr" style="padding:0 24px 14px;font-family:var(--font-text);font-size:9.5px;letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--text-faint)">Tarea visual</div>'+
+      '<div class="nv-tablist">'+rows+'</div>'+
+      '<div class="nv-railfoot" style="padding:20px 24px 6px;margin-top:12px;border-top:var(--bw) solid var(--border)">'+
+        '<p style="font-family:var(--font-text);font-size:12px;line-height:1.5;color:var(--text-faint);margin:0">La pregunta no es qué dicen los datos, sino qué decisión se va a tomar con ellos.</p>'+
+      '</div>'+
+    '</nav>';
+  }
+
+  function grid(at){
+    var cards = at.charts.map(function(c){
+      return '<article data-act="openChart" data-id="'+c.id+'" role="button" class="nv-cardhover" data-hover style="display:flex;flex-direction:column;background:var(--surface);border:var(--bw) solid var(--border);border-radius:var(--r-2);overflow:hidden;cursor:pointer">'+
+        '<div style="aspect-ratio:17/10;background:var(--carbon-950);border-bottom:var(--bw) solid var(--border)"><div class="nv-fig">'+fig(c.id)+'</div></div>'+
+        '<div style="padding:14px 16px 16px">'+
+          '<h3 style="font-family:var(--font-display);font-size:23px;font-weight:var(--w-medium);line-height:1;letter-spacing:var(--tracking-display);margin:0 0 4px">'+esc(c.nombre)+'</h3>'+
+          '<div style="font-family:var(--font-text);font-size:11px;letter-spacing:var(--tracking-wide);text-transform:uppercase;color:var(--text-faint);margin-bottom:8px">'+esc(c.ejemplo)+'</div>'+
+          '<p style="font-family:var(--font-text);font-size:13px;line-height:1.45;color:var(--text-muted);margin:0">'+esc(c.pregunta)+'</p>'+
+        '</div>'+
+      '</article>';
+    }).join('');
+    return '<div class="nv-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px">'+cards+'</div>';
+  }
+
+  function detail(at, c){
+    var idx = at.charts.map(function(x){return x.id;}).indexOf(c.id);
+    var pos = idx+1, total = at.charts.length;
+    var hasPrev = idx>0, hasNext = idx<total-1;
+    var lectura = (typeof LECTURA!=='undefined' && LECTURA[c.id]) || '';
+    var navBtns = ''+
+      '<span style="font-family:var(--font-text);font-size:12px;color:var(--text-faint);font-feature-settings:var(--fnum)">'+pos+' / '+total+'</span>'+
+      (hasPrev?'<div data-act="prev" role="button" class="nv-btnhover" data-hover style="display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border:var(--bw) solid var(--border-strong);border-radius:var(--r-1);cursor:pointer;color:var(--text)">'+ICON.prev+'</div>':'')+
+      (hasNext?'<div data-act="next" role="button" class="nv-btnhover" data-hover style="display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border:var(--bw) solid var(--border-strong);border-radius:var(--r-1);cursor:pointer;color:var(--text)">'+ICON.next+'</div>':'');
+    var areaTag = c.area?'<span style="font-family:var(--font-text);font-size:10.5px;font-weight:var(--w-semibold);letter-spacing:var(--tracking-wide);text-transform:uppercase;color:var(--accent);border:var(--bw) solid var(--border-focus);border-radius:var(--r-1);padding:3px 9px">'+esc(c.area)+'</span>':'';
+    return ''+
+    '<div style="animation:nvfade var(--dur) var(--ease)">'+
+      '<div style="display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:22px">'+
+        '<div data-act="backGrid" role="button" class="nv-linkhover" data-hover style="display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-family:var(--font-text);font-size:11px;letter-spacing:var(--tracking-eyebrow);text-transform:uppercase;color:var(--text-muted)">'+ICON.back+esc(at.nombre)+'</div>'+
+        '<div style="display:flex;align-items:center;gap:10px">'+navBtns+'</div>'+
+      '</div>'+
+      '<div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:20px">'+
+        '<h2 class="nv-chartname" style="font-family:var(--font-display);font-size:60px;font-weight:var(--w-medium);line-height:0.94;letter-spacing:var(--tracking-display);margin:0">'+esc(c.nombre)+'</h2>'+areaTag+
+      '</div>'+
+      '<div class="nv-detailgrid" style="display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:32px;align-items:start">'+
+        /* IZQUIERDA: figura enmarcada */
+        '<div>'+
+          '<figure style="margin:0">'+
+            '<div style="position:relative;padding:18px;background:var(--carbon-950);border:var(--bw) solid var(--border);border-radius:var(--r-2)">'+
+              '<span style="position:absolute;top:0;left:0;width:22px;height:22px;border-top:2px solid var(--accent);border-left:2px solid var(--accent);pointer-events:none"></span>'+
+              '<span style="position:absolute;top:0;right:0;width:22px;height:22px;border-top:2px solid var(--accent);border-right:2px solid var(--accent);pointer-events:none"></span>'+
+              '<span style="position:absolute;bottom:0;left:0;width:22px;height:22px;border-bottom:2px solid var(--accent);border-left:2px solid var(--accent);pointer-events:none"></span>'+
+              '<span style="position:absolute;bottom:0;right:0;width:22px;height:22px;border-bottom:2px solid var(--accent);border-right:2px solid var(--accent);pointer-events:none"></span>'+
+              '<div style="aspect-ratio:17/10;width:100%"><div class="nv-fig">'+fig(c.id)+'</div></div>'+
+            '</div>'+
+            '<figcaption style="display:flex;align-items:baseline;gap:12px;margin-top:12px">'+
+              '<span style="font-family:var(--font-text);font-size:10.5px;font-weight:var(--w-bold);letter-spacing:var(--tracking-wide);color:var(--accent);flex-shrink:0">FIG</span>'+
+              '<span style="font-family:var(--font-text);font-size:12.5px;letter-spacing:var(--tracking-wide);text-transform:uppercase;color:var(--text-faint);line-height:1.5">'+esc(c.ejemplo)+'</span>'+
+            '</figcaption>'+
+          '</figure>'+
+          '<div style="margin-top:16px;padding:15px 17px;background:var(--carbon-950);border:var(--bw) solid var(--border);border-radius:var(--r-2)">'+
+            '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">'+ICON.search+
+              '<span style="font-family:var(--font-text);font-size:10px;font-weight:var(--w-semibold);letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--accent)">Cómo leer la figura</span>'+
+            '</div>'+
+            '<p style="font-family:var(--font-text);font-size:13.5px;line-height:1.55;color:var(--text-muted);margin:0">'+esc(lectura)+'</p>'+
+            '<div style="display:flex;flex-wrap:wrap;gap:14px;margin-top:12px;padding-top:11px;border-top:var(--bw) solid var(--border)">'+
+              '<span style="display:inline-flex;align-items:center;gap:6px;font-family:var(--font-text);font-size:11px;color:var(--text-faint)"><span style="width:11px;height:11px;background:var(--focus);border-radius:1px;flex-shrink:0"></span>Foco</span>'+
+              '<span style="display:inline-flex;align-items:center;gap:6px;font-family:var(--font-text);font-size:11px;color:var(--text-faint)"><span style="width:11px;height:11px;background:var(--context);border-radius:1px;flex-shrink:0"></span>Contexto</span>'+
+              '<span style="display:inline-flex;align-items:center;gap:6px;font-family:var(--font-text);font-size:11px;color:var(--text-faint)"><span style="width:11px;height:11px;background:var(--signal-negative);border-radius:1px;flex-shrink:0"></span>Negativo</span>'+
+            '</div>'+
+          '</div>'+
+          '<div style="margin-top:22px;padding:16px 18px;background:var(--surface-2);border-left:var(--bw-2) solid var(--accent);border-radius:0 var(--r-2) var(--r-2) 0">'+
+            '<div style="font-family:var(--font-text);font-size:10px;font-weight:var(--w-semibold);letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--accent);margin-bottom:6px">La pregunta que responde</div>'+
+            '<p style="font-family:var(--font-display);font-size:24px;font-weight:var(--w-medium);line-height:1.05;color:var(--text);margin:0">'+esc(c.pregunta)+'</p>'+
+          '</div>'+
+        '</div>'+
+        /* DERECHA: ficha */
+        '<div style="display:flex;flex-direction:column;gap:22px">'+
+          '<div style="display:grid;grid-template-columns:1fr 1fr;gap:18px">'+
+            '<div><div style="font-family:var(--font-text);font-size:10px;font-weight:var(--w-semibold);letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--text-faint);margin-bottom:7px">Cuándo usarlo</div>'+
+              '<p style="font-family:var(--font-text);font-size:14px;line-height:1.5;color:var(--text-muted);margin:0">'+esc(c.cuando)+'</p></div>'+
+            '<div><div style="font-family:var(--font-text);font-size:10px;font-weight:var(--w-semibold);letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--signal-negative);margin-bottom:7px">Cuándo no</div>'+
+              '<p style="font-family:var(--font-text);font-size:14px;line-height:1.5;color:var(--text-muted);margin:0">'+esc(c.cuandoNo)+'</p></div>'+
+          '</div>'+
+          '<div style="border-top:var(--bw) solid var(--border);padding-top:20px">'+
+            '<div style="font-family:var(--font-text);font-size:10px;font-weight:var(--w-semibold);letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--text-faint);margin-bottom:7px">Ejemplo en el área</div>'+
+            '<p style="font-family:var(--font-text);font-size:15px;line-height:1.5;color:var(--text);margin:0">'+esc(c.ejemploArea)+'</p>'+
+          '</div>'+
+          '<div style="background:var(--surface);border:var(--bw) solid var(--border);border-radius:var(--r-2);padding:16px 18px">'+
+            '<div style="font-family:var(--font-text);font-size:10px;font-weight:var(--w-semibold);letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--accent);margin-bottom:7px">La decisión que habilita</div>'+
+            '<p style="font-family:var(--font-text);font-size:15px;line-height:1.5;color:var(--text);margin:0">'+esc(c.decision)+'</p>'+
+          '</div>'+
+          '<div style="display:flex;gap:14px;background:var(--surface-2);border-left:var(--bw-2) solid var(--signal-negative);border-radius:0 var(--r-2) var(--r-2) 0;padding:16px 18px">'+
+            '<div style="flex:1"><div style="font-family:var(--font-text);font-size:10px;font-weight:var(--w-semibold);letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--signal-negative);margin-bottom:6px">Ética · la trampa</div>'+
+              '<p style="font-family:var(--font-text);font-size:14px;line-height:1.5;color:var(--text-muted);margin:0">'+esc(c.etica)+'</p></div>'+
+          '</div>'+
+          '<div style="display:flex;align-items:center;gap:12px;border-top:var(--bw) solid var(--border);padding-top:18px">'+ICON.chart+
+            '<div><div style="font-family:var(--font-text);font-size:10px;letter-spacing:var(--tracking-wide);text-transform:uppercase;color:var(--text-faint)">Codificación (Cleveland–McGill)</div>'+
+              '<div style="font-family:var(--font-text);font-size:14px;font-weight:var(--w-medium);color:var(--text)">'+esc(c.cleveland)+'</div></div>'+
+          '</div>'+
+        '</div>'+
+      '</div>'+
+    '</div>';
+  }
+
+  function main(at){
+    var body = state.chartId ? detail(at, at.charts.filter(function(c){return c.id===state.chartId;})[0]) : grid(at);
+    return ''+
+    '<main class="nv-main" style="flex:1;min-width:0;overflow-y:auto;padding:32px 40px 60px">'+
+      '<div style="margin-bottom:28px">'+
+        '<div style="display:flex;align-items:baseline;gap:14px">'+
+          '<span style="font-family:var(--font-text);font-size:11px;letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--accent);font-weight:var(--w-semibold)">Serie '+at.num+'</span>'+
+          '<span style="font-family:var(--font-text);font-size:11px;letter-spacing:var(--tracking-wide);color:var(--text-faint)">'+esc(at.lema)+'</span>'+
+        '</div>'+
+        '<h1 class="nv-h1" style="font-family:var(--font-display);font-size:52px;font-weight:var(--w-medium);line-height:0.98;letter-spacing:var(--tracking-display);margin:6px 0 8px">'+esc(at.nombre)+'</h1>'+
+        '<p style="font-family:var(--font-text);font-size:15px;line-height:1.5;color:var(--text-muted);max-width:640px;margin:0">'+esc(at.desc)+'</p>'+
+      '</div>'+body+
+    '</main>';
+  }
+
+  function modal(){
+    if(!state.decisionOpen) return '';
+    var rows = DECISION.map(function(d){
+      return '<div data-act="goDecision" data-id="'+d.tarea+'" role="button" class="nv-rowhover" data-hover style="display:flex;align-items:center;justify-content:space-between;gap:18px;padding:16px 20px;background:var(--carbon-900);cursor:pointer">'+
+        '<div style="min-width:0">'+
+          '<div style="font-family:var(--font-display);font-size:22px;font-weight:var(--w-medium);line-height:1.05;letter-spacing:var(--tracking-display);color:var(--text)">'+esc(d.q)+'</div>'+
+          '<div style="font-family:var(--font-text);font-size:12px;color:var(--text-faint);margin-top:3px">'+esc(d.ej)+'</div>'+
+        '</div>'+ICON.arrow+
+      '</div>';
+    }).join('');
+    return ''+
+    '<div data-act="closeDecision" data-overlay="1" style="position:fixed;inset:0;background:rgba(10,10,10,0.82);display:flex;align-items:center;justify-content:center;padding:40px;z-index:50;animation:nvfade 160ms var(--ease)">'+
+      '<div style="max-width:720px;width:100%;background:var(--carbon-900);border:var(--bw) solid var(--border-strong);border-radius:var(--r-2);box-shadow:var(--shadow-pop);padding:36px 40px 40px;max-height:88vh;overflow-y:auto">'+
+        '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:20px;margin-bottom:6px">'+
+          '<div><div style="font-family:var(--font-text);font-size:10.5px;letter-spacing:var(--tracking-label);text-transform:uppercase;color:var(--accent);font-weight:var(--w-semibold)">Diagrama de decisión</div>'+
+            '<h2 style="font-family:var(--font-display);font-size:44px;font-weight:var(--w-medium);line-height:0.96;letter-spacing:var(--tracking-display);margin:4px 0 0">¿Qué quiero mostrar?</h2></div>'+
+          '<div data-act="closeDecision" role="button" class="nv-btnhover" data-hover style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border:var(--bw) solid var(--border-strong);border-radius:var(--r-1);cursor:pointer;color:var(--text-muted);flex-shrink:0">'+ICON.close+'</div>'+
+        '</div>'+
+        '<p style="font-family:var(--font-text);font-size:13px;line-height:1.5;color:var(--text-faint);margin:14px 0 24px;max-width:520px">La pregunta manda sobre el dato. Elegí lo que querés que el lector entienda; el recurso te lleva al grupo de gráficos correcto.</p>'+
+        '<div style="display:flex;flex-direction:column;gap:1px;background:var(--border);border:var(--bw) solid var(--border);border-radius:var(--r-2);overflow:hidden">'+rows+'</div>'+
+      '</div>'+
+    '</div>';
+  }
+
+  function render(){
+    var at = tarea(state.tareaId);
+    root.innerHTML = header() + '<div class="nv-inner" style="display:flex;flex:1;min-height:0">'+rail(at)+main(at)+'</div>' + modal();
+  }
+
+  // Delegación de eventos
+  root.addEventListener('click', function(ev){
+    var el = ev.target.closest('[data-act]');
+    if(!el) return;
+    var act = el.getAttribute('data-act');
+    if(act==='closeDecision'){ if(el.getAttribute('data-overlay') && ev.target!==el) return; state.decisionOpen=false; render(); return; }
+    if(act==='openDecision'){ state.decisionOpen=true; render(); return; }
+    if(act==='selTarea'){ state.tareaId=el.getAttribute('data-id'); state.chartId=null; render(); return; }
+    if(act==='openChart'){ state.chartId=el.getAttribute('data-id'); render(); scrollTop(); return; }
+    if(act==='backGrid'){ state.chartId=null; render(); return; }
+    if(act==='goDecision'){ state.tareaId=el.getAttribute('data-id'); state.chartId=null; state.decisionOpen=false; render(); return; }
+    if(act==='prev'||act==='next'){
+      var at=tarea(state.tareaId); var ids=at.charts.map(function(c){return c.id;}); var i=ids.indexOf(state.chartId);
+      i += (act==='next'?1:-1); if(i>=0 && i<ids.length){ state.chartId=ids[i]; render(); scrollTop(); }
+      return;
+    }
+  });
+  document.addEventListener('keydown', function(ev){ if(ev.key==='Escape' && state.decisionOpen){ state.decisionOpen=false; render(); } });
+  function scrollTop(){ var m=document.querySelector('.nv-main'); if(m) m.scrollTop=0; }
+
+  render();
+})();
+</script>
+</body>
+</html>
