@@ -353,6 +353,15 @@ export const narrativas202620Course: Course = {
         'Deck de la sesión 2 (Módulo 1). Taller análogo de crítica con la dinámica 1-2-4 sobre gráficos honestos pero inefectivos: el lente de experiencia de usuario («¿le sirve a quien decide?»), honesto ≠ efectivo, la rúbrica de crítica de seis criterios, un ejemplo de rediseño por el foco y la reflexión de 400 palabras.',
       file: 'presentacion-02-taller-critica.html',
     },
+    {
+      id: 'presentacion-03-eligiendo-visual',
+      title: 'Sesión 3 · Eligiendo el visual correcto',
+      sessionNumber: 3,
+      date: '2026-08-20',
+      description:
+        'Deck de la sesión 3 (Módulo 2). Apertura «Mostrar, no contar»: el dato dentro de la experiencia de usuario y el mismo dato en tres momentos (descubrir, comparar, decidir). El catálogo de las 8 tareas visuales, la codificación de Cleveland-McGill (por qué posición y longitud ganan), un recorrido en vivo del Explorador de gráficos y los gráficos a evitar por ética. Cierra con el ejercicio en papel —un set de calidad de alimentos con tres preguntas que piden tres visuales distintos— y la preparación de cuentas de IA para la sesión 4.',
+      file: 'presentacion-03-eligiendo-visual.html',
+    },
   ],
   simulations: [
     {
