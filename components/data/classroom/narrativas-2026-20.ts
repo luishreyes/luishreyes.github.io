@@ -295,6 +295,25 @@ export const narrativas202620Course: Course = {
     },
   ],
 
+  cronograma: [
+    { week: 1, day: 'Jueves', date: '2026-08-06', topic: 'El contexto lo es todo', details: ['Módulo 1 · las tres preguntas, Big Idea, storyboard, engaño visual'] },
+    { week: 2, day: 'Jueves', date: '2026-08-13', topic: 'Taller análogo de crítica 1-2-4', details: ['Módulo 1 · criticar y rediseñar gráficos honestos pero inefectivos'] },
+    { week: 3, day: 'Jueves', date: '2026-08-20', topic: 'Eligiendo el visual correcto', details: ['Módulo 2 · catálogo de visuales, Cleveland-McGill, gráficos a evitar'] },
+    { week: 4, day: 'Jueves', date: '2026-08-27', topic: 'Introducción a la IA generativa', details: ['Módulo 2 · prompting y flujo human-in-the-loop'], proyecto: 'Pieza 1 · Selección de visualizaciones' },
+    { week: 5, day: 'Jueves', date: '2026-09-03', topic: 'Menos es más', details: ['Módulo 3 · Gestalt, carga cognitiva, atributos preatentivos'] },
+    { week: 6, day: 'Jueves', date: '2026-09-10', topic: 'Taller de decluttering', details: ['Módulo 3 · quitar ruido y ejecución digital'], proyecto: 'Pieza 2 · Antes/después (decluttering)' },
+    { week: 7, day: 'Jueves', date: '2026-09-17', topic: 'Taller integrador #1', details: ['Módulo 4 · narrativa visual de propuesta de valor'], taller: 'Taller integrador de narrativa' },
+    { week: 8, day: 'Jueves', date: '2026-09-24', topic: 'Pensar como diseñador', details: ['Módulo 4 · color, tipografía, accesibilidad'], proyecto: 'Pieza 3 · Visual interactivo intencional' },
+    { week: 9, day: 'Jueves', date: '2026-10-08', topic: 'La narrativa detrás de los datos', details: ['Módulo 5 · planificar (Storytelling with You)'] },
+    { week: 10, day: 'Jueves', date: '2026-10-15', topic: 'Ejecución digital de la narrativa', details: ['Módulo 5 · storyboard de la historia de datos'], proyecto: 'Pieza 4 · Data story centrado en el usuario' },
+    { week: 11, day: 'Jueves', date: '2026-10-22', topic: 'Flujo human-in-the-loop completo', details: ['Módulo 6 · crear (Storytelling with You)'] },
+    { week: 12, day: 'Jueves', date: '2026-10-29', topic: 'Laboratorio en Colab', details: ['Módulo 6 · pandas, matplotlib, plotly, seaborn con LLM'], proyecto: 'Pieza 5 · Notebook HITL documentado' },
+    { week: 13, day: 'Jueves', date: '2026-11-05', topic: 'Dashboards efectivos', details: ['Módulo 7 · entregar (Storytelling with You)'] },
+    { week: 14, day: 'Jueves', date: '2026-11-12', topic: 'Taller de dashboard', details: ['Módulo 7 · casos de estudio y coevaluación'], proyecto: 'Pieza 6 · Dashboard integrador' },
+    { week: 15, day: 'Jueves', date: '2026-11-19', topic: 'Taller integrador #2', details: ['Módulo 8 · armar la presentación estelar'], taller: 'Taller integrador de presentación' },
+    { week: 16, day: 'Jueves', date: '2026-11-26', topic: 'Presentaciones del portafolio', details: ['Módulo 8 · presentación estelar ante la clase'], proyecto: 'Presentación estelar del portafolio' },
+  ],
+
   readings: [
     {
       slug: 'programa-del-curso',
@@ -330,8 +349,35 @@ export const narrativas202620Course: Course = {
       readingMinutes: 12,
       tags: ['módulo 1', 'contexto', 'storytelling', 'ética'],
       category: 'lectura',
+      week: 1,
       href: '/classroom/iqya-3751-2026-20/lecturas/Lectura_01/Lectura_01_El_contexto.html',
       bannerImg: '/classroom/iqya-3751-2026-20/lecturas-banners/l01.jpg',
+    },
+    {
+      slug: 'handout-01-practica',
+      order: 1,
+      title: 'Handout · Las tres preguntas',
+      summary:
+        'Hoja de trabajo de la sesión 1: aplica el marco quién/qué/cómo a un set de datos propio, redacta tu Big Idea y caza el engaño visual en la galería impresa.',
+      date: '2026-08-06',
+      readingMinutes: 6,
+      tags: ['módulo 1', 'taller', 'papel'],
+      category: 'practica',
+      week: 1,
+      href: '/classroom/iqya-3751-2026-20/handout-01-practica.html',
+    },
+    {
+      slug: 'handout-02-taller-critica',
+      order: 2,
+      title: 'Handout · ¿Le sirve a quien decide?',
+      summary:
+        'Hoja de trabajo del taller 1-2-4 de la sesión 2: critica y rediseña seis gráficos honestos pero inefectivos con la rúbrica de seis criterios, y bosqueja el rediseño del grupo.',
+      date: '2026-08-13',
+      readingMinutes: 6,
+      tags: ['módulo 1', 'taller', '1-2-4'],
+      category: 'practica',
+      week: 2,
+      href: '/classroom/iqya-3751-2026-20/handout-02-taller-critica.html',
     },
   ],
   presentations: [
@@ -339,6 +385,7 @@ export const narrativas202620Course: Course = {
       id: 'presentacion-01-el-contexto',
       title: 'Sesión 1 · El contexto lo es todo',
       sessionNumber: 1,
+      week: 1,
       date: '2026-08-06',
       description:
         'Deck de la sesión 1 (Módulo 1). Apertura «Mostrar, no contar»: por qué los datos no convencen solos, el mismo hallazgo en tabla vs. historia, las tres preguntas (quién/qué/cómo), el Big Idea, la historia de 3 minutos, el storyboard, foco vs. contexto y una diapositiva interactiva para cazar el engaño visual.',
@@ -348,6 +395,7 @@ export const narrativas202620Course: Course = {
       id: 'presentacion-02-taller-critica',
       title: 'Sesión 2 · Taller de crítica 1-2-4',
       sessionNumber: 2,
+      week: 2,
       date: '2026-08-13',
       description:
         'Deck de la sesión 2 (Módulo 1). Taller análogo de crítica con la dinámica 1-2-4 sobre gráficos honestos pero inefectivos: el lente de experiencia de usuario («¿le sirve a quien decide?»), honesto ≠ efectivo, la rúbrica de crítica de seis criterios, un ejemplo de rediseño por el foco y la reflexión de 400 palabras.',
@@ -357,6 +405,7 @@ export const narrativas202620Course: Course = {
       id: 'presentacion-03-eligiendo-visual',
       title: 'Sesión 3 · Eligiendo el visual correcto',
       sessionNumber: 3,
+      week: 3,
       date: '2026-08-20',
       description:
         'Deck de la sesión 3 (Módulo 2). Apertura «Mostrar, no contar»: el dato dentro de la experiencia de usuario y el mismo dato en tres momentos (descubrir, comparar, decidir). El catálogo de las 8 tareas visuales, la codificación de Cleveland-McGill (por qué posición y longitud ganan), un recorrido en vivo del Explorador de gráficos y los gráficos a evitar por ética. Cierra con el ejercicio en papel —un set de calidad de alimentos con tres preguntas que piden tres visuales distintos— y la preparación de cuentas de IA para la sesión 4.',
@@ -370,6 +419,7 @@ export const narrativas202620Course: Course = {
       description:
         'Catálogo interactivo de cerca de 80 tipos de gráfico organizados en 8 tareas visuales (comparar, distribución, relación, composición, tiempo, flujos, multivariados y canónicos de ingeniería de procesos y alimentos). Cada ficha responde qué pregunta contesta el gráfico, cuándo usarlo y cuándo no, la decisión que habilita, la trampa ética y su nivel de codificación (Cleveland–McGill). Incluye un diagrama de decisión «¿qué quiero mostrar?». Es el catálogo de visuales de la sesión 3.',
       sessionNumber: 3,
+      week: 3,
       file: 'explorador-graficos.html',
       tags: ['módulo 2', 'elegir el visual', 'catálogo', 'ética'],
     },
