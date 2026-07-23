@@ -133,7 +133,7 @@ export const NarrativasLandingPage: React.FC<Props> = ({ course }) => {
 
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 34 }}>
               {programa?.href && (
-                <a className="nv-btn nv-btn--primary" href={programa.href} target="_blank" rel="noopener noreferrer">
+                <a className="nv-btn nv-btn--primary" href={programa.href}>
                   Programa del curso <ExternalIcon />
                 </a>
               )}
