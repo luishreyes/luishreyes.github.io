@@ -7,11 +7,18 @@ export interface Reading {
   tags?: string[];
   /**
    * Categoría editorial del material:
-   * - 'guia'    → guías de proceso / metodología (trabajo en equipo, bitácoras, informe, búsqueda, etc.)
-   * - 'lectura' → lecturas de contenido que acompañan una clase (una por sesión)
+   * - 'guia'     → guías de proceso / metodología (transversales al semestre)
+   * - 'lectura'  → lecturas de contenido que acompañan una clase (una por sesión)
+   * - 'practica' → handouts / hojas de trabajo de una sesión (taller en papel)
    * Si no se especifica, se asume 'guia'.
    */
-  category?: 'guia' | 'lectura';
+  category?: 'guia' | 'lectura' | 'practica';
+  /**
+   * Semana del semestre a la que pertenece el material (1..16). Si se define,
+   * el material se agrupa bajo esa semana en «Material del curso». Las guías
+   * transversales (sin semana) van al bloque «Del curso».
+   */
+  week?: number;
   /**
    * Posición dentro de su categoría. Las lecturas se numeran según el orden
    * del programa del curso; las guías, por importancia editorial (decidida
@@ -34,6 +41,8 @@ export interface Presentation {
   id: string;
   title: string;
   sessionNumber?: number;
+  /** Semana del semestre (1..16) para agrupar en «Material del curso». */
+  week?: number;
   date?: string;
   description?: string;
   file: string;
@@ -50,6 +59,8 @@ export interface Simulation {
   description: string;
   /** Sesión / clase con la que se relaciona (opcional). Ordena el índice. */
   sessionNumber?: number;
+  /** Semana del semestre (1..16) para agrupar en «Material del curso». */
+  week?: number;
   /**
    * Nombre del archivo HTML autocontenido dentro de
    * `public/classroom/{slug}/simulaciones/`. NO es ruta completa.
