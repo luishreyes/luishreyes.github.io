@@ -354,4 +354,15 @@ export const narrativas202620Course: Course = {
       file: 'presentacion-02-taller-critica.html',
     },
   ],
+  simulations: [
+    {
+      id: 'explorador-graficos',
+      title: 'El gráfico correcto · Explorador de gráficos',
+      description:
+        'Catálogo interactivo de cerca de 80 tipos de gráfico organizados en 8 tareas visuales (comparar, distribución, relación, composición, tiempo, flujos, multivariados y canónicos de ingeniería de procesos y alimentos). Cada ficha responde qué pregunta contesta el gráfico, cuándo usarlo y cuándo no, la decisión que habilita, la trampa ética y su nivel de codificación (Cleveland–McGill). Incluye un diagrama de decisión «¿qué quiero mostrar?». Es el catálogo de visuales de la sesión 3.',
+      sessionNumber: 3,
+      file: 'explorador-graficos.html',
+      tags: ['módulo 2', 'elegir el visual', 'catálogo', 'ética'],
+    },
+  ],
 };
