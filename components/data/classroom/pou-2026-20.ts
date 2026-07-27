@@ -352,7 +352,7 @@ export const pou202620Course: Course = {
       category: 'Comunicación',
       items: [
         'Correo del curso: lh.reyes@uniandes.edu.co, af.infante@uniandes.edu.co, dc.morat1@uniandes.edu.co.',
-        'El asunto del correo debe incluir: [IQYA-2031] – Tema.',
+        'El asunto del correo debe incluir [IQYA-2031] seguido del tema.',
         'Tiempo de respuesta: 48 horas hábiles.',
       ],
     },
@@ -505,7 +505,7 @@ export const pou202620Course: Course = {
       order: 5,
       title: 'Búsqueda bibliográfica y herramientas de IA',
       summary:
-        'Once plataformas para encontrar, analizar y sintetizar literatura científica — desde Google Scholar, Web of Science y Scopus hasta ChatGPT, Claude, Perplexity, SciSpace, Consensus y Connected Papers. Incluye estrategias de búsqueda avanzada y un flujo de trabajo recomendado para el proyecto.',
+        'Once plataformas para encontrar, analizar y sintetizar literatura científica: desde Google Scholar, Web of Science y Scopus hasta ChatGPT, Claude, Perplexity, SciSpace, Consensus y Connected Papers. Incluye estrategias de búsqueda avanzada y un flujo de trabajo recomendado para el proyecto.',
       date: '2026-06-03',
       readingMinutes: 35,
       tags: ['búsqueda bibliográfica', 'herramientas de IA', 'Google Scholar', 'ChatGPT', 'bases de datos'],
@@ -586,7 +586,7 @@ export const pou202620Course: Course = {
       order: 3,
       title: 'Reducción de tamaño',
       summary:
-        'Conminución, mecanismos de fractura y leyes energéticas. Por qué la molienda es una de las operaciones más comunes en la industria y, a la vez, una de las menos eficientes. Bond, Rittinger, Kick, Hukki — y un ejemplo resuelto para caliza.',
+        'Conminución, mecanismos de fractura y leyes energéticas. Por qué la molienda es una de las operaciones más comunes en la industria y, a la vez, una de las menos eficientes. Bond, Rittinger, Kick y Hukki, con un ejemplo resuelto para caliza.',
       date: '2026-06-04',
       readingMinutes: 25,
       tags: ['conminución', 'molienda', 'trituración', 'Bond', 'mecanismos de fractura', 'sólidos'],
@@ -600,7 +600,7 @@ export const pou202620Course: Course = {
       order: 4,
       title: 'Transporte de líquidos en la industria',
       summary:
-        'Flujo en tuberías y pérdidas de energía. Número de Reynolds, diagrama de Moody interactivo, Darcy-Weisbach y pérdidas menores con coeficientes K_L. Un procedimiento de cálculo paso a paso y un ejemplo resuelto que culmina en la cabeza del sistema — el dato de partida para seleccionar la bomba en la Lectura 05.',
+        'Flujo en tuberías y pérdidas de energía. Número de Reynolds, diagrama de Moody interactivo, Darcy-Weisbach y pérdidas menores con coeficientes K_L. Un procedimiento de cálculo paso a paso y un ejemplo resuelto que culmina en la cabeza del sistema, el dato de partida para seleccionar la bomba en la Lectura 05.',
       date: '2026-06-05',
       readingMinutes: 22,
       tags: ['transporte de fluidos', 'Reynolds', 'Moody', 'Darcy-Weisbach', 'pérdidas', 'tubería', 'cabeza del sistema'],
@@ -614,7 +614,7 @@ export const pou202620Course: Course = {
       order: 5,
       title: 'Bombas industriales',
       summary:
-        'El equipo que suministra energía al fluido. Tipos de bombas (centrífugas y desplazamiento positivo), selector visual Q–H, curvas características interactivas, cavitación, NPSH disponible con calculadora reactiva y cálculo de potencia paso a paso.',
+        'El equipo que suministra energía al fluido. Tipos de bombas (centrífugas y desplazamiento positivo), selector visual Q-H, curvas características interactivas, cavitación, NPSH disponible con calculadora reactiva y cálculo de potencia paso a paso.',
       date: '2026-06-05',
       readingMinutes: 30,
       tags: ['bombas', 'centrífuga', 'desplazamiento positivo', 'curvas características', 'NPSH', 'cavitación', 'potencia de bombeo', 'BEP'],
@@ -670,7 +670,7 @@ export const pou202620Course: Course = {
       order: 9,
       title: 'Filtración industrial',
       summary:
-        'La barrera porosa que separa sólidos de fluidos. Mecanismos de retención con visor interactivo, teoría basada en la ley de Darcy (resistencia de torta y del medio), linealización t/V–V con gráfica interactiva, compresibilidad de la torta, calculadora de tiempo de ciclo, los cinco grandes tipos de filtros industriales (lecho granular, prensa, tambor rotatorio al vacío, cartucho, membranas), medios filtrantes y ciclo de operación.',
+        'La barrera porosa que separa sólidos de fluidos. Mecanismos de retención con visor interactivo, teoría basada en la ley de Darcy (resistencia de torta y del medio), linealización t/V-V con gráfica interactiva, compresibilidad de la torta, calculadora de tiempo de ciclo, los cinco grandes tipos de filtros industriales (lecho granular, prensa, tambor rotatorio al vacío, cartucho, membranas), medios filtrantes y ciclo de operación.',
       date: '2026-06-06',
       readingMinutes: 28,
       tags: ['filtración', 'separación sólido-líquido', 'torta', 'ley de Darcy', 'resistencia específica', 'filtro prensa', 'tambor rotatorio', 'membranas', 'medios filtrantes', 'retrolavado'],
@@ -795,7 +795,7 @@ export const pou202620Course: Course = {
       week: 5,
       title: 'Bombas centrífugas',
       description:
-        'Curvas características (H–Q, eficiencia, potencia) y punto de operación, NPSH y cavitación, operación en serie y paralelo, y criterios de especificación y mantenimiento.',
+        'Curvas características (H-Q, eficiencia, potencia) y punto de operación, NPSH y cavitación, operación en serie y paralelo, y criterios de especificación y mantenimiento.',
       sessionNumber: 8,
       file: 'Bombas_Centrifugas/Presentacion_Bombas_Centrifugas.html',
     },
@@ -804,7 +804,7 @@ export const pou202620Course: Course = {
       week: 6,
       title: 'Agitación',
       description:
-        'Tipos de impulsores (axiales y radiales), geometría del tanque, número de potencia y curvas Np–Re, suspensión de sólidos y escalamiento (P/V, tip speed, Re).',
+        'Tipos de impulsores (axiales y radiales), geometría del tanque, número de potencia y curvas Np-Re, suspensión de sólidos y escalamiento (P/V, tip speed, Re).',
       sessionNumber: 9,
       file: 'Agitacion/Presentacion_Agitacion.html',
     },
@@ -840,7 +840,7 @@ export const pou202620Course: Course = {
       week: 9,
       title: 'Filtración',
       description:
-        'Mecanismos (filtración con torta, profunda y tangencial), Ley de Darcy y modelo de resistencias en serie (R_c = αw, R_m), compresibilidad de la torta. Ecuaciones de diseño a presión y a caudal constante con simulador interactivo del ciclo real (Fase 1–2–3). Determinación experimental de α y R_m, ayudas de filtración (diatomeas, perlita, celulosa, pre-capa, body feed), equipos (filtro prensa, filtro rotatorio de vacío, decantadora centrífuga) con videos, criterios de selección y cosecha de células en biotecnología.',
+        'Mecanismos (filtración con torta, profunda y tangencial), Ley de Darcy y modelo de resistencias en serie (R_c = αw, R_m), compresibilidad de la torta. Ecuaciones de diseño a presión y a caudal constante con simulador interactivo del ciclo real (Fase 1-2-3). Determinación experimental de α y R_m, ayudas de filtración (diatomeas, perlita, celulosa, pre-capa, body feed), equipos (filtro prensa, filtro rotatorio de vacío, decantadora centrífuga) con videos, criterios de selección y cosecha de células en biotecnología.',
       sessionNumber: 13,
       file: 'Filtracion/Presentacion_Filtracion.html',
     },
@@ -897,7 +897,7 @@ export const pou202620Course: Course = {
       week: 6,
       title: 'Explorador de agitación',
       description:
-        'Explora el tanque agitado del proyecto en vivo: elige el impulsor (hélice marina axial, turbina Rushton radial o ancla para alta viscosidad), activa o quita los bafles, y selecciona el fluido (agua, aceite, jarabe de glucosa o uno genérico con ρ y μ ajustables) junto con la velocidad de giro y el diámetro D/T. Dibuja el campo de velocidades estilo CFD en vista lateral y superior — streamlines coloreadas por magnitud, animadas —, incluyendo el patrón clásico con bafles (giro central más remolinos entre bafles) y el vórtice central cuando faltan. Calcula Reynolds y régimen, el número de potencia sobre la curva Np–Re (con y sin bafles), la potencia y P/V, la velocidad de punta, el tiempo de mezcla θ₉₅ de Grenville y la profundidad del vórtice, con avisos de zonas muertas, arrastre de aire y daño por cizalla.',
+        'Explore el tanque agitado del proyecto en vivo: elija el impulsor (hélice marina axial, turbina Rushton radial o ancla para alta viscosidad), active o quite los bafles, y seleccione el fluido (agua, aceite, jarabe de glucosa o uno genérico con ρ y μ ajustables) junto con la velocidad de giro y el diámetro D/T. La herramienta dibuja el campo de velocidades estilo CFD en vista lateral y superior, con streamlines coloreadas por magnitud y animadas, incluyendo el patrón clásico con bafles (giro central más remolinos entre bafles) y el vórtice central cuando faltan. Calcula Reynolds y régimen, el número de potencia sobre la curva Np-Re (con y sin bafles), la potencia y P/V, la velocidad de punta, el tiempo de mezcla θ₉₅ de Grenville y la profundidad del vórtice, con avisos de zonas muertas, arrastre de aire y daño por cizalla.',
       sessionNumber: 9,
       file: 'Explorador_Agitacion.html',
       tags: ['agitación', 'mezclado', 'impulsores', 'bafles', 'número de potencia', 'Np-Re', 'vórtice', 'tiempo de mezcla', 'tanque agitado'],
@@ -907,7 +907,7 @@ export const pou202620Course: Course = {
       week: 8,
       title: 'Explorador de intercambiadores de tubos y coraza',
       description:
-        'Diseña el intercambiador del proyecto por el método de Kern en vivo: define el requerimiento (enfriar aceite ligero con agua), asigna fluidos a tubos o coraza, elige tubo, arreglo del haz (triangular/cuadrado), pasos, corazas en serie, número y longitud de tubos, espaciado de bafles, material y factores de ensuciamiento. Calcula los coeficientes h de cada lado, U limpio y de diseño, LMTD y factor F multi-paso/multi-coraza, el área requerida vs. disponible (sobrediseño), las caídas de presión y las velocidades. Entrega un veredicto de diseño por criterio (régimen, ΔP, esbeltez, F…), la viabilidad económica (capital anualizado + energía de bombeo) y una comparación de cinco materiales. Con corte longitudinal, sección transversal del haz y perfil de temperaturas dibujados en tiempo real.',
+        'Diseñe el intercambiador del proyecto por el método de Kern en vivo: defina el requerimiento (enfriar aceite ligero con agua), asigne fluidos a tubos o coraza, elija tubo, arreglo del haz (triangular/cuadrado), pasos, corazas en serie, número y longitud de tubos, espaciado de bafles, material y factores de ensuciamiento. La herramienta calcula los coeficientes h de cada lado, U limpio y de diseño, LMTD y factor F multi-paso/multi-coraza, el área requerida vs. disponible (sobrediseño), las caídas de presión y las velocidades. Entrega un veredicto de diseño por criterio (régimen, ΔP, esbeltez, F…), la viabilidad económica (capital anualizado más energía de bombeo) y una comparación de cinco materiales. Con corte longitudinal, sección transversal del haz y perfil de temperaturas dibujados en tiempo real.',
       sessionNumber: 11,
       file: 'Explorador_Intercambiadores.html',
       tags: ['intercambiadores', 'tubos y coraza', 'método de Kern', 'U', 'LMTD', 'factor F', 'bafles', 'caída de presión', 'ensuciamiento', 'economía'],
@@ -917,7 +917,7 @@ export const pou202620Course: Course = {
       week: 3,
       title: 'Explorador de molienda y tamizado',
       description:
-        'Selecciona el equipo de reducción de tamaño del proyecto en vivo: elige material (caliza, carbón, maíz, azúcar, arcilla) y molino (mandíbulas, rodillos, martillos, bolas, discos), y define alimentación F₈₀, producto objetivo P₈₀ y capacidad en escala logarítmica. Calcula la energía con la Ley de Bond y compara los tres regímenes (Bond, Kick, Rittinger) calibrados en el punto de operación, dimensiona la potencia al eje y del motor, y resuelve el balance térmico adiabático (calor disipado, ΔT, temperatura de salida vs. límite del material). En seco o húmedo, con detección de atascos, daño térmico, ATEX, abrasión y sobre-reducción. La Parte 2 modela la distribución del producto con Rosin–Rammler y genera el análisis de tamizado completo de la serie Tyler.',
+        'Seleccione el equipo de reducción de tamaño del proyecto en vivo: elija material (caliza, carbón, maíz, azúcar, arcilla) y molino (mandíbulas, rodillos, martillos, bolas, discos), y defina alimentación F₈₀, producto objetivo P₈₀ y capacidad en escala logarítmica. La herramienta calcula la energía con la Ley de Bond y compara los tres regímenes (Bond, Kick, Rittinger) calibrados en el punto de operación, dimensiona la potencia al eje y del motor, y resuelve el balance térmico adiabático (calor disipado, ΔT, temperatura de salida vs. límite del material). En seco o húmedo, con detección de atascos, daño térmico, ATEX, abrasión y sobre-reducción. La Parte 2 modela la distribución del producto con Rosin-Rammler y genera el análisis de tamizado completo de la serie Tyler.',
       sessionNumber: 6,
       file: 'Explorador_Molienda.html',
       tags: ['molienda', 'conminución', 'Ley de Bond', 'Kick', 'Rittinger', 'Rosin-Rammler', 'tamizado', 'balance térmico', 'sólidos'],
@@ -927,7 +927,7 @@ export const pou202620Course: Course = {
       week: 5,
       title: 'Explorador de Bernoulli',
       description:
-        'Arma el circuito de flujo del proyecto en vivo y aplica el balance de energía mecánica: elige el fluido (agua, etanol, glicerina, aceite o uno personalizado con ρ y μ ajustables), el material y diámetro de la tubería, la longitud, las elevaciones y el caudal de diseño, y arma la lista de accesorios (codos, tés, válvulas de globo/compuerta/bola/check) con su apertura para estrangular. Calcula la velocidad, el número de Reynolds y el régimen, el factor de fricción por Swamee–Jain, y las pérdidas por el método K y por longitud equivalente en paralelo. Resuelve el balance de Bernoulli término a término (presión, elevación, energía cinética, bomba y pérdidas), instala o quita la bomba para hallar el punto de operación donde su curva corta la del sistema, y estima la potencia. Con el esquema del sistema dibujado a partir de tus accesorios, el diagrama de Moody con el punto de operación y las curvas de sistema y bomba en tiempo real. Descarga libre a la atmósfera o sumergida a un tanque elevado.',
+        'Arme el circuito de flujo del proyecto en vivo y aplique el balance de energía mecánica: elija el fluido (agua, etanol, glicerina, aceite o uno personalizado con ρ y μ ajustables), el material y diámetro de la tubería, la longitud, las elevaciones y el caudal de diseño, y arme la lista de accesorios (codos, tés, válvulas de globo/compuerta/bola/check) con su apertura para estrangular. La herramienta calcula la velocidad, el número de Reynolds y el régimen, el factor de fricción por Swamee-Jain, y las pérdidas por el método K y por longitud equivalente en paralelo. Resuelve el balance de Bernoulli término a término (presión, elevación, energía cinética, bomba y pérdidas), permite instalar o quitar la bomba para hallar el punto de operación donde su curva corta la del sistema, y estima la potencia. Con el esquema del sistema dibujado a partir de sus accesorios, el diagrama de Moody con el punto de operación y las curvas de sistema y bomba en tiempo real. Descarga libre a la atmósfera o sumergida a un tanque elevado.',
       sessionNumber: 7,
       file: 'Explorador_Bernoulli.html',
       tags: ['Bernoulli', 'Darcy-Weisbach', 'factor de fricción', 'diagrama de Moody', 'pérdidas menores', 'método K', 'longitud equivalente', 'punto de operación', 'bomba'],
@@ -937,7 +937,7 @@ export const pou202620Course: Course = {
       week: 5,
       title: 'Explorador de bombas centrífugas',
       description:
-        'Selecciona la bomba del circuito en vivo: elige diámetro de impulsor y velocidad de giro, define la curva del sistema (caudal de diseño, fricción y niveles de succión y descarga referidos al eje de la bomba, z = 0) y observa el punto de operación donde la curva de la bomba corta la del sistema. Reescala la familia de curvas con las leyes de afinidad, dibuja las islas de eficiencia, calcula potencia hidráulica y al freno con selección de motor estándar, y evalúa el NPSH disponible vs. requerido con la altitud del sitio (Bogotá ≈ 2600 msnm) para anticipar la cavitación. Basado en la curva B&G TEH-375A. Unidades US o SI.',
+        'Seleccione la bomba del circuito en vivo: elija diámetro de impulsor y velocidad de giro, defina la curva del sistema (caudal de diseño, fricción y niveles de succión y descarga referidos al eje de la bomba, z = 0) y observe el punto de operación donde la curva de la bomba corta la del sistema. Reescale la familia de curvas con las leyes de afinidad, dibuje las islas de eficiencia, calcule la potencia hidráulica y al freno con selección de motor estándar, y evalúe el NPSH disponible vs. requerido con la altitud del sitio (Bogotá ≈ 2600 msnm) para anticipar la cavitación. Basado en la curva B&G TEH-375A. Unidades US o SI.',
       sessionNumber: 8,
       file: 'Explorador_Bombas_Centrifugas.html',
       tags: ['bombas', 'curva característica', 'NPSH', 'cavitación', 'leyes de afinidad', 'punto de operación', 'BHP', 'eficiencia'],
@@ -945,12 +945,12 @@ export const pou202620Course: Course = {
     {
       id: 'explorador-mccabe-thiele',
       week: 11,
-      title: 'Explorador McCabe–Thiele',
+      title: 'Explorador McCabe-Thiele',
       description:
-        'Diseña la columna de destilación binaria en vivo: mueve la composición y calidad de la alimentación, la pureza de productos, el reflujo y la eficiencia de Murphree, y observa cómo se reconstruyen las rectas de operación, la línea q y el escalonado de etapas. Incluye cinco sistemas (benceno–tolueno, metanol–agua, metanol–etanol, etanol–agua no ideal con azeótropo y α personalizable), balance global de materia, Rmín, Fenske y la torre con su plato de alimentación óptimo. La herramienta del proyecto para dimensionar la recuperación de etanol.',
+        'Diseñe la columna de destilación binaria en vivo: mueva la composición y calidad de la alimentación, la pureza de productos, el reflujo y la eficiencia de Murphree, y observe cómo se reconstruyen las rectas de operación, la línea q y el escalonado de etapas. Incluye cinco sistemas (benceno-tolueno, metanol-agua, metanol-etanol, etanol-agua no ideal con azeótropo y α personalizable), balance global de materia, Rmín, Fenske y la torre con su plato de alimentación óptimo. La herramienta del proyecto para dimensionar la recuperación de etanol.',
       sessionNumber: 17,
       file: 'Explorador_McCabe_Thiele.html',
-      tags: ['destilación', 'McCabe-Thiele', 'reflujo', 'línea q', 'etapas', 'etanol–agua', 'Murphree', 'Fenske'],
+      tags: ['destilación', 'McCabe-Thiele', 'reflujo', 'línea q', 'etapas', 'etanol-agua', 'Murphree', 'Fenske'],
     },
   ],
 };

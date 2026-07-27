@@ -372,7 +372,7 @@
     .thumb { outline: none; }
     .thumb:focus-visible .frame { outline-color: rgba(255,255,255,0.5); }
     .thumb[data-current] .num { color: #fff; }
-    .thumb[data-current] .frame { outline-color: #D97757; }
+    .thumb[data-current] .frame { outline-color: #5980A6; }
     .thumb[data-dragging] { opacity: 0.35; }
     .thumb::before {
       content: '';
@@ -381,7 +381,7 @@
       right: 0;
       height: 3px;
       border-radius: 2px;
-      background: #D97757;
+      background: #5980A6;
       opacity: 0;
       pointer-events: none;
     }
@@ -938,7 +938,20 @@
       const fsBtn = overlay.querySelector('.fs');
       if (fsBtn) fsBtn.addEventListener('click', () => this._toggleFs());
       const pdfBtn = overlay.querySelector('.pdf');
-      if (pdfBtn) pdfBtn.addEventListener('click', () => window.print());
+      if (pdfBtn) pdfBtn.addEventListener('click', () => {
+        // Si el deck declara un PDF de documento ya generado, se descarga ese.
+        // window.print() depende de que el usuario acierte con el tamaño de
+        // hoja y encienda «Gráficos de fondo», que viene apagado: sin eso las
+        // diapositivas oscuras salen en blanco.
+        const doc = this.getAttribute('data-doc-pdf');
+        if (doc) {
+          const a = document.createElement('a');
+          a.href = doc; a.download = '';
+          document.body.appendChild(a); a.click(); a.remove();
+        } else {
+          window.print();
+        }
+      });
 
       // Tema claro / oscuro del deck. Los slides usan tokens CSS (--blanco,
       // --gris-1, ...); la clase html.deck-dark redefine esos tokens en

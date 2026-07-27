@@ -97,7 +97,7 @@ export const PouLandingPage: React.FC<{ course: Course }> = ({ course }) => {
           <div className="plate">
             <Marks />
             <header className="title-block">
-              <span className="tb-title">{course.code} — Ficha del curso</span>
+              <span className="tb-title">{course.code} · Ficha del curso</span>
               <span className="tb-cell">POU {course.term}</span>
               <span className="tb-cell">Rev A</span>
               <span className="tb-cell">Hoja 01 de 01</span>
@@ -243,7 +243,7 @@ export const PouLandingPage: React.FC<{ course: Course }> = ({ course }) => {
             </tbody>
           </table>
           <p className="s-rem" style={{ marginTop: '14px', fontSize: '14px' }}>
-            Escriba a los tres en el mismo mensaje, con el asunto <b>[{course.code}] – Tema</b>. Respuesta en 48 horas hábiles.
+            Escriba a los tres en el mismo mensaje, con el asunto <b>[{course.code}]</b> seguido del tema. Respuesta en 48 horas hábiles.
           </p>
         </section>
 
@@ -270,7 +270,7 @@ export const PouLandingPage: React.FC<{ course: Course }> = ({ course }) => {
           <div className="plate" style={{ marginTop: '24px' }}>
             <Marks />
             <header className="title-block">
-              <span className="tb-title">{course.code} — Distribución de la evaluación</span>
+              <span className="tb-title">{course.code} · Distribución de la evaluación</span>
               <span className="tb-cell">POU {course.term}</span>
               <span className="tb-cell">Rev A</span>
               <span className="tb-cell">Hoja 01 de 01</span>
