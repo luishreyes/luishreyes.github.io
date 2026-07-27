@@ -938,7 +938,21 @@
       const fsBtn = overlay.querySelector('.fs');
       if (fsBtn) fsBtn.addEventListener('click', () => this._toggleFs());
       const pdfBtn = overlay.querySelector('.pdf');
-      if (pdfBtn) pdfBtn.addEventListener('click', () => window.print());
+      if (pdfBtn) pdfBtn.addEventListener('click', () => {
+        // Si el deck declara un PDF de documento ya generado, se descarga ese.
+        // Depender de window.print() obliga al usuario a acertar con el tamaño
+        // de hoja y a encender «Gráficos de fondo», que viene apagado: sin eso
+        // las diapositivas oscuras salen en blanco. El archivo generado no
+        // tiene ese problema y además trae expandido lo interactivo.
+        const doc = this.getAttribute('data-doc-pdf');
+        if (doc) {
+          const a = document.createElement('a');
+          a.href = doc; a.download = '';
+          document.body.appendChild(a); a.click(); a.remove();
+        } else {
+          window.print();
+        }
+      });
 
       // Tema claro / oscuro del deck. Los slides usan tokens CSS (--blanco,
       // --gris-1, ...); la clase html.deck-dark redefine esos tokens en
