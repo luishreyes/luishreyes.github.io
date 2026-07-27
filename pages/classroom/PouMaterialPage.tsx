@@ -81,7 +81,9 @@ export const PouMaterialPage: React.FC<{ course: Course }> = ({ course }) => {
     const inicio = meta.get(w)!.dates.slice().sort()[0];
     if (inicio <= hoy) actual = w;
   }
-  const abierta = semanas.find((w) => w >= actual) ?? semanas[semanas.length - 1];
+  // La semana en curso se señala, pero ninguna hoja se abre sola: el profesor
+  // pidió que el material arranque siempre colapsado.
+  const enCurso = semanas.find((w) => w >= actual) ?? semanas[semanas.length - 1];
 
   const total = lecturas.length + guias.length + presentaciones.length + simulaciones.length;
 
@@ -120,7 +122,7 @@ export const PouMaterialPage: React.FC<{ course: Course }> = ({ course }) => {
             <>
               {/* Material transversal */}
               {transversal.length > 0 && (
-                <details className="pou-sheet" open>
+                <details className="pou-sheet">
                   <Marks />
                   <summary>
                     <span className="wk" aria-hidden="true">00</span>
@@ -149,13 +151,14 @@ export const PouMaterialPage: React.FC<{ course: Course }> = ({ course }) => {
                 const fechas = m.dates.slice().sort();
 
                 return (
-                  <details className="pou-sheet" key={w} open={w === abierta}>
+                  <details className="pou-sheet" key={w}>
                     <Marks />
                     <summary>
                       <span className="wk" aria-hidden="true">{String(w).padStart(2, '0')}</span>
                       <span className="hd">
                         <span className="k">
                           Semana {w} · {fmtRange(fechas[0], fechas[fechas.length - 1])}
+                          {w === enCurso && ' · En curso'}
                           {m.quiz.length > 0 && ` · ${m.quiz.join(', ')}`}
                           {m.taller.length > 0 && ` · ${m.taller.length === 1 ? 'Taller' : 'Talleres'}`}
                         </span>
