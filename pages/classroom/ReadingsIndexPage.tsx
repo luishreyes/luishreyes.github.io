@@ -6,6 +6,7 @@ import { getCourseBySlug } from '../../components/data/classroom';
 import { CourseAccessGate } from '../../components/classroom/CourseAccessGate';
 import { NotFoundInClassroom } from './NotFoundInClassroom';
 import { NarrativasReadingsPage } from './NarrativasReadingsPage';
+import { PouMaterialPage } from './PouMaterialPage';
 
 // Slug del cronograma: vive como tarjeta propia en la landing, no dentro de Guías.
 const CRONOGRAMA_SLUG = 'cronograma-interactivo';
@@ -28,6 +29,11 @@ export const ReadingsIndexPage: React.FC = () => {
   // Identidad gráfica propia del curso Narrativas Visuales (IQYA-3751).
   if (course.slug === 'iqya-3751-2026-20') {
     return <NarrativasReadingsPage course={course} />;
+  }
+
+  // Identidad gráfica propia de POU (IQYA-2031): sistema «Industry».
+  if (course.slug === 'iqya-2031-2026-20') {
+    return <PouMaterialPage course={course} />;
   }
 
   const byOrderThenDate = (a: Reading, b: Reading) => {

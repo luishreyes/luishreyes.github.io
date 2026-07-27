@@ -194,13 +194,14 @@ export interface Course {
    * `.classroom-typeset` en `index.css` y `CourseAccessGate`.
    *
    * Paleta disponible (definida en `index.css` como `.accent-*`):
-   * - `green`     → #86BC24 (POU)
+   * - `acero`     → #5980A6 (POU · sistema Industry)
+   * - `green`     → #86BC24
    * - `violet`    → #7C5CFF (Narrativas Visuales de Datos)
    * - `blue`      → #0E7CD8 (Seminario · SPDP)
    * - `terracota` → #E06C2A (Diseño Sistémico de Bioproductos)
    * - `magenta`   → #C03B6E (Biotecnología Industrial)
    */
-  accent?: 'green' | 'violet' | 'blue' | 'terracota' | 'magenta' | 'citron';
+  accent?: 'green' | 'violet' | 'blue' | 'terracota' | 'magenta' | 'citron' | 'acero';
   /**
    * Si `true`, el curso pertenece a un semestre pasado: NO aparece en el índice de Aula
    * sino en la página de Archivo (`/classroom/archive`). Sus páginas internas (landing,
