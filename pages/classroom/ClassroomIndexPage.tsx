@@ -8,10 +8,12 @@ import { useI18n } from '../../context/i18n';
 export const ClassroomIndexPage: React.FC = () => {
   const { t } = useI18n();
 
-  const activeCourses = classroomData.filter((c) => !c.archived);
+  // Los cursos marcados como ocultos no se listan en ninguna página pública.
+  const visibleCourses = classroomData.filter((c) => !c.hidden);
+  const activeCourses = visibleCourses.filter((c) => !c.archived);
   const academicCourses = activeCourses.filter((c) => c.kind !== 'professional');
   const professionalCourses = activeCourses.filter((c) => c.kind === 'professional');
-  const hasArchived = classroomData.some((c) => c.archived);
+  const hasArchived = visibleCourses.some((c) => c.archived);
 
   return (
     <PageWrapper maxWidth="max-w-7xl">
