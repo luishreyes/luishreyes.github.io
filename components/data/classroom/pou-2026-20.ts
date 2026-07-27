@@ -11,10 +11,10 @@ export const pou202620Course: Course = {
   credits: 3,
   modality: 'Presencial',
   duration: '16 semanas',
-  accent: 'green',
-  tagline: 'Diseña una planta de pectina a partir de cáscara de fruta colombiana',
+  accent: 'acero',
+  tagline: 'Diseñe y dimensione una planta de pectina a partir de cáscara de fruta colombiana',
   description:
-    'En este curso diseñarás, dimensionarás y simularás una planta completa de producción de pectina de grado alimentario a partir de cáscara de cítricos o maracuyá — un residuo agroindustrial colombiano. Bajo el enfoque de Diseño Integrado de Productos y Procesos, cada semana aplicas lo aprendido directamente en tu proyecto: manejo de sólidos, transporte de fluidos, agitación, intercambio de calor, filtración y la columna que recupera el etanol de precipitación. El modelo es híbrido: aula invertida con lecturas previas, quices al iniciar clase, talleres prácticos en parejas y trabajo autónomo en equipos de 4-5 personas a lo largo de las 16 semanas.',
+    'En este curso diseñará, dimensionará y simulará una planta completa de producción de pectina de grado alimentario a partir de cáscara de cítricos o maracuyá, un residuo agroindustrial colombiano. Bajo el enfoque de Diseño Integrado de Productos y Procesos, cada semana aplica lo aprendido directamente en su proyecto: manejo de sólidos, transporte de fluidos, agitación, intercambio de calor, filtración y la columna que recupera el etanol de precipitación. El modelo es híbrido: aula invertida con lecturas previas, quices al iniciar clase, talleres prácticos en parejas y trabajo autónomo en equipos de 4-5 personas a lo largo de las 16 semanas.',
   accessCode: 'POU202620',
   bannerUrl: '/classroom/iqya-2031-2026-20/banner.jpg',
   pillars: [
@@ -69,7 +69,7 @@ export const pou202620Course: Course = {
   ],
   methodology: {
     summary:
-      'Modelo híbrido Project Oriented-Problem Based Learning (PO-PBL) + aula invertida. Durante todo el semestre tu equipo desarrolla un proyecto real: el diseño completo de una planta de producción de pectina de grado alimentario a partir de cáscaras de fruta colombianas. El proyecto da contexto a cada tema, que llega justo cuando tu equipo lo va a usar.',
+      'Modelo híbrido Project Oriented-Problem Based Learning (PO-PBL) + aula invertida. Durante todo el semestre su equipo desarrolla un proyecto real: el diseño completo de una planta de producción de pectina de grado alimentario a partir de cáscaras de fruta colombianas. El proyecto da contexto a cada tema, que llega justo cuando su equipo lo va a usar.',
     phases: [
       {
         label: 'Antes (3 h semanales)',
@@ -163,7 +163,7 @@ export const pou202620Course: Course = {
   project: {
     title: 'Planta de producción de pectina de grado alimentario',
     overview:
-      'Diseño integral de una planta que aprovecha cáscara de cítricos o maracuyá — residuo agroindustrial colombiano — para extraer pectina de grado alimentario, dimensionada operación por operación y validada en ASPEN Plus. No es un cálculo aislado: es un sistema, donde la decisión que se toma en la molienda reaparece en el consumo de vapor de la columna.',
+      'Diseño integral de una planta que aprovecha cáscara de cítricos o maracuyá, un residuo agroindustrial colombiano, para extraer pectina de grado alimentario, dimensionada operación por operación y validada en ASPEN Plus. No es un cálculo aislado: es un sistema, donde la decisión que se toma en la molienda reaparece en el consumo de vapor de la columna.',
     rawMaterials: [
       { name: 'Cáscara de naranja', outcome: 'Fuente clásica · alto rendimiento, pectina de alta esterificación' },
       { name: 'Cáscara de limón o lima', outcome: 'Mayor contenido de pectina · calidad premium para gelificación' },
@@ -421,7 +421,7 @@ export const pou202620Course: Course = {
     term: '2026-20',
     eyebrow: 'Reto del semestre',
     description:
-      'Diseña y dimensiona una planta que extrae pectina de grado alimentario a partir de cáscara de fruta colombiana. Abre la guía completa del proyecto.',
+      'Diseñe y dimensione una planta que extrae pectina de grado alimentario a partir de cáscara de fruta colombiana. Abra la guía completa del proyecto.',
     href: '/classroom/iqya-2031-2026-20/reto-pectina.html',
   },
   cronograma: [
