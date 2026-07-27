@@ -737,6 +737,15 @@ export const pou202620Course: Course = {
   ],
   presentations: [
     {
+      id: 'presentacion-del-curso',
+      title: 'Presentación del curso',
+      sessionNumber: 1,
+      week: 1,
+      description:
+        'La sesión inaugural completa: bienvenida y la idea del proyecto, equipo docente, objetivos y resultados ABET, el reto de la pectina, metodología, cronograma y fechas clave, evaluación, uso de IA y expectativas.',
+      file: 'Presentacion_del_Curso/Presentacion_del_Curso.html',
+    },
+    {
       id: 'diagramas-ingenieria',
       week: 2,
       title: 'Diagramas de ingeniería',
