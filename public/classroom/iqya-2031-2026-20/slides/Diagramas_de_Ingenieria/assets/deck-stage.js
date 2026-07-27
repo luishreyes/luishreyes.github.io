@@ -372,7 +372,7 @@
     .thumb { outline: none; }
     .thumb:focus-visible .frame { outline-color: rgba(255,255,255,0.5); }
     .thumb[data-current] .num { color: #fff; }
-    .thumb[data-current] .frame { outline-color: #D97757; }
+    .thumb[data-current] .frame { outline-color: #5980A6; }
     .thumb[data-dragging] { opacity: 0.35; }
     .thumb::before {
       content: '';
@@ -381,7 +381,7 @@
       right: 0;
       height: 3px;
       border-radius: 2px;
-      background: #D97757;
+      background: #5980A6;
       opacity: 0;
       pointer-events: none;
     }

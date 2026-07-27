@@ -103,8 +103,8 @@ export const CourseAccessGate: React.FC<CourseAccessGateProps> = ({ course, chil
           <div className="p-6">
             <h2 className="text-lg font-semibold text-brand-dark">Acceso restringido</h2>
             <p className="text-sm text-brand-gray mt-1 leading-relaxed">
-              Este espacio está reservado para estudiantes del curso. Ingresa el código
-              que te entregó el profesor para continuar.
+              Este espacio está reservado para estudiantes del curso. Ingrese el código
+              que le entregó el profesor para continuar.
             </p>
 
             <form onSubmit={handleSubmit} className="mt-5 space-y-3">
@@ -137,7 +137,7 @@ export const CourseAccessGate: React.FC<CourseAccessGateProps> = ({ course, chil
 
             <div className="mt-6 pt-5 border-t border-zinc-200 text-xs text-brand-gray">
               <p>
-                ¿No tienes el código? Escríbele a{' '}
+                ¿No tiene el código? Escriba a{' '}
                 <a className="text-brand-dark font-medium hover:underline" href="mailto:lh.reyes@uniandes.edu.co">
                   lh.reyes@uniandes.edu.co
                 </a>

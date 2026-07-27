@@ -578,7 +578,7 @@ const formatDate = (iso: string): string => {
   return d.toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' });
 };
 
-// Rango de fechas compacto para la cabecera de la semana (p. ej. «4 – 6 ago»).
+// Rango de fechas compacto para la cabecera de la semana (p. ej. «4 a 6 ago»).
 const formatRange = (startISO: string, endISO: string): string => {
   const s = new Date(startISO + 'T12:00:00');
   const e = new Date(endISO + 'T12:00:00');
@@ -587,6 +587,6 @@ const formatRange = (startISO: string, endISO: string): string => {
   const sd = s.getDate();
   const ed = e.getDate();
   if (startISO === endISO) return `${sd} ${month(s)}`;
-  if (s.getMonth() === e.getMonth()) return `${sd} – ${ed} ${month(e)}`;
-  return `${sd} ${month(s)} – ${ed} ${month(e)}`;
+  if (s.getMonth() === e.getMonth()) return `${sd} a ${ed} ${month(e)}`;
+  return `${sd} ${month(s)} a ${ed} ${month(e)}`;
 };
