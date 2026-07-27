@@ -49,6 +49,7 @@ import { SimulationsIndexPage } from './pages/classroom/SimulationsIndexPage';
 import { EdcoCourseDetailPage } from './pages/classroom/EdcoCourseDetailPage';
 import { EdcoCoursePresentationsPage } from './pages/classroom/EdcoCoursePresentationsPage';
 import { RetosPage } from './pages/classroom/RetosPage';
+import { DocViewerPage } from './components/classroom/DocViewerPage';
 import { startSequentialImagePreloading } from './services/preloader';
 import { AppDataContext } from './context/AppDataContext';
 import { I18nProvider, localize } from './context/i18n';
@@ -187,6 +188,7 @@ const App: React.FC = () => {
               <Route path="/classroom/archive" element={<ClassroomArchivePage />} />
               <Route path="/classroom/:courseSlug" element={<CourseLandingPage />} />
               <Route path="/classroom/:courseSlug/readings" element={<ReadingsIndexPage />} />
+              <Route path="/classroom/:courseSlug/ver/*" element={<DocViewerPage />} />
               <Route path="/classroom/:courseSlug/readings/:slug" element={<ReadingPage />} />
               <Route path="/classroom/:courseSlug/presentations" element={<PresentationsIndexPage />} />
               <Route path="/classroom/:courseSlug/simulations" element={<SimulationsIndexPage />} />

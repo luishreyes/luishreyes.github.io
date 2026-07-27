@@ -912,6 +912,11 @@
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 1.5v7.5m0 0L5.2 6.2M8 9l2.8-2.8M2.5 11v1.5A1.5 1.5 0 004 14h8a1.5 1.5 0 001.5-1.5V11"/></svg>
           PDF
         </button>
+        <span class="divider"></span>
+        <button class="btn theme" type="button" aria-label="Cambiar tema claro u oscuro" title="Tema claro / oscuro (L)" aria-pressed="false">
+          <svg class="th-dark" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13.5 9.2A5.6 5.6 0 116.8 2.5a4.4 4.4 0 006.7 6.7z"/></svg>
+          <svg class="th-light" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display:none"><circle cx="8" cy="8" r="3.1"/><path d="M8 1v1.6M8 13.4V15M1 8h1.6M13.4 8H15M3.1 3.1l1.1 1.1M11.8 11.8l1.1 1.1M12.9 3.1l-1.1 1.1M4.2 11.8l-1.1 1.1"/></svg>
+        </button>
       `;
 
       overlay.querySelector('.prev').addEventListener('click', () => this._advance(-1, 'click'));
@@ -934,6 +939,30 @@
       if (fsBtn) fsBtn.addEventListener('click', () => this._toggleFs());
       const pdfBtn = overlay.querySelector('.pdf');
       if (pdfBtn) pdfBtn.addEventListener('click', () => window.print());
+
+      // Tema claro / oscuro del deck. Los slides usan tokens CSS (--blanco,
+      // --gris-1, ...); la clase html.deck-dark redefine esos tokens en
+      // deloitte.css e invierte todas las superficies de una. Se persiste la
+      // preferencia por navegador. Tecla: L.
+      this._applyTheme = (dark) => {
+        document.documentElement.classList.toggle('deck-dark', dark);
+        try { localStorage.setItem('pou-deck-theme', dark ? 'dark' : 'light'); } catch (e) {}
+        const btn = overlay.querySelector('.theme');
+        if (btn) {
+          btn.setAttribute('aria-pressed', dark ? 'true' : 'false');
+          const dk = btn.querySelector('.th-dark');
+          const lt = btn.querySelector('.th-light');
+          if (dk) dk.style.display = dark ? 'none' : '';
+          if (lt) lt.style.display = dark ? '' : 'none';
+        }
+      };
+      this._toggleTheme = () =>
+        this._applyTheme(!document.documentElement.classList.contains('deck-dark'));
+      const themeBtn = overlay.querySelector('.theme');
+      if (themeBtn) themeBtn.addEventListener('click', () => this._toggleTheme());
+      try {
+        if (localStorage.getItem('pou-deck-theme') === 'dark') this._applyTheme(true);
+      } catch (e) {}
       const onFsChange = () => {
         const on = (document.fullscreenElement || document.webkitFullscreenElement) === this;
         if (fsBtn) {
@@ -1413,6 +1442,8 @@
         this._go(0, 'keyboard');
       } else if (key === 'f' || key === 'F') {
         if (this._toggleFs) this._toggleFs();
+      } else if (key === 'l' || key === 'L') {
+        if (this._toggleTheme) this._toggleTheme();
       } else if (/^[0-9]$/.test(key)) {
         // 1..9 jump to that slide; 0 jumps to 10.
         const n = key === '0' ? 9 : parseInt(key, 10) - 1;

@@ -424,6 +424,42 @@ export const pou202620Course: Course = {
       'Diseña y dimensiona una planta que extrae pectina de grado alimentario a partir de cáscara de fruta colombiana. Abre la guía completa del proyecto.',
     href: '/classroom/iqya-2031-2026-20/reto-pectina.html',
   },
+  cronograma: [
+    { date: '2026-08-04', day: 'Martes', week: 1, topic: 'Introducción al curso', details: ['Presentación del proyecto', 'Metodología de trabajo', 'Sistema de evaluación'], proyecto: 'Publicación del proyecto del semestre' },
+    { date: '2026-08-06', day: 'Jueves', week: 1, topic: 'Equipos de trabajo, matriz de coevaluación y contrato de cumplimiento' },
+    { date: '2026-08-11', day: 'Martes', week: 2, topic: 'Diagramas de ingeniería I', quiz: 'Quiz 1' },
+    { date: '2026-08-13', day: 'Jueves', week: 2, topic: 'Taller de diagramas', taller: 'Taller 1: diagramas en ingeniería' },
+    { date: '2026-08-18', day: 'Martes', week: 3, topic: 'Propiedades de sólidos', quiz: 'Quiz 2' },
+    { date: '2026-08-20', day: 'Jueves', week: 3, topic: 'Taller de molienda', taller: 'Taller 2: molienda', proyecto: 'Entrega Bitácora 1: domingo 23 de agosto' },
+    { date: '2026-08-25', day: 'Martes', week: 4, topic: 'Flujo de fluidos', quiz: 'Quiz 3' },
+    { date: '2026-08-27', day: 'Jueves', week: 4, topic: 'Retroalimentación 1', proyecto: 'Coevaluación Bitácora 1: jueves 27 de agosto' },
+    { date: '2026-09-01', day: 'Martes', week: 5, topic: 'Taller de Bernoulli', taller: 'Taller 3: Bernoulli' },
+    { date: '2026-09-03', day: 'Jueves', week: 5, topic: 'Bombas centrífugas', quiz: 'Quiz 4' },
+    { date: '2026-09-08', day: 'Martes', week: 6, topic: 'Agitación', quiz: 'Quiz 5' },
+    { date: '2026-09-10', day: 'Jueves', week: 6, topic: 'Mezclado y escalado', quiz: 'Quiz 6' },
+    { date: '2026-09-15', day: 'Martes', week: 7, topic: 'Taller de agitación y mezclado', taller: 'Taller 4: agitación' },
+    { date: '2026-09-17', day: 'Jueves', week: 7, topic: 'Intercambiadores de calor I', quiz: 'Quiz 7', proyecto: 'Entrega Bitácora 2: domingo 20 de septiembre' },
+    { date: '2026-09-22', day: 'Martes', week: 8, topic: 'Intercambiadores de calor II', taller: 'Taller 5: diseño térmico' },
+    { date: '2026-09-24', day: 'Jueves', week: 8, topic: 'Retroalimentación 2', proyecto: 'Coevaluación Bitácora 2: jueves 24 de septiembre' },
+    { date: '2026-10-06', day: 'Martes', week: 9, topic: 'Filtración I', quiz: 'Quiz 8' },
+    { date: '2026-10-08', day: 'Jueves', week: 9, topic: 'Taller de filtración', taller: 'Taller 6: diseño de filtros' },
+    { date: '2026-10-13', day: 'Martes', week: 10, topic: 'Destilación I: equilibrio de fases', quiz: 'Quiz 9' },
+    { date: '2026-10-15', day: 'Jueves', week: 10, topic: 'Destilación II: flash', quiz: 'Quiz 10', proyecto: 'Entrega Bitácora 3: domingo 18 de octubre' },
+    { date: '2026-10-20', day: 'Martes', week: 11, topic: 'McCabe-Thiele I', quiz: 'Quiz 11' },
+    { date: '2026-10-22', day: 'Jueves', week: 11, topic: 'Retroalimentación 3', proyecto: 'Coevaluación Bitácora 3: jueves 22 de octubre' },
+    { date: '2026-10-27', day: 'Martes', week: 12, topic: 'McCabe-Thiele II', taller: 'Taller 7: destilación flash multicomponente, método de Rachford-Rice' },
+    { date: '2026-10-29', day: 'Jueves', week: 12, topic: 'Diseño de platos', quiz: 'Quiz 12' },
+    { date: '2026-11-03', day: 'Martes', week: 13, topic: 'Eficiencias en destilación', quiz: 'Quiz 13' },
+    { date: '2026-11-05', day: 'Jueves', week: 13, topic: 'Comunicación visual', quiz: 'Quiz 14' },
+    { date: '2026-11-10', day: 'Martes', week: 14, topic: 'Taller integral de destilación', taller: 'Taller 8: destilación diferencial simple' },
+    { date: '2026-11-12', day: 'Jueves', week: 14, topic: 'Laboratorio de destilación batch' },
+    { date: '2026-11-17', day: 'Martes', week: 15, topic: 'Laboratorio de destilación batch' },
+    { date: '2026-11-19', day: 'Jueves', week: 15, topic: 'Taller integral de destilación', taller: 'Taller 9: McCabe-Thiele', proyecto: 'Entrega Bitácora 4: domingo 22 de noviembre' },
+    { date: '2026-11-24', day: 'Martes', week: 16, topic: 'Retroalimentación 4' },
+    { date: '2026-11-26', day: 'Jueves', week: 16, topic: 'Retroalimentación 4', proyecto: 'Coevaluación Bitácora 4: jueves 26 de noviembre' },
+    { date: '2026-12-01', day: 'Martes', week: 17, topic: 'Sesión de pósters', proyecto: 'Coevaluación 5: póster y documento final' },
+    { date: '2026-12-03', day: 'Jueves', week: 17, topic: 'Sustentación final del proyecto' },
+  ],
   readings: [
     {
       slug: 'programa-del-curso',
@@ -518,6 +554,7 @@ export const pou202620Course: Course = {
     },
     {
       slug: 'lectura-01-operaciones-unitarias',
+      week: 1,
       order: 1,
       title: 'Las operaciones unitarias: historia de un concepto y formas de clasificarlo',
       summary:
@@ -531,6 +568,7 @@ export const pou202620Course: Course = {
     },
     {
       slug: 'lectura-02-diagramas-ingenieria',
+      week: 2,
       order: 2,
       title: 'Los diagramas de ingeniería como lenguaje de la profesión',
       summary:
@@ -544,6 +582,7 @@ export const pou202620Course: Course = {
     },
     {
       slug: 'lectura-03-reduccion-tamano',
+      week: 3,
       order: 3,
       title: 'Reducción de tamaño',
       summary:
@@ -557,6 +596,7 @@ export const pou202620Course: Course = {
     },
     {
       slug: 'lectura-04-transporte-liquidos',
+      week: 4,
       order: 4,
       title: 'Transporte de líquidos en la industria',
       summary:
@@ -570,6 +610,7 @@ export const pou202620Course: Course = {
     },
     {
       slug: 'lectura-05-bombas',
+      week: 5,
       order: 5,
       title: 'Bombas industriales',
       summary:
@@ -583,6 +624,7 @@ export const pou202620Course: Course = {
     },
     {
       slug: 'lectura-06-agitacion',
+      week: 6,
       order: 6,
       title: 'Fundamentos de agitación',
       summary:
@@ -596,6 +638,7 @@ export const pou202620Course: Course = {
     },
     {
       slug: 'lectura-07-mezclado',
+      week: 6,
       order: 7,
       title: 'Mezclado y escalado',
       summary:
@@ -609,6 +652,7 @@ export const pou202620Course: Course = {
     },
     {
       slug: 'lectura-08-intercambiadores-de-calor',
+      week: 7,
       order: 8,
       title: 'Intercambiadores de calor',
       summary:
@@ -622,6 +666,7 @@ export const pou202620Course: Course = {
     },
     {
       slug: 'lectura-09-filtracion',
+      week: 9,
       order: 9,
       title: 'Filtración industrial',
       summary:
@@ -635,6 +680,7 @@ export const pou202620Course: Course = {
     },
     {
       slug: 'lectura-10-equilibrio-de-fases',
+      week: 10,
       order: 10,
       title: 'Equilibrio de fases',
       summary:
@@ -648,6 +694,7 @@ export const pou202620Course: Course = {
     },
     {
       slug: 'lectura-11-destilacion-flash',
+      week: 10,
       order: 11,
       title: 'Destilación flash',
       summary:
@@ -661,6 +708,7 @@ export const pou202620Course: Course = {
     },
     {
       slug: 'lectura-12-destilacion-por-lotes',
+      week: 14,
       order: 12,
       title: 'Destilación por lotes',
       summary:
@@ -674,6 +722,7 @@ export const pou202620Course: Course = {
     },
     {
       slug: 'lectura-13-destilacion-continua',
+      week: 11,
       order: 13,
       title: 'Destilación continua',
       summary:
@@ -689,6 +738,7 @@ export const pou202620Course: Course = {
   presentations: [
     {
       id: 'diagramas-ingenieria',
+      week: 2,
       title: 'Diagramas de ingeniería',
       description:
         'PBD, PFD y P&ID: el lenguaje visual de la ingeniería química. Simbología ISA, codificación de equipos, balance de masa y mejores prácticas.',
@@ -697,6 +747,7 @@ export const pou202620Course: Course = {
     },
     {
       id: 'pid-instrumentacion',
+      week: 2,
       title: 'Diagramas P&ID e instrumentación',
       description:
         'Simbología ISA para instrumentación, lazos de control, seguridad (PSV) y construcción profesional de P&ID.',
@@ -705,6 +756,7 @@ export const pou202620Course: Course = {
     },
     {
       id: 'propiedades-solidos-particulados',
+      week: 3,
       title: 'Propiedades de sólidos particulados',
       description:
         'Densidad, porosidad, tamaño y forma, flujo, cohesión, segregación, propiedades térmicas, explosividad de polvos y aplicaciones a molienda, tolvas, transporte y mezclado.',
@@ -713,6 +765,7 @@ export const pou202620Course: Course = {
     },
     {
       id: 'reduccion-de-tamano',
+      week: 3,
       title: 'Reducción de tamaño',
       description:
         'Física de la fractura (Griffith), leyes de la conminución (Rittinger, Kick, Bond), equipos de trituración y molienda, clasificación por tamizado y control de polvo.',
@@ -721,6 +774,7 @@ export const pou202620Course: Course = {
     },
     {
       id: 'flujo-de-fluidos',
+      week: 4,
       title: 'Flujo de fluidos',
       description:
         'Ecuación de Bernoulli, pérdidas de carga (Darcy-Weisbach, Moody) en redes de tuberías, selección de diámetros, fluidos no-newtonianos, cavitación y golpe de ariete.',
@@ -729,6 +783,7 @@ export const pou202620Course: Course = {
     },
     {
       id: 'bombas-centrifugas',
+      week: 5,
       title: 'Bombas centrífugas',
       description:
         'Curvas características (H–Q, eficiencia, potencia) y punto de operación, NPSH y cavitación, operación en serie y paralelo, y criterios de especificación y mantenimiento.',
@@ -737,6 +792,7 @@ export const pou202620Course: Course = {
     },
     {
       id: 'agitacion',
+      week: 6,
       title: 'Agitación',
       description:
         'Tipos de impulsores (axiales y radiales), geometría del tanque, número de potencia y curvas Np–Re, suspensión de sólidos y escalamiento (P/V, tip speed, Re).',
@@ -745,6 +801,7 @@ export const pou202620Course: Course = {
     },
     {
       id: 'mezclado-de-fluidos',
+      week: 6,
       title: 'Mezclado de fluidos',
       description:
         'Agitación (causa) vs. mezclado (efecto): los tres mecanismos de mezclado, tiempo de mezclado θ₉₅ y su costo energético, y los retos de alta viscosidad y líquidos inmiscibles.',
@@ -753,6 +810,7 @@ export const pou202620Course: Course = {
     },
     {
       id: 'intercambiadores-i',
+      week: 7,
       title: 'Intercambiadores de calor I',
       description:
         'Coeficiente global U y ensuciamiento (fouling), tipos de intercambiadores (tubos y coraza, placas, espiral, aletados) y diseño por el método LMTD con factor de corrección F.',
@@ -761,6 +819,7 @@ export const pou202620Course: Course = {
     },
     {
       id: 'intercambiadores-ii',
+      week: 8,
       title: 'Intercambiadores de calor II',
       description:
         'Método ε-NTU para evaluar equipos existentes: efectividad, número de unidades de transferencia, relaciones por geometría y casos límite. Dimensionamiento físico de tubos y coraza, velocidades y caída de presión, método de Kern y verificación con software.',
@@ -769,6 +828,7 @@ export const pou202620Course: Course = {
     },
     {
       id: 'filtracion',
+      week: 9,
       title: 'Filtración',
       description:
         'Mecanismos (filtración con torta, profunda y tangencial), Ley de Darcy y modelo de resistencias en serie (R_c = αw, R_m), compresibilidad de la torta. Ecuaciones de diseño a presión y a caudal constante con simulador interactivo del ciclo real (Fase 1–2–3). Determinación experimental de α y R_m, ayudas de filtración (diatomeas, perlita, celulosa, pre-capa, body feed), equipos (filtro prensa, filtro rotatorio de vacío, decantadora centrífuga) con videos, criterios de selección y cosecha de células en biotecnología.',
@@ -777,6 +837,7 @@ export const pou202620Course: Course = {
     },
     {
       id: 'equilibrio-de-fases',
+      week: 10,
       title: 'Equilibrio de fases y destilación',
       description:
         'Equilibrio líquido-vapor, ley de Raoult, volatilidad relativa, diagramas T-xy y x-y con datos reales, azeótropos, modelos termodinámicos (Wilson, NRTL, UNIQUAC) y tipos de destilación.',
@@ -785,6 +846,7 @@ export const pou202620Course: Course = {
     },
     {
       id: 'destilacion-flash',
+      week: 10,
       title: 'Destilación flash: principios y fundamentos',
       description:
         'Vaporización parcial súbita y equilibrio de una sola etapa: el fenómeno del flasheo, el tambor separador, diagramas P-x-y y T-x-y, balances de materia y energía, la línea de operación flash y el flash multicomponente (Rachford-Rice) con algoritmo interactivo y solucionador en vivo. Aplicaciones en refinación y desalinización.',
@@ -793,6 +855,7 @@ export const pou202620Course: Course = {
     },
     {
       id: 'destilacion-diferencial',
+      week: 14,
       title: 'Destilación diferencial',
       description:
         'Destilación por lotes y su naturaleza transitoria: recorrido interactivo en el diagrama T-x-y (A→B→C→…), aparato y anatomía de un destilador, columnas multietapa y reflujo, derivación de la ecuación de Rayleigh, algoritmo de solución y calculadora en vivo (metanol-agua), operación y aplicaciones en bebidas, perfumería y química fina.',
@@ -801,6 +864,7 @@ export const pou202620Course: Course = {
     },
     {
       id: 'destilacion-continua',
+      week: 11,
       title: 'Diseño y análisis de columnas de destilación continua',
       description:
         'Volatilidad relativa, curva de equilibrio líquido-vapor interactiva, anatomía de la columna y el método de McCabe-Thiele: zonas, balances, líneas de operación (LOS/LOI) y línea q, condición térmica de la alimentación (parámetro q), y un ejemplo completo n-hexano/p-xileno con construcción gráfica interactiva paso a paso (línea q, punto pinch, R mínimo, escalonado de etapas). Eficiencia de platos, diseño hidráulico, limitaciones, azeótropos y control.',
@@ -811,6 +875,7 @@ export const pou202620Course: Course = {
   simulations: [
     {
       id: 'manual-diagramas',
+      week: 2,
       title: 'Manual de diagramas de ingeniería',
       description:
         'La referencia interactiva de BFD, PFD y P&ID del curso, hilada por un mismo proceso (hidrodesulfuración de nafta) dibujado con detalle creciente. Once secciones navegables: introducción y jerarquía de diagramas, diagrama de bloques, equipos y nomenclatura con un decodificador de tags en vivo, corrientes y servicios, lazos de control con un constructor por tipo de equipo, tablas del PFD, un PFD explorable clic-a-clic, tuberías e instrumentación (ISA-5.1), layout e isométricos, una biblioteca de símbolos buscable y filtrable, y una autoevaluación de 10 preguntas que se califica sola. La guía visual para leer y dibujar diagramas de proceso.',
@@ -820,6 +885,7 @@ export const pou202620Course: Course = {
     },
     {
       id: 'explorador-agitacion',
+      week: 6,
       title: 'Explorador de agitación',
       description:
         'Explora el tanque agitado del proyecto en vivo: elige el impulsor (hélice marina axial, turbina Rushton radial o ancla para alta viscosidad), activa o quita los bafles, y selecciona el fluido (agua, aceite, jarabe de glucosa o uno genérico con ρ y μ ajustables) junto con la velocidad de giro y el diámetro D/T. Dibuja el campo de velocidades estilo CFD en vista lateral y superior — streamlines coloreadas por magnitud, animadas —, incluyendo el patrón clásico con bafles (giro central más remolinos entre bafles) y el vórtice central cuando faltan. Calcula Reynolds y régimen, el número de potencia sobre la curva Np–Re (con y sin bafles), la potencia y P/V, la velocidad de punta, el tiempo de mezcla θ₉₅ de Grenville y la profundidad del vórtice, con avisos de zonas muertas, arrastre de aire y daño por cizalla.',
@@ -829,6 +895,7 @@ export const pou202620Course: Course = {
     },
     {
       id: 'explorador-intercambiadores',
+      week: 8,
       title: 'Explorador de intercambiadores de tubos y coraza',
       description:
         'Diseña el intercambiador del proyecto por el método de Kern en vivo: define el requerimiento (enfriar aceite ligero con agua), asigna fluidos a tubos o coraza, elige tubo, arreglo del haz (triangular/cuadrado), pasos, corazas en serie, número y longitud de tubos, espaciado de bafles, material y factores de ensuciamiento. Calcula los coeficientes h de cada lado, U limpio y de diseño, LMTD y factor F multi-paso/multi-coraza, el área requerida vs. disponible (sobrediseño), las caídas de presión y las velocidades. Entrega un veredicto de diseño por criterio (régimen, ΔP, esbeltez, F…), la viabilidad económica (capital anualizado + energía de bombeo) y una comparación de cinco materiales. Con corte longitudinal, sección transversal del haz y perfil de temperaturas dibujados en tiempo real.',
@@ -838,6 +905,7 @@ export const pou202620Course: Course = {
     },
     {
       id: 'explorador-molienda',
+      week: 3,
       title: 'Explorador de molienda y tamizado',
       description:
         'Selecciona el equipo de reducción de tamaño del proyecto en vivo: elige material (caliza, carbón, maíz, azúcar, arcilla) y molino (mandíbulas, rodillos, martillos, bolas, discos), y define alimentación F₈₀, producto objetivo P₈₀ y capacidad en escala logarítmica. Calcula la energía con la Ley de Bond y compara los tres regímenes (Bond, Kick, Rittinger) calibrados en el punto de operación, dimensiona la potencia al eje y del motor, y resuelve el balance térmico adiabático (calor disipado, ΔT, temperatura de salida vs. límite del material). En seco o húmedo, con detección de atascos, daño térmico, ATEX, abrasión y sobre-reducción. La Parte 2 modela la distribución del producto con Rosin–Rammler y genera el análisis de tamizado completo de la serie Tyler.',
@@ -847,6 +915,7 @@ export const pou202620Course: Course = {
     },
     {
       id: 'explorador-bernoulli',
+      week: 5,
       title: 'Explorador de Bernoulli',
       description:
         'Arma el circuito de flujo del proyecto en vivo y aplica el balance de energía mecánica: elige el fluido (agua, etanol, glicerina, aceite o uno personalizado con ρ y μ ajustables), el material y diámetro de la tubería, la longitud, las elevaciones y el caudal de diseño, y arma la lista de accesorios (codos, tés, válvulas de globo/compuerta/bola/check) con su apertura para estrangular. Calcula la velocidad, el número de Reynolds y el régimen, el factor de fricción por Swamee–Jain, y las pérdidas por el método K y por longitud equivalente en paralelo. Resuelve el balance de Bernoulli término a término (presión, elevación, energía cinética, bomba y pérdidas), instala o quita la bomba para hallar el punto de operación donde su curva corta la del sistema, y estima la potencia. Con el esquema del sistema dibujado a partir de tus accesorios, el diagrama de Moody con el punto de operación y las curvas de sistema y bomba en tiempo real. Descarga libre a la atmósfera o sumergida a un tanque elevado.',
@@ -856,6 +925,7 @@ export const pou202620Course: Course = {
     },
     {
       id: 'explorador-bombas-centrifugas',
+      week: 5,
       title: 'Explorador de bombas centrífugas',
       description:
         'Selecciona la bomba del circuito en vivo: elige diámetro de impulsor y velocidad de giro, define la curva del sistema (caudal de diseño, fricción y niveles de succión y descarga referidos al eje de la bomba, z = 0) y observa el punto de operación donde la curva de la bomba corta la del sistema. Reescala la familia de curvas con las leyes de afinidad, dibuja las islas de eficiencia, calcula potencia hidráulica y al freno con selección de motor estándar, y evalúa el NPSH disponible vs. requerido con la altitud del sitio (Bogotá ≈ 2600 msnm) para anticipar la cavitación. Basado en la curva B&G TEH-375A. Unidades US o SI.',
@@ -865,6 +935,7 @@ export const pou202620Course: Course = {
     },
     {
       id: 'explorador-mccabe-thiele',
+      week: 11,
       title: 'Explorador McCabe–Thiele',
       description:
         'Diseña la columna de destilación binaria en vivo: mueve la composición y calidad de la alimentación, la pureza de productos, el reflujo y la eficiencia de Murphree, y observa cómo se reconstruyen las rectas de operación, la línea q y el escalonado de etapas. Incluye cinco sistemas (benceno–tolueno, metanol–agua, metanol–etanol, etanol–agua no ideal con azeótropo y α personalizable), balance global de materia, Rmín, Fenske y la torre con su plato de alimentación óptimo. La herramienta del proyecto para dimensionar la recuperación de etanol.',
