@@ -10,6 +10,12 @@ import { NotFoundInClassroom } from './NotFoundInClassroom';
 import { EduProLandingPage } from './EduProLandingPage';
 import { NarrativasLandingPage } from './NarrativasLandingPage';
 
+// Documento interno del curso: se puede abrir en el visor de la misma página.
+const isInternalDoc = (slug: string, href?: string): boolean =>
+  !!href && href.startsWith(`/classroom/${slug}/`);
+const toViewer = (slug: string, href: string): string =>
+  `/classroom/${slug}/ver/${href.slice(`/classroom/${slug}/`.length)}`;
+
 export const CourseLandingPage: React.FC = () => {
   const { courseSlug } = useParams<{ courseSlug: string }>();
   const course = courseSlug ? getCourseBySlug(courseSlug) : undefined;
@@ -44,29 +50,29 @@ export const CourseLandingPage: React.FC = () => {
           <div className="grid gap-4 sm:grid-cols-2">
             {(() => {
               const cronograma = course.readings.find((r) => r.slug === 'cronograma-interactivo');
-              return cronograma?.href ? (
-                <a
-                  href={cronograma.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group bg-white rounded-xl shadow-md border border-zinc-200 p-6 hover:shadow-lg transition-shadow"
-                >
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <p className="text-xs font-semibold tracking-widest uppercase text-brand-yellow-dark">Calendario</p>
-                      <h3 className="mt-1 text-xl font-bold text-brand-dark">Cronograma</h3>
-                      <p className="mt-2 text-sm text-brand-gray">
-                        Qué sigue esta semana y el timeline completo del semestre.
-                      </p>
-                    </div>
-                    <span className="text-brand-dark group-hover:text-brand-yellow-dark transition-colors">
-                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                      </svg>
-                    </span>
+              if (!cronograma?.href) return null;
+              const cardClass = 'group bg-white rounded-xl shadow-md border border-zinc-200 p-6 hover:shadow-lg transition-shadow';
+              const inner = (
+                <div className="flex items-start justify-between">
+                  <div>
+                    <p className="text-xs font-semibold tracking-widest uppercase text-brand-yellow-dark">Calendario</p>
+                    <h3 className="mt-1 text-xl font-bold text-brand-dark">Cronograma</h3>
+                    <p className="mt-2 text-sm text-brand-gray">
+                      Qué sigue esta semana y el timeline completo del semestre.
+                    </p>
                   </div>
-                </a>
-              ) : null;
+                  <span className="text-brand-dark group-hover:text-brand-yellow-dark transition-colors">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                  </span>
+                </div>
+              );
+              return isInternalDoc(course.slug, cronograma.href) ? (
+                <Link to={toViewer(course.slug, cronograma.href)} className={cardClass}>{inner}</Link>
+              ) : (
+                <a href={cronograma.href} target="_blank" rel="noopener noreferrer" className={cardClass}>{inner}</a>
+              );
             })()}
 
             <Link
@@ -123,6 +129,13 @@ export const CourseLandingPage: React.FC = () => {
                 </span>
               </>
             );
+            if (ch.href && isInternalDoc(course.slug, ch.href)) {
+              return (
+                <Link to={toViewer(course.slug, ch.href)} className={cardClass}>
+                  {inner}
+                </Link>
+              );
+            }
             return ch.href ? (
               <a href={ch.href} target="_blank" rel="noopener noreferrer" className={cardClass}>
                 {inner}
