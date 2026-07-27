@@ -208,6 +208,13 @@ export interface Course {
    * lecturas, presentaciones) siguen siendo accesibles con normalidad.
    */
   archived?: boolean;
+  /**
+   * Si `true`, el curso no se lista en ninguna página pública: ni en el índice
+   * de Aula ni en la de Archivo. Sus rutas siguen resolviendo con normalidad,
+   * así que quien tenga el enlace y el código de acceso puede entrar. Sirve
+   * para retirar un curso de la vitrina sin borrar su contenido.
+   */
+  hidden?: boolean;
   /** Solo aplica si `kind === 'professional'`. Lista de cursos EDCO/charlas que componen el espacio. */
   edcoCourses?: EdcoCourse[];
   cronograma?: CronogramaEntry[];

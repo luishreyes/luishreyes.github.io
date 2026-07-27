@@ -35,7 +35,7 @@ function semesterGroup(term: string, lang: Lang): { key: string; label: string; 
 export const ClassroomArchivePage: React.FC = () => {
   const { t, lang } = useI18n();
 
-  const archivedCourses = classroomData.filter((c) => c.archived);
+  const archivedCourses = classroomData.filter((c) => c.archived && !c.hidden);
 
   // Agrupa por semestre y ordena los grupos del más reciente al más antiguo.
   const groupsMap = new Map<string, { label: string; sort: number; courses: Course[] }>();

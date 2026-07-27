@@ -11,6 +11,9 @@ import type { Course } from '../classroom';
 // guía HTML autocontenida en /classroom/iqya-3751-2026-20/programa.html.
 export const narrativas202620Course: Course = {
   slug: 'iqya-3751-2026-20',
+  // Retirado de las listas públicas del sitio. El contenido y las rutas siguen
+  // intactos: se vuelve a mostrar quitando esta línea.
+  hidden: true,
   code: 'IQYA-3751',
   title: 'Narrativas Visuales de Datos IAgen',
   term: '2026-20',
