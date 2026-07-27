@@ -1,0 +1,129 @@
+/* ===================================================================
+   deck-doc.css — Modo documento de las presentaciones de POU
+
+   Convierte un deck de 16:9 en un apunte vertical para leer e imprimir.
+   No se usa en pantalla: lo inyecta `build-deck-doc.mjs` al generar el PDF.
+
+   Tres problemas que resuelve, y que la simple impresión del navegador no
+   resuelve sola:
+   1. Cada diapositiva se llevaba una hoja entera y dejaba media página en
+      blanco. Aquí el contenido fluye y varias secciones caben por hoja.
+   2. Las rejillas de tres y cuatro columnas desbordaban el ancho vertical.
+      Aquí se apilan.
+   3. Lo interactivo (pestañas, detalle de la planta) solo mostraba el estado
+      activo. Aquí se expande todo para que no se pierda contenido.
+   =================================================================== */
+
+/* ── Página ──────────────────────────────────────────────────────── */
+@page { size: Letter portrait; margin: 16mm 14mm 18mm; }
+
+html, body { background: #fff !important; }
+
+/* El deck deja de ser un escenario de tamaño fijo y pasa a fluir. */
+deck-stage { display: block !important; height: auto !important; background: none !important; }
+
+/* Cada diapositiva se vuelve un bloque del documento, no una hoja. */
+deck-stage > section {
+  position: relative !important;
+  width: 100% !important;
+  height: auto !important;
+  min-height: 0 !important;
+  padding: 26px 0 30px !important;
+  margin: 0 0 4px !important;
+  break-after: auto !important;
+  page-break-after: auto !important;
+  break-inside: avoid;
+  border-bottom: 1px solid #D9DCE0;
+  background: none !important;
+  color: #1D1F20 !important;
+  display: block !important;
+  overflow: visible !important;
+}
+/* Las diapositivas oscuras y los divisores: en papel se leen mejor como
+   apertura de sección, con la regla de acento y el texto en negro. */
+deck-stage > section.s--dark,
+deck-stage > section.divider {
+  border-top: 3px solid #5980A6;
+  border-bottom: 1px solid #D9DCE0;
+  page-break-before: auto;
+}
+deck-stage > section.s--dark *, deck-stage > section.divider * { color: #1D1F20 !important; }
+deck-stage > section.divider .part { color: #5980A6 !important; }
+deck-stage > section.s--dark .stat-cell .num { color: #5980A6 !important; }
+
+/* Tipografía del documento: la de pantalla es de proyección y aquí sobra. */
+deck-stage > section .s-head { font-size: 26px !important; margin-bottom: 8px !important; }
+deck-stage > section .s-title, deck-stage > section h1 { font-size: 32px !important; }
+deck-stage > section .kicker { font-size: 11px !important; margin-bottom: 6px !important; }
+deck-stage > section .lead-top { font-size: 14px !important; max-width: none !important; }
+deck-stage > section p, deck-stage > section li { font-size: 13px !important; line-height: 1.5 !important; }
+deck-stage > section h3 { font-size: 15px !important; }
+deck-stage > section h4 { font-size: 14px !important; }
+deck-stage .divider h2 { font-size: 30px !important; }
+deck-stage .divider .sub { font-size: 14px !important; }
+deck-stage .cover .session { font-size: 15px !important; }
+deck-stage .cover-meta div { font-size: 12px !important; }
+
+/* ── Rejillas: se apilan o bajan a dos columnas ──────────────────── */
+deck-stage .cards, deck-stage .cards.two, deck-stage .cards.four,
+deck-stage .cxobjs, deck-stage .cxcheck, deck-stage .cxmodmap,
+deck-stage .cxaias, deck-stage .cxpeople, deck-stage .cxweek,
+deck-stage .stat-grid, deck-stage .cxsteps, deck-stage .split {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 10px 18px !important;
+  margin-top: 10px !important;
+}
+deck-stage .cxcycle { display: grid !important; grid-template-columns: 1fr !important; gap: 10px !important; }
+deck-stage .cxcycle .arrow { display: none !important; }
+deck-stage .cxsteps .st { padding: 0 !important; }
+deck-stage .cxsteps .st::after { display: none !important; }
+deck-stage .cxsteps .num, deck-stage .cxcheck .box, deck-stage .cxpeople .av {
+  width: 34px !important; height: 34px !important; font-size: 15px !important;
+}
+deck-stage .cxobjs .o .k { font-size: 20px !important; min-width: 30px !important; }
+deck-stage .cxobjs .o b, deck-stage .cxcheck b { font-size: 14px !important; }
+deck-stage .cxobjs .o span, deck-stage .cxcheck span { font-size: 12px !important; }
+deck-stage .stat-cell .num { font-size: 46px !important; }
+deck-stage .stat-cell .lbl { font-size: 12px !important; }
+deck-stage .card { padding: 12px 14px !important; }
+deck-stage .callout { padding: 12px 16px !important; }
+deck-stage .cxmatrix { font-size: 11px !important; }
+deck-stage .cxmatrix th, deck-stage .cxmatrix td { padding: 6px 8px !important; }
+deck-stage table.tbl-sm { font-size: 11px !important; }
+deck-stage table.tbl-sm th, deck-stage table.tbl-sm td { padding: 6px 8px !important; }
+
+/* ── Diagramas anchos: ocupan todo el ancho útil de la hoja ──────── */
+deck-stage .plant, deck-stage .cxtl, deck-stage .ev, deck-stage .coev {
+  width: 100% !important; height: auto !important;
+}
+/* La línea de tiempo es la pieza más ancha del deck. En vertical su texto
+   quedaría ilegible, así que se gira y ocupa la hoja a lo alto. */
+deck-stage section[data-screen-label*="Cronograma"] { page-break-before: always; }
+deck-stage section[data-screen-label*="Cronograma"] .cxtl {
+  transform: rotate(90deg) scale(1.42);
+  transform-origin: center center;
+  margin: 210px 0 !important;
+}
+
+/* ── Lo interactivo, expandido ───────────────────────────────────── */
+/* Pestañas: se muestran todos los paneles, uno debajo del otro. */
+deck-stage .lossmenu .tabs { display: none !important; }
+deck-stage .lossmenu .panel { display: grid !important; opacity: 1 !important; margin-bottom: 12px !important; }
+/* Planta: en pantalla el detalle aparece al tocar una estación; en el
+   documento se listan las ocho. */
+deck-stage .opdetail { display: none !important; }
+deck-stage .opdoc { display: grid !important; grid-template-columns: 1fr 1fr; gap: 8px 18px; margin-top: 12px; }
+deck-stage .opdoc-item { break-inside: avoid; }
+deck-stage .opdoc-item b { display: block; font-size: 12px; color: #416180; letter-spacing: .04em; }
+deck-stage .opdoc-item span { display: block; font-size: 11.5px; line-height: 1.45; color: #45484C; }
+/* La planta nunca se atenúa en papel. */
+deck-stage .plant.hi .op, deck-stage .plant.hi .flow, deck-stage .plant.hi .flow-r,
+deck-stage .plant.hi .rlbl { opacity: 1 !important; }
+
+/* ── Cromo del deck fuera ────────────────────────────────────────── */
+deck-stage .overlay, deck-stage .rail, deck-stage .rail-resize,
+.export-hidden, [data-omelette-chrome] { display: none !important; }
+/* El pie de cada diapositiva sobra: el documento lleva su propia numeración. */
+deck-stage .s-foot { display: none !important; }
+.dl-btn { display: none !important; }
