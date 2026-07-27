@@ -6,9 +6,9 @@ import { CourseAccessGate } from '../../components/classroom/CourseAccessGate';
 import '../../components/classroom/pou-theme.css';
 
 // Material del curso de POU con la identidad «Industry»: cada semana es una
-// hoja numerada con sus marcas de registro. El comportamiento es el mismo que
-// ya estaba aprobado: la semana de hoy se abre sola, lo transversal va aparte,
-// y lecturas, guías y simulaciones abren en el visor de la misma página.
+// hoja numerada con sus marcas de registro. Todo arranca colapsado y se abre
+// una hoja a la vez, lo transversal va aparte, y lecturas, guías y
+// simulaciones abren en el visor de la misma página.
 
 const CRONOGRAMA_SLUG = 'cronograma-interactivo';
 
@@ -85,6 +85,15 @@ export const PouMaterialPage: React.FC<{ course: Course }> = ({ course }) => {
   // pidió que el material arranque siempre colapsado.
   const enCurso = semanas.find((w) => w >= actual) ?? semanas[semanas.length - 1];
 
+  // Acordeón: una sola hoja abierta a la vez. El estado vive aquí y el clic
+  // sobre el resumen se intercepta, porque dejar que `details` alterne solo
+  // desincroniza el DOM del estado de React.
+  const [abierta, setAbierta] = React.useState<string | null>(null);
+  const alternar = (id: string) => (e: React.MouseEvent) => {
+    e.preventDefault();
+    setAbierta((prev) => (prev === id ? null : id));
+  };
+
   const total = lecturas.length + guias.length + presentaciones.length + simulaciones.length;
 
   return (
@@ -109,7 +118,7 @@ export const PouMaterialPage: React.FC<{ course: Course }> = ({ course }) => {
             </p>
             <h1 style={{ fontSize: 'clamp(44px, 6vw, 84px)' }}>Material del curso</h1>
             <p className="pou-lede">
-              Organizado por semana. La semana de hoy se abre sola. Lo que acompaña todo el
+              Organizado por semana. Se abre una hoja a la vez. Lo que acompaña todo el
               semestre está en «Del curso».
             </p>
           </div>
@@ -122,9 +131,9 @@ export const PouMaterialPage: React.FC<{ course: Course }> = ({ course }) => {
             <>
               {/* Material transversal */}
               {transversal.length > 0 && (
-                <details className="pou-sheet">
+                <details className="pou-sheet" open={abierta === 'transversal'}>
                   <Marks />
-                  <summary>
+                  <summary onClick={alternar('transversal')}>
                     <span className="wk" aria-hidden="true">00</span>
                     <span className="hd">
                       <span className="k">Del curso</span>
@@ -151,9 +160,9 @@ export const PouMaterialPage: React.FC<{ course: Course }> = ({ course }) => {
                 const fechas = m.dates.slice().sort();
 
                 return (
-                  <details className="pou-sheet" key={w}>
+                  <details className="pou-sheet" key={w} open={abierta === `s${w}`}>
                     <Marks />
-                    <summary>
+                    <summary onClick={alternar(`s${w}`)}>
                       <span className="wk" aria-hidden="true">{String(w).padStart(2, '0')}</span>
                       <span className="hd">
                         <span className="k">
