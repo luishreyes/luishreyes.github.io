@@ -501,6 +501,18 @@ export const pou202620Course: Course = {
       bannerImg: '/classroom/iqya-2031-2026-20/guias-banners/teamwork.jpg',
     },
     {
+      slug: 'contrato-de-equipo',
+      order: 4,
+      title: 'Contrato de equipo',
+      summary:
+        'El acuerdo que su equipo firma en la segunda sesión y al que apela el resto del semestre. Se llena en pantalla, marca en rojo los pesos de coevaluación mientras no sumen 100, y el botón «Imprimir contrato» arma el documento formateado para firmar o guardar en PDF. Cubre propósito y valores, roles, normas con indicador observable, reuniones y canales, rutas de conflicto, criterios de coevaluación, sanciones y firmas.',
+      date: '2026-07-27',
+      readingMinutes: 40,
+      tags: ['contrato', 'equipo', 'normas', 'roles', 'coevaluación'],
+      category: 'guia',
+      href: '/classroom/iqya-2031-2026-20/guias/Contrato_de_Equipo/Contrato_de_Equipo.html',
+    },
+    {
       slug: 'busqueda-bibliografica',
       order: 5,
       title: 'Búsqueda bibliográfica y herramientas de IA',
@@ -744,6 +756,15 @@ export const pou202620Course: Course = {
       description:
         'La sesión inaugural completa: bienvenida y la idea del proyecto, equipo docente, objetivos y resultados ABET, el reto de la pectina, metodología, cronograma y fechas clave, evaluación, uso de IA y expectativas.',
       file: 'Presentacion_del_Curso/Presentacion_del_Curso.html',
+    },
+    {
+      id: 'trabajo-en-equipo',
+      week: 1,
+      title: 'Equipos, coevaluación y contrato',
+      sessionNumber: 2,
+      description:
+        'Qué distingue a un equipo que funciona, cómo la coevaluación convierte una nota grupal en cinco notas individuales, con un ejemplo que se mueve en vivo, y las ocho secciones del contrato que cada equipo firma en clase.',
+      file: 'Trabajo_en_Equipo/Presentacion_Trabajo_en_Equipo.html',
     },
     {
       id: 'diagramas-ingenieria',
