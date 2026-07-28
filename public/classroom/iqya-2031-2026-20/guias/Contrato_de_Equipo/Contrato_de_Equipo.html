@@ -1,0 +1,586 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contrato de equipo · Proyecto de Operaciones Unitarias</title>
+<style>
+/* ═══════════════════════════════════════════════════════════════════════
+   Contrato de equipo · POU · IQYA-2031 · 2026-20
+
+   Formulario que los equipos llenan en clase y que al imprimirse produce el
+   contrato firmado. Dos modos que salen del mismo archivo:
+
+   · Pantalla: campos editables, guardado automático en el navegador y una
+     barra de estado con el avance.
+   · Impresión: la plantilla se transforma. Desaparecen la barra, las ayudas
+     y los bordes de campo, y queda un documento de ocho secciones con
+     cabecera, numeración y espacio de firmas.
+
+   Los campos son <textarea> que crecen con el contenido, no cajas de alto
+   fijo: una caja de alto fijo recorta el texto al imprimir y el contrato
+   saldría mutilado.
+   ═══════════════════════════════════════════════════════════════════════ */
+@import url('https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Barlow+Condensed:wght@400;500;600;700&display=swap');
+
+:root {
+  --acero:      #5980A6;
+  --acero-osc:  #416180;
+  --acero-900:  #1D2D3D;
+  --acero-claro:#E8EFF6;
+  --gris-1: #1D1F20;
+  --gris-2: #5D5D60;
+  --gris-3: #7A7A7D;
+  --gris-4: #C9C9CC;
+  --gris-5: #E7E7EA;
+  --papel:  #F2F2F3;
+  --blanco: #FFFFFF;
+  --ambar:  #E0922F;
+  --tipo:        'Barlow', system-ui, sans-serif;
+  --tipo-titulo: 'Barlow Condensed', 'Barlow', system-ui, sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--papel); color: var(--gris-1);
+  font-family: var(--tipo); font-size: 16px; line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Barra de acciones, solo en pantalla ─────────────────────────────── */
+.barra {
+  position: sticky; top: 0; z-index: 20;
+  display: flex; align-items: center; gap: 18px; flex-wrap: wrap;
+  padding: 14px 28px;
+  background: var(--acero-900); color: #eef3f8;
+  border-bottom: 3px solid var(--acero);
+}
+.barra .marca {
+  font-family: var(--tipo-titulo); font-size: 21px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .04em;
+}
+.barra .avance {
+  flex: 1; min-width: 180px; display: flex; align-items: center; gap: 12px;
+  font-size: 13px; letter-spacing: .1em; text-transform: uppercase; color: #a9c6e2;
+}
+.barra .riel { flex: 1; max-width: 260px; height: 6px; background: rgba(255,255,255,.18); }
+.barra .relleno { height: 100%; width: 0; background: var(--acero); transition: width .3s ease; }
+.btn {
+  font-family: var(--tipo); font-size: 14px; font-weight: 600;
+  letter-spacing: .06em; text-transform: uppercase;
+  padding: 10px 20px; border: 1px solid var(--acero); border-radius: 0;
+  background: var(--acero); color: #fff; cursor: pointer;
+}
+.btn:hover { background: var(--acero-osc); border-color: var(--acero-osc); }
+.btn.fantasma { background: transparent; color: #cfe0ee; }
+.btn.fantasma:hover { background: rgba(255,255,255,.10); }
+.guardado { font-size: 13px; color: #a9c6e2; min-width: 15ch; }
+
+/* ── Documento ───────────────────────────────────────────────────────── */
+.hoja {
+  max-width: 1080px; margin: 32px auto 80px; padding: 0 28px;
+}
+.encabezado { border-bottom: 3px solid var(--acero); padding-bottom: 20px; margin-bottom: 8px; }
+.encabezado .curso {
+  font-size: 13px; font-weight: 600; letter-spacing: .2em;
+  text-transform: uppercase; color: var(--acero-osc);
+}
+.encabezado h1 {
+  font-family: var(--tipo-titulo); font-size: 54px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: -.02em; margin: 6px 0 0;
+}
+.encabezado p { margin: 10px 0 0; color: var(--gris-2); max-width: 66ch; }
+
+.aviso {
+  margin: 22px 0 0; padding: 14px 18px;
+  border-left: 3px solid var(--ambar); background: #fdf6ec;
+  font-size: 14.5px; color: #6b4a15;
+}
+
+section.bloque { margin-top: 44px; }
+section.bloque > h2 {
+  font-family: var(--tipo-titulo); font-size: 30px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: -.01em;
+  margin: 0 0 4px; padding-bottom: 8px;
+  border-bottom: 1px solid var(--gris-4);
+}
+/* La numeración salta la identificación: en la plantilla del profesor el
+   propósito es la sección 1, no la 2. */
+section.bloque:not(.sin-numero) > h2 { counter-increment: sec; }
+section.bloque:not(.sin-numero) > h2::before {
+  content: counter(sec) ' · '; color: var(--acero);
+}
+body { counter-reset: sec; }
+.ayuda { margin: 10px 0 18px; font-size: 14.5px; color: var(--gris-2); max-width: 74ch; }
+
+/* ── Campos ──────────────────────────────────────────────────────────── */
+label.campo { display: block; margin-bottom: 16px; }
+label.campo > span.rot {
+  display: block; font-size: 12.5px; font-weight: 600;
+  letter-spacing: .12em; text-transform: uppercase; color: var(--gris-3);
+  margin-bottom: 5px;
+}
+textarea, input[type="text"] {
+  font-family: var(--tipo); font-size: 16px; line-height: 1.5; color: var(--gris-1);
+  width: 100%; padding: 9px 12px;
+  border: 1px solid var(--gris-4); border-radius: 0; background: var(--blanco);
+  resize: none; overflow: hidden;
+}
+textarea:focus, input[type="text"]:focus {
+  outline: 2px solid var(--acero); outline-offset: -1px; border-color: var(--acero);
+}
+textarea::placeholder, input::placeholder { color: #b3b3b6; }
+
+.rejilla { display: grid; gap: 16px; }
+@media (min-width: 720px) {
+  .rejilla.dos { grid-template-columns: 1fr 1fr; }
+  .rejilla.tres { grid-template-columns: 1fr 1fr 1fr; }
+}
+
+table.tabla { width: 100%; border-collapse: collapse; margin-top: 6px; }
+table.tabla th {
+  font-size: 12.5px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--gris-3); text-align: left; padding: 8px 10px;
+  border-bottom: 2px solid var(--gris-4); vertical-align: bottom;
+}
+table.tabla td { padding: 5px 6px; border-bottom: 1px solid var(--gris-5); vertical-align: top; }
+table.tabla td.n {
+  width: 42px; text-align: center; font-weight: 700; color: var(--acero);
+  font-variant-numeric: tabular-nums; padding-top: 14px;
+}
+table.tabla td.fijo { font-weight: 600; font-size: 15px; width: 150px; padding-top: 14px; }
+table.tabla td.fijo small { display: block; font-weight: 400; color: var(--gris-3); font-size: 13px; }
+
+/* Ruta escalonada de conflictos */
+.ruta { display: grid; gap: 8px; margin-top: 8px; }
+.ruta label {
+  display: flex; gap: 10px; align-items: flex-start;
+  font-size: 15px; padding: 7px 10px; border: 1px solid var(--gris-5); background: var(--blanco);
+}
+.ruta input[type="checkbox"] { margin-top: 4px; width: 17px; height: 17px; accent-color: var(--acero); }
+.ruta .paso { font-weight: 700; color: var(--acero); min-width: 22px; }
+
+.conflicto { border: 1px solid var(--gris-4); padding: 16px 18px; background: #fafafb; }
+.conflicto h3 {
+  font-family: var(--tipo-titulo); font-size: 20px; margin: 0 0 4px;
+  text-transform: uppercase; letter-spacing: .02em;
+}
+
+.total { display: flex; align-items: baseline; gap: 12px; margin-top: 12px; font-size: 15px; }
+.total .cifra {
+  font-family: var(--tipo-titulo); font-size: 30px; font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.total .cifra.mal { color: #a4362a; }
+.total .cifra.bien { color: var(--acero-osc); }
+.total .nota { color: var(--gris-3); font-size: 14px; }
+
+.firmas td { padding-top: 26px; }
+.linea-firma { border-bottom: 1px solid var(--gris-1); height: 30px; }
+
+.pie-doc {
+  margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--gris-4);
+  font-size: 13.5px; color: var(--gris-3);
+}
+
+/* ═══ Impresión: la plantilla se convierte en el contrato ═══════════════
+   Se quitan la barra, las ayudas y los bordes de campo. Lo escrito queda
+   como texto del documento. */
+@media print {
+  @page { size: Letter portrait; margin: 18mm 16mm 20mm; }
+  body { background: #fff; font-size: 10.5pt; }
+  .barra, .aviso, .ayuda, .no-imprimir { display: none !important; }
+  .hoja { max-width: none; margin: 0; padding: 0; }
+
+  .encabezado h1 { font-size: 30pt; }
+  .encabezado p { display: none; }
+
+  /* Las secciones fluyen: obligarlas a no partirse deja media hoja en blanco
+     por sección y el contrato pasa de cuatro páginas a ocho. Lo que sí se
+     evita es que un título quede huérfano al pie de la página. */
+  section.bloque { margin-top: 16pt; }
+  section.bloque > h2 { font-size: 14pt; margin-bottom: 8pt; break-after: avoid; }
+  label.campo, tr, .conflicto { break-inside: avoid; }
+  /* Un campo vacío no necesita reservar tres renglones en papel. */
+  textarea:placeholder-shown, textarea:empty { min-height: 0; }
+
+  /* Los campos pierden la apariencia de formulario. */
+  textarea, input[type="text"] {
+    border: none; border-bottom: 1px solid #b9bcc0; padding: 2pt 0;
+    font-size: 10.5pt; background: none; color: #000;
+  }
+  textarea { border-bottom: none; border-left: 2pt solid #dfe4ea; padding-left: 6pt; }
+  label.campo > span.rot { font-size: 8pt; color: #666; }
+  table.tabla td { padding: 3pt 4pt; }
+  table.tabla th { font-size: 8pt; }
+
+  .ruta label { border: none; padding: 2pt 0; }
+  .ruta input[type="checkbox"] { -webkit-appearance: none; appearance: none;
+    width: 10pt; height: 10pt; border: 1pt solid #333; }
+  .ruta input[type="checkbox"]:checked::after { content: '×'; display: block;
+    text-align: center; line-height: 8pt; font-weight: 700; }
+
+  .conflicto { border: 1pt solid #ccd0d5; background: none; padding: 8pt 10pt; }
+  .firmas td { padding-top: 20pt; }
+  .pie-doc { margin-top: 24pt; }
+}
+</style>
+</head>
+<body>
+
+<div class="barra no-imprimir">
+  <span class="marca">Contrato de equipo</span>
+  <span class="avance">
+    <span class="riel"><span class="relleno" id="relleno"></span></span>
+    <span id="pct">0 %</span>
+  </span>
+  <span class="guardado" id="guardado">Sin cambios</span>
+  <button class="btn fantasma" id="btn-limpiar" type="button">Vaciar</button>
+  <button class="btn" id="btn-imprimir" type="button">Imprimir contrato</button>
+</div>
+
+<div class="hoja">
+
+  <header class="encabezado">
+    <p class="curso">IQYA-2031 · Proyecto de Operaciones Unitarias · 2026-20</p>
+    <h1>Contrato de equipo</h1>
+    <p>Este documento fija cómo va a trabajar su equipo durante las dieciséis semanas.
+       Llénelo con su equipo, imprímalo y entréguelo firmado.</p>
+  </header>
+
+  <div class="aviso no-imprimir">
+    Lo que escriba se guarda en este navegador y en este computador, no en un servidor.
+    Si va a seguir en otra máquina, imprima primero o guarde el PDF. El botón
+    <b>Imprimir contrato</b> abre el diálogo del navegador: desde ahí puede elegir
+    «Guardar como PDF».
+  </div>
+
+  <!-- ── Identificación ──────────────────────────────────────────────── -->
+  <section class="bloque sin-numero">
+    <h2>Identificación</h2>
+    <div class="rejilla dos">
+      <label class="campo"><span class="rot">Equipo</span>
+        <input type="text" data-c="equipo" placeholder="Grupo 01"></label>
+      <label class="campo"><span class="rot">Semestre</span>
+        <input type="text" data-c="semestre" value="2026-20"></label>
+    </div>
+    <label class="campo"><span class="rot">Integrantes: nombre completo, código y correo</span>
+      <textarea data-c="integrantes" rows="4"
+        placeholder="Nombre completo · 2026XXXXX · correo@uniandes.edu.co"></textarea></label>
+    <div class="rejilla dos">
+      <label class="campo"><span class="rot">Curso</span>
+        <input type="text" data-c="curso" value="Proyecto de Operaciones Unitarias"></label>
+      <label class="campo"><span class="rot">Profesor</span>
+        <input type="text" data-c="profesor" value="Luis H. Reyes"></label>
+    </div>
+  </section>
+
+  <!-- ── 1 ───────────────────────────────────────────────────────────── -->
+  <section class="bloque">
+    <h2>Propósito, misión y valores</h2>
+    <p class="ayuda">El propósito responde para qué existe el equipo. La misión, qué van a
+       hacer y cómo. Los valores son las tres a cinco reglas de comportamiento a las que
+       van a apelar cuando haya que decidir algo incómodo.</p>
+    <label class="campo"><span class="rot">Propósito del proyecto para el equipo</span>
+      <textarea data-c="proposito" rows="3"></textarea></label>
+    <label class="campo"><span class="rot">Misión: qué haremos y cómo</span>
+      <textarea data-c="mision" rows="3"></textarea></label>
+    <label class="campo"><span class="rot">Valores que guiarán nuestras decisiones</span>
+      <textarea data-c="valores" rows="5"
+        placeholder="1.&#10;2.&#10;3.&#10;4.&#10;5."></textarea></label>
+  </section>
+
+  <!-- ── 2 ───────────────────────────────────────────────────────────── -->
+  <section class="bloque">
+    <h2>Roles del equipo</h2>
+    <p class="ayuda">Definan responsable y suplente de cada rol. El suplente no es decorativo:
+       es quien responde si el titular falta a una entrega.</p>
+    <table class="tabla" id="tabla-roles">
+      <thead><tr>
+        <th style="width:150px">Rol</th><th>Responsable</th><th>Suplente</th>
+        <th>Responsabilidades clave</th><th>Indicadores de cumplimiento</th>
+      </tr></thead>
+      <tbody></tbody>
+    </table>
+    <label class="campo" style="margin-top:16px"><span class="rot">Otros roles específicos del proyecto</span>
+      <textarea data-c="roles-otros" rows="2"></textarea></label>
+    <label class="campo"><span class="rot">¿Habrá rotación de roles? ¿Cada cuánto?</span>
+      <textarea data-c="roles-rotacion" rows="2"></textarea></label>
+  </section>
+
+  <!-- ── 3 ───────────────────────────────────────────────────────────── -->
+  <section class="bloque">
+    <h2>Normas del equipo</h2>
+    <p class="ayuda">Diez a doce normas. Cada una necesita un indicador observable: si nadie
+       puede verificarla desde afuera, no sirve para evaluar ni para reclamar.</p>
+    <table class="tabla" id="tabla-normas">
+      <thead><tr>
+        <th style="width:42px">#</th><th>Norma acordada</th>
+        <th>Indicador observable o evidencia</th><th>Consecuencia ante incumplimiento</th>
+      </tr></thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <!-- ── 4 ───────────────────────────────────────────────────────────── -->
+  <section class="bloque">
+    <h2>Reuniones y canales de comunicación</h2>
+    <div class="rejilla tres">
+      <label class="campo"><span class="rot">Periodicidad y duración</span>
+        <input type="text" data-c="reu-periodicidad" placeholder="Martes 4:00 p. m., 60 min"></label>
+      <label class="campo"><span class="rot">Modalidad</span>
+        <input type="text" data-c="reu-modalidad" placeholder="Presencial / remota / mixta"></label>
+      <label class="campo"><span class="rot">Plazo para publicar el acta</span>
+        <input type="text" data-c="reu-actas" placeholder="24 horas"></label>
+    </div>
+    <table class="tabla" id="tabla-canales">
+      <thead><tr>
+        <th style="width:170px">Canal</th><th>Uso acordado</th><th style="width:220px">Tiempo de respuesta esperado</th>
+      </tr></thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <!-- ── 5 ───────────────────────────────────────────────────────────── -->
+  <section class="bloque">
+    <h2>Resolución de conflictos</h2>
+    <p class="ayuda">Marquen los pasos que su equipo se compromete a agotar, en orden, antes
+       de escalar. Definirlo hoy evita discutir el procedimiento el día que haya conflicto.</p>
+    <div class="rejilla dos" id="conflictos"></div>
+  </section>
+
+  <!-- ── 6 ───────────────────────────────────────────────────────────── -->
+  <section class="bloque">
+    <h2>Criterios de coevaluación y autoevaluación</h2>
+    <p class="ayuda">Estos son los criterios con los que se van a calificar entre ustedes en las
+       cinco coevaluaciones del semestre. Cada uno debe apuntar a una norma de la sección 3.
+       Los pesos suman 100.</p>
+    <table class="tabla" id="tabla-criterios">
+      <thead><tr>
+        <th>Criterio</th><th>Indicador observable</th><th style="width:110px">Peso (%)</th>
+      </tr></thead>
+      <tbody></tbody>
+    </table>
+    <p class="total">
+      <span>Suma de pesos</span>
+      <span class="cifra mal" id="suma-pesos">0</span>
+      <span class="nota">debe dar exactamente 100</span>
+    </p>
+  </section>
+
+  <!-- ── 7 ───────────────────────────────────────────────────────────── -->
+  <section class="bloque">
+    <h2>Sanciones y medidas restaurativas</h2>
+    <p class="ayuda">La consecuencia es lo que pasa. La medida restaurativa es cómo se repara
+       el daño al equipo. Hacen falta las dos.</p>
+    <div class="rejilla tres" id="sanciones"></div>
+  </section>
+
+  <!-- ── 8 ───────────────────────────────────────────────────────────── -->
+  <section class="bloque">
+    <h2>Firmas</h2>
+    <p class="ayuda" style="color:var(--gris-1)">Declaramos que hemos leído, discutido y aceptado
+       este contrato. Nos comprometemos a cumplirlo y a mantener evidencia de nuestro trabajo
+       conforme a lo aquí pactado.</p>
+    <table class="tabla firmas" id="tabla-firmas">
+      <thead><tr><th>Nombre</th><th style="width:38%">Firma</th><th style="width:120px">Fecha</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <p class="pie-doc">
+    Proyecto de Operaciones Unitarias · IQYA-2031 · Universidad de los Andes ·
+    Ingeniería Química y de Alimentos
+  </p>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  // ── Filas que se generan, para no repetir marcado a mano ──────────────
+  const ROLES = [
+    ['Coordinación general', 'Planificación, seguimiento y clima del equipo', 'Tareas a tiempo; reuniones con acta'],
+    ['Líder técnico', 'Profundización técnica y decisiones de diseño', 'Evidencia técnica y justificación'],
+    ['Documentación y calidad', 'Control de versiones, actas y matrices', 'Actas en 24 h; lista de chequeo'],
+    ['Analítica y modelamiento', 'Curación de datos, modelos y sensibilidad', 'Reproducibilidad; supuestos reportados'],
+    ['Vocería', 'Presentaciones y comunicación externa', 'Entregables claros y a tiempo'],
+    ['Gestión de riesgos', 'Identificación, evaluación y mitigación', 'Riesgos actualizados cada semana'],
+  ];
+  const CONFLICTOS = ['De tarea', 'De proceso', 'Interpersonal', 'De seguridad'];
+  const PASOS = [
+    'Conversación directa entre las partes, con las normas y la evidencia a la vista.',
+    'Mediación interna de la coordinación del equipo.',
+    'Revisión con el equipo completo y acta con la decisión.',
+    'Escalamiento al asistente, con evidencias.',
+    'Escalamiento al profesor.',
+  ];
+  const GRAVEDAD = [
+    ['Leve', 'Retraso menor sin impacto en el entregable'],
+    ['Moderado', 'Impacto en un entregable interno'],
+    ['Grave', 'Impacto en seguridad, ética o entrega formal'],
+  ];
+
+  const $ = (s) => document.querySelector(s);
+  const campo = (clave, filas, ph) =>
+    `<textarea data-c="${clave}" rows="${filas || 2}"${ph ? ` placeholder="${ph}"` : ''}></textarea>`;
+
+  // Roles
+  $('#tabla-roles tbody').innerHTML = ROLES.map((r, i) => `
+    <tr>
+      <td class="fijo">${r[0]}</td>
+      <td>${campo('rol' + i + '-resp', 1)}</td>
+      <td>${campo('rol' + i + '-supl', 1)}</td>
+      <td class="fijo" style="font-weight:400;color:var(--gris-2);width:auto">${r[1]}</td>
+      <td class="fijo" style="font-weight:400;color:var(--gris-2);width:auto">${r[2]}</td>
+    </tr>`).join('');
+
+  // Normas
+  $('#tabla-normas tbody').innerHTML = Array.from({ length: 12 }, (_, i) => `
+    <tr>
+      <td class="n">${i + 1}</td>
+      <td>${campo('norma' + i + '-t', 2)}</td>
+      <td>${campo('norma' + i + '-i', 2)}</td>
+      <td>${campo('norma' + i + '-c', 2)}</td>
+    </tr>`).join('');
+
+  // Canales
+  $('#tabla-canales tbody').innerHTML = Array.from({ length: 4 }, (_, i) => `
+    <tr>
+      <td>${campo('canal' + i + '-n', 1, i === 0 ? 'WhatsApp' : '')}</td>
+      <td>${campo('canal' + i + '-u', 1)}</td>
+      <td>${campo('canal' + i + '-t', 1, i === 0 ? '12 horas' : '')}</td>
+    </tr>`).join('');
+
+  // Conflictos
+  $('#conflictos').innerHTML = CONFLICTOS.map((c, i) => `
+    <div class="conflicto">
+      <h3>${c}</h3>
+      <div class="ruta">
+        ${PASOS.map((p, j) => `
+          <label><input type="checkbox" data-c="cf${i}-p${j}">
+            <span class="paso">${j + 1}</span><span>${p}</span></label>`).join('')}
+      </div>
+      <label class="campo" style="margin-top:12px"><span class="rot">Tiempo objetivo para resolver</span>
+        ${campo('cf' + i + '-tiempo', 1)}</label>
+      <label class="campo" style="margin-bottom:0"><span class="rot">Criterio para reasignar tareas o roles</span>
+        ${campo('cf' + i + '-criterio', 2)}</label>
+    </div>`).join('');
+
+  // Criterios de coevaluación
+  $('#tabla-criterios tbody').innerHTML = Array.from({ length: 6 }, (_, i) => `
+    <tr>
+      <td>${campo('crit' + i + '-n', 1)}</td>
+      <td>${campo('crit' + i + '-i', 1)}</td>
+      <td><input type="text" inputmode="numeric" data-c="crit${i}-p" data-peso="1"></td>
+    </tr>`).join('');
+
+  // Sanciones
+  $('#sanciones').innerHTML = GRAVEDAD.map((g, i) => `
+    <div class="conflicto">
+      <h3>${g[0]}</h3>
+      <p class="ayuda" style="margin:0 0 10px">${g[1]}</p>
+      <label class="campo"><span class="rot">Consecuencia</span>${campo('sanc' + i + '-c', 3)}</label>
+      <label class="campo" style="margin-bottom:0"><span class="rot">Medida restaurativa</span>${campo('sanc' + i + '-m', 3)}</label>
+    </div>`).join('');
+
+  // Firmas
+  $('#tabla-firmas tbody').innerHTML = Array.from({ length: 5 }, (_, i) => `
+    <tr>
+      <td>${campo('firma' + i + '-n', 1)}</td>
+      <td><div class="linea-firma"></div></td>
+      <td>${campo('firma' + i + '-f', 1)}</td>
+    </tr>`).join('');
+
+  // ── Crecimiento de los campos ────────────────────────────────────────
+  // Un textarea de alto fijo recorta el texto al imprimir, así que cada uno
+  // se ajusta a su contenido.
+  const crece = (t) => {
+    if (t.tagName !== 'TEXTAREA') return;
+    t.style.height = 'auto';
+    // Con box-sizing: border-box el alto incluye los bordes, y scrollHeight no
+    // los cuenta: sin sumarlos la última línea queda recortada al imprimir.
+    const c = getComputedStyle(t);
+    const bordes = parseFloat(c.borderTopWidth) + parseFloat(c.borderBottomWidth);
+    t.style.height = (t.scrollHeight + bordes) + 'px';
+  };
+
+  // ── Guardado en el navegador ─────────────────────────────────────────
+  const LLAVE = 'pou-contrato-equipo-2026-20';
+  const campos = () => document.querySelectorAll('[data-c]');
+  let reloj = null;
+
+  function guardar() {
+    const datos = {};
+    campos().forEach((el) => {
+      datos[el.dataset.c] = el.type === 'checkbox' ? el.checked : el.value;
+    });
+    try { localStorage.setItem(LLAVE, JSON.stringify(datos)); } catch (e) { /* modo privado */ }
+    const h = new Date();
+    $('#guardado').textContent = 'Guardado ' +
+      String(h.getHours()).padStart(2, '0') + ':' + String(h.getMinutes()).padStart(2, '0');
+  }
+
+  function cargar() {
+    let datos;
+    try { datos = JSON.parse(localStorage.getItem(LLAVE) || '{}'); } catch (e) { return; }
+    campos().forEach((el) => {
+      const v = datos[el.dataset.c];
+      if (v === undefined) return;
+      if (el.type === 'checkbox') el.checked = v; else el.value = v;
+    });
+  }
+
+  // ── Avance y suma de pesos ───────────────────────────────────────────
+  function actualiza() {
+    const todos = Array.from(campos());
+    const llenos = todos.filter((el) =>
+      el.type === 'checkbox' ? el.checked : el.value.trim() !== '').length;
+    const pct = Math.round((llenos / todos.length) * 100);
+    $('#relleno').style.width = pct + '%';
+    $('#pct').textContent = pct + ' %';
+
+    let suma = 0;
+    document.querySelectorAll('[data-peso]').forEach((el) => {
+      const n = parseFloat(el.value.replace(',', '.'));
+      if (!isNaN(n)) suma += n;
+    });
+    const cifra = $('#suma-pesos');
+    cifra.textContent = Number.isInteger(suma) ? suma : suma.toFixed(1);
+    cifra.className = 'cifra ' + (Math.abs(suma - 100) < 0.01 ? 'bien' : 'mal');
+  }
+
+  document.addEventListener('input', (e) => {
+    if (!e.target.dataset || e.target.dataset.c === undefined) return;
+    crece(e.target);
+    actualiza();
+    clearTimeout(reloj);
+    reloj = setTimeout(guardar, 600);
+  });
+  document.addEventListener('change', (e) => {
+    if (e.target.type === 'checkbox' && e.target.dataset.c !== undefined) {
+      actualiza(); guardar();
+    }
+  });
+
+  $('#btn-imprimir').addEventListener('click', () => {
+    campos().forEach(crece);   // el alto debe estar al día antes de paginar
+    window.print();
+  });
+
+  $('#btn-limpiar').addEventListener('click', () => {
+    if (!confirm('Esto borra todo lo escrito en este navegador. ¿Continuar?')) return;
+    campos().forEach((el) => { if (el.type === 'checkbox') el.checked = false; else el.value = ''; });
+    try { localStorage.removeItem(LLAVE); } catch (e) { /* nada */ }
+    campos().forEach(crece);
+    actualiza();
+    $('#guardado').textContent = 'Vaciado';
+  });
+
+  cargar();
+  campos().forEach(crece);
+  actualiza();
+})();
+</script>
+</body>
+</html>
