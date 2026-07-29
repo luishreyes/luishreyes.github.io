@@ -788,6 +788,20 @@ export const pou202620Course: Course = {
       href: '/classroom/iqya-2031-2026-20/talleres/Taller_02/Taller_02_Analisis_Granulometrico.html',
       bannerImg: '/classroom/iqya-2031-2026-20/lecturas-banners/l03.jpg',
     },
+    {
+      slug: 'taller-03-seleccion-de-bombas',
+      week: 5,
+      order: 103,
+      title: 'Taller 3 · Selección de un sistema de bombeo',
+      summary:
+        'Un trasiego entre dos tanques y tres bombas candidatas, con las cartas de catálogo incrustadas y un visor con zoom para leerlas. Se plantea el balance de energía, se obtiene el factor de fricción con Colebrook, se construye la curva del sistema y se calcula el NPSH disponible en la condición crítica. La parte final es la que da sentido al taller: comparar el NPSH disponible con el requerido y descubrir que el sistema, tal como está especificado, no se puede operar, para después proponer y cuantificar el rediseño. En parejas, distintas a las de los talleres 1 y 2.',
+      date: '2026-09-01',
+      readingMinutes: 18,
+      tags: ['bombas', 'Bernoulli', 'Colebrook', 'curva del sistema', 'NPSH', 'cavitación', 'punto de operación', 'BEP', 'selección de equipos', 'taller'],
+      category: 'taller',
+      href: '/classroom/iqya-2031-2026-20/talleres/Taller_03/Taller_03_Seleccion_de_Bombas.html',
+      bannerImg: '/classroom/iqya-2031-2026-20/lecturas-banners/l05.jpg',
+    },
   ],
   presentations: [
     {
