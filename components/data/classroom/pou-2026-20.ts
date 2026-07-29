@@ -884,6 +884,15 @@ export const pou202620Course: Course = {
       file: 'Destilacion_Flash/Presentacion_Destilacion_Flash.html',
     },
     {
+      id: 'diseno-de-platos',
+      week: 12,
+      title: 'Diseño de platos',
+      sessionNumber: 2,
+      description:
+        'De las etapas teóricas de McCabe-Thiele a una columna real: anatomía del plato, selección entre perforados, válvulas y campanas, la ventana de operación con sus cuatro límites, el diámetro por velocidad de inundación con Souders-Brown, la verificación del bajante y la altura. Incluye una ventana de operación interactiva y el dimensionamiento resuelto de la columna de recuperación de etanol de la planta de pectina.',
+      file: 'Diseno_de_Platos/Presentacion_Diseno_de_Platos.html',
+    },
+    {
       id: 'destilacion-diferencial',
       week: 14,
       title: 'Destilación diferencial',

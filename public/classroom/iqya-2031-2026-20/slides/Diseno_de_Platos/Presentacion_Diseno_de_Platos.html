@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diseño de platos · Proyecto de Operaciones Unitarias (IQYA-2031)</title>
+<link rel="stylesheet" href="assets/deloitte.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],throwOnError:false});"></script>
+<style>
+  html,body{margin:0;height:100%;background:#000;}
+  deck-stage:not(:defined){visibility:hidden;}
+  .s{font-family:var(--tipo);color:var(--gris-1);background:var(--blanco);display:flex;flex-direction:column;justify-content:center;padding:86px 110px 92px;-webkit-font-smoothing:antialiased;}
+  .s *{box-sizing:border-box;}
+  .kicker{display:inline-flex;align-items:center;gap:14px;font-size:25px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--verde-osc);margin:0 0 22px;}
+  .kicker::before{content:"";width:44px;height:5px;background:var(--verde);border-radius:3px;}
+  .s--dark .kicker{color:var(--verde);}
+  h1.s-title{font-size:92px;line-height:1.02;font-weight:700;margin:0;letter-spacing:-.015em;}
+  h2.s-head{font-size:62px;line-height:1.06;font-weight:700;margin:0 0 12px;letter-spacing:-.01em;}
+  .s-lead{font-size:36px;line-height:1.38;color:var(--gris-2);max-width:46ch;font-weight:400;}
+  .s p{font-size:33px;line-height:1.42;}
+  .s ul{font-size:29px;line-height:1.40;padding-left:1.2em;margin:14px 0 0;}
+  .s li{margin-bottom:12px;}
+  .s li::marker{color:var(--verde);}
+  .s-foot{position:absolute;left:110px;right:110px;bottom:42px;display:flex;justify-content:space-between;align-items:center;font-size:19px;color:var(--gris-3);}
+  .s-foot .tag{display:inline-flex;align-items:center;gap:12px;}
+  .s-foot .tag::before{content:"";width:24px;height:3px;background:var(--gris-4);}
+  .s-foot .num{font-weight:700;color:var(--gris-2);}
+  .s--dark .s-foot{color:rgba(255,255,255,.45);}
+  .s--dark .s-foot .num{color:rgba(255,255,255,.8);}
+  .s--dark .s-foot .tag::before{background:rgba(255,255,255,.3);}
+  .s--dark{background:#111;color:#fff;}
+  .s--dark h1.s-title,.s--dark h2.s-head,.s--dark h2{color:#fff;}
+  .s--tint{background:var(--papel);}
+
+  .cover{justify-content:space-between;position:relative;overflow:hidden;}
+  .cover-top{display:flex;justify-content:space-between;align-items:flex-start;}
+  .cover .org{font-size:30px;font-weight:700;}
+  .cover .fac{font-size:23px;color:var(--gris-2);letter-spacing:.06em;text-transform:uppercase;}
+  .cover .session{font-size:26px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--verde-osc);}
+  .cover h1{font-size:120px;line-height:.98;margin:20px 0 0;letter-spacing:-.02em;text-transform:uppercase;}
+  .cover .sub{font-size:33px;color:var(--gris-2);margin-top:24px;max-width:34ch;line-height:1.32;}
+  .cover-meta{display:flex;gap:78px;font-size:23px;}
+  .cover-meta b{display:block;font-size:19px;letter-spacing:.12em;text-transform:uppercase;color:var(--gris-3);margin-bottom:6px;}
+
+  .divider{background:#111;color:#fff;justify-content:center;}
+  .divider .part{font-size:25px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--verde);margin-bottom:20px;}
+  .divider h2{font-size:92px;line-height:1.02;margin:0;letter-spacing:-.02em;}
+  .divider .sub{font-size:33px;color:rgba(255,255,255,.62);margin-top:22px;max-width:40ch;line-height:1.38;}
+
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:26px;}
+  .cards.two{grid-template-columns:repeat(2,1fr);}
+  .cards.four{grid-template-columns:repeat(4,1fr);}
+  .card{border:2px solid var(--gris-4);padding:28px 30px;background:var(--blanco);}
+  .card--teal{border-color:var(--teal);}
+  .card--amber{border-color:var(--ambar);}
+  .card-n{display:block;font-size:21px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--verde-osc);margin-bottom:9px;}
+  .card h3{font-size:32px;margin:0 0 11px;line-height:1.15;}
+  .card p{font-size:26px;line-height:1.36;color:var(--gris-2);margin:0;}
+
+  .callout{border-left:8px solid var(--verde);background:var(--verde-claro);padding:24px 32px;margin-top:24px;}
+  .callout p{font-size:30px;margin:0;line-height:1.42;}
+  .callout.amber{border-left-color:var(--ambar);background:#fdf6ec;}
+
+  .split{display:flex;gap:56px;align-items:center;margin-top:12px;}
+  .split .copy{flex:1;min-width:0;}
+  .split .fig{flex:1.1;min-width:0;}
+  .figcap{font-size:23px;color:var(--gris-3);margin-top:12px;line-height:1.35;}
+
+  table.tbl{width:100%;border-collapse:collapse;margin-top:22px;font-size:28px;}
+  table.tbl th{text-align:left;font-size:21px;letter-spacing:.1em;text-transform:uppercase;color:var(--gris-3);padding:10px 14px;border-bottom:3px solid var(--gris-4);}
+  table.tbl td{padding:15px 16px;border-bottom:1px solid var(--gris-5);}
+  table.tbl td.dato{font-variant-numeric:tabular-nums;font-weight:600;}
+  table.tbl.densa{font-size:24px;margin-top:16px;}
+  table.tbl.densa td{padding:11px 14px;}
+  table.tbl tr.marca td{background:var(--verde-claro);}
+  table.tbl tr.marca td:first-child{font-weight:700;}
+
+  .fml{background:var(--papel);border-left:6px solid var(--verde);padding:22px 30px;margin-top:20px;font-size:32px;}
+
+  /* ── Ventana de operación ──────────────────────────────────────────── */
+  .sim p, .sim ul{font-size:inherit;}
+  .sim{display:grid;grid-template-columns:1fr 1.3fr;gap:44px;margin-top:8px;align-items:start;}
+  .mandos{border:2px solid var(--gris-4);padding:18px 24px;}
+  .mandos h3{font-size:23px;margin:0 0 12px;}
+  .ctrl{margin-bottom:12px;}
+  .ctrl .et{display:flex;justify-content:space-between;align-items:baseline;font-size:21px;margin-bottom:6px;}
+  .ctrl .et b{font-size:24px;color:var(--verde-osc);font-variant-numeric:tabular-nums;}
+  .ctrl input[type=range]{width:100%;accent-color:var(--verde);}
+  .opciones{display:flex;gap:8px;}
+  .opciones button{flex:1;font-family:var(--tipo);font-size:19px;font-weight:600;padding:9px 6px;border:2px solid var(--gris-4);background:#fff;cursor:pointer;color:var(--gris-2);}
+  .opciones button.on{background:var(--verde);border-color:var(--verde);color:#fff;}
+  .lecturas{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;border-top:2px solid var(--gris-4);padding-top:14px;}
+  .lect .v{font-size:31px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1;}
+  .lect .k{font-size:17px;color:var(--gris-3);letter-spacing:.08em;text-transform:uppercase;margin-top:3px;}
+  .estado{margin-top:14px;padding:12px 18px;font-size:22px;font-weight:600;border-left:8px solid var(--verde);background:var(--verde-claro);}
+  .estado.mal{border-left-color:#a4362a;background:#fdf3f2;color:#7d2b21;}
+  .estado.ojo{border-left-color:var(--ambar);background:#fdf6ec;color:#7a5210;}
+</style>
+</head>
+<body>
+
+<deck-stage width="1920" height="1080"
+  data-foot="Diseño de platos · IQYA-2031"
+  data-foot-short="Diseño de platos"
+  data-doc-pdf="Presentacion_Diseno_de_Platos_documento.pdf">
+
+<!-- 01 -->
+<section class="s cover" data-screen-label="Portada">
+  <div class="cover-top">
+    <div>
+      <div class="org">Universidad de los Andes</div>
+      <div class="fac">Ingeniería Química y de Alimentos</div>
+    </div>
+    <div class="session">IQYA-2031 · Sesión 24</div>
+  </div>
+  <div>
+    <h1>Diseño<br>de platos</h1>
+    <p class="sub">De las etapas teóricas de McCabe-Thiele a una columna con diámetro, altura y platos reales.</p>
+  </div>
+  <div class="cover-meta">
+    <div><b>Curso</b>Proyecto de Operaciones Unitarias</div>
+    <div><b>Aplicación</b>Columna de recuperación de etanol</div>
+    <div><b>Fecha</b>29 de octubre de 2026</div>
+  </div>
+</section>
+
+<!-- 02 -->
+<section class="s" data-screen-label="De dónde venimos">
+  <div class="kicker">Dónde estamos</div>
+  <h2 class="s-head">McCabe-Thiele terminó. La columna todavía no existe.</h2>
+  <p class="s-lead">El martes salieron con un número de etapas teóricas. Ese número no se compra,
+     no se instala y no ocupa espacio en la planta. Hoy se convierte en un equipo.</p>
+  <div class="cards four">
+    <div class="card"><span class="card-n">Falta decidir</span><h3>Qué plato</h3><p>Perforado, de válvulas o de campanas.</p></div>
+    <div class="card"><span class="card-n">Falta decidir</span><h3>Qué diámetro</h3><p>Lo fija el vapor que tiene que subir sin inundar la columna.</p></div>
+    <div class="card"><span class="card-n">Falta decidir</span><h3>Qué espaciamiento</h3><p>Entre plato y plato. Define la altura y el arrastre.</p></div>
+    <div class="card card--teal"><span class="card-n">Y verificar</span><h3>Que el líquido baje</h3><p>El bajante es donde se cae un diseño que en el diámetro parecía bien.</p></div>
+  </div>
+  <div class="callout">
+    <p>Hoy no cambiamos la termodinámica. Cambiamos la pregunta: de «cuántas etapas» a «qué equipo».</p>
+  </div>
+</section>
+
+<!-- 03 -->
+<section class="s divider" data-screen-label="Divisor · Anatomía">
+  <div class="part">Parte 1</div>
+  <h2>Qué pasa<br>dentro de<br>un plato</h2>
+  <p class="sub">Líquido y vapor se cruzan en el mismo espacio. Todo el diseño consiste en que ese cruce funcione.</p>
+</section>
+
+<!-- 04 -->
+<section class="s" data-screen-label="Anatomía de un plato">
+  <div class="kicker">Vocabulario</div>
+  <h2 class="s-head">Anatomía de un plato</h2>
+  <div class="split">
+    <div class="fig">
+      <svg viewBox="0 0 760 470" style="width:100%;height:auto">
+        <!-- Pared de la columna -->
+        <rect x="60" y="20" width="640" height="430" fill="none" stroke="#1D1F20" stroke-width="4"/>
+        <!-- Plato superior -->
+        <line x1="60" y1="120" x2="560" y2="120" stroke="#1D1F20" stroke-width="6"/>
+        <!-- Plato inferior -->
+        <line x1="200" y1="330" x2="700" y2="330" stroke="#1D1F20" stroke-width="6"/>
+        <!-- Bajante superior (derecha) -->
+        <line x1="560" y1="120" x2="560" y2="300" stroke="#5980A6" stroke-width="5"/>
+        <!-- Bajante inferior (izquierda) -->
+        <line x1="200" y1="330" x2="200" y2="470" stroke="#5980A6" stroke-width="5"/>
+        <!-- Vertedero -->
+        <line x1="520" y1="330" x2="520" y2="290" stroke="#2C455D" stroke-width="7"/>
+        <!-- Líquido sobre el plato inferior -->
+        <rect x="200" y="300" width="320" height="30" fill="#5980A6" opacity=".30"/>
+        <!-- Perforaciones -->
+        <g fill="#1D1F20">
+          <circle cx="250" cy="330" r="4"/><circle cx="300" cy="330" r="4"/><circle cx="350" cy="330" r="4"/>
+          <circle cx="400" cy="330" r="4"/><circle cx="450" cy="330" r="4"/><circle cx="500" cy="330" r="4"/>
+        </g>
+        <!-- Burbujeo de vapor -->
+        <g fill="none" stroke="#E0922F" stroke-width="3">
+          <path d="M250 330 q0 -22 8 -34"/><path d="M330 330 q0 -22 -8 -34"/>
+          <path d="M410 330 q0 -22 8 -34"/><path d="M490 330 q0 -22 -8 -34"/>
+        </g>
+        <!-- Flechas de líquido -->
+        <g stroke="#5980A6" stroke-width="4" fill="none" marker-end="url(#fl)">
+          <path d="M560 150 L560 285"/>
+          <path d="M540 315 L230 315"/>
+          <path d="M200 355 L200 430"/>
+        </g>
+        <defs>
+          <marker id="fl" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M0,1 L9,5 L0,9" fill="#5980A6"/>
+          </marker>
+        </defs>
+        <!-- Rótulos -->
+        <g font-family="Barlow" font-size="21" font-weight="600" fill="#1D1F20">
+          <text x="240" y="105">Área activa</text>
+          <text x="596" y="215" fill="#416180">Bajante</text>
+          <text x="424" y="282" fill="#2C455D">Vertedero</text>
+          <text x="86" y="235">Espaciamiento</text>
+          <text x="250" y="380" fill="#8a6316">Vapor asciende</text>
+          <text x="300" y="300" fill="#416180" font-size="19">Líquido cruza el plato</text>
+        </g>
+        <g stroke="#7A7A7D" stroke-width="2">
+          <line x1="80" y1="126" x2="80" y2="324"/>
+          <line x1="72" y1="126" x2="88" y2="126"/><line x1="72" y1="324" x2="88" y2="324"/>
+        </g>
+      </svg>
+      <p class="figcap">El líquido baja por gravedad y cruza el plato en horizontal. El vapor sube y lo
+        atraviesa. Se encuentran en el área activa: ahí ocurre la transferencia.</p>
+    </div>
+    <div class="copy">
+      <ul>
+        <li><b>Área activa.</b> La parte perforada. Es donde vapor y líquido se ponen en contacto.</li>
+        <li><b>Vertedero.</b> El muro que retiene una capa de líquido sobre el plato. Sin él no hay contacto.</li>
+        <li><b>Bajante.</b> El conducto por donde el líquido pasa al plato de abajo. No lleva vapor.</li>
+        <li><b>Espaciamiento.</b> La distancia entre platos. Es el parámetro que más pelea entre altura y capacidad.</li>
+      </ul>
+      <div class="callout">
+        <p>Los bajantes alternan de lado en cada plato. Por eso el líquido zigzaguea al bajar.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 05 -->
+<section class="s divider" data-screen-label="Divisor · Qué plato">
+  <div class="part">Parte 2</div>
+  <h2>Qué plato<br>escoger</h2>
+  <p class="sub">La pregunta no es cuál es mejor. Es cuál aguanta el rango de operación que usted necesita.</p>
+</section>
+
+<!-- 06 -->
+<section class="s" data-screen-label="Tres familias de plato">
+  <div class="kicker">Las tres familias</div>
+  <h2 class="s-head">Perforados, de válvulas y de campanas</h2>
+  <div class="cards">
+    <div class="card">
+      <span class="card-n">El estándar</span>
+      <h3>Perforados</h3>
+      <p>Una lámina con agujeros. Los más baratos y los más usados. A caudal bajo el vapor no sostiene
+         el líquido y empieza a gotear por los agujeros.</p>
+    </div>
+    <div class="card card--teal">
+      <span class="card-n">El flexible</span>
+      <h3>De válvulas</h3>
+      <p>Cada orificio tiene una tapa móvil que se abre según el caudal. Sostienen mucho mejor la
+         operación a carga parcial. Cuestan más y se pueden pegar.</p>
+    </div>
+    <div class="card">
+      <span class="card-n">El antiguo</span>
+      <h3>De campanas</h3>
+      <p>Sellan el líquido aunque no suba vapor. Excelente rango de operación, la mayor caída de
+         presión y el mayor costo. Hoy se usan poco, salvo cargas muy variables.</p>
+    </div>
+  </div>
+  <div class="callout amber">
+    <p>Regla práctica: empiece por perforados. Cámbielos solo si el rango de operación o el ensuciamiento
+       lo obligan, y justifique por qué.</p>
+  </div>
+</section>
+
+<!-- 07 -->
+<section class="s s--tint" data-screen-label="Criterios de selección">
+  <div class="kicker">Cómo se decide</div>
+  <h2 class="s-head">Los cuatro criterios que deciden</h2>
+  <table class="tbl">
+    <thead><tr><th>Criterio</th><th>Perforados</th><th>De válvulas</th><th>De campanas</th></tr></thead>
+    <tbody>
+      <tr><td><b>Rango de operación</b><br><span style="font-size:20px;color:var(--gris-3)">hasta qué fracción de la carga de diseño operan bien</span></td>
+          <td class="dato">50 a 60 %</td><td class="dato">25 a 30 %</td><td class="dato">15 a 20 %</td></tr>
+      <tr><td><b>Costo relativo</b></td><td class="dato">1,0</td><td class="dato">1,2 a 1,5</td><td class="dato">2 a 3</td></tr>
+      <tr><td><b>Caída de presión</b></td><td class="dato">Baja</td><td class="dato">Media</td><td class="dato">Alta</td></tr>
+      <tr><td><b>Tolerancia al ensuciamiento</b></td><td class="dato">Media</td><td class="dato">Baja</td><td class="dato">Baja</td></tr>
+    </tbody>
+  </table>
+  <div class="callout">
+    <p>Para la columna de etanol del proyecto la carga es estable y el fluido limpio. Perforados,
+       sin discusión, y el ahorro se justifica solo.</p>
+  </div>
+</section>
+
+<!-- 08 -->
+<section class="s divider" data-screen-label="Divisor · Ventana">
+  <div class="part">Parte 3</div>
+  <h2>La ventana<br>de operación</h2>
+  <p class="sub">Un plato no funciona a cualquier caudal. Funciona dentro de una ventana, y el diseño consiste en quedar cómodo adentro.</p>
+</section>
+
+<!-- 09 -->
+<section class="s" data-screen-label="Los cuatro límites">
+  <div class="kicker">Qué la encierra</div>
+  <h2 class="s-head">Cuatro formas de salirse de la ventana</h2>
+  <div class="cards four">
+    <div class="card card--amber">
+      <span class="card-n">Techo</span>
+      <h3>Inundación</h3>
+      <p>Demasiado vapor. El líquido no logra bajar, se acumula plato sobre plato y la columna se llena.
+         La caída de presión se dispara y la separación se pierde.</p>
+    </div>
+    <div class="card card--amber">
+      <span class="card-n">Techo</span>
+      <h3>Arrastre</h3>
+      <p>El vapor sube tan rápido que se lleva gotas al plato de arriba. Devuelve líquido sucio hacia el
+         domo y baja la eficiencia sin que la presión avise.</p>
+    </div>
+    <div class="card">
+      <span class="card-n">Piso</span>
+      <h3>Goteo</h3>
+      <p>Muy poco vapor. El líquido se cuela por las perforaciones en vez de cruzar el plato. Se pierde
+         contacto y la etapa deja de servir.</p>
+    </div>
+    <div class="card">
+      <span class="card-n">Costado</span>
+      <h3>Bajante saturado</h3>
+      <p>Demasiado líquido para el conducto. Se llena, pierde el sello y el vapor se devuelve por él.
+         Es inundación por el otro lado.</p>
+    </div>
+  </div>
+  <div class="callout">
+    <p>Fíjese en la asimetría: inundación y goteo se ven en la caída de presión. El arrastre no.
+       Ese se paga en la pureza del producto y nadie lo nota hasta que se analiza.</p>
+  </div>
+</section>
+
+<!-- 10 · Interactivo -->
+<section class="s s--tint" data-screen-label="Ventana de operación en vivo">
+  <div class="kicker">Muévalo</div>
+  <h2 class="s-head">La ventana de la columna de etanol</h2>
+  <div class="sim">
+    <div class="mandos">
+      <h3>Decisiones de diseño</h3>
+
+      <div class="ctrl">
+        <div class="et"><span>Tipo de plato</span></div>
+        <div class="opciones" id="tipo">
+          <button data-v="perf" class="on">Perforados</button>
+          <button data-v="valv">De válvulas</button>
+        </div>
+      </div>
+
+      <div class="ctrl">
+        <div class="et"><span>Espaciamiento</span></div>
+        <div class="opciones" id="esp">
+          <button data-v="450" class="on">450 mm</button>
+          <button data-v="600">600 mm</button>
+        </div>
+      </div>
+
+      <div class="ctrl">
+        <div class="et"><span>Diámetro de la columna</span><b id="vD">1,00 m</b></div>
+        <input type="range" id="Dcol" min="0.6" max="1.8" step="0.05" value="1.0">
+      </div>
+
+      <div class="ctrl">
+        <div class="et"><span>Razón de reflujo</span><b id="vR">3,0</b></div>
+        <input type="range" id="R" min="1.2" max="6" step="0.1" value="3">
+      </div>
+
+      <div class="lecturas">
+        <div class="lect"><div class="v" id="vU">—</div><div class="k">Velocidad de vapor</div></div>
+        <div class="lect"><div class="v" id="vF">—</div><div class="k">% de inundación</div></div>
+        <div class="lect"><div class="v" id="vQl">—</div><div class="k">Líquido al bajante</div></div>
+        <div class="lect"><div class="v" id="vT">—</div><div class="k">Residencia en bajante</div></div>
+      </div>
+      <div class="estado" id="estado">—</div>
+    </div>
+
+    <div>
+      <svg viewBox="0 0 720 460" style="width:100%;height:auto;max-height:520px;display:block;margin:0 auto" id="ventana">
+        <g id="v-fondo"></g>
+        <g id="v-ejes"></g>
+        <g id="v-punto"></g>
+      </svg>
+      <p class="figcap">Ventana esquemática: las fronteras muestran la forma del comportamiento, no una
+        correlación de diseño. El eje vertical y el porcentaje de inundación sí salen de Souders-Brown
+        con la tabla de $C_{SB}$ de la sesión.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 11 -->
+<section class="s" data-screen-label="Diseñar con margen">
+  <div class="kicker">La consecuencia</div>
+  <h2 class="s-head">Nadie diseña al 100 % de inundación</h2>
+  <div class="split">
+    <div class="copy">
+      <p class="s-lead">Se diseña entre el 75 y el 85 % de la velocidad de inundación. El resto es margen,
+         y ese margen es lo que permite operar la planta cuando la realidad no coincide con la hoja de cálculo.</p>
+      <ul>
+        <li><b>Arranques y paradas.</b> La carga no llega a régimen de inmediato.</li>
+        <li><b>Variación de la materia prima.</b> Con cáscara la composición del extracto cambia entre lotes.</li>
+        <li><b>Ensuciamiento.</b> El área efectiva baja con el tiempo de campaña.</li>
+        <li><b>Error del propio cálculo.</b> Las correlaciones traen su dispersión.</li>
+      </ul>
+    </div>
+    <div class="copy">
+      <div class="callout amber">
+        <p><b>Sobredimensionar tampoco es gratis.</b> Una columna muy ancha opera lejos del punto de diseño,
+           entra en goteo a carga parcial y cuesta más en acero, en cimentación y en calor.</p>
+      </div>
+      <div class="callout">
+        <p>El diámetro correcto no es el más grande que quepa. Es el que deja el punto de operación
+           entre el 75 y el 85 %, con el bajante verificado.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 12 -->
+<section class="s divider" data-screen-label="Divisor · Dimensionar">
+  <div class="part">Parte 4</div>
+  <h2>Dimensionar</h2>
+  <p class="sub">Cuatro cálculos y dos verificaciones. Con eso la columna queda definida.</p>
+</section>
+
+<!-- 13 -->
+<section class="s" data-screen-label="Velocidad de inundación">
+  <div class="kicker">Cálculo 1</div>
+  <h2 class="s-head">La velocidad que no se puede pasar</h2>
+  <div class="split">
+    <div class="copy">
+      <p>La velocidad de inundación sale de un balance entre el arrastre que ejerce el vapor y el peso
+         del líquido. Souders-Brown la escribe así:</p>
+      <div class="fml">$$u_{flood} = C_{SB}\sqrt{\frac{\rho_L - \rho_V}{\rho_V}}$$</div>
+      <p style="font-size:25px;margin-top:18px">$C_{SB}$ depende del tipo de plato y del espaciamiento.
+         La diferencia de densidades manda: a mayor presión el vapor pesa más, la raíz cae y la columna
+         admite menos velocidad.</p>
+    </div>
+    <div class="copy">
+      <table class="tbl">
+        <thead><tr><th>Tipo de plato</th><th>Espaciamiento</th><th>$C_{SB}$ (m/s)</th></tr></thead>
+        <tbody>
+          <tr class="marca"><td>Perforados</td><td class="dato">450 mm</td><td class="dato">0,15</td></tr>
+          <tr><td>Perforados</td><td class="dato">600 mm</td><td class="dato">0,18</td></tr>
+          <tr><td>De válvulas</td><td class="dato">450 mm</td><td class="dato">0,17</td></tr>
+          <tr><td>De válvulas</td><td class="dato">600 mm</td><td class="dato">0,21</td></tr>
+        </tbody>
+      </table>
+      <div class="callout">
+        <p>Un diseño riguroso usa la correlación de Fair, que además corrige por el parámetro de flujo
+           $F_{LV}$. Esta tabla es el atajo de la sesión y sirve para dimensionar.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 14 -->
+<section class="s" data-screen-label="Del flujo al diámetro">
+  <div class="kicker">Cálculo 2</div>
+  <h2 class="s-head">De la velocidad al diámetro</h2>
+  <div class="cards four">
+    <div class="card"><span class="card-n">Paso 1</span><h3>Velocidad de diseño</h3>
+      <p>$u_{dis} = F_{flood}\,u_{flood}$, con $F_{flood}$ entre 0,75 y 0,85.</p></div>
+    <div class="card"><span class="card-n">Paso 2</span><h3>Caudal de vapor</h3>
+      <p>$Q_V = \dfrac{V\,MW}{3600\,\rho_V}$, en m³/s.</p></div>
+    <div class="card"><span class="card-n">Paso 3</span><h3>Área y diámetro</h3>
+      <p>$A = \dfrac{Q_V}{u_{dis}}$ y $D = \sqrt{\dfrac{4A}{\pi}}$.</p></div>
+    <div class="card card--teal"><span class="card-n">Paso 4</span><h3>Redondear</h3>
+      <p>A un diámetro comercial: 0,5 · 0,6 · 0,8 · 1,0 · 1,2 · 1,5 · 1,8 · 2,0 m.</p></div>
+  </div>
+  <div class="callout amber">
+    <p>Redondear siempre hacia arriba. Al subir el diámetro baja la velocidad y el punto de operación
+       se aleja de la inundación, que es el lado seguro.</p>
+  </div>
+</section>
+
+<!-- 15 -->
+<section class="s s--tint" data-screen-label="Verificación del bajante">
+  <div class="kicker">Verificación 1</div>
+  <h2 class="s-head">El diámetro puede estar bien y el bajante mal</h2>
+  <p class="s-lead">El cálculo anterior solo mira el vapor. Falta comprobar que el líquido alcanza a bajar,
+     y ahí se cae buena parte de los diseños de primer intento.</p>
+  <div class="cards">
+    <div class="card">
+      <span class="card-n">Área</span>
+      <h3>10 a 15 % del área total</h3>
+      <p>El bajante se dimensiona como fracción del área de la columna. Menos de 10 % lo satura;
+         más de 15 % le quita área activa al plato.</p>
+    </div>
+    <div class="card">
+      <span class="card-n">Velocidad</span>
+      <h3>Menor que 0,15 m/s</h3>
+      <p>Si el líquido baja más rápido arrastra burbujas y el bajante deja de estar lleno de líquido puro.</p>
+    </div>
+    <div class="card card--teal">
+      <span class="card-n">Residencia</span>
+      <h3>Entre 3 y 5 segundos</h3>
+      <p>Es el tiempo que necesita el gas disuelto para desprenderse antes de que el líquido entre al
+         plato de abajo. Menos que eso, y baja espuma.</p>
+    </div>
+  </div>
+  <div class="fml" style="font-size:26px">
+    $$u_{baj} = \frac{Q_L}{A_{baj}} \qquad t_{res} = \frac{A_{baj}\,h_{liq}}{Q_L}$$
+  </div>
+</section>
+
+<!-- 16 -->
+<section class="s" data-screen-label="Caída de presión">
+  <div class="kicker">Verificación 2</div>
+  <h2 class="s-head">Cada plato cobra presión, y la presión cobra vapor</h2>
+  <div class="split">
+    <div class="copy">
+      <p>Un plato típico cuesta entre 0,4 y 0,8 kPa. Parece poco. Multiplicado por veinte platos son
+         unos 12 kPa que el fondo tiene que soportar por encima del domo.</p>
+      <ul>
+        <li>La presión más alta en el fondo <b>sube la temperatura de ebullición</b>.</li>
+        <li>Esa temperatura mayor <b>encarece el vapor</b> del rehervidor.</li>
+        <li>Y en sistemas sensibles, <b>degrada el producto de fondos</b>.</li>
+      </ul>
+    </div>
+    <div class="copy">
+      <div class="callout">
+        <p>Por eso, cuando la caída de presión importa de verdad, se cambia a relleno: un empaque
+           estructurado cuesta una fracción de la presión de un tren de platos.</p>
+      </div>
+      <div class="callout amber">
+        <p>Cuándo conviene relleno y cómo se calcula su altura equivalente lo vemos el martes,
+           en la sesión de eficiencias.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 17 -->
+<section class="s" data-screen-label="Altura de la columna">
+  <div class="kicker">Cálculo 3</div>
+  <h2 class="s-head">La altura es una consecuencia, no una decisión</h2>
+  <p class="s-lead">Sale del número de platos reales, del espaciamiento y de lo que hay que sumarle
+     arriba y abajo para que la columna funcione y se pueda mantener.</p>
+  <div class="cards four">
+    <div class="card"><span class="card-n">Cuerpo</span><h3>Platos × espaciamiento</h3><p>El grueso de la altura. Aquí es donde el espaciamiento se paga en acero.</p></div>
+    <div class="card"><span class="card-n">Arriba</span><h3>Domo</h3><p>Espacio de separación antes de la salida de vapor, del orden de 1,5 veces el diámetro.</p></div>
+    <div class="card"><span class="card-n">Abajo</span><h3>Fondo</h3><p>Volumen de retención para el rehervidor y para el control de nivel. Unos 2 m.</p></div>
+    <div class="card"><span class="card-n">Base</span><h3>Faldón</h3><p>La estructura que la levanta del piso y permite el retorno del rehervidor.</p></div>
+  </div>
+  <div class="callout amber">
+    <p>El número de platos <b>reales</b> todavía no lo tenemos: sale de la eficiencia, que es la clase
+       del martes. Hoy la altura queda expresada en función de ese número.</p>
+  </div>
+</section>
+
+<!-- 18 -->
+<section class="s divider" data-screen-label="Divisor · El proyecto">
+  <div class="part">Parte 5</div>
+  <h2>La columna<br>del proyecto</h2>
+  <p class="sub">La misma que recupera el etanol de la precipitación de pectina.</p>
+</section>
+
+<!-- 19 -->
+<section class="s" data-screen-label="Ejemplo · datos">
+  <div class="kicker">Ejemplo resuelto</div>
+  <h2 class="s-head">Punto de partida</h2>
+  <div class="split">
+    <div class="copy">
+      <table class="tbl">
+        <thead><tr><th>Dato</th><th>Valor</th></tr></thead>
+        <tbody>
+          <tr><td>Alimentación</td><td class="dato">201 kmol/h</td></tr>
+          <tr><td>Etanol en la alimentación</td><td class="dato">0,24 molar</td></tr>
+          <tr><td>Destilado</td><td class="dato">0,85 molar</td></tr>
+          <tr><td>Fondos</td><td class="dato">0,01 molar</td></tr>
+          <tr class="marca"><td>Razón de reflujo</td><td class="dato">3,0</td></tr>
+          <tr><td>Presión de operación</td><td class="dato">101 kPa</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="copy">
+      <p style="font-size:26px">Del balance global salen las corrientes con las que se dimensiona:</p>
+      <div class="fml" style="font-size:26px">
+        $$D = 55{,}7 \; \text{kmol/h} \qquad B = 145{,}7 \; \text{kmol/h}$$
+        $$V = D(R+1) = 223 \; \text{kmol/h}$$
+      </div>
+      <div class="callout amber">
+        <p>El destilado queda en 0,85 molar y no más: el azeótropo etanol-agua está en 0,894 a
+           1 atm. Para pasar de ahí hace falta otra tecnología, no más platos.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 20 -->
+<section class="s s--tint" data-screen-label="Ejemplo · dimensionamiento">
+  <div class="kicker">Ejemplo resuelto</div>
+  <h2 class="s-head">La columna queda así</h2>
+  <table class="tbl densa">
+    <thead><tr><th>Paso</th><th>Cálculo</th><th>Resultado</th></tr></thead>
+    <tbody>
+      <tr><td>Densidad del vapor en el domo</td><td>$\rho_V = P\,MW/RT$, con $MW = 41{,}9$ y $T = 351$ K</td><td class="dato">1,45 kg/m³</td></tr>
+      <tr><td>Velocidad de inundación</td><td>Perforados a 450 mm, $C_{SB} = 0{,}15$</td><td class="dato">3,40 m/s</td></tr>
+      <tr><td>Velocidad de diseño</td><td>$F_{flood} = 0{,}80$</td><td class="dato">2,72 m/s</td></tr>
+      <tr><td>Caudal de vapor</td><td>$Q_V = V\,MW/3600\rho_V$</td><td class="dato">1,78 m³/s</td></tr>
+      <tr><td>Área y diámetro</td><td>$A = 0{,}65$ m², $D = \sqrt{4A/\pi}$</td><td class="dato">0,91 m</td></tr>
+      <tr class="marca"><td>Diámetro adoptado</td><td>Redondeo comercial hacia arriba</td><td class="dato">1,0 m</td></tr>
+      <tr><td>Bajante al 12 %</td><td>$u_{baj} = 0{,}03$ m/s · $t_{res} = 8{,}2$ s</td><td class="dato">Cumple</td></tr>
+      <tr><td>Altura estimada</td><td>20 platos reales a 450 mm, más domo, fondo y faldón</td><td class="dato">≈ 14 m</td></tr>
+    </tbody>
+  </table>
+  <div class="callout">
+    <p>El bajante pasa con holgura porque esta columna mueve poco líquido. En una de fondos acuosos,
+       con mucho más caudal, ese mismo chequeo es el que manda.</p>
+  </div>
+</section>
+
+<!-- 21 -->
+<section class="s" data-screen-label="Errores frecuentes">
+  <div class="kicker">Antes de la bitácora</div>
+  <h2 class="s-head">Cuatro errores que vamos a ver en la entrega</h2>
+  <div class="cards four">
+    <div class="card card--amber"><span class="card-n">01</span><h3>Diámetro sin verificar el bajante</h3><p>El cálculo de vapor da bonito y el líquido no baja. Falta medio diseño.</p></div>
+    <div class="card card--amber"><span class="card-n">02</span><h3>Densidad del vapor mal evaluada</h3><p>Se toma la del aire o la de la alimentación, en vez de la del vapor en el domo a su temperatura.</p></div>
+    <div class="card"><span class="card-n">03</span><h3>Diseñar al 100 %</h3><p>Sin margen de inundación, la columna no aguanta ni el arranque.</p></div>
+    <div class="card"><span class="card-n">04</span><h3>Diámetro con tres decimales</h3><p>0,913 m no existe. Se compra 1,0 m, y hay que decir por qué.</p></div>
+  </div>
+  <div class="callout">
+    <p>En la bitácora 4 el dimensionamiento vale por los supuestos declarados y las verificaciones,
+       no por el número final.</p>
+  </div>
+</section>
+
+<!-- 22 -->
+<section class="s divider" data-screen-label="Cierre">
+  <div class="part">El martes</div>
+  <h2>Falta el número<br>que convierte etapas<br>en platos.</h2>
+  <p class="sub">Eficiencias en destilación: Murphree, eficiencia global, la correlación de O'Connell y cuándo conviene relleno.</p>
+</section>
+
+</deck-stage>
+
+<script src="assets/deck-stage.js"></script>
+<script>
+/* ── Ventana de operación de la columna de etanol ────────────────────────
+   Los ejes y el porcentaje de inundación salen de Souders-Brown con la tabla
+   de C_SB de la sesión. Las fronteras de goteo y de bajante son esquemáticas:
+   reproducen la forma del comportamiento, no una correlación de diseño, y así
+   se declara en la diapositiva. */
+(function () {
+  var CASO = { Ddest: 55.7, MW: 41.9, rhoV: 1.453, rhoL: 750, esp: 0.45, fracBaj: 0.12 };
+  var CSB = { perf: { 450: 0.15, 600: 0.18 }, valv: { 450: 0.17, 600: 0.21 } };
+  var tipo = 'perf', esp = '450';
+
+  var $ = function (s) { return document.querySelector(s); };
+  if (!$('#ventana')) return;
+
+  function coma(x, d) { return x.toFixed(d).replace('.', ','); }
+
+  function calcula() {
+    var D = parseFloat($('#Dcol').value);
+    var R = parseFloat($('#R').value);
+    var V = CASO.Ddest * (R + 1);
+    var L = CASO.Ddest * R;
+    var A = Math.PI * D * D / 4;
+    var Qv = V * CASO.MW / (3600 * CASO.rhoV);          // m³/s
+    var Ql = L * CASO.MW / CASO.rhoL / 3600;            // m³/s
+    var u = Qv / A;
+    var uFlood = CSB[tipo][esp] * Math.sqrt((CASO.rhoL - CASO.rhoV) / CASO.rhoV);
+    var Abaj = CASO.fracBaj * A;
+    var espm = parseFloat(esp) / 1000;
+    return {
+      D: D, R: R, A: A, u: u, uFlood: uFlood, pct: 100 * u / uFlood,
+      QlH: Ql * 3600, uBaj: Ql / Abaj, tRes: Abaj * 0.5 * espm / Ql,
+      QlMax: 0.15 * Abaj * 3600, espm: espm
+    };
+  }
+
+  // ── Dibujo ────────────────────────────────────────────────────────────
+  var X0 = 96, X1 = 690, Y0 = 400, Y1 = 30;   // marco del gráfico
+  var QLMAX = 26, UMAX = 5;                    // escalas de los ejes
+  var px = function (q) { return X0 + (q / QLMAX) * (X1 - X0); };
+  var py = function (u) { return Y0 - (u / UMAX) * (Y0 - Y1); };
+
+  function pinta() {
+    var c = calcula();
+
+    // Frontera de inundación: baja algo al aumentar la carga de líquido.
+    var flood = [], weep = [], q;
+    for (q = 0; q <= QLMAX; q += 1) {
+      flood.push([q, c.uFlood * (1 - 0.010 * q)]);
+      weep.push([q, 0.40 * c.uFlood * (0.75 + 0.016 * q)]);
+    }
+    var ruta = function (p) {
+      return p.map(function (d, i) { return (i ? 'L' : 'M') + px(d[0]) + ' ' + py(d[1]); }).join(' ');
+    };
+    var area = ruta(flood) + ' L' + px(QLMAX) + ' ' + py(0) + ' L' + px(0) + ' ' + py(0) + ' Z';
+
+    $('#v-fondo').innerHTML =
+      '<path d="' + area + '" fill="#5980A6" opacity=".10"/>' +
+      '<path d="' + ruta(weep) + ' L' + px(QLMAX) + ' ' + py(0) + ' L' + px(0) + ' ' + py(0) + ' Z" fill="#fff"/>' +
+      '<rect x="' + px(c.QlMax) + '" y="' + py(UMAX) + '" width="' + Math.max(0, X1 - px(c.QlMax)) +
+        '" height="' + (Y0 - Y1) + '" fill="#E0922F" opacity=".13"/>' +
+      '<path d="' + ruta(flood) + '" fill="none" stroke="#a4362a" stroke-width="3"/>' +
+      '<path d="' + ruta(weep) + '" fill="none" stroke="#416180" stroke-width="3" stroke-dasharray="9 7"/>' +
+      // El límite del bajante suele quedar fuera de escala en esta columna,
+      // que mueve muy poco líquido. En vez de comprimir el eje para que quepa,
+      // se marca en el borde con su valor: la distancia es el dato.
+      (c.QlMax <= QLMAX
+        ? '<line x1="' + px(c.QlMax) + '" y1="' + py(UMAX) + '" x2="' + px(c.QlMax) + '" y2="' + py(0) +
+            '" stroke="#E0922F" stroke-width="3" stroke-dasharray="9 7"/>' +
+          '<text x="' + (px(c.QlMax) + 10) + '" y="' + (Y1 + 26) + '" font-family="Barlow" font-size="20" font-weight="700" fill="#8a6316">Bajante</text>'
+        : '<g font-family="Barlow" font-size="19" font-weight="700" fill="#8a6316">' +
+          '<path d="M' + (X1 - 54) + ' ' + (Y1 + 22) + ' L' + (X1 - 8) + ' ' + (Y1 + 22) + '" stroke="#E0922F" stroke-width="3" marker-end="url(#pta)"/>' +
+          '<text x="' + (X1 - 62) + '" y="' + (Y1 + 27) + '" text-anchor="end">Límite del bajante: ' + coma(c.QlMax, 0) + ' m³/h</text></g>' +
+          '<defs><marker id="pta" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">' +
+          '<path d="M0,1 L9,5 L0,9" fill="#E0922F"/></marker></defs>') +
+      '<text x="' + (X0 + 16) + '" y="' + (py(c.uFlood) - 12) + '" font-family="Barlow" font-size="21" font-weight="700" fill="#a4362a">Inundación</text>' +
+      '<text x="' + (X0 + 16) + '" y="' + (py(0.40 * c.uFlood * 0.75) + 30) + '" font-family="Barlow" font-size="21" font-weight="700" fill="#416180">Goteo</text>';
+
+    $('#v-ejes').innerHTML =
+      '<line x1="' + X0 + '" y1="' + Y0 + '" x2="' + X1 + '" y2="' + Y0 + '" stroke="#1D1F20" stroke-width="3"/>' +
+      '<line x1="' + X0 + '" y1="' + Y0 + '" x2="' + X0 + '" y2="' + Y1 + '" stroke="#1D1F20" stroke-width="3"/>' +
+      [0, 1, 2, 3, 4, 5].map(function (u) {
+        return '<line x1="' + (X0 - 8) + '" y1="' + py(u) + '" x2="' + X0 + '" y2="' + py(u) + '" stroke="#1D1F20" stroke-width="2"/>' +
+          '<text x="' + (X0 - 16) + '" y="' + (py(u) + 7) + '" text-anchor="end" font-family="Barlow" font-size="19" fill="#5D5D60">' + u + '</text>';
+      }).join('') +
+      [0, 5, 10, 15, 20, 25].map(function (q) {
+        return '<line x1="' + px(q) + '" y1="' + Y0 + '" x2="' + px(q) + '" y2="' + (Y0 + 8) + '" stroke="#1D1F20" stroke-width="2"/>' +
+          '<text x="' + px(q) + '" y="' + (Y0 + 30) + '" text-anchor="middle" font-family="Barlow" font-size="19" fill="#5D5D60">' + q + '</text>';
+      }).join('') +
+      '<text x="' + ((X0 + X1) / 2) + '" y="' + (Y0 + 58) + '" text-anchor="middle" font-family="Barlow" font-size="21" font-weight="600" fill="#1D1F20">Carga de líquido al bajante (m³/h)</text>' +
+      '<text transform="translate(30 ' + ((Y0 + Y1) / 2) + ') rotate(-90)" text-anchor="middle" font-family="Barlow" font-size="21" font-weight="600" fill="#1D1F20">Velocidad de vapor (m/s)</text>';
+
+    var dentro = c.pct < 100 && c.u > 0.40 * c.uFlood * (0.75 + 0.016 * c.QlH) && c.QlH < c.QlMax;
+    var color = dentro ? (c.pct > 85 ? '#E0922F' : '#5980A6') : '#a4362a';
+    $('#v-punto').innerHTML =
+      '<line x1="' + px(c.QlH) + '" y1="' + Y0 + '" x2="' + px(c.QlH) + '" y2="' + py(c.u) + '" stroke="' + color + '" stroke-width="2" stroke-dasharray="5 5" opacity=".7"/>' +
+      '<line x1="' + X0 + '" y1="' + py(c.u) + '" x2="' + px(c.QlH) + '" y2="' + py(c.u) + '" stroke="' + color + '" stroke-width="2" stroke-dasharray="5 5" opacity=".7"/>' +
+      '<circle cx="' + px(c.QlH) + '" cy="' + py(c.u) + '" r="13" fill="' + color + '"/>' +
+      '<circle cx="' + px(c.QlH) + '" cy="' + py(c.u) + '" r="22" fill="none" stroke="' + color + '" stroke-width="3" opacity=".45"/>';
+
+    // Lecturas
+    $('#vD').textContent = coma(c.D, 2) + ' m';
+    $('#vR').textContent = coma(c.R, 1);
+    $('#vU').textContent = coma(c.u, 2);
+    $('#vF').textContent = coma(c.pct, 0) + ' %';
+    $('#vQl').textContent = coma(c.QlH, 1);
+    $('#vT').textContent = coma(c.tRes, 1) + ' s';
+
+    var e = $('#estado'), txt, cls = '';
+    if (c.pct >= 100) { txt = 'Inundada. El vapor no deja bajar el líquido: hay que ampliar el diámetro o bajar el reflujo.'; cls = 'mal'; }
+    else if (c.QlH >= c.QlMax) { txt = 'El bajante se satura. El líquido no alcanza a bajar por el conducto.'; cls = 'mal'; }
+    else if (c.tRes < 3) { txt = 'Residencia en el bajante por debajo de 3 s: baja espuma al plato siguiente.'; cls = 'ojo'; }
+    else if (c.pct > 85) { txt = 'Sin margen. Opera al ' + coma(c.pct, 0) + ' % de inundación: cualquier variación la saca.'; cls = 'ojo'; }
+    else if (c.pct < 40) { txt = 'Goteo. Muy poco vapor para el área: el líquido se cuela por las perforaciones.'; cls = 'mal'; }
+    else if (c.pct < 50) { txt = 'Cerca del goteo. La columna está sobredimensionada para esta carga.'; cls = 'ojo'; }
+    else { txt = 'Dentro de la ventana, al ' + coma(c.pct, 0) + ' % de inundación. Este es el rango de diseño.'; }
+    e.textContent = txt;
+    e.className = 'estado ' + cls;
+  }
+
+  ['#Dcol', '#R'].forEach(function (s) { $(s).addEventListener('input', pinta); });
+  $('#tipo').addEventListener('click', function (ev) {
+    var b = ev.target.closest('button'); if (!b) return;
+    tipo = b.dataset.v;
+    [].forEach.call(this.children, function (x) { x.classList.toggle('on', x === b); });
+    pinta();
+  });
+  $('#esp').addEventListener('click', function (ev) {
+    var b = ev.target.closest('button'); if (!b) return;
+    esp = b.dataset.v;
+    [].forEach.call(this.children, function (x) { x.classList.toggle('on', x === b); });
+    pinta();
+  });
+
+  pinta();
+})();
+</script>
+</body>
+</html>
