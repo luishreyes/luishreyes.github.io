@@ -816,6 +816,20 @@ export const pou202620Course: Course = {
       href: '/classroom/iqya-2031-2026-20/talleres/Taller_04/Taller_04_Suspension_de_Solidos.html',
       bannerImg: '/classroom/iqya-2031-2026-20/lecturas-banners/l06.jpg',
     },
+    {
+      slug: 'taller-05-intercambiador-tubo-coraza',
+      week: 8,
+      order: 105,
+      title: 'Taller 5 · Evaluación térmica y rediseño de un intercambiador',
+      summary:
+        'Un cliente entrega la especificación de un intercambiador 2-4 para enfriar glicerina y pide dimensionarlo. La especificación no cierra: con el caudal de agua dado y el límite de retorno de 42 °C, el servicio alcanza a llevarse apenas el 30 % de la carga, y ninguna superficie de transferencia arregla un déficit de balance. El taller pide detectarlo, cuantificar alternativas de rediseño, dimensionar por LMTD corregido, verificar por efectividad y NTU, y cerrar con un análisis de sensibilidad que muestra cómo el calor específico tomado a temperatura ambiente vuelve a violar la misma restricción. Trae incrustadas la carta del factor F y la de la efectividad, con visor de zoom, y también sus expresiones analíticas. En parejas, esta vez de libre elección.',
+      date: '2026-09-22',
+      readingMinutes: 16,
+      tags: ['intercambiadores de calor', 'coraza y tubos', 'balance de energía', 'LMTD', 'factor F', 'efectividad-NTU', 'ensuciamiento', 'integración energética', 'taller'],
+      category: 'taller',
+      href: '/classroom/iqya-2031-2026-20/talleres/Taller_05/Taller_05_Intercambiador_Tubo_Coraza.html',
+      bannerImg: '/classroom/iqya-2031-2026-20/lecturas-banners/l07.jpg',
+    },
   ],
   presentations: [
     {
