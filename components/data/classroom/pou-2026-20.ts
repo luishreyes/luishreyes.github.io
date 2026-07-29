@@ -802,6 +802,20 @@ export const pou202620Course: Course = {
       href: '/classroom/iqya-2031-2026-20/talleres/Taller_03/Taller_03_Seleccion_de_Bombas.html',
       bannerImg: '/classroom/iqya-2031-2026-20/lecturas-banners/l05.jpg',
     },
+    {
+      slug: 'taller-04-suspension-de-solidos',
+      week: 7,
+      order: 104,
+      title: 'Taller 4 · Suspensión de fibra lignocelulósica',
+      summary:
+        'Un tanque de pretratamiento organosolv donde la fibra se deposita en el fondo y hay que levantarla gastando lo menos posible. Se aplica la correlación de Zwietering para la velocidad de suspensión completa, se comparan tres diámetros de impulsor contra dos restricciones a la vez, la velocidad máxima del accionamiento y el consumo específico, y se estudia el efecto de la concentración de sólidos. Cierra sustituyendo la turbina de palas inclinadas por un impulsor hidrofoil, que consume la octava parte, y con cinco preguntas que incluyen por qué usar un solo valor de S para tres diámetros sesga la conclusión. En parejas, la cuarta distinta del semestre.',
+      date: '2026-09-15',
+      readingMinutes: 14,
+      tags: ['agitación', 'suspensión de sólidos', 'Zwietering', 'just suspended', 'número de potencia', 'hidrofoil', 'PBT', 'P/V', 'análisis dimensional', 'taller'],
+      category: 'taller',
+      href: '/classroom/iqya-2031-2026-20/talleres/Taller_04/Taller_04_Suspension_de_Solidos.html',
+      bannerImg: '/classroom/iqya-2031-2026-20/lecturas-banners/l06.jpg',
+    },
   ],
   presentations: [
     {
