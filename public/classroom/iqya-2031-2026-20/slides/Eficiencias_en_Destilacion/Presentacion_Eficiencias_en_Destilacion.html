@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eficiencias en destilación · Proyecto de Operaciones Unitarias (IQYA-2031)</title>
+<link rel="stylesheet" href="assets/deloitte.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],throwOnError:false});"></script>
+<style>
+  html,body{margin:0;height:100%;background:#000;}
+  deck-stage:not(:defined){visibility:hidden;}
+  .s{font-family:var(--tipo);color:var(--gris-1);background:var(--blanco);display:flex;flex-direction:column;justify-content:center;padding:86px 110px 92px;-webkit-font-smoothing:antialiased;}
+  .s *{box-sizing:border-box;}
+  .kicker{display:inline-flex;align-items:center;gap:14px;font-size:25px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--verde-osc);margin:0 0 22px;}
+  .kicker::before{content:"";width:44px;height:5px;background:var(--verde);border-radius:3px;}
+  .s--dark .kicker{color:var(--verde);}
+  h1.s-title{font-size:92px;line-height:1.02;font-weight:700;margin:0;letter-spacing:-.015em;}
+  h2.s-head{font-size:62px;line-height:1.06;font-weight:700;margin:0 0 12px;letter-spacing:-.01em;}
+  .s-lead{font-size:36px;line-height:1.38;color:var(--gris-2);max-width:46ch;font-weight:400;}
+  .s p{font-size:33px;line-height:1.42;}
+  .s ul{font-size:29px;line-height:1.40;padding-left:1.2em;margin:14px 0 0;}
+  .s li{margin-bottom:12px;}
+  .s li::marker{color:var(--verde);}
+  .s-foot{position:absolute;left:110px;right:110px;bottom:42px;display:flex;justify-content:space-between;align-items:center;font-size:19px;color:var(--gris-3);}
+  .s-foot .tag{display:inline-flex;align-items:center;gap:12px;}
+  .s-foot .tag::before{content:"";width:24px;height:3px;background:var(--gris-4);}
+  .s-foot .num{font-weight:700;color:var(--gris-2);}
+  .s--dark .s-foot{color:rgba(255,255,255,.45);}
+  .s--dark .s-foot .num{color:rgba(255,255,255,.8);}
+  .s--dark .s-foot .tag::before{background:rgba(255,255,255,.3);}
+  .s--dark{background:#111;color:#fff;}
+  .s--dark h1.s-title,.s--dark h2.s-head,.s--dark h2{color:#fff;}
+  .s--tint{background:var(--papel);}
+
+  .cover{justify-content:space-between;position:relative;overflow:hidden;}
+  .cover-top{display:flex;justify-content:space-between;align-items:flex-start;}
+  .cover .org{font-size:30px;font-weight:700;}
+  .cover .fac{font-size:23px;color:var(--gris-2);letter-spacing:.06em;text-transform:uppercase;}
+  .cover .session{font-size:26px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--verde-osc);}
+  .cover h1{font-size:116px;line-height:.98;margin:20px 0 0;letter-spacing:-.02em;text-transform:uppercase;}
+  .cover .sub{font-size:33px;color:var(--gris-2);margin-top:24px;max-width:34ch;line-height:1.32;}
+  .cover-meta{display:flex;gap:78px;font-size:23px;}
+  .cover-meta b{display:block;font-size:19px;letter-spacing:.12em;text-transform:uppercase;color:var(--gris-3);margin-bottom:6px;}
+
+  .divider{background:#111;color:#fff;justify-content:center;}
+  .divider .part{font-size:25px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--verde);margin-bottom:20px;}
+  .divider h2{font-size:92px;line-height:1.02;margin:0;letter-spacing:-.02em;}
+  .divider .sub{font-size:33px;color:rgba(255,255,255,.62);margin-top:22px;max-width:40ch;line-height:1.38;}
+
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:26px;}
+  .cards.two{grid-template-columns:repeat(2,1fr);}
+  .cards.four{grid-template-columns:repeat(4,1fr);}
+  .card{border:2px solid var(--gris-4);padding:28px 30px;background:var(--blanco);}
+  .card--teal{border-color:var(--teal);}
+  .card--amber{border-color:var(--ambar);}
+  .card-n{display:block;font-size:21px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--verde-osc);margin-bottom:9px;}
+  .card h3{font-size:32px;margin:0 0 11px;line-height:1.15;}
+  .card p{font-size:26px;line-height:1.36;color:var(--gris-2);margin:0;}
+
+  .callout{border-left:8px solid var(--verde);background:var(--verde-claro);padding:24px 32px;margin-top:24px;}
+  .callout p{font-size:30px;margin:0;line-height:1.42;}
+  .callout.amber{border-left-color:var(--ambar);background:#fdf6ec;}
+
+  .split{display:flex;gap:56px;align-items:center;margin-top:12px;}
+  .split .copy{flex:1;min-width:0;}
+  .split .fig{flex:1.05;min-width:0;}
+  .figcap{font-size:23px;color:var(--gris-3);margin-top:12px;line-height:1.35;}
+
+  table.tbl{width:100%;border-collapse:collapse;margin-top:22px;font-size:28px;}
+  table.tbl th{text-align:left;font-size:21px;letter-spacing:.1em;text-transform:uppercase;color:var(--gris-3);padding:10px 14px;border-bottom:3px solid var(--gris-4);}
+  table.tbl td{padding:15px 16px;border-bottom:1px solid var(--gris-5);}
+  table.tbl td.dato{font-variant-numeric:tabular-nums;font-weight:600;}
+  table.tbl tr.marca td{background:var(--verde-claro);}
+  table.tbl tr.marca td:first-child{font-weight:700;}
+
+  .fml{background:var(--papel);border-left:6px solid var(--verde);padding:22px 30px;margin-top:20px;font-size:32px;}
+
+  /* Aviso de herramienta externa */
+  .tool{display:flex;align-items:center;gap:26px;border:3px solid var(--verde);padding:26px 32px;margin-top:26px;background:var(--verde-claro);}
+  .tool .ic{font-size:44px;font-weight:700;color:var(--verde-osc);line-height:1;}
+  .tool b{font-size:31px;display:block;margin-bottom:6px;}
+  .tool span{font-size:25px;color:var(--gris-2);line-height:1.35;}
+</style>
+</head>
+<body>
+
+<deck-stage width="1920" height="1080"
+  data-foot="Eficiencias en destilación · IQYA-2031"
+  data-foot-short="Eficiencias"
+  data-doc-pdf="Presentacion_Eficiencias_en_Destilacion_documento.pdf">
+
+<!-- 01 -->
+<section class="s cover" data-screen-label="Portada">
+  <div class="cover-top">
+    <div>
+      <div class="org">Universidad de los Andes</div>
+      <div class="fac">Ingeniería Química y de Alimentos</div>
+    </div>
+    <div class="session">IQYA-2031 · Sesión 25</div>
+  </div>
+  <div>
+    <h1>Eficiencias en<br>destilación</h1>
+    <p class="sub">El número que convierte etapas teóricas en platos que se compran.</p>
+  </div>
+  <div class="cover-meta">
+    <div><b>Curso</b>Proyecto de Operaciones Unitarias</div>
+    <div><b>Aplicación</b>Columna de recuperación de etanol</div>
+    <div><b>Fecha</b>3 de noviembre de 2026</div>
+  </div>
+</section>
+
+<!-- 02 -->
+<section class="s" data-screen-label="El puente">
+  <div class="kicker">De dónde venimos</div>
+  <h2 class="s-head">El jueves asumimos un 55 %. Hoy lo calculamos.</h2>
+  <p class="s-lead">La columna de etanol quedó dimensionada con una suposición prestada: que los platos
+     reales alcanzan poco más de la mitad del equilibrio. De ahí salieron 20 platos y 14 metros.</p>
+  <div class="cards">
+    <div class="card"><span class="card-n">Ya tenemos</span><h3>11 etapas teóricas</h3><p>Del escalonado de McCabe-Thiele, sin contar el rehervidor.</p></div>
+    <div class="card card--amber"><span class="card-n">Asumimos</span><h3>Eficiencia del 55 %</h3><p>Un valor de tabla, sin justificar con las propiedades del sistema.</p></div>
+    <div class="card card--teal"><span class="card-n">Hoy</span><h3>El número real</h3><p>De dónde sale, de qué depende y cuánto se equivoca.</p></div>
+  </div>
+  <div class="callout">
+    <p>Suponer no es el problema. El problema es suponer y no volver a verificarlo. Hoy volvemos.</p>
+  </div>
+</section>
+
+<!-- 03 -->
+<section class="s divider" data-screen-label="Divisor · Por qué no se alcanza">
+  <div class="part">Parte 1</div>
+  <h2>Por qué un plato<br>real nunca<br>alcanza el<br>equilibrio</h2>
+  <p class="sub">El equilibrio necesita tiempo y contacto perfecto. Un plato industrial no da ninguna de las dos cosas.</p>
+</section>
+
+<!-- 04 -->
+<section class="s" data-screen-label="Qué pasa en un plato real">
+  <div class="kicker">La causa física</div>
+  <h2 class="s-head">Tres razones por las que se queda corto</h2>
+  <div class="cards">
+    <div class="card">
+      <span class="card-n">01</span>
+      <h3>El tiempo no alcanza</h3>
+      <p>El líquido cruza el plato en unos pocos segundos. La transferencia de masa necesita más para
+         llevar las fases al equilibrio.</p>
+    </div>
+    <div class="card">
+      <span class="card-n">02</span>
+      <h3>El mezclado no es perfecto</h3>
+      <p>El líquido no tiene la misma composición en todo el plato: entra rico y sale pobre. El vapor
+         que sube ve composiciones distintas según por dónde pase.</p>
+    </div>
+    <div class="card">
+      <span class="card-n">03</span>
+      <h3>Hay arrastre y goteo</h3>
+      <p>Parte del líquido se devuelve hacia arriba en gotas y parte se cuela hacia abajo. Las dos cosas
+         mezclan corrientes que deberían estar separadas.</p>
+    </div>
+  </div>
+  <div class="callout amber">
+    <p>Por eso la etapa teórica es una idealización útil, no una descripción. Diseñar sin corregirla
+       deja la columna corta y la separación no se consigue.</p>
+  </div>
+</section>
+
+<!-- 05 -->
+<section class="s s--tint" data-screen-label="Las tres eficiencias">
+  <div class="kicker">Cuidado con los nombres</div>
+  <h2 class="s-head">Tres eficiencias distintas, y no son intercambiables</h2>
+  <div class="cards">
+    <div class="card">
+      <span class="card-n">Escala local</span>
+      <h3>Puntual</h3>
+      <p>En un punto del plato. Es la que aparece en los modelos de transferencia de masa y casi nunca
+         se usa para dimensionar.</p>
+    </div>
+    <div class="card card--teal">
+      <span class="card-n">Escala de plato</span>
+      <h3>De Murphree</h3>
+      <p>Todo un plato: qué fracción del salto hacia el equilibrio consigue. Es la que se mete en el
+         diagrama de McCabe-Thiele.</p>
+    </div>
+    <div class="card card--teal">
+      <span class="card-n">Escala de columna</span>
+      <h3>Global</h3>
+      <p>La columna entera de una vez: cuántos platos reales hacen falta para lograr las etapas
+         teóricas. Es la que se usa para dimensionar.</p>
+    </div>
+  </div>
+  <div class="callout">
+    <p>Regla para no equivocarse: <b>Murphree corrige el diagrama, la global corrige el equipo.</b>
+       No son el mismo número y en general no coinciden.</p>
+  </div>
+</section>
+
+<!-- 06 -->
+<section class="s divider" data-screen-label="Divisor · Murphree">
+  <div class="part">Parte 2</div>
+  <h2>Eficiencia<br>de Murphree</h2>
+  <p class="sub">Cuánto del camino hacia el equilibrio recorre de verdad cada plato.</p>
+</section>
+
+<!-- 07 -->
+<section class="s" data-screen-label="Murphree en el diagrama">
+  <div class="kicker">Dónde se ve</div>
+  <h2 class="s-head">El escalón que no llega</h2>
+  <div class="split">
+    <div class="fig">
+      <svg viewBox="0 0 500 480" style="width:100%;height:auto;max-height:560px;display:block">
+        <!-- Marco -->
+        <rect x="90" y="50" width="380" height="380" fill="none" stroke="#C9C9CC" stroke-width="2"/>
+        <line x1="90" y1="430" x2="470" y2="50" stroke="#C9C9CC" stroke-width="2" stroke-dasharray="7 6"/>
+        <!-- Curva de equilibrio, alfa constante = 2,2 -->
+        <polyline fill="none" stroke="#1D1F20" stroke-width="4"
+          points="90,430 100,410 109,391 118,372 128,355 138,339 147,324 156,309 166,295 176,282 185,269 194,257 204,246 214,235 223,224 232,214 242,204 252,195 261,186 270,177 280,169 290,161 299,153 308,146 318,138 328,131 337,125 346,118 356,112 366,106 375,100 384,94 394,89 404,83 413,78 422,73 432,68 442,64 451,59 460,54 470,50"/>
+        <!-- Recta de operación -->
+        <line x1="204" y1="264" x2="413" y2="107" stroke="#5980A6" stroke-width="4"/>
+        <!-- Escalón ideal -->
+        <line x1="299" y1="192" x2="254" y2="192" stroke="#7A7A7D" stroke-width="3" stroke-dasharray="6 5"/>
+        <circle cx="254" cy="192" r="7" fill="#7A7A7D"/>
+        <!-- Escalón real, con EM = 0,65 -->
+        <line x1="299" y1="192" x2="270" y2="192" stroke="#E0922F" stroke-width="5"/>
+        <line x1="270" y1="192" x2="270" y2="215" stroke="#E0922F" stroke-width="5"/>
+        <circle cx="270" cy="192" r="8" fill="#E0922F"/>
+        <circle cx="299" cy="192" r="7" fill="#5980A6"/>
+        <!-- Rótulos -->
+        <g font-family="Barlow" font-size="20" font-weight="600">
+          <text x="478" y="46" text-anchor="end" fill="#1D1F20">Equilibrio</text>
+          <text x="462" y="256" text-anchor="end" fill="#416180">Recta de operación</text><path d="M432 244 L398 132" fill="none" stroke="#5980A6" stroke-width="2" opacity=".6"/>
+          <text x="196" y="184" text-anchor="end" fill="#7A7A7D">Plato ideal</text>
+          <text x="276" y="242" fill="#8a6316">Plato real</text>
+        </g>
+        <g font-family="Barlow" font-size="20" fill="#5D5D60">
+          <text x="280" y="462" text-anchor="middle">x · fracción en el líquido</text>
+          <text transform="translate(46 240) rotate(-90)" text-anchor="middle">y · fracción en el vapor</text>
+        </g>
+      </svg>
+      <p class="figcap">Curva de equilibrio con volatilidad relativa constante, para que la idea se vea
+        limpia. Con $E_M = 0{,}65$ el plato recorre dos tercios del camino hacia la curva.</p>
+    </div>
+    <div class="copy">
+      <p>Un plato ideal lleva el vapor hasta la curva de equilibrio. Uno real se queda antes.
+         Murphree mide qué fracción de ese salto consigue:</p>
+      <div class="fml" style="font-size:30px">$$E_M = \frac{y_n - y_{n+1}}{y_n^* - y_{n+1}}$$</div>
+      <ul>
+        <li>$y_{n+1}$: el vapor que <b>entra</b> al plato.</li>
+        <li>$y_n$: el vapor que <b>sale</b>.</li>
+        <li>$y_n^*$: el que saldría <b>si alcanzara el equilibrio</b>.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 08 -->
+<section class="s" data-screen-label="La curva efectiva">
+  <div class="kicker">La consecuencia gráfica</div>
+  <h2 class="s-head">La curva de equilibrio se acerca a la de operación</h2>
+  <div class="split">
+    <div class="copy">
+      <p class="s-lead">Si ningún plato llega al equilibrio, es como si la curva de equilibrio estuviera
+         más abajo. Esa es la <b>curva efectiva</b>, y es contra ella que hay que escalonar.</p>
+      <ul>
+        <li>La curva efectiva queda <b>entre</b> la de equilibrio y la de operación.</li>
+        <li>Los escalones se hacen <b>más pequeños</b>: cada uno avanza menos.</li>
+        <li>Hacen falta <b>más escalones</b> para ir de fondos a destilado.</li>
+      </ul>
+    </div>
+    <div class="copy">
+      <div class="callout amber">
+        <p>Cuando la eficiencia baja, el pellizco aparece antes. Con una eficiencia lo bastante mala,
+           la curva efectiva toca la recta de operación y <b>la separación se vuelve imposible</b>
+           por más platos que se pongan.</p>
+      </div>
+      <div class="callout">
+        <p>Es el mismo fenómeno del reflujo mínimo, por otra puerta: cuando las dos curvas se tocan,
+           la fuerza impulsora se acaba.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 09 -->
+<section class="s s--tint" data-screen-label="Al explorador">
+  <div class="kicker">Herramienta</div>
+  <h2 class="s-head">Véalo moverse</h2>
+  <p class="s-lead">El explorador de McCabe-Thiele de la semana 11 tiene el control de eficiencia de
+     Murphree. Vamos a moverlo y a contar escalones.</p>
+  <div class="tool">
+    <span class="ic">→</span>
+    <div>
+      <b>Explorador McCabe-Thiele</b>
+      <span>Material del curso · semana 11. Sistema etanol-agua con equilibrio de Van Laar y control de Murphree en vapor.</span>
+    </div>
+  </div>
+  <div class="cards" style="margin-top:30px">
+    <div class="card"><span class="card-n">Mire esto</span><h3>Cuente los escalones</h3><p>Baje la eficiencia de 1,0 a 0,6 y vea cuántas etapas aparecen para la misma pureza.</p></div>
+    <div class="card"><span class="card-n">Mire esto</span><h3>Dónde se aprietan</h3><p>Los escalones se cierran primero cerca de la alimentación, que es donde está el pellizco.</p></div>
+    <div class="card"><span class="card-n">Mire esto</span><h3>Suba el reflujo</h3><p>Con más reflujo se recupera parte de lo perdido, pero se paga en el rehervidor.</p></div>
+  </div>
+</section>
+
+<!-- 10 -->
+<section class="s" data-screen-label="De qué depende Murphree">
+  <div class="kicker">Qué la mueve</div>
+  <h2 class="s-head">De qué depende la eficiencia de un plato</h2>
+  <div class="cards">
+    <div class="card">
+      <span class="card-n">Del fluido</span>
+      <h3>Propiedades físicas</h3>
+      <p>La viscosidad la baja: dificulta la transferencia. La difusividad la sube. La tensión
+         superficial define cómo se forman las burbujas.</p>
+    </div>
+    <div class="card">
+      <span class="card-n">Del equipo</span>
+      <h3>Diseño del plato</h3>
+      <p>Espaciamiento, tipo, área activa y altura del vertedero. Más líquido retenido significa más
+         tiempo de contacto.</p>
+    </div>
+    <div class="card">
+      <span class="card-n">De la operación</span>
+      <h3>Cómo se opera</h3>
+      <p>La relación entre líquido y vapor y qué tan cerca se está de la inundación. Fuera de la
+         ventana de operación, la eficiencia se desploma.</p>
+    </div>
+  </div>
+  <div class="callout">
+    <p>Note el enlace con la clase pasada: el plato que se diseñó para no inundarse ni gotear es,
+       por eso mismo, el que rinde. La hidráulica y la eficiencia son el mismo problema.</p>
+  </div>
+</section>
+
+<!-- 11 -->
+<section class="s divider" data-screen-label="Divisor · Eficiencia global">
+  <div class="part">Parte 3</div>
+  <h2>Eficiencia<br>global</h2>
+  <p class="sub">Un solo número para toda la columna. Es el que de verdad se usa para dimensionar.</p>
+</section>
+
+<!-- 12 -->
+<section class="s" data-screen-label="Definición de la global">
+  <div class="kicker">La definición</div>
+  <h2 class="s-head">De etapas teóricas a platos que se compran</h2>
+  <div class="split">
+    <div class="copy">
+      <div class="fml">$$E_o = \frac{N_{teórico}}{N_{real}} \qquad N_{real} = \frac{N_{teórico}}{E_o}$$</div>
+      <p style="margin-top:22px">Es un promedio de toda la columna. No dice qué pasa en cada plato,
+         y no le hace falta: para pedir el equipo lo que se necesita es cuántos platos van.</p>
+    </div>
+    <div class="copy">
+      <div class="callout amber">
+        <p><b>Ojo con el rehervidor.</b> Cuenta como una etapa teórica más, pero no es un plato:
+           es un intercambiador. Se descuenta antes de dividir por la eficiencia.</p>
+      </div>
+      <div class="callout">
+        <p>En la columna del proyecto son 12 etapas teóricas en total. Once quedan en la columna y
+           una es el rehervidor.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 13 -->
+<section class="s" data-screen-label="O'Connell">
+  <div class="kicker">Cómo se estima</div>
+  <h2 class="s-head">La correlación de O'Connell</h2>
+  <div class="split">
+    <div class="fig">
+      <svg viewBox="0 0 680 440" style="width:100%;height:auto;max-height:520px;display:block">
+        <!-- Banda de dispersión -->
+        <polygon fill="#5980A6" opacity=".14" points="100,100 620,289 620,349 100,160"/>
+        <!-- Curva -->
+        <polyline fill="none" stroke="#416180" stroke-width="4"
+          points="100,130 132,141 163,153 195,165 226,177 258,189 289,201 321,212 353,224 384,236 416,248 447,260 479,272 510,283 542,295 573,307 605,319"/>
+        <!-- Ejes -->
+        <line x1="100" y1="380" x2="640" y2="380" stroke="#1D1F20" stroke-width="3"/>
+        <line x1="100" y1="380" x2="100" y2="70" stroke="#1D1F20" stroke-width="3"/>
+        <g font-family="Barlow" font-size="19" fill="#5D5D60">
+          <text x="100" y="404" text-anchor="middle">0,1</text>
+          <text x="224" y="404" text-anchor="middle">0,3</text>
+          <text x="360" y="404" text-anchor="middle">1</text>
+          <text x="484" y="404" text-anchor="middle">3</text>
+          <text x="620" y="404" text-anchor="middle">10</text>
+          <text x="88" y="386" text-anchor="end">0</text>
+          <text x="88" y="311" text-anchor="end">25</text>
+          <text x="88" y="236" text-anchor="end">50</text>
+          <text x="88" y="161" text-anchor="end">75</text>
+          <text x="88" y="86" text-anchor="end">100</text>
+        </g>
+        <!-- Punto del proyecto -->
+        <line x1="346" y1="380" x2="346" y2="222" stroke="#E0922F" stroke-width="3" stroke-dasharray="7 6"/>
+        <line x1="100" y1="222" x2="346" y2="222" stroke="#E0922F" stroke-width="3" stroke-dasharray="7 6"/>
+        <circle cx="346" cy="222" r="12" fill="#E0922F"/>
+        <text x="360" y="206" font-family="Barlow" font-size="22" font-weight="700" fill="#8a6316">Etanol-agua: 53 %</text>
+        <g font-family="Barlow" font-size="21" font-weight="600" fill="#1D1F20">
+          <text x="370" y="434" text-anchor="middle">Producto μₗ · α</text>
+          <text transform="translate(40 225) rotate(-90)" text-anchor="middle">Eficiencia global (%)</text>
+        </g>
+      </svg>
+      <p class="figcap">La banda es la dispersión de la correlación, de unos diez puntos.
+        Escala logarítmica en el eje horizontal.</p>
+    </div>
+    <div class="copy">
+      <div class="fml" style="font-size:29px">$$E_o = 51 - 32{,}5\,\log_{10}(\mu_L\,\alpha)$$</div>
+      <p style="font-size:29px;margin-top:18px">Con la viscosidad del líquido en centipoise y la
+         volatilidad relativa promedio, ambas evaluadas a la temperatura media de la columna.</p>
+      <ul style="font-size:27px">
+        <li>Un solo grupo manda: el <b>producto</b> $\mu_L\,\alpha$.</li>
+        <li>Viscoso y difícil de separar, la peor combinación.</li>
+        <li>Fluido y volátil, eficiencias altas.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 14 -->
+<section class="s s--tint" data-screen-label="Límites de la correlación">
+  <div class="kicker">Antes de usarla</div>
+  <h2 class="s-head">Es una correlación, no una medición</h2>
+  <div class="cards">
+    <div class="card card--amber">
+      <span class="card-n">Dispersión</span>
+      <h3>Más o menos diez puntos</h3>
+      <p>Un 55 % calculado puede ser un 45 o un 65 en la planta. Por eso el resultado se declara con
+         su incertidumbre, no como un dato exacto.</p>
+    </div>
+    <div class="card card--amber">
+      <span class="card-n">Alcance</span>
+      <h3>Hidrocarburos y sistemas simples</h3>
+      <p>Se construyó con destilación de hidrocarburos. En sistemas muy no ideales, con azeótropos o
+         con espuma, se queda corta.</p>
+    </div>
+    <div class="card">
+      <span class="card-n">Qué ignora</span>
+      <h3>El diseño del plato</h3>
+      <p>No sabe qué plato escogió ni cómo lo va a operar. Todo eso quedó fuera de la correlación.</p>
+    </div>
+  </div>
+  <div class="callout">
+    <p>Para diseño de detalle se usan métodos como el de la AIChE o datos del fabricante. O'Connell
+       sirve para estimar y para verificar que un número supuesto es razonable, que es lo que
+       necesitamos hoy.</p>
+  </div>
+</section>
+
+<!-- 15 -->
+<section class="s" data-screen-label="Valores típicos">
+  <div class="kicker">Órdenes de magnitud</div>
+  <h2 class="s-head">Qué esperar según el sistema</h2>
+  <table class="tbl">
+    <thead><tr><th>Sistema</th><th>Eficiencia global</th><th>Por qué</th></tr></thead>
+    <tbody>
+      <tr><td>Hidrocarburos ligeros</td><td class="dato">80 a 90 %</td><td>Poco viscosos y fáciles de separar.</td></tr>
+      <tr><td>Aromáticos</td><td class="dato">70 a 80 %</td><td>Algo más viscosos, volatilidades cercanas.</td></tr>
+      <tr class="marca"><td>Alcoholes</td><td class="dato">60 a 70 %</td><td>Puentes de hidrógeno: más viscosidad y no idealidad.</td></tr>
+      <tr><td>Sistemas acuosos</td><td class="dato">50 a 60 %</td><td>Tensión superficial alta y tendencia a la espuma.</td></tr>
+      <tr><td>Glicoles</td><td class="dato">30 a 40 %</td><td>Muy viscosos. Aquí casi siempre se va a relleno.</td></tr>
+    </tbody>
+  </table>
+  <div class="callout">
+    <p>La columna del proyecto es etanol y agua: cae entre las dos filas resaltadas. Un valor por
+       encima del 70 % debería hacerlos sospechar del cálculo.</p>
+  </div>
+</section>
+
+<!-- 16 -->
+<section class="s divider" data-screen-label="Divisor · Empaque">
+  <div class="part">Parte 4</div>
+  <h2>Cuando no<br>van platos</h2>
+  <p class="sub">Hay columnas donde el relleno gana, y conviene saber reconocerlas antes de dibujar veinte platos.</p>
+</section>
+
+<!-- 17 -->
+<section class="s" data-screen-label="Cuándo conviene relleno">
+  <div class="kicker">Criterio de selección</div>
+  <h2 class="s-head">Cinco situaciones donde el relleno gana</h2>
+  <div class="cards">
+    <div class="card"><span class="card-n">01</span><h3>Vacío</h3><p>Cada kilopascal de caída de presión cuesta temperatura de fondo. El relleno pide una fracción de la de los platos.</p></div>
+    <div class="card"><span class="card-n">02</span><h3>Diámetro pequeño</h3><p>Por debajo de unos 0,6 m, montar platos y bajantes se vuelve impráctico.</p></div>
+    <div class="card"><span class="card-n">03</span><h3>Corrosión</h3><p>Es más barato rellenar con cerámica o plástico que fabricar platos en aleación.</p></div>
+  </div>
+  <div class="cards two" style="margin-top:24px">
+    <div class="card"><span class="card-n">04</span><h3>Sistemas que hacen espuma</h3><p>El relleno rompe la espuma mejor que el burbujeo sobre un plato.</p></div>
+    <div class="card"><span class="card-n">05</span><h3>Productos térmicamente sensibles</h3><p>Menos caída de presión significa menor temperatura de fondo y menos degradación.</p></div>
+  </div>
+</section>
+
+<!-- 18 -->
+<section class="s s--tint" data-screen-label="HETP">
+  <div class="kicker">Cómo se dimensiona</div>
+  <h2 class="s-head">En relleno no hay platos: hay altura equivalente</h2>
+  <div class="split">
+    <div class="copy">
+      <p>El relleno es un contacto continuo, así que no se cuentan platos. Se pregunta cuánta altura de
+         relleno hace el trabajo de una etapa teórica. Eso es el HETP:</p>
+      <div class="fml" style="font-size:30px">$$H = N_{teórico} \times HETP$$</div>
+      <p style="font-size:29px;margin-top:20px">El HETP hace en el relleno el papel que la eficiencia
+         global hace en los platos: traduce etapas teóricas en equipo.</p>
+    </div>
+    <div class="copy">
+      <table class="tbl" style="margin-top:0">
+        <thead><tr><th>Tipo de relleno</th><th>HETP típico</th></tr></thead>
+        <tbody>
+          <tr><td>Aleatorio, anillos y sillas</td><td class="dato">0,45 a 0,90 m</td></tr>
+          <tr><td>Estructurado</td><td class="dato">0,25 a 0,50 m</td></tr>
+        </tbody>
+      </table>
+      <div class="callout amber">
+        <p>El estructurado da más separación por metro y menos caída de presión, y cuesta bastante más.
+           La decisión es económica, no técnica.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 19 -->
+<section class="s" data-screen-label="Recálculo del proyecto">
+  <div class="kicker">Vuelta al proyecto</div>
+  <h2 class="s-head">La columna de etanol, ahora con el número calculado</h2>
+  <table class="tbl">
+    <thead><tr><th>Paso</th><th>Valor</th><th>Resultado</th></tr></thead>
+    <tbody>
+      <tr><td>Viscosidad del líquido a la temperatura media</td><td class="dato">≈ 0,4 cP</td><td class="dato">supuesto declarado</td></tr>
+      <tr><td>Volatilidad relativa promedio</td><td class="dato">≈ 2,2</td><td class="dato">supuesto declarado</td></tr>
+      <tr><td>Producto que entra a la correlación</td><td class="dato">0,88</td><td class="dato">—</td></tr>
+      <tr class="marca"><td>Eficiencia global por O'Connell</td><td class="dato">52,8 %</td><td class="dato">contra el 55 % asumido</td></tr>
+      <tr><td>Etapas teóricas en la columna</td><td class="dato">11</td><td class="dato">sin el rehervidor</td></tr>
+      <tr class="marca"><td>Platos reales</td><td class="dato">21</td><td class="dato">eran 20</td></tr>
+      <tr><td>Altura estimada</td><td class="dato">≈ 14,5 m</td><td class="dato">eran 14,0 m</td></tr>
+    </tbody>
+  </table>
+  <div class="callout">
+    <p>Un plato más y medio metro de columna. La suposición era razonable, y aun así la verificación
+       cambió el equipo. Eso es exactamente lo que se espera en la bitácora: suponer, declarar y volver.</p>
+  </div>
+</section>
+
+<!-- 20 -->
+<section class="s divider" data-screen-label="Cierre">
+  <div class="part">Para la bitácora 4</div>
+  <h2>El número no vale<br>por su valor. Vale<br>por su justificación.</h2>
+  <p class="sub">Declare la eficiencia que usó, de dónde la sacó y qué tan sensible es su columna a que esté diez puntos abajo.</p>
+</section>
+
+</deck-stage>
+
+<script src="assets/deck-stage.js"></script>
+</body>
+</html>
