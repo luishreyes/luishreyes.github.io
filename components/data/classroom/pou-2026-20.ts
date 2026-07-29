@@ -760,6 +760,20 @@ export const pou202620Course: Course = {
       href: '/classroom/iqya-2031-2026-20/lecturas/Lectura_14/Lectura_14_Comunicacion_Visual.html',
       bannerImg: '/classroom/iqya-2031-2026-20/lecturas-banners/l14.jpg',
     },
+    {
+      slug: 'taller-01-analisis-de-pfd',
+      week: 2,
+      order: 101,
+      title: 'Taller 1 · Análisis de un diagrama de flujo de proceso',
+      summary:
+        'Una planta de producción de ron a partir de melaza, dibujada con errores de dibujo y de ingeniería. El taller pide leer el diagrama, trazar las corrientes, encontrar los errores y proponer lo que falta para que la planta pueda operarse: la separación de sólidos antes de la columna, las bombas que el plano no tiene, el control de presión del tope y los servicios de cada intercambiador. Incluye un visor con zoom sobre el PFD, porque varias etiquetas no se leen a tamaño de página. Cierra con operabilidad, seguridad y una discusión económica sobre recuperar o purgar.',
+      date: '2026-08-13',
+      readingMinutes: 15,
+      tags: ['PFD', 'diagramas de proceso', 'bombas', 'destilación', 'azeótropo', 'control', 'PSV', 'corrientes de servicio', 'taller'],
+      category: 'taller',
+      href: '/classroom/iqya-2031-2026-20/talleres/Taller_01/Taller_01_Analisis_de_PFD.html',
+      bannerImg: '/classroom/iqya-2031-2026-20/guias-banners/informe.jpg',
+    },
   ],
   presentations: [
     {
