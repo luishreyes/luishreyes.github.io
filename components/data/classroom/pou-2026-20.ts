@@ -774,6 +774,20 @@ export const pou202620Course: Course = {
       href: '/classroom/iqya-2031-2026-20/talleres/Taller_01/Taller_01_Analisis_de_PFD.html',
       bannerImg: '/classroom/iqya-2031-2026-20/guias-banners/informe.jpg',
     },
+    {
+      slug: 'taller-02-analisis-granulometrico',
+      week: 3,
+      order: 102,
+      title: 'Taller 2 · Análisis granulométrico de sólidos particulados',
+      summary:
+        'Se resuelve en un cuaderno de Google Colab, que se abre desde la página con un clic. Tres casos: un catalizador que debe fluidizar y se juzga contra tres criterios de planta, dos circuitos de molienda que compiten por alimentar una flotación y donde ninguno domina al otro, y una carta de control del D50 con las muestras de una semana. Incluye el ajuste de los tres modelos clásicos de distribución, log-normal, Rosin-Rammler y Gates-Gaudin-Schuhmann, y cinco preguntas de análisis con sustento bibliográfico en formato IEEE. En parejas, con pareja distinta a la del Taller 1.',
+      date: '2026-08-20',
+      readingMinutes: 12,
+      tags: ['granulometría', 'tamizado', 'sólidos particulados', 'D80', 'fluidización', 'molienda', 'Rosin-Rammler', 'carta de control', 'Colab', 'Python', 'taller'],
+      category: 'taller',
+      href: '/classroom/iqya-2031-2026-20/talleres/Taller_02/Taller_02_Analisis_Granulometrico.html',
+      bannerImg: '/classroom/iqya-2031-2026-20/lecturas-banners/l03.jpg',
+    },
   ],
   presentations: [
     {
