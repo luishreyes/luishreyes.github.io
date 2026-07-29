@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comunicación visual · Proyecto de Operaciones Unitarias (IQYA-2031)</title>
+<link rel="stylesheet" href="assets/deloitte.css">
+<style>
+  html,body{margin:0;height:100%;background:#000;}
+  deck-stage:not(:defined){visibility:hidden;}
+  .s{font-family:var(--tipo);color:var(--gris-1);background:var(--blanco);display:flex;flex-direction:column;justify-content:center;padding:86px 110px 92px;-webkit-font-smoothing:antialiased;}
+  .s *{box-sizing:border-box;}
+  .kicker{display:inline-flex;align-items:center;gap:14px;font-size:25px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--verde-osc);margin:0 0 22px;}
+  .kicker::before{content:"";width:44px;height:5px;background:var(--verde);border-radius:3px;}
+  .s--dark .kicker{color:var(--verde);}
+  h1.s-title{font-size:92px;line-height:1.02;font-weight:700;margin:0;letter-spacing:-.015em;}
+  h2.s-head{font-size:62px;line-height:1.06;font-weight:700;margin:0 0 12px;letter-spacing:-.01em;}
+  .s-lead{font-size:36px;line-height:1.38;color:var(--gris-2);max-width:46ch;font-weight:400;}
+  .s p{font-size:33px;line-height:1.42;}
+  .s ul{font-size:29px;line-height:1.40;padding-left:1.2em;margin:14px 0 0;}
+  .s li{margin-bottom:12px;}
+  .s li::marker{color:var(--verde);}
+  .s-foot{position:absolute;left:110px;right:110px;bottom:42px;display:flex;justify-content:space-between;align-items:center;font-size:19px;color:var(--gris-3);}
+  .s-foot .tag{display:inline-flex;align-items:center;gap:12px;}
+  .s-foot .tag::before{content:"";width:24px;height:3px;background:var(--gris-4);}
+  .s-foot .num{font-weight:700;color:var(--gris-2);}
+  .s--dark .s-foot{color:rgba(255,255,255,.45);}
+  .s--dark .s-foot .num{color:rgba(255,255,255,.8);}
+  .s--dark .s-foot .tag::before{background:rgba(255,255,255,.3);}
+  .s--dark{background:#111;color:#fff;}
+  .s--dark h1.s-title,.s--dark h2.s-head,.s--dark h2{color:#fff;}
+  .s--tint{background:var(--papel);}
+  /* Láminas con figura grande: el margen se ajusta para que quepan sin
+     bajar el cuerpo de texto, que es común a todo el curso. */
+  .s--denso{padding:58px 110px 66px;}
+
+  .cover{justify-content:space-between;position:relative;overflow:hidden;}
+  .cover-top{display:flex;justify-content:space-between;align-items:flex-start;}
+  .cover .org{font-size:30px;font-weight:700;}
+  .cover .fac{font-size:23px;color:var(--gris-2);letter-spacing:.06em;text-transform:uppercase;}
+  .cover .session{font-size:26px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--verde-osc);}
+  .cover h1{font-size:116px;line-height:.98;margin:20px 0 0;letter-spacing:-.02em;text-transform:uppercase;}
+  .cover .sub{font-size:33px;color:var(--gris-2);margin-top:24px;max-width:34ch;line-height:1.32;}
+  .cover-meta{display:flex;gap:78px;font-size:23px;}
+  .cover-meta b{display:block;font-size:19px;letter-spacing:.12em;text-transform:uppercase;color:var(--gris-3);margin-bottom:6px;}
+
+  .divider{background:#111;color:#fff;justify-content:center;}
+  .divider .part{font-size:25px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--verde);margin-bottom:20px;}
+  .divider h2{font-size:92px;line-height:1.02;margin:0;letter-spacing:-.02em;}
+  .divider .sub{font-size:33px;color:rgba(255,255,255,.62);margin-top:22px;max-width:40ch;line-height:1.38;}
+
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:26px;}
+  .cards.two{grid-template-columns:repeat(2,1fr);}
+  .cards.four{grid-template-columns:repeat(4,1fr);}
+  .card{border:2px solid var(--gris-4);padding:28px 30px;background:var(--blanco);}
+  .card--teal{border-color:var(--teal);}
+  .card--amber{border-color:var(--ambar);}
+  .card-n{display:block;font-size:21px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--verde-osc);margin-bottom:9px;}
+  .card h3{font-size:32px;margin:0 0 11px;line-height:1.15;}
+  .card p{font-size:26px;line-height:1.36;color:var(--gris-2);margin:0;}
+
+  .callout{border-left:8px solid var(--verde);background:var(--verde-claro);padding:24px 32px;margin-top:24px;}
+  .callout p{font-size:30px;margin:0;line-height:1.42;}
+  .callout.amber{border-left-color:var(--ambar);background:#fdf6ec;}
+
+  .split{display:flex;gap:56px;align-items:center;margin-top:12px;}
+  .split .copy{flex:1;min-width:0;}
+  .split .fig{flex:1.05;min-width:0;}
+  .figcap{font-size:23px;color:var(--gris-3);margin-top:12px;line-height:1.35;}
+
+  table.tbl{width:100%;border-collapse:collapse;margin-top:22px;font-size:28px;}
+  table.tbl th{text-align:left;font-size:21px;letter-spacing:.1em;text-transform:uppercase;color:var(--gris-3);padding:10px 14px;border-bottom:3px solid var(--gris-4);}
+  table.tbl td{padding:15px 16px;border-bottom:1px solid var(--gris-5);}
+  table.tbl td.dato{font-variant-numeric:tabular-nums;font-weight:600;}
+  table.tbl tr.marca td{background:var(--verde-claro);}
+  table.tbl tr.marca td:first-child{font-weight:700;}
+
+  .fml{background:var(--papel);border-left:6px solid var(--verde);padding:22px 30px;margin-top:20px;font-size:32px;}
+
+  /* Aviso de herramienta externa */
+  .tool{display:flex;align-items:center;gap:26px;border:3px solid var(--verde);padding:26px 32px;margin-top:26px;background:var(--verde-claro);}
+  .tool .ic{font-size:44px;font-weight:700;color:var(--verde-osc);line-height:1;}
+  .tool b{font-size:31px;display:block;margin-bottom:6px;}
+  .tool span{font-size:25px;color:var(--gris-2);line-height:1.35;}
+
+  /* ── Bloques de prompt ─────────────────────────────────────────────── */
+  .prompt{background:#15181B;color:#E8E8E6;padding:30px 36px;margin-top:20px;font-family:'JetBrains Mono','SFMono-Regular',Menlo,monospace;font-size:23px;line-height:1.52;white-space:pre-wrap;border-left:8px solid var(--verde);}
+  .prompt .hueco{color:var(--ambar);}
+  .prompt .clave{color:#9FC2E0;}
+  .prompt.corto{font-size:26px;}
+  .par{display:grid;grid-template-columns:1fr 1fr;gap:26px;margin-top:24px;}
+  .par .caja{border:2px solid var(--gris-4);padding:26px 30px;background:var(--blanco);}
+  .par .caja.mal{border-color:#B5502B;background:#FBF2EF;}
+  .par .caja.bien{border-color:var(--verde);background:var(--verde-claro);}
+  .par .caja h3{font-size:29px;margin:0 0 12px;}
+  .par .caja p{font-size:25px;line-height:1.38;margin:0 0 10px;color:var(--gris-2);}
+  .par .caja .cita{font-size:25px;line-height:1.4;color:var(--gris-1);font-style:italic;}
+
+  /* ── Interactivos ──────────────────────────────────────────────────── */
+  .opciones{display:flex;gap:10px;margin-top:6px;}
+  .opciones button{font-family:var(--tipo);font-size:23px;font-weight:600;padding:13px 22px;border:2px solid var(--gris-4);background:#fff;cursor:pointer;color:var(--gris-2);}
+  .opciones button.on{background:var(--verde);border-color:var(--verde);color:#fff;}
+  .vista{display:none;}
+  .vista.on{display:block;}
+  .lienzo{border:2px solid var(--gris-4);background:#fff;padding:18px 22px;}
+  .lienzo svg{display:block;width:100%;height:auto;}
+  /* Con width:100% la altura la fija el ancho de la columna, y en las láminas
+     de dos figuras eso desborda. Aquí manda la altura y el SVG se centra. */
+  .lienzo--alto-fijo svg{height:356px;}
+  .lienzo--alto-fijo.baja svg{height:340px;}
+  /* ── Documento vertical ────────────────────────────────────────────
+     En el apunte impreso la lámina ya no compite por altura y no hay quien
+     haga clic, así que la figura vuelve a escalar con el ancho y lo
+     interactivo se despliega entero: las tres audiencias una debajo de otra
+     y la prueba de los cinco segundos con su figura y su pregunta a la vista. */
+  @media (max-width:768px){
+    .lienzo--alto-fijo svg,.lienzo--alto-fijo.baja svg{height:auto;}
+    .opciones{display:none;}
+    .vista{display:block;margin-bottom:30px;}
+    .vista::before{
+      content:attr(data-rotulo);display:block;margin-bottom:10px;
+      font-size:21px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+      color:var(--verde-osc);
+    }
+    #p5-tapa{display:none !important;}
+    #p5-fig,#p5-preg{display:block !important;}
+    #p5-caja{display:block !important;min-height:0 !important;}
+    #p5-preg{border-top:2px solid var(--gris-4);margin-top:22px;padding-top:22px !important;}
+    /* El número grande está calibrado para verse desde el fondo del salón;
+       en una hoja de carta esa escala se come la página. */
+    .grande{font-size:84px;}
+    .grande-pie{font-size:22px;}
+  }
+  .nota{font-size:24px;color:var(--gris-2);line-height:1.38;margin-top:14px;}
+  .nota b{color:var(--gris-1);}
+  .grande{font-size:150px;font-weight:700;line-height:.9;letter-spacing:-.03em;color:var(--verde-osc);font-variant-numeric:tabular-nums;}
+  .grande-pie{font-size:30px;color:var(--gris-2);margin-top:10px;line-height:1.3;}
+
+  .reloj{font-size:64px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--verde-osc);line-height:1;}
+  .tapa{display:flex;flex-direction:column;align-items:center;justify-content:center;height:340px;border:2px dashed var(--gris-4);background:var(--papel);text-align:center;padding:0 60px;}
+  .tapa p{font-size:30px;color:var(--gris-2);margin:0;}
+</style>
+</head>
+<body>
+
+<deck-stage width="1920" height="1080"
+  data-foot="Comunicación visual · IQYA-2031"
+  data-foot-short="Comunicación visual"
+  data-doc-pdf="Presentacion_Comunicacion_Visual_documento.pdf">
+
+<!-- 01 -->
+<section class="s cover" data-screen-label="Portada">
+  <div class="cover-top">
+    <div>
+      <div class="org">Universidad de los Andes</div>
+      <div class="fac">Ingeniería Química y de Alimentos</div>
+    </div>
+    <div class="session">IQYA-2031 · Sesión 26</div>
+  </div>
+  <div>
+    <h1>Comunicación<br>visual</h1>
+    <p class="sub">Sus figuras van a ser leídas por alguien que tiene que decidir algo. Hoy trabajamos para ese lector.</p>
+  </div>
+  <div class="cover-meta">
+    <div><b>Curso</b>Proyecto de Operaciones Unitarias</div>
+    <div><b>Aplicación</b>Bitácoras y entrega final</div>
+    <div><b>Fecha</b>5 de noviembre de 2026</div>
+  </div>
+</section>
+
+<!-- 02 -->
+<section class="s" data-screen-label="Por qué esta clase">
+  <div class="kicker">De dónde venimos</div>
+  <h2 class="s-head">Su bitácora ya está llena de figuras</h2>
+  <p class="s-lead">Doce semanas de balances, curvas, diagramas y tablas. La entrega final no se va a
+     juzgar por el cálculo que hicieron, sino por lo que el evaluador logre entender de él.</p>
+  <div class="cards">
+    <div class="card"><span class="card-n">El cálculo</span><h3>Ya está hecho</h3><p>Molienda, bombeo, agitación, intercambio, filtración y destilación. Está en las bitácoras.</p></div>
+    <div class="card card--amber"><span class="card-n">El problema</span><h3>No se lee solo</h3><p>Una figura sin criterio esconde el resultado en vez de mostrarlo, por buena que sea la ingeniería detrás.</p></div>
+    <div class="card card--teal"><span class="card-n">Hoy</span><h3>El criterio y la herramienta</h3><p>Primero cómo decidir qué figura hacer. Después cómo usar la IA para hacerla más rápido, sin delegarle el criterio.</p></div>
+  </div>
+  <div class="callout">
+    <p>Un gráfico no falla por feo. Falla porque el lector no sabe qué hacer con él.</p>
+  </div>
+</section>
+
+<!-- 03 -->
+<section class="s divider" data-screen-label="Divisor · Parte 1">
+  <div class="part">Parte 1</div>
+  <h2>Antes de abrir<br>la herramienta</h2>
+  <p class="sub">Las decisiones que deciden si la figura sirve se toman antes de graficar nada.</p>
+</section>
+
+<!-- 04 -->
+<section class="s s--denso" data-screen-label="Explorar no es explicar">
+  <div class="kicker">Dos oficios distintos</div>
+  <h2 class="s-head">Explorar no es explicar</h2>
+  <p class="s-lead" style="margin-bottom:4px">Los mismos doce lotes de secado de la pectina. A la
+     izquierda usted busca; a la derecha ya encontró y necesita que el otro decida.</p>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:10px">
+    <div>
+      <div class="lienzo lienzo--alto-fijo">
+        <svg viewBox="0 0 560 272" role="img" aria-label="Doce lotes, ninguno destacado">
+          <line x1="78" y1="252" x2="548" y2="252" stroke="#1A1A1A" stroke-width="1.5"/>
+          <line x1="78" y1="28" x2="78" y2="252" stroke="#1A1A1A" stroke-width="1.5"/>
+          <rect x="83.5" y="175.8" width="28.2" height="76.2" fill="#C4C8CD"/><rect x="122.7" y="171.4" width="28.2" height="80.6" fill="#C4C8CD"/><rect x="161.8" y="180.3" width="28.2" height="71.7" fill="#C4C8CD"/><rect x="201.0" y="168.0" width="28.2" height="84.0" fill="#C4C8CD"/><rect x="240.2" y="183.7" width="28.2" height="68.3" fill="#C4C8CD"/><rect x="279.3" y="173.6" width="28.2" height="78.4" fill="#C4C8CD"/><rect x="318.5" y="50.4" width="28.2" height="201.6" fill="#C4C8CD"/><rect x="357.7" y="178.1" width="28.2" height="73.9" fill="#C4C8CD"/><rect x="396.8" y="170.2" width="28.2" height="81.8" fill="#C4C8CD"/><rect x="436.0" y="174.7" width="28.2" height="77.3" fill="#C4C8CD"/><rect x="475.2" y="166.9" width="28.2" height="85.1" fill="#C4C8CD"/><rect x="514.3" y="181.4" width="28.2" height="70.6" fill="#C4C8CD"/>
+          <text x="313" y="270" text-anchor="middle" font-family="Barlow,sans-serif" font-size="17" fill="#5D5D60">Lote</text>
+          <text x="60" y="140" text-anchor="middle" font-family="Barlow,sans-serif" font-size="17" fill="#5D5D60" transform="rotate(-90 60 140)">Humedad final (%)</text>
+        </svg>
+      </div>
+      <p class="figcap"><b>Explorar.</b> Todo pesa igual: todavía no sabe qué busca. Es para usted.</p>
+    </div>
+    <div>
+      <div class="lienzo lienzo--alto-fijo">
+        <svg viewBox="0 0 560 272" role="img" aria-label="Un lote destacado por incumplir la especificación">
+          <line x1="78" y1="252" x2="548" y2="252" stroke="#1A1A1A" stroke-width="1.5"/>
+          <line x1="78" y1="28" x2="78" y2="252" stroke="#1A1A1A" stroke-width="1.5"/>
+          <rect x="83.5" y="175.8" width="28.2" height="76.2" fill="#DDE1E5"/><rect x="122.7" y="171.4" width="28.2" height="80.6" fill="#DDE1E5"/><rect x="161.8" y="180.3" width="28.2" height="71.7" fill="#DDE1E5"/><rect x="201.0" y="168.0" width="28.2" height="84.0" fill="#DDE1E5"/><rect x="240.2" y="183.7" width="28.2" height="68.3" fill="#DDE1E5"/><rect x="279.3" y="173.6" width="28.2" height="78.4" fill="#DDE1E5"/><rect x="318.5" y="50.4" width="28.2" height="201.6" fill="#5980A6"/><rect x="357.7" y="178.1" width="28.2" height="73.9" fill="#DDE1E5"/><rect x="396.8" y="170.2" width="28.2" height="81.8" fill="#DDE1E5"/><rect x="436.0" y="174.7" width="28.2" height="77.3" fill="#DDE1E5"/><rect x="475.2" y="166.9" width="28.2" height="85.1" fill="#DDE1E5"/><rect x="514.3" y="181.4" width="28.2" height="70.6" fill="#DDE1E5"/>
+          <line x1="78" y1="162.4" x2="548" y2="162.4" stroke="#B5502B" stroke-width="2" stroke-dasharray="7 5"/>
+          <text x="548" y="155" text-anchor="end" font-family="Barlow,sans-serif" font-size="17" fill="#B5502B">Especificación: 8 %</text>
+          <text x="332.6" y="42" text-anchor="middle" font-family="Barlow,sans-serif" font-size="19" font-weight="700" fill="#416180">Lote 7 · 18 %</text>
+          <text x="313" y="270" text-anchor="middle" font-family="Barlow,sans-serif" font-size="17" fill="#5D5D60">Lote</text>
+        </svg>
+      </div>
+      <p class="figcap"><b>Explicar.</b> Un lote lleva la decisión y el resto es contexto. Es para quien decide.</p>
+    </div>
+  </div>
+  <div class="callout" style="margin-top:16px">
+    <p>No cambiaron los datos: cambió el trabajo. Comunicar es elegir qué dejar por fuera.</p>
+  </div>
+</section>
+
+<!-- 05 -->
+<section class="s s--tint" data-screen-label="La ficha de contexto">
+  <div class="kicker">Antes de graficar</div>
+  <h2 class="s-head">Tres preguntas que no puede saltarse</h2>
+  <p class="s-lead">Si no puede responderlas, no le falta una herramienta: le falta claridad sobre qué
+     quiere comunicar.</p>
+  <div class="cards">
+    <div class="card card--teal">
+      <span class="card-n">01</span>
+      <h3>¿Quién lo va a leer?</h3>
+      <p>No es lo mismo el profesor que evalúa la bitácora, el compañero que continúa el cálculo o un
+         comité que aprueba la inversión. Cada uno llega con distinto contexto y distinto tiempo.</p>
+    </div>
+    <div class="card card--teal">
+      <span class="card-n">02</span>
+      <h3>¿Qué decisión se toma con esto?</h3>
+      <p>Si la respuesta es «ninguna», la figura sobra. Si es «elegir entre plato y empaque», ya sabe
+         qué tiene que quedar comparable en la figura.</p>
+    </div>
+    <div class="card">
+      <span class="card-n">03</span>
+      <h3>¿Qué dato la sostiene?</h3>
+      <p>La única de las tres que la herramienta puede ayudarle a resolver. Las dos primeras son
+         decisiones suyas y no se delegan.</p>
+    </div>
+  </div>
+  <div class="callout amber">
+    <p>Estas tres preguntas van a volver en la segunda mitad de la clase. No es coincidencia: son también
+       las que hacen que un prompt sirva.</p>
+  </div>
+</section>
+
+<!-- 06 -->
+<section class="s s--denso" data-screen-label="Mismo dato, tres audiencias">
+  <div class="kicker">Muévalo</div>
+  <h2 class="s-head">El mismo dato, tres audiencias</h2>
+  <p class="s-lead" style="margin-bottom:14px">Los doce lotes de secado. Elija a quién le habla y vea
+     qué cambia.</p>
+  <div class="opciones" id="aud">
+    <button data-v="a" class="on">A · Equipo de proceso</button>
+    <button data-v="b">B · Póster del proyecto</button>
+    <button data-v="c">C · Comité de inversión</button>
+  </div>
+  <div style="display:grid;grid-template-columns:1.25fr 1fr;gap:40px;margin-top:14px;align-items:start">
+    <div>
+      <div class="vista on" data-v="a" data-rotulo="A · Equipo de proceso">
+        <div class="lienzo lienzo--alto-fijo baja">
+          <svg viewBox="0 0 560 300" role="img" aria-label="Humedad final de los doce lotes con la especificación">
+            <line x1="78" y1="252" x2="548" y2="252" stroke="#1A1A1A" stroke-width="1.5"/>
+            <line x1="78" y1="28" x2="78" y2="252" stroke="#1A1A1A" stroke-width="1.5"/>
+            <rect x="83.5" y="175.8" width="28.2" height="76.2" fill="#DDE1E5"/><rect x="122.7" y="171.4" width="28.2" height="80.6" fill="#DDE1E5"/><rect x="161.8" y="180.3" width="28.2" height="71.7" fill="#DDE1E5"/><rect x="201.0" y="168.0" width="28.2" height="84.0" fill="#DDE1E5"/><rect x="240.2" y="183.7" width="28.2" height="68.3" fill="#DDE1E5"/><rect x="279.3" y="173.6" width="28.2" height="78.4" fill="#DDE1E5"/><rect x="318.5" y="50.4" width="28.2" height="201.6" fill="#5980A6"/><rect x="357.7" y="178.1" width="28.2" height="73.9" fill="#DDE1E5"/><rect x="396.8" y="170.2" width="28.2" height="81.8" fill="#DDE1E5"/><rect x="436.0" y="174.7" width="28.2" height="77.3" fill="#DDE1E5"/><rect x="475.2" y="166.9" width="28.2" height="85.1" fill="#DDE1E5"/><rect x="514.3" y="181.4" width="28.2" height="70.6" fill="#DDE1E5"/>
+            <line x1="78" y1="162.4" x2="548" y2="162.4" stroke="#B5502B" stroke-width="2" stroke-dasharray="7 5"/>
+            <text x="548" y="155" text-anchor="end" font-family="Barlow,sans-serif" font-size="17" fill="#B5502B">Especificación: 8 %</text>
+            <text x="332.6" y="42" text-anchor="middle" font-family="Barlow,sans-serif" font-size="19" font-weight="700" fill="#416180">Lote 7</text>
+            <text x="313" y="270" text-anchor="middle" font-family="Barlow,sans-serif" font-size="17" fill="#5D5D60">Lote</text>
+          </svg>
+        </div>
+        <p class="nota">Necesitan el detalle para <b>diagnosticar</b>: los doce lotes, la dispersión
+           normal y el que se sale. La figura tiene que soportar preguntas.</p>
+      </div>
+      <div class="vista" data-v="b" data-rotulo="B · Póster del proyecto">
+        <div class="lienzo" style="padding:40px 44px">
+          <div class="grande">18 %</div>
+          <div class="grande-pie">de humedad en el lote 7, contra una especificación de 8 %.<br>Los otros once lotes cerraron en 6,9 % en promedio.</div>
+          <svg viewBox="0 0 560 90" style="margin-top:26px" role="img" aria-label="Lote 7 contra la especificación">
+            <rect x="0" y="16" width="470" height="26" fill="#5980A6"/>
+            <rect x="0" y="52" width="209" height="26" fill="#DDE1E5"/>
+            <text x="480" y="36" font-family="Barlow,sans-serif" font-size="19" font-weight="700" fill="#416180">Lote 7</text>
+            <text x="219" y="72" font-family="Barlow,sans-serif" font-size="19" fill="#5D5D60">Especificación</text>
+          </svg>
+        </div>
+        <p class="nota">Van pasando y miran tres segundos. Un número grande y una comparación. Nada más
+           cabe en ese tiempo.</p>
+      </div>
+      <div class="vista" data-v="c" data-rotulo="C · Comité de inversión">
+        <div class="lienzo" style="padding:40px 44px">
+          <svg viewBox="0 0 560 230" role="img" aria-label="Costo anual del reproceso frente al costo del sensor">
+            <text x="0" y="24" font-family="Barlow,sans-serif" font-size="21" fill="#5D5D60">Reproceso al ritmo actual</text>
+            <rect x="0" y="34" width="480" height="40" fill="#B5502B"/>
+            <text x="492" y="62" font-family="Barlow,sans-serif" font-size="27" font-weight="700" fill="#B5502B">26</text>
+            <text x="0" y="120" font-family="Barlow,sans-serif" font-size="21" fill="#5D5D60">Sensor de humedad en línea y lazo de control</text>
+            <rect x="0" y="130" width="146" height="40" fill="#5980A6"/>
+            <text x="158" y="158" font-family="Barlow,sans-serif" font-size="27" font-weight="700" fill="#416180">8</text>
+            <text x="0" y="198" font-family="Barlow,sans-serif" font-size="19" fill="#7A7A7D">Millones de pesos por año.</text>
+            <text x="0" y="220" font-family="Barlow,sans-serif" font-size="19" fill="#7A7A7D">El sensor se paga en menos de cuatro meses.</text>
+          </svg>
+        </div>
+        <p class="nota">No les interesa la curva de secado: les interesa cuánto cuesta el problema y
+           cuánto cuesta resolverlo. La figura tiene que llevar a una decisión de plata.
+           <span style="color:var(--gris-3)">Supuestos: 300 lotes al año, 8 % fuera de especificación y
+           1,05 millones por reproceso, con 6 h de secador a 40 kW y línea detenida.</span></p>
+      </div>
+    </div>
+    <div>
+      <div class="card card--teal">
+        <span class="card-n">La lección</span>
+        <h3>El dato no manda: manda la decisión</h3>
+        <p>Los tres gráficos salen de la misma tabla de doce números. Ninguno es más honesto: cada uno
+           está hecho para una decisión distinta.</p>
+      </div>
+      <div class="callout" style="margin-top:20px">
+        <p>Cuando alguien pregunta «¿qué gráfico uso?», la respuesta empieza por otra pregunta:
+           ¿quién decide y qué decide?</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 07 -->
+<section class="s s--tint" data-screen-label="El título es la tesis">
+  <div class="kicker">La palanca más barata</div>
+  <h2 class="s-head">El título es la tesis, no el tema</h2>
+  <p class="s-lead">Es el cambio que más mejora una figura por unidad de esfuerzo. Cuesta una frase.</p>
+  <table class="tbl">
+    <tr><th style="width:44%">Título de tema (lo que casi siempre escribimos)</th><th>Título de tesis (lo que el lector necesita)</th></tr>
+    <tr><td>Humedad final por lote</td><td class="dato">El lote 7 cerró en 18 % de humedad: el único fuera de especificación</td></tr>
+    <tr><td>Curva de secado</td><td class="dato">A 55 °C el secado se vuelve lento después de la hora 4, cuando entra el período decreciente</td></tr>
+    <tr><td>Caída de presión contra caudal</td><td class="dato">Por encima de 32 m³/h la caída de presión duplica el consumo de la bomba</td></tr>
+    <tr class="marca"><td>Sensibilidad del costo al reflujo</td><td class="dato">El costo total mínimo se alcanza en R = 3,0, el reflujo con el que ya está dimensionada la columna</td></tr>
+  </table>
+  <div class="callout">
+    <p>Regla: si el título no tiene verbo, todavía es un tema. Y si usted no puede escribir la tesis,
+       la figura tampoco la tiene.</p>
+  </div>
+</section>
+
+<!-- 08 -->
+<section class="s" data-screen-label="Elegir por la tarea">
+  <div class="kicker">La decisión de fondo</div>
+  <h2 class="s-head">El gráfico se elige por la tarea, no por el gusto</h2>
+  <p class="s-lead">Primero identifique qué le está preguntando al dato. El tipo de gráfico sale de ahí
+     casi solo.</p>
+  <table class="tbl" style="font-size:26px">
+    <tr><th style="width:46%">La pregunta</th><th>Los gráficos que la responden</th></tr>
+    <tr><td>¿Cuál es mayor entre categorías?</td><td>Barras, dot plot, lollipop</td></tr>
+    <tr><td>¿Cómo se distribuye una variable?</td><td>Histograma, boxplot, raincloud</td></tr>
+    <tr><td>¿Qué se relaciona con qué?</td><td>Dispersión, burbujas, contornos</td></tr>
+    <tr><td>¿De qué está hecho el total?</td><td>Waterfall, treemap, área apilada</td></tr>
+    <tr><td>¿Cómo cambia en el tiempo?</td><td>Línea, small multiples, carta de control</td></tr>
+    <tr class="marca"><td>¿Necesito una convención de la disciplina?</td><td>McCabe-Thiele, Moody, psicrométrico, curvas de bomba</td></tr>
+  </table>
+  <div class="callout amber">
+    <p>La última fila es la suya la mayor parte del tiempo. Un canónico mal reemplazado por un gráfico
+       «bonito» le cuesta credibilidad con cualquier lector del área.</p>
+  </div>
+</section>
+
+<!-- 09 -->
+<section class="s s--tint" data-screen-label="Al explorador de gráficos">
+  <div class="kicker">Herramienta</div>
+  <h2 class="s-head">Un catálogo para decidir, no para inspirarse</h2>
+  <p class="s-lead">El explorador de gráficos del curso tiene 79 tipos organizados por esas ocho tareas.
+     De cada uno dice cuándo usarlo, cuándo no, qué decisión habilita y cuál es su trampa.</p>
+  <div class="tool">
+    <span class="ic">→</span>
+    <div>
+      <b>Explorador de gráficos</b>
+      <span>Material del curso · simulaciones. Incluye una serie completa de canónicos de la disciplina:
+        McCabe-Thiele, Moody, psicrométrico, curvas de bomba y sistema, distribución de tiempos de
+        residencia, curvas de secado y tamaño de partícula.</span>
+    </div>
+  </div>
+  <div class="cards" style="margin-top:30px">
+    <div class="card"><span class="card-n">Úselo así</span><h3>Entre por la pregunta</h3><p>El diagrama de decisión lo lleva de la pregunta al grupo correcto en un clic.</p></div>
+    <div class="card"><span class="card-n">Úselo así</span><h3>Lea la trampa</h3><p>Cada ficha trae el error ético típico de ese gráfico. Vale más que la figura.</p></div>
+    <div class="card"><span class="card-n">Úselo así</span><h3>Mire «cuándo no»</h3><p>Descartar es más rápido que elegir. La mitad de las fichas se caen ahí.</p></div>
+  </div>
+</section>
+
+<!-- 10 -->
+<section class="s" data-screen-label="Data-ink">
+  <div class="kicker">Menos es más</div>
+  <h2 class="s-head">Quite hasta que empiece a doler</h2>
+  <div class="split">
+    <div class="copy">
+      <p>Cada elemento que no aporta información compite con el que sí. La rejilla, el marco, la leyenda,
+         los decimales de más y el color decorativo cuestan atención.</p>
+      <ul>
+        <li>Fuera el marco y la rejilla, o al menos que sean casi invisibles.</li>
+        <li>Etiquete las series al final de la curva, no en una leyenda que obliga a saltar.</li>
+        <li>Deje los decimales que se van a leer, no los que salieron del cálculo.</li>
+        <li>Un color por mensaje, gris para todo lo demás.</li>
+      </ul>
+      <div class="callout">
+        <p>La prueba: quite un elemento. Si la figura sigue diciendo lo mismo, no lo devuelva.</p>
+      </div>
+    </div>
+    <div class="fig">
+      <div class="lienzo">
+        <svg viewBox="0 0 760 300" role="img" aria-label="Doce curvas de secado con una destacada">
+          <line x1="78" y1="250" x2="720" y2="250" stroke="#1A1A1A" stroke-width="1.5"/>
+          <line x1="78" y1="26" x2="78" y2="250" stroke="#1A1A1A" stroke-width="1.5"/>
+          <polyline points="78.0,55.9 147.1,99.6 216.2,132.0 285.3,156.0 354.4,173.8 423.6,187.0 492.7,196.7 561.8,203.9 630.9,209.3 700.0,213.3" fill="none" stroke="#DDE1E5" stroke-width="2"/><polyline points="78.0,63.3 147.1,104.7 216.2,135.4 285.3,158.2 354.4,175.0 423.6,187.5 492.7,196.7 561.8,203.6 630.9,208.6 700.0,212.4" fill="none" stroke="#DDE1E5" stroke-width="2"/><polyline points="78.0,52.1 147.1,97.2 216.2,130.6 285.3,155.4 354.4,173.7 423.6,187.3 492.7,197.3 561.8,204.8 630.9,210.3 700.0,214.4" fill="none" stroke="#DDE1E5" stroke-width="2"/><polyline points="78.0,59.6 147.1,101.7 216.2,132.9 285.3,156.0 354.4,173.1 423.6,185.8 492.7,195.2 561.8,202.1 630.9,207.3 700.0,211.1" fill="none" stroke="#DDE1E5" stroke-width="2"/><polyline points="78.0,48.4 147.1,94.7 216.2,129.1 285.3,154.5 354.4,173.4 423.6,187.3 492.7,197.7 561.8,205.3 630.9,211.0 700.0,215.2" fill="none" stroke="#DDE1E5" stroke-width="2"/><polyline points="78.0,63.3 147.1,104.9 216.2,135.8 285.3,158.6 354.4,175.5 423.6,188.0 492.7,197.3 561.8,204.2 630.9,209.3 700.0,213.1" fill="none" stroke="#DDE1E5" stroke-width="2"/><polyline points="78.0,59.6 147.1,102.6 216.2,134.4 285.3,158.0 354.4,175.4 423.6,188.4 492.7,198.0 561.8,205.1 630.9,210.3 700.0,214.2" fill="none" stroke="#DDE1E5" stroke-width="2"/><polyline points="78.0,52.1 147.1,96.4 216.2,129.1 285.3,153.4 354.4,171.4 423.6,184.7 492.7,194.5 561.8,201.9 630.9,207.3 700.0,211.3" fill="none" stroke="#DDE1E5" stroke-width="2"/><polyline points="78.0,63.3 147.1,105.0 216.2,135.9 285.3,158.8 354.4,175.8 423.6,188.3 492.7,197.6 561.8,204.5 630.9,209.6 700.0,213.4" fill="none" stroke="#DDE1E5" stroke-width="2"/><polyline points="78.0,55.9 147.1,98.8 216.2,130.7 285.3,154.2 354.4,171.7 423.6,184.6 492.7,194.2 561.8,201.3 630.9,206.6 700.0,210.5" fill="none" stroke="#DDE1E5" stroke-width="2"/><polyline points="78.0,59.6 147.1,102.9 216.2,134.9 285.3,158.6 354.4,176.2 423.6,189.2 492.7,198.9 561.8,206.0 630.9,211.3 700.0,215.3" fill="none" stroke="#DDE1E5" stroke-width="2"/><polyline points="78.0,55.9 147.1,67.9 216.2,78.7 285.3,88.5 354.4,97.4 423.6,105.5 492.7,112.8 561.8,119.4 630.9,125.4 700.0,130.8" fill="none" stroke="#5980A6" stroke-width="4"/>
+          <text x="708" y="136" font-family="Barlow,sans-serif" font-size="19" font-weight="700" fill="#416180">Lote 7</text>
+          <text x="708" y="218" font-family="Barlow,sans-serif" font-size="18" fill="#7A7A7D">Otros 11</text>
+          <text x="399" y="286" text-anchor="middle" font-family="Barlow,sans-serif" font-size="17" fill="#5D5D60">Tiempo de secado (h)</text>
+        </svg>
+      </div>
+      <p class="figcap">Sin rejilla, sin marco, sin leyenda: once curvas en gris son el contexto y una
+         lleva el mensaje, etiquetada donde termina.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 11 -->
+<section class="s s--tint" data-screen-label="Jerarquía visual">
+  <div class="kicker">Dónde mira el ojo</div>
+  <h2 class="s-head">El color es un recurso escaso: gástelo una sola vez</h2>
+  <div class="cards">
+    <div class="card card--teal">
+      <span class="card-n">Foco</span>
+      <h3>Un solo elemento en color</h3>
+      <p>Lo que sostiene la tesis del título. Si hay dos focos, no hay ninguno.</p>
+    </div>
+    <div class="card">
+      <span class="card-n">Contexto</span>
+      <h3>Todo lo demás en gris</h3>
+      <p>El contexto no desaparece: sigue ahí para que el foco signifique algo. Simplemente deja de competir.</p>
+    </div>
+    <div class="card card--amber">
+      <span class="card-n">Señal</span>
+      <h3>Un color de alarma, y solo eso</h3>
+      <p>Límites, especificaciones y valores fuera de norma. Si lo usa para decorar, pierde su significado.</p>
+    </div>
+  </div>
+  <div class="callout">
+    <p>Los atributos preatentivos, color, tamaño y posición, se leen antes de que el lector decida leer.
+       Por eso funcionan: no dependen de su voluntad.</p>
+  </div>
+  <p class="figcap" style="margin-top:20px">Es la misma convención del explorador de gráficos y de todo el
+     material del curso: azul es foco, gris es contexto, ladrillo es señal negativa.</p>
+</section>
+
+<!-- 12 -->
+<section class="s s--denso" data-screen-label="Prueba de los cinco segundos">
+  <div class="kicker">Pruébelo ahora</div>
+  <h2 class="s-head">La prueba de los cinco segundos</h2>
+  <p class="s-lead">Su evaluador le da a la figura más o menos ese tiempo antes de decidir si vale la
+     pena entenderla. Hagamos la prueba.</p>
+  <div style="display:grid;grid-template-columns:1.3fr 1fr;gap:44px;margin-top:14px;align-items:start">
+    <div>
+      <div id="p5-caja" class="lienzo" style="min-height:320px;display:flex;align-items:center;justify-content:center">
+        <div class="tapa" id="p5-tapa" style="border:none;background:transparent">
+          <p>Va a ver una figura durante cinco segundos. Después le pregunto qué decía.</p>
+        </div>
+        <div id="p5-fig" style="display:none;width:100%">
+          <svg viewBox="0 -24 760 344" role="img" aria-label="Figura recargada de doce curvas con leyenda">
+            <rect x="60" y="14" width="580" height="248" fill="none" stroke="#9AA0A7" stroke-width="1.5"/>
+            <g stroke="#D4D7DB" stroke-width="1">
+              <line x1="60" y1="64" x2="640" y2="64"/><line x1="60" y1="114" x2="640" y2="114"/>
+              <line x1="60" y1="164" x2="640" y2="164"/><line x1="60" y1="214" x2="640" y2="214"/>
+              <line x1="176" y1="14" x2="176" y2="262"/><line x1="292" y1="14" x2="292" y2="262"/>
+              <line x1="408" y1="14" x2="408" y2="262"/><line x1="524" y1="14" x2="524" y2="262"/>
+            </g>
+            <g transform="translate(-18,12) scale(0.912,0.98)">
+              <polyline points="78.0,55.9 147.1,99.6 216.2,132.0 285.3,156.0 354.4,173.8 423.6,187.0 492.7,196.7 561.8,203.9 630.9,209.3 700.0,213.3" fill="none" stroke="#5980A6" stroke-width="2"/><polyline points="78.0,63.3 147.1,104.7 216.2,135.4 285.3,158.2 354.4,175.0 423.6,187.5 492.7,196.7 561.8,203.6 630.9,208.6 700.0,212.4" fill="none" stroke="#B5502B" stroke-width="2"/><polyline points="78.0,52.1 147.1,97.2 216.2,130.6 285.3,155.4 354.4,173.7 423.6,187.3 492.7,197.3 561.8,204.8 630.9,210.3 700.0,214.4" fill="none" stroke="#7A9E3B" stroke-width="2"/><polyline points="78.0,59.6 147.1,101.7 216.2,132.9 285.3,156.0 354.4,173.1 423.6,185.8 492.7,195.2 561.8,202.1 630.9,207.3 700.0,211.1" fill="none" stroke="#8A6BB1" stroke-width="2"/><polyline points="78.0,48.4 147.1,94.7 216.2,129.1 285.3,154.5 354.4,173.4 423.6,187.3 492.7,197.7 561.8,205.3 630.9,211.0 700.0,215.2" fill="none" stroke="#C99A2E" stroke-width="2"/><polyline points="78.0,63.3 147.1,104.9 216.2,135.8 285.3,158.6 354.4,175.5 423.6,188.0 492.7,197.3 561.8,204.2 630.9,209.3 700.0,213.1" fill="none" stroke="#3E8E8E" stroke-width="2"/><polyline points="78.0,55.9 147.1,67.9 216.2,78.7 285.3,88.5 354.4,97.4 423.6,105.5 492.7,112.8 561.8,119.4 630.9,125.4 700.0,130.8" fill="none" stroke="#B5502B" stroke-width="2"/><polyline points="78.0,59.6 147.1,102.6 216.2,134.4 285.3,158.0 354.4,175.4 423.6,188.4 492.7,198.0 561.8,205.1 630.9,210.3 700.0,214.2" fill="none" stroke="#5980A6" stroke-width="2"/><polyline points="78.0,52.1 147.1,96.4 216.2,129.1 285.3,153.4 354.4,171.4 423.6,184.7 492.7,194.5 561.8,201.9 630.9,207.3 700.0,211.3" fill="none" stroke="#9AA0A7" stroke-width="2"/><polyline points="78.0,63.3 147.1,105.0 216.2,135.9 285.3,158.8 354.4,175.8 423.6,188.3 492.7,197.6 561.8,204.5 630.9,209.6 700.0,213.4" fill="none" stroke="#7A9E3B" stroke-width="2"/><polyline points="78.0,55.9 147.1,98.8 216.2,130.7 285.3,154.2 354.4,171.7 423.6,184.6 492.7,194.2 561.8,201.3 630.9,206.6 700.0,210.5" fill="none" stroke="#8A6BB1" stroke-width="2"/><polyline points="78.0,59.6 147.1,102.9 216.2,134.9 285.3,158.6 354.4,176.2 423.6,189.2 492.7,198.9 561.8,206.0 630.9,211.3 700.0,215.3" fill="none" stroke="#C99A2E" stroke-width="2"/>
+            </g>
+            <text x="350" y="304" text-anchor="middle" font-family="Barlow,sans-serif" font-size="16" fill="#5D5D60">Tiempo (h)</text>
+            <g font-family="Barlow,sans-serif" font-size="13" fill="#3F3F46">
+              <text x="656" y="26">Lote 01</text><text x="656" y="46">Lote 02</text><text x="656" y="66">Lote 03</text>
+              <text x="656" y="86">Lote 04</text><text x="656" y="106">Lote 05</text><text x="656" y="126">Lote 06</text>
+              <text x="656" y="146">Lote 07</text><text x="656" y="166">Lote 08</text><text x="656" y="186">Lote 09</text>
+              <text x="656" y="206">Lote 10</text><text x="656" y="226">Lote 11</text><text x="656" y="246">Lote 12</text>
+            </g>
+            <g stroke-width="3">
+              <line x1="640" y1="22" x2="652" y2="22" stroke="#5980A6"/><line x1="640" y1="42" x2="652" y2="42" stroke="#B5502B"/>
+              <line x1="640" y1="62" x2="652" y2="62" stroke="#7A9E3B"/><line x1="640" y1="82" x2="652" y2="82" stroke="#8A6BB1"/>
+              <line x1="640" y1="102" x2="652" y2="102" stroke="#C99A2E"/><line x1="640" y1="122" x2="652" y2="122" stroke="#3E8E8E"/>
+              <line x1="640" y1="142" x2="652" y2="142" stroke="#B5502B"/><line x1="640" y1="162" x2="652" y2="162" stroke="#5980A6"/>
+              <line x1="640" y1="182" x2="652" y2="182" stroke="#9AA0A7"/><line x1="640" y1="202" x2="652" y2="202" stroke="#7A9E3B"/>
+              <line x1="640" y1="222" x2="652" y2="222" stroke="#8A6BB1"/><line x1="640" y1="242" x2="652" y2="242" stroke="#C99A2E"/>
+            </g>
+            <text x="350" y="-2" text-anchor="middle" font-family="Barlow,sans-serif" font-size="18" fill="#1A1A1A">Humedad contra tiempo</text>
+          </svg>
+        </div>
+        <div id="p5-preg" style="display:none;text-align:center;padding:40px 60px">
+          <div style="font-size:44px;font-weight:700;line-height:1.15">¿Qué le estaba diciendo el autor?</div>
+          <p style="font-size:28px;color:var(--gris-2);margin-top:18px">Sin volver a mirarla. En una sola frase.</p>
+        </div>
+      </div>
+      <div class="opciones" style="margin-top:18px">
+        <button id="p5-ir">Mostrar cinco segundos</button>
+        <button id="p5-ver">Ver la versión corregida</button>
+        <span class="reloj" id="p5-reloj" style="margin-left:16px"></span>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <span class="card-n">Si no la pasa</span>
+        <h3>El problema casi nunca es el gráfico</h3>
+        <p>Es que la figura no tiene una tesis. Doce series con leyenda no dicen nada porque no
+           eligieron qué decir.</p>
+      </div>
+      <div class="card card--teal" style="margin-top:24px">
+        <span class="card-n">Cómo se arregla</span>
+        <h3>Tres movimientos</h3>
+        <p>Un título con conclusión, un foco en color y el resto en gris. Los mismos datos, la misma
+           herramienta, cinco minutos de trabajo.</p>
+      </div>
+      <div class="callout amber" style="margin-top:24px">
+        <p>Hágala con un humano antes de entregar. Un compañero de otro equipo sirve mejor que usted.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 13 -->
+<section class="s s--tint" data-screen-label="Trampas frecuentes">
+  <div class="kicker">Ética de la figura</div>
+  <h2 class="s-head">Cuatro trampas que aparecen en informes de proceso</h2>
+  <div class="cards four">
+    <div class="card card--amber">
+      <span class="card-n">01</span>
+      <h3>Eje cortado</h3>
+      <p>Una barra codifica longitud desde cero. Arrancar el eje en otro valor exagera diferencias que
+         no existen.</p>
+    </div>
+    <div class="card card--amber">
+      <span class="card-n">02</span>
+      <h3>Doble eje Y</h3>
+      <p>Dos escalas independientes fabrican la correlación que uno quiera. Casi siempre se resuelve con
+         dos paneles.</p>
+    </div>
+    <div class="card card--amber">
+      <span class="card-n">03</span>
+      <h3>Volumen y 3D</h3>
+      <p>El ojo estima mal áreas y peor volúmenes. Un efecto 3D sobre barras solo agrega error de
+         lectura.</p>
+    </div>
+    <div class="card card--amber">
+      <span class="card-n">04</span>
+      <h3>Pastel con muchas tajadas</h3>
+      <p>Comparar ángulos es impreciso. Con más de tres o cuatro categorías, las barras ganan siempre.</p>
+    </div>
+  </div>
+  <div class="callout">
+    <p>Ninguna de las cuatro requiere mala fe. Aparecen solas, por defecto de la herramienta. Por eso hay
+       que buscarlas a propósito antes de entregar.</p>
+  </div>
+</section>
+
+<!-- 14 -->
+<section class="s divider" data-screen-label="Divisor · Parte 2">
+  <div class="part">Parte 2</div>
+  <h2>La IA como<br>acelerador</h2>
+  <p class="sub">Puede aplicar el criterio mucho más rápido que usted. No puede tenerlo por usted.</p>
+</section>
+
+<!-- 15 -->
+<section class="s" data-screen-label="Qué hace y qué no">
+  <div class="kicker">El reparto de trabajo</div>
+  <h2 class="s-head">Qué le puede pedir y qué no</h2>
+  <div class="par">
+    <div class="caja bien">
+      <h3>Lo que hace bien</h3>
+      <p><b>Auditar contra una rúbrica.</b> Usted da los criterios, la IA los aplica a la figura sin cansarse.</p>
+      <p><b>Producir variaciones comparables.</b> Tres versiones del mismo gráfico para poder elegir.</p>
+      <p><b>Recomendar tipo de gráfico</b> con las restricciones que usted le imponga.</p>
+      <p><b>Reescribir títulos</b> de tema a tesis.</p>
+      <p><b>Generar código</b> de matplotlib o ggplot que respeta decisiones ya tomadas.</p>
+    </div>
+    <div class="caja mal">
+      <h3>Lo que no hace</h3>
+      <p><b>No decide la audiencia.</b> Ignorar quién recibe la figura es un error de criterio, no de herramienta.</p>
+      <p><b>No sabe qué número importa</b> en su proyecto. No conoce su planta ni su entrega.</p>
+      <p><b>No garantiza los datos.</b> Puede inventar cifras y conclusiones con toda seguridad.</p>
+      <p><b>No tiene criterio propio.</b> Si usted no se lo da, produce figuras bonitas y vacías.</p>
+    </div>
+  </div>
+  <div class="callout amber">
+    <p>Es segura de sí misma incluso cuando se equivoca. Eso solo es peligroso si usted no verifica.</p>
+  </div>
+</section>
+
+<!-- 16 -->
+<section class="s s--dark" data-screen-label="La regla de oro">
+  <div class="kicker">La regla de oro</div>
+  <h1 class="s-title">La IA no reemplaza<br>el criterio.<br>Lo aplica más rápido.</h1>
+  <p class="s-lead" style="color:rgba(255,255,255,.68);margin-top:34px">Si usted no tiene criterio, la
+     herramienta va a producir figuras impecables que no dicen nada.</p>
+</section>
+
+<!-- 17 -->
+<section class="s" data-screen-label="Cinco piezas del prompt">
+  <div class="kicker">Anatomía</div>
+  <h2 class="s-head">Las cinco piezas de un prompt que sirve</h2>
+  <p class="s-lead">Cuatro de las cinco son exactamente las decisiones de la primera mitad de la clase.
+     Esto no es casualidad.</p>
+  <table class="tbl">
+    <tr><th style="width:32%">Pieza</th><th>Qué va ahí</th></tr>
+    <tr><td><b>1 · Rol y exigencia</b></td><td>Quién es la IA en esta interacción y con qué nivel de dureza revisa.</td></tr>
+    <tr class="marca"><td><b>2 · Audiencia</b></td><td>La pregunta 1 de la ficha de contexto.</td></tr>
+    <tr class="marca"><td><b>3 · Tesis o pregunta central</b></td><td>Lo que la figura debe responder. La pregunta 2.</td></tr>
+    <tr class="marca"><td><b>4 · Datos o figura adjunta</b></td><td>La pregunta 3, con los números verificados por usted.</td></tr>
+    <tr><td><b>5 · Criterios y formato</b></td><td>La rúbrica explícita y la estructura de la respuesta que espera.</td></tr>
+  </table>
+  <div class="callout">
+    <p>Si no puede completar las cinco piezas, el problema no es la IA: es que todavía no tiene claro qué
+       quiere comunicar. El prompt es un examen de claridad mental.</p>
+  </div>
+</section>
+
+<!-- 18 -->
+<section class="s s--tint" data-screen-label="Prompt débil contra prompt fuerte">
+  <div class="kicker">La diferencia</div>
+  <h2 class="s-head">Prompt débil contra prompt fuerte</h2>
+  <div class="par">
+    <div class="caja mal">
+      <h3>Débil</h3>
+      <p class="cita">«Critica esta figura.»</p>
+      <p style="margin-top:16px">Resultado: una crítica genérica que aplicaría a cualquier figura del
+         mundo. Perdió el tiempo y encima queda con la sensación de haber consultado.</p>
+    </div>
+    <div class="caja bien">
+      <h3>Fuerte</h3>
+      <p class="cita">«Actúe como revisor de figuras técnicas. La audiencia es un profesor que evalúa
+         el dimensionamiento de la columna de etanol. La tesis es que el secado del lote 7 no alcanzó
+         la especificación por caída de temperatura. Evalúe la figura contra estos seis criterios,
+         califique cada uno de 1 a 5 y termine con las tres modificaciones de mayor impacto.»</p>
+    </div>
+  </div>
+  <div class="callout">
+    <p>La diferencia no está en la herramienta. Está en que el segundo prompt solo se puede escribir
+       cuando ya se sabe qué se quiere decir.</p>
+  </div>
+</section>
+
+<!-- 19 -->
+<section class="s" data-screen-label="Prompt 1 · crítica contra rúbrica">
+  <div class="kicker">Prompt 1</div>
+  <h2 class="s-head">Crítica contra una rúbrica explícita</h2>
+<div class="prompt">Actúe como revisor de figuras técnicas para un informe de ingeniería de proceso.
+
+<span class="clave">Contexto:</span>
+- Audiencia: <span class="hueco">[una oración]</span>
+- Tesis que la figura debe defender: <span class="hueco">[una oración con conclusión]</span>
+- Tipo de entregable: <span class="hueco">[bitácora / informe final / póster]</span>
+
+Adjunto la figura. Evalúela contra estos seis criterios y asigne a cada uno
+una calificación de 1 a 5 con justificación de máximo dos oraciones:
+
+<span class="clave">1.</span> ¿La figura responde a una pregunta clara?
+<span class="clave">2.</span> ¿El título es una conclusión y no un tema?
+<span class="clave">3.</span> ¿El tipo de gráfico corresponde a la naturaleza de las variables?
+<span class="clave">4.</span> ¿La razón data-ink es alta? Liste los elementos eliminables.
+<span class="clave">5.</span> ¿Hay una jerarquía visual clara, con un solo foco?
+<span class="clave">6.</span> ¿La figura pasa la prueba de los cinco segundos?
+
+Termine con las tres modificaciones de mayor impacto, ordenadas por prioridad.</div>
+</section>
+
+<!-- 20 -->
+<section class="s s--tint" data-screen-label="Prompt 2 · cinco segundos simulada">
+  <div class="kicker">Prompt 2</div>
+  <h2 class="s-head">La prueba de los cinco segundos, simulada</h2>
+  <div class="split">
+    <div class="copy">
+<div class="prompt corto">Voy a mostrarle una figura. Antes de leer
+cualquier texto que la acompañe, mírela por
+primera vez y responda en máximo dos
+oraciones: ¿qué cree que le está diciendo
+el autor?
+
+Si <span class="clave">no</span> logra identificar un mensaje
+principal, dígalo explícitamente.
+<span class="clave">No</span> complete con suposiciones.
+
+<span class="hueco">[Adjuntar la figura sin contexto adicional]</span></div>
+    </div>
+    <div class="fig">
+      <div class="card card--teal">
+        <span class="card-n">Por qué es tan corto</span>
+        <h3>El contexto cero es el punto</h3>
+        <p>Cualquier información extra contamina la prueba. Si la IA no puede leer el mensaje sin ayuda,
+           su lector real tampoco va a poder.</p>
+      </div>
+      <div class="callout" style="margin-top:24px">
+        <p>Es el único prompt de la clase donde dar menos contexto es lo correcto.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 21 -->
+<section class="s" data-screen-label="Prompt 3 · título tesis">
+  <div class="kicker">Prompt 3</div>
+  <h2 class="s-head">De título de tema a título de tesis</h2>
+<div class="prompt">Tengo tres figuras con títulos descriptivos. Conviértalos en oraciones con
+conclusión defendible.
+
+<span class="clave">Reglas:</span>
+- Cada título nuevo debe ser una oración completa, con verbo.
+- Debe afirmar algo específico, no enunciar el contenido.
+- Máximo 14 palabras.
+- Si los datos no permiten concluir algo, pida más información en vez de inventar.
+
+<span class="clave">Títulos actuales:</span>
+1. <span class="hueco">[pegar]</span>   2. <span class="hueco">[pegar]</span>   3. <span class="hueco">[pegar]</span>
+
+<span class="clave">Datos relevantes de cada figura:</span>
+1. <span class="hueco">[resumen en una oración]</span>   2. <span class="hueco">[resumen]</span>   3. <span class="hueco">[resumen]</span></div>
+  <div class="callout amber">
+    <p>La última regla es la que importa. Sin ella, la IA le va a entregar una conclusión inventada,
+       redactada con total seguridad.</p>
+  </div>
+</section>
+
+<!-- 22 -->
+<section class="s s--tint" data-screen-label="Prompt 4 · recomendar visualización">
+  <div class="kicker">Prompt 4</div>
+  <h2 class="s-head">Recomendar la visualización, con restricciones</h2>
+  <div class="split">
+    <div class="copy">
+<div class="prompt corto">Tengo este conjunto de datos y necesito
+decidir cómo visualizarlo.
+
+<span class="clave">Datos:</span> <span class="hueco">[variables y su tipo, cuántas
+observaciones y qué representa cada una]</span>
+<span class="clave">Hallazgo:</span> <span class="hueco">[la tesis, una oración]</span>
+<span class="clave">Audiencia:</span> <span class="hueco">[evaluador / póster / comité]</span>
+
+<span class="clave">Restricción:</span> use solo barras, líneas, dispersión,
+mapa de calor, tabla o número grande. Nada de
+pasteles, 3D ni ejes Y secundarios.
+
+Proponga tres opciones de más a menos
+recomendada. De cada una: tipo, qué va en cada
+eje, qué se destaca en color y qué compromiso
+tiene frente a las otras.</div>
+    </div>
+    <div class="fig">
+      <div class="card card--amber">
+        <span class="card-n">Sin la restricción</span>
+        <h3>Le va a proponer un radar</h3>
+        <p>Y un sankey, y un treemap. Sin límites explícitos, la herramienta optimiza para lo visualmente
+           llamativo, no para lo comunicativamente claro.</p>
+      </div>
+      <div class="card card--teal" style="margin-top:24px">
+        <span class="card-n">Con la restricción</span>
+        <h3>Le va a proponer opciones defendibles</h3>
+        <p>La lista de tipos permitidos sale del explorador de gráficos: usted ya decidió el rango, la
+           IA elige dentro de él.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 23 -->
+<section class="s" data-screen-label="La trampa del copy-paste">
+  <div class="kicker">Antes de pegar</div>
+  <h2 class="s-head">El código corre. Eso no quiere decir que esté bien.</h2>
+  <p class="s-lead">Una figura que se genera sin errores y se ve aceptable puede estar diciendo algo
+     falso. Tres verificaciones, siempre, antes de que entre a la bitácora.</p>
+  <div class="cards">
+    <div class="card card--teal">
+      <span class="card-n">Verificación 1</span>
+      <h3>Los datos</h3>
+      <p>Los números que quedaron en el código son los suyos, no los que la herramienta completó para
+         que el ejemplo corriera.</p>
+    </div>
+    <div class="card card--teal">
+      <span class="card-n">Verificación 2</span>
+      <h3>Las etiquetas</h3>
+      <p>Los ejes dicen la variable real y la unidad real. Un eje en kg/h que en realidad trae kmol/h
+         invalida la figura entera.</p>
+    </div>
+    <div class="card card--teal">
+      <span class="card-n">Verificación 3</span>
+      <h3>La conclusión</h3>
+      <p>La tesis del título es defendible con esos datos específicos. No con datos parecidos ni con la
+         tendencia general.</p>
+    </div>
+  </div>
+  <div class="callout amber">
+    <p>Si la IA escribe «el consumo bajó 18 %», ese 18 % es una hipótesis hasta que usted lo saque de
+       su propia tabla.</p>
+  </div>
+</section>
+
+<!-- 24 -->
+<section class="s s--tint" data-screen-label="Tres errores">
+  <div class="kicker">Cierre de la parte 2</div>
+  <h2 class="s-head">Tres errores que no deberían cometer</h2>
+  <div class="cards">
+    <div class="card card--amber">
+      <span class="card-n">Error 1</span>
+      <h3>Delegar la tesis</h3>
+      <p>Nunca le pida a la herramienta que decida qué concluir. Esa decisión es de ustedes y es la que
+         los hace ingenieros del proyecto.</p>
+    </div>
+    <div class="card card--amber">
+      <span class="card-n">Error 2</span>
+      <h3>Confiar en los números</h3>
+      <p>Cualquier cifra que aparezca en la respuesta se verifica contra los datos propios antes de
+         entrar a la entrega.</p>
+    </div>
+    <div class="card card--amber">
+      <span class="card-n">Error 3</span>
+      <h3>Saltarse la prueba humana</h3>
+      <p>Del prompt a la entrega sin que un humano real mire la figura cinco segundos. Es el paso que
+         más barato sale y el que más se salta.</p>
+    </div>
+  </div>
+  <div class="callout">
+    <p>La IA no sabe quién es su audiencia. Ustedes sí.</p>
+  </div>
+</section>
+
+<!-- 25 -->
+<section class="s s--denso" data-screen-label="Taller de hoy">
+  <div class="kicker">Taller</div>
+  <h2 class="s-head">Su propia figura, en la sesión de hoy</h2>
+  <p class="s-lead">En equipo, con una figura real de su bitácora. No inventen una.</p>
+  <table class="tbl">
+    <tr><th style="width:14%">Paso</th><th style="width:56%">Qué hacen</th><th>Producto</th></tr>
+    <tr><td class="dato">1</td><td>Elijan una figura de la bitácora que vaya a la entrega final. Escriban su ficha de contexto: quién la lee, qué decide, qué dato la sostiene.</td><td>Tres oraciones</td></tr>
+    <tr><td class="dato">2</td><td>Háganle la prueba de los cinco segundos con alguien de otro equipo y anoten qué entendió, textual.</td><td>Una frase ajena</td></tr>
+    <tr><td class="dato">3</td><td>Corran el prompt 1 contra los seis criterios y anoten las tres modificaciones que salgan.</td><td>Lista priorizada</td></tr>
+    <tr class="marca"><td class="dato">4</td><td>Rehagan la figura: título de tesis, un solo foco, el resto en gris, sin los elementos que sobran.</td><td>Figura v2</td></tr>
+    <tr><td class="dato">5</td><td>Repitan la prueba de los cinco segundos con otra persona distinta.</td><td>Antes y después</td></tr>
+  </table>
+  <div class="callout">
+    <p>Lo que alcancen hoy queda hecho. Lo que no, sigue como trabajo autónomo del equipo esta semana.</p>
+  </div>
+</section>
+
+<!-- 26 -->
+<section class="s divider" data-screen-label="Cierre">
+  <div class="part">Para llevarse</div>
+  <h2>Tres preguntas<br>antes de<br>cada figura</h2>
+  <p class="sub">¿Sé quién la va a leer? ¿Sé qué quiero que entienda? ¿Tengo los datos verificados?
+     Si las tres son que sí, la herramienta acelera el trabajo. Si alguna es que no, lo esconde.</p>
+</section>
+
+</deck-stage>
+
+<script src="assets/deck-stage.js"></script>
+<script>
+(function(){
+  'use strict';
+
+  /* ── Mismo dato, tres audiencias ───────────────────────────────────── */
+  var mandos = document.getElementById('aud');
+  if (mandos) {
+    mandos.addEventListener('click', function (ev) {
+      var b = ev.target.closest('button');
+      if (!b) return;
+      var v = b.getAttribute('data-v');
+      mandos.querySelectorAll('button').forEach(function (x) { x.classList.toggle('on', x === b); });
+      document.querySelectorAll('.vista[data-v]').forEach(function (x) {
+        x.classList.toggle('on', x.getAttribute('data-v') === v);
+      });
+    });
+  }
+
+  /* ── Prueba de los cinco segundos ──────────────────────────────────
+     La figura se muestra y se retira sola. El punto pedagógico depende de
+     que el estudiante no pueda volver a mirarla mientras responde. */
+  var tapa  = document.getElementById('p5-tapa');
+  var fig   = document.getElementById('p5-fig');
+  var preg  = document.getElementById('p5-preg');
+  var reloj = document.getElementById('p5-reloj');
+  var irBtn = document.getElementById('p5-ir');
+  var verBtn = document.getElementById('p5-ver');
+  var cuenta = null;
+
+  function mostrar(cual) {
+    if (tapa) tapa.style.display = cual === 'tapa' ? 'flex' : 'none';
+    if (fig)  fig.style.display  = cual === 'fig'  ? 'block' : 'none';
+    if (preg) preg.style.display = cual === 'preg' ? 'block' : 'none';
+  }
+
+  if (irBtn) {
+    irBtn.addEventListener('click', function () {
+      if (cuenta) clearInterval(cuenta);
+      var t = 5;
+      mostrar('fig');
+      reloj.textContent = t;
+      cuenta = setInterval(function () {
+        t -= 1;
+        reloj.textContent = t > 0 ? t : '';
+        if (t <= 0) { clearInterval(cuenta); cuenta = null; mostrar('preg'); }
+      }, 1000);
+    });
+  }
+
+  if (verBtn) {
+    verBtn.addEventListener('click', function () {
+      if (cuenta) { clearInterval(cuenta); cuenta = null; }
+      reloj.textContent = '';
+      if (!fig) return;
+      // La versión corregida es la misma figura de la lámina de data-ink:
+      // se remite a ella para no repetir el dibujo con otro criterio.
+      preg.innerHTML =
+        '<div style="font-size:38px;font-weight:700;line-height:1.15">La versión corregida está dos láminas atrás</div>' +
+        '<p style="font-size:27px;color:var(--gris-2);margin-top:18px;line-height:1.4">Mismos doce lotes, ' +
+        'mismo dato. Once curvas en gris, una en azul etiquetada al final, sin rejilla, sin marco y sin ' +
+        'leyenda. La diferencia no fue la herramienta.</p>';
+      mostrar('preg');
+    });
+  }
+})();
+</script>
+</body>
+</html>
