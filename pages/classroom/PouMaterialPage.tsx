@@ -180,7 +180,12 @@ export const PouMaterialPage: React.FC<{ course: Course }> = ({ course }) => {
                         <ItemLectura key={r.slug} r={r} slug={course.slug} rotulo={`Lectura ${String(r.order ?? '').padStart(2, '0')}`.trim()} />
                       ))}
                       {wg.map((r) => (
-                        <ItemLectura key={r.slug} r={r} slug={course.slug} rotulo="Guía" />
+                        <ItemLectura
+                          key={r.slug}
+                          r={r}
+                          slug={course.slug}
+                          rotulo={r.category === 'taller' ? 'Taller' : 'Guía'}
+                        />
                       ))}
                       {wp.map((p) => (
                         <a

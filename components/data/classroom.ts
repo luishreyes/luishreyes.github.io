@@ -12,7 +12,7 @@ export interface Reading {
    * - 'practica' → handouts / hojas de trabajo de una sesión (taller en papel)
    * Si no se especifica, se asume 'guia'.
    */
-  category?: 'guia' | 'lectura' | 'practica';
+  category?: 'guia' | 'lectura' | 'practica' | 'taller';
   /**
    * Semana del semestre a la que pertenece el material (1..16). Si se define,
    * el material se agrupa bajo esa semana en «Material del curso». Las guías
