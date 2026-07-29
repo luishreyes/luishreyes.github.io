@@ -746,6 +746,20 @@ export const pou202620Course: Course = {
       href: '/classroom/iqya-2031-2026-20/lecturas/Lectura_13/Lectura_13_Destilacion_Continua.html',
       bannerImg: '/classroom/iqya-2031-2026-20/lecturas-banners/l13.jpg',
     },
+    {
+      slug: 'lectura-14-comunicacion-visual',
+      week: 13,
+      order: 14,
+      title: 'Comunicación visual de resultados',
+      summary:
+        'Cómo decidir qué figura hacer antes de abrir la herramienta: la diferencia entre explorar y explicar con el dato medido de Boy et al. sobre el efecto de la narrativa, el costo cognitivo y la jerarquía de Cleveland y McGill, la ficha de contexto de tres preguntas, el título como tesis y no como tema, la elección del gráfico según la tarea visual con la serie de canónicos de la disciplina, la razón de tinta de datos y la jerarquía visual de tres niveles, las cuatro trampas que aparecen solas en un informe de proceso y cómo criticar una figura ajena sin destruirla.',
+      date: '2026-11-05',
+      readingMinutes: 25,
+      tags: ['comunicación visual', 'storytelling with data', 'explorar y explicar', 'Cleveland-McGill', 'título de tesis', 'data-ink', 'jerarquía visual', 'prueba de los cinco segundos', 'ética de la figura', 'coevaluación'],
+      category: 'lectura',
+      href: '/classroom/iqya-2031-2026-20/lecturas/Lectura_14/Lectura_14_Comunicacion_Visual.html',
+      bannerImg: '/classroom/iqya-2031-2026-20/lecturas-banners/l14.jpg',
+    },
   ],
   presentations: [
     {
@@ -902,6 +916,15 @@ export const pou202620Course: Course = {
       file: 'Eficiencias_en_Destilacion/Presentacion_Eficiencias_en_Destilacion.html',
     },
     {
+      id: 'comunicacion-visual',
+      week: 13,
+      title: 'Comunicación visual',
+      sessionNumber: 2,
+      description:
+        'Cómo lograr que una figura de proceso diga lo que usted quiere decir, y cómo usar la IA generativa para acelerar ese trabajo sin delegarle el criterio. Primera mitad: explorar frente a explicar, la ficha de contexto, el título como tesis, la elección del gráfico por tarea, la razón de tinta y la jerarquía visual, con las cuatro trampas frecuentes. Segunda mitad: las cinco piezas de un prompt útil y cuatro prompts listos para criticar figuras, simular la prueba de los cinco segundos, reescribir títulos y recomendar visualizaciones con restricciones explícitas. Incluye un selector de audiencia que reconstruye la misma figura para tres lectores distintos y una prueba de los cinco segundos cronometrada en vivo.',
+      file: 'Comunicacion_Visual/Presentacion_Comunicacion_Visual.html',
+    },
+    {
       id: 'destilacion-diferencial',
       week: 14,
       title: 'Destilación diferencial',
@@ -990,6 +1013,16 @@ export const pou202620Course: Course = {
       sessionNumber: 17,
       file: 'Explorador_McCabe_Thiele.html',
       tags: ['destilación', 'McCabe-Thiele', 'reflujo', 'línea q', 'etapas', 'etanol-agua', 'Murphree', 'Fenske'],
+    },
+    {
+      id: 'explorador-graficos',
+      week: 13,
+      title: 'Explorador de gráficos',
+      description:
+        'El catálogo de decisión visual del curso: 79 tipos de gráfico organizados por las ocho tareas que puede pedirle a un dato, con una miniatura dibujada de cada uno. De cada tipo indica la pregunta que responde, cuándo usarlo y cuándo no, un ejemplo de área, la decisión que habilita, su trampa ética típica y su lugar en la jerarquía de Cleveland y McGill. Incluye un diagrama de decisión que lleva de la pregunta al grupo correcto en un clic y una serie completa de canónicos de la disciplina: McCabe-Thiele, Txy, Moody, psicrométrico, Mollier, curvas de bomba y sistema, distribución de tiempos de residencia, Arrhenius, tamaño de partícula, muerte térmica, isotermas de sorción y curvas de secado.',
+      sessionNumber: 26,
+      file: 'Explorador_Graficos.html',
+      tags: ['comunicación visual', 'elección de gráfico', 'tarea visual', 'Cleveland-McGill', 'canónicos', 'ética de la figura', 'catálogo'],
     },
   ],
 };
