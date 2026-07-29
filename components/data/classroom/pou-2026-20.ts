@@ -893,6 +893,15 @@ export const pou202620Course: Course = {
       file: 'Diseno_de_Platos/Presentacion_Diseno_de_Platos.html',
     },
     {
+      id: 'eficiencias-en-destilacion',
+      week: 13,
+      title: 'Eficiencias en destilación',
+      sessionNumber: 1,
+      description:
+        'El número que convierte etapas teóricas en platos que se compran. Por qué un plato real no alcanza el equilibrio, las tres eficiencias que suelen confundirse, la de Murphree sobre el diagrama de McCabe-Thiele, la eficiencia global con la correlación de O\'Connell y sus límites, y cuándo conviene relleno en vez de platos. Cierra recalculando la columna de recuperación de etanol del proyecto.',
+      file: 'Eficiencias_en_Destilacion/Presentacion_Eficiencias_en_Destilacion.html',
+    },
+    {
       id: 'destilacion-diferencial',
       week: 14,
       title: 'Destilación diferencial',
