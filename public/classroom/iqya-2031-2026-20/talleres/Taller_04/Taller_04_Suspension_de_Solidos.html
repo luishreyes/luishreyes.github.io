@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Taller 4 · Suspensión de fibra lignocelulósica · Proyecto de Operaciones Unitarias</title>
+<link rel="stylesheet" href="assets/deloitte.css">
+<style>
+  body {
+    margin: 0;
+    background: var(--gris-5);
+    font-family: var(--tipo);
+    color: var(--gris-1);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.62;
+  }
+
+  /* ---- Barra de progreso de lectura ---- */
+  .progress {
+    position: fixed; top: 0; left: 0; height: 4px; width: 0;
+    background: var(--verde); z-index: 200; transition: width .08s linear;
+  }
+
+  .page {
+    max-width: 940px;
+    margin: 40px auto 90px;
+    background: var(--blanco);
+    box-shadow: var(--sombra);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  /* ===================== ENCABEZADO ===================== */
+  .doc-head {
+    background: var(--papel);
+    border-bottom: 5px solid var(--verde);
+    padding: 46px 64px 40px;
+    position: relative;
+  }
+  .doc-head .org {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    font-size: 14px; font-weight: 700; letter-spacing: .03em; color: var(--gris-1);
+  }
+  .doc-head .org span { color: var(--gris-3); font-weight: 600; }
+  .doc-head .badge {
+    display: inline-block; background: var(--verde); color: #fff;
+    font-size: 13px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+    padding: 6px 14px; border-radius: 999px; margin: 28px 0 18px; white-space: nowrap;
+  }
+  .doc-head h1 { font-size: 43px; line-height: 1.1; margin: 0 0 10px; letter-spacing: -.015em; max-width: 22ch; }
+  .doc-head .subtitle { font-size: 20px; color: var(--gris-2); margin: 0; font-weight: 500; max-width: 56ch; }
+  .doc-meta {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px;
+    margin-top: 34px; padding-top: 26px; border-top: 1px solid var(--gris-4);
+  }
+  .doc-meta div { font-size: 15px; color: var(--gris-2); }
+  .doc-meta b { display: block; color: var(--gris-1); font-size: 16px; font-weight: 700; margin-bottom: 2px; }
+
+  /* ===================== CUERPO ===================== */
+  .doc-body { padding: 8px 64px 60px; }
+  .doc-body section { padding-top: 46px; scroll-margin-top: 24px; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--verde-osc); margin-bottom: 12px;
+  }
+  .eyebrow::before { content: ""; width: 26px; height: 4px; background: var(--verde); border-radius: 2px; }
+  h2.sec { font-size: 30px; line-height: 1.18; margin: 0 0 18px; letter-spacing: -.01em; }
+  h2.sec .secnum { color: var(--verde); font-weight: 700; }
+  h3.sub { font-size: 21px; margin: 34px 0 10px; letter-spacing: -.005em; }
+  .doc-body p { font-size: 17px; color: var(--gris-1); margin: 0 0 16px; text-wrap: pretty; }
+  .doc-body ul, .doc-body ol { font-size: 17px; color: var(--gris-1); margin: 0 0 16px; padding-left: 22px; line-height: 1.7; }
+  .doc-body li { margin-bottom: 7px; }
+  .doc-body ul ul, .doc-body ol ul { font-size: 16px; margin: 6px 0 4px; }
+  .lead { font-size: 20px; color: var(--gris-2); line-height: 1.55; font-weight: 400; }
+  .lead b { color: var(--gris-1); font-weight: 600; }
+  .doc-body a { color: var(--teal); text-decoration: underline; text-underline-offset: 2px; }
+  a.platform-link { color: var(--teal); font-weight: 600; }
+  a.platform-link::after { content: " ↗"; font-size: .82em; }
+  code {
+    font-family: 'JetBrains Mono', ui-monospace, 'Courier New', monospace;
+    font-size: .88em; background: var(--gris-5); color: var(--gris-1);
+    padding: 2px 6px; border-radius: 4px;
+  }
+
+  /* ---- Logo de la herramienta ---- */
+  .tool-logo {
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--papel); border: 1px solid var(--gris-4); border-radius: 8px;
+    padding: 14px 22px; margin: 4px 0 22px; min-height: 64px;
+  }
+  .tool-logo img { height: 40px; width: auto; max-width: 280px; object-fit: contain; display: block; }
+
+  /* ---- Índice / sumario por partes ---- */
+  .toc-intro { font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--gris-2); margin: 30px 0 14px; }
+  .parts { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin: 0 0 8px; }
+  .part-card {
+    background: var(--papel); border-radius: 8px; padding: 24px 26px;
+    border-top: 5px solid var(--verde);
+  }
+  .part-card .pt-k { font-size: 12px; font-weight: 700; color: var(--verde-osc); letter-spacing: .08em; text-transform: uppercase; }
+  .part-card h3 { font-size: 20px; margin: 5px 0 16px; letter-spacing: -.005em; }
+  .part-card ol { list-style: none; margin: 0; padding: 0; counter-reset: p; display: grid; gap: 9px; font-size: 16px; }
+  .part-card li { counter-increment: p; margin: 0; }
+  .part-card a {
+    display: flex; align-items: baseline; gap: 13px; text-decoration: none; cursor: pointer;
+    color: var(--gris-1); font-size: 16px; font-weight: 600; transition: color .18s ease;
+  }
+  .part-card a::before { content: counter(p, decimal-leading-zero); color: var(--verde-osc); font-weight: 700; font-size: 13px; min-width: 24px; }
+  .part-card a:hover { color: var(--verde-osc); }
+  .part-card a.is-active { color: var(--verde-osc); font-weight: 700; }
+
+  /* ---- Blocks / cards ---- */
+  .blocks { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin: 22px 0 6px; }
+  .blocks-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 22px 0 6px; }
+  .block {
+    background: var(--papel); border-radius: 8px; padding: 22px 24px;
+    border-top: 5px solid var(--verde); display: flex; flex-direction: column; gap: 6px;
+  }
+  .block .bn { font-size: 12px; font-weight: 700; color: var(--verde-osc); letter-spacing: .08em; }
+  .block b { font-size: 18px; line-height: 1.2; }
+  .block span { font-size: 14.5px; color: var(--gris-2); line-height: 1.45; }
+  .block code { font-size: 13px; word-break: break-word; }
+  .block ul { font-size: 14.5px; color: var(--gris-2); line-height: 1.45; margin: 4px 0 0; padding-left: 18px; }
+  .block ul li { margin-bottom: 4px; }
+  .block-full { grid-column: 1 / -1; }
+  .block--bad { border-top-color: #DC2626; }
+  .block--bad b { color: #991B1B; }
+  .block--good { border-top-color: var(--verde); }
+  .block--good b { color: var(--verde-osc); }
+
+  /* ===================== TABLAS ===================== */
+  .tbl-wrap { margin: 0 0 8px; overflow-x: auto; border-radius: 8px; }
+  table.ou { width: 100%; border-collapse: collapse; font-size: 15px; min-width: 560px; }
+  table.ou th, table.ou td { text-align: left; padding: 13px 16px; border-bottom: 1px solid var(--gris-4); vertical-align: top; line-height: 1.4; }
+  table.ou thead th { background: var(--gris-1); color: #fff; font-weight: 700; font-size: 13.5px; letter-spacing: .02em; }
+  table.ou thead th:first-child { border-top-left-radius: 6px; }
+  table.ou thead th:last-child { border-top-right-radius: 6px; }
+  table.ou td:first-child { font-weight: 700; color: var(--gris-1); }
+  table.ou .mag { color: var(--verde-osc); font-weight: 600; }
+  table.ou tbody tr:nth-child(even) { background: var(--papel); }
+  table.ou tbody tr:last-child td { border-bottom: none; }
+
+  /* ===================== CALLOUTS ===================== */
+  .callout {
+    display: grid; grid-template-columns: 42px 1fr; gap: 18px;
+    border-radius: 8px; padding: 20px 24px; margin: 24px 0; align-items: start;
+  }
+  .callout .ic {
+    width: 42px; height: 42px; border-radius: 50%; display: inline-flex;
+    align-items: center; justify-content: center; font-size: 21px; font-weight: 700;
+  }
+  .callout > div > b { display: block; font-size: 15.5px; margin-bottom: 4px; }
+  .callout p { font-size: 15.5px; margin: 0; color: var(--gris-1); line-height: 1.5; }
+  .callout p b { display: inline; color: inherit; font-size: inherit; }
+  .callout ul { font-size: 15.5px; margin: 6px 0 0; padding-left: 20px; color: var(--gris-1); line-height: 1.5; }
+  .callout ul li { margin-bottom: 6px; }
+  .callout--nota { background: var(--teal-claro); }
+  .callout--nota .ic { background: var(--teal); color: #fff; }
+  .callout--nota b { color: var(--teal); }
+  .callout--tip { background: var(--verde-claro); }
+  .callout--tip .ic { background: var(--verde); color: #fff; }
+  .callout--tip b { color: var(--verde-osc); }
+  .callout--warn { background: #FEF2F2; }
+  .callout--warn .ic { background: #DC2626; color: #fff; }
+  .callout--warn b { color: #991B1B; }
+
+  /* ===================== COLLAPSIBLES ===================== */
+  details { margin: 18px 0; }
+  details summary {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 14px 18px; border-radius: 8px; background: var(--papel);
+    border: 1px solid var(--gris-4); cursor: pointer; list-style: none;
+    font-size: 15.5px; font-weight: 600; color: var(--gris-1);
+    transition: background .15s;
+  }
+  details summary::-webkit-details-marker { display: none; }
+  details summary::after { content: "+"; font-size: 18px; color: var(--verde); font-weight: 700; }
+  details[open] summary::after { content: "−"; }
+  details summary:hover { background: var(--gris-5); }
+  details[open] summary { border-radius: 8px 8px 0 0; border-bottom-color: transparent; }
+  details .detail-body {
+    padding: 18px 22px 20px; border: 1px solid var(--gris-4); border-top: none;
+    border-radius: 0 0 8px 8px; background: var(--blanco);
+    font-size: 15px; color: var(--gris-1); line-height: 1.55;
+  }
+  .detail-body p { margin: 0 0 12px; font-size: 15px; }
+  .detail-body ol, .detail-body ul { margin: 0 0 12px; padding-left: 22px; font-size: 15px; }
+  .detail-body li { margin-bottom: 6px; }
+  .detail-body h4 { font-size: 15px; font-weight: 700; color: var(--gris-1); margin: 16px 0 6px; }
+
+  /* ===================== FOOTER ===================== */
+  .doc-foot {
+    border-top: 1px solid var(--gris-4); margin-top: 50px; padding-top: 22px;
+    display: flex; justify-content: space-between; font-size: 13px; color: var(--gris-3);
+  }
+
+  /* ===================== RESPONSIVE ===================== */
+  @media (max-width: 720px) {
+    .doc-head, .doc-body { padding-left: 26px; padding-right: 26px; }
+    .doc-meta, .blocks, .blocks-3, .parts { grid-template-columns: 1fr 1fr; }
+    .doc-head h1 { font-size: 33px; }
+  }
+  @media (max-width: 520px) {
+    .blocks-3, .parts { grid-template-columns: 1fr; }
+  }
+  @media print {
+    body { background: #fff; }
+    .page { box-shadow: none; margin: 0; max-width: none; border-radius: 0; }
+    .progress { display: none; }
+    section, .blocks, .blocks-3, .tbl-wrap, .callout, .parts { break-inside: avoid; }
+  }
+
+  /* ---- Outer layout with sticky side nav ---- */
+  .page { margin: 0; }
+  .outer-layout {
+    max-width: 1200px;
+    margin: 40px auto 90px;
+    display: grid;
+    grid-template-columns: 230px minmax(0, 1fr);
+    gap: 24px;
+    padding: 0 20px;
+    align-items: start;
+  }
+  .side-nav {
+    position: sticky;
+    top: 28px;
+    max-height: calc(100vh - 56px);
+    overflow-y: auto;
+    background: var(--blanco);
+    border: 1px solid var(--gris-4);
+    border-radius: 8px;
+    padding: 20px 16px;
+    box-shadow: var(--sombra);
+    scrollbar-width: thin;
+  }
+  .sn-label { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--verde-osc); margin: 0 0 8px; padding: 0 4px; }
+  .sn-label.sn-label2 { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--gris-4); }
+  .sn-item { display: flex; align-items: flex-start; gap: 7px; font-family: var(--tipo); font-size: 13px; color: var(--gris-2); text-decoration: none; padding: 6px 8px; border-radius: 5px; line-height: 1.3; transition: all .15s; margin-bottom: 2px; }
+  .sn-item:hover { color: var(--gris-1); background: var(--gris-5); }
+  .sn-item:target { color: var(--verde-osc); }
+  .sn-num { font-size: 11px; font-weight: 700; color: var(--verde-osc); min-width: 16px; padding-top: 1px; flex-shrink: 0; }
+  html { scroll-behavior: smooth; }
+  @media (max-width: 880px) {
+    .outer-layout { grid-template-columns: 1fr; padding: 0 12px; }
+    .side-nav { display: none; }
+    .page { margin: 0; }
+  }
+  .pts { display: inline-block; margin-left: 10px; font-size: 13px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--verde-osc); background: var(--verde-claro); border-radius: 4px; padding: 3px 9px; vertical-align: middle; }
+  .confidencial { border: 2px solid #a4362a; background: #fdf3f2; color: #7d2b21; border-radius: 8px; padding: 16px 20px; margin: 0 0 26px; }
+  .confidencial b { display: block; font-size: 15px; margin-bottom: 4px; }
+  .confidencial p { margin: 0; font-size: 14px; line-height: 1.5; }
+  .dato { border-left: 4px solid var(--verde); background: var(--papel); padding: 14px 18px; margin: 18px 0; font-variant-numeric: tabular-nums; }
+  .dato p { margin: 0 0 4px; font-size: 15px; }
+  .dato p:last-child { margin-bottom: 0; }
+  .esquema { border: 1px solid var(--gris-4); background: var(--blanco); border-radius: 8px; padding: 16px; margin: 22px 0; }
+  .esquema svg { display: block; width: 100%; max-width: 520px; height: auto; margin: 0 auto; }
+  .esquema figcaption { font-size: 13px; color: var(--gris-2); line-height: 1.5; margin-top: 10px; }
+  table.ou td.num { font-variant-numeric: tabular-nums; }
+  @media print { .dato, .esquema, .confidencial { break-inside: avoid; } }
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<div class="outer-layout">
+
+<nav class="side-nav" aria-label="Secciones">
+  <p class="sn-label">Contenido</p>
+  <a class="sn-item" href="#sistema"><span class="sn-num">00</span>El sistema</a>
+  <a class="sn-item" href="#pA"><span class="sn-num">01</span>Selección de diámetro</a>
+  <a class="sn-item" href="#pB"><span class="sn-num">02</span>Efecto de la concentración</a>
+  <a class="sn-item" href="#pC"><span class="sn-num">03</span>Impulsor alternativo</a>
+  <a class="sn-item" href="#preg"><span class="sn-num">04</span>Preguntas</a>
+  <a class="sn-item" href="#entrega"><span class="sn-num">05</span>Entrega</a>
+</nav>
+
+<article class="page">
+
+  <header class="doc-head">
+    <div class="org">
+      Universidad de los Andes
+      <span>Ingeniería Química y de Alimentos</span>
+    </div>
+    <div class="badge">Taller 4 · Proyecto de Operaciones Unitarias</div>
+    <h1>Suspensión de fibra lignocelulósica</h1>
+    <p class="subtitle">Un tanque de pretratamiento organosolv, tres diámetros de impulsor y una restricción de velocidad. Hay que suspender la fibra gastando lo menos posible.</p>
+    <div class="doc-meta">
+      <div><b>Curso</b>Proyecto de Operaciones Unitarias · IQYA-2031 · 2026-20</div>
+      <div><b>Modalidad</b>En parejas, la cuarta distinta del semestre</div>
+      <div><b>Sesión</b>Martes 15 de septiembre de 2026</div>
+      <div><b>Entrega</b>Viernes 18 de septiembre, 11:59 p. m., por BloqueNeón</div>
+      <div><b>Puntaje</b>100 puntos</div>
+    </div>
+  </header>
+
+  <div class="doc-body">
+
+    <section id="s0">
+      <p class="lead">Un tanque de 1,2 m³ recibe fibra lignocelulósica molida para un pretratamiento organosolv. La fibra se deposita en el fondo y el agitador tiene que levantarla: mientras haya sólido quieto sobre el fondo, esa fracción no reacciona. El objetivo es garantizar la <b>suspensión completa</b>, la condición que se conoce como <i>just suspended</i>, con el menor consumo específico posible y sin pasarse de la velocidad máxima admisible.</p>
+
+      <div class="callout callout--warn">
+        <span class="ic">!</span>
+        <div>
+          <b>Cuarta pareja distinta</b>
+          <p>Este taller se hace en parejas y <b>no puede repetir compañero de los talleres 1, 2 ni 3</b>. Van cuatro talleres y cuatro parejas distintas.</p>
+        </div>
+      </div>
+
+      <div class="callout callout--tip">
+        <span class="ic">i</span>
+        <div>
+          <b>Nivel de uso de IA generativa: 2</b>
+          <p>La inteligencia artificial se usa para hacer lluvia de ideas, estructurar el trabajo y orientar la búsqueda de fuentes. Usted parte de esas sugerencias y desarrolla el trabajo con su propio juicio. El contenido final debe estar desarrollado por usted. La declaración de uso va con el entregable.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="sistema">
+      <div class="eyebrow">Datos</div>
+      <h2 class="sec"><span class="secnum">0.</span> El sistema</h2>
+
+      <figure class="esquema">
+        <svg viewBox="0 0 560 430" role="img" aria-label="Tanque agitado con bafles y las tres opciones de diámetro de impulsor">
+          <rect x="90" y="40" width="360" height="330" fill="#F7F8FA" stroke="#1D2D3D" stroke-width="2.5"/>
+          <line x1="90" y1="60" x2="450" y2="60" stroke="#5980A6" stroke-width="1.5" stroke-dasharray="6 4"/>
+          <text x="456" y="64" font-family="Barlow,sans-serif" font-size="12" fill="#5980A6">nivel de líquido</text>
+          <rect x="90" y="60" width="22" height="310" fill="#DDE1E5" stroke="#7A7F86" stroke-width="1.2"/>
+          <rect x="428" y="60" width="22" height="310" fill="#DDE1E5" stroke="#7A7F86" stroke-width="1.2"/>
+          <text x="101" y="200" text-anchor="middle" font-family="Barlow,sans-serif" font-size="11" fill="#5D5D60" transform="rotate(-90 101 200)">bafle</text>
+          <text x="439" y="200" text-anchor="middle" font-family="Barlow,sans-serif" font-size="11" fill="#5D5D60" transform="rotate(-90 439 200)">bafle</text>
+          <line x1="270" y1="14" x2="270" y2="300" stroke="#1D2D3D" stroke-width="4"/>
+          <rect x="256" y="8" width="28" height="15" fill="#1D2D3D"/>
+          <g stroke-width="6" stroke-linecap="round" fill="none">
+            <line x1="227" y1="260" x2="313" y2="260" stroke="#5980A6"/>
+            <line x1="212" y1="280" x2="328" y2="280" stroke="#7A9E3B"/>
+            <line x1="198" y1="300" x2="342" y2="300" stroke="#B5502B"/>
+          </g>
+          <g font-family="Barlow,sans-serif" font-size="12">
+            <text x="323" y="264" fill="#416180">D/T = 0,24</text>
+            <text x="338" y="284" fill="#5C7A2C">D/T = 0,32</text>
+            <text x="352" y="304" fill="#B5502B">D/T = 0,40</text>
+          </g>
+          <g fill="#B0B4BA">
+            <circle cx="170" cy="336" r="4"/><circle cx="212" cy="352" r="3"/><circle cx="318" cy="342" r="4"/>
+            <circle cx="356" cy="356" r="3"/><circle cx="266" cy="358" r="4"/><circle cx="140" cy="356" r="3"/>
+            <circle cx="396" cy="332" r="3"/><circle cx="232" cy="330" r="3"/><circle cx="300" cy="360" r="3"/>
+          </g>
+          <text x="270" y="352" text-anchor="middle" font-family="Barlow,sans-serif" font-size="11" fill="#7A7F86" opacity="0">s</text>
+          <line x1="90" y1="398" x2="450" y2="398" stroke="#1D2D3D" stroke-width="1.2"/>
+          <line x1="90" y1="392" x2="90" y2="404" stroke="#1D2D3D" stroke-width="1.2"/>
+          <line x1="450" y1="392" x2="450" y2="404" stroke="#1D2D3D" stroke-width="1.2"/>
+          <text x="270" y="394" text-anchor="middle" font-family="Barlow,sans-serif" font-size="13" fill="#1D2D3D" font-weight="700">T = 1,15 m</text>
+          <text x="270" y="420" text-anchor="middle" font-family="Barlow,sans-serif" font-size="12" fill="#5D5D60">altura de líquido igual al diámetro</text>
+        </svg>
+        <figcaption><b>Figura 1.</b> Tanque de 1,2 m³ con cuatro bafles y turbina de palas inclinadas. Las tres barras son <b>alternativas</b> del mismo impulsor, dibujadas a escala y separadas en altura solo para poder distinguirlas: el impulsor va en una sola posición. Los sólidos, al inicio, están depositados en el fondo.</figcaption>
+      </figure>
+
+      <div class="tbl-wrap">
+      <table class="ou">
+        <thead><tr><th>Variable</th><th>Símbolo</th><th>Valor</th></tr></thead>
+        <tbody>
+          <tr><td>Volumen de operación</td><td>V</td><td class="num">1,2 m³</td></tr>
+          <tr><td>Diámetro del tanque, con altura de líquido igual</td><td>T</td><td class="num">1,15 m</td></tr>
+          <tr><td>Bafles</td><td>&mdash;</td><td class="num">4, de ancho T/10</td></tr>
+          <tr><td>Densidad del líquido, mezcla agua y glicerol</td><td>ρ<sub>f</sub></td><td class="num">1080 kg/m³</td></tr>
+          <tr><td>Viscosidad dinámica del líquido</td><td>μ<sub>f</sub></td><td class="num">8 mPa·s</td></tr>
+          <tr><td>Densidad del sólido</td><td>ρ<sub>s</sub></td><td class="num">1290 kg/m³</td></tr>
+          <tr><td>Diámetro medio de partícula, esferas equivalentes</td><td>d<sub>p</sub></td><td class="num">1,3 mm</td></tr>
+          <tr><td>Gravedad</td><td>g</td><td class="num">9,81 m/s²</td></tr>
+          <tr><td>Diámetros de impulsor a comparar</td><td>D/T</td><td class="num">0,24 · 0,32 · 0,40</td></tr>
+          <tr><td>Turbina de palas inclinadas, 4 palas a 45°</td><td>S · N<sub>P</sub></td><td class="num">4,8 · 1,7</td></tr>
+          <tr class="marca"><td>Velocidad máxima admisible del accionamiento</td><td>N<sub>máx</sub></td><td class="num">120 rpm</td></tr>
+          <tr><td>Margen de operación sobre la potencia</td><td>&mdash;</td><td class="num">15 %</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <h3 class="sub">La correlación de Zwietering</h3>
+      <div class="fml">N<sub>js</sub> = S · ν<sup>0,1</sup> · d<sub>p</sub><sup>0,2</sup> · [g(ρ<sub>s</sub> − ρ<sub>f</sub>)/ρ<sub>f</sub>]<sup>0,45</sup> · X<sup>0,13</sup> · D<sup>−0,85</sup></div>
+      <p>ν es la viscosidad <b>cinemática</b> del líquido. La <b>X de Zwietering no es la fracción másica de la suspensión</b>: está definida como la masa de sólido dividida por la masa de <b>líquido</b>, multiplicada por cien. Con 12 % en peso de sólidos sobre el total, X vale 100 × 12/88, no 12 ni 0,12. Confundir las dos definiciones es el error más común con esta correlación.</p>
+
+      <div class="callout callout--nota">
+        <span class="ic">i</span>
+        <div>
+          <b>Sobre la potencia</b>
+          <p>Use P = N<sub>P</sub> ρ N³ D⁵, válida en régimen turbulento. La densidad que entra ahí es la de la <b>suspensión</b>, no la del líquido solo. Verifique el número de Reynolds de agitación antes de dar por bueno el N<sub>P</sub> constante.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="pA">
+      <div class="eyebrow">Parte A</div>
+      <h2 class="sec"><span class="secnum">1.</span> Selección del diámetro <span class="pts">40 puntos</span></h2>
+      <p>Con 12 % en peso de sólidos.</p>
+
+      <h3 class="sub">A.1 Unidades y consistencia <span class="pts">8 pts</span></h3>
+      <p>Diga qué unidades debe llevar cada variable para que N<sub>js</sub> salga en s⁻¹, y <b>demuestre por análisis dimensional que la expresión es consistente</b>. De ahí deduzca qué unidades tiene S.</p>
+
+      <h3 class="sub">A.2 Velocidad de suspensión <span class="pts">12 pts</span></h3>
+      <p>Calcule N<sub>js</sub> para los tres diámetros, en s⁻¹ y en rpm. Verifique el número de Reynolds de agitación en cada caso.</p>
+
+      <h3 class="sub">A.3 Potencia y consumo específico <span class="pts">10 pts</span></h3>
+      <p>Calcule la potencia en cada caso, aplique el margen del 15 % y obtenga P/V en kW/m³.</p>
+
+      <h3 class="sub">A.4 Selección <span class="pts">10 pts</span></h3>
+      <p>¿Qué relación D/T escogería? Justifique con las dos restricciones a la vez: la velocidad máxima del accionamiento y el consumo específico. Diga explícitamente qué opción queda descartada y por qué.</p>
+    </section>
+
+    <section id="pB">
+      <div class="eyebrow">Parte B</div>
+      <h2 class="sec"><span class="secnum">2.</span> Efecto de la concentración <span class="pts">20 puntos</span></h2>
+      <p>Con el diámetro que escogió, repita el cálculo para 8, 12 y 18 % en peso de sólidos.</p>
+      <ul>
+        <li>Complete la tabla con N<sub>js</sub> y P/V <span class="pts">10 pts</span></li>
+        <li>Explique <b>físicamente</b> por qué N<sub>js</sub> sube con la concentración, y por qué sube tan poco. Relacione la respuesta con el exponente de la correlación. <span class="pts">10 pts</span></li>
+      </ul>
+    </section>
+
+    <section id="pC">
+      <div class="eyebrow">Parte C</div>
+      <h2 class="sec"><span class="secnum">3.</span> Impulsor alternativo <span class="pts">25 puntos</span></h2>
+      <p>Sustituya la turbina de palas inclinadas por un <b>impulsor hidrofoil</b> del mismo diámetro, con S = 3,9 y N<sub>P</sub> = 0,4, al 12 % de sólidos.</p>
+      <ul>
+        <li>Calcule la nueva N<sub>js</sub>, la potencia y el P/V. <span class="pts">10 pts</span></li>
+        <li>Compare la eficiencia energética frente a la turbina. Exprese el resultado como razón de potencias y explique de dónde sale la diferencia: cuánto viene del número de potencia y cuánto de la velocidad. <span class="pts">8 pts</span></li>
+        <li>¿Cuál recomendaría para este proceso? Considere que la fibra es un sólido blando y que el pretratamiento tiene que ser homogéneo. <span class="pts">7 pts</span></li>
+      </ul>
+    </section>
+
+    <section id="preg">
+      <div class="eyebrow">Cierre</div>
+      <h2 class="sec"><span class="secnum">4.</span> Preguntas <span class="pts">15 puntos</span></h2>
+      <p>Tres puntos cada una.</p>
+      <ol>
+        <li>¿Cuál es la diferencia entre una turbina de palas inclinadas y un impulsor hidrofoil? Hable del patrón de flujo que produce cada uno y de qué hace con la energía que entrega.</li>
+        <li>¿Qué significa la relación P/V y por qué se usa para comparar y para escalar, en vez de la potencia sola?</li>
+        <li>¿Por qué la correlación predice que N<sub>js</sub> sube tan poco con la concentración de sólidos? ¿Qué pasaría a concentraciones mucho más altas?</li>
+        <li>La correlación usa un solo valor de S para los tres diámetros. ¿Es eso realista? ¿Qué consecuencia tiene sobre la conclusión de la Parte A? <b>Sustente con al menos dos fuentes, citadas en formato IEEE.</b></li>
+        <li>Suspensión completa no es lo mismo que suspensión homogénea. Explique la diferencia y diga cuál de las dos necesita este proceso.</li>
+      </ol>
+    </section>
+
+    <section id="entrega">
+      <div class="eyebrow">Entrega</div>
+      <h2 class="sec"><span class="secnum">5.</span> Entregables</h2>
+      <ul>
+        <li>Un documento en PDF por pareja, con nombre y código de los dos integrantes.</li>
+        <li>Las tablas completas de las partes A, B y C, con las unidades en cada columna.</li>
+        <li>El análisis dimensional de A.1, desarrollado.</li>
+        <li>Las respuestas a las preguntas, con las citas donde se piden.</li>
+        <li>Declaración de uso de IA generativa.</li>
+      </ul>
+      <div class="callout callout--nota">
+        <span class="ic">i</span>
+        <div>
+          <b>Tolerancia</b>
+          <p>Se aceptan desviaciones de hasta el 5 % en los valores numéricos. Lo que no se acepta es una tabla sin unidades o una selección sin justificar.</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="doc-foot">
+      <span>IQYA-2031 · Proyecto de Operaciones Unitarias · 2026-20</span>
+      <span>Taller 4 · Universidad de los Andes</span>
+    </div>
+
+  </div>
+
+</article>
+</div>
+
+<script>
+(function () {
+  var bar = document.getElementById("progress");
+  function onScroll() {
+    var h = document.documentElement, max = h.scrollHeight - h.clientHeight;
+    bar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + "%";
+  }
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+})();
+</script>
+
+</body>
+</html>
