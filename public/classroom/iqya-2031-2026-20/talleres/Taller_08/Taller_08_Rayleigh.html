@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Taller 6 · Separación de biomasa de levadura · Proyecto de Operaciones Unitarias</title>
+<link rel="stylesheet" href="assets/deloitte.css">
+<style>
+  body {
+    margin: 0;
+    background: var(--gris-5);
+    font-family: var(--tipo);
+    color: var(--gris-1);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.62;
+  }
+
+  /* ---- Barra de progreso de lectura ---- */
+  .progress {
+    position: fixed; top: 0; left: 0; height: 4px; width: 0;
+    background: var(--verde); z-index: 200; transition: width .08s linear;
+  }
+
+  .page {
+    max-width: 940px;
+    margin: 40px auto 90px;
+    background: var(--blanco);
+    box-shadow: var(--sombra);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  /* ===================== ENCABEZADO ===================== */
+  .doc-head {
+    background: var(--papel);
+    border-bottom: 5px solid var(--verde);
+    padding: 46px 64px 40px;
+    position: relative;
+  }
+  .doc-head .org {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    font-size: 14px; font-weight: 700; letter-spacing: .03em; color: var(--gris-1);
+  }
+  .doc-head .org span { color: var(--gris-3); font-weight: 600; }
+  .doc-head .badge {
+    display: inline-block; background: var(--verde); color: #fff;
+    font-size: 13px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+    padding: 6px 14px; border-radius: 999px; margin: 28px 0 18px; white-space: nowrap;
+  }
+  .doc-head h1 { font-size: 43px; line-height: 1.1; margin: 0 0 10px; letter-spacing: -.015em; max-width: 22ch; }
+  .doc-head .subtitle { font-size: 20px; color: var(--gris-2); margin: 0; font-weight: 500; max-width: 56ch; }
+  .doc-meta {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px;
+    margin-top: 34px; padding-top: 26px; border-top: 1px solid var(--gris-4);
+  }
+  .doc-meta div { font-size: 15px; color: var(--gris-2); }
+  .doc-meta b { display: block; color: var(--gris-1); font-size: 16px; font-weight: 700; margin-bottom: 2px; }
+
+  /* ===================== CUERPO ===================== */
+  .doc-body { padding: 8px 64px 60px; }
+  .doc-body section { padding-top: 46px; scroll-margin-top: 24px; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--verde-osc); margin-bottom: 12px;
+  }
+  .eyebrow::before { content: ""; width: 26px; height: 4px; background: var(--verde); border-radius: 2px; }
+  h2.sec { font-size: 30px; line-height: 1.18; margin: 0 0 18px; letter-spacing: -.01em; }
+  h2.sec .secnum { color: var(--verde); font-weight: 700; }
+  h3.sub { font-size: 21px; margin: 34px 0 10px; letter-spacing: -.005em; }
+  .doc-body p { font-size: 17px; color: var(--gris-1); margin: 0 0 16px; text-wrap: pretty; }
+  .doc-body ul, .doc-body ol { font-size: 17px; color: var(--gris-1); margin: 0 0 16px; padding-left: 22px; line-height: 1.7; }
+  .doc-body li { margin-bottom: 7px; }
+  .doc-body ul ul, .doc-body ol ul { font-size: 16px; margin: 6px 0 4px; }
+  .lead { font-size: 20px; color: var(--gris-2); line-height: 1.55; font-weight: 400; }
+  .lead b { color: var(--gris-1); font-weight: 600; }
+  .doc-body a { color: var(--teal); text-decoration: underline; text-underline-offset: 2px; }
+  a.platform-link { color: var(--teal); font-weight: 600; }
+  a.platform-link::after { content: " ↗"; font-size: .82em; }
+  code {
+    font-family: 'JetBrains Mono', ui-monospace, 'Courier New', monospace;
+    font-size: .88em; background: var(--gris-5); color: var(--gris-1);
+    padding: 2px 6px; border-radius: 4px;
+  }
+
+  /* ---- Logo de la herramienta ---- */
+  .tool-logo {
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--papel); border: 1px solid var(--gris-4); border-radius: 8px;
+    padding: 14px 22px; margin: 4px 0 22px; min-height: 64px;
+  }
+  .tool-logo img { height: 40px; width: auto; max-width: 280px; object-fit: contain; display: block; }
+
+  /* ---- Índice / sumario por partes ---- */
+  .toc-intro { font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--gris-2); margin: 30px 0 14px; }
+  .parts { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin: 0 0 8px; }
+  .part-card {
+    background: var(--papel); border-radius: 8px; padding: 24px 26px;
+    border-top: 5px solid var(--verde);
+  }
+  .part-card .pt-k { font-size: 12px; font-weight: 700; color: var(--verde-osc); letter-spacing: .08em; text-transform: uppercase; }
+  .part-card h3 { font-size: 20px; margin: 5px 0 16px; letter-spacing: -.005em; }
+  .part-card ol { list-style: none; margin: 0; padding: 0; counter-reset: p; display: grid; gap: 9px; font-size: 16px; }
+  .part-card li { counter-increment: p; margin: 0; }
+  .part-card a {
+    display: flex; align-items: baseline; gap: 13px; text-decoration: none; cursor: pointer;
+    color: var(--gris-1); font-size: 16px; font-weight: 600; transition: color .18s ease;
+  }
+  .part-card a::before { content: counter(p, decimal-leading-zero); color: var(--verde-osc); font-weight: 700; font-size: 13px; min-width: 24px; }
+  .part-card a:hover { color: var(--verde-osc); }
+  .part-card a.is-active { color: var(--verde-osc); font-weight: 700; }
+
+  /* ---- Blocks / cards ---- */
+  .blocks { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin: 22px 0 6px; }
+  .blocks-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 22px 0 6px; }
+  .block {
+    background: var(--papel); border-radius: 8px; padding: 22px 24px;
+    border-top: 5px solid var(--verde); display: flex; flex-direction: column; gap: 6px;
+  }
+  .block .bn { font-size: 12px; font-weight: 700; color: var(--verde-osc); letter-spacing: .08em; }
+  .block b { font-size: 18px; line-height: 1.2; }
+  .block span { font-size: 14.5px; color: var(--gris-2); line-height: 1.45; }
+  .block code { font-size: 13px; word-break: break-word; }
+  .block ul { font-size: 14.5px; color: var(--gris-2); line-height: 1.45; margin: 4px 0 0; padding-left: 18px; }
+  .block ul li { margin-bottom: 4px; }
+  .block-full { grid-column: 1 / -1; }
+  .block--bad { border-top-color: #DC2626; }
+  .block--bad b { color: #991B1B; }
+  .block--good { border-top-color: var(--verde); }
+  .block--good b { color: var(--verde-osc); }
+
+  /* ===================== TABLAS ===================== */
+  .tbl-wrap { margin: 0 0 8px; overflow-x: auto; border-radius: 8px; }
+  table.ou { width: 100%; border-collapse: collapse; font-size: 15px; min-width: 560px; }
+  table.ou th, table.ou td { text-align: left; padding: 13px 16px; border-bottom: 1px solid var(--gris-4); vertical-align: top; line-height: 1.4; }
+  table.ou thead th { background: var(--gris-1); color: #fff; font-weight: 700; font-size: 13.5px; letter-spacing: .02em; }
+  table.ou thead th:first-child { border-top-left-radius: 6px; }
+  table.ou thead th:last-child { border-top-right-radius: 6px; }
+  table.ou td:first-child { font-weight: 700; color: var(--gris-1); }
+  table.ou .mag { color: var(--verde-osc); font-weight: 600; }
+  table.ou tbody tr:nth-child(even) { background: var(--papel); }
+  table.ou tbody tr:last-child td { border-bottom: none; }
+
+  /* ===================== CALLOUTS ===================== */
+  .callout {
+    display: grid; grid-template-columns: 42px 1fr; gap: 18px;
+    border-radius: 8px; padding: 20px 24px; margin: 24px 0; align-items: start;
+  }
+  .callout .ic {
+    width: 42px; height: 42px; border-radius: 50%; display: inline-flex;
+    align-items: center; justify-content: center; font-size: 21px; font-weight: 700;
+  }
+  .callout > div > b { display: block; font-size: 15.5px; margin-bottom: 4px; }
+  .callout p { font-size: 15.5px; margin: 0; color: var(--gris-1); line-height: 1.5; }
+  .callout p b { display: inline; color: inherit; font-size: inherit; }
+  .callout ul { font-size: 15.5px; margin: 6px 0 0; padding-left: 20px; color: var(--gris-1); line-height: 1.5; }
+  .callout ul li { margin-bottom: 6px; }
+  .callout--nota { background: var(--teal-claro); }
+  .callout--nota .ic { background: var(--teal); color: #fff; }
+  .callout--nota b { color: var(--teal); }
+  .callout--tip { background: var(--verde-claro); }
+  .callout--tip .ic { background: var(--verde); color: #fff; }
+  .callout--tip b { color: var(--verde-osc); }
+  .callout--warn { background: #FEF2F2; }
+  .callout--warn .ic { background: #DC2626; color: #fff; }
+  .callout--warn b { color: #991B1B; }
+
+  /* ===================== COLLAPSIBLES ===================== */
+  details { margin: 18px 0; }
+  details summary {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 14px 18px; border-radius: 8px; background: var(--papel);
+    border: 1px solid var(--gris-4); cursor: pointer; list-style: none;
+    font-size: 15.5px; font-weight: 600; color: var(--gris-1);
+    transition: background .15s;
+  }
+  details summary::-webkit-details-marker { display: none; }
+  details summary::after { content: "+"; font-size: 18px; color: var(--verde); font-weight: 700; }
+  details[open] summary::after { content: "−"; }
+  details summary:hover { background: var(--gris-5); }
+  details[open] summary { border-radius: 8px 8px 0 0; border-bottom-color: transparent; }
+  details .detail-body {
+    padding: 18px 22px 20px; border: 1px solid var(--gris-4); border-top: none;
+    border-radius: 0 0 8px 8px; background: var(--blanco);
+    font-size: 15px; color: var(--gris-1); line-height: 1.55;
+  }
+  .detail-body p { margin: 0 0 12px; font-size: 15px; }
+  .detail-body ol, .detail-body ul { margin: 0 0 12px; padding-left: 22px; font-size: 15px; }
+  .detail-body li { margin-bottom: 6px; }
+  .detail-body h4 { font-size: 15px; font-weight: 700; color: var(--gris-1); margin: 16px 0 6px; }
+
+  /* ===================== FOOTER ===================== */
+  .doc-foot {
+    border-top: 1px solid var(--gris-4); margin-top: 50px; padding-top: 22px;
+    display: flex; justify-content: space-between; font-size: 13px; color: var(--gris-3);
+  }
+
+  /* ===================== RESPONSIVE ===================== */
+  @media (max-width: 720px) {
+    .doc-head, .doc-body { padding-left: 26px; padding-right: 26px; }
+    .doc-meta, .blocks, .blocks-3, .parts { grid-template-columns: 1fr 1fr; }
+    .doc-head h1 { font-size: 33px; }
+  }
+  @media (max-width: 520px) {
+    .blocks-3, .parts { grid-template-columns: 1fr; }
+  }
+  @media print {
+    body { background: #fff; }
+    .page { box-shadow: none; margin: 0; max-width: none; border-radius: 0; }
+    .progress { display: none; }
+    section, .blocks, .blocks-3, .tbl-wrap, .callout, .parts { break-inside: avoid; }
+  }
+
+  /* ---- Outer layout with sticky side nav ---- */
+  .page { margin: 0; }
+  .outer-layout {
+    max-width: 1200px;
+    margin: 40px auto 90px;
+    display: grid;
+    grid-template-columns: 230px minmax(0, 1fr);
+    gap: 24px;
+    padding: 0 20px;
+    align-items: start;
+  }
+  .side-nav {
+    position: sticky;
+    top: 28px;
+    max-height: calc(100vh - 56px);
+    overflow-y: auto;
+    background: var(--blanco);
+    border: 1px solid var(--gris-4);
+    border-radius: 8px;
+    padding: 20px 16px;
+    box-shadow: var(--sombra);
+    scrollbar-width: thin;
+  }
+  .sn-label { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--verde-osc); margin: 0 0 8px; padding: 0 4px; }
+  .sn-label.sn-label2 { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--gris-4); }
+  .sn-item { display: flex; align-items: flex-start; gap: 7px; font-family: var(--tipo); font-size: 13px; color: var(--gris-2); text-decoration: none; padding: 6px 8px; border-radius: 5px; line-height: 1.3; transition: all .15s; margin-bottom: 2px; }
+  .sn-item:hover { color: var(--gris-1); background: var(--gris-5); }
+  .sn-item:target { color: var(--verde-osc); }
+  .sn-num { font-size: 11px; font-weight: 700; color: var(--verde-osc); min-width: 16px; padding-top: 1px; flex-shrink: 0; }
+  html { scroll-behavior: smooth; }
+  @media (max-width: 880px) {
+    .outer-layout { grid-template-columns: 1fr; padding: 0 12px; }
+    .side-nav { display: none; }
+    .page { margin: 0; }
+  }
+  .pts { display: inline-block; margin-left: 10px; font-size: 13px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--verde-osc); background: var(--verde-claro); border-radius: 4px; padding: 3px 9px; vertical-align: middle; }
+
+  /* Acceso al cuaderno */
+  .abrir { display: grid; grid-template-columns: 1fr auto; gap: 22px; align-items: center; border: 2px solid var(--verde); background: var(--verde-claro); border-radius: 8px; padding: 24px 28px; margin: 26px 0 8px; }
+  .abrir h3 { margin: 0 0 6px; font-size: 20px; }
+  .abrir p { margin: 0; font-size: 14.5px; line-height: 1.5; color: var(--gris-2); }
+  .abrir .botones { display: flex; flex-direction: column; gap: 9px; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-family: var(--tipo); font-size: 13.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; text-decoration: none !important; border-radius: 5px; padding: 12px 22px; white-space: nowrap; }
+  .btn--primario { background: var(--verde); color: #fff; }
+  .btn--primario:hover { background: var(--verde-osc); }
+  .btn--secundario { border: 2px solid var(--gris-4); color: var(--gris-1); background: var(--blanco); }
+  .btn--secundario:hover { border-color: var(--gris-2); }
+  @media (max-width: 700px) { .abrir { grid-template-columns: 1fr; } }
+  @media print { .abrir { break-inside: avoid; } .btn { border: 1px solid var(--gris-4); } }
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<div class="outer-layout">
+
+<nav class="side-nav" aria-label="Secciones">
+  <p class="sn-label">Contenido</p>
+  <a class="sn-item" href="#que-hay"><span class="sn-num">01</span>Qué va a hacer</a>
+  <a class="sn-item" href="#como"><span class="sn-num">02</span>Cómo se trabaja</a>
+  <a class="sn-item" href="#entrega"><span class="sn-num">03</span>Entrega</a>
+</nav>
+
+<article class="page">
+
+  <header class="doc-head">
+    <div class="org">
+      Universidad de los Andes
+      <span>Ingeniería Química y de Alimentos</span>
+    </div>
+    <div class="badge">Taller 8 · Proyecto de Operaciones Unitarias</div>
+    <h1>Destilación por lotes y la integral de Rayleigh</h1>
+    <p class="subtitle">Una planta piloto recupera isopropanol de una mezcla acuosa, y la termodinámica le pone un techo que ninguna cantidad de tiempo ni de equipo puede levantar.</p>
+    <div class="doc-meta">
+      <div><b>Curso</b>Proyecto de Operaciones Unitarias · IQYA-2031 · 2026-20</div>
+      <div><b>Modalidad</b>En parejas, distinta a las de los talleres 1 a 7</div>
+      <div><b>Sesión</b>Jueves 15 de octubre de 2026</div>
+      <div><b>Entrega</b>Domingo 18 de octubre, 11:59 p. m., por BloqueNeón</div>
+      <div><b>Puntaje</b>100 puntos</div>
+    </div>
+  </header>
+
+  <div class="doc-body">
+
+    <section id="s0">
+      <p class="lead">Este taller se resuelve en un <b>cuaderno de Google Colab</b>. No hay que instalar nada: se abre en el navegador, se ejecuta celda por celda y se entrega el mismo archivo con todo corrido. El cuaderno trae la deducción de la ecuación de Rayleigh, el manejo de datos de equilibrio por interpolación y tres casos demostrativos resueltos. Su trabajo empieza en la parte A.</p>
+
+      <div class="abrir">
+        <div>
+          <h3>El cuaderno del taller</h3>
+          <p>Ábralo en Colab y guarde de una vez una copia en su Drive, con <i>Archivo, Guardar una copia en Drive</i>. Si trabaja sobre el original no va a poder guardar los cambios.</p>
+        </div>
+        <div class="botones">
+          <a class="btn btn--primario" href="{COLAB}" target="_blank" rel="noopener">Abrir en Colab</a>
+          <a class="btn btn--secundario" href="{DESCARGA}" download>Descargar el .ipynb</a>
+        </div>
+      </div>
+
+      <div class="callout callout--warn">
+        <span class="ic">!</span>
+        <div>
+          <b>La pareja tiene que ser nueva</b>
+          <p>Este taller se hace en parejas, y <b>no puede repetir ninguno de los compañeros de los talleres 1 a 7</b>.</p>
+        </div>
+      </div>
+
+      <div class="callout callout--tip">
+        <span class="ic">i</span>
+        <div>
+          <b>Nivel de uso de IA generativa: 2</b>
+          <p>La inteligencia artificial se usa para hacer lluvia de ideas, estructurar el trabajo y orientar la búsqueda de fuentes. Usted parte de esas sugerencias y desarrolla el trabajo con su propio juicio. El contenido final debe estar desarrollado por usted. La declaración de uso va dentro del cuaderno.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="que-hay">
+      <div class="eyebrow">Contenido</div>
+      <h2 class="sec"><span class="secnum">1.</span> Qué va a hacer</h2>
+
+      <h3 class="sub">Parte A · Implementación <span class="pts">40 pts</span></h3>
+      <p>Tres funciones: la composición del destilado acumulado a partir del balance global, la trayectoria de composiciones del calderín a lo largo del proceso, y el diagrama de equilibrio con esa trayectoria dibujada encima. El cuaderno le da las herramientas de integración y de interpolación ya montadas; lo que usted escribe es la física.</p>
+
+      <h3 class="sub">Parte B · Casos de estudio <span class="pts">40 pts</span></h3>
+      <p>Una planta piloto farmacéutica que recupera isopropanol, con datos de equilibrio reales del sistema a 101,3 kPa. Primero el cálculo directo y el problema inverso, incluida la verificación del balance de materia. Después la comparación contra el modelo de volatilidad relativa constante, para ver cuánto se paga por la simplificación. Y al final el caso que da sentido al taller: <b>hasta dónde puede llegar la pureza del destilado</b>.</p>
+
+      <h3 class="sub">Parte C · Análisis <span class="pts">20 pts</span></h3>
+      <p>Cuatro preguntas de interpretación sobre el integrando de Rayleigh, el balance de materia, la validez del modelo ideal y el compromiso de vaporizar más.</p>
+    </section>
+
+    <section id="como">
+      <div class="eyebrow">En la sesión</div>
+      <h2 class="sec"><span class="secnum">2.</span> Cómo se trabaja</h2>
+      <p>En clase se recorre la teoría, se resuelven los casos demostrativos y se avanza la parte A. Las partes B y C quedan como trabajo autónomo de la pareja.</p>
+      <p>Tres cosas que conviene tener presentes:</p>
+      <ul>
+        <li><b>El azeótropo está dentro de los datos, y manda.</b> En la tabla de equilibrio hay una fila donde y menos x vale cero. Ahí no hay separación posible, y todo lo que el taller pregunta al final se desprende de ese punto. Mire la columna antes de empezar a integrar.</li>
+        <li><b>El integrando crece a medida que el proceso avanza.</b> El denominador es la diferencia entre el vapor y el líquido, y esa diferencia se estrecha. Entender eso de antemano explica por qué la destilación por lotes se vuelve cada vez menos eficiente.</li>
+        <li><b>El problema inverso se resuelve por búsqueda de raíz</b>, no despejando: la integral no tiene forma cerrada con datos experimentales interpolados.</li>
+      </ul>
+      <p>Las respuestas de la parte C van <b>en celdas de texto</b>. Una respuesta puesta como comentario dentro de una celda de código no se califica.</p>
+    </section>
+
+    <section id="entrega">
+      <div class="eyebrow">Cierre</div>
+      <h2 class="sec"><span class="secnum">3.</span> Entrega</h2>
+      <ol>
+        <li>El cuaderno con <b>todas las celdas ejecutadas</b> y las gráficas visibles. Un cuaderno sin ejecutar no se califica.</li>
+        <li>Las respuestas de la parte C en celdas de texto.</li>
+        <li>Nombre y código de los dos integrantes en la primera celda.</li>
+        <li>La declaración de uso de IA generativa al final, con las instrucciones que usó.</li>
+        <li>Archivo <code>Taller_08_Rayleigh_Apellido1_Apellido2.ipynb</code>, subido a BloqueNeón. Una entrega por pareja.</li>
+      </ol>
+      <div class="callout callout--nota">
+        <span class="ic">i</span>
+        <div>
+          <b>Antes de descargar</b>
+          <p>Use <i>Entorno de ejecución, Reiniciar y ejecutar todo</i>. Así queda la seguridad de que el cuaderno corre de arriba abajo en orden, que es como se va a calificar. Después, <i>Archivo, Descargar, Descargar .ipynb</i>.</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="doc-foot">
+      <span>IQYA-2031 · Proyecto de Operaciones Unitarias · 2026-20</span>
+      <span>Taller 8 · Universidad de los Andes</span>
+    </div>
+
+  </div>
+
+</article>
+</div>
+
+<script>
+(function () {
+  var bar = document.getElementById('progress');
+  function onScroll() {
+    var h = document.documentElement, max = h.scrollHeight - h.clientHeight;
+    bar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+})();
+</script>
+
+</body>
+</html>
