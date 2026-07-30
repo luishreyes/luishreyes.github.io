@@ -872,6 +872,20 @@ export const pou202620Course: Course = {
       href: '/classroom/iqya-2031-2026-20/talleres/Taller_08/Taller_08_Rayleigh.html',
       bannerImg: '/classroom/iqya-2031-2026-20/lecturas-banners/l12.jpg',
     },
+    {
+      slug: 'taller-09-mccabe-thiele',
+      week: 13,
+      order: 109,
+      title: 'Taller 9 · McCabe-Thiele y la columna de recuperación de etanol',
+      summary:
+        'La planta de pectina precipita con etanol y tiene que recuperarlo: el licor madre del filtro entra a 44,7 % v/v y por la cabeza debe salir solvente a 92,8 % v/v para volver al tanque de precipitación. El taller dimensiona esa columna, once etapas teóricas y diecisiete platos reales, y después pregunta por qué no se puede pedir más pureza. La respuesta no es «por el azeótropo»: es que la fórmula de reflujo mínimo del libro se queda 26 % corta en el etanol-agua, porque la línea de operación se vuelve tangente a la curva de equilibrio en pleno tramo de rectificación y no en la línea q. Cierra con una columna de isopropanol que otra planta pide resolver con la ley de Raoult, donde el cálculo sale impecable y el destilado que piden está por encima del azeótropo, así que la columna simplemente no existe. En parejas, de libre elección.',
+      date: '2026-10-22',
+      readingMinutes: 20,
+      tags: ['destilación continua', 'McCabe-Thiele', 'etapas teóricas', 'reflujo mínimo', 'pinch tangencial', 'azeótropo', 'eficiencia de plato', 'ley de Raoult', 'Van Laar', 'Python', 'Colab', 'taller'],
+      category: 'taller',
+      href: '/classroom/iqya-2031-2026-20/talleres/Taller_09/Taller_09_McCabe_Thiele.html',
+      bannerImg: '/classroom/iqya-2031-2026-20/lecturas-banners/l13.jpg',
+    },
   ],
   presentations: [
     {
