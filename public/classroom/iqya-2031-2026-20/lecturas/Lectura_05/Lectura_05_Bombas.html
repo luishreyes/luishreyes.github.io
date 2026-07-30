@@ -421,7 +421,7 @@
   }
 
   /* ===================== QA MÓVIL — OVERFLOW & RESPONSIVE ===================== */
-  /* Ecuaciones KaTeX display: scroll horizontal en pantallas estrechas */
+  /* Ecuaciones de bloque: scroll horizontal en pantallas estrechas */
   /* Refuerzo de imágenes en móvil */
   .fig-frame img { max-width: 100% !important; height: auto !important; }
   /* SVG de calculadoras/gráficas (selector, curvas de bomba): no desbordar */
@@ -1042,9 +1042,11 @@
 </article>
 </div><!-- /outer-layout -->
 
-<!-- ── KaTeX ──────────────────────────────────────────────────── -->
 
 <script>
+/* Coma decimal en todo lo que se muestre. */
+function coma(v){return String(v).replace('.', ',');}
+
 /* ── Progress bar ────────────────────────────────────────────── */
 (function(){
   const bar=document.getElementById('progress');
@@ -1178,12 +1180,12 @@
   xTicks.forEach(function(t){
     const x=xS(t);
     svg.appendChild(el('line',{x1:x,y1:mg.top,x2:x,y2:mg.top+plotH,stroke:'#e4e4e7','stroke-width':'0.5','stroke-dasharray':'2 2'}));
-    svg.appendChild(txt(t<1?t.toString():t.toFixed(0),{x:x,y:mg.top+plotH+18,'text-anchor':'middle','font-size':'11','fill':'#52525b'}));
+    svg.appendChild(txt(t<1?t.toString().replace('.', ','):t.toFixed(0).replace('.', ','),{x:x,y:mg.top+plotH+18,'text-anchor':'middle','font-size':'11','fill':'#52525b'}));
   });
   yTicks.forEach(function(t){
     const y=yS(t);
     svg.appendChild(el('line',{x1:mg.left,y1:y,x2:mg.left+plotW,y2:y,stroke:'#e4e4e7','stroke-width':'0.5','stroke-dasharray':'2 2'}));
-    svg.appendChild(txt(t.toString(),{x:mg.left-8,y:y+4,'text-anchor':'end','font-size':'11','fill':'#52525b'}));
+    svg.appendChild(txt(t.toString().replace('.', ','),{x:mg.left-8,y:y+4,'text-anchor':'end','font-size':'11','fill':'#52525b'}));
   });
 
   // Family rectangles (stored for update)
@@ -1221,15 +1223,15 @@
   // State
   let Q=50,H=40,mu=1,solids=false,smooth=false;
 
-  function fmt(v){return v<10?v.toFixed(1):v.toFixed(0);}
-  function fmt2(v){return v.toFixed(2);}
+  function fmt(v){return v<10?v.toFixed(1).replace('.', ','):v.toFixed(0).replace('.', ',');}
+  function fmt2(v){return v.toFixed(2).replace('.', ',');}
 
   function evaluate(f){
     const reasons=[];
     let ok=true;
-    if(Q<f.qRange[0]||Q>f.qRange[1]){ok=false;reasons.push('Q fuera de rango ('+f.qRange[0]+'–'+f.qRange[1]+' m³/h)');}
-    if(H<f.hRange[0]||H>f.hRange[1]){ok=false;reasons.push('H fuera de rango ('+f.hRange[0]+'–'+f.hRange[1]+' m)');}
-    if(mu>f.muMax){ok=false;reasons.push('viscosidad excesiva (máx '+f.muMax+' cP)');}
+    if(Q<f.qRange[0]||Q>f.qRange[1]){ok=false;reasons.push('Q fuera de rango ('+coma(f.qRange[0])+'–'+coma(f.qRange[1])+' m³/h)');}
+    if(H<f.hRange[0]||H>f.hRange[1]){ok=false;reasons.push('H fuera de rango ('+coma(f.hRange[0])+'–'+coma(f.hRange[1])+' m)');}
+    if(mu>f.muMax){ok=false;reasons.push('viscosidad excesiva (máx '+coma(f.muMax)+' cP)');}
     if(solids&&!f.solids){ok=false;reasons.push('no tolera sólidos');}
     if(smooth&&f.pulsates){ok=false;reasons.push('flujo pulsante');}
     let marginal=false;
@@ -1313,9 +1315,9 @@
     btn.textContent=p.name;
     btn.onclick=function(){
       Q=p.Q;H=p.H;mu=p.mu;solids=p.solids;smooth=p.smooth;
-      document.getElementById('sel-q').value=Math.log10(Q).toFixed(3);
-      document.getElementById('sel-h').value=Math.log10(H).toFixed(3);
-      document.getElementById('sel-mu').value=Math.log10(mu).toFixed(3);
+      document.getElementById('sel-q').value=Math.log10(Q).toFixed(3).replace('.', ',');
+      document.getElementById('sel-h').value=Math.log10(H).toFixed(3).replace('.', ',');
+      document.getElementById('sel-mu').value=Math.log10(mu).toFixed(3).replace('.', ',');
       document.getElementById('sel-solids').checked=solids;
       document.getElementById('sel-smooth').checked=smooth;
       document.getElementById('q-disp').textContent=fmt(Q).replace('.',',')+' m³/h';
@@ -1356,7 +1358,7 @@
     step=step||2;
     var d='';
     for(var q=0;q<=Qmax;q+=step){
-      d+=(q===0?'M':'L')+xS(q).toFixed(1)+' '+yscale(fn(q)).toFixed(1)+' ';
+      d+=(q===0?'M':'L')+xS(q).toFixed(1).replace('.', ',')+' '+yscale(fn(q)).toFixed(1).replace('.', ',')+' ';
     }
     return d;
   }
@@ -1375,11 +1377,11 @@
   [0,10,20,30,40,50,60].forEach(function(v){
     var y=yLS(v);
     svg.appendChild(el('line',{x1:mg.left,y1:y,x2:mg.left+plotW,y2:y,stroke:'#e4e4e7','stroke-width':'0.5','stroke-dasharray':'2 2'}));
-    svg.appendChild(txt(v,{x:mg.left-8,y:y+4,'text-anchor':'end','font-size':'11','fill':'#52525b'}));
+    svg.appendChild(txt(String(v).replace('.', ','),{x:mg.left-8,y:y+4,'text-anchor':'end','font-size':'11','fill':'#52525b'}));
   });
   [0,0.2,0.4,0.6,0.8,1].forEach(function(v){
     var y=yRS(v);
-    svg.appendChild(txt(v.toFixed(1),{x:mg.left+plotW+8,y:y+4,'text-anchor':'start','font-size':'11','fill':'#52525b'}));
+    svg.appendChild(txt(v.toFixed(1).replace('.', ','),{x:mg.left+plotW+8,y:y+4,'text-anchor':'start','font-size':'11','fill':'#52525b'}));
   });
   [0,20,40,60,80,100,120].forEach(function(t){
     var x=xS(t);
@@ -1432,15 +1434,15 @@
     curDotH.setAttribute('cx',x);curDotH.setAttribute('cy',yLS(headFn(Q)));
     curDotEta.setAttribute('cx',x);curDotEta.setAttribute('cy',yRS(etaFn(Q)));
     curDotN.setAttribute('cx',x);curDotN.setAttribute('cy',yLS(npshrFn(Q)));
-    document.getElementById('lc-h').textContent=headFn(Q).toFixed(1)+' m';
-    document.getElementById('lc-eta').textContent=(etaFn(Q)*100).toFixed(0)+' %';
-    document.getElementById('lc-bhp').textContent=bhpFn(Q).toFixed(1)+' kW';
-    document.getElementById('lc-npsh').textContent=npshrFn(Q).toFixed(1)+' m';
+    document.getElementById('lc-h').textContent=headFn(Q).toFixed(1).replace('.', ',')+' m';
+    document.getElementById('lc-eta').textContent=(etaFn(Q)*100).toFixed(0).replace('.', ',')+' %';
+    document.getElementById('lc-bhp').textContent=bhpFn(Q).toFixed(1).replace('.', ',')+' kW';
+    document.getElementById('lc-npsh').textContent=npshrFn(Q).toFixed(1).replace('.', ',')+' m';
   }
 
   document.getElementById('curves-q-slider').addEventListener('input',function(){
     var Q=parseFloat(this.value);
-    document.getElementById('q-val').textContent=Q.toFixed(0);
+    document.getElementById('q-val').textContent=Q.toFixed(0).replace('.', ',');
     updateCursor(Q);
   });
 
@@ -1451,7 +1453,7 @@
 (function(){
   var rho=1000,g=9.81;
   function head(kPa){return kPa*1000/(rho*g);}
-  function fmt(v){return v.toFixed(2);}
+  function fmt(v){return v.toFixed(2).replace('.', ',');}
 
   function calc(){
     var Ptank=parseFloat(document.getElementById('npsh-ptank').value);
@@ -1471,10 +1473,10 @@
     var ok=margen>=0.5;
     var warn=margen>=0&&margen<0.5;
 
-    document.getElementById('cr-a-val').textContent=NPSHa.toFixed(2)+' m';
+    document.getElementById('cr-a-val').textContent=NPSHa.toFixed(2).replace('.', ',')+' m';
     document.getElementById('cr-a').className='calc-card';
 
-    document.getElementById('cr-m-val').textContent=(margen>=0?'+':'')+margen.toFixed(2)+' m';
+    document.getElementById('cr-m-val').textContent=(margen>=0?'+':'')+margen.toFixed(2).replace('.', ',')+' m';
     document.getElementById('cr-m').className='calc-card '+(ok?'good':warn?'warn':'bad');
 
     document.getElementById('cr-s-val').textContent=ok?'Operación segura':warn?'Margen insuficiente':'Cavitación inminente';
@@ -1498,21 +1500,21 @@
     var eta=parseFloat(document.getElementById('pw-eta').value);
     var etaM=parseFloat(document.getElementById('pw-etam').value);
 
-    document.getElementById('pw-q-val').textContent=Q.toFixed(0)+' m³/h';
-    document.getElementById('pw-h-val').textContent=H.toFixed(0)+' m';
-    document.getElementById('pw-rho-val').textContent=rho.toFixed(0)+' kg/m³';
-    document.getElementById('pw-eta-val').textContent=(eta*100).toFixed(0)+' %';
-    document.getElementById('pw-etam-val').textContent=(etaM*100).toFixed(0)+' %';
+    document.getElementById('pw-q-val').textContent=Q.toFixed(0).replace('.', ',')+' m³/h';
+    document.getElementById('pw-h-val').textContent=H.toFixed(0).replace('.', ',')+' m';
+    document.getElementById('pw-rho-val').textContent=rho.toFixed(0).replace('.', ',')+' kg/m³';
+    document.getElementById('pw-eta-val').textContent=(eta*100).toFixed(0).replace('.', ',')+' %';
+    document.getElementById('pw-etam-val').textContent=(etaM*100).toFixed(0).replace('.', ',')+' %';
 
     var Qsi=Q/3600;
     var Ph=rho*g*Qsi*H;
     var BHP=Ph/Math.max(0.05,eta);
     var Pelec=BHP/Math.max(0.05,etaM);
 
-    document.getElementById('pw-ph').textContent=(Ph/1000).toFixed(2)+' kW';
-    document.getElementById('pw-bhp').textContent=(BHP/1000).toFixed(2)+' kW';
-    document.getElementById('pw-elec').textContent=(Pelec/1000).toFixed(2)+' kW';
-    document.getElementById('pw-hp').textContent='≈ '+(Pelec/1000*1.341).toFixed(1)+' HP';
+    document.getElementById('pw-ph').textContent=(Ph/1000).toFixed(2).replace('.', ',')+' kW';
+    document.getElementById('pw-bhp').textContent=(BHP/1000).toFixed(2).replace('.', ',')+' kW';
+    document.getElementById('pw-elec').textContent=(Pelec/1000).toFixed(2).replace('.', ',')+' kW';
+    document.getElementById('pw-hp').textContent='≈ '+(Pelec/1000*1.341).toFixed(1).replace('.', ',')+' HP';
   }
 
   ['pw-q','pw-h','pw-rho','pw-eta','pw-etam'].forEach(function(id){
