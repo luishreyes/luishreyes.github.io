@@ -858,6 +858,20 @@ export const pou202620Course: Course = {
       href: '/classroom/iqya-2031-2026-20/talleres/Taller_07/Taller_07_Rachford_Rice.html',
       bannerImg: '/classroom/iqya-2031-2026-20/lecturas-banners/l11.jpg',
     },
+    {
+      slug: 'taller-08-rayleigh',
+      week: 12,
+      order: 108,
+      title: 'Taller 8 · Destilación por lotes y la integral de Rayleigh',
+      summary:
+        'Una planta piloto farmacéutica recupera isopropanol de una mezcla acuosa en un calderín por lotes. Del balance diferencial sale la ecuación de Rayleigh, que hay que integrar sobre datos de equilibrio interpolados, resolver también en sentido inverso cuando lo que se fija es la fracción vaporizada, y verificar contra el balance de materia global. Después se compara contra el modelo de volatilidad relativa constante para medir lo que cuesta la simplificación. Y al final llega el punto que da sentido al tema: el azeótropo del sistema pone un techo de 68,5 % molar al destilado, y llevar el calderín hasta él exigiría vaporizar el 99,99999 % de la carga, así que el proceso se frena solo. En parejas, distinta a las de los talleres 1 a 7.',
+      date: '2026-10-15',
+      readingMinutes: 20,
+      tags: ['destilación por lotes', 'ecuación de Rayleigh', 'azeótropo', 'equilibrio líquido-vapor', 'volatilidad relativa', 'integración numérica', 'problema inverso', 'Python', 'Colab', 'taller'],
+      category: 'taller',
+      href: '/classroom/iqya-2031-2026-20/talleres/Taller_08/Taller_08_Rayleigh.html',
+      bannerImg: '/classroom/iqya-2031-2026-20/lecturas-banners/l12.jpg',
+    },
   ],
   presentations: [
     {
