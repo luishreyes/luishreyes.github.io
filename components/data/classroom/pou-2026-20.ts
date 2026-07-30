@@ -844,6 +844,20 @@ export const pou202620Course: Course = {
       href: '/classroom/iqya-2031-2026-20/talleres/Taller_06/Taller_06_Filtracion_de_Levadura.html',
       bannerImg: '/classroom/iqya-2031-2026-20/lecturas-banners/l09.jpg',
     },
+    {
+      slug: 'taller-07-rachford-rice',
+      week: 11,
+      order: 107,
+      title: 'Taller 7 · Rachford-Rice para el flash multicomponente',
+      summary:
+        'Un cuaderno de Colab con la teoría de la destilación flash, la deducción de la ecuación de Rachford-Rice y una implementación de referencia ya resuelta. El trabajo empieza donde el cuaderno se detiene: el estudiante escribe la función, su derivada y el lazo de Newton con sus propias manos, exige que el residuo sea pequeño y no solo el paso, y contrasta su fracción vaporizada contra la implementación de referencia hasta la octava cifra. Después lo aplica a tres casos: una mezcla de cetonas, una nafta de cuatro parafinas cuyo binario de ligeros no se comporta como se espera, y la búsqueda de la ventana de operación del tambor en el plano de temperatura y presión. En parejas, de libre elección.',
+      date: '2026-10-08',
+      readingMinutes: 20,
+      tags: ['destilación flash', 'Rachford-Rice', 'equilibrio líquido-vapor', 'multicomponente', 'Newton-Raphson', 'convergencia', 'punto de burbuja', 'punto de rocío', 'Python', 'Colab', 'taller'],
+      category: 'taller',
+      href: '/classroom/iqya-2031-2026-20/talleres/Taller_07/Taller_07_Rachford_Rice.html',
+      bannerImg: '/classroom/iqya-2031-2026-20/lecturas-banners/l11.jpg',
+    },
   ],
   presentations: [
     {
