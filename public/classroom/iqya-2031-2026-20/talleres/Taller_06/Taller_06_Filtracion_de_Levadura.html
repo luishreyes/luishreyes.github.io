@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Taller 6 · Separación de biomasa de levadura · Proyecto de Operaciones Unitarias</title>
+<link rel="stylesheet" href="assets/deloitte.css">
+<style>
+  body {
+    margin: 0;
+    background: var(--gris-5);
+    font-family: var(--tipo);
+    color: var(--gris-1);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.62;
+  }
+
+  /* ---- Barra de progreso de lectura ---- */
+  .progress {
+    position: fixed; top: 0; left: 0; height: 4px; width: 0;
+    background: var(--verde); z-index: 200; transition: width .08s linear;
+  }
+
+  .page {
+    max-width: 940px;
+    margin: 40px auto 90px;
+    background: var(--blanco);
+    box-shadow: var(--sombra);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  /* ===================== ENCABEZADO ===================== */
+  .doc-head {
+    background: var(--papel);
+    border-bottom: 5px solid var(--verde);
+    padding: 46px 64px 40px;
+    position: relative;
+  }
+  .doc-head .org {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    font-size: 14px; font-weight: 700; letter-spacing: .03em; color: var(--gris-1);
+  }
+  .doc-head .org span { color: var(--gris-3); font-weight: 600; }
+  .doc-head .badge {
+    display: inline-block; background: var(--verde); color: #fff;
+    font-size: 13px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+    padding: 6px 14px; border-radius: 999px; margin: 28px 0 18px; white-space: nowrap;
+  }
+  .doc-head h1 { font-size: 43px; line-height: 1.1; margin: 0 0 10px; letter-spacing: -.015em; max-width: 22ch; }
+  .doc-head .subtitle { font-size: 20px; color: var(--gris-2); margin: 0; font-weight: 500; max-width: 56ch; }
+  .doc-meta {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px;
+    margin-top: 34px; padding-top: 26px; border-top: 1px solid var(--gris-4);
+  }
+  .doc-meta div { font-size: 15px; color: var(--gris-2); }
+  .doc-meta b { display: block; color: var(--gris-1); font-size: 16px; font-weight: 700; margin-bottom: 2px; }
+
+  /* ===================== CUERPO ===================== */
+  .doc-body { padding: 8px 64px 60px; }
+  .doc-body section { padding-top: 46px; scroll-margin-top: 24px; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--verde-osc); margin-bottom: 12px;
+  }
+  .eyebrow::before { content: ""; width: 26px; height: 4px; background: var(--verde); border-radius: 2px; }
+  h2.sec { font-size: 30px; line-height: 1.18; margin: 0 0 18px; letter-spacing: -.01em; }
+  h2.sec .secnum { color: var(--verde); font-weight: 700; }
+  h3.sub { font-size: 21px; margin: 34px 0 10px; letter-spacing: -.005em; }
+  .doc-body p { font-size: 17px; color: var(--gris-1); margin: 0 0 16px; text-wrap: pretty; }
+  .doc-body ul, .doc-body ol { font-size: 17px; color: var(--gris-1); margin: 0 0 16px; padding-left: 22px; line-height: 1.7; }
+  .doc-body li { margin-bottom: 7px; }
+  .doc-body ul ul, .doc-body ol ul { font-size: 16px; margin: 6px 0 4px; }
+  .lead { font-size: 20px; color: var(--gris-2); line-height: 1.55; font-weight: 400; }
+  .lead b { color: var(--gris-1); font-weight: 600; }
+  .doc-body a { color: var(--teal); text-decoration: underline; text-underline-offset: 2px; }
+  a.platform-link { color: var(--teal); font-weight: 600; }
+  a.platform-link::after { content: " ↗"; font-size: .82em; }
+  code {
+    font-family: 'JetBrains Mono', ui-monospace, 'Courier New', monospace;
+    font-size: .88em; background: var(--gris-5); color: var(--gris-1);
+    padding: 2px 6px; border-radius: 4px;
+  }
+
+  /* ---- Logo de la herramienta ---- */
+  .tool-logo {
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--papel); border: 1px solid var(--gris-4); border-radius: 8px;
+    padding: 14px 22px; margin: 4px 0 22px; min-height: 64px;
+  }
+  .tool-logo img { height: 40px; width: auto; max-width: 280px; object-fit: contain; display: block; }
+
+  /* ---- Índice / sumario por partes ---- */
+  .toc-intro { font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--gris-2); margin: 30px 0 14px; }
+  .parts { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin: 0 0 8px; }
+  .part-card {
+    background: var(--papel); border-radius: 8px; padding: 24px 26px;
+    border-top: 5px solid var(--verde);
+  }
+  .part-card .pt-k { font-size: 12px; font-weight: 700; color: var(--verde-osc); letter-spacing: .08em; text-transform: uppercase; }
+  .part-card h3 { font-size: 20px; margin: 5px 0 16px; letter-spacing: -.005em; }
+  .part-card ol { list-style: none; margin: 0; padding: 0; counter-reset: p; display: grid; gap: 9px; font-size: 16px; }
+  .part-card li { counter-increment: p; margin: 0; }
+  .part-card a {
+    display: flex; align-items: baseline; gap: 13px; text-decoration: none; cursor: pointer;
+    color: var(--gris-1); font-size: 16px; font-weight: 600; transition: color .18s ease;
+  }
+  .part-card a::before { content: counter(p, decimal-leading-zero); color: var(--verde-osc); font-weight: 700; font-size: 13px; min-width: 24px; }
+  .part-card a:hover { color: var(--verde-osc); }
+  .part-card a.is-active { color: var(--verde-osc); font-weight: 700; }
+
+  /* ---- Blocks / cards ---- */
+  .blocks { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin: 22px 0 6px; }
+  .blocks-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 22px 0 6px; }
+  .block {
+    background: var(--papel); border-radius: 8px; padding: 22px 24px;
+    border-top: 5px solid var(--verde); display: flex; flex-direction: column; gap: 6px;
+  }
+  .block .bn { font-size: 12px; font-weight: 700; color: var(--verde-osc); letter-spacing: .08em; }
+  .block b { font-size: 18px; line-height: 1.2; }
+  .block span { font-size: 14.5px; color: var(--gris-2); line-height: 1.45; }
+  .block code { font-size: 13px; word-break: break-word; }
+  .block ul { font-size: 14.5px; color: var(--gris-2); line-height: 1.45; margin: 4px 0 0; padding-left: 18px; }
+  .block ul li { margin-bottom: 4px; }
+  .block-full { grid-column: 1 / -1; }
+  .block--bad { border-top-color: #DC2626; }
+  .block--bad b { color: #991B1B; }
+  .block--good { border-top-color: var(--verde); }
+  .block--good b { color: var(--verde-osc); }
+
+  /* ===================== TABLAS ===================== */
+  .tbl-wrap { margin: 0 0 8px; overflow-x: auto; border-radius: 8px; }
+  table.ou { width: 100%; border-collapse: collapse; font-size: 15px; min-width: 560px; }
+  table.ou th, table.ou td { text-align: left; padding: 13px 16px; border-bottom: 1px solid var(--gris-4); vertical-align: top; line-height: 1.4; }
+  table.ou thead th { background: var(--gris-1); color: #fff; font-weight: 700; font-size: 13.5px; letter-spacing: .02em; }
+  table.ou thead th:first-child { border-top-left-radius: 6px; }
+  table.ou thead th:last-child { border-top-right-radius: 6px; }
+  table.ou td:first-child { font-weight: 700; color: var(--gris-1); }
+  table.ou .mag { color: var(--verde-osc); font-weight: 600; }
+  table.ou tbody tr:nth-child(even) { background: var(--papel); }
+  table.ou tbody tr:last-child td { border-bottom: none; }
+
+  /* ===================== CALLOUTS ===================== */
+  .callout {
+    display: grid; grid-template-columns: 42px 1fr; gap: 18px;
+    border-radius: 8px; padding: 20px 24px; margin: 24px 0; align-items: start;
+  }
+  .callout .ic {
+    width: 42px; height: 42px; border-radius: 50%; display: inline-flex;
+    align-items: center; justify-content: center; font-size: 21px; font-weight: 700;
+  }
+  .callout > div > b { display: block; font-size: 15.5px; margin-bottom: 4px; }
+  .callout p { font-size: 15.5px; margin: 0; color: var(--gris-1); line-height: 1.5; }
+  .callout p b { display: inline; color: inherit; font-size: inherit; }
+  .callout ul { font-size: 15.5px; margin: 6px 0 0; padding-left: 20px; color: var(--gris-1); line-height: 1.5; }
+  .callout ul li { margin-bottom: 6px; }
+  .callout--nota { background: var(--teal-claro); }
+  .callout--nota .ic { background: var(--teal); color: #fff; }
+  .callout--nota b { color: var(--teal); }
+  .callout--tip { background: var(--verde-claro); }
+  .callout--tip .ic { background: var(--verde); color: #fff; }
+  .callout--tip b { color: var(--verde-osc); }
+  .callout--warn { background: #FEF2F2; }
+  .callout--warn .ic { background: #DC2626; color: #fff; }
+  .callout--warn b { color: #991B1B; }
+
+  /* ===================== COLLAPSIBLES ===================== */
+  details { margin: 18px 0; }
+  details summary {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 14px 18px; border-radius: 8px; background: var(--papel);
+    border: 1px solid var(--gris-4); cursor: pointer; list-style: none;
+    font-size: 15.5px; font-weight: 600; color: var(--gris-1);
+    transition: background .15s;
+  }
+  details summary::-webkit-details-marker { display: none; }
+  details summary::after { content: "+"; font-size: 18px; color: var(--verde); font-weight: 700; }
+  details[open] summary::after { content: "−"; }
+  details summary:hover { background: var(--gris-5); }
+  details[open] summary { border-radius: 8px 8px 0 0; border-bottom-color: transparent; }
+  details .detail-body {
+    padding: 18px 22px 20px; border: 1px solid var(--gris-4); border-top: none;
+    border-radius: 0 0 8px 8px; background: var(--blanco);
+    font-size: 15px; color: var(--gris-1); line-height: 1.55;
+  }
+  .detail-body p { margin: 0 0 12px; font-size: 15px; }
+  .detail-body ol, .detail-body ul { margin: 0 0 12px; padding-left: 22px; font-size: 15px; }
+  .detail-body li { margin-bottom: 6px; }
+  .detail-body h4 { font-size: 15px; font-weight: 700; color: var(--gris-1); margin: 16px 0 6px; }
+
+  /* ===================== FOOTER ===================== */
+  .doc-foot {
+    border-top: 1px solid var(--gris-4); margin-top: 50px; padding-top: 22px;
+    display: flex; justify-content: space-between; font-size: 13px; color: var(--gris-3);
+  }
+
+  /* ===================== RESPONSIVE ===================== */
+  @media (max-width: 720px) {
+    .doc-head, .doc-body { padding-left: 26px; padding-right: 26px; }
+    .doc-meta, .blocks, .blocks-3, .parts { grid-template-columns: 1fr 1fr; }
+    .doc-head h1 { font-size: 33px; }
+  }
+  @media (max-width: 520px) {
+    .blocks-3, .parts { grid-template-columns: 1fr; }
+  }
+  @media print {
+    body { background: #fff; }
+    .page { box-shadow: none; margin: 0; max-width: none; border-radius: 0; }
+    .progress { display: none; }
+    section, .blocks, .blocks-3, .tbl-wrap, .callout, .parts { break-inside: avoid; }
+  }
+
+  /* ---- Outer layout with sticky side nav ---- */
+  .page { margin: 0; }
+  .outer-layout {
+    max-width: 1200px;
+    margin: 40px auto 90px;
+    display: grid;
+    grid-template-columns: 230px minmax(0, 1fr);
+    gap: 24px;
+    padding: 0 20px;
+    align-items: start;
+  }
+  .side-nav {
+    position: sticky;
+    top: 28px;
+    max-height: calc(100vh - 56px);
+    overflow-y: auto;
+    background: var(--blanco);
+    border: 1px solid var(--gris-4);
+    border-radius: 8px;
+    padding: 20px 16px;
+    box-shadow: var(--sombra);
+    scrollbar-width: thin;
+  }
+  .sn-label { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--verde-osc); margin: 0 0 8px; padding: 0 4px; }
+  .sn-label.sn-label2 { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--gris-4); }
+  .sn-item { display: flex; align-items: flex-start; gap: 7px; font-family: var(--tipo); font-size: 13px; color: var(--gris-2); text-decoration: none; padding: 6px 8px; border-radius: 5px; line-height: 1.3; transition: all .15s; margin-bottom: 2px; }
+  .sn-item:hover { color: var(--gris-1); background: var(--gris-5); }
+  .sn-item:target { color: var(--verde-osc); }
+  .sn-num { font-size: 11px; font-weight: 700; color: var(--verde-osc); min-width: 16px; padding-top: 1px; flex-shrink: 0; }
+  html { scroll-behavior: smooth; }
+  @media (max-width: 880px) {
+    .outer-layout { grid-template-columns: 1fr; padding: 0 12px; }
+    .side-nav { display: none; }
+    .page { margin: 0; }
+  }
+  .pts { display: inline-block; margin-left: 10px; font-size: 13px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--verde-osc); background: var(--verde-claro); border-radius: 4px; padding: 3px 9px; vertical-align: middle; }
+
+  /* Cartas de diseño */
+  .carta { border: 1px solid var(--gris-4); background: var(--blanco); border-radius: 8px; overflow: hidden; margin: 0 0 20px; }
+  .carta img { display: block; width: 100%; height: auto; cursor: zoom-in; background: #fff; }
+  .carta figcaption { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; border-top: 1px solid var(--gris-4); padding: 10px 14px; font-size: 13px; color: var(--gris-2); background: var(--papel); }
+  .carta figcaption b { color: var(--gris-1); }
+  .lupa { font-family: var(--tipo); font-size: 12.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: #fff; background: var(--verde); border: none; border-radius: 5px; padding: 8px 15px; cursor: pointer; }
+  .lupa:hover { background: var(--verde-osc); }
+
+  .visor { position: fixed; inset: 0; z-index: 90; background: rgba(20,22,24,.94); display: none; }
+  .visor.abierto { display: block; }
+  .visor-lienzo { position: absolute; inset: 0; overflow: hidden; cursor: grab; touch-action: none; }
+  .visor-lienzo.arrastrando { cursor: grabbing; }
+  .visor-lienzo img { position: absolute; top: 0; left: 0; transform-origin: 0 0; max-width: none; user-select: none; -webkit-user-drag: none; background: #fff; }
+  .visor-barra { position: absolute; top: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 16px; background: linear-gradient(rgba(20,22,24,.85), rgba(20,22,24,0)); color: #fff; pointer-events: none; }
+  .visor-barra > * { pointer-events: auto; }
+  .visor-tit { font-family: var(--tipo); font-size: 14px; letter-spacing: .06em; text-transform: uppercase; opacity: .85; }
+  .visor-mandos { display: flex; align-items: center; gap: 8px; }
+  .visor-btn { width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center; font-family: var(--tipo); font-size: 19px; font-weight: 700; line-height: 1; color: #fff; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.28); border-radius: 5px; cursor: pointer; }
+  .visor-btn:hover { background: rgba(255,255,255,.24); }
+  .visor-btn.ancho { width: auto; padding: 0 14px; font-size: 13px; letter-spacing: .04em; text-transform: uppercase; }
+  .visor-nivel { font-family: var(--tipo); font-size: 13px; min-width: 52px; text-align: center; opacity: .85; font-variant-numeric: tabular-nums; }
+  .visor-ayuda { position: absolute; left: 0; right: 0; bottom: 0; text-align: center; padding: 12px; font-family: var(--tipo); font-size: 12.5px; color: rgba(255,255,255,.72); background: linear-gradient(rgba(20,22,24,0), rgba(20,22,24,.85)); pointer-events: none; }
+
+  .confidencial { border: 2px solid #a4362a; background: #fdf3f2; color: #7d2b21; border-radius: 8px; padding: 16px 20px; margin: 0 0 26px; }
+  .confidencial b { display: block; font-size: 15px; margin-bottom: 4px; }
+  .confidencial p { margin: 0; font-size: 14px; line-height: 1.5; }
+
+  .dato { border-left: 4px solid var(--verde); background: var(--papel); padding: 14px 18px; margin: 18px 0; font-variant-numeric: tabular-nums; }
+  .dato p { margin: 0 0 4px; font-size: 15px; }
+  .dato p:last-child { margin-bottom: 0; }
+
+  table.ou td.num { font-variant-numeric: tabular-nums; }
+  table.ou tr.marca > * { background: var(--verde-claro); }
+
+  /* Expresiones y desgloses de puntaje */
+  .fml { border: 1px solid var(--gris-4); background: var(--papel); border-radius: 6px; padding: 14px 18px; margin: 16px 0; font-size: 16px; line-height: 1.8; text-align: center; font-variant-numeric: tabular-nums; }
+  .rep { border-top: 1px dashed var(--gris-4); padding-top: 10px; margin-top: 18px; font-size: 14px; color: var(--gris-2); }
+  .rep b { color: var(--gris-1); }
+
+  /* ---- Ecuaciones compuestas en SVG (Plantillas/tools/math-svg.mjs) ---- */
+  .fml { overflow-x: auto; line-height: 1; }
+  .fml svg { display: block; margin: 0 auto; max-width: 100%; height: auto; vertical-align: baseline; }
+  .fml svg + svg { margin-top: 14px; }
+  .fml-lead { text-align: center; font-size: 14.5px; color: var(--gris-2); margin: 18px 0 -2px; }
+  .tex svg { display: inline-block; vertical-align: -0.12em; }
+
+  .solo-impreso { display: none; }
+  @media print {
+    .fml, .rep { break-inside: avoid; }
+    .lupa, .visor, .solo-pantalla { display: none !important; }
+    .solo-impreso { display: inline; }
+    .carta, .confidencial, .dato { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<div class="outer-layout">
+
+<nav class="side-nav" aria-label="Secciones">
+  <p class="sn-label">Contenido</p>
+  <a class="sn-item" href="#datos"><span class="sn-num">00</span>El caso</a>
+  <a class="sn-item" href="#pA"><span class="sn-num">01</span>Los datos del ensayo</a>
+  <a class="sn-item" href="#pB"><span class="sn-num">02</span>Diseño preliminar</a>
+  <a class="sn-item" href="#pC"><span class="sn-num">03</span>Lo que el modelo ignora</a>
+  <a class="sn-item" href="#pD"><span class="sn-num">04</span>Alternativas</a>
+  <a class="sn-item" href="#pE"><span class="sn-num">05</span>Selección</a>
+  <a class="sn-item" href="#preg"><span class="sn-num">06</span>Preguntas</a>
+  <a class="sn-item" href="#apoyo"><span class="sn-num">07</span>Datos de apoyo</a>
+</nav>
+
+<article class="page">
+
+  <header class="doc-head">
+    <div class="org">
+      Universidad de los Andes
+      <span>Ingeniería Química y de Alimentos</span>
+    </div>
+    <div class="badge">Taller 6 · Proyecto de Operaciones Unitarias</div>
+    <h1>Separación de biomasa de levadura del caldo de fermentación</h1>
+    <p class="subtitle">Un ensayo de laboratorio de cuatro puntos, una planta que produce sin parar y la pregunta de si el equipo obvio es el correcto.</p>
+    <div class="doc-meta">
+      <div><b>Curso</b>Proyecto de Operaciones Unitarias · IQYA-2031 · 2026-20</div>
+      <div><b>Modalidad</b>En parejas, distinta a las de los talleres 1 a 5</div>
+      <div><b>Sesión</b>Martes 29 de septiembre de 2026</div>
+      <div><b>Entrega</b>Domingo 4 de octubre, 11:59 p. m., por BloqueNeón</div>
+      <div><b>Puntaje</b>100 puntos</div>
+    </div>
+  </header>
+
+  <div class="doc-body">
+
+    <section id="s0">
+      <p class="lead">Levapan Foods S.A. produce levadura alimentaria por fermentación aerobia. Después del cultivo hay que separar la biomasa del caldo para concentrarla y secarla. Usted recibe cuatro puntos de un ensayo de filtración de laboratorio y tiene que decidir, con ellos, cómo se hace esa separación en la planta. La respuesta no es un área: es un equipo, y la justificación de por qué ese y no otro.</p>
+
+      <div class="callout callout--warn">
+        <span class="ic">!</span>
+        <div>
+          <b>La pareja tiene que ser nueva</b>
+          <p>Este taller se hace en parejas, y <b>no puede repetir ninguno de los compañeros de los talleres 1 a 5</b>.</p>
+        </div>
+      </div>
+
+      <div class="callout callout--tip">
+        <span class="ic">i</span>
+        <div>
+          <b>Nivel de uso de IA generativa: 2</b>
+          <p>La inteligencia artificial se usa para hacer lluvia de ideas, estructurar el trabajo y orientar la búsqueda de fuentes. Usted parte de esas sugerencias y desarrolla el trabajo con su propio juicio. El contenido final debe estar desarrollado por usted. La declaración de uso va con el entregable.</p>
+        </div>
+      </div>
+
+      <div class="callout callout--nota">
+        <span class="ic">i</span>
+        <div>
+          <b>Cómo se trabaja</b>
+          <p>En clase se resuelven las partes A y B completas. El resto queda como trabajo autónomo de la pareja.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="datos">
+      <div class="eyebrow">Datos</div>
+      <h2 class="sec"><span class="secnum">0.</span> El caso</h2>
+
+      <h3 class="sub">El caldo de fermentación</h3>
+      <div class="tbl-wrap">
+      <table class="ou">
+        <thead><tr><th>Propiedad</th><th>Valor</th></tr></thead>
+        <tbody>
+          <tr><td>Caudal a procesar</td><td class="num">4.500 L/h, continuo, 20 h/día</td></tr>
+          <tr><td>Concentración celular, peso seco</td><td class="num">25 g/L</td></tr>
+          <tr><td>Tamaño de célula</td><td class="num">4 a 8 µm</td></tr>
+          <tr><td>Densidad del caldo</td><td class="num">1.030 kg/m³</td></tr>
+          <tr><td>Viscosidad</td><td class="num">3,5 cP = 3,5 × 10⁻³ Pa·s</td></tr>
+          <tr><td>Temperatura</td><td class="num">32 °C</td></tr>
+          <tr><td>pH</td><td class="num">5,2</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <h3 class="sub">Restricciones de la planta</h3>
+      <div class="dato">
+        <p>Presupuesto máximo del sistema: <b>220.000 USD</b></p>
+        <p>Espacio disponible en piso: <b>80 m²</b></p>
+        <p>El producto no puede exponerse a más de <b>45 °C</b></p>
+        <p>Presión máxima disponible: <b>5 bar</b></p>
+      </div>
+
+      <h3 class="sub">El ensayo de laboratorio</h3>
+      <p>Filtro de laboratorio con <b>A = 0,0012 m²</b>, a presión constante de <b>1,8 bar</b>:</p>
+
+      <div class="tbl-wrap">
+      <table class="ou">
+        <thead><tr><th>t (s)</th><th>V (mL)</th><th>V (m³)</th><th>V/A (m)</th><th>t/(V/A) (s/m)</th></tr></thead>
+        <tbody>
+          <tr><td class="num">105</td><td class="num">12</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+          <tr><td class="num">223</td><td class="num">18</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+          <tr><td class="num">385</td><td class="num">24</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+          <tr><td class="num">591</td><td class="num">30</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <div class="callout callout--nota">
+        <span class="ic">i</span>
+        <div>
+          <b>Cuatro puntos son pocos</b>
+          <p>Con cuatro puntos el ajuste va a salir casi perfecto, y eso no significa que el modelo sea bueno. Téngalo presente cuando reporte la calidad del ajuste.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="pA">
+      <div class="eyebrow">Parte A</div>
+      <h2 class="sec"><span class="secnum">1.</span> Los datos del ensayo <span class="pts">20 puntos</span></h2>
+      <ol>
+        <li>Complete las tres columnas que faltan de la tabla del ensayo, en unidades del SI.</li>
+        <li>Grafique <span class="tex" data-tex="t/(V/A)"><svg style="vertical-align: -0.566ex;" xmlns="http://www.w3.org/2000/svg" width="8.276ex" height="2.262ex" role="img" focusable="false" viewBox="0 -750 3658 1000" xmlns:xlink="http://www.w3.org/1999/xlink"><defs><path id="MJX-1-TEX-I-1D461" d="M26 385Q19 392 19 395Q19 399 22 411T27 425Q29 430 36 430T87 431H140L159 511Q162 522 166 540T173 566T179 586T187 603T197 615T211 624T229 626Q247 625 254 615T261 596Q261 589 252 549T232 470L222 433Q222 431 272 431H323Q330 424 330 420Q330 398 317 385H210L174 240Q135 80 135 68Q135 26 162 26Q197 26 230 60T283 144Q285 150 288 151T303 153H307Q322 153 322 145Q322 142 319 133Q314 117 301 95T267 48T216 6T155 -11Q125 -11 98 4T59 56Q57 64 57 83V101L92 241Q127 382 128 383Q128 385 77 385H26Z"></path><path id="MJX-1-TEX-N-2F" d="M423 750Q432 750 438 744T444 730Q444 725 271 248T92 -240Q85 -250 75 -250Q68 -250 62 -245T56 -231Q56 -221 230 257T407 740Q411 750 423 750Z"></path><path id="MJX-1-TEX-N-28" d="M94 250Q94 319 104 381T127 488T164 576T202 643T244 695T277 729T302 750H315H319Q333 750 333 741Q333 738 316 720T275 667T226 581T184 443T167 250T184 58T225 -81T274 -167T316 -220T333 -241Q333 -250 318 -250H315H302L274 -226Q180 -141 137 -14T94 250Z"></path><path id="MJX-1-TEX-I-1D449" d="M52 648Q52 670 65 683H76Q118 680 181 680Q299 680 320 683H330Q336 677 336 674T334 656Q329 641 325 637H304Q282 635 274 635Q245 630 242 620Q242 618 271 369T301 118L374 235Q447 352 520 471T595 594Q599 601 599 609Q599 633 555 637Q537 637 537 648Q537 649 539 661Q542 675 545 679T558 683Q560 683 570 683T604 682T668 681Q737 681 755 683H762Q769 676 769 672Q769 655 760 640Q757 637 743 637Q730 636 719 635T698 630T682 623T670 615T660 608T652 599T645 592L452 282Q272 -9 266 -16Q263 -18 259 -21L241 -22H234Q216 -22 216 -15Q213 -9 177 305Q139 623 138 626Q133 637 76 637H59Q52 642 52 648Z"></path><path id="MJX-1-TEX-I-1D434" d="M208 74Q208 50 254 46Q272 46 272 35Q272 34 270 22Q267 8 264 4T251 0Q249 0 239 0T205 1T141 2Q70 2 50 0H42Q35 7 35 11Q37 38 48 46H62Q132 49 164 96Q170 102 345 401T523 704Q530 716 547 716H555H572Q578 707 578 706L606 383Q634 60 636 57Q641 46 701 46Q726 46 726 36Q726 34 723 22Q720 7 718 4T704 0Q701 0 690 0T651 1T578 2Q484 2 455 0H443Q437 6 437 9T439 27Q443 40 445 43L449 46H469Q523 49 533 63L521 213H283L249 155Q208 86 208 74ZM516 260Q516 271 504 416T490 562L463 519Q447 492 400 412L310 260L413 259Q516 259 516 260Z"></path><path id="MJX-1-TEX-N-29" d="M60 749L64 750Q69 750 74 750H86L114 726Q208 641 251 514T294 250Q294 182 284 119T261 12T224 -76T186 -143T145 -194T113 -227T90 -246Q87 -249 86 -250H74Q66 -250 63 -250T58 -247T55 -238Q56 -237 66 -225Q221 -64 221 250T66 725Q56 737 55 738Q55 746 60 749Z"></path></defs><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mi"><use data-c="1D461" xlink:href="#MJX-1-TEX-I-1D461"></use></g><g data-mml-node="TeXAtom" data-mjx-texclass="ORD" transform="translate(361,0)"><g data-mml-node="mo"><use data-c="2F" xlink:href="#MJX-1-TEX-N-2F"></use></g></g><g data-mml-node="mo" transform="translate(861,0)"><use data-c="28" xlink:href="#MJX-1-TEX-N-28"></use></g><g data-mml-node="mi" transform="translate(1250,0)"><use data-c="1D449" xlink:href="#MJX-1-TEX-I-1D449"></use></g><g data-mml-node="TeXAtom" data-mjx-texclass="ORD" transform="translate(2019,0)"><g data-mml-node="mo"><use data-c="2F" xlink:href="#MJX-1-TEX-N-2F"></use></g></g><g data-mml-node="mi" transform="translate(2519,0)"><use data-c="1D434" xlink:href="#MJX-1-TEX-I-1D434"></use></g><g data-mml-node="mo" transform="translate(3269,0)"><use data-c="29" xlink:href="#MJX-1-TEX-N-29"></use></g></g></g></svg></span> contra <span class="tex" data-tex="V/A"><svg style="vertical-align: -0.566ex;" xmlns="http://www.w3.org/2000/svg" width="4.568ex" height="2.262ex" role="img" focusable="false" viewBox="0 -750 2019 1000" xmlns:xlink="http://www.w3.org/1999/xlink"><defs><path id="MJX-2-TEX-I-1D449" d="M52 648Q52 670 65 683H76Q118 680 181 680Q299 680 320 683H330Q336 677 336 674T334 656Q329 641 325 637H304Q282 635 274 635Q245 630 242 620Q242 618 271 369T301 118L374 235Q447 352 520 471T595 594Q599 601 599 609Q599 633 555 637Q537 637 537 648Q537 649 539 661Q542 675 545 679T558 683Q560 683 570 683T604 682T668 681Q737 681 755 683H762Q769 676 769 672Q769 655 760 640Q757 637 743 637Q730 636 719 635T698 630T682 623T670 615T660 608T652 599T645 592L452 282Q272 -9 266 -16Q263 -18 259 -21L241 -22H234Q216 -22 216 -15Q213 -9 177 305Q139 623 138 626Q133 637 76 637H59Q52 642 52 648Z"></path><path id="MJX-2-TEX-N-2F" d="M423 750Q432 750 438 744T444 730Q444 725 271 248T92 -240Q85 -250 75 -250Q68 -250 62 -245T56 -231Q56 -221 230 257T407 740Q411 750 423 750Z"></path><path id="MJX-2-TEX-I-1D434" d="M208 74Q208 50 254 46Q272 46 272 35Q272 34 270 22Q267 8 264 4T251 0Q249 0 239 0T205 1T141 2Q70 2 50 0H42Q35 7 35 11Q37 38 48 46H62Q132 49 164 96Q170 102 345 401T523 704Q530 716 547 716H555H572Q578 707 578 706L606 383Q634 60 636 57Q641 46 701 46Q726 46 726 36Q726 34 723 22Q720 7 718 4T704 0Q701 0 690 0T651 1T578 2Q484 2 455 0H443Q437 6 437 9T439 27Q443 40 445 43L449 46H469Q523 49 533 63L521 213H283L249 155Q208 86 208 74ZM516 260Q516 271 504 416T490 562L463 519Q447 492 400 412L310 260L413 259Q516 259 516 260Z"></path></defs><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mi"><use data-c="1D449" xlink:href="#MJX-2-TEX-I-1D449"></use></g><g data-mml-node="TeXAtom" data-mjx-texclass="ORD" transform="translate(769,0)"><g data-mml-node="mo"><use data-c="2F" xlink:href="#MJX-2-TEX-N-2F"></use></g></g><g data-mml-node="mi" transform="translate(1269,0)"><use data-c="1D434" xlink:href="#MJX-2-TEX-I-1D434"></use></g></g></g></svg></span> y ajuste una recta.</li>
+        <li>Reporte la pendiente y el intercepto con sus unidades.</li>
+        <li>Calcule la resistencia específica de la torta <span class="tex" data-tex="\alpha"><svg style="vertical-align: -0.025ex;" xmlns="http://www.w3.org/2000/svg" width="1.448ex" height="1.025ex" role="img" focusable="false" viewBox="0 -442 640 453" xmlns:xlink="http://www.w3.org/1999/xlink"><defs><path id="MJX-3-TEX-I-1D6FC" d="M34 156Q34 270 120 356T309 442Q379 442 421 402T478 304Q484 275 485 237V208Q534 282 560 374Q564 388 566 390T582 393Q603 393 603 385Q603 376 594 346T558 261T497 161L486 147L487 123Q489 67 495 47T514 26Q528 28 540 37T557 60Q559 67 562 68T577 70Q597 70 597 62Q597 56 591 43Q579 19 556 5T512 -10H505Q438 -10 414 62L411 69L400 61Q390 53 370 41T325 18T267 -2T203 -11Q124 -11 79 39T34 156ZM208 26Q257 26 306 47T379 90L403 112Q401 255 396 290Q382 405 304 405Q235 405 183 332Q156 292 139 224T121 120Q121 71 146 49T208 26Z"></path></defs><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mi"><use data-c="1D6FC" xlink:href="#MJX-3-TEX-I-1D6FC"></use></g></g></g></svg></span> y la resistencia del medio filtrante <span class="tex" data-tex="R_m"><svg style="vertical-align: -0.357ex;" xmlns="http://www.w3.org/2000/svg" width="3.31ex" height="1.902ex" role="img" focusable="false" viewBox="0 -683 1462.8 840.8" xmlns:xlink="http://www.w3.org/1999/xlink"><defs><path id="MJX-4-TEX-I-1D445" d="M230 637Q203 637 198 638T193 649Q193 676 204 682Q206 683 378 683Q550 682 564 680Q620 672 658 652T712 606T733 563T739 529Q739 484 710 445T643 385T576 351T538 338L545 333Q612 295 612 223Q612 212 607 162T602 80V71Q602 53 603 43T614 25T640 16Q668 16 686 38T712 85Q717 99 720 102T735 105Q755 105 755 93Q755 75 731 36Q693 -21 641 -21H632Q571 -21 531 4T487 82Q487 109 502 166T517 239Q517 290 474 313Q459 320 449 321T378 323H309L277 193Q244 61 244 59Q244 55 245 54T252 50T269 48T302 46H333Q339 38 339 37T336 19Q332 6 326 0H311Q275 2 180 2Q146 2 117 2T71 2T50 1Q33 1 33 10Q33 12 36 24Q41 43 46 45Q50 46 61 46H67Q94 46 127 49Q141 52 146 61Q149 65 218 339T287 628Q287 635 230 637ZM630 554Q630 586 609 608T523 636Q521 636 500 636T462 637H440Q393 637 386 627Q385 624 352 494T319 361Q319 360 388 360Q466 361 492 367Q556 377 592 426Q608 449 619 486T630 554Z"></path><path id="MJX-4-TEX-I-1D45A" d="M21 287Q22 293 24 303T36 341T56 388T88 425T132 442T175 435T205 417T221 395T229 376L231 369Q231 367 232 367L243 378Q303 442 384 442Q401 442 415 440T441 433T460 423T475 411T485 398T493 385T497 373T500 364T502 357L510 367Q573 442 659 442Q713 442 746 415T780 336Q780 285 742 178T704 50Q705 36 709 31T724 26Q752 26 776 56T815 138Q818 149 821 151T837 153Q857 153 857 145Q857 144 853 130Q845 101 831 73T785 17T716 -10Q669 -10 648 17T627 73Q627 92 663 193T700 345Q700 404 656 404H651Q565 404 506 303L499 291L466 157Q433 26 428 16Q415 -11 385 -11Q372 -11 364 -4T353 8T350 18Q350 29 384 161L420 307Q423 322 423 345Q423 404 379 404H374Q288 404 229 303L222 291L189 157Q156 26 151 16Q138 -11 108 -11Q95 -11 87 -5T76 7T74 17Q74 30 112 181Q151 335 151 342Q154 357 154 369Q154 405 129 405Q107 405 92 377T69 316T57 280Q55 278 41 278H27Q21 284 21 287Z"></path></defs><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="msub"><g data-mml-node="mi"><use data-c="1D445" xlink:href="#MJX-4-TEX-I-1D445"></use></g><g data-mml-node="mi" transform="translate(792,-150) scale(0.707)"><use data-c="1D45A" xlink:href="#MJX-4-TEX-I-1D45A"></use></g></g></g></g></svg></span>, y diga <b>a qué presión quedó medida</b> cada una.</li>
+        <li>Compare su <span class="tex" data-tex="\alpha"><svg style="vertical-align: -0.025ex;" xmlns="http://www.w3.org/2000/svg" width="1.448ex" height="1.025ex" role="img" focusable="false" viewBox="0 -442 640 453" xmlns:xlink="http://www.w3.org/1999/xlink"><defs><path id="MJX-5-TEX-I-1D6FC" d="M34 156Q34 270 120 356T309 442Q379 442 421 402T478 304Q484 275 485 237V208Q534 282 560 374Q564 388 566 390T582 393Q603 393 603 385Q603 376 594 346T558 261T497 161L486 147L487 123Q489 67 495 47T514 26Q528 28 540 37T557 60Q559 67 562 68T577 70Q597 70 597 62Q597 56 591 43Q579 19 556 5T512 -10H505Q438 -10 414 62L411 69L400 61Q390 53 370 41T325 18T267 -2T203 -11Q124 -11 79 39T34 156ZM208 26Q257 26 306 47T379 90L403 112Q401 255 396 290Q382 405 304 405Q235 405 183 332Q156 292 139 224T121 120Q121 71 146 49T208 26Z"></path></defs><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mi"><use data-c="1D6FC" xlink:href="#MJX-5-TEX-I-1D6FC"></use></g></g></g></svg></span> con la tabla de referencia de la sección 7 y comente si el valor es coherente.</li>
+      </ol>
+    </section>
+
+    <section id="pB">
+      <div class="eyebrow">Parte B</div>
+      <h2 class="sec"><span class="secnum">2.</span> Diseño preliminar <span class="pts">20 puntos</span></h2>
+      <p>Tome como equipo de referencia un <b>filtro prensa de placas</b> y dimensiónelo para sostener el caudal de la planta.</p>
+      <ol>
+        <li>Explique en pocas líneas la diferencia entre un filtro rotatorio de vacío, un filtro prensa, un filtro de hojas a presión y una centrífuga filtrante, y por qué el prensa es el punto de partida razonable aquí.</li>
+        <li>Calcule el área filtrante requerida <b>a 3 bar y a 5 bar</b>, suponiendo que el equipo filtra durante toda la hora.</li>
+        <li>Traduzca el área a <b>número de placas y número de equipos</b>. Lea con cuidado la tabla de la sección 7.</li>
+        <li>Estime el costo y compárelo con el presupuesto.</li>
+        <li>Estime la <b>huella de piso</b> del equipo y compárela con los 80 m² disponibles. No confunda área filtrante con área de piso.</li>
+        <li>Concluya: ¿el filtro prensa cabe en el presupuesto y en el espacio?</li>
+      </ol>
+    </section>
+
+    <section id="pC">
+      <div class="eyebrow">Parte C</div>
+      <h2 class="sec"><span class="secnum">3.</span> Lo que el modelo ideal no ve <span class="pts">20 puntos</span></h2>
+      <p>El cálculo de la parte B tiene dos supuestos que en planta no se cumplen. Cuantifique los dos.</p>
+
+      <h3 class="sub">3.1 La torta de levadura es compresible</h3>
+      <p>Su <span class="tex" data-tex="\alpha"><svg style="vertical-align: -0.025ex;" xmlns="http://www.w3.org/2000/svg" width="1.448ex" height="1.025ex" role="img" focusable="false" viewBox="0 -442 640 453" xmlns:xlink="http://www.w3.org/1999/xlink"><defs><path id="MJX-6-TEX-I-1D6FC" d="M34 156Q34 270 120 356T309 442Q379 442 421 402T478 304Q484 275 485 237V208Q534 282 560 374Q564 388 566 390T582 393Q603 393 603 385Q603 376 594 346T558 261T497 161L486 147L487 123Q489 67 495 47T514 26Q528 28 540 37T557 60Q559 67 562 68T577 70Q597 70 597 62Q597 56 591 43Q579 19 556 5T512 -10H505Q438 -10 414 62L411 69L400 61Q390 53 370 41T325 18T267 -2T203 -11Q124 -11 79 39T34 156ZM208 26Q257 26 306 47T379 90L403 112Q401 255 396 290Q382 405 304 405Q235 405 183 332Q156 292 139 224T121 120Q121 71 146 49T208 26Z"></path></defs><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mi"><use data-c="1D6FC" xlink:href="#MJX-6-TEX-I-1D6FC"></use></g></g></g></svg></span> quedó medido a 1,8 bar. Corríjalo a la presión de operación con la relación de la sección 7 y <b>s = 0,7</b>, y rehaga el área a 3 y a 5 bar.</p>
+      <ul>
+        <li>¿Cuánto área se ahorra al subir de 3 a 5 bar con el modelo ideal?</li>
+        <li>¿Cuánto se ahorra en realidad?</li>
+        <li>¿Qué le dice eso sobre subir la presión como estrategia?</li>
+      </ul>
+
+      <h3 class="sub">3.2 No toda la hora es filtración</h3>
+      <p>Un filtro prensa alterna filtración, lavado de torta, apertura, descarga y rearme. Suponga que <b>la filtración ocupa el 60 % del ciclo</b>.</p>
+      <ul>
+        <li>La planta sigue produciendo 4.500 L cada hora. ¿Cambia el volumen que hay que pasar por ciclo?</li>
+        <li>Rehaga el área a 3 bar con ese tiempo de filtración y con la torta compresible.</li>
+        <li>Reporte el área de diseño final, el número de placas y el costo. ¿Sigue cabiendo en el presupuesto?</li>
+      </ul>
+      <p><b>Cierre la parte comparando</b> el área del modelo ideal con la del cálculo realista, en metros cuadrados y en porcentaje.</p>
+    </section>
+
+    <section id="pD">
+      <div class="eyebrow">Parte D</div>
+      <h2 class="sec"><span class="secnum">4.</span> Alternativas <span class="pts">20 puntos</span></h2>
+      <p>Proponga <b>tres</b> alternativas a la filtración convencional. Cada una con su número: área, caudal o costo, según corresponda.</p>
+      <div class="tbl-wrap">
+      <table class="ou">
+        <thead><tr><th>Alternativa</th><th>Qué cambia</th><th>Efecto cuantificado</th><th>Ventajas</th><th>Desventajas</th><th>Costo</th></tr></thead>
+        <tbody>
+          <tr><td class="num">1</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+          <tr><td class="num">2</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+          <tr><td class="num">3</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <div class="callout callout--warn">
+        <span class="ic">!</span>
+        <div>
+          <b>Antes de proponer un coadyuvante, piense qué es el producto</b>
+          <p>Las ayudas de filtración, tierra de diatomeas y perlita, se mezclan con la torta. Pregúntese si eso es admisible en este caso concreto y justifique su respuesta.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="pE">
+      <div class="eyebrow">Parte E</div>
+      <h2 class="sec"><span class="secnum">5.</span> Selección <span class="pts">10 puntos</span></h2>
+      <p>Califique sus tres alternativas de 1 a 5 en cada criterio y obtenga el puntaje ponderado.</p>
+      <div class="tbl-wrap">
+      <table class="ou">
+        <thead><tr><th>Criterio</th><th>Peso</th><th>Alt. 1</th><th>Alt. 2</th><th>Alt. 3</th></tr></thead>
+        <tbody>
+          <tr><td>Costo de inversión</td><td class="num">30 %</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+          <tr><td>Costo operativo</td><td class="num">25 %</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+          <tr><td>Calidad del producto</td><td class="num">20 %</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+          <tr><td>Facilidad de operación</td><td class="num">15 %</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+          <tr><td>Escalabilidad</td><td class="num">10 %</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+          <tr class="marca"><td><b>Puntaje ponderado</b></td><td class="num">100 %</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p><b>Y ahora la pregunta que decide la parte:</b> esta matriz deja fuera un criterio que, para una fermentación que no se detiene, pesa más que varios de los que sí están. Identifíquelo, agréguelo con el peso que considere y muestre si el resultado cambia.</p>
+    </section>
+
+    <section id="preg">
+      <div class="eyebrow">Cierre</div>
+      <h2 class="sec"><span class="secnum">6.</span> Preguntas de reflexión <span class="pts">10 puntos</span></h2>
+      <p>Dos puntos cada una.</p>
+      <ol>
+        <li>¿Por qué no se puede filtrar directamente un caldo de fermentación con células microbianas?</li>
+        <li>La levadura es bastante más grande que una bacteria. ¿Por qué su torta sigue teniendo una resistencia específica tan alta?</li>
+        <li>¿Cómo entra la compresibilidad de la torta en las decisiones de diseño, más allá del área?</li>
+        <li>El producto que sale de esta operación va a un secador. ¿Cómo influye eso en la elección del equipo?</li>
+        <li>¿Qué otros aspectos verificaría antes de dar el diseño por final? Mencione al menos tres.</li>
+      </ol>
+    </section>
+
+    <section id="apoyo">
+      <div class="eyebrow">Referencia</div>
+      <h2 class="sec"><span class="secnum">7.</span> Datos de apoyo</h2>
+
+      <h3 class="sub">Resistencia específica típica y compresibilidad</h3>
+      <div class="tbl-wrap">
+      <table class="ou">
+        <thead><tr><th>Material</th><th>α (m/kg)</th><th>Compresibilidad</th><th>Índice s</th></tr></thead>
+        <tbody>
+          <tr><td>Carbonato de calcio</td><td class="num">10⁹ a 10¹⁰</td><td>Incompresible</td><td class="num">≈ 0</td></tr>
+          <tr><td>Dióxido de titanio</td><td class="num">10¹⁰ a 10¹¹</td><td>Baja</td><td class="num">0,1 a 0,3</td></tr>
+          <tr class="marca"><td>Levadura</td><td class="num">10¹² a 10¹³</td><td>Alta</td><td class="num">0,6 a 0,8</td></tr>
+          <tr><td>Bacterias</td><td class="num">10¹² a 10¹⁴</td><td>Muy alta</td><td class="num">0,8 a 1,0</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p>Para este taller use <b>s = 0,7</b> cuando la parte C se lo pida.</p>
+
+      <h3 class="sub">Costos y desempeño de referencia</h3>
+      <div class="tbl-wrap">
+      <table class="ou">
+        <thead><tr><th>Equipo</th><th>Capacidad o tamaño</th><th>Costo</th></tr></thead>
+        <tbody>
+          <tr><td>Filtro prensa de placas</td><td>0,5 a 2 m² <b>por placa</b>, 20 a 100 placas por equipo</td><td class="num">1.500 a 3.000 USD/m²</td></tr>
+          <tr><td>Centrífuga de discos</td><td>5 m³/h, operación continua</td><td class="num">150.000 a 250.000 USD</td></tr>
+          <tr><td>Membranas de microfiltración</td><td>flujo de 20 a 50 L/(m²·h)</td><td class="num">200 a 500 USD/m²</td></tr>
+          <tr><td>Floculante catiónico</td><td>dosis de 20 a 100 g por m³ de caldo</td><td class="num">2 a 4 USD/kg</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <div class="callout callout--nota">
+        <span class="ic">i</span>
+        <div>
+          <b>Lea con cuidado la fila del filtro prensa</b>
+          <p>Los 0,5 a 2 m² son de <b>una placa</b>, no de un equipo. Un filtro prensa industrial monta entre 20 y 100 placas en el mismo bastidor.</p>
+        </div>
+      </div>
+
+      <h3 class="sub">Ecuaciones</h3>
+      <p>Filtración a presión constante, forma linealizada y forma integrada:</p>
+      <div class="fml" data-tex="\frac{t}{V/A}=\frac{\mu\,\alpha\,c_s}{2\,\Delta P}\left(\frac{V}{A}\right)+\frac{\mu\,R_m}{\Delta P}"><svg style="vertical-align: -2.172ex;" xmlns="http://www.w3.org/2000/svg" width="29.94ex" height="5.451ex" role="img" focusable="false" viewBox="0 -1449.5 13233.5 2409.5" xmlns:xlink="http://www.w3.org/1999/xlink"><defs><path id="MJX-7-TEX-I-1D461" d="M26 385Q19 392 19 395Q19 399 22 411T27 425Q29 430 36 430T87 431H140L159 511Q162 522 166 540T173 566T179 586T187 603T197 615T211 624T229 626Q247 625 254 615T261 596Q261 589 252 549T232 470L222 433Q222 431 272 431H323Q330 424 330 420Q330 398 317 385H210L174 240Q135 80 135 68Q135 26 162 26Q197 26 230 60T283 144Q285 150 288 151T303 153H307Q322 153 322 145Q322 142 319 133Q314 117 301 95T267 48T216 6T155 -11Q125 -11 98 4T59 56Q57 64 57 83V101L92 241Q127 382 128 383Q128 385 77 385H26Z"></path><path id="MJX-7-TEX-I-1D449" d="M52 648Q52 670 65 683H76Q118 680 181 680Q299 680 320 683H330Q336 677 336 674T334 656Q329 641 325 637H304Q282 635 274 635Q245 630 242 620Q242 618 271 369T301 118L374 235Q447 352 520 471T595 594Q599 601 599 609Q599 633 555 637Q537 637 537 648Q537 649 539 661Q542 675 545 679T558 683Q560 683 570 683T604 682T668 681Q737 681 755 683H762Q769 676 769 672Q769 655 760 640Q757 637 743 637Q730 636 719 635T698 630T682 623T670 615T660 608T652 599T645 592L452 282Q272 -9 266 -16Q263 -18 259 -21L241 -22H234Q216 -22 216 -15Q213 -9 177 305Q139 623 138 626Q133 637 76 637H59Q52 642 52 648Z"></path><path id="MJX-7-TEX-N-2F" d="M423 750Q432 750 438 744T444 730Q444 725 271 248T92 -240Q85 -250 75 -250Q68 -250 62 -245T56 -231Q56 -221 230 257T407 740Q411 750 423 750Z"></path><path id="MJX-7-TEX-I-1D434" d="M208 74Q208 50 254 46Q272 46 272 35Q272 34 270 22Q267 8 264 4T251 0Q249 0 239 0T205 1T141 2Q70 2 50 0H42Q35 7 35 11Q37 38 48 46H62Q132 49 164 96Q170 102 345 401T523 704Q530 716 547 716H555H572Q578 707 578 706L606 383Q634 60 636 57Q641 46 701 46Q726 46 726 36Q726 34 723 22Q720 7 718 4T704 0Q701 0 690 0T651 1T578 2Q484 2 455 0H443Q437 6 437 9T439 27Q443 40 445 43L449 46H469Q523 49 533 63L521 213H283L249 155Q208 86 208 74ZM516 260Q516 271 504 416T490 562L463 519Q447 492 400 412L310 260L413 259Q516 259 516 260Z"></path><path id="MJX-7-TEX-N-3D" d="M56 347Q56 360 70 367H707Q722 359 722 347Q722 336 708 328L390 327H72Q56 332 56 347ZM56 153Q56 168 72 173H708Q722 163 722 153Q722 140 707 133H70Q56 140 56 153Z"></path><path id="MJX-7-TEX-I-1D707" d="M58 -216Q44 -216 34 -208T23 -186Q23 -176 96 116T173 414Q186 442 219 442Q231 441 239 435T249 423T251 413Q251 401 220 279T187 142Q185 131 185 107V99Q185 26 252 26Q261 26 270 27T287 31T302 38T315 45T327 55T338 65T348 77T356 88T365 100L372 110L408 253Q444 395 448 404Q461 431 491 431Q504 431 512 424T523 412T525 402L449 84Q448 79 448 68Q448 43 455 35T476 26Q485 27 496 35Q517 55 537 131Q543 151 547 152Q549 153 557 153H561Q580 153 580 144Q580 138 575 117T555 63T523 13Q510 0 491 -8Q483 -10 467 -10Q446 -10 429 -4T402 11T385 29T376 44T374 51L368 45Q362 39 350 30T324 12T288 -4T246 -11Q199 -11 153 12L129 -85Q108 -167 104 -180T92 -202Q76 -216 58 -216Z"></path><path id="MJX-7-TEX-I-1D6FC" d="M34 156Q34 270 120 356T309 442Q379 442 421 402T478 304Q484 275 485 237V208Q534 282 560 374Q564 388 566 390T582 393Q603 393 603 385Q603 376 594 346T558 261T497 161L486 147L487 123Q489 67 495 47T514 26Q528 28 540 37T557 60Q559 67 562 68T577 70Q597 70 597 62Q597 56 591 43Q579 19 556 5T512 -10H505Q438 -10 414 62L411 69L400 61Q390 53 370 41T325 18T267 -2T203 -11Q124 -11 79 39T34 156ZM208 26Q257 26 306 47T379 90L403 112Q401 255 396 290Q382 405 304 405Q235 405 183 332Q156 292 139 224T121 120Q121 71 146 49T208 26Z"></path><path id="MJX-7-TEX-I-1D450" d="M34 159Q34 268 120 355T306 442Q362 442 394 418T427 355Q427 326 408 306T360 285Q341 285 330 295T319 325T330 359T352 380T366 386H367Q367 388 361 392T340 400T306 404Q276 404 249 390Q228 381 206 359Q162 315 142 235T121 119Q121 73 147 50Q169 26 205 26H209Q321 26 394 111Q403 121 406 121Q410 121 419 112T429 98T420 83T391 55T346 25T282 0T202 -11Q127 -11 81 37T34 159Z"></path><path id="MJX-7-TEX-I-1D460" d="M131 289Q131 321 147 354T203 415T300 442Q362 442 390 415T419 355Q419 323 402 308T364 292Q351 292 340 300T328 326Q328 342 337 354T354 372T367 378Q368 378 368 379Q368 382 361 388T336 399T297 405Q249 405 227 379T204 326Q204 301 223 291T278 274T330 259Q396 230 396 163Q396 135 385 107T352 51T289 7T195 -10Q118 -10 86 19T53 87Q53 126 74 143T118 160Q133 160 146 151T160 120Q160 94 142 76T111 58Q109 57 108 57T107 55Q108 52 115 47T146 34T201 27Q237 27 263 38T301 66T318 97T323 122Q323 150 302 164T254 181T195 196T148 231Q131 256 131 289Z"></path><path id="MJX-7-TEX-N-32" d="M109 429Q82 429 66 447T50 491Q50 562 103 614T235 666Q326 666 387 610T449 465Q449 422 429 383T381 315T301 241Q265 210 201 149L142 93L218 92Q375 92 385 97Q392 99 409 186V189H449V186Q448 183 436 95T421 3V0H50V19V31Q50 38 56 46T86 81Q115 113 136 137Q145 147 170 174T204 211T233 244T261 278T284 308T305 340T320 369T333 401T340 431T343 464Q343 527 309 573T212 619Q179 619 154 602T119 569T109 550Q109 549 114 549Q132 549 151 535T170 489Q170 464 154 447T109 429Z"></path><path id="MJX-7-TEX-N-394" d="M51 0Q46 4 46 7Q46 9 215 357T388 709Q391 716 416 716Q439 716 444 709Q447 705 616 357T786 7Q786 4 781 0H51ZM507 344L384 596L137 92L383 91H630Q630 93 507 344Z"></path><path id="MJX-7-TEX-I-1D443" d="M287 628Q287 635 230 637Q206 637 199 638T192 648Q192 649 194 659Q200 679 203 681T397 683Q587 682 600 680Q664 669 707 631T751 530Q751 453 685 389Q616 321 507 303Q500 302 402 301H307L277 182Q247 66 247 59Q247 55 248 54T255 50T272 48T305 46H336Q342 37 342 35Q342 19 335 5Q330 0 319 0Q316 0 282 1T182 2Q120 2 87 2T51 1Q33 1 33 11Q33 13 36 25Q40 41 44 43T67 46Q94 46 127 49Q141 52 146 61Q149 65 218 339T287 628ZM645 554Q645 567 643 575T634 597T609 619T560 635Q553 636 480 637Q463 637 445 637T416 636T404 636Q391 635 386 627Q384 621 367 550T332 412T314 344Q314 342 395 342H407H430Q542 342 590 392Q617 419 631 471T645 554Z"></path><path id="MJX-7-TEX-S3-28" d="M701 -940Q701 -943 695 -949H664Q662 -947 636 -922T591 -879T537 -818T475 -737T412 -636T350 -511T295 -362T250 -186T221 17T209 251Q209 962 573 1361Q596 1386 616 1405T649 1437T664 1450H695Q701 1444 701 1441Q701 1436 681 1415T629 1356T557 1261T476 1118T400 927T340 675T308 359Q306 321 306 250Q306 -139 400 -430T690 -924Q701 -936 701 -940Z"></path><path id="MJX-7-TEX-S3-29" d="M34 1438Q34 1446 37 1448T50 1450H56H71Q73 1448 99 1423T144 1380T198 1319T260 1238T323 1137T385 1013T440 864T485 688T514 485T526 251Q526 134 519 53Q472 -519 162 -860Q139 -885 119 -904T86 -936T71 -949H56Q43 -949 39 -947T34 -937Q88 -883 140 -813Q428 -430 428 251Q428 453 402 628T338 922T245 1146T145 1309T46 1425Q44 1427 42 1429T39 1433T36 1436L34 1438Z"></path><path id="MJX-7-TEX-N-2B" d="M56 237T56 250T70 270H369V420L370 570Q380 583 389 583Q402 583 409 568V270H707Q722 262 722 250T707 230H409V-68Q401 -82 391 -82H389H387Q375 -82 369 -68V230H70Q56 237 56 250Z"></path><path id="MJX-7-TEX-I-1D445" d="M230 637Q203 637 198 638T193 649Q193 676 204 682Q206 683 378 683Q550 682 564 680Q620 672 658 652T712 606T733 563T739 529Q739 484 710 445T643 385T576 351T538 338L545 333Q612 295 612 223Q612 212 607 162T602 80V71Q602 53 603 43T614 25T640 16Q668 16 686 38T712 85Q717 99 720 102T735 105Q755 105 755 93Q755 75 731 36Q693 -21 641 -21H632Q571 -21 531 4T487 82Q487 109 502 166T517 239Q517 290 474 313Q459 320 449 321T378 323H309L277 193Q244 61 244 59Q244 55 245 54T252 50T269 48T302 46H333Q339 38 339 37T336 19Q332 6 326 0H311Q275 2 180 2Q146 2 117 2T71 2T50 1Q33 1 33 10Q33 12 36 24Q41 43 46 45Q50 46 61 46H67Q94 46 127 49Q141 52 146 61Q149 65 218 339T287 628Q287 635 230 637ZM630 554Q630 586 609 608T523 636Q521 636 500 636T462 637H440Q393 637 386 627Q385 624 352 494T319 361Q319 360 388 360Q466 361 492 367Q556 377 592 426Q608 449 619 486T630 554Z"></path><path id="MJX-7-TEX-I-1D45A" d="M21 287Q22 293 24 303T36 341T56 388T88 425T132 442T175 435T205 417T221 395T229 376L231 369Q231 367 232 367L243 378Q303 442 384 442Q401 442 415 440T441 433T460 423T475 411T485 398T493 385T497 373T500 364T502 357L510 367Q573 442 659 442Q713 442 746 415T780 336Q780 285 742 178T704 50Q705 36 709 31T724 26Q752 26 776 56T815 138Q818 149 821 151T837 153Q857 153 857 145Q857 144 853 130Q845 101 831 73T785 17T716 -10Q669 -10 648 17T627 73Q627 92 663 193T700 345Q700 404 656 404H651Q565 404 506 303L499 291L466 157Q433 26 428 16Q415 -11 385 -11Q372 -11 364 -4T353 8T350 18Q350 29 384 161L420 307Q423 322 423 345Q423 404 379 404H374Q288 404 229 303L222 291L189 157Q156 26 151 16Q138 -11 108 -11Q95 -11 87 -5T76 7T74 17Q74 30 112 181Q151 335 151 342Q154 357 154 369Q154 405 129 405Q107 405 92 377T69 316T57 280Q55 278 41 278H27Q21 284 21 287Z"></path></defs><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mfrac"><g data-mml-node="mi" transform="translate(1049,676)"><use data-c="1D461" xlink:href="#MJX-7-TEX-I-1D461"></use></g><g data-mml-node="mrow" transform="translate(220,-710)"><g data-mml-node="mi"><use data-c="1D449" xlink:href="#MJX-7-TEX-I-1D449"></use></g><g data-mml-node="TeXAtom" data-mjx-texclass="ORD" transform="translate(769,0)"><g data-mml-node="mo"><use data-c="2F" xlink:href="#MJX-7-TEX-N-2F"></use></g></g><g data-mml-node="mi" transform="translate(1269,0)"><use data-c="1D434" xlink:href="#MJX-7-TEX-I-1D434"></use></g></g><rect width="2219" height="60" x="120" y="220"></rect></g><g data-mml-node="mo" transform="translate(2736.8,0)"><use data-c="3D" xlink:href="#MJX-7-TEX-N-3D"></use></g><g data-mml-node="mfrac" transform="translate(3792.6,0)"><g data-mml-node="mrow" transform="translate(220,676)"><g data-mml-node="mi"><use data-c="1D707" xlink:href="#MJX-7-TEX-I-1D707"></use></g><g data-mml-node="mstyle" transform="translate(603,0)"><g data-mml-node="mspace"></g></g><g data-mml-node="mi" transform="translate(770,0)"><use data-c="1D6FC" xlink:href="#MJX-7-TEX-I-1D6FC"></use></g><g data-mml-node="mstyle" transform="translate(1410,0)"><g data-mml-node="mspace"></g></g><g data-mml-node="msub" transform="translate(1577,0)"><g data-mml-node="mi"><use data-c="1D450" xlink:href="#MJX-7-TEX-I-1D450"></use></g><g data-mml-node="mi" transform="translate(466,-150) scale(0.707)"><use data-c="1D460" xlink:href="#MJX-7-TEX-I-1D460"></use></g></g></g><g data-mml-node="mrow" transform="translate(306.8,-686)"><g data-mml-node="mn"><use data-c="32" xlink:href="#MJX-7-TEX-N-32"></use></g><g data-mml-node="mstyle" transform="translate(500,0)"><g data-mml-node="mspace"></g></g><g data-mml-node="mi" transform="translate(667,0)"><use data-c="394" xlink:href="#MJX-7-TEX-N-394"></use></g><g data-mml-node="mi" transform="translate(1500,0)"><use data-c="1D443" xlink:href="#MJX-7-TEX-I-1D443"></use></g></g><rect width="2624.6" height="60" x="120" y="220"></rect></g><g data-mml-node="mrow" transform="translate(6657.2,0)"><g data-mml-node="mo" transform="translate(0 -0.5)"><use data-c="28" xlink:href="#MJX-7-TEX-S3-28"></use></g><g data-mml-node="mfrac" transform="translate(736,0)"><g data-mml-node="mi" transform="translate(220,676)"><use data-c="1D449" xlink:href="#MJX-7-TEX-I-1D449"></use></g><g data-mml-node="mi" transform="translate(229.5,-686)"><use data-c="1D434" xlink:href="#MJX-7-TEX-I-1D434"></use></g><rect width="969" height="60" x="120" y="220"></rect></g><g data-mml-node="mo" transform="translate(1945,0) translate(0 -0.5)"><use data-c="29" xlink:href="#MJX-7-TEX-S3-29"></use></g></g><g data-mml-node="mo" transform="translate(9560.4,0)"><use data-c="2B" xlink:href="#MJX-7-TEX-N-2B"></use></g><g data-mml-node="mfrac" transform="translate(10560.6,0)"><g data-mml-node="mrow" transform="translate(220,676)"><g data-mml-node="mi"><use data-c="1D707" xlink:href="#MJX-7-TEX-I-1D707"></use></g><g data-mml-node="mstyle" transform="translate(603,0)"><g data-mml-node="mspace"></g></g><g data-mml-node="msub" transform="translate(770,0)"><g data-mml-node="mi"><use data-c="1D445" xlink:href="#MJX-7-TEX-I-1D445"></use></g><g data-mml-node="mi" transform="translate(792,-150) scale(0.707)"><use data-c="1D45A" xlink:href="#MJX-7-TEX-I-1D45A"></use></g></g></g><g data-mml-node="mrow" transform="translate(544.4,-686)"><g data-mml-node="mi"><use data-c="394" xlink:href="#MJX-7-TEX-N-394"></use></g><g data-mml-node="mi" transform="translate(833,0)"><use data-c="1D443" xlink:href="#MJX-7-TEX-I-1D443"></use></g></g><rect width="2432.8" height="60" x="120" y="220"></rect></g></g></g></svg></div>
+      <div class="fml" data-tex="t=\frac{\mu\,\alpha\,c_s}{2\,\Delta P}\left(\frac{V}{A}\right)^{2}+\frac{\mu\,R_m}{\Delta P}\left(\frac{V}{A}\right)"><svg style="vertical-align: -2.148ex;" xmlns="http://www.w3.org/2000/svg" width="32.247ex" height="5.876ex" role="img" focusable="false" viewBox="0 -1647.5 14253 2597" xmlns:xlink="http://www.w3.org/1999/xlink"><defs><path id="MJX-8-TEX-I-1D461" d="M26 385Q19 392 19 395Q19 399 22 411T27 425Q29 430 36 430T87 431H140L159 511Q162 522 166 540T173 566T179 586T187 603T197 615T211 624T229 626Q247 625 254 615T261 596Q261 589 252 549T232 470L222 433Q222 431 272 431H323Q330 424 330 420Q330 398 317 385H210L174 240Q135 80 135 68Q135 26 162 26Q197 26 230 60T283 144Q285 150 288 151T303 153H307Q322 153 322 145Q322 142 319 133Q314 117 301 95T267 48T216 6T155 -11Q125 -11 98 4T59 56Q57 64 57 83V101L92 241Q127 382 128 383Q128 385 77 385H26Z"></path><path id="MJX-8-TEX-N-3D" d="M56 347Q56 360 70 367H707Q722 359 722 347Q722 336 708 328L390 327H72Q56 332 56 347ZM56 153Q56 168 72 173H708Q722 163 722 153Q722 140 707 133H70Q56 140 56 153Z"></path><path id="MJX-8-TEX-I-1D707" d="M58 -216Q44 -216 34 -208T23 -186Q23 -176 96 116T173 414Q186 442 219 442Q231 441 239 435T249 423T251 413Q251 401 220 279T187 142Q185 131 185 107V99Q185 26 252 26Q261 26 270 27T287 31T302 38T315 45T327 55T338 65T348 77T356 88T365 100L372 110L408 253Q444 395 448 404Q461 431 491 431Q504 431 512 424T523 412T525 402L449 84Q448 79 448 68Q448 43 455 35T476 26Q485 27 496 35Q517 55 537 131Q543 151 547 152Q549 153 557 153H561Q580 153 580 144Q580 138 575 117T555 63T523 13Q510 0 491 -8Q483 -10 467 -10Q446 -10 429 -4T402 11T385 29T376 44T374 51L368 45Q362 39 350 30T324 12T288 -4T246 -11Q199 -11 153 12L129 -85Q108 -167 104 -180T92 -202Q76 -216 58 -216Z"></path><path id="MJX-8-TEX-I-1D6FC" d="M34 156Q34 270 120 356T309 442Q379 442 421 402T478 304Q484 275 485 237V208Q534 282 560 374Q564 388 566 390T582 393Q603 393 603 385Q603 376 594 346T558 261T497 161L486 147L487 123Q489 67 495 47T514 26Q528 28 540 37T557 60Q559 67 562 68T577 70Q597 70 597 62Q597 56 591 43Q579 19 556 5T512 -10H505Q438 -10 414 62L411 69L400 61Q390 53 370 41T325 18T267 -2T203 -11Q124 -11 79 39T34 156ZM208 26Q257 26 306 47T379 90L403 112Q401 255 396 290Q382 405 304 405Q235 405 183 332Q156 292 139 224T121 120Q121 71 146 49T208 26Z"></path><path id="MJX-8-TEX-I-1D450" d="M34 159Q34 268 120 355T306 442Q362 442 394 418T427 355Q427 326 408 306T360 285Q341 285 330 295T319 325T330 359T352 380T366 386H367Q367 388 361 392T340 400T306 404Q276 404 249 390Q228 381 206 359Q162 315 142 235T121 119Q121 73 147 50Q169 26 205 26H209Q321 26 394 111Q403 121 406 121Q410 121 419 112T429 98T420 83T391 55T346 25T282 0T202 -11Q127 -11 81 37T34 159Z"></path><path id="MJX-8-TEX-I-1D460" d="M131 289Q131 321 147 354T203 415T300 442Q362 442 390 415T419 355Q419 323 402 308T364 292Q351 292 340 300T328 326Q328 342 337 354T354 372T367 378Q368 378 368 379Q368 382 361 388T336 399T297 405Q249 405 227 379T204 326Q204 301 223 291T278 274T330 259Q396 230 396 163Q396 135 385 107T352 51T289 7T195 -10Q118 -10 86 19T53 87Q53 126 74 143T118 160Q133 160 146 151T160 120Q160 94 142 76T111 58Q109 57 108 57T107 55Q108 52 115 47T146 34T201 27Q237 27 263 38T301 66T318 97T323 122Q323 150 302 164T254 181T195 196T148 231Q131 256 131 289Z"></path><path id="MJX-8-TEX-N-32" d="M109 429Q82 429 66 447T50 491Q50 562 103 614T235 666Q326 666 387 610T449 465Q449 422 429 383T381 315T301 241Q265 210 201 149L142 93L218 92Q375 92 385 97Q392 99 409 186V189H449V186Q448 183 436 95T421 3V0H50V19V31Q50 38 56 46T86 81Q115 113 136 137Q145 147 170 174T204 211T233 244T261 278T284 308T305 340T320 369T333 401T340 431T343 464Q343 527 309 573T212 619Q179 619 154 602T119 569T109 550Q109 549 114 549Q132 549 151 535T170 489Q170 464 154 447T109 429Z"></path><path id="MJX-8-TEX-N-394" d="M51 0Q46 4 46 7Q46 9 215 357T388 709Q391 716 416 716Q439 716 444 709Q447 705 616 357T786 7Q786 4 781 0H51ZM507 344L384 596L137 92L383 91H630Q630 93 507 344Z"></path><path id="MJX-8-TEX-I-1D443" d="M287 628Q287 635 230 637Q206 637 199 638T192 648Q192 649 194 659Q200 679 203 681T397 683Q587 682 600 680Q664 669 707 631T751 530Q751 453 685 389Q616 321 507 303Q500 302 402 301H307L277 182Q247 66 247 59Q247 55 248 54T255 50T272 48T305 46H336Q342 37 342 35Q342 19 335 5Q330 0 319 0Q316 0 282 1T182 2Q120 2 87 2T51 1Q33 1 33 11Q33 13 36 25Q40 41 44 43T67 46Q94 46 127 49Q141 52 146 61Q149 65 218 339T287 628ZM645 554Q645 567 643 575T634 597T609 619T560 635Q553 636 480 637Q463 637 445 637T416 636T404 636Q391 635 386 627Q384 621 367 550T332 412T314 344Q314 342 395 342H407H430Q542 342 590 392Q617 419 631 471T645 554Z"></path><path id="MJX-8-TEX-S3-28" d="M701 -940Q701 -943 695 -949H664Q662 -947 636 -922T591 -879T537 -818T475 -737T412 -636T350 -511T295 -362T250 -186T221 17T209 251Q209 962 573 1361Q596 1386 616 1405T649 1437T664 1450H695Q701 1444 701 1441Q701 1436 681 1415T629 1356T557 1261T476 1118T400 927T340 675T308 359Q306 321 306 250Q306 -139 400 -430T690 -924Q701 -936 701 -940Z"></path><path id="MJX-8-TEX-I-1D449" d="M52 648Q52 670 65 683H76Q118 680 181 680Q299 680 320 683H330Q336 677 336 674T334 656Q329 641 325 637H304Q282 635 274 635Q245 630 242 620Q242 618 271 369T301 118L374 235Q447 352 520 471T595 594Q599 601 599 609Q599 633 555 637Q537 637 537 648Q537 649 539 661Q542 675 545 679T558 683Q560 683 570 683T604 682T668 681Q737 681 755 683H762Q769 676 769 672Q769 655 760 640Q757 637 743 637Q730 636 719 635T698 630T682 623T670 615T660 608T652 599T645 592L452 282Q272 -9 266 -16Q263 -18 259 -21L241 -22H234Q216 -22 216 -15Q213 -9 177 305Q139 623 138 626Q133 637 76 637H59Q52 642 52 648Z"></path><path id="MJX-8-TEX-I-1D434" d="M208 74Q208 50 254 46Q272 46 272 35Q272 34 270 22Q267 8 264 4T251 0Q249 0 239 0T205 1T141 2Q70 2 50 0H42Q35 7 35 11Q37 38 48 46H62Q132 49 164 96Q170 102 345 401T523 704Q530 716 547 716H555H572Q578 707 578 706L606 383Q634 60 636 57Q641 46 701 46Q726 46 726 36Q726 34 723 22Q720 7 718 4T704 0Q701 0 690 0T651 1T578 2Q484 2 455 0H443Q437 6 437 9T439 27Q443 40 445 43L449 46H469Q523 49 533 63L521 213H283L249 155Q208 86 208 74ZM516 260Q516 271 504 416T490 562L463 519Q447 492 400 412L310 260L413 259Q516 259 516 260Z"></path><path id="MJX-8-TEX-S3-29" d="M34 1438Q34 1446 37 1448T50 1450H56H71Q73 1448 99 1423T144 1380T198 1319T260 1238T323 1137T385 1013T440 864T485 688T514 485T526 251Q526 134 519 53Q472 -519 162 -860Q139 -885 119 -904T86 -936T71 -949H56Q43 -949 39 -947T34 -937Q88 -883 140 -813Q428 -430 428 251Q428 453 402 628T338 922T245 1146T145 1309T46 1425Q44 1427 42 1429T39 1433T36 1436L34 1438Z"></path><path id="MJX-8-TEX-N-2B" d="M56 237T56 250T70 270H369V420L370 570Q380 583 389 583Q402 583 409 568V270H707Q722 262 722 250T707 230H409V-68Q401 -82 391 -82H389H387Q375 -82 369 -68V230H70Q56 237 56 250Z"></path><path id="MJX-8-TEX-I-1D445" d="M230 637Q203 637 198 638T193 649Q193 676 204 682Q206 683 378 683Q550 682 564 680Q620 672 658 652T712 606T733 563T739 529Q739 484 710 445T643 385T576 351T538 338L545 333Q612 295 612 223Q612 212 607 162T602 80V71Q602 53 603 43T614 25T640 16Q668 16 686 38T712 85Q717 99 720 102T735 105Q755 105 755 93Q755 75 731 36Q693 -21 641 -21H632Q571 -21 531 4T487 82Q487 109 502 166T517 239Q517 290 474 313Q459 320 449 321T378 323H309L277 193Q244 61 244 59Q244 55 245 54T252 50T269 48T302 46H333Q339 38 339 37T336 19Q332 6 326 0H311Q275 2 180 2Q146 2 117 2T71 2T50 1Q33 1 33 10Q33 12 36 24Q41 43 46 45Q50 46 61 46H67Q94 46 127 49Q141 52 146 61Q149 65 218 339T287 628Q287 635 230 637ZM630 554Q630 586 609 608T523 636Q521 636 500 636T462 637H440Q393 637 386 627Q385 624 352 494T319 361Q319 360 388 360Q466 361 492 367Q556 377 592 426Q608 449 619 486T630 554Z"></path><path id="MJX-8-TEX-I-1D45A" d="M21 287Q22 293 24 303T36 341T56 388T88 425T132 442T175 435T205 417T221 395T229 376L231 369Q231 367 232 367L243 378Q303 442 384 442Q401 442 415 440T441 433T460 423T475 411T485 398T493 385T497 373T500 364T502 357L510 367Q573 442 659 442Q713 442 746 415T780 336Q780 285 742 178T704 50Q705 36 709 31T724 26Q752 26 776 56T815 138Q818 149 821 151T837 153Q857 153 857 145Q857 144 853 130Q845 101 831 73T785 17T716 -10Q669 -10 648 17T627 73Q627 92 663 193T700 345Q700 404 656 404H651Q565 404 506 303L499 291L466 157Q433 26 428 16Q415 -11 385 -11Q372 -11 364 -4T353 8T350 18Q350 29 384 161L420 307Q423 322 423 345Q423 404 379 404H374Q288 404 229 303L222 291L189 157Q156 26 151 16Q138 -11 108 -11Q95 -11 87 -5T76 7T74 17Q74 30 112 181Q151 335 151 342Q154 357 154 369Q154 405 129 405Q107 405 92 377T69 316T57 280Q55 278 41 278H27Q21 284 21 287Z"></path></defs><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mi"><use data-c="1D461" xlink:href="#MJX-8-TEX-I-1D461"></use></g><g data-mml-node="mo" transform="translate(638.8,0)"><use data-c="3D" xlink:href="#MJX-8-TEX-N-3D"></use></g><g data-mml-node="mfrac" transform="translate(1694.6,0)"><g data-mml-node="mrow" transform="translate(220,676)"><g data-mml-node="mi"><use data-c="1D707" xlink:href="#MJX-8-TEX-I-1D707"></use></g><g data-mml-node="mstyle" transform="translate(603,0)"><g data-mml-node="mspace"></g></g><g data-mml-node="mi" transform="translate(770,0)"><use data-c="1D6FC" xlink:href="#MJX-8-TEX-I-1D6FC"></use></g><g data-mml-node="mstyle" transform="translate(1410,0)"><g data-mml-node="mspace"></g></g><g data-mml-node="msub" transform="translate(1577,0)"><g data-mml-node="mi"><use data-c="1D450" xlink:href="#MJX-8-TEX-I-1D450"></use></g><g data-mml-node="mi" transform="translate(466,-150) scale(0.707)"><use data-c="1D460" xlink:href="#MJX-8-TEX-I-1D460"></use></g></g></g><g data-mml-node="mrow" transform="translate(306.8,-686)"><g data-mml-node="mn"><use data-c="32" xlink:href="#MJX-8-TEX-N-32"></use></g><g data-mml-node="mstyle" transform="translate(500,0)"><g data-mml-node="mspace"></g></g><g data-mml-node="mi" transform="translate(667,0)"><use data-c="394" xlink:href="#MJX-8-TEX-N-394"></use></g><g data-mml-node="mi" transform="translate(1500,0)"><use data-c="1D443" xlink:href="#MJX-8-TEX-I-1D443"></use></g></g><rect width="2624.6" height="60" x="120" y="220"></rect></g><g data-mml-node="msup" transform="translate(4559.2,0)"><g data-mml-node="mrow"><g data-mml-node="mo" transform="translate(0 -0.5)"><use data-c="28" xlink:href="#MJX-8-TEX-S3-28"></use></g><g data-mml-node="mfrac" transform="translate(736,0)"><g data-mml-node="mi" transform="translate(220,676)"><use data-c="1D449" xlink:href="#MJX-8-TEX-I-1D449"></use></g><g data-mml-node="mi" transform="translate(229.5,-686)"><use data-c="1D434" xlink:href="#MJX-8-TEX-I-1D434"></use></g><rect width="969" height="60" x="120" y="220"></rect></g><g data-mml-node="mo" transform="translate(1945,0) translate(0 -0.5)"><use data-c="29" xlink:href="#MJX-8-TEX-S3-29"></use></g></g><g data-mml-node="TeXAtom" transform="translate(2714,1176.6) scale(0.707)" data-mjx-texclass="ORD"><g data-mml-node="mn"><use data-c="32" xlink:href="#MJX-8-TEX-N-32"></use></g></g></g><g data-mml-node="mo" transform="translate(7899,0)"><use data-c="2B" xlink:href="#MJX-8-TEX-N-2B"></use></g><g data-mml-node="mfrac" transform="translate(8899.2,0)"><g data-mml-node="mrow" transform="translate(220,676)"><g data-mml-node="mi"><use data-c="1D707" xlink:href="#MJX-8-TEX-I-1D707"></use></g><g data-mml-node="mstyle" transform="translate(603,0)"><g data-mml-node="mspace"></g></g><g data-mml-node="msub" transform="translate(770,0)"><g data-mml-node="mi"><use data-c="1D445" xlink:href="#MJX-8-TEX-I-1D445"></use></g><g data-mml-node="mi" transform="translate(792,-150) scale(0.707)"><use data-c="1D45A" xlink:href="#MJX-8-TEX-I-1D45A"></use></g></g></g><g data-mml-node="mrow" transform="translate(544.4,-686)"><g data-mml-node="mi"><use data-c="394" xlink:href="#MJX-8-TEX-N-394"></use></g><g data-mml-node="mi" transform="translate(833,0)"><use data-c="1D443" xlink:href="#MJX-8-TEX-I-1D443"></use></g></g><rect width="2432.8" height="60" x="120" y="220"></rect></g><g data-mml-node="mrow" transform="translate(11572,0)"><g data-mml-node="mo" transform="translate(0 -0.5)"><use data-c="28" xlink:href="#MJX-8-TEX-S3-28"></use></g><g data-mml-node="mfrac" transform="translate(736,0)"><g data-mml-node="mi" transform="translate(220,676)"><use data-c="1D449" xlink:href="#MJX-8-TEX-I-1D449"></use></g><g data-mml-node="mi" transform="translate(229.5,-686)"><use data-c="1D434" xlink:href="#MJX-8-TEX-I-1D434"></use></g><rect width="969" height="60" x="120" y="220"></rect></g><g data-mml-node="mo" transform="translate(1945,0) translate(0 -0.5)"><use data-c="29" xlink:href="#MJX-8-TEX-S3-29"></use></g></g></g></g></svg></div>
+      <p>Efecto de la compresibilidad de la torta, anclado a la presión del ensayo:</p>
+      <div class="fml" data-tex="\alpha(\Delta P)=\alpha_{\text{ensayo}}\left(\frac{\Delta P}{\Delta P_{\text{ensayo}}}\right)^{s}"><svg style="vertical-align: -2.218ex;" xmlns="http://www.w3.org/2000/svg" width="29.583ex" height="5.587ex" role="img" focusable="false" viewBox="0 -1489.1 13075.5 2469.3" xmlns:xlink="http://www.w3.org/1999/xlink"><defs><path id="MJX-9-TEX-I-1D6FC" d="M34 156Q34 270 120 356T309 442Q379 442 421 402T478 304Q484 275 485 237V208Q534 282 560 374Q564 388 566 390T582 393Q603 393 603 385Q603 376 594 346T558 261T497 161L486 147L487 123Q489 67 495 47T514 26Q528 28 540 37T557 60Q559 67 562 68T577 70Q597 70 597 62Q597 56 591 43Q579 19 556 5T512 -10H505Q438 -10 414 62L411 69L400 61Q390 53 370 41T325 18T267 -2T203 -11Q124 -11 79 39T34 156ZM208 26Q257 26 306 47T379 90L403 112Q401 255 396 290Q382 405 304 405Q235 405 183 332Q156 292 139 224T121 120Q121 71 146 49T208 26Z"></path><path id="MJX-9-TEX-N-28" d="M94 250Q94 319 104 381T127 488T164 576T202 643T244 695T277 729T302 750H315H319Q333 750 333 741Q333 738 316 720T275 667T226 581T184 443T167 250T184 58T225 -81T274 -167T316 -220T333 -241Q333 -250 318 -250H315H302L274 -226Q180 -141 137 -14T94 250Z"></path><path id="MJX-9-TEX-N-394" d="M51 0Q46 4 46 7Q46 9 215 357T388 709Q391 716 416 716Q439 716 444 709Q447 705 616 357T786 7Q786 4 781 0H51ZM507 344L384 596L137 92L383 91H630Q630 93 507 344Z"></path><path id="MJX-9-TEX-I-1D443" d="M287 628Q287 635 230 637Q206 637 199 638T192 648Q192 649 194 659Q200 679 203 681T397 683Q587 682 600 680Q664 669 707 631T751 530Q751 453 685 389Q616 321 507 303Q500 302 402 301H307L277 182Q247 66 247 59Q247 55 248 54T255 50T272 48T305 46H336Q342 37 342 35Q342 19 335 5Q330 0 319 0Q316 0 282 1T182 2Q120 2 87 2T51 1Q33 1 33 11Q33 13 36 25Q40 41 44 43T67 46Q94 46 127 49Q141 52 146 61Q149 65 218 339T287 628ZM645 554Q645 567 643 575T634 597T609 619T560 635Q553 636 480 637Q463 637 445 637T416 636T404 636Q391 635 386 627Q384 621 367 550T332 412T314 344Q314 342 395 342H407H430Q542 342 590 392Q617 419 631 471T645 554Z"></path><path id="MJX-9-TEX-N-29" d="M60 749L64 750Q69 750 74 750H86L114 726Q208 641 251 514T294 250Q294 182 284 119T261 12T224 -76T186 -143T145 -194T113 -227T90 -246Q87 -249 86 -250H74Q66 -250 63 -250T58 -247T55 -238Q56 -237 66 -225Q221 -64 221 250T66 725Q56 737 55 738Q55 746 60 749Z"></path><path id="MJX-9-TEX-N-3D" d="M56 347Q56 360 70 367H707Q722 359 722 347Q722 336 708 328L390 327H72Q56 332 56 347ZM56 153Q56 168 72 173H708Q722 163 722 153Q722 140 707 133H70Q56 140 56 153Z"></path><path id="MJX-9-TEX-N-65" d="M28 218Q28 273 48 318T98 391T163 433T229 448Q282 448 320 430T378 380T406 316T415 245Q415 238 408 231H126V216Q126 68 226 36Q246 30 270 30Q312 30 342 62Q359 79 369 104L379 128Q382 131 395 131H398Q415 131 415 121Q415 117 412 108Q393 53 349 21T250 -11Q155 -11 92 58T28 218ZM333 275Q322 403 238 411H236Q228 411 220 410T195 402T166 381T143 340T127 274V267H333V275Z"></path><path id="MJX-9-TEX-N-6E" d="M41 46H55Q94 46 102 60V68Q102 77 102 91T102 122T103 161T103 203Q103 234 103 269T102 328V351Q99 370 88 376T43 385H25V408Q25 431 27 431L37 432Q47 433 65 434T102 436Q119 437 138 438T167 441T178 442H181V402Q181 364 182 364T187 369T199 384T218 402T247 421T285 437Q305 442 336 442Q450 438 463 329Q464 322 464 190V104Q464 66 466 59T477 49Q498 46 526 46H542V0H534L510 1Q487 2 460 2T422 3Q319 3 310 0H302V46H318Q379 46 379 62Q380 64 380 200Q379 335 378 343Q372 371 358 385T334 402T308 404Q263 404 229 370Q202 343 195 315T187 232V168V108Q187 78 188 68T191 55T200 49Q221 46 249 46H265V0H257L234 1Q210 2 183 2T145 3Q42 3 33 0H25V46H41Z"></path><path id="MJX-9-TEX-N-73" d="M295 316Q295 356 268 385T190 414Q154 414 128 401Q98 382 98 349Q97 344 98 336T114 312T157 287Q175 282 201 278T245 269T277 256Q294 248 310 236T342 195T359 133Q359 71 321 31T198 -10H190Q138 -10 94 26L86 19L77 10Q71 4 65 -1L54 -11H46H42Q39 -11 33 -5V74V132Q33 153 35 157T45 162H54Q66 162 70 158T75 146T82 119T101 77Q136 26 198 26Q295 26 295 104Q295 133 277 151Q257 175 194 187T111 210Q75 227 54 256T33 318Q33 357 50 384T93 424T143 442T187 447H198Q238 447 268 432L283 424L292 431Q302 440 314 448H322H326Q329 448 335 442V310L329 304H301Q295 310 295 316Z"></path><path id="MJX-9-TEX-N-61" d="M137 305T115 305T78 320T63 359Q63 394 97 421T218 448Q291 448 336 416T396 340Q401 326 401 309T402 194V124Q402 76 407 58T428 40Q443 40 448 56T453 109V145H493V106Q492 66 490 59Q481 29 455 12T400 -6T353 12T329 54V58L327 55Q325 52 322 49T314 40T302 29T287 17T269 6T247 -2T221 -8T190 -11Q130 -11 82 20T34 107Q34 128 41 147T68 188T116 225T194 253T304 268H318V290Q318 324 312 340Q290 411 215 411Q197 411 181 410T156 406T148 403Q170 388 170 359Q170 334 154 320ZM126 106Q126 75 150 51T209 26Q247 26 276 49T315 109Q317 116 318 175Q318 233 317 233Q309 233 296 232T251 223T193 203T147 166T126 106Z"></path><path id="MJX-9-TEX-N-79" d="M69 -66Q91 -66 104 -80T118 -116Q118 -134 109 -145T91 -160Q84 -163 97 -166Q104 -168 111 -168Q131 -168 148 -159T175 -138T197 -106T213 -75T225 -43L242 0L170 183Q150 233 125 297Q101 358 96 368T80 381Q79 382 78 382Q66 385 34 385H19V431H26L46 430Q65 430 88 429T122 428Q129 428 142 428T171 429T200 430T224 430L233 431H241V385H232Q183 385 185 366L286 112Q286 113 332 227L376 341V350Q376 365 366 373T348 383T334 385H331V431H337H344Q351 431 361 431T382 430T405 429T422 429Q477 429 503 431H508V385H497Q441 380 422 345Q420 343 378 235T289 9T227 -131Q180 -204 113 -204Q69 -204 44 -177T19 -116Q19 -89 35 -78T69 -66Z"></path><path id="MJX-9-TEX-N-6F" d="M28 214Q28 309 93 378T250 448Q340 448 405 380T471 215Q471 120 407 55T250 -10Q153 -10 91 57T28 214ZM250 30Q372 30 372 193V225V250Q372 272 371 288T364 326T348 362T317 390T268 410Q263 411 252 411Q222 411 195 399Q152 377 139 338T126 246V226Q126 130 145 91Q177 30 250 30Z"></path><path id="MJX-9-TEX-S3-28" d="M701 -940Q701 -943 695 -949H664Q662 -947 636 -922T591 -879T537 -818T475 -737T412 -636T350 -511T295 -362T250 -186T221 17T209 251Q209 962 573 1361Q596 1386 616 1405T649 1437T664 1450H695Q701 1444 701 1441Q701 1436 681 1415T629 1356T557 1261T476 1118T400 927T340 675T308 359Q306 321 306 250Q306 -139 400 -430T690 -924Q701 -936 701 -940Z"></path><path id="MJX-9-TEX-S3-29" d="M34 1438Q34 1446 37 1448T50 1450H56H71Q73 1448 99 1423T144 1380T198 1319T260 1238T323 1137T385 1013T440 864T485 688T514 485T526 251Q526 134 519 53Q472 -519 162 -860Q139 -885 119 -904T86 -936T71 -949H56Q43 -949 39 -947T34 -937Q88 -883 140 -813Q428 -430 428 251Q428 453 402 628T338 922T245 1146T145 1309T46 1425Q44 1427 42 1429T39 1433T36 1436L34 1438Z"></path><path id="MJX-9-TEX-I-1D460" d="M131 289Q131 321 147 354T203 415T300 442Q362 442 390 415T419 355Q419 323 402 308T364 292Q351 292 340 300T328 326Q328 342 337 354T354 372T367 378Q368 378 368 379Q368 382 361 388T336 399T297 405Q249 405 227 379T204 326Q204 301 223 291T278 274T330 259Q396 230 396 163Q396 135 385 107T352 51T289 7T195 -10Q118 -10 86 19T53 87Q53 126 74 143T118 160Q133 160 146 151T160 120Q160 94 142 76T111 58Q109 57 108 57T107 55Q108 52 115 47T146 34T201 27Q237 27 263 38T301 66T318 97T323 122Q323 150 302 164T254 181T195 196T148 231Q131 256 131 289Z"></path></defs><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="mi"><use data-c="1D6FC" xlink:href="#MJX-9-TEX-I-1D6FC"></use></g><g data-mml-node="mo" transform="translate(640,0)"><use data-c="28" xlink:href="#MJX-9-TEX-N-28"></use></g><g data-mml-node="mi" transform="translate(1029,0)"><use data-c="394" xlink:href="#MJX-9-TEX-N-394"></use></g><g data-mml-node="mi" transform="translate(1862,0)"><use data-c="1D443" xlink:href="#MJX-9-TEX-I-1D443"></use></g><g data-mml-node="mo" transform="translate(2613,0)"><use data-c="29" xlink:href="#MJX-9-TEX-N-29"></use></g><g data-mml-node="mo" transform="translate(3279.8,0)"><use data-c="3D" xlink:href="#MJX-9-TEX-N-3D"></use></g><g data-mml-node="msub" transform="translate(4335.6,0)"><g data-mml-node="mi"><use data-c="1D6FC" xlink:href="#MJX-9-TEX-I-1D6FC"></use></g><g data-mml-node="TeXAtom" transform="translate(673,-150) scale(0.707)" data-mjx-texclass="ORD"><g data-mml-node="mtext"><use data-c="65" xlink:href="#MJX-9-TEX-N-65"></use><use data-c="6E" xlink:href="#MJX-9-TEX-N-6E" transform="translate(444,0)"></use><use data-c="73" xlink:href="#MJX-9-TEX-N-73" transform="translate(1000,0)"></use><use data-c="61" xlink:href="#MJX-9-TEX-N-61" transform="translate(1394,0)"></use><use data-c="79" xlink:href="#MJX-9-TEX-N-79" transform="translate(1894,0)"></use><use data-c="6F" xlink:href="#MJX-9-TEX-N-6F" transform="translate(2422,0)"></use></g></g></g><g data-mml-node="msup" transform="translate(7124.7,0)"><g data-mml-node="mrow"><g data-mml-node="mo" transform="translate(0 -0.5)"><use data-c="28" xlink:href="#MJX-9-TEX-S3-28"></use></g><g data-mml-node="mfrac" transform="translate(736,0)"><g data-mml-node="mrow" transform="translate(1240.1,676)"><g data-mml-node="mi"><use data-c="394" xlink:href="#MJX-9-TEX-N-394"></use></g><g data-mml-node="mi" transform="translate(833,0)"><use data-c="1D443" xlink:href="#MJX-9-TEX-I-1D443"></use></g></g><g data-mml-node="mrow" transform="translate(220,-686)"><g data-mml-node="mi"><use data-c="394" xlink:href="#MJX-9-TEX-N-394"></use></g><g data-mml-node="msub" transform="translate(833,0)"><g data-mml-node="mi"><use data-c="1D443" xlink:href="#MJX-9-TEX-I-1D443"></use></g><g data-mml-node="TeXAtom" transform="translate(675,-150) scale(0.707)" data-mjx-texclass="ORD"><g data-mml-node="mtext"><use data-c="65" xlink:href="#MJX-9-TEX-N-65"></use><use data-c="6E" xlink:href="#MJX-9-TEX-N-6E" transform="translate(444,0)"></use><use data-c="73" xlink:href="#MJX-9-TEX-N-73" transform="translate(1000,0)"></use><use data-c="61" xlink:href="#MJX-9-TEX-N-61" transform="translate(1394,0)"></use><use data-c="79" xlink:href="#MJX-9-TEX-N-79" transform="translate(1894,0)"></use><use data-c="6F" xlink:href="#MJX-9-TEX-N-6F" transform="translate(2422,0)"></use></g></g></g></g><rect width="3824.2" height="60" x="120" y="220"></rect></g><g data-mml-node="mo" transform="translate(4800.2,0) translate(0 -0.5)"><use data-c="29" xlink:href="#MJX-9-TEX-S3-29"></use></g></g><g data-mml-node="TeXAtom" transform="translate(5569.2,1176.6) scale(0.707)" data-mjx-texclass="ORD"><g data-mml-node="mi"><use data-c="1D460" xlink:href="#MJX-9-TEX-I-1D460"></use></g></g></g></g></g></svg></div>
+    </section>
+
+    <div class="doc-foot">
+      <span>IQYA-2031 · Proyecto de Operaciones Unitarias · 2026-20</span>
+      <span>Taller 6 · Universidad de los Andes</span>
+    </div>
+
+  </div>
+
+</article>
+</div>
+
+<div class="visor" id="visor" role="dialog" aria-modal="true" aria-label="Carta de diseño">
+  <div class="visor-lienzo" id="visor-lienzo"><img id="visor-img" alt="Carta de diseño"></div>
+  <div class="visor-barra">
+    <span class="visor-tit" id="visor-tit">Carta de diseño</span>
+    <div class="visor-mandos">
+      <button class="visor-btn" id="v-menos" title="Alejar" aria-label="Alejar">&minus;</button>
+      <span class="visor-nivel" id="v-nivel">100 %</span>
+      <button class="visor-btn" id="v-mas" title="Acercar" aria-label="Acercar">+</button>
+      <button class="visor-btn ancho" id="v-ajustar">Ajustar</button>
+      <button class="visor-btn" id="v-cerrar" title="Cerrar (Esc)" aria-label="Cerrar">&times;</button>
+    </div>
+  </div>
+  <div class="visor-ayuda">Rueda del ratón o pellizco para acercar · arrastre para desplazarse · doble clic para acercar · Esc para cerrar</div>
+</div>
+
+<script>
+(function () {
+  var bar = document.getElementById('progress');
+  function onScroll() {
+    var h = document.documentElement, max = h.scrollHeight - h.clientHeight;
+    bar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+})();
+
+/* Visor de las cartas. Toma la imagen de la figura sobre la que se hizo clic,
+   así que la misma ventana sirve para las dos sin duplicar el data URI. */
+(function () {
+  var visor = document.getElementById('visor');
+  if (!visor) return;
+  var lienzo = document.getElementById('visor-lienzo');
+  var img = document.getElementById('visor-img');
+  var tit = document.getElementById('visor-tit');
+  var nivel = document.getElementById('v-nivel');
+  var esc = 1, x = 0, y = 0, base = 1;
+
+  function pinta() {
+    img.style.transform = 'translate(' + x + 'px,' + y + 'px) scale(' + esc + ')';
+    nivel.textContent = Math.round(esc / base * 100) + ' %';
+  }
+  function ajustar() {
+    var w = lienzo.clientWidth, h = lienzo.clientHeight;
+    var iw = img.naturalWidth || 1, ih = img.naturalHeight || 1;
+    base = Math.min(w / iw, h / ih) * 0.94;
+    esc = base; x = (w - iw * esc) / 2; y = (h - ih * esc) / 2;
+    pinta();
+  }
+  function zoom(k, cx, cy) {
+    var n = Math.min(12, Math.max(0.05, esc * k));
+    if (n === esc) return;
+    x = cx - (cx - x) * (n / esc); y = cy - (cy - y) * (n / esc);
+    esc = n; pinta();
+  }
+  function abrir(figura) {
+    var fuente = figura.querySelector('img');
+    img.src = fuente.src;
+    tit.textContent = figura.getAttribute('data-rotulo') || 'Carta de diseño';
+    visor.classList.add('abierto');
+    document.body.style.overflow = 'hidden';
+    if (img.complete) ajustar(); else img.addEventListener('load', ajustar, { once: true });
+  }
+  function cerrar() {
+    visor.classList.remove('abierto');
+    document.body.style.overflow = '';
+  }
+
+  document.querySelectorAll('.carta').forEach(function (fig) {
+    fig.querySelectorAll('img, .lupa').forEach(function (el) {
+      el.addEventListener('click', function () { abrir(fig); });
+    });
+  });
+  document.getElementById('v-cerrar').addEventListener('click', cerrar);
+  document.getElementById('v-ajustar').addEventListener('click', ajustar);
+  document.getElementById('v-mas').addEventListener('click', function () { zoom(1.35, lienzo.clientWidth / 2, lienzo.clientHeight / 2); });
+  document.getElementById('v-menos').addEventListener('click', function () { zoom(1 / 1.35, lienzo.clientWidth / 2, lienzo.clientHeight / 2); });
+  document.addEventListener('keydown', function (e) {
+    if (!visor.classList.contains('abierto')) return;
+    if (e.key === 'Escape') cerrar();
+    if (e.key === '0') ajustar();
+  });
+  lienzo.addEventListener('wheel', function (e) {
+    e.preventDefault();
+    var r = lienzo.getBoundingClientRect();
+    zoom(Math.pow(0.9985, e.deltaY), e.clientX - r.left, e.clientY - r.top);
+  }, { passive: false });
+  lienzo.addEventListener('dblclick', function (e) {
+    var r = lienzo.getBoundingClientRect();
+    zoom(1.8, e.clientX - r.left, e.clientY - r.top);
+  });
+  var arr = false, px = 0, py = 0;
+  lienzo.addEventListener('pointerdown', function (e) {
+    arr = true; px = e.clientX; py = e.clientY;
+    lienzo.setPointerCapture(e.pointerId); lienzo.classList.add('arrastrando');
+  });
+  lienzo.addEventListener('pointermove', function (e) {
+    if (!arr) return;
+    x += e.clientX - px; y += e.clientY - py; px = e.clientX; py = e.clientY; pinta();
+  });
+  ['pointerup', 'pointercancel'].forEach(function (ev) {
+    lienzo.addEventListener(ev, function () { arr = false; lienzo.classList.remove('arrastrando'); });
+  });
+  window.addEventListener('resize', function () { if (visor.classList.contains('abierto')) ajustar(); });
+})();
+</script>
+
+</body>
+</html>

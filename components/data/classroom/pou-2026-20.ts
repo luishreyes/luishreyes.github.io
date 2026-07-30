@@ -830,6 +830,20 @@ export const pou202620Course: Course = {
       href: '/classroom/iqya-2031-2026-20/talleres/Taller_05/Taller_05_Intercambiador_Tubo_Coraza.html',
       bannerImg: '/classroom/iqya-2031-2026-20/lecturas-banners/l07.jpg',
     },
+    {
+      slug: 'taller-06-filtracion-de-levadura',
+      week: 9,
+      order: 106,
+      title: 'Taller 6 · Separación de biomasa de levadura',
+      summary:
+        'Cuatro puntos de un ensayo de filtración de laboratorio y una planta de levadura alimentaria que produce sin parar. Del ajuste linealizado salen la resistencia específica de la torta y la del medio filtrante, y con ellas se dimensiona un filtro prensa que cabe en el presupuesto y cabe en el espacio. Ahí empieza el taller de verdad: al quitarle al cálculo dos supuestos falsos, que la torta es incompresible y que la hora entera es filtración, el área sube de 55 a 85 m² y el equipo pasa de obvio a estar al filo. Cierra mostrando que la matriz multicriterio que trae el enunciado se invierte por completo cuando se le agrega el criterio que le falta, la continuidad de operación. En parejas, distinta a las de los talleres 1 a 5.',
+      date: '2026-09-29',
+      readingMinutes: 18,
+      tags: ['filtración', 'resistencia específica', 'torta compresible', 'filtro prensa', 'centrífuga de discos', 'microfiltración', 'tiempo de ciclo', 'selección multicriterio', 'taller'],
+      category: 'taller',
+      href: '/classroom/iqya-2031-2026-20/talleres/Taller_06/Taller_06_Filtracion_de_Levadura.html',
+      bannerImg: '/classroom/iqya-2031-2026-20/lecturas-banners/l09.jpg',
+    },
   ],
   presentations: [
     {
