@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Taller 8 · Destilación por lotes y la integral de Rayleigh · Proyecto de Operaciones Unitarias</title>
+<title>Taller 9 · McCabe-Thiele y la columna de recuperación de etanol · Proyecto de Operaciones Unitarias</title>
 <link rel="stylesheet" href="assets/deloitte.css">
 <style>
   body {
@@ -261,6 +261,13 @@
   .btn--secundario:hover { border-color: var(--gris-2); }
   @media (max-width: 700px) { .abrir { grid-template-columns: 1fr; } }
   @media print { .abrir { break-inside: avoid; } .btn { border: 1px solid var(--gris-4); } }
+
+  /* Tabla de especificaciones */
+  table.espec { width: 100%; border-collapse: collapse; margin: 18px 0 6px; font-size: 14.5px; }
+  table.espec th { text-align: left; font-family: var(--tipo); font-size: 12px; letter-spacing: .07em; text-transform: uppercase; color: var(--gris-2); border-bottom: 2px solid var(--gris-4); padding: 8px 12px 8px 0; }
+  table.espec td { border-bottom: 1px solid var(--gris-5); padding: 9px 12px 9px 0; vertical-align: top; }
+  table.espec td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  @media print { table.espec { break-inside: avoid; } }
 </style>
 </head>
 <body>
@@ -271,9 +278,10 @@
 
 <nav class="side-nav" aria-label="Secciones">
   <p class="sn-label">Contenido</p>
-  <a class="sn-item" href="#que-hay"><span class="sn-num">01</span>Qué va a hacer</a>
-  <a class="sn-item" href="#como"><span class="sn-num">02</span>Cómo se trabaja</a>
-  <a class="sn-item" href="#entrega"><span class="sn-num">03</span>Entrega</a>
+  <a class="sn-item" href="#el-problema"><span class="sn-num">01</span>El problema</a>
+  <a class="sn-item" href="#que-hay"><span class="sn-num">02</span>Qué va a hacer</a>
+  <a class="sn-item" href="#como"><span class="sn-num">03</span>Cómo se trabaja</a>
+  <a class="sn-item" href="#entrega"><span class="sn-num">04</span>Entrega</a>
 </nav>
 
 <article class="page">
@@ -283,14 +291,14 @@
       Universidad de los Andes
       <span>Ingeniería Química y de Alimentos</span>
     </div>
-    <div class="badge">Taller 8 · Proyecto de Operaciones Unitarias</div>
-    <h1>Destilación por lotes y la integral de Rayleigh</h1>
-    <p class="subtitle">Una planta piloto recupera isopropanol de una mezcla acuosa, y la termodinámica le pone un techo que ninguna cantidad de tiempo ni de equipo puede levantar.</p>
+    <div class="badge">Taller 9 · Proyecto de Operaciones Unitarias</div>
+    <h1>McCabe-Thiele y la columna de recuperación de etanol</h1>
+    <p class="subtitle">La planta de pectina precipita con etanol y tiene que recuperarlo. El método gráfico dice cuántas etapas hacen falta, y de paso dice cuál es el límite que ninguna cantidad de platos ni de reflujo puede pasar.</p>
     <div class="doc-meta">
       <div><b>Curso</b>Proyecto de Operaciones Unitarias · IQYA-2031 · 2026-20</div>
-      <div><b>Modalidad</b>En parejas, distinta a las de los talleres 1 a 7</div>
-      <div><b>Sesión</b>Jueves 15 de octubre de 2026</div>
-      <div><b>Entrega</b>Domingo 18 de octubre, 11:59 p. m., por BloqueNeón</div>
+      <div><b>Modalidad</b>En parejas, de libre elección</div>
+      <div><b>Sesión</b>Jueves 22 de octubre de 2026</div>
+      <div><b>Entrega</b>Domingo 25 de octubre, 11:59 p. m., por BloqueNeón</div>
       <div><b>Puntaje</b>100 puntos</div>
     </div>
   </header>
@@ -298,7 +306,7 @@
   <div class="doc-body">
 
     <section id="s0">
-      <p class="lead">Este taller se resuelve en un <b>cuaderno de Google Colab</b>. No hay que instalar nada: se abre en el navegador, se ejecuta celda por celda y se entrega el mismo archivo con todo corrido. El cuaderno trae la deducción de la ecuación de Rayleigh, el manejo de datos de equilibrio por interpolación y tres casos demostrativos resueltos. Su trabajo empieza en la parte A.</p>
+      <p class="lead">Este taller se resuelve en un <b>cuaderno de Google Colab</b>. No hay que instalar nada: se abre en el navegador, se ejecuta celda por celda y se entrega el mismo archivo con todo corrido. El cuaderno trae el marco teórico completo del método y una columna de demostración ya resuelta. Su trabajo empieza en la parte A.</p>
 
       <div class="abrir">
         <div>
@@ -306,16 +314,8 @@
           <p>Ábralo en Colab y guarde de una vez una copia en su Drive, con <i>Archivo, Guardar una copia en Drive</i>. Si trabaja sobre el original no va a poder guardar los cambios.</p>
         </div>
         <div class="botones">
-          <a class="btn btn--primario" href="https://colab.research.google.com/github/luishreyes/luishreyes.github.io/blob/main/public/classroom/iqya-2031-2026-20/talleres/Taller_08/Taller_08_Rayleigh.ipynb" target="_blank" rel="noopener">Abrir en Colab</a>
-          <a class="btn btn--secundario" href="Taller_08_Rayleigh.ipynb" download>Descargar el .ipynb</a>
-        </div>
-      </div>
-
-      <div class="callout callout--warn">
-        <span class="ic">!</span>
-        <div>
-          <b>La pareja tiene que ser nueva</b>
-          <p>Este taller se hace en parejas, y <b>no puede repetir ninguno de los compañeros de los talleres 1 a 7</b>.</p>
+          <a class="btn btn--primario" href="https://colab.research.google.com/github/luishreyes/luishreyes.github.io/blob/main/public/classroom/iqya-2031-2026-20/talleres/Taller_09/Taller_09_McCabe_Thiele.ipynb" target="_blank" rel="noopener">Abrir en Colab</a>
+          <a class="btn btn--secundario" href="Taller_09_McCabe_Thiele.ipynb" download>Descargar el .ipynb</a>
         </div>
       </div>
 
@@ -328,42 +328,70 @@
       </div>
     </section>
 
+    <section id="el-problema">
+      <div class="eyebrow">Contexto</div>
+      <h2 class="sec"><span class="secnum">1.</span> El problema</h2>
+      <p>La pectina se recupera del extracto clarificado precipitándola con etanol. El licor madre que sale del filtro es una mezcla hidroalcohólica que no se puede botar, porque el etanol es el insumo más caro del proceso, ni reutilizar tal como sale, porque la precipitación necesita solvente concentrado. La respuesta es una columna de destilación continua, y este taller la dimensiona.</p>
+
+      <table class="espec">
+        <thead>
+          <tr><th>Corriente</th><th>Fracción molar de etanol</th><th>En volumen</th><th>Destino</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Alimentación, licor madre</td><td class="num">0,20</td><td class="num">44,7 % v/v</td><td>Del filtro de precipitación</td></tr>
+          <tr><td>Destilado, solvente recuperado</td><td class="num">0,80</td><td class="num">92,8 % v/v</td><td>Al tanque de precipitación</td></tr>
+          <tr><td>Fondos, efluente acuoso</td><td class="num">0,02</td><td class="num">6,2 % v/v</td><td>A tratamiento de aguas</td></tr>
+        </tbody>
+      </table>
+
+      <p>Alimentación subenfriada, <i>q</i> igual a 1,3, porque viene del filtro y no de un precalentador. Reflujo de diseño 2,5.</p>
+
+      <div class="callout callout--nota">
+        <span class="ic">i</span>
+        <div>
+          <b>La pregunta que hay que responder con números</b>
+          <p>Al final del taller el jefe de producción pregunta por qué no se puede recuperar el etanol más puro. La respuesta corta es «por el azeótropo». La respuesta que sirve para diseñar es otra, y sale de los casos 2 y 3.</p>
+        </div>
+      </div>
+    </section>
+
     <section id="que-hay">
       <div class="eyebrow">Contenido</div>
-      <h2 class="sec"><span class="secnum">1.</span> Qué va a hacer</h2>
+      <h2 class="sec"><span class="secnum">2.</span> Qué va a hacer</h2>
 
-      <h3 class="sub">Parte A · Implementación <span class="pts">40 pts</span></h3>
-      <p>Tres funciones: la composición del destilado acumulado a partir del balance global, la trayectoria de composiciones del calderín a lo largo del proceso, y el diagrama de equilibrio con esa trayectoria dibujada encima. El cuaderno le da las herramientas de integración y de interpolación ya montadas; lo que usted escribe es la física.</p>
+      <h3 class="sub">Parte A · Implementación <span class="pts">35 pts</span></h3>
+      <p>Tres funciones. La curva de equilibrio construida a partir de datos experimentales, con detección del azeótropo por búsqueda de raíz. El reflujo mínimo, por la fórmula del libro y por la condición geométrica que de verdad manda. Y la conversión de etapas teóricas a platos reales, descontando el rehervidor y aplicando la eficiencia global. El cuaderno le da el escalonado y el graficado ya montados; lo que usted escribe es el criterio.</p>
 
-      <h3 class="sub">Parte B · Casos de estudio <span class="pts">40 pts</span></h3>
-      <p>Una planta piloto farmacéutica que recupera isopropanol, con datos de equilibrio reales del sistema a 101,3 kPa. Primero el cálculo directo y el problema inverso, incluida la verificación del balance de materia. Después la comparación contra el modelo de volatilidad relativa constante, para ver cuánto se paga por la simplificación. Y al final el caso que da sentido al taller: <b>hasta dónde puede llegar la pureza del destilado</b>.</p>
+      <h3 class="sub">Parte B · Casos de estudio <span class="pts">45 pts</span></h3>
+      <p>Primero la columna del proyecto con la especificación de diseño: etapas, plato de alimentación, platos reales y una decisión de altura de torre que hay que defender. Después el techo de la separación, donde aparece el <b>pinch tangencial</b> y se descubre que la fórmula de reflujo mínimo del libro se queda 26 % corta en este sistema. Y al final una columna de isopropanol que otra planta pide resolver con la ley de Raoult, con la comprobación que revela qué se compró.</p>
 
       <h3 class="sub">Parte C · Análisis <span class="pts">20 pts</span></h3>
-      <p>Cuatro preguntas de interpretación sobre el integrando de Rayleigh, el balance de materia, la validez del modelo ideal y el compromiso de vaporizar más.</p>
+      <p>Cinco preguntas de interpretación: dificultad comparada de las dos mezclas, el compromiso del reflujo, el efecto de la condición térmica en el plato de alimentación, datos tabulados contra modelo predictivo, y qué le entrega al módulo 6 del reto y cómo lo va a validar en ASPEN Plus.</p>
     </section>
 
     <section id="como">
       <div class="eyebrow">En la sesión</div>
-      <h2 class="sec"><span class="secnum">2.</span> Cómo se trabaja</h2>
-      <p>En clase se recorre la teoría, se resuelven los casos demostrativos y se avanza la parte A. Las partes B y C quedan como trabajo autónomo de la pareja.</p>
-      <p>Tres cosas que conviene tener presentes:</p>
+      <h2 class="sec"><span class="secnum">3.</span> Cómo se trabaja</h2>
+      <p>En clase se recorre el marco teórico, se resuelve la columna de demostración y se avanza la parte A. Las partes B y C quedan como trabajo autónomo de la pareja.</p>
+      <p>Cuatro cosas que conviene tener presentes:</p>
       <ul>
-        <li><b>El azeótropo está dentro de los datos, y manda.</b> En la tabla de equilibrio hay una fila donde y menos x vale cero. Ahí no hay separación posible, y todo lo que el taller pregunta al final se desprende de ese punto. Mire la columna antes de empezar a integrar.</li>
-        <li><b>El integrando crece a medida que el proceso avanza.</b> El denominador es la diferencia entre el vapor y el líquido, y esa diferencia se estrecha. Entender eso de antemano explica por qué la destilación por lotes se vuelve cada vez menos eficiente.</li>
-        <li><b>El problema inverso se resuelve por búsqueda de raíz</b>, no despejando: la integral no tiene forma cerrada con datos experimentales interpolados.</li>
+        <li><b>El azeótropo está dentro de la tabla de equilibrio.</b> Hay una fila donde y menos x vale cero, en 0,894. Ahí no hay separación posible, y las dos preguntas más importantes del taller se desprenden de ese punto. Mire la columna antes de empezar a escalonar.</li>
+        <li><b>La fórmula de reflujo mínimo del libro falla en este sistema.</b> No es un error de aritmética: la curva del etanol-agua tiene un codo, y la línea de operación se vuelve tangente a la curva antes de llegar a la línea q. La parte A le pide demostrarlo.</li>
+        <li><b>El rehervidor cuenta como etapa, pero no es un plato.</b> Si el escalonado da N etapas, la columna lleva N menos 1 platos. Ese descuento cambia la altura de la torre.</li>
+        <li><b>La última etapa se pasa de la composición de fondos.</b> Reportar el entero de arriba infla el resultado. Se informa la fracción, interpolando.</li>
       </ul>
       <p>Las respuestas de la parte C van <b>en celdas de texto</b>. Una respuesta puesta como comentario dentro de una celda de código no se califica.</p>
     </section>
 
     <section id="entrega">
       <div class="eyebrow">Cierre</div>
-      <h2 class="sec"><span class="secnum">3.</span> Entrega</h2>
+      <h2 class="sec"><span class="secnum">4.</span> Entrega</h2>
       <ol>
         <li>El cuaderno con <b>todas las celdas ejecutadas</b> y las gráficas visibles. Un cuaderno sin ejecutar no se califica.</li>
         <li>Las respuestas de la parte C en celdas de texto.</li>
         <li>Nombre y código de los dos integrantes en la primera celda.</li>
         <li>La declaración de uso de IA generativa al final, con las instrucciones que usó.</li>
-        <li>Archivo <code>Taller_08_Rayleigh_Apellido1_Apellido2.ipynb</code>, subido a BloqueNeón. Una entrega por pareja.</li>
+        <li>Archivo <code>Taller_09_McCabe_Thiele_Apellido1_Apellido2.ipynb</code>, subido a BloqueNeón. Una entrega por pareja.</li>
       </ol>
       <div class="callout callout--nota">
         <span class="ic">i</span>
@@ -376,7 +404,7 @@
 
     <div class="doc-foot">
       <span>IQYA-2031 · Proyecto de Operaciones Unitarias · 2026-20</span>
-      <span>Taller 8 · Universidad de los Andes</span>
+      <span>Taller 9 · Universidad de los Andes</span>
     </div>
 
   </div>
