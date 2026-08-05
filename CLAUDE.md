@@ -128,6 +128,29 @@ Para crear o editar contenido del Classroom, lee la guía correspondiente:
 
 Cada curso tiene un `accessCode`. Se guarda en `localStorage` con key `classroom:unlock:{slug}`. Case-insensitive.
 
+Opcionalmente un curso puede definir un **segundo código para el equipo docente** (`staffAccessCode`). Abre el mismo curso, pero marca la sesión con rol `staff` en `classroom:role:{slug}` (`student` si se entró con el código normal). El rol se lee con el hook `useCourseRole(slug)` de `CourseAccessGate.tsx`.
+
+### Entrega gradual del material (`gradualRelease`)
+
+Si un curso define `gradualRelease: true`, quien entra con el **código de estudiante** solo ve el material de las semanas ya transcurridas y de la semana en curso; quien entra con el **`staffAccessCode`** ve el semestre completo desde el primer día.
+
+| Campo del `Course` | Qué hace |
+|---|---|
+| `staffAccessCode` | Código alterno del equipo docente. Sin filtro por semana. |
+| `gradualRelease` | Activa el filtro para los estudiantes. |
+| `releaseLeadDays` | Días de anticipación con que abre cada semana (por defecto 2). |
+
+**Cómo se decide qué está abierto** (`components/classroom/courseRelease.ts`, hook `useCourseRelease`):
+- La semana `W` se abre `releaseLeadDays` días antes de su **primera sesión en el `cronograma`** — con el valor por defecto, el material de una semana que arranca el martes queda disponible desde el domingo anterior, que es cuando el aula invertida exige leer.
+- El material **sin `week`** (las guías transversales: programa, cronograma, trabajo en equipo, bitácoras…) está **siempre** disponible.
+- Una `week` que el cronograma no fecha se deja abierta: no hay con qué cerrarla.
+
+**Dónde se aplica:** `PouMaterialPage` (las semanas futuras se listan como hojas selladas con la fecha de apertura, `.pou-sheet.locked`), `DocViewerPage` (entrar por URL a un documento de una semana futura muestra «Todavía no está disponible»), `PresentationsIndexPage`, `SimulationsIndexPage` y los conteos de `PouLandingPage`.
+
+**⚠️ Requisito de datos:** el filtro depende de que **todo** el material esté etiquetado con `week` y de que el curso tenga `cronograma`. Una lectura, presentación o simulación sin `week` se considera transversal y queda visible desde el día uno.
+
+**⚠️ Es una capa de presentación, no seguridad.** Los HTML de `public/` son archivos estáticos servidos por GitHub Pages: quien conozca la URL exacta del archivo puede abrirlo sin pasar por la aplicación. El filtro evita el spoiler y el ruido, no impide el acceso decidido.
+
 ## Convenciones
 
 ### Colores del portafolio (Tailwind)

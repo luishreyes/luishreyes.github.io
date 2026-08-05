@@ -176,6 +176,31 @@ export interface Course {
   description: string;
   tagline?: string;
   accessCode: string;
+  /**
+   * Código alterno del equipo docente (profesor, asistente, monitora). Abre el
+   * curso igual que `accessCode`, pero marca la sesión como «staff»: si el
+   * curso usa entrega gradual (`gradualRelease`), quien entra con este código
+   * ve TODO el material del semestre sin esperar a que llegue la semana.
+   * La comparación es case-insensitive, igual que la de `accessCode`.
+   */
+  staffAccessCode?: string;
+  /**
+   * Entrega gradual del material. Si es `true`, quien entra con `accessCode`
+   * (los estudiantes) solo ve el material de las semanas ya transcurridas y de
+   * la semana en curso; las semanas futuras aparecen listadas pero cerradas.
+   * El material transversal (guías sin `week`) siempre está disponible.
+   * Requiere que el curso tenga `cronograma` y que su material esté etiquetado
+   * con `week`. Quien entra con `staffAccessCode` no se ve afectado.
+   */
+  gradualRelease?: boolean;
+  /**
+   * Días de anticipación con que se abre cada semana, contados desde su primera
+   * sesión en el cronograma. Por defecto 2: el material de una semana cuyo
+   * primer encuentro es el martes queda disponible desde el domingo anterior,
+   * que es cuando el aula invertida exige leer. Solo aplica si
+   * `gradualRelease` es `true`.
+   */
+  releaseLeadDays?: number;
   bannerUrl: string;
   /**
    * Tipo de curso:

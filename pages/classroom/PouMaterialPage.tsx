@@ -3,12 +3,18 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import type { Course, Reading, Presentation, Simulation } from '../../components/data/classroom';
 import { CourseAccessGate } from '../../components/classroom/CourseAccessGate';
+import { useCourseRelease, fmtReleaseDate } from '../../components/classroom/courseRelease';
 import '../../components/classroom/pou-theme.css';
 
 // Material del curso de POU con la identidad «Industry»: cada semana es una
 // hoja numerada con sus marcas de registro. Todo arranca colapsado y se abre
 // una hoja a la vez, lo transversal va aparte, y lecturas, guías y
 // simulaciones abren en el visor de la misma página.
+//
+// Si el curso usa entrega gradual, el estudiante solo abre las hojas de las
+// semanas que ya llegaron: las siguientes se listan selladas, con la fecha en
+// que se abren, para que el semestre se vea completo sin adelantar contenido.
+// Con el código del equipo docente no hay sellos.
 
 const CRONOGRAMA_SLUG = 'cronograma-interactivo';
 
@@ -38,6 +44,8 @@ const fmtRange = (startISO: string, endISO: string): string => {
 };
 
 export const PouMaterialPage: React.FC<{ course: Course }> = ({ course }) => {
+  const { isStaff, gated, isWeekOpen, releaseDate } = useCourseRelease(course);
+
   const byOrder = (a: Reading, b: Reading) =>
     (a.order ?? Infinity) - (b.order ?? Infinity) || b.date.localeCompare(a.date);
 
@@ -120,7 +128,13 @@ export const PouMaterialPage: React.FC<{ course: Course }> = ({ course }) => {
             <p className="pou-lede">
               Organizado por semana. Se abre una hoja a la vez. Lo que acompaña todo el
               semestre está en «Del curso».
+              {gated && ' Cada semana se abre unos días antes de su primera sesión.'}
             </p>
+            {isStaff && course.gradualRelease && (
+              <p className="pou-staff-badge">
+                Equipo docente · semestre completo a la vista
+              </p>
+            )}
           </div>
         </header>
 
@@ -158,23 +172,45 @@ export const PouMaterialPage: React.FC<{ course: Course }> = ({ course }) => {
                 const ws = simulaciones.filter((s) => s.week === w);
                 const n = wl.length + wg.length + wp.length + ws.length;
                 const fechas = m.dates.slice().sort();
+                const abierta_ = isWeekOpen(w);
+                const cabecera = (
+                  <>
+                    <span className="wk" aria-hidden="true">{String(w).padStart(2, '0')}</span>
+                    <span className="hd">
+                      <span className="k">
+                        Semana {w} · {fmtRange(fechas[0], fechas[fechas.length - 1])}
+                        {w === enCurso && abierta_ && ' · En curso'}
+                        {m.quiz.length > 0 && ` · ${m.quiz.join(', ')}`}
+                        {m.taller.length > 0 && ` · ${m.taller.length === 1 ? 'Taller' : 'Talleres'}`}
+                      </span>
+                      <h3>{m.topics.join(' · ') || `Semana ${w}`}</h3>
+                    </span>
+                    <span className="cnt">
+                      {abierta_
+                        ? `${n} ${n === 1 ? 'entrada' : 'entradas'}`
+                        : (() => {
+                            const f = releaseDate(w);
+                            return f ? `Se abre el ${fmtReleaseDate(f)}` : 'Aún no disponible';
+                          })()}
+                    </span>
+                  </>
+                );
+
+                // Semana que todavía no llega: la hoja se lista sellada, sin
+                // contenido y sin ser desplegable.
+                if (!abierta_) {
+                  return (
+                    <div className="pou-sheet locked" key={w} aria-disabled="true">
+                      <Marks />
+                      <div className="summary-like">{cabecera}</div>
+                    </div>
+                  );
+                }
 
                 return (
                   <details className="pou-sheet" key={w} open={abierta === `s${w}`}>
                     <Marks />
-                    <summary onClick={alternar(`s${w}`)}>
-                      <span className="wk" aria-hidden="true">{String(w).padStart(2, '0')}</span>
-                      <span className="hd">
-                        <span className="k">
-                          Semana {w} · {fmtRange(fechas[0], fechas[fechas.length - 1])}
-                          {w === enCurso && ' · En curso'}
-                          {m.quiz.length > 0 && ` · ${m.quiz.join(', ')}`}
-                          {m.taller.length > 0 && ` · ${m.taller.length === 1 ? 'Taller' : 'Talleres'}`}
-                        </span>
-                        <h3>{m.topics.join(' · ') || `Semana ${w}`}</h3>
-                      </span>
-                      <span className="cnt">{n} {n === 1 ? 'entrada' : 'entradas'}</span>
-                    </summary>
+                    <summary onClick={alternar(`s${w}`)}>{cabecera}</summary>
                     <div className="body">
                       {wl.map((r) => (
                         <ItemLectura key={r.slug} r={r} slug={course.slug} rotulo={`Lectura ${String(r.order ?? '').padStart(2, '0')}`.trim()} />

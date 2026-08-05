@@ -2,7 +2,9 @@ import React from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { getCourseBySlug } from '../../components/data/classroom';
+import type { Course } from '../../components/data/classroom';
 import { CourseAccessGate } from '../../components/classroom/CourseAccessGate';
+import { useCourseRelease } from '../../components/classroom/courseRelease';
 import { NotFoundInClassroom } from './NotFoundInClassroom';
 
 export const SimulationsIndexPage: React.FC = () => {
@@ -11,12 +13,23 @@ export const SimulationsIndexPage: React.FC = () => {
 
   if (!course) return <NotFoundInClassroom />;
 
-  const sims = [...(course.simulations ?? [])].sort(
-    (a, b) => (a.sessionNumber ?? 0) - (b.sessionNumber ?? 0),
-  );
-
   return (
     <CourseAccessGate course={course}>
+      <SimulationsIndex course={course} />
+    </CourseAccessGate>
+  );
+};
+
+const SimulationsIndex: React.FC<{ course: Course }> = ({ course }) => {
+  const { isWeekOpen } = useCourseRelease(course);
+
+  // Con entrega gradual, solo las simulaciones de las semanas ya abiertas.
+  const sims = (course.simulations ?? [])
+    .filter((s) => isWeekOpen(s.week))
+    .sort((a, b) => (a.sessionNumber ?? 0) - (b.sessionNumber ?? 0));
+
+  return (
+    <>
       <motion.div
         {...{
           initial: { opacity: 0, y: 20 },
@@ -110,6 +123,6 @@ export const SimulationsIndexPage: React.FC = () => {
           </div>
         </div>
       </motion.div>
-    </CourseAccessGate>
+    </>
   );
 };
