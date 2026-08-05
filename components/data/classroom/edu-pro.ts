@@ -613,7 +613,7 @@ const cursoDaviviendaCucuta: EdcoCourse = {
     'El enlace de la sesión en vivo se comparte al iniciar el curso.',
     'Monitor EDCO por confirmar.',
   ],
-  presentationIds: ['dav-m1-fundamentos-gemini'],
+  presentationIds: ['dav-m1-fundamentos-gemini', 'dav-m5-1-imagenes-ia'],
 };
 
 export const eduProCourse: Course = {
@@ -731,6 +731,16 @@ export const eduProCourse: Course = {
         'Primera sesión del curso Dominando la IA (Google Workspace y Gemini) para Davivienda Cúcuta. Introducción a la IA generativa y los modelos de lenguaje: qué es la IA, hitos históricos hasta ChatGPT y Gemini, cómo aprenden las redes (perceptrón → aprendizaje profundo), CNN y RNN, y las limitaciones y riesgos de los modelos. Adaptación de la introducción de «Dominando la IA» al contexto de Google Workspace y Gemini.',
       file: 'dav-m1-fundamentos-gemini.html',
       theme: 'Fundamentos e historia de la IA',
+    },
+    {
+      id: 'dav-m5-1-imagenes-ia',
+      title: 'M5.1 — Generación de imágenes con IA',
+      sessionNumber: 9,
+      date: '2026-08-04',
+      description:
+        'Primera sesión del módulo 5 (contenido multimodal) del curso Dominando la IA para Davivienda Cúcuta. Cómo las máquinas aprendieron a generar imágenes: modelos de difusión (forward y backward diffusion, entrenamiento, CLIP), panorama de los modelos actuales (Nano Banana 2, DALL·E 3, Midjourney, Flux, Stable Diffusion, Firefly, Ideogram) y el arte del prompt: vocabulario fotográfico, encuadres, lentes, iluminación, movimientos artísticos y palabras emocionales. Aplicable tanto en Gemini como en ChatGPT.',
+      file: 'dav-m5-1-imagenes-ia.html',
+      theme: 'Contenido multimodal: imágenes',
     },
   ],
   // Campos académicos no aplican; se dejan con stubs vacíos para satisfacer el tipo Course.
