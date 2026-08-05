@@ -2,7 +2,9 @@ import React from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { getCourseBySlug } from '../../components/data/classroom';
+import type { Course } from '../../components/data/classroom';
 import { CourseAccessGate } from '../../components/classroom/CourseAccessGate';
+import { useCourseRelease } from '../../components/classroom/courseRelease';
 import { NotFoundInClassroom } from './NotFoundInClassroom';
 
 export const PresentationsIndexPage: React.FC = () => {
@@ -11,12 +13,24 @@ export const PresentationsIndexPage: React.FC = () => {
 
   if (!course) return <NotFoundInClassroom />;
 
-  const sorted = [...course.presentations].sort(
-    (a, b) => (a.sessionNumber ?? 0) - (b.sessionNumber ?? 0),
-  );
-
   return (
     <CourseAccessGate course={course}>
+      <PresentationsIndex course={course} />
+    </CourseAccessGate>
+  );
+};
+
+const PresentationsIndex: React.FC<{ course: Course }> = ({ course }) => {
+  const { isWeekOpen } = useCourseRelease(course);
+
+  // Con entrega gradual, este índice muestra lo mismo que «Material del curso»:
+  // solo las semanas que ya llegaron.
+  const sorted = course.presentations
+    .filter((p) => isWeekOpen(p.week))
+    .sort((a, b) => (a.sessionNumber ?? 0) - (b.sessionNumber ?? 0));
+
+  return (
+    <>
       <motion.div
         {...{
           initial: { opacity: 0, y: 20 },
@@ -102,6 +116,6 @@ export const PresentationsIndexPage: React.FC = () => {
           </div>
         </div>
       </motion.div>
-    </CourseAccessGate>
+    </>
   );
 };
