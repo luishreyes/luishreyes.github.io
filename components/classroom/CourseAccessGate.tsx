@@ -1,30 +1,78 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useSyncExternalStore } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import type { Course } from '../data/classroom';
 
 const storageKey = (slug: string) => `classroom:unlock:${slug}`;
+const roleKey = (slug: string) => `classroom:role:${slug}`;
+
+/**
+ * Con qué código se abrió el curso:
+ * - 'student' → código normal del curso (`accessCode`).
+ * - 'staff'   → código del equipo docente (`staffAccessCode`).
+ * Las sesiones abiertas antes de que existieran los roles no tienen la clave
+ * guardada y se leen como 'student', que es el comportamiento conservador.
+ */
+export type CourseRole = 'student' | 'staff';
+
+const readRole = (slug: string): CourseRole | null => {
+  try {
+    if (window.localStorage.getItem(storageKey(slug)) !== 'true') return null;
+    return window.localStorage.getItem(roleKey(slug)) === 'staff' ? 'staff' : 'student';
+  } catch {
+    return null;
+  }
+};
+
+// El estado de acceso se publica como store externo porque quien lo consulta
+// suele estar POR ENCIMA del gate en el árbol: `PouMaterialPage` llama a los
+// hooks y luego se envuelve en `CourseAccessGate`, así que en el primer render
+// el curso todavía está bloqueado. Sin esta suscripción, esos componentes se
+// quedaban con la lectura de entonces y solo se enteraban del desbloqueo al
+// recargar la página. El evento `storage` mantiene además coherentes las
+// demás pestañas abiertas.
+const listeners = new Set<() => void>();
+
+const notifyAccessChange = () => {
+  listeners.forEach((l) => l());
+};
+
+const subscribeAccess = (cb: () => void): (() => void) => {
+  listeners.add(cb);
+  window.addEventListener('storage', cb);
+  return () => {
+    listeners.delete(cb);
+    window.removeEventListener('storage', cb);
+  };
+};
+
+const lockCourse = (slug: string) => {
+  try {
+    window.localStorage.removeItem(storageKey(slug));
+    window.localStorage.removeItem(roleKey(slug));
+  } catch {}
+  notifyAccessChange();
+};
 
 export const useCourseUnlocked = (slug: string): [boolean, () => void] => {
-  const [unlocked, setUnlocked] = useState<boolean>(false);
-
-  useEffect(() => {
-    try {
-      setUnlocked(window.localStorage.getItem(storageKey(slug)) === 'true');
-    } catch {
-      setUnlocked(false);
-    }
-  }, [slug]);
-
-  const lock = () => {
-    try {
-      window.localStorage.removeItem(storageKey(slug));
-    } catch {}
-    setUnlocked(false);
-  };
-
-  return [unlocked, lock];
+  const unlocked = useSyncExternalStore(
+    subscribeAccess,
+    () => readRole(slug) !== null,
+    () => false,
+  );
+  return [unlocked, () => lockCourse(slug)];
 };
+
+/**
+ * Rol de la sesión actual en un curso, o `null` si el curso está bloqueado.
+ * Se actualiza solo en cuanto se acierta el código, sin recargar la página.
+ */
+export const useCourseRole = (slug: string): CourseRole | null =>
+  useSyncExternalStore(
+    subscribeAccess,
+    () => readRole(slug),
+    () => null,
+  );
 
 interface CourseAccessGateProps {
   course: Course;
@@ -32,26 +80,28 @@ interface CourseAccessGateProps {
 }
 
 export const CourseAccessGate: React.FC<CourseAccessGateProps> = ({ course, children }) => {
-  const [unlocked, setUnlocked] = useState<boolean | null>(null);
+  const [unlocked] = useCourseUnlocked(course.slug);
   const [input, setInput] = useState('');
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    try {
-      setUnlocked(window.localStorage.getItem(storageKey(course.slug)) === 'true');
-    } catch {
-      setUnlocked(false);
-    }
-  }, [course.slug]);
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const attempt = input.trim();
-    if (attempt.toUpperCase() === course.accessCode.toUpperCase()) {
+    const attempt = input.trim().toUpperCase();
+    // El código del equipo docente se comprueba primero: abre el curso con rol
+    // 'staff' y, si el curso usa entrega gradual, sin esperar a la semana.
+    const role: CourseRole | null =
+      course.staffAccessCode && attempt === course.staffAccessCode.toUpperCase()
+        ? 'staff'
+        : attempt === course.accessCode.toUpperCase()
+          ? 'student'
+          : null;
+
+    if (role) {
       try {
         window.localStorage.setItem(storageKey(course.slug), 'true');
+        window.localStorage.setItem(roleKey(course.slug), role);
       } catch {}
-      setUnlocked(true);
+      notifyAccessChange();
       setError(null);
     } else {
       setError('Código incorrecto. Intenta de nuevo.');
@@ -68,7 +118,6 @@ export const CourseAccessGate: React.FC<CourseAccessGateProps> = ({ course, chil
       .filter(Boolean)
       .join(' ') || undefined;
 
-  if (unlocked === null) return null;
   if (unlocked) return themeClass ? <div className={themeClass}>{children}</div> : <>{children}</>;
 
   return (
