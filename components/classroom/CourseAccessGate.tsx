@@ -2,6 +2,7 @@ import React, { useState, useSyncExternalStore } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import type { Course } from '../data/classroom';
+import { todayISO } from './today';
 
 const storageKey = (slug: string) => `classroom:unlock:${slug}`;
 const roleKey = (slug: string) => `classroom:role:${slug}`;
@@ -10,18 +11,32 @@ const roleKey = (slug: string) => `classroom:role:${slug}`;
  * Con qué código se abrió el curso:
  * - 'student' → código normal del curso (`accessCode`).
  * - 'staff'   → código del equipo docente (`staffAccessCode`).
- * Las sesiones abiertas antes de que existieran los roles no tienen la clave
- * guardada y se leen como 'student', que es el comportamiento conservador.
  */
 export type CourseRole = 'student' | 'staff';
 
+/**
+ * El acceso dura un día. En vez de un `'true'` perpetuo, se guarda la fecha en
+ * que se abrió el curso y se compara con la de hoy: al cambiar el día el acceso
+ * caduca solo y el código se vuelve a pedir. Así ni una sesión olvidada en un
+ * computador compartido ni la vista del equipo docente quedan abiertas para
+ * siempre. Las sesiones anteriores a este cambio guardaban `'true'`, que ya no
+ * coincide con ninguna fecha: caducan en la primera visita.
+ */
 const readRole = (slug: string): CourseRole | null => {
   try {
-    if (window.localStorage.getItem(storageKey(slug)) !== 'true') return null;
+    if (window.localStorage.getItem(storageKey(slug)) !== todayISO()) return null;
     return window.localStorage.getItem(roleKey(slug)) === 'staff' ? 'staff' : 'student';
   } catch {
     return null;
   }
+};
+
+const openCourse = (slug: string, role: CourseRole) => {
+  try {
+    window.localStorage.setItem(storageKey(slug), todayISO());
+    window.localStorage.setItem(roleKey(slug), role);
+  } catch {}
+  notifyAccessChange();
 };
 
 // El estado de acceso se publica como store externo porque quien lo consulta
@@ -84,28 +99,40 @@ export const CourseAccessGate: React.FC<CourseAccessGateProps> = ({ course, chil
   const [input, setInput] = useState('');
   const [error, setError] = useState<string | null>(null);
 
+  // Cada botón entra por su propia puerta: el código se valida contra el del rol
+  // que se pidió, no contra los dos. Así el profesor puede entrar como
+  // estudiante —escribiendo el código del curso— para ver el aula tal como la
+  // ven ellos, en vez de que el sistema lo ascienda solo.
+  const entrar = (role: CourseRole) => {
+    const attempt = input.trim().toUpperCase();
+    const esperado = role === 'staff' ? course.staffAccessCode : course.accessCode;
+
+    if (esperado && attempt === esperado.toUpperCase()) {
+      openCourse(course.slug, role);
+      setError(null);
+      return;
+    }
+
+    // Confundir las dos puertas es el error más probable del equipo docente, así
+    // que se dice cuál era en vez de un «código incorrecto» a secas.
+    const eraElOtro =
+      role === 'student' &&
+      !!course.staffAccessCode &&
+      attempt === course.staffAccessCode.toUpperCase();
+
+    setError(
+      eraElOtro
+        ? 'Ese es el código del equipo docente: use «Acceder como profesor». Para ver el aula como la ven los estudiantes, escriba el código del curso.'
+        : role === 'staff'
+          ? 'Ese no es el código del equipo docente.'
+          : 'Código incorrecto. Intenta de nuevo.',
+    );
+  };
+
+  // Con Enter se entra como estudiante, que es el caso de casi todo el mundo.
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const attempt = input.trim().toUpperCase();
-    // El código del equipo docente se comprueba primero: abre el curso con rol
-    // 'staff' y, si el curso usa entrega gradual, sin esperar a la semana.
-    const role: CourseRole | null =
-      course.staffAccessCode && attempt === course.staffAccessCode.toUpperCase()
-        ? 'staff'
-        : attempt === course.accessCode.toUpperCase()
-          ? 'student'
-          : null;
-
-    if (role) {
-      try {
-        window.localStorage.setItem(storageKey(course.slug), 'true');
-        window.localStorage.setItem(roleKey(course.slug), role);
-      } catch {}
-      notifyAccessChange();
-      setError(null);
-    } else {
-      setError('Código incorrecto. Intenta de nuevo.');
-    }
+    entrar('student');
   };
 
   // Acento de color (siempre, incluso archivados) + tipografía de curso
@@ -152,8 +179,9 @@ export const CourseAccessGate: React.FC<CourseAccessGateProps> = ({ course, chil
           <div className="p-6">
             <h2 className="text-lg font-semibold text-brand-dark">Acceso restringido</h2>
             <p className="text-sm text-brand-gray mt-1 leading-relaxed">
-              Este espacio está reservado para estudiantes del curso. Ingrese el código
-              que le entregó el profesor para continuar.
+              {course.staffAccessCode
+                ? 'Este espacio está reservado para el curso. Escriba su código y entre por la puerta que le corresponde.'
+                : 'Este espacio está reservado para estudiantes del curso. Ingrese el código que le entregó el profesor para continuar.'}
             </p>
 
             <form onSubmit={handleSubmit} className="mt-5 space-y-3">
@@ -176,13 +204,35 @@ export const CourseAccessGate: React.FC<CourseAccessGateProps> = ({ course, chil
               {error && (
                 <p id="course-code-error" className="text-xs text-red-600">{error}</p>
               )}
-              <button
-                type="submit"
-                className="w-full py-3 rounded-md bg-brand-yellow text-brand-dark font-semibold shadow-sm hover:bg-brand-yellow-dark transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-yellow"
-              >
-                Entrar al curso
-              </button>
+              {course.staffAccessCode ? (
+                <div className="grid gap-2 sm:grid-cols-2">
+                  <button
+                    type="submit"
+                    className="w-full py-3 rounded-md bg-brand-yellow text-brand-dark font-semibold shadow-sm hover:bg-brand-yellow-dark transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-yellow"
+                  >
+                    Acceder como estudiante
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => entrar('staff')}
+                    className="w-full py-3 rounded-md border border-zinc-300 text-brand-dark font-semibold hover:border-brand-dark hover:bg-zinc-50 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-yellow"
+                  >
+                    Acceder como profesor
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="submit"
+                  className="w-full py-3 rounded-md bg-brand-yellow text-brand-dark font-semibold shadow-sm hover:bg-brand-yellow-dark transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-yellow"
+                >
+                  Entrar al curso
+                </button>
+              )}
             </form>
+
+            <p className="mt-3 text-xs text-brand-gray">
+              El acceso dura hasta el final del día: mañana el curso vuelve a pedir el código.
+            </p>
 
             <div className="mt-6 pt-5 border-t border-zinc-200 text-xs text-brand-gray">
               <p>

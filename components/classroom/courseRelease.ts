@@ -1,6 +1,7 @@
 import React from 'react';
 import type { Course } from '../data/classroom';
 import { useCourseRole } from './CourseAccessGate';
+import { todayISO } from './today';
 
 // Entrega gradual del material de un curso.
 //
@@ -16,10 +17,6 @@ import { useCourseRole } from './CourseAccessGate';
 // por GitHub Pages y quien conozca la URL exacta puede abrirlos.
 
 const DEFAULT_LEAD_DAYS = 2;
-
-/** Fecha local del dispositivo como ISO corto, para comparar con el cronograma. */
-export const todayISO = (d: Date = new Date()): string =>
-  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
 const shiftISO = (iso: string, days: number): string => {
   const d = new Date(`${iso}T12:00:00`);
