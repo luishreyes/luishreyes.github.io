@@ -126,9 +126,11 @@ Para crear o editar contenido del Classroom, lee la guía correspondiente:
 
 ### Código de acceso
 
-Cada curso tiene un `accessCode`. Se guarda en `localStorage` con key `classroom:unlock:{slug}`. Case-insensitive.
+Cada curso tiene un `accessCode`. Case-insensitive.
 
-Opcionalmente un curso puede definir un **segundo código para el equipo docente** (`staffAccessCode`). Abre el mismo curso, pero marca la sesión con rol `staff` en `classroom:role:{slug}` (`student` si se entró con el código normal). El rol se lee con el hook `useCourseRole(slug)` de `CourseAccessGate.tsx`.
+**El acceso caduca cada día.** En `localStorage`, la key `classroom:unlock:{slug}` guarda la **fecha** en que se abrió el curso (`2026-08-05`), no un `'true'` perpetuo: si no coincide con la de hoy, el código se vuelve a pedir. Vale para todos los cursos del Classroom.
+
+Opcionalmente un curso puede definir un **segundo código para el equipo docente** (`staffAccessCode`). Cuando existe, el gate muestra **dos botones** —«Acceder como estudiante» y «Acceder como profesor»— y cada uno valida **solo** el código de su rol: escribir el código del equipo y pulsar «estudiante» no asciende a nadie. Eso es deliberado, porque así el profesor entra con el código del curso para ver el aula tal como la ven los estudiantes. El rol queda en `classroom:role:{slug}` y se lee con el hook `useCourseRole(slug)` de `CourseAccessGate.tsx`.
 
 ### Entrega gradual del material (`gradualRelease`)
 
