@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import type { Course } from '../../components/data/classroom';
 import { CourseAccessGate } from '../../components/classroom/CourseAccessGate';
+import { useCourseRelease } from '../../components/classroom/courseRelease';
 import { TodayButton } from '../../components/classroom/TodayButton';
 import '../../components/classroom/pou-theme.css';
 
@@ -30,13 +31,19 @@ const toViewer = (slug: string, href: string): string =>
   `/classroom/${slug}/ver/${href.slice(`/classroom/${slug}/`.length)}`;
 
 export const PouLandingPage: React.FC<{ course: Course }> = ({ course }) => {
+  // Los conteos del acceso a «Material» cuentan lo que la sesión puede abrir
+  // hoy: con entrega gradual, anunciar 14 lecturas cuando solo hay 3
+  // disponibles confunde más de lo que informa.
+  const { isWeekOpen } = useCourseRelease(course);
+  const disponible = course.readings.filter((r) => isWeekOpen(r.week));
+
   const cronograma = course.readings.find((r) => r.slug === 'cronograma-interactivo');
-  const lecturas = course.readings.filter((r) => r.category === 'lectura').length;
-  const guias = course.readings.filter(
+  const lecturas = disponible.filter((r) => r.category === 'lectura').length;
+  const guias = disponible.filter(
     (r) => r.category !== 'lectura' && r.slug !== 'cronograma-interactivo',
   ).length;
-  const pres = course.presentations?.length ?? 0;
-  const sims = course.simulations?.length ?? 0;
+  const pres = (course.presentations ?? []).filter((p) => isWeekOpen(p.week)).length;
+  const sims = (course.simulations ?? []).filter((s) => isWeekOpen(s.week)).length;
 
   const ficha: { n: string; prop: string; val: string; rem: string }[] = [
     { n: '01', prop: 'Código', val: course.code, rem: 'Sección POU' },
