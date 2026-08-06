@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lectura 02 · Los diagramas de ingeniería · Proyecto de Operaciones Unitarias</title>
+<link rel="stylesheet" href="assets/deloitte.css">
+<style>
+  body {
+    margin: 0;
+    background: var(--gris-5);
+    font-family: var(--tipo);
+    color: var(--gris-1);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.62;
+  }
+
+  /* ---- Barra de progreso de lectura ---- */
+  .progress {
+    position: fixed; top: 0; left: 0; height: 4px; width: 0;
+    background: var(--verde); z-index: 200; transition: width .08s linear;
+  }
+
+  .page {
+    max-width: 940px;
+    margin: 40px auto 90px;
+    background: var(--blanco);
+    box-shadow: var(--sombra);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  /* ===================== ENCABEZADO ===================== */
+  .doc-head {
+    background: var(--papel);
+    border-bottom: 5px solid var(--verde);
+    padding: 46px 64px 40px;
+    position: relative;
+  }
+  .doc-head .org {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    font-size: 14px; font-weight: 700; letter-spacing: .03em; color: var(--gris-1);
+  }
+  .doc-head .org span { color: var(--gris-3); font-weight: 600; }
+  .doc-head .badge {
+    display: inline-block; background: var(--verde); color: #fff;
+    font-size: 13px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+    padding: 6px 14px; border-radius: 999px; margin: 28px 0 18px; white-space: nowrap;
+  }
+  .doc-head h1 { font-size: 43px; line-height: 1.1; margin: 0 0 10px; letter-spacing: -.015em; max-width: 22ch; }
+  .doc-head .subtitle { font-size: 20px; color: var(--gris-2); margin: 0; font-weight: 500; max-width: 52ch; }
+  .doc-meta {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px;
+    margin-top: 34px; padding-top: 26px; border-top: 1px solid var(--gris-4);
+  }
+  .doc-meta div { font-size: 15px; color: var(--gris-2); }
+  .doc-meta b { display: block; color: var(--gris-1); font-size: 16px; font-weight: 700; margin-bottom: 2px; }
+
+  /* ===================== CUERPO ===================== */
+  .doc-body { padding: 8px 64px 60px; }
+  .doc-body section { padding-top: 46px; scroll-margin-top: 24px; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--verde-osc); margin-bottom: 12px;
+  }
+  .eyebrow::before { content: ""; width: 26px; height: 4px; background: var(--verde); border-radius: 2px; }
+  h2.sec { font-size: 30px; line-height: 1.18; margin: 0 0 18px; letter-spacing: -.01em; }
+  h2.sec .secnum { color: var(--verde); font-weight: 700; }
+  h3.sub { font-size: 21px; margin: 34px 0 10px; letter-spacing: -.005em; }
+  .doc-body p { font-size: 17px; color: var(--gris-1); margin: 0 0 16px; text-wrap: pretty; }
+  .lead { font-size: 20px; color: var(--gris-2); line-height: 1.55; font-weight: 400; }
+  .lead b { color: var(--gris-1); font-weight: 600; }
+
+  /* ---- Índice / sumario ---- */
+  .toc {
+    background: var(--papel); border-radius: 8px; padding: 26px 30px;
+    margin-top: 30px; border-left: 5px solid var(--verde);
+  }
+  .toc .toc-t { font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--gris-2); margin: 0 0 14px; }
+  .toc ol { margin: 0; padding: 0; list-style: none; counter-reset: toc; display: grid; gap: 9px; }
+  .toc li { counter-increment: toc; }
+  .toc a {
+    display: flex; align-items: baseline; gap: 14px; text-decoration: none;
+    color: var(--gris-1); font-size: 16.5px; font-weight: 600; padding: 4px 0;
+    border-bottom: 1px solid transparent; transition: color .18s ease;
+  }
+  .toc a::before { content: counter(toc, decimal-leading-zero); color: var(--verde-osc); font-weight: 700; font-size: 14px; min-width: 26px; }
+  .toc a:hover { color: var(--verde-osc); }
+
+  /* ---- Bloques / niveles (cards) ---- */
+  .blocks { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 22px 0 6px; }
+  .block {
+    background: var(--papel); border-radius: 8px; padding: 22px 24px;
+    border-top: 5px solid var(--verde); display: flex; flex-direction: column; gap: 6px;
+  }
+  .block .bn { font-size: 12px; font-weight: 700; color: var(--verde-osc); letter-spacing: .08em; }
+  .block b { font-size: 18px; line-height: 1.2; }
+  .block span { font-size: 14.5px; color: var(--gris-2); line-height: 1.45; }
+
+  /* ===================== FIGURAS ===================== */
+  figure.fig { margin: 30px 0 8px; }
+  figure.fig.full img { width: 100%; height: auto; display: block; }
+  .fig-frame {
+    border: 1px solid var(--gris-4); border-radius: 8px; padding: 22px; background: var(--blanco);
+    box-shadow: var(--sombra);
+  }
+  figure.fig figcaption {
+    font-size: 14px; color: var(--gris-2); line-height: 1.5; margin-top: 12px;
+    padding-left: 16px; border-left: 3px solid var(--verde);
+  }
+  figure.fig figcaption b { color: var(--gris-1); }
+
+  /* ===================== CITA / PULL-QUOTE ===================== */
+  blockquote.pull {
+    margin: 30px 0; padding: 34px 38px 30px 40px; position: relative;
+    background: var(--gris-1); color: #fff; border-radius: 8px; border-left: 8px solid var(--verde);
+  }
+  blockquote.pull p { font-size: 21px; line-height: 1.5; color: #fff; margin: 0 0 14px; font-weight: 500; }
+  blockquote.pull p:last-child { margin-bottom: 0; }
+  blockquote.pull .qmark {
+    position: absolute; top: 6px; left: 20px; font-size: 80px; line-height: 1;
+    color: var(--verde); font-family: Georgia, serif; opacity: .5;
+  }
+  blockquote.pull cite { display: block; font-style: normal; font-size: 14.5px; color: rgba(255,255,255,.6); margin-top: 16px; }
+  blockquote.pull cite b { color: var(--verde); font-weight: 600; }
+
+  /* ===================== TIMELINE ===================== */
+  .timeline { margin: 26px 0 10px; position: relative; padding-left: 6px; }
+  .timeline::before {
+    content: ""; position: absolute; left: 78px; top: 8px; bottom: 8px; width: 2px; background: var(--gris-4);
+  }
+  .tl-item { display: grid; grid-template-columns: 70px 1fr; gap: 26px; padding: 12px 0; position: relative; }
+  .tl-year { font-size: 21px; font-weight: 700; color: var(--verde-osc); text-align: right; line-height: 1.3; }
+  .tl-dot {
+    position: absolute; left: 73px; top: 18px; width: 13px; height: 13px; border-radius: 50%;
+    background: var(--verde); border: 3px solid var(--blanco); box-shadow: 0 0 0 1px var(--gris-4);
+  }
+  .tl-body { padding-left: 22px; }
+  .tl-body b { font-size: 16.5px; line-height: 1.25; display: block; }
+  .tl-body span { font-size: 14.5px; color: var(--gris-2); line-height: 1.45; }
+
+  /* ===================== TABLAS ===================== */
+  .tbl-wrap { margin: 0 0 8px; overflow-x: auto; border-radius: 8px; }
+  table.ou { width: 100%; border-collapse: collapse; font-size: 15px; min-width: 620px; }
+  table.ou th, table.ou td { text-align: left; padding: 14px 16px; border-bottom: 1px solid var(--gris-4); vertical-align: top; line-height: 1.4; }
+  table.ou thead th { background: var(--gris-1); color: #fff; font-weight: 700; font-size: 13.5px; letter-spacing: .02em; }
+  table.ou thead th:first-child { border-top-left-radius: 6px; }
+  table.ou thead th:last-child { border-top-right-radius: 6px; }
+  table.ou td:first-child { font-weight: 700; color: var(--gris-1); width: 22%; }
+  table.ou tbody tr:nth-child(even) { background: var(--papel); }
+  .tbl-cap { font-size: 13.5px; color: var(--gris-2); margin: 24px 0 11px; padding-left: 14px; border-left: 3px solid var(--verde); line-height: 1.5; }
+  .tbl-cap b { color: var(--gris-1); }
+
+  /* ===================== CALLOUTS ===================== */
+  .callout {
+    display: grid; grid-template-columns: 42px 1fr; gap: 18px;
+    border-radius: 8px; padding: 20px 24px; margin: 24px 0; align-items: start;
+  }
+  .callout .ic {
+    width: 42px; height: 42px; border-radius: 50%; display: inline-flex;
+    align-items: center; justify-content: center; font-size: 21px; font-weight: 700;
+  }
+  .callout > div > b { display: block; font-size: 15.5px; margin-bottom: 4px; }
+  .callout p { font-size: 15.5px; margin: 0; color: var(--gris-1); line-height: 1.5; }
+  .callout p b { display: inline; color: inherit; font-size: inherit; }
+  .callout--nota { background: var(--teal-claro); }
+  .callout--nota .ic { background: var(--teal); color: #fff; }
+  .callout--nota b { color: var(--teal); }
+  .callout--tip { background: var(--verde-claro); }
+  .callout--tip .ic { background: var(--verde); color: #fff; }
+  .callout--tip b { color: var(--verde-osc); }
+
+  /* ===================== GALERÍA DE SÍMBOLOS ===================== */
+  .gallery {
+    border: 1px solid var(--gris-4); border-radius: 12px; overflow: hidden;
+    margin: 28px 0 8px; background: var(--blanco); box-shadow: var(--sombra);
+  }
+  .gal-head {
+    background: var(--gris-1); color: #fff; padding: 18px 24px;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+  }
+  .gal-head .gt { font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--verde); }
+  .gal-head .gt b { display: block; color: #fff; font-size: 19px; letter-spacing: -.01em; text-transform: none; margin-top: 4px; }
+  .gal-count { font-size: 13px; color: rgba(255,255,255,.6); font-weight: 600; white-space: nowrap; }
+  .gal-count b { color: var(--verde); }
+  .gal-tabs { display: flex; flex-wrap: wrap; gap: 8px; padding: 16px 24px 0; }
+  .gal-tab {
+    font-family: var(--tipo); font-size: 13.5px; font-weight: 600; color: var(--gris-2);
+    background: var(--papel); border: 1.5px solid var(--gris-4); border-radius: 999px;
+    padding: 8px 16px; cursor: pointer; transition: all .18s ease; white-space: nowrap;
+  }
+  .gal-tab:hover { color: var(--gris-1); border-color: var(--gris-3); }
+  .gal-tab.is-active { background: var(--verde); border-color: var(--verde); color: #fff; }
+  .gal-stage { padding: 20px 24px 8px; }
+  .gal-panel { display: none; }
+  .gal-panel.is-active { display: block; animation: galfade .35s ease; }
+  @keyframes galfade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  .gal-imgwrap {
+    border: 1px solid var(--gris-4); border-radius: 8px; background: #fff;
+    padding: 20px; display: flex; align-items: center; justify-content: center;
+  }
+  .gal-imgwrap img { width: 100%; height: auto; display: block; max-height: 460px; object-fit: contain; }
+  .gal-lead { font-size: 15.5px; color: var(--gris-2); line-height: 1.5; margin: 16px 0 4px; }
+  .gal-lead b { color: var(--gris-1); }
+  .gal-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px 22px; margin: 14px 0 6px;
+  }
+  .gal-item { display: grid; grid-template-columns: 30px 1fr; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--gris-4); align-items: start; }
+  .gal-item .lt {
+    width: 26px; height: 26px; border-radius: 6px; background: var(--verde-claro); color: var(--verde-osc);
+    font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; margin-top: 1px;
+  }
+  .gal-item .nm { font-size: 15px; line-height: 1.35; }
+  .gal-item .nm b { color: var(--gris-1); font-weight: 700; display: block; }
+  .gal-item .nm span { color: var(--gris-2); font-size: 13.5px; }
+  .gal-nav { display: flex; align-items: center; justify-content: space-between; padding: 6px 24px 20px; }
+  .gal-btn {
+    font-family: var(--tipo); font-size: 14px; font-weight: 600; color: var(--gris-1);
+    background: var(--papel); border: 1.5px solid var(--gris-4); border-radius: 999px;
+    padding: 9px 18px; cursor: pointer; transition: all .18s ease; display: inline-flex; align-items: center; gap: 8px;
+  }
+  .gal-btn:hover { border-color: var(--verde); color: var(--verde-osc); }
+  .gal-dots { display: flex; gap: 7px; }
+  .gal-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--gris-4); cursor: pointer; transition: background .18s ease; border: none; padding: 0; }
+  .gal-dot.is-active { background: var(--verde); }
+  .gal-src { font-size: 13px; color: var(--gris-3); padding: 0 24px 18px; }
+
+  /* ===================== DOCUMENTOS / NORMAS ===================== */
+  .docs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin: 24px 0 8px; }
+  .doccard {
+    display: grid; grid-template-columns: 46px 1fr; gap: 16px; align-items: start;
+    text-decoration: none; color: inherit; background: var(--papel);
+    border: 1px solid var(--gris-4); border-radius: 8px; padding: 18px 20px;
+    transition: border-color .18s ease, transform .18s ease, box-shadow .18s ease;
+  }
+  .doccard:hover { border-color: var(--verde); transform: translateY(-2px); box-shadow: var(--sombra); }
+  .doccard .dic {
+    width: 46px; height: 56px; border-radius: 5px; background: var(--blanco);
+    border: 1.5px solid var(--gris-4); position: relative; display: inline-flex;
+    align-items: flex-end; justify-content: center; padding-bottom: 7px;
+  }
+  .doccard .dic::before { content: ""; position: absolute; top: 0; right: 0; width: 14px; height: 14px; background: var(--gris-4); clip-path: polygon(0 0, 100% 100%, 0 100%); border-bottom-left-radius: 3px; }
+  .doccard .dic span { font-size: 9px; font-weight: 800; letter-spacing: .04em; color: #fff; background: var(--verde); padding: 2px 5px; border-radius: 3px; }
+  .doccard .dtxt b { display: block; font-size: 15.5px; line-height: 1.3; color: var(--gris-1); }
+  .doccard .dtxt span { display: block; font-size: 13.5px; color: var(--gris-2); margin-top: 4px; line-height: 1.45; }
+  .doccard .dtxt em { display: inline-block; font-style: normal; font-size: 12.5px; font-weight: 700; color: var(--verde-osc); margin-top: 8px; letter-spacing: .03em; }
+
+  /* ===================== CITAS INTERACTIVAS ===================== */
+  .cite {
+    display: inline-block; font-size: .62em; font-weight: 700; line-height: 0;
+    vertical-align: super; color: #fff; background: var(--verde);
+    min-width: 1.55em; height: 1.55em; padding: 0 .35em; border-radius: 999px;
+    text-align: center; cursor: pointer; margin: 0 .5px 0 1px;
+    transition: background .15s ease, transform .15s ease;
+    position: relative; top: -.15em;
+    -webkit-user-select: none; user-select: none;
+  }
+  .cite::after { content: attr(data-n); display: inline-block; line-height: 1.55em; }
+  .cite:hover, .cite:focus, .cite.is-open { background: var(--verde-osc); transform: translateY(-1px); outline: none; }
+  .cite + .cite { margin-left: 2.5px; }
+  .nbk { white-space: nowrap; }
+
+  /* Popover */
+  .ref-pop {
+    position: fixed; z-index: 250; max-width: 360px; width: max-content;
+    background: var(--blanco); border: 1px solid var(--gris-4); border-radius: 10px;
+    box-shadow: 0 6px 16px rgba(0,0,0,.12), 0 18px 48px rgba(0,0,0,.16);
+    padding: 16px 18px 15px; opacity: 0; transform: translateY(6px) scale(.98);
+    pointer-events: none; transition: opacity .18s ease, transform .18s ease;
+  }
+  .ref-pop.show { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+  .ref-pop .rp-head {
+    display: flex; align-items: center; gap: 9px; margin-bottom: 9px;
+    font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--verde-osc);
+  }
+  .ref-pop .rp-num {
+    background: var(--verde); color: #fff; min-width: 20px; height: 20px; border-radius: 999px;
+    display: inline-flex; align-items: center; justify-content: center; font-size: 11px;
+  }
+  .ref-pop .rp-body { font-size: 14px; line-height: 1.5; color: var(--gris-1); }
+  .ref-pop .rp-body i { color: var(--gris-2); }
+  .ref-pop .rp-body a { color: var(--teal); word-break: break-word; }
+  .ref-pop::before, .ref-pop::after {
+    content: ""; position: absolute; left: var(--arrow, 50%); transform: translateX(-50%);
+    border: 9px solid transparent; width: 0; height: 0;
+  }
+  .ref-pop.below::before { top: -18px; border-bottom-color: var(--gris-4); }
+  .ref-pop.below::after  { top: -16px; border-bottom-color: var(--blanco); }
+  .ref-pop.above::before { bottom: -18px; border-top-color: var(--gris-4); }
+  .ref-pop.above::after  { bottom: -16px; border-top-color: var(--blanco); }
+
+  /* ===================== REFERENCIAS ===================== */
+  .refhint {
+    display: inline-flex; align-items: center; gap: 9px; background: var(--verde-claro);
+    border-radius: 999px; padding: 8px 16px 8px 12px; font-size: 14px; color: var(--verde-osc);
+    font-weight: 600; margin-top: 6px;
+  }
+  .refhint .dot { width: 1.5em; height: 1.5em; border-radius: 999px; background: var(--verde); color:#fff; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; }
+  ol.refs { list-style: none; counter-reset: ref; padding: 0; margin: 18px 0 0; display: grid; gap: 4px; }
+  ol.refs li {
+    counter-increment: ref; position: relative; padding: 12px 16px 12px 58px; border-radius: 8px;
+    font-size: 15px; line-height: 1.5; color: var(--gris-1);
+    scroll-margin-top: 16px; transition: background .25s ease;
+  }
+  ol.refs li::before {
+    content: counter(ref); position: absolute; left: 14px; top: 11px;
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px; border-radius: 999px; background: var(--papel); color: var(--verde-osc);
+    font-size: 13px; font-weight: 700;
+  }
+  ol.refs li i { color: var(--gris-2); }
+  ol.refs li a { color: var(--teal); word-break: break-word; }
+  ol.refs li.flash { background: var(--verde-claro); }
+  ol.refs li.flash::before { background: var(--verde); color: #fff; }
+
+  /* ===================== FOOTER ===================== */
+  .doc-foot {
+    border-top: 1px solid var(--gris-4); margin-top: 50px; padding-top: 22px;
+    display: flex; justify-content: space-between; font-size: 13px; color: var(--gris-3);
+  }
+
+  /* ===================== RESPONSIVE ===================== */
+  @media (max-width: 720px) {
+    .doc-head, .doc-body { padding-left: 26px; padding-right: 26px; }
+    .doc-meta { grid-template-columns: 1fr 1fr; }
+    .blocks { grid-template-columns: 1fr; }
+    .gal-grid, .docs { grid-template-columns: 1fr; }
+    .doc-head h1 { font-size: 28px; max-width: none; }
+    .doc-head .subtitle { font-size: 17px; }
+    .doc-head .badge { font-size: 11px; padding: 5px 11px; }
+    .fig-frame { padding: 10px; }
+    .gal-head .gt b { font-size: 17px; }
+  }
+  @media (max-width: 480px) {
+    .doc-head { padding: 28px 16px 28px; }
+    .doc-body { padding-left: 16px; padding-right: 16px; }
+    .doc-head h1 { font-size: 24px; }
+    .doc-head .subtitle { font-size: 15px; }
+    .doc-meta { grid-template-columns: 1fr; gap: 10px; }
+    .fig-frame { padding: 4px; }
+    .callout { grid-template-columns: 32px 1fr; gap: 12px; padding: 14px 16px; }
+    .callout .ic { width: 32px; height: 32px; font-size: 16px; }
+  }
+
+  /* ---- Lightbox (tap-to-zoom) ---- */
+  .lightbox-overlay {
+    position: fixed; inset: 0; z-index: 9999; background: rgba(0,0,0,.88);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity .25s ease;
+    cursor: zoom-out; padding: 12px; -webkit-tap-highlight-color: transparent;
+  }
+  .lightbox-overlay.is-open { opacity: 1; pointer-events: auto; }
+  .lightbox-overlay img {
+    max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 4px;
+    transform: scale(.95); transition: transform .25s ease;
+  }
+  .lightbox-overlay.is-open img { transform: scale(1); }
+  .fig-frame img { cursor: zoom-in; }
+
+  @media print {
+    body { background: #fff; }
+    .page { box-shadow: none; margin: 0; max-width: none; border-radius: 0; }
+    .progress { display: none; }
+    section, figure.fig, .blocks, .timeline, .tbl-wrap, blockquote.pull, .callout, .gallery, .docs { break-inside: avoid; }
+    .gal-panel { display: block !important; page-break-inside: avoid; }
+    .gal-tabs, .gal-nav { display: none; }
+    .cite { background: none !important; color: var(--verde-osc) !important; vertical-align: super; }
+    .cite::after { content: "[" attr(data-n) "]"; }
+  }
+
+  /* ---- Outer layout with sticky side nav ---- */
+  .page { margin: 0; }
+  .outer-layout {
+    max-width: 1160px;
+    margin: 40px auto 90px;
+    display: grid;
+    grid-template-columns: 200px minmax(0, 1fr);
+    gap: 24px;
+    padding: 0 20px;
+    align-items: start;
+  }
+  .side-nav {
+    position: sticky;
+    top: 28px;
+    max-height: calc(100vh - 56px);
+    overflow-y: auto;
+    background: var(--blanco);
+    border: 1px solid var(--gris-4);
+    border-radius: 8px;
+    padding: 20px 16px;
+    box-shadow: var(--sombra);
+    scrollbar-width: thin;
+  }
+  .sn-label { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--gris-3); margin: 0 0 10px; padding: 0 4px; }
+  .sn-item { display: flex; align-items: flex-start; gap: 7px; font-family: var(--tipo); font-size: 13px; color: var(--gris-2); text-decoration: none; padding: 6px 8px; border-radius: 5px; line-height: 1.3; transition: all .15s; margin-bottom: 2px; border: none; background: none; cursor: pointer; width: 100%; text-align: left; }
+  .sn-item:hover { color: var(--gris-1); background: var(--gris-5); }
+  .sn-item.is-active { color: var(--verde-osc); background: var(--verde-claro); font-weight: 600; border-left: 3px solid var(--verde); padding-left: 5px; }
+  .sn-num { font-size: 11px; font-weight: 700; color: var(--verde-osc); min-width: 16px; padding-top: 1px; flex-shrink: 0; }
+  @media (max-width: 880px) {
+    .outer-layout { grid-template-columns: 1fr; padding: 0 12px; }
+    .side-nav { display: none; }
+    .page { margin: 0; }
+  }
+
+  /* ===================== QA RESPONSIVE FIXES ===================== */
+  /* (Esta lectura no tiene ecuaciones, así que no lleva las reglas de .fml) */
+  /* Imágenes: nunca desbordar el contenedor, aun con max-width inline */
+  .fig-frame img { max-width: 100% !important; height: auto !important; }
+  /* Imágenes de la galería de símbolos: nunca desbordar */
+  .gal-imgwrap img { max-width: 100% !important; height: auto !important; }
+  /* SVG de widgets interactivos: nunca desbordar */
+  .calc-wrap svg, .chart-layout svg { max-width: 100%; }
+
+  /* ---- Ecuaciones compuestas en SVG (Plantillas/tools/math-svg.mjs) ---- */
+  .fml { overflow-x: auto; line-height: 1; margin: 22px 0; }
+  .fml svg { display: block; margin: 0 auto; max-width: 100%; height: auto; vertical-align: baseline; }
+  .fml svg + svg { margin-top: 14px; }
+  .fml-lead { text-align: center; font-size: 14.5px; margin: 18px 0 -2px; }
+  .tex svg { display: inline-block; vertical-align: -0.12em; max-width: 100%; }
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<div class="outer-layout">
+
+<nav class="side-nav" aria-label="Secciones">
+  <p class="sn-label">En esta lectura</p>
+  <a href="#s1" class="sn-item"><span class="sn-num">01</span>Un proceso no cabe en un párrafo</a>
+  <a href="#s2" class="sn-item"><span class="sn-num">02</span>Por qué se inventa un lenguaje visual</a>
+  <a href="#s3" class="sn-item"><span class="sn-num">03</span>Tres niveles de representación</a>
+  <a href="#s4" class="sn-item"><span class="sn-num">04</span>Lo que el PFD le exige</a>
+  <a href="#s5" class="sn-item"><span class="sn-num">05</span>La simbología es una convención</a>
+  <a href="#s6" class="sn-item"><span class="sn-num">06</span>Conclusiones</a>
+  <a href="#s7" class="sn-item"><span class="sn-num">07</span>Referencias</a>
+</nav>
+
+<article class="page">
+
+  <!-- ENCABEZADO -->
+  <header class="doc-head">
+    <div class="org">
+      Universidad de los Andes
+      <span>Ingeniería Química y de Alimentos</span>
+    </div>
+    <div class="badge">Lectura 02 · Proyecto de Operaciones Unitarias</div>
+    <h1>Los diagramas de ingeniería como lenguaje de la profesión</h1>
+    <p class="subtitle">Por qué los ingenieros de proceso no describen sus plantas: las dibujan. Y por qué leer ese dibujo con fluidez es una de las primeras destrezas de la disciplina.</p>
+    <div class="doc-meta">
+      <div><b>Curso</b>Proyecto de Operaciones Unitarias · IQYA-2031</div>
+      <div><b>Autor</b>Luis H. Reyes</div>
+      <div><b>Fecha</b>3 de junio de 2026</div>
+      <div><b>Lectura</b>Aproximadamente 14 minutos</div>
+    </div>
+  </header>
+
+  <div class="doc-body">
+
+    <!-- INTRO + TOC -->
+    <section id="s0">
+      <p class="lead">Una refinería de tamaño medio reúne miles de equipos y decenas de miles de líneas de proceso. Ningún texto corrido sostiene esa cantidad de relaciones simultáneas sin volverse ilegible. <b>La ingeniería química resolvió el problema de la única manera que funciona: dejó de contar el proceso y empezó a dibujarlo.</b></p>
+
+      <div class="toc">
+        <p class="toc-t">En esta lectura</p>
+        <ol>
+          <li><a href="#s1">Un proceso no cabe en un párrafo</a></li>
+          <li><a href="#s2">Por qué una disciplina inventa un lenguaje visual</a></li>
+          <li><a href="#s3">Tres niveles de representación</a></li>
+          <li><a href="#s4">Lo que el PFD le exige al ingeniero</a></li>
+          <li><a href="#s5">La simbología es una convención</a></li>
+          <li><a href="#s6">Conclusiones</a></li>
+          <li><a href="#s7">Referencias</a></li>
+        </ol>
+      </div>
+
+      <div class="callout callout--tip">
+        <span class="ic">i</span>
+        <div><b>Sobre las referencias de esta lectura</b><p>A lo largo del texto encontrará marcadores verdes numerados como este<span class="cite" data-ref="5" data-n="5" tabindex="0"></span>. Pase el cursor por encima (o tóquelo) y aparecerá la fuente completa. El listado ordenado vive al final, en <a href="#s7" style="color:var(--teal)">Referencias</a>, y los documentos normativos citados se pueden abrir desde la <a href="#s5" style="color:var(--teal)">sección 5</a>.</p></div>
+      </div>
+    </section>
+
+    <!-- 1. INTRODUCCIÓN -->
+    <section id="s1">
+      <div class="eyebrow">Punto de partida</div>
+      <h2 class="sec"><span class="secnum">1.</span> Un proceso no cabe en un párrafo</h2>
+      <p>Intente describir una planta de destilación con palabras. Tendría que enumerar cada bomba, cada intercambiador, cada columna, cada válvula de control, y luego explicar en qué orden se conectan, qué corriente entra en qué equipo, a qué temperatura y a qué presión. Una refinería de tamaño medio reúne miles de equipos y decenas de miles de líneas de proceso. Ningún texto corrido sostiene esa cantidad de relaciones simultáneas sin volverse ilegible. El problema es viejo y la ingeniería química lo resolvió de la única manera que funciona: dejó de contar el proceso y empezó a dibujarlo.</p>
+
+      <p>La Lectura 01 respondió qué son las operaciones unitarias y cómo nació la disciplina alrededor de esa idea. Esta lectura responde la pregunta complementaria, la que aparece apenas el estudiante intenta diseñar algo: ¿cómo se comunica un proceso? La respuesta es que los ingenieros de proceso no describen sus plantas en prosa. Las representan en diagramas que obedecen reglas compartidas, y esos diagramas funcionan como un idioma. Quien no lo lee con fluidez queda fuera de la conversación técnica, igual que un músico que no lee partituras queda fuera de la orquesta.</p>
+
+      <blockquote class="pull">
+        <span class="qmark">&ldquo;</span>
+        <p>El diagrama de flujo es el documento central en el diseño de procesos.</p>
+        <cite>Towler y Sinnott, <b>Chemical Engineering Design (2021)</b><span class="cite" data-ref="5" data-n="5" tabindex="0"></span></cite>
+      </blockquote>
+
+      <p>La tesis de esta lectura es directa. Los diagramas de ingeniería no son una herramienta de dibujo que se aplica al final, cuando el diseño ya está hecho. Son el medio donde el diseño ocurre. Towler y Sinnott lo dicen sin rodeos: el diagrama de flujo es el documento central del diseño de procesos, y como es el documento definitivo sobre la planta, su presentación debe ser clara, completa y exacta<span class="cite" data-ref="5" data-n="5" tabindex="0"></span>. Turton y sus colegas son aún más enfáticos sobre uno de esos diagramas en particular, el diagrama de flujo de proceso, al que llaman el documento individual más importante para el ingeniero químico o de <span class="nbk">proceso<span class="cite" data-ref="6" data-n="6" tabindex="0"></span></span>.</p>
+
+      <div class="callout callout--tip">
+        <span class="ic">!</span>
+        <div><b>Cómo leer esta lectura</b><p>Esta lectura no le pide memorizar símbolos. Le pide entender por qué existen tres tipos de diagrama, qué decide cada uno y por qué leerlos es una destreza que se entrena. El catálogo de símbolos lo consultará toda su vida en la norma; el criterio para leerlos lo construye usted.</p></div>
+      </div>
+    </section>
+
+    <!-- 2. POR QUÉ UN LENGUAJE VISUAL -->
+    <section id="s2">
+      <div class="eyebrow">De dónde viene la necesidad</div>
+      <h2 class="sec"><span class="secnum">2.</span> Por qué una disciplina técnica inventa un lenguaje visual</h2>
+      <p>Toda disciplina técnica que madura termina construyendo una representación gráfica estandarizada. La arquitectura tiene sus planos, con convenciones precisas para muros, puertas y cotas. La electrónica tiene sus esquemas, donde una resistencia y un capacitor se reconocen al instante en cualquier país. La música escribe sus notas en un pentagrama que un intérprete de Bogotá y otro de Osaka leen igual. El patrón se repite porque responde a una necesidad común: cuando un sistema tiene demasiadas partes interconectadas, el lenguaje natural falla y hace falta un código visual que comprima la información y elimine la ambigüedad.</p>
+
+      <p>La ingeniería de procesos llegó tarde a esa convención, y la razón es histórica. Durante la primera mitad del siglo XX, cuando la disciplina apenas consolidaba su identidad alrededor de las operaciones unitarias, cada empresa dibujaba sus procesos a su manera. Un símbolo de bomba en una compañía podía significar otra cosa en la planta vecina. Esa fragmentación tenía un costo real: un diagrama que el autor entendía perfectamente resultaba opaco para el contratista que debía construir la planta, para el inspector que debía aprobarla y para el operador que debía manejarla.</p>
+
+      <p>La estandarización corrigió eso, y conviene verla como un hito disciplinar por derecho propio, no como un trámite administrativo. El primer paso grande llegó desde la instrumentación. La Instrument Society of America, fundada el 28 de abril de 1945, publicó en 1949 su práctica recomendada RP-5.1, el primer intento serio de fijar símbolos para los instrumentos de medición y <span class="nbk">control<span class="cite" data-ref="1" data-n="1" tabindex="0"></span></span>. Ese documento creció hasta convertirse en la norma ANSI/ISA-5.1, revisada en 1984 y actualizada en ediciones posteriores, que define el alfabeto de símbolos y etiquetas con que se representa cada sensor, controlador y válvula en un diagrama. Del lado británico, la norma BS 1553 fijó en 1977 los símbolos gráficos para sistemas de tubería y equipos de planta de <span class="nbk">proceso<span class="cite" data-ref="2" data-n="2" tabindex="0"></span></span>. Y la convergencia internacional llegó con la norma ISO 10628, que estableció las reglas generales para los diagramas de flujo de plantas de proceso y, en sus partes posteriores, el conjunto de símbolos gráficos <span class="nbk">comunes<span class="cite" data-ref="3" data-n="3" tabindex="0"></span><span class="cite" data-ref="4" data-n="4" tabindex="0"></span></span>.</p>
+
+      <h3 class="sub">Línea de tiempo de la estandarización</h3>
+      <div class="timeline">
+        <div class="tl-item"><div class="tl-year">1945</div><span class="tl-dot"></span><div class="tl-body"><b>Se funda la Instrument Society of America (ISA)</b><span>El 28 de abril, base del futuro estándar de instrumentación.</span></div></div>
+        <div class="tl-item"><div class="tl-year">1949</div><span class="tl-dot"></span><div class="tl-body"><b>La ISA publica la práctica recomendada RP-5.1</b><span>Primer código de símbolos para instrumentos de medición y control.</span></div></div>
+        <div class="tl-item"><div class="tl-year">1977</div><span class="tl-dot"></span><div class="tl-body"><b>El Reino Unido publica BS 1553-1</b><span>Símbolos gráficos para sistemas de tubería y equipos de planta.</span></div></div>
+        <div class="tl-item"><div class="tl-year">1984</div><span class="tl-dot"></span><div class="tl-body"><b>Aparece ANSI/ISA-5.1</b><span>La norma estadounidense que aún rige la simbología de instrumentos en los P&amp;ID.</span></div></div>
+        <div class="tl-item"><div class="tl-year">1997</div><span class="tl-dot"></span><div class="tl-body"><b>La ISO publica ISO 10628</b><span>Reglas generales para diagramas de flujo, paso decisivo hacia un lenguaje internacional.</span></div></div>
+        <div class="tl-item"><div class="tl-year">2009</div><span class="tl-dot"></span><div class="tl-body"><b>ANSI/ISA-5.1-2009, edición vigente</b><span>Reafirmada en 2018, amplía el sistema de identificación e incorpora las funciones implementadas en software de control.</span></div></div>
+      </div>
+
+      <p>El efecto de estas normas no fue uniformar el dibujo por gusto del orden. Fue volver el diagrama transferible. Un P&amp;ID elaborado bajo ISA-5.1 puede leerse en una firma de ingeniería de Houston, en una constructora de Medellín y en una planta de operación en Singapur, porque las tres partes comparten el mismo diccionario. El diagrama dejó de ser una nota privada del diseñador y se convirtió en un contrato técnico entre todos los que tocan el proyecto.</p>
+    </section>
+
+    <!-- 3. TRES NIVELES -->
+    <section id="s3">
+      <div class="eyebrow">Cómo se organiza el lenguaje</div>
+      <h2 class="sec"><span class="secnum">3.</span> Tres niveles de representación, no tres dibujos distintos</h2>
+      <p>El error más común del principiante es ver el diagrama de bloques, el diagrama de flujo de proceso y el diagrama de tubería e instrumentación como tres formatos sueltos que se eligen según la ocasión. No lo son. Forman una progresión de abstracción, una misma planta vista con tres aumentos distintos. Cada nivel añade detalle y reduce la libertad de interpretación. El primero cabe en una servilleta; el último necesita decenas de planos. Turton y sus colegas estructuran su tratamiento del tema exactamente así, como diagramas que representan el proceso a diferentes <span class="nbk">escalas<span class="cite" data-ref="6" data-n="6" tabindex="0"></span></span>.</p>
+
+      <div class="blocks">
+        <div class="block"><span class="bn">NIVEL 01 · BFD</span><b>Diagrama de bloques</b><span>El proceso reducido a cajas conectadas por flechas. Cada caja es una sección entera de la planta. Responde: ¿qué hace el proceso, en líneas gruesas?</span></div>
+        <div class="block"><span class="bn">NIVEL 02 · PFD</span><b>Diagrama de flujo de proceso</b><span>El documento de trabajo del ingeniero. Equipos principales, corrientes con sus condiciones y los lazos de control mayores. Aquí vive el balance de materia y energía.</span></div>
+        <div class="block"><span class="bn">NIVEL 03 · P&amp;ID</span><b>Tubería e instrumentación</b><span>El plano de la realidad física. Cada tubería, cada válvula, cada instrumento, cada etiqueta. Lo que el contratista construye y el operador maneja.</span></div>
+      </div>
+
+      <h3 class="sub">3.1 · El diagrama de bloques: el nivel conceptual</h3>
+      <p>El diagrama de bloques es el nivel conceptual. Sirve para discutir la lógica del proceso con quien no necesita el detalle: la gerencia que decide si el proyecto avanza, el equipo que evalúa la viabilidad de una ruta química frente a otra. Su virtud es que cabe en la cabeza de un vistazo. Su límite es que no permite calcular casi nada; una caja que dice "separación" no dice cómo se separa ni cuánta energía cuesta.</p>
+
+      <figure class="fig full">
+        <div class="fig-frame">
+          <img src="assets/ejemplo_bfd.webp" alt="Diagrama de bloques del proceso de producción de benceno: el reactor recibe tolueno e hidrógeno, el separador de gas divide las corrientes, y la columna de destilación entrega benceno mientras recircula el tolueno no convertido.">
+        </div>
+        <figcaption><b>Figura 1. Diagrama de bloques (BFD).</b> Producción de benceno por hidrodesalquilación de tolueno. Tres cajas (reactor, separador de gas, columna de destilación) y las flechas que las unen bastan para comunicar la lógica global: qué entra, qué se recicla y qué sale, con la reacción al pie. No hay equipos individuales ni condiciones de operación; ese no es el trabajo de este nivel.</figcaption>
+      </figure>
+
+      <h3 class="sub">3.2 · El diagrama de flujo de proceso: el corazón del diseño</h3>
+      <p>Aquí está el corazón del diseño, y por eso el diagrama de flujo de proceso merece la mayor atención del estudiante. Cada bloque se abre y revela los equipos que lo componen: la columna, el rehervidor, el condensador, las bombas, los intercambiadores. Cada corriente lleva su número y, en la tabla de corrientes que acompaña al diagrama, su caudal, su composición, su temperatura y su presión. El PFD es el lugar donde el balance de materia y energía se hace visible y donde se leen los resultados de la simulación del proceso. Cuando un ingeniero dice que está diseñando un proceso, en buena medida está construyendo y refinando un PFD.</p>
+
+      <figure class="fig full">
+        <div class="fig-frame">
+          <img src="assets/ejemplo_pfd.webp" alt="Diagrama de flujo de proceso con equipos etiquetados (R-101, V-101, T-101, T-102, decantador, bombas P-101 a P-107, intercambiadores E-101 a E-107) y una tabla de corrientes al pie que detalla flujo, temperatura, presión y composición de quince corrientes numeradas.">
+        </div>
+        <figcaption><b>Figura 2. Diagrama de flujo de proceso (PFD).</b> La misma idea del bloque anterior, abierta en equipos reales con etiqueta (R-101, T-101, T-102, P-101…) y corrientes numeradas. Note la <b>tabla de corrientes</b> al pie: flujo, temperatura, presión y fracciones molares de cada corriente. Ahí vive el balance de materia y energía, y ese es el documento que usted entregará en el proyecto del curso.</figcaption>
+      </figure>
+
+      <h3 class="sub">3.3 · El diagrama de tubería e instrumentación: la realidad física</h3>
+      <p>El diagrama de tubería e instrumentación es el nivel de la construcción y la operación. No omite nada físico: toda válvula, toda línea con su diámetro y material, todo instrumento con su etiqueta normalizada, todo lazo de control completo. Es el documento sobre el que se hace el análisis de riesgos de proceso, el HAZOP, porque solo a ese nivel de detalle se pueden rastrear los modos de falla. Es también el plano que el contratista usa para montar la planta y el que el operador consulta cuando algo se sale de lo previsto.</p>
+
+      <figure class="fig full">
+        <div class="fig-frame">
+          <img src="assets/ejemplo_pid.webp" alt="Diagrama de tubería e instrumentación de un separador trifásico horizontal: muestra el demister, el vertedero (weir), los rompevórtices, y lazos de control completos de nivel (LC, LT, LV), presión (PC, PT, PV) con válvulas de control, válvulas de bloqueo y líneas de señal punteadas hacia cada salida de vapor, aceite y agua.">
+        </div>
+        <figcaption><b>Figura 3. Diagrama de tubería e instrumentación (P&amp;ID).</b> Un único equipo, un separador trifásico, llevado al detalle físico. Aparecen los internos (demister, vertedero, rompevórtices), cada válvula y los lazos de control completos: el transmisor de nivel (LT) envía la señal al controlador (LC), que mueve la válvula (LV). Las líneas punteadas son señales, no tuberías. Este es el nivel sobre el que se hace el HAZOP.</figcaption>
+      </figure>
+
+      <p>Una sola operación deja ver la progresión. Tome la separación de una mezcla por destilación. En el diagrama de bloques aparece como una caja rotulada "separación", conectada por una flecha al bloque de reacción que la antecede. En el diagrama de flujo de proceso esa caja se abre: surge la columna con su número de etiqueta, el rehervidor que aporta calor en el fondo, el condensador que retira calor en la cabeza, el tambor de reflujo, las bombas, y las corrientes de alimentación, destilado y fondos, cada una con su caudal, su composición y sus condiciones en la tabla de corrientes. En el diagrama de tubería e instrumentación ese mismo tren se vuelve físico hasta el último detalle: el controlador de nivel del tambor de reflujo, la válvula que regula el reflujo, el lazo de temperatura del fondo, los diámetros de línea, las válvulas de alivio. El mismo equipo, tres veces, con tres propósitos. Quien confunde los niveles dibuja un lazo de control en un diagrama de bloques, donde no aporta nada, o presenta una caja vacía donde hacía falta una tabla de corrientes.</p>
+
+      <p class="tbl-cap"><b>Tabla 1.</b> Los tres niveles de representación de un proceso, comparados por propósito, audiencia, contenido y etapa del proyecto. Elaboración propia a partir de Turton et al. (2018) y Towler y Sinnott (2021).</p>
+      <div class="tbl-wrap">
+        <table class="ou">
+          <thead>
+            <tr><th>Criterio</th><th>Bloques (BFD)</th><th>Flujo de proceso (PFD)</th><th>Tubería e instrumentación (P&amp;ID)</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Propósito</td><td>Mostrar la lógica global del proceso</td><td>Definir el diseño: equipos, corrientes, balance</td><td>Especificar la planta física para construir y operar</td></tr>
+            <tr><td>Audiencia</td><td>Gerencia, evaluación de viabilidad</td><td>Ingenieros de proceso</td><td>Ingeniería de detalle, construcción, operación, seguridad</td></tr>
+            <tr><td>Contenido mínimo</td><td>Bloques de secciones y flechas de flujo</td><td>Equipos principales, corrientes numeradas, caudales, composiciones, condiciones, lazos de control mayores</td><td>Toda tubería, válvula e instrumento con etiqueta; lazos de control completos</td></tr>
+            <tr><td>Etapa del proyecto</td><td>Concepto y viabilidad</td><td>Diseño básico o de proceso</td><td>Ingeniería de detalle</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>El valor de entender esto como una progresión, y no como tres opciones, es práctico. Un diagrama de bloques con pretensiones de P&amp;ID es inútil porque promete un detalle que no tiene. Un P&amp;ID usado para explicarle el proceso a un gerente lo ahoga en información irrelevante para su decisión. Elegir el nivel correcto es la primera competencia comunicativa del ingeniero de proceso: hablarle a cada audiencia con el aumento que necesita.</p>
+    </section>
+
+    <!-- 4. LO QUE EL PFD EXIGE -->
+    <section id="s4">
+      <div class="eyebrow">La destreza central</div>
+      <h2 class="sec"><span class="secnum">4.</span> Lo que el PFD le exige al ingeniero</h2>
+      <p>Hay una idea peligrosa que conviene desmontar temprano. El estudiante suele imaginar que el diagrama de flujo de proceso es un dibujo que se hace al final, una vez terminados los cálculos, para presentar bonito lo que ya se sabía. Es exactamente al revés. El PFD es donde las decisiones de diseño se toman y quedan fijadas. La selección de equipos, el orden de las operaciones, los puntos de reciclo, las condiciones de cada corriente: todo eso se decide dibujando y se inscribe en el diagrama. El PFD no fotografía el diseño. Lo contiene.</p>
+
+      <p>De ahí se sigue una distinción que muchos cursos pasan por alto. Leer un PFD y construir un PFD son destrezas distintas, y ninguna se aprende sola. Leer significa recorrer el diagrama y reconstruir en la cabeza qué le pasa a cada sustancia: por dónde entra el reactivo, dónde reacciona, cómo se separa el producto, qué se recicla y qué se descarta. Turton dedica un capítulo entero a esta destreza, la de rastrear los compuestos a través del diagrama, porque es la que convierte un dibujo en una comprensión del <span class="nbk">proceso<span class="cite" data-ref="6" data-n="6" tabindex="0"></span></span>. Construir significa lo contrario: partir de un objetivo, el producto y su pureza, y decidir la secuencia de operaciones que lo logra, plasmándola corriente por corriente.</p>
+
+      <div class="callout callout--nota">
+        <span class="ic">i</span>
+        <div><b>Leer y construir no son lo mismo</b><p>Un estudiante puede saber dibujar un símbolo de columna y aun así no entender qué hace la columna en el proceso. Y al revés: puede entender la teoría de la destilación y bloquearse al traducirla en un diagrama coherente. Las dos destrezas se entrenan por separado y las dos se evalúan en el proyecto del curso. No basta con que el diagrama se vea bien; tiene que ser correcto y tiene que poder explicarse.</p></div>
+      </div>
+
+      <p>Construir un PFD bien tiene además una gramática concreta que conviene conocer desde ahora. Cada equipo recibe un símbolo, un nombre y una etiqueta única con un formato del tipo XX-YZZ A/B, donde las letras indican el tipo de equipo y los números la sección y el ítem: P-101 A/B nombra dos bombas en paralelo de la sección 100, una en operación y otra de respaldo. Cada corriente se numera, y su caudal, composición, temperatura y presión viven en la tabla de corrientes al pie del diagrama, donde un flujo despreciable se marca como "traza" y un componente ausente como "nil" o cero, nunca con una casilla en blanco. La regla es explícita: se documentan todas las corrientes, incluso cuando su composición no cambia, precisamente para que el lector no tenga que adivinar. Lo que para el autor resulta evidente puede no serlo para el contratista que lee el diagrama seis meses después.</p>
+
+      <p>Aquí está la conexión directa con el proyecto de este curso. El entregable central no es una ecuación suelta ni una tabla de resultados aislada. Es un diagrama de flujo de proceso coherente, acompañado de su tabla de corrientes y respaldado por un balance de materia y energía que cierre. Cuando usted presente su proceso, lo presentará en un PFD, y la primera prueba de que entiende su propio diseño será su capacidad de recorrer ese diagrama y explicar, corriente por corriente, por qué cada equipo está donde está y qué condiciones lleva cada flujo. Un PFD que el autor no sabe defender no está terminado, por más limpio que se vea.</p>
+
+      <p>Conviene además entender el PFD como un documento vivo dentro del proyecto. No se dibuja una vez. Se revisa cuando la simulación arroja un caudal distinto al supuesto, cuando un balance no cierra y obliga a reconsiderar un reciclo, cuando una decisión sobre un equipo cambia las condiciones aguas abajo. El diagrama acompaña al diseño en toda su evolución y registra su estado en cada momento. Por eso Towler y Sinnott insisten en que debe ser exacto y completo: cualquier persona del equipo que lo consulte debe poder confiar en que refleja la versión actual del proceso, no una idea ya <span class="nbk">superada<span class="cite" data-ref="5" data-n="5" tabindex="0"></span></span>.</p>
+    </section>
+
+    <!-- 5. SIMBOLOGÍA ES CONVENCIÓN + GALERÍA -->
+    <section id="s5">
+      <div class="eyebrow">Una advertencia conceptual</div>
+      <h2 class="sec"><span class="secnum">5.</span> La simbología es una convención, no una ley natural</h2>
+      <p>Falta deshacer un último malentendido, breve pero importante. El principiante tiende a tratar los símbolos como si fueran verdades fijas, un catálogo único que basta memorizar una vez. No lo son. Los símbolos son acuerdos, y como todo acuerdo, varían según quién lo firme. ISO 10628 propone un conjunto de símbolos; ANSI/ISA-5.1 propone otro para la instrumentación; BS 1553 tiene los suyos. Una empresa de ingeniería puede mantener, además, su propio estándar interno, heredado de décadas de proyectos, que se aparta en detalles de cualquier norma publicada.</p>
+
+      <p>Esto no es un defecto del sistema. Es la naturaleza de un lenguaje técnico que creció en lugares distintos y en épocas distintas. ISO 10628 predomina en Europa, BS 1553 nació británica pero sus símbolos se extendieron por toda la práctica industrial, y herramientas de dibujo como Visio incorporan sus propias bibliotecas. El contexto, además, desambigua lo que el símbolo solo no alcanza a fijar: un "mezclador" puede ser un mezclador en línea, un tanque agitado o un agitador dentro de un recipiente, y es el símbolo preciso, leído junto a la leyenda, lo que revela la intención del diseñador. La consecuencia práctica es clara: la destreza que importa no es memorizar un catálogo, sino saber leer la leyenda de cualquier diagrama y adaptarse a ella. Por eso todo plano profesional incluye su propia leyenda y su cuadro de símbolos. Ese cuadro existe precisamente porque nadie puede dar por supuesto que el lector comparte exactamente sus mismas convenciones.</p>
+
+      <h3 class="sub">5.1 · El catálogo, por familias</h3>
+      <p>Para que vea de qué tamaño es el "diccionario" y cómo se organiza, esta galería recorre el repertorio de símbolos de equipo agrupado en cinco familias. No los memorice: recórralos, reconózcalos y, cuando los necesite, vuelva a la norma. Cambie de familia con las pestañas o con las flechas.</p>
+
+      <div class="gallery" id="gallery">
+        <div class="gal-head">
+          <div class="gt">Galería de símbolos<b id="gal-title">Recipientes, columnas, reactores y tanques</b></div>
+          <div class="gal-count">Familia <b id="gal-pos">1</b> de 5</div>
+        </div>
+        <div class="gal-tabs" id="gal-tabs"></div>
+        <div class="gal-stage" id="gal-stage"></div>
+        <div class="gal-nav">
+          <button class="gal-btn" id="gal-prev" type="button">&larr; Anterior</button>
+          <div class="gal-dots" id="gal-dots"></div>
+          <button class="gal-btn" id="gal-next" type="button">Siguiente &rarr;</button>
+        </div>
+        <p class="gal-src">Símbolos adaptados de Towler y Sinnott, <i>Chemical Engineering Design</i> (2021), capítulo 2. Las letras corresponden a las etiquetas de cada lámina.</p>
+      </div>
+
+      <h3 class="sub">5.2 · Las normas, accesibles</h3>
+      <p>El criterio para leer un diagrama lo construye usted; el detalle de cada símbolo lo fija la norma. Estos son los documentos normativos y el capítulo de referencia citados en esta lectura. Ábralos cuando una leyenda le plantee una duda.</p>
+
+      <div class="docs">
+        <a class="doccard" href="referencias/ISO_10628-1_2015.pdf" target="_blank" rel="noopener">
+          <span class="dic"><span>PDF</span></span>
+          <span class="dtxt"><b>ISO 10628-1:2015</b><span>Reglas generales para los diagramas de flujo de plantas de proceso de la industria química y petroquímica.</span><em>ABRIR DOCUMENTO →</em></span>
+        </a>
+        <a class="doccard" href="referencias/ISO_10628-2_2012.pdf" target="_blank" rel="noopener">
+          <span class="dic"><span>PDF</span></span>
+          <span class="dtxt"><b>ISO 10628-2:2012</b><span>Catálogo de símbolos gráficos comunes para equipos y tuberías de proceso.</span><em>ABRIR DOCUMENTO →</em></span>
+        </a>
+        <a class="doccard" href="referencias/BS_1553.pdf" target="_blank" rel="noopener">
+          <span class="dic"><span>PDF</span></span>
+          <span class="dtxt"><b>BS 1553-1:1977</b><span>Símbolos gráficos para sistemas de tubería y equipos de planta de proceso (estándar británico).</span><em>ABRIR DOCUMENTO →</em></span>
+        </a>
+        <a class="doccard" href="referencias/Towler_2021_Cap2.pdf" target="_blank" rel="noopener">
+          <span class="dic"><span>PDF</span></span>
+          <span class="dtxt"><b>Towler &amp; Sinnott · Cap. 2</b><span><i>Chemical Engineering Design</i> (2021). Diagramas de proceso y fuente de la galería de símbolos.</span><em>ABRIR DOCUMENTO →</em></span>
+        </a>
+      </div>
+
+      <p>El estudiante que internaliza esto deja de frustrarse cuando un diagrama nuevo no coincide con el que aprendió. En lugar de buscar el símbolo "correcto", busca la leyenda y la lee. Esa actitud, leer las reglas antes de leer el contenido, es transferible a cualquier norma técnica que encuentre en su carrera, no solo a los diagramas de proceso.</p>
+
+      <h3 class="sub">5.3 · El alfabeto de la instrumentación: cómo se etiqueta un instrumento</h3>
+      <p>Los símbolos de equipo son solo la mitad del diccionario. La otra mitad, la que aparece sobre todo en el P&amp;ID, es la <b>identificación de instrumentos</b> que define ANSI/ISA-5.1<span class="cite" data-ref="1" data-n="1" tabindex="0"></span>. Un instrumento se dibuja como un globo (un círculo) con un código de letras adentro y un número de lazo. El código se lee de izquierda a derecha siguiendo una regla simple: la <b>primera letra</b> nombra la variable que se mide o que inicia el lazo, y las <b>letras siguientes</b> nombran la función que cumple el instrumento. Así, un mismo lazo de presión genera PT (transmisor de presión), PC (controlador de presión), PI (indicador de presión) y PV (válvula de control de presión), todos compartiendo el número de lazo.</p>
+
+      <p class="tbl-cap"><b>Tabla 2.</b> Letras de identificación de instrumentos según ANSI/ISA-5.1. La primera columna es la variable medida (primera letra); las demás son funciones (letras sucesivas). La etiqueta combina ambas, por ejemplo <b>FT</b> = caudal + transmisor, <b>LIC</b> = nivel + indicador + controlador.</p>
+      <div class="tbl-wrap">
+        <table class="ou">
+          <thead>
+            <tr><th>Primera letra (variable)</th><th>Letras sucesivas (función)</th><th>Ejemplos de etiqueta</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>F: caudal (<i>flow</i>)</td><td>T: transmisor</td><td>FT, FIC, FCV</td></tr>
+            <tr><td>P: presión</td><td>I: indicador</td><td>PT, PI, PIC, PSV</td></tr>
+            <tr><td>L: nivel</td><td>C: controlador</td><td>LT, LC, LIC, LV</td></tr>
+            <tr><td>T: temperatura</td><td>R: registrador</td><td>TT, TC, TIC, TW</td></tr>
+            <tr><td>A: análisis (composición, pH)</td><td>V: válvula / elemento final</td><td>AT, AIT, AIC</td></tr>
+            <tr><td>S: velocidad o frecuencia</td><td>S: interruptor (<i>switch</i>)</td><td>PSH, LSL, FSL</td></tr>
+            <tr><td>H: manual</td><td>A: alarma; H/L: alto/bajo (modificadores)</td><td>HS (interruptor manual), PAH, LAL</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout callout--nota">
+        <span class="ic">i</span>
+        <div><b>El globo cuenta dónde vive el instrumento</b><p>La forma del globo y la línea que lo cruza son tan informativas como las letras. Un <b>círculo simple</b> es un instrumento montado en campo, junto al equipo. Un círculo con una <b>línea horizontal continua</b> está accesible en un tablero o sala de control. Una <b>línea discontinua</b> indica un instrumento accesible por detrás del tablero, y un <b>cuadrado con círculo inscrito</b> denota una función compartida o implementada en el sistema de control distribuido (DCS). El número de lazo agrupa todos los instrumentos de un mismo control: PT-101, PIC-101 y PV-101 pertenecen al lazo 101.</p></div>
+      </div>
+
+      <p>Las líneas que unen estos símbolos también obedecen un código, y confundirlas es uno de los errores de lectura más frecuentes. La <b>línea de proceso</b> es una línea continua y gruesa: por ahí circula la materia. Las <b>líneas de servicios industriales</b> (<i>utilities</i>: vapor, agua de enfriamiento, aire de instrumentos, nitrógeno) suelen distinguirse con un grosor menor y un rótulo que identifica el servicio. Y las <b>líneas de señal</b> nunca llevan materia: una señal eléctrica se dibuja como una línea discontinua, una señal neumática como una línea cruzada por trazos diagonales dobles, y un enlace de software o de datos como una línea con círculos o guiones largos. Por eso, en la Figura&nbsp;3, las líneas punteadas que salen de los transmisores hacia los controladores no son tuberías: son las señales que cierran el lazo de control.</p>
+    </section>
+
+    <!-- 6. CONCLUSIONES -->
+    <section id="s6">
+      <div class="eyebrow">Para llevarse</div>
+      <h2 class="sec"><span class="secnum">6.</span> Conclusiones</h2>
+      <p>Tres ideas para llevarse de esta lectura.</p>
+      <p><b>La primera:</b> los diagramas de ingeniería son el lenguaje nativo del diseño de procesos, no una herramienta accesoria. Un proceso industrial tiene demasiadas partes interconectadas para describirse en prosa, y la disciplina resolvió ese problema con un código visual estandarizado. La estandarización, lograda a lo largo del siglo XX con normas como ISA-5.1, BS 1553 e ISO 10628, fue lo que volvió el diagrama transferible entre quien lo diseña, quien lo construye y quien lo opera.</p>
+      <p><b>La segunda:</b> el diagrama de bloques, el de flujo de proceso y el de tubería e instrumentación no son tres formatos rivales, sino tres niveles de un mismo lenguaje, ordenados por detalle creciente. Saber cuál usar para cada audiencia y cada etapa es ya una competencia profesional. El PFD ocupa el centro de esa escala y concentra el trabajo del ingeniero de proceso.</p>
+      <p><b>La tercera:</b> leer y construir diagramas son destrezas distintas que se entrenan por separado, y ambas son el núcleo del proyecto de este curso. Su PFD no será un dibujo decorativo al final del informe; será el lugar donde su diseño existe y la prueba de que lo entiende. Y como la simbología es convención y no ley, la habilidad duradera no es memorizar símbolos, sino aprender a leer la leyenda de cualquier diagrama que la profesión ponga delante de usted.</p>
+    </section>
+
+    <!-- 7. REFERENCIAS -->
+    <section id="s7">
+      <div class="eyebrow">Fuentes</div>
+      <h2 class="sec"><span class="secnum">7.</span> Referencias</h2>
+      <p>Pase el cursor por cualquier marcador del texto para ver la fuente sin perder el hilo. Aquí está el listado completo, en orden alfabético.</p>
+      <div class="refhint"><span class="dot">i</span> Cada número de esta lista corresponde a un marcador en el texto.</div>
+      <ol class="refs">
+        <li id="ref-1">ANSI/ISA. (2009). <i>ANSI/ISA-5.1-2009: Instrumentation symbols and identification.</i> International Society of Automation.</li>
+        <li id="ref-2">British Standards Institution. (1977). <i>BS 1553-1:1977: Specification for graphical symbols for general engineering — Piping systems and plant.</i> BSI.</li>
+        <li id="ref-3">International Organization for Standardization. (2014). <i>ISO 10628-1:2014: Diagrams for the chemical and petrochemical industry — Part 1: Specification of diagrams.</i> ISO.</li>
+        <li id="ref-4">International Organization for Standardization. (2012). <i>ISO 10628-2:2012: Diagrams for the chemical and petrochemical industry — Part 2: Graphical symbols.</i> ISO.</li>
+        <li id="ref-5">Towler, G., &amp; Sinnott, R. (2021). <i>Chemical engineering design: Principles, practice and economics of plant and process design</i> (3.ª ed.). Elsevier.</li>
+        <li id="ref-6">Turton, R., Shaeiwitz, J. A., Bhattacharyya, D., &amp; Whiting, W. B. (2018). <i>Analysis, synthesis, and design of chemical processes</i> (5.ª ed.). Pearson.</li>
+      </ol>
+    </section>
+
+    <footer class="doc-foot">
+      <span>Proyecto de Operaciones Unitarias · IQYA-2031</span>
+      <span>Universidad de los Andes · Ingeniería Química y de Alimentos</span>
+    </footer>
+
+  </div>
+</article>
+
+</div>
+
+<!-- Popover de referencia (único, reutilizado) -->
+<div class="ref-pop" id="refpop" role="tooltip">
+  <div class="rp-head"><span class="rp-num"></span> Referencia</div>
+  <div class="rp-body"></div>
+</div>
+
+<script>
+/* ===================== DATOS DE LA GALERÍA ===================== */
+var GAL = [
+  {
+    tab: "Recipientes y reactores",
+    title: "Recipientes, columnas, reactores y tanques",
+    img: "assets/sim_recipientes.webp",
+    lead: "El grueso del equipo de proceso son recipientes: contienen, hacen reaccionar, separan o almacenan. La forma del símbolo distingue el servicio.",
+    items: [
+      ["a","Tambor o recipiente vertical","Recipiente cilíndrico vertical para acumular o separar fases."],
+      ["b","Recipiente horizontal","Tambor horizontal, típico en separadores y acumuladores de reflujo."],
+      ["c","Columna empacada / lecho fijo","Relleno o catalizador empacado en su interior."],
+      ["d","Columnas de platos","Etapas internas para el contacto líquido-vapor en destilación o absorción."],
+      ["e","Autoclave / tanque agitado","Recipiente cerrado con agitación; opera a presión."],
+      ["f","Reactor tubular","La reacción ocurre a lo largo de un tubo por el que fluye la mezcla."],
+      ["g","Reactor serpentín / coil","Tubo plegado que alarga el recorrido en poco espacio."],
+      ["h","Decantador trifásico","Separa por densidad gas, aceite y agua."],
+      ["i","Mezclador en línea","Mezcla dos corrientes dentro de la propia tubería."],
+      ["j","Borboteador (sparger)","Inyecta gas distribuido dentro de un líquido."],
+      ["k","Tanque abierto","Almacenamiento atmosférico sin cubierta."],
+      ["l","Tanque cubierto","Tanque atmosférico con techo."],
+      ["m","Tanque de techo flotante","El techo sigue el nivel; reduce pérdidas por evaporación."],
+      ["n","Tanque de techo fijo","Techo cónico o abovedado, para almacenamiento general."],
+      ["o","Esfera de gas licuado","Almacena gases a presión con forma esférica."]
+    ]
+  },
+  {
+    tab: "Transferencia de calor",
+    title: "Intercambiadores, hornos y torres de enfriamiento",
+    img: "assets/sim_calor.webp",
+    lead: "Calentar y enfriar es una de las tareas más frecuentes de una planta. Cada símbolo señala cómo y dónde se transfiere el calor.",
+    items: [
+      ["a","Intercambiadores (básicos)","Representación genérica del intercambio de calor entre corrientes."],
+      ["b","Horno, servicio radiante","Calor aportado por radiación directa de la llama."],
+      ["c","Horno con recuperación convectiva","Aprovecha los gases de combustión para precalentar."],
+      ["d","Carcasa y tubos","El más común; fluidos separados por un haz de tubos."],
+      ["e","Enfriador por aire","Ventiladores fuerzan aire sobre tubos aletados."],
+      ["f","Haz de tubos / rehervidor stab-in","Haz insertado en el fondo de una columna."],
+      ["g","Rehervidor tipo kettle","Evapora los fondos de una columna en una carcasa ampliada."],
+      ["h","Tubos aletados","Las aletas amplían el área del lado gas."],
+      ["i","Tubos en U","Tubos doblados que permiten la dilatación libre."],
+      ["j","Serpentín de calentamiento/enfriamiento","Tubo sumergido dentro de un recipiente."],
+      ["k","Intercambiador de placas","Placas corrugadas; compacto y de alta eficiencia."],
+      ["l","Calentador eléctrico","Aporta calor mediante resistencias."],
+      ["m","Torre de enfriamiento","Enfría agua por contacto directo con aire."]
+    ]
+  },
+  {
+    tab: "Bombas y compresores",
+    title: "Bombas, compresores y máquinas de fluido",
+    img: "assets/sim_bombas.webp",
+    lead: "Mover un fluido y darle presión es trabajo de las máquinas rotativas y alternativas. El símbolo indica el principio de operación.",
+    items: [
+      ["a","Bombas centrífugas","Impulsor giratorio; el caballo de batalla del bombeo de líquidos."],
+      ["b","Reciprocantes","Pistón alternativo para presiones altas (bombas o compresores)."],
+      ["c","Desplazamiento positivo / ventilador","Desplaza un volumen fijo en cada ciclo."],
+      ["d","Bomba de engranajes","Engranajes que mueven fluidos viscosos con caudal estable."],
+      ["e","Compresor axial o centrífugo","Comprime grandes caudales de gas."],
+      ["f","Turbina","Extrae trabajo de un fluido a presión."],
+      ["g","Eyector","Un fluido motriz arrastra y comprime a otro; genera vacío."]
+    ]
+  },
+  {
+    tab: "Sólidos",
+    title: "Manejo y procesamiento de sólidos",
+    img: "assets/sim_solidos.webp",
+    lead: "Las plantas de alimentos, farmacéuticas y de materiales mueven, muelen, secan y separan sólidos. Es la familia más numerosa.",
+    items: [
+      ["a","Silo o tolva","Almacena sólidos a granel; descarga por gravedad."],
+      ["b","Banda transportadora","Traslada sólidos sobre una cinta."],
+      ["c","Transportador de tornillo","Un tornillo sin fin empuja el material."],
+      ["d","Elevador","Eleva sólidos verticalmente, por ejemplo con cangilones."],
+      ["e","Ciclón","Separa partículas del gas por fuerza centrífuga."],
+      ["f","Mezclador / tanque de suspensión","Homogeneiza sólidos o forma una lechada."],
+      ["g","Amasadora, extrusora","Mezcla y conforma materiales pastosos."],
+      ["h","Mezclador de cintas","Cintas helicoidales mezclan polvos."],
+      ["i","Quebrantadora (crusher)","Reduce trozos grandes por compresión."],
+      ["j","Molino de martillos","Pulveriza por impacto de martillos."],
+      ["k","Molino de bolas","Bolas que muelen por volteo del tambor."],
+      ["l","Filtro (básico)","Separa sólidos de un fluido."],
+      ["m","Filtro de tambor","Tambor rotatorio al vacío para filtrado continuo."],
+      ["n","Centrífuga","Separa fases por fuerza centrífuga."],
+      ["o","Centrífuga de discos","Discos apilados para separar líquidos finos."],
+      ["p","Torre de perdigones / spray dryer","Seca gotas en caída dentro de una torre."],
+      ["q","Secador de banda","Seca el producto sobre una cinta en movimiento."],
+      ["r","Secador de bandejas","Bandejas estáticas en una cámara con aire caliente."],
+      ["s","Secador rotatorio","Tambor inclinado que voltea el sólido húmedo."],
+      ["t","Granulador / aglomerador rotatorio","Forma gránulos por rodadura."]
+    ]
+  },
+  {
+    tab: "Auxiliares",
+    title: "Elementos auxiliares y accesorios",
+    img: "assets/sim_auxiliares.webp",
+    lead: "Pequeños pero indispensables: el símbolo de un motor, un venteo o una unión bridada completa la lectura de cualquier diagrama.",
+    items: [
+      ["a","Motor","Acciona equipos rotativos; se marca con \u201cM\u201d."],
+      ["b","Ventilador","Mueve aire o gases a baja presión."],
+      ["c","Agitador","Mantiene mezclado el contenido de un recipiente."],
+      ["d","Dispositivo de aspersión","Distribuye un líquido en gotas."],
+      ["e","Venteo","Salida de gases a la atmósfera."],
+      ["f","Drenaje","Punto bajo para el vaciado de líquidos."],
+      ["g","Unión bridada","Conexión desmontable entre tramos de tubería."]
+    ]
+  }
+];
+
+(function () {
+  /* ---- Barra de progreso de lectura ---- */
+  var bar = document.getElementById('progress');
+  function onScroll() {
+    var h = document.documentElement;
+    var max = h.scrollHeight - h.clientHeight;
+    bar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  /* ===================== GALERÍA ===================== */
+  var tabsEl = document.getElementById('gal-tabs');
+  var stageEl = document.getElementById('gal-stage');
+  var dotsEl = document.getElementById('gal-dots');
+  var titleEl = document.getElementById('gal-title');
+  var posEl = document.getElementById('gal-pos');
+  var cur = 0;
+
+  GAL.forEach(function (fam, i) {
+    var t = document.createElement('button');
+    t.type = 'button'; t.className = 'gal-tab'; t.textContent = fam.tab;
+    t.addEventListener('click', function () { goGal(i); });
+    tabsEl.appendChild(t);
+
+    var p = document.createElement('div');
+    p.className = 'gal-panel';
+    var grid = fam.items.map(function (it) {
+      return '<div class="gal-item"><span class="lt">' + it[0] + '</span><span class="nm"><b>' + it[1] + '</b><span>' + it[2] + '</span></span></div>';
+    }).join('');
+    p.innerHTML =
+      '<div class="gal-imgwrap"><img src="' + fam.img + '" alt="Lámina de símbolos: ' + fam.title + '" loading="lazy"></div>' +
+      '<p class="gal-lead"><b>' + fam.title + '.</b> ' + fam.lead + '</p>' +
+      '<div class="gal-grid">' + grid + '</div>';
+    stageEl.appendChild(p);
+
+    var d = document.createElement('button');
+    d.type = 'button'; d.className = 'gal-dot'; d.setAttribute('aria-label', fam.tab);
+    d.addEventListener('click', function () { goGal(i); });
+    dotsEl.appendChild(d);
+  });
+
+  var tabs = tabsEl.querySelectorAll('.gal-tab');
+  var panels = stageEl.querySelectorAll('.gal-panel');
+  var dots = dotsEl.querySelectorAll('.gal-dot');
+
+  function goGal(i) {
+    cur = (i + GAL.length) % GAL.length;
+    for (var k = 0; k < panels.length; k++) {
+      tabs[k].classList.toggle('is-active', k === cur);
+      panels[k].classList.toggle('is-active', k === cur);
+      dots[k].classList.toggle('is-active', k === cur);
+    }
+    titleEl.textContent = GAL[cur].title;
+    posEl.textContent = (cur + 1);
+  }
+
+  document.getElementById('gal-prev').addEventListener('click', function () { goGal(cur - 1); });
+  document.getElementById('gal-next').addEventListener('click', function () { goGal(cur + 1); });
+  goGal(0);
+
+  /* ===================== POPOVERS DE CITAS ===================== */
+  var pop = document.getElementById('refpop');
+  var popNum = pop.querySelector('.rp-num');
+  var popBody = pop.querySelector('.rp-body');
+  var current = null;
+  var hideTimer = null;
+
+  function refHTML(n) {
+    var li = document.getElementById('ref-' + n);
+    return li ? li.innerHTML : '';
+  }
+
+  function place(marker) {
+    var r = marker.getBoundingClientRect();
+    pop.style.visibility = 'hidden';
+    pop.classList.add('show');
+    var pw = pop.offsetWidth, ph = pop.offsetHeight;
+    var cx = r.left + r.width / 2;
+    var left = cx - pw / 2;
+    var margin = 12;
+    left = Math.max(margin, Math.min(left, window.innerWidth - pw - margin));
+    var below = r.top < ph + 24;
+    var top = below ? r.bottom + 12 : r.top - ph - 12;
+    pop.classList.toggle('below', below);
+    pop.classList.toggle('above', !below);
+    pop.style.left = left + 'px';
+    pop.style.top = top + 'px';
+    pop.style.setProperty('--arrow', (cx - left) + 'px');
+    pop.style.visibility = '';
+  }
+
+  function show(marker) {
+    clearTimeout(hideTimer);
+    var n = marker.getAttribute('data-ref');
+    if (current && current !== marker) current.classList.remove('is-open');
+    current = marker;
+    marker.classList.add('is-open');
+    popNum.textContent = n;
+    popBody.innerHTML = refHTML(n);
+    place(marker);
+    requestAnimationFrame(function () { pop.classList.add('show'); });
+  }
+
+  function hide() {
+    hideTimer = setTimeout(function () {
+      pop.classList.remove('show');
+      if (current) current.classList.remove('is-open');
+      current = null;
+    }, 120);
+  }
+
+  document.querySelectorAll('.cite').forEach(function (m) {
+    m.addEventListener('mouseenter', function () { show(m); });
+    m.addEventListener('mouseleave', hide);
+    m.addEventListener('focus', function () { show(m); });
+    m.addEventListener('blur', hide);
+    m.addEventListener('click', function (e) {
+      e.preventDefault();
+      if (current === m && pop.classList.contains('show')) {
+        var li = document.getElementById('ref-' + m.getAttribute('data-ref'));
+        if (li) {
+          var y = li.getBoundingClientRect().top + window.scrollY - 90;
+          window.scrollTo({ top: y, behavior: 'smooth' });
+          li.classList.add('flash');
+          setTimeout(function () { li.classList.remove('flash'); }, 1600);
+          pop.classList.remove('show'); m.classList.remove('is-open'); current = null;
+        }
+      } else {
+        show(m);
+      }
+    });
+  });
+
+  pop.addEventListener('mouseenter', function () { clearTimeout(hideTimer); });
+  pop.addEventListener('mouseleave', hide);
+  window.addEventListener('scroll', function () {
+    if (current) place(current);
+  }, { passive: true });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') { pop.classList.remove('show'); if (current) current.classList.remove('is-open'); current = null; }
+  });
+
+  /* ---- Navegación suave del índice ---- */
+  document.querySelectorAll('.toc a, .doc-body a[href^="#"]').forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      var id = a.getAttribute('href').slice(1);
+      var el = document.getElementById(id);
+      if (el) {
+        e.preventDefault();
+        var y = el.getBoundingClientRect().top + window.scrollY - 24;
+        window.scrollTo({ top: y, behavior: 'smooth' });
+      }
+    });
+  });
+})();
+
+// Sticky side-nav active section
+(function() {
+  var sects = Array.from(document.querySelectorAll('.doc-body section[id]')).filter(function(s){ return s.id !== 's0'; });
+  if (!sects.length) return;
+  function update() {
+    var y = window.scrollY + 180;
+    var cur = sects[0].id;
+    for (var i = 0; i < sects.length; i++) { if (sects[i].offsetTop <= y) cur = sects[i].id; }
+    document.querySelectorAll('.sn-item').forEach(function(a) {
+      a.classList.toggle('is-active', a.getAttribute('href') === '#' + cur);
+    });
+  }
+  window.addEventListener('scroll', update, { passive: true });
+  update();
+})();
+</script>
+
+<script>
+/* ── Lightbox (tap-to-zoom on figures) ─────────────────────── */
+(function(){
+  var ov=document.createElement('div');
+  ov.className='lightbox-overlay';
+  ov.innerHTML='<img alt="">';
+  document.body.appendChild(ov);
+  var ovImg=ov.querySelector('img');
+  document.querySelectorAll('.fig-frame img').forEach(function(img){
+    img.addEventListener('click',function(){
+      ovImg.src=this.src; ovImg.alt=this.alt;
+      ov.classList.add('is-open');
+    });
+  });
+  ov.addEventListener('click',function(){ ov.classList.remove('is-open'); });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape') ov.classList.remove('is-open'); });
+})();
+</script>
+
+</body>
+</html>

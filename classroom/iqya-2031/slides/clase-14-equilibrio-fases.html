@@ -1,0 +1,1529 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="/classroom-fonts.css" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Equilibrio de fases · IQYA-2031</title>
+  <style>
+    :root {
+      --brand-dark: #1A1A1A;
+      --brand-yellow: #FFBF00;
+      --brand-yellow-dark: #E6AC00;
+      --brand-gray: #555555;
+      --surface: #ffffff;
+      --muted: #f4f4f5;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      background: var(--brand-dark);
+      color: var(--brand-dark);
+      font-family: 'Manrope Variable', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      overflow: hidden;
+      -webkit-text-size-adjust: 100%;
+    }
+    .deck {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+    }
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(1rem, 4vw, 3.5rem);
+      background: var(--surface);
+      opacity: 0;
+      overflow-y: auto;
+      transition: opacity 260ms ease;
+    }
+    .slide.active {
+      display: flex;
+      opacity: 1;
+    }
+    .slide .content {
+      width: 100%;
+      max-width: 92rem;
+      margin: auto 0;
+      display: flex;
+      flex-direction: column;
+      gap: clamp(0.75rem, 1.5vw, 1.5rem);
+    }
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      font-size: clamp(0.65rem, 1vw, 1rem);
+      color: var(--brand-yellow-dark);
+      font-weight: 600;
+    }
+    h1 {
+      font-size: clamp(1.75rem, 5.5vw, 5.75rem);
+      line-height: 1.05;
+      margin: 0;
+      color: var(--brand-dark);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    h2 {
+      font-size: clamp(1.25rem, 3.4vw, 3.25rem);
+      line-height: 1.15;
+      margin: 0;
+      color: var(--brand-dark);
+      font-weight: 700;
+    }
+    p, li {
+      font-size: clamp(0.95rem, 1.8vw, 1.75rem);
+      line-height: 1.55;
+      color: var(--brand-gray);
+      margin: 0;
+    }
+    ul, ol {
+      padding-left: 1.25em;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45em;
+    }
+    li::marker { color: var(--brand-yellow-dark); }
+    .slide.title-slide {
+      background: linear-gradient(135deg, #141414 0%, #1A1A1A 50%, #2a2a2a 100%);
+      color: #fff;
+    }
+    .slide.title-slide h1 { color: #fff; }
+    .slide.title-slide p { color: #d4d4d8; }
+    .slide.title-slide .eyebrow { color: var(--brand-yellow); }
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 0.5rem;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.35em 0.9em;
+      border-radius: 999px;
+      background: var(--muted);
+      color: var(--brand-dark);
+      font-size: clamp(0.75rem, 1.3vw, 1.35rem);
+      font-weight: 500;
+    }
+    .slide.title-slide .pill {
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .grid {
+      display: grid;
+      gap: clamp(0.75rem, 1.5vw, 1.25rem);
+    }
+    .grid.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    @media (max-width: 640px) {
+      .grid.cols-2, .grid.cols-3 { grid-template-columns: 1fr; }
+    }
+    .card {
+      background: var(--muted);
+      border-radius: 0.75rem;
+      padding: clamp(0.9rem, 1.5vw, 1.35rem);
+    }
+    .card h3 {
+      font-size: clamp(1rem, 2vw, 1.75rem);
+      margin: 0 0 0.35em 0;
+      color: var(--brand-dark);
+      font-weight: 600;
+    }
+    .card p { font-size: clamp(0.8rem, 1.4vw, 1.3rem); }
+    .hud {
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      padding: 0.5rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: rgba(255,255,255,0.75);
+      font-size: 0.75rem;
+      pointer-events: none;
+      z-index: 10;
+    }
+    .slide:not(.title-slide) ~ .hud { color: var(--brand-gray); }
+    .controls {
+      position: fixed;
+      right: 1rem;
+      bottom: 2.5rem;
+      display: flex;
+      gap: 0.5rem;
+      z-index: 11;
+    }
+    .controls button {
+      -webkit-appearance: none;
+      appearance: none;
+      border: 1px solid rgba(0,0,0,0.1);
+      background: rgba(255,255,255,0.9);
+      color: var(--brand-dark);
+      width: 2.5rem; height: 2.5rem;
+      border-radius: 999px;
+      font-size: 1rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    }
+    .controls button:active { transform: scale(0.96); }
+    .progress {
+      position: fixed;
+      top: 0; left: 0;
+      height: 3px;
+      background: var(--brand-yellow);
+      transition: width 260ms ease;
+      z-index: 20;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .slide { transition: none; }
+      .progress { transition: none; }
+    }
+    @media (max-width: 480px) {
+      .controls { right: 0.5rem; bottom: 1.25rem; }
+      .hud { font-size: 0.65rem; }
+    }
+
+    /* ─── Decorative: L-shaped yellow corner accent ─── */
+    .slide:not(.title-slide)::before {
+      content: '';
+      position: absolute;
+      top: clamp(1rem, 3vw, 2.5rem);
+      right: clamp(1rem, 3vw, 2.5rem);
+      width: clamp(2rem, 5vw, 4rem);
+      height: clamp(2rem, 5vw, 4rem);
+      border-top: 2.5px solid var(--brand-yellow);
+      border-right: 2.5px solid var(--brand-yellow);
+      pointer-events: none;
+      z-index: 1;
+    }
+    .slide.title-slide::before {
+      content: '';
+      position: absolute;
+      bottom: clamp(1rem, 3vw, 2.5rem);
+      left: clamp(1rem, 3vw, 2.5rem);
+      width: clamp(2rem, 5vw, 4rem);
+      height: clamp(2rem, 5vw, 4rem);
+      border-bottom: 2.5px solid var(--brand-yellow);
+      border-left: 2.5px solid var(--brand-yellow);
+      opacity: 0.4;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* ─── Decorative: large background slide number ─── */
+    .slide-number {
+      position: absolute;
+      bottom: clamp(0.5rem, 2vw, 1.5rem);
+      left: clamp(1rem, 3vw, 2.5rem);
+      font-size: clamp(4rem, 12vw, 10rem);
+      font-weight: 800;
+      line-height: 1;
+      color: rgba(0, 0, 0, 0.04);
+      pointer-events: none;
+      z-index: 0;
+      user-select: none;
+      letter-spacing: -0.04em;
+    }
+    .slide.title-slide .slide-number {
+      color: rgba(255, 255, 255, 0.06);
+    }
+
+    /* ─── Two-column layout ─── */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(1rem, 2vw, 2rem);
+      align-items: center;
+    }
+    @media (max-width: 640px) {
+      .two-col { grid-template-columns: 1fr; }
+    }
+
+    /* ─── Diagram image ─── */
+    .diagram {
+      max-width: 100%;
+      height: auto;
+      border-radius: 0.5rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    }
+
+    /* ─── Small text ─── */
+    .small-text {
+      font-size: clamp(0.7rem, 1.2vw, 0.9rem);
+      color: var(--brand-gray);
+      opacity: 0.8;
+    }
+
+    /* ─── Tip / Warning ─── */
+    .tip {
+      background: #f0fdf4;
+      border-left: 4px solid #22c55e;
+      padding: 0.75em 1em;
+      border-radius: 0 0.5rem 0.5rem 0;
+      font-size: clamp(0.85rem, 1.5vw, 1.1rem);
+      color: var(--brand-dark);
+    }
+    .warning {
+      background: #fef9ee;
+      border-left: 4px solid #f59e0b;
+      padding: 0.75em 1em;
+      border-radius: 0 0.5rem 0.5rem 0;
+      font-size: clamp(0.85rem, 1.5vw, 1.1rem);
+      color: var(--brand-dark);
+    }
+
+    /* ─── Big example ─── */
+    .big-example {
+      background: var(--muted);
+      border-radius: 0.75rem;
+      padding: clamp(1rem, 2vw, 1.5rem);
+      text-align: center;
+    }
+    .big-example code {
+      font-size: clamp(1.2rem, 2.5vw, 2rem);
+      font-weight: 700;
+      color: var(--brand-dark);
+    }
+    .big-example .legend {
+      font-size: clamp(0.75rem, 1.2vw, 0.95rem);
+      color: var(--brand-gray);
+      margin-top: 0.5em;
+    }
+
+    /* ─── Table ─── */
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: clamp(0.75rem, 1.4vw, 1rem);
+    }
+    table.data-table th, table.data-table td {
+      padding: 0.5em 0.75em;
+      text-align: left;
+      border-bottom: 1px solid #e4e4e7;
+    }
+    table.data-table th {
+      background: var(--muted);
+      font-weight: 600;
+      color: var(--brand-dark);
+    }
+    table.data-table td {
+      color: var(--brand-gray);
+    }
+
+    /* ─── KaTeX overrides ─── */
+    .big-example .katex,
+    .big-example .katex-display {
+      color: var(--brand-dark);
+      font-size: clamp(1.1rem, 2.3vw, 1.65rem);
+      font-weight: 600;
+      margin: 0.25rem 0;
+    }
+    .big-example .katex-display > .katex { display: inline-block; white-space: nowrap; }
+    .legend .katex { font-size: 0.95em; }
+    .card .katex { font-size: 1em; }
+    /* Evitar texto invisible en cards sobre title-slides oscuros */
+    .slide.title-slide .card { color: var(--brand-dark); }
+    .slide.title-slide .card p,
+    .slide.title-slide .card li { color: var(--brand-gray); }
+    .slide.title-slide .card h3 { color: var(--brand-dark); }
+    /* Print: link clickeable para reemplazar iframes de YouTube */
+    .video-print-link { display: none; }
+
+    /* ─── Print: linealizar todos los slides como un documento ─── */
+    @media print {
+      @page { size: A4 portrait; margin: 12mm; }
+      *, *::before, *::after {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      html, body {
+        background: #fff !important;
+        height: auto !important;
+        overflow: visible !important;
+      }
+      .deck { width: 100% !important; height: auto !important; position: static !important; }
+      .controls, .hud, .progress, .slide-number { display: none !important; }
+      .slide:not(.title-slide):not(.cover)::before,
+      .slide.title-slide::before,
+      .slide.cover::before,
+      .slide.cover::after { display: none !important; }
+      .slide {
+        position: static !important;
+        display: flex !important;
+        opacity: 1 !important;
+        width: 100% !important;
+        height: auto !important;
+        inset: auto !important;
+        overflow: visible !important;
+        padding: 1.2rem 0.5rem !important;
+        min-height: 0 !important;
+        page-break-after: always;
+        break-after: page;
+        page-break-inside: avoid;
+      }
+      .slide:last-child { page-break-after: auto; break-after: auto; }
+      .slide .content { max-width: 100% !important; margin: 0 !important; gap: 0.6rem !important; }
+      h1 { font-size: 26pt !important; line-height: 1.1 !important; }
+      h2 { font-size: 18pt !important; line-height: 1.2 !important; }
+      h3 { font-size: 13pt !important; line-height: 1.25 !important; }
+      p, li { font-size: 10.5pt !important; line-height: 1.45 !important; }
+      .eyebrow, .pill { font-size: 9pt !important; }
+      .slide.title-slide, .slide.cover {
+        background: linear-gradient(135deg, #141414 0%, #1A1A1A 50%, #2a2a2a 100%) !important;
+        color: #fff !important;
+      }
+      .slide.title-slide h1, .slide.title-slide h2, .slide.title-slide h3,
+      .slide.cover h1, .slide.cover h2 { color: #fff !important; }
+      .slide.title-slide p, .slide.title-slide li,
+      .slide.cover p, .slide.cover li { color: #e4e4e7 !important; }
+      .slide.title-slide .eyebrow, .slide.cover .eyebrow { color: #FFBF00 !important; }
+      .stagger-in > * { animation: none !important; opacity: 1 !important; transform: none !important; }
+      .card, .vs-cols .col, .news-card, .timeline .dot, .stepper-nav button {
+        transition: none !important; transform: none !important;
+        box-shadow: none !important;
+      }
+      .card, .vs-cols .col, .news-card, .stepper-panel { page-break-inside: avoid; break-inside: avoid; }
+      img.diagram, .svg-frame { page-break-inside: avoid; break-inside: avoid; max-height: none !important; }
+      .svg-frame svg { max-height: none !important; }
+      table { page-break-inside: avoid; }
+      /* Stepper expandido */
+      .stepper-nav { display: none !important; }
+      .stepper-content { display: block !important; opacity: 1 !important; transform: none !important; animation: none !important; }
+      .stepper-panel { border-left: 4px solid var(--brand-yellow, #FFBF00) !important; padding: 0.8rem 1rem !important; }
+      .stepper-content + .stepper-content { margin-top: 1rem; padding-top: 0.8rem; border-top: 1px dashed #ccc; }
+      /* Iframes (YouTube) */
+      iframe { display: none !important; }
+      .video-print-link {
+        display: block !important;
+        background: #fef3c7 !important;
+        border-left: 4px solid #E6AC00 !important;
+        padding: 0.6rem 0.8rem !important;
+        border-radius: 0.4rem !important;
+        font-size: 10pt !important;
+        color: #1A1A1A !important;
+        page-break-inside: avoid; break-inside: avoid;
+      }
+      .video-print-link a { color: #1A1A1A !important; text-decoration: underline !important; word-break: break-all; }
+      .video-print-link strong { color: #78350f !important; margin-right: 0.3em; }
+    }
+  
+      /* ── FS_NAV · en pantalla completa solo se ve la diapositiva ──
+       Oculta HUD + barra de progreso y convierte los controles en
+       flechas flotantes que reaparecen al mover el mouse (clase
+       .show-controls que añade el script de abajo con un timeout). */
+    .is-fs .hud,
+    .is-fs .progress { display: none !important; }
+    .is-fs .controls {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 220ms ease;
+    }
+    .is-fs.show-controls .controls {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .is-fs .controls { transition: none; }
+    }
+</style>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+</head>
+<body>
+  <div class="progress" style="width:0"></div>
+  <div class="deck" id="deck">
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 1 — Portada (Página 1)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide title-slide active" data-slide>
+      <div class="content">
+        <p class="eyebrow">IQYA-2031 · 2026-10</p>
+        <h1>Equilibrio de fases y destilación</h1>
+        <p>Fundamentos termodinámicos para el diseño de columnas de destilación.</p>
+        <div class="pill-row">
+          <span class="pill">Equilibrio L-V</span>
+          <span class="pill">Ley de Raoult</span>
+          <span class="pill">Volatilidad relativa</span>
+          <span class="pill">Diagramas T-x-y</span>
+          <span class="pill">Azeótropos</span>
+          <span class="pill">Destilación</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 2 — Introducción al equilibrio de fases (Página 2, 1/2)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Introducción</p>
+        <h2>Introducción al equilibrio de fases</h2>
+        <div class="two-col">
+          <div style="display:flex; flex-direction:column; gap:0.75rem">
+            <div class="card">
+              <h3>Equilibrio líquido-vapor (ELV)</h3>
+              <p>Constituye la base fundamental para dimensionar cualquier columna de destilación. Permite predecir el comportamiento de las mezclas bajo diferentes condiciones operativas.</p>
+            </div>
+            <div class="card">
+              <h3>Conexión de conceptos</h3>
+              <p>Conectamos los conceptos termodinámicos con la selección de tecnologías de separación, construyendo el puente entre las necesidades del sistema y nuestras expectativas.</p>
+            </div>
+          </div>
+          <img class="diagram" src="img/pres14-p02-1.jpeg" alt="Montaje de laboratorio para equilibrio líquido-vapor" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 3 — Interpretación de diagramas (Página 2, 2/2)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Introducción</p>
+        <h2>Interpretación de diagramas de fase</h2>
+        <div class="two-col">
+          <div>
+            <p>Al dominar estos conceptos, podemos interpretar diagramas de fase complejos y estimar la viabilidad de procesos de separación.</p>
+            <div class="tip">El equilibrio líquido-vapor es el pilar sobre el que se construye todo el diseño de columnas de destilación en la industria.</div>
+          </div>
+          <img class="diagram" src="img/pres14-p01-1.jpeg" alt="Ebullición de mezcla líquida con generación de vapor" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 4 — Ley de Raoult (Página 3, 1/2)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ley de Raoult</p>
+        <h2>Ley de Raoult</h2>
+        <div class="two-col">
+          <div>
+            <p>Funciona para sistemas cercanos a la idealidad. Esta ley asume que las fuerzas intermoleculares entre moléculas iguales y diferentes son equivalentes. Es aplicable para hidrocarburos ligeros a presión moderada, pero tiene limitaciones en sistemas no ideales.</p>
+            <div class="big-example" style="margin-top:0.75em">
+              $$P_i = x_i \cdot P_i^{\text{sat}}$$
+              <p class="legend">La presión parcial de cada componente <em>i</em> en la fase vapor es proporcional a su fracción molar en la fase líquida ($x_i$) y a su presión de vapor pura ($P_i^{\text{sat}}$).</p>
+            </div>
+          </div>
+          <img class="diagram" src="img/pres14-p03-1.jpeg" alt="Diagrama de presión de vapor según ley de Raoult" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 5 — Ley de Raoult: presión total (Página 3, 2/2)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ley de Raoult</p>
+        <h2>Presión total del sistema</h2>
+        <p>La presión total (P) será la suma de las presiones parciales de todos los componentes:</p>
+        <div class="big-example">
+          $$P = \sum_i P_i = \sum_i x_i \cdot P_i^{\text{sat}}$$
+          <p class="legend">Sumatoria sobre todos los componentes <em>i</em> del sistema.</p>
+        </div>
+        <div class="warning">La ley de Raoult solo es válida para sistemas cercanos a la idealidad. Para mezclas no ideales se requieren coeficientes de actividad.</div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 6 — Desviaciones positivas: concepto (Página 4)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Desviaciones de Raoult</p>
+        <h2>Desviaciones positivas de la ley de Raoult</h2>
+        <div class="two-col">
+          <div style="display:flex; flex-direction:column; gap:0.75rem">
+            <div class="card">
+              <h3>Concepto</h3>
+              <p>Ocurre cuando las moléculas de una mezcla tienen menor afinidad entre sí que consigo mismas, aumentando la energía libre de mezcla. Las presiones parciales son superiores a las predichas por Raoult, y el diagrama P-x muestra una curva por encima de la línea ideal.</p>
+            </div>
+            <div class="card">
+              <h3>Consecuencias</h3>
+              <p>Formación de azeótropos mínimos de punto de ebullición, donde la mezcla hierve a temperatura menor que cualquiera de los componentes puros.</p>
+              <p><strong>Ejemplos:</strong> sistemas etanol-ciclohexano y acetona-cloroformo.</p>
+            </div>
+          </div>
+          <img class="diagram" src="img/pres14-p05-1.jpeg" alt="Desviación positiva de Raoult con azeótropo positivo" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 7 — Desviaciones positivas: matemática (Página 5)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Desviaciones de Raoult</p>
+        <h2>Desviaciones positivas: representación matemática</h2>
+        <p>Se introduce el coeficiente de actividad $\gamma_i > 1$:</p>
+        <div class="big-example">
+          $$P_i = \gamma_i \cdot x_i \cdot P_i^{\text{sat}}$$
+          <p class="legend">El valor de $\gamma_i$ cuantifica el grado de no idealidad del sistema.</p>
+        </div>
+        <div class="tip">Cuando $\gamma_i > 1$, las interacciones entre moléculas diferentes son más débiles que entre moléculas iguales, favoreciendo la vaporización.</div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 8 — Desviaciones negativas: características (Página 6)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Desviaciones de Raoult</p>
+        <h2>Desviaciones negativas de la ley de Raoult</h2>
+        <div class="two-col">
+          <div>
+            <h2 style="font-size:clamp(1rem,2.5vw,1.5rem); font-weight:600; color:var(--brand-gray);">Características</h2>
+            <ul>
+              <li>Las moléculas "dispares" interactúan fuertemente mediante fuerzas como puentes de hidrógeno o interacciones dipolo-dipolo.</li>
+              <li>Esta fuerte interacción reduce la energía libre, resultando en presiones parciales menores que las ideales.</li>
+              <li>El coeficiente de actividad $\gamma_i < 1$.</li>
+            </ul>
+            <div class="big-example" style="margin-top:0.5em">
+              $$P_i = \gamma_i \cdot x_i \cdot P_i^{\text{sat}} \quad (\gamma_i < 1)$$
+            </div>
+          </div>
+          <img class="diagram" src="img/pres14-p06-1.jpeg" alt="Desviación negativa de Raoult con azeótropo negativo" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 9 — Desviaciones negativas: implicaciones (Página 7)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Desviaciones de Raoult</p>
+        <h2>Desviaciones negativas: implicaciones prácticas</h2>
+        <ul>
+          <li>Originan <strong>azeótropos máximos de punto de ebullición</strong> (por ejemplo, mezcla de ácido acético-agua).</li>
+          <li>Reconocer esta tendencia temprano evita sobredimensionar intercambiadores y anticipa la necesidad de destilación extractiva.</li>
+        </ul>
+        <div class="warning">Si se ignoran las desviaciones negativas, se puede sobredimensionar significativamente el equipo de transferencia de calor.</div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 10 — Diagramas T-x-y: construcción (Página 8)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Diagramas de fase</p>
+        <h2>Diagramas T-x-y</h2>
+        <p>Representan temperatura vs composición molar a presión fija. Muestran líneas de burbuja (L $\to$ V) y rocío (V $\to$ L) que indican el inicio de vaporización y condensación.</p>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>1. Definir sistema</h3>
+            <p>Elige dos componentes (A, B) y una presión total (ej. 760 mmHg).</p>
+          </div>
+          <div class="card">
+            <h3>2. Presiones de vapor</h3>
+            <p>Usa la ecuación de Antoine para presiones de vapor puras.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 11 — Diagramas T-x-y: pasos 3-4 (Página 8 cont.)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Diagramas de fase</p>
+        <h2>Diagramas T-x-y: construcción (cont.)</h2>
+        <div class="two-col">
+          <div style="display:flex; flex-direction:column; gap:0.6rem">
+            <div class="card">
+              <h3>3. Composiciones de equilibrio</h3>
+              <p>Calcula las composiciones líquida ($x$) y vapor ($y$) a varias temperaturas.</p>
+            </div>
+            <div class="card">
+              <h3>4. Graficar resultados</h3>
+              <p>Genera el diagrama T-x-y mostrando las curvas de líquido y vapor.</p>
+            </div>
+            <div class="tip">El diagrama T-x-y es la herramienta fundamental para visualizar el equilibrio líquido-vapor de una mezcla binaria a presión constante.</div>
+          </div>
+          <img class="diagram" src="img/pres14-p08-1.jpeg" alt="Diagrama T-x-y benceno/tolueno a 1 atm" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 12 — Diagramas T-x-y: interpretación (Página 9)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Diagramas de fase</p>
+        <h2>Diagramas T-x-y: interpretación</h2>
+        <div class="two-col">
+          <div>
+            <p>La anchura entre curvas refleja la "facilidad" de separación: mayor espacio implica mayor diferencia de volatilidad.</p>
+            <p style="margin-top:0.5em">Para diseño de destiladores, estas curvas alimentan métodos de <strong>McCabe-Thiele</strong> y <strong>Ponchon-Savarit</strong>.</p>
+            <div class="tip">Cuanto mayor sea la separación entre las curvas de burbuja y rocío, más fácil será la separación por destilación.</div>
+          </div>
+          <img class="diagram" src="img/pres14-p09-1.jpeg" alt="Diagrama T-x-y con puntos de burbuja (BPT) y rocío (DPT)" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 13 — Diagramas x-y: la clave (Página 10)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Diagramas de fase</p>
+        <h2>Diagramas x-y: la clave para el diseño</h2>
+        <div class="two-col">
+          <div>
+            <p>Al proyectar un diagrama T-x-y a temperatura o presión fija obtenemos el plano x-y. Cada punto ($x_i, y_i$) se deriva de la ecuación de Raoult o de modelos de actividad.</p>
+            <p>Para un equilibrio ideal binario:</p>
+            <div class="big-example" style="margin-top:0.5em">
+              $$y_i = \frac{x_i \cdot P_i^{\text{sat}}}{P}$$
+            </div>
+          </div>
+          <img class="diagram" src="img/pres14-p10-1.jpeg" alt="Diagrama x-y ideal benzeno/tolueno" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 14 — Diagramas x-y: diagonal y volatilidad (Página 10 cont.)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Diagramas de fase</p>
+        <h2>Diagramas x-y: interpretación de la diagonal</h2>
+        <p>Trazar la diagonal ($x = y$) permite visualizar la desviación: cuanto más lejos de la diagonal, mayor la volatilidad relativa y más fácil la separación.</p>
+        <div class="tip">Si la curva de equilibrio toca la diagonal, se ha alcanzado un punto azeotrópico donde la destilación simple ya no puede separar más.</div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 15 — Diagramas x-y: no ideales (Página 11)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Diagramas de fase</p>
+        <h2>Diagramas x-y: sistemas no ideales</h2>
+        <div class="two-col">
+          <div>
+            <p>En sistemas no ideales, se introduce el coeficiente de actividad:</p>
+            <div class="big-example" style="margin-top:0.5em">
+              $$y_i = \frac{\gamma_i \cdot x_i \cdot P_i^{\text{sat}}}{P}$$
+            </div>
+            <p style="margin-top:0.5em">El coeficiente $\gamma_i$ modifica la forma de la curva x-y respecto al caso ideal, pudiendo generar cruces con la diagonal (azeótropos).</p>
+          </div>
+          <img class="diagram" src="img/pres14-p11-1.jpeg" alt="Diagrama x-y etanol/agua con azeótropo" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 16 — Volatilidad relativa: definición (Página 12, 1/2)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Volatilidad relativa</p>
+        <h2>Volatilidad relativa: definición</h2>
+        <p>La volatilidad relativa entre dos componentes A (más volátil) y B se define como:</p>
+        <div class="big-example">
+          $$\alpha_{AB} = \frac{y_A/x_A}{y_B/x_B}$$
+          <p class="legend">Para un sistema ideal: $\alpha_{AB} = P_A^{\text{sat}} / P_B^{\text{sat}}$</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 17 — Volatilidad relativa: interpretación (Página 12, 2/2)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Volatilidad relativa</p>
+        <h2>Volatilidad relativa: interpretación</h2>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>$\alpha_{AB} = 1$</h3>
+            <p>La destilación es impracticable: los componentes tienen la misma volatilidad.</p>
+          </div>
+          <div class="card">
+            <h3>$\alpha_{AB} > 1.1$</h3>
+            <p>Se reduce el número de etapas necesarias para la separación.</p>
+          </div>
+          <div class="card">
+            <h3>$\alpha_{AB} > 2$</h3>
+            <p>Suele bastar para destilación sencilla con un número razonable de etapas.</p>
+          </div>
+        </div>
+        <div class="warning">En mezclas altamente no ideales, $\alpha$ varía con $x$, exigiendo simulaciones segmentadas o métodos diferenciales de diseño.</div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 18 — Separador: Azeótropos
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Equilibrio de fases</p>
+        <h1>Azeótropos</h1>
+        <p>Puntos donde la destilación simple alcanza su límite.</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 19 — Azeótropos: definición y mínimos (Página 13)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Azeótropos</p>
+        <h2>Azeótropos: definición</h2>
+        <div class="two-col">
+          <div>
+            <p>Un azeótropo es un punto donde $\alpha_{AB} = 1$ y la composición del vapor replica la del líquido, imposibilitando más enriquecimiento por destilación simple.</p>
+            <div class="card" style="margin-top:0.5em">
+              <h3>Azeótropos mínimos</h3>
+              <p>Hierven a temperatura menor que cualquiera de los componentes puros. Se originan por desviaciones positivas de la ley de Raoult.</p>
+            </div>
+          </div>
+          <img class="diagram" src="img/pres14-p14-1.jpeg" alt="Diagrama T-x-y de azeótropo de mínima temperatura" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 20 — Azeótropos máximos (Página 14)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Azeótropos</p>
+        <h2>Azeótropos máximos</h2>
+        <div class="two-col">
+          <div>
+            <p>Hierven a temperatura mayor que cualquiera de los componentes puros. Se originan por desviaciones negativas de la ley de Raoult, donde las interacciones intermoleculares cruzadas son especialmente fuertes.</p>
+            <div class="grid cols-2" style="margin-top:0.5em">
+              <div class="card">
+                <h3>Azeótropo mínimo</h3>
+                <p>$\gamma_i > 1$ — Hierve a T menor que los puros. Ejemplo: etanol-agua (95.6% etanol).</p>
+              </div>
+              <div class="card">
+                <h3>Azeótropo máximo</h3>
+                <p>$\gamma_i < 1$ — Hierve a T mayor que los puros. Ejemplo: ácido acético-agua.</p>
+              </div>
+            </div>
+          </div>
+          <img class="diagram" src="img/pres14-p04-1.jpeg" alt="Desviaciones positivas y negativas con azeótropos" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 21 — Métodos de ruptura de azeótropos (Página 15)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Azeótropos</p>
+        <h2>Métodos de ruptura de azeótropos</h2>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>Destilación extractiva</h3>
+            <p>Se añade un tercer componente (agente de arrastre o solvente) que modifica las volatilidades relativas de los componentes del azeótropo. Este agente forma nuevas interacciones que permiten la separación de los componentes que antes eran inseparables por destilación simple.</p>
+          </div>
+          <div class="card">
+            <h3>Destilación a presión diferencial</h3>
+            <p>Aprovecha el hecho de que la composición de un azeótropo puede variar significativamente con cambios en la presión. Al operar la destilación en dos o más columnas a presiones diferentes, se desplaza la composición del azeótropo, lo que permite la separación de los componentes puros en distintas etapas.</p>
+          </div>
+          <div class="card">
+            <h3>Tamices moleculares</h3>
+            <p>Estos materiales porosos actúan como filtros a escala molecular, adsorbiendo selectivamente uno de los componentes del azeótropo en función de su tamaño molecular o polaridad. Al remover uno de los componentes, se interrumpe la formación del azeótropo y se logra la purificación del otro componente.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 22 — Separador: Modelos termodinámicos
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Equilibrio de fases</p>
+        <h1>Modelos termodinámicos</h1>
+        <p>Métodos de cálculo de equilibrio líquido-vapor.</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 23 — Métodos de cálculo (Página 16)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Modelos termodinámicos</p>
+        <h2>Métodos de cálculo de equilibrio</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Enfoque básico</h3>
+            <p>Ley de Raoult para sistemas ideales o ligeramente no ideales.</p>
+          </div>
+          <div class="card">
+            <h3>Coeficientes de actividad</h3>
+            <p>Modelos Wilson, NRTL, UNIQUAC para sistemas no ideales en fase líquida.</p>
+          </div>
+          <div class="card">
+            <h3>Ecuaciones de estado</h3>
+            <p>Peng-Robinson, Soave-Redlich-Kwong para sistemas a alta presión.</p>
+          </div>
+          <div class="card">
+            <h3>Modelos híbridos</h3>
+            <p>Combinación de ecuaciones de estado con modelos de actividad para sistemas complejos.</p>
+          </div>
+        </div>
+        <p>La selección del método adecuado depende de la naturaleza química de los componentes, las condiciones de operación y el grado de precisión requerido.</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 24 — Modelo Wilson (Página 17)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Modelos termodinámicos</p>
+        <h2>Modelo Wilson</h2>
+        <p>Asume que la energía de interacción líquida se distribuye de forma local. El exceso de energía libre de Gibbs se expresa:</p>
+        <div class="big-example">
+          $$\frac{G^E}{RT} = -\sum_i x_i \ln\!\left(\sum_j x_j\,\Lambda_{ij}\right)$$
+          <p class="legend">donde $\Lambda_{ij} = \dfrac{V_j}{V_i}\,\exp\!\left(-\dfrac{\Delta u_{ij}}{RT}\right)$</p>
+        </div>
+        <ul>
+          <li>Requiere dos parámetros binarios por par.</li>
+          <li>Excelente para sistemas parcialmente miscibles.</li>
+          <li>Continuidad matemática a todas las composiciones.</li>
+          <li><strong>Limitación:</strong> falla en azeótropos de alta no idealidad.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 25 — Modelo NRTL (Página 18)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Modelos termodinámicos</p>
+        <h2>Modelo NRTL (Non-Random Two-Liquid)</h2>
+        <p>Propone que las mezclas no son completamente aleatorias; introduce el parámetro $\alpha$ (típicamente 0.2–0.47) para cuantificar la no aleatoriedad.</p>
+        <div class="big-example">
+          $$G^E = \sum_i x_i \,\frac{\sum_k x_k\, G_{ki}\, \tau_{ji}}{\sum_j x_j\, G_{ji}}$$
+          <p class="legend">Con $G_{ji} = \exp(-\alpha_{ji}\,\tau_{ji})$ y $\tau_{ji} = g_{ji}/RT$</p>
+        </div>
+        <ul>
+          <li>Captura bien sistemas con azeótropos.</li>
+          <li>Ideal para mezclas hidro-alcohólicas.</li>
+          <li>Adecuado para sistemas con fuerte polaridad.</li>
+          <li>Ampliamente implementado en simuladores comerciales.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 26 — Modelo UNIQUAC (Página 19, 1/2)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Modelos termodinámicos</p>
+        <h2>Modelo UNIQUAC: formulación</h2>
+        <p>UNIQUAC separa la entropía de empaque (combinatorial) y la energía de interacción (residual):</p>
+        <div class="big-example">
+          $$G^E = G^E_{\text{comb}} + G^E_{\text{res}}$$
+          <p class="legend">La parte combinatorial depende de los parámetros estructurales $r_i$ (volumen) y $q_i$ (área superficial).</p>
+        </div>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>$r_i$</h3>
+            <p>Volumen molecular relativo.</p>
+          </div>
+          <div class="card">
+            <h3>$q_i$</h3>
+            <p>Área superficial molecular relativa.</p>
+          </div>
+          <div class="card">
+            <h3>$a_{ij}$</h3>
+            <p>Parámetros de energía binarios.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 27 — Modelo UNIQUAC: ventajas y limitaciones (Página 19, 2/2)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Modelos termodinámicos</p>
+        <h2>Modelo UNIQUAC: ventajas y limitaciones</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Ventajas</h3>
+            <p>Predictivo dentro de familias químicas. Base de datos estructural extensiva. Buena extrapolación a altas temperaturas.</p>
+          </div>
+          <div class="card">
+            <h3>Limitaciones</h3>
+            <p>Requiere parámetros específicos para mezclas poco comunes. Complejidad matemática mayor que Wilson o NRTL.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 28 — Comparación de modelos (Página 20)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Modelos termodinámicos</p>
+        <h2>Comparación de modelos</h2>
+        <table class="data-table">
+          <thead>
+            <tr><th>Criterio</th><th>Wilson</th><th>NRTL</th><th>UNIQUAC</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Complejidad</td><td>Baja</td><td>Media</td><td>Alta</td></tr>
+            <tr><td>Precisión</td><td>Buena (ideal)</td><td>Muy buena</td><td>Excelente</td></tr>
+            <tr><td>Versatilidad</td><td>Limitada</td><td>Alta</td><td>Muy alta</td></tr>
+            <tr><td>Implementación</td><td>Sencilla</td><td>Moderada</td><td>Compleja</td></tr>
+          </tbody>
+        </table>
+        <div class="grid cols-2" style="margin-top:0.75em">
+          <div class="card">
+            <h3>Criterios de selección</h3>
+            <p>La elección del modelo debe considerar: disponibilidad de parámetros, rango de temperatura-presión, presencia de azeótropos y necesidad de extrapolación.</p>
+          </div>
+          <div class="card">
+            <h3>Práctica industrial</h3>
+            <p>Generalmente se pre-seleccionan dos modelos y se verifica su ajuste contra datos experimentales de laboratorio.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 29 — Predicción vs correlación (Página 21)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Modelos termodinámicos</p>
+        <h2>Predicción vs correlación</h2>
+        <div class="two-col">
+          <div>
+            <div class="grid cols-2">
+              <div class="card">
+                <h3>Predicción</h3>
+                <p>Utiliza parámetros teóricos o group-contribution (UNIFAC). Sirve para análisis de viabilidad inicial. Útil para screening de solventes. No requiere datos experimentales previos.</p>
+              </div>
+              <div class="card">
+                <h3>Correlación</h3>
+                <p>Ajusta parámetros a datos experimentales. Utiliza datos de destilación estática o ebulliómetro. Mandatoria para diseño definitivo. Mayor precisión en rangos específicos.</p>
+              </div>
+            </div>
+          </div>
+          <img class="diagram" src="img/pres14-p21-1.jpeg" alt="Tabla de parámetros UNIFAC Modified (Dortmund)" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 30 — Estrategia recomendada (Página 21 cont.)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Modelos termodinámicos</p>
+        <h2>Estrategia recomendada</h2>
+        <ol>
+          <li>Predecir con UNIFAC.</li>
+          <li>Seleccionar 3-4 candidatos.</li>
+          <li>Generar datos experimentales.</li>
+          <li>Correlacionar con NRTL.</li>
+          <li>Validar independencia de escala.</li>
+        </ol>
+        <div class="tip">Este enfoque escalonado minimiza el riesgo de errores de diseño y optimiza el uso de recursos experimentales.</div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 31 — Ejemplo práctico: etanol-isopropanol-agua (Página 22)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Ejemplo práctico</p>
+        <h2>Ejemplo: etanol-isopropanol-agua</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>1. Predicción inicial</h3>
+            <p>Utilizando UNIFAC para estimar el diagrama T-x-y de la mezcla ternaria. Se observa la posibilidad de un azeótropo ternario a composiciones intermedias.</p>
+          </div>
+          <div class="card">
+            <h3>2. Generación de datos</h3>
+            <p>Mediante destilación diferencial en laboratorio. Mediciones precisas confirman el punto azeotrópico previsto.</p>
+          </div>
+          <div class="card">
+            <h3>3. Correlación con NRTL</h3>
+            <p>Ajuste de parámetros con $\alpha = 0.3$. El modelo calibrado reproduce la temperatura de burbujeo con precisión de $\pm 0.2\,\text{K}$.</p>
+          </div>
+          <div class="card">
+            <h3>4. Implementación en simulador</h3>
+            <p>Incorporación del modelo en Aspen Plus. El costo de electricidad predicho para la columna ajustada disminuye un 8% respecto al diseño basado solo en predicción.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 32 — Simuladores comerciales y académicos (Página 23)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Herramientas</p>
+        <h2>Simuladores comerciales y académicos</h2>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Principales softwares</h3>
+            <ul>
+              <li><strong>Aspen Plus:</strong> amplia biblioteca de modelos y componentes.</li>
+              <li><strong>ChemCAD:</strong> interfaz intuitiva y rápido procesamiento.</li>
+              <li><strong>ProSim:</strong> especializado en destilación y absorción.</li>
+              <li><strong>DWSIM:</strong> alternativa de código abierto.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Mejores prácticas</h3>
+            <ul>
+              <li>Ingresar unidades consistentes.</li>
+              <li>Activar reporte de convergencia.</li>
+              <li>Validar balance global de masa-energía.</li>
+              <li>Extrapolar con cautela fuera de rango de datos.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="card" style="margin-top:0.5em">
+          <h3>Flujo de trabajo</h3>
+          <ol>
+            <li>Selección del paquete termodinámico.</li>
+            <li>Definición del método de cálculo.</li>
+            <li>Ejecución de flashes isobáricos/adiabáticos.</li>
+            <li>Análisis de sensibilidad.</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 33 — Del laboratorio al simulador y a la planta (Página 24)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Flujo de trabajo</p>
+        <h2>Del laboratorio al simulador y a la planta</h2>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>1. Teoría y modelos</h3>
+            <p>Selección de fundamentos termodinámicos y modelos matemáticos apropiados.</p>
+          </div>
+          <div class="card">
+            <h3>2. Predicción inicial</h3>
+            <p>Uso de modelos predictivos para evaluar el comportamiento del sistema.</p>
+          </div>
+          <div class="card">
+            <h3>3. Generación de datos</h3>
+            <p>Obtención experimental de información de equilibrio de fases.</p>
+          </div>
+          <div class="card">
+            <h3>4. Correlación</h3>
+            <p>Ajuste de parámetros de modelos a datos experimentales.</p>
+          </div>
+          <div class="card">
+            <h3>5. Simulación</h3>
+            <p>Implementación en software para diseñar equipos y procesos.</p>
+          </div>
+          <div class="card">
+            <h3>6. Escalamiento</h3>
+            <p>Aplicación industrial del conocimiento generado.</p>
+          </div>
+        </div>
+        <div class="tip">Este flujo de trabajo minimiza sorpresas durante la operación, reduce el consumo energético y facilita la escalabilidad de los procesos.</div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 34 — Separador: Tipos de destilación
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Destilación</p>
+        <h1>Tipos de destilación</h1>
+        <p>Simple, flash y fraccionada: fundamentos y aplicaciones.</p>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 35 — Tipos de destilación (Página 25)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Destilación</p>
+        <h2>Tipos de destilación</h2>
+        <div class="two-col">
+          <div style="display:flex; flex-direction:column; gap:0.6rem">
+            <div class="card">
+              <h3>Destilación simple o diferencial</h3>
+              <p>Operación por lotes donde la composición del líquido cambia continuamente. <strong>Aplicaciones:</strong> laboratorio, fragancias, licores artesanales.</p>
+            </div>
+            <div class="card">
+              <h3>Destilación flash</h3>
+              <p>Separación instantánea mediante despresurización o calentamiento súbito. <strong>Aplicaciones:</strong> separación de gases licuados, desalcoholización parcial.</p>
+            </div>
+            <div class="card">
+              <h3>Destilación fraccionada</h3>
+              <p>Operación continua con múltiples etapas de equilibrio. <strong>Aplicaciones:</strong> separaciones industriales de alta pureza.</p>
+            </div>
+          </div>
+          <img class="diagram" src="img/pres14-p25-1.jpeg" alt="Tren de columnas de destilación industriales" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 36 — Destilación simple: principio (Página 26)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Destilación simple</p>
+        <h2>Destilación simple o diferencial: principio</h2>
+        <div class="two-col">
+          <div>
+            <p>Se calienta un alambique con mezcla líquida; el vapor enriquecido se condensa y recoge como destilado. La composición del líquido que hierve cambia continuamente según la ecuación de Rayleigh:</p>
+            <div class="big-example" style="margin-top:0.5em">
+              $$\ln\!\left(\frac{N_0}{N}\right) = \int_{x_0}^{x} \frac{dx}{y - x}$$
+              <p class="legend">Donde $N_0$ es la cantidad inicial de moles, $N$ la cantidad en cualquier momento, $x_0$ la composición inicial y $x$ la composición actual.</p>
+            </div>
+          </div>
+          <img class="diagram" src="img/pres14-p13-1.jpeg" alt="Enriquecimiento progresivo del vapor sobre el diagrama T-x-y" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 37 — Destilación simple: ventajas/desventajas (Página 27)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Destilación simple</p>
+        <h2>Destilación simple: ventajas y desventajas</h2>
+        <div class="two-col">
+          <div style="display:flex; flex-direction:column; gap:0.6rem">
+            <div class="card">
+              <h3>Ventajas</h3>
+              <ul>
+                <li>Bajo costo de capital.</li>
+                <li>Ideal para volúmenes pequeños.</li>
+                <li>Flexibilidad operativa.</li>
+              </ul>
+            </div>
+            <div class="card">
+              <h3>Desventajas</h3>
+              <ul>
+                <li>Baja productividad.</li>
+                <li>Dificultad para lograr altas purezas.</li>
+                <li>Operación discontinua.</li>
+              </ul>
+            </div>
+          </div>
+          <img class="diagram" src="img/pres14-p26-1.jpeg" alt="Alambique de cobre tradicional para destilación por lotes" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 38 — Destilación flash: fundamento (Página 28)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Destilación flash</p>
+        <h2>Destilación flash</h2>
+        <div class="two-col">
+          <div>
+            <p>Una corriente líquida se despresuriza o calienta súbitamente, provocando vaporización parcial. El equipo principal es un vaso flash con una única etapa de equilibrio.</p>
+            <div class="grid cols-2" style="margin-top:0.5em">
+              <div class="card">
+                <h3>Balance de materia</h3>
+                <div class="big-example">
+                  $$F z_i = V y_i + L x_i$$
+                  <p class="legend">$F$ = alimentación, $z_i$ = fracción molar en alim., $V$ = vapor, $L$ = líquido.</p>
+                </div>
+              </div>
+              <div class="card">
+                <h3>Relación de equilibrio</h3>
+                <div class="big-example">
+                  $$y_i = K_i \cdot x_i$$
+                  <p class="legend">$K_i$ = constante de distribución.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <img class="diagram" src="img/pres14-p28-1.jpeg" alt="Vaso flash con boquillas de entrada y salida" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 39 — Destilación flash: aplicaciones (Página 29)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Destilación flash</p>
+        <h2>Destilación flash: aplicaciones</h2>
+        <ul>
+          <li>Separación de gases licuados.</li>
+          <li>Desalcoholización parcial de bebidas.</li>
+          <li>Pre-concentración antes de destilación fraccionada.</li>
+          <li>Eliminación rápida de componentes volátiles.</li>
+        </ul>
+        <div class="warning">La eficiencia depende críticamente de la correcta estimación de los $K_i$ mediante modelos como Wilson o NRTL.</div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 40 — Destilación fraccionada: fundamento (Página 30)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Destilación fraccionada</p>
+        <h2>Destilación fraccionada</h2>
+        <div class="two-col">
+          <div>
+            <p>Emplea una columna con platos o empaques donde líquido y vapor contrapuestos alcanzan equilibrio local en múltiples etapas.</p>
+            <p style="margin-top:0.4em">El método de <strong>McCabe-Thiele</strong> grafica etapas rectangulares entre líneas de operación y la curva de equilibrio x-y.</p>
+            <div class="big-example" style="margin-top:0.5em">
+              $$N_{\min} = \frac{\ln\!\left[\dfrac{x_D}{1-x_D} \cdot \dfrac{1-x_B}{x_B}\right]}{\ln \alpha}$$
+              <p class="legend">Número mínimo de etapas teóricas (Fenske). $x_D$ = fracción en destilado, $x_B$ = fracción en fondo, $\alpha$ = volatilidad relativa.</p>
+            </div>
+            <p style="margin-top:0.4em">La eficiencia se expresa mediante el HETP (Altura Equivalente a un Plato Teórico) para empaques.</p>
+          </div>
+          <img class="diagram" src="img/pres14-p30-1.jpeg" alt="Columna de destilación fraccionada industrial" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 41 — Destilación fraccionada: parámetros (Página 31)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Destilación fraccionada</p>
+        <h2>Destilación fraccionada: parámetros clave</h2>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>Relación de reflujo (R)</h3>
+            <p>Afecta directamente el número de etapas necesarias. Mayor reflujo reduce etapas pero aumenta el costo energético.</p>
+          </div>
+          <div class="card">
+            <h3>Ubicación del plato de alimentación</h3>
+            <p>Optimiza la separación al colocar la alimentación en el plato donde la composición del líquido es más cercana a $z_F$.</p>
+          </div>
+          <div class="card">
+            <h3>Eficiencia de plato/empaque</h3>
+            <p>Determina la altura real de la columna. Se mide con eficiencia de Murphree o HETP.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 42 — Selección del tipo de destilación (Página 32)
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Destilación</p>
+        <h2>Selección del tipo de destilación</h2>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Criterio</th>
+              <th>D. simple</th>
+              <th>D. flash</th>
+              <th>D. fraccionada</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Caudal (kg/h)</td><td>&lt;100</td><td>100-10,000</td><td>100-50,000+</td></tr>
+            <tr><td>Pureza requerida</td><td>Baja-Media</td><td>Baja</td><td>Alta</td></tr>
+            <tr><td>Volatilidad relativa</td><td>&gt;1.5</td><td>&gt;2.0</td><td>&gt;1.1</td></tr>
+            <tr><td>CAPEX relativo</td><td>Bajo</td><td>Medio</td><td>Alto</td></tr>
+            <tr><td>OPEX relativo</td><td>Alto</td><td>Bajo</td><td>Medio</td></tr>
+            <tr><td>Aplicación típica</td><td>Productos especiales</td><td>Pre-concentración</td><td>Separaciones industriales</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         SLIDE 43 — Cierre
+         ═══════════════════════════════════════════════════════════ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">IQYA-2031 · 2026-10</p>
+        <h1>Resumen y cierre</h1>
+        <p>Del equilibrio de fases al diseño de columnas de destilación.</p>
+        <div class="pill-row">
+          <span class="pill">Ley de Raoult y desviaciones</span>
+          <span class="pill">Diagramas T-x-y y x-y</span>
+          <span class="pill">Volatilidad relativa y azeótropos</span>
+          <span class="pill">Modelos: Wilson, NRTL, UNIQUAC</span>
+          <span class="pill">Destilación simple, flash y fraccionada</span>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="hud">
+    <span id="hud-title">Equilibrio de fases · IQYA-2031</span>
+    <span id="hud-counter">1 / 43</span>
+  </div>
+
+  <div class="controls">
+    <button aria-label="Anterior" id="prev">‹</button>
+    <button aria-label="Descargar como PDF" id="dl-pdf" title="Descargar como PDF">
+      <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="7 10 12 15 17 10"/>
+        <line x1="12" x2="12" y1="15" y2="3"/>
+      </svg>
+    </button>
+    <button aria-label="Pantalla completa" id="fs">⛶</button>
+    <button aria-label="Siguiente" id="next">›</button>
+  </div>
+
+  <script>
+    (function () {
+      var slides = Array.prototype.slice.call(document.querySelectorAll('[data-slide]'));
+      var i = 0;
+      var counter = document.getElementById('hud-counter');
+      var progress = document.querySelector('.progress');
+
+      function render() {
+        slides.forEach(function (s, idx) {
+          s.classList.toggle('active', idx === i);
+        });
+        if (counter) counter.textContent = (i + 1) + ' / ' + slides.length;
+        if (progress) progress.style.width = ((i + 1) / slides.length * 100) + '%';
+        var isTitle = slides[i] && slides[i].classList.contains('title-slide');
+        document.body.style.background = isTitle ? '#1A1A1A' : '#ffffff';
+      }
+      function go(n) { i = Math.max(0, Math.min(slides.length - 1, n)); render(); }
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); go(i + 1); }
+        else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(i - 1); }
+        else if (e.key === 'Home') { e.preventDefault(); go(0); }
+        else if (e.key === 'End') { e.preventDefault(); go(slides.length - 1); }
+        else if (e.key === 'f' || e.key === 'F') { toggleFs(); }
+      });
+
+      document.getElementById('prev').addEventListener('click', function () { go(i - 1); });
+      var dlBtn = document.getElementById('dl-pdf');
+      if (dlBtn) dlBtn.addEventListener('click', function () {
+        // Inyectar links a YouTube para la versión imprimible (una sola vez)
+        document.querySelectorAll('iframe[src*="youtube"], iframe[src*="youtu.be"]').forEach(function (iframe) {
+          if (iframe.dataset.printLinkInjected === '1') return;
+          var src = iframe.getAttribute('src') || '';
+          var m = src.match(/(?:youtube\.com\/embed\/|youtu\.be\/)([\w-]+)/);
+          var url = m ? 'https://www.youtube.com/watch?v=' + m[1] : src;
+          var title = iframe.getAttribute('title') || 'Video';
+          var p = document.createElement('p');
+          p.className = 'video-print-link';
+          p.innerHTML = '<strong>▶ Video:</strong> ' + title + ' — <a href="' + url + '" target="_blank" rel="noopener">' + url + '</a>';
+          var host = iframe.parentNode;
+          host.parentNode.insertBefore(p, host.nextSibling);
+          iframe.dataset.printLinkInjected = '1';
+        });
+        var prevTitle = document.title;
+        document.title = 'iqya-2031--clase-14-equilibrio-fases';
+        window.print();
+        setTimeout(function(){ document.title = prevTitle; }, 200);
+      });
+      document.getElementById('next').addEventListener('click', function () { go(i + 1); });
+      document.getElementById('fs').addEventListener('click', toggleFs);
+
+      function toggleFs() {
+        var el = document.documentElement;
+        if (!document.fullscreenElement) {
+          (el.requestFullscreen || el.webkitRequestFullscreen || function(){}).call(el);
+        } else {
+          (document.exitFullscreen || document.webkitExitFullscreen || function(){}).call(document);
+        }
+      }
+
+      var tx = 0, ty = 0;
+      document.addEventListener('touchstart', function (e) {
+        if (!e.changedTouches[0]) return;
+        tx = e.changedTouches[0].clientX; ty = e.changedTouches[0].clientY;
+      }, { passive: true });
+      document.addEventListener('touchend', function (e) {
+        if (!e.changedTouches[0]) return;
+        var dx = e.changedTouches[0].clientX - tx;
+        var dy = e.changedTouches[0].clientY - ty;
+        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+          if (dx < 0) go(i + 1); else go(i - 1);
+        }
+      }, { passive: true });
+
+      // Inject decorative slide numbers
+      slides.forEach(function (s, idx) {
+        var num = document.createElement('div');
+        num.className = 'slide-number';
+        num.setAttribute('aria-hidden', 'true');
+        num.textContent = String(idx + 1).padStart(2, '0');
+        s.appendChild(num);
+      });
+
+      render();
+    })();
+  </script>
+  <!-- FS_NAV · flechas flotantes + ocultar carrete en pantalla completa -->
+  <script>
+    (function () {
+      var root = document.documentElement;
+      var t;
+      function reveal() {
+        root.classList.add('show-controls');
+        clearTimeout(t);
+        t = setTimeout(function () { root.classList.remove('show-controls'); }, 2200);
+      }
+      function syncFs() {
+        var on = !!(document.fullscreenElement || document.webkitFullscreenElement);
+        root.classList.toggle('is-fs', on);
+        if (on) reveal();
+      }
+      document.addEventListener('fullscreenchange', syncFs);
+      document.addEventListener('webkitfullscreenchange', syncFs);
+      document.addEventListener('mousemove', function () {
+        if (root.classList.contains('is-fs')) reveal();
+      });
+    })();
+  </script>
+</body>
+</html>

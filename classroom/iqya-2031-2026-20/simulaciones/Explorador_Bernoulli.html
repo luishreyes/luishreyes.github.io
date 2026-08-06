@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Explorador de Bernoulli · Proyecto de Operaciones Unitarias</title>
+<link rel="stylesheet" href="/classroom-fonts.css">
+<!-- KaTeX autoalojado (woff2) — sin CDN, funciona offline. Ver public/classroom/vendor/katex -->
+<link rel="stylesheet" href="/classroom/vendor/katex/katex.min.css">
+<script defer src="/classroom/vendor/katex/katex.min.js"></script>
+<style>
+  :root {
+    --color-accent:      #5980A6;
+    --color-accent-100:  #EFF4F9;
+    --color-accent-200:  #D3E0EC;
+    --color-accent-500:  #5980A6;
+    --color-accent-600:  #416180;
+    --color-accent-700:  #2C455D;
+    --color-accent-800:  #1D2D3D;
+    --color-bg:          #ffffff;
+    --color-text:        #1A1A1A;
+    --color-divider:     #1A1A1A;
+    --color-neutral-100: #f4f4f5;
+    --color-neutral-200: #e4e4e7;
+    --color-neutral-300: #d4d4d8;
+    --color-neutral-400: #a1a1aa;
+    --color-neutral-500: #71717a;
+    --color-neutral-600: #52525b;
+    --color-neutral-700: #3f3f46;
+    --color-neutral-800: #27272a;
+    --color-neutral-900: #18181b;
+    --font-heading: 'Manrope Variable', ui-sans-serif, system-ui, -apple-system, sans-serif;
+    --font-body:    'Manrope Variable', ui-sans-serif, system-ui, -apple-system, sans-serif;
+    --font-mono:    'JetBrains Mono Variable', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { background: var(--color-neutral-100); color: var(--color-text); font-family: var(--font-body); -webkit-font-smoothing: antialiased; }
+  .app { max-width: 1400px; margin: 0 auto; background: var(--color-bg); min-height: 100vh; border-left: 1px solid var(--color-neutral-300); border-right: 1px solid var(--color-neutral-300); }
+  a { color: var(--color-accent-700); }
+  a:hover { color: var(--color-accent-600); }
+  @keyframes flowdash { to { stroke-dashoffset: -56; } }
+  input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; height: 22px; background: transparent; cursor: pointer; margin: 2px 0 0; }
+  input[type="range"]::-webkit-slider-runnable-track { height: 2px; background: var(--color-neutral-400); }
+  input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 18px; background: var(--color-accent); margin-top: -8px; border: none; border-radius: 0; }
+  input[type="range"]::-moz-range-track { height: 2px; background: var(--color-neutral-400); }
+  input[type="range"]::-moz-range-thumb { width: 12px; height: 18px; background: var(--color-accent); border: none; border-radius: 0; }
+  input[type="range"]:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; }
+  button:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+  .katex { font-size: 1em; }
+
+  .grp-label { font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-800); }
+  .grp-label.brd { border-top: 2px solid var(--color-divider); padding-top: 10px; margin-top: 14px; }
+  .sec-label { font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-800); border-top: 2px solid var(--color-divider); padding-top: 10px; margin-top: 6px; margin-bottom: 4px; }
+  .row { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .ctl { font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--color-neutral-700); }
+  .val { font-family: var(--font-heading); font-weight: 800; font-size: 15px; }
+  .hint { font-size: 12px; color: var(--color-neutral-700); margin-top: 2px; }
+  .chk { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--color-neutral-800); cursor: pointer; user-select: none; padding: 3px 0; }
+  .chk input { accent-color: var(--color-accent); width: 15px; height: 15px; }
+  .optbtn { text-align: left; font-family: var(--font-heading); font-weight: 700; font-size: 13px; padding: 7px 10px; border: 2px solid var(--color-text); cursor: pointer; background: var(--color-bg); color: var(--color-text); }
+  .optbtn.on { background: var(--color-accent); color: #fff; border-color: var(--color-accent); }
+  .table { border-collapse: collapse; font-size: 12.5px; }
+  .table th { font-size: 10.5px; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; color: var(--color-neutral-700); border-bottom: 2px solid var(--color-divider); padding: 6px 8px; }
+  .table td { border-bottom: 1px solid var(--color-neutral-300); padding: 5px 8px; }
+  .table tbody tr:hover td { background: var(--color-neutral-100); }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+  @media (max-width: 1100px) {
+    .charts { grid-template-columns: 1fr !important; }
+  }
+  @media (max-width: 960px) {
+    .colpanel { border-right: none !important; border-bottom: 2px solid var(--color-divider); max-width: none !important; }
+    .botrow > section { border-right: none !important; }
+    .botrow > section:first-child { border-bottom: 2px solid var(--color-divider); }
+    .grid-stats { grid-template-columns: repeat(2, 1fr) !important; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header style="display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; padding: 18px 28px 16px; border-bottom: 2px solid var(--color-divider);">
+    <div style="font-family: var(--font-heading); font-weight: 800; font-size: 24px; letter-spacing: -0.015em;">Ecuación de Bernoulli: Tanque · Tubería · Bomba</div>
+    <div style="font-size: 12px; color: var(--color-neutral-700); text-transform: uppercase; letter-spacing: 0.08em;">Proyecto de Operaciones Unitarias · Darcy-Weisbach · <span id="hdrFlu"></span> · <span id="hdrMode"></span></div>
+  </header>
+
+  <div id="warnings" style="display: none; border-bottom: 2px solid var(--color-accent); background: var(--color-accent-100); padding: 10px 28px; flex-direction: column; gap: 4px;"></div>
+
+  <div class="mainrow" style="display: flex; flex-wrap: wrap;">
+
+    <aside class="colpanel" style="flex: 1 1 280px; max-width: 360px; padding: 18px 24px 28px; border-right: 2px solid var(--color-divider);">
+
+      <div class="grp-label" style="border-top: 2px solid var(--color-divider); padding-top: 10px; margin-top: 6px;">Configuración</div>
+      <div id="modeOpts" style="display: flex; flex-direction: column; gap: 6px; padding: 12px 0 4px;"></div>
+      <div class="hint" id="modeNote" style="padding-bottom: 8px;"></div>
+      <label class="chk"><input type="checkbox" id="flowAnim" checked onchange="toggleChk('flowAnim', this.checked)"> Animar el flujo en el esquema</label>
+      <label class="chk"><input type="checkbox" id="showDims" checked onchange="toggleChk('showDims', this.checked)"> Mostrar cotas y datos sobre el esquema</label>
+
+      <div class="grp-label brd">Fluido</div>
+      <div id="fluidOpts" style="display: flex; flex-direction: column; gap: 6px; padding: 12px 0 4px;"></div>
+      <div class="hint" id="fluidProps" style="padding-bottom: 4px;"></div>
+      <div id="customBlock" style="display: none;">
+        <div style="padding: 6px 0 4px;">
+          <div class="row"><label class="ctl">Densidad ρ</label><span class="val" id="fRhoC"></span></div>
+          <input type="range" min="500" max="1600" step="5" id="rho" oninput="onSlider('rho', this.value)">
+        </div>
+        <div style="padding: 6px 0 4px;">
+          <div class="row"><label class="ctl">Viscosidad μ (escala log)</label><span class="val" id="fMuC"></span></div>
+          <input type="range" min="-4" max="0.5" step="0.05" id="muExp" oninput="onSlider('muExp', this.value)">
+        </div>
+      </div>
+
+      <div class="grp-label brd">Caudal</div>
+      <div style="padding: 12px 0 6px;">
+        <div class="row"><label class="ctl">Caudal de diseño Q</label><span class="val" id="fQ"></span></div>
+        <input type="range" min="1" max="150" step="1" id="Q" oninput="onSlider('Q', this.value)">
+        <div class="hint">v = <span id="fV"></span> m/s en la tubería</div>
+      </div>
+
+      <div class="grp-label brd">Tubería</div>
+      <div id="matOpts" style="display: flex; flex-direction: column; gap: 6px; padding: 12px 0 4px;"></div>
+      <div class="hint" id="matProps" style="padding-bottom: 4px;"></div>
+      <div style="padding: 8px 0 6px;">
+        <div class="row"><label class="ctl">Diámetro interno D</label><span class="val" id="fD"></span></div>
+        <input type="range" min="0" max="7" step="1" id="diaIdx" oninput="onSlider('diaIdx', this.value)">
+      </div>
+      <div style="padding: 8px 0 6px;">
+        <div class="row"><label class="ctl">Longitud total L</label><span class="val" id="fL"></span></div>
+        <input type="range" min="1" max="500" step="1" id="L" oninput="onSlider('L', this.value)">
+      </div>
+
+      <div class="grp-label brd">Elevaciones</div>
+      <div style="padding: 12px 0 6px;">
+        <div class="row"><label class="ctl">Nivel del líquido z₁</label><span class="val" id="fZ1"></span></div>
+        <input type="range" min="0" max="20" step="0.5" id="z1" oninput="onSlider('z1', this.value)">
+      </div>
+      <div style="padding: 8px 0 6px;">
+        <div class="row"><label class="ctl" id="z2Label"></label><span class="val" id="fZ2"></span></div>
+        <input type="range" min="0" max="40" step="0.5" id="z2" oninput="onSlider('z2', this.value)">
+      </div>
+
+      <div class="grp-label brd">Accesorios</div>
+      <div id="fittings" style="display: flex; flex-direction: column; padding: 8px 0 4px;"></div>
+      <div class="hint" style="padding: 6px 0 8px;">La entrada desde el tanque (K = 0.5) <span id="exitNote"></span> se incluyen automáticamente. Al estrangular una válvula su K aumenta según valores típicos de tablas.</div>
+
+      <div class="grp-label brd">Bomba</div>
+      <div style="padding: 12px 0 6px;">
+        <button type="button" id="pumpToggle" onclick="togglePump()" style="text-align: left; font-family: var(--font-heading); font-weight: 700; font-size: 13px; padding: 8px 12px; border: 2px solid var(--color-text); cursor: pointer; width: 100%;"></button>
+      </div>
+      <div id="pumpBlock">
+        <div style="padding: 4px 0 6px;">
+          <div class="row"><label class="ctl">Cabezal a caudal cero H₀</label><span class="val" id="fH0"></span></div>
+          <input type="range" min="5" max="120" step="1" id="H0" oninput="onSlider('H0', this.value)">
+        </div>
+        <div style="padding: 4px 0 6px;">
+          <div class="row"><label class="ctl">Caudal máximo Q₀</label><span class="val" id="fQ0"></span></div>
+          <input type="range" min="20" max="300" step="5" id="Q0" oninput="onSlider('Q0', this.value)">
+          <div class="hint" style="margin-top: 4px;"><span id="pumpLaw"></span></div>
+        </div>
+        <div style="padding: 4px 0 6px;">
+          <div class="row"><label class="ctl">Eficiencia η</label><span class="val" id="fEta"></span></div>
+          <input type="range" min="0.4" max="0.85" step="0.01" id="eta" oninput="onSlider('eta', this.value)">
+        </div>
+      </div>
+    </aside>
+
+    <div class="rightcol" style="flex: 1 1 520px; min-width: 0; display: flex; flex-direction: column;">
+      <section style="padding: 18px 20px 24px; border-bottom: 2px solid var(--color-divider);">
+        <div class="sec-label">Sistema: se dibuja con sus accesorios</div>
+        <svg id="svgSchem" viewBox="0 150 560 298" style="width: 100%; display: block;"></svg>
+
+        <div id="stats" class="grid-stats" style="display: grid; grid-template-columns: repeat(3, 1fr); border-top: 2px solid var(--color-divider); border-left: 2px solid var(--color-divider); margin-top: 10px;"></div>
+      </section>
+
+      <section style="padding: 18px 20px 24px;">
+        <div class="charts" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px 24px;">
+          <div>
+            <div class="sec-label">Diagrama de Moody</div>
+            <svg id="svgMoody" viewBox="0 0 470 302" style="width: 100%; display: block;"></svg>
+          </div>
+          <div>
+            <div class="sec-label">Curva del sistema y de la bomba</div>
+            <svg id="svgCurves" viewBox="0 0 470 290" style="width: 100%; display: block;"></svg>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div class="botrow" style="display: flex; flex-wrap: wrap; border-top: 2px solid var(--color-divider);">
+    <section style="flex: 1 1 420px; padding: 18px 24px 24px; border-right: 2px solid var(--color-divider);">
+      <div class="grp-label" style="margin-bottom: 12px;">Balance de energía mecánica (por unidad de peso, en metros)</div>
+      <div id="balanceEq" style="border: 2px solid var(--color-text); padding: 12px 14px; margin-bottom: 14px; font-size: 17px; overflow-x: auto;"></div>
+      <div id="bTerms" style="display: flex; align-items: stretch; gap: 4px; flex-wrap: wrap;"></div>
+      <div class="hint" id="balanceNote" style="margin-top: 12px; max-width: 62ch;"></div>
+    </section>
+
+    <section style="flex: 1.3 1 460px; padding: 18px 24px 24px;">
+      <div class="grp-label" style="margin-bottom: 12px;">Desglose de pérdidas: método K vs. longitud equivalente</div>
+      <table class="table" style="width: 100%;">
+        <thead>
+          <tr>
+            <th style="text-align: left;">Elemento</th>
+            <th style="text-align: right;">n</th>
+            <th style="text-align: right;">K c/u</th>
+            <th style="text-align: right;">hf por K (m)</th>
+            <th style="text-align: right;">Le/D</th>
+            <th style="text-align: right;">hf por Le (m)</th>
+          </tr>
+        </thead>
+        <tbody id="lossBody"></tbody>
+        <tbody>
+          <tr style="font-weight: 800; border-top: 2px solid var(--color-divider);">
+            <td style="text-align: left; padding: 5px 8px;">Total hL</td>
+            <td></td>
+            <td></td>
+            <td style="text-align: right; padding: 5px 8px; color: var(--color-accent-700);" id="fHLK"></td>
+            <td></td>
+            <td style="text-align: right; padding: 5px 8px;" id="fHLLe"></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="hint" style="margin-top: 10px; max-width: 70ch;">Ambos métodos estiman las pérdidas menores: el método K usa coeficientes de resistencia (<span id="fmK"></span>); la longitud equivalente convierte cada accesorio en metros extra de tubería recta (<span id="fmLe"></span>). Los resultados principales usan el método K.</div>
+    </section>
+  </div>
+</div>
+
+<script>
+/* ────────────────────────────────────────────────────────────────────────
+   Explorador de Bernoulli — puerto vanilla-JS fiel del componente original.
+   Toda la física (Darcy–Weisbach, factor de fricción de Swamee–Jain, pérdidas
+   menores por método K y por longitud equivalente, balance de energía
+   mecánica, curva del sistema, curva y punto de operación de la bomba,
+   potencia) se conserva verbatim de la lógica original. Unidades SI internas.
+   ──────────────────────────────────────────────────────────────────────── */
+
+var state = {
+  mode: 'atm',
+  fluid: 'agua', rho: 998, muExp: -3,
+  Q: 30,
+  mat: 'acero',
+  diaIdx: 4,
+  L: 60,
+  z1: 5, z2: 10,
+  counts: { codo90: 2, codo90L: 0, codo45: 0, teeRun: 0, teeBranch: 0, globo: 0, compuerta: 1, bola: 0, check: 1 },
+  openings: { globo: 100, compuerta: 100, bola: 100 },
+  hasPump: true, H0: 40, Q0: 120, eta: 0.7,
+  flowAnim: true, showDims: true,
+};
+
+var FLUIDS = [
+  { k: 'agua', name: 'Agua (20 °C)', rho: 998, mu: 0.001002 },
+  { k: 'etanol', name: 'Etanol (20 °C)', rho: 789, mu: 0.0012 },
+  { k: 'glicerina', name: 'Glicerina (20 °C)', rho: 1260, mu: 1.412 },
+  { k: 'aceite', name: 'Aceite ligero', rho: 880, mu: 0.05 },
+  { k: 'custom', name: 'Personalizado', rho: 998, mu: 0.001 },
+];
+var MATS = [
+  { k: 'pvc', name: 'PVC / plástico liso', eps: 0.0015 },
+  { k: 'acero', name: 'Acero comercial', eps: 0.045 },
+  { k: 'galv', name: 'Hierro galvanizado', eps: 0.15 },
+  { k: 'fundido', name: 'Hierro fundido', eps: 0.26 },
+  { k: 'concreto', name: 'Concreto', eps: 0.9 },
+  { k: 'remachado', name: 'Acero remachado', eps: 3.0 },
+];
+var DIAS = [25, 40, 50, 80, 100, 150, 200, 250];
+var VK = {
+  compuerta: { 100: 0.15, 75: 0.9, 50: 4.5, 25: 24 },
+  globo: { 100: 10, 75: 16, 50: 36, 25: 110 },
+  bola: { 100: 0.05, 75: 1.0, 50: 5.5, 25: 100 },
+};
+var FIT = [
+  { k: 'codo90', name: 'Codo 90° estándar', K: 0.9, LeD: 30, glyph: 'elbow' },
+  { k: 'codo90L', name: 'Codo 90° radio largo', K: 0.6, LeD: 20, glyph: 'elbow' },
+  { k: 'codo45', name: 'Codo 45°', K: 0.4, LeD: 16, glyph: 'e45' },
+  { k: 'teeRun', name: 'Té — paso directo', K: 0.6, LeD: 20, glyph: 'tee' },
+  { k: 'teeBranch', name: 'Té — por el ramal', K: 1.8, LeD: 60, glyph: 'tee' },
+  { k: 'globo', name: 'Válvula de globo', K: 10, LeD: 340, glyph: 'valve' },
+  { k: 'compuerta', name: 'Válvula de compuerta', K: 0.15, LeD: 8, glyph: 'gate' },
+  { k: 'bola', name: 'Válvula de bola', K: 0.05, LeD: 3, glyph: 'ball' },
+  { k: 'check', name: 'Válvula check', K: 2.5, LeD: 100, glyph: 'check' },
+];
+
+var INK = 'var(--color-text)', DIM = 'var(--color-neutral-700)', ACC = 'var(--color-accent)', GRID = 'var(--color-neutral-300)';
+
+/* ── handlers ─────────────────────────────────────────────────────────── */
+function onSlider(k, raw) { state[k] = (k === 'diaIdx') ? parseInt(raw, 10) : parseFloat(raw); render(); }
+function setMode(m) { state.mode = m; render(); }
+function setFluid(k) { state.fluid = k; render(); }
+function setMat(k) { state.mat = k; render(); }
+function toggleChk(k, v) { state[k] = v; render(); }
+function togglePump() { state.hasPump = !state.hasPump; render(); }
+function incFit(k) { state.counts[k] = Math.min(12, (state.counts[k] || 0) + 1); render(); }
+function decFit(k) { state.counts[k] = Math.max(0, (state.counts[k] || 0) - 1); render(); }
+function setOpening(k, p) { state.openings[k] = p; render(); }
+
+/* ── helpers ──────────────────────────────────────────────────────────── */
+function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+function r1(x) { return Math.round(x * 10) / 10; }
+function fmt(x, d) { if (!isFinite(x)) return '—'; return x.toFixed(d); }
+function fmtRe(Re) {
+  if (Re >= 1e6) return fmt(Re / 1e6, 2) + ' ×10⁶';
+  if (Re >= 1e3) return fmt(Re / 1e3, 1) + ' ×10³';
+  return fmt(Re, 0);
+}
+function set(id, v) { var el = document.getElementById(id); if (el) el.textContent = v; }
+function setHTML(id, v) { var el = document.getElementById(id); if (el) el.innerHTML = v; }
+
+var katexReady = false;
+function tex(id, latex, display) {
+  var el = document.getElementById(id); if (!el) return;
+  if (katexReady && window.katex) { try { window.katex.render(latex, el, { throwOnError: false, displayMode: !!display }); return; } catch (e) {} }
+  el.textContent = latex;
+}
+
+// serializador mínimo de elementos SVG (reemplaza React.createElement del original)
+function EL(tag, attrs, inner) {
+  var s = '<' + tag;
+  for (var k in attrs) { if (attrs[k] != null && attrs[k] !== '') s += ' ' + k + '="' + attrs[k] + '"'; }
+  s += '>';
+  if (inner != null) s += inner;
+  return s + '</' + tag + '>';
+}
+function T(x, y, s, o) {
+  o = o || {};
+  return EL('text', { x: r1(x), y: r1(y), 'text-anchor': o.anchor, transform: o.transform,
+    'font-size': (o.fs || 12), fill: o.fill || DIM, 'font-weight': o.fw }, esc(s));
+}
+
+/* ── física (verbatim del componente original) ────────────────────────── */
+function ff(Re, rr) {
+  if (Re <= 0) return 0;
+  if (Re < 2300) return 64 / Re;
+  var d = Math.log10(rr / 3.7 + 5.74 / Math.pow(Re, 0.9));
+  return 0.25 / (d * d);
+}
+function effK(ft) { var op = state.openings[ft.k], t = VK[ft.k]; return (t && op != null) ? t[op] : ft.K; }
+function effLeD(ft) { return ft.K ? ft.LeD * effK(ft) / ft.K : ft.LeD; }
+
+function geo() {
+  var S = state;
+  var flu = FLUIDS.find(function (f) { return f.k === S.fluid; });
+  var rho = S.fluid === 'custom' ? S.rho : flu.rho;
+  var mu = S.fluid === 'custom' ? Math.pow(10, S.muExp) : flu.mu;
+  var D = DIAS[S.diaIdx] / 1000;
+  var eps = MATS.find(function (m) { return m.k === S.mat; }).eps / 1000;
+  var A = Math.PI * D * D / 4;
+  var sumK = 0, sumLeD = 0;
+  for (var i = 0; i < FIT.length; i++) { var f = FIT[i]; var n = S.counts[f.k] || 0; sumK += effK(f) * n; sumLeD += effLeD(f) * n; }
+  return { rho: rho, mu: mu, D: D, eps: eps, rr: eps / D, A: A, sumK: sumK, sumLeD: sumLeD, flu: flu };
+}
+
+function sysHead(Qm3h, gp) {
+  var S = state, g = 9.81;
+  var q = Qm3h / 3600, v = q / gp.A;
+  var Re = gp.rho * v * gp.D / gp.mu;
+  var f = ff(Re, gp.rr);
+  var vh = v * v / (2 * g);
+  var Kend = S.mode === 'tank' ? 1 : 0;
+  var hL = (f * S.L / gp.D + gp.sumK + 0.5 + Kend) * vh;
+  var kin = S.mode === 'atm' ? vh : 0;
+  return (S.z2 - S.z1) + kin + hL;
+}
+
+/* ── render principal ─────────────────────────────────────────────────── */
+function render() {
+  var S = state, g = 9.81;
+  var gp = geo();
+  var rho = gp.rho, mu = gp.mu, D = gp.D, rr = gp.rr, A = gp.A, sumK = gp.sumK, sumLeD = gp.sumLeD;
+  var Qs = S.Q / 3600, v = Qs / A;
+  var Re = rho * v * D / mu;
+  var f = ff(Re, rr);
+  var vh = v * v / (2 * g);
+  var fLD = f * S.L / D;
+  var Kend = S.mode === 'tank' ? 1 : 0;
+  var hfPipe = fLD * vh, hfEnt = 0.5 * vh, hfExit = Kend * vh;
+  var hfFitK = sumK * vh, hfFitLe = f * sumLeD * vh;
+  var hLK = hfPipe + hfEnt + hfExit + hfFitK;
+  var hLLe = hfPipe + hfEnt + hfExit + hfFitLe;
+  var kin = S.mode === 'atm' ? vh : 0;
+  var hpReq = (S.z2 - S.z1) + kin + hLK;
+  var hB = Math.max(0, hpReq);
+  var HpQ = S.hasPump ? S.H0 * (1 - Math.pow(S.Q / S.Q0, 2)) : 0;
+  var PoutKPa = S.hasPump ? rho * g * (HpQ - hpReq) / 1000 : rho * g * (-hpReq) / 1000;
+  var powKW = rho * g * Qs * hB / (S.eta * 1000);
+
+  var opQ = null, opH = null;
+  if (S.hasPump) {
+    var lo = 0.01, hi = S.Q0 * 1.05;
+    var fn = function (q) { return S.H0 * (1 - Math.pow(q / S.Q0, 2)) - sysHead(q, gp); };
+    if (fn(lo) > 0 && fn(hi) < 0) {
+      for (var i = 0; i < 60; i++) { var mid = (lo + hi) / 2; (fn(mid) > 0 ? lo = mid : hi = mid); }
+      opQ = (lo + hi) / 2; opH = S.H0 * (1 - Math.pow(opQ / S.Q0, 2));
+    }
+  }
+
+  var regime = Re < 2300 ? 'Laminar' : (Re < 4000 ? 'Transición' : 'Turbulento');
+  var warnings = [];
+  if (Re >= 2300 && Re < 4000) warnings.push('Régimen de transición (2300 < Re < 4000): el factor de fricción es incierto; se usa la correlación turbulenta.');
+  if (v > 3) warnings.push('Velocidad alta (v = ' + fmt(v, 2) + ' m/s > 3 m/s): considera un diámetro mayor para reducir pérdidas y erosión.');
+  if (v > 0 && v < 0.3) warnings.push('Velocidad muy baja (v < 0.3 m/s): riesgo de sedimentación; considera un diámetro menor.');
+  if (hpReq > 0 && !S.hasPump) warnings.push('El sistema no fluye por gravedad: se requiere una bomba con hB ≥ ' + fmt(hpReq, 1) + ' m. Activa la bomba.');
+  if (S.hasPump && HpQ < hpReq) warnings.push('La bomba no alcanza el cabezal requerido en el caudal de diseño (entrega ' + fmt(Math.max(0, HpQ), 1) + ' m, se requieren ' + fmt(hpReq, 1) + ' m). Sube H₀ o Q₀.');
+  var e90tot = (S.counts.codo90 || 0) + (S.counts.codo90L || 0);
+  if (S.z2 > 0.4 && e90tot < 2) warnings.push('El trazado necesita al menos 2 codos de 90° para subir a la descarga — agrégalos en Accesorios.');
+  if (Re > 0 && (Re <= 600 || f >= 0.11)) warnings.push('El punto de operación no aparece en el diagrama de Moody: Re = ' + fmtRe(Re) + ' y f = ' + fmt(f, f > 1 ? 2 : 3) + ' quedan fuera de la escala dibujada — típico de fluidos muy viscosos (p. ej. glicerina), donde el flujo es laminar profundo y f = 64/Re es muy grande.');
+
+  var muDisp = mu >= 0.1 ? fmt(mu, 2) + ' Pa·s' : fmt(mu * 1000, 2) + ' mPa·s';
+
+  // ── panel lateral ──
+  set('hdrFlu', gp.flu.name);
+  set('hdrMode', S.mode === 'atm' ? 'Descarga libre' : 'Tanque a tanque');
+
+  document.getElementById('modeOpts').innerHTML = [
+    { key: 'atm', label: 'Descarga libre a la atmósfera' },
+    { key: 'tank', label: 'Descarga a tanque elevado' },
+  ].map(function (m) {
+    return '<button type="button" class="optbtn' + (S.mode === m.key ? ' on' : '') + '" onclick="setMode(\'' + m.key + '\')">' + esc(m.label) + '</button>';
+  }).join('');
+  set('modeNote', S.mode === 'atm' ? 'El chorro sale a presión atmosférica en z₂.' : 'Descarga sumergida bajo la superficie del tanque elevado (nivel z₂).');
+
+  document.getElementById('fluidOpts').innerHTML = FLUIDS.map(function (fl) {
+    return '<button type="button" class="optbtn' + (S.fluid === fl.k ? ' on' : '') + '" onclick="setFluid(\'' + fl.k + '\')">' + esc(fl.name) + '</button>';
+  }).join('');
+  setHTML('fluidProps', 'ρ = ' + fmt(rho, 0) + ' kg/m³ · μ = ' + muDisp);
+  document.getElementById('customBlock').style.display = S.fluid === 'custom' ? 'block' : 'none';
+  set('fRhoC', fmt(rho, 0) + ' kg/m³');
+  set('fMuC', muDisp);
+
+  set('fQ', fmt(S.Q, 0) + ' m³/h');
+  set('fV', fmt(v, 2));
+
+  document.getElementById('matOpts').innerHTML = MATS.map(function (m) {
+    return '<button type="button" class="optbtn' + (S.mat === m.k ? ' on' : '') + '" onclick="setMat(\'' + m.k + '\')">' + esc(m.name + '  (ε = ' + m.eps + ' mm)') + '</button>';
+  }).join('');
+  setHTML('matProps', 'ε = ' + MATS.find(function (m) { return m.k === S.mat; }).eps + ' mm · ε/D = ' + rr.toExponential(1));
+  set('fD', DIAS[S.diaIdx] + ' mm');
+  set('fL', fmt(S.L, 0) + ' m');
+
+  set('fZ1', fmt(S.z1, 1) + ' m');
+  set('z2Label', S.mode === 'atm' ? 'Altura de descarga z₂' : 'Nivel del tanque 2 z₂');
+  set('fZ2', fmt(S.z2, 1) + ' m');
+
+  // accesorios
+  var opBtn = function (sel) {
+    return 'font-family:var(--font-heading);font-weight:700;font-size:11px;padding:3px 0;flex:1;cursor:pointer;'
+      + 'border:2px solid ' + (sel ? 'var(--color-accent)' : 'var(--color-neutral-400)') + ';'
+      + 'background:' + (sel ? 'var(--color-accent)' : 'var(--color-bg)') + ';color:' + (sel ? '#fff' : 'var(--color-text)') + ';';
+  };
+  document.getElementById('fittings').innerHTML = FIT.map(function (ft) {
+    var n = S.counts[ft.k] || 0, op = S.openings[ft.k];
+    var opensHTML = '';
+    if (op != null && n > 0) {
+      opensHTML = '<div style="display:flex;align-items:center;gap:4px;padding:6px 0 2px;">'
+        + '<div style="font-size:11px;letter-spacing:0.05em;text-transform:uppercase;color:var(--color-neutral-700);flex:0 0 64px;">Apertura</div>'
+        + [100, 75, 50, 25].map(function (p) {
+          return '<button type="button" style="' + opBtn(op === p) + '" onclick="setOpening(\'' + ft.k + '\',' + p + ')">' + p + ' %</button>';
+        }).join('') + '</div>';
+    }
+    return '<div style="border-bottom:1px solid var(--color-neutral-300);padding:6px 0;">'
+      + '<div style="display:flex;align-items:center;gap:8px;">'
+      + '<div style="flex:1;"><div style="font-size:12.5px;font-weight:600;">' + esc(ft.name) + '</div>'
+      + '<div style="font-size:11px;color:var(--color-neutral-700);">K = ' + esc(String(effK(ft))) + ' · Le/D = ' + fmt(effLeD(ft), 0) + '</div></div>'
+      + '<button type="button" onclick="decFit(\'' + ft.k + '\')" style="width:26px;height:26px;border:2px solid var(--color-text);background:var(--color-bg);color:var(--color-text);font-weight:800;cursor:pointer;font-size:15px;line-height:1;padding:0;">−</button>'
+      + '<div style="width:22px;text-align:center;font-family:var(--font-heading);font-weight:800;font-size:15px;">' + n + '</div>'
+      + '<button type="button" onclick="incFit(\'' + ft.k + '\')" style="width:26px;height:26px;border:2px solid var(--color-text);background:var(--color-text);color:var(--color-bg);font-weight:800;cursor:pointer;font-size:15px;line-height:1;padding:0;">+</button>'
+      + '</div>' + opensHTML + '</div>';
+  }).join('');
+  set('exitNote', S.mode === 'tank' ? 'y la salida sumergida (K = 1)' : '');
+
+  // bomba
+  var pt = document.getElementById('pumpToggle');
+  pt.textContent = S.hasPump ? 'Bomba instalada — quitar' : 'Sin bomba — instalar';
+  pt.style.background = S.hasPump ? 'var(--color-text)' : 'var(--color-bg)';
+  pt.style.color = S.hasPump ? 'var(--color-bg)' : 'var(--color-text)';
+  document.getElementById('pumpBlock').style.display = S.hasPump ? 'block' : 'none';
+  set('fH0', fmt(S.H0, 0) + ' m');
+  set('fQ0', fmt(S.Q0, 0) + ' m³/h');
+  set('fEta', fmt(S.eta, 2));
+
+  // sincronizar sliders con el estado
+  syncSlider('rho', S.rho); syncSlider('muExp', S.muExp); syncSlider('Q', S.Q);
+  syncSlider('diaIdx', S.diaIdx); syncSlider('L', S.L); syncSlider('z1', S.z1);
+  syncSlider('z2', S.z2); syncSlider('H0', S.H0); syncSlider('Q0', S.Q0); syncSlider('eta', S.eta);
+  syncCheck('flowAnim', S.flowAnim); syncCheck('showDims', S.showDims);
+
+  // ── métricas ──
+  var stats = [
+    { lab: 'Velocidad', val: fmt(v, 2) + ' m/s', sub: 'Q = ' + fmt(S.Q, 0) + ' m³/h', color: 'var(--color-text)' },
+    { lab: 'Reynolds', val: fmtRe(Re), sub: regime, color: 'var(--color-text)' },
+    { lab: 'Factor de fricción f', val: fmt(f, 4), sub: 'ε/D = ' + rr.toExponential(1), color: 'var(--color-text)' },
+    { lab: 'Pérdidas totales hL', val: fmt(hLK, 2) + ' m', sub: 'f·L/D = ' + fmt(fLD, 1) + ' · ΣK = ' + fmt(sumK + 0.5 + Kend, 2), color: 'var(--color-text)' },
+    { lab: 'Presión en la descarga', val: fmt(PoutKPa, 1) + ' kPa', sub: S.hasPump ? 'manométrica, con bomba' : 'manométrica, sin bomba', color: PoutKPa < 0 ? 'var(--color-accent-700)' : 'var(--color-text)' },
+    { lab: 'Cabezal requerido hB', val: fmt(hB, 2) + ' m', sub: hB > 0 ? 'Potencia ≈ ' + fmt(powKW, 2) + ' kW (η = ' + fmt(S.eta, 2) + ')' : 'fluye por gravedad', color: 'var(--color-accent-700)' },
+  ];
+  document.getElementById('stats').innerHTML = stats.map(function (st) {
+    return '<div style="border-right:2px solid var(--color-divider);border-bottom:2px solid var(--color-divider);padding:10px 12px;">'
+      + '<div style="font-size:10.5px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:var(--color-neutral-700);">' + esc(st.lab) + '</div>'
+      + '<div style="font-family:var(--font-heading);font-weight:800;font-size:20px;margin-top:2px;color:' + st.color + ';">' + esc(st.val) + '</div>'
+      + '<div style="font-size:11px;color:var(--color-neutral-700);">' + esc(st.sub) + '</div></div>';
+  }).join('');
+
+  // ── balance de energía ──
+  var P2term = hpReq < 0 ? -hpReq : 0;
+  var PatmH = 101325 / (rho * g);
+  var box = function (acc) {
+    return 'border:2px solid ' + (acc ? 'var(--color-accent)' : 'var(--color-text)') + ';'
+      + 'background:' + (acc ? 'var(--color-accent-100)' : 'var(--color-bg)') + ';padding:8px 10px;min-width:74px;';
+  };
+  var bTerms = [
+    { op: '', lab: 'P₁/ρg', val: fmt(PatmH, 2), sub: 'Patm (se cancela)', acc: false },
+    { op: '+', lab: 'z₁', val: fmt(S.z1, 2), sub: 'm', acc: false },
+    { op: '+', lab: 'v₁²/2g', val: fmt(0, 2), sub: 'superficie', acc: false },
+    { op: '+', lab: 'hB', val: fmt(hB, 2), sub: 'bomba', acc: true },
+    { op: '=', lab: 'P₂/ρg', val: fmt(PatmH + P2term, 2), sub: hpReq < 0 ? 'Patm + residual' : 'Patm (se cancela)', acc: false },
+    { op: '+', lab: 'z₂', val: fmt(S.z2, 2), sub: 'm', acc: false },
+    { op: '+', lab: 'v₂²/2g', val: fmt(kin, 2), sub: S.mode === 'atm' ? 'chorro' : 'tanque (≈0)', acc: false },
+    { op: '+', lab: 'hL', val: fmt(hLK, 2), sub: 'pérdidas', acc: true },
+  ];
+  document.getElementById('bTerms').innerHTML = bTerms.map(function (t) {
+    return '<div style="display:flex;align-items:center;gap:4px;">'
+      + '<div style="font-family:var(--font-heading);font-weight:800;font-size:20px;min-width:16px;text-align:center;">' + esc(t.op) + '</div>'
+      + '<div style="' + box(t.acc) + '">'
+      + '<div style="font-size:11px;font-weight:700;letter-spacing:0.03em;color:var(--color-neutral-700);">' + esc(t.lab) + '</div>'
+      + '<div style="font-family:var(--font-heading);font-weight:800;font-size:19px;">' + esc(t.val) + '</div>'
+      + '<div style="font-size:10.5px;color:var(--color-neutral-700);">' + esc(t.sub) + '</div></div></div>';
+  }).join('');
+
+  var atmNote = 'Ambos puntos están a presión atmosférica: Patm/ρg = ' + fmt(PatmH, 2) + ' m aparece en los dos lados y se cancela — por eso el balance suele escribirse con presiones manométricas (0). ';
+  var balanceNote = atmNote + (hpReq < 0
+    ? 'El sistema fluye por gravedad: el exceso de cabezal (' + fmt(-hpReq, 2) + ' m) aparece como presión residual en la descarga.'
+    : (S.mode === 'atm'
+      ? 'En descarga libre la energía cinética del chorro (v²/2g) debe ser suministrada; no se cuenta pérdida de salida.'
+      : 'En descarga sumergida al tanque, v₂ ≈ 0 y la energía cinética se disipa como pérdida de salida (K = 1), ya incluida en hL.'));
+  set('balanceNote', balanceNote);
+
+  // ── tabla de pérdidas ──
+  var lossRows = [];
+  lossRows.push({ name: 'Tubería recta (' + fmt(S.L, 0) + ' m)', n: '—', K: 'f·L/D = ' + fmt(fLD, 1), hfK: fmt(hfPipe, 2), LeD: '—', hfLe: fmt(hfPipe, 2) });
+  lossRows.push({ name: 'Entrada desde el tanque', n: '1', K: '0.5', hfK: fmt(hfEnt, 3), LeD: '—', hfLe: fmt(hfEnt, 3) });
+  for (var j = 0; j < FIT.length; j++) {
+    var ft = FIT[j];
+    var n2 = S.counts[ft.k] || 0;
+    if (!n2) continue;
+    var op2 = S.openings[ft.k], eK = effK(ft), eLe = effLeD(ft);
+    var nm = ft.name + (op2 != null && op2 < 100 ? ' — ' + op2 + ' % abierta' : '');
+    lossRows.push({ name: nm, n: String(n2), K: String(eK), hfK: fmt(eK * n2 * vh, 3), LeD: fmt(eLe, 0), hfLe: fmt(f * eLe * n2 * vh, 3) });
+  }
+  if (S.mode === 'tank') lossRows.push({ name: 'Salida sumergida', n: '1', K: '1.0', hfK: fmt(hfExit, 3), LeD: '—', hfLe: fmt(hfExit, 3) });
+
+  document.getElementById('lossBody').innerHTML = lossRows.map(function (r) {
+    return '<tr>'
+      + '<td style="text-align:left;">' + esc(r.name) + '</td>'
+      + '<td style="text-align:right;">' + esc(r.n) + '</td>'
+      + '<td style="text-align:right;">' + esc(r.K) + '</td>'
+      + '<td style="text-align:right;">' + esc(r.hfK) + '</td>'
+      + '<td style="text-align:right;">' + esc(r.LeD) + '</td>'
+      + '<td style="text-align:right;">' + esc(r.hfLe) + '</td></tr>';
+  }).join('');
+  set('fHLK', fmt(hLK, 2) + ' m');
+  set('fHLLe', fmt(hLLe, 2) + ' m');
+
+  // ── warnings ──
+  var wEl = document.getElementById('warnings');
+  if (warnings.length) {
+    wEl.style.display = 'flex';
+    wEl.innerHTML = warnings.map(function (w) { return '<div style="color:var(--color-accent-800);font-size:14px;font-weight:600;">' + esc(w) + '</div>'; }).join('');
+  } else { wEl.style.display = 'none'; wEl.innerHTML = ''; }
+
+  // ── gráficos SVG ──
+  document.getElementById('svgSchem').innerHTML = schemG({ v: v, hB: hB, Re: Re, f: f, regime: regime, hLK: hLK });
+  document.getElementById('svgMoody').innerHTML = moodyG({ Re: Re, f: f, rr: rr });
+  document.getElementById('svgCurves').innerHTML = curvesG({ gp: gp, hpReq: hpReq, opQ: opQ, opH: opH });
+}
+
+function syncSlider(id, v) { var el = document.getElementById(id); if (el && el.value !== String(v)) el.value = v; }
+function syncCheck(id, v) { var el = document.getElementById(id); if (el) el.checked = !!v; }
+
+/* ── esquema del sistema ──────────────────────────────────────────────── */
+function schemG(m) {
+  var S = state, v = m.v, hB = m.hB, Re = m.Re, f = m.f, regime = m.regime, hLK = m.hLK;
+  var showDims = S.showDims, flowAnim = S.flowAnim;
+  var k = 4, y0 = 384;
+  var out = '';
+
+  // Tanque 1
+  var surf = y0 - S.z1 * k - 6;
+  out += EL('rect', { x: 30, y: r1(surf), width: 96, height: r1(y0 + 10 - surf), fill: 'var(--color-accent-100)' });
+  out += EL('line', { x1: 30, y1: r1(surf), x2: 126, y2: r1(surf), stroke: ACC, 'stroke-width': 2 });
+  out += EL('path', { d: 'M 28 ' + r1(surf - 24) + ' L 28 ' + (y0 + 12) + ' L 128 ' + (y0 + 12) + ' L 128 ' + (y0 + 5) + ' M 128 ' + (y0 - 5) + ' L 128 ' + r1(surf - 24), fill: 'none', stroke: INK, 'stroke-width': 3 });
+  out += T(32, surf - 10, 'Tanque 1', { fw: 700, fill: INK });
+
+  // Trazado
+  var e90tot = (S.counts.codo90 || 0) + (S.counts.codo90L || 0);
+  var cornersNeeded = S.z2 > 0.4 ? 2 : 0;
+  var nSteps = Math.min(4, Math.floor(Math.max(0, e90tot - cornersNeeded) / 2));
+  var pts = [[128, y0]];
+  var curY = y0;
+  for (var i = 1; i <= nSteps; i++) {
+    var xj = 150 + i * (264 / (nSteps + 1));
+    pts.push([xj, curY]);
+    curY = curY === y0 ? y0 - 38 : y0;
+    pts.push([xj, curY]);
+  }
+  pts.push([424, curY]);
+  var isTank = S.mode === 'tank';
+  var ySurf2 = y0 - S.z2 * k - 6;
+  var yTarget = isTank ? Math.min(ySurf2 + 20, y0) : y0 - S.z2 * k;
+  var outX = isTank ? 474 : 506;
+  if (Math.abs(yTarget - curY) > 4) { pts.push([446, curY]); pts.push([446, yTarget]); }
+  pts.push([outX, yTarget]);
+  var ptStr = pts.map(function (p) { return r1(p[0]) + ',' + r1(p[1]); }).join(' ');
+
+  out += EL('polyline', { points: ptStr, fill: 'none', stroke: INK, 'stroke-width': 7, 'stroke-linejoin': 'miter' });
+  out += EL('polyline', { points: ptStr, fill: 'none', stroke: 'var(--color-bg)', 'stroke-width': 3.4, 'stroke-linejoin': 'miter' });
+  if (flowAnim && v > 0.01) {
+    var dur = Math.max(0.5, Math.min(12, 6 / v));
+    out += EL('polyline', { points: ptStr, fill: 'none', stroke: ACC, 'stroke-width': 3.4, 'stroke-dasharray': '6 10', style: 'animation:flowdash ' + r1(dur) + 's linear infinite;' });
+  }
+
+  // marcadores de esquina (codos del trazado)
+  var nCorners = 0;
+  for (var c = 1; c < pts.length - 1; c++) {
+    var x1p = pts[c - 1][0], x2p = pts[c][0], x3p = pts[c + 1][0], y2p = pts[c][1];
+    if ((x1p === x2p) !== (x2p === x3p)) {
+      nCorners++;
+      out += EL('rect', { x: r1(x2p - 5), y: r1(y2p - 5), width: 10, height: 10, fill: INK });
+    }
+  }
+
+  // Bomba
+  if (S.hasPump) {
+    out += EL('circle', { cx: 178, cy: y0, r: 16, fill: 'var(--color-bg)', stroke: INK, 'stroke-width': 3 });
+    out += EL('polygon', { points: '171,' + (y0 - 9) + ' 171,' + (y0 + 9) + ' 188,' + y0, fill: ACC });
+    out += T(178, y0 - 26, 'hB = ' + fmt(hB, 1) + ' m', { anchor: 'middle', fw: 700, fill: 'var(--color-accent-700)', fs: 12.5 });
+  }
+
+  // Accesorios sobre segmentos horizontales
+  var segs = [];
+  for (var s2 = 0; s2 < pts.length - 1; s2++) {
+    if (pts[s2][1] === pts[s2 + 1][1]) segs.push([Math.min(pts[s2][0], pts[s2 + 1][0]), Math.max(pts[s2][0], pts[s2 + 1][0]), pts[s2][1]]);
+  }
+  var yAt = function (x) { for (var q = 0; q < segs.length; q++) { if (x >= segs[q][0] - 1 && x <= segs[q][1] + 1) return segs[q][2]; } return y0; };
+  var glyphList = [];
+  var spare90 = Math.max(0, e90tot - nCorners);
+  for (var g1 = 0; g1 < Math.min(6, spare90); g1++) glyphList.push({ ft: { name: 'Codo 90° en línea (no altera el trazado dibujado)', glyph: 'e90' }, op: null });
+  for (var g2 = 0; g2 < FIT.length; g2++) {
+    var ftg = FIT[g2];
+    if (ftg.glyph === 'elbow') continue;
+    var ng = S.counts[ftg.k] || 0;
+    var opg = S.openings[ftg.k] != null ? S.openings[ftg.k] : null;
+    for (var g3 = 0; g3 < ng; g3++) glyphList.push({ ft: ftg, op: opg });
+  }
+  var mm = glyphList.length;
+  var xStart = S.hasPump ? 208 : 160;
+  glyphList.forEach(function (entry, idx) {
+    var ft = entry.ft;
+    var x = xStart + (idx + 1) * ((420 - xStart) / (mm + 1));
+    for (var p = 0; p < pts.length; p++) { if (pts[p][0] > 130 && Math.abs(x - pts[p][0]) < 13) x += 15; }
+    var y = yAt(x);
+    var parts = EL('title', {}, esc(ft.name));
+    if (ft.glyph === 'valve' || ft.glyph === 'ball' || ft.glyph === 'check' || ft.glyph === 'gate') {
+      parts += EL('polygon', { points: r1(x - 9) + ',' + r1(y - 7) + ' ' + r1(x - 9) + ',' + r1(y + 7) + ' ' + r1(x) + ',' + r1(y), fill: 'var(--color-bg)', stroke: INK, 'stroke-width': 2 });
+      parts += EL('polygon', { points: r1(x + 9) + ',' + r1(y - 7) + ' ' + r1(x + 9) + ',' + r1(y + 7) + ' ' + r1(x) + ',' + r1(y), fill: 'var(--color-bg)', stroke: INK, 'stroke-width': 2 });
+      if (ft.glyph === 'gate') {
+        parts += EL('line', { x1: r1(x), y1: r1(y), x2: r1(x), y2: r1(y - 14), stroke: INK, 'stroke-width': 2 });
+        parts += EL('line', { x1: r1(x - 6), y1: r1(y - 14), x2: r1(x + 6), y2: r1(y - 14), stroke: INK, 'stroke-width': 2 });
+      }
+      if (ft.glyph === 'ball') parts += EL('circle', { cx: r1(x), cy: r1(y), r: 3.4, fill: INK });
+      if (ft.glyph === 'check') parts += EL('polygon', { points: r1(x - 5) + ',' + r1(y - 15) + ' ' + r1(x + 6) + ',' + r1(y - 11) + ' ' + r1(x - 5) + ',' + r1(y - 7), fill: ACC });
+    } else if (ft.glyph === 'tee') {
+      parts += EL('line', { x1: r1(x), y1: r1(y), x2: r1(x), y2: r1(y - 16), stroke: INK, 'stroke-width': 5 });
+      parts += EL('line', { x1: r1(x), y1: r1(y - 3), x2: r1(x), y2: r1(y - 14), stroke: 'var(--color-bg)', 'stroke-width': 2 });
+      parts += EL('line', { x1: r1(x - 6), y1: r1(y - 16), x2: r1(x + 6), y2: r1(y - 16), stroke: INK, 'stroke-width': 2.5 });
+    } else if (ft.glyph === 'e45') {
+      parts += EL('line', { x1: r1(x - 7), y1: r1(y + 7), x2: r1(x + 7), y2: r1(y - 7), stroke: INK, 'stroke-width': 3 });
+      parts += EL('rect', { x: r1(x - 4), y: r1(y - 4), width: 8, height: 8, fill: INK });
+    } else if (ft.glyph === 'e90') {
+      parts += EL('path', { d: 'M ' + r1(x - 10) + ' ' + r1(y) + ' Q ' + r1(x + 4) + ' ' + r1(y) + ' ' + r1(x + 4) + ' ' + r1(y - 13), fill: 'none', stroke: INK, 'stroke-width': 3.4 });
+      parts += EL('rect', { x: r1(x - 4), y: r1(y - 4), width: 8, height: 8, fill: INK });
+      parts += T(x + 8, y - 12, '90°', { fs: 9, fill: DIM });
+    }
+    if (entry.op != null) {
+      parts += T(x, y + 20, entry.op + ' %', { anchor: 'middle', fs: 9.5, fw: 700, fill: entry.op < 100 ? 'var(--color-accent-700)' : DIM });
+    }
+    out += EL('g', {}, parts);
+  });
+
+  // Salida
+  if (isTank) {
+    var yB2 = Math.max(yTarget + 26, ySurf2 + 56);
+    out += EL('rect', { x: 476, y: r1(ySurf2), width: 70, height: r1(yB2 - ySurf2 - 2), fill: 'var(--color-accent-100)' });
+    out += EL('line', { x1: 476, y1: r1(ySurf2), x2: 546, y2: r1(ySurf2), stroke: ACC, 'stroke-width': 2 });
+    out += EL('path', { d: 'M 474 ' + r1(ySurf2 - 22) + ' L 474 ' + r1(yTarget - 5) + ' M 474 ' + r1(yTarget + 5) + ' L 474 ' + r1(yB2) + ' L 548 ' + r1(yB2) + ' L 548 ' + r1(ySurf2 - 22), fill: 'none', stroke: INK, 'stroke-width': 3 });
+    out += T(544, ySurf2 - 8, 'Tanque 2', { fw: 700, fill: INK, anchor: 'end' });
+  } else {
+    out += EL('polygon', { points: r1(outX + 2) + ',' + r1(yTarget - 6) + ' ' + r1(outX + 16) + ',' + r1(yTarget) + ' ' + r1(outX + 2) + ',' + r1(yTarget + 6), fill: ACC });
+    out += T(outX + 4, yTarget - 12, 'P₂ = Patm', { anchor: 'end', fs: 11.5 });
+  }
+
+  if (showDims) {
+    out += EL('line', { x1: 20, y1: y0, x2: 552, y2: y0, stroke: 'var(--color-neutral-500)', 'stroke-width': 1, 'stroke-dasharray': '4 5' });
+    out += T(552, y0 + 14, 'z = 0', { anchor: 'end', fs: 10.5 });
+    out += EL('line', { x1: 16, y1: r1(surf), x2: 16, y2: y0, stroke: DIM, 'stroke-width': 1.5 });
+    out += T(6, (surf + y0) / 2 + 4, 'z₁', { fs: 12, fw: 700, fill: INK });
+    var zTop = isTank ? ySurf2 : yTarget;
+    if (y0 - zTop > 12) {
+      out += EL('line', { x1: 556, y1: r1(zTop), x2: 556, y2: y0, stroke: DIM, 'stroke-width': 1.5 });
+      out += T(548, (zTop + y0) / 2 + 4, 'z₂', { anchor: 'end', fs: 12, fw: 700, fill: INK });
+    }
+    out += T(285, 424, 'L = ' + fmt(S.L, 0) + ' m · D = ' + DIAS[S.diaIdx] + ' mm · v = ' + fmt(v, 2) + ' m/s', { anchor: 'middle', fs: 12.5, fill: 'var(--color-neutral-800)' });
+    out += T(285, 442, 'Re = ' + fmtRe(Re) + ' (' + regime + ') · f = ' + fmt(f, 4) + ' · hL = ' + fmt(hLK, 2) + ' m', { anchor: 'middle', fs: 12.5, fw: 700, fill: INK });
+  }
+  return out;
+}
+
+/* ── diagrama de Moody ────────────────────────────────────────────────── */
+function moodyG(m) {
+  var Re = m.Re, f = m.f, rr = m.rr;
+  var x0 = 52, x1 = 446, yT = 14, yB = 254;
+  var lxMin = Math.log10(600), lxMax = 8;
+  var lyMin = Math.log10(0.008), lyMax = Math.log10(0.11);
+  var lx = function (re) { return x0 + (Math.log10(re) - lxMin) / (lxMax - lxMin) * (x1 - x0); };
+  var ly = function (fv) { return yT + (lyMax - Math.log10(fv)) / (lyMax - lyMin) * (yB - yT); };
+  var out = '';
+
+  out += EL('clipPath', { id: 'mclip' }, EL('rect', { x: x0, y: yT, width: x1 - x0, height: yB - yT }));
+  out += EL('rect', { x: r1(lx(2300)), y: yT, width: r1(lx(4000) - lx(2300)), height: yB - yT, fill: 'var(--color-neutral-200)' });
+  var supers = { 3: '10³', 4: '10⁴', 5: '10⁵', 6: '10⁶', 7: '10⁷', 8: '10⁸' };
+  for (var d = 3; d <= 8; d++) {
+    var x = lx(Math.pow(10, d));
+    out += EL('line', { x1: r1(x), y1: yT, x2: r1(x), y2: yB, stroke: GRID, 'stroke-width': 1 });
+    out += T(x, yB + 16, supers[d], { anchor: 'middle', fs: 11, fill: DIM });
+  }
+  var fvals = [0.008, 0.01, 0.015, 0.02, 0.03, 0.04, 0.06, 0.08, 0.1];
+  for (var fi = 0; fi < fvals.length; fi++) {
+    var y = ly(fvals[fi]);
+    out += EL('line', { x1: x0, y1: r1(y), x2: x1, y2: r1(y), stroke: GRID, 'stroke-width': 1 });
+    out += T(x0 - 6, y + 3.5, String(fvals[fi]), { anchor: 'end', fs: 10.5, fill: DIM });
+  }
+  out += EL('rect', { x: x0, y: yT, width: x1 - x0, height: yB - yT, fill: 'none', stroke: 'var(--color-divider)', 'stroke-width': 2 });
+
+  var path = function (arr) { return arr.map(function (p, i) { return (i ? 'L' : 'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1); }).join(' '); };
+  var lam = [];
+  for (var re = 600; re <= 2300; re *= 1.12) lam.push([lx(re), ly(64 / re)]);
+  out += EL('path', { d: path(lam), fill: 'none', stroke: INK, 'stroke-width': 2, 'clip-path': 'url(#mclip)' });
+  out += T(lx(900), ly(64 / 900) - 8, 'laminar 64/Re', { fs: 10, fill: DIM });
+
+  var rrList = [0, 1e-5, 1e-4, 5e-4, 1e-3, 5e-3, 0.01, 0.03];
+  var rrLabels = ['liso', '10⁻⁵', '10⁻⁴', '5·10⁻⁴', '10⁻³', '5·10⁻³', '0.01', '0.03'];
+  for (var ri = 0; ri < rrList.length; ri++) {
+    var arr = [];
+    for (var lr = Math.log10(4000); lr <= 8.001; lr += 0.1) { var re2 = Math.pow(10, lr); arr.push([lx(re2), ly(ff(re2, rrList[ri]))]); }
+    out += EL('path', { d: path(arr), fill: 'none', stroke: 'var(--color-neutral-500)', 'stroke-width': 1.3, 'clip-path': 'url(#mclip)' });
+    var fEnd = ff(1e8, rrList[ri]);
+    if (fEnd >= 0.0082 && fEnd <= 0.105) out += T(x1 + 4, ly(fEnd) + 3.5, rrLabels[ri], { fs: 9.5, fill: DIM });
+  }
+
+  var cur = [];
+  for (var lr2 = Math.log10(4000); lr2 <= 8.001; lr2 += 0.06) { var re3 = Math.pow(10, lr2); cur.push([lx(re3), ly(ff(re3, rr))]); }
+  out += EL('path', { d: path(cur), fill: 'none', stroke: 'var(--color-accent)', 'stroke-width': 2.5, 'clip-path': 'url(#mclip)' });
+
+  if (Re > 600 && f > 0.008 && f < 0.11) {
+    var px = lx(Math.min(Re, 1e8)), py = ly(f);
+    out += EL('line', { x1: r1(px), y1: r1(py), x2: r1(px), y2: yB, stroke: 'var(--color-accent-700)', 'stroke-width': 1, 'stroke-dasharray': '3 3' });
+    out += EL('line', { x1: x0, y1: r1(py), x2: r1(px), y2: r1(py), stroke: 'var(--color-accent-700)', 'stroke-width': 1, 'stroke-dasharray': '3 3' });
+    out += EL('circle', { cx: r1(px), cy: r1(py), r: 5.5, fill: 'var(--color-accent)', stroke: 'var(--color-bg)', 'stroke-width': 2 });
+    out += T(px + 9, py - 8, 'f = ' + fmt(f, 4), { fs: 11, fw: 700, fill: INK });
+  } else if (Re > 0) {
+    out += EL('polygon', { points: (x0 + 4) + ',' + (yT + 30) + ' ' + (x0 + 18) + ',' + (yT + 23) + ' ' + (x0 + 18) + ',' + (yT + 37), fill: 'var(--color-accent)' });
+    out += EL('rect', { x: x0 + 22, y: yT + 12, width: 268, height: 38, fill: 'var(--color-accent-100)', stroke: 'var(--color-accent)', 'stroke-width': 1.5 });
+    out += T(x0 + 30, yT + 28, 'Punto fuera de escala: Re = ' + fmtRe(Re) + ' · f = ' + fmt(f, f > 1 ? 2 : 4), { fs: 10.5, fw: 700, fill: 'var(--color-accent-800)' });
+    out += T(x0 + 30, yT + 43, Re < 2300 ? 'Laminar profundo: f = 64/Re, fuera del rango dibujado' : 'f fuera del rango dibujado', { fs: 10.5, fill: 'var(--color-accent-800)' });
+  }
+  out += T((x0 + x1) / 2, yB + 34, 'Número de Reynolds Re', { anchor: 'middle', fs: 11.5, fill: DIM });
+  out += T(14, (yT + yB) / 2, 'Factor de fricción f', { transform: 'rotate(-90 14 ' + ((yT + yB) / 2) + ')', anchor: 'middle', fs: 11.5, fill: DIM });
+  return out;
+}
+
+/* ── curvas del sistema y de la bomba ─────────────────────────────────── */
+function curvesG(m) {
+  var S = state, gp = m.gp, hpReq = m.hpReq, opQ = m.opQ, opH = m.opH;
+  var x0 = 52, x1 = 446, yT = 14, yB = 240;
+  var Qmax = S.hasPump ? Math.max(S.Q0 * 1.15, S.Q * 1.3) : Math.max(S.Q * 2, 20);
+  var Hmax = Math.max(S.hasPump ? S.H0 * 1.15 : 0, Math.abs(hpReq) * 1.4, (S.z2 - S.z1) * 1.4, 10);
+  var Hmin = Math.min(0, (S.z2 - S.z1) * 1.3);
+  var qx = function (q) { return x0 + q / Qmax * (x1 - x0); };
+  var hy = function (hv) { return yB - (hv - Hmin) / (Hmax - Hmin) * (yB - yT); };
+  var out = '';
+
+  var qStep = Qmax > 150 ? 50 : (Qmax > 60 ? 20 : 10);
+  for (var q = 0; q <= Qmax; q += qStep) {
+    out += EL('line', { x1: r1(qx(q)), y1: yT, x2: r1(qx(q)), y2: yB, stroke: GRID, 'stroke-width': 1 });
+    out += T(qx(q), yB + 16, String(q), { anchor: 'middle', fs: 10.5, fill: DIM });
+  }
+  var hStep = (Hmax - Hmin) > 60 ? 20 : 10;
+  for (var hv = Math.ceil(Hmin / hStep) * hStep; hv <= Hmax; hv += hStep) {
+    out += EL('line', { x1: x0, y1: r1(hy(hv)), x2: x1, y2: r1(hy(hv)), stroke: GRID, 'stroke-width': 1 });
+    out += T(x0 - 6, hy(hv) + 3.5, String(hv), { anchor: 'end', fs: 10.5, fill: DIM });
+  }
+  if (Hmin < 0) out += EL('line', { x1: x0, y1: r1(hy(0)), x2: x1, y2: r1(hy(0)), stroke: 'var(--color-neutral-500)', 'stroke-width': 1.5 });
+  out += EL('rect', { x: x0, y: yT, width: x1 - x0, height: yB - yT, fill: 'none', stroke: 'var(--color-divider)', 'stroke-width': 2 });
+  out += EL('clipPath', { id: 'cclip' }, EL('rect', { x: x0, y: yT, width: x1 - x0, height: yB - yT }));
+
+  var path = function (arr) { return arr.map(function (p, i) { return (i ? 'L' : 'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1); }).join(' '); };
+  var sys = [];
+  for (var i = 0; i <= 60; i++) { var qq = 0.2 + (Qmax - 0.2) * i / 60; sys.push([qx(qq), hy(sysHead(qq, gp))]); }
+  out += EL('path', { d: path(sys), fill: 'none', stroke: INK, 'stroke-width': 2.5, 'clip-path': 'url(#cclip)' });
+  if (S.hasPump) {
+    var pmp = [];
+    for (var i2 = 0; i2 <= 50; i2++) { var q2 = Qmax * i2 / 50; pmp.push([qx(q2), hy(S.H0 * (1 - Math.pow(q2 / S.Q0, 2)))]); }
+    out += EL('path', { d: path(pmp), fill: 'none', stroke: 'var(--color-accent)', 'stroke-width': 2.5, 'clip-path': 'url(#cclip)' });
+  }
+  var dpy = hy(Math.max(hpReq, Hmin));
+  out += EL('line', { x1: r1(qx(S.Q)), y1: yT, x2: r1(qx(S.Q)), y2: yB, stroke: 'var(--color-neutral-600)', 'stroke-width': 1, 'stroke-dasharray': '3 4' });
+  out += EL('rect', { x: r1(qx(S.Q) - 5), y: r1(dpy - 5), width: 10, height: 10, fill: 'var(--color-bg)', stroke: INK, 'stroke-width': 2.5 });
+  out += T(qx(S.Q) + 8, dpy - 9, 'diseño', { fs: 10.5, fw: 700, fill: INK });
+  if (opQ !== null) {
+    out += EL('circle', { cx: r1(qx(opQ)), cy: r1(hy(opH)), r: 6, fill: 'var(--color-accent)', stroke: 'var(--color-bg)', 'stroke-width': 2 });
+    out += T(qx(opQ) + 9, hy(opH) + 14, 'operación: ' + fmt(opQ, 0) + ' m³/h · ' + fmt(opH, 1) + ' m', { fs: 10.5, fw: 700, fill: 'var(--color-accent-700)' });
+  }
+  out += EL('line', { x1: x0 + 10, y1: yT + 12, x2: x0 + 34, y2: yT + 12, stroke: INK, 'stroke-width': 2.5 });
+  out += T(x0 + 40, yT + 16, 'sistema', { fs: 10.5, fill: DIM });
+  if (S.hasPump) {
+    out += EL('line', { x1: x0 + 100, y1: yT + 12, x2: x0 + 124, y2: yT + 12, stroke: 'var(--color-accent)', 'stroke-width': 2.5 });
+    out += T(x0 + 130, yT + 16, 'bomba', { fs: 10.5, fill: DIM });
+  }
+  out += T((x0 + x1) / 2, yB + 34, 'Caudal Q (m³/h)', { anchor: 'middle', fs: 11.5, fill: DIM });
+  out += T(14, (yT + yB) / 2, 'Cabezal H (m)', { transform: 'rotate(-90 14 ' + ((yT + yB) / 2) + ')', anchor: 'middle', fs: 11.5, fill: DIM });
+  return out;
+}
+
+/* ── ecuaciones estáticas (KaTeX) ─────────────────────────────────────── */
+function renderEquations() {
+  tex('balanceEq', '\\dfrac{P_1}{\\rho g} + z_1 + \\dfrac{v_1^2}{2g} + h_B \\;=\\; \\dfrac{P_2}{\\rho g} + z_2 + \\dfrac{v_2^2}{2g} + h_L', true);
+  tex('pumpLaw', 'H(Q) = H_0\\left[1 - \\left(\\dfrac{Q}{Q_0}\\right)^{2}\\right]');
+  tex('fmK', 'h_f = \\textstyle\\sum K\\,\\dfrac{v^2}{2g}');
+  tex('fmLe', 'h_f = f\\,\\dfrac{L_e}{D}\\,\\dfrac{v^2}{2g}');
+}
+
+window.addEventListener('load', function () {
+  katexReady = !!window.katex;
+  renderEquations();
+  render();
+});
+</script>
+</body>
+</html>

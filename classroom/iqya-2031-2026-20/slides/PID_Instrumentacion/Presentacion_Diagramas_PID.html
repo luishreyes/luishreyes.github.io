@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diagramas de tubería e instrumentación (P&ID) · IQYA-2031</title>
+<link rel="stylesheet" href="assets/deloitte.css">
+<style>
+  html, body { margin: 0; height: 100%; background: #000; }
+  deck-stage:not(:defined) { visibility: hidden; }
+
+  /* ====== Lienzo base de la diapositiva (1920×1080) ====== */
+  .s {
+    font-family: var(--tipo);
+    color: var(--gris-1);
+    background: var(--blanco);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 90px 120px 96px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .s * { box-sizing: border-box; }
+
+  .kicker {
+    display: inline-flex; align-items: center; gap: 14px;
+    font-size: 24px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--verde-osc); margin: 0 0 26px;
+  }
+  .kicker::before { content: ""; width: 46px; height: 5px; background: var(--verde); border-radius: 3px; }
+  .s--dark .kicker { color: var(--verde); }
+
+  h1.s-title { font-size: 92px; line-height: 1.02; font-weight: 700; margin: 0; letter-spacing: -.015em; }
+  h2.s-head  { font-size: 58px; line-height: 1.06; font-weight: 700; margin: 0 0 14px; letter-spacing: -.01em; }
+  .s p { font-size: 30px; line-height: 1.5; }
+
+  .s-foot {
+    position: absolute; left: 120px; right: 120px; bottom: 44px;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 19px; color: var(--gris-3); letter-spacing: .02em;
+  }
+  .s-foot .tag { display: inline-flex; align-items: center; gap: 12px; }
+  .s-foot .tag::before { content: ""; width: 24px; height: 3px; background: var(--gris-4); }
+  .s-foot .num { font-weight: 700; color: var(--gris-2); }
+  .s--dark .s-foot { color: rgba(255,255,255,.45); }
+  .s--dark .s-foot .num { color: rgba(255,255,255,.8); }
+  .s--dark .s-foot .tag::before { background: rgba(255,255,255,.3); }
+
+  /* ====== Variantes de fondo ====== */
+  .s--dark { background: #111; color: #fff; }
+  .s--dark h1.s-title, .s--dark h2.s-head { color: #fff; }
+  .s--tint { background: var(--papel); }
+
+  /* ====== Portada ====== */
+  .cover { justify-content: space-between; position: relative; overflow: hidden; }
+  .cover-top { display: flex; justify-content: space-between; align-items: flex-start; }
+  .cover-org { font-size: 26px; font-weight: 700; letter-spacing: .04em; color: var(--gris-1); }
+  .cover-org span { color: var(--gris-3); font-weight: 600; display: block; font-size: 21px; letter-spacing: .12em; text-transform: uppercase; margin-top: 6px; }
+  .cover-bar { width: 120px; height: 12px; background: var(--verde); border-radius: 4px; }
+  .cover .course { font-size: 26px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--verde-osc); margin: 0 0 22px; }
+  .cover h1 { font-size: 104px; line-height: .98; letter-spacing: -.02em; max-width: 18ch; }
+  .cover .session { font-size: 36px; color: var(--gris-2); margin: 30px 0 0; font-weight: 600; max-width: 34ch; }
+  .cover-meta { display: flex; gap: 56px; margin-top: 10px; position: relative; z-index: 2; }
+  .cover-meta div { font-size: 24px; color: var(--gris-2); }
+  .cover-meta b { display: block; color: var(--gris-1); font-size: 26px; font-weight: 700; margin-bottom: 4px; }
+  .cover .wm { position: absolute; right: -40px; top: 90px; width: 880px; opacity: .07; pointer-events: none; z-index: 0; mix-blend-mode: multiply; }
+
+  /* ====== Agenda ====== */
+  .agenda-list { list-style: none; padding: 0; margin: 22px 0 0; display: flex; flex-direction: column; gap: 18px; max-width: 1400px; }
+  .agenda-list li { display: flex; align-items: baseline; gap: 34px; padding-bottom: 16px; border-bottom: 2px solid var(--gris-5); }
+  .agenda-list .n { font-size: 30px; font-weight: 700; color: var(--verde-osc); min-width: 54px; }
+  .agenda-list .t { display: flex; flex-direction: column; gap: 4px; }
+  .agenda-list .t b { font-size: 33px; font-weight: 700; color: var(--gris-1); }
+  .agenda-list .t span { font-size: 24px; color: var(--gris-2); line-height: 1.35; }
+
+  /* ====== Tarjetas ====== */
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; margin-top: 38px; }
+  .cards.two { grid-template-columns: repeat(2, 1fr); }
+  .cards.four { grid-template-columns: repeat(2, 1fr); }
+  .card {
+    background: var(--blanco); border: 2px solid var(--gris-5);
+    border-top: 7px solid var(--verde); border-radius: var(--radio);
+    padding: 34px 32px; display: flex; flex-direction: column; gap: 12px;
+  }
+  .card .card-n { font-size: 23px; font-weight: 700; color: var(--verde-osc); letter-spacing: .02em; }
+  .card h3 { font-size: 31px; line-height: 1.12; margin: 0; font-weight: 700; }
+  .card p { font-size: 24px; line-height: 1.42; color: var(--gris-2); margin: 0; }
+  .card ul { margin: 4px 0 0; padding-left: 1.1em; font-size: 23px; color: var(--gris-2); line-height: 1.42; }
+  .card li { margin-bottom: 6px; }
+  .card li::marker { color: var(--verde); }
+  .card .qn { font-size: 23px; color: var(--gris-2); line-height: 1.42; margin: 0; }
+  .card .qn b { color: var(--verde-osc); font-weight: 700; }
+  .card--teal { border-top-color: var(--teal); }
+  .card--teal .card-n { color: var(--teal); }
+
+  /* ====== Mitad y mitad ====== */
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 70px; align-items: center; flex: 1; }
+  .split--wideR { grid-template-columns: 0.84fr 1.16fr; }
+  .split--wideL { grid-template-columns: 1.16fr 0.84fr; }
+  .split .copy h2 { font-size: 50px; line-height: 1.08; margin: 0 0 22px; }
+  .split .copy p { font-size: 29px; color: var(--gris-2); line-height: 1.5; }
+  .split .copy ul { font-size: 26px; color: var(--gris-1); line-height: 1.46; padding-left: 1.1em; margin: 16px 0 0; }
+  .split .copy li { margin-bottom: 11px; }
+  .split .copy li::marker { color: var(--verde); }
+  .split .copy li b { color: var(--gris-1); }
+
+  /* ====== Paneles de imagen ====== */
+  .img-panel { background: var(--blanco); border: 2px solid var(--gris-5); border-radius: var(--radio); padding: 22px; box-shadow: var(--sombra); }
+  .img-panel img { max-width: 100%; max-height: 720px; width: auto; height: auto; display: block; margin: 0 auto; border-radius: 3px; }
+  .img-panel .figcap { font-size: 22px; color: var(--gris-3); margin: 16px 4px 0; line-height: 1.35; text-align: center; }
+
+  .figbox { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; margin-top: 10px; }
+  .figbox img { max-width: 92%; max-height: 720px; width: auto; height: auto; object-fit: contain; border: 2px solid var(--gris-5); border-radius: var(--radio); box-shadow: var(--sombra); background: #fff; }
+  .figbox .figcap { font-size: 23px; color: var(--gris-2); text-align: center; max-width: 80ch; line-height: 1.4; }
+
+  /* ====== Callout ====== */
+  .callout { background: var(--papel); border-radius: var(--radio); padding: 36px 40px; border-left: 8px solid var(--teal); }
+  .callout h4 { font-size: 30px; margin: 0 0 18px; color: var(--gris-1); letter-spacing: .02em; }
+  .callout .eq { font-size: 24px; color: var(--gris-1); background: #fff; border: 1px solid var(--gris-5); border-radius: 4px; padding: 13px 20px; margin-bottom: 12px; font-weight: 600; line-height: 1.35; }
+  .callout .eq small { display: block; font-size: 19px; color: var(--gris-2); font-weight: 400; margin-top: 5px; }
+  .callout .ex { font-size: 22px; color: var(--gris-2); line-height: 1.42; margin: 14px 0 0; }
+  .callout .ex b { color: var(--gris-1); }
+
+  /* ====== Comparación PFD vs P&ID ====== */
+  .compare { display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; margin-top: 42px; }
+  .compare .col { border: 2px solid var(--gris-5); border-radius: var(--radio); overflow: hidden; display: flex; flex-direction: column; }
+  .compare .ch { background: var(--gris-1); color: #fff; font-size: 24px; font-weight: 700; padding: 18px 18px; line-height: 1.18; min-height: 104px; display: flex; align-items: center; }
+  .compare .pfd, .compare .pid { padding: 18px; line-height: 1.36; }
+  .compare .pfd { color: var(--gris-2); font-size: 21px; border-bottom: 2px solid var(--gris-5); }
+  .compare .pid { color: var(--gris-1); font-size: 21px; background: var(--verde-claro); flex: 1; }
+  .compare .pfd .lbl, .compare .pid .lbl { display: block; font-size: 17px; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 6px; font-weight: 700; }
+  .compare .pfd .lbl { color: var(--gris-3); }
+  .compare .pid .lbl { color: var(--verde-osc); }
+
+  /* ====== Fórmulas ====== */
+  .fml  .card .fml
+  /* ====== Divisor / Cierre ====== */
+  .divider { justify-content: center; }
+  .divider .part { font-size: 26px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--verde); margin-bottom: 28px; }
+  .divider h2 { font-size: 86px; line-height: 1.04; max-width: 22ch; letter-spacing: -.015em; }
+  .divider .sub { font-size: 30px; color: rgba(255,255,255,.7); margin-top: 30px; max-width: 46ch; line-height: 1.5; }
+  .close { justify-content: center; }
+  .close h2 { font-size: 64px; line-height: 1.1; max-width: 26ch; letter-spacing: -.012em; }
+  .close .next { margin-top: 50px; display: inline-flex; gap: 18px; align-items: center; font-size: 28px; color: rgba(255,255,255,.85); max-width: 60ch; }
+  .close .next .pill { background: var(--verde); color: #fff; font-weight: 700; padding: 8px 20px; border-radius: 999px; font-size: 24px; white-space: nowrap; }
+
+  .lead-top { font-size: 30px; color: var(--gris-2); line-height: 1.45; max-width: 94ch; margin: 0 0 6px; }
+  .foot-note { margin-top: 30px; font-size: 25px; color: var(--gris-3); line-height: 1.4; max-width: 98ch; }
+  .foot-note b { color: var(--verde-osc); }
+
+  /* ====== Ampliar imágenes (lightbox) ====== */
+  .img-panel img, .figbox img { cursor: zoom-in; }
+  .zoom-badge {
+    position: absolute; top: 30px; right: 30px; width: 44px; height: 44px;
+    border-radius: 9px; background: rgba(17,17,17,.6); color: #fff;
+    display: flex; align-items: center; justify-content: center; font-size: 23px;
+    cursor: zoom-in; opacity: 0; transition: opacity .15s ease; z-index: 4;
+  }
+  .img-panel:hover .zoom-badge, .figbox:hover .zoom-badge { opacity: 1; }
+  .lightbox {
+    position: fixed; inset: 0; width: 100vw; height: 100vh;
+    max-width: 100vw; max-height: 100vh; margin: 0; border: 0;
+    background: rgba(0,0,0,.9);
+    display: none; align-items: center; justify-content: center;
+    z-index: 99999; cursor: zoom-out; padding: 3vmin; overflow: hidden;
+  }
+  .lightbox[open] { display: flex; }
+  .lightbox::backdrop { background: rgba(0,0,0,.9); }
+  .lightbox img { max-width: 95vw; max-height: 95vh; width: auto; height: auto; object-fit: contain; border-radius: 6px; box-shadow: 0 24px 90px rgba(0,0,0,.6); background: #fff; }
+  .lightbox .lb-close {
+    position: fixed; top: 26px; right: 32px; width: 58px; height: 58px;
+    border-radius: 50%; background: rgba(255,255,255,.16); color: #fff;
+    border: none; font-size: 28px; cursor: pointer; display: flex;
+    align-items: center; justify-content: center; transition: background .15s ease;
+  }
+  .lightbox .lb-close:hover { background: rgba(255,255,255,.3); }
+  @media print { .zoom-badge, .lightbox { display: none !important; } }
+
+  /* ====== Mobile responsive (≤768px) ====== */
+  @media (max-width: 768px) {
+    html, body { height: auto; background: #f2f2f2; }
+    .s {
+      padding: 28px 20px 36px !important;
+      min-height: 0 !important;
+      overflow: visible !important;
+    }
+    h1.s-title { font-size: 24px !important; line-height: 1.15 !important; }
+    .s h2, h2.s-head { font-size: 22px !important; line-height: 1.2 !important; letter-spacing: normal !important; }
+    .s-lead    { font-size: 16px !important; max-width: 100% !important; }
+    .s p       { font-size: 16px !important; }
+    .s ul, .s ol { font-size: 15px !important; }
+    .s h3 { font-size: 20px !important; line-height: 1.25 !important; }
+    .lead-top { font-size: 16px !important; }
+    .foot-note { font-size: 12px !important; }
+    .agenda-list .n { font-size: 16px !important; min-width: 28px !important; }
+    .agenda-list .t b { font-size: 15px !important; }
+    .agenda-list .t span { font-size: 12px !important; }
+    .kicker    { font-size: 13px !important; margin-bottom: 10px !important; letter-spacing: .08em !important; }
+    .split, .split--wideR, .split--narrow, .split--twoCol {
+      grid-template-columns: 1fr !important;
+      gap: 18px !important;
+    }
+    .cards, .cards.two, .cards.four {
+      grid-template-columns: 1fr !important;
+      gap: 12px !important;
+      margin-top: 16px !important;
+    }
+    .s-foot {
+      position: static !important;
+      left: auto !important; right: auto !important; bottom: auto !important;
+      margin-top: 20px !important;
+      font-size: 11px !important;
+    }
+    .cover h1 { font-size: 24px !important; line-height: 1.15 !important; }
+    .cover .session { font-size: 16px !important; }
+    .cover-meta { flex-direction: column !important; gap: 10px !important; }
+    .cover .wm { display: none !important; }
+    .cover .course { font-size: 11px !important; letter-spacing: .05em !important; margin-bottom: 12px !important; }
+    .cover-org { font-size: 16px !important; font-weight: 700 !important; }
+    .cover-org span { font-size: 11px !important; letter-spacing: .08em !important; }
+    .cover .session { font-size: 14px !important; }
+    .cover-bar { display: none !important; }
+    .divider .part { font-size: 12px !important; letter-spacing: .1em !important; margin-bottom: 12px !important; }
+    .divider .sub { font-size: 13px !important; line-height: 1.4 !important; margin-top: 16px !important; }
+    .dctx { gap: 8px !important; }
+    .dctx b { font-size: 26px !important; }
+    .dctx span { font-size: 12px !important; }
+    .agenda-list { grid-template-columns: 1fr !important; }
+    .divider h2 { font-size: 32px !important; }
+    .fml { font-size: 14px !important; overflow-x: auto !important; padding: 8px 0 !important; }
+    .img-panel { padding: 12px !important; }
+    .callout, .callout.verde, .callout.amber { padding: 16px 18px !important; }
+    .callout p { font-size: 15px !important; }
+    .card { padding: 18px 16px !important; }
+    .card h3 { font-size: 20px !important; }
+    .card p { font-size: 15px !important; }
+    table { font-size: 12px !important; display: block !important; overflow-x: auto !important; -webkit-overflow-scrolling: touch !important; max-width: 100% !important; }
+    th, td { padding: 6px 8px !important; white-space: nowrap !important; }
+    .compare { grid-template-columns: 1fr !important; gap: 14px !important; }
+    /* cover-meta items */
+    .cover-meta div { font-size: 14px !important; }
+    .cover-meta b   { font-size: 15px !important; }
+    /* card extras */
+    .card .card-n { font-size: 13px !important; }
+    .card ul { font-size: 13px !important; }
+    /* figcap */
+    .img-panel .figcap, .figbox .figcap { font-size: 12px !important; }
+    /* callout extras */
+    .callout h4  { font-size: 15px !important; }
+    .callout .eq { font-size: 13px !important; }
+    /* slide footer/next indicator */
+    .close .next       { display: flex !important; align-items: center !important; gap: 16px !important; margin-top: 20px !important; width: 100% !important; font-size: 15px !important; }
+    .close .next .pill { font-size: 11px !important; width: 62px !important; min-width: 62px !important; height: 62px !important; padding: 6px !important; text-align: center !important; white-space: normal !important; border-radius: 50% !important; display: flex !important; align-items: center !important; justify-content: center !important; line-height: 1.3 !important; flex-shrink: 0 !important; }
+    /* agenda-note */
+    .agenda-note p { font-size: 15px !important; }
+    /* PID-specific */
+    .card .qn  { font-size: 13px !important; }
+    .callout .ex { font-size: 13px !important; }
+    .compare .ch  { font-size: 15px !important; }
+    .compare .pfd, .compare .pid { font-size: 13px !important; }
+  }
+
+  /* ---- Ecuaciones compuestas en SVG (Plantillas/tools/math-svg.mjs) ---- */
+  .fml { overflow-x: auto; line-height: 1; }
+  .fml svg { display: block; margin: 0 auto; max-width: 100%; height: auto; vertical-align: baseline; }
+  .fml svg + svg { margin-top: 14px; }
+  .fml-lead { text-align: center; font-size: 14.5px; margin: 18px 0 -2px; }
+  .tex svg { display: inline-block; vertical-align: -0.12em; max-width: 100%; }
+  .fml { font-size: 1.3em; }
+  .card .fml, .cards .fml { font-size: 1.12em; }
+</style>
+</head>
+<body>
+
+<deck-stage width="1920" height="1080" data-doc-pdf="Presentacion_Diagramas_PID_documento.pdf">
+
+  <!-- 01 · Portada -->
+  <section class="s cover" data-screen-label="Portada" data-nofoot>
+    <img class="wm" src="assets/img/PID_Real_Cristalizador.webp" alt="">
+    <div class="cover-top">
+      <div class="cover-org">Universidad de los Andes<span>Ingeniería Química y de Alimentos</span></div>
+      <div class="cover-bar"></div>
+    </div>
+    <div>
+      <div class="course">IQYA-2031 · Proyecto de Operaciones Unitarias</div>
+      <h1 class="s-title">Diagramas de tubería e instrumentación</h1>
+      <p class="session">El P&amp;ID: cómo se construye, opera y protege una planta de proceso</p>
+    </div>
+    <div class="cover-meta">
+      <div><b>Profesor</b>Luis H. Reyes</div>
+      <div><b>Asignatura</b>Proyecto de Operaciones Unitarias</div>
+      <div><b>Código</b>IQYA-2031</div>
+      <div><b>Norma base</b>ISA-5.1</div>
+    </div>
+  </section>
+
+  <!-- 02 · Agenda -->
+  <section class="s" data-screen-label="Agenda">
+    <div class="kicker">Agenda de la sesión</div>
+    <h2 class="s-head">Del PFD al documento constructivo</h2>
+    <ul class="agenda-list">
+      <li><span class="n">01</span><span class="t"><b>Qué es un P&amp;ID y qué lo hace distinto</b><span>Documento maestro, contractual y convergente. Qué migra del PFD y qué información nueva aporta.</span></span></li>
+      <li><span class="n">02</span><span class="t"><b>El lenguaje: simbología, tags y válvulas</b><span>Norma ISA-5.1, sistema de identificación única y representación de válvulas.</span></span></li>
+      <li><span class="n">03</span><span class="t"><b>Instrumentación y lazos de control</b><span>Casos aplicados a un destilador, especificación de líneas y lazos de caudal y temperatura.</span></span></li>
+      <li><span class="n">04</span><span class="t"><b>Notas, seguridad y diferencias clave</b><span>Notas operativas, seguridad integrada y el salto del PFD al P&amp;ID.</span></span></li>
+    </ul>
+  </section>
+
+  <!-- 03 · Del PFD al P&ID -->
+  <section class="s" data-screen-label="Del PFD al PID">
+    <div class="split split--wideL">
+      <div class="copy">
+        <div class="kicker">Evolución hacia el detalle constructivo</div>
+        <h2>Del PFD al P&amp;ID</h2>
+        <p>El P&amp;ID transforma el diseño conceptual del PFD en un documento constructivo completo. Mientras el PFD responde "¿qué equipos necesitamos y cómo se conectan?", el P&amp;ID responde "¿cómo construimos, operamos y controlamos esta planta de forma segura?".</p>
+        <p style="margin-top:18px;">No es solo añadir detalles: es un cambio de audiencia y de propósito. El P&amp;ID es el lenguaje que convierte ideas en realidad construible.</p>
+      </div>
+      <div class="img-panel">
+        <img src="assets/img/Monitor_PID_CAD.webp" alt="P&ID en desarrollo en una estación CAD">
+        <p class="figcap">Un P&amp;ID en desarrollo. Cada símbolo es una instrucción precisa para quien construye y opera.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 · ¿Qué es un P&ID? -->
+  <section class="s" data-screen-label="Que es un PID">
+    <div class="kicker">Cuatro caras de un mismo documento</div>
+    <h2 class="s-head">¿Qué es un P&amp;ID?</h2>
+    <div class="cards four">
+      <div class="card"><span class="card-n">Documento maestro</span><p>El documento más consultado durante toda la vida útil de la planta.</p></div>
+      <div class="card card--teal"><span class="card-n">Carácter contractual</span><p>A diferencia del PFD, que es conceptual, el P&amp;ID es contractual: los contratistas construyen exactamente lo que muestra.</p></div>
+      <div class="card"><span class="card-n">Documento convergente</span><p>Donde convergen proceso (qué hacer), mecánica (cómo construir), instrumentación (cómo controlar) y seguridad (cómo proteger).</p></div>
+      <div class="card card--teal"><span class="card-n">Evidencia legal</span><p>En disputas legales sobre accidentes, el P&amp;ID es evidencia clave de si el diseño era inherentemente seguro.</p></div>
+    </div>
+  </section>
+
+  <!-- 05 · Información que migra del PFD -->
+  <section class="s" data-screen-label="Que migra del PFD">
+    <div class="split">
+      <div class="copy">
+        <div class="kicker">Continuidad con trazabilidad</div>
+        <h2>Qué migra del PFD</h2>
+        <p>El P&amp;ID comienza donde termina el PFD: conserva toda la información esencial y la expande.</p>
+        <ul>
+          <li>Todos los equipos principales con sus códigos (V-101, P-201).</li>
+          <li>Líneas de proceso principales con sus números.</li>
+          <li>Condiciones de operación básicas (temperatura, presión, flujo).</li>
+          <li>Topología general del proceso.</li>
+        </ul>
+      </div>
+      <div class="callout">
+        <h4>EL DETALLE SE REFINA</h4>
+        <div class="eq">PFD: "P-201"</div>
+        <div class="eq" style="margin-bottom:0;">P&amp;ID: "P-201A/B, bombas centrífugas horizontales, 50 m³/h @ 45 m, motor 15 kW, 3600 rpm"</div>
+        <p class="ex"><b>Trazabilidad:</b> cualquier elemento del P&amp;ID debe poder rastrearse hasta el PFD original.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 06 · Nueva información crítica -->
+  <section class="s" data-screen-label="Nueva informacion">
+    <div class="split split--wideR">
+      <div class="copy">
+        <div class="kicker">Lo que el PFD no muestra</div>
+        <h2>Nueva información crítica del P&amp;ID</h2>
+        <ul>
+          <li><b>Instrumentación completa:</b> cada transmisor, controlador, válvula de control, alarma e interlock, con su tag y función.</li>
+          <li><b>Válvulas manuales:</b> bloqueo, check y alivio, con tipo específico (compuerta, globo, bola, mariposa).</li>
+          <li><b>Tuberías secundarias:</b> drenajes, venteos, bypasses, conexiones de servicios y tomas de muestra.</li>
+          <li><b>Especificaciones detalladas:</b> diámetro, schedule, material, rating, aislamiento e instalación.</li>
+        </ul>
+      </div>
+      <div class="img-panel">
+        <img src="assets/img/PID_Ejemplo_Instrumentacion.webp" alt="P&ID de un recipiente con varios lazos de instrumentación">
+        <p class="figcap">Un solo recipiente concentra lazos de caudal, nivel y temperatura, más su alivio de presión (PSV).</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 07 · Simbología de instrumentación ISA -->
+  <section class="s" data-screen-label="Simbologia ISA">
+    <div class="split split--wideL">
+      <div class="copy">
+        <div class="kicker">Norma ISA-5.1</div>
+        <h2>Simbología de instrumentación</h2>
+        <ul>
+          <li><b>Círculo vacío:</b> instrumento montado en campo.</li>
+          <li><b>Círculo con línea horizontal:</b> montaje en panel.</li>
+          <li><b>Círculo con línea punteada:</b> función en el DCS.</li>
+          <li><b>Primera letra:</b> variable medida (T, P, F, L).</li>
+          <li><b>Letras siguientes:</b> función (I=indicador, T=transmisor, C=controlador, V=válvula).</li>
+        </ul>
+        <p style="margin-top:16px;font-size:25px;">TIC-301 es un controlador indicador de temperatura, lazo 301. El instrumentista sabe qué instalar con solo ver el símbolo.</p>
+      </div>
+      <div class="img-panel">
+        <img src="assets/img/Simbologia_Instrumentos_ISA.webp" alt="Símbolos ISA de instrumentos sobre una válvula">
+        <p class="figcap">Cada burbuja codifica montaje y función; el tipo de trazo indica la naturaleza de la señal.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 08 · Líneas de señal ISA -->
+  <section class="s" data-screen-label="Lineas de senal">
+    <div class="split split--wideR">
+      <div class="copy">
+        <div class="kicker">Cómo viaja la señal</div>
+        <h2>Líneas de señal en el P&amp;ID</h2>
+        <p>El tipo de trazo distingue la naturaleza de cada conexión entre instrumentos:</p>
+        <ul>
+          <li><b>Doble raya:</b> señal neumática.</li>
+          <li><b>Línea segmentada:</b> señal electrónica o eléctrica.</li>
+          <li><b>Línea con cruces:</b> tubo capilar de elemento térmico.</li>
+          <li><b>Círculos sobre la línea:</b> enlaces de comunicación y bus de datos (DCS, fieldbus).</li>
+        </ul>
+        <p style="margin-top:16px;font-size:25px;">Distinguir la señal evita errores de cableado y de instalación neumática.</p>
+      </div>
+      <div class="img-panel">
+        <img src="assets/img/Simbologia_Lineas_Senal_ISA.webp" alt="Tabla ISA de tipos de líneas de señal">
+        <p class="figcap">Tabla ISA de líneas de instrumento y señal.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 09 · Sistema de tags -->
+  <section class="s" data-screen-label="Sistema de tags">
+    <div class="kicker">Identificación única</div>
+    <h2 class="s-head">Sistema de tags</h2>
+    <div class="cards">
+      <div class="card">
+        <span class="card-n">Instrumentos · XXY-###</span>
+        <ul>
+          <li><b>XX</b> variable y función (TI, PT, FIC)</li>
+          <li><b>Y</b> modificador opcional (D=diferencial)</li>
+          <li><b>###</b> número único de lazo</li>
+          <li><b>A</b> sufijo para múltiples elementos</li>
+        </ul>
+        <p style="font-size:22px;color:var(--verde-osc);font-weight:700;margin-top:auto;">Ejemplo: TIC-201</p>
+      </div>
+      <div class="card card--teal">
+        <span class="card-n">Equipos · X-###Y</span>
+        <ul>
+          <li><b>X</b> tipo de equipo (P, V, E)</li>
+          <li><b>###</b> área y número secuencial</li>
+          <li><b>Y</b> sufijo para redundantes</li>
+        </ul>
+        <p style="font-size:22px;color:var(--teal);font-weight:700;margin-top:auto;">Ejemplo: P-201A</p>
+      </div>
+      <div class="card">
+        <span class="card-n">Válvulas · XV-####</span>
+        <ul>
+          <li><b>X</b> tipo (HV=manual, XV=bloqueo)</li>
+          <li><b>####</b> número único</li>
+        </ul>
+        <p style="font-size:22px;color:var(--verde-osc);font-weight:700;margin-top:auto;">Ejemplo: PSV-4567</p>
+      </div>
+    </div>
+    <p class="foot-note">La consistencia es crítica: estos tags aparecen en P&amp;ID, planos eléctricos, órdenes de compra, etiquetas físicas y sistemas de mantenimiento <b>durante décadas.</b></p>
+  </section>
+
+  <!-- 10 · Válvulas tipos y representación -->
+  <section class="s" data-screen-label="Valvulas">
+    <div class="split split--wideL">
+      <div class="copy">
+        <div class="kicker">Selección y representación</div>
+        <h2>Válvulas: tipos y representación</h2>
+        <ul>
+          <li><b>Compuerta:</b> on/off en líneas grandes.</li>
+          <li><b>Globo:</b> para regulación manual.</li>
+          <li><b>Bola:</b> cuarto de vuelta rápido. <b>Mariposa:</b> líneas grandes con espacio limitado.</li>
+          <li><b>Check:</b> previene contraflujo, crítica después de bombas.</li>
+          <li><b>PSV:</b> protege contra sobrepresión, dimensionada por API 520.</li>
+          <li><b>Control:</b> modula el flujo según la señal del controlador.</li>
+        </ul>
+      </div>
+      <div class="img-panel">
+        <img src="assets/img/Simbologia_Valvulas_KIMRAY.webp" alt="Guía de símbolos de válvulas y actuadores">
+        <p class="figcap">Guía de símbolos de válvulas y actuadores (ANSI/ISA-S-1.1). El P&amp;ID muestra tipo, orientación y accesibilidad.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11 · Ejemplo comparativo PFD vs P&ID -->
+  <section class="s" data-screen-label="Comparativo bomba">
+    <div class="split split--wideR">
+      <div class="copy">
+        <div class="kicker">El mismo equipo, dos niveles</div>
+        <h2>PFD frente a P&amp;ID: una bomba</h2>
+        <p>En el PFD, P-201 es un círculo con triángulo, una línea de entrada y salida, quizá "15 kW" como dato básico. En el P&amp;ID, esa misma bomba se vuelve un sistema de 15 o más componentes:</p>
+        <ul style="font-size:24px;">
+          <li>P-201A/B (redundancia), filtro temporal y manómetros locales (PI-201, PI-202).</li>
+          <li>Transmisor de presión diferencial (PDT-201), válvulas de succión y descarga (check más compuerta).</li>
+          <li>Válvula de control con bypass, drenajes y venteos.</li>
+        </ul>
+        <p style="margin-top:14px;font-size:25px;">Esta expansión ocurre para CADA elemento del PFD.</p>
+      </div>
+      <div class="img-panel">
+        <img src="assets/img/Comparativo_PFD_vs_PID.webp" alt="Comparación entre PFD y P&ID del mismo lazo">
+        <p class="figcap">El mismo lazo, representado en PFD y en P&amp;ID.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 12 · Un P&ID real -->
+  <section class="s" data-screen-label="PID real">
+    <div class="kicker">100 % del detalle</div>
+    <h2 class="s-head">Así se ve un P&amp;ID terminado</h2>
+    <div class="figbox">
+      <img src="assets/img/PID_Real_Cristalizador.webp" alt="P&ID mecánico completo de un cristalizador industrial">
+      <p class="figcap">P&amp;ID mecánico de un cristalizador industrial: hasta la última válvula, dren e instrumento queda especificado. Haga clic para ampliar y recorrer el detalle.</p>
+    </div>
+  </section>
+
+  <!-- 13 · Instrumentación de un destilador -->
+  <section class="s" data-screen-label="Instrumentacion destilador">
+    <div class="split split--wideR">
+      <div class="copy">
+        <div class="kicker">Caso aplicado: separación</div>
+        <h2>Instrumentación de un destilador</h2>
+        <p>Una columna de destilación muestra cómo el control se distribuye por todo el equipo:</p>
+        <ul style="font-size:25px;">
+          <li><b>Temperatura (TI):</b> en la cabeza y en la zona de alimentación, para vigilar el perfil térmico.</li>
+          <li><b>Presión (PI):</b> en la cabeza, variable que fija el equilibrio de separación.</li>
+          <li><b>Nivel (LL):</b> en el fondo y en el tambor de reflujo, contra vaciado o inundación.</li>
+          <li><b>Caudal (FI):</b> en alimentación, reflujo, destilado y fondos, para cerrar los balances.</li>
+          <li><b>Reflujo y rehervidor:</b> la válvula de vapor regula el calor del rehervidor.</li>
+        </ul>
+      </div>
+      <div class="img-panel">
+        <img src="assets/img/Instrumentacion_Destilador.webp" alt="Columna de destilación instrumentada con condensador, tambor de reflujo y rehervidor">
+        <p class="figcap">Columna de destilación con condensador, tambor de reflujo y rehervidor instrumentados.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 14 · Especificación de líneas -->
+  <section class="s" data-screen-label="Especificacion de lineas">
+    <div class="split">
+      <div class="copy">
+        <div class="kicker">Identificación de cada tubería</div>
+        <h2>Especificación de líneas</h2>
+        <p>Cada línea lleva un código alfanumérico que la describe por completo, igual que un tag identifica a un equipo o a un instrumento.</p>
+        <p style="margin-top:16px;font-size:25px;">El código viaja con la línea en planos, listas de materiales y en la propia tubería instalada.</p>
+      </div>
+      <div class="callout">
+        <h4>4"-PG-3001-HC1-I</h4>
+        <div class="eq">4"<small>Diámetro nominal</small></div>
+        <div class="eq">PG<small>Servicio: Process General</small></div>
+        <div class="eq">3001<small>Número único de línea</small></div>
+        <div class="eq">HC1<small>Especificación: Hot Carbon steel clase 1</small></div>
+        <div class="eq" style="margin-bottom:0;">I<small>Aislamiento</small></div>
+        <p class="ex"><b>Ejemplos:</b> 3"-PF-2001-SS2 (mosto fermentado, acero inoxidable sanitario) · 2"-ST-5001-CS2-I (vapor saturado, carbon steel, aislado).</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 15 · Lazo de control de caudal -->
+  <section class="s" data-screen-label="Lazo de caudal">
+    <div class="split split--wideR">
+      <div class="copy">
+        <div class="kicker">Lazo de realimentación</div>
+        <h2>Lazo de control de caudal</h2>
+        <ul>
+          <li><b>FE:</b> elemento primario que mide el caudal de vapor.</li>
+          <li><b>FT:</b> transmisor que envía la señal al controlador.</li>
+          <li><b>FIC:</b> controlador PI que genera la señal correctiva.</li>
+          <li><b>I/P:</b> convertidor corriente a aire que acciona la válvula neumática.</li>
+          <li><b>Válvula de control:</b> regula el paso del vapor según el controlador.</li>
+        </ul>
+        <p style="margin-top:14px;font-size:25px;">El P&amp;ID dibuja con claridad la señal eléctrica, la transmisión neumática y la dirección del flujo.</p>
+      </div>
+      <div class="img-panel">
+        <img src="assets/img/Lazo_Control_Caudal.webp" alt="Lazo de control de caudal de vapor">
+        <p class="figcap">Lazo de caudal de vapor: FE, FT, FIC, I/P y válvula de control.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 16 · Lazo de control de temperatura (añadido) -->
+  <section class="s" data-screen-label="Lazo de temperatura">
+    <div class="split split--wideR">
+      <div class="copy">
+        <div class="kicker">Lazo de realimentación · temperatura</div>
+        <h2>Lazo de control de temperatura</h2>
+        <p>Sobre un intercambiador (HE), el lazo mantiene la temperatura de salida del producto:</p>
+        <ul>
+          <li><b>TE:</b> elemento que mide la temperatura del producto a la salida.</li>
+          <li><b>TIT:</b> transmisor que envía la señal de temperatura.</li>
+          <li><b>TC:</b> controlador que la compara con el set point y genera la corrección.</li>
+          <li><b>Válvula de control:</b> regula el caudal de calorportador que entra al intercambiador.</li>
+        </ul>
+        <p style="margin-top:14px;font-size:25px;">Si la temperatura de salida baja, el TC abre la válvula y admite más calorportador caliente; si sube, la cierra.</p>
+      </div>
+      <div class="img-panel">
+        <img src="assets/img/Lazo_Control_Temperatura.webp" alt="Lazo de control de temperatura sobre un intercambiador de calor">
+        <p class="figcap">Lazo de temperatura sobre un intercambiador: TE, TIT, TC y válvula sobre el calorportador.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 17 · Confiabilidad y seguridad de los lazos -->
+  <section class="s s--tint" data-screen-label="Confiabilidad de lazos">
+    <div class="kicker">Cuando el lazo debe fallar bien</div>
+    <h2 class="s-head">Confiabilidad y seguridad de los lazos</h2>
+    <div class="cards">
+      <div class="card"><span class="card-n">Redundancia</span><h3>Instrumentos duplicados</h3><p>Redundancia instrumental para evitar interrupciones imprevistas del proceso.</p></div>
+      <div class="card card--teal"><span class="card-n">Interlocks</span><h3>Acción automática</h3><p>Toman acciones automáticas ante situaciones críticas: cierre inmediato o apertura completa.</p></div>
+      <div class="card"><span class="card-n">Configuración</span><h3>Procesos estables</h3><p>Arreglos específicos que mantienen el proceso seguro y estable ante perturbaciones.</p></div>
+    </div>
+  </section>
+
+  <!-- 18 · Notas y detalles especiales (sin imagen) -->
+  <section class="s" data-screen-label="Notas y detalles">
+    <div class="kicker">Sabiduría operacional acumulada</div>
+    <h2 class="s-head">Notas y detalles especiales</h2>
+    <div class="cards">
+      <div class="card">
+        <span class="card-n">Instrucciones operativas</span>
+        <p class="qn"><b>"MANTENER PENDIENTE 1% HACIA V-201"</b> asegura el drenaje completo.</p>
+        <p class="qn"><b>"NO OPERAR HV-201 CON P-201 EN MARCHA"</b> previene el golpe de ariete.</p>
+      </div>
+      <div class="card card--teal">
+        <span class="card-n">Seguridad en mantenimiento</span>
+        <p class="qn"><b>"BRIDA SPECTACLE NORMALMENTE INSTALADA"</b> indica aislamiento positivo.</p>
+        <p class="qn"><b>"PURGAR CON N₂ ANTES DE MANTENIMIENTO"</b> salva vidas.</p>
+      </div>
+      <div class="card">
+        <span class="card-n">Previsión futura</span>
+        <p class="qn"><b>"CONEXIÓN FUTURA PARA TANQUE V-205"</b> anticipa la expansión.</p>
+        <p class="qn"><b>"INSTALAR CHECK LO MÁS CERCA POSIBLE A LA BOMBA"</b> previene el contraflujo.</p>
+      </div>
+    </div>
+    <p class="foot-note">Estas notas resultan de experiencia dolorosa en plantas similares. Ignorarlas garantiza repetir errores costosos: <b>el P&amp;ID es el repositorio de la sabiduría operacional acumulada.</b></p>
+  </section>
+
+  <!-- 19 · Seguridad integrada en el P&ID -->
+  <section class="s" data-screen-label="Seguridad integrada">
+    <div class="split split--wideL">
+      <div class="copy">
+        <div class="kicker">La seguridad se diseña, no se añade</div>
+        <h2>Seguridad integrada en el P&amp;ID</h2>
+        <ul>
+          <li><b>Alivio de presión:</b> PSV dimensionada para el peor caso creíble.</li>
+          <li><b>Sistemas de emergencia:</b> duchas, lavaojos y estaciones de alarma.</li>
+          <li><b>Venteos y drenajes:</b> ubicados para purgar bolsas de gas o líquido.</li>
+          <li><b>Instrumentación SIL:</b> lazos críticos con nivel de integridad certificado.</li>
+          <li><b>Barreras físicas:</b> diques para la contención de derrames.</li>
+        </ul>
+        <p style="margin-top:14px;font-size:25px;">Un P&amp;ID bien hecho permite un HAZOP sistemático: identificar modos de falla y salvaguardas antes de construir.</p>
+      </div>
+      <div class="img-panel">
+        <img src="assets/img/Seguridad_PSV_SellosCoche.webp" alt="Arreglo de válvulas de alivio PSV con sellos de coche y bypass">
+        <p class="figcap">Arreglo de alivio con PSV redundantes, sellos de coche (car seals) y línea de bypass.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 20 · Diferencias críticas PFD vs P&ID -->
+  <section class="s" data-screen-label="Diferencias PFD PID">
+    <div class="kicker">El salto final</div>
+    <h2 class="s-head">Diferencias críticas: PFD frente a P&amp;ID</h2>
+    <div class="compare">
+      <div class="col">
+        <div class="ch">Audiencia y propósito</div>
+        <div class="pfd"><span class="lbl">PFD</span>Ingenieros de proceso haciendo cálculos.</div>
+        <div class="pid"><span class="lbl">P&amp;ID</span>Constructores, operadores y mantenimiento.</div>
+      </div>
+      <div class="col">
+        <div class="ch">Completitud</div>
+        <div class="pfd"><span class="lbl">PFD</span>Solo los equipos principales (60-70%).</div>
+        <div class="pid"><span class="lbl">P&amp;ID</span>100%, hasta la última válvula de drenaje.</div>
+      </div>
+      <div class="col">
+        <div class="ch">Status legal</div>
+        <div class="pfd"><span class="lbl">PFD</span>Guía de diseño revisable.</div>
+        <div class="pid"><span class="lbl">P&amp;ID</span>Documento contractual vinculante.</div>
+      </div>
+      <div class="col">
+        <div class="ch">Evolución</div>
+        <div class="pfd"><span class="lbl">PFD</span>Estable tras el diseño básico.</div>
+        <div class="pid"><span class="lbl">P&amp;ID</span>Evoluciona hasta el desmantelamiento.</div>
+      </div>
+      <div class="col">
+        <div class="ch">Costo de error</div>
+        <div class="pfd"><span class="lbl">PFD</span>Requiere recálculo.</div>
+        <div class="pid"><span class="lbl">P&amp;ID</span>Puede significar reconstrucción física.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 21 · Cierre -->
+  <section class="s s--dark close" data-screen-label="Cierre" data-nofoot>
+    <div>
+      <div class="kicker">Para recordar</div>
+      <h2>En el P&amp;ID la seguridad se diseña dentro del proceso, no se añade después: es donde las ideas se vuelven una planta construible.</h2>
+      <div class="next"><span class="pill">A trabajar</span><span>Lleve el PFD de su planta de pectina al nivel P&amp;ID: instrumente, proteja y especifique cada línea.</span></div>
+    </div>
+  </section>
+
+</deck-stage>
+
+<script src="assets/deck-stage.js"></script>
+<script>
+  /* Pie con etiqueta del curso + número de diapositiva */
+  (function () {
+    var stage = document.querySelector('deck-stage');
+    var slides = Array.prototype.filter.call(stage.children, function (n) { return n.tagName === 'SECTION'; });
+    var total = slides.length;
+    slides.forEach(function (s, i) {
+      var f = document.createElement('div');
+      f.className = 's-foot';
+      var label = s.hasAttribute('data-nofoot')
+        ? 'Diagramas de tubería e instrumentación · IQYA-2031'
+        : 'P&ID · Proyecto de Operaciones Unitarias';
+      f.innerHTML = '<span class="tag">' + label + '</span><span class="num">' + (i + 1) + ' / ' + total + '</span>';
+      s.appendChild(f);
+    });
+  })();
+</script>
+
+<script>
+  /* Ampliar imágenes a pantalla completa (lightbox) */
+  (function () {
+    var lb = document.createElement('dialog');
+    lb.className = 'lightbox';
+    lb.innerHTML = '<button class="lb-close" aria-label="Cerrar">\u2715</button><div class="lb-content"></div>';
+    document.body.appendChild(lb);
+    var content = lb.querySelector('.lb-content');
+
+    function close() { if (lb.open) lb.close(); }
+    lb.addEventListener('close', function () { content.innerHTML = ''; });
+    function open(img) {
+      content.innerHTML = '';
+      var im = document.createElement('img');
+      im.src = img.currentSrc || img.src;
+      content.appendChild(im);
+      if (!lb.open) lb.showModal();
+    }
+    lb.addEventListener('click', close);
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && lb.open) { e.stopPropagation(); close(); }
+    }, true);
+
+    document.querySelectorAll('deck-stage .img-panel img, deck-stage .figbox img').forEach(function (img) {
+      var parent = img.parentElement;
+      if (getComputedStyle(parent).position === 'static') parent.style.position = 'relative';
+      function trigger(e) { e.stopPropagation(); open(img); }
+      img.addEventListener('click', trigger);
+      var badge = document.createElement('span');
+      badge.className = 'zoom-badge';
+      badge.setAttribute('aria-hidden', 'true');
+      badge.textContent = '\u2922';
+      badge.addEventListener('click', trigger);
+      parent.appendChild(badge);
+    });
+  })();
+</script>
+
+</body>
+</html>

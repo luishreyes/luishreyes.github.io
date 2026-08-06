@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía del reto · Proyecto semestral · Pectina a partir de cáscara de fruta</title>
+<style>
+/* ===================================================================
+   deloitte.css — Sistema de diseño del curso
+   Narrativas Visuales de Datos con IA Generativa
+   ADN Deloitte. Tokens compartidos por presentación y guía.
+   =================================================================== */
+
+/* Fuente cercana a Aptos: Source Sans 3 (humanista, limpia) */
+@import url('https://fonts.googleapis.com/css2?family=Barlow:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Barlow+Condensed:wght@400;500;600;700&display=swap');
+
+:root {
+  /* Paleta Deloitte */
+  --verde:        #5980A6;
+  --verde-osc:    #416180;
+  --verde-claro:  #E8EFF6;
+  --teal:         #2C455D;
+  --teal-claro:   #DFE7EF;
+  --negro:        #000000;
+  --gris-1:       #1D1F20;   /* texto principal */
+  --gris-2:       #5D5D60;   /* texto secundario */
+  --gris-3:       #9A9A9A;
+  --gris-4:       #C9C9CC;   /* bordes */
+  --gris-5:       #E7E7EA;
+  --papel:        #E9E9EA;   /* fondo muy claro */
+  --blanco:       #FFFFFF;
+  --ambar:        #6B8CAB;   /* solo con etiqueta — accesibilidad */
+
+  --tipo:         'Barlow', 'Source Sans 3', system-ui, sans-serif;
+  --tipo-titulo:  'Barlow Condensed', 'Barlow', system-ui, sans-serif;
+
+  --radio: 0px;
+  --sombra: 0 1px 3px rgba(0,0,0,.08), 0 8px 24px rgba(0,0,0,.06);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+/* ---------- Gráficos (compartido) ---------- */
+.ndv-chart {
+  font-family: var(--tipo);
+  margin: 0;
+}
+.ndv-chart__title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--gris-1);
+  margin: 0 0 .15em;
+  line-height: 1.25;
+}
+.ndv-chart__note {
+  font-size: .8rem;
+  color: var(--gris-2);
+  margin: 0 0 .6em;
+  line-height: 1.4;
+}
+.ndv-chart__plot { width: 100%; }
+.ndv-svg { width: 100%; height: auto; display: block; overflow: visible; }
+.ndv-axislabel, .ndv-valuelabel { font-family: var(--tipo); }
+
+/* Control segmentado del toggle antes/después */
+.ndv-toggle {
+  display: inline-flex;
+  gap: 0;
+  border: 1.5px solid var(--gris-4);
+  border-radius: 999px;
+  padding: 3px;
+  margin: 0 0 1em;
+  background: var(--blanco);
+}
+.ndv-toggle__btn {
+  font-family: var(--tipo);
+  font-size: .82rem;
+  font-weight: 600;
+  color: var(--gris-2);
+  background: transparent;
+  border: none;
+  padding: .42em 1.1em;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background .2s ease, color .2s ease;
+  white-space: nowrap;
+}
+.ndv-toggle__btn:hover { color: var(--gris-1); }
+.ndv-toggle__btn.is-active { background: var(--verde); color: #fff; }
+.ndv-chart__state { will-change: opacity; }
+
+
+  /* Identidad Industry: titulares condensados. */
+  h1, h2, h3, h4, h5, h6, .doc-title, .s-title, .s-head { font-family: var(--tipo-titulo); letter-spacing: -.015em; }
+  h1, .doc-title, .s-title { text-transform: uppercase; }
+</style>
+<style>
+
+  body {
+    margin: 0;
+    background: var(--gris-5);
+    font-family: var(--tipo);
+    color: var(--gris-1);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.6;
+  }
+  .page {
+    max-width: 940px;
+    margin: 40px auto 80px;
+    background: var(--blanco);
+    box-shadow: var(--sombra);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  /* ---------- Encabezado ---------- */
+  .doc-head {
+    background: var(--papel);
+    border-bottom: 5px solid var(--verde);
+    padding: 44px 56px 40px;
+  }
+  .doc-head .org {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    font-size: 14px; font-weight: 700; letter-spacing: .03em; color: var(--gris-1);
+  }
+  .doc-head .org span { color: var(--gris-3); font-weight: 600; }
+  .doc-head .badge {
+    display: inline-block; background: var(--verde); color: #fff;
+    font-size: 13px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+    padding: 6px 14px; border-radius: 999px; margin: 26px 0 16px; white-space: nowrap;
+  }
+  .doc-head h1 { font-size: 40px; line-height: 1.12; margin: 0 0 6px; letter-spacing: -.01em; }
+  .doc-head .subtitle { font-size: 20px; color: var(--gris-2); margin: 0; font-weight: 500; }
+  .doc-meta {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px;
+    margin-top: 32px; padding-top: 26px; border-top: 1px solid var(--gris-4);
+  }
+  .doc-meta div { font-size: 15px; color: var(--gris-2); }
+  .doc-meta b { display: block; color: var(--gris-1); font-size: 16px; font-weight: 700; margin-bottom: 2px; }
+
+  /* ---------- Cuerpo ---------- */
+  .doc-body { padding: 8px 56px 56px; }
+  .doc-body section { padding-top: 40px; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--verde-osc); margin-bottom: 12px;
+  }
+  .eyebrow::before { content: ""; width: 26px; height: 4px; background: var(--verde); border-radius: 2px; }
+  h2.sec { font-size: 27px; line-height: 1.2; margin: 0 0 14px; letter-spacing: -.01em; }
+  h3.sub { font-size: 19px; margin: 28px 0 8px; }
+  .doc-body p { font-size: 16.5px; color: var(--gris-1); margin: 0 0 14px; }
+  .lead { font-size: 18.5px; color: var(--gris-2); line-height: 1.55; }
+
+  /* Objetivos */
+  .objectives { list-style: none; padding: 0; margin: 8px 0 0; display: grid; gap: 14px; }
+  .objectives li {
+    display: grid; grid-template-columns: 30px 1fr; gap: 16px; align-items: start;
+    font-size: 16.5px;
+  }
+  .objectives li::before {
+    content: "✓"; display: inline-flex; align-items: center; justify-content: center;
+    width: 30px; height: 30px; border-radius: 50%; background: var(--verde-claro);
+    color: var(--verde-osc); font-weight: 700; font-size: 15px;
+  }
+
+  /* Tres preguntas */
+  .qcards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 8px; }
+  .qcard { background: var(--papel); border-radius: 8px; padding: 24px 22px; border-top: 5px solid var(--verde); display: flex; flex-direction: column; gap: 8px; }
+  .qcard .qn { font-size: 13px; font-weight: 700; color: var(--verde-osc); letter-spacing: .08em; }
+  .qcard b { font-size: 17px; line-height: 1.25; }
+  .qcard span { font-size: 14.5px; color: var(--gris-2); line-height: 1.45; }
+
+  /* Figura / gráfico */
+  figure.fig { margin: 26px 0 8px; padding: 26px 28px; border: 1px solid var(--gris-4); border-radius: 8px; background: var(--blanco); }
+  figure.fig .ndv-chart__title { font-size: 18px; }
+  figure.fig .ndv-chart__note { font-size: 14px; }
+
+  /* Callouts */
+  .callout {
+    display: grid; grid-template-columns: 44px 1fr; gap: 18px;
+    border-radius: 8px; padding: 20px 24px; margin: 22px 0; align-items: start;
+  }
+  .callout .ic {
+    width: 44px; height: 44px; border-radius: 50%; display: inline-flex;
+    align-items: center; justify-content: center; font-size: 22px; font-weight: 700;
+  }
+  .callout b { display: block; font-size: 16px; margin-bottom: 4px; }
+  .callout p { font-size: 15.5px; margin: 0; color: var(--gris-1); }
+  .callout--tip { background: var(--verde-claro); }
+  .callout--tip .ic { background: var(--verde); color: #fff; }
+  .callout--tip b { color: var(--verde-osc); }
+  .callout--etica { background: #FBEEDD; }
+  .callout--etica .ic { background: var(--ambar); color: #fff; }
+  .callout--etica b { color: #B16A14; }
+  .callout--nota { background: var(--teal-claro); }
+  .callout--nota .ic { background: var(--teal); color: #fff; }
+  .callout--nota b { color: var(--teal); }
+
+  /* Pasos del taller */
+  .steps { display: grid; gap: 16px; margin-top: 12px; counter-reset: paso; }
+  .stepc {
+    display: grid; grid-template-columns: 54px 1fr auto; gap: 20px; align-items: center;
+    border: 1px solid var(--gris-4); border-radius: 8px; padding: 18px 22px;
+  }
+  .stepc .pnum {
+    width: 46px; height: 46px; border-radius: 50%; background: var(--verde); color: #fff;
+    display: inline-flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700;
+  }
+  .stepc .ptext b { font-size: 17px; }
+  .stepc .ptext p { font-size: 15px; color: var(--gris-2); margin: 4px 0 0; }
+  .stepc .ptime { font-size: 13px; font-weight: 700; color: var(--teal); white-space: nowrap; letter-spacing: .04em; }
+
+  /* Tabla de rúbrica */
+  table.rubrica { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 15px; }
+  table.rubrica th, table.rubrica td { text-align: left; padding: 14px 16px; border-bottom: 1px solid var(--gris-4); vertical-align: top; }
+  table.rubrica thead th { background: var(--gris-1); color: #fff; font-weight: 700; font-size: 14px; letter-spacing: .02em; }
+  table.rubrica thead th:first-child { border-top-left-radius: 6px; }
+  table.rubrica thead th:last-child { border-top-right-radius: 6px; }
+  table.rubrica td:first-child { font-weight: 700; color: var(--gris-1); width: 32%; }
+  table.rubrica .peso { color: var(--verde-osc); font-weight: 700; }
+  table.rubrica tbody tr:nth-child(even) { background: var(--papel); }
+
+  /* Entregable */
+  .deliverable {
+    margin-top: 16px; background: var(--gris-1); color: #fff; border-radius: 8px;
+    padding: 34px 36px; border-left: 8px solid var(--verde);
+  }
+  .deliverable .badge { display: inline-block; background: var(--verde); color: #fff; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; padding: 5px 13px; border-radius: 999px; margin-bottom: 16px; white-space: nowrap; }
+  .deliverable h2 { font-size: 25px; margin: 0 0 10px; color: #fff; }
+  .deliverable p { color: rgba(255,255,255,.82); font-size: 16px; margin: 0 0 18px; }
+  .deliverable ul { margin: 0; padding-left: 1.2em; color: rgba(255,255,255,.9); font-size: 15.5px; }
+  .deliverable li { margin-bottom: 8px; }
+  .deliverable li::marker { color: var(--verde); }
+
+  /* Footer */
+  .doc-foot {
+    border-top: 1px solid var(--gris-4); margin-top: 44px; padding-top: 22px;
+    display: flex; justify-content: space-between; font-size: 13px; color: var(--gris-3);
+  }
+
+  /* Botón flotante "Descargar PDF" (solo pantalla) */
+  .dl-btn {
+    position: fixed; right: 22px; bottom: 22px; z-index: 210;
+    display: inline-flex; align-items: center; gap: 9px;
+    background: var(--verde); color: #fff; text-decoration: none;
+    font-family: var(--tipo); font-size: 14px; font-weight: 700; letter-spacing: .02em;
+    padding: 12px 18px; border-radius: 999px; box-shadow: var(--sombra);
+    transition: background .15s ease, transform .15s ease;
+  }
+  .dl-btn:hover { background: var(--verde-osc); transform: translateY(-2px); }
+  .dl-btn svg { width: 17px; height: 17px; }
+  /* Palabra en foco del título: verde en pantalla, resaltado en el PDF */
+  .hl { color: var(--verde-osc); }
+  /* Índice de portada: solo en el PDF */
+  .doc-index { display: none; }
+
+  /* ===================================================================
+     PDF / impresión — «documento claro» (plantilla POU): portada con
+     visor y palabra resaltada, índice imprimible, capítulos numerados
+     con numeral y regla verde, callouts con etiqueta. Cabecera/pie por
+     página los agrega el generador (Playwright).
+     =================================================================== */
+  @page { size: letter; }
+  @media print {
+    body { background: #fff; color: var(--gris-1); font-size: 11pt; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .dl-btn, .side-nav, .doc-foot { display: none !important; }
+    .outer-layout { display: block; max-width: none; margin: 0; padding: 0; }
+    .page { box-shadow: none; margin: 0; max-width: none; border-radius: 0; background: #fff; overflow: visible; }
+
+    /* ---------- Portada ---------- */
+    .doc-head { position: relative; background: #fff; border-bottom: none; padding: 30px 0 0; break-after: page; }
+    .doc-head::before, .doc-head::after { content: ""; position: absolute; top: 6px; width: 46px; height: 46px; }
+    .doc-head::before { left: 0; border-top: 3px solid var(--gris-1); border-left: 3px solid var(--gris-1); }
+    .doc-head::after  { right: 0; border-top: 3px solid var(--gris-1); border-right: 3px solid var(--gris-1); }
+    .doc-head .org { display: none; }
+    .doc-head .badge { background: var(--verde); color: #fff; margin: 34px 0 15px; border-radius: 0; }
+    .doc-head h1 { color: var(--gris-1); font-size: 58px; line-height: .98; font-weight: 900; letter-spacing: -.02em; }
+    .doc-head h1 .hl { background: var(--verde); color: #fff; padding: 0 11px; }
+    .doc-head .subtitle { color: var(--gris-2); }
+    .doc-meta { border-top: 1px solid var(--gris-4); margin-top: 22px; padding-top: 16px; }
+    .doc-meta b { color: var(--gris-1); }
+
+    /* ---------- Índice de portada ---------- */
+    .doc-index { display: block; margin-top: 24px; }
+    .di-label { font-size: 12px; font-weight: 800; letter-spacing: .22em; text-transform: uppercase; color: var(--gris-3); margin: 0 0 8px; border-bottom: 2px solid var(--gris-1); padding-bottom: 8px; }
+    .doc-index ol { list-style: none; padding: 0; margin: 0; }
+    .doc-index li { display: flex; gap: 16px; padding: 7px 0; border-bottom: 1px solid var(--gris-4); font-size: 13px; color: var(--gris-1); }
+    .doc-index li span { font-weight: 800; min-width: 22px; color: var(--verde-osc); }
+
+    /* ---------- Cuerpo: capítulos numerados ---------- */
+    .doc-body { padding: 0; counter-reset: sec; }
+    .doc-body section { padding-top: 28px; }
+    .eyebrow { display: none; }
+    h2.sec {
+      counter-increment: sec; position: relative;
+      display: flex; align-items: baseline; gap: 16px;
+      font-size: 26px; font-weight: 900; text-transform: uppercase; letter-spacing: -.005em;
+      color: var(--gris-1); margin: 0 0 22px; padding-bottom: 12px; break-after: avoid;
+    }
+    h2.sec::before { content: counter(sec, decimal-leading-zero); font-weight: 900; font-size: 30px; color: var(--verde); }
+    h2.sec::after { content: ""; position: absolute; left: 46px; bottom: 0; width: 60px; height: 4px; background: var(--verde); }
+    h3.sub { color: var(--gris-1); break-after: avoid; }
+    .doc-body p, .lead { color: var(--gris-2); }
+    .doc-body strong, .doc-body b { color: var(--gris-1); }
+
+    /* ---------- Callouts: regla lateral + etiqueta, sin ícono ---------- */
+    .callout { grid-template-columns: 1fr; gap: 0; border-radius: 0; padding: 14px 22px; border-left: 3px solid var(--gris-4); }
+    .callout .ic { display: none; }
+    .callout b { letter-spacing: .16em; text-transform: uppercase; font-size: 11px; margin-bottom: 6px; }
+    .callout p { color: var(--gris-2); }
+    .callout--tip { background: var(--verde-claro); border-left-color: var(--verde); }
+    .callout--tip b { color: var(--verde-osc); }
+    .callout--nota { background: #F3F2ED; border-left-color: var(--gris-3); }
+    .callout--nota b { color: var(--gris-3); }
+    .callout--etica { background: #FBEEDD; border-left-color: var(--ambar); }
+    .callout--etica b { color: #B16A14; }
+
+    /* ---------- Tarjetas claras y cortes de página ---------- */
+    .qcard, .infobox { background: var(--papel); border-top: 4px solid var(--verde); }
+    .qcards, .callout, .gradeitem, .infobox, .qcard, figure, .stepc, .deliverable { break-inside: avoid; }
+    table.rubrica tr, table.tbl tr, table.ou tr { break-inside: avoid; }
+    thead { display: table-header-group; }
+  }
+  @media (max-width: 720px) {
+    .doc-head, .doc-body { padding-left: 24px; padding-right: 24px; }
+    .doc-meta, .qcards { grid-template-columns: 1fr 1fr; }
+    .stepc { grid-template-columns: 46px 1fr; }
+    .stepc .ptime { grid-column: 2; }
+  }
+
+  /* ---- Outer layout with sticky side nav ---- */
+  .page { margin: 0; }
+  .outer-layout {
+    max-width: 1160px;
+    margin: 40px auto 90px;
+    display: grid;
+    grid-template-columns: 200px minmax(0, 1fr);
+    gap: 24px;
+    padding: 0 20px;
+    align-items: start;
+  }
+  .side-nav {
+    position: sticky;
+    top: 28px;
+    max-height: calc(100vh - 56px);
+    overflow-y: auto;
+    background: var(--blanco);
+    border: 1px solid var(--gris-4);
+    border-radius: 8px;
+    padding: 20px 16px;
+    box-shadow: var(--sombra);
+    scrollbar-width: thin;
+  }
+  .sn-label { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--gris-3); margin: 0 0 10px; padding: 0 4px; }
+  .sn-item { display: flex; align-items: flex-start; gap: 7px; font-family: var(--tipo); font-size: 13px; color: var(--gris-2); text-decoration: none; padding: 6px 8px; border-radius: 5px; line-height: 1.3; transition: all .15s; margin-bottom: 2px; border: none; background: none; cursor: pointer; width: 100%; text-align: left; }
+  .sn-item:hover { color: var(--gris-1); background: var(--gris-5); }
+  .sn-item.is-active { color: var(--verde-osc); background: var(--verde-claro); font-weight: 600; border-left: 3px solid var(--verde); padding-left: 5px; }
+  .sn-num { font-size: 11px; font-weight: 700; color: var(--verde-osc); min-width: 16px; padding-top: 1px; flex-shrink: 0; }
+  @media (max-width: 880px) {
+    .outer-layout { grid-template-columns: 1fr; padding: 0 12px; }
+    .side-nav { display: none; }
+    .page { margin: 0; }
+  }
+
+</style>
+</head>
+<body>
+
+<a class="dl-btn" href="reto-pectina.pdf" download aria-label="Descargar PDF de la guía del reto">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+       stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M12 3v12"/><path d="M7 11l5 5 5-5"/><path d="M5 21h14"/>
+  </svg>
+  Descargar PDF
+</a>
+
+<div class="outer-layout">
+
+<nav class="side-nav" aria-label="Secciones">
+  <p class="sn-label">En esta guía</p>
+  <a href="#s1" class="sn-item"><span class="sn-num">01</span>El reto</a>
+  <a href="#s2" class="sn-item"><span class="sn-num">02</span>Las ocho operaciones</a>
+  <a href="#s3" class="sn-item"><span class="sn-num">03</span>La materia prima</a>
+  <a href="#s4" class="sn-item"><span class="sn-num">04</span>Validar en ASPEN</a>
+  <a href="#s5" class="sn-item"><span class="sn-num">05</span>Entregables</a>
+  <a href="#s6" class="sn-item"><span class="sn-num">06</span>Rúbrica del diseño</a>
+</nav>
+
+<article class="page">
+
+  <header class="doc-head">
+    <div class="org">
+      Universidad de los Andes
+      <span>Ingeniería Química y de Alimentos</span>
+    </div>
+    <div class="badge">Guía del reto · Proyecto semestral</div>
+    <h1>La cáscara que <span class="hl">vale más</span> que la fruta</h1>
+    <p class="subtitle">Diseñe y dimensione una planta que extrae pectina de grado alimentario a partir de cáscaras de fruta colombianas</p>
+    <div class="doc-meta">
+      <div><b>Curso</b>Proyecto de Operaciones Unitarias · IQYA-2031</div>
+      <div><b>Materia prima</b>Cáscara de cítricos o maracuyá</div>
+      <div><b>Duración</b>16 semanas · Grupos de 4 a 5</div>
+      <div><b>Entregable</b>Documento técnico y sustentación</div>
+    </div>
+
+    <!-- Índice: solo en el PDF (documento claro) -->
+    <nav class="doc-index" aria-hidden="true">
+      <p class="di-label">En esta guía</p>
+      <ol>
+        <li><span>01</span> El reto</li>
+        <li><span>02</span> Las ocho operaciones que integrará</li>
+        <li><span>03</span> La materia prima decide el proyecto</li>
+        <li><span>04</span> Validar en ASPEN, y saber dónde no confiar</li>
+        <li><span>05</span> Entregables del semestre</li>
+        <li><span>06</span> Rúbrica del diseño</li>
+      </ol>
+    </nav>
+  </header>
+
+  <div class="doc-body">
+
+    <section id="s0">
+      <p class="lead">La industria de alimentos en Colombia importa la mayor parte de la pectina que utiliza, y al mismo tiempo descarta cada año miles de toneladas de cáscara de cítricos y maracuyá. Ese desajuste es su punto de partida. Durante el semestre, su equipo diseñará la planta que lo aprovecha: un proceso que recibe un residuo agroindustrial y entrega pectina de grado alimentario, dimensionado operación por operación y validado en ASPEN Plus.</p>
+    </section>
+
+    <section id="s1">
+      <div class="eyebrow">Lo que construirá</div>
+      <h2 class="sec">El reto</h2>
+      <p>No es un ejercicio de cálculo aislado. Es una planta que tiene que funcionar como un sistema, donde la decisión que toma en la molienda reaparece en el consumo de vapor de la columna. Al terminar el semestre, su equipo habrá:</p>
+      <ul class="objectives">
+        <li>Seleccionado y justificado una materia prima de descarte, con datos propios de disponibilidad regional y contenido de pectina.</li>
+        <li>Dimensionado las operaciones unitarias que conectan la cáscara con el producto terminado.</li>
+        <li>Validado los cálculos manuales en ASPEN Plus, y explicado con honestidad dónde el simulador deja de ser confiable.</li>
+        <li>Defendido el diseño en un documento técnico y una presentación ejecutiva ante un jurado.</li>
+      </ul>
+    </section>
+
+    <section id="s2">
+      <div class="eyebrow">El proceso, etapa por etapa</div>
+      <h2 class="sec">Las ocho operaciones que integrará</h2>
+      <p>Cada etapa corresponde a un módulo del curso. El proyecto las obliga a conversar entre sí: ninguna se diseña en el vacío.</p>
+      <div class="steps">
+        <div class="stepc"><span class="pnum">1</span><div class="ptext"><b>Selección y justificación de la materia prima</b><p>Naranja, limón o maracuyá, caracterizada por humedad, contenido de pectina y volumen disponible en la región.</p></div><span class="ptime">Módulo 1</span></div>
+        <div class="stepc"><span class="pnum">2</span><div class="ptext"><b>Diseño del proceso de extracción (simplificado)</b><p>Balance de masa de la hidrólisis ácida que libera la pectina, con conversión supuesta y condiciones de pH y temperatura.</p></div><span class="ptime">Módulo 1</span></div>
+        <div class="stepc"><span class="pnum">3</span><div class="ptext"><b>Manejo de sólidos: molienda de la cáscara</b><p>Secado y reducción de tamaño de la cáscara, con distribución de partícula y cálculo de potencia del molino.</p></div><span class="ptime">Módulo 2</span></div>
+        <div class="stepc"><span class="pnum">4</span><div class="ptext"><b>Sistema completo de transporte de fluidos</b><p>Bombeo del agua de proceso, el extracto ácido y el etanol, con pérdidas en tubería y verificación de NPSH.</p></div><span class="ptime">Módulo 3</span></div>
+        <div class="stepc"><span class="pnum">5</span><div class="ptext"><b>Diseño del agitador del reactor de extracción</b><p>Impulsor, patrón de flujo y criterio de escalado para el tanque donde ocurre la hidrólisis.</p></div><span class="ptime">Módulo 4</span></div>
+        <div class="stepc"><span class="pnum">6</span><div class="ptext"><b>Red de intercambiadores de calor</b><p>Calentamiento de la extracción, condensador y rehervidor de la columna, con integración energética del conjunto.</p></div><span class="ptime">Módulo 5</span></div>
+        <div class="stepc"><span class="pnum">7</span><div class="ptext"><b>Separación sólido-líquido</b><p>Filtración del bagazo agotado para clarificar el extracto rico en pectina antes de la precipitación.</p></div><span class="ptime">Módulo 6</span></div>
+        <div class="stepc"><span class="pnum">8</span><div class="ptext"><b>Columna de recuperación de etanol</b><p>Destilación que recupera el solvente de precipitación por el método McCabe-Thiele. Aquí cierra el ciclo del proceso.</p></div><span class="ptime">Módulo 7</span></div>
+      </div>
+    </section>
+
+    <section id="s3">
+      <div class="eyebrow">La primera decisión pesa más que ninguna</div>
+      <h2 class="sec">La materia prima decide el proyecto</h2>
+      <p>Escoger la cáscara no es un trámite del primer informe. Es la decisión que arrastra todo lo demás. El contenido de pectina fija el tamaño del reactor; la humedad de entrada define la carga del secador y la potencia del molino; el volumen disponible en la región determina si la planta tiene sentido fuera del papel. Empiece por los datos, no por la preferencia del grupo.</p>
+      <figure class="fig">
+        <div class="ndv-chart">
+          <h4 class="ndv-chart__title">Contenido de pectina por materia prima (base seca, orientativo)</h4>
+          <p class="ndv-chart__note">Valores típicos de literatura, no medidos. Entre cítricos las diferencias son pequeñas; la disponibilidad regional suele inclinar la decisión. Su equipo debe acotar el rango real y citar la fuente.</p>
+          <div class="ndv-chart__plot">
+          <svg viewBox="0 0 760 440" preserveAspectRatio="xMidYMid meet" role="img" class="ndv-svg" aria-label="Contenido de pectina por materia prima">
+          <line x1="64" y1="384.00" x2="732" y2="384.00" stroke="#666666" stroke-width="1.5"/>
+          <text x="52" y="388.00" text-anchor="end" fill="#666666" font-size="15" class="ndv-axislabel">0</text>
+          <line x1="64" y1="265.33" x2="732" y2="265.33" stroke="#E4E4E4" stroke-width="1"/>
+          <text x="52" y="269.33" text-anchor="end" fill="#666666" font-size="15" class="ndv-axislabel">10</text>
+          <line x1="64" y1="146.67" x2="732" y2="146.67" stroke="#E4E4E4" stroke-width="1"/>
+          <text x="52" y="150.67" text-anchor="end" fill="#666666" font-size="15" class="ndv-axislabel">20</text>
+          <line x1="64" y1="28.00" x2="732" y2="28.00" stroke="#E4E4E4" stroke-width="1"/>
+          <text x="52" y="32.00" text-anchor="end" fill="#666666" font-size="15" class="ndv-axislabel">30</text>
+          <rect x="99.07" y="51.73" width="96.86" height="332.27" fill="#5980A6" rx="2"/>
+          <text x="147.50" y="42.73" text-anchor="middle" fill="#416180" font-size="16" font-weight="700" class="ndv-valuelabel">28 % p/p</text>
+          <text x="147.50" y="412.00" text-anchor="middle" fill="#333333" font-size="15" font-weight="700" class="ndv-axislabel">Limón</text>
+          <rect x="266.07" y="87.33" width="96.86" height="296.67" fill="#D0D0D0" rx="2"/>
+          <text x="314.50" y="412.00" text-anchor="middle" fill="#666666" font-size="15" font-weight="500" class="ndv-axislabel">Naranja</text>
+          <rect x="433.07" y="122.93" width="96.86" height="261.07" fill="#D0D0D0" rx="2"/>
+          <text x="481.50" y="412.00" text-anchor="middle" fill="#666666" font-size="15" font-weight="500" class="ndv-axislabel">Toronja</text>
+          <rect x="600.07" y="170.40" width="96.86" height="213.60" fill="#D0D0D0" rx="2"/>
+          <text x="648.50" y="412.00" text-anchor="middle" fill="#666666" font-size="15" font-weight="500" class="ndv-axislabel">Maracuyá</text>
+          </svg>
+          </div>
+        </div>
+      </figure>
+      <div class="callout callout--tip">
+        <span class="ic">★</span>
+        <div><b>Recomendación</b><p>El limón rinde algo más de pectina, pero la naranja o la maracuyá pueden estar más disponibles cerca de su planta y cambiar el balance. Cada equipo toma una materia prima distinta. Justifique la elección con números, no con la intuición del grupo.</p></div>
+      </div>
+    </section>
+
+    <section id="s4">
+      <div class="eyebrow">Hasta dónde llega la herramienta</div>
+      <h2 class="sec">Validar en ASPEN, y saber dónde no confiar</h2>
+      <p>ASPEN Plus simula con rigor casi todo el proceso. La columna de recuperación de etanol es su terreno fuerte: el par etanol-agua con el modelo NRTL reproduce el azeótropo y le permite contrastar su McCabe-Thiele manual. Las bombas, los intercambiadores, la molienda y la filtración también tienen bloques dedicados. El balance se sostiene en todo el recorrido del proceso.</p>
+      <div class="callout callout--nota">
+        <span class="ic">i</span>
+        <div><b>Donde el simulador se queda corto</b><p>La pectina no existe en las bases de datos de ASPEN y la extracción sólido-líquido no tiene un bloque riguroso. Tendrá que representar la pectina como componente definido por el usuario y modelar la extracción con un separador de partición supuesta. Reporte esa simplificación de forma explícita: reconocer el límite de la herramienta es parte del criterio que se evalúa.</p></div>
+      </div>
+      <div class="callout callout--etica">
+        <span class="ic">!</span>
+        <div><b>Honestidad con los datos</b><p>Los rendimientos de pectina y las cifras de mercado que use deben venir de una fuente citable, con su rango y su número de muestras. Un rendimiento tomado del mejor caso de un artículo, presentado como típico, infla toda la economía del proyecto. Cite el rango, no el extremo que le conviene.</p></div>
+      </div>
+    </section>
+
+    <section id="s5">
+      <div class="eyebrow">Qué se entrega y cuándo</div>
+      <h2 class="sec">Entregables del semestre</h2>
+      <p>El diseño avanza en cuatro bitácoras de cálculo, cada una con su coevaluación, y cierra con el documento técnico y la sustentación. El uso de IA en el proyecto está en el Nivel 3 de la escala AIAS: puede usarla para refinar y mejorar la claridad, declarándola en cada entrega.</p>
+      <div class="deliverable">
+        <span class="badge">Cuatro bitácoras · Documento final · Sustentación</span>
+        <h2>Bitácoras de cálculo</h2>
+        <p>Cada bitácora documenta un bloque del proceso con sus cálculos, supuestos y diagramas. La secuencia sigue el flujo de la planta:</p>
+        <ul>
+          <li><b>Bitácora 1.</b> Materia prima, diagramas del proceso y manejo de sólidos.</li>
+          <li><b>Bitácora 2.</b> Transporte de fluidos y reactor de extracción agitado.</li>
+          <li><b>Bitácora 3.</b> Red de intercambiadores y separación sólido-líquido.</li>
+          <li><b>Bitácora 4.</b> Columna de recuperación de etanol y validación en ASPEN Plus.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="s6">
+      <div class="eyebrow">Cómo se evalúa cada bitácora</div>
+      <h2 class="sec">Rúbrica del diseño</h2>
+      <p>La calificación mira tres cosas en cada entrega. Revíselas antes de escribir, no después.</p>
+      <table class="rubrica">
+        <thead><tr><th>Dimensión</th><th>Qué se espera</th><th>Peso</th></tr></thead>
+        <tbody>
+          <tr><td>Modelado y dimensionamiento</td><td>Los modelos son apropiados para cada operación, los cálculos son correctos y los supuestos quedan declarados.</td><td class="peso">40%</td></tr>
+          <tr><td>Criterio de diseño</td><td>Las decisiones consideran factores económicos, ambientales y de seguridad, y se justifican con datos.</td><td class="peso">30%</td></tr>
+          <tr><td>Comunicación técnica</td><td>Diagramas claros, bitácora ordenada, fuentes citadas y declaración de uso de IA.</td><td class="peso">30%</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <footer class="doc-foot">
+      <span>Proyecto de Operaciones Unitarias · IQYA-2031</span>
+      <span>Profesor: Luis H. Reyes · Asistente: Andrés F. Infante</span>
+    </footer>
+
+  </div>
+</article>
+
+</div>
+
+<script>
+// Sticky side-nav active section
+(function() {
+  var sects = Array.from(document.querySelectorAll('.doc-body section[id]')).filter(function(s){ return s.id !== 's0'; });
+  if (!sects.length) return;
+  function update() {
+    var y = window.scrollY + 180;
+    var cur = sects[0].id;
+    for (var i = 0; i < sects.length; i++) { if (sects[i].offsetTop <= y) cur = sects[i].id; }
+    document.querySelectorAll('.sn-item').forEach(function(a) {
+      a.classList.toggle('is-active', a.getAttribute('href') === '#' + cur);
+    });
+  }
+  window.addEventListener('scroll', update, { passive: true });
+  update();
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>M3.3 — Uso de IA generativa para el análisis de datos · Dominando la IA · EDCO Uniandes</title>
+<link rel="stylesheet" href="assets/edco.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}],throwOnError:false});"></script>
+<style>
+  /* ════════════════════════════════════════════════════════════════
+     M3.3 · Estilos locales — componentes NO incluidos en edco.css.
+     px absolutos sobre canvas 1920×1080. Bloque @media ≤768px al final
+     (ver MOBILE-SLIDES.md).
+     ════════════════════════════════════════════════════════════════ */
+
+  /* ── Bloques de código (JSON / CSV / YAML) ── */
+  .code-label { font-family: var(--display); font-size: 26px; font-weight: 700; color: var(--ink); margin: 0 0 10px; }
+  .code { display: block; background: #0D1117; color: #C9D1D9; border-radius: var(--radio);
+          padding: 26px 32px; font-family: var(--mono); font-size: 23px; line-height: 1.65;
+          white-space: pre; overflow-x: auto; margin: 0; }
+  .code.wrap { white-space: pre-wrap; }
+
+  /* ── Tablas de datos ── */
+  .dtable { width: 100%; border-collapse: collapse; font-size: 24px; margin-top: 10px; }
+  .dtable th { background: var(--ink); color: #fff; text-align: left; padding: 13px 18px;
+               font-family: var(--display); font-size: 20px; font-weight: 700;
+               text-transform: uppercase; letter-spacing: .04em; }
+  .dtable td { padding: 12px 18px; border-bottom: 1px solid var(--gris-5); color: var(--gris-2); vertical-align: top; line-height: 1.4; }
+  .dtable tr:nth-child(even) td { background: var(--papel); }
+  .dtable td strong { color: var(--ink); }
+
+  /* ── Imagen QR ── */
+  .qr-img { width: 100%; max-width: 360px; background: #fff; padding: 22px;
+            border-radius: var(--radio); box-shadow: 0 6px 22px rgba(0,0,0,.12);
+            display: block; margin: 0 auto; }
+
+  /* ── Tarjetas con lista interna (roles, flujo detallado) ── */
+  .card ul { font-size: 22px; color: var(--gris-2); line-height: 1.45; padding-left: 20px; margin: 8px 0 0; }
+  .card ul li { margin-bottom: 5px; }
+  .card ul li::marker { color: var(--amarillo); }
+
+  /* ── Reveal interactivo (etapas / principios) ── */
+  .reveal { display: grid; grid-template-columns: 440px 1fr; gap: 28px; align-items: start; }
+  .rv-nav { display: flex; flex-direction: column; gap: 10px; }
+  .rv-trigger { display: flex; align-items: center; gap: 16px; text-align: left; width: 100%;
+                background: var(--blanco); border: 2px solid var(--gris-5); border-radius: var(--radio);
+                padding: 16px 20px; cursor: pointer; font-family: var(--display);
+                transition: border-color .18s, transform .18s, box-shadow .18s; }
+  .rv-trigger:hover { border-color: var(--amarillo); transform: translateX(4px); box-shadow: 0 6px 16px rgba(0,0,0,.08); }
+  .rv-trigger.is-active { background: var(--ink); border-color: var(--ink); }
+  .rv-trigger .rv-n { font-family: var(--mono); font-size: 26px; font-weight: 800; color: var(--amarillo); line-height: 1; min-width: 30px; text-align: center; }
+  .rv-trigger .rv-t { font-size: 24px; font-weight: 700; color: var(--ink); line-height: 1.2; }
+  .rv-trigger.is-active .rv-t { color: var(--blanco); }
+  .rv-trigger:focus-visible { outline: 3px solid var(--negro); outline-offset: 2px; }
+  .rv-stage { background: var(--blanco); border: 1.5px solid var(--gris-5); border-left: 7px solid var(--amarillo);
+              border-radius: var(--radio); padding: 32px 38px; min-height: 360px; }
+  .rv-panel { display: none; }
+  .rv-panel.is-active { display: block; animation: rvFade .3s ease; }
+  @keyframes rvFade { from { opacity: 0; transform: translateX(12px); } to { opacity: 1; transform: translateX(0); } }
+  .rv-panel h3 { font-family: var(--display); font-size: 36px; font-weight: 700; color: var(--ink); margin: 0 0 16px; }
+  .rv-panel p { font-size: 27px; line-height: 1.5; color: var(--gris-2); margin: 0; }
+  .rv-panel ul { font-size: 27px; line-height: 1.6; color: var(--gris-2); padding-left: 24px; margin: 0; }
+  .rv-panel ul li { margin-bottom: 10px; }
+  .rv-panel ul li::marker { color: var(--amarillo); }
+  @media (prefers-reduced-motion: reduce) { .rv-trigger, .rv-panel { transition: none; animation: none !important; } .rv-trigger:hover { transform: none; } }
+
+  /* ── MÓVIL ≤768px ── */
+  @media (max-width: 768px) {
+    .code { font-size: 12px !important; padding: 12px 14px !important; white-space: pre-wrap !important; line-height: 1.5 !important; }
+    .code-label { font-size: 15px !important; }
+    .dtable { font-size: 12px !important; }
+    .dtable th, .dtable td { padding: 6px 8px !important; }
+    .dtable th { font-size: 11px !important; }
+    .qr-img { max-width: 200px !important; padding: 12px !important; }
+    .card ul { font-size: 13px !important; }
+    .reveal { grid-template-columns: 1fr !important; gap: 12px !important; }
+    .rv-nav { flex-direction: row !important; flex-wrap: wrap !important; gap: 6px !important; }
+    .rv-trigger { padding: 8px 12px !important; flex: 1 1 auto !important; }
+    .rv-trigger .rv-n { font-size: 16px !important; min-width: 18px !important; }
+    .rv-trigger .rv-t { font-size: 13px !important; }
+    .rv-stage { min-height: 0 !important; padding: 14px 16px !important; }
+    .rv-panel h3 { font-size: 17px !important; }
+    .rv-panel p, .rv-panel ul { font-size: 14px !important; }
+  }
+
+  /* ── IMPRESIÓN: el reveal interactivo no tiene "clic" en papel — se
+     despliegan los 5 paneles apilados en una sola columna para no perder
+     contenido (ver CLAUDE.md principio #1). ── */
+  @media print {
+    .reveal[data-reveal] { grid-template-columns: 1fr !important; gap: 0 !important; }
+    .rv-nav { display: none !important; }
+    .rv-stage { min-height: 0 !important; padding: 12px 22px !important; }
+    .rv-panel { display: block !important; opacity: 1 !important; animation: none !important;
+                padding-bottom: 7px !important; margin-bottom: 7px !important;
+                border-bottom: 1.5px solid var(--gris-5) !important; }
+    .rv-panel:last-child { border-bottom: none !important; margin-bottom: 0 !important; padding-bottom: 0 !important; }
+    .rv-panel h3 { font-size: 18px !important; margin: 0 0 4px !important; }
+    .rv-panel p, .rv-panel ul { font-size: 14px !important; line-height: 1.3 !important; }
+    .rv-panel ul li { margin-bottom: 2px !important; }
+    /* El alto de la sección es fijo (1080px, !important desde deck-stage.js
+       y no puede sobreescribirse desde fuera del shadow root) y el centrado
+       vertical (.s{justify-content:center}) recortaría igual por arriba y
+       por abajo si el contenido se desborda — anclar arriba para que, si
+       algo se desborda, el corte sea solo abajo. */
+    section.s:has(.reveal[data-reveal]) { justify-content: flex-start !important; padding-top: 64px !important; padding-bottom: 56px !important; }
+    section.s:has(.reveal[data-reveal]) .kicker { margin-bottom: 8px !important; }
+    section.s:has(.reveal[data-reveal]) .s-head { margin-bottom: 10px !important; }
+    section.s:has(.reveal[data-reveal]) > p { margin-bottom: 0 !important; }
+    section.s:has(.reveal[data-reveal]) .callout { margin-top: 12px !important; margin-bottom: 14px !important; padding: 16px 22px !important; }
+    section.s:has(.reveal[data-reveal]) .callout p { font-size: 18px !important; line-height: 1.35 !important; }
+  }
+</style>
+</head>
+<body>
+
+<deck-stage width="1920" height="1080">
+
+  <!-- ============ 01 · Portada ============ -->
+  <section class="s cover cover--photo" data-label="Portada" data-nofoot
+    style="background-image:url('img/m3-3-cover.webp');background-size:cover;background-position:center;">
+    <div class="cover-top">
+      <div class="cover-org">
+        <img src="assets/img/uniandes-escudo.png" alt="Universidad de los Andes">
+        <div class="org-txt">Universidad de los Andes<span>Educación Continua · EDCO</span></div>
+      </div>
+      <div class="cover-bar"></div>
+    </div>
+    <div class="cover-mid">
+      <p class="course">Módulo 3.3</p>
+      <h1>Uso de IA generativa para el análisis de datos</h1>
+      <p class="session">Un enfoque iterativo con <em>human-in-the-loop</em> — transformando datos en insights accionables mediante la colaboración humano-IA.</p>
+    </div>
+    <div class="cover-meta">
+      <div><b>Conferencista</b>Luis H. Reyes · Profesor Asociado, Dpto. de Ingeniería Química y de Alimentos</div>
+      <div><b>Sesión</b>Clase 9 · 2 horas · Lunes 25 de mayo de 2026</div>
+    </div>
+  </section>
+
+  <!-- ============ 02 · Agenda ============ -->
+  <section class="s s--tint" data-label="Agenda">
+    <div class="kicker">Agenda</div>
+    <h2 class="s-head">Lo que veremos hoy</h2>
+    <ol class="agenda-list stagger-in" style="margin-top:30px;">
+      <li>
+        <span class="n">01</span>
+        <div class="t"><b>Fundamentos de los datos</b><span>qué son los datos estructurados, por qué importan y dónde están sus límites</span></div>
+      </li>
+      <li>
+        <span class="n">02</span>
+        <div class="t"><b>El poder del código y los LLM</b><span>del Excel manual al lenguaje natural como interfaz de análisis</span></div>
+      </li>
+      <li>
+        <span class="n">03</span>
+        <div class="t"><b>El enfoque human-in-the-loop</b><span>colaboración humano-IA en cinco etapas iterativas</span></div>
+      </li>
+      <li>
+        <span class="n">04</span>
+        <div class="t"><b>Demostración</b><span>un caso real, paso a paso, con prompts listos para usar</span></div>
+      </li>
+    </ol>
+  </section>
+
+  <!-- ============ 03 · Divisor Bloque 01 ============ -->
+  <section class="s s--dark divider" data-label="§01 Fundamentos" data-nofoot>
+    <div class="num">01</div>
+    <h2>Fundamentos<br>de los datos</h2>
+    <div class="yellow-underline"></div>
+    <p class="sub">Qué son los datos estructurados, por qué sostienen las decisiones del negocio y por qué el análisis manual ya no alcanza.</p>
+  </section>
+
+  <!-- ============ 04 · ¿Qué son los datos estructurados? ============ -->
+  <section class="s" data-label="Datos estructurados">
+    <div class="kicker">§01 · Fundamentos</div>
+    <h2 class="s-head">¿Qué son los datos estructurados?</h2>
+    <p>Información organizada en un formato predefinido. Piense en una tabla bien organizada, con datos dispuestos en <strong>filas y columnas</strong>, fácilmente buscable y analizable.</p>
+    <div class="cards four stagger-in" style="margin-top:26px;">
+      <div class="card">
+        <span class="card-n">01</span>
+        <h3>Bases de datos</h3>
+        <p>Por ejemplo, bases de datos SQL.</p>
+      </div>
+      <div class="card">
+        <span class="card-n">02</span>
+        <h3>Hojas de cálculo</h3>
+        <p>Excel, Hojas de cálculo de Google.</p>
+      </div>
+      <div class="card">
+        <span class="card-n">03</span>
+        <h3>Archivos CSV</h3>
+        <p>Valores separados por comas.</p>
+      </div>
+      <div class="card">
+        <span class="card-n">04</span>
+        <h3>Archivos JSON</h3>
+        <p>Notación de objetos de JavaScript: estructurada, no anidada profundamente.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 05 · Estructurados vs. no estructurados ============ -->
+  <section class="s" data-label="Estructurados vs no estructurados">
+    <div class="kicker">§01 · Comparación</div>
+    <h2 class="s-head">Datos estructurados <span style="color:var(--gris-3);font-weight:500;">vs.</span> no estructurados</h2>
+    <div class="vs-cols stagger-in" style="margin-top:30px;">
+      <div class="col left">
+        <h3>Datos estructurados</h3>
+        <ul>
+          <li>Organizados en un formato predefinido (filas y columnas).</li>
+          <li>Fácilmente buscables y analizables.</li>
+          <li><strong>Ejemplos:</strong> tablas de bases de datos, hojas de cálculo.</li>
+        </ul>
+      </div>
+      <div class="vs-divider">vs</div>
+      <div class="col right">
+        <h3>Datos no estructurados</h3>
+        <ul>
+          <li>Sin formato predefinido.</li>
+          <li>Requieren más procesamiento para extraer el significado.</li>
+          <li><strong>Ejemplos:</strong> documentos de texto, imágenes, audio, video.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 06 · La importancia de los datos estructurados ============ -->
+  <section class="s" data-label="Importancia">
+    <div class="kicker">§01 · Importancia</div>
+    <h2 class="s-head">Impulsan decisiones en todas las industrias</h2>
+    <p>Los datos estructurados son la columna vertebral de muchas operaciones. Permiten el almacenamiento, la recuperación y el análisis eficientes de la información.</p>
+    <div class="cards four stagger-in" style="margin-top:26px;">
+      <div class="card">
+        <span class="card-n">01</span>
+        <h3>Ventas e inventario</h3>
+        <p>Seguimiento de existencias y desempeño comercial.</p>
+      </div>
+      <div class="card">
+        <span class="card-n">02</span>
+        <h3>CRM</h3>
+        <p>Gestión de relaciones con los clientes.</p>
+      </div>
+      <div class="card">
+        <span class="card-n">03</span>
+        <h3>Finanzas</h3>
+        <p>Informes y análisis financieros.</p>
+      </div>
+      <div class="card">
+        <span class="card-n">04</span>
+        <h3>Investigación científica</h3>
+        <p>Recopilación y análisis sistemático de datos.</p>
+      </div>
+    </div>
+    <div class="callout" style="margin-top:24px;">
+      <p>¡Y mucho más! Los datos estructurados impulsan la toma de decisiones críticas en una amplia gama de industrias.</p>
+    </div>
+  </section>
+
+  <!-- ============ 07 · El análisis manual no escala ============ -->
+  <section class="s" data-label="El análisis manual no escala">
+    <div class="kicker">§01 · Desafíos</div>
+    <h2 class="s-head">El análisis manual no escala</h2>
+    <p>Analizar grandes conjuntos de datos a mano —por ejemplo, en Excel— tropieza con cuatro límites estructurales:</p>
+    <div class="cards four stagger-in" style="margin-top:26px;">
+      <div class="card">
+        <span class="card-n">01</span>
+        <h3>Lleva mucho tiempo</h3>
+        <p>El esfuerzo crece junto con el volumen de datos.</p>
+      </div>
+      <div class="card">
+        <span class="card-n">02</span>
+        <h3>Propenso a errores</h3>
+        <p>El error humano es inevitable al procesar manualmente grandes cantidades.</p>
+      </div>
+      <div class="card">
+        <span class="card-n">03</span>
+        <h3>Difícil de escalar</h3>
+        <p>Se vuelve impráctico a medida que crecen los conjuntos de datos.</p>
+      </div>
+      <div class="card">
+        <span class="card-n">04</span>
+        <h3>Perspectivas limitadas</h3>
+        <p>Dificulta detectar tendencias sutiles o relaciones complejas.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 08 · La brecha estructurada / no estructurada ============ -->
+  <section class="s" data-label="La brecha de información">
+    <div class="kicker">§01 · La brecha</div>
+    <h2 class="s-head">Perdiendo la imagen completa</h2>
+    <div class="split stagger-in" style="margin-top:24px;">
+      <div class="copy">
+        <p>A menudo, la información valiosa está bloqueada en una <strong>combinación</strong> de datos estructurados y no estructurados.</p>
+        <p style="margin-top:16px;"><strong>Ejemplo:</strong> combinar datos de ventas (estructurados) con reseñas de clientes (no estructuradas) para comprender <em>por qué</em> cambian las ventas.</p>
+        <div class="callout warn" style="margin-top:20px;">
+          <p>Las herramientas tradicionales a menudo tienen dificultades para cerrar esta brecha de manera efectiva.</p>
+        </div>
+      </div>
+      <div class="img-panel">
+        <img src="img/m3-3-survey.jpg" alt="Persona calificando su satisfacción en una encuesta de cinco estrellas">
+        <p class="figcap">Datos no estructurados — reseñas y encuestas — que complementan las cifras.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 09 · La brecha de habilidades ============ -->
+  <section class="s" data-label="Brecha de habilidades">
+    <div class="kicker">§01 · Brecha de habilidades</div>
+    <h2 class="s-head">Una barrera de entrada para muchos</h2>
+    <p>El análisis de datos tradicional a menudo exige habilidades especializadas:</p>
+    <div class="cards four stagger-in" style="margin-top:26px;">
+      <div class="card">
+        <span class="card-n">01</span>
+        <h3>Ciencia de datos</h3>
+      </div>
+      <div class="card">
+        <span class="card-n">02</span>
+        <h3>Bases de datos (SQL)</h3>
+      </div>
+      <div class="card">
+        <span class="card-n">03</span>
+        <h3>Análisis estadístico</h3>
+      </div>
+      <div class="card">
+        <span class="card-n">04</span>
+        <h3>Programación (Python, R)</h3>
+      </div>
+    </div>
+    <div class="callout ink" style="margin-top:24px;">
+      <p><b>Esto crea una barrera de entrada</b> para muchos usuarios que necesitan analizar datos pero no dominan estas disciplinas.</p>
+    </div>
+  </section>
+
+  <!-- ============ 10 · Divisor Bloque 02 ============ -->
+  <section class="s s--dark divider" data-label="§02 Código y LLM" data-nofoot>
+    <div class="num">02</div>
+    <h2>El poder del código<br>y el auge de los LLM</h2>
+    <div class="yellow-underline"></div>
+    <p class="sub">La necesidad de una mejor manera: presentamos los modelos de lenguaje como el puente entre los datos y la información valiosa.</p>
+  </section>
+
+  <!-- ============ 11 · Las herramientas tradicionales tienen techo ============ -->
+  <section class="s" data-label="Límite de las herramientas">
+    <div class="kicker">§02 · Herramientas existentes</div>
+    <h2 class="s-head">Las herramientas tradicionales tienen techo</h2>
+    <p>Herramientas como <a class="platform-link" href="https://www.microsoft.com/microsoft-365/excel" target="_blank" rel="noopener">Excel</a> y SQL son potentes, pero topan con límites:</p>
+    <div class="cards four stagger-in" style="margin-top:26px;">
+      <div class="card">
+        <span class="card-n">01</span>
+        <h3>Potentes pero limitadas</h3>
+        <p>Tienen problemas con conjuntos de datos extremadamente grandes o complejos.</p>
+      </div>
+      <div class="card">
+        <span class="card-n">02</span>
+        <h3>SQL especializado</h3>
+        <p>SQL requiere conocimientos técnicos específicos.</p>
+      </div>
+      <div class="card">
+        <span class="card-n">03</span>
+        <h3>Excel se vuelve lento</h3>
+        <p>Difícil de manejar con millones de filas.</p>
+      </div>
+      <div class="card">
+        <span class="card-n">04</span>
+        <h3>Unión compleja</h3>
+        <p>Combinar datos de diferentes fuentes puede ser complejo.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 12 · El poder del código ============ -->
+  <section class="s" data-label="El poder del código">
+    <div class="kicker">§02 · El poder del código</div>
+    <h2 class="s-head">El código es el lenguaje de los datos</h2>
+    <p><strong>Es la herramienta fundamental para interactuar con la información y transformarla.</strong> El código nos permite:</p>
+    <div class="cards stagger-in" style="margin-top:26px;">
+      <div class="card">
+        <span class="card-n">01</span>
+        <h3>Automatizar</h3>
+        <p>Tareas repetitivas, sin intervención manual.</p>
+      </div>
+      <div class="card">
+        <span class="card-n">02</span>
+        <h3>Calcular</h3>
+        <p>Operaciones complejas y análisis estadísticos.</p>
+      </div>
+      <div class="card">
+        <span class="card-n">03</span>
+        <h3>Personalizar</h3>
+        <p>El análisis para necesidades específicas.</p>
+      </div>
+      <div class="card">
+        <span class="card-n">04</span>
+        <h3>Escalar</h3>
+        <p>Manejar conjuntos de datos masivos.</p>
+      </div>
+      <div class="card">
+        <span class="card-n">05</span>
+        <h3>Reproducir</h3>
+        <p>Crear flujos de trabajo replicables.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 13 · Desafíos de codificación tradicionales ============ -->
+  <section class="s" data-label="Desafíos de codificación">
+    <div class="kicker">§02 · Desafíos de codificación</div>
+    <h2 class="s-head">Pero codificar también cuesta</h2>
+    <p>Si bien la codificación es poderosa, presenta sus propias barreras:</p>
+    <div class="cards four stagger-in" style="margin-top:26px;">
+      <div class="card">
+        <span class="card-n">01</span>
+        <h3>Curva de aprendizaje</h3>
+        <p>Requiere aprender sintaxis y lógica de programación.</p>
+      </div>
+      <div class="card">
+        <span class="card-n">02</span>
+        <h3>Inversión de tiempo</h3>
+        <p>Escribir código para tareas complejas lleva tiempo.</p>
+      </div>
+      <div class="card">
+        <span class="card-n">03</span>
+        <h3>Depuración</h3>
+        <p>Identificar y corregir errores es frustrante e iterativo.</p>
+      </div>
+      <div class="card">
+        <span class="card-n">04</span>
+        <h3>Mantenimiento</h3>
+        <p>Mantener el código funcionando requiere esfuerzo continuo.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 14 · Presentación de los LLM ============ -->
+  <section class="s" data-label="LLM más allá del texto">
+    <div class="kicker">§02 · LLM al rescate</div>
+    <h2 class="s-head">Los LLM: más allá del texto</h2>
+    <p>Los modelos de lenguaje grande (LLM) son modelos de IA avanzados, conocidos por comprender y generar texto similar al humano. <strong>Pero sus capacidades van más allá:</strong></p>
+    <div class="cards stagger-in" style="margin-top:26px;">
+      <div class="card">
+        <span class="card-n">01</span>
+        <h3>Generación de código</h3>
+        <p>Escriben código en varios lenguajes de programación.</p>
+      </div>
+      <div class="card">
+        <span class="card-n">02</span>
+        <h3>Comprensión de datos</h3>
+        <p>Interpretan el significado y la estructura de los datos.</p>
+      </div>
+      <div class="card">
+        <span class="card-n">03</span>
+        <h3>Razonamiento</h3>
+        <p>Ayudan a planificar y ejecutar tareas de análisis.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 15 · LLM como asistentes inteligentes ============ -->
+  <section class="s s--tint" data-label="Asistentes de datos">
+    <div class="kicker">§02 · Un nuevo paradigma</div>
+    <h2 class="s-head">Sus asistentes de datos inteligentes</h2>
+    <div class="split split--wideL stagger-in" style="margin-top:24px;">
+      <div class="copy">
+        <p>Los LLM pueden actuar como «asistentes inteligentes» para tareas relacionadas con los datos:</p>
+        <ul style="margin-top:14px;">
+          <li><strong>Simplifican</strong> procesos complejos.</li>
+          <li><strong>Automatizan</strong> la generación de código.</li>
+          <li><strong>Reducen la barrera de entrada</strong> para quienes no programan.</li>
+          <li><strong>Aceleran</strong> el flujo de trabajo de análisis.</li>
+        </ul>
+      </div>
+      <div class="callout teal">
+        <h4>Compañeros de pensamiento</h4>
+        <p>Piense en ellos como <strong>«compañeros de pensamiento»</strong> que le ayudan a planificar y ejecutar el análisis — no como un reemplazo del analista.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 16 · Big-quote: cerrando la brecha ============ -->
+  <section class="s s--dark big-quote" data-label="Cerrando la brecha" data-nofoot>
+    <div class="kicker">El puente</div>
+    <span class="mark">«</span>
+    <h2>Los LLM cierran la brecha entre las <span class="accent">ideas</span> y el <span class="accent">análisis</span>.</h2>
+    <p>De conceptos abstractos a planes concretos y ejecutables.</p>
+  </section>
+
+  <!-- ============ 17 · Datos como texto ============ -->
+  <section class="s" data-label="Datos como texto">
+    <div class="kicker">§02 · Datos como texto</div>
+    <h2 class="s-head">Cómo «hablarle» de datos a un LLM</h2>
+    <p>Los LLM funcionan principalmente con texto. Para usarlos con datos estructurados, debemos representarlos en un formato textual — CSV, JSON o descripciones de esquema (nombres de columna y tipos).</p>
+    <table class="dtable" style="margin-top:18px;">
+      <thead>
+        <tr><th>Marca</th><th>Costo</th><th>Descripción</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>Toyota Corolla</strong></td><td>$22,000</td><td>Sedán compacto confiable y de bajo consumo, con interior cómodo y seguridad avanzada. Ideal para viajes diarios.</td></tr>
+        <tr><td><strong>Tesla Model 3</strong></td><td>$42,000</td><td>Sedán totalmente eléctrico con tecnología de vanguardia, aceleración rápida y batería de largo alcance. Ideal para conductores ecológicos.</td></tr>
+        <tr><td><strong>BMW X5</strong></td><td>$65,000</td><td>SUV de lujo mediano con motor potente, interior premium y asistencia avanzada al conductor. Rendimiento y comodidad.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ============ 18 · Datos como texto · JSON ============ -->
+  <section class="s" data-label="Datos como texto · JSON">
+    <div class="kicker">§02 · Datos como texto</div>
+    <h2 class="s-head">El mismo dato en JSON</h2>
+    <pre class="code" style="margin-top:22px;">[
+  {
+    "Brand": "Toyota Corolla",
+    "Cost": 22000,
+    "Description": "Sedán compacto confiable y de bajo consumo, con interior cómodo y seguridad avanzada. Ideal para viajes diarios."
+  },
+  {
+    "Brand": "Tesla Model 3",
+    "Cost": 42000,
+    "Description": "Sedán totalmente eléctrico con tecnología de vanguardia, aceleración rápida y batería de largo alcance."
+  },
+  {
+    "Brand": "BMW X5",
+    "Cost": 65000,
+    "Description": "SUV de lujo mediano con motor potente, interior premium y asistencia avanzada al conductor."
+  }
+]</pre>
+  </section>
+
+  <!-- ============ 19 · Datos como texto · CSV y YAML ============ -->
+  <section class="s" data-label="Datos como texto · CSV y YAML">
+    <div class="kicker">§02 · Datos como texto</div>
+    <h2 class="s-head">CSV y YAML</h2>
+    <div class="split stagger-in" style="margin-top:22px;align-items:start;">
+      <div>
+        <p class="code-label">CSV</p>
+        <pre class="code wrap">Brand,Cost,Description
+Toyota Corolla,22000,"Sedán compacto confiable y de bajo consumo..."
+Tesla Model 3,42000,"Sedán totalmente eléctrico con tecnología de vanguardia..."
+BMW X5,65000,"SUV de lujo mediano con motor potente..."</pre>
+      </div>
+      <div>
+        <p class="code-label">YAML</p>
+        <pre class="code">cars:
+  - Brand: "Toyota Corolla"
+    Cost: 22000
+    Description: "Sedán compacto..."
+  - Brand: "Tesla Model 3"
+    Cost: 42000
+    Description: "Sedán eléctrico..."
+  - Brand: "BMW X5"
+    Cost: 65000
+    Description: "SUV de lujo..."</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 20 · Divisor Bloque 03 ============ -->
+  <section class="s s--dark divider" data-label="§03 Human-in-the-loop" data-nofoot>
+    <div class="num">03</div>
+    <h2>El enfoque<br>human-in-the-loop</h2>
+    <div class="yellow-underline"></div>
+    <p class="sub">Colaboración entre analistas humanos e IA generativa: el humano dirige, la IA ejecuta, y la iteración es el motor.</p>
+  </section>
+
+  <!-- ============ 21 · De la idea al plan ============ -->
+  <section class="s" data-label="De la idea al plan">
+    <div class="kicker">§03 · De la idea al plan</div>
+    <h2 class="s-head">El LLM como socio de lluvia de ideas</h2>
+    <div class="split stagger-in" style="margin-top:30px;align-items:center;">
+      <div class="img-panel" style="align-self:center;">
+        <img src="img/m3-3-brainstorming.jpg" alt="Silueta de una cabeza llena de notas con bombillos — lluvia de ideas" style="max-height:520px;object-fit:cover;width:100%;">
+      </div>
+      <div class="copy">
+        <p>Los LLM ayudan a refinar sus ideas iniciales. En lugar de escribir código de entrada, comienza con un <em>concepto</em> o una <em>pregunta</em>.</p>
+        <p style="margin-top:18px;"><strong>El LLM puede sugerir:</strong></p>
+        <ul style="margin-top:10px;">
+          <li>Análisis específicos para realizar.</li>
+          <li>Variables relevantes a considerar.</li>
+          <li>Perspectivas que vale la pena explorar.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 22 · Flujo de cinco etapas (interactivo) ============ -->
+  <section class="s" data-label="Flujo de cinco etapas">
+    <div class="kicker">§03 · Flujo metodológico</div>
+    <h2 class="s-head">El flujo de trabajo en cinco etapas</h2>
+    <p style="max-width:95ch;">Un marco que facilita la colaboración humano-IA. Cada etapa se construye sobre la anterior, creando un <strong>ciclo de retroalimentación</strong>. <span style="color:var(--gris-3);">Haz clic en cada etapa para ver qué ocurre en ella.</span></p>
+    <div class="reveal" data-reveal style="margin-top:24px;">
+      <div class="rv-nav">
+        <button class="rv-trigger is-active" data-rv="1"><span class="rv-n">1</span><span class="rv-t">Diagnóstico</span></button>
+        <button class="rv-trigger" data-rv="2"><span class="rv-n">2</span><span class="rv-t">Ideación</span></button>
+        <button class="rv-trigger" data-rv="3"><span class="rv-n">3</span><span class="rv-t">Alineación</span></button>
+        <button class="rv-trigger" data-rv="4"><span class="rv-n">4</span><span class="rv-t">Navegación</span></button>
+        <button class="rv-trigger" data-rv="5"><span class="rv-n">5</span><span class="rv-t">Evolución</span></button>
+      </div>
+      <div class="rv-stage">
+        <div class="rv-panel is-active" data-rv-panel="1">
+          <h3>Diagnóstico — análisis exploratorio inicial</h3>
+          <ul>
+            <li>Dimensiones del dataset</li>
+            <li>Tipos de variables</li>
+            <li>Calidad de los datos</li>
+            <li>Valores faltantes</li>
+          </ul>
+        </div>
+        <div class="rv-panel" data-rv-panel="2">
+          <h3>Ideación — generación colaborativa de hipótesis</h3>
+          <ul>
+            <li>Revisar los hallazgos de la IA</li>
+            <li>Identificar patrones relevantes</li>
+            <li>Generar hipótesis de negocio</li>
+            <li>Definir objetivos específicos</li>
+          </ul>
+        </div>
+        <div class="rv-panel" data-rv-panel="3">
+          <h3>Alineación — validación del plan estratégico</h3>
+          <ul>
+            <li>Definir los análisis prioritarios</li>
+            <li>Elegir las visualizaciones clave</li>
+            <li>Formular las preguntas de negocio</li>
+            <li>Validar la viabilidad técnica</li>
+          </ul>
+        </div>
+        <div class="rv-panel" data-rv-panel="4">
+          <h3>Navegación — ejecución iterativa guiada</h3>
+          <ul>
+            <li>Análisis paso a paso</li>
+            <li>Validación humana continua</li>
+            <li>Ajustes en tiempo real</li>
+            <li>Documentación automática</li>
+          </ul>
+        </div>
+        <div class="rv-panel" data-rv-panel="5">
+          <h3>Evolución — refinamiento y mejora continua</h3>
+          <ul>
+            <li>Revisar los resultados con el negocio</li>
+            <li>Ajustar hipótesis y parámetros</li>
+            <li>Iterar sobre las etapas previas</li>
+            <li>Capturar aprendizajes para el próximo ciclo</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="callout" style="margin-top:22px;">
+      <p><b>Punto de control crítico:</b> antes de la ejecución, validamos que el plan esté alineado con los objetivos de negocio. Si no, iteramos en las etapas de ideación y alineación.</p>
+    </div>
+  </section>
+
+  <!-- ============ 24 · Para más avanzados ============ -->
+  <section class="s" data-label="Para más avanzados">
+    <div class="kicker">§03 · Para más avanzados</div>
+    <h2 class="s-head">Un pipeline completo de clustering</h2>
+    <div class="cards stagger-in" style="margin-top:22px;">
+      <div class="card">
+        <span class="card-n">01</span>
+        <h3>Preparación de datos</h3>
+        <ul>
+          <li><strong>Cargar</strong> (CSV, base de datos, API).</li>
+          <li><strong>Explorar</strong> estructura, faltantes, atípicos.</li>
+          <li><strong>Limpiar</strong> duplicados e inconsistencias.</li>
+          <li><strong>Preprocesar</strong> (normalizar, codificar).</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="card-n">02</span>
+        <h3>Análisis exploratorio (EDA)</h3>
+        <ul>
+          <li><strong>Visualizar</strong> distribuciones.</li>
+          <li><strong>Verificar</strong> correlaciones.</li>
+          <li><strong>Seleccionar</strong> características.</li>
+          <li><strong>Reducir dimensionalidad</strong> (PCA, t-SNE, UMAP).</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="card-n">03</span>
+        <h3>Agrupación (clustering)</h3>
+        <ul>
+          <li><strong>Elegir método</strong> (K-Means, jerárquico, DBSCAN).</li>
+          <li><strong>Nº óptimo de clústeres</strong> (codo, silueta, dendrograma).</li>
+          <li><strong>Ejecutar</strong> y asignar etiquetas.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="card-n">04</span>
+        <h3>Evaluación e interpretación</h3>
+        <ul>
+          <li><strong>Evaluar calidad</strong> (silueta, Davies-Bouldin).</li>
+          <li><strong>Interpretar</strong> clústeres con el dominio.</li>
+          <li><strong>Validar</strong> contra el mundo real.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="card-n">05</span>
+        <h3>Visualización y comunicación</h3>
+        <ul>
+          <li><strong>Trazar</strong> clústeres y proyecciones.</li>
+          <li><strong>Resumir</strong> los hallazgos clave.</li>
+          <li><strong>Presentar</strong> ideas y recomendaciones.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="card-n">06</span>
+        <h3>Refinamiento e iteración</h3>
+        <ul>
+          <li><strong>Ajustar</strong> parámetros y métricas.</li>
+          <li><strong>Probar</strong> métodos alternativos.</li>
+          <li><strong>Mejorar</strong> la selección de características.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 25 · Los 3 roles clave ============ -->
+  <section class="s" data-label="Los 3 roles">
+    <div class="kicker">§03 · Roles</div>
+    <h2 class="s-head">Tres roles, una colaboración</h2>
+    <p>La efectividad del enfoque depende de una clara división de responsabilidades entre la IA, el humano y su colaboración activa.</p>
+    <div class="cards three stagger-in" style="margin-top:24px;">
+      <div class="card">
+        <span class="card-n">IA</span>
+        <h3>La IA como procesador</h3>
+        <ul>
+          <li>Analista técnico de grandes volúmenes</li>
+          <li>Generador ágil de hipótesis</li>
+          <li>Ejecutor preciso de código</li>
+          <li>Documentador automático</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="card-n">TÚ</span>
+        <h3>El humano como director</h3>
+        <ul>
+          <li>Director estratégico que define objetivos</li>
+          <li>Validador del contexto de negocio</li>
+          <li>Tomador de decisiones críticas</li>
+          <li>Guardián de calidad y relevancia</li>
+        </ul>
+      </div>
+      <div class="card card--ink">
+        <span class="card-n">+</span>
+        <h3>La colaboración como motor</h3>
+        <ul>
+          <li>Iteración continua y retroalimentación</li>
+          <li>Refinamiento progresivo</li>
+          <li>Aprendizaje mutuo y optimización</li>
+          <li>Sinergia que supera lo individual</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 26 · Principios (interactivo) ============ -->
+  <section class="s s--tint" data-label="Principios">
+    <div class="kicker">§03 · Principios</div>
+    <h2 class="s-head">Cinco principios rectores</h2>
+    <p style="color:var(--gris-3);">Haz clic en cada principio para desarrollarlo.</p>
+    <div class="reveal" data-reveal style="margin-top:20px;">
+      <div class="rv-nav">
+        <button class="rv-trigger is-active" data-rv="1"><span class="rv-n">1</span><span class="rv-t">No es automatización total</span></button>
+        <button class="rv-trigger" data-rv="2"><span class="rv-n">2</span><span class="rv-t">Conocimiento contextual</span></button>
+        <button class="rv-trigger" data-rv="3"><span class="rv-n">3</span><span class="rv-t">Iteración ágil</span></button>
+        <button class="rv-trigger" data-rv="4"><span class="rv-n">4</span><span class="rv-t">Escalamiento inteligente</span></button>
+        <button class="rv-trigger" data-rv="5"><span class="rv-n">5</span><span class="rv-t">Documentación viva</span></button>
+      </div>
+      <div class="rv-stage">
+        <div class="rv-panel is-active" data-rv-panel="1">
+          <h3>No es automatización total</h3>
+          <p>El humano mantiene el control estratégico y guía cada decisión importante, mientras la IA acelera la ejecución técnica.</p>
+        </div>
+        <div class="rv-panel" data-rv-panel="2">
+          <h3>Conocimiento contextual crítico</h3>
+          <p>Solo el humano comprende plenamente el contexto empresarial, las restricciones del negocio y las implicaciones políticas de los hallazgos.</p>
+        </div>
+        <div class="rv-panel" data-rv-panel="3">
+          <h3>Iteración inmediata y ágil</h3>
+          <p>Permite corrección y ajuste en tiempo real, evitando análisis extensos en direcciones incorrectas o irrelevantes.</p>
+        </div>
+        <div class="rv-panel" data-rv-panel="4">
+          <h3>Escalamiento inteligente</h3>
+          <p>Progresión natural de análisis simples a complejos, construyendo confianza y comprensión gradualmente.</p>
+        </div>
+        <div class="rv-panel" data-rv-panel="5">
+          <h3>Documentación viva integrada</h3>
+          <p>El diálogo colaborativo se convierte automáticamente en documentación comprensible y reutilizable del proceso analítico.</p>
+        </div>
+      </div>
+    </div>
+    <div class="callout warn" style="margin-top:20px;">
+      <p>Estos principios aseguran que la tecnología <strong>amplifique las capacidades humanas</strong> sin reemplazar el juicio crítico ni la experiencia del dominio.</p>
+    </div>
+  </section>
+
+  <!-- ============ 27 · Ventajas del enfoque ============ -->
+  <section class="s" data-label="Ventajas">
+    <div class="kicker">§03 · Ventajas</div>
+    <h2 class="s-head">Tradicional vs. con IA generativa</h2>
+    <table class="dtable" style="margin-top:18px;">
+      <thead>
+        <tr><th>Aspecto</th><th>Enfoque tradicional</th><th>Con IA generativa</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Tiempo de análisis</td><td>Semanas de desarrollo</td><td><strong>Horas de iteración</strong></td></tr>
+        <tr><td>Desarrollo de código</td><td>Programación desde cero</td><td><strong>Código generado y validado</strong></td></tr>
+        <tr><td>Ciclo de retroalimentación</td><td>Iteración lenta y costosa</td><td><strong>Iteración inmediata</strong></td></tr>
+        <tr><td>Recursos humanos</td><td>Un analista trabajando solo</td><td><strong>Analista + IA colaborando</strong></td></tr>
+        <tr><td>Documentación</td><td>Creada posteriormente</td><td><strong>Generada simultáneamente</strong></td></tr>
+        <tr><td>Escalabilidad</td><td>Limitada por recursos humanos</td><td><strong>Escalable con IA como acelerador</strong></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ============ 28 · Divisor Bloque 04 ============ -->
+  <section class="s s--dark divider" data-label="§04 Demostración" data-nofoot>
+    <div class="num">04</div>
+    <h2>Demostración</h2>
+    <div class="yellow-underline"></div>
+    <p class="sub">Apliquemos lo aprendido a un caso real, paso a paso, con prompts listos para copiar.</p>
+  </section>
+
+  <!-- ============ 29 · Dataset ============ -->
+  <section class="s" data-label="Dataset">
+    <div class="kicker">§04 · Recursos</div>
+    <h2 class="s-head">El dataset de práctica</h2>
+    <div class="split stagger-in" style="margin-top:24px;align-items:center;">
+      <div style="display:flex;justify-content:center;align-items:center;">
+        <img class="qr-img" src="img/m3-3-p28-1.png" alt="Código QR para descargar el dataset Salary_Data.csv">
+      </div>
+      <div class="copy">
+        <div class="callout">
+          <h4>Google Drive · Salary_Data.csv</h4>
+          <p>Escanea el QR o abre el enlace directo:</p>
+          <p style="margin-top:10px;word-break:break-all;"><a class="platform-link" href="https://drive.google.com/file/d/1tm_23c7EzXoVbovOV6NZu9BQE8uuG_Pv/view?usp=sharing" target="_blank" rel="noopener">drive.google.com/file/d/1tm_23c7EzXoVbovOV6NZu9BQE8uuG_Pv</a></p>
+        </div>
+        <p style="margin-top:18px;">Descarga el CSV y súbelo a la herramienta LLM de tu preferencia —<a class="platform-link" href="https://chatgpt.com" target="_blank" rel="noopener">ChatGPT</a>, <a class="platform-link" href="https://claude.ai" target="_blank" rel="noopener">Claude</a> o <a class="platform-link" href="https://gemini.google.com" target="_blank" rel="noopener">Gemini</a>— para comenzar la práctica.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 30 · Prompt 1 · EDA ============ -->
+  <section class="s" data-label="Prompt 1 · EDA">
+    <div class="kicker">§04 · Prompt 1 · Diagnóstico</div>
+    <h2 class="s-head">Primer prompt: EDA</h2>
+    <div class="split stagger-in" style="margin-top:24px;align-items:center;">
+      <div style="display:flex;justify-content:center;align-items:center;">
+        <img class="qr-img" src="img/m3-3-p29-2.png" alt="Código QR para abrir el Prompt 1 EDA en Google Docs">
+      </div>
+      <div class="copy">
+        <div class="callout">
+          <h4>Google Docs · Prompt 1 — EDA</h4>
+          <p><em>«Actúa como un analista de datos senior especializado en diagnóstico inicial de datasets. Tu objetivo es identificar rápidamente las características, calidad y potencial analítico de los datos…»</em></p>
+          <p style="margin-top:10px;word-break:break-all;"><a class="platform-link" href="https://docs.google.com/document/d/1L-JA0zQF2b8vx6_iDl9ph1FwIHZ93GlUcRL7GPG-NzM/edit?usp=sharing" target="_blank" rel="noopener">docs.google.com/document/d/1L-JA0zQF2b8vx6…</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 31 · Prompt 2 · Plan ============ -->
+  <section class="s" data-label="Prompt 2 · Plan">
+    <div class="kicker">§04 · Prompt 2 · Plan estratégico</div>
+    <h2 class="s-head">Segundo prompt: plan</h2>
+    <div class="split stagger-in" style="margin-top:24px;align-items:center;">
+      <div style="display:flex;justify-content:center;align-items:center;">
+        <img class="qr-img" src="img/m3-3-p30-2.png" alt="Código QR para abrir el Prompt 2 Plan en Google Docs">
+      </div>
+      <div class="copy">
+        <div class="callout">
+          <h4>Google Docs · Prompt 2 — Plan</h4>
+          <p><em>«Actúa como un líder de equipo de data science diseñando la estrategia analítica para un proyecto importante. Debes pensar tanto en el valor de negocio como en la viabilidad técnica…»</em></p>
+          <p style="margin-top:10px;word-break:break-all;"><a class="platform-link" href="https://docs.google.com/document/d/1aiTGkt3Gf2qZkFeM0cszei22yMWZVj_K7wp4CfnbPq0/edit?usp=sharing" target="_blank" rel="noopener">docs.google.com/document/d/1aiTGkt3Gf2qZ…</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 32 · Reflexión (big-quote) ============ -->
+  <section class="s s--dark big-quote" data-label="Reflexión" data-nofoot>
+    <div class="kicker">Pausa · Reflexión</div>
+    <span class="mark">«</span>
+    <h2>Piensen en sus <span class="accent">objetivos</span> de análisis.</h2>
+    <p>¿Qué quieren observar? ¿Qué análisis complementaría lo que la IA ya sugirió?</p>
+  </section>
+
+  <!-- ============ 33 · Prompt 3 · Ejecución ============ -->
+  <section class="s" data-label="Prompt 3 · Ejecución">
+    <div class="kicker">§04 · Prompt 3 · Ejecución iterativa</div>
+    <h2 class="s-head">Tercer prompt: ejecución</h2>
+    <div class="split stagger-in" style="margin-top:24px;align-items:center;">
+      <div style="display:flex;justify-content:center;align-items:center;">
+        <img class="qr-img" src="img/m3-3-p32-2.png" alt="Código QR para abrir el Prompt 3 Ejecución en Google Docs">
+      </div>
+      <div class="copy">
+        <div class="callout">
+          <h4>Google Docs · Prompt 3 — Ejecución</h4>
+          <p><em>«Actúa como un analista de business intelligence presentando hallazgos a stakeholders ejecutivos. Tu análisis debe ser riguroso pero accesible, con foco en implicaciones de negocio…»</em></p>
+          <p style="margin-top:10px;word-break:break-all;"><a class="platform-link" href="https://docs.google.com/document/d/1UxWjNyn-kDEFOADTyvAkt9-tpslFczp_-7ZjDyYCVa0/edit?usp=sharing" target="_blank" rel="noopener">docs.google.com/document/d/1UxWjNyn-kD…</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 34 · Cierre ============ -->
+  <section class="s s--dark close" data-label="Cierre" data-nofoot>
+    <div class="kicker">Para cerrar</div>
+    <h2>La única forma de aprender<br>es <span style="color:var(--amarillo);">cacharreando</span></h2>
+    <p class="mid">Tomen un dataset, abran su LLM favorito y empiecen a iterar. El plan se afina haciendo.</p>
+    <div class="contact">
+      <div><span class="k">Email</span>lh.reyes@uniandes.edu.co</div>
+      <div><span class="k">Campus</span>Edificio Mario Laserna · Universidad de los Andes, Bogotá</div>
+    </div>
+  </section>
+
+</deck-stage>
+
+<script src="assets/deck-stage.js"></script>
+<script>
+/* Reveal interactivo — etapas / principios clickeables */
+document.querySelectorAll('[data-reveal]').forEach(function(rev){
+  var btns = rev.querySelectorAll('.rv-trigger');
+  var pans = rev.querySelectorAll('.rv-panel');
+  function setActive(k){
+    btns.forEach(function(b){ b.classList.toggle('is-active', b.getAttribute('data-rv') === k); });
+    pans.forEach(function(p){ p.classList.toggle('is-active', p.getAttribute('data-rv-panel') === k); });
+  }
+  btns.forEach(function(b){ b.addEventListener('click', function(){ setActive(b.getAttribute('data-rv')); }); });
+});
+</script>
+<script>
+/* Footer auto-injector */
+const TAG = 'M3.3 · Análisis de datos con IA · Dominando la IA';
+document.querySelectorAll('deck-stage > section:not([data-nofoot])').forEach((s,i)=>{
+  const f=document.createElement('div'); f.className='s-foot';
+  f.innerHTML=`<span class="tag">${TAG}</span><span class="num">${String(i+1).padStart(2,'0')}</span>`;
+  s.appendChild(f);
+});
+</script>
+<script>
+/* Lightbox — clic para ampliar imágenes y QR */
+document.querySelectorAll('.img-panel img, .figbox img, .qr-img').forEach(img=>{
+  img.style.cursor='zoom-in';
+  img.addEventListener('click',()=>{
+    const ov=document.createElement('div');
+    Object.assign(ov.style,{position:'fixed',inset:'0',background:'rgba(0,0,0,.88)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:'9999',cursor:'zoom-out'});
+    const ci=document.createElement('img');
+    Object.assign(ci.style,{maxWidth:'94vw',maxHeight:'92vh',objectFit:'contain',borderRadius:'8px',boxShadow:'0 20px 80px rgba(0,0,0,.6)',background:'#fff'});
+    ci.src=img.src; ov.appendChild(ci); document.body.appendChild(ov);
+    ov.onclick=()=>ov.remove();
+  });
+});
+</script>
+</body>
+</html>

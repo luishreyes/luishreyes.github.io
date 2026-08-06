@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<title>Sesión 1 · El contexto lo es todo · Narrativas Visuales de Datos con IA Generativa</title>
+<style>
+/* ===================================================================
+   Presentación de clase — Narrativas Visuales (IQYA-3751).
+   Deck 16:9 autónomo en la identidad del curso (design system:
+   templates/presentacion). Carbón · hueso · citrón. Big Shoulders +
+   Archivo autoalojadas. Navegación propia (teclado + botones).
+   Ver NARRATIVAS-DESIGN.md.
+   =================================================================== */
+@font-face { font-family: 'Big Shoulders Display'; font-style: normal; font-weight: 100 900; font-display: swap; src: url('/fonts/big-shoulders-display-latin-wght-normal.woff2') format('woff2-variations'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: 'Big Shoulders Display'; font-style: normal; font-weight: 100 900; font-display: swap; src: url('/fonts/big-shoulders-display-latin-ext-wght-normal.woff2') format('woff2-variations'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: 'Archivo'; font-style: normal; font-weight: 100 900; font-display: swap; src: url('/fonts/archivo-latin-wght-normal.woff2') format('woff2-variations'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: 'Archivo'; font-style: normal; font-weight: 100 900; font-display: swap; src: url('/fonts/archivo-latin-ext-wght-normal.woff2') format('woff2-variations'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+
+:root {
+  --carbon-1000: #0A0A0A; --carbon-950: #101010; --carbon-900: #141412; --carbon-850: #1A1A17; --carbon-700: #2A2924; --carbon-600: #3A382F;
+  --bone-000: #E8E6E1; --bone-300: #B8B6AE; --bone-500: #86847C;
+  --citron-000: #C9C41C; --citron-hi: #DCD733;
+  --signal-negative: #C8623A;
+  --line: rgba(232,230,225,.14); --line-strong: rgba(232,230,225,.28); --line-citron: rgba(201,196,28,.55); --nav-bg: rgba(20,20,18,.82);
+  --font-display: 'Big Shoulders Display', system-ui, sans-serif;
+  --font-text: 'Archivo', system-ui, -apple-system, sans-serif;
+}
+/* Versión clara — para proyectores de bajo contraste. Redefine los tokens;
+   como las diapositivas usan var(--x), todo el deck se aclara. */
+body.light {
+  --carbon-1000: #FCFBF7; --carbon-950: #F5F4EF; --carbon-900: #EDEBE4; --carbon-850: #E7E5DD; --carbon-700: #D6D3C9; --carbon-600: #BBB9AF;
+  --bone-000: #14140F; --bone-300: #45443C; --bone-500: #6E6C63;
+  --citron-000: #8C8712; --citron-hi: #6E6A0E;
+  --signal-negative: #B4552A;
+  --line: rgba(10,10,10,.16); --line-strong: rgba(10,10,10,.30); --line-citron: rgba(140,135,18,.55);
+  --nav-bg: rgba(250,249,245,.92);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: #000; overflow: hidden; }
+.viewport { position: fixed; inset: 0 0 96px 0; display: flex; align-items: center; justify-content: center; background: #000; }
+.stage { width: 1920px; height: 1080px; position: relative; transform-origin: center center; flex-shrink: 0; }
+
+.slide { position: absolute; inset: 0; opacity: 0; visibility: hidden; transition: opacity .35s ease; font-family: var(--font-text); color: var(--bone-000); overflow: hidden; }
+.slide.is-active { opacity: 1; visibility: visible; }
+.slide.is-active .anim { animation: rise .5s cubic-bezier(.22,.61,.36,1) both; }
+@keyframes rise { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: none; } }
+
+/* utilidades */
+.kicker { font-family: var(--font-text); font-weight: 600; font-size: 24px; letter-spacing: .34em; text-transform: uppercase; color: var(--citron-000); }
+.kicker.dim { color: var(--bone-500); }
+.stitle { font-family: var(--font-display); font-weight: 300; text-transform: uppercase; line-height: .95; letter-spacing: -.005em; margin: 0; }
+.rule { width: 180px; height: 4px; background: var(--citron-000); }
+.body { font-family: var(--font-text); font-size: 30px; line-height: 1.5; color: var(--bone-300); }
+.hl { color: var(--citron-000); }
+
+.frame-corners span { position: absolute; width: 64px; height: 64px; pointer-events: none; }
+
+/* barras */
+.bars { display: flex; align-items: flex-end; gap: 26px; }
+.bars .col { flex: 1; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: 16px; position: relative; }
+.bars .col > i { width: 100%; border-radius: 3px 3px 0 0; display: block; transition: height .4s ease, background .4s ease; }
+.bars .col span { font-size: 22px; color: var(--bone-500); }
+.bars .col.focus span { color: var(--citron-000); font-weight: 600; }
+
+/* chrome de navegación */
+.progress { position: fixed; top: 0; left: 0; height: 4px; background: var(--citron-000); z-index: 20; transition: width .3s ease; }
+.nav { position: fixed; bottom: 108px; left: 50%; transform: translateX(-50%); z-index: 20; display: flex; align-items: center; gap: 18px; background: var(--nav-bg); border: 1px solid var(--line); border-radius: 999px; padding: 9px 16px; backdrop-filter: blur(6px); }
+.nav button { width: 40px; height: 40px; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: var(--bone-000); font-size: 18px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: all .15s; font-family: var(--font-text); }
+.nav button:hover { border-color: var(--bone-000); background: rgba(232,230,225,.06); }
+.nav .count { font-family: var(--font-text); font-size: 14px; letter-spacing: .1em; color: var(--bone-300); min-width: 62px; text-align: center; font-variant-numeric: tabular-nums; }
+.nav .label { font-size: 12px; letter-spacing: .18em; text-transform: uppercase; color: var(--bone-500); border-left: 1px solid var(--line); padding-left: 14px; max-width: 220px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+
+.hint { position: fixed; bottom: 30px; right: 26px; z-index: 20; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--bone-500); }
+
+/* botón interactivo dentro de diapositiva */
+.demo-btn { font-family: var(--font-text); font-size: 24px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; padding: 18px 30px; border-radius: 2px; border: 2px solid var(--line-citron); background: transparent; color: var(--bone-000); cursor: pointer; transition: all .15s; }
+.demo-btn:hover { border-color: var(--citron-000); }
+.demo-btn.on { background: var(--citron-000); color: var(--carbon-1000); border-color: var(--citron-000); }
+
+@media (prefers-reduced-motion: reduce) { .slide, .slide.is-active .anim, .bars .col > i { transition: none; animation: none; } }
+/* ── Volver al material ─────────────── */
+.deck-volver{position:fixed;top:16px;left:16px;z-index:30;display:inline-flex;align-items:center;gap:8px;padding:9px 15px;border-radius:999px;background:var(--nav-bg);border:1px solid var(--line);color:var(--bone-000);font-family:var(--font-text);font-weight:600;font-size:13px;letter-spacing:.03em;text-decoration:none;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);transition:border-color .15s}
+.deck-volver:hover{border-color:var(--bone-000)}
+.deck-volver svg{stroke:var(--citron-000)}
+/* ── Rail de miniaturas ─────────────── */
+.rail{position:fixed;left:0;right:0;bottom:0;height:92px;z-index:18;display:flex;gap:10px;align-items:center;padding:9px 14px;overflow-x:auto;overflow-y:hidden;background:var(--nav-bg);border-top:1px solid var(--line);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.thumb{position:relative;flex:0 0 auto;width:132px;height:74px;padding:0;border:1px solid var(--line);border-radius:4px;overflow:hidden;cursor:pointer;background:var(--carbon-1000)}
+.thumb:hover{border-color:var(--bone-500)}
+.thumb.is-cur{border-color:var(--citron-000);box-shadow:0 0 0 1px var(--citron-000)}
+.thumb .tw{position:absolute;top:0;left:0;width:1920px;height:1080px;transform:scale(.06875);transform-origin:top left;pointer-events:none;overflow:hidden}
+.thumb .tn{position:absolute;bottom:2px;right:3px;z-index:2;font-family:var(--font-text);font-weight:700;font-size:10px;line-height:1;color:var(--bone-000);background:rgba(10,10,10,.6);padding:2px 4px;border-radius:3px}
+.hint{bottom:112px!important}
+body.is-fs .rail,body.is-fs .deck-volver,body.is-fs .hint{display:none!important}
+body.is-fs .viewport{inset:0!important}
+body.is-fs .nav{bottom:26px}
+/* ── Móvil: reflow vertical (zoom por JS), sin fullscreen ─────── */
+@media (max-width:768px){
+  html,body{height:auto;overflow-x:hidden;overflow-y:auto;background:var(--carbon-1000)}
+  .viewport{position:static!important;inset:auto!important;display:block!important;height:auto!important;width:100%!important}
+  .stage{width:100%!important;height:auto!important;transform:none!important}
+  .slide{position:relative!important;inset:auto!important;width:1920px!important;height:1080px!important;opacity:1!important;visibility:visible!important;border-bottom:1px solid var(--line)}
+  .slide.is-active .anim{animation:none!important}
+  .rail,.nav,.hint{display:none!important}
+  .deck-volver{top:10px;left:10px;padding:8px 13px;font-size:12px}
+}
+
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+<a class="deck-volver" href="/classroom/iqya-3751-2026-20/readings" aria-label="Volver al material del curso"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg><span>Volver</span></a>
+
+<div class="viewport">
+  <div class="stage" id="stage">
+
+    <!-- 01 · PORTADA -->
+    <section class="slide" data-label="Portada" style="background:var(--carbon-1000);display:flex;flex-direction:column;justify-content:space-between;padding:110px 130px;">
+      <div class="frame-corners" style="position:absolute;inset:70px;">
+        <span style="top:0;left:0;border-top:4px solid var(--citron-000);border-left:4px solid var(--citron-000);"></span>
+        <span style="top:0;right:0;border-top:4px solid var(--citron-000);border-right:4px solid var(--citron-000);"></span>
+        <span style="bottom:0;left:0;border-bottom:4px solid var(--citron-000);border-left:4px solid var(--citron-000);"></span>
+        <span style="bottom:0;right:0;border-bottom:4px solid var(--citron-000);border-right:4px solid var(--citron-000);"></span>
+      </div>
+      <div class="kicker dim" style="font-size:22px;letter-spacing:.42em;">Narrativas Visuales · Sesión 1 · Módulo 1</div>
+      <div class="anim">
+        <div class="kicker" style="margin-bottom:26px;">Mostrar, no contar</div>
+        <h1 class="stitle" style="font-size:184px;">El contexto<br>lo es <span style="color:var(--citron-000);font-weight:200;">todo</span></h1>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;">
+        <div class="body" style="font-size:26px;max-width:52ch;">La pregunta no es qué dicen los datos, sino <span class="hl">qué decisión</span> se va a tomar con ellos.</div>
+        <div style="font-family:var(--font-display);font-weight:400;font-size:30px;text-transform:uppercase;color:var(--bone-500);">NV</div>
+      </div>
+    </section>
+
+    <!-- 02 · APERTURA -->
+    <!-- HOJA DE RUTA -->
+    <section class="slide" data-label="Hoja de ruta" style="background:var(--carbon-950);display:flex;flex-direction:column;justify-content:center;padding:0 130px;">
+      <div class="kicker" style="margin-bottom:28px;">Sesión 1 · Hoja de ruta</div>
+      <h2 class="stitle" style="font-size:96px;margin-bottom:56px;">Hoy recorremos</h2>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:34px 90px;">
+        <div class="anim" style="display:flex;gap:26px;align-items:baseline;border-top:2px solid var(--line);padding-top:24px;"><div class="stitle" style="font-weight:700;color:var(--citron-000);font-size:56px;">01</div><div><div class="stitle" style="font-weight:500;font-size:44px;">Por qué una historia mueve</div><div class="body" style="font-size:23px;margin-top:8px;">Los datos no convencen solos.</div></div></div>
+        <div class="anim" style="display:flex;gap:26px;align-items:baseline;border-top:2px solid var(--line);padding-top:24px;"><div class="stitle" style="font-weight:700;color:var(--citron-000);font-size:56px;">02</div><div><div class="stitle" style="font-weight:500;font-size:44px;">El marco: quién · qué · cómo</div><div class="body" style="font-size:23px;margin-top:8px;">Del dato a la decisión, y el Big Idea.</div></div></div>
+        <div class="anim" style="display:flex;gap:26px;align-items:baseline;border-top:2px solid var(--line);padding-top:24px;"><div class="stitle" style="font-weight:700;color:var(--citron-000);font-size:56px;">03</div><div><div class="stitle" style="font-weight:500;font-size:44px;">La toma: foco vs. contexto</div><div class="body" style="font-size:23px;margin-top:8px;">El color señala dónde mirar.</div></div></div>
+        <div class="anim" style="display:flex;gap:26px;align-items:baseline;border-top:2px solid var(--line);padding-top:24px;"><div class="stitle" style="font-weight:700;color:var(--citron-000);font-size:56px;">04</div><div><div class="stitle" style="font-weight:500;font-size:44px;">La ética: cazar el engaño</div><div class="body" style="font-size:23px;margin-top:8px;">La honestidad es parte del método.</div></div></div>
+      </div>
+    </section>
+
+    <section class="slide" data-label="Apertura narrativa" style="background:var(--carbon-950);display:flex;flex-direction:column;justify-content:center;padding:0 130px;">
+      <div class="kicker" style="font-weight:700;font-size:40px;letter-spacing:.3em;margin-bottom:34px;">30 min</div>
+      <div class="kicker dim" style="margin-bottom:20px;">Apertura narrativa</div>
+      <h2 class="stitle anim" style="font-size:120px;max-width:22ch;">Los datos no<br>convencen solos</h2>
+      <p class="body anim" style="font-size:34px;max-width:40ch;margin-top:44px;">Lo que mueve una decisión es una <span class="hl">historia</span>: un protagonista, un conflicto, una resolución. Y toda historia empieza por el contexto, no por el gráfico.</p>
+      <div class="rule" style="margin-top:48px;"></div>
+    </section>
+
+    <!-- 03 · TABLA vs HISTORIA -->
+    <section class="slide" data-label="Tabla vs. historia" style="background:var(--carbon-1000);display:flex;flex-direction:column;justify-content:center;padding:0 130px;">
+      <h2 class="stitle" style="font-size:88px;margin-bottom:56px;">El mismo hallazgo, dos veces</h2>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:56px;">
+        <div class="anim" style="border:1px solid var(--line);border-radius:4px;padding:44px;background:var(--carbon-950);">
+          <div class="kicker" style="color:var(--signal-negative);font-size:22px;letter-spacing:.28em;margin-bottom:30px;">La tabla cruda</div>
+          <div style="font-family:var(--font-text);font-size:26px;color:var(--bone-300);line-height:2.0;font-variant-numeric:tabular-nums;">
+            L1 &nbsp;42 %<br>L2 &nbsp;55 %<br>L3 &nbsp;61 %<br>L4 &nbsp;48 %<br>L5 &nbsp;73 %<br>L6 &nbsp;94 %
+          </div>
+          <div style="margin-top:24px;font-size:22px;color:var(--bone-500);">Todo cierto. Nada decide.</div>
+        </div>
+        <div class="anim" style="border:1px solid var(--line-citron);border-radius:4px;padding:44px;background:var(--carbon-950);">
+          <div class="kicker" style="font-size:22px;letter-spacing:.28em;margin-bottom:30px;">La historia</div>
+          <svg viewBox="0 0 560 360" width="100%" role="img" font-family="var(--font-text, 'Archivo', system-ui, sans-serif)" aria-label="Rend. (%) por Lote. Valores de 0 a 100.">
+<line x1="78" y1="298.0" x2="538" y2="298.0" stroke="var(--line, rgba(232,230,225,.12))" stroke-width="1"/>
+<line x1="72" y1="298.0" x2="78" y2="298.0" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1"/>
+<text x="67" y="302.0" text-anchor="end" font-size="13" fill="var(--bone-500, #86847C)" style="font-variant-numeric:tabular-nums">0</text>
+<line x1="78" y1="164.0" x2="538" y2="164.0" stroke="var(--line, rgba(232,230,225,.12))" stroke-width="1"/>
+<line x1="72" y1="164.0" x2="78" y2="164.0" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1"/>
+<text x="67" y="168.0" text-anchor="end" font-size="13" fill="var(--bone-500, #86847C)" style="font-variant-numeric:tabular-nums">50</text>
+<line x1="78" y1="30.0" x2="538" y2="30.0" stroke="var(--line, rgba(232,230,225,.12))" stroke-width="1"/>
+<line x1="72" y1="30.0" x2="78" y2="30.0" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1"/>
+<text x="67" y="34.0" text-anchor="end" font-size="13" fill="var(--bone-500, #86847C)" style="font-variant-numeric:tabular-nums">100</text>
+<line x1="78" y1="30" x2="78" y2="298" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1.5"/>
+<line x1="78" y1="298" x2="538" y2="298" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1.5"/>
+<rect x="92.6" y="185.4" width="47.5" height="112.6" rx="2" fill="var(--carbon-600, #3A382F)"/>
+<text x="116.3" y="320.0" text-anchor="middle" font-size="14" fill="var(--bone-500, #86847C)" font-weight="400">L1</text>
+<rect x="169.2" y="150.6" width="47.5" height="147.4" rx="2" fill="var(--carbon-600, #3A382F)"/>
+<text x="193.0" y="320.0" text-anchor="middle" font-size="14" fill="var(--bone-500, #86847C)" font-weight="400">L2</text>
+<rect x="245.9" y="129.2" width="47.5" height="168.8" rx="2" fill="var(--carbon-600, #3A382F)"/>
+<text x="269.7" y="320.0" text-anchor="middle" font-size="14" fill="var(--bone-500, #86847C)" font-weight="400">L3</text>
+<rect x="322.6" y="164.0" width="47.5" height="134.0" rx="2" fill="var(--carbon-600, #3A382F)"/>
+<text x="346.3" y="320.0" text-anchor="middle" font-size="14" fill="var(--bone-500, #86847C)" font-weight="400">L4</text>
+<rect x="399.2" y="94.3" width="47.5" height="203.7" rx="2" fill="var(--carbon-600, #3A382F)"/>
+<text x="423.0" y="320.0" text-anchor="middle" font-size="14" fill="var(--bone-500, #86847C)" font-weight="400">L5</text>
+<rect x="475.9" y="46.1" width="47.5" height="251.9" rx="2" fill="var(--citron-000, #C9C41C)"/>
+<text x="499.7" y="320.0" text-anchor="middle" font-size="14" fill="var(--citron-000, #C9C41C)" font-weight="600">L6</text>
+<text transform="translate(20,164.0) rotate(-90)" text-anchor="middle" font-size="12" letter-spacing="1.6" fill="var(--bone-500, #86847C)" style="text-transform:uppercase">Rend. (%)</text>
+<text x="308.0" y="352" text-anchor="middle" font-size="12" letter-spacing="1.6" fill="var(--bone-500, #86847C)" style="text-transform:uppercase">Lote</text>
+</svg>
+          <div style="margin-top:24px;font-size:22px;color:var(--citron-000);font-weight:600;">El lote 6 decide: escalamos.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 04 · LAS TRES PREGUNTAS -->
+    <!-- POR QUÉ FUNCIONAN -->
+    <section class="slide" data-label="Por qué funcionan" style="background:var(--carbon-1000);display:flex;flex-direction:column;justify-content:center;padding:0 130px;">
+      <div class="kicker" style="margin-bottom:24px;">Mostrar, no contar</div>
+      <h2 class="stitle" style="font-size:88px;margin-bottom:56px;">Por qué una historia se recuerda</h2>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:52px;">
+        <div class="anim"><div class="stitle" style="font-weight:500;font-size:50px;">Memoria</div><div class="body" style="font-size:26px;margin-top:16px;">Un número suelto se olvida. Dentro de un arco —esto estaba bien, esto se rompió, esto proponemos— se recuerda y se defiende en una reunión.</div></div>
+        <div class="anim"><div class="stitle" style="font-weight:500;font-size:50px;">Atención</div><div class="body" style="font-size:26px;margin-top:16px;">El conflicto crea tensión, y la tensión sostiene la mirada. Sin conflicto no hay razón para seguir escuchando.</div></div>
+        <div class="anim"><div class="stitle" style="font-weight:500;font-size:50px;">Decisión</div><div class="body" style="font-size:26px;margin-top:16px;">La historia termina en una acción. El dato solo describe; la historia pide hacer algo con él.</div></div>
+      </div>
+      <div class="rule" style="margin-top:56px;"></div>
+    </section>
+
+    <section class="slide" data-label="Las tres preguntas" style="background:var(--carbon-1000);display:flex;flex-direction:column;justify-content:center;padding:0 130px;">
+      <div class="kicker" style="margin-bottom:24px;">El marco</div>
+      <h2 class="stitle" style="font-size:96px;margin-bottom:56px;">Las tres preguntas</h2>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:40px;">
+        <div class="anim" style="background:var(--carbon-900);border:1px solid var(--line);border-top:4px solid var(--citron-000);border-radius:4px;padding:48px 42px;">
+          <div class="kicker" style="font-size:22px;">Quién</div>
+          <div class="stitle" style="font-weight:500;font-size:52px;margin:18px 0 18px;">La audiencia</div>
+          <div class="body" style="font-size:26px;">¿A quién le hablas? Un gerente, un cliente y un colega técnico necesitan cosas distintas.</div>
+        </div>
+        <div class="anim" style="background:var(--carbon-900);border:1px solid var(--line);border-top:4px solid var(--citron-000);border-radius:4px;padding:48px 42px;">
+          <div class="kicker" style="font-size:22px;">Qué</div>
+          <div class="stitle" style="font-weight:500;font-size:52px;margin:18px 0 18px;">La decisión</div>
+          <div class="body" style="font-size:26px;">¿Qué quieres que haga o crea? Si no hay acción posible, no hay historia.</div>
+        </div>
+        <div class="anim" style="background:var(--carbon-900);border:1px solid var(--line);border-top:4px solid var(--citron-000);border-radius:4px;padding:48px 42px;">
+          <div class="kicker" style="font-size:22px;">Cómo</div>
+          <div class="stitle" style="font-weight:500;font-size:52px;margin:18px 0 18px;">La evidencia</div>
+          <div class="body" style="font-size:26px;">¿Qué datos lo sostienen? El «cómo» va al final: primero quién y qué.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 05 · BIG IDEA -->
+    <!-- EJEMPLO BIORREACTOR -->
+    <section class="slide" data-label="Ejemplo: biorreactor" style="background:var(--carbon-1000);display:flex;flex-direction:column;justify-content:center;padding:0 130px;">
+      <div class="kicker" style="margin-bottom:22px;">El marco, en concreto</div>
+      <h2 class="stitle" style="font-size:72px;margin-bottom:34px;">El lote 6 del biorreactor</h2>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:30px;">
+        <div class="anim" style="background:var(--carbon-900);border:1px solid var(--line);border-top:4px solid var(--citron-000);border-radius:4px;padding:34px 32px;"><div class="kicker" style="font-size:21px;">Quién</div><div class="stitle" style="font-weight:500;font-size:40px;margin:14px 0 14px;">El comité de producción</div><div class="body" style="font-size:23px;">Deciden inversiones de escalado. No quieren la tabla: quieren una recomendación.</div></div>
+        <div class="anim" style="background:var(--carbon-900);border:1px solid var(--line);border-top:4px solid var(--citron-000);border-radius:4px;padding:34px 32px;"><div class="kicker" style="font-size:21px;">Qué</div><div class="stitle" style="font-weight:500;font-size:40px;margin:14px 0 14px;">¿Escalamos el lote 6?</div><div class="body" style="font-size:23px;">La decisión concreta: llevar sus condiciones al siguiente ciclo, o no.</div></div>
+        <div class="anim" style="background:var(--carbon-900);border:1px solid var(--line);border-top:4px solid var(--citron-000);border-radius:4px;padding:34px 32px;"><div class="kicker" style="font-size:21px;">Cómo</div><div class="stitle" style="font-weight:500;font-size:40px;margin:14px 0 14px;">Rendimiento por lote</div><div class="body" style="font-size:23px;">La serie con L6 en foco: una barra citrón basta para sostener el argumento.</div></div>
+      </div>
+      <div class="anim" style="background:var(--carbon-900);border:1px solid var(--line-citron);border-left:6px solid var(--citron-000);border-radius:0 4px 4px 0;padding:42px 54px;margin-top:46px;">
+        <div class="kicker" style="font-size:23px;margin-bottom:18px;">La Big Idea</div>
+        <div style="font-family:var(--font-text);font-weight:500;font-size:52px;line-height:1.1;color:var(--bone-000);">«El lote 6 supera la meta de rendimiento; <span class="hl">recomendamos escalar</span> sus condiciones al siguiente ciclo.»</div>
+      </div>
+    </section>
+
+    <section class="slide" data-label="El Big Idea" style="background:var(--carbon-1000);display:flex;flex-direction:column;justify-content:center;padding:0 130px;">
+      <div class="kicker" style="margin-bottom:30px;">El mensaje</div>
+      <h2 class="stitle anim" style="font-size:104px;max-width:20ch;">Destílalo en una<br>sola <span class="hl">frase</span></h2>
+      <p class="body anim" style="font-size:34px;max-width:46ch;margin-top:44px;">No un tema («la eficiencia del biorreactor»), sino una postura con consecuencia: <span class="hl">«el lote 6 supera la meta; deberíamos escalar sus condiciones».</span></p>
+      <div class="body anim" style="font-size:26px;margin-top:40px;max-width:50ch;color:var(--bone-500);">Si necesitas dos frases, todavía no la destilaste.</div>
+    </section>
+
+    <!-- 06 · HISTORIA DE 3 MIN -->
+    <section class="slide" data-label="Historia de 3 minutos" style="background:var(--carbon-950);display:flex;flex-direction:column;justify-content:center;padding:0 130px;">
+      <div class="kicker" style="margin-bottom:24px;">La estructura</div>
+      <h2 class="stitle" style="font-size:92px;margin-bottom:60px;">La historia de 3 minutos</h2>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:44px;align-items:start;">
+        <div class="anim">
+          <div class="stitle" style="font-weight:700;color:var(--citron-000);font-size:64px;">01</div>
+          <div class="stitle" style="font-weight:500;font-size:46px;margin:14px 0 14px;">Situación</div>
+          <div class="body" style="font-size:26px;">El contexto que la audiencia ya comparte.</div>
+        </div>
+        <div class="anim">
+          <div class="stitle" style="font-weight:700;color:var(--citron-000);font-size:64px;">02</div>
+          <div class="stitle" style="font-weight:500;font-size:46px;margin:14px 0 14px;">Complicación</div>
+          <div class="body" style="font-size:26px;">Qué cambió, el problema que obliga a decidir.</div>
+        </div>
+        <div class="anim">
+          <div class="stitle" style="font-weight:700;color:var(--citron-000);font-size:64px;">03</div>
+          <div class="stitle" style="font-weight:500;font-size:46px;margin:14px 0 14px;">Resolución</div>
+          <div class="body" style="font-size:26px;">Qué propones. La decisión que habilita el dato.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 07 · STORYBOARD -->
+    <section class="slide" data-label="El storyboard" style="background:var(--carbon-1000);display:grid;grid-template-columns:1fr 1fr;gap:90px;align-items:center;padding:0 130px;">
+      <div>
+        <div class="kicker" style="margin-bottom:24px;">El prototipo</div>
+        <h2 class="stitle" style="font-size:92px;">El storyboard,<br>en papel</h2>
+        <p class="body anim" style="font-size:28px;max-width:32ch;margin-top:34px;">El plan antes del software. Cada recuadro es una idea en el orden en que la audiencia la recibirá. El papel es barato de tirar; una diapositiva pulida no.</p>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:28px;height:520px;">
+        <div class="anim" style="border:2px dashed var(--line);border-radius:4px;display:flex;align-items:flex-end;padding:26px;"><div style="font-family:var(--font-display);font-weight:700;font-size:40px;color:var(--bone-500);">1</div></div>
+        <div class="anim" style="border:2px dashed var(--line);border-radius:4px;display:flex;align-items:flex-end;padding:26px;"><div style="font-family:var(--font-display);font-weight:700;font-size:40px;color:var(--bone-500);">2</div></div>
+        <div class="anim" style="border:2px dashed var(--line);border-radius:4px;display:flex;align-items:flex-end;padding:26px;"><div style="font-family:var(--font-display);font-weight:700;font-size:40px;color:var(--bone-500);">3</div></div>
+        <div class="anim" style="border:2px solid var(--line-citron);border-radius:4px;display:flex;align-items:flex-end;padding:26px;background:rgba(201,196,28,.06);"><div style="font-family:var(--font-display);font-weight:700;font-size:40px;color:var(--citron-000);">4 ★</div></div>
+      </div>
+    </section>
+
+    <!-- 08 · LA TOMA -->
+    <section class="slide" data-label="La toma" style="background:var(--carbon-1000);display:grid;grid-template-columns:1fr 1.15fr;gap:90px;align-items:center;padding:0 130px;">
+      <div>
+        <div class="kicker" style="margin-bottom:24px;">La toma</div>
+        <h2 class="stitle" style="font-size:88px;">Todo es contexto<br>hasta que algo<br>es el <span class="hl">foco</span></h2>
+        <p class="body anim" style="font-size:28px;max-width:34ch;margin-top:32px;">El gris se retira. Una sola barra en citrón lleva el ojo directo a la decisión. El color no decora: señala dónde mirar.</p>
+      </div>
+      <div style="position:relative;background:var(--carbon-950);border:1px solid var(--line);border-radius:4px;padding:52px 56px;">
+        <span style="position:absolute;top:0;left:0;width:34px;height:34px;border-top:3px solid var(--citron-000);border-left:3px solid var(--citron-000);"></span>
+        <span style="position:absolute;top:0;right:0;width:34px;height:34px;border-top:3px solid var(--citron-000);border-right:3px solid var(--citron-000);"></span>
+        <span style="position:absolute;bottom:0;left:0;width:34px;height:34px;border-bottom:3px solid var(--citron-000);border-left:3px solid var(--citron-000);"></span>
+        <span style="position:absolute;bottom:0;right:0;width:34px;height:34px;border-bottom:3px solid var(--citron-000);border-right:3px solid var(--citron-000);"></span>
+        <svg viewBox="0 0 640 400" width="100%" role="img" font-family="var(--font-text, 'Archivo', system-ui, sans-serif)" aria-label="Rendimiento (%) por Lote de producción. Valores de 0 a 100.">
+<line x1="78" y1="338.0" x2="618" y2="338.0" stroke="var(--line, rgba(232,230,225,.12))" stroke-width="1"/>
+<line x1="72" y1="338.0" x2="78" y2="338.0" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1"/>
+<text x="67" y="342.0" text-anchor="end" font-size="13" fill="var(--bone-500, #86847C)" style="font-variant-numeric:tabular-nums">0</text>
+<line x1="78" y1="276.4" x2="618" y2="276.4" stroke="var(--line, rgba(232,230,225,.12))" stroke-width="1"/>
+<line x1="72" y1="276.4" x2="78" y2="276.4" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1"/>
+<text x="67" y="280.4" text-anchor="end" font-size="13" fill="var(--bone-500, #86847C)" style="font-variant-numeric:tabular-nums">20</text>
+<line x1="78" y1="214.8" x2="618" y2="214.8" stroke="var(--line, rgba(232,230,225,.12))" stroke-width="1"/>
+<line x1="72" y1="214.8" x2="78" y2="214.8" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1"/>
+<text x="67" y="218.8" text-anchor="end" font-size="13" fill="var(--bone-500, #86847C)" style="font-variant-numeric:tabular-nums">40</text>
+<line x1="78" y1="153.2" x2="618" y2="153.2" stroke="var(--line, rgba(232,230,225,.12))" stroke-width="1"/>
+<line x1="72" y1="153.2" x2="78" y2="153.2" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1"/>
+<text x="67" y="157.2" text-anchor="end" font-size="13" fill="var(--bone-500, #86847C)" style="font-variant-numeric:tabular-nums">60</text>
+<line x1="78" y1="91.6" x2="618" y2="91.6" stroke="var(--line, rgba(232,230,225,.12))" stroke-width="1"/>
+<line x1="72" y1="91.6" x2="78" y2="91.6" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1"/>
+<text x="67" y="95.6" text-anchor="end" font-size="13" fill="var(--bone-500, #86847C)" style="font-variant-numeric:tabular-nums">80</text>
+<line x1="78" y1="30.0" x2="618" y2="30.0" stroke="var(--line, rgba(232,230,225,.12))" stroke-width="1"/>
+<line x1="72" y1="30.0" x2="78" y2="30.0" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1"/>
+<text x="67" y="34.0" text-anchor="end" font-size="13" fill="var(--bone-500, #86847C)" style="font-variant-numeric:tabular-nums">100</text>
+<line x1="78" y1="30" x2="78" y2="338" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1.5"/>
+<line x1="78" y1="338" x2="618" y2="338" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1.5"/>
+<rect x="95.1" y="208.6" width="55.8" height="129.4" rx="2" fill="var(--carbon-600, #3A382F)"/>
+<text x="123.0" y="360.0" text-anchor="middle" font-size="14" fill="var(--bone-500, #86847C)" font-weight="400">L1</text>
+<rect x="185.1" y="168.6" width="55.8" height="169.4" rx="2" fill="var(--carbon-600, #3A382F)"/>
+<text x="213.0" y="360.0" text-anchor="middle" font-size="14" fill="var(--bone-500, #86847C)" font-weight="400">L2</text>
+<rect x="275.1" y="144.0" width="55.8" height="194.0" rx="2" fill="var(--carbon-600, #3A382F)"/>
+<text x="303.0" y="360.0" text-anchor="middle" font-size="14" fill="var(--bone-500, #86847C)" font-weight="400">L3</text>
+<rect x="365.1" y="184.0" width="55.8" height="154.0" rx="2" fill="var(--carbon-600, #3A382F)"/>
+<text x="393.0" y="360.0" text-anchor="middle" font-size="14" fill="var(--bone-500, #86847C)" font-weight="400">L4</text>
+<rect x="455.1" y="103.9" width="55.8" height="234.1" rx="2" fill="var(--carbon-600, #3A382F)"/>
+<text x="483.0" y="360.0" text-anchor="middle" font-size="14" fill="var(--bone-500, #86847C)" font-weight="400">L5</text>
+<rect x="545.1" y="48.5" width="55.8" height="289.5" rx="2" fill="var(--citron-000, #C9C41C)"/>
+<text x="573.0" y="38.5" text-anchor="middle" font-size="16" font-weight="700" fill="var(--citron-000, #C9C41C)" style="font-variant-numeric:tabular-nums">94%</text>
+<text x="573.0" y="360.0" text-anchor="middle" font-size="14" fill="var(--citron-000, #C9C41C)" font-weight="600">L6</text>
+<text transform="translate(20,184.0) rotate(-90)" text-anchor="middle" font-size="12" letter-spacing="1.6" fill="var(--bone-500, #86847C)" style="text-transform:uppercase">Rendimiento (%)</text>
+<text x="348.0" y="392" text-anchor="middle" font-size="12" letter-spacing="1.6" fill="var(--bone-500, #86847C)" style="text-transform:uppercase">Lote de producción</text>
+</svg>
+        <div style="font-family:var(--font-text);font-size:20px;letter-spacing:.1em;text-transform:uppercase;color:var(--bone-500);margin-top:22px;">Fig 05 — Rendimiento por lote · 2025</div>
+      </div>
+    </section>
+
+    <!-- 09 · CAZA DEL ENGAÑO (interactiva) -->
+    <!-- DIRIGIR LA ATENCIÓN -->
+    <!-- CUENTA LOS NUEVES · sin foco -->
+    <section class="slide" data-label="Cuenta los nueves" style="background:var(--carbon-950);display:flex;flex-direction:column;justify-content:center;align-items:center;padding:0 120px;text-align:center;">
+      <div class="kicker" style="margin-bottom:18px;">Adelanto · Módulo 3</div>
+      <h2 class="stitle" style="font-size:100px;margin-bottom:12px;">Cuenta los nueves</h2>
+      <div class="kicker" style="color:var(--signal-negative);font-size:26px;margin-bottom:56px;">Sin foco · búscalos</div>
+      <div style="display:grid;grid-template-columns:repeat(10,1fr);gap:26px 8px;font-family:var(--font-text);font-variant-numeric:tabular-nums;font-weight:500;font-size:82px;text-align:center;max-width:1360px;margin:0 auto;"><span style="color:var(--bone-300);">4</span><span style="color:var(--bone-300);">8</span><span style="color:var(--bone-300);">2</span><span style="color:var(--bone-300);">6</span><span style="color:var(--bone-300);">1</span><span style="color:var(--bone-300);">9</span><span style="color:var(--bone-300);">3</span><span style="color:var(--bone-300);">5</span><span style="color:var(--bone-300);">7</span><span style="color:var(--bone-300);">0</span><span style="color:var(--bone-300);">6</span><span style="color:var(--bone-300);">2</span><span style="color:var(--bone-300);">8</span><span style="color:var(--bone-300);">4</span><span style="color:var(--bone-300);">1</span><span style="color:var(--bone-300);">3</span><span style="color:var(--bone-300);">9</span><span style="color:var(--bone-300);">5</span><span style="color:var(--bone-300);">7</span><span style="color:var(--bone-300);">2</span><span style="color:var(--bone-300);">0</span><span style="color:var(--bone-300);">6</span><span style="color:var(--bone-300);">8</span><span style="color:var(--bone-300);">3</span><span style="color:var(--bone-300);">1</span><span style="color:var(--bone-300);">9</span><span style="color:var(--bone-300);">4</span><span style="color:var(--bone-300);">7</span><span style="color:var(--bone-300);">5</span><span style="color:var(--bone-300);">2</span><span style="color:var(--bone-300);">8</span><span style="color:var(--bone-300);">6</span><span style="color:var(--bone-300);">0</span><span style="color:var(--bone-300);">3</span><span style="color:var(--bone-300);">1</span><span style="color:var(--bone-300);">9</span><span style="color:var(--bone-300);">5</span><span style="color:var(--bone-300);">4</span><span style="color:var(--bone-300);">7</span><span style="color:var(--bone-300);">2</span></div>
+    </section>
+
+    <!-- EL MENSAJE -->
+    <section class="slide" data-label="El ojo encuentra el foco" style="background:var(--carbon-1000);display:flex;flex-direction:column;justify-content:center;padding:0 130px;">
+      <div class="kicker" style="margin-bottom:30px;">Atributos preatentivos</div>
+      <h2 class="stitle anim" style="font-size:104px;max-width:20ch;">El ojo encuentra el foco antes de que lo <span class="hl">pienses</span></h2>
+      <p class="body anim" style="font-size:36px;max-width:50ch;margin-top:40px;">Color, tamaño, posición: son los atributos preatentivos, la herramienta con la que diriges la mirada. Un solo elemento distinto y el ojo va directo, sin esfuerzo.</p>
+      <div class="rule" style="margin-top:52px;"></div>
+    </section>
+
+    <!-- AHORA, CON FOCO -->
+    <section class="slide" data-label="Ahora, con foco" style="background:var(--carbon-950);display:flex;flex-direction:column;justify-content:center;align-items:center;padding:0 120px;text-align:center;">
+      <div class="kicker" style="margin-bottom:18px;">Adelanto · Módulo 3</div>
+      <h2 class="stitle" style="font-size:100px;margin-bottom:12px;">Ahora busca los nueves</h2>
+      <div class="kicker" style="font-size:26px;margin-bottom:56px;">Con foco · saltan solos</div>
+      <div style="display:grid;grid-template-columns:repeat(10,1fr);gap:26px 8px;font-family:var(--font-text);font-variant-numeric:tabular-nums;font-weight:500;font-size:82px;text-align:center;max-width:1360px;margin:0 auto;"><span style="color:var(--carbon-600);">4</span><span style="color:var(--carbon-600);">8</span><span style="color:var(--carbon-600);">2</span><span style="color:var(--carbon-600);">6</span><span style="color:var(--carbon-600);">1</span><span style="color:var(--citron-000);font-weight:800;">9</span><span style="color:var(--carbon-600);">3</span><span style="color:var(--carbon-600);">5</span><span style="color:var(--carbon-600);">7</span><span style="color:var(--carbon-600);">0</span><span style="color:var(--carbon-600);">6</span><span style="color:var(--carbon-600);">2</span><span style="color:var(--carbon-600);">8</span><span style="color:var(--carbon-600);">4</span><span style="color:var(--carbon-600);">1</span><span style="color:var(--carbon-600);">3</span><span style="color:var(--citron-000);font-weight:800;">9</span><span style="color:var(--carbon-600);">5</span><span style="color:var(--carbon-600);">7</span><span style="color:var(--carbon-600);">2</span><span style="color:var(--carbon-600);">0</span><span style="color:var(--carbon-600);">6</span><span style="color:var(--carbon-600);">8</span><span style="color:var(--carbon-600);">3</span><span style="color:var(--carbon-600);">1</span><span style="color:var(--citron-000);font-weight:800;">9</span><span style="color:var(--carbon-600);">4</span><span style="color:var(--carbon-600);">7</span><span style="color:var(--carbon-600);">5</span><span style="color:var(--carbon-600);">2</span><span style="color:var(--carbon-600);">8</span><span style="color:var(--carbon-600);">6</span><span style="color:var(--carbon-600);">0</span><span style="color:var(--carbon-600);">3</span><span style="color:var(--carbon-600);">1</span><span style="color:var(--citron-000);font-weight:800;">9</span><span style="color:var(--carbon-600);">5</span><span style="color:var(--carbon-600);">4</span><span style="color:var(--carbon-600);">7</span><span style="color:var(--carbon-600);">2</span></div>
+    </section>
+
+    <section class="slide" data-label="Caza del engaño" style="background:var(--carbon-1000);display:flex;flex-direction:column;justify-content:center;padding:0 130px;">
+      <div class="kicker" style="margin-bottom:24px;">La ética · en vivo</div>
+      <h2 class="stitle" style="font-size:80px;margin-bottom:16px;">¿Dónde está el truco?</h2>
+      <div style="display:grid;grid-template-columns:1.1fr 1fr;gap:80px;align-items:center;margin-top:20px;">
+        <div style="position:relative;background:var(--carbon-950);border:1px solid var(--line);border-radius:4px;padding:48px;">
+          <div id="dBad"><svg viewBox="0 0 460 380" width="100%" role="img" font-family="var(--font-text, 'Archivo', system-ui, sans-serif)" aria-label="Satisfacción (%) por . Valores de 96 a 100.">
+<line x1="78" y1="318.0" x2="438" y2="318.0" stroke="var(--line, rgba(232,230,225,.12))" stroke-width="1"/>
+<line x1="72" y1="318.0" x2="78" y2="318.0" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1"/>
+<text x="67" y="322.0" text-anchor="end" font-size="13" fill="var(--bone-500, #86847C)" style="font-variant-numeric:tabular-nums">96</text>
+<line x1="78" y1="246.0" x2="438" y2="246.0" stroke="var(--line, rgba(232,230,225,.12))" stroke-width="1"/>
+<line x1="72" y1="246.0" x2="78" y2="246.0" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1"/>
+<text x="67" y="250.0" text-anchor="end" font-size="13" fill="var(--bone-500, #86847C)" style="font-variant-numeric:tabular-nums">97</text>
+<line x1="78" y1="174.0" x2="438" y2="174.0" stroke="var(--line, rgba(232,230,225,.12))" stroke-width="1"/>
+<line x1="72" y1="174.0" x2="78" y2="174.0" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1"/>
+<text x="67" y="178.0" text-anchor="end" font-size="13" fill="var(--bone-500, #86847C)" style="font-variant-numeric:tabular-nums">98</text>
+<line x1="78" y1="102.0" x2="438" y2="102.0" stroke="var(--line, rgba(232,230,225,.12))" stroke-width="1"/>
+<line x1="72" y1="102.0" x2="78" y2="102.0" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1"/>
+<text x="67" y="106.0" text-anchor="end" font-size="13" fill="var(--bone-500, #86847C)" style="font-variant-numeric:tabular-nums">99</text>
+<line x1="78" y1="30.0" x2="438" y2="30.0" stroke="var(--line, rgba(232,230,225,.12))" stroke-width="1"/>
+<line x1="72" y1="30.0" x2="78" y2="30.0" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1"/>
+<text x="67" y="34.0" text-anchor="end" font-size="13" fill="var(--bone-500, #86847C)" style="font-variant-numeric:tabular-nums">100</text>
+<line x1="78" y1="30" x2="78" y2="318" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1.5"/>
+<line x1="78" y1="318" x2="438" y2="318" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1.5"/>
+<rect x="135.0" y="246.0" width="66.0" height="72.0" rx="2" fill="var(--carbon-600, #3A382F)"/>
+<text x="168.0" y="340.0" text-anchor="middle" font-size="14" fill="var(--bone-500, #86847C)" font-weight="400">Mes A</text>
+<rect x="315.0" y="30.0" width="66.0" height="288.0" rx="2" fill="var(--signal-negative, #C8623A)"/>
+<text x="348.0" y="340.0" text-anchor="middle" font-size="14" fill="var(--bone-500, #86847C)" font-weight="600">Mes B</text>
+<text transform="translate(20,174.0) rotate(-90)" text-anchor="middle" font-size="12" letter-spacing="1.6" fill="var(--bone-500, #86847C)" style="text-transform:uppercase">Satisfacción (%)</text>
+</svg></div>
+          <div id="dGood" hidden><svg viewBox="0 0 460 380" width="100%" role="img" font-family="var(--font-text, 'Archivo', system-ui, sans-serif)" aria-label="Satisfacción (%) por . Valores de 0 a 100.">
+<line x1="78" y1="318.0" x2="438" y2="318.0" stroke="var(--line, rgba(232,230,225,.12))" stroke-width="1"/>
+<line x1="72" y1="318.0" x2="78" y2="318.0" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1"/>
+<text x="67" y="322.0" text-anchor="end" font-size="13" fill="var(--bone-500, #86847C)" style="font-variant-numeric:tabular-nums">0</text>
+<line x1="78" y1="246.0" x2="438" y2="246.0" stroke="var(--line, rgba(232,230,225,.12))" stroke-width="1"/>
+<line x1="72" y1="246.0" x2="78" y2="246.0" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1"/>
+<text x="67" y="250.0" text-anchor="end" font-size="13" fill="var(--bone-500, #86847C)" style="font-variant-numeric:tabular-nums">25</text>
+<line x1="78" y1="174.0" x2="438" y2="174.0" stroke="var(--line, rgba(232,230,225,.12))" stroke-width="1"/>
+<line x1="72" y1="174.0" x2="78" y2="174.0" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1"/>
+<text x="67" y="178.0" text-anchor="end" font-size="13" fill="var(--bone-500, #86847C)" style="font-variant-numeric:tabular-nums">50</text>
+<line x1="78" y1="102.0" x2="438" y2="102.0" stroke="var(--line, rgba(232,230,225,.12))" stroke-width="1"/>
+<line x1="72" y1="102.0" x2="78" y2="102.0" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1"/>
+<text x="67" y="106.0" text-anchor="end" font-size="13" fill="var(--bone-500, #86847C)" style="font-variant-numeric:tabular-nums">75</text>
+<line x1="78" y1="30.0" x2="438" y2="30.0" stroke="var(--line, rgba(232,230,225,.12))" stroke-width="1"/>
+<line x1="72" y1="30.0" x2="78" y2="30.0" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1"/>
+<text x="67" y="34.0" text-anchor="end" font-size="13" fill="var(--bone-500, #86847C)" style="font-variant-numeric:tabular-nums">100</text>
+<line x1="78" y1="30" x2="78" y2="318" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1.5"/>
+<line x1="78" y1="318" x2="438" y2="318" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1.5"/>
+<rect x="135.0" y="38.6" width="66.0" height="279.4" rx="2" fill="var(--carbon-600, #3A382F)"/>
+<text x="168.0" y="340.0" text-anchor="middle" font-size="14" fill="var(--bone-500, #86847C)" font-weight="400">Mes A</text>
+<rect x="315.0" y="30.0" width="66.0" height="288.0" rx="2" fill="var(--citron-000, #C9C41C)"/>
+<text x="348.0" y="340.0" text-anchor="middle" font-size="14" fill="var(--citron-000, #C9C41C)" font-weight="600">Mes B</text>
+<text transform="translate(20,174.0) rotate(-90)" text-anchor="middle" font-size="12" letter-spacing="1.6" fill="var(--bone-500, #86847C)" style="text-transform:uppercase">Satisfacción (%)</text>
+</svg></div>
+        </div>
+        <div>
+          <p class="body" style="font-size:30px;max-width:30ch;" id="dtext">El mismo dato: un <span class="hl">+3 %</span> de un mes a otro. Con el eje truncado parece un salto enorme. Eso es contar mal la historia.</p>
+          <button class="demo-btn anim" id="demoBtn" type="button" style="margin-top:40px;">Ver la versión honesta</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10 · CITA / ÉTICA -->
+    <!-- MÁS TRUCOS -->
+    <section class="slide" data-label="Más trucos" style="background:var(--carbon-1000);display:flex;flex-direction:column;justify-content:center;padding:0 130px;">
+      <div class="kicker" style="margin-bottom:24px;">La ética · galería</div>
+      <h2 class="stitle" style="font-size:84px;margin-bottom:48px;">Los otros trucos</h2>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:36px;">
+        <div class="anim" style="background:var(--carbon-950);border:1px solid var(--line);border-top:4px solid var(--signal-negative);border-radius:4px;padding:40px 36px;"><div class="stitle" style="font-weight:500;font-size:44px;">Eje truncado</div><div class="body" style="font-size:24px;margin-top:14px;">El que acabamos de ver: un eje que no empieza en cero exagera diferencias pequeñas.</div></div>
+        <div class="anim" style="background:var(--carbon-950);border:1px solid var(--line);border-top:4px solid var(--signal-negative);border-radius:4px;padding:40px 36px;"><div class="stitle" style="font-weight:500;font-size:44px;">Cherry-picking</div><div class="body" style="font-size:24px;margin-top:14px;">Recortar el rango de tiempo o los casos para mostrar solo lo que conviene al argumento.</div></div>
+        <div class="anim" style="background:var(--carbon-950);border:1px solid var(--line);border-top:4px solid var(--signal-negative);border-radius:4px;padding:40px 36px;"><div class="stitle" style="font-weight:500;font-size:44px;">Escala de área</div><div class="body" style="font-size:24px;margin-top:14px;">Burbujas o íconos donde el área crece con el cuadrado del dato: un 2× parece 4×.</div></div>
+      </div>
+      <p class="body" style="font-size:26px;margin-top:44px;max-width:60ch;">La pregunta de control es siempre la misma: <span class="hl">¿la imagen dice la verdad que dicen los datos?</span></p>
+    </section>
+
+    <section class="slide" data-label="Ética" style="background:var(--citron-000);color:var(--carbon-1000);display:flex;flex-direction:column;justify-content:center;padding:0 150px;">
+      <div style="font-family:var(--font-display);font-weight:700;font-size:120px;line-height:1;margin-bottom:10px;">“</div>
+      <blockquote class="stitle anim" style="font-weight:400;font-size:96px;max-width:24ch;color:var(--carbon-1000);">Nunca truques la escala para exagerar un efecto.</blockquote>
+      <div style="font-family:var(--font-text);font-weight:600;font-size:24px;letter-spacing:.28em;text-transform:uppercase;margin-top:52px;">La honestidad es parte del método · hilo conductor del curso</div>
+    </section>
+
+    <!-- 11 · CIERRE / ACTIVIDAD -->
+    <section class="slide" data-label="Hoy en clase" style="background:var(--carbon-1000);display:flex;flex-direction:column;justify-content:center;padding:0 130px;">
+      <div class="kicker" style="margin-bottom:30px;">Hoy en clase</div>
+      <h2 class="stitle" style="font-size:96px;margin-bottom:48px;">Con tus propios datos</h2>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:36px;">
+        <div class="anim"><div class="stitle" style="font-weight:700;color:var(--citron-000);font-size:48px;">01</div><div class="body" style="font-size:26px;margin-top:14px;">Define tu <b style="color:var(--bone-000);">quién / qué / cómo</b> en parejas.</div></div>
+        <div class="anim"><div class="stitle" style="font-weight:700;color:var(--citron-000);font-size:48px;">02</div><div class="body" style="font-size:26px;margin-top:14px;">Escribe tu <b style="color:var(--bone-000);">Big Idea</b> en una frase.</div></div>
+        <div class="anim"><div class="stitle" style="font-weight:700;color:var(--citron-000);font-size:48px;">03</div><div class="body" style="font-size:26px;margin-top:14px;">Caza el <b style="color:var(--bone-000);">engaño visual</b> en la galería.</div></div>
+        <div class="anim"><div class="stitle" style="font-weight:700;color:var(--citron-000);font-size:48px;">04</div><div class="body" style="font-size:26px;margin-top:14px;">Bosqueja tu <b style="color:var(--bone-000);">storyboard</b> a mano.</div></div>
+      </div>
+      <div style="display:inline-flex;align-items:center;gap:14px;background:var(--carbon-900);border:1px solid var(--line);color:var(--bone-300);font-weight:600;font-size:22px;letter-spacing:.14em;text-transform:uppercase;padding:18px 30px;border-radius:2px;margin-top:56px;align-self:flex-start;">Sin IA todavía · llega en el módulo 2 · pensar antes de ejecutar</div>
+    </section>
+
+  </div>
+</div>
+
+<div class="nav" role="navigation" aria-label="Navegación de diapositivas">
+  <button id="prev" aria-label="Anterior">‹</button>
+  <span class="count" id="count">1 / 11</span>
+  <button id="next" aria-label="Siguiente">›</button>
+  <span class="label" id="slabel">Portada</span>
+  <button id="fs" aria-label="Pantalla completa" title="Pantalla completa (F)" style="font-size:15px;">⛶</button>
+  <button id="theme" aria-label="Cambiar de versión clara/oscura" title="Versión clara / oscura (L)" style="font-size:16px;">☀</button>
+</div>
+<div class="hint">← → navegar · F pantalla completa · L versión clara</div>
+
+<script>
+(function () {
+  var stage = document.getElementById('stage');
+  var viewport = document.querySelector('.viewport');
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var i = 0;
+  var mq = window.matchMedia('(max-width:768px)');
+  var countEl = document.getElementById('count'), labelEl = document.getElementById('slabel'), prog = document.getElementById('progress');
+  function fit() {
+    if (mq.matches) {
+      stage.style.transform = 'none';
+      var z = (document.documentElement.clientWidth || window.innerWidth) / 1920;
+      slides.forEach(function (sl) { sl.style.zoom = z; });
+      return;
+    }
+    slides.forEach(function (sl) { sl.style.zoom = ''; });
+    var s = Math.min(viewport.clientWidth / 1920, viewport.clientHeight / 1080);
+    stage.style.transform = 'scale(' + s + ')';
+  }
+  window.addEventListener('resize', fit);
+  var rail = document.createElement('div'); rail.className = 'rail'; rail.setAttribute('aria-label', 'Miniaturas');
+  var thumbs = slides.map(function (sl, k) {
+    var t = document.createElement('button'); t.className = 'thumb'; t.type = 'button';
+    t.title = (k + 1) + ' · ' + (sl.getAttribute('data-label') || '');
+    var tw = document.createElement('div'); tw.className = 'tw';
+    tw.style.cssText = sl.getAttribute('style') || '';
+    tw.style.width = '1920px'; tw.style.height = '1080px'; tw.style.position = 'absolute'; tw.style.top = '0'; tw.style.left = '0';
+    tw.innerHTML = sl.innerHTML;
+    var tn = document.createElement('span'); tn.className = 'tn'; tn.textContent = k + 1;
+    t.appendChild(tw); t.appendChild(tn);
+    t.addEventListener('click', function () { show(k); });
+    rail.appendChild(t); return t;
+  });
+  document.body.appendChild(rail);
+  function show(n) {
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach(function (s, k) { s.classList.toggle('is-active', k === i); });
+    thumbs.forEach(function (t, k) { t.classList.toggle('is-cur', k === i); });
+    countEl.textContent = (i + 1) + ' / ' + slides.length;
+    labelEl.textContent = slides[i].getAttribute('data-label') || '';
+    prog.style.width = ((i) / (slides.length - 1) * 100) + '%';
+    var cur = thumbs[i]; if (cur && cur.scrollIntoView) cur.scrollIntoView({ block: 'nearest', inline: 'center' });
+    if (location.hash !== '#' + (i + 1)) history.replaceState(null, '', '#' + (i + 1));
+  }
+  function next() { show(i + 1); } function prev() { show(i - 1); }
+  document.getElementById('next').addEventListener('click', next);
+  document.getElementById('prev').addEventListener('click', prev);
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); next(); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); prev(); }
+    else if (e.key === 'Home') show(0);
+    else if (e.key === 'End') show(slides.length - 1);
+    else if (e.key === 'f' || e.key === 'F') { e.preventDefault(); toggleFs(); }
+    else if (e.key === 'l' || e.key === 'L') { e.preventDefault(); toggleTheme(); }
+  });
+  var themeBtn = document.getElementById('theme');
+  function toggleTheme() { var light = document.body.classList.toggle('light'); themeBtn.textContent = light ? '☾' : '☀'; themeBtn.title = light ? 'Versión oscura (L)' : 'Versión clara (L)'; }
+  themeBtn.addEventListener('click', toggleTheme);
+  var fsBtn = document.getElementById('fs');
+  function toggleFs() { if (document.fullscreenElement) { document.exitFullscreen(); } else if (document.documentElement.requestFullscreen) { document.documentElement.requestFullscreen(); } }
+  fsBtn.addEventListener('click', toggleFs);
+  document.addEventListener('fullscreenchange', function () { document.body.classList.toggle('is-fs', !!document.fullscreenElement); fit(); });
+  if (mq.addEventListener) mq.addEventListener('change', fit);
+  fit();
+  var start = parseInt((location.hash || '').replace('#', ''), 10);
+  show(isNaN(start) ? 0 : start - 1);
+})();
+</script>
+
+</body>
+</html>

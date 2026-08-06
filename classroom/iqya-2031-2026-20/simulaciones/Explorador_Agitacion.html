@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Explorador de agitación · Proyecto de Operaciones Unitarias</title>
+<link rel="stylesheet" href="/classroom-fonts.css">
+<!-- KaTeX autoalojado (woff2) — sin CDN, funciona offline. Ver public/classroom/vendor/katex -->
+<link rel="stylesheet" href="/classroom/vendor/katex/katex.min.css">
+<script defer src="/classroom/vendor/katex/katex.min.js"></script>
+<style>
+  :root {
+    --color-accent:      #5980A6;
+    --color-accent-100:  #EFF4F9;
+    --color-accent-200:  #D3E0EC;
+    --color-accent-500:  #5980A6;
+    --color-accent-600:  #416180;
+    --color-accent-700:  #2C455D;
+    --color-accent-800:  #1D2D3D;
+    --color-bg:          #ffffff;
+    --color-text:        #1A1A1A;
+    --color-divider:     #1A1A1A;
+    --color-neutral-100: #f4f4f5;
+    --color-neutral-200: #e4e4e7;
+    --color-neutral-300: #d4d4d8;
+    --color-neutral-400: #a1a1aa;
+    --color-neutral-500: #71717a;
+    --color-neutral-600: #52525b;
+    --color-neutral-700: #3f3f46;
+    --color-neutral-800: #27272a;
+    --color-neutral-900: #18181b;
+    --font-heading: 'Manrope Variable', ui-sans-serif, system-ui, -apple-system, sans-serif;
+    --font-body:    'Manrope Variable', ui-sans-serif, system-ui, -apple-system, sans-serif;
+    --font-mono:    'JetBrains Mono Variable', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { background: var(--color-neutral-100); color: var(--color-text); font-family: var(--font-body); -webkit-font-smoothing: antialiased; }
+  .app { max-width: 1400px; margin: 0 auto; background: var(--color-bg); min-height: 100vh; border-left: 1px solid var(--color-neutral-300); border-right: 1px solid var(--color-neutral-300); }
+  a { color: var(--color-accent-700); }
+  a:hover { color: var(--color-accent-600); }
+  input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; height: 22px; background: transparent; cursor: pointer; margin: 2px 0 0; }
+  input[type="range"]::-webkit-slider-runnable-track { height: 2px; background: var(--color-neutral-400); }
+  input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 18px; background: var(--color-accent); margin-top: -8px; border: none; border-radius: 0; }
+  input[type="range"]::-moz-range-track { height: 2px; background: var(--color-neutral-400); }
+  input[type="range"]::-moz-range-thumb { width: 12px; height: 18px; background: var(--color-accent); border: none; border-radius: 0; }
+  input[type="range"]:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; }
+  button:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+  .katex { font-size: 1em; }
+
+  .grp-label { font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-800); border-top: 2px solid var(--color-divider); padding-top: 10px; margin-top: 10px; }
+  .row { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .ctl { font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--color-neutral-700); }
+  .val { font-family: var(--font-heading); font-weight: 800; font-size: 15px; }
+  .hint { font-size: 12px; color: var(--color-neutral-700); margin-top: 2px; }
+  .optbtn { text-align: left; font-family: var(--font-heading); font-weight: 700; font-size: 13px; padding: 9px 12px; border: 2px solid var(--color-neutral-400); cursor: pointer; background: transparent; color: var(--color-text); }
+  .optbtn.on { background: var(--color-accent); color: #fff; border-color: var(--color-accent); }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+  @media (max-width: 1000px) {
+    .colpanel { border-right: none !important; border-bottom: 2px solid var(--color-divider); max-width: none !important; }
+    .mainrow > section { max-width: none !important; border-right: none !important; }
+    .mainrow > section:not(:last-child) { border-bottom: 2px solid var(--color-divider); }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header style="display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; padding: 18px 28px 16px; border-bottom: 2px solid var(--color-divider);">
+    <div style="font-family: var(--font-heading); font-weight: 800; font-size: 24px; letter-spacing: -0.015em;">Agitación y mezclado de líquidos</div>
+    <div style="font-size: 12px; color: var(--color-neutral-700); text-transform: uppercase; letter-spacing: 0.08em;">Proyecto de Operaciones Unitarias · Tanque agitado · <span id="hdrImp"></span> · <span id="hdrFl"></span></div>
+  </header>
+
+  <div id="warnings" style="display: none; border-bottom: 2px solid var(--color-accent); background: var(--color-accent-100); padding: 10px 28px; flex-direction: column; gap: 4px;"></div>
+
+  <div class="mainrow" style="display: flex; flex-wrap: wrap;">
+
+    <aside class="colpanel" style="flex: 1 1 280px; max-width: 380px; padding: 8px 24px 28px; border-right: 2px solid var(--color-divider);">
+
+      <div class="grp-label" style="margin-top: 6px;">Impulsor</div>
+      <div id="impOpts" style="display: flex; flex-direction: column; gap: 6px; padding: 12px 0 4px;"></div>
+      <div class="hint" id="impNote" style="padding-bottom: 8px;"></div>
+
+      <div id="baffBlock">
+        <div class="grp-label">Bafles</div>
+        <div style="display: flex; gap: 6px; padding: 12px 0 4px;">
+          <button type="button" id="baffOn" class="optbtn" onclick="setBaffles(true)">Con bafles</button>
+          <button type="button" id="baffOff" class="optbtn" onclick="setBaffles(false)">Sin bafles</button>
+        </div>
+        <div class="hint" id="baffNote" style="padding-bottom: 8px;"></div>
+      </div>
+      <div id="anclaNote" style="display: none; font-size: 12px; color: var(--color-neutral-700); padding: 10px 0 8px; border-top: 2px solid var(--color-divider); margin-top: 10px;">El ancla barre la pared (D/T ≈ 0.95): no se usan bafles.</div>
+
+      <div class="grp-label">Fluido</div>
+      <div id="flOpts" style="display: flex; flex-direction: column; gap: 6px; padding: 12px 0 4px;"></div>
+      <div class="hint" id="flProps" style="padding-bottom: 8px;"></div>
+
+      <div id="genBlock" style="display: none;">
+        <div style="padding: 4px 0 6px;">
+          <div class="row"><label class="ctl">Densidad ρ</label><span class="val" id="fRhoG"></span></div>
+          <input type="range" min="700" max="1500" step="10" id="rhoG" oninput="onSlider('rhoG', this.value)">
+        </div>
+        <div style="padding: 4px 0 6px;">
+          <div class="row"><label class="ctl">Viscosidad μ</label><span class="val" id="fMuG"></span></div>
+          <input type="range" min="-3.5" max="1.5" step="0.05" id="lmu" oninput="onSlider('lmu', this.value)">
+        </div>
+      </div>
+
+      <div class="grp-label">Operación</div>
+      <div style="padding: 12px 0 6px;">
+        <div class="row"><label class="ctl">Velocidad N</label><span class="val" id="fN"></span></div>
+        <input type="range" min="0.9" max="2.9" step="0.01" id="lN" oninput="onSlider('lN', this.value)">
+        <div class="hint">Sin bafles, la profundidad del vórtice crece con N²</div>
+      </div>
+      <div id="dtBlock" style="padding: 8px 0 6px;">
+        <div class="row"><label class="ctl">Diámetro D/T</label><span class="val" id="fDT"></span></div>
+        <input type="range" min="0.2" max="0.55" step="0.01" id="dOT" oninput="onSlider('dOT', this.value)">
+        <div class="hint">D = <span id="fD"></span> en un tanque de T = 1.0 m</div>
+      </div>
+
+    </aside>
+
+    <section style="flex: 1.2 1 380px; max-width: 560px; padding: 8px 24px 24px; border-right: 2px solid var(--color-divider);">
+      <div class="grp-label" style="margin-top: 6px; margin-bottom: 8px;">Vista lateral · <span id="latImp"></span></div>
+      <div id="chips" style="display: flex; gap: 8px; flex-wrap: wrap; padding: 0 0 10px;"></div>
+      <canvas id="cvL" width="960" height="940" style="width: 100%; max-width: 480px; display: block;"></canvas>
+      <div class="hint" id="latNote" style="padding: 6px 0 4px;"></div>
+
+      <div class="grp-label" style="margin-top: 12px; margin-bottom: 8px;">Vista superior</div>
+      <canvas id="cvT" width="960" height="660" style="width: 100%; max-width: 480px; display: block;"></canvas>
+      <div class="hint" id="topNote" style="padding: 6px 0 4px;"></div>
+
+      <div style="font-size: 12px; color: var(--color-neutral-700); border-top: 1px solid var(--color-neutral-300); margin-top: 10px; padding-top: 8px;">Tanque estándar: T = 1.0 m · H = T · C = T/3 · V = 785 L · 4 bafles de T/12 cuando aplica. El color y el tamaño de las flechas indican la magnitud de velocidad local (azul = lento, rojo = rápido). Se dibuja el patrón de circulación media; la intensidad de turbulencia se refleja en la etiqueta de régimen, no en el trazado.</div>
+    </section>
+
+    <section style="flex: 1 1 320px; max-width: 520px; padding: 8px 24px 24px;">
+      <div class="grp-label" style="margin-top: 6px; margin-bottom: 8px;">Curva de potencia · Np-Re</div>
+      <svg viewBox="0 0 360 300" style="width: 100%; display: block;">
+        <line x1="42" y1="16" x2="42" y2="252" stroke="var(--color-neutral-300)" stroke-width="1"></line>
+        <line x1="92.3" y1="16" x2="92.3" y2="252" stroke="var(--color-neutral-300)" stroke-width="1"></line>
+        <line x1="142.7" y1="16" x2="142.7" y2="252" stroke="var(--color-neutral-300)" stroke-width="1"></line>
+        <line x1="193" y1="16" x2="193" y2="252" stroke="var(--color-neutral-300)" stroke-width="1"></line>
+        <line x1="243.3" y1="16" x2="243.3" y2="252" stroke="var(--color-neutral-300)" stroke-width="1"></line>
+        <line x1="293.7" y1="16" x2="293.7" y2="252" stroke="var(--color-neutral-300)" stroke-width="1"></line>
+        <line x1="344" y1="16" x2="344" y2="252" stroke="var(--color-neutral-300)" stroke-width="1"></line>
+        <text x="42" y="268" text-anchor="middle" style="font-size: 10px; fill: var(--color-neutral-700);">1</text>
+        <text x="92.3" y="268" text-anchor="middle" style="font-size: 10px; fill: var(--color-neutral-700);">10¹</text>
+        <text x="142.7" y="268" text-anchor="middle" style="font-size: 10px; fill: var(--color-neutral-700);">10²</text>
+        <text x="193" y="268" text-anchor="middle" style="font-size: 10px; fill: var(--color-neutral-700);">10³</text>
+        <text x="243.3" y="268" text-anchor="middle" style="font-size: 10px; fill: var(--color-neutral-700);">10⁴</text>
+        <text x="293.7" y="268" text-anchor="middle" style="font-size: 10px; fill: var(--color-neutral-700);">10⁵</text>
+        <text x="344" y="268" text-anchor="middle" style="font-size: 10px; fill: var(--color-neutral-700);">10⁶</text>
+        <line x1="42" y1="252" x2="344" y2="252" stroke="var(--color-neutral-300)" stroke-width="1"></line>
+        <line x1="42" y1="184.6" x2="344" y2="184.6" stroke="var(--color-neutral-300)" stroke-width="1"></line>
+        <line x1="42" y1="117.1" x2="344" y2="117.1" stroke="var(--color-neutral-300)" stroke-width="1"></line>
+        <line x1="42" y1="49.7" x2="344" y2="49.7" stroke="var(--color-neutral-300)" stroke-width="1"></line>
+        <text x="36" y="255" text-anchor="end" style="font-size: 10px; fill: var(--color-neutral-700);">0.1</text>
+        <text x="36" y="187.6" text-anchor="end" style="font-size: 10px; fill: var(--color-neutral-700);">1</text>
+        <text x="36" y="120.1" text-anchor="end" style="font-size: 10px; fill: var(--color-neutral-700);">10</text>
+        <text x="36" y="52.7" text-anchor="end" style="font-size: 10px; fill: var(--color-neutral-700);">100</text>
+        <line x1="42" y1="252" x2="344" y2="252" stroke="var(--color-text)" stroke-width="2"></line>
+        <line x1="42" y1="16" x2="42" y2="252" stroke="var(--color-text)" stroke-width="2"></line>
+        <polyline id="pts2" points="" fill="none" stroke="var(--color-neutral-500)" stroke-width="1.5" stroke-dasharray="5 4"></polyline>
+        <polyline id="pts1" points="" fill="none" stroke="var(--color-accent)" stroke-width="2.5"></polyline>
+        <line id="opV" x1="0" y1="252" x2="0" y2="0" stroke="var(--color-neutral-600)" stroke-width="1" stroke-dasharray="2 3"></line>
+        <line id="opH" x1="42" y1="0" x2="0" y2="0" stroke="var(--color-neutral-600)" stroke-width="1" stroke-dasharray="2 3"></line>
+        <circle id="opC" cx="0" cy="0" r="5" fill="var(--color-accent)" stroke="var(--color-bg)" stroke-width="2"></circle>
+        <text x="344" y="284" text-anchor="end" style="font-size: 10px; fill: var(--color-neutral-700);">Re = ρND²/μ</text>
+        <text x="48" y="12" style="font-size: 10px; fill: var(--color-neutral-700);">Np = P/(ρN³D⁵)</text>
+      </svg>
+      <div style="display: flex; gap: 16px; flex-wrap: wrap; padding: 4px 0 10px; font-size: 12px; color: var(--color-neutral-700); align-items: center;">
+        <span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 18px; height: 3px; background: var(--color-accent); display: inline-block;"></span><span id="leg1"></span> (operación actual)</span>
+        <span id="leg2wrap" style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 18px; height: 0; border-top: 2px dashed var(--color-neutral-500); display: inline-block;"></span><span id="leg2"></span></span>
+      </div>
+
+      <div class="grp-label" style="margin-top: 8px; margin-bottom: 4px;">Resultados</div>
+      <div id="rows"></div>
+      <div style="font-size: 12px; color: var(--color-neutral-700); border-top: 2px solid var(--color-divider); margin-top: 8px; padding-top: 8px;"><span id="eqP"></span> · θ₉₅ según Grenville · Profundidad de vórtice ≈ <span id="eqHv"></span> (vórtice forzado), amortiguada en régimen laminar</div>
+    </section>
+
+  </div>
+</div>
+
+<script>
+/* ────────────────────────────────────────────────────────────────────────
+   Explorador de agitación — puerto vanilla-JS fiel del componente original.
+   Toda la física (Re, curva Np–Re con K/Re + Np turbulento, potencia,
+   P/V, velocidad de punta, tiempo de mezcla de Grenville, profundidad de
+   vórtice forzado) se conserva verbatim. Campo de velocidades estilo CFD
+   con streamlines coloreadas por magnitud, animado en canvas.
+
+   Corrección respecto al diseño original: la vista superior CON BAFLES
+   reproduce el patrón clásico (Rushton, "Flow pattern for turbine with
+   baffles at tank wall"): rotación alrededor del impulsor y cuatro
+   remolinos, uno por cuadrante entre bafles, girando en el mismo sentido
+   que el impulsor.
+   ──────────────────────────────────────────────────────────────────────── */
+
+var state = { imp: 'helice', baffles: true, fluid: 'agua', rhoG: 1100, lmu: -0.6, lN: 2, dOT: 0.33 };
+
+var NAMES = { helice: 'Hélice marina', rushton: 'Turbina Rushton', ancla: 'Ancla' };
+var IMP_NOTES = {
+  helice: 'Flujo axial: bombea hacia el fondo y el líquido sube por las paredes. Np bajo — eficiente para baja viscosidad.',
+  rushton: 'Flujo radial: descarga horizontal que forma dos lazos de circulación por lado. Np alto — indicada para dispersión y alto corte.',
+  ancla: 'Barre la pared a baja velocidad. Para fluidos muy viscosos en régimen laminar; el centro circula poco.'
+};
+var LAT_NOTES = {
+  helice: 'Patrón axial: chorro descendente bajo el impulsor, ascenso por la pared. Campo de velocidad estilo CFD: rojo = rápido, azul = lento.',
+  rushton: 'Patrón radial: chorro horizontal desde las palas hacia la pared, con un lazo superior y uno inferior por lado.',
+  ancla: 'Las paletas arrastran el fluido junto a la pared: asciende cerca de la pared y desciende lentamente por el centro.'
+};
+var KPARAMS = { helice: { KL: 41, NpT: 0.35 }, rushton: { KL: 70, NpT: 5.5 }, ancla: { KL: 245, NpT: 0.5 } };
+
+/* ── handlers ─────────────────────────────────────────────────────────── */
+function onSlider(k, raw) { state[k] = parseFloat(raw); render(); }
+function setImp(k) { state.imp = k; render(); }
+function setFluid(k) { state.fluid = k; render(); }
+function setBaffles(b) { state.baffles = b; render(); }
+
+/* ── helpers de formato ───────────────────────────────────────────────── */
+function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+function f1(x) { return x >= 100 ? x.toFixed(0) : x >= 10 ? x.toFixed(1) : x >= 1 ? x.toFixed(2) : x.toFixed(3); }
+function sci(x) {
+  if (x < 1000) return f1(x);
+  var e = Math.floor(Math.log10(x)); var m = x / Math.pow(10, e);
+  var sup = { '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴', '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹' };
+  return m.toFixed(1) + '×10' + String(e).split('').map(function (c) { return sup[c]; }).join('');
+}
+function fmtP(x) { return x >= 1000 ? f1(x / 1000) + ' kW' : x >= 1 ? f1(x) + ' W' : (x * 1000).toFixed(1) + ' mW'; }
+function fmtMu(m) { return m < 1 ? (m * 1000 < 10 ? (m * 1000).toFixed(1) : (m * 1000).toFixed(0)) + ' mPa·s' : f1(m) + ' Pa·s'; }
+function fmtT(t) { return t > 7200 ? '> 2 h (ineficaz)' : t >= 90 ? f1(t / 60) + ' min' : f1(t) + ' s'; }
+function set(id, v) { var el = document.getElementById(id); if (el) el.textContent = v; }
+
+var katexReady = false;
+function tex(id, latex) {
+  var el = document.getElementById(id); if (!el) return;
+  if (katexReady && window.katex) { try { window.katex.render(latex, el, { throwOnError: false, displayMode: false }); return; } catch (e) {} }
+  el.textContent = latex;
+}
+
+/* ── colores desde el CSS ─────────────────────────────────────────────── */
+function cols() {
+  var cs = getComputedStyle(document.body);
+  var v = function (n, f) { var x = cs.getPropertyValue(n).trim(); return x || f; };
+  return { text: v('--color-text', '#1A1A1A'), bg: v('--color-bg', '#ffffff'), acc: v('--color-accent', '#5980A6'),
+    n2: v('--color-neutral-200', '#e4e4e7'), n3: v('--color-neutral-300', '#d4d4d8'),
+    n5: v('--color-neutral-500', '#71717a'), n7: v('--color-neutral-700', '#3f3f46') };
+}
+
+/* mapa de color de velocidad (azul lento → rojo rápido) */
+function cmap(m) {
+  m = Math.max(0, Math.min(1, m));
+  return 'hsl(' + Math.round(235 * (1 - m)) + ',82%,46%)';
+}
+
+/* ── motor de streamlines (verbatim del original) ─────────────────────── */
+function streamline(fpx, x0, y0, inb, step, maxF, maxB) {
+  var go = function (dir, n) {
+    var x = x0, y = y0; var out = [];
+    for (var i = 0; i < n; i++) {
+      var v = fpx(x, y); var mag = Math.hypot(v.vx, v.vy); if (mag < 1e-5) break;
+      var nx = x + dir * v.vx / mag * step, ny = y + dir * v.vy / mag * step;
+      var v2 = fpx(nx, ny); var m2 = Math.hypot(v2.vx, v2.vy);
+      if (m2 > 1e-5) { var ax = (v.vx / mag + v2.vx / m2) / 2, ay = (v.vy / mag + v2.vy / m2) / 2; var am = Math.hypot(ax, ay) || 1; nx = x + dir * ax / am * step; ny = y + dir * ay / am * step; }
+      if (!inb(nx, ny)) break;
+      x = nx; y = ny; out.push({ x: x, y: y, s: v2.m });
+    }
+    return out;
+  };
+  var back = go(-1, maxB).reverse(), fwd = go(1, maxF);
+  var c0 = fpx(x0, y0);
+  return back.concat([{ x: x0, y: y0, s: c0.m }], fwd);
+}
+
+function drawStream(ctx, pts) {
+  if (pts.length < 2) return;
+  ctx.lineWidth = 1.7; ctx.lineCap = 'round';
+  for (var i = 1; i < pts.length; i++) {
+    ctx.strokeStyle = cmap(pts[i].s);
+    ctx.beginPath(); ctx.moveTo(pts[i - 1].x, pts[i - 1].y); ctx.lineTo(pts[i].x, pts[i].y); ctx.stroke();
+  }
+  ctx.lineCap = 'butt';
+  var acc = 0, next = 34;
+  for (var j = 1; j < pts.length; j++) {
+    acc += Math.hypot(pts[j].x - pts[j - 1].x, pts[j].y - pts[j - 1].y);
+    if (acc >= next && j < pts.length - 1) {
+      next += 58;
+      var p = pts[j], q = pts[j - 1], a = Math.atan2(p.y - q.y, p.x - q.x), hs = 5.5;
+      ctx.fillStyle = cmap(p.s);
+      ctx.beginPath(); ctx.moveTo(p.x, p.y);
+      ctx.lineTo(p.x - hs * Math.cos(a - 0.45), p.y - hs * Math.sin(a - 0.45));
+      ctx.lineTo(p.x - hs * Math.cos(a + 0.45), p.y - hs * Math.sin(a + 0.45));
+      ctx.closePath(); ctx.fill();
+    }
+  }
+}
+
+function streamField(ctx, fpx, inb, seeds, dsep, step, maxF, maxB) {
+  var occ = {};
+  var key = function (x, y) { return Math.round(x / dsep) + ',' + Math.round(y / dsep); };
+  for (var s = 0; s < seeds.length; s++) {
+    var sd = seeds[s];
+    if (!inb(sd.x, sd.y) || occ[key(sd.x, sd.y)]) continue;
+    var pts = streamline(fpx, sd.x, sd.y, inb, step, maxF, maxB);
+    if (pts.length < 7) continue;
+    var bad = 0; for (var p = 0; p < pts.length; p++) if (occ[key(pts[p].x, pts[p].y)]) bad++;
+    if (bad > pts.length * 0.35) continue;
+    for (var p2 = 0; p2 < pts.length; p2++) occ[key(pts[p2].x, pts[p2].y)] = true;
+    drawStream(ctx, pts);
+  }
+}
+
+function colorbar(ctx, x, y, h, c) {
+  for (var i = 0; i <= h; i += 2) { ctx.fillStyle = cmap(1 - i / h); ctx.fillRect(x, y + i, 10, 2); }
+  ctx.strokeStyle = c.n5; ctx.lineWidth = 1; ctx.strokeRect(x - 0.5, y - 0.5, 11, h + 2);
+  ctx.fillStyle = c.n7; ctx.font = "10px 'Manrope Variable', sans-serif"; ctx.textAlign = 'left';
+  ctx.fillText('v', x + 1, y - 6); ctx.fillText('+', x + 15, y + 9); ctx.fillText('0', x + 15, y + h);
+}
+
+/* ── campos de velocidad ──────────────────────────────────────────────── */
+function fieldLat(rx, hy, d) {
+  var ur = 0, uh = 0;
+  for (var i = 0; i < d.loops.length; i++) {
+    var L = d.loops[i];
+    var dx = rx - L.cx, dy = hy - L.cy;
+    var g = Math.exp(-(dx * dx + dy * dy) / d.sig) * L.w;
+    ur += -dy * g; uh += dx * g;
+  }
+  if (d.imp === 'helice') uh -= 0.9 * Math.exp(-(rx * rx) / 0.05) * Math.exp(-Math.pow((hy - 0.3) / 0.22, 2));
+  if (d.imp === 'rushton') {
+    var s = rx >= 0 ? 1 : -1;
+    ur += s * 0.95 * Math.exp(-Math.pow((hy - 0.33) / 0.09, 2)) * Math.min(1, Math.abs(rx) / 0.15) * (1 - Math.abs(rx) * 0.55);
+  }
+  return { ur: ur, uh: uh };
+}
+
+function fieldTop(nx, ny, d) {
+  var r = Math.hypot(nx, ny); if (r < 1e-4) return { ux: 0, uy: 0 };
+  var tx = -ny / r, ty = nx / r, rx = nx / r, ry = ny / r;
+  var mt = 0, ux = 0, uy = 0;
+  if (d.imp === 'ancla') {
+    mt = Math.pow(r, 1.8);
+    ux = tx * mt; uy = ty * mt;
+  } else if (!d.baff) {
+    mt = r < 0.75 ? r / 0.75 : Math.max(0.3, 1 - (r - 0.75) * 1.2);
+    ux = tx * mt; uy = ty * mt;
+  } else {
+    // Con bafles — patrón clásico de la figura "turbine with baffles at
+    // tank wall": el giro se conserva alrededor del impulsor y en la zona
+    // exterior cada cuadrante entre bafles desarrolla un remolino que gira
+    // en el MISMO sentido que el impulsor. Se superpone la rotación
+    // interior (cuerpo sólido hasta el borde del impulsor, decayendo
+    // afuera) con cuatro vórtices gaussianos centrados entre bafles.
+    var ri = Math.max(0.22, d.dOT || 0.33);
+    var base = r < ri ? r / ri : Math.exp(-Math.pow((r - ri) / 0.12, 2));
+    ux += tx * 0.9 * base; uy += ty * 0.9 * base;
+    for (var k = 0; k < 4; k++) {
+      var a = Math.PI / 4 + k * Math.PI / 2;      // centros a 45°, entre bafles
+      var ex = 0.63 * Math.cos(a), ey = 0.63 * Math.sin(a);
+      var dx = nx - ex, dy = ny - ey;
+      var g = Math.exp(-(dx * dx + dy * dy) / 0.085);
+      ux += -dy * g * 1.7; uy += dx * g * 1.7;    // mismo sentido de giro
+    }
+  }
+  return { ux: ux, uy: uy };
+}
+
+/* ── dibujo: vista lateral ────────────────────────────────────────────── */
+function drawLateral(ctx, c, d, phase) {
+  var LX = 70, RX = 410, TOP = 90, BOT = 430, CX = 240;
+  ctx.setTransform(2, 0, 0, 2, 0, 0); ctx.clearRect(0, 0, 480, 470);
+  ctx.fillStyle = c.bg; ctx.fillRect(0, 0, 480, 470);
+  var rc = 72;
+  var surfY = function (x) {
+    if (!d.vdp) return TOP;
+    var r = x - CX; var g = Math.exp(-(r * r) / (rc * rc));
+    return Math.max(56, TOP - d.vdp * 0.18 + d.vdp * g);
+  };
+  ctx.fillStyle = c.n2; ctx.beginPath(); ctx.moveTo(LX, BOT); ctx.lineTo(LX, surfY(LX));
+  for (var x = LX; x <= RX; x += 6) ctx.lineTo(x, surfY(x));
+  ctx.lineTo(RX, surfY(RX)); ctx.lineTo(RX, BOT); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = c.n5; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(LX, surfY(LX));
+  for (var x2 = LX; x2 <= RX; x2 += 6) ctx.lineTo(x2, surfY(x2)); ctx.stroke();
+  if (d.baff) { ctx.fillStyle = c.n7; ctx.fillRect(LX + 2, 76, 9, BOT - 76); ctx.fillRect(RX - 11, 76, 9, BOT - 96 + 20); }
+  var cyImp = BOT - 113;
+  var fpx = function (x, y) {
+    var rx = (x - CX) / 170, hy = (BOT - y) / 340;
+    var u = fieldLat(rx, hy, d);
+    return { vx: u.ur, vy: -u.uh, m: Math.hypot(u.ur, u.uh) * d.fmul * d.spd / d.mref };
+  };
+  var inb = function (x, y) {
+    return x > LX + 7 && x < RX - 7 && y > surfY(x) + 7 && y < BOT - 7
+      && !(d.imp !== 'ancla' && Math.abs(x - CX) < d.Rpx + 6 && Math.abs(y - cyImp) < 12)
+      && !(Math.abs(x - CX) < 8 && y < cyImp - 2);
+  };
+  var seeds = [];
+  for (var sx = LX + 18; sx <= RX - 14; sx += 15)
+    for (var sy = surfY(sx) + 16; sy <= BOT - 12; sy += 15) seeds.push({ x: sx, y: sy });
+  ctx.save(); ctx.beginPath(); ctx.moveTo(LX, surfY(LX));
+  for (var x3 = LX; x3 <= RX; x3 += 6) ctx.lineTo(x3, surfY(x3));
+  ctx.lineTo(RX, BOT); ctx.lineTo(LX, BOT); ctx.closePath(); ctx.clip();
+  streamField(ctx, fpx, inb, seeds, 26, 5, 46, 20);
+  ctx.restore();
+  drawImpL(ctx, c, d, phase);
+  ctx.strokeStyle = c.text; ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.moveTo(LX, 40); ctx.lineTo(LX, BOT); ctx.lineTo(RX, BOT); ctx.lineTo(RX, 40); ctx.stroke();
+  colorbar(ctx, 22, 100, 130, c);
+}
+
+function drawImpL(ctx, c, d, phase) {
+  var CX = 240, BOT = 430, R = d.Rpx;
+  if (d.imp !== 'ancla') {
+    var cy = BOT - 113;
+    ctx.fillStyle = c.n7; ctx.fillRect(CX - 3, 20, 6, cy - 20);
+    ctx.strokeStyle = c.n5; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.ellipse(CX, cy, R, 10, 0, 0, 6.29); ctx.stroke();
+    if (d.imp === 'helice') {
+      ctx.fillStyle = c.text; ctx.beginPath(); ctx.arc(CX, cy, 7, 0, 6.29); ctx.fill();
+      ctx.strokeStyle = c.text; ctx.lineCap = 'round'; ctx.lineWidth = 7;
+      for (var k = 0; k < 3; k++) {
+        var ph = phase + k * 2.094;
+        ctx.beginPath(); ctx.moveTo(CX, cy); ctx.lineTo(CX + R * 0.95 * Math.cos(ph), cy + 7 * Math.sin(ph)); ctx.stroke();
+      }
+      ctx.lineCap = 'butt';
+    } else {
+      ctx.fillStyle = c.text;
+      ctx.fillRect(CX - R * 0.78, cy - 2, R * 1.56, 4); ctx.fillRect(CX - 4, cy - 7, 8, 14);
+      for (var k2 = 0; k2 < 6; k2++) {
+        var ph2 = phase + k2 * 1.047; var bx = R * Math.cos(ph2);
+        ctx.globalAlpha = 0.45 + 0.55 * Math.abs(Math.sin(ph2));
+        ctx.fillRect(CX + bx - 4, cy - 12, 8, 24);
+      }
+      ctx.globalAlpha = 1;
+    }
+  } else {
+    var a = R * Math.cos(phase);
+    var al = 0.35 + 0.65 * Math.abs(Math.cos(phase));
+    ctx.strokeStyle = c.n3; ctx.lineWidth = 5;
+    ctx.beginPath(); ctx.moveTo(CX - R, 150); ctx.lineTo(CX - R, 392);
+    ctx.moveTo(CX + R, 150); ctx.lineTo(CX + R, 392); ctx.stroke();
+    ctx.fillStyle = c.n7; ctx.fillRect(CX - 3, 20, 6, 130);
+    ctx.strokeStyle = c.text; ctx.globalAlpha = al; ctx.lineWidth = 6; ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(CX - a, 150); ctx.lineTo(CX + a, 150);
+    ctx.moveTo(CX - a, 290); ctx.lineTo(CX + a, 290);
+    ctx.moveTo(CX - a, 150); ctx.lineTo(CX - a, 388); ctx.quadraticCurveTo(CX - a, 412, CX - a * 0.35, 414);
+    ctx.moveTo(CX + a, 150); ctx.lineTo(CX + a, 388); ctx.quadraticCurveTo(CX + a, 412, CX + a * 0.35, 414);
+    ctx.moveTo(CX - a * 0.35, 414); ctx.lineTo(CX + a * 0.35, 414);
+    ctx.stroke(); ctx.globalAlpha = 1; ctx.lineCap = 'butt';
+  }
+}
+
+/* ── dibujo: vista superior ───────────────────────────────────────────── */
+function drawTop(ctx, c, d, phase) {
+  ctx.setTransform(2, 0, 0, 2, 0, 0); ctx.clearRect(0, 0, 480, 330);
+  ctx.fillStyle = c.bg; ctx.fillRect(0, 0, 480, 330);
+  var cx = 240, cy = 165, RT = 140, R = d.RpxT;
+  ctx.fillStyle = c.n2; ctx.beginPath(); ctx.arc(cx, cy, RT, 0, 6.29); ctx.fill();
+  var fpxT = function (x, y) {
+    var nx = (x - cx) / RT, ny = (y - cy) / RT;
+    var u = fieldTop(nx, ny, d);
+    return { vx: u.ux, vy: u.uy, m: Math.hypot(u.ux, u.uy) * d.spd };
+  };
+  var rin = d.imp === 'ancla' ? 12 : R * 0.55 + 10;
+  var nearBaffle = function (x, y) {
+    if (!d.baff) return false;
+    var nx = Math.abs(x - cx), ny = Math.abs(y - cy);
+    return (nx < 6 && ny > RT * 0.72) || (ny < 6 && nx > RT * 0.72);
+  };
+  var inbT = function (x, y) { var rr = Math.hypot(x - cx, y - cy); return rr < RT - 6 && rr > rin && !nearBaffle(x, y); };
+  var seedsT = [];
+  for (var sx = cx - RT; sx <= cx + RT; sx += 13)
+    for (var sy = cy - RT; sy <= cy + RT; sy += 13) seedsT.push({ x: sx, y: sy });
+  ctx.save(); ctx.beginPath(); ctx.arc(cx, cy, RT - 3, 0, 6.29); ctx.clip();
+  if (d.baff) {
+    // Con bafles se dibuja el patrón clásico (Fig. "turbine with baffles at
+    // tank wall") de forma determinista: un anillo de giro alrededor del
+    // impulsor y dos arcos curvos por cuadrante — el remolino que se forma
+    // entre bafle y bafle, girando en el mismo sentido que el impulsor.
+    var arc = function (ex, ey, rr, a0, a1, s0, s1) {
+      var pts = [];
+      var n = Math.max(14, Math.round(Math.abs(a1 - a0) * rr / 6));
+      for (var i = 0; i <= n; i++) {
+        var aa = a0 + (a1 - a0) * i / n;
+        pts.push({ x: ex + rr * Math.cos(aa), y: ey + rr * Math.sin(aa), s: (s0 + (s1 - s0) * i / n) * d.spd });
+      }
+      drawStream(ctx, pts);
+    };
+    var rsw = rin + 13;
+    arc(cx, cy, rsw, -Math.PI / 2, 3 * Math.PI / 2 - 0.4, 0.95, 0.9);
+    for (var q = 0; q < 4; q++) {
+      var qa = Math.PI / 4 + q * Math.PI / 2;
+      var ex = cx + 0.63 * RT * Math.cos(qa), ey = cy + 0.63 * RT * Math.sin(qa);
+      arc(ex, ey, 24, qa + 0.5, qa + 0.5 + 4.6, 0.55, 0.45);
+      arc(ex, ey, 40, qa + 2.6, qa + 2.6 + 3.4, 0.42, 0.3);
+    }
+  } else {
+    streamField(ctx, fpxT, inbT, seedsT, 24, 5, 120, 120);
+  }
+  ctx.restore();
+  if (!d.baff && d.imp !== 'ancla' && d.vdp > 4) {
+    var rcore = 6 + d.vdp * 0.22;
+    ctx.fillStyle = c.bg; ctx.beginPath(); ctx.arc(cx, cy, rcore, 0, 6.29); ctx.fill();
+    ctx.strokeStyle = c.n5; ctx.lineWidth = 1.5; ctx.setLineDash([4, 4]);
+    ctx.beginPath(); ctx.arc(cx, cy, rcore, 0, 6.29); ctx.stroke();
+    ctx.beginPath(); ctx.arc(cx, cy, rcore * 0.55, 0, 6.29); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = c.n7; ctx.font = "11px 'Manrope Variable', sans-serif"; ctx.textAlign = 'center';
+    ctx.fillText('vórtice', cx, cy + rcore + 14); ctx.textAlign = 'left';
+  }
+  if (d.baff) {
+    ctx.fillStyle = c.n7;
+    for (var k = 0; k < 4; k++) {
+      ctx.save(); ctx.translate(cx, cy); ctx.rotate(k * Math.PI / 2);
+      ctx.fillRect(RT - 26, -4, 26, 8); ctx.restore();
+    }
+  }
+  ctx.save(); ctx.translate(cx, cy); ctx.rotate(phase);
+  if (d.imp === 'helice') {
+    ctx.strokeStyle = c.text; ctx.lineWidth = 6; ctx.lineCap = 'round';
+    for (var k2 = 0; k2 < 3; k2++) {
+      var ph = k2 * 2.094;
+      ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(R * 0.92 * Math.cos(ph), R * 0.92 * Math.sin(ph)); ctx.stroke();
+    }
+    ctx.lineCap = 'butt';
+    ctx.fillStyle = c.text; ctx.beginPath(); ctx.arc(0, 0, 6, 0, 6.29); ctx.fill();
+  } else if (d.imp === 'rushton') {
+    ctx.strokeStyle = c.text; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(0, 0, R * 0.7, 0, 6.29); ctx.stroke();
+    ctx.fillStyle = c.text;
+    for (var k3 = 0; k3 < 6; k3++) {
+      ctx.save(); ctx.rotate(k3 * 1.047); ctx.fillRect(R * 0.68, -3.5, R * 0.32, 7); ctx.restore();
+    }
+  } else {
+    ctx.fillStyle = c.text; ctx.fillRect(-R, -3, 2 * R, 6);
+    ctx.strokeStyle = c.text; ctx.lineWidth = 8;
+    ctx.beginPath(); ctx.arc(0, 0, R, -0.3, 0.3); ctx.stroke();
+    ctx.beginPath(); ctx.arc(0, 0, R, Math.PI - 0.3, Math.PI + 0.3); ctx.stroke();
+  }
+  ctx.restore();
+  ctx.strokeStyle = c.text; ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.arc(cx, cy, RT, 0, 6.29); ctx.stroke();
+  ctx.fillStyle = c.n7; ctx.beginPath(); ctx.arc(cx, cy, 4, 0, 6.29); ctx.fill();
+  colorbar(ctx, 22, 90, 130, c);
+}
+
+/* ── bucle de animación ───────────────────────────────────────────────── */
+var der = null, phase = 0, last = performance.now();
+var reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function tick(t) {
+  requestAnimationFrame(tick);
+  if (!der) return;
+  var dt = Math.min((t - last) / 1000, 0.05); last = t;
+  if (reducedMotion) dt = 0;
+  phase = (phase + der.omega * dt) % 6.2832;
+  var c = cols();
+  var cvL = document.getElementById('cvL'), cvT = document.getElementById('cvT');
+  if (cvL) drawLateral(cvL.getContext('2d'), c, der, phase);
+  if (cvT) drawTop(cvT.getContext('2d'), c, der, phase);
+}
+
+/* ── render principal ─────────────────────────────────────────────────── */
+function render() {
+  var s = state;
+  var fls = {
+    agua: { r: 998, m: 0.001, n: 'Agua' },
+    aceite: { r: 900, m: 0.08, n: 'Aceite' },
+    jarabe: { r: 1350, m: 4, n: 'Jarabe de glucosa' },
+    gen: { r: s.rhoG, m: Math.pow(10, s.lmu), n: 'Fluido genérico' }
+  };
+  var fl = fls[s.fluid]; var rho = fl.r, mu = fl.m;
+  var T = 1, V = Math.PI / 4;
+  var isAncla = s.imp === 'ancla';
+  var dOT = isAncla ? 0.95 : s.dOT, D = dOT * T;
+  var rpm = Math.pow(10, s.lN), N = rpm / 60;
+  var Re = rho * N * D * D / mu;
+  var K = KPARAMS[s.imp];
+  var baff = isAncla ? false : s.baffles;
+  var npAt = function (re, b) {
+    var g = 1 / (1 + Math.pow(300 / re, 1.3));
+    return K.KL / re + K.NpT * g * ((!b && !isAncla && re > 300) ? Math.pow(300 / re, 0.2) : 1);
+  };
+  var Np = npAt(Re, baff);
+  var Pw = Np * rho * Math.pow(N, 3) * Math.pow(D, 5), PV = Pw / V, tip = Math.PI * N * D;
+  var vortexPossible = !baff && !isAncla;
+  var tm = 5.2 / (N * Math.cbrt(Np)) * Math.pow(T / D, 2);
+  if (Re <= 6400) tm *= 6400 / Re;
+  if (vortexPossible && Re > 300) tm *= 2.5;
+  var regime = Re < 10 ? 'Laminar' : Re < 1e4 ? 'Transición' : 'Turbulento';
+  var om = 2 * Math.PI * N;
+  var swirlFac = Math.max(0, Math.min(1, (Math.log10(Math.max(Re, 1)) - 2) / 1.5));
+  var hv = vortexPossible ? Math.min(0.62, 0.8 * Math.pow(om * D / 2, 2) / (2 * 9.81) * swirlFac) : 0;
+  var vortex = hv > 0.015;
+  var airEntrain = hv >= 0.55;
+  var lam = Re < 10 && !isAncla;
+
+  var loops = s.imp === 'helice' ? [{ cx: 0.5, cy: 0.42, w: 1 }, { cx: -0.5, cy: 0.42, w: -1 }]
+    : s.imp === 'rushton' ? [{ cx: 0.55, cy: 0.58, w: 1 }, { cx: 0.55, cy: 0.14, w: -1 }, { cx: -0.55, cy: 0.58, w: -1 }, { cx: -0.55, cy: 0.14, w: 1 }]
+    : [{ cx: 0.72, cy: 0.5, w: 0.65 }, { cx: -0.72, cy: 0.5, w: -0.65 }];
+  var lgRe = Math.log10(Math.max(Re, 1));
+  var reFac = Math.max(0, Math.min(1, (lgRe + 0.5) / 4.5));
+  der = {
+    imp: s.imp, baff: baff, vdp: hv * 340, Rpx: dOT * 170, RpxT: dOT * 140, dOT: dOT,
+    loops: loops, sig: isAncla ? 0.3 : (lam ? 0.05 : (s.imp === 'helice' ? 0.2 : 0.13)),
+    fmul: vortex ? 0.45 : 1, spd: Math.min(1.5, (0.25 + tip / 2.2) * (0.2 + 0.8 * reFac)),
+    mref: s.imp === 'helice' ? 1.15 : s.imp === 'rushton' ? 1.2 : 0.55,
+    omega: 2 * Math.PI * Math.min(N, 2.2), lam: lam
+  };
+
+  // ── curva Np–Re ──
+  var X = function (lr) { return 42 + lr / 6 * 302; };
+  var Y = function (np) { var ly = (Math.log10(np) + 1) / 3.5; ly = Math.max(0, Math.min(1, ly)); return 252 - ly * 236; };
+  var pts1 = '', pts2 = '';
+  for (var lr = 0; lr <= 6.001; lr += 0.12) {
+    var re = Math.pow(10, lr);
+    pts1 += X(lr).toFixed(1) + ',' + Y(npAt(re, baff)).toFixed(1) + ' ';
+    if (!isAncla) pts2 += X(lr).toFixed(1) + ',' + Y(npAt(re, !baff)).toFixed(1) + ' ';
+  }
+  document.getElementById('pts1').setAttribute('points', pts1);
+  document.getElementById('pts2').setAttribute('points', pts2);
+  var opX = X(Math.max(0, Math.min(6, Math.log10(Re)))).toFixed(1), opY = Y(Np).toFixed(1);
+  var opV = document.getElementById('opV'); opV.setAttribute('x1', opX); opV.setAttribute('x2', opX); opV.setAttribute('y2', opY);
+  var opH = document.getElementById('opH'); opH.setAttribute('y1', opY); opH.setAttribute('y2', opY); opH.setAttribute('x2', opX);
+  var opC = document.getElementById('opC'); opC.setAttribute('cx', opX); opC.setAttribute('cy', opY);
+
+  // ── warnings ──
+  var warnings = [];
+  if (lam) warnings.push('Régimen laminar (Re < 10): este impulsor deja zonas muertas lejos de las palas — considere un ancla.');
+  if (isAncla && Re > 1000) warnings.push('Ancla en régimen turbulento: consume potencia sin ventaja — una hélice o turbina mezcla mejor un fluido poco viscoso.');
+  if (vortex && !airEntrain) warnings.push('Sin bafles el líquido rota en bloque: vórtice de ' + (hv * 100).toFixed(0) + ' cm que crece con N², Np cae y la mezcla axial empeora.');
+  if (airEntrain) warnings.push('El vórtice alcanza el impulsor: arrastre de aire al seno del líquido y pérdida severa de mezclado.');
+  if (tip > 6) warnings.push('Velocidad de punta ' + f1(tip) + ' m/s (> 6 m/s): posible daño por cizalla a productos sensibles.');
+  var wEl = document.getElementById('warnings');
+  if (warnings.length) {
+    wEl.style.display = 'flex';
+    wEl.innerHTML = warnings.map(function (w) { return '<div style="color:var(--color-accent-800);font-size:14px;font-weight:600;">' + esc(w) + '</div>'; }).join('');
+  } else { wEl.style.display = 'none'; wEl.innerHTML = ''; }
+
+  // ── panel lateral ──
+  set('hdrImp', NAMES[s.imp]); set('hdrFl', fl.n);
+  document.getElementById('impOpts').innerHTML = [
+    { k: 'helice', label: 'Hélice marina — axial' },
+    { k: 'rushton', label: 'Turbina Rushton — radial' },
+    { k: 'ancla', label: 'Ancla — alta viscosidad' },
+  ].map(function (b) {
+    return '<button type="button" class="optbtn' + (s.imp === b.k ? ' on' : '') + '" onclick="setImp(\'' + b.k + '\')">' + esc(b.label) + '</button>';
+  }).join('');
+  set('impNote', IMP_NOTES[s.imp]);
+
+  document.getElementById('baffBlock').style.display = isAncla ? 'none' : 'block';
+  document.getElementById('anclaNote').style.display = isAncla ? 'block' : 'none';
+  document.getElementById('baffOn').className = 'optbtn' + (s.baffles ? ' on' : '');
+  document.getElementById('baffOff').className = 'optbtn' + (!s.baffles ? ' on' : '');
+  set('baffNote', s.baffles ? '4 bafles de T/12: rompen la rotación en bloque y fuerzan la circulación axial.' : 'Sin bafles el líquido gira con el impulsor y la superficie forma vórtice.');
+
+  document.getElementById('flOpts').innerHTML = ['agua', 'aceite', 'jarabe', 'gen'].map(function (id) {
+    return '<button type="button" class="optbtn' + (s.fluid === id ? ' on' : '') + '" onclick="setFluid(\'' + id + '\')">' + esc(fls[id].n) + '</button>';
+  }).join('');
+  set('flProps', 'ρ = ' + rho.toFixed(0) + ' kg/m³ · μ = ' + fmtMu(mu));
+  document.getElementById('genBlock').style.display = s.fluid === 'gen' ? 'block' : 'none';
+  set('fRhoG', s.rhoG.toFixed(0) + ' kg/m³');
+  set('fMuG', fmtMu(Math.pow(10, s.lmu)));
+  set('fN', rpm.toFixed(0) + ' rpm');
+  document.getElementById('dtBlock').style.display = isAncla ? 'none' : 'block';
+  set('fDT', dOT.toFixed(2));
+  set('fD', (D * 100).toFixed(0) + ' cm');
+  syncSlider('rhoG', s.rhoG); syncSlider('lmu', s.lmu); syncSlider('lN', s.lN); syncSlider('dOT', s.dOT);
+
+  // ── chips y notas ──
+  var chipBase = 'font-size:12px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;padding:4px 10px;border:2px solid ';
+  var chipOk = chipBase + 'var(--color-neutral-400);color:var(--color-neutral-800);';
+  var chipBad = chipBase + 'var(--color-accent-700);color:var(--color-accent-800);background:var(--color-accent-100);';
+  var chips = [
+    { label: regime + ' · Re ' + sci(Re), style: chipOk },
+    { label: vortex ? (airEntrain ? 'Vórtice hasta el impulsor' : 'Vórtice: ' + (hv * 100).toFixed(0) + ' cm') : 'Superficie plana', style: vortex ? chipBad : chipOk },
+    { label: baff ? 'Con bafles — circulación axial' : (isAncla ? 'Flujo tangencial junto a la pared' : 'Sin bafles — rotación en bloque'), style: (!baff && !isAncla && vortex) ? chipBad : chipOk }
+  ];
+  document.getElementById('chips').innerHTML = chips.map(function (c2) { return '<span style="' + c2.style + '">' + esc(c2.label) + '</span>'; }).join('');
+  set('latImp', NAMES[s.imp]);
+  set('latNote', LAT_NOTES[s.imp]);
+  set('topNote', isAncla ? 'Vista superior: giro tangencial — rápido junto a las paletas en la pared, casi quieto en el centro.'
+    : baff ? 'Vista superior: el líquido aún gira, pero cada bafle corta el giro — el giro central persiste alrededor del impulsor y entre bafle y bafle se forman remolinos que devuelven el fluido, como en el patrón clásico de tanque con bafles.'
+    : ('Vista superior: sin bafles el líquido rota en bloque (v ∝ r)' + (vortex ? ' y se abre un vórtice central.' : '.')));
+
+  // ── leyenda y resultados ──
+  set('leg1', isAncla ? 'Ancla' : (baff ? 'Con bafles' : 'Sin bafles'));
+  set('leg2', baff ? 'Sin bafles' : 'Con bafles');
+  document.getElementById('leg2wrap').style.display = isAncla ? 'none' : 'inline-flex';
+
+  var rows = [
+    { k: 'Reynolds Re', v: sci(Re) },
+    { k: 'Régimen', v: regime },
+    { k: 'Número de potencia Np', v: f1(Np) },
+    { k: 'Potencia P', v: fmtP(Pw) },
+    { k: 'P/V', v: fmtP(PV) + '/m³' },
+    { k: 'Velocidad de punta πND', v: f1(tip) + ' m/s' },
+    { k: 'Tiempo de mezcla θ₉₅', v: fmtT(tm) },
+    { k: 'Profundidad de vórtice', v: baff ? '— (con bafles)' : (isAncla ? '—' : (hv * 100).toFixed(0) + ' cm') }
+  ];
+  document.getElementById('rows').innerHTML = rows.map(function (r) {
+    return '<div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;border-top:1px solid var(--color-neutral-300);padding:7px 0;">'
+      + '<span class="ctl">' + esc(r.k) + '</span>'
+      + '<span style="font-family:var(--font-heading);font-weight:800;font-size:15px;text-align:right;">' + esc(r.v) + '</span></div>';
+  }).join('');
+}
+
+function syncSlider(id, v) { var el = document.getElementById(id); if (el && el.value !== String(v)) el.value = v; }
+
+function renderEquations() {
+  tex('eqP', 'P = N_p\\,\\rho\\,N^{3}D^{5}');
+  tex('eqHv', '\\omega^{2}R^{2}/2g');
+}
+
+window.addEventListener('load', function () {
+  katexReady = !!window.katex;
+  renderEquations();
+  render();
+  requestAnimationFrame(tick);
+});
+</script>
+</body>
+</html>

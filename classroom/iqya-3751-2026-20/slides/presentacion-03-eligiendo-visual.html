@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<title>Sesión 3 · Eligiendo el visual correcto · Narrativas Visuales de Datos con IA Generativa</title>
+<style>
+
+@font-face { font-family: 'Big Shoulders Display'; font-style: normal; font-weight: 100 900; font-display: swap; src: url('/fonts/big-shoulders-display-latin-wght-normal.woff2') format('woff2-variations'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: 'Big Shoulders Display'; font-style: normal; font-weight: 100 900; font-display: swap; src: url('/fonts/big-shoulders-display-latin-ext-wght-normal.woff2') format('woff2-variations'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: 'Archivo'; font-style: normal; font-weight: 100 900; font-display: swap; src: url('/fonts/archivo-latin-wght-normal.woff2') format('woff2-variations'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: 'Archivo'; font-style: normal; font-weight: 100 900; font-display: swap; src: url('/fonts/archivo-latin-ext-wght-normal.woff2') format('woff2-variations'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+
+:root {
+  --carbon-1000: #0A0A0A; --carbon-950: #101010; --carbon-900: #141412; --carbon-850: #1A1A17; --carbon-700: #2A2924; --carbon-600: #3A382F;
+  --bone-000: #E8E6E1; --bone-300: #B8B6AE; --bone-500: #86847C;
+  --citron-000: #C9C41C; --citron-hi: #DCD733;
+  --signal-negative: #C8623A;
+  --line: rgba(232,230,225,.14); --line-strong: rgba(232,230,225,.28); --line-citron: rgba(201,196,28,.55); --nav-bg: rgba(20,20,18,.82);
+  --font-display: 'Big Shoulders Display', system-ui, sans-serif;
+  --font-text: 'Archivo', system-ui, -apple-system, sans-serif;
+}
+body.light {
+  --carbon-1000: #FCFBF7; --carbon-950: #F5F4EF; --carbon-900: #EDEBE4; --carbon-850: #E7E5DD; --carbon-700: #D6D3C9; --carbon-600: #BBB9AF;
+  --bone-000: #14140F; --bone-300: #45443C; --bone-500: #6E6C63;
+  --citron-000: #8C8712; --citron-hi: #6E6A0E;
+  --signal-negative: #B4552A;
+  --line: rgba(10,10,10,.16); --line-strong: rgba(10,10,10,.30); --line-citron: rgba(140,135,18,.55);
+  --nav-bg: rgba(250,249,245,.92);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: #000; overflow: hidden; }
+.viewport { position: fixed; inset: 0 0 96px 0; display: flex; align-items: center; justify-content: center; background: #000; }
+.stage { width: 1920px; height: 1080px; position: relative; transform-origin: center center; flex-shrink: 0; }
+.slide { position: absolute; inset: 0; opacity: 0; visibility: hidden; transition: opacity .35s ease; font-family: var(--font-text); color: var(--bone-000); overflow: hidden; }
+.slide.is-active { opacity: 1; visibility: visible; }
+.slide.is-active .anim { animation: rise .5s cubic-bezier(.22,.61,.36,1) both; }
+@keyframes rise { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: none; } }
+.kicker { font-family: var(--font-text); font-weight: 600; font-size: 24px; letter-spacing: .34em; text-transform: uppercase; color: var(--citron-000); }
+.kicker.dim { color: var(--bone-500); }
+.stitle { font-family: var(--font-display); font-weight: 300; text-transform: uppercase; line-height: .95; letter-spacing: -.005em; margin: 0; }
+.rule { width: 180px; height: 4px; background: var(--citron-000); }
+.body { font-family: var(--font-text); font-size: 30px; line-height: 1.5; color: var(--bone-300); }
+.hl { color: var(--citron-000); }
+.neg { color: var(--signal-negative); }
+.frame-corners span { position: absolute; width: 64px; height: 64px; pointer-events: none; }
+.card { background: var(--carbon-900); border: 1px solid var(--line); border-top: 4px solid var(--citron-000); border-radius: 4px; }
+.card.neg-top { border-top: 4px solid var(--signal-negative); }
+.tbl { width: 100%; border-collapse: collapse; font-family: var(--font-text); font-variant-numeric: tabular-nums; }
+.tbl th, .tbl td { text-align: right; padding: 16px 22px; border-bottom: 1px solid var(--line); font-size: 26px; color: var(--bone-300); }
+.tbl th { color: var(--bone-500); font-size: 20px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; border-bottom: 1px solid var(--line-strong); }
+.tbl td:first-child, .tbl th:first-child { text-align: left; color: var(--bone-000); font-weight: 600; }
+.tbl tr.hl-row td { color: var(--carbon-1000); background: var(--citron-000); }
+.progress { position: fixed; top: 0; left: 0; height: 4px; background: var(--citron-000); z-index: 20; transition: width .3s ease; }
+.nav { position: fixed; bottom: 108px; left: 50%; transform: translateX(-50%); z-index: 20; display: flex; align-items: center; gap: 18px; background: var(--nav-bg); border: 1px solid var(--line); border-radius: 999px; padding: 9px 16px; backdrop-filter: blur(6px); }
+.nav button { width: 40px; height: 40px; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: var(--bone-000); font-size: 18px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: all .15s; font-family: var(--font-text); }
+.nav button:hover { border-color: var(--bone-000); background: rgba(232,230,225,.06); }
+.nav .count { font-family: var(--font-text); font-size: 14px; letter-spacing: .1em; color: var(--bone-300); min-width: 62px; text-align: center; font-variant-numeric: tabular-nums; }
+.nav .label { font-size: 12px; letter-spacing: .18em; text-transform: uppercase; color: var(--bone-500); border-left: 1px solid var(--line); padding-left: 14px; max-width: 220px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.hint { position: fixed; bottom: 30px; right: 26px; z-index: 20; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--bone-500); }
+@media (prefers-reduced-motion: reduce) { .slide, .slide.is-active .anim { transition: none; animation: none; } }
+
+/* ── Volver al material ─────────────── */
+.deck-volver{position:fixed;top:16px;left:16px;z-index:30;display:inline-flex;align-items:center;gap:8px;padding:9px 15px;border-radius:999px;background:var(--nav-bg);border:1px solid var(--line);color:var(--bone-000);font-family:var(--font-text);font-weight:600;font-size:13px;letter-spacing:.03em;text-decoration:none;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);transition:border-color .15s}
+.deck-volver:hover{border-color:var(--bone-000)}
+.deck-volver svg{stroke:var(--citron-000)}
+/* ── Rail de miniaturas ─────────────── */
+.rail{position:fixed;left:0;right:0;bottom:0;height:92px;z-index:18;display:flex;gap:10px;align-items:center;padding:9px 14px;overflow-x:auto;overflow-y:hidden;background:var(--nav-bg);border-top:1px solid var(--line);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.thumb{position:relative;flex:0 0 auto;width:132px;height:74px;padding:0;border:1px solid var(--line);border-radius:4px;overflow:hidden;cursor:pointer;background:var(--carbon-1000)}
+.thumb:hover{border-color:var(--bone-500)}
+.thumb.is-cur{border-color:var(--citron-000);box-shadow:0 0 0 1px var(--citron-000)}
+.thumb .tw{position:absolute;top:0;left:0;width:1920px;height:1080px;transform:scale(.06875);transform-origin:top left;pointer-events:none;overflow:hidden}
+.thumb .tn{position:absolute;bottom:2px;right:3px;z-index:2;font-family:var(--font-text);font-weight:700;font-size:10px;line-height:1;color:var(--bone-000);background:rgba(10,10,10,.6);padding:2px 4px;border-radius:3px}
+.hint{bottom:112px!important}
+body.is-fs .rail,body.is-fs .deck-volver,body.is-fs .hint{display:none!important}
+body.is-fs .viewport{inset:0!important}
+body.is-fs .nav{bottom:26px}
+/* ── Móvil: reflow vertical (zoom por JS), sin fullscreen ─────── */
+@media (max-width:768px){
+  html,body{height:auto;overflow-x:hidden;overflow-y:auto;background:var(--carbon-1000)}
+  .viewport{position:static!important;inset:auto!important;display:block!important;height:auto!important;width:100%!important}
+  .stage{width:100%!important;height:auto!important;transform:none!important}
+  .slide{position:relative!important;inset:auto!important;width:1920px!important;height:1080px!important;opacity:1!important;visibility:visible!important;border-bottom:1px solid var(--line)}
+  .slide.is-active .anim{animation:none!important}
+  .rail,.nav,.hint{display:none!important}
+  .deck-volver{top:10px;left:10px;padding:8px 13px;font-size:12px}
+}
+
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<a class="deck-volver" href="/classroom/iqya-3751-2026-20/readings" aria-label="Volver al material del curso"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg><span>Volver</span></a>
+<div class="viewport">
+  <div class="stage" id="stage">
+
+<!-- 01 · Portada -->
+<section class="slide" data-label="Portada" style="background:var(--carbon-1000);display:flex;flex-direction:column;justify-content:space-between;padding:110px 130px;">
+  <div class="frame-corners" style="position:absolute;inset:70px;">
+    <span style="top:0;left:0;border-top:4px solid var(--citron-000);border-left:4px solid var(--citron-000);"></span>
+    <span style="top:0;right:0;border-top:4px solid var(--citron-000);border-right:4px solid var(--citron-000);"></span>
+    <span style="bottom:0;left:0;border-bottom:4px solid var(--citron-000);border-left:4px solid var(--citron-000);"></span>
+    <span style="bottom:0;right:0;border-bottom:4px solid var(--citron-000);border-right:4px solid var(--citron-000);"></span>
+  </div>
+  <div class="kicker dim" style="font-size:22px;letter-spacing:.42em;">Narrativas Visuales · Sesión 3 · Módulo 2</div>
+  <div class="anim">
+    <div class="kicker" style="margin-bottom:26px;">Serie 03 · Eligiendo el visual</div>
+    <h1 class="stitle" style="font-size:150px;">El gráfico<br><span style="color:var(--citron-000);font-weight:200;">correcto</span></h1>
+  </div>
+  <div style="display:flex;justify-content:space-between;align-items:flex-end;">
+    <div class="body" style="font-size:26px;max-width:54ch;">La pregunta no es qué dicen los datos, sino <span class="hl">qué decisión</span> se va a tomar con ellos. Ella elige el gráfico, no el software.</div>
+    <div style="font-family:var(--font-display);font-weight:400;font-size:30px;text-transform:uppercase;color:var(--bone-500);">NV</div>
+  </div>
+</section>
+
+<!-- 02 · Hoja de ruta -->
+<section class="slide" data-label="Hoja de ruta" style="background:var(--carbon-950);display:flex;flex-direction:column;justify-content:center;padding:0 130px;">
+  <div class="kicker" style="margin-bottom:28px;">Sesión 3 · Hoja de ruta · 110 min</div>
+  <h2 class="stitle" style="font-size:96px;margin-bottom:56px;">Hoy hacemos</h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:30px 90px;">
+    <div class="anim" style="display:flex;gap:26px;align-items:baseline;border-top:2px solid var(--line);padding-top:22px;"><div class="stitle" style="font-weight:700;color:var(--citron-000);font-size:52px;">01</div><div><div class="stitle" style="font-weight:500;font-size:42px;">Apertura · mostrar, no contar</div><div class="body" style="font-size:22px;margin-top:6px;">El dato dentro de la experiencia del usuario. <span class="hl">30 min.</span></div></div></div>
+    <div class="anim" style="display:flex;gap:26px;align-items:baseline;border-top:2px solid var(--line);padding-top:22px;"><div class="stitle" style="font-weight:700;color:var(--citron-000);font-size:52px;">02</div><div><div class="stitle" style="font-weight:500;font-size:42px;">Catálogo de visuales</div><div class="body" style="font-size:22px;margin-top:6px;">Las 8 tareas y el Explorador en vivo. <span class="hl">40 min.</span></div></div></div>
+    <div class="anim" style="display:flex;gap:26px;align-items:baseline;border-top:2px solid var(--line);padding-top:22px;"><div class="stitle" style="font-weight:700;color:var(--citron-000);font-size:52px;">03</div><div><div class="stitle" style="font-weight:500;font-size:42px;">Ejercicio en papel</div><div class="body" style="font-size:22px;margin-top:6px;">Un set de datos, tres preguntas, tres visuales. <span class="hl">30 min.</span></div></div></div>
+    <div class="anim" style="display:flex;gap:26px;align-items:baseline;border-top:2px solid var(--line);padding-top:22px;"><div class="stitle" style="font-weight:700;color:var(--citron-000);font-size:52px;">04</div><div><div class="stitle" style="font-weight:500;font-size:42px;">Cierre + prep Sesión 4</div><div class="body" style="font-size:22px;margin-top:6px;">La IA entra la próxima. Instala tus cuentas. <span class="hl">10 min.</span></div></div></div>
+  </div>
+</section>
+
+<!-- 03 · Apertura -->
+<section class="slide" data-label="Apertura" style="background:var(--carbon-1000);display:flex;flex-direction:column;justify-content:center;padding:0 130px;">
+  <div class="kicker" style="font-weight:700;font-size:40px;letter-spacing:.3em;margin-bottom:30px;">30 min</div>
+  <div class="kicker dim" style="margin-bottom:20px;">Mostrar, no contar #2 · la narrativa en la experiencia de usuario</div>
+  <h2 class="stitle anim" style="font-size:104px;max-width:24ch;">Un dato vive dentro de la <span class="hl">experiencia</span> de alguien</h2>
+  <p class="body anim" style="font-size:34px;max-width:56ch;margin-top:44px;">El mismo dato de un producto cuenta historias distintas según el momento del usuario. Elegir el gráfico no es un detalle técnico: es una <span class="hl">decisión de experiencia</span>.</p>
+  <div class="rule" style="margin-top:52px;"></div>
+</section>
+
+<!-- 04 · Un dato, tres momentos -->
+<section class="slide" data-label="Un dato tres momentos" style="background:var(--carbon-950);display:flex;flex-direction:column;justify-content:center;padding:0 110px;">
+  <div class="kicker" style="margin-bottom:22px;">La elección del gráfico es una decisión de UX</div>
+  <h2 class="stitle" style="font-size:76px;margin-bottom:44px;">Un dato, <span class="hl">tres momentos</span></h2>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:36px;">
+    <div class="anim card" style="padding:32px 30px;">
+      <div class="kicker" style="font-size:20px;">Descubrir</div>
+      <div class="stitle" style="font-weight:500;font-size:38px;margin:10px 0 18px;">¿Cuál gusta más?</div>
+      <svg viewBox="0 0 360 210" width="100%" role="img" aria-label="Barras de aceptación por formulación." font-family="'Archivo',system-ui,sans-serif">
+        <line x1="40" y1="180" x2="344" y2="180" stroke="var(--line-strong,#444)" stroke-width="1.4"/>
+        <line x1="40" y1="20" x2="40" y2="180" stroke="var(--line-strong,#444)" stroke-width="1.4"/>
+        <rect x="58" y="70" width="40" height="110" rx="2" fill="var(--carbon-600,#3A382F)"/>
+        <rect x="116" y="104" width="40" height="76" rx="2" fill="var(--carbon-600,#3A382F)"/>
+        <rect x="174" y="52" width="40" height="128" rx="2" fill="var(--citron-000,#C9C41C)"/>
+        <rect x="232" y="128" width="40" height="52" rx="2" fill="var(--carbon-600,#3A382F)"/>
+        <rect x="290" y="78" width="40" height="102" rx="2" fill="var(--carbon-600,#3A382F)"/>
+        <text x="78" y="196" text-anchor="middle" font-size="12" fill="var(--bone-500,#86847C)">F1</text>
+        <text x="136" y="196" text-anchor="middle" font-size="12" fill="var(--bone-500,#86847C)">F2</text>
+        <text x="194" y="196" text-anchor="middle" font-size="12" fill="var(--citron-000,#C9C41C)" font-weight="700">F3</text>
+        <text x="252" y="196" text-anchor="middle" font-size="12" fill="var(--bone-500,#86847C)">F4</text>
+        <text x="310" y="196" text-anchor="middle" font-size="12" fill="var(--bone-500,#86847C)">F5</text>
+      </svg>
+      <div style="margin-top:14px;font-size:20px;color:var(--bone-500);">Comparar magnitudes → <span class="hl">barras</span>.</div>
+    </div>
+    <div class="anim card" style="padding:32px 30px;">
+      <div class="kicker" style="font-size:20px;">Comparar</div>
+      <div class="stitle" style="font-weight:500;font-size:38px;margin:10px 0 18px;">¿Firmeza y gusto?</div>
+      <svg viewBox="0 0 360 210" width="100%" role="img" aria-label="Dispersión firmeza vs aceptación." font-family="'Archivo',system-ui,sans-serif">
+        <line x1="40" y1="180" x2="344" y2="180" stroke="var(--line-strong,#444)" stroke-width="1.4"/>
+        <line x1="40" y1="20" x2="40" y2="180" stroke="var(--line-strong,#444)" stroke-width="1.4"/>
+        <circle cx="120" cy="96" r="6" fill="var(--carbon-600,#3A382F)"/>
+        <circle cx="90" cy="132" r="6" fill="var(--carbon-600,#3A382F)"/>
+        <circle cx="190" cy="60" r="6" fill="var(--citron-000,#C9C41C)"/>
+        <circle cx="70" cy="150" r="6" fill="var(--carbon-600,#3A382F)"/>
+        <circle cx="150" cy="88" r="6" fill="var(--carbon-600,#3A382F)"/>
+        <line x1="60" y1="158" x2="210" y2="54" stroke="var(--citron-000,#C9C41C)" stroke-width="2" stroke-dasharray="5 4" opacity="0.8"/>
+        <text x="192" y="352" font-size="12" fill="var(--bone-500,#86847C)"></text>
+        <text x="192" y="200" text-anchor="middle" font-size="12" fill="var(--bone-500,#86847C)">Firmeza →</text>
+      </svg>
+      <div style="margin-top:14px;font-size:20px;color:var(--bone-500);">Relacionar variables → <span class="hl">dispersión</span>.</div>
+    </div>
+    <div class="anim card" style="padding:32px 30px;">
+      <div class="kicker" style="font-size:20px;">Decidir</div>
+      <div class="stitle" style="font-weight:500;font-size:38px;margin:10px 0 18px;">¿Aguanta el tiempo?</div>
+      <svg viewBox="0 0 360 210" width="100%" role="img" aria-label="Línea de humedad en el tiempo." font-family="'Archivo',system-ui,sans-serif">
+        <line x1="40" y1="180" x2="344" y2="180" stroke="var(--line-strong,#444)" stroke-width="1.4"/>
+        <line x1="40" y1="20" x2="40" y2="180" stroke="var(--line-strong,#444)" stroke-width="1.4"/>
+        <line x1="40" y1="70" x2="344" y2="70" stroke="var(--signal-negative,#C8623A)" stroke-width="1.4" stroke-dasharray="4 4" opacity="0.8"/>
+        <text x="338" y="62" text-anchor="end" font-size="11" fill="var(--signal-negative,#C8623A)">límite</text>
+        <polyline points="58,158 120,140 182,118 244,92 306,58" fill="none" stroke="var(--citron-000,#C9C41C)" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/>
+        <text x="192" y="200" text-anchor="middle" font-size="12" fill="var(--bone-500,#86847C)">Semanas →</text>
+      </svg>
+      <div style="margin-top:14px;font-size:20px;color:var(--bone-500);">Serie de tiempo → <span class="hl">línea</span>.</div>
+    </div>
+  </div>
+</section>
+
+<!-- 05 · La pregunta manda -->
+<section class="slide" data-label="La pregunta manda" style="background:var(--carbon-1000);display:flex;flex-direction:column;justify-content:center;padding:0 130px;">
+  <div class="kicker" style="margin-bottom:30px;">El giro de hoy</div>
+  <h2 class="stitle anim" style="font-size:120px;max-width:20ch;">La pregunta manda sobre el <span class="hl">dato</span></h2>
+  <p class="body anim" style="font-size:34px;max-width:54ch;margin-top:44px;">Antes de abrir cualquier herramienta: ¿qué quiero que el lector entienda y qué decisión debe tomar? El tipo de gráfico se deduce de ahí, nunca de lo que el software abre por defecto.</p>
+  <div class="rule" style="margin-top:52px;"></div>
+</section>
+
+<!-- 06 · La idea de SWD cap 2 -->
+<section class="slide" data-label="Elegir un visual efectivo" style="background:var(--carbon-950);display:flex;flex-direction:column;justify-content:center;padding:0 130px;">
+  <div class="kicker" style="margin-bottom:22px;">Storytelling with Data · capítulo 2</div>
+  <h2 class="stitle" style="font-size:84px;margin-bottom:44px;">Elegir un visual <span class="hl">efectivo</span></h2>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:40px;">
+    <div class="anim card" style="padding:40px 36px;"><div class="kicker" style="font-size:21px;">La pregunta</div><div class="stitle" style="font-weight:500;font-size:44px;margin:14px 0 12px;">Primero</div><div class="body" style="font-size:24px;">¿Comparar, ver un cambio, una relación, una parte del todo?</div></div>
+    <div class="anim card" style="padding:40px 36px;"><div class="kicker" style="font-size:21px;">La audiencia</div><div class="stitle" style="font-weight:500;font-size:44px;margin:14px 0 12px;">Después</div><div class="body" style="font-size:24px;">Quién lee y con cuánto tiempo. Un experto no lee como un directivo.</div></div>
+    <div class="anim card" style="padding:40px 36px;"><div class="kicker" style="font-size:21px;">El visual</div><div class="stitle" style="font-weight:500;font-size:44px;margin:14px 0 12px;">Al final</div><div class="body" style="font-size:24px;">El gráfico es la consecuencia de las dos anteriores, no el punto de partida.</div></div>
+  </div>
+  <p class="body" style="font-size:26px;margin-top:44px;max-width:60ch;">Texto y tablas para valores exactos; <span class="hl">puntos, líneas, barras y área</span> para casi todo lo demás.</p>
+</section>
+
+<!-- 07 · Las 8 tareas -->
+<section class="slide" data-label="Las 8 tareas" style="background:var(--carbon-1000);display:flex;flex-direction:column;justify-content:center;padding:0 110px;">
+  <div class="kicker" style="margin-bottom:22px;">El mapa del catálogo</div>
+  <h2 class="stitle" style="font-size:80px;margin-bottom:40px;">Ocho <span class="hl">tareas visuales</span></h2>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:24px;">
+    <div class="anim card" style="padding:26px 24px;"><div class="stitle" style="font-weight:700;color:var(--citron-000);font-size:40px;">01</div><div class="stitle" style="font-weight:500;font-size:32px;margin:6px 0 8px;">Comparar</div><div class="body" style="font-size:19px;">¿Cuál es mayor?</div></div>
+    <div class="anim card" style="padding:26px 24px;"><div class="stitle" style="font-weight:700;color:var(--citron-000);font-size:40px;">02</div><div class="stitle" style="font-weight:500;font-size:32px;margin:6px 0 8px;">Distribución</div><div class="body" style="font-size:19px;">¿Cómo se reparte?</div></div>
+    <div class="anim card" style="padding:26px 24px;"><div class="stitle" style="font-weight:700;color:var(--citron-000);font-size:40px;">03</div><div class="stitle" style="font-weight:500;font-size:32px;margin:6px 0 8px;">Relación</div><div class="body" style="font-size:19px;">¿Qué se relaciona?</div></div>
+    <div class="anim card" style="padding:26px 24px;"><div class="stitle" style="font-weight:700;color:var(--citron-000);font-size:40px;">04</div><div class="stitle" style="font-weight:500;font-size:32px;margin:6px 0 8px;">Composición</div><div class="body" style="font-size:19px;">¿De qué está hecho?</div></div>
+    <div class="anim card" style="padding:26px 24px;"><div class="stitle" style="font-weight:700;color:var(--citron-000);font-size:40px;">05</div><div class="stitle" style="font-weight:500;font-size:32px;margin:6px 0 8px;">Tiempo</div><div class="body" style="font-size:19px;">¿Cómo cambia?</div></div>
+    <div class="anim card" style="padding:26px 24px;"><div class="stitle" style="font-weight:700;color:var(--citron-000);font-size:40px;">06</div><div class="stitle" style="font-weight:500;font-size:32px;margin:6px 0 8px;">Flujos</div><div class="body" style="font-size:19px;">¿Cómo fluye?</div></div>
+    <div class="anim card" style="padding:26px 24px;"><div class="stitle" style="font-weight:700;color:var(--citron-000);font-size:40px;">07</div><div class="stitle" style="font-weight:500;font-size:32px;margin:6px 0 8px;">Multivariado</div><div class="body" style="font-size:19px;">¿Lo complejo?</div></div>
+    <div class="anim card" style="padding:26px 24px;"><div class="stitle" style="font-weight:700;color:var(--citron-000);font-size:40px;">08</div><div class="stitle" style="font-weight:500;font-size:32px;margin:6px 0 8px;">Canónicos</div><div class="body" style="font-size:19px;">De la disciplina.</div></div>
+  </div>
+  <p class="body" style="font-size:24px;margin-top:36px;color:var(--bone-500);">Cerca de <span class="hl">80 tipos de gráfico</span> viven dentro de estas ocho tareas.</p>
+</section>
+
+<!-- 08 · Codificación: concepto -->
+<section class="slide" data-label="Que codifica un grafico" style="background:var(--carbon-950);display:flex;flex-direction:column;justify-content:center;padding:0 130px;">
+  <div class="kicker" style="margin-bottom:22px;">La idea detrás de por qué unos gráficos funcionan mejor</div>
+  <h2 class="stitle" style="font-size:76px;margin-bottom:20px;">Un gráfico <span class="hl">codifica</span> el dato</h2>
+  <p class="body" style="font-size:28px;max-width:60ch;margin-bottom:36px;">Cada gráfico traduce un número a algo que se ve: una posición, un largo, un ángulo, un área, un color. El ojo lee unos con precisión y otros solo «a ojo».</p>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;">
+    <div class="anim card" style="padding:36px;">
+      <div class="kicker" style="font-size:20px;margin-bottom:18px;">Longitud · se lee</div>
+      <svg viewBox="0 0 360 200" width="100%" role="img" aria-label="Tres barras: 15, 16 y 18." font-family="'Archivo',system-ui,sans-serif">
+        <line x1="40" y1="170" x2="344" y2="170" stroke="var(--line-strong,#444)" stroke-width="1.4"/>
+        <rect x="70" y="45" width="56" height="125" rx="2" fill="var(--citron-000,#C9C41C)"/>
+        <rect x="152" y="63" width="56" height="107" rx="2" fill="var(--carbon-600,#3A382F)"/>
+        <rect x="234" y="70" width="56" height="100" rx="2" fill="var(--carbon-600,#3A382F)"/>
+        <text x="98" y="36" text-anchor="middle" font-size="20" font-weight="700" fill="var(--bone-000,#E8E6E1)">18</text>
+        <text x="180" y="54" text-anchor="middle" font-size="20" font-weight="700" fill="var(--bone-500,#86847C)">16</text>
+        <text x="262" y="61" text-anchor="middle" font-size="20" font-weight="700" fill="var(--bone-500,#86847C)">15</text>
+      </svg>
+      <div class="body" style="font-size:22px;margin-top:16px;color:var(--citron-000);font-weight:600;">Cuál es mayor: obvio en un segundo.</div>
+    </div>
+    <div class="anim card neg-top" style="padding:36px;">
+      <div class="kicker neg" style="font-size:20px;margin-bottom:18px;color:var(--signal-negative);">Ángulo · se adivina</div>
+      <svg viewBox="0 0 360 200" width="100%" role="img" aria-label="Los mismos tres valores como tajadas de torta." font-family="'Archivo',system-ui,sans-serif">
+        <g transform="translate(180,100)">
+          <path d="M0,0 L0,-80 A80,80 0 0,1 76.0,25.0 Z" fill="var(--carbon-600,#3A382F)" stroke="var(--carbon-950,#101010)" stroke-width="2"/>
+          <path d="M0,0 L76.0,25.0 A80,80 0 0,1 -13.9,78.8 Z" fill="var(--bone-500,#86847C)" stroke="var(--carbon-950,#101010)" stroke-width="2"/>
+          <path d="M0,0 L-13.9,78.8 A80,80 0 0,1 0,-80 Z" fill="var(--carbon-700,#2A2924)" stroke="var(--carbon-950,#101010)" stroke-width="2"/>
+        </g>
+      </svg>
+      <div class="body" style="font-size:22px;margin-top:16px;color:var(--bone-500);">Los mismos 15, 16, 18: ¿cuál es cuál?</div>
+    </div>
+  </div>
+</section>
+
+<!-- 09 · Cleveland-McGill: jerarquía -->
+<section class="slide" data-label="Jerarquia de codificacion" style="background:var(--carbon-1000);display:flex;flex-direction:column;justify-content:center;padding:0 130px;">
+  <div class="kicker" style="margin-bottom:22px;">Cleveland &amp; McGill · qué lee mejor el ojo</div>
+  <h2 class="stitle" style="font-size:72px;margin-bottom:36px;">La jerarquía de <span class="hl">codificación</span></h2>
+  <div style="display:grid;grid-template-columns:1.1fr 1fr;gap:70px;align-items:center;">
+    <div>
+      <div class="anim" style="display:flex;align-items:baseline;gap:20px;border-left:4px solid var(--citron-000);padding:12px 0 12px 22px;margin-bottom:8px;"><div class="stitle" style="font-weight:700;color:var(--citron-000);font-size:40px;">1</div><div><b style="font-size:32px;color:var(--bone-000);font-family:var(--font-text);">Posición</b> <span class="body" style="font-size:24px;">en escala común</span></div></div>
+      <div class="anim" style="display:flex;align-items:baseline;gap:20px;border-left:4px solid var(--line-strong);padding:12px 0 12px 22px;margin-bottom:8px;"><div class="stitle" style="font-weight:700;color:var(--bone-300);font-size:36px;">2</div><div><b style="font-size:30px;color:var(--bone-000);font-family:var(--font-text);">Longitud</b> <span class="body" style="font-size:22px;">— la barra</span></div></div>
+      <div class="anim" style="display:flex;align-items:baseline;gap:20px;border-left:4px solid var(--line-strong);padding:12px 0 12px 22px;margin-bottom:8px;"><div class="stitle" style="font-weight:700;color:var(--bone-500);font-size:32px;">3</div><div><b style="font-size:27px;color:var(--bone-300);font-family:var(--font-text);">Ángulo · pendiente</b></div></div>
+      <div class="anim" style="display:flex;align-items:baseline;gap:20px;border-left:4px solid var(--line);padding:12px 0 12px 22px;margin-bottom:8px;"><div class="stitle" style="font-weight:700;color:var(--bone-500);font-size:28px;">4</div><div><b style="font-size:25px;color:var(--bone-500);font-family:var(--font-text);">Área</b> <span class="body" style="font-size:20px;">— la torta, la burbuja</span></div></div>
+      <div class="anim" style="display:flex;align-items:baseline;gap:20px;border-left:4px solid var(--line);padding:12px 0 12px 22px;"><div class="stitle" style="font-weight:700;color:var(--bone-500);font-size:24px;">5</div><div><b style="font-size:23px;color:var(--bone-500);font-family:var(--font-text);">Color · densidad</b></div></div>
+    </div>
+    <div class="anim card" style="padding:40px;">
+      <div class="kicker" style="font-size:20px;margin-bottom:16px;">La regla práctica</div>
+      <p class="body" style="font-size:30px;color:var(--bone-000);">Cuanto más <span class="hl">arriba</span> en la escala, más preciso lee el ojo. Por eso, en la duda, <span class="hl">posición y longitud</span>: barras y dot plots.</p>
+      <p class="body" style="font-size:24px;margin-top:20px;">La torta y el 3D viven abajo: el ojo estima mal ángulos, áreas y volúmenes.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 09 · Explorador en vivo -->
+<section class="slide" data-label="Explorador en vivo" style="background:var(--carbon-1000);display:flex;flex-direction:column;justify-content:center;padding:0 130px;">
+  <div class="kicker" style="margin-bottom:24px;">▶ En vivo · el catálogo interactivo</div>
+  <h2 class="stitle" style="font-size:88px;margin-bottom:20px;">Explorador de <span class="hl">gráficos</span></h2>
+  <div style="display:grid;grid-template-columns:1.05fr 1fr;gap:70px;align-items:center;margin-top:20px;">
+    <div>
+      <p class="body" style="font-size:30px;color:var(--bone-000);max-width:40ch;">Cerca de 80 gráficos en las 8 tareas. Para cada uno: qué pregunta responde, cuándo usarlo y cuándo no, la decisión que habilita y su trampa ética.</p>
+      <div class="card" style="padding:26px 30px;margin-top:34px;border-top-color:var(--citron-000);">
+        <div class="kicker" style="font-size:18px;margin-bottom:10px;">Ábrelo en tu equipo</div>
+        <div style="font-family:var(--font-text);font-weight:600;font-size:27px;color:var(--citron-000);word-break:break-all;">portfolio.luishreyes.com/classroom/<br>iqya-3751-2026-20/simulaciones/<br>explorador-graficos.html</div>
+        <div class="body" style="font-size:20px;margin-top:12px;color:var(--bone-500);">Classroom → Simulaciones → «El gráfico correcto».</div>
+      </div>
+    </div>
+    <div>
+      <div class="kicker" style="font-size:20px;margin-bottom:20px;">Qué mirar en el recorrido</div>
+      <div class="anim" style="display:flex;gap:18px;align-items:baseline;margin-bottom:20px;"><div class="stitle" style="font-weight:700;color:var(--citron-000);font-size:40px;">01</div><div class="body" style="font-size:26px;color:var(--bone-000);">Elige una <b>tarea</b> en el panel izquierdo y recorre sus gráficos.</div></div>
+      <div class="anim" style="display:flex;gap:18px;align-items:baseline;margin-bottom:20px;"><div class="stitle" style="font-weight:700;color:var(--citron-000);font-size:40px;">02</div><div class="body" style="font-size:26px;color:var(--bone-000);">Abre una <b>ficha</b>: lee «la decisión que habilita» y «la trampa ética».</div></div>
+      <div class="anim" style="display:flex;gap:18px;align-items:baseline;margin-bottom:20px;"><div class="stitle" style="font-weight:700;color:var(--citron-000);font-size:40px;">03</div><div class="body" style="font-size:26px;color:var(--bone-000);">Usa el <b>Diagrama de decisión</b>: «¿qué quiero mostrar?».</div></div>
+      <div class="anim" style="display:flex;gap:18px;align-items:baseline;"><div class="stitle" style="font-weight:700;color:var(--citron-000);font-size:40px;">04</div><div class="body" style="font-size:26px;color:var(--bone-000);">Busca los <b>canónicos</b> de tu área: Arrhenius, isotermas, secado…</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 10 · Gráficos a evitar -->
+<section class="slide" data-label="Gráficos a evitar" style="background:var(--carbon-950);display:flex;flex-direction:column;justify-content:center;padding:0 110px;">
+  <div class="kicker neg" style="margin-bottom:22px;color:var(--signal-negative);">Ética · lo que distorsiona la decisión</div>
+  <h2 class="stitle" style="font-size:76px;margin-bottom:40px;">Gráficos a <span class="neg">evitar</span> (y por qué)</h2>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:34px;">
+    <div class="anim card neg-top" style="padding:30px 28px;">
+      <svg viewBox="0 0 200 150" width="100%" height="130" role="img" aria-label="Torta con muchas tajadas casi iguales." font-family="'Archivo',system-ui,sans-serif">
+        <g transform="translate(100,75)">
+          <path d="M0,0 L0,-60 A60,60 0 0,1 51.9,-30 Z" fill="var(--carbon-600,#3A382F)" stroke="var(--carbon-950,#101010)" stroke-width="1.5"/>
+          <path d="M0,0 L51.9,-30 A60,60 0 0,1 51.9,30 Z" fill="var(--bone-500,#86847C)" stroke="var(--carbon-950,#101010)" stroke-width="1.5"/>
+          <path d="M0,0 L51.9,30 A60,60 0 0,1 0,60 Z" fill="var(--carbon-600,#3A382F)" stroke="var(--carbon-950,#101010)" stroke-width="1.5"/>
+          <path d="M0,0 L0,60 A60,60 0 0,1 -51.9,30 Z" fill="var(--bone-500,#86847C)" stroke="var(--carbon-950,#101010)" stroke-width="1.5"/>
+          <path d="M0,0 L-51.9,30 A60,60 0 0,1 -51.9,-30 Z" fill="var(--carbon-600,#3A382F)" stroke="var(--carbon-950,#101010)" stroke-width="1.5"/>
+          <path d="M0,0 L-51.9,-30 A60,60 0 0,1 0,-60 Z" fill="var(--bone-500,#86847C)" stroke="var(--carbon-950,#101010)" stroke-width="1.5"/>
+        </g>
+      </svg>
+      <div class="stitle" style="font-weight:500;font-size:34px;margin:12px 0 8px;">Torta con muchas tajadas</div>
+      <div class="body" style="font-size:22px;">El ojo no compara ángulos. Con más de 3–4, usa barras.</div>
+    </div>
+    <div class="anim card neg-top" style="padding:30px 28px;">
+      <svg viewBox="0 0 200 150" width="100%" height="130" role="img" aria-label="Barras en 3D con perspectiva." font-family="'Archivo',system-ui,sans-serif">
+        <g>
+          <polygon points="40,120 60,120 70,110 50,110" fill="var(--carbon-700,#2A2924)"/>
+          <rect x="40" y="70" width="20" height="50" fill="var(--carbon-600,#3A382F)"/>
+          <polygon points="60,70 70,60 70,110 60,120" fill="var(--carbon-700,#2A2924)"/>
+          <polygon points="40,70 60,70 70,60 50,60" fill="var(--bone-500,#86847C)"/>
+          <rect x="90" y="50" width="20" height="70" fill="var(--carbon-600,#3A382F)"/>
+          <polygon points="110,50 120,40 120,110 110,120" fill="var(--carbon-700,#2A2924)"/>
+          <polygon points="90,50 110,50 120,40 100,40" fill="var(--bone-500,#86847C)"/>
+          <rect x="140" y="80" width="20" height="40" fill="var(--carbon-600,#3A382F)"/>
+          <polygon points="160,80 170,70 170,110 160,120" fill="var(--carbon-700,#2A2924)"/>
+          <polygon points="140,80 160,80 170,70 150,70" fill="var(--bone-500,#86847C)"/>
+        </g>
+      </svg>
+      <div class="stitle" style="font-weight:500;font-size:34px;margin:12px 0 8px;">Barras en 3D</div>
+      <div class="body" style="font-size:22px;">La perspectiva miente sobre la altura y tapa datos detrás.</div>
+    </div>
+    <div class="anim card neg-top" style="padding:30px 28px;">
+      <svg viewBox="0 0 200 150" width="100%" height="130" role="img" aria-label="Gráfico con doble eje y." font-family="'Archivo',system-ui,sans-serif">
+        <line x1="30" y1="20" x2="30" y2="125" stroke="var(--citron-000,#C9C41C)" stroke-width="1.5"/>
+        <line x1="170" y1="20" x2="170" y2="125" stroke="var(--signal-negative,#C8623A)" stroke-width="1.5"/>
+        <line x1="30" y1="125" x2="170" y2="125" stroke="var(--line-strong,#444)" stroke-width="1.4"/>
+        <polyline points="40,90 75,70 110,80 145,45" fill="none" stroke="var(--citron-000,#C9C41C)" stroke-width="2.4"/>
+        <polyline points="40,50 75,85 110,60 145,100" fill="none" stroke="var(--signal-negative,#C8623A)" stroke-width="2.4"/>
+      </svg>
+      <div class="stitle" style="font-weight:500;font-size:34px;margin:12px 0 8px;">Doble eje Y</div>
+      <div class="body" style="font-size:22px;">Dos escalas fabrican correlaciones que no existen.</div>
+    </div>
+  </div>
+  <p class="body" style="font-size:24px;margin-top:34px;color:var(--bone-500);">El radar entra aquí también: el área crece al cuadrado y el orden de los ejes cambia la forma.</p>
+</section>
+
+<!-- 11 · Diagrama de decisión -->
+<section class="slide" data-label="Diagrama de decision" style="background:var(--carbon-1000);display:flex;flex-direction:column;justify-content:center;padding:0 130px;">
+  <div class="kicker" style="margin-bottom:22px;">La herramienta del Explorador</div>
+  <h2 class="stitle" style="font-size:76px;margin-bottom:40px;">¿Qué quiero <span class="hl">mostrar</span>?</h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px 80px;">
+    <div class="anim" style="display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--line);padding-bottom:16px;"><b style="font-size:30px;color:var(--bone-000);font-family:var(--font-text);">¿Cuál es mayor?</b><span class="body" style="font-size:22px;">Barras · dot plot</span></div>
+    <div class="anim" style="display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--line);padding-bottom:16px;"><b style="font-size:30px;color:var(--bone-000);font-family:var(--font-text);">¿Cómo se distribuye?</b><span class="body" style="font-size:22px;">Histograma · boxplot</span></div>
+    <div class="anim" style="display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--line);padding-bottom:16px;"><b style="font-size:30px;color:var(--bone-000);font-family:var(--font-text);">¿Qué se relaciona?</b><span class="body" style="font-size:22px;">Dispersión · burbujas</span></div>
+    <div class="anim" style="display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--line);padding-bottom:16px;"><b style="font-size:30px;color:var(--bone-000);font-family:var(--font-text);">¿De qué está hecho?</b><span class="body" style="font-size:22px;">Waterfall · treemap</span></div>
+    <div class="anim" style="display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--line);padding-bottom:16px;"><b style="font-size:30px;color:var(--bone-000);font-family:var(--font-text);">¿Cómo cambia?</b><span class="body" style="font-size:22px;">Línea · carta de control</span></div>
+    <div class="anim" style="display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--line);padding-bottom:16px;"><b style="font-size:30px;color:var(--bone-000);font-family:var(--font-text);">¿Cómo fluye?</b><span class="body" style="font-size:22px;">Sankey · aluvial</span></div>
+    <div class="anim" style="display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--line);padding-bottom:16px;"><b style="font-size:30px;color:var(--bone-000);font-family:var(--font-text);">¿Lo complejo?</b><span class="body" style="font-size:22px;">PCA · ROC</span></div>
+    <div class="anim" style="display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--line-citron);padding-bottom:16px;"><b style="font-size:30px;color:var(--citron-000);font-family:var(--font-text);">¿Convención del área?</b><span class="body" style="font-size:22px;color:var(--citron-000);">Arrhenius · isotermas</span></div>
+  </div>
+</section>
+
+<!-- 12 · Ejercicio consigna -->
+<section class="slide" data-label="Ejercicio" style="background:var(--carbon-950);display:flex;flex-direction:column;justify-content:center;padding:0 130px;">
+  <div class="kicker" style="font-weight:700;font-size:40px;letter-spacing:.3em;margin-bottom:30px;">30 min</div>
+  <div class="kicker dim" style="margin-bottom:20px;">Ejercicio en papel · sin IA todavía</div>
+  <h2 class="stitle anim" style="font-size:96px;max-width:24ch;">Un dato, <span class="hl">tres preguntas</span>, tres visuales</h2>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:40px;margin-top:52px;">
+    <div class="anim card" style="padding:36px 32px;"><div class="stitle" style="font-weight:700;color:var(--citron-000);font-size:64px;">1</div><div class="body" style="font-size:25px;margin-top:12px;color:var(--bone-000);">Lee la tabla y elige la <b>tarea visual</b> de cada pregunta.</div></div>
+    <div class="anim card" style="padding:36px 32px;"><div class="stitle" style="font-weight:700;color:var(--citron-000);font-size:64px;">2</div><div class="body" style="font-size:25px;margin-top:12px;color:var(--bone-000);">Boceta <b>a mano</b> el gráfico correcto para cada una.</div></div>
+    <div class="anim card" style="padding:36px 32px;"><div class="stitle" style="font-weight:700;color:var(--citron-000);font-size:64px;">3</div><div class="body" style="font-size:25px;margin-top:12px;color:var(--bone-000);">Valida tu elección en el <b>Explorador</b> y anota por qué.</div></div>
+  </div>
+  <div class="rule" style="margin-top:48px;"></div>
+</section>
+
+<!-- 13 · El set de datos -->
+<section class="slide" data-label="Set de datos" style="background:var(--carbon-1000);display:flex;flex-direction:column;justify-content:center;padding:0 130px;">
+  <div class="kicker" style="margin-bottom:22px;">Calidad de un snack horneado · 5 formulaciones</div>
+  <h2 class="stitle" style="font-size:70px;margin-bottom:36px;">El set de <span class="hl">datos</span></h2>
+  <table class="tbl">
+    <thead><tr><th>Formulación</th><th>Humedad (%)</th><th>Firmeza (N)</th><th>Color ΔE</th><th>Aceptación (1–9)</th></tr></thead>
+    <tbody>
+      <tr><td>F1</td><td>4.2</td><td>32</td><td>3.1</td><td>7.4</td></tr>
+      <tr><td>F2</td><td>5.8</td><td>24</td><td>5.6</td><td>6.1</td></tr>
+      <tr class="hl-row"><td>F3</td><td>3.5</td><td>41</td><td>2.2</td><td>7.9</td></tr>
+      <tr><td>F4</td><td>6.9</td><td>19</td><td>7.8</td><td>5.3</td></tr>
+      <tr><td>F5</td><td>4.0</td><td>36</td><td>3.9</td><td>7.1</td></tr>
+    </tbody>
+  </table>
+  <p class="body" style="font-size:23px;margin-top:26px;color:var(--bone-500);">Además: la humedad de F4 medida cada semana durante 8 semanas de almacenamiento (4.9 → 6.9%).</p>
+</section>
+
+<!-- 14 · Las 3 preguntas -->
+<section class="slide" data-label="Las 3 preguntas" style="background:var(--carbon-950);display:flex;flex-direction:column;justify-content:center;padding:0 130px;">
+  <div class="kicker" style="margin-bottom:22px;">Cada una pide una tarea distinta</div>
+  <h2 class="stitle" style="font-size:76px;margin-bottom:44px;">Las tres <span class="hl">preguntas</span></h2>
+  <div style="display:flex;flex-direction:column;gap:30px;">
+    <div class="anim card" style="padding:32px 40px;display:flex;gap:34px;align-items:center;"><div class="stitle" style="font-weight:700;color:var(--citron-000);font-size:60px;">A</div><div class="stitle" style="font-weight:500;font-size:42px;flex:1;">¿Qué formulación gusta más al consumidor?</div></div>
+    <div class="anim card" style="padding:32px 40px;display:flex;gap:34px;align-items:center;"><div class="stitle" style="font-weight:700;color:var(--citron-000);font-size:60px;">B</div><div class="stitle" style="font-weight:500;font-size:42px;flex:1;">¿La firmeza se relaciona con la aceptación?</div></div>
+    <div class="anim card" style="padding:32px 40px;display:flex;gap:34px;align-items:center;"><div class="stitle" style="font-weight:700;color:var(--citron-000);font-size:60px;">C</div><div class="stitle" style="font-weight:500;font-size:42px;flex:1;">¿Cómo cambia la humedad de F4 durante el almacenamiento?</div></div>
+  </div>
+  <p class="body" style="font-size:24px;margin-top:36px;color:var(--bone-500);">Ninguna se responde bien con el mismo gráfico. Esa es la lección.</p>
+</section>
+
+<!-- 15 · Autochequeo -->
+<section class="slide" data-label="Autochequeo" style="background:var(--carbon-1000);display:flex;flex-direction:column;justify-content:center;padding:0 130px;">
+  <div class="kicker" style="margin-bottom:22px;">Valida con el Explorador · pregunta → tarea → visual</div>
+  <h2 class="stitle" style="font-size:72px;margin-bottom:40px;">La respuesta, para <span class="hl">contrastar</span></h2>
+  <div style="display:grid;grid-template-columns:1fr;gap:22px;">
+    <div class="anim" style="display:grid;grid-template-columns:60px 1fr 1.2fr;gap:30px;align-items:center;border-bottom:1px solid var(--line);padding-bottom:20px;"><div class="stitle" style="font-weight:700;color:var(--citron-000);font-size:48px;">A</div><div class="body" style="font-size:27px;color:var(--bone-000);">Comparar magnitudes</div><div class="body" style="font-size:27px;"><span class="hl">Barras ordenadas</span> — F3 salta primero.</div></div>
+    <div class="anim" style="display:grid;grid-template-columns:60px 1fr 1.2fr;gap:30px;align-items:center;border-bottom:1px solid var(--line);padding-bottom:20px;"><div class="stitle" style="font-weight:700;color:var(--citron-000);font-size:48px;">B</div><div class="body" style="font-size:27px;color:var(--bone-000);">Relacionar variables</div><div class="body" style="font-size:27px;"><span class="hl">Dispersión</span> — firmeza y gusto suben juntos.</div></div>
+    <div class="anim" style="display:grid;grid-template-columns:60px 1fr 1.2fr;gap:30px;align-items:center;padding-bottom:6px;"><div class="stitle" style="font-weight:700;color:var(--citron-000);font-size:48px;">C</div><div class="body" style="font-size:27px;color:var(--bone-000);">Serie de tiempo</div><div class="body" style="font-size:27px;"><span class="hl">Línea</span> — la humedad cruza el límite.</div></div>
+  </div>
+  <p class="body" style="font-size:23px;margin-top:34px;color:var(--bone-500);">Una barra para B escondería la relación; una línea para A inventaría una tendencia entre categorías.</p>
+</section>
+
+<!-- 16 · Síntesis -->
+<section class="slide" data-label="Sintesis" style="background:var(--carbon-950);display:flex;flex-direction:column;justify-content:center;padding:0 130px;">
+  <div class="kicker" style="margin-bottom:22px;">Para llevarte</div>
+  <h2 class="stitle" style="font-size:80px;margin-bottom:44px;">Tres ideas <span class="hl">clave</span></h2>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:40px;">
+    <div class="anim card" style="padding:40px 34px;"><div class="stitle" style="font-weight:700;color:var(--citron-000);font-size:56px;">01</div><div class="stitle" style="font-weight:500;font-size:40px;margin:12px 0 12px;">La pregunta elige</div><div class="body" style="font-size:24px;">El gráfico se deduce de la decisión y la audiencia, no del software.</div></div>
+    <div class="anim card" style="padding:40px 34px;"><div class="stitle" style="font-weight:700;color:var(--citron-000);font-size:56px;">02</div><div class="stitle" style="font-weight:500;font-size:40px;margin:12px 0 12px;">Posición y longitud</div><div class="body" style="font-size:24px;">Por defecto, barras y puntos: el ojo los lee con más precisión.</div></div>
+    <div class="anim card" style="padding:40px 34px;"><div class="stitle" style="font-weight:700;color:var(--citron-000);font-size:56px;">03</div><div class="stitle" style="font-weight:500;font-size:40px;margin:12px 0 12px;">Evita lo que engaña</div><div class="body" style="font-size:24px;">Torta con muchas tajadas, 3D, doble eje: distorsionan la decisión.</div></div>
+  </div>
+</section>
+
+<!-- 17 · Prep Sesión 4 -->
+<section class="slide" data-label="Prep Sesion 4" style="background:var(--carbon-1000);display:flex;flex-direction:column;justify-content:center;padding:0 130px;">
+  <div class="kicker" style="margin-bottom:22px;">Antes de la Sesión 4 · aquí entra la IA</div>
+  <h2 class="stitle" style="font-size:84px;margin-bottom:20px;">Instala tus <span class="hl">cuentas</span></h2>
+  <p class="body" style="font-size:30px;max-width:58ch;margin-bottom:40px;">La próxima sesión prototipamos visualizaciones con IA generativa bajo flujo human-in-the-loop. Llega con acceso listo.</p>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:34px;">
+    <div class="anim card" style="padding:34px 30px;"><div class="kicker" style="font-size:19px;">Google</div><div class="stitle" style="font-weight:500;font-size:38px;margin:10px 0 10px;">AI Studio</div><div class="body" style="font-size:22px;">Con tu cuenta institucional de Google.</div></div>
+    <div class="anim card" style="padding:34px 30px;"><div class="kicker" style="font-size:19px;">Anthropic</div><div class="stitle" style="font-weight:500;font-size:38px;margin:10px 0 10px;">Claude</div><div class="body" style="font-size:22px;">Cuenta gratuita en claude.ai.</div></div>
+    <div class="anim card" style="padding:34px 30px;"><div class="kicker" style="font-size:19px;">OpenAI</div><div class="stitle" style="font-weight:500;font-size:38px;margin:10px 0 10px;">ChatGPT</div><div class="body" style="font-size:22px;">Cuenta gratuita en chatgpt.com.</div></div>
+  </div>
+  <p class="body" style="font-size:22px;margin-top:32px;color:var(--bone-500);">Nivel de uso de IA en esta sesión: <span class="hl">2 · IA para ideas</span> (opcional). En Módulo 2 sube a 4.</p>
+</section>
+
+<!-- 18 · Cierre / mantra -->
+<section class="slide" data-label="El mantra" style="background:var(--citron-000);color:var(--carbon-1000);display:flex;flex-direction:column;justify-content:center;padding:0 150px;">
+  <div style="font-family:var(--font-display);font-weight:700;font-size:120px;line-height:1;margin-bottom:10px;">“</div>
+  <blockquote class="stitle anim" style="font-weight:400;font-size:104px;max-width:24ch;color:var(--carbon-1000);">La pregunta elige el gráfico.</blockquote>
+  <div style="font-family:var(--font-text);font-weight:600;font-size:24px;letter-spacing:.28em;text-transform:uppercase;margin-top:52px;">Eligiendo el visual correcto · Sesión 3</div>
+</section>
+
+  </div>
+</div>
+
+<div class="nav" role="navigation" aria-label="Navegación de diapositivas">
+  <button id="prev" aria-label="Anterior">‹</button>
+  <span class="count" id="count">1 / 19</span>
+  <button id="next" aria-label="Siguiente">›</button>
+  <span class="label" id="slabel">Portada</span>
+  <button id="fs" aria-label="Pantalla completa" title="Pantalla completa (F)" style="font-size:15px;">⛶</button>
+  <button id="theme" aria-label="Cambiar de versión clara/oscura" title="Versión clara / oscura (L)" style="font-size:16px;">☀</button>
+</div>
+<div class="hint">← → navegar · F pantalla completa · L versión clara</div>
+
+<script>
+(function () {
+  var stage = document.getElementById('stage');
+  var viewport = document.querySelector('.viewport');
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var i = 0;
+  var mq = window.matchMedia('(max-width:768px)');
+  var countEl = document.getElementById('count'), labelEl = document.getElementById('slabel'), prog = document.getElementById('progress');
+  function fit() {
+    if (mq.matches) {
+      stage.style.transform = 'none';
+      var z = (document.documentElement.clientWidth || window.innerWidth) / 1920;
+      slides.forEach(function (sl) { sl.style.zoom = z; });
+      return;
+    }
+    slides.forEach(function (sl) { sl.style.zoom = ''; });
+    var s = Math.min(viewport.clientWidth / 1920, viewport.clientHeight / 1080);
+    stage.style.transform = 'scale(' + s + ')';
+  }
+  window.addEventListener('resize', fit);
+  var rail = document.createElement('div'); rail.className = 'rail'; rail.setAttribute('aria-label', 'Miniaturas');
+  var thumbs = slides.map(function (sl, k) {
+    var t = document.createElement('button'); t.className = 'thumb'; t.type = 'button';
+    t.title = (k + 1) + ' · ' + (sl.getAttribute('data-label') || '');
+    var tw = document.createElement('div'); tw.className = 'tw';
+    tw.style.cssText = sl.getAttribute('style') || '';
+    tw.style.width = '1920px'; tw.style.height = '1080px'; tw.style.position = 'absolute'; tw.style.top = '0'; tw.style.left = '0';
+    tw.innerHTML = sl.innerHTML;
+    var tn = document.createElement('span'); tn.className = 'tn'; tn.textContent = k + 1;
+    t.appendChild(tw); t.appendChild(tn);
+    t.addEventListener('click', function () { show(k); });
+    rail.appendChild(t); return t;
+  });
+  document.body.appendChild(rail);
+  function show(n) {
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach(function (s, k) { s.classList.toggle('is-active', k === i); });
+    thumbs.forEach(function (t, k) { t.classList.toggle('is-cur', k === i); });
+    countEl.textContent = (i + 1) + ' / ' + slides.length;
+    labelEl.textContent = slides[i].getAttribute('data-label') || '';
+    prog.style.width = ((i) / (slides.length - 1) * 100) + '%';
+    var cur = thumbs[i]; if (cur && cur.scrollIntoView) cur.scrollIntoView({ block: 'nearest', inline: 'center' });
+    if (location.hash !== '#' + (i + 1)) history.replaceState(null, '', '#' + (i + 1));
+  }
+  function next() { show(i + 1); } function prev() { show(i - 1); }
+  document.getElementById('next').addEventListener('click', next);
+  document.getElementById('prev').addEventListener('click', prev);
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); next(); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); prev(); }
+    else if (e.key === 'Home') show(0);
+    else if (e.key === 'End') show(slides.length - 1);
+    else if (e.key === 'f' || e.key === 'F') { e.preventDefault(); toggleFs(); }
+    else if (e.key === 'l' || e.key === 'L') { e.preventDefault(); toggleTheme(); }
+  });
+  var themeBtn = document.getElementById('theme');
+  function toggleTheme() { var light = document.body.classList.toggle('light'); themeBtn.textContent = light ? '☾' : '☀'; themeBtn.title = light ? 'Versión oscura (L)' : 'Versión clara (L)'; }
+  themeBtn.addEventListener('click', toggleTheme);
+  var fsBtn = document.getElementById('fs');
+  function toggleFs() { if (document.fullscreenElement) { document.exitFullscreen(); } else if (document.documentElement.requestFullscreen) { document.documentElement.requestFullscreen(); } }
+  fsBtn.addEventListener('click', toggleFs);
+  document.addEventListener('fullscreenchange', function () { document.body.classList.toggle('is-fs', !!document.fullscreenElement); fit(); });
+  if (mq.addEventListener) mq.addEventListener('change', fit);
+  fit();
+  var start = parseInt((location.hash || '').replace('#', ''), 10);
+  show(isNaN(start) ? 0 : start - 1);
+})();
+</script>
+
+</body>
+</html>

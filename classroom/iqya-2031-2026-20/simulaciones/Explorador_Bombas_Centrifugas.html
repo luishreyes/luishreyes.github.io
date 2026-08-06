@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Explorador de bombas centrífugas · Proyecto de Operaciones Unitarias</title>
+<link rel="stylesheet" href="/classroom-fonts.css">
+<!-- KaTeX autoalojado (woff2) — sin CDN, funciona offline. Ver public/classroom/vendor/katex -->
+<link rel="stylesheet" href="/classroom/vendor/katex/katex.min.css">
+<script defer src="/classroom/vendor/katex/katex.min.js"></script>
+<style>
+  :root {
+    --color-accent:      #5980A6;
+    --color-accent-100:  #EFF4F9;
+    --color-accent-200:  #D3E0EC;
+    --color-accent-500:  #5980A6;
+    --color-accent-600:  #416180;
+    --color-accent-700:  #2C455D;
+    --color-accent-800:  #1D2D3D;
+    --color-bg:          #ffffff;
+    --color-text:        #1A1A1A;
+    --color-divider:     #1A1A1A;
+    --color-neutral-100: #f4f4f5;
+    --color-neutral-200: #e4e4e7;
+    --color-neutral-300: #d4d4d8;
+    --color-neutral-400: #a1a1aa;
+    --color-neutral-500: #71717a;
+    --color-neutral-600: #52525b;
+    --color-neutral-700: #3f3f46;
+    --color-neutral-800: #27272a;
+    --color-neutral-900: #18181b;
+    --font-heading: 'Manrope Variable', ui-sans-serif, system-ui, -apple-system, sans-serif;
+    --font-body:    'Manrope Variable', ui-sans-serif, system-ui, -apple-system, sans-serif;
+    --font-mono:    'JetBrains Mono Variable', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { background: var(--color-neutral-100); color: var(--color-text); font-family: var(--font-body); -webkit-font-smoothing: antialiased; }
+  .app { max-width: 1400px; margin: 0 auto; background: var(--color-bg); min-height: 100vh; border-left: 1px solid var(--color-neutral-300); border-right: 1px solid var(--color-neutral-300); }
+  a { color: var(--color-accent-700); }
+  a:hover { color: var(--color-accent-600); }
+  input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; height: 22px; background: transparent; cursor: pointer; margin: 2px 0 0; }
+  input[type="range"]::-webkit-slider-runnable-track { height: 2px; background: var(--color-neutral-400); }
+  input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 18px; background: var(--color-accent); margin-top: -8px; border: none; border-radius: 0; }
+  input[type="range"]::-moz-range-track { height: 2px; background: var(--color-neutral-400); }
+  input[type="range"]::-moz-range-thumb { width: 12px; height: 18px; background: var(--color-accent); border: none; border-radius: 0; }
+  input[type="range"]:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; }
+  button:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+  .katex { font-size: 1em; }
+
+  .grp-label { font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-800); }
+  .grp-label.brd { border-top: 2px solid var(--color-divider); padding-top: 10px; margin-top: 14px; }
+  .row { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .ctl { font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--color-neutral-700); }
+  .val { font-family: var(--font-heading); font-weight: 800; font-size: 15px; }
+  .hint { font-size: 12px; color: var(--color-neutral-700); margin-top: 2px; }
+  .chk { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--color-neutral-800); cursor: pointer; user-select: none; }
+  .chk input { accent-color: var(--color-accent); width: 15px; height: 15px; }
+  .mcell { padding: 12px 18px; }
+  .ecell { padding: 14px 18px; }
+  .brd-r { border-right: 1px solid var(--color-neutral-300); }
+  .mlbl { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-neutral-600); }
+  .mval { font-family: var(--font-heading); font-weight: 800; font-size: 22px; margin-top: 1px; }
+  .munit { font-size: 11px; color: var(--color-neutral-600); }
+  .eprose { font-size: 13px; color: var(--color-neutral-800); margin-top: 6px; line-height: 1.5; }
+  .eq { font-family: var(--font-mono); font-size: 14px; margin-top: 4px; }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+  @media (max-width: 760px) {
+    .colpanel { border-right: none !important; border-bottom: 2px solid var(--color-divider); max-width: none !important; }
+    .grid-metrics, .grid-eq { grid-template-columns: 1fr !important; }
+    .grid-metrics .mcell, .grid-eq .ecell { border-right: none !important; }
+    .grid-metrics .mcell:not(:last-child), .grid-eq .ecell:not(:last-child) { border-bottom: 1px solid var(--color-neutral-300); }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header style="display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; padding: 18px 28px 16px; border-bottom: 2px solid var(--color-divider);">
+    <div style="font-family: var(--font-heading); font-weight: 800; font-size: 24px; letter-spacing: -0.015em;">Bombas centrífugas: Curva característica</div>
+    <div style="font-size: 12px; color: var(--color-neutral-700); text-transform: uppercase; letter-spacing: 0.08em;">Proyecto de Operaciones Unitarias · Selección de bombas · Basado en B&amp;G TEH-375A · <span id="rpmHdr"></span> RPM</div>
+  </header>
+
+  <div id="warnings" style="display: none; border-bottom: 2px solid var(--color-accent); background: var(--color-accent-100); padding: 10px 28px; flex-direction: column; gap: 4px;"></div>
+
+  <div style="display: flex; flex-wrap: wrap;">
+
+    <aside class="colpanel" style="flex: 1 1 280px; max-width: 380px; padding: 18px 24px 28px; border-right: 2px solid var(--color-divider);">
+
+      <div class="grp-label" style="border-top: 2px solid var(--color-divider); padding-top: 10px; margin-top: 6px;">Unidades</div>
+      <div id="unitOpts" style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 12px 0 4px;"></div>
+
+      <div class="grp-label brd">Bomba</div>
+      <div class="ctl" style="padding-top: 12px;">Diámetro del impulsor</div>
+      <div id="impOpts" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; padding: 8px 0 4px;"></div>
+
+      <div style="padding: 10px 0 6px;">
+        <div class="row"><label class="ctl">Velocidad de giro N</label><span class="val" id="fRpm"></span></div>
+        <input type="range" min="1150" max="3450" step="50" id="rpm" oninput="onSlider('rpm', this.value)">
+        <div class="hint">Las leyes de afinidad reescalan la curva · N/N₀ = <span id="fSpeedRatioA"></span> respecto a 1750 RPM</div>
+      </div>
+
+      <div class="grp-label brd">Curva del sistema</div>
+
+      <div style="padding: 12px 0 6px;">
+        <div class="row"><label class="ctl">Caudal de diseño Q₀</label><span class="val" id="fQd"></span></div>
+        <input type="range" min="50" max="350" step="10" id="Qd" oninput="onSlider('Qd', this.value)">
+      </div>
+      <div style="padding: 8px 0 6px;">
+        <div class="row"><label class="ctl">Fricción del circuito a Q₀</label><span class="val" id="fHf"></span></div>
+        <input type="range" min="5" max="60" step="1" id="hf" oninput="onSlider('hf', this.value)">
+        <div class="hint">La pérdida varía con el cuadrado del caudal: h ∝ Q²</div>
+      </div>
+      <div style="padding: 8px 0 6px;">
+        <div class="row"><label class="ctl">Nivel de descarga z<sub>d</sub></label><span class="val" id="fZd"></span></div>
+        <input type="range" min="0" max="50" step="1" id="zd" oninput="onSlider('zd', this.value)">
+        <div class="hint">Nivel del tanque de descarga sobre el eje de la bomba (z = 0) · cabeza estática del sistema H<sub>est</sub> = z<sub>d</sub> + h<sub>s</sub> = <span id="fHstatTotal"></span></div>
+      </div>
+
+      <div class="grp-label brd">Succión · NPSH</div>
+
+      <div style="padding: 12px 0 6px;">
+        <div class="row"><label class="ctl">Altura de succión h<sub>s</sub></label><span class="val" id="fHs"></span></div>
+        <input type="range" min="-10" max="20" step="0.5" id="hs" oninput="onSlider('hs', this.value)">
+        <div class="hint" id="hsDesc"></div>
+      </div>
+      <div style="padding: 8px 0 6px;">
+        <div class="row"><label class="ctl">Altitud del sitio</label><span class="val" id="fAlt"></span></div>
+        <input type="range" min="0" max="4000" step="100" id="alt" oninput="onSlider('alt', this.value)">
+        <div class="hint">P. atmosférica = <span id="fHatm"></span> (≈ <span id="fPatmKpa"></span>) · Bogotá ≈ 2600 msnm</div>
+      </div>
+      <div style="padding: 8px 0 6px;">
+        <div class="row"><label class="ctl">Fricción en la succión a Q₀</label><span class="val" id="fHfs"></span></div>
+        <input type="range" min="0" max="10" step="0.5" id="hfs" oninput="onSlider('hfs', this.value)">
+        <div class="hint">Agua a 20 °C · presión de vapor = <span id="fHv"></span> (≈ <span id="fPvapPa"></span>)</div>
+      </div>
+
+      <div class="grp-label brd">Fluido y criterios</div>
+      <div style="padding: 12px 0 6px;">
+        <div class="row"><label class="ctl">Gravedad específica s.g.</label><span class="val" id="fSg"></span></div>
+        <input type="range" min="0.5" max="2" step="0.05" id="sg" oninput="onSlider('sg', this.value)">
+        <div class="hint">Escala la potencia al freno (BHP ∝ s.g.)</div>
+      </div>
+      <div style="padding: 8px 0 6px;">
+        <div class="row"><label class="ctl">Margen NPSH recomendado</label><span class="val" id="fMargin"></span></div>
+        <input type="range" min="0" max="10" step="0.5" id="margin" oninput="onSlider('margin', this.value)">
+      </div>
+
+      <div class="grp-label brd">Gráfico</div>
+      <div style="padding: 12px 0 2px;">
+        <label class="chk"><input type="checkbox" id="showIsl" checked onchange="state.showIsl = this.checked; render();"> Islas de eficiencia</label>
+      </div>
+
+    </aside>
+
+    <section class="colpanel" style="flex: 1 1 280px; max-width: 430px; padding: 18px 20px 24px; border-right: 2px solid var(--color-divider);">
+      <div class="grp-label" style="border-top: 2px solid var(--color-divider); padding-top: 10px; margin-top: 6px; margin-bottom: 8px;">Instalación</div>
+      <svg id="svgDiag" viewBox="0 0 400 330" style="width: 100%; display: block;"></svg>
+      <div id="diagCaption" style="border-top: 1px solid var(--color-neutral-300); margin-top: 8px; padding-top: 8px; font-size: 13px; color: var(--color-neutral-800);"></div>
+
+      <div class="grp-label" style="border-top: 2px solid var(--color-divider); padding-top: 10px; margin-top: 18px; margin-bottom: 4px;">NPSH: disponible vs requerido</div>
+      <div style="display: flex; gap: 14px; flex-wrap: wrap; align-items: center; font-size: 12px; color: var(--color-neutral-800); padding: 4px 0 6px;">
+        <span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 18px; height: 2.5px; background: var(--color-text);"></span>NPSH disponible</span>
+        <span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 18px; height: 2.5px; background: var(--color-accent);"></span>NPSH requerido</span>
+      </div>
+      <svg id="svgNpsh" viewBox="0 0 400 260" style="width: 100%; display: block;"></svg>
+      <div id="npshCaption" style="border-top: 1px solid var(--color-neutral-300); margin-top: 8px; padding-top: 8px; font-size: 13px; color: var(--color-neutral-800);"></div>
+    </section>
+
+    <section style="flex: 1 1 480px; min-width: 0; padding: 18px 24px 24px;">
+      <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; border-top: 2px solid var(--color-divider); padding-top: 10px; margin-top: 6px; margin-bottom: 10px;">
+        <div style="display: flex; gap: 16px; flex-wrap: wrap; align-items: center; font-size: 12px; color: var(--color-neutral-800);">
+          <span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 18px; height: 3px; background: var(--color-text);"></span>Impulsor activo</span>
+          <span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 18px; height: 1.5px; background: var(--color-neutral-500);"></span>Otros impulsores</span>
+          <span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 18px; height: 2px; background: var(--color-accent);"></span>Curva del sistema</span>
+          <span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 18px; border-top: 1.5px dashed var(--color-neutral-600);"></span>Islas de eficiencia</span>
+          <span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 10px; height: 10px; background: var(--color-accent);"></span>Punto de operación</span>
+          <span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 10px; height: 10px; border: 2px solid var(--color-text);"></span>PME</span>
+        </div>
+        <div id="statusText" style="font-family: var(--font-heading); font-weight: 800; font-size: 14px;"></div>
+      </div>
+
+      <svg id="svgMain" viewBox="0 0 720 560" style="width: 100%; max-width: 820px; display: block;"></svg>
+
+      <div class="grp-label" style="border-top: 2px solid var(--color-divider); padding-top: 10px; margin-top: 16px; margin-bottom: 6px;">Potencia al freno: impulsor activo</div>
+      <svg id="svgBhp" viewBox="0 0 720 250" style="width: 100%; max-width: 820px; display: block;"></svg>
+    </section>
+  </div>
+
+  <div class="grid-metrics" style="border-top: 2px solid var(--color-divider); display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
+    <div class="mcell brd-r"><div class="mlbl">Q · caudal de operación</div><div class="mval" id="vQ" style="color: var(--color-accent-700);"></div><div class="munit" id="capQ"></div></div>
+    <div class="mcell brd-r"><div class="mlbl">H · cabeza total</div><div class="mval" id="vH"></div><div class="munit" id="capH"></div></div>
+    <div class="mcell brd-r"><div class="mlbl">η · eficiencia</div><div class="mval" id="vEta"></div><div class="munit" id="capEta"></div></div>
+    <div class="mcell brd-r"><div class="mlbl">WHP · potencia hidráulica</div><div class="mval" id="vWhp"></div><div class="munit" id="capWhp"></div></div>
+    <div class="mcell brd-r"><div class="mlbl">BHP · potencia al freno</div><div class="mval" id="vBhp"></div><div class="munit" id="capBhp"></div></div>
+    <div class="mcell"><div class="mlbl">Motor recomendado</div><div class="mval" id="vMotor" style="color: var(--color-accent-700);"></div><div class="munit" id="capMotor"></div></div>
+  </div>
+
+  <div class="grid-metrics" style="border-top: 1px solid var(--color-neutral-300); display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
+    <div class="mcell brd-r"><div class="mlbl">NPSH disponible</div><div class="mval" id="vNa"></div><div class="munit" id="capNa"></div></div>
+    <div class="mcell brd-r"><div class="mlbl">NPSH requerido</div><div class="mval" id="vNr"></div><div class="munit" id="capNr"></div></div>
+    <div class="mcell brd-r"><div class="mlbl">Margen NPSH</div><div class="mval" id="vMargin"></div><div class="munit" id="capMargin"></div></div>
+    <div class="mcell brd-r"><div class="mlbl">Q máx sin cavitar</div><div class="mval" id="vQsafe"></div><div class="munit" id="capQsafe"></div></div>
+    <div class="mcell brd-r"><div class="mlbl">PME del impulsor activo</div><div class="mval" id="vBep"></div><div class="munit" id="capBep"></div></div>
+    <div class="mcell"><div class="mlbl">Impulsor recomendado</div><div class="mval" id="vRec" style="color: var(--color-accent-700);"></div><div class="munit" id="capRec"></div></div>
+  </div>
+
+  <div class="grid-eq" style="border-top: 2px solid var(--color-divider); display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+    <div class="ecell brd-r">
+      <div class="mlbl">Punto de operación</div>
+      <div class="eq" id="eqSys"></div>
+      <div class="eprose">La bomba opera donde su curva corta la curva del sistema: la energía que entrega el impulsor iguala la que pierde el circuito. Aquí: <span id="opSummary"></span>.</div>
+    </div>
+    <div class="ecell brd-r">
+      <div class="mlbl">Leyes de afinidad</div>
+      <div class="eq" id="eqAffinity"></div>
+      <div class="eprose">Con N/N₀ = <span id="fSpeedRatio"></span> y D/D₀ = <span id="fDiaRatio"></span>, la curva publicada a 1750 RPM se reescala a la mostrada.</div>
+    </div>
+    <div class="ecell">
+      <div class="mlbl">NPSH disponible</div>
+      <div class="eq" id="eqNpshDef"></div>
+      <div class="eprose">Numéricamente: <span id="npshBreakdown"></span>. Debe superar el NPSH requerido de la curva; si no, el líquido se vaporiza en el ojo del impulsor (cavitación).</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ────────────────────────────────────────────────────────────────────────
+   Explorador de bombas centrífugas — puerto vanilla-JS fiel del componente
+   original. Toda la física (curva característica, leyes de afinidad,
+   eficiencia, NPSH disponible/requerido, potencia al freno, selección de
+   motor, islas de eficiencia) se conserva verbatim de la lógica original.
+   Modelo interno en GPM · pies · HP; referencia impulsor 7.5" a 1750 RPM.
+   ──────────────────────────────────────────────────────────────────────── */
+
+var state = { unit: 'us', di: 3, rpm: 1750, Qd: 200, hf: 30, zd: 10, hs: 5, alt: 2600, hfs: 2, sg: 1, margin: 2, showIsl: true };
+
+function onSlider(k, raw) { state[k] = +raw; render(); }
+function setUnit(u) { state.unit = u; render(); }
+function setImp(i) { state.di = i; render(); }
+
+// helpers de cadena SVG
+function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+function r1(x) { return Math.round(x * 10) / 10; }
+function pathOf(pts) { return pts.length ? 'M' + pts.map(function (p) { return r1(p[0]) + ',' + r1(p[1]); }).join(' L') : ''; }
+function sample(fx, fy, t0, t1, n) { var pts = []; for (var i = 0; i <= n; i++) { var t = t0 + (t1 - t0) * i / n; pts.push([fx(t), fy(t)]); } return pts; }
+function nice(maxV, target) {
+  if (!(maxV > 0)) maxV = 1;
+  var raw = maxV / target;
+  var mag = Math.pow(10, Math.floor(Math.log10(raw)));
+  var n = raw / mag;
+  var step = (n < 1.5 ? 1 : n < 3 ? 2 : n < 7 ? 5 : 10) * mag;
+  return { step: step, max: Math.ceil(maxV / step) * step };
+}
+function tickFmt(v, step) { return step < 1 ? v.toFixed(1) : String(Math.round(v)); }
+// <text> como cadena (reemplaza el React.createElement 'T' del original)
+function Tt(x, y, txt, o) {
+  o = o || {};
+  var a = 'x="' + x + '" y="' + y + '"';
+  if (o.anchor) a += ' text-anchor="' + o.anchor + '"';
+  if (o.transform) a += ' transform="' + o.transform + '"';
+  var st = 'font-size:' + (o.fs || 13) + 'px;fill:' + (o.fill || 'var(--color-neutral-800)') + ';';
+  if (o.fw) st += 'font-weight:' + o.fw + ';';
+  return '<text ' + a + ' style="' + st + '">' + esc(txt) + '</text>';
+}
+function svgLine(x1, y1, x2, y2, stroke, sw, dash) {
+  return '<line x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '" stroke="' + stroke + '" stroke-width="' + (sw || 1) + '"' + (dash ? ' stroke-dasharray="' + dash + '"' : '') + '></line>';
+}
+function set(id, v) { var el = document.getElementById(id); if (el) el.textContent = v; }
+function setColor(id, c) { var el = document.getElementById(id); if (el) el.style.color = c; }
+
+var katexReady = false;
+function tex(id, latex) {
+  var el = document.getElementById(id); if (!el) return;
+  if (katexReady && window.katex) { try { window.katex.render(latex, el, { throwOnError: false, displayMode: false }); return; } catch (e) {} }
+  el.textContent = latex;
+}
+
+function render() {
+  var st = state;
+  var sg = st.sg;
+  var marginReq = st.margin; // ft
+  var showIsl = st.showIsl;
+
+  var si = st.unit === 'si';
+  var cQ = si ? 0.22712 : 1;      // GPM -> m3/h
+  var cH = si ? 0.3048 : 1;       // ft -> m
+  var cP = si ? 0.7457 : 1;       // HP -> kW
+  var qUnit = si ? 'm³/h' : 'GPM';
+  var hUnit = si ? 'm' : 'pies';
+  var pUnit = si ? 'kW' : 'HP';
+  var fQv = function (g, d) { return (g * cQ).toFixed(d == null ? (si ? 1 : 0) : d); };
+  var fHvf = function (f) { return (f * cH).toFixed(1); };
+  var fPv = function (p) { return (p * cP).toFixed(2); };
+  var fQ = function (g) { return fQv(g) + ' ' + qUnit; };
+  var fH = function (f) { return fHvf(f) + ' ' + hUnit; };
+  var fP = function (p) { return fPv(p) + ' ' + pUnit; };
+
+  // ----- pump model (internal: GPM, ft, HP; reference: 7.5" impeller @ 1750 RPM) -----
+  var s = st.rpm / 1750;
+  var dRatios = [0.8, 0.8667, 0.9333, 1];
+  var impLabelsUS = ['6"', '6½"', '7"', '7½"'];
+  var impLabelsSI = ['152 mm', '165 mm', '178 mm', '191 mm'];
+  var impLabels = si ? impLabelsSI : impLabelsUS;
+  var D = dRatios[st.di];
+  var QBEP_REF = 210, Q_END = 340, Q_ZERO = 419.9;
+
+  var Href = function (q) { return 72 - 0.012 * q - 0.00038 * q * q; };
+  var etaMax = function (d) { return 74 - 18 * (1 - d); };
+  var eta = function (Q, d) { return Math.max(0, etaMax(d) * (1 - Math.pow((Q / (d * s) - QBEP_REF) / QBEP_REF, 2))); };
+  var Hp = function (Q, d) { return d * d * s * s * Href(Q / (d * s)); };
+  var qEnd = function (d) { return Q_END * d * s; };
+  var qZero = function (d) { return Q_ZERO * d * s; };
+
+  var K = st.hf / (st.Qd * st.Qd);
+  // Cabeza estática total del sistema: nivel de descarga sobre la bomba (zd)
+  // más la altura de succión (hs>0 cuando el nivel está bajo la bomba).
+  var hstatT = st.zd + st.hs;
+  var Hsys = function (Q) { return hstatT + K * Q * Q; };
+
+  var hatm = 33.9 * Math.exp(-st.alt / 8434);
+  var hvap = 0.78;
+  var Ks = st.hfs / (st.Qd * st.Qd);
+  var NPSHa = function (Q) { return hatm - hvap - st.hs - Ks * Q * Q; };
+  var NPSHr = function (Q) { return 4 * s * s + 0.000085 * Q * Q; };
+
+  var solveOp = function (d) {
+    var f = function (Q) { return Hp(Q, d) - Hsys(Q); };
+    if (f(0) <= 0) return null;
+    var lo = 0, hi = qZero(d);
+    if (f(hi) > 0) return { Q: hi, H: Hp(hi, d), beyond: true };
+    for (var i = 0; i < 70; i++) { var m = (lo + hi) / 2; (f(m) > 0) ? lo = m : hi = m; }
+    var Q = (lo + hi) / 2;
+    return { Q: Q, H: Hp(Q, d), beyond: Q > qEnd(d) + 0.5 };
+  };
+  var ops = dRatios.map(solveOp);
+  var op = ops[st.di];
+  var hasOp = !!op;
+  var beyond = hasOp && op.beyond;
+
+  // BHP = WHP/η es válido donde η es razonable; cerca del cierre (Q→0) la
+  // eficiencia tiende a cero y la división se dispara (artefacto). Se empalma
+  // suavemente con la potencia de cierre típica de una bomba radial
+  // (≈ 50 % de la potencia en el PME), manteniendo valor y pendiente en Qt.
+  var bhpRaw = function (Q) { return Q * Hp(Q, D) * sg * 100 / (3960 * Math.max(eta(Q, D), 8)); };
+  var bepQD = QBEP_REF * D * s;
+  var etaTrust = Math.min(25, etaMax(D) * 0.5);
+  var Qt = bepQD * (1 - Math.sqrt(Math.max(1 - etaTrust / etaMax(D), 0)));
+  var bhpT = bhpRaw(Qt);
+  var mT = (bhpRaw(Qt * 1.05) - bhpRaw(Qt * 0.95)) / (Qt * 0.1);
+  var bhp0 = 0.5 * bhpRaw(bepQD);
+  var cBlend = (bhp0 - bhpT + mT * Qt) / (Qt * Qt);
+  var BHPcurve = function (Q) { return Q >= Qt ? bhpRaw(Q) : bhpT + mT * (Q - Qt) + cBlend * (Q - Qt) * (Q - Qt); };
+  var bhpMax = 0;
+  for (var i = 0; i <= 60; i++) bhpMax = Math.max(bhpMax, BHPcurve(qEnd(D) * i / 60));
+  var motors = [0.5, 0.75, 1, 1.5, 2, 3, 5, 7.5, 10, 15, 20, 25, 30, 40, 50];
+  var motorNO = motors.find(function (m) { return m >= bhpMax; }) || 50;
+  var etaOp = hasOp ? eta(op.Q, D) : 0;
+  var whpOp = hasOp ? op.Q * op.H * sg / 3960 : 0;
+  var bhpOp = hasOp ? BHPcurve(op.Q) : 0;
+  var motorPt = motors.find(function (m) { return m >= bhpOp; }) || 50;
+
+  var naOp = hasOp ? NPSHa(op.Q) : NPSHa(0);
+  var nrOp = hasOp ? NPSHr(op.Q) : NPSHr(0);
+  var npshMargin = naOp - nrOp;
+  var cav = hasOp && npshMargin < 0;
+  var lowMargin = hasOp && !cav && npshMargin < marginReq;
+  var qSafe2 = (hatm - hvap - st.hs - 4 * s * s) / (Ks + 0.000085);
+  var qSafe = qSafe2 > 0 ? Math.sqrt(qSafe2) : 0;
+
+  // recommendation: impeller whose operating point has highest efficiency (within published curve)
+  var recIdx = -1, recEta = -1;
+  ops.forEach(function (o, i) {
+    if (o && !o.beyond) { var e = eta(o.Q, dRatios[i]); if (e > recEta) { recEta = e; recIdx = i; } }
+  });
+
+  // ----- axes -----
+  var qMaxI = Math.max(qEnd(1) * 1.12, st.Qd * 1.25, hasOp ? op.Q * 1.08 : 0);
+  var qsc = nice(qMaxI * cQ, 6); qMaxI = qsc.max / cQ;
+  var hMaxI = Math.max(72 * s * s * 1.18, hstatT * 1.35, 6);
+  var hsc = nice(hMaxI * cH, 6); hMaxI = hsc.max / cH;
+
+  var PX0 = 64, PX1 = 694, PY0 = 16, PY1 = 472;
+  var xOf = function (Q) { return PX0 + (Q / qMaxI) * (PX1 - PX0); };
+  var yOf = function (H) { return PY1 - (H / hMaxI) * (PY1 - PY0); };
+
+  var qTicks = [];
+  for (var v = 0; v <= qsc.max + 1e-9; v += qsc.step) qTicks.push({ x: r1(xOf(v / cQ)), label: tickFmt(v, qsc.step) });
+  var hTicks = [];
+  for (var v2 = 0; v2 <= hsc.max + 1e-9; v2 += hsc.step) { var y = r1(yOf(v2 / cH)); hTicks.push({ y: y, yText: y + 4, label: tickFmt(v2, hsc.step) }); }
+
+  // impeller curves
+  var curves = dRatios.map(function (d, i) {
+    var act = i === st.di;
+    var end = qEnd(d);
+    var pts = sample(function (Q) { return xOf(Q); }, function (Q) { return yOf(Hp(Q, d)); }, 0, end, 44);
+    return {
+      d: pathOf(pts), sw: act ? 3 : 1.5,
+      color: act ? 'var(--color-text)' : 'var(--color-neutral-500)',
+      label: impLabels[i], lx: r1(Math.min(xOf(end) + 5, PX1 + 2)), ly: r1(yOf(Hp(end, d)) + 4),
+      lw: act ? 800 : 400, lcolor: act ? 'var(--color-text)' : 'var(--color-neutral-600)'
+    };
+  });
+
+  // efficiency islands
+  var islands = [];
+  if (showIsl) {
+    var levels = [50, 60, 65, 70, 72];
+    var dsDesc = dRatios.slice().sort(function (a, b) { return b - a; });
+    levels.forEach(function (L) {
+      var quals = dsDesc.filter(function (d) { return etaMax(d) > L + 0.15; });
+      if (!quals.length) return;
+      var qr = function (d) {
+        var delta = QBEP_REF * Math.sqrt(1 - L / etaMax(d));
+        return { q1: Math.max(QBEP_REF - delta, 4), q2: Math.min(QBEP_REF + delta, Q_END - 2) };
+      };
+      var pt = function (q, d) { return [xOf(q * d * s), yOf(d * d * s * s * Href(q))]; };
+      var dTop = quals[0], dBot = quals[quals.length - 1];
+      var pts = [];
+      quals.forEach(function (d) { pts.push(pt(qr(d).q1, d)); });
+      var b = qr(dBot);
+      for (var i = 1; i <= 10; i++) pts.push(pt(b.q1 + (b.q2 - b.q1) * i / 10, dBot));
+      quals.slice().reverse().forEach(function (d) { pts.push(pt(qr(d).q2, d)); });
+      var t = qr(dTop);
+      for (var i4 = 1; i4 <= 10; i4++) pts.push(pt(t.q2 + (t.q1 - t.q2) * i4 / 10, dTop));
+      var top1 = pt(t.q1, dTop);
+      islands.push({ d: pathOf(pts) + ' Z', lx: r1(top1[0] - 4), ly: r1(top1[1] - 5), label: L + '%' });
+    });
+  }
+
+  // system curve + design point
+  var sysPath = pathOf(sample(function (Q) { return xOf(Q); }, function (Q) { return yOf(Hsys(Q)); }, 0, qMaxI, 50));
+  var designX = r1(xOf(st.Qd) - 4), designY = r1(yOf(hstatT + st.hf) - 4);
+
+  // operating + BEP markers
+  var opX = hasOp ? r1(xOf(op.Q)) : 0, opY = hasOp ? r1(yOf(op.H)) : 0;
+  var bepQ = QBEP_REF * D * s;
+  var bepX = r1(xOf(bepQ)), bepY = r1(yOf(Hp(bepQ, D)));
+  var opLabel = hasOp ? (fQv(op.Q) + ' ' + qUnit + ' · ' + fHvf(op.H) + ' ' + hUnit) : '';
+  var opLabelX = hasOp ? r1(Math.min(opX + 12, PX1 - 150)) : 0;
+  var opLabelY = hasOp ? r1(Math.max(opY - 12, 30)) : 0;
+
+  // ----- NPSH chart -----
+  var NX0 = 46, NX1 = 388, NY0 = 12, NY1 = 208;
+  var nMaxI = Math.max(NPSHa(0), NPSHr(qMaxI), 4) * 1.12;
+  var nsc = nice(nMaxI * cH, 4); nMaxI = nsc.max / cH;
+  var nx = function (Q) { return NX0 + (Q / qMaxI) * (NX1 - NX0); };
+  var ny = function (H) { return NY1 - (Math.max(H, -nMaxI) / nMaxI) * (NY1 - NY0); };
+  var nAPath = pathOf(sample(nx, function (Q) { return ny(NPSHa(Q)); }, 0, qMaxI, 40));
+  var nRPath = pathOf(sample(nx, function (Q) { return ny(NPSHr(Q)); }, 0, qMaxI, 40));
+  var nCavPath = '';
+  var qc0 = Math.min(Math.max(qSafe, 0), qMaxI);
+  if (qc0 < qMaxI - 1e-6) {
+    var up = sample(nx, function (Q) { return ny(NPSHr(Q)); }, qc0, qMaxI, 24);
+    var dn = sample(nx, function (Q) { return ny(NPSHa(Q)); }, qMaxI, qc0, 24);
+    nCavPath = pathOf(up.concat(dn)) + ' Z';
+  }
+  var nQTicks = [], nHTicks = [];
+  for (var v3 = 0; v3 <= qsc.max + 1e-9; v3 += qsc.step * 2) nQTicks.push({ x: r1(nx(v3 / cQ)), label: tickFmt(v3, qsc.step) });
+  for (var v4 = 0; v4 <= nsc.max + 1e-9; v4 += nsc.step) nHTicks.push({ yText: r1(ny(v4 / cH)) + 4, label: tickFmt(v4, nsc.step) });
+  var nOpX = hasOp ? r1(nx(op.Q)) : 0;
+  var nOpYa = hasOp ? r1(ny(naOp)) : 0;
+  var nOpYr = hasOp ? r1(ny(nrOp)) : 0;
+
+  // ----- BHP chart -----
+  var BY0 = 14, BY1 = 200;
+  var bMaxI = Math.max(bhpMax, motorNO) * 1.25;
+  var bsc = nice(bMaxI * cP, 4); bMaxI = bsc.max / cP;
+  var by = function (P) { return BY1 - (P / bMaxI) * (BY1 - BY0); };
+  var bhpPath = pathOf(sample(xOf, function (Q) { return by(BHPcurve(Q)); }, 0, qEnd(D), 60));
+  var motorLines = motors.filter(function (m) { return m <= bMaxI * 0.98 && m >= bMaxI * 0.12; }).map(function (m) {
+    var rec = m === motorNO;
+    var yy = r1(by(m));
+    return { y: yy, yText: yy - 4, label: m + ' HP' + (rec ? ' · recomendado' : ''), color: rec ? 'var(--color-accent)' : 'var(--color-neutral-500)', tcolor: rec ? 'var(--color-accent-700)' : 'var(--color-neutral-600)' };
+  });
+  var bTicks = [];
+  for (var v5 = 0; v5 <= bsc.max + 1e-9; v5 += bsc.step) bTicks.push({ yText: r1(by(v5 / cP)) + 4, label: tickFmt(v5, bsc.step) });
+  var bOpX = hasOp ? r1(xOf(op.Q)) : 0;
+  var bOpY = hasOp ? r1(by(bhpOp)) : 0;
+
+  // ----- diagram: tanques abiertos a la atmósfera, referencia z = 0 en el
+  // eje de la bomba (las dos cotas se miden desde la bomba, no entre niveles) --
+  var ys = r1(210 + st.hs * 3);      // nivel de succión (hs > 0: por debajo de la bomba)
+  var yd = r1(210 - st.zd * 2.2);    // nivel de descarga (por encima de la bomba)
+  var patmKpa = 994 * 9.81 * (hatm * 0.3048) / 1000;
+  var pvapPa = 994 * 9.81 * (hvap * 0.3048);
+  var hsLabY = r1(Math.abs(ys - 210) > 18 ? (ys + 210) / 2 + 4 : Math.min(ys, 210) - 8);
+  var zdLabY = r1((210 - yd) > 18 ? (yd + 210) / 2 + 4 : 198);
+  // símbolo de superficie libre (∇): tanque abierto a la atmósfera
+  var freeSurf = function (x, y) { return '<path d="M ' + (x - 6) + ' ' + (y - 10) + ' H ' + (x + 6) + ' L ' + x + ' ' + (y - 2) + ' Z" fill="none" stroke="var(--color-neutral-700)" stroke-width="1.5"></path>'; };
+  var subLabel = function (x, y, base, subs, rest, color, anchor) {
+    return '<text x="' + x + '" y="' + y + '"' + (anchor ? ' text-anchor="' + anchor + '"' : '') + ' style="font-size:11.5px;font-weight:700;fill:' + color + ';">' + base + '<tspan dy="2.5" font-size="9">' + subs + '</tspan><tspan dy="-2.5">' + esc(rest) + '</tspan></text>';
+  };
+
+  // ---------- Ensamble de SVGs ----------
+  // Diagrama de instalación
+  var diagInner = ''
+    // línea de referencia z = 0 por el eje de la bomba
+    + svgLine(20, 210, 146, 210, 'var(--color-neutral-500)', 1, '10 3 2 3')
+    + svgLine(204, 210, 380, 210, 'var(--color-neutral-500)', 1, '10 3 2 3')
+    + '<text x="378" y="203" text-anchor="end" style="font-size:10.5px;fill:var(--color-neutral-600);">z = 0 · eje de la bomba</text>'
+    // tanque de succión (abierto, sin tapa)
+    + '<path d="M 26 150 V 300 H 122 V 150" fill="none" stroke="var(--color-text)" stroke-width="2"></path>'
+    + '<rect x="28" y="' + ys + '" width="92" height="' + r1(Math.max(300 - ys - 1, 2)) + '" fill="var(--color-neutral-200)"></rect>'
+    + svgLine(28, ys, 120, ys, 'var(--color-text)', 2)
+    + freeSurf(62, ys)
+    + '<text x="26" y="316" style="font-size:12px;fill:var(--color-neutral-700);">Tanque de succión · abierto</text>'
+    // succión → bomba → descarga (una sola trayectoria, con flechas de flujo)
+    + '<polyline points="60,284 150,284 150,210 167,210" fill="none" stroke="var(--color-text)" stroke-width="2"></polyline>'
+    + '<circle cx="185" cy="210" r="18" fill="var(--color-bg)" stroke="var(--color-text)" stroke-width="2.5"></circle>'
+    + '<polyline points="185,192 185,56 330,56 330,92" fill="none" stroke="var(--color-text)" stroke-width="2"></polyline>'
+    + '<polygon points="96,279 96,289 106,284" fill="var(--color-accent)"></polygon>'
+    + '<polygon points="180,140 190,140 185,130" fill="var(--color-accent)"></polygon>'
+    + '<polygon points="325,90 335,90 330,100" fill="var(--color-accent)"></polygon>'
+    // tanque de descarga (abierto; la tubería entrega por encima del nivel)
+    + '<path d="M 250 88 V 300 H 384 V 88" fill="none" stroke="var(--color-text)" stroke-width="2"></path>'
+    + '<rect x="252" y="' + yd + '" width="130" height="' + r1(Math.max(300 - yd - 1, 2)) + '" fill="var(--color-neutral-200)"></rect>'
+    + svgLine(252, yd, 382, yd, 'var(--color-text)', 2)
+    + freeSurf(295, yd)
+    + '<text x="384" y="316" text-anchor="end" style="font-size:12px;fill:var(--color-neutral-700);">Tanque de descarga · abierto</text>'
+    // cotas medidas desde el eje de la bomba
+    + svgLine(120, ys, 146, ys, 'var(--color-neutral-500)', 1, '4 4')
+    + svgLine(252, yd, 222, yd, 'var(--color-neutral-500)', 1, '4 4')
+    + svgLine(136, 210, 136, ys, 'var(--color-accent-700)', 1.5)
+    + svgLine(232, 210, 232, yd, 'var(--color-neutral-700)', 1.5)
+    + subLabel(130, hsLabY, 'h', 's', ' = ' + fHvf(st.hs) + ' ' + hUnit, 'var(--color-accent-700)', 'end')
+    + subLabel(238, zdLabY, 'z', 'd', ' = ' + fHvf(st.zd) + ' ' + hUnit, 'var(--color-neutral-800)', '')
+    // etiquetas
+    + Tt(185, 215, impLabelsUS[st.di], { fs: 11, fw: 700, anchor: 'middle', fill: 'var(--color-text)' })
+    + Tt(200, 266, 'Bomba · ' + st.rpm + ' RPM', { fs: 11.5, anchor: 'middle', fill: 'var(--color-neutral-700)' })
+    + Tt(14, 22, 'P. atmosférica = ' + fH(hatm) + ' ≈ ' + patmKpa.toFixed(0) + ' kPa · ' + st.alt + ' msnm', { fs: 12, fill: 'var(--color-neutral-700)' });
+
+  // NPSH chart
+  var nLabels = ''
+    + nQTicks.map(function (t) { return Tt(t.x, 228, t.label, { fs: 11.5, anchor: 'middle' }); }).join('')
+    + nHTicks.map(function (t) { return Tt(40, t.yText, t.label, { fs: 11.5, anchor: 'end' }); }).join('')
+    + Tt(46, 248, 'Caudal — ' + qUnit, { fs: 12 })
+    + Tt(12, 208, 'NPSH — ' + hUnit, { fs: 12, transform: 'rotate(-90 12 208)' });
+  var npshInner = ''
+    + '<defs><clipPath id="clipNpsh"><rect x="46" y="12" width="342" height="196"></rect></clipPath></defs>'
+    + '<rect x="46" y="12" width="342" height="196" fill="var(--color-neutral-100)"></rect>'
+    + '<g clip-path="url(#clipNpsh)">'
+    + (nCavPath ? '<path d="' + nCavPath + '" fill="var(--color-accent-200)" opacity="0.75"></path>' : '')
+    + '<path d="' + nAPath + '" fill="none" stroke="var(--color-text)" stroke-width="2.5"></path>'
+    + '<path d="' + nRPath + '" fill="none" stroke="var(--color-accent)" stroke-width="2.5"></path>'
+    + (hasOp ? svgLine(nOpX, 12, nOpX, 208, 'var(--color-neutral-600)', 1, '4 4')
+      + '<circle cx="' + nOpX + '" cy="' + nOpYa + '" r="4.5" fill="var(--color-text)"></circle>'
+      + '<circle cx="' + nOpX + '" cy="' + nOpYr + '" r="4.5" fill="var(--color-accent)"></circle>' : '')
+    + '</g>'
+    + '<rect x="46" y="12" width="342" height="196" fill="none" stroke="var(--color-text)" stroke-width="2"></rect>'
+    + nQTicks.map(function (t) { return svgLine(t.x, 208, t.x, 214, 'var(--color-text)', 1); }).join('')
+    + nLabels;
+
+  // Main chart
+  var mainGrid = ''
+    + qTicks.map(function (t) { return svgLine(t.x, 16, t.x, 472, 'var(--color-neutral-300)', 1); }).join('')
+    + hTicks.map(function (t) { return svgLine(64, t.y, 694, t.y, 'var(--color-neutral-300)', 1); }).join('');
+  var islandsSvg = islands.map(function (isl) { return '<path d="' + isl.d + '" fill="none" stroke="var(--color-neutral-600)" stroke-width="1.2" stroke-dasharray="4 4"></path>'; }).join('');
+  var islandLabels = islands.map(function (isl) { return Tt(isl.lx, isl.ly, isl.label, { fs: 11, anchor: 'end', fill: 'var(--color-neutral-700)' }); }).join('');
+  var curvesSvg = curves.map(function (c) { return '<path d="' + c.d + '" fill="none" stroke="' + c.color + '" stroke-width="' + c.sw + '"></path>'; }).join('');
+  var curveLabels = curves.map(function (c) { return Tt(c.lx, c.ly, c.label, { fs: 12, fw: c.lw, fill: c.lcolor }); }).join('');
+  var opLabelSvg = hasOp ? Tt(opLabelX, opLabelY, opLabel, { fs: 12.5, fw: 700, fill: 'var(--color-accent-800)' }) : '';
+  var mainLabels = ''
+    + qTicks.map(function (t) { return Tt(t.x, 496, t.label, { anchor: 'middle' }); }).join('')
+    + hTicks.map(function (t) { return Tt(56, t.yText, t.label, { anchor: 'end' }); }).join('')
+    + Tt(64, 520, 'Caudal Q — ' + qUnit, { fs: 13.5 })
+    + Tt(16, 472, 'Cabeza total H — ' + hUnit, { fs: 13.5, transform: 'rotate(-90 16 472)' });
+  var mainInner = ''
+    + '<defs><clipPath id="clipMain"><rect x="64" y="16" width="630" height="456"></rect></clipPath></defs>'
+    + '<rect x="64" y="16" width="630" height="456" fill="var(--color-neutral-100)"></rect>'
+    + mainGrid
+    + '<g clip-path="url(#clipMain)">'
+    + islandsSvg + islandLabels + curvesSvg
+    + '<path d="' + sysPath + '" fill="none" stroke="var(--color-accent)" stroke-width="2.5"></path>'
+    + '<rect x="' + designX + '" y="' + designY + '" width="8" height="8" fill="var(--color-bg)" stroke="var(--color-accent)" stroke-width="2"></rect>'
+    + (hasOp ? svgLine(opX, opY, opX, 472, 'var(--color-neutral-600)', 1, '4 4')
+      + svgLine(64, opY, opX, opY, 'var(--color-neutral-600)', 1, '4 4')
+      + '<circle cx="' + bepX + '" cy="' + bepY + '" r="5.5" fill="var(--color-bg)" stroke="var(--color-text)" stroke-width="2.5"></circle>'
+      + '<circle cx="' + opX + '" cy="' + opY + '" r="6.5" fill="var(--color-accent)"></circle>' : '')
+    + opLabelSvg
+    + '</g>'
+    + curveLabels
+    + '<rect x="64" y="16" width="630" height="456" fill="none" stroke="var(--color-text)" stroke-width="2"></rect>'
+    + qTicks.map(function (t) { return svgLine(t.x, 472, t.x, 479, 'var(--color-text)', 1); }).join('')
+    + mainLabels;
+
+  // BHP chart
+  var bhpLabels = ''
+    + motorLines.map(function (m) { return Tt(690, m.yText, m.label, { fs: 11.5, fw: 700, anchor: 'end', fill: m.tcolor }); }).join('')
+    + qTicks.map(function (t) { return Tt(t.x, 222, t.label, { fs: 12, anchor: 'middle' }); }).join('')
+    + bTicks.map(function (t) { return Tt(56, t.yText, t.label, { fs: 12, anchor: 'end' }); }).join('')
+    + Tt(16, 107, 'Potencia al freno — ' + pUnit, { fs: 12, anchor: 'middle', transform: 'rotate(-90 16 107)' })
+    + Tt(64, 244, 'Caudal Q — ' + qUnit, { fs: 13 })
+    + Tt(694, 244, 'líneas punteadas: motores estándar', { fs: 12, anchor: 'end', fill: 'var(--color-neutral-600)' });
+  var bhpInner = ''
+    + '<defs><clipPath id="clipBhp"><rect x="64" y="14" width="630" height="186"></rect></clipPath></defs>'
+    + '<rect x="64" y="14" width="630" height="186" fill="var(--color-neutral-100)"></rect>'
+    + '<g clip-path="url(#clipBhp)">'
+    + motorLines.map(function (m) { return svgLine(64, m.y, 694, m.y, m.color, 1.2, '6 4'); }).join('')
+    + '<path d="' + bhpPath + '" fill="none" stroke="var(--color-text)" stroke-width="2.5"></path>'
+    + (hasOp ? svgLine(bOpX, bOpY, bOpX, 200, 'var(--color-neutral-600)', 1, '4 4')
+      + '<circle cx="' + bOpX + '" cy="' + bOpY + '" r="5.5" fill="var(--color-accent)"></circle>' : '')
+    + '</g>'
+    + '<rect x="64" y="14" width="630" height="186" fill="none" stroke="var(--color-text)" stroke-width="2"></rect>'
+    + qTicks.map(function (t) { return svgLine(t.x, 200, t.x, 207, 'var(--color-text)', 1); }).join('')
+    + bhpLabels;
+
+  // ----- warnings & status -----
+  var warnings = [];
+  if (!hasOp) warnings.push('La cabeza estática total (zd + hs = ' + fH(hstatT) + ') supera la cabeza a caudal cero (' + fH(72 * s * s * D * D) + '): la bomba no entrega flujo. Suba la velocidad, use un impulsor mayor o reduzca los niveles.');
+  if (beyond) warnings.push('El punto de operación cae más allá del final de la curva publicada: operación ruidosa, cavitación y daño posibles. Seleccione un impulsor mayor o aumente la fricción del circuito.');
+  if (cav) warnings.push('¡Cavitación! NPSH disponible (' + fH(naOp) + ') < NPSH requerido (' + fH(nrOp) + ') en el punto de operación. Reduzca la altura de succión, la fricción de succión o el caudal.');
+  if (lowMargin) warnings.push('Margen NPSH insuficiente: ' + fH(npshMargin) + ' < ' + fH(marginReq) + ' recomendado.');
+  if (hasOp && !beyond && etaOp < 50) warnings.push('Operación lejos del punto de máxima eficiencia (η = ' + etaOp.toFixed(1) + ' %): considere otro impulsor u otra velocidad.');
+
+  var statusText = 'Operación estable', statusColor = 'var(--color-text)';
+  if (!hasOp) { statusText = 'Sin flujo'; statusColor = 'var(--color-accent-700)'; }
+  else if (cav) { statusText = '¡Cavitación!'; statusColor = 'var(--color-accent-700)'; }
+  else if (beyond) { statusText = 'Fuera de la curva publicada'; statusColor = 'var(--color-accent-700)'; }
+  else if (lowMargin) { statusText = 'Margen NPSH bajo'; statusColor = 'var(--color-accent-700)'; }
+
+  // ----- controles (botones) -----
+  var btnBase = 'font-family:var(--font-body);font-size:12.5px;font-weight:700;text-align:left;padding:7px 9px;cursor:pointer;border-radius:0;';
+  var btnOn = btnBase + 'background:var(--color-accent);color:var(--color-bg);border:1px solid var(--color-accent);';
+  var btnOff = btnBase + 'background:transparent;color:var(--color-text);border:1px solid var(--color-neutral-400);';
+  var unitDefs = [{ label: 'GPM · pies · HP', key: 'us' }, { label: 'm³/h · m · kW', key: 'si' }];
+  document.getElementById('unitOpts').innerHTML = unitDefs.map(function (u) {
+    return '<button type="button" style="' + (st.unit === u.key ? btnOn : btnOff) + '" onclick="setUnit(\'' + u.key + '\')">' + esc(u.label) + '</button>';
+  }).join('');
+  document.getElementById('impOpts').innerHTML = impLabels.map(function (lb, i) {
+    return '<button type="button" style="' + (i === st.di ? btnOn : btnOff) + '" onclick="setImp(' + i + ')">' + esc(lb) + '</button>';
+  }).join('');
+
+  var dec1 = function (x) { return (Math.round(x * 10) / 10).toString(); };
+
+  // ---------- Inyección al DOM ----------
+  document.getElementById('svgDiag').innerHTML = diagInner;
+  document.getElementById('svgNpsh').innerHTML = npshInner;
+  document.getElementById('svgMain').innerHTML = mainInner;
+  document.getElementById('svgBhp').innerHTML = bhpInner;
+
+  set('rpmHdr', st.rpm);
+  set('fRpm', st.rpm + ' RPM'); set('fSpeedRatioA', s.toFixed(2)); set('fSpeedRatio', s.toFixed(2)); set('fDiaRatio', D.toFixed(2));
+  // sincroniza la posición de los deslizadores con el estado
+  ['rpm', 'Qd', 'hf', 'zd', 'hs', 'alt', 'hfs', 'sg', 'margin'].forEach(function (k) { var el = document.getElementById(k); if (el && parseFloat(el.value) !== st[k]) el.value = st[k]; });
+  set('fQd', fQ(st.Qd)); set('fHf', fH(st.hf)); set('fZd', fH(st.zd)); set('fHstatTotal', fH(hstatT)); set('fHs', fH(st.hs)); set('fHfs', fH(st.hfs));
+  set('fPatmKpa', patmKpa.toFixed(0) + ' kPa'); set('fPvapPa', Math.round(pvapPa) + ' Pa');
+  set('fAlt', st.alt + ' msnm'); set('fHatm', fH(hatm)); set('fHv', fH(hvap));
+  set('fSg', st.sg.toFixed(2)); set('fMargin', fH(marginReq));
+  set('hsDesc', st.hs >= 0 ? 'Positivo: la bomba está sobre el nivel del líquido (lift)' : 'Negativo: succión sumergida (el nivel está sobre la bomba)');
+
+  var wEl = document.getElementById('warnings');
+  if (warnings.length) {
+    wEl.style.display = 'flex';
+    wEl.innerHTML = warnings.map(function (w) { return '<div style="color:var(--color-accent-800);font-size:14px;font-weight:600;">' + esc(w) + '</div>'; }).join('');
+  } else { wEl.style.display = 'none'; wEl.innerHTML = ''; }
+
+  var stEl = document.getElementById('statusText'); stEl.textContent = statusText; stEl.style.color = statusColor;
+  document.getElementById('diagCaption').innerHTML = 'Tanques abiertos a la atmósfera, cotas medidas desde el eje de la bomba (z = 0): la bomba ' + (st.hs >= 0 ? 'aspira desde ' + fH(Math.abs(st.hs)) + ' por debajo de su eje' : 'opera sumergida, con el nivel de succión ' + fH(Math.abs(st.hs)) + ' por encima de su eje') + ' y entrega a un tanque cuyo nivel está ' + fH(st.zd) + ' por encima del eje. Cabeza estática del sistema: H<sub>est</sub> = z<sub>d</sub> + h<sub>s</sub> = ' + fH(hstatT) + '.';
+  set('npshCaption', qSafe > 1 && qSafe < qMaxI ? 'Zona sombreada: cavitación. El caudal debe mantenerse por debajo de ' + fQ(qSafe) + '.' : (qSafe <= 1 ? 'NPSHd < NPSHr en todo el rango: la succión debe rediseñarse.' : 'Sin zona de cavitación en el rango mostrado.'));
+
+  // stats grid 1
+  set('vQ', hasOp ? fQv(op.Q) : '—'); set('capQ', qUnit + ' · intersección bomba–sistema');
+  set('vH', hasOp ? fHvf(op.H) : '—'); set('capH', hUnit);
+  set('vEta', hasOp ? etaOp.toFixed(1) + ' %' : '—'); set('capEta', 'η máx del impulsor: ' + etaMax(D).toFixed(1) + ' %');
+  set('vWhp', hasOp ? fPv(whpOp) : '—'); set('capWhp', pUnit + ' · Q·H·s.g./3960');
+  set('vBhp', hasOp ? fPv(bhpOp) : '—'); set('capBhp', pUnit + ' · WHP / η');
+  set('vMotor', hasOp ? motorNO + ' HP' : '—'); set('capMotor', hasOp ? 'sin sobrecarga en toda la curva · «al punto»: ' + motorPt + ' HP' : 'sin punto de operación');
+
+  // stats grid 2
+  set('vNa', hasOp ? fHvf(naOp) : fHvf(NPSHa(0))); set('capNa', hUnit + ' · en el punto de operación');
+  set('vNr', hasOp ? fHvf(nrOp) : fHvf(NPSHr(0))); set('capNr', hUnit + ' · curva del fabricante');
+  set('vMargin', hasOp ? (npshMargin >= 0 ? '+' : '') + fHvf(npshMargin) : '—'); setColor('vMargin', cav || lowMargin ? 'var(--color-accent-700)' : 'var(--color-text)'); set('capMargin', hUnit + ' · recomendado ≥ ' + fHvf(marginReq) + ' ' + hUnit);
+  set('vQsafe', qSafe > 1 ? fQv(qSafe) : '0'); set('capQsafe', qUnit + ' · donde NPSHd = NPSHr');
+  set('vBep', fQv(bepQ)); set('capBep', qUnit + ' · punto de máxima eficiencia');
+  set('vRec', recIdx >= 0 ? impLabels[recIdx] : '—'); set('capRec', recIdx >= 0 ? 'η = ' + recEta.toFixed(1) + ' % con esta curva del sistema' : 'ningún impulsor corta la curva del sistema');
+
+  // explanatory cards
+  set('opSummary', hasOp ? fQ(op.Q) + ' y ' + fH(op.H) + (beyond ? ' (extrapolado fuera de la curva)' : '') : 'no hay intersección: la bomba no vence la cabeza estática');
+  set('npshBreakdown', dec1(hatm * cH) + ' − ' + dec1(hvap * cH) + ' − ' + dec1(st.hs * cH) + ' − ' + dec1((hasOp ? Ks * op.Q * op.Q : 0) * cH) + ' = ' + fH(naOp));
+
+  // fórmulas KaTeX (estáticas)
+  tex('eqSys', 'h = (z_d + h_s) + kQ^2');
+  tex('eqAffinity', 'Q \\propto ND \\qquad H \\propto (ND)^2 \\qquad \\mathrm{BHP} \\propto (ND)^3');
+  tex('eqNpshDef', '\\mathrm{NPSH}_d = h_{atm} - h_{vap} - h_s - h_{f,\\mathrm{succ}}');
+}
+
+window.addEventListener('load', function () { katexReady = !!window.katex; render(); });
+render();
+</script>
+</body>
+</html>

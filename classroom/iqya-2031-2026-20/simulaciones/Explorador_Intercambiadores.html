@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Explorador de intercambiadores tubos y coraza · Proyecto de Operaciones Unitarias</title>
+<link rel="stylesheet" href="/classroom-fonts.css">
+<style>
+  :root {
+    --color-accent:      #5980A6;
+    --color-accent-100:  #EFF4F9;
+    --color-accent-200:  #D3E0EC;
+    --color-accent-500:  #5980A6;
+    --color-accent-600:  #416180;
+    --color-accent-700:  #2C455D;
+    --color-accent-800:  #1D2D3D;
+    --color-bg:          #ffffff;
+    --color-text:        #1A1A1A;
+    --color-divider:     #1A1A1A;
+    --color-neutral-100: #f4f4f5;
+    --color-neutral-200: #e4e4e7;
+    --color-neutral-300: #d4d4d8;
+    --color-neutral-400: #a1a1aa;
+    --color-neutral-500: #71717a;
+    --color-neutral-600: #52525b;
+    --color-neutral-700: #3f3f46;
+    --color-neutral-800: #27272a;
+    --color-neutral-900: #18181b;
+    --font-heading: 'Manrope Variable', ui-sans-serif, system-ui, -apple-system, sans-serif;
+    --font-body:    'Manrope Variable', ui-sans-serif, system-ui, -apple-system, sans-serif;
+    --font-mono:    'JetBrains Mono Variable', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { background: var(--color-neutral-100); color: var(--color-text); font-family: var(--font-body); -webkit-font-smoothing: antialiased; }
+  .app { max-width: 1500px; margin: 0 auto; background: var(--color-bg); min-height: 100vh; border-left: 1px solid var(--color-neutral-300); border-right: 1px solid var(--color-neutral-300); }
+  input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; height: 22px; background: transparent; cursor: pointer; margin: 2px 0 0; }
+  input[type="range"]::-webkit-slider-runnable-track { height: 2px; background: var(--color-neutral-400); }
+  input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 18px; background: var(--color-accent); margin-top: -8px; border: none; border-radius: 0; }
+  input[type="range"]::-moz-range-track { height: 2px; background: var(--color-neutral-400); }
+  input[type="range"]::-moz-range-thumb { width: 12px; height: 18px; background: var(--color-accent); border: none; border-radius: 0; }
+  input[type="range"]:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; }
+  button:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+
+  .grp-label { font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-800); }
+  .grp-label.brd { border-top: 2px solid var(--color-divider); padding-top: 10px; margin-top: 12px; }
+  .row { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .ctl { font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--color-neutral-700); }
+  .val { font-family: var(--font-heading); font-weight: 800; font-size: 15px; }
+  .hint { font-size: 12px; color: var(--color-neutral-700); margin-top: 2px; }
+  .note { font-size: 12px; color: var(--color-neutral-700); padding-bottom: 8px; }
+  .btnstack { display: flex; flex-direction: column; gap: 6px; padding: 12px 0 4px; }
+  .segrow { display: flex; gap: 6px; padding: 12px 0 4px; }
+  .rowline { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; border-bottom: 1px solid var(--color-neutral-300); padding: 7px 0; }
+  .rk { font-size: 12.5px; color: var(--color-neutral-800); }
+  .rv { font-family: var(--font-heading); font-weight: 800; font-size: 15px; white-space: nowrap; }
+  .rvg { font-family: var(--font-heading); font-weight: 800; font-size: 14px; white-space: nowrap; }
+  .rs { font-size: 11px; color: var(--color-neutral-600); }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+  @media (max-width: 900px) {
+    .colpanel { border-right: none !important; border-bottom: 2px solid var(--color-divider); max-width: none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header style="display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; padding: 18px 28px 16px; border-bottom: 2px solid var(--color-divider);">
+    <div style="font-family: var(--font-heading); font-weight: 800; font-size: 24px; letter-spacing: -0.015em;">Intercambiador de tubos y coraza · Método de Kern</div>
+    <div style="font-size: 12px; color: var(--color-neutral-700); text-transform: uppercase; letter-spacing: 0.08em;">Proyecto de Operaciones Unitarias · Transferencia de calor · <span id="matNameHdr"></span></div>
+  </header>
+
+  <div id="warnings" style="display: none; border-bottom: 2px solid var(--color-accent); background: var(--color-accent-100); padding: 10px 28px; flex-direction: column; gap: 4px;"></div>
+
+  <div style="display: flex; flex-wrap: wrap;">
+
+    <aside class="colpanel" style="flex: 1 1 270px; max-width: 370px; padding: 8px 24px 28px; border-right: 2px solid var(--color-divider);">
+
+      <div class="grp-label brd" style="margin-top: 14px;">Requerimientos de proceso</div>
+      <div id="procProse" style="font-size: 12.5px; color: var(--color-neutral-800); padding: 10px 0 6px; line-height: 1.5;"></div>
+
+      <div style="padding: 4px 0 6px;">
+        <div class="row"><label class="ctl">T entrada del aceite</label><span class="val" id="fThIn"></span></div>
+        <input type="range" min="60" max="100" step="1" id="thIn" oninput="onSlider('thIn', this.value)">
+        <div class="hint">Límite: no puede superar la ebullición del agua de enfriamiento (≈ 100 °C a 1 atm), o el agua herviría en la pared.</div>
+      </div>
+      <div style="padding: 8px 0 6px;">
+        <div class="row"><label class="ctl">T salida deseada</label><span class="val" id="fThOut"></span></div>
+        <input type="range" min="30" max="140" step="1" id="thOut" oninput="onSlider('thOut', this.value)">
+        <div class="hint">Al menos 10 °C bajo la entrada</div>
+      </div>
+      <div style="padding: 8px 0 6px;">
+        <div class="row"><label class="ctl">Caudal de aceite</label><span class="val" id="fMOil"></span></div>
+        <input type="range" min="5" max="30" step="0.5" id="mOil" oninput="onSlider('mOil', this.value)">
+        <div class="hint">El caudal de agua se ajusta solo: <span id="fMWhint"></span></div>
+      </div>
+
+      <div class="grp-label brd">Asignación de fluidos</div>
+      <div class="segrow">
+        <button type="button" id="btnAguaT" class="seg" style="flex:1;" onclick="setState('asig','agua')">Agua por tubos</button>
+        <button type="button" id="btnAceiteT" class="seg" style="flex:1;" onclick="setState('asig','aceite')">Aceite por tubos</button>
+      </div>
+      <div id="asigNote" class="note"></div>
+
+      <div class="grp-label brd">Tubo (diámetro · calibre)</div>
+      <div id="tuboBtns" class="btnstack"></div>
+
+      <div class="grp-label brd">Arreglo del haz (pitch 1.25·dₒ)</div>
+      <div class="segrow">
+        <button type="button" id="btnTri" class="seg" style="flex:1;" onclick="setState('arr','tri')">Triangular 30°</button>
+        <button type="button" id="btnCua" class="seg" style="flex:1;" onclick="setState('arr','cua')">Cuadrado 90°</button>
+      </div>
+      <div id="arrNote" class="note"></div>
+
+      <div class="grp-label brd">Pasos por tubos</div>
+      <div id="pasosBtns" class="segrow"></div>
+
+      <div class="grp-label brd">Corazas en serie</div>
+      <div id="corazasBtns" class="segrow"></div>
+      <div class="note">Mejora el factor F cuando hay cruce de temperaturas; duplica área, ΔP y costo por unidad añadida.</div>
+
+      <div style="padding: 10px 0 6px; border-top: 2px solid var(--color-divider); margin-top: 12px;">
+        <div class="row"><label class="ctl">Número de tubos Nₜ (por coraza)</label><span class="val" id="fNt"></span></div>
+        <input type="range" min="60" max="900" step="2" id="nt" oninput="onSlider('nt', this.value)">
+      </div>
+      <div style="padding: 8px 0 6px;">
+        <div class="row"><label class="ctl">Longitud de tubos L</label><span class="val" id="fL"></span></div>
+        <input type="range" min="2.44" max="7.32" step="0.01" id="L" oninput="onSlider('L', this.value)">
+        <div class="hint">Longitudes normalizadas: 8 a 24 ft</div>
+      </div>
+      <div style="padding: 8px 0 6px;">
+        <div class="row"><label class="ctl">Espaciado de bafles B</label><span class="val" id="fB"></span></div>
+        <input type="range" min="0.2" max="1.0" step="0.01" id="bFrac" oninput="onSlider('bFrac', this.value)">
+        <div class="hint">Recomendado: 0.2 a 1.0 × Dₛ · corte 25%</div>
+      </div>
+
+      <div class="grp-label brd">Material de los tubos</div>
+      <div id="matBtns" class="btnstack"></div>
+      <div id="matNote" class="note"></div>
+
+      <div class="grp-label brd">Factores de ensuciamiento R_d</div>
+      <div style="padding: 12px 0 6px;">
+        <div class="row"><label class="ctl">Agua de enfriamiento</label><span class="val" id="fRdAgua"></span></div>
+        <input type="range" min="0.5" max="6" step="0.25" id="rdAgua" oninput="onSlider('rdAgua', this.value)">
+        <div class="hint">Típico: 2-4 ×10⁻⁴ m²·K/W según tratamiento</div>
+      </div>
+      <div style="padding: 8px 0 6px;">
+        <div class="row"><label class="ctl">Aceite ligero</label><span class="val" id="fRdAceite"></span></div>
+        <input type="range" min="0.5" max="9" step="0.25" id="rdAceite" oninput="onSlider('rdAceite', this.value)">
+        <div class="hint">Típico: 2-9 ×10⁻⁴ m²·K/W según el corte</div>
+      </div>
+
+      <div class="grp-label brd">Economía</div>
+      <div style="padding: 12px 0 6px;">
+        <div class="row"><label class="ctl">Costo de energía</label><span class="val" id="fCostoKwh"></span></div>
+        <input type="range" min="0.02" max="0.5" step="0.01" id="costoKwh" oninput="onSlider('costoKwh', this.value)">
+      </div>
+      <div style="padding: 8px 0 6px;">
+        <div class="row"><label class="ctl">Horas de operación</label><span class="val" id="fHorasAno"></span></div>
+        <input type="range" min="1000" max="8760" step="100" id="horasAno" oninput="onSlider('horasAno', this.value)">
+      </div>
+      <div style="padding: 8px 0 6px;">
+        <div class="row"><label class="ctl">Vida útil</label><span class="val" id="fVida"></span></div>
+        <input type="range" min="3" max="25" step="1" id="vidaUtil" oninput="onSlider('vidaUtil', this.value)">
+      </div>
+    </aside>
+
+    <section class="colpanel" style="flex: 1 1 340px; max-width: 470px; padding: 8px 22px 28px; border-right: 2px solid var(--color-divider);">
+      <div class="grp-label brd" style="margin-top: 14px;">Equipo · corte longitudinal · contracorriente</div>
+      <svg id="svgLong" viewBox="0 0 460 238" style="width: 100%; display: block; margin-top: 8px;"></svg>
+
+      <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: flex-start; margin-top: 14px;">
+        <div style="flex: 0 0 auto;">
+          <div class="grp-label brd" style="margin-top: 0;">Sección transversal</div>
+          <svg id="svgCross" viewBox="0 0 320 320" style="width: 230px; display: block; margin-top: 8px;"></svg>
+        </div>
+        <div style="flex: 1 1 150px; min-width: 150px;">
+          <div class="grp-label brd" style="margin-top: 0;">Geometría resultante</div>
+          <div id="geoRows"></div>
+        </div>
+      </div>
+
+      <div class="grp-label brd" style="margin-top: 16px;">Perfil de temperaturas</div>
+      <svg id="svgTemp" viewBox="0 0 320 180" style="width: 100%; max-width: 420px; display: block; margin-top: 8px;"></svg>
+      <div class="hint" id="tempCaption" style="margin-top: 4px;"></div>
+    </section>
+
+    <section class="colpanel" style="flex: 1 1 280px; max-width: 420px; padding: 8px 22px 28px; border-right: 2px solid var(--color-divider);">
+      <div class="grp-label brd" style="margin-top: 14px;">Transferencia de calor</div>
+      <div id="transRows"></div>
+
+      <div id="overBox" style="border: 2px solid var(--color-text); margin-top: 14px; padding: 12px 14px;">
+        <div class="grp-label">Sobrediseño de área</div>
+        <div id="fOver" style="font-family: var(--font-heading); font-weight: 800; font-size: 34px; letter-spacing: -0.02em;"></div>
+        <div style="font-size: 12px; color: var(--color-neutral-800);">A requerida <span id="fAreq"></span> · A disponible <span id="fAav"></span> · objetivo 10-20%</div>
+      </div>
+
+      <div class="grp-label brd" style="margin-top: 16px;">Hidráulica</div>
+      <div id="hidRows"></div>
+
+      <div class="grp-label brd" style="margin-top: 16px;">Veredicto de diseño</div>
+      <div id="verRows"></div>
+    </section>
+
+    <section style="flex: 1 1 290px; max-width: 460px; padding: 8px 22px 28px;">
+      <div class="grp-label brd" style="margin-top: 14px;">Viabilidad económica</div>
+      <div id="ecoRows"></div>
+
+      <div style="border: 2px solid var(--color-accent); background: var(--color-accent); color: #fff; margin-top: 14px; padding: 12px 14px;">
+        <div class="grp-label" style="color: #fff; opacity: 0.85;">Costo total anualizado</div>
+        <div id="fTotalAnual" style="font-family: var(--font-heading); font-weight: 800; font-size: 34px; letter-spacing: -0.02em;"></div>
+        <div style="font-size: 12px; opacity: 0.9;">Capital anualizado + energía de bombeo · <span id="vidaLabel"></span></div>
+      </div>
+
+      <div class="grp-label brd" style="margin-top: 16px;">Comparación de materiales</div>
+      <div class="note" style="padding: 6px 0 4px;">Misma geometría; cambia la conductividad de pared y el costo. Clic para seleccionar.</div>
+      <div id="matRows"></div>
+
+      <div style="font-size: 12px; color: var(--color-neutral-700); border-top: 2px solid var(--color-divider); margin-top: 14px; padding-top: 10px; line-height: 1.5;">Costo de compra: correlación C = 28 000 + 54·A^1.2 (Towler, base 2010, acero al carbono) escalada a 2026 y multiplicada por el factor de material. Estimación clase 5, ±40%. Bombeo con η = 70%.</div>
+    </section>
+
+  </div>
+
+  <footer style="border-top: 2px solid var(--color-divider); padding: 12px 28px 20px; font-size: 12px; color: var(--color-neutral-700); line-height: 1.6;">
+    Método de Kern: lado de tubos Dittus-Boelter (laminar: Sieder-Tate); lado de coraza h = 0.36·(k/dₑ)·Re^0.55·Pr^⅓ con diámetro equivalente según arreglo; ΔP de coraza con f = e^(0.576 − 0.19·ln Re). Haz de tubos por correlación de Sinnott; propiedades a temperatura media. Herramienta didáctica: verificar con Bell-Delaware para diseño final.
+  </footer>
+</div>
+
+<script>
+/* ────────────────────────────────────────────────────────────────────────
+   Explorador de intercambiadores de tubos y coraza — puerto vanilla-JS fiel
+   del componente original de Claude Design. Física verbatim: método de Kern
+   (Dittus-Boelter / Sieder-Tate en tubos, correlación de coraza), diámetro
+   del haz de Sinnott, factor F multi-paso/multi-coraza, caídas de presión y
+   economía (capital anualizado + bombeo). Modelo SI interno.
+   ──────────────────────────────────────────────────────────────────────── */
+
+var state = { asig: 'agua', tubo: 0, arr: 'tri', pasos: 4, nt: 340, L: 4.88, bFrac: 0.40, mat: 'cs', rdAgua: 2.0, rdAceite: 2.0, thIn: 95, thOut: 40, mOil: 13, nsh: 1, costoKwh: 0.12, horasAno: 8000, vidaUtil: 10 };
+
+function onSlider(k, raw) {
+  var v = parseFloat(raw);
+  if (k === 'thIn') { state.thIn = v; state.thOut = Math.min(state.thOut, v - 10); }
+  else if (k === 'thOut') { state.thOut = Math.min(Math.max(v, 30), state.thIn - 10); }
+  else state[k] = v;
+  render();
+}
+function setState(k, v) { state[k] = v; render(); }
+
+function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+function setT(id, v) { var el = document.getElementById(id); if (el) el.textContent = v; }
+function setH(id, v) { var el = document.getElementById(id); if (el) el.innerHTML = v; }
+
+function TUBOS() {
+  return [
+    { label: '¾ in · 16 BWG  (dₒ 19.05 / dᵢ 15.75 mm)', do_: 0.01905, di: 0.01575 },
+    { label: '¾ in · 14 BWG  (dₒ 19.05 / dᵢ 14.83 mm)', do_: 0.01905, di: 0.01483 },
+    { label: '1 in · 14 BWG  (dₒ 25.40 / dᵢ 21.18 mm)', do_: 0.02540, di: 0.02118 }
+  ];
+}
+var K1N1 = {
+  tri: { 1: [0.319, 2.142], 2: [0.249, 2.207], 4: [0.175, 2.285], 6: [0.0743, 2.499], 8: [0.0365, 2.675] },
+  cua: { 1: [0.215, 2.207], 2: [0.156, 2.291], 4: [0.158, 2.263], 6: [0.0402, 2.617], 8: [0.0331, 2.643] }
+};
+function MATS() {
+  return [
+    { id: 'cs', label: 'Acero al carbono', k: 51, fm: 1.0, nota: 'El más económico; vigilar corrosión con agua de enfriamiento no tratada.' },
+    { id: 'adm', label: 'Admiralty (latón)', k: 111, fm: 1.25, nota: 'Clásico para agua de enfriamiento; excelente conductividad.' },
+    { id: 'ss', label: 'Inoxidable 316', k: 16, fm: 1.6, nota: 'Muy resistente a corrosión; su baja conductividad penaliza la pared.' },
+    { id: 'cuni', label: 'Cu-Ni 90/10', k: 45, fm: 1.75, nota: 'Para aguas salobres o agresivas; buena resistencia a erosión.' },
+    { id: 'ti', label: 'Titanio', k: 21, fm: 3.6, nota: 'Resistencia máxima (agua de mar, cloruros); el más costoso.' }
+  ];
+}
+
+function render() {
+  var S = state;
+  var costoKwh = S.costoKwh, horasAno = S.horasAno, vidaUtil = S.vidaUtil;
+  var TB = TUBOS(), MT = MATS();
+
+  var thIn = S.thIn, thOut = S.thOut, mOil = S.mOil;
+  var Q = mOil * 2100 * (thIn - thOut);
+  var mW = Q / (4178 * (40 - 25));
+  var AGUA = { name: 'Agua', m: mW, cp: 4178, rho: 994, mu: 0.72e-3, k: 0.623, heating: true, rd: S.rdAgua * 1e-4, vmin: 1.0, vmax: 2.5 };
+  var ACEITE = { name: 'Aceite', m: mOil, cp: 2100, rho: 830, mu: 2.4e-3, k: 0.132, heating: false, rd: S.rdAceite * 1e-4, vmin: 0.8, vmax: 2.0 };
+
+  var tubo = TB[S.tubo];
+  var do_ = tubo.do_, di = tubo.di;
+  var pt = 1.25 * do_;
+  var tubeF = S.asig === 'agua' ? AGUA : ACEITE;
+  var shellF = S.asig === 'agua' ? ACEITE : AGUA;
+  var mat = MT.find(function (m) { return m.id === S.mat; });
+
+  // ---- Geometry
+  var kn = K1N1[S.arr][S.pasos];
+  var K1 = kn[0], n1 = kn[1];
+  var Db = do_ * Math.pow(S.nt / K1, 1 / n1);
+  var Ds = Db + 0.016;
+  var B = Math.max(0.05, S.bFrac * Ds);
+  var nBaf = Math.max(0, Math.round(S.L / B) - 1);
+  var nsh = S.nsh;
+  var Aav = nsh * S.nt * Math.PI * do_ * S.L;
+
+  // ---- Tube side
+  var ntPass = S.nt / S.pasos;
+  var Aflow = ntPass * Math.PI * di * di / 4;
+  var ut = tubeF.m / (tubeF.rho * Aflow);
+  var Ret = tubeF.rho * ut * di / tubeF.mu;
+  var Prt = tubeF.cp * tubeF.mu / tubeF.k;
+  var Nut;
+  if (Ret < 2100) Nut = Math.max(3.66, 1.86 * Math.pow(Ret * Prt * di / S.L, 1 / 3));
+  else Nut = 0.023 * Math.pow(Ret, 0.8) * Math.pow(Prt, tubeF.heating ? 0.4 : 0.3);
+  var hi = Nut * tubeF.k / di;
+
+  // ---- Shell side (Kern)
+  var As = Ds * B * (pt - do_) / pt;
+  var Gs = shellF.m / As;
+  var us = Gs / shellF.rho;
+  var de = S.arr === 'tri'
+    ? 1.10 * (pt * pt - 0.917 * do_ * do_) / do_
+    : 1.27 * (pt * pt - 0.785 * do_ * do_) / do_;
+  var Res = Gs * de / shellF.mu;
+  var Prs = shellF.cp * shellF.mu / shellF.k;
+  var ho = 0.36 * (shellF.k / de) * Math.pow(Res, 0.55) * Math.pow(Prs, 1 / 3);
+
+  // ---- U and area
+  var uCalc = function (kw) {
+    var rWall = do_ * Math.log(do_ / di) / (2 * kw);
+    var invUc = 1 / ho + rWall + do_ / (di * hi);
+    var invUd = invUc + shellF.rd + (do_ / di) * tubeF.rd;
+    return [1 / invUc, 1 / invUd];
+  };
+  var uu = uCalc(mat.k), Uc = uu[0], Ud = uu[1];
+
+  var dT1 = thIn - 40, dT2 = thOut - 25;
+  var lmtd = Math.abs(dT1 - dT2) < 0.01 ? dT1 : (dT1 - dT2) / Math.log(dT1 / dT2);
+  var F = 1, fInfeasible = false;
+  if (S.pasos > 1) {
+    var R = (thIn - thOut) / 15, Ptot = 15 / (thIn - 25);
+    var Pp;
+    if (Math.abs(R - 1) < 1e-3) Pp = Ptot / (nsh - (nsh - 1) * Ptot);
+    else { var X = Math.pow((1 - Ptot * R) / (1 - Ptot), 1 / nsh); Pp = (1 - X) / (R - X); }
+    var sq = Math.sqrt(R * R + 1);
+    if (Math.abs(R - 1) < 1e-3) {
+      F = (Math.SQRT2 * Pp / (1 - Pp)) / Math.log((2 - Pp * (2 - Math.SQRT2)) / (2 - Pp * (2 + Math.SQRT2)));
+    } else {
+      F = (sq / (R - 1)) * Math.log((1 - Pp) / (1 - Pp * R)) / Math.log((2 - Pp * (R + 1 - sq)) / (2 - Pp * (R + 1 + sq)));
+    }
+    if (!isFinite(F) || F <= 0) { F = 0.5; fInfeasible = true; }
+  }
+  var Areq = Q / (Ud * F * lmtd);
+  var over = (Aav / Areq - 1) * 100;
+
+  // ---- Pressure drops
+  var jf = Ret < 2100 ? 8 / Ret : 0.0396 / Math.pow(Ret, 0.25);
+  var dPt = nsh * S.pasos * (8 * jf * (S.L / di) + 2.5) * tubeF.rho * ut * ut / 2;
+  var fs = Math.exp(0.576 - 0.19 * Math.log(Math.max(Res, 10)));
+  var dPs = nsh * fs * Gs * Gs * Ds * (S.L / B) / (2 * shellF.rho * de);
+
+  // ---- Economics
+  var eta = 0.7;
+  var wT = tubeF.m * dPt / (tubeF.rho * eta);
+  var wS = shellF.m * dPs / (shellF.rho * eta);
+  var kwTotal = (wT + wS) / 1000;
+  var pumpAnual = kwTotal * horasAno * costoKwh;
+  var i = 0.12;
+  var ap = i * Math.pow(1 + i, vidaUtil) / (Math.pow(1 + i, vidaUtil) - 1);
+  var costEquip = function (fm) { return nsh * (28000 + 54 * Math.pow(Math.max(Aav / nsh, 5), 1.2)) * 1.6 * fm; };
+  var cEq = costEquip(mat.fm);
+  var capAnual = cEq * ap;
+  var totalAnual = capAnual + pumpAnual;
+
+  // ---- Formatters
+  var f0 = function (x) { return x.toLocaleString('en-US', { maximumFractionDigits: 0 }); };
+  var f1 = function (x) { return x.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }); };
+  var f2 = function (x) { return x.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); };
+  var money = function (x) { return '$' + f0(x); };
+
+  // ---- Buttons
+  var btn = function (sel) { return 'display:block;width:100%;text-align:left;font-family:var(--font-heading);font-weight:700;font-size:13px;padding:8px 10px;border:2px solid ' + (sel ? 'var(--color-accent)' : 'var(--color-neutral-400)') + ';background:' + (sel ? 'var(--color-accent)' : 'transparent') + ';color:' + (sel ? '#fff' : 'var(--color-text)') + ';cursor:pointer;'; };
+  var seg = function (sel) { return 'flex:1;text-align:left;font-family:var(--font-heading);font-weight:700;font-size:12.5px;padding:8px 10px;border:2px solid ' + (sel ? 'var(--color-accent)' : 'var(--color-neutral-400)') + ';background:' + (sel ? 'var(--color-accent)' : 'transparent') + ';color:' + (sel ? '#fff' : 'var(--color-text)') + ';cursor:pointer;'; };
+
+  // ---- Cross-section tube layout
+  var scale = 148 / (Ds / 2);
+  var rowH = S.arr === 'tri' ? pt * Math.sqrt(3) / 2 : pt;
+  var lim = Db / 2 - do_ / 2 + pt * 0.05;
+  var pos = [];
+  var nyMax = Math.ceil(lim / rowH);
+  for (var iy = -nyMax; iy <= nyMax; iy++) {
+    var y = iy * rowH;
+    var xoff = (S.arr === 'tri' && Math.abs(iy) % 2 === 1) ? pt / 2 : 0;
+    var nxMax = Math.ceil(lim / pt) + 1;
+    for (var ix = -nxMax; ix <= nxMax; ix++) {
+      var x = ix * pt + xoff;
+      if (Math.hypot(x, y) <= lim) pos.push({ x: x, y: y, d: x * x + y * y });
+    }
+  }
+  pos.sort(function (a, b) { return a.d - b.d; });
+  var tubesXY = pos.slice(0, S.nt).map(function (p) {
+    return { x: Math.round((160 + p.x * scale) * 10) / 10, y: Math.round((160 + p.y * scale) * 10) / 10, r: Math.max(1, Math.round(do_ / 2 * scale * 10) / 10) };
+  });
+
+  // ---- Longitudinal baffles
+  var nBafDraw = Math.min(nBaf, 26);
+  var baffles = [];
+  for (var kb = 0; kb < nBafDraw; kb++) {
+    var xb = Math.round(70 + (kb + 1) * 330 / (nBafDraw + 1));
+    var top = kb % 2 === 0;
+    baffles.push({ x: xb, y1: top ? 52 : 75, y2: top ? 125 : 148 });
+  }
+
+  // ---- Longitudinal pass bands, turns, nozzles, series chain
+  var bandH = 100 / S.pasos;
+  var passLines = [];
+  for (var pp = 0; pp < S.pasos; pp++) {
+    var yv = 50 + (pp + 0.5) * bandH;
+    var toRight = pp % 2 === 0;
+    var ax = 235, yA = yv.toFixed(1);
+    var arrow = toRight
+      ? (ax - 7) + ',' + (yv - 4.5).toFixed(1) + ' ' + (ax - 7) + ',' + (yv + 4.5).toFixed(1) + ' ' + (ax + 7) + ',' + yA
+      : (ax + 7) + ',' + (yv - 4.5).toFixed(1) + ' ' + (ax + 7) + ',' + (yv + 4.5).toFixed(1) + ' ' + (ax - 7) + ',' + yA;
+    passLines.push({ y: yA, arrow: arrow });
+  }
+  var headParts = [], turns = [];
+  for (var pt2 = 0; pt2 < S.pasos - 1; pt2++) {
+    var yb2 = (50 + (pt2 + 1) * bandH).toFixed(1);
+    var y1 = (50 + (pt2 + 0.5) * bandH).toFixed(1);
+    var y2 = (50 + (pt2 + 1.5) * bandH).toFixed(1);
+    if (pt2 % 2 === 0) { headParts.push({ x1: 400, x2: 430, y: yb2 }); turns.push({ d: 'M 398 ' + y1 + ' C 420 ' + y1 + ' 420 ' + y2 + ' 398 ' + y2 }); }
+    else { headParts.push({ x1: 40, x2: 70, y: yb2 }); turns.push({ d: 'M 72 ' + y1 + ' C 50 ' + y1 + ' 50 ' + y2 + ' 72 ' + y2 }); }
+  }
+  var yFirst = 50 + 0.5 * bandH, yLast = 50 + (S.pasos - 0.5) * bandH;
+  var nozIn = { x: 30, y: (yFirst - 7).toFixed(1) };
+  var nozOut = S.pasos % 2 === 0 ? { x: 30, y: (yLast - 7).toFixed(1) } : { x: 430, y: (yLast - 7).toFixed(1) };
+  var chain = [];
+  for (var c = 0; c < nsh; c++) {
+    chain.push({ x: 30 + c * 80, tx: 36 + c * 80, t: 'Coraza ' + (c + 1), lx1: c > 0 ? 6 + c * 80 : 0, lx2: c > 0 ? 30 + c * 80 : 0 });
+  }
+
+  // ---- Perfil de temperaturas REAL por ε-NTU
+  // Con la geometría actual (UA = F·Ud·A) la efectividad fija cuánto se enfría
+  // el aceite de verdad; las salidas y pendientes responden a área, U,
+  // ensuciamiento, flujo y material. Diagrama T vs calor transferido: rectas.
+  var Ch = mOil * 2100, Cc = mW * 4178;
+  var Cmin = Math.min(Ch, Cc), Cmax = Math.max(Ch, Cc), Cr = Cmin / Cmax;
+  var NTU = F * Ud * Aav / Cmin;
+  var eff;
+  if (Math.abs(1 - Cr) < 1e-6) eff = NTU / (1 + NTU);
+  else { var exn = Math.exp(-NTU * (1 - Cr)); eff = (1 - exn) / (1 - Cr * exn); }
+  var Qact = eff * Cmin * (thIn - 25);
+  var thOutAct = thIn - Qact / Ch;   // salida real del aceite
+  var tcOutAct = 25 + Qact / Cc;     // salida real del agua
+  var tMax = Math.max(thIn + 6, 46), tMin = 20;
+  var ty = function (T) { return 146 - (T - tMin) / (tMax - tMin) * 128; };
+  var PXL = 40, PXR = 292;
+  // aceite (caliente): entra por la izquierda (thIn), sale por la derecha (thOutAct)
+  // agua (frío, contracorriente): entra por la derecha (25), sale por la izquierda (tcOutAct)
+  var hp = PXL + ',' + ty(thIn).toFixed(1) + ' ' + PXR + ',' + ty(thOutAct).toFixed(1);
+  var cp_ = PXL + ',' + ty(tcOutAct).toFixed(1) + ' ' + PXR + ',' + ty(25).toFixed(1);
+  var axisLabels = [];
+  [[thIn, f0(thIn) + '°'], [thOutAct, f0(thOutAct) + '°'], [tcOutAct, f0(tcOutAct) + '°'], [25, '25°']].forEach(function (pair) {
+    var T = pair[0], t = pair[1];
+    var yl = ty(T) + 4;
+    if (!axisLabels.some(function (al) { return Math.abs(al.yn - yl) < 11; })) axisLabels.push({ yn: yl, y: yl.toFixed(0), t: t });
+  });
+
+  // ---- Verdict helpers
+  var C_OK = 'var(--color-neutral-500)', C_WARN = 'var(--color-accent-600)', C_BAD = 'var(--color-accent)';
+  var dot = function (cc) { return 'display:inline-block;width:10px;height:10px;background:' + cc + ';flex:0 0 auto;position:relative;top:1px;'; };
+  var vs = function (st) { return 'font-family:var(--font-heading);font-weight:800;font-size:13px;white-space:nowrap;color:' + (st === 2 ? 'var(--color-accent-700)' : st === 1 ? 'var(--color-accent-700)' : 'var(--color-text)') + ';'; };
+
+  var stVt = ut < tubeF.vmin || ut > tubeF.vmax ? (ut < tubeF.vmin * 0.6 || ut > tubeF.vmax * 1.4 ? 2 : 1) : 0;
+  var stVs = us < 0.3 || us > 1.0 ? (us < 0.15 || us > 1.5 ? 2 : 1) : 0;
+  var stRe = Ret >= 1e4 ? 0 : Ret >= 2100 ? 1 : 2;
+  var stPt = dPt / 1000 <= 70 ? 0 : dPt / 1000 <= 100 ? 1 : 2;
+  var stPs = dPs / 1000 <= 70 ? 0 : dPs / 1000 <= 100 ? 1 : 2;
+  var stOv = over < 0 ? 2 : (over >= 10 && over <= 20) ? 0 : (over > 50 ? 1 : 1);
+  var stF = F >= 0.8 ? 0 : F >= 0.75 ? 1 : 2;
+  var stEs = (S.L / Ds >= 5 && S.L / Ds <= 10) ? 0 : 1;
+
+  var verRows = [
+    { st: stVt, label: 'Velocidad en tubos', sub: f1(tubeF.vmin) + '–' + f1(tubeF.vmax) + ' m/s (' + tubeF.name.toLowerCase() + ')', val: stVt === 0 ? 'OK' : ut < tubeF.vmin ? 'Baja' : 'Alta' },
+    { st: stVs, label: 'Velocidad en coraza', sub: '0.3–1.0 m/s', val: stVs === 0 ? 'OK' : us < 0.3 ? 'Baja' : 'Alta' },
+    { st: stRe, label: 'Régimen en tubos', sub: 'turbulento Re ≥ 10⁴', val: stRe === 0 ? 'Turbulento' : stRe === 1 ? 'Transición' : 'Laminar' },
+    { st: stPt, label: 'ΔP en tubos', sub: '≤ 70 kPa', val: stPt === 0 ? 'OK' : 'Excede' },
+    { st: stPs, label: 'ΔP en coraza', sub: '≤ 70 kPa', val: stPs === 0 ? 'OK' : 'Excede' },
+    { st: stOv, label: 'Sobrediseño', sub: '10–20% recomendado', val: stOv === 2 ? 'Insuficiente' : over > 50 ? 'Excesivo' : over > 20 ? 'Holgado' : over >= 10 ? 'OK' : 'Justo' },
+    { st: stF, label: 'Factor F', sub: '≥ 0.75 (ideal ≥ 0.8)', val: f2(F) },
+    { st: stEs, label: 'Esbeltez L/Dₛ', sub: '5–10 recomendado', val: f1(S.L / Ds) }
+  ];
+
+  // ---- Warnings (critical only)
+  var warnings = [];
+  if (over < 0) warnings.push('El área disponible no alcanza: faltan ' + f1(Areq - Aav) + ' m². Aumente tubos, longitud o mejore U.');
+  if (stRe === 2) warnings.push('Flujo laminar en tubos (Re = ' + f0(Ret) + '): la transferencia se desploma. Reduzca tubos por paso o aumente pasos.');
+  if (fInfeasible) warnings.push('Requerimiento térmico no alcanzable con ' + nsh + ' coraza(s) y pasos múltiples: cruce de temperaturas severo. Añada corazas en serie o use 1 paso (contracorriente).');
+  if (F < 0.75 && S.pasos > 1 && !fInfeasible) warnings.push('F = ' + f2(F) + ' < 0.75: cruce de temperaturas excesivo para ' + nsh + ' coraza(s). Añada corazas en serie.');
+  if (stPt === 2) warnings.push('ΔP de tubos (' + f0(dPt / 1000) + ' kPa) muy alta: reduzca pasos o use tubos de mayor diámetro.');
+  if (stPs === 2) warnings.push('ΔP de coraza (' + f0(dPs / 1000) + ' kPa) muy alta: abra el espaciado de bafles.');
+  if (Res < 2000) warnings.push('Re de coraza (' + f0(Res) + ') por debajo del rango de validez de Kern.');
+
+  // ================= Inyección al DOM =================
+  setT('matNameHdr', mat.label);
+
+  // prosa de requerimientos
+  setH('procProse', 'Enfriar <strong>' + f1(mOil) + ' kg/s de aceite ligero</strong> de <strong>' + thIn + ' a ' + thOut + ' °C</strong> con agua de enfriamiento fija como servicio: entra a 25 °C y sale a 40 °C (' + f1(mW) + ' kg/s por balance de energía). Carga térmica Q = ' + f2(Q / 1e6) + ' MW. Intercambiador 1 coraza · N pasos por tubos.');
+
+  // sliders posición + etiquetas
+  ['thIn', 'thOut', 'mOil', 'nt', 'L', 'bFrac', 'rdAgua', 'rdAceite', 'costoKwh', 'horasAno', 'vidaUtil'].forEach(function (k) { var el = document.getElementById(k); if (el && parseFloat(el.value) !== S[k]) el.value = S[k]; });
+  document.getElementById('thOut').max = (thIn - 10);
+  setT('fThIn', f0(thIn) + ' °C'); setT('fThOut', f0(thOut) + ' °C'); setT('fMOil', f1(mOil) + ' kg/s');
+  setT('fMWhint', f1(mW) + ' kg/s');
+  setT('fNt', f0(S.nt)); setT('fL', f2(S.L) + ' m (' + f0(S.L / 0.3048) + ' ft)');
+  setT('fB', f0(B * 1000) + ' mm (' + f2(S.bFrac) + '·Dₛ)');
+  setT('fRdAgua', f2(S.rdAgua) + '×10⁻⁴'); setT('fRdAceite', f2(S.rdAceite) + '×10⁻⁴');
+  setT('fCostoKwh', '$' + f2(costoKwh) + '/kWh'); setT('fHorasAno', f0(horasAno) + ' h/año'); setT('fVida', vidaUtil + ' años');
+
+  // segmentos / botones
+  document.getElementById('btnAguaT').style.cssText = seg(S.asig === 'agua');
+  document.getElementById('btnAceiteT').style.cssText = seg(S.asig === 'aceite');
+  document.getElementById('btnTri').style.cssText = seg(S.arr === 'tri');
+  document.getElementById('btnCua').style.cssText = seg(S.arr === 'cua');
+  setT('asigNote', S.asig === 'agua'
+    ? 'Heurística de ensuciamiento: el fluido más sucio y corrosivo (agua de torre) por tubos, más fáciles de limpiar. Compite con la heurística del fluido caliente: como el aceite es el caliente, ponerlo en tubos mejoraría la transferencia. Explora ambas.'
+    : 'Heurística del fluido caliente: el aceite (caliente) por tubos mejora la transferencia de calor. Ojo con el régimen — su viscosidad baja el Re y puede caer a laminar.');
+  setT('arrNote', S.arr === 'tri' ? 'Triangular: más tubos por coraza y mayor h; limpieza mecánica difícil.' : 'Cuadrado: permite limpieza mecánica del haz; menor densidad de tubos.');
+  setT('matNote', mat.nota);
+
+  document.getElementById('tuboBtns').innerHTML = TB.map(function (t, ix) { return '<button type="button" style="' + btn(S.tubo === ix) + '" onclick="setState(\'tubo\',' + ix + ')">' + esc(t.label) + '</button>'; }).join('');
+  document.getElementById('pasosBtns').innerHTML = [1, 2, 4, 6, 8].map(function (p) { return '<button type="button" style="' + seg(S.pasos === p) + '" onclick="setState(\'pasos\',' + p + ')">' + p + '</button>'; }).join('');
+  document.getElementById('corazasBtns').innerHTML = [1, 2, 3].map(function (nn) { return '<button type="button" style="' + seg(nsh === nn) + '" onclick="setState(\'nsh\',' + nn + ')">' + nn + '</button>'; }).join('');
+  document.getElementById('matBtns').innerHTML = MT.map(function (m) { return '<button type="button" style="' + btn(S.mat === m.id) + '" onclick="setState(\'mat\',\'' + m.id + '\')">' + esc(m.label) + '</button>'; }).join('');
+
+  // advertencias
+  var wEl = document.getElementById('warnings');
+  if (warnings.length) { wEl.style.display = 'flex'; wEl.innerHTML = warnings.map(function (x) { return '<div style="color:var(--color-accent-800);font-size:14px;font-weight:600;">' + esc(x) + '</div>'; }).join(''); }
+  else { wEl.style.display = 'none'; wEl.innerHTML = ''; }
+
+  // ---- SVG corte longitudinal
+  var longSvg = ''
+    + '<rect x="40" y="50" width="30" height="100" style="fill:none;stroke:var(--color-text);stroke-width:2;"></rect>'
+    + '<rect x="400" y="50" width="30" height="100" style="fill:none;stroke:var(--color-text);stroke-width:2;"></rect>'
+    + '<rect x="70" y="50" width="330" height="100" style="fill:var(--color-neutral-100);stroke:var(--color-text);stroke-width:2;"></rect>'
+    + baffles.map(function (bf) { return '<line x1="' + bf.x + '" y1="' + bf.y1 + '" x2="' + bf.x + '" y2="' + bf.y2 + '" style="stroke:var(--color-text);stroke-width:2;"></line>'; }).join('')
+    + passLines.map(function (pl) { return '<line x1="72" y1="' + pl.y + '" x2="398" y2="' + pl.y + '" style="stroke:var(--color-neutral-600);stroke-width:1.5;"></line><polygon points="' + pl.arrow + '" style="fill:var(--color-accent-700);"></polygon>'; }).join('')
+    + headParts.map(function (hpp) { return '<line x1="' + hpp.x1 + '" y1="' + hpp.y + '" x2="' + hpp.x2 + '" y2="' + hpp.y + '" style="stroke:var(--color-text);stroke-width:2;"></line>'; }).join('')
+    + turns.map(function (tn) { return '<path d="' + tn.d + '" style="fill:none;stroke:var(--color-accent-700);stroke-width:1.5;"></path>'; }).join('')
+    + '<rect x="95" y="30" width="14" height="20" style="fill:var(--color-accent);stroke:none;"></rect>'
+    + '<rect x="360" y="150" width="14" height="20" style="fill:var(--color-accent);stroke:none;"></rect>'
+    + '<rect x="' + nozIn.x + '" y="' + nozIn.y + '" width="10" height="14" style="fill:var(--color-text);stroke:none;"></rect>'
+    + '<rect x="' + nozOut.x + '" y="' + nozOut.y + '" width="10" height="14" style="fill:var(--color-text);stroke:none;"></rect>'
+    + (nsh > 1 ? chain.map(function (cc) { return '<rect x="' + cc.x + '" y="208" width="56" height="22" style="fill:none;stroke:var(--color-neutral-700);stroke-width:1.5;"></rect><text x="' + cc.tx + '" y="223" style="font-size:10px;fill:var(--color-neutral-800);">' + esc(cc.t) + '</text>' + (cc.lx1 ? '<line x1="' + cc.lx1 + '" y1="219" x2="' + cc.lx2 + '" y2="219" style="stroke:var(--color-accent-700);stroke-width:1.5;"></line>' : ''); }).join('') + '<text x="' + (30 + nsh * 80 + 8) + '" y="223" style="font-size:11px;fill:var(--color-neutral-700);">' + esc('En serie: el aceite y el agua recorren las ' + nsh + ' corazas') + '</text>' : '')
+    + '<text x="95" y="22" style="font-size:11px;fill:var(--color-accent-700);">Entra coraza · ' + esc(shellF.name.toLowerCase()) + '</text>'
+    + '<text x="235" y="188" text-anchor="middle" style="font-size:11px;fill:var(--color-accent-700);">Sale coraza</text>'
+    + '<text x="30" y="197" style="font-size:11px;fill:var(--color-neutral-800);">Tubos · ' + esc(tubeF.name.toLowerCase()) + ' · ' + S.pasos + ' paso(s)</text>'
+    + '<text x="430" y="45" text-anchor="end" style="font-size:11px;fill:var(--color-neutral-800);">' + esc(f0(nBaf) + ' bafles · B = ' + f0(B * 1000) + ' mm' + (nsh > 1 ? ' · ×' + nsh + ' corazas en serie' : '')) + '</text>';
+  document.getElementById('svgLong').innerHTML = longSvg;
+
+  // ---- SVG sección transversal
+  document.getElementById('svgCross').innerHTML = ''
+    + '<circle cx="160" cy="160" r="148" style="fill:var(--color-neutral-100);stroke:var(--color-text);stroke-width:2;"></circle>'
+    + '<circle cx="160" cy="160" r="' + Math.round(Db / 2 * scale) + '" style="fill:none;stroke:var(--color-neutral-500);stroke-width:1;stroke-dasharray:4 3;"></circle>'
+    + tubesXY.map(function (t) { return '<circle cx="' + t.x + '" cy="' + t.y + '" r="' + t.r + '" style="fill:var(--color-bg);stroke:var(--color-accent-700);stroke-width:1;"></circle>'; }).join('')
+    + (S.pasos > 1 ? '<line x1="20" y1="160" x2="300" y2="160" style="stroke:var(--color-text);stroke-width:2;"></line>' : '');
+
+  // ---- geometría
+  var geoRows = [
+    ['Diámetro del haz D_b', f0(Db * 1000) + ' mm'], ['Diámetro de coraza Dₛ', f0(Ds * 1000) + ' mm'],
+    ['Pitch pₜ', f1(pt * 1000) + ' mm'], ['Bafles (corte 25%)', f0(nBaf)],
+    ['Esbeltez L / Dₛ', f1(S.L / Ds)], ['Corazas en serie', f0(nsh)], ['Área total de transferencia', f1(Aav) + ' m²']
+  ];
+  document.getElementById('geoRows').innerHTML = geoRows.map(function (r) { return '<div class="rowline"><div class="rk">' + esc(r[0]) + '</div><div class="rvg">' + esc(r[1]) + '</div></div>'; }).join('');
+
+  // ---- SVG perfil de temperaturas (rectas T–Q; flechas de dirección: contracorriente)
+  document.getElementById('svgTemp').innerHTML = ''
+    + '<defs>'
+    + '<marker id="tarH" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--color-accent)"></path></marker>'
+    + '<marker id="tarC" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--color-text)"></path></marker>'
+    + '</defs>'
+    + '<line x1="36" y1="18" x2="36" y2="146" style="stroke:var(--color-neutral-500);stroke-width:1;"></line>'
+    + '<line x1="36" y1="146" x2="296" y2="146" style="stroke:var(--color-neutral-500);stroke-width:1;"></line>'
+    + axisLabels.map(function (al) { return '<text x="30" y="' + al.y + '" text-anchor="end" style="font-size:10px;fill:var(--color-neutral-700);">' + esc(al.t) + '</text>'; }).join('')
+    // extremos: marcas de ΔT terminal
+    + '<circle cx="' + PXL + '" cy="' + ty(thIn).toFixed(1) + '" r="2.5" fill="var(--color-accent)"></circle>'
+    + '<circle cx="' + PXR + '" cy="' + ty(thOutAct).toFixed(1) + '" r="2.5" fill="var(--color-accent)"></circle>'
+    + '<circle cx="' + PXL + '" cy="' + ty(tcOutAct).toFixed(1) + '" r="2.5" fill="var(--color-text)"></circle>'
+    + '<circle cx="' + PXR + '" cy="' + ty(25).toFixed(1) + '" r="2.5" fill="var(--color-text)"></circle>'
+    + '<polyline points="' + hp + '" style="fill:none;stroke:var(--color-accent);stroke-width:2.5;"></polyline>'
+    + '<polyline points="' + cp_ + '" style="fill:none;stroke:var(--color-text);stroke-width:2.5;"></polyline>'
+    // dirección de flujo: aceite (caliente) → ; agua (frío) ← (contracorriente)
+    + '<line x1="120" y1="26" x2="158" y2="26" stroke="var(--color-accent)" stroke-width="1.5" marker-end="url(#tarH)"></line>'
+    + '<line x1="212" y1="120" x2="174" y2="120" stroke="var(--color-text)" stroke-width="1.5" marker-end="url(#tarC)"></line>'
+    // etiquetas fuera de las líneas
+    + '<text x="290" y="30" text-anchor="end" style="font-size:11px;fill:var(--color-accent-700);">Aceite ' + f0(thIn) + ' → ' + f0(thOutAct) + ' °C</text>'
+    + '<text x="46" y="138" style="font-size:11px;fill:var(--color-neutral-800);">Agua 25 → ' + f0(tcOutAct) + ' °C</text>'
+    + '<text x="168" y="13" text-anchor="middle" style="font-size:9.5px;font-weight:700;fill:var(--color-neutral-600);">CONTRACORRIENTE</text>'
+    + '<text x="292" y="160" text-anchor="end" style="font-size:10px;fill:var(--color-neutral-600);">Calor transferido →</text>';
+  document.getElementById('tempCaption').innerHTML = 'Perfil real por ε-NTU (NTU = ' + f2(NTU) + ', ε = ' + f0(eff * 100) + ' %): con esta geometría el aceite sale a <strong>' + f0(thOutAct) + ' °C</strong> y el agua a <strong>' + f0(tcOutAct) + ' °C</strong>. Cuando el área iguala la requerida, alcanza el objetivo (' + f0(thOut) + ' / 40 °C); si sobra área, sobre-enfría; si falta, se queda corto. F = ' + f2(F) + ' corrige el paso múltiple.';
+
+  // ---- transferencia
+  var regimeLabel = function (re) { return re >= 1e4 ? 'turbulento' : re >= 2100 ? 'transición' : 'LAMINAR'; };
+  var transRows = [
+    ['h interior (tubos · ' + tubeF.name.toLowerCase() + ')', f0(hi) + ' W/m²·K', 'Re = ' + f0(Ret) + ' (' + regimeLabel(Ret) + ') · Pr = ' + f1(Prt)],
+    ['h exterior (coraza · ' + shellF.name.toLowerCase() + ')', f0(ho) + ' W/m²·K', 'Re = ' + f0(Res) + ' (' + regimeLabel(Res) + ') · dₑ = ' + f1(de * 1000) + ' mm'],
+    ['Pared (' + mat.label + ')', 'k = ' + f0(mat.k) + ' W/m·K', ''],
+    ['U limpio', f0(Uc) + ' W/m²·K', ''],
+    ['U de diseño (sucio)', f0(Ud) + ' W/m²·K', 'con ensuciamiento'],
+    ['ΔT media log · F', f1(lmtd) + ' °C · ' + f2(F), 'ΔT efectiva = ' + f1(lmtd * F) + ' °C']
+  ];
+  document.getElementById('transRows').innerHTML = transRows.map(rowKVS).join('');
+
+  // ---- sobrediseño
+  document.getElementById('overBox').style.background = over < 0 ? 'var(--color-accent-100)' : 'transparent';
+  var ov = document.getElementById('fOver'); ov.textContent = (over >= 0 ? '+' : '') + f1(over) + '%'; ov.style.color = over < 0 ? 'var(--color-accent)' : 'var(--color-text)';
+  setT('fAreq', f1(Areq) + ' m²'); setT('fAav', f1(Aav) + ' m²');
+
+  // ---- hidráulica
+  var hidRows = [
+    ['Velocidad en tubos', f2(ut) + ' m/s', 'recomendado ' + f1(tubeF.vmin) + '–' + f1(tubeF.vmax) + ' m/s'],
+    ['Velocidad en coraza', f2(us) + ' m/s', 'recomendado 0.3–1.0 m/s'],
+    ['ΔP lado de tubos', f1(dPt / 1000) + ' kPa', 'máx. sugerido 70 kPa'],
+    ['ΔP lado de coraza', f1(dPs / 1000) + ' kPa', 'máx. sugerido 70 kPa']
+  ];
+  document.getElementById('hidRows').innerHTML = hidRows.map(rowKVS).join('');
+
+  // ---- veredicto
+  document.getElementById('verRows').innerHTML = verRows.map(function (r) {
+    var dc = r.st === 0 ? C_OK : r.st === 1 ? C_WARN : C_BAD;
+    return '<div class="rowline"><div style="display:flex;align-items:baseline;gap:8px;"><span style="' + dot(dc) + '"></span><div><div class="rk">' + esc(r.label) + '</div><div class="rs">' + esc(r.sub) + '</div></div></div><div style="' + vs(r.st) + '">' + esc(r.val) + '</div></div>';
+  }).join('');
+
+  // ---- economía
+  var ecoRows = [
+    ['Costo de compra del equipo', money(cEq), mat.label + ' · factor ' + f2(mat.fm)],
+    ['Capital anualizado', money(capAnual) + ' /año', 'i = 12% · n = ' + vidaUtil + ' años'],
+    ['Potencia de bombeo', f2(kwTotal) + ' kW', 'tubos ' + f2(wT / 1000) + ' + coraza ' + f2(wS / 1000) + ' kW'],
+    ['Energía de bombeo', money(pumpAnual) + ' /año', f0(horasAno) + ' h/año · $' + f2(costoKwh) + '/kWh']
+  ];
+  document.getElementById('ecoRows').innerHTML = ecoRows.map(rowKVS).join('');
+  setT('fTotalAnual', money(totalAnual) + ' /año'); setT('vidaLabel', vidaUtil + ' años · i = 12%');
+
+  // ---- comparación de materiales
+  document.getElementById('matRows').innerHTML = MT.map(function (m) {
+    var uu2 = uCalc(m.k), ud2 = uu2[1];
+    var areq2 = Q / (ud2 * F * lmtd);
+    var ov2 = (Aav / areq2 - 1) * 100;
+    var sel = S.mat === m.id;
+    var st = 'display:block;width:100%;text-align:left;padding:8px 10px;margin-top:6px;border:2px solid ' + (sel ? 'var(--color-accent)' : 'var(--color-neutral-400)') + ';background:' + (sel ? 'var(--color-accent-100)' : 'transparent') + ';color:var(--color-text);cursor:pointer;font-family:var(--font-body);';
+    return '<button type="button" style="' + st + '" onclick="setState(\'mat\',\'' + m.id + '\')">'
+      + '<div style="display:flex;justify-content:space-between;gap:10px;align-items:baseline;"><span style="font-size:13px;font-weight:700;">' + esc(m.label) + '</span><span style="font-family:var(--font-heading);font-weight:800;font-size:14px;white-space:nowrap;">' + money(costEquip(m.fm)) + '</span></div>'
+      + '<div style="display:flex;justify-content:space-between;gap:10px;font-size:11.5px;color:var(--color-neutral-700);margin-top:2px;"><span>k = ' + f0(m.k) + ' W/m·K · U = ' + f0(ud2) + ' W/m²·K</span><span style="white-space:nowrap;">Sobrediseño ' + (ov2 >= 0 ? '+' : '') + f1(ov2) + '%</span></div>'
+      + '</button>';
+  }).join('');
+}
+
+// fila etiqueta / valor / subtítulo (arreglo [label, val, sub])
+function rowKVS(r) {
+  return '<div class="rowline"><div class="rk">' + esc(r[0]) + '</div><div style="text-align:right;"><div class="rv">' + esc(r[1]) + '</div>' + (r[2] ? '<div class="rs">' + esc(r[2]) + '</div>' : '') + '</div></div>';
+}
+
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,1649 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="/classroom-fonts.css" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Propiedades de sólidos · IQYA-2031</title>
+  <!-- KaTeX -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+  <style>
+    :root {
+      --brand-dark: #1A1A1A;
+      --brand-yellow: #FFBF00;
+      --brand-yellow-dark: #E6AC00;
+      --brand-gray: #555555;
+      --surface: #ffffff;
+      --muted: #f4f4f5;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      background: var(--brand-dark);
+      color: var(--brand-dark);
+      font-family: 'Manrope Variable', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      overflow: hidden;
+      -webkit-text-size-adjust: 100%;
+    }
+    .deck {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+    }
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(1rem, 4vw, 3.5rem);
+      background: var(--surface);
+      opacity: 0;
+      transition: opacity 260ms ease;
+      overflow-y: auto;
+    }
+    .slide.active {
+      display: flex;
+      opacity: 1;
+    }
+    .slide .content {
+      width: 100%;
+      max-width: 92rem;
+      margin: auto 0;
+      display: flex;
+      flex-direction: column;
+      gap: clamp(0.75rem, 1.5vw, 1.5rem);
+    }
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      font-size: clamp(0.65rem, 1vw, 1rem);
+      color: var(--brand-yellow-dark);
+      font-weight: 600;
+    }
+    h1 {
+      font-size: clamp(1.75rem, 5.5vw, 5.75rem);
+      line-height: 1.05;
+      margin: 0;
+      color: var(--brand-dark);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    h2 {
+      font-size: clamp(1.25rem, 3.4vw, 3.25rem);
+      line-height: 1.15;
+      margin: 0;
+      color: var(--brand-dark);
+      font-weight: 700;
+    }
+    p, li {
+      font-size: clamp(0.95rem, 1.8vw, 1.75rem);
+      line-height: 1.55;
+      color: var(--brand-gray);
+      margin: 0;
+    }
+    ul, ol {
+      padding-left: 1.25em;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45em;
+    }
+    li::marker { color: var(--brand-yellow-dark); }
+    .slide.title-slide {
+      background: linear-gradient(135deg, #141414 0%, #1A1A1A 50%, #2a2a2a 100%);
+      color: #fff;
+    }
+    .slide.title-slide h1 { color: #fff; }
+    .slide.title-slide p { color: #d4d4d8; }
+    .slide.title-slide .eyebrow { color: var(--brand-yellow); }
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 0.5rem;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.35em 0.9em;
+      border-radius: 999px;
+      background: var(--muted);
+      color: var(--brand-dark);
+      font-size: clamp(0.75rem, 1.3vw, 1.35rem);
+      font-weight: 500;
+    }
+    .slide.title-slide .pill {
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .grid {
+      display: grid;
+      gap: clamp(0.75rem, 1.5vw, 1.25rem);
+    }
+    .grid.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid.cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    @media (max-width: 640px) {
+      .grid.cols-2, .grid.cols-3, .grid.cols-4 { grid-template-columns: 1fr; }
+    }
+    .card {
+      background: var(--muted);
+      border-radius: 0.75rem;
+      padding: clamp(0.9rem, 1.5vw, 1.35rem);
+    }
+    .card h3 {
+      font-size: clamp(1rem, 2vw, 1.75rem);
+      margin: 0 0 0.35em 0;
+      color: var(--brand-dark);
+      font-weight: 600;
+    }
+    .card p { font-size: clamp(0.8rem, 1.4vw, 1.3rem); }
+    .hud {
+      position: fixed;
+      left: 0; right: 0; bottom: 0;
+      padding: 0.5rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: rgba(255,255,255,0.75);
+      font-size: 0.75rem;
+      pointer-events: none;
+      z-index: 10;
+    }
+    .slide:not(.title-slide) ~ .hud { color: var(--brand-gray); }
+    .controls {
+      position: fixed;
+      right: 1rem;
+      bottom: 2.5rem;
+      display: flex;
+      gap: 0.5rem;
+      z-index: 11;
+    }
+    .controls button {
+      -webkit-appearance: none;
+      appearance: none;
+      border: 1px solid rgba(0,0,0,0.1);
+      background: rgba(255,255,255,0.9);
+      color: var(--brand-dark);
+      width: 2.5rem; height: 2.5rem;
+      border-radius: 999px;
+      font-size: 1rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    }
+    .controls button:active { transform: scale(0.96); }
+    .progress {
+      position: fixed;
+      top: 0; left: 0;
+      height: 3px;
+      background: var(--brand-yellow);
+      transition: width 260ms ease;
+      z-index: 20;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .slide { transition: none; }
+      .progress { transition: none; }
+    }
+    @media (max-width: 480px) {
+      .controls { right: 0.5rem; bottom: 1.25rem; }
+      .hud { font-size: 0.65rem; }
+    }
+
+    /* L-shaped yellow corner accent */
+    .slide:not(.title-slide)::before {
+      content: '';
+      position: absolute;
+      top: clamp(1rem, 3vw, 2.5rem);
+      right: clamp(1rem, 3vw, 2.5rem);
+      width: clamp(2rem, 5vw, 4rem);
+      height: clamp(2rem, 5vw, 4rem);
+      border-top: 2.5px solid var(--brand-yellow);
+      border-right: 2.5px solid var(--brand-yellow);
+      pointer-events: none;
+      z-index: 1;
+    }
+    .slide.title-slide::before {
+      content: '';
+      position: absolute;
+      bottom: clamp(1rem, 3vw, 2.5rem);
+      left: clamp(1rem, 3vw, 2.5rem);
+      width: clamp(2rem, 5vw, 4rem);
+      height: clamp(2rem, 5vw, 4rem);
+      border-bottom: 2.5px solid var(--brand-yellow);
+      border-left: 2.5px solid var(--brand-yellow);
+      opacity: 0.4;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Large background slide number */
+    .slide-number {
+      position: absolute;
+      bottom: clamp(0.5rem, 2vw, 1.5rem);
+      left: clamp(1rem, 3vw, 2.5rem);
+      font-size: clamp(4rem, 12vw, 10rem);
+      font-weight: 800;
+      line-height: 1;
+      color: rgba(0, 0, 0, 0.04);
+      pointer-events: none;
+      z-index: 0;
+      user-select: none;
+      letter-spacing: -0.04em;
+    }
+    .slide.title-slide .slide-number {
+      color: rgba(255, 255, 255, 0.06);
+    }
+
+    /* Two-column layout */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(1rem, 2vw, 2rem);
+      align-items: start;
+    }
+    @media (max-width: 640px) {
+      .two-col { grid-template-columns: 1fr; }
+    }
+
+    /* Diagram / image utility */
+    .diagram {
+      width: 100%;
+      max-height: 60vh;
+      object-fit: contain;
+      border-radius: 0.5rem;
+    }
+    .diagram-sm {
+      max-width: 280px;
+      width: 100%;
+      object-fit: contain;
+      border-radius: 0.5rem;
+    }
+    .diagram-center {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .diagram-tall {
+      width: 100%;
+      max-height: 70vh;
+      object-fit: contain;
+      border-radius: 0.5rem;
+    }
+
+    /* Highlight box */
+    .highlight-box {
+      background: linear-gradient(135deg, rgba(255,191,0,0.08), rgba(255,191,0,0.03));
+      border-left: 3px solid var(--brand-yellow);
+      padding: 0.75rem 1rem;
+      border-radius: 0 0.5rem 0.5rem 0;
+    }
+    .highlight-box p {
+      font-size: clamp(0.85rem, 1.5vw, 1.15rem);
+      color: var(--brand-dark);
+      font-weight: 500;
+    }
+
+    /* Section divider slide */
+    .slide.section-slide {
+      background: linear-gradient(135deg, #1A1A1A 0%, #2a2a2a 100%);
+    }
+    .slide.section-slide h2 { color: #fff; }
+    .slide.section-slide p { color: #d4d4d8; }
+    .slide.section-slide .eyebrow { color: var(--brand-yellow); }
+    .slide.section-slide .slide-number { color: rgba(255,255,255,0.06); }
+    /* Print: link clickeable para reemplazar iframes de YouTube */
+    .video-print-link { display: none; }
+
+    /* ─── Print: linealizar todos los slides como un documento ─── */
+    @media print {
+      @page { size: A4 portrait; margin: 12mm; }
+      *, *::before, *::after {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      html, body {
+        background: #fff !important;
+        height: auto !important;
+        overflow: visible !important;
+      }
+      .deck { width: 100% !important; height: auto !important; position: static !important; }
+      .controls, .hud, .progress, .slide-number { display: none !important; }
+      .slide:not(.title-slide):not(.cover)::before,
+      .slide.title-slide::before,
+      .slide.cover::before,
+      .slide.cover::after { display: none !important; }
+      .slide {
+        position: static !important;
+        display: flex !important;
+        opacity: 1 !important;
+        width: 100% !important;
+        height: auto !important;
+        inset: auto !important;
+        overflow: visible !important;
+        padding: 1.2rem 0.5rem !important;
+        min-height: 0 !important;
+        page-break-after: always;
+        break-after: page;
+        page-break-inside: avoid;
+      }
+      .slide:last-child { page-break-after: auto; break-after: auto; }
+      .slide .content { max-width: 100% !important; margin: 0 !important; gap: 0.6rem !important; }
+      h1 { font-size: 26pt !important; line-height: 1.1 !important; }
+      h2 { font-size: 18pt !important; line-height: 1.2 !important; }
+      h3 { font-size: 13pt !important; line-height: 1.25 !important; }
+      p, li { font-size: 10.5pt !important; line-height: 1.45 !important; }
+      .eyebrow, .pill { font-size: 9pt !important; }
+      .slide.title-slide, .slide.cover {
+        background: linear-gradient(135deg, #141414 0%, #1A1A1A 50%, #2a2a2a 100%) !important;
+        color: #fff !important;
+      }
+      .slide.title-slide h1, .slide.title-slide h2, .slide.title-slide h3,
+      .slide.cover h1, .slide.cover h2 { color: #fff !important; }
+      .slide.title-slide p, .slide.title-slide li,
+      .slide.cover p, .slide.cover li { color: #e4e4e7 !important; }
+      .slide.title-slide .eyebrow, .slide.cover .eyebrow { color: #FFBF00 !important; }
+      .stagger-in > * { animation: none !important; opacity: 1 !important; transform: none !important; }
+      .card, .vs-cols .col, .news-card, .timeline .dot, .stepper-nav button {
+        transition: none !important; transform: none !important;
+        box-shadow: none !important;
+      }
+      .card, .vs-cols .col, .news-card, .stepper-panel { page-break-inside: avoid; break-inside: avoid; }
+      img.diagram, .svg-frame { page-break-inside: avoid; break-inside: avoid; max-height: none !important; }
+      .svg-frame svg { max-height: none !important; }
+      table { page-break-inside: avoid; }
+      /* Stepper expandido */
+      .stepper-nav { display: none !important; }
+      .stepper-content { display: block !important; opacity: 1 !important; transform: none !important; animation: none !important; }
+      .stepper-panel { border-left: 4px solid var(--brand-yellow, #FFBF00) !important; padding: 0.8rem 1rem !important; }
+      .stepper-content + .stepper-content { margin-top: 1rem; padding-top: 0.8rem; border-top: 1px dashed #ccc; }
+      /* Iframes (YouTube) */
+      iframe { display: none !important; }
+      .video-print-link {
+        display: block !important;
+        background: #fef3c7 !important;
+        border-left: 4px solid #E6AC00 !important;
+        padding: 0.6rem 0.8rem !important;
+        border-radius: 0.4rem !important;
+        font-size: 10pt !important;
+        color: #1A1A1A !important;
+        page-break-inside: avoid; break-inside: avoid;
+      }
+      .video-print-link a { color: #1A1A1A !important; text-decoration: underline !important; word-break: break-all; }
+      .video-print-link strong { color: #78350f !important; margin-right: 0.3em; }
+    }
+  
+      /* ── FS_NAV · en pantalla completa solo se ve la diapositiva ──
+       Oculta HUD + barra de progreso y convierte los controles en
+       flechas flotantes que reaparecen al mover el mouse (clase
+       .show-controls que añade el script de abajo con un timeout). */
+    .is-fs .hud,
+    .is-fs .progress { display: none !important; }
+    .is-fs .controls {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 220ms ease;
+    }
+    .is-fs.show-controls .controls {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .is-fs .controls { transition: none; }
+    }
+</style>
+</head>
+<body>
+  <div class="progress" style="width:0"></div>
+  <div class="deck" id="deck">
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 1: PORTADA (Page 1) -->
+    <!-- ============================================================ -->
+    <section class="slide title-slide active" data-slide>
+      <div class="content">
+        <p class="eyebrow">IQYA-2031 &middot; Proyecto de Operaciones Unitarias</p>
+        <h1>Propiedades de sólidos particulados</h1>
+        <p>Caracterización completa de materiales granulares para diseño de procesos industriales.</p>
+        <div class="pill-row">
+          <span class="pill">Densidad</span>
+          <span class="pill">Tamaño</span>
+          <span class="pill">Flujo</span>
+          <span class="pill">Molienda</span>
+          <span class="pill">Transporte</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 2: Por qué importan (Page 2) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Introducción</p>
+        <h2>¿Por qué importan las propiedades de sólidos?</h2>
+        <p>Son determinantes críticos del diseño industrial:</p>
+        <ul>
+          <li>Un cambio de <strong>2% en humedad</strong> puede convertir un polvo de flujo libre en masa cohesiva</li>
+          <li>Una distribución de tamaño mal caracterizada resulta en <strong>segregación del producto</strong></li>
+          <li>El colapso de silos es uno de los accidentes más importantes en la industria con material particulado, muchos de ellos prevenibles</li>
+        </ul>
+        <div class="highlight-box">
+          <p>En su proyecto de producción de alcohol, estas propiedades determinarán el diseño de tolvas, potencia de molinos, eficiencia de filtración y calidad de fermentación.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 3: Densidad - tres tipos (Page 3) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Densidad</p>
+        <h2>Tres tipos de densidad</h2>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>Densidad verdadera ($\rho_t$)</h3>
+            <p>Material sólido puro, excluyendo todos los poros.</p>
+            <p>$$\rho_t = \frac{m_{\text{sólido}}}{V_{\text{sólido sin poros}}}$$</p>
+            <p>Azúcar cristalina: <strong>1 587 kg/m³</strong></p>
+            <p>Se mide por picnometría con helio que penetra poros nanométricos.</p>
+          </div>
+          <div class="card">
+            <h3>Densidad aparente ($\rho_p$)</h3>
+            <p>Incluye poros cerrados internos, excluye espacios interparticulares.</p>
+            <p>$$\rho_p = \frac{m_{\text{partícula}}}{V_{\text{partícula con poros}}}$$</p>
+            <p>Grano de caña: <strong>~1 200 kg/m³</strong></p>
+            <p>Relevante para cálculos de sedimentación.</p>
+          </div>
+          <div class="card">
+            <h3>Densidad bulk ($\rho_b$)</h3>
+            <p>Incluye todos los vacíos: material + poros + espacios entre partículas.</p>
+            <p>$$\rho_b = \frac{m_{\text{total}}}{V_{\text{total ocupado}}}$$</p>
+            <p>Caña molida suelta: <strong>~150 kg/m³</strong></p>
+            <p>Crítica para dimensionar equipos.</p>
+          </div>
+        </div>
+        <p>Cada densidad se utiliza para cálculos específicos en el diseño de procesos industriales.</p>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 4: Densidad bulk (Page 4) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Densidad</p>
+        <h2>Densidad bulk</h2>
+        <div class="two-col">
+          <div>
+            <p>La densidad bulk ($\rho_b$) es la propiedad más práctica pero más variable de los sólidos. Define cuánto material cabe en un silo, tolva o contenedor.</p>
+            <div class="grid cols-2" style="margin-top:1rem;">
+              <div class="card">
+                <h3>Densidad bulk suelta</h3>
+                <p>(poured density)</p>
+                <p>Cuando el material se vierte suavemente.</p>
+              </div>
+              <div class="card">
+                <h3>Densidad bulk compactada</h3>
+                <p>(tapped density)</p>
+                <p>Después de vibración estandarizada.</p>
+              </div>
+            </div>
+          </div>
+          <div class="diagram-center">
+            <img src="img/pres05-p04-2.png" alt="Equipo para medición de densidad compactada (tap density tester)" class="diagram">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 5: Densidad bulk - factores (Page 5) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Densidad</p>
+        <h2>Densidad bulk: factores</h2>
+        <div class="highlight-box">
+          <p>Para harina de trigo: $\rho_b$ suelta = 450 kg/m³, $\rho_b$ compactada = 720 kg/m³. ¡60% más material en el mismo volumen!</p>
+        </div>
+        <p>Factores que afectan $\rho_b$:</p>
+        <ul>
+          <li><strong>Distribución de tamaños:</strong> finos llenan vacíos entre gruesos</li>
+          <li><strong>Forma de partículas:</strong> esferas empaquetan mejor que fibras</li>
+          <li><strong>Humedad:</strong> aumenta cohesión, cambia empaquetamiento</li>
+          <li><strong>Historia de manejo:</strong> vibración, compresión previa</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 6: Porosidad (Page 6) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Porosidad</p>
+        <h2>Porosidad</h2>
+        <div class="two-col">
+          <div>
+            <div class="card" style="margin-bottom:1rem;">
+              <h3>Porosidad de partícula ($\varepsilon_p$)</h3>
+              <p>Poros internos dentro de cada partícula individual.</p>
+              <p>$$\varepsilon_p = 1 - \frac{\rho_p}{\rho_t}$$</p>
+              <p>Carbón activado puede alcanzar <strong>0.8 (80% vacío)</strong>.</p>
+            </div>
+            <div class="card">
+              <h3>Porosidad del lecho ($\varepsilon_b$)</h3>
+              <p>Espacios entre partículas en un lecho empacado.</p>
+              <p>$$\varepsilon_b = 1 - \frac{\rho_b}{\rho_p}$$</p>
+              <p>Esferas uniformes, empaquetamiento aleatorio: $\varepsilon_b \approx 0.4$.</p>
+            </div>
+          </div>
+          <div class="diagram-center">
+            <img src="img/pres05-p06-2.png" alt="Imágenes SEM de porosidad a diferentes escalas" class="diagram">
+          </div>
+        </div>
+        <div class="highlight-box">
+          <p>El bagazo tiene $\varepsilon_p \approx 0.5$ (estructura fibrosa) y $\varepsilon_b \approx 0.6$ (empaquetamiento suelto), resultando en densidad bulk de apenas 120 kg/m³. Alta porosidad complica transporte pero facilita secado.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 7: Tamaño de partícula - intro (Page 7) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Tamaño de partícula</p>
+        <h2>Tamaño de partícula</h2>
+        <div class="two-col">
+          <div>
+            <p>Para esferas, el diámetro es inequívoco. Para partículas irregulares, debemos definir <strong>diámetros equivalentes</strong> específicos.</p>
+            <p>Una partícula acicular (en forma de aguja) puede tener $d_{\text{tamiz}} = 0.5$ mm pero longitud de 5 mm.</p>
+          </div>
+          <div class="diagram-center">
+            <img src="img/pres05-p07-2.png" alt="Distribución de tamaño de partícula (curva acumulativa Q3 e histograma p3)" class="diagram">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 8: Diámetros equivalentes (Page 8) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Tamaño de partícula</p>
+        <h2>Diámetros equivalentes</h2>
+        <p>Para cristales de azúcar, la diferencia entre diámetros equivalentes puede ser del <strong>20-30%</strong>, afectando cálculos de área superficial y comportamiento en suspensión.</p>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Diámetro volumétrico ($d_v$)</h3>
+            <p>Esfera con mismo volumen que la partícula.</p>
+            <p>$$d_v = \left(\frac{6V}{\pi}\right)^{1/3}$$</p>
+          </div>
+          <div class="card">
+            <h3>Diámetro superficial ($d_s$)</h3>
+            <p>Esfera con misma área superficial.</p>
+            <p>$$d_s = \sqrt{\frac{A}{\pi}}$$</p>
+          </div>
+          <div class="card">
+            <h3>Diámetro de Stokes ($d_{St}$)</h3>
+            <p>Esfera con misma velocidad de sedimentación en el mismo fluido.</p>
+          </div>
+          <div class="card">
+            <h3>Diámetro de tamiz ($d_{\text{tamiz}}$)</h3>
+            <p>Apertura mínima cuadrada que permite el paso de la partícula.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 9: Distribución de tamaño (Page 9) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Tamaño de partícula</p>
+        <h2>Distribución de tamaño</h2>
+        <div class="two-col">
+          <div>
+            <p>Los procesos siempre generan una <strong>distribución de tamaños</strong> que caracteriza al material.</p>
+            <p><strong>Representaciones:</strong></p>
+            <ul>
+              <li><strong>Curva diferencial:</strong> muestra qué fracción tiene cada tamaño específico</li>
+              <li><strong>Curva acumulativa:</strong> indica qué fracción es menor (o mayor) que cada tamaño</li>
+            </ul>
+          </div>
+          <div class="diagram-center">
+            <img src="img/pres05-p09-2.png" alt="Curva de distribución de tamaño con d10, d50, d90" class="diagram">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 10: Parámetros de distribución (Page 10) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Tamaño de partícula</p>
+        <h2>Parámetros de distribución</h2>
+        <div class="two-col">
+          <div>
+            <p><strong>Parámetros característicos:</strong></p>
+            <ul>
+              <li>$D_{10}$, $D_{50}$ (mediana), $D_{90}$ (percentiles)</li>
+              <li>Span $= \dfrac{D_{90} - D_{10}}{D_{50}}$ (medida de amplitud)</li>
+            </ul>
+            <div class="highlight-box" style="margin-top:1rem;">
+              <p>Para caña molida típica: $D_{10} = 0.5$ mm, $D_{50} = 2$ mm, $D_{90} = 5$ mm, dando Span = 2.25, indicando distribución amplia.</p>
+            </div>
+          </div>
+          <div class="diagram-center">
+            <img src="img/pres05-p09-2.png" alt="Curva de distribución de tamaño con d10, d50, d90" class="diagram">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 11: Tamizado (Page 11) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Análisis granulométrico</p>
+        <h2>Análisis granulométrico por tamizado</h2>
+        <div class="two-col">
+          <div>
+            <p>El tamizado sigue siendo el método más usado industrialmente para partículas entre <strong>45 µm y 10 mm</strong>, combinando simplicidad, robustez y relevancia directa.</p>
+            <p><strong>Procedimiento estándar:</strong></p>
+            <ol>
+              <li>Secar muestra a 105 °C si contiene humedad</li>
+              <li>Pesar muestra inicial (100-500 g según tamaño máximo)</li>
+              <li>Apilar tamices en orden decreciente, bandeja colectora al fondo</li>
+              <li>Tamizar 10-15 minutos en vibrador mecánico</li>
+              <li>Pesar retenido en cada tamiz</li>
+              <li>Verificar cierre de balance de masa $\pm 1\%$</li>
+            </ol>
+          </div>
+          <div class="diagram-center">
+            <img src="img/pres05-p11-2.png" alt="Tamizadora vibratoria con etiquetas" class="diagram">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 12: Tamizado - cálculos (Page 12) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Análisis granulométrico</p>
+        <h2>Tamizado: cálculos</h2>
+        <div class="two-col">
+          <div>
+            <p><strong>Fracción retenida en tamiz $i$:</strong></p>
+            <p>$$f_i = \frac{\text{masa tamiz } i}{\text{masa total}}$$</p>
+            <p><strong>Fracción acumulativa pasante:</strong></p>
+            <p>$$F_i = \sum_{j>i} f_j$$</p>
+            <div class="highlight-box" style="margin-top:1rem;">
+              <p><strong>Limitaciones:</strong> no aplicable a materiales cohesivos, aglomerantes o muy frágiles que se rompan durante tamizado.</p>
+            </div>
+          </div>
+          <div class="diagram-center">
+            <img src="img/pres05-p12-2.png" alt="Tamizadora vibratoria" class="diagram">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 13: Difracción láser (Page 13) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Métodos modernos</p>
+        <h2>Difracción láser</h2>
+        <div class="two-col">
+          <div>
+            <p>Mide partículas de <strong>0.1 a 3 000 µm</strong> en minutos con alta reproducibilidad.</p>
+            <p><strong>Principio:</strong> un haz láser atraviesa suspensión diluida de partículas que dispersan luz según su tamaño:</p>
+            <ul>
+              <li>Partículas grandes dispersan a <strong>ángulos pequeños</strong></li>
+              <li>Partículas pequeñas dispersan a <strong>ángulos grandes</strong></li>
+            </ul>
+            <p>Detectores concéntricos miden intensidad angular; algoritmos invierten el patrón para obtener la distribución.</p>
+          </div>
+          <div class="diagram-center">
+            <img src="img/pres05-p13-2.png" alt="Diagrama de difracción láser" class="diagram">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 14: Difracción láser - ventajas (Page 14) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Métodos modernos</p>
+        <h2>Ventajas de la difracción láser</h2>
+        <div class="two-col">
+          <div>
+            <p><strong>Ventajas sobre tamizado:</strong></p>
+            <ul>
+              <li>Rango amplio en una sola medición</li>
+              <li>Incluye finos &lt; 45 µm</li>
+              <li>Automatización completa</li>
+              <li>Rapidez (2-3 minutos)</li>
+            </ul>
+            <div class="highlight-box" style="margin-top:1rem;">
+              <p><strong>Para su proyecto:</strong> ideal para caracterizar azúcar, levadura y auxiliares de filtración.</p>
+            </div>
+          </div>
+          <div class="diagram-center">
+            <img src="img/pres05-p14-2.png" alt="Equipo de difracción láser" class="diagram">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 15: Forma de partícula (Page 15) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Forma de partícula</p>
+        <h2>Forma de partícula y esfericidad</h2>
+        <p>La esfericidad ($\phi$) cuantifica desviación de la esfera perfecta: $\phi = \dfrac{\text{Área de esfera de igual volumen}}{\text{Área real de partícula}}$</p>
+        <div class="grid cols-4">
+          <div class="card" style="text-align:center;">
+            <img src="img/user-spheres.jpg" alt="Esferas perfectas" class="diagram-sm" style="margin:0 auto 0.5rem;">
+            <h3>Esferas</h3>
+            <p>Perlas de vidrio, $\phi = 1.0$</p>
+            <p>Excelente fluidez, empaquetamiento predecible.</p>
+          </div>
+          <div class="card" style="text-align:center;">
+            <img src="img/user-struvite.jpg" alt="Cristales prismáticos (estruvita)" class="diagram-sm" style="margin:0 auto 0.5rem;">
+            <h3>Agujas</h3>
+            <p>Cristales de lactosa, $\phi \approx 0.5$</p>
+            <p>Se entrelazan causando puenteo en tolvas.</p>
+          </div>
+          <div class="card" style="text-align:center;">
+            <img src="img/user-fibers.jpg" alt="Fibras (SEM)" class="diagram-sm" style="margin:0 auto 0.5rem;">
+            <h3>Fibras</h3>
+            <p>Bagazo de caña, $\phi \approx 0.3$</p>
+            <p>Forman matas cohesivas, difícil flujo.</p>
+          </div>
+          <div class="card" style="text-align:center;">
+            <img src="img/user-sugar.jpg" alt="Cristales de azúcar" class="diagram-sm" style="margin:0 auto 0.5rem;">
+            <h3>Prismáticos</h3>
+            <p>Cristales de azúcar, $\phi \approx 0.7$</p>
+            <p>Buen flujo, moderada cohesión.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 16: Área superficial específica (Page 16) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Área superficial</p>
+        <h2>Área superficial específica</h2>
+        <div class="two-col">
+          <div>
+            <p>El área superficial específica ($A_s$) representa los metros cuadrados de superficie por kilogramo de material, gobernando todas las interacciones interfaciales: disolución, adsorción, reacción, sinterización.</p>
+            <p>$$A_s = \frac{6}{\rho_p \times d_p}$$</p>
+            <p>Para esferas uniformes donde $d_p$ es el diámetro de partícula.</p>
+            <div class="grid cols-2" style="margin-top:1rem;">
+              <div class="card">
+                <h3>Partícula de 1 mm</h3>
+                <p>$A_s = 5$ m²/kg</p>
+              </div>
+              <div class="card">
+                <h3>Partícula de 1 µm</h3>
+                <p>$A_s = 5\,000$ m²/kg</p>
+              </div>
+            </div>
+            <div class="highlight-box" style="margin-top:1rem;">
+              <p>¡Reducir tamaño 1 000x aumenta área 1 000x!</p>
+            </div>
+          </div>
+          <div class="diagram-center">
+            <img src="img/pres05-p16-2.png" alt="SEM de material poroso — área superficial" class="diagram">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 17: BET (Page 17) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Área superficial</p>
+        <h2>Medición por adsorción BET</h2>
+        <div class="two-col">
+          <div>
+            <p><strong>Nitrógeno a 77 K</strong> forma monocapa en superficie; volumen adsorbido indica área.</p>
+            <p><strong>Aplicaciones críticas para su proyecto:</strong></p>
+            <ul>
+              <li>Velocidad de disolución de azúcar proporcional a $A_s$</li>
+              <li>Actividad de levadura depende de $A_s$ para intercambio</li>
+              <li>Eficiencia de auxiliares de filtración directamente relacionada con $A_s$</li>
+            </ul>
+          </div>
+          <div class="diagram-center">
+            <img src="img/pres05-p17-2.png" alt="Equipo de adsorción BET" class="diagram">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 18: Propiedades de flujo (Page 18) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Propiedades de flujo</p>
+        <h2>Propiedades de flujo</h2>
+        <div class="two-col">
+          <div>
+            <p>Los polvos exhiben comportamiento fascinante: fluyen como líquidos pero transmiten esfuerzos como sólidos, creando desafíos únicos de manejo.</p>
+            <p><strong>Carácter de flujo:</strong></p>
+            <ul>
+              <li>"Free-flowing" (arena seca)</li>
+              <li>Flujo fácil (azúcar granulada)</li>
+              <li>Cohesivo (harina)</li>
+              <li>Muy cohesivo (harina húmeda)</li>
+            </ul>
+            <div class="highlight-box" style="margin-top:1rem;">
+              <p>Entender estas diferencias previene costosos problemas de "no-flujo" que paran plantas enteras.</p>
+            </div>
+          </div>
+          <div class="diagram-center">
+            <img src="img/user-geldart.jpg" alt="Clasificación Geldart grupos A-D" class="diagram">
+            <p style="margin-top:0.5rem;text-align:center;"><a href="geldart-2023.pdf" target="_blank" style="color:var(--brand-yellow-dark);text-decoration:underline;font-size:clamp(0.8rem,1.3vw,1rem);">Leer artículo de Geldart (2023) →</a></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 19: Flujo - factores (Page 19) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Propiedades de flujo</p>
+        <h2>Factores determinantes del flujo</h2>
+        <ul>
+          <li><strong>Tamaño:</strong> finos &lt; 100 µm típicamente cohesivos</li>
+          <li><strong>Humedad:</strong> puentes líquidos causan cohesión</li>
+          <li><strong>Forma:</strong> esferas fluyen mejor que agujas</li>
+          <li><strong>Superficie:</strong> rugosa incrementa fricción</li>
+        </ul>
+        <div class="grid cols-2" style="margin-top:1rem;">
+          <div class="card">
+            <h3>Azúcar cristalina</h3>
+            <p>Free-flowing, facilita dosificación.</p>
+          </div>
+          <div class="card">
+            <h3>Bagazo húmedo</h3>
+            <p>Cohesivo, requiere diseño especial de tolvas.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 20: Ángulo de reposo (Page 20) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Propiedades de flujo</p>
+        <h2>Ángulo de reposo</h2>
+        <div class="two-col">
+          <div>
+            <p>El ángulo de reposo ($\theta_r$) es la pendiente del cono formado cuando un polvo se vierte libremente sobre superficie horizontal.</p>
+            <p><strong>Medición estándar:</strong></p>
+            <ol>
+              <li>Verter polvo lentamente a través de embudo a altura fija (10 cm)</li>
+              <li>Formar cono estable</li>
+              <li>Medir altura ($h$) y radio base ($r$)</li>
+            </ol>
+            <p>$$\theta_r = \arctan\!\left(\frac{h}{r}\right)$$</p>
+            <p><strong>Interpretación:</strong></p>
+            <ul>
+              <li>$\theta_r &lt; 30°$: excelente flujo (arena seca)</li>
+              <li>$30\text{-}35°$: buen flujo (azúcar granulada)</li>
+              <li>$35\text{-}40°$: flujo aceptable (sal de mesa)</li>
+              <li>$40\text{-}45°$: flujo pobre (harina)</li>
+              <li>$&gt;45°$: flujo muy pobre (cacao)</li>
+            </ul>
+          </div>
+          <div class="diagram-center">
+            <img src="img/pres05-p20-2.png" alt="Diagrama de ángulo de reposo: arena fina, arena gruesa, grava angular" class="diagram">
+          </div>
+        </div>
+        <div class="highlight-box">
+          <p>Aplicación práctica: el ángulo de tolvas debe ser al menos 10° mayor que $\theta_r$.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 21: Índices Carr y Hausner (Page 21) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Propiedades de flujo</p>
+        <h2>Densidad suelta vs compactada: Índices de Carr y Hausner</h2>
+        <div class="two-col">
+          <div>
+            <p><strong>Medición estandarizada (ASTM D7481):</strong></p>
+            <ul>
+              <li>$\rho_{\text{suelta}}$: verter 100 mL de muestra en probeta sin vibración</li>
+              <li>$\rho_{\text{comp}}$: someter probeta a 100 golpes normalizados</li>
+            </ul>
+            <p><strong>Índices derivados:</strong></p>
+            <p>$$IC = \frac{\rho_{\text{comp}} - \rho_{\text{suelta}}}{\rho_{\text{comp}}} \times 100\%$$</p>
+            <p>$$RH = \frac{\rho_{\text{comp}}}{\rho_{\text{suelta}}}$$</p>
+          </div>
+          <div>
+            <p><strong>Interpretación:</strong></p>
+            <ul>
+              <li>IC $\leq$ 10% (RH $\leq$ 1.11): flujo excelente</li>
+              <li>11-15% (1.12-1.18): bueno</li>
+              <li>16-20% (1.19-1.25): aceptable</li>
+              <li>21-25% (1.26-1.34): pasable</li>
+              <li>26-31% (1.35-1.45): pobre</li>
+              <li>&gt;32% (&gt;1.46): muy pobre</li>
+            </ul>
+            <div class="highlight-box" style="margin-top:1rem;">
+              <p>Harina IC $\approx$ 35%, RH $\approx$ 1.54: flujo problemático. Azúcar granulada IC $\approx$ 12%, RH $\approx$ 1.14: buen flujo.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 22: Cohesión (Page 22) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Cohesión</p>
+        <h2>Fuentes de cohesión entre partículas</h2>
+        <div class="two-col">
+          <div>
+            <div class="grid cols-2">
+              <div class="card">
+                <h3>Fuerzas de Van der Waals</h3>
+                <p>Dominan en partículas &lt; 100 µm, superando su peso propio.</p>
+              </div>
+              <div class="card">
+                <h3>Puentes líquidos</h3>
+                <p>Generan fuerzas 10-1 000x mayores que Van der Waals. Crítico entre 20-80% saturación.</p>
+              </div>
+              <div class="card">
+                <h3>Fuerzas electrostáticas</h3>
+                <p>Por fricción/contacto, especialmente en ambientes secos.</p>
+              </div>
+              <div class="card">
+                <h3>Entrelazamiento mecánico</h3>
+                <p>En partículas fibrosas o angulares.</p>
+              </div>
+            </div>
+          </div>
+          <div class="diagram-center">
+            <img src="img/pres05-p22-2.png" alt="Fuerzas entre partículas: cohesión vs peso" class="diagram">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 23: Cohesión - problemas (Page 23) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Cohesión</p>
+        <h2>Problemas causados por cohesión</h2>
+        <div class="two-col">
+          <div>
+            <ul>
+              <li><strong>Formación de arcos estables</strong> en salidas de tolvas</li>
+              <li><strong>Rat-holing:</strong> solo fluye canal central</li>
+              <li><strong>Adherencia a paredes:</strong> reduce capacidad efectiva</li>
+              <li><strong>Aglomeración</strong> durante almacenamiento</li>
+            </ul>
+          </div>
+          <div class="diagram-center">
+            <img src="img/pres05-p23-2.png" alt="Efectos de humedad y cohesión" class="diagram">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 24: Contenido de humedad (Page 24) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Humedad</p>
+        <h2>Contenido de humedad</h2>
+        <div class="two-col">
+          <div>
+            <div class="grid cols-2">
+              <div class="card">
+                <h3>0-0.1% humedad</h3>
+                <p>Material seco, posibles cargas electrostáticas. Problemas de electricidad estática en plásticos y polvos orgánicos.</p>
+              </div>
+              <div class="card">
+                <h3>0.1-2% humedad</h3>
+                <p>Reduce cargas, ligera cohesión por puentes pendulares. Rango óptimo para azúcar (máx. 0.5%) y sal (máx. 2%).</p>
+              </div>
+              <div class="card">
+                <h3>2-20% humedad</h3>
+                <p>Cohesión máxima por puentes funiculares, problemas severos de flujo. Harina problemática sobre 14%.</p>
+              </div>
+              <div class="card">
+                <h3>&gt;20% humedad</h3>
+                <p>Transición a suspensión, comportamiento pseudo-líquido. Bagazo húmedo post-molienda (&gt;50%) requiere manejo especializado.</p>
+              </div>
+            </div>
+            <p style="margin-top:0.75rem;"><strong>Métodos de medición:</strong> pérdida por secado (105 °C hasta peso constante), Karl Fischer para trazas, NIR para monitoreo continuo.</p>
+          </div>
+          <div class="diagram-center">
+            <img src="img/pres05-p24-2.png" alt="Ilustración de segregación" class="diagram">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 25: Segregación (Page 25) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Segregación</p>
+        <h2>Segregación: mecanismos</h2>
+        <div class="two-col">
+          <div>
+            <p><strong>Mecanismos principales:</strong></p>
+            <ul>
+              <li><strong>Percolación:</strong> finos caen entre gruesos</li>
+              <li><strong>Trayectoria:</strong> partículas con diferente fricción/rebote siguen rutas distintas</li>
+              <li><strong>Fluidización:</strong> aire arrastra finos selectivamente</li>
+              <li><strong>Vibración:</strong> Brazil nut effect - gruesos suben</li>
+            </ul>
+            <p style="margin-top:0.75rem;"><strong>Ocurre cuando componentes difieren en:</strong></p>
+            <ul>
+              <li>Tamaño (más crítico, finos migran al centro)</li>
+              <li>Densidad (pesados sedimentan)</li>
+              <li>Forma (esferas ruedan, agujas se quedan)</li>
+              <li>Propiedades superficiales</li>
+            </ul>
+          </div>
+          <div class="diagram-center">
+            <img src="img/pres05-p25-2.png" alt="Dureza y friabilidad" class="diagram">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 26: Segregación - soluciones (Page 26) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Segregación</p>
+        <h2>Segregación: soluciones</h2>
+        <ul>
+          <li><strong>Granulación</strong> para uniformizar tamaño</li>
+          <li><strong>Diseño de equipos anti-segregación</strong> (tolvas de flujo másico)</li>
+          <li><strong>Minimizar puntos de transferencia</strong></li>
+          <li><strong>Orden de adición estratégico</strong></li>
+        </ul>
+        <div class="highlight-box" style="margin-top:1rem;">
+          <p>La segregación nunca se elimina completamente, solo se controla.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 27: Dureza y friabilidad (Page 27) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Propiedades mecánicas</p>
+        <h2>Dureza y friabilidad</h2>
+        <div class="two-col">
+          <div>
+            <div class="card" style="margin-bottom:1rem;">
+              <h3>Dureza</h3>
+              <p>Resistencia a deformación, expresada en escalas mineralógicas (Mohs 1-10) o mediante indentación (Vickers, Brinell).</p>
+              <ul>
+                <li>Azúcar: Mohs 2 (similar al yeso), fácil moler</li>
+                <li>Cuarzo en cenizas: Mohs 7, abrasivo severo</li>
+              </ul>
+            </div>
+            <div class="card">
+              <h3>Friabilidad</h3>
+              <p>Tendencia a fragmentarse, medida sometiendo muestra a abrasión controlada y midiendo finos generados.</p>
+              <ul>
+                <li><strong>Alta friabilidad:</strong> genera polvo (riesgos salud/explosión), cambia distribución granulométrica, obstruye filtros</li>
+                <li><strong>Baja friabilidad:</strong> dificulta molienda aumentando consumo energético</li>
+              </ul>
+            </div>
+          </div>
+          <div class="diagram-center">
+            <img src="img/user-mohs.jpg" alt="Escala de dureza de Mohs" class="diagram">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 28: Propiedades térmicas (Page 28) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Propiedades térmicas</p>
+        <h2>Propiedades térmicas de sólidos</h2>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>Conductividad térmica efectiva ($k_{\text{eff}}$)</h3>
+            <p>De lechos es típicamente 5-10% del sólido puro por contactos puntuales limitados.</p>
+            <p>Azúcar: $k_{\text{sólido}} = 0.5$ W/m&middot;K pero $k_{\text{lecho}} = 0.05$ W/m&middot;K</p>
+            <p>$$k_{\text{eff}} = k_{\text{sólido}} \cdot (1 - \varepsilon_b) \cdot F + k_{\text{aire}} \cdot \varepsilon_b$$</p>
+            <p>Donde $F$ = factor de contacto (~0.1-0.2).</p>
+          </div>
+          <div class="card">
+            <h3>Capacidad calorífica</h3>
+            <p>Incluye contribuciones del sólido y humedad.</p>
+            <p>$$Cp_{\text{total}} = Cp_{\text{sólido}} \times (1-X) + Cp_{\text{agua}} \times X$$</p>
+            <p>Donde $X$ = fracción másica de humedad.</p>
+          </div>
+          <div class="card">
+            <h3>Difusividad térmica ($\alpha$)</h3>
+            <p>Gobierna velocidad de cambio térmico, crítica en secado/calentamiento.</p>
+            <p>$$\alpha = \frac{k}{\rho \times Cp}$$</p>
+            <p>Para lechos: $\alpha_{\text{lecho}} \ll \alpha_{\text{sólido}}$, requiriendo tiempos largos para equilibrio.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 29: Higroscopicidad (Page 29) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Higroscopicidad</p>
+        <h2>Higroscopicidad</h2>
+        <div class="two-col">
+          <div>
+            <p>La higroscopicidad describe la tendencia de materiales a absorber o desorber humedad del aire circundante, estableciendo equilibrio dinámico crítico para estabilidad.</p>
+            <p><strong>Tipos de comportamiento:</strong></p>
+            <ul>
+              <li><strong>No higroscópico:</strong> plásticos, mantienen humedad independiente de HR</li>
+              <li><strong>Moderadamente higroscópico:</strong> azúcar, equilibra 0.5% a 70% HR</li>
+              <li><strong>Altamente higroscópico:</strong> sal, CaCl$_2$, pueden delicuescer</li>
+            </ul>
+            <p>Las isotermas típicamente muestran histéresis: curva adsorción $\neq$ desorción por efectos capilares.</p>
+          </div>
+          <div class="diagram-center">
+            <img src="img/pres05-p29-2.png" alt="Diseño de tolvas y silos" class="diagram">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 30: Higroscopicidad - HRC (Page 30) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Higroscopicidad</p>
+        <h2>Humedad relativa crítica</h2>
+        <div class="two-col">
+          <div>
+            <p>Punto crítico es la <strong>humedad relativa crítica (HRC)</strong> sobre la cual ocurre aglomeración irreversible:</p>
+            <ul>
+              <li>Azúcar: HRC $\approx$ 85%</li>
+              <li>Sal: HRC $\approx$ 75%</li>
+              <li>Leche en polvo: HRC $\approx$ 50%</li>
+            </ul>
+            <div class="highlight-box" style="margin-top:1rem;">
+              <p><strong>Para su proceso:</strong> almacenar azúcar bajo 60% HR previene aglomeración; levadura seca requiere empaque barrera &lt;40% HR.</p>
+            </div>
+          </div>
+          <div class="diagram-center">
+            <img src="img/pres05-p30-2.png" alt="Tolva y silo" class="diagram">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 31: Explosividad de polvos (Page 31) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Seguridad</p>
+        <h2>Explosividad de polvos</h2>
+        <div class="two-col">
+          <div>
+            <p><strong>El pentágono de explosión requiere:</strong></p>
+            <ul>
+              <li>Combustible (polvo)</li>
+              <li>Oxidante (aire)</li>
+              <li>Concentración en rango explosivo</li>
+              <li>Fuente de ignición</li>
+              <li>Confinamiento</li>
+            </ul>
+            <p style="margin-top:0.75rem;"><strong>Parámetros críticos:</strong></p>
+            <ul>
+              <li>CME (Concentración Mínima Explosiva): típicamente 30-60 g/m³ para orgánicos</li>
+              <li>$K_{St}$ (índice de explosividad): velocidad máxima de aumento de presión</li>
+              <li>EMI (Energía Mínima de Ignición): azúcar 30 mJ, almidón 20 mJ</li>
+              <li>Temperatura de ignición: nube 400-500 °C, capa 200-300 °C</li>
+            </ul>
+            <div class="grid cols-3" style="margin-top:0.75rem;">
+              <div class="card">
+                <h3>St1</h3>
+                <p>$K_{St} &lt; 200$</p>
+                <p>Débilmente explosivo</p>
+              </div>
+              <div class="card">
+                <h3>St2</h3>
+                <p>$200 &lt; K_{St} &lt; 300$</p>
+                <p>Fuertemente explosivo</p>
+              </div>
+              <div class="card">
+                <h3>St3</h3>
+                <p>$K_{St} &gt; 300$</p>
+                <p>Muy fuertemente explosivo</p>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:center;">
+            <div style="width:min(300px,100%);aspect-ratio:9/16;border-radius:0.75rem;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.1);">
+              <iframe style="width:100%;height:100%;border:none;" src="https://www.youtube.com/embed/o2tmTkx53V4" allowfullscreen></iframe>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 32: Molienda - Ley de Bond (Page 32) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Molienda</p>
+        <h2>Aplicación a operaciones de molienda</h2>
+        <div class="two-col">
+          <div>
+            <p>La energía de molienda depende de dureza, tenacidad y distribución de tamaño deseada.</p>
+            <p><strong>Ley de Bond:</strong></p>
+            <p>$$W = W_i \times 10 \times \left(\frac{1}{\sqrt{P_{80}}} - \frac{1}{\sqrt{F_{80}}}\right) \quad \left[\frac{\text{kWh}}{\text{ton}}\right]$$</p>
+            <p>Donde:</p>
+            <ul>
+              <li>$W_i$ = índice de trabajo (función de dureza/estructura)</li>
+              <li>$P_{80}$/$F_{80}$ = tamaños 80% pasante producto/alimentación</li>
+            </ul>
+            <div class="highlight-box" style="margin-top:1rem;">
+              <p>Caña: $W_i \approx 15$ kWh/ton, relativamente fácil por estructura fibrosa.</p>
+            </div>
+          </div>
+          <div class="diagram-center">
+            <img src="img/user-gemini-cana.jpg" alt="Procesamiento de caña de azúcar" class="diagram">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 33: Molienda - factores (Page 33) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Molienda</p>
+        <h2>Factores críticos en molienda</h2>
+        <ul>
+          <li><strong>Friabilidad:</strong> determina generación de finos indeseados</li>
+          <li><strong>Contenido de humedad:</strong> muy seco causa polvo explosivo, muy húmedo empasta molino (óptimo 10-15%)</li>
+          <li><strong>Forma de partículas:</strong> fibras requieren corte (molino de cuchillas), cristales fractura (molino de martillos)</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 34: Diseño de tolvas y silos (Page 34) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Diseño de equipos</p>
+        <h2>Diseño de tolvas y silos</h2>
+        <div class="two-col">
+          <div>
+            <p>El diseño de tolvas ilustra la aplicación directa de propiedades de flujo para garantizar descarga confiable.</p>
+            <p><strong>Patrones de flujo:</strong></p>
+            <ul>
+              <li><strong>Flujo másico:</strong> todo el material se mueve, first-in-first-out</li>
+              <li><strong>Flujo embudo:</strong> canal central, material estancado en paredes</li>
+            </ul>
+            <div class="grid cols-2" style="margin-top:1rem;">
+              <div class="card">
+                <h3>Harina cohesiva (ff=2)</h3>
+                <p>Requiere $\theta &lt; 20°$ desde vertical, $D &gt; 1$ m</p>
+              </div>
+              <div class="card">
+                <h3>Azúcar free-flowing (ff=10)</h3>
+                <p>Permite $\theta &lt; 40°$, $D &gt; 0.2$ m</p>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:center;">
+            <div style="width:min(500px,100%);aspect-ratio:16/9;border-radius:0.75rem;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.1);">
+              <iframe style="width:100%;height:100%;border:none;" src="https://www.youtube.com/embed/44lz8gs1w5I" allowfullscreen></iframe>
+            </div>
+          </div>
+        </div>
+        <div class="highlight-box">
+          <p>Su proyecto debe especificar geometría precisa basada en propiedades medidas, no reglas empíricas obsoletas.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 35: Transporte mecánico (Page 35) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Transporte de sólidos</p>
+        <h2>Transporte mecánico</h2>
+        <div class="two-col">
+          <div>
+            <p><strong>Tornillos, bandas, cangilones:</strong> apropiado para materiales abrasivos, frágiles o de alta densidad bulk.</p>
+            <p><strong>Capacidad de tornillo:</strong></p>
+            <p>$$Q_{\text{tornillo}} = \frac{\pi}{4}(D^2 - d^2) \times \text{paso} \times \text{rpm} \times \rho_b \times \eta$$</p>
+            <p>Donde $\eta$ = factor de llenado (0.3-0.5).</p>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:center;">
+            <div style="width:min(300px,100%);aspect-ratio:9/16;border-radius:0.75rem;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.1);">
+              <iframe style="width:100%;height:100%;border:none;" src="https://www.youtube.com/embed/bR6hPwDEPPA" allowfullscreen></iframe>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 36: Transporte neumático (Page 36) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Transporte de sólidos</p>
+        <h2>Transporte neumático</h2>
+        <div class="two-col">
+          <div>
+            <p><strong>Fase diluida/densa:</strong> ideal para distancias largas, múltiples destinos.</p>
+            <p>$$v_{\min} = (1.5\text{-}2) \times v_{\text{sedimentación}}$$</p>
+            <ul>
+              <li><strong>Fase diluida:</strong> 15-30 m/s, $\mu$ = 2-15 kg sólido/kg aire</li>
+              <li><strong>Fase densa:</strong> 1-10 m/s, $\mu$ = 15-100, menor desgaste</li>
+            </ul>
+            <div class="highlight-box" style="margin-top:1rem;">
+              <p><strong>Para su proceso:</strong> bagazo húmedo problemático en neumático (apelmazamiento), mejor mecánico. Azúcar compatible con ambos, neumático preferible por higiene.</p>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:center;">
+            <div style="width:min(300px,100%);aspect-ratio:9/16;border-radius:0.75rem;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.1);">
+              <iframe style="width:100%;height:100%;border:none;" src="https://www.youtube.com/embed/P-Vxp9ojy-w" allowfullscreen></iframe>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 37: Mezclado de sólidos (Page 37) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Mezclado</p>
+        <h2>Mezclado de sólidos</h2>
+        <div class="two-col">
+          <div>
+            <p><strong>Mecanismos de mezclado:</strong></p>
+            <ul>
+              <li><strong>Convección:</strong> movimiento de grupos de partículas</li>
+              <li><strong>Difusión:</strong> movimiento aleatorio individual</li>
+              <li><strong>Corte:</strong> deslizamiento entre capas</li>
+            </ul>
+            <p style="margin-top:0.75rem;"><strong>Tipos de mezcladores:</strong></p>
+            <ul>
+              <li><strong>Tambor rotatorio:</strong> convección dominante, suave</li>
+              <li><strong>Ribbon blender:</strong> alto corte, versátil</li>
+              <li><strong>Mezclador de arado:</strong> muy alto corte, rápido</li>
+              <li><strong>Lecho fluidizado:</strong> excelente para recubrimiento</li>
+            </ul>
+          </div>
+          <div class="diagram-center">
+            <img src="img/user-mezclador.jpg" alt="Mezclador de sólidos industrial" class="diagram">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 38: Mezclado - modelado (Page 38) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Mezclado</p>
+        <h2>Modelado del mezclado</h2>
+        <p>La eficiencia de mezclado se puede modelar con:</p>
+        <p>$$M = e^{-2kt}$$</p>
+        <p>Donde $M$ es un índice de mezclado, $k$ es constante de velocidad dependiente del equipo y $t$ es tiempo.</p>
+        <p><strong>Validación por muestreo estadístico:</strong> CV &lt; 5% típicamente aceptable.</p>
+        <div class="highlight-box" style="margin-top:1rem;">
+          <p>Recuerden: perfecta homogeneidad es inalcanzable. Especificar "suficientemente bueno" para la aplicación.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- SLIDE 39: Integración al proyecto (Page 39) -->
+    <!-- ============================================================ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Proyecto del curso</p>
+        <h2>Integración al proyecto del curso</h2>
+        <div class="grid cols-3">
+          <div class="card">
+            <h3>1. Caracterización completa</h3>
+            <p>Para cada sólido en su proceso deben reportar:</p>
+            <ul>
+              <li>Densidades (verdadera, partícula, bulk suelta/compactada)</li>
+              <li>Distribución de tamaño ($D_{10}$, $D_{50}$, $D_{90}$, gráfica completa)</li>
+              <li>Forma y esfericidad aproximada</li>
+              <li>Propiedades de flujo (ángulo reposo, índices Carr/Hausner)</li>
+              <li>Contenido de humedad y higroscopicidad</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>2. Dimensionamiento de equipos</h3>
+            <p>Usar datos para calcular:</p>
+            <p>$$V_{\text{equipo}} = \frac{m_{\text{material}}}{\rho_{\text{bulk}}} \times \text{factor seguridad}$$</p>
+            <p>Para tolvas y silos, aplicar método Jenike para determinar:</p>
+            <ul>
+              <li>Geometría óptima para evitar arcos</li>
+              <li>Dimensión mínima de salida</li>
+              <li>Ángulo de tolva requerido</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>3. Especificaciones de seguridad</h3>
+            <p>Para materiales combustibles:</p>
+            <ul>
+              <li>Evaluar potencial explosivo ($K_{St}$)</li>
+              <li>Diseñar sistemas de supresión o venteo</li>
+              <li>Especificar housekeeping para prevención</li>
+            </ul>
+          </div>
+        </div>
+        <div class="highlight-box">
+          <p>No subestimen esta etapa: <strong>50% de problemas operacionales</strong> se rastrean a caracterización inadecuada de sólidos.</p>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- /deck -->
+
+  <div class="hud">
+    <span id="hud-title">Propiedades de sólidos &middot; IQYA-2031</span>
+    <span id="hud-counter">1 / 39</span>
+  </div>
+
+  <div class="controls">
+    <button aria-label="Anterior" id="prev">&#8249;</button>
+    <button aria-label="Descargar como PDF" id="dl-pdf" title="Descargar como PDF">
+      <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="7 10 12 15 17 10"/>
+        <line x1="12" x2="12" y1="15" y2="3"/>
+      </svg>
+    </button>
+    <button aria-label="Pantalla completa" id="fs">&#9974;</button>
+    <button aria-label="Siguiente" id="next">&#8250;</button>
+  </div>
+
+  <script>
+    (function () {
+      var slides = Array.prototype.slice.call(document.querySelectorAll('[data-slide]'));
+      var i = 0;
+      var counter = document.getElementById('hud-counter');
+      var progress = document.querySelector('.progress');
+
+      function render() {
+        slides.forEach(function (s, idx) {
+          s.classList.toggle('active', idx === i);
+        });
+        if (counter) counter.textContent = (i + 1) + ' / ' + slides.length;
+        if (progress) progress.style.width = ((i + 1) / slides.length * 100) + '%';
+        var isTitle = slides[i] && slides[i].classList.contains('title-slide');
+        var isSection = slides[i] && slides[i].classList.contains('section-slide');
+        document.body.style.background = (isTitle || isSection) ? '#1A1A1A' : '#ffffff';
+      }
+      function go(n) { i = Math.max(0, Math.min(slides.length - 1, n)); render(); }
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); go(i + 1); }
+        else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(i - 1); }
+        else if (e.key === 'Home') { e.preventDefault(); go(0); }
+        else if (e.key === 'End') { e.preventDefault(); go(slides.length - 1); }
+        else if (e.key === 'f' || e.key === 'F') { toggleFs(); }
+      });
+
+      document.getElementById('prev').addEventListener('click', function () { go(i - 1); });
+      var dlBtn = document.getElementById('dl-pdf');
+      if (dlBtn) dlBtn.addEventListener('click', function () {
+        // Inyectar links a YouTube para la versión imprimible (una sola vez)
+        document.querySelectorAll('iframe[src*="youtube"], iframe[src*="youtu.be"]').forEach(function (iframe) {
+          if (iframe.dataset.printLinkInjected === '1') return;
+          var src = iframe.getAttribute('src') || '';
+          var m = src.match(/(?:youtube\.com\/embed\/|youtu\.be\/)([\w-]+)/);
+          var url = m ? 'https://www.youtube.com/watch?v=' + m[1] : src;
+          var title = iframe.getAttribute('title') || 'Video';
+          var p = document.createElement('p');
+          p.className = 'video-print-link';
+          p.innerHTML = '<strong>▶ Video:</strong> ' + title + ' — <a href="' + url + '" target="_blank" rel="noopener">' + url + '</a>';
+          var host = iframe.parentNode;
+          host.parentNode.insertBefore(p, host.nextSibling);
+          iframe.dataset.printLinkInjected = '1';
+        });
+        var prevTitle = document.title;
+        document.title = 'iqya-2031--clase-05-solidos';
+        window.print();
+        setTimeout(function(){ document.title = prevTitle; }, 200);
+      });
+      document.getElementById('next').addEventListener('click', function () { go(i + 1); });
+      document.getElementById('fs').addEventListener('click', toggleFs);
+
+      function toggleFs() {
+        var el = document.documentElement;
+        if (!document.fullscreenElement) {
+          (el.requestFullscreen || el.webkitRequestFullscreen || function(){}).call(el);
+        } else {
+          (document.exitFullscreen || document.webkitExitFullscreen || function(){}).call(document);
+        }
+      }
+
+      var tx = 0, ty = 0;
+      document.addEventListener('touchstart', function (e) {
+        if (!e.changedTouches[0]) return;
+        tx = e.changedTouches[0].clientX; ty = e.changedTouches[0].clientY;
+      }, { passive: true });
+      document.addEventListener('touchend', function (e) {
+        if (!e.changedTouches[0]) return;
+        var dx = e.changedTouches[0].clientX - tx;
+        var dy = e.changedTouches[0].clientY - ty;
+        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+          if (dx < 0) go(i + 1); else go(i - 1);
+        }
+      }, { passive: true });
+
+      // Inject decorative slide numbers
+      slides.forEach(function (s, idx) {
+        var num = document.createElement('div');
+        num.className = 'slide-number';
+        num.setAttribute('aria-hidden', 'true');
+        num.textContent = String(idx + 1).padStart(2, '0');
+        s.appendChild(num);
+      });
+
+      render();
+    })();
+  </script>
+  <!-- FS_NAV · flechas flotantes + ocultar carrete en pantalla completa -->
+  <script>
+    (function () {
+      var root = document.documentElement;
+      var t;
+      function reveal() {
+        root.classList.add('show-controls');
+        clearTimeout(t);
+        t = setTimeout(function () { root.classList.remove('show-controls'); }, 2200);
+      }
+      function syncFs() {
+        var on = !!(document.fullscreenElement || document.webkitFullscreenElement);
+        root.classList.toggle('is-fs', on);
+        if (on) reveal();
+      }
+      document.addEventListener('fullscreenchange', syncFs);
+      document.addEventListener('webkitfullscreenchange', syncFs);
+      document.addEventListener('mousemove', function () {
+        if (root.classList.contains('is-fs')) reveal();
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<title>CGR S1 — Generalidades de la IA · ¿Qué es, historia y mitos?</title>
+<link rel="stylesheet" href="assets/edco.css">
+<style>
+/* === CGR S01 · Local styles (px only) === */
+.reveal{display:flex;flex-direction:column;gap:16px;}
+.rv-grid{display:grid;gap:8px;}
+.rv-grid.c2{grid-template-columns:repeat(2,1fr);}
+.rv-grid.c4{grid-template-columns:repeat(4,1fr);}
+.rv-grid.c5{grid-template-columns:repeat(5,1fr);}
+.rv-grid.c6{grid-template-columns:repeat(6,1fr);}
+.rv-grid.c7{grid-template-columns:repeat(7,1fr);}
+.rv-grid.c8{grid-template-columns:repeat(4,1fr);}
+.rv-trigger{background:var(--blanco);border:2px solid var(--gris-5);border-radius:var(--radio);padding:14px 12px;cursor:pointer;font-family:var(--display);display:flex;flex-direction:column;gap:6px;align-items:center;justify-content:center;text-align:center;transition:border-color .18s,transform .18s,box-shadow .18s;min-height:82px;}
+.rv-trigger:hover{border-color:var(--amarillo);transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,0,0,.08);}
+.rv-trigger.is-active{background:var(--ink);border-color:var(--ink);}
+.rv-trigger .rv-num{font-size:28px;font-weight:800;color:var(--amarillo);line-height:1;font-family:var(--mono);}
+.rv-trigger .rv-label{font-size:17px;font-weight:600;color:var(--ink);line-height:1.3;}
+.rv-trigger.is-active .rv-label{color:var(--blanco);}
+.rv-trigger .rv-icon{width:36px;height:36px;color:var(--amarillo);}
+.rv-trigger.big{min-height:110px;padding:18px 14px;}
+.rv-trigger.logo-tile{min-height:100px;padding:16px;}
+.rv-stage{background:var(--blanco);border:1.5px solid var(--gris-5);border-left:7px solid var(--amarillo);border-radius:var(--radio);padding:26px 34px;min-height:110px;}
+.rv-panel{display:none;}
+.rv-panel.is-active{display:block;animation:panelFade .3s ease;}
+@keyframes panelFade{from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:translateX(0)}}
+.rv-eyebrow{font-size:17px;font-weight:700;color:var(--amarillo);letter-spacing:.1em;text-transform:uppercase;font-family:var(--display);margin-bottom:8px;}
+.rv-panel h3{margin:0 0 10px;font-size:34px;font-weight:700;color:var(--ink);font-family:var(--display);}
+.rv-panel p{font-size:27px;line-height:1.5;color:var(--gris-2);margin:0 0 8px;}
+.rv-panel ul{font-size:25px;line-height:1.6;color:var(--gris-2);padding-left:22px;}
+.rv-panel li::marker{color:var(--amarillo);}
+.rv-panel strong{color:var(--ink);}
+.rv-meta{font-size:20px;color:var(--amarillo);font-weight:700;margin-bottom:8px;font-family:var(--mono);}
+.rv-hint{font-size:19px;color:var(--gris-3);text-align:center;font-style:italic;}
+.person-cards{display:grid;grid-template-columns:1fr 1fr;gap:22px;}
+.person-card{background:var(--blanco);border:2px solid var(--gris-5);border-radius:var(--radio);padding:28px 32px;display:grid;grid-template-columns:136px 1fr;gap:22px;align-items:start;transition:transform .18s,box-shadow .18s;}
+.person-card:hover{transform:translateY(-3px);box-shadow:0 8px 20px rgba(0,0,0,.08);}
+.person-card img{width:136px;height:136px;border-radius:50%;object-fit:cover;}
+.person-card h3{font-family:var(--display);font-size:31px;font-weight:700;color:var(--ink);margin:0 0 8px;}
+.person-card .bio{font-size:23px;color:var(--gris-2);line-height:1.45;margin:0 0 8px;}
+.person-card ul{font-size:21px;color:var(--gris-3);padding-left:18px;line-height:1.6;}
+.person-card li::marker{color:var(--amarillo);}
+.mod-list{display:flex;flex-direction:column;gap:9px;padding-left:58px;position:relative;margin-top:12px;}
+.mod-list::before{content:'';position:absolute;left:20px;top:16px;bottom:16px;width:3px;background:linear-gradient(to bottom,var(--amarillo),rgba(255,209,0,.1));border-radius:2px;}
+.mod-row{position:relative;background:var(--blanco);border:1.5px solid var(--gris-5);border-left:5px solid var(--amarillo);border-radius:var(--radio);padding:10px 16px;transition:transform .18s,box-shadow .18s;}
+.mod-row:hover{transform:translateX(4px);box-shadow:0 4px 14px rgba(0,0,0,.08);}
+.mod-row .mod-num{position:absolute;left:-38px;top:50%;transform:translateY(-50%);width:30px;height:30px;border-radius:50%;background:var(--blanco);border:3px solid var(--amarillo);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;color:var(--ink);box-shadow:0 0 0 4px var(--papel),0 2px 8px rgba(0,0,0,.08);z-index:2;}
+.mod-row .mod-title{font-family:var(--display);font-size:24px;font-weight:700;color:var(--ink);margin:0 0 3px;}
+.mod-row .mod-detail{font-size:21px;color:var(--gris-2);margin:0;line-height:1.4;}
+.sess-tag{display:inline-block;background:var(--amarillo-bg);color:var(--ochre);font-size:15px;font-weight:700;padding:2px 8px;border-radius:999px;margin-right:6px;letter-spacing:.04em;text-transform:uppercase;font-family:var(--mono);}
+.mod-row.ta{border-left-color:#0284c7;}
+.mod-row.ta .mod-num{border-color:#0284c7;}
+.obj-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px 42px;}
+.obj-item{padding-top:12px;border-top:2px solid var(--gris-5);}
+.obj-item .num-tag{font-family:var(--mono);font-size:15px;font-weight:700;color:var(--gris-3);letter-spacing:.08em;}
+.obj-item h3{font-family:var(--display);margin:5px 0 5px;font-size:26px;color:var(--ink);font-weight:700;}
+.obj-item p{font-size:22px;color:var(--gris-2);line-height:1.45;}
+.pillar-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+.pillar-card{background:var(--amarillo-bg);border-radius:var(--radio);padding:24px;transition:transform .18s,box-shadow .18s;}
+.pillar-card:hover{transform:translateY(-3px);box-shadow:0 8px 20px rgba(0,0,0,.08);}
+.pillar-card .ico-wrap{width:50px;height:50px;border-radius:50%;background:var(--amarillo);color:var(--ink);display:flex;align-items:center;justify-content:center;margin-bottom:10px;}
+.pillar-card .ico-wrap svg{width:24px;height:24px;}
+.pillar-card h3{font-family:var(--display);font-size:27px;color:var(--ink);margin:0 0 8px;font-weight:700;}
+.pillar-card p{font-size:23px;color:var(--ochre);line-height:1.45;}
+.eje-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+.eje-card{display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;padding:6px;}
+.eje-card .circle{width:148px;height:148px;border-radius:50%;background:linear-gradient(135deg,var(--amarillo) 0%,#E6AC00 100%);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 22px rgba(230,172,0,.25);transition:transform .25s,box-shadow .25s;}
+.eje-card:hover .circle{transform:scale(1.05) rotate(-3deg);box-shadow:0 14px 32px rgba(230,172,0,.35);}
+.eje-card .circle svg{width:60px;height:60px;color:var(--ink);}
+.eje-card h3{font-family:var(--display);font-size:27px;color:var(--ink);font-weight:700;margin:0;}
+.eje-card p{font-size:22px;color:var(--gris-2);line-height:1.4;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:start;}
+.two-col.center{align-items:center;}
+.dark-box{background:var(--ink);border-left:7px solid var(--amarillo);border-radius:var(--radio);padding:24px 28px;}
+.dark-box h3{font-family:var(--display);font-size:28px;color:var(--amarillo);font-weight:700;margin:0 0 10px;}
+.dark-box p{font-size:24px;color:var(--gris-3);line-height:1.5;margin:0 0 8px;}
+.dark-box strong{color:var(--blanco);}
+.dark-box ul{font-size:23px;color:var(--gris-3);padding-left:18px;line-height:1.6;}
+.dark-box li::marker{color:var(--amarillo);}
+.cap-cards{display:flex;flex-direction:column;gap:8px;}
+.cap-card{background:var(--blanco);border:1.5px solid var(--gris-5);border-left:5px solid var(--amarillo);border-radius:6px;padding:10px 14px;font-size:24px;color:var(--ink);line-height:1.4;}
+.cap-card strong{color:var(--negro);}
+.diag-cards{display:grid;grid-template-columns:1fr 1fr;gap:13px;}
+.diag-card{background:var(--amarillo-bg);border-radius:var(--radio);padding:18px 22px;display:flex;gap:12px;align-items:flex-start;transition:transform .18s,box-shadow .18s;}
+.diag-card:hover{transform:translateY(-3px);box-shadow:0 6px 16px rgba(0,0,0,.08);}
+.diag-card .qmark{width:32px;height:32px;min-width:32px;border-radius:7px;background:var(--amarillo);color:var(--ink);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:19px;font-family:var(--display);}
+.diag-card h3{font-family:var(--display);margin:0 0 5px;font-size:24px;color:var(--ink);font-weight:700;}
+.diag-card p{font-size:21px;color:var(--ochre);line-height:1.4;}
+.trend-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;padding-top:14px;}
+.trend-item{background:var(--blanco);border:1.5px solid var(--gris-5);border-radius:var(--radio);padding:18px 20px;position:relative;transition:transform .18s,box-shadow .18s;}
+.trend-item:hover{transform:translateY(-3px);box-shadow:0 8px 20px rgba(0,0,0,.08);}
+.trend-item .tnum{position:absolute;top:-14px;left:16px;width:30px;height:30px;border-radius:50%;background:var(--amarillo);color:var(--ink);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;font-family:var(--mono);box-shadow:0 2px 6px rgba(0,0,0,.1);}
+.trend-item h3{font-family:var(--display);font-size:25px;color:var(--ink);font-weight:700;margin:0 0 7px;}
+.trend-item p{font-size:21px;color:var(--gris-2);line-height:1.45;}
+.risk-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.risk-card{background:var(--blanco);border:1.5px solid var(--gris-5);border-left:6px solid var(--amarillo);border-radius:var(--radio);padding:16px 20px;transition:transform .18s,box-shadow .18s;}
+.risk-card:hover{transform:translateX(3px);box-shadow:0 6px 16px rgba(0,0,0,.08);}
+.risk-card h3{font-family:var(--display);font-size:24px;color:var(--ink);font-weight:700;margin:0 0 6px;}
+.risk-card p{font-size:21px;color:var(--gris-2);line-height:1.4;}
+.op-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;}
+.op-card{background:var(--blanco);border:1.5px solid var(--gris-5);border-radius:var(--radio);padding:14px 16px;transition:transform .18s,box-shadow .18s;}
+.op-card:hover{transform:translateY(-2px);box-shadow:0 6px 14px rgba(0,0,0,.07);}
+.op-card svg{width:30px;height:30px;color:var(--amarillo);margin-bottom:5px;display:block;}
+.op-card h3{font-family:var(--display);font-size:22px;color:var(--ink);font-weight:700;margin:0 0 4px;}
+.op-card p{font-size:20px;color:var(--gris-2);line-height:1.4;}
+.accent-card{background:var(--blanco);border:1.5px solid var(--gris-5);border-top:6px solid var(--amarillo);border-radius:var(--radio);padding:22px 26px;}
+.accent-card h3{font-family:var(--display);font-size:27px;font-weight:700;color:var(--ink);margin:0 0 10px;}
+.accent-card p,.accent-card li{font-size:24px;color:var(--gris-2);line-height:1.5;}
+.accent-card strong{color:var(--ink);}
+.accent-card ul,.accent-card ol{padding-left:20px;margin-top:8px;}
+.accent-card li::marker{color:var(--amarillo);}
+.sec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-bottom:13px;}
+.sec-card{display:flex;flex-direction:column;gap:7px;}
+.sec-img{width:100%;aspect-ratio:16/9;border-radius:8px;background:linear-gradient(135deg,#1A1A1A,#3a3a3a) center/cover no-repeat;overflow:hidden;}
+.sec-card h3{font-family:var(--display);font-size:23px;color:var(--ink);font-weight:700;margin:0;}
+.sec-card p{font-size:20px;color:var(--gris-2);line-height:1.4;}
+.banner{background:var(--amarillo-bg);border-left:6px solid var(--amarillo);padding:14px 20px;border-radius:var(--radio);font-size:26px;color:var(--ochre);line-height:1.5;}
+.banner strong{color:var(--ink);}
+.banner.info{background:var(--ink);border-left-color:var(--amarillo);color:var(--gris-3);}
+.banner.info strong{color:var(--amarillo);}
+.banner.note{display:flex;align-items:flex-start;gap:10px;}
+.banner.note svg{flex-shrink:0;width:26px;height:26px;color:var(--ochre);margin-top:2px;}
+table.mtable{width:100%;border-collapse:collapse;font-size:21px;}
+table.mtable th{background:var(--ink);color:var(--blanco);text-align:left;padding:10px 14px;font-size:17px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;font-family:var(--display);}
+table.mtable td{padding:9px 14px;border-bottom:1px solid var(--gris-5);color:var(--ink);}
+table.mtable tr:hover td{background:var(--amarillo-bg);}
+table.mtable tr:nth-child(even) td{background:var(--papel);}
+table.mtable tr:nth-child(even):hover td{background:var(--amarillo-bg);}
+.yellow-underline{width:80px;height:5px;background:var(--amarillo);border-radius:3px;margin-top:20px;}
+.figbox{display:flex;flex-direction:column;gap:8px;}
+.figbox img{width:100%;border-radius:var(--radio);box-shadow:0 4px 14px rgba(0,0,0,.1);display:block;object-fit:cover;}
+.figbox figcaption{font-size:19px;color:var(--gris-3);text-align:center;font-style:italic;}
+a.platform-link{color:var(--ink);text-decoration:none;border-bottom:2px solid var(--amarillo);padding-bottom:2px;transition:color .18s,border-color .18s;}
+a.platform-link:hover{color:var(--amarillo);}
+a.platform-link::after{content:" ↗";font-size:.65em;opacity:.5;margin-left:.1em;vertical-align:.3em;}
+@media (prefers-reduced-motion:reduce){
+  .rv-trigger,.rv-panel,.person-card,.mod-row,.pillar-card,.eje-card,.diag-card,.trend-item,.risk-card,.accent-card{transition:none;animation:none!important;}
+  .rv-trigger:hover,.eje-card:hover .circle{transform:none;}
+}
+@media (max-width:768px){
+  /* ── Reveal system ── */
+  .rv-grid.c4,.rv-grid.c5,.rv-grid.c6,.rv-grid.c7,.rv-grid.c8{grid-template-columns:repeat(2,1fr)!important;}
+  .rv-grid.c2{grid-template-columns:1fr!important;}
+  .rv-trigger{font-size:12px!important;padding:8px 10px!important;min-height:56px!important;}
+  .rv-trigger.big{min-height:64px!important;}
+  .rv-trigger.logo-tile{min-height:56px!important;}
+  .rv-trigger .rv-num{font-size:18px!important;}
+  .rv-trigger .rv-label{font-size:12px!important;}
+  .rv-trigger .rv-icon{width:22px!important;height:22px!important;}
+  .rv-stage{padding:14px 16px!important;}
+  .rv-panel h3{font-size:17px!important;}
+  .rv-panel p{font-size:14px!important;}
+  .rv-panel ul{font-size:13px!important;}
+  .rv-meta{font-size:12px!important;}
+  .rv-eyebrow{font-size:11px!important;}
+  .rv-hint{font-size:12px!important;}
+
+  /* ── Person cards ── */
+  .person-cards{grid-template-columns:1fr!important;gap:12px!important;}
+  .person-card{grid-template-columns:72px 1fr!important;gap:10px!important;padding:14px!important;}
+  .person-card img{width:72px!important;height:72px!important;}
+  .person-card h3{font-size:17px!important;}
+  .person-card .bio{font-size:13px!important;}
+  .person-card ul{font-size:12px!important;}
+
+  /* ── Módulos / mod-list: reflow badge absoluto a estático ── */
+  .mod-list{padding-left:10px!important;}
+  .mod-list::before{display:none!important;}
+  .mod-row .mod-num{position:static!important;transform:none!important;display:inline-flex!important;margin-bottom:4px!important;width:22px!important;height:22px!important;font-size:12px!important;}
+  .mod-row .mod-title{font-size:14px!important;}
+  .mod-row .mod-detail{font-size:12px!important;}
+  .sess-tag{font-size:10px!important;}
+
+  /* ── Objetivos ── */
+  .obj-grid{grid-template-columns:1fr!important;gap:8px!important;}
+  .obj-item h3{font-size:15px!important;}
+  .obj-item p{font-size:13px!important;}
+  .obj-item .num-tag{font-size:11px!important;}
+
+  /* ── Pillar cards ── */
+  .pillar-cards{grid-template-columns:repeat(2,1fr)!important;gap:10px!important;}
+  .pillar-card{padding:12px!important;}
+  .pillar-card .ico-wrap{width:36px!important;height:36px!important;}
+  .pillar-card .ico-wrap svg{width:18px!important;height:18px!important;}
+  .pillar-card h3{font-size:15px!important;}
+  .pillar-card p{font-size:13px!important;}
+
+  /* ── Eje cards: círculos de 148px → 80px ── */
+  .eje-cards{grid-template-columns:repeat(2,1fr)!important;gap:10px!important;}
+  .eje-card{padding:8px!important;}
+  .eje-card .circle{width:80px!important;height:80px!important;}
+  .eje-card .circle svg{width:34px!important;height:34px!important;}
+  .eje-card h3{font-size:14px!important;}
+  .eje-card p{font-size:12px!important;}
+
+  /* ── Two-col / vs-cols ── */
+  .two-col{grid-template-columns:1fr!important;gap:14px!important;}
+  .vs-divider{display:none!important;}
+  .vs-cols .col h3{font-size:17px!important;}
+  .vs-cols .col p,.vs-cols .col ul,.vs-cols .col li{font-size:14px!important;}
+
+  /* ── Cap cards ── */
+  .cap-card{font-size:14px!important;padding:8px 10px!important;}
+
+  /* ── Diag cards ── */
+  .diag-cards{grid-template-columns:1fr!important;gap:10px!important;}
+  .diag-card h3{font-size:15px!important;}
+  .diag-card p{font-size:13px!important;}
+  .diag-card .qmark{width:24px!important;height:24px!important;min-width:24px!important;font-size:14px!important;}
+
+  /* ── Trend items: badge absoluto → estático ── */
+  .trend-grid{grid-template-columns:1fr!important;gap:10px!important;}
+  .trend-item{padding-top:22px!important;}
+  .trend-item .tnum{position:static!important;transform:none!important;display:inline-flex!important;margin-bottom:6px!important;}
+  .trend-item h3{font-size:15px!important;}
+  .trend-item p{font-size:13px!important;}
+
+  /* ── Risk cards ── */
+  .risk-cards{grid-template-columns:1fr!important;gap:10px!important;}
+  .risk-card h3{font-size:15px!important;}
+  .risk-card p{font-size:13px!important;}
+
+  /* ── Op cards ── */
+  .op-cards{grid-template-columns:repeat(2,1fr)!important;gap:8px!important;}
+  .op-card h3{font-size:14px!important;}
+  .op-card p{font-size:12px!important;}
+  .op-card svg{width:22px!important;height:22px!important;}
+
+  /* ── Accent cards ── */
+  .accent-card{padding:12px 14px!important;}
+  .accent-card h3{font-size:16px!important;}
+  .accent-card p,.accent-card li{font-size:13px!important;}
+
+  /* ── Sec grid ── */
+  .sec-grid{grid-template-columns:repeat(2,1fr)!important;gap:10px!important;}
+  .sec-card h3{font-size:14px!important;}
+  .sec-card p{font-size:12px!important;}
+
+  /* ── Dark box ── */
+  .dark-box{padding:14px 16px!important;border-radius:10px!important;}
+  .dark-box h3{font-size:17px!important;}
+  .dark-box p,.dark-box ul,.dark-box li{font-size:14px!important;}
+
+  /* ── Banner ── */
+  .banner{font-size:14px!important;padding:10px 14px!important;}
+
+  /* ── mtable ── */
+  table.mtable{font-size:12px!important;}
+  table.mtable th,table.mtable td{padding:6px 8px!important;}
+
+  /* ── figbox ── */
+  .figbox figcaption{font-size:12px!important;}
+
+  /* ── Inline grids (attribute selectors) ── */
+  [style*="grid-template-columns:repeat(3"],[style*="grid-template-columns: repeat(3"]{grid-template-columns:1fr!important;}
+  [style*="grid-template-columns:repeat(7"],[style*="grid-template-columns: repeat(7"]{grid-template-columns:repeat(2,1fr)!important;}
+  [style*="grid-template-columns:1fr 1fr 1fr"],[style*="grid-template-columns: 1fr 1fr 1fr"]{grid-template-columns:1fr!important;}
+}
+</style>
+</head>
+<body>
+<deck-stage width="1920" height="1080">
+
+<!-- ============ S1 · Portada ============ -->
+<section class="s cover cover--photo" data-nofoot style="background-image:url('img/cover-datacenter.jpg');background-size:cover;background-position:center;">
+  <div class="cover-top">
+    <div class="pill-row">
+      <span class="pill">Módulo 1 · Sesión 1</span>
+      <span class="pill">1.5 horas · Lunes 4 de mayo de 2026</span>
+      <span class="pill">Juan C. Cruz, Ph.D.</span>
+    </div>
+  </div>
+  <div class="cover-mid">
+    <div class="kicker">Universidad de los Andes · CEF · Contraloría General de la República</div>
+    <h2>Generalidades de la Inteligencia Artificial</h2>
+    <p>Sesión 1 — ¿Qué es la inteligencia artificial? Historia, definiciones y mitos.</p>
+  </div>
+  <div class="cover-meta"></div>
+</section>
+
+<!-- ============ S2 · Equipo Docente ============ -->
+<section class="s">
+  <div class="kicker">Equipo Docente</div>
+  <h2 class="s-head">Quiénes Somos</h2>
+  <div class="person-cards stagger-in" style="margin-top:24px;">
+    <div class="person-card">
+      <img src="img/jcc-portrait.jpg" alt="Juan C. Cruz">
+      <div>
+        <h3>Juan C. Cruz, Ph.D.</h3>
+        <p class="bio">Profesor Asociado, Departamento de Ingeniería Biomédica, Universidad de los Andes</p>
+        <ul>
+          <li>IQ — Universidad de los Andes</li>
+          <li>PhD — Kansas State University</li>
+          <li>Posdoctorado — Johns Hopkins University</li>
+        </ul>
+      </div>
+    </div>
+    <div class="person-card">
+      <img src="img/luis-portrait.jpg" alt="Luis Humberto Reyes">
+      <div>
+        <h3>Luis Humberto Reyes, Ph.D.</h3>
+        <p class="bio">Profesor Asociado, Universidad de los Andes. Experto en bioprocesos y sistemas biológicos.</p>
+        <ul>
+          <li>IQ — Universidad Industrial de Santander</li>
+          <li>PhD — Texas A&amp;M University</li>
+          <li>Investigación en ingeniería biológica y sistemas de fermentación</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ S3 · ¿Por Qué Este Curso? ============ -->
+<section class="s">
+  <div class="kicker">Contexto</div>
+  <h2 class="s-head">¿Por Qué Este Curso?</h2>
+  <p>La Contraloría General de la República fiscaliza entidades que ya están adoptando inteligencia artificial. Para ejercer ese control de manera efectiva, los funcionarios necesitan comprender qué es la IA, cómo funciona, y cuáles son sus implicaciones.</p>
+  <div class="rv-grid c2 stagger-in" style="margin-top:18px;">
+    <div class="accent-card">
+      <h3>Decisiones Informadas</h3>
+      <p>Comprender las capacidades y limitaciones reales de la IA para tomar decisiones basadas en evidencia.</p>
+    </div>
+    <div class="accent-card">
+      <h3>Identificar Oportunidades</h3>
+      <p>Reconocer dónde la IA puede mejorar procesos de control fiscal y auditoría.</p>
+    </div>
+    <div class="accent-card">
+      <h3>Desarrollar Criterio</h3>
+      <p>Evaluar críticamente propuestas, proyectos y riesgos relacionados con IA en entidades controladas.</p>
+    </div>
+    <div class="accent-card">
+      <h3>Transformación Responsable</h3>
+      <p>Liderar la adopción de IA en la Contraloría con visión ética y estratégica.</p>
+    </div>
+  </div>
+  <div class="banner" style="margin-top:18px;">«No se trata de convertirse en programadores. Se trata de ser <strong>funcionarios informados, críticos y responsables</strong>.»</div>
+</section>
+
+<!-- ============ S4 · Objetivos ============ -->
+<section class="s">
+  <div class="kicker">Objetivos</div>
+  <h2 class="s-head">¿Qué Aprenderemos?</h2>
+  <div class="reveal" data-reveal style="margin-top:18px;">
+    <div class="rv-grid c8">
+      <button class="rv-trigger big is-active" data-rv="1"><span class="rv-num">01</span><span class="rv-label">Fundamentos</span></button>
+      <button class="rv-trigger big" data-rv="2"><span class="rv-num">02</span><span class="rv-label">Capacidades</span></button>
+      <button class="rv-trigger big" data-rv="3"><span class="rv-num">03</span><span class="rv-label">Aplicaciones</span></button>
+      <button class="rv-trigger big" data-rv="4"><span class="rv-num">04</span><span class="rv-label">Interacción</span></button>
+      <button class="rv-trigger big" data-rv="5"><span class="rv-num">05</span><span class="rv-label">Análisis</span></button>
+      <button class="rv-trigger big" data-rv="6"><span class="rv-num">06</span><span class="rv-label">Marco Regulatorio</span></button>
+      <button class="rv-trigger big" data-rv="7"><span class="rv-num">07</span><span class="rv-label">Evaluación</span></button>
+      <button class="rv-trigger big" data-rv="8"><span class="rv-num">08</span><span class="rv-label">Estrategia</span></button>
+    </div>
+    <div class="rv-stage">
+      <div class="rv-panel is-active" data-rv-panel="1"><h3>Fundamentos de la IA</h3><p>Comprender qué es la inteligencia artificial, su historia de 70+ años y los conceptos clave que la definen.</p></div>
+      <div class="rv-panel" data-rv-panel="2"><h3>Capacidades Actuales</h3><p>Identificar qué pueden y qué NO pueden hacer los sistemas de IA actuales, desmitificando expectativas irreales.</p></div>
+      <div class="rv-panel" data-rv-panel="3"><h3>Aplicaciones Sectoriales</h3><p>Conocer casos de uso concretos de IA en el sector público, control fiscal, auditoría y gestión gubernamental.</p></div>
+      <div class="rv-panel" data-rv-panel="4"><h3>Interacción Efectiva</h3><p>Desarrollar habilidades prácticas para interactuar con herramientas de IA de manera productiva y segura.</p></div>
+      <div class="rv-panel" data-rv-panel="5"><h3>Análisis Crítico</h3><p>Evaluar críticamente propuestas, proyectos y resultados de IA con criterio técnico y estratégico.</p></div>
+      <div class="rv-panel" data-rv-panel="6"><h3>Marco Regulatorio</h3><p>Conocer el panorama regulatorio de la IA en Colombia y el mundo, y las implicaciones para la Contraloría.</p></div>
+      <div class="rv-panel" data-rv-panel="7"><h3>Evaluación de Riesgos</h3><p>Identificar y gestionar riesgos asociados al uso de IA: sesgos, alucinaciones, privacidad y ética.</p></div>
+      <div class="rv-panel" data-rv-panel="8"><h3>Estrategia Institucional</h3><p>Diseñar una estrategia básica para la adopción responsable de IA en el contexto de la Contraloría General.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ S5 · Estructura del Curso ============ -->
+<section class="s">
+  <div class="kicker">Programa</div>
+  <h2 class="s-head">Estructura del Curso</h2>
+  <p class="sub">6 módulos en 10 sesiones</p>
+  <p>El curso cubre el ecosistema completo de la inteligencia artificial aplicada al sector público, desde los fundamentos conceptuales hasta la estrategia institucional.</p>
+  <div class="mod-list stagger-in">
+    <div class="mod-row"><div class="mod-num">1</div><div class="mod-title">Módulo 1: Fundamentos de la IA</div><p class="mod-detail"><span class="sess-tag">Sesiones 1–2</span>Qué es la IA, historia, mitos, ecosistema actual</p></div>
+    <div class="mod-row"><div class="mod-num">2</div><div class="mod-title">Módulo 2: IA Generativa y LLM</div><p class="mod-detail"><span class="sess-tag">Sesiones 3–4</span>Cómo funcionan, prompting efectivo, herramientas</p></div>
+    <div class="mod-row"><div class="mod-num">3</div><div class="mod-title">Módulo 3: Aplicaciones en Sector Público</div><p class="mod-detail"><span class="sess-tag">Sesiones 5–6</span>Casos reales, oportunidades para la Contraloría</p></div>
+    <div class="mod-row"><div class="mod-num">4</div><div class="mod-title">Módulo 4: Limitaciones y Sesgos</div><p class="mod-detail"><span class="sess-tag">Sesión 7</span>Alucinaciones, sesgos, confiabilidad, evaluación</p></div>
+    <div class="mod-row"><div class="mod-num">5</div><div class="mod-title">Módulo 5: Ética y Regulación</div><p class="mod-detail"><span class="sess-tag">Sesiones 8–9</span>Marco ético, regulación, Colombia y mundo</p></div>
+    <div class="mod-row"><div class="mod-num">6</div><div class="mod-title">Módulo 6: Estrategia y Futuro</div><p class="mod-detail"><span class="sess-tag">Sesiones 9–10</span>Adopción institucional, hoja de ruta, tendencias</p></div>
+    <div class="mod-row ta"><div class="mod-num">TA</div><div class="mod-title">Bloque Neón — Práctica Guiada</div><p class="mod-detail"><span class="sess-tag">5 horas</span>Ejercicios prácticos con herramientas de IA</p></div>
+  </div>
+</section>
+
+<!-- ============ S6 · Metodología ============ -->
+<section class="s">
+  <div class="kicker">Cómo Trabajamos</div>
+  <h2 class="s-head">Metodología</h2>
+  <div class="two-col" style="margin-top:18px;">
+    <div class="dark-box">
+      <h3>Enfoque Conceptual-Estratégico</h3>
+      <p>Este NO es un curso técnico de programación. Es un curso para líderes y funcionarios que necesitan <strong>comprender, evaluar y gestionar</strong> la IA.</p>
+      <ul>
+        <li>15 horas de clase sincrónica vía Teams</li>
+        <li>5 horas de trabajo autónomo</li>
+        <li>10 sesiones: lunes y jueves, 10:30–12:00</li>
+        <li>Metodología participativa con casos de la Contraloría</li>
+        <li>Trabajo final: análisis estratégico real</li>
+      </ul>
+    </div>
+    <div>
+      <p style="font-size:24px;color:var(--gris-2);line-height:1.5;">Cada sesión combina:</p>
+      <ul style="font-size:23px;color:var(--gris-2);line-height:1.6;padding-left:20px;">
+        <li>Conceptos clave explicados sin jerga técnica</li>
+        <li>Casos reales del sector público</li>
+        <li>Discusiones guiadas con su contexto</li>
+        <li>Ejercicios prácticos aplicables</li>
+        <li>Preguntas y reflexión colectiva</li>
+      </ul>
+      <div class="accent-card" style="margin-top:16px;">
+        <h3>Herramientas que Usaremos</h3>
+        <ul>
+          <li>Microsoft Copilot (Teams/Office)</li>
+          <li>ChatGPT, Claude, Gemini</li>
+          <li>Bloque Neón (plataforma de práctica)</li>
+          <li>Documentos colaborativos en línea</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ S7 · Evaluación y Certificación ============ -->
+<section class="s">
+  <div class="kicker">Evaluación</div>
+  <h2 class="s-head">Evaluación y Certificación</h2>
+  <div class="pillar-cards stagger-in" style="margin-top:20px;">
+    <div class="pillar-card">
+      <div class="ico-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+      <h3>Asistencia</h3>
+      <p>Mínimo 85% de asistencia a sesiones para recibir certificación del programa.</p>
+    </div>
+    <div class="pillar-card">
+      <div class="ico-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="15" y2="16"/></svg></div>
+      <h3>Actividades</h3>
+      <p>60% de actividades completadas: lecturas, quices cortos y ejercicios de cada módulo.</p>
+    </div>
+    <div class="pillar-card">
+      <div class="ico-wrap"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+      <h3>Trabajo Final</h3>
+      <p>Análisis estratégico: propuesta de uso de IA en una función específica de la Contraloría General.</p>
+    </div>
+  </div>
+  <div class="accent-card" style="margin-top:18px;">
+    <h3>Certificación</h3>
+    <p>Al completar el programa satisfactoriamente, recibirán certificado del Centro de Educación para el Fomento CEF – Universidad de los Andes.</p>
+  </div>
+</section>
+
+<!-- ============ S8 · Tres Ejes Transversales ============ -->
+<section class="s">
+  <div class="kicker">Hilo Conductor</div>
+  <h2 class="s-head">Tres Ejes Transversales</h2>
+  <p>Independientemente del módulo o sesión, <strong>tres pilares fundamentales atraviesan cada sesión</strong> del curso y guían nuestra reflexión colectiva.</p>
+  <div class="eje-cards stagger-in" style="margin-top:24px;">
+    <div class="eje-card">
+      <div class="circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M3 9h18M4 9a8 8 0 0 0 8 8 8 8 0 0 0 8-8"/></svg></div>
+      <h3>Ética y Uso Responsable</h3>
+      <p>Cada herramienta y aplicación se analiza desde sus implicaciones éticas, de privacidad y sesgo.</p>
+    </div>
+    <div class="eje-card">
+      <div class="circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="22" x2="21" y2="22"/><line x1="6" y1="18" x2="6" y2="11"/><line x1="10" y1="18" x2="10" y2="11"/><line x1="14" y1="18" x2="14" y2="11"/><line x1="18" y1="18" x2="18" y2="11"/><polygon points="12 2 20 7 4 7"/></svg></div>
+      <h3>Aplicabilidad en Su Contexto</h3>
+      <p>Todo se aterriza a la realidad de la Contraloría: sus procesos, entidades controladas y marco legal.</p>
+    </div>
+    <div class="eje-card">
+      <div class="circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/></svg></div>
+      <h3>Apropiación con Criterio</h3>
+      <p>No adoptamos IA porque está de moda. Evaluamos cuándo conviene, cuándo no, y bajo qué condiciones.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ S9 · Agenda de Hoy ============ -->
+<section class="s">
+  <div class="kicker">Agenda</div>
+  <h2 class="s-head">Agenda de Hoy</h2>
+  <p class="sub">Sesión 1 — ¿Qué es la inteligencia artificial?</p>
+  <div class="reveal" data-reveal style="margin-top:14px;">
+    <div class="rv-grid c5">
+      <button class="rv-trigger big is-active" data-rv="1"><span class="rv-num">1</span><span class="rv-label">Bienvenida</span></button>
+      <button class="rv-trigger big" data-rv="2"><span class="rv-num">2</span><span class="rv-label">¿Qué es la IA?</span></button>
+      <button class="rv-trigger big" data-rv="3"><span class="rv-num">3</span><span class="rv-label">Ecosistema</span></button>
+      <button class="rv-trigger big" data-rv="4"><span class="rv-num">4</span><span class="rv-label">Discusión</span></button>
+      <button class="rv-trigger big" data-rv="5"><span class="rv-num">5</span><span class="rv-label">Cierre</span></button>
+    </div>
+    <div class="rv-stage">
+      <div class="rv-panel is-active" data-rv-panel="1"><div class="rv-meta">10:30–10:45</div><h3>Bienvenida e Introducción</h3><ul><li>Presentación del equipo docente</li><li>Objetivos y metodología del curso</li><li>Diagnóstico inicial: ¿qué saben de IA?</li><li>Encuesta de expectativas</li></ul></div>
+      <div class="rv-panel" data-rv-panel="2"><div class="rv-meta">10:45–11:15</div><h3>¿Qué es la Inteligencia Artificial?</h3><ul><li>Definiciones accesibles</li><li>Historia de 70+ años</li><li>Tipos de IA: simbólica, ML, DL, generativa</li><li>Desmitificando 6 mitos comunes</li></ul></div>
+      <div class="rv-panel" data-rv-panel="3"><div class="rv-meta">11:15–11:35</div><h3>El Ecosistema Actual</h3><ul><li>Los actores principales: OpenAI, Google, Anthropic, Meta</li><li>Modelos líderes a 2026</li><li>Propietario vs. código abierto</li><li>IA en el sector público hoy</li></ul></div>
+      <div class="rv-panel" data-rv-panel="4"><div class="rv-meta">11:35–11:55</div><h3>Discusión Guiada</h3><ul><li>Ejercicio participativo: IA en mi día a día</li><li>Oportunidades para la Contraloría</li><li>Preocupaciones y riesgos reales</li><li>Registro colectivo</li></ul></div>
+      <div class="rv-panel" data-rv-panel="5"><div class="rv-meta">11:55–12:00</div><h3>Cierre y Próximos Pasos</h3><ul><li>Resumen de conceptos clave</li><li>Trabajo autónomo asignado</li><li>Preview: Sesión 2 — Cómo aprenden las máquinas</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ S10 · Diagnóstico Rápido ============ -->
+<section class="s">
+  <div class="kicker">Diagnóstico</div>
+  <h2 class="s-head">Diagnóstico Rápido</h2>
+  <p class="sub">Conociéndonos</p>
+  <p>Antes de empezar, queremos conocer el punto de partida del grupo. No hay respuestas correctas o incorrectas — todo conocimiento es válido.</p>
+  <div class="diag-cards stagger-in" style="margin-top:16px;">
+    <div class="diag-card"><div class="qmark">?</div><div><h3>¿Qué sabe sobre IA?</h3><p>¿Cómo describiría la inteligencia artificial a alguien que no sabe nada del tema?</p></div></div>
+    <div class="diag-card"><div class="qmark">?</div><div><h3>¿Ha usado ChatGPT, Copilot o Gemini?</h3><p>¿Con qué frecuencia? ¿Para qué tareas? ¿Qué resultados obtuvo?</p></div></div>
+    <div class="diag-card"><div class="qmark">?</div><div><h3>¿Qué espera aprender?</h3><p>¿Cuál es la habilidad o conocimiento más importante que quiere llevarse del curso?</p></div></div>
+    <div class="diag-card"><div class="qmark">?</div><div><h3>¿Qué le preocupa?</h3><p>¿Cuál es el mayor riesgo o desafío que ve en la adopción de IA en la Contraloría?</p></div></div>
+  </div>
+  <div class="banner note" style="margin-top:16px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span>Tomaremos unos minutos para una encuesta rápida. Sus respuestas nos ayudan a personalizar el contenido del curso.</span></div>
+</section>
+
+<!-- ============ S11 · Divider Parte 1 ============ -->
+<section class="s s--dark divider" data-nofoot>
+  <div class="num">01</div>
+  <h2>¿Qué es la Inteligencia Artificial?</h2>
+  <p class="sub">Historia, definiciones y mitos.</p>
+  <div class="yellow-underline"></div>
+</section>
+
+<!-- ============ S12 · Definición Accesible ============ -->
+<section class="s">
+  <div class="kicker">Definición</div>
+  <h2 class="s-head">¿Qué es la Inteligencia Artificial?</h2>
+  <p class="sub">Una definición accesible</p>
+  <p>La inteligencia artificial es el campo de la ciencia computacional dedicado a crear sistemas capaces de realizar tareas que, cuando las hace un humano, consideramos que requieren inteligencia.</p>
+  <div class="two-col" style="margin-top:16px;">
+    <div class="cap-cards">
+      <div class="cap-card"><strong>Aprendizaje:</strong> extraer patrones de datos</div>
+      <div class="cap-card"><strong>Reconocimiento:</strong> identificar objetos, voz, texto</div>
+      <div class="cap-card"><strong>Decisión:</strong> elegir acciones con base en análisis</div>
+      <div class="cap-card"><strong>Lenguaje:</strong> generar y comprender texto</div>
+      <div class="cap-card"><strong>Visión:</strong> interpretar imágenes y video</div>
+      <div class="cap-card"><strong>Generación:</strong> crear contenido nuevo</div>
+    </div>
+    <div class="dark-box">
+      <h3>Aclaración Fundamental</h3>
+      <p>La IA <strong>NO es</strong> una entidad consciente, no «piensa» ni «siente».</p>
+      <p>Son <strong>algoritmos matemáticos</strong> que aprenden patrones estadísticos en grandes volúmenes de datos.</p>
+      <p>La inteligencia aparente surge de <strong>optimización matemática</strong>, no de comprensión real.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ S13 · IA en la Vida Cotidiana ============ -->
+<section class="s">
+  <div class="kicker">Presente</div>
+  <h2 class="s-head">La IA en la Vida Cotidiana</h2>
+  <p class="sub">Ya la estamos usando</p>
+  <p>Muchas personas interactúan con sistemas de IA docenas de veces al día sin reconocerlo. La IA ya no es una tecnología del futuro.</p>
+  <div class="reveal" data-reveal style="margin-top:12px;">
+    <div class="rv-grid c6">
+      <button class="rv-trigger logo-tile is-active" data-rv="1"><svg class="rv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg><span class="rv-label">Recomendaciones</span></button>
+      <button class="rv-trigger logo-tile" data-rv="2"><svg class="rv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2" ry="2"/><path d="M6 8h.001M10 8h.001M14 8h.001M18 8h.001M8 12h.001M12 12h.001M16 12h.001M7 16h10"/></svg><span class="rv-label">Escritura</span></button>
+      <button class="rv-trigger logo-tile" data-rv="3"><svg class="rv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg><span class="rv-label">Navegación</span></button>
+      <button class="rv-trigger logo-tile" data-rv="4"><svg class="rv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg><span class="rv-label">Correo</span></button>
+      <button class="rv-trigger logo-tile" data-rv="5"><svg class="rv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/></svg><span class="rv-label">Reconocimiento</span></button>
+      <button class="rv-trigger logo-tile" data-rv="6"><svg class="rv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span class="rv-label">Chatbots</span></button>
+    </div>
+    <div class="rv-stage">
+      <div class="rv-panel is-active" data-rv-panel="1"><h3>Recomendaciones Personalizadas</h3><p>Netflix, Spotify y YouTube analizan su historial para predecir qué quiere ver o escuchar. El 80% del tiempo de visualización en Netflix viene de recomendaciones de IA.</p></div>
+      <div class="rv-panel" data-rv-panel="2"><h3>Asistencia de Escritura</h3><p>El autocompletado de Gmail, la corrección ortográfica avanzada y sugerencias de redacción en Word son sistemas de IA. WhatsApp usa IA para sugerir respuestas rápidas.</p></div>
+      <div class="rv-panel" data-rv-panel="3"><h3>Navegación Inteligente</h3><p>Waze y Google Maps usan IA para predecir el tráfico en tiempo real, optimizar rutas y estimar tiempos de llegada con millones de puntos de datos.</p></div>
+      <div class="rv-panel" data-rv-panel="4"><h3>Filtros de Correo</h3><p>Gmail y Outlook clasifican automáticamente spam, promociones y correos prioritarios. Más del 99.9% del spam es bloqueado antes de llegar a su bandeja.</p></div>
+      <div class="rv-panel" data-rv-panel="5"><h3>Reconocimiento Biométrico</h3><p>Face ID en iPhone, el reconocimiento facial de Android y los sistemas de seguridad bancaria usan redes neuronales para verificar identidad en milisegundos.</p></div>
+      <div class="rv-panel" data-rv-panel="6"><h3>Chatbots de Atención</h3><p>Los bots de atención al cliente de bancos, aerolíneas y e-commerce son sistemas de IA. Muchos resuelven el 70-80% de consultas sin intervención humana.</p></div>
+    </div>
+  </div>
+  <div class="banner" style="margin-top:14px;">La IA no es ciencia ficción del futuro: <strong>es tecnología del presente</strong> que ya forma parte de nuestra vida diaria.</div>
+</section>
+
+<!-- ============ S14 · Historia · Los Orígenes ============ -->
+<section class="s">
+  <div class="kicker">Historia</div>
+  <h2 class="s-head">Los Orígenes de la IA</h2>
+  <p class="sub">Una historia de 70+ años (1950–1970)</p>
+  <p>La inteligencia artificial no nació ayer. Tiene raíces profundas en matemáticas, lógica y filosofía de la mente que se remontan a los años 50.</p>
+  <div class="reveal" data-reveal style="margin-top:12px;">
+    <div class="rv-grid c4">
+      <button class="rv-trigger big is-active" data-rv="1"><span class="rv-num">1950</span><span class="rv-label">Test de Turing</span></button>
+      <button class="rv-trigger big" data-rv="2"><span class="rv-num">1956</span><span class="rv-label">Nace el Término</span></button>
+      <button class="rv-trigger big" data-rv="3"><span class="rv-num">1960s</span><span class="rv-label">Primeros Programas</span></button>
+      <button class="rv-trigger big" data-rv="4"><span class="rv-num">1970s</span><span class="rv-label">Primer Invierno</span></button>
+    </div>
+    <div class="rv-stage">
+      <div class="rv-panel is-active" data-rv-panel="1"><div class="two-col"><div><p>Alan Turing publica <em>Computing Machinery and Intelligence</em> y propone la pregunta: <strong>«¿Pueden las máquinas pensar?»</strong></p><p>Diseña el Test de Turing: si una máquina puede sostener una conversación indistinguible de la humana, puede considerarse inteligente.</p></div><figure class="figbox"><img src="img/turing.jpg" alt="Alan Turing"><figcaption>Alan Turing, pionero de la computación</figcaption></figure></div></div>
+      <div class="rv-panel" data-rv-panel="2"><div class="two-col"><div><p>John McCarthy acuña el término <strong>«Inteligencia Artificial»</strong> en la Conferencia de Dartmouth, New Hampshire.</p><p>Marvin Minsky, Claude Shannon y otros 10 investigadores definen el campo: <em>«toda característica de la inteligencia puede describirse con suficiente precisión para que una máquina la simule»</em>.</p></div><figure class="figbox"><img src="img/dartmouth-1956.webp" alt="Conferencia de Dartmouth"><figcaption>Conferencia de Dartmouth, 1956</figcaption></figure></div></div>
+      <div class="rv-panel" data-rv-panel="3"><div class="two-col"><div><p><strong>ELIZA</strong> (MIT, 1966) simula un psicoterapeuta usando patrones simples de texto. Muchos usuarios creyeron hablar con un humano real.</p><p>El Perceptrón de Rosenblatt intenta modelar neuronas artificiales. Optimismo extremo: se predice que las máquinas igualarán la inteligencia humana en 20 años.</p></div><figure class="figbox"><img src="img/eliza.gif" alt="ELIZA chatbot"><figcaption>ELIZA, uno de los primeros chatbots (1966)</figcaption></figure></div></div>
+      <div class="rv-panel" data-rv-panel="4"><p>Las promesas no se cumplen. El informe Lighthill (1973) concluye que la IA no ha producido los resultados prometidos.</p><p><strong>Primer «invierno de la IA»</strong>: recorte masivo de financiamiento en EE.UU. y Reino Unido. El campo entra en una fase de escepticismo que durará casi una década.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ S15 · La IA Simbólica ============ -->
+<section class="s">
+  <div class="kicker">Historia</div>
+  <h2 class="s-head">La IA Simbólica</h2>
+  <p class="sub">El enfoque basado en reglas (1970–1990)</p>
+  <p>Tras el primer invierno, la IA resurge con un nuevo paradigma: en lugar de simular el cerebro, codificar el conocimiento humano en reglas lógicas explícitas.</p>
+  <div class="reveal" data-reveal style="margin-top:14px;">
+    <div class="rv-grid c2">
+      <button class="rv-trigger big is-active" data-rv="1"><span class="rv-label">A · IA Simbólica</span></button>
+      <button class="rv-trigger big" data-rv="2"><span class="rv-label">B · Casos y Límites</span></button>
+    </div>
+    <div class="rv-stage">
+      <div class="rv-panel is-active" data-rv-panel="1"><h3>El Enfoque Simbólico</h3><p>Los <strong>Sistemas Expertos</strong> encapsulan el conocimiento de especialistas humanos en miles de reglas del tipo SI...ENTONCES.</p><p>Décadas de 1970 y 1980: segundo boom de la IA. Gobiernos y empresas invierten millones. Japón lanza el proyecto de computadoras de 5ª generación.</p></div>
+      <div class="rv-panel" data-rv-panel="2"><div class="two-col"><div><p><strong>MYCIN</strong> (Stanford): diagnóstico de infecciones bacterianas, supera a médicos junior en precisión.</p><p><strong>XCON</strong> (DEC): configura pedidos de computadoras, ahorra $40M/año.</p><ul><li>Solo funciona en dominios muy específicos</li><li>Costosísimos de construir y mantener</li><li>No aprenden ni se adaptan</li><li>Segundo invierno de la IA (1987–1993): fracaso del hardware especializado japonés</li></ul></div><figure class="figbox"><img src="img/expert-system.jpeg" alt="Arquitectura de sistema experto"><figcaption>Arquitectura típica de un sistema experto</figcaption></figure></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ S16 · La Revolución del Machine Learning ============ -->
+<section class="s">
+  <div class="kicker">Historia</div>
+  <h2 class="s-head">La Revolución del Machine Learning</h2>
+  <p class="sub">Un cambio de paradigma (2000–2015)</p>
+  <p>En lugar de codificar reglas manualmente, ¿qué pasa si dejamos que las máquinas aprendan las reglas por sí solas a partir de los datos?</p>
+  <div class="two-col" style="margin-top:14px;">
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div class="accent-card"><h3>Machine Learning</h3><p>Los sistemas aprenden patrones <strong>directamente de los datos</strong>, sin que un humano programe reglas explícitas. El algoritmo descubre por sí solo las relaciones relevantes.</p></div>
+      <div class="accent-card"><h3>La Analogía del Gato</h3><p>No programamos reglas para reconocer gatos (orejas+bigotes+cola). Le <strong>mostramos millones de fotos de gatos</strong> y el algoritmo aprende qué patrones los distinguen.</p></div>
+    </div>
+    <figure class="figbox"><img src="img/nn-classification.jpg" alt="Red neuronal clasificando patrones"><figcaption>Red neuronal clasificando patrones en datos</figcaption></figure>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:16px;">
+    <div class="accent-card"><h3>Aprendizaje Supervisado</h3><p>Aprende con ejemplos etiquetados. Ej: detectar fraude (transacciones marcadas como fraude/no-fraude).</p></div>
+    <div class="accent-card"><h3>Aprendizaje No Supervisado</h3><p>Encuentra patrones sin etiquetas. Ej: segmentar contribuyentes en grupos similares.</p></div>
+    <div class="accent-card"><h3>Aprendizaje por Refuerzo</h3><p>Aprende por prueba y error con recompensas. Ej: AlphaGo aprendió a jugar mejor que cualquier humano.</p></div>
+  </div>
+</section>
+
+<!-- ============ S17 · La Era del Deep Learning ============ -->
+<section class="s">
+  <div class="kicker">Historia</div>
+  <h2 class="s-head">La Era del Deep Learning</h2>
+  <p class="sub">Redes neuronales profundas (2012–presente)</p>
+  <p>En 2012 ocurre un momento histórico: una red neuronal profunda destrona a los mejores algoritmos de visión computacional y cambia para siempre el campo de la IA.</p>
+  <div class="reveal" data-reveal style="margin-top:12px;">
+    <div class="rv-grid c5">
+      <button class="rv-trigger big is-active" data-rv="1"><span class="rv-num">①</span><span class="rv-label">¿Qué es DL?</span></button>
+      <button class="rv-trigger big" data-rv="2"><span class="rv-num">②</span><span class="rv-label">2012: AlexNet</span></button>
+      <button class="rv-trigger big" data-rv="3"><span class="rv-num">③</span><span class="rv-label">Más Datos</span></button>
+      <button class="rv-trigger big" data-rv="4"><span class="rv-num">④</span><span class="rv-label">Más Cómputo</span></button>
+      <button class="rv-trigger big" data-rv="5"><span class="rv-num">⑤</span><span class="rv-label">Mejores Algoritmos</span></button>
+    </div>
+    <div class="rv-stage">
+      <div class="rv-panel is-active" data-rv-panel="1"><h3>Deep Learning (Aprendizaje Profundo)</h3><p>Redes neuronales con <strong>muchas capas</strong> (profundas) que aprenden representaciones jerárquicas de los datos.</p><p>Inspiradas (muy vagamente) en el cerebro: las primeras capas detectan bordes, las siguientes formas, las finales objetos completos.</p></div>
+      <div class="rv-panel" data-rv-panel="2"><div class="two-col"><div><p><strong>AlexNet</strong> gana ImageNet 2012 con 15.3% de error vs. 26.2% del segundo lugar. Una brecha sin precedentes.</p><p>Krizhevsky, Sutskever e Hinton demuestran que las redes profundas, con suficientes datos y GPU, superan masivamente los métodos anteriores.</p></div><figure class="figbox"><img src="img/alexnet-imagenet.png" alt="AlexNet en ImageNet 2012"><figcaption>AlexNet en ImageNet 2012: 15.3% vs 26.2% de error</figcaption></figure></div></div>
+      <div class="rv-panel" data-rv-panel="3"><h3>El Combustible: Datos</h3><p><strong>ImageNet</strong>: 14 millones de imágenes, 1000 categorías, construido por Fei-Fei Li en Stanford.</p><p>Internet proveyó cantidades de datos impensables: fotos, textos, videos. Sin datos masivos, el deep learning no funciona. <em>Los datos son el petróleo del siglo XXI.</em></p></div>
+      <div class="rv-panel" data-rv-panel="4"><div class="two-col"><div><p>Las GPUs (tarjetas gráficas) permiten paralelizar masivamente los cálculos matriciales que requieren las redes neuronales.</p><p>NVIDIA se convierte en la empresa más valiosa del mundo gracias a la demanda de GPUs para IA. Una GPU moderna hace en segundos lo que le tomaría días a una CPU.</p></div><figure class="figbox"><img src="img/multilayer-perceptron.jpg" alt="Red neuronal multicapa"><figcaption>Arquitectura de red neuronal multicapa</figcaption></figure></div></div>
+      <div class="rv-panel" data-rv-panel="5"><h3>Las Técnicas Clave</h3><ul><li><strong>Backpropagation:</strong> propagar el error hacia atrás para ajustar los pesos</li><li><strong>ReLU:</strong> función de activación que permite redes mucho más profundas</li><li><strong>Dropout:</strong> técnica para evitar sobreajuste</li><li><strong>Batch normalization:</strong> estabiliza el entrenamiento</li></ul><p>Aplicaciones revolucionarias: reconocimiento de imágenes, traducción automática, diagnóstico médico, <strong>AlphaFold</strong> (estructura de proteínas).</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ S18 · La IA Generativa ============ -->
+<section class="s">
+  <div class="kicker">Hoy</div>
+  <h2 class="s-head">La IA Generativa</h2>
+  <p class="sub">La IA Generativa · 2017–presente</p>
+  <p>En 2017, Google publica <em>Attention is All You Need</em>, introduciendo la arquitectura <strong>Transformer</strong>. Esta innovación hace posible los modelos de lenguaje masivos que dominan la IA hoy.</p>
+  <figure class="figbox" style="margin-top:10px;"><img src="img/transformer.png" alt="Arquitectura Transformer" style="max-height:170px;object-fit:contain;background:var(--blanco);"><figcaption>Arquitectura Transformer (2017): la base de los LLM modernos</figcaption></figure>
+  <div class="reveal" data-reveal style="margin-top:12px;">
+    <div class="rv-grid c6">
+      <button class="rv-trigger logo-tile is-active" data-rv="1"><svg class="rv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg><span class="rv-label">Texto</span></button>
+      <button class="rv-trigger logo-tile" data-rv="2"><svg class="rv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span class="rv-label">Imágenes</span></button>
+      <button class="rv-trigger logo-tile" data-rv="3"><svg class="rv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg><span class="rv-label">Audio</span></button>
+      <button class="rv-trigger logo-tile" data-rv="4"><svg class="rv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg><span class="rv-label">Video</span></button>
+      <button class="rv-trigger logo-tile" data-rv="5"><svg class="rv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg><span class="rv-label">Código</span></button>
+      <button class="rv-trigger logo-tile" data-rv="6"><svg class="rv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg><span class="rv-label">Datos Sintéticos</span></button>
+    </div>
+    <div class="rv-stage">
+      <div class="rv-panel is-active" data-rv-panel="1"><h3>Generación de Texto</h3><p>Los <strong>Modelos de Lenguaje Grande (LLM)</strong> generan texto coherente, responden preguntas, escriben código y analizan documentos.</p><ul><li>ChatGPT / GPT-5 — OpenAI</li><li>Claude — Anthropic</li><li>Gemini — Google DeepMind</li><li>Llama — Meta (código abierto)</li></ul></div>
+      <div class="rv-panel" data-rv-panel="2"><h3>Generación de Imágenes</h3><p>A partir de una descripción de texto, estos modelos crean imágenes fotorrealistas, ilustraciones y diseños.</p><ul><li>DALL-E 3 — OpenAI</li><li>Midjourney — Midjourney</li><li>Stable Diffusion — open source</li><li>Firefly — Adobe</li></ul></div>
+      <div class="rv-panel" data-rv-panel="3"><h3>Generación de Audio y Voz</h3><p>Clonación de voz, música generada por IA y eliminación de ruido en grabaciones.</p><ul><li>ElevenLabs — clonación de voz</li><li>Suno — música completa desde texto</li><li>Adobe Podcast — mejora de calidad de audio</li></ul></div>
+      <div class="rv-panel" data-rv-panel="4"><h3>Generación de Video</h3><p>Crear videos desde texto o imágenes, editar escenas y generar efectos visuales.</p><ul><li>Sora — OpenAI (texto a video)</li><li>Runway — edición de video con IA</li><li>Pika — animación de imágenes</li></ul></div>
+      <div class="rv-panel" data-rv-panel="5"><h3>Generación de Código</h3><p>Asistentes que escriben, depuran y explican código en decenas de lenguajes de programación.</p><ul><li>GitHub Copilot — Microsoft/OpenAI</li><li>Cursor — IDE con IA integrada</li><li>Claude Code — Anthropic</li></ul></div>
+      <div class="rv-panel" data-rv-panel="6"><h3>Datos Sintéticos</h3><p>Generación de datos artificiales que preservan las propiedades estadísticas de datos reales, útil cuando los datos reales son escasos o sensibles.</p><ul><li>Útil en salud (datos de pacientes)</li><li>Útil en finanzas (datos de transacciones)</li><li>Útil en sector público (datos confidenciales)</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ S19 · Las Olas de la IA ============ -->
+<section class="s">
+  <div class="kicker">Panorama</div>
+  <h2 class="s-head">Las Olas de la IA</h2>
+  <p class="sub">Cada ola construye sobre la anterior</p>
+  <p>El machine learning es un tipo de IA. El deep learning es un tipo de machine learning. La IA generativa es un tipo de deep learning. No son tecnologías separadas.</p>
+  <div class="two-col center" style="margin-top:14px;">
+    <div>
+      <svg viewBox="0 0 420 420" style="width:100%;max-width:380px;display:block;margin:0 auto;">
+        <circle cx="210" cy="210" r="200" fill="#F4F3EF" stroke="#E0E0E0" stroke-width="2"/>
+        <text x="210" y="44" text-anchor="middle" font-family="Dax,'IBM Plex Sans',sans-serif" font-size="22" fill="#6B6E73">IA</text>
+        <circle cx="210" cy="210" r="148" fill="#E0E0E0" stroke="#c0c0c0" stroke-width="2"/>
+        <text x="210" y="80" text-anchor="middle" font-family="Dax,'IBM Plex Sans',sans-serif" font-size="19" fill="#44464A">Machine Learning</text>
+        <circle cx="210" cy="210" r="100" fill="#FFD100" opacity=".25"/>
+        <circle cx="210" cy="210" r="100" fill="none" stroke="#FFD100" stroke-width="2.5"/>
+        <text x="210" y="126" text-anchor="middle" font-family="Dax,'IBM Plex Sans',sans-serif" font-size="17" fill="#8A6D00">Deep Learning</text>
+        <circle cx="210" cy="210" r="54" fill="#1A1A1A"/>
+        <text x="210" y="206" text-anchor="middle" font-family="Dax,'IBM Plex Sans',sans-serif" font-size="13" fill="#FFD100" font-weight="700">IA</text>
+        <text x="210" y="222" text-anchor="middle" font-family="Dax,'IBM Plex Sans',sans-serif" font-size="13" fill="#FFD100" font-weight="700">Generativa</text>
+      </svg>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div class="accent-card"><h3>IA — Campo amplio</h3><p>Todo sistema que simula capacidades cognitivas humanas: razonamiento, aprendizaje, percepción.</p></div>
+      <div class="accent-card"><h3>Machine Learning</h3><p>IA que aprende de datos sin programación explícita de reglas.</p></div>
+      <div class="accent-card"><h3>Deep Learning</h3><p>ML con redes neuronales de muchas capas para reconocer patrones complejos.</p></div>
+      <div class="accent-card"><h3>IA Generativa</h3><p>DL que CREA contenido nuevo: texto, imágenes, audio, video, código.</p></div>
+    </div>
+  </div>
+  <div class="banner" style="margin-top:14px;">Estas tecnologías <strong>no son mutuamente excluyentes</strong>. Coexisten y se complementan en los sistemas modernos.</div>
+</section>
+
+<!-- ============ S20 · Desmitificando la IA ============ -->
+<section class="s">
+  <div class="kicker">Mitos</div>
+  <h2 class="s-head">Desmitificando la IA</h2>
+  <p class="sub">Seis mitos comunes confrontados con la realidad</p>
+  <p>Gran parte de lo que el público general cree sobre la IA proviene de películas de ciencia ficción y cobertura mediática sensacionalista. Confrontemos los mitos más dañinos.</p>
+  <div class="reveal" data-reveal style="margin-top:12px;">
+    <div class="rv-grid" style="grid-template-columns:repeat(3,1fr);">
+      <button class="rv-trigger big is-active" data-rv="1"><span class="rv-num">M1</span><span class="rv-label">Solo de películas</span></button>
+      <button class="rv-trigger big" data-rv="2"><span class="rv-num">M2</span><span class="rv-label">Reemplazará empleos</span></button>
+      <button class="rv-trigger big" data-rv="3"><span class="rv-num">M3</span><span class="rv-label">Siempre tiene razón</span></button>
+      <button class="rv-trigger big" data-rv="4"><span class="rv-num">M4</span><span class="rv-label">Entiende lo que dice</span></button>
+      <button class="rv-trigger big" data-rv="5"><span class="rv-num">M5</span><span class="rv-label">Solo programadores</span></button>
+      <button class="rv-trigger big" data-rv="6"><span class="rv-num">M6</span><span class="rv-label">Moda pasajera</span></button>
+    </div>
+    <div class="rv-stage">
+      <div class="rv-panel is-active" data-rv-panel="1"><div class="rv-eyebrow">Mito</div><h3>«La IA es como en las películas»</h3><p>Terminator, Ex Machina, Her — robots con conciencia, emociones y objetivos propios.</p><div class="rv-eyebrow" style="color:var(--ink);background:var(--amarillo-bg);padding:6px 12px;border-radius:6px;margin-top:12px;display:inline-block;">Realidad</div><p>La IA actual son <strong>herramientas matemáticas especializadas</strong>. No tienen conciencia, no tienen deseos ni emociones. ChatGPT no «quiere» nada.</p></div>
+      <div class="rv-panel" data-rv-panel="2"><div class="rv-eyebrow">Mito</div><h3>«La IA reemplazará todos los empleos»</h3><p>Automatización masiva e inevitable del 100% de los trabajos.</p><div class="rv-eyebrow" style="color:var(--ink);background:var(--amarillo-bg);padding:6px 12px;border-radius:6px;margin-top:12px;display:inline-block;">Realidad</div><p>La IA <strong>transforma</strong> los trabajos, no los elimina masivamente. Automatiza <em>tareas</em> específicas. Los funcionarios que usen IA bien serán más productivos y valiosos que los que no la usen.</p></div>
+      <div class="rv-panel" data-rv-panel="3"><div class="two-col"><div><div class="rv-eyebrow">Mito</div><h3>«La IA siempre tiene razón»</h3><div class="rv-eyebrow" style="color:var(--ink);background:var(--amarillo-bg);padding:6px 12px;border-radius:6px;margin-top:12px;display:inline-block;">Realidad</div><p>Las IAs <strong>alucinan</strong> con confianza. Inventan hechos, citan fuentes inexistentes, cometen errores matemáticos. <strong>Siempre verificar información crítica.</strong></p></div><figure class="figbox"><img src="img/jwst-bard-error.jpg" alt="Error de Bard sobre el James Webb"><figcaption>Error de Bard al presentar el telescopio James Webb (2023)</figcaption></figure></div></div>
+      <div class="rv-panel" data-rv-panel="4"><div class="rv-eyebrow">Mito</div><h3>«La IA entiende lo que dice»</h3><p>«ChatGPT sabe de medicina / leyes / ingeniería.»</p><div class="rv-eyebrow" style="color:var(--ink);background:var(--amarillo-bg);padding:6px 12px;border-radius:6px;margin-top:12px;display:inline-block;">Realidad</div><p>Los LLMs son <strong>predictores de texto estadísticos</strong>. Predicen cuál palabra sigue a las anteriores con base en patrones. No comprenden el significado. El resultado suena coherente porque fue entrenado con texto humano coherente.</p></div>
+      <div class="rv-panel" data-rv-panel="5"><div class="rv-eyebrow">Mito</div><h3>«La IA es solo para técnicos»</h3><p>«Necesito saber programar para usar IA.»</p><div class="rv-eyebrow" style="color:var(--ink);background:var(--amarillo-bg);padding:6px 12px;border-radius:6px;margin-top:12px;display:inline-block;">Realidad</div><p>Las herramientas actuales de IA son <strong>accesibles mediante lenguaje natural</strong>. Cualquier persona que pueda escribir una pregunta clara puede usar ChatGPT, Claude o Gemini efectivamente.</p></div>
+      <div class="rv-panel" data-rv-panel="6"><div class="rv-eyebrow">Mito</div><h3>«La IA es solo una moda pasajera»</h3><p>«Esto pasará como otras modas tecnológicas.»</p><div class="rv-eyebrow" style="color:var(--ink);background:var(--amarillo-bg);padding:6px 12px;border-radius:6px;margin-top:12px;display:inline-block;">Realidad</div><p>La IA generativa representa un <strong>cambio estructural en la economía digital</strong>. OpenAI tiene 400M usuarios. Microsoft, Google y Amazon han invertido cientos de miles de millones. No es una burbuja.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ S21 · ¿Por Qué Importan los Mitos? ============ -->
+<section class="s">
+  <div class="kicker">Reflexión</div>
+  <h2 class="s-head">¿Por Qué Importan los Mitos?</h2>
+  <p>Los mitos sobre la IA tienen consecuencias prácticas concretas. En el contexto de la Contraloría, creer en mitos puede llevar a decisiones institucionales erróneas.</p>
+  <div class="rv-grid c2 stagger-in" style="margin-top:16px;">
+    <div class="accent-card"><h3>Riesgo de Subestimar la IA</h3><p>Ignorar la tecnología por considerarla <em>«pura ciencia ficción»</em> lleva a parálisis institucional. Entidades controladas ya usan IA; la Contraloría debe poder evaluarlas.</p><p><strong>→ Consecuencia: rezago en capacidad fiscalizadora.</strong></p></div>
+    <div class="accent-card"><h3>Riesgo de Sobreestimar la IA</h3><p>Confiar ciegamente en resultados de IA sin verificación. Delegar decisiones críticas de auditoría a un sistema que puede estar equivocado.</p><p><strong>→ Consecuencia: errores graves en informes y dictámenes.</strong></p></div>
+    <div class="accent-card"><h3>La Necesidad del Pensamiento Crítico</h3><p>Los funcionarios necesitan <strong>criterio técnico</strong> para evaluar propuestas de IA, licitaciones de tecnología y resultados de sistemas que usen las entidades controladas.</p></div>
+    <div class="accent-card"><h3>Aplicación al Control Fiscal</h3><p>La Contraloría fiscalizará entidades que usen IA para procesos de contratación, pagos y gestión. Sin comprensión real, <strong>no se puede auditar lo que no se entiende</strong>.</p></div>
+  </div>
+  <div class="banner note" style="margin-top:14px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span>Este curso les dará el criterio necesario para evitar ambos extremos: ni el rechazo irracional ni la confianza ciega.</span></div>
+</section>
+
+<!-- ============ S22 · IA Estrecha vs. IA General ============ -->
+<section class="s">
+  <div class="kicker">Aclaración</div>
+  <h2 class="s-head">IA Estrecha vs. IA General</h2>
+  <p>Es fundamental distinguir entre lo que existe hoy y lo que es hipotético. Confundir estas categorías lleva a expectativas irreales y decisiones mal informadas.</p>
+  <div class="reveal" data-reveal style="margin-top:14px;">
+    <div class="rv-grid c2">
+      <button class="rv-trigger big is-active" data-rv="1"><span class="rv-label">ANI — Lo que existe HOY</span></button>
+      <button class="rv-trigger big" data-rv="2"><span class="rv-label">AGI — Lo que NO existe</span></button>
+    </div>
+    <div class="rv-stage">
+      <div class="rv-panel is-active" data-rv-panel="1"><h3>IA Estrecha (Artificial Narrow Intelligence)</h3><p><strong>Todo lo que usamos hoy</strong>: ChatGPT, DALL-E, AlphaFold, Siri, Netflix, el filtro de spam.</p><p>Características:</p><ul><li>Muy competente en UN dominio específico</li><li>Incompetente fuera de ese dominio</li><li>No tiene conciencia ni comprensión real</li><li>Cada sistema debe entrenarse para su tarea</li><li>No generaliza como un humano</li></ul></div>
+      <div class="rv-panel" data-rv-panel="2"><div class="two-col"><div><h3>IA General (Artificial General Intelligence)</h3><p>Hipotético: un sistema que iguala la <strong>flexibilidad cognitiva humana</strong> en cualquier dominio.</p><ul><li>Aprender cualquier tarea sin re-entrenamiento</li><li>Razonar, planear y adaptarse como un humano</li><li>Posiblemente consciente o con comprensión real</li><li>No existe. Debate activo sobre si es posible y cuándo.</li><li>Estimaciones van de 5 años a «nunca»</li></ul></div><figure class="figbox"><img src="img/searle-chinese-room.jpg" alt="Cuarto Chino de Searle"><figcaption>El experimento mental «Cuarto Chino» de Searle cuestiona si las máquinas realmente comprenden</figcaption></figure></div></div>
+    </div>
+  </div>
+  <div class="banner" style="margin-top:14px;"><strong>Cuando hablamos de IA hoy, hablamos de IA estrecha.</strong> Los titulares sobre «IA que supera a los humanos» siempre se refieren a dominios específicos.</div>
+</section>
+
+<!-- ============ S23 · ¿Cómo Aprende una IA? ============ -->
+<section class="s">
+  <div class="kicker">Funcionamiento</div>
+  <h2 class="s-head">¿Cómo Aprende una IA?</h2>
+  <p class="sub">La analogía humana, paso a paso</p>
+  <p>Imaginemos que un estudiante va a aprender a clasificar documentos de auditoría. El proceso de aprendizaje de una IA es sorprendentemente análogo.</p>
+  <div class="reveal" data-reveal style="margin-top:12px;">
+    <div class="rv-grid c5">
+      <button class="rv-trigger big is-active" data-rv="1"><span class="rv-num">01</span><span class="rv-label">Datos = Experiencias</span></button>
+      <button class="rv-trigger big" data-rv="2"><span class="rv-num">02</span><span class="rv-label">Algoritmo = Método</span></button>
+      <button class="rv-trigger big" data-rv="3"><span class="rv-num">03</span><span class="rv-label">Modelo = Conocimiento</span></button>
+      <button class="rv-trigger big" data-rv="4"><span class="rv-num">04</span><span class="rv-label">Entrenamiento</span></button>
+      <button class="rv-trigger big" data-rv="5"><span class="rv-num">05</span><span class="rv-label">Inferencia = Aplicar</span></button>
+    </div>
+    <div class="rv-stage">
+      <div class="rv-panel is-active" data-rv-panel="1"><h3>Los Datos (Experiencias)</h3><p>Como el estudiante necesita leer documentos para aprender, la IA necesita <strong>datos de entrenamiento</strong>: millones de ejemplos del problema que debe resolver.</p><ul><li>Imágenes etiquetadas para visión</li><li>Textos y sus traducciones para traducción</li><li>Transacciones marcadas para detección de fraude</li><li>Cientos de miles de millones de palabras para LLMs</li></ul></div>
+      <div class="rv-panel" data-rv-panel="2"><h3>El Algoritmo (Método de Estudio)</h3><p>El <strong>algoritmo</strong> define cómo el sistema aprende de los datos. Es el «método de estudio» de la IA.</p><ul><li>Redes neuronales para visión y lenguaje</li><li>Árboles de decisión para clasificación</li><li>Clustering para segmentación</li><li>Transformers para IA generativa</li></ul></div>
+      <div class="rv-panel" data-rv-panel="3"><h3>El Modelo (Conocimiento Aprendido)</h3><p>Tras el entrenamiento, el <strong>modelo</strong> encapsula todo lo aprendido: millones o miles de millones de parámetros (pesos numéricos) que representan los patrones encontrados.</p><p>GPT-4: ~1.8 billones de parámetros. Llama 4: hasta 2 billones. Cada parámetro es un número ajustado durante el entrenamiento.</p></div>
+      <div class="rv-panel" data-rv-panel="4"><h3>El Entrenamiento (Proceso)</h3><p>El entrenamiento es un proceso iterativo: el modelo hace predicciones, calcula el <strong>error</strong>, y ajusta sus parámetros para reducirlo.</p><p>GPT-4 fue entrenado en semanas con miles de GPUs. Costo estimado: &gt;$100 millones. Por eso pocas empresas pueden entrenar modelos fundacionales.</p></div>
+      <div class="rv-panel" data-rv-panel="5"><h3>La Inferencia (Aplicar el Conocimiento)</h3><p>Cuando usamos ChatGPT o Claude, estamos en la fase de <strong>inferencia</strong>: el modelo usa lo aprendido para responder nuestra consulta específica.</p><p>La inferencia es rápida y barata comparada con el entrenamiento. Por eso podemos acceder a modelos potentes por pocos dólares al mes.</p></div>
+    </div>
+  </div>
+  <div class="banner" style="margin-top:14px;"><strong>GIGO: Garbage In, Garbage Out.</strong> La calidad del modelo depende directamente de la calidad y cantidad de los datos de entrenamiento. Datos sesgados = modelo sesgado.</div>
+</section>
+
+<!-- ============ S24 · La IA Generativa por Dentro ============ -->
+<section class="s">
+  <div class="kicker">Funcionamiento</div>
+  <h2 class="s-head">La IA Generativa por Dentro</h2>
+  <p class="sub">¿Cómo funciona en términos simples?</p>
+  <p>Herramientas como <a class="platform-link" href="https://chat.openai.com" target="_blank" rel="noopener">ChatGPT</a> y <a class="platform-link" href="https://claude.ai" target="_blank" rel="noopener">Claude</a> son modelos de lenguaje grande (LLM). Entender cómo funcionan es esencial para usarlos bien.</p>
+  <div class="reveal" data-reveal style="margin-top:12px;">
+    <div class="rv-grid c4">
+      <button class="rv-trigger big is-active" data-rv="1"><span class="rv-num">1</span><span class="rv-label">Entrenamiento Inicial</span></button>
+      <button class="rv-trigger big" data-rv="2"><span class="rv-num">2</span><span class="rv-label">Patrones Estadísticos</span></button>
+      <button class="rv-trigger big" data-rv="3"><span class="rv-num">3</span><span class="rv-label">Prompt Engineering</span></button>
+      <button class="rv-trigger big" data-rv="4"><span class="rv-num">4</span><span class="rv-label">Generación Token a Token</span></button>
+    </div>
+    <div class="rv-stage">
+      <div class="rv-panel is-active" data-rv-panel="1"><div class="two-col"><div><h3>Entrenamiento en Escala Masiva</h3><p>Los LLMs se entrenan con <strong>cientos de miles de millones de palabras</strong>: libros, sitios web, código, artículos científicos, Wikipedia, Reddit.</p><p>Este proceso toma meses, usa miles de GPUs especializadas, y cuesta cientos de millones de dólares. Solo unas pocas empresas en el mundo pueden hacerlo.</p></div><figure class="figbox"><img src="img/iceberg-llm.jpg" alt="El conocimiento de los LLMs como un iceberg"><figcaption>El conocimiento de los LLMs: una pequeña parte visible sobre un océano de datos</figcaption></figure></div></div>
+      <div class="rv-panel" data-rv-panel="2"><h3>Aprendizaje de Patrones</h3><p>El modelo NO aprende el <em>significado</em> de las palabras. Aprende <strong>patrones estadísticos</strong>: qué palabras tienden a aparecer juntas, qué estructuras de texto son coherentes.</p><p>Si ve «La capital de Colombia es ___», aprende que «Bogotá» es estadísticamente muy probable en ese contexto, basado en haber leído esa frase miles de veces.</p></div>
+      <div class="rv-panel" data-rv-panel="3"><h3>La Instrucción: El Prompt</h3><p>El <strong>prompt</strong> es la instrucción que damos al modelo. La calidad del resultado depende críticamente de la calidad del prompt.</p><ul><li>Ser específico: contexto + tarea + formato deseado</li><li>Dar ejemplos del resultado esperado</li><li>Indicar el rol del asistente: «Actúa como auditor...»</li><li>Especificar restricciones: «máximo 200 palabras»</li></ul><p>El <strong>prompt engineering</strong> es una habilidad que desarrollaremos en el Módulo 2.</p></div>
+      <div class="rv-panel" data-rv-panel="4"><h3>Cómo Genera el Texto</h3><p>El modelo genera texto <strong>token a token</strong> (palabras o fragmentos de palabras), eligiendo el siguiente token más probable dado todo el contexto anterior.</p><p>NO tiene un texto pre-escrito que lee. Lo construye en tiempo real, calculando probabilidades con miles de millones de operaciones matemáticas por segundo.</p></div>
+    </div>
+  </div>
+  <div class="accent-card" style="margin-top:14px;"><h3>Analogía Útil</h3><p>Un estudiante brillante que leyó millones de documentos, tiene una memoria perfecta de patrones lingüísticos, pero <strong>no comprende realmente</strong> lo que dice — solo sabe qué texto es coherente con el contexto.</p></div>
+</section>
+
+<!-- ============ S25 · Punto de Reflexión ============ -->
+<section class="s">
+  <div class="kicker">Síntesis</div>
+  <h2 class="s-head">Punto de Reflexión</h2>
+  <p>Antes de pasar al ecosistema actual, detengámonos un momento para consolidar lo que hemos visto.</p>
+  <div class="rv-grid c2 stagger-in" style="margin-top:16px;">
+    <div class="accent-card"><h3>No es Magia</h3><p>La IA es matemática aplicada a gran escala: álgebra lineal, probabilidad y optimización. Poderosa, pero determinista y auditable.</p></div>
+    <div class="accent-card"><h3>Historia de 70+ Años</h3><p>No es nueva. Ha pasado por múltiples inviernos y resurrecciones. Los saltos actuales se explican por más datos, más cómputo y mejores algoritmos.</p></div>
+    <div class="accent-card"><h3>Herramienta Poderosa, NO Infalible</h3><p>Puede hacer cosas impresionantes, pero falla de maneras impredecibles. Alucinaciones, sesgos y errores son parte inherente de la tecnología actual.</p></div>
+    <div class="accent-card"><h3>El Conocimiento es Poder Crítico</h3><p>Entender los fundamentos nos permite evaluar propuestas, detectar promesas exageradas y tomar decisiones institucionales informadas.</p></div>
+  </div>
+  <div class="banner" style="margin-top:14px;">«No necesitan ser expertos técnicos, pero sí <strong>usuarios informados, críticos y responsables</strong>.»</div>
+</section>
+
+<!-- ============ S26 · Divider Parte 2 ============ -->
+<section class="s s--dark divider" data-nofoot>
+  <div class="num">02</div>
+  <h2>El Ecosistema Actual de la IA</h2>
+  <p class="sub">Actores, modelos y plataformas.</p>
+  <div class="yellow-underline"></div>
+</section>
+
+<!-- ============ S27 · Los Gigantes de la IA ============ -->
+<section class="s">
+  <div class="kicker">Actores</div>
+  <h2 class="s-head">Los Gigantes de la IA</h2>
+  <p class="sub">¿Quién es quién en el ecosistema global?</p>
+  <p>Un pequeño grupo de empresas concentra el desarrollo de los modelos más capaces. Conocer sus posicionamientos es clave para evaluar sus herramientas.</p>
+  <div class="rv-grid stagger-in" style="grid-template-columns:repeat(3,1fr);gap:14px;margin-top:14px;">
+    <div class="accent-card"><h3><a class="platform-link" href="https://openai.com" target="_blank" rel="noopener">OpenAI</a></h3><p>ChatGPT + GPT-5. Inversión de $13B de Microsoft. El actor que desencadenó la revolución de IA generativa con ChatGPT en noviembre 2022.</p></div>
+    <div class="accent-card"><h3><a class="platform-link" href="https://anthropic.com" target="_blank" rel="noopener">Anthropic</a></h3><p>Claude 4 (Sonnet, Opus, Haiku). Respaldada por Google y Amazon. Fundada por ex-directivos de OpenAI, con foco en seguridad y alineación de IA.</p></div>
+    <div class="accent-card"><h3><a class="platform-link" href="https://deepmind.google" target="_blank" rel="noopener">Google / DeepMind</a></h3><p>Gemini 2.5 Pro + Flash. Integrado en todo el ecosistema Google (Search, Gmail, Docs). Contexto de hasta 1 millón de tokens.</p></div>
+    <div class="accent-card"><h3><a class="platform-link" href="https://ai.meta.com" target="_blank" rel="noopener">Meta AI</a></h3><p>Llama 4 (código abierto). El modelo open source más capaz. Gratuito para investigación y uso comercial. Contexto de hasta 10 millones de tokens (Scout).</p></div>
+    <div class="accent-card"><h3><a class="platform-link" href="https://deepseek.com" target="_blank" rel="noopener">DeepSeek</a></h3><p>V3 + R1 (código abierto). El disruptor chino: rendimiento comparable a GPT-4 a una fracción del costo. Sacudió los mercados en enero 2025.</p></div>
+    <div class="accent-card"><h3><a class="platform-link" href="https://x.ai" target="_blank" rel="noopener">xAI (Grok)</a></h3><p>Grok 4 (contexto 2M tokens). Creado por Elon Musk. Accede a datos en tiempo real de X (Twitter). Integrado en la plataforma X Premium.</p></div>
+    <div class="accent-card"><h3><a class="platform-link" href="https://mistral.ai" target="_blank" rel="noopener">Mistral AI</a></h3><p>Mistral Large + Codestral. Empresa francesa, referente europeo en soberanía de IA. Modelos eficientes, algunos open source, con énfasis en privacidad.</p></div>
+  </div>
+</section>
+
+<!-- ============ S28 · Modelos Líderes ============ -->
+<section class="s">
+  <div class="kicker">Comparativa</div>
+  <h2 class="s-head">Modelos Líderes</h2>
+  <p class="sub">Comparativa a Febrero 2026</p>
+  <p>El mercado de modelos de IA evoluciona cada semanas. Esta tabla muestra los modelos más relevantes por capacidad, costo y características especiales.</p>
+  <table class="mtable" style="margin-top:12px;">
+    <thead><tr><th>Modelo</th><th>Proveedor</th><th>Contexto</th><th>Precio (in/out · 1M tok)</th><th>Características destacadas</th></tr></thead>
+    <tbody>
+      <tr><td>Claude Sonnet 4.5</td><td>Anthropic</td><td>200K</td><td>$3 / $15</td><td>Balance óptimo calidad-costo, razonamiento avanzado</td></tr>
+      <tr><td>Claude Haiku 4.5</td><td>Anthropic</td><td>200K</td><td>$1 / $5</td><td>Velocidad máxima, bajo costo, tareas simples</td></tr>
+      <tr><td>GPT-5</td><td>OpenAI</td><td>272K</td><td>$1.25 / $10</td><td>Multimodal completo, integrado en ChatGPT</td></tr>
+      <tr><td>Gemini 2.5 Pro</td><td>Google</td><td>1M</td><td>$1.25 / $10</td><td>Contexto masivo, razonamiento largo</td></tr>
+      <tr><td>Gemini 2.5 Flash</td><td>Google</td><td>1M</td><td>$0.30 / $2.50</td><td>Velocidad + contexto, muy económico</td></tr>
+      <tr><td>DeepSeek V3.1</td><td>DeepSeek</td><td>128K</td><td>$0.27 / $1.10</td><td>Código abierto, muy económico, chino</td></tr>
+      <tr><td>DeepSeek R1</td><td>DeepSeek</td><td>128K</td><td>$0.55 / $2.19</td><td>Razonamiento paso a paso, código abierto</td></tr>
+      <tr><td>Grok 4</td><td>xAI</td><td>2M</td><td>$3 / $15</td><td>Contexto 2M, datos en tiempo real de X</td></tr>
+      <tr><td>Llama 4 Maverick</td><td>Meta</td><td>1M</td><td>GRATIS</td><td>Open source, on-premise posible</td></tr>
+      <tr><td>Llama 4 Scout</td><td>Meta</td><td>10M</td><td>GRATIS</td><td>Contexto 10M tokens, gratuito</td></tr>
+    </tbody>
+  </table>
+  <div class="banner note" style="margin-top:12px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span><strong>Tendencias 2025–2026:</strong> contextos masivos (1M–10M tokens), reducción agresiva de costos, código abierto competitivo con propietario.</span></div>
+</section>
+
+<!-- ============ S29 · Propietario vs. Código Abierto ============ -->
+<section class="s">
+  <div class="kicker">Decisión Estratégica</div>
+  <h2 class="s-head">Propietario vs. Código Abierto</h2>
+  <p>Una de las decisiones más importantes para la Contraloría es qué tipo de modelos usar. Cada enfoque tiene ventajas y desventajas que deben evaluarse caso por caso.</p>
+  <div class="vs-cols stagger-in" style="margin-top:16px;">
+    <div class="col left">
+      <p><strong>Modelos Propietarios</strong></p>
+      <p style="color:var(--gris-3);">ChatGPT, Claude, Gemini</p>
+      <ul>
+        <li>Interfaz lista para usar</li>
+        <li>Soporte técnico continuo</li>
+        <li>Actualizaciones automáticas</li>
+        <li>Sin infraestructura propia</li>
+      </ul>
+      <div class="rv-eyebrow" style="margin-top:10px;">Consideraciones</div>
+      <ul>
+        <li>Los datos van a servidores externos</li>
+        <li>Dependencia del proveedor</li>
+        <li>Costo por uso (por token)</li>
+        <li>Posible exposición de información sensible</li>
+      </ul>
+    </div>
+    <div class="vs-divider">vs</div>
+    <div class="col right">
+      <p><strong>Código Abierto</strong></p>
+      <p style="color:var(--gris-2);">Llama, DeepSeek, Mistral</p>
+      <ul>
+        <li>Datos no salen de su infraestructura</li>
+        <li>Costo variable (infraestructura propia)</li>
+        <li>Control total sobre el modelo</li>
+        <li>Personalizable para su contexto</li>
+      </ul>
+      <div class="rv-eyebrow" style="margin-top:10px;color:var(--ochre);">Consideraciones</div>
+      <ul>
+        <li>Requiere infraestructura de cómputo</li>
+        <li>Equipo especializado para mantener</li>
+        <li>Inversión en hardware o nube privada</li>
+        <li>Mayor complejidad de implementación</li>
+      </ul>
+    </div>
+  </div>
+  <div class="banner info" style="margin-top:14px;"><strong>Para la Contraloría:</strong> soberanía de datos vs. facilidad de uso. La decisión depende del nivel de sensibilidad de la información y la capacidad técnica disponible.</div>
+</section>
+
+<!-- ============ S30 · Tipos de IA en el Mercado ============ -->
+<section class="s">
+  <div class="kicker">Ecosistema</div>
+  <h2 class="s-head">Tipos de IA en el Mercado</h2>
+  <p>Más allá de los grandes modelos fundacionales, el mercado ofrece una diversidad de herramientas especializadas para diferentes necesidades.</p>
+  <div class="reveal" data-reveal style="margin-top:12px;">
+    <div class="rv-grid" style="grid-template-columns:repeat(7,1fr);">
+      <button class="rv-trigger logo-tile is-active" data-rv="1"><svg class="rv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg><span class="rv-label">Asistentes Virtuales</span></button>
+      <button class="rv-trigger logo-tile" data-rv="2"><svg class="rv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span class="rv-label">Búsqueda con IA</span></button>
+      <button class="rv-trigger logo-tile" data-rv="3"><svg class="rv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg><span class="rv-label">Productividad</span></button>
+      <button class="rv-trigger logo-tile" data-rv="4"><svg class="rv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span class="rv-label">Chatbots Gen.</span></button>
+      <button class="rv-trigger logo-tile" data-rv="5"><svg class="rv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span class="rv-label">Generadores Imagen</span></button>
+      <button class="rv-trigger logo-tile" data-rv="6"><svg class="rv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg><span class="rv-label">Software Empresarial</span></button>
+      <button class="rv-trigger logo-tile" data-rv="7"><svg class="rv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg><span class="rv-label">IA Embebida</span></button>
+    </div>
+    <div class="rv-stage">
+      <div class="rv-panel is-active" data-rv-panel="1"><h3>Asistentes Virtuales</h3><p>Diseñados para responder preguntas y ejecutar tareas simples mediante voz o texto.</p><ul><li>Siri — Apple</li><li>Alexa — Amazon</li><li>Google Assistant</li><li>Cortana — Microsoft (descontinuado)</li></ul></div>
+      <div class="rv-panel" data-rv-panel="2"><h3>Motores de Búsqueda Aumentados</h3><p>Búsqueda web potenciada con IA que resume, sintetiza y responde preguntas directamente.</p><ul><li>Google Search (AI Overviews)</li><li>Microsoft Bing Copilot</li><li>Perplexity AI — especializado en búsqueda con citas</li></ul></div>
+      <div class="rv-panel" data-rv-panel="3"><h3>Suites de Productividad</h3><p>IA integrada en las herramientas de trabajo diario: creación de documentos, análisis de datos, resúmenes.</p><ul><li>Microsoft 365 Copilot (Word, Excel, Teams, Outlook)</li><li>Google Workspace (Docs, Sheets, Gmail)</li><li>Notion AI</li></ul></div>
+      <div class="rv-panel" data-rv-panel="4"><h3>Chatbots Generativos</h3><p>Modelos de lenguaje de propósito general para conversación, análisis, redacción y razonamiento.</p><ul><li>ChatGPT (OpenAI)</li><li>Claude (Anthropic)</li><li>Gemini (Google)</li></ul></div>
+      <div class="rv-panel" data-rv-panel="5"><h3>Generadores de Imagen</h3><p>Crean imágenes fotorrealistas o artísticas a partir de descripciones de texto.</p><ul><li>DALL-E 3 — OpenAI (integrado en ChatGPT)</li><li>Midjourney — alta calidad artística</li><li>Stable Diffusion — open source</li><li>Adobe Firefly — integrado en Creative Cloud</li></ul></div>
+      <div class="rv-panel" data-rv-panel="6"><h3>Software Empresarial con IA</h3><p>Plataformas empresariales que integran IA en procesos de negocio específicos.</p><ul><li>Salesforce Einstein — CRM con IA</li><li>SAP AI — ERP con IA</li><li>ServiceNow — gestión de servicios TI</li><li>IBM Watson — análisis empresarial</li></ul></div>
+      <div class="rv-panel" data-rv-panel="7"><h3>IA Embebida en Dispositivos</h3><p>IA integrada directamente en hardware sin conexión a la nube.</p><ul><li>Face ID y reconocimiento facial en smartphones</li><li>Cámaras con estabilización y mejora automática</li><li>Procesadores neurales en computadores modernos</li><li>Vehículos con asistencia de conducción</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ S31 · Donde Ya Estamos Usando IA ============ -->
+<section class="s">
+  <div class="kicker">Contexto Inmediato</div>
+  <h2 class="s-head">Donde Ya Estamos Usando IA</h2>
+  <p>Sin saberlo, muchos funcionarios ya interactúan con IA en sus herramientas de trabajo diario. La Contraloría usa plataformas de Microsoft y Google que ya incorporan IA.</p>
+  <div class="reveal" data-reveal style="margin-top:12px;">
+    <div class="rv-grid c5">
+      <button class="rv-trigger big is-active" data-rv="1"><span class="rv-num">①</span><span class="rv-label">Microsoft Office 365</span></button>
+      <button class="rv-trigger big" data-rv="2"><span class="rv-num">②</span><span class="rv-label">Google Workspace</span></button>
+      <button class="rv-trigger big" data-rv="3"><span class="rv-num">③</span><span class="rv-label">Videoconferencia</span></button>
+      <button class="rv-trigger big" data-rv="4"><span class="rv-num">④</span><span class="rv-label">Correo electrónico</span></button>
+      <button class="rv-trigger big" data-rv="5"><span class="rv-num">⑤</span><span class="rv-label">Gestión documental</span></button>
+    </div>
+    <div class="rv-stage">
+      <div class="rv-panel is-active" data-rv-panel="1"><h3>Microsoft 365 Copilot</h3><ul><li>Word: redacción automática, resúmenes, mejora de texto</li><li>Excel: análisis de datos, fórmulas naturales, gráficos</li><li>PowerPoint: crear presentaciones desde texto o documentos</li><li>Outlook: resúmenes de correos, borradores de respuestas</li><li>Teams: transcripción automática, notas de reuniones, resúmenes</li></ul></div>
+      <div class="rv-panel" data-rv-panel="2"><h3>Google Workspace con Gemini</h3><ul><li>Docs: escritura con IA, mejora de redacción</li><li>Sheets: análisis y visualización de datos</li><li>Gmail: borrador inteligente, respuestas sugeridas</li><li>Meet: transcripción y subtítulos en tiempo real</li><li>Drive: búsqueda semántica en documentos</li></ul></div>
+      <div class="rv-panel" data-rv-panel="3"><h3>IA en Videoconferencias</h3><ul><li>Transcripción automática de reuniones</li><li>Separación de fondo (background blur)</li><li>Reducción de ruido ambiental</li><li>Subtítulos en tiempo real y en múltiples idiomas</li><li>Resúmenes automáticos post-reunión</li></ul></div>
+      <div class="rv-panel" data-rv-panel="4"><h3>IA en el Correo Electrónico</h3><ul><li>Filtros avanzados de spam (&gt;99.9% precisión)</li><li>Clasificación automática: importante, social, promociones</li><li>Respuestas inteligentes sugeridas</li><li>Búsqueda semántica: «correos sobre licitación de marzo»</li><li>Traducción automática de correos en otros idiomas</li></ul></div>
+      <div class="rv-panel" data-rv-panel="5"><h3>IA en Gestión Documental</h3><ul><li>OCR avanzado: extraer texto de documentos escaneados</li><li>Clasificación automática de documentos por tipo</li><li>Búsqueda por contenido, no solo nombre de archivo</li><li>Extracción de información clave de contratos</li><li>Detección de documentos duplicados o similares</li></ul></div>
+    </div>
+  </div>
+  <div class="banner info" style="margin-top:14px;"><strong>La pregunta no es SI usar IA en la Contraloría, sino CÓMO</strong> hacerlo de manera segura, ética y efectiva.</div>
+</section>
+
+<!-- ============ S32 · La IA en el Sector Público ============ -->
+<section class="s">
+  <div class="kicker">Sector Público</div>
+  <h2 class="s-head">La IA en el Sector Público</h2>
+  <p class="sub">Panorama general</p>
+  <p>Los gobiernos de todo el mundo están adoptando IA para mejorar servicios, aumentar eficiencia y fortalecer la toma de decisiones. Colombia no es la excepción.</p>
+  <div class="sec-grid stagger-in" style="margin-top:12px;">
+    <div class="sec-card"><div class="sec-img" style="background-image:url('img/cover-datacenter.jpg');background-size:cover;background-position:center;"></div><h3>Eficiencia Administrativa</h3><p>Automatización de procesos repetitivos, reducción de tiempos de respuesta y optimización de recursos.</p></div>
+    <div class="sec-card"><div class="sec-img" style="background-image:url('img/sector-publico.jpg');background-size:cover;background-position:center;"></div><h3>Servicios al Ciudadano</h3><p>Chatbots de atención, procesamiento de trámites, personalización de servicios y reducción de filas.</p></div>
+    <div class="sec-card"><div class="sec-img"></div><h3>Gobernanza Basada en Datos</h3><p>Análisis predictivo para política pública, detección de anomalías y monitoreo en tiempo real.</p></div>
+  </div>
+  <h3 style="font-size:28px;font-family:var(--display);margin:14px 0 10px;color:var(--ink);font-weight:700;">Casos Internacionales Destacados</h3>
+  <div class="op-cards">
+    <div class="op-card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><h3>Detección de Fraude Fiscal</h3><p>IRS (EE.UU.) y HMRC (UK) usan ML para identificar patrones de evasión fiscal, con tasas de detección superiores al 90%.</p></div>
+    <div class="op-card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><h3>Análisis Predictivo de Riesgos</h3><p>Tribunales europeos usan IA para priorizar casos según probabilidad de irregularidades.</p></div>
+    <div class="op-card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><h3>Automatización de Trámites</h3><p>Estonia y Singapur procesan el 99% de trámites gubernamentales sin papel. Tiempo de respuesta: minutos.</p></div>
+    <div class="op-card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg><h3>Análisis de Documentos Legales</h3><p>IA extrae cláusulas clave, detecta inconsistencias y resume contratos en segundos.</p></div>
+    <div class="op-card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><h3>Optimización de Procesos</h3><p>Algoritmos de IA reducen costos operativos gubernamentales entre 20-40% en procesos administrativos.</p></div>
+    <div class="op-card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg><h3>Monitoreo de Contratación Pública</h3><p>Colombia: SECOP II con análisis de IA para detectar posibles irregularidades en contratos públicos.</p></div>
+  </div>
+  <div class="banner info" style="margin-top:12px;"><strong>Oportunidad para Colombia:</strong> La Contraloría puede liderar la adopción responsable de IA en el control fiscal, como referente para América Latina.</div>
+</section>
+
+<!-- ============ S33 · Tendencias 2025-2026 ============ -->
+<section class="s">
+  <div class="kicker">Futuro Próximo</div>
+  <h2 class="s-head">Tendencias 2025–2026</h2>
+  <p>El campo de la IA evoluciona a una velocidad sin precedentes. Estas son las tendencias que definirán el ecosistema en los próximos 12–18 meses y que impactarán directamente la forma en que trabajan.</p>
+  <div class="trend-grid stagger-in">
+    <div class="trend-item"><div class="tnum">1</div><h3>Modelos Multimodales</h3><p>Los modelos procesan simultáneamente texto, imágenes, audio y video. GPT-4o, Gemini 1.5 y Claude 3 ya son nativamente multimodales.</p></div>
+    <div class="trend-item"><div class="tnum">2</div><h3>Agentes Autónomos</h3><p>IAs que ejecutan tareas complejas de múltiples pasos sin supervisión humana: navegan la web, ejecutan código, gestionan archivos.</p></div>
+    <div class="trend-item"><div class="tnum">3</div><h3>IA Especializada por Sector</h3><p>Modelos entrenados específicamente para medicina, derecho, finanzas y sector público, con vocabulario y casos de uso especializados.</p></div>
+    <div class="trend-item"><div class="tnum">4</div><h3>Razonamiento Avanzado</h3><p>Modelos que «piensan antes de responder» (chain-of-thought): GPT-o1, DeepSeek R1. Mejoras dramáticas en matemáticas, lógica y análisis.</p></div>
+    <div class="trend-item"><div class="tnum">5</div><h3>Contextos Masivos</h3><p>Llama 4 Scout maneja 10 millones de tokens (~7,500 libros). Permite analizar repositorios de documentos completos en una sola consulta.</p></div>
+    <div class="trend-item"><div class="tnum">6</div><h3>Open Source Competitivo</h3><p>DeepSeek y Llama 4 demuestran que los modelos abiertos igualan a los propietarios. Reduce costos y aumenta soberanía tecnológica.</p></div>
+  </div>
+  <figure class="figbox" style="margin-top:12px;"><img src="img/scaling-laws.jpg" alt="Leyes de escala en IA" style="max-height:200px;object-fit:contain;background:var(--blanco);"><figcaption>Leyes de escala: más parámetros + más datos = mejor rendimiento predictivo</figcaption></figure>
+</section>
+
+<!-- ============ S34 · Divider Parte 3 ============ -->
+<section class="s s--dark divider" data-nofoot>
+  <div class="num">03</div>
+  <h2>Discusión Guiada</h2>
+  <p class="sub">La IA en nuestro contexto: ¿qué significa para la Contraloría?</p>
+  <div class="yellow-underline"></div>
+</section>
+
+<!-- ============ S35 · Ejercicio Participativo ============ -->
+<section class="s">
+  <div class="kicker">Ejercicio</div>
+  <h2 class="s-head">Ejercicio Participativo</h2>
+  <p class="sub">La IA en mi día a día</p>
+  <p>Reflexionemos colectivamente sobre nuestra experiencia actual con la IA y las oportunidades que identificamos en nuestro contexto de trabajo.</p>
+  <div class="diag-cards stagger-in" style="grid-template-columns:1fr 1fr 1fr;margin-top:16px;">
+    <div class="diag-card"><div class="qmark">?</div><div><h3>¿Dónde ya están viendo IA?</h3><p>¿En qué herramientas o procesos de trabajo han notado que la IA ya está integrada, aunque no lo llamemos así?</p></div></div>
+    <div class="diag-card"><div class="qmark">?</div><div><h3>¿Qué tareas podrían beneficiarse?</h3><p>¿Qué actividades repetitivas, de análisis de documentos o de síntesis de información podrían mejorar con IA?</p></div></div>
+    <div class="diag-card"><div class="qmark">?</div><div><h3>¿Qué les preocupa?</h3><p>¿Cuáles son sus principales dudas, miedos o reservas sobre usar IA en el contexto de la Contraloría?</p></div></div>
+  </div>
+  <div class="banner note" style="margin-top:16px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span><strong>Instrucciones:</strong> 5 minutos de reflexión individual → compartir en plenaria → registro en documento colaborativo compartido.</span></div>
+</section>
+
+<!-- ============ S36 · Oportunidades para la Contraloría ============ -->
+<section class="s">
+  <div class="kicker">Aplicaciones</div>
+  <h2 class="s-head">Oportunidades para la Contraloría</h2>
+  <p>Identificamos siete áreas donde la IA puede generar valor concreto para la función fiscalizadora de la Contraloría General de la República.</p>
+  <div class="reveal" data-reveal style="margin-top:12px;">
+    <div class="rv-grid" style="grid-template-columns:repeat(7,1fr);">
+      <button class="rv-trigger logo-tile is-active" data-rv="1"><svg class="rv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg><span class="rv-label">Análisis de Volúmenes</span></button>
+      <button class="rv-trigger logo-tile" data-rv="2"><svg class="rv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg><span class="rv-label">Borradores</span></button>
+      <button class="rv-trigger logo-tile" data-rv="3"><svg class="rv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span class="rv-label">Detección Anomalías</span></button>
+      <button class="rv-trigger logo-tile" data-rv="4"><svg class="rv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 0 3-3h7z"/></svg><span class="rv-label">Normatividad</span></button>
+      <button class="rv-trigger logo-tile" data-rv="5"><svg class="rv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/></svg><span class="rv-label">Conceptos Técnicos</span></button>
+      <button class="rv-trigger logo-tile" data-rv="6"><svg class="rv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg><span class="rv-label">Clasificación</span></button>
+      <button class="rv-trigger logo-tile" data-rv="7"><svg class="rv-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg><span class="rv-label">Capacitación</span></button>
+    </div>
+    <div class="rv-stage">
+      <div class="rv-panel is-active" data-rv-panel="1"><h3>Análisis de Grandes Volúmenes Documentales</h3><p>La IA puede procesar y resumir miles de documentos, informes y contratos en el tiempo que le tomaría a un auditor revisar decenas.</p><ul><li>Resumen automático de informes de gestión</li><li>Extracción de cifras y compromisos clave</li><li>Identificación de inconsistencias entre documentos</li><li>Análisis de pliegos de condiciones y contratos</li></ul></div>
+      <div class="rv-panel" data-rv-panel="2"><h3>Redacción de Borradores y Respuestas</h3><p>Generar primeros borradores de informes, oficios y conceptos que los funcionarios revisan y perfeccionan.</p><ul><li>Borradores de respuestas a derechos de petición</li><li>Primeras versiones de informes de auditoría</li><li>Síntesis de hallazgos para presentaciones</li><li>Traducción y mejora de redacción formal</li></ul></div>
+      <div class="rv-panel" data-rv-panel="3"><h3>Detección de Anomalías en Datos Financieros</h3><p>Algoritmos de ML pueden identificar patrones inusuales en grandes conjuntos de datos de contratación y ejecución presupuestal.</p><ul><li>Contratos con precios atípicos vs. mercado</li><li>Patrones de fraccionamiento de contratos</li><li>Contratistas con comportamientos inusuales</li><li>Inconsistencias en ejecución presupuestal</li></ul></div>
+      <div class="rv-panel" data-rv-panel="4"><h3>Síntesis de Normatividad Compleja</h3><p>La IA puede resumir normas, precedentes y jurisprudencia, ayudando a los funcionarios a ubicarse rápidamente en marcos legales complejos.</p><ul><li>Resúmenes de leyes y decretos relevantes</li><li>Identificación de normas aplicables a un caso</li><li>Comparación de regulaciones entre entidades</li><li>Actualización automática ante cambios normativos</li></ul></div>
+      <div class="rv-panel" data-rv-panel="5"><h3>Elaboración de Conceptos Técnicos</h3><p>Soporte para la elaboración de conceptos técnicos especializados, con IA como herramienta de investigación y síntesis.</p><ul><li>Investigación de mejores prácticas internacionales</li><li>Síntesis de literatura técnica especializada</li><li>Análisis comparativo de estándares</li><li>Propuestas de recomendaciones estructuradas</li></ul></div>
+      <div class="rv-panel" data-rv-panel="6"><h3>Clasificación y Priorización de Hallazgos</h3><p>Sistemas de IA pueden ayudar a clasificar y priorizar hallazgos de auditoría según riesgo e impacto.</p><ul><li>Clasificación automática de hallazgos por severidad</li><li>Priorización por impacto fiscal potencial</li><li>Identificación de patrones recurrentes entre entidades</li><li>Seguimiento automatizado de planes de mejoramiento</li></ul></div>
+      <div class="rv-panel" data-rv-panel="7"><h3>Capacitación y Gestión del Conocimiento</h3><p>IA como herramienta de aprendizaje continuo y preservación del conocimiento institucional.</p><ul><li>Tutores virtuales para formación en auditoría</li><li>Buscadores semánticos de doctrina institucional</li><li>Onboarding acelerado de funcionarios nuevos</li><li>Sistematización de lecciones aprendidas</li></ul></div>
+    </div>
+  </div>
+  <div class="banner note" style="margin-top:12px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span><strong>Pregunta para el grupo:</strong> ¿cuáles de estas oportunidades les parecen más relevantes para su dependencia específica?</span></div>
+</section>
+
+<!-- ============ S37 · Preocupaciones y Riesgos Reales ============ -->
+<section class="s">
+  <div class="kicker">Riesgos</div>
+  <h2 class="s-head">Preocupaciones y Riesgos Reales</h2>
+  <p>Adoptar IA con responsabilidad implica reconocer sus riesgos. No se trata de rechazar la tecnología, sino de implementarla con los ojos abiertos.</p>
+  <div class="risk-cards stagger-in" style="margin-top:14px;">
+    <div class="risk-card"><h3>Confidencialidad y Privacidad</h3><p>Los modelos en la nube procesan los datos que les enviamos. Información reservada de investigaciones, datos de funcionarios o información empresarial sensible NO debe enviarse a IA pública.</p></div>
+    <div class="risk-card"><h3>Veracidad y Alucinaciones</h3><p>Los LLMs inventan información con aparente confianza. Cifras, fechas, citas y referencias pueden ser completamente incorrectas. <strong>Todo dato crítico debe verificarse.</strong></p></div>
+    <div class="risk-card"><h3>Sesgos y Discriminación</h3><p>Los modelos heredan los sesgos presentes en sus datos de entrenamiento. Pueden favorecer sistemáticamente ciertos grupos o perspectivas en sus análisis.</p></div>
+    <div class="risk-card"><h3>Dependencia Excesiva</h3><p>Confiar ciegamente en la IA sin ejercer juicio propio. Perder gradualmente la capacidad de análisis crítico independiente. La IA debe amplificar, no reemplazar, el criterio profesional.</p></div>
+    <div class="risk-card"><h3>Propiedad Intelectual</h3><p>El contenido generado por IA puede tener problemas de derechos de autor. Documentos oficiales de la Contraloría no deben ser generados íntegramente por IA sin revisión.</p></div>
+    <div class="risk-card"><h3>Marco Legal y Regulatorio</h3><p>Colombia está construyendo su regulación de IA. Algunas decisiones administrativas con impacto en derechos NO pueden delegarse a sistemas automatizados sin supervisión humana.</p></div>
+  </div>
+  <div class="banner note" style="margin-top:12px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span>El objetivo es <strong>adoptar IA con ojos abiertos, no cerrados</strong>. El conocimiento de los riesgos es la primera línea de defensa.</span></div>
+</section>
+
+<!-- ============ S38 · Nuestro Mapa de la Sesión ============ -->
+<section class="s">
+  <div class="kicker">Registro Colectivo</div>
+  <h2 class="s-head">Nuestro Mapa de la Sesión</h2>
+  <p>Registremos colectivamente los aprendizajes más importantes de esta discusión. Este mapa será un documento vivo que nos acompañará durante todo el curso.</p>
+  <div class="two-col" style="margin-top:14px;">
+    <div class="accent-card"><h3>Las 3 Oportunidades Más Relevantes</h3><ul><li>(1) ___________________________</li><li>(2) ___________________________</li><li>(3) ___________________________</li></ul></div>
+    <div class="accent-card"><h3>Las 3 Preocupaciones Más Importantes</h3><ul><li>(1) ___________________________</li><li>(2) ___________________________</li><li>(3) ___________________________</li></ul></div>
+  </div>
+  <div class="accent-card" style="margin-top:16px;"><h3>Preguntas que Queremos Resolver Durante el Curso</h3><ul><li>___________________________________________________</li><li>___________________________________________________</li><li>___________________________________________________</li><li>___________________________________________________</li></ul></div>
+  <p style="font-style:italic;font-size:22px;color:var(--gris-3);margin-top:12px;">Este registro vivo nos acompañará como referencia y guía durante todo el programa.</p>
+</section>
+
+<!-- ============ S39 · Resumen de la Sesión ============ -->
+<section class="s">
+  <div class="kicker">Cierre</div>
+  <h2 class="s-head">Resumen de la Sesión</h2>
+  <p>Repasemos los conceptos fundamentales que cubrimos hoy. Estos son los pilares sobre los que construiremos el resto del programa.</p>
+  <div class="obj-grid stagger-in" style="margin-top:14px;">
+    <div class="obj-item"><div class="num-tag">01</div><h3>Historia de 70+ Años</h3><p>La IA no es nueva: pasó por inviernos, renacimientos y transformaciones. Los saltos actuales se explican por datos, cómputo y algoritmos mejores.</p></div>
+    <div class="obj-item"><div class="num-tag">02</div><h3>IA Estrecha, No General</h3><p>Todo lo que usamos hoy es ANI: muy capaz en dominios específicos, incompetente fuera de ellos. No existe aún la AGI.</p></div>
+    <div class="obj-item"><div class="num-tag">03</div><h3>Ecosistema Diverso</h3><p>OpenAI, Anthropic, Google, Meta, DeepSeek y otros compiten con modelos de capacidades comparables. El mercado evoluciona cada semanas.</p></div>
+    <div class="obj-item"><div class="num-tag">04</div><h3>Ya Está Presente</h3><p>Microsoft 365, Gmail, Teams, los filtros de spam: la IA ya forma parte del trabajo diario, reconocida o no.</p></div>
+    <div class="obj-item"><div class="num-tag">05</div><h3>Oportunidades Reales</h3><p>Análisis documental, detección de anomalías, síntesis normativa: aplicaciones concretas para la función fiscalizadora de la Contraloría.</p></div>
+    <div class="obj-item"><div class="num-tag">06</div><h3>Mitos Desmitificados</h3><p>La IA no es consciente, no siempre tiene razón, no es solo para técnicos, y no es una moda. Es una herramienta poderosa e imperfecta.</p></div>
+  </div>
+  <div class="banner" style="margin-top:14px;"><strong>Mensaje central:</strong> No necesitan ser expertos técnicos. Necesitan ser usuarios informados, críticos y responsables de la IA.</div>
+</section>
+
+<!-- ============ S40 · Próximos Pasos ============ -->
+<section class="s">
+  <div class="kicker">Cierre</div>
+  <h2 class="s-head">Próximos Pasos</h2>
+  <div class="two-col" style="margin-top:16px;">
+    <div class="dark-box">
+      <h3>Trabajo Autónomo (1 hora)</h3>
+      <p>Para la próxima sesión:</p>
+      <ul>
+        <li><strong>Actividad 1:</strong> Lectura del informe OCDE sobre IA en el sector público (enlace en plataforma, 45 min)</li>
+        <li><strong>Actividad 2:</strong> Escribir un párrafo de 150–200 palabras sobre cómo podría aplicarse la IA en su dependencia específica</li>
+        <li>Enviar por correo antes del jueves 7 de mayo</li>
+      </ul>
+    </div>
+    <div class="accent-card">
+      <h3>Próxima Sesión</h3>
+      <p><strong>Sesión 2:</strong></p>
+      <p>Fecha: Jueves 7 de mayo de 2026</p>
+      <p>Horario: 10:30 – 12:00</p>
+      <p>Tema: <strong>¿Cómo aprenden las máquinas?</strong></p>
+      <ul>
+        <li>Machine Learning: tipos y algoritmos</li>
+        <li>Calidad de datos y sus implicaciones</li>
+        <li>Evaluación de modelos de ML</li>
+        <li>Casos prácticos de ML en auditoría</li>
+      </ul>
+    </div>
+  </div>
+  <p style="text-align:center;font-size:26px;font-weight:700;font-family:var(--display);color:var(--ink);margin-top:22px;">¡Gracias por su participación activa! Nos vemos el jueves.</p>
+</section>
+
+</deck-stage>
+<script src="assets/deck-stage.js"></script>
+<script>
+/* reveal handler */
+document.querySelectorAll('[data-reveal]').forEach(function(reveal){
+  var buttons = reveal.querySelectorAll('.rv-trigger');
+  var panels = reveal.querySelectorAll('.rv-panel');
+  function setActive(key){
+    buttons.forEach(function(b){ b.classList.toggle('is-active', b.getAttribute('data-rv') === String(key)); });
+    panels.forEach(function(p){ p.classList.toggle('is-active', p.getAttribute('data-rv-panel') === String(key)); });
+  }
+  buttons.forEach(function(b){ b.addEventListener('click', function(){ setActive(b.getAttribute('data-rv')); }); });
+});
+</script>
+<script>
+/* auto-footer */
+(function(){
+  var stage = document.querySelector('deck-stage');
+  var slides = Array.prototype.filter.call(stage.children, function(n){ return n.tagName === 'SECTION'; });
+  var total = slides.length;
+  slides.forEach(function(s, i){
+    if (s.hasAttribute('data-nofoot') || s.querySelector('.s-foot')) return;
+    var f = document.createElement('div');
+    f.className = 's-foot';
+    f.innerHTML = '<span class="tag">CGR · Fundamentos de la IA · Sesión 1</span><span class="num">' + (i + 1) + ' / ' + total + '</span>';
+    s.appendChild(f);
+  });
+})();
+</script>
+<script>
+/* lightbox (dialog element) */
+(function(){
+  var lb = document.createElement('dialog');
+  lb.className = 'lightbox';
+  lb.innerHTML = '<button class="lb-close" aria-label="Cerrar">&#x2715;</button><div class="lb-content"></div>';
+  document.body.appendChild(lb);
+  var content = lb.querySelector('.lb-content');
+  function close(){ if (lb.open) lb.close(); }
+  lb.addEventListener('close', function(){ content.innerHTML = ''; });
+  function open(img){
+    content.innerHTML = '';
+    var im = document.createElement('img');
+    im.src = img.currentSrc || img.src;
+    content.appendChild(im);
+    if (!lb.open) lb.showModal();
+  }
+  lb.addEventListener('click', close);
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape' && lb.open){ e.stopPropagation(); close(); }
+  }, true);
+  document.querySelectorAll('deck-stage .img-panel img, deck-stage .figbox img').forEach(function(img){
+    var parent = img.closest('.img-panel') || img.closest('.figbox');
+    if (parent && getComputedStyle(parent).position === 'static') parent.style.position = 'relative';
+    function trigger(e){ e.stopPropagation(); open(img); }
+    img.addEventListener('click', trigger);
+    img.style.cursor = 'zoom-in';
+  });
+})();
+</script>
+</body>
+</html>

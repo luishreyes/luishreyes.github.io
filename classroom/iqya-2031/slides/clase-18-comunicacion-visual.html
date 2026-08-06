@@ -1,0 +1,2101 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="/classroom-fonts.css" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Comunicación visual en ingeniería química · IQYA-2031</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+
+  <style>
+    :root {
+      --brand-dark: #1A1A1A;
+      --brand-yellow: #FFBF00;
+      --brand-yellow-dark: #E6AC00;
+      --brand-gray: #555555;
+      --brand-gray-soft: #9CA3AF;
+      --brand-gray-bg: #f4f4f5;
+      --surface: #ffffff;
+      --muted: #f4f4f5;
+      --accent-blue: #0F62FE;
+      --accent-red: #DC2626;
+      --accent-green: #059669;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0; padding: 0; height: 100%; width: 100%;
+      background: var(--brand-dark); color: var(--brand-dark);
+      font-family: 'Manrope Variable', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      overflow: hidden;
+      -webkit-text-size-adjust: 100%;
+    }
+    .deck { position: relative; width: 100vw; height: 100vh; height: 100dvh; }
+    .slide {
+      position: absolute; inset: 0;
+      display: none; align-items: center; justify-content: center;
+      padding: clamp(1rem, 4vw, 3.5rem);
+      background: var(--surface);
+      opacity: 0; transition: opacity 260ms ease;
+      overflow-y: auto;
+    }
+    .slide.active { display: flex; opacity: 1; }
+    .slide .content {
+      width: 100%; max-width: 92rem; margin: auto 0;
+      display: flex; flex-direction: column;
+      gap: clamp(0.75rem, 1.5vw, 1.5rem);
+      position: relative; z-index: 2;
+    }
+    .eyebrow {
+      text-transform: uppercase; letter-spacing: 0.2em;
+      font-size: clamp(0.65rem, 1vw, 1rem);
+      color: var(--brand-yellow-dark); font-weight: 600;
+    }
+    h1 {
+      font-size: clamp(1.75rem, 5.5vw, 5.75rem);
+      line-height: 1.05; margin: 0; color: var(--brand-dark);
+      font-weight: 700; letter-spacing: -0.02em;
+    }
+    h2 {
+      font-size: clamp(1.25rem, 3.4vw, 3.25rem);
+      line-height: 1.15; margin: 0; color: var(--brand-dark); font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+    h3 {
+      font-size: clamp(1rem, 2vw, 1.75rem);
+      margin: 0 0 0.35em 0; color: var(--brand-dark); font-weight: 600;
+    }
+    p, li {
+      font-size: clamp(0.95rem, 1.7vw, 1.6rem);
+      line-height: 1.5; color: var(--brand-gray); margin: 0;
+    }
+    ul, ol { padding-left: 1.25em; margin: 0; display: flex; flex-direction: column; gap: 0.45em; }
+    li::marker { color: var(--brand-yellow-dark); }
+
+    .slide.title-slide {
+      background: linear-gradient(135deg, #141414 0%, #1A1A1A 50%, #2a2a2a 100%);
+      color: #fff;
+    }
+    .slide.title-slide h1 { color: #fff; }
+    .slide.title-slide h2 { color: #fff; }
+    .slide.title-slide p { color: #d4d4d8; }
+    .slide.title-slide .eyebrow { color: var(--brand-yellow); }
+
+    .pill-row { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 0.5rem; }
+    .pill {
+      display: inline-flex; align-items: center;
+      padding: 0.35em 0.9em; border-radius: 999px;
+      background: var(--muted); color: var(--brand-dark);
+      font-size: clamp(0.75rem, 1.2vw, 1.2rem); font-weight: 500;
+    }
+    .slide.title-slide .pill {
+      background: rgba(255,255,255,0.1); color: #fff;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .grid { display: grid; gap: clamp(0.75rem, 1.5vw, 1.25rem); }
+    .grid.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid.cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    @media (max-width: 720px) {
+      .grid.cols-2, .grid.cols-3, .grid.cols-4 { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--muted); border-radius: 0.75rem;
+      padding: clamp(0.9rem, 1.5vw, 1.35rem);
+      border: 1px solid transparent;
+    }
+    .card.outline { background: #fff; border-color: rgba(0,0,0,0.08); }
+    .card p { font-size: clamp(0.8rem, 1.3vw, 1.2rem); }
+
+    .two-col {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: clamp(1rem, 2vw, 2rem); align-items: center;
+    }
+    .two-col.asym { grid-template-columns: 5fr 7fr; }
+    @media (max-width: 720px) {
+      .two-col, .two-col.asym { grid-template-columns: 1fr; }
+    }
+
+    .tip {
+      background: #fffbe6; border-left: 4px solid var(--brand-yellow);
+      padding: 0.75rem 1rem; border-radius: 0.5rem;
+      color: var(--brand-dark);
+      font-size: clamp(0.85rem, 1.4vw, 1.25rem);
+    }
+    .warning {
+      background: #fef2f2; border-left: 4px solid var(--accent-red);
+      padding: 0.75rem 1rem; border-radius: 0.5rem;
+      color: var(--brand-dark);
+      font-size: clamp(0.85rem, 1.4vw, 1.25rem);
+    }
+    .small-text {
+      font-size: clamp(0.7rem, 1.1vw, 1rem);
+      color: var(--brand-gray); font-style: italic;
+      text-align: center; margin-top: 0.4rem;
+    }
+
+    .big-number {
+      font-size: clamp(5rem, 18vw, 16rem);
+      font-weight: 800; line-height: 0.9;
+      color: var(--brand-dark); letter-spacing: -0.04em;
+    }
+    .big-number .unit { font-size: 0.5em; color: var(--brand-yellow-dark); margin-left: 0.05em; }
+
+    .quote-large {
+      font-size: clamp(1.5rem, 3.5vw, 3rem);
+      line-height: 1.2; font-weight: 600; color: var(--brand-dark);
+      letter-spacing: -0.01em;
+    }
+    .slide.title-slide .quote-large { color: #fff; }
+
+    /* ─── Flip-group: stepper / toggle interactivo (slides 19, 23) ─── */
+    .flip-group {
+      display: flex; flex-direction: column;
+      gap: 1rem;
+    }
+    .flip-tabs {
+      display: flex; flex-wrap: wrap; gap: 0.4rem;
+      padding: 0;
+    }
+    .flip-tabs button {
+      background: #fff;
+      border: 1.5px solid rgba(0,0,0,0.08);
+      color: var(--brand-gray);
+      padding: 0.55em 1.1em;
+      border-radius: 999px;
+      font-family: inherit;
+      font-size: clamp(0.8rem, 1.25vw, 1.05rem);
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 200ms, color 200ms, border-color 200ms, transform 160ms;
+    }
+    .flip-tabs button:hover {
+      color: var(--brand-dark);
+      border-color: var(--brand-yellow-dark);
+      transform: translateY(-1px);
+    }
+    .flip-tabs button.is-active {
+      background: var(--brand-dark);
+      color: #fff;
+      border-color: var(--brand-dark);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+    }
+    .flip-tabs button:focus-visible {
+      outline: 3px solid var(--brand-yellow-dark);
+      outline-offset: 2px;
+    }
+    /* Toggle binario (Bad / Good): pill grupo central */
+    .flip-tabs--toggle {
+      display: inline-flex; gap: 0;
+      padding: 0.3rem; background: var(--muted);
+      border-radius: 999px; align-self: center;
+    }
+    .flip-tabs--toggle button {
+      background: transparent; border: 0;
+      padding: 0.5em 1.4em;
+    }
+    .flip-tabs--toggle button.is-active.is-bad {
+      background: var(--accent-red); color: #fff; box-shadow: 0 4px 10px rgba(220,38,38,0.25);
+    }
+    .flip-tabs--toggle button.is-active.is-good {
+      background: var(--accent-green); color: #fff; box-shadow: 0 4px 10px rgba(5,150,105,0.25);
+    }
+
+    .flip-panels { width: 100%; }
+    .flip-panel {
+      display: none;
+      animation: flipFade 0.32s ease;
+    }
+    .flip-panel.is-active { display: grid; grid-template-columns: 7fr 5fr; gap: clamp(0.8rem, 1.6vw, 1.6rem); align-items: center; }
+    @media (max-width: 720px) {
+      .flip-panel.is-active { grid-template-columns: 1fr; }
+    }
+    .flip-panel img {
+      display: block;
+      width: 100%; max-height: 56vh; height: auto;
+      object-fit: contain;
+      background: #fafafa;
+      border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 0.55rem;
+      padding: 0.4rem;
+    }
+    .flip-caption h3 {
+      font-size: clamp(1.1rem, 2vw, 1.6rem);
+      margin: 0 0 0.4em 0; color: var(--brand-dark);
+    }
+    .flip-caption p {
+      font-size: clamp(0.9rem, 1.45vw, 1.25rem);
+      line-height: 1.5;
+    }
+    @keyframes flipFade {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Generic diagram image (matplotlib PNGs) */
+    img.diagram {
+      display: block; max-width: 100%; height: auto;
+      border-radius: 0.4rem;
+    }
+    .vis-cell img { display: block; width: 100%; height: auto; border-radius: 0.3rem; }
+    .pa-cell img { display: block; width: 100%; height: auto; }
+
+    /* SVG figures wrapper */
+    .fig {
+      background: #fafafa; border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 0.6rem;
+      padding: clamp(0.75rem, 1.5vw, 1.25rem);
+      display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+      width: 100%;
+    }
+    .fig.no-border { background: transparent; border: 0; padding: 0; }
+    .fig svg { width: 100%; height: auto; max-height: 60vh; }
+    .fig img.diagram { width: 100%; max-height: 60vh; object-fit: contain; }
+    .fig figcaption {
+      font-size: clamp(0.75rem, 1.1vw, 1rem);
+      color: var(--brand-gray); font-style: italic; text-align: center;
+    }
+    .fig-label {
+      align-self: flex-start; font-weight: 700;
+      font-size: clamp(0.75rem, 1.1vw, 1rem);
+      color: var(--brand-gray); text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+    .fig-label.bad { color: var(--accent-red); }
+    .fig-label.good { color: var(--accent-green); }
+
+    /* Tables */
+    table { width: 100%; border-collapse: collapse; font-size: clamp(0.8rem, 1.3vw, 1.15rem); }
+    table th, table td {
+      padding: 0.6em 0.85em; text-align: left;
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+      color: var(--brand-dark);
+    }
+    table thead th {
+      font-weight: 600; color: var(--brand-gray);
+      text-transform: uppercase; letter-spacing: 0.08em;
+      font-size: 0.85em;
+    }
+    table.compare th:first-child { color: var(--brand-gray); font-weight: 500; }
+    table.compare td { color: var(--brand-dark); }
+
+    /* Striked text — for "wrong" labels */
+    .striked {
+      position: relative; display: inline-block;
+      color: var(--brand-gray);
+    }
+    .striked::after {
+      content: ''; position: absolute;
+      left: -2%; right: -2%; top: 52%;
+      height: 3px; background: var(--accent-red);
+      transform: rotate(-3deg);
+    }
+
+    /* Three-question cascade */
+    .cascade { display: flex; flex-direction: column; gap: 0.6rem; }
+    .cascade-step {
+      display: flex; align-items: center; gap: 0.9rem;
+      background: #fff; border: 1px solid rgba(0,0,0,0.08);
+      border-left: 6px solid var(--brand-yellow);
+      border-radius: 0.6rem; padding: 0.85rem 1.1rem;
+      font-size: clamp(1rem, 1.8vw, 1.6rem);
+    }
+    .cascade-step .num {
+      min-width: 1.8em; height: 1.8em; flex: 0 0 auto;
+      padding: 0 0.6em;
+      border-radius: 999px; background: var(--brand-dark); color: #fff;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 0.9em;
+      white-space: nowrap;
+    }
+
+    /* Spectrum bar */
+    .spectrum {
+      position: relative;
+      height: 7px; background: linear-gradient(90deg, var(--brand-dark) 0%, var(--brand-gray-soft) 100%);
+      border-radius: 999px; margin: 2rem 0 3rem 0;
+    }
+    .spectrum::before, .spectrum::after {
+      content: ''; position: absolute; top: -7px;
+      width: 21px; height: 21px; border-radius: 999px;
+      background: var(--brand-dark); border: 4px solid #fff;
+      box-shadow: 0 0 0 1.5px var(--brand-dark);
+    }
+    .spectrum::before { left: -10px; }
+    .spectrum::after { right: -10px; background: var(--brand-yellow); box-shadow: 0 0 0 1.5px var(--brand-yellow-dark); }
+    .spectrum-mid {
+      position: absolute; top: -28px; left: 50%; transform: translateX(-50%);
+      background: #fff; padding: 0.25em 0.7em; border-radius: 999px;
+      border: 2px solid var(--brand-yellow-dark); color: var(--brand-dark);
+      font-size: clamp(0.75rem, 1.1vw, 1rem); font-weight: 600;
+    }
+    .spectrum-end-label {
+      position: absolute; top: 28px; font-size: clamp(0.8rem, 1.3vw, 1.15rem);
+      color: var(--brand-dark); font-weight: 600; line-height: 1.2;
+    }
+    .spectrum-end-label.left { left: 0; }
+    .spectrum-end-label.right { right: 0; text-align: right; }
+    .spectrum-end-label small { color: var(--brand-gray); font-weight: 400; display: block; }
+
+    /* Mini visual catalog */
+    .vis-catalog {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.85rem;
+    }
+    @media (max-width: 720px) { .vis-catalog { grid-template-columns: repeat(2, 1fr); } }
+    .vis-cell {
+      background: #fff; border: 1px solid rgba(0,0,0,0.1);
+      border-radius: 0.55rem; padding: 0.6rem;
+      display: flex; flex-direction: column; gap: 0.4rem;
+      text-align: center;
+    }
+    .vis-cell svg { width: 100%; height: auto; aspect-ratio: 4/3; }
+    .vis-cell .name {
+      font-size: clamp(0.7rem, 1.05vw, 0.95rem); font-weight: 600;
+      color: var(--brand-dark);
+    }
+    .vis-cell.bad { background: #fef2f2; border-color: rgba(220,38,38,0.2); }
+    .vis-cell.bad .name { color: var(--accent-red); }
+    .vis-cell.bad .why {
+      font-size: clamp(0.65rem, 0.95vw, 0.85rem);
+      color: var(--brand-gray); font-style: italic; line-height: 1.3;
+    }
+
+    /* Numbers grid for preattentive demo */
+    .num-grid {
+      font-family: 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: clamp(1.2rem, 3vw, 2.6rem);
+      line-height: 1.7; letter-spacing: 0.4em;
+      text-align: center; color: var(--brand-dark);
+      background: #fff; border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 0.6rem; padding: 1.25rem;
+    }
+    .num-grid .hi { color: var(--accent-blue); font-weight: 800; }
+    .num-grid .dim { color: var(--brand-gray-soft); }
+
+    /* Preattentive attribute mini-cells */
+    .pa-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.7rem; }
+    @media (max-width: 720px) { .pa-grid { grid-template-columns: repeat(2, 1fr); } }
+    .pa-cell {
+      background: #fff; border: 1px solid rgba(0,0,0,0.1);
+      border-radius: 0.5rem; padding: 0.6rem 0.5rem;
+      display: flex; flex-direction: column; align-items: center; gap: 0.4rem;
+    }
+    .pa-cell svg { width: 64px; height: 48px; }
+    .pa-cell .name {
+      font-size: clamp(0.7rem, 1.05vw, 0.95rem);
+      font-weight: 600; color: var(--brand-dark);
+    }
+
+    /* Three-distances poster diagram */
+    .dist-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.85rem; }
+    @media (max-width: 720px) { .dist-row { grid-template-columns: 1fr; } }
+    .dist-card {
+      background: #fff; border: 1px solid rgba(0,0,0,0.1);
+      border-top: 6px solid var(--brand-yellow);
+      border-radius: 0.6rem; padding: 0.9rem 1rem;
+    }
+    .dist-card h4 {
+      font-size: clamp(0.95rem, 1.5vw, 1.35rem); margin: 0 0 0.3em 0;
+      color: var(--brand-dark);
+    }
+    .dist-card .dist-tag {
+      display: inline-block; font-size: 0.75em;
+      color: var(--brand-yellow-dark); font-weight: 700;
+      letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 0.2em;
+    }
+
+    /* Checklist */
+    .checklist { display: flex; flex-direction: column; gap: 0.5rem; }
+    .checklist li {
+      list-style: none; display: flex; align-items: flex-start; gap: 0.6rem;
+      padding: 0.45em 0;
+      font-size: clamp(0.85rem, 1.4vw, 1.25rem);
+      color: var(--brand-dark);
+    }
+    .checklist li svg {
+      flex: 0 0 auto; margin-top: 0.2em;
+      color: var(--brand-yellow-dark);
+    }
+    .checklist.empty li svg { color: var(--brand-gray-soft); }
+
+    /* Platform link style */
+    a.platform-link {
+      color: var(--brand-dark); text-decoration: none;
+      border-bottom: 2px solid var(--brand-yellow);
+      padding-bottom: 0.05em;
+      transition: color 180ms, border-color 180ms;
+    }
+    a.platform-link:hover {
+      color: var(--brand-yellow-dark); border-bottom-color: var(--brand-yellow-dark);
+    }
+    a.platform-link::after {
+      content: " ↗"; font-size: 0.65em; opacity: 0.5;
+      margin-left: 0.12em; vertical-align: 0.3em;
+    }
+
+    /* HUD + controls + progress (template) */
+    .hud {
+      position: fixed; left: 0; right: 0; bottom: 0;
+      padding: 0.5rem 1rem; display: flex;
+      justify-content: space-between; align-items: center;
+      color: rgba(255,255,255,0.75); font-size: 0.75rem;
+      pointer-events: none; z-index: 10;
+    }
+    .slide:not(.title-slide) ~ .hud { color: var(--brand-gray); }
+    .controls {
+      position: fixed; right: 1rem; bottom: 2.5rem;
+      display: flex; gap: 0.5rem; z-index: 11;
+    }
+    .controls button {
+      -webkit-appearance: none; appearance: none;
+      border: 1px solid rgba(0,0,0,0.1);
+      background: rgba(255,255,255,0.9); color: var(--brand-dark);
+      width: 2.5rem; height: 2.5rem; border-radius: 999px;
+      cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+      transition: transform 160ms ease, background 160ms ease;
+    }
+    .controls button:hover { background: #fff; transform: translateY(-1px); }
+    .controls button:active { transform: scale(0.96); }
+    .controls button svg { width: 1.1em; height: 1.1em; color: var(--brand-dark); }
+    .progress {
+      position: fixed; top: 0; left: 0;
+      height: 3px; background: var(--brand-yellow);
+      transition: width 260ms ease; z-index: 20;
+    }
+    .progress.pulsing { animation: progPulse 0.5s ease; }
+    @keyframes progPulse {
+      0%   { box-shadow: 0 0 0 0 rgba(255,191,0,0.0); }
+      50%  { box-shadow: 0 0 12px 3px rgba(255,191,0,0.8); }
+      100% { box-shadow: 0 0 0 0 rgba(255,191,0,0.0); }
+    }
+
+    /* L-shaped corner accent + slide number (template) */
+    .slide:not(.title-slide)::before {
+      content: ''; position: absolute;
+      top: clamp(1rem, 3vw, 2.5rem); right: clamp(1rem, 3vw, 2.5rem);
+      width: clamp(2rem, 5vw, 4rem); height: clamp(2rem, 5vw, 4rem);
+      border-top: 2.5px solid var(--brand-yellow);
+      border-right: 2.5px solid var(--brand-yellow);
+      pointer-events: none; z-index: 1;
+    }
+    .slide.title-slide::before {
+      content: ''; position: absolute;
+      bottom: clamp(1rem, 3vw, 2.5rem); left: clamp(1rem, 3vw, 2.5rem);
+      width: clamp(2rem, 5vw, 4rem); height: clamp(2rem, 5vw, 4rem);
+      border-bottom: 2.5px solid var(--brand-yellow);
+      border-left: 2.5px solid var(--brand-yellow);
+      opacity: 0.4; pointer-events: none; z-index: 1;
+    }
+    .slide-number {
+      position: absolute; bottom: clamp(0.5rem, 2vw, 1.5rem);
+      left: clamp(1rem, 3vw, 2.5rem);
+      font-size: clamp(4rem, 12vw, 10rem); font-weight: 800;
+      line-height: 1; color: rgba(0, 0, 0, 0.04);
+      pointer-events: none; z-index: 0; user-select: none;
+      letter-spacing: -0.04em;
+    }
+    .slide.title-slide .slide-number { color: rgba(255, 255, 255, 0.06); }
+
+    /* Stagger reveal */
+    .slide.active .stagger-in > * { animation: fadeInUp 0.45s ease both; }
+    .slide.active .stagger-in > *:nth-child(1) { animation-delay: 0.05s; }
+    .slide.active .stagger-in > *:nth-child(2) { animation-delay: 0.15s; }
+    .slide.active .stagger-in > *:nth-child(3) { animation-delay: 0.25s; }
+    .slide.active .stagger-in > *:nth-child(4) { animation-delay: 0.35s; }
+    .slide.active .stagger-in > *:nth-child(5) { animation-delay: 0.45s; }
+    .slide.active .stagger-in > *:nth-child(6) { animation-delay: 0.55s; }
+    .slide.active .stagger-in > *:nth-child(7) { animation-delay: 0.65s; }
+    .slide.active .stagger-in > *:nth-child(8) { animation-delay: 0.75s; }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Hover-lift */
+    .card, .vis-cell, .pa-cell, .dist-card, .cascade-step {
+      transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+    }
+    .card:hover, .vis-cell:hover, .pa-cell:hover, .dist-card:hover, .cascade-step:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    }
+
+    /* Focus rings */
+    a:focus-visible, button:focus-visible, summary:focus-visible {
+      outline: 3px solid var(--brand-yellow-dark);
+      outline-offset: 2px;
+      border-radius: 0.35rem;
+    }
+
+    /* Icon defaults inside text */
+    h2 svg, h3 svg, .eyebrow svg {
+      vertical-align: -0.15em; margin-right: 0.4em; color: var(--brand-yellow-dark);
+    }
+    .card svg { vertical-align: -0.15em; }
+
+    /* KaTeX overrides */
+    .katex { font-size: 1em; }
+
+
+    /* Interactive vis-cells — slide 14 y 20 */
+    .vis-cell.interactive {
+      cursor: pointer; position: relative;
+      outline: none;
+    }
+    .vis-cell.interactive:focus-visible {
+      outline: 3px solid var(--brand-yellow-dark);
+      outline-offset: 2px;
+    }
+    .vis-cell .hint {
+      max-height: 0; opacity: 0; overflow: hidden;
+      transition: max-height 280ms ease, opacity 220ms ease, margin-top 220ms ease;
+      font-size: clamp(0.7rem, 1vw, 0.9rem);
+      line-height: 1.35;
+      color: var(--brand-dark);
+      text-align: left;
+      margin-top: 0;
+    }
+    .vis-cell.is-open .hint,
+    .vis-cell.interactive:hover .hint {
+      max-height: 6rem; opacity: 1; margin-top: 0.4rem;
+    }
+    .vis-cell.bad .hint {
+      color: var(--accent-green); font-weight: 600;
+    }
+    .vis-cell.interactive::after {
+      content: '+'; position: absolute;
+      top: 0.3rem; right: 0.45rem;
+      font-size: 0.85rem; color: var(--brand-gray-soft);
+      transition: transform 220ms ease, color 220ms ease;
+    }
+    .vis-cell.interactive.is-open::after {
+      content: '−'; color: var(--brand-yellow-dark); transform: rotate(0deg);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .vis-cell .hint { transition: none; }
+      .vis-cell.interactive::after { transition: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .slide { transition: none; }
+      .progress { transition: none; }
+      .progress.pulsing { animation: none !important; }
+      .slide.active .stagger-in > * { animation: none !important; }
+      .card, .vis-cell, .pa-cell, .dist-card, .cascade-step { transition: none; }
+      .card:hover, .vis-cell:hover, .pa-cell:hover, .dist-card:hover, .cascade-step:hover {
+        transform: none;
+      }
+      .controls button:hover { transform: none; }
+    }
+
+    @media (max-width: 480px) {
+      .controls { right: 0.5rem; bottom: 1.25rem; }
+      .hud { font-size: 0.65rem; }
+    }
+    /* Print: link clickeable para reemplazar iframes de YouTube */
+    .video-print-link { display: none; }
+
+    /* ─── Print: linealizar todos los slides como un documento ─── */
+    @media print {
+      @page { size: A4 portrait; margin: 12mm; }
+      *, *::before, *::after {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      html, body {
+        background: #fff !important;
+        height: auto !important;
+        overflow: visible !important;
+      }
+      .deck { width: 100% !important; height: auto !important; position: static !important; }
+      .controls, .hud, .progress, .slide-number { display: none !important; }
+      .slide:not(.title-slide):not(.cover)::before,
+      .slide.title-slide::before,
+      .slide.cover::before,
+      .slide.cover::after { display: none !important; }
+      .slide {
+        position: static !important;
+        display: flex !important;
+        opacity: 1 !important;
+        width: 100% !important;
+        height: auto !important;
+        inset: auto !important;
+        overflow: visible !important;
+        padding: 1.2rem 0.5rem !important;
+        min-height: 0 !important;
+        page-break-after: always;
+        break-after: page;
+        page-break-inside: avoid;
+      }
+      .slide:last-child { page-break-after: auto; break-after: auto; }
+      .slide .content { max-width: 100% !important; margin: 0 !important; gap: 0.6rem !important; }
+      h1 { font-size: 26pt !important; line-height: 1.1 !important; }
+      h2 { font-size: 18pt !important; line-height: 1.2 !important; }
+      h3 { font-size: 13pt !important; line-height: 1.25 !important; }
+      p, li { font-size: 10.5pt !important; line-height: 1.45 !important; }
+      .eyebrow, .pill { font-size: 9pt !important; }
+      .slide.title-slide, .slide.cover {
+        background: linear-gradient(135deg, #141414 0%, #1A1A1A 50%, #2a2a2a 100%) !important;
+        color: #fff !important;
+      }
+      .slide.title-slide h1, .slide.title-slide h2, .slide.title-slide h3,
+      .slide.cover h1, .slide.cover h2 { color: #fff !important; }
+      .slide.title-slide p, .slide.title-slide li,
+      .slide.cover p, .slide.cover li { color: #e4e4e7 !important; }
+      .slide.title-slide .eyebrow, .slide.cover .eyebrow { color: #FFBF00 !important; }
+      .stagger-in > * { animation: none !important; opacity: 1 !important; transform: none !important; }
+      .card, .vs-cols .col, .news-card, .timeline .dot, .stepper-nav button {
+        transition: none !important; transform: none !important;
+        box-shadow: none !important;
+      }
+      .card, .vs-cols .col, .news-card, .stepper-panel { page-break-inside: avoid; break-inside: avoid; }
+      img.diagram, .svg-frame { page-break-inside: avoid; break-inside: avoid; max-height: none !important; }
+      .svg-frame svg { max-height: none !important; }
+      table { page-break-inside: avoid; }
+      /* Stepper expandido */
+      .stepper-nav { display: none !important; }
+      .stepper-content { display: block !important; opacity: 1 !important; transform: none !important; animation: none !important; }
+      .stepper-panel { border-left: 4px solid var(--brand-yellow, #FFBF00) !important; padding: 0.8rem 1rem !important; }
+      .stepper-content + .stepper-content { margin-top: 1rem; padding-top: 0.8rem; border-top: 1px dashed #ccc; }
+      /* Iframes (YouTube) */
+      iframe { display: none !important; }
+      .video-print-link {
+        display: block !important;
+        background: #fef3c7 !important;
+        border-left: 4px solid #E6AC00 !important;
+        padding: 0.6rem 0.8rem !important;
+        border-radius: 0.4rem !important;
+        font-size: 10pt !important;
+        color: #1A1A1A !important;
+        page-break-inside: avoid; break-inside: avoid;
+      }
+      .video-print-link a { color: #1A1A1A !important; text-decoration: underline !important; word-break: break-all; }
+      .video-print-link strong { color: #78350f !important; margin-right: 0.3em; }
+    }
+  
+      /* ── FS_NAV · en pantalla completa solo se ve la diapositiva ──
+       Oculta HUD + barra de progreso y convierte los controles en
+       flechas flotantes que reaparecen al mover el mouse (clase
+       .show-controls que añade el script de abajo con un timeout). */
+    .is-fs .hud,
+    .is-fs .progress { display: none !important; }
+    .is-fs .controls {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 220ms ease;
+    }
+    .is-fs.show-controls .controls {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .is-fs .controls { transition: none; }
+    }
+</style>
+</head>
+<body>
+  <div class="progress" style="width:0"></div>
+  <div class="deck" id="deck">
+
+    <!-- ═════════════ SLIDE 1 — Portada ═════════════ -->
+    <section class="slide title-slide active" data-slide>
+      <div class="content">
+        <p class="eyebrow">IQYA-2031 · Proyecto de Operaciones Unitarias · 2026-10</p>
+        <h1>Comunicación visual<br>en ingeniería química</h1>
+        <p style="font-size: clamp(1rem, 2vw, 1.6rem); max-width: 50ch;">
+          Cómo hacer que sus figuras y su póster cuenten la historia.
+        </p>
+        <div class="pill-row">
+          <span class="pill">Storytelling con datos</span>
+          <span class="pill">Diseño de figuras</span>
+          <span class="pill">Documento y póster</span>
+        </div>
+        <div style="margin-top: 2rem; opacity: 0.6;">
+          <svg viewBox="0 0 600 120" width="100%" style="max-width: 560px; height: auto;" aria-hidden="true">
+            <line x1="40" y1="100" x2="560" y2="100" stroke="#FFBF00" stroke-width="1.5" opacity="0.6"/>
+            <line x1="40" y1="100" x2="40" y2="20" stroke="#FFBF00" stroke-width="1.5" opacity="0.6"/>
+            <path d="M 40 90 C 100 88, 160 80, 220 65 S 380 30, 480 22 L 560 20"
+                  fill="none" stroke="#FFBF00" stroke-width="2.5" opacity="0.85"/>
+            <circle cx="220" cy="65" r="4" fill="#FFBF00"/>
+            <circle cx="380" cy="32" r="4" fill="#FFBF00"/>
+            <circle cx="480" cy="22" r="4" fill="#FFBF00"/>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 2 — Pregunta provocadora ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <div class="two-col asym">
+          <div>
+            <p class="eyebrow">Apertura</p>
+            <h2>¿Qué dice esta gráfica?</h2>
+            <p style="margin-top: 1rem;">
+              Tienen 10 segundos. En silencio, identifiquen el mensaje principal.
+            </p>
+            <div class="tip" style="margin-top: 1.25rem;">
+              En el documento técnico tienen un minuto por figura.
+              En el póster tienen <strong>cinco segundos</strong>.
+              Una figura que no se entiende en ese tiempo no está cumpliendo su función.
+            </div>
+          </div>
+          <div class="fig">
+            <span class="fig-label bad">Ejemplo real (no recomendado)</span>
+            <img class="diagram" src="img/clase-18-02-bad.png" alt="Gráfica deliberadamente mala: barras 3D, leyenda con ocho series, marca de agua, decimales raros" style="max-height: 60vh; width: auto;" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 3 — Por qué estamos hablando de esto ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Apertura</p>
+        <h2>Por qué estamos hablando de esto</h2>
+        <div class="stagger-in" style="display: flex; flex-direction: column; gap: 0.85rem; margin-top: 1rem;">
+          <div style="display: flex; align-items: center; gap: 1rem; font-size: clamp(1.1rem, 2.2vw, 2rem); color: var(--brand-dark);">
+            <svg width="1.4em" height="1.4em" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+            <span>El programa los ha entrenado en comunicación <strong>oral</strong>.</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 1rem; font-size: clamp(1.1rem, 2.2vw, 2rem); color: var(--brand-dark);">
+            <svg width="1.4em" height="1.4em" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+            <span>El programa los ha entrenado en comunicación <strong>escrita</strong>.</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 1rem; font-size: clamp(1.1rem, 2.2vw, 2rem); color: var(--brand-dark);">
+            <svg width="1.4em" height="1.4em" viewBox="0 0 24 24" fill="none" stroke="#DC2626" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>
+            <span>El programa <strong>NO</strong> los ha entrenado en comunicación <strong>visual</strong>.</span>
+          </div>
+        </div>
+        <div class="tip" style="margin-top: 2rem;">
+          Y la mitad de su entregable final &mdash;documento técnico y póster&mdash; es visual.
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 4 — Lo que se llevarán hoy ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Apertura · Hoja de ruta</p>
+        <h2>Cinco preguntas que sabrán responder al final</h2>
+        <div class="grid cols-2 stagger-in" style="margin-top: 1rem;">
+          <div class="card outline">
+            <h3>1 · Audiencia</h3>
+            <p>¿Quién va a leer mi figura y qué necesita saber?</p>
+          </div>
+          <div class="card outline">
+            <h3>2 · Visual correcto</h3>
+            <p>¿Cuál es el tipo de gráfico que corresponde a mi mensaje?</p>
+          </div>
+          <div class="card outline">
+            <h3>3 · Desorden</h3>
+            <p>¿Qué elementos están estorbando y deben salir?</p>
+          </div>
+          <div class="card outline">
+            <h3>4 · Mirada</h3>
+            <p>¿Hacia dónde quiero que mire mi audiencia?</p>
+          </div>
+          <div class="card outline" style="grid-column: span 2;">
+            <h3>5 · Aplicación al curso</h3>
+            <p>¿Cómo bajan estos principios al documento técnico y al póster del proyecto?</p>
+          </div>
+        </div>
+        <p class="small-text" style="margin-top: 1rem; text-align: left;">
+          Una pregunta por bloque. Si no pueden responderlas frente a una figura suya, esa figura tiene un problema.
+        </p>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 5 — La pregunta equivocada ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content" style="text-align: center; align-items: center;">
+        <p class="eyebrow">Bloque 1 · Contexto antes que diseño</p>
+        <p style="margin-top: 2rem; font-size: clamp(1.2rem, 3vw, 2.6rem);">
+          La pregunta equivocada:
+        </p>
+        <p class="quote-large striked" style="font-weight: 500;">
+          ¿Cómo hago esta gráfica más bonita?
+        </p>
+        <p style="margin-top: 1.5rem; font-size: clamp(1.2rem, 3vw, 2.6rem); color: var(--brand-yellow-dark); font-weight: 700; text-transform: uppercase; letter-spacing: 0.15em;">
+          La pregunta correcta:
+        </p>
+        <p class="quote-large" style="max-width: 28ch;">
+          ¿Qué necesito que entienda quien la mire?
+        </p>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 6 — Exploratorio versus explicativo ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 1 · Contexto</p>
+        <h2>Análisis exploratorio vs. explicativo</h2>
+        <div class="grid cols-2" style="margin-top: 0.8rem;">
+          <div class="card outline">
+            <p class="eyebrow" style="color: var(--brand-gray);">Exploratorio</p>
+            <h3 style="margin-top: 0.3em;">Cuando ustedes <em>analizan</em></h3>
+            <ul style="margin-top: 0.5em;">
+              <li>Buscan patrones.</li>
+              <li>Abren cien ostras buscando perlas.</li>
+              <li>La audiencia son ustedes mismos.</li>
+            </ul>
+          </div>
+          <div class="card" style="background: #fffbe6; border-left: 6px solid var(--brand-yellow);">
+            <p class="eyebrow">Explicativo</p>
+            <h3 style="margin-top: 0.3em;">Cuando ustedes <em>comunican</em></h3>
+            <ul style="margin-top: 0.5em;">
+              <li>Cuentan una historia.</li>
+              <li>Solo enseñan las dos perlas.</li>
+              <li>La audiencia es alguien más.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="warning" style="margin-top: 1.25rem;">
+          La tentación de mostrar todo el análisis es fuerte. Resístanla. Lo que no es perla va al apéndice o se elimina.
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 7 — Las tres preguntas ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 1 · Contexto</p>
+        <h2>Las tres preguntas, en este orden</h2>
+        <div class="cascade stagger-in" style="margin-top: 1rem; max-width: 60rem;">
+          <div class="cascade-step">
+            <span class="num">1</span>
+            <span><strong>¿QUIÉN</strong> es mi audiencia?</span>
+          </div>
+          <div class="cascade-step" style="margin-left: clamp(1rem, 4vw, 4rem);">
+            <span class="num">2</span>
+            <span><strong>¿QUÉ</strong> quiero que sepa o haga?</span>
+          </div>
+          <div class="cascade-step" style="margin-left: clamp(2rem, 8vw, 8rem); border-left-color: var(--brand-dark);">
+            <span class="num" style="background: var(--brand-yellow); color: var(--brand-dark);">3</span>
+            <span><strong>¿CÓMO</strong> me apoyan los datos?</span>
+          </div>
+        </div>
+        <p class="small-text" style="margin-top: 1.5rem; text-align: left; font-size: clamp(0.9rem, 1.4vw, 1.2rem);">
+          Solo después de responder 1 y 2 piensen en gráficas. El «cómo» es el último paso, no el primero.
+        </p>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 8 — Quién: dos audiencias ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 1 · Quién</p>
+        <h2>Dos audiencias muy distintas en este curso</h2>
+        <table class="compare" style="margin-top: 0.8rem;">
+          <thead>
+            <tr><th></th><th>Documento técnico</th><th>Póster</th></tr>
+          </thead>
+          <tbody>
+            <tr><th>Lector típico</th><td>Profesor, evaluador</td><td>Asistente que pasa</td></tr>
+            <tr><th>Tiempo disponible</th><td>Minutos por figura</td><td>5 a 30 segundos</td></tr>
+            <tr><th>Distancia de lectura</th><td>30 – 50 cm</td><td>3 m, 1 m, 30 cm</td></tr>
+            <tr><th>Nivel de detalle</th><td>Alto</td><td>Mínimo necesario</td></tr>
+            <tr><th>Cuántas figuras</th><td>Las que hagan falta</td><td>Pocas, muy fuertes</td></tr>
+            <tr><th>Texto alrededor</th><td>Mucho</td><td>Casi nada</td></tr>
+          </tbody>
+        </table>
+        <div class="tip" style="margin-top: 1rem;">
+          Si el póster no le habla al lector en cinco segundos, perdieron al lector.
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 9 — Qué: pidan acción ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 1 · Qué</p>
+        <h2>Pidan acción, no admiración</h2>
+        <div class="grid cols-2" style="margin-top: 0.8rem;">
+          <div class="card" style="background: #fef2f2; border-left: 6px solid var(--accent-red);">
+            <p class="eyebrow" style="color: var(--accent-red);">Mal</p>
+            <p style="font-size: clamp(1rem, 1.7vw, 1.5rem); color: var(--brand-dark); margin-top: 0.4em;">
+              «Aquí están los resultados de la simulación.»
+            </p>
+          </div>
+          <div class="card" style="background: #ecfdf5; border-left: 6px solid var(--accent-green);">
+            <p class="eyebrow" style="color: var(--accent-green);">Bien</p>
+            <p style="font-size: clamp(1rem, 1.7vw, 1.5rem); color: var(--brand-dark); margin-top: 0.4em;">
+              «Recomendamos operar la columna a $R = 1{,}4\,R_{\min}$ porque…»
+            </p>
+          </div>
+        </div>
+        <p style="margin-top: 1.4rem; color: var(--brand-dark); font-weight: 600;">
+          Verbos útiles para abrir la conclusión de cada figura:
+        </p>
+        <div class="pill-row">
+          <span class="pill">recomendar</span>
+          <span class="pill">proponer</span>
+          <span class="pill">seleccionar</span>
+          <span class="pill">validar</span>
+          <span class="pill">rechazar</span>
+          <span class="pill">optimizar</span>
+          <span class="pill">comparar</span>
+          <span class="pill">justificar</span>
+        </div>
+        <p class="small-text" style="text-align: left; margin-top: 1rem;">
+          Una figura sin tesis es decoración. Cada figura del documento debería poder cerrarse con una oración: <em>«Por eso recomendamos X»</em>.
+        </p>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 10 — Espectro presentación-documento ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 1 · Cómo</p>
+        <h2>El espectro presentación–documento</h2>
+        <div style="position: relative; padding: 1rem 1rem 4rem 1rem; margin-top: 1rem;">
+          <div class="spectrum">
+            <div class="spectrum-mid">PÓSTER · híbrido</div>
+            <div class="spectrum-end-label left">
+              Presentación viva
+              <small>Ustedes hablan · controlan el ritmo</small>
+            </div>
+            <div class="spectrum-end-label right">
+              Documento escrito
+              <small>El lector está solo · sin guía</small>
+            </div>
+          </div>
+        </div>
+        <div class="grid cols-2" style="margin-top: 1.5rem;">
+          <div class="card outline">
+            <h3>En presentación</h3>
+            <p>Control sobre la lectura: alto. Detalle en pantalla: poco.</p>
+          </div>
+          <div class="card outline">
+            <h3>En documento</h3>
+            <p>Control sobre la lectura: nulo. Detalle en la figura: mucho.</p>
+          </div>
+        </div>
+        <p class="small-text" style="text-align: left; margin-top: 1rem;">
+          Diseñen el póster asumiendo que el lector pasa solo. Es el caso más exigente, y a veces el único que ocurrirá.
+        </p>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 11 — La historia en 3 minutos ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 1 · Ejercicio mental</p>
+        <h2>La historia, comprimida</h2>
+        <div class="stagger-in" style="display: flex; flex-direction: column; gap: 0.8rem; margin-top: 1rem; max-width: 64rem;">
+          <div class="cascade-step">
+            <span class="num">3 min</span>
+            <span>Si solo tuvieran <strong>tres minutos</strong> para contar todo el proyecto, ¿qué dirían?</span>
+          </div>
+          <div class="cascade-step">
+            <span class="num">30 s</span>
+            <span>Si solo tuvieran <strong>treinta segundos</strong>, ¿qué dirían?</span>
+          </div>
+          <div class="cascade-step" style="border-left-color: var(--brand-dark); background: #fffbe6;">
+            <span class="num" style="background: var(--brand-yellow); color: var(--brand-dark);">1</span>
+            <span>Si solo tuvieran <strong>una oración</strong>, ¿qué dirían?</span>
+          </div>
+        </div>
+        <p style="margin-top: 1.5rem; font-size: clamp(1rem, 1.8vw, 1.5rem); color: var(--brand-dark); font-weight: 600;">
+          Esa última oración es su <span style="color: var(--brand-yellow-dark);">Gran Idea</span>.
+        </p>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 12 — La Gran Idea: tres requisitos ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 1 · Gran idea</p>
+        <h2>La Gran Idea cumple tres condiciones</h2>
+        <div class="grid cols-3 stagger-in" style="margin-top: 0.8rem;">
+          <div class="card">
+            <h3>1 · Punto de vista</h3>
+            <p>Articula su posición única frente al problema.</p>
+          </div>
+          <div class="card">
+            <h3>2 · Qué está en juego</h3>
+            <p>Comunica las consecuencias de actuar o no actuar.</p>
+          </div>
+          <div class="card">
+            <h3>3 · Una oración</h3>
+            <p>Es una oración completa, con verbo. No un sustantivo, no un tema.</p>
+          </div>
+        </div>
+        <div class="grid cols-2" style="margin-top: 1.25rem;">
+          <div class="card" style="background: #fef2f2; border-left: 6px solid var(--accent-red);">
+            <p class="eyebrow" style="color: var(--accent-red);">Mal · es un tema</p>
+            <p style="color: var(--brand-dark); font-size: clamp(0.9rem, 1.5vw, 1.3rem); margin-top: 0.3em;">
+              «Diseño de columna de destilación.»
+            </p>
+          </div>
+          <div class="card" style="background: #ecfdf5; border-left: 6px solid var(--accent-green);">
+            <p class="eyebrow" style="color: var(--accent-green);">Bien · es una tesis</p>
+            <p style="color: var(--brand-dark); font-size: clamp(0.9rem, 1.5vw, 1.3rem); margin-top: 0.3em;">
+              «Una columna de 32 etapas con $R = 1{,}4\,R_{\min}$ cumple la pureza objetivo con un costo anualizado 18 % menor que la alternativa de doble efecto.»
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 13 — Aplicación al curso ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 1 · Cierre</p>
+        <h2>Antes de abrir Excel, contesten esto</h2>
+        <div class="grid cols-2 stagger-in" style="margin-top: 0.8rem;">
+          <div class="card">
+            <h3>Para el documento</h3>
+            <ul style="margin-top: 0.4em;">
+              <li><strong>Audiencia:</strong> profesor que evalúa diseño y criterio ingenieril.</li>
+              <li><strong>Acción:</strong> que apruebe el diseño propuesto.</li>
+              <li><strong>Tono:</strong> técnico, defendido, sin adornos.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>Para el póster</h3>
+            <ul style="margin-top: 0.4em;">
+              <li><strong>Audiencia:</strong> lector que pasa, posiblemente no especialista.</li>
+              <li><strong>Acción:</strong> que entienda en 30 segundos qué hicieron y por qué importa.</li>
+              <li><strong>Tono:</strong> directo, una sola idea dominante.</li>
+            </ul>
+          </div>
+        </div>
+        <p class="small-text" style="text-align: left; margin-top: 1.5rem;">
+          El resto de la clase asume que ya tienen esto resuelto. Si no, ninguna técnica de diseño los va a salvar.
+        </p>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 14 — La paleta de visuales ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 2 · Elegir el visual correcto</p>
+        <h2>La paleta que cubre el 95 % de las necesidades</h2>
+        <div class="vis-catalog stagger-in" style="margin-top: 0.6rem;">
+          <div class="vis-cell interactive" tabindex="0" role="button" aria-label="Detalle: Texto / número"><img src="img/clase-18-14-text.png" alt="Texto / número" /><span class="name">Texto / número</span><span class="hint">Para 1–2 valores clave que el lector debe recordar.</span></div>
+          <div class="vis-cell interactive" tabindex="0" role="button" aria-label="Detalle: Tabla"><img src="img/clase-18-14-table.png" alt="Tabla" /><span class="name">Tabla</span><span class="hint">Para comparar valores específicos uno a uno.</span></div>
+          <div class="vis-cell interactive" tabindex="0" role="button" aria-label="Detalle: Mapa de calor"><img src="img/clase-18-14-heatmap.png" alt="Mapa de calor" /><span class="name">Mapa de calor</span><span class="hint">Para análisis de sensibilidad de dos variables.</span></div>
+          <div class="vis-cell interactive" tabindex="0" role="button" aria-label="Detalle: Línea"><img src="img/clase-18-14-line.png" alt="Línea" /><span class="name">Línea</span><span class="hint">X continuo: tiempo, posición axial, etapa.</span></div>
+          <div class="vis-cell interactive" tabindex="0" role="button" aria-label="Detalle: Pendiente (slope)"><img src="img/clase-18-14-slope.png" alt="Pendiente (slope)" /><span class="name">Pendiente (slope)</span><span class="hint">Para comparar antes / después en pocas categorías.</span></div>
+          <div class="vis-cell interactive" tabindex="0" role="button" aria-label="Detalle: Dispersión"><img src="img/clase-18-14-scatter.png" alt="Dispersión" /><span class="name">Dispersión</span><span class="hint">Relación entre dos variables continuas.</span></div>
+          <div class="vis-cell interactive" tabindex="0" role="button" aria-label="Detalle: Barra vertical"><img src="img/clase-18-14-bar-v.png" alt="Barra vertical" /><span class="name">Barra vertical</span><span class="hint">Categorías ordenadas o discretas comparables.</span></div>
+          <div class="vis-cell interactive" tabindex="0" role="button" aria-label="Detalle: Barra horizontal"><img src="img/clase-18-14-bar-h.png" alt="Barra horizontal" /><span class="name">Barra horizontal</span><span class="hint">Etiquetas largas o muchas categorías.</span></div>
+          <div class="vis-cell interactive" tabindex="0" role="button" aria-label="Detalle: Barra apilada"><img src="img/clase-18-14-bar-stacked.png" alt="Barra apilada" /><span class="name">Barra apilada</span><span class="hint">Composición y total por categoría.</span></div>
+          <div class="vis-cell interactive" tabindex="0" role="button" aria-label="Detalle: Cascada"><img src="img/clase-18-14-waterfall.png" alt="Cascada" /><span class="name">Cascada</span><span class="hint">Variación neta desde una base.</span></div>
+          <div class="vis-cell interactive" tabindex="0" role="button" aria-label="Detalle: Área cuadrada"><img src="img/clase-18-14-square-area.png" alt="Área cuadrada" /><span class="name">Área cuadrada</span><span class="hint">Magnitudes muy disímiles (1 vs 10 000).</span></div>
+          <div class="vis-cell interactive" tabindex="0" role="button" aria-label="Detalle: 100 % apilada"><img src="img/clase-18-14-100stacked.png" alt="100 % apilada" /><span class="name">100 % apilada</span><span class="hint">Composición porcentual a lo largo de un eje.</span></div>
+        </div>
+        <p class="small-text" style="text-align: left; margin-top: 1rem;">
+          Si el lector no reconoce el tipo de gráfica en un segundo, ya hay fricción. Quédense con lo conocido y háganlo bien.
+        </p>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 15 — Cuando un número alcanza ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 2 · Visual correcto</p>
+        <h2>Cuando un número alcanza, no construyan una gráfica</h2>
+        <div class="two-col" style="margin-top: 1rem;">
+          <div class="fig">
+            <span class="fig-label bad">Sobreingenierado</span>
+            <img class="diagram" src="img/clase-18-15-bars.png" alt="Dos barras: eficiencia 1990 (62 %) vs 2024 (80 %)" style="max-height: 50vh; width: auto;" />
+            <figcaption>Dos barras para dos números: ruido innecesario.</figcaption>
+          </div>
+          <div style="text-align: left;">
+            <span class="fig-label good">Directo</span>
+            <div style="margin-top: 0.5rem;">
+              <span class="big-number" style="color: var(--brand-yellow-dark);">+18<span class="unit">%</span></span>
+            </div>
+            <p style="font-size: clamp(1rem, 1.7vw, 1.5rem); margin-top: 0.5rem;">
+              Aumento en eficiencia térmica del proceso entre <strong>1990</strong> y <strong>2024</strong>.
+            </p>
+          </div>
+        </div>
+        <p class="small-text" style="text-align: left; margin-top: 1rem;">
+          En el póster, un número de 120 puntos al frente cuenta más historia que cualquier barra.
+        </p>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 16 — Tablas: cuándo y cómo ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 2 · Visual correcto</p>
+        <h2>Tablas: livianas siempre</h2>
+        <div class="grid cols-3 stagger-in" style="margin-top: 0.8rem;">
+          <div class="fig" style="padding: 0.5rem;">
+            <span class="fig-label bad">A · pesada</span>
+            <img class="diagram" src="img/clase-18-16-table-a.png" alt="Tabla con bordes pesados y fondo gris (versión recargada)" style="max-height: 40vh; width: auto;" />
+            <p class="small-text" style="font-style: normal;">Bordes pesados. La cuadrícula compite con los datos.</p>
+          </div>
+          <div class="fig" style="padding: 0.5rem;">
+            <span class="fig-label" style="color: var(--brand-gray);">B · media</span>
+            <img class="diagram" src="img/clase-18-16-table-b.png" alt="Tabla con bordes ligeros (versión media)" style="max-height: 40vh; width: auto;" />
+            <p class="small-text" style="font-style: normal;">Mejor: los datos respiran.</p>
+          </div>
+          <div class="fig" style="padding: 0.5rem; border-color: rgba(5,150,105,0.3); background: #f0fdf4;">
+            <span class="fig-label good">C · mínima</span>
+            <img class="diagram" src="img/clase-18-16-table-c.png" alt="Tabla con líneas mínimas (versión limpia)" style="max-height: 40vh; width: auto;" />
+            <p class="small-text" style="font-style: normal;">Sólo dos líneas finas. Datos al frente.</p>
+          </div>
+        </div>
+        <div class="tip" style="margin-top: 1rem;">
+          Las tablas hablan al sistema verbal: el lector las recorre con el dedo. En el póster, casi nunca tablas.
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 17 — Mapa de calor ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 2 · Visual correcto</p>
+        <h2>Mapa de calor: tabla con código de color</h2>
+        <div class="two-col asym" style="margin-top: 0.6rem;">
+          <div>
+            <p>
+              Excelente para análisis de sensibilidad. El lector identifica de inmediato la zona óptima
+              sin tener que leer cada número, uno a uno.
+            </p>
+            <ul style="margin-top: 0.8rem;">
+              <li>Eje X y eje Y: las dos variables de diseño.</li>
+              <li>Color: la magnitud del costo (o del KPI).</li>
+              <li>Número en cada celda: el valor exacto, para quien quiera detalle.</li>
+            </ul>
+            <p class="small-text" style="text-align: left; margin-top: 1rem;">
+              Es probablemente el visual más subutilizado en proyectos de diseño.
+            </p>
+          </div>
+          <div class="fig">
+            <span class="fig-label">Sensibilidad de costo a $R$ y $N$</span>
+            <img class="diagram" src="img/clase-18-17-heatmap.png" alt="Mapa de calor del costo anualizado en función de R y N; el mínimo se localiza en R = 1,4 con N = 32" style="max-height: 60vh; width: auto;" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 18 — Línea / barra / dispersión ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 2 · Visual correcto</p>
+        <h2>¿Línea, barra o dispersión?</h2>
+        <p style="margin-top: 0.4rem;">
+          Una pregunta corta resuelve la mayoría de los casos: <strong>el eje X, ¿es continuo o discreto?</strong>
+        </p>
+        <div class="grid cols-2 stagger-in" style="margin-top: 0.8rem;">
+          <div class="card outline">
+            <h3>Línea — eje X continuo</h3>
+            <p>Tiempo, posición axial, temperatura, etapa.</p>
+            <p class="small-text" style="text-align: left; margin-top: 0.4em; font-style: normal;">
+              <strong>Ejemplo POU:</strong> perfil de composición vs. número de etapa.
+            </p>
+          </div>
+          <div class="card outline">
+            <h3>Dispersión — dos continuas</h3>
+            <p>Cada punto es una observación; la nube revela la relación.</p>
+            <p class="small-text" style="text-align: left; margin-top: 0.4em; font-style: normal;">
+              <strong>Ejemplo POU:</strong> diagrama de paridad modelo–experimento.
+            </p>
+          </div>
+          <div class="card outline">
+            <h3>Barra vertical — categorías</h3>
+            <p>Categorías ordenadas o discretas comparables.</p>
+            <p class="small-text" style="text-align: left; margin-top: 0.4em; font-style: normal;">
+              <strong>Ejemplo POU:</strong> consumo energético por equipo del proceso.
+            </p>
+          </div>
+          <div class="card outline">
+            <h3>Barra horizontal — etiquetas largas</h3>
+            <p>Categorías con nombres largos o cuando son muchas.</p>
+            <p class="small-text" style="text-align: left; margin-top: 0.4em; font-style: normal;">
+              <strong>Ejemplo POU:</strong> costos detallados de equipos.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 19 — Visualizaciones específicas POU ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 2 · Visual correcto</p>
+        <h2>Visualizaciones específicas de operaciones unitarias</h2>
+        <p class="small-text" style="text-align: left; margin: 0.2rem 0 0.4rem 0; font-style: normal;">
+          Haga clic sobre cada visualización para ver el ejemplo correspondiente.
+        </p>
+        <div class="flip-group" data-flip-group>
+          <div class="flip-tabs" role="tablist" aria-label="Tipos de visualizaciones POU">
+            <button type="button" role="tab" class="is-active" data-target="mccabe" aria-selected="true">McCabe-Thiele</button>
+            <button type="button" role="tab" data-target="txy" aria-selected="false">Diagrama T-x-y</button>
+            <button type="button" role="tab" data-target="profile" aria-selected="false">Perfil de columna</button>
+            <button type="button" role="tab" data-target="qt" aria-selected="false">Perfil Q-T</button>
+            <button type="button" role="tab" data-target="pump" aria-selected="false">Curva de bomba</button>
+            <button type="button" role="tab" data-target="parity" aria-selected="false">Paridad modelo–dato</button>
+          </div>
+          <div class="flip-panels">
+            <div class="flip-panel is-active" data-panel="mccabe" role="tabpanel">
+              <img src="img/clase-18-19-mccabe.png" alt="Diagrama McCabe-Thiele con escalones destacados" />
+              <div class="flip-caption">
+                <h3>McCabe-Thiele</h3>
+                <p>Línea de equilibrio fina, líneas de operación con peso medio, escalones destacados con color. El número de etapas teóricas es lo que el ojo debe encontrar primero.</p>
+              </div>
+            </div>
+            <div class="flip-panel" data-panel="txy" role="tabpanel" hidden>
+              <img src="img/clase-18-19-txy.png" alt="Diagrama T-x-y mostrando curvas de líquido y vapor" />
+              <div class="flip-caption">
+                <h3>Diagrama T-x-y</h3>
+                <p>Dos curvas suavizadas, etiquetas directas en cada curva (vapor / líquido) en lugar de leyenda aparte. La región entre curvas es el dominio de la separación.</p>
+              </div>
+            </div>
+            <div class="flip-panel" data-panel="profile" role="tabpanel" hidden>
+              <img src="img/clase-18-19-profile.png" alt="Perfil de composición a lo largo de las etapas; componente clave destacado" />
+              <div class="flip-caption">
+                <h3>Perfil de composición / temperatura vs. etapa</h3>
+                <p>Línea gruesa para el componente clave; el resto en gris. La transición «por dónde» se puede ver de un vistazo.</p>
+              </div>
+            </div>
+            <div class="flip-panel" data-panel="qt" role="tabpanel" hidden>
+              <img src="img/clase-18-19-qt.png" alt="Perfil Q-T con curva caliente y curva fría; ΔT mínimo etiquetado" />
+              <div class="flip-caption">
+                <h3>Perfil Q-T (intercambiadores)</h3>
+                <p>Curva caliente y curva fría. ΔT mínimo etiquetado <em>directamente</em> en el punto crítico, no en una leyenda separada.</p>
+              </div>
+            </div>
+            <div class="flip-panel" data-panel="pump" role="tabpanel" hidden>
+              <img src="img/clase-18-19-pump.png" alt="Curvas de la bomba y del sistema con punto de operación marcado" />
+              <div class="flip-caption">
+                <h3>Curva de bomba</h3>
+                <p>El punto de operación marcado claramente sobre la intersección de la curva del sistema y la curva de la bomba. Si no se ve el punto, falta lo más importante.</p>
+              </div>
+            </div>
+            <div class="flip-panel" data-panel="parity" role="tabpanel" hidden>
+              <img src="img/clase-18-19-parity.png" alt="Diagrama de paridad modelo-experimento con R² en una caja" />
+              <div class="flip-caption">
+                <h3>Diagrama de paridad</h3>
+                <p>Línea $y = x$ punteada en gris, datos sólidos. R² o RMSE anclados en una caja en una esquina, no flotando sobre los puntos.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 20 — Lo que hay que evitar ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 2 · Visual correcto</p>
+        <h2>Lo que hay que evitar &mdash; siempre</h2>
+        <div class="vis-catalog stagger-in" style="grid-template-columns: repeat(4, 1fr); margin-top: 0.6rem;">
+          <div class="vis-cell bad interactive" tabindex="0" role="button" aria-label="Alternativa para Pastel"><img src="img/clase-18-20-pie.png" alt="Pastel (no recomendado)" /><span class="name">Pastel</span><span class="why">El ojo no compara áreas con precisión.</span><span class="hint">Mejor: barra horizontal ordenada de mayor a menor.</span></div>
+          <div class="vis-cell bad interactive" tabindex="0" role="button" aria-label="Alternativa para 3D"><img src="img/clase-18-20-3d.png" alt="3D (no recomendado)" /><span class="name">3D</span><span class="why">Distorsiona magnitudes y agrega ruido.</span><span class="hint">Mejor: la versión 2D del mismo gráfico, siempre.</span></div>
+          <div class="vis-cell bad interactive" tabindex="0" role="button" aria-label="Alternativa para Eje Y secundario"><img src="img/clase-18-20-secondary.png" alt="Eje Y secundario (no recomendado)" /><span class="name">Eje Y secundario</span><span class="why">Confunde qué dato pertenece a cuál escala.</span><span class="hint">Mejor: dos paneles apilados con eje X compartido.</span></div>
+          <div class="vis-cell bad interactive" tabindex="0" role="button" aria-label="Alternativa para Donut"><img src="img/clase-18-20-donut.png" alt="Donut (no recomendado)" /><span class="name">Donut</span><span class="why">Peor que el pastel: ahora son arcos.</span><span class="hint">Mejor: barra horizontal o un solo número grande.</span></div>
+        </div>
+        <div class="warning" style="margin-top: 1.25rem;">
+          <strong>Frase para repetir:</strong> nunca 3D. Nunca. Solo es legítimo cuando la tercera dimensión es real.
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 21 — Antes / después: análisis sensibilidad ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 2 · Antes / después</p>
+        <h2>Análisis de sensibilidad de columna</h2>
+        <div class="grid cols-2" style="margin-top: 0.6rem;">
+          <div class="fig">
+            <span class="fig-label bad">Antes</span>
+            <img class="diagram" src="img/clase-18-20-3d.png" alt="Gráfico de barras 3D tachado en rojo" />
+          </div>
+          <div class="fig">
+            <span class="fig-label good">Después</span>
+            <img class="diagram" src="img/clase-18-21-good.png" alt="Gráfica después: líneas limpias con título conclusivo y óptimo destacado" style="max-height: 52vh; width: auto;" />
+          </div>
+        </div>
+        <p class="small-text" style="text-align: left; margin-top: 0.8rem;">
+          Tres cambios concretos: (i) la pregunta del visual cambió, (ii) tipo de gráfico correcto a la variable, (iii) el contexto pasó al gris para que la tesis quede al frente.
+        </p>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 22 — Carga cognitiva ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content" style="text-align: center; align-items: center;">
+        <p class="eyebrow">Bloque 3 · El desorden es el enemigo</p>
+        <p class="quote-large" style="margin-top: 1.5rem; max-width: 32ch;">
+          Cada elemento que ustedes ponen en la figura tiene un costo.
+        </p>
+        <p style="font-size: clamp(1rem, 1.8vw, 1.5rem); margin-top: 0.5rem; color: var(--brand-gray);">
+          Ese costo lo paga el cerebro del lector.
+        </p>
+        <div class="tip" style="margin-top: 2.5rem; max-width: 50rem; text-align: left;">
+          <strong>Saint-Exupéry:</strong> «Se llega a la perfección no cuando ya no hay nada más que añadir, sino cuando ya no hay nada más que quitar.»
+        </div>
+        <p style="margin-top: 2rem; font-size: clamp(1rem, 1.7vw, 1.4rem); color: var(--brand-dark); font-weight: 600;">
+          Pregunta clave: si quito esto, ¿se pierde el mensaje? Si no, fuera.
+        </p>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 23 — Razón data-tinta de Tufte ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 3 · Data-tinta</p>
+        <h2>La razón data-tinta de Tufte</h2>
+        <div class="big-example" style="background: var(--muted); border-radius: 0.6rem; padding: 0.85rem 1.15rem; max-width: 42rem;">
+          <p style="text-align: center; color: var(--brand-dark); font-weight: 600;">$$\text{razón data-tinta} = \dfrac{\text{tinta que comunica datos}}{\text{tinta total}}$$</p>
+        </div>
+        <div class="flip-group flip-group--toggle" data-flip-group style="margin-top: 0.8rem;">
+          <div class="flip-tabs flip-tabs--toggle" role="tablist" aria-label="Razón data-tinta">
+            <button type="button" role="tab" class="is-active is-bad" data-target="dt-bad" aria-selected="true">Razón baja</button>
+            <button type="button" role="tab" class="is-good" data-target="dt-good" aria-selected="false">Razón alta</button>
+          </div>
+          <div class="flip-panels">
+            <div class="flip-panel is-active" data-panel="dt-bad" role="tabpanel">
+              <img src="img/clase-18-23-bad.png" alt="Gráfica con bordes pesados, sombra, rejilla densa, fondo gris" />
+              <div class="flip-caption">
+                <p><strong>Mucha tinta no comunica datos:</strong> bordes pesados, fondo gris, sombras, rejilla densa, decimales innecesarios. Cada raya compite con los datos por la atención.</p>
+              </div>
+            </div>
+            <div class="flip-panel" data-panel="dt-good" role="tabpanel" hidden>
+              <img src="img/clase-18-23-good.png" alt="Gráfica limpia, solo ejes y datos" />
+              <div class="flip-caption">
+                <p><strong>Toda la tinta sirve:</strong> ejes finos, dos referencias en cada eje, una sola línea con los datos. Mismo mensaje, sin fricción.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="small-text" style="text-align: left; margin-top: 0.8rem;">
+          Edward Tufte, hace cuarenta años. La idea es simple: cada raya, cada color, cada borde compite con los datos por la atención. Si no comunica datos, está estorbando.
+        </p>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 24 — Principios Gestalt ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 3 · Gestalt</p>
+        <h2>Cuatro principios Gestalt aplicables aquí</h2>
+        <div class="grid cols-2 stagger-in" style="margin-top: 0.6rem;">
+          <div class="card">
+            <h3>Proximidad</h3>
+            <p>Lo que está cerca se percibe agrupado.</p>
+            <p class="small-text" style="text-align: left; font-style: normal; margin-top: 0.4em;">
+              <strong>Aplicación:</strong> etiqueten los datos al lado de los datos, no en leyendas lejanas.
+            </p>
+          </div>
+          <div class="card">
+            <h3>Similitud</h3>
+            <p>Lo que comparte color o forma se percibe como relacionado.</p>
+            <p class="small-text" style="text-align: left; font-style: normal; margin-top: 0.4em;">
+              <strong>Aplicación:</strong> misma serie, mismo color a lo largo de todo el documento.
+            </p>
+          </div>
+          <div class="card">
+            <h3>Cierre</h3>
+            <p>El cerebro completa figuras incompletas.</p>
+            <p class="small-text" style="text-align: left; font-style: normal; margin-top: 0.4em;">
+              <strong>Aplicación:</strong> no necesita bordes alrededor de toda la gráfica.
+            </p>
+          </div>
+          <div class="card">
+            <h3>Continuidad</h3>
+            <p>El ojo sigue líneas.</p>
+            <p class="small-text" style="text-align: left; font-style: normal; margin-top: 0.4em;">
+              <strong>Aplicación:</strong> líneas continuas → tendencias; series discretas → categorías.
+            </p>
+          </div>
+        </div>
+        <div class="tip" style="margin-top: 1rem;">
+          <strong>Proximidad</strong>, sobre todo, resuelve uno de los errores más comunes: leyendas en una esquina que obligan al ojo a viajar de la curva al texto y de vuelta.
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 25 — Antes/después: composición · paso 1 ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 3 · Antes / después · paso 1 de 3</p>
+        <h2>Perfil de composición de columna &mdash; el problema</h2>
+        <div class="two-col asym" style="margin-top: 0.6rem;">
+          <div class="fig">
+            <span class="fig-label bad">Antes</span>
+            <img class="diagram" src="img/clase-18-25-bad.png" alt="Perfil de composición sobrecargado con marcadores grandes, leyenda con sombra y rejilla densa" style="max-height: 60vh; width: auto;" />
+          </div>
+          <div>
+            <p style="font-weight: 600; color: var(--brand-dark);">¿Cuántos elementos compiten por su atención?</p>
+            <ul style="margin-top: 0.6rem;">
+              <li>Borde grueso alrededor de toda la figura.</li>
+              <li>Rejilla horizontal y vertical densa.</li>
+              <li>Decimales innecesarios en el eje Y (0,0000).</li>
+              <li>Etiquetas del eje X inclinadas a 45°.</li>
+              <li>Marcadores grandes sobre cada punto.</li>
+              <li>Cuatro series con colores saturados.</li>
+              <li>Leyenda en esquina, con sombra.</li>
+              <li>Título genérico: «Composición vs. Etapa».</li>
+            </ul>
+            <p style="margin-top: 0.8rem; color: var(--brand-dark); font-weight: 600;">
+              Vamos a ir quitando, paso a paso, todo lo que sobra.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 26 — Antes/después: composición · paso 2 ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 3 · Antes / después · paso 2 de 3</p>
+        <h2>Limpiar &mdash; quitar lo que no comunica</h2>
+        <div class="two-col asym" style="margin-top: 0.6rem;">
+          <div class="fig">
+            <span class="fig-label" style="color: var(--brand-gray);">Después de limpiar</span>
+            <img class="diagram" src="img/clase-18-26-clean.png" alt="Perfil limpio: cuatro series con etiquetas directas, sin marcadores ni rejilla" style="max-height: 55vh; width: auto;" />
+          </div>
+          <div>
+            <p style="font-weight: 600; color: var(--brand-dark);">Cambios aplicados:</p>
+            <ol class="stagger-in" style="margin-top: 0.6rem; padding-left: 1.5em;">
+              <li>Borde de la figura: <strong>eliminado</strong>.</li>
+              <li>Rejilla: <strong>eliminada</strong>.</li>
+              <li>Decimales del eje Y: 0,0 / 0,2 / 0,4 / 0,6 / 0,8 / 1,0.</li>
+              <li>Etiquetas del eje X: horizontales, una de cada cinco etapas.</li>
+              <li>Marcadores de datos: eliminados.</li>
+              <li>Leyenda: eliminada; cada curva etiquetada al lado.</li>
+            </ol>
+            <p class="small-text" style="text-align: left; margin-top: 1rem;">
+              La gráfica se ve más limpia y, paradójicamente, comunica más. Cada cambio elimina trabajo cognitivo del lector.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 27 — Antes/después: composición · paso 3 ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 3 · Antes / después · paso 3 de 3</p>
+        <h2>Jerarquía: una historia, no cuatro</h2>
+        <div class="two-col asym" style="margin-top: 0.6rem;">
+          <div class="fig">
+            <span class="fig-label good">Versión final</span>
+            <img class="diagram" src="img/clase-18-27-final.png" alt="Perfil con benceno destacado en azul fuerte y demás componentes en gris; punto de 99 % en etapa 18" style="max-height: 55vh; width: auto;" />
+          </div>
+          <div>
+            <p style="font-weight: 600; color: var(--brand-dark);">Tres movimientos finales:</p>
+            <ul class="stagger-in" style="margin-top: 0.6rem;">
+              <li>Tres curvas en <strong style="color: #9CA3AF;">gris claro</strong> (tolueno, xileno, otros) → contexto.</li>
+              <li>Una curva en <strong style="color: #0F62FE;">azul fuerte</strong> (benceno, el componente clave) → foco.</li>
+              <li>Etiquetas directas al final de cada curva, en su color.</li>
+              <li>Título cambia de <em>tema</em> a <em>conclusión</em>: «El benceno alcanza 99 % en la etapa 18».</li>
+            </ul>
+            <p class="small-text" style="text-align: left; margin-top: 1rem;">
+              El lector sabe en cinco segundos qué le están diciendo. Sin cambiar los datos: solo cambió la forma de mostrarlos.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 28 — Cierre del bloque 3 ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 3 · Cierre</p>
+        <h2>Lista corta: lo que casi siempre sobra</h2>
+        <div class="grid cols-2 stagger-in" style="margin-top: 0.6rem;">
+          <ul class="checklist">
+            <li><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg> <span>Bordes de la figura.</span></li>
+            <li><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg> <span>Rejilla densa.</span></li>
+            <li><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg> <span>Leyendas separadas (cuando se puede etiquetar al lado).</span></li>
+            <li><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg> <span>Decimales innecesarios.</span></li>
+          </ul>
+          <ul class="checklist">
+            <li><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg> <span>Marcadores de datos cuando hay muchos puntos.</span></li>
+            <li><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg> <span>Sombras, gradientes y fondos de color.</span></li>
+            <li><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg> <span>Texto en mayúsculas o cursivas sin razón.</span></li>
+            <li><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg> <span>Logos repetidos en cada figura.</span></li>
+          </ul>
+        </div>
+        <div class="tip" style="margin-top: 1.25rem;">
+          <strong>Lista de chequeo.</strong> Antes de entregar el documento, miren cada figura: por cada elemento de esta lista, ¿está aportando algo? Si no, fuera.
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 29 — Cuente los 3 ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content" style="text-align: center; align-items: center;">
+        <p class="eyebrow">Bloque 4 · Atributos preatentivos</p>
+        <h2>¿Cuántos «3» hay?</h2>
+        <div class="num-grid" style="margin-top: 1rem; max-width: 50rem;">
+          7 5 6 3 9 5 0 6 8 4 7 3<br>
+          6 5 8 6 6 3 0 3 7 5 7 6<br>
+          8 6 0 3 7 2 6 5 8 6 0 2<br>
+          8 4 6 5 8 9 1 0 7 8 3 0
+        </div>
+        <p style="margin-top: 1.2rem; color: var(--brand-gray);">Cuenten en silencio. Tómense diez segundos.</p>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 30 — Ahora cuéntelos otra vez ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content" style="text-align: center; align-items: center;">
+        <p class="eyebrow">Bloque 4 · Atributos preatentivos</p>
+        <h2>Ahora cuéntenlos otra vez</h2>
+        <div class="num-grid" style="margin-top: 1rem; max-width: 50rem;">
+          <span class="dim">7 5 6</span> <span class="hi">3</span> <span class="dim">9 5 0 6 8 4 7</span> <span class="hi">3</span><br>
+          <span class="dim">6 5 8 6 6</span> <span class="hi">3</span> <span class="dim">0</span> <span class="hi">3</span> <span class="dim">7 5 7 6</span><br>
+          <span class="dim">8 6 0</span> <span class="hi">3</span> <span class="dim">7 2 6 5 8 6 0 2</span><br>
+          <span class="dim">8 4 6 5 8 9 1 0 7 8</span> <span class="hi">3</span> <span class="dim">0</span>
+        </div>
+        <p style="margin-top: 1.2rem; font-size: clamp(1rem, 1.7vw, 1.4rem); color: var(--brand-dark); font-weight: 600;">
+          Saltan a la cara. Es un <span style="color: var(--brand-yellow-dark);">atributo preatentivo</span>: el cerebro lo procesa <em>antes</em> de que ustedes decidan procesarlo.
+        </p>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 31 — Paleta de atributos preatentivos ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 4 · Atributos preatentivos</p>
+        <h2>La paleta de atributos preatentivos</h2>
+        <div class="fig" style="margin-top: 0.6rem;"><img src="img/clase-18-31-preattentive.png" alt="Paleta de doce atributos preatentivos: orientación, forma, longitud, grosor, tamaño, curvatura, marca añadida, encerramiento, tono, intensidad, posición, movimiento" style="max-height: 60vh; width: auto;" /></div><div class="tip" style="margin-top: 1.25rem;">
+          <strong>Distinción clave:</strong> longitud y posición transmiten <em>magnitud</em> (por eso barras y dispersiones funcionan). El color transmite <em>categoría</em> o <em>énfasis</em>, no magnitud. ¿Es más grande el rojo o el azul? La pregunta no tiene respuesta.
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 32 — Color: gris es el nuevo negro ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 4 · Color</p>
+        <h2>Gris es el nuevo negro</h2>
+        <div class="grid cols-2 stagger-in" style="margin-top: 0.6rem;">
+          <div class="fig">
+            <span class="fig-label bad">Todo en color</span>
+            <img class="diagram" src="img/clase-18-32-bad.png" alt="Cinco curvas en cinco colores saturados: todo compite por la atención" style="max-height: 50vh; width: auto;" />
+            <figcaption>Si todo está en color, nada está en color.</figcaption>
+          </div>
+          <div class="fig">
+            <span class="fig-label good">Una sola en color</span>
+            <img class="diagram" src="img/clase-18-32-good.png" alt="Gráfica con cuatro líneas grises y una sola en azul fuerte" style="max-height: 50vh; width: auto;" />
+            <figcaption>El gris es el lienzo. El color es el énfasis.</figcaption>
+          </div>
+        </div>
+        <div class="tip" style="margin-top: 1.25rem;">
+          <strong>Regla práctica:</strong> máximo dos colores destacados por figura. Todo lo demás, gris.
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 33 — Aplicación: McCabe-Thiele ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 4 · Aplicación</p>
+        <h2>Dirigir la mirada en un McCabe-Thiele</h2>
+        <div class="grid cols-2 stagger-in" style="margin-top: 0.6rem;">
+          <div class="fig">
+            <span class="fig-label bad">Todo del mismo peso</span>
+            <img class="diagram" src="img/clase-18-33-bad.png" alt="McCabe-Thiele sin jerarquía: todos los trazos del mismo peso visual" style="max-height: 55vh; width: auto;" />
+          </div>
+          <div class="fig">
+            <span class="fig-label good">Jerarquía visual</span>
+            <img class="diagram" src="img/clase-18-33-good.png" alt="McCabe-Thiele con jerarquía: escalones azul fuerte sobre fondo claro" style="max-height: 55vh; width: auto;" />
+          </div>
+        </div>
+        <p class="small-text" style="text-align: left; margin-top: 1rem;">
+          Mismo dato, jerarquía distinta. El ojo va directo a los escalones, que es justo lo que importa: el número de etapas teóricas.
+        </p>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 34 — La prueba de los cinco segundos ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content" style="text-align: center; align-items: center;">
+        <p class="eyebrow">Bloque 4 · Diagnóstico</p>
+        <h2 style="margin-top: 1rem;">La prueba de los cinco segundos</h2>
+        <div class="stagger-in" style="display: flex; flex-direction: column; gap: 0.6rem; margin-top: 1.5rem; max-width: 36rem;">
+          <div class="cascade-step">
+            <span class="num">1</span>
+            <span>Muéstrenle su figura a alguien por <strong>cinco segundos</strong>.</span>
+          </div>
+          <div class="cascade-step">
+            <span class="num">2</span>
+            <span><strong>Quítenla.</strong></span>
+          </div>
+          <div class="cascade-step">
+            <span class="num">3</span>
+            <span>Pregúntenle: <em>¿qué decía?</em></span>
+          </div>
+        </div>
+        <div class="warning" style="margin-top: 2rem; max-width: 44rem;">
+          Si no puede responder, la figura tiene un problema, no la persona.
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 35 — Affordances ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 5 · Pensar como diseñador</p>
+        <h2>Affordances: pistas visuales que indican cómo interactuar</h2>
+        <div class="tip" style="margin-top: 0.6rem;">
+          Una <strong>manija</strong> dice «hale». Un <strong>botón rojo</strong> dice «presione». En una figura técnica, las pistas las ponen ustedes.
+        </div>
+        <div class="grid cols-2 stagger-in" style="margin-top: 1rem;">
+          <div class="card">
+            <h3>Énfasis</h3>
+            <p>«Mire aquí.»</p>
+          </div>
+          <div class="card">
+            <h3>Gris</h3>
+            <p>«Esto es contexto, no foco.»</p>
+          </div>
+          <div class="card">
+            <h3>Tamaño</h3>
+            <p>«Esto importa más.»</p>
+          </div>
+          <div class="card">
+            <h3>Posición</h3>
+            <p>«Lea en este orden.»</p>
+          </div>
+        </div>
+        <p class="small-text" style="text-align: left; margin-top: 1rem;">
+          Si no eligen activamente, el ojo decide solo &mdash; y muchas veces decide mal.
+        </p>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 36 — Resaltar lo importante ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 5 · Énfasis</p>
+        <h2>Resaltar lo importante</h2>
+        <div class="grid cols-2 asym" style="margin-top: 0.6rem; grid-template-columns: 1fr 1fr;">
+          <div class="card outline">
+            <h3>Tres reglas</h3>
+            <ul style="margin-top: 0.4em;">
+              <li>Resalten <strong>como máximo el 10 %</strong> de la figura.</li>
+              <li>Si todo está resaltado, nada está resaltado.</li>
+              <li>El resalte puede combinar atributos: color + negrita + tamaño.</li>
+            </ul>
+          </div>
+          <div class="fig">
+            <span class="fig-label">Ejemplo: parity plot</span>
+            <img class="diagram" src="img/clase-18-19-parity.png" alt="Diagrama de paridad modelo-experimento con R² en una caja" />
+            <figcaption>Outliers en rojo, resto en gris. El número clave en una caja anclada.</figcaption>
+          </div>
+        </div>
+        <p class="small-text" style="text-align: left; margin-top: 1rem;">
+          Si quieren resaltar más del 10 %, el visual probablemente está intentando responder dos preguntas. Divídanlo en dos figuras.
+        </p>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 37 — Eliminar distracciones ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 5 · Eliminación</p>
+        <h2>Eliminar distracciones</h2>
+        <div class="grid cols-2 stagger-in" style="margin-top: 0.6rem;">
+          <div class="card">
+            <h3>Candidatos a eliminar</h3>
+            <ul style="margin-top: 0.4em;">
+              <li>Datos no esenciales → al apéndice.</li>
+              <li>Series que no apoyan la tesis → al fondo (gris) o al apéndice.</li>
+              <li>Detalle excesivo → resumir cuando sea posible.</li>
+              <li>Elementos decorativos → siempre.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3>La pregunta única</h3>
+            <p style="font-weight: 600; color: var(--brand-dark); font-size: clamp(1rem, 1.6vw, 1.4rem);">
+              Si lo quito, ¿pierdo el mensaje?
+            </p>
+            <ul style="margin-top: 0.6em;">
+              <li>Sí → conservar.</li>
+              <li>No → fuera.</li>
+            </ul>
+            <p class="small-text" style="text-align: left; margin-top: 0.4em; font-style: normal;">
+              El apéndice es un buen aliado: permite entregar contexto sin distraer.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 38 — Jerarquía visual integrada ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 5 · Caso integrado</p>
+        <h2>Selección de equipo de transferencia de calor</h2>
+        <div class="two-col asym" style="margin-top: 0.6rem;">
+          <div class="fig">
+            <img class="diagram" src="img/clase-18-38-equipment.png" alt="Costo anualizado de tres tipos de intercambiador en función del área; placas óptimo en 18 m² con USD 42 000/año" style="max-height: 55vh; width: auto;" />
+          </div>
+          <div>
+            <p style="font-weight: 600; color: var(--brand-dark);">Capas de jerarquía:</p>
+            <ol class="stagger-in" style="margin-top: 0.6rem; padding-left: 1.5em;">
+              <li><strong>Título:</strong> es la conclusión, no el tema.</li>
+              <li><strong>Curva de placas:</strong> azul fuerte, gruesa, punto óptimo destacado.</li>
+              <li><strong>Otras dos curvas:</strong> gris claro, finas. Contexto.</li>
+              <li><strong>Anotación:</strong> «18 m², 42 000 USD/año», anclada al óptimo.</li>
+              <li><strong>Ejes:</strong> limpios, sin rejilla.</li>
+            </ol>
+            <p class="small-text" style="text-align: left; margin-top: 1rem;">
+              El lector no necesita leer el texto para saber la conclusión: la conclusión está en el título y reforzada por el visual.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 39 — Reglas para figuras del documento ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 6 · Documento técnico</p>
+        <h2>Reglas para figuras del documento</h2>
+        <div class="grid cols-2" style="margin-top: 0.6rem;">
+          <ul class="checklist">
+            <li><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> <span>Cada figura responde a <strong>una</strong> pregunta clara.</span></li>
+            <li><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> <span>El título es la <strong>conclusión</strong>, no el tema.</span></li>
+            <li><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> <span>Las unidades aparecen en cada eje.</span></li>
+            <li><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> <span>El componente clave se resalta; el resto es contexto en gris.</span></li>
+          </ul>
+          <ul class="checklist">
+            <li><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> <span>La figura se entiende <strong>sin leer el texto</strong> adyacente.</span></li>
+            <li><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> <span>La figura está referenciada en el cuerpo del texto.</span></li>
+            <li><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> <span>Leyenda al pie: fuente, condiciones, supuestos relevantes.</span></li>
+            <li><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg> <span>Tipo de gráfico = naturaleza de la variable (continua → línea; discreta → barra).</span></li>
+          </ul>
+        </div>
+        <div class="tip" style="margin-top: 1.25rem;">
+          La figura que necesita el texto para entenderse no es autosuficiente, y eso es un problema cuando el evaluador la mira sin leer el párrafo. <strong>Pruébenla aparte.</strong>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 40 — Reglas para el póster: 3 distancias ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 6 · Póster</p>
+        <h2>La prueba de las tres distancias</h2>
+        <div class="dist-row stagger-in" style="margin-top: 0.6rem;">
+          <div class="dist-card">
+            <span class="dist-tag">3 metros</span>
+            <h4>Atravesando el pasillo</h4>
+            <p>Solo se lee el <strong>título</strong> y, máximo, una imagen dominante.</p>
+            <p class="small-text" style="text-align: left; margin-top: 0.4em; font-style: normal;">
+              Tamaño del título: <strong>≥ 80 puntos</strong>.
+            </p>
+          </div>
+          <div class="dist-card">
+            <span class="dist-tag">1 metro</span>
+            <h4>Decidiendo si vale la pena</h4>
+            <p>Subtítulos de sección, una o dos figuras grandes.</p>
+            <p class="small-text" style="text-align: left; margin-top: 0.4em; font-style: normal;">
+              Subtítulos: <strong>36 – 48 puntos</strong>.
+            </p>
+          </div>
+          <div class="dist-card">
+            <span class="dist-tag">30 cm</span>
+            <h4>Leyendo a profundidad</h4>
+            <p>Cuerpo del texto, leyendas detalladas, datos numéricos.</p>
+            <p class="small-text" style="text-align: left; margin-top: 0.4em; font-style: normal;">
+              Texto: <strong>mínimo 24 puntos</strong>.
+            </p>
+          </div>
+        </div>
+        <div class="warning" style="margin-top: 1.25rem;">
+          Diseñen <strong>en este orden</strong>, no al revés. La mayoría de pósters fallan por llenarse de texto pequeño y dejar el título ahogado: nadie se acerca porque no hay nada que invite.
+        </div>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 41 — Antes / después: póster ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 6 · Antes / después</p>
+        <h2>El mismo proyecto, dos pósters</h2>
+        <div class="grid cols-2" style="margin-top: 0.6rem;">
+          <div class="fig">
+            <span class="fig-label bad">Antes</span>
+            <img class="diagram" src="img/clase-18-41-bad.png" alt="Póster antes: título largo y diez bloques con texto pequeño" style="max-height: 60vh; width: auto;" />
+            <figcaption>Título largo, diez bloques iguales, mucho texto pequeño.</figcaption>
+          </div>
+          <div class="fig">
+            <span class="fig-label good">Después</span>
+            <img class="diagram" src="img/clase-18-41-good.png" alt="Póster después: título grande y conclusivo, una figura dominante, jerarquía de capas" style="max-height: 60vh; width: auto;" />
+            <figcaption>Título corto y conclusivo, una figura dominante, jerarquía de capas.</figcaption>
+          </div>
+        </div>
+        <p class="small-text" style="text-align: left; margin-top: 0.8rem;">
+          La diferencia no es de cantidad de información: es de jerarquía. Y el título cambió de un tema descriptivo a una conclusión defendible.
+        </p>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 42 — Lista de verificación final ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 6 · Cierre</p>
+        <h2>Lista de verificación &mdash; pásenla por cada figura</h2>
+        <div class="grid cols-2" style="margin-top: 0.6rem;">
+          <ul class="checklist empty">
+            <li><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/></svg> <span>Tengo clara la audiencia.</span></li>
+            <li><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/></svg> <span>Tengo clara la pregunta que responde la figura.</span></li>
+            <li><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/></svg> <span>El título es una oración con conclusión, no un tema.</span></li>
+            <li><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/></svg> <span>El tipo de gráfico es el correcto para la variable.</span></li>
+            <li><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/></svg> <span>No hay 3D, ni pasteles, ni ejes Y secundarios.</span></li>
+          </ul>
+          <ul class="checklist empty">
+            <li><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/></svg> <span>El gris domina; el color resalta solo lo importante.</span></li>
+            <li><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/></svg> <span>Las series están etiquetadas directamente, no en leyenda lejana.</span></li>
+            <li><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/></svg> <span>Los ejes tienen unidades y no tienen decimales innecesarios.</span></li>
+            <li><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/></svg> <span>Rejilla, bordes y marcadores innecesarios fueron eliminados.</span></li>
+            <li><svg width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/></svg> <span>Pasé la prueba de los cinco segundos con un compañero.</span></li>
+          </ul>
+        </div>
+        <p class="small-text" style="text-align: left; margin-top: 1rem;">
+          Si una figura no pasa los diez puntos, vuelvan a trabajarla.
+        </p>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 43 — Tres errores que jamás ═════════════ -->
+    <section class="slide" data-slide>
+      <div class="content">
+        <p class="eyebrow">Bloque 6 · Cierre</p>
+        <h2>Tres errores que jamás</h2>
+        <div class="stagger-in" style="display: flex; flex-direction: column; gap: 0.8rem; margin-top: 1rem;">
+          <div class="card" style="border-left: 6px solid var(--accent-red); background: #fef2f2;">
+            <h3 style="color: var(--accent-red);">1 · Nunca presenten datos sin tesis</h3>
+            <p style="color: var(--brand-dark);">Si no saben qué quieren que el lector concluya, la figura sobra.</p>
+          </div>
+          <div class="card" style="border-left: 6px solid var(--accent-red); background: #fef2f2;">
+            <h3 style="color: var(--accent-red);">2 · Nunca usen 3D</h3>
+            <p style="color: var(--brand-dark);">Distorsiona y no añade información. Cero excepciones cuando ya hay dos dimensiones.</p>
+          </div>
+          <div class="card" style="border-left: 6px solid var(--accent-red); background: #fef2f2;">
+            <h3 style="color: var(--accent-red);">3 · Nunca pongan todo en color</h3>
+            <p style="color: var(--brand-dark);">El gris es lo que hace que el color funcione.</p>
+          </div>
+        </div>
+        <p class="small-text" style="text-align: left; margin-top: 1.25rem;">
+          Si retienen solo tres cosas de los noventa minutos, que sean estas. Las demás son refinamientos.
+        </p>
+      </div>
+    </section>
+
+    <!-- ═════════════ SLIDE 44 — Cierre ═════════════ -->
+    <section class="slide title-slide" data-slide>
+      <div class="content" style="text-align: center; align-items: center;">
+        <p class="eyebrow">Cierre</p>
+        <p class="quote-large" style="margin-top: 1rem; max-width: 28ch;">
+          Una buena figura no se ve bien.
+        </p>
+        <p class="quote-large" style="color: var(--brand-yellow); max-width: 28ch;">
+          Se entiende en cinco segundos.
+        </p>
+        <div style="margin-top: 3rem; max-width: 50rem; text-align: left;">
+          <p class="eyebrow" style="color: var(--brand-yellow);">Lecturas recomendadas</p>
+          <ul style="margin-top: 0.6rem; color: #d4d4d8;">
+            <li>Knaflic, C. N. (2015). <em>Storytelling with Data</em>. Wiley.</li>
+            <li>Tufte, E. R. (2001). <em>The Visual Display of Quantitative Information</em>. Graphics Press.</li>
+            <li>Few, S. (2012). <em>Show Me the Numbers</em>. Analytics Press.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="hud">
+    <span id="hud-title">Comunicación visual · IQYA-2031</span>
+    <span id="hud-counter">1 / 44</span>
+  </div>
+
+  <div class="controls">
+    <button aria-label="Anterior" id="prev">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+    </button>
+    <button aria-label="Descargar como PDF" id="dl-pdf" title="Descargar como PDF">
+      <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="7 10 12 15 17 10"/>
+        <line x1="12" x2="12" y1="15" y2="3"/>
+      </svg>
+    </button>
+    <button aria-label="Pantalla completa" id="fs">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" x2="14" y1="3" y2="10"/><line x1="3" x2="10" y1="21" y2="14"/></svg>
+    </button>
+    <button aria-label="Siguiente" id="next">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+    </button>
+  </div>
+
+  <script>
+    (function () {
+      var slides = Array.prototype.slice.call(document.querySelectorAll('[data-slide]'));
+      var i = 0;
+      var counter = document.getElementById('hud-counter');
+      var progress = document.querySelector('.progress');
+
+      function render() {
+        slides.forEach(function (s, idx) { s.classList.toggle('active', idx === i); });
+        if (counter) counter.textContent = (i + 1) + ' / ' + slides.length;
+        if (progress) {
+          progress.style.width = ((i + 1) / slides.length * 100) + '%';
+          progress.classList.remove('pulsing');
+          void progress.offsetWidth;
+          progress.classList.add('pulsing');
+        }
+        var isTitle = slides[i] && slides[i].classList.contains('title-slide');
+        document.body.style.background = isTitle ? '#1A1A1A' : '#ffffff';
+      }
+      function go(n) { i = Math.max(0, Math.min(slides.length - 1, n)); render(); }
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); go(i + 1); }
+        else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); go(i - 1); }
+        else if (e.key === 'Home') { e.preventDefault(); go(0); }
+        else if (e.key === 'End') { e.preventDefault(); go(slides.length - 1); }
+        else if (e.key === 'f' || e.key === 'F') { toggleFs(); }
+      });
+
+      document.getElementById('prev').addEventListener('click', function () { go(i - 1); });
+      var dlBtn = document.getElementById('dl-pdf');
+      if (dlBtn) dlBtn.addEventListener('click', function () {
+        // Inyectar links a YouTube para la versión imprimible (una sola vez)
+        document.querySelectorAll('iframe[src*="youtube"], iframe[src*="youtu.be"]').forEach(function (iframe) {
+          if (iframe.dataset.printLinkInjected === '1') return;
+          var src = iframe.getAttribute('src') || '';
+          var m = src.match(/(?:youtube\.com\/embed\/|youtu\.be\/)([\w-]+)/);
+          var url = m ? 'https://www.youtube.com/watch?v=' + m[1] : src;
+          var title = iframe.getAttribute('title') || 'Video';
+          var p = document.createElement('p');
+          p.className = 'video-print-link';
+          p.innerHTML = '<strong>▶ Video:</strong> ' + title + ' — <a href="' + url + '" target="_blank" rel="noopener">' + url + '</a>';
+          var host = iframe.parentNode;
+          host.parentNode.insertBefore(p, host.nextSibling);
+          iframe.dataset.printLinkInjected = '1';
+        });
+        var prevTitle = document.title;
+        document.title = 'iqya-2031--clase-18-comunicacion-visual';
+        window.print();
+        setTimeout(function(){ document.title = prevTitle; }, 200);
+      });
+      document.getElementById('next').addEventListener('click', function () { go(i + 1); });
+      document.getElementById('fs').addEventListener('click', toggleFs);
+
+      function toggleFs() {
+        var el = document.documentElement;
+        if (!document.fullscreenElement) {
+          (el.requestFullscreen || el.webkitRequestFullscreen || function(){}).call(el);
+        } else {
+          (document.exitFullscreen || document.webkitExitFullscreen || function(){}).call(document);
+        }
+      }
+
+      var tx = 0, ty = 0;
+      document.addEventListener('touchstart', function (e) {
+        if (!e.changedTouches[0]) return;
+        tx = e.changedTouches[0].clientX; ty = e.changedTouches[0].clientY;
+      }, { passive: true });
+      document.addEventListener('touchend', function (e) {
+        if (!e.changedTouches[0]) return;
+        var dx = e.changedTouches[0].clientX - tx;
+        var dy = e.changedTouches[0].clientY - ty;
+        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+          if (dx < 0) go(i + 1); else go(i - 1);
+        }
+      }, { passive: true });
+
+      slides.forEach(function (s, idx) {
+        var num = document.createElement('div');
+        num.className = 'slide-number';
+        num.setAttribute('aria-hidden', 'true');
+        num.textContent = String(idx + 1).padStart(2, '0');
+        s.appendChild(num);
+      });
+
+
+      // Flip-groups (stepper / toggle) — slides 19 y 23
+      document.querySelectorAll('[data-flip-group]').forEach(function (group) {
+        var tabs = group.querySelectorAll('.flip-tabs button');
+        var panels = group.querySelectorAll('.flip-panel');
+        function activate(target) {
+          tabs.forEach(function (b) {
+            var on = b.getAttribute('data-target') === target;
+            b.classList.toggle('is-active', on);
+            b.setAttribute('aria-selected', on ? 'true' : 'false');
+          });
+          panels.forEach(function (p) {
+            var on = p.getAttribute('data-panel') === target;
+            p.classList.toggle('is-active', on);
+            if (on) p.removeAttribute('hidden');
+            else p.setAttribute('hidden', '');
+          });
+        }
+        tabs.forEach(function (b) {
+          b.addEventListener('click', function () {
+            activate(b.getAttribute('data-target'));
+          });
+          b.addEventListener('keydown', function (e) {
+            if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+              e.preventDefault();
+              var arr = Array.from(tabs);
+              var idx = arr.indexOf(b);
+              var next = e.key === 'ArrowRight' ? (idx + 1) % arr.length : (idx - 1 + arr.length) % arr.length;
+              arr[next].focus();
+              activate(arr[next].getAttribute('data-target'));
+            }
+          });
+        });
+      });
+
+      // Interactive vis-cells (slides 14 y 20)
+      document.querySelectorAll('.vis-cell.interactive').forEach(function (card) {
+        function toggle() {
+          var open = card.classList.toggle('is-open');
+          card.setAttribute('aria-pressed', open ? 'true' : 'false');
+        }
+        card.addEventListener('click', toggle);
+        card.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+        });
+      });
+
+      render();
+    })();
+  </script>
+  <!-- FS_NAV · flechas flotantes + ocultar carrete en pantalla completa -->
+  <script>
+    (function () {
+      var root = document.documentElement;
+      var t;
+      function reveal() {
+        root.classList.add('show-controls');
+        clearTimeout(t);
+        t = setTimeout(function () { root.classList.remove('show-controls'); }, 2200);
+      }
+      function syncFs() {
+        var on = !!(document.fullscreenElement || document.webkitFullscreenElement);
+        root.classList.toggle('is-fs', on);
+        if (on) reveal();
+      }
+      document.addEventListener('fullscreenchange', syncFs);
+      document.addEventListener('webkitfullscreenchange', syncFs);
+      document.addEventListener('mousemove', function () {
+        if (root.classList.contains('is-fs')) reveal();
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía · Propuesta de valor · Seminario de Proyecto</title>
+<link rel="stylesheet" href="assets/deloitte.css">
+<!-- KaTeX -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous">
+<style>
+  /* ===== Acento azul del curso (override de tokens deloitte) ===== */
+  :root {
+    --brand-yellow: #0E7CD8;
+    --brand-yellow-dark: #0A5EA6;
+    --verde:       #0E7CD8;   /* acento principal → azul */
+    --verde-osc:   #0A5EA6;   /* acento oscuro → azul oscuro */
+    --verde-claro: #E2EFFB;   /* fondo de callout/tip → azul claro */
+  }
+
+  body {
+    margin: 0;
+    background: var(--gris-5);
+    font-family: var(--tipo);
+    color: var(--gris-1);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.62;
+  }
+
+  /* ---- Barra de progreso de lectura ---- */
+  .progress {
+    position: fixed; top: 0; left: 0; height: 4px; width: 0;
+    background: var(--verde); z-index: 200; transition: width .08s linear;
+  }
+
+  .page {
+    max-width: 940px;
+    margin: 40px auto 90px;
+    background: var(--blanco);
+    box-shadow: var(--sombra);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  /* ===================== ENCABEZADO ===================== */
+  .doc-head {
+    background: var(--papel);
+    border-bottom: 5px solid var(--verde);
+    padding: 46px 64px 40px;
+    position: relative;
+  }
+  .doc-head .org {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    font-size: 14px; font-weight: 700; letter-spacing: .03em; color: var(--gris-1);
+  }
+  .doc-head .org span { color: var(--gris-3); font-weight: 600; }
+  .doc-head .badge {
+    display: inline-block; background: var(--verde); color: #fff;
+    font-size: 13px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+    padding: 6px 14px; border-radius: 999px; margin: 28px 0 18px; white-space: nowrap;
+  }
+  .doc-head h1 { font-size: 43px; line-height: 1.1; margin: 0 0 10px; letter-spacing: -.015em; max-width: 22ch; }
+  .doc-head .subtitle { font-size: 20px; color: var(--gris-2); margin: 0; font-weight: 500; max-width: 52ch; }
+  .doc-meta {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px;
+    margin-top: 34px; padding-top: 26px; border-top: 1px solid var(--gris-4);
+  }
+  .doc-meta div { font-size: 15px; color: var(--gris-2); }
+  .doc-meta b { display: block; color: var(--gris-1); font-size: 16px; font-weight: 700; margin-bottom: 2px; }
+
+  /* ===================== CUERPO ===================== */
+  .doc-body { padding: 8px 64px 60px; }
+  .doc-body section { padding-top: 46px; scroll-margin-top: 24px; }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--verde-osc); margin-bottom: 12px;
+  }
+  .eyebrow::before { content: ""; width: 26px; height: 4px; background: var(--verde); border-radius: 2px; }
+  h2.sec { font-size: 30px; line-height: 1.18; margin: 0 0 18px; letter-spacing: -.01em; }
+  h2.sec .secnum { color: var(--verde); font-weight: 700; }
+  h3.sub { font-size: 21px; margin: 34px 0 10px; letter-spacing: -.005em; }
+  .doc-body p { font-size: 17px; color: var(--gris-1); margin: 0 0 16px; text-wrap: pretty; }
+  .lead { font-size: 20px; color: var(--gris-2); line-height: 1.55; font-weight: 400; }
+  .lead b { color: var(--gris-1); font-weight: 600; }
+  .doc-body ul, .doc-body ol { font-size: 17px; color: var(--gris-1); line-height: 1.6; }
+
+  /* ---- Índice / sumario ---- */
+  .toc {
+    background: var(--papel); border-radius: 8px; padding: 26px 30px;
+    margin-top: 30px; border-left: 5px solid var(--verde);
+  }
+  .toc .toc-t { font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--gris-2); margin: 0 0 14px; }
+  .toc ol { margin: 0; padding: 0; list-style: none; counter-reset: toc; display: grid; gap: 9px; }
+  .toc li { counter-increment: toc; }
+  .toc a {
+    display: flex; align-items: baseline; gap: 14px; text-decoration: none;
+    color: var(--gris-1); font-size: 16.5px; font-weight: 600; padding: 4px 0;
+    border-bottom: 1px solid transparent; transition: color .18s ease; cursor: pointer;
+  }
+  .toc a::before { content: counter(toc, decimal-leading-zero); color: var(--verde-osc); font-weight: 700; font-size: 14px; min-width: 26px; }
+  .toc a:hover { color: var(--verde-osc); }
+
+  /* ---- Blocks / cards ---- */
+  .blocks { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin: 22px 0 6px; }
+  .blocks-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 22px 0 6px; }
+  .block {
+    background: var(--papel); border-radius: 8px; padding: 22px 24px;
+    border-top: 5px solid var(--verde); display: flex; flex-direction: column; gap: 6px;
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .block:hover { transform: translateY(-3px); box-shadow: var(--sombra); }
+  .block .bn { font-size: 12px; font-weight: 700; color: var(--verde-osc); letter-spacing: .08em; }
+  .block b { font-size: 18px; line-height: 1.2; }
+  .block span { font-size: 14.5px; color: var(--gris-2); line-height: 1.45; }
+  .block ul { font-size: 14.5px; color: var(--gris-2); line-height: 1.45; margin: 4px 0 0; padding-left: 18px; }
+  .block ul li { margin-bottom: 4px; }
+
+  /* ===================== TABLAS ===================== */
+  .tbl-wrap { margin: 0 0 8px; overflow-x: auto; border-radius: 8px; }
+  table.ou { width: 100%; border-collapse: collapse; font-size: 15px; min-width: 560px; }
+  table.ou th, table.ou td { text-align: left; padding: 14px 16px; border-bottom: 1px solid var(--gris-4); vertical-align: top; line-height: 1.4; }
+  table.ou thead th { background: var(--gris-1); color: #fff; font-weight: 700; font-size: 13.5px; letter-spacing: .02em; }
+  table.ou thead th:first-child { border-top-left-radius: 6px; }
+  table.ou thead th:last-child { border-top-right-radius: 6px; }
+  table.ou td:first-child { font-weight: 700; color: var(--gris-1); width: 32%; }
+  table.ou .mag { color: var(--verde-osc); font-weight: 600; }
+  table.ou tbody tr:nth-child(even) { background: var(--papel); }
+  table.ou tbody tr { transition: background .12s ease; }
+  table.ou tbody tr:hover { background: var(--verde-claro); }
+  table.ou tbody tr:last-child td { border-bottom: none; }
+  .tbl-cap { font-size: 13.5px; color: var(--gris-2); margin: 24px 0 11px; padding-left: 14px; border-left: 3px solid var(--verde); line-height: 1.5; }
+  .tbl-cap b { color: var(--gris-1); }
+
+  /* ===================== CALLOUTS ===================== */
+  .callout {
+    display: grid; grid-template-columns: 42px 1fr; gap: 18px;
+    border-radius: 8px; padding: 20px 24px; margin: 24px 0; align-items: start;
+  }
+  .callout .ic {
+    width: 42px; height: 42px; border-radius: 50%; display: inline-flex;
+    align-items: center; justify-content: center; color: #fff; flex-shrink: 0;
+  }
+  .callout .ic svg { width: 22px; height: 22px; }
+  .callout > div > b { display: block; font-size: 15.5px; margin-bottom: 4px; }
+  .callout p { font-size: 15.5px; margin: 0 0 8px; color: var(--gris-1); line-height: 1.5; }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout p b { display: inline; color: inherit; font-size: inherit; }
+  .callout ul, .callout ol { font-size: 15.5px; color: var(--gris-1); margin: 6px 0 0; padding-left: 20px; line-height: 1.5; }
+  .callout li { margin-bottom: 5px; }
+  .callout--nota { background: var(--teal-claro); }
+  .callout--nota .ic { background: var(--teal); }
+  .callout--nota b { color: var(--teal); }
+  .callout--tip { background: var(--verde-claro); }
+  .callout--tip .ic { background: var(--verde); }
+  .callout--tip b { color: var(--verde-osc); }
+  .callout--warn { background: #FEF2F2; }
+  .callout--warn .ic { background: #DC2626; }
+  .callout--warn b { color: #991B1B; }
+
+  /* ===================== ENLACES DE PLATAFORMA ===================== */
+  a.pl { color: inherit; border-bottom: 2px solid var(--verde); text-decoration: none; white-space: nowrap; font-weight: 600; }
+  a.pl::after { content: '↗'; font-size: .75em; margin-left: .2em; color: var(--verde); }
+  a.pl:hover { color: var(--verde-osc); }
+
+  /* ===================== TABS / PESTAÑAS ===================== */
+  .tabs { display: flex; gap: 6px; border-bottom: 2px solid var(--gris-4); margin: 26px 0 22px; flex-wrap: wrap; }
+  .tab-btn {
+    appearance: none; border: none; background: none; cursor: pointer;
+    font-family: var(--tipo); font-size: 15.5px; font-weight: 700; color: var(--gris-2);
+    padding: 12px 18px; border-bottom: 3px solid transparent; margin-bottom: -2px;
+    transition: color .15s ease, border-color .15s ease; border-radius: 6px 6px 0 0;
+  }
+  .tab-btn:hover { color: var(--gris-1); background: var(--papel); }
+  .tab-btn.active { color: var(--verde-osc); border-bottom-color: var(--verde); }
+  .tab-btn:focus-visible { outline: 3px solid var(--verde-claro); outline-offset: 1px; }
+  .tab-pane { display: none; animation: fadeInUp .35s ease both; }
+  .tab-pane.active { display: block; }
+  .tab-tag { font-size: 14px; font-style: italic; color: var(--gris-2); margin: 0 0 8px; }
+
+  @keyframes fadeInUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+  /* ---- Campos del esquema (tarjetas numeradas) ---- */
+  .field {
+    border: 1px solid var(--gris-4); border-radius: 10px; padding: 20px 22px;
+    margin: 14px 0; background: var(--blanco); transition: border-color .15s ease, box-shadow .15s ease;
+  }
+  .field:hover { border-color: var(--verde); box-shadow: var(--sombra); }
+  .field-head { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+  .field-num {
+    flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%;
+    background: var(--verde); color: #fff; font-size: 14px; font-weight: 800;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .field-head h4 { margin: 0; font-size: 18px; color: var(--gris-1); line-height: 1.2; }
+  .field-desc { font-size: 15px; color: var(--gris-2); font-style: italic; margin: 0 0 12px; line-height: 1.5; }
+  .field-ex {
+    background: var(--verde-claro); border-left: 4px solid var(--verde-osc);
+    border-radius: 0 8px 8px 0; padding: 12px 16px; font-size: 15.5px; color: var(--gris-1);
+  }
+  .field-ex .ex-label { display: block; font-size: 11px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--verde-osc); margin-bottom: 6px; }
+  .field-ex ul { margin: 4px 0 0; padding-left: 20px; }
+  .field-ex p { margin: 0; font-size: 15.5px; }
+
+  /* ---- Bloque de propuesta final ---- */
+  blockquote.final {
+    margin: 16px 0; background: var(--verde-claro); border-left: 5px solid var(--verde-osc);
+    border-radius: 0 8px 8px 0; padding: 22px 26px; font-size: 16.5px; color: var(--gris-1);
+    line-height: 1.65;
+  }
+  blockquote.final p { margin: 0; font-size: 16.5px; }
+
+  /* ===================== COLLAPSIBLES ===================== */
+  details { margin: 18px 0; }
+  details summary {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 14px 18px; border-radius: 8px; background: var(--papel);
+    border: 1px solid var(--gris-4); cursor: pointer; list-style: none;
+    font-size: 15.5px; font-weight: 600; color: var(--gris-1);
+    transition: background .15s;
+  }
+  details summary::-webkit-details-marker { display: none; }
+  details summary::after { content: "+"; font-size: 18px; color: var(--verde); font-weight: 700; }
+  details[open] summary::after { content: "−"; }
+  details summary:hover { background: var(--gris-5); }
+  details[open] summary { border-radius: 8px 8px 0 0; border-bottom-color: transparent; }
+  details .detail-body {
+    padding: 18px 22px 20px; border: 1px solid var(--gris-4); border-top: none;
+    border-radius: 0 0 8px 8px; background: var(--blanco);
+    font-size: 15px; color: var(--gris-1); line-height: 1.55;
+  }
+  .detail-body p { margin: 0 0 12px; font-size: 15px; }
+  .detail-body ol, .detail-body ul { margin: 0 0 12px; padding-left: 22px; }
+  .detail-body li { margin-bottom: 6px; }
+  .detail-body h4 { font-size: 15px; font-weight: 700; color: var(--gris-1); margin: 16px 0 6px; }
+
+  /* ===================== STEPS / PASOS ===================== */
+  ol.steps { counter-reset: step; list-style: none; padding: 0; margin: 22px 0; }
+  ol.steps > li {
+    position: relative; padding: 4px 0 18px 52px; margin: 0;
+    border-left: 2px solid var(--gris-4); margin-left: 16px;
+  }
+  ol.steps > li:last-child { border-left-color: transparent; padding-bottom: 0; }
+  ol.steps > li::before {
+    counter-increment: step; content: counter(step);
+    position: absolute; left: -17px; top: 0; width: 32px; height: 32px;
+    background: var(--verde); color: #fff; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 15px;
+  }
+  ol.steps > li b { color: var(--gris-1); }
+
+  /* ===================== FOOTER ===================== */
+  .doc-foot {
+    border-top: 1px solid var(--gris-4); margin-top: 50px; padding-top: 22px;
+    display: flex; justify-content: space-between; font-size: 13px; color: var(--gris-3);
+  }
+
+  /* ===================== RESPONSIVE ===================== */
+  @media (max-width: 720px) {
+    .doc-head, .doc-body { padding-left: 26px; padding-right: 26px; }
+    .doc-meta, .blocks, .blocks-3 { grid-template-columns: 1fr 1fr; }
+    .doc-head h1 { font-size: 33px; }
+  }
+  @media (max-width: 520px) {
+    .blocks-3, .blocks { grid-template-columns: 1fr; }
+  }
+  @media print {
+    body { background: #fff; }
+    .page { box-shadow: none; margin: 0; max-width: none; border-radius: 0; }
+    .progress { display: none; }
+    .tab-pane { display: block !important; }
+    section, .blocks, .blocks-3, .tbl-wrap, .callout, .field { break-inside: avoid; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+    .block:hover, .field:hover { transform: none; }
+  }
+
+  /* ---- Outer layout with sticky side nav ---- */
+  .page { margin: 0; }
+  .outer-layout {
+    max-width: 1160px;
+    margin: 40px auto 90px;
+    display: grid;
+    grid-template-columns: 200px minmax(0, 1fr);
+    gap: 24px;
+    padding: 0 20px;
+    align-items: start;
+  }
+  .side-nav {
+    position: sticky;
+    top: 28px;
+    max-height: calc(100vh - 56px);
+    overflow-y: auto;
+    background: var(--blanco);
+    border: 1px solid var(--gris-4);
+    border-radius: 8px;
+    padding: 20px 16px;
+    box-shadow: var(--sombra);
+    scrollbar-width: thin;
+  }
+  .sn-label { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--gris-3); margin: 0 0 10px; padding: 0 4px; }
+  .sn-item { display: flex; align-items: flex-start; gap: 7px; font-family: var(--tipo); font-size: 13px; color: var(--gris-2); text-decoration: none; padding: 6px 8px; border-radius: 5px; line-height: 1.3; transition: all .15s; margin-bottom: 2px; border: none; background: none; cursor: pointer; width: 100%; text-align: left; }
+  .sn-item:hover { color: var(--gris-1); background: var(--gris-5); }
+  .sn-item.is-active { color: var(--verde-osc); background: var(--verde-claro); font-weight: 600; border-left: 3px solid var(--verde); padding-left: 5px; }
+  .sn-num { font-size: 11px; font-weight: 700; color: var(--verde-osc); min-width: 16px; padding-top: 1px; flex-shrink: 0; }
+  html { scroll-behavior: smooth; }
+  @media (max-width: 880px) {
+    .outer-layout { grid-template-columns: 1fr; padding: 0 12px; }
+    .side-nav { display: none; }
+    .page { margin: 0; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<div class="outer-layout">
+
+<nav class="side-nav" aria-label="Secciones">
+  <p class="sn-label">En esta guía</p>
+  <a class="sn-item" href="#s1"><span class="sn-num">01</span>Introducción</a>
+  <a class="sn-item" href="#s2"><span class="sn-num">02</span>Dos esquemas</a>
+  <a class="sn-item" href="#s3"><span class="sn-num">03</span>Ejemplos campo a campo</a>
+  <a class="sn-item" href="#s4"><span class="sn-num">04</span>Esquema paso a paso</a>
+  <a class="sn-item" href="#s5"><span class="sn-num">05</span>Redacción de la propuesta</a>
+  <a class="sn-item" href="#s6"><span class="sn-num">06</span>Entrega</a>
+</nav>
+
+<article class="page">
+
+  <!-- ENCABEZADO -->
+  <header class="doc-head">
+    <div class="org">
+      Universidad de los Andes
+      <span>Ingeniería Química y de Alimentos</span>
+    </div>
+    <div class="badge">Guía · Seminario de Proyecto</div>
+    <h1>Cómo escribir la propuesta de valor</h1>
+    <p class="subtitle">El documento inicial que articula qué desarrollan, para quién, por qué importa y qué los hace diferentes.</p>
+    <div class="doc-meta">
+      <div><b>Curso</b>Seminario de Proyecto · IQYA-3050</div>
+      <div><b>Autor</b>Luis H. Reyes</div>
+      <div><b>Tipo</b>Guía de proceso</div>
+      <div><b>Lectura</b>Aproximadamente 15 minutos</div>
+    </div>
+  </header>
+
+  <div class="doc-body">
+
+    <!-- INTRO + TOC — siempre visible -->
+    <section id="s0">
+      <p class="lead">Esta guía acompaña la entrega de la <b>propuesta de valor</b> del seminario. La propuesta de valor es el documento inicial que articula <em>qué</em> están desarrollando, <em>para quién</em>, <em>por qué importa</em> y <em>qué la hace diferente</em>. Es el punto de partida del proyecto de desarrollo profesional y la base sobre la que se construyen todas las entregas siguientes.</p>
+
+      <div class="toc">
+        <p class="toc-t">En esta guía</p>
+        <ol>
+          <li><a href="#s1">Introducción</a></li>
+          <li><a href="#s2">Dos esquemas: desarrollo e innovación</a></li>
+          <li><a href="#s3">Ejemplos campo a campo</a></li>
+          <li><a href="#s4">Esquema paso a paso</a></li>
+          <li><a href="#s5">Redacción de la propuesta final</a></li>
+          <li><a href="#s6">Entrega</a></li>
+        </ol>
+      </div>
+
+      <div class="callout callout--tip">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/></svg></span>
+        <div><b>Sobre esta guía</b><p>Esta es una guía de proceso, no una lectura de clase. No hay quiz sobre este material: su objetivo es ayudarles a producir un entregable sólido.</p></div>
+      </div>
+    </section>
+
+    <!-- 01. INTRODUCCIÓN -->
+    <section id="s1">
+      <div class="eyebrow">Punto de partida</div>
+      <h2 class="sec"><span class="secnum">1.</span> Introducción</h2>
+
+      <p>A continuación se presentan dos esquemas de propuesta de valor. Ambos son válidos — cada uno se ajusta mejor a un tipo específico de reto. Lo más importante es <strong>escoger el esquema que más se acomode al reto seleccionado</strong> por su equipo y seguir cada uno de los pasos que se proponen para escribirla.</p>
+
+      <div class="callout callout--tip">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/></svg></span>
+        <div><b>Idea clave</b><p>No intente forzar su proyecto a un esquema que no le calce. Escoja el que le permita articular su propuesta con <strong>mayor claridad</strong>. El esquema es una herramienta, no una camisa de fuerza.</p></div>
+      </div>
+    </section>
+
+    <!-- 02. DOS ESQUEMAS -->
+    <section id="s2">
+      <div class="eyebrow">Elija el camino correcto</div>
+      <h2 class="sec"><span class="secnum">2.</span> Dos esquemas: desarrollo e innovación</h2>
+
+      <p>Antes de redactar, decidan cuál de los dos esquemas representa mejor su reto. La diferencia no es estética: cada uno organiza la propuesta alrededor de una lógica distinta.</p>
+
+      <div class="blocks">
+        <div class="block">
+          <span class="bn">ESQUEMA 1</span>
+          <b>Proyecto de desarrollo</b>
+          <span>Ideal cuando su reto es crear una solución concreta para un problema identificado: una tecnología, un producto, un servicio, un procedimiento. La propuesta gira en torno al <em>problema de investigación</em> y a cómo la solución lo aborda mejor que las alternativas existentes.</span>
+        </div>
+        <div class="block">
+          <span class="bn">ESQUEMA 2</span>
+          <b>Proyecto de innovación</b>
+          <span>Ideal cuando su reto es proponer algo nuevo que no existe todavía: una plataforma, un modelo de negocio, una metodología que cambia la forma de hacer algo. La propuesta gira en torno a la <em>necesidad</em> insatisfecha y al <em>valor añadido</em> que aporta la innovación.</span>
+        </div>
+      </div>
+
+      <div class="callout callout--nota">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg></span>
+        <div><b>¿Cuál escoger?</b><p>Si su reto «resuelve un problema» que ya existe y ya tiene soluciones imperfectas, vayan por <strong>desarrollo</strong>. Si su reto «cambia la forma de hacer algo» o propone algo que aún no existe en el mercado, vayan por <strong>innovación</strong>. Si dudan, consulten al asesor.</p></div>
+      </div>
+    </section>
+
+    <!-- 03. EJEMPLOS CAMPO A CAMPO -->
+    <section id="s3">
+      <div class="eyebrow">De la teoría al ejemplo</div>
+      <h2 class="sec"><span class="secnum">3.</span> Ejemplos campo a campo</h2>
+
+      <p>Use las pestañas para alternar entre los dos esquemas. Cada tarjeta muestra el campo a llenar, su descripción y un ejemplo concreto. Al final de cada esquema puede desplegar la propuesta final integrada.</p>
+
+      <div class="tabs" role="tablist" aria-label="Esquemas de propuesta de valor">
+        <button class="tab-btn active" role="tab" aria-selected="true" data-tab="ej1">Ejemplo 1 · EcoFilter</button>
+        <button class="tab-btn" role="tab" aria-selected="false" data-tab="ej2">Ejemplo 2 · ChemFoodLab</button>
+      </div>
+
+      <!-- EJEMPLO 1 -->
+      <div class="tab-pane active" id="ej1" role="tabpanel">
+        <p class="tab-tag">EcoFilter · Proyecto de desarrollo</p>
+
+        <div class="field">
+          <div class="field-head"><span class="field-num">1</span><h4>Nombre del proyecto</h4></div>
+          <p class="field-desc">Título corto y descriptivo del proyecto de grado.</p>
+          <div class="field-ex"><span class="ex-label">Ejemplo</span><p><strong>EcoFilter</strong></p></div>
+        </div>
+
+        <div class="field">
+          <div class="field-head"><span class="field-num">2</span><h4>Es un</h4></div>
+          <p class="field-desc">Tipo de proyecto de grado (investigación, desarrollo de software, diseño de producto, estudio de caso, etc.).</p>
+          <div class="field-ex"><span class="ex-label">Ejemplo</span><p>Desarrollo de un sistema de filtración de agua sostenible.</p></div>
+        </div>
+
+        <div class="field">
+          <div class="field-head"><span class="field-num">3</span><h4>Que busca beneficiar a</h4></div>
+          <p class="field-desc">Público objetivo del proyecto (comunidad, industria, grupo académico, sociedad en general, etc.).</p>
+          <div class="field-ex"><span class="ex-label">Ejemplo</span><p>Comunidades rurales sin acceso a agua potable.</p></div>
+        </div>
+
+        <div class="field">
+          <div class="field-head"><span class="field-num">4</span><h4>Acción frente al problema identificado</h4></div>
+          <p class="field-desc">Qué pretende lograr el proyecto en relación con el problema (generar conocimiento, proponer soluciones, desarrollar tecnología, etc.).</p>
+          <div class="field-ex"><span class="ex-label">Ejemplo</span><p>Proporcionar un método asequible y sostenible para purificar el agua.</p></div>
+        </div>
+
+        <div class="field">
+          <div class="field-head"><span class="field-num">5</span><h4>Problema de investigación</h4></div>
+          <p class="field-desc">Descripción concisa del problema o brecha de conocimiento que el proyecto aborda.</p>
+          <div class="field-ex"><span class="ex-label">Ejemplo</span><p>Falta de acceso a sistemas de purificación de agua eficientes y ecológicos en áreas rurales.</p></div>
+        </div>
+
+        <div class="field">
+          <div class="field-head"><span class="field-num">6</span><h4>Esto es relevante porque</h4></div>
+          <p class="field-desc">Justificación de la importancia del proyecto y el valor de la investigación propuesta.</p>
+          <div class="field-ex"><span class="ex-label">Ejemplo</span><p>El acceso al agua potable es fundamental para la salud y el bienestar de estas comunidades, y la solución propuesta utiliza materiales sostenibles y fácilmente disponibles, reduciendo el impacto ambiental.</p></div>
+        </div>
+
+        <div class="field">
+          <div class="field-head"><span class="field-num">7</span><h4>Y se distingue porque</h4></div>
+          <p class="field-desc">Beneficios y ventajas del enfoque o metodología respecto a otras investigaciones o soluciones existentes.</p>
+          <div class="field-ex"><span class="ex-label">Ejemplo</span>
+            <ul>
+              <li>EcoFilter utiliza una tecnología innovadora basada en carbón activado producido de desechos agrícolas.</li>
+              <li>Es un sistema fácil de implementar y mantener por las comunidades beneficiadas.</li>
+              <li>El proyecto incluye un programa de capacitación y educación para los usuarios finales.</li>
+            </ul>
+          </div>
+        </div>
+
+        <details>
+          <summary>Ver la propuesta de valor final integrada · EcoFilter</summary>
+          <div class="detail-body">
+            <blockquote class="final">
+              <p><strong>EcoFilter</strong> es un desarrollo innovador de un sistema de filtración de agua sostenible, diseñado para beneficiar a comunidades rurales sin acceso a agua potable. Enfocado en proporcionar un método asequible y sostenible para purificar el agua, EcoFilter aborda la falta de acceso a sistemas de purificación de agua eficientes y ecológicos en áreas rurales. Este proyecto es relevante y esencial, ya que facilita el acceso vital al agua potable, promoviendo la salud y el bienestar de estas comunidades mientras utiliza materiales sostenibles y de fácil acceso, minimizando así el impacto ambiental. Lo que distingue a EcoFilter es su innovadora tecnología basada en carbón activado producido a partir de desechos agrícolas, su facilidad de implementación y mantenimiento en las comunidades beneficiadas, y la inclusión de un programa integral de capacitación y educación para los usuarios finales.</p>
+            </blockquote>
+          </div>
+        </details>
+      </div>
+
+      <!-- EJEMPLO 2 -->
+      <div class="tab-pane" id="ej2" role="tabpanel">
+        <p class="tab-tag">ChemFoodLab · Proyecto de innovación</p>
+
+        <div class="field">
+          <div class="field-head"><span class="field-num">1</span><h4>Nombre de la innovación</h4></div>
+          <p class="field-desc">Título corto y llamativo que describa la innovación.</p>
+          <div class="field-ex"><span class="ex-label">Ejemplo</span><p><strong>ChemFoodLab</strong></p></div>
+        </div>
+
+        <div class="field">
+          <div class="field-head"><span class="field-num">2</span><h4>Es un(a)</h4></div>
+          <p class="field-desc">Tipo de innovación (tecnología, proceso, modelo de negocio, producto, servicio, etc.).</p>
+          <div class="field-ex"><span class="ex-label">Ejemplo</span><p>Plataforma virtual de simulación y experimentación para ingeniería química y de alimentos.</p></div>
+        </div>
+
+        <div class="field">
+          <div class="field-head"><span class="field-num">3</span><h4>Dirigido a</h4></div>
+          <p class="field-desc">Perfil del usuario final o stakeholder que se beneficiará de la innovación.</p>
+          <div class="field-ex"><span class="ex-label">Ejemplo</span><p>Estudiantes de ingeniería química y de alimentos.</p></div>
+        </div>
+
+        <div class="field">
+          <div class="field-head"><span class="field-num">4</span><h4>Acción innovadora</h4></div>
+          <p class="field-desc">Qué hace la innovación de manera diferente para abordar un problema o necesidad específica.</p>
+          <div class="field-ex"><span class="ex-label">Ejemplo</span><p>Facilitar el aprendizaje práctico y experimental en un entorno virtual seguro y controlado.</p></div>
+        </div>
+
+        <div class="field">
+          <div class="field-head"><span class="field-num">5</span><h4>Problema o necesidad</h4></div>
+          <p class="field-desc">Descripción clara y concisa del problema o necesidad que la innovación pretende solucionar.</p>
+          <div class="field-ex"><span class="ex-label">Ejemplo</span><p>La falta de acceso a laboratorios y equipos especializados limita las oportunidades de aprendizaje práctico y experimental para los estudiantes.</p></div>
+        </div>
+
+        <div class="field">
+          <div class="field-head"><span class="field-num">6</span><h4>Innovación propuesta</h4></div>
+          <p class="field-desc">¿Cómo la idea o solución es nueva, diferente y valiosa? ¿Cómo aborda el problema de una manera que no se ha hecho antes?</p>
+          <div class="field-ex"><span class="ex-label">Ejemplo</span><p>ChemFoodLab es una plataforma en línea que simula un laboratorio real, permitiendo a los estudiantes realizar experimentos y prácticas relacionados con ingeniería química y de alimentos de manera virtual. La plataforma ofrece una variedad de herramientas y recursos didácticos que complementan y enriquecen la formación académica de los estudiantes.</p></div>
+        </div>
+
+        <div class="field">
+          <div class="field-head"><span class="field-num">7</span><h4>Valor añadido</h4></div>
+          <p class="field-desc">Beneficios claros y tangibles que los usuarios o stakeholders obtendrán al adoptar la innovación.</p>
+          <div class="field-ex"><span class="ex-label">Ejemplo</span>
+            <ul>
+              <li>Aprendizaje práctico sin necesidad de infraestructura física.</li>
+              <li>Acceso a una amplia gama de experimentos y prácticas.</li>
+              <li>Flexibilidad para aprender y practicar en cualquier momento y lugar.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="field">
+          <div class="field-head"><span class="field-num">8</span><h4>Diferenciadores clave</h4></div>
+          <p class="field-desc">Elementos únicos de la innovación que la distinguen de otras soluciones existentes o enfoques tradicionales.</p>
+          <div class="field-ex"><span class="ex-label">Ejemplo</span>
+            <ul>
+              <li>Interfaz amigable e interactiva que simula un entorno de laboratorio real.</li>
+              <li>Módulos educativos actualizados y alineados con los currículos de ingeniería química y de alimentos.</li>
+              <li>Comunidad virtual para la colaboración y el intercambio de conocimientos entre estudiantes y docentes.</li>
+            </ul>
+          </div>
+        </div>
+
+        <details>
+          <summary>Ver la propuesta de valor final integrada · ChemFoodLab</summary>
+          <div class="detail-body">
+            <blockquote class="final">
+              <p><strong>ChemFoodLab</strong> es una plataforma virtual de simulación y experimentación única diseñada para estudiantes de ingeniería química y de alimentos. Esta innovación aborda la necesidad crítica de acceso a experiencias prácticas y experimentales, proporcionando un entorno virtual seguro y controlado donde los estudiantes pueden aprender y practicar en cualquier momento y lugar. La plataforma simula con precisión un laboratorio real, permitiendo realizar una variedad de experimentos y prácticas esenciales para su formación académica. ChemFoodLab se distingue por su interfaz intuitiva, módulos educativos alineados con los currículos actuales y una comunidad virtual para la colaboración y el intercambio de conocimientos entre estudiantes y educadores, ofreciendo así un valor educativo inigualable y apoyando el desarrollo integral de los futuros ingenieros en estos campos.</p>
+            </blockquote>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- 04. ESQUEMA PASO A PASO -->
+    <section id="s4">
+      <div class="eyebrow">El proceso</div>
+      <h2 class="sec"><span class="secnum">4.</span> Esquema paso a paso</h2>
+
+      <p>Independientemente del esquema elegido, siga este proceso para escribir su propuesta:</p>
+
+      <ol class="steps">
+        <li><b>Escoja el esquema adecuado.</b> Lea ambos ejemplos y escoja el que más se acomode al reto de su equipo. Si dudan, consulten al asesor.</li>
+        <li><b>Llene cada campo en borrador.</b> Redacte cada respuesta por separado. No se preocupen por la conexión entre ellas — todavía no. Céntrense en responder cada pregunta con precisión.</li>
+        <li><b>Valide con datos y referencias.</b> La justificación («esto es relevante porque…») y el problema deben estar apoyados en <em>evidencia</em>: cifras, reportes, literatura. No alcanzan las intuiciones.</li>
+        <li><b>Integre en un párrafo.</b> Conecte las respuestas en un texto narrativo único, fluido y sin saltos bruscos. Esta es la propuesta de valor final.</li>
+        <li><b>Iteren con el asesor.</b> Muestren la versión borrador. Reciban retroalimentación y ajusten. La propuesta madura con iteraciones.</li>
+        <li><b>Firma y entrega.</b> Cuando el asesor apruebe, firma digitalmente el documento y cada integrante sube el PDF firmado a <a class="pl" href="https://bloqueneon.uniandes.edu.co" target="_blank" rel="noopener">BloqueNeón</a>.</li>
+      </ol>
+
+      <div class="callout callout--warn">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></span>
+        <div><b>Errores comunes</b>
+          <ul>
+            <li>Confundir <em>problema</em> con <em>síntoma</em>. El problema es la causa estructural; el síntoma es lo que se observa.</li>
+            <li>Escribir el diferenciador en términos vagos («es mejor», «es más eficiente») sin cuantificar ni comparar.</li>
+            <li>Describir la solución antes de haber descrito bien el problema.</li>
+            <li>Entregar la propuesta sin haber recibido retroalimentación del asesor.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 05. REDACCIÓN -->
+    <section id="s5">
+      <div class="eyebrow">De los campos al párrafo</div>
+      <h2 class="sec"><span class="secnum">5.</span> Redacción de la propuesta final</h2>
+
+      <p>Una vez completados los campos, integre las respuestas en un <strong>párrafo único, fluido y conectado</strong>. La propuesta final no es una lista de viñetas — es un texto narrativo que comunica el proyecto con claridad. En la sección anterior puede desplegar cómo queda integrado cada uno de los dos ejemplos.</p>
+
+      <p>Una forma útil de pensar la redacción es como una proporción: la propuesta gana fuerza cuando el <em>valor percibido</em> supera con claridad al <em>esfuerzo o costo</em> que implica adoptarla.</p>
+
+      <p style="text-align:center; font-size:18px;">$$\text{Propuesta de valor} \;=\; \frac{\text{Beneficios para el usuario}}{\text{Costos y fricciones de adoptar la solución}}$$</p>
+
+      <div class="callout callout--tip">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/></svg></span>
+        <div><b>Buena redacción = buena comunicación</b><p>La claridad, coherencia y solidez de la propuesta son fundamentales para comunicar efectivamente la importancia y el impacto potencial del proyecto. Léala en voz alta: si hay frases que se enredan, reescríbalas.</p></div>
+      </div>
+    </section>
+
+    <!-- 06. ENTREGA -->
+    <section id="s6">
+      <div class="eyebrow">Cierre del entregable</div>
+      <h2 class="sec"><span class="secnum">6.</span> Entrega</h2>
+
+      <p>Para completar la actividad, cada equipo debe desarrollar una propuesta de valor siguiendo uno de los esquemas presentados, adaptándolo al reto seleccionado para el proyecto de desarrollo profesional.</p>
+
+      <p>Es importante que la entrega muestre <strong>de manera clara y evidente</strong> que se siguió el proceso propuesto: abordar cada uno de los puntos indicados y presentar una propuesta de valor final sólida y bien articulada.</p>
+
+      <div class="callout callout--nota">
+        <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg></span>
+        <div><b>Pasos de entrega</b>
+          <ol>
+            <li>Completen el documento con los campos del esquema elegido y la propuesta final integrada.</li>
+            <li>Envíen el documento al <strong>asesor principal</strong> para revisión.</li>
+            <li>Una vez aprobado, el asesor <strong>firma digitalmente</strong> el PDF.</li>
+            <li>Cada integrante sube el <strong>PDF firmado</strong> a <a class="pl" href="https://bloqueneon.uniandes.edu.co" target="_blank" rel="noopener">BloqueNeón</a> antes de la fecha límite establecida.</li>
+          </ol>
+        </div>
+      </div>
+
+      <p>Recuerden: la <strong>claridad, coherencia y solidez</strong> de la propuesta son fundamentales para comunicar la importancia y el impacto potencial del proyecto. No se trata solo de cumplir con un entregable — es la primera oportunidad para vender la idea.</p>
+    </section>
+
+    <footer class="doc-foot">
+      <span>Luis H. Reyes · Universidad de los Andes</span>
+      <span>Seminario de Proyecto · IQYA-3050 · 2026-20</span>
+    </footer>
+
+  </div>
+</article>
+
+</div>
+
+<!-- KaTeX -->
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hh1HrFW7TI/o+gT1jTV/qSXKwm3PiF3eD2H56qiP" crossorigin="anonymous"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" integrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous" onload="renderMath()"></script>
+
+<script>
+/* ── Barra de progreso ───────────────────────────────────────── */
+(function () {
+  var bar = document.getElementById('progress');
+  function onScroll() {
+    var h = document.documentElement;
+    var max = h.scrollHeight - h.clientHeight;
+    bar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+})();
+
+/* ── Scroll-spy ──────────────────────────────────────────────── */
+(function () {
+  var items = document.querySelectorAll('.sn-item');
+  var secs = Array.prototype.slice.call(document.querySelectorAll('#s1,#s2,#s3,#s4,#s5,#s6'));
+  function spy() {
+    var active = null;
+    secs.forEach(function (s) {
+      if (s.getBoundingClientRect().top <= 120) active = s.id;
+    });
+    items.forEach(function (a) {
+      var href = a.getAttribute('href').slice(1);
+      a.classList.toggle('is-active', href === active);
+    });
+  }
+  document.addEventListener('scroll', spy, { passive: true });
+  spy();
+})();
+
+/* ── Tabs ────────────────────────────────────────────────────── */
+(function () {
+  var btns = document.querySelectorAll('.tab-btn');
+  btns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var id = btn.getAttribute('data-tab');
+      btns.forEach(function (b) {
+        var on = b === btn;
+        b.classList.toggle('active', on);
+        b.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
+      document.querySelectorAll('.tab-pane').forEach(function (p) {
+        p.classList.toggle('active', p.id === id);
+      });
+    });
+  });
+})();
+
+/* ── KaTeX helper ────────────────────────────────────────────── */
+function renderMath() {
+  if (typeof renderMathInElement === 'function') {
+    renderMathInElement(document.body, {
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$', right: '$', display: false },
+        { left: '\\(', right: '\\)', display: false },
+        { left: '\\[', right: '\\]', display: true }
+      ],
+      throwOnError: false
+    });
+  }
+}
+</script>
+
+</body>
+</html>

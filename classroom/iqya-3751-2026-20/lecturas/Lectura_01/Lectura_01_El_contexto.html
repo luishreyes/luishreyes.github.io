@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lectura 01 · El contexto lo es todo · Narrativas Visuales de Datos con IA Generativa</title>
+<style>
+/* ===================================================================
+   Lectura del curso Narrativas Visuales (IQYA-3751) — identidad propia:
+   carbón (escenario) · hueso (texto) · citrón (el único foco).
+   Autocontenida. Mismo sistema que programa.html. Ver NARRATIVAS-DESIGN.md.
+   Fuentes AUTOALOJADAS (sin Google Fonts CDN).
+   =================================================================== */
+@font-face { font-family: 'Big Shoulders Display'; font-style: normal; font-weight: 100 900; font-display: swap; src: url('/fonts/big-shoulders-display-latin-wght-normal.woff2') format('woff2-variations'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: 'Big Shoulders Display'; font-style: normal; font-weight: 100 900; font-display: swap; src: url('/fonts/big-shoulders-display-latin-ext-wght-normal.woff2') format('woff2-variations'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: 'Archivo'; font-style: normal; font-weight: 100 900; font-display: swap; src: url('/fonts/archivo-latin-wght-normal.woff2') format('woff2-variations'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: 'Archivo'; font-style: normal; font-weight: 100 900; font-display: swap; src: url('/fonts/archivo-latin-ext-wght-normal.woff2') format('woff2-variations'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: 'Archivo'; font-style: italic; font-weight: 100 900; font-display: swap; src: url('/fonts/archivo-latin-wght-italic.woff2') format('woff2-variations'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+
+:root {
+  --citron: #C9C41C; --citron-hi: #DCD733; --citron-tint: #23210C;
+  --carbon-1000: #0A0A0A; --carbon-950: #101010; --carbon-900: #141412; --carbon-850: #1A1A17; --carbon-800: #201F1B; --carbon-700: #2A2924; --carbon-600: #3A382F;
+  --bone-000: #E8E6E1; --bone-300: #B8B6AE; --bone-500: #86847C;
+  --clay: #C8623A;
+  --line: rgba(232,230,225,.14); --line-strong: rgba(232,230,225,.28);
+  --tipo: 'Archivo', system-ui, -apple-system, sans-serif;
+  --display: 'Big Shoulders Display', 'Archivo', system-ui, sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; background: var(--carbon-1000); color: var(--bone-000); font-family: var(--tipo); line-height: 1.62; color-scheme: dark; -webkit-font-smoothing: antialiased; }
+
+/* barra de progreso */
+.progress { position: fixed; top: 0; left: 0; height: 3px; width: 0; background: var(--citron); z-index: 50; transition: width .1s linear; }
+
+/* layout con side-nav */
+.outer-layout { max-width: 1160px; margin: 34px auto 90px; display: grid; grid-template-columns: 210px minmax(0,1fr); gap: 26px; padding: 0 20px; align-items: start; }
+.side-nav { position: sticky; top: 26px; max-height: calc(100vh - 52px); overflow-y: auto; background: var(--carbon-900); border: 1px solid var(--line); border-radius: 4px; padding: 20px 14px; scrollbar-width: thin; }
+.sn-label { font-family: var(--tipo); font-size: 10.5px; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; color: var(--bone-500); margin: 0 0 12px; padding: 0 4px; }
+.sn-item { display: flex; align-items: flex-start; gap: 8px; font-family: var(--tipo); font-size: 13px; color: var(--bone-300); text-decoration: none; padding: 7px 8px; border-radius: 3px; line-height: 1.3; transition: all .15s; margin-bottom: 2px; border-left: 2px solid transparent; }
+.sn-item:hover { color: var(--bone-000); background: var(--carbon-800); }
+.sn-item.is-active { color: var(--citron-hi); background: var(--citron-tint); font-weight: 600; border-left-color: var(--citron); }
+.sn-num { font-size: 11px; font-weight: 700; color: var(--citron-hi); min-width: 16px; padding-top: 1px; flex-shrink: 0; font-variant-numeric: tabular-nums; }
+
+.page { min-width: 0; }
+
+/* encabezado */
+.doc-head { position: relative; padding: 8px 0 30px; border-bottom: 1px solid var(--line); }
+.doc-head .org { display: flex; justify-content: space-between; align-items: baseline; font-size: 12px; font-weight: 700; letter-spacing: .04em; color: var(--bone-300); flex-wrap: wrap; gap: 4px 16px; }
+.doc-head .org span { color: var(--bone-500); font-weight: 600; }
+.doc-head .badge { display: inline-block; background: var(--citron); color: var(--carbon-1000); font-family: var(--tipo); font-size: 11.5px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; padding: 6px 13px; margin: 22px 0 14px; }
+.doc-head h1 { font-family: var(--display); font-weight: 400; text-transform: uppercase; font-size: clamp(40px, 6vw, 68px); line-height: .92; letter-spacing: -.005em; margin: 0 0 10px; color: var(--bone-000); }
+.doc-head h1 .hl { color: var(--citron-hi); }
+.doc-head .subtitle { font-size: 19px; color: var(--bone-300); margin: 0; font-weight: 500; max-width: 60ch; }
+.doc-meta { display: grid; grid-template-columns: repeat(4, auto); gap: 14px 34px; margin-top: 26px; padding-top: 22px; border-top: 1px solid var(--line); justify-content: start; }
+.doc-meta div { font-size: 13px; color: var(--bone-300); }
+.doc-meta b { display: block; color: var(--bone-500); font-size: 10.5px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; margin-bottom: 4px; }
+
+/* cuerpo */
+.doc-body section { padding-top: 44px; }
+.eyebrow { display: inline-flex; align-items: center; gap: 10px; font-family: var(--tipo); font-size: 12px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--citron-hi); margin-bottom: 12px; }
+.eyebrow::before { content: ""; width: 26px; height: 2px; background: var(--citron); }
+h2.sec { font-family: var(--display); font-weight: 400; text-transform: uppercase; font-size: clamp(28px, 4vw, 40px); line-height: 1.0; letter-spacing: -.005em; margin: 0 0 16px; color: var(--bone-000); display: flex; align-items: baseline; gap: 14px; }
+h2.sec .secnum { font-weight: 700; color: var(--citron); font-size: .82em; }
+h3.sub { font-family: var(--display); font-weight: 500; text-transform: uppercase; font-size: 21px; letter-spacing: .01em; margin: 30px 0 8px; color: var(--bone-000); }
+.doc-body p { font-size: 16.5px; color: var(--bone-300); margin: 0 0 14px; max-width: 68ch; }
+.doc-body p strong, .doc-body strong { color: var(--bone-000); font-weight: 600; }
+.lead { font-size: 19px !important; color: var(--bone-000) !important; line-height: 1.55; max-width: 64ch; }
+
+/* enlaces de plataforma */
+a.pl { color: var(--citron-hi); font-weight: 600; text-decoration: none; border-bottom: 1px solid var(--line-strong); }
+a.pl:hover { border-bottom-color: var(--citron); }
+a.pl::after { content: " \2197"; font-size: .85em; }
+
+/* listas */
+ul.body-list { margin: 8px 0 16px; padding: 0; list-style: none; max-width: 68ch; }
+ul.body-list li { position: relative; padding-left: 18px; margin-bottom: 9px; font-size: 16.5px; color: var(--bone-300); line-height: 1.55; }
+ul.body-list li::before { content: ""; position: absolute; left: 0; top: 10px; width: 5px; height: 5px; background: var(--citron); }
+ul.body-list li strong { color: var(--bone-000); font-weight: 600; }
+
+/* preguntas destacadas (quién/qué/cómo) */
+.qcards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 14px 0 6px; }
+.qcard { background: var(--carbon-900); border: 1px solid var(--line); border-top: 3px solid var(--citron); border-radius: 4px; padding: 20px 20px; }
+.qcard .qn { font-family: var(--tipo); font-size: 10.5px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--citron-hi); }
+.qcard b { display: block; font-family: var(--display); font-weight: 500; font-size: 22px; text-transform: uppercase; margin: 8px 0 6px; color: var(--bone-000); }
+.qcard span { font-size: 14px; color: var(--bone-300); line-height: 1.5; }
+
+/* figura enmarcada (visor) */
+.fig { margin: 26px 0; }
+.fig-frame { position: relative; background: var(--carbon-950); border: 1px solid var(--line); border-radius: 4px; padding: 30px 34px; }
+.fig-frame::before, .fig-frame::after, .fig-frame > .fb::before, .fig-frame > .fb::after { content: ""; position: absolute; width: 20px; height: 20px; border: 2px solid var(--citron); pointer-events: none; }
+.fig-frame::before { top: 8px; left: 8px; border-right: none; border-bottom: none; }
+.fig-frame::after { top: 8px; right: 8px; border-left: none; border-bottom: none; }
+.fig-frame > .fb::before { bottom: 8px; left: 8px; border-right: none; border-top: none; }
+.fig-frame > .fb::after { bottom: 8px; right: 8px; border-left: none; border-top: none; }
+figcaption { margin-top: 12px; font-size: 12.5px; letter-spacing: .04em; color: var(--bone-500); }
+figcaption b { color: var(--citron-hi); font-weight: 700; letter-spacing: .06em; }
+
+/* mini gráfico de barras foco/contexto */
+.bars { display: flex; align-items: flex-end; gap: 14px; height: 190px; }
+.bars .bar { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 10px; height: 100%; }
+.bars .bar > i { width: 100%; background: var(--carbon-600); border-radius: 2px 2px 0 0; display: block; transition: background .3s, height .3s; }
+.bars .bar.focus > i { background: var(--citron); }
+.bars .bar span { font-size: 11px; letter-spacing: .06em; color: var(--bone-500); }
+.bars .bar.focus span { color: var(--citron-hi); font-weight: 700; }
+
+/* toggle interactivo antes/después */
+.demo { background: var(--carbon-900); border: 1px solid var(--line); border-radius: 4px; padding: 22px 24px; margin: 24px 0; }
+.demo-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; }
+.demo-title { font-family: var(--tipo); font-size: 11px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase; color: var(--bone-500); }
+.demo-btn { font-family: var(--tipo); font-size: 11.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; padding: 9px 16px; border-radius: 2px; border: 1px solid var(--line-strong); background: transparent; color: var(--bone-000); cursor: pointer; transition: all .15s; }
+.demo-btn:hover { border-color: var(--bone-000); }
+.demo-btn.on { background: var(--citron); color: var(--carbon-1000); border-color: var(--citron); }
+.chart { width: 100%; }
+.demo-charts { display: flex; justify-content: center; margin: 6px 0 2px; }
+.demo-charts > div { width: 100%; max-width: 440px; }
+.demo-axis { font-size: 12.5px; color: var(--bone-300); margin-top: 14px; }
+.demo-axis b { color: var(--clay); }
+.demo.honest .demo-axis b { color: var(--citron-hi); }
+
+/* callouts */
+.callout { display: grid; grid-template-columns: 40px 1fr; gap: 16px; border-radius: 4px; padding: 18px 22px; margin: 22px 0; align-items: start; background: var(--carbon-850); border-left: 2px solid var(--line-strong); }
+.callout .ic { width: 40px; height: 40px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; font-family: var(--display); font-size: 20px; font-weight: 700; }
+.callout b { display: block; font-family: var(--tipo); font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; margin-bottom: 6px; }
+.callout p { font-size: 15.5px; margin: 0; color: var(--bone-300); max-width: none; }
+.callout--tip { border-left-color: var(--citron); }
+.callout--tip .ic { background: var(--citron); color: var(--carbon-1000); }
+.callout--tip b { color: var(--citron-hi); }
+.callout--nota { border-left-color: var(--bone-500); }
+.callout--nota .ic { background: var(--carbon-700); color: var(--bone-000); }
+.callout--nota b { color: var(--bone-300); }
+.callout--etica { border-left-color: var(--clay); }
+.callout--etica .ic { background: var(--clay); color: var(--carbon-1000); }
+.callout--etica b { color: var(--clay); }
+
+/* bibliografía */
+ol.refs { font-size: 14.5px; color: var(--bone-300); padding-left: 1.3em; max-width: 68ch; }
+ol.refs li { margin-bottom: 10px; }
+ol.refs li::marker { color: var(--citron); }
+
+/* footer */
+.doc-foot { border-top: 1px solid var(--line); margin-top: 50px; padding-top: 22px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; font-size: 12px; color: var(--bone-500); letter-spacing: .04em; }
+
+@media (max-width: 880px) {
+  .outer-layout { grid-template-columns: 1fr; padding: 0 16px; }
+  .side-nav { display: none; }
+}
+@media (max-width: 620px) {
+  .qcards { grid-template-columns: 1fr; }
+  .doc-meta { grid-template-columns: 1fr 1fr; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+</head>
+<body>
+<style>
+.nv-volver{position:fixed;top:14px;left:14px;z-index:9999;display:inline-flex;align-items:center;gap:8px;padding:9px 15px;border-radius:999px;background:rgba(10,10,10,.74);border:1px solid rgba(201,196,28,.55);color:#E8E6E1;font:600 13px/1 'Archivo',system-ui,-apple-system,sans-serif;letter-spacing:.03em;text-decoration:none;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);box-shadow:0 4px 14px rgba(0,0,0,.35);transition:border-color .15s,background .15s}
+.nv-volver:hover{border-color:#C9C41C;background:rgba(10,10,10,.92)}
+@media print{.nv-volver{display:none!important}}
+</style>
+<a class="nv-volver" href="/classroom/iqya-3751-2026-20/readings" aria-label="Volver al material del curso"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C9C41C" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg><span>Volver al material</span></a>
+
+<div class="progress" id="progress"></div>
+
+<div class="outer-layout">
+
+<nav class="side-nav" aria-label="Secciones de la lectura">
+  <p class="sn-label">En esta lectura</p>
+  <a href="#s1" class="sn-item"><span class="sn-num">01</span>Explorar no es explicar</a>
+  <a href="#s2" class="sn-item"><span class="sn-num">02</span>Las tres preguntas</a>
+  <a href="#s3" class="sn-item"><span class="sn-num">03</span>El Big Idea</a>
+  <a href="#s4" class="sn-item"><span class="sn-num">04</span>La historia de 3 minutos</a>
+  <a href="#s5" class="sn-item"><span class="sn-num">05</span>El storyboard</a>
+  <a href="#s6" class="sn-item"><span class="sn-num">06</span>El primer engaño visual</a>
+  <a href="#s7" class="sn-item"><span class="sn-num">07</span>Para la sesión</a>
+</nav>
+
+<article class="page">
+
+  <header class="doc-head">
+    <div class="org">Universidad de los Andes <span>Ingeniería Química y de Alimentos</span></div>
+    <div class="badge">Lectura 01 · Módulo 1</div>
+    <h1>El contexto lo es <span class="hl">todo</span></h1>
+    <p class="subtitle">Antes de abrir cualquier herramienta: para quién, para qué y qué decisión se va a tomar.</p>
+    <div class="doc-meta">
+      <div><b>Curso</b>IQYA-3751 · Sesión 1</div>
+      <div><b>Lectura previa</b>SWD · Intro + cap. 1</div>
+      <div><b>Fecha</b>Jueves 6 de agosto</div>
+      <div><b>Tiempo</b>≈ 12 min</div>
+    </div>
+  </header>
+
+  <div class="doc-body">
+
+    <!-- INTRO -->
+    <section id="s0">
+      <p class="lead">Los datos no convencen solos. Una tabla con la respuesta correcta puede dejar a la audiencia igual de indecisa que antes. Lo que mueve una decisión es una <strong>historia</strong>: un mensaje con un protagonista, un conflicto y una resolución. Y toda historia empieza por el mismo lugar — no por el gráfico, sino por el <strong>contexto</strong>.</p>
+
+      <figure class="fig">
+        <div class="fig-frame">
+          <span class="fb"></span>
+          <div class="chart">
+<svg viewBox="0 0 640 400" width="100%" role="img" font-family="var(--font-text, 'Archivo', system-ui, sans-serif)" aria-label="Rendimiento (%) por Lote de producción. Valores de 0 a 100.">
+<line x1="78" y1="338.0" x2="618" y2="338.0" stroke="var(--line, rgba(232,230,225,.12))" stroke-width="1"/>
+<line x1="72" y1="338.0" x2="78" y2="338.0" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1"/>
+<text x="67" y="342.0" text-anchor="end" font-size="13" fill="var(--bone-500, #86847C)" style="font-variant-numeric:tabular-nums">0</text>
+<line x1="78" y1="276.4" x2="618" y2="276.4" stroke="var(--line, rgba(232,230,225,.12))" stroke-width="1"/>
+<line x1="72" y1="276.4" x2="78" y2="276.4" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1"/>
+<text x="67" y="280.4" text-anchor="end" font-size="13" fill="var(--bone-500, #86847C)" style="font-variant-numeric:tabular-nums">20</text>
+<line x1="78" y1="214.8" x2="618" y2="214.8" stroke="var(--line, rgba(232,230,225,.12))" stroke-width="1"/>
+<line x1="72" y1="214.8" x2="78" y2="214.8" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1"/>
+<text x="67" y="218.8" text-anchor="end" font-size="13" fill="var(--bone-500, #86847C)" style="font-variant-numeric:tabular-nums">40</text>
+<line x1="78" y1="153.2" x2="618" y2="153.2" stroke="var(--line, rgba(232,230,225,.12))" stroke-width="1"/>
+<line x1="72" y1="153.2" x2="78" y2="153.2" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1"/>
+<text x="67" y="157.2" text-anchor="end" font-size="13" fill="var(--bone-500, #86847C)" style="font-variant-numeric:tabular-nums">60</text>
+<line x1="78" y1="91.6" x2="618" y2="91.6" stroke="var(--line, rgba(232,230,225,.12))" stroke-width="1"/>
+<line x1="72" y1="91.6" x2="78" y2="91.6" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1"/>
+<text x="67" y="95.6" text-anchor="end" font-size="13" fill="var(--bone-500, #86847C)" style="font-variant-numeric:tabular-nums">80</text>
+<line x1="78" y1="30.0" x2="618" y2="30.0" stroke="var(--line, rgba(232,230,225,.12))" stroke-width="1"/>
+<line x1="72" y1="30.0" x2="78" y2="30.0" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1"/>
+<text x="67" y="34.0" text-anchor="end" font-size="13" fill="var(--bone-500, #86847C)" style="font-variant-numeric:tabular-nums">100</text>
+<line x1="78" y1="30" x2="78" y2="338" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1.5"/>
+<line x1="78" y1="338" x2="618" y2="338" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1.5"/>
+<rect x="95.1" y="208.6" width="55.8" height="129.4" rx="2" fill="var(--carbon-600, #3A382F)"/>
+<text x="123.0" y="360.0" text-anchor="middle" font-size="14" fill="var(--bone-500, #86847C)" font-weight="400">L1</text>
+<rect x="185.1" y="168.6" width="55.8" height="169.4" rx="2" fill="var(--carbon-600, #3A382F)"/>
+<text x="213.0" y="360.0" text-anchor="middle" font-size="14" fill="var(--bone-500, #86847C)" font-weight="400">L2</text>
+<rect x="275.1" y="144.0" width="55.8" height="194.0" rx="2" fill="var(--carbon-600, #3A382F)"/>
+<text x="303.0" y="360.0" text-anchor="middle" font-size="14" fill="var(--bone-500, #86847C)" font-weight="400">L3</text>
+<rect x="365.1" y="184.0" width="55.8" height="154.0" rx="2" fill="var(--carbon-600, #3A382F)"/>
+<text x="393.0" y="360.0" text-anchor="middle" font-size="14" fill="var(--bone-500, #86847C)" font-weight="400">L4</text>
+<rect x="455.1" y="103.9" width="55.8" height="234.1" rx="2" fill="var(--carbon-600, #3A382F)"/>
+<text x="483.0" y="360.0" text-anchor="middle" font-size="14" fill="var(--bone-500, #86847C)" font-weight="400">L5</text>
+<rect x="545.1" y="48.5" width="55.8" height="289.5" rx="2" fill="var(--citron-000, #C9C41C)"/>
+<text x="573.0" y="38.5" text-anchor="middle" font-size="16" font-weight="700" fill="var(--citron-000, #C9C41C)" style="font-variant-numeric:tabular-nums">94%</text>
+<text x="573.0" y="360.0" text-anchor="middle" font-size="14" fill="var(--citron-000, #C9C41C)" font-weight="600">L6</text>
+<text transform="translate(20,184.0) rotate(-90)" text-anchor="middle" font-size="12" letter-spacing="1.6" fill="var(--bone-500, #86847C)" style="text-transform:uppercase">Rendimiento (%)</text>
+<text x="348.0" y="392" text-anchor="middle" font-size="12" letter-spacing="1.6" fill="var(--bone-500, #86847C)" style="text-transform:uppercase">Lote de producción</text>
+</svg>
+          </div>
+        </div>
+        <figcaption><b>Figura 1.</b> Rendimiento por lote. Todo es contexto (gris) hasta que una cosa se vuelve el foco (citrón). Esa es toda la disciplina del curso.</figcaption>
+      </figure>
+
+      <div class="callout callout--tip">
+        <span class="ic">i</span>
+        <div>
+          <b>Aplicación al proyecto</b>
+          <p>Piensa en un conjunto de datos de tu carrera —parámetros de proceso, resultados de laboratorio, indicadores de calidad—. Esta lectura te da el marco para convertirlo en una historia que habilite una decisión. Lo usarás en clase con tus propios datos.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 1 -->
+    <section id="s1">
+      <div class="eyebrow">Análisis</div>
+      <h2 class="sec"><span class="secnum">01.</span> Explorar no es explicar</h2>
+      <p>Cuando analizamos datos hacemos dos cosas muy distintas, y confundirlas es la primera fuente de gráficos ilegibles.</p>
+      <ul class="body-list">
+        <li><strong>Análisis exploratorio</strong> — buscar. Abres cien gráficos, pruebas hipótesis, exploras lo que los datos podrían decir. Es para ti, en privado. Aquí sí se vale mostrar todo.</li>
+        <li><strong>Análisis explicativo</strong> — contar. Ya encontraste el hallazgo; ahora comunicas <em>uno</em> a una audiencia para que decida. Aquí muestras una cosa, no cien.</li>
+      </ul>
+      <p>El error clásico es entregar el análisis exploratorio como si fuera explicativo: veinte gráficos «por si acaso», cuando la audiencia solo necesita el que mueve la decisión. <strong>Comunicar es elegir qué dejar por fuera.</strong></p>
+    </section>
+
+    <!-- 2 -->
+    <section id="s2">
+      <div class="eyebrow">El marco</div>
+      <h2 class="sec"><span class="secnum">02.</span> Las tres preguntas</h2>
+      <p>Antes de tocar una herramienta de visualización, responde tres preguntas. Si no puedes, todavía no tienes una comunicación — tienes datos.</p>
+      <div class="qcards">
+        <div class="qcard">
+          <div class="qn">Quién</div>
+          <b>La audiencia</b>
+          <span>¿A quién le hablas? Un gerente, un cliente, un ente regulador y un colega técnico necesitan cosas distintas. Cuanto más específico, mejor: «el comité de calidad», no «la gente».</span>
+        </div>
+        <div class="qcard">
+          <div class="qn">Qué</div>
+          <b>La decisión</b>
+          <span>¿Qué quieres que haga o crea la audiencia? La pregunta no es qué dicen los datos, sino qué <strong>decisión</strong> se va a tomar con ellos. Si no hay acción posible, no hay historia.</span>
+        </div>
+        <div class="qcard">
+          <div class="qn">Cómo</div>
+          <b>La evidencia</b>
+          <span>¿Qué datos sostienen ese mensaje ante esa audiencia? El «cómo» viene <em>al final</em>: primero quién y qué; los datos son el argumento, no el punto de partida.</span>
+        </div>
+      </div>
+      <div class="callout callout--nota">
+        <span class="ic">i</span>
+        <div>
+          <b>Orden importa</b>
+          <p>Quien empieza por el «cómo» (el gráfico) casi siempre termina con un tablero recargado que no habilita ninguna decisión. Empieza por el «quién» y el «qué»; el «cómo» se vuelve obvio.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3 -->
+    <section id="s3">
+      <div class="eyebrow">El mensaje</div>
+      <h2 class="sec"><span class="secnum">03.</span> El Big Idea</h2>
+      <p>El <strong>Big Idea</strong> es tu mensaje destilado en <strong>una sola frase</strong>. No un tema («la eficiencia del biorreactor»), sino una postura con consecuencia («el lote 6 supera la meta de rendimiento; deberíamos escalar sus condiciones»).</p>
+      <p>Una buena Big Idea cumple tres cosas: <strong>(1)</strong> articula tu punto de vista, <strong>(2)</strong> transmite lo que está en juego y <strong>(3)</strong> es una oración completa. Si necesitas dos frases, todavía no la destilaste.</p>
+      <div class="callout callout--tip">
+        <span class="ic">i</span>
+        <div>
+          <b>La prueba de la frase</b>
+          <p>Antes de diseñar nada, escribe la Big Idea. Si no puedes decir en una frase qué decisión habilita tu gráfico, todavía no tienes una historia — tienes un dato buscando un dueño.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 -->
+    <section id="s4">
+      <div class="eyebrow">La estructura</div>
+      <h2 class="sec"><span class="secnum">04.</span> La historia de 3 minutos</h2>
+      <p>Si tuvieras tres minutos con quien decide —en el pasillo, sin diapositivas—, ¿qué le dirías? Ese ejercicio te obliga a soltar el detalle y quedarte con el arco: <strong>situación</strong> (el contexto que comparten), <strong>complicación</strong> (qué cambió, el problema) y <strong>resolución</strong> (qué proponer).</p>
+      <p>Ese arco no es adorno literario: es cómo la mente humana retiene y actúa. Un número suelto se olvida; un número dentro de «esto estaba bien, esto se rompió, esto proponemos» se recuerda y se defiende en una reunión.</p>
+    </section>
+
+    <!-- 5 -->
+    <section id="s5">
+      <div class="eyebrow">El prototipo</div>
+      <h2 class="sec"><span class="secnum">05.</span> El storyboard</h2>
+      <p>El <strong>storyboard</strong> es el prototipo de tu comunicación: el plan en papel, <em>antes</em> de abrir cualquier software. Cada recuadro es una idea —un gráfico, un titular, una transición— en el orden en que la audiencia la recibirá.</p>
+      <p>Hacerlo a mano es intencional. El papel es barato de tirar; una diapositiva pulida no. Prototipar análogo te deja iterar el <strong>argumento</strong> sin enamorarte de la ejecución. En este curso muchos ejercicios empiezan con marcadores por esta razón.</p>
+      <div class="callout callout--nota">
+        <span class="ic">i</span>
+        <div>
+          <b>Por qué análogo</b>
+          <p>Quien salta directo a la herramienta termina defendiendo su gráfico bonito aunque no funcione. El storyboard en papel separa «¿es el argumento correcto?» de «¿se ve bien?». Primero lo primero.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6 -->
+    <section id="s6">
+      <div class="eyebrow">La ética</div>
+      <h2 class="sec"><span class="secnum">06.</span> El primer engaño visual</h2>
+      <p>La misma libertad que usamos para dirigir la atención se puede usar para engañar. Reconocer el engaño es el primer paso para no cometerlo. Tres formas básicas:</p>
+      <ul class="body-list">
+        <li><strong>Eje truncado</strong> — un eje vertical que no empieza en cero exagera diferencias pequeñas hasta volverlas dramáticas.</li>
+        <li><strong>Escala manipulada</strong> — ejes no lineales o intervalos irregulares que distorsionan el ritmo real de los datos.</li>
+        <li><strong>Cherry-picking</strong> — recortar el rango de tiempo o los casos para mostrar solo lo que conviene al argumento.</li>
+      </ul>
+
+      <div class="demo" id="demo" aria-live="polite">
+        <div class="demo-head">
+          <span class="demo-title">Satisfacción del cliente · de 97 % a 100 % (+3 puntos)</span>
+          <button class="demo-btn" id="demoBtn" type="button">Ver la versión honesta</button>
+        </div>
+        <div class="demo-charts">
+          <div id="chartBad"><svg viewBox="0 0 460 380" width="100%" role="img" font-family="var(--font-text, 'Archivo', system-ui, sans-serif)" aria-label="Satisfacción (%) por . Valores de 96 a 100.">
+<line x1="78" y1="318.0" x2="438" y2="318.0" stroke="var(--line, rgba(232,230,225,.12))" stroke-width="1"/>
+<line x1="72" y1="318.0" x2="78" y2="318.0" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1"/>
+<text x="67" y="322.0" text-anchor="end" font-size="13" fill="var(--bone-500, #86847C)" style="font-variant-numeric:tabular-nums">96</text>
+<line x1="78" y1="246.0" x2="438" y2="246.0" stroke="var(--line, rgba(232,230,225,.12))" stroke-width="1"/>
+<line x1="72" y1="246.0" x2="78" y2="246.0" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1"/>
+<text x="67" y="250.0" text-anchor="end" font-size="13" fill="var(--bone-500, #86847C)" style="font-variant-numeric:tabular-nums">97</text>
+<line x1="78" y1="174.0" x2="438" y2="174.0" stroke="var(--line, rgba(232,230,225,.12))" stroke-width="1"/>
+<line x1="72" y1="174.0" x2="78" y2="174.0" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1"/>
+<text x="67" y="178.0" text-anchor="end" font-size="13" fill="var(--bone-500, #86847C)" style="font-variant-numeric:tabular-nums">98</text>
+<line x1="78" y1="102.0" x2="438" y2="102.0" stroke="var(--line, rgba(232,230,225,.12))" stroke-width="1"/>
+<line x1="72" y1="102.0" x2="78" y2="102.0" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1"/>
+<text x="67" y="106.0" text-anchor="end" font-size="13" fill="var(--bone-500, #86847C)" style="font-variant-numeric:tabular-nums">99</text>
+<line x1="78" y1="30.0" x2="438" y2="30.0" stroke="var(--line, rgba(232,230,225,.12))" stroke-width="1"/>
+<line x1="72" y1="30.0" x2="78" y2="30.0" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1"/>
+<text x="67" y="34.0" text-anchor="end" font-size="13" fill="var(--bone-500, #86847C)" style="font-variant-numeric:tabular-nums">100</text>
+<line x1="78" y1="30" x2="78" y2="318" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1.5"/>
+<line x1="78" y1="318" x2="438" y2="318" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1.5"/>
+<rect x="135.0" y="246.0" width="66.0" height="72.0" rx="2" fill="var(--carbon-600, #3A382F)"/>
+<text x="168.0" y="340.0" text-anchor="middle" font-size="14" fill="var(--bone-500, #86847C)" font-weight="400">Mes A</text>
+<rect x="315.0" y="30.0" width="66.0" height="288.0" rx="2" fill="var(--signal-negative, #C8623A)"/>
+<text x="348.0" y="340.0" text-anchor="middle" font-size="14" fill="var(--bone-500, #86847C)" font-weight="600">Mes B</text>
+<text transform="translate(20,174.0) rotate(-90)" text-anchor="middle" font-size="12" letter-spacing="1.6" fill="var(--bone-500, #86847C)" style="text-transform:uppercase">Satisfacción (%)</text>
+</svg></div>
+          <div id="chartGood" hidden><svg viewBox="0 0 460 380" width="100%" role="img" font-family="var(--font-text, 'Archivo', system-ui, sans-serif)" aria-label="Satisfacción (%) por . Valores de 0 a 100.">
+<line x1="78" y1="318.0" x2="438" y2="318.0" stroke="var(--line, rgba(232,230,225,.12))" stroke-width="1"/>
+<line x1="72" y1="318.0" x2="78" y2="318.0" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1"/>
+<text x="67" y="322.0" text-anchor="end" font-size="13" fill="var(--bone-500, #86847C)" style="font-variant-numeric:tabular-nums">0</text>
+<line x1="78" y1="246.0" x2="438" y2="246.0" stroke="var(--line, rgba(232,230,225,.12))" stroke-width="1"/>
+<line x1="72" y1="246.0" x2="78" y2="246.0" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1"/>
+<text x="67" y="250.0" text-anchor="end" font-size="13" fill="var(--bone-500, #86847C)" style="font-variant-numeric:tabular-nums">25</text>
+<line x1="78" y1="174.0" x2="438" y2="174.0" stroke="var(--line, rgba(232,230,225,.12))" stroke-width="1"/>
+<line x1="72" y1="174.0" x2="78" y2="174.0" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1"/>
+<text x="67" y="178.0" text-anchor="end" font-size="13" fill="var(--bone-500, #86847C)" style="font-variant-numeric:tabular-nums">50</text>
+<line x1="78" y1="102.0" x2="438" y2="102.0" stroke="var(--line, rgba(232,230,225,.12))" stroke-width="1"/>
+<line x1="72" y1="102.0" x2="78" y2="102.0" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1"/>
+<text x="67" y="106.0" text-anchor="end" font-size="13" fill="var(--bone-500, #86847C)" style="font-variant-numeric:tabular-nums">75</text>
+<line x1="78" y1="30.0" x2="438" y2="30.0" stroke="var(--line, rgba(232,230,225,.12))" stroke-width="1"/>
+<line x1="72" y1="30.0" x2="78" y2="30.0" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1"/>
+<text x="67" y="34.0" text-anchor="end" font-size="13" fill="var(--bone-500, #86847C)" style="font-variant-numeric:tabular-nums">100</text>
+<line x1="78" y1="30" x2="78" y2="318" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1.5"/>
+<line x1="78" y1="318" x2="438" y2="318" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1.5"/>
+<rect x="135.0" y="38.6" width="66.0" height="279.4" rx="2" fill="var(--carbon-600, #3A382F)"/>
+<text x="168.0" y="340.0" text-anchor="middle" font-size="14" fill="var(--bone-500, #86847C)" font-weight="400">Mes A</text>
+<rect x="315.0" y="30.0" width="66.0" height="288.0" rx="2" fill="var(--citron-000, #C9C41C)"/>
+<text x="348.0" y="340.0" text-anchor="middle" font-size="14" fill="var(--citron-000, #C9C41C)" font-weight="600">Mes B</text>
+<text transform="translate(20,174.0) rotate(-90)" text-anchor="middle" font-size="12" letter-spacing="1.6" fill="var(--bone-500, #86847C)" style="text-transform:uppercase">Satisfacción (%)</text>
+</svg></div>
+        </div>
+        <p class="demo-axis" id="demoNote">Mira el eje Y: <b>empieza en 96 %</b>. Truncado así, un +3 % parece un salto enorme. Eso es contar mal la historia.</p>
+      </div>
+
+      <div class="callout callout--etica">
+        <span class="ic">!</span>
+        <div>
+          <b>Ética</b>
+          <p>Nunca truques la escala para exagerar un efecto. En seguridad alimentaria y control de procesos, una visualización engañosa lleva a decisiones equivocadas, recursos mal asignados y riesgos subestimados. La honestidad no es un añadido: es parte del método. Es el hilo conductor de todo el curso.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7 -->
+    <section id="s7">
+      <div class="eyebrow">Antes de venir</div>
+      <h2 class="sec"><span class="secnum">07.</span> Para la sesión</h2>
+      <p>Trae a clase, en papel o en tu portátil, <strong>un conjunto de datos real de tu carrera</strong> (un proceso, un laboratorio, un indicador de calidad). En la sesión vas a:</p>
+      <ul class="body-list">
+        <li>Definir su <strong>quién / qué / cómo</strong> en parejas.</li>
+        <li>Escribir su <strong>Big Idea</strong> en una sola frase.</li>
+        <li>Cazar el engaño visual en una galería de gráficos manipulados.</li>
+        <li>Bosquejar el <strong>storyboard</strong> de tu historia a mano.</li>
+      </ul>
+      <p>No necesitas herramientas ni programación — la IA llega en el módulo 2. Hoy pensamos antes de ejecutar.</p>
+
+      <div class="eyebrow" style="margin-top:38px;">Fuentes</div>
+      <ol class="refs">
+        <li>Nussbaumer Knaflic, C. (2015). <em>Storytelling with Data.</em> Wiley. Introducción y capítulo 1, «The importance of context».</li>
+        <li>Nussbaumer Knaflic, C. (2022). <em>Storytelling with You.</em> Wiley. Capítulo 1, «Consider your audience» (contexto de la apertura narrativa).</li>
+      </ol>
+    </section>
+
+    <footer class="doc-foot">
+      <span>Narrativas Visuales de Datos con IA Generativa · IQYA-3751</span>
+      <span>Lectura 01 · De los datos a la historia</span>
+    </footer>
+
+  </div>
+</article>
+</div>
+
+<script>
+(function () {
+  // barra de progreso
+  var bar = document.getElementById('progress');
+  function onScroll() {
+    var h = document.documentElement;
+    var max = h.scrollHeight - h.clientHeight;
+    bar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
+  }
+  window.addEventListener('scroll', onScroll, { passive: true }); onScroll();
+
+  // scroll-spy
+  var links = Array.prototype.slice.call(document.querySelectorAll('.sn-item'));
+  var sections = links.map(function (a) { return document.querySelector(a.getAttribute('href')); });
+  function spy() {
+    var y = window.scrollY + 140, idx = 0;
+    for (var i = 0; i < sections.length; i++) { if (sections[i] && sections[i].offsetTop <= y) idx = i; }
+    links.forEach(function (l, i) { l.classList.toggle('is-active', i === idx); });
+  }
+  window.addEventListener('scroll', spy, { passive: true }); spy();
+
+  // demo antes/después (eje truncado): togglea entre dos gráficos con ejes distintos
+  var demo = document.getElementById('demo'), btn = document.getElementById('demoBtn');
+  var cb = document.getElementById('chartBad'), cg = document.getElementById('chartGood'), note = document.getElementById('demoNote');
+  var honest = false;
+  btn.addEventListener('click', function () {
+    honest = !honest;
+    demo.classList.toggle('honest', honest);
+    btn.classList.toggle('on', honest);
+    cb.hidden = honest; cg.hidden = !honest;
+    if (honest) {
+      note.innerHTML = 'Con el eje desde <b>0 %</b>, el +3 % se ve como lo que es: un cambio pequeño. Esta es la versión honesta.';
+      btn.textContent = 'Ver la versión engañosa';
+    } else {
+      note.innerHTML = 'Mira el eje Y: <b>empieza en 96 %</b>. Truncado así, un +3 % parece un salto enorme. Eso es contar mal la historia.';
+      btn.textContent = 'Ver la versión honesta';
+    }
+  });
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<title>Sesión 2 · Taller de crítica 1-2-4 · Narrativas Visuales de Datos con IA Generativa</title>
+<style>
+
+@font-face { font-family: 'Big Shoulders Display'; font-style: normal; font-weight: 100 900; font-display: swap; src: url('/fonts/big-shoulders-display-latin-wght-normal.woff2') format('woff2-variations'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: 'Big Shoulders Display'; font-style: normal; font-weight: 100 900; font-display: swap; src: url('/fonts/big-shoulders-display-latin-ext-wght-normal.woff2') format('woff2-variations'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+@font-face { font-family: 'Archivo'; font-style: normal; font-weight: 100 900; font-display: swap; src: url('/fonts/archivo-latin-wght-normal.woff2') format('woff2-variations'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: 'Archivo'; font-style: normal; font-weight: 100 900; font-display: swap; src: url('/fonts/archivo-latin-ext-wght-normal.woff2') format('woff2-variations'); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF; }
+
+:root {
+  --carbon-1000: #0A0A0A; --carbon-950: #101010; --carbon-900: #141412; --carbon-850: #1A1A17; --carbon-700: #2A2924; --carbon-600: #3A382F;
+  --bone-000: #E8E6E1; --bone-300: #B8B6AE; --bone-500: #86847C;
+  --citron-000: #C9C41C; --citron-hi: #DCD733;
+  --signal-negative: #C8623A;
+  --line: rgba(232,230,225,.14); --line-strong: rgba(232,230,225,.28); --line-citron: rgba(201,196,28,.55); --nav-bg: rgba(20,20,18,.82);
+  --font-display: 'Big Shoulders Display', system-ui, sans-serif;
+  --font-text: 'Archivo', system-ui, -apple-system, sans-serif;
+}
+body.light {
+  --carbon-1000: #FCFBF7; --carbon-950: #F5F4EF; --carbon-900: #EDEBE4; --carbon-850: #E7E5DD; --carbon-700: #D6D3C9; --carbon-600: #BBB9AF;
+  --bone-000: #14140F; --bone-300: #45443C; --bone-500: #6E6C63;
+  --citron-000: #8C8712; --citron-hi: #6E6A0E;
+  --signal-negative: #B4552A;
+  --line: rgba(10,10,10,.16); --line-strong: rgba(10,10,10,.30); --line-citron: rgba(140,135,18,.55);
+  --nav-bg: rgba(250,249,245,.92);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: #000; overflow: hidden; }
+.viewport { position: fixed; inset: 0 0 96px 0; display: flex; align-items: center; justify-content: center; background: #000; }
+.stage { width: 1920px; height: 1080px; position: relative; transform-origin: center center; flex-shrink: 0; }
+.slide { position: absolute; inset: 0; opacity: 0; visibility: hidden; transition: opacity .35s ease; font-family: var(--font-text); color: var(--bone-000); overflow: hidden; }
+.slide.is-active { opacity: 1; visibility: visible; }
+.slide.is-active .anim { animation: rise .5s cubic-bezier(.22,.61,.36,1) both; }
+@keyframes rise { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: none; } }
+.kicker { font-family: var(--font-text); font-weight: 600; font-size: 24px; letter-spacing: .34em; text-transform: uppercase; color: var(--citron-000); }
+.kicker.dim { color: var(--bone-500); }
+.stitle { font-family: var(--font-display); font-weight: 300; text-transform: uppercase; line-height: .95; letter-spacing: -.005em; margin: 0; }
+.rule { width: 180px; height: 4px; background: var(--citron-000); }
+.body { font-family: var(--font-text); font-size: 30px; line-height: 1.5; color: var(--bone-300); }
+.hl { color: var(--citron-000); }
+.frame-corners span { position: absolute; width: 64px; height: 64px; pointer-events: none; }
+.card { background: var(--carbon-900); border: 1px solid var(--line); border-top: 4px solid var(--citron-000); border-radius: 4px; }
+.progress { position: fixed; top: 0; left: 0; height: 4px; background: var(--citron-000); z-index: 20; transition: width .3s ease; }
+.nav { position: fixed; bottom: 108px; left: 50%; transform: translateX(-50%); z-index: 20; display: flex; align-items: center; gap: 18px; background: var(--nav-bg); border: 1px solid var(--line); border-radius: 999px; padding: 9px 16px; backdrop-filter: blur(6px); }
+.nav button { width: 40px; height: 40px; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: var(--bone-000); font-size: 18px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: all .15s; font-family: var(--font-text); }
+.nav button:hover { border-color: var(--bone-000); background: rgba(232,230,225,.06); }
+.nav .count { font-family: var(--font-text); font-size: 14px; letter-spacing: .1em; color: var(--bone-300); min-width: 62px; text-align: center; font-variant-numeric: tabular-nums; }
+.nav .label { font-size: 12px; letter-spacing: .18em; text-transform: uppercase; color: var(--bone-500); border-left: 1px solid var(--line); padding-left: 14px; max-width: 220px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.hint { position: fixed; bottom: 30px; right: 26px; z-index: 20; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--bone-500); }
+@media (prefers-reduced-motion: reduce) { .slide, .slide.is-active .anim { transition: none; animation: none; } }
+
+/* ── Volver al material ─────────────── */
+.deck-volver{position:fixed;top:16px;left:16px;z-index:30;display:inline-flex;align-items:center;gap:8px;padding:9px 15px;border-radius:999px;background:var(--nav-bg);border:1px solid var(--line);color:var(--bone-000);font-family:var(--font-text);font-weight:600;font-size:13px;letter-spacing:.03em;text-decoration:none;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);transition:border-color .15s}
+.deck-volver:hover{border-color:var(--bone-000)}
+.deck-volver svg{stroke:var(--citron-000)}
+/* ── Rail de miniaturas ─────────────── */
+.rail{position:fixed;left:0;right:0;bottom:0;height:92px;z-index:18;display:flex;gap:10px;align-items:center;padding:9px 14px;overflow-x:auto;overflow-y:hidden;background:var(--nav-bg);border-top:1px solid var(--line);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.thumb{position:relative;flex:0 0 auto;width:132px;height:74px;padding:0;border:1px solid var(--line);border-radius:4px;overflow:hidden;cursor:pointer;background:var(--carbon-1000)}
+.thumb:hover{border-color:var(--bone-500)}
+.thumb.is-cur{border-color:var(--citron-000);box-shadow:0 0 0 1px var(--citron-000)}
+.thumb .tw{position:absolute;top:0;left:0;width:1920px;height:1080px;transform:scale(.06875);transform-origin:top left;pointer-events:none;overflow:hidden}
+.thumb .tn{position:absolute;bottom:2px;right:3px;z-index:2;font-family:var(--font-text);font-weight:700;font-size:10px;line-height:1;color:var(--bone-000);background:rgba(10,10,10,.6);padding:2px 4px;border-radius:3px}
+.hint{bottom:112px!important}
+body.is-fs .rail,body.is-fs .deck-volver,body.is-fs .hint{display:none!important}
+body.is-fs .viewport{inset:0!important}
+body.is-fs .nav{bottom:26px}
+/* ── Móvil: reflow vertical (zoom por JS), sin fullscreen ─────── */
+@media (max-width:768px){
+  html,body{height:auto;overflow-x:hidden;overflow-y:auto;background:var(--carbon-1000)}
+  .viewport{position:static!important;inset:auto!important;display:block!important;height:auto!important;width:100%!important}
+  .stage{width:100%!important;height:auto!important;transform:none!important}
+  .slide{position:relative!important;inset:auto!important;width:1920px!important;height:1080px!important;opacity:1!important;visibility:visible!important;border-bottom:1px solid var(--line)}
+  .slide.is-active .anim{animation:none!important}
+  .rail,.nav,.hint{display:none!important}
+  .deck-volver{top:10px;left:10px;padding:8px 13px;font-size:12px}
+}
+
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<a class="deck-volver" href="/classroom/iqya-3751-2026-20/readings" aria-label="Volver al material del curso"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg><span>Volver</span></a>
+<div class="viewport">
+  <div class="stage" id="stage">
+
+<section class="slide" data-label="Portada" style="background:var(--carbon-1000);display:flex;flex-direction:column;justify-content:space-between;padding:110px 130px;">
+  <div class="frame-corners" style="position:absolute;inset:70px;">
+    <span style="top:0;left:0;border-top:4px solid var(--citron-000);border-left:4px solid var(--citron-000);"></span>
+    <span style="top:0;right:0;border-top:4px solid var(--citron-000);border-right:4px solid var(--citron-000);"></span>
+    <span style="bottom:0;left:0;border-bottom:4px solid var(--citron-000);border-left:4px solid var(--citron-000);"></span>
+    <span style="bottom:0;right:0;border-bottom:4px solid var(--citron-000);border-right:4px solid var(--citron-000);"></span>
+  </div>
+  <div class="kicker dim" style="font-size:22px;letter-spacing:.42em;">Narrativas Visuales · Sesión 2 · Módulo 1</div>
+  <div class="anim">
+    <div class="kicker" style="margin-bottom:26px;">Taller de crítica · 1-2-4</div>
+    <h1 class="stitle" style="font-size:150px;">Criticar para<br><span style="color:var(--citron-000);font-weight:200;">rediseñar</span></h1>
+  </div>
+  <div style="display:flex;justify-content:space-between;align-items:flex-end;">
+    <div class="body" style="font-size:26px;max-width:52ch;">Un gráfico puede ser <span class="hl">cierto</span> y aun así no ayudar a decidir. Hoy lo criticamos como un usuario que debe actuar.</div>
+    <div style="font-family:var(--font-display);font-weight:400;font-size:30px;text-transform:uppercase;color:var(--bone-500);">NV</div>
+  </div>
+</section>
+
+<section class="slide" data-label="Hoja de ruta" style="background:var(--carbon-950);display:flex;flex-direction:column;justify-content:center;padding:0 130px;">
+  <div class="kicker" style="margin-bottom:28px;">Sesión 2 · Hoja de ruta</div>
+  <h2 class="stitle" style="font-size:96px;margin-bottom:56px;">Hoy hacemos</h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:30px 90px;">
+    <div class="anim" style="display:flex;gap:26px;align-items:baseline;border-top:2px solid var(--line);padding-top:22px;"><div class="stitle" style="font-weight:700;color:var(--citron-000);font-size:52px;">01</div><div><div class="stitle" style="font-weight:500;font-size:42px;">Recap: el contexto</div><div class="body" style="font-size:22px;margin-top:6px;">Quién · qué · cómo, y la Big Idea.</div></div></div>
+    <div class="anim" style="display:flex;gap:26px;align-items:baseline;border-top:2px solid var(--line);padding-top:22px;"><div class="stitle" style="font-weight:700;color:var(--citron-000);font-size:52px;">02</div><div><div class="stitle" style="font-weight:500;font-size:42px;">El método 1-2-4</div><div class="body" style="font-size:22px;margin-top:6px;">Individual → parejas → grupo.</div></div></div>
+    <div class="anim" style="display:flex;gap:26px;align-items:baseline;border-top:2px solid var(--line);padding-top:22px;"><div class="stitle" style="font-weight:700;color:var(--citron-000);font-size:52px;">03</div><div><div class="stitle" style="font-weight:500;font-size:42px;">Criticar y rediseñar</div><div class="body" style="font-size:22px;margin-top:6px;">Seis gráficos, la rúbrica, el lienzo.</div></div></div>
+    <div class="anim" style="display:flex;gap:26px;align-items:baseline;border-top:2px solid var(--line);padding-top:22px;"><div class="stitle" style="font-weight:700;color:var(--citron-000);font-size:52px;">04</div><div><div class="stitle" style="font-weight:500;font-size:42px;">Puesta en común + reflexión</div><div class="body" style="font-size:22px;margin-top:6px;">Y el escrito de 400 palabras.</div></div></div>
+  </div>
+</section>
+
+<section class="slide" data-label="Recap" style="background:var(--carbon-950);display:flex;flex-direction:column;justify-content:center;padding:0 130px;">
+  <div class="kicker" style="font-weight:700;font-size:40px;letter-spacing:.3em;margin-bottom:30px;">15 min</div>
+  <div class="kicker dim" style="margin-bottom:20px;">Recap · el contexto</div>
+  <h2 class="stitle anim" style="font-size:104px;max-width:24ch;">Antes del gráfico,<br>el <span class="hl">contexto</span></h2>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:40px;margin-top:56px;">
+    <div class="anim card" style="padding:40px 36px;"><div class="kicker" style="font-size:21px;">Quién</div><div class="stitle" style="font-weight:500;font-size:46px;margin:14px 0 12px;">La audiencia</div><div class="body" style="font-size:24px;">A quién le hablamos define todo lo demás.</div></div>
+    <div class="anim card" style="padding:40px 36px;"><div class="kicker" style="font-size:21px;">Qué</div><div class="stitle" style="font-weight:500;font-size:46px;margin:14px 0 12px;">La decisión</div><div class="body" style="font-size:24px;">Qué queremos que haga o crea con el dato.</div></div>
+    <div class="anim card" style="padding:40px 36px;"><div class="kicker" style="font-size:21px;">Cómo</div><div class="stitle" style="font-weight:500;font-size:46px;margin:14px 0 12px;">La evidencia</div><div class="body" style="font-size:24px;">El dato, al final. Primero quién y qué.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-label="El lente de hoy" style="background:var(--carbon-1000);display:flex;flex-direction:column;justify-content:center;padding:0 130px;">
+  <div class="kicker" style="margin-bottom:30px;">El lente de hoy · experiencia de usuario</div>
+  <h2 class="stitle anim" style="font-size:112px;max-width:22ch;">Critica como quien tiene que <span class="hl">decidir</span></h2>
+  <p class="body anim" style="font-size:34px;max-width:52ch;margin-top:44px;">No preguntamos «¿está bonito?». Preguntamos <span class="hl">«¿este gráfico le sirve al usuario que debe tomar una decisión?»</span>. Comunicar datos es, en el fondo, diseñar una experiencia: la de entender y actuar.</p>
+  <div class="rule" style="margin-top:52px;"></div>
+</section>
+
+<section class="slide" data-label="Honesto no es efectivo" style="background:var(--carbon-1000);display:flex;flex-direction:column;justify-content:center;padding:0 130px;">
+  <div class="kicker" style="margin-bottom:22px;">El giro de hoy</div>
+  <h2 class="stitle" style="font-size:80px;margin-bottom:40px;">Honesto no es lo mismo que <span class="hl">efectivo</span></h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;">
+    <div class="anim" style="background:var(--carbon-950);border:1px solid var(--line);border-radius:4px;padding:40px;">
+      <div class="kicker" style="color:var(--signal-negative);font-size:22px;letter-spacing:.28em;margin-bottom:24px;">Cierto, pero no decide</div>
+      <svg viewBox="0 0 560 380" width="100%" role="img" font-family="'Archivo', system-ui, sans-serif" aria-label="Gráfico de torta de 8 categorías.">
+<path d="M224.0,190.0 L224.0,14.0 A176.0,176.0 0 0 1 383.2,115.1 Z" fill="var(--carbon-600, #3A382F)" stroke="var(--carbon-950, #101010)" stroke-width="2"/>
+<path d="M224.0,190.0 L383.2,115.1 A176.0,176.0 0 0 1 372.6,284.3 Z" fill="var(--bone-500, #86847C)" stroke="var(--carbon-950, #101010)" stroke-width="2"/>
+<path d="M224.0,190.0 L372.6,284.3 A176.0,176.0 0 0 1 235.1,365.7 Z" fill="var(--carbon-600, #3A382F)" stroke="var(--carbon-950, #101010)" stroke-width="2"/>
+<path d="M224.0,190.0 L235.1,365.7 A176.0,176.0 0 0 1 103.5,318.3 Z" fill="var(--bone-500, #86847C)" stroke="var(--carbon-950, #101010)" stroke-width="2"/>
+<path d="M224.0,190.0 L103.5,318.3 A176.0,176.0 0 0 1 48.3,201.1 Z" fill="var(--carbon-600, #3A382F)" stroke="var(--carbon-950, #101010)" stroke-width="2"/>
+<path d="M224.0,190.0 L48.3,201.1 A176.0,176.0 0 0 1 75.4,95.7 Z" fill="var(--bone-500, #86847C)" stroke="var(--carbon-950, #101010)" stroke-width="2"/>
+<path d="M224.0,190.0 L75.4,95.7 A176.0,176.0 0 0 1 149.1,30.8 Z" fill="var(--carbon-600, #3A382F)" stroke="var(--carbon-950, #101010)" stroke-width="2"/>
+<path d="M224.0,190.0 L149.1,30.8 A176.0,176.0 0 0 1 224.0,14.0 Z" fill="var(--bone-500, #86847C)" stroke="var(--carbon-950, #101010)" stroke-width="2"/>
+<rect x="424.0" y="21.0" width="13" height="13" rx="2" fill="var(--carbon-600, #3A382F)"/>
+<text x="444.0" y="32.0" font-size="12.5" fill="var(--bone-500, #86847C)">Sellos · 18%</text>
+<rect x="424.0" y="45.0" width="13" height="13" rx="2" fill="var(--bone-500, #86847C)"/>
+<text x="444.0" y="56.0" font-size="12.5" fill="var(--bone-500, #86847C)">Bomba · 16%</text>
+<rect x="424.0" y="69.0" width="13" height="13" rx="2" fill="var(--carbon-600, #3A382F)"/>
+<text x="444.0" y="80.0" font-size="12.5" fill="var(--bone-500, #86847C)">Válvula · 15%</text>
+<rect x="424.0" y="93.0" width="13" height="13" rx="2" fill="var(--bone-500, #86847C)"/>
+<text x="444.0" y="104.0" font-size="12.5" fill="var(--bone-500, #86847C)">Sensor · 13%</text>
+<rect x="424.0" y="117.0" width="13" height="13" rx="2" fill="var(--carbon-600, #3A382F)"/>
+<text x="444.0" y="128.0" font-size="12.5" fill="var(--bone-500, #86847C)">Motor · 12%</text>
+<rect x="424.0" y="141.0" width="13" height="13" rx="2" fill="var(--bone-500, #86847C)"/>
+<text x="444.0" y="152.0" font-size="12.5" fill="var(--bone-500, #86847C)">Tubería · 10%</text>
+<rect x="424.0" y="165.0" width="13" height="13" rx="2" fill="var(--carbon-600, #3A382F)"/>
+<text x="444.0" y="176.0" font-size="12.5" fill="var(--bone-500, #86847C)">Control · 9%</text>
+<rect x="424.0" y="189.0" width="13" height="13" rx="2" fill="var(--bone-500, #86847C)"/>
+<text x="444.0" y="200.0" font-size="12.5" fill="var(--bone-500, #86847C)">Otros · 7%</text>
+</svg>
+      <div style="margin-top:20px;font-size:22px;color:var(--bone-500);">Ocho tajadas casi iguales: ¿cuál causa para más?</div>
+    </div>
+    <div class="anim" style="background:var(--carbon-950);border:1px solid var(--line-citron);border-radius:4px;padding:40px;">
+      <div class="kicker" style="font-size:22px;letter-spacing:.28em;margin-bottom:24px;">El mismo dato, que sí decide</div>
+      <svg viewBox="0 0 560 380" width="100%" role="img" font-family="'Archivo', system-ui, sans-serif" aria-label="Paradas (h) por Causa. Eje de 0 a 20.">
+<line x1="62" y1="326.0" x2="540" y2="326.0" stroke="var(--line, rgba(232,230,225,.14))" stroke-width="1"/>
+<line x1="57" y1="326.0" x2="62" y2="326.0" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1"/>
+<text x="53" y="330.0" text-anchor="end" font-size="11.5" fill="var(--bone-500, #86847C)" style="font-variant-numeric:tabular-nums">0</text>
+<line x1="62" y1="251.0" x2="540" y2="251.0" stroke="var(--line, rgba(232,230,225,.14))" stroke-width="1"/>
+<line x1="57" y1="251.0" x2="62" y2="251.0" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1"/>
+<text x="53" y="255.0" text-anchor="end" font-size="11.5" fill="var(--bone-500, #86847C)" style="font-variant-numeric:tabular-nums">5</text>
+<line x1="62" y1="176.0" x2="540" y2="176.0" stroke="var(--line, rgba(232,230,225,.14))" stroke-width="1"/>
+<line x1="57" y1="176.0" x2="62" y2="176.0" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1"/>
+<text x="53" y="180.0" text-anchor="end" font-size="11.5" fill="var(--bone-500, #86847C)" style="font-variant-numeric:tabular-nums">10</text>
+<line x1="62" y1="101.0" x2="540" y2="101.0" stroke="var(--line, rgba(232,230,225,.14))" stroke-width="1"/>
+<line x1="57" y1="101.0" x2="62" y2="101.0" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1"/>
+<text x="53" y="105.0" text-anchor="end" font-size="11.5" fill="var(--bone-500, #86847C)" style="font-variant-numeric:tabular-nums">15</text>
+<line x1="62" y1="26.0" x2="540" y2="26.0" stroke="var(--line, rgba(232,230,225,.14))" stroke-width="1"/>
+<line x1="57" y1="26.0" x2="62" y2="26.0" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1"/>
+<text x="53" y="30.0" text-anchor="end" font-size="11.5" fill="var(--bone-500, #86847C)" style="font-variant-numeric:tabular-nums">20</text>
+<line x1="62" y1="26" x2="62" y2="326" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1.4"/>
+<line x1="62" y1="326" x2="540" y2="326" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1.4"/>
+<rect x="74.0" y="56.0" width="35.9" height="270.0" rx="2" fill="var(--citron-000, #C9C41C)"/>
+<text x="91.9" y="48.0" text-anchor="middle" font-size="12" font-weight="700" fill="var(--bone-000, #E8E6E1)" style="font-variant-numeric:tabular-nums">18</text>
+<text x="91.9" y="344.0" text-anchor="middle" font-size="11.5" fill="var(--bone-500, #86847C)" font-weight="700">Sellos</text>
+<rect x="133.7" y="86.0" width="35.9" height="240.0" rx="2" fill="var(--carbon-600, #3A382F)"/>
+<text x="151.6" y="78.0" text-anchor="middle" font-size="12" font-weight="700" fill="var(--bone-000, #E8E6E1)" style="font-variant-numeric:tabular-nums">16</text>
+<text x="151.6" y="344.0" text-anchor="middle" font-size="11.5" fill="var(--bone-500, #86847C)" font-weight="500">Bomba</text>
+<rect x="193.4" y="101.0" width="35.9" height="225.0" rx="2" fill="var(--carbon-600, #3A382F)"/>
+<text x="211.4" y="93.0" text-anchor="middle" font-size="12" font-weight="700" fill="var(--bone-000, #E8E6E1)" style="font-variant-numeric:tabular-nums">15</text>
+<text x="211.4" y="344.0" text-anchor="middle" font-size="11.5" fill="var(--bone-500, #86847C)" font-weight="500">Válvula</text>
+<rect x="253.2" y="131.0" width="35.9" height="195.0" rx="2" fill="var(--carbon-600, #3A382F)"/>
+<text x="271.1" y="123.0" text-anchor="middle" font-size="12" font-weight="700" fill="var(--bone-000, #E8E6E1)" style="font-variant-numeric:tabular-nums">13</text>
+<text x="271.1" y="344.0" text-anchor="middle" font-size="11.5" fill="var(--bone-500, #86847C)" font-weight="500">Sensor</text>
+<rect x="312.9" y="146.0" width="35.9" height="180.0" rx="2" fill="var(--carbon-600, #3A382F)"/>
+<text x="330.9" y="138.0" text-anchor="middle" font-size="12" font-weight="700" fill="var(--bone-000, #E8E6E1)" style="font-variant-numeric:tabular-nums">12</text>
+<text x="330.9" y="344.0" text-anchor="middle" font-size="11.5" fill="var(--bone-500, #86847C)" font-weight="500">Motor</text>
+<rect x="372.7" y="176.0" width="35.9" height="150.0" rx="2" fill="var(--carbon-600, #3A382F)"/>
+<text x="390.6" y="168.0" text-anchor="middle" font-size="12" font-weight="700" fill="var(--bone-000, #E8E6E1)" style="font-variant-numeric:tabular-nums">10</text>
+<text x="390.6" y="344.0" text-anchor="middle" font-size="11.5" fill="var(--bone-500, #86847C)" font-weight="500">Tubería</text>
+<rect x="432.4" y="191.0" width="35.9" height="135.0" rx="2" fill="var(--carbon-600, #3A382F)"/>
+<text x="450.4" y="183.0" text-anchor="middle" font-size="12" font-weight="700" fill="var(--bone-000, #E8E6E1)" style="font-variant-numeric:tabular-nums">9</text>
+<text x="450.4" y="344.0" text-anchor="middle" font-size="11.5" fill="var(--bone-500, #86847C)" font-weight="500">Control</text>
+<rect x="492.2" y="221.0" width="35.9" height="105.0" rx="2" fill="var(--carbon-600, #3A382F)"/>
+<text x="510.1" y="213.0" text-anchor="middle" font-size="12" font-weight="700" fill="var(--bone-000, #E8E6E1)" style="font-variant-numeric:tabular-nums">7</text>
+<text x="510.1" y="344.0" text-anchor="middle" font-size="11.5" fill="var(--bone-500, #86847C)" font-weight="500">Otros</text>
+<text transform="translate(16,176.0) rotate(-90)" text-anchor="middle" font-size="11" letter-spacing="1.5" fill="var(--bone-500, #86847C)" style="text-transform:uppercase">Paradas (h)</text>
+<text x="301.0" y="374" text-anchor="middle" font-size="11" letter-spacing="1.5" fill="var(--bone-500, #86847C)" style="text-transform:uppercase">Causa</text>
+</svg>
+      <div style="margin-top:20px;font-size:22px;color:var(--citron-000);font-weight:600;">Ordenado: la causa a atacar salta primero.</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-label="El método 1-2-4" style="background:var(--carbon-950);display:flex;flex-direction:column;justify-content:center;padding:0 130px;">
+  <div class="kicker" style="margin-bottom:24px;">Cómo trabajamos</div>
+  <h2 class="stitle" style="font-size:96px;margin-bottom:56px;">El método 1-2-4</h2>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:40px;">
+    <div class="anim card" style="padding:46px 40px;"><div class="stitle" style="font-weight:700;color:var(--citron-000);font-size:80px;">1</div><div class="stitle" style="font-weight:500;font-size:46px;margin:10px 0 14px;">Individual</div><div class="body" style="font-size:25px;">Cada quien critica un gráfico con la rúbrica. <span class="hl">5 min.</span></div></div>
+    <div class="anim card" style="padding:46px 40px;"><div class="stitle" style="font-weight:700;color:var(--citron-000);font-size:80px;">2</div><div class="stitle" style="font-weight:500;font-size:46px;margin:10px 0 14px;">Parejas</div><div class="body" style="font-size:25px;">Contrastan: ¿mismo usuario? ¿misma falla? <span class="hl">10 min.</span></div></div>
+    <div class="anim card" style="padding:46px 40px;"><div class="stitle" style="font-weight:700;color:var(--citron-000);font-size:80px;">4</div><div class="stitle" style="font-weight:500;font-size:46px;margin:10px 0 14px;">Grupo de 4</div><div class="body" style="font-size:25px;">Consolidan la mejor crítica y <span class="hl">rediseñan en papel.</span></div></div>
+  </div>
+  <div class="rule" style="margin-top:52px;"></div>
+</section>
+
+<section class="slide" data-label="La rúbrica" style="background:var(--carbon-1000);display:flex;flex-direction:column;justify-content:center;padding:0 130px;">
+  <div class="kicker" style="margin-bottom:22px;">El lente, en seis preguntas</div>
+  <h2 class="stitle" style="font-size:84px;margin-bottom:44px;">La rúbrica de crítica</h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:22px 70px;">
+    <div class="anim" style="display:flex;gap:22px;align-items:baseline;"><div class="stitle" style="font-weight:700;color:var(--citron-000);font-size:44px;">1</div><div><b style="font-size:34px;color:var(--bone-000);font-family:var(--font-text);">Contexto</b><div class="body" style="font-size:22px;">¿Quién decide y qué decide?</div></div></div>
+    <div class="anim" style="display:flex;gap:22px;align-items:baseline;"><div class="stitle" style="font-weight:700;color:var(--citron-000);font-size:44px;">2</div><div><b style="font-size:34px;color:var(--bone-000);font-family:var(--font-text);">Mensaje</b><div class="body" style="font-size:22px;">¿El título dice la conclusión, no el tema?</div></div></div>
+    <div class="anim" style="display:flex;gap:22px;align-items:baseline;"><div class="stitle" style="font-weight:700;color:var(--citron-000);font-size:44px;">3</div><div><b style="font-size:34px;color:var(--bone-000);font-family:var(--font-text);">Foco</b><div class="body" style="font-size:22px;">¿Algo guía la mirada, o todo compite?</div></div></div>
+    <div class="anim" style="display:flex;gap:22px;align-items:baseline;"><div class="stitle" style="font-weight:700;color:var(--citron-000);font-size:44px;">4</div><div><b style="font-size:34px;color:var(--bone-000);font-family:var(--font-text);">Tipo</b><div class="body" style="font-size:22px;">¿Es el gráfico correcto para la pregunta?</div></div></div>
+    <div class="anim" style="display:flex;gap:22px;align-items:baseline;"><div class="stitle" style="font-weight:700;color:var(--citron-000);font-size:44px;">5</div><div><b style="font-size:34px;color:var(--bone-000);font-family:var(--font-text);">Ruido</b><div class="body" style="font-size:22px;">¿Sobra 3D, gridlines, leyendas, adornos?</div></div></div>
+    <div class="anim" style="display:flex;gap:22px;align-items:baseline;"><div class="stitle" style="font-weight:700;color:var(--citron-000);font-size:44px;">6</div><div><b style="font-size:34px;color:var(--bone-000);font-family:var(--font-text);">Honestidad</b><div class="body" style="font-size:22px;">¿La imagen dice la verdad de los datos?</div></div></div>
+  </div>
+</section>
+
+<section class="slide" data-label="Un ejemplo" style="background:var(--carbon-1000);display:flex;flex-direction:column;justify-content:center;padding:0 130px;">
+  <div class="kicker" style="margin-bottom:22px;">Un ejemplo de rediseño · el foco</div>
+  <h2 class="stitle" style="font-size:76px;margin-bottom:36px;">¿Algún reactor se está saliendo?</h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;">
+    <div class="anim" style="background:var(--carbon-950);border:1px solid var(--line);border-radius:4px;padding:34px;">
+      <div class="kicker" style="color:var(--signal-negative);font-size:20px;letter-spacing:.26em;margin-bottom:18px;">Foco enterrado</div>
+      <svg viewBox="0 0 620 400" width="100%" role="img" font-family="'Archivo', system-ui, sans-serif" aria-label="Temp (°C): 10 series.">
+<line x1="58" y1="346.0" x2="602" y2="346.0" stroke="var(--line, rgba(232,230,225,.14))" stroke-width="1"/>
+<text x="49" y="350.0" text-anchor="end" font-size="11.5" fill="var(--bone-500, #86847C)" style="font-variant-numeric:tabular-nums">65</text>
+<line x1="58" y1="269.8" x2="602" y2="269.8" stroke="var(--line, rgba(232,230,225,.14))" stroke-width="1"/>
+<text x="49" y="273.8" text-anchor="end" font-size="11.5" fill="var(--bone-500, #86847C)" style="font-variant-numeric:tabular-nums">70</text>
+<line x1="58" y1="193.6" x2="602" y2="193.6" stroke="var(--line, rgba(232,230,225,.14))" stroke-width="1"/>
+<text x="49" y="197.6" text-anchor="end" font-size="11.5" fill="var(--bone-500, #86847C)" style="font-variant-numeric:tabular-nums">75</text>
+<line x1="58" y1="117.4" x2="602" y2="117.4" stroke="var(--line, rgba(232,230,225,.14))" stroke-width="1"/>
+<text x="49" y="121.4" text-anchor="end" font-size="11.5" fill="var(--bone-500, #86847C)" style="font-variant-numeric:tabular-nums">80</text>
+<line x1="58" y1="41.2" x2="602" y2="41.2" stroke="var(--line, rgba(232,230,225,.14))" stroke-width="1"/>
+<text x="49" y="45.2" text-anchor="end" font-size="11.5" fill="var(--bone-500, #86847C)" style="font-variant-numeric:tabular-nums">85</text>
+<line x1="58" y1="26" x2="58" y2="346" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1.4"/>
+<line x1="58" y1="346" x2="602" y2="346" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1.4"/>
+<text x="58.0" y="364.0" text-anchor="middle" font-size="11" fill="var(--bone-500, #86847C)">8:00</text>
+<text x="166.8" y="364.0" text-anchor="middle" font-size="11" fill="var(--bone-500, #86847C)">9:00</text>
+<text x="275.6" y="364.0" text-anchor="middle" font-size="11" fill="var(--bone-500, #86847C)">10:00</text>
+<text x="384.4" y="364.0" text-anchor="middle" font-size="11" fill="var(--bone-500, #86847C)">11:00</text>
+<text x="493.2" y="364.0" text-anchor="middle" font-size="11" fill="var(--bone-500, #86847C)">12:00</text>
+<text x="602.0" y="364.0" text-anchor="middle" font-size="11" fill="var(--bone-500, #86847C)">13:00</text>
+<polyline points="58.0,269.8 166.8,254.6 275.6,239.3 384.4,239.3 493.2,224.1 602.0,224.1" fill="none" stroke="var(--carbon-600, #3A382F)" stroke-width="1.6" stroke-opacity="0.8" stroke-linejoin="round"/>
+<polyline points="58.0,300.3 166.8,285.0 275.6,269.8 384.4,254.6 493.2,254.6 602.0,239.3" fill="none" stroke="var(--carbon-600, #3A382F)" stroke-width="1.6" stroke-opacity="0.8" stroke-linejoin="round"/>
+<polyline points="58.0,239.3 166.8,224.1 275.6,224.1 384.4,208.9 493.2,208.9 602.0,193.6" fill="none" stroke="var(--carbon-600, #3A382F)" stroke-width="1.6" stroke-opacity="0.8" stroke-linejoin="round"/>
+<polyline points="58.0,285.0 166.8,269.8 275.6,269.8 384.4,254.6 493.2,239.3 602.0,239.3" fill="none" stroke="var(--carbon-600, #3A382F)" stroke-width="1.6" stroke-opacity="0.8" stroke-linejoin="round"/>
+<polyline points="58.0,254.6 166.8,239.3 275.6,224.1 384.4,224.1 493.2,208.9 602.0,208.9" fill="none" stroke="var(--carbon-600, #3A382F)" stroke-width="1.6" stroke-opacity="0.8" stroke-linejoin="round"/>
+<polyline points="58.0,269.8 166.8,269.8 275.6,254.6 384.4,239.3 493.2,239.3 602.0,224.1" fill="none" stroke="var(--carbon-600, #3A382F)" stroke-width="1.6" stroke-opacity="0.8" stroke-linejoin="round"/>
+<polyline points="58.0,224.1 166.8,208.9 275.6,193.6 384.4,163.1 493.2,117.4 602.0,56.5" fill="none" stroke="var(--carbon-600, #3A382F)" stroke-width="1.6" stroke-opacity="0.8" stroke-linejoin="round"/>
+<polyline points="58.0,300.3 166.8,285.0 275.6,285.0 384.4,269.8 493.2,269.8 602.0,254.6" fill="none" stroke="var(--carbon-600, #3A382F)" stroke-width="1.6" stroke-opacity="0.8" stroke-linejoin="round"/>
+<polyline points="58.0,239.3 166.8,239.3 275.6,224.1 384.4,224.1 493.2,208.9 602.0,193.6" fill="none" stroke="var(--carbon-600, #3A382F)" stroke-width="1.6" stroke-opacity="0.8" stroke-linejoin="round"/>
+<polyline points="58.0,269.8 166.8,254.6 275.6,254.6 384.4,239.3 493.2,224.1 602.0,224.1" fill="none" stroke="var(--carbon-600, #3A382F)" stroke-width="1.6" stroke-opacity="0.8" stroke-linejoin="round"/>
+<text transform="translate(16,186.0) rotate(-90)" text-anchor="middle" font-size="11" letter-spacing="1.5" fill="var(--bone-500, #86847C)" style="text-transform:uppercase">Temp (°C)</text>
+<text x="330.0" y="394" text-anchor="middle" font-size="11" letter-spacing="1.5" fill="var(--bone-500, #86847C)" style="text-transform:uppercase">Hora</text>
+</svg>
+      <div style="margin-top:16px;font-size:21px;color:var(--bone-500);">Diez líneas del mismo gris: el problema se esconde.</div>
+    </div>
+    <div class="anim" style="background:var(--carbon-950);border:1px solid var(--line-citron);border-radius:4px;padding:34px;">
+      <div class="kicker" style="font-size:20px;letter-spacing:.26em;margin-bottom:18px;">Un color, y aparece</div>
+      <svg viewBox="0 0 620 400" width="100%" role="img" font-family="'Archivo', system-ui, sans-serif" aria-label="Temp (°C): 10 series.">
+<line x1="58" y1="346.0" x2="602" y2="346.0" stroke="var(--line, rgba(232,230,225,.14))" stroke-width="1"/>
+<text x="49" y="350.0" text-anchor="end" font-size="11.5" fill="var(--bone-500, #86847C)" style="font-variant-numeric:tabular-nums">65</text>
+<line x1="58" y1="269.8" x2="602" y2="269.8" stroke="var(--line, rgba(232,230,225,.14))" stroke-width="1"/>
+<text x="49" y="273.8" text-anchor="end" font-size="11.5" fill="var(--bone-500, #86847C)" style="font-variant-numeric:tabular-nums">70</text>
+<line x1="58" y1="193.6" x2="602" y2="193.6" stroke="var(--line, rgba(232,230,225,.14))" stroke-width="1"/>
+<text x="49" y="197.6" text-anchor="end" font-size="11.5" fill="var(--bone-500, #86847C)" style="font-variant-numeric:tabular-nums">75</text>
+<line x1="58" y1="117.4" x2="602" y2="117.4" stroke="var(--line, rgba(232,230,225,.14))" stroke-width="1"/>
+<text x="49" y="121.4" text-anchor="end" font-size="11.5" fill="var(--bone-500, #86847C)" style="font-variant-numeric:tabular-nums">80</text>
+<line x1="58" y1="41.2" x2="602" y2="41.2" stroke="var(--line, rgba(232,230,225,.14))" stroke-width="1"/>
+<text x="49" y="45.2" text-anchor="end" font-size="11.5" fill="var(--bone-500, #86847C)" style="font-variant-numeric:tabular-nums">85</text>
+<line x1="58" y1="26" x2="58" y2="346" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1.4"/>
+<line x1="58" y1="346" x2="602" y2="346" stroke="var(--line-strong, rgba(232,230,225,.28))" stroke-width="1.4"/>
+<text x="58.0" y="364.0" text-anchor="middle" font-size="11" fill="var(--bone-500, #86847C)">8:00</text>
+<text x="166.8" y="364.0" text-anchor="middle" font-size="11" fill="var(--bone-500, #86847C)">9:00</text>
+<text x="275.6" y="364.0" text-anchor="middle" font-size="11" fill="var(--bone-500, #86847C)">10:00</text>
+<text x="384.4" y="364.0" text-anchor="middle" font-size="11" fill="var(--bone-500, #86847C)">11:00</text>
+<text x="493.2" y="364.0" text-anchor="middle" font-size="11" fill="var(--bone-500, #86847C)">12:00</text>
+<text x="602.0" y="364.0" text-anchor="middle" font-size="11" fill="var(--bone-500, #86847C)">13:00</text>
+<polyline points="58.0,269.8 166.8,254.6 275.6,239.3 384.4,239.3 493.2,224.1 602.0,224.1" fill="none" stroke="var(--bone-500, #86847C)" stroke-width="1.6" stroke-opacity="0.45" stroke-linejoin="round"/>
+<polyline points="58.0,300.3 166.8,285.0 275.6,269.8 384.4,254.6 493.2,254.6 602.0,239.3" fill="none" stroke="var(--bone-500, #86847C)" stroke-width="1.6" stroke-opacity="0.45" stroke-linejoin="round"/>
+<polyline points="58.0,239.3 166.8,224.1 275.6,224.1 384.4,208.9 493.2,208.9 602.0,193.6" fill="none" stroke="var(--bone-500, #86847C)" stroke-width="1.6" stroke-opacity="0.45" stroke-linejoin="round"/>
+<polyline points="58.0,285.0 166.8,269.8 275.6,269.8 384.4,254.6 493.2,239.3 602.0,239.3" fill="none" stroke="var(--bone-500, #86847C)" stroke-width="1.6" stroke-opacity="0.45" stroke-linejoin="round"/>
+<polyline points="58.0,254.6 166.8,239.3 275.6,224.1 384.4,224.1 493.2,208.9 602.0,208.9" fill="none" stroke="var(--bone-500, #86847C)" stroke-width="1.6" stroke-opacity="0.45" stroke-linejoin="round"/>
+<polyline points="58.0,269.8 166.8,269.8 275.6,254.6 384.4,239.3 493.2,239.3 602.0,224.1" fill="none" stroke="var(--bone-500, #86847C)" stroke-width="1.6" stroke-opacity="0.45" stroke-linejoin="round"/>
+<polyline points="58.0,300.3 166.8,285.0 275.6,285.0 384.4,269.8 493.2,269.8 602.0,254.6" fill="none" stroke="var(--bone-500, #86847C)" stroke-width="1.6" stroke-opacity="0.45" stroke-linejoin="round"/>
+<polyline points="58.0,239.3 166.8,239.3 275.6,224.1 384.4,224.1 493.2,208.9 602.0,193.6" fill="none" stroke="var(--bone-500, #86847C)" stroke-width="1.6" stroke-opacity="0.45" stroke-linejoin="round"/>
+<polyline points="58.0,269.8 166.8,254.6 275.6,254.6 384.4,239.3 493.2,224.1 602.0,224.1" fill="none" stroke="var(--bone-500, #86847C)" stroke-width="1.6" stroke-opacity="0.45" stroke-linejoin="round"/>
+<polyline points="58.0,224.1 166.8,208.9 275.6,193.6 384.4,163.1 493.2,117.4 602.0,56.5" fill="none" stroke="var(--citron-000, #C9C41C)" stroke-width="3.2" stroke-linejoin="round"/>
+<text transform="translate(16,186.0) rotate(-90)" text-anchor="middle" font-size="11" letter-spacing="1.5" fill="var(--bone-500, #86847C)" style="text-transform:uppercase">Temp (°C)</text>
+<text x="330.0" y="394" text-anchor="middle" font-size="11" letter-spacing="1.5" fill="var(--bone-500, #86847C)" style="text-transform:uppercase">Hora</text>
+</svg>
+      <div style="margin-top:16px;font-size:21px;color:var(--citron-000);font-weight:600;">El reactor que se sobrecalienta salta a la vista.</div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" data-label="Puesta en común" style="background:var(--carbon-950);display:flex;flex-direction:column;justify-content:center;padding:0 130px;">
+  <div class="kicker" style="font-weight:700;font-size:40px;letter-spacing:.3em;margin-bottom:30px;">25 min</div>
+  <div class="kicker dim" style="margin-bottom:20px;">Puesta en común</div>
+  <h2 class="stitle anim" style="font-size:96px;max-width:22ch;">Presenten crítica y <span class="hl">rediseño</span></h2>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:44px;margin-top:52px;">
+    <div class="anim"><div class="stitle" style="font-weight:700;color:var(--citron-000);font-size:56px;">01</div><div class="body" style="font-size:26px;margin-top:12px;">El grupo dice <b style="color:var(--bone-000);">quién decide y qué decide</b>.</div></div>
+    <div class="anim"><div class="stitle" style="font-weight:700;color:var(--citron-000);font-size:56px;">02</div><div class="body" style="font-size:26px;margin-top:12px;">Muestra <b style="color:var(--bone-000);">qué fallaba</b> y su <b style="color:var(--bone-000);">rediseño</b>.</div></div>
+    <div class="anim"><div class="stitle" style="font-weight:700;color:var(--citron-000);font-size:56px;">03</div><div class="body" style="font-size:26px;margin-top:12px;">La clase nombra el <b style="color:var(--bone-000);">contexto</b> que ve.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-label="Tu reflexión" style="background:var(--carbon-1000);display:flex;flex-direction:column;justify-content:center;padding:0 130px;">
+  <div class="kicker" style="margin-bottom:30px;">Entregable · antes de la Sesión 3</div>
+  <h2 class="stitle" style="font-size:92px;margin-bottom:44px;">Tu reflexión · 400 palabras</h2>
+  <p class="body" style="font-size:32px;max-width:56ch;">Elige un gráfico de <span class="hl">tu área</span> y descríbelo para un usuario que debe decidir:</p>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:40px;margin-top:44px;">
+    <div class="anim card" style="padding:36px 32px;"><div class="kicker" style="font-size:20px;">Quién · qué</div><div class="body" style="font-size:25px;margin-top:14px;color:var(--bone-000);">La audiencia y la decisión que debería habilitar.</div></div>
+    <div class="anim card" style="padding:36px 32px;"><div class="kicker" style="font-size:20px;">Qué falla</div><div class="body" style="font-size:25px;margin-top:14px;color:var(--bone-000);">Según la rúbrica: mensaje, foco, tipo, ruido.</div></div>
+    <div class="anim card" style="padding:36px 32px;"><div class="kicker" style="font-size:20px;">Rediseño</div><div class="body" style="font-size:25px;margin-top:14px;color:var(--bone-000);">Qué cambias para que la decisión salte.</div></div>
+  </div>
+</section>
+
+<section class="slide" data-label="El mantra" style="background:var(--citron-000);color:var(--carbon-1000);display:flex;flex-direction:column;justify-content:center;padding:0 150px;">
+  <div style="font-family:var(--font-display);font-weight:700;font-size:120px;line-height:1;margin-bottom:10px;">“</div>
+  <blockquote class="stitle anim" style="font-weight:400;font-size:108px;max-width:22ch;color:var(--carbon-1000);">¿Le sirve a quien tiene que decidir?</blockquote>
+  <div style="font-family:var(--font-text);font-weight:600;font-size:24px;letter-spacing:.28em;text-transform:uppercase;margin-top:52px;">La pregunta que ordena toda crítica · Sesión 2</div>
+</section>
+  </div>
+</div>
+
+<div class="nav" role="navigation" aria-label="Navegación de diapositivas">
+  <button id="prev" aria-label="Anterior">‹</button>
+  <span class="count" id="count">1 / 12</span>
+  <button id="next" aria-label="Siguiente">›</button>
+  <span class="label" id="slabel">Portada</span>
+  <button id="fs" aria-label="Pantalla completa" title="Pantalla completa (F)" style="font-size:15px;">⛶</button>
+  <button id="theme" aria-label="Cambiar de versión clara/oscura" title="Versión clara / oscura (L)" style="font-size:16px;">☀</button>
+</div>
+<div class="hint">← → navegar · F pantalla completa · L versión clara</div>
+
+<script>
+(function () {
+  var stage = document.getElementById('stage');
+  var viewport = document.querySelector('.viewport');
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+  var i = 0;
+  var mq = window.matchMedia('(max-width:768px)');
+  var countEl = document.getElementById('count'), labelEl = document.getElementById('slabel'), prog = document.getElementById('progress');
+  function fit() {
+    if (mq.matches) {
+      stage.style.transform = 'none';
+      var z = (document.documentElement.clientWidth || window.innerWidth) / 1920;
+      slides.forEach(function (sl) { sl.style.zoom = z; });
+      return;
+    }
+    slides.forEach(function (sl) { sl.style.zoom = ''; });
+    var s = Math.min(viewport.clientWidth / 1920, viewport.clientHeight / 1080);
+    stage.style.transform = 'scale(' + s + ')';
+  }
+  window.addEventListener('resize', fit);
+  var rail = document.createElement('div'); rail.className = 'rail'; rail.setAttribute('aria-label', 'Miniaturas');
+  var thumbs = slides.map(function (sl, k) {
+    var t = document.createElement('button'); t.className = 'thumb'; t.type = 'button';
+    t.title = (k + 1) + ' · ' + (sl.getAttribute('data-label') || '');
+    var tw = document.createElement('div'); tw.className = 'tw';
+    tw.style.cssText = sl.getAttribute('style') || '';
+    tw.style.width = '1920px'; tw.style.height = '1080px'; tw.style.position = 'absolute'; tw.style.top = '0'; tw.style.left = '0';
+    tw.innerHTML = sl.innerHTML;
+    var tn = document.createElement('span'); tn.className = 'tn'; tn.textContent = k + 1;
+    t.appendChild(tw); t.appendChild(tn);
+    t.addEventListener('click', function () { show(k); });
+    rail.appendChild(t); return t;
+  });
+  document.body.appendChild(rail);
+  function show(n) {
+    i = Math.max(0, Math.min(slides.length - 1, n));
+    slides.forEach(function (s, k) { s.classList.toggle('is-active', k === i); });
+    thumbs.forEach(function (t, k) { t.classList.toggle('is-cur', k === i); });
+    countEl.textContent = (i + 1) + ' / ' + slides.length;
+    labelEl.textContent = slides[i].getAttribute('data-label') || '';
+    prog.style.width = ((i) / (slides.length - 1) * 100) + '%';
+    var cur = thumbs[i]; if (cur && cur.scrollIntoView) cur.scrollIntoView({ block: 'nearest', inline: 'center' });
+    if (location.hash !== '#' + (i + 1)) history.replaceState(null, '', '#' + (i + 1));
+  }
+  function next() { show(i + 1); } function prev() { show(i - 1); }
+  document.getElementById('next').addEventListener('click', next);
+  document.getElementById('prev').addEventListener('click', prev);
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') { e.preventDefault(); next(); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); prev(); }
+    else if (e.key === 'Home') show(0);
+    else if (e.key === 'End') show(slides.length - 1);
+    else if (e.key === 'f' || e.key === 'F') { e.preventDefault(); toggleFs(); }
+    else if (e.key === 'l' || e.key === 'L') { e.preventDefault(); toggleTheme(); }
+  });
+  var themeBtn = document.getElementById('theme');
+  function toggleTheme() { var light = document.body.classList.toggle('light'); themeBtn.textContent = light ? '☾' : '☀'; themeBtn.title = light ? 'Versión oscura (L)' : 'Versión clara (L)'; }
+  themeBtn.addEventListener('click', toggleTheme);
+  var fsBtn = document.getElementById('fs');
+  function toggleFs() { if (document.fullscreenElement) { document.exitFullscreen(); } else if (document.documentElement.requestFullscreen) { document.documentElement.requestFullscreen(); } }
+  fsBtn.addEventListener('click', toggleFs);
+  document.addEventListener('fullscreenchange', function () { document.body.classList.toggle('is-fs', !!document.fullscreenElement); fit(); });
+  if (mq.addEventListener) mq.addEventListener('change', fit);
+  fit();
+  var start = parseInt((location.hash || '').replace('#', ''), 10);
+  show(isNaN(start) ? 0 : start - 1);
+})();
+</script>
+
+</body>
+</html>
