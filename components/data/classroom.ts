@@ -201,6 +201,17 @@ export interface Course {
    * `gradualRelease` es `true`.
    */
   releaseLeadDays?: number;
+  /**
+   * Publicación manual del material. Si es `true`, nada se abre solo por
+   * fecha: el equipo docente (sesión `staff`) publica u oculta cada semana con
+   * un botón ON/OFF en la página de Material, y los estudiantes solo ven las
+   * semanas publicadas. El estado vive en `published/{slug}.json` del
+   * repositorio y se escribe desde el navegador con un fine-grained token de
+   * GitHub (ver `components/classroom/publishState.ts` y PUBLICACION.md).
+   * Tiene prioridad sobre `gradualRelease`. El material transversal (sin
+   * `week`) sigue siempre disponible.
+   */
+  manualRelease?: boolean;
   bannerUrl: string;
   /**
    * Tipo de curso:
