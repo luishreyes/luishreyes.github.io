@@ -4,7 +4,12 @@ import { motion } from 'framer-motion';
 import type { Course, Reading, Presentation, Simulation } from '../../components/data/classroom';
 import { CourseAccessGate } from '../../components/classroom/CourseAccessGate';
 import { useCourseRelease, fmtReleaseDate } from '../../components/classroom/courseRelease';
-import { getPublishToken, savePublishToken } from '../../components/classroom/publishState';
+import {
+  getPublishToken,
+  itemKey,
+  savePublishToken,
+  type PublishKind,
+} from '../../components/classroom/publishState';
 import '../../components/classroom/pou-theme.css';
 
 // Material del curso de POU con la identidad «Industry»: cada semana es una
@@ -12,12 +17,13 @@ import '../../components/classroom/pou-theme.css';
 // una hoja a la vez, lo transversal va aparte, y lecturas, guías y
 // simulaciones abren en el visor de la misma página.
 //
-// Si el curso restringe la entrega (gradual o manual), el estudiante solo abre
-// las hojas ya disponibles: las demás se listan selladas para que el semestre
-// se vea completo sin adelantar contenido. Con el código del equipo docente no
-// hay sellos y, en los cursos de publicación manual (`manualRelease`), cada
-// hoja lleva además el botón Publicada/Oculta con que el equipo decide qué ven
-// los estudiantes.
+// Si el curso restringe la entrega (gradual o manual), el estudiante solo ve
+// lo ya disponible: las semanas sin nada publicado se listan selladas para que
+// el semestre se vea completo sin adelantar contenido. Con el código del
+// equipo docente no hay sellos y, en los cursos de publicación manual
+// (`manualRelease`), cada ACTIVIDAD lleva su botón Publicada/Oculta y la
+// cabecera de la semana un botón que publica u oculta todo el paquete de una
+// vez.
 
 const CRONOGRAMA_SLUG = 'cronograma-interactivo';
 
@@ -47,7 +53,7 @@ const fmtRange = (startISO: string, endISO: string): string => {
 };
 
 export const PouMaterialPage: React.FC<{ course: Course }> = ({ course }) => {
-  const { isStaff, gated, manual, isWeekOpen, releaseDate, publishedWeeks, setPublished } =
+  const { isStaff, gated, manual, isWeekOpen, releaseDate, isItemOpen, publishedItems, setItemsPublished } =
     useCourseRelease(course);
 
   // Publicación manual (equipo docente): el token de GitHub se pega una sola
@@ -56,7 +62,8 @@ export const PouMaterialPage: React.FC<{ course: Course }> = ({ course }) => {
   const [pubToken, setPubToken] = React.useState<string | null>(() => getPublishToken());
   const [tokenDraft, setTokenDraft] = React.useState('');
   const [pubError, setPubError] = React.useState<string | null>(null);
-  const [guardando, setGuardando] = React.useState<number | null>(null);
+  // Qué se está guardando ahora mismo: la llave de una actividad o `semana:N`.
+  const [guardando, setGuardando] = React.useState<string | null>(null);
 
   const guardarToken = (e: React.FormEvent) => {
     e.preventDefault();
@@ -73,20 +80,58 @@ export const PouMaterialPage: React.FC<{ course: Course }> = ({ course }) => {
     setPubToken(null);
   };
 
-  const alternarPublicada = async (w: number) => {
+  const alternarActividades = async (
+    changes: Array<{ key: string; on: boolean }>,
+    message: string,
+    marca: string,
+  ) => {
     if (!pubToken) {
       setPubError('Antes de publicar, configure el token del equipo docente (arriba).');
       return;
     }
-    setGuardando(w);
+    if (changes.length === 0) return;
+    setGuardando(marca);
     setPubError(null);
     try {
-      await setPublished(w, !(publishedWeeks?.has(w) ?? false), pubToken);
+      await setItemsPublished(changes, pubToken, message);
     } catch (err) {
       setPubError(err instanceof Error ? err.message : 'No se pudo guardar el cambio.');
     } finally {
       setGuardando(null);
     }
+  };
+
+  // Botón Publicada/Oculta de una actividad. Vive junto al enlace de la
+  // actividad (nunca adentro, para no anidar controles) y solo existe en la
+  // vista del equipo docente de cursos con publicación manual.
+  const botonActividad = (kind: PublishKind, id: string, titulo: string): React.ReactNode => {
+    if (!isStaff || !manual) return null;
+    const k = itemKey(kind, id);
+    const on = publishedItems?.has(k) ?? false;
+    return (
+      <button
+        type="button"
+        className={`pou-pub-toggle sm${on ? ' on' : ''}`}
+        disabled={guardando !== null}
+        aria-pressed={on}
+        title={
+          on
+            ? 'Los estudiantes ven esta actividad. Clic para ocultarla.'
+            : 'Los estudiantes no ven esta actividad. Clic para publicarla.'
+        }
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          void alternarActividades(
+            [{ key: k, on: !on }],
+            `${on ? 'oculta' : 'publica'} «${titulo}»`,
+            k,
+          );
+        }}
+      >
+        {guardando === k ? 'Guardando…' : on ? 'Publicada' : 'Oculta'}
+      </button>
+    );
   };
 
   const byOrder = (a: Reading, b: Reading) =>
@@ -185,8 +230,10 @@ export const PouMaterialPage: React.FC<{ course: Course }> = ({ course }) => {
               <div className="pou-pub-panel">
                 {pubToken ? (
                   <p>
-                    Publicación manual activa: use el botón <strong>Publicada / Oculta</strong>{' '}
-                    de cada semana. Los estudiantes ven el cambio en cosa de un minuto.{' '}
+                    Publicación manual activa: cada actividad tiene su botón{' '}
+                    <strong>Publicada / Oculta</strong>, y el botón de la cabecera publica u
+                    oculta la semana completa de una vez. Los estudiantes ven el cambio en
+                    cosa de un minuto.{' '}
                     <button type="button" onClick={olvidarToken}>
                       Cambiar token
                     </button>
@@ -254,13 +301,29 @@ export const PouMaterialPage: React.FC<{ course: Course }> = ({ course }) => {
               {/* Una hoja por semana */}
               {semanas.map((w) => {
                 const m = meta.get(w)!;
-                const wl = lecturas.filter((r) => r.week === w);
-                const wg = guias.filter((r) => r.week === w);
-                const wp = presentaciones.filter((p) => p.week === w);
-                const ws = simulaciones.filter((s) => s.week === w);
+                // Para estudiantes de un curso manual solo cuentan las
+                // actividades publicadas; el equipo docente las ve todas
+                // (isItemOpen responde `true` sin filtro para staff).
+                const wl = lecturas.filter((r) => r.week === w && isItemOpen('reading', r.slug, r.week));
+                const wg = guias.filter((r) => r.week === w && isItemOpen('reading', r.slug, r.week));
+                const wp = presentaciones.filter((p) => p.week === w && isItemOpen('pres', p.id, p.week));
+                const ws = simulaciones.filter((s) => s.week === w && isItemOpen('sim', s.id, s.week));
                 const n = wl.length + wg.length + wp.length + ws.length;
                 const fechas = m.dates.slice().sort();
-                const abierta_ = isWeekOpen(w);
+                // Manual: la hoja se sella cuando no hay nada publicado en la
+                // semana. Gradual: cuando la fecha aún no llega.
+                const abierta_ = manual ? n > 0 : isWeekOpen(w);
+                // Estado del paquete completo de la semana, para el botón de
+                // la cabecera (equipo docente).
+                const claves = isStaff && manual
+                  ? [
+                      ...wl.map((r) => itemKey('reading', r.slug)),
+                      ...wg.map((r) => itemKey('reading', r.slug)),
+                      ...wp.map((p) => itemKey('pres', p.id)),
+                      ...ws.map((s) => itemKey('sim', s.id)),
+                    ]
+                  : [];
+                const nPub = claves.filter((k) => publishedItems?.has(k)).length;
                 const cabecera = (
                   <>
                     <span className="wk" aria-hidden="true">{String(w).padStart(2, '0')}</span>
@@ -286,27 +349,41 @@ export const PouMaterialPage: React.FC<{ course: Course }> = ({ course }) => {
                       <span className="pub">
                         <button
                           type="button"
-                          className={`pou-pub-toggle${publishedWeeks?.has(w) ? ' on' : ''}`}
+                          className={`pou-pub-toggle${
+                            nPub === claves.length ? ' on' : nPub > 0 ? ' mix' : ''
+                          }`}
                           disabled={guardando !== null}
-                          aria-pressed={publishedWeeks?.has(w) ?? false}
+                          aria-pressed={nPub === claves.length}
                           title={
-                            publishedWeeks?.has(w)
-                              ? 'Los estudiantes ven esta semana. Clic para ocultarla.'
-                              : 'Los estudiantes no ven esta semana. Clic para publicarla.'
+                            nPub === claves.length
+                              ? 'Toda la semana está publicada. Clic para ocultarla completa.'
+                              : nPub > 0
+                                ? `${nPub} de ${claves.length} actividades publicadas. Clic para publicar el resto.`
+                                : 'Nada de esta semana está publicado. Clic para publicarla completa.'
                           }
                           onClick={(e) => {
                             // El botón vive dentro del `summary`: sin esto, el
                             // clic también abriría o cerraría la hoja.
                             e.preventDefault();
                             e.stopPropagation();
-                            void alternarPublicada(w);
+                            const on = nPub < claves.length;
+                            const cambios = claves
+                              .filter((k) => (publishedItems?.has(k) ?? false) !== on)
+                              .map((k) => ({ key: k, on }));
+                            void alternarActividades(
+                              cambios,
+                              `semana ${w} ${on ? 'publicada' : 'oculta'} (${cambios.length} actividades)`,
+                              `semana:${w}`,
+                            );
                           }}
                         >
-                          {guardando === w
+                          {guardando === `semana:${w}`
                             ? 'Guardando…'
-                            : publishedWeeks?.has(w)
-                              ? 'Publicada'
-                              : 'Oculta'}
+                            : nPub === claves.length
+                              ? 'Semana publicada'
+                              : nPub > 0
+                                ? `${nPub}/${claves.length} publicadas`
+                                : 'Semana oculta'}
                         </button>
                       </span>
                     )}
@@ -330,45 +407,50 @@ export const PouMaterialPage: React.FC<{ course: Course }> = ({ course }) => {
                     <summary onClick={alternar(`s${w}`)}>{cabecera}</summary>
                     <div className="body">
                       {wl.map((r) => (
-                        <ItemLectura key={r.slug} r={r} slug={course.slug} rotulo={`Lectura ${String(r.order ?? '').padStart(2, '0')}`.trim()} />
+                        <Fila key={r.slug} toggle={botonActividad('reading', r.slug, r.title)}>
+                          <ItemLectura r={r} slug={course.slug} rotulo={`Lectura ${String(r.order ?? '').padStart(2, '0')}`.trim()} />
+                        </Fila>
                       ))}
                       {wg.map((r) => (
-                        <ItemLectura
-                          key={r.slug}
-                          r={r}
-                          slug={course.slug}
-                          rotulo={r.category === 'taller' ? 'Taller' : 'Guía'}
-                        />
+                        <Fila key={r.slug} toggle={botonActividad('reading', r.slug, r.title)}>
+                          <ItemLectura
+                            r={r}
+                            slug={course.slug}
+                            rotulo={r.category === 'taller' ? 'Taller' : 'Guía'}
+                          />
+                        </Fila>
                       ))}
                       {wp.map((p) => (
-                        <a
-                          key={p.id}
-                          className="pou-item"
-                          href={`/classroom/${course.slug}/slides/${p.file}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          <span className="n">Presentación</span>
-                          <span style={{ flex: 1, minWidth: 0 }}>
-                            <span className="t">{p.title}</span>
-                            {p.description && <span className="d">{p.description}</span>}
-                          </span>
-                          <span className="ext">Pestaña nueva ↗</span>
-                        </a>
+                        <Fila key={p.id} toggle={botonActividad('pres', p.id, p.title)}>
+                          <a
+                            className="pou-item"
+                            href={`/classroom/${course.slug}/slides/${p.file}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <span className="n">Presentación</span>
+                            <span style={{ flex: 1, minWidth: 0 }}>
+                              <span className="t">{p.title}</span>
+                              {p.description && <span className="d">{p.description}</span>}
+                            </span>
+                            <span className="ext">Pestaña nueva ↗</span>
+                          </a>
+                        </Fila>
                       ))}
                       {ws.map((s) => (
-                        <Link
-                          key={s.id}
-                          className="pou-item"
-                          to={toViewer(course.slug, `/classroom/${course.slug}/simulaciones/${s.file}`)}
-                        >
-                          <span className="n">Simulación</span>
-                          <span style={{ flex: 1, minWidth: 0 }}>
-                            <span className="t">{s.title}</span>
-                            <span className="d">{s.description}</span>
-                          </span>
-                          <span className="ext">Abrir →</span>
-                        </Link>
+                        <Fila key={s.id} toggle={botonActividad('sim', s.id, s.title)}>
+                          <Link
+                            className="pou-item"
+                            to={toViewer(course.slug, `/classroom/${course.slug}/simulaciones/${s.file}`)}
+                          >
+                            <span className="n">Simulación</span>
+                            <span style={{ flex: 1, minWidth: 0 }}>
+                              <span className="t">{s.title}</span>
+                              <span className="d">{s.description}</span>
+                            </span>
+                            <span className="ext">Abrir →</span>
+                          </Link>
+                        </Fila>
                       ))}
                     </div>
                   </details>
@@ -381,6 +463,19 @@ export const PouMaterialPage: React.FC<{ course: Course }> = ({ course }) => {
     </CourseAccessGate>
   );
 };
+
+// Fila de actividad: cuando hay botón de publicación (equipo docente, curso
+// manual) el enlace y el botón conviven lado a lado, sin anidar controles;
+// sin botón, la fila es el enlace de siempre.
+const Fila: React.FC<{ toggle: React.ReactNode; children: React.ReactNode }> = ({ toggle, children }) =>
+  toggle ? (
+    <div className="pou-item-row">
+      {children}
+      {toggle}
+    </div>
+  ) : (
+    <>{children}</>
+  );
 
 // Lecturas y guías: si son documentos HTML del curso van al visor de la misma
 // página; las lecturas internas conservan su ruta de siempre.

@@ -21,11 +21,12 @@ export const SimulationsIndexPage: React.FC = () => {
 };
 
 const SimulationsIndex: React.FC<{ course: Course }> = ({ course }) => {
-  const { isWeekOpen } = useCourseRelease(course);
+  const { isItemOpen } = useCourseRelease(course);
 
-  // Con entrega gradual, solo las simulaciones de las semanas ya abiertas.
+  // Con entrega restringida (gradual o manual), solo las simulaciones ya
+  // disponibles para la sesión.
   const sims = (course.simulations ?? [])
-    .filter((s) => isWeekOpen(s.week))
+    .filter((s) => isItemOpen('sim', s.id, s.week))
     .sort((a, b) => (a.sessionNumber ?? 0) - (b.sessionNumber ?? 0));
 
   return (

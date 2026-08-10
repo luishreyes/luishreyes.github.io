@@ -21,12 +21,12 @@ export const PresentationsIndexPage: React.FC = () => {
 };
 
 const PresentationsIndex: React.FC<{ course: Course }> = ({ course }) => {
-  const { isWeekOpen } = useCourseRelease(course);
+  const { isItemOpen } = useCourseRelease(course);
 
-  // Con entrega gradual, este índice muestra lo mismo que «Material del curso»:
-  // solo las semanas que ya llegaron.
+  // Con entrega restringida (gradual o manual), este índice muestra lo mismo
+  // que «Material del curso»: solo lo ya disponible para la sesión.
   const sorted = course.presentations
-    .filter((p) => isWeekOpen(p.week))
+    .filter((p) => isItemOpen('pres', p.id, p.week))
     .sort((a, b) => (a.sessionNumber ?? 0) - (b.sessionNumber ?? 0));
 
   return (

@@ -2,7 +2,13 @@ import React from 'react';
 import type { Course } from '../data/classroom';
 import { useCourseRole } from './CourseAccessGate';
 import { todayISO } from './today';
-import { fetchPublishedWeeks, readCachedWeeks, setWeekPublished } from './publishState';
+import {
+  fetchPublishedItems,
+  itemKey,
+  readCachedItems,
+  setItemsPublished as pushItemsPublished,
+  type PublishKind,
+} from './publishState';
 
 // Entrega del material de un curso, en dos modos:
 //
@@ -11,8 +17,9 @@ import { fetchPublishedWeeks, readCachedWeeks, setWeekPublished } from './publis
 //   `releaseLeadDays` días antes de su primera sesión (por defecto 2, para que
 //   el aula invertida tenga fin de semana para leer).
 // - `manualRelease` (manual): nada se abre solo. El equipo docente publica u
-//   oculta cada semana con un botón ON/OFF; el estado vive en
-//   `published/{slug}.json` en el repositorio (ver `publishState.ts`).
+//   oculta cada ACTIVIDAD (lectura, guía, presentación, simulación) con un
+//   botón ON/OFF; el estado vive en `published/{slug}.json` en el repositorio
+//   (ver `publishState.ts`).
 //
 // Quien entra con el código del equipo docente (`staffAccessCode`) ve todo
 // desde el primer día; el filtro es una capa de presentación, no un control de
@@ -47,17 +54,28 @@ export interface ReleaseInfo {
   manual: boolean;
   /** Semana en curso según la fecha del dispositivo (la última ya iniciada). */
   currentWeek: number | null;
-  /** ¿Está disponible el material de esta semana? Sin semana → siempre sí. */
+  /** ¿Está disponible el material de esta semana? Sin semana → siempre sí.
+   *  En cursos `manualRelease` NO decide nada: ahí manda `isItemOpen`. */
   isWeekOpen: (week?: number) => boolean;
   /** Fecha ISO en que se abre una semana, o `null` si no está en el cronograma. */
   releaseDate: (week: number) => string | null;
   /**
-   * Semanas publicadas por el equipo docente (solo cursos `manualRelease`);
-   * `null` mientras no se ha podido leer el estado del repositorio.
+   * ¿Está disponible esta actividad? Sin `week` (material transversal) →
+   * siempre sí. En modo manual responde según lo publicado; en modo gradual,
+   * según la fecha de su semana.
    */
-  publishedWeeks: Set<number> | null;
-  /** Publica u oculta una semana en el repositorio (equipo docente). */
-  setPublished: (week: number, on: boolean, token: string) => Promise<void>;
+  isItemOpen: (kind: PublishKind, id: string, week?: number) => boolean;
+  /**
+   * Llaves `tipo:id` publicadas por el equipo docente (solo cursos
+   * `manualRelease`); `null` mientras no se ha podido leer el estado.
+   */
+  publishedItems: Set<string> | null;
+  /** Publica u oculta actividades en el repositorio, en un solo commit. */
+  setItemsPublished: (
+    changes: ReadonlyArray<{ key: string; on: boolean }>,
+    token: string,
+    message: string,
+  ) => Promise<void>;
 }
 
 /**
@@ -75,27 +93,31 @@ export const useCourseRelease = (course: Course): ReleaseInfo => {
 
   // Publicación manual: se arranca con la última copia buena en caché para no
   // parpadear, y se refresca desde el repositorio en cuanto se puede.
-  const [pub, setPub] = React.useState<number[] | null>(() =>
-    manual ? readCachedWeeks(course.slug) : null,
+  const [pub, setPub] = React.useState<string[] | null>(() =>
+    manual ? readCachedItems(course.slug) : null,
   );
   React.useEffect(() => {
     if (!manual) return;
     let vivo = true;
-    fetchPublishedWeeks(course.slug).then((weeks) => {
-      if (vivo && weeks) setPub(weeks);
+    fetchPublishedItems(course.slug).then((items) => {
+      if (vivo && items) setPub(items);
     });
     return () => {
       vivo = false;
     };
   }, [manual, course.slug]);
-  const publishedWeeks = React.useMemo<Set<number> | null>(
+  const publishedItems = React.useMemo<Set<string> | null>(
     () => (pub ? new Set(pub) : null),
     [pub],
   );
 
-  const setPublished = async (week: number, on: boolean, token: string) => {
-    const weeks = await setWeekPublished(course.slug, week, on, token);
-    setPub(weeks);
+  const setItemsPublished = async (
+    changes: ReadonlyArray<{ key: string; on: boolean }>,
+    token: string,
+    message: string,
+  ) => {
+    const items = await pushItemsPublished(course.slug, changes, token, message);
+    setPub(items);
   };
 
   const starts = React.useMemo<Map<number, string>>(() => weekStartDates(course), [course]);
@@ -119,16 +141,32 @@ export const useCourseRelease = (course: Course): ReleaseInfo => {
 
   const isWeekOpen = (week?: number): boolean => {
     if (week === undefined) return true; // material transversal
-    if (!gated) return true;
-    // Manual: solo lo publicado. Sin estado legible se falla cerrado, para que
-    // un tropiezo de red no destape material que el equipo aún no publica.
-    if (manual) return publishedWeeks?.has(week) ?? false;
+    if (!gated || manual) return true;
     const release = releaseDate(week);
     // Semana que el cronograma no fecha: no hay con qué cerrarla, se deja abierta.
     return release === null || release <= hoy;
   };
 
-  return { isStaff, gated, manual, currentWeek, isWeekOpen, releaseDate, publishedWeeks, setPublished };
+  const isItemOpen = (kind: PublishKind, id: string, week?: number): boolean => {
+    if (week === undefined) return true; // material transversal
+    if (!gated) return true;
+    // Manual: solo lo publicado. Sin estado legible se falla cerrado, para que
+    // un tropiezo de red no destape material que el equipo aún no publica.
+    if (manual) return publishedItems?.has(itemKey(kind, id)) ?? false;
+    return isWeekOpen(week);
+  };
+
+  return {
+    isStaff,
+    gated,
+    manual,
+    currentWeek,
+    isWeekOpen,
+    releaseDate,
+    isItemOpen,
+    publishedItems,
+    setItemsPublished,
+  };
 };
 
 /** «domingo 6 de septiembre» — para anunciar cuándo se abre una semana. */

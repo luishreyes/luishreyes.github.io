@@ -34,16 +34,16 @@ export const PouLandingPage: React.FC<{ course: Course }> = ({ course }) => {
   // Los conteos del acceso a «Material» cuentan lo que la sesión puede abrir
   // hoy: con entrega gradual, anunciar 14 lecturas cuando solo hay 3
   // disponibles confunde más de lo que informa.
-  const { isWeekOpen } = useCourseRelease(course);
-  const disponible = course.readings.filter((r) => isWeekOpen(r.week));
+  const { isItemOpen } = useCourseRelease(course);
+  const disponible = course.readings.filter((r) => isItemOpen('reading', r.slug, r.week));
 
   const cronograma = course.readings.find((r) => r.slug === 'cronograma-interactivo');
   const lecturas = disponible.filter((r) => r.category === 'lectura').length;
   const guias = disponible.filter(
     (r) => r.category !== 'lectura' && r.slug !== 'cronograma-interactivo',
   ).length;
-  const pres = (course.presentations ?? []).filter((p) => isWeekOpen(p.week)).length;
-  const sims = (course.simulations ?? []).filter((s) => isWeekOpen(s.week)).length;
+  const pres = (course.presentations ?? []).filter((p) => isItemOpen('pres', p.id, p.week)).length;
+  const sims = (course.simulations ?? []).filter((s) => isItemOpen('sim', s.id, s.week)).length;
 
   const ficha: { n: string; prop: string; val: string; rem: string }[] = [
     { n: '01', prop: 'Código', val: course.code, rem: 'Sección POU' },
