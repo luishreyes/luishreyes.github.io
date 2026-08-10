@@ -29,7 +29,7 @@ export const DocViewerPage: React.FC = () => {
 
 const DocViewer: React.FC<{ course: Course; splat: string }> = ({ course, splat }) => {
   const courseSlug = course.slug;
-  const { isWeekOpen, releaseDate } = useCourseRelease(course);
+  const { isWeekOpen, releaseDate, manual } = useCourseRelease(course);
 
   // El src se reconstruye solo a partir del slug del curso y la cola de la ruta,
   // ambos del mismo origen: nunca se embebe un destino externo.
@@ -48,7 +48,9 @@ const DocViewer: React.FC<{ course: Course; splat: string }> = ({ course, splat 
         </p>
         <h1 className="mt-3 text-2xl font-bold text-brand-dark">Todavía no está disponible</h1>
         <p className="mt-2 max-w-md text-sm leading-relaxed text-brand-gray">
-          «{title}» acompaña una sesión que aún no llega.
+          {manual
+            ? `El equipo docente aún no publica «${title}».`
+            : `«${title}» acompaña una sesión que aún no llega.`}
           {f ? ` Se abre el ${fmtReleaseDate(f)}.` : ''}
         </p>
         <Link

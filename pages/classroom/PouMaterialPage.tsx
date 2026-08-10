@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import type { Course, Reading, Presentation, Simulation } from '../../components/data/classroom';
 import { CourseAccessGate } from '../../components/classroom/CourseAccessGate';
 import { useCourseRelease, fmtReleaseDate } from '../../components/classroom/courseRelease';
+import { getPublishToken, savePublishToken } from '../../components/classroom/publishState';
 import '../../components/classroom/pou-theme.css';
 
 // Material del curso de POU con la identidad «Industry»: cada semana es una
@@ -11,10 +12,12 @@ import '../../components/classroom/pou-theme.css';
 // una hoja a la vez, lo transversal va aparte, y lecturas, guías y
 // simulaciones abren en el visor de la misma página.
 //
-// Si el curso usa entrega gradual, el estudiante solo abre las hojas de las
-// semanas que ya llegaron: las siguientes se listan selladas, con la fecha en
-// que se abren, para que el semestre se vea completo sin adelantar contenido.
-// Con el código del equipo docente no hay sellos.
+// Si el curso restringe la entrega (gradual o manual), el estudiante solo abre
+// las hojas ya disponibles: las demás se listan selladas para que el semestre
+// se vea completo sin adelantar contenido. Con el código del equipo docente no
+// hay sellos y, en los cursos de publicación manual (`manualRelease`), cada
+// hoja lleva además el botón Publicada/Oculta con que el equipo decide qué ven
+// los estudiantes.
 
 const CRONOGRAMA_SLUG = 'cronograma-interactivo';
 
@@ -44,7 +47,47 @@ const fmtRange = (startISO: string, endISO: string): string => {
 };
 
 export const PouMaterialPage: React.FC<{ course: Course }> = ({ course }) => {
-  const { isStaff, gated, isWeekOpen, releaseDate } = useCourseRelease(course);
+  const { isStaff, gated, manual, isWeekOpen, releaseDate, publishedWeeks, setPublished } =
+    useCourseRelease(course);
+
+  // Publicación manual (equipo docente): el token de GitHub se pega una sola
+  // vez y queda en este navegador; con él cada botón escribe el cambio en el
+  // repositorio para que lo vean todos los estudiantes.
+  const [pubToken, setPubToken] = React.useState<string | null>(() => getPublishToken());
+  const [tokenDraft, setTokenDraft] = React.useState('');
+  const [pubError, setPubError] = React.useState<string | null>(null);
+  const [guardando, setGuardando] = React.useState<number | null>(null);
+
+  const guardarToken = (e: React.FormEvent) => {
+    e.preventDefault();
+    const t = tokenDraft.trim();
+    if (!t) return;
+    savePublishToken(t);
+    setPubToken(t);
+    setTokenDraft('');
+    setPubError(null);
+  };
+
+  const olvidarToken = () => {
+    savePublishToken(null);
+    setPubToken(null);
+  };
+
+  const alternarPublicada = async (w: number) => {
+    if (!pubToken) {
+      setPubError('Antes de publicar, configure el token del equipo docente (arriba).');
+      return;
+    }
+    setGuardando(w);
+    setPubError(null);
+    try {
+      await setPublished(w, !(publishedWeeks?.has(w) ?? false), pubToken);
+    } catch (err) {
+      setPubError(err instanceof Error ? err.message : 'No se pudo guardar el cambio.');
+    } finally {
+      setGuardando(null);
+    }
+  };
 
   const byOrder = (a: Reading, b: Reading) =>
     (a.order ?? Infinity) - (b.order ?? Infinity) || b.date.localeCompare(a.date);
@@ -128,12 +171,57 @@ export const PouMaterialPage: React.FC<{ course: Course }> = ({ course }) => {
             <p className="pou-lede">
               Organizado por semana. Se abre una hoja a la vez. Lo que acompaña todo el
               semestre está en «Del curso».
-              {gated && ' Cada semana se abre unos días antes de su primera sesión.'}
+              {gated &&
+                (manual
+                  ? ' El equipo docente publica cada semana cuando su material está listo.'
+                  : ' Cada semana se abre unos días antes de su primera sesión.')}
             </p>
-            {isStaff && course.gradualRelease && (
+            {isStaff && (manual || course.gradualRelease) && (
               <p className="pou-staff-badge">
                 Equipo docente · semestre completo a la vista
               </p>
+            )}
+            {isStaff && manual && (
+              <div className="pou-pub-panel">
+                {pubToken ? (
+                  <p>
+                    Publicación manual activa: use el botón <strong>Publicada / Oculta</strong>{' '}
+                    de cada semana. Los estudiantes ven el cambio en cosa de un minuto.{' '}
+                    <button type="button" onClick={olvidarToken}>
+                      Cambiar token
+                    </button>
+                  </p>
+                ) : (
+                  <>
+                    <p>
+                      Para publicar u ocultar semanas desde aquí se necesita un{' '}
+                      <a
+                        href="https://github.com/settings/personal-access-tokens/new"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        fine-grained token de GitHub ↗
+                      </a>{' '}
+                      con acceso solo a <code>luishreyes.github.io</code> y permiso{' '}
+                      «Contents · Read and write». Se pega una sola vez y queda guardado en
+                      este navegador.
+                    </p>
+                    <form onSubmit={guardarToken}>
+                      <input
+                        type="password"
+                        autoComplete="off"
+                        spellCheck={false}
+                        placeholder="github_pat_…"
+                        value={tokenDraft}
+                        onChange={(e) => setTokenDraft(e.target.value)}
+                        aria-label="Token de publicación"
+                      />
+                      <button type="submit">Guardar</button>
+                    </form>
+                  </>
+                )}
+                {pubError && <p className="err">{pubError}</p>}
+              </div>
             )}
           </div>
         </header>
@@ -190,9 +278,38 @@ export const PouMaterialPage: React.FC<{ course: Course }> = ({ course }) => {
                         ? `${n} ${n === 1 ? 'entrada' : 'entradas'}`
                         : (() => {
                             const f = releaseDate(w);
-                            return f ? `Se abre el ${fmtReleaseDate(f)}` : 'Aún no disponible';
+                            if (f) return `Se abre el ${fmtReleaseDate(f)}`;
+                            return manual ? 'Aún no publicada' : 'Aún no disponible';
                           })()}
                     </span>
+                    {isStaff && manual && (
+                      <span className="pub">
+                        <button
+                          type="button"
+                          className={`pou-pub-toggle${publishedWeeks?.has(w) ? ' on' : ''}`}
+                          disabled={guardando !== null}
+                          aria-pressed={publishedWeeks?.has(w) ?? false}
+                          title={
+                            publishedWeeks?.has(w)
+                              ? 'Los estudiantes ven esta semana. Clic para ocultarla.'
+                              : 'Los estudiantes no ven esta semana. Clic para publicarla.'
+                          }
+                          onClick={(e) => {
+                            // El botón vive dentro del `summary`: sin esto, el
+                            // clic también abriría o cerraría la hoja.
+                            e.preventDefault();
+                            e.stopPropagation();
+                            void alternarPublicada(w);
+                          }}
+                        >
+                          {guardando === w
+                            ? 'Guardando…'
+                            : publishedWeeks?.has(w)
+                              ? 'Publicada'
+                              : 'Oculta'}
+                        </button>
+                      </span>
+                    )}
                   </>
                 );
 

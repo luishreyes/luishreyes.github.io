@@ -132,6 +132,10 @@ Cada curso tiene un `accessCode`. Case-insensitive.
 
 Opcionalmente un curso puede definir un **segundo código para el equipo docente** (`staffAccessCode`). Cuando existe, el gate muestra **dos botones** —«Acceder como estudiante» y «Acceder como profesor»— y cada uno valida **solo** el código de su rol: escribir el código del equipo y pulsar «estudiante» no asciende a nadie. Eso es deliberado, porque así el profesor entra con el código del curso para ver el aula tal como la ven los estudiantes. El rol queda en `classroom:role:{slug}` y se lee con el hook `useCourseRole(slug)` de `CourseAccessGate.tsx`.
 
+### Publicación manual del material (`manualRelease`) — SISTEMA VIGENTE en POU 2026-20
+
+Si un curso define `manualRelease: true`, **nada se abre solo por fecha**: el equipo docente (sesión `staff`) publica u oculta cada semana con un botón **Publicada/Oculta** en la página de Material, y los estudiantes solo ven las semanas publicadas. El estado vive en `published/{slug}.json` en `main`: la app lo lee de `raw.githubusercontent.com` (~1 min de propagación, con caché en `localStorage` y fallo cerrado) y el botón lo escribe vía la API de GitHub con un fine-grained token que cada docente pega una vez (`classroom:publishToken`). Esos commits NO disparan el deploy (`paths-ignore: published/**`). El material sin `week` sigue siempre visible. Ver [PUBLICACION.md](PUBLICACION.md) para la guía completa (token, semilla, módulos `publishState.ts` / `courseRelease.ts`). `manualRelease` tiene prioridad sobre `gradualRelease`.
+
 ### Entrega gradual del material (`gradualRelease`)
 
 Si un curso define `gradualRelease: true`, quien entra con el **código de estudiante** solo ve el material de las semanas ya transcurridas y de la semana en curso; quien entra con el **`staffAccessCode`** ve el semestre completo desde el primer día.
