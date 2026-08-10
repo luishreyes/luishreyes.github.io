@@ -29,7 +29,7 @@ export const DocViewerPage: React.FC = () => {
 
 const DocViewer: React.FC<{ course: Course; splat: string }> = ({ course, splat }) => {
   const courseSlug = course.slug;
-  const { isWeekOpen, releaseDate, manual } = useCourseRelease(course);
+  const { isItemOpen, releaseDate, manual } = useCourseRelease(course);
 
   // El src se reconstruye solo a partir del slug del curso y la cola de la ruta,
   // ambos del mismo origen: nunca se embebe un destino externo.
@@ -39,7 +39,7 @@ const DocViewer: React.FC<{ course: Course; splat: string }> = ({ course, splat 
 
   // Entrar por URL no adelanta el calendario: si el documento pertenece a una
   // semana que aún no se abre, el visor lo dice en vez de embeberlo.
-  if (entrada && !isWeekOpen(entrada.week)) {
+  if (entrada && !isItemOpen(entrada.kind, entrada.id, entrada.week)) {
     const f = entrada.week !== undefined ? releaseDate(entrada.week) : null;
     return (
       <div className="fixed left-0 right-0 bottom-0 top-16 flex flex-col items-center justify-center bg-zinc-100 px-6 text-center">
@@ -104,12 +104,12 @@ const DocViewer: React.FC<{ course: Course; splat: string }> = ({ course, splat 
 const findEntry = (
   course: Course,
   src: string,
-): { title: string; week?: number } | null => {
+): { title: string; week?: number; kind: 'reading' | 'sim'; id: string } | null => {
   const reading = course.readings?.find((r) => r.href === src);
-  if (reading) return { title: reading.title, week: reading.week };
+  if (reading) return { title: reading.title, week: reading.week, kind: 'reading', id: reading.slug };
   const sim = course.simulations?.find(
     (s) => `/classroom/${course.slug}/simulaciones/${s.file}` === src,
   );
-  if (sim) return { title: sim.title, week: sim.week };
+  if (sim) return { title: sim.title, week: sim.week, kind: 'sim', id: sim.id };
   return null;
 };

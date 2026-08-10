@@ -1,9 +1,9 @@
 # Publicación manual del material (`manualRelease`)
 
-Sistema con el que el **equipo docente decide, semana a semana y con un botón
-ON/OFF, qué material ve el estudiantado**. Sustituye a la entrega gradual por
-fechas (`gradualRelease`) en los cursos donde la sincronización automática no
-sirve. Hoy lo usa POU 2026-20 (`iqya-2031-2026-20`).
+Sistema con el que el **equipo docente decide, actividad por actividad y con
+un botón ON/OFF, qué material ve el estudiantado**. Sustituye a la entrega
+gradual por fechas (`gradualRelease`) en los cursos donde la sincronización
+automática no sirve. Hoy lo usa POU 2026-20 (`iqya-2031-2026-20`).
 
 ## Cómo funciona
 
@@ -13,9 +13,17 @@ publicación vive **en el propio repositorio**:
 ```
 published/{slug}.json      ← p. ej. published/iqya-2031-2026-20.json
 {
-  "weeks": [1, 2]          ← semanas visibles para los estudiantes
+  "items": [               ← actividades visibles para los estudiantes,
+    "reading:lectura-01-operaciones-unitarias",   ←   como llaves `tipo:id`
+    "pres:trabajo-en-equipo",
+    "sim:manual-diagramas"
+  ]
 }
 ```
+
+Las llaves son `reading:{slug}` (lecturas, guías y talleres del array
+`readings`), `pres:{id}` (presentaciones) y `sim:{id}` (simulaciones) — ver
+`itemKey()` en `publishState.ts`.
 
 - **Lectura (todos):** la app lee ese JSON de `raw.githubusercontent.com`
   (el repo es público) con un cache-buster por minuto: un cambio se propaga a
@@ -23,23 +31,27 @@ published/{slug}.json      ← p. ej. published/iqya-2031-2026-20.json
   buena se guarda en `localStorage` (`classroom:published:{slug}`) como
   respaldo si la red falla; si nunca se ha podido leer nada, se **falla
   cerrado** (solo se ve el material transversal).
-- **Escritura (equipo docente):** el botón Publicada/Oculta hace un commit a
+- **Escritura (equipo docente):** cada botón Publicada/Oculta hace un commit a
   `main` sobre ese JSON usando la API de contenidos de GitHub con un
-  fine-grained token. El workflow de deploy tiene `paths-ignore: published/**`,
-  de modo que esos commits **no** reconstruyen el sitio.
+  fine-grained token; el botón de la cabecera de una semana publica u oculta
+  todas sus actividades **en un solo commit**. El workflow de deploy tiene
+  `paths-ignore: published/**`, de modo que esos commits **no** reconstruyen
+  el sitio.
 - **Módulos:** `components/classroom/publishState.ts` (lectura/escritura del
-  JSON, token) y `components/classroom/courseRelease.ts` (hook
-  `useCourseRelease`, que en modo manual responde `isWeekOpen` con el JSON en
-  vez de con fechas).
+  JSON, llaves `itemKey`, token) y `components/classroom/courseRelease.ts`
+  (hook `useCourseRelease`, que en modo manual responde `isItemOpen` con el
+  JSON en vez de con fechas; `isWeekOpen` queda solo para el modo gradual).
 
 Reglas que se conservan del sistema gradual:
 
 - El material **sin `week`** (programa, cronograma, guías transversales) está
   siempre disponible.
 - Quien entra con `staffAccessCode` ve el semestre completo; además, **solo en
-  esa vista** aparecen los botones Publicada/Oculta (en la página de Material,
-  uno por hoja de semana). La vista de estudiante no tiene botones: solo ve lo
-  publicado.
+  esa vista** aparecen los botones Publicada/Oculta (en la página de Material:
+  uno por actividad, más el de la cabecera que maneja la semana completa y
+  marca el estado parcial como `x/n publicadas`). La vista de estudiante no
+  tiene botones: solo ve lo publicado, y una semana sin nada publicado se
+  lista sellada.
 - Es una **capa de presentación, no de seguridad**: los HTML de `public/`
   siguen siendo estáticos y quien conozca la URL exacta puede abrirlos.
 
@@ -52,8 +64,8 @@ staffAccessCode: '…',
 manualRelease: true,   // reemplaza a gradualRelease / releaseLeadDays
 ```
 
-Y crear la semilla `published/{slug}.json` con las semanas que ya deben estar
-abiertas (para que nadie pierda acceso al activar el modo).
+Y crear la semilla `published/{slug}.json` con las llaves de las actividades
+que ya deben estar abiertas (para que nadie pierda acceso al activar el modo).
 
 ## Configurar el token (una vez por navegador del equipo docente)
 
@@ -76,10 +88,13 @@ revocarlo en GitHub al terminar el semestre o si se filtra.
 ## Uso diario
 
 - Entrar con `staffAccessCode` → Material del curso → botón **Publicada /
-  Oculta** en la cabecera de cada semana. El cambio queda como un commit
-  (`Classroom {slug}: semana N publicada`) y los estudiantes lo ven en ~1
-  minuto (afecta Material, visor de documentos, índices de presentaciones y
-  simulaciones, y los conteos del landing).
+  Oculta** junto a cada actividad; el botón de la cabecera de la semana
+  publica u oculta el paquete completo (si está a medias muestra
+  `x/n publicadas` y el clic publica lo que falta). Cada cambio queda como un
+  commit (`Classroom {slug}: publica «…»` / `semana N publicada (n
+  actividades)`) y los estudiantes lo ven en ~1 minuto (afecta Material, visor
+  de documentos, índices de presentaciones y simulaciones, y los conteos del
+  landing).
 - Si dos personas publican a la vez, la escritura se reintenta sola sobre el
   estado fresco.
 - Sin token guardado, los botones avisan que falta configurarlo; el panel del
