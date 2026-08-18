@@ -415,7 +415,13 @@ La buena noticia es que no necesitan escribir en inglés. Pídanle a Gemini que 
 
 *[Al pasar a la diapositiva]*
 
-Ahora ustedes. Tienen cuarenta y cinco minutos para construir su propia narrativa de tres momentos, y son cuatro pasos.
+Ahora ustedes. Tienen cuarenta y cinco minutos para construir su propia narrativa de tres momentos.
+
+*[Señale la imagen del estado financiero a la derecha y haga una pausa. Este punto es importante.]*
+
+Y quiero que noten algo antes de arrancar: **este no es el mismo cliente que acabamos de ver.** Es otra empresa, Comercializadora Ferretera del Norte, y esconde un hallazgo distinto. Lo que descubrimos en Distribuidora Andina no les va a servir aquí. Léanlo sin supuestos, como si les acabara de llegar al correo.
+
+Son cuatro pasos.
 
 **Paso uno, leer: diez minutos.** Adjunten el estado financiero en Gemini y extraigan las cifras. Encuentren la historia. Y por favor, verifiquen dos o tres cifras contra el documento antes de seguir: si el modelo leyó mal un número, todo lo que viene después queda contaminado.
 
@@ -440,6 +446,8 @@ Les acabo de dejar en el chat la guía del taller con todos los prompts listos p
 Perfecto. Empiecen. Yo me quedo conectado: escriban por el chat o levanten la mano si se atascan, y voy pasando a ver cómo van.
 
 *[Durante los 45 minutos: manténgase disponible. A los 20 minutos avise que deberían ir en el paso dos. A los 35 avise que quedan 10 minutos y que vayan armando la lámina. A los 43 pida que cierren.]*
+
+*[Si a los 10 minutos alguien no ha encontrado el hallazgo, empújelo con esta pregunta sin darle la respuesta: «¿La utilidad neta y la utilidad operacional le están contando la misma historia?». Consulte el anexo al final de este guión.]*
 
 *[Al terminar, si el tiempo alcanza, pida a dos o tres personas que muestren su lámina en dos minutos cada una.]*
 
@@ -469,3 +477,51 @@ Su entregable es la narrativa de tres momentos que acaban de construir. Si quier
 *[Espere. Responda lo que surja.]*
 
 Muchas gracias por estas dos sesiones. Nos vemos en el módulo seis con Juan Carlos. Buenas noches.
+
+
+---
+
+# Anexo · Hoja de respuestas del caso del taller
+
+**Solo para usted.** Comercializadora Ferretera del Norte S.A.S. — no la comparta antes de que terminen.
+
+## El engaño
+
+A primera vista **todo mejoró**: la utilidad neta se triplicó (de 750 a 2.419), la deuda total bajó, la liquidez subió y el endeudamiento cayó del 70 % al 65 %. Un analista apurado aprueba.
+
+**Pero la operación pasó de ganar 3.370 a perder 600.** Toda la utilidad —y más— viene de una sola línea: «Otros ingresos — venta de inmueble», por 6.850 millones. Es un ingreso que no se repite.
+
+## Las cifras
+
+| Concepto | 2025 | 2024 | Variación |
+|---|---|---|---|
+| Ingresos | 68.400 | 79.250 | **−13,7 %** |
+| Margen bruto | 23,7 % | 25,7 % | −2,0 pp |
+| **Utilidad operacional** | **(600)** | **3.370** | **pasa a pérdida** |
+| Otros ingresos (venta de inmueble) | 6.850 | — | no recurrente |
+| **Utilidad neta** | **2.419** | **750** | **+222 %** |
+| Cobertura de intereses | −0,25x | 1,55x | negativa |
+| Propiedad, planta y equipo | 22.410 | 29.980 | −25,3 % |
+| Pasivo por arrendamiento | 2.380 | 1.290 | +84,5 % |
+
+## Las tres pistas, en orden de dificultad
+
+1. **La más visible:** las ventas caen 13,7 % pero la utilidad neta se triplica. Eso no puede venir de la operación.
+2. **La confirmación:** la utilidad operacional es negativa. El negocio, por sí solo, está perdiendo plata.
+3. **La fina:** el activo fijo cae 7.570 y el pasivo por arrendamiento sube 1.090. Vendieron el inmueble y ahora lo arriendan — se quedaron sin el activo y con un gasto fijo nuevo.
+
+*[Pista extra para quien vaya muy rápido: los resultados acumulados suben solo 655 cuando la utilidad fue 2.419. Repartieron cerca de 1.764 en dividendos — es decir, distribuyeron parte de la plata de la venta.]*
+
+## La narrativa esperada
+
+- **Establecer** — Un cliente que aparenta recuperación: la utilidad neta se triplicó y el endeudamiento bajó.
+- **Desarrollar** — El resultado no viene del negocio: las ventas cayeron 13,7 %, la operación arroja pérdida de 600 y toda la utilidad proviene de vender un inmueble por 6.850.
+- **Resolver** — No aprobar sobre la utilidad reportada. Evaluar con resultado operacional recurrente; pedir explicación del plan de negocio y del nuevo gasto de arrendamiento.
+
+## Diferencia con el caso de la clase
+
+| | Distribuidora Andina (demo) | Ferretera del Norte (taller) |
+|---|---|---|
+| Apariencia | Buena: crece en ventas | Buena: crece en utilidad |
+| Realidad | Ahogada por deuda de corto plazo | Operación en pérdida |
+| Lección | El crecimiento tiene un costo financiero | La utilidad puede no ser del negocio |
