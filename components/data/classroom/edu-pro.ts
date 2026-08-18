@@ -613,7 +613,7 @@ const cursoDaviviendaCucuta: EdcoCourse = {
     'El enlace de la sesión en vivo se comparte al iniciar el curso.',
     'Monitor EDCO por confirmar.',
   ],
-  presentationIds: ['dav-m1-fundamentos-gemini', 'dav-m5-1-imagenes-ia'],
+  presentationIds: ['dav-m1-fundamentos-gemini', 'dav-m5-1-imagenes-ia', 'dav-m5-2-narrativas-visuales'],
 };
 
 export const eduProCourse: Course = {
@@ -740,6 +740,16 @@ export const eduProCourse: Course = {
       description:
         'Primera sesión del módulo 5 (contenido multimodal) del curso Dominando la IA para Davivienda Cúcuta. Cómo las máquinas aprendieron a generar imágenes: modelos de difusión (forward y backward diffusion, entrenamiento, CLIP), panorama de los modelos actuales (Nano Banana 2, DALL·E 3, Midjourney, Flux, Stable Diffusion, Firefly, Ideogram) y el arte del prompt: vocabulario fotográfico, encuadres, lentes, iluminación, movimientos artísticos y palabras emocionales. Aplicable tanto en Gemini como en ChatGPT.',
       file: 'dav-m5-1-imagenes-ia.html',
+      theme: 'Contenido multimodal: imágenes',
+    },
+    {
+      id: 'dav-m5-2-narrativas-visuales',
+      title: 'M5.2 — Narrativas visuales con IA',
+      sessionNumber: 10,
+      date: '2026-08-06',
+      description:
+        'Segunda sesión del módulo 5 del curso Dominando la IA para Davivienda Cúcuta. El camino inverso: de generar imágenes a leerlas. Bloque 1, la IA que ve — modelos multimodales aplicados a documentos escaneados, estados financieros y gráficos densos; anatomía del prompt visual y los límites reales (alucinación de cifras, precisión numérica, aritmética). Bloque 2, de ver a contar — la narrativa visual de tres momentos (establecer, desarrollar, resolver) para comunicar un hallazgo en comité, con estilo base consistente. Cierra con taller práctico en Gemini sobre un caso ficticio.',
+      file: 'dav-m5-2-narrativas-visuales.html',
       theme: 'Contenido multimodal: imágenes',
     },
   ],
