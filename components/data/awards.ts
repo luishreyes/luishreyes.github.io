@@ -5,6 +5,38 @@ import type { Recognition } from '../../types';
 
 export const awardsData: Recognition[] = [
   {
+    title: "Award for Innovation in Chemical Engineering Education",
+    awarder: "AIChE Education Division",
+    category: { en: "Innovation in Chemical Engineering Education", es: "Innovación en la educación en ingeniería química" },
+    year: 2026,
+    projectTitle: "Project of Unit Operations (POU): PO-PBL, gamification, and bounded generative AI under the Cognitive-AI Synergy Framework",
+    authors: ["Luis H. Reyes"],
+    summary: [
+      {
+        en: "Selected by the Education Division of the American Institute of Chemical Engineers as the 2026 recipient of its Award for Innovation in Chemical Engineering Education, with the citation: «For integrating generative AI into chemical engineering education through the Cognitive-AI Synergy Framework and a project-based Unit Operations model with measurable impact on student learning.»",
+        es: "Seleccionado por la División de Educación del American Institute of Chemical Engineers como el galardonado 2026 de su Award for Innovation in Chemical Engineering Education, con la citación: «Por integrar la IA generativa en la educación en ingeniería química a través del Cognitive-AI Synergy Framework y un modelo de Operaciones Unitarias basado en proyectos, con impacto medible en el aprendizaje de los estudiantes.»"
+      },
+      {
+        en: "The recognized innovation is a specific, replicable redesign of Project of Unit Operations (POU) at Universidad de los Andes, refined across a seven-year peer-reviewed trajectory. Project-Oriented Problem-Based Learning, Integrated Product and Process Design, a structured gamification system, and self- and peer-evaluation rubrics that build psychological safety operate as one instructional architecture, into which generative AI is incorporated under explicit cognitive boundaries set by the Artificial Intelligence Assessment Scale (AIAS).",
+        es: "La innovación reconocida es un rediseño específico y replicable del curso Proyecto de Operaciones Unitarias (POU) en la Universidad de los Andes, afinado a lo largo de siete años de trayectoria con publicaciones arbitradas. El aprendizaje basado en problemas orientado a proyectos, el diseño integrado de producto y proceso, un sistema estructurado de gamificación y las rúbricas de autoevaluación y coevaluación que construyen seguridad psicológica operan como una sola arquitectura instruccional, dentro de la cual la IA generativa se incorpora bajo límites cognitivos explícitos definidos por la Artificial Intelligence Assessment Scale (AIAS)."
+      },
+      {
+        en: "The impact is documented against a prior baseline in a longitudinal analysis of 112 students across four cohorts. Written communication improved with statistical significance (one-way ANOVA, F = 7.50, p < 0.001), confirmed by independent blind evaluation (p = 0.005 to 0.014 across six rubric criteria), while technical performance held steady. Sustained motivation through the semester reached 94% of students, against 67% under the previous model.",
+        es: "El impacto está documentado frente a una línea base previa en un análisis longitudinal de 112 estudiantes a lo largo de cuatro cohortes. La comunicación escrita mejoró con significancia estadística (ANOVA de una vía, F = 7,50, p < 0,001), confirmada por evaluación ciega independiente (p = 0,005 a 0,014 en seis criterios de la rúbrica), mientras el desempeño técnico se mantuvo estable. La motivación sostenida a lo largo del semestre alcanzó al 94% de los estudiantes, frente al 67% bajo el modelo anterior."
+      },
+      {
+        en: "The bounded use of generative AI sharpened research rigor most visibly: the average number of references rose from 8 to more than 20 (p = 0.045), high-impact sources quadrupled from 3 to 13 (p = 0.043), and the quality of methodological writing improved from roughly 65% to 88–90% across three independent criteria. By the end of the course, 94% of students reported feeling better prepared for their careers and 87% said the course had significantly shaped their professional aspirations.",
+        es: "El uso acotado de la IA generativa afinó el rigor investigativo de forma especialmente visible: el número promedio de referencias pasó de 8 a más de 20 (p = 0,045), las fuentes de alto impacto se cuadruplicaron de 3 a 13 (p = 0,043) y la calidad de la escritura metodológica mejoró de cerca del 65% a 88–90% en tres criterios independientes. Al terminar el curso, el 94% de los estudiantes reportó sentirse mejor preparado para su carrera y el 87% afirmó que el curso había moldeado significativamente sus aspiraciones profesionales."
+      },
+      {
+        en: "The model has travelled beyond its own classroom: the Cognitive-AI Synergy Framework (CASF) is operationalized through a publicly accessible Implementation Assistant, its principles were written into Universidad de los Andes' institutional Guidelines for Generative AI, and the approach has reached more than 4,500 participants in executive and continuing-education programs across Latin America. The award will be presented at the Education Division dinner during the AIChE Annual Meeting in Minneapolis on November 10, 2026.",
+        es: "El modelo ha viajado más allá de su propio salón de clase: el Cognitive-AI Synergy Framework (CASF) se operacionaliza mediante un Asistente de Implementación de acceso público, sus principios quedaron escritos en los Lineamientos institucionales de IA generativa de la Universidad de los Andes, y el enfoque ha llegado a más de 4.500 participantes en programas de educación ejecutiva y continua en América Latina. El premio se entregará en la cena de la División de Educación durante el AIChE Annual Meeting en Minneapolis el 10 de noviembre de 2026."
+      }
+    ],
+    url: "https://www.aiche.org/community/awards/award-innovation-chemical-engineering-education",
+    imageUrl: "/images/aiche-logo.svg",
+  },
+  {
     title: "The Global Faculty AI Project",
     awarder: "OpenAI",
     category: { en: "Innovation in AI Education", es: "Innovación en educación con IA" },
