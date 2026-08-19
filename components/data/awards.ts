@@ -21,8 +21,12 @@ export const awardsData: Recognition[] = [
         es: "La innovación reconocida es el rediseño del curso Proyecto de Operaciones Unitarias (POU) en la Universidad de los Andes: un curso donde los estudiantes llevan un problema de diseño a lo largo de todo el semestre y donde la IA generativa entra bajo límites cognitivos explícitos, no como atajo. Afinado durante siete años y documentado en publicaciones arbitradas, el modelo mejoró con significancia estadística la comunicación escrita y el rigor investigativo de los estudiantes, mientras el desempeño técnico se mantuvo estable."
       },
       {
-        en: "The distinction singles out one pedagogical innovation implemented in a real course, judged by its documented impact on teaching effectiveness and student learning, and it can be received only once in a career. It will be presented at the Education Division dinner during the AIChE Annual Meeting in Minneapolis on November 10, 2026.",
-        es: "La distinción reconoce una innovación pedagógica concreta implementada en un curso real, juzgada por su impacto documentado en la efectividad de la enseñanza y en el aprendizaje de los estudiantes, y se puede recibir una sola vez en la carrera. Se entregará en la cena de la División de Educación durante el AIChE Annual Meeting en Minneapolis el 10 de noviembre de 2026."
+        en: "The distinction singles out one specific pedagogical innovation, created or implemented in a real course and judged by its documented impact on teaching effectiveness and student learning. Every recipient on the Education Division's published list since 2014 has been based at a university in the United States, so this is the first time the award goes to a professor working in Colombia — and in Latin America.",
+        es: "La distinción reconoce una innovación pedagógica específica, creada o implementada en un curso real y juzgada por su impacto documentado en la efectividad de la enseñanza y en el aprendizaje de los estudiantes. Todos los galardonados de la lista pública de la División de Educación desde 2014 han estado vinculados a universidades de Estados Unidos, de modo que es la primera vez que el premio llega a un profesor que trabaja en Colombia y en América Latina."
+      },
+      {
+        en: "It will be presented at the Education Division dinner during the AIChE Annual Meeting in Minneapolis on November 10, 2026.",
+        es: "Se entregará en la cena de la División de Educación durante el AIChE Annual Meeting en Minneapolis el 10 de noviembre de 2026."
       }
     ],
     url: "https://www.aiche.org/community/awards/award-innovation-chemical-engineering-education",
