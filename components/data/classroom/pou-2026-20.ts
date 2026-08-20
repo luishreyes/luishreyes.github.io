@@ -843,7 +843,7 @@ export const pou202620Course: Course = {
       title: 'Taller 6 · Separación de biomasa de levadura',
       summary:
         'Cuatro puntos de un ensayo de filtración de laboratorio y una planta de levadura alimentaria que produce sin parar. Del ajuste linealizado salen la resistencia específica de la torta y la del medio filtrante, y con ellas se dimensiona un filtro prensa que cabe en el presupuesto y cabe en el espacio. Ahí empieza el taller de verdad: al quitarle al cálculo dos supuestos falsos, que la torta es incompresible y que la hora entera es filtración, el área sube de 55 a 85 m² y el equipo pasa de obvio a estar al filo. Cierra mostrando que la matriz multicriterio que trae el enunciado se invierte por completo cuando se le agrega el criterio que le falta, la continuidad de operación. En parejas, distinta a las de los talleres 1 a 5.',
-      date: '2026-09-29',
+      date: '2026-10-08',
       readingMinutes: 18,
       tags: ['filtración', 'resistencia específica', 'torta compresible', 'filtro prensa', 'centrífuga de discos', 'microfiltración', 'tiempo de ciclo', 'selección multicriterio', 'taller'],
       category: 'taller',
@@ -852,12 +852,12 @@ export const pou202620Course: Course = {
     },
     {
       slug: 'taller-07-rachford-rice',
-      week: 11,
+      week: 12,
       order: 107,
       title: 'Taller 7 · Rachford-Rice para el flash multicomponente',
       summary:
         'Un cuaderno de Colab con la teoría de la destilación flash, la deducción de la ecuación de Rachford-Rice y una implementación de referencia ya resuelta. El trabajo empieza donde el cuaderno se detiene: el estudiante escribe la función, su derivada y el lazo de Newton con sus propias manos, exige que el residuo sea pequeño y no solo el paso, y contrasta su fracción vaporizada contra la implementación de referencia hasta la octava cifra. Después lo aplica a tres casos: una mezcla de cetonas, una nafta de cuatro parafinas cuyo binario de ligeros no se comporta como se espera, y la búsqueda de la ventana de operación del tambor en el plano de temperatura y presión. En parejas, de libre elección.',
-      date: '2026-10-08',
+      date: '2026-10-27',
       readingMinutes: 20,
       tags: ['destilación flash', 'Rachford-Rice', 'equilibrio líquido-vapor', 'multicomponente', 'Newton-Raphson', 'convergencia', 'punto de burbuja', 'punto de rocío', 'Python', 'Colab', 'taller'],
       category: 'taller',
@@ -866,12 +866,12 @@ export const pou202620Course: Course = {
     },
     {
       slug: 'taller-08-rayleigh',
-      week: 12,
+      week: 14,
       order: 108,
       title: 'Taller 8 · Destilación por lotes y la integral de Rayleigh',
       summary:
         'Una planta piloto farmacéutica recupera isopropanol de una mezcla acuosa en un calderín por lotes. Del balance diferencial sale la ecuación de Rayleigh, que hay que integrar sobre datos de equilibrio interpolados, resolver también en sentido inverso cuando lo que se fija es la fracción vaporizada, y verificar contra el balance de materia global. Después se compara contra el modelo de volatilidad relativa constante para medir lo que cuesta la simplificación. Y al final llega el punto que da sentido al tema: el azeótropo del sistema pone un techo de 68,5 % molar al destilado, y llevar el calderín hasta él exigiría vaporizar el 99,99999 % de la carga, así que el proceso se frena solo. En parejas, distinta a las de los talleres 1 a 7.',
-      date: '2026-10-15',
+      date: '2026-11-10',
       readingMinutes: 20,
       tags: ['destilación por lotes', 'ecuación de Rayleigh', 'azeótropo', 'equilibrio líquido-vapor', 'volatilidad relativa', 'integración numérica', 'problema inverso', 'Python', 'Colab', 'taller'],
       category: 'taller',
@@ -880,12 +880,12 @@ export const pou202620Course: Course = {
     },
     {
       slug: 'taller-09-mccabe-thiele',
-      week: 13,
+      week: 15,
       order: 109,
       title: 'Taller 9 · McCabe-Thiele y la columna de recuperación de etanol',
       summary:
         'La planta de pectina precipita con etanol y tiene que recuperarlo: el licor madre del filtro entra a 44,7 % v/v y por la cabeza debe salir solvente a 92,8 % v/v para volver al tanque de precipitación. El taller dimensiona esa columna, once etapas teóricas y diecisiete platos reales, y después pregunta por qué no se puede pedir más pureza. La respuesta no es «por el azeótropo»: es que la fórmula de reflujo mínimo del libro se queda 26 % corta en el etanol-agua, porque la línea de operación se vuelve tangente a la curva de equilibrio en pleno tramo de rectificación y no en la línea q. Cierra con una columna de isopropanol que otra planta pide resolver con la ley de Raoult, donde el cálculo sale impecable y el destilado que piden está por encima del azeótropo, así que la columna simplemente no existe. En parejas, de libre elección.',
-      date: '2026-10-22',
+      date: '2026-11-19',
       readingMinutes: 20,
       tags: ['destilación continua', 'McCabe-Thiele', 'etapas teóricas', 'reflujo mínimo', 'pinch tangencial', 'azeótropo', 'eficiencia de plato', 'ley de Raoult', 'Van Laar', 'Python', 'Colab', 'taller'],
       category: 'taller',
