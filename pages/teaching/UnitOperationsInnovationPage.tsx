@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { PageWrapper } from '../../components/PageWrapper';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { useI18n } from '../../context/i18n';
 
 const evaluationScores = [
@@ -158,6 +159,43 @@ export const UnitOperationsInnovationPage: React.FC = () => {
         </div>
 
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-20">
+          <motion.aside
+            initial={{ opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="bg-brand-dark rounded-xl p-8 sm:p-10 shadow-xl border border-yellow-400/30"
+          >
+            <div className="sm:flex sm:items-start sm:gap-8">
+              <img
+                src="/images/aiche-logo.svg"
+                alt="AIChE"
+                className="w-24 h-24 flex-shrink-0 mx-auto sm:mx-0 invert opacity-90"
+              />
+              <div className="mt-6 sm:mt-0 min-w-0">
+                <p className="text-xs font-bold uppercase tracking-widest text-yellow-400">{t('unitops.award.eyebrow')}</p>
+                <h2 className="mt-2 text-2xl font-bold text-white leading-tight">{t('unitops.award.title')}</h2>
+                <p className="mt-4 text-zinc-300 italic leading-relaxed">{t('unitops.award.citation')}</p>
+                <p className="mt-4 text-sm text-zinc-400 leading-relaxed">{t('unitops.award.note')}</p>
+                <div className="mt-6 flex flex-wrap gap-3">
+                  <Link
+                    to="/recognition"
+                    className="inline-flex items-center text-xs font-bold uppercase tracking-wider text-brand-dark bg-yellow-400 px-4 py-2 rounded hover:bg-yellow-500 transition-colors"
+                  >
+                    {t('unitops.award.cta')}
+                  </Link>
+                  <a
+                    href="https://www.aiche.org/community/awards/award-innovation-chemical-engineering-education"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center text-xs font-bold uppercase tracking-wider text-yellow-400 border border-yellow-400/50 px-4 py-2 rounded hover:bg-yellow-400/10 transition-colors"
+                  >
+                    {t('unitops.award.ctaAiche')} &#8599;
+                  </a>
+                </div>
+              </div>
+            </div>
+          </motion.aside>
+
           <section>
             <h2 className="text-2xl font-bold tracking-tight text-brand-dark mb-6">{t('unitops.context')}</h2>
             <p className="text-lg text-brand-gray leading-relaxed">
