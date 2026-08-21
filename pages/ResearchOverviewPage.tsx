@@ -5,8 +5,7 @@ import { Link } from 'react-router-dom';
 import { PageWrapper } from '../components/PageWrapper';
 import { StatsSection } from '../components/StatsSection';
 import { useI18n } from '../context/i18n';
-import { grantsData } from '../components/data/grants';
-import { studentsData, graduatedStudentsData } from '../components/data/students';
+import { metrics, awardsByRole } from '../components/data/metrics';
 import { ProductsOverTimeChart } from '../components/ProductsOverTimeChart';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { ResearchConnectionsGraph } from '../components/ResearchConnectionsGraph';
@@ -15,15 +14,24 @@ import { useAppData } from '../context/AppDataContext';
 export const ResearchOverviewPage: React.FC = () => {
   const { citationData, products } = useAppData();
   const { t } = useI18n();
-  const totalMentees = studentsData.phd.length + studentsData.ms.length + graduatedStudentsData.phd.length + graduatedStudentsData.ms.length;
+  const { research } = metrics;
+  const researchAwards = awardsByRole('research');
 
   const stats = [
     { label: t('stats.products'), value: products.length },
     { label: t('stats.citations'), value: citationData.total },
     { label: t('stats.hindex'), value: citationData.hIndex },
     { label: t('stats.i10index'), value: citationData.i10Index },
-    { label: t('stats.grants'), value: grantsData.length },
-    { label: t('stats.mentees'), value: totalMentees },
+    { label: t('stats.grants'), value: research.grants, note: `${research.activeGrants} ${t('stats.grants.note')}` },
+    { label: t('stats.mentees'), value: research.mentees, note: `${research.graduatedMentees} ${t('stats.mentees.note')}` },
+    // The two national distinctions get their own tiles; the rest are counted
+    // on the Recognition page.
+    ...researchAwards
+      .filter((award) => award.awarder.includes('Alejandro Ángel Escobar') || award.awarder.includes('National Academy of Medicine'))
+      .map((award) => ({
+        label: `${award.title} — ${award.awarder}`,
+        value: String(award.year),
+      })),
   ];
   
   const headerRef = useRef<HTMLDivElement>(null);

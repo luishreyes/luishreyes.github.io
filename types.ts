@@ -120,6 +120,11 @@ export interface Grant {
 export interface Recognition {
   title: string;
   awarder: string;
+  /**
+   * Which role the distinction recognizes. Drives which overview dashboard
+   * surfaces it; the Recognition page lists them all regardless.
+   */
+  role?: 'teaching' | 'research' | 'service';
   category: Localized;
   year: number;
   projectTitle: string;

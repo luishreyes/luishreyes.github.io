@@ -4,46 +4,15 @@ import { StatsSection } from '../../components/StatsSection';
 import { useI18n } from '../../context/i18n';
 import { teachingData, type TaughtCourse } from '../../components/data/teaching';
 import { edcoCoursesData } from '../../components/data/edco';
-import { grantsData } from '../../components/data/grants';
-import { awardsData } from '../../components/data/awards';
+import { metrics, flagshipAward } from '../../components/data/metrics';
 import { CoursesOverTimeChart } from '../../components/CoursesOverTimeChart';
 import { motion, useScroll, useTransform } from 'framer-motion';
 
-// Calculate stats from data (values computed at module level, labels translated inside component)
-const universityCoursesCount = teachingData.length;
-const edcoCoursesCount = edcoCoursesData.length;
-const totalCourses = universityCoursesCount + edcoCoursesCount;
-
-// Three populations, kept apart on purpose. Summed into one "students" figure,
-// MOOC enrolments swamp the rest (they were 78% of the old total), and a reader
-// takes the headline for classroom students. Each is quotable on its own.
-const universityStudentsCount = teachingData.reduce((sum, course) => sum + (course.students || 0), 0);
-
-const moocCourses = edcoCoursesData.filter((c) => c.client === 'Coursera (MOOC)');
-const moocEnrolments = moocCourses.reduce((sum, c) => sum + c.attendees, 0);
-const moocCompletions = moocCourses.reduce((sum, c) => sum + Math.round(c.attendees * (c.completionRate ?? 0)), 0);
-
-const continuingEdStudentsCount = edcoCoursesData
-    .filter((c) => c.client !== 'Coursera (MOOC)')
-    .reduce((sum, c) => sum + c.attendees, 0);
-
-const evaluations = teachingData
-    .map(c => c.evaluation)
-    .filter((e): e is number => e !== null);
-
-const averageEvaluation = evaluations.length > 0
-    ? (evaluations.reduce((sum, e) => sum + e, 0) / evaluations.length)
-    : null;
-
-const averageEvaluationDisplay = averageEvaluation !== null
-    ? averageEvaluation.toFixed(1)
+const { teaching } = metrics;
+const teachingAward = flagshipAward('teaching');
+const averageEvaluationDisplay = teaching.averageEvaluation !== null
+    ? teaching.averageEvaluation.toFixed(1)
     : 'N/A';
-
-const educationGrantsCount = grantsData.filter(g => g.area === 'education').length;
-const teachingAward = awardsData.find(a => a.awarder === 'AIChE Education Division');
-
-const titleKey = (t: string | { en: string; es: string }): string => typeof t === 'string' ? t : t.en;
-const uniqueCourses = new Set([...teachingData.map(c => titleKey(c.title)), ...edcoCoursesData.map(c => c.title)]).size;
 
 export const TeachingOverviewPage: React.FC = () => {
   const { t } = useI18n();
@@ -52,15 +21,16 @@ export const TeachingOverviewPage: React.FC = () => {
   // sliced three ways said the same thing three times; recognition and funded
   // education research say something the counts cannot.
   const stats = [
-    { label: t('stats.totalCourses'), value: totalCourses, note: t('stats.totalCourses.note') },
-    { label: t('stats.uniStudents'), value: universityStudentsCount, note: t('stats.uniStudents.note') },
-    { label: t('stats.contEdStudents'), value: continuingEdStudentsCount, note: t('stats.contEdStudents.note') },
-    { label: t('stats.moocLearners'), value: moocEnrolments, note: `${moocCompletions.toLocaleString()} ${t('stats.moocLearners.note')}` },
-    { label: t('stats.avgEvaluation'), value: averageEvaluationDisplay },
-    { label: t('stats.uniqueCourses'), value: uniqueCourses },
-    ...(teachingAward ? [{ label: teachingAward.title, value: `AIChE ${teachingAward.year}`, note: t('stats.award.note') }] : []),
-    { label: t('stats.eduGrants'), value: educationGrantsCount, note: t('stats.eduGrants.note') },
+    { label: t('stats.totalCourses'), value: teaching.courses, note: t('stats.totalCourses.note') },
+    { label: t('stats.uniStudents'), value: teaching.universityStudents, note: t('stats.uniStudents.note') },
+    { label: t('stats.contEdStudents'), value: teaching.continuingEdParticipants, note: t('stats.contEdStudents.note') },
+    { label: t('stats.moocLearners'), value: teaching.moocEnrolments, note: `${teaching.moocCompletions.toLocaleString()} ${t('stats.moocLearners.note')}` },
+    { label: t('stats.avgEvaluation'), value: averageEvaluationDisplay, note: `${teaching.evaluatedRuns} ${t('stats.avgEvaluation.runs')}` },
+    { label: t('stats.uniqueCourses'), value: teaching.uniqueCourseTitles },
+    ...(teachingAward ? [{ label: teachingAward.title, value: `${teachingAward.awarder.replace('AIChE Education Division', 'AIChE')} ${teachingAward.year}`, note: t('stats.award.note') }] : []),
+    { label: t('stats.eduGrants'), value: teaching.educationGrants, note: t('stats.eduGrants.note') },
   ];
+
 
   // Map continuing education courses to the TaughtCourse type for the chart
   const mappedEdcoCourses: TaughtCourse[] = edcoCoursesData.map(course => {

@@ -7,6 +7,7 @@ export const awardsData: Recognition[] = [
   {
     title: "Award for Innovation in Chemical Engineering Education",
     awarder: "AIChE Education Division",
+    role: 'teaching',
     category: { en: "Innovation in Chemical Engineering Education", es: "Innovación en la educación en ingeniería química" },
     year: 2026,
     projectTitle: "Redesign of Project of Unit Operations (POU), Universidad de los Andes",
@@ -35,6 +36,7 @@ export const awardsData: Recognition[] = [
   {
     title: "The Global Faculty AI Project",
     awarder: "OpenAI",
+    role: 'teaching',
     category: { en: "Innovation in AI Education", es: "Innovación en educación con IA" },
     year: 2025,
     projectTitle: "Engineering a better way to teach with generative AI",
@@ -59,6 +61,7 @@ export const awardsData: Recognition[] = [
   {
     title: "Best Research Work",
     awarder: "National Academy of Medicine of Colombia",
+    role: 'research',
     category: { en: "Scientific Research in Human Health", es: "Investigación científica en salud humana" },
     year: 2023,
     projectTitle: "CRISPR/nCas9-Based Genome Editing for GM2 Gangliosidoses and Mucopolysaccharidoses IVA Using Non-Viral Vectors",
@@ -95,6 +98,7 @@ export const awardsData: Recognition[] = [
   {
     title: "Honorable Mention in Sciences",
     awarder: "Fundación Alejandro Ángel Escobar",
+    role: 'research',
     category: { en: "Exact, Physical, and Natural Sciences", es: "Ciencias exactas, físicas y naturales" },
     year: 2023,
     projectTitle: "CRISPR/nCas9-Based Genome Editing for GM2 Gangliosidoses and Mucopolysaccharidoses IVA Using Non-Viral Vectors",
@@ -123,6 +127,7 @@ export const awardsData: Recognition[] = [
   {
     title: "III Premio Nacional Rebeca Uribe Bone",
     awarder: "Consejo Profesional de Ingeniería Química de Colombia (CPIQ)",
+    role: 'teaching',
     category: { en: "Best Chemical Engineering Degree Project", es: "Mejor trabajo de grado en ingeniería química" },
     year: 2023,
     projectTitle: "Purificación del Péptido Polygly y Evaluación de sus Propiedades Interfaciales y Emulsificantes",
@@ -151,6 +156,7 @@ export const awardsData: Recognition[] = [
   {
     title: "Best Presentation Award",
     awarder: "ICGDMMP 2021: XV. International Conference on Green Design, Materials and Manufacturing Processes",
+    role: 'research',
     category: { en: "Best Presentation", es: "Mejor presentación" },
     year: 2021,
     projectTitle: "Composite Materials from Beer Bran Fibers and Polylactic Acid: Characterization and Properties",
@@ -182,6 +188,7 @@ export const awardsData: Recognition[] = [
   {
     title: "Editor's Choice Article",
     awarder: "Pharmaceutics (MDPI)",
+    role: 'research',
     category: { en: "Academic/Scientific Recognition", es: "Reconocimiento académico/científico" },
     year: 2021,
     projectTitle: "Delivery Systems for Nucleic Acids and Proteins: Barriers, Cell Capture Pathways and Nanocarriers",
