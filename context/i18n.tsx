@@ -37,6 +37,25 @@ export function localize(value: Localized | undefined | null, lang: Lang): strin
   return typeof value === 'string' ? value : value[lang];
 }
 
+/**
+ * Fills {placeholders} in a translated string. Prose that quotes figures reads
+ * them from the data records rather than restating them, and this keeps the
+ * translatable string a readable sentence instead of a dozen fragments.
+ *
+ *   fill(t('sotl.intro2'), { students: 112 })
+ */
+export function fill(template: string, values: Record<string, string | number>): string {
+  return template.replace(/\{(\w+)\}/g, (match, key) =>
+    key in values ? String(values[key]) : match,
+  );
+}
+
+/** Formats a number for the active language: 7.5 reads 7,5 in Spanish. */
+export function num(value: number, lang: Lang, decimals = 0): string {
+  const text = value.toFixed(decimals);
+  return lang === 'es' ? text.replace('.', ',') : text;
+}
+
 interface I18nValue {
   lang: Lang;
   setLang: (l: Lang) => void;
