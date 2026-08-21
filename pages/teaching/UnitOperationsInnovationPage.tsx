@@ -3,24 +3,54 @@ import { PageWrapper } from '../../components/PageWrapper';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useI18n } from '../../context/i18n';
+import { teachingData } from '../../components/data/teaching';
 
-const evaluationScores = [
-  { term: '17-20', score: 160 },
-  { term: '18-10', score: 154 },
-  { term: '18-20', score: 153 },
-  { term: '19-10', score: 153 },
-  { term: '19-20', score: 152 },
-  { term: '20-20', score: 152 },
-  { term: '21-10', score: 153 },
-  { term: '21-20', score: 141 },
-  { term: '22-10', score: 143 },
-  { term: '22-20', score: 135 },
-  { term: '23-10', score: 143 },
-  { term: '23-20', score: 152 },
-  { term: '24-10', score: 149 },
-  { term: '24-20', score: 149 },
-  { term: '25-20', score: 156 },
-];
+// The Unit Operations course keeps its identity across renamings and code
+// changes: Unit Operations (IQUI-3010) became Integrated Project 2 under the
+// 2021 curriculum reform, then Unit Operations Project. Everything on this
+// page — the chart and the figures quoted in the prose — is derived from the
+// teaching record, so a new term shows up here as soon as it is logged there.
+const UNIT_OPS_CODES = ['IQUI-3010', 'IQUI-2032', 'IQYA-2032', 'IQYA-2031'];
+// Pandora's Laboratory ran unchanged over the same period and serves as the
+// reference benchmark.
+const BENCHMARK_CODE = 'CBP-C1320';
+
+interface ScorePoint {
+  term: string;
+  score: number;
+}
+
+const evaluationScores: ScorePoint[] = teachingData
+  .filter((c) => UNIT_OPS_CODES.includes(c.code) && c.evaluation !== null)
+  .sort((a, b) => a.term.localeCompare(b.term))
+  .map((c) => ({ term: c.term.slice(2), score: c.evaluation as number }));
+
+const benchmarkRuns = teachingData.filter((c) => c.code === BENCHMARK_CODE && c.evaluation !== null);
+const benchmark = benchmarkRuns.reduce((sum, c) => sum + (c.evaluation as number), 0) / benchmarkRuns.length;
+
+const termIndex = (term: string) => evaluationScores.findIndex((d) => d.term === term);
+const REFORM_START = termIndex('21-20');    // course becomes Integrated Project 2
+const SYNTHESIS_START = termIndex('24-10'); // course becomes Unit Operations Project
+
+// Figures quoted in the narrative, derived so the prose cannot drift from the chart.
+const traditionalRuns = evaluationScores.slice(0, REFORM_START);
+const traditionalAvg = traditionalRuns.reduce((sum, d) => sum + d.score, 0) / traditionalRuns.length;
+
+const lowestIndex = evaluationScores.reduce((lo, d, i) => (d.score < evaluationScores[lo].score ? i : lo), 0);
+const lowest = evaluationScores[lowestIndex];
+
+const peakIndex = evaluationScores.reduce(
+  (hi, d, i) => (i > lowestIndex && d.score > evaluationScores[hi].score ? i : hi),
+  lowestIndex,
+);
+const peak = evaluationScores[peakIndex];
+const recoverySemesters = peakIndex - lowestIndex + 1;
+
+const latest = evaluationScores[evaluationScores.length - 1];
+
+const fullTerm = (term: string) => `20${term}`;
+const decimal = (value: number, lang: string) =>
+  lang === 'es' ? value.toFixed(1).replace('.', ',') : value.toFixed(1);
 
 const scholarlyPapers = [
   {
@@ -47,7 +77,7 @@ const scholarlyPapers = [
 ];
 
 const ScoreChart = () => {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const chartRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(0);
   const height = 350;
@@ -73,6 +103,10 @@ const ScoreChart = () => {
   const yScale = (score: number) => margin.top + innerHeight - ((score - minScore) / (maxScore - minScore)) * innerHeight;
   const points = evaluationScores.map((d, i) => `${xScale(i)},${yScale(d.score)}`).join(' ');
 
+  // Phase bands break halfway between the last run of one era and the first of the next.
+  const reformEdge = REFORM_START - 0.5;
+  const synthesisEdge = SYNTHESIS_START - 0.5;
+
   return (
     <div ref={chartRef} className="bg-white p-6 rounded-lg shadow-lg border border-yellow-400/40 overflow-hidden relative">
       <h3 className="text-xl font-bold text-brand-dark mb-2 text-center">{t('unitops.chart.title')}</h3>
@@ -80,14 +114,14 @@ const ScoreChart = () => {
       
       <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} className="overflow-visible">
         {/* Phase backgrounds - following site's subtle palette */}
-        <rect x={margin.left} y={margin.top} width={xScale(6.5) - margin.left} height={innerHeight} fill="#f4f4f5" />
-        <rect x={xScale(6.5)} y={margin.top} width={xScale(11.5) - xScale(6.5)} height={innerHeight} fill="#fff7ed" />
-        <rect x={xScale(11.5)} y={margin.top} width={width - margin.right - xScale(11.5)} height={innerHeight} fill="#fefce8" />
+        <rect x={margin.left} y={margin.top} width={xScale(reformEdge) - margin.left} height={innerHeight} fill="#f4f4f5" />
+        <rect x={xScale(reformEdge)} y={margin.top} width={xScale(synthesisEdge) - xScale(reformEdge)} height={innerHeight} fill="#fff7ed" />
+        <rect x={xScale(synthesisEdge)} y={margin.top} width={width - margin.right - xScale(synthesisEdge)} height={innerHeight} fill="#fefce8" />
 
         {/* Phase Labels */}
-        <text x={margin.left + (xScale(6.5) - margin.left)/2} y={margin.top - 20} textAnchor="middle" className="text-[10px] font-bold fill-zinc-400 uppercase tracking-widest">{t('unitops.phase.traditional')}</text>
-        <text x={xScale(6.5) + (xScale(11.5) - xScale(6.5))/2} y={margin.top - 20} textAnchor="middle" className="text-[10px] font-bold fill-orange-400 uppercase tracking-widest">{t('unitops.phase.reform')}</text>
-        <text x={xScale(11.5) + (width - margin.right - xScale(11.5))/2} y={margin.top - 20} textAnchor="middle" className="text-[10px] font-bold fill-yellow-600 uppercase tracking-widest">{t('unitops.phase.synthesis')}</text>
+        <text x={margin.left + (xScale(reformEdge) - margin.left)/2} y={margin.top - 20} textAnchor="middle" className="text-[10px] font-bold fill-zinc-400 uppercase tracking-widest">{t('unitops.phase.traditional')}</text>
+        <text x={xScale(reformEdge) + (xScale(synthesisEdge) - xScale(reformEdge))/2} y={margin.top - 20} textAnchor="middle" className="text-[10px] font-bold fill-orange-400 uppercase tracking-widest">{t('unitops.phase.reform')}</text>
+        <text x={xScale(synthesisEdge) + (width - margin.right - xScale(synthesisEdge))/2} y={margin.top - 20} textAnchor="middle" className="text-[10px] font-bold fill-yellow-600 uppercase tracking-widest">{t('unitops.phase.synthesis')}</text>
 
         {/* Horizontal Grid */}
         {[130, 140, 150, 160, 170].map(val => (
@@ -98,8 +132,8 @@ const ScoreChart = () => {
         ))}
 
         {/* Ref Benchmark */}
-        <line x1={margin.left} y1={yScale(157.6)} x2={width - margin.right} y2={yScale(157.6)} stroke="#94a3b8" strokeWidth="1.5" strokeDasharray="4 4" />
-        <text x={width - margin.right + 5} y={yScale(157.6) + 3} className="text-[8px] fill-slate-500 font-bold uppercase">{t('unitops.chart.benchmark')}</text>
+        <line x1={margin.left} y1={yScale(benchmark)} x2={width - margin.right} y2={yScale(benchmark)} stroke="#94a3b8" strokeWidth="1.5" strokeDasharray="4 4" />
+        <text x={width - margin.right} y={yScale(benchmark) - 6} textAnchor="end" className="text-[8px] fill-slate-500 font-bold uppercase">{`${t('unitops.chart.benchmark')} (${decimal(benchmark, lang)})`}</text>
 
         {/* Main path */}
         <motion.polyline
@@ -145,7 +179,7 @@ const ScoreChart = () => {
 };
 
 export const UnitOperationsInnovationPage: React.FC = () => {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   return (
     <PageWrapper noPadding>
       <div className="pt-16">
@@ -221,7 +255,7 @@ export const UnitOperationsInnovationPage: React.FC = () => {
                   <span className="text-xs font-bold uppercase bg-zinc-100 px-2 py-1 rounded">{t('unitops.phase1.tag')}</span>
                 </div>
                 <p className="text-brand-gray leading-relaxed">
-                  {t('unitops.phase1.text')}
+                  {`${t('unitops.phase1.textPre')}${decimal(traditionalAvg, lang)}${t('unitops.phase1.textPost')}`}
                 </p>
               </motion.div>
 
@@ -239,7 +273,7 @@ export const UnitOperationsInnovationPage: React.FC = () => {
                   {t('unitops.phase2.text1').split('{ip2}')[0]}<span className="font-medium text-brand-dark">{t('unitops.phase2.ip2')}</span>{t('unitops.phase2.text1').split('{ip2}')[1]}
                 </p>
                 <p className="text-brand-gray leading-relaxed">
-                  {t('unitops.phase2.text2pre')}<span className="text-red-600 font-bold">{t('unitops.phase2.text2low')}</span>{t('unitops.phase2.text2post')}
+                  {t('unitops.phase2.text2pre')}<span className="text-red-600 font-bold">{`${t('unitops.phase2.lowOf')}${lowest.score} ${t('unitops.phase2.lowIn')} ${fullTerm(lowest.term)}`}</span>{t('unitops.phase2.text2post')}
                 </p>
               </motion.div>
 
@@ -254,7 +288,7 @@ export const UnitOperationsInnovationPage: React.FC = () => {
                   <span className="text-xs font-bold uppercase bg-yellow-50 text-yellow-600 px-2 py-1 rounded">{t('unitops.phase3.tag')}</span>
                 </div>
                 <p className="text-brand-gray leading-relaxed">
-                  {t('unitops.phase3.text1')}<span className="font-semibold text-brand-dark">{t('unitops.phase3.genai')}</span>{t('unitops.phase3.text2')}<span className="font-bold text-brand-dark">{t('unitops.phase3.fifty')}</span>{t('unitops.phase3.text3')}<span className="font-medium text-brand-dark italic">{t('unitops.phase3.insilico')}</span>{t('unitops.phase3.text4')}<span className="font-semibold text-brand-dark">{t('unitops.phase3.aspen')}</span>{t('unitops.phase3.text5')}<span className="font-bold text-brand-dark">156</span>{t('unitops.phase3.text6')}
+                  {t('unitops.phase3.text1')}<span className="font-semibold text-brand-dark">{t('unitops.phase3.genai')}</span>{t('unitops.phase3.text2')}<span className="font-bold text-brand-dark">{t('unitops.phase3.fifty')}</span>{t('unitops.phase3.text3')}<span className="font-medium text-brand-dark italic">{t('unitops.phase3.insilico')}</span>{t('unitops.phase3.text4')}<span className="font-semibold text-brand-dark">{t('unitops.phase3.aspen')}</span>{t('unitops.phase3.text5')}<span className="font-bold text-brand-dark">{peak.score}</span>{t('unitops.phase3.text5b')}<span className="font-bold text-brand-dark">{fullTerm(peak.term)}</span>{t('unitops.phase3.text5c')}<span className="font-bold text-brand-dark">{`${latest.score} (${fullTerm(latest.term)})`}</span>{t('unitops.phase3.text6')}
                 </p>
               </motion.div>
             </div>
@@ -265,7 +299,7 @@ export const UnitOperationsInnovationPage: React.FC = () => {
               <h2 className="text-2xl font-bold tracking-tight text-brand-dark mb-10 text-center uppercase tracking-widest">{t('unitops.impact')}</h2>
               <ScoreChart />
               <p className="mt-8 text-xs text-center text-brand-gray italic">
-                {t('unitops.chart.note')}
+                {`${t('unitops.chart.notePre')}${decimal(benchmark, lang)}${t('unitops.chart.notePost')}`}
               </p>
             </div>
           </section>
@@ -275,7 +309,7 @@ export const UnitOperationsInnovationPage: React.FC = () => {
             <div className="grid md:grid-cols-2 gap-x-12 gap-y-8">
               {[
                 { title: t('unitops.lesson1.title'), desc: t('unitops.lesson1.desc') },
-                { title: t('unitops.lesson2.title'), desc: t('unitops.lesson2.desc') },
+                { title: t('unitops.lesson2.title'), desc: `${t('unitops.lesson2.descPre')}${lowest.score}${t('unitops.lesson2.descTo')}${peak.score}${t('unitops.lesson2.descOver')}${recoverySemesters}${t('unitops.lesson2.descPost')}` },
                 { title: t('unitops.lesson3.title'), desc: t('unitops.lesson3.desc') },
                 { title: t('unitops.lesson4.title'), desc: t('unitops.lesson4.desc') }
               ].map((lesson, idx) => (
