@@ -4,6 +4,8 @@ import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { PageWrapper } from '../../components/PageWrapper';
 import { useI18n } from '../../context/i18n';
+import { StatsSection } from '../../components/StatsSection';
+import { metrics } from '../../components/data/metrics';
 // FIX: Removed 'Variants' from framer-motion import to resolve module export error.
 import { motion, useScroll, useTransform } from 'framer-motion';
 
@@ -33,9 +35,18 @@ const itemVariants = {
     },
 };
 
+const { service } = metrics;
+
 export const InstitutionalOverviewPage: React.FC = () => {
   const { t } = useI18n();
   const headerRef = useRef<HTMLDivElement>(null);
+
+  const stats = [
+    { label: t('stats.editorialBoards'), value: service.editorialBoards, note: t('stats.editorialBoards.note') },
+    { label: t('stats.committees'), value: service.committees, note: t('stats.committees.note') },
+    { label: t('stats.leadershipRoles'), value: service.leadershipRoles },
+    { label: t('stats.outreach'), value: service.outreachActivities },
+  ];
 
   const serviceItems = [
     {
@@ -123,6 +134,10 @@ export const InstitutionalOverviewPage: React.FC = () => {
       {/* Content Section */}
       <div className="bg-white">
         <div className="max-w-7xl mx-auto py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
+            <StatsSection stats={stats} isLoading={false} />
+
+            <div className="mt-16" />
+
             <motion.div
               {...{
                 initial: { opacity: 0, y: 20 },
