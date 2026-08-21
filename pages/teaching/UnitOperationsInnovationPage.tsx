@@ -58,21 +58,21 @@ const scholarlyPapers = [
     year: '2019',
     title: 'Applying PBL methodologies to the chemical engineering courses: Unit operations and modeling and simulation, using a joint course project',
     journal: 'Education for Chemical Engineers, 27, 35-42',
-    doi: '10.1016/j.ece.2019.03.003'
+    doi: '10.1016/j.ece.2019.01.005'
   },
   {
     authors: 'Ballesteros, M.Á., Sánchez, J.S., Ratkovich, N., Cruz, J.C., & Reyes, L.H.',
     year: '2021',
     title: 'Modernizing the chemical engineering curriculum via a student-centered framework that promotes technical, professional, and technology expertise skills: The case of unit operations',
     journal: 'Education for Chemical Engineers, 35, 8-21',
-    doi: '10.1016/j.ece.2020.11.007'
+    doi: '10.1016/j.ece.2020.12.004'
   },
   {
     authors: 'Acuña, O.L., Santos Carvajal, D.M., Bolaños-Barbosa, A.D., Torres-Vanegas, J.D., Alvarez Solano, O.A., Cruz, J.C., & Reyes, L.H.',
     year: '2025',
     title: 'Fostering technical proficiency and professional skills: A multifaceted PO-PBL strategy for unit operations education',
     journal: 'Education for Chemical Engineers, 51, 64-78',
-    doi: '10.1016/j.ece.2024.12.001'
+    doi: '10.1016/j.ece.2025.01.001'
   }
 ];
 
