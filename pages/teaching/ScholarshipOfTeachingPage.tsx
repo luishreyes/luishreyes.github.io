@@ -3,6 +3,7 @@
 
 import React, { useMemo } from 'react';
 import { PageWrapper } from '../../components/PageWrapper';
+import { Link } from 'react-router-dom';
 import { useI18n } from '../../context/i18n';
 import type { Product } from '../../types';
 import { motion } from 'framer-motion';
@@ -105,6 +106,19 @@ export const ScholarshipOfTeachingPage: React.FC = () => {
                         <p className="mt-4 text-lg text-brand-gray leading-relaxed">
                             {t('sotl.intro2')}
                         </p>
+                        <p className="mt-4 text-lg text-brand-gray leading-relaxed">
+                            {t('sotl.intro3')}
+                        </p>
+
+                        <div className="mt-8 border-l-4 border-yellow-400 bg-zinc-50 p-6 rounded-r-lg">
+                            <p className="text-brand-gray leading-relaxed">{t('sotl.case')}</p>
+                            <Link
+                                to="/teaching/unit-ops"
+                                className="mt-3 inline-flex items-center text-sm font-bold uppercase tracking-wider text-brand-dark bg-yellow-400 px-4 py-2 rounded hover:bg-yellow-500 transition-colors"
+                            >
+                                {t('sotl.caseCta')}
+                            </Link>
+                        </div>
                     </motion.div>
                     
                      <motion.div 

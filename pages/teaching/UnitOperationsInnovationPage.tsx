@@ -345,6 +345,12 @@ export const UnitOperationsInnovationPage: React.FC = () => {
                 </div>
               ))}
             </div>
+            <p className="mt-8 text-sm text-brand-gray leading-relaxed">
+              {t('unitops.sotlLink')}{' '}
+              <Link to="/teaching/scholarship" className="font-semibold text-brand-dark underline decoration-yellow-400 decoration-2 underline-offset-4 hover:text-yellow-600 transition-colors">
+                {t('unitops.sotlLinkCta')}
+              </Link>
+            </p>
           </section>
 
           <section className="text-center py-12 border-t border-zinc-100">
