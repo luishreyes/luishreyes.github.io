@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useI18n } from '../../context/i18n';
 import { teachingData } from '../../components/data/teaching';
+import { educationPapers } from '../../components/data/educationResearch';
 
 // The Unit Operations course keeps its identity across renamings and code
 // changes: Unit Operations (IQUI-3010) became Integrated Project 2 under the
@@ -52,29 +53,6 @@ const fullTerm = (term: string) => `20${term}`;
 const decimal = (value: number, lang: string) =>
   lang === 'es' ? value.toFixed(1).replace('.', ',') : value.toFixed(1);
 
-const scholarlyPapers = [
-  {
-    authors: 'Ballesteros, M.A., Daza, M.A., Valdés, J.P., Ratkovich, N., & Reyes, L.H.',
-    year: '2019',
-    title: 'Applying PBL methodologies to the chemical engineering courses: Unit operations and modeling and simulation, using a joint course project',
-    journal: 'Education for Chemical Engineers, 27, 35-42',
-    doi: '10.1016/j.ece.2019.01.005'
-  },
-  {
-    authors: 'Ballesteros, M.Á., Sánchez, J.S., Ratkovich, N., Cruz, J.C., & Reyes, L.H.',
-    year: '2021',
-    title: 'Modernizing the chemical engineering curriculum via a student-centered framework that promotes technical, professional, and technology expertise skills: The case of unit operations',
-    journal: 'Education for Chemical Engineers, 35, 8-21',
-    doi: '10.1016/j.ece.2020.12.004'
-  },
-  {
-    authors: 'Acuña, O.L., Santos Carvajal, D.M., Bolaños-Barbosa, A.D., Torres-Vanegas, J.D., Alvarez Solano, O.A., Cruz, J.C., & Reyes, L.H.',
-    year: '2025',
-    title: 'Fostering technical proficiency and professional skills: A multifaceted PO-PBL strategy for unit operations education',
-    journal: 'Education for Chemical Engineers, 51, 64-78',
-    doi: '10.1016/j.ece.2025.01.001'
-  }
-];
 
 const ScoreChart = () => {
   const { t, lang } = useI18n();
@@ -330,15 +308,15 @@ export const UnitOperationsInnovationPage: React.FC = () => {
               <span className="flex-grow h-px bg-zinc-200"></span>
             </h2>
             <div className="space-y-6">
-              {scholarlyPapers.map((paper, idx) => (
+              {educationPapers.map((paper, idx) => (
                 <div key={idx} className="bg-white p-6 rounded-lg border border-zinc-100 shadow-sm transition-all hover:border-yellow-400/40">
                   <h3 className="text-lg font-bold text-brand-dark mb-2 leading-tight">
                     <a href={`https://doi.org/${paper.doi}`} target="_blank" rel="noopener noreferrer" className="hover:text-yellow-600 transition-colors">
                       {paper.title}
                     </a>
                   </h3>
-                  <p className="text-xs text-brand-gray mb-1 uppercase tracking-wider font-semibold">{paper.authors} ({paper.year})</p>
-                  <p className="text-xs text-yellow-600 font-bold mb-4 uppercase tracking-tighter">{paper.journal}</p>
+                  <p className="text-xs text-brand-gray mb-1 uppercase tracking-wider font-semibold">{paper.authorsFull} ({paper.year})</p>
+                  <p className="text-xs text-yellow-600 font-bold mb-4 uppercase tracking-tighter">{`${paper.journal}, ${paper.locator}`}</p>
                   <a href={`https://doi.org/${paper.doi}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-xs font-bold text-brand-dark bg-yellow-400 px-3 py-1.5 rounded hover:bg-yellow-500 transition-colors">
                     DOI: {paper.doi}
                   </a>

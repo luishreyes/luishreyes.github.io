@@ -4,7 +4,9 @@
 import React, { useMemo } from 'react';
 import { PageWrapper } from '../../components/PageWrapper';
 import { Link } from 'react-router-dom';
-import { useI18n, localize } from '../../context/i18n';
+import { useI18n, localize, fill, num } from '../../context/i18n';
+import { cycleTurns, pouLongitudinalStudy } from '../../components/data/educationResearch';
+import { awardsData } from '../../components/data/awards';
 import { grantsData } from '../../components/data/grants';
 import type { Product } from '../../types';
 import { motion } from 'framer-motion';
@@ -93,14 +95,11 @@ const IconChevron = () => (
   </svg>
 );
 
-const cycleTurns = [
-  { years: '2017-2019', changeKey: 'sotl.turn1.change', paper: 'Ballesteros et al. (2019)', venue: 'Education for Chemical Engineers 27, 35-42', doi: '10.1016/j.ece.2019.01.005' },
-  { years: '2019-2021', changeKey: 'sotl.turn2.change', paper: 'Ballesteros et al. (2021)', venue: 'Education for Chemical Engineers 35, 8-21', doi: '10.1016/j.ece.2020.12.004' },
-  { years: '2021-2025', changeKey: 'sotl.turn3.change', paper: 'Acuña et al. (2025)', venue: 'Education for Chemical Engineers 51, 64-78', doi: '10.1016/j.ece.2025.01.001', outcomeKey: 'sotl.turn3.outcome' },
-] as const;
+const turnAward = (turn: (typeof cycleTurns)[number]) =>
+  turn.recognizedBy ? awardsData.find((a) => a.awarder === turn.recognizedBy) : undefined;
 
 const ResearchCycle: React.FC = () => {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const steps = [
     { icon: <IconMeasure />, title: t('sotl.cycle.s1'), desc: t('sotl.cycle.s1d') },
     { icon: <IconPublish />, title: t('sotl.cycle.s2'), desc: t('sotl.cycle.s2d') },
@@ -179,19 +178,19 @@ const ResearchCycle: React.FC = () => {
               <p className="font-mono text-sm text-brand-dark font-bold mt-1">{turn.years}</p>
             </div>
             <div className="min-w-0">
-              <p className="text-brand-gray leading-relaxed">{t(turn.changeKey)}</p>
+              <p className="text-brand-gray leading-relaxed">{localize(turn.change, lang)}</p>
               <a
-                href={`https://doi.org/${turn.doi}`}
+                href={`https://doi.org/${turn.paper.doi}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="mt-3 inline-block text-sm font-semibold text-brand-dark underline decoration-yellow-400 decoration-2 underline-offset-4 hover:text-yellow-600 transition-colors"
               >
-                {turn.paper}
+                {`${turn.paper.authors} (${turn.paper.year})`}
               </a>
-              <p className="text-xs text-brand-gray mt-1">{turn.venue}</p>
-              {'outcomeKey' in turn && turn.outcomeKey && (
+              <p className="text-xs text-brand-gray mt-1">{`${turn.paper.journal} ${turn.paper.locator}`}</p>
+              {turnAward(turn) && (
                 <p className="mt-4 bg-brand-dark text-white text-sm rounded px-4 py-3 leading-relaxed">
-                  {t(turn.outcomeKey)}
+                  {fill(t('sotl.turn.recognized'), { award: turnAward(turn)!.title, year: turnAward(turn)!.year })}
                 </p>
               )}
             </div>
@@ -254,9 +253,11 @@ const FundedEducationResearch: React.FC = () => {
   );
 };
 
+const study = pouLongitudinalStudy;
+
 export const ScholarshipOfTeachingPage: React.FC = () => {
   const { products } = useAppData();
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
     const sotlPublications = useMemo(() => 
         products
             .filter(p => p.researchAreas?.includes('Scholarship of Teaching & Learning'))
@@ -289,7 +290,19 @@ export const ScholarshipOfTeachingPage: React.FC = () => {
                             {t('sotl.intro1')}
                         </p>
                         <p className="mt-4 text-lg text-brand-gray leading-relaxed">
-                            {t('sotl.intro2')}
+                            {fill(t('sotl.intro2'), {
+                                students: study.students,
+                                cohorts: study.cohorts,
+                                citation: `${study.paper.authors}, ${study.paper.year}`,
+                                test: t('sotl.test.anova'),
+                                f: num(study.writtenCommunication.f, lang, 2),
+                                p: num(study.writtenCommunication.pBelow, lang, 3),
+                                criteria: study.blindEvaluation.criteria,
+                                pLow: num(study.blindEvaluation.pLow, lang, 3),
+                                pHigh: num(study.blindEvaluation.pHigh, lang, 3),
+                                motivationNow: study.sustainedMotivation.now,
+                                motivationBefore: study.sustainedMotivation.before,
+                            })}
                         </p>
                         <p className="mt-4 text-lg text-brand-gray leading-relaxed">
                             {t('sotl.intro3')}
