@@ -56,6 +56,21 @@ export function num(value: number, lang: Lang, decimals = 0): string {
   return lang === 'es' ? text.replace('.', ',') : text;
 }
 
+const CARDINALS: Record<Lang, Record<number, string>> = {
+  en: { 2: 'two', 3: 'three', 4: 'four', 5: 'five', 6: 'six', 7: 'seven', 8: 'eight', 9: 'nine', 10: 'ten' },
+  es: { 2: 'dos', 3: 'tres', 4: 'cuatro', 5: 'cinco', 6: 'seis', 7: 'siete', 8: 'ocho', 9: 'nueve', 10: 'diez' },
+};
+
+/**
+ * Spells a small count as a word, for prose where a numeral reads wrong
+ * ("four cohorts", not "4 cohorts"). Covers 2 to 10, which are invariant in
+ * both languages; everything else comes back as digits, since Spanish "uno"
+ * takes the gender of the noun and this helper cannot know it.
+ */
+export function cardinal(value: number, lang: Lang): string {
+  return CARDINALS[lang][value] ?? String(value);
+}
+
 interface I18nValue {
   lang: Lang;
   setLang: (l: Lang) => void;
