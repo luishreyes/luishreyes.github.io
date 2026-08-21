@@ -18,8 +18,11 @@ export const research = {
   'stats.totalStudents':    { en: 'Total Students',          es: 'Estudiantes en Total' },
   'stats.avgEvaluation':    { en: 'Avg. Evaluation Score',  es: 'Promedio de Evaluación' },
   'stats.uniqueCourses':    { en: 'Unique Course Titles',    es: 'Títulos de Cursos Únicos' },
-  'stats.uniCourses':       { en: 'University Courses',      es: 'Cursos Universitarios' },
-  'stats.contEdCourses':    { en: 'Continuing Ed. Courses',  es: 'Cursos de Ed. Continua' },
+  'stats.totalCourses.note':{ en: 'University and continuing education', es: 'Universitarios y de educación continua' },
+  'stats.avgEvaluation.note':{ en: 'Institutional 100-200 scale',  es: 'Escala institucional 100-200' },
+  'stats.award.note':       { en: 'First awarded outside the United States', es: 'El primero otorgado fuera de Estados Unidos' },
+  'stats.eduGrants':        { en: 'Funded Education Research',  es: 'Proyectos de Investigación en Docencia' },
+  'stats.eduGrants.note':   { en: 'Currently under way',         es: 'Actualmente en curso' },
 
   // Research Program
   'research.program.title':  { en: 'Research Program: Biological Engineering', es: 'Programa de Investigación: Ingeniería Biológica' },

@@ -4,6 +4,8 @@ import { StatsSection } from '../../components/StatsSection';
 import { useI18n } from '../../context/i18n';
 import { teachingData, type TaughtCourse } from '../../components/data/teaching';
 import { edcoCoursesData } from '../../components/data/edco';
+import { grantsData } from '../../components/data/grants';
+import { awardsData } from '../../components/data/awards';
 import { CoursesOverTimeChart } from '../../components/CoursesOverTimeChart';
 import { motion, useScroll, useTransform } from 'framer-motion';
 
@@ -16,8 +18,8 @@ const universityStudentsCount = teachingData.reduce((sum, course) => sum + (cour
 const edcoStudentsCount = edcoCoursesData.reduce((sum, course) => sum + course.attendees, 0);
 const totalStudents = universityStudentsCount + edcoStudentsCount;
 
-// Note: Averaging mixed scales (e.g. 5.0 and 200.0) isn't perfectly meaningful
-// but we keep a generic metric for now.
+// Every evaluation on record sits on the institutional 100-200 scale (the series
+// runs 135 to 163), so the mean across course runs is a comparable figure.
 const evaluations = teachingData
     .map(c => c.evaluation)
     .filter((e): e is number => e !== null);
@@ -30,19 +32,25 @@ const averageEvaluationDisplay = averageEvaluation !== null
     ? averageEvaluation.toFixed(1)
     : 'N/A';
 
+const educationGrantsCount = grantsData.filter(g => g.area === 'education').length;
+const teachingAward = awardsData.find(a => a.awarder === 'AIChE Education Division');
+
 const titleKey = (t: string | { en: string; es: string }): string => typeof t === 'string' ? t : t.en;
 const uniqueCourses = new Set([...teachingData.map(c => titleKey(c.title)), ...edcoCoursesData.map(c => c.title)]).size;
 
 export const TeachingOverviewPage: React.FC = () => {
   const { t } = useI18n();
 
+  // A figure earns a tile only if it can be quoted on its own. Course counts
+  // sliced three ways said the same thing three times; recognition and funded
+  // education research say something the counts cannot.
   const stats = [
-    { label: t('stats.totalCourses'), value: totalCourses },
+    { label: t('stats.totalCourses'), value: totalCourses, note: t('stats.totalCourses.note') },
     { label: t('stats.totalStudents'), value: totalStudents },
-    { label: t('stats.avgEvaluation'), value: averageEvaluationDisplay },
+    { label: t('stats.avgEvaluation'), value: averageEvaluationDisplay, note: t('stats.avgEvaluation.note') },
     { label: t('stats.uniqueCourses'), value: uniqueCourses },
-    { label: t('stats.uniCourses'), value: universityCoursesCount },
-    { label: t('stats.contEdCourses'), value: edcoCoursesCount },
+    ...(teachingAward ? [{ label: teachingAward.title, value: `AIChE ${teachingAward.year}`, note: t('stats.award.note') }] : []),
+    { label: t('stats.eduGrants'), value: educationGrantsCount, note: t('stats.eduGrants.note') },
   ];
 
   // Map continuing education courses to the TaughtCourse type for the chart
