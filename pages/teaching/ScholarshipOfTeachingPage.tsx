@@ -69,6 +69,138 @@ const editorialRole = {
 };
 
 
+
+// Lucide icons, inline so they inherit size and colour from the surrounding text.
+const IconMeasure = () => (
+  <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M3 3v18h18" /><path d="m19 9-5 5-4-4-3 3" />
+  </svg>
+);
+const IconPublish = () => (
+  <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" /><path d="M14 2v4a2 2 0 0 0 2 2h4" /><path d="M16 13H8" /><path d="M16 17H8" /><path d="M10 9H8" />
+  </svg>
+);
+const IconRedesign = () => (
+  <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M21.17 6.81a1 1 0 0 0-3.98-3.99L3.84 16.17a2 2 0 0 0-.5.83l-1.32 4.35a.5.5 0 0 0 .62.63l4.35-1.32a2 2 0 0 0 .83-.5z" /><path d="m15 5 4 4" />
+  </svg>
+);
+const IconChevron = () => (
+  <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="m9 18 6-6-6-6" />
+  </svg>
+);
+
+const cycleTurns = [
+  { years: '2017-2019', changeKey: 'sotl.turn1.change', paper: 'Ballesteros et al. (2019)', venue: 'Education for Chemical Engineers 27, 35-42', doi: '10.1016/j.ece.2019.01.005' },
+  { years: '2019-2021', changeKey: 'sotl.turn2.change', paper: 'Ballesteros et al. (2021)', venue: 'Education for Chemical Engineers 35, 8-21', doi: '10.1016/j.ece.2020.12.004' },
+  { years: '2021-2025', changeKey: 'sotl.turn3.change', paper: 'Acuña et al. (2025)', venue: 'Education for Chemical Engineers 51, 64-78', doi: '10.1016/j.ece.2025.01.001', outcomeKey: 'sotl.turn3.outcome' },
+] as const;
+
+const ResearchCycle: React.FC = () => {
+  const { t } = useI18n();
+  const steps = [
+    { icon: <IconMeasure />, title: t('sotl.cycle.s1'), desc: t('sotl.cycle.s1d') },
+    { icon: <IconPublish />, title: t('sotl.cycle.s2'), desc: t('sotl.cycle.s2d') },
+    { icon: <IconRedesign />, title: t('sotl.cycle.s3'), desc: t('sotl.cycle.s3d') },
+  ];
+
+  return (
+    <section className="my-16">
+      <h2 className="text-3xl font-bold tracking-tight text-brand-dark mb-3">{t('sotl.cycle.title')}</h2>
+      <p className="text-brand-gray leading-relaxed mb-10 max-w-3xl">{t('sotl.cycle.sub')}</p>
+
+      {/* The loop */}
+      <div className="flex flex-col sm:flex-row sm:items-stretch gap-3">
+        {steps.map((step, i) => (
+          <React.Fragment key={step.title}>
+            <motion.div
+              {...{
+                initial: { opacity: 0, y: 12 },
+                whileInView: { opacity: 1, y: 0 },
+                viewport: { once: true },
+                transition: { duration: 0.4, delay: i * 0.12 },
+              }}
+              className="flex-1 bg-white rounded-lg border border-zinc-200 border-t-4 border-t-yellow-400 p-6 shadow-sm"
+            >
+              <div className="flex items-center gap-3 mb-3">
+                <span className="text-2xl text-yellow-500">{step.icon}</span>
+                <h3 className="text-lg font-bold text-brand-dark">{step.title}</h3>
+                <span className="ml-auto font-mono text-xs text-zinc-400">{i + 1}</span>
+              </div>
+              <p className="text-sm text-brand-gray leading-relaxed">{step.desc}</p>
+            </motion.div>
+            {i < steps.length - 1 && (
+              <div className="flex items-center justify-center text-yellow-500 text-xl rotate-90 sm:rotate-0" aria-hidden="true">
+                <IconChevron />
+              </div>
+            )}
+          </React.Fragment>
+        ))}
+      </div>
+
+      {/* Return path: the loop closing back on itself */}
+      <div className="relative mt-1" aria-hidden="true">
+        <div className="h-10 border-b-2 border-l-2 border-r-2 border-dashed border-yellow-400 rounded-b-2xl" />
+        <svg
+          className="absolute -top-[7px] -left-[8px] w-4 h-4 text-yellow-500"
+          viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"
+        >
+          <path d="m18 15-6-6-6 6" />
+        </svg>
+      </div>
+      <p className="mt-3 text-center text-xs font-bold uppercase tracking-widest text-brand-gray">
+        {t('sotl.cycle.return')}
+      </p>
+
+      {/* The three turns that have actually run */}
+      <h3 className="mt-14 mb-6 text-sm font-bold uppercase tracking-widest text-brand-dark flex items-center gap-4">
+        {t('sotl.cycle.turns')}
+        <span className="flex-grow h-px bg-zinc-200" />
+      </h3>
+      <ol className="space-y-4">
+        {cycleTurns.map((turn, i) => (
+          <motion.li
+            key={turn.years}
+            {...{
+              initial: { opacity: 0, x: -10 },
+              whileInView: { opacity: 1, x: 0 },
+              viewport: { once: true },
+              transition: { duration: 0.4, delay: i * 0.1 },
+            }}
+            className="bg-white rounded-lg border border-zinc-200 p-6 sm:flex sm:gap-6 transition-colors hover:border-yellow-400/60"
+          >
+            <div className="sm:w-32 flex-shrink-0 mb-3 sm:mb-0">
+              <p className="font-mono text-xs uppercase tracking-widest text-yellow-600 font-bold">
+                {t('sotl.cycle.turn')} {i + 1}
+              </p>
+              <p className="font-mono text-sm text-brand-dark font-bold mt-1">{turn.years}</p>
+            </div>
+            <div className="min-w-0">
+              <p className="text-brand-gray leading-relaxed">{t(turn.changeKey)}</p>
+              <a
+                href={`https://doi.org/${turn.doi}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-3 inline-block text-sm font-semibold text-brand-dark underline decoration-yellow-400 decoration-2 underline-offset-4 hover:text-yellow-600 transition-colors"
+              >
+                {turn.paper}
+              </a>
+              <p className="text-xs text-brand-gray mt-1">{turn.venue}</p>
+              {'outcomeKey' in turn && turn.outcomeKey && (
+                <p className="mt-4 bg-brand-dark text-white text-sm rounded px-4 py-3 leading-relaxed">
+                  {t(turn.outcomeKey)}
+                </p>
+              )}
+            </div>
+          </motion.li>
+        ))}
+      </ol>
+    </section>
+  );
+};
+
 export const ScholarshipOfTeachingPage: React.FC = () => {
   const { products } = useAppData();
   const { t } = useI18n();
@@ -120,7 +252,9 @@ export const ScholarshipOfTeachingPage: React.FC = () => {
                             </Link>
                         </div>
                     </motion.div>
-                    
+
+                    <ResearchCycle />
+
                      <motion.div 
                       // FIX: Spread motion props to avoid TypeScript type errors.
                       {...{
