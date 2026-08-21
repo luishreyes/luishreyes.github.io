@@ -8,6 +8,8 @@ import { motion, useMotionValue, useTransform, animate } from 'framer-motion';
 interface Stat {
   label: string;
   value: number | string;
+  /** Optional qualifier: what the figure is measured over, or where it comes from. */
+  note?: string;
 }
 
 interface StatsSectionProps {
@@ -30,7 +32,7 @@ const cardVariants = {
 };
 
 // FIX: Changed component to React.FC to resolve TypeScript error with the 'key' prop.
-const StatCard: React.FC<{ label: string; value: string | number; index: number }> = ({ label, value, index }) => {
+const StatCard: React.FC<{ label: string; value: string | number; note?: string; index: number }> = ({ label, value, note, index }) => {
     const isNumber = typeof value === 'number';
     const count = useMotionValue(0);
     const rounded = useTransform(count, latest => Math.round(latest as number));
@@ -60,6 +62,9 @@ const StatCard: React.FC<{ label: string; value: string | number; index: number 
             {isNumber ? <motion.span>{rounded}</motion.span> : value}
           </p>
           <p className="text-brand-gray mt-2">{label}</p>
+          {note && (
+            <p className="mt-2 font-mono text-[11px] uppercase tracking-wider text-zinc-400">{note}</p>
+          )}
         </motion.div>
     );
 };
@@ -67,6 +72,6 @@ const StatCard: React.FC<{ label: string; value: string | number; index: number 
 export const StatsSection = ({ stats }: StatsSectionProps) => (
     <div className="grid grid-cols-2 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
         {/* FIX: Replaced spread props with explicit props to resolve TypeScript error regarding the 'key' prop. */}
-        {stats.map((stat, index) => <StatCard key={stat.label} label={stat.label} value={stat.value} index={index} />)}
+        {stats.map((stat, index) => <StatCard key={stat.label} label={stat.label} value={stat.value} note={stat.note} index={index} />)}
     </div>
 );
