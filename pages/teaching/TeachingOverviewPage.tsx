@@ -18,8 +18,6 @@ const universityStudentsCount = teachingData.reduce((sum, course) => sum + (cour
 const edcoStudentsCount = edcoCoursesData.reduce((sum, course) => sum + course.attendees, 0);
 const totalStudents = universityStudentsCount + edcoStudentsCount;
 
-// Every evaluation on record sits on the institutional 100-200 scale (the series
-// runs 135 to 163), so the mean across course runs is a comparable figure.
 const evaluations = teachingData
     .map(c => c.evaluation)
     .filter((e): e is number => e !== null);
@@ -47,7 +45,7 @@ export const TeachingOverviewPage: React.FC = () => {
   const stats = [
     { label: t('stats.totalCourses'), value: totalCourses, note: t('stats.totalCourses.note') },
     { label: t('stats.totalStudents'), value: totalStudents },
-    { label: t('stats.avgEvaluation'), value: averageEvaluationDisplay, note: t('stats.avgEvaluation.note') },
+    { label: t('stats.avgEvaluation'), value: averageEvaluationDisplay },
     { label: t('stats.uniqueCourses'), value: uniqueCourses },
     ...(teachingAward ? [{ label: teachingAward.title, value: `AIChE ${teachingAward.year}`, note: t('stats.award.note') }] : []),
     { label: t('stats.eduGrants'), value: educationGrantsCount, note: t('stats.eduGrants.note') },
