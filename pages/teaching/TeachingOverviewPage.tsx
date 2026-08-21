@@ -14,9 +14,18 @@ const universityCoursesCount = teachingData.length;
 const edcoCoursesCount = edcoCoursesData.length;
 const totalCourses = universityCoursesCount + edcoCoursesCount;
 
+// Three populations, kept apart on purpose. Summed into one "students" figure,
+// MOOC enrolments swamp the rest (they were 78% of the old total), and a reader
+// takes the headline for classroom students. Each is quotable on its own.
 const universityStudentsCount = teachingData.reduce((sum, course) => sum + (course.students || 0), 0);
-const edcoStudentsCount = edcoCoursesData.reduce((sum, course) => sum + course.attendees, 0);
-const totalStudents = universityStudentsCount + edcoStudentsCount;
+
+const moocCourses = edcoCoursesData.filter((c) => c.client === 'Coursera (MOOC)');
+const moocEnrolments = moocCourses.reduce((sum, c) => sum + c.attendees, 0);
+const moocCompletions = moocCourses.reduce((sum, c) => sum + Math.round(c.attendees * (c.completionRate ?? 0)), 0);
+
+const continuingEdStudentsCount = edcoCoursesData
+    .filter((c) => c.client !== 'Coursera (MOOC)')
+    .reduce((sum, c) => sum + c.attendees, 0);
 
 const evaluations = teachingData
     .map(c => c.evaluation)
@@ -44,7 +53,9 @@ export const TeachingOverviewPage: React.FC = () => {
   // education research say something the counts cannot.
   const stats = [
     { label: t('stats.totalCourses'), value: totalCourses, note: t('stats.totalCourses.note') },
-    { label: t('stats.totalStudents'), value: totalStudents },
+    { label: t('stats.uniStudents'), value: universityStudentsCount, note: t('stats.uniStudents.note') },
+    { label: t('stats.contEdStudents'), value: continuingEdStudentsCount, note: t('stats.contEdStudents.note') },
+    { label: t('stats.moocLearners'), value: moocEnrolments, note: `${moocCompletions.toLocaleString()} ${t('stats.moocLearners.note')}` },
     { label: t('stats.avgEvaluation'), value: averageEvaluationDisplay },
     { label: t('stats.uniqueCourses'), value: uniqueCourses },
     ...(teachingAward ? [{ label: teachingAward.title, value: `AIChE ${teachingAward.year}`, note: t('stats.award.note') }] : []),

@@ -7,6 +7,8 @@ export interface EdcoCourse {
   attendees: number;
   role: 'Coordinator' | 'Instructor';
   url?: string;
+  /** MOOCs only: share of enrolled learners who completed the course (0-1). */
+  completionRate?: number;
 }
 
 export const edcoCoursesData: EdcoCourse[] = [
@@ -62,7 +64,8 @@ export const edcoCoursesData: EdcoCourse[] = [
     titleEn: 'Fundamentals of Using Generative AI',
     type: 'Open Course',
     client: 'Coursera (MOOC)',
-    attendees: 143,
+    attendees: 189,
+    completionRate: 0.20,
     role: 'Instructor',
     url: 'https://www.coursera.org/learn/fundamentals-of-using-generative-ai'
   },
@@ -147,7 +150,8 @@ export const edcoCoursesData: EdcoCourse[] = [
     titleEn: 'Fundamentals of Generative AI Usage',
     type: 'Open Course',
     client: 'Coursera (MOOC)',
-    attendees: 11026,
+    attendees: 14743,
+    completionRate: 0.52,
     role: 'Instructor',
     url: 'https://www.coursera.org/learn/fundamentos-del-uso-de-ia-generativa'
   },
