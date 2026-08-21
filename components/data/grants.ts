@@ -7,7 +7,8 @@ export const grantsData: Grant[] = [
     endYear: 2027,
     organization: 'Novus Triada 2025',
     role: { en: 'Co-investigator', es: 'Coinvestigador' },
-    status: 'In Progress'
+    status: 'In Progress',
+    area: 'education'
   },
   {
     title: 'Development of Informational Material on H2S for the Paraíso Hydroelectric Power Plant',
@@ -39,7 +40,8 @@ export const grantsData: Grant[] = [
     endYear: 2026,
     organization: 'Universidad de los Andes (Horizontes Conectados)',
     role: { en: 'Co-investigator', es: 'Coinvestigador' },
-    status: 'In Progress'
+    status: 'In Progress',
+    area: 'education'
   },
   {
     title: 'Phase 1 - Part 2: Diagnosis and Modeling of the Ecofilter System of the Paraíso Power Plant for the Removal of Offensive Odors',

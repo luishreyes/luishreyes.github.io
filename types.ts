@@ -112,6 +112,9 @@ export interface Grant {
   organization: string;
   role: Localized;
   status: string;
+  // Grants whose object of study is teaching itself. Tagged ones are listed on
+  // the Scholarship of Teaching page as well as under Funded Grants.
+  area?: 'education';
 }
 
 export interface Recognition {

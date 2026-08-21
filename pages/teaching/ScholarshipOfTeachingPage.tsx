@@ -4,7 +4,8 @@
 import React, { useMemo } from 'react';
 import { PageWrapper } from '../../components/PageWrapper';
 import { Link } from 'react-router-dom';
-import { useI18n } from '../../context/i18n';
+import { useI18n, localize } from '../../context/i18n';
+import { grantsData } from '../../components/data/grants';
 import type { Product } from '../../types';
 import { motion } from 'framer-motion';
 import { useAppData } from '../../context/AppDataContext';
@@ -201,6 +202,58 @@ const ResearchCycle: React.FC = () => {
   );
 };
 
+
+// Grants tagged area: 'education' in the grant record. Tagging a new one there
+// lists it here without touching this page.
+const educationGrants = grantsData
+  .filter((g) => g.area === 'education')
+  .sort((a, b) => b.startYear - a.startYear);
+
+const FundedEducationResearch: React.FC = () => {
+  const { t, lang } = useI18n();
+  if (educationGrants.length === 0) return null;
+
+  return (
+    <section className="my-16">
+      <h2 className="text-3xl font-bold tracking-tight text-brand-dark mb-3">{t('sotl.funded.title')}</h2>
+      <p className="text-brand-gray leading-relaxed mb-8 max-w-3xl">{t('sotl.funded.sub')}</p>
+
+      <div className="grid gap-4 md:grid-cols-2">
+        {educationGrants.map((grant, i) => (
+          <motion.article
+            key={grant.title}
+            {...{
+              initial: { opacity: 0, y: 12 },
+              whileInView: { opacity: 1, y: 0 },
+              viewport: { once: true },
+              transition: { duration: 0.4, delay: i * 0.1 },
+            }}
+            className="bg-white rounded-lg border border-zinc-200 border-l-4 border-l-yellow-400 p-6 flex flex-col"
+          >
+            <div className="flex items-center gap-3 mb-3">
+              <span className="font-mono text-xs font-bold text-brand-dark">
+                {grant.startYear}{grant.endYear ? `-${grant.endYear}` : ''}
+              </span>
+              <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
+                grant.status === 'Concluded' ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'
+              }`}>
+                {grant.status === 'Concluded' ? t('grants.status.concluded') : t('grants.status.inProgress')}
+              </span>
+            </div>
+            <h3 className="font-bold text-brand-dark leading-snug">{grant.title}</h3>
+            <p className="mt-3 text-sm text-brand-gray mt-auto pt-3">
+              {grant.organization}
+              <span className="block text-xs uppercase tracking-wider font-semibold text-yellow-600 mt-1">
+                {localize(grant.role, lang)}
+              </span>
+            </p>
+          </motion.article>
+        ))}
+      </div>
+    </section>
+  );
+};
+
 export const ScholarshipOfTeachingPage: React.FC = () => {
   const { products } = useAppData();
   const { t } = useI18n();
@@ -254,6 +307,8 @@ export const ScholarshipOfTeachingPage: React.FC = () => {
                     </motion.div>
 
                     <ResearchCycle />
+
+                    <FundedEducationResearch />
 
                      <motion.div 
                       // FIX: Spread motion props to avoid TypeScript type errors.
