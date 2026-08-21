@@ -2,9 +2,10 @@ import React, { useRef, useState, useEffect } from 'react';
 import { PageWrapper } from '../../components/PageWrapper';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { useI18n } from '../../context/i18n';
+import { useI18n, fill } from '../../context/i18n';
 import { teachingData } from '../../components/data/teaching';
 import { educationPapers } from '../../components/data/educationResearch';
+import { flagshipAward } from '../../components/data/metrics';
 
 // The Unit Operations course keeps its identity across renamings and code
 // changes: Unit Operations (IQUI-3010) became Integrated Project 2 under the
@@ -50,6 +51,7 @@ const recoverySemesters = peakIndex - lowestIndex + 1;
 const latest = evaluationScores[evaluationScores.length - 1];
 
 const fullTerm = (term: string) => `20${term}`;
+const award = flagshipAward('teaching');
 const decimal = (value: number, lang: string) =>
   lang === 'es' ? value.toFixed(1).replace('.', ',') : value.toFixed(1);
 
@@ -184,7 +186,7 @@ export const UnitOperationsInnovationPage: React.FC = () => {
                 className="w-24 h-24 flex-shrink-0 mx-auto sm:mx-0 invert opacity-90"
               />
               <div className="mt-6 sm:mt-0 min-w-0">
-                <p className="text-xs font-bold uppercase tracking-widest text-yellow-400">{t('unitops.award.eyebrow')}</p>
+                <p className="text-xs font-bold uppercase tracking-widest text-yellow-400">{fill(t('unitops.award.eyebrow'), { year: award?.year ?? '' })}</p>
                 <h2 className="mt-2 text-2xl font-bold text-white leading-tight">{t('unitops.award.title')}</h2>
                 <p className="mt-4 text-zinc-300 italic leading-relaxed">{t('unitops.award.citation')}</p>
                 <p className="mt-4 text-sm text-zinc-400 leading-relaxed">{t('unitops.award.note')}</p>
@@ -266,7 +268,7 @@ export const UnitOperationsInnovationPage: React.FC = () => {
                   <span className="text-xs font-bold uppercase bg-yellow-50 text-yellow-600 px-2 py-1 rounded">{t('unitops.phase3.tag')}</span>
                 </div>
                 <p className="text-brand-gray leading-relaxed">
-                  {t('unitops.phase3.text1')}<span className="font-semibold text-brand-dark">{t('unitops.phase3.genai')}</span>{t('unitops.phase3.text2')}<span className="font-bold text-brand-dark">{t('unitops.phase3.fifty')}</span>{t('unitops.phase3.text3')}<span className="font-medium text-brand-dark italic">{t('unitops.phase3.insilico')}</span>{t('unitops.phase3.text4')}<span className="font-semibold text-brand-dark">{t('unitops.phase3.aspen')}</span>{t('unitops.phase3.text5')}<span className="font-bold text-brand-dark">{peak.score}</span>{t('unitops.phase3.text5b')}<span className="font-bold text-brand-dark">{fullTerm(peak.term)}</span>{t('unitops.phase3.text5c')}<span className="font-bold text-brand-dark">{`${latest.score} (${fullTerm(latest.term)})`}</span>{t('unitops.phase3.text6')}<span className="font-bold text-brand-dark">{decimal(traditionalAvg, lang)}</span>{t('unitops.phase3.text7')}
+                  {t('unitops.phase3.text1')}<span className="font-semibold text-brand-dark">{t('unitops.phase3.genai')}</span>{fill(t('unitops.phase3.text2'), { peakTerm: fullTerm(peak.term) })}<span className="font-bold text-brand-dark">{t('unitops.phase3.fifty')}</span>{t('unitops.phase3.text3')}<span className="font-medium text-brand-dark italic">{t('unitops.phase3.insilico')}</span>{t('unitops.phase3.text4')}<span className="font-semibold text-brand-dark">{t('unitops.phase3.aspen')}</span>{t('unitops.phase3.text5')}<span className="font-bold text-brand-dark">{peak.score}</span>{t('unitops.phase3.text5b')}<span className="font-bold text-brand-dark">{fullTerm(peak.term)}</span>{t('unitops.phase3.text5c')}<span className="font-bold text-brand-dark">{`${latest.score} (${fullTerm(latest.term)})`}</span>{t('unitops.phase3.text6')}<span className="font-bold text-brand-dark">{decimal(traditionalAvg, lang)}</span>{t('unitops.phase3.text7')}
                 </p>
               </motion.div>
             </div>

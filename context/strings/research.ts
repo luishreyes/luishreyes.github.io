@@ -26,7 +26,7 @@ export const research = {
   'stats.totalCourses':     { en: 'Total Courses Taught',   es: 'Cursos Impartidos en Total' },
   'stats.totalStudents':    { en: 'Total Students',          es: 'Estudiantes en Total' },
   'stats.uniStudents':      { en: 'University Students',     es: 'Estudiantes Universitarios' },
-  'stats.uniStudents.note': { en: 'Credit-bearing courses since 2017', es: 'Cursos con créditos desde 2017' },
+  'stats.uniStudents.note': { en: 'Credit-bearing courses since {firstYear}', es: 'Cursos con créditos desde {firstYear}' },
   'stats.contEdStudents':   { en: 'Continuing Education Participants', es: 'Participantes en Educación Continua' },
   'stats.contEdStudents.note': { en: 'Open and corporate programmes', es: 'Programas abiertos y corporativos' },
   'stats.moocLearners':     { en: 'MOOC Enrolments',          es: 'Inscritos en MOOC' },

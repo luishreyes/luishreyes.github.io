@@ -34,6 +34,7 @@ const courseTitle = (title: string | { en: string; es: string }) =>
   typeof title === 'string' ? title : title.en;
 
 const teaching = {
+  firstYear: Math.min(...teachingData.map((course) => course.year)),
   courses: teachingData.length + edcoCoursesData.length,
   universityCourses: teachingData.length,
   continuingEdCourses: edcoCoursesData.length,

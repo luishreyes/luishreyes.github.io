@@ -1,6 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import { PageWrapper } from '../../components/PageWrapper';
 import { teachingData } from '../../components/data/teaching';
+import { fill } from '../../context/i18n';
+import { metrics } from '../../components/data/metrics';
 import { useI18n, localize, type UIKey } from '../../context/i18n';
 
 type FilterType = 'All' | 'Core' | 'Elective' | 'CBU' | 'Undergraduate' | 'Graduate';
@@ -57,7 +59,7 @@ export const CoursesPage: React.FC = () => {
                         <div className="max-w-4xl mx-auto text-left">
                             <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-brand-dark">{t('courses.title')}</h1>
                             <p className="mt-4 text-brand-gray leading-relaxed">
-                                {t('courses.sub')}
+                                {fill(t('courses.sub'), { firstYear: metrics.teaching.firstYear })}
                             </p>
                         </div>
                         
