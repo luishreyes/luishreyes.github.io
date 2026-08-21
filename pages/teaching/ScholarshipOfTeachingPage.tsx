@@ -4,7 +4,7 @@
 import React, { useMemo } from 'react';
 import { PageWrapper } from '../../components/PageWrapper';
 import { Link } from 'react-router-dom';
-import { useI18n, localize, fill, num } from '../../context/i18n';
+import { useI18n, localize, fill, num, cardinal } from '../../context/i18n';
 import { cycleTurns, pouLongitudinalStudy } from '../../components/data/educationResearch';
 import { awardsData } from '../../components/data/awards';
 import { grantsData } from '../../components/data/grants';
@@ -292,12 +292,12 @@ export const ScholarshipOfTeachingPage: React.FC = () => {
                         <p className="mt-4 text-lg text-brand-gray leading-relaxed">
                             {fill(t('sotl.intro2'), {
                                 students: study.students,
-                                cohorts: study.cohorts,
+                                cohorts: cardinal(study.cohorts, lang),
                                 citation: `${study.paper.authors}, ${study.paper.year}`,
                                 test: t('sotl.test.anova'),
                                 f: num(study.writtenCommunication.f, lang, 2),
                                 p: num(study.writtenCommunication.pBelow, lang, 3),
-                                criteria: study.blindEvaluation.criteria,
+                                criteria: cardinal(study.blindEvaluation.criteria, lang),
                                 pLow: num(study.blindEvaluation.pLow, lang, 3),
                                 pHigh: num(study.blindEvaluation.pHigh, lang, 3),
                                 motivationNow: study.sustainedMotivation.now,
