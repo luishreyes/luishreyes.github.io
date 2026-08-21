@@ -29,7 +29,7 @@ export const teaching = {
   'unitops.lessons':         { en: 'Lessons Learned',        es: 'Lecciones Aprendidas' },
   'unitops.scholarly':       { en: 'Scholarly Foundation',   es: 'Base Académica' },
   'unitops.chart.title':     { en: 'Score Evolution: The Reform Journey', es: 'Evolución de Puntajes: El Camino de la Reforma' },
-  'unitops.chart.scale':     { en: 'Institutional 100–200 Scale', es: 'Escala Institucional 100–200' },
+  'unitops.chart.scale':     { en: 'Institutional evaluation score, higher is better', es: 'Puntaje de evaluación institucional, más alto es mejor' },
   'unitops.phase.traditional': { en: 'Traditional',         es: 'Tradicional' },
   'unitops.phase.reform':    { en: 'Reform Era',             es: 'Era de Reforma' },
   'unitops.phase.synthesis': { en: 'Synthesis',              es: 'Síntesis' },
