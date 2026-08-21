@@ -64,10 +64,10 @@ const navItems = (t: (key: import('../context/i18n').UIKey) => string) => [
     subItems: [
       { title: t('nav.teaching.overview'), path: '/teaching' },
       { title: t('nav.teaching.courses'), path: '/teaching/courses' },
+      { title: t('nav.teaching.scholarship'), path: '/teaching/scholarship' },
       { title: t('nav.teaching.unitops'), path: '/teaching/unit-ops' },
       { title: t('nav.teaching.continuing'), path: '/teaching/continuing-education' },
       { title: t('nav.teaching.testimonials'), path: '/teaching/testimonials' },
-      { title: t('nav.teaching.scholarship'), path: '/teaching/scholarship' },
       { title: t('nav.teaching.profdev'), path: '/teaching/professional-development' },
     ],
   },
