@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { PageWrapper } from '../../components/PageWrapper';
 import { StatsSection } from '../../components/StatsSection';
-import { useI18n } from '../../context/i18n';
+import { useI18n, fill } from '../../context/i18n';
 import { teachingData, type TaughtCourse } from '../../components/data/teaching';
 import { edcoCoursesData } from '../../components/data/edco';
 import { metrics, flagshipAward } from '../../components/data/metrics';
@@ -22,7 +22,7 @@ export const TeachingOverviewPage: React.FC = () => {
   // education research say something the counts cannot.
   const stats = [
     { label: t('stats.totalCourses'), value: teaching.courses, note: t('stats.totalCourses.note') },
-    { label: t('stats.uniStudents'), value: teaching.universityStudents, note: t('stats.uniStudents.note') },
+    { label: t('stats.uniStudents'), value: teaching.universityStudents, note: fill(t('stats.uniStudents.note'), { firstYear: teaching.firstYear }) },
     { label: t('stats.contEdStudents'), value: teaching.continuingEdParticipants, note: t('stats.contEdStudents.note') },
     { label: t('stats.moocLearners'), value: teaching.moocEnrolments, note: `${teaching.moocCompletions.toLocaleString()} ${t('stats.moocLearners.note')}` },
     { label: t('stats.avgEvaluation'), value: averageEvaluationDisplay, note: `${teaching.evaluatedRuns} ${t('stats.avgEvaluation.runs')}` },

@@ -109,7 +109,12 @@ const ResearchCycle: React.FC = () => {
   return (
     <section className="my-16">
       <h2 className="text-3xl font-bold tracking-tight text-brand-dark mb-3">{t('sotl.cycle.title')}</h2>
-      <p className="text-brand-gray leading-relaxed mb-10 max-w-3xl">{t('sotl.cycle.sub')}</p>
+      <p className="text-brand-gray leading-relaxed mb-10 max-w-3xl">
+        {fill(t('sotl.cycle.sub'), {
+          times: cardinal(cycleTurns.length, lang),
+          sinceYear: cycleTurns[0].paper.year,
+        })}
+      </p>
 
       {/* The loop */}
       <div className="flex flex-col sm:flex-row sm:items-stretch gap-3">
