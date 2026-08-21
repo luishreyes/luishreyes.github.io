@@ -70,6 +70,12 @@ export const teaching = {
   'unitops.lesson3.title':   { en: 'In Silico Bridging',     es: 'Puente In Silico' },
   'unitops.lesson3.desc':    { en: 'ASPEN simulation addresses physical laboratory constraints, allowing students to see immediate consequences of engineering decisions in larger scopes.', es: 'La simulación en ASPEN aborda las limitaciones del laboratorio físico, permitiendo a los estudiantes ver las consecuencias inmediatas de las decisiones de ingeniería en escalas mayores.' },
   'unitops.lesson4.title':   { en: 'AI-Assisted Rigor',      es: 'Rigor Asistido por IA' },
+  'unitops.award.eyebrow':   { en: 'AIChE Education Division · 2026', es: 'División de Educación de AIChE · 2026' },
+  'unitops.award.title':     { en: 'Award for Innovation in Chemical Engineering Education', es: 'Award for Innovation in Chemical Engineering Education' },
+  'unitops.award.citation':  { en: '«For integrating generative AI into chemical engineering education through the Cognitive-AI Synergy Framework and a project-based Unit Operations model with measurable impact on student learning.»', es: '«Por integrar la IA generativa en la educación en ingeniería química a través del Cognitive-AI Synergy Framework y un modelo de Operaciones Unitarias basado en proyectos, con impacto medible en el aprendizaje de los estudiantes.»' },
+  'unitops.award.note':      { en: 'The American Institute of Chemical Engineers recognized the work this page documents. Since the award was created it had never gone outside the United States.', es: 'El American Institute of Chemical Engineers reconoció el trabajo que documenta esta página. Desde la creación del premio nunca había salido de Estados Unidos.' },
+  'unitops.award.cta':       { en: 'See the recognition', es: 'Ver el reconocimiento' },
+  'unitops.award.ctaAiche':  { en: 'Award at AIChE', es: 'El premio en AIChE' },
   'unitops.lesson4.desc':    { en: 'GenAI tools support learning when properly scaffolded. Structured AI integration (AIAS framework) improved literature review quality while maintaining rigor.', es: 'Las herramientas de IA generativa apoyan el aprendizaje cuando se andamian adecuadamente. La integración estructurada de IA (marco AIAS) mejoró la calidad de las revisiones de literatura manteniendo el rigor.' },
 
   // Continuing Education
