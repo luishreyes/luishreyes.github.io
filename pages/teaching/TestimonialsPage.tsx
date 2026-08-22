@@ -5,6 +5,7 @@ import React, { useMemo, useState } from 'react';
 import { PageWrapper } from '../../components/PageWrapper';
 import { useI18n, localize, type UIKey, type Lang } from '../../context/i18n';
 import { testimonials, type Testimonial } from '../../components/data/teaching';
+import { graduateByName } from '../../components/data/metrics';
 // FIX: Removed 'Variants' from framer-motion import to resolve module export error.
 import { motion } from 'framer-motion';
 
@@ -32,6 +33,14 @@ const itemVariants = {
 };
 
 // FIX: Changed component to React.FC to resolve TypeScript error with the 'key' prop.
+// A graduate's job is stated once, in their student record. The testimonial's
+// own info is the fallback for people who have no record, or whose record does
+// not list a position.
+const currentRole = (testimonial: Testimonial) => {
+    const graduate = testimonial.graduateName ? graduateByName(testimonial.graduateName) : undefined;
+    return graduate?.currentPosition || testimonial.info;
+};
+
 const TestimonialCard: React.FC<{ testimonial: Testimonial; lang: Lang }> = ({ testimonial, lang }) => (
     <motion.div
         className="w-full h-full bg-white rounded-lg shadow-lg border border-yellow-400/40 flex flex-col p-8"
@@ -46,7 +55,7 @@ const TestimonialCard: React.FC<{ testimonial: Testimonial; lang: Lang }> = ({ t
             />
             <div className="ml-4 text-left">
                 <p className="font-semibold text-brand-dark text-lg">{testimonial.name}</p>
-                <p className="text-sm text-brand-gray">{localize(testimonial.info, lang)}</p>
+                <p className="text-sm text-brand-gray">{localize(currentRole(testimonial), lang)}</p>
                 <p className="text-xs text-zinc-500 mt-1 font-medium uppercase tracking-wider">{localize(testimonial.context, lang)}</p>
             </div>
         </div>

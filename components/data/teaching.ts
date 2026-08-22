@@ -144,6 +144,15 @@ export const teachingPillars: TeachingPillar[] = [
 export interface Testimonial {
   quote: Localized;
   name: string;
+  /**
+   * Exact `name` of the matching record in the graduated-student data. When set,
+   * the page shows that record's currentPosition and `info` is not used, so a
+   * graduate's job is stated in one place. Testimonials from people without a
+   * graduate record leave it unset and carry their own `info`.
+   */
+  graduateName?: string;
+  /** Fallback shown when graduateName is unset, or when the linked record has
+   *  no current position on file. */
   info: Localized;
   imageUrl: string;
   context: Localized;
@@ -157,6 +166,7 @@ export const testimonials: Testimonial[] = [
       es: "El profesor Luis H. Reyes fue una figura fundamental a lo largo de toda mi carrera académica: primero como mi profesor de pregrado, luego como director de mi tesis y más tarde como asesor de mi maestría. En cada uno de esos roles demostró un compromiso profundo, un rigor académico constante y una calidad humana distintiva que lo hizo destacar. Su orientación clara en la investigación, sumada a su capacidad para fomentar el pensamiento crítico y la excelencia, fue clave para mi desarrollo profesional y científico. Estoy segura de que su labor es una contribución significativa a la formación de futuras generaciones de estudiantes e investigadores."
     },
     name: "Angie Daniela Bolaños Barbosa",
+    graduateName: "Angie Daniela Bolaños Barbosa",
     info: { en: "University Tutor at Fundación Alquería Cavelier", es: "Tutora universitaria en la Fundación Alquería Cavelier" },
     imageUrl: "https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5804.jpeg",
     context: { en: "Undergraduate, Thesis & M.S. Mentorship", es: "Mentoría de pregrado, tesis y maestría" },
@@ -168,6 +178,7 @@ export const testimonials: Testimonial[] = [
       es: "Durante mi doctorado tuve la oportunidad de contar con Luis H. Reyes como mi supervisor principal. Su acompañamiento se caracterizó por una apertura académica que me permitió explorar mis propios intereses de investigación, combinada con una orientación constante que fomentó la autonomía en mi proceso formativo. Además, su estilo de supervisión fue considerado y respetuoso de mi tiempo, brindando una guía académica sólida a la vez que respetaba mis ritmos de trabajo. Su cercanía, autenticidad y disposición para apoyar con recursos y herramientas fueron fundamentales para mi crecimiento como investigador."
     },
     name: "Brayan Rodríguez",
+    graduateName: "Brayan Rodríguez",
     info: { en: "Assistant Professor at Pontificia Universidad Javeriana", es: "Profesor asistente en la Pontificia Universidad Javeriana" },
     imageUrl: "https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/Brayan%20Rodriguez.JPG",
     context: { en: "Ph.D. Thesis Advisee, Engineering", es: "Dirigido de tesis doctoral, Ingeniería" },
@@ -179,6 +190,7 @@ export const testimonials: Testimonial[] = [
       es: "Como director de mi tesis doctoral, LuisH demostró una notable capacidad de orientación estratégica y metodológica. Su mentoría se distinguió por la combinación de rigor académico, practicidad empresarial y sensibilidad hacia las particularidades de cada estudiante, lo que ayudó a maximizar mis capacidades. En mi caso, su orientación fue decisiva para estructurar y fortalecer mi proyecto doctoral, aportando no solo conocimiento especializado, sino también confianza y motivación en cada etapa del proceso."
     },
     name: "Julián F. Becerra-Encinales",
+    graduateName: "Julián Fernando Becerra-Encinales",
     info: { en: "Director of Technological Extension at Cenipalma", es: "Director de Extensión Tecnológica en Cenipalma" },
     imageUrl: "https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/Julian%20Fernando%20Becerra-Encinales.JPG",
     context: { en: "Ph.D. Thesis Advisee, Technological Innovation Management", es: "Dirigido de tesis doctoral, Gestión de la Innovación Tecnológica" },
@@ -190,6 +202,7 @@ export const testimonials: Testimonial[] = [
       es: "El enfoque pedagógico del profesor Reyes, centrado en el trabajo por proyectos y en objetivos claros, fue decisivo para mi desarrollo académico. Su orientación me enseñó a abordar problemas complejos con un método sistemático: descomponerlos, formular hipótesis concretas, diseñar pruebas rigurosas y ejecutar experimentos para validarlas. Siempre me animó a comprender los fenómenos en profundidad, evitando el pensamiento de 'caja negra' y preguntando constantemente 'por qué'. Esta práctica fortaleció mis habilidades analíticas y moldeó la forma en que hoy abordo la investigación y la innovación en el campo biomédico."
     },
     name: "Cristian F. Rodríguez",
+    graduateName: "Cristian F. Rodríguez",
     info: { en: "Instructor Professor at Universidad de los Andes", es: "Profesor instructor en la Universidad de los Andes" },
     imageUrl: "https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5728.jpg",
     context: { en: "M.S. Thesis Advisee, Biomedical Engineering", es: "Dirigido de tesis de maestría, Ingeniería Biomédica" },
@@ -201,7 +214,7 @@ export const testimonials: Testimonial[] = [
       es: "Biotecnología Industrial es un curso que revela las diversas aplicaciones de la Ingeniería Química cuando se combina con la biología, abriendo un mundo de posibilidades hacia un futuro más sostenible. En la clase del profesor Luis H. no solo aprendimos sobre las distintas etapas de producción de bioproductos, sino que también desarrollamos un pensamiento crítico sobre las consecuencias, ventajas y desventajas de diseñar estos productos y procesos."
     },
     name: "Daniela Aristizabal",
-    info: { en: "Management Specialist at Bavaria", es: "Especialista de gestión en Bavaria" },
+    info: { en: "Talent Development Specialist at Fortra", es: "Especialista en Desarrollo de Talento en Fortra" },
     imageUrl: "https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5792%20(1).jpeg",
     context: { en: "Course: Industrial Biotechnology", es: "Curso: Biotecnología Industrial" },
     category: 'Teaching & Mentorship'
@@ -234,7 +247,7 @@ export const testimonials: Testimonial[] = [
       es: "El curso de cervecería es una excelente oportunidad para adquirir conocimientos específicos sobre todo el proceso de elaboración de cerveza, desde la evaluación de la calidad de la malta hasta el empaque del producto final. Como graduada de Ingeniería Química que hoy trabaja como Especialista de Aseguramiento de Calidad en Central Cervecera de Colombia, puedo decir que tomar este curso fue una de las mejores decisiones de mi carrera académica. Me brindó una base sólida para comprender de manera clara y eficiente las operaciones y objetivos de la industria cervecera."
     },
     name: "Diego Alejandro Peñaloza Mayorga",
-    info: { en: "Quality Assurance Specialist, Central Cervecera de Colombia", es: "Especialista de Aseguramiento de Calidad, Central Cervecera de Colombia" },
+    info: { en: "Packaging Team Lead at Central Cervecera de Colombia", es: "Líder de Equipo de Envasado en Central Cervecera de Colombia" },
     imageUrl: "https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5790.jpeg",
     context: { en: "Course: From Yeast to Beer", es: "Curso: De la Levadura a la Cerveza" },
     category: 'Teaching & Mentorship'
@@ -245,7 +258,7 @@ export const testimonials: Testimonial[] = [
       es: "«De la Levadura a la Cerveza» se construye sobre una idea simple y cautivadora: entender la cerveza que tienes en la mano. Despierta una curiosidad innata que convierte cada sorbo en una pregunta de «¿cómo?» y «¿por qué?». Para mí, este fue el primer curso que realmente se sintió como Ingeniería Química aplicada. Se nos retó a pensar y actuar como ingenieros frente a un problema real, donde nuestras decisiones impactaban directamente un producto tangible. Es una forma poderosa de aprender."
     },
     name: "Jason Bernal Sánchez",
-    info: { en: "Process Engineer, Sun Chemical", es: "Ingeniero de procesos, Sun Chemical" },
+    info: { en: "Integration Lead Engineer at Kanadevia Inova", es: "Ingeniero líder de integración en Kanadevia Inova" },
     imageUrl: "https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5798.jpeg",
     context: { en: "Course: From Yeast to Beer", es: "Curso: De la Levadura a la Cerveza" },
     category: 'Teaching & Mentorship'
@@ -256,7 +269,7 @@ export const testimonials: Testimonial[] = [
       es: "«De la Levadura a la Cerveza», o como me gusta llamarla, la «clase de la pola», es el primer verdadero acercamiento de un estudiante al mundo real de un ingeniero químico. Es donde llegas a gestionar un proceso y a diseñar tu propio producto de principio a fin. Luis H. se asegura de que abordemos temas de igual o mayor relevancia, como analizar el impacto ambiental del proceso, diseñar y comercializar una marca y gestionar el producto financieramente. Este enfoque holístico no sería posible sin la pasión que Luis H. inspira en sus estudiantes."
     },
     name: "Camilo Zarate",
-    info: { en: "MBA, Georgetown University", es: "MBA, Georgetown University" },
+    info: { en: "Senior Associate at PwC", es: "Asociado sénior en PwC" },
     imageUrl: "https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5784.jpeg",
     context: { en: "Course: From Yeast to Beer", es: "Curso: De la Levadura a la Cerveza" },
     category: 'Teaching & Mentorship'
@@ -267,6 +280,7 @@ export const testimonials: Testimonial[] = [
       es: "Tuve la oportunidad de tomar varios cursos de ingeniería con Luis Reyes y pude ser testigo de su labor en cada uno de ellos. Es un profesor metódico, que se esfuerza por impartir contenidos valiosos e integrar nuevas tecnologías y temas de actualidad. También busca ofrecer herramientas prácticas y realistas que facilitan el aprendizaje y el desarrollo de habilidades.\n\nEn los cursos que tomé con él, siempre lograba que analizáramos más allá de los temas específicos, fomentando el desarrollo de un pensamiento crítico y estructurado. Siempre nos animó a aplicar de manera práctica lo aprendido para resolver problemas reales, yendo más allá de la teoría e involucrándose genuinamente en nuestro crecimiento profesional y personal."
     },
     name: "Camila Ocasión",
+    graduateName: "Camila Ocasión Martinez",
     info: { en: "M.S. in Chemical Engineering, Director of Corporate Responsibility at Hevolución", es: "M.Sc. en Ingeniería Química, Directora de Responsabilidad Corporativa en Hevolución" },
     imageUrl: "https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5777.JPG",
     context: { en: "Course: Multiple Engineering Courses", es: "Curso: Varios cursos de ingeniería" },
@@ -278,6 +292,7 @@ export const testimonials: Testimonial[] = [
       es: "Como asesor de tesis, nunca se limitó a dar respuestas directas; en cambio, me dotó de las herramientas para encontrar mis propias soluciones, fomentando el pensamiento innovador y una actitud resiliente."
     },
     name: "Carlos Manuel Ramirez Acosta",
+    graduateName: "Carlos Manuel Ramirez Acosta",
     info: { en: "Research Professional at Vecol S.A.", es: "Profesional de investigación en Vecol S.A." },
     imageUrl: "https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5801.jpeg",
     context: { en: "M.S. Thesis Advisee", es: "Dirigido de tesis de maestría" },
@@ -289,6 +304,7 @@ export const testimonials: Testimonial[] = [
       es: "Como profesor, su pasión es innegable. En una clase, usó una simple discusión sobre los pandas para enseñarnos los fundamentos del diseño experimental, cautivando a todo el salón. Años después, queda claro que no solo nos enseñaba sobre pandas; nos enseñaba a pensar de forma crítica, a abordar preguntas con herramientas claras y a ser conscientes del mundo que nos rodea. Esta anécdota muestra el impacto duradero de un gran maestro."
     },
     name: "Carlos Manuel Ramirez Acosta",
+    graduateName: "Carlos Manuel Ramirez Acosta",
     info: { en: "Research Professional at Vecol S.A.", es: "Profesional de investigación en Vecol S.A." },
     imageUrl: "https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5801.jpeg",
     context: { en: "Course: Experimental Design", es: "Curso: Diseño Experimental" },
@@ -300,6 +316,7 @@ export const testimonials: Testimonial[] = [
       es: "Durante mis estudios doctorales tuve la oportunidad de ser asesorado por el Dr. Luis H. Reyes. Fui testigo de su atención y asertividad al guiar el desarrollo de mi tesis. Siempre me dio total autonomía para resolver las situaciones que surgían durante los experimentos y la escritura."
     },
     name: "Julian Daniel Torres Vanegas",
+    graduateName: "Julian Daniel Torres Vanegas",
     info: { en: "Assistant Professor at Universidad EAN", es: "Profesor asistente en la Universidad EAN" },
     imageUrl: "https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/Julian%20Daniel%20Torres%20Vanegas.JPG",
     context: { en: "Ph.D. Thesis Advisee", es: "Dirigido de tesis doctoral" },
@@ -311,6 +328,7 @@ export const testimonials: Testimonial[] = [
       es: "Como su asistente de docencia, también vi el gran interés y esfuerzo que pone en diseñar experiencias de aprendizaje creativas. Estas experiencias motivaron a sus estudiantes a apropiarse de su proceso de aprendizaje y a involucrarse con compromiso, lo que se reflejó en su excelente desempeño académico. Puedo afirmar sin duda que el profesor Luis H. es uno de los mejores docentes que he tenido, e inspira a que dé lo mejor de mí en mi trabajo actual como profesor."
     },
     name: "Julian Daniel Torres Vanegas",
+    graduateName: "Julian Daniel Torres Vanegas",
     info: { en: "Assistant Professor at Universidad EAN", es: "Profesor asistente en la Universidad EAN" },
     imageUrl: "https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/Julian%20Daniel%20Torres%20Vanegas.JPG",
     context: { en: "Teaching Assistant", es: "Asistente de docencia" },
@@ -322,6 +340,7 @@ export const testimonials: Testimonial[] = [
       es: "Tuve la oportunidad de trabajar con el profesor Luis H. Reyes en distintos escenarios académicos: primero como su estudiante en el curso de Operaciones Unitarias y luego como asistente graduada. En cada uno de estos contextos, el profesor se distinguió por su creatividad y por la generación constante de ideas valiosas, que enriquecieron tanto el aprendizaje como el desarrollo académico."
     },
     name: "Olga Lucia Acuña",
+    graduateName: "Olga Lucia Acuña",
     info: { en: "M.S. in Chemical Engineering", es: "M.Sc. en Ingeniería Química" },
     imageUrl: "https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5782.JPG",
     context: { en: "Course Student & Graduate Assistant", es: "Estudiante del curso y asistente graduada" },
@@ -333,6 +352,7 @@ export const testimonials: Testimonial[] = [
       es: "Como asesor de mi tesis, una de las cualidades que más destaco es la libertad que brinda para explorar distintos caminos cuando surgen dificultades. Esta apertura fomenta la autonomía y el pensamiento crítico, manteniendo a la vez un acompañamiento cercano y orientador. Gracias a su guía, pude fortalecer mis capacidades académicas y profesionales y comprender la importancia de un liderazgo que combina la orientación con la confianza en el estudiante."
     },
     name: "Olga Lucia Acuña",
+    graduateName: "Olga Lucia Acuña",
     info: { en: "M.S. in Chemical Engineering", es: "M.Sc. en Ingeniería Química" },
     imageUrl: "https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5782.JPG",
     context: { en: "M.S. Thesis Advisee", es: "Dirigida de tesis de maestría" },
@@ -344,6 +364,7 @@ export const testimonials: Testimonial[] = [
       es: "Lo que distingue al profesor Reyes no es solo su vasta experiencia y su capacidad para impulsar investigación innovadora, sino su excepcional calidad humana. No ve únicamente a sus estudiantes, sino a las personas detrás de ellos. Su calidez y apoyo trascienden lo académico, y ese valor es, para mí, aún más significativo que cualquier conocimiento técnico. Siempre está dispuesto a escuchar, orientar y motivar, incluso en los momentos más difíciles. Gran parte de la profesional que soy hoy se debe a su influencia."
     },
     name: "Valentina Quezada",
+    graduateName: "Valentina Quezada Pérez",
     info: { en: "Researcher at Universidad de los Andes", es: "Investigadora en la Universidad de los Andes" },
     imageUrl: "https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5755.JPG",
     context: { en: "Mentorship Experience", es: "Experiencia de mentoría" },
@@ -355,6 +376,7 @@ export const testimonials: Testimonial[] = [
       es: "Bajo su mentoría, participé en un proyecto pionero sobre péptidos transmembranales y, más tarde, como coasesor de mi tesis de maestría, guió mi trabajo sobre un hidrogel antifúngico, que derivó en la presentación de una patente. Esta experiencia me enseñó la importancia de desarrollar metodologías accesibles y escalables. Transmite la convicción de que la ciencia debe trascender el laboratorio para generar un impacto real en la sociedad."
     },
     name: "Valentina Quezada",
+    graduateName: "Valentina Quezada Pérez",
     info: { en: "Researcher at Universidad de los Andes", es: "Investigadora en la Universidad de los Andes" },
     imageUrl: "https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5755.JPG",
     context: { en: "Undergraduate Researcher & M.S. Thesis Advisee", es: "Investigadora de pregrado y dirigida de tesis de maestría" },
@@ -388,6 +410,7 @@ export const testimonials: Testimonial[] = [
       es: "Trabajar con el profesor Luis entre 2019 y 2021 fue una etapa clave en mi desarrollo académico y profesional. Durante ese tiempo tuve la oportunidad de contar con su apoyo como asesor de mi tesis de maestría y, al mismo tiempo, como mi supervisor en mis roles de asistente de investigación y de docencia para el curso de Operaciones Unitarias. Su pasión por la ciencia y la investigación dejó en mí una huella significativa, especialmente al iniciar mi camino en el mundo de los bioprocesos y la biotecnología. Vivir esta etapa durante la pandemia hizo su orientación aún más valiosa; su apoyo constante me dio tranquilidad en medio de la incertidumbre y permitió que mi proyecto de investigación tuviera un impacto significativo en un momento complicado. Gracias a su guía, pude enfocar mi conocimiento en un área que me apasiona, lo que sin duda definió el rumbo de mi carrera."
     },
     name: "Maria Camila Henao",
+    graduateName: "Maria Camila Henao",
     info: { en: "Scientist at VaxThera", es: "Científica en VaxThera" },
     imageUrl: "https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5759.JPG",
     context: { en: "M.S. Thesis Advisee & Research/Teaching Assistant", es: "Dirigida de tesis de maestría y asistente de investigación/docencia" },
@@ -399,6 +422,7 @@ export const testimonials: Testimonial[] = [
       es: "Mi relación profesional con el profesor Luis me dio mucho más que conocimiento técnico; me inculcó valores importantes para mi crecimiento personal. Con él aprendí a ver los errores como oportunidades de mejora y a trabajar con una mayor conciencia de mis debilidades. Siempre supo corregir con respeto y enseñar con entusiasmo, lo que creó un ambiente de aprendizaje positivo y retador. Hoy, cuatro años después de graduarme, agradezco todo lo que me dio, no solo como docente sino también como mentor. Gran parte de la profesional que soy hoy se debe a su guía, y espero que algún día podamos reencontrarnos en proyectos futuros.\n\nPor último, quisiera señalar que pocas veces se tiene la oportunidad de aprender tanto de alguien tan genial como Luis: su cercanía y sentido del humor hicieron mucho más llevaderos incluso los días más exigentes en el laboratorio."
     },
     name: "Maria Camila Henao",
+    graduateName: "Maria Camila Henao",
     info: { en: "Scientist at VaxThera", es: "Científica en VaxThera" },
     imageUrl: "https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5759.JPG",
     context: { en: "General Mentorship", es: "Mentoría general" },

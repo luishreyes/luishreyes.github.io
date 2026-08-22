@@ -85,6 +85,14 @@ const service = {
 
 // ── Recognition ─────────────────────────────────────────────────────────────
 
+/** The graduated-student record with this exact name, if there is one. Used to
+ *  state a graduate's current position in one place: testimonials link here
+ *  instead of keeping their own copy of the job title. */
+export const graduateByName = (name: string) =>
+  [...graduatedStudentsData.phd, ...graduatedStudentsData.ms].find(
+    (student) => student.name === name,
+  );
+
 /** Distinctions that recognize a given role, newest first. */
 export const awardsByRole = (role: NonNullable<Recognition['role']>): Recognition[] =>
   awardsData.filter((award) => award.role === role).sort((a, b) => b.year - a.year);
