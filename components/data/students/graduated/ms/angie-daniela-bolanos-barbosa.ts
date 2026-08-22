@@ -6,7 +6,7 @@ const student: GraduatedStudent = {
     program: { en: 'M.S. in Chemical Engineering', es: 'M.S. en Ingeniería Química' },
     graduationYear: 2023,
     startedYear: 2021,
-    currentPosition: { en: 'University Tutor at Fundación Alquería Cavelier', es: 'Tutora universitaria en la Fundación Alquería Cavelier' },
+    currentPosition: { en: 'Co-founder at Moxacá Brewery', es: 'Cofundadora de Moxacá Brewery' },
     linkedinUrl: 'https://www.linkedin.com/in/angiedanielabola%C3%B1osbarbosa/',
     thesisTitle: 'Formulation and characterization of calcium alginate capsules and different strains of the yeast Saccharomyces cerevisiae: impact on the sensory profile of fermented products obtained from a base malt wort.',
     laymanSummary: [

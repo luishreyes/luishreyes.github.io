@@ -6,7 +6,7 @@ const student: GraduatedStudent = {
     program: { en: 'M.S. in Biomedical Engineering', es: 'M.S. en Ingeniería Biomédica' },
     graduationYear: 2022,
     startedYear: 2020,
-    currentPosition: { en: 'Researcher at Universidad de los Andes', es: 'Investigadora en la Universidad de los Andes' },
+    currentPosition: { en: 'Scientific Writer at Sanofi', es: 'Redactora científica en Sanofi' },
     linkedinUrl: 'https://www.linkedin.com/in/valentina-quezada-p%C3%A9rez/',
     thesisTitle: 'Formulation and evaluation of a peptide-based topical treatment against Fluconazole-resistant Candida sp.',
     laymanSummary: [

@@ -6,7 +6,7 @@ const student: GraduatedStudent = {
     program: { en: 'M.S. in Chemical Engineering at Universidad de Los Andes', es: 'M.S. en Ingeniería Química en la Universidad de Los Andes' },
     graduationYear: 2021,
     startedYear: 2019,
-    currentPosition: { en: 'CEO at Excelsa', es: 'CEO en Excelsa' },
+    currentPosition: { en: 'Consultant at Excelsa', es: 'Consultora en Excelsa' },
     linkedinUrl: 'https://www.linkedin.com/in/camila-ocasion/',
     thesisTitle: 'Improvement in the Functional Screening of Metagenomic Libraries',
     laymanSummary: [
