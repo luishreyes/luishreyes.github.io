@@ -6,7 +6,7 @@ const student: GraduatedStudent = {
     program: { en: 'M.S. in Bioengineering at Karlsruhe Institute of Technology & Universidad de los Andes', es: 'M.S. en Bioingeniería en el Karlsruhe Institute of Technology y la Universidad de los Andes' },
     graduationYear: 2025,
     startedYear: 2024,
-    currentPosition: { en: 'Business Development (Geodata) at Frankfurt', es: 'Desarrollo de Negocios (Geodata) en Fráncfort' },
+    currentPosition: { en: 'Private Sector Sales Manager at Cyclomedia', es: 'Gerente de Ventas para el Sector Privado en Cyclomedia' },
     linkedinUrl: 'https://www.linkedin.com/in/halil-kizilates-7712491ba/',
     thesisTitle: 'Enhancing Beer Sensory Profile and Wort Fermentation through Alginate-Peptone and Polyelectrolyte Complex Yeast Encapsulation: A Novel Approach',
     laymanSummary: [

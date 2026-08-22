@@ -3,10 +3,10 @@ import type { GraduatedStudent } from '../../../../types';
 const student: GraduatedStudent = {
     name: 'Anamaria Moreno Castaño',
     degree: 'M.S.',
-    program: { en: 'M.S. in Product and Process Design at Universidad de Los Andes', es: 'M.S. en Diseño de Producto y Proceso en la Universidad de Los Andes' },
+    program: { en: 'M.S. in Product and Process Design at Universidad de los Andes', es: 'M.S. en Diseño de Productos y Procesos en la Universidad de los Andes' },
     graduationYear: 2023,
     startedYear: 2021,
-    currentPosition: { en: 'Clinical Data Manager at MSD', es: 'Gerente de Datos Clínicos en MSD' },
+    currentPosition: { en: 'Regulatory Coordinator at FMC Colombia', es: 'Coordinadora de Asuntos Regulatorios en FMC Colombia' },
     linkedinUrl: 'https://www.linkedin.com/in/anamar%C3%ADa-moreno-castano-a139a612a/',
     thesisTitle: 'Integrating In-Silico and Experimental Approaches in the Discovery of Potential Pea Protein (Pisum sativum L.) Bioactive Peptides for the Food Industry',
     laymanSummary: [

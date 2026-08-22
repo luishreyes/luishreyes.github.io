@@ -7,6 +7,7 @@ const student: GraduatedStudent = {
     graduationYear: 2022,
     startedYear: 2020,
     currentPosition: { en: 'Scientist at VaxThera', es: 'Científica en VaxThera' },
+    linkedinUrl: 'https://www.linkedin.com/in/maria-camila-henao-botia-555879167/',
     thesisTitle: 'Discovery and Validation of Novel Cell-Penetrating Peptides from the SARS-CoV-2 Spike Glycoprotein for Biomedical Applications',
     laymanSummary: [
         {

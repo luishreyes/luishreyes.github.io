@@ -3,10 +3,10 @@ import type { GraduatedStudent } from '../../../../types';
 const student: GraduatedStudent = {
     name: 'Jorge Felipe León Velandia',
     degree: 'M.S.',
-    program: { en: 'M.S. in Product and Process Design at Universidad de Los Andes', es: 'M.S. en Diseño de Producto y Proceso en la Universidad de Los Andes' },
+    program: { en: 'M.S. in Product and Process Design at Universidad de los Andes', es: 'M.S. en Diseño de Productos y Procesos en la Universidad de los Andes' },
     graduationYear: 2022,
     startedYear: 2020,
-    currentPosition: { en: 'Project Management Consultant, Desechables Los Ángeles, Bogotá, Colombia', es: 'Consultor de Gestión de Proyectos, Desechables Los Ángeles, Bogotá, Colombia' },
+    currentPosition: { en: 'Process Engineer at Desechables Los Ángeles', es: 'Ingeniero de procesos en Desechables Los Ángeles' },
     linkedinUrl: 'https://www.linkedin.com/in/jorge-felipe-le%C3%B3n-a053b2242/',
     thesisTitle: 'Preparation, Sensory and Physicochemical Analysis of Rice Masato Enriched with Blueberries',
     laymanSummary: [

@@ -3,11 +3,11 @@ import type { GraduatedStudent } from '../../../../types';
 const student: GraduatedStudent = {
     name: 'Gabriela Meléndez Plata',
     degree: 'M.S.',
-    program: { en: 'M.S. in Product and Process Design', es: 'M.S. en Diseño de Producto y Proceso' },
+    program: { en: 'M.S. in Product and Process Design at Universidad de los Andes', es: 'M.S. en Diseño de Productos y Procesos en la Universidad de los Andes' },
     graduationYear: 2026,
     startedYear: 2024,
     currentPosition: { en: 'Research Professional at Universidad de los Andes', es: 'Profesional de investigación en la Universidad de los Andes' },
-    linkedinUrl: '',
+    linkedinUrl: 'https://www.linkedin.com/in/gabriela-mel%C3%A9ndez-plata-1a6645212/',
     thesisTitle: 'Gate-to-Gate Life Cycle Assessment of Full-Scale Biological H₂S Odor Control in an Integrated Recirculating Biofilter–Biotrickling System',
     laymanSummary: [
         {

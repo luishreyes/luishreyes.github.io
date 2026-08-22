@@ -7,7 +7,7 @@ const student: GraduatedStudent = {
     graduationYear: 2026,
     startedYear: 2024,
     currentPosition: { en: 'Research Professional at Universidad de los Andes', es: 'Profesional de investigación en la Universidad de los Andes' },
-    linkedinUrl: '',
+    linkedinUrl: 'https://www.linkedin.com/in/jesus-mastrogiacomo/',
     thesisTitle: 'Adaptive Optimization via Extremum Seeking Control for the Operation of a Biological H₂S Treatment System',
     laymanSummary: [
         {
