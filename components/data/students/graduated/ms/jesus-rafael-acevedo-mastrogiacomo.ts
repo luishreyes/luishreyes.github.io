@@ -6,7 +6,7 @@ const student: GraduatedStudent = {
     program: { en: 'M.S. in Chemical Engineering', es: 'M.S. en Ingeniería Química' },
     graduationYear: 2026,
     startedYear: 2024,
-    currentPosition: '',
+    currentPosition: { en: 'Research Professional at Universidad de los Andes', es: 'Profesional de investigación en la Universidad de los Andes' },
     linkedinUrl: '',
     thesisTitle: 'Adaptive Optimization via Extremum Seeking Control for the Operation of a Biological H₂S Treatment System',
     laymanSummary: [
