@@ -6,7 +6,7 @@ const student: GraduatedStudent = {
     program: { en: 'M.S. in Biomedical Engineering', es: 'M.S. en Ingeniería Biomédica' },
     graduationYear: 2022,
     startedYear: 2020,
-    currentPosition: { en: 'Research Networks Officer - Vicerrectoría de Investigación y Creación, Universidad de los Andes', es: 'Profesional de Redes de Investigación - Vicerrectoría de Investigación y Creación, Universidad de los Andes' },
+    currentPosition: { en: 'Science Diplomacy Officer, Vicerrectoría de Investigación y Creación, Universidad de los Andes', es: 'Oficial de Diplomacia Científica, Vicerrectoría de Investigación y Creación, Universidad de los Andes' },
     linkedinUrl: 'https://www.linkedin.com/in/andresmantillaorozco/',
     thesisTitle: 'Modeling, simulation, and synthesis of magnetoliposomes formation by encapsulation of magnetic nanoparticles in liposomes enabled by low-cost microfluidic platforms as potential drugs delivery vehicles.',
     laymanSummary: [

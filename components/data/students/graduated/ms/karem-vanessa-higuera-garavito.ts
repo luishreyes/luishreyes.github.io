@@ -3,10 +3,10 @@ import type { GraduatedStudent } from '../../../../types';
 const student: GraduatedStudent = {
     name: 'Karem Vanessa Higuera Garavito',
     degree: 'M.S.',
-    program: { en: 'M.S. in Product and Process Design at Universidad de Los Andes', es: 'M.S. en Diseño de Producto y Proceso en la Universidad de Los Andes' },
+    program: { en: 'M.S. in Product and Process Design at Universidad de los Andes', es: 'M.S. en Diseño de Productos y Procesos en la Universidad de los Andes' },
     graduationYear: 2022,
     startedYear: 2020,
-    currentPosition: { en: 'Product Analyst, West Química', es: 'Analista de Producto, West Química' },
+    currentPosition: { en: 'Research, Development and Innovation Analyst at West Química', es: 'Analista de investigación, desarrollo e innovación en West Química' },
     linkedinUrl: 'https://www.linkedin.com/in/karem-vanessa-higuera-garavito-606bbb157/',
     thesisTitle: 'Formulation of a Whey Protein Isolate Supplemented with 3,3-Diindolylmethane as a Result Enhancer in Fat Loss and Maintenance Programs',
     laymanSummary: [

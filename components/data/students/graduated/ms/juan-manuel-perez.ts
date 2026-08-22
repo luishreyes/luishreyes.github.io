@@ -3,10 +3,11 @@ import type { GraduatedStudent } from '../../../../types';
 const student: GraduatedStudent = {
     name: 'Juan Manuel Perez',
     degree: 'M.S.',
-    program: { en: 'M.S. in Product and Process Design at Universidad de Los Andes', es: 'M.S. en Diseño de Producto y Proceso en la Universidad de Los Andes' },
+    program: { en: 'M.S. in Product and Process Design at Universidad de los Andes', es: 'M.S. en Diseño de Productos y Procesos en la Universidad de los Andes' },
     graduationYear: 2023,
     startedYear: 2021,
-    currentPosition: { en: 'Founder at Insuaecol', es: 'Fundador de Insuaecol' },
+    currentPosition: { en: 'Technical Manager at Insuaecol', es: 'Gerente técnico de Insuaecol' },
+    linkedinUrl: 'https://www.linkedin.com/in/juan-manuel-perez-teatino-14a3a9177/',
     thesisTitle: 'Extraction of Amino Acids from Soybean Cake Through Enzymatic Hydrolysis for Fertilizer Production',
     laymanSummary: [
         {

@@ -3,10 +3,10 @@ import type { GraduatedStudent } from '../../../../types';
 const student: GraduatedStudent = {
     name: 'Julián Felipe Rodríguez Rubiano',
     degree: 'M.S.',
-    program: { en: 'M.S. in Product and Process Design at Universidad de Los Andes', es: 'M.S. en Diseño de Producto y Proceso en la Universidad de Los Andes' },
+    program: { en: 'M.S. in Product and Process Design at Universidad de los Andes', es: 'M.S. en Diseño de Productos y Procesos en la Universidad de los Andes' },
     graduationYear: 2024,
     startedYear: 2022,
-    currentPosition: { en: 'Junior Researcher at Bio D S.A', es: 'Investigador júnior en Bio D S.A' },
+    currentPosition: { en: 'Research Engineer at Bio D', es: 'Ingeniero investigador en Bio D' },
     linkedinUrl: 'https://www.linkedin.com/in/julianfrodriguezr/',
     thesisTitle: 'Mathematical Modeling and Economic Evaluation of the Production of 1,3-Propanediol Through the Fermentation of Glycerol with Lactobacillus reuteri',
     laymanSummary: [

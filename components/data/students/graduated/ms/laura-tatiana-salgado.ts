@@ -6,6 +6,7 @@ const student: GraduatedStudent = {
     program: { en: 'M.S. in Biomedical Engineering', es: 'M.S. en Ingeniería Biomédica' },
     graduationYear: 2024,
     startedYear: 2022,
+    currentPosition: { en: 'Technology Transfer Project Professional at Universidad de los Andes', es: 'Profesional de Proyectos de Transferencia Tecnológica en la Universidad de los Andes' },
     linkedinUrl: 'https://www.linkedin.com/in/laura-tatiana-salgado-rios-18738a312/',
     thesisTitle: 'Evaluating the Impact of Cell-Penetrating Motif Position on the Cellular Uptake of Magnetite Nanoparticles',
     laymanSummary: [
