@@ -96,7 +96,7 @@ const IconChevron = () => (
 );
 
 const turnAward = (turn: (typeof cycleTurns)[number]) =>
-  turn.recognizedBy ? awardsData.find((a) => a.awarder === turn.recognizedBy) : undefined;
+  turn.recognizedBy ? awardsData.find((a) => localize(a.awarder, 'en') === turn.recognizedBy) : undefined;
 
 const ResearchCycle: React.FC = () => {
   const { t, lang } = useI18n();
@@ -195,7 +195,7 @@ const ResearchCycle: React.FC = () => {
               <p className="text-xs text-brand-gray mt-1">{`${turn.paper.journal} ${turn.paper.locator}`}</p>
               {turnAward(turn) && (
                 <p className="mt-4 bg-brand-dark text-white text-sm rounded px-4 py-3 leading-relaxed">
-                  {fill(t('sotl.turn.recognized'), { award: turnAward(turn)!.title, year: turnAward(turn)!.year })}
+                  {fill(t('sotl.turn.recognized'), { award: localize(turnAward(turn)!.title, lang), year: turnAward(turn)!.year })}
                 </p>
               )}
             </div>

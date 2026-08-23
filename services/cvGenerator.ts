@@ -221,7 +221,7 @@ export const generateCvPdf = (
      autoTable(doc, {
         startY: yPos,
         head: [['Year', 'Award', 'Awarding Body']],
-        body: sortedRecognitions.map(a => [a.year.toString(), a.title, a.awarder]),
+        body: sortedRecognitions.map(a => [a.year.toString(), localize(a.title, 'en'), localize(a.awarder, 'en')]),
         theme: 'grid',
         headStyles: { fillColor: [85, 85, 85], textColor: 255 },
         styles: { fontSize: FONT_TINY_SIZE, cellPadding: 2, overflow: 'linebreak' },

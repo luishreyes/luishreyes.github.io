@@ -118,8 +118,14 @@ export interface Grant {
 }
 
 export interface Recognition {
-  title: string;
-  awarder: string;
+  /** Localized when the award's real name is not English: the two Colombian
+   *  distinctions were granted in Spanish, so English is the translation. Left
+   *  as a plain string when the official name is the same in both languages. */
+  title: Localized;
+  awarder: Localized;
+  /** Compact form of the awarder for dashboard tiles, where the full name of
+   *  the body does not fit. */
+  shortName?: string;
   /**
    * Which role the distinction recognizes. Drives which overview dashboard
    * surfaces it; the Recognition page lists them all regardless.

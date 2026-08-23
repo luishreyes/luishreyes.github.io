@@ -4,7 +4,7 @@ import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { PageWrapper } from '../components/PageWrapper';
 import { StatsSection } from '../components/StatsSection';
-import { useI18n } from '../context/i18n';
+import { useI18n, localize } from '../context/i18n';
 import { metrics, awardsByRole } from '../components/data/metrics';
 import { ProductsOverTimeChart } from '../components/ProductsOverTimeChart';
 import { motion, useScroll, useTransform } from 'framer-motion';
@@ -13,7 +13,7 @@ import { useAppData } from '../context/AppDataContext';
 
 export const ResearchOverviewPage: React.FC = () => {
   const { citationData, products } = useAppData();
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const { research } = metrics;
   const researchAwards = awardsByRole('research');
 
@@ -27,9 +27,9 @@ export const ResearchOverviewPage: React.FC = () => {
     // The two national distinctions get their own tiles; the rest are counted
     // on the Recognition page.
     ...researchAwards
-      .filter((award) => award.awarder.includes('Alejandro Ángel Escobar') || award.awarder.includes('National Academy of Medicine'))
+      .filter((award) => ['Fundación Alejandro Ángel Escobar', 'National Academy of Medicine of Colombia'].includes(localize(award.awarder, 'en')))
       .map((award) => ({
-        label: `${award.title} — ${award.awarder}`,
+        label: `${localize(award.title, lang)} — ${localize(award.awarder, lang)}`,
         value: String(award.year),
       })),
   ];

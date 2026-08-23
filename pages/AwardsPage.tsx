@@ -68,7 +68,7 @@ const RecognitionCard: React.FC<{ recognition: typeof awardsData[0] }> = ({ reco
                             <img
                                 className="w-full h-full object-contain object-center p-4"
                                 src={recognition.imageUrl}
-                                alt={`Icon for ${recognition.title}`}
+                                alt={`Icon for ${localize(recognition.title, lang)}`}
                             />
                             <div className="absolute inset-0 bg-white mix-blend-saturation pointer-events-none"></div>
                         </motion.div>
@@ -77,10 +77,10 @@ const RecognitionCard: React.FC<{ recognition: typeof awardsData[0] }> = ({ reco
                 <div className="p-8 pt-0 md:pt-8 md:pl-0 flex-grow flex flex-col justify-between">
                     <div>
                         <div className="flex flex-col sm:flex-row justify-between sm:items-baseline gap-2 mb-2">
-                            <h2 className="text-2xl font-bold text-brand-dark leading-tight">{recognition.title}</h2>
+                            <h2 className="text-2xl font-bold text-brand-dark leading-tight">{localize(recognition.title, lang)}</h2>
                             <span className="text-sm font-semibold bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full whitespace-nowrap flex-shrink-0">{recognition.year}</span>
                         </div>
-                        <p className="block text-sm font-semibold text-yellow-500 uppercase tracking-wide">{recognition.awarder} - {localize(recognition.category, lang)}</p>
+                        <p className="block text-sm font-semibold text-yellow-500 uppercase tracking-wide">{localize(recognition.awarder, lang)} - {localize(recognition.category, lang)}</p>
                         
                         <p className="mt-4 text-brand-dark italic font-medium">{t('awards.work')} "{recognition.projectTitle}"</p>
 
