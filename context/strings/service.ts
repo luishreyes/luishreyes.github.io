@@ -32,6 +32,15 @@ export const service = {
   // Editorial
   'editorial.title':         { en: 'Editorial Contributions', es: 'Contribuciones Editoriales' },
   'editorial.sub':           { en: 'I contribute to the academic publishing community by serving on editorial boards, ensuring the quality and integrity of scientific research.', es: 'Contribuyo a la comunidad editorial académica participando en comités editoriales, garantizando la calidad e integridad de la investigación científica.' },
+  'peerReview.title':        { en: 'Peer Review', es: 'Evaluación por Pares' },
+  'peerReview.lead':         { en: 'Beyond the boards, I referee manuscripts for journals across engineering, the life sciences, and education research. The figures below come from my ORCID record, which is public and can be checked against this page.', es: 'Más allá de los comités, evalúo manuscritos para revistas de ingeniería, ciencias de la vida e investigación educativa. Las cifras que siguen provienen de mi registro ORCID, que es público y puede contrastarse con esta página.' },
+  'peerReview.reviews':      { en: 'reviews credited on ORCID', es: 'evaluaciones acreditadas en ORCID' },
+  'peerReview.journals':     { en: 'journals refereed', es: 'revistas evaluadas' },
+  'peerReview.journalsShort':{ en: 'journals',            es: 'revistas' },
+  'peerReview.areasTitle':   { en: 'Where the invitations come from', es: 'De dónde vienen las invitaciones' },
+  'peerReview.journalsTitle':{ en: 'Journals refereed', es: 'Revistas evaluadas' },
+  'peerReview.orcid':        { en: 'Verify on ORCID', es: 'Verificar en ORCID' },
+  'peerReview.note':         { en: 'Manuscripts under review are confidential, so no paper, author or outcome is named here. Journals shown without a number were refereed through publisher systems that record one entry per review round, which would overstate the count.', es: 'Los manuscritos en evaluación son confidenciales, de modo que aquí no se nombra ningún artículo, autor ni resultado. Las revistas que aparecen sin número se evaluaron a través de sistemas editoriales que registran una entrada por ronda de revisión, lo que inflaría el conteo.' },
   'editorial.visitJournal':  { en: 'Visit Journal',          es: 'Visitar Revista' },
 
   // Outreach
