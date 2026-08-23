@@ -189,6 +189,26 @@ export const leadershipRolesData: Committee[] = [
 
 export const committeesData: Committee[] = [
     {
+        title: {
+          en: 'Task Force on Teaching in the Age of AI',
+          es: 'Task Force de Profesores en Docencia en Tiempos de IA',
+        },
+        role: { en: 'Member', es: 'Miembro' },
+        startYear: 2026,
+        endYear: 'Present',
+        level: 'University',
+        description: [
+            {
+              en: "A group of professors from different faculties raised, on their own initiative, what generative AI was doing to teaching. The Vice Presidency for Academic Affairs took up that concern and gave the group, eleven of us, an open mandate: it named the subject and left the approach, the method, and the reach of the proposals to us. Participation is voluntary. The group is temporary and dissolves once it delivers.",
+              es: "Un grupo de profesores de distintas facultades planteó, por iniciativa propia, lo que la IA generativa le estaba haciendo a la docencia. La Vicerrectoría Académica acogió esa inquietud y le dio al grupo, once en total, un mandato abierto: definió el tema y dejó en nuestras manos el enfoque, la metodología y el alcance de las propuestas. La participación es voluntaria. El grupo es temporal y se disuelve una vez entregue.",
+            },
+            {
+              en: "We read the peer-reviewed literature on what AI does to learning: cognitive offloading, skill atrophy, effort, comprehension. We gather the uses already happening in Uniandes classrooms, and we survey professors and students for a baseline of what is being used and for what. Those inputs feed guidelines, proposals on assessment and classroom practice, and a roadmap with actions and deadlines the University can adopt.",
+              es: "Leemos la literatura arbitrada sobre lo que la IA le hace al aprendizaje: descarga cognitiva, atrofia de habilidades, esfuerzo, comprensión. Recogemos los usos que ya ocurren en las aulas de los Andes y encuestamos a profesores y estudiantes para levantar una línea base de qué se usa y con qué propósito. Esos insumos alimentan lineamientos, propuestas sobre evaluación y práctica de aula, y una hoja de ruta con acciones y plazos que la Universidad pueda adoptar.",
+            }
+        ]
+    },
+    {
         title: 'Academia Joven de Colombia',
         role: { en: 'Member', es: 'Miembro' },
         startYear: 2024,
