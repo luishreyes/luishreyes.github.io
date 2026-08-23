@@ -3,6 +3,7 @@
 import React from 'react';
 import { PageWrapper } from '../../components/PageWrapper';
 import { editorialData } from '../../components/data/institutional';
+import { reviewedJournals, reviewsByArea, reviewAreaLabels, totalReviews, totalJournalsReviewed, ORCID_URL } from '../../components/data/peerReview';
 import { useI18n, localize } from '../../context/i18n';
 
 const eceIcons = [
@@ -77,6 +78,60 @@ export const EditorialPage: React.FC = () => {
                       )
                     })}
                 </div>
+
+                {/* Peer review: aggregate only, from the public ORCID record */}
+                <section className="mt-20">
+                    <h2 className="text-3xl font-bold tracking-tight text-brand-dark mb-3">{t('peerReview.title')}</h2>
+                    <p className="text-brand-gray leading-relaxed max-w-3xl">{t('peerReview.lead')}</p>
+
+                    <div className="mt-8 flex flex-wrap items-end gap-x-10 gap-y-4">
+                        <p className="flex items-baseline gap-2">
+                            <span className="text-5xl font-bold text-brand-dark tabular-nums">{totalReviews}</span>
+                            <span className="text-brand-gray">{t('peerReview.reviews')}</span>
+                        </p>
+                        <p className="flex items-baseline gap-2">
+                            <span className="text-5xl font-bold text-brand-dark tabular-nums">{totalJournalsReviewed}</span>
+                            <span className="text-brand-gray">{t('peerReview.journals')}</span>
+                        </p>
+                        <a
+                            href={ORCID_URL}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-block bg-yellow-400 text-brand-dark font-semibold px-5 py-2 rounded-lg shadow-md hover:bg-yellow-500 transition-colors text-sm"
+                        >
+                            {t('peerReview.orcid')} &#8599;
+                        </a>
+                    </div>
+
+                    <h3 className="mt-12 mb-4 text-sm font-bold uppercase tracking-widest text-brand-dark">{t('peerReview.areasTitle')}</h3>
+                    <ul className="space-y-3 max-w-3xl">
+                        {reviewsByArea.map(({ area, reviews, journals }) => (
+                            <li key={area}>
+                                <div className="flex items-baseline justify-between gap-4 text-sm">
+                                    <span className="text-brand-dark font-medium">{localize(reviewAreaLabels[area], lang)}</span>
+                                    <span className="text-brand-gray whitespace-nowrap tabular-nums">
+                                        {reviews} · {journals} {t('peerReview.journalsShort')}
+                                    </span>
+                                </div>
+                                <div className="mt-1 h-2 bg-zinc-100 rounded-full overflow-hidden">
+                                    <div className="h-full bg-yellow-400 rounded-full" style={{ width: `${(reviews / totalReviews) * 100}%` }} />
+                                </div>
+                            </li>
+                        ))}
+                    </ul>
+
+                    <h3 className="mt-12 mb-4 text-sm font-bold uppercase tracking-widest text-brand-dark">{t('peerReview.journalsTitle')}</h3>
+                    <ul className="grid sm:grid-cols-2 gap-x-8 gap-y-1 text-sm max-w-4xl">
+                        {reviewedJournals.map(({ journal, reviews }) => (
+                            <li key={journal} className="flex items-baseline justify-between gap-3 border-b border-zinc-100 py-1.5">
+                                <span className="text-brand-gray">{journal}</span>
+                                <span className="text-brand-dark font-semibold tabular-nums">{reviews ?? '·'}</span>
+                            </li>
+                        ))}
+                    </ul>
+
+                    <p className="mt-8 text-xs text-brand-gray italic max-w-3xl">{t('peerReview.note')}</p>
+                </section>
             </div>
         </div>
     </PageWrapper>
