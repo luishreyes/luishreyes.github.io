@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { PageWrapper } from '../../components/PageWrapper';
 import { StatsSection } from '../../components/StatsSection';
-import { useI18n, fill } from '../../context/i18n';
+import { useI18n, fill, localize } from '../../context/i18n';
 import { teachingData, type TaughtCourse } from '../../components/data/teaching';
 import { edcoCoursesData } from '../../components/data/edco';
 import { metrics, flagshipAward } from '../../components/data/metrics';
@@ -15,7 +15,7 @@ const averageEvaluationDisplay = teaching.averageEvaluation !== null
     : 'N/A';
 
 export const TeachingOverviewPage: React.FC = () => {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
 
   // A figure earns a tile only if it can be quoted on its own. Course counts
   // sliced three ways said the same thing three times; recognition and funded
@@ -27,7 +27,7 @@ export const TeachingOverviewPage: React.FC = () => {
     { label: t('stats.moocLearners'), value: teaching.moocEnrolments, note: `${teaching.moocCompletions.toLocaleString()} ${t('stats.moocLearners.note')}` },
     { label: t('stats.avgEvaluation'), value: averageEvaluationDisplay, note: `${teaching.evaluatedRuns} ${t('stats.avgEvaluation.runs')}` },
     { label: t('stats.uniqueCourses'), value: teaching.uniqueCourseTitles },
-    ...(teachingAward ? [{ label: teachingAward.title, value: `${teachingAward.awarder.replace('AIChE Education Division', 'AIChE')} ${teachingAward.year}`, note: t('stats.award.note') }] : []),
+    ...(teachingAward ? [{ label: localize(teachingAward.title, lang), value: `${teachingAward.shortName ?? ''} ${teachingAward.year}`.trim(), note: t('stats.award.note') }] : []),
     { label: t('stats.eduGrants'), value: teaching.educationGrants, note: t('stats.eduGrants.note') },
   ];
 

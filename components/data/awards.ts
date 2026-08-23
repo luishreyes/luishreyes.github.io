@@ -6,7 +6,8 @@ import type { Recognition } from '../../types';
 export const awardsData: Recognition[] = [
   {
     title: "Award for Innovation in Chemical Engineering Education",
-    awarder: "AIChE Education Division",
+    awarder: { en: "AIChE Education Division", es: "División de Educación de AIChE" },
+    shortName: "AIChE",
     role: 'teaching',
     category: { en: "Innovation in Chemical Engineering Education", es: "Innovación en la educación en ingeniería química" },
     year: 2026,
@@ -59,8 +60,9 @@ export const awardsData: Recognition[] = [
     imageUrl: "https://img.icons8.com/?size=512&id=4KY3tfAid4dZ&format=png",
   },
   {
-    title: "Best Research Work",
-    awarder: "National Academy of Medicine of Colombia",
+    title: { en: "Best Research Work", es: "Mejor Trabajo de Investigación" },
+    awarder: { en: "National Academy of Medicine of Colombia", es: "Academia Nacional de Medicina de Colombia" },
+    shortName: "Academia Nacional de Medicina",
     role: 'research',
     category: { en: "Scientific Research in Human Health", es: "Investigación científica en salud humana" },
     year: 2023,
@@ -96,8 +98,9 @@ export const awardsData: Recognition[] = [
     imageUrl: "https://static.thenounproject.com/png/1862029-200.png",
   },
   {
-    title: "Honorable Mention in Sciences",
+    title: { en: "Honorable Mention in Sciences", es: "Mención de Honor en Ciencias" },
     awarder: "Fundación Alejandro Ángel Escobar",
+    shortName: "Alejandro Ángel Escobar",
     role: 'research',
     category: { en: "Exact, Physical, and Natural Sciences", es: "Ciencias exactas, físicas y naturales" },
     year: 2023,
@@ -125,8 +128,8 @@ export const awardsData: Recognition[] = [
     imageUrl: "https://www.abmgood.com/assets/images/category/cate-icon/crispr-knock-in-repair-template.png",
   },
   {
-    title: "III Premio Nacional Rebeca Uribe Bone",
-    awarder: "Consejo Profesional de Ingeniería Química de Colombia (CPIQ)",
+    title: { en: "III Rebeca Uribe Bone National Award", es: "III Premio Nacional Rebeca Uribe Bone" },
+    awarder: { en: "Colombian Professional Council of Chemical Engineering (CPIQ)", es: "Consejo Profesional de Ingeniería Química de Colombia (CPIQ)" },
     role: 'teaching',
     category: { en: "Best Chemical Engineering Degree Project", es: "Mejor trabajo de grado en ingeniería química" },
     year: 2023,
