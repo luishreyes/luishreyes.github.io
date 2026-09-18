@@ -190,6 +190,26 @@ export const leadershipRolesData: Committee[] = [
 export const committeesData: Committee[] = [
     {
         title: {
+          en: 'Senior Researcher (IS) — National System of Science, Technology and Innovation',
+          es: 'Investigador Senior (IS) — Sistema Nacional de Ciencia, Tecnología e Innovación',
+        },
+        role: { en: 'Minciencias Classification', es: 'Categoría Minciencias' },
+        startYear: 2025,
+        endYear: 'Present',
+        level: 'National',
+        description: [
+            {
+              en: "Senior Researcher is the highest category in the researcher classification of Colombia's Ministry of Science, Technology and Innovation (Minciencias). It is awarded through the National Call for the Recognition and Measurement of Research Groups and Researchers, and requires a sustained record of peer-reviewed production, doctoral supervision, and demonstrated scientific leadership.",
+              es: "Investigador Senior es la categoría más alta en la clasificación de investigadores del Ministerio de Ciencia, Tecnología e Innovación (Minciencias). Se otorga a través de la Convocatoria Nacional para el Reconocimiento y Medición de Grupos de Investigación e Investigadores, y exige una trayectoria sostenida de producción arbitrada, dirección de tesis doctorales y liderazgo científico demostrado.",
+            },
+            {
+              en: "I am also a recognized peer evaluator for Minciencias, assessing research proposals submitted to national calls.",
+              es: "También soy par evaluador reconocido por Minciencias, evaluando propuestas de investigación presentadas a convocatorias nacionales.",
+            }
+        ]
+    },
+    {
+        title: {
           en: 'Task Force on Teaching in the Age of AI',
           es: 'Task Force de Profesores en Docencia en Tiempos de IA',
         },
