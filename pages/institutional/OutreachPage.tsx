@@ -43,6 +43,8 @@ const getTypeIcon = (type: string) => {
       return <svg xmlns="http://www.w3.org/2000/svg" className={iconClass} viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M3 5a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2h-2.22l.123.489.804.804A1 1 0 0113 18H7a1 1 0 01-.707-1.707l.804-.804L7.22 15H5a2 2 0 01-2-2V5zm2-1a1 1 0 00-1 1v8a1 1 0 001 1h10a1 1 0 001-1V5a1 1 0 00-1-1H5z" clipRule="evenodd" /></svg>;
     case 'Fair':
       return <svg xmlns="http://www.w3.org/2000/svg" className={iconClass} viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" /></svg>;
+    case 'Media Feature':
+      return <svg xmlns="http://www.w3.org/2000/svg" className={iconClass} viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zm12.553 1.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" clipRule="evenodd" /></svg>;
     default:
       return null;
   }
@@ -53,6 +55,7 @@ const typeLabels: Record<string, { en: string; es: string }> = {
   'University Event': { en: 'University Event', es: 'Evento universitario' },
   'Virtual Event': { en: 'Virtual Event', es: 'Evento virtual' },
   'Fair': { en: 'Fair', es: 'Feria' },
+  'Media Feature': { en: 'Media Feature', es: 'Aparición en medios' },
 };
 
 export const OutreachPage: React.FC = () => {
@@ -110,6 +113,19 @@ export const OutreachPage: React.FC = () => {
 
                                 <p className="font-medium text-brand-dark">{localize(activity.location, lang)}</p>
                                 <p className="mt-2 text-brand-gray">{localize(activity.description, lang)}</p>
+                                {activity.url && (
+                                    <a
+                                        href={activity.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-brand-dark border-b-2 border-brand-yellow hover:border-brand-yellow-dark transition-colors"
+                                    >
+                                        {lang === 'es' ? 'Ver el episodio' : 'Watch the episode'}
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                        </svg>
+                                    </a>
+                                )}
                             </div>
                         </motion.div>
                     ))}
