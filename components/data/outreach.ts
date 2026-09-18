@@ -7,10 +7,29 @@ export interface OutreachActivity {
   title: Localized;
   location: Localized;
   description: Localized;
-  type: 'School Visit' | 'University Event' | 'Virtual Event' | 'Fair';
+  type: 'School Visit' | 'University Event' | 'Virtual Event' | 'Fair' | 'Media Feature';
+  url?: string;
 }
 
 export const outreachData: OutreachActivity[] = [
+  {
+    year: 2026,
+    date: 'September',
+    title: {
+      en: 'Visionarios — Universidad de los Andes documentary series',
+      es: 'Visionarios — serie documental de la Universidad de los Andes',
+    },
+    location: {
+      en: 'Universidad de los Andes · Full episode on YouTube and RevisaPuntos',
+      es: 'Universidad de los Andes · Episodio completo en YouTube y RevisaPuntos',
+    },
+    description: {
+      en: 'A documentary episode on my trajectory, one of four professors profiled in the new season of Visionarios. It goes back to the teacher in Ocaña who graded me by having me teach the class on alkanes — where both the science and the teaching started — through the decision to turn down industry for the classroom, the doctorate at Texas A&M and the work at NREL, the return to Colombia under the «Es tiempo de volver» call, and the use of CRISPR-Cas9 to design therapies for orphan diseases such as Morquio IV A. It also takes in the black-and-white photography, which follows the same multiscale logic as the science. The closing argument is the one I care about: research is a way of teaching, and the papers and the awards are beautiful by-products.',
+      es: 'Un episodio documental sobre mi trayectoria, uno de los cuatro profesores perfilados en la nueva temporada de Visionarios. Vuelve a la profesora de Ocaña que me evaluaba poniéndome a dictar la clase de alcanos —donde arrancaron a la vez la ciencia y la docencia—, pasa por la decisión de dejar la industria por el aula, el doctorado en Texas A&M y el trabajo en el NREL, el regreso a Colombia con la convocatoria «Es tiempo de volver», y el uso de CRISPR-Cas9 para diseñar terapias contra enfermedades huérfanas como el síndrome de Morquio IV A. Recoge también la fotografía en blanco y negro, que sigue la misma lógica multiescala de la ciencia. El cierre es el argumento que me importa: la investigación es una forma de hacer docencia, y los papers y los premios son subproductos bonitos.',
+    },
+    type: 'Media Feature',
+    url: 'https://youtu.be/fQQH2BbAbUM',
+  },
   {
     year: 2024,
     date: 'October 1-2',
