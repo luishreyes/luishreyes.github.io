@@ -8,7 +8,7 @@ export const service = {
   'service.leadership.title': { en: 'Service & Leadership',  es: 'Servicio y Liderazgo' },
   'service.leadership.desc':  { en: 'Shaping academic and scientific direction at national and institutional levels through leadership roles and service on key strategic committees.', es: 'Orientando la dirección académica y científica a nivel nacional e institucional a través de roles de liderazgo y participación en comités estratégicos clave.' },
   'service.ai.title':         { en: 'Augmented Intelligence Initiative', es: 'Iniciativa de Inteligencia Aumentada' },
-  'service.ai.desc':          { en: "Co-founding and leading the 'Augmented Intelligence Uniandes' initiative to strategically integrate Generative AI into the engineering curriculum, revolutionizing our pedagogical models.", es: "Co-fundando y liderando la iniciativa 'Inteligencia Aumentada Uniandes' para integrar estratégicamente la IA Generativa en el currículo de ingeniería, revolucionando nuestros modelos pedagógicos." },
+  'service.ai.desc':          { en: 'Co-founded and co-led the \'Augmented Intelligence Uniandes\' initiative (June 2024 to 2026), which set out to integrate Generative AI strategically into the engineering curriculum and to rethink our pedagogical models.', es: 'Cofundé y colideré la iniciativa «Inteligencia Aumentada Uniandes» (junio de 2024 a 2026), que se propuso integrar estratégicamente la IA generativa en el currículo de ingeniería y repensar nuestros modelos pedagógicos.' },
   'service.editorial.title':  { en: 'Editorial Contributions', es: 'Contribuciones Editoriales' },
   'service.editorial.desc':   { en: 'Contributing to the global scientific community by upholding the quality and integrity of research through service on the editorial boards of prestigious international journals.', es: 'Contribuyendo a la comunidad científica global manteniendo la calidad e integridad de la investigación a través del servicio en los comités editoriales de revistas internacionales de prestigio.' },
   'service.outreach.title':   { en: 'Outreach & Scouting',   es: 'Divulgación y Scouting' },
@@ -25,8 +25,8 @@ export const service = {
   'committees.faculty':      { en: 'Faculty Level',          es: 'Nivel de Facultad' },
   'committees.department':   { en: 'Department Level',       es: 'Nivel Departamental' },
   'committees.ai.title':     { en: 'Augmented Intelligence Uniandes Initiative', es: 'Iniciativa Inteligencia Aumentada Uniandes' },
-  'committees.ai.role':      { en: 'Co-founder (Jun 2024 - Present)', es: 'Cofundador (Jun 2024 - Presente)' },
-  'committees.ai.desc':      { en: 'A strategic initiative to transform engineering education with Generative AI. For more details on my role and its impact, visit the dedicated page.', es: 'Una iniciativa estratégica para transformar la educación en ingeniería con IA Generativa. Para más detalles sobre mi rol y su impacto, visita la página dedicada.' },
+  'committees.ai.role':      { en: 'Co-founder (Jun 2024 - 2026)', es: 'Cofundador (jun 2024 - 2026)' },
+  'committees.ai.desc':      { en: 'A strategic initiative, active from June 2024 to the second semester of 2026, to transform engineering education with Generative AI. For more details on my role and its impact, visit the dedicated page.', es: 'Una iniciativa estratégica, activa entre junio de 2024 y el segundo semestre de 2026, para transformar la educación en ingeniería con IA generativa. Para más detalles sobre mi rol y su impacto, visita la página dedicada.' },
   'committees.learnMore':    { en: 'Learn More',             es: 'Saber más' },
 
   // Editorial
@@ -49,7 +49,7 @@ export const service = {
 
   // Augmented Intelligence
   'ai.title':                { en: 'Augmented Intelligence Uniandes', es: 'Inteligencia Aumentada Uniandes' },
-  'ai.sub':                  { en: "A pioneering initiative to transform engineering education by strategically integrating Generative AI, co-founded and co-designed to amplify human intelligence.", es: 'Una iniciativa pionera para transformar la educación en ingeniería integrando estratégicamente la IA Generativa, cofundada y codiseñada para amplificar la inteligencia humana.' },
+  'ai.sub':                  { en: 'A pioneering initiative (2024 to 2026) to transform engineering education by integrating Generative AI strategically, co-founded and co-designed to amplify human intelligence.', es: 'Una iniciativa pionera (2024 a 2026) para transformar la educación en ingeniería con una integración estratégica de la IA generativa, cofundada y codiseñada para amplificar la inteligencia humana.' },
   'ai.transforming':         { en: 'Transforming Engineering Education with AI', es: 'Transformando la Educación en Ingeniería con IA' },
   'ai.myRole':               { en: 'My Role and Contribution', es: 'Mi Rol y Contribución' },
   'ai.leadership':           { en: 'Leadership and Conceptual Design', es: 'Liderazgo y Diseño Conceptual' },
@@ -67,12 +67,12 @@ export const service = {
   'ai.framework':            { en: 'Conceptual Framework: Augmented Intelligence', es: 'Marco Conceptual: Inteligencia Aumentada' },
   'ai.principles':           { en: 'Guiding Principles Implemented', es: 'Principios Rectores Implementados' },
   'ai.implementation':       { en: 'Implementation Process',  es: 'Proceso de Implementación' },
-  'ai.projection':           { en: 'Projection and Sustainability', es: 'Proyección y Sostenibilidad' },
-  'ai.futureVision':         { en: 'Future Vision',           es: 'Visión de Futuro' },
+  'ai.projection':           { en: 'Legacy', es: 'Legado' },
+  'ai.futureVision':         { en: 'What Continues', es: 'Lo que continúa' },
 
   // AI - Executive summary
   'ai.summary.pre':          { en: 'As a co-founder of the ', es: 'Como cofundador de la iniciativa ' },
-  'ai.summary.post':         { en: ' initiative, alongside Dean Rubby Casallas and Professor Juan Carlos Cruz, I have actively participated in the strategic integration of Generative Artificial Intelligence in the School of Engineering at Universidad de los Andes. This pioneering initiative, launched in June 2024, represents a paradigm shift in how we conceive teaching and learning in engineering.', es: ', junto a la Decana Rubby Casallas y el Profesor Juan Carlos Cruz, he participado activamente en la integración estratégica de la Inteligencia Artificial Generativa en la Facultad de Ingeniería de la Universidad de los Andes. Esta iniciativa pionera, lanzada en junio de 2024, representa un cambio de paradigma en la manera en que concebimos la enseñanza y el aprendizaje en ingeniería.' },
+  'ai.summary.post':         { en: ' initiative, alongside Dean Rubby Casallas and Professor Juan Carlos Cruz, I took an active part in the strategic integration of Generative Artificial Intelligence in the School of Engineering at Universidad de los Andes. The initiative, launched in June 2024 and closed in the second semester of 2026, marked a shift in how we conceive teaching and learning in engineering.', es: ', junto a la decana Rubby Casallas y el profesor Juan Carlos Cruz, participé activamente en la integración estratégica de la inteligencia artificial generativa en la Facultad de Ingeniería de la Universidad de los Andes. La iniciativa, lanzada en junio de 2024 y cerrada en el segundo semestre de 2026, marcó un cambio en la manera en que concebimos la enseñanza y el aprendizaje en ingeniería.' },
 
   // AI - Leadership list
   'ai.lead.1.strong':        { en: 'Co-creator',  es: 'Cocreador' },
@@ -124,11 +124,11 @@ export const service = {
   'ai.stage2.2':             { en: 'Definition of scopes and resources.', es: 'Definición de alcances y recursos.' },
   'ai.stage2.3':             { en: 'Assignment of IAU team students.', es: 'Asignación de estudiantes del equipo IAU.' },
   'ai.stage3.title':         { en: 'Stage 3: Development and Implementation', es: 'Etapa 3: Desarrollo e Implementación' },
-  'ai.stage3.date':          { en: '(April 2025 - Present)', es: '(Abril de 2025 - Presente)' },
+  'ai.stage3.date':          { en: '(April 2025 - 2026)', es: '(abril de 2025 - 2026)' },
   'ai.stage3.1':             { en: 'Weekly progress monitoring.', es: 'Seguimiento semanal del avance.' },
   'ai.stage3.2':             { en: 'Resolution of technical challenges.', es: 'Resolución de retos técnicos.' },
   'ai.stage3.3':             { en: 'Documentation of best practices.', es: 'Documentación de buenas prácticas.' },
 
   // AI - Future vision
-  'ai.futureVision.text':    { en: 'The Augmented Intelligence Uniandes initiative is designed to be a sustainable and evolving program. Our vision is to establish a permanent center of excellence for AI in education, continuously exploring new pedagogical models and technologies. Future plans include expanding the program to other faculties, securing long-term strategic partnerships with industry leaders, and developing a repository of open-source educational AI tools to benefit the broader academic community.', es: 'La iniciativa Augmented Intelligence Uniandes está diseñada para ser un programa sostenible y en constante evolución. Nuestra visión es establecer un centro de excelencia permanente para la IA en la educación, explorando continuamente nuevos modelos pedagógicos y tecnologías. Los planes futuros incluyen extender el programa a otras facultades, asegurar alianzas estratégicas de largo plazo con líderes de la industria, y desarrollar un repositorio de herramientas educativas de IA de código abierto en beneficio de la comunidad académica en general.' },
+  'ai.futureVision.text':    { en: 'The Augmented Intelligence Uniandes initiative closed in the second semester of 2026, and its work did not end with it. What I learned there now guides my work in the Task Force on Teaching in the Age of AI and my research on Generative AI in engineering education, which starts from one rule: AI must first do no harm to learning, and only then try to improve it. The projects from its first call, and the experience of the students and faculty who built them, remain as a foundation for what the School does next.', es: 'La iniciativa Inteligencia Aumentada Uniandes cerró en el segundo semestre de 2026, y su trabajo no terminó con ella. Lo que aprendí en ella orienta hoy mi trabajo en el Task Force de Profesores en Docencia en Tiempos de IA y mi investigación sobre IA generativa en la formación de ingenieros, que parte de una regla: la IA primero no debe dañar el aprendizaje, y solo después puede intentar mejorarlo. Los proyectos de su primera convocatoria, y la experiencia de los estudiantes y profesores que los construyeron, quedan como base para lo que la Facultad haga después.' },
 } as const;
