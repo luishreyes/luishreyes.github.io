@@ -1,10 +1,11 @@
 import type { Course, CronogramaEntry } from '../classroom';
+import { spdpDocumentos, spdpPresentaciones } from './spdp-material-2026-20';
 
 // ── Seminario de Proyecto (SPDP) · semestre 2026-20 · Periodo 8B ───
 // Nueva corrida del Seminario (código IQYA-3050), adaptada de la versión
-// 2026-10. Acento azul. Cronograma: 8 sesiones, miércoles 7-oct → 25-nov 2026.
-// NOTA: las fechas del Periodo 8B 2026-20 son tentativas (miércoles del bloque)
-// y deben confirmarse contra el calendario académico oficial de Uniandes.
+// 2026-10. Acento naranja, el del design system del curso. Cronograma: 8 sesiones, miércoles 7-oct → 25-nov 2026.
+// Fechas y salón confirmados contra el programa 2026-20 (sPDP/202620/programa)
+// el 6 de octubre de 2026: AU-107, Edificio Aulas, campus principal.
 const seminarioCronograma: CronogramaEntry[] = [
   {
     date: '2026-10-07',
@@ -101,11 +102,11 @@ export const seminario202620Course: Course = {
   code: 'IQYA-3050',
   title: 'Seminario de Proyecto de Desarrollo Profesional',
   term: '2026-20 · Periodo 8B',
-  accent: 'blue',
+  accent: 'naranja',
   credits: 1,
   modality: 'Presencial',
   duration: '8 sesiones',
-  tagline: 'Diseñar en 8 sesiones el proyecto que ejecutarás el próximo semestre',
+  tagline: 'Ocho miércoles para pasar de un reto propuesto a una propuesta que su asesor pueda firmar',
   description:
     'El Seminario de Proyecto de Desarrollo Profesional (SPDP) es el primer curso de una serie de dos. Aquí los estudiantes, junto con un mentor, diseñan el reto de innovación o la pregunta de investigación que desarrollarán durante el semestre 2027-10. A lo largo de 8 sesiones se construyen progresivamente tres entregas: la propuesta de valor, el flujograma del proceso y la propuesta final completa — con avales del mentor, presupuesto, consideraciones éticas y evaluación de riesgo.',
   accessCode: 'SPDP202620',
@@ -142,6 +143,7 @@ export const seminario202620Course: Course = {
   ],
   schedule: [
     { label: 'Sesión semanal', detail: 'Miércoles 12:30 pm – 1:50 pm · Grupo 1' },
+    { label: 'Salón', detail: 'AU-107 · Edificio Aulas · Campus principal' },
     { label: 'Atención a estudiantes', detail: 'Viernes 8:00 am – 12:00 m · Cita previa por correo' },
   ],
   objectives: [
@@ -313,7 +315,7 @@ export const seminario202620Course: Course = {
     {
       category: 'Ajustes razonables para estudiantes con discapacidad',
       items: [
-        'Informa al profesor en las primeras dos semanas.',
+        'Informe al profesor en las primeras dos semanas.',
         'Los ajustes se implementarán confidencialmente.',
         'Objetivo: facilitar la experiencia educativa en igualdad de condiciones.',
       ],
@@ -325,96 +327,30 @@ export const seminario202620Course: Course = {
       ],
     },
   ],
-  readings: [
-    {
-      slug: 'propuesta-valor',
-      title: 'Propuesta de valor',
-      summary:
-        'Guía para desarrollar la propuesta de valor del proyecto de desarrollo profesional: dos esquemas (proyecto de desarrollo y proyecto de innovación) con ejemplos completos (EcoFilter, ChemFoodLab), campo a campo, proceso de redacción y pasos de entrega firmada por el asesor.',
-      date: '2026-10-07',
-      readingMinutes: 15,
-      tags: ['propuesta', 'proyecto', 'entregable'],
-      category: 'guia',
-      order: 1,
-      href: '/classroom/iqya-3050-2026-20/guias/Guia_Propuesta_de_Valor/Guia_Propuesta_de_Valor.html',
-    },
-    {
-      slug: 'flujogramas',
-      title: 'Flujogramas en el desarrollo de proyectos',
-      summary:
-        'Guía sobre qué es un flujograma, sus características, tipos (lineal vertical/horizontal/panorámico, matricial), símbolos estándar (terminales, proceso, decisión, entrada, salida, conectores), los cuatro pasos para construirlo y herramientas recomendadas (draw.io, Lucidchart, Miro, Canva).',
-      date: '2026-10-21',
-      readingMinutes: 18,
-      tags: ['flujograma', 'proceso', 'diseño', 'entregable'],
-      category: 'guia',
-      order: 2,
-      href: '/classroom/iqya-3050-2026-20/guias/Guia_Flujogramas/Guia_Flujogramas.html',
-    },
-  ],
-  presentations: [
-    {
-      id: 'clase-01-bienvenida',
-      title: 'Bienvenida y presentación de retos',
-      description:
-        'Presentación del curso: objetivos, metodología de las tres entregas, cronograma, evaluación Aprobado/Reprobado, escala AIAS y listado completo de los retos propuestos por los asesores del departamento.',
-      date: '2026-10-07',
-      sessionNumber: 1,
-      file: 'clase-01-bienvenida.html',
-    },
-    {
-      id: 'clase-03-ia-investigacion',
-      title: 'IA generativa para investigación',
-      description:
-        'Framework de decisión estratégica para elegir la herramienta correcta según el tipo de pregunta (conceptual, empírica, metodológica, contextual). Revisión de ChatGPT/Claude, Perplexity, SciSpace/Consensus, Google Scholar/WoS, NotebookLM y Deep Research, con matriz de decisión y flujo de trabajo recomendado.',
-      date: '2026-10-21',
-      sessionNumber: 3,
-      file: 'clase-03-ia-investigacion.html',
-    },
-    {
-      id: 'clase-04-ia-datos',
-      title: 'IA generativa para análisis de datos',
-      description:
-        'Enfoque human-in-the-loop para analítica moderna: datos estructurados vs. no estructurados, por qué los LLM cierran la brecha de habilidades, formatos de representación (CSV, JSON, YAML), flujo de 5 etapas (Diagnóstico → Ideación → Alineación → Navegación → Evolución), roles clave (IA · humano · colaboración) y demostración con tres prompts (EDA, plan y ejecución).',
-      date: '2026-10-28',
-      sessionNumber: 4,
-      file: 'clase-04-ia-datos.html',
-    },
-    {
-      id: 'clase-05a-presupuestos',
-      title: 'Presupuesto pregrado y posgrados',
-      description:
-        'Gestión del presupuesto del proyecto: montos asignados por programa, compra de reactivos y sustancias químicas, equipos de laboratorio, alimentos perecederos, otros suministros, servicios especializados (Ing. Mecánica, Centro de Microscopía, DSIT), gases especiales, restricciones y proceso de solicitud de compras.',
-      date: '2026-11-04',
-      sessionNumber: 5,
-      file: 'clase-05a-presupuestos.html',
-    },
-    {
-      id: 'clase-05b-laboratorios',
-      title: 'Laboratorios',
-      description:
-        'Uso correcto de laboratorios del departamento: sistema BooQui para reservas y formato PES, cursos virtuales y charlas obligatorias, gestión de material roto, categorías de reservas ML 416 / ML 418, inventario de sustancias químicas, directriz para montajes, reglamentos clave, horario no hábil, compras externas y proveedores autorizados.',
-      date: '2026-11-04',
-      sessionNumber: 5,
-      file: 'clase-05b-laboratorios.html',
-    },
-    {
-      id: 'clase-06-etica',
-      title: 'Ética en investigación',
-      description:
-        'Principios fundamentales (Belmont: respeto, beneficencia, justicia), casos históricos (Tuskegee), marco normativo en Colombia (Resolución 8430 de 1993), Comité de Ética de la Facultad de Ingeniería, clasificación de riesgo por autoclasificación (preguntas 1.1–1.5 · conflicto de interés), ejemplos prácticos sin riesgo / mínimo / mayor al mínimo, consentimiento y asentimiento informado, proceso de solicitud y lista de chequeo.',
-      date: '2026-11-11',
-      sessionNumber: 6,
-      file: 'clase-06-etica.html',
-    },
-    {
-      id: 'clase-07-narrativas-visuales',
-      title: 'Narrativas visuales para presentación de datos',
-      description:
-        'Data storytelling y los 5 principios de diseño visual (tipo de gráfica, ratio datos-tinta, jerarquía visual, color con propósito y títulos argumentativos). Cuarteto de Anscombe, makeovers de "antes y después", paletas cualitativa/secuencial/divergente, estructura Situación-Complicación-Resolución, herramientas (Excel, Python, IA generativa) y talleres prácticos. Todas las gráficas están renderizadas directamente en SVG dentro del slide.',
-      date: '2026-11-18',
-      sessionNumber: 7,
-      file: 'clase-07-narrativas-visuales.html',
-    },
-  ],
+  // Material: los documentos y las presentaciones viven en spdp-material-2026-20.ts
+  // (generado desde la carpeta del curso) y los pinta SpdpMaterialPage. Aquí
+  // quedan los documentos como `readings` para que el resto del Aula (conteos,
+  // visor genérico) los vea. Las siete presentaciones HTML de 2026-10 que estaban
+  // aquí se quitaron: siguen en el curso archivado (iqya-3050).
+  readings: spdpDocumentos.map((d, i) => ({
+    slug: d.id,
+    title: d.titulo,
+    summary: d.descripcion,
+    date: '2026-10-07',
+    category: 'guia' as const,
+    order: i + 1,
+    href: d.archivo,
+  })),
+  // Las presentaciones son PDF y las pinta SpdpMaterialPage desde spdp-material-2026-20.ts.
+  // Se repiten aquí para que la tarjeta del Aula las cuente. La página genérica
+  // arma /classroom/{slug}/slides/{file}; con '../presentaciones/' el enlace
+  // resuelve al PDF real.
+  presentations: spdpPresentaciones.map((p) => ({
+    id: `sesion-${p.sesion}`,
+    title: p.titulo,
+    sessionNumber: p.sesion,
+    week: p.sesion,
+    file: `../presentaciones/${p.archivo.split('/').pop()}`,
+  })),
   cronograma: seminarioCronograma,
 };
