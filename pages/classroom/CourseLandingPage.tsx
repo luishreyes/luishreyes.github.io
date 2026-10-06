@@ -10,6 +10,7 @@ import { NotFoundInClassroom } from './NotFoundInClassroom';
 import { EduProLandingPage } from './EduProLandingPage';
 import { NarrativasLandingPage } from './NarrativasLandingPage';
 import { PouLandingPage } from './PouLandingPage';
+import { SpdpLandingPage } from './SpdpLandingPage';
 
 // Documento interno del curso: se puede abrir en el visor de la misma página.
 const isInternalDoc = (slug: string, href?: string): boolean =>
@@ -35,6 +36,11 @@ export const CourseLandingPage: React.FC = () => {
   // Identidad gráfica propia de POU (IQYA-2031): sistema «Industry».
   if (course.slug === 'iqya-2031-2026-20') {
     return <PouLandingPage course={course} />;
+  }
+
+  // Identidad gráfica propia del SPDP 2026-20 (IQYA-3050): design system del curso.
+  if (course.slug === 'iqya-3050-2026-20') {
+    return <SpdpLandingPage course={course} />;
   }
 
   return (

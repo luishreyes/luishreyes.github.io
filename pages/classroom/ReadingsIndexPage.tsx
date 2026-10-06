@@ -6,6 +6,7 @@ import { getCourseBySlug } from '../../components/data/classroom';
 import { CourseAccessGate } from '../../components/classroom/CourseAccessGate';
 import { NotFoundInClassroom } from './NotFoundInClassroom';
 import { NarrativasReadingsPage } from './NarrativasReadingsPage';
+import { SpdpMaterialPage } from './SpdpMaterialPage';
 import { PouMaterialPage } from './PouMaterialPage';
 
 // Slug del cronograma: vive como tarjeta propia en la landing, no dentro de Guías.
@@ -27,6 +28,10 @@ export const ReadingsIndexPage: React.FC = () => {
   if (!course) return <NotFoundInClassroom />;
 
   // Identidad gráfica propia del curso Narrativas Visuales (IQYA-3751).
+  // SPDP 2026-20: material por sesión, con los PDF del curso, en la identidad del curso.
+  if (course.slug === 'iqya-3050-2026-20') {
+    return <SpdpMaterialPage course={course} />;
+  }
   if (course.slug === 'iqya-3751-2026-20') {
     return <NarrativasReadingsPage course={course} />;
   }
