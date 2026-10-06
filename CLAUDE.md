@@ -54,7 +54,8 @@ Los datos de cada curso viven en `components/data/classroom/{slug}.ts` y se impo
 | `iqya-2031` | Proyecto de Operaciones Unitarias (POU) | Curso pesado en lecturas técnicas y presentaciones (clases 02 a 18+) |
 | `iqya-3050` | Seminario de IQ | Lecturas tipo guía y presentaciones de seminario |
 | `dpro-4300` | Diseño Sistémico de Bioproductos | Curso más reciente, agregado a inicios del semestre |
-| `spdp` / `spdp-retos` | Servicio de Práctica | Catálogo de retos, sin presentaciones */ Solo placeholder |
+| `iqya-3050` (`spdp.ts`) | SPDP 2026-10 (archivado) | Explorador de retos original (`spdp-retos.ts`, retos de 2026-10) |
+| `iqya-3050-2026-20` (`seminario-2026-20.ts`) | SPDP 2026-20 | Explorador propio: `SpdpRetosPage.tsx` + `spdp-theme.css` (identidad del design system del SPDP: Anton/Barlow/Playfair, papel y naranja, todo bajo `.spdp-ds`). Datos en `spdp-retos-2026-20.ts`, **generado** desde la carpeta del curso (`sPDP/202620/presentaciones/datos/exportar-portafolio.py`): no editar a mano |
 
 **⚠️ Terminología:** la UI pública dice "Material del curso", no "Lecturas". Los objetos de datos siguen llamándose `readings` / `Reading` en el código por compatibilidad. La URL sigue siendo `/classroom/{slug}/readings/...`.
 

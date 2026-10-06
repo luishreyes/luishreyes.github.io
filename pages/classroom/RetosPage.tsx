@@ -5,10 +5,23 @@ import { getCourseBySlug } from '../../components/data/classroom';
 import { CourseAccessGate } from '../../components/classroom/CourseAccessGate';
 import { NotFoundInClassroom } from './NotFoundInClassroom';
 import { spdpRetos, type Reto } from '../../components/data/classroom/spdp-retos';
+import { SpdpRetosPage } from './SpdpRetosPage';
 
 type TabView = 'stats' | 'retos';
 
+// El SPDP 2026-20 tiene su propio explorador, con los retos de ese semestre y la
+// identidad del curso. Los demás cursos con `challenges` (el SPDP 2026-10,
+// archivado) siguen con el explorador original y los retos de spdp-retos.ts.
+const SPDP_2026_20 = 'iqya-3050-2026-20';
+
 export const RetosPage: React.FC = () => {
+  const { courseSlug } = useParams<{ courseSlug: string }>();
+  const course = courseSlug ? getCourseBySlug(courseSlug) : undefined;
+  if (course && course.slug === SPDP_2026_20) return <SpdpRetosPage course={course} />;
+  return <RetosOriginal />;
+};
+
+const RetosOriginal: React.FC = () => {
   const { courseSlug } = useParams<{ courseSlug: string }>();
   const course = courseSlug ? getCourseBySlug(courseSlug) : undefined;
 
