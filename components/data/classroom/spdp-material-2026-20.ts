@@ -72,7 +72,7 @@ export const spdpPresentaciones: SpdpPresentacion[] = [
     "titulo": "El curso y los retos",
     "archivo": "/classroom/iqya-3050-2026-20/presentaciones/IQYA-3050-Presentacion-Dia1-Curso-Retos-2026-20-8B.pdf",
     "laminas": 29,
-    "peso": "375 KB"
+    "peso": "377 KB"
   },
   {
     "sesion": 3,
