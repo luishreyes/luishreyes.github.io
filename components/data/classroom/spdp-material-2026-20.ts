@@ -87,5 +87,12 @@ export const spdpPresentaciones: SpdpPresentacion[] = [
     "archivo": "/classroom/iqya-3050-2026-20/presentaciones/IQYA-3050-Presentacion-Dia4-IA-Analisis-Datos-2026-20-8B.pdf",
     "laminas": 30,
     "peso": "420 KB"
+  },
+  {
+    "sesion": 5,
+    "titulo": "Presupuesto y laboratorio",
+    "archivo": "/classroom/iqya-3050-2026-20/presentaciones/IQYA-3050-Presentacion-Dia5-Presupuesto-Laboratorio-2026-20-8B.pdf",
+    "laminas": 28,
+    "peso": "2.1 MB"
   }
 ];
