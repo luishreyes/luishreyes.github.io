@@ -2,6 +2,7 @@ import React, { useEffect, useMemo } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import type { Course, CronogramaEntry } from '../../components/data/classroom';
 import { CourseAccessGate } from '../../components/classroom/CourseAccessGate';
+import { retos202620 } from '../../components/data/classroom/spdp-retos-2026-20';
 import {
   spdpDocumentos,
   spdpPresentaciones,
@@ -240,7 +241,7 @@ export const SpdpMaterialPage: React.FC<Props> = ({ course }) => {
                     {s.week === 1 && (
                       <Link to={`/classroom/${course.slug}/retos`} className="sp-mat" style={{ textDecoration: 'none', borderLeftColor: 'var(--sp-ink-900)' }}>
                         <span className="sp-mat-titulo">Explorador de retos 2026-20</span>
-                        <span className="sp-doc-meta">Los 23 retos, con filtros y favoritos</span>
+                        <span className="sp-doc-meta">Los {retos202620.length} retos, con filtros y favoritos</span>
                       </Link>
                     )}
                   </div>
