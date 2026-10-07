@@ -4,8 +4,8 @@
 // presentación del Día 1.
 //
 // Ajuste a mano del 7 de octubre de 2026: el reto 198 (microfluídica) se dividió
-// en dos, 198 (experimental) y 200 (aprendizaje de máquina), de una persona cada
-// uno. Replicar el cambio en el formulario fuente antes de volver a exportar.
+// en dos, 198 (experimental) y 200 (aprendizaje de máquina), de dos personas
+// cada uno. Replicar el cambio en el formulario fuente antes de volver a exportar.
 
 export type RetoOrigen = 'asesor' | 'semillero' | 'empresa';
 
@@ -425,9 +425,9 @@ export const retos202620: Reto202620[] = [
     "area": "Biomateriales e interfases",
     "origen": "asesor",
     "empresa": null,
-    "integrantes": 1,
+    "integrantes": 2,
     "seguimiento": "Semanal",
-    "seguimientoTexto": "Reuniones semanales 1:1 con los asesores (Luis H. Reyes y Juan C. Cruz), en las que el estudiante presenta los avances de la semana, los problemas encontrados y las soluciones que propone. En estas reuniones se revisan los resultados y se acuerdan los ajustes al protocolo y las tareas de la semana siguiente. Además, el estudiante mantiene una bitácora de laboratorio actualizada y entrega un informe de avance en la semana 8. Los datos que genera alimentan el reto de aprendizaje de máquina sobre el mismo dispositivo, así que coordina con ese equipo la estructura de la base de datos.",
+    "seguimientoTexto": "Reuniones semanales 1:1 con los asesores (Luis H. Reyes y Juan C. Cruz), en las que el estudiante presenta los avances de la semana, los problemas encontrados y las soluciones que propone. En estas reuniones se revisan los resultados y se acuerdan los ajustes al protocolo y las tareas de la semana siguiente. Además, el estudiante mantiene una bitácora de laboratorio actualizada y entrega un informe de avance en la semana 8.",
     "requisito": null,
     "residuo": false,
     "reto": "La tensión interfacial (IFT) determina la formación y estabilidad de las emulsiones, pero los tensiómetros convencionales exigen volúmenes de muestra difíciles de justificar para biosurfactantes y emulsificantes naturales de alto valor. En el GDPP se desarrolló un dispositivo de flow focusing en PMMA, fabricado por ablación láser, que estima la IFT a partir de la deformación de las gotas con una correlación empírica basada en simulaciones CFD (Jaramillo, 2025). Con surfactantes sintéticos esa correlación capturó la tendencia, pero con un MAPE cercano a 41 %. Al extenderla a goma arábiga y lecitina de girasol (Solórzano, 2026), las estimaciones resultaron insensibles al emulsificante y proporcionales al cuadrado del caudal, lo que indica que una correlación basada en Weber no discrimina la IFT en el régimen de bajo Reynolds del dispositivo. Este proyecto genera la base experimental para formular una correlación basada en los grupos adimensionales que sí gobiernan la deformación en ese régimen (capilaridad, relación de viscosidades y confinamiento), calibrada directamente contra gota colgante.\n\nPregunta. ¿Puede una correlación basada en el número de capilaridad y la relación de viscosidades, calibrada experimentalmente contra tensiometría de gota colgante, estimar la IFT de emulsificantes naturales en el dispositivo con un error inferior al 20 %?\n\nObjetivo general. Desarrollar y validar una correlación calibrada experimentalmente que permita estimar la IFT de emulsificantes naturales a partir de la deformación de gotas en el dispositivo microfluídico, con un error inferior al 20 % frente a gota colgante y con un consumo mínimo de muestra.",
@@ -443,9 +443,9 @@ export const retos202620: Reto202620[] = [
     "area": "Simulación y datos",
     "origen": "asesor",
     "empresa": null,
-    "integrantes": 1,
+    "integrantes": 2,
     "seguimiento": "Semanal",
-    "seguimientoTexto": "Reuniones semanales 1:1 con los asesores (Luis H. Reyes y Juan C. Cruz), en las que el estudiante presenta los avances de la semana, los problemas encontrados y las soluciones que propone. En estas reuniones se revisan los resultados y se acuerdan los ajustes y las tareas de la semana siguiente. Trabaja sobre los datos del reto experimental de microfluídica, así que coordina con ese equipo la estructura de la base de datos. Entrega un informe de avance en la semana 8.",
+    "seguimientoTexto": "Reuniones semanales 1:1 con los asesores (Luis H. Reyes y Juan C. Cruz), en las que el estudiante presenta los avances de la semana, los problemas encontrados y las soluciones que propone. En estas reuniones se revisan los resultados y se acuerdan los ajustes al protocolo y las tareas de la semana siguiente. Además, el estudiante mantiene una bitácora de laboratorio actualizada y entrega un informe de avance en la semana 8.",
     "requisito": null,
     "residuo": false,
     "reto": "Usando la base de datos del proyecto experimental, se entrenarán y compararán modelos de ML (XGBoost, Random Forest, regresión regularizada, procesos gaussianos y, opcionalmente, regresión simbólica) para predecir la IFT a partir de variables de deformación, caudales, propiedades de los fluidos y grupos adimensionales. La correlación en capilaridad, viscosidad y confinamiento del Proyecto 1 actúa como línea base física. La pregunta central es si el ML mejora la predicción en sistemas nuevos, que es donde falló el enfoque previo, y qué variables aportan realmente información sobre la IFT.\n\nObjetivo general. Evaluar si modelos de ML entrenados sobre datos experimentales de deformación de gotas predicen la IFT de emulsificantes naturales con menor error y mejor generalización que la correlación semiempírica, manteniendo interpretabilidad suficiente para uso en el dispositivo.",
