@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import type { Course } from '../../components/data/classroom';
 import { CourseAccessGate } from '../../components/classroom/CourseAccessGate';
 import { retos202620, retosCorte, type Reto202620, type RetoOrigen } from '../../components/data/classroom/spdp-retos-2026-20';
+import { retosSeleccionados } from '../../components/data/classroom/spdp-retos-seleccionados-2026-20';
 import '@fontsource/anton/400.css';
 import '@fontsource/barlow/400.css';
 import '@fontsource/barlow/500.css';
@@ -21,9 +22,12 @@ import '../../components/classroom/spdp-theme.css';
    (las gráficas de la presentación; tocar una barra filtra) y Mis
    favoritos (guardados en este navegador; se comparten con un
    enlace ?favoritos=177,183). ?reto=177 abre la ficha de un reto.
+   Los retos que ya tienen equipo (spdp-retos-seleccionados-2026-20.ts)
+   se marcan «No disponible» con los nombres y van al final.
    ============================================================ */
 
 type Vista = 'explorar' | 'cifras' | 'favoritos';
+type Disponibilidad = 'libre' | 'tomado';
 
 interface Filtros {
   area: string | null;
@@ -31,9 +35,10 @@ interface Filtros {
   integrantes: number | null;
   origen: RetoOrigen | null;
   persona: string | null;
+  disponibilidad: Disponibilidad | null;
 }
 
-const SIN_FILTROS: Filtros = { area: null, tipo: null, integrantes: null, origen: null, persona: null };
+const SIN_FILTROS: Filtros = { area: null, tipo: null, integrantes: null, origen: null, persona: null, disponibilidad: null };
 
 const ORIGEN_ROTULO: Record<RetoOrigen, string> = {
   asesor: 'Propuesto por el asesor',
@@ -47,6 +52,13 @@ const numero = (n: number) =>
   ['cero', 'un', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete', 'ocho', 'nueve', 'diez', 'once', 'doce'][n] ?? String(n);
 
 const personas = (n: number) => (n === 1 ? 'una persona' : 'dos personas');
+
+/** Quién ya escogió el reto; vacío si sigue disponible. */
+const seleccionadoPor = (r: Reto202620): string[] => retosSeleccionados[r.id] ?? [];
+const estaTomado = (r: Reto202620) => seleccionadoPor(r).length > 0;
+const nombres = (lista: string[]) => (lista.length > 1 ? `${lista.slice(0, -1).join(', ')} y ${lista[lista.length - 1]}` : lista[0] ?? '');
+/** Los disponibles primero; dentro de cada grupo se respeta el orden de los datos. */
+const retosOrdenados = [...retos202620].sort((a, b) => Number(estaTomado(a)) - Number(estaTomado(b)));
 
 const sinTildes = (t: string) => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 
@@ -80,9 +92,10 @@ function cumple(r: Reto202620, f: Filtros, q: string, ignorar?: keyof Filtros): 
   if (ignorar !== 'integrantes' && f.integrantes && r.integrantes !== f.integrantes) return false;
   if (ignorar !== 'origen' && f.origen && r.origen !== f.origen) return false;
   if (ignorar !== 'persona' && f.persona && r.asesor !== f.persona && r.coasesor !== f.persona) return false;
+  if (ignorar !== 'disponibilidad' && f.disponibilidad && (f.disponibilidad === 'tomado') !== estaTomado(r)) return false;
   if (q) {
     const hay = sinTildes(
-      [r.titulo, r.enCorto, r.asesor, r.coasesor ?? '', r.area, r.tipo, r.empresa ?? '', r.reto, r.objetivos].join(' '),
+      [r.titulo, r.enCorto, r.asesor, r.coasesor ?? '', r.area, r.tipo, r.empresa ?? '', r.reto, r.objetivos, ...seleccionadoPor(r)].join(' '),
     );
     if (!q.split(/\s+/).every((p) => hay.includes(p))) return false;
   }
@@ -132,9 +145,19 @@ const Estrella: React.FC<{ activa: boolean; onToggle: () => void; titulo: string
   </button>
 );
 
+const Sello: React.FC<{ r: Reto202620 }> = ({ r }) =>
+  estaTomado(r) ? (
+    <div className="sp-tomado">
+      <span className="sp-tomado-sello">No disponible</span>
+      <span>
+        Seleccionado por <b>{nombres(seleccionadoPor(r))}</b>
+      </span>
+    </div>
+  ) : null;
+
 const Ficha: React.FC<{ r: Reto202620; favorito: boolean; onFavorito: () => void; onAbrir: () => void }> = ({ r, favorito, onFavorito, onAbrir }) => (
   <article
-    className="sp-ficha"
+    className={`sp-ficha${estaTomado(r) ? ' sp-ficha--tomada' : ''}`}
     role="button"
     tabIndex={0}
     onClick={onAbrir}
@@ -144,7 +167,7 @@ const Ficha: React.FC<{ r: Reto202620; favorito: boolean; onFavorito: () => void
         onAbrir();
       }
     }}
-    aria-label={`${r.titulo}. Ver el reto completo`}
+    aria-label={`${r.titulo}.${estaTomado(r) ? ' No disponible.' : ''} Ver el reto completo`}
   >
     <span className="sp-ficha-area">{r.area}</span>
     <Estrella activa={favorito} onToggle={onFavorito} titulo={r.titulo} />
@@ -154,6 +177,7 @@ const Ficha: React.FC<{ r: Reto202620; favorito: boolean; onFavorito: () => void
     </span>
     <p className="sp-ficha-corto">{r.enCorto}</p>
     <Etiquetas r={r} />
+    <Sello r={r} />
     <div className="sp-ficha-pie">
       <b>{r.asesor}</b>
       {r.coasesor ? <> · con {r.coasesor}</> : null}
@@ -234,7 +258,7 @@ export const SpdpRetosPage: React.FC<Props> = ({ course }) => {
     setFavoritos((f) => (f.includes(id) ? f.filter((x) => x !== id) : [...f, id]));
 
   const q = sinTildes(busqueda.trim());
-  const visibles = useMemo(() => retos202620.filter((r) => cumple(r, filtros, q)), [filtros, q]);
+  const visibles = useMemo(() => retosOrdenados.filter((r) => cumple(r, filtros, q)), [filtros, q]);
 
   // Conteo de cada opción con los demás filtros aplicados: dice cuántos retos
   // quedarían si se toca ese botón.
@@ -260,6 +284,7 @@ export const SpdpRetosPage: React.FC<Props> = ({ course }) => {
       retos: retos202620.length,
       cupos: retos202620.reduce((s, r) => s + r.integrantes, 0),
       asesores: asesores.size,
+      disponibles: retos202620.filter((r) => !estaTomado(r)).length,
     };
   }, []);
 
@@ -334,6 +359,12 @@ export const SpdpRetosPage: React.FC<Props> = ({ course }) => {
                 <span className="sp-cifra-valor">{totales.asesores}</span>
                 <span className="sp-cifra-pie">Asesores</span>
               </div>
+              {totales.disponibles < totales.retos && (
+                <div>
+                  <span className="sp-cifra-valor">{totales.disponibles}</span>
+                  <span className="sp-cifra-pie">Retos disponibles</span>
+                </div>
+              )}
             </div>
           </div>
         </header>
@@ -477,6 +508,7 @@ export const SpdpRetosPage: React.FC<Props> = ({ course }) => {
                   {abierto.titulo}
                 </h2>
                 <p className="sp-panel-lead">{abierto.enCorto}</p>
+                <Sello r={abierto} />
                 <table className="sp-datos">
                   <tbody>
                     <tr>
@@ -502,6 +534,10 @@ export const SpdpRetosPage: React.FC<Props> = ({ course }) => {
                     <tr>
                       <th scope="row">Equipo</th>
                       <td>{abierto.integrantes === 1 ? 'Una persona' : 'Dos personas'}</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Estado</th>
+                      <td>{estaTomado(abierto) ? `No disponible: seleccionado por ${nombres(seleccionadoPor(abierto))}` : 'Disponible'}</td>
                     </tr>
                     <tr>
                       <th scope="row">Seguimiento</th>
@@ -550,8 +586,19 @@ const FiltrosPanel: React.FC<{
   const nOrigen = conteo('origen', (r) => r.origen);
   const enPersona = conteo('persona', (r) => r.asesor);
   const enPersonaCo = conteo('persona', (r) => r.coasesor);
+  const nDisp = conteo('disponibilidad', (r): Disponibilidad => (estaTomado(r) ? 'tomado' : 'libre'));
   return (
     <>
+      <div>
+        <h2 className="sp-filtro-titulo">Disponibilidad</h2>
+        <div className="sp-opciones">
+          {(['libre', 'tomado'] as Disponibilidad[]).map((d) => (
+            <Chip key={d} activo={filtros.disponibilidad === d} n={nDisp.get(d) ?? 0} onClick={() => alternar('disponibilidad', d)}>
+              {d === 'libre' ? 'Disponibles' : 'Ya seleccionados'}
+            </Chip>
+          ))}
+        </div>
+      </div>
       <div>
         <h2 className="sp-filtro-titulo">Área</h2>
         <div className="sp-opciones">
@@ -742,7 +789,7 @@ const Favoritos: React.FC<{
   const enlace = `${window.location.origin}/classroom/${slug}/retos?favoritos=${favoritos.join(',')}`;
   const texto = favoritos
     .map(porId)
-    .map((r) => `${r.id} · ${r.titulo} — ${r.asesor} (${personas(r.integrantes)})`)
+    .map((r) => `${r.id} · ${r.titulo} — ${r.asesor} (${personas(r.integrantes)})${estaTomado(r) ? ' · no disponible' : ''}`)
     .join('\n');
 
   return (
@@ -790,6 +837,7 @@ const Favoritos: React.FC<{
                 <div className="sp-ficha-meta" style={{ marginTop: 6 }}>
                   {r.tipo} · {personas(r.integrantes)} · {r.asesor}
                 </div>
+                <Sello r={r} />
                 <p className="sp-ficha-corto" style={{ marginTop: 6 }}>
                   {r.enCorto}
                 </p>
