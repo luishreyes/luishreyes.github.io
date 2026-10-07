@@ -15,6 +15,7 @@ export const retosSeleccionados: Record<number, Seleccion> = {
   191: { nombres: ['Gian Torres', 'Laura Acuña'] },
   192: { nombres: ['Mahmud Bultaif', 'María José Pisciotti'] },
   // Gian Torres, 7 de octubre de 2026: lo trabaja este semestre como
-  // proyecto especial de maestría.
+  // proyecto especial de maestría. No choca con el 191: Gian tiene dos
+  // proyectos, uno para ingeniería química (191) y otro para alimentos (179).
   179: { nombres: ['Gian Torres'], motivo: 'maestria' },
 };
