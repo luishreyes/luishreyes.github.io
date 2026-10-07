@@ -54,7 +54,8 @@ const numero = (n: number) =>
 const personas = (n: number) => (n === 1 ? 'una persona' : 'dos personas');
 
 /** Quién ya escogió el reto; vacío si sigue disponible. */
-const seleccionadoPor = (r: Reto202620): string[] => retosSeleccionados[r.id] ?? [];
+const seleccionadoPor = (r: Reto202620): string[] => retosSeleccionados[r.id]?.nombres ?? [];
+const porMaestria = (r: Reto202620) => retosSeleccionados[r.id]?.motivo === 'maestria';
 const estaTomado = (r: Reto202620) => seleccionadoPor(r).length > 0;
 const nombres = (lista: string[]) => (lista.length > 1 ? `${lista.slice(0, -1).join(', ')} y ${lista[lista.length - 1]}` : lista[0] ?? '');
 /** Los disponibles primero; dentro de cada grupo se respeta el orden de los datos. */
@@ -149,9 +150,15 @@ const Sello: React.FC<{ r: Reto202620 }> = ({ r }) =>
   estaTomado(r) ? (
     <div className="sp-tomado">
       <span className="sp-tomado-sello">No disponible</span>
-      <span>
-        Seleccionado por <b>{nombres(seleccionadoPor(r))}</b>
-      </span>
+      {porMaestria(r) ? (
+        <span>
+          Lo trabaja <b>{nombres(seleccionadoPor(r))}</b> como proyecto especial de maestría
+        </span>
+      ) : (
+        <span>
+          Seleccionado por <b>{nombres(seleccionadoPor(r))}</b>
+        </span>
+      )}
     </div>
   ) : null;
 
@@ -537,7 +544,13 @@ export const SpdpRetosPage: React.FC<Props> = ({ course }) => {
                     </tr>
                     <tr>
                       <th scope="row">Estado</th>
-                      <td>{estaTomado(abierto) ? `No disponible: seleccionado por ${nombres(seleccionadoPor(abierto))}` : 'Disponible'}</td>
+                      <td>
+                        {!estaTomado(abierto)
+                          ? 'Disponible'
+                          : porMaestria(abierto)
+                            ? `No disponible: lo trabaja ${nombres(seleccionadoPor(abierto))} como proyecto especial de maestría`
+                            : `No disponible: seleccionado por ${nombres(seleccionadoPor(abierto))}`}
+                      </td>
                     </tr>
                     <tr>
                       <th scope="row">Seguimiento</th>
