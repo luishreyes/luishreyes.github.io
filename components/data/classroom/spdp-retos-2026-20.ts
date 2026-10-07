@@ -2,6 +2,10 @@
 // a partir del formulario de propuesta de retos de 2026-20 (corte: 5 de octubre
 // de 2026). No editar a mano: se sobrescribe. Los mismos datos alimentan la
 // presentación del Día 1.
+//
+// Ajuste a mano del 7 de octubre de 2026: el reto 198 (microfluídica) se dividió
+// en dos, 198 (experimental) y 200 (aprendizaje de máquina), de una persona cada
+// uno. Replicar el cambio en el formulario fuente antes de volver a exportar.
 
 export type RetoOrigen = 'asesor' | 'semillero' | 'empresa';
 
@@ -413,21 +417,39 @@ export const retos202620: Reto202620[] = [
   },
   {
     "id": 198,
-    "titulo": "Microfluídica para medir tensión interfacial",
-    "enCorto": "¿Puede una correlación calibrada medir tensión interfacial en un chip microfluídico?",
+    "titulo": "Microfluídica calibrada para medir tensión interfacial",
+    "enCorto": "¿Puede una correlación calibrada contra gota colgante medir tensión interfacial en un chip microfluídico?",
     "asesor": "Luis H. Reyes",
     "coasesor": "Juan Carlos Cruz",
     "tipo": "Investigación",
     "area": "Biomateriales e interfases",
     "origen": "asesor",
     "empresa": null,
-    "integrantes": 2,
+    "integrantes": 1,
     "seguimiento": "Semanal",
-    "seguimientoTexto": "Reuniones semanales 1:1 con los asesores (Luis H. Reyes y Juan C. Cruz), en las que el estudiante presenta los avances de la semana, los problemas encontrados y las soluciones que propone. En estas reuniones se revisan los resultados y se acuerdan los ajustes al protocolo y las tareas de la semana siguiente. Además, el estudiante mantiene una bitácora de laboratorio actualizada y entrega un informe de avance en la semana 8.",
+    "seguimientoTexto": "Reuniones semanales 1:1 con los asesores (Luis H. Reyes y Juan C. Cruz), en las que el estudiante presenta los avances de la semana, los problemas encontrados y las soluciones que propone. En estas reuniones se revisan los resultados y se acuerdan los ajustes al protocolo y las tareas de la semana siguiente. Además, el estudiante mantiene una bitácora de laboratorio actualizada y entrega un informe de avance en la semana 8. Los datos que genera alimentan el reto de aprendizaje de máquina sobre el mismo dispositivo, así que coordina con ese equipo la estructura de la base de datos.",
     "requisito": null,
     "residuo": false,
-    "reto": "La tensión interfacial determina la formación y la estabilidad de las emulsiones, pero los tensiómetros convencionales consumen volúmenes de muestra difíciles de justificar para biosurfactantes y emulsificantes naturales de alto valor. En el GDPP se desarrolló un dispositivo microfluídico de flow focusing en PMMA, fabricado por ablación láser, que estima la IFT a partir de la deformación de las gotas con una correlación empírica construida sobre simulaciones CFD (Jaramillo, 2025). Con surfactantes sintéticos la correlación capturó la tendencia general, aunque con un error experimental alto (MAPE cercano a 41 % después de recalibrar). Al extenderla a goma arábiga y lecitina de girasol (Solórzano, 2026), las estimaciones resultaron insensibles al emulsificante y proporcionales al cuadrado del caudal. Esto indica que una correlación basada en el número de Weber no discrimina la IFT en el régimen de bajo Reynolds en que opera el dispositivo. Para cerrar la metodología hace falta una correlación formulada sobre los grupos adimensionales que gobiernan la deformación en ese régimen y calibrada directamente con mediciones experimentales.\n\nPregunta. ¿Puede una correlación basada en el número de capilaridad y la relación de viscosidades, calibrada experimentalmente contra tensiometría de gota colgante, estimar la tensión interfacial de emulsificantes naturales en el dispositivo microfluídico con un error inferior al 20 %?",
-    "objetivos": "1. Construir una base de datos de calibración con sistemas de IFT conocida, medida por gota colgante a la edad de interfaz del ensayo microfluídico, que cubra un rango amplio de tensiones (por ejemplo, agua y aceite sin surfactante y Span 80 a varias concentraciones), usando una misma matriz de caudales para todos los sistemas y verificando las propiedades de transporte de cada formulación.\n2. Formular y seleccionar, mediante validación cruzada, una correlación entre la relación de aspecto de la gota y el número de capilaridad, la relación de viscosidades y el confinamiento, y compararla con el modelo M6 recalibrado.\n3. Validar la correlación seleccionada con sistemas que no se usaron en la calibración (goma arábiga y lecitina de girasol, idealmente también un biosurfactante microbiano) y reportar el error frente a gota colgante, la ventana de operación válida y el volumen de muestra consumido por medición."
+    "reto": "La tensión interfacial (IFT) determina la formación y estabilidad de las emulsiones, pero los tensiómetros convencionales exigen volúmenes de muestra difíciles de justificar para biosurfactantes y emulsificantes naturales de alto valor. En el GDPP se desarrolló un dispositivo de flow focusing en PMMA, fabricado por ablación láser, que estima la IFT a partir de la deformación de las gotas con una correlación empírica basada en simulaciones CFD (Jaramillo, 2025). Con surfactantes sintéticos esa correlación capturó la tendencia, pero con un MAPE cercano a 41 %. Al extenderla a goma arábiga y lecitina de girasol (Solórzano, 2026), las estimaciones resultaron insensibles al emulsificante y proporcionales al cuadrado del caudal, lo que indica que una correlación basada en Weber no discrimina la IFT en el régimen de bajo Reynolds del dispositivo. Este proyecto genera la base experimental para formular una correlación basada en los grupos adimensionales que sí gobiernan la deformación en ese régimen (capilaridad, relación de viscosidades y confinamiento), calibrada directamente contra gota colgante.\n\nPregunta. ¿Puede una correlación basada en el número de capilaridad y la relación de viscosidades, calibrada experimentalmente contra tensiometría de gota colgante, estimar la IFT de emulsificantes naturales en el dispositivo con un error inferior al 20 %?\n\nObjetivo general. Desarrollar y validar una correlación calibrada experimentalmente que permita estimar la IFT de emulsificantes naturales a partir de la deformación de gotas en el dispositivo microfluídico, con un error inferior al 20 % frente a gota colgante y con un consumo mínimo de muestra.",
+    "objetivos": "1. Construir una base de datos de calibración con sistemas de IFT conocida, medida por gota colgante a la misma edad de interfaz del ensayo microfluídico, que cubra un rango amplio de tensiones (agua y aceite sin surfactante, y Span 80 a varias concentraciones), usando una misma matriz de caudales para todos los sistemas y verificando las propiedades de transporte (viscosidad, densidad) de cada formulación.\n2. Formular y seleccionar, mediante validación cruzada, una correlación entre la relación de aspecto de la gota y el número de capilaridad, la relación de viscosidades y el confinamiento, y compararla con el modelo M6 recalibrado.\n3. Validar la correlación seleccionada con sistemas no usados en la calibración (goma arábiga, lecitina de girasol y, idealmente, un biosurfactante microbiano), reportando el error frente a gota colgante, la ventana de operación válida y el volumen de muestra consumido por medición."
+  },
+  {
+    "id": 200,
+    "titulo": "Aprendizaje de máquina para predecir tensión interfacial",
+    "enCorto": "¿Predice el aprendizaje de máquina la tensión interfacial mejor que una correlación física?",
+    "asesor": "Luis H. Reyes",
+    "coasesor": "Juan Carlos Cruz",
+    "tipo": "Investigación",
+    "area": "Simulación y datos",
+    "origen": "asesor",
+    "empresa": null,
+    "integrantes": 1,
+    "seguimiento": "Semanal",
+    "seguimientoTexto": "Reuniones semanales 1:1 con los asesores (Luis H. Reyes y Juan C. Cruz), en las que el estudiante presenta los avances de la semana, los problemas encontrados y las soluciones que propone. En estas reuniones se revisan los resultados y se acuerdan los ajustes y las tareas de la semana siguiente. Trabaja sobre los datos del reto experimental de microfluídica, así que coordina con ese equipo la estructura de la base de datos. Entrega un informe de avance en la semana 8.",
+    "requisito": null,
+    "residuo": false,
+    "reto": "Usando la base de datos del proyecto experimental, se entrenarán y compararán modelos de ML (XGBoost, Random Forest, regresión regularizada, procesos gaussianos y, opcionalmente, regresión simbólica) para predecir la IFT a partir de variables de deformación, caudales, propiedades de los fluidos y grupos adimensionales. La correlación en capilaridad, viscosidad y confinamiento del Proyecto 1 actúa como línea base física. La pregunta central es si el ML mejora la predicción en sistemas nuevos, que es donde falló el enfoque previo, y qué variables aportan realmente información sobre la IFT.\n\nObjetivo general. Evaluar si modelos de ML entrenados sobre datos experimentales de deformación de gotas predicen la IFT de emulsificantes naturales con menor error y mejor generalización que la correlación semiempírica, manteniendo interpretabilidad suficiente para uso en el dispositivo.",
+    "objetivos": "1. Construir el conjunto de variables a partir de los datos experimentales, incluyendo variables crudas (caudales, relación de aspecto, viscosidades, densidades) y derivadas (Ca, λ, confinamiento, Re), con un control de calidad que descarte mediciones fuera de la ventana operativa.\n2. Entrenar y optimizar XGBoost y modelos alternos (Random Forest, ridge/lasso sobre variables en log, proceso gaussiano) con validación cruzada agrupada por sistema químico (leave-one-system-out), para medir generalización real y no solo interpolación.\n3. Comparar los modelos contra la correlación física y el modelo M6 usando MAPE, RMSE y R², con intervalos de incertidumbre.\n4. Analizar la importancia de las variables (SHAP, importancia por permutación) para verificar que los modelos aprenden dependencia con la IFT y no solo con el caudal, como ocurrió con la correlación de Weber.\n5. Validar con los sistemas externos (goma arábiga, lecitina, biosurfactante) y definir el dominio de aplicabilidad del mejor modelo."
   },
   {
     "id": 199,
