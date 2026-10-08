@@ -2,9 +2,9 @@
 // aparte de spdp-retos-2026-20.ts para que la exportación del formulario
 // (exportar-portafolio.py) no lo sobrescriba. Clave: id del reto.
 //
-// Un reto queda «No disponible» cuando tiene tantos nombres como cupos, o
-// cuando se marca individual o de maestría. Un reto para dos con un solo
-// nombre se muestra con «Queda un cupo».
+// Un reto con al menos un nombre queda «No disponible». No existe el estado
+// «Queda un cupo»: cuando alguien escoge un reto, el reto ya está asignado,
+// aunque sea para dos y haya una sola persona inscrita.
 
 export interface Seleccion {
   nombres: string[];
