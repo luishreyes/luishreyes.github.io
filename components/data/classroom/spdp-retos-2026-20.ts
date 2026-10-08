@@ -1,11 +1,7 @@
 // GENERADO por sPDP/202620/presentaciones/datos/exportar-portafolio.py
-// a partir del formulario de propuesta de retos de 2026-20 (corte: 5 de octubre
-// de 2026). No editar a mano: se sobrescribe. Los mismos datos alimentan la
-// presentación del Día 1.
-//
-// Ajuste a mano del 7 de octubre de 2026: el reto 198 (microfluídica) se dividió
-// en dos, 198 (experimental) y 200 (aprendizaje de máquina), de dos personas
-// cada uno. Replicar el cambio en el formulario fuente antes de volver a exportar.
+// a partir del formulario de propuesta de retos de 2026-20 y de los retos que
+// llegaron por correo (corte: 8 de octubre de 2026). No editar a mano: se sobrescribe.
+// Los mismos datos alimentan la presentación del Día 1.
 
 export type RetoOrigen = 'asesor' | 'semillero' | 'empresa';
 
@@ -34,7 +30,7 @@ export interface Reto202620 {
   objetivos: string;
 }
 
-export const retosCorte = '5 de octubre de 2026';
+export const retosCorte = '8 de octubre de 2026';
 
 export const retos202620: Reto202620[] = [
   {
@@ -94,7 +90,7 @@ export const retos202620: Reto202620[] = [
   {
     "id": 180,
     "titulo": "RTD funcional a base de aguardiente",
-    "enCorto": "¿Puede una bebida lista para tomar con aguardiente ser refrescante, funcional y estable?",
+    "enCorto": "¿Puede un RTD de aguardiente ser refrescante, funcional y estable?",
     "asesor": "Diego Pradilla",
     "coasesor": "Nicolás Ratkovich",
     "tipo": "Innovación",
@@ -112,7 +108,7 @@ export const retos202620: Reto202620[] = [
   {
     "id": 181,
     "titulo": "Bebida sin alcohol con perfil de aguardiente",
-    "enCorto": "¿Puede una bebida sin alcohol reproducir el anís, el cuerpo y el aroma del aguardiente?",
+    "enCorto": "¿Puede una bebida sin alcohol saber a aguardiente?",
     "asesor": "Diego Pradilla",
     "coasesor": "Nicolás Ratkovich",
     "tipo": "Innovación",
@@ -400,7 +396,7 @@ export const retos202620: Reto202620[] = [
   {
     "id": 197,
     "titulo": "Colágeno porcino y alginato para encapsular probióticos",
-    "enCorto": "¿Cambia la protección de un probiótico si el colágeno de la cápsula es nativo o desnaturalizado?",
+    "enCorto": "¿Protege igual al probiótico el colágeno nativo que el desnaturalizado?",
     "asesor": "Luis H. Reyes",
     "coasesor": "Juan Carlos Cruz",
     "tipo": "Investigación",
@@ -418,7 +414,7 @@ export const retos202620: Reto202620[] = [
   {
     "id": 198,
     "titulo": "Microfluídica calibrada para medir tensión interfacial",
-    "enCorto": "¿Puede una correlación calibrada contra gota colgante medir tensión interfacial en un chip microfluídico?",
+    "enCorto": "¿Puede una correlación calibrada medir tensión interfacial en un chip microfluídico?",
     "asesor": "Luis H. Reyes",
     "coasesor": "Juan Carlos Cruz",
     "tipo": "Investigación",
@@ -432,24 +428,6 @@ export const retos202620: Reto202620[] = [
     "residuo": false,
     "reto": "La tensión interfacial (IFT) determina la formación y estabilidad de las emulsiones, pero los tensiómetros convencionales exigen volúmenes de muestra difíciles de justificar para biosurfactantes y emulsificantes naturales de alto valor. En el GDPP se desarrolló un dispositivo de flow focusing en PMMA, fabricado por ablación láser, que estima la IFT a partir de la deformación de las gotas con una correlación empírica basada en simulaciones CFD (Jaramillo, 2025). Con surfactantes sintéticos esa correlación capturó la tendencia, pero con un MAPE cercano a 41 %. Al extenderla a goma arábiga y lecitina de girasol (Solórzano, 2026), las estimaciones resultaron insensibles al emulsificante y proporcionales al cuadrado del caudal, lo que indica que una correlación basada en Weber no discrimina la IFT en el régimen de bajo Reynolds del dispositivo. Este proyecto genera la base experimental para formular una correlación basada en los grupos adimensionales que sí gobiernan la deformación en ese régimen (capilaridad, relación de viscosidades y confinamiento), calibrada directamente contra gota colgante.\n\nPregunta. ¿Puede una correlación basada en el número de capilaridad y la relación de viscosidades, calibrada experimentalmente contra tensiometría de gota colgante, estimar la IFT de emulsificantes naturales en el dispositivo con un error inferior al 20 %?\n\nObjetivo general. Desarrollar y validar una correlación calibrada experimentalmente que permita estimar la IFT de emulsificantes naturales a partir de la deformación de gotas en el dispositivo microfluídico, con un error inferior al 20 % frente a gota colgante y con un consumo mínimo de muestra.",
     "objetivos": "1. Construir una base de datos de calibración con sistemas de IFT conocida, medida por gota colgante a la misma edad de interfaz del ensayo microfluídico, que cubra un rango amplio de tensiones (agua y aceite sin surfactante, y Span 80 a varias concentraciones), usando una misma matriz de caudales para todos los sistemas y verificando las propiedades de transporte (viscosidad, densidad) de cada formulación.\n2. Formular y seleccionar, mediante validación cruzada, una correlación entre la relación de aspecto de la gota y el número de capilaridad, la relación de viscosidades y el confinamiento, y compararla con el modelo M6 recalibrado.\n3. Validar la correlación seleccionada con sistemas no usados en la calibración (goma arábiga, lecitina de girasol y, idealmente, un biosurfactante microbiano), reportando el error frente a gota colgante, la ventana de operación válida y el volumen de muestra consumido por medición."
-  },
-  {
-    "id": 200,
-    "titulo": "Aprendizaje de máquina para predecir tensión interfacial",
-    "enCorto": "¿Predice el aprendizaje de máquina la tensión interfacial mejor que una correlación física?",
-    "asesor": "Luis H. Reyes",
-    "coasesor": "Juan Carlos Cruz",
-    "tipo": "Investigación",
-    "area": "Simulación y datos",
-    "origen": "asesor",
-    "empresa": null,
-    "integrantes": 2,
-    "seguimiento": "Semanal",
-    "seguimientoTexto": "Reuniones semanales 1:1 con los asesores (Luis H. Reyes y Juan C. Cruz), en las que el estudiante presenta los avances de la semana, los problemas encontrados y las soluciones que propone. En estas reuniones se revisan los resultados y se acuerdan los ajustes al protocolo y las tareas de la semana siguiente. Además, el estudiante mantiene una bitácora de laboratorio actualizada y entrega un informe de avance en la semana 8.",
-    "requisito": null,
-    "residuo": false,
-    "reto": "Usando la base de datos del proyecto experimental, se entrenarán y compararán modelos de ML (XGBoost, Random Forest, regresión regularizada, procesos gaussianos y, opcionalmente, regresión simbólica) para predecir la IFT a partir de variables de deformación, caudales, propiedades de los fluidos y grupos adimensionales. La correlación en capilaridad, viscosidad y confinamiento del Proyecto 1 actúa como línea base física. La pregunta central es si el ML mejora la predicción en sistemas nuevos, que es donde falló el enfoque previo, y qué variables aportan realmente información sobre la IFT.\n\nObjetivo general. Evaluar si modelos de ML entrenados sobre datos experimentales de deformación de gotas predicen la IFT de emulsificantes naturales con menor error y mejor generalización que la correlación semiempírica, manteniendo interpretabilidad suficiente para uso en el dispositivo.",
-    "objetivos": "1. Construir el conjunto de variables a partir de los datos experimentales, incluyendo variables crudas (caudales, relación de aspecto, viscosidades, densidades) y derivadas (Ca, λ, confinamiento, Re), con un control de calidad que descarte mediciones fuera de la ventana operativa.\n2. Entrenar y optimizar XGBoost y modelos alternos (Random Forest, ridge/lasso sobre variables en log, proceso gaussiano) con validación cruzada agrupada por sistema químico (leave-one-system-out), para medir generalización real y no solo interpolación.\n3. Comparar los modelos contra la correlación física y el modelo M6 usando MAPE, RMSE y R², con intervalos de incertidumbre.\n4. Analizar la importancia de las variables (SHAP, importancia por permutación) para verificar que los modelos aprenden dependencia con la IFT y no solo con el caudal, como ocurrió con la correlación de Weber.\n5. Validar con los sistemas externos (goma arábiga, lecitina, biosurfactante) y definir el dominio de aplicabilidad del mejor modelo."
   },
   {
     "id": 199,
@@ -468,5 +446,41 @@ export const retos202620: Reto202620[] = [
     "residuo": false,
     "reto": "La Central Hidroeléctrica El Paraíso (Enel) trata los gases con H₂S provenientes del tanque de aquietamiento en cuatro biofiltros abiertos de compost. La documentación histórica reporta eficiencias de remoción de hasta 97 a 99 %, pero también modificaciones sucesivas en el material de soporte, la distribución del gas y la humectación, además de caudales reales cercanos a un 57 % por encima del nominal. En el GDPP se desarrolla un modelo CFD tridimensional del biofiltro B1 en COMSOL que acopla flujo libre, flujo en medio poroso y transporte reactivo de H₂S y O₂. En su primera versión, el lecho se representa como un medio homogéneo alimentado por una entrada única. Esta simplificación puede ocultar fenómenos relevantes: la resistencia del sistema de distribución es comparable a la del lecho, y la humedad, la compactación y la estratificación de compost y turba generan zonas de permeabilidad distinta que favorecen caminos preferenciales y reducen el tiempo de contacto efectivo.\n\nPregunta. ¿Cuánto reduce la mala distribución del gas, originada en el sistema de distribución y en las heterogeneidades del lecho, el tiempo de residencia efectivo y la eficiencia de remoción de H₂S del biofiltro, y bajo qué condiciones de operación esa reducción se vuelve relevante?",
     "objetivos": "1. Construir un modelo CFD de un sector representativo del biofiltro (una o dos líneas de distribución con condiciones de simetría) que incluya cabezal, tubería perforada, plenum, grava y lecho, y evaluar la uniformidad del flujo (CVu) en función del caudal, la altura del plenum y la permeabilidad del lecho.\n2. Incorporar heterogeneidades en el lecho (estratificación compost y turba, zonas húmedas de baja permeabilidad, zonas compactadas o canales) y cuantificar su efecto sobre la uniformidad del flujo y la distribución de tiempos de residencia mediante un trazador simulado.\n3. Acoplar la cinética preliminar de biodegradación del modelo base para estimar, como análisis de sensibilidad, la pérdida de eficiencia de remoción frente al caso de flujo uniforme."
+  },
+  {
+    "id": 200,
+    "titulo": "Aprendizaje de máquina para predecir tensión interfacial",
+    "enCorto": "¿Supera el aprendizaje de máquina a la correlación física?",
+    "asesor": "Luis H. Reyes",
+    "coasesor": "Juan Carlos Cruz",
+    "tipo": "Investigación",
+    "area": "Simulación y datos",
+    "origen": "asesor",
+    "empresa": null,
+    "integrantes": 2,
+    "seguimiento": "Semanal",
+    "seguimientoTexto": "Reuniones semanales 1:1 con los asesores (Luis H. Reyes y Juan C. Cruz), en las que el estudiante presenta los avances de la semana, los problemas encontrados y las soluciones que propone. En estas reuniones se revisan los resultados y se acuerdan los ajustes al protocolo y las tareas de la semana siguiente. Además, el estudiante mantiene una bitácora de laboratorio actualizada y entrega un informe de avance en la semana 8.",
+    "requisito": null,
+    "residuo": false,
+    "reto": "Usando la base de datos del proyecto experimental, se entrenarán y compararán modelos de ML (XGBoost, Random Forest, regresión regularizada, procesos gaussianos y, opcionalmente, regresión simbólica) para predecir la IFT a partir de variables de deformación, caudales, propiedades de los fluidos y grupos adimensionales. La correlación en capilaridad, viscosidad y confinamiento del Proyecto 1 actúa como línea base física. La pregunta central es si el ML mejora la predicción en sistemas nuevos, que es donde falló el enfoque previo, y qué variables aportan realmente información sobre la IFT.\n\nObjetivo general. Evaluar si modelos de ML entrenados sobre datos experimentales de deformación de gotas predicen la IFT de emulsificantes naturales con menor error y mejor generalización que la correlación semiempírica, manteniendo interpretabilidad suficiente para uso en el dispositivo.",
+    "objetivos": "1. Construir el conjunto de variables a partir de los datos experimentales, incluyendo variables crudas (caudales, relación de aspecto, viscosidades, densidades) y derivadas (Ca, λ, confinamiento, Re), con un control de calidad que descarte mediciones fuera de la ventana operativa.\n2. Entrenar y optimizar XGBoost y modelos alternos (Random Forest, ridge/lasso sobre variables en log, proceso gaussiano) con validación cruzada agrupada por sistema químico (leave-one-system-out), para medir generalización real y no solo interpolación.\n3. Comparar los modelos contra la correlación física y el modelo M6 usando MAPE, RMSE y R², con intervalos de incertidumbre.\n4. Analizar la importancia de las variables (SHAP, importancia por permutación) para verificar que los modelos aprenden dependencia con la IFT y no solo con el caudal, como ocurrió con la correlación de Weber.\n5. Validar con los sistemas externos (goma arábiga, lecitina, biosurfactante) y definir el dominio de aplicabilidad del mejor modelo."
+  },
+  {
+    "id": 201,
+    "titulo": "PINNs y transformers para productos formulados",
+    "enCorto": "¿Sirven PINNs y transformers para diseñar productos formulados?",
+    "asesor": "Diego Pradilla",
+    "coasesor": null,
+    "tipo": "Investigación",
+    "area": "Simulación y datos",
+    "origen": "asesor",
+    "empresa": null,
+    "integrantes": 1,
+    "seguimiento": "Otro",
+    "seguimientoTexto": "Por definir con el asesor",
+    "requisito": null,
+    "residuo": false,
+    "reto": "Redes neuronales informadas por la física (PINNs), transformers y estrategias de aprendizaje de máquina para el diseño de productos formulados.",
+    "objetivos": "Por definir con el asesor."
   }
 ];
