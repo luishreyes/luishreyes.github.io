@@ -3,7 +3,8 @@
 // public/classroom/iqya-3050-2026-20/ en la misma corrida.
 //
 // Ajuste a mano del 8 de octubre de 2026: sesión 6 y formato corregido (sección
-// 06). Replicar en el exportador antes de volver a correrlo.
+// 06). Ajuste a mano del 8 de octubre de 2026 (segundo): sesión 7. Replicar en
+// el exportador antes de volver a correrlo.
 
 export interface SpdpDocumento {
   id: string;
@@ -104,5 +105,12 @@ export const spdpPresentaciones: SpdpPresentacion[] = [
     "archivo": "/classroom/iqya-3050-2026-20/presentaciones/IQYA-3050-Presentacion-Dia6-Etica-2026-20-8B.pdf",
     "laminas": 24,
     "peso": "335 KB"
+  },
+  {
+    "sesion": 7,
+    "titulo": "Narrativas visuales para presentar datos",
+    "archivo": "/classroom/iqya-3050-2026-20/presentaciones/IQYA-3050-Presentacion-Dia7-Narrativas-Visuales-2026-20-8B.pdf",
+    "laminas": 30,
+    "peso": "476 KB"
   }
 ];
