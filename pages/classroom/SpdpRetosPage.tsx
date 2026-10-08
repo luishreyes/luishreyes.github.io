@@ -56,8 +56,26 @@ const personas = (n: number) => (n === 1 ? 'una persona' : 'dos personas');
 /** Quién ya escogió el reto; vacío si sigue disponible. */
 const seleccionadoPor = (r: Reto202620): string[] => retosSeleccionados[r.id]?.nombres ?? [];
 const porMaestria = (r: Reto202620) => retosSeleccionados[r.id]?.motivo === 'maestria';
-const estaTomado = (r: Reto202620) => seleccionadoPor(r).length > 0;
+const individual = (r: Reto202620) => retosSeleccionados[r.id]?.individual === true;
+/** Sin cupos: tantos nombres como integrantes, o marcado individual o de maestría. */
+const estaTomado = (r: Reto202620) => {
+  const n = seleccionadoPor(r).length;
+  return n > 0 && (n >= r.integrantes || individual(r) || porMaestria(r));
+};
+/** Reto para dos con una sola persona: sigue disponible, con un cupo. */
+const quedaUnCupo = (r: Reto202620) => seleccionadoPor(r).length > 0 && !estaTomado(r);
 const nombres = (lista: string[]) => (lista.length > 1 ? `${lista.slice(0, -1).join(', ')} y ${lista[lista.length - 1]}` : lista[0] ?? '');
+
+/** La frase de estado de un reto con gente, con los nombres resaltados. */
+const fraseEstado = (r: Reto202620, Nombres: React.FC<{ children: string }>) => {
+  const quien = <Nombres>{nombres(seleccionadoPor(r))}</Nombres>;
+  if (porMaestria(r)) return <>Lo trabaja {quien} como proyecto especial de maestría</>;
+  if (individual(r)) return <>Lo trabaja {quien} de manera individual</>;
+  if (quedaUnCupo(r)) return <>Ya lo escogió {quien}; falta una persona</>;
+  return <>Seleccionado por {quien}</>;
+};
+const Negrita: React.FC<{ children: string }> = ({ children }) => <b>{children}</b>;
+const Plano: React.FC<{ children: string }> = ({ children }) => <>{children}</>;
 /** Los disponibles primero; dentro de cada grupo se respeta el orden de los datos. */
 const retosOrdenados = [...retos202620].sort((a, b) => Number(estaTomado(a)) - Number(estaTomado(b)));
 
@@ -147,18 +165,10 @@ const Estrella: React.FC<{ activa: boolean; onToggle: () => void; titulo: string
 );
 
 const Sello: React.FC<{ r: Reto202620 }> = ({ r }) =>
-  estaTomado(r) ? (
+  seleccionadoPor(r).length ? (
     <div className="sp-tomado">
-      <span className="sp-tomado-sello">No disponible</span>
-      {porMaestria(r) ? (
-        <span>
-          Lo trabaja <b>{nombres(seleccionadoPor(r))}</b> como proyecto especial de maestría
-        </span>
-      ) : (
-        <span>
-          Seleccionado por <b>{nombres(seleccionadoPor(r))}</b>
-        </span>
-      )}
+      <span className={`sp-tomado-sello${quedaUnCupo(r) ? ' sp-tomado-sello--cupo' : ''}`}>{quedaUnCupo(r) ? 'Queda un cupo' : 'No disponible'}</span>
+      <span>{fraseEstado(r, Negrita)}</span>
     </div>
   ) : null;
 
@@ -545,11 +555,13 @@ export const SpdpRetosPage: React.FC<Props> = ({ course }) => {
                     <tr>
                       <th scope="row">Estado</th>
                       <td>
-                        {!estaTomado(abierto)
-                          ? 'Disponible'
-                          : porMaestria(abierto)
-                            ? `No disponible: lo trabaja ${nombres(seleccionadoPor(abierto))} como proyecto especial de maestría`
-                            : `No disponible: seleccionado por ${nombres(seleccionadoPor(abierto))}`}
+                        {!seleccionadoPor(abierto).length ? (
+                          'Disponible'
+                        ) : (
+                          <>
+                            {estaTomado(abierto) ? 'No disponible' : 'Queda un cupo'} · {fraseEstado(abierto, Plano)}
+                          </>
+                        )}
                       </td>
                     </tr>
                     <tr>
