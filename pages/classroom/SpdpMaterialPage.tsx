@@ -6,6 +6,7 @@ import { retos202620 } from '../../components/data/classroom/spdp-retos-2026-20'
 import {
   spdpDocumentos,
   spdpPresentaciones,
+  spdpArchivosSesion,
   type SpdpDocumento,
   type SpdpPresentacion,
 } from '../../components/data/classroom/spdp-material-2026-20';
@@ -182,6 +183,7 @@ export const SpdpMaterialPage: React.FC<Props> = ({ course }) => {
             {cronograma.map((s) => {
               const pres = spdpPresentaciones.find((p) => p.sesion === s.week);
               const guias = spdpDocumentos.filter((d) => d.sesion === s.week);
+              const archivos = spdpArchivosSesion.filter((a) => a.sesion === s.week);
               const esProxima = s.week === proxima;
               return (
                 <section key={s.week} className={`sp-sesion${esProxima ? ' sp-sesion--hoy' : ''}`} aria-label={`Sesión ${s.week}`}>
@@ -233,6 +235,22 @@ export const SpdpMaterialPage: React.FC<Props> = ({ course }) => {
                             </button>
                           )}
                           <a className="sp-boton sp-boton--claro" href={d.archivo} download>
+                            <IconoDescargar /> Descargar
+                          </a>
+                        </div>
+                      </div>
+                    ))}
+                    {archivos.map((a) => (
+                      <div key={a.archivo} className="sp-mat" style={{ borderLeftColor: 'var(--sp-ink-900)' }}>
+                        <span className="sp-mat-titulo">{a.titulo}</span>
+                        <span className="sp-doc-meta">{a.descripcion} · {a.tipo.toUpperCase()} · {a.peso}</span>
+                        <div className="sp-acciones">
+                          {a.tipo === 'txt' && (
+                            <a className="sp-boton sp-boton--claro" href={a.archivo} target="_blank" rel="noreferrer">
+                              <IconoVer /> Abrir
+                            </a>
+                          )}
+                          <a className="sp-boton sp-boton--claro" href={a.archivo} download>
                             <IconoDescargar /> Descargar
                           </a>
                         </div>

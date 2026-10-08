@@ -23,6 +23,16 @@ export interface SpdpPresentacion {
   peso: string;
 }
 
+/** Archivos de trabajo de una sesión: datos y prompts de una demostración. */
+export interface SpdpArchivoSesion {
+  sesion: number;
+  titulo: string;
+  descripcion: string;
+  archivo: string;
+  tipo: 'csv' | 'txt';
+  peso: string;
+}
+
 export const spdpDocumentos: SpdpDocumento[] = [
   {
     "id": "programa",
@@ -78,15 +88,15 @@ export const spdpPresentaciones: SpdpPresentacion[] = [
     "sesion": 3,
     "titulo": "IA generativa para investigación",
     "archivo": "/classroom/iqya-3050-2026-20/presentaciones/IQYA-3050-Presentacion-Dia3-IA-Investigacion-2026-20-8B.pdf",
-    "laminas": 33,
+    "laminas": 34,
     "peso": "1.5 MB"
   },
   {
     "sesion": 4,
     "titulo": "IA generativa para análisis de datos",
     "archivo": "/classroom/iqya-3050-2026-20/presentaciones/IQYA-3050-Presentacion-Dia4-IA-Analisis-Datos-2026-20-8B.pdf",
-    "laminas": 30,
-    "peso": "420 KB"
+    "laminas": 33,
+    "peso": "500 KB"
   },
   {
     "sesion": 5,
@@ -108,5 +118,48 @@ export const spdpPresentaciones: SpdpPresentacion[] = [
     "archivo": "/classroom/iqya-3050-2026-20/presentaciones/IQYA-3050-Presentacion-Dia7-Narrativas-Visuales-2026-20-8B.pdf",
     "laminas": 30,
     "peso": "488 KB"
+  }
+];
+
+export const spdpArchivosSesion: SpdpArchivoSesion[] = [
+  {
+    "sesion": 4,
+    "titulo": "Datos de la demostración",
+    "descripcion": "6 497 vinos: análisis fisicoquímicos y calificación sensorial.",
+    "archivo": "/classroom/iqya-3050-2026-20/dia4/IQYA-3050-Dia4-Vinos-2026-20-8B.csv",
+    "tipo": "csv",
+    "peso": "423 KB"
+  },
+  {
+    "sesion": 4,
+    "titulo": "Diccionario de los datos",
+    "descripcion": "Qué es cada columna, en qué unidad y de dónde salen los datos.",
+    "archivo": "/classroom/iqya-3050-2026-20/dia4/IQYA-3050-Dia4-Diccionario-Vinos-2026-20-8B.txt",
+    "tipo": "txt",
+    "peso": "2 KB"
+  },
+  {
+    "sesion": 4,
+    "titulo": "Prompt 1 · Diagnóstico",
+    "descripcion": "El estado del archivo, sin conclusiones.",
+    "archivo": "/classroom/iqya-3050-2026-20/dia4/IQYA-3050-Dia4-Prompt1-Diagnostico-2026-20-8B.txt",
+    "tipo": "txt",
+    "peso": "1 KB"
+  },
+  {
+    "sesion": 4,
+    "titulo": "Prompt 2 · Plan",
+    "descripcion": "Un plan ordenado por prioridad, a partir de su pregunta.",
+    "archivo": "/classroom/iqya-3050-2026-20/dia4/IQYA-3050-Dia4-Prompt2-Plan-2026-20-8B.txt",
+    "tipo": "txt",
+    "peso": "1 KB"
+  },
+  {
+    "sesion": 4,
+    "titulo": "Prompt 3 · Ejecución",
+    "descripcion": "Un análisis del plan por vez, con código.",
+    "archivo": "/classroom/iqya-3050-2026-20/dia4/IQYA-3050-Dia4-Prompt3-Ejecucion-2026-20-8B.txt",
+    "tipo": "txt",
+    "peso": "1 KB"
   }
 ];
