@@ -1,6 +1,9 @@
 // GENERADO por sPDP/202620/presentaciones/datos/exportar-portafolio.py.
 // No editar a mano: se sobrescribe. Los archivos que nombra se copian a
 // public/classroom/iqya-3050-2026-20/ en la misma corrida.
+//
+// Ajuste a mano del 8 de octubre de 2026: sesión 6 y formato corregido (sección
+// 06). Replicar en el exportador antes de volver a correrlo.
 
 export interface SpdpDocumento {
   id: string;
@@ -61,7 +64,7 @@ export const spdpDocumentos: SpdpDocumento[] = [
     "archivo": "/classroom/iqya-3050-2026-20/documentos/IQYA-3050-Formato-Entrega-Final-2026-20-8B.docx",
     "tipo": "docx",
     "paginas": null,
-    "peso": "508 KB",
+    "peso": "496 KB",
     "sesion": 8
   }
 ];
@@ -94,5 +97,12 @@ export const spdpPresentaciones: SpdpPresentacion[] = [
     "archivo": "/classroom/iqya-3050-2026-20/presentaciones/IQYA-3050-Presentacion-Dia5-Presupuesto-Laboratorio-2026-20-8B.pdf",
     "laminas": 28,
     "peso": "2.1 MB"
+  },
+  {
+    "sesion": 6,
+    "titulo": "Ética en investigación",
+    "archivo": "/classroom/iqya-3050-2026-20/presentaciones/IQYA-3050-Presentacion-Dia6-Etica-2026-20-8B.pdf",
+    "laminas": 24,
+    "peso": "335 KB"
   }
 ];

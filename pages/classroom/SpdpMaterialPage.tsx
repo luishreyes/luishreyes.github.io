@@ -238,6 +238,12 @@ export const SpdpMaterialPage: React.FC<Props> = ({ course }) => {
                         </div>
                       </div>
                     ))}
+                    {s.week === 6 && (
+                      <Link to={`/classroom/${course.slug}/etica`} className="sp-mat" style={{ textDecoration: 'none', borderLeftColor: 'var(--sp-ink-900)' }}>
+                        <span className="sp-mat-titulo">Clasifique su reto</span>
+                        <span className="sp-doc-meta">Nivel de riesgo, documentos y texto para la sección 06</span>
+                      </Link>
+                    )}
                     {s.week === 1 && (
                       <Link to={`/classroom/${course.slug}/retos`} className="sp-mat" style={{ textDecoration: 'none', borderLeftColor: 'var(--sp-ink-900)' }}>
                         <span className="sp-mat-titulo">Explorador de retos 2026-20</span>
