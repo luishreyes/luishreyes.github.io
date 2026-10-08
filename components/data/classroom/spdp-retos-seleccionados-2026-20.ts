@@ -28,4 +28,7 @@ export const retosSeleccionados: Record<number, Seleccion> = {
   177: { nombres: ['Ana Sofía Contreras'], individual: true }, // viene de su proyecto especial
   183: { nombres: ['Valentina Losada Perdomo'] },
   197: { nombres: ['Isabel Acosta'] },
+  // Diego Pradilla, 8 de octubre de 2026: reto nuevo, coordinado con el
+  // estudiante para el seminario de 2026-20 y el PDP de 2027-10.
+  201: { nombres: ['Jesús Daniel Guzmán'] },
 };

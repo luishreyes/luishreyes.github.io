@@ -1,10 +1,6 @@
 // GENERADO por sPDP/202620/presentaciones/datos/exportar-portafolio.py.
 // No editar a mano: se sobrescribe. Los archivos que nombra se copian a
 // public/classroom/iqya-3050-2026-20/ en la misma corrida.
-//
-// Ajuste a mano del 8 de octubre de 2026: sesión 6 y formato corregido (sección
-// 06). Ajuste a mano del 8 de octubre de 2026 (segundo): sesión 7. Replicar en
-// el exportador antes de volver a correrlo.
 
 export interface SpdpDocumento {
   id: string;
@@ -65,7 +61,7 @@ export const spdpDocumentos: SpdpDocumento[] = [
     "archivo": "/classroom/iqya-3050-2026-20/documentos/IQYA-3050-Formato-Entrega-Final-2026-20-8B.docx",
     "tipo": "docx",
     "paginas": null,
-    "peso": "496 KB",
+    "peso": "508 KB",
     "sesion": 8
   }
 ];
@@ -76,7 +72,7 @@ export const spdpPresentaciones: SpdpPresentacion[] = [
     "titulo": "El curso y los retos",
     "archivo": "/classroom/iqya-3050-2026-20/presentaciones/IQYA-3050-Presentacion-Dia1-Curso-Retos-2026-20-8B.pdf",
     "laminas": 29,
-    "peso": "377 KB"
+    "peso": "387 KB"
   },
   {
     "sesion": 3,
@@ -104,13 +100,13 @@ export const spdpPresentaciones: SpdpPresentacion[] = [
     "titulo": "Ética en investigación",
     "archivo": "/classroom/iqya-3050-2026-20/presentaciones/IQYA-3050-Presentacion-Dia6-Etica-2026-20-8B.pdf",
     "laminas": 24,
-    "peso": "335 KB"
+    "peso": "343 KB"
   },
   {
     "sesion": 7,
     "titulo": "Narrativas visuales para presentar datos",
     "archivo": "/classroom/iqya-3050-2026-20/presentaciones/IQYA-3050-Presentacion-Dia7-Narrativas-Visuales-2026-20-8B.pdf",
     "laminas": 30,
-    "peso": "476 KB"
+    "peso": "488 KB"
   }
 ];
