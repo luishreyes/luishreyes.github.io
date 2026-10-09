@@ -1,574 +1,1146 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-canvas="paper">
 <head>
 <meta charset="utf-8">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Explorador de molienda y tamizado · Proyecto de Operaciones Unitarias</title>
 <link rel="stylesheet" href="/classroom-fonts.css">
-<!-- KaTeX autoalojado (woff2) — sin CDN, funciona offline. Ver public/classroom/vendor/katex -->
 <link rel="stylesheet" href="/classroom/vendor/katex/katex.min.css">
 <script defer src="/classroom/vendor/katex/katex.min.js"></script>
 <style>
-  :root {
-    --color-accent:      #5980A6;
-    --color-accent-100:  #EFF4F9;
-    --color-accent-200:  #D3E0EC;
-    --color-accent-500:  #5980A6;
-    --color-accent-600:  #416180;
-    --color-accent-700:  #2C455D;
-    --color-accent-800:  #1D2D3D;
-    --color-bg:          #ffffff;
-    --color-text:        #1A1A1A;
-    --color-divider:     #1A1A1A;
-    --color-neutral-100: #f4f4f5;
-    --color-neutral-200: #e4e4e7;
-    --color-neutral-300: #d4d4d8;
-    --color-neutral-400: #a1a1aa;
-    --color-neutral-500: #71717a;
-    --color-neutral-600: #52525b;
-    --color-neutral-700: #3f3f46;
-    --color-neutral-800: #27272a;
-    --color-neutral-900: #18181b;
-    --font-heading: 'Manrope Variable', ui-sans-serif, system-ui, -apple-system, sans-serif;
-    --font-body:    'Manrope Variable', ui-sans-serif, system-ui, -apple-system, sans-serif;
-    --font-mono:    'JetBrains Mono Variable', ui-monospace, 'SFMono-Regular', Menlo, monospace;
-  }
-  * { box-sizing: border-box; }
-  html, body { margin: 0; }
-  body { background: var(--color-neutral-100); color: var(--color-text); font-family: var(--font-body); -webkit-font-smoothing: antialiased; }
-  .app { max-width: 1400px; margin: 0 auto; background: var(--color-bg); min-height: 100vh; border-left: 1px solid var(--color-neutral-300); border-right: 1px solid var(--color-neutral-300); }
-  a { color: var(--color-accent-700); }
-  input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; height: 22px; background: transparent; cursor: pointer; margin: 2px 0 0; }
-  input[type="range"]::-webkit-slider-runnable-track { height: 2px; background: var(--color-neutral-400); }
-  input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 18px; background: var(--color-accent); margin-top: -8px; border: none; border-radius: 0; }
-  input[type="range"]::-moz-range-track { height: 2px; background: var(--color-neutral-400); }
-  input[type="range"]::-moz-range-thumb { width: 12px; height: 18px; background: var(--color-accent); border: none; border-radius: 0; }
-  input[type="range"]:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; }
-  button:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
-  .katex { font-size: 1em; }
+:root {
+  --accent: #5980A6; --accent-50: #F6F9FC; --accent-100: #EFF4F9; --accent-200: #D3E0EC; --accent-300: #A9C3D8; --accent-600: #416180; --accent-700: #2C455D;
+  --text: #1c1b1a; --bg: #fff; --divider: #1c1b1a;
+  --n50: #faf9f8; --n100: #f4f2f0; --n200: #e9e6e3; --n300: #d8d5d2; --n400: #b3afab; --n500: #8a8683; --n600: #6b6764; --n700: #4f4b48; --n800: #35322f;
+  --redline: #C8452B; --ok: #2F7D5B; --warn: #B7791F;
+  --font-body: 'Manrope Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, Menlo, Consolas, monospace;
+  --ink: #1c1b1a; --paper: #fff; --grid: rgba(89,128,166,.09); --muted-ink: #6b6764; --hl: #5980A6;
+  --top-h: 128px; --ctl-w: 330px;
+}
+:root[data-canvas="blueprint"] { --ink: #e6eef7; --paper: #12304d; --grid: rgba(255,255,255,.06); --muted-ink: #9fb6cc; --hl: #FFBF00; }
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--text); font-family: var(--font-body); -webkit-font-smoothing: antialiased; font-size: 15px; line-height: 1.5; }
+button { font-family: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.mono { font-family: var(--font-mono); }
+.kick { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--accent); font-weight: 600; }
+.lbl { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--n600); font-weight: 700; }
+.small { font-size: 12.5px; color: var(--n600); line-height: 1.5; }
 
-  .grp-label { font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-800); }
-  .grp-label.brd { border-top: 2px solid var(--color-divider); padding-top: 10px; margin-top: 12px; }
-  .row { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
-  .ctl { font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--color-neutral-700); }
-  .val { font-family: var(--font-heading); font-weight: 800; font-size: 15px; }
-  .hint { font-size: 12px; color: var(--color-neutral-700); margin-top: 2px; }
-  .note { font-size: 12px; color: var(--color-neutral-700); padding-bottom: 8px; }
-  .chk { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--color-neutral-800); cursor: pointer; user-select: none; }
-  .chk input { accent-color: var(--color-accent); width: 15px; height: 15px; }
-  .btnstack { display: flex; flex-direction: column; gap: 6px; padding: 12px 0 4px; }
-  .selbtn { display: block; width: 100%; text-align: left; padding: 8px 10px; font-family: var(--font-heading); font-weight: 700; font-size: 13px; letter-spacing: 0.01em; border-radius: 0; cursor: pointer; }
-  .mcell { padding: 12px 18px; }
-  .ecell { padding: 14px 18px; }
-  .brd-r { border-right: 1px solid var(--color-neutral-300); }
-  .mlbl { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-neutral-600); }
-  .mval { font-family: var(--font-heading); font-weight: 800; font-size: 22px; margin-top: 1px; }
-  .munit { font-size: 11px; color: var(--color-neutral-600); }
-  .eq { font-family: var(--font-mono); font-size: 14px; margin-top: 4px; min-height: 20px; }
-  .enote { font-size: 12px; color: var(--color-neutral-600); margin-top: 3px; }
-  .spec { display: grid; grid-template-columns: 1fr auto; gap: 0 12px; font-size: 12.5px; margin-top: 6px; }
-  .spec > div { padding: 6px 0; border-top: 1px solid var(--color-neutral-300); }
-  .spec .k { color: var(--color-neutral-700); }
-  .spec .v { font-weight: 700; text-align: right; }
-  table.sieve { width: 100%; font-size: 13px; border-collapse: collapse; }
-  table.sieve th { text-align: right; padding: 6px 6px; border-bottom: 2px solid var(--color-text); font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--color-neutral-700); }
-  table.sieve th:first-child { text-align: left; }
-  table.sieve td { text-align: right; padding: 5px 6px; border-bottom: 1px solid var(--color-neutral-200); }
-  table.sieve td:first-child { text-align: left; font-weight: 700; }
-  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
-  @media (max-width: 760px) {
-    .colpanel { border-right: none !important; border-bottom: 2px solid var(--color-divider); max-width: none !important; }
-    .grid-metrics, .grid-eq { grid-template-columns: 1fr !important; }
-    .grid-metrics .mcell, .grid-eq .ecell { border-right: none !important; }
-    .grid-metrics .mcell:not(:last-child), .grid-eq .ecell:not(:last-child) { border-bottom: 1px solid var(--color-neutral-300); }
-  }
+/* ---------- cabecera fija con indicadores ---------- */
+.top { position: sticky; top: 0; z-index: 40; background: #fff; border-bottom: 2px solid var(--divider); }
+.top-row { display: flex; align-items: center; gap: 18px; padding: 12px 22px 10px; }
+.top-row h1 { font-size: 21px; font-weight: 780; letter-spacing: -.02em; margin: 2px 0 0; line-height: 1.1; }
+.top-row .sp { flex: 1; }
+.ctx { font-size: 12.5px; color: var(--n600); }
+.ctx b { color: var(--text); }
+.status { border: 2px solid var(--text); padding: 6px 12px; font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; font-weight: 700; background: #fff; cursor: pointer; display: inline-flex; gap: 8px; align-items: center; color: var(--text); }
+.status i { width: 9px; height: 9px; border-radius: 50%; background: var(--ok); }
+.status.adv i { background: var(--warn); } .status.inv i { background: var(--redline); }
+.status.inv { border-color: var(--redline); color: var(--redline); }
+.kpis { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); border-top: 1px solid var(--n300); }
+.kpi { padding: 7px 14px 8px; border-right: 1px solid var(--n300); min-width: 0; }
+.kpi:last-child { border-right: none; }
+.kpi .v { font-family: var(--font-mono); font-size: 19px; font-weight: 750; font-variant-numeric: tabular-nums; white-space: nowrap; transition: color .2s; }
+.kpi .v small { font-size: 11px; font-weight: 600; color: var(--n600); margin-left: 3px; }
+.kpi .u { font-size: 11px; color: var(--n600); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.kpi.bad .v { color: var(--redline); }
+.kpi .v.flash { animation: kf .6s ease; }
+@keyframes kf { 0% { color: var(--accent); } 100% { } }
+
+/* ---------- estructura ---------- */
+.shell { display: grid; grid-template-columns: var(--ctl-w) minmax(0, 1fr); }
+.ctl { position: sticky; top: var(--top-h); height: calc(100vh - var(--top-h)); overflow-y: auto; border-right: 2px solid var(--divider); background: var(--n50); padding: 4px 0 30px; overscroll-behavior: contain; }
+.ctl section { padding: 14px 20px 16px; border-bottom: 1px solid var(--n300); }
+.ctl h2 { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--n700); margin: 0 0 10px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+.ctl h2 .n { color: var(--accent); }
+.opts { display: grid; gap: 6px; }
+.opt { display: grid; grid-template-columns: 14px 1fr auto; gap: 10px; align-items: center; text-align: left; border: 1.5px solid var(--n300); background: #fff; padding: 8px 10px; cursor: pointer; font-size: 13.5px; font-weight: 650; color: var(--text); transition: border-color .12s, background .12s; }
+.opt:hover { border-color: var(--text); }
+.opt[aria-pressed="true"] { border-color: var(--accent); background: var(--accent); color: #fff; }
+.opt .dotc { width: 12px; height: 12px; border-radius: 50%; border: 1px solid rgba(0,0,0,.3); }
+.opt .x { font-family: var(--font-mono); font-size: 11px; font-weight: 600; opacity: .75; }
+.mills { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.mill { border: 1.5px solid var(--n300); background: #fff; padding: 8px 6px 7px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12px; font-weight: 700; color: var(--text); transition: border-color .12s, background .12s; }
+.mill svg { width: 44px; height: 30px; }
+.mill:hover { border-color: var(--text); }
+.mill[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-100); box-shadow: inset 0 -3px 0 var(--accent); color: var(--accent-700); }
+.mill:last-child:nth-child(odd) { grid-column: 1 / -1; flex-direction: row; justify-content: center; gap: 10px; }
+.seg { display: flex; border: 2px solid var(--text); background: #fff; }
+.seg button { flex: 1; border: none; border-right: 1px solid var(--text); background: #fff; padding: 7px 8px; font-size: 12.5px; font-weight: 650; cursor: pointer; color: var(--text); }
+.seg button:last-child { border-right: none; }
+.seg button[aria-pressed="true"] { background: var(--accent); color: #fff; }
+.seg.inline { display: inline-flex; }
+.sl { margin-top: 12px; }
+.sl .row { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.sl .row span:first-child { font-size: 12.5px; font-weight: 650; color: var(--n800); }
+.sl .row b { font-family: var(--font-mono); font-size: 13.5px; font-weight: 750; }
+.sl .hint { font-size: 11.5px; color: var(--n600); margin-top: 2px; }
+.sl .hint.bad { color: var(--redline); font-weight: 650; }
+input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 22px; background: transparent; cursor: pointer; margin: 2px 0 0; }
+input[type=range]::-webkit-slider-runnable-track { height: 2px; background: var(--n400); }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 18px; background: var(--accent); margin-top: -8px; border: none; }
+input[type=range]::-moz-range-track { height: 2px; background: var(--n400); }
+input[type=range]::-moz-range-thumb { width: 12px; height: 18px; background: var(--accent); border: none; border-radius: 0; }
+.toggle { display: flex; align-items: center; gap: 9px; font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 10px; }
+.toggle input { appearance: none; width: 30px; height: 17px; border: 1.5px solid var(--text); position: relative; background: #fff; cursor: pointer; margin: 0; flex: none; }
+.toggle input::after { content: ''; position: absolute; top: 2px; left: 2px; width: 10px; height: 10px; background: var(--text); transition: transform .15s; }
+.toggle input:checked { background: var(--accent); border-color: var(--accent); }
+.toggle input:checked::after { transform: translateX(13px); background: #fff; }
+select.sel { width: 100%; border: 1.5px solid var(--text); padding: 7px 8px; font: inherit; font-size: 13px; background: #fff; margin-top: 6px; }
+
+main { min-width: 0; }
+.tabs { position: sticky; top: var(--top-h); z-index: 30; display: flex; background: #fff; border-bottom: 2px solid var(--divider); overflow-x: auto; scrollbar-width: none; }
+.tabs button { border: none; background: #fff; padding: 12px 18px 11px; font-size: 14px; font-weight: 700; cursor: pointer; color: var(--n600); border-right: 1px solid var(--n300); white-space: nowrap; display: flex; align-items: baseline; gap: 8px; position: relative; }
+.tabs button .k { font-family: var(--font-mono); font-size: 10.5px; color: var(--n400); }
+.tabs button:hover { color: var(--text); background: var(--accent-50); }
+.tabs button[aria-selected="true"] { color: var(--accent-700); background: var(--accent-100); }
+.tabs button[aria-selected="true"]::after { content: ''; position: absolute; left: 0; right: 0; bottom: -2px; height: 4px; background: var(--accent); }
+.tabs .sp { flex: 1; border-right: none; }
+.tabs .canv { display: flex; align-items: center; padding: 0 12px; gap: 6px; }
+.tabs .canv button { padding: 5px 9px; border: 1.5px solid var(--n300); font-size: 11.5px; }
+.tabs .canv button[aria-pressed="true"] { background: var(--text); color: #fff; border-color: var(--text); }
+.panel { display: none; padding: 22px 26px 60px; }
+.panel.on { display: block; animation: pin .3s ease both; }
+@keyframes pin { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.ph h2 { font-size: 23px; font-weight: 760; letter-spacing: -.02em; margin: 0 12px 0 0; display: inline; }
+.ph .lbl { display: inline-block; }
+.ph p { margin: 8px 0 0; color: var(--n700); font-size: 14.5px; max-width: 82ch; }
+#svgSankey text { paint-order: stroke; stroke: #fff; stroke-width: 4px; stroke-linejoin: round; }
+:root[data-canvas="blueprint"] #svgSankey text { stroke: var(--paper); }
+.card { border: 2px solid var(--divider); background: #fff; margin-top: 18px; }
+.card-h { display: flex; align-items: center; gap: 12px; padding: 8px 14px; border-bottom: 1.5px solid var(--divider); font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; font-weight: 700; color: var(--n700); flex-wrap: wrap; }
+.card-h .t { color: var(--text); }
+.card-h .sp { flex: 1; }
+.card-b { padding: 16px 18px; }
+.two { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+.three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; align-items: start; }
+.stage { position: relative; background: var(--paper); }
+.stage canvas { display: block; width: 100%; height: clamp(320px, 52vh, 520px); touch-action: pan-y; }
+.hud { position: absolute; left: 12px; top: 12px; display: flex; gap: 6px; flex-wrap: wrap; pointer-events: none; }
+.chip { font-family: var(--font-mono); font-size: 11px; font-weight: 700; padding: 4px 8px; border: 1.5px solid var(--text); background: rgba(255,255,255,.94); color: var(--text); letter-spacing: .02em; }
+.chip.acc { background: var(--accent); border-color: var(--accent); color: #fff; }
+.chip.red { background: var(--redline); border-color: var(--redline); color: #fff; }
+.play { position: absolute; right: 12px; top: 12px; display: flex; gap: 6px; }
+.play button { border: 1.5px solid var(--text); background: #fff; height: 30px; min-width: 30px; padding: 0 8px; cursor: pointer; display: inline-grid; place-items: center; font-family: var(--font-mono); font-size: 11px; font-weight: 700; color: var(--text); }
+.play button[aria-pressed="true"] { background: var(--text); color: #fff; }
+.caption { padding: 12px 16px; border-top: 1.5px solid var(--divider); font-size: 13.5px; color: var(--n800); background: var(--n50); line-height: 1.55; }
+.caption b { color: var(--accent-700); }
+.spec { display: grid; grid-template-columns: 1fr auto; font-size: 13px; }
+.spec > div { padding: 6px 0; border-bottom: 1px solid var(--n200); }
+.spec .v { font-weight: 700; text-align: right; font-family: var(--font-mono); font-size: 12.5px; }
+.warn { display: grid; grid-template-columns: 22px 1fr; gap: 8px; padding: 9px 0; border-bottom: 1px solid var(--n200); font-size: 13.5px; line-height: 1.5; animation: pin .25s ease both; }
+.warn i { width: 18px; height: 18px; display: grid; place-items: center; font-style: normal; font-weight: 800; font-size: 12px; color: #fff; background: var(--warn); margin-top: 1px; }
+.warn.c i { background: var(--redline); }
+.warn.ok i { background: var(--ok); }
+svg.ch { width: 100%; height: auto; display: block; font-family: var(--font-body); }
+svg.ch text { fill: var(--ink); }
+.chart-bg { fill: var(--paper); }
+table.t { width: 100%; border-collapse: collapse; font-size: 13px; }
+table.t th { text-align: right; padding: 6px 8px; border-bottom: 2px solid var(--text); font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--n700); font-weight: 700; }
+table.t th:first-child, table.t td:first-child { text-align: left; }
+table.t td { text-align: right; padding: 6px 8px; border-bottom: 1px solid var(--n200); font-variant-numeric: tabular-nums; }
+table.t td:first-child { font-weight: 700; }
+table.t tr.tot td { border-top: 2px solid var(--text); font-weight: 800; }
+table.t tr:hover td { background: var(--accent-50); }
+.flowstep td:first-child { font-weight: 600 !important; }
+.flowstep .op { font-family: var(--font-mono); color: var(--accent-700); font-weight: 700; }
+.mcards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 2px solid var(--divider); margin-top: 18px; background: #fff; }
+.mcards > div { padding: 12px 16px; border-right: 1px solid var(--n300); border-bottom: 1px solid var(--n300); }
+.mcards > div:nth-child(3n) { border-right: none; }
+.mcards .v { font-family: var(--font-mono); font-size: 22px; font-weight: 780; margin-top: 2px; }
+.mcards .u { font-size: 11.5px; color: var(--n600); }
+.mcards .bad { color: var(--redline); }
+.eqs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0; border: 2px solid var(--divider); margin-top: 18px; background: #fff; }
+.eqs > div { padding: 16px 18px; border-right: 1px solid var(--n300); border-bottom: 1px solid var(--n300); }
+.eqs > div:nth-child(2n) { border-right: none; }
+.eqs .f { font-size: 17px; margin: 8px 0 6px; min-height: 28px; overflow-x: auto; }
+.eqs .n2 { font-size: 12.5px; color: var(--n600); }
+.callout { border-left: 4px solid var(--accent); background: var(--accent-100); padding: 12px 16px; margin-top: 18px; font-size: 13.5px; line-height: 1.6; }
+.callout.ink { border-left-color: var(--text); background: var(--n100); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12px; color: var(--n700); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { display: inline-block; width: 24px; border-top: 2.5px solid var(--accent); }
+.legend i.k { border-top: 2px dashed var(--ink); } .legend i.r { border-top: 2px dotted var(--ink); }
+.legend i.box { width: 12px; height: 10px; border: 1px solid var(--accent-700); background: var(--accent-200); }
+.readout { font-family: var(--font-mono); font-size: 12px; color: var(--n700); min-height: 18px; }
+.mobile-ctl { display: none; }
+@media (max-width: 1100px) { .two { grid-template-columns: 1fr; } .kpi .v { font-size: 16px; } }
+@media (max-width: 900px) {
+  .top-row .kick, .top-row .ctx, .top-row .sp { display: none; }
+  .top-row h1 { font-size: 15px; flex: 1; }
+  .status { padding: 4px 8px; font-size: 9.5px; }
+  .kpi { padding: 4px 10px 5px; } .kpi .v { font-size: 14.5px; } .kpi .u { display: none; } .kpi .lbl { font-size: 9px; }
+  .hud .chip:not(.acc):not(.red) { display: none; }
+  .hud { top: 50px; }
+  .kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .kpi:nth-child(3) { border-right: none; } .kpi:nth-child(-n+3) { border-bottom: 1px solid var(--n300); }
+  .shell { grid-template-columns: 1fr; }
+  .ctl { position: fixed; left: 0; right: 0; bottom: 0; top: auto; height: 72vh; z-index: 60; transform: translateY(102%); transition: transform .25s ease; border-right: none; border-top: 2px solid var(--divider); box-shadow: 0 -12px 40px -10px rgba(0,0,0,.3); }
+  .ctl.open { transform: none; }
+  .mobile-ctl { display: inline-flex; position: fixed; right: 14px; bottom: 14px; z-index: 61; background: var(--accent); color: #fff; border: none; padding: 12px 16px; font-weight: 750; font-size: 14px; box-shadow: 0 6px 20px -6px rgba(0,0,0,.4); gap: 8px; align-items: center; }
+  .panel { padding: 16px 14px 90px; }
+  .three, .eqs, .mcards { grid-template-columns: 1fr; }
+  .eqs > div, .mcards > div { border-right: none !important; }
+  .top-row { flex-wrap: wrap; padding: 10px 14px; }
+  .tabs .canv { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 </style>
 </head>
 <body>
-<div class="app">
+<header class="top" id="top">
+  <div class="top-row">
+    <div>
+      <div class="kick">POU · IQYA-2031 · Reducción de tamaño</div>
+      <h1>Explorador de molienda y tamizado</h1>
+    </div>
+    <div class="ctx" id="ctx"></div>
+    <span class="sp"></span>
+    <button type="button" class="status" id="status" title="Ver el diagnóstico"><i></i><span id="statusTxt">Selección viable</span></button>
+  </div>
+  <div class="kpis">
+    <div class="kpi"><div class="lbl">Energía</div><div class="v" id="kE">—</div><div class="u" id="kEu">kWh/t de sólido</div></div>
+    <div class="kpi"><div class="lbl">Potencia en el eje</div><div class="v" id="kP">—</div><div class="u" id="kPu">kW</div></div>
+    <div class="kpi"><div class="lbl">Motor</div><div class="v" id="kM">—</div><div class="u" id="kMu">kW · tamaño IEC</div></div>
+    <div class="kpi"><div class="lbl">P₈₀ real</div><div class="v" id="kP80">—</div><div class="u" id="kP80u">del producto</div></div>
+    <div class="kpi"><div class="lbl">Reducción</div><div class="v" id="kRR">—</div><div class="u">F₈₀ / P₈₀</div></div>
+    <div class="kpi" id="kTc"><div class="lbl">T de salida</div><div class="v" id="kT">—</div><div class="u" id="kTu">°C</div></div>
+  </div>
+</header>
 
-  <header style="display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; padding: 18px 28px 16px; border-bottom: 2px solid var(--color-divider);">
-    <div style="font-family: var(--font-heading); font-weight: 800; font-size: 24px; letter-spacing: -0.015em;">Molienda y análisis de tamizado</div>
-    <div style="font-size: 12px; color: var(--color-neutral-700); text-transform: uppercase; letter-spacing: 0.08em;">Proyecto de Operaciones Unitarias · Reducción de tamaño · <span id="matNameHdr"></span> · <span id="millNameHdr"></span></div>
-  </header>
-
-  <div id="warnings" style="display: none; border-bottom: 2px solid var(--color-accent); background: var(--color-accent-100); padding: 10px 28px; flex-direction: column; gap: 4px;"></div>
-
-  <div style="padding: 10px 28px 0; font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-neutral-800);">Parte 1 · Molienda y selección de equipo</div>
-
-  <div style="display: flex; flex-wrap: wrap;">
-
-    <aside class="colpanel" style="flex: 1 1 280px; max-width: 400px; padding: 8px 24px 28px; border-right: 2px solid var(--color-divider);">
-
-      <div class="grp-label" style="border-top: 2px solid var(--color-divider); padding-top: 10px; margin-top: 6px;">Material</div>
-      <div id="matBtns" class="btnstack"></div>
-      <div id="matNote" class="note"></div>
-
-      <div class="grp-label brd">Equipo de reducción</div>
-      <div id="millBtns" class="btnstack"></div>
-      <div id="millNote" class="note"></div>
-
-      <div class="grp-label brd">Modo de operación</div>
-      <div style="display: flex; gap: 6px; padding: 12px 0 4px;">
-        <button type="button" id="modeSeca" class="selbtn" style="flex:1;" onclick="setMode('seca')">Molienda seca</button>
-        <button type="button" id="modeHum" class="selbtn" style="flex:1;" onclick="setMode('hum')">Molienda húmeda</button>
+<div class="shell">
+  <aside class="ctl" id="ctl" aria-label="Controles">
+    <section><h2><span class="n">01</span> Material</h2><div class="opts" id="matBtns"></div>
+      <div id="customBox" style="display:none">
+        <div class="sl"><div class="row"><span>Wi de su ensayo</span><b id="vcWi"></b></div><input type="range" id="cWi" min="3" max="40" step="0.1"><div class="hint">kWh/t (tonelada métrica)</div></div>
+        <div class="sl"><div class="row"><span>Calor específico cp</span><b id="vcCp"></b></div><input type="range" id="cCp" min="0.8" max="2.5" step="0.05"></div>
+        <div class="sl"><div class="row"><span>Temperatura límite</span><b id="vcTmax"></b></div><input type="range" id="cTmax" min="40" max="120" step="1"><div class="hint">Por encima se degrada el producto</div></div>
       </div>
-
-      <div id="humRow" style="padding: 8px 0 6px;">
-        <div class="row"><label class="ctl">Humedad del material w</label><span class="val" id="fHum"></span></div>
-        <input type="range" min="0" max="25" step="0.5" id="hum" oninput="onSlider('hum', this.value)">
-        <div class="hint">Máx. admisible en seco para este equipo: <span id="humValA"></span></div>
-      </div>
-      <div id="solRow" style="padding: 8px 0 6px; display: none;">
-        <div class="row"><label class="ctl">Sólidos en la pulpa Cw</label><span class="val" id="fSol"></span></div>
-        <input type="range" min="30" max="80" step="1" id="sol" oninput="onSlider('sol', this.value)">
-        <div class="hint">El agua de la pulpa absorbe parte del calor generado</div>
-      </div>
-
-      <div class="grp-label brd">Corriente de proceso</div>
-      <div style="padding: 12px 0 6px;">
-        <div class="row"><label class="ctl">Alimentación F₈₀</label><span class="val" id="fF80"></span></div>
-        <input type="range" min="2.7" max="6" step="0.01" id="lF" oninput="onSlider('lF', this.value)">
-      </div>
-      <div style="padding: 8px 0 6px;">
-        <div class="row"><label class="ctl">Producto objetivo P₈₀</label><span class="val" id="fP80t"></span></div>
-        <input type="range" min="1.3" max="5.5" step="0.01" id="lP" oninput="onSlider('lP', this.value)">
-        <div class="hint">Rango alcanzable del equipo: <span id="prodValA"></span></div>
-      </div>
-      <div style="padding: 8px 0 6px;">
-        <div class="row"><label class="ctl">Capacidad (sólidos secos)</label><span class="val" id="fCap"></span></div>
-        <input type="range" min="-0.7" max="3" step="0.01" id="lC" oninput="onSlider('lC', this.value)">
-        <div class="hint">Rango típico del equipo: <span id="capValA"></span></div>
-      </div>
-
-      <div class="grp-label brd">Condiciones y diagramas</div>
-      <div style="padding: 12px 0 6px;">
-        <div class="row"><label class="ctl">Temperatura ambiente</label><span class="val" id="fTamb"></span></div>
-        <input type="range" min="5" max="40" step="1" id="Tamb" oninput="onSlider('Tamb', this.value)">
-      </div>
-      <div style="display: flex; flex-direction: column; gap: 8px; padding: 4px 0 2px;">
-        <label class="chk"><input type="checkbox" id="grid" checked onchange="state.grid = this.checked; render();"> Cuadrícula</label>
-        <label class="chk"><input type="checkbox" id="showEq" checked onchange="state.showEq = this.checked; render();"> Mostrar ecuaciones</label>
-      </div>
-
-    </aside>
-
-    <section class="colpanel" style="flex: 1 1 260px; max-width: 380px; padding: 8px 20px 24px; border-right: 2px solid var(--color-divider);">
-      <div class="grp-label" style="border-top: 2px solid var(--color-divider); padding-top: 10px; margin-top: 6px; margin-bottom: 8px;">Equipo · <span id="millNameEq"></span></div>
-      <svg id="svgMill" viewBox="0 0 360 300" style="width: 100%; display: block;"></svg>
-      <div id="millNote2" style="border-top: 1px solid var(--color-neutral-300); margin-top: 8px; padding-top: 6px; font-size: 12.5px; color: var(--color-neutral-800);"></div>
-
-      <div class="grp-label brd">Ficha del equipo</div>
-      <div class="spec">
-        <div class="k">Mecanismo</div><div class="v" id="mechVal"></div>
-        <div class="k">Alimentación máx.</div><div class="v" id="fmaxVal"></div>
-        <div class="k">Producto alcanzable</div><div class="v" id="prodVal"></div>
-        <div class="k">Relación de reducción máx.</div><div class="v" id="rrVal"></div>
-        <div class="k">Capacidad típica</div><div class="v" id="capVal"></div>
-        <div class="k">Humedad máx. en seco</div><div class="v" id="humVal"></div>
-        <div class="k">Admite molienda húmeda</div><div class="v" id="wetVal"></div>
-        <div class="k">Uniformidad n (Rosin-Rammler)</div><div class="v" id="nVal"></div>
-      </div>
-
-      <div class="grp-label brd">Ficha del material</div>
-      <div class="spec">
-        <div class="k">Índice de trabajo de Bond Wi</div><div class="v" id="wiVal"></div>
-        <div class="k">Dureza (Mohs)</div><div class="v" id="mohsVal"></div>
-        <div class="k">Calor específico cp</div><div class="v" id="cpVal"></div>
-        <div class="k">Humedad típica</div><div class="v" id="humTipVal"></div>
-        <div class="k">Temperatura límite</div><div class="v" id="tmaxVal"></div>
-      </div>
-      <div id="matNote2" class="note" style="margin-top: 6px;"></div>
+      <p class="small" id="matNote" style="margin:10px 0 0"></p>
     </section>
+    <section><h2><span class="n">02</span> Equipo de reducción</h2><div class="mills" id="millBtns"></div><p class="small" id="millNote" style="margin:10px 0 0"></p></section>
+    <section><h2><span class="n">03</span> Modo de operación</h2>
+      <div class="seg" id="modeSeg"><button type="button" data-m="seca">Molienda seca</button><button type="button" data-m="hum">Molienda húmeda</button></div>
+      <div class="sl" id="humRow"><div class="row"><span>Humedad del material w</span><b id="vhum"></b></div><input type="range" id="hum" min="0" max="25" step="0.5"><div class="hint" id="humHint"></div></div>
+      <div class="sl" id="solRow"><div class="row"><span>Sólidos en la pulpa Cw</span><b id="vsol"></b></div><input type="range" id="sol" min="30" max="80" step="1"><div class="hint">El agua de la pulpa absorbe parte del calor generado</div></div>
+    </section>
+    <section><h2><span class="n">04</span> Corriente de proceso</h2>
+      <div class="sl"><div class="row"><span>Alimentación F₈₀</span><b id="vlF"></b></div><input type="range" id="lF" min="2.7" max="6" step="0.01"><div class="hint" id="fHint"></div></div>
+      <div class="sl"><div class="row"><span>Producto objetivo P₈₀</span><b id="vlP"></b></div><input type="range" id="lP" min="1.3" max="5.5" step="0.01"><div class="hint" id="pHint"></div></div>
+      <div class="sl"><div class="row"><span>Capacidad (sólidos secos)</span><b id="vlC"></b></div><input type="range" id="lC" min="-0.7" max="3" step="0.01"><div class="hint" id="cHint"></div></div>
+    </section>
+    <section id="ballBox"><h2><span class="n">05</span> Molino de bolas</h2>
+      <div class="sl"><div class="row"><span>Velocidad φ (fracción de la crítica)</span><b id="vphi"></b></div><input type="range" id="phi" min="30" max="120" step="1"><div class="hint" id="phiHint"></div></div>
+      <div class="sl"><div class="row"><span>Diámetro interno D</span><b id="vD"></b></div><input type="range" id="D" min="0.5" max="5" step="0.1"></div>
+      <div class="sl"><div class="row"><span>Carga de bolas J</span><b id="vJ"></b></div><input type="range" id="J" min="20" max="45" step="1"><div class="hint">Fracción del volumen del molino ocupada por la carga</div></div>
+      <label class="toggle"><input type="checkbox" id="rowland"> Factores de Rowland (seco, alimentación gruesa, finos)</label>
+    </section>
+    <section><h2><span class="n">06</span> Condiciones y vista</h2>
+      <div class="sl"><div class="row"><span>Temperatura ambiente</span><b id="vTamb"></b></div><input type="range" id="Tamb" min="5" max="40" step="1"></div>
+      <div class="sl"><div class="row"><span>Serie de tamices</span></div><select class="sel" id="series"><option value="astm">ASTM E11 / ISO 3310 (la de la lectura)</option><option value="tyler">Tyler (razón √2)</option></select></div>
+      <label class="toggle"><input type="checkbox" id="grid"> Cuadrícula en las gráficas</label>
+      <label class="toggle"><input type="checkbox" id="showEq"> Mostrar ecuaciones</label>
+      <button type="button" class="seg inline" id="resetAll" style="margin-top:14px;padding:7px 12px;font-weight:700;font-size:12.5px;cursor:pointer">Restablecer el caso base</button>
+    </section>
+  </aside>
 
-    <section style="flex: 1 1 480px; min-width: 0; padding: 8px 24px 24px;">
-      <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; border-top: 2px solid var(--color-divider); padding-top: 10px; margin-top: 6px; margin-bottom: 10px;">
-        <div style="display: flex; gap: 16px; flex-wrap: wrap; align-items: center; font-size: 12px; color: var(--color-neutral-800);">
-          <span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 18px; height: 3px; background: var(--color-accent);"></span>Bond</span>
-          <span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 18px; border-top: 2px dashed var(--color-text);"></span>Kick</span>
-          <span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 18px; border-top: 2px dotted var(--color-neutral-700);"></span>Rittinger</span>
-          <span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 10px; height: 10px; background: var(--color-accent); border: 2px solid var(--color-bg); box-shadow: 0 0 0 1px var(--color-accent);"></span>Punto de operación</span>
+  <main id="main">
+    <nav class="tabs" role="tablist" aria-label="Vistas">
+      <button type="button" role="tab" data-tab="eq" aria-selected="true"><span class="k">1</span>Equipo en operación</button>
+      <button type="button" role="tab" data-tab="en" aria-selected="false"><span class="k">2</span>Energía</button>
+      <button type="button" role="tab" data-tab="th" aria-selected="false"><span class="k">3</span>Balance térmico</button>
+      <button type="button" role="tab" data-tab="gr" aria-selected="false"><span class="k">4</span>Granulometría</button>
+      <button type="button" role="tab" data-tab="ec" aria-selected="false"><span class="k">5</span>Ecuaciones y supuestos</button>
+      <span class="sp"></span>
+      <div class="canv"><button type="button" data-canvas="paper" aria-pressed="true">Papel</button><button type="button" data-canvas="blueprint" aria-pressed="false">Blueprint</button></div>
+    </nav>
+
+    <!-- 1 · Equipo -->
+    <section class="panel on" data-panel="eq">
+      <div class="ph"><h2 id="eqTitle">Molino de bolas</h2><span class="lbl" id="eqMech"></span><p id="eqLead"></p></div>
+      <div class="card">
+        <div class="stage">
+          <canvas id="millCv" aria-label="Animación del equipo de molienda"></canvas>
+          <div class="hud" id="hud"></div>
+          <div class="play"><button type="button" id="btnPlay" aria-label="Pausar">❚❚</button><button type="button" data-sp="0.5">0,5×</button><button type="button" data-sp="1" aria-pressed="true">1×</button><button type="button" data-sp="2">2×</button><button type="button" id="btnReset" aria-label="Reiniciar">↺</button></div>
         </div>
-        <div id="statusText" style="font-family: var(--font-heading); font-weight: 800; font-size: 14px;"></div>
+        <div class="caption" id="animCap"></div>
       </div>
-      <svg id="svgEnergy" viewBox="0 0 720 640" style="width: 100%; max-width: 780px; display: block;"></svg>
-      <div style="border-top: 1px solid var(--color-neutral-300); margin-top: 10px; padding-top: 8px; font-size: 13px; color: var(--color-neutral-800);">Las tres leyes se calibran para coincidir en el punto de operación actual (F₈₀ fijo). Al alejarse de él divergen: Kick subestima la energía de molienda fina; Rittinger la sobreestima frente a Bond, que interpola ambos regímenes.</div>
-    </section>
-  </div>
-
-  <div class="grid-metrics" style="border-top: 2px solid var(--color-divider); display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));">
-    <div class="mcell brd-r"><div class="mlbl">E · Bond</div><div class="mval" id="vE"></div><div class="munit">kWh/t de sólido</div></div>
-    <div class="mcell brd-r"><div class="mlbl">Potencia en el eje</div><div class="mval" id="vPeje"></div><div class="munit">kW · factor del equipo k = <span id="vK"></span></div></div>
-    <div class="mcell brd-r"><div class="mlbl">Potencia del motor</div><div class="mval" id="vPmot"></div><div class="munit">kW · η transmisión = 0.95</div></div>
-    <div class="mcell brd-r"><div class="mlbl">Relación de reducción</div><div class="mval" id="vRR"></div><div class="munit">F₈₀ / P₈₀ real</div></div>
-    <div class="mcell brd-r"><div class="mlbl">P₈₀ real del producto</div><div class="mval" id="vP80"></div><div class="munit" id="p80Note"></div></div>
-    <div class="mcell"><div class="mlbl">Capacidad</div><div class="mval" id="vCapS"></div><div class="munit" id="capNote"></div></div>
-  </div>
-
-  <div class="grid-metrics" style="border-top: 1px solid var(--color-neutral-300); display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));">
-    <div class="mcell brd-r"><div class="mlbl">Calor disipado Q̇</div><div class="mval" id="vQ"></div><div class="munit">kW · ≈ 97 % de la potencia en el eje</div></div>
-    <div class="mcell brd-r"><div class="mlbl">ṁ·c̄p del flujo</div><div class="mval" id="vMcp"></div><div class="munit">kW/K · sólido + agua</div></div>
-    <div class="mcell brd-r"><div class="mlbl">ΔT del material</div><div class="mval" id="vDT"></div><div class="munit">°C · independiente del flujo</div></div>
-    <div class="mcell brd-r"><div class="mlbl">T de salida</div><div class="mval" id="vTout"></div><div class="munit">°C · T ambiente = <span id="vTamb"></span> °C</div></div>
-    <div class="mcell brd-r"><div class="mlbl">Límite del material</div><div class="mval" id="vTmax"></div><div class="munit" id="tmaxNote"></div></div>
-    <div class="mcell"><div class="mlbl">Agua en el circuito</div><div class="mval" id="vAgua"></div><div class="munit">t/h · <span id="aguaNote"></span></div></div>
-  </div>
-
-  <div style="border-top: 2px solid var(--color-divider); background: var(--color-accent); color: var(--color-bg); padding: 14px 28px; display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap;">
-    <div style="font-family: var(--font-heading); font-weight: 800; font-size: 18px; letter-spacing: -0.01em;">Parte 2 · Análisis granulométrico del producto</div>
-    <div style="font-size: 12.5px; font-weight: 600;">Rosin-Rammler · x′ = <span id="vX63"></span> · n = <span id="vN"></span> (<span id="nDesc"></span>)</div>
-  </div>
-
-  <div style="display: flex; flex-wrap: wrap;">
-    <section class="colpanel" style="flex: 1 1 480px; min-width: 0; padding: 14px 24px 24px; border-right: 2px solid var(--color-divider);">
-      <div style="display: flex; gap: 16px; flex-wrap: wrap; align-items: center; font-size: 12px; color: var(--color-neutral-800); margin-bottom: 10px;">
-        <span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 18px; height: 3px; background: var(--color-text);"></span>Pasante acumulado</span>
-        <span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 14px; height: 10px; background: var(--color-accent-200); border: 1px solid var(--color-accent-700);"></span>Retenido por malla</span>
-        <span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 18px; border-top: 2px dashed var(--color-accent);"></span>P₈₀</span>
+      <div class="three">
+        <div class="card"><div class="card-h"><span class="t">Ficha del equipo</span></div><div class="card-b"><div class="spec" id="specMill"></div></div></div>
+        <div class="card"><div class="card-h"><span class="t">Ficha del material</span></div><div class="card-b"><div class="spec" id="specMat"></div><p class="small" id="matNote2" style="margin:10px 0 0"></p></div></div>
+        <div class="card" id="diagCard"><div class="card-h"><span class="t">Diagnóstico</span><span class="sp"></span><span id="diagCount"></span></div><div class="card-b" id="warnings" style="padding-top:4px"></div></div>
       </div>
-      <svg id="svgPsd" viewBox="0 0 720 640" style="width: 100%; max-width: 780px; display: block;"></svg>
-      <div style="border-top: 1px solid var(--color-neutral-300); margin-top: 10px; padding-top: 8px; font-size: 13px; color: var(--color-neutral-800);">La distribución del producto se modela con Rosin-Rammler: el parámetro n depende del mecanismo del equipo (impacto produce distribuciones amplias; compresión entre rodillos, estrechas).</div>
     </section>
 
-    <aside style="flex: 1 1 320px; max-width: 520px; padding: 14px 24px 24px;">
-      <div class="grp-label" style="margin-bottom: 8px;">Análisis de tamizado · serie Tyler</div>
-      <table class="sieve">
-        <thead><tr><th>Malla</th><th>Abertura</th><th>Retenido %</th><th>Ret. acum. %</th><th>Pasante %</th></tr></thead>
-        <tbody id="sieveBody"></tbody>
-      </table>
-      <div id="tamizNote" style="font-size: 12px; color: var(--color-neutral-700); margin-top: 10px; border-top: 1px solid var(--color-neutral-300); padding-top: 8px;"></div>
-    </aside>
-  </div>
+    <!-- 2 · Energía -->
+    <section class="panel" data-panel="en">
+      <div class="ph"><h2>Energía de conminución</h2><p>Las tres leyes se calibran para coincidir en el punto de operación actual (F₈₀ fijo). Al alejarse de él divergen: Kick subestima la energía de molienda fina; Rittinger la sobreestima frente a Bond, que interpola ambos regímenes. Pase el cursor por la gráfica para leer las tres leyes; haga clic para fijar ese P₈₀ como objetivo.</p></div>
+      <div class="two">
+        <div class="card"><div class="card-h"><span class="t">E frente a P₈₀</span><span class="sp"></span><div class="legend"><span><i></i>Bond</span><span><i class="k"></i>Kick</span><span><i class="r"></i>Rittinger</span></div></div>
+          <div class="card-b" style="padding:10px 12px 6px"><svg class="ch" id="svgEnergy" viewBox="0 0 720 640"></svg><div class="readout" id="enRead">&nbsp;</div></div></div>
+        <div>
+          <div class="card" style="margin-top:18px"><div class="card-h"><span class="t">De la energía al motor</span></div><div class="card-b" style="padding:6px 12px 12px"><table class="t flowstep" id="flowTable"></table></div></div>
+          <div class="callout ink" id="rowNote"></div>
+        </div>
+      </div>
+    </section>
 
-  <div id="eqGrid" class="grid-eq" style="border-top: 2px solid var(--color-divider); display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));">
-    <div class="ecell brd-r"><div class="mlbl">Ley de Bond</div><div class="eq" id="eqBond"></div><div class="enote">Wi = <span id="wiVal2"></span> · tamaños en µm · E = <span id="vE2"></span> kWh/t</div></div>
-    <div class="ecell brd-r"><div class="mlbl">Ley de Kick</div><div class="eq" id="eqKick"></div><div class="enote">C_K = <span id="vCK"></span> kWh/t (calibrada en el punto de operación) · válida en trituración gruesa</div></div>
-    <div class="ecell brd-r"><div class="mlbl">Ley de Rittinger</div><div class="eq" id="eqRitt"></div><div class="enote">C_R = <span id="vCR"></span> kWh·µm/t (calibrada) · válida en molienda fina</div></div>
-    <div class="ecell brd-r"><div class="mlbl">Rosin-Rammler</div><div class="eq" id="eqRR"></div><div class="enote">x′ = <span id="vX63b"></span> (63.2 % pasante) · n = <span id="vNb"></span> según el equipo</div></div>
-    <div class="ecell"><div class="mlbl">Balance térmico</div><div class="eq" id="eqTerm"></div><div class="enote">Solo ~3 % de la energía crea superficie nueva; el resto se disipa como calor</div></div>
-  </div>
+    <!-- 3 · Térmico -->
+    <section class="panel" data-panel="th">
+      <div class="ph"><h2>Balance térmico</h2><p>Solo cerca del 3 % de la energía crea superficie nueva; el resto se disipa como calor. Con el sistema adiabático, ese calor eleva la temperatura del sólido y del agua que lo acompaña.</p></div>
+      <div class="two">
+        <div class="card"><div class="card-h"><span class="t">A dónde va la potencia</span></div><div class="card-b"><svg class="ch" id="svgSankey" viewBox="0 0 640 300"></svg></div></div>
+        <div class="card"><div class="card-h"><span class="t">Temperatura del producto</span></div><div class="card-b" style="display:flex;gap:18px;align-items:center"><svg id="svgTherm" viewBox="0 0 120 300" style="width:110px;flex:none"></svg><div id="thermTxt" style="font-size:13.5px;line-height:1.6"></div></div></div>
+      </div>
+      <div class="mcards" id="thermCards"></div>
+    </section>
 
-  <footer style="border-top: 2px solid var(--color-divider); padding: 12px 28px; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; font-size: 12px; color: var(--color-neutral-700);">
-    <div>Supuestos: operación continua en estado estacionario · Wi de tabla (molino de bolas húmedo de referencia) · factor k corrige la ineficiencia relativa del equipo · sistema adiabático (todo el calor va al flujo de proceso) · distribución Rosin-Rammler con n típico del mecanismo</div>
-    <div><span id="matNameFt"></span> · Wi = <span id="wiValFt"></span></div>
-  </footer>
+    <!-- 4 · Granulometría -->
+    <section class="panel" data-panel="gr">
+      <div class="ph"><h2>Análisis granulométrico del producto</h2><span class="lbl" id="rrHead"></span><p>La distribución del producto se modela con Rosin-Rammler: el parámetro n depende del mecanismo del equipo (impacto produce distribuciones amplias; compresión entre rodillos, estrechas).</p></div>
+      <div class="two">
+        <div class="card"><div class="card-h"><span class="t">Distribución de tamaños</span><span class="sp"></span><div class="legend"><span><i style="border-top-color:var(--ink)"></i>Pasante acumulado</span><span><i class="box"></i>Retenido por malla</span><span><i class="k" style="border-top-color:var(--accent)"></i>P₈₀</span></div></div>
+          <div class="card-b" style="padding:10px 12px 6px"><svg class="ch" id="svgPsd" viewBox="0 0 720 640"></svg><div class="readout" id="psdRead">&nbsp;</div></div></div>
+        <div>
+          <div class="card" style="margin-top:18px"><div class="card-h"><span class="t" id="sieveTitle">Análisis de tamizado</span></div><div class="card-b" style="padding:6px 12px 12px"><table class="t"><thead><tr><th>Malla</th><th>Abertura</th><th>Retenido %</th><th>Ret. acum. %</th><th>Pasante %</th></tr></thead><tbody id="sieveBody"></tbody></table><p class="small" id="tamizNote" style="margin:10px 0 0"></p></div></div>
+          <div class="card"><div class="card-h"><span class="t">Tamizadora</span><span class="sp"></span><button type="button" class="seg inline" id="sieveGo" style="padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer">Tamizar otra muestra</button></div><div class="stage"><canvas id="sieveCv" style="height:360px" aria-label="Animación del tamizado"></canvas></div><div class="caption">Cada partícula se toma al azar de la distribución calculada y queda en el primer tamiz cuya abertura es menor que ella. Con muchas partículas, el porcentaje de cada bandeja converge al de la tabla.</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 · Ecuaciones -->
+    <section class="panel" data-panel="ec">
+      <div class="ph"><h2>Ecuaciones y supuestos</h2><p>Cada ecuación muestra los valores del caso actual.</p></div>
+      <div class="eqs" id="eqGrid">
+        <div><div class="lbl">Ley de Bond</div><div class="f" id="eqBond"></div><div class="n2" id="nBond"></div></div>
+        <div><div class="lbl">Factores de Rowland (molino de bolas)</div><div class="f" id="eqRow"></div><div class="n2" id="nRow"></div></div>
+        <div><div class="lbl">Ley de Kick</div><div class="f" id="eqKick"></div><div class="n2" id="nKick"></div></div>
+        <div><div class="lbl">Ley de Rittinger</div><div class="f" id="eqRitt"></div><div class="n2" id="nRitt"></div></div>
+        <div><div class="lbl">Rosin-Rammler</div><div class="f" id="eqRR"></div><div class="n2" id="nRR"></div></div>
+        <div><div class="lbl">Balance térmico</div><div class="f" id="eqTerm"></div><div class="n2" id="nTerm"></div></div>
+        <div><div class="lbl">Velocidad crítica del molino de bolas</div><div class="f" id="eqNc"></div><div class="n2" id="nNc"></div></div>
+        <div><div class="lbl">Potencia</div><div class="f" id="eqPow"></div><div class="n2" id="nPow"></div></div>
+      </div>
+      <div class="callout ink"><b>Supuestos.</b> Operación continua en estado estacionario · Wi de tabla en kWh por tonelada métrica, referido a un molino de bolas húmedo en circuito cerrado (Bond tabuló en tonelada corta; aquí se multiplica por 1,102) · factores de Rowland solo para el molino de bolas · factor k que corrige la ineficiencia relativa de cada equipo (orientativo) · eficiencia de transmisión 0,95 · sistema adiabático (todo el calor va al flujo de proceso) · distribución Rosin-Rammler con n típico del mecanismo · las animaciones son esquemáticas: los tamaños se dibujan en escala logarítmica entre F₈₀ y P₈₀, y el molino de bolas conserva la semejanza dinámica (misma fracción de la velocidad crítica).</div>
+      <p class="small" style="margin-top:14px">Referencias: F. C. Bond (1961), <i>Crushing and grinding calculations</i>, Br. Chem. Eng. 6. C. A. Rowland (1972), <i>Selection of rod mills, ball mills and regrind mills</i>. W. L. McCabe, J. C. Smith y P. Harriott, <i>Unit Operations of Chemical Engineering</i>, cap. 28. B. A. Wills y J. A. Finch, <i>Wills' Mineral Processing Technology</i>, caps. 5 a 7. ASTM E11 e ISO 3310-1 (tamices de ensayo).</p>
+    </section>
+  </main>
 </div>
-
+<button type="button" class="mobile-ctl" id="mobCtl">Controles</button>
 <script>
-/* ────────────────────────────────────────────────────────────────────────
-   Explorador de molienda y tamizado — puerto vanilla-JS fiel del componente
-   original de Claude Design. Física verbatim: Ley de Bond (energía), factor
-   de equipo k, balance térmico adiabático, distribución Rosin–Rammler y
-   análisis de tamizado serie Tyler. Leyes de Kick y Rittinger calibradas en
-   el punto de operación.
-   ──────────────────────────────────────────────────────────────────────── */
-
-var state = { mat: 'caliza', mill: 'bolas', lF: 4.30, lP: 2.18, lC: 1.30, modo: 'seca', hum: 2, sol: 65, Tamb: 25, grid: true, showEq: true };
-
-function MATERIALS() {
-  return [
-    { id: 'caliza', name: 'Caliza', Wi: 12.7, mohs: '3', cp: 0.91, hum: 2, tmax: null, fib: false, sol: false, higro: false, abr: true, atex: false, note: 'Mineral de dureza media y abrasividad moderada · sin límite térmico del producto.' },
-    { id: 'carbon', name: 'Carbón bituminoso', Wi: 11.4, mohs: '2–2.5', cp: 1.30, hum: 8, tmax: null, fib: false, sol: false, higro: false, abr: false, atex: true, note: 'Friable, fácil de moler · el polvo fino seco forma atmósferas explosivas (ATEX).' },
-    { id: 'maiz', name: 'Maíz (grano)', Wi: 9.0, mohs: '—', cp: 1.80, hum: 14, tmax: 60, fib: true, sol: false, higro: false, abr: false, atex: false, note: 'Orgánico fibroso-elástico · por encima de ~60 °C el almidón se gelatiniza y se daña.' },
-    { id: 'azucar', name: 'Azúcar cristal', Wi: 7.0, mohs: '—', cp: 1.24, hum: 0.5, tmax: 50, fib: false, sol: true, higro: true, abr: false, atex: false, note: 'Higroscópico y termosensible: se apelmaza y carameliza · soluble en agua.' },
-    { id: 'arcilla', name: 'Arcilla húmeda', Wi: 7.1, mohs: '1–2', cp: 1.10, hum: 20, tmax: null, fib: false, sol: false, higro: false, abr: false, atex: false, note: 'Blanda pero plástica y pegajosa · en seco ciega y atasca la mayoría de los equipos.' }
-  ];
-}
-function MILLS() {
-  return [
-    { id: 'mand', name: 'Trituradora de mandíbulas', mech: 'Compresión', fmax: 1000, pmin: 12, pmax: 300, rrMax: 8, capMin: 10, capMax: 800, humMax: 12, wet: false, n: 1.5, k: 1.0, note: 'Trituración primaria de material grueso y duro; no produce finos.' },
-    { id: 'rod', name: 'Molino de rodillos', mech: 'Compresión', fmax: 40, pmin: 1, pmax: 15, rrMax: 4, capMin: 5, capMax: 300, humMax: 20, wet: false, n: 2.2, k: 1.1, note: 'Producto uniforme con pocos finos; tolera material algo húmedo o pegajoso.' },
-    { id: 'mart', name: 'Molino de martillos', mech: 'Impacto', fmax: 80, pmin: 0.15, pmax: 25, rrMax: 40, capMin: 0.5, capMax: 80, humMax: 12, wet: false, n: 0.9, k: 1.4, note: 'Versátil, gran relación de reducción; distribución amplia y desgaste alto con abrasivos.' },
-    { id: 'bolas', name: 'Molino de bolas', mech: 'Impacto + atrición', fmax: 25, pmin: 0.02, pmax: 2, rrMax: 200, capMin: 1, capMax: 200, humMax: 4, wet: true, n: 1.1, k: 1.0, note: 'Molienda fina, seca o húmeda; en seco exige alimentación casi seca.' },
-    { id: 'disc', name: 'Molino de discos (atrición)', mech: 'Cizalla / fricción', fmax: 12, pmin: 0.02, pmax: 1, rrMax: 100, capMin: 0.2, capMax: 15, humMax: 10, wet: true, n: 1.2, k: 1.8, note: 'Molienda fina de blandos y fibrosos; gran generación de calor por fricción.' }
-  ];
-}
-function SIEVES() {
-  return [
-    { m: '125 mm', a: 125000 }, { m: '90 mm', a: 90000 }, { m: '63 mm', a: 63000 }, { m: '45 mm', a: 45000 }, { m: '31.5 mm', a: 31500 },
-    { m: '1.05″', a: 26500 }, { m: '0.742″', a: 19000 }, { m: '0.525″', a: 13200 }, { m: '0.371″', a: 9500 },
-    { m: '3', a: 6700 }, { m: '4', a: 4750 }, { m: '6', a: 3350 }, { m: '8', a: 2360 }, { m: '10', a: 1700 }, { m: '14', a: 1180 },
-    { m: '20', a: 850 }, { m: '28', a: 600 }, { m: '35', a: 425 }, { m: '48', a: 300 }, { m: '65', a: 212 }, { m: '100', a: 150 },
-    { m: '150', a: 106 }, { m: '200', a: 75 }, { m: '270', a: 53 }, { m: '400', a: 38 }
-  ];
-}
-
-// Diagramas de equipo (SVG estático por tipo de molino)
-var MILL_DIAGRAMS = {
-  mand: '<g><line x1="138" y1="65" x2="163" y2="238" stroke="var(--color-text)" stroke-width="4"></line><line x1="126" y1="90" x2="140" y2="82" stroke="var(--color-neutral-500)" stroke-width="2"></line><line x1="132" y1="130" x2="146" y2="122" stroke="var(--color-neutral-500)" stroke-width="2"></line><line x1="138" y1="170" x2="152" y2="162" stroke="var(--color-neutral-500)" stroke-width="2"></line><line x1="144" y1="210" x2="158" y2="202" stroke="var(--color-neutral-500)" stroke-width="2"></line><line x1="246" y1="80" x2="184" y2="238" stroke="var(--color-text)" stroke-width="4"></line><circle cx="249" cy="68" r="11" fill="var(--color-neutral-100)" stroke="var(--color-text)" stroke-width="2"></circle><circle cx="253" cy="64" r="3.5" fill="var(--color-text)"></circle><path d="M 272 52 A 26 26 0 0 1 276 76" fill="none" stroke="var(--color-neutral-700)" stroke-width="2"></path><polygon points="272,74 278,82 281,72" fill="var(--color-neutral-700)"></polygon><line x1="196" y1="18" x2="196" y2="50" stroke="var(--color-accent)" stroke-width="2.5"></line><polygon points="191,48 196,58 201,48" fill="var(--color-accent)"></polygon><line x1="174" y1="250" x2="174" y2="276" stroke="var(--color-accent)" stroke-width="2.5"></line><polygon points="169,274 174,284 179,274" fill="var(--color-accent)"></polygon><text x="14" y="150" style="font-size:12px;fill:var(--color-neutral-700);">Mandíbula fija</text><text x="252" y="150" style="font-size:12px;fill:var(--color-neutral-700);">Móvil</text><text x="208" y="30" style="font-size:12px;fill:var(--color-neutral-700);">Alimentación</text><text x="188" y="280" style="font-size:12px;fill:var(--color-neutral-700);">Producto</text></g>',
-  rod: '<g><circle cx="125" cy="155" r="52" fill="var(--color-neutral-100)" stroke="var(--color-text)" stroke-width="2.5"></circle><circle cx="235" cy="155" r="52" fill="var(--color-neutral-100)" stroke="var(--color-text)" stroke-width="2.5"></circle><circle cx="125" cy="155" r="4" fill="var(--color-text)"></circle><circle cx="235" cy="155" r="4" fill="var(--color-text)"></circle><path d="M 96 120 A 46 46 0 0 1 152 114" fill="none" stroke="var(--color-neutral-700)" stroke-width="2"></path><polygon points="148,108 158,116 146,120" fill="var(--color-neutral-700)"></polygon><path d="M 264 120 A 46 46 0 0 0 208 114" fill="none" stroke="var(--color-neutral-700)" stroke-width="2"></path><polygon points="212,108 202,116 214,120" fill="var(--color-neutral-700)"></polygon><line x1="180" y1="42" x2="180" y2="78" stroke="var(--color-accent)" stroke-width="2.5"></line><polygon points="175,76 180,86 185,76" fill="var(--color-accent)"></polygon><line x1="180" y1="218" x2="180" y2="248" stroke="var(--color-accent)" stroke-width="2.5"></line><polygon points="175,246 180,256 185,246" fill="var(--color-accent)"></polygon><text x="192" y="52" style="font-size:12px;fill:var(--color-neutral-700);">Alimentación</text><text x="192" y="252" style="font-size:12px;fill:var(--color-neutral-700);">Producto</text><text x="120" y="286" style="font-size:12px;fill:var(--color-neutral-700);">Rodillos en contrarrotación</text></g>',
-  mart: '<g><circle cx="180" cy="155" r="82" fill="var(--color-neutral-100)" stroke="var(--color-text)" stroke-width="2.5"></circle><g transform="rotate(45 180 155)"><line x1="180" y1="155" x2="180" y2="100" stroke="var(--color-text)" stroke-width="3"></line><rect x="172" y="82" width="16" height="20" fill="var(--color-text)"></rect></g><g transform="rotate(135 180 155)"><line x1="180" y1="155" x2="180" y2="100" stroke="var(--color-text)" stroke-width="3"></line><rect x="172" y="82" width="16" height="20" fill="var(--color-text)"></rect></g><g transform="rotate(225 180 155)"><line x1="180" y1="155" x2="180" y2="100" stroke="var(--color-text)" stroke-width="3"></line><rect x="172" y="82" width="16" height="20" fill="var(--color-text)"></rect></g><g transform="rotate(315 180 155)"><line x1="180" y1="155" x2="180" y2="100" stroke="var(--color-text)" stroke-width="3"></line><rect x="172" y="82" width="16" height="20" fill="var(--color-text)"></rect></g><circle cx="180" cy="155" r="14" fill="var(--color-text)"></circle><path d="M 116 208 A 82 82 0 0 0 244 208" fill="none" stroke="var(--color-accent-700)" stroke-width="2.5" stroke-dasharray="6 5"></path><polyline points="92,42 128,42 152,80" fill="none" stroke="var(--color-accent)" stroke-width="2.5"></polyline><polygon points="144,80 158,88 152,72" fill="var(--color-accent)"></polygon><line x1="180" y1="252" x2="180" y2="276" stroke="var(--color-accent)" stroke-width="2.5"></line><polygon points="175,274 180,284 185,274" fill="var(--color-accent)"></polygon><text x="66" y="30" style="font-size:12px;fill:var(--color-neutral-700);">Alimentación</text><text x="194" y="280" style="font-size:12px;fill:var(--color-neutral-700);">Producto</text><text x="252" y="238" style="font-size:12px;fill:var(--color-neutral-700);">Criba</text></g>',
-  bolas: '<g><rect x="55" y="95" width="250" height="108" fill="var(--color-neutral-100)" stroke="var(--color-text)" stroke-width="2.5"></rect><line x1="75" y1="95" x2="75" y2="203" stroke="var(--color-neutral-400)" stroke-width="2"></line><line x1="285" y1="95" x2="285" y2="203" stroke="var(--color-neutral-400)" stroke-width="2"></line><circle cx="100" cy="188" r="6" fill="var(--color-text)"></circle><circle cx="116" cy="190" r="6" fill="var(--color-text)"></circle><circle cx="132" cy="188" r="6" fill="var(--color-text)"></circle><circle cx="148" cy="190" r="6" fill="var(--color-text)"></circle><circle cx="108" cy="176" r="6" fill="var(--color-text)"></circle><circle cx="124" cy="177" r="6" fill="var(--color-text)"></circle><circle cx="140" cy="176" r="6" fill="var(--color-text)"></circle><circle cx="116" cy="164" r="6" fill="var(--color-text)"></circle><circle cx="131" cy="164" r="6" fill="var(--color-text)"></circle><circle cx="150" cy="152" r="6" fill="var(--color-neutral-600)"></circle><circle cx="172" cy="136" r="6" fill="var(--color-neutral-600)"></circle><circle cx="196" cy="150" r="6" fill="var(--color-neutral-600)"></circle><circle cx="214" cy="172" r="6" fill="var(--color-neutral-600)"></circle><path d="M 306 120 A 60 60 0 0 1 306 178" fill="none" stroke="var(--color-neutral-700)" stroke-width="2"></path><polygon points="300,174 306,186 312,172" fill="var(--color-neutral-700)"></polygon><line x1="18" y1="149" x2="48" y2="149" stroke="var(--color-accent)" stroke-width="2.5"></line><polygon points="46,144 56,149 46,154" fill="var(--color-accent)"></polygon><line x1="312" y1="149" x2="342" y2="149" stroke="var(--color-accent)" stroke-width="2.5"></line><polygon points="340,144 350,149 340,154" fill="var(--color-accent)"></polygon><text x="14" y="136" style="font-size:12px;fill:var(--color-neutral-700);">Alim.</text><text x="306" y="136" style="font-size:12px;fill:var(--color-neutral-700);">Prod.</text><text x="90" y="232" style="font-size:12px;fill:var(--color-neutral-700);">Carga de bolas en cascada · tambor rotatorio</text></g>',
-  disc: '<g><rect x="140" y="80" width="16" height="146" fill="var(--color-neutral-100)" stroke="var(--color-text)" stroke-width="2.5"></rect><rect x="204" y="80" width="16" height="146" fill="var(--color-neutral-100)" stroke="var(--color-text)" stroke-width="2.5"></rect><line x1="160" y1="96" x2="164" y2="96" stroke="var(--color-text)" stroke-width="2"></line><line x1="160" y1="126" x2="164" y2="126" stroke="var(--color-text)" stroke-width="2"></line><line x1="160" y1="156" x2="164" y2="156" stroke="var(--color-text)" stroke-width="2"></line><line x1="160" y1="186" x2="164" y2="186" stroke="var(--color-text)" stroke-width="2"></line><line x1="196" y1="111" x2="200" y2="111" stroke="var(--color-text)" stroke-width="2"></line><line x1="196" y1="141" x2="200" y2="141" stroke="var(--color-text)" stroke-width="2"></line><line x1="196" y1="171" x2="200" y2="171" stroke="var(--color-text)" stroke-width="2"></line><line x1="60" y1="153" x2="140" y2="153" stroke="var(--color-text)" stroke-width="5"></line><line x1="220" y1="153" x2="300" y2="153" stroke="var(--color-text)" stroke-width="5"></line><path d="M 262 130 A 24 24 0 0 1 286 140" fill="none" stroke="var(--color-neutral-700)" stroke-width="2"></path><polygon points="280,136 290,144 286,130" fill="var(--color-neutral-700)"></polygon><line x1="180" y1="38" x2="180" y2="70" stroke="var(--color-accent)" stroke-width="2.5"></line><polygon points="175,68 180,78 185,68" fill="var(--color-accent)"></polygon><line x1="180" y1="234" x2="180" y2="262" stroke="var(--color-accent)" stroke-width="2.5"></line><polygon points="175,260 180,270 185,260" fill="var(--color-accent)"></polygon><text x="192" y="50" style="font-size:12px;fill:var(--color-neutral-700);">Alimentación</text><text x="192" y="266" style="font-size:12px;fill:var(--color-neutral-700);">Producto</text><text x="60" y="140" style="font-size:12px;fill:var(--color-neutral-700);">Disco fijo</text><text x="238" y="120" style="font-size:12px;fill:var(--color-neutral-700);">Disco rotatorio</text></g>'
+/* ====================================================================
+   Explorador de molienda y tamizado · modelo
+   Todo el cálculo vive en compute(s): una función pura, sin DOM, que la
+   interfaz y las animaciones consultan. Unidades: tamaños en µm,
+   capacidad en t/h (tonelada métrica), energía en kWh/t, potencia en kW.
+   ==================================================================== */
+'use strict';
+var TS = 1.1023; // tonelada métrica / tonelada corta
+/* Wi en kWh por tonelada MÉTRICA. Bond (1961) tabuló en kWh/tonelada corta:
+   caliza 11,61 → 12,8 · carbón bituminoso 11,37 → 12,5 · arcilla 7,10 → 7,8.
+   Maíz y azúcar no tienen ensayo de Bond publicado: valores orientativos. */
+var MATERIALS = [
+  { id: 'caliza', name: 'Caliza', Wi: 12.8, WiSrc: 'Bond (1961): 11,61 kWh/t corta', mohs: '3', cp: 0.91, hum: 2, tmax: null, fib: false, sol: false, higro: false, abr: true, atex: false, color: '#b9b1a3', note: 'Mineral de dureza media y abrasividad moderada · sin límite térmico del producto.' },
+  { id: 'carbon', name: 'Carbón bituminoso', Wi: 12.5, WiSrc: 'Bond (1961): 11,37 kWh/t corta', mohs: '2–2,5', cp: 1.30, hum: 8, tmax: null, fib: false, sol: false, higro: false, abr: false, atex: true, color: '#2d2c2b', note: 'Friable, fácil de moler · el polvo fino seco forma atmósferas explosivas (ATEX).' },
+  { id: 'maiz', name: 'Maíz (grano)', Wi: 9.0, WiSrc: 'orientativo · sin ensayo de Bond publicado', mohs: '—', cp: 1.80, hum: 14, tmax: 60, fib: true, sol: false, higro: false, abr: false, atex: false, color: '#e3b23c', note: 'Orgánico fibroso-elástico · por encima de ~60 °C el almidón se gelatiniza y se daña.' },
+  { id: 'azucar', name: 'Azúcar cristal', Wi: 7.0, WiSrc: 'orientativo · sin ensayo de Bond publicado', mohs: '—', cp: 1.24, hum: 0.5, tmax: 50, fib: false, sol: true, higro: true, abr: false, atex: false, color: '#f2efe8', note: 'Higroscópico y termosensible: se apelmaza y carameliza · soluble en agua.' },
+  { id: 'arcilla', name: 'Arcilla húmeda', Wi: 7.8, WiSrc: 'Bond (1961): 7,10 kWh/t corta', mohs: '1–2', cp: 1.10, hum: 20, tmax: null, fib: false, sol: false, higro: false, abr: false, atex: false, color: '#9c6b4a', note: 'Blanda pero plástica y pegajosa · en seco ciega y atasca la mayoría de los equipos.' },
+  { id: 'cascara', name: 'Cáscara cítrica seca', Wi: 12.0, WiSrc: 'a medir · no hay Wi publicado: use el de su ensayo', mohs: '—', cp: 1.40, hum: 10, tmax: 60, fib: true, sol: false, higro: true, abr: false, atex: false, custom: true, color: '#e88a2d', note: 'Materia prima del proyecto, ya secada. Fibrosa y algo higroscópica; sobre ~60 °C se degrada la pectina. Bond describe mal los fibrosos: Wi, cp y límite son editables.' }
+];
+var MILLS = [
+  { id: 'mand', name: 'Trituradora de mandíbulas', short: 'Mandíbulas', mech: 'Compresión', fmax: 1000, pmin: 12, pmax: 300, rrMax: 8, capMin: 10, capMax: 800, humMax: 12, wet: false, n: 1.5, k: 1.0, note: 'Trituración primaria de material grueso y duro; no produce finos.' },
+  { id: 'rod', name: 'Molino de rodillos', short: 'Rodillos', mech: 'Compresión', fmax: 40, pmin: 1, pmax: 15, rrMax: 4, capMin: 5, capMax: 300, humMax: 20, wet: false, n: 2.2, k: 1.1, note: 'Producto uniforme con pocos finos; tolera material algo húmedo o pegajoso.' },
+  { id: 'mart', name: 'Molino de martillos', short: 'Martillos', mech: 'Impacto', fmax: 80, pmin: 0.15, pmax: 25, rrMax: 40, capMin: 0.5, capMax: 80, humMax: 12, wet: false, n: 0.9, k: 1.4, note: 'Versátil, gran relación de reducción; distribución amplia y desgaste alto con abrasivos.' },
+  { id: 'bolas', name: 'Molino de bolas', short: 'Bolas', mech: 'Impacto + atrición', fmax: 25, pmin: 0.02, pmax: 2, rrMax: 200, capMin: 1, capMax: 200, humMax: 4, wet: true, n: 1.1, k: 1.0, note: 'Molienda fina, seca o húmeda; en seco exige alimentación casi seca.' },
+  { id: 'disc', name: 'Molino de discos (atrición)', short: 'Discos', mech: 'Cizalla / fricción', fmax: 12, pmin: 0.02, pmax: 1, rrMax: 100, capMin: 0.2, capMax: 15, humMax: 10, wet: true, n: 1.2, k: 1.8, note: 'Molienda fina de blandos y fibrosos; gran generación de calor por fricción.' }
+];
+/* Series de tamices. ASTM E11 (= ISO 3310-1, la de la lectura del curso) y
+   Tyler (razón √2, aberturas propias). */
+var SIEVE_SERIES = {
+  astm: { name: 'ASTM E11 / ISO 3310', list: [
+    ['125 mm', 125000], ['90 mm', 90000], ['63 mm', 63000], ['45 mm', 45000], ['31,5 mm', 31500], ['26,5 mm', 26500], ['19 mm', 19000], ['13,2 mm', 13200], ['9,5 mm', 9500],
+    ['6,7 mm', 6700], ['N.º 4', 4750], ['N.º 6', 3350], ['N.º 8', 2360], ['N.º 12', 1700], ['N.º 16', 1180], ['N.º 20', 850], ['N.º 30', 600], ['N.º 40', 425],
+    ['N.º 50', 300], ['N.º 70', 212], ['N.º 100', 150], ['N.º 140', 106], ['N.º 200', 75], ['N.º 270', 53], ['N.º 400', 38]] },
+  tyler: { name: 'Tyler (√2)', list: [
+    ['4,24″', 106700], ['2,97″', 75400], ['2,10″', 53300], ['1,48″', 37700], ['1,05″', 26670], ['0,742″', 18850], ['0,525″', 13330], ['0,371″', 9423],
+    ['3 mesh', 6680], ['4 mesh', 4699], ['6 mesh', 3327], ['8 mesh', 2362], ['10 mesh', 1651], ['14 mesh', 1168], ['20 mesh', 833], ['28 mesh', 589], ['35 mesh', 417],
+    ['48 mesh', 295], ['65 mesh', 208], ['100 mesh', 147], ['150 mesh', 104], ['200 mesh', 74], ['270 mesh', 53], ['400 mesh', 37]] }
 };
+var IEC_MOTORS = [0.37, 0.55, 0.75, 1.1, 1.5, 2.2, 3, 4, 5.5, 7.5, 11, 15, 18.5, 22, 30, 37, 45, 55, 75, 90, 110, 132, 160, 200, 250, 315, 355, 400, 450, 500, 560, 630, 710, 800, 900, 1000, 1120, 1250, 1400, 1600, 1800, 2000, 2240, 2500, 2800, 3150, 3550, 4000, 4500, 5000, 5600, 6300, 7100, 8000, 9000, 10000, 11200, 12500, 14000, 16000, 18000, 20000];
 
-function fmt(v, d) { return v.toFixed(d === undefined ? 2 : d); }
-function fmtSize(um) {
-  if (um < 1000) return (um < 10 ? um.toFixed(1) : Math.round(um)) + ' µm';
-  var mm = um / 1000;
-  return (mm < 10 ? mm.toFixed(2) : mm < 100 ? mm.toFixed(1) : Math.round(mm)) + ' mm';
-}
-function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
-function setT(id, v) { var el = document.getElementById(id); if (el) el.textContent = v; }
-function setColor(id, c) { var el = document.getElementById(id); if (el) el.style.color = c; }
-function selBtnStyle(sel) {
-  return 'border:2px solid ' + (sel ? 'var(--color-accent);background:var(--color-accent);color:var(--color-bg);' : 'var(--color-text);background:transparent;color:var(--color-text);');
-}
+function byId(list, id) { for (var i = 0; i < list.length; i++) if (list[i].id === id) return list[i]; return list[0]; }
 
-function onSlider(k, raw) { state[k] = parseFloat(raw); render(); }
-function setMat(id) { var m = MATERIALS().find(function (x) { return x.id === id; }); state.mat = id; state.hum = m.hum; render(); }
-function setMill(id) { state.mill = id; render(); }
-function setMode(m) { state.modo = m; render(); }
-
-var katexReady = false;
-function tex(id, latex) {
-  var el = document.getElementById(id); if (!el) return;
-  if (katexReady && window.katex) { try { window.katex.render(latex, el, { throwOnError: false, displayMode: false }); return; } catch (e) {} }
-  el.textContent = latex;
-}
-
-function render() {
-  var s = state;
-  var mats = MATERIALS(), millsL = MILLS();
-  var mat = mats.find(function (m) { return m.id === s.mat; });
-  var mill = millsL.find(function (m) { return m.id === s.mill; });
-  var Tamb = s.Tamb;
-  var F80 = Math.pow(10, s.lF);
-  var P80t = Math.pow(10, s.lP);
-  var cap = Math.pow(10, s.lC);
-  var wet = s.modo === 'hum';
-
-  // ---- producto real alcanzable
+function compute(s) {
+  var mat0 = byId(MATERIALS, s.mat), mill = byId(MILLS, s.mill);
+  var mat = Object.assign({}, mat0);
+  if (mat.custom) { mat.Wi = s.cWi; mat.cp = s.cCp; mat.tmax = s.cTmax; }
+  var Tamb = s.Tamb, F80 = Math.pow(10, s.lF), P80t = Math.pow(10, s.lP), cap = Math.pow(10, s.lC), wet = s.modo === 'hum';
   var pminUm = mill.pmin * 1000, pmaxUm = mill.pmax * 1000;
   var P80 = Math.min(Math.max(P80t, pminUm), pmaxUm);
   P80 = Math.min(P80, F80 / 1.2);
   var clamped = Math.abs(P80 - P80t) / P80t > 0.001;
   var rr = F80 / P80;
 
-  // ---- energía (Bond) y potencias
-  var E = Math.max(0, 10 * mat.Wi * (1 / Math.sqrt(P80) - 1 / Math.sqrt(F80)));
-  var Peje = mill.k * E * cap;
-  var Pmot = Peje / 0.95;
-  var Q = 0.97 * Peje;
-
-  // ---- balance térmico
-  var w = wet ? (100 / s.sol - 1) : s.hum / 100; // kg agua / kg sólido
-  var cpmix = mat.cp + w * 4.18;
-  var dT = E > 0 ? 0.97 * mill.k * E * 3.6 / cpmix : 0;
-  var Tout = Tamb + dT;
-  var mcp = cap * 0.27778 * cpmix;
-  var agua = cap * w;
-
-  // ---- advertencias
-  var warns = [];
-  var crit = false;
-  if (F80 > mill.fmax * 1000) { warns.push('La alimentación F₈₀ = ' + fmtSize(F80) + ' supera la boca de entrada del equipo (' + mill.fmax + ' mm): el material no entra — se requiere trituración previa.'); crit = true; }
-  if (P80t >= F80 / 1.2) warns.push('El tamaño objetivo debe ser claramente menor que la alimentación: se calcula con P₈₀ = F₈₀/1.2.');
-  else if (P80t < pminUm) { warns.push('Producto fuera de especificación: este equipo no baja de ' + fmtSize(pminUm) + ' y el objetivo era ' + fmtSize(P80t) + '. El cálculo usa el mínimo alcanzable.'); crit = true; }
-  else if (P80t > pmaxUm) warns.push('El objetivo ' + fmtSize(P80t) + ' es más grueso que el rango del equipo (máx. ' + fmtSize(pmaxUm) + '): habrá sobre-molienda; considere un equipo de trituración.');
-  if (rr > mill.rrMax) warns.push('Relación de reducción ' + fmt(rr, 0) + ':1, mayor que la máxima típica del equipo (' + mill.rrMax + ':1): divida la reducción en varias etapas en serie.');
-  if (!wet && s.hum > mill.humMax) { warns.push('ATASCO: con humedad de ' + fmt(s.hum, 1) + ' % (máx. ' + mill.humMax + ' % en seco) el material se apelmaza, ciega las superficies de molienda y bloquea el equipo.'); crit = true; }
-  if (wet && !mill.wet) { warns.push('Este equipo no admite operación húmeda: la pulpa no puede procesarse en una ' + mill.name.toLowerCase() + '.'); crit = true; }
-  if (wet && mat.sol) { warns.push('El azúcar es soluble: en molienda húmeda el producto se disuelve en el agua — proceso inviable.'); crit = true; }
-  if (!wet && mat.higro && s.hum > 1.5) warns.push('Material higroscópico: con w > 1.5 % los cristales se apelmazan durante la molienda y el manejo posterior.');
-  if (mat.tmax && Tout > mat.tmax) { warns.push('Daño térmico: la temperatura de salida (' + fmt(Tout, 0) + ' °C) supera el límite del material (' + mat.tmax + ' °C)' + (mat.id === 'maiz' ? ' — gelatinización y daño del almidón. Considere molienda criogénica o aire de barrido.' : ' — caramelización y apelmazado del producto. Considere aire de barrido o enfriamiento.')); crit = true; }
-  if (mat.fib && (s.mill === 'bolas' || s.mill === 'mand')) warns.push('Material fibroso-elástico: la fractura por ' + mill.mech.toLowerCase() + ' es poco eficaz en maíz; prefiera impacto (martillos) o atrición (discos).');
-  if (mat.atex && !wet && P80 < 200) warns.push('Polvo de carbón < 200 µm en seco: atmósfera explosiva (ATEX) — requiere inertización y venteos de explosión.');
-  if (mat.abr && (s.mill === 'mart' || s.mill === 'disc')) warns.push('Material abrasivo en equipo de ' + (s.mill === 'mart' ? 'impacto: desgaste acelerado de martillos y criba' : 'fricción: desgaste acelerado de los discos') + ' — alto costo de mantenimiento.');
-  if (cap > mill.capMax) warns.push('Capacidad de ' + fmt(cap, 0) + ' t/h por encima del rango típico (' + mill.capMin + '–' + mill.capMax + ' t/h): use varias unidades en paralelo o un equipo mayor.');
-  else if (cap < mill.capMin) warns.push('Capacidad de ' + fmt(cap, 1) + ' t/h por debajo del rango típico (' + mill.capMin + '–' + mill.capMax + ' t/h): el equipo queda sobredimensionado.');
-
-  var statusText = crit ? 'SELECCIÓN INVIABLE' : warns.length ? 'OPERA CON ADVERTENCIAS' : 'SELECCIÓN VIABLE';
-  var statusColor = crit ? 'var(--color-accent-700)' : warns.length ? 'var(--color-accent-600)' : 'var(--color-text)';
-
-  // ---- gráfica de leyes de energía
-  var xU = function (um) { return 70 + (Math.log10(um) - 1) * 124; };
-  var yE = function (e) { return 584 - (Math.log10(e) + 2) * 140; };
-  var E0 = E;
-  var CK = E0 > 0 ? E0 / Math.log(F80 / P80) : 0;
-  var CR = E0 > 0 ? E0 / (1 / P80 - 1 / F80) : 0;
-  var mkPath = function (f) {
-    var d = '', on = false;
-    var lo = 1, hi = Math.log10(F80 * 0.995);
-    for (var i = 0; i <= 160; i++) {
-      var um = Math.pow(10, lo + (hi - lo) * i / 160);
-      var e = f(um);
-      if (e <= 0.0005) { on = false; continue; }
-      d += (on ? ' L' : ' M') + fmt(xU(um), 1) + ' ' + fmt(yE(e), 1);
-      on = true;
-    }
-    return d;
-  };
-  var bondPath = mkPath(function (p) { return 10 * mat.Wi * (1 / Math.sqrt(p) - 1 / Math.sqrt(F80)); });
-  var kickPath = E0 > 0 ? mkPath(function (p) { return CK * Math.log(F80 / p); }) : '';
-  var rittPath = E0 > 0 ? mkPath(function (p) { return CR * (1 / p - 1 / F80); }) : '';
-  var opX = xU(P80);
-  var opY = E0 > 0 ? Math.min(584, Math.max(24, yE(E0))) : 584;
-
-  // ---- Rosin–Rammler y tamizado
-  var n = mill.n;
-  var x63 = P80 / Math.pow(Math.log(5), 1 / n);
-  var Fpass = function (a) { return 1 - Math.exp(-Math.pow(a / x63, n)); };
-  var psdPath = '';
-  for (var i = 0; i <= 140; i++) {
-    var um2 = Math.pow(10, 1 + 5 * i / 140);
-    psdPath += (i ? ' L' : 'M') + fmt(xU(um2), 1) + ' ' + fmt(584 - Fpass(um2) * 560, 1);
+  /* Energía: Bond sobre el Wi de referencia (molino de bolas húmedo, circuito
+     cerrado) y factores de corrección de Rowland para el molino de bolas. */
+  var Ebond = Math.max(0, 10 * mat.Wi * (1 / Math.sqrt(P80) - 1 / Math.sqrt(F80)));
+  var ef = { EF1: 1, EF4: 1, EF5: 1 };
+  if (s.rowland && mill.id === 'bolas') {
+    if (!wet) ef.EF1 = 1.3;
+    var F0 = 4000 * Math.sqrt(13 / mat.Wi);
+    if (F80 > F0 && rr > 1.01) ef.EF4 = (rr + (mat.Wi - 7) * (F80 - F0) / F0) / rr;
+    if (P80 < 75) ef.EF5 = (P80 + 10.3) / (1.145 * P80);
+    ef.F0 = F0;
   }
-  var d80x = Math.min(690, Math.max(70, xU(P80)));
-  var d80anchor = d80x > 550 ? 'end' : 'start';
-  var d80lx = d80x > 550 ? d80x - 8 : d80x + 8;
+  var EF = ef.EF1 * ef.EF4 * ef.EF5;
+  var E = Ebond * EF;               // kWh/t de sólido, en el molino de referencia
+  var Eeq = mill.k * E;             // kWh/t que absorbe ESTE equipo
+  var Peje = Eeq * cap, eta = 0.95, Pmot = Peje / eta;
+  var motor = null; for (var i = 0; i < IEC_MOTORS.length; i++) if (IEC_MOTORS[i] >= Pmot) { motor = IEC_MOTORS[i]; break; }
+  var Qsurf = 0.03 * Peje, Q = 0.97 * Peje, Ploss = Pmot - Peje;
 
-  var all = SIEVES();
-  var pass = all.map(function (t) { return Fpass(t.a) * 100; });
-  var i0 = pass.findIndex(function (p) { return p < 99.5; });
-  if (i0 < 0) i0 = all.length - 1;
-  i0 = Math.max(0, i0 - 1);
-  var i1 = i0;
-  while (i1 < all.length - 1 && pass[i1] > 2) i1++;
-  var idx = [];
-  for (var ii = i0; ii <= i1; ii++) idx.push(ii);
+  /* Balance térmico adiabático: todo el calor va al flujo de proceso. */
+  var w = wet ? (100 / s.sol - 1) : s.hum / 100;  // kg agua / kg sólido seco
+  var cpmix = mat.cp + w * 4.18;                  // kJ/(kg sólido·K)
+  var dT = Eeq > 0 ? 0.97 * Eeq * 3.6 / cpmix : 0; // 1 kWh/t = 3,6 kJ/kg
+  var Tout = Tamb + dT, mcp = cap / 3.6 * cpmix, agua = cap * w;
+
+  /* Leyes de Kick y Rittinger calibradas en el punto de operación. */
+  var CK = Ebond > 0 ? Ebond / Math.log(F80 / P80) : 0;
+  var CR = Ebond > 0 ? Ebond / (1 / P80 - 1 / F80) : 0;
+
+  /* Molino de bolas: velocidad crítica Nc = 42,3/√(D − d) rpm (D, d en m). */
+  var ball = null;
+  if (mill.id === 'bolas') {
+    var D = s.D, d = 0.05, Nc = 42.3 / Math.sqrt(D - d), N = s.phi / 100 * Nc;
+    var reg = s.phi >= 100 ? 'Centrifugado' : s.phi >= 85 ? 'Catarata intensa' : s.phi >= 65 ? 'Catarata' : s.phi >= 45 ? 'Cascada' : 'Deslizamiento';
+    ball = { D: D, d: d, Nc: Nc, N: N, phi: s.phi, J: s.J, reg: reg };
+  }
+
+  /* Rosin-Rammler: F(x) = 1 − exp[−(x/x′)ⁿ], anclada en P₈₀. */
+  var n = mill.n, x63 = P80 / Math.pow(Math.log(5), 1 / n);
+  var Fpass = function (a) { return 1 - Math.exp(-Math.pow(a / x63, n)); };
+  var series = SIEVE_SERIES[s.series] || SIEVE_SERIES.astm, all = series.list;
+  var pass = all.map(function (t) { return Fpass(t[1]) * 100; });
+  var i0 = -1; for (var a = 0; a < pass.length; a++) if (pass[a] < 99.5) { i0 = a; break; }
+  if (i0 < 0) i0 = all.length - 1; i0 = Math.max(0, i0 - 1);
+  var i1 = i0; while (i1 < all.length - 1 && pass[i1] > 2) i1++;
+  var idx = []; for (var ii = i0; ii <= i1; ii++) idx.push(ii);
   while (idx.length > 9) idx = idx.filter(function (_, j) { return j % 2 === 0 || j === idx.length - 1; });
-  var prev = 100;
-  var rows = [], bars = [];
-  idx.forEach(function (i, j) {
-    var p = pass[i];
-    var ret = prev - p;
-    rows.push({ m: all[i].m, a: fmtSize(all[i].a), ret: fmt(ret, 1), retAc: fmt(100 - p, 1), pas: fmt(p, 1) });
-    var hiUm = j === 0 ? Math.min(all[i].a * 2.2, 900000) : all[idx[j - 1]].a;
-    var x1 = xU(all[i].a), x2 = xU(hiUm);
-    var hh = Math.max(0, ret * 5.6);
-    bars.push({ x: fmt(x1, 1), w: fmt(Math.max(2, x2 - x1), 1), y: fmt(584 - hh, 1), h: fmt(hh, 1) });
+  var prev = 100, rows = [];
+  idx.forEach(function (k, j) {
+    var p = pass[k];
+    rows.push({ m: all[k][0], a: all[k][1], ret: prev - p, retAc: 100 - p, pas: p, hi: j === 0 ? Math.min(all[k][1] * 2.2, 900000) : all[idx[j - 1]][1] });
     prev = p;
   });
-  var fondo = prev;
-  var sub38 = Fpass(38) * 100;
-  var tamizNote = sub38 > 15
-    ? 'Atención: ' + fmt(sub38, 0) + ' % del producto es menor de 38 µm (malla 400). El tamizado pierde resolución en ese rango: complemente con difracción láser o sedimentación.'
-    : 'Base: 100 % de sólido seco. Retenido calculado entre mallas consecutivas de la serie seleccionada.';
-  var nDesc = n < 1 ? 'distribución amplia' : n < 1.6 ? 'distribución media' : 'distribución estrecha';
+  var fondo = prev, sub38 = Fpass(38) * 100;
+  var P50 = x63 * Math.pow(Math.log(2), 1 / n);
 
-  var gridOpacity = s.grid ? 1 : 0;
+  /* Advertencias (textos del explorador original, más las nuevas). */
+  var warns = [], crit = false;
+  var W = function (t, c) { warns.push({ t: t, c: !!c }); if (c) crit = true; };
+  if (F80 > mill.fmax * 1000) W('La alimentación F₈₀ = ' + fmtSize(F80) + ' supera la boca de entrada del equipo (' + mill.fmax + ' mm): el material no entra. Se requiere trituración previa.', true);
+  if (P80t >= F80 / 1.2) W('El tamaño objetivo debe ser claramente menor que la alimentación: se calcula con P₈₀ = F₈₀/1,2.');
+  else if (P80t < pminUm) W('Producto fuera de especificación: este equipo no baja de ' + fmtSize(pminUm) + ' y el objetivo era ' + fmtSize(P80t) + '. El cálculo usa el mínimo alcanzable.', true);
+  else if (P80t > pmaxUm) W('El objetivo ' + fmtSize(P80t) + ' es más grueso que el rango del equipo (máx. ' + fmtSize(pmaxUm) + '): habrá sobre-molienda; considere un equipo de trituración.');
+  if (rr > mill.rrMax) W('Relación de reducción ' + fmtN(rr, 0) + ':1, mayor que la máxima típica del equipo (' + mill.rrMax + ':1): divida la reducción en varias etapas en serie.');
+  if (!wet && s.hum > mill.humMax) W('Atasco: con humedad de ' + fmtN(s.hum, 1) + ' % (máx. ' + mill.humMax + ' % en seco) el material se apelmaza, ciega las superficies de molienda y bloquea el equipo.', true);
+  if (wet && !mill.wet) W('Este equipo no admite operación húmeda: la pulpa no puede procesarse en un equipo de ' + mill.short.toLowerCase() + '.', true);
+  if (wet && mat.sol) W('El azúcar es soluble: en molienda húmeda el producto se disuelve en el agua. Proceso inviable.', true);
+  if (wet && mat.id === 'cascara') W('La cáscara se muele seca: en pulpa acuosa la pectina empieza a solubilizarse y se pierde antes de la extracción.');
+  if (!wet && mat.higro && s.hum > 1.5 && mat.id === 'azucar') W('Material higroscópico: con w > 1,5 % los cristales se apelmazan durante la molienda y el manejo posterior.');
+  if (mat.tmax && Tout > mat.tmax) W('Daño térmico: la temperatura de salida (' + fmtN(Tout, 0) + ' °C) supera el límite del material (' + mat.tmax + ' °C). ' + (mat.id === 'maiz' ? 'Gelatinización y daño del almidón. Considere molienda criogénica o aire de barrido.' : mat.id === 'cascara' ? 'Degradación de la pectina. Considere aire de barrido, menor relación de reducción por etapa o enfriamiento.' : 'Caramelización y apelmazado del producto. Considere aire de barrido o enfriamiento.'), true);
+  if (mat.fib && (mill.id === 'bolas' || mill.id === 'mand')) W('Material fibroso-elástico: la fractura por ' + mill.mech.toLowerCase() + ' es poco eficaz; prefiera impacto (martillos) o atrición (discos).');
+  if (mat.atex && !wet && P80 < 200) W('Polvo de carbón < 200 µm en seco: atmósfera explosiva (ATEX). Requiere inertización y venteos de explosión.');
+  if (mat.abr && (mill.id === 'mart' || mill.id === 'disc')) W('Material abrasivo en equipo de ' + (mill.id === 'mart' ? 'impacto: desgaste acelerado de martillos y criba' : 'fricción: desgaste acelerado de los discos') + '. Alto costo de mantenimiento.');
+  if (cap > mill.capMax) W('Capacidad de ' + fmtN(cap, 0) + ' t/h por encima del rango típico (' + mill.capMin + '–' + mill.capMax + ' t/h): use varias unidades en paralelo o un equipo mayor.');
+  else if (cap < mill.capMin) W('Capacidad de ' + fmtN(cap, 1) + ' t/h por debajo del rango típico (' + mill.capMin + '–' + mill.capMax + ' t/h): el equipo queda sobredimensionado.');
+  if (ball && ball.phi >= 100) W('Molino de bolas a ' + fmtN(ball.phi, 0) + ' % de la velocidad crítica: la carga centrifuga pegada a la pared y no hay molienda.', true);
+  else if (ball && ball.phi > 85) W('A ' + fmtN(ball.phi, 0) + ' % de la velocidad crítica las bolas golpean el revestimiento: desgaste alto. Lo usual es 65 a 80 %.');
+  else if (ball && ball.phi < 55) W('A ' + fmtN(ball.phi, 0) + ' % de la velocidad crítica la carga apenas se levanta: molienda lenta por atrición. Lo usual es 65 a 80 %.');
+  if (mat.custom) W('Cáscara cítrica: no hay índice de Bond publicado. El Wi de ' + fmtN(mat.Wi, 1) + ' kWh/t es el que usted fijó; reemplácelo por el de su ensayo o una fuente citada.');
 
-  // ============ Inyección al DOM ============
-  setT('matNameHdr', mat.name); setT('millNameHdr', mill.name); setT('millNameEq', mill.name);
-  setT('matNameFt', mat.name); setT('wiValFt', fmt(mat.Wi, 1) + ' kWh/t');
+  var status = crit ? 'inviable' : warns.length ? 'advertencias' : 'viable';
+  return {
+    mat: mat, mill: mill, F80: F80, P80t: P80t, P80: P80, clamped: clamped, rr: rr, cap: cap, wet: wet, Tamb: Tamb,
+    Ebond: Ebond, ef: ef, EF: EF, E: E, Eeq: Eeq, Peje: Peje, Pmot: Pmot, eta: eta, motor: motor, Q: Q, Qsurf: Qsurf, Ploss: Ploss,
+    w: w, cpmix: cpmix, dT: dT, Tout: Tout, mcp: mcp, agua: agua, CK: CK, CR: CR, ball: ball,
+    n: n, x63: x63, P50: P50, Fpass: Fpass, rows: rows, fondo: fondo, sub38: sub38, series: series,
+    warns: warns, crit: crit, status: status, pminUm: pminUm, pmaxUm: pmaxUm
+  };
+}
 
-  // botones material / equipo
-  document.getElementById('matBtns').innerHTML = mats.map(function (m) {
-    return '<button type="button" class="selbtn" style="' + selBtnStyle(m.id === s.mat) + '" onclick="setMat(\'' + m.id + '\')">' + esc(m.name) + '</button>';
-  }).join('');
-  document.getElementById('millBtns').innerHTML = millsL.map(function (m) {
-    return '<button type="button" class="selbtn" style="' + selBtnStyle(m.id === s.mill) + '" onclick="setMill(\'' + m.id + '\')">' + esc(m.name) + '</button>';
-  }).join('');
-  setT('matNote', mat.note); setT('millNote', mill.note); setT('millNote2', mill.note); setT('matNote2', mat.note);
-
-  // modo
-  document.getElementById('modeSeca').style.cssText = 'flex:1;' + selBtnStyle(!wet);
-  document.getElementById('modeHum').style.cssText = 'flex:1;' + selBtnStyle(wet);
-  document.getElementById('humRow').style.display = wet ? 'none' : 'block';
-  document.getElementById('solRow').style.display = wet ? 'block' : 'none';
-  setT('fHum', fmt(s.hum, 1) + ' %'); setT('humValA', '≤ ' + mill.humMax + ' %');
-  setT('fSol', fmt(s.sol, 0) + ' % sólidos');
-
-  // sliders (posición + etiqueta)
-  ['hum', 'sol', 'lF', 'lP', 'lC', 'Tamb'].forEach(function (k) { var el = document.getElementById(k); if (el && parseFloat(el.value) !== s[k]) el.value = s[k]; });
-  document.getElementById('grid').checked = s.grid;
-  document.getElementById('showEq').checked = s.showEq;
-  setT('fF80', fmtSize(F80)); setT('fP80t', fmtSize(P80t)); setT('fCap', fmt(cap, cap < 10 ? 1 : 0) + ' t/h');
-  setT('prodValA', fmtSize(pminUm) + ' – ' + fmtSize(pmaxUm)); setT('capValA', mill.capMin + ' – ' + mill.capMax + ' t/h');
-  setT('fTamb', fmt(Tamb, 0) + ' °C');
-
-  // advertencias
-  var wEl = document.getElementById('warnings');
-  if (warns.length) { wEl.style.display = 'flex'; wEl.innerHTML = warns.map(function (x) { return '<div style="color:var(--color-accent-800);font-size:14px;font-weight:600;">' + esc(x) + '</div>'; }).join(''); }
-  else { wEl.style.display = 'none'; wEl.innerHTML = ''; }
-
-  var stEl = document.getElementById('statusText'); stEl.textContent = statusText; stEl.style.color = statusColor;
-
-  // diagrama de equipo
-  document.getElementById('svgMill').innerHTML = MILL_DIAGRAMS[s.mill] || '';
-
-  // ficha equipo/material
-  setT('mechVal', mill.mech); setT('fmaxVal', '≤ ' + mill.fmax + ' mm');
-  setT('prodVal', fmtSize(pminUm) + ' – ' + fmtSize(pmaxUm)); setT('rrVal', mill.rrMax + ' : 1');
-  setT('capVal', mill.capMin + ' – ' + mill.capMax + ' t/h'); setT('humVal', '≤ ' + mill.humMax + ' %');
-  setT('wetVal', mill.wet ? 'Sí' : 'No'); setT('nVal', fmt(mill.n, 1));
-  setT('wiVal', fmt(mat.Wi, 1) + ' kWh/t'); setT('mohsVal', mat.mohs); setT('cpVal', fmt(mat.cp, 2) + ' kJ/(kg·K)');
-  setT('humTipVal', fmt(mat.hum, 1) + ' %'); setT('tmaxVal', mat.tmax ? mat.tmax + ' °C' : '—');
-
-  // ---- gráfica de energía (SVG completo)
-  var eGrid = s.grid ? (
-    '<line x1="194" y1="24" x2="194" y2="584" stroke="var(--color-neutral-300)" stroke-width="1"></line><line x1="318" y1="24" x2="318" y2="584" stroke="var(--color-neutral-300)" stroke-width="1"></line><line x1="442" y1="24" x2="442" y2="584" stroke="var(--color-neutral-300)" stroke-width="1"></line><line x1="566" y1="24" x2="566" y2="584" stroke="var(--color-neutral-300)" stroke-width="1"></line>' +
-    '<line x1="70" y1="164" x2="690" y2="164" stroke="var(--color-neutral-300)" stroke-width="1"></line><line x1="70" y1="304" x2="690" y2="304" stroke="var(--color-neutral-300)" stroke-width="1"></line><line x1="70" y1="444" x2="690" y2="444" stroke="var(--color-neutral-300)" stroke-width="1"></line>'
-  ) : '';
-  var eAxes = '<text x="66" y="588" text-anchor="end" style="font-size:13px;fill:var(--color-neutral-800);">0.01</text><text x="66" y="448" text-anchor="end" style="font-size:13px;fill:var(--color-neutral-800);">0.1</text><text x="66" y="308" text-anchor="end" style="font-size:13px;fill:var(--color-neutral-800);">1</text><text x="66" y="168" text-anchor="end" style="font-size:13px;fill:var(--color-neutral-800);">10</text><text x="66" y="28" text-anchor="end" style="font-size:13px;fill:var(--color-neutral-800);">100</text>' + xAxisLabels() + '<text x="70" y="628" style="font-size:13.5px;fill:var(--color-neutral-800);">P₈₀ del producto (escala logarítmica)</text><text x="16" y="584" transform="rotate(-90 16 584)" style="font-size:13.5px;fill:var(--color-neutral-800);">E — energía específica de conminución (kWh/t)</text>';
-  document.getElementById('svgEnergy').innerHTML =
-    '<defs><clipPath id="eclip"><rect x="70" y="24" width="620" height="560"></rect></clipPath></defs>' +
-    '<rect x="70" y="24" width="620" height="560" fill="var(--color-neutral-100)"></rect>' + eGrid +
-    '<g clip-path="url(#eclip)">' +
-    (kickPath ? '<path d="' + kickPath + '" fill="none" stroke="var(--color-text)" stroke-width="1.8" stroke-dasharray="7 5"></path>' : '') +
-    (rittPath ? '<path d="' + rittPath + '" fill="none" stroke="var(--color-neutral-700)" stroke-width="1.8" stroke-dasharray="2 4"></path>' : '') +
-    '<path d="' + bondPath + '" fill="none" stroke="var(--color-accent)" stroke-width="2.5"></path>' +
-    '<circle cx="' + fmt(opX, 1) + '" cy="' + fmt(opY, 1) + '" r="6" fill="var(--color-accent)" stroke="var(--color-bg)" stroke-width="2"></circle>' +
-    '</g>' +
-    '<rect x="70" y="24" width="620" height="560" fill="none" stroke="var(--color-text)" stroke-width="2"></rect>' + eAxes;
-
-  // ---- gráfica PSD (SVG completo)
-  var pGrid = s.grid ? (
-    '<line x1="194" y1="24" x2="194" y2="584" stroke="var(--color-neutral-300)" stroke-width="1"></line><line x1="318" y1="24" x2="318" y2="584" stroke="var(--color-neutral-300)" stroke-width="1"></line><line x1="442" y1="24" x2="442" y2="584" stroke="var(--color-neutral-300)" stroke-width="1"></line><line x1="566" y1="24" x2="566" y2="584" stroke="var(--color-neutral-300)" stroke-width="1"></line>' +
-    '<line x1="70" y1="136" x2="690" y2="136" stroke="var(--color-neutral-300)" stroke-width="1"></line><line x1="70" y1="248" x2="690" y2="248" stroke="var(--color-neutral-300)" stroke-width="1"></line><line x1="70" y1="360" x2="690" y2="360" stroke="var(--color-neutral-300)" stroke-width="1"></line><line x1="70" y1="472" x2="690" y2="472" stroke="var(--color-neutral-300)" stroke-width="1"></line>'
-  ) : '';
-  var barsSvg = bars.map(function (b) { return '<rect x="' + b.x + '" y="' + b.y + '" width="' + b.w + '" height="' + b.h + '" fill="var(--color-accent-200)" stroke="var(--color-accent-700)" stroke-width="1"></rect>'; }).join('');
-  var pAxes = '<text x="66" y="588" text-anchor="end" style="font-size:13px;fill:var(--color-neutral-800);">0</text><text x="66" y="476" text-anchor="end" style="font-size:13px;fill:var(--color-neutral-800);">20</text><text x="66" y="364" text-anchor="end" style="font-size:13px;fill:var(--color-neutral-800);">40</text><text x="66" y="252" text-anchor="end" style="font-size:13px;fill:var(--color-neutral-800);">60</text><text x="66" y="140" text-anchor="end" style="font-size:13px;fill:var(--color-neutral-800);">80</text><text x="66" y="28" text-anchor="end" style="font-size:13px;fill:var(--color-neutral-800);">100</text>' + xAxisLabels() + '<text x="70" y="628" style="font-size:13.5px;fill:var(--color-neutral-800);">Abertura del tamiz (escala logarítmica)</text><text x="16" y="584" transform="rotate(-90 16 584)" style="font-size:13.5px;fill:var(--color-neutral-800);">% en masa</text>';
-  document.getElementById('svgPsd').innerHTML =
-    '<rect x="70" y="24" width="620" height="560" fill="var(--color-neutral-100)"></rect>' + pGrid + barsSvg +
-    '<path d="' + psdPath + '" fill="none" stroke="var(--color-text)" stroke-width="2.5"></path>' +
-    '<line x1="' + fmt(d80x, 1) + '" y1="24" x2="' + fmt(d80x, 1) + '" y2="584" stroke="var(--color-accent)" stroke-width="1.5" stroke-dasharray="6 5"></line>' +
-    '<text x="' + fmt(d80lx, 1) + '" y="44" text-anchor="' + d80anchor + '" style="font-size:13px;font-weight:700;fill:var(--color-accent-700);">P₈₀ = ' + esc(fmtSize(P80)) + '</text>' +
-    '<rect x="70" y="24" width="620" height="560" fill="none" stroke="var(--color-text)" stroke-width="2"></rect>' + pAxes;
-
-  // ---- tabla de tamizado
-  document.getElementById('sieveBody').innerHTML = rows.map(function (r) {
-    return '<tr><td>' + esc(r.m) + '</td><td>' + esc(r.a) + '</td><td>' + r.ret + '</td><td>' + r.retAc + '</td><td>' + r.pas + '</td></tr>';
-  }).join('') + '<tr><td style="color:var(--color-accent-700);">Fondo (bandeja)</td><td>—</td><td style="color:var(--color-accent-700);font-weight:700;">' + fmt(fondo, 1) + '</td><td>100.0</td><td>0.0</td></tr>';
-  setT('tamizNote', tamizNote);
-
-  // ---- métricas
-  setT('vE', fmt(E, 2)); setT('vE2', fmt(E, 2)); setT('vK', fmt(mill.k, 1));
-  setT('vPeje', fmt(Peje, Peje < 100 ? 1 : 0)); setT('vPmot', fmt(Pmot, Pmot < 100 ? 1 : 0));
-  setT('vRR', fmt(rr, 1) + ' : 1');
-  setT('vP80', fmtSize(P80)); setColor('vP80', clamped ? 'var(--color-accent-700)' : 'var(--color-text)');
-  setT('p80Note', clamped ? 'limitado por el equipo (objetivo: ' + fmtSize(P80t) + ')' : 'coincide con el objetivo');
-  setT('vCapS', fmt(cap, cap < 10 ? 1 : 0)); setT('capNote', 't/h de sólidos · rango del equipo ' + mill.capMin + '–' + mill.capMax + ' t/h');
-  setT('vQ', fmt(Q, Q < 100 ? 1 : 0)); setT('vMcp', fmt(mcp, 2)); setT('vDT', fmt(dT, 1));
-  setT('vTout', fmt(Tout, 0)); setColor('vTout', mat.tmax && Tout > mat.tmax ? 'var(--color-accent-700)' : 'var(--color-text)');
-  setT('vTamb', fmt(Tamb, 0));
-  setT('vTmax', mat.tmax ? mat.tmax + ' °C' : 'sin límite');
-  setT('tmaxNote', mat.tmax ? (mat.id === 'maiz' ? 'daño del almidón' : 'caramelización / apelmazado') : 'material térmicamente estable');
-  setT('vAgua', fmt(agua, agua < 10 ? 2 : 1)); setT('aguaNote', wet ? 'agua de la pulpa' : 'humedad del material');
-
-  // ---- Parte 2 encabezado + ecuaciones
-  setT('vX63', fmtSize(x63)); setT('vX63b', fmtSize(x63)); setT('vN', fmt(n, 1)); setT('vNb', fmt(n, 1)); setT('nDesc', nDesc);
-  setT('wiVal2', fmt(mat.Wi, 1) + ' kWh/t');
-  setT('vCK', E0 > 0 ? fmt(CK, 2) : '—'); setT('vCR', E0 > 0 ? fmt(CR, 0) : '—');
-
-  document.getElementById('eqGrid').style.display = s.showEq ? 'grid' : 'none';
-  if (s.showEq) {
-    tex('eqBond', 'E = 10\\,W_i\\left(\\dfrac{1}{\\sqrt{P_{80}}} - \\dfrac{1}{\\sqrt{F_{80}}}\\right)');
-    tex('eqKick', 'E = C_K\\,\\ln\\!\\left(\\dfrac{F_{80}}{P_{80}}\\right)');
-    tex('eqRitt', 'E = C_R\\left(\\dfrac{1}{P_{80}} - \\dfrac{1}{F_{80}}\\right)');
-    tex('eqRR', 'F(x) = 1 - \\exp\\!\\left[-\\left(\\dfrac{x}{x\'}\\right)^{n}\\right]');
-    tex('eqTerm', '\\dot{Q} = 0.97\\,P_{eje} = \\dot{m}\\,\\bar{c}_p\\,\\Delta T');
+function fmtN(n, d) {
+  if (n === null || n === undefined || !isFinite(n)) return '—';
+  d = d === undefined ? 1 : d;
+  var neg = n < 0, s = Math.abs(n).toFixed(d), p = s.split('.'), int = p[0];
+  if (int.length > 4) int = int.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  return (neg ? '−' : '') + int + (p[1] ? ',' + p[1] : '');
+}
+function fmtSize(um) {
+  if (um < 1000) return (um < 10 ? fmtN(um, 1) : fmtN(um, 0)) + ' µm';
+  var mm = um / 1000;
+  return (mm < 10 ? fmtN(mm, 2) : mm < 100 ? fmtN(mm, 1) : fmtN(mm, 0)) + ' mm';
+}
+if (typeof module !== 'undefined') module.exports = { compute: compute, MATERIALS: MATERIALS, MILLS: MILLS };
+/* ====================================================================
+   Animaciones con física de partículas (canvas 2D)
+   - Molino de bolas: elementos discretos (DEM) con resortes, amortiguación
+     y fricción de Coulomb; el tambor y sus levantadores giran a la
+     fracción φ de la velocidad crítica ωc = √(g/(R − r)). Como el régimen
+     depende solo de ω²R/g, la animación es dinámicamente semejante al
+     molino real aunque su escala sea otra.
+   - Mandíbulas, rodillos y martillos: partículas que caen, chocan con las
+     piezas móviles y se fracturan en fragmentos cuando se comprimen entre
+     dos superficies o reciben un impacto suficiente.
+   - Discos: trayectoria en espiral desde el ojo hasta la periferia.
+   Los tamaños son ilustrativos (escala logarítmica entre F₈₀ y P₈₀).
+   ==================================================================== */
+function MillAnim(canvas) {
+  this.cv = canvas; this.ctx = canvas.getContext('2d');
+  this.P = []; this.fx = []; this.t = 0; this.kind = null; this.running = true; this.speed = 1;
+  this.stats = { broken: 0, out: 0, impacts: 0 };
+  this.prm = {};
+}
+MillAnim.prototype.resize = function () {
+  var r = this.cv.getBoundingClientRect(), dpr = Math.min(window.devicePixelRatio || 1, 2);
+  if (!r.width) return;
+  this.W = r.width; this.H = r.height;
+  this.cv.width = Math.round(r.width * dpr); this.cv.height = Math.round(r.height * dpr);
+  this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+};
+MillAnim.prototype.configure = function (res, opts) {
+  var kind = res.mill.id, changed = kind !== this.kind || (kind === 'bolas' && opts && opts.J !== this.prm.J);
+  this.res = res; this.opts = opts || {};
+  this.prm.color = res.mat.color; this.prm.J = opts.J;
+  this.prm.phi = res.ball ? res.ball.phi / 100 : 0.75;
+  this.prm.heat = Math.max(0, Math.min(1, (res.Tout - 30) / 70));
+  this.prm.over = res.mat.tmax ? res.Tout > res.mat.tmax : false;
+  if (changed || !this.W) { this.kind = kind; this.reset(); }
+};
+MillAnim.prototype.reset = function () {
+  this.resize(); this.P = []; this.fx = []; this.t = 0; this.ang = 0; this.stats = { broken: 0, out: 0, impacts: 0 }; this.spawnT = 0;
+  if (!this.W) return;
+  var W = this.W, H = this.H;
+  if (this.kind === 'bolas') {
+    var R = Math.min(W, H) * 0.42; this.geo = { cx: W / 2, cy: H / 2 + 6, R: R, rb: R / 15, nl: 14, lh: 1.0 };
+    var A = Math.PI * R * R * (this.prm.J || 35) / 100 * 0.78, nb = Math.round(A / (Math.PI * this.geo.rb * this.geo.rb));
+    for (var i = 0; i < nb; i++) this.P.push(this.mkBallIn('ball', this.geo.rb * (0.85 + Math.random() * 0.3)));
+    for (var j = 0; j < 46; j++) { var o = this.mkBallIn('ore', this.geo.rb * (0.35 + Math.random() * 0.25)); this.P.push(o); }
+  } else if (this.kind === 'mand') {
+    var cxj = W / 2; this.geo = { top: H * 0.2, bot: H * 0.86, xl0: cxj - 95, xl1: cxj - 14, xr0: cxj + 95, xr1: cxj + 0, amp: 12 };
+  } else if (this.kind === 'rod') {
+    var Rr = Math.min(W * 0.2, H * 0.34); this.geo = { R: Rr, cy: H * 0.56, gap: 7, cx: W / 2 };
+  } else if (this.kind === 'mart') {
+    var Rc = Math.min(W, H) * 0.42; this.geo = { cx: W / 2, cy: H / 2 + 4, Rc: Rc, rr: Rc * 0.18, L: Rc * 0.62, hole: 4.2 };
+  } else if (this.kind === 'disc') {
+    this.geo = { cx: W / 2, cy: H / 2, R: Math.min(W, H) * 0.43 };
   }
+};
+MillAnim.prototype.mkBallIn = function (kind, r) {
+  var g = this.geo, a, rad, x, y, tries = 0;
+  do { a = Math.PI * (0.15 + Math.random() * 0.7); rad = Math.sqrt(Math.random()) * (g.R - r - 2); x = g.cx + rad * Math.cos(a); y = g.cy + rad * Math.sin(a); tries++; } while (y < g.cy - g.R * 0.1 && tries < 30);
+  return { x: x, y: y, vx: 0, vy: 0, r: r, m: kind === 'ball' ? 1 : 0.16, k: kind, life: 0 };
+};
+MillAnim.prototype.feedR = function () { return this.kind === 'mand' ? 15 : this.kind === 'rod' ? 10 : this.kind === 'mart' ? 11 : 7; };
+MillAnim.prototype.prodR = function () { return this.kind === 'mand' ? 4.6 : this.kind === 'rod' ? 3.4 : this.kind === 'mart' ? 2.6 : 2; };
+MillAnim.prototype.spawnFeed = function () {
+  var W = this.W, g = this.geo, rF = this.feedR() * (0.75 + Math.random() * 0.5);
+  if (this.kind === 'mand') this.P.push({ x: W * 0.5 + (Math.random() - 0.5) * 80, y: g.top - 40 - Math.random() * 20, vx: 0, vy: 40, r: rF, m: 1, k: 'ore', life: 0 });
+  else if (this.kind === 'rod') this.P.push({ x: g.cx + (Math.random() - 0.5) * g.R * 0.9, y: -rF, vx: 0, vy: 60, r: rF, m: 1, k: 'ore', life: 0 });
+  else if (this.kind === 'mart') { var a = -Math.PI * 0.62 + (Math.random() - 0.5) * 0.18; this.P.push({ x: g.cx + (g.Rc - rF - 6) * Math.cos(a), y: g.cy + (g.Rc - rF - 6) * Math.sin(a), vx: 30, vy: 120, r: rF, m: 1, k: 'ore', life: 0 }); }
+};
+MillAnim.prototype.split = function (p, n, impulse) {
+  var nr = p.r / Math.sqrt(n) * 0.97, out = [];
+  for (var i = 0; i < n; i++) {
+    var a = Math.random() * Math.PI * 2, s = (impulse || 40) * (0.4 + Math.random());
+    out.push({ x: p.x + Math.cos(a) * nr * 0.6, y: p.y + Math.sin(a) * nr * 0.6, vx: p.vx + Math.cos(a) * s, vy: p.vy + Math.sin(a) * s, r: nr, m: p.m / n, k: 'ore', life: 0 });
+  }
+  this.stats.broken++;
+  this.fx.push({ x: p.x, y: p.y, t: 0, s: p.r * 1.6 });
+  return out;
+};
+/* contacto partícula-superficie: n = normal unitaria (de la superficie hacia la partícula) */
+function contact(p, nx, ny, ov, wvx, wvy, kn, cn, mu, acc) {
+  var rvx = p.vx - wvx, rvy = p.vy - wvy, vn = rvx * nx + rvy * ny;
+  var fn = kn * ov - cn * vn; if (fn < 0) fn = 0;
+  var tx = -ny, ty = nx, vt = rvx * tx + rvy * ty, ft = -vt * cn * 1.4, lim = mu * fn;
+  if (ft > lim) ft = lim; else if (ft < -lim) ft = -lim;
+  acc.x += (fn * nx + ft * tx) / p.m; acc.y += (fn * ny + ft * ty) / p.m;
+  return fn;
+}
+function segContact(p, x1, y1, x2, y2) {
+  var dx = x2 - x1, dy = y2 - y1, L2 = dx * dx + dy * dy, t = ((p.x - x1) * dx + (p.y - y1) * dy) / L2;
+  t = t < 0 ? 0 : t > 1 ? 1 : t;
+  var cx = x1 + t * dx, cy = y1 + t * dy, ex = p.x - cx, ey = p.y - cy, d = Math.sqrt(ex * ex + ey * ey);
+  if (d >= p.r || d < 1e-6) return null;
+  return { nx: ex / d, ny: ey / d, ov: p.r - d, t: t, cx: cx, cy: cy };
+}
+MillAnim.prototype.step = function (dtFrame) {
+  if (!this.W || !this.kind) return;
+  var sub = this.kind === 'bolas' ? 10 : 6, dt = Math.min(dtFrame, 1 / 30) * this.speed / sub;
+  for (var s = 0; s < sub; s++) { this.t += dt; this['step_' + this.kind](dt); }
+  for (var i = this.fx.length - 1; i >= 0; i--) { this.fx[i].t += dtFrame; if (this.fx[i].t > 0.45) this.fx.splice(i, 1); }
+};
+/* fuerzas entre partículas (O(n²); n < 160) */
+MillAnim.prototype.pairForces = function (A, kn, cn, mu, onHit) {
+  var P = this.P, n = P.length;
+  for (var i = 0; i < n; i++) {
+    var a = P[i];
+    for (var j = i + 1; j < n; j++) {
+      var b = P[j], dx = b.x - a.x, dy = b.y - a.y, rs = a.r + b.r;
+      if (dx > rs || dx < -rs || dy > rs || dy < -rs) continue;
+      var d2 = dx * dx + dy * dy; if (d2 >= rs * rs || d2 < 1e-8) continue;
+      var d = Math.sqrt(d2), nx = dx / d, ny = dy / d, ov = rs - d;
+      var rvx = b.vx - a.vx, rvy = b.vy - a.vy, vn = rvx * nx + rvy * ny;
+      var mEff = a.m * b.m / (a.m + b.m), fn = kn * mEff * ov - cn * mEff * vn; if (fn < 0) fn = 0;
+      var tx = -ny, ty = nx, vt = rvx * tx + rvy * ty, ft = -vt * cn * mEff * 0.8, lim = mu * fn;
+      if (ft > lim) ft = lim; else if (ft < -lim) ft = -lim;
+      var fx = fn * nx + ft * tx, fy = fn * ny + ft * ty;
+      A[i].x -= fx / a.m; A[i].y -= fy / a.m; A[j].x += fx / b.m; A[j].y += fy / b.m;
+      if (onHit && vn < 0) onHit(a, b, -vn, i, j);
+    }
+  }
+};
+MillAnim.prototype.integrate = function (A, dt, g) {
+  for (var i = 0; i < this.P.length; i++) { var p = this.P[i]; p.vx += A[i].x * dt; p.vy += (A[i].y + g) * dt; p.x += p.vx * dt; p.y += p.vy * dt; p.life += dt; }
+};
+/* ---------- molino de bolas ---------- */
+MillAnim.prototype.step_bolas = function (dt) {
+  var g = this.geo, P = this.P, G = 1700, R = g.R, wc = Math.sqrt(G / (R - g.rb)), w = this.prm.phi * wc;
+  this.ang += w * dt;
+  var A = P.map(function () { return { x: 0, y: 0 }; }), kn = 2.4e5, cn = 2 * 0.25 * Math.sqrt(kn), self = this;
+  this.pairForces(A, kn, cn, 0.12, function (a, b, vn, i, j) {
+    if (a.k !== b.k && vn > 120) {
+      var ore = a.k === 'ore' ? a : b;
+      if (!ore.hit || self.t - ore.hit > 0.15) { ore.hit = self.t; self.stats.impacts++; if (ore.r > g.rb * 0.16 && Math.random() < Math.min(0.5, vn / 900)) ore.cr = (ore.cr || 0) + 1; if (vn > 220 && Math.random() < 0.25) self.fx.push({ x: (a.x + b.x) / 2, y: (a.y + b.y) / 2, t: 0, s: 6 + vn / 40 }); }
+    }
+  });
+  for (var i = 0; i < P.length; i++) {
+    var p = P[i], dx = p.x - g.cx, dy = p.y - g.cy, d = Math.sqrt(dx * dx + dy * dy), ov = d + p.r - R;
+    if (ov > 0) { var nx = -dx / d, ny = -dy / d; contact(p, nx, ny, ov, -w * dy, w * dx, kn * p.m, cn * p.m, 0.4, A[i]); }
+    for (var l = 0; l < g.nl; l++) {
+      var a = this.ang + l * Math.PI * 2 / g.nl, ca = Math.cos(a), sa = Math.sin(a), x1 = g.cx + R * ca, y1 = g.cy + R * sa, x2 = g.cx + (R - g.rb * g.lh) * ca, y2 = g.cy + (R - g.rb * g.lh) * sa;
+      var c = segContact(p, x1, y1, x2, y2);
+      if (c) contact(p, c.nx, c.ny, c.ov, -w * (c.cy - g.cy), w * (c.cx - g.cx), kn * p.m, cn * p.m, 0.3, A[i]);
+    }
+  }
+  this.integrate(A, dt, G);
+  /* fractura de mineral y renovación continua (descarga de finos, nueva alimentación) */
+  for (var k = P.length - 1; k >= 0; k--) {
+    var q = P[k];
+    if (q.k === 'ore' && q.cr >= 3 && q.r > g.rb * 0.17) { var fr = this.split(q, 2, 30); P.splice(k, 1); for (var f = 0; f < fr.length; f++) P.push(fr[f]); }
+  }
+  var ores = P.filter(function (q) { return q.k === 'ore'; });
+  if (ores.length > 80) { for (var z = 0; z < P.length; z++) if (P[z].k === 'ore' && P[z].r < g.rb * 0.2 && Math.random() < 0.5) { P.splice(z, 1); this.stats.out++; break; } }
+  this.spawnT += dt; if (this.spawnT > 0.35 && ores.length < 60) { this.spawnT = 0; var o = { x: g.cx - R * 0.15, y: g.cy - R * 0.1, vx: 0, vy: 0, r: g.rb * (0.45 + Math.random() * 0.2), m: 0.16, k: 'ore', life: 0 }; P.push(o); }
+};
+/* ---------- trituradora de mandíbulas ---------- */
+MillAnim.prototype.jaw = function (t) {
+  var g = this.geo, w = 5.5, e = Math.sin(w * t), de = Math.cos(w * t) * w, A = g.amp;
+  return { x0: g.xr0 + A * 0.3 * e, y0: g.top, x1: g.xr1 + A * (1 + e) / 2, y1: g.bot, v0: A * 0.3 * de, v1: A * de / 2 };
+};
+MillAnim.prototype.step_mand = function (dt) {
+  var g = this.geo, P = this.P, G = 900, j = this.jaw(this.t), kn = 1.6e5, cn = 2 * 0.3 * Math.sqrt(kn), A = P.map(function () { return { x: 0, y: 0 }; });
+  this.pairForces(A, kn, cn, 0.4);
+  var hop = [[g.xl0 - 50, g.top - 70, g.xl0, g.top], [g.xr0 + 50, g.top - 70, g.xr0 + 4, g.top]];
+  for (var i = 0; i < P.length; i++) {
+    var p = P[i], tL = segContact(p, g.xl0, g.top, g.xl1, g.bot), tR = segContact(p, j.x0, j.y0, j.x1, j.y1);
+    if (tL) contact(p, tL.nx, tL.ny, tL.ov, 0, 0, kn * p.m, cn * p.m, 0.6, A[i]);
+    if (tR) contact(p, tR.nx, tR.ny, tR.ov, j.v0 + (j.v1 - j.v0) * tR.t, 0, kn * p.m, cn * p.m, 0.6, A[i]);
+    for (var h = 0; h < 2; h++) { var c = segContact(p, hop[h][0], hop[h][1], hop[h][2], hop[h][3]); if (c) contact(p, c.nx, c.ny, c.ov, 0, 0, kn * p.m, cn * p.m, 0.3, A[i]); }
+    p.sq = tL && tR && j.v1 < 0 ? 1 : 0;
+  }
+  this.integrate(A, dt, G);
+  this.breakAndExit(function (p) { return p.sq && Math.random() < 0.06; }, 3);
+  this.spawnT += dt; if (this.spawnT > 0.55 && P.length < 90) { this.spawnT = 0; this.spawnFeed(); }
+};
+/* ---------- molino de rodillos ---------- */
+MillAnim.prototype.step_rod = function (dt) {
+  var g = this.geo, P = this.P, G = 900, w = 3.2, xl = g.cx - g.R - g.gap / 2, xr = g.cx + g.R + g.gap / 2;
+  this.ang += w * dt;
+  var kn = 1.6e5, cn = 2 * 0.3 * Math.sqrt(kn), A = P.map(function () { return { x: 0, y: 0 }; });
+  this.pairForces(A, kn, cn, 0.4);
+  for (var i = 0; i < P.length; i++) {
+    var p = P[i], sq = 0, rolls = [[xl, w], [xr, -w]];
+    for (var k = 0; k < 2; k++) {
+      var cx = rolls[k][0], om = rolls[k][1], dx = p.x - cx, dy = p.y - g.cy, d = Math.sqrt(dx * dx + dy * dy), ov = g.R + p.r - d;
+      if (ov > 0) { contact(p, dx / d, dy / d, ov, -om * dy, om * dx, kn * p.m, cn * p.m, 0.8, A[i]); sq += ov; p['t' + k] = 1; } else p['t' + k] = 0;
+    }
+    p.sq = p.t0 && p.t1 ? 1 : 0;
+  }
+  this.integrate(A, dt, G);
+  this.breakAndExit(function (p) { return p.sq && Math.random() < 0.08; }, 3);
+  this.spawnT += dt; if (this.spawnT > 0.32 && P.length < 90) { this.spawnT = 0; this.spawnFeed(); }
+};
+/* ---------- molino de martillos ---------- */
+MillAnim.prototype.step_mart = function (dt) {
+  var g = this.geo, P = this.P, G = 900, w = 11, kn = 1.4e5, cn = 2 * 0.25 * Math.sqrt(kn), self = this;
+  this.ang += w * dt;
+  var A = P.map(function () { return { x: 0, y: 0 }; });
+  this.pairForces(A, kn, cn, 0.3);
+  for (var i = 0; i < P.length; i++) {
+    var p = P[i], dx = p.x - g.cx, dy = p.y - g.cy, d = Math.sqrt(dx * dx + dy * dy), ov = d + p.r - g.Rc;
+    if (ov > 0) {
+      var ang = Math.atan2(dy, dx), onScreen = ang > Math.PI * 0.18 && ang < Math.PI * 0.82;
+      if (onScreen && p.r < g.hole) { p.out = true; continue; }
+      contact(p, -dx / d, -dy / d, ov, 0, 0, kn * p.m, cn * p.m, 0.3, A[i]);
+    }
+    for (var h = 0; h < 4; h++) {
+      var a = this.ang + h * Math.PI / 2, x1 = g.cx + g.rr * Math.cos(a), y1 = g.cy + g.rr * Math.sin(a), x2 = g.cx + (g.rr + g.L) * Math.cos(a), y2 = g.cy + (g.rr + g.L) * Math.sin(a);
+      var c = segContact(p, x1, y1, x2, y2);
+      if (c) {
+        var wvx = -w * (c.cy - g.cy), wvy = w * (c.cx - g.cx), rel = Math.abs((p.vx - wvx) * c.nx + (p.vy - wvy) * c.ny);
+        contact(p, c.nx, c.ny, c.ov, wvx, wvy, kn * p.m, cn * p.m, 0.2, A[i]);
+        if (rel > 180 && p.r > g.hole * 0.9 && (!p.hit || self.t - p.hit > 0.08)) { p.hit = self.t; p.brk = true; }
+      }
+    }
+    var rc = Math.sqrt(dx * dx + dy * dy); if (rc < g.rr + p.r) { contact(p, dx / rc, dy / rc, g.rr + p.r - rc, -w * dy, w * dx, kn * p.m, cn * p.m, 0.2, A[i]); }
+  }
+  this.integrate(A, dt, G);
+  for (var k = P.length - 1; k >= 0; k--) {
+    var q = P[k];
+    if (q.out) { P.splice(k, 1); this.stats.out++; continue; }
+    if (q.brk) { q.brk = false; var fr = this.split(q, 3, 120); P.splice(k, 1); for (var f = 0; f < fr.length; f++) P.push(fr[f]); }
+  }
+  this.spawnT += dt; if (this.spawnT > 0.16 && P.length < 130) { this.spawnT = 0; this.spawnFeed(); }
+};
+MillAnim.prototype.breakAndExit = function (crit, n) {
+  var P = this.P, H = this.H, rP = this.prodR();
+  for (var k = P.length - 1; k >= 0; k--) {
+    var q = P[k];
+    if (q.y > H + 20) { P.splice(k, 1); this.stats.out++; continue; }
+    if (q.r > rP * 1.15 && crit(q)) { var fr = this.split(q, n, 25); P.splice(k, 1); for (var f = 0; f < fr.length; f++) P.push(fr[f]); }
+  }
+};
+/* ---------- molino de discos (vista frontal, cinemática) ---------- */
+MillAnim.prototype.step_disc = function (dt) {
+  var g = this.geo, P = this.P, w = 4.5;
+  this.ang += w * dt;
+  this.spawnT += dt; if (this.spawnT > 0.06 && P.length < 160) { this.spawnT = 0; P.push({ rho: g.R * 0.1, th: Math.random() * Math.PI * 2, r0: 6 + Math.random() * 2, k: 'ore' }); }
+  for (var k = P.length - 1; k >= 0; k--) {
+    var p = P[k]; p.rho += (22 + p.rho * 0.35) * dt; p.th += w * 0.42 * dt;
+    var f = Math.min(1, p.rho / g.R); p.r = p.r0 * (1 - f) + 1.4 * f; p.x = g.cx + p.rho * Math.cos(p.th); p.y = g.cy + p.rho * Math.sin(p.th);
+    if (p.rho > g.R * 1.02) { P.splice(k, 1); this.stats.out++; }
+  }
+};
+/* ---------- dibujo ---------- */
+function mixHex(a, b, t) { var pa = parseInt(a.slice(1), 16), pb = parseInt(b.slice(1), 16); var r = Math.round(((pa >> 16) & 255) * (1 - t) + ((pb >> 16) & 255) * t), g = Math.round(((pa >> 8) & 255) * (1 - t) + ((pb >> 8) & 255) * t), bl = Math.round((pa & 255) * (1 - t) + (pb & 255) * t); return 'rgb(' + r + ',' + g + ',' + bl + ')'; }
+MillAnim.prototype.draw = function () {
+  var c = this.ctx, W = this.W, H = this.H; if (!W) return;
+  var bp = document.documentElement.getAttribute('data-canvas') === 'blueprint';
+  var ink = bp ? '#e6eef7' : '#1c1b1a', paper = bp ? '#12304d' : '#ffffff', steel = bp ? '#9fb6cc' : '#7c8796';
+  c.clearRect(0, 0, W, H);
+  c.fillStyle = paper; c.fillRect(0, 0, W, H);
+  c.strokeStyle = bp ? 'rgba(255,255,255,.05)' : 'rgba(89,128,166,.08)'; c.lineWidth = 1;
+  for (var gx = 0; gx < W; gx += 20) { c.beginPath(); c.moveTo(gx + .5, 0); c.lineTo(gx + .5, H); c.stroke(); }
+  for (var gy = 0; gy < H; gy += 20) { c.beginPath(); c.moveTo(0, gy + .5); c.lineTo(W, gy + .5); c.stroke(); }
+  var heat = this.prm.heat, body = mixHex(bp ? '#1d4268' : '#eef1f4', this.prm.over ? '#f2b8a8' : '#f6d2a6', heat * 0.9);
+  var col = this.prm.color || '#b9b1a3', fine = mixHex(col.length === 7 ? col : '#b9b1a3', bp ? '#ffffff' : '#fff7ea', 0.35);
+  var g = this.geo, self = this;
+  var drawOre = function (p) { var f = Math.max(0, Math.min(1, (p.r - self.prodR()) / (self.feedR() - self.prodR() + 1e-6))); c.fillStyle = mixHex(col, '#fff7ea', (1 - f) * 0.45); c.beginPath(); c.arc(p.x, p.y, Math.max(1, p.r), 0, Math.PI * 2); c.fill(); if (p.r > 3) { c.strokeStyle = 'rgba(0,0,0,.35)'; c.lineWidth = 0.8; c.stroke(); } };
+  c.lineJoin = 'round';
+  if (this.kind === 'bolas') {
+    c.fillStyle = body; c.beginPath(); c.arc(g.cx, g.cy, g.R, 0, Math.PI * 2); c.fill();
+    c.strokeStyle = ink; c.lineWidth = 7; c.beginPath(); c.arc(g.cx, g.cy, g.R + 3.5, 0, Math.PI * 2); c.stroke();
+    c.lineWidth = 4; c.strokeStyle = steel;
+    for (var l = 0; l < g.nl; l++) { var a = this.ang + l * Math.PI * 2 / g.nl; c.beginPath(); c.moveTo(g.cx + g.R * Math.cos(a), g.cy + g.R * Math.sin(a)); c.lineTo(g.cx + (g.R - g.rb * g.lh) * Math.cos(a), g.cy + (g.R - g.rb * g.lh) * Math.sin(a)); c.stroke(); }
+    this.P.forEach(function (p) {
+      if (p.k === 'ball') { var gr = c.createRadialGradient(p.x - p.r * .35, p.y - p.r * .35, p.r * .1, p.x, p.y, p.r); gr.addColorStop(0, bp ? '#ffffff' : '#f1f3f6'); gr.addColorStop(.55, bp ? '#9fb6cc' : '#8e98a6'); gr.addColorStop(1, bp ? '#4c6d8c' : '#3d4550'); c.fillStyle = gr; c.beginPath(); c.arc(p.x, p.y, p.r, 0, Math.PI * 2); c.fill(); }
+      else drawOre(p);
+    });
+    /* flecha de giro */
+    c.strokeStyle = ink; c.fillStyle = ink; c.lineWidth = 2;
+    c.beginPath(); c.arc(g.cx, g.cy, g.R + 18, -Math.PI * 0.42, -Math.PI * 0.12); c.stroke();
+    var ea = -Math.PI * 0.12, ex = g.cx + (g.R + 18) * Math.cos(ea), ey = g.cy + (g.R + 18) * Math.sin(ea);
+    c.beginPath(); c.moveTo(ex + 7, ey - 2); c.lineTo(ex - 4, ey + 6); c.lineTo(ex - 2, ey - 8); c.closePath(); c.fill();
+    /* hombro y pie de la carga: bolas que viajan pegadas a la pared */
+    if (this.prm.phi < 0.98) {
+      var wv = this.prm.phi * Math.sqrt(1700 / (g.R - g.rb)), th = [];
+      this.P.forEach(function (p) {
+        if (p.k !== 'ball') return; var dx = p.x - g.cx, dy = p.y - g.cy, d = Math.sqrt(dx * dx + dy * dy); if (d < g.R - g.rb * 2.3) return;
+        var vt = (p.vx * -dy + p.vy * dx) / d; if (vt < 0.25 * wv * d) return;
+        var a = Math.atan2(dy, dx); if (a < 0) a += Math.PI * 2; if (a > Math.PI * 0.25 && a < Math.PI * 1.75) th.push(a);
+      });
+      if (th.length > 4) { th.sort(function (a, b) { return a - b; }); this.mark(th[Math.floor(th.length * 0.03)], 'pie', ink); this.mark(th[th.length - 1 - Math.floor(th.length * 0.03)], 'hombro', ink); }
+    }
+  } else if (this.kind === 'mand') {
+    var j = this.jaw(this.t);
+    c.fillStyle = body; c.strokeStyle = ink; c.lineWidth = 2;
+    c.beginPath(); c.moveTo(g.xl0 - 34, g.top - 6); c.lineTo(g.xl0, g.top); c.lineTo(g.xl1, g.bot); c.lineTo(g.xl1 - 34, g.bot + 6); c.closePath(); c.fill(); c.stroke();
+    c.beginPath(); c.moveTo(j.x0 + 36, j.y0 - 10); c.lineTo(j.x0, j.y0); c.lineTo(j.x1, j.y1); c.lineTo(j.x1 + 30, j.y1 + 8); c.closePath(); c.fill(); c.stroke();
+    c.lineWidth = 1.2; for (var z = 0; z < 9; z++) { var tz = (z + .5) / 9; var lx = g.xl0 + (g.xl1 - g.xl0) * tz, ly = g.top + (g.bot - g.top) * tz; c.beginPath(); c.moveTo(lx, ly); c.lineTo(lx - 6, ly + 5); c.stroke(); var rx = j.x0 + (j.x1 - j.x0) * tz, ry = j.y0 + (j.y1 - j.y0) * tz; c.beginPath(); c.moveTo(rx, ry); c.lineTo(rx + 6, ry + 5); c.stroke(); }
+    c.beginPath(); c.arc(j.x0 + 52, j.y0 - 22, 16, 0, Math.PI * 2); c.stroke(); c.beginPath(); c.arc(j.x0 + 52 + 6 * Math.cos(this.t * 5.5), j.y0 - 22 + 6 * Math.sin(this.t * 5.5), 3.5, 0, Math.PI * 2); c.fillStyle = ink; c.fill();
+    c.lineWidth = 2; c.beginPath(); c.moveTo(g.xl0 - 50, g.top - 70); c.lineTo(g.xl0, g.top); c.moveTo(g.xr0 + 50, g.top - 70); c.lineTo(g.xr0 + 4, g.top); c.stroke();
+    this.P.forEach(drawOre);
+    this.dim(g.xl1, g.bot + 18, j.x1, g.bot + 18, 'abertura de descarga', ink);
+  } else if (this.kind === 'rod') {
+    var xl = g.cx - g.R - g.gap / 2, xr = g.cx + g.R + g.gap / 2;
+    [[xl, 1], [xr, -1]].forEach(function (rl) {
+      c.fillStyle = body; c.strokeStyle = ink; c.lineWidth = 2.5; c.beginPath(); c.arc(rl[0], g.cy, g.R, 0, Math.PI * 2); c.fill(); c.stroke();
+      c.lineWidth = 1.2; for (var s = 0; s < 18; s++) { var a = rl[1] * self.ang + s * Math.PI / 9; c.beginPath(); c.moveTo(rl[0] + g.R * 0.86 * Math.cos(a), g.cy + g.R * 0.86 * Math.sin(a)); c.lineTo(rl[0] + g.R * Math.cos(a), g.cy + g.R * Math.sin(a)); c.stroke(); }
+      c.fillStyle = ink; c.beginPath(); c.arc(rl[0], g.cy, 5, 0, Math.PI * 2); c.fill();
+    });
+    this.P.forEach(drawOre);
+  } else if (this.kind === 'mart') {
+    c.fillStyle = body; c.beginPath(); c.arc(g.cx, g.cy, g.Rc, 0, Math.PI * 2); c.fill();
+    c.strokeStyle = ink; c.lineWidth = 3; c.beginPath(); c.arc(g.cx, g.cy, g.Rc + 1.5, Math.PI * 0.82, Math.PI * 2.18); c.stroke();
+    c.setLineDash([4, 5]); c.lineWidth = 3; c.strokeStyle = steel; c.beginPath(); c.arc(g.cx, g.cy, g.Rc + 1.5, Math.PI * 0.18, Math.PI * 0.82); c.stroke(); c.setLineDash([]);
+    c.strokeStyle = ink; c.lineWidth = 2; c.beginPath(); c.moveTo(g.cx - g.Rc * 1.15, g.cy - g.Rc * 1.05); c.lineTo(g.cx + g.Rc * Math.cos(-Math.PI * 0.66), g.cy + g.Rc * Math.sin(-Math.PI * 0.66)); c.stroke();
+    for (var h = 0; h < 4; h++) { var ha = this.ang + h * Math.PI / 2; c.lineWidth = 7; c.strokeStyle = ink; c.beginPath(); c.moveTo(g.cx + g.rr * Math.cos(ha), g.cy + g.rr * Math.sin(ha)); c.lineTo(g.cx + (g.rr + g.L) * Math.cos(ha), g.cy + (g.rr + g.L) * Math.sin(ha)); c.stroke(); }
+    c.fillStyle = ink; c.beginPath(); c.arc(g.cx, g.cy, g.rr, 0, Math.PI * 2); c.fill();
+    c.globalAlpha = .18; c.strokeStyle = ink; c.lineWidth = 1; c.beginPath(); c.arc(g.cx, g.cy, g.rr + g.L, 0, Math.PI * 2); c.stroke(); c.globalAlpha = 1;
+    this.P.forEach(drawOre);
+  } else if (this.kind === 'disc') {
+    c.fillStyle = body; c.strokeStyle = ink; c.lineWidth = 3; c.beginPath(); c.arc(g.cx, g.cy, g.R, 0, Math.PI * 2); c.fill(); c.stroke();
+    c.lineWidth = 1.4; c.strokeStyle = steel;
+    for (var s2 = 0; s2 < 24; s2++) { var a2 = this.ang + s2 * Math.PI / 12; c.beginPath(); for (var u = 0; u <= 10; u++) { var rr2 = g.R * (0.22 + 0.78 * u / 10), aa = a2 + u * 0.06; if (u) c.lineTo(g.cx + rr2 * Math.cos(aa), g.cy + rr2 * Math.sin(aa)); else c.moveTo(g.cx + rr2 * Math.cos(aa), g.cy + rr2 * Math.sin(aa)); } c.stroke(); }
+    c.fillStyle = paper; c.strokeStyle = ink; c.lineWidth = 2; c.beginPath(); c.arc(g.cx, g.cy, g.R * 0.16, 0, Math.PI * 2); c.fill(); c.stroke();
+    this.P.forEach(function (p) { drawOre({ x: p.x, y: p.y, r: p.r * 0.9 }); });
+  }
+  this.fx.forEach(function (f) { var k = f.t / 0.45; c.globalAlpha = 1 - k; c.strokeStyle = bp ? '#FFBF00' : '#C8452B'; c.lineWidth = 1.6; for (var s = 0; s < 6; s++) { var a = s * Math.PI / 3 + f.x; c.beginPath(); c.moveTo(f.x + Math.cos(a) * f.s * k * .5, f.y + Math.sin(a) * f.s * k * .5); c.lineTo(f.x + Math.cos(a) * f.s * (.4 + k), f.y + Math.sin(a) * f.s * (.4 + k)); c.stroke(); } c.globalAlpha = 1; });
+};
+MillAnim.prototype.mark = function (a, label, ink) {
+  var g = this.geo, c = this.ctx, x1 = g.cx + (g.R - 2) * Math.cos(a), y1 = g.cy + (g.R - 2) * Math.sin(a), x2 = g.cx + (g.R + 28) * Math.cos(a), y2 = g.cy + (g.R + 28) * Math.sin(a);
+  c.strokeStyle = '#C8452B'; c.fillStyle = '#C8452B'; c.lineWidth = 1.5; c.setLineDash([3, 3]); c.beginPath(); c.moveTo(x1, y1); c.lineTo(x2, y2); c.stroke(); c.setLineDash([]);
+  c.font = '700 11px "JetBrains Mono Variable", monospace'; c.textAlign = Math.cos(a) > 0 ? 'left' : 'right'; c.fillText(label, x2 + (Math.cos(a) > 0 ? 4 : -4), y2 + 4);
+};
+MillAnim.prototype.dim = function (x1, y, x2, y2, label, ink) {
+  var c = this.ctx; c.strokeStyle = '#C8452B'; c.fillStyle = '#C8452B'; c.lineWidth = 1.2;
+  c.beginPath(); c.moveTo(x1, y); c.lineTo(x2, y); c.moveTo(x1, y - 5); c.lineTo(x1, y + 5); c.moveTo(x2, y - 5); c.lineTo(x2, y + 5); c.stroke();
+  c.font = '600 11px "JetBrains Mono Variable", monospace'; c.textAlign = 'center'; c.fillText(label, (x1 + x2) / 2, y + 16);
+};
+
+/* ====================================================================
+   Tamizadora animada: cada partícula se muestrea de la Rosin-Rammler
+   calculada (x = x′·[−ln(1 − u)]^(1/n)) y queda retenida en el primer
+   tamiz cuya abertura es menor que ella. Lo que se acumula en cada
+   bandeja converge al % retenido de la tabla.
+   ==================================================================== */
+function SieveAnim(canvas) { this.cv = canvas; this.ctx = canvas.getContext('2d'); this.parts = []; this.t = 0; }
+SieveAnim.prototype.resize = MillAnim.prototype.resize;
+SieveAnim.prototype.configure = function (res) {
+  this.res = res; this.rows = res.rows.slice(); this.resize(); this.parts = []; this.t = 0; this.done = 0; this.total = 360;
+  this.counts = this.rows.map(function () { return 0; }); this.counts.push(0);
+};
+SieveAnim.prototype.sample = function () {
+  var u = Math.random(); return this.res.x63 * Math.pow(-Math.log(1 - u), 1 / this.res.n);
+};
+SieveAnim.prototype.step = function (dt) {
+  if (!this.W || !this.rows) return;
+  this.t += dt;
+  var n = this.rows.length + 1, top = 34, hTray = (this.H - top - 16) / n;
+  if (this.done < this.total && Math.random() < 0.9) for (var k = 0; k < 3 && this.done < this.total; k++) { var x = this.sample(), lvl = this.rows.length; for (var i = 0; i < this.rows.length; i++) if (x >= this.rows[i].a) { lvl = i; break; } this.parts.push({ x: this.W * (0.22 + Math.random() * 0.4), y: top - 20 - Math.random() * 30, vy: 0, size: x, lvl: lvl, settled: false }); this.done++; }
+  var self = this;
+  this.parts.forEach(function (p) {
+    if (p.settled) return;
+    var floorY = top + (p.lvl + 1) * hTray - 6 - Math.min(hTray * 0.55, self.counts[p.lvl] * 0.18);
+    p.vy += 900 * dt; p.y += p.vy * dt;
+    if (p.y >= floorY) { p.y = floorY; p.settled = true; self.counts[p.lvl]++; }
+  });
+};
+SieveAnim.prototype.draw = function () {
+  var c = this.ctx, W = this.W, H = this.H; if (!W || !this.rows) return;
+  var bp = document.documentElement.getAttribute('data-canvas') === 'blueprint', ink = bp ? '#e6eef7' : '#1c1b1a';
+  c.clearRect(0, 0, W, H); c.fillStyle = bp ? '#12304d' : '#fff'; c.fillRect(0, 0, W, H);
+  var n = this.rows.length + 1, top = 34, hTray = (H - top - 16) / n, shake = this.done < this.total || this.parts.some(function (p) { return !p.settled; }) ? Math.sin(this.t * 38) * 3 : 0;
+  var x0 = W * 0.16 + shake, x1 = W * 0.70 + shake, col = this.res.mat.color, tot = Math.max(1, this.counts.reduce(function (a, b) { return a + b; }, 0));
+  var lmin = Math.log(Math.max(5, this.res.x63 * 0.02)), lmax = Math.log(this.res.rows[0].hi), rpx = function (s) { var f = (Math.log(s) - lmin) / (lmax - lmin); return 1 + Math.max(0, Math.min(1, f)) * 5; };
+  c.font = '600 11px "JetBrains Mono Variable", monospace';
+  for (var i = 0; i < n; i++) {
+    var yb = top + (i + 1) * hTray - 2;
+    c.strokeStyle = ink; c.lineWidth = 2; c.beginPath(); c.moveTo(x0, yb - hTray + 6); c.lineTo(x0, yb); c.lineTo(x1, yb); c.lineTo(x1, yb - hTray + 6); c.stroke();
+    if (i < n - 1) { c.setLineDash([2, 3]); c.lineWidth = 1; c.beginPath(); c.moveTo(x0, yb - 1); c.lineTo(x1, yb - 1); c.stroke(); c.setLineDash([]); }
+    c.fillStyle = ink; c.textAlign = 'right'; c.fillText(i < n - 1 ? this.rows[i].m : 'Fondo', x0 - 10, yb - hTray / 2 + 4);
+    c.textAlign = 'left'; c.fillStyle = bp ? '#9fb6cc' : '#6b6764';
+    var pct = 100 * this.counts[i] / tot, tgt = i < n - 1 ? this.rows[i].ret : this.res.fondo;
+    c.fillText(fmtN(pct, 1) + ' %', x1 + 12, yb - hTray / 2); c.fillText('tabla ' + fmtN(tgt, 1) + ' %', x1 + 12, yb - hTray / 2 + 14);
+  }
+  this.parts.forEach(function (p) { c.fillStyle = col; c.beginPath(); c.arc(p.x + shake, p.y, rpx(p.size), 0, Math.PI * 2); c.fill(); });
+  c.fillStyle = ink; c.textAlign = 'left'; c.fillText('Muestra: ' + this.done + ' partículas', x0, 18);
+};
+
+/* bucle común: solo anima lo visible */
+var ANIMS = [];
+function animLoop(ts) {
+  requestAnimationFrame(animLoop);
+  var last = animLoop.last || ts, dt = Math.min(0.05, (ts - last) / 1000); animLoop.last = ts;
+  if (document.hidden) return;
+  ANIMS.forEach(function (a) {
+    if (!a.obj || !a.isOn()) return;
+    if (a.obj.running !== false) a.obj.step(dt);
+    a.obj.draw(); if (a.after) a.after();
+  });
+}
+/* ====================================================================
+   Interfaz: controles, indicadores, pestañas, gráficas y animaciones
+   ==================================================================== */
+var $ = function (s, r) { return (r || document).querySelector(s); };
+var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+var store = { get: function (k, d) { try { var v = localStorage.getItem('pou-molienda:' + k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } }, set: function (k, v) { try { localStorage.setItem('pou-molienda:' + k, JSON.stringify(v)); } catch (e) { } } };
+var BASE = { mat: 'caliza', mill: 'bolas', lF: 4.30, lP: 2.18, lC: 1.30, modo: 'seca', hum: 2, sol: 65, Tamb: 25, grid: true, showEq: true, rowland: true, D: 3.0, phi: 75, J: 35, series: 'astm', cWi: 12.0, cCp: 1.40, cTmax: 60 };
+var state = Object.assign({}, BASE, store.get('state', {}));
+var R = null, tab = store.get('tab', 'eq');
+
+var ICONS = {
+  mand: '<path d="M10 4 L18 26 M34 4 L25 26" stroke="currentColor" stroke-width="2.5" fill="none"/><path d="M19 9 l4 3 M18 15 l5 2" stroke="currentColor" stroke-width="1.2"/>',
+  rod: '<circle cx="14" cy="16" r="9" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="31" cy="16" r="9" stroke="currentColor" stroke-width="2" fill="none"/><path d="M22.5 2 V8" stroke="currentColor" stroke-width="2"/>',
+  mart: '<circle cx="22" cy="15" r="12" stroke="currentColor" stroke-width="2" fill="none"/><path d="M22 6 V24 M13 15 H31" stroke="currentColor" stroke-width="3"/><path d="M14 23 A12 12 0 0 0 30 23" stroke="currentColor" stroke-width="1.4" stroke-dasharray="2 2" fill="none"/>',
+  bolas: '<circle cx="22" cy="15" r="12" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="17" cy="20" r="2.4" fill="currentColor"/><circle cx="22" cy="21" r="2.4" fill="currentColor"/><circle cx="27" cy="19" r="2.4" fill="currentColor"/><circle cx="19" cy="15.5" r="2.4" fill="currentColor"/><circle cx="29" cy="12" r="2.4" fill="currentColor"/>',
+  disc: '<rect x="14" y="3" width="5" height="24" stroke="currentColor" stroke-width="2" fill="none"/><rect x="25" y="3" width="5" height="24" stroke="currentColor" stroke-width="2" fill="none"/><path d="M4 15 H14 M30 15 H40" stroke="currentColor" stroke-width="2.5"/>'
+};
+var SVGI = {
+  pause: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M8 5v14M16 5v14"/></svg>',
+  play: '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l12-7.5z"/></svg>',
+  reset: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>'
+};
+var CAPS = {
+  bolas: function (r) {
+    var b = r.ball, t = { 'Deslizamiento': 'la carga apenas se levanta y resbala contra la pared: casi no hay molienda.', 'Cascada': 'las bolas ruedan sobre la superficie de la carga: molienda fina por atrición, con poco impacto.', 'Catarata': 'las bolas se despegan en el hombro y caen sobre el pie de la carga: el régimen de impacto que se busca en la operación normal.', 'Catarata intensa': 'las bolas vuelan por encima de la carga y golpean el revestimiento: más desgaste que molienda.', 'Centrifugado': 'la fuerza centrífuga supera al peso y la carga gira pegada a la pared: no hay molienda.' }[b.reg];
+    return '<b>Simulación de elementos discretos.</b> Bolas de acero y mineral dentro del tambor con levantadores, girando a φ = ' + fmtN(b.phi, 0) + ' % de la velocidad crítica. En régimen de <b>' + b.reg.toLowerCase() + '</b> ' + t + ' Los destellos son impactos bola-mineral; el mineral se fractura con impactos repetidos y los finos se descargan. En la planta: N<sub>c</sub> = ' + fmtN(b.Nc, 1) + ' rpm y N = ' + fmtN(b.N, 1) + ' rpm para D = ' + fmtN(b.D, 1) + ' m.';
+  },
+  mand: function () { return '<b>Compresión.</b> La mandíbula móvil oscila impulsada por la excéntrica y aprieta el material contra la fija. Una partícula se fractura cuando queda atrapada entre las dos; los fragmentos descienden hasta pasar por la abertura de descarga, que fija el tamaño máximo del producto. No produce finos.'; },
+  rod: function () { return '<b>Compresión entre rodillos.</b> Los rodillos giran en sentidos opuestos y arrastran el material por fricción hacia la separación. Solo pasan las partículas que caben; las demás se fracturan en la línea de contacto. Por eso el producto es uniforme (n alto) y con pocos finos.'; },
+  mart: function () { return '<b>Impacto.</b> Los martillos giran a gran velocidad periférica y golpean el material, que rebota contra la carcasa y vuelve a ser golpeado. Solo sale lo que pasa por la criba de la parte inferior: la abertura de la criba controla el tamaño del producto. Distribución amplia (n bajo).'; },
+  disc: function (r) { return '<b>Atrición y cizalla.</b> El material entra por el ojo del disco fijo y avanza en espiral entre las ranuras del disco rotatorio, reduciéndose por fricción hasta salir por la periferia. Casi toda la energía se vuelve calor: el color del disco sigue la temperatura de salida (' + fmtN(r.Tout, 0) + ' °C).'; }
+};
+
+/* ---------- controles ---------- */
+function buildControls() {
+  $('#matBtns').innerHTML = MATERIALS.map(function (m) { return '<button type="button" class="opt" data-mat="' + m.id + '"><span class="dotc" style="background:' + m.color + '"></span><span>' + esc(m.name) + '</span><span class="x">' + (m.custom ? 'proyecto' : 'Wi ' + fmtN(m.Wi, 1)) + '</span></button>'; }).join('');
+  $('#millBtns').innerHTML = MILLS.map(function (m) { return '<button type="button" class="mill" data-mill="' + m.id + '"><svg viewBox="0 0 44 30" aria-hidden="true">' + ICONS[m.id] + '</svg>' + esc(m.short) + '</button>'; }).join('');
+  $$('#matBtns .opt').forEach(function (b) { b.addEventListener('click', function () { var m = byId(MATERIALS, b.dataset.mat); state.mat = m.id; state.hum = m.hum; if (m.id === 'cascara' && state.modo === 'hum') state.modo = 'seca'; update(); }); });
+  $$('#millBtns .mill').forEach(function (b) { b.addEventListener('click', function () { state.mill = b.dataset.mill; update(); }); });
+  $$('#modeSeg button').forEach(function (b) { b.addEventListener('click', function () { state.modo = b.dataset.m; update(); }); });
+  ['hum', 'sol', 'lF', 'lP', 'lC', 'Tamb', 'phi', 'D', 'J', 'cWi', 'cCp', 'cTmax'].forEach(function (k) { var el = document.getElementById(k); el.addEventListener('input', function () { state[k] = parseFloat(el.value); update(); }); });
+  ['grid', 'showEq', 'rowland'].forEach(function (k) { var el = document.getElementById(k); el.addEventListener('change', function () { state[k] = el.checked; update(); }); });
+  $('#series').addEventListener('change', function () { state.series = this.value; update(); });
+  $('#resetAll').addEventListener('click', function () { state = Object.assign({}, BASE); update(); mill.reset(); });
+  $('#status').addEventListener('click', function () { setTab('eq'); setTimeout(function () { $('#diagCard').scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 50); });
+  $$('.tabs [role=tab]').forEach(function (b) { b.addEventListener('click', function () { setTab(b.dataset.tab); }); });
+  $$('.tabs .canv button').forEach(function (b) { b.addEventListener('click', function () { document.documentElement.setAttribute('data-canvas', b.dataset.canvas); $$('.tabs .canv button').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); }); store.set('canvas', b.dataset.canvas); renderCharts(); }); });
+  $('#mobCtl').addEventListener('click', function () { $('#ctl').classList.toggle('open'); this.textContent = $('#ctl').classList.contains('open') ? 'Cerrar' : 'Controles'; });
+  document.addEventListener('keydown', function (e) { if (/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return; var i = '12345'.indexOf(e.key); if (i >= 0) setTab(['eq', 'en', 'th', 'gr', 'ec'][i]); if (e.key === ' ' && tab === 'eq') { e.preventDefault(); togglePlay(); } });
+  $('#btnPlay').innerHTML = SVGI.pause; $('#btnReset').innerHTML = SVGI.reset;
+  $('#btnPlay').addEventListener('click', togglePlay);
+  $('#btnReset').addEventListener('click', function () { mill.reset(); });
+  $$('.play [data-sp]').forEach(function (b) { b.addEventListener('click', function () { mill.speed = +b.dataset.sp; $$('.play [data-sp]').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); }); }); });
+  $('#sieveGo').addEventListener('click', function () { sieve.configure(R); });
+  var cv = store.get('canvas', 'paper'); document.documentElement.setAttribute('data-canvas', cv); $$('.tabs .canv button').forEach(function (x) { x.setAttribute('aria-pressed', x.dataset.canvas === cv ? 'true' : 'false'); });
+}
+function togglePlay() { mill.running = !mill.running; $('#btnPlay').innerHTML = mill.running ? SVGI.pause : SVGI.play; $('#btnPlay').setAttribute('aria-label', mill.running ? 'Pausar' : 'Reanudar'); }
+function setTab(t) {
+  tab = t; store.set('tab', t);
+  $$('.tabs [role=tab]').forEach(function (b) { b.setAttribute('aria-selected', b.dataset.tab === t ? 'true' : 'false'); });
+  $$('.panel').forEach(function (p) { p.classList.toggle('on', p.dataset.panel === t); });
+  if (t === 'eq') { mill.resize(); }
+  if (t === 'gr') { sieve.resize(); if (!sieve.rows || sieve.key !== sieveKey()) { sieve.configure(R); sieve.key = sieveKey(); } }
+  if (t === 'ec') renderEqs();
+}
+function sieveKey() { return [R.mill.id, fmtN(R.P80, 0), state.series, R.mat.id].join('|'); }
+function setV(id, v) { var el = document.getElementById(id); if (el && el.textContent !== v) { el.textContent = v; if (el.classList.contains('v')) { el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); } } }
+
+/* ---------- actualización ---------- */
+function update() {
+  store.set('state', state);
+  R = compute(state);
+  var s = state, r = R, m = r.mill, mt = r.mat;
+  $$('#matBtns .opt').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.mat === s.mat ? 'true' : 'false'); });
+  $$('#millBtns .mill').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.mill === s.mill ? 'true' : 'false'); });
+  $$('#modeSeg button').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.m === s.modo ? 'true' : 'false'); });
+  ['hum', 'sol', 'lF', 'lP', 'lC', 'Tamb', 'phi', 'D', 'J', 'cWi', 'cCp', 'cTmax'].forEach(function (k) { var el = document.getElementById(k); if (parseFloat(el.value) !== s[k]) el.value = s[k]; });
+  ['grid', 'showEq', 'rowland'].forEach(function (k) { document.getElementById(k).checked = !!s[k]; });
+  $('#series').value = s.series;
+  $('#customBox').style.display = mt.custom ? 'block' : 'none';
+  setV('vcWi', fmtN(s.cWi, 1)); setV('vcCp', fmtN(s.cCp, 2) + ' kJ/(kg·K)'); setV('vcTmax', fmtN(s.cTmax, 0) + ' °C');
+  $('#matNote').textContent = mt.note; $('#millNote').textContent = m.note;
+  $('#humRow').style.display = r.wet ? 'none' : 'block'; $('#solRow').style.display = r.wet ? 'block' : 'none';
+  setV('vhum', fmtN(s.hum, 1) + ' %'); setV('vsol', fmtN(s.sol, 0) + ' % sólidos');
+  var hh = $('#humHint'); hh.textContent = 'Máx. admisible en seco para este equipo: ≤ ' + m.humMax + ' %'; hh.className = 'hint' + (s.hum > m.humMax ? ' bad' : '');
+  setV('vlF', fmtSize(r.F80)); setV('vlP', fmtSize(r.P80t)); setV('vlC', fmtN(r.cap, r.cap < 10 ? 1 : 0) + ' t/h');
+  var fh = $('#fHint'); fh.textContent = 'Boca de entrada del equipo: ≤ ' + m.fmax + ' mm'; fh.className = 'hint' + (r.F80 > m.fmax * 1000 ? ' bad' : '');
+  var ph = $('#pHint'); ph.textContent = 'Rango alcanzable del equipo: ' + fmtSize(r.pminUm) + ' – ' + fmtSize(r.pmaxUm); ph.className = 'hint' + (r.clamped ? ' bad' : '');
+  var ch = $('#cHint'); ch.textContent = 'Rango típico del equipo: ' + m.capMin + ' – ' + m.capMax + ' t/h'; ch.className = 'hint' + (r.cap > m.capMax || r.cap < m.capMin ? ' bad' : '');
+  setV('vTamb', fmtN(s.Tamb, 0) + ' °C');
+  $('#ballBox').style.display = m.id === 'bolas' ? 'block' : 'none';
+  if (r.ball) { setV('vphi', fmtN(s.phi, 0) + ' % · ' + r.ball.reg.toLowerCase()); setV('vD', fmtN(s.D, 1) + ' m'); setV('vJ', fmtN(s.J, 0) + ' %'); $('#phiHint').textContent = 'Nc = ' + fmtN(r.ball.Nc, 1) + ' rpm · N = ' + fmtN(r.ball.N, 1) + ' rpm · lo usual es 65 a 80 %'; }
+  /* cabecera */
+  $('#ctx').innerHTML = '<b>' + esc(mt.name) + '</b> · ' + esc(m.name) + ' · ' + (r.wet ? 'húmeda' : 'seca');
+  var st = $('#status'); st.className = 'status' + (r.status === 'inviable' ? ' inv' : r.status === 'advertencias' ? ' adv' : '');
+  $('#statusTxt').textContent = r.status === 'inviable' ? 'Selección inviable' : r.status === 'advertencias' ? 'Opera con ' + r.warns.length + (r.warns.length === 1 ? ' advertencia' : ' advertencias') : 'Selección viable';
+  setV('kE', fmtN(r.Eeq, 2)); $('#kEu').textContent = 'kWh/t · ' + (r.EF > 1.0001 ? 'Bond ' + fmtN(r.Ebond, 2) + ' × ' + fmtN(r.EF, 2) : 'Bond') + (m.k !== 1 ? ' × k ' + fmtN(m.k, 1) : '');
+  setV('kP', fmtN(r.Peje, r.Peje < 100 ? 1 : 0)); $('#kPu').textContent = 'kW · motor ' + fmtN(r.Pmot, r.Pmot < 100 ? 1 : 0) + ' kW (η 0,95)';
+  setV('kM', r.motor ? fmtN(r.motor, r.motor < 10 ? 1 : 0) : '> 20 MW'); $('#kMu').textContent = 'kW · tamaño IEC';
+  setV('kP80', fmtSize(r.P80)); $('#kP80u').textContent = r.clamped ? 'limitado (objetivo ' + fmtSize(r.P80t) + ')' : 'coincide con el objetivo';
+  $('#kP80').style.color = r.clamped ? 'var(--redline)' : '';
+  setV('kRR', fmtN(r.rr, 1) + ' : 1');
+  setV('kT', fmtN(r.Tout, 0) + ' °C'); $('#kTu').textContent = 'ΔT ' + fmtN(r.dT, 1) + ' °C · límite ' + (mt.tmax ? mt.tmax + ' °C' : 'sin límite');
+  $('#kTc').classList.toggle('bad', !!(mt.tmax && r.Tout > mt.tmax));
+  /* panel equipo */
+  $('#eqTitle').textContent = m.name; $('#eqMech').textContent = 'Mecanismo · ' + m.mech;
+  $('#eqLead').textContent = m.note;
+  var hud = '<span class="chip">' + esc(mt.name) + '</span><span class="chip">F₈₀ ' + fmtSize(r.F80) + ' → P₈₀ ' + fmtSize(r.P80) + '</span>';
+  if (r.ball) hud += '<span class="chip ' + (r.ball.phi >= 100 ? 'red' : 'acc') + '">φ ' + fmtN(r.ball.phi, 0) + ' % · ' + r.ball.reg + '</span>';
+  if (mt.tmax && r.Tout > mt.tmax) hud += '<span class="chip red">' + fmtN(r.Tout, 0) + ' °C · sobre el límite</span>';
+  $('#hud').innerHTML = hud;
+  $('#animCap').innerHTML = CAPS[m.id](r);
+  $('#specMill').innerHTML = [['Mecanismo', m.mech], ['Alimentación máx.', '≤ ' + m.fmax + ' mm'], ['Producto alcanzable', fmtSize(r.pminUm) + ' – ' + fmtSize(r.pmaxUm)], ['Relación de reducción máx.', m.rrMax + ' : 1'], ['Capacidad típica', m.capMin + ' – ' + m.capMax + ' t/h'], ['Humedad máx. en seco', '≤ ' + m.humMax + ' %'], ['Admite molienda húmeda', m.wet ? 'Sí' : 'No'], ['Uniformidad n (Rosin-Rammler)', fmtN(m.n, 1)], ['Factor de equipo k', fmtN(m.k, 1)]].map(function (x) { return '<div>' + x[0] + '</div><div class="v">' + esc(x[1]) + '</div>'; }).join('');
+  $('#specMat').innerHTML = [['Índice de trabajo de Bond Wi', fmtN(mt.Wi, 1) + ' kWh/t'], ['Fuente del Wi', mt.WiSrc], ['Dureza (Mohs)', mt.mohs], ['Calor específico cp', fmtN(mt.cp, 2) + ' kJ/(kg·K)'], ['Humedad típica', fmtN(mt.hum, 1) + ' %'], ['Temperatura límite', mt.tmax ? mt.tmax + ' °C' : '—']].map(function (x) { return '<div>' + x[0] + '</div><div class="v" style="' + (x[0] === 'Fuente del Wi' ? 'font-family:var(--font-body);font-weight:600;font-size:11.5px;max-width:170px' : '') + '">' + esc(x[1]) + '</div>'; }).join('');
+  $('#matNote2').textContent = mt.note;
+  $('#diagCount').textContent = r.warns.length ? r.warns.length + (r.warns.length === 1 ? ' aviso' : ' avisos') : '';
+  $('#warnings').innerHTML = r.warns.length ? r.warns.map(function (w) { return '<div class="warn' + (w.c ? ' c' : '') + '"><i>' + (w.c ? '!' : 'i') + '</i><div>' + esc(w.t) + '</div></div>'; }).join('') : '<div class="warn ok"><i>✓</i><div>Selección viable: el equipo acepta la alimentación, alcanza el producto y opera dentro de sus límites de humedad, temperatura y capacidad.</div></div>';
+  mill.configure(r, { J: s.J });
+  renderCharts(); renderFlow(); renderThermal(); renderSieve();
+  if (tab === 'ec') renderEqs();
+  if (tab === 'gr' && sieve.key !== sieveKey()) { sieve.configure(r); sieve.key = sieveKey(); }
 }
 
-function xAxisLabels() {
-  return '<text x="70" y="604" text-anchor="middle" style="font-size:13px;fill:var(--color-neutral-800);">10 µm</text><text x="194" y="604" text-anchor="middle" style="font-size:13px;fill:var(--color-neutral-800);">100 µm</text><text x="318" y="604" text-anchor="middle" style="font-size:13px;fill:var(--color-neutral-800);">1 mm</text><text x="442" y="604" text-anchor="middle" style="font-size:13px;fill:var(--color-neutral-800);">10 mm</text><text x="566" y="604" text-anchor="middle" style="font-size:13px;fill:var(--color-neutral-800);">100 mm</text><text x="690" y="604" text-anchor="middle" style="font-size:13px;fill:var(--color-neutral-800);">1 m</text>';
+/* ---------- gráficas ---------- */
+var xU = function (um) { return 70 + (Math.log10(um) - 1) * 124; }, uX = function (x) { return Math.pow(10, (x - 70) / 124 + 1); };
+var yE = function (e) { return 584 - (Math.log10(e) + 2) * 140; };
+function axisX() { return [['10 µm', 70], ['100 µm', 194], ['1 mm', 318], ['10 mm', 442], ['100 mm', 566], ['1 m', 690]].map(function (a) { return '<text x="' + a[1] + '" y="604" text-anchor="middle" style="font-size:13px">' + a[0] + '</text>'; }).join(''); }
+function gridV(h) { return state.grid ? [194, 318, 442, 566].map(function (x) { return '<line x1="' + x + '" y1="24" x2="' + x + '" y2="584" style="stroke:var(--grid);stroke-width:1.5"/>'; }).join('') + h.map(function (y) { return '<line x1="70" y1="' + y + '" x2="690" y2="' + y + '" style="stroke:var(--grid);stroke-width:1.5"/>'; }).join('') : ''; }
+function renderCharts() {
+  var r = R, Wi = r.mat.Wi, F = r.F80, P = r.P80, E0 = r.Ebond;
+  var mk = function (f) { var d = '', on = false, lo = 1, hi = Math.log10(F * 0.995); for (var i = 0; i <= 160; i++) { var um = Math.pow(10, lo + (hi - lo) * i / 160), e = f(um); if (!(e > 0.0005)) { on = false; continue; } d += (on ? ' L' : ' M') + xU(um).toFixed(1) + ' ' + yE(e).toFixed(1); on = true; } return d; };
+  var bond = mk(function (p) { return 10 * Wi * (1 / Math.sqrt(p) - 1 / Math.sqrt(F)); }), kick = E0 > 0 ? mk(function (p) { return r.CK * Math.log(F / p); }) : '', ritt = E0 > 0 ? mk(function (p) { return r.CR * (1 / p - 1 / F); }) : '';
+  var opX = xU(P), opY = E0 > 0 ? Math.min(584, Math.max(24, yE(E0))) : 584;
+  var ya = [['0,01', 588], ['0,1', 448], ['1', 308], ['10', 168], ['100', 28]].map(function (a) { return '<text x="64" y="' + a[1] + '" text-anchor="end" style="font-size:13px">' + a[0] + '</text>'; }).join('');
+  $('#svgEnergy').innerHTML = '<defs><clipPath id="ecl"><rect x="70" y="24" width="620" height="560"/></clipPath></defs><rect x="70" y="24" width="620" height="560" class="chart-bg"/>' + gridV([164, 304, 444]) +
+    '<g clip-path="url(#ecl)">' + (kick ? '<path d="' + kick + '" style="fill:none;stroke:var(--ink);stroke-width:1.8;stroke-dasharray:7 5"/>' : '') + (ritt ? '<path d="' + ritt + '" style="fill:none;stroke:var(--ink);stroke-width:1.8;stroke-dasharray:2 4;opacity:.8"/>' : '') +
+    '<path d="' + bond + '" style="fill:none;stroke:var(--accent);stroke-width:3"/>' +
+    '<line x1="' + opX.toFixed(1) + '" y1="' + opY.toFixed(1) + '" x2="' + opX.toFixed(1) + '" y2="584" style="stroke:var(--accent);stroke-width:1;stroke-dasharray:3 3"/><circle cx="' + opX.toFixed(1) + '" cy="' + opY.toFixed(1) + '" r="7" style="fill:var(--accent);stroke:#fff;stroke-width:2.5"/>' +
+    '<line id="enX" x1="0" y1="24" x2="0" y2="584" style="stroke:var(--redline);stroke-width:1;opacity:0"/></g>' +
+    '<rect x="70" y="24" width="620" height="560" style="fill:none;stroke:var(--ink);stroke-width:2"/>' + ya + axisX() +
+    '<text x="70" y="630" style="font-size:13.5px">P₈₀ del producto (escala logarítmica)</text><text x="16" y="584" transform="rotate(-90 16 584)" style="font-size:13.5px">E · energía específica de conminución (kWh/t)</text>' +
+    '<text x="' + (opX + 12).toFixed(1) + '" y="' + (opY - 12).toFixed(1) + '" style="font-size:12.5px;font-weight:700;fill:var(--accent)">' + fmtN(E0, 2) + ' kWh/t</text>' +
+    '<rect id="enHit" x="70" y="24" width="620" height="560" style="fill:transparent;cursor:crosshair"/>';
+  /* PSD */
+  var n = r.n, x63 = r.x63, psd = ''; for (var i = 0; i <= 140; i++) { var um = Math.pow(10, 1 + 5 * i / 140); psd += (i ? ' L' : 'M') + xU(um).toFixed(1) + ' ' + (584 - r.Fpass(um) * 560).toFixed(1); }
+  var bars = r.rows.map(function (row) { var x1 = xU(row.a), x2 = xU(row.hi), h = Math.max(0, row.ret * 5.6); return '<rect x="' + x1.toFixed(1) + '" y="' + (584 - h).toFixed(1) + '" width="' + Math.max(2, x2 - x1).toFixed(1) + '" height="' + h.toFixed(1) + '" style="fill:var(--accent-200);stroke:var(--accent-700);stroke-width:1"><title>' + row.m + ': ' + fmtN(row.ret, 1) + ' %</title></rect>'; }).join('');
+  var d80 = Math.min(690, Math.max(70, xU(P))), an = d80 > 550 ? 'end' : 'start', lx = d80 > 550 ? d80 - 8 : d80 + 8;
+  var yp = [['0', 588], ['20', 476], ['40', 364], ['60', 252], ['80', 140], ['100', 28]].map(function (a) { return '<text x="64" y="' + a[1] + '" text-anchor="end" style="font-size:13px">' + a[0] + '</text>'; }).join('');
+  $('#svgPsd').innerHTML = '<rect x="70" y="24" width="620" height="560" class="chart-bg"/>' + gridV([136, 248, 360, 472]) + bars +
+    '<path d="' + psd + '" style="fill:none;stroke:var(--ink);stroke-width:2.6"/><line x1="70" y1="136" x2="690" y2="136" style="stroke:var(--accent);stroke-width:1;stroke-dasharray:2 4;opacity:.7"/>' +
+    '<line x1="' + d80.toFixed(1) + '" y1="24" x2="' + d80.toFixed(1) + '" y2="584" style="stroke:var(--accent);stroke-width:1.6;stroke-dasharray:6 5"/>' +
+    '<text x="' + lx.toFixed(1) + '" y="46" text-anchor="' + an + '" style="font-size:13px;font-weight:700;fill:var(--accent)">P₈₀ = ' + esc(fmtSize(P)) + '</text>' +
+    '<line id="psX" x1="0" y1="24" x2="0" y2="584" style="stroke:var(--redline);stroke-width:1;opacity:0"/><circle id="psD" r="5" cx="0" cy="0" style="fill:var(--redline);opacity:0"/>' +
+    '<rect x="70" y="24" width="620" height="560" style="fill:none;stroke:var(--ink);stroke-width:2"/>' + yp + axisX() +
+    '<text x="70" y="630" style="font-size:13.5px">Abertura del tamiz (escala logarítmica)</text><text x="16" y="584" transform="rotate(-90 16 584)" style="font-size:13.5px">% en masa</text>' +
+    '<rect id="psHit" x="70" y="24" width="620" height="560" style="fill:transparent;cursor:crosshair"/>';
+  bindHover();
+}
+function svgX(svg, e) { var b = svg.getBoundingClientRect(); return (e.clientX - b.left) / b.width * 720; }
+function bindHover() {
+  var se = $('#svgEnergy'), hitE = $('#enHit'), r = R;
+  hitE.addEventListener('mousemove', function (e) {
+    var x = Math.max(70, Math.min(690, svgX(se, e))), um = uX(x), F = r.F80; $('#enX').setAttribute('x1', x); $('#enX').setAttribute('x2', x); $('#enX').style.opacity = 1;
+    if (um >= F) { $('#enRead').textContent = 'P₈₀ ' + fmtSize(um) + ' ≥ F₈₀: no hay reducción'; return; }
+    var b = 10 * r.mat.Wi * (1 / Math.sqrt(um) - 1 / Math.sqrt(F)), k = r.CK * Math.log(F / um), rt = r.CR * (1 / um - 1 / F);
+    $('#enRead').textContent = 'P₈₀ ' + fmtSize(um) + ' · Bond ' + fmtN(b, 2) + ' · Kick ' + fmtN(k, 2) + ' · Rittinger ' + fmtN(rt, 2) + ' kWh/t · clic para fijarlo';
+  });
+  hitE.addEventListener('mouseleave', function () { $('#enX').style.opacity = 0; $('#enRead').innerHTML = '&nbsp;'; });
+  hitE.addEventListener('click', function (e) { var um = uX(Math.max(70, Math.min(690, svgX(se, e)))); state.lP = Math.max(1.3, Math.min(5.5, Math.log10(um))); update(); });
+  var sp = $('#svgPsd'), hitP = $('#psHit');
+  hitP.addEventListener('mousemove', function (e) {
+    var x = Math.max(70, Math.min(690, svgX(sp, e))), um = uX(x), f = r.Fpass(um) * 100; $('#psX').setAttribute('x1', x); $('#psX').setAttribute('x2', x); $('#psX').style.opacity = 1; var d = $('#psD'); d.setAttribute('cx', x); d.setAttribute('cy', 584 - f * 5.6); d.style.opacity = 1;
+    $('#psdRead').textContent = 'Abertura ' + fmtSize(um) + ' · pasa ' + fmtN(f, 1) + ' % · queda retenido ' + fmtN(100 - f, 1) + ' %';
+  });
+  hitP.addEventListener('mouseleave', function () { $('#psX').style.opacity = 0; $('#psD').style.opacity = 0; $('#psdRead').innerHTML = '&nbsp;'; });
+}
+function renderFlow() {
+  var r = R, m = r.mill, rows = [];
+  rows.push(['Bond con el Wi de tabla', '', fmtN(r.Ebond, 2) + ' kWh/t']);
+  if (m.id === 'bolas' && state.rowland) {
+    rows.push(['EF1 · molienda en seco', '×', fmtN(r.ef.EF1, 2)]);
+    rows.push(['EF4 · alimentación gruesa (F₀ = ' + fmtSize(r.ef.F0) + ')', '×', fmtN(r.ef.EF4, 3)]);
+    rows.push(['EF5 · producto fino (P₈₀ < 75 µm)', '×', fmtN(r.ef.EF5, 3)]);
+  }
+  rows.push(['Factor del equipo k', '×', fmtN(m.k, 1)]);
+  rows.push(['Energía del equipo', '=', fmtN(r.Eeq, 2) + ' kWh/t', 'tot']);
+  rows.push(['Capacidad', '×', fmtN(r.cap, r.cap < 10 ? 1 : 0) + ' t/h']);
+  rows.push(['Potencia en el eje', '=', fmtN(r.Peje, r.Peje < 100 ? 1 : 0) + ' kW', 'tot']);
+  rows.push(['Eficiencia de transmisión η', '÷', '0,95']);
+  rows.push(['Potencia del motor', '=', fmtN(r.Pmot, r.Pmot < 100 ? 1 : 0) + ' kW', 'tot']);
+  rows.push(['Motor estándar IEC inmediatamente superior', '→', r.motor ? fmtN(r.motor, r.motor < 10 ? 1 : 0) + ' kW' : '—']);
+  $('#flowTable').innerHTML = rows.map(function (x) { return '<tr class="' + (x[3] || '') + '"><td>' + esc(x[0]) + '</td><td class="op">' + x[1] + '</td><td>' + esc(x[2]) + '</td></tr>'; }).join('');
+  $('#rowNote').innerHTML = m.id === 'bolas'
+    ? '<b>Correcciones de Rowland.</b> El Wi de Bond se mide en un molino de bolas húmedo de 2,44 m en circuito cerrado. En seco se gasta 1,3 veces más (EF1); si la alimentación es más gruesa que el óptimo F₀ = 4000·√(13/Wi) µm se corrige con EF4, y si el producto es menor de 75 µm, con EF5. ' + (state.rowland ? 'Están aplicadas: desactívelas en el panel para ver solo Bond.' : 'Están desactivadas: actívelas en el panel.')
+    : '<b>Factor del equipo.</b> El Wi de tabla corresponde a un molino de bolas húmedo de referencia; k corrige de forma orientativa la eficiencia relativa de los demás equipos (k = ' + fmtN(m.k, 1) + ' para ' + m.short.toLowerCase() + '). Las correcciones de Rowland solo aplican al molino de bolas.';
+}
+function renderThermal() {
+  var r = R, Pm = Math.max(r.Pmot, 1e-6), W = 560, x0 = 40, f = function (v) { return Math.max(3, W * v / Pm); };
+  var hL = f(r.Ploss), hS = f(r.Qsurf), hQ = f(r.Q);
+  var s = '<text x="' + x0 + '" y="20" style="font-size:12px;font-weight:700">Potencia del motor · ' + fmtN(r.Pmot, r.Pmot < 100 ? 1 : 0) + ' kW</text>';
+  s += '<rect x="' + x0 + '" y="30" width="' + W + '" height="34" style="fill:var(--ink)"/>';
+  s += '<path d="M ' + x0 + ' 64 L ' + x0 + ' 120 L ' + (x0 + hL) + ' 120 L ' + (x0 + hL) + ' 64 Z" style="fill:var(--n400)"/>';
+  s += '<text x="' + (x0) + '" y="138" style="font-size:11.5px">Pérdidas de transmisión · ' + fmtN(r.Ploss, 1) + ' kW (5 %)</text>';
+  s += '<path d="M ' + (x0 + hL) + ' 64 C ' + (x0 + hL) + ' 110, ' + (x0 + hL + 40) + ' 110, ' + (x0 + hL + 40) + ' 160 L ' + (x0 + hL + 40 + hS + hQ) + ' 160 C ' + (x0 + W) + ' 110, ' + (x0 + W) + ' 110, ' + (x0 + W) + ' 64 Z" style="fill:var(--accent-300);opacity:.7"/>';
+  s += '<rect x="' + (x0 + hL + 40) + '" y="160" width="' + hQ + '" height="34" style="fill:var(--redline)"/><rect x="' + (x0 + hL + 40 + hQ) + '" y="160" width="' + hS + '" height="34" style="fill:var(--accent)"/>';
+  s += '<text x="' + (x0 + hL + 40) + '" y="214" style="font-size:12px;font-weight:700;fill:var(--redline)">Calor · ' + fmtN(r.Q, r.Q < 100 ? 1 : 0) + ' kW (97 % del eje)</text>';
+  s += '<text x="' + (x0 + hL + 40) + '" y="230" style="font-size:11.5px">→ calienta ' + fmtN(r.cap, r.cap < 10 ? 1 : 0) + ' t/h de sólido' + (r.w > 0 ? ' y ' + fmtN(r.agua, r.agua < 10 ? 2 : 1) + ' t/h de agua' : '') + ': ΔT = ' + fmtN(r.dT, 1) + ' °C</text>';
+  s += '<text x="' + (x0 + W) + '" y="252" text-anchor="end" style="font-size:12px;font-weight:700;fill:var(--accent)">Superficie nueva · ' + fmtN(r.Qsurf, 1) + ' kW (3 %)</text>';
+  s += '<text x="' + (x0 + W / 2) + '" y="88" text-anchor="middle" style="font-size:12px;font-weight:700">Potencia en el eje · ' + fmtN(r.Peje, r.Peje < 100 ? 1 : 0) + ' kW</text>';
+  $('#svgSankey').innerHTML = s;
+  var Tm = r.mat.tmax, top = Math.max(100, Math.ceil((Math.max(r.Tout, Tm || 0) + 20) / 20) * 20), y = function (T) { return 250 - (Math.max(0, T) / top) * 220; };
+  var t = '<rect x="48" y="24" width="24" height="234" rx="12" style="fill:var(--n100);stroke:var(--ink);stroke-width:2"/><circle cx="60" cy="270" r="20" style="fill:var(--redline);stroke:var(--ink);stroke-width:2"/>';
+  t += '<rect x="54" y="' + y(r.Tout).toFixed(1) + '" width="12" height="' + (262 - y(r.Tout)).toFixed(1) + '" style="fill:var(--redline);transition:all .4s"/>';
+  for (var T = 0; T <= top; T += 20) t += '<line x1="72" y1="' + y(T) + '" x2="80" y2="' + y(T) + '" style="stroke:var(--ink)"/><text x="84" y="' + (y(T) + 4) + '" style="font-size:10px">' + T + '</text>';
+  t += '<line x1="40" y1="' + y(r.Tamb) + '" x2="54" y2="' + y(r.Tamb) + '" style="stroke:var(--accent);stroke-width:2"/>';
+  if (Tm) t += '<line x1="34" y1="' + y(Tm) + '" x2="86" y2="' + y(Tm) + '" style="stroke:var(--redline);stroke-width:2;stroke-dasharray:4 3"/><text x="2" y="' + (y(Tm) - 4) + '" style="font-size:9.5px;fill:var(--redline);font-weight:700">límite</text>';
+  $('#svgTherm').innerHTML = t;
+  $('#thermTxt').innerHTML = '<div class="lbl">T ambiente</div><div class="mono" style="font-size:20px;font-weight:750">' + fmtN(r.Tamb, 0) + ' °C</div><div class="lbl" style="margin-top:8px">T de salida</div><div class="mono" style="font-size:26px;font-weight:800;color:' + (Tm && r.Tout > Tm ? 'var(--redline)' : 'var(--text)') + '">' + fmtN(r.Tout, 0) + ' °C</div><p class="small" style="margin:8px 0 0">ΔT no depende del flujo: duplicar la capacidad duplica la potencia y también la masa que se calienta. Depende de la energía por tonelada y del cp de la mezcla (' + fmtN(r.cpmix, 2) + ' kJ/(kg sólido·K)).</p>';
+  var cards = [['Calor disipado Q̇', fmtN(r.Q, r.Q < 100 ? 1 : 0), 'kW · ≈ 97 % de la potencia en el eje'], ['ṁ·c̄p del flujo', fmtN(r.mcp, 2), 'kW/K · sólido + agua'], ['ΔT del material', fmtN(r.dT, 1), '°C · independiente del flujo'], ['T de salida', fmtN(r.Tout, 0), '°C · T ambiente = ' + fmtN(r.Tamb, 0) + ' °C', Tm && r.Tout > Tm], ['Límite del material', Tm ? Tm + ' °C' : 'sin límite', Tm ? (r.mat.id === 'maiz' ? 'daño del almidón' : r.mat.id === 'cascara' ? 'degradación de la pectina' : 'caramelización / apelmazado') : 'material térmicamente estable'], ['Agua en el circuito', fmtN(r.agua, r.agua < 10 ? 2 : 1), 't/h · ' + (r.wet ? 'agua de la pulpa' : 'humedad del material')]];
+  $('#thermCards').innerHTML = cards.map(function (c) { return '<div><div class="lbl">' + c[0] + '</div><div class="v' + (c[3] ? ' bad' : '') + '">' + esc(c[1]) + '</div><div class="u">' + esc(c[2]) + '</div></div>'; }).join('');
+}
+function renderSieve() {
+  var r = R;
+  $('#rrHead').textContent = 'Rosin-Rammler · x′ = ' + fmtSize(r.x63) + ' · n = ' + fmtN(r.n, 1) + ' (' + (r.n < 1 ? 'distribución amplia' : r.n < 1.6 ? 'distribución media' : 'distribución estrecha') + ') · P₅₀ = ' + fmtSize(r.P50);
+  $('#sieveTitle').textContent = 'Análisis de tamizado · ' + r.series.name;
+  $('#sieveBody').innerHTML = r.rows.map(function (x) { return '<tr><td>' + esc(x.m) + '</td><td>' + esc(fmtSize(x.a)) + '</td><td>' + fmtN(x.ret, 1) + '</td><td>' + fmtN(x.retAc, 1) + '</td><td>' + fmtN(x.pas, 1) + '</td></tr>'; }).join('') + '<tr class="tot"><td style="color:var(--accent-700)">Fondo (bandeja)</td><td>—</td><td style="color:var(--accent-700)">' + fmtN(r.fondo, 1) + '</td><td>100,0</td><td>0,0</td></tr>';
+  $('#tamizNote').textContent = r.sub38 > 15 ? 'Atención: ' + fmtN(r.sub38, 0) + ' % del producto es menor de 38 µm (N.º 400). El tamizado pierde resolución en ese rango: complemente con difracción láser o sedimentación.' : 'Base: 100 % de sólido seco. Retenido calculado entre mallas consecutivas de la serie seleccionada (cuando el rango es amplio se usa una malla sí y otra no).';
+}
+var katexOk = false;
+function tex(id, l) { var el = document.getElementById(id); if (!el) return; if (window.katex) { try { window.katex.render(l, el, { throwOnError: false }); return; } catch (e) { } } el.textContent = l; }
+function renderEqs() {
+  var r = R, b = r.ball || { Nc: 42.3 / Math.sqrt(state.D - 0.05), N: 0, D: state.D };
+  $('#eqGrid').style.display = state.showEq ? 'grid' : 'none';
+  tex('eqBond', 'E = 10\\,W_i\\left(\\dfrac{1}{\\sqrt{P_{80}}} - \\dfrac{1}{\\sqrt{F_{80}}}\\right)');
+  $('#nBond').textContent = 'Wi = ' + fmtN(r.mat.Wi, 1) + ' kWh/t · tamaños en µm · E = ' + fmtN(r.Ebond, 2) + ' kWh/t';
+  tex('eqRow', 'EF_4 = \\dfrac{R_r + (W_i - 7)\\,\\frac{F_{80}-F_0}{F_0}}{R_r},\\quad EF_5 = \\dfrac{P_{80}+10{,}3}{1{,}145\\,P_{80}}');
+  $('#nRow').textContent = 'EF1 = 1,3 en seco · F₀ = 4000·√(13/Wi) = ' + fmtSize(4000 * Math.sqrt(13 / r.mat.Wi)) + ' · factor total ' + fmtN(r.EF, 3) + (r.mill.id === 'bolas' ? '' : ' (no aplica a este equipo)');
+  tex('eqKick', 'E = C_K\\,\\ln\\!\\left(\\dfrac{F_{80}}{P_{80}}\\right)');
+  $('#nKick').textContent = 'C_K = ' + fmtN(r.CK, 2) + ' kWh/t (calibrada en el punto de operación) · válida en trituración gruesa';
+  tex('eqRitt', 'E = C_R\\left(\\dfrac{1}{P_{80}} - \\dfrac{1}{F_{80}}\\right)');
+  $('#nRitt').textContent = 'C_R = ' + fmtN(r.CR, 0) + ' kWh·µm/t (calibrada) · válida en molienda fina';
+  tex('eqRR', 'F(x) = 1 - \\exp\\!\\left[-\\left(\\dfrac{x}{x\'}\\right)^{n}\\right]');
+  $('#nRR').textContent = 'x′ = ' + fmtSize(r.x63) + ' (63,2 % pasante) · n = ' + fmtN(r.n, 1) + ' según el equipo';
+  tex('eqTerm', '\\dot{Q} = 0{,}97\\,P_{eje} = \\dot{m}\\,\\bar{c}_p\\,\\Delta T,\\qquad \\Delta T = \\dfrac{0{,}97\\cdot 3{,}6\\,E}{\\bar c_p}');
+  $('#nTerm').textContent = '1 kWh/t = 3,6 kJ/kg · c̄p = ' + fmtN(r.cpmix, 2) + ' kJ/(kg·K) · ΔT = ' + fmtN(r.dT, 1) + ' °C';
+  tex('eqNc', 'N_c = \\dfrac{1}{2\\pi}\\sqrt{\\dfrac{g}{R-r}} = \\dfrac{42{,}3}{\\sqrt{D-d}}\\ \\text{rpm}');
+  $('#nNc').textContent = 'D = ' + fmtN(b.D, 1) + ' m, d = 0,05 m → Nc = ' + fmtN(b.Nc, 1) + ' rpm' + (r.ball ? ' · a φ = ' + fmtN(r.ball.phi, 0) + ' %: N = ' + fmtN(r.ball.N, 1) + ' rpm' : '');
+  tex('eqPow', 'P_{eje} = k\\,E\\,\\dot m,\\qquad P_{motor} = \\dfrac{P_{eje}}{\\eta}');
+  $('#nPow').textContent = 'k = ' + fmtN(r.mill.k, 1) + ' · ṁ = ' + fmtN(r.cap, 1) + ' t/h · η = 0,95 · P motor = ' + fmtN(r.Pmot, 1) + ' kW';
 }
 
-window.addEventListener('load', function () { katexReady = !!window.katex; render(); });
-render();
+/* ---------- arranque ---------- */
+var mill = new MillAnim($('#millCv')), sieve = new SieveAnim($('#sieveCv'));
+ANIMS.push({ obj: mill, isOn: function () { return tab === 'eq'; } });
+ANIMS.push({ obj: sieve, isOn: function () { return tab === 'gr'; } });
+buildControls();
+if (window.ResizeObserver) new ResizeObserver(function () { document.documentElement.style.setProperty('--top-h', $('#top').offsetHeight + 'px'); }).observe($('#top'));
+update();
+setTab(tab);
+if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) { mill.speed = 0.5; }
+window.addEventListener('resize', function () { mill.resize(); if (mill.kind) { mill.reset(); } sieve.resize(); });
+window.addEventListener('load', function () { if (tab === 'ec') renderEqs(); mill.reset(); });
+requestAnimationFrame(animLoop);
 </script>
 </body>
 </html>
