@@ -65,7 +65,7 @@ export const pou202620Course: Course = {
   ],
   objectives: [
     'Diseñar y dimensionar las operaciones unitarias de un proceso químico completo, que abarca el manejo de sólidos, el transporte de fluidos y la separación final por destilación.',
-    'Elaborar e interpretar diagramas de ingeniería profesionales (PBD, PFD, P&ID) según estándares industriales.',
+    'Elaborar e interpretar diagramas de ingeniería profesionales (BFD, PFD, P&ID) según estándares industriales.',
     'Calcular y especificar equipos de proceso con criterios técnicos, económicos y de sostenibilidad.',
     'Simular procesos completos en ASPEN Plus y validar con ellos los cálculos manuales.',
     'Documentar el diseño en bitácoras de cálculo profesionales y reportes ejecutivos.',
@@ -197,7 +197,7 @@ export const pou202620Course: Course = {
       title: 'Módulo 1 · Fundamentos y diagramación',
       topics: [
         'Introducción al proyecto y formación de equipos.',
-        'Diagramas de ingeniería: PBD, PFD, P&ID.',
+        'Diagramas de ingeniería: BFD, PFD, P&ID.',
         'Simbología y estándares ISA.',
         'Definición del alcance del proyecto.',
       ],
@@ -917,7 +917,7 @@ export const pou202620Course: Course = {
       week: 2,
       title: 'Diagramas de ingeniería',
       description:
-        'PBD, PFD y P&ID: el lenguaje visual de la ingeniería química. Simbología ISA, codificación de equipos, balance de masa y mejores prácticas.',
+        'BFD, PFD y P&ID: el lenguaje visual de la ingeniería química. Simbología de equipos e instrumentos, codificación de equipos (Turton), balance de masa y mejores prácticas, aplicados al proyecto de pectina.',
       sessionNumber: 1,
       file: 'Diagramas_de_Ingenieria/Presentacion_Diagramas_de_Ingenieria.html',
     },
