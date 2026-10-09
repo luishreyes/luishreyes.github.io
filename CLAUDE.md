@@ -137,6 +137,10 @@ Opcionalmente un curso puede definir un **segundo código para el equipo docente
 
 Si un curso define `manualRelease: true`, **nada se abre solo por fecha**: el equipo docente (sesión `staff`) publica u oculta **cada actividad** (lectura/guía/taller, presentación, simulación) con un botón **Publicada/Oculta** en la página de Material; el botón de la cabecera de cada semana publica u oculta el paquete completo en un solo commit. Los estudiantes solo ven lo publicado (una semana sin nada publicado se lista sellada). El estado vive en `published/{slug}.json` en `main` como llaves `reading:{slug}` / `pres:{id}` / `sim:{id}`: la app lo lee de `raw.githubusercontent.com` (~1 min de propagación, con caché en `localStorage` y fallo cerrado) y el botón lo escribe vía la API de GitHub con un fine-grained token que cada docente pega una vez (`classroom:publishToken`). Esos commits NO disparan el deploy (`paths-ignore: published/**`). El material sin `week` sigue siempre visible. El gate por actividad es `isItemOpen` de `useCourseRelease` (`isWeekOpen` queda solo para el modo gradual). Ver [PUBLICACION.md](PUBLICACION.md) para la guía completa (token, semilla, módulos `publishState.ts` / `courseRelease.ts`). `manualRelease` tiene prioridad sobre `gradualRelease`.
 
+### Simuladores de POU 2026-20 (`/classroom/iqya-2031-2026-20/simulations`)
+
+`PouSimulationsPage` reúne los simuladores del curso como tarjetas con captura, en el orden del semestre, con la misma regla de publicación del Material: el estudiante ve los publicados (`sim:{id}`) y los demás como tarjetas selladas con su semana; el equipo docente los ve todos con su botón Publicada/Oculta (controles compartidos en `components/classroom/PouPublishControls.tsx`). Se llega desde el botón «Simuladores» de la portada y desde el Material. Cada simulador declara su captura con `bannerImg`: `public/classroom/iqya-2031-2026-20/simuladores-banners/{id}.jpg`, 800×500 a color (16:10, < 100 KB), recortada de la vista principal del simulador. Al rediseñar un simulador, vuelva a capturar su miniatura.
+
 ### Entrega gradual del material (`gradualRelease`)
 
 Si un curso define `gradualRelease: true`, quien entra con el **código de estudiante** solo ve el material de las semanas ya transcurridas y de la semana en curso; quien entra con el **`staffAccessCode`** ve el semestre completo desde el primer día.
@@ -152,7 +156,7 @@ Si un curso define `gradualRelease: true`, quien entra con el **código de estud
 - El material **sin `week`** (las guías transversales: programa, cronograma, trabajo en equipo, bitácoras…) está **siempre** disponible.
 - Una `week` que el cronograma no fecha se deja abierta: no hay con qué cerrarla.
 
-**Dónde se aplica:** `PouMaterialPage` (las semanas futuras se listan como hojas selladas con la fecha de apertura, `.pou-sheet.locked`), `DocViewerPage` (entrar por URL a un documento de una semana futura muestra «Todavía no está disponible»), `PresentationsIndexPage`, `SimulationsIndexPage` y los conteos de `PouLandingPage`.
+**Dónde se aplica:** `PouMaterialPage` (las semanas futuras se listan como hojas selladas con la fecha de apertura, `.pou-sheet.locked`), `DocViewerPage` (entrar por URL a un documento de una semana futura muestra «Todavía no está disponible»), `PresentationsIndexPage`, `SimulationsIndexPage` (en POU 2026-20 ramifica a `PouSimulationsPage`) y los conteos de `PouLandingPage`.
 
 **⚠️ Requisito de datos:** el filtro depende de que **todo** el material esté etiquetado con `week` y de que el curso tenga `cronograma`. Una lectura, presentación o simulación sin `week` se considera transversal y queda visible desde el día uno.
 

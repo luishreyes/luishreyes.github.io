@@ -6,12 +6,18 @@ import type { Course } from '../../components/data/classroom';
 import { CourseAccessGate } from '../../components/classroom/CourseAccessGate';
 import { useCourseRelease } from '../../components/classroom/courseRelease';
 import { NotFoundInClassroom } from './NotFoundInClassroom';
+import { PouSimulationsPage } from './PouSimulationsPage';
 
 export const SimulationsIndexPage: React.FC = () => {
   const { courseSlug } = useParams<{ courseSlug: string }>();
   const course = courseSlug ? getCourseBySlug(courseSlug) : undefined;
 
   if (!course) return <NotFoundInClassroom />;
+
+  // Identidad gráfica propia de POU (IQYA-2031): sistema «Industry».
+  if (course.slug === 'iqya-2031-2026-20') {
+    return <PouSimulationsPage course={course} />;
+  }
 
   return (
     <CourseAccessGate course={course}>

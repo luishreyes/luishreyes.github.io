@@ -1084,6 +1084,7 @@ export const pou202620Course: Course = {
         'La referencia interactiva de BFD, PFD y P&ID del curso, hilada por una misma unidad de hidrodesulfuración (HDS) dibujada con detalle creciente y con balances que cierran. Trece secciones con índice, buscador (Ctrl K) y navegación con el teclado: jerarquía de diagramas con el separador V-201 en tres niveles, BFD con verificador de balance en masa y en moles, nomenclatura de equipos (Turton) con decodificador de tags ISA-5.1, corrientes y servicios con sus condiciones típicas, lazos de control por tipo de equipo (intercambiador, recipiente, reactor, torre, bomba, compresor y horno) y calculadora de PSV, tablas de equipos y de corrientes, un PFD explorable por capas, el P&ID explorable del separador, layout e isométricos en 3D (planta, elevación e isométrico con three.js), una biblioteca de 64 símbolos, la lista de chequeo del PFD del proyecto y una autoevaluación de 15 preguntas. Lienzo en modo papel o blueprint.',
       sessionNumber: 1,
       file: 'Manual_Diagramas.html',
+      bannerImg: '/classroom/iqya-2031-2026-20/simuladores-banners/manual-diagramas.jpg',
       tags: ['diagramas', 'BFD', 'PFD', 'P&ID', 'ISA-5.1', 'nomenclatura', 'lazos de control', 'símbolos', 'instrumentación', 'isométricos', '3D'],
     },
     {
@@ -1094,6 +1095,7 @@ export const pou202620Course: Course = {
         'Mire el tanque por dentro: una vista lateral en perspectiva y una vista en planta donde cientos de partículas siguen la circulación que se calcula para cada geometría (el chorro radial de la Rushton que se parte en dos lazos, el lazo único del PBT, la cinta que sube por la pared), con el giro alrededor del eje, la turbulencia y el vórtice cuando faltan los bafles. Inyecte un trazador (o toque el líquido) y vea cómo se mezcla mientras tres sondas miden θ₉₅ con el criterio de ±5 % de las diapositivas; el resultado se compara con Grenville. Escoja entre seis impulsores (PBT, hélice, hidrofoil, Rushton, ancla y cinta helicoidal), la geometría, la velocidad y el fluido, y agregue sólidos (con su lecho bajo Nⱼₛ) o gas por un anillo distribuidor (inundado, cargado o disperso). Incluye la curva Nₚ-Re de McCabe con y sin bafles, la potencia y el motor IEC, la intensidad P/V, θ₉₅ contra N con sus mediciones, la suspensión de Zwietering, el mapa de régimen del gas con kLa, los cuatro criterios de escalado y el calentamiento del lote por la camisa, con el reactor de extracción del proyecto como caso de partida.',
       sessionNumber: 9,
       file: 'Explorador_Agitacion.html',
+      bannerImg: '/classroom/iqya-2031-2026-20/simuladores-banners/explorador-agitacion.jpg',
       tags: ['agitación', 'mezclado', 'impulsores', 'bafles', 'número de potencia', 'Np-Re', 'vórtice', 'tiempo de mezcla', 'trazador', 'Zwietering', 'dispersión de gas', 'escalado', 'tanque agitado'],
     },
     {
@@ -1104,6 +1106,7 @@ export const pou202620Course: Course = {
         'Diseñe el intercambiador del proyecto por el método de Kern en vivo: defina el requerimiento (enfriar aceite ligero con agua), asigne fluidos a tubos o coraza, elija tubo, arreglo del haz (triangular/cuadrado), pasos, corazas en serie, número y longitud de tubos, espaciado de bafles, material y factores de ensuciamiento. La herramienta calcula los coeficientes h de cada lado, U limpio y de diseño, LMTD y factor F multi-paso/multi-coraza, el área requerida vs. disponible (sobrediseño), las caídas de presión y las velocidades. Entrega un veredicto de diseño por criterio (régimen, ΔP, esbeltez, F…), la viabilidad económica (capital anualizado más energía de bombeo) y una comparación de cinco materiales. Con corte longitudinal, sección transversal del haz y perfil de temperaturas dibujados en tiempo real.',
       sessionNumber: 11,
       file: 'Explorador_Intercambiadores.html',
+      bannerImg: '/classroom/iqya-2031-2026-20/simuladores-banners/explorador-intercambiadores.jpg',
       tags: ['intercambiadores', 'tubos y coraza', 'método de Kern', 'U', 'LMTD', 'factor F', 'bafles', 'caída de presión', 'ensuciamiento', 'economía'],
     },
     {
@@ -1114,6 +1117,7 @@ export const pou202620Course: Course = {
         'Seleccione el equipo de reducción de tamaño del proyecto y véalo operar: cada molino tiene su animación con física de partículas. El molino de bolas es una simulación de elementos discretos en la que la carga pasa de cascada a catarata y a centrifugado según la fracción de la velocidad crítica (con Nc y rpm para el diámetro elegido); en mandíbulas, rodillos y martillos las partículas se fracturan en vivo. Elija material (caliza, carbón, maíz, azúcar, arcilla o la cáscara cítrica seca del proyecto, con Wi editable) y equipo, y defina F₈₀, P₈₀ y capacidad. La herramienta calcula la energía con la Ley de Bond y los factores de Rowland, compara Bond, Kick y Rittinger, lleva la energía hasta el motor estándar IEC y resuelve el balance térmico con su temperatura de salida frente al límite del material. La granulometría usa Rosin-Rammler con tamizado en serie ASTM E11 o Tyler y una tamizadora animada. Indicadores y controles siempre visibles; cinco pestañas.',
       sessionNumber: 6,
       file: 'Explorador_Molienda.html',
+      bannerImg: '/classroom/iqya-2031-2026-20/simuladores-banners/explorador-molienda.jpg',
       tags: ['molienda', 'conminución', 'Ley de Bond', 'Rowland', 'velocidad crítica', 'Kick', 'Rittinger', 'Rosin-Rammler', 'tamizado', 'balance térmico', 'sólidos'],
     },
     {
@@ -1124,6 +1128,7 @@ export const pou202620Course: Course = {
         'Aplique el balance de energía mecánica a una línea con tramo de succión y tramo de descarga, y véala operar: las partículas viajan a la velocidad real con el perfil laminar (parabólico) o turbulento, sobre el sistema se dibujan la línea de energía y la piezométrica con piezómetros, y el chorro libre cae con su trayectoria balística. Tres modos: Diseño (fija Q y calcula la cabeza H_A, como en la Lectura 04), Operación (una bomba con su curva, su BEP y variador de velocidad fija el caudal) y Gravedad. Fluidos con propiedades según la temperatura (agua, etanol, glicerina, aceite ISO VG 32 y el extracto ácido de pectina del proyecto), tubería comercial Sch 40 u 80, accesorios con K de Çengel y L_e/D de Crane, Colebrook, Swamee-Jain o Haaland, y altitud del sitio para la presión atmosférica y el NPSH disponible. Incluye el perfil de energía a lo largo de la tubería con el límite de vaporización, el desglose de pérdidas, la elección del diámetro, el diagrama de Moody, las curvas del sistema y de la bomba con la comparación entre estrangular la válvula y usar variador, y las ecuaciones con los valores del caso. Arranca con el ejemplo resuelto de la Lectura 04.',
       sessionNumber: 7,
       file: 'Explorador_Bernoulli.html',
+      bannerImg: '/classroom/iqya-2031-2026-20/simuladores-banners/explorador-bernoulli.jpg',
       tags: ['Bernoulli', 'línea de energía', 'línea piezométrica', 'Darcy-Weisbach', 'Colebrook', 'diagrama de Moody', 'pérdidas menores', 'NPSH', 'punto de operación', 'variador de velocidad'],
     },
     {
@@ -1134,6 +1139,7 @@ export const pou202620Course: Course = {
         'Mire la bomba por dentro: una vista frontal del impulsor y la voluta en cámara lenta, con partículas que siguen la cinemática real y se colorean con la presión estática, el triángulo de velocidades de Euler en vivo, burbujas que nacen en el borde de ataque y colapsan cuando falta NPSH, y recirculación cuando la bomba trabaja lejos del BEP. Escoja carcasa (1½×2-6, 2×3-8 o 3×4-10), velocidad de 1750 o 3500 rpm con variador, diámetro del impulsor y arreglo (una, dos en paralelo o en serie), y defina el sistema y el fluido (agua, etanol, aceite o el extracto de pectina del proyecto, con la corrección por viscosidad de ANSI/HI 9.6.7). Incluye la carta de la bomba como la de un catálogo (diámetros, islas de eficiencia, NPSH3 y potencia), el NPSH disponible contra el requerido y la temperatura máxima de bombeo en Bogotá, la regulación por válvula, variador o recorte con su consumo de energía, la comparación serie y paralelo y una lista de chequeo para la selección con el motor IEC.',
       sessionNumber: 8,
       file: 'Explorador_Bombas_Centrifugas.html',
+      bannerImg: '/classroom/iqya-2031-2026-20/simuladores-banners/explorador-bombas-centrifugas.jpg',
       tags: ['bombas', 'curva característica', 'Euler', 'triángulos de velocidad', 'NPSH', 'cavitación', 'leyes de afinidad', 'variador', 'serie y paralelo', 'viscosidad'],
     },
     {
@@ -1144,6 +1150,7 @@ export const pou202620Course: Course = {
         'Diseñe la columna de destilación binaria en vivo: mueva la composición y calidad de la alimentación, la pureza de productos, el reflujo y la eficiencia de Murphree, y observe cómo se reconstruyen las rectas de operación, la línea q y el escalonado de etapas. Incluye cinco sistemas (benceno-tolueno, metanol-agua, metanol-etanol, etanol-agua no ideal con azeótropo y α personalizable), balance global de materia, Rmín, Fenske y la torre con su plato de alimentación óptimo. La herramienta del proyecto para dimensionar la recuperación de etanol.',
       sessionNumber: 17,
       file: 'Explorador_McCabe_Thiele.html',
+      bannerImg: '/classroom/iqya-2031-2026-20/simuladores-banners/explorador-mccabe-thiele.jpg',
       tags: ['destilación', 'McCabe-Thiele', 'reflujo', 'línea q', 'etapas', 'etanol-agua', 'Murphree', 'Fenske'],
     },
     {
@@ -1154,6 +1161,7 @@ export const pou202620Course: Course = {
         'El catálogo de decisión visual del curso: 79 tipos de gráfico organizados por las ocho tareas que puede pedirle a un dato, con una miniatura dibujada de cada uno. De cada tipo indica la pregunta que responde, cuándo usarlo y cuándo no, un ejemplo de área, la decisión que habilita, su trampa ética típica y su lugar en la jerarquía de Cleveland y McGill. Incluye un diagrama de decisión que lleva de la pregunta al grupo correcto en un clic y una serie completa de canónicos de la disciplina: McCabe-Thiele, Txy, Moody, psicrométrico, Mollier, curvas de bomba y sistema, distribución de tiempos de residencia, Arrhenius, tamaño de partícula, muerte térmica, isotermas de sorción y curvas de secado.',
       sessionNumber: 26,
       file: 'Explorador_Graficos.html',
+      bannerImg: '/classroom/iqya-2031-2026-20/simuladores-banners/explorador-graficos.jpg',
       tags: ['comunicación visual', 'elección de gráfico', 'tarea visual', 'Cleveland-McGill', 'canónicos', 'ética de la figura', 'catálogo'],
     },
   ],
