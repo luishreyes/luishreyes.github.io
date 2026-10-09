@@ -688,7 +688,7 @@ export const pou202620Course: Course = {
       order: 9,
       title: 'Filtración industrial',
       summary:
-        'La barrera porosa que separa sólidos de fluidos. Mecanismos de retención con visor interactivo, teoría basada en la ley de Darcy (resistencia de torta y del medio), linealización t/V-V con gráfica interactiva, compresibilidad de la torta, calculadora de tiempo de ciclo, los cinco grandes tipos de filtros industriales (lecho granular, prensa, tambor rotatorio al vacío, cartucho, membranas), medios filtrantes y ciclo de operación.',
+        'La barrera porosa que separa sólidos de fluidos. Mecanismos de retención con visor interactivo, teoría basada en la ley de Darcy (resistencia de torta y del medio), linealización t/V-V con gráfica interactiva, compresibilidad de la torta, calculadora de tiempo de filtración, las cuatro grandes familias de filtros industriales en un visor (lecho granular, prensa, tambor rotatorio al vacío, cartucho), filtración por membranas, medios filtrantes y ciclo de operación.',
       date: '2026-06-06',
       readingMinutes: 28,
       tags: ['filtración', 'separación sólido-líquido', 'torta', 'ley de Darcy', 'resistencia específica', 'filtro prensa', 'tambor rotatorio', 'membranas', 'medios filtrantes', 'retrolavado'],

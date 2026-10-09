@@ -1191,13 +1191,19 @@ function coma(v){return String(v).replace('.', ',');}
   // Family rectangles (stored for update)
   const familyRects=[];
   const familyLabels=[];
+  const placed=[];  // cajas de etiquetas ya puestas: se baja la siguiente si se cruza
   families.forEach(function(f){
     const x1=xS(f.qRange[0]),x2=xS(f.qRange[1]);
     const y1=yS(f.hRange[1]),y2=yS(f.hRange[0]);
     const r=el('rect',{x:x1,y:y1,width:x2-x1,height:y2-y1,fill:f.color,'fill-opacity':'0.16',stroke:f.color,'stroke-opacity':'0.85','stroke-width':'1.6'});
     svg.appendChild(r);
     familyRects.push({rect:r,color:f.color});
-    const lbl=txt(f.name,{x:(x1+x2)/2,y:y1+14,'text-anchor':'middle','font-size':'11','font-weight':'700',fill:f.color,opacity:'0.95'});
+    const lw=f.name.length*6.6, lx=(x1+x2)/2;
+    let ly=y1+14;
+    const hit=function(yy){return placed.some(function(b){return lx-lw/2<b[2]&&lx+lw/2>b[0]&&yy-11<b[3]&&yy+3>b[1];});};
+    while(hit(ly)&&ly+14<y2-4)ly+=14;
+    placed.push([lx-lw/2,ly-11,lx+lw/2,ly+3]);
+    const lbl=txt(f.name,{x:lx,y:ly,'text-anchor':'middle','font-size':'11','font-weight':'700',fill:f.color,opacity:'0.95'});
     svg.appendChild(lbl);
     familyLabels.push(lbl);
   });
@@ -1315,9 +1321,9 @@ function coma(v){return String(v).replace('.', ',');}
     btn.textContent=p.name;
     btn.onclick=function(){
       Q=p.Q;H=p.H;mu=p.mu;solids=p.solids;smooth=p.smooth;
-      document.getElementById('sel-q').value=Math.log10(Q).toFixed(3).replace('.', ',');
-      document.getElementById('sel-h').value=Math.log10(H).toFixed(3).replace('.', ',');
-      document.getElementById('sel-mu').value=Math.log10(mu).toFixed(3).replace('.', ',');
+      document.getElementById('sel-q').value=Math.log10(Q).toFixed(3);
+      document.getElementById('sel-h').value=Math.log10(H).toFixed(3);
+      document.getElementById('sel-mu').value=Math.log10(mu).toFixed(3);
       document.getElementById('sel-solids').checked=solids;
       document.getElementById('sel-smooth').checked=smooth;
       document.getElementById('q-disp').textContent=fmt(Q).replace('.',',')+' m³/h';
@@ -1358,7 +1364,7 @@ function coma(v){return String(v).replace('.', ',');}
     step=step||2;
     var d='';
     for(var q=0;q<=Qmax;q+=step){
-      d+=(q===0?'M':'L')+xS(q).toFixed(1).replace('.', ',')+' '+yscale(fn(q)).toFixed(1).replace('.', ',')+' ';
+      d+=(q===0?'M':'L')+xS(q).toFixed(1)+' '+yscale(fn(q)).toFixed(1)+' ';
     }
     return d;
   }
