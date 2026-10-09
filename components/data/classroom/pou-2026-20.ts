@@ -1111,10 +1111,10 @@ export const pou202620Course: Course = {
       week: 3,
       title: 'Explorador de molienda y tamizado',
       description:
-        'Seleccione el equipo de reducción de tamaño del proyecto en vivo: elija material (caliza, carbón, maíz, azúcar, arcilla) y molino (mandíbulas, rodillos, martillos, bolas, discos), y defina alimentación F₈₀, producto objetivo P₈₀ y capacidad en escala logarítmica. La herramienta calcula la energía con la Ley de Bond y compara los tres regímenes (Bond, Kick, Rittinger) calibrados en el punto de operación, dimensiona la potencia al eje y del motor, y resuelve el balance térmico adiabático (calor disipado, ΔT, temperatura de salida vs. límite del material). En seco o húmedo, con detección de atascos, daño térmico, ATEX, abrasión y sobre-reducción. La Parte 2 modela la distribución del producto con Rosin-Rammler y genera el análisis de tamizado completo de la serie Tyler.',
+        'Seleccione el equipo de reducción de tamaño del proyecto y véalo operar: cada molino tiene su animación con física de partículas. El molino de bolas es una simulación de elementos discretos en la que la carga pasa de cascada a catarata y a centrifugado según la fracción de la velocidad crítica (con Nc y rpm para el diámetro elegido); en mandíbulas, rodillos y martillos las partículas se fracturan en vivo. Elija material (caliza, carbón, maíz, azúcar, arcilla o la cáscara cítrica seca del proyecto, con Wi editable) y equipo, y defina F₈₀, P₈₀ y capacidad. La herramienta calcula la energía con la Ley de Bond y los factores de Rowland, compara Bond, Kick y Rittinger, lleva la energía hasta el motor estándar IEC y resuelve el balance térmico con su temperatura de salida frente al límite del material. La granulometría usa Rosin-Rammler con tamizado en serie ASTM E11 o Tyler y una tamizadora animada. Indicadores y controles siempre visibles; cinco pestañas.',
       sessionNumber: 6,
       file: 'Explorador_Molienda.html',
-      tags: ['molienda', 'conminución', 'Ley de Bond', 'Kick', 'Rittinger', 'Rosin-Rammler', 'tamizado', 'balance térmico', 'sólidos'],
+      tags: ['molienda', 'conminución', 'Ley de Bond', 'Rowland', 'velocidad crítica', 'Kick', 'Rittinger', 'Rosin-Rammler', 'tamizado', 'balance térmico', 'sólidos'],
     },
     {
       id: 'explorador-bernoulli',
