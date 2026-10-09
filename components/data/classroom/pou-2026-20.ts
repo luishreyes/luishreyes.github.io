@@ -1091,10 +1091,10 @@ export const pou202620Course: Course = {
       week: 6,
       title: 'Explorador de agitación',
       description:
-        'Explore el tanque agitado del proyecto en vivo: elija el impulsor (hélice marina axial, turbina Rushton radial o ancla para alta viscosidad), active o quite los bafles, y seleccione el fluido (agua, aceite, jarabe de glucosa o uno genérico con ρ y μ ajustables) junto con la velocidad de giro y el diámetro D/T. La herramienta dibuja el campo de velocidades estilo CFD en vista lateral y superior, con streamlines coloreadas por magnitud y animadas, incluyendo el patrón clásico con bafles (giro central más remolinos entre bafles) y el vórtice central cuando faltan. Calcula Reynolds y régimen, el número de potencia sobre la curva Np-Re (con y sin bafles), la potencia y P/V, la velocidad de punta, el tiempo de mezcla θ₉₅ de Grenville y la profundidad del vórtice, con avisos de zonas muertas, arrastre de aire y daño por cizalla.',
+        'Mire el tanque por dentro: una vista lateral en perspectiva y una vista en planta donde cientos de partículas siguen la circulación que se calcula para cada geometría (el chorro radial de la Rushton que se parte en dos lazos, el lazo único del PBT, la cinta que sube por la pared), con el giro alrededor del eje, la turbulencia y el vórtice cuando faltan los bafles. Inyecte un trazador (o toque el líquido) y vea cómo se mezcla mientras tres sondas miden θ₉₅ con el criterio de ±5 % de las diapositivas; el resultado se compara con Grenville. Escoja entre seis impulsores (PBT, hélice, hidrofoil, Rushton, ancla y cinta helicoidal), la geometría, la velocidad y el fluido, y agregue sólidos (con su lecho bajo Nⱼₛ) o gas por un anillo distribuidor (inundado, cargado o disperso). Incluye la curva Nₚ-Re de McCabe con y sin bafles, la potencia y el motor IEC, la intensidad P/V, θ₉₅ contra N con sus mediciones, la suspensión de Zwietering, el mapa de régimen del gas con kLa, los cuatro criterios de escalado y el calentamiento del lote por la camisa, con el reactor de extracción del proyecto como caso de partida.',
       sessionNumber: 9,
       file: 'Explorador_Agitacion.html',
-      tags: ['agitación', 'mezclado', 'impulsores', 'bafles', 'número de potencia', 'Np-Re', 'vórtice', 'tiempo de mezcla', 'tanque agitado'],
+      tags: ['agitación', 'mezclado', 'impulsores', 'bafles', 'número de potencia', 'Np-Re', 'vórtice', 'tiempo de mezcla', 'trazador', 'Zwietering', 'dispersión de gas', 'escalado', 'tanque agitado'],
     },
     {
       id: 'explorador-intercambiadores',
