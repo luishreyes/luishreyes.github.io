@@ -1081,10 +1081,10 @@ export const pou202620Course: Course = {
       week: 2,
       title: 'Manual de diagramas de ingeniería',
       description:
-        'La referencia interactiva de BFD, PFD y P&ID del curso, hilada por un mismo proceso (hidrodesulfuración de nafta) dibujado con detalle creciente. Once secciones navegables: introducción y jerarquía de diagramas, diagrama de bloques, equipos y nomenclatura con un decodificador de tags en vivo, corrientes y servicios, lazos de control con un constructor por tipo de equipo, tablas del PFD, un PFD explorable clic-a-clic, tuberías e instrumentación (ISA-5.1), layout e isométricos, una biblioteca de símbolos buscable y filtrable, y una autoevaluación de 10 preguntas que se califica sola. La guía visual para leer y dibujar diagramas de proceso.',
+        'La referencia interactiva de BFD, PFD y P&ID del curso, hilada por una misma unidad de hidrodesulfuración (HDS) dibujada con detalle creciente y con balances que cierran. Trece secciones con índice, buscador (Ctrl K) y navegación con el teclado: jerarquía de diagramas con el separador V-201 en tres niveles, BFD con verificador de balance en masa y en moles, nomenclatura de equipos (Turton) con decodificador de tags ISA-5.1, corrientes y servicios con sus condiciones típicas, lazos de control por tipo de equipo (intercambiador, recipiente, reactor, torre, bomba, compresor y horno) y calculadora de PSV, tablas de equipos y de corrientes, un PFD explorable por capas, el P&ID explorable del separador, layout e isométricos en 3D (planta, elevación e isométrico con three.js), una biblioteca de 64 símbolos, la lista de chequeo del PFD del proyecto y una autoevaluación de 15 preguntas. Lienzo en modo papel o blueprint.',
       sessionNumber: 1,
       file: 'Manual_Diagramas.html',
-      tags: ['diagramas', 'BFD', 'PFD', 'P&ID', 'ISA-5.1', 'nomenclatura', 'lazos de control', 'símbolos', 'instrumentación'],
+      tags: ['diagramas', 'BFD', 'PFD', 'P&ID', 'ISA-5.1', 'nomenclatura', 'lazos de control', 'símbolos', 'instrumentación', 'isométricos', '3D'],
     },
     {
       id: 'explorador-agitacion',
