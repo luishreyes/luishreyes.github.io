@@ -551,15 +551,25 @@ MillAnim.prototype.feedR = function () { return this.kind === 'mand' ? 15 : this
 MillAnim.prototype.prodR = function () { return this.kind === 'mand' ? 4.6 : this.kind === 'rod' ? 3.4 : this.kind === 'mart' ? 2.6 : 2; };
 MillAnim.prototype.spawnFeed = function () {
   var W = this.W, g = this.geo, rF = this.feedR() * (0.75 + Math.random() * 0.5);
-  if (this.kind === 'mand') this.P.push({ x: W * 0.5 + (Math.random() - 0.5) * 80, y: g.top - 40 - Math.random() * 20, vx: 0, vy: 40, r: rF, m: 1, k: 'ore', life: 0 });
+  if (this.kind === 'mand') {
+    // la alimentación cae solo donde hay hueco: un grano que nace encimado con la carga sale expulsado
+    for (var tr = 0; tr < 8; tr++) {
+      var x = W * 0.5 + (Math.random() - 0.5) * 80, y = g.top - 40 - Math.random() * 20, ok = true;
+      for (var q = 0; q < this.P.length && ok; q++) { var o = this.P[q], dx = o.x - x, dy = o.y - y, rs = o.r + rF + 1; if (dx * dx + dy * dy < rs * rs) ok = false; }
+      if (ok) { this.P.push({ x: x, y: y, vx: 0, vy: 40, r: rF, m: 1, k: 'ore', life: 0 }); break; }
+    }
+  }
   else if (this.kind === 'rod') this.P.push({ x: g.cx + (Math.random() - 0.5) * g.R * 0.9, y: -rF, vx: 0, vy: 60, r: rF, m: 1, k: 'ore', life: 0 });
   else if (this.kind === 'mart') { var a = -Math.PI * 0.62 + (Math.random() - 0.5) * 0.18; this.P.push({ x: g.cx + (g.Rc - rF - 6) * Math.cos(a), y: g.cy + (g.Rc - rF - 6) * Math.sin(a), vx: 30, vy: 120, r: rF, m: 1, k: 'ore', life: 0 }); }
 };
 MillAnim.prototype.split = function (p, n, impulse) {
-  var nr = p.r / Math.sqrt(n) * 0.97, out = [];
+  // Los fragmentos nacen dentro del contorno de la partícula madre, repartidos
+  // alrededor de su centro: si nacieran afuera quedarían encimados con la pared
+  // o entre sí, y el resorte del contacto los dispararía.
+  var nr = p.r / Math.sqrt(n) * 0.97, off = Math.max(0, p.r - nr) * 0.95, a0 = Math.random() * Math.PI * 2, out = [];
   for (var i = 0; i < n; i++) {
-    var a = Math.random() * Math.PI * 2, s = (impulse || 40) * (0.4 + Math.random());
-    out.push({ x: p.x + Math.cos(a) * nr * 0.6, y: p.y + Math.sin(a) * nr * 0.6, vx: p.vx + Math.cos(a) * s, vy: p.vy + Math.sin(a) * s, r: nr, m: p.m / n, k: 'ore', life: 0 });
+    var a = a0 + i * Math.PI * 2 / n, s = (impulse || 40) * (0.4 + Math.random());
+    out.push({ x: p.x + Math.cos(a) * off, y: p.y + Math.sin(a) * off, vx: p.vx + Math.cos(a) * s, vy: p.vy + Math.sin(a) * s, r: nr, m: p.m / n, k: 'ore', life: 0 });
   }
   this.stats.broken++;
   this.fx.push({ x: p.x, y: p.y, t: 0, s: p.r * 1.6 });
@@ -607,9 +617,23 @@ MillAnim.prototype.pairForces = function (A, kn, cn, mu, onHit) {
     }
   }
 };
-MillAnim.prototype.integrate = function (A, dt, g) {
-  for (var i = 0; i < this.P.length; i++) { var p = this.P[i]; p.vx += A[i].x * dt; p.vy += (A[i].y + g) * dt; p.x += p.vx * dt; p.y += p.vy * dt; p.life += dt; }
+MillAnim.prototype.integrate = function (A, dt, g, vmax) {
+  for (var i = 0; i < this.P.length; i++) {
+    var p = this.P[i]; p.vx += A[i].x * dt; p.vy += (A[i].y + g) * dt;
+    // Tope de rapidez: un contacto muy comprimido no puede lanzar una partícula
+    // más rápido de lo que la integración alcanza a seguir (atravesaría la pared).
+    if (vmax) { var v = Math.sqrt(p.vx * p.vx + p.vy * p.vy); if (v > vmax) { p.vx *= vmax / v; p.vy *= vmax / v; } }
+    p.x += p.vx * dt; p.y += p.vy * dt; p.life += dt;
+  }
 };
+/* devuelve a la cámara una partícula que cruzó una pared lineal y le quita la velocidad hacia afuera
+   (ix, iy: normal unitaria de la pared que apunta hacia adentro; dist: distancia con signo del centro) */
+function keepIn(p, ix, iy, dist, wvx) {
+  if (dist >= p.r * 0.35) return;
+  var push = p.r * 0.35 - dist; p.x += ix * push; p.y += iy * push;
+  var vn = (p.vx - (wvx || 0)) * ix + p.vy * iy;
+  if (vn < 0) { p.vx -= 1.3 * vn * ix; p.vy -= 1.3 * vn * iy; }
+}
 /* ---------- molino de bolas ---------- */
 MillAnim.prototype.step_bolas = function (dt) {
   var g = this.geo, P = this.P, G = 1700, R = g.R, wc = Math.sqrt(G / (R - g.rb)), w = this.prm.phi * wc;
@@ -656,9 +680,33 @@ MillAnim.prototype.step_mand = function (dt) {
     for (var h = 0; h < 2; h++) { var c = segContact(p, hop[h][0], hop[h][1], hop[h][2], hop[h][3]); if (c) contact(p, c.nx, c.ny, c.ov, 0, 0, kn * p.m, cn * p.m, 0.3, A[i]); }
     p.sq = tL && tR && j.v1 < 0 ? 1 : 0;
   }
-  this.integrate(A, dt, G);
+  this.integrate(A, dt, G, 800);
+  this.containJaw(this.jaw(this.t));
   this.breakAndExit(function (p) { return p.sq && Math.random() < 0.06; }, 3);
   this.spawnT += dt; if (this.spawnT > 0.55 && P.length < 90) { this.spawnT = 0; this.spawnFeed(); }
+};
+/* La cámara de las mandíbulas y la tolva son paredes con espesor: nada sale por los lados,
+   solo por la abertura de descarga de abajo. */
+MillAnim.prototype.containJaw = function (j) {
+  var g = this.geo, P = this.P, hop = g.top - 70;
+  var side = function (p, x1, y1, x2, y2, sgn, wvx) {
+    var dx = x2 - x1, dy = y2 - y1, L = Math.sqrt(dx * dx + dy * dy), ix = sgn * dy / L, iy = -sgn * dx / L;
+    keepIn(p, ix, iy, (p.x - x1) * ix + (p.y - y1) * iy, wvx);
+  };
+  for (var i = 0; i < P.length; i++) {
+    var p = P[i];
+    // producto ya descargado: cae a la banda casi vertical, sin regarse por debajo de las mandíbulas
+    if (p.y > g.bot) { if (p.vx > 120) p.vx = 120; else if (p.vx < -120) p.vx = -120; continue; }
+    // sobre la cámara nada sale volando: la subida se frena y la tolva sigue siendo pared hacia arriba
+    if (p.y < g.top && p.vy < -260) p.vy = -260;
+    if (p.y >= g.top) {
+      side(p, g.xl0, g.top, g.xl1, g.bot, 1, 0);
+      var f = (p.y - j.y0) / (j.y1 - j.y0); side(p, j.x0, j.y0, j.x1, j.y1, -1, j.v0 + (j.v1 - j.v0) * f);
+    } else {
+      side(p, g.xl0 - 50, hop, g.xl0, g.top, 1, 0);
+      side(p, g.xr0 + 50, hop, g.xr0 + 4, g.top, -1, 0);
+    }
+  }
 };
 /* ---------- molino de rodillos ---------- */
 MillAnim.prototype.step_rod = function (dt) {
@@ -674,7 +722,10 @@ MillAnim.prototype.step_rod = function (dt) {
     }
     p.sq = p.t0 && p.t1 ? 1 : 0;
   }
-  this.integrate(A, dt, G);
+  this.integrate(A, dt, G, 1100);
+  // tolva de alimentación: dos placas guía sobre los rodillos que dejan caer el material hacia la zona de agarre
+  var yb = g.cy - g.R * 1.06, xg = g.R * 0.95;
+  for (var q = 0; q < P.length; q++) { var pp = P[q]; if (pp.y < yb) { keepIn(pp, 1, 0, pp.x - (g.cx - xg), 0); keepIn(pp, -1, 0, (g.cx + xg) - pp.x, 0); } }
   this.breakAndExit(function (p) { return p.sq && Math.random() < 0.08; }, 3);
   this.spawnT += dt; if (this.spawnT > 0.32 && P.length < 90) { this.spawnT = 0; this.spawnFeed(); }
 };
@@ -702,7 +753,13 @@ MillAnim.prototype.step_mart = function (dt) {
     }
     var rc = Math.sqrt(dx * dx + dy * dy); if (rc < g.rr + p.r) { contact(p, dx / rc, dy / rc, g.rr + p.r - rc, -w * dy, w * dx, kn * p.m, cn * p.m, 0.2, A[i]); }
   }
-  this.integrate(A, dt, G);
+  this.integrate(A, dt, G, 2600);
+  // la carcasa es una pared con espesor: lo que no pasa por la criba se queda adentro
+  for (var m = 0; m < P.length; m++) {
+    var pm = P[m]; if (pm.out) continue;
+    var ex = pm.x - g.cx, ey = pm.y - g.cy, dm = Math.sqrt(ex * ex + ey * ey) || 1;
+    keepIn(pm, -ex / dm, -ey / dm, g.Rc - dm, 0);
+  }
   for (var k = P.length - 1; k >= 0; k--) {
     var q = P[k];
     if (q.out) { P.splice(k, 1); this.stats.out++; continue; }
@@ -786,6 +843,9 @@ MillAnim.prototype.draw = function () {
       c.lineWidth = 1.2; for (var s = 0; s < 18; s++) { var a = rl[1] * self.ang + s * Math.PI / 9; c.beginPath(); c.moveTo(rl[0] + g.R * 0.86 * Math.cos(a), g.cy + g.R * 0.86 * Math.sin(a)); c.lineTo(rl[0] + g.R * Math.cos(a), g.cy + g.R * Math.sin(a)); c.stroke(); }
       c.fillStyle = ink; c.beginPath(); c.arc(rl[0], g.cy, 5, 0, Math.PI * 2); c.fill();
     });
+    c.strokeStyle = ink; c.lineWidth = 2; c.beginPath();
+    [-1, 1].forEach(function (sg) { var xg = g.cx + sg * g.R * 0.95; c.moveTo(xg, 0); c.lineTo(xg, g.cy - g.R * 1.06); });
+    c.stroke();
     this.P.forEach(drawOre);
   } else if (this.kind === 'mart') {
     c.fillStyle = body; c.beginPath(); c.arc(g.cx, g.cy, g.Rc, 0, Math.PI * 2); c.fill();
