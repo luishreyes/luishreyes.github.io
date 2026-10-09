@@ -43,7 +43,13 @@ export const PouLandingPage: React.FC<{ course: Course }> = ({ course }) => {
     (r) => r.category !== 'lectura' && r.slug !== 'cronograma-interactivo',
   ).length;
   const pres = (course.presentations ?? []).filter((p) => isItemOpen('pres', p.id, p.week)).length;
-  const sims = (course.simulations ?? []).filter((s) => isItemOpen('sim', s.id, s.week)).length;
+  const simsAbiertos = (course.simulations ?? []).filter((s) => isItemOpen('sim', s.id, s.week));
+  const sims = simsAbiertos.length;
+  // Miniaturas de los últimos simuladores disponibles para la tarjeta de acceso.
+  const mosaico = simsAbiertos
+    .filter((s) => s.bannerImg)
+    .sort((a, b) => (a.week ?? 0) - (b.week ?? 0) || (a.sessionNumber ?? 0) - (b.sessionNumber ?? 0))
+    .slice(-4);
 
   const ficha: { n: string; prop: string; val: string; rem: string }[] = [
     { n: '01', prop: 'Código', val: course.code, rem: 'Sección POU' },
@@ -83,6 +89,11 @@ export const PouLandingPage: React.FC<{ course: Course }> = ({ course }) => {
               <Link className="btn btn-primary" to={`/classroom/${course.slug}/readings`}>
                 Material del curso
               </Link>
+              {(course.simulations?.length ?? 0) > 0 && (
+                <Link className="btn btn-secondary" to={`/classroom/${course.slug}/simulations`}>
+                  Simuladores
+                </Link>
+              )}
               {cronograma?.href && (
                 isInternalDoc(course.slug, cronograma.href) ? (
                   <Link className="btn btn-secondary" to={toViewer(course.slug, cronograma.href)}>
@@ -141,7 +152,7 @@ export const PouLandingPage: React.FC<{ course: Course }> = ({ course }) => {
         {/* ── Accesos ─────────────────────────────────────────────── */}
         <section className="pou-wrap" style={{ paddingBottom: '72px' }} aria-label="Accesos del curso">
           <Eyebrow>Dónde está todo</Eyebrow>
-          <div className="pou-cells two" style={{ marginTop: '24px' }}>
+          <div className="pou-cells three" style={{ marginTop: '24px' }}>
             <Link className="pou-cell blueprint" to={`/classroom/${course.slug}/readings`}>
               <Marks />
               <span className="k">Material</span>
@@ -156,6 +167,27 @@ export const PouLandingPage: React.FC<{ course: Course }> = ({ course }) => {
               </p>
               <span className="go">Abrir por semana →</span>
             </Link>
+
+            {(course.simulations?.length ?? 0) > 0 && (
+              <Link className="pou-cell blueprint" to={`/classroom/${course.slug}/simulations`}>
+                <Marks />
+                <span className="k">Interactivos</span>
+                <h3>Simuladores</h3>
+                {mosaico.length > 0 && (
+                  <span className="mosaic" aria-hidden="true">
+                    {mosaico.map((s) => (
+                      <img key={s.id} src={s.bannerImg} alt="" loading="lazy" />
+                    ))}
+                  </span>
+                )}
+                <p>
+                  {sims > 0
+                    ? `${sims} ${sims === 1 ? 'simulador disponible' : 'simuladores disponibles'}, en el orden del semestre. Cada uno llega con su semana.`
+                    : 'Los exploradores del curso llegan con el material de su semana.'}
+                </p>
+                <span className="go">Abrir simuladores →</span>
+              </Link>
+            )}
 
             {cronograma?.href && (
               isInternalDoc(course.slug, cronograma.href) ? (

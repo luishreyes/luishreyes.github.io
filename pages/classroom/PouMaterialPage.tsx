@@ -4,12 +4,8 @@ import { motion } from 'framer-motion';
 import type { Course, Reading, Presentation, Simulation } from '../../components/data/classroom';
 import { CourseAccessGate } from '../../components/classroom/CourseAccessGate';
 import { useCourseRelease, fmtReleaseDate } from '../../components/classroom/courseRelease';
-import {
-  getPublishToken,
-  itemKey,
-  savePublishToken,
-  type PublishKind,
-} from '../../components/classroom/publishState';
+import { itemKey } from '../../components/classroom/publishState';
+import { usePublishControls } from '../../components/classroom/PouPublishControls';
 import '../../components/classroom/pou-theme.css';
 
 // Material del curso de POU con la identidad «Industry»: cada semana es una
@@ -56,83 +52,14 @@ export const PouMaterialPage: React.FC<{ course: Course }> = ({ course }) => {
   const { isStaff, gated, manual, isWeekOpen, releaseDate, isItemOpen, publishedItems, setItemsPublished } =
     useCourseRelease(course);
 
-  // Publicación manual (equipo docente): el token de GitHub se pega una sola
-  // vez y queda en este navegador; con él cada botón escribe el cambio en el
-  // repositorio para que lo vean todos los estudiantes.
-  const [pubToken, setPubToken] = React.useState<string | null>(() => getPublishToken());
-  const [tokenDraft, setTokenDraft] = React.useState('');
-  const [pubError, setPubError] = React.useState<string | null>(null);
-  // Qué se está guardando ahora mismo: la llave de una actividad o `semana:N`.
-  const [guardando, setGuardando] = React.useState<string | null>(null);
-
-  const guardarToken = (e: React.FormEvent) => {
-    e.preventDefault();
-    const t = tokenDraft.trim();
-    if (!t) return;
-    savePublishToken(t);
-    setPubToken(t);
-    setTokenDraft('');
-    setPubError(null);
-  };
-
-  const olvidarToken = () => {
-    savePublishToken(null);
-    setPubToken(null);
-  };
-
-  const alternarActividades = async (
-    changes: Array<{ key: string; on: boolean }>,
-    message: string,
-    marca: string,
-  ) => {
-    if (!pubToken) {
-      setPubError('Antes de publicar, configure el token del equipo docente (arriba).');
-      return;
-    }
-    if (changes.length === 0) return;
-    setGuardando(marca);
-    setPubError(null);
-    try {
-      await setItemsPublished(changes, pubToken, message);
-    } catch (err) {
-      setPubError(err instanceof Error ? err.message : 'No se pudo guardar el cambio.');
-    } finally {
-      setGuardando(null);
-    }
-  };
-
-  // Botón Publicada/Oculta de una actividad. Vive junto al enlace de la
-  // actividad (nunca adentro, para no anidar controles) y solo existe en la
-  // vista del equipo docente de cursos con publicación manual.
-  const botonActividad = (kind: PublishKind, id: string, titulo: string): React.ReactNode => {
-    if (!isStaff || !manual) return null;
-    const k = itemKey(kind, id);
-    const on = publishedItems?.has(k) ?? false;
-    return (
-      <button
-        type="button"
-        className={`pou-pub-toggle sm${on ? ' on' : ''}`}
-        disabled={guardando !== null}
-        aria-pressed={on}
-        title={
-          on
-            ? 'Los estudiantes ven esta actividad. Clic para ocultarla.'
-            : 'Los estudiantes no ven esta actividad. Clic para publicarla.'
-        }
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          void alternarActividades(
-            [{ key: k, on: !on }],
-            `${on ? 'oculta' : 'publica'} «${titulo}»`,
-            k,
-          );
-        }}
-      >
-        {guardando === k ? 'Guardando…' : on ? 'Publicada' : 'Oculta'}
-      </button>
-    );
-  };
+  // Publicación manual (equipo docente): token, panel y botones compartidos
+  // con la página de simuladores.
+  const pub = usePublishControls(
+    { isStaff, manual, publishedItems, setItemsPublished },
+    'El botón de la cabecera publica u oculta la semana completa de una vez.',
+  );
+  const { guardando, boton: botonActividad } = pub;
+  const alternarActividades = pub.alternar;
 
   const byOrder = (a: Reading, b: Reading) =>
     (a.order ?? Infinity) - (b.order ?? Infinity) || b.date.localeCompare(a.date);
@@ -220,56 +147,21 @@ export const PouMaterialPage: React.FC<{ course: Course }> = ({ course }) => {
                 (manual
                   ? ' El equipo docente publica cada semana cuando su material está listo.'
                   : ' Cada semana se abre unos días antes de su primera sesión.')}
+              {simulaciones.length > 0 && (
+                <>
+                  {' '}Los simuladores también están reunidos en{' '}
+                  <Link to={`/classroom/${course.slug}/simulations`} style={{ color: 'var(--pou-accent-700)' }}>
+                    Simuladores →
+                  </Link>
+                </>
+              )}
             </p>
             {isStaff && (manual || course.gradualRelease) && (
               <p className="pou-staff-badge">
                 Equipo docente · semestre completo a la vista
               </p>
             )}
-            {isStaff && manual && (
-              <div className="pou-pub-panel">
-                {pubToken ? (
-                  <p>
-                    Publicación manual activa: cada actividad tiene su botón{' '}
-                    <strong>Publicada / Oculta</strong>, y el botón de la cabecera publica u
-                    oculta la semana completa de una vez. Los estudiantes ven el cambio en
-                    cosa de un minuto.{' '}
-                    <button type="button" onClick={olvidarToken}>
-                      Cambiar token
-                    </button>
-                  </p>
-                ) : (
-                  <>
-                    <p>
-                      Para publicar u ocultar semanas desde aquí se necesita un{' '}
-                      <a
-                        href="https://github.com/settings/personal-access-tokens/new"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        fine-grained token de GitHub ↗
-                      </a>{' '}
-                      con acceso solo a <code>luishreyes.github.io</code> y permiso{' '}
-                      «Contents · Read and write». Se pega una sola vez y queda guardado en
-                      este navegador.
-                    </p>
-                    <form onSubmit={guardarToken}>
-                      <input
-                        type="password"
-                        autoComplete="off"
-                        spellCheck={false}
-                        placeholder="github_pat_…"
-                        value={tokenDraft}
-                        onChange={(e) => setTokenDraft(e.target.value)}
-                        aria-label="Token de publicación"
-                      />
-                      <button type="submit">Guardar</button>
-                    </form>
-                  </>
-                )}
-                {pubError && <p className="err">{pubError}</p>}
-              </div>
-            )}
+            {pub.panel}
           </div>
         </header>
 
