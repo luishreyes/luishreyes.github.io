@@ -156,7 +156,7 @@ const PouSimulations: React.FC<{ course: Course }> = ({ course }) => {
         <div className="plate" style={{ marginTop: '48px', padding: '22px 26px' }}>
           <Marks />
           <p className="pou-eyebrow" style={{ marginBottom: '10px' }}>Cómo sacarles provecho</p>
-          <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '15px', lineHeight: 1.55 }}>
+          <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '17px', lineHeight: 1.55 }}>
             <li style={{ marginBottom: '6px' }}>Llévelos a los extremos: el régimen laminar, el caudal cero, el impulsor sin bafles. Ahí se entiende la regla.</li>
             <li style={{ marginBottom: '6px' }}>Contraste cada resultado con su cálculo a mano en la bitácora antes de usarlo en el informe.</li>
             <li>Cada simulador abre con el caso del proyecto o con el ejemplo de la lectura: empiece por ahí y cambie una variable a la vez.</li>
