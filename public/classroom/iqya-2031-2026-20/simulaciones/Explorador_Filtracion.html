@@ -1,0 +1,1584 @@
+<!DOCTYPE html>
+<html lang="es" data-canvas="paper">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Explorador de filtración · Proyecto de Operaciones Unitarias</title>
+<link rel="stylesheet" href="/classroom-fonts.css">
+<link rel="stylesheet" href="/classroom/vendor/katex/katex.min.css">
+<script defer src="/classroom/vendor/katex/katex.min.js"></script>
+<style>
+:root {
+  --accent: #5980A6; --accent-50: #F6F9FC; --accent-100: #EFF4F9; --accent-200: #D3E0EC; --accent-300: #A9C3D8; --accent-600: #416180; --accent-700: #2C455D;
+  --text: #1c1b1a; --bg: #fff; --divider: #1c1b1a;
+  --n50: #faf9f8; --n100: #f4f2f0; --n200: #e9e6e3; --n300: #d8d5d2; --n400: #b3afab; --n500: #8a8683; --n600: #6b6764; --n700: #4f4b48; --n800: #35322f;
+  --redline: #C8452B; --ok: #2F7D5B; --warn: #B7791F;
+  --font-body: 'Manrope Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, Menlo, Consolas, monospace;
+  --ink: #1c1b1a; --paper: #fff; --grid: rgba(89,128,166,.09); --muted-ink: #6b6764; --hl: #5980A6;
+  --top-h: 128px; --ctl-w: 330px;
+}
+:root[data-canvas="blueprint"] { --ink: #e6eef7; --paper: #12304d; --grid: rgba(255,255,255,.06); --muted-ink: #9fb6cc; --hl: #FFBF00; }
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--text); font-family: var(--font-body); -webkit-font-smoothing: antialiased; font-size: 15px; line-height: 1.5; }
+button { font-family: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.mono { font-family: var(--font-mono); }
+.kick { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--accent); font-weight: 600; }
+.lbl { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--n600); font-weight: 700; }
+.small { font-size: 12.5px; color: var(--n600); line-height: 1.5; }
+
+/* ---------- cabecera fija con indicadores ---------- */
+.top { position: sticky; top: 0; z-index: 40; background: #fff; border-bottom: 2px solid var(--divider); }
+.top-row { display: flex; align-items: center; gap: 18px; padding: 12px 22px 10px; }
+.top-row h1 { font-size: 21px; font-weight: 780; letter-spacing: -.02em; margin: 2px 0 0; line-height: 1.1; }
+.top-row .sp { flex: 1; }
+.ctx { font-size: 12.5px; color: var(--n600); }
+.ctx b { color: var(--text); }
+.status { border: 2px solid var(--text); padding: 6px 12px; font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; font-weight: 700; background: #fff; cursor: pointer; display: inline-flex; gap: 8px; align-items: center; color: var(--text); }
+.status i { width: 9px; height: 9px; border-radius: 50%; background: var(--ok); }
+.status.adv i { background: var(--warn); } .status.inv i { background: var(--redline); }
+.status.inv { border-color: var(--redline); color: var(--redline); }
+.kpis { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); border-top: 1px solid var(--n300); }
+.kpi { padding: 7px 14px 8px; border-right: 1px solid var(--n300); min-width: 0; }
+.kpi:last-child { border-right: none; }
+.kpi .v { font-family: var(--font-mono); font-size: 19px; font-weight: 750; font-variant-numeric: tabular-nums; white-space: nowrap; transition: color .2s; }
+.kpi .v small { font-size: 11px; font-weight: 600; color: var(--n600); margin-left: 3px; }
+.kpi .u { font-size: 11px; color: var(--n600); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.kpi.bad .v { color: var(--redline); }
+.kpi .v.flash { animation: kf .6s ease; }
+@keyframes kf { 0% { color: var(--accent); } 100% { } }
+
+/* ---------- estructura ---------- */
+.shell { display: grid; grid-template-columns: var(--ctl-w) minmax(0, 1fr); }
+.ctl { position: sticky; top: var(--top-h); height: calc(100vh - var(--top-h)); overflow-y: auto; border-right: 2px solid var(--divider); background: var(--n50); padding: 4px 0 30px; overscroll-behavior: contain; }
+.ctl section { padding: 14px 20px 16px; border-bottom: 1px solid var(--n300); }
+.ctl h2 { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--n700); margin: 0 0 10px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+.ctl h2 .n { color: var(--accent); }
+.opts { display: grid; gap: 6px; }
+.opt { display: grid; grid-template-columns: 14px 1fr auto; gap: 10px; align-items: center; text-align: left; border: 1.5px solid var(--n300); background: #fff; padding: 8px 10px; cursor: pointer; font-size: 13.5px; font-weight: 650; color: var(--text); transition: border-color .12s, background .12s; }
+.opt:hover { border-color: var(--text); }
+.opt[aria-pressed="true"] { border-color: var(--accent); background: var(--accent); color: #fff; }
+.opt .dotc { width: 12px; height: 12px; border-radius: 50%; border: 1px solid rgba(0,0,0,.3); }
+.opt .x { font-family: var(--font-mono); font-size: 11px; font-weight: 600; opacity: .75; }
+.mills { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.mill { border: 1.5px solid var(--n300); background: #fff; padding: 8px 6px 7px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12px; font-weight: 700; color: var(--text); transition: border-color .12s, background .12s; }
+.mill svg { width: 44px; height: 30px; }
+.mill:hover { border-color: var(--text); }
+.mill[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-100); box-shadow: inset 0 -3px 0 var(--accent); color: var(--accent-700); }
+.mill:last-child:nth-child(odd) { grid-column: 1 / -1; flex-direction: row; justify-content: center; gap: 10px; }
+.seg { display: flex; border: 2px solid var(--text); background: #fff; }
+.seg button { flex: 1; border: none; border-right: 1px solid var(--text); background: #fff; padding: 7px 8px; font-size: 12.5px; font-weight: 650; cursor: pointer; color: var(--text); }
+.seg button:last-child { border-right: none; }
+.seg button[aria-pressed="true"] { background: var(--accent); color: #fff; }
+.seg.inline { display: inline-flex; }
+.sl { margin-top: 12px; }
+.sl .row { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.sl .row span:first-child { font-size: 12.5px; font-weight: 650; color: var(--n800); }
+.sl .row b { font-family: var(--font-mono); font-size: 13.5px; font-weight: 750; }
+.sl .hint { font-size: 11.5px; color: var(--n600); margin-top: 2px; }
+.sl .hint.bad { color: var(--redline); font-weight: 650; }
+input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 22px; background: transparent; cursor: pointer; margin: 2px 0 0; }
+input[type=range]::-webkit-slider-runnable-track { height: 2px; background: var(--n400); }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 18px; background: var(--accent); margin-top: -8px; border: none; }
+input[type=range]::-moz-range-track { height: 2px; background: var(--n400); }
+input[type=range]::-moz-range-thumb { width: 12px; height: 18px; background: var(--accent); border: none; border-radius: 0; }
+.toggle { display: flex; align-items: center; gap: 9px; font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 10px; }
+.toggle input { appearance: none; width: 30px; height: 17px; border: 1.5px solid var(--text); position: relative; background: #fff; cursor: pointer; margin: 0; flex: none; }
+.toggle input::after { content: ''; position: absolute; top: 2px; left: 2px; width: 10px; height: 10px; background: var(--text); transition: transform .15s; }
+.toggle input:checked { background: var(--accent); border-color: var(--accent); }
+.toggle input:checked::after { transform: translateX(13px); background: #fff; }
+select.sel { width: 100%; border: 1.5px solid var(--text); padding: 7px 8px; font: inherit; font-size: 13px; background: #fff; margin-top: 6px; }
+
+main { min-width: 0; }
+.tabs { position: sticky; top: var(--top-h); z-index: 30; display: flex; background: #fff; border-bottom: 2px solid var(--divider); overflow-x: auto; scrollbar-width: none; }
+.tabs button { border: none; background: #fff; padding: 12px 18px 11px; font-size: 14px; font-weight: 700; cursor: pointer; color: var(--n600); border-right: 1px solid var(--n300); white-space: nowrap; display: flex; align-items: baseline; gap: 8px; position: relative; }
+.tabs button .k { font-family: var(--font-mono); font-size: 10.5px; color: var(--n400); }
+.tabs button:hover { color: var(--text); background: var(--accent-50); }
+.tabs button[aria-selected="true"] { color: var(--accent-700); background: var(--accent-100); }
+.tabs button[aria-selected="true"]::after { content: ''; position: absolute; left: 0; right: 0; bottom: -2px; height: 4px; background: var(--accent); }
+.tabs .sp { flex: 1; border-right: none; }
+.tabs .canv { display: flex; align-items: center; padding: 0 12px; gap: 6px; }
+.tabs .canv button { padding: 5px 9px; border: 1.5px solid var(--n300); font-size: 11.5px; }
+.tabs .canv button[aria-pressed="true"] { background: var(--text); color: #fff; border-color: var(--text); }
+.panel { display: none; padding: 22px 26px 60px; }
+.panel.on { display: block; animation: pin .3s ease both; }
+@keyframes pin { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.ph h2 { font-size: 23px; font-weight: 760; letter-spacing: -.02em; margin: 0 12px 0 0; display: inline; }
+.ph .lbl { display: inline-block; }
+.ph p { margin: 8px 0 0; color: var(--n700); font-size: 14.5px; max-width: 82ch; }
+#svgSankey text { paint-order: stroke; stroke: #fff; stroke-width: 4px; stroke-linejoin: round; }
+:root[data-canvas="blueprint"] #svgSankey text { stroke: var(--paper); }
+.card { border: 2px solid var(--divider); background: #fff; margin-top: 18px; }
+.card-h { display: flex; align-items: center; gap: 12px; padding: 8px 14px; border-bottom: 1.5px solid var(--divider); font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; font-weight: 700; color: var(--n700); flex-wrap: wrap; }
+.card-h .t { color: var(--text); }
+.card-h .sp { flex: 1; }
+.card-b { padding: 16px 18px; }
+.two { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+.three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; align-items: start; }
+.stage { position: relative; background: var(--paper); }
+.stage canvas { display: block; width: 100%; height: clamp(320px, 52vh, 520px); touch-action: pan-y; }
+.hud { position: absolute; left: 12px; top: 12px; display: flex; gap: 6px; flex-wrap: wrap; pointer-events: none; }
+.chip { font-family: var(--font-mono); font-size: 11px; font-weight: 700; padding: 4px 8px; border: 1.5px solid var(--text); background: rgba(255,255,255,.94); color: var(--text); letter-spacing: .02em; }
+.chip.acc { background: var(--accent); border-color: var(--accent); color: #fff; }
+.chip.red { background: var(--redline); border-color: var(--redline); color: #fff; }
+.play { position: absolute; right: 12px; top: 12px; display: flex; gap: 6px; }
+.play button { border: 1.5px solid var(--text); background: #fff; height: 30px; min-width: 30px; padding: 0 8px; cursor: pointer; display: inline-grid; place-items: center; font-family: var(--font-mono); font-size: 11px; font-weight: 700; color: var(--text); }
+.play button[aria-pressed="true"] { background: var(--text); color: #fff; }
+.caption { padding: 12px 16px; border-top: 1.5px solid var(--divider); font-size: 13.5px; color: var(--n800); background: var(--n50); line-height: 1.55; }
+.caption b { color: var(--accent-700); }
+.spec { display: grid; grid-template-columns: 1fr auto; font-size: 13px; }
+.spec > div { padding: 6px 0; border-bottom: 1px solid var(--n200); }
+.spec .v { font-weight: 700; text-align: right; font-family: var(--font-mono); font-size: 12.5px; }
+.warn { display: grid; grid-template-columns: 22px 1fr; gap: 8px; padding: 9px 0; border-bottom: 1px solid var(--n200); font-size: 13.5px; line-height: 1.5; animation: pin .25s ease both; }
+.warn i { width: 18px; height: 18px; display: grid; place-items: center; font-style: normal; font-weight: 800; font-size: 12px; color: #fff; background: var(--warn); margin-top: 1px; }
+.warn.c i { background: var(--redline); }
+.warn.ok i { background: var(--ok); }
+svg.ch { width: 100%; height: auto; display: block; font-family: var(--font-body); }
+svg.ch text { fill: var(--ink); }
+.chart-bg { fill: var(--paper); }
+table.t { width: 100%; border-collapse: collapse; font-size: 13px; }
+table.t th { text-align: right; padding: 6px 8px; border-bottom: 2px solid var(--text); font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--n700); font-weight: 700; }
+table.t th:first-child, table.t td:first-child { text-align: left; }
+table.t td { text-align: right; padding: 6px 8px; border-bottom: 1px solid var(--n200); font-variant-numeric: tabular-nums; }
+table.t td:first-child { font-weight: 700; }
+table.t tr.tot td { border-top: 2px solid var(--text); font-weight: 800; }
+table.t tr:hover td { background: var(--accent-50); }
+.flowstep td:first-child { font-weight: 600 !important; }
+.flowstep .op { font-family: var(--font-mono); color: var(--accent-700); font-weight: 700; }
+.mcards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 2px solid var(--divider); margin-top: 18px; background: #fff; }
+.mcards > div { padding: 12px 16px; border-right: 1px solid var(--n300); border-bottom: 1px solid var(--n300); }
+.mcards > div:nth-child(3n) { border-right: none; }
+.mcards .v { font-family: var(--font-mono); font-size: 22px; font-weight: 780; margin-top: 2px; }
+.mcards .u { font-size: 11.5px; color: var(--n600); }
+.mcards .bad { color: var(--redline); }
+.eqs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0; border: 2px solid var(--divider); margin-top: 18px; background: #fff; }
+.eqs > div { padding: 16px 18px; border-right: 1px solid var(--n300); border-bottom: 1px solid var(--n300); }
+.eqs > div:nth-child(2n) { border-right: none; }
+.eqs .f { font-size: 17px; margin: 8px 0 6px; min-height: 28px; overflow-x: auto; }
+.eqs .n2 { font-size: 12.5px; color: var(--n600); }
+.callout { border-left: 4px solid var(--accent); background: var(--accent-100); padding: 12px 16px; margin-top: 18px; font-size: 13.5px; line-height: 1.6; }
+.callout.ink { border-left-color: var(--text); background: var(--n100); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12px; color: var(--n700); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { display: inline-block; width: 24px; border-top: 2.5px solid var(--accent); }
+.legend i.k { border-top: 2px dashed var(--ink); } .legend i.r { border-top: 2px dotted var(--ink); }
+.legend i.box { width: 12px; height: 10px; border: 1px solid var(--accent-700); background: var(--accent-200); }
+.readout { font-family: var(--font-mono); font-size: 12px; color: var(--n700); min-height: 18px; }
+.mobile-ctl { display: none; }
+@media (max-width: 1100px) { .two { grid-template-columns: 1fr; } .kpi .v { font-size: 16px; } }
+@media (max-width: 900px) {
+  .top-row .kick, .top-row .ctx, .top-row .sp { display: none; }
+  .top-row h1 { font-size: 15px; flex: 1; }
+  .status { padding: 4px 8px; font-size: 9.5px; }
+  .kpi { padding: 4px 10px 5px; } .kpi .v { font-size: 14.5px; } .kpi .u { display: none; } .kpi .lbl { font-size: 9px; }
+  .hud .chip:not(.acc):not(.red) { display: none; }
+  .hud { top: 50px; }
+  .kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .kpi:nth-child(3) { border-right: none; } .kpi:nth-child(-n+3) { border-bottom: 1px solid var(--n300); }
+  .shell { grid-template-columns: 1fr; }
+  .ctl { position: fixed; left: 0; right: 0; bottom: 0; top: auto; height: 72vh; z-index: 60; transform: translateY(102%); transition: transform .25s ease; border-right: none; border-top: 2px solid var(--divider); box-shadow: 0 -12px 40px -10px rgba(0,0,0,.3); }
+  .ctl.open { transform: none; }
+  .mobile-ctl { display: inline-flex; position: fixed; right: 14px; bottom: 14px; z-index: 61; background: var(--accent); color: #fff; border: none; padding: 12px 16px; font-weight: 750; font-size: 14px; box-shadow: 0 6px 20px -6px rgba(0,0,0,.4); gap: 8px; align-items: center; }
+  .panel { padding: 16px 14px 90px; }
+  .three, .eqs, .mcards { grid-template-columns: minmax(0, 1fr); }
+  .eqs > div, .mcards > div { border-right: none !important; }
+  .top-row { flex-wrap: wrap; padding: 10px 14px; }
+  .tabs .canv { display: none; }
+}
+
+/* ---------- propios del explorador de Bernoulli ---------- */
+.mills { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.mill svg { width: 40px; height: 26px; }
+.mill:last-child:nth-child(odd) { grid-column: auto; flex-direction: column; gap: 4px; }
+.mode-note { font-size: 12px; color: var(--n700); margin-top: 8px; line-height: 1.45; }
+.fitrow { display: grid; grid-template-columns: 1fr auto; gap: 6px 8px; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--n200); }
+.fitrow .nm { font-size: 12.5px; font-weight: 650; line-height: 1.3; }
+.fitrow .kk { font-family: var(--font-mono); font-size: 10.5px; color: var(--n600); }
+.fitrow.on .nm { color: var(--accent-700); }
+.stp { display: inline-flex; align-items: center; border: 1.5px solid var(--text); }
+.stp button { width: 26px; height: 24px; border: none; background: #fff; font-size: 15px; font-weight: 800; cursor: pointer; color: var(--text); line-height: 1; padding: 0; }
+.stp button:last-child { background: var(--text); color: #fff; }
+.stp b { min-width: 22px; text-align: center; font-family: var(--font-mono); font-size: 13px; }
+.fitrow .opn { grid-column: 1 / -1; display: flex; gap: 4px; align-items: center; }
+.fitrow .opn span { font-family: var(--font-mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--n600); margin-right: 4px; }
+.fitrow .opn button { flex: 1; border: 1.5px solid var(--n300); background: #fff; font-family: var(--font-mono); font-size: 11px; font-weight: 700; padding: 3px 0; cursor: pointer; color: var(--text); }
+.fitrow .opn button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+.fitrow .opn input { flex: 1; }
+.fitrow .opn b { font-family: var(--font-mono); font-size: 12px; min-width: 44px; text-align: right; }
+.sub { font-family: var(--font-mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent-700); font-weight: 700; margin: 16px 0 2px; }
+.btnw { width: 100%; margin-top: 12px; border: 2px solid var(--text); background: #fff; padding: 8px 10px; font-weight: 750; font-size: 12.5px; cursor: pointer; color: var(--text); text-align: left; }
+.btnw:hover { background: var(--accent-50); }
+.btnw.acc { background: var(--accent); border-color: var(--accent); color: #fff; }
+.presets { display: grid; gap: 6px; }
+.presets .opt { grid-template-columns: 1fr auto; }
+.terms { display: flex; flex-wrap: wrap; align-items: stretch; gap: 4px; }
+.terms .op { font-family: var(--font-mono); font-weight: 800; font-size: 18px; align-self: center; min-width: 14px; text-align: center; }
+.terms .tb { border: 1.5px solid var(--n300); padding: 6px 9px; min-width: 70px; background: #fff; }
+.terms .tb .l { font-size: 11px; color: var(--n600); font-weight: 700; }
+.terms .tb .v { font-family: var(--font-mono); font-weight: 780; font-size: 16px; }
+.terms .tb .u { font-size: 10.5px; color: var(--n600); }
+.terms .tb.acc { border-color: var(--accent); background: var(--accent-100); }
+.terms .tb.loss { border-color: var(--redline); background: #fbf0ed; }
+.terms .side { font-family: var(--font-mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--n600); width: 100%; margin-top: 6px; }
+.stack { display: flex; height: 34px; border: 1.5px solid var(--divider); margin-top: 8px; overflow: hidden; }
+.stack > div { height: 100%; position: relative; transition: flex-basis .3s ease; min-width: 0; }
+.stack > div span { position: absolute; left: 5px; top: 50%; transform: translateY(-50%); font-family: var(--font-mono); font-size: 10.5px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; max-width: calc(100% - 6px); }
+.stack-leg { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 16px; margin-top: 10px; font-size: 12px; }
+.stack-leg div { display: grid; grid-template-columns: 12px 1fr auto; gap: 7px; align-items: center; }
+.stack-leg i { width: 12px; height: 12px; display: block; }
+.stack-leg b { font-family: var(--font-mono); font-size: 12px; }
+#svgProfile text, #svgCurves text, #svgMoody text, #svgSweep text, #svgBars text { paint-order: stroke; stroke: var(--paper); stroke-width: 3px; stroke-linejoin: round; }
+.hov { cursor: crosshair; }
+.stage .hud { right: 300px; }
+.kpi .lbl { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 900px) { .stage .hud { right: 12px; } }
+.pill { display: inline-block; font-family: var(--font-mono); font-size: 10.5px; font-weight: 700; padding: 2px 7px; border: 1.5px solid currentColor; margin-left: 6px; }
+.pill.ok { color: var(--ok); } .pill.w { color: var(--warn); } .pill.c { color: var(--redline); }
+.cmp { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0; border: 1.5px solid var(--divider); }
+.cmp > div { padding: 12px 14px; border-right: 1px solid var(--n300); }
+.cmp > div:last-child { border-right: none; }
+.cmp h4 { margin: 0 0 6px; font-size: 13px; }
+.cmp .big { font-family: var(--font-mono); font-size: 24px; font-weight: 780; }
+.save { margin-top: 12px; font-size: 13.5px; }
+.save b { color: var(--ok); font-family: var(--font-mono); }
+@media (max-width: 900px) { .cmp, .stack-leg { grid-template-columns: 1fr; } .cmp > div { border-right: none; border-bottom: 1px solid var(--n300); } }
+
+/* ---------- propios del explorador de intercambiadores ---------- */
+.mills { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.mill svg { width: 42px; height: 30px; }
+.mill .sz { font-family: var(--font-mono); font-size: 10px; font-weight: 600; color: var(--n600); }
+.mill[aria-pressed="true"] .sz { color: var(--accent-700); }
+.seg button:disabled, .opt:disabled { opacity: .45; cursor: not-allowed; }
+.seg.wrap { flex-wrap: wrap; }
+#svgProf text, #svgF text, #svgE text, #svgFo text, #svgBal text, #svgVel text, #svgCost text { paint-order: stroke; stroke: var(--paper); stroke-width: 3px; stroke-linejoin: round; }
+:root[data-canvas="blueprint"] svg.ch, :root[data-canvas="blueprint"] .card-b:has(> svg.ch), :root[data-canvas="blueprint"] .card-b:has(> canvas) { background: var(--paper); }
+:root[data-canvas="blueprint"] .card-b:has(> svg.ch) .readout { color: var(--muted-ink); }
+.np-msg { display: none; border-left-color: var(--redline); background: #fbf0ed; color: var(--n800); }
+.panel.nophys .np-msg { display: block; }
+.panel.nophys .card:not(#diagCard), .panel.nophys .eqs, .panel.nophys #assump { display: none; }
+.crit { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 6px; }
+.crit > div { display: grid; grid-template-columns: 12px 1fr auto; gap: 2px 8px; align-items: center; border: 1.5px solid var(--n200); padding: 7px 10px; background: #fff; }
+.crit i { width: 10px; height: 10px; border-radius: 50%; background: var(--ok); grid-row: 1 / span 2; }
+.crit .w i { background: var(--warn); } .crit .c i { background: var(--redline); } .crit .na i { background: var(--n300); }
+.crit .c { border-color: #ecc3b9; background: #fdf6f4; } .crit .w { border-color: #ead9b4; }
+.crit .nm { font-size: 12px; font-weight: 700; color: var(--n800); } .crit .vv { font-family: var(--font-mono); font-size: 12.5px; font-weight: 750; text-align: right; }
+.crit .rl { grid-column: 2 / -1; font-size: 11px; color: var(--n600); }
+.crit .na .vv, .crit .na .nm { color: var(--n500); }
+#matTable tr.cur td { background: var(--accent-100); }
+#matTable td.bad { color: var(--redline); font-weight: 700; }
+.tabs button { padding: 12px 13px 11px; font-size: 13.5px; }
+.tabs .canv { padding: 0 10px; }
+.timeline { padding: 10px 16px 4px; border-top: 1.5px solid var(--divider); background: #fff; }
+.tl-bar { position: relative; display: flex; height: 24px; border: 1.5px solid var(--divider); overflow: hidden; }
+.tl-bar > div { height: 100%; position: relative; min-width: 0; }
+.tl-bar > div span { position: absolute; left: 6px; top: 50%; transform: translateY(-50%); font-family: var(--font-mono); font-size: 10.5px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; max-width: calc(100% - 8px); }
+.tl-bar i { position: absolute; top: -2px; bottom: -2px; width: 3px; background: var(--ink); left: 0; box-shadow: 0 0 0 1.5px #fff; }
+.labin { display: flex; flex-wrap: wrap; gap: 8px 14px; margin-bottom: 10px; font-size: 12.5px; color: var(--n700); }
+.labin input, .ni { width: 82px; border: 1.5px solid var(--n300); padding: 3px 6px; font-family: var(--font-mono); font-size: 12.5px; background: #fff; color: var(--text); }
+.ni.sc { width: 48px; text-align: center; }
+.xb { border: 1.5px solid var(--n300); background: #fff; cursor: pointer; font-weight: 800; color: var(--n700); padding: 2px 8px; font-size: 12px; }
+.xb:hover { border-color: var(--text); color: var(--text); }
+.xb.wide { font-weight: 650; padding: 4px 10px; margin-top: 4px; }
+table.t tr.dim td { color: var(--n500); }
+#svgCyc text, #svgLab text, #svgRes text, #svgComp text, #svgPA text, #svgRamp text, #svgCi text, #svgBud text, #svgDr text, #svgMat text { paint-order: stroke; stroke: var(--paper); stroke-width: 3px; stroke-linejoin: round; }
+.stage .hud { right: 230px; }
+.eq2 { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+#altTable td { font-size: 12.5px; vertical-align: top; }
+#altTable td:nth-child(2), #altTable td:nth-child(4), #altTable td:nth-child(5) { min-width: 150px; }
+@media (max-width: 1100px) { .eq2 { grid-template-columns: 1fr; } }
+@media (max-width: 900px) { .stage .hud { right: 12px; } }
+@media (max-width: 640px) { .stage .hud { display: none; } .eqs .f { font-size: 14px; } }
+.mill:disabled { opacity: .4; cursor: not-allowed; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<header class="top" id="top">
+  <div class="top-row">
+    <div>
+      <div class="kick">POU · IQYA-2031 · Separación sólido-líquido</div>
+      <h1>Explorador de filtración</h1>
+    </div>
+    <div class="ctx" id="ctx"></div>
+    <span class="sp"></span>
+    <button type="button" class="status" id="status" title="Ver el diagnóstico"><i></i><span id="statusTxt">Diseño sano</span></button>
+  </div>
+  <div class="kpis">
+    <div class="kpi" id="kAc"><div class="lbl">Área filtrante</div><div class="v" id="kA">—</div><div class="u" id="kAu">—</div></div>
+    <div class="kpi" id="kNc"><div class="lbl" id="kNl">Placas y equipos</div><div class="v" id="kN">—</div><div class="u" id="kNu">—</div></div>
+    <div class="kpi"><div class="lbl">α de operación</div><div class="v" id="kAl">—</div><div class="u" id="kAlu">—</div></div>
+    <div class="kpi"><div class="lbl" id="kTl">Ciclo</div><div class="v" id="kT">—</div><div class="u" id="kTu">—</div></div>
+    <div class="kpi" id="kCc"><div class="lbl">Torta</div><div class="v" id="kC">—</div><div class="u" id="kCu">—</div></div>
+    <div class="kpi" id="kMc"><div class="lbl" id="kMl">Costo</div><div class="v" id="kM">—</div><div class="u" id="kMu">—</div></div>
+  </div>
+</header>
+
+<div class="shell">
+  <aside class="ctl" id="ctl" aria-label="Controles">
+    <section><h2><span class="n">00</span> Casos de partida</h2><div class="presets" id="presetBtns"></div></section>
+    <section><h2><span class="n">01</span> Suspensión</h2>
+      <div class="opts" id="matBtns"></div>
+      <div class="sl"><div class="row"><span>Sólidos secos</span></div><div class="seg" id="basisSeg" style="margin-top:6px"><button type="button" data-v="filtrado">Por m³ de filtrado</button><button type="button" data-v="alimentado">Por m³ de líquido alimentado</button></div></div>
+      <div class="sl"><div class="row"><span id="csLbl">Concentración c</span><b id="vcs"></b></div><input type="range" id="lcs" min="-1" max="2.6" step="0.005"><div class="hint" id="csHint"></div></div>
+      <div class="sl"><div class="row"><span id="QLbl">Caudal de filtrado</span><b id="vlQ"></b></div><input type="range" id="lQ" min="-1.5" max="2" step="0.005"><div class="hint" id="QHint"></div></div>
+      <div class="sl"><div class="row"><span>Viscosidad del filtrado μ</span><b id="vmu"></b></div><input type="range" id="mu" min="0.3" max="20" step="0.01"><div class="hint">Agua: 1,0 mPa·s a 20 °C, 0,76 a 32 °C, 0,38 a 80 °C</div></div>
+    </section>
+    <section><h2><span class="n">02</span> Torta y medio filtrante</h2>
+      <div class="sl" style="margin-top:0"><div class="row"><span>Resistencia específica α</span><b id="vla"></b></div><input type="range" id="la" min="8" max="14" step="0.01"><div class="hint" id="laHint"></div></div>
+      <div class="sl"><div class="row"><span>Medida a ΔP</span><b id="vdPref"></b></div><input type="range" id="dPref" min="0.2" max="10" step="0.05"></div>
+      <div class="sl"><div class="row"><span>Compresibilidad s</span><b id="vsComp"></b></div><input type="range" id="sComp" min="0" max="1" step="0.01"><div class="hint" id="sHint"></div></div>
+      <div class="sl"><div class="row"><span>Resistencia del medio R<sub>m</sub></span><b id="vlRm"></b></div><input type="range" id="lRm" min="6" max="12" step="0.01"><div class="hint">McCabe: valores típicos de 10¹⁰ a 10¹¹ m⁻¹</div></div>
+      <div class="sl"><div class="row"><span>Torta húmeda / torta seca m<sub>F</sub>/m<sub>c</sub></span><b id="vmw"></b></div><input type="range" id="mw" min="1.1" max="8" step="0.05"></div>
+      <div class="sl"><div class="row"><span>Sólido seco por m³ de torta</span><b id="vrhoCd"></b></div><input type="range" id="rhoCd" min="80" max="2000" step="10"><div class="hint">Fija el espesor de la torta y el llenado de las cámaras</div></div>
+      <button type="button" class="btnw" id="useLab">Tomar α, s y R<sub>m</sub> del ensayo (pestaña 2)</button>
+    </section>
+    <section><h2><span class="n">03</span> Equipo</h2>
+      <div class="mills" id="eqBtns"></div>
+      <div id="pressBox">
+        <div class="sl"><div class="row"><span>Presión de filtración ΔP</span><b id="vdP"></b></div><input type="range" id="dP" min="0.5" max="15" step="0.05"></div>
+        <div class="sl"><div class="row"><span>Área por placa</span><b id="vAp"></b></div><input type="range" id="Ap" min="0.25" max="6.5" step="0.05"><div class="hint">Taller 6: de 0,5 a 2 m² por placa</div></div>
+        <div class="sl"><div class="row"><span>Placas por equipo, máximo</span><b id="vmaxPl"></b></div><input type="range" id="maxPl" min="10" max="150" step="1"><div class="hint">Taller 6: de 20 a 100 placas por equipo</div></div>
+        <div class="sl"><div class="row"><span>Profundidad de la cámara</span><b id="vdepth"></b></div><input type="range" id="depth" min="15" max="60" step="1"></div>
+      </div>
+      <div id="drumBox">
+        <div class="sl"><div class="row"><span>Vacío ΔP</span><b id="vdPv"></b></div><input type="range" id="dPv" min="0.1" max="0.95" step="0.005"><div class="hint" id="dPvHint"></div></div>
+        <div class="sl"><div class="row"><span>Fracción sumergida f</span><b id="vf"></b></div><input type="range" id="f" min="0.15" max="0.75" step="0.01"><div class="hint">McCabe: ≈ 30 % con lavado; 60 a 70 % sin lavado</div></div>
+        <div class="sl"><div class="row"><span>Velocidad de giro</span><b id="vrpm"></b></div><input type="range" id="rpm" min="0.05" max="3" step="0.01"></div>
+        <div class="sl"><div class="row"><span>Torta mínima que descarga la cuchilla</span><b id="vminCake"></b></div><input type="range" id="minCake" min="1" max="8" step="0.5"></div>
+      </div>
+    </section>
+    <section id="cycSec"><h2><span class="n">04</span> Ciclo de la prensa</h2>
+      <div class="seg" id="cycSeg"><button type="button" data-v="frac">Fracción del ciclo</button><button type="button" data-v="td">Tiempo muerto</button></div>
+      <div id="fracBox">
+        <div class="sl"><div class="row"><span>Duración del ciclo</span><b id="vtcH"></b></div><input type="range" id="tcH" min="0.25" max="8" step="0.05"></div>
+        <div class="sl"><div class="row"><span>Fracción que filtra</span><b id="vfrac"></b></div><input type="range" id="frac" min="0.2" max="1" step="0.01"><div class="hint">Taller 6: 100 % en la parte B y 60 % en la parte C</div></div>
+      </div>
+      <div id="tdBox">
+        <div class="sl"><div class="row"><span>Descarga, limpieza y cierre</span><b id="vtdMin"></b></div><input type="range" id="tdMin" min="5" max="180" step="1"></div>
+        <div class="sl"><div class="row"><span>Tiempo de filtración</span></div><div class="seg" id="tfSeg" style="margin-top:6px"><button type="button" data-v="opt">El óptimo</button><button type="button" data-v="manual">Manual</button></div></div>
+        <div class="sl" id="tfRow"><div class="row"><span>Filtración</span><b id="vtfMin"></b></div><input type="range" id="tfMin" min="2" max="300" step="1"></div>
+      </div>
+      <div class="sl"><div class="row"><span>Lavado: razón n</span><b id="vwash"></b></div><input type="range" id="wash" min="0" max="3" step="0.05"><div class="hint" id="washHint"></div></div>
+      <div class="sl" id="kwRow"><div class="row"><span>Caudal de lavado</span></div><div class="seg" id="kwSeg" style="margin-top:6px"><button type="button" data-v="mitad">½ (McCabe)</button><button type="button" data-v="cuarto">¼</button><button type="button" data-v="igual">1 (hojas)</button></div></div>
+    </section>
+    <section><h2><span class="n">05</span> Restricciones de la planta</h2>
+      <div class="sl" style="margin-top:0"><div class="row"><span>Presión máxima disponible</span><b id="vPmax"></b></div><input type="range" id="Pmax" min="1" max="15" step="0.5"></div>
+      <div class="sl"><div class="row"><span>Presupuesto</span><b id="vbudget"></b></div><input type="range" id="budget" min="20000" max="600000" step="5000"></div>
+      <div class="sl"><div class="row"><span>Espacio en piso</span><b id="vfloor"></b></div><input type="range" id="floor" min="10" max="300" step="5"></div>
+    </section>
+    <section><h2><span class="n">06</span> Vista</h2>
+      <label class="toggle"><input type="checkbox" id="grid"> Cuadrícula en las gráficas</label>
+      <button type="button" class="seg inline" id="resetAll" style="margin-top:14px;padding:7px 12px;font-weight:700;font-size:12.5px;cursor:pointer">Restablecer el caso base</button>
+    </section>
+  </aside>
+
+  <main id="main">
+    <nav class="tabs" role="tablist" aria-label="Vistas">
+      <button type="button" role="tab" data-tab="in" aria-selected="true"><span class="k">1</span>Por dentro</button>
+      <button type="button" role="tab" data-tab="la" aria-selected="false"><span class="k">2</span>Ensayo</button>
+      <button type="button" role="tab" data-tab="pr" aria-selected="false"><span class="k">3</span>Presión</button>
+      <button type="button" role="tab" data-tab="ci" aria-selected="false"><span class="k">4</span>Ciclo y área</button>
+      <button type="button" role="tab" data-tab="ta" aria-selected="false"><span class="k">5</span>Tambor</button>
+      <button type="button" role="tab" data-tab="al" aria-selected="false"><span class="k">6</span>Alternativas</button>
+      <button type="button" role="tab" data-tab="ec" aria-selected="false"><span class="k">7</span>Ecuaciones</button>
+      <span class="sp"></span>
+      <div class="canv"><button type="button" data-canvas="paper" aria-pressed="true">Papel</button><button type="button" data-canvas="blueprint" aria-pressed="false">Blueprint</button></div>
+    </nav>
+
+    <!-- 1 · por dentro -->
+    <section class="panel on" data-panel="in">
+      <div class="ph"><h2>El filtro por dentro</h2><span class="lbl" id="inLbl"></span><p id="inLead"></p></div>
+      <div class="card">
+        <div class="stage">
+          <canvas id="fCv" aria-label="Animación del filtro durante un ciclo" style="height:clamp(400px,58vh,580px)"></canvas>
+          <div class="hud" id="hud"></div>
+          <div class="play"><button type="button" id="btnPlay" aria-label="Pausar"></button><button type="button" data-sp="0.5">½×</button><button type="button" data-sp="1" aria-pressed="true">1×</button><button type="button" data-sp="3">3×</button></div>
+        </div>
+        <div class="timeline" id="tline"></div>
+        <div class="caption" id="inCap"></div>
+      </div>
+      <div class="two">
+        <div class="card"><div class="card-h"><span class="t" id="cycT">Filtrado y caudal durante el ciclo</span><span class="sp"></span><div class="legend" id="cycLeg"></div></div><div class="card-b"><svg class="ch hov" id="svgCyc" viewBox="0 0 560 320"></svg><div class="readout" id="cycRead"></div></div></div>
+        <div class="card"><div class="card-h"><span class="t">Un ciclo en números</span><span class="sp"></span><span id="numLbl"></span></div><div class="card-b"><div class="spec" id="specIn"></div></div></div>
+      </div>
+      <div class="card" id="diagCard"><div class="card-h"><span class="t">Diagnóstico</span><span class="sp"></span><span id="diagCount"></span></div><div class="card-b" style="padding-top:12px"><div class="crit" id="crit"></div><div id="warnings" style="margin-top:10px"></div></div></div>
+    </section>
+
+    <!-- 2 · ensayo -->
+    <section class="panel" data-panel="la">
+      <div class="ph"><h2>El ensayo de laboratorio</h2><span class="lbl">Taller 6 · parte A</span><p>Se filtra a presión constante en un portafiltro de área conocida y se registra el volumen contra el tiempo. Graficando t/(V/A) contra V/A sale una recta: la pendiente da α y el intercepto da R<sub>m</sub>. Con ensayos a varias presiones, la pendiente de log α contra log ΔP da la compresibilidad s.</p></div>
+      <div class="seg inline" id="labSeg" style="margin-top:16px"></div>
+      <div class="two">
+        <div class="card"><div class="card-h"><span class="t">t/(V/A) contra V/A</span><span class="sp"></span><div class="legend" id="labLeg"></div></div><div class="card-b"><svg class="ch hov" id="svgLab" viewBox="0 0 560 360"></svg><div class="readout" id="labRead"></div><svg class="ch" id="svgRes" viewBox="0 0 560 110" style="margin-top:6px"></svg></div></div>
+        <div class="card"><div class="card-h"><span class="t">Datos</span><span class="sp"></span><span id="labLbl"></span></div><div class="card-b" style="overflow-x:auto"><div id="labInputs"></div><table class="t" id="labTable"></table><p class="small" id="labNote" style="margin:10px 0 0"></p></div></div>
+      </div>
+      <div class="card"><div class="card-h"><span class="t">Resultados</span><span class="sp"></span><span id="labRes2"></span></div><div class="card-b"><div class="two" style="margin:0"><div class="spec" id="specLab"></div><div id="compBox"><svg class="ch" id="svgComp" viewBox="0 0 520 300"></svg></div></div><button type="button" class="btnw acc" id="useLab2" style="max-width:420px">Usar estos resultados en el diseño</button></div></div>
+    </section>
+
+    <!-- 3 · presión -->
+    <section class="panel" data-panel="pr">
+      <div class="ph"><h2>Presión y compresibilidad</h2><span class="lbl">Taller 6 · parte C · diapositivas 12 a 17</span><p>En una torta compresible α crece con la presión: α = α<sub>ensayo</sub>(ΔP/ΔP<sub>ensayo</sub>)<sup>s</sup>. Sin la tela, el área va como ΔP<sup>−(1−s)/2</sup>: con s = 0 subir de 3 a 5 bar ahorra 23 % del área; con s = 0,7, menos del 8 %; con s = 1, nada.</p></div>
+      <div class="two">
+        <div class="card"><div class="card-h"><span class="t">Área requerida contra presión</span><span class="sp"></span><div class="legend" id="pALeg"></div></div><div class="card-b"><svg class="ch hov" id="svgPA" viewBox="0 0 560 340"></svg><div class="readout" id="pARead"></div></div></div>
+        <div class="card"><div class="card-h"><span class="t">¿Cuánto se ahorra subiendo la presión?</span></div><div class="card-b">
+          <div class="sl" style="margin-top:0"><div class="row"><span>Presión baja</span><b id="vdPa"></b></div><input type="range" id="dPa" min="0.5" max="15" step="0.1"></div>
+          <div class="sl"><div class="row"><span>Presión alta</span><b id="vdPb"></b></div><input type="range" id="dPb" min="0.5" max="15" step="0.1"></div>
+          <div class="cmp" style="margin-top:14px" id="saveCmp"></div>
+          <p class="small" id="saveNote" style="margin:10px 0 0"></p>
+        </div></div>
+      </div>
+      <div class="card"><div class="card-h"><span class="t">Arranque a caudal constante y luego presión constante</span><span class="sp"></span><span>diapositiva 17 · el ciclo real</span></div><div class="card-b">
+        <div class="two" style="margin:0">
+          <div><svg class="ch hov" id="svgRamp" viewBox="0 0 560 300"></svg><div class="readout" id="rampRead"></div></div>
+          <div>
+            <label class="toggle" style="margin-top:0"><input type="checkbox" id="rampOn"> Arrancar con la bomba a caudal constante</label>
+            <div class="sl"><div class="row"><span>Flux de arranque</span><b id="vJ0"></b></div><input type="range" id="J0" min="20" max="3000" step="5"></div>
+            <div class="spec" id="specRamp" style="margin-top:12px"></div>
+            <p class="small" id="rampNote" style="margin:10px 0 0"></p>
+          </div>
+        </div>
+      </div></div>
+    </section>
+
+    <!-- 4 · ciclo -->
+    <section class="panel" data-panel="ci">
+      <div class="ph"><h2>Ciclo y área de la prensa</h2><span class="lbl">Taller 6 · partes B y C</span><p>Una prensa es un equipo por lotes que debe sostener un caudal continuo. Cada ciclo filtra lo que la planta produce durante todo el ciclo, pero solo filtra una parte de él: el resto se va en lavar, descargar y cerrar. Ese tiempo muerto obliga a más área; con un tiempo muerto fijo hay una duración de la filtración que hace mínima el área.</p></div>
+      <div class="card"><div class="card-h"><span class="t">El ciclo</span><span class="sp"></span><span id="ciLbl"></span></div><div class="card-b"><div id="cycBar"></div></div></div>
+      <div class="two">
+        <div class="card"><div class="card-h"><span class="t" id="ciChartT">Área contra tiempo de filtración</span><span class="sp"></span><div class="legend" id="ciLeg"></div></div><div class="card-b"><svg class="ch hov" id="svgCi" viewBox="0 0 560 340"></svg><div class="readout" id="ciRead"></div></div></div>
+        <div class="card"><div class="card-h"><span class="t">Dimensionamiento</span></div><div class="card-b"><div class="spec" id="specCi"></div></div></div>
+      </div>
+      <div class="two">
+        <div class="card"><div class="card-h"><span class="t">Presupuesto y espacio</span><span class="sp"></span><span>1500 a 3000 USD/m² (Taller 6)</span></div><div class="card-b"><svg class="ch" id="svgBud" viewBox="0 0 520 190"></svg><p class="small" id="budNote" style="margin:8px 0 0"></p></div></div>
+        <div class="card"><div class="card-h"><span class="t">Torta y lavado</span></div><div class="card-b"><div class="spec" id="specCake"></div><p class="small" id="cakeNote" style="margin:10px 0 0"></p></div></div>
+      </div>
+    </section>
+
+    <!-- 5 · tambor -->
+    <section class="panel" data-panel="ta">
+      <div class="ph"><h2>Filtro de tambor rotatorio al vacío</h2><span class="lbl">McCabe 29.31 a 29.33 · ejemplo 29.2</span><p>Cada franja del tambor filtra mientras está sumergida, una fracción f de la vuelta. Es la filtración a presión constante con t = f/n, repetida en continuo: la capacidad por m² crece con √n, pero la torta de cada vuelta se adelgaza como 1/√n y debajo de unos milímetros la cuchilla ya no la puede descargar.</p></div>
+      <div class="two">
+        <div class="card"><div class="card-h"><span class="t">Capacidad y espesor contra velocidad de giro</span><span class="sp"></span><div class="legend" id="drLeg"></div></div><div class="card-b"><svg class="ch hov" id="svgDr" viewBox="0 0 560 340"></svg><div class="readout" id="drRead"></div></div></div>
+        <div class="card"><div class="card-h"><span class="t">Dimensionamiento</span><span class="sp"></span><span id="drLbl"></span></div><div class="card-b"><div class="spec" id="specDr"></div><p class="small" id="drNote" style="margin:10px 0 0"></p></div></div>
+      </div>
+    </section>
+
+    <!-- 6 · alternativas -->
+    <section class="panel" data-panel="al">
+      <div class="ph"><h2>Alternativas y selección</h2><span class="lbl">Taller 6 · partes D y E</span><p>La respuesta del taller no es un área: es un equipo y la razón para preferirlo. Cada alternativa lleva su número, calculado con los datos del caso; la matriz usa los pesos del taller y deja agregar el criterio que le falta.</p></div>
+      <div class="card"><div class="card-h"><span class="t">Alternativas cuantificadas</span><span class="sp"></span><span>con los datos de la sección 7 del taller</span></div><div class="card-b" style="overflow-x:auto"><table class="t" id="altTable"></table></div></div>
+      <div class="two">
+        <div class="card"><div class="card-h"><span class="t">Supuestos de las alternativas</span></div><div class="card-b">
+          <div class="sl" style="margin-top:0"><div class="row"><span>Floculación: α se divide por</span><b id="vflocK"></b></div><input type="range" id="flocK" min="1" max="100" step="0.5"><div class="hint">El taller no da el efecto: hay que medirlo con un ensayo</div></div>
+          <div class="sl"><div class="row"><span>Dosis de floculante</span><b id="vflocDose"></b></div><input type="range" id="flocDose" min="20" max="100" step="1"></div>
+          <div class="sl"><div class="row"><span>Flux de microfiltración</span><b id="vmfJ"></b></div><input type="range" id="mfJ" min="20" max="50" step="1"></div>
+          <div class="sl"><div class="row"><span>Diferencia de densidad célula-caldo</span><b id="vdrho"></b></div><input type="range" id="drho" min="20" max="200" step="1"><div class="hint">Para el área equivalente Σ de la centrífuga (teoría externa al curso)</div></div>
+        </div></div>
+        <div class="card"><div class="card-h"><span class="t">Resultado de la matriz</span><span class="sp"></span><label class="toggle" style="margin:0;font-family:var(--font-body);text-transform:none;letter-spacing:0"><input type="checkbox" id="contOn"> Agregar el criterio que falta</label></div><div class="card-b"><div class="sl" id="contRow" style="margin-top:0"><div class="row"><span>Peso de la continuidad de operación</span><b id="vcontW"></b></div><input type="range" id="contW" min="5" max="50" step="1"></div><svg class="ch" id="svgMat" viewBox="0 0 520 150" style="margin-top:10px"></svg><p class="small" id="matNote" style="margin:8px 0 0"></p></div></div>
+      </div>
+      <div class="card"><div class="card-h"><span class="t">Matriz de selección</span><span class="sp"></span><span>pesos del Taller 6 · puntajes de 1 a 5, editables</span></div><div class="card-b" style="overflow-x:auto"><table class="t" id="matTable"></table></div></div>
+    </section>
+
+    <!-- 7 · ecuaciones -->
+    <section class="panel" data-panel="ec">
+      <div class="ph"><h2>Ecuaciones</h2><span class="lbl">con los valores del caso actual</span><p>Las de la Lectura 09, las diapositivas, el Taller 6 y el capítulo 29 de McCabe, evaluadas con la configuración de los controles. Lo que no está en el material del curso se marca como externo.</p></div>
+      <div class="eqs" id="eqs"></div>
+      <div class="callout ink" id="assump"></div>
+    </section>
+  </main>
+</div>
+<button type="button" class="mobile-ctl" id="mobCtl">Controles</button>
+<script>
+/* ---------- suspensiones: propiedades de la torta y del líquido ----------
+   α a una presión de referencia (la del ensayo) y su compresibilidad s:
+   α(ΔP) = α_ref·(ΔP/ΔP_ref)^s (forma anclada del Taller 6).
+   mw = m_F/m_c (torta húmeda / torta seca); rhoCd = kg de sólido seco por m³ de torta. */
+var BAR = 1e5, G = 9.81;
+var MATS = [
+  { id: 'levadura', name: 'Levadura alimentaria', short: 'levadura', tag: 'Taller 6', color: '#C9A46A', cake: [196, 160, 98],
+    alphaRef: 3.604e12, dPref: 1.8, s: 0.7, Rm: 8.91e10, cs: 25, mu: 3.5, rhoL: 1030, mw: 4, rhoCd: 270, rhoS: 1100, dum: 6,
+    src: 'α y R_m: ensayo del Taller 6 a 1,8 bar · s = 0,7 del taller · humedad y densidad de la torta supuestas',
+    note: 'Células de 4 a 8 µm, deformables: la torta es muy resistente (10¹² a 10¹³ m/kg) y compresible. La torta es el producto: va a un secador, así que no admite coadyuvantes.' },
+  { id: 'caco3', name: 'Carbonato de calcio', short: 'CaCO₃', tag: 'McCabe 29.1', color: '#D8D2C2', cake: [214, 208, 192],
+    alphaRef: 1.4227e11, dPref: 1.0, s: 0.26, Rm: 8.0e10, cs: 23.5, mu: 0.886, rhoL: 997, mw: 2, rhoCd: 1200, rhoS: 2710, dum: 10,
+    src: 'α = 7,13×10⁹·ΔP^0,26 (ΔP en Pa) del ejemplo 29.1 de McCabe · humedad 50 % del ejemplo 29.2',
+    note: 'Ligeramente compresible (s = 0,26 en McCabe). La tabla del Taller 6 lo da como incompresible y con α de 10⁹ a 10¹⁰: el ejemplo del libro de referencia da 1 a 2×10¹¹ m/kg.' },
+  { id: 'tio2', name: 'Dióxido de titanio', short: 'TiO₂', tag: 'tabla del Taller 6', color: '#ECECEA', cake: [226, 226, 222],
+    alphaRef: 3e10, dPref: 1.0, s: 0.2, Rm: 3e10, cs: 50, mu: 1.0, rhoL: 1000, mw: 1.6, rhoCd: 1600, rhoS: 4200, dum: 1,
+    src: 'α y s dentro de los rangos de la tabla del Taller 6 (10¹⁰ a 10¹¹ m/kg, s de 0,1 a 0,3)',
+    note: 'Pigmento mineral fino de baja compresibilidad: subir la presión sí reduce el área.' },
+  { id: 'bacterias', name: 'Biomasa bacteriana', short: 'bacterias', tag: 'tabla del Taller 6', color: '#B9A27A', cake: [178, 156, 112],
+    alphaRef: 1e13, dPref: 1.0, s: 0.9, Rm: 1e11, cs: 15, mu: 2.0, rhoL: 1020, mw: 5, rhoCd: 200, rhoS: 1080, dum: 1,
+    src: 'α y s dentro de los rangos de la tabla del Taller 6 (10¹² a 10¹⁴ m/kg, s de 0,8 a 1,0)',
+    note: 'Células de 1 µm: torta casi impermeable y muy compresible. Con s cerca de 1, subir la presión casi no sirve.' },
+  { id: 'diatomita', name: 'Diatomita (coadyuvante)', short: 'diatomita', tag: 'incompresible', color: '#E8DFC9', cake: [232, 223, 201],
+    alphaRef: 5e9, dPref: 1.0, s: 0.0, Rm: 1e10, cs: 20, mu: 1.0, rhoL: 1000, mw: 2.5, rhoCd: 300, rhoS: 2200, dum: 20,
+    src: 'α externo al curso (tortas de diatomita, 10⁹ a 10¹⁰ m/kg) · incompresible como en las diapositivas',
+    note: 'Granular, porosa e incompresible (diapositivas): la referencia de una torta ideal.' },
+  { id: 'bagazo', name: 'Bagazo de cáscara agotada', short: 'bagazo', tag: 'proyecto', color: '#C98A3A', cake: [196, 142, 70], project: true,
+    alphaRef: 1e10, dPref: 1.0, s: 0.5, Rm: 3e10, cs: 10, mu: 4.0, rhoL: 1008, mw: 5, rhoCd: 150, rhoS: 950, dum: 2000,
+    src: 'α, s y R_m supuestos: midan la torta de su bagazo en el laboratorio · ≈ 1 % de sólidos y μ ≈ 4 mPa·s de los otros exploradores',
+    note: 'El filtro del módulo 6 separa el bagazo agotado para clarificar el extracto antes de precipitar. Aquí el producto es el filtrado: un coadyuvante sí es admisible. El extracto es ácido (pH ≈ 2) y caliente: telas de PP o PVDF y acero inoxidable.' }
+];
+function byId(list, id) { for (var i = 0; i < list.length; i++) if (list[i].id === id) return list[i]; return list[0]; }
+/* ---------- formato ---------- */
+function fmtN(n, d) {
+  if (n === null || n === undefined || !isFinite(n)) return '—';
+  d = d === undefined ? 1 : d;
+  var neg = n < 0 && Math.abs(n) >= 0.5 * Math.pow(10, -d), s = Math.abs(n).toFixed(d), p = s.split('.'), int = p[0];
+  if (int.length > 4) int = int.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  return (neg ? '−' : '') + int + (p[1] ? ',' + p[1] : '');
+}
+var SUP = { '-': '⁻', '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴', '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹' };
+function sup(n) { return String(n).split('').map(function (c) { return SUP[c] || c; }).join(''); }
+function fmtSci(x, d) { if (!(x > 0)) return fmtN(x, d); var e = Math.floor(Math.log10(x)), m = x / Math.pow(10, e); if (m >= 9.995) { m /= 10; e++; } return fmtN(m, d == null ? 2 : d) + '×10' + sup(e); }
+function fmtRe(Re) { if (!(Re > 0)) return '0'; if (Re < 1e4) return fmtN(Re, Re < 100 ? 1 : 0); return fmtSci(Re, 2); }
+function fmtF(f) { return f >= 1 ? fmtN(f, 2) : (f >= 0.1 ? fmtN(f, 3) : fmtN(f, 4)); }
+function fmtMu(mu) { return mu >= 0.1 ? fmtN(mu, 2) + ' Pa·s' : fmtN(mu * 1000, mu < 0.01 ? 3 : 1) + ' mPa·s'; }
+function fmtQ(Qs) { var h = Qs * 3600; return fmtN(h, h < 10 ? 2 : (h < 100 ? 1 : 0)); }
+function fmtKW(k) { return k < 10 ? fmtN(k, 2) : fmtN(k, 1); }
+/* ====================================================================
+   Modelo de filtración con torta: Darcy con resistencias en serie
+   (Lectura 09, diapositivas, McCabe cap. 29, Taller 6)
+     (1/A)·dV/dt = ΔP / [μ(α·c·V/A + R_m)]
+   A presión constante, por unidad de área (u = V/A, en m):
+     t = a·u² + b·u,   a = μαc/(2ΔP) (s/m²),   b = μR_m/ΔP (s/m)
+   (la recta t/(V/A) contra V/A de las diapositivas y del taller)
+   ==================================================================== */
+function log10(x) { return Math.log(x) / Math.LN10; }
+/* α a la presión ΔP (Pa), anclada a la del ensayo */
+function alphaAt(p, dPa) { return p.alphaRef * Math.pow(dPa / (p.dPref * BAR), p.s); }
+function coefs(mu, alpha, c, Rm, dPa) { return { a: mu * alpha * c / (2 * dPa), b: mu * Rm / dPa }; }
+function uOfT(a, b, t) { if (!(t > 0)) return 0; if (a <= 0) return b > 0 ? t / b : Infinity; return (-b + Math.sqrt(b * b + 4 * a * t)) / (2 * a); }
+function tOfU(a, b, u) { return a * u * u + b * u; }
+/* recta de mínimos cuadrados con errores estándar */
+var T95 = [0, 12.706, 4.303, 3.182, 2.776, 2.571, 2.447, 2.365, 2.306, 2.262, 2.228, 2.201, 2.179];
+function fitLine(xs, ys) {
+  var n = xs.length, i, xm = 0, ym = 0, Sxx = 0, Sxy = 0, Syy = 0;
+  for (i = 0; i < n; i++) { xm += xs[i]; ym += ys[i]; } xm /= n; ym /= n;
+  for (i = 0; i < n; i++) { Sxx += (xs[i] - xm) * (xs[i] - xm); Sxy += (xs[i] - xm) * (ys[i] - ym); Syy += (ys[i] - ym) * (ys[i] - ym); }
+  var m = Sxy / Sxx, b = ym - m * xm, res = [], ss = 0;
+  for (i = 0; i < n; i++) { var r = ys[i] - (m * xs[i] + b); res.push(r); ss += r * r; }
+  var dof = n - 2, s2 = dof > 0 ? ss / dof : 0, sem = Math.sqrt(s2 / Sxx), seb = Math.sqrt(s2 * (1 / n + xm * xm / Sxx));
+  return { m: m, b: b, r2: Syy > 0 ? 1 - ss / Syy : 1, res: res, sem: sem, seb: seb, n: n, t95: dof > 0 ? (T95[dof] || 1.96) : NaN };
+}
+/* ensayos de laboratorio: el del Taller 6 y las cinco corridas del ejemplo 29.1 de McCabe */
+var LABSETS = [
+  { id: 't6', name: 'Taller 6 · levadura, un ensayo', A: 0.0012, mu: 3.5, c: 25, runs: [{ dP: 1.8, pts: [[105, 12], [223, 18], [385, 24], [591, 30]] }],
+    note: 'Filtro de laboratorio de 0,0012 m² a 1,8 bar; V en mL y t en s, tal como los da el taller.' },
+  { id: 'mc', name: 'McCabe 29.1 · CaCO₃, cinco presiones', A: 0.044, mu: 0.886, c: 23.5, skipFirst: true, runs: [
+    { dP: 6.7 * 6894.76 / BAR, pts: [[17.3, 500], [41.3, 1000], [72.0, 1500], [108.3, 2000], [152.1, 2500], [201.7, 3000]] },
+    { dP: 16.2 * 6894.76 / BAR, pts: [[6.8, 500], [19.0, 1000], [34.6, 1500], [53.4, 2000], [76.0, 2500], [102.0, 3000], [131.2, 3500], [163.0, 4000]] },
+    { dP: 28.2 * 6894.76 / BAR, pts: [[6.3, 500], [14.0, 1000], [24.2, 1500], [37.0, 2000], [51.7, 2500], [69.0, 3000], [88.8, 3500], [110.0, 4000], [134.0, 4500], [160.0, 5000]] },
+    { dP: 36.3 * 6894.76 / BAR, pts: [[5.0, 500], [11.5, 1000], [19.8, 1500], [30.1, 2000], [42.5, 2500], [56.8, 3000], [73.0, 3500], [91.2, 4000], [111.0, 4500], [133.0, 5000], [156.8, 5500], [182.5, 6000]] },
+    { dP: 49.1 * 6894.76 / BAR, pts: [[4.4, 500], [9.5, 1000], [16.3, 1500], [24.6, 2000], [34.7, 2500], [46.1, 3000], [59.0, 3500], [73.6, 4000], [89.4, 4500], [107.3, 5000]] }],
+    note: 'Tabla 29.1: A = 440 cm², c = 23,5 g/L, μ = 0,886 cP a 25 °C. El libro omite el primer punto de la corrida I; aquí también.' }
+];
+function labRun(set, run, mu, c, skip) {
+  var A = set.A, xs = [], ys = [], rows = [];
+  run.pts.forEach(function (p, i) { var V = p[1] * 1e-6, u = V / A, y = p[0] / u; rows.push({ t: p[0], mL: p[1], V: V, u: u, y: y, used: !(skip && i === 0) }); if (!(skip && i === 0)) { xs.push(u); ys.push(y); } });
+  var f = fitLine(xs, ys), dPa = run.dP * BAR;
+  return { rows: rows, fit: f, dP: run.dP, alpha: 2 * f.m * dPa / (mu * c), Rm: f.b * dPa / mu,
+    alphaLo: 2 * (f.m - f.t95 * f.sem) * dPa / (mu * c), alphaHi: 2 * (f.m + f.t95 * f.sem) * dPa / (mu * c), RmLo: (f.b - f.t95 * f.seb) * dPa / mu, RmHi: (f.b + f.t95 * f.seb) * dPa / mu };
+}
+function labFit(set, mu, c) {
+  var runs = set.runs.map(function (r, i) { return labRun(set, r, mu, c, set.skipFirst && i === 0); });
+  var out = { runs: runs };
+  if (runs.length > 1) { // compresibilidad: log α contra log ΔP
+    var f = fitLine(runs.map(function (r) { return Math.log(r.dP * BAR); }), runs.map(function (r) { return Math.log(r.alpha); }));
+    out.s = f.m; out.alpha0 = Math.exp(f.b); out.sfit = f;
+    var gm = 0; runs.forEach(function (r) { gm += Math.log(r.dP); }); out.dPref = Math.exp(gm / runs.length); // presión de anclaje: media geométrica
+    out.alphaRef = out.alpha0 * Math.pow(out.dPref * BAR, out.s);
+    out.Rm = runs.reduce(function (q, r) { return q + r.Rm; }, 0) / runs.length;
+  } else { out.s = null; out.dPref = runs[0].dP; out.alphaRef = runs[0].alpha; out.Rm = runs[0].Rm; }
+  return out;
+}
+/* curva de lavado de McCabe (fig. 29.17, torta de Al(OH)₃): fracción extraída contra la razón de lavado n */
+function washRecovery(n) { var P = [[0, 0], [1, 0.75], [2, 0.98], [3, 0.995], [4, 0.999]]; if (n >= 4) return 0.999; for (var i = 1; i < P.length; i++) if (n <= P[i][0]) { var f = (n - P[i - 1][0]) / (P[i][0] - P[i - 1][0]); return P[i - 1][1] + f * (P[i][1] - P[i - 1][1]); } return 0.999; }
+var KW = { mitad: { k: 0.5, name: 'la mitad del caudal final (McCabe)' }, cuarto: { k: 0.25, name: 'un cuarto del caudal final (placas y marcos, Geankoplis)' }, igual: { k: 1, name: 'igual al caudal final (filtro de hojas)' } };
+/* tiempo de lavado por unidad de área (no depende de A): licor retenido = (m_F/m_c − 1)·c·u/ρ */
+function washTime(p, a, b, c, u) {
+  if (!(p.wash > 0)) return 0;
+  var liq = (p.mw - 1) * c * u / p.rhoL, Vw = p.wash * liq, qend = 1 / (2 * a * u + b);
+  return Vw / (KW[p.kw].k * qend);
+}
+/* área de la prensa para un tiempo de filtración tf: A = Q·(tf + tw + td)/u(tf) */
+function pressAreaFor(p, a, b, c, Qf, tf, td, frac) {
+  var u = uOfT(a, b, tf), tw = washTime(p, a, b, c, u), tc = frac ? tf / p.frac : tf + tw + td;
+  return { u: u, tw: tw, tc: tc, V: Qf * tc, A: Qf * tc / u };
+}
+function goldenMin(f, lo, hi) { var g = 0.6180339887, x1 = hi - g * (hi - lo), x2 = lo + g * (hi - lo), f1 = f(x1), f2 = f(x2); for (var i = 0; i < 80; i++) { if (f1 < f2) { hi = x2; x2 = x1; f2 = f1; x1 = hi - g * (hi - lo); f1 = f(x1); } else { lo = x1; x1 = x2; f1 = f2; x2 = lo + g * (hi - lo); f2 = f(x2); } } return (lo + hi) / 2; }
+var DRUMS = [[0.9, 0.6], [1.2, 1.2], [1.8, 1.8], [2.4, 2.4], [3.0, 3.0], [3.0, 4.3], [3.7, 5.5], [4.3, 6.1]]; // D × L (m); McCabe: de 0,3 × 0,3 hasta 3 × 4,3; los dos últimos, externos
+
+function compute(p) {
+  var m = byId(MATS, p.mat), mu = p.mu / 1000, rhoL = p.rhoL;
+  // concentración de sólidos por m³ de filtrado (ec. 29.19 de McCabe si se da por líquido alimentado)
+  var den = 1 - (p.mw - 1) * p.cs / rhoL, c = p.cBasis === 'alimentado' ? (den > 0 ? p.cs / den : NaN) : p.cs;
+  var Q = Math.pow(10, p.lQ) / 3600, mdot = (p.cBasis === 'alimentado' ? p.cs : c) * Q, Qf = mdot / c;
+  var Rm = Math.pow(10, p.lRm), cake = { alphaRef: Math.pow(10, p.la), dPref: p.dPref, s: p.sComp };
+  var alpha0 = cake.alphaRef / Math.pow(cake.dPref * BAR, cake.s); // (m/kg)/Pa^s, con ΔP en Pa
+  var R = { p: p, m: m, mu: mu, c: c, Q: Q, Qf: Qf, mdot: mdot, Rm: Rm, cake: cake, alpha0: alpha0, eq: p.eq, cOk: isFinite(c) && c > 0 };
+  // ---------- filtro prensa
+  var dPa = p.dP * BAR, alpha = alphaAt(cake, dPa), k = coefs(mu, alpha, c, Rm, dPa), pr = { dPa: dPa, alpha: alpha, a: k.a, b: k.b };
+  var td = p.cyc === 'frac' ? null : p.tdMin * 60, d;
+  if (p.cyc === 'frac') { pr.tc = p.tcH * 3600; pr.tf = p.frac * pr.tc; d = pressAreaFor(p, k.a, k.b, c, Qf, pr.tf, 0, true); }
+  else {
+    var Af = function (lt) { return pressAreaFor(p, k.a, k.b, c, Qf, Math.exp(lt), td, false).A; };
+    pr.tfOpt = Math.exp(goldenMin(Af, Math.log(5), Math.log(Math.max(600, td) * 60)));
+    // la torta debe caber en las cámaras: u ≤ (e/2)·ρ_torta/c, así que t_f no puede pasar de t(u_máx)
+    pr.uFull = (p.depth / 1000 / 2) * p.rhoCd / c; pr.tfFull = tOfU(k.a, k.b, pr.uFull);
+    pr.tfOptFree = pr.tfOpt; pr.volLimited = pr.tfOpt > pr.tfFull; if (pr.volLimited) pr.tfOpt = pr.tfFull;
+    pr.tf = p.tfMode === 'opt' ? pr.tfOpt : p.tfMin * 60;
+    d = pressAreaFor(p, k.a, k.b, c, Qf, pr.tf, td, false); pr.tc = d.tc; pr.td = td;
+    pr.Aopt = pressAreaFor(p, k.a, k.b, c, Qf, pr.tfOpt, td, false).A;
+  }
+  pr.u = d.u; pr.V = d.V; pr.A = d.A; pr.tw = d.tw; pr.Acp = d.A;
+  // arranque a caudal constante (diapositiva 17): flux J0 hasta llegar a ΔP y luego presión constante
+  var J0 = p.J0 / 1000 / 3600, dPm = mu * J0 * Rm, rp = { J0: J0, dPm: dPm, ok: dPm < dPa };
+  if (rp.ok) {
+    rp.t1 = cake.s < 0.999 ? Math.pow(dPa - dPm, 1 - cake.s) / (alpha0 * mu * c * J0 * J0) : (dPa - dPm) / (mu * alpha * c * J0 * J0);
+    rp.u1 = J0 * rp.t1;
+    var uR = pr.tf <= rp.t1 ? J0 * pr.tf : uOfT(k.a, k.b, pr.tf - rp.t1 + tOfU(k.a, k.b, rp.u1));
+    rp.u = uR; rp.A = pr.V / uR; rp.extra = rp.A / pr.A - 1;
+  }
+  pr.ramp = rp; pr.rampUsed = !!(p.rampOn && rp.ok);
+  if (pr.rampUsed) { pr.u = rp.u; pr.A = rp.A; }
+  pr.tdead = pr.tc - pr.tf - pr.tw; // tiempo para descarga, limpieza y cierre
+  pr.qEnd = pr.rampUsed && pr.tf <= rp.t1 ? J0 * pr.A : pr.A / (2 * k.a * pr.u + k.b); pr.qMean = pr.V / pr.tf; pr.q0 = pr.rampUsed ? J0 * pr.A : pr.A / k.b;
+  pr.RmShare = k.b * pr.u / (k.a * pr.u * pr.u + k.b * pr.u);
+  pr.w = c * pr.u; pr.Lc = pr.w / p.rhoCd; pr.fill = 2 * pr.Lc / (p.depth / 1000); pr.mCake = c * pr.V; pr.mWet = pr.mCake * p.mw;
+  pr.liq = (p.mw - 1) * pr.mCake / rhoL; pr.Vw = p.wash * pr.liq; pr.recov = washRecovery(p.wash);
+  pr.N = Math.max(1, Math.ceil(pr.A / p.Ap - 1e-9)); pr.presses = Math.ceil(pr.N / p.maxPl); pr.perPress = Math.ceil(pr.N / pr.presses);
+  pr.cost = [pr.A * 1500, pr.A * 3000]; pr.uMax = p.budget / pr.A;
+  // huella de piso (estimación externa al curso): placa cuadrada de lado ℓ con ≈ 1,7·ℓ² de área por placa
+  var side = Math.sqrt(p.Ap / 1.7), pitch = p.depth / 1000 + 0.035, len = 2.2 + pr.perPress * pitch, wid = side + 0.8;
+  pr.side = side; pr.foot = { machine: len * wid * pr.presses, total: (len + 2) * (wid + 2) * pr.presses, len: len, wid: wid };
+  R.pr = pr;
+  // ---------- tambor rotatorio al vacío (ec. 29.31 de McCabe)
+  var dv = p.dPv * BAR, av = alphaAt(cake, dv), n = p.rpm / 60, f = p.f, kv = coefs(mu, av, c, Rm, dv);
+  var Gd = (Math.sqrt(2 * c * av * dv * f * n / mu + n * n * Rm * Rm) - n * Rm) / av, dr = { dPa: dv, alpha: av, n: n, f: f, a: kv.a, b: kv.b, G: Gd };
+  dr.AT = mdot / Gd; dr.tsub = f / n; dr.tc = 1 / n; dr.wrev = Gd / n; dr.Lrev = dr.wrev / p.rhoCd; dr.urev = dr.wrev / c;
+  dr.Gnorm = Math.sqrt(2 * c * dv * f * n / (av * mu)); // con R_m despreciable (ec. 29.32 y 29.33)
+  var pick = null; for (var i = 0; i < DRUMS.length; i++) { var Ad = Math.PI * DRUMS[i][0] * DRUMS[i][1]; if (Ad >= dr.AT) { pick = { D: DRUMS[i][0], L: DRUMS[i][1], A: Ad, n: 1 }; break; } }
+  if (!pick) { var big = DRUMS[DRUMS.length - 1], Ab = Math.PI * big[0] * big[1]; pick = { D: big[0], L: big[1], A: Ab, n: Math.ceil(dr.AT / Ab) }; }
+  dr.pick = pick; dr.over = pick.A * pick.n / dr.AT - 1;
+  R.dr = dr;
+  R.alphaOp = p.eq === 'tambor' ? av : alpha; R.dPop = p.eq === 'tambor' ? p.dPv : p.dP;
+  R.A = p.eq === 'tambor' ? dr.AT : pr.A;
+  R.warn = diagnose(R);
+  return R;
+}
+
+/* ---------- diagnóstico ---------- */
+function diagnose(R) {
+  var w = [], p = R.p, pr = R.pr, dr = R.dr, m = R.m, press = p.eq === 'prensa';
+  var add = function (sev, t) { w.push({ sev: sev, t: t }); };
+  if (!R.cOk) { add('c', 'Con esa humedad de torta y esa concentración, la corrección por el líquido retenido (ec. 29.19 de McCabe) no tiene solución: la torta se llevaría más líquido del que entra.'); return w; }
+  if (p.cs < 1 && p.cBasis === 'filtrado') add('w', 'Suspensión muy diluida (' + fmtN(p.cs, 2) + ' kg/m³, cerca de 0,1 %): las diapositivas recomiendan clarificar con cartuchos o lechos profundos, no filtrar con torta.');
+  if (press) {
+    if (p.dP > p.Pmax + 1e-9) add('c', 'La prensa opera a ' + fmtN(p.dP, 1) + ' bar, pero la planta solo dispone de ' + fmtN(p.Pmax, 1) + ' bar.');
+    if (p.dP > 15) add('c', 'Por encima de ≈ 15 bar no hay filtros prensa convencionales (diapositivas).');
+    if (pr.fill > 1) add('c', 'Las cámaras se llenan antes de terminar la filtración: la torta mide ' + fmtN(pr.Lc * 1000, 1) + ' mm por cara y la cámara ' + fmtN(p.depth, 0) + ' mm. Acorte el ciclo, aumente el área o use cámaras más profundas.');
+    else if (pr.fill < 0.25) add('ok', 'La torta solo ocupa el ' + fmtN(100 * pr.fill, 0) + ' % de la cámara: la prensa está limitada por el tiempo de filtración, no por el volumen de torta.');
+    if (pr.presses > 1) add('w', 'Hacen falta ' + pr.N + ' placas de ' + fmtN(p.Ap, 2) + ' m²: más que las ' + p.maxPl + ' que admite un equipo, así que se necesitan ' + pr.presses + ' prensas.');
+    if (pr.cost[0] > p.budget) add('c', 'Ni al menor costo unitario (1500 USD/m²) cabe en el presupuesto: ' + fmtN(pr.cost[0] / 1000, 0) + ' contra ' + fmtN(p.budget / 1000, 0) + ' kUSD.');
+    else if (pr.cost[1] > p.budget) add('w', 'Cabe en el presupuesto solo si el área cuesta como máximo ' + fmtN(pr.uMax, 0) + ' USD/m² (el rango del taller llega a 3000): queda al filo.');
+    if (pr.foot.total > p.floor) add('w', 'La huella estimada con espacio de servicio (' + fmtN(pr.foot.total, 0) + ' m²) supera los ' + fmtN(p.floor, 0) + ' m² disponibles. Estimación externa al curso.');
+    if (p.cyc !== 'frac' && pr.tdead < -1) add('c', 'El tiempo de ciclo no alcanza.');
+    if (p.cyc === 'frac' && p.wash > 0 && pr.tw > (1 - p.frac) * pr.tc) add('w', 'El lavado (' + fmtN(pr.tw / 60, 0) + ' min) no cabe en el ' + fmtN(100 * (1 - p.frac), 0) + ' % del ciclo que no filtra (' + fmtN((1 - p.frac) * pr.tc / 60, 0) + ' min), y además hay que descargar y cerrar.');
+    if (p.cyc === 'td' && p.tfMode === 'opt' && pr.volLimited) add('ok', 'El óptimo sin restricciones sería filtrar ' + fmtN(pr.tfOptFree / 60, 0) + ' min, pero la torta no cabría en las cámaras: el ciclo se corta a los ' + fmtN(pr.tfOpt / 60, 0) + ' min, cuando se llenan. Esta prensa está limitada por el volumen de torta.');
+    if (p.cyc === 'td' && p.tfMode !== 'opt' && pr.A > pr.Aopt * 1.15) add('w', 'Con ' + fmtN(pr.tf / 60, 0) + ' min de filtración el área es ' + fmtN(100 * (pr.A / pr.Aopt - 1), 0) + ' % mayor que en el óptimo (' + fmtN(pr.tfOpt / 60, 0) + ' min).');
+    if (pr.RmShare > 0.5) add('w', 'Al final de la filtración la tela pesa más que la torta (' + fmtN(100 * pr.RmShare, 0) + ' % de la resistencia): conviene un medio más abierto o ciclos más largos.');
+    if (pr.ramp.ok === false && p.rampOn) add('w', 'Con un flux de arranque de ' + fmtN(p.J0, 0) + ' L/m²h la tela sola ya pide más que ' + fmtN(p.dP, 1) + ' bar: baje el caudal de la bomba.');
+  } else {
+    if (p.dPv >= 1) add('c', 'Un tambor al vacío no puede pasar de 1 bar de diferencia de presión (diapositivas).');
+    if (dr.Lrev * 1000 < p.minCake) add('c', 'Cada vuelta forma solo ' + fmtN(dr.Lrev * 1000, dr.Lrev * 1000 < 1 ? 2 : 1) + ' mm de torta: una cuchilla necesita unos ' + fmtN(p.minCake, 0) + ' mm para descargarla. Baje la velocidad de giro o use precapa (si los sólidos no son el producto).');
+    if (dr.Lrev * 1000 > 40) add('w', 'La torta de ' + fmtN(dr.Lrev * 1000, 0) + ' mm por vuelta supera los 40 mm habituales (McCabe): suba la velocidad de giro.');
+    if (p.rpm > 3 || p.rpm < 0.1) add('w', 'McCabe da de 0,1 a 2 rpm para estos tambores.');
+    if (dr.pick.n > 1) add('w', 'Hacen falta ' + dr.pick.n + ' tambores del tamaño mayor.');
+  }
+  var dPop = R.dPop, ratio = dPop / p.dPref;
+  if (p.sComp > 0 && (ratio > 3 || ratio < 1 / 3)) add('w', 'Se extrapola α de ' + fmtN(p.dPref, 1) + ' a ' + fmtN(dPop, 2) + ' bar. McCabe advierte que α = α₀ΔPˢ no debe usarse lejos de las presiones del ensayo.');
+  if (p.sComp >= 0.95) add('w', 'Con s ≈ 1 subir la presión sube α en la misma proporción: el caudal casi no mejora.');
+  if (m.id === 'levadura' || m.id === 'bacterias') add('ok', 'La torta es el producto y va al secador: los coadyuvantes (diatomita, perlita) quedarían en él. Compare otras alternativas en la pestaña 6.');
+  if (!w.some(function (x) { return x.sev !== 'ok'; })) w.unshift({ sev: 'ok', t: 'Diseño coherente con los datos y las restricciones de la planta.' });
+  return w;
+}
+/* ====================================================================
+   El filtro por dentro.
+   Prensa: corte de seis cámaras entre placas. La torta crece desde las
+   dos telas con el filtrado acumulado del modelo (u = V/A); el filtrado
+   escurre por las placas y sale por abajo, con un caudal que cae como
+   el del modelo. Al final se abren las placas y la torta cae.
+   Tambor: la franja sumergida forma torta a presión constante durante
+   t = f/n; luego se lava, se seca y la cuchilla la desprende.
+   ==================================================================== */
+function cssVar(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+function clamp(x, a, b) { return x < a ? a : (x > b ? b : x); }
+function rgbS(c, al) { return 'rgba(' + (c[0] | 0) + ',' + (c[1] | 0) + ',' + (c[2] | 0) + ',' + (al == null ? 1 : al) + ')'; }
+function mix(c, d, f) { return [c[0] + (d[0] - c[0]) * f, c[1] + (d[1] - c[1]) * f, c[2] + (d[2] - c[2]) * f]; }
+var WATER = [63, 134, 209];
+
+function FScene(cv) {
+  this.cv = cv; this.ctx = cv.getContext('2d'); this.running = true; this.speed = 1; this.ph = 0; this.ang = 0; this.R = null;
+  this.parts = []; this.drops = []; this.chunks = []; this.lastPh = 0;
+}
+FScene.prototype.resize = function () {
+  var r = this.cv.getBoundingClientRect(); if (!r.width) return;
+  var dpr = Math.min(2, window.devicePixelRatio || 1);
+  this.W = r.width; this.H = r.height; this.cv.width = Math.round(r.width * dpr); this.cv.height = Math.round(r.height * dpr);
+  this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0); if (this.R) this.layout();
+};
+FScene.prototype.configure = function (R) {
+  var key = R.p.eq + '|' + R.m.id; this.R = R;
+  if (!this.W) this.resize();
+  this.layout();
+  if (key !== this.key) { this.key = key; this.prime(); }
+};
+FScene.prototype.layout = function () {
+  var R = this.R, W = this.W, H = this.H; if (!R || !W) return;
+  var blue = document.documentElement.getAttribute('data-canvas') === 'blueprint';
+  this.col = { ink: cssVar('--ink') || '#1c1b1a', paper: cssVar('--paper') || '#fff', muted: cssVar('--muted-ink') || '#6b6764', hl: cssVar('--hl') || '#5980A6', red: cssVar('--redline') || '#C8452B', grid: cssVar('--grid'), blue: blue };
+  this.font = cssVar('--font-body') || 'sans-serif'; this.mono = cssVar('--font-mono') || 'monospace';
+  this.mob = W < 640;
+  var m = R.m; this.cake = m.cake; this.slurry = mix(m.cake, [210, 222, 232], 0.55);
+  if (R.p.eq === 'prensa') this.layoutPress(); else this.layoutDrum();
+};
+FScene.prototype.prime = function () { this.parts = []; this.drops = []; this.chunks = []; this.ph = 0; this.ang = 0; };
+
+/* ---------- prensa ---------- */
+FScene.prototype.layoutPress = function () {
+  var W = this.W, H = this.H, mob = this.mob, nd = mob ? 4 : 6;
+  var x0 = mob ? 18 : 120, x1 = W - (mob ? 18 : 120), headW = mob ? 16 : 30, plateW = mob ? 14 : 24;
+  var avail = x1 - x0 - 2 * headW, chW = (avail - (nd + 1) * plateW) / nd;
+  var top = mob ? 70 : 84, bot = H - (mob ? 130 : 128);
+  this.P = { nd: nd, x0: x0, x1: x1, headW: headW, plateW: plateW, chW: chW, top: top, bot: bot, feedY: top + 16, outY: bot + 18 };
+};
+FScene.prototype.pressTime = function () { // fase de la animación → tiempo real del ciclo
+  var pr = this.R.pr, tc = pr.tc, tf = pr.tf, tw = pr.tw, td = Math.max(0, pr.tdead), Tvis = 20, minD = 3;
+  var fD = td / tc * Tvis < minD ? minD / (Tvis + minD) : td / tc; // descarga visible aunque el modelo no le dé tiempo
+  var fFilt = (1 - fD) * tf / (tf + tw || 1), fWash = (1 - fD) - fFilt, ph = this.ph, st;
+  if (ph < fFilt) st = { phase: 'f', t: tf * ph / fFilt, k: ph / fFilt };
+  else if (ph < fFilt + fWash) st = { phase: 'w', t: tf + tw * (ph - fFilt) / fWash, k: (ph - fFilt) / fWash };
+  else st = { phase: 'd', t: Math.min(tc, tf + tw + td * (ph - fFilt - fWash) / fD), k: (ph - fFilt - fWash) / fD, instant: td / tc * Tvis < minD };
+  st.Tanim = Tvis + (td / tc * Tvis < minD ? minD : 0);
+  return st;
+};
+FScene.prototype.uAt = function (t) { var pr = this.R.pr, rp = pr.ramp; if (pr.rampUsed && t <= rp.t1) return rp.J0 * t; if (pr.rampUsed) return uOfT(pr.a, pr.b, t - rp.t1 + tOfU(pr.a, pr.b, rp.u1)); return uOfT(pr.a, pr.b, t); };
+FScene.prototype.stepPress = function (dt) {
+  var st = this.pressTime(), P = this.P, pr = this.R.pr, h = dt * this.speed;
+  this.ph += h / st.Tanim; if (this.ph >= 1) { this.ph -= 1; this.chunks = []; }
+  st = this.pressTime(); this.st = st;
+  var u = st.phase === 'f' ? this.uAt(st.t) : pr.u, fill = clamp((this.R.c * u / this.R.p.rhoCd) / (this.R.p.depth / 2000), 0, 1.15);
+  this.fill = fill;
+  // caudal relativo de filtrado: el del modelo contra el inicial
+  var q = st.phase === 'f' ? (pr.rampUsed && st.t <= pr.ramp.t1 ? pr.ramp.J0 * pr.A : pr.A / (2 * pr.a * u + pr.b)) : 0, q0 = pr.q0;
+  this.qrel = q0 > 0 ? q / q0 : 0; this.qNow = q; this.uNow = u;
+  this.Pnow = st.phase === 'f' ? (pr.rampUsed && st.t <= pr.ramp.t1 ? (pr.ramp.dPm + Math.pow(Math.max(0, this.R.alpha0 * this.R.mu * this.R.c * pr.ramp.J0 * pr.ramp.J0 * st.t), 1 / Math.max(0.001, 1 - this.R.cake.s))) / BAR : pr.dPa / BAR) : (st.phase === 'w' ? pr.dPa / BAR : 0);
+  this.imp = (this.imp || 0) + h * (st.phase === 'f' ? 2 + 10 * Math.min(1, q / Math.max(1e-9, pr.qMean)) : (st.phase === 'w' ? 4 : 0));
+  if (st.phase === 'f') {
+    var nNew = h * 60 * (0.25 + 0.75 * this.qrel);
+    for (var k = 0; k < nNew; k++) { var c = Math.floor(Math.random() * P.nd); this.parts.push({ c: c, x: 0.5 + (Math.random() - 0.5) * 0.15, y: 0.08, vx: (Math.random() < 0.5 ? -1 : 1) * (0.4 + Math.random() * 0.6), vy: 0.15 + Math.random() * 0.5, life: 0 }); }
+    var nd = h * 90 * this.qrel; for (k = 0; k < nd; k++) this.drops.push({ c: Math.floor(Math.random() * (P.nd + 1)), side: Math.random() < 0.5 ? -1 : 1, y: 0.1 + Math.random() * 0.8, v: 0.5 + Math.random() * 0.5, out: 0 });
+  } else if (st.phase === 'w') {
+    for (k = 0; k < h * 40; k++) this.parts.push({ c: Math.floor(Math.random() * P.nd), x: 0.5, y: 0.05 + Math.random() * 0.9, vx: Math.random() < 0.5 ? -1.4 : 1.4, vy: 0, life: 0, wash: true });
+    for (k = 0; k < h * 30; k++) this.drops.push({ c: Math.floor(Math.random() * (P.nd + 1)), side: Math.random() < 0.5 ? -1 : 1, y: 0.1 + Math.random() * 0.8, v: 0.5 + Math.random() * 0.5, out: 0, wash: true });
+  }
+  // partículas: de la entrada hacia la superficie de la torta
+  var keep = [];
+  for (var i = 0; i < this.parts.length; i++) {
+    var p = this.parts[i]; p.life += h; p.x += p.vx * h * 0.35; p.y += p.vy * h * 0.35 + Math.sin(p.life * 6 + i) * 0.002;
+    var surf = 0.5 * (1 - Math.min(1, this.fill)); // la torta ocupa desde cada cara hasta este margen (fracción del ancho)
+    if (p.wash) { if (p.x > 1.02 || p.x < -0.02) continue; }
+    else if (p.x < 0.5 - surf || p.x > 0.5 + surf || p.y > 0.98 || st.phase !== 'f') continue;
+    keep.push(p);
+  }
+  this.parts = keep.slice(-700);
+  var kd = [];
+  for (i = 0; i < this.drops.length; i++) { var d = this.drops[i]; if (d.out > 0) { d.out += h * 1.6; if (d.out < 1) kd.push(d); continue; } d.y += d.v * h * 0.9; if (d.y >= 1) d.out = 0.001; kd.push(d); }
+  this.drops = kd.slice(-600);
+  if (st.phase === 'd' && !this.chunks.length) for (var c2 = 0; c2 < P.nd; c2++) this.chunks.push({ c: c2, y: 0, v: 0, t0: c2 / P.nd * 0.45 });
+  for (i = 0; i < this.chunks.length; i++) { var q2 = this.chunks[i]; if (st.k > q2.t0 + 0.1) { q2.v += h * 900; q2.y += q2.v * h; } }
+};
+FScene.prototype.drawPress = function () {
+  var c = this.ctx, R = this.R, P = this.P, col = this.col, W = this.W, H = this.H, st = this.st || this.pressTime(), pr = R.pr, self = this;
+  var plateCol = col.blue ? 'rgba(210,225,240,.85)' : '#8a9099', plateDark = col.blue ? 'rgba(170,190,210,.9)' : '#5f656d';
+  var open = st.phase === 'd' ? Math.sin(Math.PI * clamp(st.k * 1.15, 0, 1)) : 0; // separación de las placas en la descarga
+  var gap = open * (this.mob ? 10 : 22);
+  var top = P.top, bot = P.bot, hgt = bot - top, fill = Math.min(1, this.fill || 0);
+  // bastidor: barras laterales, cabezal fijo y cabezal móvil
+  c.fillStyle = col.blue ? 'rgba(255,255,255,.18)' : '#c9ccd1'; c.fillRect(P.x0 - 6, top - 26, P.x1 - P.x0 + 12, 8);
+  c.fillStyle = col.ink; c.fillRect(P.x0, top - 34, P.headW, hgt + 60);
+  var xr = P.x1 - P.headW + gap * P.nd * 0.6; c.fillRect(xr, top - 34, P.headW, hgt + 60);
+  c.fillStyle = col.muted; c.fillRect(P.x0 - 8, bot + 26, P.x1 - P.x0 + 16 + gap * P.nd * 0.6, 4);
+  // placas y cámaras
+  var x = P.x0 + P.headW;
+  var slurry = rgbS(this.slurry, 0.55), cakeC = rgbS(this.cake), cakeD = rgbS(mix(this.cake, [60, 45, 30], 0.25));
+  this.chX = [];
+  for (var k = 0; k <= P.nd; k++) {
+    var px = x + k * (P.plateW + P.chW) + k * gap * 0.6;
+    c.fillStyle = plateCol; c.fillRect(px, top - 6, P.plateW, hgt + 12);
+    c.fillStyle = plateDark; c.fillRect(px + P.plateW * 0.42, top + 4, P.plateW * 0.16, hgt - 8); // canal de drenaje
+    if (k < P.nd) {
+      var cx0 = px + P.plateW + gap * 0.3, cw = P.chW; this.chX.push(cx0);
+      var inPress = st.phase !== 'd' || open < 0.05;
+      if (st.phase === 'f' || st.phase === 'w') { c.fillStyle = slurry; c.fillRect(cx0, top, cw, hgt); }
+      // torta desde las dos telas
+      var tw = cw / 2 * fill;
+      if (st.phase !== 'd') {
+        c.fillStyle = cakeC; c.fillRect(cx0, top, tw, hgt); c.fillRect(cx0 + cw - tw, top, tw, hgt);
+        c.fillStyle = cakeD; for (var ly = 0; ly < 5; ly++) { var lf = (ly + 1) / 6; c.fillRect(cx0 + tw * lf, top, 0.8, hgt); c.fillRect(cx0 + cw - tw * lf, top, 0.8, hgt); }
+        if (this.fill > 1) { c.strokeStyle = col.red; c.lineWidth = 2; c.strokeRect(cx0 + 1, top + 1, cw - 2, hgt - 2); }
+      }
+      // telas
+      c.strokeStyle = col.blue ? 'rgba(255,255,255,.7)' : '#3d4147'; c.setLineDash([3, 2]); c.lineWidth = 1.4;
+      c.beginPath(); c.moveTo(cx0 + 0.5, top); c.lineTo(cx0 + 0.5, bot); c.moveTo(cx0 + cw - 0.5, top); c.lineTo(cx0 + cw - 0.5, bot); c.stroke(); c.setLineDash([]);
+    }
+  }
+  // partículas que llegan a la torta
+  for (var i = 0; i < this.parts.length; i++) {
+    var p = this.parts[i], cx = this.chX[p.c]; if (cx == null) continue;
+    var xx = cx + P.chW * p.x, yy = top + hgt * p.y;
+    c.fillStyle = p.wash ? rgbS(WATER, 0.8) : cakeD; c.beginPath(); c.arc(xx, yy, p.wash ? 1.8 : 2.2, 0, 6.2832); c.fill();
+  }
+  // tortas que caen en la descarga
+  if (st.phase === 'd') for (i = 0; i < this.chunks.length; i++) {
+    var q = this.chunks[i], cx2 = this.chX[q.c]; if (cx2 == null) continue; var tw2 = P.chW / 2 * fill;
+    c.fillStyle = cakeC; c.save(); c.translate(cx2 + P.chW / 2, top + hgt / 2 + q.y); c.rotate(Math.min(0.5, q.y / 400) * (q.c % 2 ? 1 : -1));
+    c.fillRect(-P.chW / 2, -hgt / 2, tw2, hgt * 0.98); c.fillRect(P.chW / 2 - tw2, -hgt / 2, tw2, hgt * 0.98); c.restore();
+  }
+  // tolva de descarga
+  var hy = bot + 44; c.strokeStyle = col.muted; c.lineWidth = 2; c.beginPath(); c.moveTo(P.x0 + 30, hy); c.lineTo(P.x0 + 60, hy + 26); c.lineTo(P.x1 - 60, hy + 26); c.lineTo(P.x1 - 30, hy); c.stroke();
+  if (!this.mob) { c.fillStyle = col.muted; c.font = '600 10px ' + this.mono; c.textAlign = 'center'; c.fillText('tolva de la torta', (P.x0 + P.x1) / 2, hy + 40); }
+  // tubo de alimentación arriba y filtrado abajo
+  var feedOn = st.phase === 'f', washOn = st.phase === 'w';
+  c.strokeStyle = col.ink; c.lineWidth = 7; c.beginPath(); c.moveTo(P.x0 - (this.mob ? 10 : 60), P.feedY); c.lineTo(P.x0 + P.headW, P.feedY); c.stroke();
+  c.strokeStyle = feedOn ? rgbS(this.slurry) : (washOn ? rgbS(WATER) : col.paper); c.lineWidth = 3.5; c.beginPath(); c.moveTo(P.x0 - (this.mob ? 10 : 60), P.feedY); c.lineTo(P.x0 + P.headW, P.feedY); c.stroke();
+  if (feedOn || washOn) { c.strokeStyle = 'rgba(255,255,255,.9)'; c.lineWidth = 1.5; c.setLineDash([4, 8]); c.lineDashOffset = -performance.now() / 40; c.beginPath(); c.moveTo(P.x0 - (this.mob ? 10 : 60), P.feedY); c.lineTo(P.x0 + P.headW, P.feedY); c.stroke(); c.setLineDash([]); }
+  // filtrado: gotas que bajan por los canales de las placas y salen por abajo
+  for (i = 0; i < this.drops.length; i++) {
+    var d = this.drops[i], kx = P.x0 + P.headW + d.c * (P.plateW + P.chW) + d.c * gap * 0.6 + P.plateW / 2;
+    if (d.out > 0) { var yy2 = bot + 6 + d.out * 22; c.fillStyle = rgbS(d.wash ? WATER : [120, 170, 220], 0.9 * (1 - d.out)); c.beginPath(); c.ellipse(kx, yy2, 1.6, 2.6, 0, 0, 6.2832); c.fill(); continue; }
+    c.fillStyle = rgbS(d.wash ? WATER : [120, 170, 220], 0.85); c.beginPath(); c.arc(kx + d.side * 2, top + hgt * d.y, 1.5, 0, 6.2832); c.fill();
+  }
+  // rótulos
+  var fT = function (s) { return fTime(s); };
+  c.font = '700 12px ' + this.mono; c.fillStyle = col.ink; c.textAlign = 'left';
+  var phName = st.phase === 'f' ? 'Filtración' : (st.phase === 'w' ? 'Lavado' : 'Descarga y cierre');
+  var ly0 = this.mob ? H - 34 : H - 30;
+  c.fillText(phName.toUpperCase() + ' · ' + fT(st.t) + ' de ' + fT(pr.tc), this.mob ? 14 : P.x0, ly0);
+  c.font = '600 11px ' + this.mono; c.fillStyle = col.muted;
+  var info = st.phase === 'f' ? 'torta ' + fmtN(R.c * this.uAt(st.t) / R.p.rhoCd * 1000, 1) + ' mm por cara · ' + fmtN(100 * clamp((this.uNow || 0) / pr.u, 0, 1), 0) + ' % del filtrado del ciclo' : (st.phase === 'w' ? 'el agua de lavado desplaza el licor de la torta' : (st.instant ? 'en este supuesto la descarga no toma tiempo del ciclo' : 'se abren las placas y la torta cae por gravedad'));
+  c.fillText(info, this.mob ? 14 : P.x0, ly0 + 16);
+  if (!this.mob) {
+    c.textAlign = 'right'; c.fillStyle = col.muted; c.fillText('cámaras de ' + fmtN(R.p.depth, 0) + ' mm · ' + P.nd + ' de ' + pr.N, P.x1, ly0 + 16);
+    this.drawPressGear();
+  }
+};
+/* bomba de alimentación, manómetro, caudalímetro y tanque de filtrado */
+FScene.prototype.dial = function (x, y, r, f, lab, val, color) {
+  var c = this.ctx, col = this.col, a0 = Math.PI * 0.8, a1 = Math.PI * 2.2, af = a0 + (a1 - a0) * clamp(f, 0, 1.05);
+  c.fillStyle = col.paper; c.beginPath(); c.arc(x, y, r, 0, 6.2832); c.fill();
+  c.strokeStyle = col.ink; c.lineWidth = 2; c.beginPath(); c.arc(x, y, r, 0, 6.2832); c.stroke();
+  c.strokeStyle = color; c.lineWidth = 4; c.beginPath(); c.arc(x, y, r - 6, a0, af); c.stroke();
+  c.strokeStyle = col.muted; c.lineWidth = 1; for (var i = 0; i <= 5; i++) { var a = a0 + (a1 - a0) * i / 5; c.beginPath(); c.moveTo(x + Math.cos(a) * (r - 2), y + Math.sin(a) * (r - 2)); c.lineTo(x + Math.cos(a) * (r - 9), y + Math.sin(a) * (r - 9)); c.stroke(); }
+  c.strokeStyle = col.ink; c.lineWidth = 2.2; c.beginPath(); c.moveTo(x, y); c.lineTo(x + Math.cos(af) * (r - 10), y + Math.sin(af) * (r - 10)); c.stroke();
+  c.fillStyle = col.ink; c.beginPath(); c.arc(x, y, 3, 0, 6.2832); c.fill();
+  c.font = '700 11px ' + this.mono; c.textAlign = 'center'; c.fillText(val, x, y + r + 14);
+  c.font = '600 10px ' + this.mono; c.fillStyle = col.muted; c.fillText(lab, x, y - r - 6);
+};
+FScene.prototype.drawPressGear = function () {
+  var c = this.ctx, R = this.R, P = this.P, col = this.col, W = this.W, H = this.H, pr = R.pr, st = this.st, s = R.p;
+  // bomba de alimentación
+  var px = P.x0 - 62, py = P.feedY + 64, rr = 17;
+  c.strokeStyle = col.ink; c.lineWidth = 7; c.beginPath(); c.moveTo(px, py - rr); c.lineTo(px, P.feedY); c.lineTo(P.x0 - 60, P.feedY); c.stroke();
+  c.fillStyle = col.paper; c.beginPath(); c.arc(px, py, rr, 0, 6.2832); c.fill(); c.lineWidth = 2.2; c.stroke();
+  c.lineWidth = 2; for (var i = 0; i < 4; i++) { var a = (this.imp || 0) + i * Math.PI / 2; c.beginPath(); c.moveTo(px, py); c.lineTo(px + Math.cos(a) * (rr - 4), py + Math.sin(a) * (rr - 4)); c.stroke(); }
+  c.fillStyle = col.muted; c.font = '600 10px ' + this.mono; c.textAlign = 'center'; c.fillText(pr.rampUsed ? 'bomba (caudal fijo)' : 'bomba', px, py + rr + 14); c.fillText('suspensión', px, P.feedY - 10);
+  // instrumentos
+  var gx = P.x1 + (W - P.x1) / 2 + 4, gr = Math.min(34, (W - P.x1) / 2 - 10), Pm = Math.max(s.Pmax, s.dP) * 1.2, qm = Math.max(pr.qMean * 3, pr.rampUsed ? pr.ramp.J0 * pr.A * 1.25 : 0);
+  this.dial(gx, P.top + 46, gr, this.Pnow / Pm, 'ΔP', fmtN(this.Pnow, 2) + ' bar', '#1D5273');
+  this.dial(gx, P.top + 46 + gr * 2 + 44, gr, (this.qNow || 0) / qm, 'CAUDAL', fmtN((this.qNow || 0) * 3600, (this.qNow || 0) * 3600 < 10 ? 2 : 1) + ' m³/h', '#B77A2B');
+  // tanque de filtrado: se llena con V(t)
+  var tx = gx - 26, tw = 52, ty0 = P.bot - 6, th = Math.max(60, H - 60 - ty0), lv = st.phase === 'f' ? clamp((this.uNow || 0) / pr.u, 0, 1) : 1;
+  if (st.phase === 'd') lv = 1 - clamp(st.k * 1.4, 0, 1);
+  c.fillStyle = rgbS([120, 170, 220], 0.75); c.fillRect(tx, ty0 + th * (1 - lv), tw, th * lv);
+  c.strokeStyle = col.ink; c.lineWidth = 2; c.strokeRect(tx, ty0, tw, th);
+  c.lineWidth = 3; c.beginPath(); c.moveTo(P.x1 - P.headW, P.outY + 6); c.lineTo(tx + tw / 2, P.outY + 6); c.lineTo(tx + tw / 2, ty0); c.stroke();
+  c.fillStyle = col.muted; c.font = '600 10px ' + this.mono; c.textAlign = 'center'; c.fillText('filtrado', tx + tw / 2, ty0 - 6);
+  c.fillStyle = col.ink; c.font = '700 10.5px ' + this.mono; c.fillText(fmtN(lv * pr.V, 2) + ' m³', tx + tw / 2, ty0 + th + 14);
+};
+
+/* ---------- tambor ---------- */
+FScene.prototype.layoutDrum = function () {
+  var W = this.W, H = this.H, mob = this.mob, Rd = Math.min(H * 0.25, W * (mob ? 0.27 : 0.19));
+  var D = this.D = { cx: W * (mob ? 0.4 : 0.4), cy: H * 0.45, R: Rd }, f = this.R.dr.f;
+  var entry = Math.PI / 2 - Math.PI * f, ka = entry + 2 * Math.PI * 0.94, kx = D.cx + Math.cos(ka) * Rd, ky = D.cy + Math.sin(ka) * Rd;
+  var level = D.cy + Rd * Math.cos(Math.PI * f), wallX = D.cx + Rd * 1.45, wallTop = level - 10;
+  var ex = wallX + Rd * 0.3, ey = Math.max(ky + Rd * 0.12, wallTop - Rd * 0.1);
+  if (ey > wallTop - 4) ey = wallTop - 4; // la canaleta siempre pasa por encima del borde de la artesa
+  var bx0 = ex - Rd * 0.05, bx1 = Math.min(W - 14, ex + Rd * 0.95), byy = Math.min(H - 76, ey + Rd * 0.42);
+  D.knife = { a: ka, x: kx, y: ky, ex: ex, ey: ey, bx0: bx0, bx1: bx1, by: byy, level: level, wallX: wallX };
+};
+FScene.prototype.thick = function (phi) { // espesor (m) de la franja que entró a la suspensión hace phi radianes
+  var dr = this.R.dr, f = dr.f, fr = phi / (2 * Math.PI), tk = 0.94; // la cuchilla está al 94 % de la vuelta
+  if (fr > tk && dr.Lrev * 1000 >= this.R.p.minCake) return 0; // si es muy delgada, la cuchilla no la despega
+  var ts = Math.min(fr, f) / dr.n, u = uOfT(dr.a, dr.b, ts); return this.R.c * u / this.R.p.rhoCd;
+};
+FScene.prototype.stepDrum = function (dt) {
+  var h = dt * this.speed, D = this.D, dr = this.R.dr, f = dr.f;
+  this.ang += h * 2 * Math.PI / 14; if (this.ang > 2 * Math.PI) this.ang -= 2 * Math.PI;
+  // partículas en la artesa
+  for (var k = 0; k < h * 40; k++) this.parts.push({ x: (Math.random() - 0.5) * 2.2, y: Math.random(), vx: (Math.random() - 0.5) * 0.3, vy: (Math.random() - 0.5) * 0.3, life: 0 });
+  var kp = []; for (var i = 0; i < this.parts.length; i++) { var p = this.parts[i]; p.life += h; p.x += p.vx * h; p.y += p.vy * h; if (p.life < 3) kp.push(p); } this.parts = kp.slice(-300);
+  // filtrado hacia el centro (vacío) en el arco sumergido
+  for (k = 0; k < h * 50; k++) { var a = Math.PI / 2 - Math.PI * f + Math.random() * 2 * Math.PI * f; this.drops.push({ a: a, r: 1, v: 0.6 + Math.random() * 0.5, wash: false }); }
+  for (k = 0; k < h * 14; k++) this.drops.push({ a: Math.PI * (1.05 + Math.random() * 0.35), r: 1.35, v: 0.8, wash: true, fall: true });
+  var kd = []; for (i = 0; i < this.drops.length; i++) { var d = this.drops[i]; if (d.fall) { d.r -= d.v * h * 0.5; if (d.r > 1.02) kd.push(d); continue; } d.r -= d.v * h * 0.5; if (d.r > 0.18) kd.push(d); } this.drops = kd.slice(-500);
+  // trozos de torta que corta la cuchilla: bajan por la canaleta, caen a la banda y se van; nunca vuelven a la artesa
+  var K = D.knife;
+  if (Math.random() < h * 6 && this.thick(2 * Math.PI * 0.935) > 0 && dr.Lrev * 1000 >= this.R.p.minCake) this.chunks.push({ st: 0, s: 0, x: K.x, y: K.y, vx: 0, vy: 0, rot: Math.random() * 6 });
+  var kc = [];
+  for (i = 0; i < this.chunks.length; i++) {
+    var q = this.chunks[i];
+    if (q.st === 0) { q.s += h * 1.3; q.x = K.x + (K.ex - K.x) * q.s; q.y = K.y + (K.ey - K.y) * q.s - 4; if (q.s >= 1) { q.st = 1; q.vx = 45; q.vy = 20; } }
+    else if (q.st === 1) { q.vy += 600 * h; q.x += q.vx * h; q.y += q.vy * h; q.rot += h * 4; if (q.y >= K.by - 4) { q.st = 2; q.y = K.by - 4; } }
+    else { q.x += 38 * h; }
+    if (q.x < K.bx1 + 6) kc.push(q);
+  }
+  this.chunks = kc.slice(-80);
+};
+FScene.prototype.drawDrum = function () {
+  var c = this.ctx, R = this.R, D = this.D, col = this.col, W = this.W, H = this.H, dr = R.dr, f = dr.f, self = this, i;
+  var cx = D.cx, cy = D.cy, Rr = D.R;
+  // ángulo de pantalla de un punto de la superficie: el tambor gira en sentido horario; la franja entra a la suspensión por la derecha
+  var entry = Math.PI / 2 - Math.PI * f; // ángulo (horario, desde el eje x) donde la superficie entra al líquido
+  var scr = function (phi) { return entry + phi; };
+  var level = cy + Rr * Math.cos(Math.PI * f);
+  // artesa con la suspensión
+  var tw = Rr * 1.45;
+  c.fillStyle = rgbS(this.slurry, 0.75); c.beginPath(); c.moveTo(cx - tw, level); c.lineTo(cx + tw, level); c.lineTo(cx + tw * 0.92, cy + Rr * 1.22); c.quadraticCurveTo(cx, cy + Rr * 1.42, cx - tw * 0.92, cy + Rr * 1.22); c.closePath(); c.fill();
+  c.strokeStyle = col.ink; c.lineWidth = 2.5; c.beginPath(); c.moveTo(cx - tw, level - 10); c.lineTo(cx - tw * 0.92, cy + Rr * 1.22); c.quadraticCurveTo(cx, cy + Rr * 1.42, cx + tw * 0.92, cy + Rr * 1.22); c.lineTo(cx + tw, level - 10); c.stroke();
+  for (i = 0; i < this.parts.length; i++) { var p = this.parts[i], py0 = clamp(p.y, 0, 1), px = cx + clamp(p.x, -1, 1) * tw * 0.8 * (1 - 0.3 * py0), py = level + 6 + py0 * (cy + Rr * 1.22 - level - 10); c.fillStyle = rgbS(mix(this.cake, [40, 30, 20], 0.2), 0.8); c.beginPath(); c.arc(px, py, 1.8, 0, 6.2832); c.fill(); }
+  // tambor y sectores que giran
+  c.fillStyle = col.blue ? 'rgba(200,215,235,.18)' : '#dfe3e8'; c.beginPath(); c.arc(cx, cy, Rr, 0, 6.2832); c.fill();
+  c.strokeStyle = col.blue ? 'rgba(255,255,255,.35)' : '#9aa1aa'; c.lineWidth = 1.2;
+  for (i = 0; i < 12; i++) { var a = this.ang + i * Math.PI / 6; c.beginPath(); c.moveTo(cx + Math.cos(a) * Rr * 0.22, cy + Math.sin(a) * Rr * 0.22); c.lineTo(cx + Math.cos(a) * Rr * 0.97, cy + Math.sin(a) * Rr * 0.97); c.stroke(); }
+  c.fillStyle = col.ink; c.beginPath(); c.arc(cx, cy, Rr * 0.18, 0, 6.2832); c.fill();
+  // filtrado aspirado hacia el centro
+  for (i = 0; i < this.drops.length; i++) { var d = this.drops[i]; if (d.fall) continue; c.fillStyle = rgbS([120, 170, 220], 0.85); c.beginPath(); c.arc(cx + Math.cos(d.a) * Rr * d.r, cy + Math.sin(d.a) * Rr * d.r, 1.6, 0, 6.2832); c.fill(); }
+  // torta: banda de espesor variable (exagerado para que se vea; la escala va en el rótulo)
+  var Lmax = Math.max(this.thick(2 * Math.PI * Math.min(0.93, f)), 1e-6), pxMax = Math.min(Rr * 0.16, 26), sc = clamp(pxMax * Math.sqrt(Lmax / 0.04), 3, pxMax) / Lmax; // el espesor se dibuja comprimido: va como √L
+  this.cakeScale = sc;
+  c.fillStyle = rgbS(this.cake); c.beginPath();
+  var N = 140, pts = [];
+  for (i = 0; i <= N; i++) { var phi = 2 * Math.PI * i / N, L = this.thick(phi) * sc, aa = scr(phi); pts.push([cx + Math.cos(aa) * (Rr + L), cy + Math.sin(aa) * (Rr + L)]); }
+  c.moveTo(pts[0][0], pts[0][1]); for (i = 1; i < pts.length; i++) c.lineTo(pts[i][0], pts[i][1]);
+  for (i = N; i >= 0; i--) { var a2 = scr(2 * Math.PI * i / N); c.lineTo(cx + Math.cos(a2) * Rr, cy + Math.sin(a2) * Rr); }
+  c.closePath(); c.fill();
+  c.strokeStyle = col.ink; c.lineWidth = 2.5; c.beginPath(); c.arc(cx, cy, Rr, 0, 6.2832); c.stroke();
+  // lavado: aspersores arriba a la izquierda
+  var wa = scr(2 * Math.PI * Math.min(0.9, f + 0.12));
+  for (i = 0; i < this.drops.length; i++) { var w = this.drops[i]; if (!w.fall) continue; c.fillStyle = rgbS(WATER, 0.85); c.beginPath(); c.arc(cx + Math.cos(w.a) * Rr * w.r, cy + Math.sin(w.a) * Rr * w.r, 1.7, 0, 6.2832); c.fill(); }
+  c.fillStyle = col.ink; [1.1, 1.25, 1.4].forEach(function (k) { var a3 = Math.PI * k; c.fillRect(cx + Math.cos(a3) * Rr * 1.42 - 5, cy + Math.sin(a3) * Rr * 1.42 - 3, 10, 6); });
+  // secado: flechas de aire arriba
+  c.strokeStyle = col.muted; c.lineWidth = 1.6;
+  [1.55, 1.7, 1.85].forEach(function (k) { var a4 = Math.PI * k, r0 = Rr * 1.5, r1 = Rr * 1.12; c.beginPath(); c.moveTo(cx + Math.cos(a4) * r0, cy + Math.sin(a4) * r0); c.lineTo(cx + Math.cos(a4) * r1, cy + Math.sin(a4) * r1); c.stroke(); });
+  // cuchilla y descarga
+  var K = D.knife, kx = K.x, ky = K.y;
+  // banda transportadora fuera de la artesa
+  c.strokeStyle = col.ink; c.lineWidth = 2; c.beginPath(); c.moveTo(K.bx0, K.by); c.lineTo(K.bx1, K.by); c.moveTo(K.bx0, K.by + 9); c.lineTo(K.bx1, K.by + 9); c.stroke();
+  [K.bx0, K.bx1].forEach(function (xx) { c.beginPath(); c.arc(xx, K.by + 4.5, 4.5, 0, 6.2832); c.stroke(); });
+  c.strokeStyle = col.muted; c.lineWidth = 1; var off = (performance.now() / 30) % 14; for (var bx = K.bx0 + off; bx < K.bx1; bx += 14) { c.beginPath(); c.moveTo(bx, K.by + 1); c.lineTo(bx, K.by + 8); c.stroke(); }
+  // canaleta con la cuchilla en su borde: va desde la superficie del tambor hasta afuera del borde de la artesa
+  c.strokeStyle = col.ink; c.lineWidth = 4; c.lineCap = 'round'; c.beginPath(); c.moveTo(kx + Math.cos(K.a) * 1, ky + Math.sin(K.a) * 1); c.lineTo(K.ex, K.ey); c.stroke(); c.lineCap = 'butt';
+  for (i = 0; i < this.chunks.length; i++) { var q = this.chunks[i]; c.save(); c.translate(q.x, q.y); c.rotate(q.st === 0 ? Math.atan2(K.ey - ky, K.ex - kx) : q.rot); c.fillStyle = rgbS(this.cake); c.strokeStyle = 'rgba(0,0,0,.25)'; c.lineWidth = 0.8; c.fillRect(-6, -3, 12, 6); c.strokeRect(-6, -3, 12, 6); c.restore(); }
+  if (!this.mob) { c.fillStyle = col.muted; c.font = '600 10px ' + this.mono; c.textAlign = 'center'; c.fillText('torta descargada', (K.bx0 + K.bx1) / 2, K.by + 24); }
+  // rótulos de zonas
+  c.font = '700 11px ' + this.mono; c.textAlign = 'center';
+  var lab = function (phi, txt, rr) { var a5 = scr(phi), x = cx + Math.cos(a5) * Rr * (rr || 1.62), y = cy + Math.sin(a5) * Rr * (rr || 1.62); c.fillStyle = col.paper; var w2 = c.measureText(txt).width; c.globalAlpha = 0.85; c.fillRect(x - w2 / 2 - 3, y - 10, w2 + 6, 14); c.globalAlpha = 1; c.fillStyle = col.ink; c.fillText(txt, x, y); };
+  if (!this.mob) { lab(Math.PI * f, 'FORMACIÓN', 1.25); lab(2 * Math.PI * (f + 0.1), 'LAVADO'); lab(2 * Math.PI * 0.72, 'SECADO'); lab(2 * Math.PI * 0.9, 'DESCARGA', 1.35); }
+  c.textAlign = 'left'; c.font = '700 12px ' + this.mono; c.fillStyle = col.ink;
+  var ly = H - 50;
+  c.fillText('VUELTA REAL: ' + fTime(dr.tc).toUpperCase() + ' · ANIMACIÓN ACELERADA', this.mob ? 14 : 20, ly);
+  c.font = '600 11px ' + this.mono; c.fillStyle = col.muted;
+  c.fillText('torta ' + fmtN(dr.Lrev * 1000, dr.Lrev * 1000 < 1 ? 2 : 1) + ' mm por vuelta' + (this.mob ? '' : ' (espesor dibujado fuera de escala)') + (dr.Lrev * 1000 < R.p.minCake ? ' · la cuchilla no la puede despegar' : ''), this.mob ? 14 : 20, ly + 16);
+  c.fillText('vacío ' + fmtN(R.p.dPv * 750.06, 0) + ' mmHg · ' + fmtN(100 * f, 0) + ' % sumergido', this.mob ? 14 : 20, ly + 32);
+  if (dr.Lrev * 1000 < R.p.minCake) { c.strokeStyle = col.red; c.lineWidth = 2; c.setLineDash([5, 4]); c.beginPath(); c.arc(kx, ky, 18, 0, 6.2832); c.stroke(); c.setLineDash([]); }
+};
+
+FScene.prototype.step = function (dt) { if (!this.R) return; if (this.R.p.eq === 'prensa') this.stepPress(dt); else this.stepDrum(dt); };
+FScene.prototype.draw = function () {
+  var c = this.ctx, R = this.R, col = this.col, W = this.W, H = this.H; if (!R || !col) return;
+  c.fillStyle = col.paper; c.fillRect(0, 0, W, H);
+  c.strokeStyle = col.grid; c.lineWidth = 1; c.beginPath(); for (var gx = 0; gx < W; gx += 24) { c.moveTo(gx + 0.5, 0); c.lineTo(gx + 0.5, H); } for (var gy = 0; gy < H; gy += 24) { c.moveTo(0, gy + 0.5); c.lineTo(W, gy + 0.5); } c.stroke();
+  if (R.p.eq === 'prensa') this.drawPress(); else this.drawDrum();
+};
+/* posición del cursor del ciclo en la gráfica y en la línea de tiempo */
+FScene.prototype.cursor = function () {
+  if (!CYC) return; var el = document.getElementById('cycCur'), x;
+  if (CYC.mode === 'p' && this.st) { x = CYC.a.X(this.st.t / 60); var tl = document.getElementById('tlCur'); if (tl) tl.style.left = (100 * this.st.t / this.R.pr.tc) + '%'; }
+  else if (CYC.mode === 'd') x = CYC.a.X((this.ang / (2 * Math.PI)) * 360 % 360);
+  if (el && isFinite(x)) { el.setAttribute('x1', x); el.setAttribute('x2', x); }
+};
+var fscene = null, lastT = 0;
+function animLoop(ts) {
+  var dt = lastT ? Math.min(0.05, (ts - lastT) / 1000) : 0.016; lastT = ts;
+  if (fscene && fscene.R && fscene.R.cOk && tab === 'in' && !document.hidden) { if (fscene.running) fscene.step(dt); else if (!fscene.st && fscene.R.p.eq === 'prensa') fscene.step(0); fscene.draw(); fscene.cursor(); }
+  requestAnimationFrame(animLoop);
+}
+/* ====================================================================
+   Interfaz: controles, indicadores, pestañas y gráficas
+   ==================================================================== */
+var $ = function (s, r) { return (r || document).querySelector(s); };
+var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+var store = { get: function (k, d) { try { var v = localStorage.getItem('pou-filtracion:' + k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } }, set: function (k, v) { try { localStorage.setItem('pou-filtracion:' + k, JSON.stringify(v)); } catch (e) { } } };
+function clone(o) { return JSON.parse(JSON.stringify(o)); }
+var L10 = Math.log10;
+
+var T6PTS = [[105, 12], [223, 18], [385, 24], [591, 30]];
+var BASE = { mat: 'levadura', mu: 3.5, rhoL: 1030, cBasis: 'filtrado', lcs: L10(25), mw: 4, rhoCd: 270, lQ: L10(4.5), la: L10(3.604e12), dPref: 1.8, sComp: 0, lRm: L10(8.91e10),
+  eq: 'prensa', dP: 3, Pmax: 5, cyc: 'frac', tcH: 1, frac: 1, tdMin: 24, tfMode: 'opt', tfMin: 30, wash: 0, kw: 'mitad', Ap: 1, maxPl: 100, depth: 32, budget: 220000, floor: 80,
+  rampOn: false, J0: 300, dPv: 0.6, f: 0.3, rpm: 0.5, minCake: 3, dPa: 3, dPb: 5, flocK: 10, flocDose: 50, mfJ: 35, drho: 70, contOn: false, contW: 25,
+  lab: 't6', labA: 0.0012, labDP: 1.8, labMu: 3.5, labC: 25, labPts: clone(T6PTS), grid: true,
+  scores: { prensa: [3, 3, 4, 2, 2, 1], floc: [5, 4, 3, 2, 3, 1], cent: [2, 3, 5, 4, 4, 5], mf: [4, 2, 4, 3, 5, 4] } };
+var PRESETS = [
+  { id: 't6a', name: 'Taller 6 · modelo ideal', tag: '55 m² a 3 bar', s: {} },
+  { id: 't6c', name: 'Taller 6 · torta compresible', tag: 's = 0,7', s: { sComp: 0.7 } },
+  { id: 't6r', name: 'Taller 6 · ciclo real', tag: '60 % del ciclo', s: { sComp: 0.7, frac: 0.6 } },
+  { id: 't6d', name: 'Taller 6 en un tambor al vacío', tag: 'torta delgada', s: { sComp: 0.7, eq: 'tambor', dPv: 0.6, f: 0.3, rpm: 0.5 } },
+  { id: 'mc2', name: 'McCabe 29.2 · tambor con CaCO₃', tag: '7,59 m²', s: { mat: 'caco3', mu: 1.0, rhoL: 998, cBasis: 'alimentado', lcs: L10(236), mw: 2, rhoCd: 1200, lQ: L10(2.089), la: L10(1.4226e11), dPref: 1, sComp: 0.26, lRm: 6, eq: 'tambor', dPv: 20 * 3386.39 / 1e5, f: 0.3, rpm: 0.2, minCake: 3 } },
+  { id: 'proj', name: 'Proyecto · filtro del bagazo agotado', tag: 'α a medir', s: { mat: 'bagazo', mu: 4, rhoL: 1008, lcs: L10(10), mw: 5, rhoCd: 150, lQ: L10(6), la: L10(1e10), dPref: 1, sComp: 0.5, lRm: L10(3e10), dP: 1.5, Pmax: 3, cyc: 'td', tdMin: 30, tfMode: 'opt', wash: 1, kw: 'mitad', Ap: 1, maxPl: 60, depth: 40 } }
+];
+function presetState(id) { var p = byId(PRESETS, id), s = Object.assign(clone(BASE), clone(p.s)); s.preset = id; return s; }
+var state = Object.assign(presetState('t6a'), store.get('state', {}));
+var R = null, LAB = null, tab = store.get('tab', 'in');
+function mstate(s) { return Object.assign({}, s, { cs: Math.pow(10, s.lcs) }); }
+var SVGI = {
+  pause: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M8 5v14M16 5v14"/></svg>',
+  play: '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l12-7.5z"/></svg>'
+};
+var EQS = [
+  { id: 'prensa', name: 'Filtro prensa', sz: 'por lotes · hasta ≈ 15 bar', icon: '<rect x="4" y="7" width="4" height="16" stroke-width="2"/><rect x="34" y="7" width="4" height="16" stroke-width="2"/><path d="M11 9v12M15 9v12M19 9v12M23 9v12M27 9v12M31 9v12" stroke-width="2.4"/><path d="M2 25h38" stroke-width="1.6"/>' },
+  { id: 'tambor', name: 'Tambor rotatorio al vacío', sz: 'continuo · ΔP < 1 bar', icon: '<circle cx="21" cy="13" r="9" stroke-width="2"/><path d="M6 18q15 12 30 0" stroke-width="1.6"/><path d="M30 6l6 -3" stroke-width="2"/>' }
+];
+
+/* ---------- formato ---------- */
+function fA(A) { return isFinite(A) ? fmtN(A, A < 10 ? 2 : 1) + ' m²' : '—'; }
+function fTime(s) { if (!isFinite(s)) return '—'; if (s < 90) return fmtN(s, 0) + ' s'; if (s < 5400) return fmtN(s / 60, s < 600 ? 1 : 0) + ' min'; return fmtN(s / 3600, 2) + ' h'; }
+function fk(usd) { return fmtN(usd / 1000, usd < 1e5 ? 1 : 0); }
+function fbar(b) { return fmtN(b, b < 1 ? 2 : (b < 10 ? 2 : 1)) + ' bar'; }
+function fQ(m3s) { var h = m3s * 3600; return fmtN(h, h < 1 ? 3 : (h < 10 ? 2 : 1)) + ' m³/h'; }
+
+/* ---------- controles ---------- */
+var SLIDERS = ['lcs', 'lQ', 'mu', 'la', 'dPref', 'sComp', 'lRm', 'mw', 'rhoCd', 'dP', 'Ap', 'maxPl', 'depth', 'dPv', 'f', 'rpm', 'minCake', 'tcH', 'frac', 'tdMin', 'tfMin', 'wash', 'Pmax', 'budget', 'floor', 'dPa', 'dPb', 'J0', 'flocK', 'flocDose', 'mfJ', 'drho', 'contW'];
+function buildControls() {
+  $$('.panel .ph').forEach(function (ph) { var d = document.createElement('div'); d.className = 'callout np-msg'; ph.parentNode.insertBefore(d, ph.nextSibling); });
+  $('#presetBtns').innerHTML = PRESETS.map(function (p) { return '<button type="button" class="opt" data-p="' + p.id + '"><span>' + esc(p.name) + '</span><span class="x">' + esc(p.tag) + '</span></button>'; }).join('');
+  $('#matBtns').innerHTML = MATS.map(function (f) { return '<button type="button" class="opt" data-m="' + f.id + '"><span class="dotc" style="background:' + f.color + '"></span><span>' + esc(f.name) + '</span><span class="x">' + esc(f.tag) + '</span></button>'; }).join('');
+  $('#eqBtns').innerHTML = EQS.map(function (a) { return '<button type="button" class="mill" data-e="' + a.id + '"><svg viewBox="0 0 42 30" aria-hidden="true" fill="none" stroke="currentColor">' + a.icon + '</svg>' + esc(a.name) + '<span class="sz">' + esc(a.sz) + '</span></button>'; }).join('');
+  $('#labSeg').innerHTML = LABSETS.map(function (l) { return '<button type="button" data-v="' + l.id + '">' + esc(l.name) + '</button>'; }).join('');
+  $$('#presetBtns .opt').forEach(function (b) { b.addEventListener('click', function () { state = presetState(b.dataset.p); update(); if (fscene) fscene.prime(); }); });
+  $$('#matBtns .opt').forEach(function (b) { b.addEventListener('click', function () {
+    var m = byId(MATS, b.dataset.m); state.mat = m.id;
+    Object.assign(state, { la: L10(m.alphaRef), dPref: m.dPref, sComp: m.s, lRm: L10(m.Rm), lcs: L10(m.cs), mu: m.mu, rhoL: m.rhoL, mw: m.mw, rhoCd: m.rhoCd, cBasis: 'filtrado' });
+    dirty(); if (fscene) fscene.prime(); }); });
+  $$('#eqBtns .mill').forEach(function (b) { b.addEventListener('click', function () { state.eq = b.dataset.e; dirty(); if (fscene) fscene.prime(); }); });
+  [['#basisSeg', 'cBasis'], ['#cycSeg', 'cyc'], ['#tfSeg', 'tfMode'], ['#kwSeg', 'kw'], ['#labSeg', 'lab']].forEach(function (a) { $$(a[0] + ' button').forEach(function (b) { b.addEventListener('click', function () { state[a[1]] = b.dataset.v; dirty(); }); }); });
+  SLIDERS.forEach(function (k) { var el = document.getElementById(k); el.addEventListener('input', function () { state[k] = parseFloat(el.value); dirty(); }); });
+  $('#grid').addEventListener('change', function () { state.grid = this.checked; dirty(); });
+  $('#rampOn').addEventListener('change', function () { state.rampOn = this.checked; dirty(); });
+  $('#contOn').addEventListener('change', function () { state.contOn = this.checked; dirty(); });
+  $('#resetAll').addEventListener('click', function () { state = presetState('t6a'); update(); if (fscene) fscene.prime(); });
+  var useLab = function () { if (!LAB) return; state.la = L10(LAB.alphaRef); state.dPref = Math.round(LAB.dPref * 100) / 100; state.lRm = L10(LAB.Rm); if (LAB.s != null) state.sComp = Math.round(LAB.s * 100) / 100; dirty(); };
+  $('#useLab').addEventListener('click', useLab); $('#useLab2').addEventListener('click', function () { useLab(); setTab('in'); });
+  $('#status').addEventListener('click', function () { setTab('in'); setTimeout(function () { $('#diagCard').scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 50); });
+  $$('.tabs [role=tab]').forEach(function (b) { b.addEventListener('click', function () { setTab(b.dataset.tab); }); });
+  $$('.tabs .canv button').forEach(function (b) { b.addEventListener('click', function () { document.documentElement.setAttribute('data-canvas', b.dataset.canvas); $$('.tabs .canv button').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); }); store.set('canvas', b.dataset.canvas); if (fscene) fscene.layout(); renderTab(); }); });
+  $('#mobCtl').addEventListener('click', function () { $('#ctl').classList.toggle('open'); this.textContent = $('#ctl').classList.contains('open') ? 'Cerrar' : 'Controles'; });
+  document.addEventListener('keydown', function (e) { if (/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return; var i = '1234567'.indexOf(e.key); if (i >= 0) setTab(['in', 'la', 'pr', 'ci', 'ta', 'al', 'ec'][i]); if (e.key === ' ' && tab === 'in') { e.preventDefault(); togglePlay(); } });
+  $('#btnPlay').innerHTML = SVGI.pause; $('#btnPlay').addEventListener('click', togglePlay);
+  $$('.play [data-sp]').forEach(function (b) { b.addEventListener('click', function () { fscene.speed = +b.dataset.sp; $$('.play [data-sp]').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); }); }); });
+  var cv = store.get('canvas', 'paper'); document.documentElement.setAttribute('data-canvas', cv); $$('.tabs .canv button').forEach(function (x) { x.setAttribute('aria-pressed', x.dataset.canvas === cv ? 'true' : 'false'); });
+  hoverSetup();
+}
+function dirty() { state.preset = null; update(); }
+function togglePlay() { fscene.running = !fscene.running; $('#btnPlay').innerHTML = fscene.running ? SVGI.pause : SVGI.play; }
+function setTab(t) {
+  tab = t; store.set('tab', t);
+  $$('.tabs [role=tab]').forEach(function (b) { b.setAttribute('aria-selected', b.dataset.tab === t ? 'true' : 'false'); });
+  $$('.panel').forEach(function (p) { p.classList.toggle('on', p.dataset.panel === t); });
+  if (t === 'in' && fscene) fscene.resize();
+  renderTab();
+}
+function setV(id, v) { var el = document.getElementById(id); if (el && el.innerHTML !== v) { el.innerHTML = v; if (el.classList.contains('v')) { el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); } } }
+function pressed(sel, attr, val) { $$(sel).forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset[attr]) === String(val) ? 'true' : 'false'); }); }
+function show(id, on) { var el = document.getElementById(id); if (el) el.style.display = on ? '' : 'none'; }
+
+function update() {
+  var s = state, press = s.eq === 'prensa';
+  store.set('state', s);
+  R = compute(mstate(s));
+  var r = R, m = r.m, pr = r.pr, dr = r.dr, cs = Math.pow(10, s.lcs);
+  pressed('#presetBtns .opt', 'p', s.preset || ''); pressed('#matBtns .opt', 'm', s.mat); pressed('#eqBtns .mill', 'e', s.eq);
+  pressed('#basisSeg button', 'v', s.cBasis); pressed('#cycSeg button', 'v', s.cyc); pressed('#tfSeg button', 'v', s.tfMode); pressed('#kwSeg button', 'v', s.kw); pressed('#labSeg button', 'v', s.lab);
+  SLIDERS.forEach(function (k) { var el = document.getElementById(k); if (parseFloat(el.value) !== s[k]) el.value = s[k]; });
+  $('#grid').checked = !!s.grid; $('#rampOn').checked = !!s.rampOn; $('#contOn').checked = !!s.contOn;
+  // suspensión
+  $('#csLbl').textContent = s.cBasis === 'filtrado' ? 'Concentración c (por m³ de filtrado)' : 'Concentración c_F (por m³ de líquido)';
+  setV('vcs', fmtN(cs, cs < 10 ? 2 : 1) + ' kg/m³');
+  $('#csHint').textContent = s.cBasis === 'alimentado' ? (r.cOk ? 'Corregida por el líquido de la torta (McCabe 29.19): c = ' + fmtN(r.c, 1) + ' kg/m³ de filtrado' : 'La corrección no tiene solución con esta humedad') : 'Taller 6: 25 g/L de células en peso seco (≈ ' + fmtN(cs / 10, 1) + ' % en peso)'.replace('Taller 6: 25 g/L de células en peso seco', m.id === 'levadura' ? 'Taller 6: 25 g/L de células en peso seco' : 'Sólidos secos');
+  $('#QLbl').textContent = s.cBasis === 'filtrado' ? 'Caudal de la planta (filtrado)' : 'Caudal de líquido alimentado';
+  setV('vlQ', fQ(r.Q)); $('#QHint').textContent = 'Sólidos ' + fmtN(r.mdot * 3600, r.mdot * 3600 < 10 ? 2 : 1) + ' kg/h · filtrado ' + fQ(r.Qf);
+  setV('vmu', fmtN(s.mu, 2) + ' mPa·s');
+  // torta
+  setV('vla', fmtSci(Math.pow(10, s.la), 2) + ' m/kg'); $('#laHint').textContent = m.src;
+  setV('vdPref', fbar(s.dPref)); setV('vsComp', fmtN(s.sComp, 2)); $('#sHint').textContent = s.sComp < 0.05 ? 'Incompresible: α no cambia con la presión' : (s.sComp < 0.5 ? 'Poco compresible' : (s.sComp < 0.9 ? 'Compresible: la mayoría de las tortas reales' : 'Muy compresible: subir la presión casi no sirve'));
+  setV('vlRm', fmtSci(r.Rm, 2) + ' m⁻¹'); setV('vmw', fmtN(s.mw, 2) + ' · ' + fmtN(100 / s.mw, 0) + ' % de sólidos'); setV('vrhoCd', fmtN(s.rhoCd, 0) + ' kg/m³');
+  // equipo
+  show('pressBox', press); show('drumBox', !press); show('cycSec', press);
+  setV('vdP', fbar(s.dP)); setV('vAp', fmtN(s.Ap, 2) + ' m²'); setV('vmaxPl', fmtN(s.maxPl, 0)); setV('vdepth', fmtN(s.depth, 0) + ' mm');
+  setV('vdPv', fbar(s.dPv)); $('#dPvHint').textContent = fmtN(s.dPv * 750.06, 0) + ' mmHg · McCabe: normalmente de 250 a 500 mmHg'; setV('vf', fmtN(100 * s.f, 0) + ' %'); setV('vrpm', fmtN(s.rpm, 2) + ' rpm · una vuelta cada ' + fTime(60 / s.rpm)); setV('vminCake', fmtN(s.minCake, 1) + ' mm');
+  // ciclo
+  show('fracBox', s.cyc === 'frac'); show('tdBox', s.cyc === 'td'); show('tfRow', s.tfMode === 'manual'); show('kwRow', s.wash > 0);
+  setV('vtcH', fTime(s.tcH * 3600)); setV('vfrac', fmtN(100 * s.frac, 0) + ' %'); setV('vtdMin', fmtN(s.tdMin, 0) + ' min'); setV('vtfMin', fmtN(s.tfMin, 0) + ' min');
+  setV('vwash', s.wash > 0 ? fmtN(s.wash, 2) : 'sin lavado'); $('#washHint').textContent = s.wash > 0 ? 'Volumen de lavado / licor retenido en la torta · extrae ≈ ' + fmtN(100 * pr.recov, 0) + ' % (McCabe, fig. 29.17)' : (s.cyc === 'frac' ? 'En el Taller 6 el lavado va dentro de la parte del ciclo que no filtra' : '');
+  setV('vPmax', fbar(s.Pmax)); setV('vbudget', 'US$ ' + fk(s.budget) + ' mil'); setV('vfloor', fmtN(s.floor, 0) + ' m²');
+  // panel de presión y alternativas
+  setV('vdPa', fbar(s.dPa)); setV('vdPb', fbar(s.dPb)); setV('vJ0', fmtN(s.J0, 0) + ' L/(m²·h)'); setV('vflocK', '÷ ' + fmtN(s.flocK, 1)); setV('vflocDose', fmtN(s.flocDose, 0) + ' g/m³'); setV('vmfJ', fmtN(s.mfJ, 0) + ' L/(m²·h)'); setV('vdrho', fmtN(s.drho, 0) + ' kg/m³'); setV('vcontW', fmtN(s.contW, 0) + ' %');
+  show('contRow', s.contOn);
+  $('#ctx').innerHTML = '<b>' + esc(press ? 'Filtro prensa · ' + fbar(s.dP) : 'Tambor al vacío · ' + fmtN(s.dPv * 750.06, 0) + ' mmHg') + '</b> · ' + esc(m.short) + ' ' + fmtN(r.c, 1) + ' kg/m³ · ' + fQ(r.Qf) + ' de filtrado';
+  renderKPIs();
+  var sev = r.warn.some(function (w) { return w.sev === 'c'; }) ? 'inv' : (r.warn.some(function (w) { return w.sev === 'w'; }) ? 'adv' : '');
+  $('#status').className = 'status' + (sev ? ' ' + sev : ''); $('#statusTxt').textContent = sev === 'inv' ? 'No cumple' : (sev === 'adv' ? 'Con advertencias' : 'Diseño sano');
+  if (fscene) fscene.configure(R);
+  renderTab();
+}
+function renderKPIs() {
+  var r = R, s = state, pr = r.pr, dr = r.dr, press = s.eq === 'prensa';
+  if (!r.cOk) { ['kA', 'kN', 'kAl', 'kT', 'kC', 'kM'].forEach(function (id) { setV(id, '—'); }); ['kAu', 'kNu', 'kAlu', 'kTu', 'kCu', 'kMu'].forEach(function (id) { setV(id, 'sin solución'); }); return; }
+  if (press) {
+    setV('kA', fmtN(pr.A, pr.A < 10 ? 2 : 1) + '<small>m²</small>'); setV('kAu', fmtN(pr.V, 2) + ' m³ por ciclo · ' + fmtN(r.Qf * 3600 / pr.A, 3) + ' m³/(m²·h)');
+    $('#kNl').textContent = 'Placas y equipos'; setV('kN', pr.N + '<small>placas</small>'); setV('kNu', pr.presses + (pr.presses === 1 ? ' prensa' : ' prensas') + ' · ' + pr.perPress + ' placas de ' + fmtN(s.Ap, 2) + ' m²');
+    $('#kNc').classList.toggle('bad', pr.presses > 1);
+    $('#kTl').textContent = 'Ciclo'; setV('kT', fTime(pr.tc)); setV('kTu', 'filtra ' + fTime(pr.tf) + (pr.tw > 0 ? ' · lava ' + fTime(pr.tw) : '') + ' · descarga ' + fTime(Math.max(0, pr.tdead)));
+    setV('kC', fmtN(pr.Lc * 1000, 1) + '<small>mm</small>'); setV('kCu', 'por cara · ' + fmtN(pr.mCake, pr.mCake < 100 ? 1 : 0) + ' kg secos · llena ' + fmtN(100 * pr.fill, 0) + ' % de la cámara');
+    $('#kCc').classList.toggle('bad', pr.fill > 1);
+    $('#kMl').textContent = 'Costo'; setV('kM', fk(pr.cost[0]) + '–' + fk(pr.cost[1]) + '<small>kUSD</small>'); setV('kMu', 'presupuesto ' + fk(s.budget) + ' · cabe hasta ' + fmtN(pr.uMax, 0) + ' USD/m²');
+    $('#kMc').classList.toggle('bad', pr.cost[0] > s.budget);
+    $('#kAc').classList.remove('bad');
+  } else {
+    setV('kA', fmtN(dr.AT, dr.AT < 10 ? 2 : 1) + '<small>m²</small>'); setV('kAu', 'área total del tambor · ' + fmtN(dr.G * 3600, 2) + ' kg/(m²·h) de sólidos');
+    $('#kNl').textContent = 'Tambor'; setV('kN', fmtN(dr.pick.D, 1) + ' × ' + fmtN(dr.pick.L, 1) + '<small>m</small>'); setV('kNu', dr.pick.n + (dr.pick.n === 1 ? ' tambor' : ' tambores') + ' · ' + fA(dr.pick.A * dr.pick.n) + ' instalados');
+    $('#kNc').classList.toggle('bad', dr.pick.n > 1);
+    $('#kTl').textContent = 'Giro'; setV('kT', fmtN(s.rpm, 2) + '<small>rpm</small>'); setV('kTu', 'vuelta de ' + fTime(dr.tc) + ' · sumergida ' + fTime(dr.tsub));
+    setV('kC', fmtN(dr.Lrev * 1000, dr.Lrev * 1000 < 1 ? 2 : 1) + '<small>mm</small>'); setV('kCu', 'por vuelta · ' + fmtN(dr.wrev, 2) + ' kg/m² · mínimo ' + fmtN(s.minCake, 1) + ' mm');
+    $('#kCc').classList.toggle('bad', dr.Lrev * 1000 < s.minCake);
+    $('#kMl').textContent = 'Filtrado'; setV('kM', fmtN(r.Qf * 3600 / dr.AT * 1000, 0) + '<small>L/(m²·h)</small>'); setV('kMu', 'el curso no da costos de tambores');
+    $('#kMc').classList.remove('bad'); $('#kAc').classList.remove('bad');
+  }
+  setV('kAl', fmtSci(r.alphaOp, 2) + '<small>m/kg</small>'); setV('kAlu', 'a ' + fbar(r.dPop) + ' · s = ' + fmtN(s.sComp, 2) + ' · ensayo a ' + fbar(s.dPref));
+}
+function renderTab() {
+  if (!R) return;
+  var np = !R.cOk;
+  $$('.panel').forEach(function (p) { p.classList.toggle('nophys', np); });
+  if (np) { $$('.np-msg').forEach(function (el) { el.innerHTML = '<b>Así no hay diseño posible.</b> ' + esc(R.warn[0].t); }); renderWarn(); return; }
+  if (tab === 'in') renderInside();
+  else if (tab === 'la') renderLab();
+  else if (tab === 'pr') renderPress();
+  else if (tab === 'ci') renderCycle();
+  else if (tab === 'ta') renderDrum();
+  else if (tab === 'al') renderAlt();
+  else if (tab === 'ec') renderEqs();
+}
+
+/* ---------- utilidades SVG ---------- */
+function E(tag, a, inner) { var s = '<' + tag; for (var k in a) if (a[k] != null && a[k] !== '') s += ' ' + k + '="' + a[k] + '"'; return s + '>' + (inner == null ? '' : inner) + '</' + tag + '>'; }
+function TX(x, y, s, o) { o = o || {}; return E('text', { x: r1(x), y: r1(y), 'text-anchor': o.a, 'font-size': o.fs || 11, 'font-weight': o.fw, transform: o.tr, style: o.c ? 'fill:' + o.c : null, 'font-family': o.mono ? 'var(--font-mono)' : null }, esc(s)); }
+function LN(x1, y1, x2, y2, st) { return E('line', { x1: r1(x1), y1: r1(y1), x2: r1(x2), y2: r1(y2), style: st }); }
+function PATH(d, st, clip) { return E('path', { d: d, style: 'fill:none;' + st, 'clip-path': clip ? 'url(#' + clip + ')' : null }); }
+function r1(x) { return Math.round(x * 10) / 10; }
+function poly(arr) { return arr.filter(function (p) { return isFinite(p[0]) && isFinite(p[1]); }).map(function (p, i) { return (i ? 'L' : 'M') + r1(p[0]) + ' ' + r1(p[1]); }).join(' '); }
+function niceStep(range, n) { var raw = range / (n || 5), p = Math.pow(10, Math.floor(Math.log10(raw))), m = raw / p; return (m < 1.5 ? 1 : (m < 3 ? 2 : (m < 7 ? 5 : 10))) * p; }
+var MUT = 'var(--muted-ink)';
+/* ejes lineales o logarítmicos (o.xlog, o.ylog) */
+function axes(o) {
+  var out = E('rect', { x: o.x0, y: o.y0, width: o.x1 - o.x0, height: o.y1 - o.y0, class: 'chart-bg' });
+  var tx = function (v) { return o.xlog ? Math.log10(v) : v; }, ty = function (v) { return o.ylog ? Math.log10(v) : v; };
+  var X = function (v) { return o.x0 + (tx(v) - tx(o.xmin)) / (tx(o.xmax) - tx(o.xmin)) * (o.x1 - o.x0); }, Y = function (v) { return o.y1 - (ty(v) - ty(o.ymin)) / (ty(o.ymax) - ty(o.ymin)) * (o.y1 - o.y0); };
+  var ticks = function (lo, hi, log, n) { var t = [], v; if (log) { for (var e = Math.floor(Math.log10(lo)); e <= Math.ceil(Math.log10(hi)); e++) [1, 2, 5].forEach(function (k) { v = k * Math.pow(10, e); if (v >= lo * 0.999 && v <= hi * 1.001 && (k === 1 || Math.log10(hi / lo) < 2.5)) t.push(v); }); return t; } var d = niceStep(hi - lo, n); for (v = Math.ceil(lo / d - 1e-9) * d; v <= hi + 1e-9; v += d) t.push(v); t.d = d; return t; };
+  var lab = function (v, log, d) { if (log) { var e = Math.floor(Math.log10(v) + 1e-9), k = Math.round(v / Math.pow(10, e)); return Math.abs(e) <= 2 ? fmtN(v, e < 0 ? -e : 0) : (k === 1 ? '10' + sup(e) : k + '×10' + sup(e)); } return fmtN(v, decOf(d)); };
+  var xt = ticks(o.xmin, o.xmax, o.xlog, o.nx || 8), yt = ticks(o.ymin, o.ymax, o.ylog, o.ny || 5);
+  xt.forEach(function (v) { var xx = X(v); if (state.grid) out += LN(xx, o.y0, xx, o.y1, 'stroke:var(--n300);stroke-width:.7;opacity:.7'); out += TX(xx, o.y1 + 15, lab(v, o.xlog, xt.d), { a: 'middle', c: MUT, fs: 10.5 }); });
+  yt.forEach(function (v) { var yy = Y(v); if (state.grid) out += LN(o.x0, yy, o.x1, yy, 'stroke:var(--n300);stroke-width:.7;opacity:.7'); out += TX(o.x0 - 6, yy + 4, lab(v, o.ylog, yt.d), { a: 'end', c: MUT, fs: 10.5 }); });
+  out += E('rect', { x: o.x0, y: o.y0, width: o.x1 - o.x0, height: o.y1 - o.y0, style: 'fill:none;stroke:var(--ink);stroke-width:1.5' });
+  if (o.clip) out += E('clipPath', { id: o.clip }, E('rect', { x: o.x0, y: o.y0, width: o.x1 - o.x0, height: o.y1 - o.y0 }));
+  if (o.xlab) out += TX((o.x0 + o.x1) / 2, o.y1 + 32, o.xlab, { a: 'middle', c: MUT, fs: 11 });
+  if (o.ylab) out += TX(o.x0 - (o.ylw || 42), (o.y0 + o.y1) / 2, o.ylab, { a: 'middle', c: MUT, fs: 11, tr: 'rotate(-90 ' + (o.x0 - (o.ylw || 42)) + ' ' + ((o.y0 + o.y1) / 2) + ')' });
+  return { svg: out, X: X, Y: Y, o: o };
+}
+function decOf(d) { return d >= 1 ? 0 : Math.ceil(-Math.log10(d) - 1e-9); }
+/* eje vertical derecho para una segunda magnitud */
+function rightAxis(a, ymin, ymax, lab, col) {
+  var o = a.o, Y = function (v) { return o.y1 - (v - ymin) / (ymax - ymin) * (o.y1 - o.y0); }, d = niceStep(ymax - ymin, 5), out = '';
+  for (var v = Math.ceil(ymin / d - 1e-9) * d; v <= ymax + 1e-9; v += d) out += TX(o.x1 + 6, Y(v) + 4, fmtN(v, decOf(d)), { c: col, fs: 10.5 });
+  out += TX(o.x1 + 40, (o.y0 + o.y1) / 2, lab, { a: 'middle', c: col, fs: 11, tr: 'rotate(90 ' + (o.x1 + 40) + ' ' + ((o.y0 + o.y1) / 2) + ')' });
+  return { svg: out, Y: Y };
+}
+function dot(x, y, r, col) { return E('circle', { cx: r1(x), cy: r1(y), r: r, style: 'fill:' + (col || 'var(--hl)') + ';stroke:var(--paper);stroke-width:2' }); }
+var C1 = '#1D5273', C2 = '#B77A2B', CR = '#C8452B', CG = '#2F7D5B';
+function withS(extra) { return compute(mstate(Object.assign({}, state, extra))); }
+function spec(id, rows) { $(id).innerHTML = rows.map(function (q) { return '<div>' + q[0] + '</div><div class="v">' + q[1] + '</div>'; }).join(''); }
+
+/* ---------- 1 · por dentro ---------- */
+var CYC = null, lastWarn = '';
+function cycleSeries(r) { // filtrado acumulado y caudal en un ciclo de la prensa (con o sin arranque a caudal constante)
+  var pr = r.pr, A = pr.A, a = pr.a, b = pr.b, rp = pr.ramp, ramp = pr.rampUsed, pts = [], N = 160;
+  for (var i = 0; i <= N; i++) {
+    var t = pr.tf * i / N, u, q, P;
+    if (ramp && t <= rp.t1) { u = rp.J0 * t; q = rp.J0 * A; P = (rp.dPm + Math.pow(Math.max(0, R.alpha0 * r.mu * r.c * rp.J0 * rp.J0 * t), 1 / Math.max(0.001, 1 - r.cake.s))) / BAR; if (r.cake.s >= 0.999) P = (rp.dPm + r.mu * pr.alpha * r.c * rp.J0 * rp.J0 * t) / BAR; }
+    else if (ramp) { u = uOfT(a, b, t - rp.t1 + tOfU(a, b, rp.u1)); q = A / (2 * a * u + b); P = pr.dPa / BAR; }
+    else { u = uOfT(a, b, t); q = A / (2 * a * u + b); P = pr.dPa / BAR; }
+    pts.push({ t: t, V: u * A, q: q, P: P });
+  }
+  return pts;
+}
+/* escala del caudal: el inicial (solo la tela) suele ser enorme; se recorta a unas veces el caudal medio */
+function qScale(r, pts) { var pr = r.pr, qx = Math.max.apply(null, pts.map(function (p) { return p.q; })), cap = Math.max(pr.qMean * 3, pr.rampUsed ? pr.ramp.J0 * pr.A * 1.25 : 0); return Math.min(qx, cap) * 3600 * 1.12; }
+function renderInside() {
+  var r = R, s = state, pr = r.pr, dr = r.dr, press = s.eq === 'prensa', m = r.m;
+  $('#inLbl').textContent = press ? 'filtro prensa de placas · ' + fbar(s.dP) : 'tambor rotatorio al vacío · ' + fmtN(s.rpm, 2) + ' rpm';
+  $('#inLead').innerHTML = press ? 'La bomba llena las cámaras con la suspensión; el líquido cruza la tela y sale por los canales de las placas, mientras los sólidos se quedan y forman la torta, que crece desde las dos caras de cada cámara. A presión constante, la torta frena el caudal. Al terminar se abren las placas y la torta cae.' : 'El tambor gira con su parte baja sumergida en la suspensión; el vacío interior arrastra el líquido y la torta se forma mientras la franja está sumergida. Al salir se lava, se seca con aire y una cuchilla la desprende antes de volver a entrar.';
+  $('#inCap').innerHTML = press ? '<b>Cómo leerlo.</b> El ciclo animado dura lo mismo que el real a escala: ' + fTime(pr.tc) + ' comprimidos en unos 20 s. El espesor de la torta y el caudal de filtrado salen del modelo (t = a·u² + b·u por unidad de área). Se dibujan 6 de las ' + pr.N + ' cámaras; la profundidad de la cámara es de ' + fmtN(s.depth, 0) + ' mm y la torta llega a ' + fmtN(pr.Lc * 1000, 1) + ' mm por cara.' : '<b>Cómo leerlo.</b> El giro está acelerado: una vuelta real dura ' + fTime(dr.tc) + '. El espesor de la torta en cada ángulo sale del modelo de presión constante con el tiempo que lleva sumergida esa franja; se exagera en el dibujo para que se vea (la real llega a ' + fmtN(dr.Lrev * 1000, dr.Lrev * 1000 < 1 ? 2 : 1) + ' mm).';
+  renderCyc(); renderTimeline();
+  var rows = press ? [['Filtrado por ciclo', fmtN(pr.V, 2) + ' m³'], ['Sólidos secos por ciclo', fmtN(pr.mCake, 1) + ' kg · ' + fmtN(pr.w, 2) + ' kg/m²'], ['Torta húmeda', fmtN(pr.mWet, 0) + ' kg'], [pr.rampUsed ? 'Caudal al empezar (bomba a caudal fijo)' : 'Caudal al empezar (solo la tela)', fQ(pr.q0)], ['Caudal al terminar', fQ(pr.qEnd)], ['Caudal medio mientras filtra', fQ(pr.qMean)], ['Parte de la resistencia final en la tela', fmtN(100 * pr.RmShare, 1) + ' %'], ['Tiempo de filtración', fTime(pr.tf)], pr.tw > 0 ? ['Lavado', fTime(pr.tw) + ' · ' + fmtN(pr.Vw, 2) + ' m³'] : ['Lavado', 'no se calcula'], ['Descarga, limpieza y cierre', fTime(Math.max(0, pr.tdead))]]
+    : [['Sólidos que llegan', fmtN(r.mdot * 3600, 1) + ' kg/h'], ['Capacidad por m² de tambor', fmtN(dr.G * 3600, 2) + ' kg/(m²·h)'], ['Tiempo sumergido por vuelta', fTime(dr.tsub)], ['Torta por vuelta', fmtN(dr.wrev, 3) + ' kg/m² · ' + fmtN(dr.Lrev * 1000, 2) + ' mm'], ['Filtrado por vuelta', fmtN(dr.urev * 1000, 2) + ' L/m²'], ['α al vacío de operación', fmtSci(dr.alpha, 2) + ' m/kg'], ['Área total requerida', fA(dr.AT)], ['Tambor estándar', dr.pick.n + ' × ' + fmtN(dr.pick.D, 1) + ' m de diámetro × ' + fmtN(dr.pick.L, 1) + ' m']];
+  spec('#specIn', rows); $('#numLbl').textContent = press ? 'por ciclo' : 'por vuelta';
+  var chips = press ? ['<span class="chip acc">A ' + fA(pr.A) + '</span>', '<span class="chip">' + pr.N + ' placas · ' + pr.presses + (pr.presses === 1 ? ' prensa' : ' prensas') + '</span>', '<span class="chip">ciclo ' + fTime(pr.tc) + '</span>']
+    : ['<span class="chip acc">A ' + fA(dr.AT) + '</span>', '<span class="chip">torta ' + fmtN(dr.Lrev * 1000, 2) + ' mm por vuelta</span>'];
+  if (press && pr.fill > 1) chips.push('<span class="chip red">las cámaras se llenan</span>');
+  if (!press && dr.Lrev * 1000 < s.minCake) chips.push('<span class="chip red">torta demasiado delgada</span>');
+  $('#hud').innerHTML = chips.join('');
+  renderWarn();
+}
+function renderWarn() {
+  var r = R, w = r.warn;
+  $('#crit').innerHTML = criteria(r).map(function (c) { return '<div class="' + c.st + '" title="' + esc(c.r) + '"><i></i><span class="nm">' + esc(c.n) + '</span><span class="vv">' + esc(c.v) + '</span><span class="rl">' + esc(c.r) + '</span></div>'; }).join('');
+  $('#diagCount').textContent = w.length + (w.length === 1 ? ' nota' : ' notas');
+  var wh = w.map(function (x) { return '<div class="warn ' + (x.sev === 'c' ? 'c' : (x.sev === 'ok' ? 'ok' : '')) + '"><i>' + (x.sev === 'ok' ? '✓' : '!') + '</i><div>' + esc(x.t) + '</div></div>'; }).join('');
+  if (wh !== lastWarn) { $('#warnings').innerHTML = wh; lastWarn = wh; }
+}
+function criteria(r) {
+  var s = state, pr = r.pr, dr = r.dr, out = [], add = function (n, v, rule, st) { out.push({ n: n, v: v, r: rule, st: st }); };
+  if (s.eq === 'prensa') {
+    add('Presión', fbar(s.dP), '≤ ' + fbar(s.Pmax) + ' disponibles', s.dP <= s.Pmax + 1e-9 ? 'ok' : 'c');
+    add('Equipos', pr.presses + (pr.presses === 1 ? ' prensa' : ' prensas'), '≤ ' + s.maxPl + ' placas por prensa', pr.presses === 1 ? 'ok' : 'w');
+    add('Llenado de la cámara', fmtN(100 * pr.fill, 0) + ' %', 'la torta cabe en la cámara', pr.fill <= 1 ? 'ok' : 'c');
+    add('Costo', fk(pr.cost[0]) + '–' + fk(pr.cost[1]) + ' kUSD', '≤ ' + fk(s.budget) + ' kUSD', pr.cost[1] <= s.budget ? 'ok' : (pr.cost[0] <= s.budget ? 'w' : 'c'));
+    add('Huella de piso', fmtN(pr.foot.total, 0) + ' m²', '≤ ' + fmtN(s.floor, 0) + ' m² (estimada)', pr.foot.total <= s.floor ? 'ok' : 'w');
+    add('Lavado', s.wash > 0 ? fTime(pr.tw) : 'no', s.cyc === 'frac' ? 'cabe en la parte que no filtra' : 'dentro del ciclo', s.wash > 0 && s.cyc === 'frac' && pr.tw > (1 - s.frac) * pr.tc ? 'w' : 'ok');
+  } else {
+    add('Vacío', fmtN(s.dPv * 750.06, 0) + ' mmHg', '< 1 bar', s.dPv < 1 ? 'ok' : 'c');
+    add('Torta por vuelta', fmtN(dr.Lrev * 1000, 2) + ' mm', '≥ ' + fmtN(s.minCake, 1) + ' mm para la cuchilla', dr.Lrev * 1000 >= s.minCake ? (dr.Lrev * 1000 <= 40 ? 'ok' : 'w') : 'c');
+    add('Velocidad', fmtN(s.rpm, 2) + ' rpm', '0,1 a 2 rpm (McCabe)', s.rpm >= 0.1 && s.rpm <= 2 ? 'ok' : 'w');
+    add('Tambores', dr.pick.n + '', 'uno de tamaño estándar', dr.pick.n === 1 ? 'ok' : 'w');
+  }
+  var ratio = r.dPop / s.dPref;
+  add('Extrapolación de α', '×' + fmtN(ratio, 2), 'entre ⅓ y 3 veces la presión del ensayo', s.sComp === 0 || (ratio <= 3 && ratio >= 1 / 3) ? 'ok' : 'w');
+  return out;
+}
+function renderCyc() {
+  var r = R, s = state, press = s.eq === 'prensa';
+  if (press) {
+    var pr = r.pr, pts = cycleSeries(r), tc = pr.tc / 60, Vmax = pr.V * 1.08, qmax = qScale(r, pts);
+    var a = axes({ x0: 52, x1: 506, y0: 14, y1: 266, xmin: 0, xmax: tc, ymin: 0, ymax: Vmax, xlab: 'tiempo en el ciclo (min)', ylab: 'filtrado acumulado (m³)', clip: 'cpC' }), out = a.svg, ra = rightAxis(a, 0, qmax, 'caudal (m³/h)', C2);
+    out += E('rect', { x: r1(a.X(pr.tf / 60)), y: 14, width: r1(a.X(tc) - a.X(pr.tf / 60)), height: 252, style: 'fill:var(--n200);opacity:.5' });
+    if (pr.tw > 0) out += E('rect', { x: r1(a.X(pr.tf / 60)), y: 14, width: r1(a.X((pr.tf + pr.tw) / 60) - a.X(pr.tf / 60)), height: 252, style: 'fill:#7FB3E0;opacity:.35' });
+    out += TX(a.X(pr.tf / 120), 30, 'filtración', { a: 'middle', fs: 10.5, c: MUT, fw: 700 });
+    if (pr.tw > 0) out += TX(a.X((pr.tf + pr.tw / 2) / 60), 30, 'lavado', { a: 'middle', fs: 10.5, c: MUT, fw: 700 });
+    if (pr.tdead > 0.04 * pr.tc) out += TX(a.X((pr.tf + pr.tw + Math.max(0, pr.tdead) / 2) / 60), 46, 'descarga', { a: 'middle', fs: 10.5, c: MUT, fw: 700 });
+    else out += TX(a.X(tc) - 6, 46, 'sin tiempo de descarga', { a: 'end', fs: 10, c: MUT });
+    out += ra.svg;
+    out += PATH(poly(pts.map(function (p) { return [a.X(p.t / 60), a.Y(p.V)]; })), 'stroke:' + C1 + ';stroke-width:2.6', 'cpC');
+    out += PATH(poly(pts.map(function (p) { return [a.X(p.t / 60), ra.Y(p.q * 3600)]; })), 'stroke:' + C2 + ';stroke-width:2.2;stroke-dasharray:6 3', 'cpC');
+    out += LN(a.X(pr.tf / 60), a.Y(pr.V), a.X(tc), a.Y(pr.V), 'stroke:' + C1 + ';stroke-width:2;opacity:.5');
+    out += '<line id="cycCur" x1="0" y1="14" x2="0" y2="266" style="stroke:var(--ink);stroke-width:1;opacity:.6"></line>';
+    $('#svgCyc').setAttribute('viewBox', '0 0 560 320'); $('#svgCyc').innerHTML = out; CYC = { a: a, mode: 'p', pts: pts, tc: tc };
+    $('#cycT').textContent = 'Filtrado y caudal durante el ciclo'; $('#cycLeg').innerHTML = '<span><i style="border-top-color:' + C1 + '"></i>filtrado</span><span><i style="border-top:2px dashed ' + C2 + '"></i>caudal</span>';
+  } else {
+    var dr = r.dr, N = 180, th = [], tmax = 0;
+    for (var i = 0; i <= N; i++) { var ang = 360 * i / N, fr = ang / 360, ts = Math.min(fr, dr.f) / dr.n, u = uOfT(dr.a, dr.b, ts), L = fr <= 0.94 ? r.c * u / state.rhoCd * 1000 : 0, fl = fr < dr.f ? 1000 * 3600 / (2 * dr.a * u + dr.b) : 0; th.push([ang, L, fl]); }
+    var Lmax = Math.max(state.minCake * 1.3, dr.Lrev * 1000 * 1.25), flmax = Math.min(th[1][2], th[2][2] * 3) * 1.1;
+    var a2 = axes({ x0: 52, x1: 506, y0: 14, y1: 266, xmin: 0, xmax: 360, ymin: 0, ymax: Lmax, nx: 8, xlab: 'ángulo desde que la franja entra en la suspensión (°)', ylab: 'espesor de torta (mm)', clip: 'cpC' }), o2 = a2.svg, rb = rightAxis(a2, 0, flmax, 'flux de filtrado (L/(m²·h))', C2);
+    o2 += E('rect', { x: a2.X(0), y: 14, width: r1(a2.X(360 * dr.f) - a2.X(0)), height: 252, style: 'fill:#E8D9BE;opacity:.45' }) + TX(a2.X(180 * dr.f), 30, 'sumergida', { a: 'middle', fs: 10.5, c: MUT, fw: 700 });
+    o2 += TX(a2.X(360 * dr.f + (338 - 360 * dr.f) / 2), 30, 'lavado y secado', { a: 'middle', fs: 10.5, c: MUT, fw: 700 }) + LN(a2.X(338), 14, a2.X(338), 266, 'stroke:var(--ink);stroke-dasharray:3 3') + TX(a2.X(338) - 4, 46, 'cuchilla', { a: 'end', fs: 10.5, c: MUT });
+    o2 += LN(52, a2.Y(state.minCake), 506, a2.Y(state.minCake), 'stroke:' + CR + ';stroke-width:1.2;stroke-dasharray:5 3') + TX(500, a2.Y(state.minCake) - 5, 'mínimo para la cuchilla', { a: 'end', fs: 10, c: CR });
+    o2 += rb.svg + PATH(poly(th.map(function (p) { return [a2.X(p[0]), a2.Y(p[1])]; })), 'stroke:' + C1 + ';stroke-width:2.6', 'cpC');
+    o2 += PATH(poly(th.filter(function (p) { return p[0] <= 360 * dr.f && p[0] > 0; }).map(function (p) { return [a2.X(p[0]), rb.Y(Math.min(p[2], flmax))]; })), 'stroke:' + C2 + ';stroke-width:2.2;stroke-dasharray:6 3', 'cpC');
+    o2 += '<line id="cycCur" x1="0" y1="14" x2="0" y2="266" style="stroke:var(--ink);stroke-width:1;opacity:.6"></line>';
+    $('#svgCyc').innerHTML = o2; CYC = { a: a2, mode: 'd', th: th };
+    $('#cycT').textContent = 'Espesor de torta y flux alrededor del tambor'; $('#cycLeg').innerHTML = '<span><i style="border-top-color:' + C1 + '"></i>espesor</span><span><i style="border-top:2px dashed ' + C2 + '"></i>flux</span>';
+  }
+}
+function renderTimeline() {
+  var r = R, s = state;
+  if (s.eq !== 'prensa') { $('#tline').innerHTML = ''; return; }
+  var pr = r.pr, tc = pr.tc, seg = [['filtración', pr.tf, '#5980A6'], ['lavado', pr.tw, '#7FB3E0'], ['descarga y cierre', Math.max(0, pr.tdead), '#B7A98A']].filter(function (q) { return q[1] > 0.5; });
+  $('#tline').innerHTML = '<div class="tl-bar">' + seg.map(function (q) { return '<div style="flex-basis:' + (100 * q[1] / tc) + '%;background:' + q[2] + '"><span>' + esc(q[0]) + ' · ' + fTime(q[1]) + '</span></div>'; }).join('') + '<i id="tlCur"></i></div>';
+}
+
+/* ---------- 2 · ensayo ---------- */
+var LABCH = null;
+function labSetFor(s) { // el ensayo del taller se puede editar; el de McCabe es fijo
+  if (s.lab === 'mc') return LABSETS[1];
+  return { id: 't6', A: s.labA, mu: s.labMu, c: s.labC, runs: [{ dP: s.labDP, pts: s.labPts }], note: LABSETS[0].note };
+}
+function renderLab() {
+  var s = state, set = labSetFor(s), mu = set.mu / 1000, L = labFit(set, mu, set.c); LAB = L;
+  var runs = L.runs, cols = ['#1D5273', '#2F7D5B', '#B77A2B', '#C8452B', '#6B4C9A'];
+  var xmax = 0, ymax = 0; runs.forEach(function (rn) { rn.rows.forEach(function (q) { xmax = Math.max(xmax, q.u); ymax = Math.max(ymax, q.y); }); });
+  var a = axes({ x0: 62, x1: 546, y0: 14, y1: 300, xmin: 0, xmax: xmax * 1.12, ymin: 0, ymax: ymax * 1.12, xlab: 'V/A (m)', ylab: 't/(V/A) (s/m)', ylw: 52, clip: 'cpL' }), out = a.svg;
+  runs.forEach(function (rn, i) {
+    var col = cols[i % cols.length], f = rn.fit;
+    out += PATH('M' + r1(a.X(0)) + ' ' + r1(a.Y(f.b)) + ' L' + r1(a.X(xmax * 1.12)) + ' ' + r1(a.Y(f.b + f.m * xmax * 1.12)), 'stroke:' + col + ';stroke-width:1.8', 'cpL');
+    rn.rows.forEach(function (q) { out += q.used ? dot(a.X(q.u), a.Y(q.y), 5, col) : E('circle', { cx: r1(a.X(q.u)), cy: r1(a.Y(q.y)), r: 5, style: 'fill:none;stroke:' + col + ';stroke-width:1.6' }); });
+    if (runs.length === 1) out += TX(a.X(0) + 8, a.Y(f.b) - 8, 'intercepto b = ' + fmtN(f.b, 0) + ' s/m', { fs: 11, fw: 700, c: col }) + TX(a.X(xmax * 0.55), a.Y(f.b + f.m * xmax * 0.55) - 12, 'pendiente m = ' + fmtSci(f.m, 3) + ' s/m²', { fs: 11, fw: 700, c: col, a: 'end' });
+  });
+  out += '<g id="labCur"></g>';
+  $('#svgLab').innerHTML = out; LABCH = { a: a, L: L };
+  $('#labLeg').innerHTML = runs.length > 1 ? runs.map(function (rn, i) { return '<span><i style="border-top-color:' + cols[i] + '"></i>' + fbar(rn.dP) + '</span>'; }).join('') : '';
+  // residuos
+  var rr = runs[0], rmax = 1e-9; runs.forEach(function (rn) { rn.fit.res.forEach(function (v) { rmax = Math.max(rmax, Math.abs(v)); }); });
+  var b2 = axes({ x0: 62, x1: 546, y0: 8, y1: 88, xmin: 0, xmax: xmax * 1.12, ymin: -rmax * 1.3, ymax: rmax * 1.3, ny: 3, ylab: 'residuo', ylw: 52 }), o2 = b2.svg + LN(62, b2.Y(0), 546, b2.Y(0), 'stroke:var(--ink);stroke-width:1');
+  runs.forEach(function (rn, i) { var k = 0; rn.rows.forEach(function (q) { if (!q.used) return; var v = rn.fit.res[k++]; o2 += LN(b2.X(q.u), b2.Y(0), b2.X(q.u), b2.Y(v), 'stroke:' + cols[i] + ';stroke-width:2') + dot(b2.X(q.u), b2.Y(v), 3, cols[i]); }); });
+  $('#svgRes').innerHTML = o2;
+  // tabla de datos
+  if (s.lab === 't6') {
+    $('#labInputs').innerHTML = '<div class="labin"><label>Área del filtro <input type="number" step="0.0001" min="0.0001" id="iA" value="' + s.labA + '"> m²</label><label>ΔP <input type="number" step="0.1" min="0.1" id="iDP" value="' + s.labDP + '"> bar</label><label>μ <input type="number" step="0.1" min="0.1" id="iMu" value="' + s.labMu + '"> mPa·s</label><label>c <input type="number" step="0.5" min="0.1" id="iC" value="' + s.labC + '"> kg/m³</label></div>';
+    $('#labTable').innerHTML = '<tr><th>t (s)</th><th>V (mL)</th><th>V (m³)</th><th>V/A (m)</th><th>t/(V/A) (s/m)</th><th></th></tr>' + rr.rows.map(function (q, i) { return '<tr><td><input type="number" class="ni" data-i="' + i + '" data-k="0" value="' + s.labPts[i][0] + '"></td><td><input type="number" class="ni" data-i="' + i + '" data-k="1" value="' + s.labPts[i][1] + '"></td><td>' + fmtSci(q.V, 2) + '</td><td>' + fmtN(q.u, 4) + '</td><td>' + fmtN(q.y, 0) + '</td><td>' + (s.labPts.length > 3 ? '<button type="button" class="xb" data-del="' + i + '" aria-label="Quitar punto">×</button>' : '') + '</td></tr>'; }).join('') + '<tr><td colspan="6"><button type="button" class="xb wide" id="addPt">Agregar un punto</button> <button type="button" class="xb wide" id="resetPts">Volver a los datos del taller</button></td></tr>';
+    $$('#labTable .ni').forEach(function (inp) { inp.addEventListener('change', function () { var v = parseFloat(inp.value); if (v > 0) { state.labPts[+inp.dataset.i][+inp.dataset.k] = v; dirty(); } }); });
+    $$('#labTable [data-del]').forEach(function (bt) { bt.addEventListener('click', function () { state.labPts.splice(+bt.dataset.del, 1); dirty(); }); });
+    $('#addPt').addEventListener('click', function () { var l = state.labPts[state.labPts.length - 1]; state.labPts.push([Math.round(l[0] * 1.35), Math.round(l[1] + 6)]); dirty(); });
+    $('#resetPts').addEventListener('click', function () { Object.assign(state, { labPts: clone(T6PTS), labA: 0.0012, labDP: 1.8, labMu: 3.5, labC: 25 }); dirty(); });
+    [['iA', 'labA'], ['iDP', 'labDP'], ['iMu', 'labMu'], ['iC', 'labC']].forEach(function (q) { $('#' + q[0]).addEventListener('change', function () { var v = parseFloat(this.value); if (v > 0) { state[q[1]] = v; dirty(); } }); });
+  } else {
+    $('#labInputs').innerHTML = '';
+    $('#labTable').innerHTML = '<tr><th>ΔP</th><th>puntos</th><th>pendiente (s/m²)</th><th>intercepto (s/m)</th><th>α (m/kg)</th><th>R<sub>m</sub> (m⁻¹)</th></tr>' + runs.map(function (rn) { return '<tr><td>' + fbar(rn.dP) + '</td><td>' + rn.fit.n + '</td><td>' + fmtSci(rn.fit.m, 3) + '</td><td>' + fmtN(rn.fit.b, 0) + '</td><td>' + fmtSci(rn.alpha, 3) + '</td><td>' + fmtSci(rn.Rm, 2) + '</td></tr>'; }).join('');
+  }
+  $('#labLbl').textContent = s.lab === 't6' ? 'editable' : 'tabla 29.1 de McCabe';
+  $('#labNote').textContent = set.note + (s.lab === 'mc' ? ' Varias cifras de la tabla 29.1 impresa no cuadran con los datos (por ejemplo, la corrida II a 3,5 L da t/V = 37,49 y no 34,49), y la tabla 29.2 no se reproduce exactamente por mínimos cuadrados.' : '');
+  // resultados
+  var f0 = rr.fit, rowsR;
+  if (runs.length === 1) rowsR = [['Pendiente m', fmtSci(f0.m, 4) + ' s/m² · ±' + fmtN(100 * f0.t95 * f0.sem / f0.m, 2) + ' %'], ['Intercepto b', fmtN(f0.b, 1) + ' s/m · ±' + fmtN(100 * f0.t95 * f0.seb / f0.b, 1) + ' %'], ['R²', fmtN(f0.r2, 6)], ['α = 2mΔP/(μc)', fmtSci(rr.alpha, 3) + ' m/kg'], ['intervalo del 95 %', fmtSci(rr.alphaLo, 3) + ' a ' + fmtSci(rr.alphaHi, 3)], ['R<sub>m</sub> = bΔP/μ', fmtSci(rr.Rm, 3) + ' m⁻¹'], ['intervalo del 95 %', fmtSci(rr.RmLo, 2) + ' a ' + fmtSci(rr.RmHi, 2)], ['Presión a la que quedaron medidas', fbar(rr.dP)], ['Comparación', compareAlpha(rr.alpha)]];
+  else rowsR = [['Compresibilidad s (pendiente de log α contra log ΔP)', fmtN(L.s, 3)], ['α₀ con ΔP en Pa', fmtSci(L.alpha0, 3) + ' (m/kg)/Paˢ'], ['α anclado a ' + fbar(L.dPref), fmtSci(L.alphaRef, 3) + ' m/kg'], ['R<sub>m</sub> promedio', fmtSci(L.Rm, 2) + ' m⁻¹'], ['R² del ajuste de s', fmtN(L.sfit.r2, 4)], ['McCabe obtiene', 's = 0,26 · α₀ = 2,90×10¹⁰ ft/lb con Δp en lbf/ft², es decir 7,13×10⁹ (m/kg)/Pa^0,26']];
+  spec('#specLab', rowsR);
+  $('#labRes2').textContent = runs.length === 1 ? 'un ensayo: s no se puede medir' : runs.length + ' ensayos';
+  if (runs.length > 1) {
+    var lo = Math.min.apply(null, runs.map(function (q) { return q.dP; })), hi = Math.max.apply(null, runs.map(function (q) { return q.dP; }));
+    var c3 = axes({ x0: 62, x1: 500, y0: 14, y1: 240, xmin: lo / 1.4, xmax: hi * 1.4, ymin: 7e10, ymax: 3e11, xlog: true, ylog: true, xlab: 'ΔP (bar)', ylab: 'α (m/kg)', ylw: 52 }), o3 = c3.svg;
+    o3 += PATH(poly([lo / 1.4, hi * 1.4].map(function (p) { return [c3.X(p), c3.Y(L.alpha0 * Math.pow(p * BAR, L.s))]; })), 'stroke:var(--hl);stroke-width:2');
+    runs.forEach(function (rn, i) { o3 += dot(c3.X(rn.dP), c3.Y(rn.alpha), 5, cols[i]); });
+    o3 += TX(70, 30, 's = ' + fmtN(L.s, 3), { fs: 12, fw: 750 });
+    $('#svgComp').innerHTML = o3; show('compBox', true);
+  } else { $('#svgComp').innerHTML = TX(260, 130, 'Con un solo ensayo no se puede medir s.', { a: 'middle', fs: 12, fw: 700, c: MUT }) + TX(260, 150, 'El Taller 6 la da: s = 0,7. Para medirla, repita el ensayo a varias presiones.', { a: 'middle', fs: 11, c: MUT }); show('compBox', true); }
+}
+function compareAlpha(al) {
+  var bands = [['carbonato de calcio', 1e9, 1e10], ['dióxido de titanio', 1e10, 1e11], ['levadura', 1e12, 1e13], ['bacterias', 1e12, 1e14]], hit = bands.filter(function (b) { return al >= b[1] && al <= b[2]; }).map(function (b) { return b[0]; });
+  return hit.length ? 'en la banda de ' + hit.join(' y ') + ' (tabla del taller)' : 'fuera de las bandas de la tabla del taller';
+}
+
+/* ---------- 3 · presión ---------- */
+var PA = null, RAMP = null;
+function areaAt(dPbar, sVal) { var x = {}; x.dP = dPbar; x.sComp = sVal; if (state.eq !== 'prensa') x.eq = 'prensa'; return withS(x).pr.A; }
+function renderPress() {
+  var r = R, s = state, lo = 0.5, hi = Math.max(8, s.Pmax * 1.5, s.dPb * 1.2), xs = [], k;
+  for (k = 0; k <= 60; k++) xs.push(lo * Math.pow(hi / lo, k / 60));
+  var curves = [{ s: 0, col: 'var(--n500)', dash: '5 4', name: 's = 0 (ideal)' }, { s: s.sComp, col: 'var(--hl)', dash: 'none', name: 's = ' + fmtN(s.sComp, 2) + ' (este caso)' }, { s: 1, col: CR, dash: '2 3', name: 's = 1' }];
+  curves.forEach(function (cv) { cv.pts = xs.map(function (x) { return [x, areaAt(x, cv.s)]; }); });
+  var all = []; curves.forEach(function (cv) { cv.pts.forEach(function (p) { all.push(p[1]); }); });
+  var ymax = Math.min(Math.max.apply(null, all), areaAt(lo, s.sComp) * 2.5) * 1.05, ymin = 0;
+  var a = axes({ x0: 56, x1: 546, y0: 14, y1: 280, xmin: lo, xmax: hi, ymin: ymin, ymax: ymax, xlog: true, xlab: 'presión de filtración ΔP (bar)', ylab: 'área requerida (m²)', clip: 'cpP' }), out = a.svg;
+  out += E('rect', { x: r1(a.X(Math.min(hi, s.Pmax))), y: 14, width: r1(a.X(hi) - a.X(Math.min(hi, s.Pmax))), height: 266, style: 'fill:var(--redline);opacity:.06' }) + LN(a.X(s.Pmax), 14, a.X(s.Pmax), 280, 'stroke:' + CR + ';stroke-dasharray:4 3') + TX(a.X(s.Pmax) + 4, 28, 'máximo de la planta', { fs: 10, c: CR });
+  curves.forEach(function (cv) { out += PATH(poly(cv.pts.map(function (p) { return [a.X(p[0]), a.Y(p[1])]; })), 'stroke:' + cv.col + ';stroke-width:' + (cv.dash === 'none' ? 2.6 : 1.6) + ';stroke-dasharray:' + cv.dash, 'cpP'); });
+  var Aa = areaAt(s.dPa, s.sComp), Ab = areaAt(s.dPb, s.sComp), A0a = areaAt(s.dPa, 0), A0b = areaAt(s.dPb, 0);
+  out += dot(a.X(s.dPa), a.Y(Aa), 5) + dot(a.X(s.dPb), a.Y(Ab), 5) + dot(a.X(s.dPa), a.Y(A0a), 4, 'var(--n500)') + dot(a.X(s.dPb), a.Y(A0b), 4, 'var(--n500)');
+  out += TX(a.X(s.dPa) + 7, a.Y(Aa) - 7, fA(Aa), { fs: 11, fw: 700 }) + TX(a.X(s.dPb) + 7, a.Y(Ab) - 7, fA(Ab), { fs: 11, fw: 700 });
+  out += '<g id="paCur"></g>';
+  $('#svgPA').innerHTML = out; PA = { a: a };
+  $('#pALeg').innerHTML = curves.map(function (cv) { return '<span><i style="border-top:2px ' + (cv.dash === 'none' ? 'solid' : 'dashed') + ' ' + cv.col + '"></i>' + esc(cv.name) + '</span>'; }).join('');
+  var sv = function (x, y) { return fmtN(100 * (1 - y / x), 1) + ' %'; };
+  $('#saveCmp').innerHTML = '<div><h4>Modelo ideal (s = 0)</h4><div class="big">' + sv(A0a, A0b) + '</div><div class="small">' + fA(A0a) + ' → ' + fA(A0b) + ' · ahorra ' + fA(A0a - A0b) + '</div></div><div><h4>Con s = ' + fmtN(s.sComp, 2) + '</h4><div class="big">' + sv(Aa, Ab) + '</div><div class="small">' + fA(Aa) + ' → ' + fA(Ab) + ' · ahorra ' + fA(Aa - Ab) + '</div></div>';
+  $('#saveNote').textContent = (s.sComp > 0 ? 'Subir de ' + fbar(s.dPa) + ' a ' + fbar(s.dPb) + ' compacta la torta: α pasa de ' + fmtSci(alphaAt(R.cake, s.dPa * BAR), 2) + ' a ' + fmtSci(alphaAt(R.cake, s.dPb * BAR), 2) + ' m/kg. ' : 'Con s = 0 la torta no se compacta: α es el mismo a cualquier presión y el área va como 1/√ΔP. ') + (s.sComp >= 0.5 ? 'Con una torta así de compresible la presión no es la palanca: conviene cambiar la torta (flocular) o el equipo.' : 'Con una torta poco compresible, la presión sí es una buena palanca.');
+  renderRamp();
+}
+function renderRamp() {
+  var r = R, s = state, pr = r.pr;
+  if (s.eq !== 'prensa') { $('#svgRamp').innerHTML = TX(280, 150, 'El arranque a caudal constante aplica a la prensa.', { a: 'middle', fs: 12, c: MUT }); spec('#specRamp', []); $('#rampNote').textContent = ''; return; }
+  var pts = cycleSeries(r), tf = pr.tf / 60, qmax = qScale(r, pts), Pm = Math.max(s.dP, s.Pmax) * 1.15;
+  var a = axes({ x0: 52, x1: 500, y0: 14, y1: 250, xmin: 0, xmax: tf, ymin: 0, ymax: Pm, xlab: 'tiempo de filtración (min)', ylab: 'ΔP (bar)', clip: 'cpR' }), out = a.svg, ra = rightAxis(a, 0, qmax, 'caudal (m³/h)', C2);
+  out += LN(52, a.Y(s.Pmax), 500, a.Y(s.Pmax), 'stroke:' + CR + ';stroke-dasharray:4 3') + TX(496, a.Y(s.Pmax) - 5, 'P máx de la planta', { a: 'end', fs: 10, c: CR });
+  if (s.rampOn && pr.ramp.ok) out += E('rect', { x: 52, y: 14, width: r1(a.X(Math.min(tf, pr.ramp.t1 / 60)) - 52), height: 236, style: 'fill:#E8D9BE;opacity:.4' }) + TX(56, 30, 'caudal constante', { fs: 10.5, c: MUT, fw: 700 });
+  out += ra.svg + PATH(poly(pts.map(function (p) { return [a.X(p.t / 60), a.Y(p.P)]; })), 'stroke:' + C1 + ';stroke-width:2.6', 'cpR') + PATH(poly(pts.map(function (p) { return [a.X(p.t / 60), ra.Y(p.q * 3600)]; })), 'stroke:' + C2 + ';stroke-width:2.2;stroke-dasharray:6 3', 'cpR');
+  $('#svgRamp').innerHTML = out; RAMP = { a: a, pts: pts };
+  var rp = pr.ramp;
+  spec('#specRamp', pr.rampUsed ? [['Flux de la bomba', fmtN(s.J0, 0) + ' L/(m²·h) · ' + fQ(rp.J0 * pr.A)], ['Llega a ' + fbar(s.dP) + ' a los', fTime(Math.min(rp.t1, pr.tf)) + (rp.t1 > pr.tf ? ' (no llega en el ciclo)' : '')], ['Filtrado en esa fase', fmtN(Math.min(rp.u1, pr.u) * pr.A, 2) + ' m³ (' + fmtN(100 * Math.min(1, rp.u1 / pr.u), 0) + ' %)'], ['Área para el mismo ciclo', fA(rp.A) + ' contra ' + fA(pr.Acp) + ' a presión constante (' + (rp.extra >= 0 ? '+' : '') + fmtN(100 * rp.extra, 1) + ' %)']] : (s.rampOn ? [['Arranque', 'imposible: la tela sola pide más que ΔP']] : [['Arranque', 'presión constante desde t = 0'], ['Caudal inicial', fQ(pr.q0) + ' (solo la tela)']]));
+  $('#rampNote').textContent = 'Una bomba de desplazamiento positivo arranca a caudal fijo: la presión sube con la torta hasta el límite y desde ahí se filtra a presión constante con un caudal que cae (diapositiva 17). Arrancar suave evita una capa compacta contra la tela, pero se pierde fuerza impulsora al comienzo: para el mismo ciclo hace falta algo más de área.';
+}
+
+/* ---------- 4 · ciclo y área ---------- */
+var CI = null;
+function renderCycle() {
+  var r = R, s = state, pr = r.pr;
+  if (s.eq !== 'prensa') { $('#cycBar').innerHTML = '<p class="small">El tambor es continuo: no tiene ciclo por lotes. Vea la pestaña 5.</p>'; $('#svgCi').innerHTML = ''; spec('#specCi', []); $('#svgBud').innerHTML = ''; spec('#specCake', []); $('#budNote').textContent = ''; $('#cakeNote').textContent = ''; return; }
+  var tc = pr.tc, seg = [['Filtración', pr.tf, '#5980A6'], ['Lavado', pr.tw, '#7FB3E0'], ['Descarga, limpieza y cierre', Math.max(0, pr.tdead), '#B7A98A']].filter(function (q) { return q[1] > 0.5; });
+  $('#cycBar').innerHTML = '<div class="stack" style="height:40px">' + seg.map(function (q) { return '<div style="flex-basis:' + (100 * q[1] / tc) + '%;background:' + q[2] + '"><span>' + esc(q[0]) + ' · ' + fTime(q[1]) + ' · ' + fmtN(100 * q[1] / tc, 0) + ' %</span></div>'; }).join('') + '</div><p class="small" style="margin:8px 0 0">Ciclo de ' + fTime(tc) + ': cada ciclo filtra ' + fmtN(pr.V, 2) + ' m³, lo que la planta produce en ese tiempo (' + fQ(r.Qf) + ').</p>';
+  $('#ciLbl').textContent = s.cyc === 'frac' ? 'fracción fija del ciclo (Taller 6)' : 'tiempo muerto fijo';
+  var pts = [], k, out, a;
+  if (s.cyc === 'frac') {
+    for (k = 0; k <= 80; k++) { var fr = 0.2 + 0.8 * k / 80; pts.push([fr * 100, withS({ frac: fr }).pr.A]); }
+    a = axes({ x0: 56, x1: 546, y0: 14, y1: 280, xmin: 20, xmax: 100, ymin: 0, ymax: Math.min(pts[0][1], pts[pts.length - 1][1] * 4) * 1.05, xlab: 'parte del ciclo que filtra (%)', ylab: 'área requerida (m²)', clip: 'cpI' }); out = a.svg;
+    out += PATH(poly(pts.map(function (p) { return [a.X(p[0]), a.Y(p[1])]; })), 'stroke:var(--hl);stroke-width:2.6', 'cpI');
+    [1, 0.6].forEach(function (fr) { var A1 = withS({ frac: fr }).pr.A; out += dot(a.X(fr * 100), a.Y(A1), 4, 'var(--n500)') + TX(a.X(fr * 100) - 6, a.Y(A1) - 8, fmtN(fr * 100, 0) + ' %: ' + fA(A1), { a: 'end', fs: 10.5, c: MUT }); });
+    out += dot(a.X(s.frac * 100), a.Y(pr.A), 6) + TX(a.X(s.frac * 100) + (s.frac > 0.7 ? -8 : 8), a.Y(pr.A) + 18, 'este caso · ' + fA(pr.A), { fs: 11.5, fw: 750, a: s.frac > 0.7 ? 'end' : null });
+    $('#ciChartT').textContent = 'Área contra la parte del ciclo que filtra'; CI = { a: a, mode: 'frac' };
+  } else {
+    var tmax = Math.max(pr.tfOpt * 4, s.tdMin * 60 * 3, pr.tf * 1.3), tmin = Math.max(30, pr.tfOpt / 15);
+    for (k = 0; k <= 90; k++) { var tf = tmin * Math.pow(tmax / tmin, k / 90); pts.push([tf / 60, withS({ tfMode: 'manual', tfMin: tf / 60 }).pr.A]); }
+    var ys = pts.map(function (p) { return p[1]; });
+    a = axes({ x0: 56, x1: 546, y0: 14, y1: 280, xmin: tmin / 60, xmax: tmax / 60, ymin: 0, ymax: Math.min(Math.max.apply(null, ys), pr.Aopt * 3) * 1.05, xlog: true, xlab: 'tiempo de filtración por ciclo (min)', ylab: 'área requerida (m²)', clip: 'cpI' }); out = a.svg;
+    out += PATH(poly(pts.map(function (p) { return [a.X(p[0]), a.Y(p[1])]; })), 'stroke:var(--hl);stroke-width:2.6', 'cpI');
+    out += LN(a.X(pr.tfOpt / 60), 14, a.X(pr.tfOpt / 60), 280, 'stroke:' + CG + ';stroke-dasharray:4 3') + TX(a.X(pr.tfOpt / 60) + 4, 28, 'óptimo · ' + fTime(pr.tfOpt), { fs: 10.5, c: CG, fw: 700 });
+    out += dot(a.X(pr.tf / 60), a.Y(pr.A), 6) + TX(a.X(pr.tf / 60) + 8, a.Y(pr.A) - 10, 'este caso · ' + fA(pr.A), { fs: 11.5, fw: 750 });
+    $('#ciChartT').textContent = 'Área contra tiempo de filtración'; CI = { a: a, mode: 'td' };
+  }
+  out += '<g id="ciCur"></g>';
+  $('#svgCi').innerHTML = out; $('#ciLeg').innerHTML = '';
+  spec('#specCi', [['Filtrado por ciclo', fmtN(pr.V, 2) + ' m³'], ['Filtrado por m² y ciclo (V/A)', fmtN(pr.u, 4) + ' m'], ['Área requerida', fA(pr.A)], s.cyc === 'td' ? ['Área en el óptimo', fA(pr.Aopt) + ' con ' + fTime(pr.tfOpt) + ' de filtración'] : ['Área si filtrara todo el ciclo', fA(withS({ frac: 1 }).pr.A)], ['Placas de ' + fmtN(s.Ap, 2) + ' m²', pr.N + ' · ' + pr.presses + (pr.presses === 1 ? ' prensa' : ' prensas') + ' de ' + pr.perPress], ['Con placas de 0,5, 1 y 2 m²', [0.5, 1, 2].map(function (ap) { var n = Math.ceil(pr.A / ap - 1e-9); return n + (n > s.maxPl ? ' (' + Math.ceil(n / s.maxPl) + ' eq.)' : ''); }).join(' · ')], ['Capacidad específica', fmtN(r.Qf * 3600 / pr.A * 1000, 0) + ' L/(m²·h)'], ['α a la presión de filtración', fmtSci(pr.alpha, 3) + ' m/kg']]);
+  // presupuesto y huella
+  var mx = Math.max(s.budget, pr.cost[1]) * 1.12, X0 = 150, X1 = 400, X = function (v) { return X0 + (X1 - X0) * v / mx; }, o = '';
+  o += TX(X0 - 10, 34, 'Costo de la prensa', { a: 'end', fs: 12, fw: 700 }) + E('rect', { x: X0, y: 20, width: r1(X(pr.cost[0]) - X0), height: 22, style: 'fill:#5980A6' }) + E('rect', { x: r1(X(pr.cost[0])), y: 20, width: r1(X(pr.cost[1]) - X(pr.cost[0])), height: 22, style: 'fill:#5980A6;opacity:.4' });
+  o += LN(X(s.budget), 12, X(s.budget), 52, 'stroke:' + CR + ';stroke-width:2') + TX(X(s.budget) + 4, 62, 'presupuesto ' + fk(s.budget) + ' kUSD', { fs: 10.5, c: CR });
+  o += TX(X0, 76, fk(pr.cost[0]) + ' a ' + fk(pr.cost[1]) + ' kUSD', { fs: 11, fw: 700 });
+  var fm = Math.max(s.floor, pr.foot.total) * 1.15, XF = function (v) { return X0 + (X1 - X0) * v / fm; };
+  o += TX(X0 - 10, 124, 'Huella de piso', { a: 'end', fs: 12, fw: 700 }) + TX(X0 - 10, 138, 'estimación externa', { a: 'end', fs: 10, c: MUT }) + E('rect', { x: X0, y: 110, width: r1(XF(pr.foot.machine) - X0), height: 22, style: 'fill:#8a8683' }) + E('rect', { x: r1(XF(pr.foot.machine)), y: 110, width: r1(XF(pr.foot.total) - XF(pr.foot.machine)), height: 22, style: 'fill:#8a8683;opacity:.4' });
+  o += LN(XF(s.floor), 102, XF(s.floor), 142, 'stroke:' + CR + ';stroke-width:2') + TX(XF(s.floor) + 4, 152, 'piso ' + fmtN(s.floor, 0) + ' m²', { fs: 10.5, c: CR }) + TX(X0, 166, fmtN(pr.foot.machine, 0) + ' m² de máquina · ' + fmtN(pr.foot.total, 0) + ' m² con espacio de servicio', { fs: 11, fw: 700 });
+  $('#svgBud').innerHTML = o;
+  $('#budNote').textContent = 'Cabe en el presupuesto si el área cuesta como máximo ' + fmtN(pr.uMax, 0) + ' USD/m². La huella no está en el material del curso: se estima con placas de ' + fmtN(pr.side, 2) + ' m de lado y unos 3,5 cm de paso por placa más la cámara, y un metro libre alrededor. No confunda área filtrante con área de piso.';
+  spec('#specCake', [['Sólidos secos por ciclo', fmtN(pr.mCake, 1) + ' kg · ' + fmtN(pr.w, 2) + ' kg/m²'], ['Torta húmeda', fmtN(pr.mWet, 0) + ' kg (' + fmtN(100 / s.mw, 0) + ' % de sólidos)'], ['Espesor por cara', fmtN(pr.Lc * 1000, 1) + ' mm'], ['Llenado de la cámara de ' + fmtN(s.depth, 0) + ' mm', fmtN(100 * pr.fill, 0) + ' %'], ['Licor retenido en la torta', fmtN(pr.liq, 3) + ' m³'], ['Agua de lavado', s.wash > 0 ? fmtN(pr.Vw, 3) + ' m³ (n = ' + fmtN(s.wash, 2) + ')' : 'sin lavado'], ['Caudal de lavado', s.wash > 0 ? fQ(KW[s.kw].k * pr.qEnd) + ' · ' + KW[s.kw].name : '—'], ['Tiempo de lavado', s.wash > 0 ? fTime(pr.tw) : '—'], ['Extracción del licor', s.wash > 0 ? '≈ ' + fmtN(100 * pr.recov, 0) + ' %' : '—']]);
+  $('#cakeNote').textContent = 'El licor retenido sale de la humedad de la torta. La extracción contra la razón de lavado usa la curva de McCabe (fig. 29.17, una torta de Al(OH)₃): con n = 1 se extrae el 75 % y con n = 2 el 98 %. McCabe da el caudal de lavado como la mitad del caudal final; otros textos usan un cuarto para placas y marcos (externo al curso).';
+}
+
+/* ---------- 5 · tambor ---------- */
+var DR = null;
+function renderDrum() {
+  var r = R, s = state, xs = [], k, lo = 0.05, hi = 3;
+  for (k = 0; k <= 70; k++) xs.push(lo * Math.pow(hi / lo, k / 70));
+  var pts = xs.map(function (n) { var q = withS({ rpm: n, eq: 'tambor' }).dr; return [n, q.AT, q.Lrev * 1000]; });
+  var Amax = Math.min(Math.max.apply(null, pts.map(function (p) { return p[1]; })), pts[pts.length - 1][1] * 8) * 1.05, Lmax = Math.max(s.minCake * 2, Math.min(60, pts[0][2] * 1.05));
+  var a = axes({ x0: 56, x1: 500, y0: 14, y1: 280, xmin: lo, xmax: hi, ymin: 0, ymax: Amax, xlog: true, xlab: 'velocidad de giro (rpm)', ylab: 'área total del tambor (m²)', clip: 'cpD' }), out = a.svg, ra = rightAxis(a, 0, Lmax, 'torta por vuelta (mm)', C2);
+  var bad = pts.filter(function (p) { return p[2] < s.minCake; });
+  if (bad.length) out += E('rect', { x: r1(a.X(bad[0][0])), y: 14, width: r1(a.X(hi) - a.X(bad[0][0])), height: 266, style: 'fill:var(--redline);opacity:.07' }) + TX(a.X(bad[0][0]) + 4, 28, 'la cuchilla ya no descarga', { fs: 10, c: CR });
+  out += ra.svg + LN(56, ra.Y(s.minCake), 500, ra.Y(s.minCake), 'stroke:' + CR + ';stroke-width:1;stroke-dasharray:5 3');
+  out += PATH(poly(pts.map(function (p) { return [a.X(p[0]), a.Y(p[1])]; })), 'stroke:var(--hl);stroke-width:2.6', 'cpD') + PATH(poly(pts.map(function (p) { return [a.X(p[0]), ra.Y(Math.min(p[2], Lmax * 1.2))]; })), 'stroke:' + C2 + ';stroke-width:2.2;stroke-dasharray:6 3', 'cpD');
+  var dr = withS({ eq: 'tambor' }).dr;
+  out += dot(a.X(s.rpm), a.Y(dr.AT), 6) + TX(a.X(s.rpm) + 8, a.Y(dr.AT) - 8, fA(dr.AT), { fs: 11.5, fw: 750 }) + dot(a.X(s.rpm), ra.Y(Math.min(dr.Lrev * 1000, Lmax)), 4, C2);
+  out += '<g id="drCur"></g>';
+  $('#svgDr').innerHTML = out; DR = { a: a };
+  $('#drLeg').innerHTML = '<span><i></i>área</span><span><i style="border-top:2px dashed ' + C2 + '"></i>torta por vuelta</span>';
+  $('#drLbl').textContent = s.eq === 'tambor' ? 'equipo actual' : 'con los datos de este caso';
+  spec('#specDr', [['Vacío', fmtN(s.dPv * 750.06, 0) + ' mmHg · ' + fbar(s.dPv)], ['α al vacío de operación', fmtSci(dr.alpha, 3) + ' m/kg'], ['Sumergida', fmtN(100 * s.f, 0) + ' % · ' + fTime(dr.tsub) + ' por vuelta'], ['Sólidos que llegan', fmtN(r.mdot * 3600, 1) + ' kg/h'], ['Capacidad (ec. 29.31)', fmtN(dr.G * 3600, 3) + ' kg/(m²·h)'], ['Sin R<sub>m</sub> (ec. 29.33)', fmtN(dr.Gnorm * 3600, 3) + ' kg/(m²·h)'], ['Área total requerida A<sub>T</sub>', fA(dr.AT)], ['Tambor estándar', dr.pick.n + ' × ' + fmtN(dr.pick.D, 1) + ' × ' + fmtN(dr.pick.L, 1) + ' m · ' + fA(dr.pick.A * dr.pick.n)], ['Torta por vuelta', fmtN(dr.wrev, 3) + ' kg/m² · ' + fmtN(dr.Lrev * 1000, 2) + ' mm'], ['Filtrado por vuelta', fmtN(dr.urev * 1000, 2) + ' L/m²']]);
+  $('#drNote').textContent = (s.preset === 'mc2' ? 'Ejemplo 29.2 de McCabe: el libro obtiene A_T = 81,7 ft² (7,59 m²); aquí sale ' + fA(dr.AT) + '. ' : '') + 'Tamaños de McCabe: de 0,3 × 0,3 m hasta 3 m de diámetro × 4,3 m; los dos mayores de la lista son externos al curso. Con una torta de levadura (α del orden de 10¹² a 10¹³ m/kg) cada vuelta forma décimas de milímetro: por eso el tambor necesita precapa, y eso contamina un producto que es la torta.';
+}
+
+/* ---------- 6 · alternativas ---------- */
+function renderAlt() {
+  var r = R, s = state, pr = withS({ eq: 'prensa' }).pr, Qh = r.Qf * 3600, m = r.m;
+  var fl = withS({ eq: 'prensa', la: s.la - L10(s.flocK) }).pr, dose = s.flocDose * Qh / 1000, flDay = [dose * 20 * 2, dose * 20 * 4];
+  var units = Math.ceil(Qh / 5 - 1e-9), cent = [units * 150000, units * 250000], vg = s.drho * Math.pow(m.dum * 1e-6, 2) * G / (18 * r.mu), Sig = r.Qf / vg;
+  var Amf = Qh * 1000 / s.mfJ, mf = [Amf * 200, Amf * 500];
+  var product = m.id === 'levadura' || m.id === 'bacterias';
+  var rows = [
+    ['Filtro prensa (referencia)', 'El diseño actual', fA(pr.A) + ' · ' + pr.N + ' placas', 'Torta seca, sin aditivos, simple', 'Por lotes contra una planta continua; mano de obra', fk(pr.cost[0]) + ' a ' + fk(pr.cost[1]) + ' kUSD'],
+    ['Floculación + prensa', 'Acondiciona las células: α ÷ ' + fmtN(s.flocK, 1), fA(fl.A) + ' (' + fmtN(100 * (fl.A / pr.A - 1), 0) + ' %) · ' + fmtN(dose, 2) + ' kg/h de floculante', 'Mantiene la prensa y reduce área y costo', 'El floculante queda en un producto alimentario; hay que medir su efecto', fk(fl.cost[0]) + ' a ' + fk(fl.cost[1]) + ' kUSD + ' + fmtN(flDay[0], 0) + ' a ' + fmtN(flDay[1], 0) + ' USD/día'],
+    ['Centrífuga de discos', 'Separa por densidad, en continuo', units + (units === 1 ? ' equipo' : ' equipos') + ' de 5 m³/h (' + fmtN(100 * Qh / (5 * units), 0) + ' % de carga) · Σ ≈ ' + fmtN(Sig, 0) + ' m² (externo)', 'Continua como la fermentación; higiénica; sin aditivos', 'Crema más húmeda que la torta; energía; sin repuesto a esa carga', fk(cent[0]) + ' a ' + fk(cent[1]) + ' kUSD'],
+    ['Microfiltración tangencial', 'Membrana en flujo cruzado: el producto es el concentrado', fA(Amf) + ' a ' + fmtN(s.mfJ, 0) + ' L/(m²·h)', 'Continua; permeado estéril; modular', 'Ensuciamiento y limpieza CIP; el concentrado aún hay que deshidratarlo', fk(mf[0]) + ' a ' + fk(mf[1]) + ' kUSD en membranas'],
+    ['Coadyuvante (diatomita)', 'Body feed o precapa: baja α y s', 'No se cuantifica', 'Torta más permeable', product ? 'No es admisible aquí: la torta es el producto y el coadyuvante quedaría en ella' : 'Contamina la torta; aquí el producto es el filtrado, así que es admisible', '—']
+  ];
+  $('#altTable').innerHTML = '<tr><th>Alternativa</th><th>Qué cambia</th><th>Efecto cuantificado</th><th>Ventajas</th><th>Desventajas</th><th>Costo</th></tr>' + rows.map(function (q, i) { return '<tr' + (i === 4 && product ? ' class="dim"' : '') + '>' + q.map(function (c, j) { return '<td' + (j > 0 ? ' style="text-align:left"' : '') + '>' + esc(c) + '</td>'; }).join('') + '</tr>'; }).join('');
+  // matriz
+  var crit = [['Costo de inversión', 30], ['Costo operativo', 25], ['Calidad del producto', 20], ['Facilidad de operación', 15], ['Escalabilidad', 10]], alts = [['prensa', 'Prensa'], ['floc', 'Floc. + prensa'], ['cent', 'Centrífuga'], ['mf', 'Microfiltración']];
+  var cw = s.contOn ? s.contW / 100 : 0, wts = crit.map(function (c) { return c[1] / 100 * (1 - cw); });
+  if (s.contOn) { crit.push(['Continuidad de operación', s.contW]); wts.push(cw); }
+  var tot = alts.map(function (a) { return wts.reduce(function (q, w, i) { return q + w * s.scores[a[0]][i]; }, 0); });
+  $('#matTable').innerHTML = '<tr><th>Criterio</th><th>Peso</th>' + alts.map(function (a) { return '<th>' + esc(a[1]) + '</th>'; }).join('') + '</tr>' + crit.map(function (c, i) { return '<tr><td>' + esc(c[0]) + '</td><td>' + fmtN(100 * wts[i], 1) + ' %</td>' + alts.map(function (a) { return '<td><input type="number" class="ni sc" min="1" max="5" step="1" data-a="' + a[0] + '" data-i="' + i + '" value="' + s.scores[a[0]][i] + '"></td>'; }).join('') + '</tr>'; }).join('') + '<tr class="tot"><td>Ponderado</td><td>100 %</td>' + tot.map(function (t) { return '<td>' + fmtN(t, 2) + '</td>'; }).join('') + '</tr>';
+  $$('#matTable .sc').forEach(function (inp) { inp.addEventListener('change', function () { var v = Math.max(1, Math.min(5, Math.round(parseFloat(inp.value) || 1))); state.scores[inp.dataset.a][+inp.dataset.i] = v; dirty(); }); });
+  var best = tot.indexOf(Math.max.apply(null, tot)), X0 = 130, X1 = 480, o = '';
+  alts.forEach(function (a, i) { var y = 14 + i * 32; o += TX(X0 - 10, y + 15, a[1], { a: 'end', fs: 12, fw: 700 }) + E('rect', { x: X0, y: y, width: r1((X1 - X0) * tot[i] / 5), height: 20, style: 'fill:' + (i === best ? 'var(--hl)' : 'var(--n400)') }) + TX(X0 + (X1 - X0) * tot[i] / 5 + 6, y + 15, fmtN(tot[i], 2), { fs: 11.5, fw: 750 }); });
+  $('#svgMat').innerHTML = o;
+  $('#matNote').textContent = 'Puntajes ilustrativos (de 1 a 5): el taller pide justificar los suyos. ' + (s.contOn ? 'Con la continuidad de operación, que pesa para una fermentación que no se detiene, ' + (alts[best][1] === 'Prensa' || alts[best][1] === 'Floc. + prensa' ? 'la prensa aún gana con estos puntajes.' : 'gana ' + alts[best][1].toLowerCase() + ': la matriz se invierte.') : 'Active el criterio que falta: para una fermentación que no se detiene, la continuidad de operación pesa más que varios de los que sí están.');
+}
+
+/* ---------- 7 · ecuaciones ---------- */
+function tex(id, s, disp) { var el = typeof id === 'string' ? document.getElementById(id) : id; if (!el) return; if (window.katex) { try { window.katex.render(s, el, { throwOnError: false, displayMode: !!disp }); return; } catch (e) { } } el.textContent = s; }
+function n2(x, d) { return fmtN(x, d).replace(',', '{,}').replace(/ /g, '\\,').replace('−', '-'); }
+function sci(x, d) { if (!(x > 0)) return n2(x, d || 2); var e = Math.floor(Math.log10(x)), mm = x / Math.pow(10, e); if (mm >= 9.995) { mm /= 10; e++; } return n2(mm, d == null ? 2 : d) + '\\times10^{' + e + '}'; }
+/* subíndices de las notas: R_m, K_p, t_f, t_d, A_T, ρ_torta… */
+function subs(h) { return h.replace(/([A-Za-zαρṁ])_([a-zA-Z]+|\{[^}]*\})/g, function (m, a, b) { return a + '<sub>' + b.replace(/[{}]/g, '') + '</sub>'; }); }
+function renderEqs() {
+  var r = R, s = state, pr = r.pr, dr = r.dr, A = pr.A, cake = r.cake;
+  var items = [
+    ['Darcy y resistencias en serie', 'J=\\frac{1}{A}\\frac{dV}{dt}=\\frac{\\Delta P}{\\mu\\,(R_c+R_m)},\\qquad R_c=\\alpha\\,c\\,\\frac{V}{A}', 'Diapositivas 9 a 11. La tela es fija; la torta crece con el filtrado y pronto domina.'],
+    ['Presión constante (diapositivas y Taller 6)', '\\begin{aligned}\\frac{t}{V/A}&=\\underbrace{\\frac{\\mu\\alpha c}{2\\Delta P}}_{a}\\frac{V}{A}+\\underbrace{\\frac{\\mu R_m}{\\Delta P}}_{b}\\\\a&=' + sci(pr.a, 3) + '\\ \\text{s/m}^2,\\quad b=' + n2(pr.b, 1) + '\\ \\text{s/m}\\end{aligned}', 'Con μ, α a la presión de filtración, c y R_m del caso. Las diapositivas llaman K_p a la pendiente a; en Geankoplis K_p es otra cosa (2a/A²).'],
+    ['La misma recta en la lectura y en McCabe', '\\begin{aligned}\\frac{t}{V}&=\\frac{\\mu\\alpha w}{2A^2\\Delta P}V+\\frac{\\mu R_m}{A\\Delta P}=\\frac{K_c}{2}V+\\frac{1}{q_0}\\\\\\frac{K_c}{2}&=' + sci(pr.a / (A * A), 3) + '\\ \\text{s/m}^6,\\quad \\frac1{q_0}=' + sci(pr.b / A, 3) + '\\ \\text{s/m}^3\\end{aligned}', 'La lectura usa w para los kg de sólido por m³ de filtrado; las diapositivas usan w para los kg por m² de tela. Aquí se escribe c (kg/m³), con el área A = ' + fA(A) + ' del diseño.'],
+    ['Área para un tiempo dado', '\\begin{aligned}u&=\\frac{V}{A}=\\frac{-b+\\sqrt{b^2+4at_f}}{2a}=' + n2(pr.u, 4) + '\\ \\text{m}\\\\A&=\\frac{V}{u}=\\frac{' + n2(pr.V, 2) + '}{' + n2(pr.u, 4) + '}=' + n2(A, 2) + '\\ \\text{m}^2\\end{aligned}', 'V es el filtrado de un ciclo completo (' + fmtN(pr.V, 2) + ' m³) y t_f el tiempo que de verdad filtra (' + fTime(pr.tf) + ').'],
+    ['Compresibilidad', '\\begin{aligned}\\alpha&=\\alpha_{ens}\\left(\\frac{\\Delta P}{\\Delta P_{ens}}\\right)^{s}=' + sci(cake.alphaRef, 3) + '\\left(\\frac{' + n2(r.dPop, 2) + '}{' + n2(cake.dPref, 2) + '}\\right)^{' + n2(cake.s, 2) + '}\\\\&=' + sci(r.alphaOp, 3) + '\\ \\text{m/kg}\\end{aligned}', 'La forma anclada del Taller 6 equivale a α = α₀ΔPˢ (McCabe 29.25) con α₀ = ' + fmtSci(r.alpha0, 3) + ' y ΔP en Pa. Pasar α₀ de ft/lb a m/kg sin cambiar la base de ΔP es un error común.'],
+    ['Caudal constante', '\\begin{aligned}\\Delta P&=\\frac{\\mu\\alpha cQ^2}{A^2}t+\\frac{\\mu QR_m}{A}\\\\(\\Delta P-\\Delta p_m)^{1-s}&=\\alpha_0\\mu c\\,u^2\\,t\\end{aligned}', 'La primera es la de la lectura y las diapositivas (α constante); la segunda, la de McCabe (29.38) para torta compresible.'],
+    ['Sólidos por volumen de filtrado (McCabe 29.19)', 'c=\\frac{c_F}{1-\\left(\\frac{m_F}{m_c}-1\\right)\\frac{c_F}{\\rho}}' + (s.cBasis === 'alimentado' ? '=' + n2(r.c, 1) + '\\ \\text{kg/m}^3' : ''), 'El Taller 6 usa los 25 g/L del caldo como si fueran por m³ de filtrado (desprecia el líquido de la torta).'],
+    ['Ciclo óptimo (externo al curso)', '\\frac{d}{dt_f}\\left[\\frac{t_f+t_w+t_d}{u(t_f)}\\right]=0\\ \\xrightarrow{R_m\\to0}\\ t_{f,opt}=t_d' + (s.cyc === 'td' ? ',\\quad t_{f,opt}=' + n2(pr.tfOpt / 60, 1) + '\\ \\text{min}' : ''), 'Maximiza el filtrado por unidad de área y tiempo con un tiempo muerto t_d fijo. Ningún material del curso da esta fórmula.'],
+    ['Lavado', 'V_w=n\\left(\\frac{m_F}{m_c}-1\\right)\\frac{m_c}{\\rho},\\quad \\left(\\frac{dV}{dt}\\right)_w=k\\left(\\frac{dV}{dt}\\right)_{final}', 'McCabe: con marcos alternos el lavado va a la mitad del caudal final (k = ½). Otros textos usan ¼ para placas y marcos y 1 para filtros de hojas.'],
+    ['Tambor rotatorio (McCabe 29.31)', '\\begin{aligned}\\frac{\\dot m_c}{A_T}&=\\frac{\\left[\\frac{2c\\alpha\\Delta P f n}{\\mu}+(nR_m)^2\\right]^{1/2}-nR_m}{\\alpha}\\\\&=' + n2(dr.G * 3600, 3) + '\\ \\text{kg/(m}^2\\text{h)}\\end{aligned}', 'Es la filtración a presión constante con t = f/n. Sin R_m (29.33): ṁ_c/A_T = (2cΔP^(1−s)fn/(α₀μ))^½.'],
+    ['Espesor de la torta', 'L=\\frac{c\\,u}{\\rho_{torta}}=' + n2(pr.Lc * 1000, 2) + '\\ \\text{mm},\\qquad \\text{llenado}=\\frac{2L}{e_{cámara}}=' + n2(100 * pr.fill, 0) + '\\ \\%', 'En la prensa la torta crece desde las dos caras de cada cámara. ρ_torta (kg de sólido seco por m³ de torta) es un dato supuesto.'],
+    ['Alternativas (Taller 6 y externas)', '\\begin{aligned}&A_{MF}=\\frac{Q}{J},\\qquad \\Sigma=\\frac{Q}{v_g},\\ v_g=\\frac{\\Delta\\rho\\,d^2g}{18\\mu}\\end{aligned}', 'El flux de microfiltración y las capacidades de la centrífuga son datos del taller; la teoría Σ de la centrífuga no está en el material del curso.']
+  ];
+  $('#eqs').innerHTML = items.map(function (it, i) { return '<div><div class="lbl">' + it[0] + '</div><div class="f" id="eq' + i + '"></div><div class="n2">' + subs(esc(it[2])) + '</div></div>'; }).join('');
+  items.forEach(function (it, i) { tex('eq' + i, it[1], true); });
+  $('#assump').innerHTML = '<b>Cómo está hecho.</b> El modelo es el de la Lectura 09, las diapositivas y el Taller 6: Darcy con resistencias en serie, α y R_m constantes durante la filtración a presión constante, y α corregido por compresibilidad con la forma anclada del taller. Reproduce el Taller 6 (α = 3,60×10¹² m/kg y R_m = 8,91×10¹⁰ m⁻¹ a 1,8 bar; 55,0 y 42,5 m² con el modelo ideal; 65,7 y 60,6 m² con s = 0,7; 85,0 m² con el 60 % del ciclo) y los ejemplos 29.1 y 29.2 de McCabe. '
+    + 'El tambor usa la ecuación 29.31 de McCabe. Son externos al curso, y se marcan en cada pestaña: el óptimo del ciclo, la huella de piso de la prensa, los tamaños de tambor mayores que 3 × 4,3 m, la teoría Σ de la centrífuga, la humedad y la densidad de las tortas, y los parámetros del bagazo del proyecto, que hay que medir.';
+}
+
+/* ---------- lectura con el cursor ---------- */
+function svgPt(svg, e) { var b = svg.getBoundingClientRect(), vb = svg.viewBox.baseVal; return { x: (e.clientX - b.left) / b.width * vb.width, y: (e.clientY - b.top) / b.height * vb.height }; }
+function invX(a, x) { var o = a.o, f = (x - o.x0) / (o.x1 - o.x0); return o.xlog ? o.xmin * Math.pow(o.xmax / o.xmin, f) : o.xmin + f * (o.xmax - o.xmin); }
+function hoverSetup() {
+  $('#svgCyc').addEventListener('mousemove', function (e) {
+    if (!CYC) return; var p = svgPt(this, e), o = CYC.a.o; if (p.x < o.x0 || p.x > o.x1) return; var x = invX(CYC.a, p.x);
+    if (CYC.mode === 'p') { var tf = R.pr.tf / 60; if (x > tf) { $('#cycRead').textContent = fmtN(x, 1) + ' min · ' + (x < (R.pr.tf + R.pr.tw) / 60 ? 'lavando' : 'descargando y cerrando'); return; } var best = CYC.pts[0]; CYC.pts.forEach(function (q) { if (Math.abs(q.t / 60 - x) < Math.abs(best.t / 60 - x)) best = q; }); $('#cycRead').textContent = fmtN(best.t / 60, 1) + ' min · filtrado ' + fmtN(best.V, 2) + ' m³ · caudal ' + fQ(best.q) + ' · ΔP ' + fbar(best.P); }
+    else { var bq = CYC.th[0]; CYC.th.forEach(function (q) { if (Math.abs(q[0] - x) < Math.abs(bq[0] - x)) bq = q; }); $('#cycRead').textContent = fmtN(bq[0], 0) + '° · torta ' + fmtN(bq[1], 2) + ' mm' + (bq[2] > 0 ? ' · flux ' + fmtN(bq[2], 0) + ' L/(m²·h)' : ''); }
+  });
+  $('#svgPA').addEventListener('mousemove', function (e) { if (!PA) return; var p = svgPt(this, e), o = PA.a.o; if (p.x < o.x0 || p.x > o.x1) return; var x = invX(PA.a, p.x); $('#paCur').innerHTML = LN(p.x, o.y0, p.x, o.y1, 'stroke:var(--ink);stroke-width:.8;opacity:.5'); $('#pARead').textContent = fbar(x) + ' · ideal ' + fA(areaAt(x, 0)) + ' · con s = ' + fmtN(state.sComp, 2) + ' ' + fA(areaAt(x, state.sComp)) + ' · α ' + fmtSci(alphaAt(R.cake, x * BAR), 2) + ' m/kg'; });
+  $('#svgCi').addEventListener('mousemove', function (e) { if (!CI) return; var p = svgPt(this, e), o = CI.a.o; if (p.x < o.x0 || p.x > o.x1) return; var x = invX(CI.a, p.x); $('#ciCur').innerHTML = LN(p.x, o.y0, p.x, o.y1, 'stroke:var(--ink);stroke-width:.8;opacity:.5'); var q = CI.mode === 'frac' ? withS({ frac: x / 100 }).pr : withS({ tfMode: 'manual', tfMin: x }).pr; $('#ciRead').textContent = (CI.mode === 'frac' ? fmtN(x, 0) + ' % del ciclo filtrando' : fmtN(x, 1) + ' min de filtración') + ' · ciclo ' + fTime(q.tc) + ' · A ' + fA(q.A) + ' · ' + q.N + ' placas'; });
+  $('#svgDr').addEventListener('mousemove', function (e) { if (!DR) return; var p = svgPt(this, e), o = DR.a.o; if (p.x < o.x0 || p.x > o.x1) return; var x = invX(DR.a, p.x), q = withS({ rpm: x, eq: 'tambor' }).dr; $('#drCur').innerHTML = LN(p.x, o.y0, p.x, o.y1, 'stroke:var(--ink);stroke-width:.8;opacity:.5'); $('#drRead').textContent = fmtN(x, 2) + ' rpm · A_T ' + fA(q.AT) + ' · torta ' + fmtN(q.Lrev * 1000, 2) + ' mm por vuelta'; });
+  $('#svgLab').addEventListener('mousemove', function (e) { if (!LABCH) return; var p = svgPt(this, e), o = LABCH.a.o; if (p.x < o.x0 || p.x > o.x1) return; var x = invX(LABCH.a, p.x), f = LABCH.L.runs[0].fit; $('#labCur').innerHTML = LN(p.x, o.y0, p.x, o.y1, 'stroke:var(--ink);stroke-width:.8;opacity:.5'); $('#labRead').textContent = 'V/A = ' + fmtN(x, 4) + ' m · recta ' + fmtN(f.b + f.m * x, 0) + ' s/m · t = ' + fmtN((f.b + f.m * x) * x, 0) + ' s'; });
+}
+
+/* ---------- inicio ---------- */
+function init() {
+  buildControls();
+  fscene = new FScene($('#fCv'));
+  setTab(tab);
+  update();
+  fscene.resize(); fscene.configure(R); renderTab();
+  window.addEventListener('resize', function () { fscene.resize(); fitTop(); if (tab === 'in') renderInside(); });
+  fitTop(); if (window.ResizeObserver) new ResizeObserver(fitTop).observe($('#top'));
+  requestAnimationFrame(animLoop);
+}
+function fitTop() { document.documentElement.style.setProperty('--top-h', $('#top').offsetHeight + 'px'); }
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+</script>
+</body>
+</html>
