@@ -1158,11 +1158,11 @@ export const pou202620Course: Course = {
       week: 11,
       title: 'Explorador McCabe-Thiele',
       description:
-        'Diseñe la columna de destilación binaria en vivo: mueva la composición y calidad de la alimentación, la pureza de productos, el reflujo y la eficiencia de Murphree, y observe cómo se reconstruyen las rectas de operación, la línea q y el escalonado de etapas. Incluye cinco sistemas (benceno-tolueno, metanol-agua, metanol-etanol, etanol-agua no ideal con azeótropo y α personalizable), balance global de materia, Rmín, Fenske y la torre con su plato de alimentación óptimo. La herramienta del proyecto para dimensionar la recuperación de etanol.',
+        'Mire la columna por dentro: cada plato con su capa de líquido, su vertedero y su bajante, el vapor que burbujea y sube, el condensador con su tambor de reflujo y el hervidor, todo coloreado con la composición que sale del diagrama de McCabe-Thiele, que se dibuja al lado y se recorre etapa por etapa con el cursor. El equilibrio es el del curso: la tabla del Taller 9 con PCHIP (azeótropo en 0,894) y los datos de Perry, el isopropanol-agua del Taller 9 con Van Laar o ideal, el metanol-agua de McCabe y benceno-tolueno con Antoine o con α constante, más un NRTL ajustado para ver la columna a la presión de Bogotá. Encuentra el reflujo mínimo real con su pinch tangente y lo compara con la fórmula del libro (26 % corta en el Taller 9); escalona con condensador total o parcial, alimentación óptima o fija y eficiencia de Murphree, y calcula q a partir de la temperatura de la alimentación. Incluye la construcción en los nueve pasos de la Lectura 13, el reflujo total con Fenske, las etapas y la energía contra el reflujo con Gilliland, O\'Connell y los platos reales, el diámetro por Souders-Brown con la ventana de operación, la altura con las tres reglas del material y el hervidor y el condensador con sus servicios. Reproduce el Taller 9 (10,94 etapas, alimentación en la 10, 17 platos al 60 %), el explorador de la Lectura 13 y los ejemplos de McCabe.',
       sessionNumber: 17,
       file: 'Explorador_McCabe_Thiele.html',
       bannerImg: '/classroom/iqya-2031-2026-20/simuladores-banners/explorador-mccabe-thiele.jpg',
-      tags: ['destilación', 'McCabe-Thiele', 'reflujo', 'línea q', 'etapas', 'etanol-agua', 'Murphree', 'Fenske'],
+      tags: ['destilación', 'McCabe-Thiele', 'reflujo mínimo', 'pinch tangencial', 'línea q', 'etapas', 'etanol-agua', 'azeótropo', 'Murphree', 'Fenske', 'O\'Connell', 'diámetro de la columna'],
     },
     {
       id: 'explorador-graficos',
