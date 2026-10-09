@@ -980,14 +980,14 @@ Scene.prototype.draw = function () {
   for (var hx = 0; hx < W; hx += 9) { c.beginPath(); c.moveTo(hx, yG); c.lineTo(hx - 6, yG + 6); c.stroke(); }
   // datum z = 0
   c.setLineDash([5, 5]); c.strokeStyle = col.muted; c.beginPath(); c.moveTo(0, L.Y0); c.lineTo(W, L.Y0); c.stroke(); c.setLineDash([]);
-  c.fillStyle = col.muted; c.textAlign = 'left'; c.fillText(L.pump ? 'z = 0 · eje de la bomba' : 'z = 0', L.xp + (L.rp || 8) + 34, L.Y0 + 14);
+  if (L.pump) { c.fillStyle = col.muted; c.textAlign = 'left'; c.fillText('z = 0 · eje de la bomba', L.xp + L.rp + 34, L.Y0 + 14); }
   this.drawTank(1);
   if (L.jet) this.drawBasin(); else this.drawTank(2);
   if (s.lines) this.drawLines(true);
   this.drawPipe();
   this.drawParticles();
   this.drawFittings();
-  if (L.pump) this.drawPump(); else { c.fillStyle = col.muted; c.textAlign = 'center'; c.fillText('sin bomba', L.xp, L.Y0 + L.thS / 2 + 14); }
+  if (L.pump) this.drawPump(); else { c.fillStyle = col.muted; c.textAlign = 'center'; c.fillText('punto bajo · z = 0 · sin bomba', L.xp, L.Y0 + L.thS / 2 + 16); }
   this.drawExit();
   if (s.lines) this.drawLines(false);
   this.drawDims();
@@ -1034,7 +1034,10 @@ Scene.prototype.pipePath = function (from, to) {
     if (p.corner && i < v.length - 1) {
       var o = (p.corner[0] === 's' ? fitS : fitD).filter(function (f) { return f.corner && Math.abs(f.s - p.s) < 1e-6; })[0];
       var rad = !o ? 0 : (o.ft.id === 'codoB' ? 2.2 : (o.ft.id === 'codoR' ? 0.9 : 0)) * (p.corner[0] === 's' ? L.thS : L.thD);
-      if (rad > 0) c.arcTo(p.x, p.y, v[i + 1].x, v[i + 1].y, rad); else c.lineTo(p.x, p.y);
+      // el radio no puede pasar de la mitad de los tramos vecinos: si no, el arco se sale del trazado
+      var pv = v[i - 1], nx = v[i + 1], la = Math.hypot(p.x - pv.x, p.y - pv.y), lb = Math.hypot(nx.x - p.x, nx.y - p.y);
+      rad = Math.min(rad, 0.5 * la, 0.5 * lb);
+      if (rad > 0.5) c.arcTo(p.x, p.y, nx.x, nx.y, rad); else c.lineTo(p.x, p.y);
     } else c.lineTo(p.x, p.y);
   }
 };
