@@ -215,7 +215,7 @@ export const PouLandingPage: React.FC<{ course: Course }> = ({ course }) => {
         {course.project && (
           <section className="pou-field" aria-label="Proyecto del semestre">
             <div className="pou-wrap">
-              <p style={{ fontSize: '12px', letterSpacing: '0.16em', textTransform: 'uppercase', fontWeight: 600, color: 'rgba(255,255,255,.62)', margin: 0 }}>
+              <p style={{ fontSize: '13px', letterSpacing: '0.16em', textTransform: 'uppercase', fontWeight: 600, color: 'rgba(255,255,255,.62)', margin: 0 }}>
                 Proyecto del semestre
               </p>
               <h2 style={{ marginTop: '10px' }}>{course.project.title}</h2>
@@ -274,14 +274,14 @@ export const PouLandingPage: React.FC<{ course: Course }> = ({ course }) => {
               {course.team.map((m) => (
                 <tr key={m.email}>
                   <td className="s-num">{m.role}</td>
-                  <td style={{ fontFamily: 'var(--pou-heading)', fontWeight: 600, fontSize: '20px' }}>{m.name}</td>
+                  <td style={{ fontFamily: 'var(--pou-heading)', fontWeight: 600, fontSize: '22px' }}>{m.name}</td>
                   <td><a href={`mailto:${m.email}`} style={{ color: 'var(--pou-accent-700)' }}>{m.email}</a></td>
                   <td className="s-rem">{m.officeHours ?? '—'}</td>
                 </tr>
               ))}
             </tbody>
           </table>
-          <p className="s-rem" style={{ marginTop: '14px', fontSize: '14px' }}>
+          <p className="s-rem" style={{ marginTop: '14px', fontSize: '16px' }}>
             Escriba a los tres en el mismo mensaje, con el asunto <b>[{course.code}]</b> seguido del tema. Respuesta en 48 horas hábiles.
           </p>
         </section>
@@ -346,7 +346,7 @@ export const PouLandingPage: React.FC<{ course: Course }> = ({ course }) => {
         {/* ── Metodología ────────────────────────────────────────── */}
         <section className="pou-wrap" style={{ paddingBottom: '64px' }} aria-label="Metodología">
           <Eyebrow>Cómo aprendemos</Eyebrow>
-          <p className="pou-lede" style={{ marginTop: '14px', fontSize: '17px' }}>
+          <p className="pou-lede" style={{ marginTop: '14px', fontSize: '19px' }}>
             {course.methodology.summary}
           </p>
           <div className="pou-cells" style={{ marginTop: '30px', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }}>
@@ -354,8 +354,8 @@ export const PouLandingPage: React.FC<{ course: Course }> = ({ course }) => {
               <div key={p.label} className="pou-cell blueprint" style={{ cursor: 'default' }}>
                 <Marks />
                 <span className="k">{p.label}</span>
-                <h3 style={{ fontSize: '24px' }}>{p.title}</h3>
-                <ul style={{ margin: '12px 0 0', paddingLeft: '18px', fontSize: '15px', lineHeight: 1.5 }}>
+                <h3 style={{ fontSize: '26px' }}>{p.title}</h3>
+                <ul style={{ margin: '12px 0 0', paddingLeft: '18px', fontSize: '17px', lineHeight: 1.55 }}>
                   {p.items.map((it, i) => <li key={i} style={{ marginBottom: '6px' }}>{it}</li>)}
                 </ul>
               </div>
@@ -382,8 +382,8 @@ export const PouLandingPage: React.FC<{ course: Course }> = ({ course }) => {
                   <tr key={lv.level} style={off ? { opacity: 0.5 } : undefined}>
                     <td className="s-num">Nivel {lv.level}</td>
                     <td>
-                      <span style={{ fontFamily: 'var(--pou-heading)', fontWeight: 600, fontSize: '20px' }}>{lv.title}</span>
-                      <span className="d" style={{ display: 'block', fontSize: '14px', opacity: 0.8 }}>{lv.description}</span>
+                      <span style={{ fontFamily: 'var(--pou-heading)', fontWeight: 600, fontSize: '22px' }}>{lv.title}</span>
+                      <span className="d" style={{ display: 'block', fontSize: '16px', opacity: 0.8 }}>{lv.description}</span>
                     </td>
                     <td>
                       <span className={off ? 'tag tag-neutral' : 'tag'}>{lv.application}</span>
@@ -403,7 +403,7 @@ export const PouLandingPage: React.FC<{ course: Course }> = ({ course }) => {
               <div key={p.category} className="pou-cell blueprint" style={{ cursor: 'default' }}>
                 <Marks />
                 <span className="k">{p.category}</span>
-                <ul style={{ margin: '12px 0 0', paddingLeft: '18px', fontSize: '15px', lineHeight: 1.5 }}>
+                <ul style={{ margin: '12px 0 0', paddingLeft: '18px', fontSize: '17px', lineHeight: 1.55 }}>
                   {p.items.map((it, i) => <li key={i} style={{ marginBottom: '6px' }}>{it}</li>)}
                 </ul>
               </div>
