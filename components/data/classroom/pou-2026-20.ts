@@ -1131,10 +1131,10 @@ export const pou202620Course: Course = {
       week: 5,
       title: 'Explorador de bombas centrífugas',
       description:
-        'Seleccione la bomba del circuito en vivo: elija diámetro de impulsor y velocidad de giro, defina la curva del sistema (caudal de diseño, fricción y niveles de succión y descarga referidos al eje de la bomba, z = 0) y observe el punto de operación donde la curva de la bomba corta la del sistema. Reescale la familia de curvas con las leyes de afinidad, dibuje las islas de eficiencia, calcule la potencia hidráulica y al freno con selección de motor estándar, y evalúe el NPSH disponible vs. requerido con la altitud del sitio (Bogotá ≈ 2600 msnm) para anticipar la cavitación. Basado en la curva B&G TEH-375A. Unidades US o SI.',
+        'Mire la bomba por dentro: una vista frontal del impulsor y la voluta en cámara lenta, con partículas que siguen la cinemática real y se colorean con la presión estática, el triángulo de velocidades de Euler en vivo, burbujas que nacen en el borde de ataque y colapsan cuando falta NPSH, y recirculación cuando la bomba trabaja lejos del BEP. Escoja carcasa (1½×2-6, 2×3-8 o 3×4-10), velocidad de 1750 o 3500 rpm con variador, diámetro del impulsor y arreglo (una, dos en paralelo o en serie), y defina el sistema y el fluido (agua, etanol, aceite o el extracto de pectina del proyecto, con la corrección por viscosidad de ANSI/HI 9.6.7). Incluye la carta de la bomba como la de un catálogo (diámetros, islas de eficiencia, NPSH3 y potencia), el NPSH disponible contra el requerido y la temperatura máxima de bombeo en Bogotá, la regulación por válvula, variador o recorte con su consumo de energía, la comparación serie y paralelo y una lista de chequeo para la selección con el motor IEC.',
       sessionNumber: 8,
       file: 'Explorador_Bombas_Centrifugas.html',
-      tags: ['bombas', 'curva característica', 'NPSH', 'cavitación', 'leyes de afinidad', 'punto de operación', 'BHP', 'eficiencia'],
+      tags: ['bombas', 'curva característica', 'Euler', 'triángulos de velocidad', 'NPSH', 'cavitación', 'leyes de afinidad', 'variador', 'serie y paralelo', 'viscosidad'],
     },
     {
       id: 'explorador-mccabe-thiele',
