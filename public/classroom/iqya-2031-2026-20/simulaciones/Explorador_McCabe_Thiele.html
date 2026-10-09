@@ -410,7 +410,7 @@ table.t tr.dim td { color: var(--n500); }
       <div class="sl"><div class="row"><span>Capacidad C<sub>SB</sub></span></div><div class="seg" id="csbSeg" style="margin-top:6px"><button type="button" data-v="curso">Tabla del curso</button><button type="button" data-v="fair">Fair (externo)</button></div></div>
       <label class="toggle" id="netRow"><input type="checkbox" id="net"> Descontar el bajante del área (área neta)</label>
       <div class="sl"><div class="row"><span>Área del bajante</span><b id="vfracBaj"></b></div><input type="range" id="fracBaj" min="0.08" max="0.2" step="0.005"><div class="hint">Diseño de platos: 10 a 15 % del área total</div></div>
-      <div class="sl"><div class="row"><span>Faldón</span><b id="vskirt"></b></div><input type="range" id="skirt" min="0" max="4" step="0.1"><div class="hint">El curso no lo cuantifica; 1,5 m reproduce los 14 m del ejemplo</div></div>
+      <div class="sl"><div class="row"><span>Faldón</span><b id="vskirt"></b></div><input type="range" id="skirt" min="0" max="4" step="0.1"><div class="hint">El curso no lo cuantifica; 1,5 m reproduce los 13 m de Diseño de platos</div></div>
       <div class="sl"><div class="row"><span>Altura según</span></div><div class="seg wrap" id="hSeg" style="margin-top:6px"><button type="button" data-v="s2">Diseño de platos</button><button type="button" data-v="l13">Lectura 13</button><button type="button" data-v="t9">Taller 9</button></div></div>
     </section>
     <section><h2><span class="n">07</span> Vista</h2>
@@ -452,7 +452,7 @@ table.t tr.dim td { color: var(--n500); }
 
     <!-- 2 · equilibrio -->
     <section class="panel" data-panel="eq">
-      <div class="ph"><h2>El equilibrio líquido-vapor</h2><span class="lbl" id="eqLbl"></span><p>Todo el método descansa en la curva y-x a la presión de la columna. Si la curva está mal, las etapas están mal: el explorador anterior usaba un Van Laar que pone el azeótropo del etanol-agua en 0,915 en vez de 0,894, y con él la columna del Taller 9 parecía necesitar 8,7 etapas en lugar de 10,9.</p></div>
+      <div class="ph"><h2>El equilibrio líquido-vapor</h2><span class="lbl" id="eqLbl"></span><p>Todo el método descansa en la curva y-x a la presión de la columna. Si la curva está mal, las etapas están mal: el explorador anterior usaba un Van Laar que pone el azeótropo del etanol-agua en 0,915 en vez de 0,894, y con él la columna del Taller 9 parecía necesitar 8,8 etapas en lugar de 10,96.</p></div>
       <div class="two">
         <div class="card"><div class="card-h"><span class="t">Curva y-x</span><span class="sp"></span><label class="toggle" style="margin:0;font-family:var(--font-body);text-transform:none;letter-spacing:0"><input type="checkbox" id="cmpOn"> Comparar modelos</label></div><div class="card-b"><svg class="ch hov halo" id="svgXY" viewBox="0 0 560 540"></svg><div class="legend" id="xyLeg" style="margin-top:6px"></div><div class="readout" id="xyRead"></div></div></div>
         <div class="card"><div class="card-h"><span class="t">Diagrama T-x-y</span><span class="sp"></span><span id="txyLbl"></span></div><div class="card-b"><svg class="ch hov halo" id="svgTXY" viewBox="0 0 560 400"></svg><div class="readout" id="txyRead"></div><svg class="ch hov halo" id="svgAl" viewBox="0 0 560 230" style="margin-top:10px"></svg><div class="readout" id="alRead"></div></div></div>
@@ -1185,15 +1185,16 @@ function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').
 var store = { get: function (k, d) { try { var v = localStorage.getItem('pou-mccabe:' + k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } }, set: function (k, v) { try { localStorage.setItem('pou-mccabe:' + k, JSON.stringify(v)); } catch (e) { } } };
 function clone(o) { return JSON.parse(JSON.stringify(o)); }
 
-var BASE = { sys: 'ea9', alpha: 2.4, P: 760, zF: 0.20, xD: 0.80, xB: 0.02, F: 100, qMode: 'q', q: 1.3, TF: 30,
+var BASE = { sys: 'ea9', alpha: 2.4, P: 760, zF: 0.20, xD: 0.80, xB: 0.02, F: 100, qMode: 'q', q: 1.1, TF: 35,
   rMode: 'R', lR: Math.log10(2.5), Rm: 1.3, cond: 'total', feedMode: 'opt', feedN: 10, Emv: 1, eoMode: 'man', Eo: 0.60, muL: 0.4, aSrc: 'col',
-  tray: 'perf', TS: 0.45, ff: 0.80, csb: 'curso', net: false, fracBaj: 0.12, skirt: 1.5, hRule: 's2', view: 'all', grid: true, vv: true, cmpOn: true, pp: 1, pp8: 99 };
+  tray: 'perf', TS: 0.45, ff: 0.80, csb: 'curso', net: true, fracBaj: 0.12, skirt: 1.5, hRule: 's2', view: 'all', grid: true, vv: true, cmpOn: true, pp: 1, pp8: 99 };
 var L10 = Math.log10;
 var PRESETS = [
-  { id: 't9', name: 'Taller 9 · columna de diseño', tag: 'q = 1,3 · R = 2,5', s: {} },
-  { id: 't9T', name: 'Taller 9 con el filtrado a 30 °C', tag: 'q real ≈ 1,11', s: { qMode: 'T', TF: 30 } },
+  { id: 't9', name: 'Taller 9 · columna de diseño', tag: 'q = 1,1 · R = 2,5', s: {} },
+  { id: 't9T', name: 'Taller 9 con el filtrado a 35 °C', tag: 'q desde T ≈ 1,10', s: { qMode: 'T', TF: 35 } },
+  { id: 't9x', name: 'Taller 9 · x_D = 0,85', tag: 'sobre el techo', s: { xD: 0.85 } },
   { id: 't9d', name: 'Taller 9 · demostración', tag: 'x_D = 0,70', s: { zF: 0.24, xD: 0.70, xB: 0.05, q: 1, lR: L10(2) } },
-  { id: 's2', name: 'Diseño de platos · x_D = 0,85', tag: 'R = 3 · 201 kmol/h', s: { zF: 0.24, xD: 0.85, xB: 0.01, q: 1, lR: L10(3), F: 201, Eo: 0.55 } },
+  { id: 's2', name: 'Diseño de platos · columna del proyecto', tag: '201 kmol/h · E_o = 55 %', s: { F: 201, Eo: 0.55 } },
   { id: 'bog', name: 'La columna en Bogotá', tag: 'NRTL · 560 mmHg', s: { sys: 'eaN', P: 560, qMode: 'T', TF: 30 } },
   { id: 'ipa', name: 'Taller 9 · isopropanol ideal', tag: 'α = 1,958', s: { sys: 'ipaI', zF: 0.30, xD: 0.80, xB: 0.03, q: 0.7, lR: L10(3.5) } },
   { id: 'ipaV', name: 'El mismo isopropanol con Van Laar', tag: 'sobre el azeótropo', s: { sys: 'ipaV', zF: 0.30, xD: 0.80, xB: 0.03, q: 0.7, lR: L10(3.5) } },
@@ -1308,7 +1309,10 @@ function compute(s) {
   r.top = sizeSection(sys, P, b.V, b.L, s.xD, x1, r.Ttop, o);
   r.bot = sizeSection(sys, P, b.Vp, b.Lp, eq.y(s.xB), s.xB, r.Tbot, o);
   r.ctrl = r.top.Dcalc >= r.bot.Dcalc ? 'top' : 'bot';
-  r.Dcalc = Math.max(r.top.Dcalc, r.bot.Dcalc); r.Dcom = commercial(r.Dcalc);
+  r.Dcalc = Math.max(r.top.Dcalc, r.bot.Dcalc); r.Dcom = commercial(r.Dcalc); r.Ddown = false;
+  // Diseño de platos: se adopta el comercial inferior si deja las dos secciones a 85 % o menos de la inundación y el bajante cumple
+  var iD = D_COM.indexOf(r.Dcom);
+  if (iD > 0) { var Dm = D_COM[iD - 1], ok = [r.top, r.bot].every(function (sec) { var c = checkDiameter(sec, Dm, o); return c.flood <= 0.85 + 1e-9 && c.ubaj <= 0.15 && c.tres >= 3; }); if (ok) { r.Dcom = Dm; r.Ddown = true; } }
   r.chkTop = checkDiameter(r.top, r.Dcom, o); r.chkBot = checkDiameter(r.bot, r.Dcom, o);
   r.chk = r.ctrl === 'top' ? r.chkTop : r.chkBot;
   r.H = isFinite(r.Nreal) ? heights(r.Nreal, s.TS, r.Dcom, s.skirt) : null;
@@ -1341,8 +1345,8 @@ function diagnose(r) {
   if (r.eq.az && s.xD > r.eq.az.x - 0.02) add('w', 'x_D está a ' + fmtN(r.eq.az.x - s.xD, 3) + ' del azeótropo (' + fx(r.eq.az.x) + '): cerca de él y − x se hace muy pequeño, las etapas de arriba casi no avanzan y el reflujo mínimo se dispara.');
   if (isFinite(r.Nreal)) {
     var ch = r.chk;
-    if (ch.flood > 0.85) add('c', 'Con ' + fmtN(r.Dcom, 1) + ' m la ' + (r.ctrl === 'top' ? 'cabeza' : 'base') + ' trabaja al ' + fmtN(100 * ch.flood, 0) + ' % de la inundación: por encima del 85 % no queda margen.');
-    else if (ch.flood < 0.75) add('w', 'El diámetro comercial (' + fmtN(r.Dcom, 1) + ' m, calculado ' + fmtN(r.Dcalc, 3) + ' m) deja la ' + (r.ctrl === 'top' ? 'cabeza' : 'base') + ' al ' + fmtN(100 * ch.flood, 0) + ' % de la inundación, por debajo del 75 a 85 % de diseño: hay margen, pero vigile el goteo a carga baja.');
+    if (Math.round(100 * ch.flood) > 85) add('c', 'Con ' + fmtN(r.Dcom, 1) + ' m la ' + (r.ctrl === 'top' ? 'cabeza' : 'base') + ' trabaja al ' + fmtN(100 * ch.flood, 0) + ' % de la inundación: por encima del 85 % no queda margen.');
+    else if (Math.round(100 * ch.flood) < 75) add('w', 'El diámetro comercial (' + fmtN(r.Dcom, 1) + ' m, calculado ' + fmtN(r.Dcalc, 3) + ' m) deja la ' + (r.ctrl === 'top' ? 'cabeza' : 'base') + ' al ' + fmtN(100 * ch.flood, 0) + ' % de la inundación, por debajo del 75 a 85 % de diseño: hay margen, pero vigile el goteo a carga baja.');
     if (ch.ubaj > 0.15) add('c', 'El líquido baja por el bajante a ' + fmtN(ch.ubaj, 3) + ' m/s: más de 0,15 m/s y el bajante se satura.');
     if (ch.tres < 3) add('c', 'El líquido pasa ' + fmtN(ch.tres, 1) + ' s en el bajante: menos de 3 s no deja separar la espuma.');
     if (r.Dcom < 0.6) add('w', 'Un diámetro de ' + fmtN(r.Dcom, 1) + ' m es poco práctico para platos: por debajo de unos 0,6 m se prefiere relleno (Eficiencias).');
@@ -1979,7 +1983,7 @@ function renderAL() {
     g += LN(a.X(Tb), a.o.y0, a.X(Tb), a.o.y1, 'stroke:' + C1 + ';stroke-width:1.2;stroke-dasharray:4 3') + LN(a.X(Td), a.o.y0, a.X(Td), a.o.y1, 'stroke:' + C2 + ';stroke-width:1.2;stroke-dasharray:4 3');
     g += TX(a.X(Tb) - 4, a.o.y0 + 14, 'burbuja ' + fmtN(Tb, 1), { a: 'end', fs: 10.5, c: C1, fw: 700 }) + TX(a.X(Td) + 4, a.o.y0 + 14, 'rocío ' + fmtN(Td, 1), { fs: 10.5, c: C2, fw: 700 });
     [1, 0].forEach(function (qv) { g += LN(a.o.x0, a.Y(qv), a.o.x1, a.Y(qv), 'stroke:var(--ink);stroke-width:.8;opacity:.4'); });
-    if (qmx >= 1.3) { g += LN(a.o.x0, a.Y(1.3), a.o.x1, a.Y(1.3), 'stroke:' + CR + ';stroke-width:1.2;stroke-dasharray:6 4'); g += TX(a.o.x0 + 6, a.Y(1.3) + 14, 'q = 1,3 del Taller 9: pediría ' + fmtN(TFromQ(eq, sys, s.zF, 1.3), 0) + ' °C', { fs: 10.5, c: CR, fw: 700 }); }
+    if (isEA(sys)) { g += LN(a.o.x0, a.Y(1.1), a.o.x1, a.Y(1.1), 'stroke:' + CR + ';stroke-width:1.2;stroke-dasharray:6 4'); g += TX(Math.max(a.o.x0 + 210, a.X(Tb) - 8), a.Y(1.1) - 6, 'q = 1,1 del Taller 9: filtrado a ' + fmtN(TFromQ(eq, sys, s.zF, 1.1), 0) + ' °C', { a: 'end', fs: 10.5, c: CR, fw: 700 }); }
     g += PATH(poly(pts.map(function (p) { return [a.X(p[0]), a.Y(p[1])]; })), 'stroke:' + C1 + ';stroke-width:2.6', 'clQT');
     var Tcur = r.qi ? s.TF : TFromQ(eq, sys, s.zF, r.q);
     if (isFinite(Tcur) && Tcur >= T0 && Tcur <= T1) g += dot(a.X(Tcur), a.Y(r.q), 5.5, 'var(--hl)');
@@ -2082,7 +2086,7 @@ function renderPT() {
     + row('Con D = ' + fmtN(r.Dcom, 1) + ' m: u · inundación', fmtN(ct.u, 3) + ' m/s · ' + fmtN(100 * ct.flood, 1) + ' %', fmtN(cb.u, 3) + ' m/s · ' + fmtN(100 * cb.flood, 1) + ' %')
     + row('Bajante: área · u_baj · t_res', fmtN(ct.Abaj, 4) + ' m² · ' + fmtN(ct.ubaj, 4) + ' m/s · ' + fmtN(ct.tres, 1) + ' s', fmtN(cb.Abaj, 4) + ' m² · ' + fmtN(cb.ubaj, 4) + ' m/s · ' + fmtN(cb.tres, 1) + ' s')
     + '</tbody>';
-  $('#hyNote').innerHTML = subs(esc('Método de Diseño de platos: Souders-Brown con la tabla de C_SB del curso sobre el área total, fracción de inundación ' + fmtN(100 * s.ff, 0) + ' %, diámetro comercial hacia arriba y bajante con h_liq = ½ espaciamiento. La ventana es el esquema de la sesión, escalado al caso. ρ_L con volúmenes aditivos y σ por Macleod-Sugden: estimaciones externas. ' + (s.csb === 'fair' ? 'Fair (externo) corrige por F_LV y σ y trabaja sobre el área neta: suele dar diámetros mayores que la tabla del curso.' : 'La correlación de Fair (externa) daría C_SB ≈ ' + fmtN(sizeSection(sys, r.P, tb.V, tb.L, s.xD, s.xD, tb.T, Object.assign({}, r.hyO, { csb: 'fair' })).C, 3) + ' m/s en la cabeza, contra ' + fmtN(tb.C, 2) + ' de la tabla.') + (Math.abs(r.P - 760) > 5 ? ' A ' + fmtN(r.P, 0) + ' mmHg el vapor es menos denso y el diámetro crece.' : '')));
+  $('#hyNote').innerHTML = subs(esc('Método de Diseño de platos: Souders-Brown con la tabla de C_SB del curso ' + (tb.net ? 'sobre el área neta (el área total suma el bajante, ' + fmtN(100 * s.fracBaj, 0) + ' %)' : 'sobre el área total, sin descontar el bajante') + ', fracción de inundación ' + fmtN(100 * s.ff, 0) + ' % y bajante con h_liq = ½ espaciamiento. Diámetro comercial: el inferior si deja la columna a 85 % o menos de la inundación, si no el superior' + (r.Ddown ? '; aquí ' + fmtN(r.Dcom, 1) + ' m, por debajo de los ' + fmtN(r.Dcalc, 3) + ' m calculados, como en la sesión.' : '.') + ' La ventana es el esquema de la sesión, escalado al caso. ρ_L con volúmenes aditivos y σ por Macleod-Sugden: estimaciones externas. ' + (s.csb === 'fair' ? 'Fair (externo) corrige por F_LV y σ y trabaja sobre el área neta: suele dar diámetros mayores que la tabla del curso.' : 'La correlación de Fair (externa) daría C_SB ≈ ' + fmtN(sizeSection(sys, r.P, tb.V, tb.L, s.xD, s.xD, tb.T, Object.assign({}, r.hyO, { csb: 'fair' })).C, 3) + ' m/s en la cabeza, contra ' + fmtN(tb.C, 2) + ' de la tabla.') + (Math.abs(r.P - 760) > 5 ? ' A ' + fmtN(r.P, 0) + ' mmHg el vapor es menos denso y el diámetro crece.' : '')));
   // torre en alzado y altura
   renderTower(r);
   var H = r.H, rowsH = [['Zona de platos', isFinite(r.Nreal) ? r.Nreal + ' × ' + fmtN(s.TS, 2) + ' = ' + fmtN(r.Nreal * s.TS, 2) + ' m' : '—']];
@@ -2160,7 +2164,7 @@ function renderEqs() {
   $('#eqs').innerHTML = items.map(function (it, i) { return '<div><div class="lbl">' + esc(it[0]) + '</div><div class="f" id="eq' + i + '"></div><div class="n2">' + subs(esc(it[2])) + '</div></div>'; }).join('');
   items.forEach(function (it, i) { tex('eq' + i, it[1], true); });
   $('#assump').innerHTML = subs('<b>Cómo está hecho.</b> McCabe-Thiele con flujo molar constante, como la Lectura 13 y el Taller 9: condensador total (o parcial, como etapa de equilibrio aparte), hervidor parcial contado como la última etapa, etapas desde la cabeza, cambio de recta en la primera etapa con x_n ≤ x_int y la última etapa fraccional. El reflujo mínimo se busca como la menor R con las dos rectas por debajo de la curva, así que encuentra el pinch tangente. '
-    + 'Reproduce el Taller 9 (10,94 etapas, alimentación en la 10, R_mín 1,0904 por tangencia contra 0,8075 de la fórmula del libro, N_mín 6,87, y 20/19/17/16/15 platos de 50 a 70 %; 4,08 etapas en la demostración; 14,89 en el caso del isopropanol ideal), el explorador de la Lectura 13 (12 etapas, 16 platos, 12,6 m), el ejemplo 21.2 de McCabe (12, 11 y 13 etapas) y el dimensionamiento de Diseño de platos (D = 0,91 m, 1,0 m comercial, 67 % de inundación, 8,2 s en el bajante). '
+    + 'Reproduce el Taller 9 con q = 1,1 (10,96 etapas, alimentación en la 10, R_mín 1,0904 por tangencia contra 0,7984 de la fórmula del libro, N_mín 6,87, y 20/19/17/16/15 platos de 50 a 70 %; 4,08 etapas en la demostración; 14,89 en el caso del isopropanol ideal), el explorador de la Lectura 13 (12 etapas, 16 platos, 12,6 m), el ejemplo 21.2 de McCabe (12, 11 y 13 etapas) y el dimensionamiento de Diseño de platos con la columna del proyecto (0,822 m calculados sobre el área neta, 0,8 m comercial al 84 % de la inundación, 1,07 m con Fair, 19 platos y 13 m; 8,0 s en el bajante contra 7,9 de la sesión, que toma el líquido con la composición x_D). '
     + 'Son externos al curso, y se marcan en cada pestaña: el NRTL ajustado para cambiar la presión, las propiedades físicas (calores latentes, c_p, densidades, viscosidades, tensión superficial), las temperaturas del metanol-agua, la correlación de Fair, Gilliland-Eduljee y la presión de Bogotá. Los HTML del curso trabajan a 1 atm.');
 }
 
