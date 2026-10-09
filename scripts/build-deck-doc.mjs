@@ -44,6 +44,8 @@ try {
   await page.goto(`${base}/classroom/${SLUG}/slides/${deck}/${htmlName}`, { waitUntil: 'networkidle' });
   await page.addStyleTag({ content: css });
   try { await page.evaluate(() => document.fonts.ready); } catch {}
+  // Los botones con data-doc-final se pulsan hasta el último paso: el PDF muestra el estado completo.
+  await page.evaluate(() => document.querySelectorAll('[data-doc-final]').forEach((b) => { for (let i = 0; i < 40 && !b.disabled; i++) b.click(); }));
   await page.waitForTimeout(1500);
   const out = path.join(dir, pdfName);
   await page.pdf({
