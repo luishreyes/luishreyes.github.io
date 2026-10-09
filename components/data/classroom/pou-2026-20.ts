@@ -1110,6 +1110,17 @@ export const pou202620Course: Course = {
       tags: ['intercambiadores', 'tubos y coraza', 'balance de energía', 'LMTD', 'factor F', 'ε-NTU', 'corazas en serie', 'TEMA', 'Kern', 'Donohue', 'caída de presión', 'ensuciamiento', 'costos', 'Taller 5'],
     },
     {
+      id: 'explorador-filtracion',
+      week: 9,
+      title: 'Explorador de filtración',
+      description:
+        'Diseñe el filtro con los métodos del curso y véalo funcionar. Del ensayo de laboratorio (los datos del Taller 6, editables, o las cinco corridas del ejemplo 29.1 de McCabe) sale la recta t/(V/A) contra V/A, y de ella α y Rₘ con su intervalo de confianza; con varias presiones, también la compresibilidad s. Con esos datos dimensiona un filtro prensa que sostiene el caudal continuo de la planta: área, placas, equipos, costo contra presupuesto y huella de piso, con el ciclo como fracción fija (el Taller 6) o con un tiempo muerto y el tiempo de filtración óptimo, lavado y llenado de las cámaras. Reproduce el Taller 6 (α = 3,60×10¹² m/kg; 55,0 y 42,5 m² con el modelo ideal; 65,7 y 60,6 m² con s = 0,7; 85,0 m² con el 60 % del ciclo). Muestra cuánto ahorra de verdad subir la presión en una torta compresible, el arranque a caudal constante y el tambor rotatorio al vacío (ecuación 29.31 de McCabe, con el ejemplo 29.2), donde la torta de cada vuelta puede quedar demasiado delgada para la cuchilla. Las alternativas del taller (floculación, centrífuga de discos, microfiltración) llevan su número y la matriz de selección deja agregar la continuidad de operación. La animación muestra las cámaras de la prensa llenándose de torta y el tambor formando, lavando, secando y descargando.',
+      sessionNumber: 13,
+      file: 'Explorador_Filtracion.html',
+      bannerImg: '/classroom/iqya-2031-2026-20/simuladores-banners/explorador-filtracion.jpg',
+      tags: ['filtración', 'separación sólido-líquido', 'ley de Darcy', 'resistencia específica', 'torta compresible', 'filtro prensa', 'tambor rotatorio', 'ciclo de filtración', 'lavado', 'Taller 6'],
+    },
+    {
       id: 'explorador-molienda',
       week: 3,
       title: 'Explorador de molienda y tamizado',
