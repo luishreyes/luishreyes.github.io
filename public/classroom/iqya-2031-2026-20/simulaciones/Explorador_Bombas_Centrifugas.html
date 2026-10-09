@@ -1,694 +1,1415 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-canvas="paper">
 <head>
 <meta charset="utf-8">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Explorador de bombas centrífugas · Proyecto de Operaciones Unitarias</title>
 <link rel="stylesheet" href="/classroom-fonts.css">
-<!-- KaTeX autoalojado (woff2) — sin CDN, funciona offline. Ver public/classroom/vendor/katex -->
 <link rel="stylesheet" href="/classroom/vendor/katex/katex.min.css">
 <script defer src="/classroom/vendor/katex/katex.min.js"></script>
 <style>
-  :root {
-    --color-accent:      #5980A6;
-    --color-accent-100:  #EFF4F9;
-    --color-accent-200:  #D3E0EC;
-    --color-accent-500:  #5980A6;
-    --color-accent-600:  #416180;
-    --color-accent-700:  #2C455D;
-    --color-accent-800:  #1D2D3D;
-    --color-bg:          #ffffff;
-    --color-text:        #1A1A1A;
-    --color-divider:     #1A1A1A;
-    --color-neutral-100: #f4f4f5;
-    --color-neutral-200: #e4e4e7;
-    --color-neutral-300: #d4d4d8;
-    --color-neutral-400: #a1a1aa;
-    --color-neutral-500: #71717a;
-    --color-neutral-600: #52525b;
-    --color-neutral-700: #3f3f46;
-    --color-neutral-800: #27272a;
-    --color-neutral-900: #18181b;
-    --font-heading: 'Manrope Variable', ui-sans-serif, system-ui, -apple-system, sans-serif;
-    --font-body:    'Manrope Variable', ui-sans-serif, system-ui, -apple-system, sans-serif;
-    --font-mono:    'JetBrains Mono Variable', ui-monospace, 'SFMono-Regular', Menlo, monospace;
-  }
-  * { box-sizing: border-box; }
-  html, body { margin: 0; }
-  body { background: var(--color-neutral-100); color: var(--color-text); font-family: var(--font-body); -webkit-font-smoothing: antialiased; }
-  .app { max-width: 1400px; margin: 0 auto; background: var(--color-bg); min-height: 100vh; border-left: 1px solid var(--color-neutral-300); border-right: 1px solid var(--color-neutral-300); }
-  a { color: var(--color-accent-700); }
-  a:hover { color: var(--color-accent-600); }
-  input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; height: 22px; background: transparent; cursor: pointer; margin: 2px 0 0; }
-  input[type="range"]::-webkit-slider-runnable-track { height: 2px; background: var(--color-neutral-400); }
-  input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 18px; background: var(--color-accent); margin-top: -8px; border: none; border-radius: 0; }
-  input[type="range"]::-moz-range-track { height: 2px; background: var(--color-neutral-400); }
-  input[type="range"]::-moz-range-thumb { width: 12px; height: 18px; background: var(--color-accent); border: none; border-radius: 0; }
-  input[type="range"]:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; }
-  button:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
-  .katex { font-size: 1em; }
+:root {
+  --accent: #5980A6; --accent-50: #F6F9FC; --accent-100: #EFF4F9; --accent-200: #D3E0EC; --accent-300: #A9C3D8; --accent-600: #416180; --accent-700: #2C455D;
+  --text: #1c1b1a; --bg: #fff; --divider: #1c1b1a;
+  --n50: #faf9f8; --n100: #f4f2f0; --n200: #e9e6e3; --n300: #d8d5d2; --n400: #b3afab; --n500: #8a8683; --n600: #6b6764; --n700: #4f4b48; --n800: #35322f;
+  --redline: #C8452B; --ok: #2F7D5B; --warn: #B7791F;
+  --font-body: 'Manrope Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, Menlo, Consolas, monospace;
+  --ink: #1c1b1a; --paper: #fff; --grid: rgba(89,128,166,.09); --muted-ink: #6b6764; --hl: #5980A6;
+  --top-h: 128px; --ctl-w: 330px;
+}
+:root[data-canvas="blueprint"] { --ink: #e6eef7; --paper: #12304d; --grid: rgba(255,255,255,.06); --muted-ink: #9fb6cc; --hl: #FFBF00; }
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--text); font-family: var(--font-body); -webkit-font-smoothing: antialiased; font-size: 15px; line-height: 1.5; }
+button { font-family: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.mono { font-family: var(--font-mono); }
+.kick { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--accent); font-weight: 600; }
+.lbl { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--n600); font-weight: 700; }
+.small { font-size: 12.5px; color: var(--n600); line-height: 1.5; }
 
-  .grp-label { font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-neutral-800); }
-  .grp-label.brd { border-top: 2px solid var(--color-divider); padding-top: 10px; margin-top: 14px; }
-  .row { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
-  .ctl { font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--color-neutral-700); }
-  .val { font-family: var(--font-heading); font-weight: 800; font-size: 15px; }
-  .hint { font-size: 12px; color: var(--color-neutral-700); margin-top: 2px; }
-  .chk { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--color-neutral-800); cursor: pointer; user-select: none; }
-  .chk input { accent-color: var(--color-accent); width: 15px; height: 15px; }
-  .mcell { padding: 12px 18px; }
-  .ecell { padding: 14px 18px; }
-  .brd-r { border-right: 1px solid var(--color-neutral-300); }
-  .mlbl { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-neutral-600); }
-  .mval { font-family: var(--font-heading); font-weight: 800; font-size: 22px; margin-top: 1px; }
-  .munit { font-size: 11px; color: var(--color-neutral-600); }
-  .eprose { font-size: 13px; color: var(--color-neutral-800); margin-top: 6px; line-height: 1.5; }
-  .eq { font-family: var(--font-mono); font-size: 14px; margin-top: 4px; }
-  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
-  @media (max-width: 760px) {
-    .colpanel { border-right: none !important; border-bottom: 2px solid var(--color-divider); max-width: none !important; }
-    .grid-metrics, .grid-eq { grid-template-columns: 1fr !important; }
-    .grid-metrics .mcell, .grid-eq .ecell { border-right: none !important; }
-    .grid-metrics .mcell:not(:last-child), .grid-eq .ecell:not(:last-child) { border-bottom: 1px solid var(--color-neutral-300); }
-  }
+/* ---------- cabecera fija con indicadores ---------- */
+.top { position: sticky; top: 0; z-index: 40; background: #fff; border-bottom: 2px solid var(--divider); }
+.top-row { display: flex; align-items: center; gap: 18px; padding: 12px 22px 10px; }
+.top-row h1 { font-size: 21px; font-weight: 780; letter-spacing: -.02em; margin: 2px 0 0; line-height: 1.1; }
+.top-row .sp { flex: 1; }
+.ctx { font-size: 12.5px; color: var(--n600); }
+.ctx b { color: var(--text); }
+.status { border: 2px solid var(--text); padding: 6px 12px; font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; font-weight: 700; background: #fff; cursor: pointer; display: inline-flex; gap: 8px; align-items: center; color: var(--text); }
+.status i { width: 9px; height: 9px; border-radius: 50%; background: var(--ok); }
+.status.adv i { background: var(--warn); } .status.inv i { background: var(--redline); }
+.status.inv { border-color: var(--redline); color: var(--redline); }
+.kpis { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); border-top: 1px solid var(--n300); }
+.kpi { padding: 7px 14px 8px; border-right: 1px solid var(--n300); min-width: 0; }
+.kpi:last-child { border-right: none; }
+.kpi .v { font-family: var(--font-mono); font-size: 19px; font-weight: 750; font-variant-numeric: tabular-nums; white-space: nowrap; transition: color .2s; }
+.kpi .v small { font-size: 11px; font-weight: 600; color: var(--n600); margin-left: 3px; }
+.kpi .u { font-size: 11px; color: var(--n600); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.kpi.bad .v { color: var(--redline); }
+.kpi .v.flash { animation: kf .6s ease; }
+@keyframes kf { 0% { color: var(--accent); } 100% { } }
+
+/* ---------- estructura ---------- */
+.shell { display: grid; grid-template-columns: var(--ctl-w) minmax(0, 1fr); }
+.ctl { position: sticky; top: var(--top-h); height: calc(100vh - var(--top-h)); overflow-y: auto; border-right: 2px solid var(--divider); background: var(--n50); padding: 4px 0 30px; overscroll-behavior: contain; }
+.ctl section { padding: 14px 20px 16px; border-bottom: 1px solid var(--n300); }
+.ctl h2 { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--n700); margin: 0 0 10px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+.ctl h2 .n { color: var(--accent); }
+.opts { display: grid; gap: 6px; }
+.opt { display: grid; grid-template-columns: 14px 1fr auto; gap: 10px; align-items: center; text-align: left; border: 1.5px solid var(--n300); background: #fff; padding: 8px 10px; cursor: pointer; font-size: 13.5px; font-weight: 650; color: var(--text); transition: border-color .12s, background .12s; }
+.opt:hover { border-color: var(--text); }
+.opt[aria-pressed="true"] { border-color: var(--accent); background: var(--accent); color: #fff; }
+.opt .dotc { width: 12px; height: 12px; border-radius: 50%; border: 1px solid rgba(0,0,0,.3); }
+.opt .x { font-family: var(--font-mono); font-size: 11px; font-weight: 600; opacity: .75; }
+.mills { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.mill { border: 1.5px solid var(--n300); background: #fff; padding: 8px 6px 7px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12px; font-weight: 700; color: var(--text); transition: border-color .12s, background .12s; }
+.mill svg { width: 44px; height: 30px; }
+.mill:hover { border-color: var(--text); }
+.mill[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-100); box-shadow: inset 0 -3px 0 var(--accent); color: var(--accent-700); }
+.mill:last-child:nth-child(odd) { grid-column: 1 / -1; flex-direction: row; justify-content: center; gap: 10px; }
+.seg { display: flex; border: 2px solid var(--text); background: #fff; }
+.seg button { flex: 1; border: none; border-right: 1px solid var(--text); background: #fff; padding: 7px 8px; font-size: 12.5px; font-weight: 650; cursor: pointer; color: var(--text); }
+.seg button:last-child { border-right: none; }
+.seg button[aria-pressed="true"] { background: var(--accent); color: #fff; }
+.seg.inline { display: inline-flex; }
+.sl { margin-top: 12px; }
+.sl .row { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.sl .row span:first-child { font-size: 12.5px; font-weight: 650; color: var(--n800); }
+.sl .row b { font-family: var(--font-mono); font-size: 13.5px; font-weight: 750; }
+.sl .hint { font-size: 11.5px; color: var(--n600); margin-top: 2px; }
+.sl .hint.bad { color: var(--redline); font-weight: 650; }
+input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 22px; background: transparent; cursor: pointer; margin: 2px 0 0; }
+input[type=range]::-webkit-slider-runnable-track { height: 2px; background: var(--n400); }
+input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 18px; background: var(--accent); margin-top: -8px; border: none; }
+input[type=range]::-moz-range-track { height: 2px; background: var(--n400); }
+input[type=range]::-moz-range-thumb { width: 12px; height: 18px; background: var(--accent); border: none; border-radius: 0; }
+.toggle { display: flex; align-items: center; gap: 9px; font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 10px; }
+.toggle input { appearance: none; width: 30px; height: 17px; border: 1.5px solid var(--text); position: relative; background: #fff; cursor: pointer; margin: 0; flex: none; }
+.toggle input::after { content: ''; position: absolute; top: 2px; left: 2px; width: 10px; height: 10px; background: var(--text); transition: transform .15s; }
+.toggle input:checked { background: var(--accent); border-color: var(--accent); }
+.toggle input:checked::after { transform: translateX(13px); background: #fff; }
+select.sel { width: 100%; border: 1.5px solid var(--text); padding: 7px 8px; font: inherit; font-size: 13px; background: #fff; margin-top: 6px; }
+
+main { min-width: 0; }
+.tabs { position: sticky; top: var(--top-h); z-index: 30; display: flex; background: #fff; border-bottom: 2px solid var(--divider); overflow-x: auto; scrollbar-width: none; }
+.tabs button { border: none; background: #fff; padding: 12px 18px 11px; font-size: 14px; font-weight: 700; cursor: pointer; color: var(--n600); border-right: 1px solid var(--n300); white-space: nowrap; display: flex; align-items: baseline; gap: 8px; position: relative; }
+.tabs button .k { font-family: var(--font-mono); font-size: 10.5px; color: var(--n400); }
+.tabs button:hover { color: var(--text); background: var(--accent-50); }
+.tabs button[aria-selected="true"] { color: var(--accent-700); background: var(--accent-100); }
+.tabs button[aria-selected="true"]::after { content: ''; position: absolute; left: 0; right: 0; bottom: -2px; height: 4px; background: var(--accent); }
+.tabs .sp { flex: 1; border-right: none; }
+.tabs .canv { display: flex; align-items: center; padding: 0 12px; gap: 6px; }
+.tabs .canv button { padding: 5px 9px; border: 1.5px solid var(--n300); font-size: 11.5px; }
+.tabs .canv button[aria-pressed="true"] { background: var(--text); color: #fff; border-color: var(--text); }
+.panel { display: none; padding: 22px 26px 60px; }
+.panel.on { display: block; animation: pin .3s ease both; }
+@keyframes pin { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.ph h2 { font-size: 23px; font-weight: 760; letter-spacing: -.02em; margin: 0 12px 0 0; display: inline; }
+.ph .lbl { display: inline-block; }
+.ph p { margin: 8px 0 0; color: var(--n700); font-size: 14.5px; max-width: 82ch; }
+#svgSankey text { paint-order: stroke; stroke: #fff; stroke-width: 4px; stroke-linejoin: round; }
+:root[data-canvas="blueprint"] #svgSankey text { stroke: var(--paper); }
+.card { border: 2px solid var(--divider); background: #fff; margin-top: 18px; }
+.card-h { display: flex; align-items: center; gap: 12px; padding: 8px 14px; border-bottom: 1.5px solid var(--divider); font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; font-weight: 700; color: var(--n700); flex-wrap: wrap; }
+.card-h .t { color: var(--text); }
+.card-h .sp { flex: 1; }
+.card-b { padding: 16px 18px; }
+.two { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+.three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; align-items: start; }
+.stage { position: relative; background: var(--paper); }
+.stage canvas { display: block; width: 100%; height: clamp(320px, 52vh, 520px); touch-action: pan-y; }
+.hud { position: absolute; left: 12px; top: 12px; display: flex; gap: 6px; flex-wrap: wrap; pointer-events: none; }
+.chip { font-family: var(--font-mono); font-size: 11px; font-weight: 700; padding: 4px 8px; border: 1.5px solid var(--text); background: rgba(255,255,255,.94); color: var(--text); letter-spacing: .02em; }
+.chip.acc { background: var(--accent); border-color: var(--accent); color: #fff; }
+.chip.red { background: var(--redline); border-color: var(--redline); color: #fff; }
+.play { position: absolute; right: 12px; top: 12px; display: flex; gap: 6px; }
+.play button { border: 1.5px solid var(--text); background: #fff; height: 30px; min-width: 30px; padding: 0 8px; cursor: pointer; display: inline-grid; place-items: center; font-family: var(--font-mono); font-size: 11px; font-weight: 700; color: var(--text); }
+.play button[aria-pressed="true"] { background: var(--text); color: #fff; }
+.caption { padding: 12px 16px; border-top: 1.5px solid var(--divider); font-size: 13.5px; color: var(--n800); background: var(--n50); line-height: 1.55; }
+.caption b { color: var(--accent-700); }
+.spec { display: grid; grid-template-columns: 1fr auto; font-size: 13px; }
+.spec > div { padding: 6px 0; border-bottom: 1px solid var(--n200); }
+.spec .v { font-weight: 700; text-align: right; font-family: var(--font-mono); font-size: 12.5px; }
+.warn { display: grid; grid-template-columns: 22px 1fr; gap: 8px; padding: 9px 0; border-bottom: 1px solid var(--n200); font-size: 13.5px; line-height: 1.5; animation: pin .25s ease both; }
+.warn i { width: 18px; height: 18px; display: grid; place-items: center; font-style: normal; font-weight: 800; font-size: 12px; color: #fff; background: var(--warn); margin-top: 1px; }
+.warn.c i { background: var(--redline); }
+.warn.ok i { background: var(--ok); }
+svg.ch { width: 100%; height: auto; display: block; font-family: var(--font-body); }
+svg.ch text { fill: var(--ink); }
+.chart-bg { fill: var(--paper); }
+table.t { width: 100%; border-collapse: collapse; font-size: 13px; }
+table.t th { text-align: right; padding: 6px 8px; border-bottom: 2px solid var(--text); font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--n700); font-weight: 700; }
+table.t th:first-child, table.t td:first-child { text-align: left; }
+table.t td { text-align: right; padding: 6px 8px; border-bottom: 1px solid var(--n200); font-variant-numeric: tabular-nums; }
+table.t td:first-child { font-weight: 700; }
+table.t tr.tot td { border-top: 2px solid var(--text); font-weight: 800; }
+table.t tr:hover td { background: var(--accent-50); }
+.flowstep td:first-child { font-weight: 600 !important; }
+.flowstep .op { font-family: var(--font-mono); color: var(--accent-700); font-weight: 700; }
+.mcards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 2px solid var(--divider); margin-top: 18px; background: #fff; }
+.mcards > div { padding: 12px 16px; border-right: 1px solid var(--n300); border-bottom: 1px solid var(--n300); }
+.mcards > div:nth-child(3n) { border-right: none; }
+.mcards .v { font-family: var(--font-mono); font-size: 22px; font-weight: 780; margin-top: 2px; }
+.mcards .u { font-size: 11.5px; color: var(--n600); }
+.mcards .bad { color: var(--redline); }
+.eqs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0; border: 2px solid var(--divider); margin-top: 18px; background: #fff; }
+.eqs > div { padding: 16px 18px; border-right: 1px solid var(--n300); border-bottom: 1px solid var(--n300); }
+.eqs > div:nth-child(2n) { border-right: none; }
+.eqs .f { font-size: 17px; margin: 8px 0 6px; min-height: 28px; overflow-x: auto; }
+.eqs .n2 { font-size: 12.5px; color: var(--n600); }
+.callout { border-left: 4px solid var(--accent); background: var(--accent-100); padding: 12px 16px; margin-top: 18px; font-size: 13.5px; line-height: 1.6; }
+.callout.ink { border-left-color: var(--text); background: var(--n100); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12px; color: var(--n700); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { display: inline-block; width: 24px; border-top: 2.5px solid var(--accent); }
+.legend i.k { border-top: 2px dashed var(--ink); } .legend i.r { border-top: 2px dotted var(--ink); }
+.legend i.box { width: 12px; height: 10px; border: 1px solid var(--accent-700); background: var(--accent-200); }
+.readout { font-family: var(--font-mono); font-size: 12px; color: var(--n700); min-height: 18px; }
+.mobile-ctl { display: none; }
+@media (max-width: 1100px) { .two { grid-template-columns: 1fr; } .kpi .v { font-size: 16px; } }
+@media (max-width: 900px) {
+  .top-row .kick, .top-row .ctx, .top-row .sp { display: none; }
+  .top-row h1 { font-size: 15px; flex: 1; }
+  .status { padding: 4px 8px; font-size: 9.5px; }
+  .kpi { padding: 4px 10px 5px; } .kpi .v { font-size: 14.5px; } .kpi .u { display: none; } .kpi .lbl { font-size: 9px; }
+  .hud .chip:not(.acc):not(.red) { display: none; }
+  .hud { top: 50px; }
+  .kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .kpi:nth-child(3) { border-right: none; } .kpi:nth-child(-n+3) { border-bottom: 1px solid var(--n300); }
+  .shell { grid-template-columns: 1fr; }
+  .ctl { position: fixed; left: 0; right: 0; bottom: 0; top: auto; height: 72vh; z-index: 60; transform: translateY(102%); transition: transform .25s ease; border-right: none; border-top: 2px solid var(--divider); box-shadow: 0 -12px 40px -10px rgba(0,0,0,.3); }
+  .ctl.open { transform: none; }
+  .mobile-ctl { display: inline-flex; position: fixed; right: 14px; bottom: 14px; z-index: 61; background: var(--accent); color: #fff; border: none; padding: 12px 16px; font-weight: 750; font-size: 14px; box-shadow: 0 6px 20px -6px rgba(0,0,0,.4); gap: 8px; align-items: center; }
+  .panel { padding: 16px 14px 90px; }
+  .three, .eqs, .mcards { grid-template-columns: 1fr; }
+  .eqs > div, .mcards > div { border-right: none !important; }
+  .top-row { flex-wrap: wrap; padding: 10px 14px; }
+  .tabs .canv { display: none; }
+}
+
+/* ---------- propios del explorador de Bernoulli ---------- */
+.mills { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.mill svg { width: 40px; height: 26px; }
+.mill:last-child:nth-child(odd) { grid-column: auto; flex-direction: column; gap: 4px; }
+.mode-note { font-size: 12px; color: var(--n700); margin-top: 8px; line-height: 1.45; }
+.fitrow { display: grid; grid-template-columns: 1fr auto; gap: 6px 8px; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--n200); }
+.fitrow .nm { font-size: 12.5px; font-weight: 650; line-height: 1.3; }
+.fitrow .kk { font-family: var(--font-mono); font-size: 10.5px; color: var(--n600); }
+.fitrow.on .nm { color: var(--accent-700); }
+.stp { display: inline-flex; align-items: center; border: 1.5px solid var(--text); }
+.stp button { width: 26px; height: 24px; border: none; background: #fff; font-size: 15px; font-weight: 800; cursor: pointer; color: var(--text); line-height: 1; padding: 0; }
+.stp button:last-child { background: var(--text); color: #fff; }
+.stp b { min-width: 22px; text-align: center; font-family: var(--font-mono); font-size: 13px; }
+.fitrow .opn { grid-column: 1 / -1; display: flex; gap: 4px; align-items: center; }
+.fitrow .opn span { font-family: var(--font-mono); font-size: 10px; letter-spacing: .08em; text-transform: uppercase; color: var(--n600); margin-right: 4px; }
+.fitrow .opn button { flex: 1; border: 1.5px solid var(--n300); background: #fff; font-family: var(--font-mono); font-size: 11px; font-weight: 700; padding: 3px 0; cursor: pointer; color: var(--text); }
+.fitrow .opn button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+.fitrow .opn input { flex: 1; }
+.fitrow .opn b { font-family: var(--font-mono); font-size: 12px; min-width: 44px; text-align: right; }
+.sub { font-family: var(--font-mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent-700); font-weight: 700; margin: 16px 0 2px; }
+.btnw { width: 100%; margin-top: 12px; border: 2px solid var(--text); background: #fff; padding: 8px 10px; font-weight: 750; font-size: 12.5px; cursor: pointer; color: var(--text); text-align: left; }
+.btnw:hover { background: var(--accent-50); }
+.btnw.acc { background: var(--accent); border-color: var(--accent); color: #fff; }
+.presets { display: grid; gap: 6px; }
+.presets .opt { grid-template-columns: 1fr auto; }
+.terms { display: flex; flex-wrap: wrap; align-items: stretch; gap: 4px; }
+.terms .op { font-family: var(--font-mono); font-weight: 800; font-size: 18px; align-self: center; min-width: 14px; text-align: center; }
+.terms .tb { border: 1.5px solid var(--n300); padding: 6px 9px; min-width: 70px; background: #fff; }
+.terms .tb .l { font-size: 11px; color: var(--n600); font-weight: 700; }
+.terms .tb .v { font-family: var(--font-mono); font-weight: 780; font-size: 16px; }
+.terms .tb .u { font-size: 10.5px; color: var(--n600); }
+.terms .tb.acc { border-color: var(--accent); background: var(--accent-100); }
+.terms .tb.loss { border-color: var(--redline); background: #fbf0ed; }
+.terms .side { font-family: var(--font-mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--n600); width: 100%; margin-top: 6px; }
+.stack { display: flex; height: 34px; border: 1.5px solid var(--divider); margin-top: 8px; overflow: hidden; }
+.stack > div { height: 100%; position: relative; transition: flex-basis .3s ease; min-width: 0; }
+.stack > div span { position: absolute; left: 5px; top: 50%; transform: translateY(-50%); font-family: var(--font-mono); font-size: 10.5px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; max-width: calc(100% - 6px); }
+.stack-leg { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 16px; margin-top: 10px; font-size: 12px; }
+.stack-leg div { display: grid; grid-template-columns: 12px 1fr auto; gap: 7px; align-items: center; }
+.stack-leg i { width: 12px; height: 12px; display: block; }
+.stack-leg b { font-family: var(--font-mono); font-size: 12px; }
+#svgProfile text, #svgCurves text, #svgMoody text, #svgSweep text, #svgBars text { paint-order: stroke; stroke: var(--paper); stroke-width: 3px; stroke-linejoin: round; }
+.hov { cursor: crosshair; }
+.stage .hud { right: 300px; }
+.kpi .lbl { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 900px) { .stage .hud { right: 12px; } }
+.pill { display: inline-block; font-family: var(--font-mono); font-size: 10.5px; font-weight: 700; padding: 2px 7px; border: 1.5px solid currentColor; margin-left: 6px; }
+.pill.ok { color: var(--ok); } .pill.w { color: var(--warn); } .pill.c { color: var(--redline); }
+.cmp { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0; border: 1.5px solid var(--divider); }
+.cmp > div { padding: 12px 14px; border-right: 1px solid var(--n300); }
+.cmp > div:last-child { border-right: none; }
+.cmp h4 { margin: 0 0 6px; font-size: 13px; }
+.cmp .big { font-family: var(--font-mono); font-size: 24px; font-weight: 780; }
+.save { margin-top: 12px; font-size: 13.5px; }
+.save b { color: var(--ok); font-family: var(--font-mono); }
+@media (max-width: 900px) { .cmp, .stack-leg { grid-template-columns: 1fr; } .cmp > div { border-right: none; border-bottom: 1px solid var(--n300); } }
+
+/* ---------- propios del explorador de bombas ---------- */
+.mills { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.mill .sz { font-family: var(--font-mono); font-size: 10.5px; font-weight: 600; color: var(--n600); }
+.mill[aria-pressed="true"] .sz { color: var(--accent-700); }
+.three2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 0.9fr); gap: 18px; align-items: start; }
+.chk { display: grid; grid-template-columns: 22px 1fr auto; gap: 8px; padding: 9px 0; border-bottom: 1px solid var(--n200); font-size: 13.5px; align-items: start; }
+.chk i { width: 18px; height: 18px; display: grid; place-items: center; font-style: normal; font-weight: 800; font-size: 12px; color: #fff; margin-top: 1px; }
+.chk i.ok { background: var(--ok); } .chk i.w { background: var(--warn); } .chk i.c { background: var(--redline); }
+.chk b { font-family: var(--font-mono); font-size: 12px; white-space: nowrap; }
+.nsbar { position: relative; height: 26px; margin: 26px 0 8px; display: flex; border: 1.5px solid var(--divider); }
+.nsbar > div { flex: 1; font-size: 10.5px; display: grid; place-items: center; color: var(--n700); border-right: 1px solid var(--n300); text-align: center; line-height: 1.1; }
+.nsbar > div:last-child { border-right: none; }
+.nsbar .mk { position: absolute; top: -20px; transform: translateX(-50%); font-family: var(--font-mono); font-size: 11px; font-weight: 800; color: var(--accent-700); white-space: nowrap; }
+.nsbar .mk::after { content: ''; position: absolute; left: 50%; top: 15px; width: 2px; height: 31px; background: var(--accent); }
+.two.eq2 { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+@media (max-width: 1100px) { .three2, .two.eq2 { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 </style>
 </head>
 <body>
-<div class="app">
+<header class="top" id="top">
+  <div class="top-row">
+    <div>
+      <div class="kick">POU · IQYA-2031 · Selección de bombas</div>
+      <h1>Explorador de bombas centrífugas</h1>
+    </div>
+    <div class="ctx" id="ctx"></div>
+    <span class="sp"></span>
+    <button type="button" class="status" id="status" title="Ver el diagnóstico"><i></i><span id="statusTxt">Selección sana</span></button>
+  </div>
+  <div class="kpis">
+    <div class="kpi"><div class="lbl">Caudal</div><div class="v" id="kQ">—</div><div class="u" id="kQu">—</div></div>
+    <div class="kpi"><div class="lbl">Cabeza</div><div class="v" id="kH">—</div><div class="u" id="kHu">—</div></div>
+    <div class="kpi"><div class="lbl">Eficiencia</div><div class="v" id="kE">—</div><div class="u" id="kEu">—</div></div>
+    <div class="kpi" id="kXc"><div class="lbl">Posición en la curva</div><div class="v" id="kX">—</div><div class="u">del caudal del BEP · ventana 70 a 110 %</div></div>
+    <div class="kpi"><div class="lbl">Potencia al freno</div><div class="v" id="kP">—</div><div class="u" id="kPu">—</div></div>
+    <div class="kpi" id="kNc"><div class="lbl">Margen de NPSH</div><div class="v" id="kN">—</div><div class="u" id="kNu">—</div></div>
+  </div>
+</header>
 
-  <header style="display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; padding: 18px 28px 16px; border-bottom: 2px solid var(--color-divider);">
-    <div style="font-family: var(--font-heading); font-weight: 800; font-size: 24px; letter-spacing: -0.015em;">Bombas centrífugas: Curva característica</div>
-    <div style="font-size: 12px; color: var(--color-neutral-700); text-transform: uppercase; letter-spacing: 0.08em;">Proyecto de Operaciones Unitarias · Selección de bombas · Basado en B&amp;G TEH-375A · <span id="rpmHdr"></span> RPM</div>
-  </header>
-
-  <div id="warnings" style="display: none; border-bottom: 2px solid var(--color-accent); background: var(--color-accent-100); padding: 10px 28px; flex-direction: column; gap: 4px;"></div>
-
-  <div style="display: flex; flex-wrap: wrap;">
-
-    <aside class="colpanel" style="flex: 1 1 280px; max-width: 380px; padding: 18px 24px 28px; border-right: 2px solid var(--color-divider);">
-
-      <div class="grp-label" style="border-top: 2px solid var(--color-divider); padding-top: 10px; margin-top: 6px;">Unidades</div>
-      <div id="unitOpts" style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 12px 0 4px;"></div>
-
-      <div class="grp-label brd">Bomba</div>
-      <div class="ctl" style="padding-top: 12px;">Diámetro del impulsor</div>
-      <div id="impOpts" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; padding: 8px 0 4px;"></div>
-
-      <div style="padding: 10px 0 6px;">
-        <div class="row"><label class="ctl">Velocidad de giro N</label><span class="val" id="fRpm"></span></div>
-        <input type="range" min="1150" max="3450" step="50" id="rpm" oninput="onSlider('rpm', this.value)">
-        <div class="hint">Las leyes de afinidad reescalan la curva · N/N₀ = <span id="fSpeedRatioA"></span> respecto a 1750 RPM</div>
-      </div>
-
-      <div class="grp-label brd">Curva del sistema</div>
-
-      <div style="padding: 12px 0 6px;">
-        <div class="row"><label class="ctl">Caudal de diseño Q₀</label><span class="val" id="fQd"></span></div>
-        <input type="range" min="50" max="350" step="10" id="Qd" oninput="onSlider('Qd', this.value)">
-      </div>
-      <div style="padding: 8px 0 6px;">
-        <div class="row"><label class="ctl">Fricción del circuito a Q₀</label><span class="val" id="fHf"></span></div>
-        <input type="range" min="5" max="60" step="1" id="hf" oninput="onSlider('hf', this.value)">
-        <div class="hint">La pérdida varía con el cuadrado del caudal: h ∝ Q²</div>
-      </div>
-      <div style="padding: 8px 0 6px;">
-        <div class="row"><label class="ctl">Nivel de descarga z<sub>d</sub></label><span class="val" id="fZd"></span></div>
-        <input type="range" min="0" max="50" step="1" id="zd" oninput="onSlider('zd', this.value)">
-        <div class="hint">Nivel del tanque de descarga sobre el eje de la bomba (z = 0) · cabeza estática del sistema H<sub>est</sub> = z<sub>d</sub> + h<sub>s</sub> = <span id="fHstatTotal"></span></div>
-      </div>
-
-      <div class="grp-label brd">Succión · NPSH</div>
-
-      <div style="padding: 12px 0 6px;">
-        <div class="row"><label class="ctl">Altura de succión h<sub>s</sub></label><span class="val" id="fHs"></span></div>
-        <input type="range" min="-10" max="20" step="0.5" id="hs" oninput="onSlider('hs', this.value)">
-        <div class="hint" id="hsDesc"></div>
-      </div>
-      <div style="padding: 8px 0 6px;">
-        <div class="row"><label class="ctl">Altitud del sitio</label><span class="val" id="fAlt"></span></div>
-        <input type="range" min="0" max="4000" step="100" id="alt" oninput="onSlider('alt', this.value)">
-        <div class="hint">P. atmosférica = <span id="fHatm"></span> (≈ <span id="fPatmKpa"></span>) · Bogotá ≈ 2600 msnm</div>
-      </div>
-      <div style="padding: 8px 0 6px;">
-        <div class="row"><label class="ctl">Fricción en la succión a Q₀</label><span class="val" id="fHfs"></span></div>
-        <input type="range" min="0" max="10" step="0.5" id="hfs" oninput="onSlider('hfs', this.value)">
-        <div class="hint">Agua a 20 °C · presión de vapor = <span id="fHv"></span> (≈ <span id="fPvapPa"></span>)</div>
-      </div>
-
-      <div class="grp-label brd">Fluido y criterios</div>
-      <div style="padding: 12px 0 6px;">
-        <div class="row"><label class="ctl">Gravedad específica s.g.</label><span class="val" id="fSg"></span></div>
-        <input type="range" min="0.5" max="2" step="0.05" id="sg" oninput="onSlider('sg', this.value)">
-        <div class="hint">Escala la potencia al freno (BHP ∝ s.g.)</div>
-      </div>
-      <div style="padding: 8px 0 6px;">
-        <div class="row"><label class="ctl">Margen NPSH recomendado</label><span class="val" id="fMargin"></span></div>
-        <input type="range" min="0" max="10" step="0.5" id="margin" oninput="onSlider('margin', this.value)">
-      </div>
-
-      <div class="grp-label brd">Gráfico</div>
-      <div style="padding: 12px 0 2px;">
-        <label class="chk"><input type="checkbox" id="showIsl" checked onchange="state.showIsl = this.checked; render();"> Islas de eficiencia</label>
-      </div>
-
-    </aside>
-
-    <section class="colpanel" style="flex: 1 1 280px; max-width: 430px; padding: 18px 20px 24px; border-right: 2px solid var(--color-divider);">
-      <div class="grp-label" style="border-top: 2px solid var(--color-divider); padding-top: 10px; margin-top: 6px; margin-bottom: 8px;">Instalación</div>
-      <svg id="svgDiag" viewBox="0 0 400 330" style="width: 100%; display: block;"></svg>
-      <div id="diagCaption" style="border-top: 1px solid var(--color-neutral-300); margin-top: 8px; padding-top: 8px; font-size: 13px; color: var(--color-neutral-800);"></div>
-
-      <div class="grp-label" style="border-top: 2px solid var(--color-divider); padding-top: 10px; margin-top: 18px; margin-bottom: 4px;">NPSH: disponible vs requerido</div>
-      <div style="display: flex; gap: 14px; flex-wrap: wrap; align-items: center; font-size: 12px; color: var(--color-neutral-800); padding: 4px 0 6px;">
-        <span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 18px; height: 2.5px; background: var(--color-text);"></span>NPSH disponible</span>
-        <span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 18px; height: 2.5px; background: var(--color-accent);"></span>NPSH requerido</span>
-      </div>
-      <svg id="svgNpsh" viewBox="0 0 400 260" style="width: 100%; display: block;"></svg>
-      <div id="npshCaption" style="border-top: 1px solid var(--color-neutral-300); margin-top: 8px; padding-top: 8px; font-size: 13px; color: var(--color-neutral-800);"></div>
+<div class="shell">
+  <aside class="ctl" id="ctl" aria-label="Controles">
+    <section><h2><span class="n">00</span> Casos de partida</h2><div class="presets" id="presetBtns"></div></section>
+    <section><h2><span class="n">01</span> Bomba</h2>
+      <div class="mills" id="casBtns"></div>
+      <p class="small" id="casNote" style="margin:8px 0 0"></p>
+      <div class="sl"><div class="row"><span>Velocidad nominal del motor</span></div><div class="seg" id="nSeg" style="margin-top:6px"><button type="button" data-v="1750">1750 rpm · 4 polos</button><button type="button" data-v="3500">3500 rpm · 2 polos</button></div><div class="hint">Red de 60 Hz, como en Colombia</div></div>
+      <div class="sl"><div class="row"><span>Diámetro del impulsor</span><b id="vD"></b></div><input type="range" id="D" min="100" max="260" step="1"><div class="hint" id="Dhint"></div></div>
+      <div class="sl"><div class="row"><span>Velocidad con variador</span><b id="vvfd"></b></div><input type="range" id="vfd" min="40" max="110" step="1"><div class="hint" id="vfdHint"></div></div>
+      <div class="sl"><div class="row"><span>Arreglo</span></div><div class="seg" id="arrSeg" style="margin-top:6px"><button type="button" data-v="una">Una bomba</button><button type="button" data-v="paralelo">Dos en paralelo</button><button type="button" data-v="serie">Dos en serie</button></div></div>
     </section>
+    <section><h2><span class="n">02</span> Fluido</h2><div class="opts" id="fluBtns"></div>
+      <div class="sl" id="TRow"><div class="row"><span>Temperatura de bombeo</span><b id="vT"></b></div><input type="range" id="T" min="0" max="100" step="1"></div>
+      <div class="sl" id="pMuRow"><div class="row"><span>Viscosidad del extracto μ</span><b id="vpMu"></b></div><input type="range" id="pMu" min="1" max="60" step="0.5"><div class="hint">Dato de referencia: mídalo con el viscosímetro del laboratorio</div></div>
+      <div id="customBox">
+        <div class="sl"><div class="row"><span>Densidad ρ</span><b id="vcRho"></b></div><input type="range" id="cRho" min="500" max="1800" step="5"></div>
+        <div class="sl"><div class="row"><span>Viscosidad μ (escala logarítmica)</span><b id="vcMuExp"></b></div><input type="range" id="cMuExp" min="-4" max="0" step="0.05"></div>
+        <div class="sl"><div class="row"><span>Presión de vapor Pv</span><b id="vcPv"></b></div><input type="range" id="cPv" min="0" max="90" step="0.5"></div>
+      </div>
+      <div class="spec" id="specFlu" style="margin-top:10px"></div>
+    </section>
+    <section><h2><span class="n">03</span> Sistema</h2>
+      <div class="sl"><div class="row"><span>Caudal requerido Q<sub>d</sub></span><b id="vlQd"></b></div><input type="range" id="lQd" min="0" max="2.4" step="0.005"></div>
+      <div class="sl"><div class="row"><span>Nivel de succión z<sub>s</sub></span><b id="vzs"></b></div><input type="range" id="zs" min="-7" max="10" step="0.1"><div class="hint" id="zsHint"></div></div>
+      <div class="sl"><div class="row"><span>Nivel de descarga z<sub>d</sub></span><b id="vzd"></b></div><input type="range" id="zd" min="-5" max="120" step="0.5"><div class="hint">Respecto al eje de la bomba (z = 0)</div></div>
+      <div class="sl"><div class="row"><span>Presión del tanque de succión P<sub>1</sub></span><b id="vP1"></b></div><input type="range" id="P1" min="-60" max="300" step="5"><div class="hint">Manométrica · 0 = abierto</div></div>
+      <div class="sl"><div class="row"><span>Presión del destino P<sub>2</sub></span><b id="vP2"></b></div><input type="range" id="P2" min="-60" max="800" step="5"></div>
+      <div class="sl"><div class="row"><span>Pérdidas en la succión a Q<sub>d</sub></span><b id="vhfs"></b></div><input type="range" id="hfs" min="0" max="6" step="0.05"></div>
+      <div class="sl"><div class="row"><span>Pérdidas en la descarga a Q<sub>d</sub></span><b id="vhfd"></b></div><input type="range" id="hfd" min="0" max="80" step="0.5"><div class="hint">Calcúlelas con el Explorador de Bernoulli</div></div>
+      <div class="sl"><div class="row"><span>Válvula de regulación a Q<sub>d</sub></span><b id="vhv"></b></div><input type="range" id="hv" min="0" max="60" step="0.5"><div class="hint">Cabeza que se quema estrangulando</div></div>
+    </section>
+    <section><h2><span class="n">04</span> Sitio, criterios y vista</h2>
+      <div class="sl"><div class="row"><span>Altitud del sitio</span><b id="valt"></b></div><input type="range" id="alt" min="0" max="3500" step="50"><div class="hint" id="altHint"></div></div>
+      <div class="sl"><div class="row"><span>Margen de NPSH exigido</span><b id="vmarg"></b></div><input type="range" id="marg" min="0.3" max="3" step="0.1"></div>
+      <div class="sl"><div class="row"><span>Factor de servicio del motor</span><b id="vFS"></b></div><input type="range" id="FS" min="1" max="1.3" step="0.05"></div>
+      <div class="sl"><div class="row"><span>Unidades</span></div><div class="seg" id="unitSeg" style="margin-top:6px"><button type="button" data-v="si">m³/h · m · kW</button><button type="button" data-v="us">GPM · pie · HP</button></div></div>
+      <label class="toggle"><input type="checkbox" id="isl"> Islas de eficiencia en la carta</label>
+      <label class="toggle"><input type="checkbox" id="grid"> Cuadrícula en las gráficas</label>
+      <button type="button" class="seg inline" id="resetAll" style="margin-top:14px;padding:7px 12px;font-weight:700;font-size:12.5px;cursor:pointer">Restablecer el caso base</button>
+    </section>
+  </aside>
 
-    <section style="flex: 1 1 480px; min-width: 0; padding: 18px 24px 24px;">
-      <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; border-top: 2px solid var(--color-divider); padding-top: 10px; margin-top: 6px; margin-bottom: 10px;">
-        <div style="display: flex; gap: 16px; flex-wrap: wrap; align-items: center; font-size: 12px; color: var(--color-neutral-800);">
-          <span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 18px; height: 3px; background: var(--color-text);"></span>Impulsor activo</span>
-          <span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 18px; height: 1.5px; background: var(--color-neutral-500);"></span>Otros impulsores</span>
-          <span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 18px; height: 2px; background: var(--color-accent);"></span>Curva del sistema</span>
-          <span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 18px; border-top: 1.5px dashed var(--color-neutral-600);"></span>Islas de eficiencia</span>
-          <span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 10px; height: 10px; background: var(--color-accent);"></span>Punto de operación</span>
-          <span style="display: inline-flex; align-items: center; gap: 6px;"><span style="width: 10px; height: 10px; border: 2px solid var(--color-text);"></span>PME</span>
+  <main id="main">
+    <nav class="tabs" role="tablist" aria-label="Vistas">
+      <button type="button" role="tab" data-tab="in" aria-selected="true"><span class="k">1</span>Por dentro</button>
+      <button type="button" role="tab" data-tab="ca" aria-selected="false"><span class="k">2</span>Carta</button>
+      <button type="button" role="tab" data-tab="np" aria-selected="false"><span class="k">3</span>NPSH</button>
+      <button type="button" role="tab" data-tab="re" aria-selected="false"><span class="k">4</span>Regulación</button>
+      <button type="button" role="tab" data-tab="sp" aria-selected="false"><span class="k">5</span>Serie y paralelo</button>
+      <button type="button" role="tab" data-tab="se" aria-selected="false"><span class="k">6</span>Selección</button>
+      <span class="sp"></span>
+      <div class="canv"><button type="button" data-canvas="paper" aria-pressed="true">Papel</button><button type="button" data-canvas="blueprint" aria-pressed="false">Blueprint</button></div>
+    </nav>
+
+    <!-- 1 · por dentro -->
+    <section class="panel on" data-panel="in">
+      <div class="ph"><h2>La bomba por dentro</h2><span class="lbl" id="inLbl"></span><p id="inLead"></p></div>
+      <div class="card">
+        <div class="stage">
+          <canvas id="pumpCv" aria-label="Animación del impulsor y la voluta" style="height:clamp(380px,62vh,600px)"></canvas>
+          <div class="hud" id="hud"></div>
+          <div class="play"><button type="button" id="btnPlay" aria-label="Pausar"></button><button type="button" data-sp="0.25">¼×</button><button type="button" data-sp="1" aria-pressed="true">1×</button><button type="button" data-sp="3">3×</button><button type="button" id="btnReset" aria-label="Reiniciar"></button></div>
         </div>
-        <div id="statusText" style="font-family: var(--font-heading); font-weight: 800; font-size: 14px;"></div>
+        <div class="caption" id="inCap"></div>
       </div>
-
-      <svg id="svgMain" viewBox="0 0 720 560" style="width: 100%; max-width: 820px; display: block;"></svg>
-
-      <div class="grp-label" style="border-top: 2px solid var(--color-divider); padding-top: 10px; margin-top: 16px; margin-bottom: 6px;">Potencia al freno: impulsor activo</div>
-      <svg id="svgBhp" viewBox="0 0 720 250" style="width: 100%; max-width: 820px; display: block;"></svg>
+      <div class="two eq2">
+        <div class="card"><div class="card-h"><span class="t">Triángulos de velocidad</span><span class="sp"></span><span>Euler</span></div><div class="card-b"><svg class="ch" id="svgTri" viewBox="0 0 420 230"></svg><div class="spec" id="specTri" style="margin-top:8px"></div></div></div>
+        <div class="card"><div class="card-h"><span class="t">Presión a lo largo de la bomba</span><span class="sp"></span><span>absoluta, m de líquido</span></div><div class="card-b"><svg class="ch" id="svgPress" viewBox="0 0 420 330"></svg><p class="small" id="pressNote" style="margin:8px 0 0"></p></div></div>
+      </div>
+      <div class="card" id="diagCard"><div class="card-h"><span class="t">Diagnóstico</span><span class="sp"></span><span id="diagCount"></span></div><div class="card-b" id="warnings" style="padding-top:4px"></div></div>
     </section>
-  </div>
 
-  <div class="grid-metrics" style="border-top: 2px solid var(--color-divider); display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
-    <div class="mcell brd-r"><div class="mlbl">Q · caudal de operación</div><div class="mval" id="vQ" style="color: var(--color-accent-700);"></div><div class="munit" id="capQ"></div></div>
-    <div class="mcell brd-r"><div class="mlbl">H · cabeza total</div><div class="mval" id="vH"></div><div class="munit" id="capH"></div></div>
-    <div class="mcell brd-r"><div class="mlbl">η · eficiencia</div><div class="mval" id="vEta"></div><div class="munit" id="capEta"></div></div>
-    <div class="mcell brd-r"><div class="mlbl">WHP · potencia hidráulica</div><div class="mval" id="vWhp"></div><div class="munit" id="capWhp"></div></div>
-    <div class="mcell brd-r"><div class="mlbl">BHP · potencia al freno</div><div class="mval" id="vBhp"></div><div class="munit" id="capBhp"></div></div>
-    <div class="mcell"><div class="mlbl">Motor recomendado</div><div class="mval" id="vMotor" style="color: var(--color-accent-700);"></div><div class="munit" id="capMotor"></div></div>
-  </div>
+    <!-- 2 · carta -->
+    <section class="panel" data-panel="ca">
+      <div class="ph"><h2>Carta de la bomba</h2><span class="lbl" id="caLbl"></span><p>Como la carta de un catálogo: una curva H-Q por cada diámetro de impulsor, las islas de eficiencia, el NPSH requerido y la potencia al freno sobre el mismo eje de caudal. Encima, la curva del sistema y el punto de operación. La banda verde es la ventana de 70 a 110 % del BEP; la parábola punteada es la de afinidad: por ella se mueve el punto si cambia la velocidad.</p></div>
+      <div class="card"><div class="card-h"><span class="t">Cabeza, eficiencia, NPSH y potencia</span><span class="sp"></span><div class="legend" id="caLegend"></div></div>
+        <div class="card-b"><svg class="ch hov" id="svgChart" viewBox="0 0 900 640" role="img" aria-label="Carta de la bomba"></svg><div class="readout" id="caRead">Pase el cursor para leer la carta a cualquier caudal.</div></div></div>
+      <div class="mcards" id="caCards"></div>
+    </section>
 
-  <div class="grid-metrics" style="border-top: 1px solid var(--color-neutral-300); display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));">
-    <div class="mcell brd-r"><div class="mlbl">NPSH disponible</div><div class="mval" id="vNa"></div><div class="munit" id="capNa"></div></div>
-    <div class="mcell brd-r"><div class="mlbl">NPSH requerido</div><div class="mval" id="vNr"></div><div class="munit" id="capNr"></div></div>
-    <div class="mcell brd-r"><div class="mlbl">Margen NPSH</div><div class="mval" id="vMargin"></div><div class="munit" id="capMargin"></div></div>
-    <div class="mcell brd-r"><div class="mlbl">Q máx sin cavitar</div><div class="mval" id="vQsafe"></div><div class="munit" id="capQsafe"></div></div>
-    <div class="mcell brd-r"><div class="mlbl">PME del impulsor activo</div><div class="mval" id="vBep"></div><div class="munit" id="capBep"></div></div>
-    <div class="mcell"><div class="mlbl">Impulsor recomendado</div><div class="mval" id="vRec" style="color: var(--color-accent-700);"></div><div class="munit" id="capRec"></div></div>
-  </div>
+    <!-- 3 · NPSH -->
+    <section class="panel" data-panel="np">
+      <div class="ph"><h2>NPSH y cavitación</h2><span class="lbl">disponible contra requerido</span><p>El NPSH disponible es una propiedad de la instalación: la energía absoluta en la succión por encima de la presión de vapor. El requerido es de la bomba: el fabricante lo mide como el NPSH al que la cabeza cae 3 % (NPSH3). Las burbujas empiezan antes, hacia 1,2 a 1,5 veces NPSH3.</p></div>
+      <div class="two">
+        <div class="card"><div class="card-h"><span class="t">NPSH contra caudal</span><span class="sp"></span><div class="legend"><span><i style="border-top:2.5px solid var(--ink)"></i>disponible</span><span><i></i>NPSH3</span><span><i style="border-top:2px dashed var(--hl)"></i>inicio de burbujas</span></div></div><div class="card-b"><svg class="ch hov" id="svgNpsh" viewBox="0 0 520 330"></svg><div class="readout" id="npRead"></div></div></div>
+        <div class="card"><div class="card-h"><span class="t">De dónde sale el NPSH disponible</span></div><div class="card-b"><svg class="ch" id="svgNpshBar" viewBox="0 0 520 330"></svg></div></div>
+      </div>
+      <div class="card" id="npTcard"><div class="card-h"><span class="t">Temperatura máxima de bombeo</span></div><div class="card-b"><svg class="ch" id="svgNpshT" viewBox="0 0 900 300"></svg><p class="small" id="npTnote" style="margin:8px 0 0"></p></div></div>
+    </section>
 
-  <div class="grid-eq" style="border-top: 2px solid var(--color-divider); display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
-    <div class="ecell brd-r">
-      <div class="mlbl">Punto de operación</div>
-      <div class="eq" id="eqSys"></div>
-      <div class="eprose">La bomba opera donde su curva corta la curva del sistema: la energía que entrega el impulsor iguala la que pierde el circuito. Aquí: <span id="opSummary"></span>.</div>
-    </div>
-    <div class="ecell brd-r">
-      <div class="mlbl">Leyes de afinidad</div>
-      <div class="eq" id="eqAffinity"></div>
-      <div class="eprose">Con N/N₀ = <span id="fSpeedRatio"></span> y D/D₀ = <span id="fDiaRatio"></span>, la curva publicada a 1750 RPM se reescala a la mostrada.</div>
-    </div>
-    <div class="ecell">
-      <div class="mlbl">NPSH disponible</div>
-      <div class="eq" id="eqNpshDef"></div>
-      <div class="eprose">Numéricamente: <span id="npshBreakdown"></span>. Debe superar el NPSH requerido de la curva; si no, el líquido se vaporiza en el ojo del impulsor (cavitación).</div>
-    </div>
-  </div>
+    <!-- 4 · regulación -->
+    <section class="panel" data-panel="re">
+      <div class="ph"><h2>Regulación del caudal</h2><span class="lbl">válvula · variador · recorte</span><p id="reLead"></p></div>
+      <div class="two">
+        <div class="card"><div class="card-h"><span class="t">Tres maneras de entregar Q<sub>d</sub></span></div><div class="card-b"><svg class="ch" id="svgReg" viewBox="0 0 520 360"></svg></div></div>
+        <div class="card"><div class="card-h"><span class="t">Potencia al freno según el caudal requerido</span></div><div class="card-b"><svg class="ch hov" id="svgRegP" viewBox="0 0 520 360"></svg><div class="readout" id="reRead"></div></div></div>
+      </div>
+      <div class="mcards" id="reCards"></div>
+    </section>
 
+    <!-- 5 · serie y paralelo -->
+    <section class="panel" data-panel="sp">
+      <div class="ph"><h2>Bombas en serie y en paralelo</h2><span class="lbl">dos bombas iguales</span><p>En paralelo se suman los caudales a la misma cabeza; en serie, las cabezas al mismo caudal. Cuál conviene depende de la curva del sistema: con un sistema dominado por la fricción el paralelo gana poco caudal, y con mucha cabeza estática la serie es la que levanta.</p></div>
+      <div class="card"><div class="card-h"><span class="t">Curvas combinadas</span><span class="sp"></span><div class="legend"><span><i style="border-top:2.5px solid var(--ink)"></i>sistema</span><span><i></i>una bomba</span><span><i style="border-top:2.5px solid var(--ok)"></i>paralelo</span><span><i style="border-top:2.5px solid var(--warn)"></i>serie</span></div></div>
+        <div class="card-b"><svg class="ch" id="svgSP" viewBox="0 0 900 400"></svg></div></div>
+      <div class="card"><div class="card-h"><span class="t">Comparación</span></div><div class="card-b" style="overflow-x:auto"><table class="t" id="spTable"></table></div></div>
+    </section>
+
+    <!-- 6 · selección -->
+    <section class="panel" data-panel="se">
+      <div class="ph"><h2>Selección y ecuaciones</h2><span class="lbl">lista de chequeo de la Lectura 05</span><p>Lo que debe verificar antes de escoger una bomba para el proyecto, con los valores de la selección actual.</p></div>
+      <div class="two">
+        <div class="card"><div class="card-h"><span class="t">Lista de chequeo</span></div><div class="card-b" id="checks" style="padding-top:4px"></div></div>
+        <div>
+          <div class="card" style="margin-top:18px"><div class="card-h"><span class="t">Motor</span></div><div class="card-b"><div class="spec" id="specMotor"></div></div></div>
+          <div class="card"><div class="card-h"><span class="t">Velocidad específica</span></div><div class="card-b"><div class="nsbar" id="nsBar"></div><p class="small" id="nsNote" style="margin:6px 0 0"></p></div></div>
+          <div class="card"><div class="card-h"><span class="t">Corrección por viscosidad · ANSI/HI 9.6.7</span></div><div class="card-b"><div class="spec" id="specHI"></div><p class="small" id="hiNote" style="margin:8px 0 0"></p></div></div>
+        </div>
+      </div>
+      <div class="eqs" id="eqs"></div>
+      <div class="callout ink" id="assump"></div>
+    </section>
+  </main>
 </div>
-
+<button type="button" class="mobile-ctl" id="mobCtl">Controles</button>
 <script>
-/* ────────────────────────────────────────────────────────────────────────
-   Explorador de bombas centrífugas — puerto vanilla-JS fiel del componente
-   original. Toda la física (curva característica, leyes de afinidad,
-   eficiencia, NPSH disponible/requerido, potencia al freno, selección de
-   motor, islas de eficiencia) se conserva verbatim de la lógica original.
-   Modelo interno en GPM · pies · HP; referencia impulsor 7.5" a 1750 RPM.
-   ──────────────────────────────────────────────────────────────────────── */
-
-var state = { unit: 'us', di: 3, rpm: 1750, Qd: 200, hf: 30, zd: 10, hs: 5, alt: 2600, hfs: 2, sg: 1, margin: 2, showIsl: true };
-
-function onSlider(k, raw) { state[k] = +raw; render(); }
-function setUnit(u) { state.unit = u; render(); }
-function setImp(i) { state.di = i; render(); }
-
-// helpers de cadena SVG
-function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
-function r1(x) { return Math.round(x * 10) / 10; }
-function pathOf(pts) { return pts.length ? 'M' + pts.map(function (p) { return r1(p[0]) + ',' + r1(p[1]); }).join(' L') : ''; }
-function sample(fx, fy, t0, t1, n) { var pts = []; for (var i = 0; i <= n; i++) { var t = t0 + (t1 - t0) * i / n; pts.push([fx(t), fy(t)]); } return pts; }
-function nice(maxV, target) {
-  if (!(maxV > 0)) maxV = 1;
-  var raw = maxV / target;
-  var mag = Math.pow(10, Math.floor(Math.log10(raw)));
-  var n = raw / mag;
-  var step = (n < 1.5 ? 1 : n < 3 ? 2 : n < 7 ? 5 : 10) * mag;
-  return { step: step, max: Math.ceil(maxV / step) * step };
+/* ---------- propiedades de los fluidos ---------- */
+function antoineKPa(A, B, C, T) { return Math.pow(10, A - B / (C + T)) * 0.133322; }
+function waterRho(T) { return 1000 * (1 - (T + 288.9414) / (508929.2 * (T + 68.12963)) * Math.pow(T - 3.9863, 2)); } // Thiesen (PTB)
+function waterMu(T) { return 2.414e-5 * Math.pow(10, 247.8 / (T + 273.15 - 140)); } // Vogel, Pa·s
+function waterPv(T) { return antoineKPa(8.07131, 1730.63, 233.426, T); } // Antoine, 1 a 100 °C
+var GLY_T = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
+var GLY_MU = [3900, 1410, 612, 284, 142, 81.3, 50.6, 31.9, 21.3, 14.8]; // mPa·s, Segur y Oberstar (1951)
+function glyMu(T) {
+  if (T <= GLY_T[0]) return GLY_MU[0] / 1000;
+  for (var i = 1; i < GLY_T.length; i++) if (T <= GLY_T[i]) {
+    var t = (T - GLY_T[i - 1]) / (GLY_T[i] - GLY_T[i - 1]);
+    return Math.exp(Math.log(GLY_MU[i - 1]) + t * (Math.log(GLY_MU[i]) - Math.log(GLY_MU[i - 1]))) / 1000;
+  }
+  return GLY_MU[GLY_MU.length - 1] / 1000;
 }
-function tickFmt(v, step) { return step < 1 ? v.toFixed(1) : String(Math.round(v)); }
-// <text> como cadena (reemplaza el React.createElement 'T' del original)
-function Tt(x, y, txt, o) {
-  o = o || {};
-  var a = 'x="' + x + '" y="' + y + '"';
-  if (o.anchor) a += ' text-anchor="' + o.anchor + '"';
-  if (o.transform) a += ' transform="' + o.transform + '"';
-  var st = 'font-size:' + (o.fs || 13) + 'px;fill:' + (o.fill || 'var(--color-neutral-800)') + ';';
-  if (o.fw) st += 'font-weight:' + o.fw + ';';
-  return '<text ' + a + ' style="' + st + '">' + esc(txt) + '</text>';
+// ISO VG 32: ν = 32 cSt a 40 °C y 5,4 cSt a 100 °C (IV ≈ 100), interpolado con Walther (ASTM D341)
+function oilNu(T) { var lg = 9.5304 - 3.7464 * Math.log10(T + 273.15); return Math.pow(10, Math.pow(10, lg)) - 0.7; } // cSt
+var FLUIDS = [
+  { id: 'agua', name: 'Agua', color: '#3F86D1', T: [1, 95], src: 'ρ: Thiesen (PTB) · μ: Vogel · Pv: Antoine',
+    props: function (T) { return { rho: waterRho(T), mu: waterMu(T), Pv: waterPv(T) }; },
+    note: 'Agua de servicios y de proceso. La viscosidad cae a la tercera parte entre 20 y 80 °C; la presión de vapor sube de 2,3 a 47 kPa.' },
+  { id: 'etanol', name: 'Etanol', color: '#8DB9E4', T: [0, 70], src: 'ρ lineal · μ: Andrade · Pv: Antoine',
+    props: function (T) { return { rho: 806.4 - 0.85 * T, mu: Math.exp(-5.702 + 1725 / (T + 273.15)) / 1000, Pv: antoineKPa(8.20417, 1642.89, 230.3, T) }; },
+    note: 'El etanol de precipitación del proyecto. Muy volátil: a 40 °C su presión de vapor ya es 18 kPa, así que la succión se vuelve el punto crítico.' },
+  { id: 'glicerina', name: 'Glicerina', color: '#D9B54E', T: [10, 100], src: 'μ: Segur y Oberstar (1951)',
+    props: function (T) { return { rho: 1261 - 0.62 * (T - 20), mu: glyMu(T), Pv: 0.0001 }; },
+    note: 'Líquido newtoniano muy viscoso: a 20 °C es 1400 veces más viscoso que el agua. Útil para ver el flujo laminar y su perfil parabólico.' },
+  { id: 'aceite', name: 'Aceite ISO VG 32', color: '#BF8F2A', T: [0, 100], src: 'ν: Walther (ASTM D341), 32 cSt a 40 °C',
+    props: function (T) { var rho = 870 - 0.63 * T; return { rho: rho, mu: oilNu(T) * rho / 1e6, Pv: 0.0001 }; },
+    note: 'Aceite mineral ligero (grado ISO VG 32, típico de lubricación e hidráulica). Cae en flujo laminar o de transición en casi toda la escala de diseño.' },
+  { id: 'pectina', name: 'Extracto ácido de pectina', color: '#D0913A', T: [20, 90], custom: 'mu', project: true, src: 'ρ y Pv del agua; μ a medir',
+    props: function (T, s) { return { rho: waterRho(T) + 8, mu: s.pMu / 1000, Pv: waterPv(T) }; },
+    note: 'El extracto caliente del proyecto (≈ 1 % de sólidos). Su densidad y presión de vapor son las del agua a la misma temperatura; la viscosidad depende del contenido de pectina y es pseudoplástica: el valor que se usa aquí es un dato de referencia que deben medir.' },
+  { id: 'custom', name: 'Personalizado', color: '#6F9BC4', T: null, custom: 'all', src: 'propiedades del usuario',
+    props: function (T, s) { return { rho: s.cRho, mu: Math.pow(10, s.cMuExp), Pv: s.cPv }; },
+    note: 'Defina densidad, viscosidad y presión de vapor a la temperatura de proceso.' }
+];
+
+/* ---------- formato ---------- */
+function fmtN(n, d) {
+  if (n === null || n === undefined || !isFinite(n)) return '—';
+  d = d === undefined ? 1 : d;
+  var neg = n < 0 && Math.abs(n) >= 0.5 * Math.pow(10, -d), s = Math.abs(n).toFixed(d), p = s.split('.'), int = p[0];
+  if (int.length > 4) int = int.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  return (neg ? '−' : '') + int + (p[1] ? ',' + p[1] : '');
 }
-function svgLine(x1, y1, x2, y2, stroke, sw, dash) {
-  return '<line x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '" stroke="' + stroke + '" stroke-width="' + (sw || 1) + '"' + (dash ? ' stroke-dasharray="' + dash + '"' : '') + '></line>';
+var SUP = { '-': '⁻', '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴', '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹' };
+function sup(n) { return String(n).split('').map(function (c) { return SUP[c] || c; }).join(''); }
+function fmtSci(x, d) { if (!(x > 0)) return fmtN(x, d); var e = Math.floor(Math.log10(x)), m = x / Math.pow(10, e); if (m >= 9.995) { m /= 10; e++; } return fmtN(m, d == null ? 2 : d) + '×10' + sup(e); }
+function fmtRe(Re) { if (!(Re > 0)) return '0'; if (Re < 1e4) return fmtN(Re, Re < 100 ? 1 : 0); return fmtSci(Re, 2); }
+function fmtF(f) { return f >= 1 ? fmtN(f, 2) : (f >= 0.1 ? fmtN(f, 3) : fmtN(f, 4)); }
+function fmtMu(mu) { return mu >= 0.1 ? fmtN(mu, 2) + ' Pa·s' : fmtN(mu * 1000, mu < 0.01 ? 3 : 1) + ' mPa·s'; }
+function fmtQ(Qs) { var h = Qs * 3600; return fmtN(h, h < 10 ? 2 : (h < 100 ? 1 : 0)); }
+function fmtKW(k) { return k < 10 ? fmtN(k, 2) : fmtN(k, 1); }
+/* ====================================================================
+   Explorador de bombas centrífugas · modelo (SI interno: m³/s, m, W)
+   Bomba radial de una etapa construida con la ecuación de Euler (con
+   deslizamiento de Wiesner) y pérdidas: fricción, choque a la entrada,
+   fugas, fricción de disco, mecánicas y recirculación a carga parcial.
+   Las leyes de afinidad salen solas del modelo; el recorte del impulsor
+   las cumple solo de forma aproximada, como en una bomba real.
+   ==================================================================== */
+var G = 9.81, RHO_W = 998;
+// carcasa de referencia 2×3-8 (impulsor máximo de 8 pulgadas); las otras son semejantes
+var REF = { D2max: 0.203, b2: 0.00931, beta2: 27, z: 6, D1: 0.080, dh: 0.025, kf: 56100, A: 19.6, Qsf: 0.01528, QL: 0.03, Cdf: 0.0025, Pm: 250, Rrec: 0.0095, tau: 0.92, Nref: 3500 };
+var SIGMA = 1 - Math.sqrt(Math.sin(REF.beta2 * Math.PI / 180)) / Math.pow(REF.z, 0.7); // Wiesner
+var CASINGS = [
+  { id: 's', name: '1½×2-6', lam: 0.75, nozS: 52.5, nozD: 40.9, note: 'Carcasa pequeña: succión de 2″, descarga de 1½″, impulsor de hasta 6″.' },
+  { id: 'm', name: '2×3-8', lam: 1.0, nozS: 77.9, nozD: 52.5, note: 'Carcasa mediana: succión de 3″, descarga de 2″, impulsor de hasta 8″.' },
+  { id: 'l', name: '3×4-10', lam: 1.25, nozS: 102.3, nozD: 77.9, note: 'Carcasa grande: succión de 4″, descarga de 3″, impulsor de hasta 10″.' }
+];
+var IEC_MOTORS = [0.18, 0.25, 0.37, 0.55, 0.75, 1.1, 1.5, 2.2, 3, 4, 5.5, 7.5, 11, 15, 18.5, 22, 30, 37, 45, 55, 75, 90, 110, 132, 160, 200, 250, 315];
+// eficiencia nominal IE3 (IEC 60034-30-1), 4 polos, valores de referencia
+var IE3 = [[0.12, 0.65], [0.18, 0.69], [0.25, 0.73], [0.37, 0.77], [0.55, 0.80], [0.75, 0.825], [1.1, 0.841], [1.5, 0.853], [2.2, 0.867], [3, 0.877], [4, 0.886], [5.5, 0.896], [7.5, 0.904], [11, 0.914], [15, 0.921], [18.5, 0.926], [22, 0.930], [30, 0.936], [37, 0.939], [45, 0.942], [55, 0.946], [75, 0.950], [90, 0.952], [110, 0.954], [132, 0.956], [160, 0.958], [200, 0.960], [250, 0.960], [315, 0.960]];
+function byId(list, id) { for (var i = 0; i < list.length; i++) if (list[i].id === id) return list[i]; return list[0]; }
+function patmKPa(alt) { return 101.325 * Math.pow(1 - 2.25577e-5 * alt, 5.25588); }
+function gShock(t) { return (Math.sqrt(t * t + 0.04) - 0.2) / (Math.sqrt(1.04) - 0.2); }
+function ie3(kW) { for (var i = 0; i < IE3.length; i++) if (IE3[i][0] >= kW - 1e-9) return IE3[i][1]; return 0.96; }
+function bisect(fn, lo, hi, it) { var flo = fn(lo); for (var i = 0; i < (it || 70); i++) { var m = 0.5 * (lo + hi), fm = fn(m); if ((fm > 0) === (flo > 0)) { lo = m; flo = fm; } else hi = m; } return 0.5 * (lo + hi); }
+
+/* ---------- bomba con agua ---------- */
+function pumpW(N, D, cas) {
+  var lam = cas.lam, w = N * Math.PI / 30, n = N / REF.Nref, Qsf = REF.Qsf * n * lam * lam * lam;
+  var b2 = REF.b2 * lam, A2 = Math.PI * D * b2 * REF.tau, u2 = w * D / 2, tb2 = Math.tan(REF.beta2 * Math.PI / 180);
+  var D1 = REF.D1 * lam, dh = REF.dh * lam, A1 = Math.PI / 4 * (D1 * D1 - dh * dh), r1 = 0.45 * D1, u1 = w * r1;
+  var kf = REF.kf / Math.pow(lam, 4), Ash = REF.A * n * n * lam * lam, cdisk = RHO_W * Math.pow(w, 3) * Math.pow(D / 2, 5);
+  function Hth(Q) { return (SIGMA * u2 * u2 - u2 * (Q / A2) / tb2) / G; }
+  function H(Q) { return Hth(Q) - kf * Q * Q - Ash * gShock((Qsf - Q) / Qsf); }
+  function P(Q) { var ht = Hth(Q), QL = REF.QL * Qsf * Math.sqrt(Math.max(ht, 0.1) / (93 * n * n * lam * lam)); return RHO_W * G * (Q + QL) * ht + REF.Cdf * cdisk + REF.Pm * Math.pow(n, 1.5) * lam * lam * lam + REF.Rrec * cdisk * Math.pow(Math.max(0, 1 - Q / Qsf), 1.5); }
+  function eta(Q) { return Q > 0 ? Math.max(0, RHO_W * G * Q * H(Q) / P(Q)) : 0; }
+  function npsh3(Q) { var c1 = Q / A1, w1s = c1 * c1 + u1 * u1, x = Q / Qsf; return (1.1 * c1 * c1 + 0.22 * w1s) / (2 * G) * (1 + 0.3 * Math.pow(Math.max(0, 0.6 - x) / 0.6, 2)); }
+  // BEP por sección dorada
+  var a = 0.2 * Qsf, b = 1.6 * Qsf, gr = 0.618034;
+  for (var i = 0; i < 60; i++) { var c = b - gr * (b - a), d = a + gr * (b - a); if (eta(c) > eta(d)) b = d; else a = c; }
+  var qB = 0.5 * (a + b);
+  var qZ = bisect(function (q) { return H(q); }, Qsf * 0.5, Qsf * 3);
+  return { N: N, D: D, cas: cas, lam: lam, w: w, n: n, Qsf: Qsf, u2: u2, u1: u1, A1: A1, A2: A2, tb2: tb2, r1: r1, r2: D / 2, D1: D1, dh: dh, b2: b2,
+    Hth: Hth, H: H, P: P, eta: eta, npsh3: npsh3, qB: qB, hB: H(qB), eB: eta(qB), qZero: qZ, beta1B: Math.atan((Qsf / A1) / u1) * 180 / Math.PI };
 }
-function set(id, v) { var el = document.getElementById(id); if (el) el.textContent = v; }
-function setColor(id, c) { var el = document.getElementById(id); if (el) el.style.color = c; }
+/* ---------- corrección por viscosidad: ANSI/HI 9.6.7 ---------- */
+function hiCorr(pw, nuCst) {
+  var Qg = pw.qB * 15850.32, Hf = pw.hB * 3.28084;
+  var B = 16.5 * Math.sqrt(Math.max(nuCst, 0.01)) * Math.pow(Hf, 0.0625) / (Math.pow(Qg, 0.375) * Math.pow(pw.N, 0.25));
+  if (B <= 1) return { B: B, CQ: 1, CHb: 1, Ce: 1, on: false, valid: true, CH: function () { return 1; } };
+  var Bc = Math.min(B, 40), CQ = Math.pow(2.71, -0.165 * Math.pow(Math.log10(Bc), 3.15)), Ce = Math.pow(Bc, -0.0547 * Math.pow(Bc, 0.69));
+  return { B: B, CQ: CQ, CHb: CQ, Ce: Ce, on: true, valid: B < 40, CH: function (Qw) { return 1 - (1 - CQ) * Math.pow(Math.max(Qw, 0) / pw.qB, 0.75); } };
+}
+/* ---------- bomba con el fluido del proceso ---------- */
+function pumpF(pw, P, hi) {
+  var rr = P.rho / RHO_W;
+  return { pw: pw, hi: hi,
+    H: function (Q) { var qw = Q / hi.CQ; return hi.CH(qw) * pw.H(qw); },
+    eta: function (Q) { return hi.Ce * pw.eta(Q / hi.CQ); },
+    P: function (Q) { var qw = Q / hi.CQ; return rr * hi.CQ * hi.CH(qw) / hi.Ce * pw.P(qw); },
+    npsh3: function (Q) { return pw.npsh3(Q / hi.CQ); },
+    qB: pw.qB * hi.CQ, hB: pw.hB * hi.CHb, eB: pw.eB * hi.Ce, qEnd: 1.3 * pw.qB * hi.CQ, qZero: pw.qZero * hi.CQ };
+}
+// caída de cabeza por cavitación: 3 % cuando NPSHa = NPSH3 (definición del ensayo)
+function cavDrop(ratio) { if (!(ratio > 0)) return 1; if (ratio >= 1) return 0.03 * Math.exp(-(ratio - 1) * 7); return Math.min(1, 0.03 + 0.97 * Math.pow(1 - ratio, 0.8)); }
 
-var katexReady = false;
-function tex(id, latex) {
-  var el = document.getElementById(id); if (!el) return;
-  if (katexReady && window.katex) { try { window.katex.render(latex, el, { throwOnError: false, displayMode: false }); return; } catch (e) {} }
-  el.textContent = latex;
+/* ---------- sistema ---------- */
+function setupSystem(s, P, Patm) {
+  var rg = P.rho * G, Qd = Math.pow(10, s.lQd) / 3600;
+  var Hst = (s.zd - s.zs) + (s.P2 - s.P1) * 1000 / rg;
+  var kS = s.hfs / (Qd * Qd), kD = (s.hfd + s.hv) / (Qd * Qd);
+  return { Qd: Qd, Hst: Hst, kS: kS, kD: kD, rg: rg,
+    H: function (Q) { return Hst + (kS + kD) * Q * Q; },
+    npsha: function (Q) { return (Patm + s.P1 - P.Pv) * 1000 / rg + s.zs - kS * Q * Q; } };
+}
+function perPump(arr, Q) { return arr === 'paralelo' ? Q / 2 : Q; }
+function setHead(pf, sys, arr, Q, cav) {
+  var q1 = perPump(arr, Q), h1 = pf.H(q1);
+  var dr = cav ? cavDrop(sys.npsha(Q) / pf.npsh3(q1)) : 0;
+  if (arr === 'serie') return h1 * (1 - dr) + h1;
+  return h1 * (1 - dr);
+}
+function solveOp(pf, sys, arr) {
+  var f = function (Q) { return setHead(pf, sys, arr, Q, true) - sys.H(Q); };
+  if (f(1e-7) <= 0) return null;
+  var hi = (arr === 'paralelo' ? 2 : 1) * pf.qZero * 1.02;
+  if (f(hi) > 0) hi *= 2;
+  var Q = bisect(f, 1e-7, hi);
+  return { Q: Q, H: sys.H(Q), q1: perPump(arr, Q), h1: arr === 'serie' ? sys.H(Q) / 2 : sys.H(Q) };
+}
+function motorPick(Pmax, FS) { var need = Pmax * FS; for (var i = 0; i < IEC_MOTORS.length; i++) if (IEC_MOTORS[i] >= need - 1e-9) return IEC_MOTORS[i]; return null; }
+
+/* ---------- triángulos de velocidad y presiones internas ---------- */
+function triangles(pw, Qw, H) {
+  var c1 = Qw / pw.A1, u1 = pw.u1, w1 = Math.sqrt(c1 * c1 + u1 * u1), b1 = Math.atan2(c1, u1) * 180 / Math.PI;
+  var cm2 = Qw / pw.A2, u2 = pw.u2, cu2 = SIGMA * u2 - cm2 / pw.tb2, cu2inf = u2 - cm2 / pw.tb2, wu2 = u2 - cu2;
+  var w2 = Math.sqrt(cm2 * cm2 + wu2 * wu2), c2 = Math.sqrt(cm2 * cm2 + cu2 * cu2), Hth = u2 * cu2 / G;
+  return { c1: c1, u1: u1, w1: w1, beta1: b1, beta1B: pw.beta1B, inc: pw.beta1B - b1, cm2: cm2, u2: u2, cu2: cu2, cu2inf: cu2inf, wu2: wu2, w2: w2, c2: c2,
+    beta2: Math.atan2(cm2, wu2) * 180 / Math.PI, beta2B: REF.beta2, alpha2: Math.atan2(cm2, cu2) * 180 / Math.PI, Hth: Hth, etah: H / Hth, slip: SIGMA };
+}
+function innerPressures(pw, tri, H, npsha, npsh3, P, cas, q1) {
+  var rg = P.rho * G, pv = P.Pv * 1000 / rg;
+  var As = Math.PI / 4 * Math.pow(cas.nozS / 1000, 2), Ad = Math.PI / 4 * Math.pow(cas.nozD / 1000, 2);
+  var vs = q1 / As, vd = q1 / Ad, vhs = vs * vs / (2 * G), vhd = vd * vd / (2 * G);
+  var p0 = npsha + pv - vhs;
+  var p1 = p0 + vhs - (1.05 * tri.c1 * tri.c1) / (2 * G);
+  var npshi = 1.3 * npsh3, pmin = Math.min(pv + (npsha - npshi), p1 - 0.05);
+  var dimp = (tri.u2 * tri.u2 - tri.u1 * tri.u1 + tri.w1 * tri.w1 - tri.w2 * tri.w2) / (2 * G) - 0.5 * (tri.Hth - H);
+  var p2 = p1 + dimp, p4 = p0 + H + vhs - vhd, p3 = p2 + 0.7 * (p4 - p2);
+  return { pv: pv, vs: vs, vd: vd, npshi: npshi, pts: [
+    { k: 'Brida de succión', x: 0, p: p0 }, { k: 'Ojo del impulsor', x: 1, p: p1 }, { k: 'Borde de ataque del álabe', x: 1.3, p: pmin },
+    { k: 'Salida del impulsor', x: 2.2, p: p2 }, { k: 'Voluta', x: 3.1, p: p3 }, { k: 'Brida de descarga', x: 4, p: p4 }] };
 }
 
-function render() {
-  var st = state;
-  var sg = st.sg;
-  var marginReq = st.margin; // ft
-  var showIsl = st.showIsl;
+/* ---------- cálculo completo ---------- */
+function compute(s, lite) {
+  var fl = byId(FLUIDS, s.fluid), T = fl.T ? Math.max(fl.T[0], Math.min(fl.T[1], s.T)) : s.T;
+  var P = fl.props(T, s); P.nu = P.mu / P.rho;
+  var cas = byId(CASINGS, s.casing), Dmax = REF.D2max * cas.lam, Dmin = 0.75 * Dmax, D = Math.max(Dmin, Math.min(Dmax, s.D / 1000));
+  var N = s.N0 * s.vfd / 100, Patm = patmKPa(s.alt);
+  var pw = pumpW(N, D, cas), hi = hiCorr(pw, P.nu * 1e6), pf = pumpF(pw, P, hi);
+  var sys = setupSystem(s, P, Patm), arr = s.arr;
+  var op = solveOp(pf, sys, arr);
+  var R = { s: s, fl: fl, T: T, P: P, cas: cas, D: D, Dmin: Dmin, Dmax: Dmax, N: N, Patm: Patm, pw: pw, hi: hi, pf: pf, sys: sys, arr: arr, op: op, rg: P.rho * G };
+  if (op) {
+    var q1 = op.q1, h1 = pf.H(q1), qw = q1 / hi.CQ;
+    R.eta = pf.eta(q1); R.x = q1 / pf.qB; R.Pshaft1 = pf.P(q1) / 1000; R.nP = arr === 'una' ? 1 : 2; R.Pshaft = R.Pshaft1 * R.nP;
+    R.Phyd = R.rg * op.Q * op.H / 1000;
+    R.npsha = sys.npsha(op.Q); R.npsh3 = pf.npsh3(q1); R.npshi = 1.3 * R.npsh3; R.margin = R.npsha - R.npsh3;
+    R.drop = cavDrop(R.npsha / R.npsh3);
+    R.tri = triangles(pw, qw, pw.H(qw));
+    R.press = innerPressures(pw, R.tri, h1 * (1 - R.drop), R.npsha, R.npsh3, P, cas, q1);
+    R.beyond = q1 > pf.qEnd;
+  }
+  // motor: potencia máxima en la curva publicada (no sobrecargable) con factor de servicio
+  var pmax = 0; for (var i = 0; i <= 60; i++) pmax = Math.max(pmax, pf.P(pf.qEnd * i / 60) / 1000);
+  R.PmaxCurve = pmax; R.motor = motorPick(pmax, s.FS); R.motorPt = op ? motorPick(R.Pshaft1, s.FS) : null;
+  R.etaM = R.motor ? ie3(R.motor) : 0.9; R.Pelec = op ? R.Pshaft / R.etaM : 0;
+  // velocidad específica en el BEP (agua)
+  R.nq = N * Math.sqrt(pw.qB) / Math.pow(pw.hB, 0.75); R.NsUS = N * Math.sqrt(pw.qB * 15850.32) / Math.pow(pw.hB * 3.28084, 0.75);
+  R.regul = lite ? null : regulation(s, P, cas, sys, Patm, arr);
+  R.arrs = lite ? null : ['una', 'paralelo', 'serie'].map(function (a) { return { a: a, op: solveOp(pf, sys, a) }; });
+  R.warn = diagnose(R);
+  return R;
+}
+/* tres maneras de entregar el caudal requerido Q_d: válvula, variador, recorte */
+function regulation(s, P, cas, sys, Patm, arr) {
+  var Dmax = REF.D2max * cas.lam, Dmin = 0.75 * Dmax, D = Math.max(Dmin, Math.min(Dmax, s.D / 1000));
+  var mk = function (N, Dd) { var pw = pumpW(N, Dd, cas); return pumpF(pw, P, hiCorr(pw, P.nu * 1e6)); };
+  var base = mk(s.N0, D);
+  function at(Q) {
+    var q1 = perPump(arr, Q), Hs = sys.H(Q), n = arr === 'una' ? 1 : 2, out = { Q: Q, Hs: Hs };
+    var Hp = setHead(base, sys, arr, Q, false);
+    out.thr = Hp >= Hs ? { P: n * base.P(q1) / 1000, dH: Hp - Hs, eta: base.eta(q1) } : null;
+    // variador: velocidad que pone la curva de la bomba sobre el sistema
+    var f = function (r) { return setHead(mk(s.N0 * r, D), sys, arr, Q, false) - Hs; };
+    if (f(1.1) > 0 && f(0.2) < 0) { var r = bisect(f, 0.2, 1.1, 40), pv = mk(s.N0 * r, D); out.vfd = { P: n * pv.P(q1) / 1000, n: r, eta: pv.eta(q1) }; }
+    // recorte del impulsor a plena velocidad
+    var g = function (Dd) { return setHead(mk(s.N0, Dd), sys, arr, Q, false) - Hs; };
+    if (g(Dmax) > 0 && g(Dmin) < 0) { var Dd = bisect(g, Dmin, Dmax, 40), pt = mk(s.N0, Dd); out.trim = { P: n * pt.P(q1) / 1000, D: Dd, eta: pt.eta(q1) }; }
+    else if (g(Dmin) >= 0) out.trimMin = true;
+    return out;
+  }
+  var Qd = sys.Qd, pts = [];
+  for (var i = 0; i <= 24; i++) pts.push(at(Qd * (0.4 + 0.8 * i / 24)));
+  return { at: at(Qd), pts: pts };
+}
 
-  var si = st.unit === 'si';
-  var cQ = si ? 0.22712 : 1;      // GPM -> m3/h
-  var cH = si ? 0.3048 : 1;       // ft -> m
-  var cP = si ? 0.7457 : 1;       // HP -> kW
-  var qUnit = si ? 'm³/h' : 'GPM';
-  var hUnit = si ? 'm' : 'pies';
-  var pUnit = si ? 'kW' : 'HP';
-  var fQv = function (g, d) { return (g * cQ).toFixed(d == null ? (si ? 1 : 0) : d); };
-  var fHvf = function (f) { return (f * cH).toFixed(1); };
-  var fPv = function (p) { return (p * cP).toFixed(2); };
-  var fQ = function (g) { return fQv(g) + ' ' + qUnit; };
-  var fH = function (f) { return fHvf(f) + ' ' + hUnit; };
-  var fP = function (p) { return fPv(p) + ' ' + pUnit; };
+/* ---------- diagnóstico ---------- */
+function diagnose(R) {
+  var w = [], s = R.s, pf = R.pf;
+  function add(sev, t) { w.push({ sev: sev, t: t }); }
+  if (!R.op && setHead(pf, R.sys, R.arr, 1e-7, false) > R.sys.Hst) { add('c', 'Cavitación tan severa que la bomba no levanta la cabeza estática: el NPSH disponible a caudal casi nulo (' + fmtN(R.sys.npsha(0), 2) + ' m) no alcanza el requerido (' + fmtN(pf.npsh3(1e-6), 2) + ' m). Suba el tanque de succión o enfríe el líquido.'); return w; }
+  if (!R.op) { add('c', 'La bomba no vence la cabeza estática: su cabeza a caudal cero (' + fmtN(setHead(pf, R.sys, R.arr, 1e-7, false), 1) + ' m) no supera los ' + fmtN(R.sys.Hst, 1) + ' m del sistema. No hay punto de operación: suba la velocidad, use un impulsor mayor o ponga dos bombas en serie.'); return w; }
+  if (R.hi.on && !R.hi.valid) add('c', 'Viscosidad fuera del rango de ANSI/HI 9.6.7 (B = ' + fmtN(R.hi.B, 1) + ' > 40): una centrífuga no es adecuada. Use una bomba de desplazamiento positivo.');
+  if (R.npsha < R.npsh3) add('c', 'Cavitación: NPSH disponible (' + fmtN(R.npsha, 2) + ' m) menor que el requerido (' + fmtN(R.npsh3, 2) + ' m). La cabeza cae ' + fmtN(100 * R.drop, 0) + ' % y el impulsor se erosiona. Suba el tanque, acorte la succión, enfríe el líquido o baje la velocidad.');
+  else if (R.npsha < R.npsh3 + s.marg || R.npsha < 1.1 * R.npsh3) add('w', 'Margen de NPSH insuficiente: ' + fmtN(R.margin, 2) + ' m sobre el requerido. La Lectura 05 pide 0,5 a 1 m (o 10 a 25 %); aquí se exige ' + fmtN(s.marg, 1) + ' m.');
+  else if (R.npsha < R.npshi) add('w', 'Cavitación incipiente: el NPSH disponible supera el NPSH3 pero no el de inicio de burbujas (≈ 1,3 × NPSH3 = ' + fmtN(R.npshi, 2) + ' m). Habrá algo de ruido y erosión lenta en los álabes.');
+  if (R.beyond) add('c', 'El punto de operación cae más allá del final de la curva publicada (' + fmtN(100 * R.x, 0) + ' % del BEP): ruido, vibración y riesgo de cavitación. Agregue resistencia a la descarga o elija una bomba mayor.');
+  else if (R.x < 0.7 || R.x > 1.1) add('w', 'La bomba opera al ' + fmtN(100 * R.x, 0) + ' % del caudal de mejor eficiencia, fuera de la ventana de 70 a 110 % de la Lectura 05' + (R.x < 0.7 ? ': recirculación interna, empujes radiales y calentamiento.' : ': NPSH requerido alto y riesgo de cavitación.'));
+  if (R.x < 0.45) add('w', 'Caudal muy bajo para esta bomba: con menos del 45 % del BEP aparece recirculación en la entrada y la salida del impulsor (se ve en la animación).');
+  if (R.hi.on && R.hi.valid) add(R.hi.Ce < 0.97 ? 'w' : 'ok', 'Fluido viscoso (ν = ' + fmtN(R.P.nu * 1e6, 1) + ' cSt, B = ' + fmtN(R.hi.B, 2) + '): según ANSI/HI 9.6.7 el caudal se multiplica por ' + fmtN(R.hi.CQ, 3) + ', la cabeza en el BEP por ' + fmtN(R.hi.CHb, 3) + ' y la eficiencia por ' + fmtN(R.hi.Ce, 3) + '.');
+  if (s.vfd > 100) add('w', 'Velocidad sobre la nominal del motor (' + fmtN(s.vfd, 0) + ' %): verifique con el fabricante la velocidad máxima de la bomba y la potencia del motor.');
+  if (R.motor === null) add('c', 'No hay motor estándar en la tabla para ' + fmtN(R.PmaxCurve * s.FS, 1) + ' kW.');
+  if (Math.abs(R.D - R.Dmax) < 1e-4 && !R.beyond) add('ok', 'El impulsor está en el diámetro máximo de la carcasa: no queda margen para crecer si la demanda aumenta.');
+  if (!w.some(function (x) { return x.sev !== 'ok'; })) add('ok', 'Selección sana: punto dentro de la ventana de eficiencia, margen de NPSH suficiente y motor que no se sobrecarga en toda la curva.');
+  return w;
+}
+/* ====================================================================
+   La bomba por dentro: vista frontal de impulsor y voluta en cámara
+   lenta. Las partículas siguen la cinemática real (velocidad relativa
+   entre álabes más la rotación), se colorean con la presión estática y
+   se forman burbujas donde la presión cae bajo la de vapor.
+   ==================================================================== */
+function cssVar(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+function clamp(x, a, b) { return x < a ? a : (x > b ? b : x); }
+var PAL = [[43, 76, 126], [89, 128, 166], [143, 184, 201], [232, 195, 90], [217, 130, 43]];
+function palAt(t) { t = clamp(t, 0, 1) * (PAL.length - 1); var i = Math.min(PAL.length - 2, Math.floor(t)), f = t - i, a = PAL[i], b = PAL[i + 1]; return 'rgb(' + Math.round(a[0] + (b[0] - a[0]) * f) + ',' + Math.round(a[1] + (b[1] - a[1]) * f) + ',' + Math.round(a[2] + (b[2] - a[2]) * f) + ')'; }
+var SLOW = 150; // cámara lenta: el tiempo en pantalla corre 150 veces más despacio
 
-  // ----- pump model (internal: GPM, ft, HP; reference: 7.5" impeller @ 1750 RPM) -----
-  var s = st.rpm / 1750;
-  var dRatios = [0.8, 0.8667, 0.9333, 1];
-  var impLabelsUS = ['6"', '6½"', '7"', '7½"'];
-  var impLabelsSI = ['152 mm', '165 mm', '178 mm', '191 mm'];
-  var impLabels = si ? impLabelsSI : impLabelsUS;
-  var D = dRatios[st.di];
-  var QBEP_REF = 210, Q_END = 340, Q_ZERO = 419.9;
-
-  var Href = function (q) { return 72 - 0.012 * q - 0.00038 * q * q; };
-  var etaMax = function (d) { return 74 - 18 * (1 - d); };
-  var eta = function (Q, d) { return Math.max(0, etaMax(d) * (1 - Math.pow((Q / (d * s) - QBEP_REF) / QBEP_REF, 2))); };
-  var Hp = function (Q, d) { return d * d * s * s * Href(Q / (d * s)); };
-  var qEnd = function (d) { return Q_END * d * s; };
-  var qZero = function (d) { return Q_ZERO * d * s; };
-
-  var K = st.hf / (st.Qd * st.Qd);
-  // Cabeza estática total del sistema: nivel de descarga sobre la bomba (zd)
-  // más la altura de succión (hs>0 cuando el nivel está bajo la bomba).
-  var hstatT = st.zd + st.hs;
-  var Hsys = function (Q) { return hstatT + K * Q * Q; };
-
-  var hatm = 33.9 * Math.exp(-st.alt / 8434);
-  var hvap = 0.78;
-  var Ks = st.hfs / (st.Qd * st.Qd);
-  var NPSHa = function (Q) { return hatm - hvap - st.hs - Ks * Q * Q; };
-  var NPSHr = function (Q) { return 4 * s * s + 0.000085 * Q * Q; };
-
-  var solveOp = function (d) {
-    var f = function (Q) { return Hp(Q, d) - Hsys(Q); };
-    if (f(0) <= 0) return null;
-    var lo = 0, hi = qZero(d);
-    if (f(hi) > 0) return { Q: hi, H: Hp(hi, d), beyond: true };
-    for (var i = 0; i < 70; i++) { var m = (lo + hi) / 2; (f(m) > 0) ? lo = m : hi = m; }
-    var Q = (lo + hi) / 2;
-    return { Q: Q, H: Hp(Q, d), beyond: Q > qEnd(d) + 0.5 };
+function PumpScene(cv) { this.cv = cv; this.ctx = cv.getContext('2d'); this.running = true; this.speed = 1; this.rot = 0; this.t = 0; this.parts = []; this.bub = []; this.flash = []; this.spawnAcc = 0; this.R = null; }
+PumpScene.prototype.resize = function () {
+  var r = this.cv.getBoundingClientRect(); if (!r.width) return;
+  var dpr = Math.min(2, window.devicePixelRatio || 1);
+  this.W = r.width; this.H = r.height; this.cv.width = Math.round(r.width * dpr); this.cv.height = Math.round(r.height * dpr);
+  this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0); if (this.R) this.layout();
+};
+PumpScene.prototype.configure = function (R) { var first = !this.R; this.R = R; if (!this.W) this.resize(); this.layout(); if (first) this.prime(); };
+PumpScene.prototype.reset = function () { this.parts = []; this.bub = []; this.flash = []; this.prime(); };
+PumpScene.prototype.layout = function () {
+  var R = this.R, W = this.W, H = this.H; if (!W || !R) return;
+  var pw = R.pw, mob = W < 640;
+  var r2m = R.Dmax / 2, rOutMax = r2m * (1.10 + 0.62);
+  var avail = Math.min((mob ? W * 0.34 : W * 0.36) , (H - 70) / 2.25);
+  var k = avail / rOutMax; // px por metro
+  var L = { mob: mob, k: k, cx: mob ? W * 0.43 : W * 0.40, cy: H * 0.56 };
+  L.r1 = pw.D1 / 2 * k; L.rh = pw.dh / 2 * k; L.r2 = R.D / 2 * k; L.r2m = r2m * k; L.r3 = r2m * 1.10 * k; L.dv = r2m * 0.62 * k;
+  L.th = 0; // lengüeta a las 3
+  // álabe: ángulo de 0 en r1 a θoff(r2), con β variando de β1B a β2B (medido desde la tangente)
+  var b1 = (pw.beta1B || 18) * Math.PI / 180, b2 = REF.beta2 * Math.PI / 180, n = 30, off = [0], rr = [pw.D1 / 2], r1m = pw.D1 / 2, r2mm = R.D / 2;
+  for (var i = 1; i <= n; i++) { var ra = r1m + (r2mm - r1m) * (i - 1) / n, rb = r1m + (r2mm - r1m) * i / n, rm = 0.5 * (ra + rb), bt = b1 + (b2 - b1) * (rm - r1m) / (r2mm - r1m); off.push(off[i - 1] - (rb - ra) / (rm * Math.tan(bt))); rr.push(rb); }
+  L.boff = off; L.brr = rr; L.z = REF.z;
+  this.Lo = L;
+  this.col = { ink: cssVar('--ink') || '#1c1b1a', paper: cssVar('--paper') || '#fff', muted: cssVar('--muted-ink') || '#6b6764', hl: cssVar('--hl') || '#5980A6', red: cssVar('--redline') || '#C8452B', grid: cssVar('--grid') };
+};
+PumpScene.prototype.bladeOff = function (rm) { var L = this.Lo, rr = L.brr, off = L.boff; if (rm <= rr[0]) return 0; for (var i = 1; i < rr.length; i++) if (rm <= rr[i]) { var t = (rm - rr[i - 1]) / (rr[i] - rr[i - 1]); return off[i - 1] + (off[i] - off[i - 1]) * t; } return off[off.length - 1]; };
+PumpScene.prototype.rOut = function (phi) { var L = this.Lo; return L.r3 + L.dv * clamp(phi / (2 * Math.PI), 0, 1); };
+// presión estática (m, absoluta) en cada zona: para el color
+PumpScene.prototype.pAt = function (zone, f) {
+  var R = this.R; if (!R.press) return 0; var p = R.press.pts;
+  if (zone === 'eye') return p[1].p;
+  if (zone === 'imp') { var dip = Math.max(0, 1 - f / 0.18); return p[1].p + (p[3].p - p[1].p) * Math.pow(f, 1.3) - (p[1].p - p[2].p) * dip * dip; }
+  if (zone === 'vol') return p[3].p + (p[4].p - p[3].p) * f;
+  return p[4].p + (p[5].p - p[4].p) * f;
+};
+PumpScene.prototype.pColor = function (pv) { var R = this.R, p = R.press.pts, lo = Math.min(p[2].p, R.press.pv), hi = p[5].p; if (pv < R.press.pv) return this.col.red; return palAt((pv - lo) / Math.max(1e-6, hi - lo)); };
+PumpScene.prototype.prime = function () { for (var i = 0; i < 260; i++) this.step(0.03, true); };
+PumpScene.prototype.spawn = function () {
+  var L = this.Lo, a = Math.random() * 2 * Math.PI, r = L.rh + (L.r1 - L.rh) * Math.sqrt(Math.random());
+  this.parts.push({ z: 'eye', r: r, th: a, f: Math.random() * 0.7 + 0.15, life: 0 });
+};
+PumpScene.prototype.step = function (dt, silent) {
+  var R = this.R, L = this.Lo; if (!R || !L || !R.op) return;
+  var pw = R.pw, k = L.k, h = dt * this.speed / SLOW, w = pw.w, q = R.op.q1 / R.hi.CQ, tri = R.tri;
+  this.rot += w * h; this.t += dt;
+  // caudal de partículas proporcional al caudal real
+  this.spawnAcc += dt * this.speed * clamp(70 * q / pw.qB, 8, 130);
+  while (this.spawnAcc > 1) { this.spawnAcc -= 1; if (this.parts.length < 900) this.spawn(); }
+  var b1 = pw.b2 * 1.7, b2 = pw.b2, r1m = pw.D1 / 2, r2m = R.D / 2, rec = clamp((0.6 - R.x) / 0.6, 0, 1);
+  for (var i = this.parts.length - 1; i >= 0; i--) {
+    var p = this.parts[i]; p.life += h;
+    if (p.z === 'eye') { var rmE = p.r / k, cr = q / (2 * Math.PI * Math.max(rmE, 0.004) * b1); p.r += cr * k * h * 0.6; if (p.r >= L.r1) { p.z = 'imp'; p.ch = Math.floor((((p.th - this.rot) % (2 * Math.PI)) + 4 * Math.PI) % (2 * Math.PI) / (2 * Math.PI / L.z)); } continue; }
+    if (p.z === 'imp') {
+      var rm = p.r / k, fr = clamp((rm - r1m) / (r2m - r1m), 0, 1), bb = b1 + (b2 - b1) * fr, cm = q / (2 * Math.PI * rm * bb * REF.tau);
+      p.r += cm * k * h; if (rec > 0 && fr < 0.25) p.f += (Math.random() - 0.5) * rec * 0.08;
+      p.f = clamp(p.f + (Math.random() - 0.5) * 0.01, 0.08, 0.92);
+      p.th = this.rot + p.ch * 2 * Math.PI / L.z + this.bladeOff(rm) + p.f * 2 * Math.PI / L.z;
+      if (p.r >= L.r2) { p.z = 'vol'; p.rv = L.r2; p.ph = ((p.th - L.th) % (2 * Math.PI) + 4 * Math.PI) % (2 * Math.PI); p.trav = 0; }
+      continue;
+    }
+    if (p.z === 'vol') {
+      var ro = this.rOut(p.ph), rmid = (L.r2 + 0.35 * (ro - L.r2)) + p.f * 0.55 * (ro - L.r2);
+      p.rv += (rmid - p.rv) * Math.min(1, 6 * h * w / 20);
+      var cu = tri.cu2 * L.r2 / Math.max(p.rv, L.r2), dph = cu / (p.rv / k) * h;
+      p.ph += dph; p.trav += dph;
+      if (p.ph >= 2 * Math.PI) { p.z = 'noz'; p.y = 0; p.xr = p.rv; }
+      continue;
+    }
+    if (p.z === 'noz') { var vdz = (R.press.vd || 3); p.y += vdz * k * h * 1.4 + 0.6; if (p.y > L.cy + 10) this.parts.splice(i, 1); }
+  }
+  // burbujas: nacen en el lado de succión del álabe cerca del borde de ataque
+  var pr = R.press, sev = pr ? (pr.pv - pr.pts[2].p) : -1;
+  if (sev > 0 && !silent) {
+    var rate = clamp(sev / Math.max(0.3, R.npshi) * 200, 14, 260) * dt * this.speed;
+    for (var j = 0; j < rate; j++) if (this.bub.length < 360) { var ch = Math.floor(Math.random() * L.z), rr0 = L.r1 * (1.02 + Math.random() * 0.16); this.bub.push({ ch: ch, r: rr0, s: 0, max: 2.6 + Math.random() * 3.4 * clamp(sev, 0.4, 3) / 1.2, age: 0 }); }
+  }
+  var pv = pr ? pr.pv : 0;
+  for (var m = this.bub.length - 1; m >= 0; m--) {
+    var b = this.bub[m], rm2 = b.r / k, fr2 = clamp((rm2 - r1m) / (r2m - r1m), 0, 1), cm2 = q / (2 * Math.PI * rm2 * (b1 + (b2 - b1) * fr2) * REF.tau);
+    b.r += cm2 * k * h; b.age += dt;
+    var pl = this.pAt('imp', fr2);
+    if (pl < pv + 0.6 * sev) b.s = Math.min(b.max, b.s + dt * 14); else { b.s -= dt * 22; if (b.s <= 0) { var th = this.rot + b.ch * 2 * Math.PI / L.z + this.bladeOff(rm2) - 0.05; this.flash.push({ x: L.cx + b.r * Math.cos(th), y: L.cy - b.r * Math.sin(th), a: 1 }); this.bub.splice(m, 1); continue; } }
+    if (b.r > L.r2) this.bub.splice(m, 1);
+  }
+  for (var f = this.flash.length - 1; f >= 0; f--) { this.flash[f].a -= dt * 4; if (this.flash[f].a <= 0) this.flash.splice(f, 1); }
+};
+PumpScene.prototype.draw = function () {
+  var R = this.R, L = this.Lo, c = this.ctx; if (!R || !L) return;
+  var W = this.W, H = this.H, col = this.col, cx = L.cx, cy = L.cy, i;
+  c.clearRect(0, 0, W, H); c.fillStyle = col.paper; c.fillRect(0, 0, W, H);
+  c.strokeStyle = col.grid; c.lineWidth = 1;
+  for (var gx = 0; gx < W; gx += 24) { c.beginPath(); c.moveTo(gx + 0.5, 0); c.lineTo(gx + 0.5, H); c.stroke(); }
+  for (var gy = 0; gy < H; gy += 24) { c.beginPath(); c.moveTo(0, gy + 0.5); c.lineTo(W, gy + 0.5); c.stroke(); }
+  var font = cssVar('--font-body') || 'sans-serif', mono = cssVar('--font-mono') || 'monospace';
+  if (!R.op) { c.fillStyle = col.red; c.font = '700 15px ' + font; c.textAlign = 'center'; c.fillText('Sin punto de operación: la bomba no mueve el líquido', W / 2, H / 2); return; }
+  var X = function (r, th) { return cx + r * Math.cos(th); }, Y = function (r, th) { return cy - r * Math.sin(th); };
+  // voluta: anillo coloreado por presión
+  var NS = 72;
+  for (i = 0; i < NS; i++) {
+    var p0 = i / NS * 2 * Math.PI, p1 = (i + 1) / NS * 2 * Math.PI, a0 = L.th + p0, a1 = L.th + p1;
+    c.beginPath(); c.moveTo(X(L.r2m * 1.02, a0), Y(L.r2m * 1.02, a0)); c.lineTo(X(this.rOut(p0), a0), Y(this.rOut(p0), a0)); c.lineTo(X(this.rOut(p1), a1), Y(this.rOut(p1), a1)); c.lineTo(X(L.r2m * 1.02, a1), Y(L.r2m * 1.02, a1)); c.closePath();
+    c.fillStyle = this.pColor(this.pAt('vol', (i + 0.5) / NS)); c.globalAlpha = 0.32; c.fill(); c.globalAlpha = 1;
+  }
+  // boquilla de descarga (vertical, a la derecha)
+  var xa = cx + L.r3, xb = cx + this.rOut(2 * Math.PI), ytop = 18;
+  var gr = c.createLinearGradient(0, cy, 0, ytop); gr.addColorStop(0, this.pColor(this.pAt('noz', 0))); gr.addColorStop(1, this.pColor(this.pAt('noz', 1)));
+  c.fillStyle = gr; c.globalAlpha = 0.32; c.fillRect(xa, ytop, xb - xa, cy - ytop); c.globalAlpha = 1;
+  // carcasa
+  c.strokeStyle = col.ink; c.lineWidth = 3; c.beginPath();
+  for (i = 0; i <= NS; i++) { var ph = i / NS * 2 * Math.PI, rr = this.rOut(ph), aa = L.th + ph; if (i) c.lineTo(X(rr, aa), Y(rr, aa)); else c.moveTo(X(rr, aa), Y(rr, aa)); }
+  c.lineTo(xb, ytop); c.moveTo(xa, ytop); c.lineTo(xa, cy - 2); c.stroke();
+  // lengüeta
+  c.beginPath(); c.moveTo(xa, cy - 2); c.quadraticCurveTo(xa - 4, cy + 6, X(L.r3, L.th - 0.12), Y(L.r3, L.th - 0.12)); c.stroke();
+  c.fillStyle = col.ink; c.fillRect(xa - 6, ytop - 6, xb - xa + 12, 6);
+  // disco del impulsor coloreado por presión radial
+  var rg = c.createRadialGradient(cx, cy, L.r1, cx, cy, L.r2);
+  for (i = 0; i <= 6; i++) rg.addColorStop(i / 6, this.pColor(this.pAt('imp', i / 6)));
+  c.fillStyle = rg; c.globalAlpha = 0.42; c.beginPath(); c.arc(cx, cy, L.r2, 0, 6.2832); c.arc(cx, cy, L.r1, 0, 6.2832, true); c.fill(); c.globalAlpha = 1;
+  // ojo
+  c.fillStyle = this.pColor(this.pAt('eye')); c.globalAlpha = 0.35; c.beginPath(); c.arc(cx, cy, L.r1, 0, 6.2832); c.fill(); c.globalAlpha = 1;
+  c.strokeStyle = col.muted; c.lineWidth = 1; c.setLineDash([3, 3]); c.beginPath(); c.arc(cx, cy, L.r1, 0, 6.2832); c.stroke(); c.setLineDash([]);
+  c.strokeStyle = col.ink; c.lineWidth = 1.5; c.beginPath(); c.arc(cx, cy, L.r2, 0, 6.2832); c.stroke();
+  // partículas
+  for (i = 0; i < this.parts.length; i++) {
+    var p = this.parts[i], x, y, pc;
+    if (p.z === 'eye') { x = X(p.r, p.th); y = Y(p.r, p.th); pc = this.pColor(this.pAt('eye')); }
+    else if (p.z === 'imp') { x = X(p.r, p.th); y = Y(p.r, p.th); pc = this.pColor(this.pAt('imp', clamp((p.r - L.r1) / (L.r2 - L.r1), 0, 1))); }
+    else if (p.z === 'vol') { var a2 = L.th + p.ph; x = X(p.rv, a2); y = Y(p.rv, a2); pc = this.pColor(this.pAt('vol', p.ph / (2 * Math.PI))); }
+    else { x = xa + (p.xr - L.r3) / (this.rOut(2 * Math.PI) - L.r3) * (xb - xa); x = clamp(x, xa + 2, xb - 2); y = cy - p.y; pc = this.pColor(this.pAt('noz', clamp(p.y / (cy - ytop), 0, 1))); }
+    c.fillStyle = pc; c.beginPath(); c.arc(x, y, 2.1, 0, 6.2832); c.fill();
+  }
+  // álabes
+  var z = L.z, nPts = 16;
+  c.strokeStyle = col.ink; c.lineWidth = Math.max(2.4, L.r2 * 0.035); c.lineCap = 'round';
+  for (var b = 0; b < z; b++) {
+    c.beginPath();
+    for (i = 0; i <= nPts; i++) { var rm = (R.pw.D1 / 2) + (R.D / 2 - R.pw.D1 / 2) * i / nPts, th = this.rot + b * 2 * Math.PI / z + this.bladeOff(rm), rp = rm * L.k; if (i) c.lineTo(X(rp, th), Y(rp, th)); else c.moveTo(X(rp, th), Y(rp, th)); }
+    c.stroke();
+  }
+  c.fillStyle = col.ink; c.beginPath(); c.arc(cx, cy, L.rh, 0, 6.2832); c.fill();
+  c.fillStyle = col.paper; c.beginPath(); c.arc(cx, cy, L.rh * 0.4, 0, 6.2832); c.fill();
+  // recirculación a carga parcial
+  var rec = clamp((0.7 - R.x) / 0.5, 0, 1);
+  if (rec > 0) {
+    c.strokeStyle = col.red; c.lineWidth = 1.6; c.globalAlpha = 0.35 + 0.5 * rec;
+    for (i = 0; i < 4; i++) { var ang = i * Math.PI / 2 + this.t * 0.7, rx = X(L.r1 * 1.05, ang), ry = Y(L.r1 * 1.05, ang), rs = 6 + 8 * rec; c.beginPath(); c.arc(rx, ry, rs, this.t * 5 + i, this.t * 5 + i + 4.4); c.stroke(); }
+    for (i = 0; i < 3; i++) { var ang2 = L.th + 0.6 + i * 0.9 - this.t * 0.4, rx2 = X(L.r2 * 1.04, ang2), ry2 = Y(L.r2 * 1.04, ang2); c.beginPath(); c.arc(rx2, ry2, 5 + 6 * rec, -this.t * 5 + i, -this.t * 5 + i + 4.2); c.stroke(); }
+    c.globalAlpha = 1;
+  }
+  // burbujas y colapsos
+  c.lineWidth = 1;
+  for (i = 0; i < this.bub.length; i++) { var bu = this.bub[i]; if (bu.s <= 0.1) continue; var thb = this.rot + bu.ch * 2 * Math.PI / z + this.bladeOff(bu.r / L.k) - 0.06; c.fillStyle = 'rgba(255,255,255,0.95)'; c.strokeStyle = col.red; c.lineWidth = 1.4; c.beginPath(); c.arc(X(bu.r, thb), Y(bu.r, thb), bu.s * Math.max(1, L.r2 / 95), 0, 6.2832); c.fill(); c.stroke(); }
+  for (i = 0; i < this.flash.length; i++) { var fl = this.flash[i]; c.strokeStyle = col.red; c.globalAlpha = fl.a; c.lineWidth = 1.4; c.beginPath(); for (var sgm = 0; sgm < 6; sgm++) { var aa2 = sgm * Math.PI / 3; c.moveTo(fl.x + Math.cos(aa2) * 2, fl.y + Math.sin(aa2) * 2); c.lineTo(fl.x + Math.cos(aa2) * (4 + 5 * (1 - fl.a)), fl.y + Math.sin(aa2) * (4 + 5 * (1 - fl.a))); } c.stroke(); c.globalAlpha = 1; }
+  // triángulo de salida sobre la punta superior
+  this.drawTriangle();
+  if (!L.mob && W > 900) this.drawInset();
+  // rótulos
+  c.font = '600 11px ' + font; c.fillStyle = col.muted; c.textAlign = 'center';
+  if (!L.mob) {
+    c.fillText('ojo · entrada axial', cx, cy + L.r1 + 14);
+    c.textAlign = 'left'; c.fillText('lengüeta', xa + 8, cy + 16);
+    c.fillText('descarga', xb + 8, ytop + 18);
+    var lv = L.th + Math.PI * 1.15, rl = this.rOut(Math.PI * 1.15) + 12; c.textAlign = 'right'; c.fillText('voluta', X(rl, lv), Y(rl, lv));
+  }
+  c.textAlign = 'left'; c.font = '700 11px ' + mono; c.fillStyle = col.ink;
+  c.fillText(fmtN(R.N, 0) + ' rpm · cámara lenta ×1/' + SLOW, 12, H - 12);
+  // escala de color
+  if (!L.mob) {
+    var lx = W - 190, ly = H - 34, lw = 150;
+    for (i = 0; i < lw; i++) { c.fillStyle = palAt(i / lw); c.fillRect(lx + i, ly, 1, 9); }
+    c.font = '600 10px ' + font; c.fillStyle = col.muted; c.textAlign = 'left'; c.fillText('presión estática: baja', lx, ly - 5); c.textAlign = 'right'; c.fillText('alta', lx + lw, ly - 5);
+    c.fillStyle = col.red; c.fillRect(lx, ly + 13, 9, 9); c.fillStyle = col.muted; c.textAlign = 'left'; c.fillText('bajo la presión de vapor', lx + 14, ly + 21);
+  }
+};
+PumpScene.prototype.drawTriangle = function () {
+  var R = this.R, L = this.Lo, c = this.ctx, col = this.col, t = R.tri; if (!t) return;
+  var px = L.cx, py = L.cy - L.r2, sc = L.r2 * 0.95 / Math.max(t.u2, 1);
+  var oy = this.rOut(Math.PI / 2) - L.r2 + 14; c.strokeStyle = col.muted; c.setLineDash([2, 3]); c.lineWidth = 1; c.beginPath(); c.moveTo(px, py); c.lineTo(px, py - oy); c.stroke(); c.setLineDash([]); py -= oy;
+  var u = [-t.u2 * sc, 0], cc = [-t.cu2 * sc, -t.cm2 * sc * 3], ww = [cc[0] - u[0], cc[1] - u[1]];
+  var arrow = function (x0, y0, dx, dy, color, lab, lw) {
+    var x1 = x0 + dx, y1 = y0 + dy, a = Math.atan2(dy, dx);
+    c.strokeStyle = color; c.fillStyle = color; c.lineWidth = lw || 2.2; c.beginPath(); c.moveTo(x0, y0); c.lineTo(x1, y1); c.stroke();
+    c.beginPath(); c.moveTo(x1, y1); c.lineTo(x1 - 8 * Math.cos(a - 0.4), y1 - 8 * Math.sin(a - 0.4)); c.lineTo(x1 - 8 * Math.cos(a + 0.4), y1 - 8 * Math.sin(a + 0.4)); c.closePath(); c.fill();
+    if (lab) { c.font = '800 11px ' + (cssVar('--font-mono') || 'monospace'); c.textAlign = 'center'; var tw = c.measureText(lab).width + 6; c.fillStyle = col.paper; c.fillRect(x0 + dx * 0.55 - tw / 2, y0 + dy * 0.55 - 18, tw, 13); c.fillStyle = color; c.fillText(lab, x0 + dx * 0.55, y0 + dy * 0.55 - 8); }
   };
-  var ops = dRatios.map(solveOp);
-  var op = ops[st.di];
-  var hasOp = !!op;
-  var beyond = hasOp && op.beyond;
+  arrow(px, py, u[0], u[1], col.muted, 'u₂', 2);
+  arrow(px + u[0], py + u[1], ww[0], ww[1], col.hl, 'w₂');
+  arrow(px, py, cc[0], cc[1], col.red, 'c₂', 2.6);
+  c.font = '600 10px ' + (cssVar('--font-body') || 'sans-serif'); c.fillStyle = col.muted; c.textAlign = 'left';
+  if (!L.mob) { c.textAlign = 'left'; c.fillText('triángulo de salida · cₘ ×3', px + 10, py + 14); }
+};
 
-  // BHP = WHP/η es válido donde η es razonable; cerca del cierre (Q→0) la
-  // eficiencia tiende a cero y la división se dispara (artefacto). Se empalma
-  // suavemente con la potencia de cierre típica de una bomba radial
-  // (≈ 50 % de la potencia en el PME), manteniendo valor y pendiente en Qt.
-  var bhpRaw = function (Q) { return Q * Hp(Q, D) * sg * 100 / (3960 * Math.max(eta(Q, D), 8)); };
-  var bepQD = QBEP_REF * D * s;
-  var etaTrust = Math.min(25, etaMax(D) * 0.5);
-  var Qt = bepQD * (1 - Math.sqrt(Math.max(1 - etaTrust / etaMax(D), 0)));
-  var bhpT = bhpRaw(Qt);
-  var mT = (bhpRaw(Qt * 1.05) - bhpRaw(Qt * 0.95)) / (Qt * 0.1);
-  var bhp0 = 0.5 * bhpRaw(bepQD);
-  var cBlend = (bhp0 - bhpT + mT * Qt) / (Qt * Qt);
-  var BHPcurve = function (Q) { return Q >= Qt ? bhpRaw(Q) : bhpT + mT * (Q - Qt) + cBlend * (Q - Qt) * (Q - Qt); };
-  var bhpMax = 0;
-  for (var i = 0; i <= 60; i++) bhpMax = Math.max(bhpMax, BHPcurve(qEnd(D) * i / 60));
-  var motors = [0.5, 0.75, 1, 1.5, 2, 3, 5, 7.5, 10, 15, 20, 25, 30, 40, 50];
-  var motorNO = motors.find(function (m) { return m >= bhpMax; }) || 50;
-  var etaOp = hasOp ? eta(op.Q, D) : 0;
-  var whpOp = hasOp ? op.Q * op.H * sg / 3960 : 0;
-  var bhpOp = hasOp ? BHPcurve(op.Q) : 0;
-  var motorPt = motors.find(function (m) { return m >= bhpOp; }) || 50;
+PumpScene.prototype.drawInset = function () {
+  var R = this.R, c = this.ctx, col = this.col, pf = R.pf, sys = R.sys, op = R.op, n = R.arr === 'paralelo' ? 2 : 1, ser = R.arr === 'serie' ? 2 : 1;
+  var x0 = 40, x1 = Math.min(250, this.Lo.cx - this.rOut(Math.PI) - 40), y0 = 78, y1 = 228; if (x1 - x0 < 140) return;
+  var Qm = Math.max(pf.qEnd * n * 1.1, op.Q * 1.2), Hm = Math.max(pf.H(0) * ser * 1.15, op.H * 1.2);
+  var X = function (q) { return x0 + q / Qm * (x1 - x0); }, Y = function (h) { return y1 - h / Hm * (y1 - y0); };
+  c.fillStyle = col.paper; c.globalAlpha = 0.9; c.fillRect(x0 - 30, y0 - 22, x1 - x0 + 40, y1 - y0 + 46); c.globalAlpha = 1;
+  c.strokeStyle = col.ink; c.lineWidth = 1.2; c.strokeRect(x0, y0, x1 - x0, y1 - y0);
+  var font = cssVar('--font-body') || 'sans-serif'; c.font = '700 10.5px ' + font; c.fillStyle = col.ink; c.textAlign = 'left'; c.fillText('Punto de operación', x0 - 26, y0 - 8);
+  c.save(); c.beginPath(); c.rect(x0, y0, x1 - x0, y1 - y0); c.clip();
+  c.strokeStyle = 'rgba(47,125,91,0.28)'; c.lineWidth = 9; c.lineCap = 'round'; c.beginPath();
+  for (var i = 0; i <= 12; i++) { var q = (0.7 + 0.4 * i / 12) * pf.qB * n; if (i) c.lineTo(X(q), Y(ser * pf.H(q / n))); else c.moveTo(X(q), Y(ser * pf.H(q / n))); } c.stroke();
+  c.lineWidth = 2.2; c.strokeStyle = col.ink; c.beginPath(); for (i = 0; i <= 40; i++) { var q2 = pf.qEnd * n * i / 40; if (i) c.lineTo(X(q2), Y(ser * pf.H(q2 / n))); else c.moveTo(X(q2), Y(ser * pf.H(q2 / n))); } c.stroke();
+  c.strokeStyle = col.hl; c.beginPath(); for (i = 0; i <= 40; i++) { var q3 = Qm * i / 40; if (i) c.lineTo(X(q3), Y(sys.H(q3))); else c.moveTo(X(q3), Y(sys.H(q3))); } c.stroke();
+  c.restore();
+  var pul = 4 + 1.5 * Math.sin(this.t * 4);
+  c.fillStyle = col.hl; c.beginPath(); c.arc(X(op.Q), Y(op.H), pul + 2, 0, 6.2832); c.fill();
+  c.fillStyle = col.paper; c.beginPath(); c.arc(X(op.Q), Y(op.H), 2, 0, 6.2832); c.fill();
+  c.font = '600 9.5px ' + font; c.fillStyle = col.muted; c.textAlign = 'center'; c.fillText('Q', (x0 + x1) / 2, y1 + 13);
+  c.save(); c.translate(x0 - 9, (y0 + y1) / 2); c.rotate(-Math.PI / 2); c.fillText('H', 0, 0); c.restore();
+  c.textAlign = 'left'; c.fillStyle = col.ink; c.fillText('bomba', x0 + 4, Y(ser * pf.H(0)) - 4); c.fillStyle = col.hl; c.fillText('sistema', x0 + 4, Math.min(Y(sys.H(0)) - 4, y1 - 4));
+};
+var pscene = null, lastT = 0;
+function animLoop(ts) {
+  var dt = lastT ? Math.min(0.05, (ts - lastT) / 1000) : 0.016; lastT = ts;
+  if (pscene && pscene.R && tab === 'in' && !document.hidden) { if (pscene.running) pscene.step(dt); pscene.draw(); }
+  if (window.tweenTick) window.tweenTick(dt);
+  requestAnimationFrame(animLoop);
+}
+/* ====================================================================
+   Interfaz: controles, indicadores, pestañas y gráficas
+   ==================================================================== */
+var $ = function (s, r) { return (r || document).querySelector(s); };
+var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+var store = { get: function (k, d) { try { var v = localStorage.getItem('pou-bombas:' + k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } }, set: function (k, v) { try { localStorage.setItem('pou-bombas:' + k, JSON.stringify(v)); } catch (e) { } } };
+function clone(o) { return JSON.parse(JSON.stringify(o)); }
 
-  var naOp = hasOp ? NPSHa(op.Q) : NPSHa(0);
-  var nrOp = hasOp ? NPSHr(op.Q) : NPSHr(0);
-  var npshMargin = naOp - nrOp;
-  var cav = hasOp && npshMargin < 0;
-  var lowMargin = hasOp && !cav && npshMargin < marginReq;
-  var qSafe2 = (hatm - hvap - st.hs - 4 * s * s) / (Ks + 0.000085);
-  var qSafe = qSafe2 > 0 ? Math.sqrt(qSafe2) : 0;
+var BASE = { casing: 'm', N0: 1750, vfd: 100, D: 190, arr: 'una', fluid: 'agua', T: 25, pMu: 4, cRho: 1000, cMuExp: -3, cPv: 2.3, lQd: Math.log10(25), zs: 2, zd: 12, P1: 0, P2: 0, hfs: 0.5, hfd: 5, hv: 0, alt: 2600, FS: 1.15, marg: 1.0, units: 'si', isl: true, grid: true };
+var PRESETS = [
+  { id: 'agua', name: 'Agua de servicios', tag: 'base', s: {} },
+  { id: 'pectina', name: 'Extracto de pectina al filtro prensa', tag: 'proyecto', s: { casing: 's', N0: 3500, D: 117, fluid: 'pectina', T: 80, lQd: Math.log10(15), zs: 1.5, zd: 3.5, P2: 150, hfs: 0.35, hfd: 6 } },
+  { id: 'sobre', name: 'Bomba sobredimensionada', tag: 'recirculación', s: { casing: 'l', D: 254, lQd: Math.log10(20), zs: 2, zd: 34, hfs: 0.3, hfd: 2 } },
+  { id: 'cavita', name: 'Agua a 60 °C con succión negativa', tag: 'cavitación', s: { N0: 3500, D: 195, T: 60, lQd: Math.log10(48), zs: -3, zd: 55, hfs: 1.0, hfd: 12 } },
+  { id: 'viscoso', name: 'Aceite viscoso a 20 °C', tag: 'ANSI/HI 9.6.7', s: { fluid: 'aceite', T: 20, D: 203, lQd: Math.log10(20), zs: 2, zd: 14, hfs: 0.5, hfd: 3 } },
+  { id: 'paralelo', name: 'Dos bombas en paralelo', tag: 'arreglo', s: { D: 203, arr: 'paralelo', lQd: Math.log10(45), zs: 2, zd: 12, hfs: 0.4, hfd: 8 } }
+];
+function presetState(id) { var p = byId(PRESETS, id), s = Object.assign(clone(BASE), clone(p.s)); s.preset = id; s.units = state ? state.units : 'si'; return s; }
+var state = null; state = Object.assign(clone(BASE), store.get('state', {}));
+var R = null, RV = null, tab = store.get('tab', 'in');
+var SVGI = {
+  pause: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M8 5v14M16 5v14"/></svg>',
+  play: '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l12-7.5z"/></svg>',
+  reset: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>'
+};
+var CAS_ICON = '<svg viewBox="0 0 44 30" aria-hidden="true"><path d="M8 15 a12 12 0 1 1 24 0 a12 12 0 0 1 -12 12 h-2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M32 15 V3 h6 V15" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="20" cy="15" r="3" fill="currentColor"/><path d="M20 15 q4 -6 8 -4 M20 15 q-6 -2 -6 -8 M20 15 q2 6 -2 8" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>';
 
-  // recommendation: impeller whose operating point has highest efficiency (within published curve)
-  var recIdx = -1, recEta = -1;
-  ops.forEach(function (o, i) {
-    if (o && !o.beyond) { var e = eta(o.Q, dRatios[i]); if (e > recEta) { recEta = e; recIdx = i; } }
+/* ---------- unidades ---------- */
+function US() { return state.units === 'us'; }
+function uQ(Qs) { return US() ? Qs * 15850.32 : Qs * 3600; } function lQ() { return US() ? 'GPM' : 'm³/h'; }
+function uH(m) { return US() ? m * 3.28084 : m; } function lH() { return US() ? 'pie' : 'm'; }
+function uP(kW) { return US() ? kW / 0.7457 : kW; } function lP() { return US() ? 'HP' : 'kW'; }
+function fq(Qs) { var v = uQ(Qs); return fmtN(v, v < 10 ? 2 : (v < 100 ? 1 : 0)); }
+function fh(m) { var v = uH(m); return fmtN(v, Math.abs(v) < 10 ? 2 : 1); }
+function fp(kW) { var v = uP(kW); return fmtN(v, v < 10 ? 2 : 1); }
+function fD(Dm) { return fmtN(Dm * 1000, 0) + ' mm (' + fmtN(Dm / 0.0254, 2) + '″)'; }
+
+/* ---------- controles ---------- */
+var SLIDERS = ['D', 'vfd', 'T', 'pMu', 'cRho', 'cMuExp', 'cPv', 'lQd', 'zs', 'zd', 'P1', 'P2', 'hfs', 'hfd', 'hv', 'alt', 'marg', 'FS'];
+function buildControls() {
+  $('#presetBtns').innerHTML = PRESETS.map(function (p) { return '<button type="button" class="opt" data-p="' + p.id + '"><span>' + esc(p.name) + '</span><span class="x">' + esc(p.tag) + '</span></button>'; }).join('');
+  $('#casBtns').innerHTML = CASINGS.map(function (c) { return '<button type="button" class="mill" data-c="' + c.id + '">' + CAS_ICON + esc(c.name) + '<span class="sz">' + fmtN(REF.D2max * c.lam * 1000, 0) + ' mm</span></button>'; }).join('');
+  $('#fluBtns').innerHTML = FLUIDS.filter(function (f) { return f.id !== 'glicerina'; }).map(function (f) { return '<button type="button" class="opt" data-f="' + f.id + '"><span class="dotc" style="background:' + f.color + '"></span><span>' + esc(f.name) + '</span><span class="x">' + (f.project ? 'proyecto' : (f.custom ? 'ρ, μ, Pv' : '')) + '</span></button>'; }).join('');
+  $$('#presetBtns .opt').forEach(function (b) { b.addEventListener('click', function () { state = presetState(b.dataset.p); pscene && pscene.reset(); update(true); }); });
+  $$('#casBtns .mill').forEach(function (b) { b.addEventListener('click', function () { var old = byId(CASINGS, state.casing), nw = byId(CASINGS, b.dataset.c); state.casing = nw.id; state.D = Math.round(state.D * nw.lam / old.lam); dirty(); }); });
+  $$('#fluBtns .opt').forEach(function (b) { b.addEventListener('click', function () { var f = byId(FLUIDS, b.dataset.f); state.fluid = f.id; if (f.T) state.T = clamp(state.T, f.T[0], f.T[1]); if (f.id === 'pectina' && state.T < 50) state.T = 80; dirty(); }); });
+  [['#nSeg', 'N0', true], ['#arrSeg', 'arr'], ['#unitSeg', 'units']].forEach(function (a) { $$(a[0] + ' button').forEach(function (b) { b.addEventListener('click', function () { state[a[1]] = a[2] ? +b.dataset.v : b.dataset.v; dirty(); }); }); });
+  SLIDERS.forEach(function (k) { var el = document.getElementById(k); el.addEventListener('input', function () { state[k] = parseFloat(el.value); dirty(); }); });
+  ['isl', 'grid'].forEach(function (k) { var el = document.getElementById(k); el.addEventListener('change', function () { state[k] = el.checked; dirty(); }); });
+  $('#resetAll').addEventListener('click', function () { state = presetState('agua'); pscene && pscene.reset(); update(true); });
+  $('#status').addEventListener('click', function () { setTab('in'); setTimeout(function () { $('#diagCard').scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 50); });
+  $$('.tabs [role=tab]').forEach(function (b) { b.addEventListener('click', function () { setTab(b.dataset.tab); }); });
+  $$('.tabs .canv button').forEach(function (b) { b.addEventListener('click', function () { document.documentElement.setAttribute('data-canvas', b.dataset.canvas); $$('.tabs .canv button').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); }); store.set('canvas', b.dataset.canvas); pscene && pscene.layout(); renderTab(); }); });
+  $('#mobCtl').addEventListener('click', function () { $('#ctl').classList.toggle('open'); this.textContent = $('#ctl').classList.contains('open') ? 'Cerrar' : 'Controles'; });
+  document.addEventListener('keydown', function (e) { if (/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return; var i = '123456'.indexOf(e.key); if (i >= 0) setTab(['in', 'ca', 'np', 're', 'sp', 'se'][i]); if (e.key === ' ' && tab === 'in') { e.preventDefault(); togglePlay(); } });
+  $('#btnPlay').innerHTML = SVGI.pause; $('#btnReset').innerHTML = SVGI.reset;
+  $('#btnPlay').addEventListener('click', togglePlay); $('#btnReset').addEventListener('click', function () { pscene.reset(); });
+  $$('.play [data-sp]').forEach(function (b) { b.addEventListener('click', function () { pscene.speed = +b.dataset.sp; $$('.play [data-sp]').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); }); }); });
+  var cv = store.get('canvas', 'paper'); document.documentElement.setAttribute('data-canvas', cv); $$('.tabs .canv button').forEach(function (x) { x.setAttribute('aria-pressed', x.dataset.canvas === cv ? 'true' : 'false'); });
+  hoverSetup();
+}
+function dirty() { state.preset = null; update(); }
+function togglePlay() { pscene.running = !pscene.running; $('#btnPlay').innerHTML = pscene.running ? SVGI.pause : SVGI.play; }
+function setTab(t) {
+  tab = t; store.set('tab', t);
+  $$('.tabs [role=tab]').forEach(function (b) { b.setAttribute('aria-selected', b.dataset.tab === t ? 'true' : 'false'); });
+  $$('.panel').forEach(function (p) { p.classList.toggle('on', p.dataset.panel === t); });
+  if (t === 'in' && pscene) pscene.resize();
+  renderTab();
+}
+function setV(id, v) { var el = document.getElementById(id); if (el && el.innerHTML !== v) { el.innerHTML = v; if (el.classList.contains('v')) { el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); } } }
+function pressed(sel, attr, val) { $$(sel).forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset[attr]) === String(val) ? 'true' : 'false'); }); }
+
+/* transición suave de diámetro y velocidad en las cartas */
+var VIS = null;
+window.tweenTick = function (dt) {
+  if (!VIS || !R) return;
+  var done = true, kf = 1 - Math.exp(-dt / 0.08);
+  ['D', 'vfd'].forEach(function (k) { var tg = k === 'D' ? R.D * 1000 : state[k]; var d = tg - VIS[k]; if (Math.abs(d) > (k === 'D' ? 0.15 : 0.08)) { VIS[k] += d * kf; done = false; } else VIS[k] = tg; });
+  if (VIS.casing !== state.casing || VIS.N0 !== state.N0) { VIS.casing = state.casing; VIS.N0 = state.N0; }
+  if (done) { if (RV) { RV = null; renderTab(); } return; }
+  if (tab === 'ca' || tab === 'np') { RV = compute(Object.assign({}, state, { D: VIS.D, vfd: VIS.vfd }), true); renderTab(); }
+};
+
+function update(jump) {
+  store.set('state', state);
+  R = compute(state);
+  if (!VIS || jump || VIS.casing !== state.casing || VIS.N0 !== state.N0) VIS = { D: R.D * 1000, vfd: state.vfd, casing: state.casing, N0: state.N0 };
+  var s = state, r = R, fl = r.fl, P = r.P;
+  pressed('#presetBtns .opt', 'p', s.preset || ''); pressed('#casBtns .mill', 'c', s.casing); pressed('#fluBtns .opt', 'f', s.fluid);
+  pressed('#nSeg button', 'v', s.N0); pressed('#arrSeg button', 'v', s.arr); pressed('#unitSeg button', 'v', s.units);
+  var dEl = $('#D'); dEl.min = Math.round(r.Dmin * 1000); dEl.max = Math.round(r.Dmax * 1000);
+  if (s.D < +dEl.min || s.D > +dEl.max) s.D = clamp(s.D, +dEl.min, +dEl.max);
+  SLIDERS.forEach(function (k) { var el = document.getElementById(k); if (parseFloat(el.value) !== s[k]) el.value = s[k]; });
+  ['isl', 'grid'].forEach(function (k) { document.getElementById(k).checked = !!s[k]; });
+  $('#casNote').textContent = r.cas.note;
+  setV('vD', fD(r.D)); $('#Dhint').textContent = 'Rango de la carcasa: ' + fmtN(r.Dmin * 1000, 0) + ' a ' + fmtN(r.Dmax * 1000, 0) + ' mm (recorte hasta 75 %)';
+  setV('vvfd', fmtN(s.vfd, 0) + ' % · ' + fmtN(r.N, 0) + ' rpm'); $('#vfdHint').textContent = 'Leyes de afinidad: Q ∝ N, H ∝ N², P ∝ N³ · ' + fmtN(60 * s.vfd / 100, 1) + ' Hz';
+  // fluido
+  $('#TRow').style.display = fl.T ? 'block' : 'none';
+  if (fl.T) { var tEl = $('#T'); tEl.min = fl.T[0]; tEl.max = fl.T[1]; if (parseFloat(tEl.value) !== r.T) tEl.value = r.T; }
+  setV('vT', fmtN(r.T, 0) + ' °C');
+  $('#pMuRow').style.display = fl.custom === 'mu' ? 'block' : 'none'; setV('vpMu', fmtN(s.pMu, 1) + ' mPa·s');
+  $('#customBox').style.display = fl.custom === 'all' ? 'block' : 'none';
+  setV('vcRho', fmtN(s.cRho, 0) + ' kg/m³'); setV('vcMuExp', fmtMu(Math.pow(10, s.cMuExp))); setV('vcPv', fmtN(s.cPv, 1) + ' kPa');
+  $('#specFlu').innerHTML = [['Densidad ρ', fmtN(P.rho, 1) + ' kg/m³'], ['Viscosidad cinemática ν', fmtN(P.nu * 1e6, P.nu < 1e-5 ? 2 : 1) + ' cSt'], ['Presión de vapor Pv', fmtN(P.Pv, P.Pv < 1 ? 3 : 1) + ' kPa'], ['Gravedad específica', fmtN(P.rho / 999, 3)]].map(function (a) { return '<div>' + a[0] + '</div><div class="v">' + a[1] + '</div>'; }).join('');
+  // sistema
+  setV('vlQd', fq(r.sys.Qd) + ' ' + lQ());
+  setV('vzs', fh(s.zs) + ' ' + lH()); $('#zsHint').textContent = s.zs < 0 ? 'Nivel bajo el eje: altura de succión (succión negativa)' : 'Nivel sobre el eje: succión inundada';
+  setV('vzd', fh(s.zd) + ' ' + lH()); setV('vP1', fmtN(s.P1, 0) + ' kPa'); setV('vP2', fmtN(s.P2, 0) + ' kPa');
+  setV('vhfs', fh(s.hfs) + ' ' + lH()); setV('vhfd', fh(s.hfd) + ' ' + lH()); setV('vhv', fh(s.hv) + ' ' + lH());
+  setV('valt', fmtN(s.alt, 0) + ' msnm'); $('#altHint').textContent = 'Patm = ' + fmtN(r.Patm, 1) + ' kPa' + (Math.abs(s.alt - 2600) < 60 ? ' · Bogotá' : '');
+  setV('vmarg', fh(s.marg) + ' ' + lH()); setV('vFS', fmtN(s.FS, 2));
+  $('#ctx').innerHTML = '<b>' + esc(r.cas.name) + '</b> · ' + fmtN(r.N, 0) + ' rpm · ' + esc(fl.name.toLowerCase()) + (fl.T ? ' a ' + fmtN(r.T, 0) + ' °C' : '') + (s.arr !== 'una' ? ' · dos en ' + s.arr : '');
+  renderKPIs();
+  var sev = r.warn.some(function (w) { return w.sev === 'c'; }) ? 'inv' : (r.warn.some(function (w) { return w.sev === 'w'; }) ? 'adv' : '');
+  $('#status').className = 'status' + (sev ? ' ' + sev : ''); $('#statusTxt').textContent = sev === 'inv' ? 'No viable' : (sev === 'adv' ? 'Con advertencias' : 'Selección sana');
+  renderTab();
+  if (pscene) pscene.configure(R);
+}
+function renderKPIs() {
+  var r = R, op = r.op;
+  setV('kQ', op ? fq(op.Q) : '0'); setV('kQu', lQ() + (op ? ' · requerido ' + fq(r.sys.Qd) : ''));
+  setV('kH', op ? fh(op.H) : '—'); setV('kHu', lH() + ' de líquido · ' + (op ? fmtN(op.H * r.rg / 1000, 0) + ' kPa' : ''));
+  setV('kE', op ? fmtN(100 * r.eta, 1) + ' %' : '—'); setV('kEu', 'máxima ' + fmtN(100 * r.pf.eB, 1) + ' % en el BEP');
+  setV('kX', op ? fmtN(100 * r.x, 0) + ' %' : '—'); $('#kXc').classList.toggle('bad', !!op && (r.x < 0.7 || r.x > 1.1));
+  setV('kP', op ? fp(r.Pshaft) : '—'); setV('kPu', lP() + (r.motor ? ' · motor ' + (r.nP > 1 ? '2 × ' : '') + fmtN(r.motor, r.motor < 1 ? 2 : (r.motor < 10 ? 1 : 0)) + ' kW' : ''));
+  setV('kN', op ? (r.margin >= 0 ? '+' : '') + fh(r.margin) : '—'); setV('kNu', op ? lH() + ' · NPSHa ' + fh(r.npsha) + ' / NPSH3 ' + fh(r.npsh3) : '');
+  $('#kNc').classList.toggle('bad', !!op && r.margin < state.marg);
+}
+function renderTab() {
+  if (!R) return; var r = RV || R;
+  if (tab === 'in') renderInside();
+  else if (tab === 'ca') renderChart(r);
+  else if (tab === 'np') renderNpsh(r);
+  else if (tab === 're') renderReg();
+  else if (tab === 'sp') renderSP();
+  else if (tab === 'se') renderSel();
+}
+
+/* ---------- utilidades SVG ---------- */
+function E(tag, a, inner) { var s = '<' + tag; for (var k in a) if (a[k] != null && a[k] !== '') s += ' ' + k + '="' + a[k] + '"'; return s + '>' + (inner == null ? '' : inner) + '</' + tag + '>'; }
+function TX(x, y, s, o) { o = o || {}; return E('text', { x: r1(x), y: r1(y), 'text-anchor': o.a, 'font-size': o.fs || 11, 'font-weight': o.fw, transform: o.tr, style: o.c ? 'fill:' + o.c : null, 'font-family': o.mono ? 'var(--font-mono)' : null }, esc(s)); }
+function LN(x1, y1, x2, y2, st) { return E('line', { x1: r1(x1), y1: r1(y1), x2: r1(x2), y2: r1(y2), style: st }); }
+function PATH(d, st, clip) { return E('path', { d: d, style: 'fill:none;' + st, 'clip-path': clip ? 'url(#' + clip + ')' : null }); }
+function r1(x) { return Math.round(x * 10) / 10; }
+function poly(arr) { return arr.map(function (p, i) { return (i ? 'L' : 'M') + r1(p[0]) + ' ' + r1(p[1]); }).join(' '); }
+function niceStep(range, n) { var raw = range / (n || 5), p = Math.pow(10, Math.floor(Math.log10(raw))), m = raw / p; return (m < 1.5 ? 1 : (m < 3 ? 2 : (m < 7 ? 5 : 10))) * p; }
+var MUT = 'var(--muted-ink)';
+function axes(o) { // o: x0,x1,y0,y1, xmax, ymin, ymax, xlab, ylab, xs (display multiplier), ys, clip
+  var out = E('rect', { x: o.x0, y: o.y0, width: o.x1 - o.x0, height: o.y1 - o.y0, class: 'chart-bg' });
+  var X = function (v) { return o.x0 + v / o.xmax * (o.x1 - o.x0); }, Y = function (v) { return o.y1 - (v - o.ymin) / (o.ymax - o.ymin) * (o.y1 - o.y0); };
+  var dx = niceStep(o.xmax * o.xs, o.nx || 8), dy = niceStep((o.ymax - o.ymin) * o.ys, o.ny || 5);
+  for (var v = 0; v <= o.xmax * o.xs + 1e-9; v += dx) { var xx = X(v / o.xs); if (state.grid) out += LN(xx, o.y0, xx, o.y1, 'stroke:var(--n300);stroke-width:.7;opacity:.7'); if (!o.noXlab) out += TX(xx, o.y1 + 15, fmtN(v, dx < 1 ? 1 : 0), { a: 'middle', c: MUT, fs: 10.5 }); }
+  for (v = Math.ceil(o.ymin * o.ys / dy) * dy; v <= o.ymax * o.ys + 1e-9; v += dy) { var yy = Y(v / o.ys); if (state.grid) out += LN(o.x0, yy, o.x1, yy, 'stroke:var(--n300);stroke-width:.7;opacity:.7'); out += TX(o.x0 - 6, yy + 4, fmtN(v, dy < 1 ? 1 : 0), { a: 'end', c: MUT, fs: 10.5 }); }
+  out += E('rect', { x: o.x0, y: o.y0, width: o.x1 - o.x0, height: o.y1 - o.y0, style: 'fill:none;stroke:var(--ink);stroke-width:1.5' });
+  if (o.clip) out += E('clipPath', { id: o.clip }, E('rect', { x: o.x0, y: o.y0, width: o.x1 - o.x0, height: o.y1 - o.y0 }));
+  if (o.xlab) out += TX((o.x0 + o.x1) / 2, o.y1 + 32, o.xlab, { a: 'middle', c: MUT, fs: 11 });
+  if (o.ylab) out += TX(o.x0 - 40, (o.y0 + o.y1) / 2, o.ylab, { a: 'middle', c: MUT, fs: 11, tr: 'rotate(-90 ' + (o.x0 - 40) + ' ' + ((o.y0 + o.y1) / 2) + ')' });
+  return { svg: out, X: X, Y: Y };
+}
+function samp(fn, a, b, n) { var o = []; for (var i = 0; i <= n; i++) { var q = a + (b - a) * i / n; o.push([q, fn(q)]); } return o; }
+
+/* ---------- 1 · por dentro ---------- */
+function renderInside() {
+  var r = R, s = state, op = r.op;
+  $('#inLbl').textContent = fmtN(r.N, 0) + ' rpm · D = ' + fmtN(r.D * 1000, 0) + ' mm';
+  if (!op) { $('#inLead').textContent = 'Sin punto de operación: revise el diagnóstico.'; $('#hud').innerHTML = '<span class="chip red">Sin flujo</span>'; $('#svgTri').innerHTML = ''; $('#svgPress').innerHTML = ''; $('#specTri').innerHTML = ''; renderWarn(); return; }
+  var t = r.tri;
+  $('#inLead').innerHTML = 'El líquido entra por el ojo, los álabes lo aceleran hacia la periferia y la voluta convierte esa velocidad en presión. A ' + fmtN(r.N, 0) + ' rpm la punta del álabe corre a ' + fmtN(t.u2, 1) + ' m/s y la bomba entrega ' + fh(op.h1) + ' ' + lH() + ' a ' + fq(op.q1) + ' ' + lQ() + (r.nP > 1 ? ' por bomba' : '') + '.';
+  var chips = ['<span class="chip acc">' + fmtN(100 * r.x, 0) + ' % del BEP</span>', '<span class="chip">η ' + fmtN(100 * r.eta, 1) + ' %</span>', '<span class="chip">u₂ ' + fmtN(t.u2, 1) + ' m/s</span>'];
+  if (r.npsha < r.npsh3) chips.push('<span class="chip red">Cavitación · cabeza −' + fmtN(100 * r.drop, 0) + ' %</span>');
+  else if (r.npsha < r.npshi) chips.push('<span class="chip red">Burbujas incipientes</span>');
+  if (r.x < 0.7) chips.push('<span class="chip red">Recirculación</span>');
+  $('#hud').innerHTML = chips.join('');
+  var cap = '<b>Cámara lenta ×1/' + SLOW + '.</b> Las partículas siguen la velocidad relativa entre los álabes más la rotación, y su color es la presión estática: baja en el ojo, sube a lo largo del álabe y termina de subir en la voluta. ';
+  if (r.npsha < r.npshi) cap += 'En el borde de ataque, en el lado de succión del álabe, la presión cae bajo la de vapor y nacen <b>burbujas</b>; unos milímetros adelante la presión sube y colapsan (los destellos rojos son los colapsos que erosionan el metal). ';
+  if (r.x < 0.7) cap += 'A este caudal tan bajo aparece <b>recirculación</b> en la entrada y en la salida del impulsor. ';
+  cap += 'El triángulo de salida muestra la velocidad de la punta u₂, la relativa w₂ y la absoluta c₂ = u₂ + w₂.';
+  $('#inCap').innerHTML = cap;
+  renderTri(); renderPress(); renderWarn();
+}
+function renderTri() {
+  var t = R.tri, W = 420, H = 330, o = '';
+  var arrow = function (x0, y0, dx, dy, col, lab, dash) {
+    var x1 = x0 + dx, y1 = y0 + dy, a = Math.atan2(dy, dx), hd = 8;
+    var s = LN(x0, y0, x1, y1, 'stroke:' + col + ';stroke-width:2.2' + (dash ? ';stroke-dasharray:4 3' : ''));
+    if (!dash) s += E('path', { d: 'M' + r1(x1) + ' ' + r1(y1) + 'L' + r1(x1 - hd * Math.cos(a - 0.4)) + ' ' + r1(y1 - hd * Math.sin(a - 0.4)) + 'L' + r1(x1 - hd * Math.cos(a + 0.4)) + ' ' + r1(y1 - hd * Math.sin(a + 0.4)) + 'Z', style: 'fill:' + col });
+    if (lab) s += TX(x0 + dx * 0.5 + (dy === 0 ? 0 : 10), y0 + dy * 0.5 + (dy === 0 ? 15 : 0), lab, { c: col, fw: 800, fs: 11, mono: true, a: dy === 0 ? 'middle' : 'start' });
+    return s;
+  };
+  // entrada (izquierda): u1 horizontal, c1 meridional (sin prerrotación), w1 = c1 − u1; escala real
+  var sc1 = 165 / Math.max(t.u1, 1), bx = 18, by = 150;
+  o += TX(12, 20, 'Entrada (ojo)', { fw: 800, fs: 12 });
+  o += arrow(bx, by, t.u1 * sc1, 0, 'var(--muted-ink)', 'u₁ = ' + fmtN(t.u1, 1));
+  o += arrow(bx, by, 0, -t.c1 * sc1, 'var(--redline)', '');
+  o += TX(bx + 4, by - t.c1 * sc1 - 6, 'c₁ = ' + fmtN(t.c1, 2), { c: 'var(--redline)', fw: 800, fs: 11, mono: true });
+  o += arrow(bx + t.u1 * sc1, by, -t.u1 * sc1, -t.c1 * sc1, 'var(--hl)', '');
+  o += TX(bx + t.u1 * sc1 * 0.55, by - t.c1 * sc1 * 0.55 - 8, 'w₁ = ' + fmtN(t.w1, 1), { c: 'var(--hl)', fw: 800, fs: 11, mono: true });
+  var lb = 70, a1 = t.beta1B * Math.PI / 180; o += LN(bx + t.u1 * sc1, by, bx + t.u1 * sc1 - lb * Math.cos(a1), by - lb * Math.sin(a1), 'stroke:var(--ink);stroke-width:1;stroke-dasharray:3 3');
+  o += TX(bx, by + 32, 'β₁ = ' + fmtN(t.beta1, 1) + '° · álabe ' + fmtN(t.beta1B, 1) + '°', { fs: 10.5, c: MUT });
+  o += TX(bx, by + 46, 'incidencia ' + (t.inc >= 0 ? '+' : '') + fmtN(t.inc, 1) + '°' + (Math.abs(t.inc) > 3 ? (t.inc > 0 ? ' · carga parcial' : ' · sobrecarga') : ''), { fs: 10.5, c: Math.abs(t.inc) > 3 ? 'var(--redline)' : MUT, fw: 700 });
+  // salida (derecha): cₘ exagerada ×3 para ver los ángulos; la línea del álabe usa la misma escala
+  var sc2 = 185 / Math.max(t.u2, 1), cx = 410, cy = 150, ex = 3, cmv = t.cm2 * sc2 * ex;
+  o += TX(222, 20, 'Salida (punta del álabe)', { fw: 800, fs: 12 });
+  o += arrow(cx, cy, -t.u2 * sc2, 0, 'var(--muted-ink)', 'u₂ = ' + fmtN(t.u2, 1));
+  o += arrow(cx, cy, -t.cu2inf * sc2, -cmv, 'var(--ink)', '', true);
+  o += arrow(cx, cy, -t.cu2 * sc2, -cmv, 'var(--redline)', '');
+  o += arrow(cx - t.u2 * sc2, cy, (t.u2 - t.cu2) * sc2, -cmv, 'var(--hl)', '');
+  o += TX(cx - t.cu2 * sc2 * 0.5 + 6, cy - cmv * 0.5 - 6, 'c₂ = ' + fmtN(t.c2, 1), { c: 'var(--redline)', fw: 800, fs: 11, mono: true });
+  o += TX(cx - t.u2 * sc2 + 2, cy - cmv - 6, 'w₂ = ' + fmtN(t.w2, 1), { c: 'var(--hl)', fw: 800, fs: 11, mono: true });
+  o += TX(cx - 2, by + 32, 'cᵤ₂ = ' + fmtN(t.cu2, 1) + ' m/s · ideal ' + fmtN(t.cu2inf, 1) + ' (punteada)', { a: 'end', fs: 10.5, c: MUT });
+  o += TX(cx - 2, by + 46, 'deslizamiento σ = ' + fmtN(t.slip, 3) + ' (Wiesner) · cₘ₂ ×3', { a: 'end', fs: 10.5, c: MUT });
+  o += TX(210, 222, 'velocidades en m/s', { a: 'middle', fs: 10, c: MUT });
+  $('#svgTri').innerHTML = o.replace(/c_u2/g, 'cᵤ₂');
+  $('#specTri').innerHTML = [['Cabeza teórica de Euler, u₂c<sub>u2</sub>/g', fh(t.Hth) + ' ' + lH()], ['Cabeza real H', fh(R.pw.H(R.op.q1 / R.hi.CQ)) + ' ' + lH()], ['Eficiencia hidráulica η<sub>h</sub>', fmtN(100 * t.etah, 1) + ' %'], ['Ángulo del flujo a la salida β₂', fmtN(t.beta2, 1) + '° (álabe ' + fmtN(t.beta2B, 0) + '°)']].map(function (a) { return '<div>' + a[0] + '</div><div class="v">' + a[1] + '</div>'; }).join('');
+}
+function renderPress() {
+  var pr = R.press, pts = pr.pts, W = 420, H = 330, x0 = 54, x1 = W - 34, y0 = 16, y1 = H - 64;
+  var lo = Math.min(0, pr.pv - 1, Math.min.apply(null, pts.map(function (p) { return p.p; })) - 1), hi = Math.max.apply(null, pts.map(function (p) { return p.p; })) * 1.08;
+  var ax = axes({ x0: x0, x1: x1, y0: y0, y1: y1, xmax: 4, ymin: lo, ymax: hi, xs: 1, ys: US() ? 3.28084 : 1, nx: 4, ny: 5, noXlab: true, ylab: 'p absoluta (' + lH() + ')' });
+  var o = ax.svg, X = ax.X, Y = ax.Y;
+  o += E('rect', { x: x0, y: r1(Y(pr.pv)), width: x1 - x0, height: r1(y1 - Y(pr.pv)), style: 'fill:var(--redline);opacity:.10' });
+  o += LN(x0, Y(pr.pv), x1, Y(pr.pv), 'stroke:var(--redline);stroke-width:1.4;stroke-dasharray:5 4');
+  o += TX(x1 - 4, Y(pr.pv) - 5, 'presión de vapor', { a: 'end', fs: 10, c: 'var(--redline)', fw: 700 });
+  var sm = []; for (var i = 0; i < pts.length - 1; i++) { var a = pts[i], b = pts[i + 1]; for (var k = 0; k < 12; k++) { var tt = k / 12, e = 0.5 - 0.5 * Math.cos(Math.PI * tt); sm.push([X(a.x + (b.x - a.x) * tt), Y(a.p + (b.p - a.p) * e)]); } } sm.push([X(4), Y(pts[pts.length - 1].p)]);
+  o += PATH(poly(sm), 'stroke:var(--hl);stroke-width:2.6');
+  var short = ['succión', 'ojo', 'borde de ataque', 'salida impulsor', 'voluta', 'descarga'];
+  pts.forEach(function (p, i) {
+    var bad = p.p < pr.pv;
+    o += E('circle', { cx: r1(X(p.x)), cy: r1(Y(p.p)), r: 4.5, style: 'fill:' + (bad ? 'var(--redline)' : 'var(--paper)') + ';stroke:' + (bad ? 'var(--redline)' : 'var(--hl)') + ';stroke-width:2' });
+    o += TX(X(p.x), y1 + 16 + (i % 2) * 13, short[i], { a: 'middle', fs: 10, c: MUT });
+    o += TX(X(p.x) + (i === 0 ? 6 : 0), Y(p.p) - 9, fh(p.p), { a: i === 0 ? 'start' : 'middle', fs: 10.5, fw: 700, mono: true });
   });
+  // NPSH disponible como cota en la succión
+  var ytot = Y(pts[0].p + pr.vs * pr.vs / (2 * G));
+  o += LN(x0 + 30, Y(pr.pv), x0 + 30, ytot, 'stroke:var(--ink);stroke-width:1.4');
+  o += TX(x0 + 34, (Y(pr.pv) + ytot) / 2 + 4, 'NPSHₐ', { fs: 10.5, fw: 800 });
+  $('#svgPress').innerHTML = o;
+  var mn = pts[2].p - pr.pv;
+  $('#pressNote').innerHTML = 'El mínimo está en el borde de ataque del álabe: ' + (mn < 0 ? '<b style="color:var(--redline)">' + fh(-mn) + ' ' + lH() + ' bajo la presión de vapor</b>, ahí nacen las burbujas, que colapsan cuando la presión se recupera hacia la salida del impulsor.' : fh(mn) + ' ' + lH() + ' sobre la presión de vapor: sin burbujas.') + ' Entre succión y descarga la bomba suma H = ' + fh(R.op.h1) + ' ' + lH() + '.';
+}
+function renderWarn() {
+  var w = R.warn, nc = w.filter(function (x) { return x.sev === 'c'; }).length, nw = w.filter(function (x) { return x.sev === 'w'; }).length;
+  $('#diagCount').innerHTML = nc ? '<span class="pill c">' + nc + ' crítico' + (nc > 1 ? 's' : '') + '</span>' : (nw ? '<span class="pill w">' + nw + ' aviso' + (nw > 1 ? 's' : '') + '</span>' : '<span class="pill ok">en orden</span>');
+  $('#warnings').innerHTML = w.map(function (x) { return '<div class="warn ' + (x.sev === 'c' ? 'c' : (x.sev === 'ok' ? 'ok' : '')) + '"><i>' + (x.sev === 'ok' ? '✓' : '!') + '</i><div>' + esc(x.t) + '</div></div>'; }).join('');
+}
 
-  // ----- axes -----
-  var qMaxI = Math.max(qEnd(1) * 1.12, st.Qd * 1.25, hasOp ? op.Q * 1.08 : 0);
-  var qsc = nice(qMaxI * cQ, 6); qMaxI = qsc.max / cQ;
-  var hMaxI = Math.max(72 * s * s * 1.18, hstatT * 1.35, 6);
-  var hsc = nice(hMaxI * cH, 6); hMaxI = hsc.max / cH;
-
-  var PX0 = 64, PX1 = 694, PY0 = 16, PY1 = 472;
-  var xOf = function (Q) { return PX0 + (Q / qMaxI) * (PX1 - PX0); };
-  var yOf = function (H) { return PY1 - (H / hMaxI) * (PY1 - PY0); };
-
-  var qTicks = [];
-  for (var v = 0; v <= qsc.max + 1e-9; v += qsc.step) qTicks.push({ x: r1(xOf(v / cQ)), label: tickFmt(v, qsc.step) });
-  var hTicks = [];
-  for (var v2 = 0; v2 <= hsc.max + 1e-9; v2 += hsc.step) { var y = r1(yOf(v2 / cH)); hTicks.push({ y: y, yText: y + 4, label: tickFmt(v2, hsc.step) }); }
-
-  // impeller curves
-  var curves = dRatios.map(function (d, i) {
-    var act = i === st.di;
-    var end = qEnd(d);
-    var pts = sample(function (Q) { return xOf(Q); }, function (Q) { return yOf(Hp(Q, d)); }, 0, end, 44);
-    return {
-      d: pathOf(pts), sw: act ? 3 : 1.5,
-      color: act ? 'var(--color-text)' : 'var(--color-neutral-500)',
-      label: impLabels[i], lx: r1(Math.min(xOf(end) + 5, PX1 + 2)), ly: r1(yOf(Hp(end, d)) + 4),
-      lw: act ? 800 : 400, lcolor: act ? 'var(--color-text)' : 'var(--color-neutral-600)'
-    };
-  });
-
-  // efficiency islands
-  var islands = [];
-  if (showIsl) {
-    var levels = [50, 60, 65, 70, 72];
-    var dsDesc = dRatios.slice().sort(function (a, b) { return b - a; });
-    levels.forEach(function (L) {
-      var quals = dsDesc.filter(function (d) { return etaMax(d) > L + 0.15; });
-      if (!quals.length) return;
-      var qr = function (d) {
-        var delta = QBEP_REF * Math.sqrt(1 - L / etaMax(d));
-        return { q1: Math.max(QBEP_REF - delta, 4), q2: Math.min(QBEP_REF + delta, Q_END - 2) };
-      };
-      var pt = function (q, d) { return [xOf(q * d * s), yOf(d * d * s * s * Href(q))]; };
-      var dTop = quals[0], dBot = quals[quals.length - 1];
-      var pts = [];
-      quals.forEach(function (d) { pts.push(pt(qr(d).q1, d)); });
-      var b = qr(dBot);
-      for (var i = 1; i <= 10; i++) pts.push(pt(b.q1 + (b.q2 - b.q1) * i / 10, dBot));
-      quals.slice().reverse().forEach(function (d) { pts.push(pt(qr(d).q2, d)); });
-      var t = qr(dTop);
-      for (var i4 = 1; i4 <= 10; i4++) pts.push(pt(t.q2 + (t.q1 - t.q2) * i4 / 10, dTop));
-      var top1 = pt(t.q1, dTop);
-      islands.push({ d: pathOf(pts) + ' Z', lx: r1(top1[0] - 4), ly: r1(top1[1] - 5), label: L + '%' });
+/* ---------- 2 · carta ---------- */
+var CH = null;
+function chartFamily(r) {
+  var Ds = []; for (var i = 0; i < 5; i++) Ds.push(r.Dmin + (r.Dmax - r.Dmin) * i / 4);
+  return Ds.map(function (Dd) { var pw = pumpW(r.N, Dd, r.cas); return { D: Dd, pf: pumpF(pw, r.P, hiCorr(pw, r.P.nu * 1e6)) }; });
+}
+function renderChart(r) {
+  var s = state, W = 900, x0 = 70, x1 = 820, mainY = [16, 350], npY = [384, 476], pY = [512, 600];
+  var fam = chartFamily(r), big = fam[fam.length - 1].pf, pf = r.pf, sys = r.sys, arr = r.arr, nset = arr === 'paralelo' ? 2 : 1;
+  var Qmax = Math.max(big.qEnd * 1.12 * nset, (r.op ? r.op.Q * 1.12 : 0), sys.Qd * 1.25);
+  var Hmax = Math.max(big.H(0) * (arr === 'serie' ? 2 : 1) * 1.12, sys.H(Qmax * 0.6), 5); Hmax = Math.min(Hmax, Math.max(big.H(0) * (arr === 'serie' ? 2.3 : 1.25), sys.Hst * 1.3 + 5));
+  var ax = axes({ x0: x0, x1: x1, y0: mainY[0], y1: mainY[1], xmax: Qmax, ymin: 0, ymax: Hmax, xs: US() ? 15850.32 : 3600, ys: US() ? 3.28084 : 1, noXlab: true, ylab: 'Cabeza H (' + lH() + ')', clip: 'cmain' });
+  var o = ax.svg, X = ax.X, Y = ax.Y;
+  // islas de eficiencia
+  if (s.isl) {
+    var dens = []; for (var j = 0; j <= 8; j++) { var Dd = r.Dmin + (r.Dmax - r.Dmin) * j / 8, pw2 = pumpW(r.N, Dd, r.cas); dens.push(pumpF(pw2, r.P, hiCorr(pw2, r.P.nu * 1e6))); }
+    var emax = Math.max.apply(null, dens.map(function (q) { return q.eB; })) * 100;
+    var lv = [30, 40, 50, 55, 60, 64, 67, 70, 72, 74, 76, 78].filter(function (L) { return L < emax - 0.4; }).slice(-6);
+    lv.forEach(function (L) {
+      var ok = dens.filter(function (q) { return q.eB * 100 > L + 0.2; }); if (ok.length < 1) return;
+      var side = function (q, left) { if (!left && q.eta(q.qEnd) * 100 > L) return q.qEnd; return bisect(function (Q) { return q.eta(Q) * 100 - L; }, left ? 1e-6 : q.qB, left ? q.qB : q.qEnd, 40); };
+      var pl = [], i2;
+      for (i2 = ok.length - 1; i2 >= 0; i2--) { var ql = side(ok[i2], true); pl.push([X(ql * nset), Y(ok[i2].H(ql) * (arr === 'serie' ? 2 : 1))]); }
+      var bot = ok[0], qa = side(bot, true), qb = side(bot, false); for (i2 = 1; i2 < 10; i2++) { var qq = qa + (qb - qa) * i2 / 10; pl.push([X(qq * nset), Y(bot.H(qq) * (arr === 'serie' ? 2 : 1))]); }
+      for (i2 = 0; i2 < ok.length; i2++) { var qr = side(ok[i2], false); pl.push([X(qr * nset), Y(ok[i2].H(qr) * (arr === 'serie' ? 2 : 1))]); }
+      var top = ok[ok.length - 1], ta = side(top, false), tb = side(top, true); for (i2 = 1; i2 < 10; i2++) { var q3 = ta + (tb - ta) * i2 / 10; pl.push([X(q3 * nset), Y(top.H(q3) * (arr === 'serie' ? 2 : 1))]); }
+      o += E('path', { d: poly(pl) + 'Z', 'clip-path': 'url(#cmain)', style: 'fill:var(--ok);fill-opacity:' + (0.035 + 0.02 * lv.indexOf(L)) + ';stroke:var(--ok);stroke-width:1;stroke-dasharray:3 3' });
+      o += TX(pl[0][0] - 4, pl[0][1] - 4, L + ' %', { a: 'end', fs: 10, c: 'var(--ok)', fw: 700 });
     });
   }
-
-  // system curve + design point
-  var sysPath = pathOf(sample(function (Q) { return xOf(Q); }, function (Q) { return yOf(Hsys(Q)); }, 0, qMaxI, 50));
-  var designX = r1(xOf(st.Qd) - 4), designY = r1(yOf(hstatT + st.hf) - 4);
-
-  // operating + BEP markers
-  var opX = hasOp ? r1(xOf(op.Q)) : 0, opY = hasOp ? r1(yOf(op.H)) : 0;
-  var bepQ = QBEP_REF * D * s;
-  var bepX = r1(xOf(bepQ)), bepY = r1(yOf(Hp(bepQ, D)));
-  var opLabel = hasOp ? (fQv(op.Q) + ' ' + qUnit + ' · ' + fHvf(op.H) + ' ' + hUnit) : '';
-  var opLabelX = hasOp ? r1(Math.min(opX + 12, PX1 - 150)) : 0;
-  var opLabelY = hasOp ? r1(Math.max(opY - 12, 30)) : 0;
-
-  // ----- NPSH chart -----
-  var NX0 = 46, NX1 = 388, NY0 = 12, NY1 = 208;
-  var nMaxI = Math.max(NPSHa(0), NPSHr(qMaxI), 4) * 1.12;
-  var nsc = nice(nMaxI * cH, 4); nMaxI = nsc.max / cH;
-  var nx = function (Q) { return NX0 + (Q / qMaxI) * (NX1 - NX0); };
-  var ny = function (H) { return NY1 - (Math.max(H, -nMaxI) / nMaxI) * (NY1 - NY0); };
-  var nAPath = pathOf(sample(nx, function (Q) { return ny(NPSHa(Q)); }, 0, qMaxI, 40));
-  var nRPath = pathOf(sample(nx, function (Q) { return ny(NPSHr(Q)); }, 0, qMaxI, 40));
-  var nCavPath = '';
-  var qc0 = Math.min(Math.max(qSafe, 0), qMaxI);
-  if (qc0 < qMaxI - 1e-6) {
-    var up = sample(nx, function (Q) { return ny(NPSHr(Q)); }, qc0, qMaxI, 24);
-    var dn = sample(nx, function (Q) { return ny(NPSHa(Q)); }, qMaxI, qc0, 24);
-    nCavPath = pathOf(up.concat(dn)) + ' Z';
-  }
-  var nQTicks = [], nHTicks = [];
-  for (var v3 = 0; v3 <= qsc.max + 1e-9; v3 += qsc.step * 2) nQTicks.push({ x: r1(nx(v3 / cQ)), label: tickFmt(v3, qsc.step) });
-  for (var v4 = 0; v4 <= nsc.max + 1e-9; v4 += nsc.step) nHTicks.push({ yText: r1(ny(v4 / cH)) + 4, label: tickFmt(v4, nsc.step) });
-  var nOpX = hasOp ? r1(nx(op.Q)) : 0;
-  var nOpYa = hasOp ? r1(ny(naOp)) : 0;
-  var nOpYr = hasOp ? r1(ny(nrOp)) : 0;
-
-  // ----- BHP chart -----
-  var BY0 = 14, BY1 = 200;
-  var bMaxI = Math.max(bhpMax, motorNO) * 1.25;
-  var bsc = nice(bMaxI * cP, 4); bMaxI = bsc.max / cP;
-  var by = function (P) { return BY1 - (P / bMaxI) * (BY1 - BY0); };
-  var bhpPath = pathOf(sample(xOf, function (Q) { return by(BHPcurve(Q)); }, 0, qEnd(D), 60));
-  var motorLines = motors.filter(function (m) { return m <= bMaxI * 0.98 && m >= bMaxI * 0.12; }).map(function (m) {
-    var rec = m === motorNO;
-    var yy = r1(by(m));
-    return { y: yy, yText: yy - 4, label: m + ' HP' + (rec ? ' · recomendado' : ''), color: rec ? 'var(--color-accent)' : 'var(--color-neutral-500)', tcolor: rec ? 'var(--color-accent-700)' : 'var(--color-neutral-600)' };
+  var setH = function (q, f) { var qq = f.pw ? q / nset : q; return (arr === 'serie' ? 2 : 1) * f.H(qq); };
+  // familia de curvas
+  fam.forEach(function (f) {
+    var pts = samp(function (Q) { return setH(Q, f.pf); }, 0, f.pf.qEnd * nset, 50).map(function (p) { return [X(p[0]), Y(p[1])]; });
+    o += PATH(poly(pts), 'stroke:var(--n500);stroke-width:1.2', 'cmain');
+    var e = pts[pts.length - 1]; o += E('circle', { cx: r1(e[0]), cy: r1(e[1]), r: 2.5, style: 'fill:var(--n500)' });
+    o += TX(e[0] + 5, e[1] + 4, fmtN(f.D * 1000, 0) + ' mm', { fs: 10, c: MUT });
   });
-  var bTicks = [];
-  for (var v5 = 0; v5 <= bsc.max + 1e-9; v5 += bsc.step) bTicks.push({ yText: r1(by(v5 / cP)) + 4, label: tickFmt(v5, bsc.step) });
-  var bOpX = hasOp ? r1(xOf(op.Q)) : 0;
-  var bOpY = hasOp ? r1(by(bhpOp)) : 0;
-
-  // ----- diagram: tanques abiertos a la atmósfera, referencia z = 0 en el
-  // eje de la bomba (las dos cotas se miden desde la bomba, no entre niveles) --
-  var ys = r1(210 + st.hs * 3);      // nivel de succión (hs > 0: por debajo de la bomba)
-  var yd = r1(210 - st.zd * 2.2);    // nivel de descarga (por encima de la bomba)
-  var patmKpa = 994 * 9.81 * (hatm * 0.3048) / 1000;
-  var pvapPa = 994 * 9.81 * (hvap * 0.3048);
-  var hsLabY = r1(Math.abs(ys - 210) > 18 ? (ys + 210) / 2 + 4 : Math.min(ys, 210) - 8);
-  var zdLabY = r1((210 - yd) > 18 ? (yd + 210) / 2 + 4 : 198);
-  // símbolo de superficie libre (∇): tanque abierto a la atmósfera
-  var freeSurf = function (x, y) { return '<path d="M ' + (x - 6) + ' ' + (y - 10) + ' H ' + (x + 6) + ' L ' + x + ' ' + (y - 2) + ' Z" fill="none" stroke="var(--color-neutral-700)" stroke-width="1.5"></path>'; };
-  var subLabel = function (x, y, base, subs, rest, color, anchor) {
-    return '<text x="' + x + '" y="' + y + '"' + (anchor ? ' text-anchor="' + anchor + '"' : '') + ' style="font-size:11.5px;font-weight:700;fill:' + color + ';">' + base + '<tspan dy="2.5" font-size="9">' + subs + '</tspan><tspan dy="-2.5">' + esc(rest) + '</tspan></text>';
-  };
-
-  // ---------- Ensamble de SVGs ----------
-  // Diagrama de instalación
-  var diagInner = ''
-    // línea de referencia z = 0 por el eje de la bomba
-    + svgLine(20, 210, 146, 210, 'var(--color-neutral-500)', 1, '10 3 2 3')
-    + svgLine(204, 210, 380, 210, 'var(--color-neutral-500)', 1, '10 3 2 3')
-    + '<text x="378" y="203" text-anchor="end" style="font-size:10.5px;fill:var(--color-neutral-600);">z = 0 · eje de la bomba</text>'
-    // tanque de succión (abierto, sin tapa)
-    + '<path d="M 26 150 V 300 H 122 V 150" fill="none" stroke="var(--color-text)" stroke-width="2"></path>'
-    + '<rect x="28" y="' + ys + '" width="92" height="' + r1(Math.max(300 - ys - 1, 2)) + '" fill="var(--color-neutral-200)"></rect>'
-    + svgLine(28, ys, 120, ys, 'var(--color-text)', 2)
-    + freeSurf(62, ys)
-    + '<text x="26" y="316" style="font-size:12px;fill:var(--color-neutral-700);">Tanque de succión · abierto</text>'
-    // succión → bomba → descarga (una sola trayectoria, con flechas de flujo)
-    + '<polyline points="60,284 150,284 150,210 167,210" fill="none" stroke="var(--color-text)" stroke-width="2"></polyline>'
-    + '<circle cx="185" cy="210" r="18" fill="var(--color-bg)" stroke="var(--color-text)" stroke-width="2.5"></circle>'
-    + '<polyline points="185,192 185,56 330,56 330,92" fill="none" stroke="var(--color-text)" stroke-width="2"></polyline>'
-    + '<polygon points="96,279 96,289 106,284" fill="var(--color-accent)"></polygon>'
-    + '<polygon points="180,140 190,140 185,130" fill="var(--color-accent)"></polygon>'
-    + '<polygon points="325,90 335,90 330,100" fill="var(--color-accent)"></polygon>'
-    // tanque de descarga (abierto; la tubería entrega por encima del nivel)
-    + '<path d="M 250 88 V 300 H 384 V 88" fill="none" stroke="var(--color-text)" stroke-width="2"></path>'
-    + '<rect x="252" y="' + yd + '" width="130" height="' + r1(Math.max(300 - yd - 1, 2)) + '" fill="var(--color-neutral-200)"></rect>'
-    + svgLine(252, yd, 382, yd, 'var(--color-text)', 2)
-    + freeSurf(295, yd)
-    + '<text x="384" y="316" text-anchor="end" style="font-size:12px;fill:var(--color-neutral-700);">Tanque de descarga · abierto</text>'
-    // cotas medidas desde el eje de la bomba
-    + svgLine(120, ys, 146, ys, 'var(--color-neutral-500)', 1, '4 4')
-    + svgLine(252, yd, 222, yd, 'var(--color-neutral-500)', 1, '4 4')
-    + svgLine(136, 210, 136, ys, 'var(--color-accent-700)', 1.5)
-    + svgLine(232, 210, 232, yd, 'var(--color-neutral-700)', 1.5)
-    + subLabel(130, hsLabY, 'h', 's', ' = ' + fHvf(st.hs) + ' ' + hUnit, 'var(--color-accent-700)', 'end')
-    + subLabel(238, zdLabY, 'z', 'd', ' = ' + fHvf(st.zd) + ' ' + hUnit, 'var(--color-neutral-800)', '')
-    // etiquetas
-    + Tt(185, 215, impLabelsUS[st.di], { fs: 11, fw: 700, anchor: 'middle', fill: 'var(--color-text)' })
-    + Tt(200, 266, 'Bomba · ' + st.rpm + ' RPM', { fs: 11.5, anchor: 'middle', fill: 'var(--color-neutral-700)' })
-    + Tt(14, 22, 'P. atmosférica = ' + fH(hatm) + ' ≈ ' + patmKpa.toFixed(0) + ' kPa · ' + st.alt + ' msnm', { fs: 12, fill: 'var(--color-neutral-700)' });
-
-  // NPSH chart
-  var nLabels = ''
-    + nQTicks.map(function (t) { return Tt(t.x, 228, t.label, { fs: 11.5, anchor: 'middle' }); }).join('')
-    + nHTicks.map(function (t) { return Tt(40, t.yText, t.label, { fs: 11.5, anchor: 'end' }); }).join('')
-    + Tt(46, 248, 'Caudal — ' + qUnit, { fs: 12 })
-    + Tt(12, 208, 'NPSH — ' + hUnit, { fs: 12, transform: 'rotate(-90 12 208)' });
-  var npshInner = ''
-    + '<defs><clipPath id="clipNpsh"><rect x="46" y="12" width="342" height="196"></rect></clipPath></defs>'
-    + '<rect x="46" y="12" width="342" height="196" fill="var(--color-neutral-100)"></rect>'
-    + '<g clip-path="url(#clipNpsh)">'
-    + (nCavPath ? '<path d="' + nCavPath + '" fill="var(--color-accent-200)" opacity="0.75"></path>' : '')
-    + '<path d="' + nAPath + '" fill="none" stroke="var(--color-text)" stroke-width="2.5"></path>'
-    + '<path d="' + nRPath + '" fill="none" stroke="var(--color-accent)" stroke-width="2.5"></path>'
-    + (hasOp ? svgLine(nOpX, 12, nOpX, 208, 'var(--color-neutral-600)', 1, '4 4')
-      + '<circle cx="' + nOpX + '" cy="' + nOpYa + '" r="4.5" fill="var(--color-text)"></circle>'
-      + '<circle cx="' + nOpX + '" cy="' + nOpYr + '" r="4.5" fill="var(--color-accent)"></circle>' : '')
-    + '</g>'
-    + '<rect x="46" y="12" width="342" height="196" fill="none" stroke="var(--color-text)" stroke-width="2"></rect>'
-    + nQTicks.map(function (t) { return svgLine(t.x, 208, t.x, 214, 'var(--color-text)', 1); }).join('')
-    + nLabels;
-
-  // Main chart
-  var mainGrid = ''
-    + qTicks.map(function (t) { return svgLine(t.x, 16, t.x, 472, 'var(--color-neutral-300)', 1); }).join('')
-    + hTicks.map(function (t) { return svgLine(64, t.y, 694, t.y, 'var(--color-neutral-300)', 1); }).join('');
-  var islandsSvg = islands.map(function (isl) { return '<path d="' + isl.d + '" fill="none" stroke="var(--color-neutral-600)" stroke-width="1.2" stroke-dasharray="4 4"></path>'; }).join('');
-  var islandLabels = islands.map(function (isl) { return Tt(isl.lx, isl.ly, isl.label, { fs: 11, anchor: 'end', fill: 'var(--color-neutral-700)' }); }).join('');
-  var curvesSvg = curves.map(function (c) { return '<path d="' + c.d + '" fill="none" stroke="' + c.color + '" stroke-width="' + c.sw + '"></path>'; }).join('');
-  var curveLabels = curves.map(function (c) { return Tt(c.lx, c.ly, c.label, { fs: 12, fw: c.lw, fill: c.lcolor }); }).join('');
-  var opLabelSvg = hasOp ? Tt(opLabelX, opLabelY, opLabel, { fs: 12.5, fw: 700, fill: 'var(--color-accent-800)' }) : '';
-  var mainLabels = ''
-    + qTicks.map(function (t) { return Tt(t.x, 496, t.label, { anchor: 'middle' }); }).join('')
-    + hTicks.map(function (t) { return Tt(56, t.yText, t.label, { anchor: 'end' }); }).join('')
-    + Tt(64, 520, 'Caudal Q — ' + qUnit, { fs: 13.5 })
-    + Tt(16, 472, 'Cabeza total H — ' + hUnit, { fs: 13.5, transform: 'rotate(-90 16 472)' });
-  var mainInner = ''
-    + '<defs><clipPath id="clipMain"><rect x="64" y="16" width="630" height="456"></rect></clipPath></defs>'
-    + '<rect x="64" y="16" width="630" height="456" fill="var(--color-neutral-100)"></rect>'
-    + mainGrid
-    + '<g clip-path="url(#clipMain)">'
-    + islandsSvg + islandLabels + curvesSvg
-    + '<path d="' + sysPath + '" fill="none" stroke="var(--color-accent)" stroke-width="2.5"></path>'
-    + '<rect x="' + designX + '" y="' + designY + '" width="8" height="8" fill="var(--color-bg)" stroke="var(--color-accent)" stroke-width="2"></rect>'
-    + (hasOp ? svgLine(opX, opY, opX, 472, 'var(--color-neutral-600)', 1, '4 4')
-      + svgLine(64, opY, opX, opY, 'var(--color-neutral-600)', 1, '4 4')
-      + '<circle cx="' + bepX + '" cy="' + bepY + '" r="5.5" fill="var(--color-bg)" stroke="var(--color-text)" stroke-width="2.5"></circle>'
-      + '<circle cx="' + opX + '" cy="' + opY + '" r="6.5" fill="var(--color-accent)"></circle>' : '')
-    + opLabelSvg
-    + '</g>'
-    + curveLabels
-    + '<rect x="64" y="16" width="630" height="456" fill="none" stroke="var(--color-text)" stroke-width="2"></rect>'
-    + qTicks.map(function (t) { return svgLine(t.x, 472, t.x, 479, 'var(--color-text)', 1); }).join('')
-    + mainLabels;
-
-  // BHP chart
-  var bhpLabels = ''
-    + motorLines.map(function (m) { return Tt(690, m.yText, m.label, { fs: 11.5, fw: 700, anchor: 'end', fill: m.tcolor }); }).join('')
-    + qTicks.map(function (t) { return Tt(t.x, 222, t.label, { fs: 12, anchor: 'middle' }); }).join('')
-    + bTicks.map(function (t) { return Tt(56, t.yText, t.label, { fs: 12, anchor: 'end' }); }).join('')
-    + Tt(16, 107, 'Potencia al freno — ' + pUnit, { fs: 12, anchor: 'middle', transform: 'rotate(-90 16 107)' })
-    + Tt(64, 244, 'Caudal Q — ' + qUnit, { fs: 13 })
-    + Tt(694, 244, 'líneas punteadas: motores estándar', { fs: 12, anchor: 'end', fill: 'var(--color-neutral-600)' });
-  var bhpInner = ''
-    + '<defs><clipPath id="clipBhp"><rect x="64" y="14" width="630" height="186"></rect></clipPath></defs>'
-    + '<rect x="64" y="14" width="630" height="186" fill="var(--color-neutral-100)"></rect>'
-    + '<g clip-path="url(#clipBhp)">'
-    + motorLines.map(function (m) { return svgLine(64, m.y, 694, m.y, m.color, 1.2, '6 4'); }).join('')
-    + '<path d="' + bhpPath + '" fill="none" stroke="var(--color-text)" stroke-width="2.5"></path>'
-    + (hasOp ? svgLine(bOpX, bOpY, bOpX, 200, 'var(--color-neutral-600)', 1, '4 4')
-      + '<circle cx="' + bOpX + '" cy="' + bOpY + '" r="5.5" fill="var(--color-accent)"></circle>' : '')
-    + '</g>'
-    + '<rect x="64" y="14" width="630" height="186" fill="none" stroke="var(--color-text)" stroke-width="2"></rect>'
-    + qTicks.map(function (t) { return svgLine(t.x, 200, t.x, 207, 'var(--color-text)', 1); }).join('')
-    + bhpLabels;
-
-  // ----- warnings & status -----
-  var warnings = [];
-  if (!hasOp) warnings.push('La cabeza estática total (zd + hs = ' + fH(hstatT) + ') supera la cabeza a caudal cero (' + fH(72 * s * s * D * D) + '): la bomba no entrega flujo. Suba la velocidad, use un impulsor mayor o reduzca los niveles.');
-  if (beyond) warnings.push('El punto de operación cae más allá del final de la curva publicada: operación ruidosa, cavitación y daño posibles. Seleccione un impulsor mayor o aumente la fricción del circuito.');
-  if (cav) warnings.push('¡Cavitación! NPSH disponible (' + fH(naOp) + ') < NPSH requerido (' + fH(nrOp) + ') en el punto de operación. Reduzca la altura de succión, la fricción de succión o el caudal.');
-  if (lowMargin) warnings.push('Margen NPSH insuficiente: ' + fH(npshMargin) + ' < ' + fH(marginReq) + ' recomendado.');
-  if (hasOp && !beyond && etaOp < 50) warnings.push('Operación lejos del punto de máxima eficiencia (η = ' + etaOp.toFixed(1) + ' %): considere otro impulsor u otra velocidad.');
-
-  var statusText = 'Operación estable', statusColor = 'var(--color-text)';
-  if (!hasOp) { statusText = 'Sin flujo'; statusColor = 'var(--color-accent-700)'; }
-  else if (cav) { statusText = '¡Cavitación!'; statusColor = 'var(--color-accent-700)'; }
-  else if (beyond) { statusText = 'Fuera de la curva publicada'; statusColor = 'var(--color-accent-700)'; }
-  else if (lowMargin) { statusText = 'Margen NPSH bajo'; statusColor = 'var(--color-accent-700)'; }
-
-  // ----- controles (botones) -----
-  var btnBase = 'font-family:var(--font-body);font-size:12.5px;font-weight:700;text-align:left;padding:7px 9px;cursor:pointer;border-radius:0;';
-  var btnOn = btnBase + 'background:var(--color-accent);color:var(--color-bg);border:1px solid var(--color-accent);';
-  var btnOff = btnBase + 'background:transparent;color:var(--color-text);border:1px solid var(--color-neutral-400);';
-  var unitDefs = [{ label: 'GPM · pies · HP', key: 'us' }, { label: 'm³/h · m · kW', key: 'si' }];
-  document.getElementById('unitOpts').innerHTML = unitDefs.map(function (u) {
-    return '<button type="button" style="' + (st.unit === u.key ? btnOn : btnOff) + '" onclick="setUnit(\'' + u.key + '\')">' + esc(u.label) + '</button>';
-  }).join('');
-  document.getElementById('impOpts').innerHTML = impLabels.map(function (lb, i) {
-    return '<button type="button" style="' + (i === st.di ? btnOn : btnOff) + '" onclick="setImp(' + i + ')">' + esc(lb) + '</button>';
-  }).join('');
-
-  var dec1 = function (x) { return (Math.round(x * 10) / 10).toString(); };
-
-  // ---------- Inyección al DOM ----------
-  document.getElementById('svgDiag').innerHTML = diagInner;
-  document.getElementById('svgNpsh').innerHTML = npshInner;
-  document.getElementById('svgMain').innerHTML = mainInner;
-  document.getElementById('svgBhp').innerHTML = bhpInner;
-
-  set('rpmHdr', st.rpm);
-  set('fRpm', st.rpm + ' RPM'); set('fSpeedRatioA', s.toFixed(2)); set('fSpeedRatio', s.toFixed(2)); set('fDiaRatio', D.toFixed(2));
-  // sincroniza la posición de los deslizadores con el estado
-  ['rpm', 'Qd', 'hf', 'zd', 'hs', 'alt', 'hfs', 'sg', 'margin'].forEach(function (k) { var el = document.getElementById(k); if (el && parseFloat(el.value) !== st[k]) el.value = st[k]; });
-  set('fQd', fQ(st.Qd)); set('fHf', fH(st.hf)); set('fZd', fH(st.zd)); set('fHstatTotal', fH(hstatT)); set('fHs', fH(st.hs)); set('fHfs', fH(st.hfs));
-  set('fPatmKpa', patmKpa.toFixed(0) + ' kPa'); set('fPvapPa', Math.round(pvapPa) + ' Pa');
-  set('fAlt', st.alt + ' msnm'); set('fHatm', fH(hatm)); set('fHv', fH(hvap));
-  set('fSg', st.sg.toFixed(2)); set('fMargin', fH(marginReq));
-  set('hsDesc', st.hs >= 0 ? 'Positivo: la bomba está sobre el nivel del líquido (lift)' : 'Negativo: succión sumergida (el nivel está sobre la bomba)');
-
-  var wEl = document.getElementById('warnings');
-  if (warnings.length) {
-    wEl.style.display = 'flex';
-    wEl.innerHTML = warnings.map(function (w) { return '<div style="color:var(--color-accent-800);font-size:14px;font-weight:600;">' + esc(w) + '</div>'; }).join('');
-  } else { wEl.style.display = 'none'; wEl.innerHTML = ''; }
-
-  var stEl = document.getElementById('statusText'); stEl.textContent = statusText; stEl.style.color = statusColor;
-  document.getElementById('diagCaption').innerHTML = 'Tanques abiertos a la atmósfera, cotas medidas desde el eje de la bomba (z = 0): la bomba ' + (st.hs >= 0 ? 'aspira desde ' + fH(Math.abs(st.hs)) + ' por debajo de su eje' : 'opera sumergida, con el nivel de succión ' + fH(Math.abs(st.hs)) + ' por encima de su eje') + ' y entrega a un tanque cuyo nivel está ' + fH(st.zd) + ' por encima del eje. Cabeza estática del sistema: H<sub>est</sub> = z<sub>d</sub> + h<sub>s</sub> = ' + fH(hstatT) + '.';
-  set('npshCaption', qSafe > 1 && qSafe < qMaxI ? 'Zona sombreada: cavitación. El caudal debe mantenerse por debajo de ' + fQ(qSafe) + '.' : (qSafe <= 1 ? 'NPSHd < NPSHr en todo el rango: la succión debe rediseñarse.' : 'Sin zona de cavitación en el rango mostrado.'));
-
-  // stats grid 1
-  set('vQ', hasOp ? fQv(op.Q) : '—'); set('capQ', qUnit + ' · intersección bomba–sistema');
-  set('vH', hasOp ? fHvf(op.H) : '—'); set('capH', hUnit);
-  set('vEta', hasOp ? etaOp.toFixed(1) + ' %' : '—'); set('capEta', 'η máx del impulsor: ' + etaMax(D).toFixed(1) + ' %');
-  set('vWhp', hasOp ? fPv(whpOp) : '—'); set('capWhp', pUnit + ' · Q·H·s.g./3960');
-  set('vBhp', hasOp ? fPv(bhpOp) : '—'); set('capBhp', pUnit + ' · WHP / η');
-  set('vMotor', hasOp ? motorNO + ' HP' : '—'); set('capMotor', hasOp ? 'sin sobrecarga en toda la curva · «al punto»: ' + motorPt + ' HP' : 'sin punto de operación');
-
-  // stats grid 2
-  set('vNa', hasOp ? fHvf(naOp) : fHvf(NPSHa(0))); set('capNa', hUnit + ' · en el punto de operación');
-  set('vNr', hasOp ? fHvf(nrOp) : fHvf(NPSHr(0))); set('capNr', hUnit + ' · curva del fabricante');
-  set('vMargin', hasOp ? (npshMargin >= 0 ? '+' : '') + fHvf(npshMargin) : '—'); setColor('vMargin', cav || lowMargin ? 'var(--color-accent-700)' : 'var(--color-text)'); set('capMargin', hUnit + ' · recomendado ≥ ' + fHvf(marginReq) + ' ' + hUnit);
-  set('vQsafe', qSafe > 1 ? fQv(qSafe) : '0'); set('capQsafe', qUnit + ' · donde NPSHd = NPSHr');
-  set('vBep', fQv(bepQ)); set('capBep', qUnit + ' · punto de máxima eficiencia');
-  set('vRec', recIdx >= 0 ? impLabels[recIdx] : '—'); set('capRec', recIdx >= 0 ? 'η = ' + recEta.toFixed(1) + ' % con esta curva del sistema' : 'ningún impulsor corta la curva del sistema');
-
-  // explanatory cards
-  set('opSummary', hasOp ? fQ(op.Q) + ' y ' + fH(op.H) + (beyond ? ' (extrapolado fuera de la curva)' : '') : 'no hay intersección: la bomba no vence la cabeza estática');
-  set('npshBreakdown', dec1(hatm * cH) + ' − ' + dec1(hvap * cH) + ' − ' + dec1(st.hs * cH) + ' − ' + dec1((hasOp ? Ks * op.Q * op.Q : 0) * cH) + ' = ' + fH(naOp));
-
-  // fórmulas KaTeX (estáticas)
-  tex('eqSys', 'h = (z_d + h_s) + kQ^2');
-  tex('eqAffinity', 'Q \\propto ND \\qquad H \\propto (ND)^2 \\qquad \\mathrm{BHP} \\propto (ND)^3');
-  tex('eqNpshDef', '\\mathrm{NPSH}_d = h_{atm} - h_{vap} - h_s - h_{f,\\mathrm{succ}}');
+  // curva activa con su ventana 70–110 %
+  var cur = samp(function (Q) { return setH(Q, pf); }, 0, pf.qEnd * nset, 70).map(function (p) { return [X(p[0]), Y(p[1])]; });
+  var por = samp(function (Q) { return setH(Q, pf); }, 0.7 * pf.qB * nset, 1.1 * pf.qB * nset, 20).map(function (p) { return [X(p[0]), Y(p[1])]; });
+  o += PATH(poly(por), 'stroke:var(--ok);stroke-width:11;opacity:.25;stroke-linecap:round', 'cmain');
+  o += PATH(poly(cur), 'stroke:var(--ink);stroke-width:2.8', 'cmain');
+  var bq = pf.qB * nset, bh = setH(bq, pf);
+  o += E('path', { d: 'M' + r1(X(bq)) + ' ' + r1(Y(bh) - 7) + 'l7 7l-7 7l-7 -7z', style: 'fill:var(--paper);stroke:var(--ink);stroke-width:2' }) + TX(X(bq) + 10, Y(bh) - 9, 'BEP', { fw: 800, fs: 10.5 });
+  // sistema
+  var sc = samp(function (Q) { return sys.H(Q); }, 0, Qmax, 60).map(function (p) { return [X(p[0]), Y(p[1])]; });
+  o += PATH(poly(sc), 'stroke:var(--hl);stroke-width:2.6', 'cmain');
+  o += TX(X(Qmax) - 6, Y(sys.H(Qmax)) + (Y(sys.H(Qmax)) < mainY[0] + 20 ? 30 : -8), 'sistema', { a: 'end', c: 'var(--hl)', fw: 700 });
+  o += E('rect', { x: r1(X(sys.Qd) - 5), y: r1(Y(sys.H(sys.Qd)) - 5), width: 10, height: 10, style: 'fill:var(--paper);stroke:var(--hl);stroke-width:2' });
+  if (r.op) {
+    var op = r.op, xo = X(op.Q), yo = Y(op.H);
+    var af = samp(function (Q) { return op.H * Math.pow(Q / op.Q, 2); }, 0, Qmax, 40).map(function (p) { return [X(p[0]), Y(p[1])]; });
+    o += PATH(poly(af), 'stroke:var(--ink);stroke-width:1;stroke-dasharray:2 4;opacity:.7', 'cmain');
+    o += LN(xo, yo, xo, mainY[1], 'stroke:var(--hl);stroke-width:1;stroke-dasharray:3 3') + LN(x0, yo, xo, yo, 'stroke:var(--hl);stroke-width:1;stroke-dasharray:3 3');
+    o += E('circle', { cx: r1(xo), cy: r1(yo), r: 7, style: 'fill:var(--hl);stroke:var(--paper);stroke-width:2.5' });
+    o += TX(xo + 12, yo + 20, fq(op.Q) + ' ' + lQ() + ' · ' + fh(op.H) + ' ' + lH() + ' · η ' + fmtN(100 * r.eta, 1) + ' %', { fw: 800, fs: 11.5, c: 'var(--hl)' });
+  }
+  // NPSH
+  var npMax = Math.min(Math.max(pf.npsh3(pf.qEnd) * 1.4, sys.npsha(0) * 1.12, 2), 40);
+  var an = axes({ x0: x0, x1: x1, y0: npY[0], y1: npY[1], xmax: Qmax, ymin: 0, ymax: npMax, xs: US() ? 15850.32 : 3600, ys: US() ? 3.28084 : 1, noXlab: true, ny: 3, ylab: 'NPSH (' + lH() + ')', clip: 'cnp' });
+  o += an.svg;
+  var n3 = samp(function (Q) { return pf.npsh3(Q / nset); }, 0, pf.qEnd * nset, 40).map(function (p) { return [an.X(p[0]), an.Y(p[1])]; });
+  var na = samp(function (Q) { return sys.npsha(Q); }, 0, Qmax, 40).map(function (p) { return [an.X(p[0]), an.Y(p[1])]; });
+  o += PATH(poly(na), 'stroke:var(--ink);stroke-width:2', 'cnp') + PATH(poly(n3), 'stroke:var(--hl);stroke-width:2.4', 'cnp');
+  o += TX(x1 - 6, Math.max(an.Y(sys.npsha(Qmax * 0.95)) - 5, npY[0] + 12), 'NPSHₐ', { a: 'end', fs: 10, fw: 700 }) + TX(an.X(pf.qEnd * nset) + 4, an.Y(pf.npsh3(pf.qEnd)) + 4, 'NPSH3', { fs: 10, fw: 700, c: 'var(--hl)' });
+  // potencia
+  var pmx = Math.max(big.P(big.qEnd) / 1000 * nset, (r.motor || 0) * nset) * 1.15;
+  var ap = axes({ x0: x0, x1: x1, y0: pY[0], y1: pY[1], xmax: Qmax, ymin: 0, ymax: pmx, xs: US() ? 15850.32 : 3600, ys: US() ? 1 / 0.7457 : 1, ny: 3, ylab: 'P (' + lP() + ')', xlab: 'Caudal Q (' + lQ() + ')', clip: 'cp' });
+  o += ap.svg;
+  fam.forEach(function (f) { o += PATH(poly(samp(function (Q) { return nset * f.pf.P(Q / nset) / 1000; }, 0, f.pf.qEnd * nset, 30).map(function (p) { return [ap.X(p[0]), ap.Y(p[1])]; })), 'stroke:var(--n500);stroke-width:1', 'cp'); });
+  o += PATH(poly(samp(function (Q) { return nset * pf.P(Q / nset) / 1000; }, 0, pf.qEnd * nset, 40).map(function (p) { return [ap.X(p[0]), ap.Y(p[1])]; })), 'stroke:var(--ink);stroke-width:2.4', 'cp');
+  if (r.motor) { var ym = ap.Y(r.motor * nset / s.FS); o += LN(x0, ym, x1, ym, 'stroke:var(--warn);stroke-width:1.4;stroke-dasharray:6 4') + TX(x1 - 4, ym - 4, 'motor ' + fmtN(r.motor, r.motor < 10 ? 1 : 0) + ' kW ÷ FS ' + fmtN(s.FS, 2), { a: 'end', fs: 10, c: 'var(--warn)', fw: 700 }); }
+  if (r.op) { o += LN(X(r.op.Q), npY[0], X(r.op.Q), pY[1], 'stroke:var(--hl);stroke-width:1;stroke-dasharray:3 3'); o += E('circle', { cx: r1(an.X(r.op.Q)), cy: r1(an.Y(r.npsh3)), r: 4.5, style: 'fill:var(--hl)' }) + E('circle', { cx: r1(an.X(r.op.Q)), cy: r1(an.Y(r.npsha)), r: 4.5, style: 'fill:var(--ink)' }) + E('circle', { cx: r1(ap.X(r.op.Q)), cy: r1(ap.Y(r.Pshaft)), r: 4.5, style: 'fill:var(--hl)' }); }
+  o += E('g', { id: 'caCur' }, '');
+  $('#svgChart').innerHTML = o;
+  CH = { x0: x0, x1: x1, Qmax: Qmax, Y: Y, an: an, ap: ap, y0: mainY[0], y1: pY[1], r: r, nset: nset };
+  $('#caLbl').textContent = r.cas.name + ' · ' + fmtN(r.N, 0) + ' rpm' + (r.hi.on ? ' · corregida por viscosidad' : '');
+  $('#caLegend').innerHTML = '<span><i style="border-top:2.5px solid var(--ink)"></i>impulsor de ' + fmtN(r.D * 1000, 0) + ' mm</span><span><i style="border-top:1.5px solid var(--n500)"></i>otros diámetros</span><span><i></i>sistema</span><span><i style="border-top:8px solid var(--ok);opacity:.35"></i>70 a 110 % del BEP</span>';
+  var cards = [['BEP del impulsor', fq(pf.qB) + ' ' + lQ(), fh(pf.hB) + ' ' + lH() + ' · η ' + fmtN(100 * pf.eB, 1) + ' %'], ['Cabeza a caudal cero', fh(pf.H(1e-9)) + ' ' + lH(), 'shutoff · ' + fmtN(pf.H(1e-9) / pf.hB, 2) + ' × la del BEP'], ['Fin de la curva publicada', fq(pf.qEnd) + ' ' + lQ(), '130 % del BEP']];
+  $('#caCards').innerHTML = cards.map(function (c) { return '<div><div class="lbl">' + c[0] + '</div><div class="v">' + c[1] + '</div><div class="u">' + c[2] + '</div></div>'; }).join('');
 }
 
-window.addEventListener('load', function () { katexReady = !!window.katex; render(); });
-render();
+/* ---------- 3 · NPSH ---------- */
+var NP = null;
+function renderNpsh(r) {
+  var pf = r.pf, sys = r.sys, nset = r.arr === 'paralelo' ? 2 : 1, W = 520, H = 330;
+  var Qmax = Math.max(pf.qEnd * nset * 1.1, sys.Qd * 1.2), top = Math.max(sys.npsha(0), pf.npsh3(pf.qEnd) * 1.3) * 1.1, bot = Math.min(0, sys.npsha(Qmax)) - 0.5;
+  var ax = axes({ x0: 52, x1: W - 14, y0: 14, y1: H - 46, xmax: Qmax, ymin: bot, ymax: top, xs: US() ? 15850.32 : 3600, ys: US() ? 3.28084 : 1, ylab: 'NPSH (' + lH() + ')', xlab: 'Caudal Q (' + lQ() + ')', clip: 'cn' });
+  var o = ax.svg, X = ax.X, Y = ax.Y;
+  var A = samp(function (Q) { return sys.npsha(Q); }, 0, Qmax, 60), N3 = samp(function (Q) { return pf.npsh3(Q / nset); }, 0, Qmax, 60);
+  var bad = []; A.forEach(function (p, i) { if (p[1] < N3[i][1]) bad.push(i); });
+  if (bad.length) { var a0 = bad[0], a1 = bad[bad.length - 1], poly1 = []; for (var i = a0; i <= a1; i++) poly1.push([X(N3[i][0]), Y(N3[i][1])]); for (i = a1; i >= a0; i--) poly1.push([X(A[i][0]), Y(A[i][1])]); o += E('path', { d: poly(poly1) + 'Z', 'clip-path': 'url(#cn)', style: 'fill:var(--redline);opacity:.18' }); o += TX(X(A[Math.round((a0 + a1) / 2)][0]), Y(top) + 14, 'cavitación', { a: 'middle', c: 'var(--redline)', fw: 800, fs: 11 }); }
+  o += PATH(poly(N3.map(function (p) { return [X(p[0]), Y(p[1] * 1.3)]; })), 'stroke:var(--hl);stroke-width:1.4;stroke-dasharray:5 4', 'cn');
+  o += PATH(poly(N3.map(function (p) { return [X(p[0]), Y(p[1] + state.marg)]; })), 'stroke:var(--warn);stroke-width:1.2;stroke-dasharray:1 3', 'cn');
+  o += PATH(poly(N3.map(function (p) { return [X(p[0]), Y(p[1])]; })), 'stroke:var(--hl);stroke-width:2.6', 'cn');
+  o += PATH(poly(A.map(function (p) { return [X(p[0]), Y(p[1])]; })), 'stroke:var(--ink);stroke-width:2.6', 'cn');
+  o += TX(X(Qmax) - 4, Y(N3[N3.length - 1][1] + state.marg) - 5, 'NPSH3 + margen', { a: 'end', fs: 10, c: 'var(--warn)' });
+  if (r.op) { var xo = X(r.op.Q); o += LN(xo, 14, xo, H - 46, 'stroke:var(--n500);stroke-dasharray:3 3') + E('circle', { cx: r1(xo), cy: r1(Y(r.npsha)), r: 5, style: 'fill:var(--ink)' }) + E('circle', { cx: r1(xo), cy: r1(Y(r.npsh3)), r: 5, style: 'fill:var(--hl)' }) + TX(xo + 8, Y(r.npsha) - 8, 'margen ' + fh(r.margin) + ' ' + lH(), { fw: 800, fs: 11 }); }
+  o += E('g', { id: 'npCur' }, '');
+  $('#svgNpsh').innerHTML = o; NP = { X: X, Y: Y, x0: 52, x1: W - 14, Qmax: Qmax, r: r, nset: nset };
+  // cascada del NPSH disponible
+  var P = r.P, rg = r.rg, Qo = r.op ? r.op.Q : sys.Qd;
+  var terms = [['Presión atmosférica', r.Patm * 1000 / rg], ['Presión del tanque P₁', state.P1 * 1000 / rg], ['Nivel z_s'.replace('_s', 'ₛ'), state.zs], ['Pérdidas de succión', -sys.kS * Qo * Qo], ['Presión de vapor', -P.Pv * 1000 / rg]];
+  var cum = 0, ext = [0]; terms.forEach(function (t) { cum += t[1]; ext.push(cum); });
+  var vmax = Math.max.apply(null, ext) * 1.08, vmin = Math.min(0, Math.min.apply(null, ext)), bx0 = 168, bx1 = 500, rowH = 40, o2 = '';
+  var BX = function (v) { return bx0 + (v - vmin) / (vmax - vmin) * (bx1 - bx0); };
+  cum = 0;
+  terms.forEach(function (t, i) { var a = cum, b = cum + t[1]; cum = b; var y = 14 + i * rowH; o2 += TX(bx0 - 8, y + 22, t[0], { a: 'end', fs: 11 }); o2 += E('rect', { x: r1(Math.min(BX(a), BX(b))), y: y + 8, width: r1(Math.max(1.5, Math.abs(BX(b) - BX(a)))), height: 22, style: 'fill:' + (t[1] >= 0 ? 'var(--accent-300)' : 'var(--redline)') + ';opacity:' + (t[1] >= 0 ? 1 : 0.7) }); o2 += TX(Math.max(BX(a), BX(b)) + 5, y + 23, (t[1] >= 0 ? '+' : '') + fh(t[1]), { fs: 10.5, mono: true, fw: 700 }); });
+  var yN = 14 + terms.length * rowH;
+  o2 += TX(bx0 - 8, yN + 22, 'NPSH disponible', { a: 'end', fs: 11.5, fw: 800 }) + E('rect', { x: r1(BX(Math.min(0, cum))), y: yN + 8, width: r1(Math.abs(BX(cum) - BX(0))), height: 22, style: 'fill:var(--ink)' }) + TX(BX(Math.max(cum, 0)) + 5, yN + 23, fh(cum) + ' ' + lH(), { fs: 11, mono: true, fw: 800 });
+  if (r.op) { var yR = yN + rowH; o2 += TX(bx0 - 8, yR + 22, 'NPSH3 de la bomba', { a: 'end', fs: 11, c: 'var(--hl)', fw: 700 }) + E('rect', { x: r1(BX(0)), y: yR + 8, width: r1(BX(r.npsh3) - BX(0)), height: 22, style: 'fill:var(--hl)' }) + TX(BX(r.npsh3) + 5, yR + 23, fh(r.npsh3) + ' ' + lH(), { fs: 10.5, mono: true, fw: 700, c: 'var(--hl)' }); }
+  o2 += LN(BX(0), 8, BX(0), yN + rowH + 34, 'stroke:var(--ink);stroke-width:1');
+  $('#svgNpshBar').innerHTML = o2;
+  // barrido de temperatura
+  var fl = r.fl, card = $('#npTcard');
+  if (!fl.T || !r.op) { card.style.display = 'none'; return; }
+  card.style.display = 'block';
+  var Ts = [], tmax = null; for (var T = fl.T[0]; T <= fl.T[1] + 1e-9; T += 1) { var pp = fl.props(T, state), na = (r.Patm + state.P1 - pp.Pv) * 1000 / (pp.rho * G) + state.zs - sys.kS * Qo * Qo; Ts.push([T, na]); if (na >= r.npsh3 + state.marg) tmax = T; }
+  var lo = Math.min(Math.min.apply(null, Ts.map(function (p) { return p[1]; })), 0) - 0.5, hi = Math.max(Ts[0][1], r.npsh3 + state.marg) * 1.1;
+  var at = axes({ x0: 60, x1: 880, y0: 14, y1: 250, xmax: fl.T[1], ymin: lo, ymax: hi, xs: 1, ys: US() ? 3.28084 : 1, ylab: 'NPSHₐ (' + lH() + ')', xlab: 'Temperatura de bombeo (°C)', clip: 'ct' });
+  var o3 = at.svg;
+  o3 += PATH(poly(Ts.map(function (p) { return [at.X(p[0]), at.Y(p[1])]; })), 'stroke:var(--ink);stroke-width:2.6', 'ct');
+  o3 += LN(60, at.Y(r.npsh3 + state.marg), 880, at.Y(r.npsh3 + state.marg), 'stroke:var(--warn);stroke-width:1.4;stroke-dasharray:6 4') + TX(876, at.Y(r.npsh3 + state.marg) - 5, 'NPSH3 + margen', { a: 'end', fs: 10.5, c: 'var(--warn)', fw: 700 });
+  o3 += LN(60, at.Y(r.npsh3), 880, at.Y(r.npsh3), 'stroke:var(--hl);stroke-width:1.4') + TX(876, at.Y(r.npsh3) + 13, 'NPSH3', { a: 'end', fs: 10.5, c: 'var(--hl)', fw: 700 });
+  o3 += E('circle', { cx: r1(at.X(r.T)), cy: r1(at.Y(r.npsha)), r: 5.5, style: 'fill:var(--hl);stroke:var(--paper);stroke-width:2' }) + TX(at.X(r.T) + 8, at.Y(r.npsha) - 8, 'actual ' + fmtN(r.T, 0) + ' °C', { fw: 800, fs: 11 });
+  if (tmax != null && tmax < fl.T[1]) o3 += LN(at.X(tmax), 14, at.X(tmax), 250, 'stroke:var(--redline);stroke-width:1.4;stroke-dasharray:3 3') + TX(at.X(tmax) + 5, 28, 'T máx ≈ ' + fmtN(tmax, 0) + ' °C', { fs: 11, fw: 800, c: 'var(--redline)' });
+  $('#svgNpshT').innerHTML = o3;
+  $('#npTnote').textContent = 'Al calentar, la presión de vapor sube y el NPSH disponible cae. ' + (tmax == null ? 'Con esta succión no hay temperatura que cumpla el margen.' : (tmax >= fl.T[1] ? 'En todo el rango de temperatura se cumple el margen exigido.' : 'Con esta succión y este caudal, la temperatura máxima de bombeo con el margen exigido es ≈ ' + fmtN(tmax, 0) + ' °C. La pendiente se agrava en Bogotá, donde la presión atmosférica es menor.'));
+}
+
+/* ---------- 4 · regulación ---------- */
+var REG = null;
+function renderReg() {
+  var r = R, reg = r.regul, g = reg.at, s = state, sys = r.sys, Qd = sys.Qd, arr = r.arr, nset = arr === 'paralelo' ? 2 : 1;
+  var mk = function (N, Dd) { var pw = pumpW(N, Dd, r.cas); return pumpF(pw, r.P, hiCorr(pw, r.P.nu * 1e6)); };
+  var base = mk(s.N0, r.D), Qmax = Math.max(base.qEnd * nset * 1.1, Qd * 1.4);
+  var sH = function (f, Q) { return (arr === 'serie' ? 2 : 1) * f.H(Q / nset); };
+  var Hmax = Math.max(sH(base, 0) * 1.15, sys.H(Qd) * 1.3);
+  var ax = axes({ x0: 56, x1: 506, y0: 14, y1: 312, xmax: Qmax, ymin: 0, ymax: Hmax, xs: US() ? 15850.32 : 3600, ys: US() ? 3.28084 : 1, ylab: 'H (' + lH() + ')', xlab: 'Caudal Q (' + lQ() + ')', clip: 'cr' });
+  var o = ax.svg, X = ax.X, Y = ax.Y, line = function (fn, a, b, st) { return PATH(poly(samp(fn, a, b, 50).map(function (p) { return [X(p[0]), Y(p[1])]; })), st, 'cr'); };
+  o += line(function (Q) { return sys.H(Q); }, 0, Qmax, 'stroke:var(--hl);stroke-width:2.6');
+  o += line(function (Q) { return sH(base, Q); }, 0, base.qEnd * nset, 'stroke:var(--ink);stroke-width:2.4');
+  if (g.thr) { var Kx = (sH(base, Qd) - sys.H(Qd)) / (Qd * Qd); o += line(function (Q) { return sys.H(Q) + Kx * Q * Q; }, 0, Qmax, 'stroke:var(--redline);stroke-width:1.6;stroke-dasharray:6 4'); }
+  if (g.vfd) { var fv = mk(s.N0 * g.vfd.n, r.D); o += line(function (Q) { return sH(fv, Q); }, 0, fv.qEnd * nset, 'stroke:var(--ok);stroke-width:2;stroke-dasharray:6 4'); }
+  if (g.trim) { var ft = mk(s.N0, g.trim.D); o += line(function (Q) { return sH(ft, Q); }, 0, ft.qEnd * nset, 'stroke:var(--warn);stroke-width:2;stroke-dasharray:2 3'); }
+  o += LN(X(Qd), 14, X(Qd), 312, 'stroke:var(--n500);stroke-dasharray:3 3');
+  if (g.thr) o += E('circle', { cx: r1(X(Qd)), cy: r1(Y(sH(base, Qd))), r: 5, style: 'fill:var(--redline)' });
+  o += E('circle', { cx: r1(X(Qd)), cy: r1(Y(sys.H(Qd))), r: 5.5, style: 'fill:var(--hl);stroke:var(--paper);stroke-width:2' });
+  o += TX(X(Qd) + 6, 30, 'Q requerido', { fs: 10.5, fw: 700 });
+  $('#svgReg').innerHTML = o;
+  // potencia vs caudal requerido
+  var pts = reg.pts, pmx = 0; pts.forEach(function (p) { ['thr', 'vfd', 'trim'].forEach(function (k) { if (p[k]) pmx = Math.max(pmx, p[k].P); }); });
+  var a2 = axes({ x0: 56, x1: 506, y0: 14, y1: 312, xmax: pts[pts.length - 1].Q * 1.02, ymin: 0, ymax: pmx * 1.15 || 1, xs: US() ? 15850.32 : 3600, ys: US() ? 1 / 0.7457 : 1, ylab: 'P al freno (' + lP() + ')', xlab: 'Caudal requerido (' + lQ() + ')', clip: 'crp' });
+  var o2 = a2.svg, seg = function (k, st) { var arrp = pts.filter(function (p) { return p[k]; }).map(function (p) { return [a2.X(p.Q), a2.Y(p[k].P)]; }); return arrp.length > 1 ? PATH(poly(arrp), st, 'crp') : ''; };
+  o2 += seg('thr', 'stroke:var(--redline);stroke-width:2.6') + seg('trim', 'stroke:var(--warn);stroke-width:2.4;stroke-dasharray:2 3') + seg('vfd', 'stroke:var(--ok);stroke-width:2.6');
+  o2 += LN(a2.X(Qd), 14, a2.X(Qd), 312, 'stroke:var(--n500);stroke-dasharray:3 3');
+  o2 += TX(66, 32, 'válvula', { fs: 11, fw: 800, c: 'var(--redline)' }) + TX(66, 48, 'recorte del impulsor', { fs: 11, fw: 800, c: 'var(--warn)' }) + TX(66, 64, 'variador', { fs: 11, fw: 800, c: 'var(--ok)' });
+  o2 += E('g', { id: 'reCur' }, '');
+  $('#svgRegP').innerHTML = o2; REG = { a: a2, pts: pts };
+  $('#reLead').innerHTML = 'Para entregar ' + fq(Qd) + ' ' + lQ() + ' (el caudal requerido) hay tres caminos: <b>estrangular</b> una válvula y quemar la cabeza que sobra, bajar la <b>velocidad</b> con un variador o <b>recortar</b> el impulsor una vez. La potencia de la izquierda es la que paga cada uno.';
+  var card = function (lab, x, base) { if (!x) return '<div><div class="lbl">' + lab + '</div><div class="v">—</div><div class="u">no alcanza el caudal con esta bomba</div></div>'; var sv = base && base.P ? 1 - x.P / base.P : 0; return '<div><div class="lbl">' + lab + '</div><div class="v">' + fp(x.P) + ' ' + lP() + '</div><div class="u">η ' + fmtN(100 * x.eta, 1) + ' % · ' + fmtN(x.P * 8000, 0) + ' kWh/año' + (sv > 0.005 ? ' · ahorra ' + fmtN(100 * sv, 0) + ' %' : '') + (x.n ? ' · ' + fmtN(100 * x.n, 0) + ' % de velocidad' : '') + (x.D ? ' · D = ' + fmtN(x.D * 1000, 0) + ' mm' : '') + (x.dH ? ' · quema ' + fh(x.dH) + ' ' + lH() : '') + '</div></div>'; };
+  $('#reCards').innerHTML = card('Estrangulando la válvula', g.thr) + card('Con variador', g.vfd, g.thr) + card('Recortando el impulsor', g.trim, g.thr);
+}
+
+/* ---------- 5 · serie y paralelo ---------- */
+function renderSP() {
+  var r = R, pf = r.pf, sys = r.sys, W = 900, Qmax = Math.max(pf.qEnd * 2.1, sys.Qd * 1.3), Hmax = Math.max(pf.H(0) * 2.15, sys.H(Qmax * 0.5));
+  Hmax = Math.min(Hmax, Math.max(pf.H(0) * 2.3, sys.Hst + 5));
+  var ax = axes({ x0: 64, x1: 880, y0: 14, y1: 350, xmax: Qmax, ymin: 0, ymax: Hmax, xs: US() ? 15850.32 : 3600, ys: US() ? 3.28084 : 1, ylab: 'H (' + lH() + ')', xlab: 'Caudal Q (' + lQ() + ')', clip: 'csp' });
+  var o = ax.svg, X = ax.X, Y = ax.Y, ln = function (fn, a, b, st) { return PATH(poly(samp(fn, a, b, 60).map(function (p) { return [X(p[0]), Y(p[1])]; })), st, 'csp'); };
+  o += ln(function (Q) { return sys.H(Q); }, 0, Qmax, 'stroke:var(--ink);stroke-width:2.6');
+  var qz = Math.min(pf.qZero, pf.qEnd * 1.6);
+  o += ln(function (Q) { return pf.H(Q); }, 0, pf.qEnd, 'stroke:var(--hl);stroke-width:2.4') + ln(function (Q) { return pf.H(Q); }, pf.qEnd, qz, 'stroke:var(--hl);stroke-width:1.4;stroke-dasharray:4 4');
+  o += ln(function (Q) { return pf.H(Q / 2); }, 0, pf.qEnd * 2, 'stroke:var(--ok);stroke-width:2.4') + ln(function (Q) { return pf.H(Q / 2); }, pf.qEnd * 2, qz * 2, 'stroke:var(--ok);stroke-width:1.4;stroke-dasharray:4 4');
+  o += ln(function (Q) { return 2 * pf.H(Q); }, 0, pf.qEnd, 'stroke:var(--warn);stroke-width:2.4') + ln(function (Q) { return 2 * pf.H(Q); }, pf.qEnd, qz, 'stroke:var(--warn);stroke-width:1.4;stroke-dasharray:4 4');
+  o += TX(X(pf.qEnd) + 4, Y(pf.H(pf.qEnd)) - 6, 'fin de curva', { fs: 10, c: MUT });
+  var colA = { una: 'var(--hl)', paralelo: 'var(--ok)', serie: 'var(--warn)' }, nm = { una: 'una', paralelo: 'paralelo', serie: 'serie' };
+  r.arrs.forEach(function (a) { if (!a.op) return; var dy = { una: 22, paralelo: -12, serie: -16 }[a.a], lft = a.a === 'serie'; o += E('circle', { cx: r1(X(a.op.Q)), cy: r1(Y(a.op.H)), r: a.a === r.arr ? 7.5 : 5.5, style: 'fill:' + colA[a.a] + ';stroke:var(--paper);stroke-width:2' }) + LN(X(a.op.Q), Y(a.op.H), X(a.op.Q) + (lft ? -8 : 8), Y(a.op.H) + dy + 4, 'stroke:' + colA[a.a] + ';stroke-width:1') + TX(X(a.op.Q) + (lft ? -10 : 10), Y(a.op.H) + dy, nm[a.a] + ' · ' + fq(a.op.Q) + ' ' + lQ() + ' · ' + fh(a.op.H) + ' ' + lH(), { fw: 800, fs: 11, c: colA[a.a], a: lft ? 'end' : null }); });
+  $('#svgSP').innerHTML = o;
+  var rows = r.arrs.map(function (a) {
+    if (!a.op) return '<tr><td>' + ({ una: 'Una bomba', paralelo: 'Dos en paralelo', serie: 'Dos en serie' })[a.a] + '</td><td colspan="6" style="text-align:left">sin punto de operación</td></tr>';
+    var q1 = a.op.q1, n = a.a === 'una' ? 1 : 2, e = pf.eta(q1), Pk = n * pf.P(q1) / 1000, npa = sys.npsha(a.op.Q), mg = npa - pf.npsh3(q1);
+    return '<tr' + (a.a === r.arr ? ' style="background:var(--accent-100)"' : '') + '><td>' + ({ una: 'Una bomba', paralelo: 'Dos en paralelo', serie: 'Dos en serie' })[a.a] + '</td><td>' + fq(a.op.Q) + '</td><td>' + fh(a.op.H) + '</td><td>' + fq(q1) + ' / ' + fh(a.op.h1) + '</td><td>' + fmtN(100 * e, 1) + ' %</td><td>' + fp(Pk) + '</td><td>' + fh(mg) + '</td></tr>';
+  });
+  $('#spTable').innerHTML = '<thead><tr><th>Arreglo</th><th>Q (' + lQ() + ')</th><th>H (' + lH() + ')</th><th>Por bomba Q / H</th><th style="text-transform:none">η</th><th>P total (' + lP() + ')</th><th>Margen NPSH (' + lH() + ')</th></tr></thead><tbody>' + rows.join('') + '</tbody>';
+}
+
+/* ---------- 6 · selección ---------- */
+function renderSel() {
+  var r = R, s = state, pf = r.pf, op = r.op;
+  var ck = function (ok, txt, val) { return '<div class="chk"><i class="' + (ok === true ? 'ok' : (ok === 'w' ? 'w' : 'c')) + '">' + (ok === true ? '✓' : '!') + '</i><div>' + txt + '</div><b>' + (val || '') + '</b></div>'; };
+  var h = '';
+  h += ck(!!op, 'Existe punto de operación: la curva de la bomba corta la del sistema.', op ? fq(op.Q) + ' ' + lQ() : 'no');
+  if (op) {
+    h += ck(r.x >= 0.7 && r.x <= 1.1 ? true : 'w', 'El punto cae en la ventana de 70 a 110 % del caudal del BEP (Lectura 05).', fmtN(100 * r.x, 0) + ' %');
+    h += ck(!r.beyond, 'El punto está dentro de la curva publicada por el fabricante.', fmtN(100 * op.q1 / pf.qEnd, 0) + ' % del final');
+    var mreq = Math.max(s.marg, 0.1 * r.npsh3);
+    h += ck(r.margin >= mreq ? true : (r.margin >= 0 ? 'w' : false), 'NPSH disponible sobre el requerido con margen (≥ ' + fh(mreq) + ' ' + lH() + ').', (r.margin >= 0 ? '+' : '') + fh(r.margin) + ' ' + lH());
+    h += ck(r.motor ? true : false, 'Motor que no se sobrecarga en toda la curva, con factor de servicio ' + fmtN(s.FS, 2) + '.', r.motor ? fmtN(r.motor, r.motor < 10 ? 1 : 0) + ' kW' : '—');
+    h += ck(r.D < 0.96 * r.Dmax ? true : 'w', 'El impulsor deja margen para crecer si aumenta la demanda.', fmtN(100 * r.D / r.Dmax, 0) + ' % del máximo');
+    h += ck(!r.hi.on ? true : (r.hi.valid ? 'w' : false), 'Viscosidad dentro de lo que una centrífuga maneja bien (B ≤ 1 sin corrección, B < 40 con HI 9.6.7).', 'B = ' + fmtN(r.hi.B, 2));
+  }
+  $('#checks').innerHTML = h;
+  var nP = r.nP || 1;
+  $('#specMotor').innerHTML = [['Potencia al freno en el punto', op ? fp(r.Pshaft1) + ' ' + lP() + (nP > 1 ? ' por bomba' : '') : '—'], ['Máxima en la curva publicada', fp(r.PmaxCurve) + ' ' + lP()], ['× factor de servicio ' + fmtN(s.FS, 2), fp(r.PmaxCurve * s.FS) + ' ' + lP()], ['Motor IEC elegido', r.motor ? fmtN(r.motor, r.motor < 10 ? 1 : 0) + ' kW (' + fmtN(r.motor / 0.7457, 1) + ' HP)' : '—'], ['Eficiencia del motor, IE3', fmtN(100 * r.etaM, 1) + ' %'], ['Potencia eléctrica', op ? fp(r.Pelec) + ' ' + lP() : '—'], ['Energía a 8000 h/año', op ? fmtN(r.Pelec * 8000, 0) + ' kWh' : '—']].map(function (a) { return '<div>' + a[0] + '</div><div class="v">' + a[1] + '</div>'; }).join('');
+  // velocidad específica
+  var ns = r.NsUS, pos = clamp((Math.log10(ns) - Math.log10(300)) / (Math.log10(15000) - Math.log10(300)), 0, 1);
+  var cut = function (v) { return 100 * (Math.log10(v) - Math.log10(300)) / (Math.log10(15000) - Math.log10(300)); };
+  $('#nsBar').innerHTML = '<div style="flex:0 0 ' + cut(1000) + '%">radial angosto</div><div style="flex:0 0 ' + (cut(4000) - cut(1000)) + '%">radial</div><div style="flex:0 0 ' + (cut(9000) - cut(4000)) + '%">flujo mixto</div><div>axial</div><span class="mk" style="left:' + (100 * pos) + '%">N<sub>s</sub> = ' + fmtN(ns, 0) + '</span>';
+  $('#nsNote').innerHTML = 'N<sub>s</sub> = N√Q / H<sup>3/4</sup> en el BEP (rpm, GPM, pie) = ' + fmtN(ns, 0) + '; en SI, n<sub>q</sub> = ' + fmtN(r.nq, 1) + ' (rpm, m³/s, m). Un valor bajo indica impulsor radial y angosto: mucha cabeza y poco caudal por etapa.';
+  var hi = r.hi;
+  $('#specHI').innerHTML = [['Viscosidad cinemática ν', fmtN(r.P.nu * 1e6, 1) + ' cSt'], ['Parámetro B', fmtN(hi.B, 2) + (hi.on ? '' : ' · no corrige (B ≤ 1)')], ['C<sub>Q</sub> (caudal)', fmtN(hi.CQ, 3)], ['C<sub>H</sub> en el BEP (cabeza)', fmtN(hi.CHb, 3)], ['C<sub>η</sub> (eficiencia)', fmtN(hi.Ce, 3)], ['BEP con agua', fq(r.pw.qB) + ' ' + lQ() + ' · ' + fh(r.pw.hB) + ' ' + lH() + ' · ' + fmtN(100 * r.pw.eB, 1) + ' %'], ['BEP con el fluido', fq(pf.qB) + ' ' + lQ() + ' · ' + fh(pf.hB) + ' ' + lH() + ' · ' + fmtN(100 * pf.eB, 1) + ' %']].map(function (a) { return '<div>' + a[0] + '</div><div class="v">' + a[1] + '</div>'; }).join('');
+  $('#hiNote').textContent = hi.on ? (hi.valid ? 'Las curvas que ve en la carta ya están corregidas: con este fluido la bomba entrega menos caudal y cabeza, y gasta más potencia.' : 'B supera 40: fuera del rango del método. Use una bomba de desplazamiento positivo.') : 'Con esta viscosidad la curva de agua del fabricante vale sin corregir.';
+  renderEqs();
+}
+var katexReady = false;
+function tex(id, s, disp) { var el = typeof id === 'string' ? document.getElementById(id) : id; if (!el) return; if (window.katex) { try { window.katex.render(s, el, { throwOnError: false, displayMode: !!disp }); return; } catch (e) { } } el.textContent = s; }
+function n2(x, d) { return fmtN(x, d).replace(',', '{,}').replace('−', '-'); }
+function renderEqs() {
+  var r = R, t = r.tri, op = r.op, P = r.P;
+  var items = [
+    ['Ecuación de Euler', op ? 'H_{th}=\\frac{u_2\\,c_{u2}}{g}=\\frac{(' + n2(t.u2, 2) + ')(' + n2(t.cu2, 2) + ')}{9{,}81}=' + n2(t.Hth, 2) + '\\ \\text{m}' : 'H_{th}=\\frac{u_2\\,c_{u2}}{g}', 'Cabeza que el impulsor le daría a un fluido ideal. La real es H = η_h·H_th por las pérdidas hidráulicas.'.replace('η_h', 'ηₕ').replace('H_th', 'Hₜₕ')],
+    ['Deslizamiento (Wiesner)', '\\sigma=1-\\frac{\\sqrt{\\sin\\beta_{2B}}}{z^{0{,}7}}=' + n2(SIGMA, 3) + ',\\quad c_{u2}=\\sigma u_2-\\frac{c_{m2}}{\\tan\\beta_{2B}}', 'Con un número finito de álabes el flujo no sigue exactamente el ángulo del álabe: c_u2 queda por debajo del valor ideal.'.replace('c_u2', 'cᵤ₂')],
+    ['Leyes de afinidad', '\\frac{Q_2}{Q_1}=\\frac{N_2}{N_1},\\quad \\frac{H_2}{H_1}=\\left(\\frac{N_2}{N_1}\\right)^2,\\quad \\frac{P_2}{P_1}=\\left(\\frac{N_2}{N_1}\\right)^3', 'Exactas para cambios de velocidad; para el recorte del impulsor son solo aproximadas (compare las curvas de la carta).'],
+    ['NPSH disponible', '\\text{NPSH}_A=\\frac{P_{atm}+P_1-P_v}{\\rho g}+z_s-h_{f,s}' + (op ? '=' + n2(r.npsha, 2) + '\\ \\text{m}' : ''), 'Debe superar al NPSH3 de la bomba con margen: 0,5 a 1 m o 10 a 25 % (Lectura 05).'],
+    ['Potencia', op ? 'P=\\frac{\\rho g Q H}{\\eta}=\\frac{' + n2(P.rho, 0) + '(9{,}81)(' + n2(op.q1, 5) + ')(' + n2(op.h1, 2) + ')}{' + n2(r.eta, 3) + '}=' + n2(r.Pshaft1, 2) + '\\ \\text{kW}' : 'P=\\frac{\\rho g Q H}{\\eta}', 'Potencia al freno por bomba. La eléctrica divide además por la eficiencia del motor.'],
+    ['Velocidad específica', 'N_s=\\frac{N\\sqrt{Q}}{H^{3/4}}=' + n2(r.NsUS, 0) + '\\quad(\\text{rpm, GPM, pie})', 'Se evalúa en el BEP con el diámetro máximo o el actual; caracteriza la forma del impulsor.'],
+    ['Viscosidad: ANSI/HI 9.6.7', '\\begin{aligned}B&=16{,}5\\,\\frac{\\nu^{0{,}5}H_{BEP}^{0{,}0625}}{Q_{BEP}^{0{,}375}N^{0{,}25}}\\\\C_Q&=2{,}71^{-0{,}165(\\log B)^{3{,}15}},\\quad C_\\eta=B^{-0{,}0547B^{0{,}69}}\\end{aligned}', 'ν en cSt, H en pie, Q en GPM. C_H = 1 − (1 − C_Q)(Q/Q_BEP)^0,75.'.replace(/C_H/g, 'C_H').replace('Q_BEP', 'Qᴮᴱᴾ')],
+    ['Caída por cavitación', '\\frac{\\Delta H}{H}=3\\,\\%\\ \\text{cuando}\\ \\text{NPSH}_A=\\text{NPSH}_3', 'Así se define el NPSH requerido en el ensayo (ANSI/HI 14.6). Las burbujas aparecen antes, hacia 1,2 a 1,5 × NPSH3.']
+  ];
+  $('#eqs').innerHTML = items.map(function (it, i) { return '<div><div class="lbl">' + it[0] + '</div><div class="f" id="eq' + i + '"></div><div class="n2">' + esc(it[2]) + '</div></div>'; }).join('');
+  items.forEach(function (it, i) { tex('eq' + i, it[1], true); });
+  $('#assump').innerHTML = '<b>Cómo está hecha la bomba.</b> Es una bomba radial de una etapa construida con la ecuación de Euler y el deslizamiento de Wiesner (6 álabes, β₂ = 27°), con pérdidas por fricción, por choque a la entrada fuera del caudal de diseño, fugas por los anillos, fricción de disco, pérdidas mecánicas y recirculación a carga parcial. Está calibrada para comportarse como una bomba comercial: η máxima de 70 a 76 %, cabeza a caudal cero de 1,1 a 1,2 veces la del BEP y potencia a caudal cero cercana al 45 % de la del BEP. Las tres carcasas son geométricamente semejantes (Q ∝ D³, H ∝ D²). '
+    + 'El NPSH3 sale de la velocidad en el ojo y de la velocidad relativa en el borde de ataque (forma de Gülich) y crece con N². La corrección por viscosidad es la de ANSI/HI 9.6.7. Los motores son tamaños IEC con eficiencia IE3 de referencia (IEC 60034-30-1). '
+    + 'Es un modelo didáctico: para el proyecto use las curvas del fabricante, como en el Taller 3. Propiedades de los fluidos: las del Explorador de Bernoulli.';
+}
+
+/* ---------- lectura con el cursor ---------- */
+function svgPt(svg, e) { var b = svg.getBoundingClientRect(), vb = svg.viewBox.baseVal; return { x: (e.clientX - b.left) / b.width * vb.width, y: (e.clientY - b.top) / b.height * vb.height }; }
+function hoverSetup() {
+  $('#svgChart').addEventListener('mousemove', function (e) {
+    if (!CH) return; var p = svgPt(this, e); if (p.x < CH.x0 || p.x > CH.x1) return;
+    var Q = (p.x - CH.x0) / (CH.x1 - CH.x0) * CH.Qmax, r = CH.r, n = CH.nset, q1 = Q / n, H = (r.arr === 'serie' ? 2 : 1) * r.pf.H(q1);
+    $('#caCur').innerHTML = LN(p.x, CH.y0, p.x, CH.y1, 'stroke:var(--ink);stroke-width:.8;opacity:.5') + E('circle', { cx: r1(p.x), cy: r1(CH.Y(H)), r: 4, style: 'fill:var(--ink)' });
+    $('#caRead').textContent = 'Q = ' + fq(Q) + ' ' + lQ() + ' · bomba ' + fh(H) + ' ' + lH() + ' · η ' + fmtN(100 * r.pf.eta(q1), 1) + ' % · NPSH3 ' + fh(r.pf.npsh3(q1)) + ' ' + lH() + ' · P ' + fp(n * r.pf.P(q1) / 1000) + ' ' + lP() + ' · sistema ' + fh(r.sys.H(Q)) + ' ' + lH();
+  });
+  $('#svgNpsh').addEventListener('mousemove', function (e) {
+    if (!NP) return; var p = svgPt(this, e); if (p.x < NP.x0 || p.x > NP.x1) return;
+    var Q = (p.x - NP.x0) / (NP.x1 - NP.x0) * NP.Qmax, a = NP.r.sys.npsha(Q), n3 = NP.r.pf.npsh3(Q / NP.nset);
+    $('#npCur').innerHTML = LN(p.x, 14, p.x, 284, 'stroke:var(--ink);stroke-width:.8;opacity:.5');
+    $('#npRead').textContent = 'Q = ' + fq(Q) + ' ' + lQ() + ' · NPSHa ' + fh(a) + ' · NPSH3 ' + fh(n3) + ' · margen ' + fh(a - n3) + ' ' + lH();
+  });
+  $('#svgRegP').addEventListener('mousemove', function (e) {
+    if (!REG) return; var p = svgPt(this, e), a = REG.a, pts = REG.pts, Q = (p.x - 56) / (506 - 56) * pts[pts.length - 1].Q * 1.02, best = pts[0];
+    pts.forEach(function (q) { if (Math.abs(q.Q - Q) < Math.abs(best.Q - Q)) best = q; });
+    var f = function (x) { return x ? fp(x.P) + ' ' + lP() : '—'; };
+    $('#reCur').innerHTML = LN(a.X(best.Q), 14, a.X(best.Q), 312, 'stroke:var(--ink);stroke-width:.8;opacity:.5');
+    $('#reRead').textContent = 'Q = ' + fq(best.Q) + ' ' + lQ() + ' · válvula ' + f(best.thr) + ' · recorte ' + f(best.trim) + ' · variador ' + f(best.vfd);
+  });
+}
+
+/* ---------- inicio ---------- */
+function init() {
+  buildControls();
+  pscene = new PumpScene($('#pumpCv'));
+  setTab(tab);
+  update(true);
+  pscene.resize(); pscene.configure(R);
+  window.addEventListener('resize', function () { pscene.resize(); fitTop(); });
+  fitTop(); if (window.ResizeObserver) new ResizeObserver(fitTop).observe($('#top'));
+  requestAnimationFrame(animLoop);
+}
+function fitTop() { document.documentElement.style.setProperty('--top-h', $('#top').offsetHeight + 'px'); }
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
 </script>
 </body>
 </html>
