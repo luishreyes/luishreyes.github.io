@@ -175,6 +175,10 @@ Si un curso define `gradualRelease: true`, quien entra con el **código de estud
 - Las fuentes **Manrope Variable** (sans) y **JetBrains Mono Variable** (mono) van **autoalojadas** vía `@fontsource-variable/manrope` y `@fontsource-variable/jetbrains-mono` (NPM). Importadas desde `index.tsx`. No usar Google Fonts CDN — el portafolio funciona offline y el load es más rápido.
 - El CSS extra `public/classroom-fonts.css` declara las mismas familias para los archivos HTML autocontenidos del Classroom (presentaciones).
 
+### Librerías autoalojadas para los HTML del Classroom
+- `public/classroom/vendor/katex/`: KaTeX (fórmulas).
+- `public/classroom/vendor/three/`: three.js r170 (`three.module.min.js` + `OrbitControls.js`, licencia MIT). Se usa con un import map (`"three": "/classroom/vendor/three/three.module.min.js"`) y `import()` dinámico, para que solo cargue cuando la sección 3D se abre. Primer uso: el Manual de diagramas de POU (sección Layout e isométricos). Reutilizarlo para los simuladores 3D siguientes en vez de traerlo de un CDN.
+
 ### Idioma
 - **Portafolio principal y Classroom index:** Inglés
 - **Contenido de cursos (lecturas, presentaciones, landing):** Español con tildes correctas (á, é, í, ó, ú, ñ, ü)
