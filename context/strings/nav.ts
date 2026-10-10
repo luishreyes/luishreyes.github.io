@@ -23,6 +23,7 @@ export const nav = {
   'nav.service.ai':        { en: 'Augmented Intelligence',  es: 'Inteligencia Aumentada' },
   'nav.service.leadership': { en: 'Service & Leadership',   es: 'Servicio y Liderazgo' },
   'nav.service.editorial': { en: 'Editorial Boards',        es: 'Comités Editoriales' },
+  'nav.service.editorships': { en: 'Edited Books & Guest Editorships', es: 'Libros editados y ediciones invitadas' },
   'nav.service.outreach':  { en: 'Outreach & Scouting',     es: 'Divulgación y Scouting' },
   'nav.recognition':       { en: 'Recognition',             es: 'Reconocimientos' },
   'nav.classroom':         { en: 'Classroom',               es: 'Aula' },
