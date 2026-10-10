@@ -52,7 +52,7 @@ const containerVariants = {
 };
 
 const ResponsibilityIcons = [
-  <img src="https://cdn-icons-png.flaticon.com/512/8998/8998530.png" alt="Subject Editor Icon" className="w-8 h-8" />,
+  <img src="https://cdn-icons-png.flaticon.com/512/8998/8998530.png" alt="Manuscript Evaluation Icon" className="w-8 h-8" />,
   <img src="https://cdn-icons-png.flaticon.com/512/263/263075.png" alt="Special Issue Development Icon" className="w-8 h-8" />,
   <img src="https://cdn-icons-png.flaticon.com/512/15766/15766048.png" alt="Academic & Industry Impact Icon" className="w-8 h-8" />,
 ];
@@ -63,7 +63,7 @@ const editorialRole = {
     tenure: 'Sep 2022 - Present',
     description: 'Education for Chemical Engineers is a peer-reviewed academic journal published by Elsevier on behalf of the IChemE. The journal is a primary forum for discussing the ongoing development of chemical engineering education, publishing papers from around the world to create a global network of chemical engineering academics.',
     responsibilities: [
-      'Subject Editor in Biotechnology & Bioprocessing: Oversee the review and evaluation of manuscripts related to biotechnology, bioprocessing, and bio-related topics within the context of chemical engineering education.',
+      'Manuscript Evaluation: Oversee the review and evaluation of manuscripts related to biotechnology, bioprocessing, and bio-related topics within the context of chemical engineering education.',
       'Special Issue Development: Actively propose and coordinate special issues on emerging topics in chemical engineering education, fostering discussions on innovative teaching methodologies and curriculum development.',
       'Academic & Industry Impact: Contribute to the strategic direction of the journal, ensuring the publication of high-quality research that bridges the gap between academic advancements and industrial applications in chemical engineering education.',
     ],

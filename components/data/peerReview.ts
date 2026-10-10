@@ -93,6 +93,7 @@ export const reviewedJournals: ReviewedJournal[] = [
   { journal: 'Microbial Biotechnology', area: 'biotech' },
   { journal: 'Microbial Cell Factories', area: 'biotech' },
   { journal: 'Polymers for Advanced Technologies', area: 'materials' },
+  { journal: 'Revista Criminalidad (Policía Nacional de Colombia)', area: 'education' },
   { journal: 'Scientific Reports', area: 'chemistry' },
   { journal: 'Veterinary Research', area: 'biotech' },
   { journal: 'World Journal of Microbiology and Biotechnology', area: 'biotech' },

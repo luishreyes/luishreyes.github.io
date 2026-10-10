@@ -1,0 +1,25 @@
+name: Listar tablas de Supabase
+
+# Inventario de lo que guarda Supabase (tablas, columnas y filas), para decidir
+# qué más se migra al repositorio. Solo imprime en el registro; no hace commits.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  listar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Listar
+        env:
+          SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY }}
+        run: |
+          KEY=$(grep -o "eyJ[A-Za-z0-9._-]*" scripts/export-supabase.mjs | head -1)
+          SUPABASE_ANON_KEY="${SUPABASE_ANON_KEY:-$KEY}" node scripts/listar-supabase.mjs

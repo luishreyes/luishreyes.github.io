@@ -6,7 +6,7 @@ const student: GraduatedStudent = {
     program: { en: 'M.S. in Biomedical Engineering', es: 'M.S. en Ingeniería Biomédica' },
     graduationYear: 2021,
     startedYear: 2019,
-    currentPosition: { en: 'Sr Site Activation Coordinator at IQVIA', es: 'Coordinador Sénior de Activación de Sitios en IQVIA' },
+    currentPosition: { en: 'Global Pharmacovigilance Specialist and Safety Data Lead at Merck Sharp & Dohme (MSD)', es: 'Especialista global de farmacovigilancia y líder de datos de seguridad en Merck Sharp & Dohme (MSD)' },
     thesisTitle: 'Magnetic Nanoparticle Platform Development for Genetic Edition of Neurodegenerative Diseases',
     laymanSummary: [
         {
