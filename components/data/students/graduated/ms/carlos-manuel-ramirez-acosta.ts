@@ -1,7 +1,7 @@
 import type { GraduatedStudent } from '../../../../types';
 
 const student: GraduatedStudent = {
-    name: 'Carlos Manuel Ramirez Acosta',
+    name: 'Carlos Manuel Ramírez Acosta',
     degree: 'M.S.',
     program: { en: 'M.S. in Chemical Engineering at Universidad de Los Andes', es: 'M.S. en Ingeniería Química en la Universidad de Los Andes' },
     graduationYear: 2021,
@@ -23,7 +23,7 @@ const student: GraduatedStudent = {
             answer: { en: "The nanovehicles were highly effective. They could load significant amounts of plasmid DNA, enter mammalian cells without causing harm, and efficiently escape the cellular compartments that typically destroy foreign materials. This work demonstrates a powerful and biocompatible platform for highly-targeted gene therapy.", es: 'Los nanovehículos fueron muy eficaces. Lograron cargar cantidades significativas de ADN plasmídico, ingresar a células de mamífero sin causar daño y escapar eficientemente de los compartimentos celulares que suelen destruir el material extraño. Este trabajo demuestra una plataforma potente y biocompatible para una terapia génica altamente dirigida.' }
         }
     ],
-    imageUrl: 'https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5801.jpeg',
+    imageUrl: '/images/students/carlos-manuel-ramirez-acosta.jpg',
 };
 
 export default student;

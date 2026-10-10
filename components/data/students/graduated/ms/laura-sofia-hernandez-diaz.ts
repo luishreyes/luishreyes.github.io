@@ -23,7 +23,7 @@ const student: GraduatedStudent = {
             answer: { en: "The research successfully identified native yeast strains capable of fermenting sugars into ethanol. The resulting product had a characteristic beer-like aroma, confirming the potential of these local microbes to create unique beverages. This study lays the groundwork for a more independent and innovative Colombian brewing industry, leveraging local biodiversity to craft authentic products and reduce reliance on imported ingredients.", es: 'La investigación logró identificar cepas de levadura nativas capaces de fermentar azúcares en etanol. El producto resultante tenía un aroma característico a cerveza, confirmando el potencial de estos microbios locales para crear bebidas únicas. Este estudio sienta las bases para una industria cervecera colombiana más independiente e innovadora, aprovechando la biodiversidad local para elaborar productos auténticos y reducir la dependencia de ingredientes importados.' }
         }
     ],
-    imageUrl: 'https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5722.JPG',
+    imageUrl: '/images/students/laura-sofia-hernandez-diaz.jpg',
 };
 
 export default student;

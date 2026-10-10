@@ -23,7 +23,7 @@ const student: GraduatedStudent = {
             answer: { en: "The microfluidic platform proved to be highly effective, showing great potential for rapidly screening new MAPs. The computational models accurately predicted the system's performance, providing a robust and affordable tool to accelerate the discovery of new drugs to combat antibiotic resistance.", es: 'La plataforma microfluídica resultó muy eficaz, mostrando un gran potencial para rastrear rápidamente nuevos MAP. Los modelos computacionales predijeron con precisión el desempeño del sistema, ofreciendo una herramienta robusta y asequible para acelerar el descubrimiento de nuevos fármacos que combatan la resistencia a los antibióticos.' }
         }
     ],
-    imageUrl: 'https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5775.JPG',
+    imageUrl: '/images/students/saul-camilo-gomez-tinoco.jpg',
 };
 
 export default student;

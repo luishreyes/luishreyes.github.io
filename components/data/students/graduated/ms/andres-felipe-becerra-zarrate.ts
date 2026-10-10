@@ -21,7 +21,7 @@ const student: GraduatedStudent = {
             answer: { en: 'Infrared spectra confirmed the synthesis and silanization of the nanoparticles, and the weight lost on heating grew with each layer added to their surface, as expected. The particles kept a uniform size up to the PEG step. A band consistent with doxorubicin appeared after loading, and the study recommends further tests to confirm the drug on the surface.', es: 'Los espectros infrarrojos confirmaron la síntesis y la silanización de las nanopartículas, y la pérdida de peso al calentarlas aumentó con cada capa añadida a su superficie, como se esperaba. Las partículas mantuvieron un tamaño uniforme hasta el paso del PEG. Tras la carga apareció una banda compatible con la doxorrubicina, y el estudio recomienda más pruebas para confirmar el fármaco en la superficie.' }
         }
     ],
-    imageUrl: 'https://luishreyes.github.io/images/students/andres-felipe-becerra-zarrate.jpg',
+    imageUrl: '/images/students/andres-felipe-becerra-zarrate.jpg',
 };
 
 export default student;

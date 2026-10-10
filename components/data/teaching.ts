@@ -169,7 +169,7 @@ export const testimonials: Testimonial[] = [
     name: "Angie Daniela Bolaños Barbosa",
     graduateName: "Angie Daniela Bolaños Barbosa",
     info: { en: "University Tutor at Fundación Alquería Cavelier", es: "Tutora universitaria en la Fundación Alquería Cavelier" },
-    imageUrl: "https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5804.jpeg",
+    imageUrl: "/images/students/angie-daniela-bolanos-barbosa.jpg",
     context: { en: "Undergraduate, Thesis & M.S. Mentorship", es: "Mentoría de pregrado, tesis y maestría" },
     category: 'Research Advising'
   },
@@ -181,7 +181,7 @@ export const testimonials: Testimonial[] = [
     name: "Brayan Rodríguez",
     graduateName: "Brayan Rodríguez",
     info: { en: "Assistant Professor at Pontificia Universidad Javeriana", es: "Profesor asistente en la Pontificia Universidad Javeriana" },
-    imageUrl: "https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/Brayan%20Rodriguez.JPG",
+    imageUrl: "/images/students/brayan-rodriguez.jpg",
     context: { en: "Ph.D. Thesis Advisee, Engineering", es: "Dirigido de tesis doctoral, Ingeniería" },
     category: 'Research Advising'
   },
@@ -193,7 +193,7 @@ export const testimonials: Testimonial[] = [
     name: "Julián F. Becerra-Encinales",
     graduateName: "Julián Fernando Becerra-Encinales",
     info: { en: "Director of Technological Extension at Cenipalma", es: "Director de Extensión Tecnológica en Cenipalma" },
-    imageUrl: "https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/Julian%20Fernando%20Becerra-Encinales.JPG",
+    imageUrl: "/images/students/julian-fernando-becerra-encinales.jpg",
     context: { en: "Ph.D. Thesis Advisee, Technological Innovation Management", es: "Dirigido de tesis doctoral, Gestión de la Innovación Tecnológica" },
     category: 'Research Advising'
   },
@@ -205,7 +205,7 @@ export const testimonials: Testimonial[] = [
     name: "Cristian F. Rodríguez",
     graduateName: "Cristian F. Rodríguez",
     info: { en: "Instructor Professor at Universidad de los Andes", es: "Profesor instructor en la Universidad de los Andes" },
-    imageUrl: "https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5728.jpg",
+    imageUrl: "/images/students/cristian-f-rodriguez.jpg",
     context: { en: "M.S. Thesis Advisee, Biomedical Engineering", es: "Dirigido de tesis de maestría, Ingeniería Biomédica" },
     category: 'Research Advising'
   },
@@ -216,7 +216,7 @@ export const testimonials: Testimonial[] = [
     },
     name: "Daniela Aristizabal",
     info: { en: "Talent Development Specialist at Fortra", es: "Especialista en Desarrollo de Talento en Fortra" },
-    imageUrl: "https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5792%20(1).jpeg",
+    imageUrl: "/images/testimonials/img-5792-1.jpg",
     context: { en: "Course: Industrial Biotechnology", es: "Curso: Biotecnología Industrial" },
     category: 'Teaching & Mentorship'
   },
@@ -227,7 +227,7 @@ export const testimonials: Testimonial[] = [
     },
     name: "David Santamaría",
     info: { en: "Cheese Expert at Novonesis", es: "Experto en quesos en Novonesis" },
-    imageUrl: "https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5791.jpeg",
+    imageUrl: "/images/testimonials/img-5791.jpg",
     context: { en: "Course: Industrial Biotechnology", es: "Curso: Biotecnología Industrial" },
     category: 'Teaching & Mentorship'
   },
@@ -238,7 +238,7 @@ export const testimonials: Testimonial[] = [
     },
     name: "Fabio Esteban Herrera",
     info: { en: "Postdoctoral Researcher in Molecular Machine Learning, Leibniz Institute of Plant Biochemistry", es: "Investigador postdoctoral en Aprendizaje Automático Molecular, Leibniz Institute of Plant Biochemistry" },
-    imageUrl: "https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5797.jpeg",
+    imageUrl: "/images/testimonials/img-5797.jpg",
     context: { en: "Course: Industrial Biotechnology", es: "Curso: Biotecnología Industrial" },
     category: 'Teaching & Mentorship'
   },
@@ -249,7 +249,7 @@ export const testimonials: Testimonial[] = [
     },
     name: "Diego Alejandro Peñaloza Mayorga",
     info: { en: "Packaging Team Lead at Central Cervecera de Colombia", es: "Líder de Equipo de Envasado en Central Cervecera de Colombia" },
-    imageUrl: "https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5790.jpeg",
+    imageUrl: "/images/testimonials/img-5790.jpg",
     context: { en: "Course: From Yeast to Beer", es: "Curso: De la Levadura a la Cerveza" },
     category: 'Teaching & Mentorship'
   },
@@ -260,7 +260,7 @@ export const testimonials: Testimonial[] = [
     },
     name: "Jason Bernal Sánchez",
     info: { en: "Integration Lead Engineer at Kanadevia Inova", es: "Ingeniero líder de integración en Kanadevia Inova" },
-    imageUrl: "https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5798.jpeg",
+    imageUrl: "/images/testimonials/img-5798.jpg",
     context: { en: "Course: From Yeast to Beer", es: "Curso: De la Levadura a la Cerveza" },
     category: 'Teaching & Mentorship'
   },
@@ -271,7 +271,7 @@ export const testimonials: Testimonial[] = [
     },
     name: "Camilo Zarate",
     info: { en: "Senior Associate at PwC", es: "Asociado sénior en PwC" },
-    imageUrl: "https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5784.jpeg",
+    imageUrl: "/images/testimonials/img-5784.jpg",
     context: { en: "Course: From Yeast to Beer", es: "Curso: De la Levadura a la Cerveza" },
     category: 'Teaching & Mentorship'
   },
@@ -281,9 +281,9 @@ export const testimonials: Testimonial[] = [
       es: "Tuve la oportunidad de tomar varios cursos de ingeniería con Luis Reyes y pude ser testigo de su labor en cada uno de ellos. Es un profesor metódico, que se esfuerza por impartir contenidos valiosos e integrar nuevas tecnologías y temas de actualidad. También busca ofrecer herramientas prácticas y realistas que facilitan el aprendizaje y el desarrollo de habilidades.\n\nEn los cursos que tomé con él, siempre lograba que analizáramos más allá de los temas específicos, fomentando el desarrollo de un pensamiento crítico y estructurado. Siempre nos animó a aplicar de manera práctica lo aprendido para resolver problemas reales, yendo más allá de la teoría e involucrándose genuinamente en nuestro crecimiento profesional y personal."
     },
     name: "Camila Ocasión",
-    graduateName: "Camila Ocasión Martinez",
+    graduateName: "Camila Ocasión Martínez",
     info: { en: "M.S. in Chemical Engineering, Director of Corporate Responsibility at Hevolución", es: "M.Sc. en Ingeniería Química, Directora de Responsabilidad Corporativa en Hevolución" },
-    imageUrl: "https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5777.JPG",
+    imageUrl: "/images/students/camila-ocasion-martinez.jpg",
     context: { en: "Course: Multiple Engineering Courses", es: "Curso: Varios cursos de ingeniería" },
     category: 'Teaching & Mentorship'
   },
@@ -292,10 +292,10 @@ export const testimonials: Testimonial[] = [
       en: "As a thesis advisor, he never just gave direct answers; instead, he equipped me with the tools to find my own solutions, encouraging innovative thinking and a resilient attitude.",
       es: "Como asesor de tesis, nunca se limitó a dar respuestas directas; en cambio, me dotó de las herramientas para encontrar mis propias soluciones, fomentando el pensamiento innovador y una actitud resiliente."
     },
-    name: "Carlos Manuel Ramirez Acosta",
-    graduateName: "Carlos Manuel Ramirez Acosta",
+    name: "Carlos Manuel Ramírez Acosta",
+    graduateName: "Carlos Manuel Ramírez Acosta",
     info: { en: "Research Professional at Vecol S.A.", es: "Profesional de investigación en Vecol S.A." },
-    imageUrl: "https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5801.jpeg",
+    imageUrl: "/images/students/carlos-manuel-ramirez-acosta.jpg",
     context: { en: "M.S. Thesis Advisee", es: "Dirigido de tesis de maestría" },
     category: 'Research Advising'
   },
@@ -304,10 +304,10 @@ export const testimonials: Testimonial[] = [
       en: "As a professor, his passion is undeniable. In one class, he used a simple discussion about pandas to teach us the fundamentals of experimental design, captivating the entire room. Years later, it's clear he wasn't just teaching us about pandas; he was teaching us to think critically, to approach questions with clear tools, and to be aware of the world around us. This anecdote shows the lasting impact of a great teacher.",
       es: "Como profesor, su pasión es innegable. En una clase, usó una simple discusión sobre los pandas para enseñarnos los fundamentos del diseño experimental, cautivando a todo el salón. Años después, queda claro que no solo nos enseñaba sobre pandas; nos enseñaba a pensar de forma crítica, a abordar preguntas con herramientas claras y a ser conscientes del mundo que nos rodea. Esta anécdota muestra el impacto duradero de un gran maestro."
     },
-    name: "Carlos Manuel Ramirez Acosta",
-    graduateName: "Carlos Manuel Ramirez Acosta",
+    name: "Carlos Manuel Ramírez Acosta",
+    graduateName: "Carlos Manuel Ramírez Acosta",
     info: { en: "Research Professional at Vecol S.A.", es: "Profesional de investigación en Vecol S.A." },
-    imageUrl: "https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5801.jpeg",
+    imageUrl: "/images/students/carlos-manuel-ramirez-acosta.jpg",
     context: { en: "Course: Experimental Design", es: "Curso: Diseño Experimental" },
     category: 'Teaching & Mentorship'
   },
@@ -319,7 +319,7 @@ export const testimonials: Testimonial[] = [
     name: "Julian Daniel Torres Vanegas",
     graduateName: "Julian Daniel Torres Vanegas",
     info: { en: "Assistant Professor at Universidad EAN", es: "Profesor asistente en la Universidad EAN" },
-    imageUrl: "https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/Julian%20Daniel%20Torres%20Vanegas.JPG",
+    imageUrl: "/images/students/julian-daniel-torres-vanegas.jpg",
     context: { en: "Ph.D. Thesis Advisee", es: "Dirigido de tesis doctoral" },
     category: 'Research Advising'
   },
@@ -331,7 +331,7 @@ export const testimonials: Testimonial[] = [
     name: "Julian Daniel Torres Vanegas",
     graduateName: "Julian Daniel Torres Vanegas",
     info: { en: "Assistant Professor at Universidad EAN", es: "Profesor asistente en la Universidad EAN" },
-    imageUrl: "https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/Julian%20Daniel%20Torres%20Vanegas.JPG",
+    imageUrl: "/images/students/julian-daniel-torres-vanegas.jpg",
     context: { en: "Teaching Assistant", es: "Asistente de docencia" },
     category: 'Teaching & Mentorship'
   },
@@ -340,10 +340,10 @@ export const testimonials: Testimonial[] = [
       en: "I had the opportunity to work with Professor Luis H. Reyes in various academic settings: first as his student in the Unit Operations course and later as a graduate assistant. In each of these contexts, the professor distinguished himself by his creativity and the constant generation of valuable ideas, which enriched both learning and academic development.",
       es: "Tuve la oportunidad de trabajar con el profesor Luis H. Reyes en distintos escenarios académicos: primero como su estudiante en el curso de Operaciones Unitarias y luego como asistente graduada. En cada uno de estos contextos, el profesor se distinguió por su creatividad y por la generación constante de ideas valiosas, que enriquecieron tanto el aprendizaje como el desarrollo académico."
     },
-    name: "Olga Lucia Acuña",
-    graduateName: "Olga Lucia Acuña",
+    name: "Olga Lucía Acuña",
+    graduateName: "Olga Lucía Acuña",
     info: { en: "M.S. in Chemical Engineering", es: "M.Sc. en Ingeniería Química" },
-    imageUrl: "https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5782.JPG",
+    imageUrl: "/images/students/olga-lucia-acuna.jpg",
     context: { en: "Course Student & Graduate Assistant", es: "Estudiante del curso y asistente graduada" },
     category: 'Teaching & Mentorship'
   },
@@ -352,10 +352,10 @@ export const testimonials: Testimonial[] = [
       en: "As my thesis advisor, one of the qualities I most highlight is the freedom he provides to explore different paths when difficulties arise. This openness fosters autonomy and critical thinking, while maintaining close and guiding support. Thanks to his guidance, I was able to strengthen my academic and professional capabilities and understand the importance of leadership that combines guidance with trust in the student.",
       es: "Como asesor de mi tesis, una de las cualidades que más destaco es la libertad que brinda para explorar distintos caminos cuando surgen dificultades. Esta apertura fomenta la autonomía y el pensamiento crítico, manteniendo a la vez un acompañamiento cercano y orientador. Gracias a su guía, pude fortalecer mis capacidades académicas y profesionales y comprender la importancia de un liderazgo que combina la orientación con la confianza en el estudiante."
     },
-    name: "Olga Lucia Acuña",
-    graduateName: "Olga Lucia Acuña",
+    name: "Olga Lucía Acuña",
+    graduateName: "Olga Lucía Acuña",
     info: { en: "M.S. in Chemical Engineering", es: "M.Sc. en Ingeniería Química" },
-    imageUrl: "https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5782.JPG",
+    imageUrl: "/images/students/olga-lucia-acuna.jpg",
     context: { en: "M.S. Thesis Advisee", es: "Dirigida de tesis de maestría" },
     category: 'Research Advising'
   },
@@ -367,7 +367,7 @@ export const testimonials: Testimonial[] = [
     name: "Valentina Quezada",
     graduateName: "Valentina Quezada Pérez",
     info: { en: "Researcher at Universidad de los Andes", es: "Investigadora en la Universidad de los Andes" },
-    imageUrl: "https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5755.JPG",
+    imageUrl: "/images/students/valentina-quezada-perez.jpg",
     context: { en: "Mentorship Experience", es: "Experiencia de mentoría" },
     category: 'Teaching & Mentorship'
   },
@@ -379,7 +379,7 @@ export const testimonials: Testimonial[] = [
     name: "Valentina Quezada",
     graduateName: "Valentina Quezada Pérez",
     info: { en: "Researcher at Universidad de los Andes", es: "Investigadora en la Universidad de los Andes" },
-    imageUrl: "https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5755.JPG",
+    imageUrl: "/images/students/valentina-quezada-perez.jpg",
     context: { en: "Undergraduate Researcher & M.S. Thesis Advisee", es: "Investigadora de pregrado y dirigida de tesis de maestría" },
     category: 'Research Advising'
   },
@@ -390,7 +390,7 @@ export const testimonials: Testimonial[] = [
     },
     name: "Juanita Sierra",
     info: { en: "Consultant in sustainable finance at Ambire Global", es: "Consultora en finanzas sostenibles en Ambire Global" },
-    imageUrl: "https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5799.jpeg",
+    imageUrl: "/images/testimonials/img-5799.jpg",
     context: { en: "Course: Unit Operations & Industrial Biotechnology", es: "Curso: Operaciones Unitarias y Biotecnología Industrial" },
     category: 'Teaching & Mentorship'
   },
@@ -401,7 +401,7 @@ export const testimonials: Testimonial[] = [
     },
     name: "Juanita Sierra",
     info: { en: "Consultant in sustainable finance at Ambire Global", es: "Consultora en finanzas sostenibles en Ambire Global" },
-    imageUrl: "https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5799.jpeg",
+    imageUrl: "/images/testimonials/img-5799.jpg",
     context: { en: "Undergraduate Thesis Advisee", es: "Dirigida de tesis de pregrado" },
     category: 'Research Advising'
   },
@@ -410,10 +410,10 @@ export const testimonials: Testimonial[] = [
       en: "Working with Professor Luis between 2019 and 2021 was a key stage in my academic and professional development. During that time, I had the opportunity to have his support as my master's thesis advisor and, at the same time, as my supervisor in my roles as a research assistant and teaching assistant for the Unit Operations course. His passion for science and research left a significant mark on me, especially as I began my journey in the world of bioprocesses and biotechnology. Experiencing this stage during the pandemic made his guidance even more valuable; his constant support gave me peace of mind amid the uncertainty and allowed my research project to have a significant impact during a complicated time. Thanks to his guidance, I was able to focus my knowledge in an area I am passionate about, which undoubtedly defined the course of my career.",
       es: "Trabajar con el profesor Luis entre 2019 y 2021 fue una etapa clave en mi desarrollo académico y profesional. Durante ese tiempo tuve la oportunidad de contar con su apoyo como asesor de mi tesis de maestría y, al mismo tiempo, como mi supervisor en mis roles de asistente de investigación y de docencia para el curso de Operaciones Unitarias. Su pasión por la ciencia y la investigación dejó en mí una huella significativa, especialmente al iniciar mi camino en el mundo de los bioprocesos y la biotecnología. Vivir esta etapa durante la pandemia hizo su orientación aún más valiosa; su apoyo constante me dio tranquilidad en medio de la incertidumbre y permitió que mi proyecto de investigación tuviera un impacto significativo en un momento complicado. Gracias a su guía, pude enfocar mi conocimiento en un área que me apasiona, lo que sin duda definió el rumbo de mi carrera."
     },
-    name: "Maria Camila Henao",
-    graduateName: "Maria Camila Henao",
+    name: "María Camila Henao",
+    graduateName: "María Camila Henao",
     info: { en: "Scientist at VaxThera", es: "Científica en VaxThera" },
-    imageUrl: "https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5759.JPG",
+    imageUrl: "/images/students/maria-camila-henao.jpg",
     context: { en: "M.S. Thesis Advisee & Research/Teaching Assistant", es: "Dirigida de tesis de maestría y asistente de investigación/docencia" },
     category: 'Research Advising'
   },
@@ -422,10 +422,10 @@ export const testimonials: Testimonial[] = [
       en: "My professional relationship with Professor Luis gave me much more than technical knowledge; he instilled in me important values for my personal growth. With him, I learned to see mistakes as opportunities for improvement and to work with a greater awareness of my weaknesses. He always knew how to correct with respect and teach with enthusiasm, which created a positive and challenging learning environment. Today, four years after graduating, I am grateful for everything he gave me, not only as a teacher but also as a mentor. A large part of the professional I am today is due to his guidance, and I hope one day we can reconnect on future projects.\n\nFinally, I'd like to point out that one rarely has the chance to learn so much from someone as cool as Luis: his approachability and sense of humor made even the most demanding days in the lab much more bearable.",
       es: "Mi relación profesional con el profesor Luis me dio mucho más que conocimiento técnico; me inculcó valores importantes para mi crecimiento personal. Con él aprendí a ver los errores como oportunidades de mejora y a trabajar con una mayor conciencia de mis debilidades. Siempre supo corregir con respeto y enseñar con entusiasmo, lo que creó un ambiente de aprendizaje positivo y retador. Hoy, cuatro años después de graduarme, agradezco todo lo que me dio, no solo como docente sino también como mentor. Gran parte de la profesional que soy hoy se debe a su guía, y espero que algún día podamos reencontrarnos en proyectos futuros.\n\nPor último, quisiera señalar que pocas veces se tiene la oportunidad de aprender tanto de alguien tan genial como Luis: su cercanía y sentido del humor hicieron mucho más llevaderos incluso los días más exigentes en el laboratorio."
     },
-    name: "Maria Camila Henao",
-    graduateName: "Maria Camila Henao",
+    name: "María Camila Henao",
+    graduateName: "María Camila Henao",
     info: { en: "Scientist at VaxThera", es: "Científica en VaxThera" },
-    imageUrl: "https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5759.JPG",
+    imageUrl: "/images/students/maria-camila-henao.jpg",
     context: { en: "General Mentorship", es: "Mentoría general" },
     category: 'Teaching & Mentorship'
   }

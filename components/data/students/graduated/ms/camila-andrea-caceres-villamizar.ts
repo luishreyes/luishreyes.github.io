@@ -23,7 +23,7 @@ const student: GraduatedStudent = {
             answer: { en: "The study successfully designed a recombinant Lactobacillus bulgaricus strain with the potential for significantly increased diacetyl biosynthesis. By creating a genetic blueprint for overexpressing key production genes while simultaneously blocking a competing pathway, the research provides a powerful new strategy for developing natural bioprotectants. This work paves the way for creating dairy products with a longer shelf life and enhanced flavor, all through the power of precision genetic engineering.", es: 'El estudio logró diseñar una cepa recombinante de Lactobacillus bulgaricus con potencial para aumentar significativamente la biosíntesis de diacetilo. Al crear un plano genético para sobreexpresar genes clave de producción mientras se bloqueaba simultáneamente una vía competidora, la investigación aporta una potente nueva estrategia para desarrollar bioprotectores naturales. Este trabajo allana el camino para crear productos lácteos con mayor vida útil y sabor mejorado, todo gracias al poder de la ingeniería genética de precisión.' }
         }
     ],
-    imageUrl: 'https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5764.jpg',
+    imageUrl: '/images/students/camila-andrea-caceres-villamizar.jpg',
 };
 
 export default student;
