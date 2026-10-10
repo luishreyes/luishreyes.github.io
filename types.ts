@@ -53,7 +53,7 @@ export interface GraduatedStudent {
   degree: 'Ph.D.' | 'M.S.' | 'Doctor';
   program?: Localized;
   graduationYear: number;
-  startedYear: number;
+  startedYear?: number; // Optional: left out when unknown rather than guessed
   currentPosition?: Localized;
   linkedinUrl?: string;
   thesisTitle: string;
