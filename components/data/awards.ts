@@ -235,7 +235,7 @@ export const awardsData: Recognition[] = [
       },
       {
         en: "I did the postdoctoral stay at the Institute for the Study of Inborn Errors of Metabolism of the Pontificia Universidad Javeriana in Bogotá, under Dr. Luis Alejandro Barrera, where I helped strengthen the group's molecular biology area. The stay moved my research away from biofuels and microbial evolution and toward rare diseases and human health.",
-        es: "Hice la estancia posdoctoral en el Instituto de Errores Innatos del Metabolismo de la Pontificia Universidad Javeriana, en Bogotá, con el doctor Luis Alejandro Barrera, y allí ayudé a fortalecer el área de biología molecular del grupo. Con esa estancia mi investigación pasó de los biocombustibles y la evolución de microorganismos a las enfermedades raras y la salud humana."
+        es: "Hice la estancia posdoctoral en el Instituto de Errores Innatos del Metabolismo de la Pontificia Universidad Javeriana, en Bogotá, con el doctor Luis Alejandro Barrera, y allí ayudé a fortalecer el área de biología molecular del grupo. Con esa estancia mi investigación dejó los biocombustibles y la evolución de microorganismos y se volcó hacia las enfermedades raras y la salud humana."
       }
     ],
     url: "https://minciencias.gov.co/convocatorias/2014/convocatoria-es-tiempo-volver-2014",
