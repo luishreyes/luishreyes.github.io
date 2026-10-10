@@ -6,7 +6,7 @@ const student: GraduatedStudent = {
     program: { en: 'M.S. in Chemical Engineering', es: 'M.S. en Ingeniería Química' },
     graduationYear: 2025,
     startedYear: 2023,
-    currentPosition: undefined,
+    currentPosition: { en: 'Jr. Solutions Engineer at Arcaise LLC', es: 'Ingeniera de soluciones júnior en Arcaise LLC' },
     linkedinUrl: 'https://www.linkedin.com/in/lucia-acuna-ingenieraquimica/',
     thesisTitle: 'Design Study of Thermally Sensitive Liposomes Based on Soy Lecithin, Using Carbon Quantum Dots as Marker Nanoparticles',
     laymanSummary: [
