@@ -22,7 +22,7 @@ const student: GraduatedStudent = {
             answer: { en: "The research successfully turned industrial waste into a valuable product. The new additive significantly improved the cement grinding process and final quality, making it possible to produce high-quality cement with less clinker. This provides a practical, sustainable solution to help the cement industry reduce its carbon footprint and energy consumption.", es: 'La investigación logró convertir residuos industriales en un producto valioso. El nuevo aditivo mejoró significativamente el proceso de molienda y la calidad final del cemento, haciendo posible producir cemento de alta calidad con menos clínker. Esto ofrece una solución práctica y sostenible para ayudar a la industria cementera a reducir su huella de carbono y su consumo de energía.' }
         }
     ],
-    imageUrl: 'https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5749.JPG',
+    imageUrl: '/images/students/sebastian-rodriguez-patino.jpg',
 };
 
 export default student;

@@ -10,23 +10,23 @@
 // The main hero image is already preloaded via a <link> tag in index.html for maximum speed.
 const prioritizedImageUrls = [
   // About Page (second image)
-  'https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/1756469286343.jpeg',
+  '/images/site/1756469286343.jpg',
 
   // --- Page Specific Banners (in navigation order) ---
   // Principles
-  'https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/Campus_mision-historia-y-simbolos_0.webp', // Teaching Purpose
-  'https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/Generales%20campus_2015_2015%20(69).jpg', // Research Purpose
+  '/images/site/campus-mision-historia-y-simbolos-0.webp', // Teaching Purpose
+  '/images/site/generales-campus-2015-2015-69.jpg', // Research Purpose
   'https://ingenieria.uniandes.edu.co/sites/default/files/actualidad_0.jpg', // Service Purpose
   '/images/uniandes-bw.jpg', // Teaching Philosophy
 
   // Research
-  'https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/Generated%20Image%20September%2002,%202025%20-%201_07PM.jpeg', // Research Overview
+  '/images/site/generated-image-september-02-2025-1-07pm.jpg', // Research Overview
   
   // Teaching
-  'https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/04.png', // Teaching Overview
+  '/images/site/04.png', // Teaching Overview
 
   // Service
-  'https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_4560-2.jpg', // Institutional Overview
+  '/images/site/img-4560-2.jpg', // Institutional Overview
   
   // Recognition
   'https://pbs.twimg.com/media/DWKm7gvXcAIISbY?format=jpg&name=4096x4096', // Awards Page

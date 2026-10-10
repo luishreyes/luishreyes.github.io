@@ -23,7 +23,7 @@ const student: GraduatedStudent = {
             answer: { en: "Yeast encapsulation proved to be a powerful tool for innovation. It significantly altered the final flavor and aroma of the beer, creating distinct sensory profiles. The technique also dramatically improved the performance of the wild yeast strain, boosting its alcohol production. The study demonstrates that encapsulation is a viable strategy for brewers to differentiate their products without needing to genetically modify the yeast.", es: 'La encapsulación de levadura resultó ser una herramienta poderosa para la innovación. Alteró significativamente el sabor y el aroma finales de la cerveza, creando perfiles sensoriales distintivos. La técnica también mejoró notablemente el desempeño de la cepa silvestre, aumentando su producción de alcohol. El estudio demuestra que la encapsulación es una estrategia viable para que los cerveceros diferencien sus productos sin necesidad de modificar genéticamente la levadura.' }
         }
     ],
-    imageUrl: 'https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5804.jpeg',
+    imageUrl: '/images/students/angie-daniela-bolanos-barbosa.jpg',
 };
 
 export default student;

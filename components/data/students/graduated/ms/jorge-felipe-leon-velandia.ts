@@ -23,7 +23,7 @@ const student: GraduatedStudent = {
             answer: { en: "The study successfully created a healthier masato with higher antioxidant activity and lower sugar content that was still well-received by consumers. The enriched beverage showed similar physicochemical properties to the commercial version but with added health benefits from the blueberries. Sensory analysis revealed a positive response, even with a more sour taste. The project concluded that producing this innovative, healthier masato is not only technically feasible but also economically viable for production expansion.", es: 'El estudio logró crear un masato más saludable, con mayor actividad antioxidante y menor contenido de azúcar, que aun así fue bien recibido por los consumidores. La bebida enriquecida mostró propiedades fisicoquímicas similares a las de la versión comercial, pero con beneficios adicionales para la salud aportados por los arándanos. El análisis sensorial reveló una respuesta positiva, incluso con un sabor más ácido. El proyecto concluyó que producir este masato innovador y más saludable no solo es técnicamente factible, sino también económicamente viable para expandir la producción.' }
         }
     ],
-    imageUrl: 'https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5766.JPG',
+    imageUrl: '/images/students/jorge-felipe-leon-velandia.jpg',
 };
 
 export default student;

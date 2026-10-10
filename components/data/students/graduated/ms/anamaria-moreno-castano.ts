@@ -1,7 +1,7 @@
 import type { GraduatedStudent } from '../../../../types';
 
 const student: GraduatedStudent = {
-    name: 'Anamaria Moreno Castaño',
+    name: 'Anamaría Moreno Castaño',
     degree: 'M.S.',
     program: { en: 'M.S. in Product and Process Design at Universidad de los Andes', es: 'M.S. en Diseño de Productos y Procesos en la Universidad de los Andes' },
     graduationYear: 2023,
@@ -23,7 +23,7 @@ const student: GraduatedStudent = {
             answer: { en: "The study successfully identified potential antimicrobial peptides from pea protein using computer models. While the lab experiments didn't fully match the computer predictions for antifungal activity, the work highlights the importance of combining computational and experimental methods. The findings show that pea protein is a valuable source of bioactive peptides that could be used as natural food preservatives, contributing to safer and healthier food products.", es: 'El estudio logró identificar posibles péptidos antimicrobianos de la proteína de arveja mediante modelos computacionales. Aunque los experimentos de laboratorio no coincidieron del todo con las predicciones computacionales en cuanto a la actividad antifúngica, el trabajo resalta la importancia de combinar métodos computacionales y experimentales. Los hallazgos muestran que la proteína de arveja es una valiosa fuente de péptidos bioactivos que podrían usarse como conservantes naturales de alimentos, contribuyendo a productos más seguros y saludables.' }
         }
     ],
-    imageUrl: 'https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5740.JPG',
+    imageUrl: '/images/students/anamaria-moreno-castano.jpg',
 };
 
 export default student;

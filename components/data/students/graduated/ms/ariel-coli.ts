@@ -23,7 +23,7 @@ const student: GraduatedStudent = {
             answer: { en: 'The engineered nanocarriers were highly successful. They proved to be very safe and biocompatible, and demonstrated excellent cell penetration and the ability to escape cellular traps. This work provides a promising new platform for creating more effective and targeted drug delivery systems.', es: 'Los nanoacarreadores diseñados tuvieron gran éxito. Resultaron muy seguros y biocompatibles, y demostraron una excelente penetración celular y la capacidad de escapar de las trampas celulares. Este trabajo aporta una prometedora nueva plataforma para crear sistemas de entrega de fármacos más eficaces y dirigidos.' }
         }
     ],
-    imageUrl: 'https://luishreyes.github.io/images/students/ariel-coli.jpg',
+    imageUrl: '/images/students/ariel-coli.jpg',
 };
 
 export default student;

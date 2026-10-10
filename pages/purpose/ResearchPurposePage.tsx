@@ -24,7 +24,7 @@ export const ResearchPurposePage: React.FC = () => {
             className="relative rounded-2xl shadow-xl z-10 overflow-hidden"
           >
             <img 
-                src="https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/Generales%20campus_2015_2015%20(69).jpg" 
+                src="/images/site/generales-campus-2015-2015-69.jpg" 
                 alt="Panoramic view of the Uniandes campus, representing the environment for research and creation"
                 className="absolute inset-0 w-full h-full object-cover object-center"
             />

@@ -23,7 +23,7 @@ const student: GraduatedStudent = {
             answer: { en: 'The strategy proved highly successful. The CRISPR/IONP system corrected the genetic defect in patient cells, restoring the function of the missing enzyme and reducing cellular stress. In mice with Morquio A syndrome, the treatment led to significant therapeutic effects in various tissues. This work demonstrates a powerful new platform for treating devastating genetic disorders, combining precise gene editing with a safe, innovative nanoparticle delivery system.', es: 'La estrategia resultó muy exitosa. El sistema CRISPR/IONP corrigió el defecto genético en las células de los pacientes, restaurando la función de la enzima ausente y reduciendo el estrés celular. En ratones con síndrome de Morquio A, el tratamiento produjo efectos terapéuticos significativos en varios tejidos. Este trabajo demuestra una potente nueva plataforma para tratar trastornos genéticos devastadores, combinando la edición génica precisa con un sistema de entrega por nanopartículas seguro e innovador.' }
         }
     ],
-    imageUrl: 'https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5805.jpeg',
+    imageUrl: '/images/students/andres-felipe-leal.jpg',
 };
 
 export default student;

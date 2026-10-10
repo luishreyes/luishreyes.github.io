@@ -23,7 +23,7 @@ const student: GraduatedStudent = {
             answer: { en: 'The newly developed hair mousse was stable and demonstrated significant antifungal activity against the target fungi in lab tests. The study successfully showed that a peptide-based cosmetic product can be an effective and gentle alternative to conventional antifungal treatments, offering a sustainable, bioactive solution for the hair care industry.', es: 'La mousse capilar desarrollada fue estable y demostró una actividad antifúngica significativa contra los hongos objetivo en pruebas de laboratorio. El estudio demostró con éxito que un producto cosmético basado en péptidos puede ser una alternativa eficaz y suave frente a los tratamientos antifúngicos convencionales, ofreciendo una solución sostenible y bioactiva para la industria del cuidado del cabello.' }
         }
     ],
-    imageUrl: 'https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5737.JPG',
+    imageUrl: '/images/students/catalina-garcia-rondon.jpg',
 };
 
 export default student;

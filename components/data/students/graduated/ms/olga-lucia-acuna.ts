@@ -1,7 +1,7 @@
 import type { GraduatedStudent } from '../../../../types';
 
 const student: GraduatedStudent = {
-    name: 'Olga Lucia Acuña',
+    name: 'Olga Lucía Acuña',
     degree: 'M.S.',
     program: { en: 'M.S. in Chemical Engineering', es: 'M.S. en Ingeniería Química' },
     graduationYear: 2025,
@@ -23,7 +23,7 @@ const student: GraduatedStudent = {
             answer: { en: "The study successfully created functional, low-cost thermosensitive liposomes from soy lecithin. They demonstrated that the traditional hydration method was more efficient at encapsulating the CQD markers. The addition of the heat-sensitive polymer chain was confirmed to be the key component for temperature-triggered release. This work provides a practical and scalable methodology for developing affordable, smart drug delivery systems, using CQDs as a powerful tool for characterization.", es: 'El estudio logró crear liposomas termosensibles funcionales y de bajo costo a partir de lecitina de soya. Demostraron que el método tradicional de hidratación era más eficiente para encapsular los marcadores de CQD. Se confirmó que la incorporación de la cadena polimérica sensible al calor era el componente clave para la liberación activada por temperatura. Este trabajo aporta una metodología práctica y escalable para desarrollar sistemas de entrega de fármacos inteligentes y asequibles, usando los CQD como una potente herramienta de caracterización.' }
         }
     ],
-    imageUrl: 'https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5782.JPG',
+    imageUrl: '/images/students/olga-lucia-acuna.jpg',
 };
 
 export default student;

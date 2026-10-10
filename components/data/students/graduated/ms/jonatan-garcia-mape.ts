@@ -1,7 +1,7 @@
 import type { GraduatedStudent } from '../../../../types';
 
 const student: GraduatedStudent = {
-    name: 'Jonatan Garcia Mape',
+    name: 'Jonatan García Mape',
     degree: 'M.S.',
     program: { en: 'M.S. in Product and Process Design at Universidad de los Andes', es: 'M.S. en Diseño de Productos y Procesos en la Universidad de los Andes' },
     graduationYear: 2023,
@@ -23,7 +23,7 @@ const student: GraduatedStudent = {
             answer: { en: "The strategy was highly successful. The created nanobioconjugates were stable and demonstrated outstanding antioxidant activity, effectively neutralizing harmful free radicals in lab tests. This research provides a promising new platform for delivering tricky but potent drugs like Idebenone, potentially leading to more effective treatments by improving the drug's bioavailability.", es: 'La estrategia fue muy exitosa. Los nanobioconjugados creados fueron estables y demostraron una actividad antioxidante sobresaliente, neutralizando eficazmente radicales libres dañinos en pruebas de laboratorio. Esta investigación aporta una prometedora nueva plataforma para entregar fármacos potentes pero difíciles como la idebenona, lo que podría conducir a tratamientos más eficaces al mejorar la biodisponibilidad del medicamento.' }
         }
     ],
-    imageUrl: 'https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5744.jpg',
+    imageUrl: '/images/students/jonatan-garcia-mape.jpg',
 };
 
 export default student;

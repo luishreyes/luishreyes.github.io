@@ -1,7 +1,7 @@
 import type { GraduatedStudent } from '../../../../types';
 
 const student: GraduatedStudent = {
-    name: 'Maria Camila Henao',
+    name: 'María Camila Henao',
     degree: 'M.S.',
     program: { en: 'M.S. in Chemical Engineering', es: 'M.S. en Ingeniería Química' },
     graduationYear: 2022,
@@ -23,7 +23,7 @@ const student: GraduatedStudent = {
             answer: { en: "A novel peptide, named AHB-1, was discovered and validated as a highly effective cell-penetrating agent. The study confirmed that nanoparticles carrying AHB-1 could safely and efficiently enter cells and reach the cell's interior (cytosol), demonstrating its strong potential as a new tool for developing advanced and targeted drug delivery systems.", es: 'Se descubrió y validó un péptido novedoso, llamado AHB-1, como un agente penetrante de célula altamente eficaz. El estudio confirmó que las nanopartículas que portaban AHB-1 podían ingresar a las células de forma segura y eficiente y alcanzar el interior celular (el citosol), demostrando su gran potencial como nueva herramienta para desarrollar sistemas avanzados y dirigidos de entrega de fármacos.' }
         }
     ],
-    imageUrl: 'https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5759.JPG',
+    imageUrl: '/images/students/maria-camila-henao.jpg',
 };
 
 export default student;

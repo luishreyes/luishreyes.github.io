@@ -22,7 +22,7 @@ const student: GraduatedStudent = {
             answer: { en: "The project successfully translated local consumer preferences into two distinct and well-formulated craft beer recipes. The APA ('La Catedral') and the Porter ('La Diosa del Chairá') both met the desired sensory profiles identified in the market research. Microbiological analysis confirmed that the beers were safe for consumption, and a financial analysis demonstrated the economic viability of producing them on a larger scale. This work provides a complete roadmap for establishing a craft brewery in the region, from consumer research to final product formulation.", es: 'El proyecto logró traducir las preferencias de los consumidores locales en dos recetas de cerveza artesanal distintas y bien formuladas. Tanto la APA («La Catedral») como la Porter («La Diosa del Chairá») cumplieron los perfiles sensoriales deseados identificados en el estudio de mercado. El análisis microbiológico confirmó que las cervezas eran seguras para el consumo, y un análisis financiero demostró la viabilidad económica de producirlas a mayor escala. Este trabajo aporta una hoja de ruta completa para establecer una cervecería artesanal en la región, desde la investigación de los consumidores hasta la formulación final del producto.' }
         }
     ],
-    imageUrl: 'https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5803.jpeg',
+    imageUrl: '/images/students/yiovann-alirio-arce-portilla.jpg',
 };
 
 export default student;

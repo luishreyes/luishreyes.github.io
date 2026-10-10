@@ -23,7 +23,7 @@ const student: GraduatedStudent = {
             answer: { en: "The magnetic-assist technique was a remarkable success, reducing tissue fusion time from 7 days to just 2 days. This breakthrough, supported by the predictive computer model, makes biofabrication much faster and more reliable. It's a significant step toward accelerating medical research, reducing animal testing, and advancing regenerative medicine.", es: 'La técnica de asistencia magnética fue un éxito notable, reduciendo el tiempo de fusión del tejido de 7 días a apenas 2 días. Este avance, respaldado por el modelo computacional predictivo, hace que la biofabricación sea mucho más rápida y confiable. Es un paso significativo hacia la aceleración de la investigación médica, la reducción de la experimentación animal y el avance de la medicina regenerativa.' }
         }
     ],
-    imageUrl: 'https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5728.jpg',
+    imageUrl: '/images/students/cristian-f-rodriguez.jpg',
 };
 
 export default student;

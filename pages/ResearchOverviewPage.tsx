@@ -58,7 +58,7 @@ export const ResearchOverviewPage: React.FC = () => {
           style={{ rotate: imageRotate }}
         >
           <img 
-              src="https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/Generated%20Image%20September%2002,%202025%20-%201_07PM.jpeg" 
+              src="/images/site/generated-image-september-02-2025-1-07pm.jpg" 
               alt={t('research.overview.hero.alt')}
               className="absolute inset-0 w-full h-full object-cover object-center"
           />

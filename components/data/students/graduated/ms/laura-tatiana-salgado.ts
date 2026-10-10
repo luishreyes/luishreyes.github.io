@@ -23,7 +23,7 @@ const student: GraduatedStudent = {
             answer: { en: "Design matters—a lot. The nanoparticle with the peptide where the motif was at the very beginning (N-terminus) was significantly better at entering cells and escaping entrapment. This provides a clear design rule for engineering more effective CPP-based drug delivery vehicles.", es: 'El diseño importa, y mucho. La nanopartícula con el péptido cuyo motivo estaba justo al inicio (extremo N-terminal) fue significativamente mejor para ingresar a las células y escapar del atrapamiento. Esto aporta una regla de diseño clara para crear vehículos de entrega de fármacos basados en CPP más eficaces.' }
         }
     ],
-    imageUrl: 'https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/Laura%20Tatiana%20Salgado.JPG',
+    imageUrl: '/images/students/laura-tatiana-salgado.jpg',
 };
 
 export default student;

@@ -23,7 +23,7 @@ const student: GraduatedStudent = {
             answer: { en: "The hydrogel was highly effective, completely stopping the growth of harmful bacteria like E. coli and S. aureus. It was also proven to be biocompatible and safe for contact with human cells and blood. This work creates a promising new tool for wound dressings and skin infection treatments that can serve as an alternative to traditional antibiotics.", es: 'El hidrogel fue muy eficaz, deteniendo por completo el crecimiento de bacterias dañinas como E. coli y S. aureus. También demostró ser biocompatible y seguro en contacto con células humanas y sangre. Este trabajo crea una prometedora nueva herramienta para apósitos de heridas y tratamientos de infecciones cutáneas que puede servir como alternativa a los antibióticos tradicionales.' }
         }
     ],
-    imageUrl: 'https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5757.JPG',
+    imageUrl: '/images/students/jorge-luis-patarroyo.jpg',
 };
 
 export default student;

@@ -23,7 +23,7 @@ const student: GraduatedStudent = {
             answer: { en: "Encapsulating the yeast worked wonders. The capsules significantly enhanced desirable flavor notes like bitterness, richness, and fruity aromas, making the beer more complex and appealing. The encapsulated yeast was also more efficient at converting sugar to alcohol. The study found that a specific method—homogenizing chitosan and alginate to form polyelectrolyte capsules—provided the best balance of mechanical strength, controlled fermentation, and superior sensory quality, offering a powerful new technique for brewers.", es: 'Encapsular la levadura hizo maravillas. Las cápsulas realzaron notablemente notas de sabor deseables como el amargor, el cuerpo y los aromas frutales, haciendo la cerveza más compleja y atractiva. La levadura encapsulada también fue más eficiente al convertir el azúcar en alcohol. El estudio halló que un método específico —homogeneizar quitosano y alginato para formar cápsulas polielectrolíticas— ofrecía el mejor equilibrio entre resistencia mecánica, fermentación controlada y calidad sensorial superior, brindando una potente nueva técnica para los cerveceros.' }
         }
     ],
-    imageUrl: 'https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/Halil%20Ibrahim%20Kizilates.JPG',
+    imageUrl: '/images/students/halil-ibrahim-kizilates.jpg',
 };
 
 export default student;

@@ -79,7 +79,7 @@ export const TeachingOverviewPage: React.FC = () => {
           style={{ rotate: imageRotate }}
         >
           <img 
-              src="https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/04.png" 
+              src="/images/site/04.png" 
               alt="A professor engaging with students in a modern, collaborative classroom setting at Uniandes"
               className="absolute inset-0 w-full h-full object-cover object-center"
           />

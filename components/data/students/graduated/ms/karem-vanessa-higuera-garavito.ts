@@ -23,7 +23,7 @@ const student: GraduatedStudent = {
             answer: { en: "The study successfully demonstrated that whey protein can effectively encapsulate DIM, increasing its bioavailability through hydrophobic interactions. The sensory panel showed a clear preference for the formulation made with whey protein concentrate, which was also the most stable. The research determined the ideal spray-drying conditions to create a non-clumping powder, resulting in a final product that is both functionally enhanced and consumer-friendly.", es: 'El estudio demostró con éxito que la proteína de suero puede encapsular eficazmente el DIM, aumentando su biodisponibilidad mediante interacciones hidrofóbicas. El panel sensorial mostró una clara preferencia por la formulación elaborada con concentrado de proteína de suero, que también fue la más estable. La investigación determinó las condiciones ideales de secado por aspersión para crear un polvo que no se apelmaza, dando como resultado un producto final funcionalmente mejorado y agradable para el consumidor.' }
         }
     ],
-    imageUrl: 'https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5768.JPG',
+    imageUrl: '/images/students/karem-vanessa-higuera-garavito.jpg',
 };
 
 export default student;

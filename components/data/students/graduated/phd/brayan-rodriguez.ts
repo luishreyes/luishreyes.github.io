@@ -23,7 +23,7 @@ const student: GraduatedStudent = {
             answer: { en: "The study demonstrated that carefully designed sounds can significantly influence consumer choices. For example, packaging sounds can make non-alcoholic beverages more appealing, and specific soundscapes can enhance perceptions of environmental and social sustainability. The research also produced a novel AI-powered music recommendation system that generates playlists based on desired flavor profiles, highlighting the powerful and underexplored role of sound in sustainable marketing.", es: 'El estudio demostró que los sonidos cuidadosamente diseñados pueden influir significativamente en las decisiones de los consumidores. Por ejemplo, los sonidos del empaque pueden hacer más atractivas las bebidas sin alcohol, y ciertos paisajes sonoros pueden potenciar las percepciones de sostenibilidad ambiental y social. La investigación también produjo un novedoso sistema de recomendación musical impulsado por IA que genera listas de reproducción según perfiles de sabor deseados, resaltando el papel poderoso y poco explorado del sonido en el marketing sostenible.' }
         }
     ],
-    imageUrl: 'https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/Brayan%20Rodriguez.JPG',
+    imageUrl: '/images/students/brayan-rodriguez.jpg',
 };
 
 export default student;

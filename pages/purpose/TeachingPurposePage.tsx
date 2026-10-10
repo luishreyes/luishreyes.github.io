@@ -24,7 +24,7 @@ export const TeachingPurposePage: React.FC = () => {
             className="relative rounded-2xl shadow-xl z-10 overflow-hidden"
           >
             <img 
-                src="https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/Campus_mision-historia-y-simbolos_0.webp" 
+                src="/images/site/campus-mision-historia-y-simbolos-0.webp" 
                 alt="A modern classroom with flexible seating arrangements, representing active learning."
                 className="absolute inset-0 w-full h-full object-cover object-center"
             />

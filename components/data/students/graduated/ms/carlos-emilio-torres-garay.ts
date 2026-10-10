@@ -23,7 +23,7 @@ const student: GraduatedStudent = {
             answer: { en: "The microfluidic platform was highly successful, producing uniform and biocompatible drug carriers with an impressive encapsulation efficiency of up to 90%. This work provides a scalable and cost-effective method for developing advanced oral drug delivery systems for difficult-to-transport medicines.", es: 'La plataforma microfluídica tuvo gran éxito, produciendo acarreadores de fármacos uniformes y biocompatibles con una impresionante eficiencia de encapsulación de hasta el 90 %. Este trabajo aporta un método escalable y rentable para desarrollar sistemas avanzados de administración oral de medicamentos difíciles de transportar.' }
         }
     ],
-    imageUrl: 'https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5771.JPG',
+    imageUrl: '/images/students/carlos-emilio-torres-garay.jpg',
 };
 
 export default student;

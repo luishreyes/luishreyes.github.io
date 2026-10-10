@@ -23,7 +23,7 @@ const student: GraduatedStudent = {
             answer: { en: "The study provided the first detailed look at this interaction, showing that BUFII causes DNA to form unique, super-coiled nanoscale structures. This deeper understanding of BUFII's mechanism is a critical step for developing it into a new antibiotic and could also be used to design new systems for gene therapy.", es: 'El estudio ofreció la primera mirada detallada de esta interacción, mostrando que la BUFII hace que el ADN forme estructuras únicas y superenrolladas a nanoescala. Esta comprensión más profunda del mecanismo de la BUFII es un paso clave para convertirla en un nuevo antibiótico y también podría servir para diseñar nuevos sistemas de terapia génica.' }
         }
     ],
-    imageUrl: 'https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5773.JPG',
+    imageUrl: '/images/students/daniela-rubio-olaya.jpg',
 };
 
 export default student;

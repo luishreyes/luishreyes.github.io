@@ -1,7 +1,7 @@
 import type { GraduatedStudent } from '../../../../types';
 
 const student: GraduatedStudent = {
-    name: 'Camila Ocasión Martinez',
+    name: 'Camila Ocasión Martínez',
     degree: 'M.S.',
     program: { en: 'M.S. in Chemical Engineering at Universidad de Los Andes', es: 'M.S. en Ingeniería Química en la Universidad de Los Andes' },
     graduationYear: 2021,
@@ -23,7 +23,7 @@ const student: GraduatedStudent = {
             answer: { en: "The strategy was a success. The team created a robust and efficient method for designing these molecular sensors. The developed biosensor could successfully detect naringenin at very low concentrations, providing a clear signal. This work provides a powerful new toolkit for a scientist, making it much faster and easier to screen vast genetic libraries and accelerate the discovery of novel, valuable biomolecules.", es: 'La estrategia fue un éxito. El equipo creó un método robusto y eficiente para diseñar estos sensores moleculares. El biosensor desarrollado logró detectar naringenina en concentraciones muy bajas, ofreciendo una señal clara. Este trabajo aporta un poderoso nuevo conjunto de herramientas para los científicos, haciendo mucho más rápido y sencillo rastrear vastas bibliotecas genéticas y acelerar el descubrimiento de biomoléculas novedosas y valiosas.' }
         }
     ],
-    imageUrl: 'https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5777.JPG',
+    imageUrl: '/images/students/camila-ocasion-martinez.jpg',
 };
 
 export default student;
