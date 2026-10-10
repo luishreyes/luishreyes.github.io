@@ -14,7 +14,8 @@ export interface EditedBook {
   year: number;
   /** Editors in the order printed on the cover. */
   editors: string[];
-  role: 'first-editor' | 'co-editor';
+  /** Cover image under public/images/books/. */
+  cover: string;
   pages: number;
   /** Chapters in the whole volume, when the publisher lists them. */
   chapters?: number;
@@ -35,7 +36,7 @@ export const editedBooksData: EditedBook[] = [
     publisher: 'CRC Press (Taylor & Francis)',
     year: 2025,
     editors: ['Luis H. Reyes', 'Juan C. Cruz', 'Yashwant V. Pathak'],
-    role: 'first-editor',
+    cover: '/images/books/nanocarriers.jpg',
     pages: 418,
     chapters: 16,
     authoredChapters: 6,
@@ -52,7 +53,7 @@ export const editedBooksData: EditedBook[] = [
     publisher: 'Elsevier',
     year: 2024,
     editors: ['Luis H. Reyes', 'Juan C. Cruz', 'Gregory R. Wiedman'],
-    role: 'first-editor',
+    cover: '/images/books/antimicrobial-peptides.jpg',
     pages: 350,
     authoredChapters: 7,
     authoredIntroduction: true,
@@ -68,7 +69,7 @@ export const editedBooksData: EditedBook[] = [
     publisher: 'IntechOpen',
     year: 2022,
     editors: ['Miguel Fernández-Niño', 'Luis H. Reyes'],
-    role: 'co-editor',
+    cover: '/images/books/synthetic-genomics.jpg',
     pages: 104,
     authoredChapters: 0,
     authoredIntroduction: true,
@@ -92,9 +93,8 @@ export interface GuestEditorship {
   section?: Localized;
   publisher: Localized;
   period: string;
-  role: Localized;
-  withEditors: Localized;
-  facts?: Localized[];
+  /** Guest editors in the order the journal lists them. */
+  editors: string[];
   /** The opening editorial signed by the guest editors, when there is one. */
   editorial?: { title: string; doi: string };
 }
@@ -109,8 +109,7 @@ export const guestEditorshipsData: GuestEditorship[] = [
       es: 'Elsevier, por encargo de la Institution of Chemical Engineers (IChemE)',
     },
     period: '2024',
-    role: { en: 'Guest editor, first of three', es: 'Editor invitado, primero de tres' },
-    withEditors: { en: 'With Óscar Álvarez and Juan C. Cruz', es: 'Con Óscar Álvarez y Juan C. Cruz' },
+    editors: ['Luis H. Reyes', 'Juan C. Cruz', 'Óscar Alberto Álvarez Solano'],
     editorial: {
       title: 'Editorial: The modern face of chemical engineering in Latin America',
       doi: '10.1016/j.ece.2023.10.003',
@@ -122,14 +121,7 @@ export const guestEditorshipsData: GuestEditorship[] = [
     journal: 'Nanoscale Advances',
     publisher: { en: 'Royal Society of Chemistry (RSC)', es: 'Royal Society of Chemistry (RSC)' },
     period: '2024',
-    role: { en: 'Guest editor, one of two', es: 'Editor invitado, uno de dos' },
-    withEditors: { en: 'With Juan C. Cruz', es: 'Con Juan C. Cruz' },
-    facts: [
-      {
-        en: 'Both guest editors are corresponding authors of the opening editorial.',
-        es: 'Los dos editores invitados son autores de correspondencia del editorial de apertura.',
-      },
-    ],
+    editors: ['Juan C. Cruz', 'Luis H. Reyes'],
     editorial: {
       title: 'Frontiers in stimuli-responsive nanoplatforms: pioneering drug delivery in nanobiotechnology',
       doi: '10.1039/d4na90074j',
@@ -142,15 +134,7 @@ export const guestEditorshipsData: GuestEditorship[] = [
     section: { en: 'Polymer Chemistry section', es: 'Sección de Química de Polímeros' },
     publisher: { en: 'Frontiers', es: 'Frontiers' },
     period: '2024',
-    role: { en: 'Guest editor, one of nine', es: 'Editor invitado, uno de nueve' },
-    withEditors: {
-      en: 'Nine editors from six countries, led by Lei Nie',
-      es: 'Nueve editores de seis países, coordinados por Lei Nie',
-    },
-    facts: [
-      { en: '7 articles by 42 authors', es: '7 artículos de 42 autores' },
-      { en: '68,000 views', es: '68.000 vistas' },
-    ],
+    editors: ['Lei Nie', 'Carolina Muñoz-Camargo', 'Sayan Ganguly', 'Lahoucine Bahsis', 'Juan C. Cruz', 'Reza Mohammadinejad', 'Aldo Nicosia', 'Luis H. Reyes', 'Xing Wang'],
     editorial: {
       title: 'Editorial: Biocompatible hydrogels: properties, synthesis and applications in biomedicine',
       doi: '10.3389/fchem.2024.1500836',
@@ -163,8 +147,6 @@ export const guestEditorshipsData: GuestEditorship[] = [
     section: { en: 'Polymer Applications section', es: 'Sección Polymer Applications' },
     publisher: { en: 'MDPI', es: 'MDPI' },
     period: '2023-2024',
-    role: { en: 'Guest editor', es: 'Editor invitado' },
-    withEditors: { en: 'With Juan C. Cruz', es: 'Con Juan C. Cruz' },
-    facts: [{ en: 'More than 38,000 views', es: 'Más de 38.000 visualizaciones' }],
+    editors: ['Luis H. Reyes', 'Juan C. Cruz'],
   },
 ];
