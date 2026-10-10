@@ -18,7 +18,7 @@ export const research = {
   'stats.editorialBoards':  { en: 'Editorial Boards',        es: 'Comités Editoriales' },
   'stats.editorialBoards.note': { en: 'All current, since {since}', es: 'Todos vigentes, desde {since}' },
   'stats.editedBooks':      { en: 'Edited Books',            es: 'Libros Editados' },
-  'stats.editedBooks.note': { en: '{n} as first editor',     es: '{n} como primer editor' },
+  'stats.editedBooks.note': { en: 'CRC Press, Elsevier and IntechOpen', es: 'CRC Press, Elsevier e IntechOpen' },
   'stats.guestEditorships': { en: 'Guest Editorships',       es: 'Ediciones Invitadas' },
   'stats.guestEditorships.note': { en: 'Special issues since {since}', es: 'Números especiales desde {since}' },
   'stats.leadershipRoles':  { en: 'Leadership Roles',        es: 'Roles de Liderazgo' },

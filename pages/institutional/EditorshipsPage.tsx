@@ -60,7 +60,6 @@ const EditorList: React.FC<{ names: string[]; and: string }> = ({ names, and }) 
 
 const BookCard: React.FC<{ book: EditedBook }> = ({ book }) => {
   const { t, lang } = useI18n();
-  const role = t(book.role === 'first-editor' ? 'editorships.role.first' : 'editorships.role.co');
 
   let authored: string | null = null;
   if (book.authoredChapters > 0 && book.authoredIntroduction) {
@@ -80,17 +79,18 @@ const BookCard: React.FC<{ book: EditedBook }> = ({ book }) => {
 
   return (
     <article className="bg-white rounded-xl shadow-lg border border-yellow-400/40 overflow-hidden flex flex-col md:flex-row transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
-      {/* A typographic cover: publisher and year, no borrowed artwork */}
       <div className="md:w-1/3 flex items-center justify-center p-8 bg-zinc-50">
-        <div className="relative w-32 h-44 rounded-r-md rounded-l-sm bg-brand-dark shadow-xl border-l-8 border-brand-yellow flex flex-col justify-between p-4" aria-hidden="true">
-          <span className="font-mono text-[10px] uppercase tracking-widest text-white/60 leading-snug">{book.publisher}</span>
-          <span className="text-3xl font-bold text-brand-yellow tabular-nums">{book.year}</span>
-        </div>
+        <img
+          src={book.cover}
+          alt={fill(t('editorships.coverAlt'), { title: book.title })}
+          className="w-36 h-auto rounded-sm shadow-xl"
+          loading="lazy"
+        />
       </div>
       <div className="p-8 flex flex-col justify-between md:w-2/3">
         <div>
           <p className="block text-sm font-semibold text-yellow-500 uppercase tracking-wide">
-            {role} ({book.year})
+            {book.year}
           </p>
           <h3 className="mt-2 text-2xl font-bold text-brand-dark leading-tight">{book.title}</h3>
           <p className="mt-2 font-medium text-brand-dark">{book.publisher}</p>
@@ -146,19 +146,9 @@ const GuestEditorshipCard: React.FC<{ issue: GuestEditorship }> = ({ issue }) =>
 
       <h3 className="mt-4 text-xl font-bold text-brand-dark leading-snug">{issue.issueTitle}</h3>
 
-      <p className="mt-3 text-sm font-semibold text-yellow-500 uppercase tracking-wide">{localize(issue.role, lang)}</p>
-      <p className="mt-1 text-sm text-brand-gray">{localize(issue.withEditors, lang)}</p>
-
-      {issue.facts && (
-        <ul className="mt-4 space-y-1 text-sm text-brand-gray">
-          {issue.facts.map((fact) => (
-            <li key={localize(fact, 'en')} className="flex items-start gap-2">
-              <span className="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-yellow-400" aria-hidden="true" />
-              <span>{localize(fact, lang)}</span>
-            </li>
-          ))}
-        </ul>
-      )}
+      <p className="mt-3 text-sm text-brand-gray">
+        {t('editorships.guestEditors')}: <EditorList names={issue.editors} and={t('editorships.and')} />
+      </p>
 
       {issue.editorial && (
         <div className="mt-5 border-t border-zinc-100 pt-4">

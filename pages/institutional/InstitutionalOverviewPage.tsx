@@ -43,7 +43,7 @@ export const InstitutionalOverviewPage: React.FC = () => {
 
   const stats = [
     { label: t('stats.editorialBoards'), value: service.editorialBoards, note: fill(t('stats.editorialBoards.note'), { since: service.editorialBoardsSince }) },
-    { label: t('stats.editedBooks'), value: service.editedBooks, note: fill(t('stats.editedBooks.note'), { n: service.editedBooksAsFirstEditor }) },
+    { label: t('stats.editedBooks'), value: service.editedBooks, note: t('stats.editedBooks.note') },
     { label: t('stats.guestEditorships'), value: service.guestEditorships, note: fill(t('stats.guestEditorships.note'), { since: service.guestEditorshipsSince }) },
     { label: t('stats.committees'), value: service.committees, note: t('stats.committees.note') },
     { label: t('stats.leadershipRoles'), value: service.leadershipRoles },

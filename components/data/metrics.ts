@@ -84,7 +84,6 @@ const service = {
   editorialBoards: editorialData.length,
   editorialBoardsSince: Math.min(...editorialData.map((role) => firstYear(role.startDate))),
   editedBooks: editedBooksData.length,
-  editedBooksAsFirstEditor: editedBooksData.filter((book) => book.role === 'first-editor').length,
   guestEditorships: guestEditorshipsData.length,
   guestEditorshipsSince: Math.min(...guestEditorshipsData.map((issue) => firstYear(issue.period))),
   leadershipRoles: leadershipRolesData.length,
