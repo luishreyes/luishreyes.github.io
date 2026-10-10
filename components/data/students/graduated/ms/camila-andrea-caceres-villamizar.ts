@@ -6,7 +6,7 @@ const student: GraduatedStudent = {
     program: { en: 'M.S. in Product and Process Design at Universidad de los Andes', es: 'M.S. en Diseño de Productos y Procesos en la Universidad de los Andes' },
     graduationYear: 2022,
     startedYear: 2020,
-    currentPosition: { en: 'Commercial Chief at Bavaria', es: 'Jefa Comercial en Bavaria' },
+    currentPosition: { en: 'Commercial Integration Lead at Bavaria', es: 'Jefa de integración comercial en Bavaria' },
     linkedinUrl: 'https://www.linkedin.com/in/camilaandreacv/',
     thesisTitle: 'Genome Editing of Lactobacillus bulgaricus with CRISPR-Cas9 to Increase Its Bioprotective Potential in Dairy Products',
     laymanSummary: [

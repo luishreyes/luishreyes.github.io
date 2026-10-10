@@ -3,7 +3,7 @@
 import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { PageWrapper } from '../../components/PageWrapper';
-import { useI18n } from '../../context/i18n';
+import { useI18n, fill } from '../../context/i18n';
 import { StatsSection } from '../../components/StatsSection';
 import { metrics } from '../../components/data/metrics';
 // FIX: Removed 'Variants' from framer-motion import to resolve module export error.
@@ -42,7 +42,9 @@ export const InstitutionalOverviewPage: React.FC = () => {
   const headerRef = useRef<HTMLDivElement>(null);
 
   const stats = [
-    { label: t('stats.editorialBoards'), value: service.editorialBoards, note: t('stats.editorialBoards.note') },
+    { label: t('stats.editorialBoards'), value: service.editorialBoards, note: fill(t('stats.editorialBoards.note'), { since: service.editorialBoardsSince }) },
+    { label: t('stats.editedBooks'), value: service.editedBooks, note: t('stats.editedBooks.note') },
+    { label: t('stats.guestEditorships'), value: service.guestEditorships, note: fill(t('stats.guestEditorships.note'), { since: service.guestEditorshipsSince }) },
     { label: t('stats.committees'), value: service.committees, note: t('stats.committees.note') },
     { label: t('stats.leadershipRoles'), value: service.leadershipRoles },
     { label: t('stats.outreach'), value: service.outreachActivities },
@@ -72,6 +74,19 @@ export const InstitutionalOverviewPage: React.FC = () => {
           <img src="https://cdn-icons-png.flaticon.com/512/4598/4598321.png" alt="Editorial Contributions Icon" className="h-8 w-8" />
       ),
       link: '/service/editorial'
+    },
+    {
+      title: t('service.editorships.title'),
+      description: t('service.editorships.desc'),
+      icon: (
+          // Lucide "library-big"
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="h-8 w-8 text-brand-dark" aria-hidden="true">
+            <rect width="8" height="18" x="3" y="3" rx="1" />
+            <path d="M7 3v18" />
+            <path d="M20.4 18.9c.2.5-.1 1.1-.6 1.3l-1.9.7c-.5.2-1.1-.1-1.3-.6L11.1 5.1c-.2-.5.1-1.1.6-1.3l1.9-.7c.5-.2 1.1.1 1.3.6Z" />
+          </svg>
+      ),
+      link: '/service/editorships'
     },
     {
       title: t('service.outreach.title'),
@@ -161,12 +176,13 @@ export const InstitutionalOverviewPage: React.FC = () => {
                 viewport: { once: true, amount: 0.1 },
               }}
             >
-              {serviceItems.map(item => (
+              {serviceItems.map((item, index) => (
                   <motion.div
                       key={item.title}
                       // FIX: Spread motion props to avoid TypeScript type errors.
                       {...{variants: itemVariants}}
-                      className="h-full"
+                      // An odd card out spans the whole last row instead of leaving a hole.
+                      className={`h-full ${serviceItems.length % 2 === 1 && index === serviceItems.length - 1 ? 'md:col-span-2' : ''}`}
                   >
                       <Link
                           to={item.link}

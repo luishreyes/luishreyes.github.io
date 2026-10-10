@@ -17,10 +17,8 @@ import { ScholarshipOfTeachingPage } from './pages/teaching/ScholarshipOfTeachin
 import { InstitutionalOverviewPage } from './pages/institutional/InstitutionalOverviewPage';
 import { CommitteesPage } from './pages/institutional/CommitteesPage';
 import { EditorialPage } from './pages/institutional/EditorialPage';
+import { EditorshipsPage } from './pages/institutional/EditorshipsPage';
 import { OutreachPage } from './pages/institutional/OutreachPage';
-import { FutureOverviewPage } from './pages/future/FutureOverviewPage';
-import { ResearchDirectionsPage } from './pages/future/ResearchDirectionsPage';
-import { CollaborationPage } from './pages/future/CollaborationPage';
 import { AwardsPage } from './pages/AwardsPage';
 import { ContinuingEducationPage } from './pages/teaching/ContinuingEducationPage';
 import { ProfessionalDevelopmentPage } from './pages/teaching/ProfessionalDevelopmentPage';
@@ -28,7 +26,7 @@ import { AugmentedIntelligencePage } from './pages/institutional/AugmentedIntell
 import { UnitOperationsInnovationPage } from './pages/teaching/UnitOperationsInnovationPage';
 import { ScrollToTopButton } from './components/ScrollToTopButton';
 import { SocialLinks } from './components/SocialLinks';
-import { fetchInitialData } from './services/supabase';
+import { fetchInitialData } from './services/products';
 import type { Product } from './types';
 import { generateCvPdf } from './services/cvGenerator';
 import { grantsData } from './components/data/grants';
@@ -180,10 +178,8 @@ const App: React.FC = () => {
               <Route path="/service/augmented-intelligence" element={<AugmentedIntelligencePage />} />
               <Route path="/service/committees" element={<CommitteesPage />} />
               <Route path="/service/editorial" element={<EditorialPage />} />
+              <Route path="/service/editorships" element={<EditorshipsPage />} />
               <Route path="/service/outreach" element={<OutreachPage />} />
-              <Route path="/future" element={<FutureOverviewPage />} />
-              <Route path="/future/research" element={<ResearchDirectionsPage />} />
-              <Route path="/future/collaboration" element={<CollaborationPage />} />
               <Route path="/recognition" element={<AwardsPage />} />
               <Route path="/classroom" element={<ClassroomIndexPage />} />
               <Route path="/classroom/archive" element={<ClassroomArchivePage />} />

@@ -4,6 +4,7 @@ import { edcoCoursesData } from './edco';
 import { grantsData } from './grants';
 import { awardsData } from './awards';
 import { editorialData, leadershipRolesData, committeesData } from './institutional';
+import { editedBooksData, guestEditorshipsData } from './editorships';
 import { outreachData } from './outreach';
 import { studentsData, graduatedStudentsData } from './students';
 
@@ -76,8 +77,15 @@ const research = {
 
 // ── Service ─────────────────────────────────────────────────────────────────
 
+/** First year in a free-text date such as 'Sep 2022' or '2023-2024'. */
+const firstYear = (text: string) => Number(text.match(/\d{4}/)?.[0]);
+
 const service = {
   editorialBoards: editorialData.length,
+  editorialBoardsSince: Math.min(...editorialData.map((role) => firstYear(role.startDate))),
+  editedBooks: editedBooksData.length,
+  guestEditorships: guestEditorshipsData.length,
+  guestEditorshipsSince: Math.min(...guestEditorshipsData.map((issue) => firstYear(issue.period))),
   leadershipRoles: leadershipRolesData.length,
   committees: committeesData.length,
   outreachActivities: outreachData.length,

@@ -81,6 +81,7 @@ const navItems = (t: (key: import('../context/i18n').UIKey) => string) => [
       { title: t('nav.service.ai'), path: '/service/augmented-intelligence' },
       { title: t('nav.service.leadership'), path: '/service/committees' },
       { title: t('nav.service.editorial'), path: '/service/editorial' },
+      { title: t('nav.service.editorships'), path: '/service/editorships' },
       { title: t('nav.service.outreach'), path: '/service/outreach' },
     ],
   },

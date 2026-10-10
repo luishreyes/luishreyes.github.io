@@ -11,6 +11,8 @@ export const service = {
   'service.ai.desc':          { en: 'Co-founded and co-led the \'Augmented Intelligence Uniandes\' initiative (June 2024 to 2026), which set out to integrate Generative AI strategically into the engineering curriculum and to rethink our pedagogical models.', es: 'Cofundé y colideré la iniciativa «Inteligencia Aumentada Uniandes» (junio de 2024 a 2026), que se propuso integrar estratégicamente la IA generativa en el currículo de ingeniería y repensar nuestros modelos pedagógicos.' },
   'service.editorial.title':  { en: 'Editorial Contributions', es: 'Contribuciones Editoriales' },
   'service.editorial.desc':   { en: 'Contributing to the global scientific community by upholding the quality and integrity of research through service on the editorial boards of prestigious international journals.', es: 'Contribuyendo a la comunidad científica global manteniendo la calidad e integridad de la investigación a través del servicio en los comités editoriales de revistas internacionales de prestigio.' },
+  'service.editorships.title': { en: 'Edited Books & Guest Editorships', es: 'Libros editados y ediciones invitadas' },
+  'service.editorships.desc':  { en: 'Books edited for Elsevier, CRC Press and IntechOpen, and special issues curated as guest editor for journals published by Elsevier, the Royal Society of Chemistry, Frontiers and MDPI.', es: 'Libros editados para Elsevier, CRC Press e IntechOpen, y números especiales curados como editor invitado para revistas de Elsevier, la Royal Society of Chemistry, Frontiers y MDPI.' },
   'service.outreach.title':   { en: 'Outreach & Scouting',   es: 'Divulgación y Scouting' },
   'service.learnAbout':       { en: 'Learn more about',       es: 'Saber más sobre' },
   'service.outreach.desc':    { en: 'Engaging with the broader community to promote STEM education, scout and recruit new talent, and inspire the next generation of scientists and engineers through talks, fairs, and hands-on workshops.', es: 'Interactuando con la comunidad en general para promover la educación STEM, identificar y reclutar nuevos talentos, e inspirar a la próxima generación de científicos e ingenieros a través de charlas, ferias y talleres prácticos.' },
@@ -26,7 +28,7 @@ export const service = {
   'committees.department':   { en: 'Department Level',       es: 'Nivel Departamental' },
   'committees.ai.title':     { en: 'Augmented Intelligence Uniandes Initiative', es: 'Iniciativa Inteligencia Aumentada Uniandes' },
   'committees.ai.role':      { en: 'Co-founder (Jun 2024 - 2026)', es: 'Cofundador (jun 2024 - 2026)' },
-  'committees.ai.desc':      { en: 'A strategic initiative, active from June 2024 to the second semester of 2026, to transform engineering education with Generative AI. For more details on my role and its impact, visit the dedicated page.', es: 'Una iniciativa estratégica, activa entre junio de 2024 y el segundo semestre de 2026, para transformar la educación en ingeniería con IA generativa. Para más detalles sobre mi rol y su impacto, visita la página dedicada.' },
+  'committees.ai.desc':      { en: 'An initiative of the School of Engineering, active between June 2024 and the second semester of 2026, to integrate generative AI into engineering courses. For more details on my role, its results and its limits, visit the dedicated page.', es: 'Una iniciativa de la Facultad de Ingeniería, activa entre junio de 2024 y el segundo semestre de 2026, para integrar la IA generativa en los cursos de ingeniería. Para más detalles sobre mi rol, sus resultados y sus límites, visita la página dedicada.' },
   'committees.learnMore':    { en: 'Learn More',             es: 'Saber más' },
 
   // Editorial
@@ -42,6 +44,33 @@ export const service = {
   'peerReview.orcid':        { en: 'Verify on ORCID', es: 'Verificar en ORCID' },
   'peerReview.note':         { en: 'Manuscripts under review are confidential, so no paper, author or outcome is named here. Journals shown without a number were refereed through publisher systems that record one entry per review round, which would overstate the count.', es: 'Los manuscritos en evaluación son confidenciales, de modo que aquí no se nombra ningún artículo, autor ni resultado. Las revistas que aparecen sin número se evaluaron a través de sistemas editoriales que registran una entrada por ronda de revisión, lo que inflaría el conteo.' },
   'editorial.visitJournal':  { en: 'Visit Journal',          es: 'Visitar Revista' },
+  'editorial.editorships.text': { en: 'Edited books and special issues curated as guest editor are one-time appointments, separate from a standing seat on a board. They have their own page.', es: 'Los libros editados y los números especiales curados como editor invitado son encargos puntuales, distintos de una silla permanente en un comité. Tienen su propia página.' },
+  'editorial.editorships.link': { en: 'Edited books and guest editorships', es: 'Libros editados y ediciones invitadas' },
+
+  // Edited books and guest editorships
+  'editorships.title':       { en: 'Edited Books & Guest Editorships', es: 'Libros editados y ediciones invitadas' },
+  'editorships.sub':         { en: 'Besides my work on editorial boards, publishers and journals have asked me to edit books and to curate special issues as guest editor. Each one is a single appointment, separate from a standing seat on a board.', es: 'Además de mi trabajo en los comités editoriales, casas editoriales y revistas me han encargado editar libros y curar números especiales como editor invitado. Cada uno es un encargo puntual, distinto de una silla permanente en un comité.' },
+  'editorships.books.title': { en: 'Edited Books',            es: 'Libros editados' },
+  'editorships.books.lead':  { en: 'Three volumes edited with colleagues and published by CRC Press, Elsevier and IntechOpen. Each card also notes the chapters I wrote inside the volume.', es: 'Tres volúmenes editados con colegas y publicados por CRC Press, Elsevier e IntechOpen. Cada tarjeta indica también los capítulos que escribí dentro del volumen.' },
+  'editorships.issues.title':{ en: 'Guest Editorships',       es: 'Ediciones invitadas' },
+  'editorships.issues.lead': { en: '{count} collections that journals asked me to curate as guest editor. Where a collection opened with an editorial signed by its editors, the card links to it.', es: '{count} colecciones que distintas revistas me encargaron curar como editor invitado. Cuando la colección abrió con un editorial firmado por sus editores, la tarjeta lo enlaza.' },
+  'editorships.guestEditors':{ en: 'Guest editors', es: 'Editores invitados' },
+  'editorships.coverAlt':    { en: 'Cover of {title}', es: 'Portada de {title}' },
+  'editorships.editedBy':    { en: 'Edited by',               es: 'Editado por' },
+  'editorships.and':         { en: 'and',                     es: 'y' },
+  'editorships.pages':       { en: '{n} pages',               es: '{n} páginas' },
+  'editorships.chapters':    { en: '{n} chapters',            es: '{n} capítulos' },
+  'editorships.openAccess':  { en: 'Open access',             es: 'Acceso abierto' },
+  'editorships.authored.chaptersIntro': { en: 'Author or co-author of {n} chapters and of the introduction to the volume.', es: 'Autor o coautor de {n} capítulos y de la introducción del volumen.' },
+  'editorships.authored.chaptersOf':    { en: 'Author or co-author of {n} of its {total} chapters.', es: 'Autor o coautor de {n} de sus {total} capítulos.' },
+  'editorships.authored.intro':         { en: 'Co-author of the introduction to the volume.', es: 'Coautor de la introducción del volumen.' },
+  'editorships.viewBook':    { en: 'View Book',               es: 'Ver el libro' },
+  'editorships.kind.special-issue':  { en: 'Special issue',   es: 'Número especial' },
+  'editorships.kind.themed-issue':   { en: 'Themed issue',    es: 'Número temático' },
+  'editorships.kind.research-topic': { en: 'Research Topic',  es: 'Research Topic' },
+  'editorships.editorial':   { en: 'Opening editorial',       es: 'Editorial de apertura' },
+  'editorships.boardsLink':  { en: 'Editorial board memberships', es: 'Comités editoriales' },
+  'editorships.boardsText':  { en: 'The standing seats are on the editorial boards of {count} journals.', es: 'Las sillas permanentes están en los comités editoriales de {count} revistas.' },
 
   // Outreach
   'outreach.title':          { en: 'Outreach & Scouting',    es: 'Divulgación y Scouting' },
@@ -49,16 +78,19 @@ export const service = {
 
   // Augmented Intelligence
   'ai.title':                { en: 'Augmented Intelligence Uniandes', es: 'Inteligencia Aumentada Uniandes' },
-  'ai.sub':                  { en: 'A pioneering initiative (2024 to 2026) to transform engineering education by integrating Generative AI strategically, co-founded and co-designed to amplify human intelligence.', es: 'Una iniciativa pionera (2024 a 2026) para transformar la educación en ingeniería con una integración estratégica de la IA generativa, cofundada y codiseñada para amplificar la inteligencia humana.' },
-  'ai.transforming':         { en: 'Transforming Engineering Education with AI', es: 'Transformando la Educación en Ingeniería con IA' },
+  'ai.sub':                  { en: 'An initiative of the School of Engineering (2024 to 2026) to integrate generative AI into courses, co-founded and co-designed to amplify human intelligence, not to replace it.', es: 'Una iniciativa de la Facultad de Ingeniería (2024 a 2026) para integrar la IA generativa en los cursos, cofundada y codiseñada para amplificar la inteligencia humana, no para reemplazarla.' },
+  'ai.transforming':         { en: 'Generative AI in Engineering Courses', es: 'La IA generativa en los cursos de ingeniería' },
   'ai.myRole':               { en: 'My Role and Contribution', es: 'Mi Rol y Contribución' },
   'ai.leadership':           { en: 'Leadership and Conceptual Design', es: 'Liderazgo y Diseño Conceptual' },
   'ai.management':           { en: 'Management and Implementation', es: 'Gestión e Implementación' },
   'ai.impact':               { en: 'Impact and Results',      es: 'Impacto y Resultados' },
-  'ai.impact.projects':      { en: 'projects submitted',      es: 'proyectos presentados' },
-  'ai.impact.selected':      { en: 'projects selected',       es: 'proyectos seleccionados' },
-  'ai.impact.all':           { en: 'The call achieved participation from', es: 'La convocatoria logró participación de' },
-  'ai.impact.all2':          { en: 'all departments of the School.', es: 'todos los departamentos de la Facultad.' },
+  'ai.impact.projects':      { en: 'proposals submitted', es: 'propuestas presentadas' },
+  'ai.impact.selected':      { en: 'assistants put into operation', es: 'asistentes en funcionamiento' },
+  'ai.impact.all':           { en: 'The proposals came from', es: 'Las propuestas llegaron de' },
+  'ai.impact.all2':          { en: 'eight departments of the School.', es: 'ocho departamentos de la Facultad.' },
+  'ai.impact.users':         { en: 'students and professors served in two semesters', es: 'estudiantes y profesores atendidos en dos semestres' },
+  'ai.impact.interactions':  { en: 'interactions with the assistants', es: 'interacciones con los asistentes' },
+  'ai.impact.limits':        { en: 'The most used assistants were those whose professors built them into their class and let us into the classroom to present them. The call also showed its limits: use concentrated around the presentation and fell over the weeks, and several assistants were barely used. We documented this in the closing report, together with what we would do differently, and it is part of what we are now taking to our research on generative AI in engineering education.', es: 'Los asistentes más usados fueron los de profesores que los integraron a su clase y nos dejaron entrar al aula a presentarlos. La convocatoria también mostró sus límites: el uso se concentraba cerca de la presentación y caía con las semanas, y varios asistentes casi no se usaron. Lo dejamos escrito en el informe de cierre, con lo que haríamos distinto, y es parte de lo que hoy llevamos a nuestra investigación sobre IA generativa en la educación en ingeniería.' },
   'ai.categories':           { en: 'Innovation Categories Developed', es: 'Categorías de Innovación Desarrolladas' },
   'ai.global':               { en: 'Global Recognition',      es: 'Reconocimiento Global' },
   'ai.openai':               { en: "Selected for OpenAI's Global Faculty AI Project", es: 'Seleccionado para el Proyecto Global de IA para Docentes de OpenAI' },
@@ -90,14 +122,14 @@ export const service = {
   'ai.mgmt.3':               { en: 'Support in the management and monitoring of selected projects.', es: 'Apoyo en la gestión y el seguimiento de los proyectos seleccionados.' },
 
   // AI - Impact
-  'ai.call.title':           { en: 'First IAGen Call 2025-1: A Resounding Success', es: 'Primera Convocatoria IAGen 2025-1: Un Éxito Rotundo' },
+  'ai.call.title':           { en: 'First IAGen Call 2025-1: What It Achieved and What It Taught Us', es: 'Primera Convocatoria IAGen 2025-1: lo que logró y lo que nos enseñó' },
   'ai.cat.optimization':     { en: 'Process Optimization',   es: 'Optimización de Procesos' },
   'ai.cat.learning':         { en: 'Contribution to Learning', es: 'Contribución al Aprendizaje' },
   'ai.cat.skills':           { en: 'Skills Enhancement',     es: 'Fortalecimiento de Habilidades' },
   'ai.cat.projects':         { en: 'projects',               es: 'proyectos' },
 
   // AI - Global recognition
-  'ai.openai.text':          { en: "In 2025, my work on AI in engineering education was recognized through selection into OpenAI's inaugural Global Faculty AI Project. This distinction, awarded to only 50 academics worldwide, validates our approach at Uniandes and connects our local initiative to a global network of innovators, further amplifying our impact.", es: 'En 2025, mi trabajo sobre IA en la educación en ingeniería fue reconocido mediante mi selección en el primer Global Faculty AI Project de OpenAI. Esta distinción, otorgada a solo 50 académicos en todo el mundo, valida nuestro enfoque en Uniandes y conecta nuestra iniciativa local con una red global de innovadores, amplificando aún más nuestro impacto.' },
+  'ai.openai.text':          { en: "In 2025, my work on AI in engineering education was recognized through selection into OpenAI's inaugural Global Faculty AI Project, chosen from more than 300 applications. This distinction validates our approach at Uniandes and connects our local initiative to a global network of innovators, further amplifying our impact.", es: 'En 2025, mi trabajo sobre IA en la educación en ingeniería fue reconocido mediante mi selección, entre más de 300 postulaciones, en el primer Global Faculty AI Project de OpenAI. Esta distinción valida nuestro enfoque en Uniandes y conecta nuestra iniciativa local con una red global de innovadores, amplificando aún más nuestro impacto.' },
 
   // AI - Framework quote
   'ai.framework.quote':      { en: '"Augmented Intelligence does not seek to replace human intelligence, but to amplify it, enabling students, teachers, and researchers to address complex problems, generate innovative ideas, and develop creative solutions more effectively."', es: '«La Inteligencia Aumentada no busca reemplazar la inteligencia humana, sino amplificarla, permitiendo que estudiantes, docentes e investigadores aborden problemas complejos, generen ideas innovadoras y desarrollen soluciones creativas de manera más eficaz.»' },

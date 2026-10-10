@@ -6,7 +6,7 @@ const student: GraduatedStudent = {
     program: { en: 'M.S. in Technology Innovation Management', es: 'M.S. en Gestión de la Innovación Tecnológica' },
     graduationYear: 2026,
     startedYear: 2024,
-    currentPosition: '',
+    currentPosition: { en: 'Co-founder of TOC Studio (web design and development)', es: 'Cofundadora de TOC Studio (diseño y desarrollo web)' },
     linkedinUrl: '',
     thesisTitle: 'Design of an Evaluation Methodology for Generative AI Tools in University Education',
     laymanSummary: [

@@ -1,0 +1,52 @@
+name: Exportar productos de Supabase
+
+# Exportación única (o de rescate) de la producción académica que vivía en
+# Supabase a public/data/products.json, el archivo versionado que el sitio lee.
+# Se lanza a mano desde la pestaña Actions. Los commits que hace con el
+# GITHUB_TOKEN no disparan ningún otro workflow (tampoco el deploy).
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Rama donde se guarda public/data/products.json'
+        required: true
+        default: 'productos-json'
+
+permissions:
+  contents: write
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Exportar
+        run: node scripts/export-supabase.mjs public/data/products.json
+
+      - name: Commit y push
+        env:
+          BRANCH: ${{ inputs.branch }}
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898183+github-actions[bot]@users.noreply.github.com'
+          git add public/data/products.json
+          if git diff --cached --quiet; then
+            echo 'Sin cambios en public/data/products.json'
+            exit 0
+          fi
+          git commit -m 'Productos: exportación de Supabase'
+          git push origin "HEAD:refs/heads/$BRANCH"

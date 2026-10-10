@@ -40,7 +40,7 @@ export const researchLinesMap: Record<ResearchArea, ResearchLine> = {
   },
    'Multisensory Experience Design': {
     id: 'Multisensory Experience Design',
-    title: { en: 'Multisensory Experience Design', es: 'Diseño de Experiencias Multisensoriales' },
+    title: { en: 'Sensory Product Design', es: 'Diseño Sensorial de Productos' },
     description: {
       en: "We investigate how the interplay of senses—such as sound, smell, and sight—shapes human perception and behavior. By leveraging crossmodal correspondences and computational models, we design immersive sensory experiences that enhance consumer products, promote well-being, and drive sustainable choices.",
       es: "Investigo cómo la interacción de los sentidos —como el oído, el olfato y la vista— moldea la percepción y el comportamiento humanos. Aprovechando las correspondencias crossmodales y modelos computacionales, diseño experiencias sensoriales inmersivas que enriquecen los productos de consumo, promueven el bienestar e impulsan decisiones sostenibles.",
