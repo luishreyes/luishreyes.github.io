@@ -259,7 +259,7 @@ export const awardsData: Recognition[] = [
         es: "Hice la estancia en 2014 en el grupo de Biociencias, con la doctora Katherine J. Chou, sobre la nueva generación de bioprocesos consolidados: la capacidad de un microorganismo modificado para convertir biomasa en hidrógeno y su mejora mediante evolución adaptativa en el laboratorio."
       }
     ],
-    url: "https://nrel.gov/careers/directors-fellowship",
+    url: "https://www.nrel.gov/careers/directors-fellowship",
     imageUrl: "/images/icons/award.svg",
   },
   {
