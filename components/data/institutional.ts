@@ -28,8 +28,8 @@ export const editorialData: EditorialRole[] = [
         es: 'Editor temático en Biotecnología y Bioprocesos: superviso la revisión y evaluación de manuscritos relacionados con la biotecnología, los bioprocesos y temas afines dentro del contexto de la educación en ingeniería química.',
       },
       {
-        en: 'Special Issue Development: Actively propose and coordinate special issues on emerging topics in chemical engineering education, fostering discussions on innovative teaching methodologies and curriculum development.',
-        es: 'Desarrollo de números especiales: propongo y coordino activamente números especiales sobre temas emergentes en la educación en ingeniería química, fomentando discusiones sobre metodologías de enseñanza innovadoras y el desarrollo curricular.',
+        en: 'Special Issue Development: Actively propose and coordinate special issues on emerging topics in chemical engineering education, fostering discussions on innovative teaching methodologies and curriculum development. In 2024 I was the first of three guest editors, with Óscar Álvarez and Juan C. Cruz, of the special issue «Latest pedagogical developments in chemical engineering education in Latin America».',
+        es: 'Desarrollo de números especiales: propongo y coordino activamente números especiales sobre temas emergentes en la educación en ingeniería química, fomentando discusiones sobre metodologías de enseñanza innovadoras y el desarrollo curricular. En 2024 fui el primero de los tres editores invitados, con Óscar Álvarez y Juan C. Cruz, del número especial «Latest pedagogical developments in chemical engineering education in Latin America».',
       },
       {
         en: 'Academic & Industry Impact: Contribute to the strategic direction of the journal, ensuring the publication of high-quality research that bridges the gap between academic advancements and industrial applications in chemical engineering education.',
@@ -96,6 +96,44 @@ export const editorialData: EditorialRole[] = [
 export const leadershipRolesData: Committee[] = [
     {
         title: {
+          en: 'Future Faculty Mentoring Program, AIChE Education Division',
+          es: 'Future Faculty Mentoring Program, División de Educación del AIChE',
+        },
+        role: { en: 'Mentor (2026-2027 cohort)', es: 'Mentor (cohorte 2026-2027)' },
+        startYear: 2026,
+        endYear: 2027,
+        description: [
+            {
+              en: "The Future Faculty Mentoring Program of the Education Division of the American Institute of Chemical Engineers (AIChE) pairs senior faculty members of the Division with senior graduate students and postdoctoral scholars who are preparing for their first faculty position. Each mentor commits for one year to a mentoring project with monthly contact.",
+              es: "El Future Faculty Mentoring Program de la División de Educación del American Institute of Chemical Engineers (AIChE) une a profesores sénior de la División con doctorandos y posdoctorados que se preparan para su primera plaza de profesor. Cada mentor se compromete por un año con un proyecto de mentoría y contacto mensual.",
+            },
+            {
+              en: "I am the only mentor from a university outside the United States among the 34 in the 2026-2027 cohort. The program is formally launched at the AIChE Annual Meeting in Minneapolis on November 8, 2026.",
+              es: "Soy el único mentor de una universidad de fuera de Estados Unidos entre los 34 de la cohorte 2026-2027. El programa arranca formalmente en el AIChE Annual Meeting de Minneapolis el 8 de noviembre de 2026.",
+            }
+        ]
+    },
+    {
+        title: {
+          en: 'Artificial Intelligence Global Education Network (AIGEN)',
+          es: 'Artificial Intelligence Global Education Network (AIGEN)',
+        },
+        role: { en: 'Research Committee Leader', es: 'Líder del Comité de Investigación' },
+        startYear: 2025,
+        endYear: 'Present',
+        description: [
+            {
+              en: "More than 90 universities applied to join AIGEN, the network of the Instituto Tecnológico y de Estudios Superiores de Monterrey (Tecnológico de Monterrey), and 55 were accepted, most of them from Latin America and nine from Colombia. The network works through four committees, and I lead its Research Committee.",
+              es: "Más de 90 universidades se postularon a AIGEN, la red del Instituto Tecnológico y de Estudios Superiores de Monterrey (Tecnológico de Monterrey), y 55 fueron aceptadas, la mayoría de América Latina y nueve de Colombia. La red funciona con cuatro comités, y lidero su Comité de Investigación.",
+            },
+            {
+              en: "In 2025 the network ran the TECgpt Open Edition pilot with 12 universities and the DEC AI Survey for LATAM with 21 universities.",
+              es: "En 2025 la red hizo el piloto TECgpt Open Edition con 12 universidades y la encuesta DEC AI Survey for LATAM con 21 universidades.",
+            }
+        ]
+    },
+    {
+        title: {
           en: 'XXXI Inter-American & XXXIII Colombian Congress of Chemical Engineering',
           es: 'XXXI Congreso Interamericano y XXXIII Congreso Colombiano de Ingeniería Química',
         },
@@ -126,16 +164,16 @@ export const leadershipRolesData: Committee[] = [
         endYear: 'Present',
         description: [
             {
-              en: "In 2025, I retook the directorship of the GDPP and led a strategic transformation to evolve the group into a more agile, collaborative, and market-oriented model. The goal was to maximize our impact by aligning with Colombia's national priorities in sustainability, energy transition, and agro-industry, effectively bridging the gap between academia and industry.",
-              es: "En 2025 retomé la dirección del GDPP y lideré una transformación estratégica para evolucionar el grupo hacia un modelo más ágil, colaborativo y orientado al mercado. El objetivo era maximizar nuestro impacto alineándonos con las prioridades nacionales de Colombia en sostenibilidad, transición energética y agroindustria, conectando eficazmente la academia con la industria.",
+              en: "In 2025 I retook the directorship of the GDPP and proposed renewing the group, a process that is still under way. The proposal seeks a more agile, collaborative, and market-oriented group, aligned with Colombia's national priorities in sustainability, energy transition, and agro-industry, and closer to industry.",
+              es: "En 2025 retomé la dirección del GDPP y propuse renovar el grupo, un proceso que sigue en curso. La propuesta busca un grupo más ágil, colaborativo y orientado al mercado, alineado con las prioridades nacionales de Colombia en sostenibilidad, transición energética y agroindustria, y más cercano a la industria.",
             },
             {
-              en: "The core of this transformation was the restructuring of our research capabilities into five specialized, interconnected clusters: Industrial Sustainability, Bio-innovation & Advanced Materials, Digital Process Engineering, Product & Experience Innovation, and Agri-Food Systems Engineering. This new structure is designed to foster synergy and respond effectively to complex industrial and national challenges.",
-              es: "El núcleo de esta transformación fue la reestructuración de nuestras capacidades de investigación en cinco clústeres especializados e interconectados: Sostenibilidad Industrial, Bioinnovación y Materiales Avanzados, Ingeniería Digital de Procesos, Innovación de Producto y Experiencia, e Ingeniería de Sistemas Agroalimentarios. Esta nueva estructura está diseñada para fomentar la sinergia y responder eficazmente a desafíos industriales y nacionales complejos.",
+              en: "The proposal reorganizes the group's research capabilities into five specialized, interconnected clusters: Industrial Sustainability, Bio-innovation & Advanced Materials, Digital Process Engineering, Product & Experience Innovation, and Agri-Food Systems Engineering. The members of the group chose the name «cluster» by vote.",
+              es: "La propuesta reorganiza las capacidades de investigación del grupo en cinco clústeres especializados e interconectados: Sostenibilidad Industrial, Bioinnovación y Materiales Avanzados, Ingeniería Digital de Procesos, Innovación de Productos y Experiencias, e Ingeniería de Sistemas Agroalimentarios. El nombre de «clúster» lo eligieron por votación los miembros del grupo.",
             },
             {
-              en: "This new vision reframes our mission to develop and transfer tangible scientific and technological solutions. Our approach is grounded in two methodological pillars: integrated product and process design and multiscale design, ensuring we deliver rational, robust, and complete solutions.",
-              es: "Esta nueva visión replantea nuestra misión de desarrollar y transferir soluciones científicas y tecnológicas tangibles. Nuestro enfoque se fundamenta en dos pilares metodológicos: el diseño integrado de productos y procesos y el diseño multiescala, asegurando que entreguemos soluciones racionales, robustas y completas.",
+              en: "The proposal reframes our mission to develop and transfer tangible scientific and technological solutions. Our approach is grounded in two methodological pillars: integrated product and process design and multiscale design, ensuring we deliver rational, robust, and complete solutions.",
+              es: "La propuesta replantea nuestra misión de desarrollar y transferir soluciones científicas y tecnológicas tangibles. Nuestro enfoque se fundamenta en dos pilares metodológicos: el diseño integrado de productos y procesos y el diseño multiescala, asegurando que entreguemos soluciones racionales, robustas y completas.",
             }
         ]
     },
@@ -203,8 +241,8 @@ export const committeesData: Committee[] = [
               es: "Investigador Senior es la categoría más alta en la clasificación de investigadores del Ministerio de Ciencia, Tecnología e Innovación (Minciencias). Se otorga a través de la Convocatoria Nacional para el Reconocimiento y Medición de Grupos de Investigación e Investigadores, y exige una trayectoria sostenida de producción arbitrada, dirección de tesis doctorales y liderazgo científico demostrado.",
             },
             {
-              en: "I am also a recognized peer evaluator for Minciencias, assessing research proposals submitted to national calls.",
-              es: "También soy par evaluador reconocido por Minciencias, evaluando propuestas de investigación presentadas a convocatorias nacionales.",
+              en: "I am also a recognized peer evaluator for Minciencias. Since 2018 I have evaluated 15 proposals for Colciencias and Minciencias in seven calls and processes, among them calls of the General System of Royalties and the national preselection for the Research Grants of the International Centre for Genetic Engineering and Biotechnology (ICGEB), and I have served on four expert panels.",
+              es: "También soy par evaluador reconocido por Minciencias. Desde 2018 he evaluado 15 propuestas para Colciencias y Minciencias en siete convocatorias y procesos, entre ellos convocatorias del Sistema General de Regalías y la preselección nacional para los Research Grants del International Centre for Genetic Engineering and Biotechnology (ICGEB), y he integrado cuatro paneles de expertos.",
             }
         ]
     },
@@ -260,8 +298,8 @@ export const committeesData: Committee[] = [
               es: "En octubre de 2024, la Universidad de los Andes lanzó sus «Lineamientos para el uso de la inteligencia artificial generativa (GenAI)», un documento pionero en Colombia que ofrece un conjunto integral de orientaciones para estudiantes, profesores y personal administrativo sobre el uso de esta tecnología transformadora.",
             },
             {
-              en: "The creation of these guidelines was a collaborative and multidisciplinary process involving multiple university entities. As part of the team representing the School of Engineering, alongside Dean Rubby Casallas and Professor Juan Carlos Cruz, I co-authored the entire section of the guidelines dedicated to the use of GenAI in research.",
-              es: "La creación de estos lineamientos fue un proceso colaborativo y multidisciplinario en el que participaron múltiples dependencias de la universidad. Como parte del equipo que representó a la Facultad de Ingeniería, junto a la decana Rubby Casallas y el profesor Juan Carlos Cruz, fui coautor de toda la sección de los lineamientos dedicada al uso de la GenAI en la investigación.",
+              en: "The creation of these guidelines was a collaborative and multidisciplinary process involving multiple university entities. As part of the team representing the School of Engineering, alongside Dean Rubby Casallas and Professor Juan Carlos Cruz, I took part in the entire discussion and wrote the first version of the section for researchers. The document's closing note acknowledges these contributions.",
+              es: "La creación de estos lineamientos fue un proceso colaborativo y multidisciplinario en el que participaron múltiples dependencias de la universidad. Como parte del equipo que representó a la Facultad de Ingeniería, junto a la decana Rubby Casallas y el profesor Juan Carlos Cruz, participé en toda la discusión y escribí la primera versión de la sección dirigida a los investigadores. La nota final del documento reconoce esos aportes.",
             },
             {
               en: "The final document provides concrete recommendations categorized by user type and activity, setting a new standard for GenAI policy in Colombian higher education. It is designed as a dynamic framework, subject to updates as the technology evolves, to guide the university community on the responsible and ethical use of GenAI tools.",
@@ -271,25 +309,17 @@ export const committeesData: Committee[] = [
     },
     {
         title: {
-          en: 'Research and Doctorate Committee, Faculty of Engineering',
-          es: 'Comité de Investigación y Doctorado, Facultad de Ingeniería',
+          en: 'Research and Doctorate Committee, Department of Chemical and Food Engineering',
+          es: 'Comité de Investigaciones y Doctorado, Departamento de Ingeniería Química y de Alimentos',
         },
         role: { en: 'Committee Member', es: 'Miembro del Comité' },
-        startYear: 2022,
+        startYear: 2021,
         endYear: 2025,
-        level: 'Faculty',
+        level: 'Department',
         description: [
             {
-              en: "The Research and Doctorate Committee is an advisory body to the Faculty Council, supporting strategic decisions to promote and strengthen research within the Faculty of Engineering. It plays a central role in the university's research ecosystem.",
-              es: "El Comité de Investigación y Doctorado es un órgano asesor del Consejo de Facultad que apoya las decisiones estratégicas para promover y fortalecer la investigación dentro de la Facultad de Ingeniería. Desempeña un papel central en el ecosistema de investigación de la universidad.",
-            },
-            {
-              en: "Our responsibilities include designing strategies to increase research activity, ensuring its quality and impact, suggesting methods for measuring research output, and advising the Dean on resource allocation. We also contribute to the efficient management of research infrastructure and propose strategies for disseminating research findings.",
-              es: "Nuestras responsabilidades incluyen diseñar estrategias para incrementar la actividad investigativa, asegurar su calidad e impacto, sugerir métodos para medir la producción investigativa y asesorar al decano en la asignación de recursos. También contribuimos a la gestión eficiente de la infraestructura de investigación y proponemos estrategias para difundir los hallazgos de investigación.",
-            },
-            {
-              en: "As a professor member, I maintain ongoing communication with my department's director and faculty, bringing their perspectives and feedback to the committee's discussions to ensure departmental alignment with the Faculty's research goals.",
-              es: "Como profesor miembro, mantengo una comunicación constante con el director y los profesores de mi departamento, llevando sus perspectivas y comentarios a las discusiones del comité para asegurar la alineación del departamento con los objetivos de investigación de la Facultad.",
+              en: "The Research and Doctorate Committee of the Department of Chemical and Food Engineering oversees the admission and progress of doctoral students, their candidacy exams and defenses, the allocation of the department's internal research resources, and its research priorities.",
+              es: "El Comité de Investigaciones y Doctorado del Departamento de Ingeniería Química y de Alimentos se ocupa de la admisión y el seguimiento de los doctorandos, de sus candidaturas y sustentaciones, de los recursos internos de investigación del departamento y de sus prioridades de investigación.",
             }
         ]
     },
@@ -314,6 +344,22 @@ export const committeesData: Committee[] = [
             {
               en: "This service is crucial for maintaining the integrity of our research and ensuring that all investigations, even those classified as 'no risk,' are conducted responsibly and with the highest ethical diligence.",
               es: "Este servicio es crucial para mantener la integridad de nuestra investigación y asegurar que todas las indagaciones, incluso las clasificadas como «sin riesgo», se realicen de manera responsable y con la mayor diligencia ética.",
+            }
+        ]
+    },
+    {
+        title: {
+          en: 'Nanotech LATAM Forum, first edition',
+          es: 'Foro Nanotech LATAM, primera edición',
+        },
+        role: { en: 'Organizing Committee Member', es: 'Miembro del Comité Organizador' },
+        startYear: 2023,
+        endYear: 2023,
+        level: 'Faculty',
+        description: [
+            {
+              en: "I served on the organizing committee of the first edition of the Nanotech LATAM Forum, held by the School of Engineering in the first semester of 2023.",
+              es: "Formé parte del comité organizador de la primera edición del Foro Nanotech LATAM, que la Facultad de Ingeniería realizó en el primer semestre de 2023.",
             }
         ]
     },
