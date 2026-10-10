@@ -18,9 +18,6 @@ import { InstitutionalOverviewPage } from './pages/institutional/InstitutionalOv
 import { CommitteesPage } from './pages/institutional/CommitteesPage';
 import { EditorialPage } from './pages/institutional/EditorialPage';
 import { OutreachPage } from './pages/institutional/OutreachPage';
-import { FutureOverviewPage } from './pages/future/FutureOverviewPage';
-import { ResearchDirectionsPage } from './pages/future/ResearchDirectionsPage';
-import { CollaborationPage } from './pages/future/CollaborationPage';
 import { AwardsPage } from './pages/AwardsPage';
 import { ContinuingEducationPage } from './pages/teaching/ContinuingEducationPage';
 import { ProfessionalDevelopmentPage } from './pages/teaching/ProfessionalDevelopmentPage';
@@ -181,9 +178,6 @@ const App: React.FC = () => {
               <Route path="/service/committees" element={<CommitteesPage />} />
               <Route path="/service/editorial" element={<EditorialPage />} />
               <Route path="/service/outreach" element={<OutreachPage />} />
-              <Route path="/future" element={<FutureOverviewPage />} />
-              <Route path="/future/research" element={<ResearchDirectionsPage />} />
-              <Route path="/future/collaboration" element={<CollaborationPage />} />
               <Route path="/recognition" element={<AwardsPage />} />
               <Route path="/classroom" element={<ClassroomIndexPage />} />
               <Route path="/classroom/archive" element={<ClassroomArchivePage />} />

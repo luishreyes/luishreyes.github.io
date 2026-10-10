@@ -11,7 +11,23 @@ export const grantsData: Grant[] = [
     area: 'education'
   },
   {
-    title: 'Environmental Mitigation, H2S Corrosion and Science Communication at the Paraíso Hydroelectric Power Plant: Phase 3 (Life Cycle Analysis, Risk Management and Aspen Plus Process Modeling), Evaluation of the Incidence of Hydrogen Sulfide on Atmospheric Corrosion in Metallic Materials, and Informational Material on H2S',
+    title: 'Phase 3: Life Cycle Analysis, Consolidation of Risk Management Systems and Optimization, and Aspen Plus Process Modeling and Simulation at the Paraíso Hydroelectric Power Plant',
+    startYear: 2025,
+    endYear: 2027,
+    organization: 'Enel Colombia S.A. E.S.P.',
+    role: { en: 'Principal Investigator', es: 'Investigador principal' },
+    status: 'In Progress'
+  },
+  {
+    title: 'Evaluation of the Incidence of Hydrogen Sulfide on Atmospheric Corrosion in Metallic Materials in the Area of Influence of the Paraíso Hydroelectric Power Plant',
+    startYear: 2025,
+    endYear: 2027,
+    organization: 'Enel Colombia S.A. E.S.P.',
+    role: { en: 'Principal Investigator', es: 'Investigador principal' },
+    status: 'In Progress'
+  },
+  {
+    title: 'Development of Informational Material on H2S for the Paraíso Hydroelectric Power Plant',
     startYear: 2025,
     endYear: 2027,
     organization: 'Enel Colombia S.A. E.S.P.',
@@ -28,7 +44,15 @@ export const grantsData: Grant[] = [
     area: 'education'
   },
   {
-    title: 'Phase 2: Mitigation of Environmental and Social Impacts at the Paraíso Power Plant Arising from the Polluted Conditions of the Bogotá River, and Analysis of Hydrogen Sulfide Concentrations: Influence of Operational and Environmental Factors',
+    title: 'Phase 2: Mitigation of Environmental and Social Impacts at the Paraíso Power Plant Arising from the Polluted Conditions of the Bogotá River through Innovative Process Initiatives',
+    startYear: 2024,
+    endYear: 2025,
+    organization: 'Enel Colombia S.A. E.S.P.',
+    role: { en: 'Principal Investigator', es: 'Investigador principal' },
+    status: 'Concluded'
+  },
+  {
+    title: 'Analysis of Hydrogen Sulfide Concentrations at the Paraíso Hydroelectric Power Plant: Influence of Operational and Environmental Factors',
     startYear: 2024,
     endYear: 2025,
     organization: 'Enel Colombia S.A. E.S.P.',
@@ -60,7 +84,7 @@ export const grantsData: Grant[] = [
     status: 'Concluded'
   },
   {
-    title: 'Technological Strategies for Odor Control',
+    title: 'Formulation of an Innovation Proposal for Minciencias Call 913 (Tax Benefits): Odor Control at the Paraíso Power Plant',
     startYear: 2022,
     endYear: 2022,
     organization: 'Enel Colombia S.A. E.S.P.',

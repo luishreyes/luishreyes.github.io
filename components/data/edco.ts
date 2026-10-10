@@ -28,7 +28,7 @@ export const edcoCoursesData: EdcoCourse[] = [
     titleEn: 'AI Fundamentals',
     type: 'Corporate Course',
     client: 'Contraloría General de la República de Colombia',
-    attendees: 36,
+    attendees: 35,
     role: 'Instructor'
   },
   {
@@ -37,7 +37,7 @@ export const edcoCoursesData: EdcoCourse[] = [
     titleEn: 'AI Tools',
     type: 'Corporate Course',
     client: 'Contraloría General de la República de Colombia',
-    attendees: 34,
+    attendees: 35,
     role: 'Instructor'
   },
   {
@@ -94,7 +94,7 @@ export const edcoCoursesData: EdcoCourse[] = [
     titleEn: 'AI Fundamentals',
     type: 'Corporate Course',
     client: 'Contraloría General de la República de Colombia',
-    attendees: 28,
+    attendees: 35,
     role: 'Instructor'
   },
   {
@@ -103,7 +103,7 @@ export const edcoCoursesData: EdcoCourse[] = [
     titleEn: 'AI Models',
     type: 'Corporate Course',
     client: 'Contraloría General de la República de Colombia',
-    attendees: 28,
+    attendees: 35,
     role: 'Instructor'
   },
   {
