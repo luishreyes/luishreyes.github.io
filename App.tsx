@@ -25,7 +25,7 @@ import { AugmentedIntelligencePage } from './pages/institutional/AugmentedIntell
 import { UnitOperationsInnovationPage } from './pages/teaching/UnitOperationsInnovationPage';
 import { ScrollToTopButton } from './components/ScrollToTopButton';
 import { SocialLinks } from './components/SocialLinks';
-import { fetchInitialData } from './services/supabase';
+import { fetchInitialData } from './services/products';
 import type { Product } from './types';
 import { generateCvPdf } from './services/cvGenerator';
 import { grantsData } from './components/data/grants';

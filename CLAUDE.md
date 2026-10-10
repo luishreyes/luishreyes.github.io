@@ -35,6 +35,15 @@ routes.ts             ← Definición de rutas
 App.tsx               ← Router principal
 ```
 
+## Productos (publicaciones, patentes, libros, conferencias)
+
+La página `/research/products`, las cifras de citas, índice h e i10 del resumen de investigación, el CV en PDF y la sección de Scholarship of Teaching leen **`public/data/products.json`**, un arreglo versionado en el repo. Ya no dependen de Supabase (`services/products.ts` hace un `fetch` del archivo al cargar la app).
+
+- **Agregar o corregir un producto:** editar el JSON (en GitHub o aquí) y pushear a `main`; el deploy lo publica. Cada entrada tiene la forma de `Product` (`types.ts`) más `citations` (número o `null`). `type` debe ser un `ProductType`, `researchAreas` uno de los ocho `ResearchArea`, `publicationDate` en `AAAA-MM-DD` y `doi` único (la lista lo usa como `key`; para lo que no tiene DOI se usa un identificador propio, como ya hacen las patentes y los libros autopublicados).
+- **Las citas son una foto fija:** se actualizan a mano en `citations`.
+- `scripts/export-supabase.mjs` + el workflow manual `export-supabase.yml` hicieron la migración desde Supabase (oct 2026); solo se vuelven a correr para un rescate, y sobrescriben el archivo.
+- ⚠️ Solo datos bibliográficos públicos. Nada del registro privado de titularidad (estudiantes dirigidos, financiación, notas, montos) entra aquí.
+
 ## Classroom — Sistema de intranet académica
 
 El Classroom es la sección de cursos. Cada curso tiene:
