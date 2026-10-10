@@ -12,6 +12,11 @@ export interface EditorialRole {
   journalUrl: string;
 }
 
+/**
+ * Standing editorial board seats only: Education for Chemical Engineers,
+ * Scientific Reports and Discover Biotechnology. Edited books and guest
+ * editorships are one-time appointments and live in `editorships.ts`.
+ */
 export const editorialData: EditorialRole[] = [
   {
     journal: 'Education for Chemical Engineers',
@@ -24,12 +29,12 @@ export const editorialData: EditorialRole[] = [
     },
     responsibilities: [
       {
-        en: 'Subject Editor in Biotechnology & Bioprocessing: Oversee the review and evaluation of manuscripts related to biotechnology, bioprocessing, and bio-related topics within the context of chemical engineering education.',
-        es: 'Editor temático en Biotecnología y Bioprocesos: superviso la revisión y evaluación de manuscritos relacionados con la biotecnología, los bioprocesos y temas afines dentro del contexto de la educación en ingeniería química.',
+        en: 'Manuscript Evaluation: Oversee the review and evaluation of manuscripts related to biotechnology, bioprocessing, and bio-related topics within the context of chemical engineering education.',
+        es: 'Evaluación de manuscritos: superviso la revisión y evaluación de manuscritos relacionados con la biotecnología, los bioprocesos y temas afines dentro del contexto de la educación en ingeniería química.',
       },
       {
-        en: 'Special Issue Development: Actively propose and coordinate special issues on emerging topics in chemical engineering education, fostering discussions on innovative teaching methodologies and curriculum development. In 2024 I was the first of three guest editors, with Óscar Álvarez and Juan C. Cruz, of the special issue «Latest pedagogical developments in chemical engineering education in Latin America».',
-        es: 'Desarrollo de números especiales: propongo y coordino activamente números especiales sobre temas emergentes en la educación en ingeniería química, fomentando discusiones sobre metodologías de enseñanza innovadoras y el desarrollo curricular. En 2024 fui el primero de los tres editores invitados, con Óscar Álvarez y Juan C. Cruz, del número especial «Latest pedagogical developments in chemical engineering education in Latin America».',
+        en: 'Special Issue Development: Actively propose and coordinate special issues on emerging topics in chemical engineering education, fostering discussions on innovative teaching methodologies and curriculum development.',
+        es: 'Desarrollo de números especiales: propongo y coordino activamente números especiales sobre temas emergentes en la educación en ingeniería química, fomentando discusiones sobre metodologías de enseñanza innovadoras y el desarrollo curricular.',
       },
       {
         en: 'Academic & Industry Impact: Contribute to the strategic direction of the journal, ensuring the publication of high-quality research that bridges the gap between academic advancements and industrial applications in chemical engineering education.',
@@ -45,8 +50,8 @@ export const editorialData: EditorialRole[] = [
     startDate: 'Mar 2023',
     endDate: 'Present',
     description: {
-      en: 'Scientific Reports is an open-access, peer-reviewed journal published by Nature Publishing Group, covering all areas of the natural and clinical sciences.',
-      es: 'Scientific Reports es una revista arbitrada de acceso abierto publicada por Nature Publishing Group, que abarca todas las áreas de las ciencias naturales y clínicas.',
+      en: 'Scientific Reports is an open-access, peer-reviewed journal published by Nature Portfolio, covering all areas of the natural and clinical sciences.',
+      es: 'Scientific Reports es una revista arbitrada de acceso abierto publicada por Nature Portfolio, que abarca todas las áreas de las ciencias naturales y clínicas.',
     },
     responsibilities: [
       {

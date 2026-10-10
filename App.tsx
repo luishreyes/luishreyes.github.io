@@ -17,6 +17,7 @@ import { ScholarshipOfTeachingPage } from './pages/teaching/ScholarshipOfTeachin
 import { InstitutionalOverviewPage } from './pages/institutional/InstitutionalOverviewPage';
 import { CommitteesPage } from './pages/institutional/CommitteesPage';
 import { EditorialPage } from './pages/institutional/EditorialPage';
+import { EditorshipsPage } from './pages/institutional/EditorshipsPage';
 import { OutreachPage } from './pages/institutional/OutreachPage';
 import { AwardsPage } from './pages/AwardsPage';
 import { ContinuingEducationPage } from './pages/teaching/ContinuingEducationPage';
@@ -177,6 +178,7 @@ const App: React.FC = () => {
               <Route path="/service/augmented-intelligence" element={<AugmentedIntelligencePage />} />
               <Route path="/service/committees" element={<CommitteesPage />} />
               <Route path="/service/editorial" element={<EditorialPage />} />
+              <Route path="/service/editorships" element={<EditorshipsPage />} />
               <Route path="/service/outreach" element={<OutreachPage />} />
               <Route path="/recognition" element={<AwardsPage />} />
               <Route path="/classroom" element={<ClassroomIndexPage />} />

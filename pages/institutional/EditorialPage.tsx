@@ -1,13 +1,14 @@
 
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { PageWrapper } from '../../components/PageWrapper';
 import { editorialData } from '../../components/data/institutional';
 import { reviewedJournals, reviewsByArea, reviewAreaLabels, totalReviews, totalJournalsReviewed, ORCID_URL } from '../../components/data/peerReview';
 import { useI18n, localize } from '../../context/i18n';
 
 const eceIcons = [
-  <img src="https://cdn-icons-png.flaticon.com/512/8998/8998530.png" alt="Subject Editor in Biotechnology & Bioprocessing Icon" className="w-8 h-8" />,
+  <img src="https://cdn-icons-png.flaticon.com/512/8998/8998530.png" alt="Manuscript Evaluation Icon" className="w-8 h-8" />,
   <img src="https://cdn-icons-png.flaticon.com/512/263/263075.png" alt="Special Issue Development Icon" className="w-8 h-8" />,
   <img src="https://cdn-icons-png.flaticon.com/512/15766/15766048.png" alt="Academic & Industry Impact Icon" className="w-8 h-8" />,
 ];
@@ -78,6 +79,18 @@ export const EditorialPage: React.FC = () => {
                       )
                     })}
                 </div>
+
+                {/* One-time appointments live on their own page, not among the boards */}
+                <Link
+                    to="/service/editorships"
+                    className="group mt-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl border border-zinc-200 bg-zinc-50 px-6 py-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400"
+                >
+                    <p className="text-sm text-brand-gray leading-relaxed max-w-2xl">{t('editorial.editorships.text')}</p>
+                    <span className="inline-flex items-center gap-2 whitespace-nowrap text-sm font-semibold text-brand-dark border-b-2 border-brand-yellow group-hover:border-brand-yellow-dark transition-colors">
+                        {t('editorial.editorships.link')}
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden="true"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
+                    </span>
+                </Link>
 
                 {/* Peer review: aggregate only, from the public ORCID record */}
                 <section className="mt-20">

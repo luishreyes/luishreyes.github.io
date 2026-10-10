@@ -20,6 +20,7 @@ export const ROUTES: Record<string, string> = {
   'institutional.augmented-intelligence': '/service/augmented-intelligence',
   'institutional.committees':             '/service/committees',
   'institutional.editorial':              '/service/editorial',
+  'institutional.editorships':            '/service/editorships',
   'institutional.outreach':               '/service/outreach',
   'recognition':                          '/recognition',
   'classroom.index':                      '/classroom',
