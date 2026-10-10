@@ -6,7 +6,7 @@ const student: GraduatedStudent = {
     program: { en: 'Ph.D. Program in Biological Sciences at Pontificia Universidad Javeriana', es: 'Doctorado en Ciencias Biológicas en la Pontificia Universidad Javeriana' },
     graduationYear: 2023,
     startedYear: 2019,
-    currentPosition: { en: 'Postdoctoral Researcher at IIMCB, Poland', es: 'Investigador posdoctoral en el IIMCB, Polonia' },
+    currentPosition: { en: 'Postdoctoral Researcher at the International Institute of Molecular and Cell Biology in Warsaw (IIMCB), Poland', es: 'Investigador posdoctoral en el International Institute of Molecular and Cell Biology in Warsaw (IIMCB), Polonia' },
     linkedinUrl: 'https://www.linkedin.com/in/andr%C3%A9s-felipe-leal-4347b17a/',
     thesisTitle: 'CRISPR/nCas9-Based Genome Editing for GM2 Gangliosidoses and Mucopolysaccharidosis IVA Using Non-Viral Vectors',
     laymanSummary: [
