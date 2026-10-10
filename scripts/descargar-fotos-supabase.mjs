@@ -11,7 +11,7 @@ import { join, relative } from 'node:path';
 
 const OUT = process.argv[2] || 'fotos-supabase';
 const RAIZ = process.cwd();
-const PATRON = /https:\/\/ourwyskhfdesnmnhlxof\.supabase\.co\/storage\/v1\/object\/public\/[^'"`\s)]+/g;
+const PATRON = /https:\/\/ourwyskhfdesnmnhlxof\.supabase\.co\/storage\/v1\/object\/public\/[^'"`\s]+/g; // con paréntesis: hay nombres como «IMG_5792 (1).jpeg»
 
 const archivos = [];
 const recorrer = (dir) => {
