@@ -44,8 +44,8 @@ export const awardsData: Recognition[] = [
     authors: ["Luis H. Reyes"],
     summary: [
       {
-        en: "Selected as one of 50 academics worldwide for OpenAI's inaugural Global Faculty AI Project, an initiative to recognize and support innovative uses of AI in higher education.",
-        es: "Seleccionado como uno de los 50 académicos a nivel mundial para el primer Global Faculty AI Project de OpenAI, una iniciativa para reconocer y apoyar usos innovadores de la IA en la educación superior."
+        en: "Selected from more than 300 applications for OpenAI's inaugural Global Faculty AI Project, an initiative to recognize and support innovative uses of AI in higher education.",
+        es: "Seleccionado entre más de 300 postulaciones para el primer Global Faculty AI Project de OpenAI, una iniciativa para reconocer y apoyar usos innovadores de la IA en la educación superior."
       },
       {
         en: "My project focuses on co-designing AI tools with students to create personalized, real-time feedback, enhancing deep learning and critical thinking in a core chemical engineering course.",
@@ -216,5 +216,71 @@ export const awardsData: Recognition[] = [
     ],
     url: "https://doi.org/10.3390/pharmaceutics13030428",
     imageUrl: "https://uxwing.com/wp-content/themes/uxwing/download/seo-marketing/articles-icon.png",
+  },
+  {
+    title: { en: "Es Tiempo de Volver Program", es: "Programa Es Tiempo de Volver" },
+    awarder: {
+      en: "Administrative Department of Science, Technology and Innovation (Colciencias), now Minciencias",
+      es: "Departamento Administrativo de Ciencia, Tecnología e Innovación (Colciencias), hoy Minciencias"
+    },
+    shortName: "Colciencias",
+    category: { en: "Postdoctoral return fellowship", es: "Estancia posdoctoral de retorno" },
+    year: 2014,
+    projectTitle: "Postdoctoral stay at the Institute for the Study of Inborn Errors of Metabolism, Pontificia Universidad Javeriana (2015-2017)",
+    authors: ["Luis H. Reyes"],
+    summary: [
+      {
+        en: "At the end of 2014 Colciencias selected me for its Es Tiempo de Volver program, which brought me back to Colombia in 2015 to do research and strengthen my teaching.",
+        es: "A finales de 2014 Colciencias me seleccionó para su programa Es Tiempo de Volver, con el que regresé a Colombia en 2015 para hacer investigación y fortalecer mi docencia."
+      },
+      {
+        en: "I did the postdoctoral stay at the Institute for the Study of Inborn Errors of Metabolism of the Pontificia Universidad Javeriana in Bogotá, under Dr. Luis Alejandro Barrera, where I helped strengthen the group's molecular biology area. The stay moved my research away from biofuels and microbial evolution and toward rare diseases and human health.",
+        es: "Hice la estancia posdoctoral en el Instituto de Errores Innatos del Metabolismo de la Pontificia Universidad Javeriana, en Bogotá, con el doctor Luis Alejandro Barrera, y allí ayudé a fortalecer el área de biología molecular del grupo. Con esa estancia mi investigación pasó de los biocombustibles y la evolución de microorganismos a las enfermedades raras y la salud humana."
+      }
+    ],
+    url: "https://minciencias.gov.co/convocatorias/2014/convocatoria-es-tiempo-volver-2014",
+    imageUrl: "/images/icons/award.svg",
+  },
+  {
+    title: "NREL Director's Fellowship",
+    awarder: "National Renewable Energy Laboratory (NREL)",
+    shortName: "NREL",
+    category: { en: "Postdoctoral fellowship", es: "Beca posdoctoral" },
+    year: 2013,
+    projectTitle: "Postdoctoral research on the new generation of consolidated bioprocesses, Biosciences group, NREL (Golden, CO)",
+    authors: ["Luis H. Reyes"],
+    summary: [
+      {
+        en: "The National Renewable Energy Laboratory awards its Director's Fellowship to attract exceptionally qualified early-career scientists and engineers with outstanding credentials in renewable energy research. In 2013 it went to three Ph.D. graduates in the United States, for a postdoctoral appointment at NREL in Golden, Colorado, the largest research center in the country devoted to renewable energy.",
+        es: "El National Renewable Energy Laboratory otorga su Director's Fellowship para atraer a científicos e ingenieros jóvenes excepcionalmente calificados, con credenciales sobresalientes en investigación en energías renovables. En 2013 la recibieron tres doctores en Estados Unidos, para una estancia posdoctoral en el NREL, en Golden (Colorado), el mayor centro de investigación de ese país dedicado a las energías renovables."
+      },
+      {
+        en: "I did the stay in 2014 in the Biosciences group, under Dr. Katherine J. Chou, on the new generation of consolidated bioprocesses: the ability of an engineered microorganism to convert biomass into hydrogen, and its improvement through adaptive laboratory evolution.",
+        es: "Hice la estancia en 2014 en el grupo de Biociencias, con la doctora Katherine J. Chou, sobre la nueva generación de bioprocesos consolidados: la capacidad de un microorganismo modificado para convertir biomasa en hidrógeno y su mejora mediante evolución adaptativa en el laboratorio."
+      }
+    ],
+    url: "https://nrel.gov/careers/directors-fellowship",
+    imageUrl: "/images/icons/award.svg",
+  },
+  {
+    title: { en: "Cum Laude Distinction", es: "Grado cum laude" },
+    awarder: "Universidad Industrial de Santander",
+    shortName: "UIS",
+    category: { en: "Academic merit", es: "Mérito académico" },
+    year: 2007,
+    projectTitle: "B.S. in Chemical Engineering (2001-2007)",
+    authors: ["Luis H. Reyes"],
+    summary: [
+      {
+        en: "I received the cum laude distinction for academic merit at the end of my undergraduate studies in Chemical Engineering at the Universidad Industrial de Santander (UIS), in Bucaramanga, Colombia.",
+        es: "Recibí la distinción cum laude por méritos académicos al terminar el pregrado en Ingeniería Química en la Universidad Industrial de Santander (UIS), en Bucaramanga, Colombia."
+      },
+      {
+        en: "During those years I tutored first-semester engineering students in mathematics, physics, and chemistry, which sparked my interest in teaching, and I did my undergraduate thesis as a research intern in the Chemical Engineering Department at Texas A&M University (2006).",
+        es: "En esos años di clases de matemáticas, física y química a estudiantes de primeros semestres de ingeniería, lo que despertó mi interés por la docencia, e hice mi trabajo de grado como pasante de investigación en el Departamento de Ingeniería Química de Texas A&M University (2006)."
+      }
+    ],
+    url: "https://www.uis.edu.co/",
+    imageUrl: "/images/icons/graduation-cap.svg",
   }
 ];
