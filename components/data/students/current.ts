@@ -12,5 +12,7 @@ export const studentsData: {
     ms: [
         { name: 'Andrés Felipe Infante Bravo', degree: 'M.S.', info: { en: 'Designing a biopercolation system for the removal of offensive gases.', es: 'Diseña un sistema de biopercolación para la eliminación de gases ofensivos.' } },
         { name: 'Brayan Stick Chacón Fontecha', degree: 'M.S.', info: { en: 'Extracting bioactive compounds from native fauna with potential biomedical applications.', es: 'Extrae compuestos bioactivos de fauna nativa con potenciales aplicaciones biomédicas.' } },
+        { name: 'Andrés Felipe Becerra Zárrate', degree: 'M.S.', info: { en: "Master's student in the Department of Chemical and Food Engineering. Co-advised with Juan Carlos Cruz.", es: 'Estudiante de maestría del Departamento de Ingeniería Química y de Alimentos. Codirigido con Juan Carlos Cruz.' } },
+        { name: 'Paula Andrea Villamarín Manrique', degree: 'M.S.', info: { en: 'M.S. in Biomedical Engineering, co-advised. As an undergraduate she worked with me on the scale-down of iron oxide nanoparticle production.', es: 'Maestría en Ingeniería Biomédica, en codirección. En el pregrado trabajó conmigo en el escalamiento descendente de la producción de nanopartículas de óxido de hierro.' } },
     ]
 };
