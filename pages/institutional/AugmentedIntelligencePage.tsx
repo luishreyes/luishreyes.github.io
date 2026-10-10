@@ -125,17 +125,26 @@ export const AugmentedIntelligencePage: React.FC = () => {
             <Section title={t('ai.impact')}>
                 <motion.div {...{variants: cardVariants}}>
                     <h3 className="text-2xl font-semibold text-brand-dark text-left mb-6">{t('ai.call.title')}</h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-center">
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 text-center">
                         <div className="bg-white p-6 rounded-lg shadow-md border border-yellow-400/40">
                             <p className="text-4xl font-bold text-yellow-400">30</p>
                             <p className="text-brand-gray">{t('ai.impact.projects')}</p>
                         </div>
                         <div className="bg-white p-6 rounded-lg shadow-md border border-yellow-400/40">
-                            <p className="text-4xl font-bold text-yellow-400">20</p>
+                            <p className="text-4xl font-bold text-yellow-400">26</p>
                             <p className="text-brand-gray">{t('ai.impact.selected')}</p>
+                        </div>
+                        <div className="bg-white p-6 rounded-lg shadow-md border border-yellow-400/40">
+                            <p className="text-4xl font-bold text-yellow-400">~470</p>
+                            <p className="text-brand-gray">{t('ai.impact.users')}</p>
+                        </div>
+                        <div className="bg-white p-6 rounded-lg shadow-md border border-yellow-400/40">
+                            <p className="text-4xl font-bold text-yellow-400">10,817</p>
+                            <p className="text-brand-gray">{t('ai.impact.interactions')}</p>
                         </div>
                     </div>
                     <p className="text-center mt-6 text-brand-gray">{t('ai.impact.all')} <strong>{t('ai.impact.all2')}</strong></p>
+                    <p className="text-left mt-6 text-brand-gray">{t('ai.impact.limits')}</p>
                 </motion.div>
                 
                 <motion.div {...{variants: cardVariants}} className="mt-12">

@@ -157,38 +157,6 @@ export const awardsData: Recognition[] = [
     imageUrl: "https://static.thenounproject.com/png/66903-200.png",
   },
   {
-    title: "Best Presentation Award",
-    awarder: "ICGDMMP 2021: XV. International Conference on Green Design, Materials and Manufacturing Processes",
-    role: 'research',
-    category: { en: "Best Presentation", es: "Mejor presentación" },
-    year: 2021,
-    projectTitle: "Composite Materials from Beer Bran Fibers and Polylactic Acid: Characterization and Properties",
-    authors: [
-        "Camila Hurtado",
-        "Maria A. Morales",
-        "Diego Torres",
-        "Luis H. Reyes",
-        "Alejandro Maranon",
-        "Alicia Porras"
-    ],
-    summary: [
-      {
-        en: "This award recognizes the outstanding presentation of research on developing sustainable composite materials from industrial byproducts.",
-        es: "Este premio reconoce la presentación sobresaliente de una investigación sobre el desarrollo de materiales compuestos sostenibles a partir de subproductos industriales."
-      },
-      {
-        en: "The project focused on utilizing beer bran fibers, a waste stream from the brewing industry, to reinforce polylactic acid (PLA), a biodegradable polymer. This approach contributes to a circular economy by valorizing waste materials.",
-        es: "El proyecto se centró en utilizar fibras de afrecho de cerveza, un residuo de la industria cervecera, para reforzar el ácido poliláctico (PLA), un polímero biodegradable. Este enfoque contribuye a la economía circular al valorizar materiales de desecho."
-      },
-      {
-        en: "Our work detailed the characterization of these novel green composites, highlighting their improved mechanical and thermal properties and their potential for applications in sustainable manufacturing.",
-        es: "Nuestro trabajo detalló la caracterización de estos novedosos compuestos verdes, destacando sus mejores propiedades mecánicas y térmicas y su potencial para aplicaciones en manufactura sostenible."
-      }
-    ],
-    url: "https://drive.google.com/file/d/1B1psmWdxQaTQSH6EeHZ9K1ihJ372hZ0s/view?usp=drivesdk",
-    imageUrl: "https://static.thenounproject.com/png/303466-200.png",
-  },
-  {
     title: "Editor's Choice Article",
     awarder: "Pharmaceutics (MDPI)",
     role: 'research',

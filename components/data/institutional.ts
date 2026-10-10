@@ -309,17 +309,25 @@ export const committeesData: Committee[] = [
     },
     {
         title: {
-          en: 'Research and Doctorate Committee, Department of Chemical and Food Engineering',
-          es: 'Comité de Investigaciones y Doctorado, Departamento de Ingeniería Química y de Alimentos',
+          en: 'Research and Doctorate Committee, Faculty of Engineering',
+          es: 'Comité de Investigaciones y Doctorado, Facultad de Ingeniería',
         },
-        role: { en: 'Committee Member', es: 'Miembro del Comité' },
+        role: { en: 'Representative of the Department of Chemical and Food Engineering', es: 'Representante del Departamento de Ingeniería Química y de Alimentos' },
         startYear: 2021,
         endYear: 2025,
-        level: 'Department',
+        level: 'Faculty',
         description: [
             {
-              en: "The Research and Doctorate Committee of the Department of Chemical and Food Engineering oversees the admission and progress of doctoral students, their candidacy exams and defenses, the allocation of the department's internal research resources, and its research priorities.",
-              es: "El Comité de Investigaciones y Doctorado del Departamento de Ingeniería Química y de Alimentos se ocupa de la admisión y el seguimiento de los doctorandos, de sus candidaturas y sustentaciones, de los recursos internos de investigación del departamento y de sus prioridades de investigación.",
+              en: "The Research and Doctorate Committee is an advisory body to the Faculty Council, supporting strategic decisions to promote and strengthen research within the Faculty of Engineering. It plays a central role in the university's research ecosystem.",
+              es: "El Comité de Investigaciones y Doctorado es un órgano asesor del Consejo de Facultad que apoya las decisiones estratégicas para promover y fortalecer la investigación dentro de la Facultad de Ingeniería. Desempeña un papel central en el ecosistema de investigación de la universidad.",
+            },
+            {
+              en: "Our responsibilities include designing strategies to increase research activity, ensuring its quality and impact, suggesting methods for measuring research output, and advising the Dean on resource allocation. We also contribute to the efficient management of research infrastructure and propose strategies for disseminating research findings.",
+              es: "Nuestras responsabilidades incluyen diseñar estrategias para incrementar la actividad investigativa, asegurar su calidad e impacto, sugerir métodos para medir la producción investigativa y asesorar al decano en la asignación de recursos. También contribuimos a la gestión eficiente de la infraestructura de investigación y proponemos estrategias para difundir los hallazgos de investigación.",
+            },
+            {
+              en: "As the representative of my department, I maintain ongoing communication with my department's director and faculty, bringing their perspectives and feedback to the committee's discussions to ensure departmental alignment with the Faculty's research goals.",
+              es: "Como representante de mi departamento, mantengo una comunicación constante con el director y los profesores de mi departamento, llevando sus perspectivas y comentarios a las discusiones del comité para asegurar la alineación del departamento con los objetivos de investigación de la Facultad.",
             }
         ]
     },

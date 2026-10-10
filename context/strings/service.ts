@@ -26,7 +26,7 @@ export const service = {
   'committees.department':   { en: 'Department Level',       es: 'Nivel Departamental' },
   'committees.ai.title':     { en: 'Augmented Intelligence Uniandes Initiative', es: 'Iniciativa Inteligencia Aumentada Uniandes' },
   'committees.ai.role':      { en: 'Co-founder (Jun 2024 - 2026)', es: 'Cofundador (jun 2024 - 2026)' },
-  'committees.ai.desc':      { en: 'A strategic initiative, active from June 2024 to the second semester of 2026, to transform engineering education with Generative AI. For more details on my role and its impact, visit the dedicated page.', es: 'Una iniciativa estratégica, activa entre junio de 2024 y el segundo semestre de 2026, para transformar la educación en ingeniería con IA generativa. Para más detalles sobre mi rol y su impacto, visita la página dedicada.' },
+  'committees.ai.desc':      { en: 'An initiative of the School of Engineering, active between June 2024 and the second semester of 2026, to integrate generative AI into engineering courses. For more details on my role, its results and its limits, visit the dedicated page.', es: 'Una iniciativa de la Facultad de Ingeniería, activa entre junio de 2024 y el segundo semestre de 2026, para integrar la IA generativa en los cursos de ingeniería. Para más detalles sobre mi rol, sus resultados y sus límites, visita la página dedicada.' },
   'committees.learnMore':    { en: 'Learn More',             es: 'Saber más' },
 
   // Editorial
@@ -49,16 +49,19 @@ export const service = {
 
   // Augmented Intelligence
   'ai.title':                { en: 'Augmented Intelligence Uniandes', es: 'Inteligencia Aumentada Uniandes' },
-  'ai.sub':                  { en: 'A pioneering initiative (2024 to 2026) to transform engineering education by integrating Generative AI strategically, co-founded and co-designed to amplify human intelligence.', es: 'Una iniciativa pionera (2024 a 2026) para transformar la educación en ingeniería con una integración estratégica de la IA generativa, cofundada y codiseñada para amplificar la inteligencia humana.' },
-  'ai.transforming':         { en: 'Transforming Engineering Education with AI', es: 'Transformando la Educación en Ingeniería con IA' },
+  'ai.sub':                  { en: 'An initiative of the School of Engineering (2024 to 2026) to integrate generative AI into courses, co-founded and co-designed to amplify human intelligence, not to replace it.', es: 'Una iniciativa de la Facultad de Ingeniería (2024 a 2026) para integrar la IA generativa en los cursos, cofundada y codiseñada para amplificar la inteligencia humana, no para reemplazarla.' },
+  'ai.transforming':         { en: 'Generative AI in Engineering Courses', es: 'La IA generativa en los cursos de ingeniería' },
   'ai.myRole':               { en: 'My Role and Contribution', es: 'Mi Rol y Contribución' },
   'ai.leadership':           { en: 'Leadership and Conceptual Design', es: 'Liderazgo y Diseño Conceptual' },
   'ai.management':           { en: 'Management and Implementation', es: 'Gestión e Implementación' },
   'ai.impact':               { en: 'Impact and Results',      es: 'Impacto y Resultados' },
-  'ai.impact.projects':      { en: 'projects submitted',      es: 'proyectos presentados' },
-  'ai.impact.selected':      { en: 'projects selected',       es: 'proyectos seleccionados' },
-  'ai.impact.all':           { en: 'The call achieved participation from', es: 'La convocatoria logró participación de' },
-  'ai.impact.all2':          { en: 'all departments of the School.', es: 'todos los departamentos de la Facultad.' },
+  'ai.impact.projects':      { en: 'proposals submitted', es: 'propuestas presentadas' },
+  'ai.impact.selected':      { en: 'assistants put into operation', es: 'asistentes en funcionamiento' },
+  'ai.impact.all':           { en: 'The proposals came from', es: 'Las propuestas llegaron de' },
+  'ai.impact.all2':          { en: 'eight departments of the School.', es: 'ocho departamentos de la Facultad.' },
+  'ai.impact.users':         { en: 'students and professors served in two semesters', es: 'estudiantes y profesores atendidos en dos semestres' },
+  'ai.impact.interactions':  { en: 'interactions with the assistants', es: 'interacciones con los asistentes' },
+  'ai.impact.limits':        { en: 'The most used assistants were those whose professors built them into their class and let us into the classroom to present them. The call also showed its limits: use concentrated around the presentation and fell over the weeks, and several assistants were barely used. We documented this in the closing report, together with what we would do differently, and it is part of what we are now taking to our research on generative AI in engineering education.', es: 'Los asistentes más usados fueron los de profesores que los integraron a su clase y nos dejaron entrar al aula a presentarlos. La convocatoria también mostró sus límites: el uso se concentraba cerca de la presentación y caía con las semanas, y varios asistentes casi no se usaron. Lo dejamos escrito en el informe de cierre, con lo que haríamos distinto, y es parte de lo que hoy llevamos a nuestra investigación sobre IA generativa en la educación en ingeniería.' },
   'ai.categories':           { en: 'Innovation Categories Developed', es: 'Categorías de Innovación Desarrolladas' },
   'ai.global':               { en: 'Global Recognition',      es: 'Reconocimiento Global' },
   'ai.openai':               { en: "Selected for OpenAI's Global Faculty AI Project", es: 'Seleccionado para el Proyecto Global de IA para Docentes de OpenAI' },
@@ -90,7 +93,7 @@ export const service = {
   'ai.mgmt.3':               { en: 'Support in the management and monitoring of selected projects.', es: 'Apoyo en la gestión y el seguimiento de los proyectos seleccionados.' },
 
   // AI - Impact
-  'ai.call.title':           { en: 'First IAGen Call 2025-1: A Resounding Success', es: 'Primera Convocatoria IAGen 2025-1: Un Éxito Rotundo' },
+  'ai.call.title':           { en: 'First IAGen Call 2025-1: What It Achieved and What It Taught Us', es: 'Primera Convocatoria IAGen 2025-1: lo que logró y lo que nos enseñó' },
   'ai.cat.optimization':     { en: 'Process Optimization',   es: 'Optimización de Procesos' },
   'ai.cat.learning':         { en: 'Contribution to Learning', es: 'Contribución al Aprendizaje' },
   'ai.cat.skills':           { en: 'Skills Enhancement',     es: 'Fortalecimiento de Habilidades' },

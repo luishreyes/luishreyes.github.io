@@ -19,6 +19,7 @@ export const teachingData: TaughtCourse[] = [
   { term: '2026-10', year: 2026, code: 'DPRO-4300', title: { en: 'Systemic Bioproducts Design', es: 'Diseño Sistémico de Bioproductos' }, students: 16, type: 'Core', level: 'Graduate', evaluation: null },
 
   // 2025
+  { term: '2025-20', year: 2025, code: 'MGI-4307', title: { en: 'Generative AI Applications in Project Management', es: 'Aplicaciones de IA Generativa en la Gestión de Proyectos' }, students: 45, type: 'Elective', level: 'Graduate', evaluation: null },
   { term: '2025-20', year: 2025, code: 'CBP-C1320', title: { en: 'Pandora\'s Laboratory', es: 'El Laboratorio de Pandora' }, students: 37, type: 'CBU', level: 'Undergraduate', evaluation: 157 },
   { term: '2025-20', year: 2025, code: 'IQYA-2031', title: { en: 'Unit Operations Project', es: 'Proyecto de Operaciones Unitarias' }, students: 32, type: 'Core', level: 'Undergraduate', evaluation: 156 },
   { term: '2025-10', year: 2025, code: 'DPRO-4300', title: { en: 'Systemic Bioproducts Design', es: 'Diseño Sistémico de Bioproductos' }, students: 23, type: 'Core', level: 'Graduate', evaluation: 155 },
