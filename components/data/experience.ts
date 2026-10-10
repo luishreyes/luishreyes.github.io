@@ -15,7 +15,7 @@ export const workExperienceData: WorkExperience[] = [
     },
     {
         role: { en: 'Lecturer', es: 'Profesor de Cátedra' },
-        company: 'Fundacion Universidad de América',
+        company: 'Fundación Universidad de América',
         period: 'Jul 2016 - Jun 2017',
         location: 'Bogotá D.C. Area, Colombia',
     },
