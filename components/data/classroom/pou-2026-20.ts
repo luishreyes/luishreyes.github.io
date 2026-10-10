@@ -1169,11 +1169,11 @@ export const pou202620Course: Course = {
       week: 13,
       title: 'Explorador de gráficos',
       description:
-        'El catálogo de decisión visual del curso: 79 tipos de gráfico organizados por las ocho tareas que puede pedirle a un dato, con una miniatura dibujada de cada uno. De cada tipo indica la pregunta que responde, cuándo usarlo y cuándo no, un ejemplo de área, la decisión que habilita, su trampa ética típica y su lugar en la jerarquía de Cleveland y McGill. Incluye un diagrama de decisión que lleva de la pregunta al grupo correcto en un clic y una serie completa de canónicos de la disciplina: McCabe-Thiele, Txy, Moody, psicrométrico, Mollier, curvas de bomba y sistema, distribución de tiempos de residencia, Arrhenius, tamaño de partícula, muerte térmica, isotermas de sorción y curvas de secado.',
+        'El taller de la Lectura 14 en una sola página. Un catálogo de 86 tipos de gráfico organizados por las ocho tareas que se le pueden pedir a un dato, con la ficha completa de cada uno: la pregunta que responde, cuándo usarlo y cuándo no, un ejemplo del área, la decisión que habilita, su trampa ética típica y su lugar en la jerarquía de Cleveland y McGill. Los canónicos del curso se calculan en vivo con las ecuaciones y los datos del material: energía de molienda, distribución de tamaños, Moody, bomba con sistema y NPSH, número de potencia, factor F y ε-NTU, la recta de filtración del Taller 6, Txy y McCabe-Thiele con la tabla del Taller 9, inundación de Fair y O\'Connell, además del psicrométrico de Bogotá, Mollier con IAPWS-IF97, tiempos de residencia, Arrhenius, secado, isotermas, muerte térmica y reología. Cada uno escribe su título de tesis con los números del caso y muestra su trampa cuantificada: la carta de Fanning, el pinch de la línea q, el α ideal, la carta de nivel del mar usada en Bogotá. Trae un diagrama de decisión de dos pasos y tres laboratorios: el experimento de Cleveland y McGill con su medida de error de 1984, la razón de tinta medida píxel a píxel sobre los doce lotes de secado y las cuatro trampas con el factor de mentira de Tufte.',
       sessionNumber: 26,
       file: 'Explorador_Graficos.html',
       bannerImg: '/classroom/iqya-2031-2026-20/simuladores-banners/explorador-graficos.jpg',
-      tags: ['comunicación visual', 'elección de gráfico', 'tarea visual', 'Cleveland-McGill', 'canónicos', 'ética de la figura', 'catálogo'],
+      tags: ['comunicación visual', 'elección de gráfico', 'tarea visual', 'Cleveland-McGill', 'canónicos', 'canónicos en vivo', 'razón de tinta', 'factor de mentira', 'ética de la figura', 'catálogo'],
     },
   ],
 };
