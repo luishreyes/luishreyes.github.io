@@ -1154,6 +1154,17 @@ export const pou202620Course: Course = {
       tags: ['bombas', 'curva característica', 'Euler', 'triángulos de velocidad', 'NPSH', 'cavitación', 'leyes de afinidad', 'variador', 'serie y paralelo', 'viscosidad'],
     },
     {
+      id: 'explorador-equilibrio-flash',
+      week: 10,
+      title: 'Explorador de equilibrio y flash',
+      description:
+        'Mire el tambor por dentro: la bomba, el intercambiador, la válvula de expansión y el tambor con su eliminador de niebla, con el vapor que sube y las gotas que caen coloreados según su composición, y al lado el T-x-y, el P-x-y o el y-x con el recorrido de la alimentación y la línea de amarre. El equilibrio es el del curso: la tabla de Perry de las diapositivas para el etanol-agua, Raoult con el Antoine de la Lectura 10 (la calculadora de la Lectura 11), benceno-tolueno, n-hexano/n-octano, el isopropanol-agua del Taller 9 con Van Laar y un NRTL ajustado para cambiar la presión, más las mezclas multicomponente de las diapositivas y del Taller 7 con K de Raoult o fijas. Resuelve el flash isotérmico, el de fracción vaporizada fija y el adiabático. Muestra la regla de la palanca, la línea de operación y la solución cerrada del binario; Rachford-Rice con las pruebas de burbuja y rocío y cada paso de Newton; el balance de energía con la temperatura que necesita la alimentación y la presión que debe sostener la bomba, y un mapa de Ψ en el plano T-P con la trayectoria isentálpica de la válvula. Reproduce la calculadora de la Lectura 11 (Ψ = 0,450 a 91 °C), el flash interactivo de las diapositivas (f = 0,2008), los ejemplos resueltos del Taller 7 (β = 7/12 y 0,3098) y el ejemplo 21.1 de McCabe.',
+      sessionNumber: 15,
+      file: 'Explorador_Equilibrio_Flash.html',
+      bannerImg: '/classroom/iqya-2031-2026-20/simuladores-banners/explorador-equilibrio-flash.jpg',
+      tags: ['destilación flash', 'equilibrio líquido-vapor', 'Rachford-Rice', 'Newton-Raphson', 'punto de burbuja', 'punto de rocío', 'regla de la palanca', 'flash adiabático', 'Antoine', 'Raoult', 'etanol-agua', 'multicomponente'],
+    },
+    {
       id: 'explorador-mccabe-thiele',
       week: 11,
       title: 'Explorador McCabe-Thiele',
