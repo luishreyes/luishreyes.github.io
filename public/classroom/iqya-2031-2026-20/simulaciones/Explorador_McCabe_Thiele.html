@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="/classroom-fonts.css">
 <link rel="stylesheet" href="/classroom/vendor/katex/katex.min.css">
 <script defer src="/classroom/vendor/katex/katex.min.js"></script>
+<script type="importmap">{"imports":{"three":"/classroom/vendor/three/three.module.min.js"}}</script>
 <style>
 :root {
   --accent: #5980A6; --accent-50: #F6F9FC; --accent-100: #EFF4F9; --accent-200: #D3E0EC; --accent-300: #A9C3D8; --accent-600: #416180; --accent-700: #2C455D;
@@ -342,6 +343,39 @@ table.t tr.dim td { color: var(--n500); }
 @media (max-width: 640px) { .towgrid { grid-template-columns: 1fr; } .mtgrid .stage { min-height: 520px; } }
 @media (max-width: 900px) { .mtgrid .hud { top: auto; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+
+/* ---------- plato en 3D ---------- */
+.t3grid { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, .75fr); border: 2px solid var(--divider); margin-top: 18px; background: #fff; }
+.t3grid > .card { margin: 0; border: none; }
+.t3grid > .card.t3main { border-right: 1.5px solid var(--divider); display: flex; flex-direction: column; }
+.t3grid .card-h { padding: 6px 10px; min-height: 45px; flex-wrap: wrap; gap: 6px; }
+.t3grid .hud, .t3grid .play { position: static; pointer-events: auto; }
+.t3grid .hud .chip { text-transform: none; letter-spacing: 0; }
+.t3grid .play button { height: 28px; }
+.t3stage { flex: 1; min-height: 560px; overflow: hidden; }
+.t3stage canvas { position: absolute; inset: 0; width: 100%; height: 100% !important; touch-action: none; cursor: grab; }
+.t3stage canvas:active { cursor: grabbing; }
+.t3lab { position: absolute; inset: 0; pointer-events: none; font-family: var(--font-body); }
+.t3lab .lb { position: absolute; transform: translate(-50%, -100%); white-space: nowrap; font-size: 11.5px; font-weight: 700; color: var(--ink); background: rgba(255,255,255,.88); border: 1px solid var(--n300); padding: 2px 6px; line-height: 1.3; }
+.t3lab .lb small { display: block; font-family: var(--font-mono); font-size: 10.5px; font-weight: 650; color: var(--muted-ink); }
+.t3lab .lb::after { content: ''; position: absolute; left: 50%; top: 100%; width: 1px; height: 10px; background: var(--n500); }
+.t3lab .lb.sel { border-color: var(--hl); box-shadow: 0 0 0 1.5px var(--hl); }
+.t3lab .lb.bad { color: var(--redline); }
+:root[data-canvas="blueprint"] .t3lab .lb { background: rgba(18,48,77,.86); border-color: rgba(255,255,255,.25); }
+.t3msg { position: absolute; inset: 0; display: grid; place-items: center; font-size: 13px; color: var(--muted-ink); pointer-events: none; text-align: center; padding: 20px; }
+.t3tog { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 18px; padding: 8px 12px 10px; border-top: 1.5px solid var(--divider); }
+.t3tog .toggle { margin-top: 0; font-size: 12.5px; }
+.t3tog .small { font-size: 11.5px; }
+.t3side .card-b { padding-top: 12px; }
+.t3sub { margin: 16px 0 2px; font-family: var(--font-mono); font-size: 10.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted-ink); border-top: 1px solid var(--n200); padding-top: 10px; }
+#t3Chk td.st { font-weight: 750; white-space: nowrap; }
+#t3Chk td.st.ok { color: var(--ok); } #t3Chk td.st.w { color: var(--warn); } #t3Chk td.st.c { color: var(--redline); }
+#t3Chk tr.ext td:first-child::after { content: ' · externo'; font-size: 10.5px; color: var(--muted-ink); font-weight: 600; }
+#t3Chk th, #t3Chk td { text-align: left; } #t3Chk td:nth-child(2), #t3Chk td:nth-child(3) { font-family: var(--font-mono); font-size: 12px; }
+#svgSec text, #svgPerf text { paint-order: stroke; stroke: var(--paper); stroke-width: 3px; stroke-linejoin: round; }
+@media (max-width: 1100px) { .t3grid { grid-template-columns: 1fr; } .t3grid > .card.t3main { border-right: none; border-bottom: 1.5px solid var(--divider); } }
+@media (max-width: 640px) { #t3Chk .stx { display: none; } #t3Chk td.st { font-size: 15px; }
+  .t3stage { min-height: 440px; } .t3lab .lb { font-size: 10.5px; } .t3lab .lb small { display: none; } }
 </style>
 </head>
 <body>
@@ -428,7 +462,8 @@ table.t tr.dim td { color: var(--n500); }
       <button type="button" role="tab" data-tab="rf" aria-selected="false"><span class="k">4</span>Reflujo</button>
       <button type="button" role="tab" data-tab="al" aria-selected="false"><span class="k">5</span>Alimentación</button>
       <button type="button" role="tab" data-tab="pt" aria-selected="false"><span class="k">6</span>Platos y torre</button>
-      <button type="button" role="tab" data-tab="ec" aria-selected="false"><span class="k">7</span>Ecuaciones</button>
+      <button type="button" role="tab" data-tab="p3" aria-selected="false"><span class="k">7</span>Plato en 3D</button>
+      <button type="button" role="tab" data-tab="ec" aria-selected="false"><span class="k">8</span>Ecuaciones</button>
       <span class="sp"></span>
       <div class="canv"><button type="button" data-canvas="paper" aria-pressed="true">Papel</button><button type="button" data-canvas="blueprint" aria-pressed="false">Blueprint</button></div>
     </nav>
@@ -509,6 +544,40 @@ table.t tr.dim td { color: var(--n500); }
       <div class="two">
         <div class="card"><div class="card-h"><span class="t">Diámetro y ventana de operación</span><span class="sp"></span><span id="hyLbl"></span></div><div class="card-b"><svg class="ch halo" id="svgWin" viewBox="0 0 560 320"></svg><div style="overflow-x:auto"><table class="t" id="hyTable" style="margin-top:10px"></table></div><p class="small" id="hyNote" style="margin:8px 0 0"></p></div></div>
         <div class="card"><div class="card-h"><span class="t">Altura y energía</span></div><div class="card-b"><div class="towgrid"><svg class="ch halo" id="svgTow" viewBox="0 0 220 420"></svg><div class="spec" id="specH"></div></div><div class="spec" id="specE" style="margin-top:16px"></div><p class="small" id="enNote" style="margin:10px 0 0"></p></div></div>
+      </div>
+    </section>
+
+    <!-- 7 · plato en 3D -->
+    <section class="panel" data-panel="p3">
+      <div class="ph"><h2>El plato perforado por dentro</h2><span class="lbl" id="p3Lbl"></span><p id="p3Lead"></p></div>
+      <div class="t3grid">
+        <div class="card t3main">
+          <div class="card-h"><div class="hud" id="p3Hud"></div><span class="sp"></span><div class="seg inline mini" id="camSeg"><button type="button" data-v="iso">Isométrica</button><button type="button" data-v="side">Corte</button><button type="button" data-v="top">Planta</button><button type="button" data-v="dc">Bajante</button></div><div class="play"><button type="button" id="p3Play" aria-label="Pausar"></button></div></div>
+          <div class="stage t3stage"><canvas id="t3Cv" aria-label="Plato perforado en tres dimensiones: tres platos con sus vertederos, bajantes, espuma y vapor"></canvas><div class="t3lab" id="t3Lab" aria-hidden="true"></div><div class="t3msg" id="t3Msg">Cargando el modelo en 3D…</div></div>
+          <div class="t3tog"><label class="toggle"><input type="checkbox" id="t3cut"> Carcasa en corte</label><label class="toggle"><input type="checkbox" id="t3lab"> Rótulos</label><label class="toggle"><input type="checkbox" id="t3flow"> Vapor y líquido</label><label class="toggle"><input type="checkbox" id="t3up"> Plato de arriba</label><span class="sp"></span><span class="small">Arrastre para girar · rueda o pellizco para acercar · toque una pieza</span></div>
+        </div>
+        <div class="card t3side"><div class="card-h"><span class="t">El plato y su carga</span><span class="sp"></span><span id="t3SecLbl"></span></div><div class="card-b">
+          <div class="seg" id="t3SecSeg"><button type="button" data-v="ctrl">La que manda</button><button type="button" data-v="top">Cabeza</button><button type="button" data-v="bot">Fondo</button></div>
+          <div class="sl"><div class="row"><span>Carga de vapor</span><b id="vt3vL"></b></div><input type="range" id="t3vL" min="0.2" max="1.4" step="0.01"><div class="hint" id="t3vLH">Del caudal de diseño. Los perforados operan bien hasta un 50 a 60 % (Diseño de platos).</div></div>
+          <div class="sl"><div class="row"><span>Carga de líquido</span><b id="vt3lL"></b></div><input type="range" id="t3lL" min="0.2" max="3" step="0.01"><div class="hint" id="t3lLH"></div></div>
+          <div class="t3sub">Geometría del plato · valores típicos de Sinnott (externos al curso)</div>
+          <div class="sl"><div class="row"><span>Altura del vertedero h<sub>w</sub></span><b id="vt3hw"></b></div><input type="range" id="t3hw" min="0.025" max="0.1" step="0.005"><div class="hint">De 40 a 90 mm; 50 mm es lo común a presión atmosférica.</div></div>
+          <div class="sl"><div class="row"><span>Diámetro de perforación d<sub>h</sub></span><b id="vt3dh"></b></div><input type="range" id="t3dh" min="0.003" max="0.012" step="0.0005"><div class="hint">El curso da de 3 a 12 mm (Destilación continua); 5 mm es lo usual.</div></div>
+          <div class="sl"><div class="row"><span>Área perforada A<sub>h</sub>/A<sub>a</sub></span><b id="vt3Ah"></b></div><input type="range" id="t3Ah" min="0.06" max="0.16" step="0.005"><div class="hint" id="t3AhH"></div></div>
+          <div class="sl"><div class="row"><span>Franjas sin perforar</span><b id="vt3calm"></b></div><input type="range" id="t3calm" min="0.02" max="0.08" step="0.005"><div class="hint">Zona de calma junto a cada vertedero y borde contra la carcasa.</div></div>
+          <div class="sl"><div class="row"><span>Holgura del bajante h<sub>ap</sub></span><b id="vt3gap"></b></div><input type="range" id="t3gap" min="0.005" max="0.025" step="0.0025"><div class="hint" id="t3gapH"></div></div>
+          <div class="sl"><div class="row"><span>Coeficiente de orificio C<sub>0</sub></span><b id="vt3C0"></b></div><input type="range" id="t3C0" min="0.66" max="0.9" step="0.01"><div class="hint">De la figura de Sinnott: 0,84 con espesor igual al diámetro y 10 % perforado.</div></div>
+          <button type="button" class="seg inline" id="t3Reset" style="margin-top:12px;padding:6px 10px;font-weight:700;font-size:12px;cursor:pointer">Volver a la carga y la geometría de partida</button>
+        </div></div>
+      </div>
+      <div class="caption" id="t3Cap" style="border:1.5px solid var(--divider);border-top:none"></div>
+      <div class="two">
+        <div class="card"><div class="card-h"><span class="t">Verificaciones del plato</span><span class="sp"></span><span id="t3ChkLbl"></span></div><div class="card-b" style="overflow-x:auto"><table class="t" id="t3Chk"></table><p class="small" id="t3ChkNote" style="margin:10px 0 0"></p></div></div>
+        <div class="card"><div class="card-h"><span class="t">Corte del plato, con sus alturas</span></div><div class="card-b"><svg class="ch halo" id="svgSec" viewBox="0 0 560 560"></svg><div class="legend" id="secLeg" style="margin-top:6px"></div></div></div>
+      </div>
+      <div class="two">
+        <div class="card"><div class="card-h"><span class="t">Diagrama de desempeño del plato</span></div><div class="card-b"><svg class="ch hov halo" id="svgPerf" viewBox="0 0 560 400"></svg><div class="legend" id="perfLeg" style="margin-top:6px"></div><div class="readout" id="perfRead"></div><p class="small" id="perfNote" style="margin:8px 0 0"></p></div></div>
+        <div class="card"><div class="card-h"><span class="t">Geometría</span><span class="sp"></span><span id="t3GeoLbl"></span></div><div class="card-b"><div class="spec" id="t3Geo"></div><p class="small" id="t3GeoNote" style="margin:10px 0 0"></p></div></div>
       </div>
     </section>
 
@@ -943,6 +1012,58 @@ function heights(Nreal, TS, D, skirt) {
   return { s2: Nreal * TS + 1.5 * D + 2 + skirt, l13: Nreal * TS + 3, t9: Nreal * 0.45 };
 }
 /* ====================================================================
+   El plato perforado por dentro: geometría de un plato de flujo
+   cruzado de un paso y su hidráulica.
+   Del curso (Diseño de platos): inundación por Souders-Brown sobre el
+   área neta, bajante del 10 al 15 % del área, u_baj < 0,15 m/s, t_res de
+   3 a 5 s con h_liq = ½ espaciamiento y 0,4 a 0,8 kPa por plato.
+   Externo (Sinnott, Chemical Engineering Design, cap. de columnas de
+   platos): cresta de Francis, goteo de Eduljee, caída en seco con C₀,
+   cabeza residual, retroceso y residencia en el bajante. Externo (Bennett,
+   Agrawal y Cook, 1983): densidad de la espuma y altura del líquido claro.
+   ==================================================================== */
+var TRAY_DEF = { hw: 0.050, dh: 0.005, AhAa: 0.10, C0: 0.84, calm: 0.050, edge: 0.050, gap: 0.010, tp: 0.003, vL: 1, lL: 1, sec: 'ctrl' };
+function bisect(f, lo, hi, n) { var flo = f(lo); for (var i = 0; i < (n || 60); i++) { var m = 0.5 * (lo + hi), fm = f(m); if ((fm > 0) === (flo > 0)) { lo = m; flo = fm; } else hi = m; } return 0.5 * (lo + hi); }
+/* ángulo central θ del segmento que ocupa la fracción f del círculo: (θ − sen θ)/2π = f */
+function segTheta(f) { var lo = 0, hi = Math.PI; for (var i = 0; i < 60; i++) { var m = 0.5 * (lo + hi); if ((m - Math.sin(m)) / (2 * Math.PI) < f) lo = m; else hi = m; } return 0.5 * (lo + hi); }
+/* área de la franja |x| ≤ a dentro de un círculo de radio r */
+function stripArea(r, a) { a = Math.min(a, r); if (a <= 0) return 0; return 2 * (a * Math.sqrt(r * r - a * a) + r * r * Math.asin(a / r)); }
+function trayGeom(D, fracBaj, o) {
+  var R = D / 2, Ac = Math.PI * D * D / 4, Ad = fracBaj * Ac, th = segTheta(fracBaj), lw = D * Math.sin(th / 2), c = R * Math.cos(th / 2);
+  var An = Ac - Ad, Aa = Ac - 2 * Ad, Ap = stripArea(R - o.edge, c - o.calm), Ah = o.AhAa * Aa, AhAp = Ah / Ap;
+  var p = o.dh * Math.sqrt(0.9069 / AhAp), nh = Ah / (Math.PI * o.dh * o.dh / 4);
+  return { D: D, R: R, Ac: Ac, Ad: Ad, th: th, lw: lw, lwD: lw / D, c: c, An: An, Aa: Aa, Ap: Ap, Ah: Ah, AhAp: AhAp, p: p, pd: p / o.dh, nh: nh, hap: o.hw - o.gap };
+}
+/* K₂ de la correlación de goteo de Eduljee contra (h_w + h_ow) en mm: ajuste propio a la figura de Sinnott (30,2 a 54,7 mm y 30,6 a 77,8 mm) */
+function K2fit(h) { return 31.0 - 4.6 * Math.exp(-0.032 * h); }
+/* hidráulica del plato. sec: la sección de sizeSection (cabeza o fondo); s: estado del explorador */
+function trayHyd(sec, s, o, D) {
+  var g = trayGeom(D, s.fracBaj, o), rhoV = sec.rhoV, rhoL = sec.rhoL;
+  var Vw = sec.V * sec.MV / 3600 * o.vL, Lw = sec.L * sec.ML / 3600 * o.lL, QV = Vw / rhoV, QL = Lw / rhoL;
+  // inundación: la del explorador; con Fair, C_SB cambia con el parámetro de flujo de esta carga
+  var uf = sec.uf;
+  if (s.csb === 'fair') { var FLV = sec.FLV * o.lL / o.vL, C = (0.0105 + 8.127e-4 * Math.pow(s.TS * 1000, 0.755) * Math.exp(-1.463 * Math.pow(FLV, 0.842))) * Math.pow(sec.sig / 20, 0.2); uf = C * Math.sqrt((rhoL - rhoV) / rhoV); }
+  var Ab = sec.net ? g.An : g.Ac, un = QV / Ab, ua = QV / g.Aa, uh = QV / g.Ah, flood = un / uf;
+  // Francis: cresta sobre el vertedero (mm de líquido)
+  var how = 750 * Math.pow(Lw / (rhoL * g.lw), 2 / 3), hwm = 1000 * o.hw;
+  // goteo
+  var K2 = K2fit(hwm + how), uhmin = (K2 - 0.90 * (25.4 - 1000 * o.dh)) / Math.sqrt(rhoV), weep = uh < uhmin;
+  // caída de presión: en seco, cabeza residual y líquido sobre el plato (mm de líquido)
+  var hd = 51 * Math.pow(uh / o.C0, 2) * rhoV / rhoL, hr = 12.5e3 / rhoL, ht = hd + hwm + how + hr, dP = 9.81e-3 * ht * rhoL / 1000;
+  // bajante
+  var Am = Math.min(g.Ad, g.hap * g.lw), hdc = 166 * Math.pow(Lw / (rhoL * Am), 2), hb = hwm + how + ht + hdc, hbLim = 0.5 * (1000 * s.TS + hwm), trS = g.Ad * (hb / 1000) * rhoL / Lw;
+  // criterios del curso
+  var ubaj = QL / g.Ad, tres = g.Ad * 0.5 * s.TS / QL;
+  // espuma (Bennett, Agrawal y Cook): fracción de líquido αₑ, líquido claro y altura de la espuma
+  var Ks = ua * Math.sqrt(rhoV / (rhoL - rhoV)), ae = Math.exp(-12.55 * Math.pow(Ks, 0.91)), Cb = 0.501 + 0.438 * Math.exp(-137.8 * o.hw);
+  var hcl = ae * (o.hw + Cb * Math.pow(QL / (g.lw * ae), 0.67)), hf = hcl / ae;
+  // la carga de vapor con la que empieza el goteo, como fracción del diseño (misma carga de líquido)
+  var vMin = uhmin / (uh / o.vL);
+  var valv = s.tray === 'valv', reg = flood >= 1 ? 'flood' : ((!valv && hb > hbLim) || ubaj > 0.15 ? 'dcflood' : (!valv && weep ? 'weep' : (flood > 0.85 ? 'entr' : 'ok')));
+  return { g: g, o: o, Vw: Vw, Lw: Lw, QV: QV, QL: QL, rhoV: rhoV, rhoL: rhoL, un: un, ua: ua, uh: uh, uf: uf, flood: flood, how: how, K2: K2, uhmin: uhmin, weep: weep, vMin: vMin,
+    hd: hd, hr: hr, ht: ht, dP: dP, Am: Am, hdc: hdc, hb: hb, hbLim: hbLim, trS: trS, ubaj: ubaj, tres: tres, Ks: Ks, ae: ae, hcl: hcl, hf: hf, reg: reg, TS: s.TS, net: sec.net };
+}
+/* ====================================================================
    La columna por dentro.
    Cada plato real con su capa de líquido, su vertedero y su bajante; el
    líquido cruza el plato y baja, el vapor burbujea por las perforaciones
@@ -1187,7 +1308,8 @@ function clone(o) { return JSON.parse(JSON.stringify(o)); }
 
 var BASE = { sys: 'ea9', alpha: 2.4, P: 760, zF: 0.20, xD: 0.80, xB: 0.02, F: 100, qMode: 'q', q: 1.1, TF: 35,
   rMode: 'R', lR: Math.log10(2.5), Rm: 1.3, cond: 'total', feedMode: 'opt', feedN: 10, Emv: 1, eoMode: 'man', Eo: 0.60, muL: 0.4, aSrc: 'col',
-  tray: 'perf', TS: 0.45, ff: 0.80, csb: 'curso', net: true, fracBaj: 0.12, skirt: 1.5, hRule: 's2', view: 'all', grid: true, vv: true, cmpOn: true, pp: 1, pp8: 99 };
+  tray: 'perf', TS: 0.45, ff: 0.80, csb: 'curso', net: true, fracBaj: 0.12, skirt: 1.5, hRule: 's2', view: 'all', grid: true, vv: true, cmpOn: true, pp: 1, pp8: 99,
+  t3sec: 'ctrl', t3vL: 1, t3lL: 1, t3hw: 0.05, t3dh: 0.005, t3Ah: 0.10, t3calm: 0.05, t3gap: 0.010, t3C0: 0.84, t3cut: true, t3lab: true, t3flow: true, t3up: true, t3cam: 'iso' };
 var L10 = Math.log10;
 var PRESETS = [
   { id: 't9', name: 'Taller 9 · columna de diseño', tag: 'q = 1,1 · R = 2,5', s: {} },
@@ -1204,6 +1326,7 @@ var PRESETS = [
 ];
 function presetState(id) { var p = byId(PRESETS, id), s = Object.assign(clone(BASE), clone(p.s)); s.preset = id; return s; }
 var state = Object.assign(presetState('t9'), store.get('state', {}));
+Object.keys(BASE).forEach(function (k) { if (state[k] === undefined) state[k] = BASE[k]; });
 var RES = null, tab = store.get('tab', 'co'), cscene = null, HL = -1;
 var SVGI = {
   pause: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M8 5v14M16 5v14"/></svg>',
@@ -1240,7 +1363,7 @@ function buildControls() {
   $('#mobCtl').addEventListener('click', function () { $('#ctl').classList.toggle('open'); this.textContent = $('#ctl').classList.contains('open') ? 'Cerrar' : 'Controles'; });
   document.addEventListener('keydown', function (e) {
     if (/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return;
-    var i = '1234567'.indexOf(e.key); if (i >= 0) setTab(['co', 'eq', 'pp', 'rf', 'al', 'pt', 'ec'][i]);
+    var i = '12345678'.indexOf(e.key); if (i >= 0) setTab(['co', 'eq', 'pp', 'rf', 'al', 'pt', 'p3', 'ec'][i]);
     if (e.key === ' ' && tab === 'co') { e.preventDefault(); togglePlay(); }
     if (tab === 'pp' && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) { ppMove(e.key === 'ArrowRight' ? 1 : -1); }
   });
@@ -1248,6 +1371,7 @@ function buildControls() {
   $$('.play [data-sp]').forEach(function (b) { b.addEventListener('click', function () { cscene.speed = +b.dataset.sp; $$('.play [data-sp]').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); }); }); });
   var cv = store.get('canvas', 'paper'); document.documentElement.setAttribute('data-canvas', cv); $$('.tabs .canv button').forEach(function (x) { x.setAttribute('aria-pressed', x.dataset.canvas === cv ? 'true' : 'false'); });
   buildPP();
+  t3Controls();
   hoverSetup();
 }
 function dirty() { state.preset = null; update(); }
@@ -1468,6 +1592,7 @@ function renderTab() {
   else if (tab === 'rf') renderRF();
   else if (tab === 'al') renderAL();
   else if (tab === 'pt') renderPT();
+  else if (tab === 'p3') renderP3();
   else if (tab === 'ec') renderEqs();
 }
 var lastWarn = '';
@@ -2130,6 +2255,522 @@ function hoverTabs() {
   $('#svgFS').addEventListener('mousemove', function (e) { if (!FS) return; var p = svgPt(this, e), o = FS.a.o; if (p.x < o.x0 || p.x > o.x1) return; var f = Math.round(invX(FS.a, p.x)), q = FS.fs[f - 1]; if (!q) return; $('#fsRead').textContent = 'Alimentar en la etapa ' + f + ' · N ' + (isFinite(q.N) ? fmtN(q.N, 2) : '∞: una de las rectas toca la curva'); });
 }
 /* ====================================================================
+   Pestaña 7 · el plato en 3D: controles, verificaciones, corte acotado,
+   diagrama de desempeño y geometría. La escena 3D está en 37_tray3d.js.
+   ==================================================================== */
+var T3KEYS = ['t3vL', 't3lL', 't3hw', 't3dh', 't3Ah', 't3calm', 't3gap', 't3C0'];
+var T3H = null;
+function ring(x, y, r, col) { return E('circle', { cx: r1(x), cy: r1(y), r: r, style: 'fill:var(--paper);stroke:' + (col || 'var(--ink)') + ';stroke-width:2' }); }
+function t3Opts(s) { return { hw: s.t3hw, dh: s.t3dh, AhAa: s.t3Ah, C0: s.t3C0, calm: s.t3calm, edge: s.t3calm, gap: s.t3gap, tp: 0.003, vL: s.t3vL, lL: s.t3lL }; }
+function t3Sec(r, s) { var k = s.t3sec === 'ctrl' ? r.ctrl : s.t3sec; return { k: k, sec: k === 'top' ? r.top : r.bot }; }
+function t3Compute(r, s) { var q = t3Sec(r, s), h = trayHyd(q.sec, s, t3Opts(s), r.Dcom); h.secK = q.k; h.sec = q.sec; return h; }
+function t3Controls() {
+  T3KEYS.forEach(function (k) { var el = document.getElementById(k); el.addEventListener('input', function () { state[k] = parseFloat(el.value); store.set('state', state); renderP3(); }); });
+  [['t3cut', 't3cut'], ['t3lab', 't3lab'], ['t3flow', 't3flow'], ['t3up', 't3up']].forEach(function (a) { $('#' + a[0]).addEventListener('change', function () { state[a[1]] = this.checked; store.set('state', state); if (T3) T3.setView(state); }); });
+  $$('#t3SecSeg button').forEach(function (b) { b.addEventListener('click', function () { state.t3sec = b.dataset.v; store.set('state', state); renderP3(); }); });
+  $$('#camSeg button').forEach(function (b) { b.addEventListener('click', function () { state.t3cam = b.dataset.v; store.set('state', state); pressed('#camSeg button', 'v', b.dataset.v); if (T3) T3.setCam(b.dataset.v, true); }); });
+  $('#t3Reset').addEventListener('click', function () { ['t3vL', 't3lL', 't3hw', 't3dh', 't3Ah', 't3calm', 't3gap', 't3C0', 't3sec'].forEach(function (k) { state[k] = BASE[k]; }); store.set('state', state); renderP3(); });
+  $('#p3Play').innerHTML = SVGI.pause;
+  $('#p3Play').addEventListener('click', function () { if (!T3) return; T3.running = !T3.running; $('#p3Play').innerHTML = T3.running ? SVGI.pause : SVGI.play; });
+}
+var T3INFO = {
+  deck: ['Plato y área activa', 'La lámina sobre la que cruza el líquido. El área activa es la que queda entre los dos bajantes, A_a = A_c − 2A_d: ahí el vapor atraviesa la capa de líquido y ocurre la transferencia (Diseño de platos).'],
+  perf: ['Perforaciones', 'El área de los agujeros, A_h, fija la velocidad del vapor en ellos, u_h = Q_V/A_h. Muy poca velocidad y el líquido se cuela: goteo. Mucha y se dispara la caída de presión en seco, h_d ∝ u_h².'],
+  weir: ['Vertedero de salida', 'Retiene una capa de líquido de altura h_w sobre el plato; sin él no hay contacto (Diseño de platos). Por encima pasa la cresta h_ow, que da la fórmula de Francis, y el líquido cae al bajante.'],
+  apron: ['Bajante', 'El conducto por donde el líquido pasa al plato de abajo; no lleva vapor. Termina a una holgura h_ap del plato inferior: el líquido que se acumula encima sella la salida para que el vapor no suba por él. Los bajantes alternan de lado en cada plato.'],
+  dcliq: ['Retroceso en el bajante', 'El líquido se acumula en el bajante hasta vencer la caída de presión del plato de abajo: h_b = (h_w + h_ow) + h_t + h_dc. Con espuma de densidad relativa ½, si h_b pasa de ½(espaciamiento + h_w) el bajante se llena hasta el plato de arriba y se inunda (Sinnott).'],
+  froth: ['Espuma', 'La mezcla de vapor y líquido que forma el burbujeo. Su altura sale de la fracción de líquido αₑ (Bennett, Agrawal y Cook): h_f = h_cl/αₑ. Las gotas que salta por encima son el arrastre.'],
+  shell: ['Carcasa', 'El diámetro comercial que dio Souders-Brown. Las tres capas de la escena son tres platos seguidos, separados por el espaciamiento.'],
+  inlet: ['Zona de entrada', 'El líquido del plato de arriba sale por debajo de su bajante y entra al plato. Esta franja no tiene perforaciones: si las tuviera, el líquido se colaría antes de cruzar.'],
+  calm: ['Zona de calma', 'Franja sin perforar junto a la entrada y al vertedero. Deja que el líquido se aquiete y que suelte el vapor antes de pasar al bajante.'],
+  valve: ['Válvulas', 'En un plato de válvulas cada orificio tiene una tapa que se levanta con el caudal de vapor: por eso sostiene la operación a carga parcial mucho mejor que un perforado (Diseño de platos).']
+};
+var T3REG = {
+  ok: ['dentro de la ventana', ''],
+  entr: ['arrastre', 'w'],
+  flood: ['inundación', 'c'],
+  dcflood: ['bajante inundado', 'c'],
+  weep: ['goteo', 'w']
+};
+function renderP3() {
+  var r = RES, s = state; if (!r || !r.ok) return;
+  var h = t3Compute(r, s), g = h.g, sec = h.sec; T3H = h;
+  // controles
+  var setS = function (id, v) { var el = document.getElementById(id); if (+el.value !== v) el.value = v; };
+  T3KEYS.forEach(function (k) { setS(k, s[k]); });
+  setV('vt3vL', fmtN(100 * s.t3vL, 0) + ' %'); setV('vt3lL', fmtN(100 * s.t3lL, 0) + ' %');
+  setV('vt3hw', fmtN(1000 * s.t3hw, 0) + ' mm'); setV('vt3dh', fmtN(1000 * s.t3dh, 1) + ' mm'); setV('vt3Ah', fmtN(100 * s.t3Ah, 1) + ' %'); setV('vt3calm', fmtN(1000 * s.t3calm, 0) + ' mm');
+  setV('vt3gap', fmtN(1000 * g.hap, 0) + ' mm'); setV('vt3C0', fmtN(s.t3C0, 2));
+  $('#t3lLH').innerHTML = subs(esc('Q_L = ' + fmtN(h.QL * 3600, 2) + ' m³/h de ' + (h.secK === 'top' ? 'la cabeza' : 'el fondo') + ' (L = ' + fmtN(sec.L * s.t3lL, 1) + ' kmol/h).'));
+  $('#t3AhH').innerHTML = subs(esc('A_h/A_p = ' + fmtN(100 * g.AhAp, 1) + ' %, paso de ' + fmtN(g.pd, 2) + ' d_h' + (g.pd < 2.5 ? ': por debajo de 2,5 d_h los agujeros quedan muy juntos.' : '. Sinnott recomienda de 2,5 a 5 d_h.')));
+  $('#t3AhH').classList.toggle('bad', g.pd < 2.5);
+  $('#t3gapH').innerHTML = subs(esc('h_ap = h_w − ' + fmtN(1000 * s.t3gap, 1) + ' mm: el borde del bajante queda por debajo del vertedero del plato de abajo, y el líquido lo sella.'));
+  pressed('#t3SecSeg button', 'v', s.t3sec); pressed('#camSeg button', 'v', s.t3cam);
+  ['t3cut', 't3lab', 't3flow', 't3up'].forEach(function (k) { $('#' + k).checked = !!s[k]; });
+  $('#t3SecLbl').textContent = (h.secK === 'top' ? 'cabeza' : 'fondo') + (h.secK === r.ctrl ? ' · manda' : '');
+  var valv = s.tray === 'valv';
+  $('#p3Lbl').textContent = (valv ? 'de válvulas' : 'perforado') + ' · D = ' + fmtN(r.Dcom, 1) + ' m · ' + fmtN(1000 * s.TS, 0) + ' mm · bajante ' + fmtN(100 * s.fracBaj, 0) + ' %';
+  $('#p3Lead').innerHTML = subs(esc('Tres platos seguidos de la ' + (h.secK === 'top' ? 'cabeza' : 'base') + ' de la columna, con el diámetro comercial, el espaciamiento y el bajante de la pestaña Platos y torre. El líquido entra por debajo del bajante del plato de arriba, cruza el área activa, pasa el vertedero y cae al bajante; el vapor sube por las perforaciones y lo convierte en espuma. Mueva la carga para ver el goteo, el arrastre y la inundación del bajante: las alturas salen de la hidráulica del plato, no de un dibujo.'));
+  var reg = T3REG[h.reg], chips = '<span class="chip ' + (reg[1] === 'c' ? 'red' : 'acc') + '">' + reg[0] + '</span><span class="chip">' + fmtN(100 * h.flood, 0) + ' % de inundación</span><span class="chip">ΔP ' + fmtN(h.dP, 2) + ' kPa</span>';
+  if ($('#p3Hud').innerHTML !== chips) $('#p3Hud').innerHTML = chips;
+  t3Caption(h, T3 ? T3.sel : null);
+  t3Checks(h, r, s); t3Section(h, s); t3Perf(h, r, s); t3Geo(h, r, s);
+  if (T3) T3.configure(h, s); else if (tab === 'p3') t3Ensure();
+}
+function t3Caption(h, key) {
+  var s = state, html;
+  if (key && T3INFO[key]) html = '<b>' + esc(T3INFO[key][0]) + '.</b> ' + subs(esc(T3INFO[key][1]));
+  else {
+    var t = {
+      ok: 'Dentro de la ventana: el vapor pasa por los agujeros a ' + fmtN(h.uh, 1) + ' m/s (el goteo empieza por debajo de ' + fmtN(h.uhmin, 1) + ' m/s), la espuma alcanza ' + fmtN(1000 * h.hf, 0) + ' mm y el bajante retiene ' + fmtN(h.hb, 0) + ' mm de líquido claro, por debajo de su límite de ' + fmtN(h.hbLim, 0) + ' mm.',
+      entr: 'Al ' + fmtN(100 * h.flood, 0) + ' % de la inundación el vapor ya lanza gotas hacia el plato de arriba: es arrastre. La caída de presión no lo delata; se paga en la pureza del destilado (Diseño de platos).',
+      flood: 'Inundación: el vapor va al ' + fmtN(100 * h.flood, 0) + ' % de su velocidad límite y la espuma llena el espaciamiento. El líquido ya no baja; se acumula plato sobre plato.',
+      dcflood: h.ubaj > 0.15 ? 'El bajante se satura: el líquido baja a ' + fmtN(h.ubaj, 3) + ' m/s, por encima de 0,15 m/s, y arrastra burbujas al plato de abajo.' : 'El bajante se inunda: para vencer la caída de presión del plato el líquido sube a ' + fmtN(h.hb, 0) + ' mm, más que el límite de ' + fmtN(h.hbLim, 0) + ' mm. Con espuma ocupa todo el espaciamiento y alcanza el plato de arriba, aunque el diámetro pase Souders-Brown. «El bajante es donde se cae un diseño que en el diámetro parecía bien» (Diseño de platos). La geometría de partida es el primer intento de Sinnott: pruebe más área perforada, un vertedero más bajo o el diámetro siguiente.',
+      weep: 'Goteo: el vapor pasa por los agujeros a ' + fmtN(h.uh, 1) + ' m/s, menos que los ' + fmtN(h.uhmin, 1) + ' m/s que sostienen el líquido, y parte se cuela al plato de abajo sin cruzar el área activa.'
+    }[h.reg];
+    html = subs(esc(t)) + ' <span style="color:var(--muted-ink)">Toque una pieza para ver qué hace.</span>';
+  }
+  if ($('#t3Cap').innerHTML !== html) $('#t3Cap').innerHTML = html;
+}
+/* ---------- verificaciones ---------- */
+function t3Checks(h, r, s) {
+  var valv = s.tray === 'valv', rows = [];
+  var st = function (k) { return k === 'ok' ? '✓<span class="stx"> cumple</span>' : (k === 'w' ? '!<span class="stx"> revisar</span>' : '✗<span class="stx"> no cumple</span>'); };
+  var add = function (n, v, lim, k, src, ext) { rows.push('<tr' + (ext ? ' class="ext"' : '') + '><td>' + subs(esc(n)) + '</td><td>' + v + '</td><td>' + subs(esc(lim)) + '</td><td class="st ' + k + '">' + st(k) + '</td></tr>'); };
+  var fl = h.flood;
+  add('Inundación u_n/u_inund', fmtN(100 * fl, 1) + ' %', 'de 75 a 85 % (Diseño de platos)', fl >= 1 ? 'c' : (fl > 0.85 ? 'c' : (fl < 0.75 ? 'w' : 'ok')));
+  add('Velocidad en el bajante', fmtN(h.ubaj, 4) + ' m/s', 'menor que 0,15 m/s', h.ubaj > 0.15 ? 'c' : 'ok');
+  add('Residencia en el bajante, con ½ espaciamiento', fmtN(h.tres, 1) + ' s', 'al menos 3 a 5 s', h.tres < 3 ? 'c' : (h.tres < 5 ? 'w' : 'ok'));
+  add('Caída de presión por plato', fmtN(h.dP, 2) + ' kPa', 'típica de 0,4 a 0,8 kPa', h.dP > 1.5 ? 'c' : (h.dP > 0.8 || h.dP < 0.4 ? 'w' : 'ok'), '', true);
+  if (!valv) {
+    add('Goteo: u_h contra u_h,mín', fmtN(h.uh, 1) + ' · ' + fmtN(h.uhmin, 1) + ' m/s', 'u_h > u_h,mín; gotea por debajo del ' + fmtN(100 * h.vMin, 0) + ' % del vapor de diseño', h.weep ? 'c' : (h.vMin > 0.6 ? 'w' : 'ok'), '', true);
+    add('Retroceso en el bajante h_b', fmtN(h.hb, 0) + ' mm', '≤ ½(espaciamiento + h_w) = ' + fmtN(h.hbLim, 0) + ' mm', h.hb > h.hbLim ? 'c' : (h.hb > 0.9 * h.hbLim ? 'w' : 'ok'), '', true);
+    add('Residencia con h_b', fmtN(h.trS, 1) + ' s', 'al menos 3 s', h.trS < 3 ? 'c' : 'ok', '', true);
+    add('Paso entre perforaciones', fmtN(h.g.pd, 2) + ' d_h', 'de 2,5 a 5 d_h', h.g.pd < 2.5 || h.g.pd > 5 ? 'w' : 'ok', '', true);
+  }
+  add('Espuma sobre el plato h_f', fmtN(1000 * h.hf, 0) + ' mm', 'muy por debajo del espaciamiento', h.hf > 0.5 * s.TS ? 'w' : 'ok', '', true);
+  $('#t3Chk').innerHTML = '<thead><tr><th>Criterio</th><th>Valor</th><th>Límite</th><th></th></tr></thead><tbody>' + rows.join('') + '</tbody>';
+  var nC = (rows.join('').match(/st c/g) || []).length;
+  $('#t3ChkLbl').textContent = nC ? nC + ' no cumple' + (nC > 1 ? 'n' : '') : 'todo en orden';
+  $('#t3ChkNote').innerHTML = subs(esc('Las tres primeras son las verificaciones de Diseño de platos y las que pide la bitácora. Las marcadas como externas siguen a Sinnott (Chemical Engineering Design): son más exigentes y usan la geometría del plato, que el curso no fija. La caída de presión es h_t = h_d + (h_w + h_ow) + h_r = ' + fmtN(h.hd, 0) + ' + ' + fmtN(1000 * h.o.hw + h.how, 0) + ' + ' + fmtN(h.hr, 0) + ' = ' + fmtN(h.ht, 0) + ' mm de líquido. ' + (valv ? 'Para válvulas la hidráulica detallada la da el fabricante: aquí solo se aplican los criterios del curso.' : (h.hb > h.hbLim ? 'El retroceso no pasa porque la caída en seco es grande: suba el área perforada, baje el vertedero o use un diámetro mayor (Fair pide más que la tabla del curso).' : ''))));
+}
+/* ---------- corte acotado ---------- */
+function t3Section(h, s) {
+  var g = h.g, R = g.R, c = g.c, TS = s.TS, hw = h.o.hw, how = h.how / 1000, hb = h.hb / 1000, hbA = Math.min(2 * hb, TS + hw), hf = Math.min(h.hf, TS), hcl = h.hcl, hap = g.hap;
+  var W = 560, H = 560, k = Math.min(390 / (2 * R), 500 / (2.17 * TS)), cx = 302, y0 = 32 + (TS + 0.14 * TS) * k;
+  var X = function (x) { return cx + x * k; }, Y = function (y) { return y0 - y * k; }, out = E('rect', { x: 0, y: 0, width: W, height: H, class: 'chart-bg' });
+  var rect = function (x1, y1, x2, y2, st) { return E('rect', { x: r1(Math.min(X(x1), X(x2))), y: r1(Math.min(Y(y1), Y(y2))), width: r1(Math.abs(X(x2) - X(x1))), height: r1(Math.abs(Y(y2) - Y(y1))), style: st }); };
+  var FR = 'fill:var(--accent-300);opacity:.6', CLQ = 'fill:var(--accent);opacity:.6', DCQ = 'fill:var(--accent-600);opacity:.7', DCA = 'fill:var(--accent-300);opacity:.55';
+  // dos platos completos (el de arriba, salida a la izquierda; el del medio, salida a la derecha) y la cubierta del de abajo
+  [[TS, -1], [0, 1]].forEach(function (q) {
+    var y = q[0], sg = q[1], xw = sg * c, xin = -sg * R;
+    out += rect(xin, y, -sg * c, y + hw + how, CLQ);           // entrada, bajo el bajante de arriba
+    out += rect(-sg * c, y, xw, y + Math.min(hf, TS - 0.005), FR); // espuma
+    out += rect(-sg * c, y, xw, y + hcl, CLQ);                 // líquido claro
+    // bajante de este plato: líquido claro y espuma desde el plato de abajo
+    var xa = xw, xs = sg * R; out += rect(xa, y - TS, xs, y - TS + Math.min(hb, TS + hw), DCQ) + rect(xa, y - TS + Math.min(hb, TS + hw), xs, y - TS + hbA, DCA);
+    // cubierta, vertedero y faldón del bajante
+    out += LN(X(xin), Y(y), X(xw), Y(y), 'stroke:var(--ink);stroke-width:3.2');
+    out += LN(X(xw), Y(y + hw), X(xw), Y(y - TS + hap), 'stroke:var(--ink);stroke-width:2.6');
+    for (var i = 1; i < 14; i++) { var xx = -sg * c + sg * 2 * c * i / 14; out += LN(X(xx), Y(y) - 2, X(xx), Y(y) + 2, 'stroke:var(--paper);stroke-width:1.4'); }
+  });
+  out += LN(X(-c), Y(-TS), X(R), Y(-TS), 'stroke:var(--ink);stroke-width:3.2');   // plato de abajo
+  out += LN(X(-R), Y(-TS - 0.02), X(-R), Y(TS + 0.12 * TS), 'stroke:var(--ink);stroke-width:2.4') + LN(X(R), Y(-TS - 0.02), X(R), Y(TS + 0.12 * TS), 'stroke:var(--ink);stroke-width:2.4');
+  // cotas
+  var dim = function (x, ya, yb, txt, side, col) { var xx = X(x), a = Y(ya), b = Y(yb), s2 = LN(xx, a, xx, b, 'stroke:' + (col || 'var(--ink)') + ';stroke-width:1') + LN(xx - 4, a, xx + 4, a, 'stroke:' + (col || 'var(--ink)') + ';stroke-width:1') + LN(xx - 4, b, xx + 4, b, 'stroke:' + (col || 'var(--ink)') + ';stroke-width:1'); return s2 + TX(xx + (side < 0 ? -6 : 6), (a + b) / 2 + 4, txt, { a: side < 0 ? 'end' : null, fs: 12, fw: 700, c: col }); };
+  out += dim(-R - 0.08 * R, 0, TS, fmtN(1000 * TS, 0) + ' mm', -1) + TX(X(-R - 0.08 * R) - 6, Y(TS / 2) + 20, 'espaciamiento', { a: 'end', fs: 11, c: MUT });
+  out += dim(c - 0.07 * R, 0, hw, 'h_w ' + fmtN(1000 * hw, 0), -1);
+  out += LN(X(c), Y(hw + how), X(c) - 26, Y(hw + how) - 18, 'stroke:' + CR + ';stroke-width:1') + TX(X(c) - 28, Y(hw + how) - 21, 'cresta h_ow ' + fmtN(h.how, 1) + ' mm', { a: 'end', fs: 12, fw: 700, c: CR });
+  out += dim(R + 0.05 * R, -TS, -TS + Math.min(hb, TS + hw), 'h_b ' + fmtN(h.hb, 0) + ' mm', 1, h.hb > h.hbLim ? CR : null);
+  out += dim(-c - 0.08 * R, 0, hap, 'h_ap ' + fmtN(1000 * hap, 0), -1);
+  out += dim(-0.55 * c, 0, Math.min(hf, TS - 0.005), 'espuma ' + fmtN(1000 * h.hf, 0) + ' mm', 1);
+  // límite del bajante
+  out += LN(X(c), Y(-TS + h.hbLim / 1000), X(R), Y(-TS + h.hbLim / 1000), 'stroke:' + CR + ';stroke-width:1.2;stroke-dasharray:4 3') + TX(X(R) - 3, Y(-TS + h.hbLim / 1000) - 4, 'límite ' + fmtN(h.hbLim, 0), { a: 'end', fs: 11, c: CR, fw: 650 });
+  // flechas de flujo
+  out += TX(X(0), Y(TS) - 8, '← líquido', { a: 'middle', fs: 12, c: 'var(--accent-700)', fw: 700 }) + TX(X(0), Y(0) + 16, 'líquido →', { a: 'middle', fs: 12, c: 'var(--accent-700)', fw: 700 }) + TX(X(0), Y(-TS * 0.55), '↑ vapor', { a: 'middle', fs: 12, c: CV, fw: 700 });
+  $('#svgSec').innerHTML = out;
+  $('#secLeg').innerHTML = '<span><i class="box" style="background:var(--accent);opacity:.55"></i>líquido claro</span><span><i class="box" style="background:var(--accent-200)"></i>espuma</span><span><i class="box" style="background:var(--accent-600);opacity:.7"></i>retroceso en el bajante</span><span><i class="box" style="background:var(--accent-300);opacity:.55"></i>bajante con espuma (×2)</span>';
+}
+/* ---------- diagrama de desempeño: carga de vapor contra carga de líquido ---------- */
+function t3Bound(sec, s, base, f, lo, hi) { // la carga de vapor donde f(h) cruza cero, a cada carga de líquido
+  var g = function (v) { return f(trayHyd(sec, s, Object.assign({}, base, { vL: v }), RES.Dcom)); };
+  var flo = g(lo), fhi = g(hi); if ((flo > 0) === (fhi > 0)) return NaN;
+  return bisect(g, lo, hi, 36);
+}
+function t3Perf(h, r, s) {
+  var sec = h.sec, o = t3Opts(s), xmax = 3, ymax = 1.6, a = axes({ x0: 60, x1: 542, y0: 12, y1: 350, xmin: 0, xmax: 100 * xmax, ymin: 0, ymax: 100 * ymax, xlab: 'Carga de líquido (% del diseño)', ylab: 'Carga de vapor (% del diseño)', clip: 'clPerf', ylw: 44 }), out = a.svg;
+  var key = 'perf|' + [h.secK, r.Dcom, s.TS, s.fracBaj, s.csb, s.tray, o.hw, o.dh, o.AhAa, o.C0, o.calm, o.gap, sec.V.toFixed(2), sec.L.toFixed(2), sec.rhoV.toFixed(4)].join('|');
+  var B = cached(key, function () {
+    var fl = [], we = [], dc = [], b75 = [], b85 = [], n = 40;
+    for (var i = 1; i <= n; i++) {
+      var lL = 0.05 + (xmax - 0.05) * i / n, base = Object.assign({}, o, { lL: lL });
+      fl.push([lL, t3Bound(sec, s, base, function (q) { return q.flood - 1; }, 0.01, 4)]);
+      b85.push([lL, t3Bound(sec, s, base, function (q) { return q.flood - 0.85; }, 0.01, 4)]);
+      b75.push([lL, t3Bound(sec, s, base, function (q) { return q.flood - 0.75; }, 0.01, 4)]);
+      we.push([lL, t3Bound(sec, s, base, function (q) { return q.uh - q.uhmin; }, 0.01, 4)]);
+      dc.push([lL, t3Bound(sec, s, base, function (q) { return q.hb - q.hbLim; }, 0.01, 4)]);
+    }
+    var lbaj = 0.15 * h.g.Ad * sec.rhoL / (sec.L * sec.ML / 3600); // la carga de líquido con u_baj = 0,15 m/s
+    return { fl: fl, we: we, dc: dc, b75: b75, b85: b85, lbaj: lbaj };
+  });
+  var P = function (arr) { return poly(arr.filter(function (q) { return isFinite(q[1]); }).map(function (q) { return [a.X(100 * q[0]), a.Y(100 * q[1])]; })); };
+  // ventana: entre el goteo y el menor de inundación y retroceso
+  var top = B.fl.map(function (q, i) { var d = B.dc[i][1], f = q[1]; return [q[0], isFinite(d) ? (isFinite(f) ? Math.min(d, f) : d) : f]; }), win = top.filter(function (q, i) { return q[0] <= B.lbaj && isFinite(q[1]) && isFinite(B.we[i][1]) && q[1] > B.we[i][1]; });
+  if (win.length > 1) { var lowp = B.we.filter(function (q) { return q[0] <= B.lbaj; }).filter(function (q, i) { return isFinite(q[1]); }); var poly2 = win.map(function (q) { return [a.X(100 * q[0]), a.Y(100 * Math.min(q[1], ymax))]; }).concat(lowp.slice(0, win.length).reverse().map(function (q) { return [a.X(100 * q[0]), a.Y(100 * q[1])]; })); out += E('path', { d: poly(poly2) + 'Z', style: 'fill:' + CG + ';opacity:.1', 'clip-path': 'url(#clPerf)' }); }
+  out += PATH(P(B.b75), 'stroke:var(--ink);stroke-width:.8;stroke-dasharray:2 3;opacity:.6', 'clPerf') + PATH(P(B.b85), 'stroke:var(--ink);stroke-width:.8;stroke-dasharray:2 3;opacity:.6', 'clPerf');
+  out += PATH(P(B.fl), 'stroke:' + CR + ';stroke-width:2.2', 'clPerf') + PATH(P(B.dc), 'stroke:' + C2 + ';stroke-width:2.2;stroke-dasharray:7 4', 'clPerf') + PATH(P(B.we), 'stroke:' + C1 + ';stroke-width:2.2', 'clPerf');
+  if (B.lbaj < xmax) out += LN(a.X(100 * B.lbaj), a.o.y0, a.X(100 * B.lbaj), a.o.y1, 'stroke:' + CV + ';stroke-width:1.6;stroke-dasharray:5 3') + TX(a.X(100 * B.lbaj) - 4, a.o.y0 + 14, 'u_baj = 0,15 m/s', { a: 'end', fs: 10, c: CV, fw: 700 });
+  else out += TX(a.o.x1 - 4, a.o.y0 + 14, 'u_baj = 0,15 m/s a ' + fmtN(100 * B.lbaj, 0) + ' % →', { a: 'end', fs: 10, c: CV, fw: 700 });
+  var lab = function (arr, txt, col, dy) { var q = arr.filter(function (p) { return isFinite(p[1]) && p[1] < ymax * 0.95; }); q = q[Math.min(q.length - 1, Math.round(q.length * 0.18))]; if (q) out += TX(a.X(100 * q[0]) + 4, a.Y(100 * q[1]) + dy, txt, { fs: 10.5, c: col, fw: 700 }); };
+  lab(B.fl, 'inundación', CR, -6); lab(B.dc, 'retroceso del bajante', C2, -6); lab(B.we, 'goteo', C1, 14);
+  var b85q = B.b85.filter(function (p) { return isFinite(p[1]) && p[1] < ymax; }); if (b85q.length) { var q85 = b85q[b85q.length - 1]; out += TX(a.X(100 * q85[0]) - 4, a.Y(100 * q85[1]) - 4, '85 %', { a: 'end', fs: 9.5, c: MUT }); }
+  out += ring(a.X(100), a.Y(100), 4.5, 'var(--ink)') + TX(a.X(100) + 7, a.Y(100) + 15, 'diseño', { fs: 10, c: MUT });
+  out += dot(a.X(100 * s.t3lL), a.Y(100 * s.t3vL), 6, T3REG[h.reg][1] === 'c' ? CR : 'var(--hl)') + TX(a.X(100 * s.t3lL) + 9, a.Y(100 * s.t3vL) - 7, T3REG[h.reg][0], { fs: 11, fw: 750 });
+  // rango de los perforados según el curso
+  out += E('rect', { x: a.o.x0, y: r1(a.Y(60)), width: 5, height: r1(a.Y(50) - a.Y(60)), style: 'fill:' + C1 + ';opacity:.8' }) + TX(a.o.x0 + 9, a.Y(55) + 4, 'curso: perforados hasta 50 a 60 %', { fs: 9.5, c: C1 });
+  $('#svgPerf').innerHTML = out; PERFAX = a;
+  $('#perfLeg').innerHTML = '<span><i style="border-top-color:' + CR + '"></i>inundación</span><span><i class="k" style="border-top-color:' + C2 + '"></i>retroceso del bajante</span><span><i style="border-top-color:' + C1 + '"></i>goteo</span><span><i class="k" style="border-top-color:' + CV + '"></i>velocidad en el bajante</span>';
+  $('#perfRead').textContent = '';
+  $('#perfNote').innerHTML = subs(esc('La ventana real del plato, con sus correlaciones: arriba la inundación (Souders-Brown ' + (s.csb === 'fair' ? 'con Fair' : 'con la tabla del curso') + ') y el retroceso del bajante; abajo el goteo; a la derecha el bajante saturado. Es la versión cuantitativa del esquema de Diseño de platos. Con la geometría de partida el goteo empieza al ' + fmtN(100 * h.vMin, 0) + ' % del vapor de diseño; el curso da de 50 a 60 % para los perforados.'));
+}
+var PERFAX = null;
+/* ---------- geometría ---------- */
+function t3Geo(h, r, s) {
+  var g = h.g, rows = [];
+  rows.push(['Diámetro D · área de la columna A_c', fmtN(g.D, 2) + ' m · ' + fmtN(g.Ac, 4) + ' m²']);
+  rows.push(['Cada bajante A_d', fmtN(g.Ad, 4) + ' m² · ' + fmtN(100 * s.fracBaj, 0) + ' %']);
+  rows.push(['Área neta A_n = A_c − A_d', fmtN(g.An, 4) + ' m²']);
+  rows.push(['Área activa A_a = A_c − 2A_d', fmtN(g.Aa, 4) + ' m²']);
+  rows.push(['Vertedero l_w · ángulo del segmento', fmtN(g.lw, 3) + ' m (' + fmtN(g.lwD, 3) + ' D) · ' + fmtN(g.th * 180 / Math.PI, 1) + '°']);
+  rows.push(['Área perforable A_p', fmtN(g.Ap, 4) + ' m²']);
+  rows.push(['Área de agujeros A_h', fmtN(g.Ah, 4) + ' m² · ' + fmtN(100 * g.AhAp, 1) + ' % de A_p']);
+  rows.push([s.tray === 'valv' ? 'Válvulas (orientativo)' : 'Perforaciones', s.tray === 'valv' ? fmtN(Math.round(g.Aa * 130), 0) + ' de 48 mm' : fmtN(Math.round(g.nh), 0) + ' de ' + fmtN(1000 * h.o.dh, 1) + ' mm · paso ' + fmtN(1000 * g.p, 1) + ' mm']);
+  rows.push(['Velocidades u_n · u_a · u_h', fmtN(h.un, 2) + ' · ' + fmtN(h.ua, 2) + ' · ' + fmtN(h.uh, 1) + ' m/s']);
+  rows.push(['Líquido claro h_cl · fracción de líquido αₑ', fmtN(1000 * h.hcl, 1) + ' mm · ' + fmtN(h.ae, 3)]);
+  spec('#t3Geo', rows);
+  $('#t3GeoLbl').textContent = 'un paso, flujo cruzado';
+  $('#t3GeoNote').innerHTML = subs(esc('La longitud del vertedero sale del segmento que ocupa el bajante: (θ − sen θ)/2π = A_d/A_c y l_w = D sen(θ/2). Con 12 % da 0,764 D, el 0,76 de Sinnott. Las perforaciones van en arreglo triangular: A_h/A_p = 0,907 (d_h/p)². Franjas sin perforar, holgura del bajante, C₀ y la correlación de la espuma son externas al curso.'));
+}
+/* ====================================================================
+   El plato en 3D (three.js r170, autoalojado en /classroom/vendor/three).
+   Tres platos de flujo cruzado: el del medio con la salida a la derecha
+   (+x), el de arriba y el de abajo con la salida a la izquierda, porque
+   los bajantes alternan de lado. Unidades: metros. Se carga solo cuando
+   se abre la pestaña.
+   ==================================================================== */
+var T3 = null, T3LOAD = null;
+function t3Ensure() {
+  if (T3 || T3LOAD) return;
+  T3LOAD = Promise.all([import('three'), import('/classroom/vendor/three/OrbitControls.js')]).then(function (m) {
+    T3 = new T3Scene(m[0], m[1].OrbitControls, $('#t3Cv'));
+    T3.onPick = function (k) { if (T3H) t3Caption(T3H, k); };
+    $('#t3Msg').style.display = 'none';
+    if (T3H) T3.configure(T3H, state);
+    T3.setCam(state.t3cam || 'iso', false);
+  }).catch(function (e) { console.error(e); $('#t3Msg').textContent = 'No se pudo cargar el modelo en 3D. Ábralo desde el sitio del curso, no como archivo local.'; });
+}
+function T3Scene(THREE, Orbit, cv) {
+  var T = THREE, self = this;
+  this.T = T; this.cv = cv; this.t = 0; this.running = true; this.sel = null; this.sig = ''; this.anim = null;
+  try { if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) { this.running = false; $('#p3Play').innerHTML = SVGI.play; } } catch (e) { }
+  this.mob = window.innerWidth < 640;
+  this.renderer = new T.WebGLRenderer({ canvas: cv, antialias: true });
+  this.renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
+  this.scene = new T.Scene();
+  this.camera = new T.PerspectiveCamera(32, 1, 0.01, 40);
+  this.controls = new Orbit(this.camera, cv); this.controls.enableDamping = true; this.controls.dampingFactor = 0.08; this.controls.screenSpacePanning = true;
+  this.scene.add(new T.HemisphereLight(0xffffff, 0xb8c2cc, 1.25));
+  var dl = new T.DirectionalLight(0xffffff, 1.5); dl.position.set(2, 3.2, 2.4); this.scene.add(dl);
+  var dl2 = new T.DirectionalLight(0xdfe8f2, 0.55); dl2.position.set(-2.5, 1.2, -1.5); this.scene.add(dl2);
+  this.root = new T.Group(); this.scene.add(this.root);
+  this.ray = new T.Raycaster(); this.ptr = new T.Vector2(); this.dummy = new T.Object3D();
+  var down = null;
+  cv.addEventListener('pointerdown', function (e) { down = [e.clientX, e.clientY]; });
+  cv.addEventListener('pointerup', function (e) { if (down && Math.hypot(e.clientX - down[0], e.clientY - down[1]) < 6) self.pick(e); down = null; });
+  this.controls.addEventListener('start', function () { self.anim = null; self.userMoved = true; });
+  this.resize();
+  if (window.ResizeObserver) new ResizeObserver(function () { self.resize(); }).observe(cv.parentNode);
+}
+T3Scene.prototype.resize = function () {
+  var r = this.cv.parentNode.getBoundingClientRect(); if (!r.width || !r.height) return;
+  this.W = r.width; this.H = r.height; this.renderer.setSize(r.width, r.height, false);
+  this.camera.aspect = r.width / r.height; this.camera.updateProjectionMatrix();
+  if (this.geo && !this.userMoved) this.setCam(this.camName || 'iso', false);
+};
+/* colores del tema: papel o plano azul */
+T3Scene.prototype.palette = function () {
+  var bp = document.documentElement.getAttribute('data-canvas') === 'blueprint', T = this.T;
+  var col = function (n, d) { var v = cssVar(n); try { return new T.Color(v || d); } catch (e) { return new T.Color(d); } };
+  return { bp: bp, bg: bp ? col('--paper', '#12304d') : new T.Color('#f5f7fa'), steel: bp ? new T.Color('#9fb8d0') : new T.Color('#b7c0ca'), steelD: bp ? new T.Color('#cfe0f0') : new T.Color('#7f8b97'),
+    edge: bp ? new T.Color('#e6eef7') : new T.Color('#2b3238'), liq: col('--accent', '#5980A6'), liqD: col('--accent-600', '#416180'), froth: bp ? new T.Color('#d8e8f6') : new T.Color('#eaf2f9'),
+    vap: col('--c-v', '#7A5CA8'), red: new T.Color(bp ? '#ff9c86' : '#d9826f'), hole: bp ? new T.Color('#0d2236') : new T.Color('#27313b') };
+};
+/* ---------- construcción ---------- */
+T3Scene.prototype.clear = function () {
+  var root = this.root;
+  root.traverse(function (o) { if (o.geometry) o.geometry.dispose(); if (o.material) { (Array.isArray(o.material) ? o.material : [o.material]).forEach(function (m) { if (m.map) m.map.dispose(); m.dispose(); }); } });
+  while (root.children.length) root.remove(root.children[0]);
+};
+T3Scene.prototype.build = function (h, s) {
+  var T = this.T, g = h.g, R = g.R, c = g.c, TS = s.TS, hw = h.o.hw, tp = 0.003, P = this.palette(), self = this;
+  this.clear(); this.P = P; this.scene.background = P.bg;
+  this.geo = { R: R, c: c, TS: TS, hw: hw, hap: g.hap, lw: g.lw, a: c - h.o.calm, Re: R - h.o.edge };
+  var hc = Math.sqrt(R * R - c * c), phi = Math.acos(c / R);
+  var mSteel = new T.MeshStandardMaterial({ color: P.steel, metalness: 0.45, roughness: 0.5, side: T.DoubleSide });
+  var mDark = new T.MeshStandardMaterial({ color: P.steelD, metalness: 0.4, roughness: 0.55, side: T.DoubleSide });
+  var mEdge = new T.LineBasicMaterial({ color: P.edge, transparent: true, opacity: P.bp ? 0.7 : 0.55 });
+  this.mats = { steel: mSteel };
+  var flat = function (geo) { geo.rotateX(-Math.PI / 2); return geo; };
+  // forma de la cubierta: círculo menos el segmento de salida (salida en +x)
+  var deckShape = new T.Shape(); deckShape.moveTo(c, hc); deckShape.absarc(0, 0, R, phi, 2 * Math.PI - phi, false); deckShape.lineTo(c, hc);
+  // región perforada: |x| ≤ a dentro de un círculo de radio Re
+  var a = this.geo.a, Re = this.geo.Re, ha = Math.sqrt(Math.max(0, Re * Re - a * a)), pa = Math.atan2(ha, a);
+  var perfShape = new T.Shape(); perfShape.moveTo(a, -ha); perfShape.lineTo(a, ha); perfShape.absarc(0, 0, Re, pa, Math.PI - pa, false); perfShape.lineTo(-a, -ha); perfShape.absarc(0, 0, Re, Math.PI + pa, 2 * Math.PI - pa, false);
+  // segmento del bajante (entre la cuerda y la carcasa), para el líquido retenido
+  var segShape = new T.Shape(); segShape.moveTo(c, -hc); segShape.absarc(0, 0, R, -phi, phi, false); segShape.lineTo(c, -hc);
+  // textura de perforaciones con el paso triangular real
+  var valv = s.tray === 'valv', tex = null;
+  if (!valv) {
+    var p = g.p, tw = 64, th = Math.round(64 * Math.sqrt(3)), cnv = document.createElement('canvas'); cnv.width = tw; cnv.height = th;
+    var cx = cnv.getContext('2d'), rr = 0.5 * h.o.dh / p * tw;
+    cx.fillStyle = '#' + P.steel.getHexString(); cx.fillRect(0, 0, tw, th); cx.fillStyle = '#' + P.hole.getHexString();
+    [[0, 0], [tw, 0], [0, th], [tw, th], [tw / 2, th / 2]].forEach(function (q) { cx.beginPath(); cx.arc(q[0], q[1], rr, 0, 7); cx.fill(); });
+    tex = new T.CanvasTexture(cnv); tex.wrapS = tex.wrapT = T.RepeatWrapping; tex.repeat.set(1 / p, 1 / (p * Math.sqrt(3))); tex.colorSpace = T.SRGBColorSpace;
+    tex.anisotropy = Math.min(8, this.renderer.capabilities.getMaxAnisotropy()); tex.needsUpdate = true;
+  }
+  this.trays = [];
+  [1, 0, -1].forEach(function (k) {
+    var grp = new T.Group(), y0 = k * TS, sg = k === 0 ? 1 : -1; grp.position.y = y0; grp.scale.x = sg; self.root.add(grp);
+    var tr = { k: k, grp: grp, y0: y0, sg: sg };
+    var deck = new T.Mesh(flat(new T.ExtrudeGeometry(deckShape, { depth: tp, bevelEnabled: false, curveSegments: 48 })), mSteel); deck.position.y = 0; deck.userData.key = 'deck'; grp.add(deck);
+    grp.add(new T.LineSegments(new T.EdgesGeometry(deck.geometry, 30), mEdge));
+    var perfMat = valv ? mDark : new T.MeshStandardMaterial({ map: tex, metalness: 0.4, roughness: 0.55, side: T.DoubleSide, polygonOffset: true, polygonOffsetFactor: -1 });
+    var perf = new T.Mesh(flat(new T.ShapeGeometry(perfShape, 48)), perfMat); perf.position.y = tp + 0.0004; perf.userData.key = valv ? 'valve' : 'perf'; grp.add(perf);
+    // vertedero y faldón del bajante (una sola placa en la cuerda de salida)
+    var pBot = k === -1 ? -0.045 : -TS + g.hap, plateH = hw - pBot, wp = new T.Mesh(new T.BoxGeometry(0.004, plateH, g.lw), mDark); wp.position.set(c + 0.002, hw - plateH / 2, 0); wp.userData.key = 'apron'; grp.add(wp);
+    var wpe = new T.LineSegments(new T.EdgesGeometry(wp.geometry), mEdge); wpe.position.copy(wp.position); grp.add(wpe);
+    var weirHit = new T.Mesh(new T.BoxGeometry(0.012, hw, g.lw), new T.MeshBasicMaterial({ visible: false })); weirHit.position.set(c + 0.002, hw / 2, 0); weirHit.userData.key = 'weir'; grp.add(weirHit);
+    // válvulas
+    if (valv) {
+      var pts = [], pv = 0.075; for (var yy = -Re; yy <= Re; yy += pv * 0.866) for (var xx = -a + ((Math.round((yy + Re) / (pv * 0.866)) % 2) ? pv / 2 : 0); xx <= a; xx += pv) if (xx * xx + yy * yy < (Re - 0.03) * (Re - 0.03) && Math.abs(xx) < a - 0.02) pts.push([xx, yy]);
+      var vg = new T.CylinderGeometry(0.024, 0.024, 0.002, 18), vm = new T.InstancedMesh(vg, mDark, pts.length); vm.userData.key = 'valve'; vm.userData.pts = pts;
+      pts.forEach(function (q, i) { self.dummy.position.set(q[0], tp + 0.008, -q[1]); self.dummy.updateMatrix(); vm.setMatrixAt(i, self.dummy.matrix); }); grp.add(vm); tr.valves = vm;
+    }
+    // espuma: malla sobre el área activa, recortada al círculo
+    var nx = self.mob ? 22 : 34, nz = self.mob ? 16 : 24, fg = new T.PlaneGeometry(1, 1, nx, nz); fg.rotateX(-Math.PI / 2);
+    var pos = fg.attributes.position, base = [];
+    for (var i = 0; i < pos.count; i++) { var u = pos.getX(i) + 0.5, v = pos.getZ(i), x = -c + u * 2 * c, zl = Math.sqrt(Math.max(0, R * R - x * x)) * 0.985, z = Math.max(-zl, Math.min(zl, v * 2 * R)); base.push([x, z]); pos.setXYZ(i, x, 0.02, z); }
+    var froth = new T.Mesh(fg, new T.MeshStandardMaterial({ color: P.froth, transparent: true, opacity: 0.5, roughness: 0.85, metalness: 0, side: T.DoubleSide, depthWrite: false })); froth.userData.key = 'froth'; froth.renderOrder = 3; grp.add(froth);
+    tr.froth = froth; tr.fbase = base;
+    var cl = new T.Mesh(flat(new T.ShapeGeometry(perfShape, 32)), new T.MeshStandardMaterial({ color: P.liq, transparent: true, opacity: 0.45, roughness: 0.3, depthWrite: false, side: T.DoubleSide })); cl.renderOrder = 2; grp.add(cl); tr.clear = cl;
+    // zona de entrada: líquido que llega por debajo del bajante de arriba
+    var inShape = new T.Shape(); inShape.moveTo(-c, -hc); inShape.absarc(0, 0, R, Math.PI + phi, Math.PI - phi, true); inShape.lineTo(-c, -hc);
+    var inl = new T.Mesh(flat(new T.ExtrudeGeometry(inShape, { depth: 1, bevelEnabled: false, curveSegments: 32 })), new T.MeshStandardMaterial({ color: P.liq, transparent: true, opacity: 0.5, roughness: 0.3, depthWrite: false })); inl.position.y = tp; inl.userData.key = 'inlet'; inl.renderOrder = 2; grp.add(inl); tr.inlet = inl;
+    // líquido retenido en el bajante de este plato (desde la cubierta del plato de abajo)
+    var dcq = new T.Mesh(flat(new T.ExtrudeGeometry(segShape, { depth: 1, bevelEnabled: false, curveSegments: 32 })), new T.MeshStandardMaterial({ color: P.liqD, transparent: true, opacity: 0.72, roughness: 0.3, depthWrite: false }));
+    dcq.position.y = -TS + tp; dcq.userData.key = 'dcliq'; dcq.renderOrder = 2; grp.add(dcq); tr.dcq = dcq;
+    var dca = new T.Mesh(dcq.geometry.clone(), new T.MeshStandardMaterial({ color: P.froth, transparent: true, opacity: 0.45, roughness: 0.9, depthWrite: false })); dca.userData.key = 'dcliq'; dca.renderOrder = 3; grp.add(dca); tr.dca = dca;
+    if (k === -1) { dcq.visible = false; dca.visible = false; }
+    // zonas de calma (solo como lugar para tocar)
+    var calmHit = new T.Mesh(new T.BoxGeometry(Math.max(0.004, c - a), 0.004, 2 * hc * 0.9), new T.MeshBasicMaterial({ visible: false })); calmHit.position.set((a + c) / 2, tp + 0.002, 0); calmHit.userData.key = 'calm'; grp.add(calmHit);
+    // flechas del flujo cruzado sobre el líquido claro
+    var ar = new T.Shape(), aw = 0.035, al = 0.07; ar.moveTo(al / 2, 0); ar.lineTo(-al / 2, aw / 2); ar.lineTo(-al / 4, 0); ar.lineTo(-al / 2, -aw / 2); ar.lineTo(al / 2, 0);
+    tr.arrows = [];
+    for (var ai = 0; ai < 3; ai++) { var am = new T.Mesh(flat(new T.ShapeGeometry(ar)), new T.MeshBasicMaterial({ color: P.liqD, transparent: true, opacity: 0.85, depthWrite: false, side: T.DoubleSide })); am.renderOrder = 5; grp.add(am); tr.arrows.push(am); }
+    self.trays.push(tr);
+  });
+  // carcasa en corte (se quita el frente para ver adentro)
+  var yb = -TS - 0.05, yt = TS + Math.max(0.12, 0.35 * TS), shH = yt - yb; this.geo.yt = yt;
+  var shell = new T.Mesh(new T.CylinderGeometry(R + 0.004, R + 0.004, shH, 72, 1, true, 0.5 * Math.PI, Math.PI), new T.MeshStandardMaterial({ color: P.steel, metalness: 0.35, roughness: 0.6, side: T.DoubleSide, transparent: true, opacity: 0.9 }));
+  shell.position.y = (yb + yt) / 2; shell.userData.key = 'shell'; this.root.add(shell); this.shell = shell;
+  var shellFull = new T.Mesh(new T.CylinderGeometry(R + 0.004, R + 0.004, shH, 72, 1, true), new T.MeshStandardMaterial({ color: P.steel, metalness: 0.2, roughness: 0.6, side: T.DoubleSide, transparent: true, opacity: 0.14, depthWrite: false }));
+  shellFull.position.y = shell.position.y; shellFull.userData.key = 'shell'; this.root.add(shellFull); this.shellFull = shellFull;
+  [yb, yt].forEach(function (y) { var ring = new T.Mesh(new T.TorusGeometry(R + 0.004, 0.0035, 6, 96), mDark); ring.rotation.x = Math.PI / 2; ring.position.y = y; self.root.add(ring); });
+  // partículas
+  var sphere = new T.SphereGeometry(1, 8, 6), mk = function (n, color, op) { var m = new T.InstancedMesh(sphere, new T.MeshBasicMaterial({ color: color, transparent: true, opacity: op, depthWrite: false }), n); m.frustumCulled = false; m.renderOrder = 4; self.root.add(m); return m; };
+  var nb = this.mob ? 90 : 170;
+  this.pBub = mk(nb * 3, 0xffffff, 0.85);         // burbujas en la espuma
+  this.pDrop = mk(this.mob ? 90 : 180, P.liqD, 0.9);  // gotas de arrastre
+  this.pFall = mk(this.mob ? 90 : 150, P.liq, 0.85);  // líquido que cae sobre el vertedero
+  this.pWeep = mk(this.mob ? 60 : 120, P.liqD, 0.9);  // goteo por los agujeros
+  this.pVap = mk(this.mob ? 90 : 160, P.vap, 0.35);   // vapor entre platos
+  this.pIn = mk(this.mob ? 40 : 80, P.liq, 0.8);      // líquido que entra bajo el bajante
+  // semillas fijas por partícula
+  this.seed = function (i, j) { var x = Math.sin(i * 127.1 + j * 311.7) * 43758.5453; return x - Math.floor(x); };
+  this.labels = this.makeLabels(h, s);
+  this.setView(s);
+};
+T3Scene.prototype.makeLabels = function (h, s) {
+  var g = h.g, R = g.R, c = g.c, TS = s.TS, hw = h.o.hw, a = this.geo.a, T = this.T;
+  var L = [
+    { k: 'perf', p: [-0.15 * c, 0.01, -0.62 * R], t: s.tray === 'valv' ? 'Área activa · válvulas' : 'Área activa', d: s.tray === 'valv' ? '' : fmtN(Math.round(g.nh), 0) + ' agujeros de ' + fmtN(1000 * h.o.dh, 1) + ' mm' },
+    { k: 'weir', p: [c, hw + 0.012, 0.42 * g.lw], t: 'Vertedero', d: 'h_w = ' + fmtN(1000 * hw, 0) + ' mm · cresta ' + fmtN(h.how, 1) + ' mm' },
+    { k: 'apron', p: [c + 0.45 * (R - c), -0.42 * TS, -0.1 * R], t: 'Bajante', d: fmtN(100 * s.fracBaj, 0) + ' % del área' },
+    { k: 'dcliq', p: [c + 0.5 * (R - c), -TS + Math.min(2 * h.hb / 1000, TS + hw), 0.25 * R], t: 'Retroceso en el bajante', d: 'h_b = ' + fmtN(h.hb, 0) + ' mm · límite ' + fmtN(h.hbLim, 0), bad: h.hb > h.hbLim },
+    { k: 'froth', p: [0.25 * c, Math.min(h.hf, TS * 0.95), 0.55 * R], t: 'Espuma', d: fmtN(1000 * h.hf, 0) + ' mm' },
+    { k: 'inlet', p: [-(c + R) / 2, hw + 0.02, -0.15 * R], t: 'Entrada del líquido', d: 'bajo el bajante de arriba' },
+    { k: 'shell', p: [-0.96 * R, 0.55 * TS, -0.25 * R], t: 'Espaciamiento', d: fmtN(1000 * TS, 0) + ' mm' }
+  ];
+  L.forEach(function (q) { q.v = new T.Vector3(q.p[0], q.p[1], q.p[2]); });
+  return L;
+};
+T3Scene.prototype.setView = function (s) {
+  if (!this.trays) return;
+  var top = s.t3cam === 'top' || !s.t3up, self = this;
+  this.trays.forEach(function (tr) { tr.grp.visible = !(tr.k === 1 && top); });
+  this.shell.visible = !!s.t3cut; this.shellFull.visible = !s.t3cut;
+  [this.pBub, this.pDrop, this.pFall, this.pWeep, this.pVap, this.pIn].forEach(function (m) { m.visible = !!s.t3flow; });
+  $('#t3Lab').style.display = s.t3lab ? '' : 'none';
+  this.flow = !!s.t3flow; this.showUp = !top;
+  void self;
+};
+/* ---------- configuración con la hidráulica del caso ---------- */
+T3Scene.prototype.configure = function (h, s) {
+  var g = h.g, sig = [g.D, s.fracBaj, s.TS, h.o.hw, h.o.dh, h.o.AhAa, h.o.calm, h.o.gap, s.tray, document.documentElement.getAttribute('data-canvas')].join('|');
+  if (sig !== this.sig) { this.sig = sig; this.build(h, s); if (!this.camSet) { this.setCam(s.t3cam || 'iso', false); this.camSet = true; } }
+  this.h = h; this.s = s; this.labels = this.makeLabels(h, s); this.setView(s);
+  var TS = s.TS, hw = h.o.hw, how = h.how / 1000, hb = Math.min(h.hb / 1000, TS + hw), hbA = Math.min(2 * h.hb / 1000, TS + hw);
+  var flood = h.flood, dcf = s.tray !== 'valv' && h.hb > h.hbLim;
+  // altura de la espuma que se dibuja: la de Bennett; con inundación llena el espaciamiento
+  this.hfD = flood >= 1 ? TS * 0.97 : Math.min(TS * 0.97, Math.max(h.hf, hw * 0.4));
+  this.trays.forEach(function (tr) {
+    tr.clear.position.y = 0.0035 + Math.min(h.hcl, hw);
+    tr.inlet.scale.y = Math.max(0.002, hw + how);
+    tr.dcq.scale.y = Math.max(0.002, hb); tr.dca.scale.y = Math.max(0.002, hbA - hb); tr.dca.position.y = -TS + 0.003 + hb;
+    tr.dcq.material.color.copy(dcf ? this.P.red : this.P.liqD);
+  }, this);
+  if (this.trays[0] && this.trays[0].valves) { var lift = Math.min(1, h.o.vL / 0.6) * 0.009 + 0.001, self = this; this.trays.forEach(function (tr) { var vm = tr.valves; vm.userData.pts.forEach(function (q, i) { self.dummy.position.set(q[0], 0.003 + lift, -q[1]); self.dummy.scale.set(1, 1, 1); self.dummy.updateMatrix(); vm.setMatrixAt(i, self.dummy.matrix); }); vm.instanceMatrix.needsUpdate = true; }); }
+  this.render();
+};
+/* ---------- cámaras ---------- */
+T3Scene.prototype.setCam = function (name, animate) {
+  if (!this.geo) { this.pendingCam = name; return; }
+  this.camName = name; if (animate) this.userMoved = false;
+  var G = this.geo, S = Math.max(2 * G.R, 1.7 * G.TS), T = this.T, pos, tgt;
+  // encuadre: la esfera que envuelve la escena cabe en el campo de visión más estrecho
+  var yb = -G.TS - 0.05, yt = G.yt, cy = 0.5 * (yb + yt), rs = Math.sqrt(G.R * G.R + 0.25 * (yt - yb) * (yt - yb)), asp = Math.max(0.3, this.W / Math.max(1, this.H));
+  var vf = 32 * Math.PI / 180, hf = 2 * Math.atan(Math.tan(vf / 2) * asp), dist = rs / Math.sin(Math.min(vf, hf) / 2) * 0.92;
+  var dir = function (x, y, z) { var n = Math.hypot(x, y, z); return [x / n * dist, cy + y / n * dist, z / n * dist]; };
+  if (name === 'side') { pos = dir(0.0001, 0.02, 1); tgt = [0, cy, 0]; }
+  else if (name === 'top') { pos = [0, cy + 0.82 * dist, 0.02]; tgt = [0, cy, 0]; }
+  else if (name === 'dc') { pos = [G.R + 0.22 * dist, 0.05 * G.TS, 0.5 * dist]; tgt = [G.c + 0.5 * (G.R - G.c), -0.5 * G.TS, 0]; }
+  else { pos = dir(0.55, 0.45, 0.8); tgt = [0, cy - 0.04 * G.TS, 0]; }
+  this.controls.minDistance = 0.15 * dist; this.controls.maxDistance = 3 * dist;
+  var p1 = new T.Vector3(pos[0], pos[1], pos[2]), t1 = new T.Vector3(tgt[0], tgt[1], tgt[2]);
+  if (this.s) this.setView(Object.assign({}, this.s, { t3cam: name }));
+  if (!animate) { this.camera.position.copy(p1); this.controls.target.copy(t1); this.controls.update(); this.anim = null; this.render(); return; }
+  this.anim = { p0: this.camera.position.clone(), t0: this.controls.target.clone(), p1: p1, t1: t1, u: 0 };
+};
+/* ---------- selección ---------- */
+T3Scene.prototype.pick = function (e) {
+  var r = this.cv.getBoundingClientRect(); this.ptr.set((e.clientX - r.left) / r.width * 2 - 1, -(e.clientY - r.top) / r.height * 2 + 1);
+  this.ray.setFromCamera(this.ptr, this.camera);
+  var objs = []; this.root.traverse(function (o) { if (o.isMesh && o.userData.key && o.visible !== false) objs.push(o); });
+  var hit = this.ray.intersectObjects(objs, false).filter(function (q) { var o = q.object; while (o) { if (o.visible === false) return false; o = o.parent; } return true; })[0];
+  var k = hit ? hit.object.userData.key : null;
+  this.sel = this.sel === k ? null : k;
+  if (this.onPick) this.onPick(this.sel);
+  this.render();
+};
+/* ---------- animación ---------- */
+T3Scene.prototype.tick = function (dt) {
+  if (this.anim) { var A = this.anim; A.u = Math.min(1, A.u + dt / 0.7); var e = A.u < 0.5 ? 2 * A.u * A.u : 1 - Math.pow(-2 * A.u + 2, 2) / 2; this.camera.position.lerpVectors(A.p0, A.p1, e); this.controls.target.lerpVectors(A.t0, A.t1, e); if (A.u >= 1) this.anim = null; }
+  this.controls.update();
+  if (this.running) this.t += dt;
+  if (this.h) this.animate();
+  this.render();
+};
+T3Scene.prototype.animate = function () {
+  var h = this.h, s = this.s, G = this.geo, t = this.t, D = this.dummy, sd = this.seed, R = G.R, c = G.c, a = G.a, Re = G.Re, TS = G.TS, hw = G.hw, self = this;
+  var hf = this.hfD, flood = h.flood, ua = h.ua, how = h.how / 1000, hb = Math.min(h.hb / 1000, TS + hw), hbA = Math.min(2 * h.hb / 1000, TS + hw), weepF = h.weep ? Math.min(1, 1 - h.uh / h.uhmin + 0.15) : 0;
+  // superficie de la espuma
+  this.trays.forEach(function (tr) {
+    if (!tr.grp.visible) return;
+    var pos = tr.froth.geometry.attributes.position, b = tr.fbase, amp = flood >= 1 ? 0.05 : 0.06 + 0.16 * Math.min(1, flood), hfk = Math.min(hf, self.geo.yt - tr.y0 - 0.02);
+    for (var i = 0; i < b.length; i++) { var x = b[i][0], z = b[i][1], n = Math.sin(x * 31 + t * 5.3 + tr.k) * Math.cos(z * 27 - t * 4.1) + 0.5 * Math.sin((x + z) * 53 + t * 8.7); var edge = Math.min(1, (c - Math.abs(x)) / 0.03); pos.setY(i, Math.max(0.006, hfk * (1 + amp * 0.35 * n) * (0.35 + 0.65 * edge))); }
+    pos.needsUpdate = true; tr.froth.geometry.computeVertexNormals();
+  });
+  // flechas: avanzan hacia el vertedero
+  this.trays.forEach(function (tr) { tr.arrows.forEach(function (am, i) { var u = frac(0.28 * t * (0.6 + 0.4 * Math.min(2, h.o.lL)) + i / 3), x = -c + 0.06 + u * (2 * c - 0.12); am.position.set(x, 0.006 + Math.min(h.hcl, hw) + 0.002, (i - 1) * 0.32 * R); am.material.opacity = 0.85 * Math.min(1, Math.min(u, 1 - u) * 6); am.visible = self.flow; }); });
+  if (!this.flow) return;
+  var vis = this.trays.filter(function (tr) { return tr.grp.visible; }), nT = vis.length, sg = function (tr) { return tr.sg; };
+  // burbujas: suben desde las perforaciones hasta la superficie
+  var nb = this.pBub.count, per = Math.floor(nb / 3), sp = 0.6 + 0.9 * Math.min(1.6, ua / 2.5), rb = Math.max(0.0025, Math.min(0.0055, 0.0018 + 0.45 * h.o.dh));
+  for (var i = 0; i < nb; i++) {
+    var tr = this.trays[Math.floor(i / per) % 3]; if (!tr || !tr.grp.visible) { D.scale.set(0, 0, 0); D.updateMatrix(); this.pBub.setMatrixAt(i, D.matrix); continue; }
+    var x = -a + 2 * a * sd(i, 1), zl = Math.sqrt(Math.max(0, Re * Re - x * x)), z = (2 * sd(i, 2) - 1) * zl, u = frac(t * sp * (0.7 + 0.6 * sd(i, 3)) + sd(i, 4));
+    D.position.set(x * tr.sg, tr.y0 + 0.004 + u * Math.min(hf, G.yt - tr.y0 - 0.02) * 0.95, z); var sc = rb * (0.6 + 0.8 * u) * (u > 0.9 ? (1 - u) * 10 : 1); D.scale.set(sc, sc, sc); D.updateMatrix(); this.pBub.setMatrixAt(i, D.matrix);
+  }
+  this.pBub.instanceMatrix.needsUpdate = true;
+  // gotas de arrastre: saltan por encima de la espuma, más alto con más vapor
+  var nd = this.pDrop.count, hmax0 = flood >= 1 ? TS : Math.max(0.01, (TS - hf) * Math.pow(Math.max(0, (flood - 0.45) / 0.55), 1.8)), yTop = this.geo.yt;
+  for (var j = 0; j < nd; j++) {
+    var tr2 = this.trays[j % 3], act = sd(j, 9) < Math.min(1, 0.25 + flood), hmax = Math.min(hmax0, yTop - tr2.y0 - hf - 0.01);
+    if (!tr2.grp.visible || !act || hmax < 0.012) { D.scale.set(0, 0, 0); D.updateMatrix(); this.pDrop.setMatrixAt(j, D.matrix); continue; }
+    var x2 = -a + 2 * a * sd(j, 5), zl2 = Math.sqrt(Math.max(0, Re * Re - x2 * x2)), z2 = (2 * sd(j, 6) - 1) * zl2, u2 = frac(t * (0.9 + 0.8 * sd(j, 7)) + sd(j, 8)), hh = hmax * (0.35 + 0.65 * sd(j, 10));
+    var yy = flood >= 1 ? u2 * hh : 4 * u2 * (1 - u2) * hh;
+    D.position.set(x2 * tr2.sg, tr2.y0 + hf + yy, z2); var s2 = 0.0035 + 0.003 * sd(j, 11); D.scale.set(s2, s2, s2); D.updateMatrix(); this.pDrop.setMatrixAt(j, D.matrix);
+  }
+  this.pDrop.instanceMatrix.needsUpdate = true;
+  // líquido que pasa el vertedero y cae al bajante
+  var nf = this.pFall.count, lw = G.lw, qL = Math.min(2.5, Math.max(0.3, h.o.lL));
+  for (var m = 0; m < nf; m++) {
+    var tr3 = this.trays[m % 2], u3 = frac(t * (0.8 + 0.5 * qL) * (0.8 + 0.4 * sd(m, 12)) + sd(m, 13));
+    if (!tr3.grp.visible) { D.scale.set(0, 0, 0); D.updateMatrix(); this.pFall.setMatrixAt(m, D.matrix); continue; }
+    var lvl = -TS + hbA, ytop = hw + how, yb = ytop + (lvl - ytop) * u3 * u3, xb = c + 0.006 + 0.05 * Math.sqrt(u3) * (0.4 + qL * 0.3), zz = (sd(m, 14) - 0.5) * lw * 0.92;
+    D.position.set(xb * tr3.sg, tr3.y0 + yb, zz); var s3 = 0.004 + 0.002 * sd(m, 15); D.scale.set(s3, s3 * 1.6, s3); D.updateMatrix(); this.pFall.setMatrixAt(m, D.matrix);
+  }
+  this.pFall.instanceMatrix.needsUpdate = true;
+  // goteo: líquido que se cuela por los agujeros al plato de abajo
+  var nw = this.pWeep.count;
+  for (var w = 0; w < nw; w++) {
+    var tr4 = this.trays[w % 2], on = sd(w, 16) < weepF;
+    if (!tr4.grp.visible || !on) { D.scale.set(0, 0, 0); D.updateMatrix(); this.pWeep.setMatrixAt(w, D.matrix); continue; }
+    var x4 = -a + 2 * a * sd(w, 17), zl4 = Math.sqrt(Math.max(0, Re * Re - x4 * x4)), z4 = (2 * sd(w, 18) - 1) * zl4, u4 = frac(t * (0.7 + 0.5 * sd(w, 19)) + sd(w, 20));
+    D.position.set(x4 * tr4.sg, tr4.y0 - 0.004 - u4 * u4 * (TS - 0.01), z4); var s4 = 0.0035; D.scale.set(s4, s4 * 1.8, s4); D.updateMatrix(); this.pWeep.setMatrixAt(w, D.matrix);
+  }
+  this.pWeep.instanceMatrix.needsUpdate = true;
+  // vapor: sube entre los platos, solo por el área activa
+  var nv = this.pVap.count;
+  for (var v = 0; v < nv; v++) {
+    var tr5 = this.trays[1 + (v % 2)], x5 = -a + 2 * a * sd(v, 21), zl5 = Math.sqrt(Math.max(0, Re * Re - x5 * x5)), z5 = (2 * sd(v, 22) - 1) * zl5, u5 = frac(t * (0.35 + 0.25 * Math.min(2, ua / 2)) * (0.8 + 0.4 * sd(v, 23)) + sd(v, 24));
+    var ybase = tr5.y0 + hf + 0.01, ytop2 = tr5.y0 + TS - 0.006;
+    if (!tr5.grp.visible || ytop2 - ybase < 0.01) { D.scale.set(0, 0, 0); D.updateMatrix(); this.pVap.setMatrixAt(v, D.matrix); continue; }
+    D.position.set(x5 * tr5.sg, ybase + u5 * (ytop2 - ybase), z5); var s5 = 0.006 + 0.004 * sd(v, 25); D.scale.set(s5, s5, s5); D.updateMatrix(); this.pVap.setMatrixAt(v, D.matrix);
+  }
+  this.pVap.instanceMatrix.needsUpdate = true;
+  // líquido que entra al plato por debajo del bajante de arriba
+  var ni = this.pIn.count;
+  for (var q = 0; q < ni; q++) {
+    var tr6 = this.trays[q % 2 === 0 ? 1 : 2]; // el del medio (lo alimenta el de arriba) y el de abajo (lo alimenta el del medio)
+    if (!tr6.grp.visible || (tr6.k === 0 && !this.showUp)) { D.scale.set(0, 0, 0); D.updateMatrix(); this.pIn.setMatrixAt(q, D.matrix); continue; }
+    var u6 = frac(t * (0.5 + 0.3 * qL) + sd(q, 26)), x6 = -R + 0.02 + u6 * (R - c + 0.06), zz6 = (sd(q, 27) - 0.5) * lw * 0.9;
+    D.position.set(x6 * tr6.sg, tr6.y0 + 0.006 + 0.5 * G.hap * sd(q, 28), zz6); var s6 = 0.0042; D.scale.set(s6, s6, s6); D.updateMatrix(); this.pIn.setMatrixAt(q, D.matrix);
+  }
+  this.pIn.instanceMatrix.needsUpdate = true;
+  void nT; void sg; void self;
+};
+T3Scene.prototype.render = function () {
+  if (!this.W) this.resize();
+  this.renderer.render(this.scene, this.camera);
+  this.drawLabels();
+};
+T3Scene.prototype.drawLabels = function () {
+  var box = $('#t3Lab'); if (!this.labels || box.style.display === 'none') return;
+  var cam = this.camera, W = this.W, H = this.H, sel = this.sel, html = '', T = this.T, v = new T.Vector3();
+  var placed = [];
+  this.labels.forEach(function (q) {
+    v.copy(q.v).project(cam); if (v.z > 1 || v.x < -1.05 || v.x > 1.05 || v.y < -1.05 || v.y > 1.05) return;
+    var wl0 = Math.max(q.t.length * 6.7, (q.d || '').length * 6.1) + 16, hl = q.d ? 34 : 20, x0 = Math.max(wl0 / 2 + 4, Math.min(W - wl0 / 2 - 4, (v.x + 1) / 2 * W)), y0 = Math.max(hl + 6, Math.min(H - 4, (1 - v.y) / 2 * H - 10));
+    var hit = function (yy) { return placed.some(function (b) { return Math.abs(b[0] - x0) < (b[2] + wl0) / 2 + 3 && Math.abs(b[1] - yy) < (b[3] + hl) / 2 + 2; }); };
+    var yy = y0; for (var tries = 1; tries < 7 && hit(yy); tries++) yy = Math.max(hl + 6, y0 + (tries % 2 ? -1 : 1) * Math.ceil(tries / 2) * (hl + 4));
+    placed.push([x0, yy, wl0, hl]); q.sx = x0; q.sy = yy;
+    var x = q.sx, y = q.sy;
+    html += '<div class="lb' + (q.k === sel ? ' sel' : '') + (q.bad ? ' bad' : '') + '" style="left:' + x.toFixed(1) + 'px;top:' + y.toFixed(1) + 'px">' + esc(q.t) + (q.d ? '<small>' + subs(esc(q.d)) + '</small>' : '') + '</div>';
+  });
+  if (box.innerHTML !== html) box.innerHTML = html;
+};
+/* ====================================================================
    7 · ecuaciones con los valores del caso, e inicio
    ==================================================================== */
 function renderEqs() {
@@ -2161,17 +2802,24 @@ function renderEqs() {
     ['Energía', 'Q_C=' + (s.cond === 'parcial' ? 'L' : 'V') + '\\lambda=' + n2(r.en.Qc, 0) + '\\ \\text{kW},\\qquad Q_R=\\bar V\\lambda=' + n2(r.en.Qr, 0) + '\\ \\text{kW}', 'McCabe 21.35 y 21.36. Q_R = (R + 1)Dλ solo vale con q = 1. Vapor: ṁ = Q_R/λ_s = ' + fmtN(r.en.steam, 0) + ' kg/h.'],
     ['Altura', 'H=N_{\\text{real}}\\,TS+1{,}5D+2+h_{\\text{faldón}}' + (r.H ? '=' + n2(r.H.s2, 2) + '\\ \\text{m}' : ''), 'Diseño de platos. La Lectura 13 usa N_real·t_s + 3 m (' + (r.H ? fmtN(r.H.l13, 2) : '—') + ' m) y el Taller 9 solo la zona de platos, N_real × 0,45 m (' + (r.H ? fmtN(r.H.t9, 2) : '—') + ' m).']
   ];
+  // el plato perforado (pestaña 7), con la carga y la geometría que estén allí
+  var th = t3Compute(r, s);
+  items.push(['Plato perforado: cresta y goteo (externo)', '\\begin{aligned}h_{ow}&=750\\left[\\frac{L_w}{\\rho_L\\,l_w}\\right]^{2/3}=' + n2(th.how, 1) + '\\ \\text{mm}\\\\u_{h,\\text{mín}}&=\\frac{K_2-0{,}90\\,(25{,}4-d_h)}{\\rho_V^{1/2}}=' + n2(th.uhmin, 2) + '\\ \\tfrac{\\text{m}}{\\text{s}}\\end{aligned}', 'Francis y Eduljee, como los usa Sinnott. K₂ = ' + fmtN(th.K2, 2) + ' con h_w + h_ow = ' + fmtN(1000 * th.o.hw + th.how, 1) + ' mm (ajuste propio a su figura). En los agujeros u_h = ' + fmtN(th.uh, 1) + ' m/s.']);
+  items.push(['Caída de presión del plato (externo)', '\\begin{aligned}h_d&=51\\left(\\frac{u_h}{C_0}\\right)^2\\frac{\\rho_V}{\\rho_L}=' + n2(th.hd, 0) + '\\ \\text{mm}\\\\h_t&=h_d+(h_w+h_{ow})+h_r=' + n2(th.ht, 0) + '\\ \\text{mm}\\ \\Rightarrow\\ \\Delta P=' + n2(th.dP, 2) + '\\ \\text{kPa}\\end{aligned}', 'h_r = 12 500/ρ_L = ' + fmtN(th.hr, 1) + ' mm. Diseño de platos da de 0,4 a 0,8 kPa por plato como valor típico.']);
+  items.push(['Retroceso en el bajante (externo)', '\\begin{aligned}h_b&=(h_w+h_{ow})+h_t+h_{dc}=' + n2(th.hb, 0) + '\\ \\text{mm}\\\\&\\le\\tfrac{1}{2}(TS+h_w)=' + n2(th.hbLim, 0) + '\\ \\text{mm}\\end{aligned}', 'h_dc = 166 [L_w/(ρ_L A_m)]² = ' + fmtN(th.hdc, 2) + ' mm, con A_m = h_ap·l_w. Con espuma de densidad ½, pasar el límite llena el bajante hasta el plato de arriba (Sinnott).']);
+  items.push(['Espuma sobre el plato (externo)', '\\begin{aligned}\\alpha_e&=e^{-12{,}55\\,K_s^{0{,}91}}=' + n2(th.ae, 3) + '\\\\h_f&=\\frac{h_{cl}}{\\alpha_e}=h_w+C\\left(\\frac{Q_L}{l_w\\,\\alpha_e}\\right)^{0{,}67}=' + n2(1000 * th.hf, 0) + '\\ \\text{mm}\\end{aligned}', 'Bennett, Agrawal y Cook (1983): K_s = u_a [ρ_V/(ρ_L − ρ_V)]^½ = ' + fmtN(th.Ks, 3) + ' m/s y C = 0,501 + 0,438 e^(−137,8 h_w).']);
   $('#eqs').innerHTML = items.map(function (it, i) { return '<div><div class="lbl">' + esc(it[0]) + '</div><div class="f" id="eq' + i + '"></div><div class="n2">' + subs(esc(it[2])) + '</div></div>'; }).join('');
   items.forEach(function (it, i) { tex('eq' + i, it[1], true); });
   $('#assump').innerHTML = subs('<b>Cómo está hecho.</b> McCabe-Thiele con flujo molar constante, como la Lectura 13 y el Taller 9: condensador total (o parcial, como etapa de equilibrio aparte), hervidor parcial contado como la última etapa, etapas desde la cabeza, cambio de recta en la primera etapa con x_n ≤ x_int y la última etapa fraccional. El reflujo mínimo se busca como la menor R con las dos rectas por debajo de la curva, así que encuentra el pinch tangente. '
     + 'Reproduce el Taller 9 con q = 1,1 (10,96 etapas, alimentación en la 10, R_mín 1,0904 por tangencia contra 0,7984 de la fórmula del libro, N_mín 6,87, y 20/19/17/16/15 platos de 50 a 70 %; 4,08 etapas en la demostración; 14,89 en el caso del isopropanol ideal), el explorador de la Lectura 13 (12 etapas, 16 platos, 12,6 m), el ejemplo 21.2 de McCabe (12, 11 y 13 etapas) y el dimensionamiento de Diseño de platos con la columna del proyecto (0,822 m calculados sobre el área neta, 0,8 m comercial al 84 % de la inundación, 1,07 m con Fair, 19 platos y 13 m; 8,0 s en el bajante contra 7,9 de la sesión, que toma el líquido con la composición x_D). '
-    + 'Son externos al curso, y se marcan en cada pestaña: el NRTL ajustado para cambiar la presión, las propiedades físicas (calores latentes, c_p, densidades, viscosidades, tensión superficial), las temperaturas del metanol-agua, la correlación de Fair, Gilliland-Eduljee y la presión de Bogotá. Los HTML del curso trabajan a 1 atm.');
+    + 'Son externos al curso, y se marcan en cada pestaña: el NRTL ajustado para cambiar la presión, las propiedades físicas (calores latentes, c_p, densidades, viscosidades, tensión superficial), las temperaturas del metanol-agua, la correlación de Fair, Gilliland-Eduljee, la presión de Bogotá y la hidráulica del plato de la pestaña 7 (Sinnott para la cresta, el goteo, la caída de presión y el bajante; Bennett para la espuma; la geometría del plato, que el curso no fija). Los HTML del curso trabajan a 1 atm.');
 }
 
 /* ---------- inicio ---------- */
 function animLoop(ts) {
   var dt = animLoop.last ? Math.min(0.05, (ts - animLoop.last) / 1000) : 0; animLoop.last = ts;
   if (tab === 'co' && cscene && !document.hidden) cscene.tick(dt);
+  if (tab === 'p3' && T3 && !document.hidden) T3.tick(dt);
   requestAnimationFrame(animLoop);
 }
 function init() {
