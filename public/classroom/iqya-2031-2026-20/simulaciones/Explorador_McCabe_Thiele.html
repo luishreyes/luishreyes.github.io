@@ -603,7 +603,7 @@ table.t tr.dim td { color: var(--n500); }
           <div class="sl"><div class="row"><span>Área perforada A<sub>h</sub>/A<sub>a</sub></span><b id="vt3Ah"></b></div><input type="range" id="t3Ah" min="0.06" max="0.16" step="0.005"><div class="hint" id="t3AhH"></div></div>
           <div class="sl"><div class="row"><span>Franjas sin perforar</span><b id="vt3calm"></b></div><input type="range" id="t3calm" min="0.02" max="0.08" step="0.005"><div class="hint">Zona de calma junto a cada vertedero y borde contra la carcasa.</div></div>
           <div class="sl"><div class="row"><span>Holgura del bajante h<sub>ap</sub></span><b id="vt3gap"></b></div><input type="range" id="t3gap" min="0.005" max="0.025" step="0.0025"><div class="hint" id="t3gapH"></div></div>
-          <div class="sl"><div class="row"><span>Coeficiente de orificio C<sub>0</sub></span><b id="vt3C0"></b></div><input type="range" id="t3C0" min="0.66" max="0.9" step="0.01"><div class="hint">De la figura de Sinnott: 0,84 con espesor igual al diámetro y 10 % perforado.</div></div>
+          <div class="sl"><div class="row"><span>Coeficiente de orificio C<sub>0</sub></span><b id="vt3C0"></b></div><input type="range" id="t3C0" min="0.66" max="0.9" step="0.01"><div class="hint">De la figura de Sinnott: 0,84 con espesor igual al diámetro y 10 % perforado. Con más área perforada sube un poco, así que 0,84 deja la caída de presión del lado seguro.</div></div>
           <button type="button" class="seg inline" id="t3Reset" style="margin-top:12px;padding:6px 10px;font-weight:700;font-size:12px;cursor:pointer">Volver a la carga y la geometría de partida</button>
         </div></div>
       </div>
@@ -1066,7 +1066,7 @@ function heights(Nreal, TS, D, skirt) {
    cabeza residual, retroceso y residencia en el bajante. Externo (Bennett,
    Agrawal y Cook, 1983): densidad de la espuma y altura del líquido claro.
    ==================================================================== */
-var TRAY_DEF = { hw: 0.050, dh: 0.005, AhAa: 0.10, C0: 0.84, calm: 0.050, edge: 0.050, gap: 0.010, tp: 0.003, vL: 1, lL: 1, sec: 'ctrl' };
+var TRAY_DEF = { hw: 0.050, dh: 0.005, AhAa: 0.13, C0: 0.84, calm: 0.050, edge: 0.050, gap: 0.010, tp: 0.003, vL: 1, lL: 1, sec: 'ctrl' };
 function bisect(f, lo, hi, n) { var flo = f(lo); for (var i = 0; i < (n || 60); i++) { var m = 0.5 * (lo + hi), fm = f(m); if ((fm > 0) === (flo > 0)) { lo = m; flo = fm; } else hi = m; } return 0.5 * (lo + hi); }
 /* ángulo central θ del segmento que ocupa la fracción f del círculo: (θ − sen θ)/2π = f */
 function segTheta(f) { var lo = 0, hi = Math.PI; for (var i = 0; i < 60; i++) { var m = 0.5 * (lo + hi); if ((m - Math.sin(m)) / (2 * Math.PI) < f) lo = m; else hi = m; } return 0.5 * (lo + hi); }
@@ -1357,7 +1357,7 @@ function clone(o) { return JSON.parse(JSON.stringify(o)); }
 var BASE = { sys: 'ea9', alpha: 2.5, P: 760, zF: 0.20, xD: 0.80, xB: 0.02, F: 100, qMode: 'q', q: 1.1, TF: 35,
   rMode: 'R', lR: Math.log10(2.5), Rm: 1.3, cond: 'total', feedMode: 'opt', feedN: 10, Emv: 1, eoMode: 'man', Eo: 0.60, muL: 0.4, aSrc: 'col',
   tray: 'perf', TS: 0.45, ff: 0.80, csb: 'curso', net: true, fracBaj: 0.12, skirt: 1.5, hRule: 's2', view: 'all', grid: true, vv: true, cmpOn: true, pp: 1, pp8: 99,
-  t3sec: 'ctrl', t3vL: 1, t3lL: 1, t3hw: 0.05, t3dh: 0.005, t3Ah: 0.10, t3calm: 0.05, t3gap: 0.010, t3C0: 0.84, t3cut: true, t3lab: true, t3flow: true, t3up: true, t3cam: 'iso' };
+  t3sec: 'ctrl', t3vL: 1, t3lL: 1, t3hw: 0.05, t3dh: 0.005, t3Ah: 0.13, t3calm: 0.05, t3gap: 0.010, t3C0: 0.84, t3cut: true, t3lab: true, t3flow: true, t3up: true, t3cam: 'iso' };
 var L10 = Math.log10;
 /* Configuraciones del curso: cada una es una columna completa (especificación, alimentación, reflujo y platos)
    y se carga desde la pestaña 9. Las que son un ejemplo definido por su mezcla (los datos de un taller, un ejemplo
@@ -2444,8 +2444,8 @@ function renderP3() {
   setV('vt3hw', fmtN(1000 * s.t3hw, 0) + ' mm'); setV('vt3dh', fmtN(1000 * s.t3dh, 1) + ' mm'); setV('vt3Ah', fmtN(100 * s.t3Ah, 1) + ' %'); setV('vt3calm', fmtN(1000 * s.t3calm, 0) + ' mm');
   setV('vt3gap', fmtN(1000 * g.hap, 0) + ' mm'); setV('vt3C0', fmtN(s.t3C0, 2));
   $('#t3lLH').innerHTML = subs(esc('Q_L = ' + fmtN(h.QL * 3600, 2) + ' m³/h de ' + (h.secK === 'top' ? 'la cabeza' : 'el fondo') + ' (L = ' + fmtN(sec.L * s.t3lL, 1) + ' kmol/h).'));
-  $('#t3AhH').innerHTML = subs(esc('A_h/A_p = ' + fmtN(100 * g.AhAp, 1) + ' %, paso de ' + fmtN(g.pd, 2) + ' d_h' + (g.pd < 2.5 ? ': por debajo de 2,5 d_h los agujeros quedan muy juntos.' : '. Sinnott recomienda de 2,5 a 5 d_h.')));
-  $('#t3AhH').classList.toggle('bad', g.pd < 2.5);
+  $('#t3AhH').innerHTML = subs(esc('A_h/A_p = ' + fmtN(100 * g.AhAp, 1) + ' %, paso de ' + fmtN(g.pd, 2) + ' d_h' + (g.pd < 2 ? ': por debajo de 2 d_h, el mínimo de Sinnott, los agujeros quedan demasiado juntos.' : g.pd < 2.5 ? ': por encima del mínimo de 2 d_h de Sinnott, aunque por debajo de su rango normal, de 2,5 a 5.' : '. Sinnott recomienda de 2,5 a 5 d_h.')));
+  $('#t3AhH').classList.toggle('bad', g.pd < 2);
   $('#t3gapH').innerHTML = subs(esc('h_ap = h_w − ' + fmtN(1000 * s.t3gap, 1) + ' mm: el borde del bajante queda por debajo del vertedero del plato de abajo, y el líquido lo sella.'));
   pressed('#t3SecSeg button', 'v', s.t3sec); pressed('#camSeg button', 'v', s.t3cam);
   ['t3cut', 't3lab', 't3flow', 't3up'].forEach(function (k) { $('#' + k).checked = !!s[k]; });
@@ -2488,7 +2488,7 @@ function t3Checks(h, r, s) {
     add('Goteo: u_h contra u_h,mín', fmtN(h.uh, 1) + ' · ' + fmtN(h.uhmin, 1) + ' m/s', 'u_h > u_h,mín; gotea por debajo del ' + fmtN(100 * h.vMin, 0) + ' % del vapor de diseño', h.weep ? 'c' : (h.vMin > 0.6 ? 'w' : 'ok'), '', true);
     add('Retroceso en el bajante h_b', fmtN(h.hb, 0) + ' mm', '≤ ½(espaciamiento + h_w) = ' + fmtN(h.hbLim, 0) + ' mm', h.hb > h.hbLim ? 'c' : (h.hb > 0.9 * h.hbLim ? 'w' : 'ok'), '', true);
     add('Residencia con h_b', fmtN(h.trS, 1) + ' s', 'al menos 3 s', h.trS < 3 ? 'c' : 'ok', '', true);
-    add('Paso entre perforaciones', fmtN(h.g.pd, 2) + ' d_h', 'de 2,5 a 5 d_h', h.g.pd < 2.5 || h.g.pd > 5 ? 'w' : 'ok', '', true);
+    add('Paso entre perforaciones', fmtN(h.g.pd, 2) + ' d_h', 'al menos 2 d_h; lo normal, de 2,5 a 5', h.g.pd < 2 ? 'c' : (h.g.pd < 2.5 || h.g.pd > 5 ? 'w' : 'ok'), '', true);
   }
   add('Espuma sobre el plato h_f', fmtN(1000 * h.hf, 0) + ' mm', 'muy por debajo del espaciamiento', h.hf > 0.5 * s.TS ? 'w' : 'ok', '', true);
   $('#t3Chk').innerHTML = '<thead><tr><th>Criterio</th><th>Valor</th><th>Límite</th><th></th></tr></thead><tbody>' + rows.join('') + '</tbody>';
