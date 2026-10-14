@@ -660,19 +660,19 @@ function pchip(xs, ys) {
 }
 /* ====================================================================
    Sistemas binarios del explorador.
-   Datos del curso: tabla x-y del Taller 9 y datos x-y-T de Perry de las
+   Datos del curso: tabla x-y del Taller 9 y datos x-y-T DECHEMA de las
    diapositivas de equilibrio (etanol-agua), tabla 21.5 de McCabe
    (metanol-agua), Van Laar e isopropanol del Taller 9, Antoine de la
-   Lectura 10. Lo que no está en el curso se marca como externo.
+   Lectura 10 (etanol y agua) y de las diapositivas de equilibrio (benceno y tolueno). Lo que no está en el curso se marca como externo.
    ==================================================================== */
 var ANT = {
   etanol: { A: 8.11220, B: 1592.864, C: 226.184 },     // Lectura 10
   agua: { A: 8.07131, B: 1730.63, C: 233.426 },        // Lectura 10
   aguaT9: { A: 8.0713, B: 1730.63, C: 233.43 },        // Taller 9, caso 3 (redondeado)
   etanolEMT: { A: 8.20417, B: 1642.89, C: 230.3 },     // explorador anterior
-  benceno: { A: 6.90565, B: 1211.033, C: 220.790 },    // Lectura 10
-  tolueno: { A: 6.95464, B: 1344.800, C: 219.482 },    // Lectura 10
-  ipaVL: { A: 8.87829, B: 2010.33, C: 252.636 },       // Taller 8 y celda de Van Laar del Taller 9
+  benceno: { A: 6.90565, B: 1211.033, C: 220.790 },    // diapositivas de equilibrio de fases
+  tolueno: { A: 6.95464, B: 1344.800, C: 219.482 },    // diapositivas de equilibrio de fases
+  ipaVL: { A: 8.87829, B: 2010.33, C: 252.636 },       // Taller 9, celda del Van Laar
   ipa: { A: 8.1182, B: 1580.92, C: 219.61 },           // Taller 9, caso 3
   metanol: { A: 8.08097, B: 1582.271, C: 239.726 }     // externo: solo para el α ideal de O'Connell
 };
@@ -690,7 +690,7 @@ var COMP = {
 /* tabla del Taller 9 (celda 7 del cuaderno) */
 var T9X = [0, .01, .02, .05, .1, .2, .3, .4, .5, .55, .65, .75, .85, .894, .95, 1];
 var T9Y = [0, .110, .175, .325, .442, .531, .576, .614, .654, .676, .722, .778, .856, .894, .942, 1];
-/* datos de Perry en las diapositivas de equilibrio de fases (x, y, T) */
+/* datos de las diapositivas de equilibrio de fases (x, y, T): Gmehling et al., DECHEMA */
 var PERX = [0, .019, .0721, .0966, .1238, .1661, .2337, .2608, .3273, .3965, .5079, .5198, .5732, .6763, .7472, .8943, 1];
 var PERY = [0, .170, .3891, .4375, .4704, .5089, .5445, .5580, .5826, .6122, .6564, .6599, .6841, .7385, .7815, .8943, 1];
 var PERT = [100, 95.5, 89.0, 86.7, 85.3, 84.1, 82.7, 82.3, 81.5, 80.7, 79.8, 79.7, 79.3, 78.74, 78.41, 78.15, 78.37];
@@ -702,18 +702,18 @@ var MAT = [100, 87.7, 81.7, 78.0, 75.3, 73.1, 71.2, 69.3, 67.6, 66.0, 64.5];
 var SYSTEMS = [
   { id: 'ea9', name: 'Etanol-agua · datos del curso', tag: 'Taller 9 · 1 atm', light: 'etanol', c1: 'etanol', c2: 'agua', model: 'table', fixedP: 760, dot: '#C8452B',
     fxy: pchip(T9X, T9Y), fyx: pchip(T9Y, T9X), fT: pchip(PERX, PERT), ant1: ANT.etanol, ant2: ANT.agua,
-    src: 'Tabla x-y del Taller 9 con interpolación PCHIP en los dos sentidos, como el cuaderno; temperaturas de los datos de Perry de las diapositivas. Solo a 1 atm.' },
+    src: 'Tabla x-y del Taller 9 con interpolación PCHIP en los dos sentidos, como el cuaderno; temperaturas de los datos DECHEMA de las diapositivas de equilibrio. Solo a 1 atm.' },
   { id: 'eaN', name: 'Etanol-agua · NRTL', tag: 'cualquier presión', light: 'etanol', c1: 'etanol', c2: 'agua', model: 'nrtl', a12: 0, a21: 0, b12: 72.844, b21: 556.567, al: 0.47, ant1: ANT.etanol, ant2: ANT.agua, dot: '#B77A2B',
-    src: 'NRTL ajustado a los datos x-y-T de Perry de las diapositivas, con el Antoine de la Lectura 10: τ₁₂ = 72,84/T, τ₂₁ = 556,6/T (T en K), α = 0,47. Azeótropo en 0,896 a 78,1 °C. Ajuste propio del explorador, externo al curso; sirve para cambiar la presión.' },
+    src: 'NRTL ajustado a los datos x-y-T de las diapositivas de equilibrio (Gmehling et al., DECHEMA), con el Antoine de la Lectura 10: τ₁₂ = 72,84/T, τ₂₁ = 556,6/T (T en K), α = 0,47. Azeótropo en 0,896 a 78,1 °C. Ajuste propio del explorador, externo al curso; sirve para cambiar la presión.' },
   { id: 'ma', name: 'Metanol-agua', tag: 'McCabe · tabla 21.5', light: 'metanol', c1: 'metanol', c2: 'agua', model: 'table', fixedP: 760, dot: '#2F7D5B',
     fxy: pchip(MAX, MAY), fyx: pchip(MAY, MAX), fT: pchip(MAX, MAT), ant1: ANT.metanol, ant2: ANT.agua,
     src: 'Tabla 21.5 de McCabe con PCHIP, a 1 atm. Sin azeótropo; α baja de unos 6 a 2,6. Las temperaturas son externas (Geankoplis).' },
   { id: 'ipaV', name: 'Isopropanol-agua · Van Laar', tag: 'azeótropo 0,685', light: 'isopropanol', c1: 'ipa', c2: 'agua', model: 'vanlaar', A12: 2.0910, A21: 1.1867, ant1: ANT.ipaVL, ant2: ANT.agua, dot: '#7A5CA8',
-    src: 'Van Laar del Taller 9 (caso 3) ajustado al azeótropo de 0,685 a 80,4 °C: A = 2,091, B = 1,187, con el Antoine del Taller 8.' },
+    src: 'Van Laar del Taller 9 (caso 3) ajustado al azeótropo de 0,685 a 80,4 °C: A = 2,091, B = 1,187, con el Antoine del Taller 9.' },
   { id: 'ipaI', name: 'Isopropanol-agua · ideal', tag: 'α = 1,958 a 80 °C', light: 'isopropanol', c1: 'ipa', c2: 'agua', model: 'alphaT', Tref: 80, fixedP: 760, ant1: ANT.ipa, ant2: ANT.aguaT9, dot: '#9C8BC0',
     src: 'Raoult ideal del Taller 9 (caso 3): α es el cociente de las presiones de vapor a 80 °C, 1,958, y se toma constante. Ignora el azeótropo; el taller pide ver por qué no sirve.' },
   { id: 'bt', name: 'Benceno-tolueno', tag: 'Raoult · Antoine', light: 'benceno', c1: 'benceno', c2: 'tolueno', model: 'raoult', ant1: ANT.benceno, ant2: ANT.tolueno, dot: '#1D5273',
-    src: 'Raoult con el Antoine de la Lectura 10. Casi ideal: α va de 2,6 en el fondo a 2,35 en la cabeza.' },
+    src: 'Raoult con el Antoine de las diapositivas de equilibrio de fases. Casi ideal: α va de 2,6 en el fondo a 2,35 en la cabeza.' },
   { id: 'alpha', name: 'Volatilidad relativa constante', tag: 'α libre', light: 'liviano', c1: null, c2: null, model: 'alpha', dot: '#555555',
     src: 'y = αx/[1 + (α − 1)x]. El modelo de los ejemplos del libro y de la Lectura 13. Sin temperaturas.' }
 ];
@@ -1376,7 +1376,7 @@ var CONFIGS = [
     desc: 'La sesión de Diseño de platos dimensiona la columna del Taller 9 con el caudal del proyecto y una eficiencia global de 55 %: el diámetro por la inundación, los platos reales y la altura.',
     note: 'Con la tabla del Taller 9 reproduce la sesión: 0,822 m calculados, 0,8 m comercial al 84 % de la inundación y 19 platos.' },
   { id: 'bog', name: 'La columna en Bogotá', src: 'extensión · NRTL', mix: true, s: { sys: 'eaN', P: 560, qMode: 'T', TF: 35 },
-    desc: 'La columna de diseño a 560 mmHg, la presión de Bogotá. La tabla del taller solo vale a 1 atm, así que el equilibrio sale del NRTL ajustado a los datos de Perry, y la alimentación se da por su temperatura: los mismos 35 °C con que sale del filtro.',
+    desc: 'La columna de diseño a 560 mmHg, la presión de Bogotá. La tabla del taller solo vale a 1 atm, así que el equilibrio sale del NRTL ajustado a los datos DECHEMA de las diapositivas de equilibrio, y la alimentación se da por su temperatura: los mismos 35 °C con que sale del filtro.',
     note: 'La sesión de Diseño de platos lo advierte: los datos de equilibrio son a 1 atm y en Bogotá la atmosférica es de unos 75 kPa. Ningún material del curso resuelve la columna a esa presión: es una extensión.' },
   { id: 'ipa', name: 'Isopropanol del Taller 9 · modelo ideal', gname: 'Taller 9 · el isopropanol de otra planta', vlabel: 'el modelo ideal', src: 'Taller 9 · caso 3', mix: true,
     s: { sys: 'ipaI', zF: 0.30, xD: 0.80, xB: 0.03, q: 0.7, lR: L10(3.5) },
@@ -1390,7 +1390,7 @@ var CONFIGS = [
   { id: 'mc', name: 'McCabe 21.2 · α = 2,5 constante', src: 'McCabe · ejemplo 21.2', mix: true,
     s: { sys: 'alpha', alpha: 2.5, zF: 0.44, xD: 0.974, xB: 0.0235, q: 1, lR: L10(3.5), F: 350, eoMode: 'oc', muL: 0.28 },
     desc: 'El ejemplo de benceno-tolueno del libro, resuelto como allí: con una volatilidad relativa constante de 2,5 y no con los datos de la mezcla. Son 350 kmol/h con 0,44 de benceno, x_D = 0,974, x_B = 0,0235 y R = 3,5: once platos ideales más el hervidor, como en el libro.',
-    note: 'El libro no da eficiencia: los platos reales salen de O\'Connell con μ_L ≈ 0,28 cP, la del benceno-tolueno a la temperatura media de unos 95 °C. Si quiere la mezcla con sus datos (Raoult con el Antoine de la Lectura 10), escoja «Benceno-tolueno» en el panel 01 después de cargarla.' },
+    note: 'El libro no da eficiencia: los platos reales salen de O\'Connell con μ_L ≈ 0,28 cP, la del benceno-tolueno a la temperatura media de unos 95 °C. Si quiere la mezcla con sus datos (Raoult con el Antoine de las diapositivas de equilibrio de fases), escoja «Benceno-tolueno» en el panel 01 después de cargarla.' },
   { id: 'mv', name: 'Murphree de la diapositiva de Eficiencias', src: 'Eficiencias · diapositiva 7', mix: true,
     s: { sys: 'alpha', alpha: 2.2, zF: 0.30, xD: 0.85, xB: 0.05, q: 1, lR: L10(3), Emv: 0.64 },
     desc: 'La figura de «El escalón que no llega»: una curva ideal con α = 2,2 constante, la recta de R = 3 que llega a x_D = 0,85 y platos que recorren el 64 % del salto hacia el equilibrio (E_MV = 0,64).',
@@ -2046,7 +2046,7 @@ function renderEq() {
   if (isEA(sys) && state.cmpOn) {
     T9X.forEach(function (x, i) { g += E('rect', { x: r1(a.X(x) - 3.2), y: r1(a.Y(T9Y[i]) - 3.2), width: 6.4, height: 6.4, style: 'fill:var(--paper);stroke:' + CR + ';stroke-width:1.5' }); });
     PERX.forEach(function (x, i) { g += E('circle', { cx: r1(a.X(x)), cy: r1(a.Y(PERY[i])), r: 2.8, style: 'fill:' + C2 + ';stroke:var(--paper);stroke-width:1' }); });
-    leg += '<span><i class="box" style="border-color:' + CR + ';background:transparent"></i>tabla del Taller 9</span><span><i class="box" style="border-radius:50%;background:' + C2 + ';border-color:' + C2 + '"></i>Perry (diapositivas)</span>';
+    leg += '<span><i class="box" style="border-color:' + CR + ';background:transparent"></i>tabla del Taller 9</span><span><i class="box" style="border-radius:50%;background:' + C2 + ';border-color:' + C2 + '"></i>DECHEMA (diapositivas)</span>';
   }
   if (sys.id === 'ma') MAX.forEach(function (x, i) { g += E('rect', { x: r1(a.X(x) - 3), y: r1(a.Y(MAY[i]) - 3), width: 6, height: 6, style: 'fill:var(--paper);stroke:' + CG + ';stroke-width:1.5' }); });
   if (eq.az) { g += dot(a.X(eq.az.x), a.Y(eq.az.x), 5, CR); g += TX(a.X(eq.az.x) - 8, a.Y(eq.az.x) - 10, 'azeótropo ' + fx(eq.az.x) + (isFinite(eq.az.T) ? ' · ' + fT(eq.az.T) : ''), { a: 'end', fs: 11, c: CR, fw: 750 }); }
@@ -2922,9 +2922,9 @@ function renderEqs() {
     table: ['y=\\mathrm{PCHIP}(x)\\ \\text{sobre la tabla},\\qquad x=\\mathrm{PCHIP}^{-1}(y)', 'Interpolación cúbica monótona en los dos sentidos, como el cuaderno del Taller 9 (scipy PchipInterpolator). No inventa máximos entre los datos.'],
     alpha: ['y=\\frac{\\alpha x}{1+(\\alpha-1)x},\\qquad \\alpha=' + n2(eq.aConst || s.alpha, 3), 'Volatilidad relativa constante: la curva de los ejemplos del libro y de la Lectura 13.'],
     alphaT: ['\\alpha=\\frac{P^*_{IPA}(80\\,°C)}{P^*_{agua}(80\\,°C)}=\\frac{' + n2(psat(ANT.ipa, 80), 2) + '}{' + n2(psat(ANT.aguaT9, 80), 2) + '}=' + n2(eq.aConst || 1, 4), 'Raoult ideal con α tomada a 80 °C, como el caso 3 del Taller 9.'],
-    raoult: ['y_iP=x_iP^*_i(T),\\qquad \\log_{10}P^*=A-\\frac{B}{T+C}', 'Raoult con Antoine (P en mmHg, T en °C), constantes de la Lectura 10.'],
+    raoult: ['y_iP=x_iP^*_i(T),\\qquad \\log_{10}P^*=A-\\frac{B}{T+C}', 'Raoult con Antoine (P en mmHg, T en °C): constantes de la Lectura 10 para el etanol y el agua, y de las diapositivas de equilibrio para el benceno y el tolueno.'],
     vanlaar: ['\\ln\\gamma_1=\\frac{A}{\\left(1+\\frac{Ax_1}{Bx_2}\\right)^2},\\quad \\ln\\gamma_2=\\frac{B}{\\left(1+\\frac{Bx_2}{Ax_1}\\right)^2},\\quad y_1P=x_1\\gamma_1P_1^*', 'A = ' + fmtN(sys.A12 || 0, 4) + ', B = ' + fmtN(sys.A21 || 0, 4) + ', ajustados al azeótropo (Taller 9). El punto de burbuja se resuelve en T.'],
-    nrtl: ['\\ln\\gamma_1=x_2^2\\left[\\tau_{21}\\left(\\frac{G_{21}}{x_1+x_2G_{21}}\\right)^2+\\frac{\\tau_{12}G_{12}}{(x_2+x_1G_{12})^2}\\right],\\quad G_{ij}=e^{-\\alpha\\tau_{ij}},\\ \\tau_{ij}=\\frac{b_{ij}}{T}', 'b₁₂ = 72,84 K, b₂₁ = 556,6 K, α = 0,47: ajuste propio a los datos de Perry de las diapositivas (externo al curso). ASPEN Plus usa NRTL con sus propios parámetros.']
+    nrtl: ['\\ln\\gamma_1=x_2^2\\left[\\tau_{21}\\left(\\frac{G_{21}}{x_1+x_2G_{21}}\\right)^2+\\frac{\\tau_{12}G_{12}}{(x_2+x_1G_{12})^2}\\right],\\quad G_{ij}=e^{-\\alpha\\tau_{ij}},\\ \\tau_{ij}=\\frac{b_{ij}}{T}', 'b₁₂ = 72,84 K, b₂₁ = 556,6 K, α = 0,47: ajuste propio a los datos DECHEMA de las diapositivas de equilibrio (externo al curso). ASPEN Plus usa NRTL con sus propios parámetros.']
   }[sys.model];
   var items = [
     ['Balances globales', 'F=D+B,\\quad Fz_F=Dx_D+Bx_B\\ \\Rightarrow\\ D=F\\frac{z_F-x_B}{x_D-x_B}=' + n2(b.D, 2) + '\\ \\tfrac{\\text{kmol}}{\\text{h}}', 'B = ' + fmtN(b.B, 2) + ' kmol/h. Lectura 13 y Diseño de platos.'],

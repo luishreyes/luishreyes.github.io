@@ -657,14 +657,15 @@ function pchip(xs, ys) {
    destilación diferencial (interpolación lineal, como su calculadora),
    la tabla metanol-agua de 12 puntos y la de isopropanol-agua del
    Taller 8 (spline cúbico, como interp1d de SciPy), la tabla x-y del
-   Taller 9 y los x-y-T de Perry para el etanol-agua, el Antoine de la
-   Lectura 10 y la α constante de la Lectura 12. Lo externo se marca.
+   Taller 9 y los x-y-T DECHEMA de las diapositivas de equilibrio para el
+   etanol-agua, el Antoine de la Lectura 10 (etanol y agua) y de las
+   diapositivas de equilibrio (benceno y tolueno), y la α constante de la Lectura 12. Lo externo se marca.
    ==================================================================== */
 var ANT = {
   etanol: { A: 8.11220, B: 1592.864, C: 226.184 },     // Lectura 10
   agua: { A: 8.07131, B: 1730.63, C: 233.426 },        // Lectura 10
-  benceno: { A: 6.90565, B: 1211.033, C: 220.790 },    // Lectura 10
-  tolueno: { A: 6.95464, B: 1344.800, C: 219.482 }     // Lectura 10
+  benceno: { A: 6.90565, B: 1211.033, C: 220.790 },    // diapositivas de equilibrio de fases
+  tolueno: { A: 6.95464, B: 1344.800, C: 219.482 }     // diapositivas de equilibrio de fases
 };
 /* propiedades de componente puro: M del curso; λ en el punto de ebullición (kJ/mol) y c_p del líquido (J/(mol·K)) externos,
    los mismos de los exploradores de flash y McCabe-Thiele (λ de benceno y tolueno: McCabe, tabla 21.3) */
@@ -722,7 +723,7 @@ var T8MY = [0.000, 0.134, 0.304, 0.418, 0.531, 0.613, 0.710, 0.779, 0.839, 0.894
 var T8IX = [0.000, 0.010, 0.025, 0.050, 0.080, 0.120, 0.170, 0.230, 0.300, 0.380, 0.460, 0.540, 0.610, 0.685, 0.760, 0.840, 0.920, 1.000];
 var T8IY = [0.000, 0.130, 0.254, 0.370, 0.443, 0.496, 0.530, 0.552, 0.567, 0.582, 0.600, 0.623, 0.649, 0.685, 0.732, 0.797, 0.884, 1.000];
 var T8IT = [100.00, 96.41, 92.64, 88.72, 86.00, 84.01, 82.75, 82.01, 81.54, 81.19, 80.89, 80.63, 80.47, 80.40, 80.49, 80.82, 81.47, 82.56];
-/* tabla del Taller 9 (celda 7 del cuaderno) y datos de Perry de las diapositivas de equilibrio (x, y, T) */
+/* tabla del Taller 9 (celda 7 del cuaderno) y datos de las diapositivas de equilibrio (x, y, T): Gmehling et al., DECHEMA */
 var T9X = [0, .01, .02, .05, .1, .2, .3, .4, .5, .55, .65, .75, .85, .894, .95, 1];
 var T9Y = [0, .110, .175, .325, .442, .531, .576, .614, .654, .676, .722, .778, .856, .894, .942, 1];
 var PERX = [0, .019, .0721, .0966, .1238, .1661, .2337, .2608, .3273, .3965, .5079, .5198, .5732, .6763, .7472, .8943, 1];
@@ -740,14 +741,14 @@ var SYSTEMS = [
     src: 'La tabla del caso demo B del Taller 8 con spline cúbico, el interp1d(kind=\'cubic\') del cuaderno. Las temperaturas son externas (Geankoplis).' },
   { id: 'ea9', name: 'Etanol-agua · datos del curso', tag: 'Taller 9 · 1 atm', c1: 'etanol', c2: 'agua', model: 'table', fixedP: 760, dot: '#C8452B',
     fxy: pchip(T9X, T9Y), fT: pchip(PERX, PERT), tx: T9X, ty: T9Y,
-    src: 'Tabla x-y del Taller 9 con PCHIP, como su cuaderno; temperaturas de los datos de Perry de las diapositivas de equilibrio. Azeótropo en 0,894. Solo a 1 atm.' },
+    src: 'Tabla x-y del Taller 9 con PCHIP, como su cuaderno; temperaturas de los datos DECHEMA de las diapositivas de equilibrio. Azeótropo en 0,894. Solo a 1 atm.' },
   { id: 'eaN', name: 'Etanol-agua · NRTL', tag: 'Bogotá o cualquier P', c1: 'etanol', c2: 'agua', model: 'nrtl', a12: 0, a21: 0, b12: 72.844, b21: 556.567, al: 0.47, ant1: ANT.etanol, ant2: ANT.agua, dot: '#B77A2B',
-    src: 'NRTL ajustado a los datos x-y-T de Perry de las diapositivas, con el Antoine de la Lectura 10 (τ₁₂ = 72,84/T, τ₂₁ = 556,6/T, α = 0,47). Ajuste propio, externo al curso, el mismo de los otros exploradores; sirve para cambiar la presión.' },
+    src: 'NRTL ajustado a los datos x-y-T de las diapositivas de equilibrio (Gmehling et al., DECHEMA), con el Antoine de la Lectura 10 (τ₁₂ = 72,84/T, τ₂₁ = 556,6/T, α = 0,47). Ajuste propio, externo al curso, el mismo de los otros exploradores; sirve para cambiar la presión.' },
   { id: 'ipa8', name: 'Isopropanol-agua · Taller 8', tag: 'tabla · azeótropo 0,685', c1: 'ipa', c2: 'agua', model: 'table', fixedP: 760, dot: '#7A5CA8',
     fxy: spline3(T8IX, T8IY), fT: pchip(T8IX, T8IT), tx: T8IX, ty: T8IY,
     src: 'La tabla x-y-T del caso de estudio 1 del Taller 8 con spline cúbico, como el cuaderno. Viene de un Van Laar ajustado al azeótropo de 0,685 a 80,4 °C.' },
   { id: 'bt', name: 'Benceno-tolueno', tag: 'Raoult · Antoine', c1: 'benceno', c2: 'tolueno', model: 'raoult', ant1: ANT.benceno, ant2: ANT.tolueno, dot: '#1D5273',
-    src: 'Raoult con el Antoine de la Lectura 10. Casi ideal: α va de 2,6 en el tolueno puro a 2,35 en el benceno puro.' },
+    src: 'Raoult con el Antoine de las diapositivas de equilibrio de fases. Casi ideal: α va de 2,6 en el tolueno puro a 2,35 en el benceno puro.' },
   { id: 'alpha', name: 'Volatilidad relativa constante', tag: 'α libre', c1: null, c2: null, model: 'alpha', dot: '#555555',
     src: 'y* = αx/[1 + (α − 1)x], el modelo de la Lectura 12 y del caso demo A del Taller 8. Tiene forma cerrada; no trae temperaturas ni entalpías.' }
 ];
@@ -2494,7 +2495,7 @@ function renderEqs() {
     ['Análisis y verificación', 'trayectoria, balance, gráficos', ok ? 'balance cerrado · recuperación ' + fpct(B.rec, 1) : '—']
   ];
   $('#algo').innerHTML = st.map(function (q, i) { return '<div><b class="n">' + (i + 1) + '</b><b>' + esc(q[0]) + '</b><br>' + subs(esc(q[1])) + '<span class="res">' + subs(esc(q[2])) + '</span></div>'; }).join('');
-  $('#assump').innerHTML = subs('<b>Cómo está hecho.</b> El vapor sale en equilibrio con el líquido del calderín en cada instante; la retención de líquido en la columna y en el condensador se desprecia y el flujo molar es constante (Lectura 12). La integral se evalúa con cuadratura adaptativa de Gauss-Kronrod, cortando en los nodos de la tabla, y el problema inverso con bisección. La columna escalona N etapas con condensador total y el calderín como última etapa. El equilibrio es el del curso: los cuatro puntos de las diapositivas con su interpolación lineal, las tablas del Taller 8 con el spline cúbico de interp1d, la tabla del Taller 9 con PCHIP y las temperaturas de Perry, Raoult con el Antoine de la Lectura 10 y α constante; el NRTL para cambiar la presión es un ajuste propio. '
+  $('#assump').innerHTML = subs('<b>Cómo está hecho.</b> El vapor sale en equilibrio con el líquido del calderín en cada instante; la retención de líquido en la columna y en el condensador se desprecia y el flujo molar es constante (Lectura 12). La integral se evalúa con cuadratura adaptativa de Gauss-Kronrod, cortando en los nodos de la tabla, y el problema inverso con bisección. La columna escalona N etapas con condensador total y el calderín como última etapa. El equilibrio es el del curso: los cuatro puntos de las diapositivas con su interpolación lineal, las tablas del Taller 8 con el spline cúbico de interp1d, la tabla del Taller 9 con PCHIP y las temperaturas DECHEMA de las diapositivas, Raoult con el Antoine de la Lectura 10 y de las diapositivas de equilibrio y α constante; el NRTL para cambiar la presión es un ajuste propio. '
     + 'Reproduce las diapositivas (I = 1,040, W_f = 35,3 kmol, D = 64,7 kmol y x_D,avg = 0,859, con los tres trapecios 0,210 + 0,516 + 0,323), la Lectura 12 (ln(L₀/L_W) = 1,784, L_W/L₀ = 0,168, ȳ = 0,461 y 95,8 % de recuperación) y los casos demo del Taller 8 (A: I = 2,3669 y 90,62 %; B: L₀/L_f = 2,391 y 58,17 %; C: z_f = 0,3141 ideal y 0,0904 real). '
     + 'Son externos al curso: el NRTL, los calores latentes y los c_p, las temperaturas del metanol-agua (Geankoplis), la presión de Bogotá y la conversión a % v/v con volúmenes ideales.');
 }
