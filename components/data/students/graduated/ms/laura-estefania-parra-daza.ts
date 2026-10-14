@@ -1,7 +1,7 @@
 import type { GraduatedStudent } from '../../../../types';
 
 const student: GraduatedStudent = {
-    name: 'Laura Estefania Parra Daza',
+    name: 'Laura Estefanía Parra Daza',
     degree: 'M.S.',
     program: { en: 'M.S. in Chemical Engineering', es: 'M.S. en Ingeniería Química' },
     graduationYear: 2023,
@@ -23,7 +23,7 @@ const student: GraduatedStudent = {
             answer: { en: 'The research successfully assembled the bio-factory and found that oxygen transfer is a critical factor. They discovered that specific oxygen levels trigger different gene expression patterns, directly influencing the final yield. By optimizing these conditions, they significantly increased naringenin production, providing a clear strategy for scaling up the sustainable production of this valuable compound.', es: 'La investigación logró ensamblar la biofábrica y halló que la transferencia de oxígeno es un factor crítico. Descubrieron que niveles específicos de oxígeno desencadenan distintos patrones de expresión génica, influyendo directamente en el rendimiento final. Al optimizar estas condiciones, aumentaron significativamente la producción de naringenina, aportando una estrategia clara para escalar la producción sostenible de este valioso compuesto.' }
         }
     ],
-    imageUrl: 'https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5735.JPG',
+    imageUrl: '/images/students/laura-estefania-parra-daza.jpg',
 };
 
 export default student;

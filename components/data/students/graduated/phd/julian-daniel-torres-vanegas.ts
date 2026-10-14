@@ -23,7 +23,7 @@ const student: GraduatedStudent = {
             answer: { en: "The research revealed that a 'one-size-fits-all' approach doesn't work. The success of the delivery vehicle depended on a precise combination of the carbon material, the peptide, the chemical linker, and the target cell type. The study successfully created nanoplatforms that were excellent at entering cells and, in some cases, achieved up to 50% escape from the cellular traps. This work provides a valuable roadmap for rationally designing next-generation drug delivery systems, paving the way for more effective and targeted therapies.", es: 'La investigación reveló que un enfoque «de talla única» no funciona. El éxito del vehículo de entrega dependía de una combinación precisa del material de carbono, el péptido, el enlazador químico y el tipo de célula objetivo. El estudio logró crear nanoplataformas excelentes para ingresar a las células y, en algunos casos, alcanzó hasta un 50 % de escape de las trampas celulares. Este trabajo aporta una valiosa hoja de ruta para diseñar racionalmente sistemas de entrega de fármacos de próxima generación, allanando el camino hacia terapias más eficaces y dirigidas.' }
         }
     ],
-    imageUrl: 'https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/Julian%20Daniel%20Torres%20Vanegas.JPG',
+    imageUrl: '/images/students/julian-daniel-torres-vanegas.jpg',
 };
 
 export default student;

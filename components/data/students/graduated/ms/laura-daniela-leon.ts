@@ -23,7 +23,7 @@ const student: GraduatedStudent = {
             answer: { en: 'The resulting methodology provides a criterion-based, reproducible process that enables educational institutions to systematically assess and responsibly adopt generative AI tools, balancing pedagogical effectiveness with ethical and practical considerations.', es: 'La metodología resultante ofrece un proceso reproducible y basado en criterios que permite a las instituciones educativas evaluar de forma sistemática y adoptar de manera responsable herramientas de IA generativa, equilibrando la eficacia pedagógica con consideraciones éticas y prácticas.' }
         }
     ],
-    imageUrl: 'https://luishreyes.github.io/images/students/laura-daniela-leon.jpg',
+    imageUrl: '/images/students/laura-daniela-leon.jpg',
 };
 
 export default student;

@@ -23,7 +23,7 @@ const student: GraduatedStudent = {
             answer: { en: "The computer simulations accurately predicted the behavior of the new biosurfactants, showing they effectively lower the tension between oil and water. The study also revealed how the peptides arrange themselves at the interface, forming clusters as their concentration increases. This work provides a powerful and efficient computational method to accelerate the design of greener, high-performance biosurfactants for a wide range of products.", es: 'Las simulaciones computacionales predijeron con precisión el comportamiento de los nuevos biosurfactantes, mostrando que reducen eficazmente la tensión entre el aceite y el agua. El estudio también reveló cómo se organizan los péptidos en la interfase, formando agregados a medida que aumenta su concentración. Este trabajo aporta un método computacional potente y eficiente para acelerar el diseño de biosurfactantes más ecológicos y de alto desempeño para una amplia gama de productos.' }
         }
     ],
-    imageUrl: 'https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5761.JPG',
+    imageUrl: '/images/students/johana-valentina-perez-bejarano.jpg',
 };
 
 export default student;

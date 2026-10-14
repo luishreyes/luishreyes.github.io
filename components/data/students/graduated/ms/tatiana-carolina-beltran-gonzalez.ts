@@ -23,7 +23,7 @@ const student: GraduatedStudent = {
             answer: { en: 'The nanoplatform was successfully constructed and showed high biocompatibility. It demonstrated the ability to effectively enter cells, escape cellular compartments, and release its cargo in response to the internal cell environment. This study provides a versatile and promising new vehicle for delivering linear nucleic acids, advancing the potential of gene therapy applications.', es: 'La nanoplataforma se construyó con éxito y mostró una alta biocompatibilidad. Demostró la capacidad de ingresar eficazmente a las células, escapar de los compartimentos celulares y liberar su carga en respuesta al entorno interno de la célula. Este estudio aporta un vehículo nuevo, versátil y prometedor para entregar ácidos nucleicos lineales, avanzando el potencial de las aplicaciones de terapia génica.' }
         }
     ],
-    imageUrl: 'https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5753.JPG',
+    imageUrl: '/images/students/tatiana-carolina-beltran-gonzalez.jpg',
 };
 
 export default student;

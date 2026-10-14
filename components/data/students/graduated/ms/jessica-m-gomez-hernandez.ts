@@ -23,7 +23,7 @@ const student: GraduatedStudent = {
             answer: { en: 'The developed system successfully produced uniform, high-quality nanoparticles. A detailed technical and economic feasibility analysis demonstrated that the proposed process is both technologically sound and economically viable for scaling up to full industrial production, paving the way for their use in biomedical applications.', es: 'El sistema desarrollado produjo con éxito nanopartículas uniformes y de alta calidad. Un análisis detallado de factibilidad técnica y económica demostró que el proceso propuesto es tecnológicamente sólido y económicamente viable para escalarlo a producción industrial plena, allanando el camino para su uso en aplicaciones biomédicas.' }
         }
     ],
-    imageUrl: 'https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5733.jpg',
+    imageUrl: '/images/students/jessica-m-gomez-hernandez.jpg',
 };
 
 export default student;

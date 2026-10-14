@@ -204,7 +204,7 @@ export const AboutPage = () => {
                     style={{ rotate: heroImageRotate, scale: heroImageScale }}
                   >
                     <img
-                      src="https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/uandes_2.jpg"
+                      src="/images/site/uandes-2.jpg"
                       alt="Luis H. Reyes"
                       className="w-full h-full object-cover object-top"
                     />
@@ -244,7 +244,7 @@ export const AboutPage = () => {
                             style={{ rotate: purposeImageRotate, scale: purposeImageScale }}
                           >
                               <img
-                                  src="https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/1756469286343.jpeg"
+                                  src="/images/site/1756469286343.jpg"
                                   alt="Luis H. Reyes"
                                   className="w-full h-full object-cover"
                               />

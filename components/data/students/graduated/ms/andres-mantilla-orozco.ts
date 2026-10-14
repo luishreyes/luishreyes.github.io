@@ -23,7 +23,7 @@ const student: GraduatedStudent = {
             answer: { en: 'The study demonstrated that the microfluidic system is a viable, low-cost method for synthesis. The computer models accurately predicted the system\'s performance, showing that specific turbulence models (Euler-Euler) could significantly improve encapsulation efficiency. This provides a powerful computational tool to accelerate the design of nanomedicines.', es: 'El estudio demostró que el sistema microfluídico es un método de síntesis viable y de bajo costo. Los modelos computacionales predijeron con precisión el desempeño del sistema, mostrando que ciertos modelos de turbulencia (Euler-Euler) podían mejorar significativamente la eficiencia de encapsulación. Esto aporta una potente herramienta computacional para acelerar el diseño de nanomedicinas.' }
         }
     ],
-    imageUrl: 'https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5751.JPG',
+    imageUrl: '/images/students/andres-mantilla-orozco.jpg',
 };
 
 export default student;

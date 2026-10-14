@@ -23,7 +23,7 @@ const student: GraduatedStudent = {
             answer: { en: 'The study identified key barriers to technology adoption and segmented producers into distinct typologies based on their sustainability performance. It developed a practical, systemic model and an operational protocol for Cenipalma (the leading research institute) to implement more targeted, effective, and adaptive extension strategies, moving beyond one-size-fits-all approaches.', es: 'El estudio identificó barreras clave para la adopción de tecnología y segmentó a los productores en tipologías diferenciadas según su desempeño en sostenibilidad. Desarrolló un modelo sistémico y práctico y un protocolo operativo para que Cenipalma (el principal instituto de investigación) implemente estrategias de extensión más dirigidas, eficaces y adaptativas, superando los enfoques de talla única.' }
         }
     ],
-    imageUrl: 'https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/Julian%20Fernando%20Becerra-Encinales.JPG',
+    imageUrl: '/images/students/julian-fernando-becerra-encinales.jpg',
 };
 
 export default student;
