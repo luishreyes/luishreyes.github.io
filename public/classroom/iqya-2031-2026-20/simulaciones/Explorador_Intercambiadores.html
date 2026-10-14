@@ -269,8 +269,10 @@ table.t tr:hover td { background: var(--accent-50); }
 .crit .na .vv, .crit .na .nm { color: var(--n500); }
 #matTable tr.cur td { background: var(--accent-100); }
 #matTable td.bad { color: var(--redline); font-weight: 700; }
-.tabs button { padding: 12px 13px 11px; font-size: 13.5px; }
-.tabs .canv { padding: 0 10px; }
+.tabs button { padding: 12px 9px 11px; font-size: 13.5px; gap: 6px; }
+.tabs .canv { padding: 0 8px; }
+@media (max-width: 1420px) { .tabs button .k { display: none; } }
+@media (max-width: 1300px) { .tabs button { padding: 12px 7px 11px; font-size: 13px; } }
 .stage .hud { right: 230px; }
 .eq2 { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
 #altTable td { font-size: 12.5px; vertical-align: top; }
@@ -280,6 +282,33 @@ table.t tr:hover td { background: var(--accent-50); }
 @media (max-width: 640px) { .stage .hud { display: none; } .eqs .f { font-size: 14px; } }
 .mill:disabled { opacity: .4; cursor: not-allowed; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+/* sistema en pantalla y configuraciones del curso */
+.ctl .cfgnow { background: var(--accent-50); }
+.cfgnow-l { font-family: var(--font-mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--n600); font-weight: 700; }
+.cfgnow-n { font-size: 14.5px; font-weight: 750; margin-top: 3px; line-height: 1.3; }
+.cfgnow-n small { display: block; font-size: 11.5px; font-weight: 600; color: var(--n600); margin-top: 2px; }
+.cfgnow-b { margin-top: 8px; border: none; background: none; padding: 0; font: inherit; font-size: 12.5px; font-weight: 700; color: var(--accent-700); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.cfgs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin-top: 18px; }
+.cfg { border: 2px solid var(--divider); background: #fff; display: flex; flex-direction: column; }
+.cfg.on { border-color: var(--accent); box-shadow: inset 0 -4px 0 var(--accent); }
+.cfg svg { display: block; width: 100%; height: auto; background: var(--paper); border-bottom: 1.5px solid var(--divider); }
+.cfg .cb { padding: 12px 16px 14px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+.cfg .ct { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.cfg h3 { margin: 0; font-size: 16px; font-weight: 780; }
+.cfg .src { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-700); font-weight: 700; }
+.cfg p { margin: 0; font-size: 13.5px; color: var(--n700); line-height: 1.5; }
+.cfg .facts { display: grid; grid-template-columns: auto 1fr; gap: 3px 12px; font-size: 12.5px; margin: 2px 0 0; }
+.cfg .facts dt { color: var(--n600); font-weight: 600; }
+.cfg .facts dd { margin: 0; font-weight: 650; }
+.cfg .res { font-family: var(--font-mono); font-size: 12.5px; font-weight: 700; border-top: 1px solid var(--n200); padding-top: 8px; }
+.cfg .res span { color: var(--n600); font-weight: 600; }
+.cfg .note { font-size: 12.5px; color: var(--n600); }
+.cfg button { margin-top: auto; align-self: flex-start; border: 2px solid var(--text); background: var(--text); color: #fff; font: inherit; font-size: 12.5px; font-weight: 750; padding: 7px 12px; cursor: pointer; }
+.cfg.on button { background: #fff; color: var(--text); }
+.cfg button:disabled { opacity: .6; cursor: default; }
+.ideas { margin: 0; padding-left: 18px; display: grid; gap: 6px; font-size: 13.5px; line-height: 1.5; }
+.ideas b { color: var(--accent-700); }
+@media (max-width: 1100px) { .cfgs { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
@@ -305,7 +334,7 @@ table.t tr:hover td { background: var(--accent-50); }
 
 <div class="shell">
   <aside class="ctl" id="ctl" aria-label="Controles">
-    <section><h2><span class="n">00</span> Casos de partida</h2><div class="presets" id="presetBtns"></div></section>
+    <section class="cfgnow"><div class="cfgnow-l">Sistema en pantalla</div><div class="cfgnow-n" id="cfgNow"></div><button type="button" class="cfgnow-b" id="toCfg">Ver las configuraciones del curso</button></section>
     <section><h2><span class="n">01</span> Fluido caliente</h2>
       <div class="opts" id="hotBtns"></div>
       <div class="sl" id="mhRow"><div class="row"><span>Caudal ṁ<sub>c</sub></span><b id="vmh"></b></div><input type="range" id="lmh" min="-1.3" max="1.7" step="0.005"></div>
@@ -320,7 +349,7 @@ table.t tr:hover td { background: var(--accent-50); }
       <div class="sl"><div class="row"><span>Temperatura de entrada</span><b id="vTci"></b></div><input type="range" id="Tci" min="2" max="150" step="0.5"></div>
       <div class="sl" id="TcoMaxRow"><div class="row"><span>Salida máxima permitida</span><b id="vTcoMax"></b></div><input type="range" id="TcoMax" min="10" max="160" step="0.5"><div class="hint">Restricción de la red de servicios (Taller 5)</div></div>
       <div class="sl" id="TcoRow"><div class="row"><span>Temperatura de salida objetivo</span><b id="vTco"></b></div><input type="range" id="Tco" min="10" max="190" step="0.5"></div>
-      <div class="sl"><div class="row"><span>Lo que fija el diseño</span></div><div class="seg" id="tgtSeg" style="margin-top:6px"><button type="button" data-v="hot">Enfriar el caliente</button><button type="button" data-v="cold">Calentar el frío</button></div></div>
+      <div class="sl"><div class="row"><span>Lo que fija el diseño</span></div><div class="seg" id="tgtSeg" style="margin-top:6px"><button type="button" data-v="hot">Enfriar el caliente</button><button type="button" data-v="cold">Calentar el frío</button></div><div class="hint" id="tgtHint"></div></div>
     </section>
     <section><h2><span class="n">03</span> Arreglo</h2>
       <div class="mills" id="arrBtns"></div>
@@ -353,13 +382,13 @@ table.t tr:hover td { background: var(--accent-50); }
       </div>
       <div class="sl"><div class="row"><span>Propiedades</span></div><div class="seg" id="propSeg" style="margin-top:6px"><button type="button" data-v="0">A la temperatura media</button><button type="button" data-v="1">cₚ constantes</button></div></div>
       <div id="cpBox">
-        <div class="sl"><div class="row"><span>cₚ del caliente</span><b id="vcpHot"></b></div><input type="range" id="cpHot" min="1.5" max="4.4" step="0.005"></div>
-        <div class="sl"><div class="row"><span>cₚ del frío</span><b id="vcpCold"></b></div><input type="range" id="cpCold" min="1.5" max="4.4" step="0.005"></div>
+        <div class="sl" id="cpHotRow"><div class="row"><span>cₚ del caliente</span><b id="vcpHot"></b></div><input type="range" id="cpHot" min="1.5" max="4.4" step="0.005"></div>
+        <div class="sl"><div class="row"><span>cₚ del frío</span><b id="vcpCold"></b></div><input type="range" id="cpCold" min="1.5" max="4.4" step="0.005"><div class="hint">Al escoger otro fluido se carga su cₚ a 25 °C, el valor de tabla que suele dar un enunciado.</div></div>
       </div>
     </section>
     <section><h2><span class="n">06</span> Vista</h2>
       <label class="toggle"><input type="checkbox" id="grid"> Cuadrícula en las gráficas</label>
-      <button type="button" class="seg inline" id="resetAll" style="margin-top:14px;padding:7px 12px;font-weight:700;font-size:12.5px;cursor:pointer">Restablecer el caso base</button>
+      <button type="button" class="seg inline" id="resetAll" style="margin-top:14px;padding:7px 12px;font-weight:700;font-size:12.5px;cursor:pointer">Volver al Taller 5 rediseñado</button>
     </section>
   </aside>
 
@@ -373,6 +402,7 @@ table.t tr:hover td { background: var(--accent-50); }
       <button type="button" role="tab" data-tab="fo" aria-selected="false"><span class="k">6</span>Ensuciamiento</button>
       <button type="button" role="tab" data-tab="cs" aria-selected="false"><span class="k">7</span>Costos</button>
       <button type="button" role="tab" data-tab="ec" aria-selected="false"><span class="k">8</span>Ecuaciones</button>
+      <button type="button" role="tab" data-tab="cf" aria-selected="false"><span class="k">9</span>Configuraciones</button>
       <span class="sp"></span>
       <div class="canv"><button type="button" data-canvas="paper" aria-pressed="true">Papel</button><button type="button" data-canvas="blueprint" aria-pressed="false">Blueprint</button></div>
     </nav>
@@ -468,6 +498,13 @@ table.t tr:hover td { background: var(--accent-50); }
       <div class="ph"><h2>Ecuaciones</h2><span class="lbl">con los valores del caso actual</span><p>Las de la Lectura 08, las sesiones I y II y el Taller 5, evaluadas con la configuración de los controles. Las correlaciones de coeficientes y de caída de presión no están en el material del curso: se marcan como externas.</p></div>
       <div class="eqs" id="eqs"></div>
       <div class="callout ink" id="assump"></div>
+    </section>
+
+    <!-- 9 · configuraciones -->
+    <section class="panel" data-panel="cf">
+      <div class="ph"><h2>Configuraciones del curso</h2><span class="lbl">cargue una y siga cambiándola</span><p id="cfLead"></p></div>
+      <div class="cfgs" id="cfgCards"></div>
+      <div class="card"><div class="card-h"><span class="t">Para probar en el sistema que tiene en pantalla</span><span class="sp"></span><span>un cambio a la vez</span></div><div class="card-b"><ul class="ideas" id="cfgIdeas"></ul></div></div>
     </section>
   </main>
 </div>
@@ -664,7 +701,9 @@ function lmtdOf(d1, d2) { if (d1 <= 0 || d2 <= 0) return NaN; return Math.abs(d1
 
 function compute(s) {
   var hf = byId(FLUIDS, s.hot), cf = byId(FLUIDS, s.cold), steam = !!hf.steam;
-  var arr = s.arr, Ns = shellsOf(arr), Np = (arr === 'contra' || arr === 'paralelo') ? 1 : s.Np;
+  // lo que impone el vapor que condensa se deriva aquí y no se guarda en el estado: va por la coraza, fija la salida
+  // del frío y con F = 1 basta una coraza; si el caliente vuelve a ser un líquido, reaparece lo que el estudiante tenía
+  var arr = steam && shellsOf(s.arr) > 1 ? '1-n' : s.arr, Ns = shellsOf(arr), Np = (arr === 'contra' || arr === 'paralelo') ? 1 : s.Np;
   var hotShell = steam ? true : s.hotShell;
   var Thi = steam ? waterTsat(s.pSteam) : s.Thi, Tci = s.Tci;
   // ---- balance de energía con los dos caudales que fija el usuario
@@ -839,6 +878,15 @@ function diagnose(R) {
   else if (R.Np > 1) { var pmn = Math.min.apply(null, g.lay.perPass), pmx = Math.max.apply(null, g.lay.perPass); if (pmn < 0.6 * g.Nt / R.Np) add('w', 'Los pasos quedan desparejos (' + pmn + ' a ' + pmx + ' tubos por paso): con particiones en cinta, las filas cortas de los bordes no alcanzan. La velocidad cambia de un paso a otro; use menos pasos o una coraza mayor.'); }
   if (g.LDs < 4 || g.LDs > 12) add('w', 'Relación L/Ds = ' + fmtN(g.LDs, 1) + ': lo habitual es 5 a 10. ' + (g.LDs < 4 ? 'Equipo corto y ancho, caro por área.' : 'Equipo muy esbelto: vibración y soportes.'));
   }
+  // cada fluido trae el intervalo de temperatura de sus datos (FLUIDS[].T): fuera de él las propiedades se extrapolan
+  [[R.hf, 'caliente', R.steam ? null : [R.Thi, b.Tho]], [R.cf, 'frío', [R.Tci, b.Tco]]].forEach(function (q) {
+    var f = q[0], ts = q[2]; if (!f.T || !ts) return;
+    if (!(b.physical && closes)) ts = [ts[0]]; // sin balance posible la salida es hipotética: solo se revisa la entrada
+    var hi = Math.max.apply(null, ts), lo = Math.min.apply(null, ts), up = hi > f.T[1] + 0.05;
+    if (!up && !(lo < f.T[0] - 0.05)) return;
+    add('w', 'El fluido ' + q[1] + ' (' + f.short + ') ' + (up ? 'llega a ' + fmtN(hi, 1) : 'baja a ' + fmtN(lo, 1)) + ' °C, fuera del intervalo de sus datos de propiedades (' + f.T[0] + ' a ' + f.T[1] + ' °C): ahí se extrapolan y el resultado es menos confiable.' + (f.id === 'etanol' && up && hi > 78 ? ' A presión atmosférica el etanol hierve a 78 °C.' : (f.id === 'pectina' && up ? ' A presión atmosférica el extracto, que es casi agua, hierve cerca de 100 °C.' : '')));
+  });
+  if (s.hot === s.cold) add('ok', 'Caliente y frío son el mismo fluido (' + R.hf.short + '): es un recuperador de calor, como cuando el producto caliente precalienta la alimentación. El cálculo es el mismo.');
   if (closes && R.cf.id === 'agua' && R.bal.Tco > 50) add('w', 'El agua de enfriamiento vuelve a ' + fmtN(R.bal.Tco, 1) + ' °C: sobre 45 a 50 °C precipitan las sales y la torre se ensucia.');
   if (!R.hotShell && R.hf.id !== 'vapor' && R.Thi > 150) add('ok', 'El caliente va por los tubos: McCabe lo recomienda por seguridad y ahorro de energía (la coraza queda a menor temperatura).');
   if (R.hotShell && !R.steam && R.Thi > 120) {
@@ -1349,18 +1397,43 @@ var TALLER = { hot: 'glicerina', cold: 'agua', lmh: L10(5.5), Thi: 140, Tho: 85,
   arr: '2-n', Np: 2, hotShell: true, head: 'BEM', tube: '34-16', layout: 'sq', shellIdx: 3, lenIdx: 0, baff: 0.4, mat: 'cs', Amode: 'geom', Adato: 30,
   Umode: 'dato', Uclean: 480, Rd: 0.0004, rfHot: 0.0002, rfCold: 0.0003, shellCorr: 'kern', constProps: true, cpHot: 2.45, cpCold: 4.18, months: 12, tau: 4, cEnergy: 0.12, hours: 8000, life: 10, nSer: 2, grid: true };
 var BASE = clone(TALLER);
-var PRESETS = [
-  { id: 'taller', name: 'Taller 5 rediseñado: 13 kg/s de agua', tag: '2-4', s: {} },
-  { id: 'taller0', name: 'Taller 5 tal como llega', tag: 'no cierra', s: { lmc: L10(3.8) } },
-  { id: 'diap1', name: 'Sesión I: aceite con agua en un 2-4', tag: 'F = 0,776', s: { hot: 'aceite', lmh: L10(3), cpHot: 2.5, Thi: 90, Tho: 40, cold: 'agua', lmc: L10(2), cpCold: 4.186, Tci: 20, TcoMax: 70, hotShell: false, Uclean: 350, Rd: 0, Amode: 'dato', Adato: 61.4, tube: '34-16', layout: 'tri', shellIdx: 3, lenIdx: 1, baff: 0.3 } },
-  { id: 'diap2', name: 'Sesión II: flujo paralelo por ε-NTU', tag: 'techo 1/(1+Cr)', s: { arr: 'paralelo', hot: 'aceite', lmh: L10(1.2), cpHot: 2.1, Thi: 110, Tho: 51, cold: 'agua', lmc: L10(1), cpCold: 4.2, Tci: 15, TcoMax: 90, Uclean: 500, Rd: 0, Amode: 'dato', Adato: 30, hotShell: false, tube: '34-16', layout: 'tri', shellIdx: 4, lenIdx: 0, baff: 0.3 } },
-  { id: 'pectina', name: 'Proyecto: enfriar el extracto antes del etanol', tag: 'proyecto', s: { hot: 'pectina', pMu: 2.5, lmh: L10(3), Thi: 88, Tho: 40, cold: 'agua', lmc: L10(10), Tci: 25, TcoMax: 42, hotShell: false, arr: '2-n', Np: 6, tube: '34-16', layout: 'sq', shellIdx: 4, lenIdx: 1, baff: 0.4, mat: 'ss', Umode: 'geom', constProps: false, rfHot: 0.0004, rfCold: 0.0003 } },
-  { id: 'vapor', name: 'Calentar agua de proceso con vapor', tag: 'Cr = 0', s: { hot: 'vapor', pSteam: 2, cold: 'aguap', lmc: L10(5), Tci: 25, Tco: 85, target: 'cold', arr: '1-n', Np: 4, hotShell: true, tube: '34-16', layout: 'sq', shellIdx: 3, lenIdx: 1, baff: 0.4, mat: 'ss', Umode: 'geom', constProps: false, rfHot: 0.0001, rfCold: 0.0002 } },
-  { id: 'aceite', name: 'Aceite ligero con agua de torre', tag: 'U calculado', s: { hot: 'aceite', lmh: L10(8), Thi: 110, Tho: 50, cold: 'agua', lmc: L10(18), Tci: 25, TcoMax: 40, hotShell: true, arr: '1-n', Np: 4, tube: '34-14', layout: 'tri', shellIdx: 7, lenIdx: 2, baff: 0.4, head: 'AES', Umode: 'geom', constProps: false, rfHot: 0.0002, rfCold: 0.0003 } }
+/* cₚ de tabla (a 25 °C) de un fluido, al paso del control: es el que se carga al cambiar de fluido, porque es el que
+   suele dar un enunciado (el 2,45 de la glicerina y el 4,18 del agua del Taller 5 son esos). El vapor no tiene cₚ. */
+function cp25(id) { var f = byId(FLUIDS, id); return f.steam ? null : Math.round(f.props(25, { pMu: 2 }).cp / 5) * 5 / 1000; }
+/* Configuraciones del curso: cada una es un intercambiador completo (corrientes, arreglo, geometría y cálculo de U).
+   Se cargan desde la pestaña 9. Como son ejemplos resueltos, fijan sus fluidos; conservan la vista y los supuestos
+   de campaña y costos que el estudiante haya puesto. */
+var CONFIGS = [
+  { id: 'taller', name: 'Taller 5 rediseñado: 13 kg/s de agua', src: 'Taller 5 · partes C y D', s: {},
+    desc: 'El equipo del taller con la alternativa de subir el agua a 13 kg/s. La glicerina se enfría de 140 a 85 °C por la coraza de dos corazas 2-4; el agua de torre entra a 28 °C y no puede volver a más de 42 °C. U limpio, Rd y los cₚ son los del enunciado.' },
+  { id: 'taller0', name: 'Taller 5 tal como llega', src: 'Taller 5 · parte A', s: { lmc: L10(3.8) },
+    desc: 'La especificación del cliente, con 3,8 kg/s de agua. El agua tendría que volver a casi 75 °C: el balance no cierra, ningún área lo arregla y la pestaña 2 cuantifica las alternativas.',
+    note: 'Respecto al rediseño solo cambia el caudal de agua; todo lo demás es igual.' },
+  { id: 'diap1', name: 'Factor F de un 2-4 con U y A dados', src: 'Sesión I · diapositivas', s: { hot: 'aceite', lmh: L10(3), cpHot: 2.5, Thi: 90, Tho: 40, cold: 'agua', lmc: L10(2), cpCold: 4.186, Tci: 20, TcoMax: 70, hotShell: false, Uclean: 350, Rd: 0, Amode: 'dato', Adato: 61.4, tube: '34-16', layout: 'tri', shellIdx: 3, lenIdx: 1, baff: 0.3 },
+    desc: 'Enfriar 3 kg/s de aceite de 90 a 40 °C con 2 kg/s de agua que entra a 20 °C, en dos corazas con cuatro pasos por tubos. U = 350 W/m²K y el área son datos: F = 0,776 queda cerca del mínimo de 0,75 y el área dada alcanza justo.',
+    note: 'Los cₚ son los de la diapositiva (2,5 y 4,186 kJ/kg·K), constantes.' },
+  { id: 'diap2', name: 'Flujo paralelo: la efectividad tiene techo', src: 'Sesión II · diapositivas', s: { arr: 'paralelo', hot: 'aceite', lmh: L10(1.2), cpHot: 2.1, Thi: 110, Tho: 51, cold: 'agua', lmc: L10(1), cpCold: 4.2, Tci: 15, TcoMax: 90, Uclean: 500, Rd: 0, Amode: 'dato', Adato: 30, hotShell: false, tube: '34-16', layout: 'tri', shellIdx: 4, lenIdx: 0, baff: 0.3 },
+    desc: 'Aceite a 110 °C calienta 1 kg/s de agua que entra a 15 °C, en flujo paralelo con U = 500 W/m²K y 30 m². Las dos salidas casi se igualan cerca de 50,6 °C: ε se queda en su techo 1/(1 + Cr) = 0,625 y más área ya no sirve.',
+    note: 'Pase a contracorriente en el panel 03: el mismo equipo enfría más el aceite (pestaña 4).' },
+  { id: 'pectina', name: 'Enfriar el extracto antes del etanol', src: 'Proyecto', s: { hot: 'pectina', pMu: 2.5, lmh: L10(3), Thi: 88, Tho: 40, cold: 'agua', lmc: L10(10), Tci: 25, TcoMax: 42, hotShell: false, arr: '2-n', Np: 6, tube: '34-16', layout: 'sq', shellIdx: 4, lenIdx: 1, baff: 0.4, mat: 'ss', Umode: 'geom', constProps: false, cpHot: cp25('pectina'), rfHot: 0.0004, rfCold: 0.0003 },
+    desc: 'El extracto ácido sale de la extracción a 88 °C y debe llegar a 40 °C antes de la precipitación con etanol. Va por los tubos de acero inoxidable 316, con seis pasos en cada una de dos corazas, y U se calcula con la geometría.',
+    note: 'La viscosidad del extracto (2,5 mPa·s) es un supuesto: cámbiela en el panel 01 por la que midan en el laboratorio.' },
+  { id: 'vapor', name: 'Calentar con vapor que condensa', src: 'Lectura 08 · Cr = 0', s: { hot: 'vapor', pSteam: 2, cold: 'aguap', lmc: L10(5), Tci: 25, Tco: 85, target: 'cold', arr: '1-n', Np: 4, hotShell: true, tube: '34-16', layout: 'sq', shellIdx: 3, lenIdx: 1, baff: 0.4, mat: 'ss', Umode: 'geom', constProps: false, rfHot: 0.0001, rfCold: 0.0002 },
+    desc: 'Vapor saturado a 2 bar condensa en la coraza y calienta 5 kg/s de agua de proceso de 25 a 85 °C en un 1-4 de acero inoxidable. El vapor no cambia de temperatura: Cr = 0, F = 1 en cualquier arreglo y su caudal sale del balance.',
+    note: 'Mientras el caliente sea vapor, el lado de la coraza y lo que fija el diseño quedan bloqueados, y las corazas en serie no hacen falta.' },
+  { id: 'aceite', name: 'U calculado por geometría: enfriador de aceite', src: 'ejercicio de diseño', s: { hot: 'aceite', lmh: L10(8), Thi: 110, Tho: 50, cold: 'agua', lmc: L10(18), Tci: 25, TcoMax: 40, hotShell: true, arr: '1-n', Np: 4, tube: '34-14', layout: 'tri', shellIdx: 7, lenIdx: 2, baff: 0.4, head: 'AES', Umode: 'geom', constProps: false, cpHot: cp25('aceite'), rfHot: 0.0002, rfCold: 0.0003 },
+    desc: 'Se enfrían 8 kg/s de aceite ligero de 110 a 50 °C con agua de torre, en un 1-4 de cabezal flotante (AES) con el aceite por la coraza. Aquí U no es un dato: sale de las dos películas, la pared y el ensuciamiento.',
+    note: 'En la pestaña 5 se ve qué resistencia manda; compare Kern con Donohue en el panel 05.' }
 ];
-function presetState(id) { var p = byId(PRESETS, id), s = Object.assign(clone(BASE), clone(p.s)); s.preset = id; return s; }
-var state = Object.assign(presetState('taller'), store.get('state', {}));
-var R = null, tab = store.get('tab', 'in');
+/* al cargar una tarjeta se conservan la vista y los supuestos de las pestañas de ensuciamiento y costos */
+var KEEP_VIEW = ['grid'], KEEP_STUDY = ['months', 'tau', 'cEnergy', 'hours', 'life'], STUDY = { months: 1, tau: 1, cEnergy: 1, hours: 1, life: 1 };
+function cfgState(id, from) {
+  var c = byId(CONFIGS, id), s = Object.assign(clone(BASE), clone(c.s));
+  if (from) KEEP_VIEW.concat(KEEP_STUDY).forEach(function (k) { s[k] = from[k]; });
+  s.cfg = c.id; s.cfgMod = false; return s;
+}
+var state = cfgState('taller');
+var R = null, tab = 'in';
 function mstate(s) { return Object.assign({}, s, { mh: Math.pow(10, s.lmh), mc: Math.pow(10, s.lmc) }); }
 var SVGI = {
   pause: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M8 5v14M16 5v14"/></svg>',
@@ -1384,16 +1457,15 @@ function arrLabel(r) { return r.arr === 'contra' ? 'contracorriente 1-1' : (r.ar
 /* ---------- controles ---------- */
 var SLIDERS = ['lmh', 'Thi', 'pSteam', 'Tho', 'pMu', 'lmc', 'Tci', 'TcoMax', 'Tco', 'shellIdx', 'baff', 'Adato', 'Uclean', 'Rd', 'rfHot', 'rfCold', 'hCond', 'cpHot', 'cpCold', 'months', 'tau', 'cEnergy', 'hours', 'life'];
 function buildControls() {
-  $$('.panel .ph').forEach(function (ph) { var d = document.createElement('div'); d.className = 'callout np-msg'; ph.parentNode.insertBefore(d, ph.nextSibling); });
-  $('#presetBtns').innerHTML = PRESETS.map(function (p) { return '<button type="button" class="opt" data-p="' + p.id + '"><span>' + esc(p.name) + '</span><span class="x">' + esc(p.tag) + '</span></button>'; }).join('');
+  $$('.panel:not([data-panel="cf"]) .ph').forEach(function (ph) { var d = document.createElement('div'); d.className = 'callout np-msg'; ph.parentNode.insertBefore(d, ph.nextSibling); });
   $('#hotBtns').innerHTML = FLUIDS.filter(function (f) { return f.id !== 'aguap' || true; }).map(function (f) { return '<button type="button" class="opt" data-f="' + f.id + '"><span class="dotc" style="background:' + f.color + '"></span><span>' + esc(f.name) + '</span><span class="x">' + (f.project ? 'proyecto' : '') + '</span></button>'; }).join('');
   $('#coldBtns').innerHTML = FLUIDS.filter(function (f) { return !f.hotOnly; }).map(function (f) { return '<button type="button" class="opt" data-f="' + f.id + '"><span class="dotc" style="background:' + f.color + '"></span><span>' + esc(f.name) + '</span><span class="x">' + (f.project ? 'proyecto' : '') + '</span></button>'; }).join('');
   $('#arrBtns').innerHTML = ARRS.map(function (a) { return '<button type="button" class="mill" data-a="' + a.id + '"><svg viewBox="0 0 42 30" aria-hidden="true" fill="none" stroke="currentColor">' + a.icon + '</svg>' + esc(a.name) + '<span class="sz">' + esc(a.sz) + '</span></button>'; }).join('');
   $('#tubeBtns').innerHTML = TUBES.map(function (t) { return '<button type="button" class="opt" data-t="' + t.id + '" style="grid-template-columns:1fr auto"><span>' + esc(t.name) + '</span><span class="x">' + fmtN((t.d - 2 * t.t) * 1000, 2) + ' mm</span></button>'; }).join('');
   $('#matSel').innerHTML = MATS.map(function (m) { return '<option value="' + m.id + '">' + esc(m.name) + ' · k = ' + m.k + ' W/m·K</option>'; }).join('');
-  $$('#presetBtns .opt').forEach(function (b) { b.addEventListener('click', function () { state = presetState(b.dataset.p); update(); if (hscene) hscene.prime(); }); });
-  $$('#hotBtns .opt').forEach(function (b) { b.addEventListener('click', function () { var f = byId(FLUIDS, b.dataset.f); state.hot = f.id; if (f.steam) { state.target = 'cold'; state.hotShell = true; } if (f.id === state.cold) state.cold = f.id === 'agua' ? 'aguap' : 'agua'; state.constProps = false; dirty(); }); });
-  $$('#coldBtns .opt').forEach(function (b) { b.addEventListener('click', function () { state.cold = b.dataset.f; state.constProps = false; dirty(); }); });
+  // cada botón de fluido cambia solo el fluido y su cₚ de tabla; lo que impone el vapor se deriva en compute()
+  $$('#hotBtns .opt').forEach(function (b) { b.addEventListener('click', function () { var f = byId(FLUIDS, b.dataset.f); if (f.id === state.hot) return; state.hot = f.id; if (!f.steam) state.cpHot = cp25(f.id); dirty(); }); });
+  $$('#coldBtns .opt').forEach(function (b) { b.addEventListener('click', function () { var id = b.dataset.f; if (id === state.cold) return; state.cold = id; state.cpCold = cp25(id); dirty(); }); });
   $$('#arrBtns .mill').forEach(function (b) { b.addEventListener('click', function () { state.arr = b.dataset.a === 'serie' ? (state.nSer || 2) + '-n' : b.dataset.a; dirty(); }); });
   $$('#NsSeg button').forEach(function (b) { b.addEventListener('click', function () { state.nSer = +b.dataset.v; state.arr = b.dataset.v + '-n'; dirty(); }); });
   $$('#tubeBtns .opt').forEach(function (b) { b.addEventListener('click', function () { state.tube = b.dataset.t; dirty(); }); });
@@ -1403,25 +1475,31 @@ function buildControls() {
   $$('#sideSeg button').forEach(function (b) { b.addEventListener('click', function () { if (byId(FLUIDS, state.hot).steam) return; state.hotShell = b.dataset.v === '1'; dirty(); }); });
   $$('#propSeg button').forEach(function (b) { b.addEventListener('click', function () { state.constProps = b.dataset.v === '1'; dirty(); }); });
   $('#matSel').addEventListener('change', function () { state.mat = this.value; dirty(); });
-  SLIDERS.forEach(function (k) { var el = document.getElementById(k); el.addEventListener('input', function () { state[k] = parseFloat(el.value); dirty(); }); });
-  $('#grid').addEventListener('change', function () { state.grid = this.checked; dirty(); });
-  $('#resetAll').addEventListener('click', function () { state = presetState('taller'); update(); if (hscene) hscene.prime(); });
+  SLIDERS.forEach(function (k) { var el = document.getElementById(k); el.addEventListener('input', function () { state[k] = parseFloat(el.value); dirty(STUDY[k] ? 'study' : null); }); });
+  $('#grid').addEventListener('change', function () { state.grid = this.checked; dirty('view'); });
+  $('#resetAll').addEventListener('click', function () { state = cfgState('taller'); update(); if (hscene) hscene.prime(); });
+  $('#toCfg').addEventListener('click', function () { setTab('cf'); if (window.innerWidth < 900) { $('#ctl').classList.remove('open'); $('#mobCtl').textContent = 'Controles'; } });
+  $('#cfgCards').addEventListener('click', function (e) { var b = e.target.closest('button[data-cfg]'); if (b) loadCfg(b.dataset.cfg); });
   $('#status').addEventListener('click', function () { setTab('in'); setTimeout(function () { $('#diagCard').scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 50); });
   $$('.tabs [role=tab]').forEach(function (b) { b.addEventListener('click', function () { setTab(b.dataset.tab); }); });
   $$('.tabs .canv button').forEach(function (b) { b.addEventListener('click', function () { document.documentElement.setAttribute('data-canvas', b.dataset.canvas); $$('.tabs .canv button').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); }); store.set('canvas', b.dataset.canvas); hscene && hscene.layout(); renderTab(); }); });
   $('#mobCtl').addEventListener('click', function () { $('#ctl').classList.toggle('open'); this.textContent = $('#ctl').classList.contains('open') ? 'Cerrar' : 'Controles'; });
-  document.addEventListener('keydown', function (e) { if (/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return; var i = '12345678'.indexOf(e.key); if (i >= 0) setTab(['in', 'ba', 'lm', 'en', 'co', 'fo', 'cs', 'ec'][i]); if (e.key === ' ' && tab === 'in') { e.preventDefault(); togglePlay(); } });
+  document.addEventListener('keydown', function (e) { if (/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return; var i = '123456789'.indexOf(e.key); if (i >= 0) setTab(['in', 'ba', 'lm', 'en', 'co', 'fo', 'cs', 'ec', 'cf'][i]); if (e.key === ' ' && tab === 'in') { e.preventDefault(); togglePlay(); } });
   $('#btnPlay').innerHTML = SVGI.pause; $('#btnPlay').addEventListener('click', togglePlay);
   $$('.play [data-sp]').forEach(function (b) { b.addEventListener('click', function () { hscene.speed = +b.dataset.sp; $$('.play [data-sp]').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); }); }); });
   var cv = store.get('canvas', 'paper'); document.documentElement.setAttribute('data-canvas', cv); $$('.tabs .canv button').forEach(function (x) { x.setAttribute('aria-pressed', x.dataset.canvas === cv ? 'true' : 'false'); });
   hoverSetup();
 }
-function dirty() { state.preset = null; update(); }
+/* todo cambio del sistema marca la configuración como modificada; la vista y los supuestos de campaña y costos no */
+function dirty(kind) { if (kind !== 'view' && kind !== 'study') state.cfgMod = true; update(); }
+function loadCfg(id) { state = cfgState(id, state); update(); if (hscene) hscene.prime(); setTab('in'); window.scrollTo(0, 0); }
 function togglePlay() { hscene.running = !hscene.running; $('#btnPlay').innerHTML = hscene.running ? SVGI.pause : SVGI.play; }
 function setTab(t) {
-  tab = t; store.set('tab', t);
+  tab = t;
   $$('.tabs [role=tab]').forEach(function (b) { b.setAttribute('aria-selected', b.dataset.tab === t ? 'true' : 'false'); });
   $$('.panel').forEach(function (p) { p.classList.toggle('on', p.dataset.panel === t); });
+  var tb = $('.tabs'), sel = $('.tabs [aria-selected="true"]'); // en pantallas angostas, que se vea la pestaña activa
+  if (tb && sel && tb.scrollWidth > tb.clientWidth) { var l = sel.offsetLeft, rgt = l + sel.offsetWidth; if (l < tb.scrollLeft || rgt > tb.scrollLeft + tb.clientWidth) tb.scrollLeft = Math.max(0, l - (tb.clientWidth - sel.offsetWidth) / 2); }
   if (t === 'in' && hscene) hscene.resize();
   renderTab();
 }
@@ -1431,12 +1509,11 @@ function show(id, on) { var el = document.getElementById(id); if (el) el.style.d
 
 function update() {
   var s = state, hf = byId(FLUIDS, s.hot), cf = byId(FLUIDS, s.cold), steam = !!hf.steam;
-  if (steam) { s.target = 'cold'; s.hotShell = true; if (shellsOf(s.arr) > 1) s.arr = '1-n'; }
-  if (s.arr === 'contra' || s.arr === 'paralelo') { /* un solo paso */ }
-  store.set('state', s);
+  // con vapor, compute() deriva el lado (coraza), lo que fija el diseño (la salida del frío) y una sola coraza: se
+  // muestran y se bloquean aquí, pero el estado guarda lo que el estudiante tenía para cuando vuelva a un líquido
   R = compute(mstate(s));
   var r = R, b = r.bal, g = r.geo;
-  pressed('#presetBtns .opt', 'p', s.preset || ''); pressed('#hotBtns .opt', 'f', s.hot); pressed('#coldBtns .opt', 'f', s.cold); pressed('#arrBtns .mill', 'a', shellsOf(s.arr) > 1 ? 'serie' : s.arr); pressed('#NsSeg button', 'v', shellsOf(s.arr)); pressed('#tubeBtns .opt', 't', s.tube);
+  pressed('#hotBtns .opt', 'f', s.hot); pressed('#coldBtns .opt', 'f', s.cold); pressed('#arrBtns .mill', 'a', shellsOf(r.arr) > 1 ? 'serie' : r.arr); pressed('#NsSeg button', 'v', shellsOf(r.arr)); pressed('#tubeBtns .opt', 't', s.tube);
   pressed('#tgtSeg button', 'v', r.target); pressed('#laySeg button', 'v', s.layout); pressed('#headSeg button', 'v', s.head); pressed('#AmodeSeg button', 'v', s.Amode); pressed('#UmodeSeg button', 'v', s.Umode); pressed('#corrSeg button', 'v', s.shellCorr);
   pressed('#NpSeg button', 'v', s.Np); pressed('#lenSeg button', 'v', s.lenIdx); pressed('#sideSeg button', 'v', r.hotShell ? '1' : '0'); pressed('#propSeg button', 'v', s.constProps ? '1' : '0');
   $('#matSel').value = s.mat;
@@ -1451,8 +1528,9 @@ function update() {
   setV('vmc', fmtN(Math.pow(10, s.lmc), 2) + ' kg/s'); setV('vTci', fmtN(s.Tci, 1) + ' °C'); setV('vTcoMax', fmtN(s.TcoMax, 1) + ' °C'); setV('vTco', fmtN(s.Tco, 1) + ' °C');
   $('#mcHint').textContent = r.target === 'hot' ? 'Mínimo para no pasar del límite: ' + fmtN(b.mcNeed, 2) + ' kg/s' : '';
   $$('#tgtSeg button').forEach(function (x) { x.disabled = steam; });
+  $('#tgtHint').textContent = steam ? 'Con vapor se fija la salida del frío y el caudal de vapor sale del balance.' : '';
   // arreglo
-  show('NpRow', isST(s.arr)); show('NsRow', shellsOf(s.arr) > 1);
+  show('NpRow', isST(r.arr)); show('NsRow', shellsOf(r.arr) > 1);
   $$('#arrBtns .mill').forEach(function (x) { x.disabled = steam && x.dataset.a === 'serie'; x.title = x.disabled ? 'Con vapor que condensa, F = 1 en cualquier arreglo: una coraza basta' : ''; });
   $$('#sideSeg button').forEach(function (x) { x.disabled = steam; });
   $('#sideHint').textContent = steam ? 'El vapor condensa en la coraza.' : 'McCabe: por los tubos el corrosivo, el sucio y el muy caliente; el muy viscoso, por la coraza.';
@@ -1464,13 +1542,15 @@ function update() {
   $('#layHint').textContent = 'Paso pₜ = ' + fmtN(g.pt * 1000, 2) + ' mm (' + fmtN(g.pt / g.d, 2) + '·dₒ)' + (s.layout !== 'tri' ? ' · carril de limpieza de ¼″' : '');
   show('AdatoRow', s.Amode === 'dato'); setV('vAdato', fmtN(s.Adato, 1) + ' m²');
   // coeficiente
-  show('UdatoBox', s.Umode === 'dato'); show('UgeomBox', s.Umode !== 'dato'); show('corrRow', !steam); show('hCondRow', steam); show('cpBox', s.constProps);
+  show('UdatoBox', s.Umode === 'dato'); show('UgeomBox', s.Umode !== 'dato'); show('corrRow', !steam); show('hCondRow', steam); show('cpBox', s.constProps); show('cpHotRow', !steam);
   setV('vUclean', fmtN(s.Uclean, 0) + ' W/m²K'); setV('vRd', fRf(s.Rd) + ' m²K/W'); setV('vrfHot', fRf(s.rfHot) + ' m²K/W'); setV('vrfCold', fRf(s.rfCold) + ' m²K/W'); setV('vhCond', fmtN(s.hCond, 0) + ' W/m²K');
   $('#rfHotHint').textContent = 'Típico: ' + hf.rfNote; $('#rfColdHint').textContent = 'Típico: ' + cf.rfNote;
   setV('vcpHot', fmtN(s.cpHot, 3) + ' kJ/kg·K'); setV('vcpCold', fmtN(s.cpCold, 3) + ' kJ/kg·K');
   setV('vmonths', fmtN(s.months, 0) + ' meses'); setV('vtau', fmtN(s.tau, 1) + ' meses');
   setV('vcEnergy', 'US$ ' + fmtN(s.cEnergy, 2) + '/kWh'); setV('vhours', fmtN(s.hours, 0) + ' h'); setV('vlife', fmtN(s.life, 0) + ' años');
-  $('#ctx').innerHTML = '<b>' + esc(arrLabel(r)) + '</b> · ' + esc(hf.short) + ' ' + fmtN(r.Thi, 0) + ' → ' + fmtN(b.Tho, 0) + ' °C · ' + esc(cf.short) + ' ' + fmtN(r.Tci, 0) + ' → ' + fmtN(b.Tco, 1) + ' °C';
+  var cg = byId(CONFIGS, s.cfg);
+  $('#cfgNow').innerHTML = esc(cg.name) + '<small>' + esc(s.cfgMod ? 'con sus cambios' : cg.src) + '</small>';
+  $('#ctx').innerHTML = '<b>' + esc(cg.name) + (s.cfgMod ? ', modificado' : '') + '</b> · ' + esc(arrLabel(r)) + ' · ' + esc(hf.short) + ' ' + fmtN(r.Thi, 0) + ' → ' + fmtN(b.Tho, 0) + ' °C · ' + esc(cf.short) + ' ' + fmtN(r.Tci, 0) + ' → ' + fmtN(b.Tco, 1) + ' °C';
   renderKPIs();
   var sev = r.warn.some(function (w) { return w.sev === 'c'; }) ? 'inv' : (r.warn.some(function (w) { return w.sev === 'w'; }) ? 'adv' : '');
   $('#status').className = 'status' + (sev ? ' ' + sev : ''); $('#statusTxt').textContent = !b.closes ? 'El balance no cierra' : (sev === 'inv' ? 'No cumple' : (sev === 'adv' ? 'Con advertencias' : 'Diseño sano'));
@@ -1494,7 +1574,8 @@ function renderKPIs() {
 function renderTab() {
   if (!R) return;
   var np = !R.bal.physical;
-  $$('.panel').forEach(function (p) { p.classList.toggle('nophys', np); });
+  $$('.panel').forEach(function (p) { p.classList.toggle('nophys', np && p.dataset.panel !== 'cf'); });
+  if (tab === 'cf') { renderConfigs(); return; } // las configuraciones se ven aunque el sistema en pantalla no sea posible
   if (np) { var m = R.warn[0] ? R.warn[0].t : ''; $$('.np-msg').forEach(function (el) { el.innerHTML = '<b>Así no hay diseño posible.</b> ' + esc(m) + ' Corrija las temperaturas o los caudales en los controles.'; }); renderWarn(); return; }
   if (tab === 'in') renderInside();
   else if (tab === 'ba') renderBalance();
@@ -1612,7 +1693,7 @@ function renderBalance() {
   }
   $('#altTable').style.display = alts.length ? '' : 'none';
   $('#altTable').innerHTML = alts.length ? '<tr><th>Alternativa</th><th>Qué se modifica</th><th>Efecto</th><th>Ventaja</th><th>Desventaja</th><th>¿Viable?</th></tr>' + alts.map(function (a) { return '<tr><td>' + esc(a[0]) + '</td><td style="text-align:left">' + esc(a[1]) + '</td><td>' + esc(a[2]) + '</td><td style="text-align:left">' + esc(a[3]) + '</td><td style="text-align:left">' + esc(a[4]) + '</td><td>' + esc(a[5]) + '</td></tr>'; }).join('') : '';
-  $('#altNote').textContent = !hot ? 'Con el frío como objetivo el balance siempre cierra: el caudal del caliente (o del vapor) se ajusta.' : (b.closes ? 'El balance cierra: con ' + fmtN(s.mc, 2) + ' kg/s el frío tiene ' + fmtN(100 * (s.mc / b.mcNeed - 1), 1) + ' % de caudal por encima del mínimo (' + fmtN(b.mcNeed, 2) + ' kg/s). Las alternativas del Taller 5 aparecen cuando el caso no cierra: pruebe «Taller 5 tal como llega».' : 'Cada alternativa se calculó con el mismo U de diseño y el mismo arreglo. Otras ideas del taller: un segundo servicio o etapa, agua helada, un aeroenfriador antes del agua.');
+  $('#altNote').textContent = !hot ? 'Con el frío como objetivo el balance siempre cierra: el caudal del caliente (o del vapor) se ajusta.' : (b.closes ? 'El balance cierra: con ' + fmtN(s.mc, 2) + ' kg/s el frío tiene ' + fmtN(100 * (s.mc / b.mcNeed - 1), 1) + ' % de caudal por encima del mínimo (' + fmtN(b.mcNeed, 2) + ' kg/s). Las alternativas del Taller 5 aparecen cuando el caso no cierra: cargue «Taller 5 tal como llega» en la pestaña 9.' : 'Cada alternativa se calculó con el mismo U de diseño y el mismo arreglo. Otras ideas del taller: un segundo servicio o etapa, agua helada, un aeroenfriador antes del agua.');
 }
 
 /* ---------- 3 · LMTD y F ---------- */
@@ -1745,6 +1826,50 @@ function renderCost() {
     return '<tr' + (x.m.id === r.mat.id ? ' class="cur"' : '') + '><td>' + esc(x.m.name) + (best && best.m.id === x.m.id ? ' <span class="pill ok">más barato</span>' : '') + '</td><td>' + x.m.k + '</td><td>' + fmtN(x.q.Ud, 0) + ' W/m²K</td><td>' + fA(x.q.Areq) + '</td><td' + (isFinite(ov) && ov < 0 ? ' class="bad"' : '') + '>' + (isFinite(ov) ? (ov >= 0 ? '+' : '') + fmtN(100 * ov, 0) + ' %' : '—') + '</td><td>' + usd(x.e.buy) + '</td><td>' + usd(x.e.totY) + '</td><td' + (ok ? '' : ' class="bad"') + '>' + (ok ? (isFinite(ov) && ov < 0 ? 'falta área' : 'sí') : 'no: se corroe') + '</td></tr>';
   }).join('');
   $('#matNote').textContent = (r.s.Umode === 'dato' ? 'Con U como dato el material no cambia U ni el área: solo el precio. ' : 'La pared casi nunca manda en 1/U: cambiar de material mueve poco el área y mucho el precio. ') + (acid ? 'El extracto es ácido (pH 1,5 a 2,5): solo el acero inoxidable 316 y el titanio lo resisten.' : 'Admiralty y Cu-Ni se usan con agua de mar o de torre agresiva; el titanio, con medios muy corrosivos.');
+}
+
+/* ---------- 9 · configuraciones del curso ---------- */
+function trimN(x, d) { var t = fmtN(x, d); return t.indexOf(',') >= 0 ? t.replace(/0+$/, '').replace(/,$/, '') : t; }
+function lc1(s) { return s.charAt(0).toLowerCase() + s.slice(1); }
+function cfgFacts(st, r) {
+  var g = r.geo, side = function (f, shell) { return f.name + (shell ? ' por la coraza' : ' por los tubos'); };
+  var mh = Math.pow(10, st.lmh), mc = Math.pow(10, st.lmc), hot = r.target === 'hot';
+  var hotTxt = r.steam ? 'vapor a ' + trimN(st.pSteam, 2) + ' bar abs, condensa a ' + fmtN(r.Thi, 0) + ' °C' : trimN(mh, 2) + ' kg/s · ' + (hot ? trimN(st.Thi, 1) + ' → ' + trimN(st.Tho, 1) + ' °C' : 'entra a ' + trimN(st.Thi, 1) + ' °C');
+  var coldTxt = trimN(mc, 2) + ' kg/s · ' + (hot ? 'entra a ' + trimN(st.Tci, 1) + ' °C y sale a ' + trimN(st.TcoMax, 1) + ' °C como máximo' : trimN(st.Tci, 1) + ' → ' + trimN(st.Tco, 1) + ' °C');
+  var lay = LAYOUTS.filter(function (l) { return l.id === st.layout; })[0], mat = /^(cs|ss|ti)$/.test(r.mat.id) ? lc1(r.mat.name) : r.mat.name;
+  var Utxt = st.Umode === 'dato' ? 'U limpio = ' + fmtN(st.Uclean, 0) + ' W/m²K como dato, ' + (st.Rd ? 'Rd = ' + fRf(st.Rd) + ' m²K/W' : 'sin ensuciamiento') : 'U con la geometría (' + (r.steam ? 'condensación' : (st.shellCorr === 'kern' ? 'Kern' : 'Donohue')) + ' en la coraza)';
+  var cpTxt = st.constProps ? (r.steam ? 'cₚ del frío constante, ' + trimN(st.cpCold, 3) : 'cₚ constantes, ' + trimN(st.cpHot, 3) + ' y ' + trimN(st.cpCold, 3)) + ' kJ/kg·K' : 'propiedades a la temperatura media';
+  return [['Fluidos', side(r.hf, r.hotShell) + ' · ' + lc1(side(r.cf, !r.hotShell))], ['Caliente', hotTxt], ['Frío', coldTxt],
+    ['Equipo', arrLabel(r) + ' · ' + g.head.id + ' · coraza de ' + trimN(SHELL_IN[st.shellIdx], 2) + '″ · tubos de ' + LEN_FT[st.lenIdx] + ' pies'],
+    ['Haz', g.tb.name.replace(' · ', ' ') + ' en ' + lc1(lay.name) + ' · ' + g.Nt + ' tubos por coraza · ' + mat],
+    ['Cálculo', Utxt + ' · ' + (st.Amode === 'dato' ? 'A = ' + trimN(st.Adato, 1) + ' m² como dato' : 'A de la geometría') + ' · ' + cpTxt]];
+}
+function cfgResult(r) {
+  var b = r.bal, sev = r.warn.some(function (w) { return w.sev === 'c'; }) ? 'no cumple' : (r.warn.some(function (w) { return w.sev === 'w'; }) ? 'con advertencias' : 'diseño sano');
+  if (!b.physical) return 'las temperaturas no son posibles (segunda ley)';
+  if (r.target === 'hot' && !b.closes) return 'Q = ' + fkW(b.Q) + ' kW · el balance no cierra: el frío absorbe ' + fmtN(100 * b.Qcmax / b.Q, 0) + ' % de la carga';
+  return 'Q = ' + fkW(b.Q) + ' kW' + (r.steam ? ' · vapor ' + fmtN(b.mh * 3600, 0) + ' kg/h' : '') + ' · F = ' + (r.Fr.ok ? fmtN(r.F, 3) : 'imposible') + ' · U = ' + fmtN(r.Ud, 0) + ' W/m²K · A = ' + fA(r.Areq)
+    + ' (' + (r.s.Amode === 'dato' ? 'dada ' : 'instalada ') + fA(r.Aav) + (isFinite(r.over) ? ', ' + (r.over >= 0 ? '+' : '') + fmtN(100 * r.over, 0) + ' %' : '') + ') · ' + sev;
+}
+/* el resultado de cada tarjeta depende solo de la tarjeta (lo que se conserva al cargarla no entra en compute): se calcula una vez */
+var CFG_R = {};
+function renderConfigs() {
+  var s = state;
+  $('#cfLead').innerHTML = 'Cada tarjeta es un intercambiador completo del curso: sus dos corrientes, el arreglo, la geometría y la forma de calcular U. Como son ejemplos resueltos, cada una trae sus propios fluidos. Al cargarla se conservan la cuadrícula, el fondo y lo que haya puesto en la campaña de limpieza (pestaña 6) y en los costos (pestaña 7); después la sigue cambiando pieza por pieza en los controles.';
+  $('#cfgCards').innerHTML = CONFIGS.map(function (c) {
+    var st = cfgState(c.id, s), r = CFG_R[c.id] || (CFG_R[c.id] = compute(mstate(st))), on = s.cfg === c.id;
+    return '<div class="cfg' + (on ? ' on' : '') + '"><div class="cb"><div class="ct"><h3>' + esc(c.name) + '</h3><span class="src">' + esc(c.src) + '</span></div><p>' + esc(c.desc) + '</p>'
+      + '<dl class="facts">' + cfgFacts(st, r).map(function (q) { return '<dt>' + q[0] + '</dt><dd>' + esc(q[1]) + '</dd>'; }).join('') + '</dl>'
+      + '<div class="res"><span>Resultado:</span> ' + esc(cfgResult(r)) + '</div>' + (c.note ? '<div class="note">' + esc(c.note) + '</div>' : '')
+      + '<button type="button" data-cfg="' + c.id + '"' + (on && !s.cfgMod ? ' disabled' : '') + '>' + (on ? (s.cfgMod ? 'Volver a cargarla sin sus cambios' : 'Es la que está en pantalla') : 'Cargar esta configuración') + '</button></div></div>';
+  }).join('');
+  $('#cfgIdeas').innerHTML = [
+    '<b>Fluido caliente (01):</b> escoja el vapor saturado. Pasa a la coraza, F vale 1 en cualquier arreglo y lo que fija el diseño es la salida del frío; vuelva al líquido y el equipo recupera lo que tenía.',
+    '<b>Arreglo (03):</b> cambie el número de corazas en serie y compare F en la pestaña 3. Cuando las temperaturas se cruzan, una sola coraza no alcanza.',
+    '<b>Geometría (04):</b> cierre el espaciado de bafles y mire cómo suben la velocidad, el coeficiente y la caída de presión de la coraza en la pestaña 5.',
+    '<b>Coeficiente global (05):</b> alterne entre «U como dato» y «Calcular con la geometría» para ver qué resistencia manda en 1/U.',
+    '<b>Coeficiente global (05):</b> alterne entre «cₚ constantes» y «A la temperatura media». Es la parte E del Taller 5: cuánto cambian la carga, el caudal de agua y el área.'
+  ].map(function (x) { return '<li>' + x + '</li>'; }).join('');
 }
 
 /* ---------- 8 · ecuaciones ---------- */

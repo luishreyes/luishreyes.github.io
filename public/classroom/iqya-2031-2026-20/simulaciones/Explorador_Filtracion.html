@@ -293,6 +293,32 @@ table.t tr.dim td { color: var(--n500); }
 @media (max-width: 640px) { .stage .hud { display: none; } .eqs .f { font-size: 14px; } }
 .mill:disabled { opacity: .4; cursor: not-allowed; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+/* sistema en pantalla y configuraciones del curso */
+.ctl .cfgnow { background: var(--accent-50); }
+.cfgnow-l { font-family: var(--font-mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--n600); font-weight: 700; }
+.cfgnow-n { font-size: 14.5px; font-weight: 750; margin-top: 3px; line-height: 1.3; }
+.cfgnow-n small { display: block; font-size: 11.5px; font-weight: 600; color: var(--n600); margin-top: 2px; }
+.cfgnow-b { margin-top: 8px; border: none; background: none; padding: 0; font: inherit; font-size: 12.5px; font-weight: 700; color: var(--accent-700); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.cfgs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin-top: 18px; }
+.cfg { border: 2px solid var(--divider); background: #fff; display: flex; flex-direction: column; }
+.cfg.on { border-color: var(--accent); box-shadow: inset 0 -4px 0 var(--accent); }
+.cfg .cb { padding: 12px 16px 14px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+.cfg .ct { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.cfg h3 { margin: 0; font-size: 16px; font-weight: 780; }
+.cfg .src { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-700); font-weight: 700; }
+.cfg p { margin: 0; font-size: 13.5px; color: var(--n700); line-height: 1.5; }
+.cfg .facts { display: grid; grid-template-columns: auto 1fr; gap: 3px 12px; font-size: 12.5px; margin: 2px 0 0; }
+.cfg .facts dt { color: var(--n600); font-weight: 600; }
+.cfg .facts dd { margin: 0; font-weight: 650; }
+.cfg .res { font-family: var(--font-mono); font-size: 12.5px; font-weight: 700; border-top: 1px solid var(--n200); padding-top: 8px; }
+.cfg .res span { color: var(--n600); font-weight: 600; }
+.cfg .note { font-size: 12.5px; color: var(--n600); }
+.cfg button { margin-top: auto; align-self: flex-start; border: 2px solid var(--text); background: var(--text); color: #fff; font: inherit; font-size: 12.5px; font-weight: 750; padding: 7px 12px; cursor: pointer; }
+.cfg.on button { background: #fff; color: var(--text); }
+.cfg button:disabled { opacity: .6; cursor: default; }
+.ideas { margin: 0; padding-left: 18px; display: grid; gap: 6px; font-size: 13.5px; line-height: 1.5; }
+.ideas b { color: var(--accent-700); }
+@media (max-width: 1100px) { .cfgs { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
@@ -318,7 +344,7 @@ table.t tr.dim td { color: var(--n500); }
 
 <div class="shell">
   <aside class="ctl" id="ctl" aria-label="Controles">
-    <section><h2><span class="n">00</span> Casos de partida</h2><div class="presets" id="presetBtns"></div></section>
+    <section class="cfgnow"><div class="cfgnow-l">Sistema en pantalla</div><div class="cfgnow-n" id="cfgNow"></div><button type="button" class="cfgnow-b" id="toCfg">Ver las configuraciones del curso</button></section>
     <section><h2><span class="n">01</span> Suspensión</h2>
       <div class="opts" id="matBtns"></div>
       <div class="sl"><div class="row"><span>Sólidos secos</span></div><div class="seg" id="basisSeg" style="margin-top:6px"><button type="button" data-v="filtrado">Por m³ de filtrado</button><button type="button" data-v="alimentado">Por m³ de líquido alimentado</button></div></div>
@@ -376,7 +402,7 @@ table.t tr.dim td { color: var(--n500); }
     </section>
     <section><h2><span class="n">06</span> Vista</h2>
       <label class="toggle"><input type="checkbox" id="grid"> Cuadrícula en las gráficas</label>
-      <button type="button" class="seg inline" id="resetAll" style="margin-top:14px;padding:7px 12px;font-weight:700;font-size:12.5px;cursor:pointer">Restablecer el caso base</button>
+      <button type="button" class="seg inline" id="resetAll" style="margin-top:14px;padding:7px 12px;font-weight:700;font-size:12.5px;cursor:pointer">Volver al filtro prensa del Taller 6</button>
     </section>
   </aside>
 
@@ -389,6 +415,7 @@ table.t tr.dim td { color: var(--n500); }
       <button type="button" role="tab" data-tab="ta" aria-selected="false"><span class="k">5</span>Tambor</button>
       <button type="button" role="tab" data-tab="al" aria-selected="false"><span class="k">6</span>Alternativas</button>
       <button type="button" role="tab" data-tab="ec" aria-selected="false"><span class="k">7</span>Ecuaciones</button>
+      <button type="button" role="tab" data-tab="cf" aria-selected="false"><span class="k">8</span>Configuraciones</button>
       <span class="sp"></span>
       <div class="canv"><button type="button" data-canvas="paper" aria-pressed="true">Papel</button><button type="button" data-canvas="blueprint" aria-pressed="false">Blueprint</button></div>
     </nav>
@@ -491,6 +518,13 @@ table.t tr.dim td { color: var(--n500); }
       <div class="ph"><h2>Ecuaciones</h2><span class="lbl">con los valores del caso actual</span><p>Las de la Lectura 09, las diapositivas, el Taller 6 y el capítulo 29 de McCabe, evaluadas con la configuración de los controles. Lo que no está en el material del curso se marca como externo.</p></div>
       <div class="eqs" id="eqs"></div>
       <div class="callout ink" id="assump"></div>
+    </section>
+
+    <!-- 8 · configuraciones -->
+    <section class="panel" data-panel="cf">
+      <div class="ph"><h2>Configuraciones del curso</h2><span class="lbl">cargue una y siga cambiándola</span><p id="cfLead"></p></div>
+      <div class="cfgs" id="cfgCards"></div>
+      <div class="card"><div class="card-h"><span class="t">Para probar en el sistema que tiene en pantalla</span><span class="sp"></span><span>un cambio a la vez</span></div><div class="card-b"><ul class="ideas" id="cfgIdeas"></ul></div></div>
     </section>
   </main>
 </div>
@@ -1110,17 +1144,45 @@ var BASE = { mat: 'levadura', mu: 3.5, rhoL: 1030, cBasis: 'filtrado', lcs: L10(
   J0: 150, qStop: 0.25, dPv: 0.6, f: 0.3, rpm: 0.5, minCake: 3, dPa: 3, dPb: 5, flocK: 10, flocDose: 50, mfJ: 35, drho: 70, contOn: false, contW: 25,
   lab: 't6', labA: 0.0012, labDP: 1.8, labMu: 3.5, labC: 25, labPts: clone(T6PTS), grid: true,
   scores: { prensa: [3, 3, 4, 2, 2, 1], floc: [5, 4, 3, 2, 3, 1], cent: [2, 3, 5, 4, 4, 5], mf: [4, 2, 4, 3, 5, 4] } };
-var PRESETS = [
-  { id: 't6a', name: 'Taller 6 · modelo ideal', tag: '55 m² a 3 bar', s: {} },
-  { id: 't6c', name: 'Taller 6 · torta compresible', tag: 's = 0,7', s: { sComp: 0.7 } },
-  { id: 't6r', name: 'Taller 6 · no toda la hora filtra', tag: '60 % del ciclo', s: { sComp: 0.7, frac: 0.6 } },
-  { id: 'real', name: 'Ciclo real de la prensa', tag: 'bomba hasta 5 bar', s: { sComp: 0.7, cyc: 'real', dP: 5 } },
-  { id: 't6d', name: 'Taller 6 en un tambor al vacío', tag: 'torta delgada', s: { sComp: 0.7, eq: 'tambor', dPv: 0.6, f: 0.3, rpm: 0.5 } },
-  { id: 'mc2', name: 'McCabe 29.2 · tambor con CaCO₃', tag: '7,59 m²', s: { mat: 'caco3', mu: 1.0, rhoL: 998, cBasis: 'alimentado', lcs: L10(236), mw: 2, rhoCd: 1200, lQ: L10(2.089), la: L10(1.4226e11), dPref: 1, sComp: 0.26, lRm: 6, eq: 'tambor', dPv: 20 * 3386.39 / 1e5, f: 0.3, rpm: 0.2, minCake: 3 } },
-  { id: 'proj', name: 'Proyecto · filtro del bagazo agotado', tag: 'α a medir', s: { mat: 'bagazo', mu: 4, rhoL: 1008, lcs: L10(10), mw: 5, rhoCd: 150, lQ: L10(6), la: L10(1e10), dPref: 1, sComp: 0.5, lRm: L10(3e10), dP: 1.5, Pmax: 3, cyc: 'td', tdMin: 30, tfMode: 'opt', wash: 1, kw: 'mitad', Ap: 1, maxPl: 60, depth: 40 } }
+/* Configuraciones del curso: cada una es un filtro completo (la corriente, el equipo, el ciclo y las restricciones de la planta).
+   Se cargan desde la pestaña 8. Conservan la suspensión que el estudiante tiene en pantalla (el material con las propiedades
+   de su torta y de su líquido) salvo las claves que la tarjeta fija: las del Taller 6 y la del ciclo real fijan solo la
+   compresibilidad s que estudian; mc2 y proj son ejemplos completos y fijan su propia suspensión. Siempre se conservan los
+   datos editados del ensayo, los puntajes de la matriz, los supuestos de las alternativas y las opciones de vista. */
+var CONFIGS = [
+  { id: 't6a', name: 'Taller 6 · modelo ideal', src: 'Taller 6 · parte B', s: { sComp: 0 },
+    desc: 'La prensa del taller: 4,5 m³/h de filtrado con 25 g/L de levadura, a 3 bar, filtrando durante toda la hora del ciclo y con la torta incompresible (s = 0). Es el cálculo de la parte B.',
+    note: 'Con la levadura del taller da 55,0 m² a 3 bar y 42,5 m² a 5 bar (pestaña 3).' },
+  { id: 't6c', name: 'Taller 6 · torta compresible', src: 'Taller 6 · parte C', s: { sComp: 0.7 },
+    desc: 'La misma prensa con la compresibilidad que da el taller, s = 0,7. La torta se compacta al subir la presión y α crece, así que pasar de 3 a 5 bar ahorra mucha menos área que en el modelo ideal.',
+    note: 'Con la levadura del taller: 65,7 m² a 3 bar y 60,6 m² a 5 bar.' },
+  { id: 't6r', name: 'Taller 6 · solo el 60 % del ciclo filtra', src: 'Taller 6 · parte C', s: { sComp: 0.7, frac: 0.6 },
+    desc: 'Torta compresible y un ciclo de una hora en el que la prensa filtra 36 minutos; los otros 24 se van en lavar, descargar y cerrar. Para filtrar lo mismo en menos tiempo hace falta más área.',
+    note: 'Con la levadura del taller: 85,0 m².' },
+  { id: 'real', name: 'Ciclo real de la prensa', src: 'Diapositivas 15 a 17', s: { sComp: 0.7, cyc: 'real', dP: 5 },
+    desc: 'La bomba de desplazamiento positivo arranca a caudal constante y la presión sube con la torta hasta 5 bar; de ahí en adelante filtra a presión constante hasta que el caudal cae al 25 % del de la bomba. Luego descarga, limpia y cierra en 24 min.' },
+  { id: 't6d', name: 'Taller 6 en un tambor al vacío', src: 'Taller 6 · McCabe 29.31', s: { sComp: 0.7, eq: 'tambor', dPv: 0.6, f: 0.3, rpm: 0.5 },
+    desc: 'El caldo del taller en un filtro de tambor rotatorio continuo: 0,6 bar de vacío, 30 % sumergido y media vuelta por minuto.',
+    note: 'Con la levadura, una torta muy resistente, cada vuelta deja una capa mucho más delgada que la mínima que la cuchilla alcanza a descargar.' },
+  { id: 'mc2', name: 'Tambor al vacío con carbonato de calcio', src: 'McCabe · ejemplo 29.2', s: { mat: 'caco3', mu: 1.0, rhoL: 998, cBasis: 'alimentado', lcs: L10(236), mw: 2, rhoCd: 1200, lQ: L10(2.089), la: L10(1.4226e11), dPref: 1, sComp: 0.26, lRm: 6, eq: 'tambor', dPv: 20 * 3386.39 / 1e5, f: 0.3, rpm: 0.2, minCake: 3 },
+    desc: 'El ejemplo resuelto del libro: un tambor rotatorio a 20 inHg de vacío, 30 % sumergido y a 0,2 rpm, que filtra una suspensión de CaCO₃ con la concentración dada por m³ de líquido alimentado. El libro obtiene 7,59 m² de área.',
+    note: 'Fija su propia suspensión, la del ejemplo: CaCO₃ con s = 0,26 y la resistencia del medio despreciable.' },
+  { id: 'proj', name: 'Filtro del bagazo agotado', src: 'Proyecto', s: { mat: 'bagazo', mu: 4, rhoL: 1008, lcs: L10(10), mw: 5, rhoCd: 150, lQ: L10(6), la: L10(1e10), dPref: 1, sComp: 0.5, lRm: L10(3e10), dP: 1.5, Pmax: 3, cyc: 'td', tdMin: 30, tfMode: 'opt', wash: 1, kw: 'mitad', Ap: 1, maxPl: 60, depth: 40 },
+    desc: 'La prensa que separa el bagazo agotado y clarifica el extracto antes de precipitar: 6 m³/h con cerca de 1 % de sólidos, a 1,5 bar, con lavado de la torta y 30 min de tiempo muerto. Aquí el producto es el filtrado.',
+    note: 'Fija la suspensión del proyecto, con α, s y R_m supuestos: hay que medirlos con la torta de su bagazo y ponerlos en el panel 02.' }
 ];
-function presetState(id) { var p = byId(PRESETS, id), s = Object.assign(clone(BASE), clone(p.s)); s.preset = id; return s; }
-var state = Object.assign(presetState('t6a'), store.get('state', {}));
+/* lo que se conserva al cargar una tarjeta: la suspensión (propiedades de la torta y del líquido, salvo las que fija la tarjeta),
+   los datos que el estudiante editó y que no son del sistema, y la vista (incluidas las dos presiones que se comparan en la pestaña 3) */
+var MAT_KEYS = ['mat', 'la', 'dPref', 'sComp', 'lRm', 'mu', 'rhoL', 'mw', 'rhoCd'];
+var KEEP_DATA = ['lab', 'labA', 'labDP', 'labMu', 'labC', 'labPts', 'scores', 'flocK', 'flocDose', 'mfJ', 'drho', 'contOn', 'contW'], KEEP_VIEW = ['grid', 'dPa', 'dPb'];
+function cfgState(id, from) {
+  var c = byId(CONFIGS, id), s = Object.assign(clone(BASE), clone(c.s));
+  if (from) MAT_KEYS.filter(function (k) { return !(k in c.s); }).concat(KEEP_DATA, KEEP_VIEW).forEach(function (k) { if (from[k] !== undefined) s[k] = clone(from[k]); });
+  s.cfg = c.id; s.cfgMod = false; return s;
+}
+/* «modificado»: el estado ya no es el que daría volver a cargar su tarjeta (con la misma suspensión, datos y vista) */
+function cfgChanged(s) { var ref = cfgState(s.cfg, s); return Object.keys(ref).concat(Object.keys(s)).some(function (k) { return k !== 'cfgMod' && JSON.stringify(ref[k]) !== JSON.stringify(s[k]); }); }
+var state = cfgState('t6a');
 var R = null, LAB = null, tab = store.get('tab', 'in');
 function mstate(s) { return Object.assign({}, s, { cs: Math.pow(10, s.lcs) }); }
 var SVGI = {
@@ -1143,14 +1205,13 @@ function fQ(m3s) { var h = m3s * 3600; return fmtN(h, h < 1 ? 3 : (h < 10 ? 2 : 
 var SLIDERS = ['lcs', 'lQ', 'mu', 'la', 'dPref', 'sComp', 'lRm', 'mw', 'rhoCd', 'dP', 'Ap', 'maxPl', 'depth', 'dPv', 'f', 'rpm', 'minCake', 'tcH', 'frac', 'tdMin', 'tfMin', 'wash', 'Pmax', 'budget', 'floor', 'dPa', 'dPb', 'J0', 'qStop', 'flocK', 'flocDose', 'mfJ', 'drho', 'contW'];
 function buildControls() {
   $$('.panel .ph').forEach(function (ph) { var d = document.createElement('div'); d.className = 'callout np-msg'; ph.parentNode.insertBefore(d, ph.nextSibling); });
-  $('#presetBtns').innerHTML = PRESETS.map(function (p) { return '<button type="button" class="opt" data-p="' + p.id + '"><span>' + esc(p.name) + '</span><span class="x">' + esc(p.tag) + '</span></button>'; }).join('');
   $('#matBtns').innerHTML = MATS.map(function (f) { return '<button type="button" class="opt" data-m="' + f.id + '"><span class="dotc" style="background:' + f.color + '"></span><span>' + esc(f.name) + '</span><span class="x">' + esc(f.tag) + '</span></button>'; }).join('');
   $('#eqBtns').innerHTML = EQS.map(function (a) { return '<button type="button" class="mill" data-e="' + a.id + '"><svg viewBox="0 0 42 30" aria-hidden="true" fill="none" stroke="currentColor">' + a.icon + '</svg>' + esc(a.name) + '<span class="sz">' + esc(a.sz) + '</span></button>'; }).join('');
   $('#labSeg').innerHTML = LABSETS.map(function (l) { return '<button type="button" data-v="' + l.id + '">' + esc(l.name) + '</button>'; }).join('');
-  $$('#presetBtns .opt').forEach(function (b) { b.addEventListener('click', function () { state = presetState(b.dataset.p); update(); if (fscene) fscene.prime(); }); });
   $$('#matBtns .opt').forEach(function (b) { b.addEventListener('click', function () {
-    var m = byId(MATS, b.dataset.m); state.mat = m.id;
-    Object.assign(state, { la: L10(m.alphaRef), dPref: m.dPref, sComp: m.s, lRm: L10(m.Rm), lcs: L10(m.cs), mu: m.mu, rhoL: m.rhoL, mw: m.mw, rhoCd: m.rhoCd, cBasis: 'filtrado' });
+    var m = byId(MATS, b.dataset.m); if (m.id === state.mat) return; // el material que ya está no cambia nada
+    // solo las propiedades propias de la torta y del líquido: la concentración y su base son de la corriente
+    Object.assign(state, { mat: m.id, la: L10(m.alphaRef), dPref: m.dPref, sComp: m.s, lRm: L10(m.Rm), mu: m.mu, rhoL: m.rhoL, mw: m.mw, rhoCd: m.rhoCd });
     dirty(); if (fscene) fscene.prime(); }); });
   $$('#eqBtns .mill').forEach(function (b) { b.addEventListener('click', function () { state.eq = b.dataset.e; dirty(); if (fscene) fscene.prime(); }); });
   [['#basisSeg', 'cBasis'], ['#cycSeg', 'cyc'], ['#tfSeg', 'tfMode'], ['#kwSeg', 'kw'], ['#labSeg', 'lab']].forEach(function (a) { $$(a[0] + ' button').forEach(function (b) { b.addEventListener('click', function () { state[a[1]] = b.dataset.v; dirty(); }); }); });
@@ -1159,20 +1220,25 @@ function buildControls() {
   $('#qOpt').addEventListener('click', function () { var rc = R && R.pr.rc; if (!rc) return; state.qStop = Math.round(clamp(rc.optFull ? rc.phiFull : rc.phiOpt, 0.05, 0.9) * 100) / 100; dirty(); });
   $('#rampUse').addEventListener('click', function () { state.cyc = 'real'; if (state.eq !== 'prensa') state.eq = 'prensa'; dirty(); if (fscene) fscene.prime(); setTab('in'); });
   $('#contOn').addEventListener('change', function () { state.contOn = this.checked; dirty(); });
-  $('#resetAll').addEventListener('click', function () { state = presetState('t6a'); update(); if (fscene) fscene.prime(); });
+  $('#resetAll').addEventListener('click', function () { state = baseState(state); update(); if (fscene) fscene.prime(); });
+  $('#toCfg').addEventListener('click', function () { setTab('cf'); if (window.innerWidth < 900) { $('#ctl').classList.remove('open'); $('#mobCtl').textContent = 'Controles'; } });
+  $('#cfgCards').addEventListener('click', function (e) { var b = e.target.closest('button[data-cfg]'); if (b) loadCfg(b.dataset.cfg); });
   var useLab = function () { if (!LAB) return; state.la = L10(LAB.alphaRef); state.dPref = Math.round(LAB.dPref * 100) / 100; state.lRm = L10(LAB.Rm); if (LAB.s != null) state.sComp = Math.round(LAB.s * 100) / 100; dirty(); };
   $('#useLab').addEventListener('click', useLab); $('#useLab2').addEventListener('click', function () { useLab(); setTab('in'); });
   $('#status').addEventListener('click', function () { setTab('in'); setTimeout(function () { $('#diagCard').scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 50); });
   $$('.tabs [role=tab]').forEach(function (b) { b.addEventListener('click', function () { setTab(b.dataset.tab); }); });
   $$('.tabs .canv button').forEach(function (b) { b.addEventListener('click', function () { document.documentElement.setAttribute('data-canvas', b.dataset.canvas); $$('.tabs .canv button').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); }); store.set('canvas', b.dataset.canvas); if (fscene) fscene.layout(); renderTab(); }); });
   $('#mobCtl').addEventListener('click', function () { $('#ctl').classList.toggle('open'); this.textContent = $('#ctl').classList.contains('open') ? 'Cerrar' : 'Controles'; });
-  document.addEventListener('keydown', function (e) { if (/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return; var i = '1234567'.indexOf(e.key); if (i >= 0) setTab(['in', 'la', 'pr', 'ci', 'ta', 'al', 'ec'][i]); if (e.key === ' ' && tab === 'in') { e.preventDefault(); togglePlay(); } });
+  document.addEventListener('keydown', function (e) { if (/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return; var i = '12345678'.indexOf(e.key); if (i >= 0) setTab(['in', 'la', 'pr', 'ci', 'ta', 'al', 'ec', 'cf'][i]); if (e.key === ' ' && tab === 'in') { e.preventDefault(); togglePlay(); } });
   $('#btnPlay').innerHTML = SVGI.pause; $('#btnPlay').addEventListener('click', togglePlay);
   $$('.play [data-sp]').forEach(function (b) { b.addEventListener('click', function () { fscene.speed = +b.dataset.sp; $$('.play [data-sp]').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); }); }); });
   var cv = store.get('canvas', 'paper'); document.documentElement.setAttribute('data-canvas', cv); $$('.tabs .canv button').forEach(function (x) { x.setAttribute('aria-pressed', x.dataset.canvas === cv ? 'true' : 'false'); });
   hoverSetup();
 }
-function dirty() { state.preset = null; update(); }
+function dirty() { state.cfgMod = cfgChanged(state); update(); }
+function loadCfg(id) { state = cfgState(id, state); update(); if (fscene) fscene.prime(); setTab('in'); window.scrollTo(0, 0); }
+/* el botón de la barra: el caso base completo, con la levadura del taller; no borra los datos del ensayo ni la matriz */
+function baseState(from) { var s = cfgState('t6a', from); MAT_KEYS.forEach(function (k) { s[k] = clone(BASE[k]); }); return s; }
 function togglePlay() { fscene.running = !fscene.running; $('#btnPlay').innerHTML = fscene.running ? SVGI.pause : SVGI.play; }
 function setTab(t) {
   tab = t; store.set('tab', t);
@@ -1187,23 +1253,22 @@ function show(id, on) { var el = document.getElementById(id); if (el) el.style.d
 
 function update() {
   var s = state, press = s.eq === 'prensa';
-  store.set('state', s);
   R = compute(mstate(s));
   var r = R, m = r.m, pr = r.pr, dr = r.dr, cs = Math.pow(10, s.lcs);
-  pressed('#presetBtns .opt', 'p', s.preset || ''); pressed('#matBtns .opt', 'm', s.mat); pressed('#eqBtns .mill', 'e', s.eq);
+  pressed('#matBtns .opt', 'm', s.mat); pressed('#eqBtns .mill', 'e', s.eq);
   pressed('#basisSeg button', 'v', s.cBasis); pressed('#cycSeg button', 'v', s.cyc); pressed('#tfSeg button', 'v', s.tfMode); pressed('#kwSeg button', 'v', s.kw); pressed('#labSeg button', 'v', s.lab);
   SLIDERS.forEach(function (k) { var el = document.getElementById(k); if (parseFloat(el.value) !== s[k]) el.value = s[k]; });
   $('#grid').checked = !!s.grid; $('#contOn').checked = !!s.contOn;
   // suspensión
   $('#csLbl').textContent = s.cBasis === 'filtrado' ? 'Concentración c (por m³ de filtrado)' : 'Concentración c_F (por m³ de líquido)';
   setV('vcs', fmtN(cs, cs < 10 ? 2 : 1) + ' kg/m³');
-  $('#csHint').textContent = s.cBasis === 'alimentado' ? (r.cOk ? 'Corregida por el líquido de la torta (McCabe 29.19): c = ' + fmtN(r.c, 1) + ' kg/m³ de filtrado' : 'La corrección no tiene solución con esta humedad') : 'Taller 6: 25 g/L de células en peso seco (≈ ' + fmtN(cs / 10, 1) + ' % en peso)'.replace('Taller 6: 25 g/L de células en peso seco', m.id === 'levadura' ? 'Taller 6: 25 g/L de células en peso seco' : 'Sólidos secos');
+  $('#csHint').textContent = s.cBasis === 'alimentado' ? (r.cOk ? 'Corregida por el líquido de la torta (McCabe 29.19): c = ' + fmtN(r.c, 1) + ' kg/m³ de filtrado' : 'La corrección no tiene solución con esta humedad') : (m.id === 'levadura' && Math.abs(cs - 25) < 0.05 ? 'Taller 6: 25 g/L de células en peso seco' : 'Sólidos secos') + ' (≈ ' + fmtN(cs / 10, 1) + ' % en peso)' + (m.id === 'levadura' && Math.abs(cs - 25) >= 0.05 ? ' · el Taller 6 usa 25 g/L' : '');
   $('#QLbl').textContent = s.cBasis === 'filtrado' ? 'Caudal de la planta (filtrado)' : 'Caudal de líquido alimentado';
   setV('vlQ', fQ(r.Q)); $('#QHint').textContent = 'Sólidos ' + fmtN(r.mdot * 3600, r.mdot * 3600 < 10 ? 2 : 1) + ' kg/h · filtrado ' + fQ(r.Qf);
   setV('vmu', fmtN(s.mu, 2) + ' mPa·s');
   // torta
   setV('vla', fmtSci(Math.pow(10, s.la), 2) + ' m/kg'); $('#laHint').textContent = m.src;
-  setV('vdPref', fbar(s.dPref)); setV('vsComp', fmtN(s.sComp, 2)); $('#sHint').textContent = s.sComp < 0.05 ? 'Incompresible: α no cambia con la presión' : (s.sComp < 0.5 ? 'Poco compresible' : (s.sComp < 0.9 ? 'Compresible: la mayoría de las tortas reales' : 'Muy compresible: subir la presión casi no sirve'));
+  setV('vdPref', fbar(s.dPref)); setV('vsComp', fmtN(s.sComp, 2)); $('#sHint').textContent = (s.sComp < 0.05 ? 'Incompresible: α no cambia con la presión' : (s.sComp < 0.5 ? 'Poco compresible' : (s.sComp < 0.9 ? 'Compresible: la mayoría de las tortas reales' : 'Muy compresible: subir la presión casi no sirve'))) + (s.mat === 'levadura' ? '. En el Taller 6 la parte B usa s = 0 (el modelo ideal) y la parte C, s = 0,7' : '');
   setV('vlRm', fmtSci(r.Rm, 2) + ' m⁻¹'); setV('vmw', fmtN(s.mw, 2) + ' · ' + fmtN(100 / s.mw, 0) + ' % de sólidos'); setV('vrhoCd', fmtN(s.rhoCd, 0) + ' kg/m³');
   // equipo
   show('pressBox', press); show('drumBox', !press); show('cycSec', press);
@@ -1229,7 +1294,9 @@ function update() {
   // panel de presión y alternativas
   setV('vdPa', fbar(s.dPa)); setV('vdPb', fbar(s.dPb)); setV('vflocK', '÷ ' + fmtN(s.flocK, 1)); setV('vflocDose', fmtN(s.flocDose, 0) + ' g/m³'); setV('vmfJ', fmtN(s.mfJ, 0) + ' L/(m²·h)'); setV('vdrho', fmtN(s.drho, 0) + ' kg/m³'); setV('vcontW', fmtN(s.contW, 0) + ' %');
   show('contRow', s.contOn);
-  $('#ctx').innerHTML = '<b>' + esc(press ? 'Filtro prensa · ' + fbar(s.dP) : 'Tambor al vacío · ' + fmtN(s.dPv * 750.06, 0) + ' mmHg') + '</b> · ' + esc(m.short) + ' ' + fmtN(r.c, 1) + ' kg/m³ · ' + fQ(r.Qf) + ' de filtrado';
+  var cf = byId(CONFIGS, s.cfg);
+  $('#ctx').innerHTML = '<b>' + esc(cf.name) + (s.cfgMod ? ', modificado' : '') + '</b> · ' + esc(press ? 'filtro prensa a ' + fbar(s.dP) : 'tambor al vacío a ' + fmtN(s.dPv * 750.06, 0) + ' mmHg') + ' · ' + esc(m.short) + ' ' + fmtN(r.c, 1) + ' kg/m³ · ' + fQ(r.Qf) + ' de filtrado';
+  $('#cfgNow').innerHTML = esc(cf.name) + '<small>' + esc(s.cfgMod ? 'con sus cambios' : cf.src) + '</small>';
   renderKPIs();
   var sev = r.warn.some(function (w) { return w.sev === 'c'; }) ? 'inv' : (r.warn.some(function (w) { return w.sev === 'w'; }) ? 'adv' : '');
   $('#status').className = 'status' + (sev ? ' ' + sev : ''); $('#statusTxt').textContent = sev === 'inv' ? 'No cumple' : (sev === 'adv' ? 'Con advertencias' : 'Diseño sano');
@@ -1267,7 +1334,8 @@ function renderKPIs() {
 function renderTab() {
   if (!R) return;
   var np = !R.cOk;
-  $$('.panel').forEach(function (p) { p.classList.toggle('nophys', np); });
+  $$('.panel').forEach(function (p) { p.classList.toggle('nophys', np && p.dataset.panel !== 'cf'); });
+  if (tab === 'cf') { renderConfigs(); return; } // las configuraciones se pueden cargar aunque el sistema en pantalla no tenga solución
   if (np) { $$('.np-msg').forEach(function (el) { el.innerHTML = '<b>Así no hay diseño posible.</b> ' + esc(R.warn[0].t); }); renderWarn(); return; }
   if (tab === 'in') renderInside();
   else if (tab === 'la') renderLab();
@@ -1536,7 +1604,8 @@ function renderPress() {
 }
 function renderRamp() {
   var s = state, live = s.cyc === 'real' && s.eq === 'prensa', r = live ? R : withS({ cyc: 'real', eq: 'prensa' }), pr = r.pr, rc = pr.rc;
-  show('rampUse', !live); $('#rampLbl').textContent = live ? 'diapositivas 15 a 17' : 'vista previa · el diseño usa otro ciclo';
+  show('rampUse', !live); $('#rampLbl').textContent = live ? 'diapositivas 15 a 17' : (s.eq === 'prensa' ? 'vista previa · el diseño usa otro ciclo' : 'vista previa · el diseño es el tambor');
+  $('#rampUse').textContent = s.eq === 'prensa' ? 'Usar el ciclo real en el diseño' : 'Usar el ciclo real y pasar al filtro prensa';
   if (!r.cOk) { $('#svgRamp').innerHTML = TX(280, 150, 'Con estos valores el ciclo real no filtra (vea el diagnóstico).', { a: 'middle', fs: 12, c: MUT }); spec('#specRamp', []); $('#rampNote').textContent = ''; $('#rampLeg').innerHTML = ''; RAMP = null; return; }
   var pts = cycleSeries(r), tf = pr.tf / 60, A = pr.A, Pm = Math.max(s.dP, s.Pmax) * 1.18, qp = rc.J0 * A * 3600, qmax = Math.max(qp * 2, pr.q0 * 3600 * 1.15);
   var a = axes({ x0: 52, x1: 500, y0: 14, y1: 250, xmin: 0, xmax: tf, ymin: 0, ymax: Pm, xlab: 'tiempo de filtración (min)', ylab: 'ΔP (bar)', clip: 'cpR' }), out = a.svg, ra = rightAxis(a, 0, qmax, 'caudal (m³/h)', C2);
@@ -1561,7 +1630,7 @@ function renderRamp() {
     ['La presión sube', rc.ok ? rise : '—'],
     ['Arranque directo: caudal inicial', fQ(A / pr.b) + ' · ' + fmtN(A / pr.b / (rc.J0 * A), 1) + ' × la bomba'],
     ['Área con arranque directo', fA(rc.Acp) + ' (' + fmtN(100 * (rc.Acp / A - 1), 1) + ' %)']]);
-  $('#rampNote').innerHTML = subs(esc('Una bomba de desplazamiento positivo arranca a caudal fijo: la presión sube con la torta hasta la presión tope y desde ahí se filtra a presión constante con un caudal que cae (diapositivas 15 a 17). ' + (sc < 0.02 ? 'Con s = 0 la presión sube en línea recta, como en la diapositiva 15. ' : 'La diapositiva 15 la dibuja recta porque toma α constante; con s = ' + fmtN(sc, 2) + ' α crece con la presión y la curva se empina' + (sc < 0.95 ? ' (ΔP − Δp_m va como t^' + fmtN(1 / (1 - sc), 1) + ', McCabe 29.38). ' : '. ')) + 'Arrancar directo a presión constante filtraría algo más en el mismo tiempo, pero al principio solo frena la tela y el caudal pedido sería el de una bomba mucho más grande. En planta, arrancar a caudal moderado también evita que los finos cieguen la tela (práctica industrial, externa al curso).' + (live ? '' : ' El diseño actual no usa este ciclo: el botón lo activa.'))).replace(/t\^([\d,]+)/g, 't<sup>$1</sup>');
+  $('#rampNote').innerHTML = subs(esc('Una bomba de desplazamiento positivo arranca a caudal fijo: la presión sube con la torta hasta la presión tope y desde ahí se filtra a presión constante con un caudal que cae (diapositivas 15 a 17). ' + (sc < 0.02 ? 'Con s = 0 la presión sube en línea recta, como en la diapositiva 15. ' : 'La diapositiva 15 la dibuja recta porque toma α constante; con s = ' + fmtN(sc, 2) + ' α crece con la presión y la curva se empina' + (sc < 0.95 ? ' (ΔP − Δp_m va como t^' + fmtN(1 / (1 - sc), 1) + ', McCabe 29.38). ' : '. ')) + 'Arrancar directo a presión constante filtraría algo más en el mismo tiempo, pero al principio solo frena la tela y el caudal pedido sería el de una bomba mucho más grande. En planta, arrancar a caudal moderado también evita que los finos cieguen la tela (práctica industrial, externa al curso).' + (live ? '' : (s.eq === 'prensa' ? ' El diseño actual no usa este ciclo: el botón lo activa.' : ' El diseño actual es el tambor al vacío: el botón cambia el equipo a filtro prensa y le pone este ciclo.')))).replace(/t\^([\d,]+)/g, 't<sup>$1</sup>');
 }
 
 /* ---------- 4 · ciclo y área ---------- */
@@ -1638,7 +1707,7 @@ function renderDrum() {
   $('#drLeg').innerHTML = '<span><i></i>área</span><span><i style="border-top:2px dashed ' + C2 + '"></i>torta por vuelta</span>';
   $('#drLbl').textContent = s.eq === 'tambor' ? 'equipo actual' : 'con los datos de este caso';
   spec('#specDr', [['Vacío', fmtN(s.dPv * 750.06, 0) + ' mmHg · ' + fbar(s.dPv)], ['α al vacío de operación', fmtSci(dr.alpha, 3) + ' m/kg'], ['Sumergida', fmtN(100 * s.f, 0) + ' % · ' + fTime(dr.tsub) + ' por vuelta'], ['Sólidos que llegan', fmtN(r.mdot * 3600, 1) + ' kg/h'], ['Capacidad (ec. 29.31)', fmtN(dr.G * 3600, 3) + ' kg/(m²·h)'], ['Sin R<sub>m</sub> (ec. 29.33)', fmtN(dr.Gnorm * 3600, 3) + ' kg/(m²·h)'], ['Área total requerida A<sub>T</sub>', fA(dr.AT)], ['Tambor estándar', dr.pick.n + ' × ' + fmtN(dr.pick.D, 1) + ' × ' + fmtN(dr.pick.L, 1) + ' m · ' + fA(dr.pick.A * dr.pick.n)], ['Torta por vuelta', fmtN(dr.wrev, 3) + ' kg/m² · ' + fmtN(dr.Lrev * 1000, 2) + ' mm'], ['Filtrado por vuelta', fmtN(dr.urev * 1000, 2) + ' L/m²']]);
-  $('#drNote').textContent = (s.preset === 'mc2' ? 'Ejemplo 29.2 de McCabe: el libro obtiene A_T = 81,7 ft² (7,59 m²); aquí sale ' + fA(dr.AT) + '. ' : '') + 'Tamaños de McCabe: de 0,3 × 0,3 m hasta 3 m de diámetro × 4,3 m; los dos mayores de la lista son externos al curso. Con una torta de levadura (α del orden de 10¹² a 10¹³ m/kg) cada vuelta forma décimas de milímetro: por eso el tambor necesita precapa, y eso contamina un producto que es la torta.';
+  $('#drNote').textContent = (s.cfg === 'mc2' && !s.cfgMod ? 'Ejemplo 29.2 de McCabe: el libro obtiene A_T = 81,7 ft² (7,59 m²); aquí sale ' + fA(dr.AT) + '. ' : '') + 'Tamaños de McCabe: de 0,3 × 0,3 m hasta 3 m de diámetro × 4,3 m; los dos mayores de la lista son externos al curso. Con una torta de levadura (α del orden de 10¹² a 10¹³ m/kg) cada vuelta forma décimas de milímetro: por eso el tambor necesita precapa, y eso contamina un producto que es la torta.';
 }
 
 /* ---------- 6 · alternativas ---------- */
@@ -1648,9 +1717,10 @@ function renderAlt() {
   var units = Math.ceil(Qh / 5 - 1e-9), cent = [units * 150000, units * 250000], vg = s.drho * Math.pow(m.dum * 1e-6, 2) * G / (18 * r.mu), Sig = r.Qf / vg;
   var Amf = Qh * 1000 / s.mfJ, mf = [Amf * 200, Amf * 500];
   var product = m.id === 'levadura' || m.id === 'bacterias';
+  var okP = isFinite(pr.A) && pr.A > 0, okF = okP && isFinite(fl.A) && fl.A > 0, noP = 'sin solución con este ciclo (vea el diagnóstico con la prensa)'; // el ciclo real puede no filtrar nada
   var rows = [
-    ['Filtro prensa (referencia)', 'El diseño actual', fA(pr.A) + ' · ' + pr.N + ' placas', 'Torta seca, sin aditivos, simple', 'Por lotes contra una planta continua; mano de obra', fk(pr.cost[0]) + ' a ' + fk(pr.cost[1]) + ' kUSD'],
-    ['Floculación + prensa', 'Acondiciona las células: α ÷ ' + fmtN(s.flocK, 1), fA(fl.A) + ' (' + fmtN(100 * (fl.A / pr.A - 1), 0) + ' %) · ' + fmtN(dose, 2) + ' kg/h de floculante', 'Mantiene la prensa y reduce área y costo', 'El floculante queda en un producto alimentario; hay que medir su efecto', fk(fl.cost[0]) + ' a ' + fk(fl.cost[1]) + ' kUSD + ' + fmtN(flDay[0], 0) + ' a ' + fmtN(flDay[1], 0) + ' USD/día'],
+    ['Filtro prensa (referencia)', 'El diseño actual', okP ? fA(pr.A) + ' · ' + pr.N + ' placas' : noP, 'Torta seca, sin aditivos, simple', 'Por lotes contra una planta continua; mano de obra', okP ? fk(pr.cost[0]) + ' a ' + fk(pr.cost[1]) + ' kUSD' : '—'],
+    ['Floculación + prensa', 'Acondiciona las células: α ÷ ' + fmtN(s.flocK, 1), (okF ? fA(fl.A) + ' (' + fmtN(100 * (fl.A / pr.A - 1), 0) + ' %)' : noP) + ' · ' + fmtN(dose, 2) + ' kg/h de floculante', 'Mantiene la prensa y reduce área y costo', 'El floculante queda en un producto alimentario; hay que medir su efecto', (okF ? fk(fl.cost[0]) + ' a ' + fk(fl.cost[1]) + ' kUSD + ' : '') + fmtN(flDay[0], 0) + ' a ' + fmtN(flDay[1], 0) + ' USD/día'],
     ['Centrífuga de discos', 'Separa por densidad, en continuo', units + (units === 1 ? ' equipo' : ' equipos') + ' de 5 m³/h (' + fmtN(100 * Qh / (5 * units), 0) + ' % de carga) · Σ ≈ ' + fmtN(Sig, 0) + ' m² (externo)', 'Continua como la fermentación; higiénica; sin aditivos', 'Crema más húmeda que la torta; energía; sin repuesto a esa carga', fk(cent[0]) + ' a ' + fk(cent[1]) + ' kUSD'],
     ['Microfiltración tangencial', 'Membrana en flujo cruzado: el producto es el concentrado', fA(Amf) + ' a ' + fmtN(s.mfJ, 0) + ' L/(m²·h)', 'Continua; permeado estéril; modular', 'Ensuciamiento y limpieza CIP; el concentrado aún hay que deshidratarlo', fk(mf[0]) + ' a ' + fk(mf[1]) + ' kUSD en membranas'],
     ['Coadyuvante (diatomita)', 'Body feed o precapa: baja α y s', 'No se cuantifica', 'Torta más permeable', product ? 'No es admisible aquí: la torta es el producto y el coadyuvante quedaría en ella' : 'Contamina la torta; aquí el producto es el filtrado, así que es admisible', '—']
@@ -1696,6 +1766,46 @@ function renderEqs() {
   items.forEach(function (it, i) { tex('eq' + i, it[1], true); });
   $('#assump').innerHTML = '<b>Cómo está hecho.</b> El modelo es el de la Lectura 09, las diapositivas y el Taller 6: Darcy con resistencias en serie, α y R_m constantes durante la filtración a presión constante, y α corregido por compresibilidad con la forma anclada del taller. Reproduce el Taller 6 (α = 3,60×10¹² m/kg y R_m = 8,91×10¹⁰ m⁻¹ a 1,8 bar; 55,0 y 42,5 m² con el modelo ideal; 65,7 y 60,6 m² con s = 0,7; 85,0 m² con el 60 % del ciclo) y los ejemplos 29.1 y 29.2 de McCabe. El ciclo real une las dos ecuaciones de las diapositivas 14 y 15 como lo describe la 17: caudal constante hasta la presión tope, presión constante hasta un caudal mínimo o hasta llenar las cámaras, y descarga. '
     + 'El tambor usa la ecuación 29.31 de McCabe. Son externos al curso, y se marcan en cada pestaña: el óptimo del ciclo, la huella de piso de la prensa, los tamaños de tambor mayores que 3 × 4,3 m, la teoría Σ de la centrífuga, la humedad y la densidad de las tortas, y los parámetros del bagazo del proyecto, que hay que medir.';
+}
+
+/* ---------- 8 · configuraciones del curso ---------- */
+function cfgFacts(c, st) {
+  var m = byId(MATS, st.mat), press = st.eq === 'prensa', cs = Math.pow(10, st.lcs), own = 'mat' in c.s, f = [];
+  f.push(['Suspensión', m.name + (own ? (c.id === 'proj' ? ' (la del proyecto, la fija la tarjeta)' : ' (la del ejemplo, la fija la tarjeta)') : ' (la que tiene en pantalla)')]);
+  f.push(['Corriente', fmtN(Math.pow(10, st.lQ), 2) + ' m³/h de ' + (st.cBasis === 'alimentado' ? 'líquido alimentado' : 'filtrado') + ' · ' + fmtN(cs, cs < 10 ? 2 : 0) + ' kg/m³ de sólidos secos']);
+  if (own) f.push(['Torta', 'α = ' + fmtSci(Math.pow(10, st.la), 2) + ' m/kg a ' + fbar(st.dPref) + ' · s = ' + fmtN(st.sComp, 2)]);
+  else if ('sComp' in c.s) f.push(['Compresibilidad', 's = ' + fmtN(st.sComp, st.sComp ? 1 : 0) + (st.sComp ? ', la de la parte C del taller' : ', el modelo ideal')]);
+  f.push(['Equipo', press ? 'filtro prensa a ' + fbar(st.dP) + (st.cyc === 'real' ? ' de presión tope' : '') + ' · placas de ' + fmtN(st.Ap, 2) + ' m²'
+    : 'tambor al vacío a ' + fmtN(st.dPv * 750.06, 0) + ' mmHg · ' + fmtN(100 * st.f, 0) + ' % sumergido · ' + fmtN(st.rpm, 2) + ' rpm']);
+  if (press) f.push(['Ciclo', st.cyc === 'frac' ? fTime(st.tcH * 3600) + ' y filtra el ' + fmtN(100 * st.frac, 0) + ' %'
+    : (st.cyc === 'real' ? 'real: bomba de ' + fmtN(st.J0, 0) + ' L/(m²·h), para con el caudal al ' + fmtN(100 * st.qStop, 0) + ' % y descarga en ' + fmtN(st.tdMin, 0) + ' min'
+    : fmtN(st.tdMin, 0) + ' min de tiempo muerto, filtración ' + (st.tfMode === 'opt' ? 'óptima' : 'de ' + fmtN(st.tfMin, 0) + ' min') + (st.wash > 0 ? ' y lavado con n = ' + fmtN(st.wash, 1) : ''))]);
+  if (press) f.push(['Planta', 'hasta ' + fbar(st.Pmax) + ' · presupuesto de US$\u00a0' + fk(st.budget) + '\u00a0mil']);
+  return f;
+}
+function cfgResult(r, st) {
+  if (!r.cOk) return 'sin diseño posible con estos datos';
+  var sev = r.warn.some(function (w) { return w.sev === 'c'; }) ? ' · no cumple' : (r.warn.some(function (w) { return w.sev === 'w'; }) ? ' · con advertencias' : '');
+  if (st.eq === 'prensa') return 'A = ' + fA(r.pr.A) + ' · ' + r.pr.N + ' placas · ciclo de ' + fTime(r.pr.tc) + sev;
+  return 'A<sub>T</sub> = ' + fA(r.dr.AT) + ' · torta de ' + fmtN(r.dr.Lrev * 1000, r.dr.Lrev * 1000 < 1 ? 2 : 1) + ' mm por vuelta' + sev;
+}
+function renderConfigs() {
+  var s = state, m = byId(MATS, s.mat);
+  $('#cfLead').innerHTML = 'Cada tarjeta es un filtro completo del curso: la corriente, el equipo, el ciclo y las restricciones de la planta. Al cargar una se conserva la suspensión que tiene en pantalla (<b>' + esc(m.name.toLowerCase()) + '</b>, con las propiedades de su torta y de su líquido); de la torta, solo la compresibilidad s la fijan las tarjetas que la estudian. Los dos ejemplos completos, el de McCabe y el del proyecto, traen su propia suspensión y lo dicen. Tampoco se pierden los puntos que editó en el ensayo, los puntajes de la matriz, los supuestos de las alternativas ni las opciones de vista. Los resultados de cada tarjeta ya están calculados así.';
+  $('#cfgCards').innerHTML = CONFIGS.map(function (c) {
+    var st = cfgState(c.id, s), r = compute(mstate(st)), on = s.cfg === c.id, mm = byId(MATS, st.mat);
+    return '<div class="cfg' + (on ? ' on' : '') + '"><div class="cb"><div class="ct"><h3>' + esc(c.name) + '</h3><span class="src">' + esc(c.src) + '</span></div><p>' + subs(esc(c.desc)) + '</p>'
+      + '<dl class="facts">' + cfgFacts(c, st).map(function (q) { return '<dt>' + q[0] + '</dt><dd>' + esc(q[1]) + '</dd>'; }).join('') + '</dl>'
+      + '<div class="res"><span>Con ' + esc(mm.short) + ':</span> ' + cfgResult(r, st) + '</div>' + (c.note ? '<div class="note">' + subs(esc(c.note)) + '</div>' : '')
+      + '<button type="button" data-cfg="' + c.id + '"' + (on && !s.cfgMod ? ' disabled' : '') + '>' + (on ? (s.cfgMod ? 'Volver a cargarla sin sus cambios' : 'Es la que está en pantalla') : 'Cargar esta configuración') + '</button></div></div>';
+  }).join('');
+  $('#cfgIdeas').innerHTML = [
+    '<b>Torta y medio filtrante (02):</b> suba la compresibilidad s de 0 a 0,7 y mire en la pestaña 3 cuánto se encoge el ahorro de pasar de 3 a 5 bar.',
+    '<b>Ciclo de la prensa (04):</b> baje la fracción que filtra al 60 %. Lo que la prensa deja de filtrar en el tiempo lo tiene que recuperar con área (pestaña 4).',
+    '<b>Equipo (03):</b> cambie la prensa por el tambor al vacío y compare, en la pestaña 5, la torta de cada vuelta con la mínima que descarga la cuchilla.',
+    '<b>Suspensión (01):</b> escoja el dióxido de titanio, una torta poco compresible, y vuelva a la pestaña 3: con ella subir la presión sí ahorra área.',
+    '<b>Restricciones de la planta (05):</b> baje el presupuesto hasta que el diagnóstico avise y vea en la pestaña 4 cuánto puede costar como máximo cada m².'
+  ].map(function (t) { return '<li>' + t + '</li>'; }).join('');
 }
 
 /* ---------- lectura con el cursor ---------- */

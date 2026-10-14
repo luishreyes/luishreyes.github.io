@@ -285,6 +285,33 @@ table.t tr:hover td { background: var(--accent-50); }
   .tbar button { padding: 5px 7px; font-size: 11.5px; }
 }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+/* sistema en pantalla y configuraciones del curso */
+.ctl .cfgnow { background: var(--accent-50); }
+.cfgnow-l { font-family: var(--font-mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--n600); font-weight: 700; }
+.cfgnow-n { font-size: 14.5px; font-weight: 750; margin-top: 3px; line-height: 1.3; }
+.cfgnow-n small { display: block; font-size: 11.5px; font-weight: 600; color: var(--n600); margin-top: 2px; }
+.cfgnow-b { margin-top: 8px; border: none; background: none; padding: 0; font: inherit; font-size: 12.5px; font-weight: 700; color: var(--accent-700); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.cfgs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin-top: 18px; }
+.cfg { border: 2px solid var(--divider); background: #fff; display: flex; flex-direction: column; }
+.cfg.on { border-color: var(--accent); box-shadow: inset 0 -4px 0 var(--accent); }
+.cfg svg { display: block; width: 100%; height: auto; background: var(--paper); border-bottom: 1.5px solid var(--divider); }
+.cfg .cb { padding: 12px 16px 14px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+.cfg .ct { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.cfg h3 { margin: 0; font-size: 16px; font-weight: 780; }
+.cfg .src { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-700); font-weight: 700; }
+.cfg p { margin: 0; font-size: 13.5px; color: var(--n700); line-height: 1.5; }
+.cfg .facts { display: grid; grid-template-columns: auto 1fr; gap: 3px 12px; font-size: 12.5px; margin: 2px 0 0; }
+.cfg .facts dt { color: var(--n600); font-weight: 600; }
+.cfg .facts dd { margin: 0; font-weight: 650; }
+.cfg .res { font-family: var(--font-mono); font-size: 12.5px; font-weight: 700; border-top: 1px solid var(--n200); padding-top: 8px; }
+.cfg .res span { color: var(--n600); font-weight: 600; }
+.cfg .note { font-size: 12.5px; color: var(--n600); }
+.cfg button { margin-top: auto; align-self: flex-start; border: 2px solid var(--text); background: var(--text); color: #fff; font: inherit; font-size: 12.5px; font-weight: 750; padding: 7px 12px; cursor: pointer; }
+.cfg.on button { background: #fff; color: var(--text); }
+.cfg button:disabled { opacity: .6; cursor: default; }
+.ideas { margin: 0; padding-left: 18px; display: grid; gap: 6px; font-size: 13.5px; line-height: 1.5; }
+.ideas b { color: var(--accent-700); }
+@media (max-width: 1100px) { .cfgs { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
@@ -310,7 +337,7 @@ table.t tr:hover td { background: var(--accent-50); }
 
 <div class="shell">
   <aside class="ctl" id="ctl" aria-label="Controles">
-    <section><h2><span class="n">00</span> Casos de partida</h2><div class="presets" id="presetBtns"></div></section>
+    <section class="cfgnow"><div class="cfgnow-l">Sistema en pantalla</div><div class="cfgnow-n" id="cfgNow"></div><button type="button" class="cfgnow-b" id="toCfg">Ver las configuraciones del curso</button></section>
     <section><h2><span class="n">01</span> Impulsor</h2>
       <div class="mills" id="impBtns"></div>
       <p class="small" id="impNote" style="margin:8px 0 0"></p>
@@ -319,7 +346,7 @@ table.t tr:hover td { background: var(--accent-50); }
     <section><h2><span class="n">02</span> Geometría</h2>
       <div class="sl"><div class="row"><span>Diámetro del tanque T</span><b id="vlT"></b></div><input type="range" id="lT" min="-0.82" max="0.6" step="0.005"><div class="hint" id="Thint"></div></div>
       <div class="sl"><div class="row"><span>Altura del líquido H/T</span><b id="vHT"></b></div><input type="range" id="HT" min="0.6" max="2" step="0.01"></div>
-      <div class="sl" id="DTRow"><div class="row"><span>Diámetro del impulsor D/T</span><b id="vDT"></b></div><input type="range" id="DT" min="0.2" max="0.6" step="0.005"></div>
+      <div class="sl" id="DTRow"><div class="row"><span>Diámetro del impulsor D/T</span><b id="vDT"></b></div><input type="range" id="DT" min="0.2" max="0.6" step="0.005"><div class="hint" id="DThint"></div></div>
       <div class="sl" id="CTRow"><div class="row"><span>Altura sobre el fondo C/T</span><b id="vCT"></b></div><input type="range" id="CT" min="0.1" max="0.6" step="0.005"><div class="hint">Estándar: C/T = 1/4 a 1/3</div></div>
       <div class="spec" id="specGeo" style="margin-top:10px"></div>
     </section>
@@ -329,7 +356,7 @@ table.t tr:hover td { background: var(--accent-50); }
       <div class="sl"><div class="row"><span>Factor de servicio del motor</span><b id="vFS"></b></div><input type="range" id="FS" min="1" max="1.5" step="0.05"><div class="hint">Las diapositivas usan ×1,3 por el arranque</div></div>
     </section>
     <section><h2><span class="n">04</span> Fluido</h2><div class="opts" id="fluBtns"></div>
-      <div class="sl" id="TfRow"><div class="row"><span>Temperatura</span><b id="vTf"></b></div><input type="range" id="Tf" min="0" max="100" step="1"></div>
+      <div class="sl" id="TfRow"><div class="row"><span>Temperatura</span><b id="vTf"></b></div><input type="range" id="Tf" min="0" max="100" step="1"><div class="hint" id="Tfhint"></div></div>
       <div class="sl" id="pMuRow"><div class="row"><span>Viscosidad del extracto μ</span><b id="vpMu"></b></div><input type="range" id="pMu" min="1" max="60" step="0.5"><div class="hint">Dato de referencia: mídalo con el viscosímetro del laboratorio</div></div>
       <div id="customBox">
         <div class="sl"><div class="row"><span>Densidad ρ</span><b id="vcRho"></b></div><input type="range" id="cRho" min="600" max="1800" step="5"></div>
@@ -359,7 +386,7 @@ table.t tr:hover td { background: var(--accent-50); }
     </section>
     <section><h2><span class="n">07</span> Vista</h2>
       <label class="toggle"><input type="checkbox" id="grid"> Cuadrícula en las gráficas</label>
-      <button type="button" class="seg inline" id="resetAll" style="margin-top:14px;padding:7px 12px;font-weight:700;font-size:12.5px;cursor:pointer">Restablecer el caso base</button>
+      <button type="button" class="seg inline" id="resetAll" style="margin-top:14px;padding:7px 12px;font-weight:700;font-size:12.5px;cursor:pointer">Volver al reactor del proyecto</button>
     </section>
   </aside>
 
@@ -371,6 +398,7 @@ table.t tr:hover td { background: var(--accent-50); }
       <button type="button" role="tab" data-tab="so" aria-selected="false"><span class="k">4</span>Sólidos y gas</button>
       <button type="button" role="tab" data-tab="es" aria-selected="false"><span class="k">5</span>Escalado y calor</button>
       <button type="button" role="tab" data-tab="ec" aria-selected="false"><span class="k">6</span>Ecuaciones</button>
+      <button type="button" role="tab" data-tab="cf" aria-selected="false"><span class="k">7</span>Configuraciones</button>
       <span class="sp"></span>
       <div class="canv"><button type="button" data-canvas="paper" aria-pressed="true">Papel</button><button type="button" data-canvas="blueprint" aria-pressed="false">Blueprint</button></div>
     </nav>
@@ -446,6 +474,13 @@ table.t tr:hover td { background: var(--accent-50); }
       <div class="ph"><h2>Ecuaciones</h2><span class="lbl">con los valores del caso actual</span><p>Las correlaciones del explorador, evaluadas con la configuración de los controles.</p></div>
       <div class="eqs" id="eqs"></div>
       <div class="callout ink" id="assump"></div>
+    </section>
+
+    <!-- 7 · configuraciones -->
+    <section class="panel" data-panel="cf">
+      <div class="ph"><h2>Configuraciones del curso</h2><span class="lbl">cargue una y siga cambiándola</span><p id="cfLead"></p></div>
+      <div class="cfgs" id="cfgCards"></div>
+      <div class="card"><div class="card-h"><span class="t">Para probar en el sistema que tiene en pantalla</span><span class="sp"></span><span>un cambio a la vez</span></div><div class="card-b"><ul class="ideas" id="cfgIdeas"></ul></div></div>
     </section>
   </main>
 </div>
@@ -1485,18 +1520,41 @@ var L10 = Math.log10;
 var BASE = { imp: 'pbt', baff: true, fluid: 'agua', Tf: 85, pMu: 4, cRho: 1000, cMuExp: -3, lT: L10(2.5), HT: 1.2, DT: 0.33, CT: 0.25, lrpm: 2, etaM: 0.9, FS: 1.3,
   solids: true, ldp: L10(2), rhoS: 950, X: 10, gas: false, vvm: 0.5, coal: true, lV2: L10(0.0147), Tw: 110, T0: 20, Tgoal: 85, tH: 30, grid: true };
 var LAB = { imp: 'rushton', lT: L10(0.3), HT: 1, DT: 0.333, CT: 0.333, lrpm: L10(300), fluid: 'agua', Tf: 20, solids: false, gas: false, lV2: L10(14.7), FS: 1.15, Tw: 60, T0: 20, Tgoal: 45, tH: 20 };
-var PRESETS = [
-  { id: 'proyecto', name: 'Reactor de extracción de pectina', tag: 'proyecto', s: {} },
-  { id: 'lab', name: 'Rushton de laboratorio con trazador', tag: 'θ₉₅', s: LAB },
-  { id: 'vortice', name: 'Sin bafles: vórtice', tag: 'Froude', s: Object.assign({}, LAB, { baff: false, lrpm: L10(450) }) },
-  { id: 'viscoso', name: 'Turbina en glicerina', tag: 'laminar', s: Object.assign({}, LAB, { fluid: 'glicerina', Tf: 20, lrpm: L10(120) }) },
-  { id: 'cinta', name: 'Cinta helicoidal en glicerina', tag: 'viscosos', s: Object.assign({}, LAB, { imp: 'cinta', fluid: 'glicerina', Tf: 20, lrpm: L10(30) }) },
-  { id: 'arena', name: 'Suspensión de arena', tag: 'Zwietering', s: { imp: 'pbt', lT: L10(0.5), HT: 1, DT: 0.33, CT: 0.25, lrpm: L10(380), fluid: 'agua', Tf: 20, solids: true, ldp: L10(0.3), rhoS: 2650, X: 20, gas: false, lV2: L10(10), FS: 1.15, Tw: 60, T0: 20, Tgoal: 40, tH: 30 } },
-  { id: 'gas', name: 'Aireación con Rushton', tag: 'kLa', s: { imp: 'rushton', lT: L10(0.6), HT: 1, DT: 0.333, CT: 0.333, lrpm: L10(250), fluid: 'agua', Tf: 30, solids: false, gas: true, vvm: 1, coal: true, lV2: L10(10), FS: 1.15, Tw: 60, T0: 20, Tgoal: 37, tH: 30 } },
-  { id: 'etanol', name: 'Precipitación con etanol', tag: 'punta < 2 m/s', s: { imp: 'hidro', lT: L10(2), HT: 1, DT: 0.4, CT: 0.3, lrpm: L10(45), fluid: 'etanol', Tf: 20, solids: false, gas: false, lV2: L10(0.05), FS: 1.15, Tw: 40, T0: 10, Tgoal: 25, tH: 60 } }
+/* Configuraciones del curso: cada una es un sistema completo (impulsor, tanque, velocidad, líquido, sólidos o gas, escalado y calor).
+   Se cargan desde la pestaña 7. Todas traen su líquido, porque el caso depende de él (el ensayo del trazador, el vórtice, Zwietering y
+   la aireación se plantean con agua; la glicerina y el etanol son el punto de sus tarjetas). Conservan la vista y las propiedades que
+   el estudiante haya puesto al extracto y al fluido personalizado, que ninguna tarjeta usa. */
+var CONFIGS = [
+  { id: 'proyecto', name: 'Reactor de extracción de pectina', src: 'Proyecto · Sesión 09', s: {},
+    desc: 'El reactor de extracción ácida del proyecto, el de la Sesión 09: 14,7 m³ con una turbina de palas inclinadas de 0,83 m a 100 rpm, cuatro bafles y la cáscara triturada en suspensión.',
+    note: 'El líquido es agua a 85 °C (ρ ≈ 970 kg/m³, la densidad de las diapositivas) en lugar del extracto. El extracto ácido de pectina está en el panel 04, con la viscosidad que midan.' },
+  { id: 'lab', name: 'Tanque de laboratorio con Rushton', src: 'Sesión 09 · tiempo de mezclado', s: LAB,
+    desc: 'La geometría estándar a escala de banco: tanque de 0,3 m con H = T, Rushton de D = T/3 a 300 rpm y cuatro bafles. Inyecte el trazador en la pestaña 1 y compare el θ₉₅ de las sondas con Grenville; el panel 06 lo escala a los 14,7 m³ del reactor.',
+    note: 'Trae agua a 20 °C: el ensayo del trazador, y la calibración del simulado contra Grenville, se hacen con agua.' },
+  { id: 'vortice', name: 'Tanque de laboratorio sin bafles', src: 'Lectura 06 · vórtice', s: Object.assign({}, LAB, { baff: false, lrpm: L10(450) }),
+    desc: 'El mismo tanque de banco con la Rushton a 450 rpm y sin bafles. El líquido gira en bloque, se forma el vórtice y Nₚ cae a una fracción del valor con bafles: la corrección por el número de Froude. La vista en planta de la pestaña 1 muestra el giro.',
+    note: 'Trae agua a 20 °C: con un líquido viscoso el Reynolds baja de 300 y el vórtice no se forma.' },
+  { id: 'viscoso', name: 'Tanque de laboratorio con glicerina', src: 'McCabe · tabla 9.2', s: Object.assign({}, LAB, { fluid: 'glicerina', Tf: 20, lrpm: L10(120) }),
+    desc: 'El tanque de banco con la Rushton, ahora en glicerina a 20 °C, unas 1400 veces más viscosa que el agua. A 120 rpm el Reynolds queda en transición: Nₚ sube por encima de su valor turbulento y Grenville ya no da un θ₉₅, porque quedan zonas que no se mezclan.' },
+  { id: 'cinta', name: 'Cinta helicoidal en glicerina', src: 'Lectura 06 · viscosos', s: Object.assign({}, LAB, { imp: 'cinta', fluid: 'glicerina', Tf: 20, lrpm: L10(30) }),
+    desc: 'La misma glicerina con una cinta helicoidal que barre la pared a 30 rpm. En laminar sube el líquido por la periferia y lo baja por el centro, y mezcla en unas 40 vueltas donde la Rushton dejaba zonas quietas.' },
+  { id: 'arena', name: 'Suspensión de arena con PBT', src: 'McCabe · Zwietering', s: { imp: 'pbt', lT: L10(0.5), HT: 1, DT: 0.33, CT: 0.25, lrpm: L10(380), fluid: 'agua', Tf: 20, solids: true, ldp: L10(0.3), rhoS: 2650, X: 20, gas: false, lV2: L10(10), FS: 1.15, Tw: 60, T0: 20, Tgoal: 40, tH: 30 },
+    desc: 'Arena de 0,3 mm (ρₛ = 2650 kg/m³, X = 20) en un tanque de 0,5 m con una PBT a 380 rpm. La velocidad queda un poco por debajo del Nⱼₛ de Zwietering y parte del lecho sigue quieto en el fondo: súbala hasta la ventana de 1,2 a 1,5 Nⱼₛ.',
+    note: 'Trae agua a 20 °C: Nⱼₛ depende de la diferencia de densidad con el líquido y de su viscosidad.' },
+  { id: 'gas', name: 'Aireación con Rushton', src: 'Sesión 09 · gas-líquido', s: { imp: 'rushton', lT: L10(0.6), HT: 1, DT: 0.333, CT: 0.333, lrpm: L10(250), fluid: 'agua', Tf: 30, solids: false, gas: true, vvm: 1, coal: true, lV2: L10(10), FS: 1.15, Tw: 60, T0: 20, Tgoal: 37, tH: 30 },
+    desc: 'Un tanque de 0,6 m con Rushton a 250 rpm y aire a 1 vvm por un anillo bajo el impulsor. El gas queda en régimen cargado, la potencia gaseada cae y el kLa sale de van\'t Riet. Baje la velocidad y mire en la pestaña 4 cuándo se inunda el impulsor.',
+    note: 'Trae agua a 30 °C: las fronteras de Nienow y el kLa de van\'t Riet son para agua y soluciones acuosas.' },
+  { id: 'etanol', name: 'Tanque de precipitación con etanol', src: 'Proyecto · Sesión 09', s: { imp: 'hidro', lT: L10(2), HT: 1, DT: 0.4, CT: 0.3, lrpm: L10(45), fluid: 'etanol', Tf: 20, solids: false, gas: false, lV2: L10(0.05), FS: 1.15, Tw: 40, T0: 10, Tgoal: 25, tH: 60 },
+    desc: 'El tanque del proyecto donde el extracto se mezcla con etanol para precipitar la pectina: 2 m, hidrofoil de D/T = 0,4 a 45 rpm. Las diapositivas piden mezclar sin pasar de 2 m/s en la punta, para no degradar la pectina.',
+    note: 'Se modela con etanol puro a 20 °C; la mezcla real con el extracto es más densa y más viscosa.' }
 ];
-function presetState(id) { var p = byId(PRESETS, id), s = Object.assign(clone(BASE), clone(p.s)); s.preset = id; return s; }
-var state = Object.assign(clone(BASE), store.get('state', {}));
+var KEEP_VIEW = ['grid'], KEEP_PROPS = ['pMu', 'cRho', 'cMuExp'];
+function cfgState(id, from) {
+  var c = byId(CONFIGS, id), s = Object.assign(clone(BASE), clone(c.s));
+  if (from) KEEP_VIEW.concat(KEEP_PROPS).forEach(function (k) { s[k] = from[k]; });
+  s.cfg = c.id; s.cfgMod = false; return s;
+}
+var state = cfgState('proyecto');
 var R = null, tab = store.get('tab', 'ta'), MEAS = [];
 function mstate(s) { return Object.assign({}, s, { T: Math.pow(10, s.lT), rpm: Math.pow(10, s.lrpm), dp: Math.pow(10, s.ldp), V2: Math.pow(10, s.lV2), baff: !!s.baff, coal: !!s.coal }); }
 var SVGI = {
@@ -1524,22 +1582,22 @@ function fPV(x) { return fmtN(x, x < 1 ? 3 : (x < 10 ? 2 : (x < 100 ? 1 : 0))); 
 /* ---------- controles ---------- */
 var SLIDERS = ['lT', 'HT', 'DT', 'CT', 'lrpm', 'etaM', 'FS', 'Tf', 'pMu', 'cRho', 'cMuExp', 'ldp', 'rhoS', 'X', 'vvm', 'lV2', 'Tw', 'T0', 'Tgoal', 'tH'];
 function buildControls() {
-  $('#presetBtns').innerHTML = PRESETS.map(function (p) { return '<button type="button" class="opt" data-p="' + p.id + '"><span>' + esc(p.name) + '</span><span class="x">' + esc(p.tag) + '</span></button>'; }).join('');
   $('#impBtns').innerHTML = IMPS.map(function (m) { return '<button type="button" class="mill" data-i="' + m.id + '"><svg viewBox="0 0 42 32" aria-hidden="true" fill="none" stroke="currentColor">' + IMP_ICON[m.id] + '</svg>' + esc(m.short) + '<span class="sz">Nₚ ' + fmtN(m.KT, 2) + '</span></button>'; }).join('');
   $('#fluBtns').innerHTML = FLUIDS.map(function (f) { return '<button type="button" class="opt" data-f="' + f.id + '"><span class="dotc" style="background:' + f.color + '"></span><span>' + esc(f.name) + '</span><span class="x">' + (f.project ? 'proyecto' : (f.custom ? 'ρ, μ' : '')) + '</span></button>'; }).join('');
-  $$('#presetBtns .opt').forEach(function (b) { b.addEventListener('click', function () { state = presetState(b.dataset.p); update(); if (tscene) { tscene.reset(); } }); });
-  $$('#impBtns .mill').forEach(function (b) { b.addEventListener('click', function () { var m = byId(IMPS, b.dataset.i); state.imp = m.id; if (!m.close) { state.DT = m.dt; } dirty(); }); });
-  $$('#fluBtns .opt').forEach(function (b) { b.addEventListener('click', function () { var f = byId(FLUIDS, b.dataset.f); state.fluid = f.id; if (f.T) state.Tf = clamp(state.Tf, f.T[0], f.T[1]); dirty(); }); });
+  $$('#impBtns .mill').forEach(function (b) { b.addEventListener('click', function () { state.imp = b.dataset.i; dirty(); }); });
+  $$('#fluBtns .opt').forEach(function (b) { b.addEventListener('click', function () { state.fluid = b.dataset.f; dirty(); }); });
   $$('#bafSeg button').forEach(function (b) { b.addEventListener('click', function () { state.baff = b.dataset.v === '1'; dirty(); }); });
   $$('#coalSeg button').forEach(function (b) { b.addEventListener('click', function () { state.coal = b.dataset.v === '1'; dirty(); }); });
   SLIDERS.forEach(function (k) { var el = document.getElementById(k); el.addEventListener('input', function () { state[k] = parseFloat(el.value); dirty(); }); });
-  ['solids', 'gas', 'grid'].forEach(function (k) { var el = document.getElementById(k); el.addEventListener('change', function () { state[k] = el.checked; dirty(); }); });
-  $('#resetAll').addEventListener('click', function () { state = presetState('proyecto'); update(); if (tscene) tscene.reset(); });
+  ['solids', 'gas', 'grid'].forEach(function (k) { var el = document.getElementById(k); el.addEventListener('change', function () { state[k] = el.checked; dirty(k === 'grid' ? 'view' : null); }); });
+  $('#resetAll').addEventListener('click', function () { state = cfgState('proyecto'); update(); if (tscene) tscene.reset(); });
+  $('#toCfg').addEventListener('click', function () { setTab('cf'); window.scrollTo(0, 0); if (window.innerWidth < 900) { $('#ctl').classList.remove('open'); $('#mobCtl').textContent = 'Controles'; } });
+  $('#cfgCards').addEventListener('click', function (e) { var b = e.target.closest('button[data-cfg]'); if (b) loadCfg(b.dataset.cfg); });
   $('#status').addEventListener('click', function () { setTab('ta'); setTimeout(function () { $('#diagCard').scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 50); });
   $$('.tabs [role=tab]').forEach(function (b) { b.addEventListener('click', function () { setTab(b.dataset.tab); }); });
   $$('.tabs .canv button').forEach(function (b) { b.addEventListener('click', function () { document.documentElement.setAttribute('data-canvas', b.dataset.canvas); $$('.tabs .canv button').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); }); store.set('canvas', b.dataset.canvas); tscene && tscene.layout(); renderTab(); }); });
   $('#mobCtl').addEventListener('click', function () { $('#ctl').classList.toggle('open'); this.textContent = $('#ctl').classList.contains('open') ? 'Cerrar' : 'Controles'; });
-  document.addEventListener('keydown', function (e) { if (/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return; var i = '123456'.indexOf(e.key); if (i >= 0) setTab(['ta', 'po', 'me', 'so', 'es', 'ec'][i]); if (e.key === ' ' && tab === 'ta') { e.preventDefault(); togglePlay(); } });
+  document.addEventListener('keydown', function (e) { if (/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return; var i = '1234567'.indexOf(e.key); if (i >= 0) setTab(['ta', 'po', 'me', 'so', 'es', 'ec', 'cf'][i]); if (e.key === ' ' && tab === 'ta') { e.preventDefault(); togglePlay(); } });
   $('#btnPlay').innerHTML = SVGI.pause; $('#btnReset').innerHTML = SVGI.reset;
   $('#btnPlay').addEventListener('click', togglePlay); $('#btnReset').addEventListener('click', function () { tscene.reset(); });
   $$('.play [data-sp]').forEach(function (b) { b.addEventListener('click', function () { tscene.speedSel = b.dataset.sp === 'auto' ? 'auto' : +b.dataset.sp; $$('.play [data-sp]').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); }); }); });
@@ -1549,12 +1607,17 @@ function buildControls() {
   hoverSetup();
 }
 function syncView() { $$('.tbar [data-view]').forEach(function (b) { b.setAttribute('aria-pressed', tscene.view[b.dataset.view] ? 'true' : 'false'); }); }
-function dirty() { state.preset = null; update(); }
+/* un cambio en los controles marca la configuración como modificada; la cuadrícula es solo vista */
+function dirty(kind) { if (kind !== 'view') state.cfgMod = true; update(); }
+function loadCfg(id) { state = cfgState(id, state); update(); if (tscene) tscene.reset(); setTab('ta'); window.scrollTo(0, 0); }
 function togglePlay() { tscene.running = !tscene.running; $('#btnPlay').innerHTML = tscene.running ? SVGI.pause : SVGI.play; }
 function setTab(t) {
   tab = t; store.set('tab', t);
   $$('.tabs [role=tab]').forEach(function (b) { b.setAttribute('aria-selected', b.dataset.tab === t ? 'true' : 'false'); });
   $$('.panel').forEach(function (p) { p.classList.toggle('on', p.dataset.panel === t); });
+  // en el celular la barra de pestañas se desplaza: que la elegida quede a la vista
+  var tb = $('.tabs'), on = $('.tabs [aria-selected="true"]');
+  if (on && tb.scrollWidth > tb.clientWidth) { var l = on.offsetLeft, rr = l + on.offsetWidth; if (l < tb.scrollLeft) tb.scrollLeft = l - 8; else if (rr > tb.scrollLeft + tb.clientWidth) tb.scrollLeft = rr - tb.clientWidth + 8; }
   if (t === 'ta' && tscene) tscene.resize();
   renderTab();
 }
@@ -1562,11 +1625,10 @@ function setV(id, v) { var el = document.getElementById(id); if (el && el.innerH
 function pressed(sel, attr, val) { $$(sel).forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset[attr]) === String(val) ? 'true' : 'false'); }); }
 
 function update() {
-  store.set('state', state);
   var s = state, fl = byId(FLUIDS, s.fluid);
   R = compute(mstate(s));
   var r = R, imp = r.imp, g = r.geo, P = r.P;
-  pressed('#presetBtns .opt', 'p', s.preset || ''); pressed('#impBtns .mill', 'i', s.imp); pressed('#fluBtns .opt', 'f', s.fluid);
+  pressed('#impBtns .mill', 'i', s.imp); pressed('#fluBtns .opt', 'f', s.fluid);
   pressed('#bafSeg button', 'v', r.baff ? '1' : '0'); pressed('#coalSeg button', 'v', s.coal ? '1' : '0');
   $$('#bafSeg button').forEach(function (b) { b.disabled = imp.close; });
   SLIDERS.forEach(function (k) { var el = document.getElementById(k); if (parseFloat(el.value) !== s[k]) el.value = s[k]; });
@@ -1576,6 +1638,7 @@ function update() {
   // geometría
   setV('vlT', fmtN(g.T, g.T < 1 ? 3 : 2) + ' m'); $('#Thint').textContent = 'Volumen de líquido ' + fV(g.V);
   setV('vHT', fmtN(s.HT, 2)); setV('vDT', imp.close ? fmtN(imp.dt, 2) : fmtN(s.DT, 3)); setV('vCT', fmtN(g.CT, 3));
+  $('#DThint').textContent = imp.close ? 'Lo fija el impulsor, que barre la pared' : 'Típico para este impulsor: D/T ≈ ' + fmtN(imp.dt, 2);
   $('#DTRow').style.opacity = imp.close ? 0.45 : 1; $('#CTRow').style.opacity = imp.close ? 0.45 : 1; $('#DT').disabled = imp.close; $('#CT').disabled = imp.close;
   $('#specGeo').innerHTML = [['Altura del líquido H', fL(g.H)], ['Diámetro del impulsor D', fL(g.D)], ['Altura del impulsor C', fL(g.C)], ['Ancho de bafle B = T/10', r.baff ? fL(g.B) : 'sin bafles'], ['Volumen V', fV(g.V)]].map(function (a) { return '<div>' + a[0] + '</div><div class="v">' + a[1] + '</div>'; }).join('');
   // operación
@@ -1586,6 +1649,7 @@ function update() {
   $('#TfRow').style.display = fl.T ? 'block' : 'none';
   if (fl.T) { var tEl = $('#Tf'); tEl.min = fl.T[0]; tEl.max = fl.T[1]; if (parseFloat(tEl.value) !== r.Tf) tEl.value = r.Tf; }
   setV('vTf', fmtN(r.Tf, 0) + ' °C');
+  if (fl.T) $('#Tfhint').textContent = 'Rango de las correlaciones: ' + fl.T[0] + ' a ' + fl.T[1] + ' °C' + (Math.abs(s.Tf - r.Tf) > 0.5 ? ' · sus ' + fmtN(s.Tf, 0) + ' °C quedan fuera y se usa ' + fmtN(r.Tf, 0) + ' °C' : '');
   $('#pMuRow').style.display = fl.custom === 'mu' ? 'block' : 'none'; setV('vpMu', fmtN(s.pMu, 1) + ' mPa·s');
   $('#customBox').style.display = fl.custom === 'all' ? 'block' : 'none';
   setV('vcRho', fmtN(s.cRho, 0) + ' kg/m³'); setV('vcMuExp', fmtMu(Math.pow(10, s.cMuExp)));
@@ -1598,7 +1662,9 @@ function update() {
   // escalado y calor
   var V2 = Math.pow(10, s.lV2); setV('vlV2', fV(V2)); $('#V2hint').textContent = (V2 > g.V ? 'Escalado ×' + fmtN(r.scale.R, 2) + ' en tamaño' : 'Escala menor: ×' + fmtN(r.scale.R, 3) + ' en tamaño') + ' · T₂ = ' + fL(r.scale.T2);
   setV('vTw', fmtN(s.Tw, 0) + ' °C'); setV('vT0', fmtN(s.T0, 0) + ' °C'); setV('vTgoal', fmtN(s.Tgoal, 0) + ' °C'); setV('vtH', fmtN(s.tH, 0) + ' min');
-  $('#ctx').innerHTML = '<b>' + esc(imp.short) + '</b> · ' + fRPM(Math.pow(10, s.lrpm)) + ' rpm · T = ' + fmtN(g.T, 2) + ' m · ' + esc(fl.name.toLowerCase()) + (fl.T ? ' a ' + fmtN(r.Tf, 0) + ' °C' : '') + (r.baff ? '' : (imp.close ? '' : ' · sin bafles'));
+  var cf = byId(CONFIGS, s.cfg);
+  $('#cfgNow').innerHTML = esc(cf.name) + '<small>' + esc(s.cfgMod ? 'con sus cambios' : cf.src) + '</small>';
+  $('#ctx').innerHTML = '<b>' + esc(cf.name) + (s.cfgMod ? ', modificado' : '') + '</b> · ' + esc(imp.short) + ' · ' + fRPM(Math.pow(10, s.lrpm)) + ' rpm · T = ' + fmtN(g.T, 2) + ' m · ' + esc(fl.name.toLowerCase()) + (fl.T ? ' a ' + fmtN(r.Tf, 0) + ' °C' : '') + (r.baff ? '' : (imp.close ? '' : ' · sin bafles'));
   renderKPIs();
   var sev = r.warn.some(function (w) { return w.sev === 'c'; }) ? 'inv' : (r.warn.some(function (w) { return w.sev === 'w'; }) ? 'adv' : '');
   $('#status').className = 'status' + (sev ? ' ' + sev : ''); $('#statusTxt').textContent = sev === 'inv' ? 'Problema' : (sev === 'adv' ? 'Con advertencias' : 'Configuración sana');
@@ -1628,6 +1694,7 @@ function renderTab() {
   else if (tab === 'so') renderSolids();
   else if (tab === 'es') renderScale();
   else if (tab === 'ec') renderEqs();
+  else if (tab === 'cf') renderConfigs();
 }
 
 /* ---------- utilidades SVG ---------- */
@@ -1920,6 +1987,42 @@ function renderEqs() {
   $('#assump').innerHTML = '<b>Cómo está hecho el tanque.</b> La potencia sale de las constantes K<sub>L</sub> y K<sub>T</sub> de McCabe (tabla 9.2), con una transición suave entre ambas y la corrección por Froude sin bafles. La circulación media es una función de corriente axisimétrica que se resuelve en cada cambio (ecuación de Stokes con fuentes de vorticidad que imitan la descarga de cada impulsor) y se escala al caudal de circulación de McCabe. '
     + 'La dispersión turbulenta es proporcional a N<sub>p</sub><sup>1/3</sup>·N·D² y se calibró para que el θ₉₅ simulado del caso estándar coincida con Grenville; cae como (Re/6400)<sup>1,5</sup> en transición. En turbulento el simulado queda dentro de unos 25 % de Grenville y en transición dentro de unos 35 %. En laminar el ancla y la cinta pliegan el líquido junto a la pared: calibrados a N·θ ≈ 250 y 40. '
     + 'El trazador se resuelve con volúmenes finitos conservativos en ese corte; las partículas son 3D y siguen el mismo campo más el giro u<sub>θ</sub> y la turbulencia. Suspensión: Zwietering con S de la tabla 9.4. Gas: Nienow, Cui et al. y van\'t Riet. Calor: la correlación de las diapositivas. Es un modelo didáctico: para el diseño del proyecto verifique con datos del fabricante o con ensayos.';
+}
+
+/* ---------- 7 · configuraciones ---------- */
+function cfgFacts(st, r) {
+  var imp = r.imp, fl = r.fl, g = r.geo, dp = Math.pow(10, st.ldp), so = [];
+  if (st.solids) so.push('sólidos de ' + fmtN(dp, dp < 1 ? 2 : 1) + ' mm, ρₛ = ' + fmtN(st.rhoS, 0) + ' kg/m³, X = ' + fmtN(st.X, 0));
+  if (st.gas) so.push('aire a ' + fmtN(st.vvm, 2) + ' vvm, medio ' + (st.coal ? 'coalescente' : 'no coalescente'));
+  return [['Impulsor', imp.short + ' a ' + fRPM(r.N * 60) + ' rpm · ' + (imp.close ? 'barre la pared' : 'D/T ' + fmtN(g.dt, 2) + ' · ' + (r.baff ? 'cuatro bafles' : 'sin bafles'))],
+    ['Tanque', 'T = ' + fmtN(g.T, 2) + ' m · H/T ' + fmtN(g.HT, 2) + ' · ' + fV(g.V)],
+    ['Líquido', fl.name.toLowerCase() + (fl.T ? ' a ' + fmtN(r.Tf, 0) + ' °C' : '') + ' · lo trae la tarjeta'],
+    ['Sólidos o gas', so.length ? so.join(' · ') : 'ninguno']];
+}
+function cfgResult(r) { // cada dato con su valor en una sola línea
+  var it = ['Re ' + fmtRe(r.Re), 'Nₚ ' + fmtN(r.NpG, r.NpG < 10 ? 2 : 1), 'P ' + fW(r.Pw), 'θ₉₅ ' + (r.th95 ? fT(r.th95) : 'sin correlación')];
+  if (r.sol && r.sol.Njs) it.push('N/Nⱼₛ ' + fmtN(r.sol.ratio, 2));
+  else if (r.gas && r.gas.reg) it.push('gas ' + r.gas.reg, 'kLa ' + fmtN(r.gas.kLa * 3600, 0) + ' h⁻¹');
+  else it.push('punta ' + fmtN(r.tip, 2) + ' m/s');
+  return it.map(function (x) { return esc(x).replace(/ /g, '&nbsp;'); }).join('&nbsp;· ');
+}
+function renderConfigs() {
+  var s = state;
+  $('#cfLead').innerHTML = 'Cada tarjeta es un sistema completo del curso: impulsor, tanque, velocidad, líquido, sólidos o gas, y los datos de escalado y calor. Todas traen su propio líquido, porque el caso depende de él, así que al cargar una se reemplaza el fluido que tenga escogido. Se conservan la cuadrícula, el fondo, las capas de la animación y sus mediciones de θ₉₅. Después siga cambiando el sistema pieza por pieza en los controles.';
+  $('#cfgCards').innerHTML = CONFIGS.map(function (c) {
+    var st = cfgState(c.id, s), r = compute(mstate(st)), on = s.cfg === c.id;
+    return '<div class="cfg' + (on ? ' on' : '') + '"><div class="cb"><div class="ct"><h3>' + esc(c.name) + '</h3><span class="src">' + esc(c.src) + '</span></div><p>' + esc(c.desc) + '</p>'
+      + '<dl class="facts">' + cfgFacts(st, r).map(function (q) { return '<dt>' + q[0] + '</dt><dd>' + esc(q[1]) + '</dd>'; }).join('') + '</dl>'
+      + '<div class="res"><span>Resultado:</span> ' + cfgResult(r) + '</div>' + (c.note ? '<div class="note">' + esc(c.note) + '</div>' : '')
+      + '<button type="button" data-cfg="' + c.id + '"' + (on && !s.cfgMod ? ' disabled' : '') + '>' + (on ? (s.cfgMod ? 'Volver a cargarla sin sus cambios' : 'Es la que está en pantalla') : 'Cargar esta configuración') + '</button></div></div>';
+  }).join('');
+  $('#cfgIdeas').innerHTML = [
+    '<b>Impulsor (01):</b> pase de la PBT a la Rushton, o al revés, sin tocar nada más. Con el mismo D/T y la misma velocidad, la potencia cambia en la proporción de los Nₚ, unas 4,5 veces en turbulento; la pestaña 2 muestra las seis curvas.',
+    '<b>Deflectores (01):</b> quite los bafles y mire la vista en planta de la pestaña 1. Con Re por encima de 300 el líquido gira en bloque, aparece el vórtice y Nₚ cae con el número de Froude.',
+    '<b>Operación (03):</b> doble la velocidad. En turbulento la potencia se multiplica por ocho (P ∝ N³) y θ₉₅ solo baja a la mitad; la pestaña 3 lo muestra contra N.',
+    '<b>Fluido (04):</b> pase a un líquido más viscoso, como la glicerina, con la misma geometría. El Reynolds cae, Nₚ sube en la pestaña 2 y, ya en laminar, la potencia es proporcional a la viscosidad.',
+    '<b>Escalado (06):</b> suba el volumen de la planta y compare los cuatro criterios en la pestaña 5. Con la misma P/V la velocidad de punta crece; con la misma punta, la P/V cae.'
+  ].map(function (x) { return '<li>' + x + '</li>'; }).join('');
 }
 
 /* ---------- lectura con el cursor ---------- */
