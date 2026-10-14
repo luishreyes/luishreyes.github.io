@@ -259,7 +259,7 @@ table.t tr:hover td { background: var(--accent-50); }
 :root[data-canvas="blueprint"] .card-b:has(> svg.ch) .readout { color: var(--muted-ink); }
 .np-msg { display: none; border-left-color: var(--redline); background: #fbf0ed; color: var(--n800); }
 .panel.nophys .np-msg { display: block; }
-.panel.nophys .card:not(#diagCard), .panel.nophys .eqs, .panel.nophys #assump { display: none; }
+.panel.nophys .card:not(#diagCard), .panel.nophys .eqs, .panel.nophys #assump, .panel.nophys #t3Cap { display: none; }
 .crit { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 6px; }
 .crit > div { display: grid; grid-template-columns: 12px 1fr auto; gap: 2px 8px; align-items: center; border: 1.5px solid var(--n200); padding: 7px 10px; background: #fff; }
 .crit i { width: 10px; height: 10px; border-radius: 50%; background: var(--ok); grid-row: 1 / span 2; }
@@ -407,6 +407,11 @@ table.t tr.dim td { color: var(--n500); }
 .ideas { margin: 0; padding-left: 18px; display: grid; gap: 6px; font-size: 13.5px; line-height: 1.5; }
 .ideas b { color: var(--accent-700); }
 @media (max-width: 1100px) { .cfgs { grid-template-columns: 1fr; } }
+/* barra de pestañas a 1280 */
+@media (max-width: 1400px) { .tabs button { padding-left: 12px; padding-right: 12px; } }
+@media (max-width: 1320px) { .tabs button { padding-left: 9px; padding-right: 9px; font-size: 13px; gap: 6px; } .tabs .canv { padding: 0 8px; } }
+@media (max-width: 1320px) { .tabs.tight button .k { display: none; } }
+@media (max-width: 1320px) { .tabs button { padding-left: 7px; padding-right: 7px; } .tabs .canv { padding: 0 6px; } }
 </style>
 </head>
 <body>
@@ -486,7 +491,7 @@ table.t tr.dim td { color: var(--n500); }
   </aside>
 
   <main id="main">
-    <nav class="tabs" role="tablist" aria-label="Vistas">
+    <nav class="tabs tight" role="tablist" aria-label="Vistas">
       <button type="button" role="tab" data-tab="co" aria-selected="true"><span class="k">1</span>Columna</button>
       <button type="button" role="tab" data-tab="eq" aria-selected="false"><span class="k">2</span>Equilibrio</button>
       <button type="button" role="tab" data-tab="pp" aria-selected="false"><span class="k">3</span>Paso a paso</button>
@@ -1660,9 +1665,10 @@ function renderKPIs() {
 }
 function renderTab() {
   if (!RES) return;
-  var np = !RES.ok;
-  $$('.panel').forEach(function (p) { p.classList.toggle('nophys', np && p.dataset.panel !== 'eq' && p.dataset.panel !== 'cf'); });
+  var np = !RES.ok, noD = !np && !p3HasD(RES);
+  $$('.panel').forEach(function (p) { p.classList.toggle('nophys', (np && p.dataset.panel !== 'eq' && p.dataset.panel !== 'cf') || (noD && p.dataset.panel === 'p3')); });
   $$('.np-msg').forEach(function (el) { el.innerHTML = np ? '<b>Así no hay columna.</b> ' + subs(esc(RES.fatal)) : ''; });
+  if (noD) $('[data-panel="p3"] .np-msg').innerHTML = '<b>Así no hay plato.</b> Con esta especificación el vapor de una de las secciones sale negativo o nulo, y sin caudal de vapor no hay diámetro ni plato que dibujar. Suba el reflujo o la q de la alimentación.';
   if (np && tab !== 'eq' && tab !== 'cf') { renderWarn(); if (tab === 'co') renderCo(); return; }
   if (tab === 'co') renderCo();
   else if (tab === 'eq') renderEq();
@@ -1708,7 +1714,7 @@ function cfgRes(r) {
 }
 function renderConfigs() {
   var s = state, here = mixName(s);
-  $('#cfLead').innerHTML = subs('Cada tarjeta es una columna completa de un material del curso: especificación, alimentación, reflujo y platos. Al cargar una se conservan las opciones de vista y el plato en 3D. Las que reproducen un ejemplo definido por su mezcla la fijan y lo dicen; las demás se calculan con la mezcla que usted tiene en el panel 01 (<b>' + esc(here) + '</b>). Después la sigue cambiando pieza por pieza en los controles.');
+  $('#cfLead').innerHTML = subs('Cada tarjeta es una columna completa, casi siempre tomada del material del curso: especificación, alimentación, reflujo y platos. Al cargar una se conservan las opciones de vista y el plato en 3D. Las que reproducen un ejemplo definido por su mezcla la fijan y lo dicen; las demás se calculan con la mezcla que usted tiene en el panel 01 (<b>' + esc(here) + '</b>). Después la sigue cambiando pieza por pieza en los controles.');
   $('#cfgCards').innerHTML = CONFIGS.filter(function (c) { return !c.of; }).map(function (c) {
     var vars = [c].concat(CONFIGS.filter(function (v) { return v.of === c.id; })), multi = vars.length > 1;
     var on = vars.some(function (v) { return v.id === s.cfg; }), st0 = cfgState(c.id, s);
@@ -2266,7 +2272,7 @@ function renderAL() {
     return out;
   });
   var finite = fs.filter(function (p) { return isFinite(p.N); }), nmax = finite.length ? Math.max.apply(null, finite.map(function (p) { return p.N; })) : 10;
-  var b2 = axes({ x0: 56, x1: 546, y0: 14, y1: 250, xmin: 0.5, xmax: fs.length + 0.5, ymin: 0, ymax: Math.ceil(Math.min(nmax, (r.colOpt.ok ? r.colOpt.N : nmax) * 3) * 1.08), xlab: 'Etapa de alimentación (desde la cabeza)', ylab: 'Etapas N', clip: 'clFS' });
+  var b2 = axes({ x0: 56, x1: 546, y0: 14, y1: 250, xmin: 0.5, xmax: fs.length + 0.5, ymin: 0, ymax: Math.max(1, Math.ceil(Math.min(nmax, (r.colOpt.ok ? r.colOpt.N : nmax) * 3) * 1.08)), xlab: 'Etapa de alimentación (desde la cabeza)', ylab: 'Etapas N', clip: 'clFS' });
   var gb = b2.svg, bw = Math.max(2, (b2.X(1.5) - b2.X(0.5)) * 0.7);
   fs.forEach(function (p) {
     var x = b2.X(p.f);
@@ -2315,19 +2321,23 @@ function renderPT() {
   $('#eoNote').innerHTML = subs(esc('N = ' + fmtN(N, 2) + ' incluye el hervidor, que no es plato: por eso se divide N − 1 (Taller 9). O\'Connell, la única correlación del curso: E_o = 51 − 32,5 log(μ_L·α), con μ_L y α a la temperatura media; la banda es de unos diez puntos. Para etanol-agua el α cambia de ' + fmtN(eq.alpha(Math.max(0.005, s.xB)), 1) + ' a ' + fmtN(eq.alpha(Math.min(0.995, s.xD)), 2) + ' a lo largo de la columna: la media geométrica da ' + fmtN(r.aCol, 2) + ' y el α ideal ' + fmtN(r.aIdeal, 2) + '. Declare cuál usó y qué pasa si E_o resulta diez puntos menor (Eficiencias).'));
   // ventana de operación (esquema de Diseño de platos, escalado al caso)
   var sec = r.ctrl === 'top' ? r.top : r.bot, ch = r.chk, QLh = sec.QL * 3600, Qmx = ch.QLmax, xmax = Math.max(Qmx * 1.12, QLh * 1.4), uf = sec.uf, Ab = sec.net ? ch.AT * (1 - s.fracBaj) : ch.AT;
-  var w = axes({ x0: 56, x1: 546, y0: 12, y1: 272, xmin: 0, xmax: xmax, ymin: 0, ymax: uf * 1.2, xlab: 'Caudal de líquido Q_L (m³/h)', ylab: 'Velocidad del vapor u (m/s)', clip: 'clWin' });
-  var wg = w.svg, fl = [], we = [], win = [];
-  for (var k = 0; k <= 60; k++) { var ql = xmax * k / 60; fl.push([w.X(ql), w.Y(uf * (1 - 0.5 * ql / Qmx))]); we.push([w.X(ql), w.Y(0.4 * uf * (0.75 + 0.8 * ql / Qmx))]); }
-  for (var k2 = 0; k2 <= 40; k2++) { var q3 = Math.min(Qmx, xmax) * k2 / 40; win.push([w.X(q3), w.Y(uf * (1 - 0.5 * q3 / Qmx))]); }
-  for (var k3 = 40; k3 >= 0; k3--) { var q4 = Math.min(Qmx, xmax) * k3 / 40; win.push([w.X(q4), w.Y(0.4 * uf * (0.75 + 0.8 * q4 / Qmx))]); }
-  wg += E('path', { d: poly(win) + 'Z', style: 'fill:' + CG + ';opacity:.1', 'clip-path': 'url(#clWin)' });
-  wg += PATH(poly(fl), 'stroke:' + CR + ';stroke-width:2', 'clWin') + PATH(poly(we), 'stroke:' + C2 + ';stroke-width:2', 'clWin');
-  wg += LN(w.X(Qmx), w.o.y0, w.X(Qmx), w.o.y1, 'stroke:' + CV + ';stroke-width:1.6;stroke-dasharray:5 3');
-  wg += TX(w.X(xmax * 0.03), w.Y(uf) - 6, 'inundación', { fs: 10.5, c: CR, fw: 700 }) + TX(w.X(xmax * 0.03), w.Y(0.3 * uf) + 14, 'goteo', { fs: 10.5, c: C2, fw: 700 }) + TX(w.X(Qmx) - 4, w.o.y0 + 14, 'bajante saturado', { a: 'end', fs: 10.5, c: CV, fw: 700 });
-  [0.75, 0.85].forEach(function (f) { wg += LN(w.o.x0, w.Y(f * uf), w.o.x1, w.Y(f * uf), 'stroke:var(--ink);stroke-width:.8;stroke-dasharray:2 3;opacity:.5'); });
-  wg += TX(w.o.x1 - 4, w.Y(0.85 * uf) - 4, '75 a 85 %', { a: 'end', fs: 10, c: MUT });
-  wg += dot(w.X(QLh), w.Y(ch.u), 6, 'var(--hl)') + TX(w.X(QLh) + 9, w.Y(ch.u) + 4, fmtN(100 * ch.flood, 0) + ' % con D = ' + fmtN(r.Dcom, 1) + ' m', { fs: 11, fw: 750 });
-  $('#svgWin').innerHTML = wg; void Ab;
+  /* sin un diámetro calculable (flujos nulos o una columna que no converge) no hay ventana que dibujar */
+  if (!(isFinite(Qmx) && Qmx > 0 && isFinite(uf) && uf > 0 && isFinite(ch.u) && isFinite(QLh))) $('#svgWin').innerHTML = TX(280, 160, 'Sin un diámetro calculado no hay ventana de operación que dibujar', { a: 'middle', c: MUT, fs: 12 });
+  else {
+    var w = axes({ x0: 56, x1: 546, y0: 12, y1: 272, xmin: 0, xmax: xmax, ymin: 0, ymax: uf * 1.2, xlab: 'Caudal de líquido Q_L (m³/h)', ylab: 'Velocidad del vapor u (m/s)', clip: 'clWin' });
+    var wg = w.svg, fl = [], we = [], win = [];
+    for (var k = 0; k <= 60; k++) { var ql = xmax * k / 60; fl.push([w.X(ql), w.Y(uf * (1 - 0.5 * ql / Qmx))]); we.push([w.X(ql), w.Y(0.4 * uf * (0.75 + 0.8 * ql / Qmx))]); }
+    for (var k2 = 0; k2 <= 40; k2++) { var q3 = Math.min(Qmx, xmax) * k2 / 40; win.push([w.X(q3), w.Y(uf * (1 - 0.5 * q3 / Qmx))]); }
+    for (var k3 = 40; k3 >= 0; k3--) { var q4 = Math.min(Qmx, xmax) * k3 / 40; win.push([w.X(q4), w.Y(0.4 * uf * (0.75 + 0.8 * q4 / Qmx))]); }
+    wg += E('path', { d: poly(win) + 'Z', style: 'fill:' + CG + ';opacity:.1', 'clip-path': 'url(#clWin)' });
+    wg += PATH(poly(fl), 'stroke:' + CR + ';stroke-width:2', 'clWin') + PATH(poly(we), 'stroke:' + C2 + ';stroke-width:2', 'clWin');
+    wg += LN(w.X(Qmx), w.o.y0, w.X(Qmx), w.o.y1, 'stroke:' + CV + ';stroke-width:1.6;stroke-dasharray:5 3');
+    wg += TX(w.X(xmax * 0.03), w.Y(uf) - 6, 'inundación', { fs: 10.5, c: CR, fw: 700 }) + TX(w.X(xmax * 0.03), w.Y(0.3 * uf) + 14, 'goteo', { fs: 10.5, c: C2, fw: 700 }) + TX(w.X(Qmx) - 4, w.o.y0 + 14, 'bajante saturado', { a: 'end', fs: 10.5, c: CV, fw: 700 });
+    [0.75, 0.85].forEach(function (f) { wg += LN(w.o.x0, w.Y(f * uf), w.o.x1, w.Y(f * uf), 'stroke:var(--ink);stroke-width:.8;stroke-dasharray:2 3;opacity:.5'); });
+    wg += TX(w.o.x1 - 4, w.Y(0.85 * uf) - 4, '75 a 85 %', { a: 'end', fs: 10, c: MUT });
+    wg += dot(w.X(QLh), w.Y(ch.u), 6, 'var(--hl)') + TX(w.X(QLh) + 9, w.Y(ch.u) + 4, fmtN(100 * ch.flood, 0) + ' % con D = ' + fmtN(r.Dcom, 1) + ' m', { fs: 11, fw: 750 });
+    $('#svgWin').innerHTML = wg; void Ab;
+  }
   $('#hyLbl').textContent = (s.tray === 'perf' ? 'perforados' : 'válvulas') + ' · ' + fmtN(s.TS * 1000, 0) + ' mm · ' + (s.csb === 'fair' ? 'Fair' : 'tabla del curso');
   var tb = r.top, bo = r.bot, ct = r.chkTop, cb = r.chkBot, row = function (n, a1, b1) { return '<tr><td>' + subs(n) + '</td><td>' + a1 + '</td><td>' + b1 + '</td></tr>'; };
   $('#hyTable').innerHTML = '<thead><tr><th></th><th>Cabeza' + (r.ctrl === 'top' ? ' · manda' : '') + '</th><th>Fondo' + (r.ctrl === 'bot' ? ' · manda' : '') + '</th></tr></thead><tbody>'
@@ -2393,6 +2403,8 @@ var T3H = null;
 function ring(x, y, r, col) { return E('circle', { cx: r1(x), cy: r1(y), r: r, style: 'fill:var(--paper);stroke:' + (col || 'var(--ink)') + ';stroke-width:2' }); }
 function t3Opts(s) { return { hw: s.t3hw, dh: s.t3dh, AhAa: s.t3Ah, C0: s.t3C0, calm: s.t3calm, edge: s.t3calm, gap: s.t3gap, tp: 0.003, vL: s.t3vL, lL: s.t3lL }; }
 function t3Sec(r, s) { var k = s.t3sec === 'ctrl' ? r.ctrl : s.t3sec; return { k: k, sec: k === 'top' ? r.top : r.bot }; }
+/* sin vapor en alguna sección (V o V̄ ≤ 0) no sale diámetro, y sin diámetro no hay plato que dibujar */
+function p3HasD(r) { return isFinite(r.Dcom) && r.Dcom > 0; }
 function t3Compute(r, s) { var q = t3Sec(r, s), h = trayHyd(q.sec, s, t3Opts(s), r.Dcom); h.secK = q.k; h.sec = q.sec; return h; }
 function t3Controls() {
   T3KEYS.forEach(function (k) { var el = document.getElementById(k); el.addEventListener('input', function () { state[k] = parseFloat(el.value); store.set('state', state); renderP3(); }); });
@@ -2423,7 +2435,7 @@ var T3REG = {
   weep: ['goteo', 'w']
 };
 function renderP3() {
-  var r = RES, s = state; if (!r || !r.ok) return;
+  var r = RES, s = state; if (!r || !r.ok || !p3HasD(r)) return;
   var h = t3Compute(r, s), g = h.g, sec = h.sec; T3H = h;
   // controles
   var setS = function (id, v) { var el = document.getElementById(id); if (+el.value !== v) el.value = v; };
