@@ -70,7 +70,6 @@ const asesorBloque = (a) => `
       <thead><tr><th>Reto</th><th>Estudiantes</th><th>Notas</th></tr></thead>
       <tbody>
         ${a.principal.map((r) => filaReto(r)).join('')}
-        ${a.coasesor.length ? `<tr class="sub"><td colspan="3">Como coasesor</td></tr>${a.coasesor.map((r) => filaReto(r, true)).join('')}` : ''}
       </tbody>
     </table>
   </section>`;

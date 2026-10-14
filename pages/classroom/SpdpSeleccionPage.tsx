@@ -71,10 +71,8 @@ const retoPorId = new Map(retos202620.map((r) => [r.id, r]));
 
 /** Cupos que quedan de un reto antes de la sesión, descontando lo ya asignado. */
 function cupoInicial(r: Reto202620): number {
-  const s = retosSeleccionados[r.id];
-  if (!s) return r.integrantes;
-  if (s.individual || s.motivo === 'maestria') return 0;
-  return Math.max(0, r.integrantes - s.nombres.length);
+  // un reto con al menos un estudiante ya no tiene cupos, aunque sea para dos
+  return retosSeleccionados[r.id]?.nombres.length ? 0 : r.integrantes;
 }
 
 /** Estudiante de la lista que ya tenía reto antes de la sesión. */

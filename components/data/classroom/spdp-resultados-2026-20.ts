@@ -16,11 +16,11 @@ export interface RetoResultado {
   nota?: string;
 }
 
+/** Asesor principal de uno o más retos. Los coasesores no tienen bloque
+    propio: aparecen como dato de cada reto. */
 export interface AsesorResultado {
   nombre: string;
   principal: RetoResultado[];
-  /** Retos de otros asesores en los que acompaña como coasesor. */
-  coasesor: RetoResultado[];
   /** Cuántos estudiantes lo van a contactar (sin repetir). */
   contactos: number;
 }
@@ -66,27 +66,20 @@ export function armarResultados(
   const res: RetoResultado[] = retos.map((reto) => {
     const s = seleccionados[reto.id];
     const estudiantes = s?.nombres ?? [];
-    const libres = s?.individual || s?.motivo === 'maestria' ? 0 : Math.max(0, reto.integrantes - estudiantes.length);
+    // Un reto con al menos un estudiante queda lleno, aunque sea para dos.
+    const libres = estudiantes.length > 0 ? 0 : reto.integrantes;
     return { reto, estudiantes, libres, pendiente: s?.pendiente, nota: s?.nota };
   });
 
   const conEstudiantes = res.filter((r) => r.estudiantes.length > 0);
   const sinEstudiantes = res.filter((r) => r.estudiantes.length === 0);
 
-  const nombresAsesores = new Set<string>();
-  res.forEach((r) => {
-    nombresAsesores.add(r.reto.asesor);
-    if (r.reto.coasesor) nombresAsesores.add(r.reto.coasesor);
-  });
-  const asesores: AsesorResultado[] = Array.from(nombresAsesores)
+  const asesores: AsesorResultado[] = Array.from(new Set(res.map((r) => r.reto.asesor)))
     .map((nombre) => {
       const principal = res.filter((r) => r.reto.asesor === nombre);
-      const coasesor = res.filter((r) => r.reto.coasesor === nombre && r.estudiantes.length > 0);
-      const contactos = new Set([...principal, ...coasesor].flatMap((r) => r.estudiantes)).size;
-      return { nombre, principal, coasesor, contactos };
+      const contactos = new Set(principal.flatMap((r) => r.estudiantes)).size;
+      return { nombre, principal, contactos };
     })
-    // solo quien tiene un reto propio o acompaña uno que quedó con estudiantes
-    .filter((a) => a.principal.length > 0 || a.coasesor.length > 0)
     .sort((a, b) => orden(a.nombre, b.nombre));
 
   const todos = new Set([...estudiantesCurso, ...conEstudiantes.flatMap((r) => r.estudiantes)]);
