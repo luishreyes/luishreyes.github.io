@@ -338,7 +338,7 @@ table.t tr.dim td { color: var(--n500); }
     <section><h2><span class="n">03</span> Equipo</h2>
       <div class="mills" id="eqBtns"></div>
       <div id="pressBox">
-        <div class="sl"><div class="row"><span>Presión de filtración ΔP</span><b id="vdP"></b></div><input type="range" id="dP" min="0.5" max="15" step="0.05"></div>
+        <div class="sl"><div class="row"><span id="dPLbl">Presión de filtración ΔP</span><b id="vdP"></b></div><input type="range" id="dP" min="0.5" max="15" step="0.05"><div class="hint" id="dPHint"></div></div>
         <div class="sl"><div class="row"><span>Área por placa</span><b id="vAp"></b></div><input type="range" id="Ap" min="0.25" max="6.5" step="0.05"><div class="hint">Taller 6: de 0,5 a 2 m² por placa</div></div>
         <div class="sl"><div class="row"><span>Placas por equipo, máximo</span><b id="vmaxPl"></b></div><input type="range" id="maxPl" min="10" max="150" step="1"><div class="hint">Taller 6: de 20 a 100 placas por equipo</div></div>
         <div class="sl"><div class="row"><span>Profundidad de la cámara</span><b id="vdepth"></b></div><input type="range" id="depth" min="15" max="60" step="1"></div>
@@ -351,13 +351,18 @@ table.t tr.dim td { color: var(--n500); }
       </div>
     </section>
     <section id="cycSec"><h2><span class="n">04</span> Ciclo de la prensa</h2>
-      <div class="seg" id="cycSeg"><button type="button" data-v="frac">Fracción del ciclo</button><button type="button" data-v="td">Tiempo muerto</button></div>
+      <div class="seg" id="cycSeg"><button type="button" data-v="frac">Fracción</button><button type="button" data-v="td">Tiempo muerto</button><button type="button" data-v="real">Ciclo real</button></div>
+      <div class="hint" id="cycHint" style="margin-top:6px"></div>
       <div id="fracBox">
         <div class="sl"><div class="row"><span>Duración del ciclo</span><b id="vtcH"></b></div><input type="range" id="tcH" min="0.25" max="8" step="0.05"></div>
         <div class="sl"><div class="row"><span>Fracción que filtra</span><b id="vfrac"></b></div><input type="range" id="frac" min="0.2" max="1" step="0.01"><div class="hint">Taller 6: 100 % en la parte B y 60 % en la parte C</div></div>
       </div>
+      <div id="realBox">
+        <div class="sl"><div class="row"><span>Fase 1 · flux de la bomba</span><b id="vJ0"></b></div><input type="range" id="J0" min="20" max="3000" step="5"><div class="hint" id="J0Hint"></div></div>
+        <div class="sl"><div class="row"><span>Fase 2 · parar con el caudal al</span><b id="vqStop"></b></div><input type="range" id="qStop" min="0.05" max="0.9" step="0.01"><div class="hint" id="qStopHint"></div><button type="button" class="seg inline" id="qOpt" style="margin-top:6px;padding:5px 10px;font-weight:700;font-size:12px;cursor:pointer"></button></div>
+      </div>
+      <div class="sl" id="tdRow"><div class="row"><span id="tdLbl">Descarga, limpieza y cierre</span><b id="vtdMin"></b></div><input type="range" id="tdMin" min="5" max="180" step="1"></div>
       <div id="tdBox">
-        <div class="sl"><div class="row"><span>Descarga, limpieza y cierre</span><b id="vtdMin"></b></div><input type="range" id="tdMin" min="5" max="180" step="1"></div>
         <div class="sl"><div class="row"><span>Tiempo de filtración</span></div><div class="seg" id="tfSeg" style="margin-top:6px"><button type="button" data-v="opt">El óptimo</button><button type="button" data-v="manual">Manual</button></div></div>
         <div class="sl" id="tfRow"><div class="row"><span>Filtración</span><b id="vtfMin"></b></div><input type="range" id="tfMin" min="2" max="300" step="1"></div>
       </div>
@@ -430,14 +435,13 @@ table.t tr.dim td { color: var(--n500); }
           <p class="small" id="saveNote" style="margin:10px 0 0"></p>
         </div></div>
       </div>
-      <div class="card"><div class="card-h"><span class="t">Arranque a caudal constante y luego presión constante</span><span class="sp"></span><span>diapositiva 17 · el ciclo real</span></div><div class="card-b">
+      <div class="card" id="rampCard"><div class="card-h"><span class="t">El ciclo real contra presión constante desde el arranque</span><span class="sp"></span><span id="rampLbl">diapositivas 15 a 17</span></div><div class="card-b">
         <div class="two" style="margin:0">
-          <div><svg class="ch hov" id="svgRamp" viewBox="0 0 560 300"></svg><div class="readout" id="rampRead"></div></div>
+          <div><svg class="ch hov" id="svgRamp" viewBox="0 0 560 300"></svg><div class="legend" id="rampLeg" style="margin-top:6px"></div><div class="readout" id="rampRead"></div></div>
           <div>
-            <label class="toggle" style="margin-top:0"><input type="checkbox" id="rampOn"> Arrancar con la bomba a caudal constante</label>
-            <div class="sl"><div class="row"><span>Flux de arranque</span><b id="vJ0"></b></div><input type="range" id="J0" min="20" max="3000" step="5"></div>
-            <div class="spec" id="specRamp" style="margin-top:12px"></div>
+            <div class="spec" id="specRamp" style="margin-top:0"></div>
             <p class="small" id="rampNote" style="margin:10px 0 0"></p>
+            <button type="button" class="btnw acc" id="rampUse" style="max-width:420px">Usar el ciclo real en el diseño</button>
           </div>
         </div>
       </div></div>
@@ -548,6 +552,7 @@ function fmtKW(k) { return k < 10 ? fmtN(k, 2) : fmtN(k, 1); }
      t = a·u² + b·u,   a = μαc/(2ΔP) (s/m²),   b = μR_m/ΔP (s/m)
    (la recta t/(V/A) contra V/A de las diapositivas y del taller)
    ==================================================================== */
+function fTimeM(s) { if (s < 90) return fmtN(s, 0) + ' s'; if (s < 5400) return fmtN(s / 60, s < 600 ? 1 : 0) + ' min'; return fmtN(s / 3600, 2) + ' h'; }
 function log10(x) { return Math.log(x) / Math.LN10; }
 /* α a la presión ΔP (Pa), anclada a la del ensayo */
 function alphaAt(p, dPa) { return p.alphaRef * Math.pow(dPa / (p.dPref * BAR), p.s); }
@@ -600,9 +605,9 @@ function labFit(set, mu, c) {
 function washRecovery(n) { var P = [[0, 0], [1, 0.75], [2, 0.98], [3, 0.995], [4, 0.999]]; if (n >= 4) return 0.999; for (var i = 1; i < P.length; i++) if (n <= P[i][0]) { var f = (n - P[i - 1][0]) / (P[i][0] - P[i - 1][0]); return P[i - 1][1] + f * (P[i][1] - P[i - 1][1]); } return 0.999; }
 var KW = { mitad: { k: 0.5, name: 'la mitad del caudal final (McCabe)' }, cuarto: { k: 0.25, name: 'un cuarto del caudal final (placas y marcos, Geankoplis)' }, igual: { k: 1, name: 'igual al caudal final (filtro de hojas)' } };
 /* tiempo de lavado por unidad de área (no depende de A): licor retenido = (m_F/m_c − 1)·c·u/ρ */
-function washTime(p, a, b, c, u) {
+function washTime(p, a, b, c, u, Jend) {
   if (!(p.wash > 0)) return 0;
-  var liq = (p.mw - 1) * c * u / p.rhoL, Vw = p.wash * liq, qend = 1 / (2 * a * u + b);
+  var liq = (p.mw - 1) * c * u / p.rhoL, Vw = p.wash * liq, qend = Jend || 1 / (2 * a * u + b);
   return Vw / (KW[p.kw].k * qend);
 }
 /* área de la prensa para un tiempo de filtración tf: A = Q·(tf + tw + td)/u(tf) */
@@ -611,6 +616,47 @@ function pressAreaFor(p, a, b, c, Qf, tf, td, frac) {
   return { u: u, tw: tw, tc: tc, V: Qf * tc, A: Qf * tc / u };
 }
 function goldenMin(f, lo, hi) { var g = 0.6180339887, x1 = hi - g * (hi - lo), x2 = lo + g * (hi - lo), f1 = f(x1), f2 = f(x2); for (var i = 0; i < 80; i++) { if (f1 < f2) { hi = x2; x2 = x1; f2 = f1; x1 = hi - g * (hi - lo); f1 = f(x1); } else { lo = x1; x1 = x2; f1 = f2; x2 = lo + g * (hi - lo); f2 = f(x2); } } return (lo + hi) / 2; }
+/* ciclo real de la prensa (diapositivas 15 a 17), por unidad de área:
+   fase 1 · caudal constante: la bomba da un flux J₀ y la presión sube con la torta hasta la presión tope,
+     ΔP = μJ₀(α(ΔP)·c·u + R_m), u = J₀t   →   t₁ = (ΔP_tope − μJ₀R_m)/(μ·α(ΔP_tope)·c·J₀²)
+     (α a la presión total, como en la fase 2, para que el caudal no salte al cambiar de fase)
+   fase 2 · presión constante en ΔP_tope: t = t₁ + a(u² − u₁²) + b(u − u₁) y el flux cae como 1/(2au + b),
+     hasta el caudal mínimo económico φ·J₀ o hasta que la torta llena las cámaras, lo que llegue primero
+   fase 3 · lavado (si lo hay), descarga, limpieza y cierre en el tiempo muerto t_d */
+function realCycle(p, cake, mu, c, Rm, dPa, k, td) {
+  var J0 = p.J0 / 1000 / 3600, alpha = alphaAt(cake, dPa), dPm = mu * J0 * Rm;
+  var rc = { J0: J0, dPm: dPm, phi: p.qStop, td: td, ok: dPm < dPa }; // ok: con la tela limpia, ΔP_tope alcanza para el flux de la bomba
+  rc.u1 = rc.ok ? (dPa / (mu * J0) - Rm) / (alpha * c) : 0; rc.t1 = rc.u1 / J0;
+  rc.uFull = (p.depth / 1000 / 2) * p.rhoCd / c;
+  var tOf = function (u) { return u < rc.u1 ? u / J0 : rc.t1 + tOfU(k.a, k.b, u) - tOfU(k.a, k.b, rc.u1); };
+  var Jof = function (u) { return u < rc.u1 ? J0 : 1 / (2 * k.a * u + k.b); };
+  rc.tOf = tOf; rc.Jof = Jof;
+  rc.uQ = Math.max(0, (1 / (p.qStop * J0) - k.b) / (2 * k.a));       // donde el flux cae a φ·J₀ (siempre en la fase 2)
+  rc.full = rc.uFull < rc.uQ; rc.uEnd = rc.full ? rc.uFull : rc.uQ;
+  rc.tEnd = tOf(rc.uEnd); rc.Jend = Jof(rc.uEnd); rc.endPh = rc.uEnd < rc.u1 ? 1 : 2;
+  rc.areaPer = function (u) { return (tOf(u) + washTime(p, k.a, k.b, c, u, Jof(u)) + td) / u; }; // A/Q_f para parar en u
+  // corte económico: el que hace mínima el área (con R_m = 0 y sin lavado, cuando el caudal cae al medio del ciclo completo)
+  var lo = Math.log(rc.uFull * 1e-4), hi = Math.log(rc.uFull);
+  rc.uOpt = Math.exp(goldenMin(function (lu) { return rc.areaPer(Math.exp(lu)); }, lo, hi));
+  if (rc.areaPer(rc.uFull) <= rc.areaPer(rc.uOpt)) rc.uOpt = rc.uFull;
+  rc.optFull = rc.uOpt >= rc.uFull * 0.999; rc.phiOpt = Jof(rc.uOpt) / J0;
+  rc.phiFull = Jof(rc.uFull) / J0;                                    // con paradas por debajo de este caudal mandan las cámaras
+  return rc;
+}
+/* presión durante la fase 1: P = μJ₀(α(P)·c·J₀t + R_m), por bisección entre μJ₀R_m y ΔP_tope */
+function rampP(R, t) {
+  var pr = R.pr, rc = pr.rc, K = R.mu * R.c * rc.J0 * rc.J0 * t, lo = rc.dPm, hi = pr.dPa;
+  if (R.cake.s === 0) return Math.min(hi, rc.dPm + K * R.cake.alphaRef);
+  for (var i = 0; i < 60; i++) { var m = 0.5 * (lo + hi); if (m - K * alphaAt(R.cake, m) - rc.dPm > 0) hi = m; else lo = m; }
+  return 0.5 * (lo + hi);
+}
+/* estado de la prensa a los t segundos de filtración: u = V/A (m), flux J (m/s), ΔP (Pa) y fase */
+function cycAt(R, t) {
+  var pr = R.pr, rc = pr.rc, a = pr.a, b = pr.b, u;
+  if (!rc) { u = uOfT(a, b, t); return { u: u, J: 1 / (2 * a * u + b), P: pr.dPa, ph: 0 }; }
+  if (rc.ok && t < rc.t1) return { u: rc.J0 * t, J: rc.J0, P: rampP(R, t), ph: 1 };
+  u = uOfT(a, b, t - rc.t1 + tOfU(a, b, rc.u1)); return { u: u, J: 1 / (2 * a * u + b), P: pr.dPa, ph: 2 };
+}
 var DRUMS = [[0.9, 0.6], [1.2, 1.2], [1.8, 1.8], [2.4, 2.4], [3.0, 3.0], [3.0, 4.3], [3.7, 5.5], [4.3, 6.1]]; // D × L (m); McCabe: de 0,3 × 0,3 hasta 3 × 4,3; los dos últimos, externos
 
 function compute(p) {
@@ -623,8 +669,17 @@ function compute(p) {
   var R = { p: p, m: m, mu: mu, c: c, Q: Q, Qf: Qf, mdot: mdot, Rm: Rm, cake: cake, alpha0: alpha0, eq: p.eq, cOk: isFinite(c) && c > 0 };
   // ---------- filtro prensa
   var dPa = p.dP * BAR, alpha = alphaAt(cake, dPa), k = coefs(mu, alpha, c, Rm, dPa), pr = { dPa: dPa, alpha: alpha, a: k.a, b: k.b };
-  var td = p.cyc === 'frac' ? null : p.tdMin * 60, d;
+  R.pr = pr;
+  var td = p.cyc === 'frac' ? null : p.tdMin * 60, d, rc = null;
   if (p.cyc === 'frac') { pr.tc = p.tcH * 3600; pr.tf = p.frac * pr.tc; d = pressAreaFor(p, k.a, k.b, c, Qf, pr.tf, 0, true); }
+  else if (p.cyc === 'real') {
+    rc = realCycle(p, cake, mu, c, Rm, dPa, k, td);
+    pr.tf = rc.tEnd; var tw = washTime(p, k.a, k.b, c, rc.uEnd, rc.Jend); pr.tc = pr.tf + tw + td; pr.td = td;
+    d = { u: rc.uEnd, tw: tw, tc: pr.tc, V: Qf * pr.tc, A: Qf * pr.tc / rc.uEnd };
+    pr.Aopt = Qf * rc.areaPer(rc.uOpt); pr.tfOpt = rc.tOf(rc.uOpt);
+    // la misma duración a presión constante desde el arranque: menos área, pero al principio solo frena la tela
+    rc.uCP = uOfT(k.a, k.b, pr.tf); rc.Acp = d.V / rc.uCP; rc.q0cp = rc.Acp / k.b;
+  }
   else {
     var Af = function (lt) { return pressAreaFor(p, k.a, k.b, c, Qf, Math.exp(lt), td, false).A; };
     pr.tfOpt = Math.exp(goldenMin(Af, Math.log(5), Math.log(Math.max(600, td) * 60)));
@@ -636,19 +691,12 @@ function compute(p) {
     pr.Aopt = pressAreaFor(p, k.a, k.b, c, Qf, pr.tfOpt, td, false).A;
   }
   pr.u = d.u; pr.V = d.V; pr.A = d.A; pr.tw = d.tw; pr.Acp = d.A;
-  // arranque a caudal constante (diapositiva 17): flux J0 hasta llegar a ΔP y luego presión constante
-  var J0 = p.J0 / 1000 / 3600, dPm = mu * J0 * Rm, rp = { J0: J0, dPm: dPm, ok: dPm < dPa };
-  if (rp.ok) {
-    rp.t1 = cake.s < 0.999 ? Math.pow(dPa - dPm, 1 - cake.s) / (alpha0 * mu * c * J0 * J0) : (dPa - dPm) / (mu * alpha * c * J0 * J0);
-    rp.u1 = J0 * rp.t1;
-    var uR = pr.tf <= rp.t1 ? J0 * pr.tf : uOfT(k.a, k.b, pr.tf - rp.t1 + tOfU(k.a, k.b, rp.u1));
-    rp.u = uR; rp.A = pr.V / uR; rp.extra = rp.A / pr.A - 1;
-  }
-  pr.ramp = rp; pr.rampUsed = !!(p.rampOn && rp.ok);
-  if (pr.rampUsed) { pr.u = rp.u; pr.A = rp.A; }
+  pr.rc = rc; pr.real = !!rc;
+  if (rc) rc.Pend = rc.endPh === 1 ? rampP(R, pr.tf) : dPa;
   pr.tdead = pr.tc - pr.tf - pr.tw; // tiempo para descarga, limpieza y cierre
-  pr.qEnd = pr.rampUsed && pr.tf <= rp.t1 ? J0 * pr.A : pr.A / (2 * k.a * pr.u + k.b); pr.qMean = pr.V / pr.tf; pr.q0 = pr.rampUsed ? J0 * pr.A : pr.A / k.b;
-  pr.RmShare = k.b * pr.u / (k.a * pr.u * pr.u + k.b * pr.u);
+  pr.qEnd = (rc ? rc.Jend : 1 / (2 * k.a * pr.u + k.b)) * pr.A; pr.qMean = pr.V / pr.tf; pr.q0 = (rc && rc.ok ? rc.J0 : 1 / k.b) * pr.A;
+  // parte de la resistencia al final que es de la tela: R_m/(αcu + R_m)
+  pr.RmShare = rc && rc.endPh === 1 ? rc.dPm / rc.Pend : k.b / (2 * k.a * pr.u + k.b);
   pr.w = c * pr.u; pr.Lc = pr.w / p.rhoCd; pr.fill = 2 * pr.Lc / (p.depth / 1000); pr.mCake = c * pr.V; pr.mWet = pr.mCake * p.mw;
   pr.liq = (p.mw - 1) * pr.mCake / rhoL; pr.Vw = p.wash * pr.liq; pr.recov = washRecovery(p.wash);
   pr.N = Math.max(1, Math.ceil(pr.A / p.Ap - 1e-9)); pr.presses = Math.ceil(pr.N / p.maxPl); pr.perPress = Math.ceil(pr.N / pr.presses);
@@ -656,7 +704,7 @@ function compute(p) {
   // huella de piso (estimación externa al curso): placa cuadrada de lado ℓ con ≈ 1,7·ℓ² de área por placa
   var side = Math.sqrt(p.Ap / 1.7), pitch = p.depth / 1000 + 0.035, len = 2.2 + pr.perPress * pitch, wid = side + 0.8;
   pr.side = side; pr.foot = { machine: len * wid * pr.presses, total: (len + 2) * (wid + 2) * pr.presses, len: len, wid: wid };
-  R.pr = pr;
+  if (p.eq === 'prensa' && rc && !(rc.uEnd > 1e-9)) { R.cOk = false; R.why = 'parada'; }
   // ---------- tambor rotatorio al vacío (ec. 29.31 de McCabe)
   var dv = p.dPv * BAR, av = alphaAt(cake, dv), n = p.rpm / 60, f = p.f, kv = coefs(mu, av, c, Rm, dv);
   var Gd = (Math.sqrt(2 * c * av * dv * f * n / mu + n * n * Rm * Rm) - n * Rm) / av, dr = { dPa: dv, alpha: av, n: n, f: f, a: kv.a, b: kv.b, G: Gd };
@@ -676,7 +724,11 @@ function compute(p) {
 function diagnose(R) {
   var w = [], p = R.p, pr = R.pr, dr = R.dr, m = R.m, press = p.eq === 'prensa';
   var add = function (sev, t) { w.push({ sev: sev, t: t }); };
-  if (!R.cOk) { add('c', 'Con esa humedad de torta y esa concentración, la corrección por el líquido retenido (ec. 29.19 de McCabe) no tiene solución: la torta se llevaría más líquido del que entra.'); return w; }
+  if (!R.cOk) {
+    if (R.why === 'parada') add('c', 'Con la tela limpia, ' + fmtN(p.dP, 1) + ' bar solo dejan pasar ' + fmtN(3.6e6 / pr.b, 0) + ' L/(m²·h), y la parada está fijada en el ' + fmtN(100 * p.qStop, 0) + ' % de los ' + fmtN(p.J0, 0) + ' L/(m²·h) de la bomba: el caudal arranca por debajo del mínimo y el ciclo no filtra nada. Baje el flux de la bomba o la parada, o suba la presión tope.');
+    else add('c', 'Con esa humedad de torta y esa concentración, la corrección por el líquido retenido (ec. 29.19 de McCabe) no tiene solución: la torta se llevaría más líquido del que entra.');
+    return w;
+  }
   if (p.cs < 1 && p.cBasis === 'filtrado') add('w', 'Suspensión muy diluida (' + fmtN(p.cs, 2) + ' kg/m³, cerca de 0,1 %): las diapositivas recomiendan clarificar con cartuchos o lechos profundos, no filtrar con torta.');
   if (press) {
     if (p.dP > p.Pmax + 1e-9) add('c', 'La prensa opera a ' + fmtN(p.dP, 1) + ' bar, pero la planta solo dispone de ' + fmtN(p.Pmax, 1) + ' bar.');
@@ -692,7 +744,13 @@ function diagnose(R) {
     if (p.cyc === 'td' && p.tfMode === 'opt' && pr.volLimited) add('ok', 'El óptimo sin restricciones sería filtrar ' + fmtN(pr.tfOptFree / 60, 0) + ' min, pero la torta no cabría en las cámaras: el ciclo se corta a los ' + fmtN(pr.tfOpt / 60, 0) + ' min, cuando se llenan. Esta prensa está limitada por el volumen de torta.');
     if (p.cyc === 'td' && p.tfMode !== 'opt' && pr.A > pr.Aopt * 1.15) add('w', 'Con ' + fmtN(pr.tf / 60, 0) + ' min de filtración el área es ' + fmtN(100 * (pr.A / pr.Aopt - 1), 0) + ' % mayor que en el óptimo (' + fmtN(pr.tfOpt / 60, 0) + ' min).');
     if (pr.RmShare > 0.5) add('w', 'Al final de la filtración la tela pesa más que la torta (' + fmtN(100 * pr.RmShare, 0) + ' % de la resistencia): conviene un medio más abierto o ciclos más largos.');
-    if (pr.ramp.ok === false && p.rampOn) add('w', 'Con un flux de arranque de ' + fmtN(p.J0, 0) + ' L/m²h la tela sola ya pide más que ' + fmtN(p.dP, 1) + ' bar: baje el caudal de la bomba.');
+    var rc = pr.rc;
+    if (rc) {
+      if (!rc.ok) add('w', 'La bomba no alcanza a dar sus ' + fmtN(p.J0, 0) + ' L/(m²·h): con la tela limpia, ' + fmtN(p.dP, 1) + ' bar solo dejan pasar ' + fmtN(3.6e6 / pr.b, 0) + '. No hay fase a caudal constante; la prensa filtra a presión constante desde el arranque.');
+      else if (rc.t1 < 0.05 * pr.tf) add('ok', 'La bomba llega a la presión tope en ' + fTimeM(rc.t1) + ', el ' + fmtN(100 * rc.t1 / pr.tf, 1) + ' % de la filtración: con una torta así de resistente, casi todo el ciclo es a presión constante.');
+      if (rc.full) add('ok', 'La filtración se detiene porque la torta llena las cámaras, a los ' + fTimeM(pr.tf) + ', antes de que el caudal caiga al ' + fmtN(100 * p.qStop, 0) + ' % del de la bomba (quedó en el ' + fmtN(100 * rc.Jend / rc.J0, 0) + ' %).');
+      if (pr.A > pr.Aopt * 1.1) add('w', 'Con la parada al ' + fmtN(100 * p.qStop, 0) + ' % el área es ' + fmtN(100 * (pr.A / pr.Aopt - 1), 0) + ' % mayor que con el corte económico' + (rc.optFull ? ', que aquí es filtrar hasta llenar las cámaras.' : ', al ' + fmtN(100 * rc.phiOpt, 0) + ' %. Externo al curso: maximiza el filtrado por ciclo completo.'));
+    }
   } else {
     if (p.dPv >= 1) add('c', 'Un tambor al vacío no puede pasar de 1 bar de diferencia de presión (diapositivas).');
     if (dr.Lrev * 1000 < p.minCake) add('c', 'Cada vuelta forma solo ' + fmtN(dr.Lrev * 1000, dr.Lrev * 1000 < 1 ? 2 : 1) + ' mm de torta: una cuchilla necesita unos ' + fmtN(p.minCake, 0) + ' mm para descargarla. Baje la velocidad de giro o use precapa (si los sólidos no son el producto).');
@@ -767,17 +825,17 @@ FScene.prototype.pressTime = function () { // fase de la animación → tiempo r
   st.Tanim = Tvis + (td / tc * Tvis < minD ? minD : 0);
   return st;
 };
-FScene.prototype.uAt = function (t) { var pr = this.R.pr, rp = pr.ramp; if (pr.rampUsed && t <= rp.t1) return rp.J0 * t; if (pr.rampUsed) return uOfT(pr.a, pr.b, t - rp.t1 + tOfU(pr.a, pr.b, rp.u1)); return uOfT(pr.a, pr.b, t); };
+FScene.prototype.uAt = function (t) { return cycAt(this.R, t).u; };
 FScene.prototype.stepPress = function (dt) {
   var st = this.pressTime(), P = this.P, pr = this.R.pr, h = dt * this.speed;
   this.ph += h / st.Tanim; if (this.ph >= 1) { this.ph -= 1; this.chunks = []; }
   st = this.pressTime(); this.st = st;
-  var u = st.phase === 'f' ? this.uAt(st.t) : pr.u, fill = clamp((this.R.c * u / this.R.p.rhoCd) / (this.R.p.depth / 2000), 0, 1.15);
-  this.fill = fill;
+  var cs = st.phase === 'f' ? cycAt(this.R, st.t) : null, u = cs ? cs.u : pr.u, fill = clamp((this.R.c * u / this.R.p.rhoCd) / (this.R.p.depth / 2000), 0, 1.15);
+  this.fill = fill; this.subPh = cs ? cs.ph : 0;
   // caudal relativo de filtrado: el del modelo contra el inicial
-  var q = st.phase === 'f' ? (pr.rampUsed && st.t <= pr.ramp.t1 ? pr.ramp.J0 * pr.A : pr.A / (2 * pr.a * u + pr.b)) : 0, q0 = pr.q0;
+  var q = cs ? cs.J * pr.A : (st.phase === 'w' ? KW[this.R.p.kw].k * pr.qEnd : 0), q0 = pr.q0;
   this.qrel = q0 > 0 ? q / q0 : 0; this.qNow = q; this.uNow = u;
-  this.Pnow = st.phase === 'f' ? (pr.rampUsed && st.t <= pr.ramp.t1 ? (pr.ramp.dPm + Math.pow(Math.max(0, this.R.alpha0 * this.R.mu * this.R.c * pr.ramp.J0 * pr.ramp.J0 * st.t), 1 / Math.max(0.001, 1 - this.R.cake.s))) / BAR : pr.dPa / BAR) : (st.phase === 'w' ? pr.dPa / BAR : 0);
+  this.Pnow = cs ? cs.P / BAR : (st.phase === 'w' ? pr.dPa / BAR : 0);
   this.imp = (this.imp || 0) + h * (st.phase === 'f' ? 2 + 10 * Math.min(1, q / Math.max(1e-9, pr.qMean)) : (st.phase === 'w' ? 4 : 0));
   if (st.phase === 'f') {
     var nNew = h * 60 * (0.25 + 0.75 * this.qrel);
@@ -867,11 +925,12 @@ FScene.prototype.drawPress = function () {
   // rótulos
   var fT = function (s) { return fTime(s); };
   c.font = '700 12px ' + this.mono; c.fillStyle = col.ink; c.textAlign = 'left';
-  var phName = st.phase === 'f' ? 'Filtración' : (st.phase === 'w' ? 'Lavado' : 'Descarga y cierre');
+  var rc = pr.rc, phName = rc ? (st.phase === 'f' ? (this.subPh === 1 ? 'Fase 1 · caudal constante' : 'Fase 2 · presión constante') : (st.phase === 'w' ? 'Fase 3 · lavado' : 'Fase 3 · descarga y cierre'))
+    : (st.phase === 'f' ? 'Filtración' : (st.phase === 'w' ? 'Lavado' : 'Descarga y cierre'));
   var ly0 = this.mob ? H - 34 : H - 30;
   c.fillText(phName.toUpperCase() + ' · ' + fT(st.t) + ' de ' + fT(pr.tc), this.mob ? 14 : P.x0, ly0);
   c.font = '600 11px ' + this.mono; c.fillStyle = col.muted;
-  var info = st.phase === 'f' ? 'torta ' + fmtN(R.c * this.uAt(st.t) / R.p.rhoCd * 1000, 1) + ' mm por cara · ' + fmtN(100 * clamp((this.uNow || 0) / pr.u, 0, 1), 0) + ' % del filtrado del ciclo' : (st.phase === 'w' ? 'el agua de lavado desplaza el licor de la torta' : (st.instant ? 'en este supuesto la descarga no toma tiempo del ciclo' : 'se abren las placas y la torta cae por gravedad'));
+  var info = st.phase === 'f' ? (rc && this.mob ? (this.subPh === 1 ? 'caudal fijo · ' + fmtN(this.Pnow, 2) + ' de ' + fmtN(R.p.dP, 1) + ' bar' : 'caudal al ' + fmtN(100 * (this.qNow || 0) / (rc.J0 * pr.A), 0) + ' % del de la bomba') : rc ? (this.subPh === 1 ? 'la bomba sostiene ' + fQ(this.qNow) + ' y la presión sube con la torta: ' + fmtN(this.Pnow, 2) + ' de ' + fmtN(R.p.dP, 1) + ' bar' : 'a ' + fmtN(R.p.dP, 1) + ' bar el caudal cae: ' + fmtN(100 * (this.qNow || 0) / (rc.J0 * pr.A), 0) + ' % del de la bomba · para ' + (rc.full ? 'cuando se llenen las cámaras' : 'al ' + fmtN(100 * R.p.qStop, 0) + ' %')) + ' · torta ' + fmtN(R.c * (this.uNow || 0) / R.p.rhoCd * 1000, 1) + ' mm' : 'torta ' + fmtN(R.c * this.uAt(st.t) / R.p.rhoCd * 1000, 1) + ' mm por cara · ' + fmtN(100 * clamp((this.uNow || 0) / pr.u, 0, 1), 0) + ' % del filtrado del ciclo') : (st.phase === 'w' ? 'el agua de lavado desplaza el licor de la torta' : (st.instant ? 'en este supuesto la descarga no toma tiempo del ciclo' : 'se abren las placas y la torta cae por gravedad'));
   c.fillText(info, this.mob ? 14 : P.x0, ly0 + 16);
   if (!this.mob) {
     c.textAlign = 'right'; c.fillStyle = col.muted; c.fillText('cámaras de ' + fmtN(R.p.depth, 0) + ' mm · ' + P.nd + ' de ' + pr.N, P.x1, ly0 + 16);
@@ -879,12 +938,13 @@ FScene.prototype.drawPress = function () {
   }
 };
 /* bomba de alimentación, manómetro, caudalímetro y tanque de filtrado */
-FScene.prototype.dial = function (x, y, r, f, lab, val, color) {
+FScene.prototype.dial = function (x, y, r, f, lab, val, color, mark) {
   var c = this.ctx, col = this.col, a0 = Math.PI * 0.8, a1 = Math.PI * 2.2, af = a0 + (a1 - a0) * clamp(f, 0, 1.05);
   c.fillStyle = col.paper; c.beginPath(); c.arc(x, y, r, 0, 6.2832); c.fill();
   c.strokeStyle = col.ink; c.lineWidth = 2; c.beginPath(); c.arc(x, y, r, 0, 6.2832); c.stroke();
   c.strokeStyle = color; c.lineWidth = 4; c.beginPath(); c.arc(x, y, r - 6, a0, af); c.stroke();
   c.strokeStyle = col.muted; c.lineWidth = 1; for (var i = 0; i <= 5; i++) { var a = a0 + (a1 - a0) * i / 5; c.beginPath(); c.moveTo(x + Math.cos(a) * (r - 2), y + Math.sin(a) * (r - 2)); c.lineTo(x + Math.cos(a) * (r - 9), y + Math.sin(a) * (r - 9)); c.stroke(); }
+  if (mark != null && mark > 0 && mark <= 1.05) { var am = a0 + (a1 - a0) * mark; c.strokeStyle = col.red; c.lineWidth = 2.6; c.beginPath(); c.moveTo(x + Math.cos(am) * (r + 3), y + Math.sin(am) * (r + 3)); c.lineTo(x + Math.cos(am) * (r - 10), y + Math.sin(am) * (r - 10)); c.stroke(); }
   c.strokeStyle = col.ink; c.lineWidth = 2.2; c.beginPath(); c.moveTo(x, y); c.lineTo(x + Math.cos(af) * (r - 10), y + Math.sin(af) * (r - 10)); c.stroke();
   c.fillStyle = col.ink; c.beginPath(); c.arc(x, y, 3, 0, 6.2832); c.fill();
   c.font = '700 11px ' + this.mono; c.textAlign = 'center'; c.fillText(val, x, y + r + 14);
@@ -897,11 +957,11 @@ FScene.prototype.drawPressGear = function () {
   c.strokeStyle = col.ink; c.lineWidth = 7; c.beginPath(); c.moveTo(px, py - rr); c.lineTo(px, P.feedY); c.lineTo(P.x0 - 60, P.feedY); c.stroke();
   c.fillStyle = col.paper; c.beginPath(); c.arc(px, py, rr, 0, 6.2832); c.fill(); c.lineWidth = 2.2; c.stroke();
   c.lineWidth = 2; for (var i = 0; i < 4; i++) { var a = (this.imp || 0) + i * Math.PI / 2; c.beginPath(); c.moveTo(px, py); c.lineTo(px + Math.cos(a) * (rr - 4), py + Math.sin(a) * (rr - 4)); c.stroke(); }
-  c.fillStyle = col.muted; c.font = '600 10px ' + this.mono; c.textAlign = 'center'; c.fillText(pr.rampUsed ? 'bomba (caudal fijo)' : 'bomba', px, py + rr + 14); c.fillText('suspensión', px, P.feedY - 10);
+  c.fillStyle = col.muted; c.font = '600 10px ' + this.mono; c.textAlign = 'center'; c.fillText('bomba', px, py + rr + 14); if (pr.rc && st.phase === 'f') c.fillText(this.subPh === 1 ? 'caudal fijo' : 'a ΔP tope', px, py + rr + 26); c.fillText('suspensión', px, P.feedY - 10);
   // instrumentos
-  var gx = P.x1 + (W - P.x1) / 2 + 4, gr = Math.min(34, (W - P.x1) / 2 - 10), Pm = Math.max(s.Pmax, s.dP) * 1.2, qm = Math.max(pr.qMean * 3, pr.rampUsed ? pr.ramp.J0 * pr.A * 1.25 : 0);
-  this.dial(gx, P.top + 46, gr, this.Pnow / Pm, 'ΔP', fmtN(this.Pnow, 2) + ' bar', '#1D5273');
-  this.dial(gx, P.top + 46 + gr * 2 + 44, gr, (this.qNow || 0) / qm, 'CAUDAL', fmtN((this.qNow || 0) * 3600, (this.qNow || 0) * 3600 < 10 ? 2 : 1) + ' m³/h', '#B77A2B');
+  var gx = P.x1 + (W - P.x1) / 2 + 4, gr = Math.min(34, (W - P.x1) / 2 - 10), Pm = Math.max(s.Pmax, s.dP) * 1.2, qm = Math.max(pr.qMean * 3, pr.rc ? pr.rc.J0 * pr.A * 1.25 : 0);
+  this.dial(gx, P.top + 46, gr, this.Pnow / Pm, 'ΔP', fmtN(this.Pnow, 2) + ' bar', '#1D5273', s.dP / Pm);
+  this.dial(gx, P.top + 46 + gr * 2 + 44, gr, (this.qNow || 0) / qm, 'CAUDAL', fmtN((this.qNow || 0) * 3600, (this.qNow || 0) * 3600 < 10 ? 2 : 1) + ' m³/h', '#B77A2B', pr.rc && !pr.rc.full ? s.qStop * pr.rc.J0 * pr.A / qm : null);
   // tanque de filtrado: se llena con V(t)
   var tx = gx - 26, tw = 52, ty0 = P.bot - 6, th = Math.max(60, H - 60 - ty0), lv = st.phase === 'f' ? clamp((this.uNow || 0) / pr.u, 0, 1) : 1;
   if (st.phase === 'd') lv = 1 - clamp(st.k * 1.4, 0, 1);
@@ -1047,13 +1107,14 @@ var L10 = Math.log10;
 var T6PTS = [[105, 12], [223, 18], [385, 24], [591, 30]];
 var BASE = { mat: 'levadura', mu: 3.5, rhoL: 1030, cBasis: 'filtrado', lcs: L10(25), mw: 4, rhoCd: 270, lQ: L10(4.5), la: L10(3.604e12), dPref: 1.8, sComp: 0, lRm: L10(8.91e10),
   eq: 'prensa', dP: 3, Pmax: 5, cyc: 'frac', tcH: 1, frac: 1, tdMin: 24, tfMode: 'opt', tfMin: 30, wash: 0, kw: 'mitad', Ap: 1, maxPl: 100, depth: 32, budget: 220000, floor: 80,
-  rampOn: false, J0: 300, dPv: 0.6, f: 0.3, rpm: 0.5, minCake: 3, dPa: 3, dPb: 5, flocK: 10, flocDose: 50, mfJ: 35, drho: 70, contOn: false, contW: 25,
+  J0: 150, qStop: 0.25, dPv: 0.6, f: 0.3, rpm: 0.5, minCake: 3, dPa: 3, dPb: 5, flocK: 10, flocDose: 50, mfJ: 35, drho: 70, contOn: false, contW: 25,
   lab: 't6', labA: 0.0012, labDP: 1.8, labMu: 3.5, labC: 25, labPts: clone(T6PTS), grid: true,
   scores: { prensa: [3, 3, 4, 2, 2, 1], floc: [5, 4, 3, 2, 3, 1], cent: [2, 3, 5, 4, 4, 5], mf: [4, 2, 4, 3, 5, 4] } };
 var PRESETS = [
   { id: 't6a', name: 'Taller 6 · modelo ideal', tag: '55 m² a 3 bar', s: {} },
   { id: 't6c', name: 'Taller 6 · torta compresible', tag: 's = 0,7', s: { sComp: 0.7 } },
-  { id: 't6r', name: 'Taller 6 · ciclo real', tag: '60 % del ciclo', s: { sComp: 0.7, frac: 0.6 } },
+  { id: 't6r', name: 'Taller 6 · no toda la hora filtra', tag: '60 % del ciclo', s: { sComp: 0.7, frac: 0.6 } },
+  { id: 'real', name: 'Ciclo real de la prensa', tag: 'bomba hasta 5 bar', s: { sComp: 0.7, cyc: 'real', dP: 5 } },
   { id: 't6d', name: 'Taller 6 en un tambor al vacío', tag: 'torta delgada', s: { sComp: 0.7, eq: 'tambor', dPv: 0.6, f: 0.3, rpm: 0.5 } },
   { id: 'mc2', name: 'McCabe 29.2 · tambor con CaCO₃', tag: '7,59 m²', s: { mat: 'caco3', mu: 1.0, rhoL: 998, cBasis: 'alimentado', lcs: L10(236), mw: 2, rhoCd: 1200, lQ: L10(2.089), la: L10(1.4226e11), dPref: 1, sComp: 0.26, lRm: 6, eq: 'tambor', dPv: 20 * 3386.39 / 1e5, f: 0.3, rpm: 0.2, minCake: 3 } },
   { id: 'proj', name: 'Proyecto · filtro del bagazo agotado', tag: 'α a medir', s: { mat: 'bagazo', mu: 4, rhoL: 1008, lcs: L10(10), mw: 5, rhoCd: 150, lQ: L10(6), la: L10(1e10), dPref: 1, sComp: 0.5, lRm: L10(3e10), dP: 1.5, Pmax: 3, cyc: 'td', tdMin: 30, tfMode: 'opt', wash: 1, kw: 'mitad', Ap: 1, maxPl: 60, depth: 40 } }
@@ -1079,7 +1140,7 @@ function fbar(b) { return fmtN(b, b < 1 ? 2 : (b < 10 ? 2 : 1)) + ' bar'; }
 function fQ(m3s) { var h = m3s * 3600; return fmtN(h, h < 1 ? 3 : (h < 10 ? 2 : 1)) + ' m³/h'; }
 
 /* ---------- controles ---------- */
-var SLIDERS = ['lcs', 'lQ', 'mu', 'la', 'dPref', 'sComp', 'lRm', 'mw', 'rhoCd', 'dP', 'Ap', 'maxPl', 'depth', 'dPv', 'f', 'rpm', 'minCake', 'tcH', 'frac', 'tdMin', 'tfMin', 'wash', 'Pmax', 'budget', 'floor', 'dPa', 'dPb', 'J0', 'flocK', 'flocDose', 'mfJ', 'drho', 'contW'];
+var SLIDERS = ['lcs', 'lQ', 'mu', 'la', 'dPref', 'sComp', 'lRm', 'mw', 'rhoCd', 'dP', 'Ap', 'maxPl', 'depth', 'dPv', 'f', 'rpm', 'minCake', 'tcH', 'frac', 'tdMin', 'tfMin', 'wash', 'Pmax', 'budget', 'floor', 'dPa', 'dPb', 'J0', 'qStop', 'flocK', 'flocDose', 'mfJ', 'drho', 'contW'];
 function buildControls() {
   $$('.panel .ph').forEach(function (ph) { var d = document.createElement('div'); d.className = 'callout np-msg'; ph.parentNode.insertBefore(d, ph.nextSibling); });
   $('#presetBtns').innerHTML = PRESETS.map(function (p) { return '<button type="button" class="opt" data-p="' + p.id + '"><span>' + esc(p.name) + '</span><span class="x">' + esc(p.tag) + '</span></button>'; }).join('');
@@ -1095,7 +1156,8 @@ function buildControls() {
   [['#basisSeg', 'cBasis'], ['#cycSeg', 'cyc'], ['#tfSeg', 'tfMode'], ['#kwSeg', 'kw'], ['#labSeg', 'lab']].forEach(function (a) { $$(a[0] + ' button').forEach(function (b) { b.addEventListener('click', function () { state[a[1]] = b.dataset.v; dirty(); }); }); });
   SLIDERS.forEach(function (k) { var el = document.getElementById(k); el.addEventListener('input', function () { state[k] = parseFloat(el.value); dirty(); }); });
   $('#grid').addEventListener('change', function () { state.grid = this.checked; dirty(); });
-  $('#rampOn').addEventListener('change', function () { state.rampOn = this.checked; dirty(); });
+  $('#qOpt').addEventListener('click', function () { var rc = R && R.pr.rc; if (!rc) return; state.qStop = Math.round(clamp(rc.optFull ? rc.phiFull : rc.phiOpt, 0.05, 0.9) * 100) / 100; dirty(); });
+  $('#rampUse').addEventListener('click', function () { state.cyc = 'real'; if (state.eq !== 'prensa') state.eq = 'prensa'; dirty(); if (fscene) fscene.prime(); setTab('in'); });
   $('#contOn').addEventListener('change', function () { state.contOn = this.checked; dirty(); });
   $('#resetAll').addEventListener('click', function () { state = presetState('t6a'); update(); if (fscene) fscene.prime(); });
   var useLab = function () { if (!LAB) return; state.la = L10(LAB.alphaRef); state.dPref = Math.round(LAB.dPref * 100) / 100; state.lRm = L10(LAB.Rm); if (LAB.s != null) state.sComp = Math.round(LAB.s * 100) / 100; dirty(); };
@@ -1131,7 +1193,7 @@ function update() {
   pressed('#presetBtns .opt', 'p', s.preset || ''); pressed('#matBtns .opt', 'm', s.mat); pressed('#eqBtns .mill', 'e', s.eq);
   pressed('#basisSeg button', 'v', s.cBasis); pressed('#cycSeg button', 'v', s.cyc); pressed('#tfSeg button', 'v', s.tfMode); pressed('#kwSeg button', 'v', s.kw); pressed('#labSeg button', 'v', s.lab);
   SLIDERS.forEach(function (k) { var el = document.getElementById(k); if (parseFloat(el.value) !== s[k]) el.value = s[k]; });
-  $('#grid').checked = !!s.grid; $('#rampOn').checked = !!s.rampOn; $('#contOn').checked = !!s.contOn;
+  $('#grid').checked = !!s.grid; $('#contOn').checked = !!s.contOn;
   // suspensión
   $('#csLbl').textContent = s.cBasis === 'filtrado' ? 'Concentración c (por m³ de filtrado)' : 'Concentración c_F (por m³ de líquido)';
   setV('vcs', fmtN(cs, cs < 10 ? 2 : 1) + ' kg/m³');
@@ -1145,15 +1207,27 @@ function update() {
   setV('vlRm', fmtSci(r.Rm, 2) + ' m⁻¹'); setV('vmw', fmtN(s.mw, 2) + ' · ' + fmtN(100 / s.mw, 0) + ' % de sólidos'); setV('vrhoCd', fmtN(s.rhoCd, 0) + ' kg/m³');
   // equipo
   show('pressBox', press); show('drumBox', !press); show('cycSec', press);
+  var real = s.cyc === 'real', rc = pr.rc;
+  $('#dPLbl').textContent = real ? 'Presión tope ΔP (fin de la fase 1)' : 'Presión de filtración ΔP';
+  $('#dPHint').textContent = real ? 'La bomba sube la presión hasta aquí y desde ahí se filtra a presión constante' : '';
   setV('vdP', fbar(s.dP)); setV('vAp', fmtN(s.Ap, 2) + ' m²'); setV('vmaxPl', fmtN(s.maxPl, 0)); setV('vdepth', fmtN(s.depth, 0) + ' mm');
   setV('vdPv', fbar(s.dPv)); $('#dPvHint').textContent = fmtN(s.dPv * 750.06, 0) + ' mmHg · McCabe: normalmente de 250 a 500 mmHg'; setV('vf', fmtN(100 * s.f, 0) + ' %'); setV('vrpm', fmtN(s.rpm, 2) + ' rpm · una vuelta cada ' + fTime(60 / s.rpm)); setV('vminCake', fmtN(s.minCake, 1) + ' mm');
   // ciclo
-  show('fracBox', s.cyc === 'frac'); show('tdBox', s.cyc === 'td'); show('tfRow', s.tfMode === 'manual'); show('kwRow', s.wash > 0);
+  show('fracBox', s.cyc === 'frac'); show('tdBox', s.cyc === 'td'); show('realBox', real); show('tdRow', s.cyc !== 'frac'); show('tfRow', s.tfMode === 'manual'); show('kwRow', s.wash > 0);
+  $('#cycHint').textContent = s.cyc === 'frac' ? 'Taller 6: una parte fija del ciclo filtra a presión constante.' : (s.cyc === 'td' ? 'Presión constante desde el arranque y un tiempo muerto fijo.' : 'Diapositiva 17: la bomba a caudal constante hasta la presión tope, luego presión constante hasta un caudal antieconómico, y descarga.');
+  $('#tdLbl').textContent = real ? 'Fase 3 · descarga, limpieza y cierre' : 'Descarga, limpieza y cierre';
+  setV('vJ0', fmtN(s.J0, 0) + ' L/(m²·h)'); setV('vqStop', fmtN(100 * s.qStop, 0) + ' %');
+  if (real && r.cOk) {
+    $('#J0Hint').textContent = rc.ok ? 'Bomba de ' + fQ(rc.J0 * pr.A) + ' para los ' + fA(pr.A) + ' · llega a ' + fbar(s.dP) + ' a los ' + fTime(rc.t1) : 'Con la tela limpia ' + fbar(s.dP) + ' solo dejan pasar ' + fmtN(3.6e6 / pr.b, 0) + ' L/(m²·h): no hay fase 1';
+    $('#qStopHint').textContent = (rc.full ? 'Ahora para antes: las cámaras se llenan con el caudal al ' + fmtN(100 * rc.Jend / rc.J0, 0) + ' %' : 'Corta a los ' + fTime(pr.tf) + ' de filtración, con ' + fmtN(rc.Jend * 3.6e6, 0) + ' L/(m²·h)') + ' · corte económico ' + (rc.optFull ? 'llenar las cámaras' : 'al ' + fmtN(100 * rc.phiOpt, 0) + ' %') + ' (externo al curso)';
+    var qo = Math.round(clamp(rc.optFull ? rc.phiFull : rc.phiOpt, 0.05, 0.9) * 100);
+    $('#qOpt').textContent = 'Parar en el corte económico · ' + qo + ' %'; $('#qOpt').disabled = Math.abs(qo - 100 * s.qStop) < 0.5;
+  } else if (real) { $('#J0Hint').textContent = ''; $('#qStopHint').textContent = ''; }
   setV('vtcH', fTime(s.tcH * 3600)); setV('vfrac', fmtN(100 * s.frac, 0) + ' %'); setV('vtdMin', fmtN(s.tdMin, 0) + ' min'); setV('vtfMin', fmtN(s.tfMin, 0) + ' min');
-  setV('vwash', s.wash > 0 ? fmtN(s.wash, 2) : 'sin lavado'); $('#washHint').textContent = s.wash > 0 ? 'Volumen de lavado / licor retenido en la torta · extrae ≈ ' + fmtN(100 * pr.recov, 0) + ' % (McCabe, fig. 29.17)' : (s.cyc === 'frac' ? 'En el Taller 6 el lavado va dentro de la parte del ciclo que no filtra' : '');
+  setV('vwash', s.wash > 0 ? fmtN(s.wash, 2) : 'sin lavado'); $('#washHint').textContent = s.wash > 0 ? 'Volumen de lavado / licor retenido en la torta · extrae ≈ ' + fmtN(100 * pr.recov, 0) + ' % (McCabe, fig. 29.17)' : (s.cyc === 'frac' ? 'En el Taller 6 el lavado va dentro de la parte del ciclo que no filtra' : (real ? 'Sin lavado la fase 3 es solo descarga, limpieza y cierre' : ''));
   setV('vPmax', fbar(s.Pmax)); setV('vbudget', 'US$ ' + fk(s.budget) + ' mil'); setV('vfloor', fmtN(s.floor, 0) + ' m²');
   // panel de presión y alternativas
-  setV('vdPa', fbar(s.dPa)); setV('vdPb', fbar(s.dPb)); setV('vJ0', fmtN(s.J0, 0) + ' L/(m²·h)'); setV('vflocK', '÷ ' + fmtN(s.flocK, 1)); setV('vflocDose', fmtN(s.flocDose, 0) + ' g/m³'); setV('vmfJ', fmtN(s.mfJ, 0) + ' L/(m²·h)'); setV('vdrho', fmtN(s.drho, 0) + ' kg/m³'); setV('vcontW', fmtN(s.contW, 0) + ' %');
+  setV('vdPa', fbar(s.dPa)); setV('vdPb', fbar(s.dPb)); setV('vflocK', '÷ ' + fmtN(s.flocK, 1)); setV('vflocDose', fmtN(s.flocDose, 0) + ' g/m³'); setV('vmfJ', fmtN(s.mfJ, 0) + ' L/(m²·h)'); setV('vdrho', fmtN(s.drho, 0) + ' kg/m³'); setV('vcontW', fmtN(s.contW, 0) + ' %');
   show('contRow', s.contOn);
   $('#ctx').innerHTML = '<b>' + esc(press ? 'Filtro prensa · ' + fbar(s.dP) : 'Tambor al vacío · ' + fmtN(s.dPv * 750.06, 0) + ' mmHg') + '</b> · ' + esc(m.short) + ' ' + fmtN(r.c, 1) + ' kg/m³ · ' + fQ(r.Qf) + ' de filtrado';
   renderKPIs();
@@ -1169,7 +1243,10 @@ function renderKPIs() {
     setV('kA', fmtN(pr.A, pr.A < 10 ? 2 : 1) + '<small>m²</small>'); setV('kAu', fmtN(pr.V, 2) + ' m³ por ciclo · ' + fmtN(r.Qf * 3600 / pr.A, 3) + ' m³/(m²·h)');
     $('#kNl').textContent = 'Placas y equipos'; setV('kN', pr.N + '<small>placas</small>'); setV('kNu', pr.presses + (pr.presses === 1 ? ' prensa' : ' prensas') + ' · ' + pr.perPress + ' placas de ' + fmtN(s.Ap, 2) + ' m²');
     $('#kNc').classList.toggle('bad', pr.presses > 1);
-    $('#kTl').textContent = 'Ciclo'; setV('kT', fTime(pr.tc)); setV('kTu', 'filtra ' + fTime(pr.tf) + (pr.tw > 0 ? ' · lava ' + fTime(pr.tw) : '') + ' · descarga ' + fTime(Math.max(0, pr.tdead)));
+    var rc = pr.rc, t1 = rc && rc.ok ? Math.min(rc.t1, pr.tf) : 0;
+    $('#kTl').textContent = rc ? 'Ciclo real' : 'Ciclo'; setV('kT', fTime(pr.tc));
+    setV('kTu', rc ? (t1 > 0 ? 'bomba ' + fTime(t1) + ' · ' : '') + 'ΔP cte ' + fTime(pr.tf - t1) + (pr.tw > 0 ? ' · lava ' + fTime(pr.tw) : '') + ' · descarga ' + fTime(Math.max(0, pr.tdead))
+      : 'filtra ' + fTime(pr.tf) + (pr.tw > 0 ? ' · lava ' + fTime(pr.tw) : '') + ' · descarga ' + fTime(Math.max(0, pr.tdead)));
     setV('kC', fmtN(pr.Lc * 1000, 1) + '<small>mm</small>'); setV('kCu', 'por cara · ' + fmtN(pr.mCake, pr.mCake < 100 ? 1 : 0) + ' kg secos · llena ' + fmtN(100 * pr.fill, 0) + ' % de la cámara');
     $('#kCc').classList.toggle('bad', pr.fill > 1);
     $('#kMl').textContent = 'Costo'; setV('kM', fk(pr.cost[0]) + '–' + fk(pr.cost[1]) + '<small>kUSD</small>'); setV('kMu', 'presupuesto ' + fk(s.budget) + ' · cabe hasta ' + fmtN(pr.uMax, 0) + ' USD/m²');
@@ -1241,31 +1318,34 @@ function spec(id, rows) { $(id).innerHTML = rows.map(function (q) { return '<div
 
 /* ---------- 1 · por dentro ---------- */
 var CYC = null, lastWarn = '';
-function cycleSeries(r) { // filtrado acumulado y caudal en un ciclo de la prensa (con o sin arranque a caudal constante)
-  var pr = r.pr, A = pr.A, a = pr.a, b = pr.b, rp = pr.ramp, ramp = pr.rampUsed, pts = [], N = 160;
-  for (var i = 0; i <= N; i++) {
-    var t = pr.tf * i / N, u, q, P;
-    if (ramp && t <= rp.t1) { u = rp.J0 * t; q = rp.J0 * A; P = (rp.dPm + Math.pow(Math.max(0, R.alpha0 * r.mu * r.c * rp.J0 * rp.J0 * t), 1 / Math.max(0.001, 1 - r.cake.s))) / BAR; if (r.cake.s >= 0.999) P = (rp.dPm + r.mu * pr.alpha * r.c * rp.J0 * rp.J0 * t) / BAR; }
-    else if (ramp) { u = uOfT(a, b, t - rp.t1 + tOfU(a, b, rp.u1)); q = A / (2 * a * u + b); P = pr.dPa / BAR; }
-    else { u = uOfT(a, b, t); q = A / (2 * a * u + b); P = pr.dPa / BAR; }
-    pts.push({ t: t, V: u * A, q: q, P: P });
-  }
-  return pts;
+function cycleSeries(r) { // filtrado acumulado, caudal y presión mientras la prensa filtra (con el ciclo real, en sus dos fases)
+  var pr = r.pr, A = pr.A, rc = pr.rc, ts = [], N = 160, i;
+  for (i = 0; i <= N; i++) ts.push(pr.tf * i / N);
+  if (rc && rc.ok && rc.t1 < pr.tf) { for (i = 1; i < 48; i++) ts.push(rc.t1 * i / 48); ts.push(rc.t1 * (1 - 1e-9)); ts.push(rc.t1); ts.sort(function (x, y) { return x - y; }); }
+  return ts.map(function (t) { var q = cycAt(r, t); return { t: t, V: q.u * A, q: q.J * A, P: q.P / BAR, ph: q.ph }; });
 }
 /* escala del caudal: el inicial (solo la tela) suele ser enorme; se recorta a unas veces el caudal medio */
-function qScale(r, pts) { var pr = r.pr, qx = Math.max.apply(null, pts.map(function (p) { return p.q; })), cap = Math.max(pr.qMean * 3, pr.rampUsed ? pr.ramp.J0 * pr.A * 1.25 : 0); return Math.min(qx, cap) * 3600 * 1.12; }
+function qScale(r, pts) { var pr = r.pr, qx = Math.max.apply(null, pts.map(function (p) { return p.q; })), cap = Math.max(pr.qMean * 3, pr.rc ? pr.rc.J0 * pr.A * 1.25 : 0); return Math.min(qx, cap) * 3600 * 1.12; }
 function renderInside() {
   var r = R, s = state, pr = r.pr, dr = r.dr, press = s.eq === 'prensa', m = r.m;
   $('#inLbl').textContent = press ? 'filtro prensa de placas · ' + fbar(s.dP) : 'tambor rotatorio al vacío · ' + fmtN(s.rpm, 2) + ' rpm';
-  $('#inLead').innerHTML = press ? 'La bomba llena las cámaras con la suspensión; el líquido cruza la tela y sale por los canales de las placas, mientras los sólidos se quedan y forman la torta, que crece desde las dos caras de cada cámara. A presión constante, la torta frena el caudal. Al terminar se abren las placas y la torta cae.' : 'El tambor gira con su parte baja sumergida en la suspensión; el vacío interior arrastra el líquido y la torta se forma mientras la franja está sumergida. Al salir se lava, se seca con aire y una cuchilla la desprende antes de volver a entrar.';
-  $('#inCap').innerHTML = press ? '<b>Cómo leerlo.</b> El ciclo animado dura lo mismo que el real a escala: ' + fTime(pr.tc) + ' comprimidos en unos 20 s. El espesor de la torta y el caudal de filtrado salen del modelo (t = a·u² + b·u por unidad de área). Se dibujan 6 de las ' + pr.N + ' cámaras; la profundidad de la cámara es de ' + fmtN(s.depth, 0) + ' mm y la torta llega a ' + fmtN(pr.Lc * 1000, 1) + ' mm por cara.' : '<b>Cómo leerlo.</b> El giro está acelerado: una vuelta real dura ' + fTime(dr.tc) + '. El espesor de la torta en cada ángulo sale del modelo de presión constante con el tiempo que lleva sumergida esa franja; se exagera en el dibujo para que se vea (la real llega a ' + fmtN(dr.Lrev * 1000, dr.Lrev * 1000 < 1 ? 2 : 1) + ' mm).';
+  var rc = pr.rc, t1 = rc && rc.ok ? Math.min(rc.t1, pr.tf) : 0;
+  $('#inLead').innerHTML = press && rc ? 'El ciclo real de la diapositiva 17. <b>Fase 1:</b> la bomba de desplazamiento positivo empuja la suspensión a caudal fijo y la presión sube a medida que crece la torta, hasta la presión tope. <b>Fase 2:</b> desde ahí se filtra a presión constante y el caudal cae. Cuando llega al mínimo económico, o la torta llena las cámaras, se para. <b>Fase 3:</b> ' + (s.wash > 0 ? 'se lava la torta, ' : '') + 'se abren las placas, la torta cae y se cierra para el siguiente ciclo.'
+    : press ? 'La bomba llena las cámaras con la suspensión; el líquido cruza la tela y sale por los canales de las placas, mientras los sólidos se quedan y forman la torta, que crece desde las dos caras de cada cámara. A presión constante, la torta frena el caudal. Al terminar se abren las placas y la torta cae.' : 'El tambor gira con su parte baja sumergida en la suspensión; el vacío interior arrastra el líquido y la torta se forma mientras la franja está sumergida. Al salir se lava, se seca con aire y una cuchilla la desprende antes de volver a entrar.';
+  $('#inCap').innerHTML = press ? '<b>Cómo leerlo.</b> ' + (rc ? 'El manómetro y el caudalímetro siguen las tres fases: caudal fijo con la presión subiendo, presión fija con el caudal cayendo, y parada. ' : '') + 'El ciclo animado dura lo mismo que el real a escala: ' + fTime(pr.tc) + ' comprimidos en unos 20 s. El espesor de la torta y el caudal de filtrado salen del modelo (t = a·u² + b·u por unidad de área). Se dibujan 6 de las ' + pr.N + ' cámaras; la profundidad de la cámara es de ' + fmtN(s.depth, 0) + ' mm y la torta llega a ' + fmtN(pr.Lc * 1000, 1) + ' mm por cara.' : '<b>Cómo leerlo.</b> El giro está acelerado: una vuelta real dura ' + fTime(dr.tc) + '. El espesor de la torta en cada ángulo sale del modelo de presión constante con el tiempo que lleva sumergida esa franja; se exagera en el dibujo para que se vea (la real llega a ' + fmtN(dr.Lrev * 1000, dr.Lrev * 1000 < 1 ? 2 : 1) + ' mm).';
   renderCyc(); renderTimeline();
-  var rows = press ? [['Filtrado por ciclo', fmtN(pr.V, 2) + ' m³'], ['Sólidos secos por ciclo', fmtN(pr.mCake, 1) + ' kg · ' + fmtN(pr.w, 2) + ' kg/m²'], ['Torta húmeda', fmtN(pr.mWet, 0) + ' kg'], [pr.rampUsed ? 'Caudal al empezar (bomba a caudal fijo)' : 'Caudal al empezar (solo la tela)', fQ(pr.q0)], ['Caudal al terminar', fQ(pr.qEnd)], ['Caudal medio mientras filtra', fQ(pr.qMean)], ['Parte de la resistencia final en la tela', fmtN(100 * pr.RmShare, 1) + ' %'], ['Tiempo de filtración', fTime(pr.tf)], pr.tw > 0 ? ['Lavado', fTime(pr.tw) + ' · ' + fmtN(pr.Vw, 2) + ' m³'] : ['Lavado', 'no se calcula'], ['Descarga, limpieza y cierre', fTime(Math.max(0, pr.tdead))]]
+  var rows = press && rc ? [['Fase 1 · caudal constante', rc.ok ? fTime(t1) + ' a ' + fQ(rc.J0 * pr.A) : 'no hay'], ['Filtrado en la fase 1', rc.ok ? fmtN(Math.min(rc.u1, pr.u) * pr.A, 2) + ' m³ · ' + fmtN(100 * Math.min(1, rc.u1 / pr.u), 0) + ' %' : 'la tela pide más que ' + fbar(s.dP)],
+      ['Fase 2 · presión constante', rc.endPh === 2 ? fTime(pr.tf - t1) + ' a ' + fbar(s.dP) : 'no llega a ' + fbar(s.dP)], ['Caudal en la fase 2', rc.endPh === 2 ? fQ(pr.q0) + ' → ' + fQ(pr.qEnd) : '—'],
+      ['Para porque', rc.full ? 'se llenan las cámaras' : 'el caudal cae al ' + fmtN(100 * s.qStop, 0) + ' %'],
+      ['Fase 3 · ' + (pr.tw > 0 ? 'lavado y descarga' : 'descarga y cierre'), fTime(pr.tw + Math.max(0, pr.tdead)) + (pr.tw > 0 ? ' · lava ' + fTime(pr.tw) : '')],
+      ['Filtrado por ciclo', fmtN(pr.V, 2) + ' m³'], ['Sólidos secos por ciclo', fmtN(pr.mCake, 1) + ' kg · ' + fmtN(pr.w, 2) + ' kg/m²'], ['Torta húmeda', fmtN(pr.mWet, 0) + ' kg'], ['Caudal medio mientras filtra', fQ(pr.qMean)], ['Parte de la resistencia final en la tela', fmtN(100 * pr.RmShare, 1) + ' %']]
+    : press ? [['Filtrado por ciclo', fmtN(pr.V, 2) + ' m³'], ['Sólidos secos por ciclo', fmtN(pr.mCake, 1) + ' kg · ' + fmtN(pr.w, 2) + ' kg/m²'], ['Torta húmeda', fmtN(pr.mWet, 0) + ' kg'], ['Caudal al empezar (solo la tela)', fQ(pr.q0)], ['Caudal al terminar', fQ(pr.qEnd)], ['Caudal medio mientras filtra', fQ(pr.qMean)], ['Parte de la resistencia final en la tela', fmtN(100 * pr.RmShare, 1) + ' %'], ['Tiempo de filtración', fTime(pr.tf)], pr.tw > 0 ? ['Lavado', fTime(pr.tw) + ' · ' + fmtN(pr.Vw, 2) + ' m³'] : ['Lavado', 'no se calcula'], ['Descarga, limpieza y cierre', fTime(Math.max(0, pr.tdead))]]
     : [['Sólidos que llegan', fmtN(r.mdot * 3600, 1) + ' kg/h'], ['Capacidad por m² de tambor', fmtN(dr.G * 3600, 2) + ' kg/(m²·h)'], ['Tiempo sumergido por vuelta', fTime(dr.tsub)], ['Torta por vuelta', fmtN(dr.wrev, 3) + ' kg/m² · ' + fmtN(dr.Lrev * 1000, 2) + ' mm'], ['Filtrado por vuelta', fmtN(dr.urev * 1000, 2) + ' L/m²'], ['α al vacío de operación', fmtSci(dr.alpha, 2) + ' m/kg'], ['Área total requerida', fA(dr.AT)], ['Tambor estándar', dr.pick.n + ' × ' + fmtN(dr.pick.D, 1) + ' m de diámetro × ' + fmtN(dr.pick.L, 1) + ' m']];
   spec('#specIn', rows); $('#numLbl').textContent = press ? 'por ciclo' : 'por vuelta';
   var chips = press ? ['<span class="chip acc">A ' + fA(pr.A) + '</span>', '<span class="chip">' + pr.N + ' placas · ' + pr.presses + (pr.presses === 1 ? ' prensa' : ' prensas') + '</span>', '<span class="chip">ciclo ' + fTime(pr.tc) + '</span>']
     : ['<span class="chip acc">A ' + fA(dr.AT) + '</span>', '<span class="chip">torta ' + fmtN(dr.Lrev * 1000, 2) + ' mm por vuelta</span>'];
-  if (press && pr.fill > 1) chips.push('<span class="chip red">las cámaras se llenan</span>');
+  if (press && rc) chips.push('<span class="chip">parada: ' + (rc.full ? 'cámaras llenas' : 'caudal al ' + fmtN(100 * s.qStop, 0) + ' %') + '</span>');
+  if (press && pr.fill > 1.0001) chips.push('<span class="chip red">las cámaras se llenan</span>');
   if (!press && dr.Lrev * 1000 < s.minCake) chips.push('<span class="chip red">torta demasiado delgada</span>');
   $('#hud').innerHTML = chips.join('');
   renderWarn();
@@ -1296,9 +1376,41 @@ function criteria(r) {
   add('Extrapolación de α', '×' + fmtN(ratio, 2), 'entre ⅓ y 3 veces la presión del ensayo', s.sComp === 0 || (ratio <= 3 && ratio >= 1 / 3) ? 'ok' : 'w');
   return out;
 }
+/* las tres fases del ciclo real sobre una gráfica de tiempo: bandas, números de fase y líneas de presión tope y de parada */
+var PHC = { 1: '#E8D9BE', 2: '#CFE0EE', w: '#7FB3E0', d: 'var(--n200)' };
+function phaseBands(a, r, y0, y1, tScale) {
+  var pr = r.pr, rc = pr.rc, t1 = rc.ok ? Math.min(rc.t1, pr.tf) : 0, tf = pr.tf, tw = pr.tw, tc = pr.tc, out = '';
+  var band = function (ta, tb, col, op) { if (tb - ta <= 0) return; out += E('rect', { x: r1(a.X(ta / tScale)), y: y0, width: r1(Math.max(0.6, a.X(tb / tScale) - a.X(ta / tScale))), height: y1 - y0, style: 'fill:' + col + ';opacity:' + op }); };
+  band(0, t1, PHC[1], 0.55); band(t1, tf, PHC[2], 0.45); band(tf, tf + tw, PHC.w, 0.35); band(tf + tw, tc, PHC.d, 0.55);
+  var badge = function (ta, tb, n) { var x = Math.max(a.X(ta / tScale) + 9, Math.min(a.X(Math.min(tb, a.o.xmax * tScale) / tScale) - 9, (a.X(ta / tScale) + a.X(Math.min(tb, a.o.xmax * tScale) / tScale)) / 2)); return E('circle', { cx: r1(x), cy: y0 + 13, r: 8.5, style: 'fill:var(--paper);stroke:var(--ink);stroke-width:1.3' }) + TX(x, y0 + 17, n, { a: 'middle', fs: 10.5, fw: 800 }); };
+  if (t1 > 0) out += badge(0, t1, '1');
+  if (tf > t1) out += badge(t1, tf, '2');
+  if (tc > tf) out += badge(tf, tc, '3');
+  return out;
+}
+function phaseLegend(r) {
+  var pr = r.pr, rc = pr.rc;
+  return '<span><i class="box" style="background:' + PHC[1] + ';border-color:#b9a57f"></i>1 · caudal constante</span><span><i class="box" style="background:' + PHC[2] + ';border-color:#8fb0cc"></i>2 · presión constante</span><span><i class="box" style="background:var(--n200);border-color:var(--n400)"></i>3 · ' + (pr.tw > 0 ? 'lavado y ' : '') + 'descarga</span>';
+}
 function renderCyc() {
   var r = R, s = state, press = s.eq === 'prensa';
-  if (press) {
+  if (press && r.pr.rc) {
+    var pr = r.pr, rc = pr.rc, pts = cycleSeries(r), tc = pr.tc / 60, Pm = Math.max(s.dP, s.Pmax) * 1.18, qmax = Math.max(qScale(r, pts), rc.J0 * pr.A * 3600 * 1.35), qStopH = s.qStop * rc.J0 * pr.A * 3600;
+    var a = axes({ x0: 52, x1: 506, y0: 14, y1: 266, xmin: 0, xmax: tc, ymin: 0, ymax: Pm, xlab: 'tiempo en el ciclo (min)', ylab: 'ΔP (bar)', clip: 'cpC' }), out = a.svg, ra = rightAxis(a, 0, qmax, 'caudal (m³/h)', C2);
+    out += phaseBands(a, r, 14, 266, 60);
+    out += LN(52, a.Y(s.dP), 506, a.Y(s.dP), 'stroke:' + C1 + ';stroke-dasharray:6 4;stroke-width:1.2') + TX(500, a.Y(s.dP) - 5, 'ΔP tope ' + fbar(s.dP), { a: 'end', fs: 10, c: C1, fw: 700 });
+    if (s.Pmax > s.dP + 0.05 && s.Pmax < Pm) out += LN(52, a.Y(s.Pmax), 506, a.Y(s.Pmax), 'stroke:' + CR + ';stroke-dasharray:3 3;stroke-width:1') + TX(500, a.Y(s.Pmax) - 5, 'máximo de la planta ' + fbar(s.Pmax), { a: 'end', fs: 10, c: CR });
+    if (!rc.full && qStopH < qmax) out += LN(a.X(Math.min(rc.ok ? rc.t1 : 0, pr.tf) / 60), ra.Y(qStopH), a.X(pr.tf / 60), ra.Y(qStopH), 'stroke:' + C2 + ';stroke-dasharray:3 3;stroke-width:1.2') + TX(a.X(pr.tf / 60) - 4, ra.Y(qStopH) + 13, 'parada · ' + fmtN(100 * s.qStop, 0) + ' % de la bomba', { a: 'end', fs: 10, c: C2, fw: 700 });
+    out += ra.svg;
+    // presión y caudal mientras filtra; en el lavado la presión se mantiene y el caudal es el de lavado
+    out += PATH(poly(pts.map(function (p) { return [a.X(p.t / 60), a.Y(p.P)]; })), 'stroke:' + C1 + ';stroke-width:2.6', 'cpC');
+    out += PATH(poly(pts.map(function (p) { return [a.X(p.t / 60), ra.Y(Math.min(p.q * 3600, qmax * 1.5))]; })), 'stroke:' + C2 + ';stroke-width:2.4', 'cpC');
+    if (pr.tw > 0) { var qw = KW[s.kw].k * pr.qEnd * 3600; out += LN(a.X(pr.tf / 60), a.Y(s.dP), a.X((pr.tf + pr.tw) / 60), a.Y(s.dP), 'stroke:' + C1 + ';stroke-width:2;stroke-dasharray:2 3') + LN(a.X(pr.tf / 60), ra.Y(qw), a.X((pr.tf + pr.tw) / 60), ra.Y(qw), 'stroke:#3F86D1;stroke-width:2;stroke-dasharray:2 3'); }
+    var pe = pts[pts.length - 1]; out += LN(a.X(pr.tf / 60), a.Y(pe.P), a.X(pr.tf / 60), a.Y(0), 'stroke:' + C1 + ';stroke-width:1;opacity:.35');
+    out += '<line id="cycCur" x1="0" y1="14" x2="0" y2="266" style="stroke:var(--ink);stroke-width:1;opacity:.6"></line>';
+    $('#svgCyc').setAttribute('viewBox', '0 0 560 320'); $('#svgCyc').innerHTML = out; CYC = { a: a, mode: 'p', pts: pts, tc: tc, real: true };
+    $('#cycT').textContent = 'Presión y caudal en el ciclo real'; $('#cycLeg').innerHTML = '<span><i style="border-top-color:' + C1 + '"></i>ΔP</span><span><i style="border-top-color:' + C2 + '"></i>caudal</span>' + phaseLegend(r);
+  } else if (press) {
     var pr = r.pr, pts = cycleSeries(r), tc = pr.tc / 60, Vmax = pr.V * 1.08, qmax = qScale(r, pts);
     var a = axes({ x0: 52, x1: 506, y0: 14, y1: 266, xmin: 0, xmax: tc, ymin: 0, ymax: Vmax, xlab: 'tiempo en el ciclo (min)', ylab: 'filtrado acumulado (m³)', clip: 'cpC' }), out = a.svg, ra = rightAxis(a, 0, qmax, 'caudal (m³/h)', C2);
     out += E('rect', { x: r1(a.X(pr.tf / 60)), y: 14, width: r1(a.X(tc) - a.X(pr.tf / 60)), height: 252, style: 'fill:var(--n200);opacity:.5' });
@@ -1332,7 +1444,9 @@ function renderCyc() {
 function renderTimeline() {
   var r = R, s = state;
   if (s.eq !== 'prensa') { $('#tline').innerHTML = ''; return; }
-  var pr = r.pr, tc = pr.tc, seg = [['filtración', pr.tf, '#5980A6'], ['lavado', pr.tw, '#7FB3E0'], ['descarga y cierre', Math.max(0, pr.tdead), '#B7A98A']].filter(function (q) { return q[1] > 0.5; });
+  var pr = r.pr, tc = pr.tc, rc = pr.rc, t1 = rc && rc.ok ? Math.min(rc.t1, pr.tf) : 0;
+  var seg = (rc ? [['1 · caudal constante', t1, '#A8895A'], ['2 · presión constante', pr.tf - t1, '#5980A6'], ['3 · lavado', pr.tw, '#7FB3E0'], [(pr.tw > 0 ? '' : '3 · ') + 'descarga y cierre', Math.max(0, pr.tdead), '#B7A98A']]
+    : [['filtración', pr.tf, '#5980A6'], ['lavado', pr.tw, '#7FB3E0'], ['descarga y cierre', Math.max(0, pr.tdead), '#B7A98A']]).filter(function (q) { return q[1] > 0.5; });
   $('#tline').innerHTML = '<div class="tl-bar">' + seg.map(function (q) { return '<div style="flex-basis:' + (100 * q[1] / tc) + '%;background:' + q[2] + '"><span>' + esc(q[0]) + ' · ' + fTime(q[1]) + '</span></div>'; }).join('') + '<i id="tlCur"></i></div>';
 }
 
@@ -1398,40 +1512,56 @@ function compareAlpha(al) {
 
 /* ---------- 3 · presión ---------- */
 var PA = null, RAMP = null;
-function areaAt(dPbar, sVal) { var x = {}; x.dP = dPbar; x.sComp = sVal; if (state.eq !== 'prensa') x.eq = 'prensa'; return withS(x).pr.A; }
+function areaAt(dPbar, sVal) { var x = {}; x.dP = dPbar; x.sComp = sVal; if (state.eq !== 'prensa') x.eq = 'prensa'; var q = withS(x); return q.cOk && isFinite(q.pr.A) ? q.pr.A : NaN; }
 function renderPress() {
   var r = R, s = state, lo = 0.5, hi = Math.max(8, s.Pmax * 1.5, s.dPb * 1.2), xs = [], k;
   for (k = 0; k <= 60; k++) xs.push(lo * Math.pow(hi / lo, k / 60));
   var curves = [{ s: 0, col: 'var(--n500)', dash: '5 4', name: 's = 0 (ideal)' }, { s: s.sComp, col: 'var(--hl)', dash: 'none', name: 's = ' + fmtN(s.sComp, 2) + ' (este caso)' }, { s: 1, col: CR, dash: '2 3', name: 's = 1' }];
   curves.forEach(function (cv) { cv.pts = xs.map(function (x) { return [x, areaAt(x, cv.s)]; }); });
-  var all = []; curves.forEach(function (cv) { cv.pts.forEach(function (p) { all.push(p[1]); }); });
-  var ymax = Math.min(Math.max.apply(null, all), areaAt(lo, s.sComp) * 2.5) * 1.05, ymin = 0;
+  var all = []; curves.forEach(function (cv) { cv.pts.forEach(function (p) { if (isFinite(p[1])) all.push(p[1]); }); });
+  var cap = curves[1].pts.filter(function (p) { return isFinite(p[1]); })[0], ymax = Math.min(all.length ? Math.max.apply(null, all) : 1, cap ? cap[1] * 2.5 : Infinity) * 1.05, ymin = 0;
   var a = axes({ x0: 56, x1: 546, y0: 14, y1: 280, xmin: lo, xmax: hi, ymin: ymin, ymax: ymax, xlog: true, xlab: 'presión de filtración ΔP (bar)', ylab: 'área requerida (m²)', clip: 'cpP' }), out = a.svg;
   out += E('rect', { x: r1(a.X(Math.min(hi, s.Pmax))), y: 14, width: r1(a.X(hi) - a.X(Math.min(hi, s.Pmax))), height: 266, style: 'fill:var(--redline);opacity:.06' }) + LN(a.X(s.Pmax), 14, a.X(s.Pmax), 280, 'stroke:' + CR + ';stroke-dasharray:4 3') + TX(a.X(s.Pmax) + 4, 28, 'máximo de la planta', { fs: 10, c: CR });
   curves.forEach(function (cv) { out += PATH(poly(cv.pts.map(function (p) { return [a.X(p[0]), a.Y(p[1])]; })), 'stroke:' + cv.col + ';stroke-width:' + (cv.dash === 'none' ? 2.6 : 1.6) + ';stroke-dasharray:' + cv.dash, 'cpP'); });
   var Aa = areaAt(s.dPa, s.sComp), Ab = areaAt(s.dPb, s.sComp), A0a = areaAt(s.dPa, 0), A0b = areaAt(s.dPb, 0);
-  out += dot(a.X(s.dPa), a.Y(Aa), 5) + dot(a.X(s.dPb), a.Y(Ab), 5) + dot(a.X(s.dPa), a.Y(A0a), 4, 'var(--n500)') + dot(a.X(s.dPb), a.Y(A0b), 4, 'var(--n500)');
-  out += TX(a.X(s.dPa) + 7, a.Y(Aa) - 7, fA(Aa), { fs: 11, fw: 700 }) + TX(a.X(s.dPb) + 7, a.Y(Ab) - 7, fA(Ab), { fs: 11, fw: 700 });
+  [[s.dPa, Aa, 5], [s.dPb, Ab, 5], [s.dPa, A0a, 4, 'var(--n500)'], [s.dPb, A0b, 4, 'var(--n500)']].forEach(function (q) { if (isFinite(q[1]) && q[1] <= ymax) out += dot(a.X(q[0]), a.Y(q[1]), q[2], q[3]); });
+  [[s.dPa, Aa], [s.dPb, Ab]].forEach(function (q) { if (isFinite(q[1]) && q[1] <= ymax) out += TX(a.X(q[0]) + 7, a.Y(q[1]) - 7, fA(q[1]), { fs: 11, fw: 700 }); });
   out += '<g id="paCur"></g>';
   $('#svgPA').innerHTML = out; PA = { a: a };
   $('#pALeg').innerHTML = curves.map(function (cv) { return '<span><i style="border-top:2px ' + (cv.dash === 'none' ? 'solid' : 'dashed') + ' ' + cv.col + '"></i>' + esc(cv.name) + '</span>'; }).join('');
-  var sv = function (x, y) { return fmtN(100 * (1 - y / x), 1) + ' %'; };
+  var sv = function (x, y) { return isFinite(x) && isFinite(y) ? fmtN(100 * (1 - y / x), 1) + ' %' : '—'; };
   $('#saveCmp').innerHTML = '<div><h4>Modelo ideal (s = 0)</h4><div class="big">' + sv(A0a, A0b) + '</div><div class="small">' + fA(A0a) + ' → ' + fA(A0b) + ' · ahorra ' + fA(A0a - A0b) + '</div></div><div><h4>Con s = ' + fmtN(s.sComp, 2) + '</h4><div class="big">' + sv(Aa, Ab) + '</div><div class="small">' + fA(Aa) + ' → ' + fA(Ab) + ' · ahorra ' + fA(Aa - Ab) + '</div></div>';
   $('#saveNote').textContent = (s.sComp > 0 ? 'Subir de ' + fbar(s.dPa) + ' a ' + fbar(s.dPb) + ' compacta la torta: α pasa de ' + fmtSci(alphaAt(R.cake, s.dPa * BAR), 2) + ' a ' + fmtSci(alphaAt(R.cake, s.dPb * BAR), 2) + ' m/kg. ' : 'Con s = 0 la torta no se compacta: α es el mismo a cualquier presión y el área va como 1/√ΔP. ') + (s.sComp >= 0.5 ? 'Con una torta así de compresible la presión no es la palanca: conviene cambiar la torta (flocular) o el equipo.' : 'Con una torta poco compresible, la presión sí es una buena palanca.');
   renderRamp();
 }
 function renderRamp() {
-  var r = R, s = state, pr = r.pr;
-  if (s.eq !== 'prensa') { $('#svgRamp').innerHTML = TX(280, 150, 'El arranque a caudal constante aplica a la prensa.', { a: 'middle', fs: 12, c: MUT }); spec('#specRamp', []); $('#rampNote').textContent = ''; return; }
-  var pts = cycleSeries(r), tf = pr.tf / 60, qmax = qScale(r, pts), Pm = Math.max(s.dP, s.Pmax) * 1.15;
+  var s = state, live = s.cyc === 'real' && s.eq === 'prensa', r = live ? R : withS({ cyc: 'real', eq: 'prensa' }), pr = r.pr, rc = pr.rc;
+  show('rampUse', !live); $('#rampLbl').textContent = live ? 'diapositivas 15 a 17' : 'vista previa · el diseño usa otro ciclo';
+  if (!r.cOk) { $('#svgRamp').innerHTML = TX(280, 150, 'Con estos valores el ciclo real no filtra (vea el diagnóstico).', { a: 'middle', fs: 12, c: MUT }); spec('#specRamp', []); $('#rampNote').textContent = ''; $('#rampLeg').innerHTML = ''; RAMP = null; return; }
+  var pts = cycleSeries(r), tf = pr.tf / 60, A = pr.A, Pm = Math.max(s.dP, s.Pmax) * 1.18, qp = rc.J0 * A * 3600, qmax = Math.max(qp * 2, pr.q0 * 3600 * 1.15);
   var a = axes({ x0: 52, x1: 500, y0: 14, y1: 250, xmin: 0, xmax: tf, ymin: 0, ymax: Pm, xlab: 'tiempo de filtración (min)', ylab: 'ΔP (bar)', clip: 'cpR' }), out = a.svg, ra = rightAxis(a, 0, qmax, 'caudal (m³/h)', C2);
-  out += LN(52, a.Y(s.Pmax), 500, a.Y(s.Pmax), 'stroke:' + CR + ';stroke-dasharray:4 3') + TX(496, a.Y(s.Pmax) - 5, 'P máx de la planta', { a: 'end', fs: 10, c: CR });
-  if (s.rampOn && pr.ramp.ok) out += E('rect', { x: 52, y: 14, width: r1(a.X(Math.min(tf, pr.ramp.t1 / 60)) - 52), height: 236, style: 'fill:#E8D9BE;opacity:.4' }) + TX(56, 30, 'caudal constante', { fs: 10.5, c: MUT, fw: 700 });
-  out += ra.svg + PATH(poly(pts.map(function (p) { return [a.X(p.t / 60), a.Y(p.P)]; })), 'stroke:' + C1 + ';stroke-width:2.6', 'cpR') + PATH(poly(pts.map(function (p) { return [a.X(p.t / 60), ra.Y(p.q * 3600)]; })), 'stroke:' + C2 + ';stroke-width:2.2;stroke-dasharray:6 3', 'cpR');
-  $('#svgRamp').innerHTML = out; RAMP = { a: a, pts: pts };
-  var rp = pr.ramp;
-  spec('#specRamp', pr.rampUsed ? [['Flux de la bomba', fmtN(s.J0, 0) + ' L/(m²·h) · ' + fQ(rp.J0 * pr.A)], ['Llega a ' + fbar(s.dP) + ' a los', fTime(Math.min(rp.t1, pr.tf)) + (rp.t1 > pr.tf ? ' (no llega en el ciclo)' : '')], ['Filtrado en esa fase', fmtN(Math.min(rp.u1, pr.u) * pr.A, 2) + ' m³ (' + fmtN(100 * Math.min(1, rp.u1 / pr.u), 0) + ' %)'], ['Área para el mismo ciclo', fA(rp.A) + ' contra ' + fA(pr.Acp) + ' a presión constante (' + (rp.extra >= 0 ? '+' : '') + fmtN(100 * rp.extra, 1) + ' %)']] : (s.rampOn ? [['Arranque', 'imposible: la tela sola pide más que ΔP']] : [['Arranque', 'presión constante desde t = 0'], ['Caudal inicial', fQ(pr.q0) + ' (solo la tela)']]));
-  $('#rampNote').textContent = 'Una bomba de desplazamiento positivo arranca a caudal fijo: la presión sube con la torta hasta el límite y desde ahí se filtra a presión constante con un caudal que cae (diapositiva 17). Arrancar suave evita una capa compacta contra la tela, pero se pierde fuerza impulsora al comienzo: para el mismo ciclo hace falta algo más de área.';
+  var t1 = rc.ok ? Math.min(rc.t1, pr.tf) : 0;
+  if (t1 > 0) out += E('rect', { x: 52, y: 14, width: r1(Math.max(0.6, a.X(t1 / 60) - 52)), height: 236, style: 'fill:' + PHC[1] + ';opacity:.55' });
+  out += E('rect', { x: r1(a.X(t1 / 60)), y: 14, width: r1(500 - a.X(t1 / 60)), height: 236, style: 'fill:' + PHC[2] + ';opacity:.4' });
+  out += LN(52, a.Y(s.dP), 500, a.Y(s.dP), 'stroke:' + C1 + ';stroke-dasharray:6 4;stroke-width:1.1') + TX(496, a.Y(s.dP) - 5, 'ΔP tope', { a: 'end', fs: 10, c: C1, fw: 700 });
+  if (s.Pmax > s.dP + 0.05) out += LN(52, a.Y(s.Pmax), 500, a.Y(s.Pmax), 'stroke:' + CR + ';stroke-dasharray:3 3') + TX(496, a.Y(s.Pmax) - 5, 'máximo de la planta', { a: 'end', fs: 10, c: CR });
+  out += ra.svg;
+  // presión constante desde el arranque con la misma prensa: solo la tela frena al principio
+  var cp = pts.map(function (p) { var u = uOfT(pr.a, pr.b, p.t); return { t: p.t, q: A / (2 * pr.a * u + pr.b) }; });
+  out += PATH(poly(cp.map(function (p) { return [a.X(p.t / 60), ra.Y(Math.min(p.q * 3600, qmax * 1.4))]; })), 'stroke:var(--n500);stroke-width:1.8;stroke-dasharray:5 4', 'cpR');
+  out += PATH(poly(pts.map(function (p) { return [a.X(p.t / 60), a.Y(p.P)]; })), 'stroke:' + C1 + ';stroke-width:2.6', 'cpR') + PATH(poly(pts.map(function (p) { return [a.X(p.t / 60), ra.Y(p.q * 3600)]; })), 'stroke:' + C2 + ';stroke-width:2.4', 'cpR');
+  if (pr.b > 0 && A / pr.b * 3600 > qmax) out += TX(58, 30, '↑ arranque directo: ' + fQ(A / pr.b) + ' al principio', { fs: 10, c: 'var(--n600)', fw: 700 });
+  out += '<g id="rampCur"></g>';
+  $('#svgRamp').innerHTML = out; RAMP = { a: a, pts: pts, cp: cp, r: r };
+  $('#rampLeg').innerHTML = '<span><i style="border-top-color:' + C1 + '"></i>ΔP, ciclo real</span><span><i style="border-top-color:' + C2 + '"></i>caudal, ciclo real</span><span><i style="border-top:2px dashed var(--n500)"></i>caudal a presión constante desde el arranque</span>';
+  var sc = s.sComp, rise = sc < 0.02 ? 'en línea recta' : (sc >= 0.95 ? 'se dispara' : 'como t<sup>' + fmtN(1 / (1 - sc), 1) + '</sup>');
+  spec('#specRamp', [['Bomba', fmtN(s.J0, 0) + ' L/(m²·h) · ' + fQ(rc.J0 * A)],
+    ['Llega a la presión tope', rc.ok ? (rc.t1 <= pr.tf ? fTime(rc.t1) : 'no: se llenan antes') : 'nunca'],
+    ['Filtrado en la fase 1', rc.ok ? fmtN(Math.min(rc.u1, pr.u) * A, 2) + ' m³ · ' + fmtN(100 * Math.min(1, rc.u1 / pr.u), 0) + ' %' : '—'],
+    ['La presión sube', rc.ok ? rise : '—'],
+    ['Arranque directo: caudal inicial', fQ(A / pr.b) + ' · ' + fmtN(A / pr.b / (rc.J0 * A), 1) + ' × la bomba'],
+    ['Área con arranque directo', fA(rc.Acp) + ' (' + fmtN(100 * (rc.Acp / A - 1), 1) + ' %)']]);
+  $('#rampNote').innerHTML = subs(esc('Una bomba de desplazamiento positivo arranca a caudal fijo: la presión sube con la torta hasta la presión tope y desde ahí se filtra a presión constante con un caudal que cae (diapositivas 15 a 17). ' + (sc < 0.02 ? 'Con s = 0 la presión sube en línea recta, como en la diapositiva 15. ' : 'La diapositiva 15 la dibuja recta porque toma α constante; con s = ' + fmtN(sc, 2) + ' α crece con la presión y la curva se empina' + (sc < 0.95 ? ' (ΔP − Δp_m va como t^' + fmtN(1 / (1 - sc), 1) + ', McCabe 29.38). ' : '. ')) + 'Arrancar directo a presión constante filtraría algo más en el mismo tiempo, pero al principio solo frena la tela y el caudal pedido sería el de una bomba mucho más grande. En planta, arrancar a caudal moderado también evita que los finos cieguen la tela (práctica industrial, externa al curso).' + (live ? '' : ' El diseño actual no usa este ciclo: el botón lo activa.'))).replace(/t\^([\d,]+)/g, 't<sup>$1</sup>');
 }
 
 /* ---------- 4 · ciclo y área ---------- */
@@ -1439,11 +1569,23 @@ var CI = null;
 function renderCycle() {
   var r = R, s = state, pr = r.pr;
   if (s.eq !== 'prensa') { $('#cycBar').innerHTML = '<p class="small">El tambor es continuo: no tiene ciclo por lotes. Vea la pestaña 5.</p>'; $('#svgCi').innerHTML = ''; spec('#specCi', []); $('#svgBud').innerHTML = ''; spec('#specCake', []); $('#budNote').textContent = ''; $('#cakeNote').textContent = ''; return; }
-  var tc = pr.tc, seg = [['Filtración', pr.tf, '#5980A6'], ['Lavado', pr.tw, '#7FB3E0'], ['Descarga, limpieza y cierre', Math.max(0, pr.tdead), '#B7A98A']].filter(function (q) { return q[1] > 0.5; });
+  var tc = pr.tc, rc = pr.rc, t1 = rc && rc.ok ? Math.min(rc.t1, pr.tf) : 0;
+  var seg = (rc ? [['1 · Caudal constante', t1, '#A8895A'], ['2 · Presión constante', pr.tf - t1, '#5980A6'], ['3 · Lavado', pr.tw, '#7FB3E0'], [(pr.tw > 0 ? '' : '3 · ') + 'Descarga, limpieza y cierre', Math.max(0, pr.tdead), '#B7A98A']]
+    : [['Filtración', pr.tf, '#5980A6'], ['Lavado', pr.tw, '#7FB3E0'], ['Descarga, limpieza y cierre', Math.max(0, pr.tdead), '#B7A98A']]).filter(function (q) { return q[1] > 0.5; });
   $('#cycBar').innerHTML = '<div class="stack" style="height:40px">' + seg.map(function (q) { return '<div style="flex-basis:' + (100 * q[1] / tc) + '%;background:' + q[2] + '"><span>' + esc(q[0]) + ' · ' + fTime(q[1]) + ' · ' + fmtN(100 * q[1] / tc, 0) + ' %</span></div>'; }).join('') + '</div><p class="small" style="margin:8px 0 0">Ciclo de ' + fTime(tc) + ': cada ciclo filtra ' + fmtN(pr.V, 2) + ' m³, lo que la planta produce en ese tiempo (' + fQ(r.Qf) + ').</p>';
-  $('#ciLbl').textContent = s.cyc === 'frac' ? 'fracción fija del ciclo (Taller 6)' : 'tiempo muerto fijo';
+  $('#ciLbl').textContent = s.cyc === 'frac' ? 'fracción fija del ciclo (Taller 6)' : (rc ? 'ciclo real · diapositiva 17' : 'tiempo muerto fijo');
   var pts = [], k, out, a;
-  if (s.cyc === 'frac') {
+  if (rc) {
+    for (k = 0; k <= 85; k++) { var ph = 0.05 + 0.85 * k / 85; pts.push([ph * 100, withS({ qStop: ph }).pr.A]); }
+    var ysr = pts.map(function (p) { return p[1]; }).filter(isFinite);
+    a = axes({ x0: 56, x1: 546, y0: 14, y1: 280, xmin: 5, xmax: 90, ymin: 0, ymax: Math.min(Math.max.apply(null, ysr), pr.Aopt * 3) * 1.05, xlab: 'parada: caudal en % del de la bomba', ylab: 'área requerida (m²)', clip: 'cpI' }); out = a.svg;
+    var xf = 100 * rc.phiFull;
+    if (xf > 5) { out += E('rect', { x: 56, y: 14, width: r1(a.X(Math.min(90, xf)) - 56), height: 266, style: 'fill:var(--redline);opacity:.07' }) + TX(62, 272, '← aquí paran por cámaras llenas', { fs: 10.5, c: CR, fw: 700 }); }
+    out += PATH(poly(pts.map(function (p) { return [a.X(p[0]), a.Y(p[1])]; })), 'stroke:var(--hl);stroke-width:2.6', 'cpI');
+    if (!rc.optFull && rc.phiOpt * 100 >= 5 && rc.phiOpt * 100 <= 90) out += LN(a.X(rc.phiOpt * 100), 14, a.X(rc.phiOpt * 100), 280, 'stroke:' + CG + ';stroke-dasharray:4 3') + TX(a.X(rc.phiOpt * 100) + (rc.phiOpt > 0.7 ? -4 : 4), 46, 'corte económico · ' + fmtN(100 * rc.phiOpt, 0) + ' %', { fs: 10.5, c: CG, fw: 700, a: rc.phiOpt > 0.7 ? 'end' : null });
+    out += dot(a.X(s.qStop * 100), a.Y(pr.A), 6) + TX(a.X(s.qStop * 100) + (s.qStop > 0.6 ? -8 : 8), a.Y(pr.A) - 10, 'este caso · ' + fA(pr.A), { fs: 11.5, fw: 750, a: s.qStop > 0.6 ? 'end' : null });
+    $('#ciChartT').textContent = 'Área contra el caudal al que se para'; CI = { a: a, mode: 'real' };
+  } else if (s.cyc === 'frac') {
     for (k = 0; k <= 80; k++) { var fr = 0.2 + 0.8 * k / 80; pts.push([fr * 100, withS({ frac: fr }).pr.A]); }
     a = axes({ x0: 56, x1: 546, y0: 14, y1: 280, xmin: 20, xmax: 100, ymin: 0, ymax: Math.min(pts[0][1], pts[pts.length - 1][1] * 4) * 1.05, xlab: 'parte del ciclo que filtra (%)', ylab: 'área requerida (m²)', clip: 'cpI' }); out = a.svg;
     out += PATH(poly(pts.map(function (p) { return [a.X(p[0]), a.Y(p[1])]; })), 'stroke:var(--hl);stroke-width:2.6', 'cpI');
@@ -1462,7 +1604,7 @@ function renderCycle() {
   }
   out += '<g id="ciCur"></g>';
   $('#svgCi').innerHTML = out; $('#ciLeg').innerHTML = '';
-  spec('#specCi', [['Filtrado por ciclo', fmtN(pr.V, 2) + ' m³'], ['Filtrado por m² y ciclo (V/A)', fmtN(pr.u, 4) + ' m'], ['Área requerida', fA(pr.A)], s.cyc === 'td' ? ['Área en el óptimo', fA(pr.Aopt) + ' con ' + fTime(pr.tfOpt) + ' de filtración'] : ['Área si filtrara todo el ciclo', fA(withS({ frac: 1 }).pr.A)], ['Placas de ' + fmtN(s.Ap, 2) + ' m²', pr.N + ' · ' + pr.presses + (pr.presses === 1 ? ' prensa' : ' prensas') + ' de ' + pr.perPress], ['Con placas de 0,5, 1 y 2 m²', [0.5, 1, 2].map(function (ap) { var n = Math.ceil(pr.A / ap - 1e-9); return n + (n > s.maxPl ? ' (' + Math.ceil(n / s.maxPl) + ' eq.)' : ''); }).join(' · ')], ['Capacidad específica', fmtN(r.Qf * 3600 / pr.A * 1000, 0) + ' L/(m²·h)'], ['α a la presión de filtración', fmtSci(pr.alpha, 3) + ' m/kg']]);
+  spec('#specCi', [['Filtrado por ciclo', fmtN(pr.V, 2) + ' m³'], ['Filtrado por m² y ciclo (V/A)', fmtN(pr.u, 4) + ' m'], ['Área requerida', fA(pr.A)], rc ? ['Área con el corte económico', fA(pr.Aopt) + (rc.optFull ? ' llenando las cámaras' : ' parando al ' + fmtN(100 * rc.phiOpt, 0) + ' %') + ' (externo)'] : (s.cyc === 'td' ? ['Área en el óptimo', fA(pr.Aopt) + ' con ' + fTime(pr.tfOpt) + ' de filtración'] : ['Área si filtrara todo el ciclo', fA(withS({ frac: 1 }).pr.A)]), ['Placas de ' + fmtN(s.Ap, 2) + ' m²', pr.N + ' · ' + pr.presses + (pr.presses === 1 ? ' prensa' : ' prensas') + ' de ' + pr.perPress], ['Con placas de 0,5, 1 y 2 m²', [0.5, 1, 2].map(function (ap) { var n = Math.ceil(pr.A / ap - 1e-9); return n + (n > s.maxPl ? ' (' + Math.ceil(n / s.maxPl) + ' eq.)' : ''); }).join(' · ')], ['Capacidad específica', fmtN(r.Qf * 3600 / pr.A * 1000, 0) + ' L/(m²·h)'], [rc ? 'α a la presión tope' : 'α a la presión de filtración', fmtSci(pr.alpha, 3) + ' m/kg']]);
   // presupuesto y huella
   var mx = Math.max(s.budget, pr.cost[1]) * 1.12, X0 = 150, X1 = 400, X = function (v) { return X0 + (X1 - X0) * v / mx; }, o = '';
   o += TX(X0 - 10, 34, 'Costo de la prensa', { a: 'end', fs: 12, fw: 700 }) + E('rect', { x: X0, y: 20, width: r1(X(pr.cost[0]) - X0), height: 22, style: 'fill:#5980A6' }) + E('rect', { x: r1(X(pr.cost[0])), y: 20, width: r1(X(pr.cost[1]) - X(pr.cost[0])), height: 22, style: 'fill:#5980A6;opacity:.4' });
@@ -1541,9 +1683,10 @@ function renderEqs() {
     ['La misma recta en la lectura y en McCabe', '\\begin{aligned}\\frac{t}{V}&=\\frac{\\mu\\alpha w}{2A^2\\Delta P}V+\\frac{\\mu R_m}{A\\Delta P}=\\frac{K_c}{2}V+\\frac{1}{q_0}\\\\\\frac{K_c}{2}&=' + sci(pr.a / (A * A), 3) + '\\ \\text{s/m}^6,\\quad \\frac1{q_0}=' + sci(pr.b / A, 3) + '\\ \\text{s/m}^3\\end{aligned}', 'La lectura usa w para los kg de sólido por m³ de filtrado; las diapositivas usan w para los kg por m² de tela. Aquí se escribe c (kg/m³), con el área A = ' + fA(A) + ' del diseño.'],
     ['Área para un tiempo dado', '\\begin{aligned}u&=\\frac{V}{A}=\\frac{-b+\\sqrt{b^2+4at_f}}{2a}=' + n2(pr.u, 4) + '\\ \\text{m}\\\\A&=\\frac{V}{u}=\\frac{' + n2(pr.V, 2) + '}{' + n2(pr.u, 4) + '}=' + n2(A, 2) + '\\ \\text{m}^2\\end{aligned}', 'V es el filtrado de un ciclo completo (' + fmtN(pr.V, 2) + ' m³) y t_f el tiempo que de verdad filtra (' + fTime(pr.tf) + ').'],
     ['Compresibilidad', '\\begin{aligned}\\alpha&=\\alpha_{ens}\\left(\\frac{\\Delta P}{\\Delta P_{ens}}\\right)^{s}=' + sci(cake.alphaRef, 3) + '\\left(\\frac{' + n2(r.dPop, 2) + '}{' + n2(cake.dPref, 2) + '}\\right)^{' + n2(cake.s, 2) + '}\\\\&=' + sci(r.alphaOp, 3) + '\\ \\text{m/kg}\\end{aligned}', 'La forma anclada del Taller 6 equivale a α = α₀ΔPˢ (McCabe 29.25) con α₀ = ' + fmtSci(r.alpha0, 3) + ' y ΔP en Pa. Pasar α₀ de ft/lb a m/kg sin cambiar la base de ΔP es un error común.'],
-    ['Caudal constante', '\\begin{aligned}\\Delta P&=\\frac{\\mu\\alpha cQ^2}{A^2}t+\\frac{\\mu QR_m}{A}\\\\(\\Delta P-\\Delta p_m)^{1-s}&=\\alpha_0\\mu c\\,u^2\\,t\\end{aligned}', 'La primera es la de la lectura y las diapositivas (α constante); la segunda, la de McCabe (29.38) para torta compresible.'],
+    ['Caudal constante', '\\begin{aligned}\\Delta P&=\\frac{\\mu\\alpha cQ^2}{A^2}t+\\frac{\\mu QR_m}{A}\\\\(\\Delta P-\\Delta p_m)^{1-s}&=\\alpha_0\\mu c\\,J^2\\,t,\\quad J=\\frac{Q}{A}\\end{aligned}', 'La primera es la de la lectura y las diapositivas (α constante): la presión sube en línea recta. La segunda es la de McCabe (29.38) para torta compresible, con α evaluado en la caída de la torta ΔP − Δp_m: la presión sube cada vez más rápido.'],
+    ['Ciclo real (diapositivas 15 a 17)', (function () { var q = pr.rc ? pr : withS({ cyc: 'real', eq: 'prensa' }).pr, c = q.rc; if (!c || !(c.uEnd > 0)) return '\\text{sin solución con estos valores}'; return '\\begin{aligned}t_1&=\\frac{\\Delta P_{tope}-\\mu J_0R_m}{\\mu\\,\\alpha(\\Delta P_{tope})\\,c\\,J_0^2}=' + n2(c.t1 / 60, 2) + '\\ \\text{min}\\\\u_1&=J_0t_1=' + n2(c.u1, 4) + '\\ \\text{m}\\\\t&=t_1+a\\,(u^2-u_1^2)+b\\,(u-u_1)\\\\J&=\\frac{1}{2au+b}\\\\u_{fin}&=\\min\\left(\\frac{1/(\\varphi J_0)-b}{2a},\\ \\frac{e}{2}\\frac{\\rho_{torta}}{c}\\right)=' + n2(c.uEnd, 4) + '\\ \\text{m}\\\\A&=\\frac{Q\\,(t_{fin}+t_w+t_d)}{u_{fin}}=' + n2(q.A, 1) + '\\ \\text{m}^2\\end{aligned}'; })(), 'J₀ es el flux de la bomba y φ la fracción de ese caudal a la que se para. En la fase 1 α se evalúa con la presión total, igual que en la fase 2, para que el caudal no salte al cambiar de fase; con la tela tomando ' + fmtN(100 * (pr.rc ? pr.rc.dPm : withS({ cyc: 'real', eq: 'prensa' }).pr.rc.dPm) / pr.dPa, 0) + ' % de la presión, la diferencia con McCabe es pequeña.' + (pr.rc ? '' : ' Valores del ciclo real con los controles actuales; el diseño usa otro ciclo.')],
     ['Sólidos por volumen de filtrado (McCabe 29.19)', 'c=\\frac{c_F}{1-\\left(\\frac{m_F}{m_c}-1\\right)\\frac{c_F}{\\rho}}' + (s.cBasis === 'alimentado' ? '=' + n2(r.c, 1) + '\\ \\text{kg/m}^3' : ''), 'El Taller 6 usa los 25 g/L del caldo como si fueran por m³ de filtrado (desprecia el líquido de la torta).'],
-    ['Ciclo óptimo (externo al curso)', '\\frac{d}{dt_f}\\left[\\frac{t_f+t_w+t_d}{u(t_f)}\\right]=0\\ \\xrightarrow{R_m\\to0}\\ t_{f,opt}=t_d' + (s.cyc === 'td' ? ',\\quad t_{f,opt}=' + n2(pr.tfOpt / 60, 1) + '\\ \\text{min}' : ''), 'Maximiza el filtrado por unidad de área y tiempo con un tiempo muerto t_d fijo. Ningún material del curso da esta fórmula.'],
+    ['Ciclo óptimo (externo al curso)', '\\frac{d}{dt_f}\\left[\\frac{t_f+t_w+t_d}{u(t_f)}\\right]=0\\ \\xrightarrow{R_m\\to0}\\ t_{f,opt}=t_d' + (s.cyc === 'td' ? ',\\quad t_{f,opt}=' + n2(pr.tfOpt / 60, 1) + '\\ \\text{min}' : ''), 'Maximiza el filtrado por unidad de área y tiempo con un tiempo muerto t_d fijo. Sin lavado equivale a parar cuando el caudal instantáneo cae al caudal medio del ciclo completo, con o sin fase a caudal constante' + (pr.rc ? ': aquí, al ' + fmtN(100 * pr.rc.phiOpt, 0) + ' % del de la bomba' : '') + '. Ningún material del curso da esta fórmula.'],
     ['Lavado', 'V_w=n\\left(\\frac{m_F}{m_c}-1\\right)\\frac{m_c}{\\rho},\\quad \\left(\\frac{dV}{dt}\\right)_w=k\\left(\\frac{dV}{dt}\\right)_{final}', 'McCabe: con marcos alternos el lavado va a la mitad del caudal final (k = ½). Otros textos usan ¼ para placas y marcos y 1 para filtros de hojas.'],
     ['Tambor rotatorio (McCabe 29.31)', '\\begin{aligned}\\frac{\\dot m_c}{A_T}&=\\frac{\\left[\\frac{2c\\alpha\\Delta P f n}{\\mu}+(nR_m)^2\\right]^{1/2}-nR_m}{\\alpha}\\\\&=' + n2(dr.G * 3600, 3) + '\\ \\text{kg/(m}^2\\text{h)}\\end{aligned}', 'Es la filtración a presión constante con t = f/n. Sin R_m (29.33): ṁ_c/A_T = (2cΔP^(1−s)fn/(α₀μ))^½.'],
     ['Espesor de la torta', 'L=\\frac{c\\,u}{\\rho_{torta}}=' + n2(pr.Lc * 1000, 2) + '\\ \\text{mm},\\qquad \\text{llenado}=\\frac{2L}{e_{cámara}}=' + n2(100 * pr.fill, 0) + '\\ \\%', 'En la prensa la torta crece desde las dos caras de cada cámara. ρ_torta (kg de sólido seco por m³ de torta) es un dato supuesto.'],
@@ -1551,7 +1694,7 @@ function renderEqs() {
   ];
   $('#eqs').innerHTML = items.map(function (it, i) { return '<div><div class="lbl">' + it[0] + '</div><div class="f" id="eq' + i + '"></div><div class="n2">' + subs(esc(it[2])) + '</div></div>'; }).join('');
   items.forEach(function (it, i) { tex('eq' + i, it[1], true); });
-  $('#assump').innerHTML = '<b>Cómo está hecho.</b> El modelo es el de la Lectura 09, las diapositivas y el Taller 6: Darcy con resistencias en serie, α y R_m constantes durante la filtración a presión constante, y α corregido por compresibilidad con la forma anclada del taller. Reproduce el Taller 6 (α = 3,60×10¹² m/kg y R_m = 8,91×10¹⁰ m⁻¹ a 1,8 bar; 55,0 y 42,5 m² con el modelo ideal; 65,7 y 60,6 m² con s = 0,7; 85,0 m² con el 60 % del ciclo) y los ejemplos 29.1 y 29.2 de McCabe. '
+  $('#assump').innerHTML = '<b>Cómo está hecho.</b> El modelo es el de la Lectura 09, las diapositivas y el Taller 6: Darcy con resistencias en serie, α y R_m constantes durante la filtración a presión constante, y α corregido por compresibilidad con la forma anclada del taller. Reproduce el Taller 6 (α = 3,60×10¹² m/kg y R_m = 8,91×10¹⁰ m⁻¹ a 1,8 bar; 55,0 y 42,5 m² con el modelo ideal; 65,7 y 60,6 m² con s = 0,7; 85,0 m² con el 60 % del ciclo) y los ejemplos 29.1 y 29.2 de McCabe. El ciclo real une las dos ecuaciones de las diapositivas 14 y 15 como lo describe la 17: caudal constante hasta la presión tope, presión constante hasta un caudal mínimo o hasta llenar las cámaras, y descarga. '
     + 'El tambor usa la ecuación 29.31 de McCabe. Son externos al curso, y se marcan en cada pestaña: el óptimo del ciclo, la huella de piso de la prensa, los tamaños de tambor mayores que 3 × 4,3 m, la teoría Σ de la centrífuga, la humedad y la densidad de las tortas, y los parámetros del bagazo del proyecto, que hay que medir.';
 }
 
@@ -1561,11 +1704,12 @@ function invX(a, x) { var o = a.o, f = (x - o.x0) / (o.x1 - o.x0); return o.xlog
 function hoverSetup() {
   $('#svgCyc').addEventListener('mousemove', function (e) {
     if (!CYC) return; var p = svgPt(this, e), o = CYC.a.o; if (p.x < o.x0 || p.x > o.x1) return; var x = invX(CYC.a, p.x);
-    if (CYC.mode === 'p') { var tf = R.pr.tf / 60; if (x > tf) { $('#cycRead').textContent = fmtN(x, 1) + ' min · ' + (x < (R.pr.tf + R.pr.tw) / 60 ? 'lavando' : 'descargando y cerrando'); return; } var best = CYC.pts[0]; CYC.pts.forEach(function (q) { if (Math.abs(q.t / 60 - x) < Math.abs(best.t / 60 - x)) best = q; }); $('#cycRead').textContent = fmtN(best.t / 60, 1) + ' min · filtrado ' + fmtN(best.V, 2) + ' m³ · caudal ' + fQ(best.q) + ' · ΔP ' + fbar(best.P); }
+    if (CYC.mode === 'p') { var tf = R.pr.tf / 60, fz = CYC.real ? 'fase 3 · ' : ''; if (x > tf) { $('#cycRead').textContent = fmtN(x, 1) + ' min · ' + fz + (x < (R.pr.tf + R.pr.tw) / 60 ? 'lavando' : 'descargando y cerrando'); return; } var best = CYC.pts[0]; CYC.pts.forEach(function (q) { if (Math.abs(q.t / 60 - x) < Math.abs(best.t / 60 - x)) best = q; }); $('#cycRead').textContent = fmtN(best.t / 60, 1) + ' min · ' + (CYC.real ? (best.ph === 1 ? 'fase 1 · ' : 'fase 2 · ') : '') + 'filtrado ' + fmtN(best.V, 2) + ' m³ · caudal ' + fQ(best.q) + ' · ΔP ' + fbar(best.P); }
     else { var bq = CYC.th[0]; CYC.th.forEach(function (q) { if (Math.abs(q[0] - x) < Math.abs(bq[0] - x)) bq = q; }); $('#cycRead').textContent = fmtN(bq[0], 0) + '° · torta ' + fmtN(bq[1], 2) + ' mm' + (bq[2] > 0 ? ' · flux ' + fmtN(bq[2], 0) + ' L/(m²·h)' : ''); }
   });
+  $('#svgRamp').addEventListener('mousemove', function (e) { if (!RAMP) return; var p = svgPt(this, e), o = RAMP.a.o; if (p.x < o.x0 || p.x > o.x1) return; var x = invX(RAMP.a, p.x), i, best = 0; for (i = 1; i < RAMP.pts.length; i++) if (Math.abs(RAMP.pts[i].t / 60 - x) < Math.abs(RAMP.pts[best].t / 60 - x)) best = i; var q = RAMP.pts[best]; $('#rampCur').innerHTML = LN(p.x, o.y0, p.x, o.y1, 'stroke:var(--ink);stroke-width:.8;opacity:.5'); $('#rampRead').textContent = fmtN(q.t / 60, 1) + ' min · fase ' + (q.ph === 1 ? '1' : '2') + ' · ΔP ' + fbar(q.P) + ' · caudal ' + fQ(q.q) + ' · a presión constante desde el arranque ' + fQ(RAMP.cp[best].q); });
   $('#svgPA').addEventListener('mousemove', function (e) { if (!PA) return; var p = svgPt(this, e), o = PA.a.o; if (p.x < o.x0 || p.x > o.x1) return; var x = invX(PA.a, p.x); $('#paCur').innerHTML = LN(p.x, o.y0, p.x, o.y1, 'stroke:var(--ink);stroke-width:.8;opacity:.5'); $('#pARead').textContent = fbar(x) + ' · ideal ' + fA(areaAt(x, 0)) + ' · con s = ' + fmtN(state.sComp, 2) + ' ' + fA(areaAt(x, state.sComp)) + ' · α ' + fmtSci(alphaAt(R.cake, x * BAR), 2) + ' m/kg'; });
-  $('#svgCi').addEventListener('mousemove', function (e) { if (!CI) return; var p = svgPt(this, e), o = CI.a.o; if (p.x < o.x0 || p.x > o.x1) return; var x = invX(CI.a, p.x); $('#ciCur').innerHTML = LN(p.x, o.y0, p.x, o.y1, 'stroke:var(--ink);stroke-width:.8;opacity:.5'); var q = CI.mode === 'frac' ? withS({ frac: x / 100 }).pr : withS({ tfMode: 'manual', tfMin: x }).pr; $('#ciRead').textContent = (CI.mode === 'frac' ? fmtN(x, 0) + ' % del ciclo filtrando' : fmtN(x, 1) + ' min de filtración') + ' · ciclo ' + fTime(q.tc) + ' · A ' + fA(q.A) + ' · ' + q.N + ' placas'; });
+  $('#svgCi').addEventListener('mousemove', function (e) { if (!CI) return; var p = svgPt(this, e), o = CI.a.o; if (p.x < o.x0 || p.x > o.x1) return; var x = invX(CI.a, p.x); $('#ciCur').innerHTML = LN(p.x, o.y0, p.x, o.y1, 'stroke:var(--ink);stroke-width:.8;opacity:.5'); var q = CI.mode === 'frac' ? withS({ frac: x / 100 }).pr : (CI.mode === 'real' ? withS({ qStop: x / 100 }).pr : withS({ tfMode: 'manual', tfMin: x }).pr); $('#ciRead').textContent = (CI.mode === 'frac' ? fmtN(x, 0) + ' % del ciclo filtrando' : (CI.mode === 'real' ? 'parada al ' + fmtN(x, 0) + ' %' + (q.rc.full ? ' (para antes: cámaras llenas)' : '') + ' · filtra ' + fTime(q.tf) : fmtN(x, 1) + ' min de filtración')) + ' · ciclo ' + fTime(q.tc) + ' · A ' + fA(q.A) + ' · ' + q.N + ' placas'; });
   $('#svgDr').addEventListener('mousemove', function (e) { if (!DR) return; var p = svgPt(this, e), o = DR.a.o; if (p.x < o.x0 || p.x > o.x1) return; var x = invX(DR.a, p.x), q = withS({ rpm: x, eq: 'tambor' }).dr; $('#drCur').innerHTML = LN(p.x, o.y0, p.x, o.y1, 'stroke:var(--ink);stroke-width:.8;opacity:.5'); $('#drRead').textContent = fmtN(x, 2) + ' rpm · A_T ' + fA(q.AT) + ' · torta ' + fmtN(q.Lrev * 1000, 2) + ' mm por vuelta'; });
   $('#svgLab').addEventListener('mousemove', function (e) { if (!LABCH) return; var p = svgPt(this, e), o = LABCH.a.o; if (p.x < o.x0 || p.x > o.x1) return; var x = invX(LABCH.a, p.x), f = LABCH.L.runs[0].fit; $('#labCur').innerHTML = LN(p.x, o.y0, p.x, o.y1, 'stroke:var(--ink);stroke-width:.8;opacity:.5'); $('#labRead').textContent = 'V/A = ' + fmtN(x, 4) + ' m · recta ' + fmtN(f.b + f.m * x, 0) + ' s/m · t = ' + fmtN((f.b + f.m * x) * x, 0) + ' s'; });
 }
