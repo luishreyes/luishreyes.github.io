@@ -4,6 +4,7 @@ import type { Course, CronogramaEntry } from '../../components/data/classroom';
 import { CourseAccessGate } from '../../components/classroom/CourseAccessGate';
 import { todayISO } from '../../components/classroom/today';
 import { retos202620 } from '../../components/data/classroom/spdp-retos-2026-20';
+import { plazoContacto } from '../../components/data/classroom/spdp-retos-seleccionados-2026-20';
 import { spdpDocumentos, spdpPresentaciones, type SpdpDocumento } from '../../components/data/classroom/spdp-material-2026-20';
 import '@fontsource/anton/400.css';
 import '@fontsource/barlow/400.css';
@@ -203,6 +204,17 @@ export const SpdpLandingPage: React.FC<Props> = ({ course }) => {
             </div>
           </div>
         </header>
+
+        {/* ---------------- resultados de la selección de retos ---------------- */}
+        <div className="sp-wrap" style={{ marginTop: 28 }}>
+          <Link to={`${base}/resultados`} className="sp-aviso" style={{ textDecoration: 'none', color: '#fff' }}>
+            <span className="sp-aviso-etiqueta">Selección de retos</span>
+            <p>
+              Ya están los resultados: quién quedó en cada reto y con qué asesor. Escríbale a su asesor antes del {plazoContacto} para pedir una reunión de 15 minutos. Ver
+              resultados →
+            </p>
+          </Link>
+        </div>
 
         {/* ---------------- tres puertas ---------------- */}
         <nav className="sp-wrap spl-puertas" aria-label="Accesos del curso">

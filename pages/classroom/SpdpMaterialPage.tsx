@@ -268,6 +268,12 @@ export const SpdpMaterialPage: React.FC<Props> = ({ course }) => {
                         <span className="sp-doc-meta">Los {retos202620.length} retos, con filtros y favoritos</span>
                       </Link>
                     )}
+                    {s.week === 2 && (
+                      <Link to={`/classroom/${course.slug}/resultados`} className="sp-mat" style={{ textDecoration: 'none', borderLeftColor: 'var(--sp-orange-600)' }}>
+                        <span className="sp-mat-titulo">Resultados de la selección de retos</span>
+                        <span className="sp-doc-meta">Quién quedó en cada reto y con qué asesor</span>
+                      </Link>
+                    )}
                   </div>
                 </section>
               );
