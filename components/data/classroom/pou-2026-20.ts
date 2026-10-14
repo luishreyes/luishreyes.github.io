@@ -730,10 +730,10 @@ export const pou202620Course: Course = {
       order: 12,
       title: 'Destilación por lotes',
       summary:
-        'Destilación discontinua (alambique): principio de la operación, ecuación de Rayleigh con calculadora interactiva (integración numérica), destilación rectificada por lotes a R constante y a y_D constante, destilación multietapa con simulación interactiva embebida (LearnChemE) y video explicativo, los tres cortes del destilado (cabezas, corazón y colas) en la destilería artesanal, sistema de doble destilación escocés y el rol del cobre.',
+        'Destilación discontinua (alambique): principio de la operación, ecuación de Rayleigh con calculadora interactiva (integración numérica), destilación rectificada por lotes a R constante y a y_D constante, destilación multietapa con simulación interactiva embebida (LearnChemE) y video explicativo, los tres cortes del destilado (cabezas, corazón y colas) en la destilería artesanal, sistema de doble destilación escocés, el rol del cobre y dónde sale de verdad el metanol (no en las cabezas: diluido en agua es menos volátil que el etanol).',
       date: '2026-06-27',
       readingMinutes: 22,
-      tags: ['destilación por lotes', 'alambique', 'ecuación de Rayleigh', 'pot still', 'multietapa', 'simulación', 'cabezas', 'corazón', 'colas', 'spirit cut', 'whisky', 'discontinua'],
+      tags: ['destilación por lotes', 'alambique', 'ecuación de Rayleigh', 'pot still', 'multietapa', 'simulación', 'cabezas', 'corazón', 'colas', 'spirit cut', 'whisky', 'discontinua', 'metanol'],
       category: 'lectura',
       href: '/classroom/iqya-2031-2026-20/lecturas/Lectura_12/Lectura_12_Destilacion_por_Lotes.html',
       bannerImg: '/classroom/iqya-2031-2026-20/lecturas-banners/l12.jpg',
@@ -1061,7 +1061,7 @@ export const pou202620Course: Course = {
       week: 14,
       title: 'Destilación diferencial',
       description:
-        'Destilación por lotes y su naturaleza transitoria: recorrido interactivo en el diagrama T-x-y (A→B→C→…), aparato y anatomía de un destilador, columnas multietapa y reflujo, derivación de la ecuación de Rayleigh, algoritmo de solución y calculadora en vivo (metanol-agua), operación y aplicaciones en bebidas, perfumería y química fina.',
+        'Destilación por lotes y su naturaleza transitoria: recorrido interactivo en el diagrama T-x-y (A→B→C→…), aparato y anatomía de un destilador, columnas multietapa y reflujo, derivación de la ecuación de Rayleigh, algoritmo de solución y calculadora en vivo (metanol-agua), operación y aplicaciones en bebidas, perfumería y química fina, con una diapositiva sobre dónde sale el metanol.',
       sessionNumber: 16,
       file: 'Destilacion_Diferencial/Presentacion_Destilacion_Diferencial.html',
     },
@@ -1191,11 +1191,11 @@ export const pou202620Course: Course = {
       week: 14,
       title: 'Explorador de destilación por lotes',
       description:
-        'Mire el lote por dentro: el calderín que se vacía mientras su líquido se empobrece y se calienta, el vapor que sube por el cuello o por una columna con su divisor de reflujo, el condensador y los recipientes de cabezas, corazón y colas que se van llenando, todo coloreado con la composición; al lado, el T-x-y con el recorrido del calderín o el McCabe-Thiele del instante, y una barra para recorrer el lote. El equilibrio es el del curso: los cuatro puntos metanol-agua de las diapositivas con su interpolación lineal, las tablas de metanol-agua y de isopropanol-agua del Taller 8 con el spline cúbico de su cuaderno, el etanol-agua del Taller 9 con las temperaturas de Perry, benceno-tolueno con Antoine, α constante y un NRTL para el laboratorio a la presión de Bogotá. Integra la ecuación de Rayleigh y muestra el área bajo 1/(y* − x) con el trapecio sobre los nodos de la tabla, el trapecio o Simpson; la forma cerrada de la Lectura 12, y el problema inverso con cada paso. Se detiene por composición del calderín, fracción destilada, pureza del destilado, grado al cortar o temperatura; calcula el tiempo, el calor y el vapor de servicio. Compara los datos reales con α constante, opera la columna con reflujo constante o con pureza constante y la enfrenta al alambique simple, corta cabezas, corazón y colas en % v/v y recorre la doble destilación escocesa: mosto, low wines y corazón. Reproduce la calculadora de las diapositivas (I = 1,040, 64,7 kmol al 0,859), el ejemplo resuelto de la Lectura 12 (L_W/L₀ = 0,168, ȳ = 0,461, 95,8 %) y los casos demo A, B y C del Taller 8.',
+        'Mire el lote por dentro: el calderín que se vacía mientras su líquido se empobrece y se calienta, el vapor que sube por el cuello o por una columna con su divisor de reflujo, el condensador y los recipientes de cabezas, corazón y colas que se van llenando, todo coloreado con la composición; al lado, el T-x-y con el recorrido del calderín o el McCabe-Thiele del instante, y una barra para recorrer el lote. El equilibrio es el del curso: los cuatro puntos metanol-agua de las diapositivas con su interpolación lineal, las tablas de metanol-agua y de isopropanol-agua del Taller 8 con el spline cúbico de su cuaderno, el etanol-agua del Taller 9 con las temperaturas de Perry, benceno-tolueno con Antoine, α constante y un NRTL para el laboratorio a la presión de Bogotá. Integra la ecuación de Rayleigh y muestra el área bajo 1/(y* − x) con el trapecio sobre los nodos de la tabla, el trapecio o Simpson; la forma cerrada de la Lectura 12, y el problema inverso con cada paso. Se detiene por composición del calderín, fracción destilada, pureza del destilado, grado al cortar o temperatura; calcula el tiempo, el calor y el vapor de servicio. Compara los datos reales con α constante, opera la columna con reflujo constante o con pureza constante y la enfrenta al alambique simple, corta cabezas, corazón y colas en % v/v, sigue el metanol como traza para mostrar por qué no se va con las cabezas y recorre la doble destilación escocesa: mosto, low wines y corazón. Reproduce la calculadora de las diapositivas (I = 1,040, 64,7 kmol al 0,859), el ejemplo resuelto de la Lectura 12 (L_W/L₀ = 0,168, ȳ = 0,461, 95,8 %) y los casos demo A, B y C del Taller 8.',
       sessionNumber: 16,
       file: 'Explorador_Destilacion_por_Lotes.html',
       bannerImg: '/classroom/iqya-2031-2026-20/simuladores-banners/explorador-destilacion-lotes.jpg',
-      tags: ['destilación por lotes', 'destilación diferencial', 'ecuación de Rayleigh', 'integral de separación', 'problema inverso', 'rectificación por lotes', 'reflujo constante', 'pureza constante', 'cabezas, corazón y colas', 'doble destilación', 'metanol-agua', 'isopropanol-agua'],
+      tags: ['destilación por lotes', 'destilación diferencial', 'ecuación de Rayleigh', 'integral de separación', 'problema inverso', 'rectificación por lotes', 'reflujo constante', 'pureza constante', 'cabezas, corazón y colas', 'doble destilación', 'metanol', 'metanol-agua', 'isopropanol-agua'],
     },
   ],
 };

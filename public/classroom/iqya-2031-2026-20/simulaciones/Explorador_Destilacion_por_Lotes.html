@@ -378,13 +378,13 @@ table.t tr.dim td { color: var(--n500); }
 .ddflow b { font-family: var(--font-mono); font-size: 12.5px; }
 .ddflow .ar { border: none; padding: 0 10px; font-family: var(--font-mono); font-size: 11px; color: var(--n600); background: none; display: block; }
 #cuTable td:first-child span, #cmpTable td:first-child span { display: inline-block; width: 10px; height: 10px; margin-right: 7px; vertical-align: -1px; }
-#cmpTable tr.cur td { background: var(--accent-100); }
+#cmpTable tr.cur td, #meWhat tr.cur td { background: var(--accent-100); }
 #cmpTable td.na { color: var(--n500); }
 #stgTable tr.still td { background: #fbf3e6; }
 #pfTable tr.cur td { background: #fff1bf; }
 #pfTable td, #ivTable td, #inTable td { font-family: var(--font-mono); font-size: 12px; }
 #ivTable tr.last td, #inTable tr.tot td { font-weight: 750; }
-#svgAL text, #svgIN text, #svgEV1 text, #svgEV2 text, #svgEV3 text, #svgEV4 text, #svgCU1 text, #svgDD text, #svgCO1 text, #svgCO2 text { paint-order: stroke; stroke: var(--paper); stroke-width: 3px; stroke-linejoin: round; }
+#svgME1 text, #svgME2 text, #svgAL text, #svgIN text, #svgEV1 text, #svgEV2 text, #svgEV3 text, #svgEV4 text, #svgCU1 text, #svgDD text, #svgCO1 text, #svgCO2 text { paint-order: stroke; stroke: var(--paper); stroke-width: 3px; stroke-linejoin: round; }
 .eqcard p { margin: 0 0 8px; font-size: 13.5px; line-height: 1.6; }
 .eqcard .res { font-family: var(--font-mono); font-size: 12.5px; background: var(--n50); border: 1.5px solid var(--n200); padding: 8px 10px; margin: 6px 0 10px; line-height: 1.7; }
 .eqcard .tx[data-d] { margin: 4px 0 10px; overflow-x: auto; overflow-y: hidden; }
@@ -394,7 +394,7 @@ table.t tr.dim td { color: var(--n500); }
 .algo b.n { display: block; font-family: var(--font-mono); font-size: 18px; color: var(--accent); margin-bottom: 4px; }
 .algo .res { font-family: var(--font-mono); font-size: 11.5px; color: var(--accent-700); margin-top: 6px; display: block; }
 .two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-#cuTable th, #cmpTable th, #pfTable th, #idTable th, #inTable th, #ivTable th, #strTable th, #stgTable th, .nt { text-transform: none; letter-spacing: .01em; }
+#meTable th, #meWhat th, #cuTable th, #cmpTable th, #pfTable th, #idTable th, #inTable th, #ivTable th, #strTable th, #stgTable th, .nt { text-transform: none; letter-spacing: .01em; }
 .card-h .seg button { white-space: nowrap; }
 .platform-link { color: inherit; text-decoration: underline; text-decoration-color: var(--brand, #FFBF00); text-decoration-thickness: 2px; text-underline-offset: 3px; }
 .platform-link::after { content: ' ↗'; font-size: .85em; }
@@ -537,6 +537,18 @@ code { font-family: var(--font-mono); font-size: .92em; background: var(--n100);
         <div class="card"><div class="card-h"><span class="t">Los tres cortes</span><span class="sp"></span><span id="cuTLbl"></span></div><div class="card-b" style="overflow-x:auto"><table class="t" id="cuTable"></table><div class="stack" id="cuStack"></div><div class="stack-leg" id="cuSLeg"></div><p class="small" id="cuNote" style="margin:10px 0 0"></p></div></div>
         <div class="card"><div class="card-h"><span class="t">Los cortes en la destilería (Lectura 12)</span></div><div class="card-b" style="overflow-x:auto"><table class="t" id="cuRef"></table><p class="small" id="cuRefNote" style="margin:10px 0 0"></p></div></div>
       </div>
+      <div class="card" id="meCard"><div class="card-h"><span class="t">¿Dónde sale el metanol?</span><span class="sp"></span><span id="meLbl"></span></div><div class="card-b">
+        <p class="small" id="meLead" style="margin:0 0 10px;font-size:13.5px;color:var(--n800)"></p>
+        <div class="two" id="meCharts" style="margin-top:0;gap:22px">
+          <div><svg class="ch hov halo" id="svgME1" viewBox="0 0 560 360"></svg><div class="legend" id="me1Leg" style="margin-top:6px"></div><div class="readout" id="me1Read"></div></div>
+          <div><svg class="ch hov halo" id="svgME2" viewBox="0 0 560 360"></svg><div class="legend" id="me2Leg" style="margin-top:6px"></div><div class="readout" id="me2Read"></div></div>
+        </div>
+        <div class="two" id="meTables" style="margin-top:14px;gap:22px">
+          <div style="overflow-x:auto"><table class="t" id="meTable"></table></div>
+          <div style="overflow-x:auto"><table class="t" id="meWhat"></table></div>
+        </div>
+        <p class="small" id="meNote" style="margin:12px 0 0"></p>
+      </div></div>
       <div class="card" id="ddCard"><div class="card-h"><span class="t">Doble destilación: el sistema escocés</span><span class="sp"></span><span id="ddLbl"></span></div><div class="card-b">
         <div class="ddctl">
           <div class="sl"><div class="row"><span>Mosto (wash)</span><b id="vddw"></b></div><input type="range" id="ddw" min="4" max="12" step="0.1"></div>
@@ -1056,6 +1068,62 @@ function cutsOf(B, headsFrac, heartEnd) {
   var nl = function (phi) { var a = atPhi(B, phi); return x0 - (1 - phi) * a.x; };
   var mk = function (k, p1, p2) { var d = p2 - p1, n = nl(p2) - nl(p1); return { k: k, p1: p1, p2: p2, D: d * W0, x: d > 1e-12 ? n / d : NaN, nl: n * W0 }; };
   return [mk('cab', 0, ph), mk('cor', ph, pc), mk('col', pc, pf)];
+}
+/* ====================================================================
+   El metanol como traza en el etanol-agua.
+   K_M = γ_M P*_M/P con γ_M a dilución infinita en la mezcla etanol-agua
+   del calderín o de cada plato (NRTL ternario):
+     metanol-agua: ajuste propio a la tabla del Taller 8 (b₁₂ = −220,1 K,
+       b₂₁ = 566,0 K, α = 0,3; error medio en y de 0,003);
+     etanol-agua: el NRTL de los otros exploradores (72,84 y 556,6 K, 0,47);
+     metanol-etanol: ideal (el caso demo A del Taller 8 lo trata así).
+   Antoine del metanol externo al curso (el de los otros exploradores).
+   ==================================================================== */
+var MEOH = { ant: { A: 8.08097, B: 1582.271, C: 239.726 }, bMW: -220.1160, bWM: 565.9908, aMW: 0.3, bEW: 72.844, bWE: 556.567, aEW: 0.47 };
+/* γ del metanol a dilución infinita en etanol-agua con x_E de etanol, T en °C */
+function gMinf(xE, T) {
+  var TK = T + 273.15, xW = 1 - xE, m = MEOH;
+  var tMW = m.bMW / TK, tWM = m.bWM / TK, tEW = m.bEW / TK, tWE = m.bWE / TK;
+  var GMW = Math.exp(-m.aMW * tMW), GWM = Math.exp(-m.aMW * tWM), GEW = Math.exp(-m.aEW * tEW), GWE = Math.exp(-m.aEW * tWE);
+  // términos con τ_ME = τ_EM = 0 (G = 1)
+  var s1 = (xW * tWM * GWM) / (xE + xW * GWM);
+  var DE = xE + xW * GWE, DW = xE * GEW + xW;          // Σ_k x_k G_kj para j = E y j = W
+  var s2 = xE * 1 / DE * (0 - (xW * tWE * GWE) / DE) + xW * GMW / DW * (tMW - (xE * tEW * GEW) / DW);
+  return Math.exp(s1 + s2);
+}
+function KMeOH(xE, T, P) { return gMinf(xE, T) * psat(MEOH.ant, T) / P; }
+/* volatilidad del metanol respecto al etanol en un líquido etanol-agua en ebullición */
+function alphaME(eq, xE) { var x = Math.min(0.9999, Math.max(1e-6, xE)), T = eq.T(x), KE = eq.y(x) / x; return KMeOH(x, T, eq.P) / KE; }
+/* cuánto más rico en metanol sale lo que va por la cabeza que el calderín: r = x_D,M/x_W,M */
+function meohRatio(B, p) {
+  var eq = B.eq;
+  if (B.mode === 'simple' || B.N <= 1) return KMeOH(p.x, eq.T(p.x), eq.P);
+  var R = isFinite(p.R) ? p.R : 1e6, st = stepDown(eq, p.g, R, B.N, true).st, xD = 1, y = xD, x = 0;
+  for (var n = 0; n < st.length; n++) { var K = KMeOH(st[n].x, eq.T(st[n].x), eq.P); x = y / K; if (n < st.length - 1) y = (R * x + xD) / (R + 1); }
+  return xD / x;
+}
+/* el metanol a lo largo del lote. Se normaliza x_M,0 = 1: lo que sale es la fracción del metanol cargado
+   y la razón metanol/etanol relativa a la de la carga (1 = igual que la carga) */
+function meohTrace(B) {
+  if (!B.ok || !B.eq.hasT) return null;
+  var P = B.P, x0 = B.s.x0, xM = 1, out = [], prev = null;
+  P.forEach(function (p) {
+    var r = meohRatio(B, p), lw = Math.log(p.Wr);
+    if (prev) xM *= Math.exp(0.5 * (r + prev.r - 2) * (lw - prev.lw));
+    var nM = 1 - p.Wr * xM;                                   // metanol destilado / metanol cargado
+    out.push({ phi: p.phi, r: r, lw: lw, xM: xM, nM: nM, rel: r * xM / p.g * x0, alpha: alphaME(B.eq, p.x) });
+    prev = out[out.length - 1];
+  });
+  return out;
+}
+function meohAt(T, phi) { if (phi <= 0) return T[0]; for (var i = 1; i < T.length; i++) if (T[i].phi >= phi) { var a = T[i - 1], b = T[i], f = (phi - a.phi) / (b.phi - a.phi); return { phi: phi, nM: a.nM + f * (b.nM - a.nM), rel: a.rel + f * (b.rel - a.rel), r: a.r + f * (b.r - a.r) }; } return T[T.length - 1]; }
+/* reparto del metanol en los cortes: fracción del cargado y razón metanol/etanol de cada recipiente respecto a la carga */
+function meohCuts(B, T, cuts) {
+  var x0 = B.s.x0, W0 = B.s.W0;
+  var res = cuts.map(function (c) { var a = meohAt(T, c.p1), b = meohAt(T, c.p2), dM = b.nM - a.nM, dE = c.nl / (W0 * x0); return { k: c.k, sM: dM, sE: dE, rel: dE > 1e-12 ? dM / dE : NaN }; });
+  var last = T[T.length - 1];
+  res.push({ k: 'res', sM: 1 - last.nM, sE: B.Wr * B.xf / x0, rel: (B.Wr * B.xf / x0) > 1e-12 ? (1 - last.nM) / (B.Wr * B.xf / x0) : NaN });
+  return res;
 }
 /* ====================================================================
    El lote por dentro (diapositivas: «Aparato simple» y «Anatomía de un
@@ -2071,10 +2139,10 @@ function renderCU() {
   var R = RES, B = R.B, s = state;
   npMsg('cu', B.ok ? '' : MSG[B.msg]);
   renderDD(R);
-  if (!B.ok) return;
+  if (!B.ok) { renderME(R); return; }
   $('#cuLbl').textContent = R.sys.name;
   $('#cuLead').innerHTML = subs(esc('El destilado no se recoge todo junto. Las primeras gotas (cabezas) se apartan, el corazón se recoge mientras lo que sale por la cabeza se mantiene por encima de un valor y el resto son colas. Con el modelo binario, los cortes se ven en la composición del liviano; los compuestos de aroma no están en el modelo.'));
-  drawCU1(R); cutTable(R); cutRef(R);
+  drawCU1(R); cutTable(R); cutRef(R); renderME(R);
 }
 function drawCU1(R) {
   var svg = $('#svgCU1'), W = 900, H = 340, B = R.B, s = state, P = B.P, abv = R.abv, out = '';
@@ -2151,8 +2219,62 @@ function renderDD(R) {
   var fl = [['var(--c-w)', 'Mosto (wash)', fL(1000) + ' · ' + fV(s.ddw)], [null, '↓ 1.ª destilación hasta 1 % v/v'], [CGG, 'Low wines', fL(L(B1.D, B1.xDavg)) + ' · ' + fV(vvFromX(B1.xDavg))], [null, '↓ 2.ª destilación' + (s.ddr > 0 ? ' con reflujo interno R = ' + fmtN(s.ddr, 2) : ', una etapa')], [CCAB, 'Cabezas', cl(D.cuts[0])], [CCOR, 'Corazón: new make spirit', cl(D.cuts[1])], [CCOL, 'Colas (feints)', cl(D.cuts[2])]];
   $('#ddFlow').innerHTML = fl.map(function (q) { return q[0] ? '<div><i style="background:' + q[0] + '"></i><span>' + esc(q[1]) + '</span><b>' + q[2] + '</b></div>' : '<div class="ar">' + esc(q[1]) + '</div>'; }).join('');
   var laH = LA(cor.D, cor.x), en = (B1.en.tot + B2.en.tot) / 1000, Lh = L(cor.D, cor.x);
-  spec('#specDD', [['Alcohol puro en el mosto', fmtN(la0, 1) + ' L'], ['En los low wines', fmtN(LA(B1.D, B1.xDavg), 1) + ' L (' + fpct(LA(B1.D, B1.xDavg) / la0, 1) + ')'], ['En el corazón', fmtN(laH, 1) + ' L (' + fpct(laH / la0, 1) + ')'], ['En cabezas y colas, para el siguiente lote', fmtN(LA(D.cuts[0].D, D.cuts[0].x) + LA(D.cuts[2].D, D.cuts[2].x), 1) + ' L'], ['Calor de los dos alambiques', fmtN(en, 0) + ' MJ · ' + (Lh > 0 ? fmtN(en / Lh, 1) + ' MJ por litro de corazón' : '—')]]);
+  var T1 = meohTrace(B1), T2 = meohTrace(B2), m1 = T1 ? T1[T1.length - 1].nM : NaN, relLW = m1 / B1.rec, mh = T2 ? meohCuts(B2, T2, D.cuts)[1] : null;
+  spec('#specDD', [['Alcohol puro en el mosto', fmtN(la0, 1) + ' L'], ['En los low wines', fmtN(LA(B1.D, B1.xDavg), 1) + ' L (' + fpct(LA(B1.D, B1.xDavg) / la0, 1) + ')'], ['En el corazón', fmtN(laH, 1) + ' L (' + fpct(laH / la0, 1) + ')'], ['En cabezas y colas, para el siguiente lote', fmtN(LA(D.cuts[0].D, D.cuts[0].x) + LA(D.cuts[2].D, D.cuts[2].x), 1) + ' L'], ['Calor de los dos alambiques', fmtN(en, 0) + ' MJ · ' + (Lh > 0 ? fmtN(en / Lh, 1) + ' MJ por litro de corazón' : '—')]].concat(mh && mh.sE > 1e-4 ? [['Metanol del mosto que llega al corazón', fpct(m1 * mh.sM, 1) + ' · metanol/etanol ' + fmtN(relLW * mh.rel, 2) + ' veces el mosto']] : []));
   $('#ddNote').innerHTML = subs(esc('La Lectura 12 da para The Glenlivet un mosto de unos 8 % v/v, low wines de 20 a 25 % y un corazón de 65 a 70 %. Con una sola etapa ideal (reflujo interno 0) los low wines salen en ' + fV(vvFromX(B1.xDavg)) + ', dentro del rango, pero el corazón queda por debajo: el cuello y el brazo de cobre condensan parte del vapor y lo devuelven, algo así como una etapa más con poco reflujo. Con R ≈ 0,3 a 0,6 el corazón llega al rango de la lectura. Base: 1 000 L de mosto; volúmenes ideales a 20 °C; en la destilería las cabezas y las colas vuelven a la carga siguiente, así que el rendimiento real es mayor.'));
+}
+/* ---------- ¿dónde sale el metanol? (Lectura 12, Figura 2) ---------- */
+var ME1AX = null, ME2AX = null;
+function meohOf(R) { var s = state; return cached('me|' + [R.sys.id, R.P, s.x0, R.B.xf, R.mode, s.N, s.R, s.xD, s.Rmax, s.stop].join('|'), function () { return meohTrace(R.B); }); }
+function renderME(R) {
+  var B = R.B, s = state, ok = R.abv && B.ok && R.eq.hasT;
+  show('meCharts', ok); show('meTables', ok);
+  $('#meLbl').textContent = ok ? 'metanol como traza' : '';
+  if (!ok) { $('#meLead').innerHTML = subs(esc(R.abv ? 'Con este caso no hay lote que seguir.' : 'El metanol se sigue como traza en el etanol-agua. Escoja uno de los sistemas de etanol-agua para verlo con este lote; la Lectura 12 explica el modelo.')); $('#meNote').innerHTML = ''; ME1AX = ME2AX = null; return; }
+  var T = meohOf(R), mc = meohCuts(B, T, R.cuts), cor = mc[1], col = mc[2], eq = R.eq, xc = cached('mex|' + eq.sys.id + eq.P, function () { return bisect(function (x) { return alphaME(eq, x) - 1; }, 0.05, 0.85, 50); });
+  $('#meLead').innerHTML = subs(esc('El metanol hierve antes que el etanol, pero diluido en agua es menos volátil que él: α metanol/etanol < 1 mientras el líquido tenga menos de ' + fx(xc) + ' de etanol (unos ' + fmtN(vvFromX(xc), 0) + ' % v/v). ' + (R.mode === 'simple' ? 'En este alambique el calderín nunca pasa de ' + fx(Math.max(s.x0, B.xf)) + ', así que el metanol sale rezagado en toda la corrida y se carga hacia las colas.' : 'Con la columna, los platos de arriba trabajan con mucho etanol y ahí el metanol se adelanta.')));
+  drawME1(R, T); drawME2(R, T);
+  var nm = { cab: 'Cabezas', cor: 'Corazón', col: 'Colas', res: 'Residuo' }, cl = { cab: CCAB, cor: CCOR, col: CCOL, res: 'var(--c-w)' };
+  $('#meTable').innerHTML = '<thead><tr><th>Corte</th><th>del metanol cargado</th><th>del etanol cargado</th><th>metanol/etanol, veces la carga</th></tr></thead><tbody>' + mc.map(function (m) { return '<tr><td><span style="display:inline-block;width:10px;height:10px;margin-right:7px;background:' + cl[m.k] + '"></span>' + nm[m.k] + '</td><td>' + fpct(m.sM, 1) + '</td><td>' + fpct(m.sE, 1) + '</td><td>' + (isFinite(m.rel) && m.sE > 1e-4 ? fmtN(m.rel, 2) : '—') + '</td></tr>'; }).join('') + '</tbody>';
+  // qué corte lo baja: más cabezas o un corazón más corto
+  var heX = R.heX, rows = [], hv = [0, s.heads, s.heads + 0.03, s.heads + 0.06].filter(function (v, i, a) { return a.indexOf(v) === i && v <= 0.25; });
+  hv.forEach(function (h) { var c = cutsOf(B, h, heX), m = meohCuts(B, T, c)[1]; rows.push(['Cabezas ' + fpct(h, 1) + ' de la carga', m, h === s.heads]); });
+  var ends = R.abv ? [s.heV + 5, s.heV - 5].filter(function (v) { return v > 1 && v < 95; }) : [];
+  ends.forEach(function (v) { var c = cutsOf(B, s.heads, xFromVv(v)), m = meohCuts(B, T, c)[1]; rows.push(['Corazón hasta ' + fV(v), m, false]); });
+  $('#meWhat').innerHTML = '<thead><tr><th>¿Qué corte lo baja?</th><th>etanol en el corazón</th><th>metanol/etanol del corazón</th></tr></thead><tbody>' + rows.map(function (r) { var m = r[1]; return '<tr' + (r[2] ? ' class="cur"' : '') + '><td>' + subs(esc(r[0])) + '</td><td>' + fpct(m.sE, 1) + '</td><td>' + (m.sE > 1e-4 ? fmtN(m.rel, 3) : '—') + '</td></tr>'; }).join('') + '</tbody>';
+  $('#meNote').innerHTML = subs(esc('Con estos cortes el corazón sale con ' + (cor.sE > 1e-4 ? fmtN(cor.rel, 2) : '—') + ' veces la razón metanol/etanol de la carga y las colas con ' + (col.sE > 1e-4 ? fmtN(col.rel, 2) : '—') + '. Rayleigh para una traza: d ln x_W,M/d ln W = K_M − 1, con la K del metanol a dilución infinita en el líquido de cada instante (en la columna, plato por plato con la recta de operación). NRTL ternario: metanol-agua ajustado a la tabla del Taller 8, etanol-agua el de los otros exploradores, metanol-etanol ideal. Lo confirman las mediciones de Hatta-Sakoda et al. (2024) en pisco, Rodríguez Madrera et al. (2006) en aguardiente de sidra y Claus et al. (2005) en una columna por lotes. El metanol sale de la pectina de la fruta: se controla en la materia prima y la fermentación.'));
+}
+function drawME1(R, T) {
+  var svg = $('#svgME1'), W = 560, H = 360, eq = R.eq, B = R.B, s = state, top = eq.az ? eq.az.x : 0.95, out = '';
+  var a = axes({ x0: 56, x1: W - 16, y0: 14, y1: H - 46, xmin: 0, xmax: 0.9, ymin: 0.5, ymax: 1.8, xlab: 'etanol en el líquido que hierve (fracción molar)', ylab: 'α metanol/etanol', ny: 6, nx: 9, clip: 'cME1' });
+  out = a.svg;
+  var lo = Math.min(s.x0, B.xf), hi = Math.max(s.x0, B.xf);
+  out += E('rect', { x: r1(a.X(lo)), y: a.o.y0, width: r1(Math.max(2, a.X(hi) - a.X(lo))), height: a.o.y1 - a.o.y0, style: 'fill:' + CCOR + ';opacity:.16' });
+  out += TX(a.X(hi) + 4, a.o.y0 + 14, 'calderín', { fs: 10.5, fw: 700, c: CCOR });
+  if (R.mode !== 'simple') { var gs = B.P.map(function (p) { return p.g; }), glo = Math.min.apply(null, gs), ghi = Math.max.apply(null, gs); out += E('rect', { x: r1(a.X(glo)), y: a.o.y0, width: r1(Math.max(2, a.X(Math.min(0.9, ghi)) - a.X(glo))), height: a.o.y1 - a.o.y0, style: 'fill:var(--accent);opacity:.14' }) + TX(a.X(Math.min(0.9, ghi)) - 4, a.o.y0 + 14, 'cabeza de la columna', { a: 'end', fs: 10.5, fw: 700, c: 'var(--accent-700)' }); }
+  out += LN(a.o.x0, a.Y(1), a.o.x1, a.Y(1), 'stroke:var(--ink);stroke-width:1.2;stroke-dasharray:5 4');
+  var pts = []; for (var i = 0; i <= 160; i++) { var x = 1e-4 + (Math.min(0.9, top) - 1e-4) * i / 160; pts.push([a.X(x), a.Y(alphaME(eq, x))]); }
+  out += PATH(poly(pts), 'stroke:var(--c-w);stroke-width:2.8', 'cME1');
+  var xc = cached('mex|' + eq.sys.id + eq.P, function () { return bisect(function (x) { return alphaME(eq, x) - 1; }, 0.05, 0.85, 50); });
+  out += dot(a.X(xc), a.Y(1), 5, 'var(--ink)') + TX(a.X(xc) + 8, a.Y(1) + 18, 'α = 1 en x = ' + fx(xc) + ' (' + fmtN(vvFromX(xc), 0) + ' % v/v)', { fs: 11, fw: 750 });
+  out += TX(a.o.x0 + 6, a.Y(alphaME(eq, 1e-3)) + 18, 'en agua: α ≈ ' + fmtN(alphaME(eq, 1e-3), 2), { fs: 10.5, fw: 700, c: 'var(--c-w)' });
+  svg.innerHTML = out;
+  $('#me1Leg').innerHTML = '<span><i style="border-top-color:var(--c-w)"></i>α del metanol respecto al etanol</span><span><i class="box" style="background:' + CCOR + ';border-color:' + CCOR + ';opacity:.5"></i>calderín en este lote</span>' + (R.mode !== 'simple' ? '<span><i class="box"></i>lo que sale por la cabeza</span>' : '');
+  ME1AX = a;
+}
+function drawME2(R, T) {
+  var svg = $('#svgME2'), W = 560, H = 360, B = R.B, out = '';
+  var cum = T.map(function (q, i) { var p = B.P[i], nE = p.nl / B.s.x0; return nE > 1e-9 ? q.nM / nE : q.rel; });
+  var vals = T.map(function (q) { return q.rel; }).concat(cum), ymax = Math.min(4, Math.max(1.3, Math.max.apply(null, vals) * 1.1)), ymin = Math.max(0, Math.min(0.6, Math.min.apply(null, vals) * 0.9));
+  var a = axes({ x0: 56, x1: W - 16, y0: 14, y1: H - 46, xmin: 0, xmax: B.phi, ymin: ymin, ymax: ymax, xlab: 'D/W₀', ylab: 'metanol/etanol, veces la carga', ny: 5, nx: 6, clip: 'cME2' });
+  out = a.svg + cutBands(R, a, false);
+  out += LN(a.o.x0, a.Y(1), a.o.x1, a.Y(1), 'stroke:var(--ink);stroke-width:1.2;stroke-dasharray:5 4') + TX(a.o.x0 + 6, a.Y(1) - 5, 'igual que la carga', { fs: 10, c: MUT });
+  out += PATH(poly(T.map(function (q) { return [a.X(q.phi), a.Y(Math.min(q.rel, ymax * 1.5))]; })), 'stroke:' + CGG + ';stroke-width:2.6', 'cME2');
+  out += PATH(poly(T.map(function (q, i) { return [a.X(q.phi), a.Y(cum[i])]; })), 'stroke:' + CBAR + ';stroke-width:2.2;stroke-dasharray:6 4', 'cME2');
+  R.cuts.forEach(function (c) { if (c.p2 > c.p1 && c.p2 < B.phi - 1e-9) out += LN(a.X(c.p2), a.o.y0, a.X(c.p2), a.o.y1, 'stroke:var(--ink);stroke-width:1.2'); });
+  svg.innerHTML = out;
+  $('#me2Leg').innerHTML = '<span><i style="border-top-color:' + CGG + '"></i>lo que sale en cada instante</span><span><i style="border-top:2px dashed ' + CBAR + '"></i>todo lo recogido</span>';
+  ME2AX = { a: a, cum: cum, T: T };
 }
 /* ====================================================================
    Pestaña 5 · rectificación por lotes: McCabe-Thiele del instante,
@@ -2296,6 +2418,8 @@ function hoverSetup() {
     svgEV3: ['ev3Read', function (p) { var R = RES; if (!EV3AX || !R.B.ok) return null; var a = EV3AX.a; if (!inBox(a, p)) return null; var q = atAxis(R.B, invX(a, p.x), EV3AX.useT); return { t: 'D/W₀ = ' + fpct(q.phi, 1) + ' · t = ' + fTime(q.t) + ' · calderín ' + fT(q.T) + (R.mode !== 'simple' ? ' · cabeza ' + fT(q.Ttop) : ''), ov: vline(a, p.x) + dot(p.x, a.Y(q.T), 3.5, CW) }; }],
     svgEV4: ['ev4Read', function (p) { var R = RES; if (!EV4AX) return null; var a = EV4AX.a; if (!inBox(a, p)) return null; var x = invX(a, p.x), yr = R.eq.y(x), yi = EV4AX.eqI.y(x); return { t: 'x = ' + fx(x) + ' · real y* = ' + fx(yr) + ' · ideal y* = ' + fx(yi) + ' · diferencia ' + fmtN(yi - yr, 4), ov: vline(a, p.x) + dot(p.x, a.Y(yr), 3.5, CW) + dot(p.x, a.Y(yi), 3.5, CID) }; }],
     svgCU1: ['cu1Read', function (p) { var R = RES; if (!CU1AX || !R.B.ok) return null; var a = CU1AX.a; if (!inBox(a, p)) return null; var q = atPhi(R.B, Math.max(0, Math.min(R.B.phi, invX(a, p.x)))), on = R.cuts.filter(function (c) { return q.phi >= c.p1 && q.phi <= c.p2; })[0]; return { t: 'D/W₀ = ' + fpct(q.phi, 1) + ' · sale ' + fxv(R, q.g) + ' · recogido x̄_D = ' + fxv(R, q.xbar) + (on ? ' · cae en ' + CUTN[on.k].toLowerCase() : ''), ov: vline(a, p.x) + dot(p.x, a.Y(CU1AX.Y(q.g)), 3.5, CGG) }; }],
+    svgME1: ['me1Read', function (p) { var R = RES, a = ME1AX; if (!a || !inBox(a, p)) return null; var x = Math.max(1e-4, invX(a, p.x)), al = alphaME(R.eq, x); return { t: 'x = ' + fx(x) + ' (' + fV(vvFromX(x)) + ') · T = ' + fT(R.eq.T(x)) + ' · K metanol = ' + fmtN(KMeOH(x, R.eq.T(x), R.eq.P), 2) + ' · K etanol = ' + fmtN(R.eq.y(x) / x, 2) + ' · α = ' + fmtN(al, 3), ov: vline(a, p.x) + dot(p.x, a.Y(al), 3.5, 'var(--c-w)') }; }],
+    svgME2: ['me2Read', function (p) { var R = RES; if (!ME2AX) return null; var a = ME2AX.a; if (!inBox(a, p)) return null; var f = Math.max(0, Math.min(R.B.phi, invX(a, p.x))), q = meohAt(ME2AX.T, f), pp = atPhi(R.B, f), nE = pp.nl / R.B.s.x0; return { t: 'D/W₀ = ' + fpct(f, 1) + ' · sale ' + fV(vvFromX(pp.g)) + ' con ' + fmtN(q.rel, 2) + ' veces la razón metanol/etanol de la carga · ya salió el ' + fpct(q.nM, 1) + ' del metanol y el ' + fpct(nE, 1) + ' del etanol', ov: vline(a, p.x) + dot(p.x, a.Y(q.rel), 3.5, CGG) }; }],
     svgDD: ['ddRead', function (p) { if (!DDAX) return null; var a = DDAX.a; if (!inBox(a, p)) return null; var f = invX(a, p.x) / 100; if (f < 0 || f > 1) return null; var q1 = atPhi(DDAX.B1, f * DDAX.B1.phi), q2 = atPhi(DDAX.B2, f * DDAX.B2.phi); return { t: fpct(f, 0) + ' destilado · mosto: sale ' + fV(vvFromX(q1.g)) + ' · espíritu: sale ' + fV(vvFromX(q2.g)) + ', calderín ' + fV(vvFromX(q2.x)), ov: vline(a, p.x) + dot(p.x, a.Y(vvFromX(q1.g)), 3.5, CW) + dot(p.x, a.Y(vvFromX(q2.g)), 3.5, CGG) }; }],
     svgCO1: ['co1Read', function (p) { var R = RES, a = CO1AX; if (!a || !inBox(a, p)) return null; var x = invX(a, p.x), y = R.eq.y(x); return { t: 'x = ' + fx(x) + ' → y* = ' + fx(y) + ' · α = ' + fmtN(R.eq.alpha(x), 3) + (R.eq.hasT ? ' · T = ' + fT(R.eq.T(x)) : ''), ov: vline(a, p.x) + dot(p.x, a.Y(y), 3.5, CGG) }; }],
     svgCO2: ['co2Read', function (p) {
