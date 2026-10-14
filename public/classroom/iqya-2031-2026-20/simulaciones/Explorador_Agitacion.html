@@ -963,7 +963,7 @@ function palRGB(t) { t = clamp(t, 0, 1) * (PAL.length - 1); var i = Math.min(PAL
 function palAt(t) { var c = palRGB(t); return 'rgb(' + Math.round(c[0]) + ',' + Math.round(c[1]) + ',' + Math.round(c[2]) + ')'; }
 function gauss() { var u = 1 - Math.random(), v = Math.random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(6.283185307 * v); }
 var TILT = 0.17;
-var KVIS = 0.3;             // fracción de la difusividad turbulenta que se ve en las partículas (más, y los lazos no se leen)
+var KVIS = 0.3;             // fracción de la difusividad turbulenta que se ve en los elementos de líquido (más, y los lazos no se leen); los sólidos usan la completa, porque su reparto en el tanque es un resultado
 var TRAIL = 14;             // puntos de la estela de cada partícula            // inclinación de la cámara: lo de atrás se ve un poco más arriba
 var PROBE_COL = ['#C8452B', '#2F7D5B', '#B7791F'];
 var DYE = [205, 34, 92];    // fucsina
@@ -1087,11 +1087,11 @@ TankScene.prototype.vel = function (x, y, z) {
   var ex = x / r, ey = y / r;
   return { vx: u.ur * ex - ut * ey, vy: u.ur * ey + ut * ex, vz: u.uz, D: u.D, Dv: u.Dv, ur: u.ur, ut: ut, r: r };
 };
-TankScene.prototype.stepParts = function (arr, dts, vset) {
+TankScene.prototype.stepParts = function (arr, dts, vset, kv) {
   var R = this.R, F = this.F, Rr = R.geo.T / 2 * 0.985, H = R.geo.H, TL = clamp(0.3 / Math.max(R.N, 0.05), 0.02, 2.5);
   var nsub = clamp(Math.ceil(dts * F.umax * 1.6 / F.dr), 1, 6), h = dts / nsub, f = Math.exp(-h / TL), sq = Math.sqrt(1 - f * f);
   for (var s = 0; s < nsub; s++) for (var i = 0; i < arr.length; i++) {
-    var p = arr[i], v = this.vel(p.x, p.y, p.z), sig = Math.sqrt(KVIS * v.Dv / TL);
+    var p = arr[i], v = this.vel(p.x, p.y, p.z), sig = Math.sqrt((kv === undefined ? KVIS : kv) * v.Dv / TL);
     p.vx = f * p.vx + sq * sig * gauss(); p.vy = f * p.vy + sq * sig * gauss(); p.vz = f * p.vz + sq * sig * gauss();
     p.x += (v.vx + p.vx) * h; p.y += (v.vy + p.vy) * h; p.z += (v.vz + p.vz + (vset || 0)) * h;
     var r = Math.hypot(p.x, p.y);
@@ -1108,7 +1108,7 @@ TankScene.prototype.stepSolids = function (dts) {
   // tasa de levantamiento desde el lecho: nula bajo 0,5·Nⱼₛ y unas 3 por segundo en Nⱼₛ (ninguna partícula dura más de 1 a 2 s quieta)
   var lam = 3 * Math.pow(clamp((ratio - 0.5) / 0.5, 0, 2.4), 3);
   var free = this.sol.filter(function (p) { return !p.rest; });
-  this.stepParts(free, dts, vt);
+  this.stepParts(free, dts, vt, 1);
   for (var i = 0; i < this.sol.length; i++) {
     var p = this.sol[i], r = Math.hypot(p.x, p.y);
     if (!p.rest) {
