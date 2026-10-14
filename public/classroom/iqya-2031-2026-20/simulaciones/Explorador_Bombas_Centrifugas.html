@@ -263,6 +263,35 @@ table.t tr:hover td { background: var(--accent-50); }
 .two.eq2 { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
 @media (max-width: 1100px) { .three2, .two.eq2 { grid-template-columns: 1fr; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+/* sistema en pantalla y configuraciones del curso */
+.ctl .cfgnow { background: var(--accent-50); }
+.cfgnow-l { font-family: var(--font-mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--n600); font-weight: 700; }
+.cfgnow-n { font-size: 14.5px; font-weight: 750; margin-top: 3px; line-height: 1.3; }
+.cfgnow-n small { display: block; font-size: 11.5px; font-weight: 600; color: var(--n600); margin-top: 2px; }
+.cfgnow-b { margin-top: 8px; border: none; background: none; padding: 0; font: inherit; font-size: 12.5px; font-weight: 700; color: var(--accent-700); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.cfgs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin-top: 18px; }
+.cfg { border: 2px solid var(--divider); background: #fff; display: flex; flex-direction: column; }
+.cfg.on { border-color: var(--accent); box-shadow: inset 0 -4px 0 var(--accent); }
+.cfg svg { display: block; width: 100%; height: auto; background: var(--paper); border-bottom: 1.5px solid var(--divider); }
+.cfg .cb { padding: 12px 16px 14px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+.cfg .ct { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.cfg h3 { margin: 0; font-size: 16px; font-weight: 780; }
+.cfg .src { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-700); font-weight: 700; }
+.cfg p { margin: 0; font-size: 13.5px; color: var(--n700); line-height: 1.5; }
+.cfg .facts { display: grid; grid-template-columns: auto 1fr; gap: 3px 12px; font-size: 12.5px; margin: 2px 0 0; }
+.cfg .facts dt { color: var(--n600); font-weight: 600; }
+.cfg .facts dd { margin: 0; font-weight: 650; }
+.cfg .res { font-family: var(--font-mono); font-size: 12.5px; font-weight: 700; border-top: 1px solid var(--n200); padding-top: 8px; }
+.cfg .res span { color: var(--n600); font-weight: 600; }
+.cfg .note { font-size: 12.5px; color: var(--n600); }
+.cfg button { margin-top: auto; align-self: flex-start; border: 2px solid var(--text); background: var(--text); color: #fff; font: inherit; font-size: 12.5px; font-weight: 750; padding: 7px 12px; cursor: pointer; }
+.cfg.on button { background: #fff; color: var(--text); }
+.cfg button:disabled { opacity: .6; cursor: default; }
+.ideas { margin: 0; padding-left: 18px; display: grid; gap: 6px; font-size: 13.5px; line-height: 1.5; }
+.ideas b { color: var(--accent-700); }
+@media (max-width: 1100px) { .cfgs { grid-template-columns: 1fr; } }
+/* con la séptima pestaña, la barra se aprieta un poco para que Papel/Blueprint quepa hacia 1280 px */
+@media (max-width: 1400px) { .tabs button { padding-left: 12px; padding-right: 12px; } }
 </style>
 </head>
 <body>
@@ -288,7 +317,7 @@ table.t tr:hover td { background: var(--accent-50); }
 
 <div class="shell">
   <aside class="ctl" id="ctl" aria-label="Controles">
-    <section><h2><span class="n">00</span> Casos de partida</h2><div class="presets" id="presetBtns"></div></section>
+    <section class="cfgnow"><div class="cfgnow-l">Sistema en pantalla</div><div class="cfgnow-n" id="cfgNow"></div><button type="button" class="cfgnow-b" id="toCfg">Ver las configuraciones del curso</button></section>
     <section><h2><span class="n">01</span> Bomba</h2>
       <div class="mills" id="casBtns"></div>
       <p class="small" id="casNote" style="margin:8px 0 0"></p>
@@ -324,7 +353,7 @@ table.t tr:hover td { background: var(--accent-50); }
       <div class="sl"><div class="row"><span>Unidades</span></div><div class="seg" id="unitSeg" style="margin-top:6px"><button type="button" data-v="si">m³/h · m · kW</button><button type="button" data-v="us">GPM · pie · HP</button></div></div>
       <label class="toggle"><input type="checkbox" id="isl"> Islas de eficiencia en la carta</label>
       <label class="toggle"><input type="checkbox" id="grid"> Cuadrícula en las gráficas</label>
-      <button type="button" class="seg inline" id="resetAll" style="margin-top:14px;padding:7px 12px;font-weight:700;font-size:12.5px;cursor:pointer">Restablecer el caso base</button>
+      <button type="button" class="seg inline" id="resetAll" style="margin-top:14px;padding:7px 12px;font-weight:700;font-size:12.5px;cursor:pointer">Volver al sistema del curso</button>
     </section>
   </aside>
 
@@ -336,6 +365,7 @@ table.t tr:hover td { background: var(--accent-50); }
       <button type="button" role="tab" data-tab="re" aria-selected="false"><span class="k">4</span>Regulación</button>
       <button type="button" role="tab" data-tab="sp" aria-selected="false"><span class="k">5</span>Serie y paralelo</button>
       <button type="button" role="tab" data-tab="se" aria-selected="false"><span class="k">6</span>Selección</button>
+      <button type="button" role="tab" data-tab="cf" aria-selected="false"><span class="k">7</span>Configuraciones</button>
       <span class="sp"></span>
       <div class="canv"><button type="button" data-canvas="paper" aria-pressed="true">Papel</button><button type="button" data-canvas="blueprint" aria-pressed="false">Blueprint</button></div>
     </nav>
@@ -407,6 +437,13 @@ table.t tr:hover td { background: var(--accent-50); }
       </div>
       <div class="eqs" id="eqs"></div>
       <div class="callout ink" id="assump"></div>
+    </section>
+
+    <!-- 7 · configuraciones -->
+    <section class="panel" data-panel="cf">
+      <div class="ph"><h2>Configuraciones del curso</h2><span class="lbl">cargue una y siga cambiándola</span><p id="cfLead"></p></div>
+      <div class="cfgs" id="cfgCards"></div>
+      <div class="card"><div class="card-h"><span class="t">Para probar en el sistema que tiene en pantalla</span><span class="sp"></span><span>un cambio a la vez</span></div><div class="card-b"><ul class="ideas" id="cfgIdeas"></ul></div></div>
     </section>
   </main>
 </div>
@@ -900,17 +937,41 @@ var store = { get: function (k, d) { if (!STORE_KEEP[k]) return d; try { var v =
 function clone(o) { return JSON.parse(JSON.stringify(o)); }
 
 var BASE = { casing: 'm', N0: 1750, vfd: 100, D: 190, arr: 'una', fluid: 'agua', T: 25, pMu: 4, cRho: 1000, cMuExp: -3, cPv: 2.3, lQd: Math.log10(25), zs: 2, zd: 12, P1: 0, P2: 0, hfs: 0.5, hfd: 5, hv: 0, alt: 2600, FS: 1.15, marg: 1.0, units: 'si', isl: true, grid: true };
-var PRESETS = [
-  { id: 'agua', name: 'Agua de servicios', tag: 'base', s: {} },
-  { id: 'pectina', name: 'Extracto de pectina al filtro prensa', tag: 'proyecto', s: { casing: 's', N0: 3500, D: 117, fluid: 'pectina', T: 80, lQd: Math.log10(15), zs: 1.5, zd: 3.5, P2: 150, hfs: 0.35, hfd: 6 } },
-  { id: 'sobre', name: 'Bomba sobredimensionada', tag: 'recirculación', s: { casing: 'l', D: 254, lQd: Math.log10(20), zs: 2, zd: 34, hfs: 0.3, hfd: 2 } },
-  { id: 'cavita', name: 'Agua a 60 °C con succión negativa', tag: 'cavitación', s: { N0: 3500, D: 195, T: 60, lQd: Math.log10(48), zs: -3, zd: 55, hfs: 1.0, hfd: 12 } },
-  { id: 'viscoso', name: 'Aceite viscoso a 20 °C', tag: 'ANSI/HI 9.6.7', s: { fluid: 'aceite', T: 20, D: 203, lQd: Math.log10(20), zs: 2, zd: 14, hfs: 0.5, hfd: 3 } },
-  { id: 'paralelo', name: 'Dos bombas en paralelo', tag: 'arreglo', s: { D: 203, arr: 'paralelo', lQd: Math.log10(45), zs: 2, zd: 12, hfs: 0.4, hfd: 8 } }
+/* Configuraciones del curso: cada una es un sistema completo (bomba, niveles, presiones y pérdidas de la línea). Se cargan
+   desde la pestaña 7 y conservan las unidades y las opciones de vista. Las que nacen de un fluido concreto lo fijan (fix) y
+   lo dicen en la tarjeta; las demás conservan el fluido que el estudiante tiene escogido. */
+var CONFIGS = [
+  { id: 'agua', name: 'Línea de agua de servicios', src: 'Caso del curso', fix: ['fluid', 'T'], fluNote: 'la del caso del curso', s: {},
+    desc: 'Una bomba 2×3-8 a 1750 rpm, con impulsor de 190 mm, pasa 25 m³/h de agua a un tanque 10 m más arriba con 5,5 m de fricción en la línea. Es una selección sana, con el punto dentro de la ventana del BEP, y sirve de referencia para comparar las demás.' },
+  { id: 'pectina', name: 'Alimentación del filtro prensa', src: 'Proyecto', fix: ['fluid', 'T'], fluNote: 'el del proyecto',
+    s: { casing: 's', N0: 3500, D: 117, fluid: 'pectina', T: 80, lQd: Math.log10(15), zs: 1.5, zd: 3.5, P2: 150, hfs: 0.35, hfd: 6 },
+    desc: 'El extracto caliente va del tanque de extracción al filtro prensa, que trabaja a 150 kPa. Lo mueve una carcasa pequeña 1½×2-6 a 3500 rpm, con el impulsor recortado a 117 mm para los 15 m³/h que pide el filtro.',
+    note: 'La viscosidad del extracto es la que tenga en el panel 02 (4 mPa·s por defecto, un valor de referencia): cámbiela por la que midan en el laboratorio.' },
+  { id: 'sobre', name: 'Bomba sobredimensionada', src: 'Lectura 05',
+    s: { casing: 'l', D: 254, lQd: Math.log10(20), zs: 2, zd: 34, hfs: 0.3, hfd: 2 },
+    desc: 'Una carcasa grande 3×4-10 con el impulsor máximo de 254 mm para apenas 20 m³/h hacia un tanque 32 m más arriba. Trabaja muy a la izquierda del BEP, con recirculación, poca eficiencia y un motor que sobra.',
+    note: 'La pestaña 4 compara lo que cuesta llevarla a los 20 m³/h con la válvula, con el variador o recortando el impulsor.' },
+  { id: 'cavita', name: 'Succión negativa con agua caliente', src: 'Lectura 05 · NPSH', fix: ['fluid', 'T'], fluNote: 'la del ejemplo',
+    s: { N0: 3500, D: 195, T: 60, lQd: Math.log10(48), zs: -3, zd: 55, hfs: 1.0, hfd: 12 },
+    desc: 'El tanque está 3 m por debajo del eje de la bomba y el agua llega a 60 °C, con la presión atmosférica de Bogotá. A 3500 rpm y 48 m³/h el NPSH disponible no alcanza el requerido: la bomba cavita, pierde cabeza y no llega al caudal.',
+    note: 'Para quitar la cavitación pruebe una cosa a la vez: subir el tanque (panel 03), enfriar el agua (panel 02) o bajar a 1750 rpm (panel 01).' },
+  { id: 'viscoso', name: 'Bombeo de aceite viscoso', src: 'ANSI/HI 9.6.7', fix: ['fluid', 'T'], fluNote: 'el del ejemplo',
+    s: { fluid: 'aceite', T: 20, D: 203, lQd: Math.log10(20), zs: 2, zd: 14, hfs: 0.5, hfd: 3 },
+    desc: 'La carcasa 2×3-8 con el impulsor máximo mueve aceite ISO VG 32 a 20 °C, de 86 cSt. Con esa viscosidad la curva de agua del fabricante ya no vale: ANSI/HI 9.6.7 la corrige y la eficiencia baja a las tres cuartas partes.',
+    note: 'En la pestaña 6 compare el BEP con agua y con el aceite.' },
+  { id: 'paralelo', name: 'Dos bombas en paralelo', src: 'Lectura 05',
+    s: { D: 203, arr: 'paralelo', lQd: Math.log10(45), zs: 2, zd: 12, hfs: 0.4, hfd: 8 },
+    desc: 'Dos bombas 2×3-8 iguales, con el impulsor máximo, comparten succión y descarga para llevar 45 m³/h al tanque del caso del curso, 10 m más arriba. Cada una pasa la mitad del caudal cerca de su BEP.',
+    note: 'La pestaña 5 compara este arreglo con una sola bomba y con dos en serie en el mismo sistema.' }
 ];
-function presetState(id) { var p = byId(PRESETS, id), s = Object.assign(clone(BASE), clone(p.s)); s.preset = id; s.units = state ? state.units : 'si'; return s; }
-var state = null; state = Object.assign(clone(BASE), store.get('state', {}));
-var R = null, RV = null, tab = store.get('tab', 'in');
+var BASE_ID = 'agua', KEEP_FLUID = ['fluid', 'T', 'pMu', 'cRho', 'cMuExp', 'cPv'], KEEP_VIEW = ['units', 'isl', 'grid'];
+function cfgState(id, from) {
+  var c = byId(CONFIGS, id), s = Object.assign(clone(BASE), clone(c.s)), fix = c.fix || [];
+  if (from) KEEP_FLUID.filter(function (k) { return fix.indexOf(k) < 0; }).concat(KEEP_VIEW).forEach(function (k) { s[k] = from[k]; });
+  s.cfg = c.id; s.cfgMod = false; return s;
+}
+var state = cfgState(BASE_ID);
+var R = null, RV = null, tab = 'in';
 var SVGI = {
   pause: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M8 5v14M16 5v14"/></svg>',
   play: '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l12-7.5z"/></svg>',
@@ -930,32 +991,42 @@ function fD(Dm) { return fmtN(Dm * 1000, 0) + ' mm (' + fmtN(Dm / 0.0254, 2) + '
 
 /* ---------- controles ---------- */
 var SLIDERS = ['D', 'vfd', 'T', 'pMu', 'cRho', 'cMuExp', 'cPv', 'lQd', 'zs', 'zd', 'P1', 'P2', 'hfs', 'hfd', 'hv', 'alt', 'marg', 'FS'];
+var FLUID_SLIDERS = { T: 1, pMu: 1, cRho: 1, cMuExp: 1, cPv: 1 };
+function loadCfg(id) { state = cfgState(id, state); pscene && pscene.reset(); update(true); setTab('in'); window.scrollTo(0, 0); }
+/* volver al sistema del curso completo, fluido incluido; solo se conservan las opciones de vista */
+function resetAll() { var old = state; state = cfgState(BASE_ID); KEEP_VIEW.forEach(function (k) { state[k] = old[k]; }); pscene && pscene.reset(); update(true); }
 function buildControls() {
-  $('#presetBtns').innerHTML = PRESETS.map(function (p) { return '<button type="button" class="opt" data-p="' + p.id + '"><span>' + esc(p.name) + '</span><span class="x">' + esc(p.tag) + '</span></button>'; }).join('');
   $('#casBtns').innerHTML = CASINGS.map(function (c) { return '<button type="button" class="mill" data-c="' + c.id + '">' + CAS_ICON + esc(c.name) + '<span class="sz">' + fmtN(REF.D2max * c.lam * 1000, 0) + ' mm</span></button>'; }).join('');
   $('#fluBtns').innerHTML = FLUIDS.filter(function (f) { return f.id !== 'glicerina'; }).map(function (f) { return '<button type="button" class="opt" data-f="' + f.id + '"><span class="dotc" style="background:' + f.color + '"></span><span>' + esc(f.name) + '</span><span class="x">' + (f.project ? 'proyecto' : (f.custom ? 'ρ, μ, Pv' : '')) + '</span></button>'; }).join('');
-  $$('#presetBtns .opt').forEach(function (b) { b.addEventListener('click', function () { state = presetState(b.dataset.p); pscene && pscene.reset(); update(true); }); });
-  $$('#casBtns .mill').forEach(function (b) { b.addEventListener('click', function () { var old = byId(CASINGS, state.casing), nw = byId(CASINGS, b.dataset.c); state.casing = nw.id; state.D = Math.round(state.D * nw.lam / old.lam); dirty(); }); });
-  $$('#fluBtns .opt').forEach(function (b) { b.addEventListener('click', function () { var f = byId(FLUIDS, b.dataset.f); state.fluid = f.id; if (f.T) state.T = clamp(state.T, f.T[0], f.T[1]); if (f.id === 'pectina' && state.T < 50) state.T = 80; dirty(); }); });
-  [['#nSeg', 'N0', true], ['#arrSeg', 'arr'], ['#unitSeg', 'units']].forEach(function (a) { $$(a[0] + ' button').forEach(function (b) { b.addEventListener('click', function () { state[a[1]] = a[2] ? +b.dataset.v : b.dataset.v; dirty(); }); }); });
-  SLIDERS.forEach(function (k) { var el = document.getElementById(k); el.addEventListener('input', function () { state[k] = parseFloat(el.value); dirty(); }); });
-  ['isl', 'grid'].forEach(function (k) { var el = document.getElementById(k); el.addEventListener('change', function () { state[k] = el.checked; dirty(); }); });
-  $('#resetAll').addEventListener('click', function () { state = presetState('agua'); pscene && pscene.reset(); update(true); });
+  $$('#casBtns .mill').forEach(function (b) { b.addEventListener('click', function () { var old = byId(CASINGS, state.casing), nw = byId(CASINGS, b.dataset.c); if (nw.id === old.id) return; state.casing = nw.id; state.D = Math.round(state.D * nw.lam / old.lam); dirty(); }); });
+  $$('#fluBtns .opt').forEach(function (b) { b.addEventListener('click', function () { var f = byId(FLUIDS, b.dataset.f); if (f.id === state.fluid) return; state.fluid = f.id; if (f.T) state.T = clamp(state.T, f.T[0], f.T[1]); dirty('fluid', 'fluid'); }); });
+  [['#nSeg', 'N0', true], ['#arrSeg', 'arr'], ['#unitSeg', 'units', false, 'view']].forEach(function (a) { $$(a[0] + ' button').forEach(function (b) { b.addEventListener('click', function () { var v = a[2] ? +b.dataset.v : b.dataset.v; if (state[a[1]] === v) return; state[a[1]] = v; dirty(a[3], a[1]); }); }); });
+  SLIDERS.forEach(function (k) { var el = document.getElementById(k); el.addEventListener('input', function () { state[k] = parseFloat(el.value); dirty(FLUID_SLIDERS[k] ? 'fluid' : null, k); }); });
+  ['isl', 'grid'].forEach(function (k) { var el = document.getElementById(k); el.addEventListener('change', function () { state[k] = el.checked; dirty('view', k); }); });
+  $('#resetAll').addEventListener('click', resetAll);
+  $('#toCfg').addEventListener('click', function () { setTab('cf'); if (window.innerWidth < 900) { $('#ctl').classList.remove('open'); $('#mobCtl').textContent = 'Controles'; } });
+  $('#cfgCards').addEventListener('click', function (e) { var b = e.target.closest('button[data-cfg]'); if (b) loadCfg(b.dataset.cfg); });
   $('#status').addEventListener('click', function () { setTab('in'); setTimeout(function () { $('#diagCard').scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 50); });
   $$('.tabs [role=tab]').forEach(function (b) { b.addEventListener('click', function () { setTab(b.dataset.tab); }); });
   $$('.tabs .canv button').forEach(function (b) { b.addEventListener('click', function () { document.documentElement.setAttribute('data-canvas', b.dataset.canvas); $$('.tabs .canv button').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); }); store.set('canvas', b.dataset.canvas); pscene && pscene.layout(); renderTab(); }); });
   $('#mobCtl').addEventListener('click', function () { $('#ctl').classList.toggle('open'); this.textContent = $('#ctl').classList.contains('open') ? 'Cerrar' : 'Controles'; });
-  document.addEventListener('keydown', function (e) { if (/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return; var i = '123456'.indexOf(e.key); if (i >= 0) setTab(['in', 'ca', 'np', 're', 'sp', 'se'][i]); if (e.key === ' ' && tab === 'in') { e.preventDefault(); togglePlay(); } });
+  document.addEventListener('keydown', function (e) { if (/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return; var i = '1234567'.indexOf(e.key); if (i >= 0) setTab(['in', 'ca', 'np', 're', 'sp', 'se', 'cf'][i]); if (e.key === ' ' && tab === 'in') { e.preventDefault(); togglePlay(); } });
   $('#btnPlay').innerHTML = SVGI.pause; $('#btnReset').innerHTML = SVGI.reset;
   $('#btnPlay').addEventListener('click', togglePlay); $('#btnReset').addEventListener('click', function () { pscene.reset(); });
   $$('.play [data-sp]').forEach(function (b) { b.addEventListener('click', function () { pscene.speed = +b.dataset.sp; $$('.play [data-sp]').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); }); }); });
   var cv = store.get('canvas', 'paper'); document.documentElement.setAttribute('data-canvas', cv); $$('.tabs .canv button').forEach(function (x) { x.setAttribute('aria-pressed', x.dataset.canvas === cv ? 'true' : 'false'); });
   hoverSetup();
 }
-function dirty() { state.preset = null; update(); }
+/* un cambio del estudiante. Si toca el sistema, o el fluido de una configuración que lo fija, lo que hay en pantalla ya no es
+   la configuración cargada tal cual. Las opciones de vista y el fluido de las configuraciones que lo conservan no cuentan. */
+function dirty(kind, key) {
+  var fix = byId(CONFIGS, state.cfg).fix || [];
+  if (kind !== 'view' && (kind !== 'fluid' || fix.indexOf(key) >= 0)) state.cfgMod = true;
+  update();
+}
 function togglePlay() { pscene.running = !pscene.running; $('#btnPlay').innerHTML = pscene.running ? SVGI.pause : SVGI.play; }
 function setTab(t) {
-  tab = t; store.set('tab', t);
+  tab = t;
   $$('.tabs [role=tab]').forEach(function (b) { b.setAttribute('aria-selected', b.dataset.tab === t ? 'true' : 'false'); });
   $$('.panel').forEach(function (p) { p.classList.toggle('on', p.dataset.panel === t); });
   if (t === 'in' && pscene) pscene.resize();
@@ -976,11 +1047,10 @@ window.tweenTick = function (dt) {
 };
 
 function update(jump) {
-  store.set('state', state);
   R = compute(state);
   if (!VIS || jump || VIS.casing !== state.casing || VIS.N0 !== state.N0) VIS = { D: R.D * 1000, vfd: state.vfd, casing: state.casing, N0: state.N0 };
   var s = state, r = R, fl = r.fl, P = r.P;
-  pressed('#presetBtns .opt', 'p', s.preset || ''); pressed('#casBtns .mill', 'c', s.casing); pressed('#fluBtns .opt', 'f', s.fluid);
+  pressed('#casBtns .mill', 'c', s.casing); pressed('#fluBtns .opt', 'f', s.fluid);
   pressed('#nSeg button', 'v', s.N0); pressed('#arrSeg button', 'v', s.arr); pressed('#unitSeg button', 'v', s.units);
   var dEl = $('#D'); dEl.min = Math.round(r.Dmin * 1000); dEl.max = Math.round(r.Dmax * 1000);
   if (s.D < +dEl.min || s.D > +dEl.max) s.D = clamp(s.D, +dEl.min, +dEl.max);
@@ -1004,7 +1074,9 @@ function update(jump) {
   setV('vhfs', fh(s.hfs) + ' ' + lH()); setV('vhfd', fh(s.hfd) + ' ' + lH()); setV('vhv', fh(s.hv) + ' ' + lH());
   setV('valt', fmtN(s.alt, 0) + ' msnm'); $('#altHint').textContent = 'Patm = ' + fmtN(r.Patm, 1) + ' kPa' + (Math.abs(s.alt - 2600) < 60 ? ' · Bogotá' : '');
   setV('vmarg', fh(s.marg) + ' ' + lH()); setV('vFS', fmtN(s.FS, 2));
-  $('#ctx').innerHTML = '<b>' + esc(r.cas.name) + '</b> · ' + fmtN(r.N, 0) + ' rpm · ' + esc(fl.name.toLowerCase()) + (fl.T ? ' a ' + fmtN(r.T, 0) + ' °C' : '') + (s.arr !== 'una' ? ' · dos en ' + s.arr : '');
+  var cf = byId(CONFIGS, s.cfg);
+  $('#ctx').innerHTML = '<b>' + esc(cf.name) + (s.cfgMod ? ', con cambios' : '') + '</b> · ' + esc(r.cas.name) + ' · ' + fmtN(r.N, 0) + ' rpm · ' + esc(fluName(s)) + (s.arr !== 'una' ? ' · dos en ' + s.arr : '');
+  $('#cfgNow').innerHTML = esc(cf.name) + '<small>' + esc(s.cfgMod ? 'con sus cambios' : cf.src) + '</small>';
   renderKPIs();
   var sev = r.warn.some(function (w) { return w.sev === 'c'; }) ? 'inv' : (r.warn.some(function (w) { return w.sev === 'w'; }) ? 'adv' : '');
   $('#status').className = 'status' + (sev ? ' ' + sev : ''); $('#statusTxt').textContent = sev === 'inv' ? 'No viable' : (sev === 'adv' ? 'Con advertencias' : 'Selección sana');
@@ -1029,6 +1101,7 @@ function renderTab() {
   else if (tab === 're') renderReg();
   else if (tab === 'sp') renderSP();
   else if (tab === 'se') renderSel();
+  else if (tab === 'cf') renderConfigs();
 }
 
 /* ---------- utilidades SVG ---------- */
@@ -1375,6 +1448,45 @@ function renderEqs() {
   $('#assump').innerHTML = '<b>Cómo está hecha la bomba.</b> Es una bomba radial de una etapa construida con la ecuación de Euler y el deslizamiento de Wiesner (6 álabes, β₂ = 27°), con pérdidas por fricción, por choque a la entrada fuera del caudal de diseño, fugas por los anillos, fricción de disco, pérdidas mecánicas y recirculación a carga parcial. Está calibrada para comportarse como una bomba comercial: η máxima de 70 a 76 %, cabeza a caudal cero de 1,1 a 1,2 veces la del BEP y potencia a caudal cero cercana al 45 % de la del BEP. Las tres carcasas son geométricamente semejantes (Q ∝ D³, H ∝ D²). '
     + 'El NPSH3 sale de la velocidad en el ojo y de la velocidad relativa en el borde de ataque (forma de Gülich) y crece con N². La corrección por viscosidad es la de ANSI/HI 9.6.7. Los motores son tamaños IEC con eficiencia IE3 de referencia (IEC 60034-30-1). '
     + 'Es un modelo didáctico: para el proyecto use las curvas del fabricante, como en el Taller 3. Propiedades de los fluidos: las del Explorador de Bernoulli.';
+}
+
+/* ---------- 7 · configuraciones del curso ---------- */
+/* nombre del fluido en minúscula inicial (sin tocar siglas como ISO VG) y su temperatura recortada al rango de datos */
+function fluName(st) {
+  var fl = byId(FLUIDS, st.fluid);
+  if (fl.custom === 'all') return 'fluido personalizado';
+  return fl.name.charAt(0).toLowerCase() + fl.name.slice(1) + (fl.T ? ' a ' + fmtN(clamp(st.T, fl.T[0], fl.T[1]), 0) + '\u00a0°C' : '');
+}
+function fhs(m) { return fmtN(uH(m), 2).replace(/,?0+$/, ''); } // alturas de las tarjetas sin ceros sobrantes
+var NB = '\u00a0', ARR_TXT = { una: 'una bomba', paralelo: 'dos en paralelo', serie: 'dos en serie' };
+function cfgResult(r) {
+  var sev = r.warn.some(function (w) { return w.sev === 'c'; }) ? ' · no viable' : (r.warn.some(function (w) { return w.sev === 'w'; }) ? ' · con avisos' : ' · selección sana');
+  if (!r.op) return 'sin punto de operación' + sev;
+  return 'Q = ' + fq(r.op.Q) + NB + lQ() + ' a ' + fh(r.op.H) + NB + lH() + ' · ' + fmtN(100 * r.x, 0) + NB + '% del BEP · ' + fp(r.Pshaft) + NB + lP() + ' · margen de NPSH ' + (r.margin >= 0 ? '+' : '') + fh(r.margin) + NB + lH() + sev;
+}
+function renderConfigs() {
+  var s = state;
+  $('#cfLead').innerHTML = 'Cada tarjeta es un sistema completo del curso: la bomba, los niveles, las presiones y las pérdidas de la línea. Al cargar una se conservan las unidades y las opciones de vista. '
+    + 'Las que nacen de un fluido concreto lo fijan y lo dicen; las demás se calculan con el que tiene escogido (<b>' + esc(fluName(s)) + '</b>). Después la sigue cambiando pieza por pieza en los controles.';
+  $('#cfgCards').innerHTML = CONFIGS.map(function (c) {
+    var st = cfgState(c.id, s), r = compute(st, true), on = s.cfg === c.id, cas = byId(CASINGS, st.casing), Qd = Math.pow(10, st.lQd) / 3600, fixed = (c.fix || []).indexOf('fluid') >= 0;
+    var facts = [
+      ['Bomba', cas.name + ' a ' + fmtN(st.N0, 0) + NB + 'rpm' + (st.vfd !== 100 ? ' (variador al ' + fmtN(st.vfd, 0) + NB + '%)' : '') + ' · impulsor de ' + fmtN(st.D, 0) + NB + 'mm · ' + ARR_TXT[st.arr]],
+      ['Sistema', fq(Qd) + NB + lQ() + ' · niveles de succión ' + fhs(st.zs) + ' y de descarga ' + fhs(st.zd) + NB + lH() + (st.P1 ? ' · tanque a ' + fmtN(st.P1, 0) + NB + 'kPa' : '') + (st.P2 ? ' · destino a ' + fmtN(st.P2, 0) + NB + 'kPa' : '')],
+      ['Pérdidas', 'succión ' + fhs(st.hfs) + ' y descarga ' + fhs(st.hfd) + NB + lH() + (st.hv ? ' · válvula ' + fhs(st.hv) + NB + lH() : '') + ' a ' + fq(Qd) + NB + lQ()],
+      ['Fluido', fixed ? fluName(st) + ' (' + c.fluNote + ')' : 'el suyo, ' + fluName(st)]];
+    return '<div class="cfg' + (on ? ' on' : '') + '"><div class="cb"><div class="ct"><h3>' + esc(c.name) + '</h3><span class="src">' + esc(c.src) + '</span></div><p>' + esc(c.desc) + '</p>'
+      + '<dl class="facts">' + facts.map(function (q) { return '<dt>' + q[0] + '</dt><dd>' + esc(q[1]) + '</dd>'; }).join('') + '</dl>'
+      + '<div class="res"><span>Con ' + esc(fluName(st)) + ':</span> ' + cfgResult(r) + '</div>' + (c.note ? '<div class="note">' + esc(c.note) + '</div>' : '')
+      + '<button type="button" data-cfg="' + c.id + '"' + (on && !s.cfgMod ? ' disabled' : '') + '>' + (on ? (s.cfgMod ? 'Volver a cargarla sin sus cambios' : 'Es la que está en pantalla') : 'Cargar esta configuración') + '</button></div></div>';
+  }).join('');
+  $('#cfgIdeas').innerHTML = [
+    '<b>Bomba (01):</b> baje la velocidad con el variador y siga en la carta (pestaña 2) cómo el punto baja por la curva del sistema; la potencia al freno cae mucho más rápido que el caudal.',
+    '<b>Bomba (01):</b> escoja «Dos en paralelo» y luego «Dos en serie»; la pestaña 5 muestra cuánto gana cada arreglo con este sistema.',
+    '<b>Fluido (02):</b> caliente el líquido y mire en la pestaña 3 cómo la presión de vapor se come el NPSH disponible; en Bogotá el agua cerca de 95\u00a0°C ya hace cavitar la bomba.',
+    '<b>Sistema (03):</b> lleve el nivel de succión por debajo del eje (z<sub>s</sub> negativo); sube la cabeza estática, cae el caudal y el margen de NPSH se estrecha.',
+    '<b>Sitio (04):</b> cambie la altitud a 0\u00a0msnm y compare el NPSH disponible al nivel del mar con el de Bogotá.'
+  ].map(function (t) { return '<li>' + t + '</li>'; }).join('');
 }
 
 /* ---------- lectura con el cursor ---------- */
