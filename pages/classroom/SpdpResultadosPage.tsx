@@ -24,7 +24,8 @@ import '../../components/classroom/spdp-resultados.css';
    scripts/build-spdp-seleccion-pdf.mjs con los mismos datos.
    ============================================================ */
 
-export const PDF_SELECCION = '/classroom/iqya-3050-2026-20/documentos/IQYA-3050-Seleccion-de-Retos-2026-20-8B.pdf';
+// El sufijo ?v= evita que el navegador muestre una copia vieja del PDF al regenerarlo.
+export const PDF_SELECCION = '/classroom/iqya-3050-2026-20/documentos/IQYA-3050-Seleccion-de-Retos-2026-20-8B.pdf?v=20261014c';
 
 const sinTildes = (t: string) => t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 
