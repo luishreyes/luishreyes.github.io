@@ -417,7 +417,7 @@ table.t tr:hover td { background: var(--accent-50); }
         </div>
         <div class="tbar">
           <div class="g"><span class="gl">Trazador</span><button type="button" class="acc" data-inj="top">Inyectar arriba</button><button type="button" data-inj="imp">En el impulsor</button><span class="hint">o toque el líquido</span></div>
-          <div class="g"><span class="gl">Ver</span><button type="button" data-view="parts">Partículas</button><button type="button" data-view="dye">Trazador</button><button type="button" data-view="stream">Líneas de corriente</button><button type="button" data-view="map">Mapa de velocidad</button><button type="button" data-view="dims">Cotas</button></div>
+          <div class="g"><span class="gl">Ver</span><button type="button" data-view="parts" title="Elementos de líquido: siguen la circulación y su color es la rapidez local">Líquido</button><button type="button" data-view="sol" title="Los sólidos en suspensión del panel 04">Sólidos</button><button type="button" data-view="gas" title="Las burbujas de gas o de aire arrastrado por el vórtice">Burbujas</button><button type="button" data-view="dye">Trazador</button><button type="button" data-view="stream">Líneas de corriente</button><button type="button" data-view="map">Mapa de velocidad</button><button type="button" data-view="dims">Cotas</button></div>
         </div>
         <div class="caption" id="taCap"></div>
       </div>
@@ -970,7 +970,7 @@ var DYE = [205, 34, 92];    // fucsina
 
 function TankScene(cv) {
   this.cv = cv; this.ctx = cv.getContext('2d'); this.running = true; this.speedSel = 'auto'; this.eff = 1;
-  this.view = { parts: true, dye: true, stream: true, map: false, dims: true };
+  this.view = { parts: true, sol: true, gas: true, dye: true, stream: true, map: false, dims: true };
   this.rot = 0; this.ts = 0; this.tw = 0; this.parts = []; this.sol = []; this.bub = []; this.gasB = []; this.R = null; this.F = null; this.tr = null; this.lines = [];
   this.key = ''; this.pend = null; this.msSub = 0.06; this.budget = 6; this.autoInj = 1.2; this.onTheta = null; this.thetaSent = false;
   var self = this;
@@ -1285,17 +1285,16 @@ TankScene.prototype.draw = function () {
   var spin = R.omega * (this.dts || 0) / Math.max(1e-3, (this.dtw || 0.016));
   polys.sort(function (a, b) { return b.d - a.d; });
   if (this.view.parts) this.drawParts(this.parts, true);
-  this.drawSolids(true);
-  this.drawSparger(false); this.drawGas(true);
+  if (this.view.sol) this.drawSolids(true);
+  this.drawSparger(false); if (this.view.gas) this.drawGas(true);
   this.drawShaft();
   var blur = Math.abs(R.omega * (this.dts || 0)) > 0.35 && this.running;
   polys.forEach(function (o) { if (o.d > 0.02 * Rr || o.k === 'disk' || o.k === 'hub') self.drawPoly(o, blur && o.k !== 'hub' ? 0.6 : 1); });
   polys.forEach(function (o) { if (!(o.d > 0.02 * Rr || o.k === 'disk' || o.k === 'hub')) self.drawPoly(o, blur ? 0.6 : 1); });
   if (blur) this.drawSwept();
   if (this.view.parts) this.drawParts(this.parts, false);
-  this.drawSolids(false);
-  this.drawSparger(true); this.drawGas(false);
-  this.drawBubbles();
+  if (this.view.sol) this.drawSolids(false);
+  this.drawSparger(true); if (this.view.gas) { this.drawGas(false); this.drawBubbles(); }
   bafs.filter(function (a) { return Math.sin(a) <= 0; }).forEach(function (a) { self.drawBaffle(a, 1); });
   if (this.view.dye && this.tr && this.tr.on) this.drawProbes();
   // contorno del tanque
@@ -1467,7 +1466,7 @@ TankScene.prototype.drawPlan = function () {
       c.beginPath(); c.moveTo(q[0] - (p.ux || 0) * ln, q[1] + (p.uy || 0) * ln); c.lineTo(q[0], q[1]); c.stroke();
     }
   }
-  if (R.sol) for (i = 0; i < this.sol.length; i++) { var s = this.sol[i], q3 = P2(s.x, s.y); c.fillStyle = s.rest ? '#7a5230' : '#b07a45'; c.globalAlpha = 0.9; c.beginPath(); c.arc(q3[0], q3[1], 1.7, 0, 6.2832); c.fill(); }
+  if (R.sol && this.view.sol) for (i = 0; i < this.sol.length; i++) { var s = this.sol[i], q3 = P2(s.x, s.y); c.fillStyle = s.rest ? '#7a5230' : '#b07a45'; c.globalAlpha = 0.9; c.beginPath(); c.arc(q3[0], q3[1], 1.7, 0, 6.2832); c.fill(); }
   c.globalAlpha = 1; c.restore();
   // bafles
   if (R.baff) for (i = 0; i < 4; i++) { var a = Math.PI / 4 + i * Math.PI / 2, p1 = P2((Rr - g.B) * Math.cos(a), (Rr - g.B) * Math.sin(a)), p2 = P2(Rr * Math.cos(a), Rr * Math.sin(a)); c.strokeStyle = col.ink; c.lineWidth = 3; c.beginPath(); c.moveTo(p1[0], p1[1]); c.lineTo(p2[0], p2[1]); c.stroke(); }
@@ -1488,7 +1487,7 @@ TankScene.prototype.drawLegend = function () {
   var x = L.pcx - L.ps, y = L.pcy + L.ps + 34, w = 2 * L.ps;
   c.font = '600 10px ' + this.font; c.textAlign = 'left'; c.fillStyle = col.muted;
   if (this.view.parts || this.view.map) {
-    c.fillText(this.view.map ? 'velocidad local' : 'partículas: velocidad local', x, y);
+    c.fillText(this.view.map ? 'velocidad local' : 'líquido: velocidad local', x, y);
     for (var i = 0; i <= 40; i++) { c.fillStyle = palAt(i / 40); c.fillRect(x + w * i / 41, y + 5, w / 41 + 0.6, 7); }
     c.fillStyle = col.muted; c.fillText('lenta', x, y + 24); c.textAlign = 'right'; c.fillText('rápida', x + w, y + 24); c.textAlign = 'left'; y += 42;
   }
@@ -1497,8 +1496,8 @@ TankScene.prototype.drawLegend = function () {
     for (i = 0; i <= 40; i++) { var v = 4 * i / 40, al = 0.78 * (1 - Math.exp(-0.5 * v)); c.fillStyle = 'rgba(' + DYE.join(',') + ',' + al.toFixed(3) + ')'; c.fillRect(x + w * i / 41, y + 5, w / 41 + 0.6, 7); }
     c.fillStyle = col.muted; c.fillText('0', x, y + 24); c.textAlign = 'center'; c.fillText('1 = mezclado', x + w / 4, y + 24); c.textAlign = 'right'; c.fillText('4', x + w, y + 24); c.textAlign = 'left'; y += 42;
   }
-  if (this.R.sol) { c.fillStyle = '#7a5230'; c.beginPath(); c.arc(x + 4, y - 3, 3, 0, 6.2832); c.fill(); c.fillStyle = col.muted; c.fillText('sólidos (oscuros: quietos en el lecho)', x + 12, y); y += 16; }
-  if (this.bub.length || this.gasB.length) { c.strokeStyle = col.ink; c.fillStyle = '#fff'; c.beginPath(); c.arc(x + 4, y - 3, 3, 0, 6.2832); c.fill(); c.stroke(); c.fillStyle = col.muted; c.fillText(this.gasB.length ? 'burbujas de gas' + (this.R.gas && this.R.gas.reg ? ' · ' + this.R.gas.reg : '') : 'aire arrastrado por el vórtice', x + 12, y); }
+  if (this.R.sol && this.view.sol) { c.fillStyle = '#7a5230'; c.beginPath(); c.arc(x + 4, y - 3, 3, 0, 6.2832); c.fill(); c.fillStyle = col.muted; c.fillText(this.R.sol.float ? 'sólidos (oscuros: quietos en la superficie)' : 'sólidos (oscuros: quietos en el lecho)', x + 12, y); y += 16; }
+  if (this.view.gas && (this.bub.length || this.gasB.length)) { c.strokeStyle = col.ink; c.fillStyle = '#fff'; c.beginPath(); c.arc(x + 4, y - 3, 3, 0, 6.2832); c.fill(); c.stroke(); c.fillStyle = col.muted; c.fillText(this.gasB.length ? 'burbujas de gas' + (this.R.gas && this.R.gas.reg ? ' · ' + this.R.gas.reg : '') : 'aire arrastrado por el vórtice', x + 12, y); }
 };
 var tscene = null, lastT = 0;
 function animLoop(ts) {
@@ -1611,7 +1610,10 @@ function buildControls() {
   var cv = store.get('canvas', 'paper'); document.documentElement.setAttribute('data-canvas', cv); $$('.tabs .canv button').forEach(function (x) { x.setAttribute('aria-pressed', x.dataset.canvas === cv ? 'true' : 'false'); });
   hoverSetup();
 }
-function syncView() { $$('.tbar [data-view]').forEach(function (b) { b.setAttribute('aria-pressed', tscene.view[b.dataset.view] ? 'true' : 'false'); }); }
+function syncView() {
+  var R = tscene && tscene.R, has = { sol: !!(R && R.sol), gas: !!(R && (R.gas || (R.vx && R.vx.on))) };
+  $$('.tbar [data-view]').forEach(function (b) { var k = b.dataset.view; b.setAttribute('aria-pressed', tscene.view[k] ? 'true' : 'false'); if (k in has) b.hidden = !has[k]; });
+}
 /* un cambio en los controles marca la configuración como modificada; la cuadrícula es solo vista */
 function dirty(kind) { if (kind !== 'view') state.cfgMod = true; update(); }
 function loadCfg(id) { state = cfgState(id, state); update(); if (tscene) tscene.reset(); setTab('ta'); window.scrollTo(0, 0); }
@@ -1674,7 +1676,7 @@ function update() {
   var sev = r.warn.some(function (w) { return w.sev === 'c'; }) ? 'inv' : (r.warn.some(function (w) { return w.sev === 'w'; }) ? 'adv' : '');
   $('#status').className = 'status' + (sev ? ' ' + sev : ''); $('#statusTxt').textContent = sev === 'inv' ? 'Problema' : (sev === 'adv' ? 'Con advertencias' : 'Configuración sana');
   renderTab();
-  if (tscene) tscene.configure(R);
+  if (tscene) { tscene.configure(R); syncView(); }
 }
 function measKey(s) { return [s.imp, s.baff, s.fluid, Math.round(s.Tf), s.lT.toFixed(3), s.HT, s.DT, s.CT, s.pMu, s.cRho, s.cMuExp, s.gas, s.vvm].join('|'); }
 function lastMeas() { var k = measKey(state), rpm = Math.pow(10, state.lrpm), m = MEAS.filter(function (x) { return x.key === k && Math.abs(x.rpm / rpm - 1) < 0.01; }); return m.length ? m[m.length - 1] : null; }
@@ -1741,7 +1743,9 @@ function renderTank() {
   $('#taLbl').textContent = imp.short + ' · ' + r.reg;
   var pat = imp.kind === 'radial' ? 'El chorro radial choca con la pared y se parte en dos lazos, uno arriba y otro abajo del impulsor.' : (imp.kind === 'axial' ? 'El impulsor empuja hacia el fondo; el líquido sube por la pared y vuelve al centro en un solo lazo grande.' : (imp.kind === 'ribbon' ? 'La cinta sube el líquido junto a la pared y lo deja bajar por el centro.' : 'El ancla barre la pared y casi no mueve el centro: solo hay lazos débiles cerca de la pared.'));
   $('#taLead').textContent = pat + (r.reg === 'laminar' && !imp.close ? ' En laminar el movimiento se queda junto a las palas.' : '') + (!r.baff && !imp.close && r.vx.on ? ' Sin bafles casi todo es giro: mire la vista en planta y el vórtice.' : '');
-  var cap = '<b>Cómo leerlo.</b> Las partículas son elementos de líquido: siguen la circulación media que se calcula para esta geometría, el giro alrededor del eje y la turbulencia, y su color es la rapidez local. El trazador se resuelve en el corte que pasa por el eje (se ve reflejado a ambos lados): inyéctelo y mire cómo las sondas P1, P2 y P3 llegan a ±5 % del valor final, como en el ensayo de las diapositivas. '
+  var cap = '<b>Cómo leerlo.</b> Los puntos de colores son elementos de líquido: siguen la circulación media que se calcula para esta geometría, el giro alrededor del eje y la turbulencia, y su color es la rapidez local (botón «Líquido»). '
+    + (r.sol ? (r.sol.float ? 'Los puntos cafés son los sólidos (botón «Sólidos»): con ' + fmtN(state.rhoS, 0) + ' kg/m³ son un poco más livianos que el líquido, así que arrancan flotando y el agitador los va arrastrando hacia abajo; los oscuros siguen quietos en la superficie. ' : 'Los puntos cafés son los sólidos (botón «Sólidos»): el agitador los levanta del fondo; los oscuros siguen quietos en el lecho. ') : '')
+    + (r.gas || (r.vx && r.vx.on) ? 'Los blancos son burbujas (botón «Burbujas»). ' : '') + 'El trazador se resuelve en el corte que pasa por el eje (se ve reflejado a ambos lados): inyéctelo y mire cómo las sondas P1, P2 y P3 llegan a ±5 % del valor final, como en el ensayo de las diapositivas. '
     + 'El tiempo corre en ' + (tscene && tscene.speedSel === 'auto' ? 'cámara lenta automática' : 'la velocidad elegida') + ': el reloj del tanque marca el tiempo real del proceso.';
   $('#taCap').innerHTML = cap;
   var F = tscene && tscene.F;
