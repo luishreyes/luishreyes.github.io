@@ -212,8 +212,6 @@ table.t tr:hover td { background: var(--accent-50); }
 .btnw { width: 100%; margin-top: 12px; border: 2px solid var(--text); background: #fff; padding: 8px 10px; font-weight: 750; font-size: 12.5px; cursor: pointer; color: var(--text); text-align: left; }
 .btnw:hover { background: var(--accent-50); }
 .btnw.acc { background: var(--accent); border-color: var(--accent); color: #fff; }
-.presets { display: grid; gap: 6px; }
-.presets .opt { grid-template-columns: 1fr auto; }
 .terms { display: flex; flex-wrap: wrap; align-items: stretch; gap: 4px; }
 .terms .op { font-family: var(--font-mono); font-weight: 800; font-size: 18px; align-self: center; min-width: 14px; text-align: center; }
 .terms .tb { border: 1.5px solid var(--n300); padding: 6px 9px; min-width: 70px; background: #fff; }
@@ -406,6 +404,35 @@ table.t tr.dim td { color: var(--n500); }
 #nInt { padding: 0 7px; white-space: nowrap; }
 #strTable td:last-child { white-space: nowrap; }
 code { font-family: var(--font-mono); font-size: .92em; background: var(--n100); padding: 0 3px; }
+/* sistema en pantalla y configuraciones del curso */
+.ctl .cfgnow { background: var(--accent-50); }
+.cfgnow-l { font-family: var(--font-mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--n600); font-weight: 700; }
+.cfgnow-n { font-size: 14.5px; font-weight: 750; margin-top: 3px; line-height: 1.3; }
+.cfgnow-n small { display: block; font-size: 11.5px; font-weight: 600; color: var(--n600); margin-top: 2px; }
+.cfgnow-b { margin-top: 8px; border: none; background: none; padding: 0; font: inherit; font-size: 12.5px; font-weight: 700; color: var(--accent-700); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.cfgs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin-top: 18px; }
+.cfg { border: 2px solid var(--divider); background: #fff; display: flex; flex-direction: column; }
+.cfg.on { border-color: var(--accent); box-shadow: inset 0 -4px 0 var(--accent); }
+.cfg svg { display: block; width: 100%; height: auto; background: var(--paper); border-bottom: 1.5px solid var(--divider); }
+.cfg .cb { padding: 12px 16px 14px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+.cfg .ct { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.cfg h3 { margin: 0; font-size: 16px; font-weight: 780; }
+.cfg .src { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-700); font-weight: 700; }
+.cfg p { margin: 0; font-size: 13.5px; color: var(--n700); line-height: 1.5; }
+.cfg .facts { display: grid; grid-template-columns: auto 1fr; gap: 3px 12px; font-size: 12.5px; margin: 2px 0 0; }
+.cfg .facts dt { color: var(--n600); font-weight: 600; }
+.cfg .facts dd { margin: 0; font-weight: 650; }
+.cfg .res { font-family: var(--font-mono); font-size: 12.5px; font-weight: 700; border-top: 1px solid var(--n200); padding-top: 8px; }
+.cfg .res span { color: var(--n600); font-weight: 600; }
+.cfg .note { font-size: 12.5px; color: var(--n600); }
+.cfg button { margin-top: auto; align-self: flex-start; border: 2px solid var(--text); background: var(--text); color: #fff; font: inherit; font-size: 12.5px; font-weight: 750; padding: 7px 12px; cursor: pointer; }
+.cfg.on button { background: #fff; color: var(--text); }
+.cfg button:disabled { opacity: .6; cursor: default; }
+.ideas { margin: 0; padding-left: 18px; display: grid; gap: 6px; font-size: 13.5px; line-height: 1.5; }
+.ideas b { color: var(--accent-700); }
+.mode-hint { font-size: 11.5px; color: var(--n600); margin-top: 6px; line-height: 1.45; }
+.mode-hint:empty { display: none; }
+@media (max-width: 1100px) { .cfgs { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
@@ -431,7 +458,7 @@ code { font-family: var(--font-mono); font-size: .92em; background: var(--n100);
 
 <div class="shell">
   <aside class="ctl" id="ctl" aria-label="Controles">
-    <section><h2><span class="n">00</span> Casos de partida</h2><div class="presets opts" id="presetBtns"></div></section>
+    <section class="cfgnow"><div class="cfgnow-l">Sistema en pantalla</div><div class="cfgnow-n" id="cfgNow"></div><button type="button" class="cfgnow-b" id="toCfg">Ver las configuraciones del curso</button></section>
     <section><h2><span class="n">01</span> Sistema</h2>
       <div class="opts" id="sysBtns"></div>
       <div class="sl" id="alphaRow"><div class="row"><span>Volatilidad relativa α</span><b id="valpha"></b></div><input type="range" id="alpha" min="1.05" max="8" step="0.05"><div class="hint">La Lectura 12 usa 2,3; el caso demo A del Taller 8, 1,7.</div></div>
@@ -454,6 +481,7 @@ code { font-family: var(--font-mono); font-size: .92em; background: var(--n100);
     </section>
     <section><h2><span class="n">04</span> Operación</h2>
       <div class="seg" id="modeSeg"><button type="button" data-v="simple">Alambique</button><button type="button" data-v="R">R constante</button><button type="button" data-v="xd">x<sub>D</sub> constante</button></div>
+      <div class="hint mode-hint" id="modeHint"></div>
       <div class="sl" id="NRow"><div class="row"><span>Etapas de equilibrio N, con el calderín</span><b id="vN"></b></div><input type="range" id="N" min="1" max="20" step="1"><div class="hint">N = 1 es el alambique simple: el reflujo vuelve al calderín y no separa más.</div></div>
       <div class="sl" id="RRow"><div class="row"><span>Relación de reflujo R = L/D</span><b id="vR"></b></div><input type="range" id="R" min="0" max="30" step="0.05"><div class="hint">Se mantiene fija durante el lote: x<sub>D</sub> cae.</div></div>
       <div class="sl" id="xDRow"><div class="row"><span>Pureza del destilado x<sub>D</sub></span><b id="vxD"></b></div><input type="range" id="xD" min="0.3" max="0.999" step="0.001"><div class="hint">Se mantiene fija: R sube a medida que el calderín se empobrece.</div></div>
@@ -463,7 +491,7 @@ code { font-family: var(--font-mono); font-size: .92em; background: var(--n100);
     </section>
     <section><h2><span class="n">05</span> Vista</h2>
       <label class="toggle"><input type="checkbox" id="grid"> Cuadrícula en las gráficas</label>
-      <button type="button" class="seg inline" id="resetAll" style="margin-top:14px;padding:7px 12px;font-weight:700;font-size:12.5px;cursor:pointer">Volver al caso de las diapositivas</button>
+      <button type="button" class="seg inline" id="resetAll" style="margin-top:14px;padding:7px 12px;font-weight:700;font-size:12.5px;cursor:pointer">Volver al ejemplo de las diapositivas</button>
     </section>
   </aside>
 
@@ -475,6 +503,7 @@ code { font-family: var(--font-mono); font-size: .92em; background: var(--n100);
       <button type="button" role="tab" data-tab="cu" aria-selected="false"><span class="k">4</span>Cortes</button>
       <button type="button" role="tab" data-tab="co" aria-selected="false"><span class="k">5</span>Columna</button>
       <button type="button" role="tab" data-tab="ec" aria-selected="false"><span class="k">6</span>Ecuaciones</button>
+      <button type="button" role="tab" data-tab="cf" aria-selected="false"><span class="k">7</span>Configuraciones</button>
       <span class="sp"></span>
       <div class="canv"><button type="button" data-canvas="paper" aria-pressed="true">Papel</button><button type="button" data-canvas="blueprint" aria-pressed="false">Blueprint</button></div>
     </nav>
@@ -584,6 +613,13 @@ code { font-family: var(--font-mono); font-size: .92em; background: var(--n100);
       <div class="eqs" id="eqs"></div>
       <div class="algo" id="algo"></div>
       <div class="callout ink" id="assump"></div>
+    </section>
+
+    <!-- 7 · configuraciones -->
+    <section class="panel" data-panel="cf">
+      <div class="ph"><h2>Configuraciones del curso</h2><span class="lbl">cargue una y siga cambiándola</span><p id="cfLead"></p></div>
+      <div class="cfgs" id="cfgCards"></div>
+      <div class="card"><div class="card-h"><span class="t">Para probar en el sistema que tiene en pantalla</span><span class="sp"></span><span>un cambio a la vez</span></div><div class="card-b"><ul class="ideas" id="cfgIdeas"></ul></div></div>
     </section>
   </main>
 </div>
@@ -1385,27 +1421,50 @@ function clone(o) { return JSON.parse(JSON.stringify(o)); }
 var L10 = Math.log10;
 var LAM_STEAM = 2133;   // kJ/kg, vapor LPS a 3 barg (144 °C), Manual de diagramas
 
+/* El caso del curso: el ejemplo resuelto de las diapositivas (100 kmol de metanol-agua, 0,75 → 0,55, corazón hasta 0,85). */
 var BASE = { sys: 'ma4', alpha: 2.3, lP: L10(760), unit: 'kmol', W0: 100, x0: 0.75, Tc: 20,
   stop: 'xf', xf: 0.55, frac: 0.5, xd: 0.80, yi: 0.60, yiV: 60, Tst: 85,
   mode: 'simple', N: 5, R: 3, xD: 0.95, Rmax: 20, V: 20,
-  heads: 0.03, he: 0.5, heV: 60, diag: 'txy', integ: 'nodes', nInt: 4, xax: 'phi', aid: 'geo', aMan: 2.3,
+  heads: 0.03, he: 0.85, heV: 60, diag: 'txy', integ: 'nodes', nInt: 4, xax: 'phi', aid: 'geo', aMan: 2.3,
   ddw: 8, ddh: 0.03, dde: 60, ddr: 0.5, grid: true };
-var PRESETS = [
-  { id: 's4', name: 'Diapositivas · metanol-agua', tag: '100 kmol · 0,75 → 0,55', s: { he: 0.85 } },
-  { id: 'l12', name: 'Lectura 12 · ejemplo resuelto', tag: 'α = 2,3 · 0,40 → 0,10', s: { sys: 'alpha', alpha: 2.3, unit: 'mol', x0: 0.40, xf: 0.10, he: 0.35 } },
-  { id: 'dA', name: 'Taller 8 · caso demo A', tag: 'α = 1,7 · 0,55 → 0,25', s: { sys: 'alpha', alpha: 1.7, unit: 'mol', x0: 0.55, xf: 0.25, he: 0.5 } },
-  { id: 'dB', name: 'Taller 8 · caso demo B', tag: 'metanol-agua · 0,45 → 0,15', s: { sys: 'ma12', unit: 'mol', x0: 0.45, xf: 0.15, he: 0.6 } },
-  { id: 'dC', name: 'Taller 8 · caso demo C', tag: '65 % vaporizado · real', s: { sys: 'ma12', unit: 'mol', x0: 0.45, stop: 'frac', frac: 0.65, he: 0.6 } },
-  { id: 'dCi', name: 'Demo C con α = 1,7', tag: '65 % vaporizado · ideal', s: { sys: 'alpha', alpha: 1.7, unit: 'mol', x0: 0.45, stop: 'frac', frac: 0.65, he: 0.5 } },
-  { id: 'lab', name: 'Laboratorio en Bogotá', tag: '10 L · 10 % v/v · 560 mmHg', s: { sys: 'eaN', lP: L10(560), unit: 'mol', W0: 516, x0: 0.0332, Tc: 16, stop: 'T', Tst: 90, V: 90, heads: 0.01, heV: 30 } },
-  { id: 'wash', name: 'Alambique de mosto', tag: '8 % v/v → 1 % v/v', s: { sys: 'ea9', unit: 'kmol', W0: 500, x0: 0.0262, stop: 'yi', yiV: 1, V: 60, heads: 0, heV: 30 } },
-  { id: 'rc', name: 'Columna · R constante', tag: 'benceno-tolueno · N = 6 · R = 4,5', s: { sys: 'bt', unit: 'kmol', W0: 100, x0: 0.5, mode: 'R', N: 6, R: 4.5, stop: 'xd', xd: 0.95, V: 30, heads: 0.02, he: 0.9, diag: 'xy' } },
-  { id: 'xc', name: 'Columna · x_D constante', tag: 'x_D = 0,95 · R ≤ 15', s: { sys: 'bt', unit: 'kmol', W0: 100, x0: 0.5, mode: 'xd', N: 6, xD: 0.95, Rmax: 15, stop: 'xf', xf: 0.10, V: 30, heads: 0, he: 0.9, diag: 'xy' } },
-  { id: 'ipaz', name: 'Isopropanol sobre el azeótropo', tag: 'x₀ = 0,80', s: { sys: 'ipa8', unit: 'mol', W0: 100, x0: 0.80, stop: 'frac', frac: 0.6, heads: 0, he: 0.7 } }
+/* Configuraciones del curso (pestaña 7). Cada una es un lote completo de un material del curso y trae su mezcla,
+   porque los números del ejemplo dependen de sus datos de equilibrio. Al cargarla se conservan la vista y la doble destilación. */
+var CONFIGS = [
+  { id: 's4', name: 'Ejemplo resuelto de metanol-agua', src: 'Diapositivas', s: {},
+    desc: 'El ejemplo que se resuelve en clase: 100 kmol de metanol-agua con 75 % molar de metanol, en un alambique simple a 1 atm, hasta que el calderín baja a 55 %. El equilibrio son los cuatro puntos de la calculadora de las diapositivas.',
+    note: 'Con estos cuatro puntos no se puede escalonar una columna: para la rectificación escoja otra mezcla en el panel 01 o cargue una de las columnas de abajo.' },
+  { id: 'l12', name: 'Ejemplo resuelto con α constante', src: 'Lectura 12', s: { sys: 'alpha', alpha: 2.3, unit: 'mol', x0: 0.40, xf: 0.10, he: 0.35 },
+    desc: 'Una mezcla ideal con α = 2,3 que pasa de x₀ = 0,40 a x_W = 0,10. Con volatilidad constante la integral de Rayleigh tiene forma cerrada, y la pestaña 2 la compara con la cuadratura.' },
+  { id: 'dA', name: 'Caso demo A: α = 1,7', src: 'Taller 8', s: { sys: 'alpha', alpha: 1.7, unit: 'mol', x0: 0.55, xf: 0.25, he: 0.5 },
+    desc: 'El primer caso demostrativo del cuaderno: volatilidad constante de 1,7, una carga con x₀ = 0,55 y parada en x_W = 0,25. Con α tan bajo el destilado sale apenas más rico que la carga.' },
+  { id: 'dB', name: 'Caso demo B: metanol-agua con la tabla', src: 'Taller 8', s: { sys: 'ma12', unit: 'mol', x0: 0.45, xf: 0.15, he: 0.6 },
+    desc: 'El cálculo directo con datos reales: la tabla de 12 puntos de metanol-agua con spline cúbico, de x₀ = 0,45 a x_W = 0,15. La integral ya no tiene forma cerrada y se resuelve por cuadratura.' },
+  { id: 'dC', name: 'Caso demo C: problema inverso', src: 'Taller 8', s: { sys: 'ma12', unit: 'mol', x0: 0.45, stop: 'frac', frac: 0.65, he: 0.6 },
+    desc: 'La misma carga del caso B, pero ahora se fija cuánto se vaporiza (65 %) y se busca la composición final del calderín por búsqueda de raíz.' },
+  { id: 'dCi', name: 'Caso demo C con el modelo ideal', src: 'Taller 8', s: { sys: 'alpha', alpha: 1.7, unit: 'mol', x0: 0.45, stop: 'frac', frac: 0.65, he: 0.5 },
+    desc: 'El problema inverso del caso C resuelto con α = 1,7 constante en lugar de la tabla. Compárelo con la tarjeta anterior para ver cuánto se equivoca el modelo ideal.' },
+  { id: 'lab', name: 'Destilación de laboratorio en Bogotá', src: 'Laboratorio', s: { sys: 'eaN', lP: L10(560), unit: 'mol', W0: 516, x0: 0.0332, Tc: 16, stop: 'T', Tst: 90, V: 90, heads: 0.01, heV: 30 },
+    desc: 'Diez litros de etanol-agua al 10 % v/v que se destilan a 560 mmHg, la presión de Bogotá, hasta que el calderín llega a 90 °C. El NRTL permite bajar la presión y todo el lote hierve más frío que a nivel del mar.' },
+  { id: 'wash', name: 'Alambique de mosto', src: 'Lectura 12', s: { sys: 'ea9', unit: 'kmol', W0: 500, x0: 0.0262, stop: 'yi', yiV: 1, V: 60, heads: 0, heV: 30 },
+    desc: 'La primera destilación de una destilería: 500 kmol de mosto al 8 % v/v en un alambique simple, cortando cuando lo que sale por la cabeza baja a 1 % v/v. Los datos x-y son los del Taller 9.' },
+  { id: 'rc', name: 'Columna con R constante, en benceno-tolueno', src: 'Lectura 12', s: { sys: 'bt', unit: 'kmol', W0: 100, x0: 0.5, mode: 'R', N: 6, R: 4.5, stop: 'xd', xd: 0.95, V: 30, heads: 0.02, he: 0.9 },
+    desc: 'Una columna de 6 etapas sobre el calderín con reflujo fijo de 4,5: la pureza del destilado cae a medida que el calderín se empobrece, y el lote para cuando el recipiente acumulado baja a x̄_D = 0,95.',
+    note: 'Usa benceno-tolueno porque los cuatro puntos del metanol-agua de las diapositivas no alcanzan para escalonar platos.' },
+  { id: 'xc', name: 'Columna con x_D constante, en benceno-tolueno', src: 'Lectura 12', s: { sys: 'bt', unit: 'kmol', W0: 100, x0: 0.5, mode: 'xd', N: 6, xD: 0.95, Rmax: 15, stop: 'xf', xf: 0.10, V: 30, heads: 0, he: 0.9 },
+    desc: 'La misma columna, ahora con la pureza del destilado fija en 0,95: el reflujo sube durante el lote hasta el máximo del equipo, R_máx = 15, o hasta que el calderín llega a x_W = 0,10.',
+    note: 'Usa benceno-tolueno porque los cuatro puntos del metanol-agua de las diapositivas no alcanzan para escalonar platos.' },
+  { id: 'ipaz', name: 'Isopropanol por encima del azeótropo', src: 'Taller 8', s: { sys: 'ipa8', unit: 'mol', W0: 100, x0: 0.80, stop: 'frac', frac: 0.6, heads: 0, he: 0.7 },
+    desc: 'La tabla de isopropanol-agua del caso de estudio con una carga de x₀ = 0,80, más rica que el azeótropo de 0,685. El vapor sale más pobre que el líquido: el calderín se enriquece y el destilado tiende al azeótropo.' }
 ];
-function presetState(id) { var p = byId(PRESETS, id), s = Object.assign(clone(BASE), clone(p.s)); s.preset = id; return s; }
-var state = Object.assign(presetState('s4'), store.get('state', {}));
-var RES = null, tab = store.get('tab', 'al'), scene = null;
+/* lo que se conserva al cargar una configuración: la vista y los controles que no son del lote (α a mano, doble destilación) */
+var KEEP_VIEW = ['diag', 'integ', 'nInt', 'xax', 'aid', 'aMan', 'ddw', 'ddh', 'dde', 'ddr', 'grid'];
+function cfgState(id, from) {
+  var c = byId(CONFIGS, id), s = Object.assign(clone(BASE), clone(c.s));
+  if (from) KEEP_VIEW.forEach(function (k) { if (k in from) s[k] = from[k]; });
+  s.cfg = c.id; s.cfgMod = false; return s;
+}
+var state = cfgState('s4');
+var RES = null, tab = 'al', scene = null;
 var SVGI = {
   pause: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M8 5v14M16 5v14"/></svg>',
   play: '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l12-7.5z"/></svg>'
@@ -1449,22 +1508,22 @@ var upPending = false;
 function schedule() { if (upPending) return; upPending = true; requestAnimationFrame(function () { upPending = false; update(); }); }
 function buildControls() {
   $$('.panel .ph').forEach(function (ph) { var d = document.createElement('div'); d.className = 'callout np-msg'; ph.parentNode.insertBefore(d, ph.nextSibling); });
-  $('#presetBtns').innerHTML = PRESETS.map(function (p) { return '<button type="button" class="opt" data-p="' + p.id + '"><span>' + subs(esc(p.name)) + '</span><span class="x">' + subs(esc(p.tag)) + '</span></button>'; }).join('');
   $('#sysBtns').innerHTML = SYSTEMS.map(function (f) { return '<button type="button" class="opt" data-s="' + f.id + '"><span class="dotc" style="background:' + f.dot + '"></span><span>' + esc(f.name) + '</span><span class="x">' + esc(f.tag) + '</span></button>'; }).join('');
-  $$('#presetBtns .opt').forEach(function (b) { b.addEventListener('click', function () { state = presetState(b.dataset.p); if (scene) scene.restart(); update(); }); });
   $$('#sysBtns .opt').forEach(function (b) { b.addEventListener('click', function () { state.sys = b.dataset.s; keepValid(); dirty(); }); });
-  SEGS.forEach(function (a) { $$(a[0] + ' button').forEach(function (b) { b.addEventListener('click', function () { if (b.disabled) return; state[a[1]] = b.dataset.v; if (VIEW_ONLY[a[1]]) { store.set('state', state); renderTab(); pressed(a[0] + ' button', 'v', state[a[1]]); return; } if (a[1] === 'stop') stopFromResult(b.dataset.v); if (a[1] === 'mode') keepValid(); dirty(); }); }); });
-  SLIDERS.forEach(function (k) { var el = document.getElementById(k); el.addEventListener('input', function () { var r = slGet(k, el); state[r[0]] = r[1]; if (VIEW_ONLY[k]) { store.set('state', state); renderTab(); return; } state.preset = null; schedule(); }); });
-  $('#grid').addEventListener('change', function () { state.grid = this.checked; store.set('state', state); renderTab(); });
-  $$('#nStp button').forEach(function (b) { b.addEventListener('click', function () { var d = +b.dataset.d, n = state.nInt; n = d > 0 ? (n < 16 ? n + 1 : Math.min(256, n * 2)) : (n > 16 ? n / 2 : Math.max(1, n - 1)); state.nInt = n; store.set('state', state); renderTab(); }); });
-  $('#resetAll').addEventListener('click', function () { state = presetState('s4'); if (scene) scene.restart(); update(); });
+  SEGS.forEach(function (a) { $$(a[0] + ' button').forEach(function (b) { b.addEventListener('click', function () { if (b.disabled) return; state[a[1]] = b.dataset.v; if (VIEW_ONLY[a[1]]) { renderTab(); pressed(a[0] + ' button', 'v', state[a[1]]); return; } if (a[1] === 'stop') stopFromResult(b.dataset.v); if (a[1] === 'mode') keepValid(); dirty(); }); }); });
+  SLIDERS.forEach(function (k) { var el = document.getElementById(k); el.addEventListener('input', function () { var r = slGet(k, el); state[r[0]] = r[1]; if (VIEW_ONLY[k]) { renderTab(); return; } state.cfgMod = true; schedule(); }); });
+  $('#grid').addEventListener('change', function () { state.grid = this.checked; renderTab(); });
+  $$('#nStp button').forEach(function (b) { b.addEventListener('click', function () { var d = +b.dataset.d, n = state.nInt; n = d > 0 ? (n < 16 ? n + 1 : Math.min(256, n * 2)) : (n > 16 ? n / 2 : Math.max(1, n - 1)); state.nInt = n; renderTab(); }); });
+  $('#resetAll').addEventListener('click', function () { state = cfgState('s4'); if (scene) scene.restart(); update(); });
+  $('#toCfg').addEventListener('click', function () { setTab('cf'); if (window.innerWidth < 900) { $('#ctl').classList.remove('open'); $('#mobCtl').textContent = 'Controles'; } window.scrollTo(0, 0); });
+  $('#cfgCards').addEventListener('click', function (e) { var b = e.target.closest('button[data-cfg]'); if (b && !b.disabled) loadCfg(b.dataset.cfg); });
   $('#status').addEventListener('click', function () { setTab('al'); setTimeout(function () { $('#diagCard').scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 50); });
   $$('.tabs [role=tab]').forEach(function (b) { b.addEventListener('click', function () { setTab(b.dataset.tab); }); });
   $$('.tabs .canv button').forEach(function (b) { b.addEventListener('click', function () { document.documentElement.setAttribute('data-canvas', b.dataset.canvas); $$('.tabs .canv button').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); }); store.set('canvas', b.dataset.canvas); if (scene) scene.layout(); renderTab(); }); });
   $('#mobCtl').addEventListener('click', function () { $('#ctl').classList.toggle('open'); this.textContent = $('#ctl').classList.contains('open') ? 'Cerrar' : 'Controles'; });
   document.addEventListener('keydown', function (e) {
     if (/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return;
-    var i = '123456'.indexOf(e.key); if (i >= 0) setTab(['al', 'in', 'ev', 'cu', 'co', 'ec'][i]);
+    var i = '1234567'.indexOf(e.key); if (i >= 0) setTab(['al', 'in', 'ev', 'cu', 'co', 'ec', 'cf'][i]);
     if (e.key === ' ' && tab === 'al') { e.preventDefault(); togglePlay(); }
   });
   $('#btnPlay').innerHTML = SVGI.pause; $('#btnPlay').addEventListener('click', togglePlay);
@@ -1473,16 +1532,17 @@ function buildControls() {
   var cv = store.get('canvas', 'paper'); document.documentElement.setAttribute('data-canvas', cv); $$('.tabs .canv button').forEach(function (x) { x.setAttribute('aria-pressed', x.dataset.canvas === cv ? 'true' : 'false'); });
   hoverSetup();
 }
-/* al cambiar de sistema o de modo, se deja el caso dentro del dominio */
+/* al cambiar de mezcla o de modo, se recorta lo que quede fuera del dominio de los datos. El modo no se toca:
+   con una mezcla sin columna compute() corre el alambique y la interfaz desactiva los botones de la columna. */
 function keepValid() {
-  var sys = byId(SYSTEMS, state.sys), d = sys.dom || [0, 1];
+  var sys = byId(SYSTEMS, state.sys), d = sys.dom || [0, 1], mode = sys.noCol ? 'simple' : state.mode;
   state.x0 = Math.min(d[1] - 0.01, Math.max(d[0] + 0.02, state.x0));
   if (state.stop === 'xf') state.xf = Math.min(state.x0 - 0.01, Math.max(d[0], state.xf));
-  if (sys.noCol && state.mode !== 'simple') state.mode = 'simple';
   var eq = null; try { eq = makeEq(sys, Math.pow(10, state.lP), state.alpha); } catch (e) { }
-  if (state.mode === 'xd') {
+  if (mode === 'xd') {
     if (state.stop === 'xd' || state.stop === 'yi') { stopFromResult('xf'); state.stop = 'xf'; }
-    if (eq) { var top = eq.az ? Math.floor((eq.az.x - 0.005) * 1000) / 1000 : 0.995; if (state.xD <= eq.y(state.x0) || state.xD > top) state.xD = Math.min(top, Math.round((eq.y(state.x0) + 0.6 * (top - eq.y(state.x0))) * 1000) / 1000); }
+    // ninguna columna pasa el azeótropo: la pureza pedida se recorta a él
+    if (eq && eq.az) { var top = Math.floor((eq.az.x - 0.005) * 1000) / 1000; if (state.xD > top) state.xD = top; }
   }
   // la composición final tiene que quedar del lado al que se mueve el calderín
   if (eq && state.stop === 'xf') { var up = eq.y(state.x0) < state.x0; if (!up && state.xf >= state.x0) state.xf = Math.round(0.5 * state.x0 * 2000) / 2000; if (up && state.xf <= state.x0) state.xf = Math.round((state.x0 + 0.5 * (d[1] - state.x0)) * 2000) / 2000; }
@@ -1496,12 +1556,17 @@ function stopFromResult(v) {
   if (v === 'yi') { if (RES.abv) state.yiV = Math.round(vvFromX(B.gf) * 2) / 2; else state.yi = Math.round(B.gf * 1000) / 1000; }
   if (v === 'T' && isFinite(B.Tf)) state.Tst = Math.round(B.Tf * 10) / 10;
 }
-function dirty() { state.preset = null; update(); }
+/* un cambio del estudiante en el lote: ya no es la configuración cargada tal cual (la vista no pasa por aquí) */
+function dirty() { state.cfgMod = true; update(); }
+/* carga una configuración del curso y vuelve a la pestaña del alambique */
+function loadCfg(id) { state = cfgState(id, state); if (scene) scene.restart(); update(); setTab('al'); window.scrollTo(0, 0); }
 function togglePlay() { scene.running = !scene.running; $('#btnPlay').innerHTML = scene.running ? SVGI.pause : SVGI.play; }
 function setTab(t) {
-  tab = t; store.set('tab', t);
+  tab = t;
   $$('.tabs [role=tab]').forEach(function (b) { b.setAttribute('aria-selected', b.dataset.tab === t ? 'true' : 'false'); });
   $$('.panel').forEach(function (p) { p.classList.toggle('on', p.dataset.panel === t); });
+  // en pantallas angostas la fila de pestañas se desliza: se deja a la vista la pestaña escogida
+  var tb = $('.tabs [data-tab="' + t + '"]'), nav = tb && tb.parentNode; if (nav && nav.scrollWidth > nav.clientWidth) nav.scrollLeft = Math.max(0, tb.offsetLeft - (nav.clientWidth - tb.offsetWidth) / 2);
   if (t === 'al' && scene) scene.resize();
   renderTab();
 }
@@ -1517,6 +1582,8 @@ function compute(s) {
   var mode = sys.noCol ? 'simple' : s.mode; R.mode = mode;
   var stopV = { xf: s.xf, frac: s.frac, xd: s.xd, yi: R.abv ? xFromVv(s.yiV) : s.yi, T: s.Tst }[s.stop];
   R.B = runBatch(eq, { mode: mode, N: mode === 'simple' ? 1 : s.N, R: s.R, xD: s.xD, Rmax: mode === 'xd' ? s.Rmax : Infinity, W0: s.W0, V: s.V, Tc: s.Tc, x0: s.x0, stop: { k: s.stop, v: stopV } });
+  // un lote que se detiene en el arranque no tiene trayectoria que graficar (p. ej. x_D constante con N = 1 y x_D apenas bajo y*(x₀))
+  if (R.B.ok && !(R.B.phi > 1e-6)) { R.B.ok = false; R.B.msg = mode === 'xd' ? 'phi0xd' : 'phi0'; }
   R.heX = R.abv ? xFromVv(s.heV) : s.he;
   if (R.B.ok) R.cuts = cutsOf(R.B, s.heads, R.heX);
   diagnose(R);
@@ -1533,7 +1600,9 @@ var MSG = {
   xfside: 'Por encima del azeótropo el calderín se enriquece: la composición final tiene que ser mayor que la de la carga.',
   stop0: 'La parada ya se cumple en el arranque: la primera gota de destilado no llega a la especificación.',
   stopaz: 'Por encima del azeótropo el destilado no se empobrece: use x_W final, D/W₀ o la temperatura como parada.',
-  stopxd: 'Con x_D constante el destilado no cambia: use x_W final, D/W₀ o la temperatura como parada.'
+  stopxd: 'Con x_D constante el destilado no cambia: use x_W final, D/W₀ o la temperatura como parada.',
+  phi0xd: 'El lote se detiene apenas arranca: la columna llega a reflujo total casi de inmediato y no saca destilado. Suba N o baje x_D.',
+  phi0: 'El lote se detiene apenas arranca y no saca destilado: revise la parada.'
 };
 /* ---------- diagnóstico ---------- */
 function diagnose(R) {
@@ -1586,19 +1655,21 @@ function update() {
   var s = state;
   try { RES = compute(s); } catch (e) { console.error(e); return; }
   var R = RES, B = R.B, sys = R.sys, eq = R.eq, U = s.unit;
-  store.set('state', s);
   syncSliders(R);
   setV('valpha', fmtN(s.alpha, 2)); setV('vP', fP(R.P)); setV('vW0', fA(s.W0) + ' ' + U); setV('vx0', fx4(s.x0)); setV('vTc', fT(s.Tc));
   setV('vxf', fx4(s.xf)); setV('vfrac', fpct(s.frac, 1)); setV('vxd', fx(s.xd)); setV('vyi', R.abv ? fV(s.yiV) : fx(s.yi)); setV('vTst', fT(s.Tst));
   setV('vN', String(s.N)); setV('vR', fmtN(s.R, 2)); setV('vxD', fx(s.xD)); setV('vRmax', fmtN(s.Rmax, 1)); setV('vV', fA(s.V) + ' ' + U + '/h');
   setV('vheads', fpct(s.heads, 1) + ' de la carga'); setV('vhe', R.abv ? fV(s.heV) : fx(s.he)); setV('vaMan', fmtN(s.aMan, 2));
   setV('vddw', fV(s.ddw)); setV('vddh', fpct(s.ddh, 1)); setV('vdde', fV(s.dde)); setV('vddr', fmtN(s.ddr, 2));
-  pressed('#presetBtns .opt', 'p', s.preset); pressed('#sysBtns .opt', 's', s.sys);
+  pressed('#sysBtns .opt', 's', s.sys);
+  var cf = byId(CONFIGS, s.cfg); $('#cfgNow').innerHTML = subs(esc(cf.name)) + '<small>' + esc(s.cfgMod ? 'con sus cambios' : cf.src) + '</small>';
   SEGS.forEach(function (a) { pressed(a[0] + ' button', 'v', a[1] === 'mode' ? R.mode : s[a[1]]); });
   show('alphaRow', sys.model === 'alpha'); show('PRow', !sys.fixedP && sys.model !== 'alpha'); show('TcRow', eq.hasH && eq.hasT);
   ['xf', 'frac', 'xd', 'yi', 'Tst'].forEach(function (k) { show(k + 'Row', s.stop === (k === 'Tst' ? 'T' : k)); });
   $$('#stopSeg button').forEach(function (b) { var v = b.dataset.v; b.disabled = (v === 'T' && !eq.hasT) || ((v === 'xd' || v === 'yi') && R.mode === 'xd'); });
-  $$('#modeSeg button').forEach(function (b) { b.disabled = b.dataset.v !== 'simple' && !!sys.noCol; });
+  var NOCOL = 'Con los cuatro puntos de las diapositivas no hay columna: cubren solo x = 0,50 a 0,80 y no alcanzan para escalonar platos.';
+  $$('#modeSeg button').forEach(function (b) { var off = b.dataset.v !== 'simple' && !!sys.noCol; b.disabled = off; if (off) b.title = NOCOL; else b.removeAttribute('title'); });
+  $('#modeHint').innerHTML = sys.noCol ? subs(esc(NOCOL + ' Para operar la columna escoja otra mezcla en el panel 01' + (s.mode !== 'simple' ? '; su «' + (s.mode === 'R' ? 'R constante' : 'x_D constante') + '» vuelve en cuanto cambie.' : '.'))) : '';
   show('NRow', R.mode !== 'simple'); show('RRow', R.mode === 'R'); show('xDRow', R.mode === 'xd'); show('RmaxRow', R.mode === 'xd');
   $('#yiLab').innerHTML = R.abv ? 'Grado del destilado al cortar' : 'Composición del destilado al cortar';
   $('#heLab').innerHTML = R.abv ? 'Corazón: hasta que el destilado baja a' : 'Corazón: hasta que x<sub>D</sub> baja a';
@@ -1632,7 +1703,7 @@ function renderKPIs(R) {
   setCtx(R);
 }
 function setCtx(R) {
-  var s = state, ctx = '<b>' + esc(R.sys.name) + '</b>' + (R.sys.model === 'alpha' ? ' · α = ' + fmtN(s.alpha, 2) : ' · ' + fP(R.P)) + ' · ' + { simple: 'alambique simple', R: 'columna de ' + s.N + ' etapas con R = ' + fmtN(s.R, 2), xd: 'columna de ' + s.N + ' etapas con x_D = ' + fx(s.xD) }[R.mode];
+  var s = state, ctx = '<b>' + esc(byId(CONFIGS, s.cfg).name) + (s.cfgMod ? ', modificado' : '') + '</b> · ' + esc(R.sys.name) + (R.sys.model === 'alpha' ? ' · α = ' + fmtN(s.alpha, 2) : ' · ' + fP(R.P)) + ' · ' + { simple: 'alambique simple', R: 'columna de ' + s.N + ' etapas con R = ' + fmtN(s.R, 2), xd: 'columna de ' + s.N + ' etapas con x_D = ' + fx(s.xD) }[R.mode];
   ctx = subs(ctx);
   if ($('#ctx').innerHTML !== ctx) $('#ctx').innerHTML = ctx;
 }
@@ -1650,6 +1721,43 @@ function renderWarn(R) {
   if (wh !== lastWarn) { $('#warnings').innerHTML = wh; lastWarn = wh; }
 }
 
+/* ---------- 7 · configuraciones del curso ---------- */
+/* el resultado de cada tarjeta no depende de la vista que se conserva: se calcula una sola vez */
+var CFG_RES = {};
+function cfgRes(id) { if (!(id in CFG_RES)) { try { CFG_RES[id] = compute(cfgState(id)); } catch (e) { CFG_RES[id] = null; } } return CFG_RES[id]; }
+function cfgFacts(st, r) {
+  var sys = r.sys, abv = r.abv, uf = st.unit === 'kmol' ? 1000 : 1;
+  var mix = sys.name + (sys.model === 'alpha' ? ', α = ' + fmtN(st.alpha, 2) : '') + (!sys.fixedP && sys.model !== 'alpha' ? ' a ' + fP(r.P) : '') + ' (la del ejemplo)';
+  var load = fA(st.W0) + ' ' + st.unit + ' con x₀ = ' + fx(st.x0) + (abv ? ' (' + fV(vvFromX(st.x0)) + ', unos ' + fL(litersOf(st.W0, st.x0, uf)) + ')' : '');
+  var stop = { xf: 'x_W = ' + fx(st.xf), frac: 'D/W₀ = ' + fpct(st.frac, 0), xd: 'x̄_D = ' + fx(st.xd), yi: 'destilado al cortar en ' + (abv ? fV(st.yiV) : fx(st.yi)), T: 'calderín a ' + fT(st.Tst) }[st.stop];
+  var op = { simple: 'alambique simple', R: 'columna de ' + st.N + ' etapas con R = ' + fmtN(st.R, 2), xd: 'columna de ' + st.N + ' etapas con x_D = ' + fx(st.xD) + ' y R_máx = ' + fmtN(st.Rmax, 0) }[r.mode] + ' · V = ' + fA(st.V) + ' ' + st.unit + '/h';
+  var cuts = (st.heads > 0 ? 'cabezas ' + fpct(st.heads, 1) : 'sin cabezas') + ' · corazón hasta ' + (abv ? fV(st.heV) : 'x_D = ' + fx(st.he));
+  return [['Mezcla', mix], ['Carga', load], ['Parada', stop], ['Operación', op], ['Cortes', cuts]];
+}
+function cfgResult(st, r) {
+  var B = r.B; if (!B.ok) return 'caso inválido';
+  return 'D = ' + fA(B.D) + ' ' + st.unit + ' con x̄_D = ' + fx(B.xDavg) + (r.abv ? ' (' + fV(vvFromX(B.xDavg)) + ')' : '') + ' · x_W = ' + fx(B.xf) + ' · ' + fTime(B.t + (isFinite(B.tPre) ? B.tPre : 0))
+    + (r.warn.some(function (w) { return w.sev === 'c'; }) ? ' · con alertas' : '');
+}
+function renderConfigs() {
+  var s = state;
+  $('#cfLead').innerHTML = subs(esc('Cada tarjeta es un lote completo de un material del curso: la mezcla con sus datos de equilibrio, la carga, la parada, la operación y los cortes. Todas traen su propia mezcla, porque los números de cada ejemplo salen de esos datos. Al cargar una se conservan la vista que tenga escogida y la doble destilación de la pestaña 4; después la sigue cambiando pieza por pieza en los controles.'));
+  $('#cfgCards').innerHTML = CONFIGS.map(function (c) {
+    var st = cfgState(c.id), r = cfgRes(c.id), on = s.cfg === c.id;
+    if (!r) return '';
+    return '<div class="cfg' + (on ? ' on' : '') + '"><div class="cb"><div class="ct"><h3>' + subs(esc(c.name)) + '</h3><span class="src">' + esc(c.src) + '</span></div><p>' + subs(esc(c.desc)) + '</p>'
+      + '<dl class="facts">' + cfgFacts(st, r).map(function (q) { return '<dt>' + q[0] + '</dt><dd>' + subs(esc(q[1])) + '</dd>'; }).join('') + '</dl>'
+      + '<div class="res"><span>Resultado:</span> ' + subs(esc(cfgResult(st, r))) + '</div>' + (c.note ? '<div class="note">' + subs(esc(c.note)) + '</div>' : '')
+      + '<button type="button" data-cfg="' + c.id + '"' + (on && !s.cfgMod ? ' disabled' : '') + '>' + (on ? (s.cfgMod ? 'Volver a cargarla sin sus cambios' : 'Es la que está en pantalla') : 'Cargar esta configuración') + '</button></div></div>';
+  }).join('');
+  $('#cfgIdeas').innerHTML = [
+    '<b>Sistema (01):</b> escoja otra mezcla y deje lo demás quieto. La carga y la parada se mantienen, salvo lo que quede por fuera de los datos de la nueva.',
+    '<b>Carga (02):</b> baje x₀ y mire en la pestaña 2 cómo crece el área bajo 1/(y* − x) a medida que la curva se acerca a la diagonal.',
+    '<b>Parada (03):</b> pase de «x_W final» a «D/W₀» y fije cuánto se vaporiza: es el problema inverso del Taller 8.',
+    '<b>Operación (04):</b> con una mezcla que admita columna, escoja «R constante» y suba N de a una etapa; la pestaña 5 escalona los platos en cada instante.',
+    '<b>Cortes (pestaña 4):</b> mueva el fin del corazón y mire cuánto destilado pasa a las colas y, con etanol-agua, adónde se va el metanol.'
+  ].map(function (t) { return '<li>' + subs(t) + '</li>'; }).join('');
+}
 /* ---------- utilidades SVG ---------- */
 function E(tag, a, inner) { var s = '<' + tag; for (var k in a) if (a[k] != null && a[k] !== '') s += ' ' + k + '="' + a[k] + '"'; return s + '>' + (inner == null ? '' : inner) + '</' + tag + '>'; }
 function richSvg(s) {
@@ -2395,6 +2503,7 @@ function renderTab() {
     else if (tab === 'cu') renderCU();
     else if (tab === 'co') renderCO();
     else if (tab === 'ec') renderEqs();
+    else if (tab === 'cf') renderConfigs();
   } catch (e) { console.error(e); }
 }
 

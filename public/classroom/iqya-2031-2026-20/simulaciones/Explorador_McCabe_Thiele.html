@@ -270,8 +270,9 @@ table.t tr:hover td { background: var(--accent-50); }
 .crit .na .vv, .crit .na .nm { color: var(--n500); }
 #matTable tr.cur td { background: var(--accent-100); }
 #matTable td.bad { color: var(--redline); font-weight: 700; }
-.tabs button { padding: 12px 13px 11px; font-size: 13.5px; }
-.tabs .canv { padding: 0 10px; }
+.tabs button { padding: 12px 9px 11px; font-size: 13px; }
+.tabs .canv { padding: 0 8px; }
+@media (max-width: 1400px) { .tabs button .k { display: none; } }
 .timeline { padding: 10px 16px 4px; border-top: 1.5px solid var(--divider); background: #fff; }
 .tl-bar { position: relative; display: flex; height: 24px; border: 1.5px solid var(--divider); overflow: hidden; }
 .tl-bar > div { height: 100%; position: relative; min-width: 0; }
@@ -376,6 +377,36 @@ table.t tr.dim td { color: var(--n500); }
 @media (max-width: 1100px) { .t3grid { grid-template-columns: 1fr; } .t3grid > .card.t3main { border-right: none; border-bottom: 1.5px solid var(--divider); } }
 @media (max-width: 640px) { #t3Chk .stx { display: none; } #t3Chk td.st { font-size: 15px; }
   .t3stage { min-height: 440px; } .t3lab .lb { font-size: 10.5px; } .t3lab .lb small { display: none; } }
+/* sistema en pantalla y configuraciones del curso */
+.ctl .cfgnow { background: var(--accent-50); }
+.cfgnow-l { font-family: var(--font-mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--n600); font-weight: 700; }
+.cfgnow-n { font-size: 14.5px; font-weight: 750; margin-top: 3px; line-height: 1.3; }
+.cfgnow-n small { display: block; font-size: 11.5px; font-weight: 600; color: var(--n600); margin-top: 2px; }
+.cfgnow-b { margin-top: 8px; border: none; background: none; padding: 0; font: inherit; font-size: 12.5px; font-weight: 700; color: var(--accent-700); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.cfgs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin-top: 18px; }
+.cfg { border: 2px solid var(--divider); background: #fff; display: flex; flex-direction: column; }
+.cfg.on { border-color: var(--accent); box-shadow: inset 0 -4px 0 var(--accent); }
+.cfg svg { display: block; width: 100%; height: auto; background: var(--paper); border-bottom: 1.5px solid var(--divider); }
+.cfg .cb { padding: 12px 16px 14px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+.cfg .ct { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.cfg h3 { margin: 0; font-size: 16px; font-weight: 780; }
+.cfg .src { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-700); font-weight: 700; }
+.cfg p { margin: 0; font-size: 13.5px; color: var(--n700); line-height: 1.5; }
+.cfg .facts { display: grid; grid-template-columns: auto 1fr; gap: 3px 12px; font-size: 12.5px; margin: 2px 0 0; }
+.cfg .facts dt { color: var(--n600); font-weight: 600; }
+.cfg .facts dd { margin: 0; font-weight: 650; }
+.cfg .res { font-family: var(--font-mono); font-size: 12.5px; font-weight: 700; border-top: 1px solid var(--n200); padding-top: 8px; }
+.cfg .res span { color: var(--n600); font-weight: 600; }
+.cfg .note { font-size: 12.5px; color: var(--n600); }
+.cfg button { margin-top: auto; align-self: flex-start; border: 2px solid var(--text); background: var(--text); color: #fff; font: inherit; font-size: 12.5px; font-weight: 750; padding: 7px 12px; cursor: pointer; }
+.cfg.on button { background: #fff; color: var(--text); }
+.cfg button:disabled { opacity: .6; cursor: default; }
+.cfg .btns { margin-top: auto; display: flex; flex-wrap: wrap; gap: 8px; }
+.cfg .btns button { margin-top: 0; }
+.cfg.on .btns button:not(.cur) { background: var(--text); color: #fff; }
+.ideas { margin: 0; padding-left: 18px; display: grid; gap: 6px; font-size: 13.5px; line-height: 1.5; }
+.ideas b { color: var(--accent-700); }
+@media (max-width: 1100px) { .cfgs { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
@@ -401,7 +432,7 @@ table.t tr.dim td { color: var(--n500); }
 
 <div class="shell">
   <aside class="ctl" id="ctl" aria-label="Controles">
-    <section><h2><span class="n">00</span> Casos de partida</h2><div class="presets opts" id="presetBtns"></div></section>
+    <section class="cfgnow"><div class="cfgnow-l">Columna en pantalla</div><div class="cfgnow-n" id="cfgNow"></div><button type="button" class="cfgnow-b" id="toCfg">Ver las configuraciones del curso</button></section>
     <section><h2><span class="n">01</span> Sistema y presión</h2>
       <div class="opts" id="sysBtns"></div>
       <p class="mode-note" id="sysNote"></p>
@@ -450,7 +481,7 @@ table.t tr.dim td { color: var(--n500); }
     <section><h2><span class="n">07</span> Vista</h2>
       <label class="toggle"><input type="checkbox" id="grid"> Cuadrícula en las gráficas</label>
       <label class="toggle" id="vvRow"><input type="checkbox" id="vv"> Composiciones también en % v/v</label>
-      <button type="button" class="seg inline" id="resetAll" style="margin-top:14px;padding:7px 12px;font-weight:700;font-size:12.5px;cursor:pointer">Restablecer el caso del Taller 9</button>
+      <button type="button" class="seg inline" id="resetAll" style="margin-top:14px;padding:7px 12px;font-weight:700;font-size:12.5px;cursor:pointer">Volver a la columna del Taller 9</button>
     </section>
   </aside>
 
@@ -464,6 +495,7 @@ table.t tr.dim td { color: var(--n500); }
       <button type="button" role="tab" data-tab="pt" aria-selected="false"><span class="k">6</span>Platos y torre</button>
       <button type="button" role="tab" data-tab="p3" aria-selected="false"><span class="k">7</span>Plato en 3D</button>
       <button type="button" role="tab" data-tab="ec" aria-selected="false"><span class="k">8</span>Ecuaciones</button>
+      <button type="button" role="tab" data-tab="cf" aria-selected="false"><span class="k">9</span>Configuraciones</button>
       <span class="sp"></span>
       <div class="canv"><button type="button" data-canvas="paper" aria-pressed="true">Papel</button><button type="button" data-canvas="blueprint" aria-pressed="false">Blueprint</button></div>
     </nav>
@@ -581,11 +613,18 @@ table.t tr.dim td { color: var(--n500); }
       </div>
     </section>
 
-    <!-- 7 · ecuaciones -->
+    <!-- 8 · ecuaciones -->
     <section class="panel" data-panel="ec">
       <div class="ph"><h2>Ecuaciones</h2><span class="lbl">con los valores del caso actual</span><p>Las de la Lectura 13, las diapositivas de McCabe-Thiele, Diseño de platos y Eficiencias, el Taller 9 y el capítulo 21 de McCabe, evaluadas con la configuración de los controles. Lo que no está en el material del curso se marca como externo.</p></div>
       <div class="eqs" id="eqs"></div>
       <div class="callout ink" id="assump"></div>
+    </section>
+
+    <!-- 9 · configuraciones del curso -->
+    <section class="panel" data-panel="cf">
+      <div class="ph"><h2>Configuraciones del curso</h2><span class="lbl">cargue una y siga cambiándola</span><p id="cfLead"></p></div>
+      <div class="cfgs" id="cfgCards"></div>
+      <div class="card"><div class="card-h"><span class="t">Para probar en la columna que tiene en pantalla</span><span class="sp"></span><span>un cambio a la vez</span></div><div class="card-b"><ul class="ideas" id="cfgIdeas"></ul></div></div>
     </section>
   </main>
 </div>
@@ -1315,22 +1354,52 @@ var BASE = { sys: 'ea9', alpha: 2.4, P: 760, zF: 0.20, xD: 0.80, xB: 0.02, F: 10
   tray: 'perf', TS: 0.45, ff: 0.80, csb: 'curso', net: true, fracBaj: 0.12, skirt: 1.5, hRule: 's2', view: 'all', grid: true, vv: true, cmpOn: true, pp: 1, pp8: 99,
   t3sec: 'ctrl', t3vL: 1, t3lL: 1, t3hw: 0.05, t3dh: 0.005, t3Ah: 0.10, t3calm: 0.05, t3gap: 0.010, t3C0: 0.84, t3cut: true, t3lab: true, t3flow: true, t3up: true, t3cam: 'iso' };
 var L10 = Math.log10;
-var PRESETS = [
-  { id: 't9', name: 'Taller 9 · columna de diseño', tag: 'q = 1,1 · R = 2,5', s: {} },
-  { id: 't9T', name: 'Taller 9 con el filtrado a 35 °C', tag: 'q desde T ≈ 1,10', s: { qMode: 'T', TF: 35 } },
-  { id: 't9x', name: 'Taller 9 · x_D = 0,85', tag: 'sobre el techo', s: { xD: 0.85 } },
-  { id: 't9d', name: 'Taller 9 · demostración', tag: 'x_D = 0,70', s: { zF: 0.24, xD: 0.70, xB: 0.05, q: 1, lR: L10(2) } },
-  { id: 's2', name: 'Diseño de platos · columna del proyecto', tag: '201 kmol/h · E_o = 55 %', s: { F: 201, Eo: 0.55 } },
-  { id: 'bog', name: 'La columna en Bogotá', tag: 'NRTL · 560 mmHg', s: { sys: 'eaN', P: 560, qMode: 'T', TF: 30 } },
-  { id: 'ipa', name: 'Taller 9 · isopropanol ideal', tag: 'α = 1,958', s: { sys: 'ipaI', zF: 0.30, xD: 0.80, xB: 0.03, q: 0.7, lR: L10(3.5) } },
-  { id: 'ipaV', name: 'El mismo isopropanol con Van Laar', tag: 'sobre el azeótropo', s: { sys: 'ipaV', zF: 0.30, xD: 0.80, xB: 0.03, q: 0.7, lR: L10(3.5) } },
-  { id: 'l13', name: 'Lectura 13 · explorador', tag: 'α = 2,5 · R = 1,65', s: { sys: 'alpha', alpha: 2.5, zF: 0.5, xD: 0.95, xB: 0.05, q: 1, lR: L10(1.65), Eo: 0.70, TS: 0.6, hRule: 'l13' } },
-  { id: 'mc', name: 'McCabe 21.2 · benceno-tolueno', tag: 'α = 2,5 · R = 3,5', s: { sys: 'alpha', alpha: 2.5, zF: 0.44, xD: 0.974, xB: 0.0235, q: 1, lR: L10(3.5), F: 350, Eo: 0.75 } },
-  { id: 'mv', name: 'Benceno-tolueno con Murphree', tag: 'E_MV = 0,75', s: { sys: 'alpha', alpha: 2.4, zF: 0.5, xD: 0.95, xB: 0.05, q: 1, lR: L10(2), Emv: 0.75, Eo: 0.75 } }
+/* Configuraciones del curso: cada una es una columna completa (especificación, alimentación, reflujo y platos)
+   y se carga desde la pestaña 9. Las que son un ejemplo definido por su mezcla (los datos de un taller, un ejemplo
+   del libro, el explorador de una lectura) la fijan y lo dicen (mix: true); t9d y s2 aplican solo sus cambios y
+   conservan la mezcla del panel 01. Ninguna toca la vista ni el plato en 3D, y solo l13 toca el espaciamiento y la
+   regla de altura, porque son parte de su ejemplo. ipaV es la variante con Van Laar de la tarjeta ipa (of: 'ipa'). */
+var CONFIGS = [
+  { id: 't9', name: 'Taller 9 · columna de diseño', src: 'Taller 9 · caso 1', mix: true, s: {},
+    desc: 'La columna que recupera el etanol del licor madre del proyecto: z_F = 0,20, x_D = 0,80 y x_B = 0,02. La alimentación sale del filtro a unos 35 °C, subenfriada, así que q = 1,1; el reflujo de diseño es 2,5.' },
+  { id: 't9x', name: 'Taller 9 · el techo del destilado', src: 'Taller 9 · caso 2', mix: true, s: { xD: 0.85 },
+    desc: 'La pregunta del jefe de producción: ¿por qué no diseñar la columna para 0,85 en vez de 0,80? Es la misma columna de diseño, con el destilado más puro y el mismo reflujo.' },
+  { id: 't9d', name: 'Taller 9 · columna de demostración', src: 'Taller 9 · demostración', s: { zF: 0.24, xD: 0.70, xB: 0.05, q: 1, lR: L10(2) },
+    desc: 'El caso de tanteo que el cuaderno trae resuelto antes del diseño. La meta es modesta: x_D = 0,70 a partir de un licor de 0,24, con líquido saturado y R = 2.',
+    note: 'Con la tabla del Taller 9 da las 4,08 etapas del cuaderno.' },
+  { id: 's2', name: 'La columna del proyecto a 201 kmol/h', src: 'Diseño de platos', s: { F: 201, Eo: 0.55 },
+    desc: 'La sesión de Diseño de platos dimensiona la columna del Taller 9 con el caudal del proyecto y una eficiencia global de 55 %: el diámetro por la inundación, los platos reales y la altura.',
+    note: 'Con la tabla del Taller 9 reproduce la sesión: 0,822 m calculados, 0,8 m comercial al 84 % de la inundación y 19 platos.' },
+  { id: 'bog', name: 'La columna en Bogotá', src: 'extensión · NRTL', mix: true, s: { sys: 'eaN', P: 560, qMode: 'T', TF: 30 },
+    desc: 'La columna de diseño a 560 mmHg, la presión de Bogotá. La tabla del taller solo vale a 1 atm, así que el equilibrio sale del NRTL ajustado a los datos de Perry, y la alimentación se da por su temperatura: 30 °C.',
+    note: 'Ningún material del curso trabaja a esta presión: es una extensión.' },
+  { id: 'ipa', name: 'Isopropanol del Taller 9 · modelo ideal', gname: 'Taller 9 · el isopropanol de otra planta', vlabel: 'el modelo ideal', src: 'Taller 9 · caso 3', mix: true,
+    s: { sys: 'ipaI', zF: 0.30, xD: 0.80, xB: 0.03, q: 0.7, lR: L10(3.5) },
+    mixTxt: 'isopropanol-agua, ideal (α = 1,958) o con Van Laar; cada botón fija la suya',
+    desc: 'Otra planta pide resolver su columna de isopropanol con Antoine y la ley de Raoult, que es lo que trae el manual. La comprobación del taller es el mismo cálculo con el Van Laar ajustado al azeótropo de 0,685: cargue las dos y compare.' },
+  { id: 'ipaV', of: 'ipa', name: 'Isopropanol del Taller 9 · Van Laar', vlabel: 'Van Laar', src: 'Taller 9 · caso 3', mix: true,
+    s: { sys: 'ipaV', zF: 0.30, xD: 0.80, xB: 0.03, q: 0.7, lR: L10(3.5) } },
+  { id: 'l13', name: 'Etapas y altura contra el reflujo', src: 'Lectura 13 · explorador', mix: true,
+    s: { sys: 'alpha', alpha: 2.5, zF: 0.5, xD: 0.95, xB: 0.05, q: 1, lR: L10(1.65), Eo: 0.70, TS: 0.6, hRule: 'l13' },
+    desc: 'El explorador de la Lectura 13: una binaria ideal con α = 2,5 constante, líquido saturado en z_F = 0,5, x_D = 0,95 y R = 1,65, que es 1,5 veces el mínimo. Usa E_o = 70 %, platos a 600 mm y la altura de la lectura, platos por espaciamiento más 3 m.' },
+  { id: 'mc', name: 'McCabe 21.2 · α = 2,5 constante', src: 'McCabe · ejemplo 21.2', mix: true,
+    s: { sys: 'alpha', alpha: 2.5, zF: 0.44, xD: 0.974, xB: 0.0235, q: 1, lR: L10(3.5), F: 350, Eo: 0.75 },
+    desc: 'El ejemplo de benceno-tolueno del libro, resuelto como allí: con una volatilidad relativa constante de 2,5 y no con los datos de la mezcla. Son 350 kmol/h con 0,44 de benceno, x_D = 0,974, x_B = 0,0235 y R = 3,5.',
+    note: 'Si quiere la mezcla con sus datos (Raoult con el Antoine de la Lectura 10), escoja «Benceno-tolueno» en el panel 01 después de cargarla.' },
+  { id: 'mv', name: 'Murphree con α = 2,4 constante', src: 'Eficiencias · curva ideal', mix: true,
+    s: { sys: 'alpha', alpha: 2.4, zF: 0.5, xD: 0.95, xB: 0.05, q: 1, lR: L10(2), Emv: 0.75, Eo: 0.75 },
+    desc: 'La curva efectiva de Murphree sobre una curva ideal, como en la diapositiva de Eficiencias: α = 2,4 constante, el valor típico del benceno-tolueno, platos con E_MV = 0,75, z_F = 0,5, x_D = 0,95 y R = 2.',
+    note: 'Los números son propios del explorador. Lleve E_MV a 1 en el panel 05 y compare: en una curva ideal los escalones se cierran junto a la alimentación.' }
 ];
-function presetState(id) { var p = byId(PRESETS, id), s = Object.assign(clone(BASE), clone(p.s)); s.preset = id; return s; }
-var state = Object.assign(presetState('t9'), store.get('state', {}));
-Object.keys(BASE).forEach(function (k) { if (state[k] === undefined) state[k] = BASE[k]; });
+/* lo que se conserva al cargar una tarjeta: la vista y el plato en 3D siempre; la mezcla (panel 01) si la tarjeta no la fija */
+var KEEP_MIX = ['sys', 'alpha', 'P'];
+var KEEP_VIEW = ['grid', 'vv', 'view', 'cmpOn', 'pp', 'pp8', 't3sec', 't3vL', 't3lL', 't3hw', 't3dh', 't3Ah', 't3calm', 't3gap', 't3C0', 't3cut', 't3lab', 't3flow', 't3up', 't3cam'];
+function cfgState(id, from) {
+  var c = byId(CONFIGS, id), s = Object.assign(clone(BASE), clone(c.s));
+  if (from) KEEP_VIEW.concat(c.mix ? [] : KEEP_MIX).forEach(function (k) { if (from[k] !== undefined) s[k] = from[k]; });
+  s.cfg = c.id; s.cfgMod = false; return s;
+}
+var state = cfgState('t9');
 var RES = null, tab = store.get('tab', 'co'), cscene = null, HL = -1;
 var SVGI = {
   pause: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M8 5v14M16 5v14"/></svg>',
@@ -1353,21 +1422,21 @@ var SLIDERS = ['alpha', 'P', 'zF', 'xD', 'xB', 'F', 'q', 'TF', 'lR', 'Rm', 'feed
 var SEGS = [['#qSeg', 'qMode'], ['#rSeg', 'rMode'], ['#condSeg', 'cond'], ['#feedSeg', 'feedMode'], ['#eoSeg', 'eoMode'], ['#aSeg', 'aSrc'], ['#traySeg', 'tray'], ['#TSSeg', 'TS'], ['#csbSeg', 'csb'], ['#hSeg', 'hRule'], ['#viewSeg', 'view']];
 function buildControls() {
   $$('.panel .ph').forEach(function (ph) { var d = document.createElement('div'); d.className = 'callout np-msg'; ph.parentNode.insertBefore(d, ph.nextSibling); });
-  $('#presetBtns').innerHTML = PRESETS.map(function (p) { return '<button type="button" class="opt" data-p="' + p.id + '"><span>' + subs(esc(p.name)) + '</span><span class="x">' + subs(esc(p.tag)) + '</span></button>'; }).join('');
   $('#sysBtns').innerHTML = SYSTEMS.map(function (f) { return '<button type="button" class="opt" data-s="' + f.id + '"><span class="dotc" style="background:' + f.dot + '"></span><span>' + esc(f.name) + '</span><span class="x">' + esc(f.tag) + '</span></button>'; }).join('');
-  $$('#presetBtns .opt').forEach(function (b) { b.addEventListener('click', function () { state = presetState(b.dataset.p); HL = -1; update(); }); });
-  $$('#sysBtns .opt').forEach(function (b) { b.addEventListener('click', function () { state.sys = b.dataset.s; dirty(); }); });
+  $$('#sysBtns .opt').forEach(function (b) { b.addEventListener('click', function () { state.sys = b.dataset.s; dirty('mix'); }); });
   SEGS.forEach(function (a) { $$(a[0] + ' button').forEach(function (b) { b.addEventListener('click', function () { var v = b.dataset.v; state[a[1]] = a[1] === 'TS' ? parseFloat(v) : v; if (a[1] === 'view') { store.set('state', state); renderTab(); pressed('#viewSeg button', 'v', v); return; } dirty(); }); }); });
-  SLIDERS.forEach(function (k) { var el = document.getElementById(k); el.addEventListener('input', function () { state[k] = parseFloat(el.value); dirty(); }); });
-  [['grid', 'grid'], ['vv', 'vv'], ['net', 'net'], ['cmpOn', 'cmpOn']].forEach(function (a) { $('#' + a[0]).addEventListener('change', function () { state[a[1]] = this.checked; dirty(); }); });
-  $('#resetAll').addEventListener('click', function () { state = presetState('t9'); HL = -1; update(); });
+  SLIDERS.forEach(function (k) { var el = document.getElementById(k); el.addEventListener('input', function () { state[k] = parseFloat(el.value); dirty(k === 'alpha' || k === 'P' ? 'mix' : null); }); });
+  [['grid', 'grid', 'view'], ['vv', 'vv', 'view'], ['net', 'net', null], ['cmpOn', 'cmpOn', 'view']].forEach(function (a) { $('#' + a[0]).addEventListener('change', function () { state[a[1]] = this.checked; dirty(a[2]); }); });
+  $('#resetAll').addEventListener('click', function () { state = cfgState('t9'); HL = -1; update(); if (T3) T3.setCam(state.t3cam, true); });
+  $('#toCfg').addEventListener('click', function () { setTab('cf'); if (window.innerWidth <= 900) { $('#ctl').classList.remove('open'); $('#mobCtl').textContent = 'Controles'; } });
+  $('#cfgCards').addEventListener('click', function (e) { var b = e.target.closest('button[data-cfg]'); if (b) loadCfg(b.dataset.cfg); });
   $('#status').addEventListener('click', function () { setTab('co'); setTimeout(function () { $('#diagCard').scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 50); });
   $$('.tabs [role=tab]').forEach(function (b) { b.addEventListener('click', function () { setTab(b.dataset.tab); }); });
   $$('.tabs .canv button').forEach(function (b) { b.addEventListener('click', function () { document.documentElement.setAttribute('data-canvas', b.dataset.canvas); $$('.tabs .canv button').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); }); store.set('canvas', b.dataset.canvas); if (cscene) cscene.layout(); renderTab(); }); });
   $('#mobCtl').addEventListener('click', function () { $('#ctl').classList.toggle('open'); this.textContent = $('#ctl').classList.contains('open') ? 'Cerrar' : 'Controles'; });
   document.addEventListener('keydown', function (e) {
     if (/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return;
-    var i = '12345678'.indexOf(e.key); if (i >= 0) setTab(['co', 'eq', 'pp', 'rf', 'al', 'pt', 'p3', 'ec'][i]);
+    var i = '123456789'.indexOf(e.key); if (i >= 0) setTab(['co', 'eq', 'pp', 'rf', 'al', 'pt', 'p3', 'ec', 'cf'][i]);
     if (e.key === ' ' && tab === 'co') { e.preventDefault(); togglePlay(); }
     if (tab === 'pp' && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) { ppMove(e.key === 'ArrowRight' ? 1 : -1); }
   });
@@ -1378,7 +1447,10 @@ function buildControls() {
   t3Controls();
   hoverSetup();
 }
-function dirty() { state.preset = null; update(); }
+/* un cambio del estudiante. Lo de la vista nunca cuenta como modificación; la mezcla (panel 01) solo cuenta si la
+   configuración cargada la fija, porque las que la conservan no la definen */
+function dirty(kind) { if (kind !== 'view' && (kind !== 'mix' || byId(CONFIGS, state.cfg).mix)) state.cfgMod = true; update(); }
+function loadCfg(id) { state = cfgState(id, state); HL = -1; update(); setTab('co'); window.scrollTo(0, 0); }
 function togglePlay() { cscene.running = !cscene.running; $('#btnPlay').innerHTML = cscene.running ? SVGI.pause : SVGI.play; }
 function setTab(t) {
   tab = t; store.set('tab', t);
@@ -1505,7 +1577,7 @@ function update() {
   store.set('state', s);
   RES = compute(s);
   var r = RES, sys = r.sys, eq = r.eq;
-  pressed('#presetBtns .opt', 'p', s.preset || ''); pressed('#sysBtns .opt', 's', s.sys);
+  pressed('#sysBtns .opt', 's', s.sys);
   SEGS.forEach(function (a) { pressed(a[0] + ' button', 'v', s[a[1]]); });
   SLIDERS.forEach(function (k) { var el = document.getElementById(k); if (parseFloat(el.value) !== s[k]) el.value = s[k]; });
   $('#grid').checked = !!s.grid; $('#vv').checked = !!s.vv; $('#net').checked = !!s.net; $('#cmpOn').checked = !!s.cmpOn;
@@ -1554,7 +1626,9 @@ function update() {
   // platos
   setV('vff', fmtN(100 * s.ff, 0) + ' %'); setV('vfracBaj', fmtN(100 * s.fracBaj, 1) + ' %'); setV('vskirt', fmtN(s.skirt, 1) + ' m');
   $('#netRow').style.opacity = s.csb === 'fair' ? 0.5 : 1; $('#net').disabled = s.csb === 'fair';
-  $('#ctx').innerHTML = '<b>' + esc(sys.name) + '</b> · ' + (sys.model === 'alpha' ? 'α = ' + fmtN(s.alpha, 2) : fP(r.P)) + ' · F = ' + fmtN(s.F, 0) + ' kmol/h';
+  var cf = byId(CONFIGS, s.cfg);
+  $('#ctx').innerHTML = '<b>' + esc(cf.name) + (s.cfgMod ? ', modificada' : '') + '</b> · ' + esc(lc1(sys.name)) + ' · ' + (sys.model === 'alpha' ? 'α = ' + fmtN(s.alpha, 2) : fmtN(r.P, 0) + ' mmHg');
+  $('#cfgNow').innerHTML = esc(cf.name) + '<small>' + esc(s.cfgMod ? 'con sus cambios' : cf.src) + '</small>';
   renderKPIs(); renderStatus(); renderTab();
   if (cscene) { cscene.configure(sceneData(r)); }
 }
@@ -1587,9 +1661,9 @@ function renderKPIs() {
 function renderTab() {
   if (!RES) return;
   var np = !RES.ok;
-  $$('.panel').forEach(function (p) { p.classList.toggle('nophys', np && p.dataset.panel !== 'eq'); });
+  $$('.panel').forEach(function (p) { p.classList.toggle('nophys', np && p.dataset.panel !== 'eq' && p.dataset.panel !== 'cf'); });
   $$('.np-msg').forEach(function (el) { el.innerHTML = np ? '<b>Así no hay columna.</b> ' + subs(esc(RES.fatal)) : ''; });
-  if (np && tab !== 'eq') { renderWarn(); if (tab === 'co') renderCo(); return; }
+  if (np && tab !== 'eq' && tab !== 'cf') { renderWarn(); if (tab === 'co') renderCo(); return; }
   if (tab === 'co') renderCo();
   else if (tab === 'eq') renderEq();
   else if (tab === 'pp') renderPP();
@@ -1598,6 +1672,7 @@ function renderTab() {
   else if (tab === 'pt') renderPT();
   else if (tab === 'p3') renderP3();
   else if (tab === 'ec') renderEqs();
+  else if (tab === 'cf') renderConfigs();
 }
 var lastWarn = '';
 function renderWarn() {
@@ -1606,6 +1681,57 @@ function renderWarn() {
   $('#diagCount').textContent = w.length + (w.length === 1 ? ' nota' : ' notas');
   var wh = w.map(function (x) { return '<div class="warn ' + (x.sev === 'c' ? 'c' : (x.sev === 'ok' ? 'ok' : '')) + '"><i>' + (x.sev === 'ok' ? '✓' : '!') + '</i><div>' + subs(esc(x.t)) + '</div></div>'; }).join('');
   if (wh !== lastWarn) { $('#warnings').innerHTML = wh; lastWarn = wh; }
+}
+
+/* ---------- 9 · configuraciones del curso ---------- */
+var HRULE_TXT = { s2: 'de Diseño de platos', l13: 'de la Lectura 13, platos × TS + 3 m', t9: 'del Taller 9, solo la zona de platos' };
+function lc1(t) { return t.charAt(0).toLowerCase() + t.slice(1); }
+function mixName(s) { var sys = byId(SYSTEMS, s.sys); return sys.model === 'alpha' ? 'volatilidad relativa constante, α = ' + fmtN(s.alpha, 2) : lc1(sys.name) + (sys.fixedP ? '' : ' a ' + fmtN(s.P, 0) + ' mmHg'); }
+/* composición en las tarjetas: con la cuarta cifra decimal solo si la tiene (0,0235) */
+function fxc(x) { return fmtN(x, Math.abs(x * 1000 - Math.round(x * 1000)) > 1e-6 ? 4 : 3); }
+function cfgFacts(c, st) {
+  var f = [['Mezcla', c.mixTxt || (c.mix ? mixName(st) + ' (la fija la tarjeta)' : 'la del panel 01, ahora ' + mixName(state))],
+    ['Especificación', 'z_F = ' + fxc(st.zF) + ' · x_D = ' + fxc(st.xD) + ' · x_B = ' + fxc(st.xB) + ' · F = ' + fmtN(st.F, 0) + ' kmol/h'],
+    ['Alimentación', st.qMode === 'T' ? 'a ' + fT(st.TF) + ', q sale de la temperatura' : 'q = ' + fmtN(st.q, 2)],
+    ['Reflujo', st.rMode === 'Rm' ? 'R = ' + fmtN(st.Rm, 2) + ' R_mín' : 'R = ' + fmtN(Math.pow(10, st.lR), 2) + (st.cond === 'parcial' ? ' · condensador parcial' : '')],
+    ['Platos', (st.Emv < 1 ? 'Murphree, E_MV = ' + fmtN(st.Emv, 2) : 'E_o = ' + fmtN(100 * st.Eo, 0) + ' %') + ' · ' + (st.tray === 'valv' ? 'de válvulas' : 'perforados') + ' a ' + fmtN(1000 * st.TS, 0) + ' mm']];
+  if (st.hRule !== BASE.hRule) f.push(['Altura', 'con la regla ' + HRULE_TXT[st.hRule]]);
+  return f;
+}
+function cfgRes(r) {
+  if (!r.ok) return r.az ? 'x_D queda sobre el azeótropo' + (r.eq.az ? ' (' + fx(r.eq.az.x) + ')' : '') + ': no hay columna' : 'especificación imposible';
+  if (!r.col.ok) return r.R <= r.rm.R * 1.0005 ? 'no hay columna: R = ' + fmtN(r.R, 2) + ' queda por debajo de R_mín = ' + fmtN(r.rm.R, 3) : 'el escalonado no converge';
+  var t = fmtN(r.col.N, 2) + ' etapas · ';
+  t += isFinite(r.Nreal) ? r.Nreal + ' platos · D = ' + fmtN(r.Dcom, 1) + ' m · H = ' + fmtN(r.H[r.s.hRule], 1) + ' m' : 'con E_MV = ' + fmtN(r.s.Emv, 2) + ' los platos no alcanzan';
+  if (isFinite(r.Nreal) && r.warn.some(function (w) { return w.sev === 'c'; })) t += ' · no viable';
+  return t;
+}
+function renderConfigs() {
+  var s = state, here = mixName(s);
+  $('#cfLead').innerHTML = subs('Cada tarjeta es una columna completa de un material del curso: especificación, alimentación, reflujo y platos. Al cargar una se conservan las opciones de vista y el plato en 3D. Las que reproducen un ejemplo definido por su mezcla la fijan y lo dicen; las demás se calculan con la mezcla que usted tiene en el panel 01 (<b>' + esc(here) + '</b>). Después la sigue cambiando pieza por pieza en los controles.');
+  $('#cfgCards').innerHTML = CONFIGS.filter(function (c) { return !c.of; }).map(function (c) {
+    var vars = [c].concat(CONFIGS.filter(function (v) { return v.of === c.id; })), multi = vars.length > 1;
+    var on = vars.some(function (v) { return v.id === s.cfg; }), st0 = cfgState(c.id, s);
+    var res = vars.map(function (v) {
+      var r = compute(cfgState(v.id, s));
+      return (multi ? '<span>Con ' + esc(v.vlabel) + ':</span> ' : (c.mix ? '<span>Resultado:</span> ' : '<span>Con ' + esc(here) + ':</span> ')) + subs(esc(cfgRes(r)));
+    }).join('<br>');
+    var btns = vars.map(function (v) {
+      var cur = v.id === s.cfg, lab = cur ? (s.cfgMod ? 'Volver a cargarla sin sus cambios' : (multi ? 'En pantalla, con ' + v.vlabel : 'Es la que está en pantalla')) : (multi ? 'Cargar con ' + v.vlabel : 'Cargar esta configuración');
+      return '<button type="button" data-cfg="' + v.id + '"' + (cur ? ' class="cur"' : '') + (cur && !s.cfgMod ? ' disabled' : '') + '>' + esc(lab) + '</button>';
+    }).join('');
+    return '<div class="cfg' + (on ? ' on' : '') + '"><div class="cb"><div class="ct"><h3>' + esc(c.gname || c.name) + '</h3><span class="src">' + esc(c.src) + '</span></div><p>' + subs(esc(c.desc)) + '</p>'
+      + '<dl class="facts">' + cfgFacts(c, st0).map(function (q) { return '<dt>' + q[0] + '</dt><dd>' + subs(esc(q[1])) + '</dd>'; }).join('') + '</dl>'
+      + '<div class="res">' + res + '</div>' + (c.note ? '<div class="note">' + subs(esc(c.note)) + '</div>' : '')
+      + '<div class="btns">' + btns + '</div></div></div>';
+  }).join('');
+  $('#cfgIdeas').innerHTML = [
+    '<b>Alimentación (03):</b> pulse «Dar la temperatura». El filtrado a 35 °C da q ≈ 1,10, el valor del Taller 9; llévelo por encima del punto de burbuja, unos 83 °C, y mire en la pestaña 5 cómo cae q y gira la línea q.',
+    '<b>Eficiencia (05):</b> baje E_MV de 1,0 a 0,6 y cuente cuántas etapas aparecen para la misma pureza, como propone la sesión de Eficiencias.',
+    '<b>Reflujo (04):</b> pase a «Dar R/R_mín» y compare 1,2 y 1,5 veces el mínimo, el intervalo de la Lectura 13: etapas, platos y hervidor.',
+    '<b>Sistema y presión (01):</b> cambie la tabla del Taller 9 por «Etanol-agua · NRTL». A la misma presión la columna baja de 10,96 a unas 8,9 etapas, y la pestaña 2 muestra por qué; después mueva la presión y mire cómo se corre el azeótropo.',
+    '<b>Platos y torre (06):</b> pase a 600 mm entre platos. El diámetro calculado baja porque el vapor admite más velocidad, y la torre crece; los dos están en la pestaña 6.'
+  ].map(function (q) { return '<li>' + subs(q) + '</li>'; }).join('');
 }
 
 /* ---------- utilidades SVG ---------- */

@@ -387,6 +387,39 @@ table.t tr.light td:first-child { color: var(--accent-700); }
 .card-h .seg button { white-space: nowrap; }
 .eqcard .tx[data-d] { margin: 4px 0 10px; overflow-x: auto; overflow-y: hidden; }
 @media (max-width: 1100px) { .two { grid-template-columns: minmax(0, 1fr); } }
+/* sistema en pantalla y configuraciones del curso */
+.ctl .cfgnow { background: var(--accent-50); }
+.cfgnow-l { font-family: var(--font-mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--n600); font-weight: 700; }
+.cfgnow-n { font-size: 14.5px; font-weight: 750; margin-top: 3px; line-height: 1.3; }
+.cfgnow-n small { display: block; font-size: 11.5px; font-weight: 600; color: var(--n600); margin-top: 2px; }
+.cfgnow-b { margin-top: 8px; border: none; background: none; padding: 0; font: inherit; font-size: 12.5px; font-weight: 700; color: var(--accent-700); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.cfgs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin-top: 18px; }
+.cfg { border: 2px solid var(--divider); background: #fff; display: flex; flex-direction: column; }
+.cfg.on { border-color: var(--accent); box-shadow: inset 0 -4px 0 var(--accent); }
+.cfg svg { display: block; width: 100%; height: auto; background: var(--paper); border-bottom: 1.5px solid var(--divider); }
+.cfg .cb { padding: 12px 16px 14px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+.cfg .ct { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.cfg h3 { margin: 0; font-size: 16px; font-weight: 780; }
+.cfg .src { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-700); font-weight: 700; }
+.cfg p { margin: 0; font-size: 13.5px; color: var(--n700); line-height: 1.5; }
+.cfg .facts { display: grid; grid-template-columns: auto 1fr; gap: 3px 12px; font-size: 12.5px; margin: 2px 0 0; }
+.cfg .facts dt { color: var(--n600); font-weight: 600; }
+.cfg .facts dd { margin: 0; font-weight: 650; }
+.cfg .res { font-family: var(--font-mono); font-size: 12.5px; font-weight: 700; border-top: 1px solid var(--n200); padding-top: 8px; }
+.cfg .res span { color: var(--n600); font-weight: 600; }
+.cfg .res .nw { white-space: nowrap; }
+.cfg .note { font-size: 12.5px; color: var(--n600); }
+.cfg button { margin-top: auto; align-self: flex-start; border: 2px solid var(--text); background: var(--text); color: #fff; font: inherit; font-size: 12.5px; font-weight: 750; padding: 7px 12px; cursor: pointer; }
+.cfg.on button { background: #fff; color: var(--text); }
+.cfg button:disabled { opacity: .6; cursor: default; }
+.ideas { margin: 0; padding-left: 18px; display: grid; gap: 6px; font-size: 13.5px; line-height: 1.5; }
+.ideas b { color: var(--accent-700); }
+@media (max-width: 1100px) { .cfgs { grid-template-columns: 1fr; } }
+/* pista cuando la T del tambor queda fuera de la región de dos fases */
+.tpfix { display: none; margin-top: 8px; padding: 8px 10px; border: 1.5px dashed var(--n400); background: #fff; font-size: 12px; line-height: 1.45; color: var(--n700); }
+.tpfix.on { display: block; }
+.tpfix button { display: block; margin-top: 6px; border: 1.5px solid var(--text); background: #fff; color: var(--text); font: inherit; font-size: 12px; font-weight: 700; padding: 5px 10px; cursor: pointer; }
+.tpfix button:hover { background: var(--accent-50); }
 </style>
 </head>
 <body>
@@ -412,11 +445,12 @@ table.t tr.light td:first-child { color: var(--accent-700); }
 
 <div class="shell">
   <aside class="ctl" id="ctl" aria-label="Controles">
-    <section><h2><span class="n">00</span> Casos de partida</h2><div class="presets opts" id="presetBtns"></div></section>
+    <section class="cfgnow"><div class="cfgnow-l">Sistema en pantalla</div><div class="cfgnow-n" id="cfgNow"></div><button type="button" class="cfgnow-b" id="toCfg">Ver las configuraciones del curso</button></section>
     <section><h2><span class="n">01</span> Mezcla</h2>
       <div class="seg" id="modeSeg"><button type="button" data-v="bin">Binaria</button><button type="button" data-v="multi">Multicomponente</button></div>
       <div class="opts" id="sysBtns" style="margin-top:10px"></div>
       <div class="opts" id="mixBtns" style="margin-top:10px"></div>
+      <p class="mode-note" id="mixHint"></p>
       <p class="mode-note" id="sysNote"></p>
     </section>
     <section><h2><span class="n">02</span> Alimentación</h2>
@@ -428,7 +462,7 @@ table.t tr.light td:first-child { color: var(--accent-700); }
     <section><h2><span class="n">03</span> Tambor</h2>
       <div class="sl" id="PRow" style="margin-top:0"><div class="row"><span>Presión del tambor</span><b id="vP"></b></div><input type="range" id="lP" min="1.7" max="4.4" step="0.002"><div class="hint" id="PHint"></div></div>
       <div class="sl"><div class="row"><span>Se especifica</span></div><div class="seg wrap" id="specSeg" style="margin-top:6px"><button type="button" data-v="T">La T del tambor</button><button type="button" data-v="psi">La fracción Ψ</button><button type="button" data-v="adi">T<sub>F</sub> · adiabático</button></div></div>
-      <div class="sl" id="TRow"><div class="row"><span>Temperatura del tambor</span><b id="vT"></b></div><input type="range" id="T" min="-60" max="240" step="0.1"><div class="hint" id="THint"></div></div>
+      <div class="sl" id="TRow"><div class="row"><span>Temperatura del tambor</span><b id="vT"></b></div><input type="range" id="T" min="-60" max="240" step="0.1"><div class="hint" id="THint"></div><div class="tpfix" id="tpFix"><span id="tpFixTxt"></span><button type="button" id="toTwoPhase">Llevar T a la región de dos fases</button></div></div>
       <div class="sl" id="psiRow"><div class="row"><span>Fracción vaporizada Ψ = V/F</span><b id="vpsi"></b></div><input type="range" id="psi" min="0" max="1" step="0.005"><div class="hint">f en las diapositivas, Ψ en la Lectura 11, β en el Taller 7.</div></div>
       <div class="sl" id="TFRow"><div class="row"><span>Salida del intercambiador T<sub>F</sub></span><b id="vTF"></b></div><input type="range" id="TF" min="20" max="320" step="0.5"><div class="hint" id="TFHint"></div></div>
       <p class="mode-note" id="specNote"></p>
@@ -449,6 +483,7 @@ table.t tr.light td:first-child { color: var(--accent-700); }
       <button type="button" role="tab" data-tab="en" aria-selected="false"><span class="k">5</span>Energía</button>
       <button type="button" role="tab" data-tab="vo" aria-selected="false"><span class="k">6</span>Ventana T-P</button>
       <button type="button" role="tab" data-tab="ec" aria-selected="false"><span class="k">7</span>Ecuaciones</button>
+      <button type="button" role="tab" data-tab="cf" aria-selected="false"><span class="k">8</span>Configuraciones</button>
       <span class="sp"></span>
       <div class="canv"><button type="button" data-canvas="paper" aria-pressed="true">Papel</button><button type="button" data-canvas="blueprint" aria-pressed="false">Blueprint</button></div>
     </nav>
@@ -539,6 +574,13 @@ table.t tr.light td:first-child { color: var(--accent-700); }
       <div class="eqs" id="eqs"></div>
       <div class="algo" id="algo"></div>
       <div class="callout ink" id="assump"></div>
+    </section>
+
+    <!-- 8 · configuraciones -->
+    <section class="panel" data-panel="cf">
+      <div class="ph"><h2>Configuraciones del curso</h2><span class="lbl">cargue una y siga cambiándola</span><p id="cfLead"></p></div>
+      <div class="cfgs" id="cfgCards"></div>
+      <div class="card"><div class="card-h"><span class="t">Para probar en el sistema que tiene en pantalla</span><span class="sp"></span><span>un cambio a la vez</span></div><div class="card-b"><ul class="ideas" id="cfgIdeas"></ul></div></div>
     </section>
   </main>
 </div>
@@ -1075,27 +1117,59 @@ var L10 = Math.log10;
 
 var BASE = { mode: 'bin', sys: 'eaR', mix: 'c345', lP: L10(760), spec: 'T', T: 91, psi: 0.4, TF: 150, T0: 25, z: 0.40, zm: null, Km: null, F: 100,
   units: 'mmHg', diag: 'txy', b0: '0.5', grid: true, logP: false, cmpIdeal: true, Teq: null };
-var PRESETS = [
-  { id: 'l11', name: 'Lectura 11 · calculadora', tag: 'Raoult · 91 °C · z = 0,40', s: {} },
-  { id: 'l11r', name: 'El mismo flash con datos reales', tag: '91 °C · todo vapor', s: { sys: 'eaD' } },
-  { id: 'reto', name: 'El reto · pre-flash del filtrado', tag: 'z = 0,20 · Ψ = 0,20', s: { sys: 'eaD', z: 0.20, spec: 'psi', psi: 0.20, T0: 35 } },
-  { id: 'bog', name: 'El mismo pre-flash en Bogotá', tag: 'NRTL · 560 mmHg', s: { sys: 'eaN', lP: L10(560), z: 0.20, spec: 'psi', psi: 0.20, T0: 35 } },
-  { id: 'mc', name: 'McCabe 21.1 · benceno-tolueno', tag: 'Ψ = 0,4 → T_F', s: { sys: 'bt', z: 0.5, spec: 'psi', psi: 0.4, T0: 25, diag: 'xy' } },
-  { id: 'adi', name: 'El mismo, adiabático', tag: 'T_F = 178 °C', s: { sys: 'bt', z: 0.5, spec: 'adi', TF: 178, T0: 25 } },
-  { id: 'ho', name: 'Lectura 10 · n-hexano/n-octano', tag: 'ideal · α ≈ 5', s: { sys: 'ho', z: 0.5, T: 95 } },
-  { id: 'ipa', name: 'Isopropanol-agua sobre el azeótropo', tag: 'z = 0,80', s: { sys: 'ipa', z: 0.80, spec: 'psi', psi: 0.4 } },
-  { id: 's3', name: 'Diapositivas · C₃, C₄ y C₅', tag: '60 °C · 8 atm', s: { mode: 'multi', mix: 'c345', lP: L10(8 * 760), T: 60, units: 'atm' } },
-  { id: 't7e1', name: 'Taller 7 · ejemplo 1', tag: 'K fijas · β = 7/12', s: { mode: 'multi', mix: 't7e1', units: 'kPa' } },
-  { id: 't7a', name: 'Taller 7 · escenario A', tag: 'dos fases · F = 150', s: { mode: 'multi', mix: 't7a', units: 'kPa', F: 150 } },
-  { id: 't7b', name: 'Taller 7 · escenario B', tag: 'todo líquido', s: { mode: 'multi', mix: 't7b', units: 'kPa', F: 150 } },
-  { id: 't7c', name: 'Taller 7 · escenario C', tag: 'todo vapor', s: { mode: 'multi', mix: 't7c', units: 'kPa', F: 150 } },
-  { id: 'hbt', name: 'Hexano, benceno y tolueno', tag: 'Raoult · adiabático', s: { mode: 'multi', mix: 'hbt', spec: 'adi', TF: 160, lP: L10(760) } }
+/* Configuraciones del curso: cada una es un caso completo (mezcla, alimentación y tambor) y se carga desde la pestaña 8.
+   Las que salen de un ejemplo, de un taller o del reto fijan su mezcla; las que llevan keep: true se aplican a la mezcla
+   que el estudiante tiene en pantalla. Ninguna toca las opciones de vista (unidades, diagrama, Ψ₀, cuadrícula). */
+var CONFIGS = [
+  { id: 'l11', name: 'La calculadora de la Lectura 11', src: 'Lectura 11', mixWhy: 'la de la lectura', s: {},
+    desc: 'Etanol-agua con Raoult ideal, como la calculadora de la lectura: z = 0,40 en un tambor a 91 °C y 1 atm. Es el caso para seguir el algoritmo del flash isotérmico paso a paso.' },
+  { id: 'l11r', name: 'El mismo flash con el equilibrio real', src: 'Lectura 11 · datos de Perry', mixWhy: 'la tabla de las diapositivas', s: { sys: 'eaD' },
+    desc: 'El caso de la calculadora con la tabla x-y-T de las diapositivas en lugar de Raoult. El punto de rocío real queda por debajo de 91 °C, así que la alimentación sale toda como vapor y el tambor no separa nada.',
+    note: 'Para encontrar las dos fases con estos datos use «Llevar T a la región de dos fases» en el panel 03.' },
+  { id: 'reto', name: 'El pre-flash del filtrado del reto', src: 'Reto del curso', mixWhy: 'la del reto', s: { sys: 'eaD', z: 0.20, spec: 'psi', psi: 0.20, T0: 35 },
+    desc: 'El filtrado llega a 35 °C con z = 0,20 de etanol (44,7 % v/v) y se quiere vaporizar la quinta parte en un tambor a 1 atm. Se busca la temperatura que da Ψ = 0,20 y el calor que pide el intercambiador.' },
+  { id: 'bog', name: 'El pre-flash del reto a la presión de Bogotá', src: 'Reto · 560 mmHg', keep: true, s: { lP: L10(560), z: 0.20, spec: 'psi', psi: 0.20, T0: 35 },
+    fit: function (s) { if (s.mode === 'bin' && byId(BIN, s.sys).fixedP) s.sys = 'eaN'; },
+    desc: 'La especificación del reto (z = 0,20, Ψ = 0,20 y llegada a 35 °C) con el tambor a 560 mmHg. Se aplica a la mezcla que tiene en pantalla: compare la temperatura del tambor y el calor con los de 1 atm.',
+    note: 'Los datos del curso para etanol-agua solo valen a 1 atm; si son los que tiene, la tarjeta pasa al NRTL ajustado a esos mismos datos.' },
+  { id: 'mc', name: 'Benceno-tolueno, el ejemplo 21.1 de McCabe', src: 'McCabe 21.1', s: { sys: 'bt', z: 0.5, spec: 'psi', psi: 0.4 },
+    desc: 'Una alimentación equimolar de benceno y tolueno a 1 atm de la que se vaporiza el 40 %. Salen la temperatura del tambor, las dos composiciones y la temperatura T_F a la que hay que calentar la alimentación.' },
+  { id: 'adi', name: 'Flash adiabático con T_F = 178 °C', src: 'McCabe 21.1 al revés', keep: true, s: { z: 0.5, spec: 'adi', TF: 178 },
+    desc: 'La alimentación sale del intercambiador a 178 °C y la válvula y el tambor no intercambian calor: la entalpía que trae fija la temperatura del tambor y cuánto se vaporiza. Se aplica a la mezcla que tiene en pantalla.',
+    note: 'Con benceno-tolueno es el ejemplo 21.1 visto al revés y da Ψ ≈ 0,40.' },
+  { id: 'ho', name: 'Una mezcla casi ideal: n-hexano/n-octano', src: 'Lectura 10', s: { sys: 'ho', z: 0.5, T: 95 },
+    desc: 'El ejemplo de mezcla ideal de la Lectura 10, equimolar, en un tambor a 95 °C y 1 atm. Con α cerca de 5 una sola etapa ya separa bastante: compare el vapor con el del etanol-agua.' },
+  { id: 'ipa', name: 'Isopropanol-agua del otro lado del azeótropo', src: 'Taller 9 · Van Laar', s: { sys: 'ipa', z: 0.80, spec: 'psi', psi: 0.4 },
+    desc: 'Una alimentación con z = 0,80, a la derecha del azeótropo de 0,685. El vapor sale más pobre en isopropanol que el líquido: un flash no puede cruzar el azeótropo.' },
+  { id: 's3', name: 'El flash interactivo de las diapositivas', src: 'Diapositivas de flash', s: { mode: 'multi', mix: 'c345', lP: L10(8 * 760), T: 60 },
+    desc: 'Propano, n-butano y n-pentano (z = 0,30, 0,40 y 0,30) a 60 °C y 8 atm, con K de Raoult y el Antoine de las diapositivas. Da f = 0,201.' },
+  { id: 't7e1', name: 'K fijas: el ejemplo 1 del Taller 7', src: 'Taller 7 · ejemplo 1', mixWhy: 'la del taller, con sus K', s: { mode: 'multi', mix: 't7e1' },
+    desc: 'Propano, n-butano y n-pentano con K constantes a 350 K y 1000 kPa y F = 100 kmol/h. La raíz de Rachford-Rice es exactamente β = 7/12.' },
+  { id: 't7a', name: 'K fijas: escenario A del Taller 7', src: 'Taller 7 · ejemplo 2', mixWhy: 'la del taller, con sus K', s: { mode: 'multi', mix: 't7a', F: 150 },
+    desc: 'Etano, propano, i-butano, n-butano e i-pentano a 340 K y 1200 kPa, con F = 150 kmol/h. Hay dos fases y β = 0,3098.' },
+  { id: 't7b', name: 'K fijas: escenario B, todo líquido', src: 'Taller 7 · ejemplo 2', mixWhy: 'la del taller, con sus K', s: { mode: 'multi', mix: 't7b', F: 150 },
+    desc: 'La misma alimentación a 2500 kPa y 320 K. Con Σ zK = 0,43 no aparece vapor: Rachford-Rice no tiene raíz entre 0 y 1 y todo sale líquido.' },
+  { id: 't7c', name: 'K fijas: escenario C, todo vapor', src: 'Taller 7 · ejemplo 2', mixWhy: 'la del taller, con sus K', s: { mode: 'multi', mix: 't7c', F: 150 },
+    desc: 'La misma alimentación a 400 kPa y 370 K. Con Σ z/K = 0,38 no queda líquido y todo se vaporiza.' },
+  { id: 'hbt', name: 'Tres componentes con Raoult, adiabático', src: 'Ejemplo del explorador', s: { mode: 'multi', mix: 'hbt', spec: 'adi', TF: 160, lP: L10(760) },
+    desc: 'n-Hexano, benceno y tolueno con K que cambian con la temperatura y la presión. La alimentación sale del intercambiador a 160 °C y el tambor adiabático a 1 atm fija la temperatura y Ψ.' }
 ];
-function mixDefaults(s) { var mx = byId(MULTI, s.mix); s.zm = mx.z.slice(); s.Km = mx.K ? mx.K.slice() : null; if (mx.kmode === 'fixed') { s.F = mx.F || s.F; } }
-function presetState(id) { var p = byId(PRESETS, id), s = Object.assign(clone(BASE), clone(p.s)); mixDefaults(s); if (p.s.F) s.F = p.s.F; s.preset = id; return s; }
-var state = Object.assign(presetState('l11'), store.get('state', {}));
-if (!state.zm) mixDefaults(state);
-var RES = null, tab = store.get('tab', 'td'), dscene = null;
+/* la mezcla es el sistema (binario o multicomponente) con sus datos propios: la composición zᵢ y, si las trae, las K */
+var MIX_KEYS = ['mode', 'sys', 'mix', 'zm', 'Km'], VIEW_KEYS = ['units', 'diag', 'b0', 'grid', 'logP', 'cmpIdeal'];
+function mixDefaults(s) { var mx = byId(MULTI, s.mix); s.zm = mx.z.slice(); s.Km = mx.K ? mx.K.slice() : null; }
+function cfgState(id, from) {
+  var c = byId(CONFIGS, id), s = Object.assign(clone(BASE), clone(c.s));
+  mixDefaults(s);
+  if (from) {
+    VIEW_KEYS.forEach(function (k) { if (from[k] !== undefined) s[k] = from[k]; });
+    if (c.keep) MIX_KEYS.forEach(function (k) { if (from[k] !== undefined) s[k] = clone(from[k]); });
+  }
+  if (!s.zm) mixDefaults(s);
+  if (c.fit) c.fit(s);
+  s.cfg = c.id; s.cfgMod = false; return s;
+}
+var state = cfgState('l11');
+var RES = null, tab = 'td', dscene = null;
 var SVGI = {
   pause: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M8 5v14M16 5v14"/></svg>',
   play: '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l12-7.5z"/></svg>'
@@ -1109,7 +1183,6 @@ function fkw(k) { return isFinite(k) ? fmtN(k, Math.abs(k) < 100 ? 1 : 0) : '—
 function fpct(v, d) { return isFinite(v) ? fmtN(100 * v, d == null ? 1 : d) + ' %' : '—'; }
 function Pu(P, u) { u = u || state.units; return u === 'kPa' ? P * MMHG_KPA : (u === 'atm' ? P / 760 : P); }
 function fP(P, u) { u = u || state.units; var v = Pu(P, u); return fmtN(v, u === 'atm' ? (v < 10 ? 3 : 2) : (u === 'kPa' ? (v < 100 ? 2 : 1) : (v < 100 ? 1 : 0))) + ' ' + u; }
-function fP2(P) { return fmtN(P, P < 100 ? 1 : 0) + ' mmHg · ' + fmtN(P * MMHG_KPA, 1) + ' kPa'; }
 function subs(h) { return h.replace(/([A-Za-zαλμρθΨβγ*])_(\{[^}]*\}|[A-Za-záéíóúñ0-9]+)/g, function (m, a, b) { return a + '<sub>' + b.replace(/[{}]/g, '') + '</sub>'; }); }
 function cName(c) { return COMP[c] ? COMP[c].n : c; }
 
@@ -1118,23 +1191,31 @@ var SLIDERS = ['z', 'F', 'T0', 'lP', 'T', 'psi', 'TF'];
 var SEGS = [['#modeSeg', 'mode'], ['#specSeg', 'spec'], ['#unitSeg', 'units'], ['#diagSeg', 'diag'], ['#b0Seg', 'b0']];
 function buildControls() {
   $$('.panel .ph').forEach(function (ph) { var d = document.createElement('div'); d.className = 'callout np-msg'; ph.parentNode.insertBefore(d, ph.nextSibling); });
-  $('#presetBtns').innerHTML = PRESETS.map(function (p) { return '<button type="button" class="opt" data-p="' + p.id + '"><span>' + subs(esc(p.name)) + '</span><span class="x">' + subs(esc(p.tag)) + '</span></button>'; }).join('');
   $('#sysBtns').innerHTML = BIN.map(function (f) { return '<button type="button" class="opt" data-s="' + f.id + '"><span class="dotc" style="background:' + f.dot + '"></span><span>' + esc(f.name) + '</span><span class="x">' + esc(f.tag) + '</span></button>'; }).join('');
   $('#mixBtns').innerHTML = MULTI.map(function (f) { return '<button type="button" class="opt" data-m="' + f.id + '"><span class="dotc" style="background:' + (f.kmode === 'fixed' ? '#8a8683' : '#416180') + '"></span><span>' + esc(f.name) + '</span><span class="x">' + esc(f.tag) + '</span></button>'; }).join('');
-  $$('#presetBtns .opt').forEach(function (b) { b.addEventListener('click', function () { state = presetState(b.dataset.p); update(); }); });
-  $$('#sysBtns .opt').forEach(function (b) { b.addEventListener('click', function () { state.sys = b.dataset.s; state.mode = 'bin'; keepTwoPhase(); dirty(); }); });
-  $$('#mixBtns .opt').forEach(function (b) { b.addEventListener('click', function () { state.mix = b.dataset.m; state.mode = 'multi'; mixDefaults(state); var mx = byId(MULTI, state.mix); if (mx.kmode === 'fixed') { state.units = 'kPa'; state.spec = 'T'; } else if (state.mix === 'c345') { state.lP = L10(8 * 760); state.T = 60; } keepTwoPhase(); dirty(); }); });
-  SEGS.forEach(function (a) { $$(a[0] + ' button').forEach(function (b) { b.addEventListener('click', function () { var v = b.dataset.v; state[a[1]] = v; if (a[1] === 'mode') keepTwoPhase(); if (a[1] === 'spec') specFromResult(v); if (a[1] === 'diag' || a[1] === 'units' || a[1] === 'b0') { store.set('state', state); update(); return; } dirty(); }); }); });
+  /* cada control cambia solo su clave: la mezcla (y sus datos propios zᵢ y K), la especificación o una vista */
+  $$('#sysBtns .opt').forEach(function (b) { b.addEventListener('click', function () { state.sys = b.dataset.s; state.mode = 'bin'; dirty('mix'); }); });
+  $$('#mixBtns .opt').forEach(function (b) { b.addEventListener('click', function () { state.mix = b.dataset.m; state.mode = 'multi'; mixDefaults(state); dirty('mix'); }); });
+  SEGS.forEach(function (a) { $$(a[0] + ' button').forEach(function (b) { b.addEventListener('click', function () {
+    var v = b.dataset.v; state[a[1]] = v;
+    // al pasar a multicomponente sin mezcla se usa la primera de la lista, con la presión que ya tiene
+    if (a[1] === 'mode') { if (v === 'multi' && !state.zm) { state.mix = MULTI[0].id; mixDefaults(state); } dirty('mix'); return; }
+    if (a[1] === 'spec') specFromResult(v);
+    dirty(a[1] === 'diag' || a[1] === 'units' || a[1] === 'b0' ? 'view' : null);
+  }); }); });
   SLIDERS.forEach(function (k) { var el = document.getElementById(k); el.addEventListener('input', function () { state[k] = parseFloat(el.value); dirty(); }); });
-  [['grid', 'grid'], ['logP', 'logP'], ['cmpIdeal', 'cmpIdeal']].forEach(function (a) { $('#' + a[0]).addEventListener('change', function () { state[a[1]] = this.checked; store.set('state', state); update(); }); });
-  $('#resetAll').addEventListener('click', function () { state = presetState('l11'); update(); });
+  [['grid', 'grid'], ['logP', 'logP'], ['cmpIdeal', 'cmpIdeal']].forEach(function (a) { $('#' + a[0]).addEventListener('change', function () { state[a[1]] = this.checked; dirty('view'); }); });
+  $('#toTwoPhase').addEventListener('click', toTwoPhase);
+  $('#resetAll').addEventListener('click', function () { state = cfgState('l11'); update(); });
+  $('#toCfg').addEventListener('click', function () { setTab('cf'); if (window.innerWidth < 900) { $('#ctl').classList.remove('open'); $('#mobCtl').textContent = 'Controles'; } });
+  $('#cfgCards').addEventListener('click', function (e) { var b = e.target.closest('button[data-cfg]'); if (b) loadCfg(b.dataset.cfg); });
   $('#status').addEventListener('click', function () { setTab('td'); setTimeout(function () { $('#diagCard').scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 50); });
   $$('.tabs [role=tab]').forEach(function (b) { b.addEventListener('click', function () { setTab(b.dataset.tab); }); });
   $$('.tabs .canv button').forEach(function (b) { b.addEventListener('click', function () { document.documentElement.setAttribute('data-canvas', b.dataset.canvas); $$('.tabs .canv button').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); }); store.set('canvas', b.dataset.canvas); if (dscene) dscene.layout(); renderTab(); }); });
   $('#mobCtl').addEventListener('click', function () { $('#ctl').classList.toggle('open'); this.textContent = $('#ctl').classList.contains('open') ? 'Cerrar' : 'Controles'; });
   document.addEventListener('keydown', function (e) {
     if (/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return;
-    var i = '1234567'.indexOf(e.key); if (i >= 0) setTab(['td', 'eq', 'fb', 'rr', 'en', 'vo', 'ec'][i]);
+    var i = '12345678'.indexOf(e.key); if (i >= 0) setTab(['td', 'eq', 'fb', 'rr', 'en', 'vo', 'ec', 'cf'][i]);
     if (e.key === ' ' && tab === 'td') { e.preventDefault(); togglePlay(); }
   });
   $('#btnPlay').innerHTML = SVGI.pause; $('#btnPlay').addEventListener('click', togglePlay);
@@ -1142,20 +1223,32 @@ function buildControls() {
   var cv = store.get('canvas', 'paper'); document.documentElement.setAttribute('data-canvas', cv); $$('.tabs .canv button').forEach(function (x) { x.setAttribute('aria-pressed', x.dataset.canvas === cv ? 'true' : 'false'); });
   hoverSetup();
 }
-/* al cambiar de mezcla, se busca una T dentro de la región bifásica para que el caso no arranque vacío */
-function keepTwoPhase() {
-  try {
-    var R = compute(state); if (!isFinite(R.Tb) || !isFinite(R.Td)) return;
-    if (state.spec === 'T' && (state.T <= R.Tb || state.T >= R.Td)) state.T = Math.round((0.5 * (R.Tb + R.Td)) * 10) / 10;
-  } catch (e) { }
+/* si la T del tambor queda fuera de la región de dos fases, la pista del panel 03 ofrece llevarla al centro de esa región
+   (recortada al rango del control); nunca se mueve sola, para que «todo líquido» y «todo vapor» sigan siendo posibles */
+function toTwoPhase() {
+  var R = RES; if (!R || R.fixedK || !isFinite(R.Tb) || !isFinite(R.Td)) return;
+  var el = $('#T'), T = Math.round(5 * (R.Tb + R.Td)) / 10;
+  state.T = Math.min(+el.max, Math.max(+el.min, T)); dirty();
 }
+function loadCfg(id) { state = cfgState(id, state); update(); setTab('td'); window.scrollTo(0, 0); }
 /* al cambiar lo que se especifica, se arranca desde el resultado actual (no salta el caso) */
 function specFromResult(v) { if (!RES) return; if (v === 'T' && isFinite(RES.T)) state.T = Math.round(RES.T * 10) / 10; if (v === 'psi' && isFinite(RES.psi)) state.psi = Math.min(1, Math.max(0, Math.round(RES.psi * 200) / 200)); if (v === 'adi' && RES.en && isFinite(RES.en.TF)) state.TF = Math.round(RES.en.TF * 2) / 2; }
-function dirty() { state.preset = null; update(); }
+/* un cambio del estudiante. Las vistas no cuentan; un cambio de mezcla tampoco cuenta en las tarjetas que se aplican
+   a la mezcla en pantalla, salvo que la tarjeta la hubiera cargado distinta (los datos de 1 atm en Bogotá) */
+function dirty(kind) {
+  if (kind !== 'view') {
+    var c = byId(CONFIGS, state.cfg);
+    if (kind !== 'mix' || !c.keep) state.cfgMod = true;
+    else { var ref = cfgState(c.id, state); if (MIX_KEYS.some(function (k) { return JSON.stringify(ref[k]) !== JSON.stringify(state[k]); })) state.cfgMod = true; }
+  }
+  update();
+}
 function togglePlay() { dscene.running = !dscene.running; $('#btnPlay').innerHTML = dscene.running ? SVGI.pause : SVGI.play; }
 function setTab(t) {
-  tab = t; store.set('tab', t);
+  tab = t;
   $$('.tabs [role=tab]').forEach(function (b) { b.setAttribute('aria-selected', b.dataset.tab === t ? 'true' : 'false'); });
+  var nav = $('.tabs'), sel = $('.tabs [aria-selected="true"]');
+  if (nav && sel && (sel.offsetLeft < nav.scrollLeft || sel.offsetLeft + sel.offsetWidth > nav.scrollLeft + nav.clientWidth)) nav.scrollLeft = Math.max(0, sel.offsetLeft - 16);
   $$('.panel').forEach(function (p) { p.classList.toggle('on', p.dataset.panel === t); });
   if (t === 'td' && dscene) dscene.resize();
   renderTab();
@@ -1269,11 +1362,13 @@ function update() {
   var s = state;
   try { RES = compute(s); } catch (e) { console.error(e); return; }
   var R = RES;
-  store.set('state', s);
   syncSliders(R);
   setV('vz', fx(s.z)); setV('vF', fmtN(s.F, 0) + ' kmol/h'); setV('vT0', fT(s.T0)); setV('vP', R.fixedK ? fmtN(R.Pk, 0) + ' kPa' : fP(R.mode === 'bin' && R.sys.fixedP ? R.sys.fixedP : Math.pow(10, s.lP)));
   setV('vT', R.fixedK ? fmtN(R.Tk, 0) + ' K' : fT(s.spec === 'T' ? s.T : R.T)); setV('vpsi', fmtN(s.spec === 'psi' ? s.psi : R.psi, 3)); setV('vTF', fT(s.spec === 'adi' ? s.TF : (R.en ? R.en.TF : NaN)));
-  pressed('#presetBtns .opt', 'p', s.preset); pressed('#sysBtns .opt', 's', s.mode === 'bin' ? s.sys : '-'); pressed('#mixBtns .opt', 'm', s.mode === 'multi' ? s.mix : '-');
+  pressed('#sysBtns .opt', 's', s.mode === 'bin' ? s.sys : '-'); pressed('#mixBtns .opt', 'm', s.mode === 'multi' ? s.mix : '-');
+  // las mezclas con K fijas del Taller 7 son tarjetas de Configuraciones: en la lista solo aparece la que está en pantalla
+  $$('#mixBtns .opt').forEach(function (b) { var mx = byId(MULTI, b.dataset.m); b.style.display = mx.kmode !== 'fixed' || (s.mode === 'multi' && s.mix === mx.id) ? '' : 'none'; });
+  $('#grid').checked = !!s.grid; $('#logP').checked = !!s.logP; $('#cmpIdeal').checked = !!s.cmpIdeal;
   SEGS.forEach(function (a) { pressed(a[0] + ' button', 'v', s[a[1]]); });
   show('sysBtns', s.mode === 'bin'); show('mixBtns', s.mode === 'multi'); show('zRow', s.mode === 'bin'); show('zmBox', s.mode === 'multi');
   var fixed = R.fixedK, tbl = s.mode === 'bin' && R.sys.model === 'table';
@@ -1282,10 +1377,15 @@ function update() {
   $$('#specSeg button').forEach(function (b) { b.disabled = fixed || (b.dataset.v === 'adi' && !R.hasH); });
   $('#PHint').innerHTML = tbl ? 'Los datos del curso son a 1 atm.' : (fixed ? 'Las K del Taller 7 ya traen la presión.' : 'Bogotá ≈ 560 mmHg · 1 atm = 760 mmHg · baje P y sube Ψ');
   $('#THint').innerHTML = R.fixedK ? 'Las K del Taller 7 ya traen la temperatura.' : (isFinite(R.Tb) ? 'Burbuja ' + fT(R.Tb) + ' · rocío ' + fT(R.Td) + ' a esta presión' : '');
+  // la T fija del tambor fuera de la región de dos fases: se dice y se ofrece el botón, sin mover nada solo
+  var outT = s.spec === 'T' && !fixed && isFinite(R.Tb) && isFinite(R.Td) && R.state !== '2F';
+  $('#tpFix').classList.toggle('on', outT);
+  if (outT) setV('tpFixTxt', R.state === 'L' ? 'A ' + fT(s.T) + ' la alimentación sale toda líquida: su punto de burbuja a esta presión es ' + fT(R.Tb) + '.' : 'A ' + fT(s.T) + ' la alimentación sale toda como vapor: su punto de rocío a esta presión es ' + fT(R.Td) + '.');
   $('#TFHint').innerHTML = R.en ? (s.spec === 'adi' ? 'Tambor y válvula adiabáticos: el calor entra aquí' : 'La que haría falta para hacerlo adiabático') : 'Esta mezcla no tiene entalpías';
   $('#zLab').innerHTML = subs(esc((R.mode === 'bin' ? cName(R.names[0]) : 'liviano') + ' en la alimentación z'));
   $('#zHint').innerHTML = R.mode === 'bin' && R.eq.az ? 'Azeótropo en ' + fx(R.eq.az.x) + ' a esta presión' : (R.mode === 'bin' && R.sys.id.indexOf('ea') === 0 ? 'El reto: z = 0,20 (44,7 % v/v)' : '');
   $('#sysNote').innerHTML = subs(esc(R.mode === 'bin' ? R.sys.src : R.mx.src));
+  $('#mixHint').innerHTML = s.mode !== 'multi' ? '' : (fixed ? 'Las mezclas con K fijas del Taller 7 se cargan desde la pestaña 8, Configuraciones. Si escoge otra mezcla, esta deja de aparecer en la lista.' : 'Los casos del Taller 7, con K fijas, están en la pestaña 8, Configuraciones.');
   $('#specNote').innerHTML = subs(esc(s.spec === 'T' ? 'Flash isotérmico: se fija la T del tambor y sale el calor.' : (s.spec === 'psi' ? 'Se fija cuánto se vaporiza y se busca la T que lo da.' : 'Flash adiabático: la entalpía de la alimentación fija la T del tambor.')));
   renderZm(R);
   renderKPIs(R); renderStatus(R); renderWarn(R);
@@ -1300,7 +1400,7 @@ function renderZm(R) {
   if (sigs !== zmSig) {
     zmSig = sigs;
     $('#zmBox').innerHTML = '<div class="row" style="font-size:12.5px;font-weight:650;margin:2px 0 4px;display:flex;justify-content:space-between"><span>Composición z<sub>i</sub></span><span class="lbl">se normaliza</span></div>' + R.labels.map(function (nm, i) { return '<div class="zrow"><span class="nm"><i style="background:' + compCol(i, R.labels.length) + '"></i>' + esc(nm) + '</span><input type="range" min="0" max="1" step="0.01" data-zi="' + i + '"><b data-zv="' + i + '"></b></div>'; }).join('') + (R.fixedK ? '<div class="row" style="font-size:12.5px;font-weight:650;margin:12px 0 4px">K<sub>i</sub> del Taller 7 (editables en la pestaña 4)</div>' : '');
-    $$('#zmBox [data-zi]').forEach(function (el) { el.addEventListener('input', function () { state.zm[+el.dataset.zi] = parseFloat(el.value); dirty(); }); });
+    $$('#zmBox [data-zi]').forEach(function (el) { el.addEventListener('input', function () { state.zm[+el.dataset.zi] = parseFloat(el.value); dirty('mix'); }); });
   }
   $$('#zmBox [data-zi]').forEach(function (el) { var i = +el.dataset.zi; if (+el.value !== state.zm[i]) el.value = state.zm[i]; });
   $$('#zmBox [data-zv]').forEach(function (el) { el.textContent = fmtN(R.zv[+el.dataset.zv], 3); });
@@ -1316,8 +1416,11 @@ function renderKPIs(R) {
   if (R.en) { setV('kQ', fkw(R.en.QH) + '<small>kW</small>'); setV('kQu', 'T<sub>F</sub> = ' + fmtN(R.en.TF, 1) + ' °C desde ' + fmtN(s.T0, 0) + ' °C'); }
   else { setV('kQ', '—'); setV('kQu', 'sin datos de entalpía'); }
   $('#kQc').classList.toggle('bad', !!(R.en && R.en.TF > 200 && s.spec !== 'adi'));
-  var ctx = R.mode === 'bin' ? '<b>' + esc(R.sys.name) + '</b> · ' + fP2(R.P) + ' · F = ' + fmtN(s.F, 0) + ' kmol/h' : '<b>' + esc(R.mx.name) + '</b> · ' + (R.fixedK ? fmtN(R.Pk, 0) + ' kPa · ' + fmtN(R.Tk, 0) + ' K' : fP2(R.P)) + ' · F = ' + fmtN(s.F, 0) + ' kmol/h';
+  var cf = byId(CONFIGS, s.cfg), mixN = R.mode === 'bin' ? R.sys.name : R.mx.name;
+  var ctx = '<b>' + subs(esc(cf.name)) + (s.cfgMod ? ', modificado' : '') + '</b> · ' + esc(mixN) + ' · ' + (R.fixedK ? fmtN(R.Pk, 0) + ' kPa · ' + fmtN(R.Tk, 0) + ' K' : fP(R.P)) + ' · F = ' + fmtN(s.F, 0) + ' kmol/h';
   if ($('#ctx').innerHTML !== ctx) $('#ctx').innerHTML = ctx;
+  var now = subs(esc(cf.name)) + '<small>' + esc(s.cfgMod ? 'con sus cambios' : cf.src) + '</small>';
+  if ($('#cfgNow').innerHTML !== now) $('#cfgNow').innerHTML = now;
 }
 function renderStatus(R) {
   var c = R.warn.filter(function (w) { return w.sev === 'c'; }).length, a = R.warn.filter(function (w) { return w.sev === 'w'; }).length, el = $('#status');
@@ -1331,6 +1434,57 @@ function renderWarn(R) {
   $('#diagCount').textContent = R.warn.length ? R.warn.length + ' nota' + (R.warn.length > 1 ? 's' : '') : 'sin alertas';
   var wh = R.warn.map(function (x) { return '<div class="warn ' + (x.sev === 'c' ? 'c' : (x.sev === 'ok' ? 'ok' : '')) + '"><i>' + (x.sev === 'ok' ? '✓' : '!') + '</i><div>' + subs(esc(x.t)) + '</div></div>'; }).join('');
   if (wh !== lastWarn) { $('#warnings').innerHTML = wh; lastWarn = wh; }
+}
+
+/* ---------- 8 · configuraciones del curso ---------- */
+function mixName(st) { return st.mode === 'bin' ? byId(BIN, st.sys).name : byId(MULTI, st.mix).name; }
+function cfgFacts(c, st, r, from) {
+  var mn = mixName(st), rows = [], z;
+  if (c.keep) rows.push(['Mezcla', mn + (from && from.mode === 'bin' && st.mode === 'bin' && st.sys !== from.sys ? ' (en lugar de los datos del curso, que solo valen a 1 atm)' : ' (la que tiene en pantalla)')]);
+  else rows.push(['Mezcla', mn + ' (' + (c.mixWhy || 'la del ejemplo') + ')']);
+  z = r.mode === 'bin' ? 'z = ' + fx(st.z) : 'z = ' + r.zv.map(function (v) { return fmtN(v, 2); }).join(' / ');
+  rows.push(['Alimentación', z + ' · F = ' + fmtN(st.F, 0) + ' kmol/h' + (r.en ? ' · llega a ' + fT(st.T0) : '')]);
+  if (r.fixedK) rows.push(['Tambor', fmtN(r.Tk, 0) + ' K y ' + fmtN(r.Pk, 0) + ' kPa, los de las K']);
+  else {
+    var P = r.P, pS = fP(P, st.units) + (st.units === 'atm' ? '' : ' (' + fmtN(P / 760, P / 760 < 10 ? 2 : 1) + ' atm)');
+    if (r.mode === 'bin' && r.sys.fixedP) pS = '1 atm, la de los datos';
+    rows.push(['Tambor', pS + ' · ' + (st.spec === 'adi' && r.hasH ? 'adiabático, T_F = ' + fT(st.TF) : (st.spec === 'psi' ? 'Ψ = ' + fmtN(st.psi, 2) + ', se busca la T' : 'T = ' + fT(st.T)))]);
+  }
+  return rows;
+}
+/* en las tarjetas no se parte «z = 0,40» ni «91,0 °C» al final de una línea */
+function nbsp(h) { return h.replace(/ = /g, '\u00a0=\u00a0').replace(/(\d) (°C|K|kPa|mmHg|atm|kmol\/h|%)/g, '$1\u00a0$2'); }
+function cfgResult(r) {
+  var L = r.labels[r.iL], T = r.fixedK ? fmtN(r.Tk, 0) + ' K' : fT(r.T);
+  if (r.state === 'L') return nbsp(esc('todo líquido (Ψ = 0) a ' + T));
+  if (r.state === 'V') return nbsp(esc('todo vapor (Ψ = 1) a ' + T));
+  return nbsp(esc('Ψ = ' + fmtN(r.psi, 3) + ' a ' + T + ' · y = ' + fx(r.y[r.iL]) + ', x = ' + fx(r.x[r.iL]) + ' de ')) + '<b class="nw">' + esc(L) + '</b>';
+}
+function renderConfigs() {
+  var s = state, mn = mixName(s);
+  $('#cfLead').innerHTML = 'Cada tarjeta es un caso del curso con su mezcla, su alimentación y su tambor. Las que salen de un ejemplo resuelto, de un taller o del reto traen su propia mezcla y lo dicen; las dos que dicen «la que tiene en pantalla» se aplican a la suya (<b>' + esc(mn) + '</b>). Al cargar una se conservan las unidades, el diagrama elegido, el Ψ₀ de Newton y la cuadrícula, y después la sigue cambiando pieza por pieza en los controles.';
+  $('#cfgCards').innerHTML = CONFIGS.map(function (c) {
+    var st = cfgState(c.id, s), r, on = s.cfg === c.id, notes = [];
+    try { r = compute(st); } catch (e) { return ''; }
+    if (c.note) notes.push(c.note);
+    if (c.keep && c.id === 'adi' && !r.hasH) notes.push('Con la mezcla que tiene en pantalla no hay entalpías: el flash adiabático no se puede resolver y se usa la T del tambor.');
+    if (c.keep && c.id === 'bog' && r.fixedK) notes.push('Con K fijas la presión no entra al cálculo: escoja una mezcla con Raoult para ver el efecto de Bogotá.');
+    return '<div class="cfg' + (on ? ' on' : '') + '"><div class="cb"><div class="ct"><h3>' + subs(esc(c.name)) + '</h3><span class="src">' + esc(c.src) + '</span></div><p>' + nbsp(subs(esc(c.desc))) + '</p>'
+      + '<dl class="facts">' + cfgFacts(c, st, r, s).map(function (q) { return '<dt>' + q[0] + '</dt><dd>' + nbsp(subs(esc(q[1]))) + '</dd>'; }).join('') + '</dl>'
+      + '<div class="res"><span>' + (c.keep ? 'Con ' + esc(mixName(st)) + ':' : 'Resultado:') + '</span> ' + cfgResult(r) + '</div>'
+      + notes.map(function (n) { return '<div class="note">' + nbsp(subs(esc(n))) + '</div>'; }).join('')
+      + '<button type="button" data-cfg="' + c.id + '"' + (on && !s.cfgMod ? ' disabled' : '') + '>' + (on ? (s.cfgMod ? 'Volver a cargarla sin sus cambios' : 'Es la que está en pantalla') : 'Cargar esta configuración') + '</button></div></div>';
+  }).join('');
+  var bin = s.mode === 'bin';
+  $('#cfgIdeas').innerHTML = [
+    bin ? '<b>Mezcla (01):</b> cambie Raoult ideal por los datos del curso o por el NRTL sin tocar nada más y compare los puntos de burbuja y de rocío en la pestaña 2.'
+      : '<b>Mezcla (01):</b> pase de propano, butano y pentano a hexano, benceno y tolueno con la misma presión; si el tambor queda fuera de las dos fases, use «Llevar T a la región de dos fases».',
+    bin ? '<b>Alimentación (02):</b> mueva z y siga en el diagrama de la pestaña 1 cómo se corren la línea de amarre y la regla de la palanca.'
+      : '<b>Alimentación (02):</b> mueva una sola z<sub>i</sub> y mire en la pestaña 4 cómo se corre la raíz de Rachford-Rice.',
+    '<b>Tambor (03):</b> con la T fija, baje la presión a 560 mmHg, la de Bogotá, y vea cuánto sube la fracción vaporizada. Con los datos del curso, que solo valen a 1 atm, pase antes al NRTL.',
+    '<b>Se especifica (03):</b> pase de «La T del tambor» a «La fracción Ψ». El punto de operación se conserva y ahora el simulador busca la temperatura que da esa Ψ.',
+    '<b>Rachford-Rice (pestaña 4):</b> cambie el Ψ<sub>0</sub> con que arranca Newton y cuente las iteraciones: la raíz es la misma.'
+  ].map(function (t) { return '<li>' + t + '</li>'; }).join('');
 }
 
 /* ---------- utilidades SVG ---------- */
@@ -1829,9 +1983,9 @@ function renderRR() {
   }
   body += '<tr><td><b>Suma</b></td><td><b>' + fmtN(z.reduce(function (p, q) { return p + q; }, 0), 4) + '</b></td><td></td><td><b>f(Ψ) = ' + fe(st) + '</b></td><td><b>' + (R.state === 'V' ? '—' : fmtN(sx, 4)) + '</b></td><td><b>' + (R.state === 'L' ? '—' : fmtN(sy, 4)) + '</b></td><td></td></tr>';
   $('#ccTable').innerHTML = head + '<tbody>' + body + '</tbody>';
-  $$('#ccTable .kin').forEach(function (el) { el.addEventListener('change', function () { var v = parseFloat(String(el.value).replace(',', '.')); if (!(v > 0) || v > 1000) { el.value = String(state.Km[+el.dataset.ki]).replace('.', ','); return; } state.Km[+el.dataset.ki] = v; dirty(); }); });
+  $$('#ccTable .kin').forEach(function (el) { el.addEventListener('change', function () { var v = parseFloat(String(el.value).replace(',', '.')); if (!(v > 0) || v > 1000) { el.value = String(state.Km[+el.dataset.ki]).replace('.', ','); return; } state.Km[+el.dataset.ki] = v; dirty('mix'); }); });
   $('#ccLbl').innerHTML = R.fixedK ? '<button type="button" class="seg inline mini" id="kReset" style="padding:3px 8px;cursor:pointer;font-weight:700">K del Taller 7</button>' : (R.mode === 'bin' && R.state === '2F' ? 'K = y/x de la línea de amarre' : 'K = P*/P');
-  if (R.fixedK) $('#kReset').addEventListener('click', function () { state.Km = byId(MULTI, state.mix).K.slice(); dirty(); });
+  if (R.fixedK) $('#kReset').addEventListener('click', function () { state.Km = byId(MULTI, state.mix).K.slice(); dirty('mix'); });
   $('#ccNote').innerHTML = subs(esc((R.fixedK ? 'Edite las K para ver cómo cambia la raíz: con K fijas el Taller 7 resume la temperatura y la presión en esos números. ' : '') + 'Los componentes con K > 1 se van al vapor y los de K < 1 se quedan en el líquido. ' + (R.state === 'L' ? 'Con Ψ = 0, x = z y no hay vapor.' : (R.state === 'V' ? 'Con Ψ = 1, y = z y no queda líquido.' : 'La columna del centro suma cero en la raíz.'))));
   // iteraciones
   if (R.state === '2F') {
@@ -2116,6 +2270,7 @@ function renderTab() {
   else if (tab === 'en') renderEN();
   else if (tab === 'vo') renderVO();
   else if (tab === 'ec') renderEqs();
+  else if (tab === 'cf') renderConfigs();
 }
 
 /* ---------- lecturas al pasar el cursor ---------- */
