@@ -23,7 +23,7 @@ const student: GraduatedStudent = {
             answer: { en: 'The ESC algorithm successfully converged to near-optimal conditions and adapted dynamically as the system changed, demonstrating a robust, data-driven path to more efficient and automated odor control in industrial biotreatment facilities.', es: 'El algoritmo ESC convergió con éxito a condiciones casi óptimas y se adaptó dinámicamente a medida que el sistema cambiaba, demostrando una vía robusta y basada en datos hacia un control de olores más eficiente y automatizado en instalaciones industriales de biotratamiento.' }
         }
     ],
-    imageUrl: 'https://luishreyes.github.io/images/students/jesus-rafael-acevedo.jpg',
+    imageUrl: '/images/students/jesus-rafael-acevedo.jpg',
 };
 
 export default student;

@@ -1,0 +1,37 @@
+name: Descargar fotos de Supabase
+
+# Copia única de las imágenes que el sitio todavía sirve desde Supabase Storage.
+# Las guarda en la rama indicada (por defecto fotos-supabase), nunca en main, así
+# que no dispara el deploy. Se lanza a mano desde la pestaña Actions.
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Rama donde se guardan las fotos'
+        required: true
+        default: 'fotos-supabase'
+
+permissions:
+  contents: write
+
+jobs:
+  descargar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Descargar
+        run: node scripts/descargar-fotos-supabase.mjs fotos-supabase
+      - name: Commit y push a la rama
+        env:
+          BRANCH: ${{ inputs.branch }}
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898183+github-actions[bot]@users.noreply.github.com'
+          git checkout -b "$BRANCH"
+          git add fotos-supabase
+          git commit -m 'Fotos: copia de Supabase Storage'
+          git push --force origin "HEAD:refs/heads/$BRANCH"

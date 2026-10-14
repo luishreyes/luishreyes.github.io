@@ -120,7 +120,7 @@ export const InstitutionalOverviewPage: React.FC = () => {
           style={{ rotate: imageRotate }}
         >
           <img 
-              src="https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_4560-2.jpg" 
+              src="/images/site/img-4560-2.jpg" 
               alt="Uniandes campus building, symbolizing the institution's commitment to service and community engagement."
               className="absolute inset-0 w-full h-full object-cover object-center"
           />

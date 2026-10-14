@@ -23,7 +23,7 @@ const student: GraduatedStudent = {
             answer: { en: 'Treating the gas is worth it. The system removed 85.3% of the incoming H₂S and cut freshwater ecotoxicity by 84.8%, from 33.26 to 5.05 CTUe per functional unit. What escapes untreated dominates everything else, accounting for more than 99% of that impact category, so keeping removal efficiency high matters more than trimming resource use. Electricity was the operational driver with the broadest reach, and disposal of spent packing traded off by category: neither composting nor landfill was better across the board.', es: 'Tratar el gas vale la pena. El sistema removió el 85,3% del H₂S entrante y redujo la ecotoxicidad de agua dulce en 84,8%, de 33,26 a 5,05 CTUe por unidad funcional. Lo que escapa sin tratar domina todo lo demás, con más del 99% de esa categoría de impacto, de modo que sostener la eficiencia de remoción pesa más que recortar el consumo de recursos. La electricidad fue el factor operativo de mayor alcance, y la disposición del empaque agotado presentó compensaciones según la categoría: ni el compostaje ni el relleno sanitario resultaron mejores en todas.' }
         }
     ],
-    imageUrl: 'https://luishreyes.github.io/images/students/gabriela-melendez-plata.jpg',
+    imageUrl: '/images/students/gabriela-melendez-plata.jpg',
 };
 
 export default student;

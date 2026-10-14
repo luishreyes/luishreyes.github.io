@@ -23,7 +23,7 @@ const student: GraduatedStudent = {
             answer: { en: "The study demonstrated that while the base process was technically viable, it was not initially profitable. However, by proposing key optimizations—such as switching to a more efficient 'feed-batch' fermentation and creating additional value by selling the bacterial biomass as a probiotic—the project's economic outlook was transformed. The optimized process showed a strong positive Net Present Value (NPV), providing a clear pathway to turn an industrial waste stream into a high-value, sustainable chemical in a competitive and profitable way.", es: 'El estudio demostró que, aunque el proceso base era técnicamente viable, inicialmente no era rentable. Sin embargo, al proponer optimizaciones clave —como cambiar a una fermentación «feed-batch» más eficiente y generar valor adicional vendiendo la biomasa bacteriana como probiótico—, las perspectivas económicas del proyecto se transformaron. El proceso optimizado mostró un Valor Presente Neto (VPN) sólido y positivo, ofreciendo una vía clara para convertir un flujo de residuos industriales en un compuesto químico sostenible y de alto valor de manera competitiva y rentable.' }
         }
     ],
-    imageUrl: 'https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5720.JPG',
+    imageUrl: '/images/students/julian-felipe-rodriguez-rubiano.jpg',
 };
 
 export default student;

@@ -1,7 +1,7 @@
 import type { GraduatedStudent } from '../../../../types';
 
 const student: GraduatedStudent = {
-    name: 'Juan Manuel Perez',
+    name: 'Juan Manuel Pérez',
     degree: 'M.S.',
     program: { en: 'M.S. in Product and Process Design at Universidad de los Andes', es: 'M.S. en Diseño de Productos y Procesos en la Universidad de los Andes' },
     graduationYear: 2023,
@@ -23,7 +23,7 @@ const student: GraduatedStudent = {
             answer: { en: 'The method was highly successful. The enzymatic process efficiently converted the waste soybean cake into a nutrient-rich amino acid solution. When applied to potato plants, this natural fertilizer led to a significant increase in both the size and quantity of the harvested potatoes. This study demonstrates a viable circular economy model, turning agricultural waste into a high-value product that can improve crop yields sustainably.', es: 'El método fue muy exitoso. El proceso enzimático convirtió eficientemente la torta de soya residual en una solución de aminoácidos rica en nutrientes. Al aplicarse a las plantas de papa, este fertilizante natural produjo un aumento significativo tanto en el tamaño como en la cantidad de papas cosechadas. Este estudio demuestra un modelo viable de economía circular, transformando residuos agrícolas en un producto de alto valor capaz de mejorar los rendimientos de los cultivos de forma sostenible.' }
         }
     ],
-    imageUrl: 'https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5747.JPG',
+    imageUrl: '/images/students/juan-manuel-perez.jpg',
 };
 
 export default student;

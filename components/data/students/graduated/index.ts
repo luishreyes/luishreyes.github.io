@@ -42,6 +42,7 @@ import yiovannArce from './ms/yiovann-alirio-arce-portilla';
 import jesusAcevedo from './ms/jesus-rafael-acevedo-mastrogiacomo';
 import lauraDanielLeon from './ms/laura-daniela-leon';
 import gabrielaMelendez from './ms/gabriela-melendez-plata';
+import andresBecerra from './ms/andres-felipe-becerra-zarrate';
 
 export const graduatedStudentsData: {
     phd: GraduatedStudent[];
@@ -54,6 +55,7 @@ export const graduatedStudentsData: {
         julianTorres,
     ],
     ms: [
+        andresBecerra,
         gabrielaMelendez,
         jesusAcevedo,
         lauraDanielLeon,

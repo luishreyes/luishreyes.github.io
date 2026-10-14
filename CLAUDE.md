@@ -44,6 +44,10 @@ La página `/research/products`, las cifras de citas, índice h e i10 del resume
 - `scripts/export-supabase.mjs` + el workflow manual `export-supabase.yml` hicieron la migración desde Supabase (oct 2026); solo se vuelven a correr para un rescate, y sobrescriben el archivo.
 - ⚠️ Solo datos bibliográficos públicos. Nada del registro privado de titularidad (estudiantes dirigidos, financiación, notas, montos) entra aquí.
 
+### Imágenes (ya no salen de Supabase)
+
+Desde oct 2026 el sitio no usa Supabase para nada. Las fotos de egresados viven en `public/images/students/{slug}.jpg` (el slug es el nombre de su ficha en `components/data/students/graduated/`), las de testimonios en `public/images/testimonials/` y las de páginas en `public/images/site/`, todas con ruta relativa (`/images/...`). Las de egresados y testimonios van recortadas al cuadrado desde arriba, al 88 % del lado menor, para dejar fuera la estrella de Gemini de la esquina. Los originales se copiaron con el workflow manual `fotos-supabase.yml` a la rama `fotos-supabase`.
+
 ## Classroom — Sistema de intranet académica
 
 El Classroom es la sección de cursos. Cada curso tiene:

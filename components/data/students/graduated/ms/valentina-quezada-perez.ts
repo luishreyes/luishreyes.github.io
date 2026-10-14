@@ -23,7 +23,7 @@ const student: GraduatedStudent = {
             answer: { en: "The peptide-infused hydrogel was highly effective, showing significant antifungal activity against resistant Candida strains. It was also found to be biocompatible, with very low toxicity to human cells and blood. The treatment worked successfully in advanced 3D models of skin and cervical infections, demonstrating its strong potential as a safe and potent new therapy for topical fungal infections.", es: 'El hidrogel con péptido fue muy eficaz, mostrando una actividad antifúngica significativa contra cepas resistentes de Candida. También resultó biocompatible, con una toxicidad muy baja para las células humanas y la sangre. El tratamiento funcionó con éxito en avanzados modelos 3D de infecciones cutáneas y cervicales, demostrando su gran potencial como una nueva terapia segura y potente para las infecciones fúngicas tópicas.' }
         }
     ],
-    imageUrl: 'https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/IMG_5755.JPG',
+    imageUrl: '/images/students/valentina-quezada-perez.jpg',
 };
 
 export default student;

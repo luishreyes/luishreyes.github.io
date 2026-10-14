@@ -23,7 +23,7 @@ const student: GraduatedStudent = {
             answer: { en: "Four promising native yeast strains were identified. The encapsulation technique (using 2.3% w/v sodium alginate) successfully allowed these low-flocculating yeasts to be used in fermentation, creating distinct organoleptic profiles without negatively impacting alcohol production. This validates honey as a source for novel brewing yeasts and shows that encapsulation is a powerful tool to differentiate beer flavors, offering a viable alternative to imported yeast strains.", es: 'Se identificaron cuatro prometedoras cepas de levadura nativas. La técnica de encapsulación (con alginato de sodio al 2,3 % p/v) permitió usar con éxito estas levaduras de baja floculación en la fermentación, creando perfiles organolépticos distintivos sin afectar negativamente la producción de alcohol. Esto valida la miel como fuente de nuevas levaduras cerveceras y muestra que la encapsulación es una herramienta poderosa para diferenciar los sabores de la cerveza, ofreciendo una alternativa viable a las cepas de levadura importadas.' }
         }
     ],
-    imageUrl: 'https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/Weinner%20David%20Silgado%20Mejaa.JPG',
+    imageUrl: '/images/students/weinner-david-silgado-mejia.jpg',
 };
 
 export default student;

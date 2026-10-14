@@ -22,7 +22,7 @@ const student: GraduatedStudent = {
             answer: { en: 'The study successfully designed and characterized a magnetic nanoparticle-based platform capable of carrying gene-editing tools. This work established a versatile system for delivering CRISPR-based therapies, laying the groundwork for future in-vivo testing and the development of new treatments for neurodegenerative diseases.', es: 'El estudio logró diseñar y caracterizar una plataforma basada en nanopartículas magnéticas capaz de transportar herramientas de edición génica. Este trabajo estableció un sistema versátil para entregar terapias basadas en CRISPR, sentando las bases para futuras pruebas in vivo y el desarrollo de nuevos tratamientos contra enfermedades neurodegenerativas.' }
         }
     ],
-    imageUrl: 'https://ourwyskhfdesnmnhlxof.supabase.co/storage/v1/object/public/Photos/David%20Arango%20Saavedra.JPG',
+    imageUrl: '/images/students/david-arango-saavedra.jpg',
 };
 
 export default student;
