@@ -360,7 +360,7 @@ table.t tr.dim td { color: var(--n500); }
       <div class="sl" style="margin-top:0"><div class="row"><span>Resistencia específica α</span><b id="vla"></b></div><input type="range" id="la" min="8" max="14" step="0.01"><div class="hint" id="laHint"></div></div>
       <div class="sl"><div class="row"><span>Medida a ΔP</span><b id="vdPref"></b></div><input type="range" id="dPref" min="0.2" max="10" step="0.05"></div>
       <div class="sl"><div class="row"><span>Compresibilidad s</span><b id="vsComp"></b></div><input type="range" id="sComp" min="0" max="1" step="0.01"><div class="hint" id="sHint"></div></div>
-      <div class="sl"><div class="row"><span>Resistencia del medio R<sub>m</sub></span><b id="vlRm"></b></div><input type="range" id="lRm" min="6" max="12" step="0.01"><div class="hint">McCabe: valores típicos de 10¹⁰ a 10¹¹ m⁻¹</div></div>
+      <div class="sl"><div class="row"><span>Resistencia del medio R<sub>m</sub></span><b id="vlRm"></b></div><input type="range" id="lRm" min="6" max="12" step="0.01"><div class="hint">Es de la tela y de la primera capa de torta, no de la suspensión: no cambia al escoger otro material. McCabe: de 10¹⁰ a 10¹¹ m⁻¹</div></div>
       <div class="sl"><div class="row"><span>Torta húmeda / torta seca m<sub>F</sub>/m<sub>c</sub></span><b id="vmw"></b></div><input type="range" id="mw" min="1.1" max="8" step="0.05"></div>
       <div class="sl"><div class="row"><span>Sólido seco por m³ de torta</span><b id="vrhoCd"></b></div><input type="range" id="rhoCd" min="80" max="2000" step="10"><div class="hint">Fija el espesor de la torta y el llenado de las cámaras</div></div>
       <button type="button" class="btnw" id="useLab">Tomar α, s y R<sub>m</sub> del ensayo (pestaña 2)</button>
@@ -1143,7 +1143,7 @@ function clone(o) { return JSON.parse(JSON.stringify(o)); }
 var L10 = Math.log10;
 
 var T6PTS = [[105, 12], [223, 18], [385, 24], [591, 30]];
-var BASE = { mat: 'levadura', mu: 3.5, rhoL: 1030, cBasis: 'filtrado', lcs: L10(25), mw: 4, rhoCd: 270, lQ: L10(4.5), la: L10(3.604e12), dPref: 1.8, sComp: 0, lRm: L10(8.91e10),
+var BASE = { mat: 'levadura', mu: 3.5, rhoL: 1030, cBasis: 'filtrado', lcs: L10(25), mw: 4, rhoCd: 270, lQ: L10(4.5), la: L10(3.604e12), dPref: 1.8, sComp: 0.7, lRm: L10(8.91e10),
   eq: 'prensa', dP: 3, Pmax: 5, cyc: 'frac', tcH: 1, frac: 1, tdMin: 24, tfMode: 'opt', tfMin: 30, wash: 0, kw: 'mitad', Ap: 1, maxPl: 100, depth: 32, budget: 220000, floor: 80,
   J0: 150, qStop: 0.25, dPv: 0.6, f: 0.3, rpm: 0.5, minCake: 3, dPa: 3, dPb: 5, flocK: 10, flocDose: 50, mfJ: 35, drho: 70, contOn: false, contW: 25,
   lab: 't6', labA: 0.0012, labDP: 1.8, labMu: 3.5, labC: 25, labPts: clone(T6PTS), grid: true,
@@ -1154,12 +1154,12 @@ var BASE = { mat: 'levadura', mu: 3.5, rhoL: 1030, cBasis: 'filtrado', lcs: L10(
    compresibilidad s que estudian; mc2 y proj son ejemplos completos y fijan su propia suspensión. Siempre se conservan los
    datos editados del ensayo, los puntajes de la matriz, los supuestos de las alternativas y las opciones de vista. */
 var CONFIGS = [
+  { id: 't6c', name: 'Taller 6 · la levadura real', src: 'Taller 6 · parte C', s: { sComp: 0.7 },
+    desc: 'La prensa del taller con la levadura como es: 4,5 m³/h de filtrado con 25 g/L de células, a 3 bar, filtrando toda la hora del ciclo, y una torta compresible con s = 0,7, el valor que da el taller. Al subir la presión la torta se compacta y α crece.',
+    note: 'Con la levadura del taller: 65,7 m² a 3 bar y 60,6 m² a 5 bar (pestaña 3).' },
   { id: 't6a', name: 'Taller 6 · modelo ideal', src: 'Taller 6 · parte B', s: { sComp: 0 },
-    desc: 'La prensa del taller: 4,5 m³/h de filtrado con 25 g/L de levadura, a 3 bar, filtrando durante toda la hora del ciclo y con la torta incompresible (s = 0). Es el cálculo de la parte B.',
-    note: 'Con la levadura del taller da 55,0 m² a 3 bar y 42,5 m² a 5 bar (pestaña 3).' },
-  { id: 't6c', name: 'Taller 6 · torta compresible', src: 'Taller 6 · parte C', s: { sComp: 0.7 },
-    desc: 'La misma prensa con la compresibilidad que da el taller, s = 0,7. La torta se compacta al subir la presión y α crece, así que pasar de 3 a 5 bar ahorra mucha menos área que en el modelo ideal.',
-    note: 'Con la levadura del taller: 65,7 m² a 3 bar y 60,6 m² a 5 bar.' },
+    desc: 'El mismo cálculo con el supuesto de la parte B: la torta incompresible, s = 0. La levadura real no es así (s = 0,7), pero el modelo ideal muestra cuánto se equivocaría el diseño si se ignora la compresibilidad.',
+    note: 'Con la levadura del taller da 55,0 m² a 3 bar y 42,5 m² a 5 bar: casi 11 m² menos que el caso real a 3 bar.' },
   { id: 't6r', name: 'Taller 6 · solo el 60 % del ciclo filtra', src: 'Taller 6 · parte C', s: { sComp: 0.7, frac: 0.6 },
     desc: 'Torta compresible y un ciclo de una hora en el que la prensa filtra 36 minutos; los otros 24 se van en lavar, descargar y cerrar. Para filtrar lo mismo en menos tiempo hace falta más área.',
     note: 'Con la levadura del taller: 85,0 m².' },
@@ -1177,7 +1177,7 @@ var CONFIGS = [
 ];
 /* lo que se conserva al cargar una tarjeta: la suspensión (propiedades de la torta y del líquido, salvo las que fija la tarjeta),
    los datos que el estudiante editó y que no son del sistema, y la vista (incluidas las dos presiones que se comparan en la pestaña 3) */
-var MAT_KEYS = ['mat', 'la', 'dPref', 'sComp', 'lRm', 'mu', 'rhoL', 'mw', 'rhoCd'];
+var MAT_KEYS = ['mat', 'la', 'dPref', 'sComp', 'mu', 'rhoL', 'mw', 'rhoCd'];
 var KEEP_DATA = ['lab', 'labA', 'labDP', 'labMu', 'labC', 'labPts', 'scores', 'flocK', 'flocDose', 'mfJ', 'drho', 'contOn', 'contW'], KEEP_VIEW = ['grid', 'dPa', 'dPb'];
 function cfgState(id, from) {
   var c = byId(CONFIGS, id), s = Object.assign(clone(BASE), clone(c.s));
@@ -1186,7 +1186,7 @@ function cfgState(id, from) {
 }
 /* «modificado»: el estado ya no es el que daría volver a cargar su tarjeta (con la misma suspensión, datos y vista) */
 function cfgChanged(s) { var ref = cfgState(s.cfg, s); return Object.keys(ref).concat(Object.keys(s)).some(function (k) { return k !== 'cfgMod' && JSON.stringify(ref[k]) !== JSON.stringify(s[k]); }); }
-var state = cfgState('t6a');
+var state = cfgState('t6c');
 var R = null, LAB = null, tab = store.get('tab', 'in');
 function mstate(s) { return Object.assign({}, s, { cs: Math.pow(10, s.lcs) }); }
 var SVGI = {
@@ -1215,7 +1215,7 @@ function buildControls() {
   $$('#matBtns .opt').forEach(function (b) { b.addEventListener('click', function () {
     var m = byId(MATS, b.dataset.m); if (m.id === state.mat) return; // el material que ya está no cambia nada
     // solo las propiedades propias de la torta y del líquido: la concentración y su base son de la corriente
-    Object.assign(state, { mat: m.id, la: L10(m.alphaRef), dPref: m.dPref, sComp: m.s, lRm: L10(m.Rm), mu: m.mu, rhoL: m.rhoL, mw: m.mw, rhoCd: m.rhoCd });
+    Object.assign(state, { mat: m.id, la: L10(m.alphaRef), dPref: m.dPref, sComp: m.s, mu: m.mu, rhoL: m.rhoL, mw: m.mw, rhoCd: m.rhoCd }); // R_m es de la tela, no de la suspensión
     dirty(); if (fscene) fscene.prime(); }); });
   $$('#eqBtns .mill').forEach(function (b) { b.addEventListener('click', function () { state.eq = b.dataset.e; dirty(); if (fscene) fscene.prime(); }); });
   [['#basisSeg', 'cBasis'], ['#cycSeg', 'cyc'], ['#tfSeg', 'tfMode'], ['#kwSeg', 'kw'], ['#labSeg', 'lab']].forEach(function (a) { $$(a[0] + ' button').forEach(function (b) { b.addEventListener('click', function () { state[a[1]] = b.dataset.v; dirty(); }); }); });
@@ -1242,7 +1242,7 @@ function buildControls() {
 function dirty() { state.cfgMod = cfgChanged(state); update(); }
 function loadCfg(id) { state = cfgState(id, state); update(); if (fscene) fscene.prime(); setTab('in'); window.scrollTo(0, 0); }
 /* el botón de la barra: el caso base completo, con la levadura del taller; no borra los datos del ensayo ni la matriz */
-function baseState(from) { var s = cfgState('t6a', from); MAT_KEYS.forEach(function (k) { s[k] = clone(BASE[k]); }); return s; }
+function baseState(from) { var s = cfgState('t6c', from); MAT_KEYS.forEach(function (k) { s[k] = clone(BASE[k]); }); return s; }
 function togglePlay() { fscene.running = !fscene.running; $('#btnPlay').innerHTML = fscene.running ? SVGI.pause : SVGI.play; }
 function setTab(t) {
   tab = t; store.set('tab', t);
@@ -1272,7 +1272,7 @@ function update() {
   setV('vmu', fmtN(s.mu, 2) + ' mPa·s');
   // torta
   setV('vla', fmtSci(Math.pow(10, s.la), 2) + ' m/kg'); $('#laHint').textContent = m.src;
-  setV('vdPref', fbar(s.dPref)); setV('vsComp', fmtN(s.sComp, 2)); $('#sHint').textContent = (s.sComp < 0.05 ? 'Incompresible: α no cambia con la presión' : (s.sComp < 0.5 ? 'Poco compresible' : (s.sComp < 0.9 ? 'Compresible: la mayoría de las tortas reales' : 'Muy compresible: subir la presión casi no sirve'))) + (s.mat === 'levadura' ? '. En el Taller 6 la parte B usa s = 0 (el modelo ideal) y la parte C, s = 0,7' : '');
+  setV('vdPref', fbar(s.dPref)); setV('vsComp', fmtN(s.sComp, 2)); $('#sHint').textContent = (s.sComp < 0.05 ? 'Incompresible: α no cambia con la presión' : (s.sComp < 0.5 ? 'Poco compresible' : (s.sComp < 0.9 ? 'Compresible: la mayoría de las tortas reales' : 'Muy compresible: subir la presión casi no sirve'))) + (s.mat === 'levadura' ? (Math.abs(s.sComp - 0.7) < 0.005 ? '. La levadura real del Taller 6: s = 0,7' : '. La levadura real tiene s = 0,7 (Taller 6); el modelo ideal de la parte B supone s = 0') : '');
   setV('vlRm', fmtSci(r.Rm, 2) + ' m⁻¹'); setV('vmw', fmtN(s.mw, 2) + ' · ' + fmtN(100 / s.mw, 0) + ' % de sólidos'); setV('vrhoCd', fmtN(s.rhoCd, 0) + ' kg/m³');
   // equipo
   show('pressBox', press); show('drumBox', !press); show('cycSec', press);
