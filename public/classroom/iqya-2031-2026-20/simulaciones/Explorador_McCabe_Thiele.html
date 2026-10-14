@@ -441,7 +441,7 @@ table.t tr.dim td { color: var(--n500); }
     <section><h2><span class="n">01</span> Sistema y presión</h2>
       <div class="opts" id="sysBtns"></div>
       <p class="mode-note" id="sysNote"></p>
-      <div class="sl" id="alphaRow"><div class="row"><span>Volatilidad relativa α</span><b id="valpha"></b></div><input type="range" id="alpha" min="1.1" max="10" step="0.01"><div class="hint">Benceno-tolueno ≈ 2,4 · McCabe y Lectura 13: 2,5 · metanol-etanol ≈ 1,7</div></div>
+      <div class="sl" id="alphaRow"><div class="row"><span>Volatilidad relativa α</span><b id="valpha"></b></div><input type="range" id="alpha" min="1.1" max="10" step="0.01"><div class="hint">Benceno-tolueno ≈ 2,5, el de McCabe y la Lectura 13 · etanol-agua con Raoult ≈ 2,2 · metanol-etanol ≈ 1,7</div></div>
       <div class="sl" id="PRow"><div class="row"><span>Presión de la columna</span><b id="vP"></b></div><input type="range" id="P" min="300" max="1520" step="1"><div class="hint" id="PHint"></div></div>
     </section>
     <section><h2><span class="n">02</span> Especificación</h2>
@@ -1354,7 +1354,7 @@ try { Object.keys(localStorage).forEach(function (k) { if (k.indexOf('pou-mccabe
 var store = { get: function (k, d) { if (!STORE_KEEP[k]) return d; try { var v = localStorage.getItem('pou-mccabe:' + k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } }, set: function (k, v) { if (!STORE_KEEP[k]) return; try { localStorage.setItem('pou-mccabe:' + k, JSON.stringify(v)); } catch (e) { } } };
 function clone(o) { return JSON.parse(JSON.stringify(o)); }
 
-var BASE = { sys: 'ea9', alpha: 2.4, P: 760, zF: 0.20, xD: 0.80, xB: 0.02, F: 100, qMode: 'q', q: 1.1, TF: 35,
+var BASE = { sys: 'ea9', alpha: 2.5, P: 760, zF: 0.20, xD: 0.80, xB: 0.02, F: 100, qMode: 'q', q: 1.1, TF: 35,
   rMode: 'R', lR: Math.log10(2.5), Rm: 1.3, cond: 'total', feedMode: 'opt', feedN: 10, Emv: 1, eoMode: 'man', Eo: 0.60, muL: 0.4, aSrc: 'col',
   tray: 'perf', TS: 0.45, ff: 0.80, csb: 'curso', net: true, fracBaj: 0.12, skirt: 1.5, hRule: 's2', view: 'all', grid: true, vv: true, cmpOn: true, pp: 1, pp8: 99,
   t3sec: 'ctrl', t3vL: 1, t3lL: 1, t3hw: 0.05, t3dh: 0.005, t3Ah: 0.10, t3calm: 0.05, t3gap: 0.010, t3C0: 0.84, t3cut: true, t3lab: true, t3flow: true, t3up: true, t3cam: 'iso' };
@@ -1375,9 +1375,9 @@ var CONFIGS = [
   { id: 's2', name: 'La columna del proyecto a 201 kmol/h', src: 'Diseño de platos', s: { F: 201, Eo: 0.55 },
     desc: 'La sesión de Diseño de platos dimensiona la columna del Taller 9 con el caudal del proyecto y una eficiencia global de 55 %: el diámetro por la inundación, los platos reales y la altura.',
     note: 'Con la tabla del Taller 9 reproduce la sesión: 0,822 m calculados, 0,8 m comercial al 84 % de la inundación y 19 platos.' },
-  { id: 'bog', name: 'La columna en Bogotá', src: 'extensión · NRTL', mix: true, s: { sys: 'eaN', P: 560, qMode: 'T', TF: 30 },
-    desc: 'La columna de diseño a 560 mmHg, la presión de Bogotá. La tabla del taller solo vale a 1 atm, así que el equilibrio sale del NRTL ajustado a los datos de Perry, y la alimentación se da por su temperatura: 30 °C.',
-    note: 'Ningún material del curso trabaja a esta presión: es una extensión.' },
+  { id: 'bog', name: 'La columna en Bogotá', src: 'extensión · NRTL', mix: true, s: { sys: 'eaN', P: 560, qMode: 'T', TF: 35 },
+    desc: 'La columna de diseño a 560 mmHg, la presión de Bogotá. La tabla del taller solo vale a 1 atm, así que el equilibrio sale del NRTL ajustado a los datos de Perry, y la alimentación se da por su temperatura: los mismos 35 °C con que sale del filtro.',
+    note: 'La sesión de Diseño de platos lo advierte: los datos de equilibrio son a 1 atm y en Bogotá la atmosférica es de unos 75 kPa. Ningún material del curso resuelve la columna a esa presión: es una extensión.' },
   { id: 'ipa', name: 'Isopropanol del Taller 9 · modelo ideal', gname: 'Taller 9 · el isopropanol de otra planta', vlabel: 'el modelo ideal', src: 'Taller 9 · caso 3', mix: true,
     s: { sys: 'ipaI', zF: 0.30, xD: 0.80, xB: 0.03, q: 0.7, lR: L10(3.5) },
     mixTxt: 'isopropanol-agua, ideal (α = 1,958) o con Van Laar; cada botón fija la suya',
@@ -1388,13 +1388,13 @@ var CONFIGS = [
     s: { sys: 'alpha', alpha: 2.5, zF: 0.5, xD: 0.95, xB: 0.05, q: 1, lR: L10(1.65), Eo: 0.70, TS: 0.6, hRule: 'l13' },
     desc: 'El explorador de la Lectura 13: una binaria ideal con α = 2,5 constante, líquido saturado en z_F = 0,5, x_D = 0,95 y R = 1,65, que es 1,5 veces el mínimo. Usa E_o = 70 %, platos a 600 mm y la altura de la lectura, platos por espaciamiento más 3 m.' },
   { id: 'mc', name: 'McCabe 21.2 · α = 2,5 constante', src: 'McCabe · ejemplo 21.2', mix: true,
-    s: { sys: 'alpha', alpha: 2.5, zF: 0.44, xD: 0.974, xB: 0.0235, q: 1, lR: L10(3.5), F: 350, Eo: 0.75 },
-    desc: 'El ejemplo de benceno-tolueno del libro, resuelto como allí: con una volatilidad relativa constante de 2,5 y no con los datos de la mezcla. Son 350 kmol/h con 0,44 de benceno, x_D = 0,974, x_B = 0,0235 y R = 3,5.',
-    note: 'Si quiere la mezcla con sus datos (Raoult con el Antoine de la Lectura 10), escoja «Benceno-tolueno» en el panel 01 después de cargarla.' },
-  { id: 'mv', name: 'Murphree con α = 2,4 constante', src: 'Eficiencias · curva ideal', mix: true,
-    s: { sys: 'alpha', alpha: 2.4, zF: 0.5, xD: 0.95, xB: 0.05, q: 1, lR: L10(2), Emv: 0.75, Eo: 0.75 },
-    desc: 'La curva efectiva de Murphree sobre una curva ideal, como en la diapositiva de Eficiencias: α = 2,4 constante, el valor típico del benceno-tolueno, platos con E_MV = 0,75, z_F = 0,5, x_D = 0,95 y R = 2.',
-    note: 'Los números son propios del explorador. Lleve E_MV a 1 en el panel 05 y compare: en una curva ideal los escalones se cierran junto a la alimentación.' }
+    s: { sys: 'alpha', alpha: 2.5, zF: 0.44, xD: 0.974, xB: 0.0235, q: 1, lR: L10(3.5), F: 350, eoMode: 'oc', muL: 0.28 },
+    desc: 'El ejemplo de benceno-tolueno del libro, resuelto como allí: con una volatilidad relativa constante de 2,5 y no con los datos de la mezcla. Son 350 kmol/h con 0,44 de benceno, x_D = 0,974, x_B = 0,0235 y R = 3,5: once platos ideales más el hervidor, como en el libro.',
+    note: 'El libro no da eficiencia: los platos reales salen de O\'Connell con μ_L ≈ 0,28 cP, la del benceno-tolueno a la temperatura media de unos 95 °C. Si quiere la mezcla con sus datos (Raoult con el Antoine de la Lectura 10), escoja «Benceno-tolueno» en el panel 01 después de cargarla.' },
+  { id: 'mv', name: 'Murphree de la diapositiva de Eficiencias', src: 'Eficiencias · diapositiva 7', mix: true,
+    s: { sys: 'alpha', alpha: 2.2, zF: 0.30, xD: 0.85, xB: 0.05, q: 1, lR: L10(3), Emv: 0.64 },
+    desc: 'La figura de «El escalón que no llega»: una curva ideal con α = 2,2 constante, la recta de R = 3 que llega a x_D = 0,85 y platos que recorren el 64 % del salto hacia el equilibrio (E_MV = 0,64).',
+    note: 'La figura solo muestra la rectificación. Su recta arranca en x = 0,30, que se toma como z_F con líquido saturado; x_B = 0,05 es propio del explorador. Lleve E_MV a 1 en el panel 05 y compare: en una curva ideal los escalones se cierran junto a la alimentación.' }
 ];
 /* lo que se conserva al cargar una tarjeta: la vista y el plato en 3D siempre; la mezcla (panel 01) si la tarjeta no la fija */
 var KEEP_MIX = ['sys', 'alpha', 'P'];
@@ -2027,7 +2027,7 @@ function cmpModels(r) {
   } else if (sys.id === 'ma') {
     out.push({ n: 'α = 3,3 del explorador anterior', eq: makeEq(byId(SYSTEMS, 'alpha'), 760, 3.3), c: CV, d: '7 4' });
   } else if (sys.id === 'bt') {
-    out.push({ n: 'α = 2,4 constante', eq: makeEq(byId(SYSTEMS, 'alpha'), 760, 2.4), c: CV, d: '7 4' });
+    out.push({ n: 'α = 2,5 constante (McCabe 21.2)', eq: makeEq(byId(SYSTEMS, 'alpha'), 760, 2.5), c: CV, d: '7 4' });
   } else if (sys.model === 'alpha') {
     [1.5, 2.5, 5].forEach(function (aa, i) { if (Math.abs(aa - state.alpha) > 0.05) out.push({ n: 'α = ' + fmtN(aa, 1), eq: makeEq(sys, 760, aa), c: [C2, CV, CG][i], d: '6 3' }); });
   }
