@@ -4,7 +4,7 @@
 // Los mismos datos alimentan la presentación del Día 1.
 //
 // Agregado a mano el 14 de octubre de 2026: reto 202 (destilados tipo whisky,
-// Nicolás Ríos con Luis H. Reyes), que salió en la sesión de selección.
+// Nicolás Ratkovich con Luis H. Reyes), que salió en la sesión de selección.
 // Replicarlo en la carpeta del curso antes de volver a exportar.
 
 export type RetoOrigen = 'asesor' | 'semillero' | 'empresa';
@@ -491,7 +491,7 @@ export const retos202620: Reto202620[] = [
     "id": 202,
     "titulo": "Destilados tipo whisky con materias primas colombianas",
     "enCorto": "¿Qué materia prima colombiana da la mejor bebida espirituosa con perfil tipo whisky?",
-    "asesor": "Nicolás Ríos",
+    "asesor": "Nicolás Ratkovich",
     "coasesor": "Luis H. Reyes",
     "tipo": "Investigación",
     "area": "Alimentos y bebidas",
