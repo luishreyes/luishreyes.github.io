@@ -29,4 +29,10 @@ export const estudiantes202620: string[] = [
   'Camilo José Ochoa Romero',
   'Eduardo Perea Castillo',
   'María José Pisciotti Díaz',
+  'James Andrés Rodríguez Aldana',
+  'Valentina Rodríguez Caneva',
+  'Catalina Romero Gómez',
+  'Erick Antonio Sayes Guandique',
+  'Gian Carlo Torres Medina',
+  'Jacobo Zapata Montes',
 ];
