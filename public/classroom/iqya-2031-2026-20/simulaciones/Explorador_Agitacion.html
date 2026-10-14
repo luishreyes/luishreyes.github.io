@@ -641,7 +641,7 @@ function compute(s) {
     else if (Re >= 200) { th95 = 33500 / (N * Math.cbrt(Np) * Re) * Math.pow(T / D, 2); th95src = 'Grenville, transición'; }
     if (th95 && !baff) { th95 *= 2.5; th95src += ' (sin bafles, ×2,5 orientativo)'; }
     if (th95 && s.HT > 1.05) th95 *= Math.pow(s.HT, 2.43);
-  } else if (Re < 100) { th95 = (imp.id === 'cinta' ? 40 : 250) / N; th95src = imp.id === 'cinta' ? 'cinta en laminar, N·θ ≈ 40' : 'ancla en laminar, N·θ ≈ 250 (orientativo)'; }
+  } else if (Re < 100) { th95 = (imp.id === 'cinta' ? 40 : 250) / N; th95src = imp.id === 'cinta' ? 'cinta con Re < 100, N·θ ≈ 40' : 'ancla con Re < 100, N·θ ≈ 250 (orientativo)'; }
   // McCabe (99 %): turbina n·t_T·(D/T)²·(T/H) ≈ 4 (36 rev para D/T = 1/3, ec. 9.30 y fig. 9.16); HE-3 ec. 9.32
   var tT = (!close && imp.kind === 'radial' && Re > 2000) ? 4.0 / N * Math.pow(T / D, 2) * (H / T) : (imp.id === 'hidro' && Re > 2000 ? 16.9 / N * Math.pow(T / D, 1.67) * Math.pow(H / T, 0.5) : null);
   var vx = vortex(imp, s, geo, omega, Re, baff);
@@ -712,7 +712,7 @@ function diagnose(R) {
   if (s.HT > 1.25 && !imp.close) add('w', 'Tanque alto (H/T = ' + fmtN(s.HT, 2) + '): con un solo impulsor la parte superior circula poco. Las diapositivas sugieren dos impulsores en el mismo eje si H/T > 1,5.');
   if (!R.baff && !imp.close && R.Re < 300) add('ok', 'Con este Reynolds los bafles no hacen falta: el líquido viscoso no forma vórtice.');
   if (R.baff && R.Re < 100 && !imp.close) add('w', 'Bafles en régimen casi laminar: no aportan y crean zonas muertas detrás de ellos (Lectura 06).');
-  if (!w.length) add('ok', 'Configuración coherente: régimen turbulento, sin vórtice y con la potencia que pide la geometría estándar.');
+  if (!w.length) add('ok', 'Configuración coherente: régimen ' + (R.reg === 'transición' ? 'de transición' : R.reg) + ', sin vórtice y con la potencia que pide la geometría estándar.');
   return w;
 }
 /* ====================================================================
@@ -1530,26 +1530,28 @@ var LAB = { imp: 'rushton', lT: L10(0.3), HT: 1, DT: 0.333, CT: 0.333, lrpm: L10
 var CONFIGS = [
   { id: 'proyecto', name: 'Reactor de extracción de pectina', src: 'Proyecto · Sesión 09', s: {},
     desc: 'El reactor de extracción ácida del proyecto, el de la Sesión 09: 14,7 m³ con una turbina de palas inclinadas de 0,83 m a 100 rpm, cuatro bafles y la cáscara triturada en suspensión.',
-    note: 'El líquido es agua a 85 °C (ρ ≈ 970 kg/m³, la densidad de las diapositivas) en lugar del extracto. El extracto ácido de pectina está en el panel 04, con la viscosidad que midan.' },
-  { id: 'lab', name: 'Tanque de laboratorio con Rushton', src: 'Sesión 09 · tiempo de mezclado', s: LAB,
-    desc: 'La geometría estándar a escala de banco: tanque de 0,3 m con H = T, Rushton de D = T/3 a 300 rpm y cuatro bafles. Inyecte el trazador en la pestaña 1 y compare el θ₉₅ de las sondas con Grenville; el panel 06 lo escala a los 14,7 m³ del reactor.',
-    note: 'Trae agua a 20 °C: el ensayo del trazador, y la calibración del simulado contra Grenville, se hacen con agua.' },
-  { id: 'vortice', name: 'Tanque de laboratorio sin bafles', src: 'Lectura 06 · vórtice', s: Object.assign({}, LAB, { baff: false, lrpm: L10(450) }),
-    desc: 'El mismo tanque de banco con la Rushton a 450 rpm y sin bafles. El líquido gira en bloque, se forma el vórtice y Nₚ cae a una fracción del valor con bafles: la corrección por el número de Froude. La vista en planta de la pestaña 1 muestra el giro.',
-    note: 'Trae agua a 20 °C: con un líquido viscoso el Reynolds baja de 300 y el vórtice no se forma.' },
-  { id: 'viscoso', name: 'Tanque de laboratorio con glicerina', src: 'McCabe · tabla 9.2', s: Object.assign({}, LAB, { fluid: 'glicerina', Tf: 20, lrpm: L10(120) }),
-    desc: 'El tanque de banco con la Rushton, ahora en glicerina a 20 °C, unas 1400 veces más viscosa que el agua. A 120 rpm el Reynolds queda en transición: Nₚ sube por encima de su valor turbulento y Grenville ya no da un θ₉₅, porque quedan zonas que no se mezclan.' },
-  { id: 'cinta', name: 'Cinta helicoidal en glicerina', src: 'Lectura 06 · viscosos', s: Object.assign({}, LAB, { imp: 'cinta', fluid: 'glicerina', Tf: 20, lrpm: L10(30) }),
-    desc: 'La misma glicerina con una cinta helicoidal que barre la pared a 30 rpm. En laminar sube el líquido por la periferia y lo baja por el centro, y mezcla en unas 40 vueltas donde la Rushton dejaba zonas quietas.' },
-  { id: 'arena', name: 'Suspensión de arena con PBT', src: 'McCabe · Zwietering', s: { imp: 'pbt', lT: L10(0.5), HT: 1, DT: 0.33, CT: 0.25, lrpm: L10(380), fluid: 'agua', Tf: 20, solids: true, ldp: L10(0.3), rhoS: 2650, X: 20, gas: false, lV2: L10(10), FS: 1.15, Tw: 60, T0: 20, Tgoal: 40, tH: 30 },
-    desc: 'Arena de 0,3 mm (ρₛ = 2650 kg/m³, X = 20) en un tanque de 0,5 m con una PBT a 380 rpm. La velocidad queda un poco por debajo del Nⱼₛ de Zwietering y parte del lecho sigue quieto en el fondo: súbala hasta la ventana de 1,2 a 1,5 Nⱼₛ.',
-    note: 'Trae agua a 20 °C: Nⱼₛ depende de la diferencia de densidad con el líquido y de su viscosidad.' },
-  { id: 'gas', name: 'Aireación con Rushton', src: 'Sesión 09 · gas-líquido', s: { imp: 'rushton', lT: L10(0.6), HT: 1, DT: 0.333, CT: 0.333, lrpm: L10(250), fluid: 'agua', Tf: 30, solids: false, gas: true, vvm: 1, coal: true, lV2: L10(10), FS: 1.15, Tw: 60, T0: 20, Tgoal: 37, tH: 30 },
-    desc: 'Un tanque de 0,6 m con Rushton a 250 rpm y aire a 1 vvm por un anillo bajo el impulsor. El gas queda en régimen cargado, la potencia gaseada cae y el kLa sale de van\'t Riet. Baje la velocidad y mire en la pestaña 4 cuándo se inunda el impulsor.',
-    note: 'Trae agua a 30 °C: las fronteras de Nienow y el kLa de van\'t Riet son para agua y soluciones acuosas.' },
-  { id: 'etanol', name: 'Tanque de precipitación con etanol', src: 'Proyecto · Sesión 09', s: { imp: 'hidro', lT: L10(2), HT: 1, DT: 0.4, CT: 0.3, lrpm: L10(45), fluid: 'etanol', Tf: 20, solids: false, gas: false, lV2: L10(0.05), FS: 1.15, Tw: 40, T0: 10, Tgoal: 25, tH: 60 },
-    desc: 'El tanque del proyecto donde el extracto se mezcla con etanol para precipitar la pectina: 2 m, hidrofoil de D/T = 0,4 a 45 rpm. Las diapositivas piden mezclar sin pasar de 2 m/s en la punta, para no degradar la pectina.',
-    note: 'Se modela con etanol puro a 20 °C; la mezcla real con el extracto es más densa y más viscosa.' }
+    note: 'El líquido es agua a 85 °C (ρ ≈ 970 kg/m³, la densidad de las diapositivas) en lugar del extracto, que está en el panel 04 con la viscosidad que midan. El calentamiento de la pestaña 5 no coincide con el de la Sesión 09: allí se supone U ≈ 800 W/m²K y salen unos 53 m² para llegar a 85 °C en 30 min. El explorador calcula U con la correlación de Nusselt de esa misma diapositiva más la pared, el ensuciamiento y el vapor, obtiene unos 1125 W/m²K y pide 37,7 m².' },
+  { id: 'lab', name: 'Tanque de laboratorio con Rushton', src: 'Ejemplo del explorador · Sesión 09', s: LAB,
+    desc: 'La geometría estándar a escala de banco: tanque de 0,3 m con H = T, Rushton de D = T/3 a 300 rpm y cuatro bafles. Inyecte el trazador en la pestaña 1 y compare el θ₉₅ de las sondas con el de Grenville, unos 5 s. El panel 06 lo lleva a los 14,7 m³ del reactor con la misma geometría de banco, que no es la del reactor: T₂ = 2,66 m y una Rushton de 0,88 m.',
+    note: 'Los números son propios del explorador: el tanque de 0,3 m, la Rushton y los 300 rpm. Trae agua a 20 °C, porque el ensayo del trazador y la calibración del simulado contra Grenville se hacen con agua.' },
+  { id: 'vortice', name: 'Tanque de laboratorio sin bafles', src: 'Ejemplo del explorador · Lectura 06', s: Object.assign({}, LAB, { baff: false, lrpm: L10(450) }),
+    desc: 'El mismo tanque de banco con la Rushton a 450 rpm y sin bafles. El líquido gira en bloque, se forma un vórtice de unos 9 cm y Nₚ baja de 5,75 a 1,34, con la corrección por el número de Froude de la Lectura 06. La vista en planta de la pestaña 1 muestra el giro.',
+    note: 'Los números son propios del explorador: la velocidad y la curva sin bafles, que toma el 22 % del Nₚ turbulento y lo corrige con Frᵐ (a = 1,0 y b = 40 para la Rushton). Por eso Nₚ queda en el 23 % del valor con bafles, algo por encima del 10 a 20 % de la Sesión 09: con Fr < 1 esa corrección lo sube un poco. Trae agua a 20 °C: con un líquido viscoso el Reynolds baja de 300 y el vórtice no se forma.' },
+  { id: 'viscoso', name: 'Tanque de laboratorio con glicerina', src: 'Ejemplo del explorador · McCabe, tabla 9.2', s: Object.assign({}, LAB, { fluid: 'glicerina', Tf: 20, lrpm: L10(120) }),
+    desc: 'El tanque de banco con la Rushton, ahora en glicerina a 20 °C, unas 1400 veces más viscosa que el agua. A 120 rpm el Reynolds es 17,9, en transición pero cerca del laminar: Nₚ baja a 4,06, por debajo del 5,75 turbulento, y 3,64 de eso es el término laminar 65/Re. Grenville no da θ₉₅ con Re < 200 y, a este Reynolds, los bafles ya no aportan.',
+    note: 'Los números son propios del explorador: el tanque de banco y la velocidad. Las constantes de la Rushton, 65 en laminar y 5,75 en turbulento, son las de la tabla 9.2 de McCabe, y la viscosidad de la glicerina, 1,41 Pa·s a 20 °C, es la de Segur y Oberstar.' },
+  { id: 'cinta', name: 'Cinta helicoidal en glicerina', src: 'Ejemplo del explorador · Lectura 06', s: Object.assign({}, LAB, { imp: 'cinta', fluid: 'glicerina', Tf: 20, lrpm: L10(30) }),
+    desc: 'La misma glicerina con una cinta helicoidal que barre la pared a 30 rpm. El Reynolds es 36, en transición según la Lectura 06, aunque casi todo el Nₚ de 1,46 es todavía el término laminar 52/Re. La cinta sube el líquido por la periferia, lo baja por el centro y mezcla en unas 40 vueltas, unos 80 s, donde la Rushton dejaba zonas quietas.',
+    note: 'Los números son propios del explorador: el tanque, la velocidad y las 40 vueltas, el valor típico que el explorador usa para una cinta con Re < 100. Con turbinas, la mezcla en laminar pide más de 100 vueltas (Sesión 09). La constante laminar de la cinta, 52, es la de la tabla 9.2 de McCabe.' },
+  { id: 'arena', name: 'Suspensión de arena con PBT', src: 'McCabe · arena de la fig. 9.20 · Zwietering con S de la Sesión 09', s: { imp: 'pbt', lT: L10(0.5), HT: 1, DT: 0.33, CT: 0.25, lrpm: L10(330), fluid: 'agua', Tf: 20, solids: true, ldp: L10(0.2), rhoS: 2590, X: 11.1, gas: false, lV2: L10(10), FS: 1.15, Tw: 60, T0: 20, Tgoal: 40, tH: 30 },
+    desc: 'La arena de la figura 9.20 de McCabe (200 µm, ρₛ = 2590 kg/m³, X = 11,1) en un tanque de 0,5 m agitado por una PBT 45° con D/T = 0,33 y C/T = 0,25, como en esa figura. A 330 rpm la velocidad queda en el 91 % del Nⱼₛ de Zwietering, unos 363 rpm, y parte del lecho sigue quieto en el fondo: súbala hasta la ventana de 1,2 a 1,5 Nⱼₛ.',
+    note: 'Los datos de la arena son los de McCabe: Δρ = 1,59 g/cm³ en agua y X = 11,1, que equivale a 10 % en peso. El tamaño del tanque y la velocidad son del explorador, y S ≈ 6 es el de la Sesión 09 para la PBT, porque la tabla 9.4 de McCabe no trae ese impulsor. Trae agua a 20 °C: Nⱼₛ depende de la diferencia de densidad con el líquido y de su viscosidad.' },
+  { id: 'gas', name: 'Aireación con Rushton', src: 'Ejemplo del explorador · Sesión 09', s: { imp: 'rushton', lT: L10(0.6), HT: 1, DT: 0.333, CT: 0.333, lrpm: L10(250), fluid: 'agua', Tf: 30, solids: false, gas: true, vvm: 1, coal: true, lV2: L10(10), FS: 1.15, Tw: 60, T0: 20, Tgoal: 37, tH: 30 },
+    desc: 'Un tanque de 0,6 m con Rushton a 250 rpm y aire a 1 vvm por un anillo bajo el impulsor. El gas queda cargado, entre la inundación (181 rpm) y la dispersión completa (281 rpm); la potencia gaseada baja al 46 % y el kLa sale en unos 99 h⁻¹. Baje la velocidad y mire en la pestaña 4 cuándo se inunda el impulsor.',
+    note: 'Los números son propios del explorador: el tanque, la velocidad y el caudal de aire. El kLa tiene la forma de la Sesión 09 con las constantes de van\'t Riet para agua (C = 0,026, α = 0,4, β = 0,5); las fronteras de inundación y de dispersión son de Nienow, y la caída de la potencia con el gas, de Cui y colaboradores. Ninguna de esas tres fuentes está en las diapositivas. Trae agua a 30 °C, porque esas correlaciones son para agua y soluciones acuosas.' },
+  { id: 'etanol', name: 'Tanque de precipitación con etanol', src: 'Proyecto · Sesión 09 (geometría ilustrativa)', s: { imp: 'hidro', lT: L10(2), HT: 1, DT: 0.4, CT: 0.3, lrpm: L10(45), fluid: 'etanol', Tf: 20, solids: false, gas: false, lV2: L10(0.05), FS: 1.15, Tw: 40, T0: 10, Tgoal: 25, tH: 60 },
+    desc: 'El tanque del proyecto donde el extracto se mezcla con etanol para precipitar la pectina: 2 m, hidrofoil de D/T = 0,4 a 45 rpm. La Sesión 09 pide tₘ < 30 s sin pasar de 2 m/s en la punta, para no degradar la pectina. Aquí la punta va a 1,88 m/s, pero θ₉₅ sale en unos 66 s, y subir la velocidad hasta bajar de 30 s lleva la punta a más de 4 m/s.',
+    note: 'Se modela con etanol puro a 20 °C; la mezcla real con el extracto es más densa y más viscosa. El diámetro de 2 m, el hidrofoil de 0,8 m y la velocidad son ilustrativos: la Sesión 09 solo fija el tipo de impulsor (hidrofoil o PBT pequeño, a baja velocidad) y los dos criterios.' }
 ];
 var KEEP_VIEW = ['grid'], KEEP_PROPS = ['pMu', 'cRho', 'cMuExp'];
 function cfgState(id, from) {
@@ -1682,7 +1684,7 @@ function renderKPIs() {
   setV('kNp', fmtN(r.NpG, r.NpG < 10 ? 2 : 1)); setV('kNpu', (r.imp.close ? 'impulsor de pared' : (r.baff ? 'con bafles' : 'sin bafles · Fr ' + fmtN(r.Fr, 3))) + (r.gas && r.gas.ratio ? ' · gaseado' : ''));
   setV('kP', fW(r.Pw)); setV('kPu', r.motor ? 'motor IEC ' + fmtN(r.motor, r.motor < 1 ? 2 : (r.motor < 10 ? 1 : 0)) + ' kW' : 'más de 315 kW');
   var pv = r.PV / 1000; setV('kPV', fmtN(pv, pv < 0.1 ? 3 : 2) + '<small>kW/m³</small>'); setV('kPVu', pvClass(pv));
-  setV('kTh', r.th95 ? fT(r.th95) : '—'); setV('kThu', r.th95 ? (m ? 'simulado ' + fT(m.th) + ' · ' : '') + r.th95src : (r.imp.close ? 'sin correlación en este régimen' : 'laminar: zonas que no se mezclan'));
+  setV('kTh', r.th95 ? fT(r.th95) : '—'); setV('kThu', r.th95 ? (m ? 'simulado ' + fT(m.th) + ' · ' : '') + r.th95src : (r.imp.close ? 'sin correlación en este régimen' : (r.reg === 'laminar' ? 'laminar: zonas que no se mezclan' : 'Re < 200: Grenville no aplica')));
   $('#kThc').classList.toggle('bad', !r.th95 && !r.imp.close);
   if (so && so.Njs) { $('#kJsl').textContent = 'Suspensión N/Nⱼₛ'; setV('kJs', fmtN(so.ratio, 2)); setV('kJsu', 'Nⱼₛ = ' + fRPM(so.Njs * 60) + ' rpm · operar a 1,2 a 1,5'); $('#kJsc').classList.toggle('bad', so.ratio < 1); }
   else if (r.gas && r.gas.reg) { $('#kJsl').textContent = 'Régimen del gas'; setV('kJs', r.gas.reg); setV('kJsu', 'k_La ' + fmtN(r.gas.kLa * 3600, 0) + ' h⁻¹ · N_F ' + fRPM(r.gas.NF * 60) + ' rpm'); $('#kJsc').classList.toggle('bad', r.gas.reg === 'inundado'); }
@@ -1995,7 +1997,7 @@ function renderEqs() {
 /* ---------- 7 · configuraciones ---------- */
 function cfgFacts(st, r) {
   var imp = r.imp, fl = r.fl, g = r.geo, dp = Math.pow(10, st.ldp), so = [];
-  if (st.solids) so.push('sólidos de ' + fmtN(dp, dp < 1 ? 2 : 1) + ' mm, ρₛ = ' + fmtN(st.rhoS, 0) + ' kg/m³, X = ' + fmtN(st.X, 0));
+  if (st.solids) so.push('sólidos de ' + fmtN(dp, dp < 1 ? 2 : 1) + ' mm, ρₛ = ' + fmtN(st.rhoS, 0) + ' kg/m³, X = ' + fmtN(st.X, st.X % 1 ? 1 : 0));
   if (st.gas) so.push('aire a ' + fmtN(st.vvm, 2) + ' vvm, medio ' + (st.coal ? 'coalescente' : 'no coalescente'));
   return [['Impulsor', imp.short + ' a ' + fRPM(r.N * 60) + ' rpm · ' + (imp.close ? 'barre la pared' : 'D/T ' + fmtN(g.dt, 2) + ' · ' + (r.baff ? 'cuatro bafles' : 'sin bafles'))],
     ['Tanque', 'T = ' + fmtN(g.T, 2) + ' m · H/T ' + fmtN(g.HT, 2) + ' · ' + fV(g.V)],
@@ -2009,21 +2011,23 @@ function cfgResult(r) { // cada dato con su valor en una sola línea
   else it.push('punta ' + fmtN(r.tip, 2) + ' m/s');
   return it.map(function (x) { return esc(x).replace(/ /g, '&nbsp;'); }).join('&nbsp;· ');
 }
+/* número y unidad en la misma línea */
+function nbU(t) { return t.replace(/(\d) (?=(%|°C|°|µm|mm|m³\/h|m³|m²|m\/s|m|rpm|kW|W\/m²K|W|kPa|kg\/m³|g\/cm³|cSt|min|s|h⁻¹|L|mPa·s|Pa·s|vvm)(?![\p{L}\d]))/gu, '$1 '); }
 function renderConfigs() {
   var s = state;
-  $('#cfLead').innerHTML = 'Cada tarjeta es un sistema completo del curso: impulsor, tanque, velocidad, líquido, sólidos o gas, y los datos de escalado y calor. Todas traen su propio líquido, porque el caso depende de él, así que al cargar una se reemplaza el fluido que tenga escogido. Se conservan la cuadrícula, el fondo, las capas de la animación y sus mediciones de θ₉₅. Después siga cambiando el sistema pieza por pieza en los controles.';
+  $('#cfLead').innerHTML = 'Cada tarjeta es un sistema completo: impulsor, tanque, velocidad, líquido, sólidos o gas, y los datos de escalado y calor. Su etiqueta dice de dónde salen los números. Todas traen su propio líquido, porque el caso depende de él, así que al cargar una se reemplaza el fluido que tenga escogido. Se conservan la cuadrícula, el fondo, las capas de la animación y sus mediciones de θ₉₅. Después siga cambiando el sistema pieza por pieza en los controles.';
   $('#cfgCards').innerHTML = CONFIGS.map(function (c) {
     var st = cfgState(c.id, s), r = compute(mstate(st)), on = s.cfg === c.id;
-    return '<div class="cfg' + (on ? ' on' : '') + '"><div class="cb"><div class="ct"><h3>' + esc(c.name) + '</h3><span class="src">' + esc(c.src) + '</span></div><p>' + esc(c.desc) + '</p>'
+    return '<div class="cfg' + (on ? ' on' : '') + '"><div class="cb"><div class="ct"><h3>' + esc(c.name) + '</h3><span class="src">' + esc(c.src) + '</span></div><p>' + nbU(esc(c.desc)) + '</p>'
       + '<dl class="facts">' + cfgFacts(st, r).map(function (q) { return '<dt>' + q[0] + '</dt><dd>' + esc(q[1]) + '</dd>'; }).join('') + '</dl>'
-      + '<div class="res"><span>Resultado:</span> ' + cfgResult(r) + '</div>' + (c.note ? '<div class="note">' + esc(c.note) + '</div>' : '')
+      + '<div class="res"><span>Resultado:</span> ' + cfgResult(r) + '</div>' + (c.note ? '<div class="note">' + nbU(esc(c.note)) + '</div>' : '')
       + '<button type="button" data-cfg="' + c.id + '"' + (on && !s.cfgMod ? ' disabled' : '') + '>' + (on ? (s.cfgMod ? 'Volver a cargarla sin sus cambios' : 'Es la que está en pantalla') : 'Cargar esta configuración') + '</button></div></div>';
   }).join('');
   $('#cfgIdeas').innerHTML = [
     '<b>Impulsor (01):</b> pase de la PBT a la Rushton, o al revés, sin tocar nada más. Con el mismo D/T y la misma velocidad, la potencia cambia en la proporción de los Nₚ, unas 4,5 veces en turbulento; la pestaña 2 muestra las seis curvas.',
-    '<b>Deflectores (01):</b> quite los bafles y mire la vista en planta de la pestaña 1. Con Re por encima de 300 el líquido gira en bloque, aparece el vórtice y Nₚ cae con el número de Froude.',
+    '<b>Deflectores (01):</b> quite los bafles y mire la vista en planta de la pestaña 1. Con Re por encima de 300 el líquido gira en bloque, aparece el vórtice y Nₚ cae a una fracción del valor con bafles, corregida con el número de Froude.',
     '<b>Operación (03):</b> doble la velocidad. En turbulento la potencia se multiplica por ocho (P ∝ N³) y θ₉₅ solo baja a la mitad; la pestaña 3 lo muestra contra N.',
-    '<b>Fluido (04):</b> pase a un líquido más viscoso, como la glicerina, con la misma geometría. El Reynolds cae, Nₚ sube en la pestaña 2 y, ya en laminar, la potencia es proporcional a la viscosidad.',
+    '<b>Fluido (04):</b> pase a un líquido más viscoso, como la glicerina, con la misma geometría. El Reynolds cae y el punto recorre la curva de la pestaña 2: en transición Nₚ queda algo por debajo del turbulento y, ya en laminar, crece con Nₚ·Re constante y la potencia es proporcional a la viscosidad.',
     '<b>Escalado (06):</b> suba el volumen de la planta y compare los cuatro criterios en la pestaña 5. Con la misma P/V la velocidad de punta crece; con la misma punta, la P/V cae.'
   ].map(function (x) { return '<li>' + x + '</li>'; }).join('');
 }

@@ -355,7 +355,7 @@ table.t tr:hover td { background: var(--accent-50); }
       <div class="sl"><div class="row"><span>Unidades</span></div><div class="seg" id="unitSeg" style="margin-top:6px"><button type="button" data-v="si">m³/h · m · kW</button><button type="button" data-v="us">GPM · pie · HP</button></div></div>
       <label class="toggle"><input type="checkbox" id="isl"> Islas de eficiencia en la carta</label>
       <label class="toggle"><input type="checkbox" id="grid"> Cuadrícula en las gráficas</label>
-      <button type="button" class="seg inline" id="resetAll" style="margin-top:14px;padding:7px 12px;font-weight:700;font-size:12.5px;cursor:pointer">Volver al sistema del curso</button>
+      <button type="button" class="seg inline" id="resetAll" style="margin-top:14px;padding:7px 12px;font-weight:700;font-size:12.5px;cursor:pointer">Volver al caso base</button>
     </section>
   </aside>
 
@@ -943,28 +943,29 @@ var BASE = { casing: 'm', N0: 1750, vfd: 100, D: 190, arr: 'una', fluid: 'agua',
    desde la pestaña 7 y conservan las unidades y las opciones de vista. Las que nacen de un fluido concreto lo fijan (fix) y
    lo dicen en la tarjeta; las demás conservan el fluido que el estudiante tiene escogido. */
 var CONFIGS = [
-  { id: 'agua', name: 'Línea de agua de servicios', src: 'Caso del curso', fix: ['fluid', 'T'], fluNote: 'la del caso del curso', s: {},
-    desc: 'Una bomba 2×3-8 a 1750 rpm, con impulsor de 190 mm, pasa 25 m³/h de agua a un tanque 10 m más arriba con 5,5 m de fricción en la línea. Es una selección sana, con el punto dentro de la ventana del BEP, y sirve de referencia para comparar las demás.' },
-  { id: 'pectina', name: 'Alimentación del filtro prensa', src: 'Proyecto', fix: ['fluid', 'T'], fluNote: 'el del proyecto',
-    s: { casing: 's', N0: 3500, D: 117, fluid: 'pectina', T: 80, lQd: Math.log10(15), zs: 1.5, zd: 3.5, P2: 150, hfs: 0.35, hfd: 6 },
-    desc: 'El extracto caliente va del tanque de extracción al filtro prensa, que trabaja a 150 kPa. Lo mueve una carcasa pequeña 1½×2-6 a 3500 rpm, con el impulsor recortado a 117 mm para los 15 m³/h que pide el filtro.',
-    note: 'La viscosidad del extracto es la que tenga en el panel 02 (4 mPa·s por defecto, un valor de referencia): cámbiela por la que midan en el laboratorio.' },
-  { id: 'sobre', name: 'Bomba sobredimensionada', src: 'Lectura 05',
+  { id: 'agua', name: 'Línea de agua de servicios', src: 'Caso base del explorador', fix: ['fluid', 'T'], fluNote: 'la del caso base', s: {},
+    desc: 'Una bomba 2×3-8 a 1750 rpm, con impulsor de 190 mm, en una línea diseñada para 25 m³/h de agua hacia un tanque 10 m más arriba, con 5,5 m de fricción a ese caudal. Con la válvula abierta pasa 27,3 m³/h a 16,6 m, con 6,6 m de fricción y al 108 % del BEP: una selección sana que sirve de referencia para comparar las demás.',
+    note: 'Los números son propios del explorador: la bomba, los niveles y las pérdidas de la línea son ilustrativos.' },
+  { id: 'pectina', name: 'Alimentación del filtro prensa', src: 'Proyecto · datos supuestos', fix: ['fluid', 'T'], fluNote: 'el del proyecto',
+    s: { casing: 's', N0: 3500, D: 117, fluid: 'pectina', T: 85, lQd: Math.log10(15), zs: 1.5, zd: 3.5, P2: 150, hfs: 0.35, hfd: 6 },
+    desc: 'El extracto a 85 °C, la temperatura de diseño del proyecto, va del tanque de extracción al filtro prensa, que trabaja a 150 kPa. Lo mueve una carcasa pequeña 1½×2-6 a 3500 rpm con el impulsor recortado a 117 mm, que pasa 15,3 m³/h, apenas sobre los 15 m³/h que pide el filtro, al 80 % del BEP.',
+    note: 'Se supusieron la bomba, los niveles, la presión del filtro, las pérdidas y los 15 m³/h. A 85 °C la presión de vapor del extracto ya es de 58 kPa y el margen de NPSH baja a 1,5 m. La viscosidad es la que tenga en el panel 02 (4 mPa·s por defecto, un valor de referencia): cámbiela por la que midan en el laboratorio.' },
+  { id: 'sobre', name: 'Bomba sobredimensionada', src: 'Ejemplo del explorador · Lectura 05',
     s: { casing: 'l', D: 254, lQd: Math.log10(20), zs: 2, zd: 34, hfs: 0.3, hfd: 2 },
-    desc: 'Una carcasa grande 3×4-10 con el impulsor máximo de 254 mm para apenas 20 m³/h hacia un tanque 32 m más arriba. Trabaja muy a la izquierda del BEP, con recirculación, poca eficiencia y un motor que sobra.',
-    note: 'La pestaña 4 compara lo que cuesta llevarla a los 20 m³/h con la válvula, con el variador o recortando el impulsor.' },
-  { id: 'cavita', name: 'Succión negativa con agua caliente', src: 'Lectura 05 · NPSH', fix: ['fluid', 'T'], fluNote: 'la del ejemplo',
+    desc: 'Una carcasa grande 3×4-10 con el impulsor máximo de 254 mm en una línea diseñada para 20 m³/h hacia un tanque 32 m más arriba. Con agua y la válvula abierta pasa 26,5 m³/h, al 52 % del BEP: recirculación, una eficiencia del 58 % y un motor de 11 kW para 4,5 kW al freno.',
+    note: 'Los números son propios del explorador: la bomba, el tanque y las pérdidas. La pestaña 4 compara lo que cuesta llevarla a los 20 m³/h con la válvula, con el variador o recortando el impulsor.' },
+  { id: 'cavita', name: 'Succión negativa con agua caliente', src: 'Ejemplo del explorador · NPSH de la Lectura 05', fix: ['fluid', 'T'], fluNote: 'la fija el caso',
     s: { N0: 3500, D: 195, T: 60, lQd: Math.log10(48), zs: -3, zd: 55, hfs: 1.0, hfd: 12 },
-    desc: 'El tanque está 3 m por debajo del eje de la bomba y el agua llega a 60 °C, con la presión atmosférica de Bogotá. A 3500 rpm y 48 m³/h el NPSH disponible no alcanza el requerido: la bomba cavita, pierde cabeza y no llega al caudal.',
-    note: 'Para quitar la cavitación pruebe una cosa a la vez: subir el tanque (panel 03), enfriar el agua (panel 02) o bajar a 1750 rpm (panel 01).' },
-  { id: 'viscoso', name: 'Bombeo de aceite viscoso', src: 'ANSI/HI 9.6.7', fix: ['fluid', 'T'], fluNote: 'el del ejemplo',
+    desc: 'El tanque está 3 m por debajo del eje de la bomba y el agua llega a 60 °C, con la presión atmosférica de Bogotá. La línea es para 48 m³/h a 3500 rpm, pero el NPSH disponible (2,0 m) no alcanza el requerido (2,3 m): la bomba cavita, pierde el 20 % de la cabeza y se queda en 35,9 m³/h.',
+    note: 'Los números son propios del explorador: la bomba, los niveles, las pérdidas y la temperatura. Pruebe una cosa a la vez. Con el tanque al nivel del eje (zₛ = 0, panel 03) queda sana, con 1,6 m de margen; enfriar el agua a 20 °C (panel 02) deja 0,5 m, todavía con aviso; con el variador entre el 83 y el 92 % (panel 01) deja de cavitar, pero no pasa de 37 m³/h. Bajar a 1750 rpm no sirve: a caudal cero la bomba da 21 m y no vence los 58 m de cabeza estática.' },
+  { id: 'viscoso', name: 'Bombeo de aceite viscoso', src: 'Ejemplo del explorador · ANSI/HI 9.6.7', fix: ['fluid', 'T'], fluNote: 'lo fija el caso',
     s: { fluid: 'aceite', T: 20, D: 203, lQd: Math.log10(20), zs: 2, zd: 14, hfs: 0.5, hfd: 3 },
-    desc: 'La carcasa 2×3-8 con el impulsor máximo mueve aceite ISO VG 32 a 20 °C, de 86 cSt. Con esa viscosidad la curva de agua del fabricante ya no vale: ANSI/HI 9.6.7 la corrige y la eficiencia baja a las tres cuartas partes.',
-    note: 'En la pestaña 6 compare el BEP con agua y con el aceite.' },
-  { id: 'paralelo', name: 'Dos bombas en paralelo', src: 'Lectura 05',
+    desc: 'La carcasa 2×3-8 con el impulsor máximo mueve aceite ISO VG 32 a 20 °C, de 86 cSt. Con esa viscosidad la curva de agua del fabricante ya no vale: ANSI/HI 9.6.7 la corrige y la eficiencia baja a las tres cuartas partes. La línea es para 20 m³/h; con la válvula abierta pasa 27 m³/h, al 110 % del BEP corregido.',
+    note: 'Los números son propios del explorador: la bomba, la línea y el aceite. En la pestaña 6 compare el BEP con agua y con el aceite.' },
+  { id: 'paralelo', name: 'Dos bombas en paralelo', src: 'Ejemplo del explorador · Lectura 05',
     s: { D: 203, arr: 'paralelo', lQd: Math.log10(45), zs: 2, zd: 12, hfs: 0.4, hfd: 8 },
-    desc: 'Dos bombas 2×3-8 iguales, con el impulsor máximo, comparten succión y descarga para llevar 45 m³/h al tanque del caso del curso, 10 m más arriba. Cada una pasa la mitad del caudal cerca de su BEP.',
-    note: 'La pestaña 5 compara este arreglo con una sola bomba y con dos en serie en el mismo sistema.' }
+    desc: 'Dos bombas 2×3-8 iguales, con el impulsor máximo, comparten succión y descarga en una línea diseñada para 45 m³/h hacia el tanque del caso base, 10 m más arriba. Con agua y la válvula abierta pasan 51,0 m³/h, unos 25,5 m³/h cada una, al 98 % de su BEP.',
+    note: 'Los números son propios del explorador: la bomba y las pérdidas de la línea. La pestaña 5 compara este arreglo con una sola bomba (35,7 m³/h) y con dos en serie (44,2 m³/h) en el mismo sistema.' }
 ];
 var BASE_ID = 'agua', KEEP_FLUID = ['fluid', 'T', 'pMu', 'cRho', 'cMuExp', 'cPv'], KEEP_VIEW = ['units', 'isl', 'grid'];
 function cfgState(id, from) {
@@ -1466,10 +1467,12 @@ function cfgResult(r) {
   if (!r.op) return 'sin punto de operación' + sev;
   return 'Q = ' + fq(r.op.Q) + NB + lQ() + ' a ' + fh(r.op.H) + NB + lH() + ' · ' + fmtN(100 * r.x, 0) + NB + '% del BEP · ' + fp(r.Pshaft) + NB + lP() + ' · margen de NPSH ' + (r.margin >= 0 ? '+' : '') + fh(r.margin) + NB + lH() + sev;
 }
+/* número y unidad en la misma línea */
+function nbU(t) { return t.replace(/(\d) (?=(%|°C|°|µm|mm|m³\/h|m³|m²|m\/s|m|rpm|kW|W\/m²K|W|kPa|kg\/m³|g\/cm³|cSt|min|s|h⁻¹|L|mPa·s|Pa·s|vvm)(?![\p{L}\d]))/gu, '$1 '); }
 function renderConfigs() {
   var s = state;
-  $('#cfLead').innerHTML = 'Cada tarjeta es un sistema completo del curso: la bomba, los niveles, las presiones y las pérdidas de la línea. Al cargar una se conservan las unidades y las opciones de vista. '
-    + 'Las que nacen de un fluido concreto lo fijan y lo dicen; las demás se calculan con el que tiene escogido (<b>' + esc(fluName(s)) + '</b>). Después la sigue cambiando pieza por pieza en los controles.';
+  $('#cfLead').innerHTML = 'Cada tarjeta es un sistema completo: la bomba, los niveles, las presiones y las pérdidas de la línea. Su etiqueta dice de dónde salen los números. Al cargar una se conservan las unidades y las opciones de vista. '
+    + 'Las que nacen de un fluido concreto lo fijan y lo dicen; las demás se calculan con el que tiene escogido (<b>' + esc(fluName(s)) + '</b>), aunque su descripción da los números con agua. Después la sigue cambiando pieza por pieza en los controles.';
   $('#cfgCards').innerHTML = CONFIGS.map(function (c) {
     var st = cfgState(c.id, s), r = compute(st, true), on = s.cfg === c.id, cas = byId(CASINGS, st.casing), Qd = Math.pow(10, st.lQd) / 3600, fixed = (c.fix || []).indexOf('fluid') >= 0;
     var facts = [
@@ -1477,9 +1480,9 @@ function renderConfigs() {
       ['Sistema', fq(Qd) + NB + lQ() + ' · niveles de succión ' + fhs(st.zs) + ' y de descarga ' + fhs(st.zd) + NB + lH() + (st.P1 ? ' · tanque a ' + fmtN(st.P1, 0) + NB + 'kPa' : '') + (st.P2 ? ' · destino a ' + fmtN(st.P2, 0) + NB + 'kPa' : '')],
       ['Pérdidas', 'succión ' + fhs(st.hfs) + ' y descarga ' + fhs(st.hfd) + NB + lH() + (st.hv ? ' · válvula ' + fhs(st.hv) + NB + lH() : '') + ' a ' + fq(Qd) + NB + lQ()],
       ['Fluido', fixed ? fluName(st) + ' (' + c.fluNote + ')' : 'el suyo, ' + fluName(st)]];
-    return '<div class="cfg' + (on ? ' on' : '') + '"><div class="cb"><div class="ct"><h3>' + esc(c.name) + '</h3><span class="src">' + esc(c.src) + '</span></div><p>' + esc(c.desc) + '</p>'
+    return '<div class="cfg' + (on ? ' on' : '') + '"><div class="cb"><div class="ct"><h3>' + esc(c.name) + '</h3><span class="src">' + esc(c.src) + '</span></div><p>' + nbU(esc(c.desc)) + '</p>'
       + '<dl class="facts">' + facts.map(function (q) { return '<dt>' + q[0] + '</dt><dd>' + esc(q[1]) + '</dd>'; }).join('') + '</dl>'
-      + '<div class="res"><span>Con ' + esc(fluName(st)) + ':</span> ' + cfgResult(r) + '</div>' + (c.note ? '<div class="note">' + esc(c.note) + '</div>' : '')
+      + '<div class="res"><span>Con ' + esc(fluName(st)) + ':</span> ' + cfgResult(r) + '</div>' + (c.note ? '<div class="note">' + nbU(esc(c.note)) + '</div>' : '')
       + '<button type="button" data-cfg="' + c.id + '"' + (on && !s.cfgMod ? ' disabled' : '') + '>' + (on ? (s.cfgMod ? 'Volver a cargarla sin sus cambios' : 'Es la que está en pantalla') : 'Cargar esta configuración') + '</button></div></div>';
   }).join('');
   $('#cfgIdeas').innerHTML = [

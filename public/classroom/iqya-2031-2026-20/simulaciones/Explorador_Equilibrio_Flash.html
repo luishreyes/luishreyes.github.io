@@ -461,7 +461,7 @@ table.t tr.light td:first-child { color: var(--accent-700); }
       <div class="sl" id="zRow" style="margin-top:0"><div class="row"><span id="zLab">Liviano en la alimentación z</span><b id="vz"></b></div><input type="range" id="z" min="0.01" max="0.99" step="0.005"><div class="hint" id="zHint"></div></div>
       <div id="zmBox"></div>
       <div class="sl"><div class="row"><span>Caudal de alimentación F</span><b id="vF"></b></div><input type="range" id="F" min="10" max="500" step="1"><div class="hint">El Taller 7 usa 100 y 150 kmol/h. Las fracciones no dependen de F.</div></div>
-      <div class="sl" id="T0Row"><div class="row"><span>Temperatura con que llega T<sub>0</sub></span><b id="vT0"></b></div><input type="range" id="T0" min="5" max="80" step="0.5"><div class="hint">Antes de la bomba y del intercambiador. El filtrado del reto llega a unos 35 °C.</div></div>
+      <div class="sl" id="T0Row"><div class="row"><span>Temperatura con que llega T<sub>0</sub></span><b id="vT0"></b></div><input type="range" id="T0" min="5" max="80" step="0.5"><div class="hint">Antes de la bomba y del intercambiador. El licor madre del Taller 9 sale del filtro a unos 35 °C.</div></div>
     </section>
     <section><h2><span class="n">03</span> Tambor</h2>
       <div class="sl" id="PRow" style="margin-top:0"><div class="row"><span>Presión del tambor</span><b id="vP"></b></div><input type="range" id="lP" min="1.7" max="4.4" step="0.002"><div class="hint" id="PHint"></div></div>
@@ -618,7 +618,8 @@ function pchip(xs, ys) {
    Antoine (log10, P en mmHg, T en °C): Lectura 10 (agua, etanol,
    n-hexano, n-octano), diapositivas de equilibrio de fases (benceno,
    tolueno), diapositivas de destilación flash (propano, n-butano,
-   n-pentano) y Taller 8 (isopropanol). Entalpías: McCabe, tabla 21.3,
+   n-pentano) y Taller 9 (isopropanol, en la celda del Van Laar de la
+   tarea 3.3). Entalpías: McCabe, tabla 21.3,
    para benceno y tolueno; las demás son externas al curso y así se dicen.
    ==================================================================== */
 var ANT = {
@@ -631,7 +632,7 @@ var ANT = {
   propano: { A: 6.80398, B: 803.81, C: 246.99, r: '', src: 'diapositivas de destilación flash' },
   butano: { A: 6.83029, B: 945.90, C: 240.00, r: '', src: 'diapositivas de destilación flash' },
   pentano: { A: 6.87632, B: 1075.78, C: 233.21, r: '', src: 'diapositivas de destilación flash' },
-  ipa: { A: 8.87829, B: 2010.33, C: 252.636, r: '', src: 'Taller 8' }
+  ipa: { A: 8.87829, B: 2010.33, C: 252.636, r: '', src: 'Taller 9' }
 };
 /* componentes: M kg/kmol; lam kJ/mol en el punto normal de ebullición; cpL y cpV J/(mol·K).
    ext: true cuando los datos de entalpía son externos al curso. */
@@ -647,17 +648,17 @@ var COMP = {
   butano: { n: 'n-butano', s: 'C₄', ant: ANT.butano, M: 58.12 },
   pentano: { n: 'n-pentano', s: 'C₅', ant: ANT.pentano, M: 72.15 }
 };
-/* datos x-y-T del etanol-agua a 1 atm de las diapositivas de equilibrio de fases
-   («Gmehling et al., DECHEMA»), la tabla clásica de Perry y McCabe */
+/* datos x-y-T del etanol-agua a 1 atm de las diapositivas de equilibrio de fases, que los citan como
+   «Gmehling et al., DECHEMA» */
 var PERX = [0, .019, .0721, .0966, .1238, .1661, .2337, .2608, .3273, .3965, .5079, .5198, .5732, .6763, .7472, .8943, 1];
 var PERY = [0, .170, .3891, .4375, .4704, .5089, .5445, .5580, .5826, .6122, .6564, .6599, .6841, .7385, .7815, .8943, 1];
 var PERT = [100, 95.5, 89.0, 86.7, 85.3, 84.1, 82.7, 82.3, 81.5, 80.7, 79.8, 79.7, 79.3, 78.74, 78.41, 78.15, 78.37];
 
 var BIN = [
-  { id: 'eaD', name: 'Etanol-agua · datos del curso', tag: 'Perry · solo 1 atm', c: ['etanol', 'agua'], model: 'table', fixedP: 760, dot: '#C8452B',
-    src: 'Datos x-y-T de las diapositivas de equilibrio de fases (Gmehling, DECHEMA; la tabla de Perry), con PCHIP. Burbuja y rocío salen de la misma tabla, así que las líneas de amarre son consistentes. Solo a 1 atm. Coinciden con la tabla x-y del Taller 9 dentro de 0,006 en y.' },
+  { id: 'eaD', name: 'Etanol-agua · datos del curso', tag: 'DECHEMA · solo 1 atm', c: ['etanol', 'agua'], model: 'table', fixedP: 760, dot: '#C8452B',
+    src: 'Datos x-y-T de las diapositivas de equilibrio de fases (Gmehling et al., DECHEMA), con PCHIP. Burbuja y rocío salen de la misma tabla, así que las líneas de amarre son consistentes. Solo a 1 atm. Difieren de la tabla x-y del Taller 9 en 0,01 o menos en y.' },
   { id: 'eaN', name: 'Etanol-agua · NRTL', tag: 'cualquier presión', c: ['etanol', 'agua'], model: 'nrtl', a12: 0, a21: 0, b12: 72.844, b21: 556.567, al: 0.47, dot: '#B77A2B',
-    src: 'NRTL ajustado por el Explorador McCabe-Thiele a los mismos datos de Perry, con el Antoine de la Lectura 10: τ₁₂ = 72,84/T, τ₂₁ = 556,6/T (T en K), α = 0,47. Azeótropo en 0,896 a 78,1 °C a 1 atm. Ajuste propio, externo al curso; sirve para cambiar la presión, por ejemplo a la de Bogotá.' },
+    src: 'NRTL ajustado por el Explorador McCabe-Thiele a esos mismos datos x-y-T de las diapositivas (DECHEMA), con el Antoine de la Lectura 10: τ₁₂ = 72,84/T, τ₂₁ = 556,6/T (T en K), α = 0,47. Azeótropo en 0,896 a 78,1 °C a 1 atm. Ajuste propio, externo al curso; sirve para cambiar la presión, por ejemplo a la de Bogotá.' },
   { id: 'eaR', name: 'Etanol-agua · Raoult ideal', tag: 'Lectura 11', c: ['etanol', 'agua'], model: 'raoult', dot: '#9A6E5C',
     src: 'Raoult ideal con el Antoine de la Lectura 10, como la calculadora de la Lectura 11. Ignora la no idealidad: no hay azeótropo y el punto de burbuja de z = 0,40 sale en 89,0 °C, cuando el real es de unos 80,7 °C.' },
   { id: 'bt', name: 'Benceno-tolueno', tag: 'Raoult · McCabe 21.1', c: ['benceno', 'tolueno'], model: 'raoult', dot: '#1D5273',
@@ -665,7 +666,7 @@ var BIN = [
   { id: 'ho', name: 'n-Hexano/n-octano', tag: 'ideal · Lectura 10', c: ['hexano', 'octano'], model: 'raoult', dot: '#2F7D5B',
     src: 'El ejemplo de mezcla ideal de la Lectura 10, con su Antoine. α cerca de 5: una sola etapa ya separa bastante. Entalpías externas al curso.' },
   { id: 'ipa', name: 'Isopropanol-agua · Van Laar', tag: 'azeótropo 0,685', c: ['ipa', 'agua'], model: 'vanlaar', A12: 2.0910, A21: 1.1867, dot: '#7A5CA8',
-    src: 'Van Laar del Taller 9 ajustado al azeótropo de 0,685 a 80,4 °C (A = 2,091, B = 1,187), con el Antoine del Taller 8. Entalpías externas al curso.' }
+    src: 'Van Laar de la tarea 3.3 del Taller 9, «el mismo modelo del Taller 8», ajustado al azeótropo de 0,685 a 80,4 °C (A = 2,091, B = 1,187) con el Antoine que trae esa celda. Entalpías externas al curso.' }
 ];
 /* mezclas multicomponente: Raoult con Antoine, o constantes K fijas como en el Taller 7 */
 var MULTI = [
@@ -1121,30 +1122,36 @@ var L10 = Math.log10;
 
 var BASE = { mode: 'bin', sys: 'eaR', mix: 'c345', lP: L10(760), spec: 'T', T: 91, psi: 0.4, TF: 150, T0: 25, z: 0.40, zm: null, Km: null, F: 100,
   units: 'mmHg', diag: 'txy', b0: '0.5', grid: true, logP: false, cmpIdeal: true, Teq: null };
-/* Configuraciones del curso: cada una es un caso completo (mezcla, alimentación y tambor) y se carga desde la pestaña 8.
-   Las que salen de un ejemplo, de un taller o del reto fijan su mezcla; las que llevan keep: true se aplican a la mezcla
-   que el estudiante tiene en pantalla. Ninguna toca las opciones de vista (unidades, diagrama, Ψ₀, cuadrícula). */
+/* Configuraciones: cada una es un caso completo (mezcla, alimentación y tambor) y se carga desde la pestaña 8.
+   Su `src` dice de dónde sale: el material del curso que resuelve ese caso, el libro de McCabe o, si los números
+   son ilustrativos, «Ejemplo del explorador» (y la nota dice qué datos lo son). Las que salen de un ejemplo, de
+   un taller o del licor madre del Taller 9 fijan su mezcla; las que llevan keep: true se aplican a la mezcla que
+   el estudiante tiene en pantalla. Ninguna toca las opciones de vista (unidades, diagrama, Ψ₀, cuadrícula). */
 var CONFIGS = [
   { id: 'l11', name: 'La calculadora de la Lectura 11', src: 'Lectura 11', mixWhy: 'la de la lectura', s: {},
     desc: 'Etanol-agua con Raoult ideal, como la calculadora de la lectura: z = 0,40 en un tambor a 91 °C y 1 atm. Es el caso para seguir el algoritmo del flash isotérmico paso a paso.' },
-  { id: 'l11r', name: 'El mismo flash con el equilibrio real', src: 'Lectura 11 · datos de Perry', mixWhy: 'la tabla de las diapositivas', s: { sys: 'eaD' },
-    desc: 'El caso de la calculadora con la tabla x-y-T de las diapositivas en lugar de Raoult. El punto de rocío real queda por debajo de 91 °C, así que la alimentación sale toda como vapor y el tambor no separa nada.',
+  { id: 'l11r', name: 'El mismo flash con el equilibrio real', src: 'Diapositivas de equilibrio · DECHEMA', mixWhy: 'la tabla de las diapositivas', s: { sys: 'eaD' },
+    desc: 'El caso de la calculadora con la tabla x-y-T de las diapositivas de equilibrio (Gmehling et al., DECHEMA) en lugar de Raoult. El punto de rocío real es de 88,6 °C, por debajo de los 91 °C del tambor, así que la alimentación sale toda como vapor y el tambor no separa nada.',
     note: 'Para encontrar las dos fases con estos datos use «Llevar T a la región de dos fases» en el panel 03.' },
-  { id: 'reto', name: 'El pre-flash del filtrado del reto', src: 'Reto del curso', mixWhy: 'la del reto', s: { sys: 'eaD', z: 0.20, spec: 'psi', psi: 0.20, T0: 35 },
-    desc: 'El filtrado llega a 35 °C con z = 0,20 de etanol (44,7 % v/v) y se quiere vaporizar la quinta parte en un tambor a 1 atm. Se busca la temperatura que da Ψ = 0,20 y el calor que pide el intercambiador.' },
-  { id: 'bog', name: 'El pre-flash del reto a la presión de Bogotá', src: 'Reto · 560 mmHg', keep: true, s: { lP: L10(560), z: 0.20, spec: 'psi', psi: 0.20, T0: 35 },
+  { id: 'reto', name: 'Un pre-flash supuesto para el licor madre', src: 'Licor madre del Taller 9 · flash supuesto', mixWhy: 'la tabla de las diapositivas', s: { sys: 'eaD', z: 0.20, spec: 'psi', psi: 0.20, T0: 35 },
+    desc: 'El licor madre de la precipitación sale del filtro a unos 35 °C con z = 0,20 de etanol (44,7 % v/v). Aquí se supone que, antes de la columna, pasa por un tambor flash a 1 atm que vaporiza la quinta parte: se busca la temperatura que da Ψ = 0,20 y el calor que pide el intercambiador.',
+    note: 'z = 0,20 y los 35 °C son del Taller 9; el pre-flash y Ψ = 0,20 son supuestos. En el Taller 9 la alimentación va a la columna sin precalentador y llega subenfriada (q = 1,1). La Lectura 11 menciona un flash así para la planta de pectina, sin números.' },
+  { id: 'bog', name: 'El mismo pre-flash a la presión de Bogotá', src: 'Licor madre del Taller 9 · 560 mmHg', keep: true, s: { lP: L10(560), z: 0.20, spec: 'psi', psi: 0.20, T0: 35 },
     fit: function (s) { if (s.mode === 'bin' && byId(BIN, s.sys).fixedP) s.sys = 'eaN'; },
-    desc: 'La especificación del reto (z = 0,20, Ψ = 0,20 y llegada a 35 °C) con el tambor a 560 mmHg. Se aplica a la mezcla que tiene en pantalla: compare la temperatura del tambor y el calor con los de 1 atm.',
+    desc: 'El pre-flash supuesto de la tarjeta anterior (z = 0,20, Ψ = 0,20 y llegada a 35 °C) con el tambor a 560 mmHg. Se aplica a la mezcla que tiene en pantalla: compare la temperatura del tambor y el calor con los de 1 atm.',
     note: 'Los datos del curso para etanol-agua solo valen a 1 atm; si son los que tiene, la tarjeta pasa al NRTL ajustado a esos mismos datos.' },
-  { id: 'mc', name: 'Benceno-tolueno, el ejemplo 21.1 de McCabe', src: 'McCabe 21.1', s: { sys: 'bt', z: 0.5, spec: 'psi', psi: 0.4 },
-    desc: 'Una alimentación equimolar de benceno y tolueno a 1 atm de la que se vaporiza el 40 %. Salen la temperatura del tambor, las dos composiciones y la temperatura T_F a la que hay que calentar la alimentación.' },
-  { id: 'adi', name: 'Flash adiabático con T_F = 178 °C', src: 'McCabe 21.1 al revés', keep: true, s: { z: 0.5, spec: 'adi', TF: 178 },
+  { id: 'mc', name: 'Benceno-tolueno, el ejemplo 21.1 de McCabe', src: 'McCabe · ejemplo 21.1', s: { sys: 'bt', z: 0.5, spec: 'psi', psi: 0.4 },
+    desc: 'Una alimentación equimolar de benceno y tolueno a 1 atm de la que se vaporiza el 40 %. Salen la temperatura del tambor, las dos composiciones y la temperatura T_F a la que hay que calentar la alimentación.',
+    note: 'El libro da x = 0,412, y = 0,632 y T_F ≈ 178 °C; el explorador da 0,411, 0,633 y 177,3 °C con su propio balance de entalpías (tabla 21.3). El enunciado del libro habla de evaporar el 50 %, pero su solución usa f = 0,4, y la tarjeta sigue la solución.' },
+  { id: 'adi', name: 'Flash adiabático con T_F = 178 °C', src: 'McCabe 21.1 · al revés', keep: true, s: { z: 0.5, spec: 'adi', TF: 178 },
     desc: 'La alimentación sale del intercambiador a 178 °C y la válvula y el tambor no intercambian calor: la entalpía que trae fija la temperatura del tambor y cuánto se vaporiza. Se aplica a la mezcla que tiene en pantalla.',
     note: 'Con benceno-tolueno es el ejemplo 21.1 visto al revés y da Ψ ≈ 0,40.' },
-  { id: 'ho', name: 'Una mezcla casi ideal: n-hexano/n-octano', src: 'Lectura 10', s: { sys: 'ho', z: 0.5, T: 95 },
-    desc: 'El ejemplo de mezcla ideal de la Lectura 10, equimolar, en un tambor a 95 °C y 1 atm. Con α cerca de 5 una sola etapa ya separa bastante: compare el vapor con el del etanol-agua.' },
-  { id: 'ipa', name: 'Isopropanol-agua del otro lado del azeótropo', src: 'Taller 9 · Van Laar', s: { sys: 'ipa', z: 0.80, spec: 'psi', psi: 0.4 },
-    desc: 'Una alimentación con z = 0,80, a la derecha del azeótropo de 0,685. El vapor sale más pobre en isopropanol que el líquido: un flash no puede cruzar el azeótropo.' },
+  { id: 'ho', name: 'Una mezcla casi ideal: n-hexano/n-octano', src: 'Ejemplo del explorador · Antoine de la Lectura 10', s: { sys: 'ho', z: 0.5, T: 95 },
+    desc: 'La Lectura 10 pone esta pareja como ejemplo de mezcla ideal y da su Antoine. Aquí entra equimolar a un tambor a 95 °C y 1 atm. Con α ≈ 5,4 una sola etapa ya separa bastante: compare el vapor con el del etanol-agua.',
+    note: 'Los números son propios del explorador: z = 0,50 y los 95 °C son ilustrativos, y las entalpías del n-hexano y el n-octano son externas al curso. La lectura no resuelve este flash.' },
+  { id: 'ipa', name: 'Isopropanol-agua del otro lado del azeótropo', src: 'Ejemplo del explorador · Van Laar del Taller 9', s: { sys: 'ipa', z: 0.80, spec: 'psi', psi: 0.4 },
+    desc: 'Una alimentación con z = 0,80, a la derecha del azeótropo de 0,685, de la que se vaporiza el 40 %. El vapor sale más pobre en isopropanol que el líquido: un flash no puede cruzar el azeótropo.',
+    note: 'Los números son propios del explorador: z = 0,80 y Ψ = 0,40 son ilustrativos. El equilibrio es el Van Laar de la tarea 3.3 del Taller 9 (A = 2,0910, B = 1,1867) con el Antoine de esa misma celda; las entalpías son externas al curso.' },
   { id: 's3', name: 'El flash interactivo de las diapositivas', src: 'Diapositivas de flash', s: { mode: 'multi', mix: 'c345', lP: L10(8 * 760), T: 60 },
     desc: 'Propano, n-butano y n-pentano (z = 0,30, 0,40 y 0,30) a 60 °C y 8 atm, con K de Raoult y el Antoine de las diapositivas. Da f = 0,201.' },
   { id: 't7e1', name: 'K fijas: el ejemplo 1 del Taller 7', src: 'Taller 7 · ejemplo 1', mixWhy: 'la del taller, con sus K', s: { mode: 'multi', mix: 't7e1' },
@@ -1155,8 +1162,9 @@ var CONFIGS = [
     desc: 'La misma alimentación a 2500 kPa y 320 K. Con Σ zK = 0,43 no aparece vapor: Rachford-Rice no tiene raíz entre 0 y 1 y todo sale líquido.' },
   { id: 't7c', name: 'K fijas: escenario C, todo vapor', src: 'Taller 7 · ejemplo 2', mixWhy: 'la del taller, con sus K', s: { mode: 'multi', mix: 't7c', F: 150 },
     desc: 'La misma alimentación a 400 kPa y 370 K. Con Σ z/K = 0,38 no queda líquido y todo se vaporiza.' },
-  { id: 'hbt', name: 'Tres componentes con Raoult, adiabático', src: 'Ejemplo del explorador', s: { mode: 'multi', mix: 'hbt', spec: 'adi', TF: 160, lP: L10(760) },
-    desc: 'n-Hexano, benceno y tolueno con K que cambian con la temperatura y la presión. La alimentación sale del intercambiador a 160 °C y el tambor adiabático a 1 atm fija la temperatura y Ψ.' }
+  { id: 'hbt', name: 'Tres componentes con Raoult, adiabático', src: 'Ejemplo del explorador', mixWhy: 'la del ejemplo', s: { mode: 'multi', mix: 'hbt', spec: 'adi', TF: 160, lP: L10(760) },
+    desc: 'n-Hexano, benceno y tolueno con K que cambian con la temperatura y la presión. La alimentación sale del intercambiador a 160 °C y el tambor adiabático a 1 atm fija la temperatura y Ψ.',
+    note: 'Los números son propios del explorador: la composición (0,30, 0,30 y 0,40) y T_F = 160 °C son ilustrativos, y las entalpías del n-hexano son externas al curso. El Antoine es el de la Lectura 10 y el de las diapositivas de equilibrio; las entalpías del benceno y el tolueno, las de la tabla 21.3 de McCabe.' }
 ];
 /* la mezcla es el sistema (binario o multicomponente) con sus datos propios: la composición zᵢ y, si las trae, las K */
 var MIX_KEYS = ['mode', 'sys', 'mix', 'zm', 'Km'], VIEW_KEYS = ['units', 'diag', 'b0', 'grid', 'logP', 'cmpIdeal'];
@@ -1327,7 +1335,7 @@ function diagnose(R) {
     if (sys.id === 'eaR') { var real = eqAt(byId(BIN, 'eaD'), 760).T(s.z); w.push({ sev: 'w', t: 'Raoult ideal para el etanol-agua, como la calculadora de la Lectura 11: sirve para ver el algoritmo, no para diseñar. Ignora la no idealidad y el azeótropo; el punto de burbuja ideal de z = ' + fmtN(s.z, 2) + ' a 1 atm sale en ' + fT(eqAt(sys, 760).T(s.z)) + ', el real en ' + fT(real) + '.' }); }
     if (eq.az && Math.abs(s.z - eq.az.x) > 1e-3 && s.z > eq.az.x) w.push({ sev: 'w', t: 'z = ' + fx(s.z) + ' está del otro lado del azeótropo (' + fx(eq.az.x) + '): ahí el vapor sale más pobre en ' + n[0] + ' que el líquido. El flash no puede cruzar el azeótropo.' });
     if (eq.az && Math.abs(s.z - eq.az.x) <= 1e-3) w.push({ sev: 'c', t: 'La alimentación tiene la composición del azeótropo: líquido y vapor salen iguales y no hay separación.' });
-    if ((sys.c[0] === 'etanol') && R.state === '2F' && s.z < 0.5) w.push({ sev: 'ok', t: 'Una sola etapa: el vapor más rico que puede dar esta alimentación es el de la primera burbuja, y = ' + fx(eq.y(s.z)) + '. La columna del reto pide x_D = 0,80; para eso hacen falta varias etapas (Taller 9).' });
+    if ((sys.c[0] === 'etanol') && R.state === '2F' && s.z < 0.5) w.push({ sev: 'ok', t: 'Una sola etapa: el vapor más rico que puede dar esta alimentación es el de la primera burbuja, y = ' + fx(eq.y(s.z)) + '. La columna del Taller 9 pide x_D = 0,80; para eso hacen falta varias etapas.' });
     if (sys.model === 'table' && Math.abs(Math.pow(10, s.lP) - 760) > 1) w.push({ sev: 'w', t: 'Los datos del curso son a 1 atm: la presión del control no se usa. Para otra presión, elija el NRTL.' });
   } else {
     if (R.fixedK) w.push({ sev: 'w', t: 'K fijas, como en el Taller 7: no cambian con la temperatura ni con la presión. Para verlas cambiar use una mezcla con Raoult.' });
@@ -1387,7 +1395,7 @@ function update() {
   if (outT) setV('tpFixTxt', R.state === 'L' ? 'A ' + fT(s.T) + ' la alimentación sale toda líquida: su punto de burbuja a esta presión es ' + fT(R.Tb) + '.' : 'A ' + fT(s.T) + ' la alimentación sale toda como vapor: su punto de rocío a esta presión es ' + fT(R.Td) + '.');
   $('#TFHint').innerHTML = R.en ? (s.spec === 'adi' ? 'Tambor y válvula adiabáticos: el calor entra aquí' : 'La que haría falta para hacerlo adiabático') : 'Esta mezcla no tiene entalpías';
   $('#zLab').innerHTML = subs(esc((R.mode === 'bin' ? cName(R.names[0]) : 'liviano') + ' en la alimentación z'));
-  $('#zHint').innerHTML = R.mode === 'bin' && R.eq.az ? 'Azeótropo en ' + fx(R.eq.az.x) + ' a esta presión' : (R.mode === 'bin' && R.sys.id.indexOf('ea') === 0 ? 'El reto: z = 0,20 (44,7 % v/v)' : '');
+  $('#zHint').innerHTML = R.mode === 'bin' && R.eq.az ? 'Azeótropo en ' + fx(R.eq.az.x) + ' a esta presión' : (R.mode === 'bin' && R.sys.id.indexOf('ea') === 0 ? 'Licor madre del Taller 9: z = 0,20 (44,7 % v/v)' : '');
   $('#sysNote').innerHTML = subs(esc(R.mode === 'bin' ? R.sys.src : R.mx.src));
   $('#mixHint').innerHTML = s.mode !== 'multi' ? '' : (fixed ? 'Las mezclas con K fijas del Taller 7 se cargan desde la pestaña 8, Configuraciones. Si escoge otra mezcla, esta deja de aparecer en la lista.' : 'Los casos del Taller 7, con K fijas, están en la pestaña 8, Configuraciones.');
   $('#specNote').innerHTML = subs(esc(s.spec === 'T' ? 'Flash isotérmico: se fija la T del tambor y sale el calor.' : (s.spec === 'psi' ? 'Se fija cuánto se vaporiza y se busca la T que lo da.' : 'Flash adiabático: la entalpía de la alimentación fija la T del tambor.')));
@@ -1466,14 +1474,14 @@ function cfgResult(r) {
 }
 function renderConfigs() {
   var s = state, mn = mixName(s);
-  $('#cfLead').innerHTML = 'Cada tarjeta es un caso del curso con su mezcla, su alimentación y su tambor. Las que salen de un ejemplo resuelto, de un taller o del reto traen su propia mezcla y lo dicen; las dos que dicen «la que tiene en pantalla» se aplican a la suya (<b>' + esc(mn) + '</b>). Al cargar una se conservan las unidades, el diagrama elegido, el Ψ₀ de Newton y la cuadrícula, y después la sigue cambiando pieza por pieza en los controles.';
+  $('#cfLead').innerHTML = 'Cada tarjeta es un caso completo, con su mezcla, su alimentación y su tambor, y dice de dónde sale: un caso resuelto en el curso, un ejemplo de McCabe o un ejemplo propio del explorador con números ilustrativos. Las que traen su propia mezcla lo dicen; las dos que dicen «la que tiene en pantalla» se aplican a la suya (<b>' + esc(mn) + '</b>). Al cargar una se conservan las unidades, el diagrama elegido, el Ψ₀ de Newton y la cuadrícula, y después la sigue cambiando pieza por pieza en los controles.';
   $('#cfgCards').innerHTML = CONFIGS.map(function (c) {
     var st = cfgState(c.id, s), r, on = s.cfg === c.id, notes = [];
     try { r = compute(st); } catch (e) { return ''; }
     if (c.note) notes.push(c.note);
     if (c.keep && c.id === 'adi' && !r.hasH) notes.push('Con la mezcla que tiene en pantalla no hay entalpías: el flash adiabático no se puede resolver y se usa la T del tambor.');
     if (c.keep && c.id === 'bog' && r.fixedK) notes.push('Con K fijas la presión no entra al cálculo: escoja una mezcla con Raoult para ver el efecto de Bogotá.');
-    return '<div class="cfg' + (on ? ' on' : '') + '"><div class="cb"><div class="ct"><h3>' + subs(esc(c.name)) + '</h3><span class="src">' + esc(c.src) + '</span></div><p>' + nbsp(subs(esc(c.desc))) + '</p>'
+    return '<div class="cfg' + (on ? ' on' : '') + '"><div class="cb"><div class="ct"><h3>' + subs(esc(c.name)) + '</h3><span class="src">' + esc(c.src).replace(/(Taller|Lectura|ejemplo) (\d)/g, '$1\u00a0$2') + '</span></div><p>' + nbsp(subs(esc(c.desc))) + '</p>'
       + '<dl class="facts">' + cfgFacts(c, st, r, s).map(function (q) { return '<dt>' + q[0] + '</dt><dd>' + nbsp(subs(esc(q[1]))) + '</dd>'; }).join('') + '</dl>'
       + '<div class="res"><span>' + (c.keep ? 'Con ' + esc(mixName(st)) + ':' : 'Resultado:') + '</span> ' + cfgResult(r) + '</div>'
       + notes.map(function (n) { return '<div class="note">' + nbsp(subs(esc(n))) + '</div>'; }).join('')
@@ -1649,7 +1657,7 @@ function drawTdBin(R, d) {
   } else out += dot(a.X(z), a.Y(R.T), 5, CR) + TX(a.X(z) + 8, a.Y(R.T) - 6, fmtN(R.T, 1) + ' °C · ' + (R.state === 'L' ? 'líquido' : 'vapor'), { fs: 11, fw: 750, c: CR });
   out += TX(a.o.x0 + 4, a.Y(eq.Tb2) - 5, fmtN(eq.Tb2, 1) + ' °C', { fs: 10, c: MUT }) + TX(a.o.x1 - 4, a.Y(eq.Tb1) - 5, fmtN(eq.Tb1, 1) + ' °C', { a: 'end', fs: 10, c: MUT });
   svg.innerHTML = out;
-  $('#tdLeg').innerHTML = '<span><i style="border-top-color:var(--ink)"></i>burbuja</span><span><i class="k"></i>rocío</span><span><i style="border-top-color:' + CF + '"></i>línea de amarre</span>' + (R.en ? '<span><i style="border-top-color:' + CR + '"></i>calentamiento a presión</span>' : '') + (R.sys.model === 'table' ? '<span><i class="box" style="background:var(--ink);border-color:var(--ink);width:8px;height:8px;border-radius:50%"></i>datos de Perry</span>' : '');
+  $('#tdLeg').innerHTML = '<span><i style="border-top-color:var(--ink)"></i>burbuja</span><span><i class="k"></i>rocío</span><span><i style="border-top-color:' + CF + '"></i>línea de amarre</span>' + (R.en ? '<span><i style="border-top-color:' + CR + '"></i>calentamiento a presión</span>' : '') + (R.sys.model === 'table' ? '<span><i class="box" style="background:var(--ink);border-color:var(--ink);width:8px;height:8px;border-radius:50%"></i>datos DECHEMA</span>' : '');
   TDAX = { a: a, d: d };
 }
 var TDAX = null;
@@ -1694,7 +1702,7 @@ function renderStreams(R) {
   rows += line('Líquido L', R.L, Tf, R.state === 'V' ? R.zv.map(function () { return NaN; }) : R.x);
   $('#strTable').innerHTML = head + '<tbody>' + rows + '</tbody>';
   $('#strLbl').textContent = 'fracciones molares';
-  $('#strNote').innerHTML = subs(esc('Las dos corrientes salen en equilibrio a la T y la P del tambor: y_i = K_i x_i. ' + (R.mode === 'bin' && R.sys.model === 'table' ? 'Con los datos del curso, x e y se leen de la tabla de Perry en la línea de amarre.' : '')));
+  $('#strNote').innerHTML = subs(esc('Las dos corrientes salen en equilibrio a la T y la P del tambor: y_i = K_i x_i. ' + (R.mode === 'bin' && R.sys.model === 'table' ? 'Con los datos del curso, x e y se leen de la tabla de las diapositivas en la línea de amarre.' : '')));
 }
 function renderBal(R) {
   var s = state, rows = [], iL = R.iL, nm = R.labels[iL];
@@ -2213,6 +2221,8 @@ function renderVO() {
    ==================================================================== */
 function G() { return '\\begin{gathered}' + Array.prototype.join.call(arguments, '\\\\[4pt]') + '\\end{gathered}'; }
 function tn(c) { return '\\text{' + String(c).replace(/[{}\\]/g, '') + '}'; }
+/* «de la Lectura 10», «del Taller 9», «de las diapositivas de…» */
+function deSrc(s) { return (/^Taller/.test(s) ? 'del ' : (/^diapositivas/.test(s) ? 'de las ' : 'de la ')) + s; }
 function renderEqs() {
   var R = RES, s = state, z = R.zv, K = R.K, iL = R.iL, lab = R.labels, nl = lab[iL], bin = R.mode === 'bin', rr = R.rr, S = rr.sums, two = R.state === '2F';
   var Ttx = R.fixedK ? n2(R.Tk, 0) + '\\ \\text{K}' : n2(R.T, 1) + '\\ °\\text{C}';
@@ -2220,7 +2230,7 @@ function renderEqs() {
   // Antoine y K
   if (!R.fixedK) {
     var ant = R.names.map(function (c) { var a = COMP[c].ant; return 'P^*_{' + tn(cName(c)) + '}&=10^{' + n2(a.A, 5) + '-\\frac{' + n2(a.B, 3) + '}{' + n2(R.T, 1) + '+' + n2(a.C, 3) + '}}=' + n2(psat(a, R.T), 1) + '\\ \\text{mmHg}'; });
-    items.push(['Presión de vapor (Antoine)', '\\begin{aligned}' + ant.join('\\\\') + '\\end{aligned}', 'log₁₀ P* = A − B/(T + C), P en mmHg y T en °C. Constantes de la ' + R.names.map(function (c) { return COMP[c].ant.src; }).filter(function (v, i, a) { return a.indexOf(v) === i; }).join(' y de las ') + '.']);
+    items.push(['Presión de vapor (Antoine)', '\\begin{aligned}' + ant.join('\\\\') + '\\end{aligned}', 'log₁₀ P* = A − B/(T + C), P en mmHg y T en °C. Constantes ' + R.names.map(function (c) { return COMP[c].ant.src; }).filter(function (v, i, a) { return a.indexOf(v) === i; }).map(deSrc).join(' y ') + '.']);
     var ideal = !bin || R.sys.model === 'raoult';
     var kl = R.names.map(function (c, i) { return 'K_{' + tn(lab[i]) + '}&=' + n2(K[i], 4); });
     items.push(['Equilibrio y constante K', (ideal ? 'y_iP=x_iP_i^*\\ \\Rightarrow\\ K_i=\\frac{y_i}{x_i}=\\frac{P_i^*(T)}{P}' : 'y_iP=x_i\\gamma_iP_i^*\\ \\Rightarrow\\ K_i=\\frac{\\gamma_iP_i^*}{P}') + '\\qquad\\begin{aligned}' + kl.join('\\\\') + '\\end{aligned}', ideal ? 'Raoult y Dalton (Lectura 10). Con vapor ideal y líquido ideal, K depende solo de T y P.' : 'Raoult modificada con γ (Lectura 10, sección de no idealidad). Las diapositivas agregan φ en el vapor: K = γP*/(Pφ); a presiones moderadas φ ≈ 1.']);
@@ -2259,7 +2269,7 @@ function renderEqs() {
     ['Flujos y verificación', 'V = ΨF, L = F − V; Σx = Σy = 1', 'V = ' + fmtN(R.V, 2) + ' · L = ' + fmtN(R.L, 2)]
   ];
   $('#algo').innerHTML = st.map(function (q, i) { return '<div><b class="n">' + (i + 1) + '</b><b>' + esc(q[0]) + '</b><br>' + subs(esc(q[1])) + '<span class="res">' + subs(esc(q[2])) + '</span></div>'; }).join('');
-  $('#assump').innerHTML = subs('<b>Cómo está hecho.</b> Una etapa de equilibrio con vapor ideal. El equilibrio binario sale de la tabla de Perry de las diapositivas (con PCHIP), de Raoult con el Antoine del curso, del Van Laar del Taller 9 o de un NRTL propio; el multicomponente, de Raoult o de las K fijas del Taller 7. El flash binario se resuelve sobre la curva de burbuja y Rachford-Rice con Newton-Raphson, como el Taller 7, y con bisección, como las diapositivas. La energía toma líquidos puros a 25 °C como referencia, una válvula isentálpica y un tambor adiabático. '
+  $('#assump').innerHTML = subs('<b>Cómo está hecho.</b> Una etapa de equilibrio con vapor ideal. El equilibrio binario sale de la tabla DECHEMA de las diapositivas de equilibrio (con PCHIP), de Raoult con el Antoine del curso, del Van Laar del Taller 9 o de un NRTL propio; el multicomponente, de Raoult o de las K fijas del Taller 7. El flash binario se resuelve sobre la curva de burbuja y Rachford-Rice con Newton-Raphson, como el Taller 7, y con bisección, como las diapositivas. La energía toma líquidos puros a 25 °C como referencia, una válvula isentálpica y un tambor adiabático. '
     + 'Reproduce la calculadora de la Lectura 11 (Ψ = 0,450 a 91 °C con z = 0,40), el flash interactivo de las diapositivas (f = 0,2008 con K = 2,522, 0,782 y 0,265), el Taller 7 (β = 7/12 = 0,58333 en el ejemplo 1 y 0,30980 con V = 46,47 kmol/h en el escenario A) y el ejemplo 21.1 de McCabe (x = 0,41, y = 0,63 a 94,8 °C y T_F de 177 °C, contra 178 °C del libro). '
     + 'Son externos al curso y se marcan en cada pestaña: el NRTL, los calores latentes y los c_p de todo lo que no es benceno-tolueno, y la presión de Bogotá.');
 }
