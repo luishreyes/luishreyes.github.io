@@ -73,7 +73,7 @@ export const SpdpResultadosPage: React.FC<{ course: Course }> = ({ course }) => 
 
   const estudiantes = res.estudiantes.filter((e) => !q || sinTildes(e.nombre).includes(sinTildes(q)));
   const asesores = res.asesores.filter(
-    (a) => !q || sinTildes(a.nombre).includes(sinTildes(q)) || [...a.principal, ...a.coasesor].some((r) => r.estudiantes.some((e) => sinTildes(e).includes(sinTildes(q)))),
+    (a) => !q || sinTildes(a.nombre).includes(sinTildes(q)) || a.principal.some((r) => r.estudiantes.some((e) => sinTildes(e).includes(sinTildes(q)))),
   );
   const t = res.totales;
   const maxArea = Math.max(...res.areas.map((a) => a.propuestos));
@@ -214,17 +214,6 @@ export const SpdpResultadosPage: React.FC<{ course: Course }> = ({ course }) => 
                         <Reto key={r.reto.id} r={r} slug={course.slug} />
                       ))}
                     </div>
-                    {a.coasesor.length > 0 && (
-                      <p className="rs-co">
-                        <b>Como coasesor:</b>{' '}
-                        {a.coasesor.map((r, i) => (
-                          <span key={r.reto.id}>
-                            {i > 0 && ' · '}
-                            {r.reto.id} {r.reto.titulo} ({r.reto.asesor}; {nombres(r.estudiantes)})
-                          </span>
-                        ))}
-                      </p>
-                    )}
                   </section>
                 ))}
               </div>

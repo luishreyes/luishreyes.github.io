@@ -7,9 +7,8 @@
 // de resultados y el PDF para los profesores
 // (scripts/build-spdp-seleccion-pdf.mjs).
 //
-// Un reto queda «No disponible» cuando tiene tantos nombres como cupos, o
-// cuando se marca individual. Un reto para dos con un solo nombre se muestra
-// con «Queda un cupo».
+// Un reto con al menos un estudiante queda «No disponible», aunque sea para
+// dos: si en uno para dos quedó una sola persona, el reto se cierra igual.
 
 export interface Seleccion {
   nombres: string[];
