@@ -943,7 +943,11 @@ function animLoop(ts) {
 var $ = function (s, r) { return (r || document).querySelector(s); };
 var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
 function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
-var store = { get: function (k, d) { try { var v = localStorage.getItem('pou-molienda:' + k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } }, set: function (k, v) { try { localStorage.setItem('pou-molienda:' + k, JSON.stringify(v)); } catch (e) { } } };
+/* Entre visitas solo se recuerda el fondo (papel o blueprint): los valores del simulador arrancan siempre en el caso
+   del curso, para que nadie lo encuentre en el punto en que otro lo dejó. Se borra lo que guardaban las versiones anteriores. */
+var STORE_KEEP = { canvas: 1 };
+try { Object.keys(localStorage).forEach(function (k) { if (k.indexOf('pou-molienda:') === 0 && !STORE_KEEP[k.slice(13)]) localStorage.removeItem(k); }); } catch (e) { }
+var store = { get: function (k, d) { if (!STORE_KEEP[k]) return d; try { var v = localStorage.getItem('pou-molienda:' + k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } }, set: function (k, v) { if (!STORE_KEEP[k]) return; try { localStorage.setItem('pou-molienda:' + k, JSON.stringify(v)); } catch (e) { } } };
 var BASE = { mat: 'caliza', mill: 'bolas', lF: 4.30, lP: 2.18, lC: 1.30, modo: 'seca', hum: 2, sol: 65, Tamb: 25, grid: true, showEq: true, rowland: true, D: 3.0, phi: 75, J: 35, series: 'astm', cWi: 14.0, cCp: 1.40, cTmax: 60 };
 var state = Object.assign({}, BASE, store.get('state', {}));
 var R = null, tab = store.get('tab', 'eq');

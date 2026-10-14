@@ -1303,7 +1303,11 @@ function hexToRgb(h) { h = (h || '#000').replace('#', ''); if (h.length === 3) h
 var $ = function (s, r) { return (r || document).querySelector(s); };
 var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
 function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
-var store = { get: function (k, d) { try { var v = localStorage.getItem('pou-mccabe:' + k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } }, set: function (k, v) { try { localStorage.setItem('pou-mccabe:' + k, JSON.stringify(v)); } catch (e) { } } };
+/* Entre visitas solo se recuerda el fondo (papel o blueprint): los valores del simulador arrancan siempre en el caso
+   del curso, para que nadie lo encuentre en el punto en que otro lo dejó. Se borra lo que guardaban las versiones anteriores. */
+var STORE_KEEP = { canvas: 1 };
+try { Object.keys(localStorage).forEach(function (k) { if (k.indexOf('pou-mccabe:') === 0 && !STORE_KEEP[k.slice(11)]) localStorage.removeItem(k); }); } catch (e) { }
+var store = { get: function (k, d) { if (!STORE_KEEP[k]) return d; try { var v = localStorage.getItem('pou-mccabe:' + k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } }, set: function (k, v) { if (!STORE_KEEP[k]) return; try { localStorage.setItem('pou-mccabe:' + k, JSON.stringify(v)); } catch (e) { } } };
 function clone(o) { return JSON.parse(JSON.stringify(o)); }
 
 var BASE = { sys: 'ea9', alpha: 2.4, P: 760, zF: 0.20, xD: 0.80, xB: 0.02, F: 100, qMode: 'q', q: 1.1, TF: 35,
