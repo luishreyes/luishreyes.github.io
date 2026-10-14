@@ -1332,27 +1332,31 @@ function clone(o) { return JSON.parse(JSON.stringify(o)); }
 var BASE = { mode: 'diseno', fluid: 'agua', T: 25, pMu: 4, cRho: 1000, cMuExp: -3, cPv: 2.3, lQ: Math.log10(36), mat: 'acero', sch: 40, nS: 5, nD: 5, Ls: 6, Ld: 114, ent: 'aguda',
   fit: { s: { codoB: 2, compuerta: 1 }, d: { codoB: 4, compuerta: 1 } }, op: { s: { compuerta: 100, bola: 100 }, d: { compuerta: 100, bola: 100, globo: 100 } },
   z1: 2, P1: 0, dest: 'tanque', z2: 20, P2: 0, alt: 2600, qB: 36, hB: 72.5, eB: 0.72, N: 100, eta: 0.70, pArr: '1', corr: 'swamee', minor: 'K', lines: true, grid: true };
-/* Configuraciones del curso: cada una es un sistema completo (tanques, tubería, accesorios, bomba y cálculo).
-   Se cargan desde la pestaña 7 y conservan el fluido que el estudiante tiene elegido y las opciones de vista. */
+/* Configuraciones: cada una es un sistema completo (tanques, tubería, accesorios, bomba y cálculo).
+   Se cargan desde la pestaña 7 y conservan las opciones de vista y el fluido que el estudiante tiene elegido,
+   salvo las que se definen por su fluido (fixFluid), que cargan el suyo. */
 var CONFIGS = [
-  { id: 'lectura', name: 'Bombeo a un tanque elevado', src: 'Lectura 04 · ejemplo resuelto', s: {},
-    desc: 'El ejemplo resuelto de la lectura: 36 m³/h de un tanque abierto a otro 18 m más arriba, por 120 m de tubería de acero de 2 pulgadas con codos y válvulas de compuerta. Se calcula la cabeza que tiene que dar la bomba.' },
-  { id: 'pectina', name: 'Bombeo al filtro prensa del proyecto', src: 'Proyecto', s: { mode: 'operacion', lQ: Math.log10(6), mat: 'inox', nS: 5, nD: 4, Ls: 4, Ld: 35,
-    fit: { s: { codoB: 2, compuerta: 1 }, d: { codoB: 3, check: 1, compuerta: 1, globo: 1, teL: 1 } }, op: { s: { compuerta: 100, bola: 100 }, d: { compuerta: 100, bola: 100, globo: 100 } }, z1: 1.5, z2: 4, P2: 150, qB: 6.5, hB: 26, eB: 0.62, corr: 'colebrook' },
-    desc: 'Del tanque de extracción al filtro prensa, que trabaja presurizado a 150 kPa: acero inoxidable, válvula de retención, válvula de globo y una te. Con una bomba dada, el caudal sale del cruce de su curva con la del sistema.',
-    note: 'En el proyecto el líquido es el extracto de pectina a 75 °C: escójalo en el panel 01 si quiere el caso completo.' },
-  { id: 'gravedad', name: 'Trasiego entre tanques por gravedad', src: 'sin bomba', s: { mode: 'gravedad', mat: 'pvc', nS: 5, nD: 5, Ls: 10, Ld: 40, z1: 8, z2: 1,
+  { id: 'lectura', name: 'Bombeo a un tanque elevado', src: 'Lectura 04 · ejemplo resuelto', fixFluid: true, s: { fluid: 'agua', T: 25 },
+    desc: 'El ejemplo resuelto de la lectura: 36 m³/h de un tanque abierto a otro 18 m más arriba, por 120 m de tubería de acero de 2 pulgadas con codos y válvulas de compuerta. Se calcula la cabeza que tiene que dar la bomba.',
+    note: 'Carga el fluido del ejemplo aunque usted tenga otro escogido. Con agua a 25 °C: h<sub>A</sub> = 72,4 m, como la lectura.' },
+  { id: 'pectina', name: 'Bombeo al filtro prensa del proyecto', src: 'Proyecto · datos supuestos', s: { mode: 'operacion', lQ: Math.log10(6), mat: 'inox', nS: 5, nD: 4, Ls: 4, Ld: 35,
+    fit: { s: { codoB: 2, compuerta: 1 }, d: { codoB: 3, check: 1, compuerta: 1, globo: 1, teL: 1 } }, op: { s: { compuerta: 100, bola: 100 }, d: { compuerta: 100, bola: 100, globo: 100 } }, z1: 2, z2: 4, P2: 150, qB: 6, hB: 21, eB: 0.62, corr: 'colebrook' },
+    desc: 'Del tanque de extracción al filtro prensa, que trabaja presurizado a 150 kPa, por acero inoxidable con válvula de retención, válvula de globo y una te. Con una bomba dada, el caudal sale del cruce de su curva con la del sistema; la escogida tiene su mejor eficiencia en 6 m³/h, el caudal que pide el proceso, con 21 m de cabeza.',
+    note: 'Se supusieron los niveles, las longitudes, los accesorios, la presión del filtro y la bomba. En el proyecto el líquido es el extracto de pectina a 85 °C: escójalo en el panel 01 y la bomba entrega 6,0 m³/h en su BEP, con un NPSH disponible de 3,6 m. Con agua a 25 °C pasan 6,3 m³/h, al 105 % del BEP.' },
+  { id: 'gravedad', name: 'Trasiego entre tanques por gravedad', src: 'Ejemplo del explorador', s: { mode: 'gravedad', mat: 'pvc', nS: 5, nD: 5, Ls: 10, Ld: 40, z1: 8, z2: 1,
     fit: { s: { codoB: 2, compuerta: 1 }, d: { codoB: 2, compuerta: 1 } }, corr: 'colebrook' },
-    desc: 'El tanque de origen está 7 m más alto que el de destino y la línea no tiene bomba: el caudal es el que gasta en pérdidas todo el desnivel.' },
-  { id: 'cavita', name: 'Bomba por encima del tanque', src: 'succión negativa', s: { lQ: Math.log10(12), nS: 5, nD: 4, Ls: 8, Ld: 30, z1: -3, z2: 10,
+    desc: 'El tanque de origen está 7 m más alto que el de destino y la línea no tiene bomba: el caudal es el que gasta en pérdidas todo el desnivel.',
+    note: 'Los números son propios del explorador: los niveles, la tubería de PVC de 2 pulgadas y sus accesorios. Con agua a 25 °C bajan 21,1 m³/h.' },
+  { id: 'cavita', name: 'Bomba por encima del tanque', src: 'Ejemplo del explorador · NPSH de la Lectura 05', s: { lQ: Math.log10(12), nS: 5, nD: 4, Ls: 8, Ld: 30, z1: -3, z2: 10,
     fit: { s: { codoR: 2, pie: 1 }, d: { codoB: 2, check: 1, compuerta: 1 } }, corr: 'colebrook' },
     desc: 'El líquido está 3 m por debajo del eje de la bomba y la succión lleva válvula de pie con colador y codos roscados: la presión a la entrada de la bomba queda por debajo de la atmosférica.',
-    note: 'Con agua a 80 °C (panel 01) el NPSH disponible no alcanza y la bomba cavita.' }
+    note: 'Los números son propios del explorador: el nivel, la succión, la descarga y el caudal de 12 m³/h. Con agua a 25 °C el NPSH disponible es de 1,7 m, un margen estrecho. Caliéntela en el panel 01: a 50 °C ya baja de 1 m y prácticamente cualquier bomba cavita; a 60 °C el agua hierve a la entrada de la bomba.' }
 ];
 var KEEP_FLUID = ['fluid', 'T', 'pMu', 'cRho', 'cMuExp', 'cPv'], KEEP_VIEW = ['lines', 'grid'];
 function cfgState(id, from) {
   var c = byId(CONFIGS, id), s = Object.assign(clone(BASE), clone(c.s));
-  if (from) KEEP_FLUID.concat(KEEP_VIEW).forEach(function (k) { s[k] = from[k]; });
+  // las que se definen por su fluido conservan solo las propiedades del fluido personalizado, no la elección
+  if (from) KEEP_FLUID.concat(KEEP_VIEW).forEach(function (k) { if (!(c.fixFluid && (k === 'fluid' || k === 'T'))) s[k] = from[k]; });
   s.cfg = c.id; s.cfgMod = false; return s;
 }
 var state = cfgState('lectura');
@@ -1420,7 +1424,7 @@ function buildControls() {
   hoverSetup();
 }
 /* un cambio del estudiante; si no es del fluido ni de la vista, el sistema ya no es la configuración cargada tal cual */
-function dirty(kind) { if (kind !== 'fluid' && kind !== 'view') state.cfgMod = true; update(); }
+function dirty(kind) { if ((kind !== 'fluid' || byId(CONFIGS, state.cfg).fixFluid) && kind !== 'view') state.cfgMod = true; update(); }
 function togglePlay() { scene.running = !scene.running; $('#btnPlay').innerHTML = scene.running ? SVGI.pause : SVGI.play; $('#btnPlay').setAttribute('aria-label', scene.running ? 'Pausar' : 'Reanudar'); }
 function setTab(t) {
   tab = t;
@@ -1944,17 +1948,17 @@ function cfgResult(r, st) {
   return 'Q = ' + fmtQ(r.Q) + ' m³/h por gravedad' + sev;
 }
 function renderConfigs() {
-  var s = state, fl = byId(FLUIDS, s.fluid), fname = fl.name.toLowerCase() + (fl.T || fl.custom === 'mu' ? ' a ' + fmtN(R.T, 0) + ' °C' : '');
-  $('#cfLead').innerHTML = 'Cada tarjeta es un sistema completo del curso: tanques, tubería, accesorios y bomba. Al cargar una se conserva el fluido que tiene escogido (<b>' + esc(fname) + '</b>) y las opciones de vista; después la sigue cambiando pieza por pieza en los controles. Los resultados de cada tarjeta ya están calculados con ese fluido.';
+  var s = state, fname = function (st, T) { var fl = byId(FLUIDS, st.fluid); return fl.name.toLowerCase() + (fl.T || fl.custom === 'mu' ? ' a ' + fmtN(T, 0) + ' °C' : ''); };
+  $('#cfLead').innerHTML = 'Cada tarjeta es un sistema completo: tanques, tubería, accesorios y bomba. Al cargar una se conservan las opciones de vista y el fluido que tiene escogido (<b>' + esc(fname(s, R.T)) + '</b>), salvo en el ejemplo de la Lectura 04, que se carga con su agua a 25 °C; después la sigue cambiando pieza por pieza en los controles. El resultado de cada tarjeta ya está calculado con el fluido con que se carga.';
   $('#cfgCards').innerHTML = CONFIGS.map(function (c) {
     var st = cfgState(c.id, s), r = compute(st), on = s.cfg === c.id, m = byId(MATS, st.mat);
-    var facts = [['Tanques', 'z₁ = ' + fmtN(st.z1, 1) + ' m → ' + (st.dest === 'chorro' ? 'chorro a ' : 'z₂ = ') + fmtN(st.z2, 1) + ' m' + (st.P2 && st.dest !== 'chorro' ? ' · destino a ' + fmtN(st.P2, 0) + ' kPa' : '')],
+    var facts = (c.fixFluid ? [['Fluido', fname(st, r.T) + ' (el del ejemplo)']] : []).concat([['Tanques', 'z₁ = ' + fmtN(st.z1, 1) + ' m → ' + (st.dest === 'chorro' ? 'chorro a ' : 'z₂ = ') + fmtN(st.z2, 1) + ' m' + (st.P2 && st.dest !== 'chorro' ? ' · destino a ' + fmtN(st.P2, 0) + ' kPa' : '')],
       ['Tubería', m.name + ' · succión NPS ' + NPS[st.nS].n + ', ' + fmtN(st.Ls, 0) + ' m · descarga NPS ' + NPS[st.nD].n + ', ' + fmtN(st.Ld, 0) + ' m'],
       ['Accesorios', 'succión: ' + fitText(st.fit.s) + ' · descarga: ' + fitText(st.fit.d)],
-      ['Bomba', modeName(st) + (st.mode === 'operacion' ? ' · BEP ' + fmtN(st.qB, 1) + ' m³/h, ' + fmtN(st.hB, 1) + ' m' : '')]];
+      ['Bomba', modeName(st) + (st.mode === 'operacion' ? ' · BEP ' + fmtN(st.qB, 1) + ' m³/h, ' + fmtN(st.hB, 1) + ' m' : '')]]);
     return '<div class="cfg' + (on ? ' on' : '') + '">' + miniSketch(st) + '<div class="cb"><div class="ct"><h3>' + esc(c.name) + '</h3><span class="src">' + esc(c.src) + '</span></div><p>' + esc(c.desc) + '</p>'
       + '<dl class="facts">' + facts.map(function (q) { return '<dt>' + q[0] + '</dt><dd>' + esc(q[1]) + '</dd>'; }).join('') + '</dl>'
-      + '<div class="res"><span>Con ' + esc(fname) + ':</span> ' + cfgResult(r, st) + '</div>' + (c.note ? '<div class="note">' + esc(c.note) + '</div>' : '')
+      + '<div class="res"><span>Con ' + esc(fname(st, r.T)) + ':</span> ' + cfgResult(r, st) + '</div>' + (c.note ? '<div class="note">' + c.note + '</div>' : '')
       + '<button type="button" data-cfg="' + c.id + '"' + (on && !s.cfgMod ? ' disabled' : '') + '>' + (on ? (s.cfgMod ? 'Volver a cargarla sin sus cambios' : 'Es la que está en pantalla') : 'Cargar esta configuración') + '</button></div></div>';
   }).join('');
   $('#cfgIdeas').innerHTML = [

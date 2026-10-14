@@ -1148,7 +1148,7 @@ var BASE = { mat: 'levadura', mu: 3.5, rhoL: 1030, cBasis: 'filtrado', lcs: L10(
   J0: 150, qStop: 0.25, dPv: 0.6, f: 0.3, rpm: 0.5, minCake: 3, dPa: 3, dPb: 5, flocK: 10, flocDose: 50, mfJ: 35, drho: 70, contOn: false, contW: 25,
   lab: 't6', labA: 0.0012, labDP: 1.8, labMu: 3.5, labC: 25, labPts: clone(T6PTS), grid: true,
   scores: { prensa: [3, 3, 4, 2, 2, 1], floc: [5, 4, 3, 2, 3, 1], cent: [2, 3, 5, 4, 4, 5], mf: [4, 2, 4, 3, 5, 4] } };
-/* Configuraciones del curso: cada una es un filtro completo (la corriente, el equipo, el ciclo y las restricciones de la planta).
+/* Configuraciones: cada una es un filtro completo (la corriente, el equipo, el ciclo y las restricciones de la planta).
    Se cargan desde la pestaña 8. Conservan la suspensión que el estudiante tiene en pantalla (el material con las propiedades
    de su torta y de su líquido) salvo las claves que la tarjeta fija: las del Taller 6 y la del ciclo real fijan solo la
    compresibilidad s que estudian; mc2 y proj son ejemplos completos y fijan su propia suspensión. Siempre se conservan los
@@ -1163,17 +1163,18 @@ var CONFIGS = [
   { id: 't6r', name: 'Taller 6 · solo el 60 % del ciclo filtra', src: 'Taller 6 · parte C', s: { sComp: 0.7, frac: 0.6 },
     desc: 'Torta compresible y un ciclo de una hora en el que la prensa filtra 36 minutos; los otros 24 se van en lavar, descargar y cerrar. Para filtrar lo mismo en menos tiempo hace falta más área.',
     note: 'Con la levadura del taller: 85,0 m².' },
-  { id: 'real', name: 'Ciclo real de la prensa', src: 'Diapositivas 15 a 17', s: { sComp: 0.7, cyc: 'real', dP: 5 },
-    desc: 'La bomba de desplazamiento positivo arranca a caudal constante y la presión sube con la torta hasta 5 bar; de ahí en adelante filtra a presión constante hasta que el caudal cae al 25 % del de la bomba. Luego descarga, limpia y cierra en 24 min.' },
-  { id: 't6d', name: 'Taller 6 en un tambor al vacío', src: 'Taller 6 · McCabe 29.31', s: { sComp: 0.7, eq: 'tambor', dPv: 0.6, f: 0.3, rpm: 0.5 },
-    desc: 'El caldo del taller en un filtro de tambor rotatorio continuo: 0,6 bar de vacío, 30 % sumergido y media vuelta por minuto.',
-    note: 'Con la levadura, una torta muy resistente, cada vuelta deja una capa mucho más delgada que la mínima que la cuchilla alcanza a descargar.' },
+  { id: 'real', name: 'Ciclo real de la prensa', src: 'Diapositivas 15 a 17 · datos del Taller 6', s: { sComp: 0.7, cyc: 'real', dP: 5 },
+    desc: 'La prensa del taller con el ciclo de las diapositivas: la bomba de desplazamiento positivo arranca a caudal constante y la presión sube con la torta hasta 5 bar; de ahí en adelante filtra a presión constante hasta que el caudal cae al 25 % del de la bomba, y luego descarga, limpia y cierra. El flux de la bomba (150 L/(m²·h)), la parada al 25 % y los 24 min de descarga son supuestos del explorador.',
+    note: 'Con la levadura del taller: 88,3 m². La fase a caudal constante dura 7 min, la prensa filtra 63 min y el ciclo completo toma 87 min.' },
+  { id: 't6d', name: 'Taller 6 en un tambor al vacío', src: 'Taller 6 · ec. 29.31 de McCabe', s: { sComp: 0.7, eq: 'tambor', dPv: 0.6, f: 0.3, rpm: 0.5 },
+    desc: 'El caldo del taller en un filtro de tambor rotatorio continuo: 0,6 bar de vacío, 30 % sumergido y media vuelta por minuto. El taller no calcula tambores; aquí se aplica la ecuación 29.31 de McCabe a sus datos.',
+    note: 'Las condiciones del tambor son supuestas y caen dentro de lo que da McCabe: un tambor gira de 0,1 a 2 rpm y la mayoría trabaja con un 30 % sumergido; el vacío de 0,6 bar es cercano a las 20 inHg (0,68 bar) del ejemplo 29.2. Con la levadura, una torta muy resistente, cada vuelta deja 0,34 mm, muy por debajo de los 3 mm que la cuchilla alcanza a descargar.' },
   { id: 'mc2', name: 'Tambor al vacío con carbonato de calcio', src: 'McCabe · ejemplo 29.2', s: { mat: 'caco3', mu: 1.0, rhoL: 998, cBasis: 'alimentado', lcs: L10(236), mw: 2, rhoCd: 1200, lQ: L10(2.089), la: L10(1.4226e11), dPref: 1, sComp: 0.26, lRm: 6, eq: 'tambor', dPv: 20 * 3386.39 / 1e5, f: 0.3, rpm: 0.2, minCake: 3 },
     desc: 'El ejemplo resuelto del libro: un tambor rotatorio a 20 inHg de vacío, 30 % sumergido y a 0,2 rpm, que filtra una suspensión de CaCO₃ con la concentración dada por m³ de líquido alimentado. El libro obtiene 7,59 m² de área.',
     note: 'Fija su propia suspensión, la del ejemplo: CaCO₃ con s = 0,26 y la resistencia del medio despreciable.' },
-  { id: 'proj', name: 'Filtro del bagazo agotado', src: 'Proyecto', s: { mat: 'bagazo', mu: 4, rhoL: 1008, lcs: L10(10), mw: 5, rhoCd: 150, lQ: L10(6), la: L10(1e10), dPref: 1, sComp: 0.5, lRm: L10(3e10), dP: 1.5, Pmax: 3, cyc: 'td', tdMin: 30, tfMode: 'opt', wash: 1, kw: 'mitad', Ap: 1, maxPl: 60, depth: 40 },
+  { id: 'proj', name: 'Filtro del bagazo agotado', src: 'Proyecto · datos supuestos', s: { mat: 'bagazo', mu: 4, rhoL: 1008, lcs: L10(10), mw: 5, rhoCd: 150, lQ: L10(6), la: L10(1e10), dPref: 1, sComp: 0.5, lRm: L10(3e10), dP: 1.5, Pmax: 3, cyc: 'td', tdMin: 30, tfMode: 'opt', wash: 1, kw: 'mitad', Ap: 1, maxPl: 60, depth: 40 },
     desc: 'La prensa que separa el bagazo agotado y clarifica el extracto antes de precipitar: 6 m³/h con cerca de 1 % de sólidos, a 1,5 bar, con lavado de la torta y 30 min de tiempo muerto. Aquí el producto es el filtrado.',
-    note: 'Fija la suspensión del proyecto, con α, s y R_m supuestos: hay que medirlos con la torta de su bagazo y ponerlos en el panel 02.' }
+    note: 'Fija la suspensión del proyecto. Todo es supuesto: el caudal, los sólidos, la presión, el lavado y los tiempos, igual que α, s y R_m, que hay que medir con la torta de su bagazo y poner en el panel 02. Con estos datos la prensa queda limitada por el volumen de torta: las cámaras se llenan a los 6 min de filtración.' }
 ];
 /* lo que se conserva al cargar una tarjeta: la suspensión (propiedades de la torta y del líquido, salvo las que fija la tarjeta),
    los datos que el estudiante editó y que no son del sistema, y la vista (incluidas las dos presiones que se comparan en la pestaña 3) */
@@ -1795,7 +1796,7 @@ function cfgResult(r, st) {
 }
 function renderConfigs() {
   var s = state, m = byId(MATS, s.mat);
-  $('#cfLead').innerHTML = 'Cada tarjeta es un filtro completo del curso: la corriente, el equipo, el ciclo y las restricciones de la planta. Al cargar una se conserva la suspensión que tiene en pantalla (<b>' + esc(m.name.toLowerCase()) + '</b>, con las propiedades de su torta y de su líquido); de la torta, solo la compresibilidad s la fijan las tarjetas que la estudian. Los dos ejemplos completos, el de McCabe y el del proyecto, traen su propia suspensión y lo dicen. Tampoco se pierden los puntos que editó en el ensayo, los puntajes de la matriz, los supuestos de las alternativas ni las opciones de vista. Los resultados de cada tarjeta ya están calculados así.';
+  $('#cfLead').innerHTML = 'Cada tarjeta es un filtro completo: la corriente, el equipo, el ciclo y las restricciones de la planta. Al cargar una se conserva la suspensión que tiene en pantalla (<b>' + esc(m.name.toLowerCase()) + '</b>, con las propiedades de su torta y de su líquido); de la torta, solo la compresibilidad s la fijan las tarjetas que la estudian. Los dos ejemplos completos, el de McCabe y el del proyecto, traen su propia suspensión y lo dicen. Tampoco se pierden los puntos que editó en el ensayo, los puntajes de la matriz, los supuestos de las alternativas ni las opciones de vista. Los resultados de cada tarjeta ya están calculados así.';
   $('#cfgCards').innerHTML = CONFIGS.map(function (c) {
     var st = cfgState(c.id, s), r = compute(mstate(st)), on = s.cfg === c.id, mm = byId(MATS, st.mat);
     return '<div class="cfg' + (on ? ' on' : '') + '"><div class="cb"><div class="ct"><h3>' + esc(c.name) + '</h3><span class="src">' + esc(c.src) + '</span></div><p>' + subs(esc(c.desc)) + '</p>'
