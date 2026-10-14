@@ -40,10 +40,7 @@ export const retosSeleccionados: Record<number, Seleccion> = {
     nombres: ['Gian Carlo Torres Medina'],
     nota: 'Es su reto de Ingeniería de Alimentos; lo viene trabajando como proyecto especial de maestría.',
   },
-  180: {
-    nombres: ['Andrés Alfonso López López', 'Erick Antonio Sayes Guandique'],
-    pendiente: 'Diego Pradilla debe confirmar por escrito que de este reto salen dos, uno por estudiante.',
-  },
+  180: { nombres: ['Andrés Alfonso López López', 'Erick Antonio Sayes Guandique'] },
   181: { nombres: ['Ana Sofía Martínez Osorio', 'Valentina Rodríguez Caneva'] },
   182: {
     nombres: ['Sebastián Mantilla Torres'],
