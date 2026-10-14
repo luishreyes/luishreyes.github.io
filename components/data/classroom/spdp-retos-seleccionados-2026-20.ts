@@ -46,8 +46,8 @@ export const retosSeleccionados: Record<number, Seleccion> = {
   },
   181: { nombres: ['Ana Sofía Martínez Osorio', 'Valentina Rodríguez Caneva'] },
   182: {
-    nombres: ['Nicolás Castellanos Coy', 'Sebastián Mantilla Torres'],
-    nota: 'Nicolás Castellanos podría continuarlo en 2027-20.',
+    nombres: ['Sebastián Mantilla Torres'],
+    nota: 'Nicolás Castellanos Coy lo contactará para ver la posibilidad de escribir una propuesta de continuación, que sería para 2027-20.',
   },
   183: { nombres: ['Valentina Losada Perdomo'] },
   184: { nombres: ['Juan Esteban Narváez Calderón'] },
@@ -73,6 +73,12 @@ export const otrosCasos: { nombre: string; situacion: string; contacto: string }
     nombre: 'Andrea Carolina Castellanos Ríos',
     situacion: 'Trabajará en el reto del semestre pasado junto con Salomé Guarín.',
     contacto: 'Alicia Porras',
+  },
+  {
+    nombre: 'Nicolás Castellanos Coy',
+    situacion:
+      'No seleccionó reto en esta convocatoria. Contactará al asesor para ver la posibilidad de escribir una propuesta de continuación del reto 182 (Asfaltenos modelo in silico en interfases), que sería para 2027-20.',
+    contacto: 'Diego Pradilla',
   },
   {
     nombre: 'Juan Sebastián Dimas Caro',
