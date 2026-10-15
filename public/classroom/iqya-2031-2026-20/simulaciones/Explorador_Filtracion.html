@@ -80,6 +80,7 @@ button { font-family: inherit; }
 .sl .row b { font-family: var(--font-mono); font-size: 13.5px; font-weight: 750; }
 .sl .hint { font-size: 11.5px; color: var(--n600); margin-top: 2px; }
 .sl .hint.bad { color: var(--redline); font-weight: 650; }
+.ctl section > .hint { font-size: 11.5px; color: var(--n600); line-height: 1.45; }
 input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 22px; background: transparent; cursor: pointer; margin: 2px 0 0; }
 input[type=range]::-webkit-slider-runnable-track { height: 2px; background: var(--n400); }
 input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 18px; background: var(--accent); margin-top: -8px; border: none; }
@@ -300,6 +301,10 @@ table.t tr.dim td { color: var(--n500); }
 .cfgnow-n small { display: block; font-size: 11.5px; font-weight: 600; color: var(--n600); margin-top: 2px; }
 .cfgnow-b { margin-top: 8px; border: none; background: none; padding: 0; font: inherit; font-size: 12.5px; font-weight: 700; color: var(--accent-700); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
 .cfgs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin-top: 18px; }
+.cfg-g { grid-column: 1 / -1; margin: 10px 0 -6px; font-family: var(--font-mono); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--n700); font-weight: 700; display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; border-bottom: 2px solid var(--divider); padding-bottom: 6px; }
+.cfg-g:first-child { margin-top: 0; }
+.cfg-g span { letter-spacing: .08em; color: var(--n600); font-weight: 600; text-transform: none; font-size: 11.5px; }
+.eqx-msg b { font-weight: 750; }
 .cfg { border: 2px solid var(--divider); background: #fff; display: flex; flex-direction: column; }
 .cfg.on { border-color: var(--accent); box-shadow: inset 0 -4px 0 var(--accent); }
 .cfg .cb { padding: 12px 16px 14px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
@@ -540,11 +545,12 @@ table.t tr.dim td { color: var(--n500); }
       <div class="sl"><div class="row"><span>Compresibilidad s</span><b id="vsComp"></b></div><input type="range" id="sComp" min="0" max="1" step="0.01"><div class="hint" id="sHint"></div></div>
       <div class="sl"><div class="row"><span>Resistencia del medio R<sub>m</sub></span><b id="vlRm"></b></div><input type="range" id="lRm" min="6" max="12" step="0.01"><div class="hint">Es de la tela y de la primera capa de torta, no de la suspensión: no cambia al escoger otro material. McCabe: de 10¹⁰ a 10¹¹ m⁻¹</div></div>
       <div class="sl"><div class="row"><span>Torta húmeda / torta seca m<sub>F</sub>/m<sub>c</sub></span><b id="vmw"></b></div><input type="range" id="mw" min="1.1" max="8" step="0.05"></div>
-      <div class="sl"><div class="row"><span>Sólido seco por m³ de torta</span><b id="vrhoCd"></b></div><input type="range" id="rhoCd" min="80" max="2000" step="10"><div class="hint">Fija el espesor de la torta y el llenado de las cámaras</div></div>
+      <div class="sl"><div class="row"><span>Sólido seco por m³ de torta</span><b id="vrhoCd"></b></div><input type="range" id="rhoCd" min="80" max="2000" step="10"><div class="hint" id="rhoHint"></div></div>
       <button type="button" class="btnw" id="useLab">Tomar α, s y R<sub>m</sub> del ensayo (pestaña 2)</button>
     </section>
     <section><h2><span class="n">03</span> Equipo</h2>
       <div class="mills" id="eqBtns"></div>
+      <div class="hint" id="eqHint" style="margin-top:8px"></div>
       <div id="pressBox">
         <div class="sl"><div class="row"><span id="dPLbl">Presión de filtración ΔP</span><b id="vdP"></b></div><input type="range" id="dP" min="0.5" max="15" step="0.05"><div class="hint" id="dPHint"></div></div>
         <div class="sl"><div class="row"><span>Área por placa</span><b id="vAp"></b></div><input type="range" id="Ap" min="0.25" max="6.5" step="0.05"><div class="hint">Taller 6: de 0,5 a 2 m² por placa</div></div>
@@ -554,8 +560,8 @@ table.t tr.dim td { color: var(--n500); }
       <div id="drumBox">
         <div class="sl"><div class="row"><span>Vacío ΔP</span><b id="vdPv"></b></div><input type="range" id="dPv" min="0.1" max="0.95" step="0.005"><div class="hint" id="dPvHint"></div></div>
         <div class="sl"><div class="row"><span>Fracción sumergida f</span><b id="vf"></b></div><input type="range" id="f" min="0.15" max="0.75" step="0.01"><div class="hint">McCabe: ≈ 30 % con lavado; 60 a 70 % sin lavado</div></div>
-        <div class="sl"><div class="row"><span>Velocidad de giro</span><b id="vrpm"></b></div><input type="range" id="rpm" min="0.05" max="3" step="0.01"></div>
-        <div class="sl"><div class="row"><span>Torta mínima que descarga la cuchilla</span><b id="vminCake"></b></div><input type="range" id="minCake" min="1" max="8" step="0.5"></div>
+        <div class="sl"><div class="row"><span>Velocidad de giro</span><b id="vrpm"></b></div><input type="range" id="rpm" min="0.05" max="3" step="0.01"><div class="hint">McCabe: de 0,1 a 2 rpm</div></div>
+        <div class="sl"><div class="row"><span>Torta mínima que descarga la cuchilla</span><b id="vminCake"></b></div><input type="range" id="minCake" min="1" max="8" step="0.5"><div class="hint">McCabe: las tortas de un tambor van de 3 a 40 mm</div></div>
       </div>
     </section>
     <section id="cycSec"><h2><span class="n">04</span> Ciclo de la prensa</h2>
@@ -577,14 +583,14 @@ table.t tr.dim td { color: var(--n500); }
       <div class="sl"><div class="row"><span>Lavado: razón n</span><b id="vwash"></b></div><input type="range" id="wash" min="0" max="3" step="0.05"><div class="hint" id="washHint"></div></div>
       <div class="sl" id="kwRow"><div class="row"><span>Caudal de lavado</span></div><div class="seg" id="kwSeg" style="margin-top:6px"><button type="button" data-v="mitad">½ (McCabe)</button><button type="button" data-v="cuarto">¼</button><button type="button" data-v="igual">1 (hojas)</button></div></div>
     </section>
-    <section><h2><span class="n">05</span> Restricciones de la planta</h2>
+    <section id="plantSec"><h2><span class="n">05</span> Restricciones de la planta</h2>
       <div class="sl" style="margin-top:0"><div class="row"><span>Presión máxima disponible</span><b id="vPmax"></b></div><input type="range" id="Pmax" min="1" max="15" step="0.5"></div>
       <div class="sl"><div class="row"><span>Presupuesto</span><b id="vbudget"></b></div><input type="range" id="budget" min="20000" max="600000" step="5000"></div>
       <div class="sl"><div class="row"><span>Espacio en piso</span><b id="vfloor"></b></div><input type="range" id="floor" min="10" max="300" step="5"></div>
     </section>
     <section><h2><span class="n">06</span> Vista</h2>
       <label class="toggle"><input type="checkbox" id="grid"> Cuadrícula en las gráficas</label>
-      <button type="button" class="seg inline" id="resetAll" style="margin-top:14px;padding:7px 12px;font-weight:700;font-size:12.5px;cursor:pointer">Volver al filtro prensa del Taller 6</button>
+      <button type="button" class="seg inline" id="resetAll" style="margin-top:14px;padding:7px 12px;font-weight:700;font-size:12.5px;cursor:pointer"></button>
     </section>
   </aside>
 
@@ -2110,7 +2116,7 @@ var BASE = { mat: 'levadura', mu: 3.5, rhoL: 1030, cBasis: 'filtrado', lcs: L10(
    datos editados del ensayo, los puntajes de la matriz, los supuestos de las alternativas y las opciones de vista. */
 var CONFIGS = [
   { id: 't6c', name: 'Taller 6 · la levadura real', src: 'Taller 6 · parte C', s: { sComp: 0.7 },
-    desc: 'La prensa del taller con la levadura como es: 4,5 m³/h de filtrado con 25 g/L de células, a 3 bar, filtrando toda la hora del ciclo, y una torta compresible con s = 0,7, el valor que da el taller. Al subir la presión la torta se compacta y α crece.',
+    desc: 'Con esta abre el explorador. La prensa del taller con la levadura como es: 4,5 m³/h de filtrado con 25 g/L de células, a 3 bar, filtrando toda la hora del ciclo, y una torta compresible con s = 0,7, el valor que da el taller. Al subir la presión la torta se compacta y α crece.',
     note: 'Con la levadura del taller: 65,7 m² a 3 bar y 60,6 m² a 5 bar (pestaña 3).' },
   { id: 't6a', name: 'Taller 6 · modelo ideal', src: 'Taller 6 · parte B', s: { sComp: 0 },
     desc: 'El mismo cálculo con el supuesto de la parte B: la torta incompresible, s = 0. La levadura real no es así (s = 0,7), pero el modelo ideal muestra cuánto se equivocaría el diseño si se ignora la compresibilidad.',
@@ -2121,12 +2127,12 @@ var CONFIGS = [
   { id: 'real', name: 'Ciclo real de la prensa', src: 'Diapositivas 15 a 17 · datos del Taller 6', s: { sComp: 0.7, cyc: 'real', dP: 5 },
     desc: 'La prensa del taller con el ciclo de las diapositivas: la bomba de desplazamiento positivo arranca a caudal constante y la presión sube con la torta hasta 5 bar; de ahí en adelante filtra a presión constante hasta que el caudal cae al 25 % del de la bomba, y luego descarga, limpia y cierra. El flux de la bomba (150 L/(m²·h)), la parada al 25 % y los 24 min de descarga son supuestos del explorador.',
     note: 'Con la levadura del taller: 88,3 m². La fase a caudal constante dura 7 min, la prensa filtra 63 min y el ciclo completo toma 87 min.' },
-  { id: 't6d', name: 'Taller 6 en un tambor al vacío', src: 'Taller 6 · ec. 29.31 de McCabe', s: { sComp: 0.7, eq: 'tambor', dPv: 0.6, f: 0.3, rpm: 0.5 },
-    desc: 'El caldo del taller en un filtro de tambor rotatorio continuo: 0,6 bar de vacío, 30 % sumergido y media vuelta por minuto. El taller no calcula tambores; aquí se aplica la ecuación 29.31 de McCabe a sus datos.',
-    note: 'Las condiciones del tambor son supuestas y caen dentro de lo que da McCabe: un tambor gira de 0,1 a 2 rpm y la mayoría trabaja con un 30 % sumergido; el vacío de 0,6 bar es cercano a las 20 inHg (0,68 bar) del ejemplo 29.2. Con la levadura, una torta muy resistente, cada vuelta deja 0,34 mm, muy por debajo de los 3 mm que la cuchilla alcanza a descargar.' },
   { id: 'mc2', name: 'Tambor al vacío con carbonato de calcio', src: 'McCabe · ejemplo 29.2', s: { mat: 'caco3', mu: 1.0, rhoL: 998, cBasis: 'alimentado', lcs: L10(236), mw: 2, rhoCd: 1200, lQ: L10(2.089), la: L10(1.4226e11), dPref: 1, sComp: 0.26, lRm: 6, eq: 'tambor', dPv: 20 * 3386.39 / 1e5, f: 0.3, rpm: 0.2, minCake: 3 },
-    desc: 'El ejemplo resuelto del libro: un tambor rotatorio a 20 inHg de vacío, 30 % sumergido y a 0,2 rpm, que filtra una suspensión de CaCO₃ con la concentración dada por m³ de líquido alimentado. El libro obtiene 7,59 m² de área.',
+    desc: 'Con este abre el tambor. El ejemplo resuelto del libro: un tambor rotatorio a 20 inHg de vacío, 30 % sumergido y a 0,2 rpm, que filtra una suspensión de CaCO₃ con la concentración dada por m³ de líquido alimentado. El libro obtiene 7,59 m² de área; cada vuelta deja 4,5 mm de torta, que la cuchilla descarga.',
     note: 'Fija su propia suspensión, la del ejemplo: CaCO₃ con s = 0,26 y la resistencia del medio despreciable.' },
+  { id: 't6d', name: 'Taller 6 · la levadura en un tambor al vacío', src: 'Taller 6 · parte B · ec. 29.31 de McCabe', s: { sComp: 0.7, eq: 'tambor', dPv: 0.6, f: 0.3, rpm: 0.5 },
+    desc: 'La pregunta de la parte B del taller: ¿por qué no un tambor? El caldo del taller en un filtro de tambor rotatorio continuo, a 0,6 bar de vacío, 30 % sumergido y media vuelta por minuto. El taller no calcula tambores; aquí se aplica la ecuación 29.31 de McCabe a sus datos.',
+    note: 'Las condiciones del tambor son supuestas y caen dentro de lo que da McCabe: de 0,1 a 2 rpm, un 30 % sumergido y un vacío cercano a las 20 inHg (0,68 bar) del ejemplo 29.2. Con la levadura, una torta muy resistente y un caldo diluido, cada vuelta deja 0,34 mm, muy por debajo de los 3 mm que la cuchilla alcanza a descargar: la figura muestra cómo pasa de largo bajo la cuchilla. A 0,1 rpm, el mínimo de McCabe, deja 0,95 mm; y aun girando así, con el 75 % sumergido y 0,95 bar de vacío, apenas llega a 1,8 mm. Esa es la respuesta del taller: la levadura solo saldría de un tambor con precapa, que quedaría en el producto. Por eso parte de la prensa.' },
   { id: 'proj', name: 'Filtro del bagazo agotado', src: 'Proyecto · datos supuestos', s: { mat: 'bagazo', mu: 4, rhoL: 1008, lcs: L10(10), mw: 5, rhoCd: 150, lQ: L10(6), la: L10(1e10), dPref: 1, sComp: 0.5, lRm: L10(3e10), dP: 1.5, Pmax: 3, cyc: 'td', tdMin: 30, tfMode: 'opt', wash: 1, kw: 'mitad', Ap: 1, maxPl: 60, depth: 40 },
     desc: 'La prensa que separa el bagazo agotado y clarifica el extracto antes de precipitar: 6 m³/h con cerca de 1 % de sólidos, a 1,5 bar, con lavado de la torta y 30 min de tiempo muerto. Aquí el producto es el filtrado.',
     note: 'Fija la suspensión del proyecto. Todo es supuesto: el caudal, los sólidos, la presión, el lavado y los tiempos, igual que α, s y R_m, que hay que medir con la torta de su bagazo y poner en el panel 02. Con estos datos la prensa queda limitada por el volumen de torta: las cámaras se llenan a los 6 min de filtración.' }
@@ -2165,6 +2171,8 @@ function fQ(m3s) { var h = m3s * 3600; return fmtN(h, h < 1 ? 3 : (h < 10 ? 2 : 
 var SLIDERS = ['lcs', 'lQ', 'mu', 'la', 'dPref', 'sComp', 'lRm', 'mw', 'rhoCd', 'dP', 'Ap', 'maxPl', 'depth', 'dPv', 'f', 'rpm', 'minCake', 'tcH', 'frac', 'tdMin', 'tfMin', 'wash', 'Pmax', 'budget', 'floor', 'dPa', 'dPb', 'J0', 'qStop', 'flocK', 'flocDose', 'mfJ', 'drho', 'contW'];
 function buildControls() {
   $$('.panel .ph').forEach(function (ph) { var d = document.createElement('div'); d.className = 'callout np-msg'; ph.parentNode.insertBefore(d, ph.nextSibling); });
+  // las pestañas que calculan el otro equipo con la suspensión en pantalla lo dicen
+  ['pr', 'ta'].forEach(function (t) { var ph = $('.panel[data-panel="' + t + '"] .ph'), d = document.createElement('div'); d.className = 'callout ink eqx-msg'; d.id = 'eqx-' + t; d.style.display = 'none'; ph.parentNode.insertBefore(d, ph.nextSibling); });
   $('#matBtns').innerHTML = MATS.map(function (f) { return '<button type="button" class="opt" data-m="' + f.id + '"><span class="dotc" style="background:' + f.color + '"></span><span>' + esc(f.name) + '</span><span class="x">' + esc(f.tag) + '</span></button>'; }).join('');
   $('#eqBtns').innerHTML = EQS.map(function (a) { return '<button type="button" class="mill" data-e="' + a.id + '"><svg viewBox="0 0 42 30" aria-hidden="true" fill="none" stroke="currentColor">' + a.icon + '</svg>' + esc(a.name) + '<span class="sz">' + esc(a.sz) + '</span></button>'; }).join('');
   $('#labSeg').innerHTML = LABSETS.map(function (l) { return '<button type="button" data-v="' + l.id + '">' + esc(l.name) + '</button>'; }).join('');
@@ -2173,14 +2181,14 @@ function buildControls() {
     // solo las propiedades propias de la torta y del líquido: la concentración y su base son de la corriente
     Object.assign(state, { mat: m.id, la: L10(m.alphaRef), dPref: m.dPref, sComp: m.s, mu: m.mu, rhoL: m.rhoL, mw: m.mw, rhoCd: m.rhoCd }); // R_m es de la tela, no de la suspensión
     dirty(); if (fscene) fscene.prime(); }); });
-  $$('#eqBtns .mill').forEach(function (b) { b.addEventListener('click', function () { state.eq = b.dataset.e; dirty(); if (fscene) fscene.prime(); }); });
+  $$('#eqBtns .mill').forEach(function (b) { b.addEventListener('click', function () { switchEq(b.dataset.e); }); });
   [['#basisSeg', 'cBasis'], ['#cycSeg', 'cyc'], ['#tfSeg', 'tfMode'], ['#kwSeg', 'kw'], ['#labSeg', 'lab']].forEach(function (a) { $$(a[0] + ' button').forEach(function (b) { b.addEventListener('click', function () { state[a[1]] = b.dataset.v; dirty(); }); }); });
   SLIDERS.forEach(function (k) { var el = document.getElementById(k); el.addEventListener('input', function () { state[k] = parseFloat(el.value); dirty(); }); });
   $('#grid').addEventListener('change', function () { state.grid = this.checked; dirty(); });
   $('#qOpt').addEventListener('click', function () { var rc = R && R.pr.rc; if (!rc) return; state.qStop = Math.round(clamp(rc.optFull ? rc.phiFull : rc.phiOpt, 0.05, 0.9) * 100) / 100; dirty(); });
   $('#rampUse').addEventListener('click', function () { state.cyc = 'real'; if (state.eq !== 'prensa') state.eq = 'prensa'; dirty(); if (fscene) fscene.prime(); setTab('in'); });
   $('#contOn').addEventListener('change', function () { state.contOn = this.checked; dirty(); });
-  $('#resetAll').addEventListener('click', function () { state = baseState(state); update(); if (fscene) fscene.prime(); });
+  $('#resetAll').addEventListener('click', function () { state = homeState(state.eq, state); update(); if (fscene) fscene.prime(); });
   $('#toCfg').addEventListener('click', function () { setTab('cf'); if (window.innerWidth < 900) { $('#ctl').classList.remove('open'); $('#mobCtl').textContent = 'Controles'; } });
   $('#cfgCards').addEventListener('click', function (e) { var b = e.target.closest('button[data-cfg]'); if (b) loadCfg(b.dataset.cfg); });
   var useLab = function () { if (!LAB) return; state.la = L10(LAB.alphaRef); state.dPref = Math.round(LAB.dPref * 100) / 100; state.lRm = L10(LAB.Rm); if (LAB.s != null) state.sComp = Math.round(LAB.s * 100) / 100; dirty(); };
@@ -2196,9 +2204,21 @@ function buildControls() {
   hoverSetup();
 }
 function dirty() { state.cfgMod = cfgChanged(state); update(); }
-function loadCfg(id) { state = cfgState(id, state); update(); if (fscene) fscene.prime(); setTab('in'); window.scrollTo(0, 0); }
+function loadCfg(id) { var s = cfgState(id, state); if (s.eq !== state.eq) eqMem[state.eq] = clone(state); state = s; update(); if (fscene) fscene.prime(); setTab('in'); window.scrollTo(0, 0); }
 /* el botón de la barra: el caso base completo, con la levadura del taller; no borra los datos del ensayo ni la matriz */
 function baseState(from) { var s = cfgState('t6c', from); MAT_KEYS.forEach(function (k) { s[k] = clone(BASE[k]); }); return s; }
+/* Cada equipo abre en su caso del curso: la prensa en el Taller 6 y el tambor en el ejemplo 29.2 de McCabe, porque la levadura
+   del taller no forma en un tambor una torta que la cuchilla alcance a descargar (esa es la tarjeta t6d). Mientras la página
+   está abierta, cada equipo guarda el sistema en que se dejó; nada de esto pasa a localStorage. */
+var EQ_HOME = { prensa: 't6c', tambor: 'mc2' }, eqMem = {};
+function homeState(eq, from) { return eq === 'prensa' ? baseState(from) : cfgState(EQ_HOME[eq], from); }
+function switchEq(eq) {
+  if (eq === state.eq) return;
+  eqMem[state.eq] = clone(state);
+  var s = eqMem[eq] ? clone(eqMem[eq]) : homeState(eq, state);
+  KEEP_DATA.concat(KEEP_VIEW).forEach(function (k) { if (state[k] !== undefined) s[k] = clone(state[k]); });
+  state = s; state.cfgMod = cfgChanged(state); update(); if (fscene) fscene.prime();
+}
 function togglePlay() { fscene.running = !fscene.running; $('#btnPlay').innerHTML = fscene.running ? SVGI.pause : SVGI.play; }
 function setTab(t) {
   tab = t; store.set('tab', t);
@@ -2231,7 +2251,13 @@ function update() {
   setV('vdPref', fbar(s.dPref)); setV('vsComp', fmtN(s.sComp, 2)); $('#sHint').textContent = (s.sComp < 0.05 ? 'Incompresible: α no cambia con la presión' : (s.sComp < 0.5 ? 'Poco compresible' : (s.sComp < 0.9 ? 'Compresible: la mayoría de las tortas reales' : 'Muy compresible: subir la presión casi no sirve'))) + (s.mat === 'levadura' ? (Math.abs(s.sComp - 0.7) < 0.005 ? '. La levadura real del Taller 6: s = 0,7' : '. La levadura real tiene s = 0,7 (Taller 6); el modelo ideal de la parte B supone s = 0') : '');
   setV('vlRm', fmtSci(r.Rm, 2) + ' m⁻¹'); setV('vmw', fmtN(s.mw, 2) + ' · ' + fmtN(100 / s.mw, 0) + ' % de sólidos'); setV('vrhoCd', fmtN(s.rhoCd, 0) + ' kg/m³');
   // equipo
-  show('pressBox', press); show('drumBox', !press); show('cycSec', press);
+  show('pressBox', press); show('drumBox', !press); show('cycSec', press); show('plantSec', press);
+  var nSec = 0; $$('#ctl > section h2 .n').forEach(function (el) { if (el.closest('section').style.display !== 'none') el.textContent = String(++nSec).padStart(2, '0'); });
+  $('#eqHint').textContent = (press ? 'El tambor abre en el ejemplo 29.2 de McCabe, con CaCO₃: la levadura del taller no forma en él una torta que la cuchilla descargue (pestaña 5).'
+    : 'La prensa abre en el Taller 6, con la levadura.') + ' Cada equipo guarda sus cambios mientras la página siga abierta.';
+  $('#rhoHint').textContent = press ? 'Fija el espesor de la torta y el llenado de las cámaras' : 'Fija el espesor de la torta de cada vuelta';
+  $('#resetAll').textContent = press ? 'Volver al filtro prensa del Taller 6' : 'Volver al tambor del ejemplo 29.2';
+  show('rampUse', press);
   var real = s.cyc === 'real', rc = pr.rc;
   $('#dPLbl').textContent = real ? 'Presión tope ΔP (fin de la fase 1)' : 'Presión de filtración ΔP';
   $('#dPHint').textContent = real ? 'La bomba sube la presión hasta aquí y desde ahí se filtra a presión constante' : '';
@@ -2541,7 +2567,9 @@ function compareAlpha(al) {
 /* ---------- 3 · presión ---------- */
 var PA = null, RAMP = null;
 function areaAt(dPbar, sVal) { var x = {}; x.dP = dPbar; x.sComp = sVal; if (state.eq !== 'prensa') x.eq = 'prensa'; var q = withS(x); return q.cOk && isFinite(q.pr.A) ? q.pr.A : NaN; }
+function eqNote(t, html) { var el = $('#eqx-' + t); el.style.display = html ? '' : 'none'; if (html) el.innerHTML = html; }
 function renderPress() {
+  eqNote('pr', state.eq === 'tambor' ? '<b>En pantalla está el tambor</b>, que no pasa de 1 bar de vacío. Esta pestaña muestra la prensa que haría el mismo trabajo con la suspensión de ' + esc(byId(MATS, state.mat).short) + ' que está en pantalla, a ' + fbar(state.dP) + ' y con el ciclo de la prensa del Taller 6' + (state.cyc === 'frac' ? ' (' + fTime(state.tcH * 3600) + ', filtrando el ' + fmtN(100 * state.frac, 0) + ' %)' : '') + '.' : '');
   var r = R, s = state, lo = 0.5, hi = Math.max(8, s.Pmax * 1.5, s.dPb * 1.2), xs = [], k;
   for (k = 0; k <= 60; k++) xs.push(lo * Math.pow(hi / lo, k / 60));
   var curves = [{ s: 0, col: 'var(--n500)', dash: '5 4', name: 's = 0 (ideal)' }, { s: s.sComp, col: 'var(--hl)', dash: 'none', name: 's = ' + fmtN(s.sComp, 2) + ' (este caso)' }, { s: 1, col: CR, dash: '2 3', name: 's = 1' }];
@@ -2651,6 +2679,7 @@ function renderCycle() {
 /* ---------- 5 · tambor ---------- */
 var DR = null;
 function renderDrum() {
+  eqNote('ta', state.eq === 'prensa' ? '<b>En pantalla está la prensa.</b> Esta pestaña pone la misma suspensión en un tambor a ' + fmtN(state.dPv * 750.06, 0) + ' mmHg de vacío, ' + fmtN(100 * state.f, 0) + ' % sumergido y ' + fmtN(state.rpm, 2) + ' rpm, las condiciones de la tarjeta «Taller 6 · la levadura en un tambor al vacío». Para moverlas, cargue esa tarjeta en Configuraciones; el botón del tambor abre el ejemplo 29.2 de McCabe.' : '');
   var r = R, s = state, xs = [], k, lo = 0.05, hi = 3;
   for (k = 0; k <= 70; k++) xs.push(lo * Math.pow(hi / lo, k / 70));
   var pts = xs.map(function (n) { var q = withS({ rpm: n, eq: 'tambor' }).dr; return [n, q.AT, q.Lrev * 1000]; });
@@ -2752,20 +2781,30 @@ function cfgResult(r, st) {
 function renderConfigs() {
   var s = state, m = byId(MATS, s.mat);
   $('#cfLead').innerHTML = 'Cada tarjeta es un filtro completo: la corriente, el equipo, el ciclo y las restricciones de la planta. Al cargar una se conserva la suspensión que tiene en pantalla (<b>' + esc(m.name.toLowerCase()) + '</b>, con las propiedades de su torta y de su líquido); de la torta, solo la compresibilidad s la fijan las tarjetas que la estudian. Los dos ejemplos completos, el de McCabe y el del proyecto, traen su propia suspensión y lo dicen. Tampoco se pierden los puntos que editó en el ensayo, los puntajes de la matriz, los supuestos de las alternativas ni las opciones de vista. Los resultados de cada tarjeta ya están calculados así.';
-  $('#cfgCards').innerHTML = CONFIGS.map(function (c) {
+  var card = function (c) {
     var st = cfgState(c.id, s), r = compute(mstate(st)), on = s.cfg === c.id, mm = byId(MATS, st.mat);
     return '<div class="cfg' + (on ? ' on' : '') + '"><div class="cb"><div class="ct"><h3>' + esc(c.name) + '</h3><span class="src">' + esc(c.src) + '</span></div><p>' + subs(esc(c.desc)) + '</p>'
       + '<dl class="facts">' + cfgFacts(c, st).map(function (q) { return '<dt>' + q[0] + '</dt><dd>' + esc(q[1]) + '</dd>'; }).join('') + '</dl>'
       + '<div class="res"><span>Con ' + esc(mm.short) + ':</span> ' + cfgResult(r, st) + '</div>' + (c.note ? '<div class="note">' + subs(esc(c.note)) + '</div>' : '')
       + '<button type="button" data-cfg="' + c.id + '"' + (on && !s.cfgMod ? ' disabled' : '') + '>' + (on ? (s.cfgMod ? 'Volver a cargarla sin sus cambios' : 'Es la que está en pantalla') : 'Cargar esta configuración') + '</button></div></div>';
+  };
+  $('#cfgCards').innerHTML = EQS.map(function (e) {
+    var cs = CONFIGS.filter(function (c) { return (c.s.eq || BASE.eq) === e.id; });
+    return '<h3 class="cfg-g">' + esc(e.name) + '<span>' + esc(e.id === 'prensa' ? 'abre en el Taller 6 · la levadura real' : 'abre en el ejemplo 29.2 de McCabe') + '</span></h3>' + cs.map(card).join('');
   }).join('');
-  $('#cfgIdeas').innerHTML = [
+  $('#cfgIdeas').innerHTML = (s.eq === 'prensa' ? [
     '<b>Torta y medio filtrante (02):</b> suba la compresibilidad s de 0 a 0,7 y mire en la pestaña 3 cuánto se encoge el ahorro de pasar de 3 a 5 bar.',
     '<b>Ciclo de la prensa (04):</b> baje la fracción que filtra al 60 %. Lo que la prensa deja de filtrar en el tiempo lo tiene que recuperar con área (pestaña 4).',
-    '<b>Equipo (03):</b> cambie la prensa por el tambor al vacío y compare, en la pestaña 5, la torta de cada vuelta con la mínima que descarga la cuchilla.',
+    '<b>Equipo (03):</b> antes de cambiar de equipo, mire la pestaña 5: la misma levadura en un tambor deja décimas de milímetro por vuelta, muy por debajo de lo que descarga la cuchilla.',
     '<b>Suspensión (01):</b> escoja el dióxido de titanio, una torta poco compresible, y vuelva a la pestaña 3: con ella subir la presión sí ahorra área.',
     '<b>Restricciones de la planta (05):</b> baje el presupuesto hasta que el diagnóstico avise y vea en la pestaña 4 cuánto puede costar como máximo cada m².'
-  ].map(function (t) { return '<li>' + t + '</li>'; }).join('');
+  ] : [
+    '<b>Equipo (03):</b> suba la velocidad de giro de 0,2 a 0,5 rpm. El área baja de 7,6 a 4,8 m², pero la torta de cada vuelta se adelgaza como 1/√n y queda en 2,9 mm: en la figura la cuchilla deja de pelarla.',
+    '<b>Equipo (03):</b> suba la fracción sumergida del 30 al 60 %. Cada franja forma torta el doble de tiempo: 6,4 mm por vuelta y 5,4 m² de área. A cambio queda poco arco para lavar y secar: McCabe deja esa inmersión para los tambores sin lavado.',
+    '<b>Equipo (03):</b> baje el vacío a 250 mmHg, el borde bajo de McCabe. Con s = 0,26 la capacidad va como ΔP<sup>0,37</sup> (ec. 29.33) y el área sube de 7,6 a 9,9 m².',
+    '<b>Torta y medio filtrante (02):</b> el libro desprecia la tela. Suba R<sub>m</sub> a 10¹¹ m⁻¹, una tela cerrada, y el área crece de 7,6 a 8,8 m² (ec. 29.31).',
+    '<b>Suspensión (01):</b> escoja la levadura. Con los 236 kg/m³ del ejemplo, una crema ya concentrada, cada vuelta deja 4,5 mm y la cuchilla la descarga; con los 25 g/L del caldo del Taller 6 no pasa del milímetro. La torta de cada vuelta crece con la concentración.'
+  ]).map(function (t) { return '<li>' + t + '</li>'; }).join('');
 }
 
 /* ---------- lectura con el cursor ---------- */
