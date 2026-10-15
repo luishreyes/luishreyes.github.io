@@ -47,6 +47,7 @@ import { SimulationsIndexPage } from './pages/classroom/SimulationsIndexPage';
 import { EdcoCourseDetailPage } from './pages/classroom/EdcoCourseDetailPage';
 import { EdcoCoursePresentationsPage } from './pages/classroom/EdcoCoursePresentationsPage';
 import { RetosPage } from './pages/classroom/RetosPage';
+import { SeleccionRetosPage, ResultadosRetosPage } from './pages/classroom/RetosPage';
 import { EticaPage } from './pages/classroom/EticaPage';
 import { DocViewerPage } from './components/classroom/DocViewerPage';
 import { startSequentialImagePreloading } from './services/preloader';
@@ -192,6 +193,8 @@ const App: React.FC = () => {
               <Route path="/classroom/:courseSlug/cursos/:edcoCourseId" element={<EdcoCourseDetailPage />} />
               <Route path="/classroom/:courseSlug/cursos/:edcoCourseId/presentations" element={<EdcoCoursePresentationsPage />} />
               <Route path="/classroom/:courseSlug/retos" element={<RetosPage />} />
+              <Route path="/classroom/:courseSlug/seleccion" element={<SeleccionRetosPage />} />
+              <Route path="/classroom/:courseSlug/resultados" element={<ResultadosRetosPage />} />
               <Route path="/classroom/:courseSlug/etica" element={<EticaPage />} />
               <Route path="*" element={<AboutPage />} />
             </Routes>
