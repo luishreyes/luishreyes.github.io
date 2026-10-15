@@ -25,11 +25,12 @@ const { kitScript } = await import(KIT + "/scripts/inline-kit.mjs");
 const HERE = dirname(fileURLToPath(import.meta.url));
 const X = await import(join(HERE, "xprism.mjs"));
 
-// --js: solo vuelve a escribir out/fig.js (el código en vivo) con los datos de la última salida ordenada
+// --js: solo vuelve a escribir out/fig.js (el código en vivo) y out/fig.css con los datos de la última salida ordenada
 if (process.argv.includes("--js")) {
   const xs = readFileSync(join(HERE, "xprism.mjs"), "utf8").replace(/^export /gm, "");
   writeFileSync(join(HERE, "out", "fig.js"), "/* filtro prensa en isométrico: generado por build.mjs */\n" + xs + "\nvar FP_DATA = " + readFileSync(join(HERE, "press_data.json"), "utf8") + ";\n" + readFileSync(join(HERE, "live.js"), "utf8"));
-  console.log("out/fig.js"); process.exit(0);
+  writeFileSync(join(HERE, "out", "fig.css"), k.ISO_CSS + "\n" + readFileSync(join(HERE, "fp.css"), "utf8") + "\n" + readFileSync(join(HERE, "fp-theme.css"), "utf8"));
+  console.log("out/fig.js, out/fig.css"); process.exit(0);
 }
 const W = 680, H = 400, AZ = +(process.env.AZ || 70), EL = +(process.env.EL || 26);
 const FAST = process.argv.includes("--fast");

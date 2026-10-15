@@ -18,10 +18,12 @@ el mismo que replica el audit) y cada torta cae a la banda.
 | `drive_test.js` | Ciclo sintético para `preview.html` (`?t=18.5` congela un instante). |
 | `fp.css`, `fp-theme.css` | Colores de torta, suspensión y agua; tema papel y blueprint del explorador. |
 | `splice.mjs` | Reinserta `out/` en el HTML publicado, entre los marcadores `FPRESS_*_START/END`. |
+| `isozoom.js` | Pellizco, arrastre, doble toque y botones + − «todo» para acercar la figura. Copia de referencia: el explorador lo lleva en su propio script (no está en `out/`), y sirve igual para la figura del tambor. |
 
 ```sh
 node build.mjs --fast      # geometría y salidas, sin ordenar (segundos)
 node build.mjs --audit     # settle + audit completo (unos 4 min); debe terminar en «audit passed»
+node build.mjs --js        # solo el código en vivo y el CSS, con los datos de la última salida ordenada
 node splice.mjs            # mete la figura nueva en public/.../Explorador_Filtracion.html
 ```
 
