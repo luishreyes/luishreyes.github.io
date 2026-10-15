@@ -1006,23 +1006,30 @@ function xCam(P) {
     depth: (x, y, z) => (x * cA + y * sA) * cE + z * sE,
   };
 }
-function xPrismSvg(C, poly, x0, x1, { tone = "mid", crease = "faint", cls = "", flat = false } = {}) {
+function xPrismSvg(C, poly, x0, x1, opts = {}) { return prismSvg(C, poly, x0, x1, opts); }
+// prisma a lo largo de x (sección en y, z) o de y (sección en x, z); skip: aristas de la sección cuyas caras no se pintan
+function prismSvg(C, poly, x0, x1, { tone = "mid", crease = "faint", cls = "", flat = false, axis = "x", skip = null, cap: capMode = "auto" } = {}) {
   const f1 = (v) => { const t = (Math.round(v * 10) / 10).toFixed(1).replace(/\.0$/, ""); return t === "-0" ? "0" : t; };
   const pth = (pts) => pts.map(([x, y], i) => (i ? "L" : "M") + f1(x) + " " + f1(y)).join("") + "Z";
   const seg = (a, b) => "M" + f1(a[0]) + " " + f1(a[1]) + "L" + f1(b[0]) + " " + f1(b[1]);
   const area = (pts) => { let s = 0; for (let i = 0; i < pts.length; i++) { const p = pts[i], q = pts[(i + 1) % pts.length]; s += p[0] * q[1] - q[0] * p[1]; } return s; };
   const orient = (pts) => (area(pts) < 0 ? pts.slice().reverse() : pts);
   const band = (s) => { const B = [0, 0.2, 0.42, 0.62]; let t = 0; while (t < B.length && s >= B[t]) t++; return t; };
-  const ring = area(poly) < 0 ? poly.slice().reverse() : poly.slice();
+  const flip = area(poly) < 0, ring = flip ? poly.slice().reverse() : poly.slice();
   const n = ring.length, V = C.V, L = C.L, dot = (u, w) => u[0] * w[0] + u[1] * w[1] + u[2] * w[2];
-  const P0 = ring.map(([y, z]) => C.pr(x0, y, z)), P1 = ring.map(([y, z]) => C.pr(x1, y, z));
+  const ax = axis === "y";
+  const at3 = (s, u, v) => (ax ? C.pr(u, s, v) : C.pr(s, u, v));
+  const skipped = (j) => skip && skip.has(flip ? (n - 2 - j + n) % n : j);
+  const P0 = ring.map(([y, z]) => at3(x0, y, z)), P1 = ring.map(([y, z]) => at3(x1, y, z));
   const faces = [];
   for (let j = 0; j < n; j++) {
     const [ya, za] = ring[j], [yb, zb] = ring[(j + 1) % n], len = Math.hypot(yb - ya, zb - za) || 1;
-    const nrm = [0, (zb - za) / len, -(yb - ya) / len];
-    faces.push({ kind: "side", j, nrm, vis: dot(nrm, V) > 1e-6, d: C.depth((x0 + x1) / 2, (ya + yb) / 2, (za + zb) / 2) });
+    const nrm = ax ? [(zb - za) / len, 0, -(yb - ya) / len] : [0, (zb - za) / len, -(yb - ya) / len];
+    const d = ax ? C.depth((ya + yb) / 2, (x0 + x1) / 2, (za + zb) / 2) : C.depth((x0 + x1) / 2, (ya + yb) / 2, (za + zb) / 2);
+    faces.push({ kind: "side", j, nrm, vis: dot(nrm, V) > 1e-6 && !skipped(j), d });
   }
-  const capHi = { kind: "cap", hi: true, nrm: [1, 0, 0], vis: V[0] > 1e-6 }, capLo = { kind: "cap", hi: false, nrm: [-1, 0, 0], vis: V[0] < -1e-6 };
+  const vc = ax ? V[1] : V[0];
+  const capHi = { kind: "cap", hi: true, nrm: ax ? [0, 1, 0] : [1, 0, 0], vis: vc > 1e-6 }, capLo = { kind: "cap", hi: false, nrm: ax ? [0, -1, 0] : [-1, 0, 0], vis: vc < -1e-6 };
   const sharp = (j) => { // arista longitudinal en el vértice j: entre la cara j-1 y la j
     const a = ring[(j - 1 + n) % n], b = ring[j], c = ring[(j + 1) % n];
     const u = [b[0] - a[0], b[1] - a[1]], w = [c[0] - b[0], c[1] - b[1]];
@@ -1034,7 +1041,7 @@ function xPrismSvg(C, poly, x0, x1, { tone = "mid", crease = "faint", cls = "", 
   const fill = [];
   const out = [];
   const paint = (pts, nrm) => { const b = band(dot(nrm, L)); return b >= 4 ? `<path class="iso-top" d="${pth(pts)}"/>` : `<path class="iso-shade" data-shade="${b}" d="${pth(pts)}"/>`; };
-  for (const f of order) {
+  for (const f of capMode === "only" ? [] : order) {
     const j = f.j, k2 = (j + 1) % n, quad = orient([P0[j], P1[j], P1[k2], P0[k2]]);
     fill.push(pth(quad));
     const edges = [], creases = [];
@@ -1051,7 +1058,7 @@ function xPrismSvg(C, poly, x0, x1, { tone = "mid", crease = "faint", cls = "", 
     if (creases.length) out.push(`<path class="iso-line iso-crease" data-tone="${crease}" d="${creases.join("")}"/>`);
     if (edges.length) out.push(`<path class="iso-line iso-edge" data-tone="${tone}" d="${edges.join("")}"/>`);
   }
-  if (cap) {
+  if (cap && capMode !== "none") {
     const pts = cap.hi ? P1 : P0, poly2 = orient(pts.slice());
     fill.push(pth(poly2));
     out.push(flat ? `<path class="iso-shade" data-shade="3" d="${pth(poly2)}"/>` : paint(poly2, cap.nrm));
@@ -1138,9 +1145,20 @@ FPress.prototype.place = function () {
   if (!same) { var frag = document.createDocumentFragment(); for (i = 0; i < next.length; i++) frag.appendChild(this.nodes[next[i]].el); this.parent.appendChild(frag); this.order = next; }
 };
 /* descarga: tiempos en segundos de animación sobre Td */
+/* La descarga en el tiempo de la animación (t = 8,5k). Primero se para la bomba y se abre el alivio: la presión de alimentación
+   cae a cero, y solo con el manómetro en cero el cilindro afloja el cierre y retira el cabezal. Al final, con el paquete ya
+   cerrado, la bomba vuelve a llenar las cámaras y la presión sube a la del arranque del ciclo siguiente. */
+var FP_T = { base: 8.5, rel: 1.5, open: 1.65 };
+FPress.prototype.stage = function (k, Td) {
+  var D = this.D, sc = Math.max(1, Td / FP_T.base), t = k * Td / sc, T = Td / sc, nP = D.stagger.length, stg = D.spring.stagger;
+  var tClose = FP_T.open + stg * (nP - 1) + 1.05, tShut = tClose + 1.5, tFill = Math.min(tShut + 0.15, T - 0.3);
+  var ease = function (x) { x = Math.min(1, Math.max(0, x)); return x * x * (3 - 2 * x); };
+  var rel = 1 - ease(t / FP_T.rel), fill = t > tFill ? ease((t - tFill) / Math.max(1e-6, T - tFill)) : 0;
+  return { t: t, rel: rel, fill: fill, tClose: tClose, id: t < FP_T.rel ? 'alivio' : (t < tClose ? 'abre' : (t < tShut ? 'cierra' : (t < tFill ? 'cerrado' : 'llena'))) };
+};
 FPress.prototype.discharge = function (k, Td, w) {
-  var D = this.D, sc = Math.max(1, Td / 7), t = k * Td / sc, tOpen = 0.45, stg = D.spring.stagger, nP = D.stagger.length;
-  var tClose = tOpen + stg * (nP - 1) + 1.05, dClose = 1.5, i, id;
+  var D = this.D, g = this.stage(k, Td), t = g.t, tOpen = FP_T.open, stg = D.spring.stagger, nP = D.stagger.length;
+  var tClose = g.tClose, dClose = 1.5, i, id;
   if (t < tClose) for (i = 0; i < nP; i++) this.share[D.stagger[i]] = this.spring(t - tOpen - i * stg);
   else { // el cilindro empuja: el cabezal móvil vuelve y arrastra las placas
     var u = Math.min(1, (t - tClose) / dClose), e = u * u * (3 - 2 * u), f = D.TRAVEL * (1 - e);
@@ -1152,7 +1170,7 @@ FPress.prototype.discharge = function (k, Td, w) {
 FPress.prototype.offset = function (piece) { return piece === 'frame' ? 0 : (this.share[piece] || 0) * this.D.pieces[piece][0]; };
 FPress.prototype.update = function (s) {
   var fin = function (v, d) { return typeof v === 'number' && isFinite(v) ? v : d; };
-  s.k = Math.min(1, Math.max(0, fin(s.k, 0))); s.Td = fin(s.Td, 7) > 0 ? fin(s.Td, 7) : 7; s.fill = Math.max(0, fin(s.fill, 0)); s.P = Math.max(0, fin(s.P, 0));
+  s.k = Math.min(1, Math.max(0, fin(s.k, 0))); s.Td = fin(s.Td, FP_T.base) > 0 ? fin(s.Td, FP_T.base) : FP_T.base; s.fill = Math.max(0, fin(s.fill, 0)); s.P = Math.max(0, fin(s.P, 0));
   s.Pset = fin(s.Pset, 0); s.qrel = Math.max(0, fin(s.qrel, 0)); s.vfrac = fin(s.vfrac, 0); s.dt = Math.max(0, fin(s.dt, 0));
   var D = this.D, C = this.C, self = this, j, w = Math.min(1, Math.max(0, s.fill)) * D.POCK, phase = s.phase, dis = phase === 'd';
   if (phase !== this.lastPhase) { if (phase === 'f') { this.drops = []; } this.lastPhase = phase; }
@@ -1160,7 +1178,8 @@ FPress.prototype.update = function (s) {
   this.lastK = dis ? s.k : 0;
   // 1 · cabezal móvil y placas
   for (var id in this.share) this.share[id] = 0;
-  var tD = dis ? this.discharge(s.k, s.Td, w) : 0;
+  var tD = dis ? this.discharge(s.k, s.Td, w) : 0, gs = dis ? this.stage(s.k, s.Td) : { id: '' };
+  if (phase === 'f' || phase === 'w') this.lastLiq = phase === 'f' ? 'fp-slurry' : 'fp-wash';
   this.place();
   // 2 · tortas: crecen en la cámara; en la descarga se despegan y caen a la tolva
   var wFull = w, fallen = [];
@@ -1185,16 +1204,19 @@ FPress.prototype.update = function (s) {
       if (el.getAttribute('transform') !== tr) { if (tr) el.setAttribute('transform', tr); else el.removeAttribute('transform'); }
     }
     // suspensión (o agua de lavado) entre las dos tortas
-    var liq = phase === 'f' ? 'fp-slurry' : (phase === 'w' ? 'fp-wash' : ''), gx0 = wl + wFull, gx1 = wr - wFull;
+    // mientras se alivia la presión el líquido sigue en las cámaras; al final de la descarga la bomba las vuelve a llenar
+    var liq = phase === 'f' ? 'fp-slurry' : (phase === 'w' ? 'fp-wash' : (gs.id === 'alivio' ? this.lastLiq || 'fp-slurry' : (gs.id === 'llena' ? 'fp-slurry' : ''))), gx0 = wl + wFull, gx1 = wr - wFull;
+    if (dis && gs.id === 'llena') { gx0 = wl; gx1 = wr; }
     var lk = liq && gx1 - gx0 > 0.04 ? liq + gx0.toFixed(3) : '';
     this.html(this.slurry[j], 's' + j, [lk, lk ? function () { return xPrismSvg(C, self.boxPoly, gx0, gx1, { tone: 'faint', crease: 'none', cls: liq, flat: true }); } : null]);
   }
   // 3 · canal central
-  var eyeCls = phase === 'f' ? 'fp-slurry' : (phase === 'w' ? 'fp-wash' : '');
+  var eyeCls = phase === 'f' ? 'fp-slurry' : (phase === 'w' ? 'fp-wash' : (gs.id === 'alivio' ? this.lastLiq || 'fp-slurry' : (gs.id === 'llena' ? 'fp-slurry' : '')));
   this.html(this.eyeHead, 'eh', [eyeCls, eyeCls ? function () { return xPrismSvg(C, self.eye, 0, D.XH, { tone: 'faint', crease: 'none', cls: eyeCls, flat: true }); } : null]);
   this.eyes.forEach(function (el, i) { var x = D.webs[i]; self.html(el, 'e' + i, [eyeCls, eyeCls ? function () { return xPrismSvg(C, self.eye, x - D.WEB / 2, x + D.WEB / 2, { tone: 'faint', crease: 'none', cls: eyeCls, flat: true }); } : null]); });
   // 4 · manómetro
-  var Pb = dis ? Math.max(0, s.P * (1 - Math.min(1, tD / 0.4))) : s.P, v = Math.max(0, Math.min(D.GMAX * 1.03, Pb));
+  // en la descarga, s.P es la presión con que terminó el ciclo y s.P0 la del arranque del siguiente
+  var Pb = dis ? Math.max(0, s.P * gs.rel + Math.max(0, fin(s.P0, 0)) * gs.fill) : s.P, v = Math.max(0, Math.min(D.GMAX * 1.03, Pb));
   var ang = 225 - 270 * v / D.GMAX; this.needle.setAttribute('transform', 'rotate(' + (-ang).toFixed(1) + ')');
   if (this.setp) { var sp = s.Pset > 0 ? 225 - 270 * Math.min(D.GMAX, s.Pset) / D.GMAX : null; this.setp.style.display = sp == null ? 'none' : ''; if (sp != null) this.setp.setAttribute('transform', 'rotate(' + (-sp).toFixed(1) + ')'); }
   var over = s.fill > 1.001; if (over !== this.over) { this.over = over; this.svg.classList.toggle('fp-over', over); }
@@ -1204,7 +1226,7 @@ FPress.prototype.update = function (s) {
   // 6 · flujos: el filtrado baja por las placas y sale por el canal inferior
   var flowing = !dis && s.qrel > 0.002, op = flowing ? Math.min(1, 0.25 + s.qrel * 1.2) : 0;
   this.offs -= (s.dt || 0) * (6 + 34 * Math.min(1.5, s.qrel));
-  [this.flowWalls, this.flowDrain, this.flowEye].forEach(function (g, n) { if (!g) return; g.style.opacity = n === 2 ? (phase === 'f' ? Math.min(1, 0.3 + s.qrel) : (phase === 'w' ? 0.6 : 0)) : op; g.style.strokeDashoffset = self.offs.toFixed(1); });
+  [this.flowWalls, this.flowDrain, this.flowEye].forEach(function (g, n) { if (!g) return; g.style.opacity = n === 2 ? (phase === 'f' ? Math.min(1, 0.3 + s.qrel) : (phase === 'w' ? 0.6 : (dis && gs.id === 'llena' ? 0.6 * gs.fill + 0.2 : 0))) : op; g.style.strokeDashoffset = self.offs.toFixed(1); });
   // 7 · al empezar el ciclo siguiente la banda se lleva las tortas de la tolva
   var move = 0;
   if (phase === 'f' && this.landed.length) {
@@ -1662,12 +1684,12 @@ FScene.prototype.layoutPress = function () {
   this.P = { nd: nd, x0: x0, x1: x1, headW: headW, plateW: plateW, chW: chW, top: top, bot: bot, feedY: top + 16, outY: bot + 18 };
 };
 FScene.prototype.pressTime = function () { // fase de la animación → tiempo real del ciclo
-  var pr = this.R.pr, tc = pr.tc, tf = pr.tf, tw = pr.tw, td = Math.max(0, pr.tdead), Tvis = 20, minD = 7;
+  var pr = this.R.pr, tc = pr.tc, tf = pr.tf, tw = pr.tw, td = Math.max(0, pr.tdead), Tvis = 20, minD = typeof FP_T !== 'undefined' ? FP_T.base : 8.5; // la descarga de la figura: alivio, apertura, cierre y llenado
   var fD = td / tc * Tvis < minD ? minD / (Tvis + minD) : td / tc; // descarga visible aunque el modelo no le dé tiempo
   var fFilt = (1 - fD) * tf / (tf + tw || 1), fWash = (1 - fD) - fFilt, ph = this.ph, st;
   if (ph < fFilt) st = { phase: 'f', t: tf * ph / fFilt, k: ph / fFilt };
   else if (ph < fFilt + fWash) st = { phase: 'w', t: tf + tw * (ph - fFilt) / fWash, k: (ph - fFilt) / fWash };
-  else st = { phase: 'd', t: Math.min(tc, tf + tw + td * (ph - fFilt - fWash) / fD), k: (ph - fFilt - fWash) / fD, instant: td / tc * Tvis < minD };
+  else st = { phase: 'd', t: Math.min(tc, tf + tw + td * (ph - fFilt - fWash) / fD), k: (ph - fFilt - fWash) / fD, instant: td < 1 };
   st.Tanim = Tvis + (td / tc * Tvis < minD ? minD : 0); st.Td = fD * st.Tanim;
   return st;
 };
@@ -1681,7 +1703,11 @@ FScene.prototype.stepPress = function (dt) {
   // caudal relativo de filtrado: el del modelo contra el inicial
   var q = cs ? cs.J * pr.A : (st.phase === 'w' ? KW[this.R.p.kw].k * pr.qEnd : 0), q0 = pr.q0;
   this.qrel = q0 > 0 ? q / q0 : 0; this.qNow = q; this.uNow = u;
-  this.Pnow = cs ? cs.P / BAR : (st.phase === 'w' ? pr.dPa / BAR : 0);
+  // presión con que termina la filtración (el lavado va a esa misma presión) y con que arranca el ciclo siguiente;
+  // en la descarga el manómetro baja con el alivio y sube cuando la bomba vuelve a llenar las cámaras (FPress.stage)
+  this.Pend = cycAt(this.R, pr.tf).P / BAR; this.Pstart = cycAt(this.R, 0).P / BAR;
+  this.dStage = st.phase === 'd' ? (this.fp && this.fp.stage ? this.fp.stage(st.k, st.Td) : { id: 'abre', rel: Math.max(0, 1 - 7 * st.k), fill: 0 }) : null;
+  this.Pnow = cs ? cs.P / BAR : (st.phase === 'w' ? this.Pend : this.Pend * this.dStage.rel + this.Pstart * this.dStage.fill);
   this.imp = (this.imp || 0) + h * (st.phase === 'f' ? 2 + 10 * Math.min(1, q / Math.max(1e-9, pr.qMean)) : (st.phase === 'w' ? 4 : 0));
   if (st.phase === 'f') {
     var nNew = h * 60 * (0.25 + 0.75 * this.qrel);
@@ -1939,9 +1965,16 @@ FScene.prototype.layoutIso = function () {
 FScene.prototype.drawIso = function () {
   var st = this.st || this.pressTime(), R = this.R, pr = R.pr;
   var vf = st.phase === 'f' ? 0.85 * clamp((this.uNow || 0) / pr.u, 0, 1) : (st.phase === 'w' ? 0.85 + 0.15 * st.k : 1 - clamp(st.k * 1.4, 0, 1));
-  this.fp.update({ phase: st.phase, k: st.k, Td: st.Td, fill: this.fill || 0, P: this.Pnow || 0, Pset: R.p.dP, qrel: this.qrel || 0, vfrac: vf, dt: this.lastH || 0 });
+  this.fp.update({ phase: st.phase, k: st.k, Td: st.Td, fill: this.fill || 0, P: st.phase === 'd' ? this.Pend || 0 : this.Pnow || 0, P0: this.Pstart || 0, Pset: R.p.dP, qrel: this.qrel || 0, vfrac: vf, dt: this.lastH || 0 });
   var tx = this.pressText(st), el = document.getElementById('fpRead');
   if (el && tx !== this.lastTxt) { this.lastTxt = tx; el.innerHTML = tx; }
+};
+FScene.prototype.dischargeText = function () {
+  var id = this.dStage ? this.dStage.id : 'abre', P0 = this.Pstart || 0;
+  return id === 'alivio' ? 'se para la bomba y se abre el alivio: la presión baja a cero antes de aflojar el cierre'
+    : (id === 'abre' ? 'sin presión, el cilindro retira el cabezal móvil, las placas se corren una por una y cada torta cae a la tolva'
+    : (id === 'llena' ? 'la bomba vuelve a llenar las cámaras y la presión sube a ' + fmtN(P0, P0 < 1 ? 2 : 1) + ' bar para el ciclo siguiente'
+    : 'el cilindro vuelve a cerrar y apretar el paquete de placas'));
 };
 FScene.prototype.pressText = function (st) {
   var R = this.R, pr = R.pr, rc = pr.rc;
@@ -1949,9 +1982,9 @@ FScene.prototype.pressText = function (st) {
     : (st.phase === 'f' ? 'Filtración' : (st.phase === 'w' ? 'Lavado' : 'Descarga y cierre'));
   var info = st.phase === 'f' ? (rc ? (this.subPh === 1 ? 'la bomba sostiene ' + fQ(this.qNow) + ' y la presión sube con la torta' : 'a ' + fmtN(R.p.dP, 1) + ' bar el caudal cae: ' + fmtN(100 * (this.qNow || 0) / (rc.J0 * pr.A), 0) + ' % del de la bomba · para ' + (rc.full ? 'cuando se llenen las cámaras' : 'al ' + fmtN(100 * R.p.qStop, 0) + ' %')) + ' · torta ' + fmtN(R.c * (this.uNow || 0) / R.p.rhoCd * 1000, 1) + ' mm por cara'
       : 'torta ' + fmtN(R.c * (this.uNow || 0) / R.p.rhoCd * 1000, 1) + ' mm por cara · ' + fmtN(100 * clamp((this.uNow || 0) / pr.u, 0, 1), 0) + ' % del filtrado del ciclo')
-    : (st.phase === 'w' ? 'el agua de lavado desplaza el licor de la torta' : (st.instant ? 'en este supuesto la descarga no toma tiempo del ciclo; se muestra igual' : 'el cilindro retira el cabezal móvil, las placas se corren una por una y cada torta cae a la tolva'));
+    : (st.phase === 'w' ? 'el agua de lavado desplaza el licor de la torta' : this.dischargeText() + (st.instant ? ' · en este supuesto la descarga no toma tiempo del ciclo; se muestra igual' : ''));
   var vf = st.phase === 'f' ? clamp((this.uNow || 0) / pr.u, 0, 1) : (st.phase === 'w' ? 1 : 1 - clamp(st.k * 1.4, 0, 1));
-  var Pnow = st.phase === 'd' ? 0 : (this.Pnow || 0), q = st.phase === 'd' ? 0 : (this.qNow || 0);
+  var Pnow = this.Pnow || 0, q = st.phase === 'd' ? 0 : (this.qNow || 0);
   return '<span><b>' + esc(phName.toUpperCase()) + ' · ' + fTime(st.t) + ' de ' + fTime(pr.tc) + '</b><br>' + esc(info) + (this.fill > 1 ? ' · <b style="color:var(--redline)">la torta llenaría la cámara</b>' : '') + '</span>'
     + '<span class="r"><b>ΔP ' + fmtN(Pnow, 2) + ' bar · ' + fmtN(q * 3600, q * 3600 < 10 ? 2 : 1) + ' m³/h · filtrado ' + fmtN(vf * pr.V, 2) + ' m³</b><br>' + FP_DATA.NPL + ' de ' + (isFinite(pr.N) ? pr.N : '—') + ' placas dibujadas · cámaras de ' + fmtN(R.p.depth, 0) + ' mm · manómetro de 0 a ' + FP_DATA.GMAX + ' bar</span>';
 };
