@@ -200,6 +200,15 @@ Si un curso define `gradualRelease: true`, quien entra con el **código de estud
 - `public/classroom/vendor/katex/`: KaTeX (fórmulas).
 - `public/classroom/vendor/three/`: three.js r170 (`three.module.min.js` + `OrbitControls.js`, licencia MIT). Se usa con un import map (`"three": "/classroom/vendor/three/three.module.min.js"`) y `import()` dinámico, para que solo cargue cuando la sección 3D se abre. Primer uso: el Manual de diagramas de POU (sección Layout e isométricos). Reutilizarlo para los simuladores 3D siguientes en vez de traerlo de un CDN.
 
+### Skill `anatomy` (figuras isométricas interactivas)
+Instalado en `.claude/skills/anatomy/` desde [wheresryan22/anatomy](https://github.com/wheresryan22/anatomy) (MIT, oct 2026). Dibuja un equipo real como figura isométrica en SVG, con piezas sólidas, lectura en vivo y movimiento, y opcionalmente WebGL o 3D. Sirve para las figuras de los simuladores y de las lecturas: un equipo del curso (bomba, intercambiador, filtro prensa, plato de destilación) cuya mecánica explica el concepto.
+- **El modelo manda:** la lectura y el movimiento salen del mismo modelo del simulador, con los números del curso.
+- **Identidad del curso:** usar el tema claro (`--light`), que va con el papel de los simuladores. Todo texto visible (título, pista, lectura) va en español con tildes, aunque los ejemplos del skill estén en inglés.
+- **Kit autoalojado:** la figura se arma con `scripts/inline-kit.mjs` dentro del HTML, sin CDN.
+- **Verificación:** sus scripts de captura necesitan `CHROME_PATH=/opt/pw-browsers/chromium` en las sesiones en la nube.
+- **Ejemplos:** sus páginas no se versionan; se generan con `node examples/<nombre>/build.mjs`.
+- ⚠️ **No usar `scripts/publish.mjs`** (la galería comunitaria) con material del curso, salvo que el profesor lo pida.
+
 ### Idioma
 - **Portafolio principal y Classroom index:** Inglés
 - **Contenido de cursos (lecturas, presentaciones, landing):** Español con tildes correctas (á, é, í, ó, ú, ñ, ü)
