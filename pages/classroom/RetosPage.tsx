@@ -6,6 +6,8 @@ import { CourseAccessGate } from '../../components/classroom/CourseAccessGate';
 import { NotFoundInClassroom } from './NotFoundInClassroom';
 import { spdpRetos, type Reto } from '../../components/data/classroom/spdp-retos';
 import { SpdpRetosPage } from './SpdpRetosPage';
+import { SpdpSeleccionPage } from './SpdpSeleccionPage';
+import { SpdpResultadosPage } from './SpdpResultadosPage';
 
 type TabView = 'stats' | 'retos';
 
@@ -19,6 +21,22 @@ export const RetosPage: React.FC = () => {
   const course = courseSlug ? getCourseBySlug(courseSlug) : undefined;
   if (course && course.slug === SPDP_2026_20) return <SpdpRetosPage course={course} />;
   return <RetosOriginal />;
+};
+
+// Herramienta del profesor para la sesión de selección (sin enlace desde el curso).
+export const SeleccionRetosPage: React.FC = () => {
+  const { courseSlug } = useParams<{ courseSlug: string }>();
+  const course = courseSlug ? getCourseBySlug(courseSlug) : undefined;
+  if (course && course.slug === SPDP_2026_20) return <SpdpSeleccionPage course={course} />;
+  return <NotFoundInClassroom />;
+};
+
+// Resultados de la selección de retos (sesión del 14 de octubre de 2026).
+export const ResultadosRetosPage: React.FC = () => {
+  const { courseSlug } = useParams<{ courseSlug: string }>();
+  const course = courseSlug ? getCourseBySlug(courseSlug) : undefined;
+  if (course && course.slug === SPDP_2026_20) return <SpdpResultadosPage course={course} />;
+  return <NotFoundInClassroom />;
 };
 
 const RetosOriginal: React.FC = () => {

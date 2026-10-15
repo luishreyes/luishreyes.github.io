@@ -2,6 +2,10 @@
 // a partir del formulario de propuesta de retos de 2026-20 y de los retos que
 // llegaron por correo (corte: 8 de octubre de 2026). No editar a mano: se sobrescribe.
 // Los mismos datos alimentan la presentación del Día 1.
+//
+// Agregado a mano el 14 de octubre de 2026: reto 202 (destilados tipo whisky,
+// Nicolás Ratkovich con Luis H. Reyes), que salió en la sesión de selección.
+// Replicarlo en la carpeta del curso antes de volver a exportar.
 
 export type RetoOrigen = 'asesor' | 'semillero' | 'empresa';
 
@@ -482,5 +486,23 @@ export const retos202620: Reto202620[] = [
     "residuo": false,
     "reto": "Redes neuronales informadas por la física (PINNs), transformers y estrategias de aprendizaje de máquina para el diseño de productos formulados.",
     "objetivos": "Por definir con el asesor."
+  },
+  {
+    "id": 202,
+    "titulo": "Destilados tipo whisky con materias primas colombianas",
+    "enCorto": "¿Qué materia prima colombiana da la mejor bebida espirituosa con perfil tipo whisky?",
+    "asesor": "Nicolás Ratkovich",
+    "coasesor": "Luis H. Reyes",
+    "tipo": "Investigación",
+    "area": "Alimentos y bebidas",
+    "origen": "asesor",
+    "empresa": null,
+    "integrantes": 2,
+    "seguimiento": "Otro",
+    "seguimientoTexto": "Por definir con los asesores",
+    "requisito": null,
+    "residuo": false,
+    "reto": "El mercado de destilados envejecidos tipo whisky en Colombia depende en gran medida de producto importado y de materias primas traídas del exterior, lo que encarece el producto y limita el desarrollo de una identidad local. Colombia cuenta con una gran diversidad agrícola con potencial para generar destilados con perfiles sensoriales propios, pero su desempeño como base de este tipo de bebida ha sido poco estudiado. Dado que un whisky propiamente dicho requiere un mínimo de 3 años de maduración, este proyecto se enfoca en una bebida espirituosa con perfil tipo whisky, y la selección de la materia prima es la decisión que más determina el rendimiento, el perfil sensorial y la viabilidad económica del producto.\n\nPregunta. ¿Qué materia prima colombiana ofrece la mejor combinación de rendimiento alcohólico, perfil sensorial y viabilidad técnico-económica para producir una bebida espirituosa con perfil tipo whisky?",
+    "objetivos": "1. Identificar y preseleccionar materias primas colombianas candidatas según su disponibilidad, costo y potencial de rendimiento alcohólico.\n2. Elaborar destilados a escala laboratorio con cada materia prima, someterlos a maduración acelerada con roble y evaluar su perfil fisicoquímico (grado alcohólico, congéneres) y sensorial.\n3. Seleccionar la materia prima más adecuada mediante una matriz de decisión (rendimiento, perfil sensorial, costo y disponibilidad) y validarla con un panel sensorial."
   }
 ];
