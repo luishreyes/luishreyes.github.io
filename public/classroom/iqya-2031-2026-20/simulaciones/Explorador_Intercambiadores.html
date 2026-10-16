@@ -466,6 +466,28 @@ table.t tr:hover td { background: var(--accent-50); }
 .dp-drop{fill:#5b8fc9;stroke:#2b4f7a;stroke-width:.12px;opacity:.85}
 .dp-film{fill:#5b8fc9;opacity:.55}
 /*DPFIG_CSS_END*/
+/*ACFIG_CSS_START*/
+/* el aeroenfriador: chapa de la cámara, cabezales y lo vivo */
+.ac-items .ac-sheet{--anatomy-paper:#e3e6e9;--anatomy-face:#e3e6e9;--anatomy-top:#eceef0;--anatomy-shade-0:#c6cbd0;--anatomy-shade-1:#cfd3d7;--anatomy-shade-2:#d7dadd;--anatomy-shade-3:#dde0e3}
+.ac-items .ac-hdr{--anatomy-paper:#dcdfe2;--anatomy-face:#dcdfe2;--anatomy-top:#e7e9eb;--anatomy-shade-0:#bec3c8;--anatomy-shade-1:#c7ccd0;--anatomy-shade-2:#d0d4d8;--anatomy-shade-3:#d7dade}
+.ac-items [data-live]{pointer-events:none}
+/* los tubos aleteados: contorno, aletas con la temperatura del proceso, rayado de las aletas y brillo */
+.ac-to{fill:none;stroke:var(--anatomy-ink,#2b2b2b);stroke-opacity:.42;stroke-linecap:butt}
+.ac-tf{fill:none;stroke-linecap:butt}
+.ac-tx{fill:none;stroke:#1d2a36;stroke-opacity:.24;stroke-dasharray:.32 1.15;stroke-linecap:butt}
+.ac-th{fill:none;stroke:#fff;stroke-opacity:.36;stroke-linecap:butt}
+.ac-flow{fill:none;stroke:#fff;stroke-opacity:.85;stroke-width:.55px;stroke-dasharray:1.6 9;stroke-linecap:round}
+.ac-f0{stroke-dashoffset:calc(var(--acf0,0) * 1px)}
+.ac-f1{stroke-dashoffset:calc(var(--acf1,0) * 1px)}
+.ac-f2{stroke-dashoffset:calc(var(--acf2,0) * 1px)}
+.ac-f3{stroke-dashoffset:calc(var(--acf3,0) * 1px)}
+/* aspas y aire */
+.ac-bl{stroke:var(--anatomy-ink,#2b2b2b);stroke-width:.3px;stroke-opacity:.7;stroke-linejoin:round}
+.ac-air{fill:none;stroke-linecap:round}
+/*ACFIG_CSS_END*/
+.iso.hx-fig[data-theme="blueprint"] .ac-sheet,.iso.hx-fig[data-theme="blueprint"] .ac-hdr{--anatomy-paper:#173b60;--anatomy-face:#173b60;--anatomy-top:#1c4672;--anatomy-shade-0:#0e2843;--anatomy-shade-1:#112e4c;--anatomy-shade-2:#143555;--anatomy-shade-3:#173c5f}
+.iso.hx-fig[data-theme="blueprint"] .ac-to{stroke:#06182b;stroke-opacity:.7}
+.iso.hx-fig[data-theme="blueprint"] .ac-bl{stroke:#e6eef7;stroke-opacity:.5}
 .iso.hx-fig[data-theme="blueprint"] .dp-cast{--anatomy-paper:#173b60;--anatomy-face:#173b60;--anatomy-top:#1c4672;--anatomy-shade-0:#0e2843;--anatomy-shade-1:#112e4c;--anatomy-shade-2:#143555;--anatomy-shade-3:#173c5f}
 .iso.hx-fig[data-theme="blueprint"] .dp-tbs{stroke-opacity:.3}
 .iso.hx-fig[data-theme="blueprint"] .pl-frame{--anatomy-paper:#173b60;--anatomy-face:#173b60;--anatomy-top:#1c4672;--anatomy-shade-0:#0e2843;--anatomy-shade-1:#112e4c;--anatomy-shade-2:#143555;--anatomy-shade-3:#173c5f}
@@ -1273,8 +1295,9 @@ function computeEq(eq, s, C) {
     var gap = sfin - tf, hAir = 0.134 * Pair.k / T.d * Math.pow(Rea2, 0.681) * Math.cbrt(Pra2) * Math.pow(gap / lf, 0.2) * Math.pow(gap / tf, 0.1134);
     // eficiencia de aleta (McCabe, ec. 15.18) con el largo corregido por la punta
     var Lc = lf + tf / 2, mF = Math.sqrt(2 * hAir / (T.kf * tf)), etaF = Math.tanh(mF * Lc) / (mF * Lc), etaO = 1 - aFin / aO * (1 - etaF);
-    // ΔP del aire por el haz (Robinson y Briggs, arreglo triangular)
-    var fRB = 18.93 * Math.pow(Rea2, -0.316) * Math.pow(T.pt / T.d, -0.927) * Math.pow(T.pt / (T.pt * Math.sqrt(3) / 2), 0.515), dPair = fRB * nRows * Gmax * Gmax / (2 * Pair.rho);
+    // ΔP del aire por el haz (Robinson y Briggs): Δp = Eu·N·G²/ρ, con Eu por fila; en el triángulo equilátero el paso
+    // diagonal es igual al transversal. Da unos 20 Pa por fila a 3 m/s de frente, el orden de las tablas del GPSA.
+    var pd = T.pt, fRB = 18.93 * Math.pow(Rea2, -0.316) * Math.pow(T.pt / T.d, -0.927) * Math.pow(T.pt / pd, 0.515), dPair = fRB * nRows * Gmax * Gmax / Pair.rho;
     shell = { P: Pair, u: vface, uMax: Gmax / Pair.rho, Re: Rea2, Pr: Pra2, h: hAir, etaF: etaF, etaO: etaO, Aface: Aface, dP: dPair, gap: gap };
     for (var it2 = 0; it2 < 4; it2++) {
       var Pt = pc(hf, Thm), At = (Nt / Npass) * Math.PI * T.di * T.di / 4, ut = mh / (Pt.rho * At), Ret = Pt.rho * ut * T.di / Pt.mu, Prt = Pt.cp * Pt.mu / Pt.k, tnA = tubeNu(Ret, Prt, T.di / Lt, Pt.mu / pc(hf, Tw).mu);
@@ -1531,7 +1554,7 @@ HxScene.prototype.resize = function () {
 HxScene.prototype.configure = function (R) {
   var kind = R.eq === 'st' ? (isST(R.arr) ? 'st' : null) : R.eq, useFig = !!(this.fig && kind && this.fig.ok(kind));
   if (useFig !== this.useFig) { this.useFig = useFig; this.figHost.hidden = !useFig; this.cv.style.display = useFig ? 'none' : ''; }
-  if (useFig) this.fig.want(kind, kind === 'st' ? R.s.head + '-' + R.Ns : '');
+  if (useFig) this.fig.want(kind, kind === 'st' ? R.s.head + '-' + R.Ns : (kind === 'ac' ? (R.geo.Np % 2 ? 'impar' : 'par') : ''));
   var key = [R.arr, R.Np, R.Ns, R.s.head, R.hotShell, R.steam, R.geo.Nb > 30 ? 30 : R.geo.Nb].join('|');
   this.R = R; this.profDirty = true;
   var hcss = R.Ns === 3 ? 'clamp(560px, 80vh, 780px)' : (R.Ns === 2 ? 'clamp(440px, 64vh, 620px)' : 'clamp(380px, 56vh, 560px)');
@@ -1949,6 +1972,10 @@ function drawSectionEq(c, W, H, R, prof, ink, muted, paper) {
 HxScene.prototype.capFor = function (r) {
   var g = r.geo;
   if (r.eq === 'pl') return '<b>Cómo leerlo.</b> El paquete va abierto por el plano de su eje: entre placa y placa se alternan los canales del caliente y del frío, cada uno con el color de su temperatura local (el perfil de contracorriente del explorador, con el F de McCabe). ' + (r.steam ? 'El vapor condensa en sus canales y gotea; ' : 'El caliente entra arriba y baja; ') + 'el frío entra abajo y sube. Los puntos tardan lo que tarda el líquido en recorrer la placa, L/u = ' + fmtN(g.Lp / Math.max(Math.min(r.tube.u || 1, r.shell.u || r.tube.u || 1), 1e-3), 1) + ' s. La figura es un equipo tipo: dibuja 15 placas con la separación exagerada; el de este caso tiene ' + g.Npl + ' placas de ' + fmtN(g.w, 2) + ' × ' + fmtN(g.Lp, 2) + ' m' + (g.nSec > 1 ? ' en ' + g.nSec + ' secciones en serie' : '') + ', a ' + fmtN(g.b * 1000, 0) + ' mm entre sí. Se acerca con pellizco, ctrl + rueda o los botones + −.';
+  if (r.eq === 'ac') {
+    var tT = r.tube.u ? g.Lt / Math.max(r.tube.u, 1e-3) : null;
+    return '<b>Cómo leerlo.</b> Al haz le falta el bastidor del lado del lector y a la cámara su panel de adelante: el aire entra por debajo de los anillos, los ventiladores lo empujan a la cámara y sube a través de las filas de tubos aleteados. ' + (r.steam ? 'El vapor entra por la fila de arriba en el cabezal de adelante y condensa adentro de los tubos' : 'El proceso entra por la fila de arriba en el cabezal de adelante y baja en ' + (g.Np === 1 ? 'un solo paso' : g.Np + ' pasos, en contra-cruce') + '; cada fila lleva el color de su temperatura local, del perfil del explorador') + '. ' + (tT != null ? 'Los trazos blancos tardan en recorrer un tubo lo que tarda el líquido, L/u = ' + fmtN(tT, 1) + ' s. ' : '') + 'El aire sale en promedio a la temperatura del balance, más caliente donde la fila de arriba está más caliente; las aspas giran más rápido con más aire, aunque más despacio que las reales. La figura es un equipo tipo: dibuja 4 filas de 16 tubos cortos y 2 ventiladores; el de este caso tiene ' + g.nRows + ' filas de ' + g.nPer + ' tubos de ' + fmtN(g.Lt, 1) + ' m y ' + g.fans + (g.fans === 1 ? ' ventilador' : ' ventiladores') + '. Se acerca con pellizco, ctrl + rueda o los botones + −.';
+  }
   if (r.eq === 'dp') {
     var tLi = g.Lleg / Math.max(r.tube.u, 1e-3), tLa = r.shell && r.shell.u ? g.Lleg / Math.max(r.shell.u, 1e-3) : null;
     return '<b>Cómo leerlo.</b> Cada rama va abierta por el plano de su eje: adentro se ve el tubo interior entero, pintado con la temperatura local de su fluido, y alrededor el ánulo con la del suyo (el perfil en ' + (r.arr === 'paralelo' ? 'paralelo' : 'contracorriente') + ' del explorador). Atrás, el cabezal de retorno de cada horquilla une los dos ánulos y lleva adentro la curva del tubo interior; adelante, el tubo interior sale por el prensaestopas y pasa a la horquilla siguiente por una curva por fuera, y el ánulo pasa por las boquillas. ' + (r.steam ? 'El vapor condensa en el ánulo y el condensado baja por la pared. ' : '') + 'Los trazos blancos tardan lo que tarda el líquido en recorrer una rama, L/u = ' + fmtN(tLi, 1) + ' s' + (tLa != null ? '; los puntos del ánulo, ' + fmtN(tLa, 1) + ' s' : '') + '. La figura es un equipo tipo: dibuja tres horquillas de ramas cortas y con el ánulo exagerado; el de este caso tiene ' + g.nhp + (g.nhp === 1 ? ' horquilla' : ' horquillas') + ' de ' + g.size.name + ' con ramas de ' + fmtN(g.Lleg, 2) + ' m. Se acerca con pellizco, ctrl + rueda o los botones + −.';
@@ -2796,11 +2823,282 @@ return FDouble;
 })();
 var DP_FIG = {"P":{"origin":[493.16830610718443,296.7662153256133],"scale":1.2262448150057599,"azimuth":35,"elevation":30},"W":680,"H":440,"L":210,"Ri":8,"Ro":8.8,"ri":4,"ro":4.6,"sc":1.5510906337560086,"legs":[40,68,96,124,152,180],"ends":{"inIn":[0,247.1,40],"inOut":[0,247.1,180],"anTop":[-5,188,195.44154679609267],"anBot":[-5,188,24.55845320390733]}};
 /*DPFIG_END*/
+/*ACFIG_START*/
+/* aeroenfriador de tiro forzado en isométrico: generado por build.mjs */
+var FAir = (function () {
+/* Prisma a lo largo de x (o de y, o de cualquier eje con un marco F) con una sección cualquiera, cóncava incluida.
+   Se pinta cara por cara, de atrás hacia adelante, y cada cara lleva sus
+   aristas: así una arista que queda detrás de otra cara del mismo sólido
+   no se ve. La tapa que mira al lector va al final: tapa todo lo que el
+   prisma tiene detrás de ella. Sin imports: el mismo texto corre en la
+   página para reconstruir las tortas en cada cuadro. */
+function xCam(P) {
+  const a = (P.azimuth * Math.PI) / 180, e = (P.elevation * Math.PI) / 180, k = P.scale * Math.sqrt(1.6);
+  const sA = Math.sin(a), cA = Math.cos(a), sE = Math.sin(e), cE = Math.cos(e);
+  const l = [-sA, cA, 1.2], ln = Math.hypot(l[0], l[1], l[2]);
+  return {
+    pr: (x, y, z) => [P.origin[0] + (x * sA - y * cA) * k, P.origin[1] + ((x * cA + y * sA) * sE - z * cE) * k],
+    V: [cA * cE, sA * cE, sE],
+    L: [l[0] / ln, l[1] / ln, l[2] / ln],
+    depth: (x, y, z) => (x * cA + y * sA) * cE + z * sE,
+  };
+}
+function xPrismSvg(C, poly, x0, x1, opts = {}) { return prismSvg(C, poly, x0, x1, opts); }
+// prisma a lo largo de x (sección en y, z) o de y (sección en x, z); skip: aristas de la sección cuyas caras no se pintan
+function prismSvg(C, poly, x0, x1, { tone = "mid", crease = "faint", cls = "", flat = false, axis = "x", skip = null, cap: capMode = "auto", F = null } = {}) {
+  const f1 = (v) => { const t = (Math.round(v * 10) / 10).toFixed(1).replace(/\.0$/, ""); return t === "-0" ? "0" : t; };
+  const pth = (pts) => pts.map(([x, y], i) => (i ? "L" : "M") + f1(x) + " " + f1(y)).join("") + "Z";
+  const seg = (a, b) => "M" + f1(a[0]) + " " + f1(a[1]) + "L" + f1(b[0]) + " " + f1(b[1]);
+  const area = (pts) => { let s = 0; for (let i = 0; i < pts.length; i++) { const p = pts[i], q = pts[(i + 1) % pts.length]; s += p[0] * q[1] - q[0] * p[1]; } return s; };
+  const orient = (pts) => (area(pts) < 0 ? pts.slice().reverse() : pts);
+  const band = (s) => { const B = [0, 0.2, 0.42, 0.62]; let t = 0; while (t < B.length && s >= B[t]) t++; return t; };
+  const flip = area(poly) < 0, ring = flip ? poly.slice().reverse() : poly.slice();
+  const n = ring.length, V = C.V, L = C.L, dot = (u, w) => u[0] * w[0] + u[1] * w[1] + u[2] * w[2];
+  const ax = axis === "y";
+  // con un marco F = { o, a, u, v } la sección va en (u, v) y el prisma corre a lo largo de a
+  const w3 = F ? (s, p, q) => [F.o[0] + F.a[0] * s + F.u[0] * p + F.v[0] * q, F.o[1] + F.a[1] * s + F.u[1] * p + F.v[1] * q, F.o[2] + F.a[2] * s + F.u[2] * p + F.v[2] * q] : null;
+  const at3 = F ? (s, p, q) => C.pr(...w3(s, p, q)) : (s, u, v) => (ax ? C.pr(u, s, v) : C.pr(s, u, v));
+  const skipped = (j) => skip && skip.has(flip ? (n - 2 - j + n) % n : j);
+  const P0 = ring.map(([y, z]) => at3(x0, y, z)), P1 = ring.map(([y, z]) => at3(x1, y, z));
+  const faces = [];
+  for (let j = 0; j < n; j++) {
+    const [ya, za] = ring[j], [yb, zb] = ring[(j + 1) % n], len = Math.hypot(yb - ya, zb - za) || 1;
+    const nrm = F ? [0, 1, 2].map((i) => (F.u[i] * (zb - za) - F.v[i] * (yb - ya)) / len) : ax ? [(zb - za) / len, 0, -(yb - ya) / len] : [0, (zb - za) / len, -(yb - ya) / len];
+    const d = F ? C.depth(...w3((x0 + x1) / 2, (ya + yb) / 2, (za + zb) / 2)) : ax ? C.depth((ya + yb) / 2, (x0 + x1) / 2, (za + zb) / 2) : C.depth((x0 + x1) / 2, (ya + yb) / 2, (za + zb) / 2);
+    faces.push({ kind: "side", j, nrm, vis: dot(nrm, V) > 1e-6 && !skipped(j), d });
+  }
+  const AX = F ? F.a : ax ? [0, 1, 0] : [1, 0, 0], vc = dot(AX, V);
+  const capHi = { kind: "cap", hi: true, nrm: AX, vis: vc > 1e-6 }, capLo = { kind: "cap", hi: false, nrm: AX.map((c) => -c), vis: vc < -1e-6 };
+  const sharp = (j) => { // arista longitudinal en el vértice j: entre la cara j-1 y la j
+    const a = ring[(j - 1 + n) % n], b = ring[j], c = ring[(j + 1) % n];
+    const u = [b[0] - a[0], b[1] - a[1]], w = [c[0] - b[0], c[1] - b[1]];
+    return (u[0] * w[0] + u[1] * w[1]) / ((Math.hypot(u[0], u[1]) * Math.hypot(w[0], w[1])) || 1) < Math.cos(0.35);
+  };
+  const order = faces.filter((f) => f.vis).sort((p, q) => p.d - q.d);
+  const cap = capHi.vis ? capHi : capLo.vis ? capLo : null;
+  const rank = new Map(order.map((f, i) => [f.j, i]));
+  const fill = [];
+  const out = [];
+  const paint = (pts, nrm) => { const b = band(dot(nrm, L)); return b >= 4 ? `<path class="iso-top" d="${pth(pts)}"/>` : `<path class="iso-shade" data-shade="${b}" d="${pth(pts)}"/>`; };
+  for (const f of capMode === "only" ? [] : order) {
+    const j = f.j, k2 = (j + 1) % n, quad = orient([P0[j], P1[j], P1[k2], P0[k2]]);
+    fill.push(pth(quad));
+    const edges = [], creases = [];
+    // aristas longitudinales en los dos extremos de la cara
+    for (const [v, other] of [[j, (j - 1 + n) % n], [k2, k2]]) {
+      const o = faces[other], mine = rank.get(j), theirs = o.vis ? rank.get(o.j) : -1;
+      if (!o.vis) edges.push(seg(P0[v], P1[v]));
+      else if (theirs < mine && sharp(v)) creases.push(seg(P0[v], P1[v]));
+    }
+    // aristas de las tapas
+    if (!capLo.vis) edges.push(seg(P0[j], P0[k2]));
+    if (!capHi.vis) edges.push(seg(P1[j], P1[k2]));
+    out.push(flat ? `<path class="iso-shade" data-shade="2" d="${pth(quad)}"/>` : paint(quad, f.nrm));
+    if (creases.length) out.push(`<path class="iso-line iso-crease" data-tone="${crease}" d="${creases.join("")}"/>`);
+    if (edges.length) out.push(`<path class="iso-line iso-edge" data-tone="${tone}" d="${edges.join("")}"/>`);
+  }
+  if (cap && capMode !== "none") {
+    const pts = cap.hi ? P1 : P0, poly2 = orient(pts.slice());
+    fill.push(pth(poly2));
+    out.push(flat ? `<path class="iso-shade" data-shade="3" d="${pth(poly2)}"/>` : paint(poly2, cap.nrm));
+    const edges = [], creases = [];
+    for (let j = 0; j < n; j++) (faces[j].vis ? creases : edges).push(seg(pts[j], pts[(j + 1) % n]));
+    if (creases.length) out.push(`<path class="iso-line iso-crease" data-tone="${crease}" d="${creases.join("")}"/>`);
+    if (edges.length) out.push(`<path class="iso-line iso-edge" data-tone="${tone}" d="${edges.join("")}"/>`);
+  }
+  return `<g class="iso-solid${cls ? " " + cls : ""}"><path class="iso-fill" d="${fill.join("")}"/>${out.join("")}</g>`;
+}
+/* secciones de uso común, en (y, z) */
+function halfOct(zc, r, steps = 8) { // media boca (y ≤ 0) de una perforación a lo largo de x, de arriba hacia abajo
+  const pts = [];
+  for (let i = 0; i <= steps; i++) { const t = Math.PI / 2 + (Math.PI * i) / steps; pts.push([r * Math.cos(t), zc + r * Math.sin(t)]); }
+  return pts.map(([y, z]) => [Math.abs(y) < 1e-9 ? 0 : y, z]);
+}
+function notched(yb, z0, z1, holes) { // rectángulo y∈[yb,0], z∈[z0,z1] con medias bocas en y = 0
+  const pts = [[0, z0], [yb, z0], [yb, z1], [0, z1]];
+  for (const h of [...holes].sort((a, b) => b.zc - a.zc)) pts.push(...halfOct(h.zc, h.r, h.steps || 8));
+  return pts;
+}
+/* Medidas del aeroenfriador de tiro forzado que comparten build.mjs y la página. Sin imports: el mismo texto corre en
+   las dos. Unidades: 1 = 1 cm, z hacia arriba. Los tubos aleteados corren a lo largo de y, entre el cabezal de tapones
+   de atrás (y < 0) y el de adelante (y > L), hacia el lector, por donde entra el proceso. Debajo del haz, la cámara
+   (plenum) con dos ventiladores que empujan el aire hacia arriba; los motores van abajo, en su puente. El corte es el
+   plano x = 0 para la cámara y los anillos de los ventiladores (se quita la mitad x > 0); del haz se quita el
+   bastidor del lado del lector para ver las cuatro filas. */
+const AC = {
+  AZ: 35, EL: 30,
+  L: 300,                                   // largo de los tubos entre cabezales (acortado)
+  NT: 16, NR: 4,                            // tubos por fila y filas dibujados
+  pt: 6.0, d: 2.54, Df: 5.7,                // paso triangular, tubo de 1″ y diámetro de las aletas
+  x0: -45,                                  // x del primer tubo de las filas sin desplazar
+  zs: 222,                                  // arriba de las vigas: ahí se apoyan los soportes de los tubos
+  sup: 2.0,                                 // alto de los soportes de los tubos (y de los sujetadores de arriba)
+  hdr: { dy: 14, x: 54, z0: 219.5, z1: 251.5 },  // cabezales de tapones
+  col: { x: 58, y: [12, 150, 288], w: 6 },  // columnas (la del medio no lleva columna: solo la viga)
+  beam: 8,                                  // alto de las vigas de arriba
+  zf: 150,                                  // piso de la cámara
+  fan: { y: [82.5, 217.5], R: 46, tip: 44, hub: 9, z: 135.5, ring: [126, 150], blades: 4 },
+  bridge: { z: [60, 66, 72], x: 16 },       // vigas bajas, puente de los motores
+  motor: { r: 11, z0: 73.5, z1: 101 },
+};
+function axesOf(az) {
+  const a = (az * Math.PI) / 180, sA = Math.sin(a), cA = Math.cos(a);
+  return { T: [sA, -cA, 0], HV: [cA, sA, 0] };
+}
+// centro de la fila r (0 la de arriba): las filas impares van desplazadas medio paso (arreglo triangular)
+function rowZ(r) { return AC.zs + AC.sup + AC.Df / 2 + 0.05 + (AC.NR - 1 - r) * AC.pt * Math.sqrt(3) / 2; }
+function tubeX(r, i) { return AC.x0 + (r % 2 ? AC.pt / 2 : 0) + i * AC.pt; }
+function topZ() { return rowZ(0) + AC.Df / 2; }
+/* paso del proceso en la fila dibujada r con Np pasos (el proceso entra por la fila de arriba y baja) */
+function passOf(r, Np) { return Math.min(Np - 1, Math.floor((r * Np) / AC.NR)); }
+/* posición a lo largo del recorrido del proceso (0 entra, 1 sale) en la fila r, en y: el paso 0 va del cabezal de
+   adelante (y = L) hacia atrás y cada paso cambia de sentido */
+function pathPos(r, y, Np) { const k = passOf(r, Np), s = Math.max(0, Math.min(1, y / AC.L)); return (k + (k % 2 === 0 ? 1 - s : s)) / Np; }
+function halfRing(r0, r1, n = 36) {
+  const out = [];
+  for (let i = 0; i <= n; i++) { const t = Math.PI + (Math.PI * i) / n; out.push([r1 * Math.cos(t), r1 * Math.sin(t)]); }
+  if (r0 > 1e-6) for (let i = n; i >= 0; i--) { const t = Math.PI + (Math.PI * i) / n; out.push([r0 * Math.cos(t), r0 * Math.sin(t)]); }
+  return out.map(([u, v]) => [Math.abs(u) < 1e-9 ? 0 : u, Math.abs(v) < 1e-9 ? 0 : v]);
+}
+/* ====================================================================
+   El aeroenfriador en vivo. La página le pasa el perfil del explorador
+   (profileAll: el proceso por los tubos y el aire como «coraza», en el
+   contra-cruce equivalente):
+   · cada fila de tubos, pintada a lo largo con la temperatura del proceso
+     en su paso (el proceso entra por la fila de arriba y baja paso a paso,
+     cambiando de sentido en cada cabezal); los trazos blancos tardan en
+     recorrer un tubo lo que tarda el líquido, L/u (acotado);
+   · las aspas giran más rápido con más aire;
+   · el aire entra frío por debajo de los anillos, llena la cámara y sale
+     por arriba del haz con su temperatura de salida: más caliente donde el
+     proceso de la fila de arriba está más caliente, con la media del
+     balance.
+   ==================================================================== */
+var TCOL = [[47, 109, 181], [111, 168, 220], [233, 227, 211], [236, 154, 96], [200, 69, 43]];
+function tcol(t) { if (!isFinite(t)) t = 0.5; t = Math.max(0, Math.min(1, t)) * (TCOL.length - 1); var i = Math.min(TCOL.length - 2, Math.floor(t)), f = t - i, a = TCOL[i], b = TCOL[i + 1]; return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f, a[2] + (b[2] - a[2]) * f]; }
+function rgb(c, k) { k = k == null ? 1 : k; return 'rgb(' + Math.round(Math.min(255, c[0] * k)) + ',' + Math.round(Math.min(255, c[1] * k)) + ',' + Math.round(Math.min(255, c[2] * k)) + ')'; }
+function FAir(host, D) {
+  this.host = host; this.D = D; this.svg = host.querySelector('svg'); this.C = xCam(D.P);
+  var svg = this.svg, q = function (n) { return svg.querySelector('[data-live="' + n + '"]'); };
+  this.el = { tubes: q('hz.tubes'), out: q('air.out'), pl: [q('air.pl0'), q('air.pl1')], inB: [q('air.in0.bk'), q('air.in1.bk')], inF: [q('air.in0.fr'), q('air.in1.fr')], bk: [q('fan0.bk'), q('fan1.bk')], fr: [q('fan0.fr'), q('fan1.fr')] };
+  // la mitad de atrás de cada ventilador: lo que queda detrás del plano vertical del eje que mira al lector
+  var a = AC.AZ * Math.PI / 180; this.hv = [Math.cos(a), Math.sin(a)];
+  this.key = ''; this.t = 0; this.ang = 0; this.off = [0, 0, 0, 0];
+}
+FAir.prototype.P = function (x, y, z) { return this.C.pr(x, y, z); };
+FAir.prototype.Tat = function (a, x) { x = Math.max(0, Math.min(1, x)) * (a.length - 1); var i = Math.min(a.length - 2, Math.floor(x)); return a[i] + (a[i + 1] - a[i]) * (x - i); };
+FAir.prototype.seg = function (a, b) { return 'M' + a[0].toFixed(1) + ' ' + a[1].toFixed(1) + 'L' + b[0].toFixed(1) + ' ' + b[1].toFixed(1); };
+/* temperatura del proceso en la fila r, en y (el perfil va en x = 1 − posición del recorrido) */
+FAir.prototype.Tp = function (s, r, y) { return this.Tat(s.prof.tubes[0], 1 - pathPos(r, y, s.Np)); };
+/* s = { prof: { shell (aire), tubes: [proceso] }, Np, Tlo, Thi, tTube (s en recorrer un tubo), vFace (m/s), dt, snap } */
+FAir.prototype.update = function (s) {
+  var dt = Math.max(0, Math.min(0.1, s.dt || 0)), sh = s.prof.shell, tb = s.prof.tubes[0];
+  var key = [s.Np, s.Tlo, s.Thi, sh[0], sh[sh.length - 1], tb[0], tb[tb.length >> 1], tb[tb.length - 1]].join('|');
+  if (key !== this.key) { this.key = key; this.build(s); }
+  if (!s.snap) {
+    this.t += dt;
+    this.ang += dt * 2 * Math.PI * Math.max(0.2, Math.min(1.2, 0.14 * (s.vFace || 3)));
+    var ln = this.tubeLen, v = ln / Math.max(0.8, Math.min(14, s.tTube || 4));
+    for (var r = 0; r < AC.NR; r++) this.off[r] += dt * v * (passOf(r, s.Np) % 2 === 0 ? 1 : -1);
+  }
+  if (this.el.tubes) for (var r2 = 0; r2 < AC.NR; r2++) this.el.tubes.style.setProperty('--acf' + r2, this.off[r2].toFixed(1));
+  this.fans(s); this.air(s);
+};
+FAir.prototype.build = function (s) {
+  var D = this.D, self = this, span = Math.max(1e-6, s.Thi - s.Tlo), sc = D.sc, df = AC.Df * sc, V = this.C.V;
+  var col = function (T) { return rgb(tcol((T - s.Tlo) / span)); };
+  // un degradado por fila, en la caja de cada tubo (horizontal): el borde izquierdo es el extremo de y = L
+  var defs = [], a0 = this.P(0, 0, 0), a1 = this.P(0, AC.L, 0), rev = a1[0] < a0[0];
+  this.tubeLen = Math.hypot(a1[0] - a0[0], a1[1] - a0[1]);
+  for (var r = 0; r < AC.NR; r++) {
+    var st = [];
+    for (var g = 0; g <= 10; g++) { var f = g / 10, y = rev ? AC.L * (1 - f) : AC.L * f; st.push('<stop offset="' + f.toFixed(2) + '" stop-color="' + col(this.Tp(s, r, y)) + '"/>'); }
+    defs.push('<linearGradient id="acG' + r + '" x1="0" y1="0" x2="1" y2="0">' + st.join('') + '</linearGradient>');
+  }
+  // los tubos de atrás hacia adelante (todos paralelos: basta la profundidad del eje)
+  var list = [];
+  for (var r3 = 0; r3 < AC.NR; r3++) for (var i = 0; i < AC.NT; i++) { var x = tubeX(r3, i), z = rowZ(r3); list.push({ r: r3, x: x, z: z, d: x * V[0] + z * V[2] }); }
+  list.sort(function (p, q) { return p.d - q.d; });
+  var html = list.map(function (t) {
+    var d = self.seg(self.P(t.x, 0.2, t.z), self.P(t.x, AC.L - 0.2, t.z)), hl = self.seg(self.P(t.x, 0.2, t.z + AC.Df * 0.3), self.P(t.x, AC.L - 0.2, t.z + AC.Df * 0.3));
+    return '<path class="ac-to" style="stroke-width:' + (df + 0.7).toFixed(2) + 'px" d="' + d + '"/><path class="ac-tf" style="stroke:url(#acG' + t.r + ');stroke-width:' + df.toFixed(2) + 'px" d="' + d + '"/><path class="ac-tx" style="stroke-width:' + (df - 0.5).toFixed(2) + 'px" d="' + d + '"/><path class="ac-th" style="stroke-width:' + (df * 0.22).toFixed(2) + 'px" d="' + hl + '"/><path class="ac-flow ac-f' + t.r + '" d="' + d + '"/>';
+  });
+  if (this.el.tubes) this.el.tubes.innerHTML = '<defs>' + defs.join('') + '</defs>' + html.join('');
+  // el aire que sale: su temperatura en cada y (la del balance en promedio)
+  var Ttop = [], n = 24, mean = 0;
+  for (var j = 0; j <= n; j++) { Ttop.push(this.Tp(s, 0, AC.L * j / n)); mean += Ttop[j] / (n + 1); }
+  var Tci = s.prof.shell[0], Tco = s.prof.shell[s.prof.shell.length - 1], k = Math.abs(mean - Tci) > 1e-6 ? (Tco - Tci) / (mean - Tci) : 0;
+  this.Tout = function (y) { return Tci + k * (self.Tat(Ttop, y / AC.L) - Tci); };
+  this.Tci = Tci; this.span = span; this.Tlo = s.Tlo;
+};
+/* las aspas: cuatro por ventilador, con su torcimiento; las de la mitad de atrás van detrás del cubo */
+FAir.prototype.fans = function (s) {
+  var self = this, F = AC.fan, V = this.C.V;
+  F.y.forEach(function (yf, f) {
+    var back = [], front = [];
+    for (var b = 0; b < F.blades; b++) {
+      var phi = self.ang + b * 2 * Math.PI / F.blades, lead = [], trail = [];
+      for (var q = 0; q <= 6; q++) {
+        var rr = F.hub + 0.9 + (F.tip - F.hub - 0.9) * q / 6, c = 10 - 3.6 * q / 6, dl = c / 2 / rr, h = 1.5 - 0.9 * q / 6;
+        lead.push(self.P(rr * Math.cos(phi + dl), yf + rr * Math.sin(phi + dl), F.z - h));
+        trail.push(self.P(rr * Math.cos(phi - dl), yf + rr * Math.sin(phi - dl), F.z + h));
+      }
+      var pts = lead.concat(trail.reverse()), cx = Math.cos(phi), mid = [26 * cx, yf + 26 * Math.sin(phi), F.z], far = self.hv[0] * cx + self.hv[1] * Math.sin(phi) < 0;
+      var lit = 0.86 + 0.1 * Math.sin(phi + 0.8), dpath = 'M' + pts.map(function (p) { return p[0].toFixed(1) + ' ' + p[1].toFixed(1); }).join('L') + 'Z';
+      (far ? back : front).push({ d: mid[0] * V[0] + mid[1] * V[1] + mid[2] * V[2], h: '<path class="ac-bl" style="fill:' + rgb([214, 219, 224], lit) + '" d="' + dpath + '"/>' });
+    }
+    var draw = function (arr) { return arr.sort(function (a, b) { return a.d - b.d; }).map(function (o) { return o.h; }).join(''); };
+    if (self.el.bk[f]) self.el.bk[f].innerHTML = draw(back);
+    if (self.el.fr[f]) self.el.fr[f].innerHTML = draw(front);
+  });
+};
+/* el aire: entra frío por los anillos, sube por la cámara y sale del haz con su temperatura */
+FAir.prototype.air = function (s) {
+  var self = this, F = AC.fan, ZT = topZ(), tR = Math.max(1.2, Math.min(5, 9 / Math.max(0.5, s.vFace || 3))), cin = rgb(tcol((this.Tci - this.Tlo) / this.span), 0.85);
+  // cada partícula es un trazo corto que sube
+  var dot = function (p, c, o, r, q) { q = q || [p[0], p[1] - 3]; return '<path class="ac-air" d="M' + p[0].toFixed(1) + ' ' + p[1].toFixed(1) + 'L' + q[0].toFixed(1) + ' ' + q[1].toFixed(1) + '" style="stroke:' + c + ';stroke-opacity:' + o.toFixed(2) + ';stroke-width:' + (r || 0.9) + 'px"/>'; };
+  var hash = function (i, k) { var v = Math.sin(i * 12.9898 + k * 78.233) * 43758.5453; return v - Math.floor(v); };
+  // arriba del haz
+  if (this.el.out) {
+    var o = [];
+    for (var i = 0; i < 46; i++) {
+      var f = (hash(i, 1) + this.t / tR) % 1, x = -44 + 92 * hash(i, 2), y = 6 + (AC.L - 12) * hash(i, 3), z = ZT + AC.sup + 1 + 36 * f;
+      o.push(dot(this.P(x, y, z), rgb(tcol((this.Tout(y) - this.Tlo) / this.span), 0.85), 0.95 * (1 - f * f), 1.1, this.P(x, y, z + 4)));
+    }
+    this.el.out.innerHTML = o.join('');
+  }
+  F.y.forEach(function (yf, k) {
+    // en la cámara
+    if (self.el.pl[k]) {
+      var o2 = [], y0 = k ? 152 : 18, y1 = k ? 282 : 148;
+      for (var i2 = 0; i2 < 26; i2++) {
+        var f2 = (hash(i2, 5 + k) + self.t / (tR * 1.3)) % 1, x2 = -50 + 100 * hash(i2, 7 + k), y2 = y0 + (y1 - y0) * hash(i2, 9 + k), z2 = AC.zf + 2 + 60 * f2;
+        o2.push(dot(self.P(x2, y2, z2), cin, 0.75 * Math.sin(Math.PI * f2), 1.0, self.P(x2, y2, z2 + 3.5)));
+      }
+      self.el.pl[k].innerHTML = o2.join('');
+    }
+    // por debajo del anillo, hacia la boca
+    var ob = [], of = [];
+    for (var i3 = 0; i3 < 18; i3++) {
+      var f3 = (hash(i3, 11 + k) + self.t / (tR * 0.8)) % 1, a = 2 * Math.PI * hash(i3, 13 + k), rr = 38 - 13 * f3, z3 = 107.5 + 16.5 * f3;
+      ((self.hv[0] * Math.cos(a) + self.hv[1] * Math.sin(a)) < 0 ? ob : of).push(dot(self.P(rr * Math.cos(a), yf + rr * Math.sin(a), z3), cin, 0.8 * Math.sin(Math.PI * f3), 1.0, self.P((rr - 1.6) * Math.cos(a), yf + (rr - 1.6) * Math.sin(a), z3 + 2.6)));
+    }
+    if (self.el.inB[k]) self.el.inB[k].innerHTML = ob.join('');
+    if (self.el.inF[k]) self.el.inF[k].innerHTML = of.join('');
+  });
+};
+
+return FAir;
+})();
+var AC_FIGS = {"par":{"P":{"origin":[477.42950073671653,326.6946066012488],"scale":0.8842278692494921,"azimuth":35,"elevation":30},"W":680,"H":470,"L":300,"sc":1.1184696149703823,"odd":false,"ends":{"pIn":[0,307,263.1],"pOut":[0,307,207.9],"aIn":[37.9654382858452,191.52644622382837,124],"aOut":[-46,26,283.3384572681199]}},"impar":{"P":{"origin":[477.42950073671653,326.6946066012488],"scale":0.8842278692494921,"azimuth":35,"elevation":30},"W":680,"H":470,"L":300,"sc":1.1184696149703823,"odd":true,"ends":{"pIn":[0,307,263.1],"pOut":[0,-7,207.9],"aIn":[37.9654382858452,191.52644622382837,124],"aOut":[-46,26,283.3384572681199]}}};
+/*ACFIG_END*/
 /* cada equipo con figura: de dónde sale el SVG, sus datos y su código en vivo */
 var FIG_KINDS = {
   st: { ok: function () { return typeof FTube === 'function'; }, url: function (k) { return 'fig/intercambiador/tc-' + k + '.svg'; }, data: function (k) { return HX_FIGS[k]; }, make: function (slot, D) { return new FTube(slot, D); } },
   pl: { ok: function () { return typeof FPlate === 'function' && !!PL_FIG; }, url: function () { return 'fig/intercambiador/placas.svg'; }, data: function () { return PL_FIG; }, make: function (slot, D) { return new FPlate(slot, D); } },
-  dp: { ok: function () { return typeof FDouble === 'function' && !!DP_FIG; }, url: function () { return 'fig/intercambiador/doble.svg'; }, data: function () { return DP_FIG; }, make: function (slot, D) { return new FDouble(slot, D); } }
+  dp: { ok: function () { return typeof FDouble === 'function' && !!DP_FIG; }, url: function () { return 'fig/intercambiador/doble.svg'; }, data: function () { return DP_FIG; }, make: function (slot, D) { return new FDouble(slot, D); } },
+  // el aeroenfriador: con pasos impares la salida va en el cabezal de atrás
+  ac: { ok: function () { return typeof FAir === 'function' && !!AC_FIGS.par; }, url: function (k) { return 'fig/intercambiador/aero-' + k + '.svg'; }, data: function (k) { return AC_FIGS[k]; }, make: function (slot, D) { return new FAir(slot, D); } }
 };
 function HxFig(host) {
   this.host = host; this.wrap = host.querySelector('.iz-wrap'); this.slot = host.querySelector('.hx-slot');
@@ -2825,7 +3123,11 @@ HxFig.prototype.want = function (kind, sub) {
 HxFig.prototype.frame = function (R, prof, dt, snap) {
   if (!this.f || !prof) return;
   var g = R.geo, Tlo = Math.min(R.Tci, R.Thi), Thi = Math.max(R.Thi, R.Tci);
-  if (this.kind === 'dp') {
+  if (this.kind === 'ac') {
+    // el proceso tarda L/u en recorrer un tubo; las aspas y el aire van más rápido con más velocidad de frente
+    var u2 = prof.units[0];
+    this.f.update({ prof: { shell: u2.shell, tubes: u2.tubes }, Np: g.Np, Tlo: Tlo, Thi: Thi, tTube: R.tube.u ? clamp(g.Lt / Math.max(R.tube.u, 1e-3), 0.8, 14) : 4, vFace: R.shell.u, dt: dt, snap: snap });
+  } else if (this.kind === 'dp') {
     // cada punto tarda lo que tarda su fluido en recorrer una rama, L/u (acotado)
     var u1 = prof.units[0];
     this.f.update({ prof: { shell: u1.shell, tubes: u1.tubes }, Tlo: Tlo, Thi: Thi, steam: R.steam, contra: R.arr !== 'paralelo', tLegIn: clamp(g.Lleg / Math.max(R.tube.u, 1e-3), 0.8, 14), tLegAn: clamp(g.Lleg / Math.max((R.shell && R.shell.u) || 0.5, 1e-3), 0.8, 14), dt: dt, snap: snap });
@@ -2847,7 +3149,12 @@ HxFig.prototype.tags = function (R, prof, Tlo, Thi) {
   var tF = R.tubeF, sF = R.shellF, last = prof.units.length - 1;
   var sIn = R.hotShell ? R.Thi : R.Tci, tIn = R.hotShell ? R.Tci : R.Thi, sOut = prof.shellOut, tOut = prof.tubeOut;
   var par = R.arr === 'paralelo', aIn = this.kind === 'dp' ? D.ends[par ? 'anBot' : 'anTop'] : null, aOut = this.kind === 'dp' ? D.ends[par ? 'anTop' : 'anBot'] : null;
-  var list = this.kind === 'dp' ? [
+  var list = this.kind === 'ac' ? [
+    { p: D.ends.pIn, a: 'r', t: [(R.steam ? 'vapor · ' + fmtN(R.s.pSteam, 1) + ' bar' : 'proceso · ' + tF.short), 'entra ' + fT(tIn)], T: tIn },
+    { p: D.ends.pOut, a: D.odd ? 'l' : 'b', t: [R.steam ? 'condensado' : 'proceso', (R.steam ? '' : 'sale ') + fT(tOut)], T: tOut },
+    { p: D.ends.aIn, a: 'l', t: ['aire', 'entra ' + fT(sIn)], T: sIn },
+    { p: D.ends.aOut, a: 'l', t: ['aire', 'sale ' + fT(sOut) + ' (media)'], T: sOut }
+  ] : this.kind === 'dp' ? [
     { p: D.ends.inIn, a: 'r', t: ['tubo interior · ' + tF.short, 'entra ' + fT(tIn)], T: tIn },
     { p: D.ends.inOut, a: 'r', t: ['tubo interior', 'sale ' + fT(tOut)], T: tOut },
     { p: aIn, a: aIn === D.ends.anBot ? 'b' : 'r', t: [(R.steam ? 'vapor · ' + fmtN(R.s.pSteam, 1) + ' bar' : 'ánulo · ' + sF.short), 'entra ' + fT(sIn)], T: sIn },
@@ -2877,7 +3184,8 @@ HxFig.prototype.tags = function (R, prof, Tlo, Thi) {
     if (x < -2 || x > 102 || y < -2 || y > 102) return '';
     return '<div class="hx-tag ' + q.a + '" style="left:' + x.toFixed(2) + '%;top:' + y.toFixed(2) + '%;color:' + col(q.T) + '">' + q.t.filter(Boolean).map(function (l, i) { return i ? '<b>' + esc(l) + '</b>' : esc(l); }).join('<br>') + '</div>';
   }).join('');
-  if (this.leg) this.leg.innerHTML = '<span>' + fmtN(Tlo, 0) + ' °C</span><i></i><span>' + fmtN(Thi, 0) + ' °C</span><em>temperatura local</em>' + (narrow ? '<em class="sh">' + (this.kind === 'dp' ? 'ánulo: ' : 'coraza: ') + esc(R.steam ? 'vapor' : sF.short) + (this.kind === 'dp' ? ' · tubo interior: ' : ' · tubos: ') + esc(tF.short) + '</em>' : '');
+  var sv = esc(R.steam ? 'vapor' : sF.short), who = this.kind === 'ac' ? 'tubos: ' + esc(tF.short) + ' · aire' : (this.kind === 'dp' ? 'ánulo: ' + sv + ' · tubo interior: ' + esc(tF.short) : 'coraza: ' + sv + ' · tubos: ' + esc(tF.short));
+  if (this.leg) this.leg.innerHTML = '<span>' + fmtN(Tlo, 0) + ' °C</span><i></i><span>' + fmtN(Thi, 0) + ' °C</span><em>temperatura local</em>' + (narrow ? '<em class="sh">' + who + '</em>' : '');
 };
 /* ====================================================================
    Interfaz: controles, indicadores, pestañas y gráficas
@@ -2971,7 +3279,7 @@ var EQS = [
   { id: 'ac', name: 'Aeroenfriador', sz: 'aire y aletas', icon: '<path d="M4 8h34M4 12h34" stroke-width="2"/><path d="M7 6v8M10 6v8M13 6v8M16 6v8M19 6v8M22 6v8M25 6v8M28 6v8M31 6v8M34 6v8" stroke-width=".8"/><circle cx="13" cy="22" r="4" stroke-width="1.6"/><circle cx="29" cy="22" r="4" stroke-width="1.6"/>' }
 ];
 var EQ_HOME = { st: 'taller', pl: 'mc155', dp: 'diap2', ac: 'aero' }, eqMem = {};
-var EQ_ON = { st: 1, pl: 1, dp: 1 }; // los equipos que ya tienen su figura
+var EQ_ON = { st: 1, pl: 1, dp: 1, ac: 1 }; // los equipos que ya tienen su figura
 function switchEq(eq) {
   if (eq === state.eq) return;
   eqMem[state.eq] = clone(state);
@@ -3662,7 +3970,7 @@ function eqItems(r) {
     ['Eficiencia de aleta (McCabe, ec. 15.18)', '\\begin{aligned}\\eta_F&=\\frac{\\tanh(a_Fx_F)}{a_Fx_F},\\quad a_F=\\sqrt{\\frac{2h_o}{k_my_F}}\\\\\\eta_F&=' + n2(100 * sh.etaF, 1) + '\\ \\%\\end{aligned}', 'Es la de la aleta recta; aquí con el largo corregido por la punta, x_F + y_F/2. Para aletas circulares altas sobreestima un poco.'],
     ['Coeficiente global con aletas (diapositivas I)', '\\frac{1}{U_oA_o}=\\frac{1}{h_iA_i}+\\frac{R_{pared}}{A_o}+\\frac{1}{\\eta_o h_oA_o},\\quad \\eta_o=1-\\frac{A_F}{A_o}(1-\\eta_F)', '«Las aletas aumentan Aₒ para compensar el bajo hₒ del lado del gas.»'],
     ['Flujo cruzado', '\\varepsilon=1-\\exp\\left[\\frac{NTU^{0{,}22}}{C_r}\\left(e^{-C_rNTU^{0{,}78}}-1\\right)\\right]', 'Ambos fluidos sin mezclar (aproximación de Incropera, externa al curso); con varios pasos se combinan en contra-cruce como corazas en serie.'],
-    ['Caída del aire (Robinson y Briggs, externa al curso)', '\\Delta p=\\frac{f\\,N_{filas}\\,G_{máx}^2}{2\\rho},\\quad f=18{,}93\\,Re^{-0{,}316}\\left(\\frac{p_t}{d_o}\\right)^{-0{,}927}\\left(\\frac{p_t}{p_d}\\right)^{0{,}515}', 'La vence el ventilador: P = V̇·Δp/η.']
+    ['Caída del aire (Robinson y Briggs, externa al curso)', '\\Delta p=\\frac{Eu\\,N_{filas}\\,G_{máx}^2}{\\rho},\\quad Eu=18{,}93\\,Re^{-0{,}316}\\left(\\frac{p_t}{d_o}\\right)^{-0{,}927}\\left(\\frac{p_t}{p_d}\\right)^{0{,}515}', 'Eu es por fila; en el triángulo equilátero el paso diagonal es igual al transversal. La vence el ventilador: P = V̇·Δp/η.']
   ];
 }
 function eqAssump(r) {
