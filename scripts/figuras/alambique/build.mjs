@@ -30,9 +30,11 @@ const X = await import(join(HERE, "xprism.mjs"));
 const GEO = await import(join(HERE, "geo.mjs"));
 const FAST = process.argv.includes("--fast");
 
+// los datos de la variante con columna (columna.mjs), si ya se armó
+function colData() { try { return readFileSync(join(HERE, "out-col", "data.json"), "utf8"); } catch (e) { return "null"; } }
 if (process.argv.includes("--js")) {
   const strip = (n) => readFileSync(join(HERE, n), "utf8").replace(/^export /gm, "");
-  writeFileSync(join(HERE, "out", "fig.js"), "/* alambique en isométrico: generado por build.mjs */\nvar ST_DATA = " + readFileSync(join(HERE, "alambique_data.json"), "utf8") + ";\nvar FStill = (function () {\n" + strip("xprism.mjs") + strip("geo.mjs") + readFileSync(join(HERE, "live.js"), "utf8") + "\nreturn FStill;\n})();\n");
+  writeFileSync(join(HERE, "out", "fig.js"), "/* alambique en isométrico: generado por build.mjs */\nvar ST_DATA = " + readFileSync(join(HERE, "alambique_data.json"), "utf8") + ";\nvar ST_COL_DATA = " + colData() + ";\nvar FStill = (function () {\n" + strip("xprism.mjs") + strip("geo.mjs") + readFileSync(join(HERE, "live.js"), "utf8") + "\nreturn FStill;\n})();\n");
   writeFileSync(join(HERE, "out", "fig.css"), k.ISO_CSS + "\n" + readFileSync(join(HERE, "st.css"), "utf8"));
   writeFileSync(join(HERE, "preview.html"), k.pageHtml({ title: "Alambique", theme: "light", width: 900, body: `<style>${readFileSync(join(HERE, "st.css"), "utf8")}</style><div class="iso-stage" id="stFig">${readFileSync(join(HERE, "out", "fig.svg"), "utf8")}</div>`, script: readFileSync(join(HERE, "out", "fig.js"), "utf8") + readFileSync(join(HERE, "drive_test.js"), "utf8") }));
   console.log("out/fig.js, out/fig.css, preview.html"); process.exit(0);
@@ -425,7 +427,7 @@ mkdirSync(join(HERE, "out"), { recursive: true });
 writeFileSync(join(HERE, "alambique_data.json"), JSON.stringify(DATA));
 writeFileSync(join(HERE, "out", "fig.svg"), svg.replace("<svg ", '<svg id="stSvg" '));
 const strip = (n) => readFileSync(join(HERE, n), "utf8").replace(/^export /gm, "");
-const bundle = (data) => "/* alambique en isométrico: generado por build.mjs */\nvar ST_DATA = " + data + ";\nvar FStill = (function () {\n" + strip("xprism.mjs") + strip("geo.mjs") + readFileSync(join(HERE, "live.js"), "utf8") + "\nreturn FStill;\n})();\n";
+const bundle = (data) => "/* alambique en isométrico: generado por build.mjs */\nvar ST_DATA = " + data + ";\nvar ST_COL_DATA = " + colData() + ";\nvar FStill = (function () {\n" + strip("xprism.mjs") + strip("geo.mjs") + readFileSync(join(HERE, "live.js"), "utf8") + "\nreturn FStill;\n})();\n";
 writeFileSync(join(HERE, "out", "fig.js"), bundle(JSON.stringify(DATA)));
 writeFileSync(join(HERE, "out", "fig.css"), k.ISO_CSS + "\n" + readFileSync(join(HERE, "st.css"), "utf8"));
 const preview = () => k.pageHtml({ title: "Alambique", theme: "light", width: 900, body: `<style>${readFileSync(join(HERE, "st.css"), "utf8")}</style><div class="iso-stage" id="stFig">${svg.replace("<svg ", '<svg id="stSvg" ')}</div>`, script: readFileSync(join(HERE, "out", "fig.js"), "utf8") + readFileSync(join(HERE, "drive_test.js"), "utf8") });
