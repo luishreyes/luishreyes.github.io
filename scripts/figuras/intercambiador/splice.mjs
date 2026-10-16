@@ -1,6 +1,8 @@
 /* Mete la figura en el Explorador de intercambiadores publicado: el código en vivo y los datos de las nueve figuras
    entre /*HXFIG_START*\/ y /*HXFIG_END*\/, el CSS entre /*HXFIG_CSS_START*\/ y /*HXFIG_CSS_END*\/, y copia los SVG a
-   simulaciones/fig/intercambiador/, de donde la página los pide cuando hacen falta. Correr después de node build.mjs --all. */
+   simulaciones/fig/intercambiador/, de donde la página los pide cuando hacen falta. Correr después de node build.mjs --all.
+   Si están construidas, mete también la de placas (../placas, marcadores PLFIG_*) y la de doble tubo (../doble-tubo,
+   marcadores DPFIG_*). */
 import { readFileSync, writeFileSync, mkdirSync, copyFileSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -32,5 +34,12 @@ if (existsSync(join(PLD, "placas.svg"))) {
   put("/*PLFIG_START*/", "/*PLFIG_END*/", readFileSync(join(PLD, "fig.js"), "utf8").trim() + "\nvar PL_FIG = " + readFileSync(join(PLD, "placas.json"), "utf8").trim() + ";");
   put("/*PLFIG_CSS_START*/", "/*PLFIG_CSS_END*/", readFileSync(join(PLD, "fig.css"), "utf8").trim());
 }
+// el doble tubo (scripts/figuras/doble-tubo): una sola figura
+const DPD = join(HERE, "../doble-tubo/out");
+if (existsSync(join(DPD, "doble.svg"))) {
+  copyFileSync(join(DPD, "doble.svg"), join(FIG, "doble.svg"));
+  put("/*DPFIG_START*/", "/*DPFIG_END*/", readFileSync(join(DPD, "fig.js"), "utf8").trim() + "\nvar DP_FIG = " + readFileSync(join(DPD, "doble.json"), "utf8").trim() + ";");
+  put("/*DPFIG_CSS_START*/", "/*DPFIG_CSS_END*/", readFileSync(join(DPD, "fig.css"), "utf8").trim());
+}
 writeFileSync(PAGE, page);
-console.log("Explorador_Intercambiadores.html", page.length, "· fig/intercambiador: tubos y coraza (9)" + (existsSync(join(PLD, "placas.svg")) ? " y placas" : ""));
+console.log("Explorador_Intercambiadores.html", page.length, "· fig/intercambiador: tubos y coraza (9)" + (existsSync(join(PLD, "placas.svg")) ? ", placas" : "") + (existsSync(join(DPD, "doble.svg")) ? ", doble tubo" : ""));
