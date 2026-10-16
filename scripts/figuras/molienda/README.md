@@ -36,8 +36,13 @@ relación de `geo.mjs`: en el molino de bolas el tambor de radio 0,42·min(W, H)
 el rotor de 60 cm). Con eso:
 
 - **bolas**: el tambor gira con el ángulo del lienzo (los pernos del casco, los dientes de la corona y del piñón con
-  la relación de radios y los agujeros del trommel), los levantadores corren por la artesa y aparecen en sección en el
-  corte, y la carga va al fondo, en el corte de la descarga, con una capa más adentro (más oscura);
+  la relación de radios y los agujeros del trommel) y los levantadores corren por la artesa y aparecen en sección en el
+  corte. La carga es la del lienzo, con bolas de 4 a 6 cm (en promedio las de 5 cm del cálculo de N_c; con J = 35 %, unas
+  950 en la sección): se repite en capas a lo largo de todo el tambor, separadas 1,15 diámetros de bola, cada capa
+  girada un poco alrededor del eje y cada partícula corrida hasta media bola, para que no queden en fila. En la artesa
+  van solo las de la mitad de atrás, y en el corte de la descarga, la sección entera. De cada capa se dibujan solo las
+  partículas que la capa siguiente no tapa (las del borde de la carga y las que vuelan), y debajo va la sombra del cuerpo
+  de la carga, para que por los huecos se vea oscuro. Si el cuadro pasa de 14 ms, se dibujan menos capas;
 - **mandíbulas**: la biela sigue a la cara móvil del lienzo (`jcMove`: giro alrededor de la punta de arriba y
   traslado) y sube y baja con el muñón excéntrico, que gira en su buje; el toggle va de su asiento en la biela al del
   bastidor; la varilla sigue a la oreja por el bloque y el resorte se comprime; giran los rayos del volante y la
@@ -87,3 +92,8 @@ Reglas que salieron de armarlas, para la próxima:
 - Una pieza que abraza a otra y cruza la línea donde se parte el casco (una cuna) queda en una sola mitad, o hay ciclo.
 - Un codo de tubo visto de canto se pliega en pantalla: va como pieza fundida (una esfera) con el paso de cada tramo solo
   hacia su lado, y el hueco del tubo se mide sobre su línea para que la boca de cada tramo quede adentro de la esfera.
+- Una carga de bolas reales (miles de partículas) no se puede simular en un objeto por partícula: las sub-iteraciones
+  corren sobre arreglos numéricos, en funciones chicas (`demGrid`, `demPairs`, `demWalls`, `demInteg`), con una malla de
+  vecinos de media vecindad, y lo que corre de vez en cuando (fractura, descarga, alimentación) va aparte, una vez por
+  cuadro; todas las partículas nacen con los mismos campos (`mkPart`). El paso no pasa de 1,4 ms: con pasos más largos
+  la pila de bolas se vuelve inestable y las lanza a decenas de miles de px/s.

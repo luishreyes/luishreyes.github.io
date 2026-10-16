@@ -709,10 +709,24 @@ MillAnim.prototype.reset = function () {
   if (!this.W) return;
   var W = this.W, H = this.H;
   if (this.kind === 'bolas') {
-    var R = Math.min(W, H) * 0.42; this.geo = { cx: W / 2, cy: H / 2 + 6, R: R, rb: R / 15, nl: 14, lh: 1.0 };
-    var A = Math.PI * R * R * (this.prm.J || 35) / 100 * 0.78, nb = Math.round(A / (Math.PI * this.geo.rb * this.geo.rb));
-    for (var i = 0; i < nb; i++) this.P.push(this.mkBallIn('ball', this.geo.rb * (0.85 + Math.random() * 0.3)));
-    for (var j = 0; j < 46; j++) { var o = this.mkBallIn('ore', this.geo.rb * (0.35 + Math.random() * 0.25)); this.P.push(o); }
+    /* el tambor del lienzo es el de la figura: 2,9 m por dentro del revestimiento, con bolas de 4 a 6 cm (en promedio
+       las de 5 cm del cálculo de N_c) y levantadores de 7 cm. La carga llena la fracción J del tambor */
+    var R = Math.min(W, H) * 0.42, rb = R * 2.5 / 145; this.geo = { cx: W / 2, cy: H / 2 + 6, R: R, rb: rb, nl: 14, lhp: R * 0.05, cs: 2.5 * rb };
+    var g = this.geo, A = Math.PI * R * R * (this.prm.J || 35) / 100 * 0.8, nb = Math.round(A / (Math.PI * rb * rb));
+    g.nOre = Math.round(nb * 0.15); g.gnx = Math.ceil(2 * R / g.cs) + 3;
+    // las bolas y el mineral arrancan acomodados en una malla triangular desde el fondo, sin encimarse
+    var sp = 2.42 * rb, rowH = sp * 0.866, sites = [];
+    for (var yy = g.cy + R - 1.3 * rb; sites.length < nb + g.nOre && yy > g.cy - R; yy -= rowH) {
+      var hw = Math.sqrt(Math.max(0, (R - 1.3 * rb) * (R - 1.3 * rb) - (yy - g.cy) * (yy - g.cy))), off = (Math.round((g.cy + R - yy) / rowH) % 2) * sp / 2;
+      for (var xx = g.cx - hw + off; xx <= g.cx + hw; xx += sp) sites.push([xx, yy]);
+    }
+    for (var q = sites.length - 1; q > 0; q--) { var z = Math.floor(Math.random() * (q + 1)), tmp = sites[q]; sites[q] = sites[z]; sites[z] = tmp; }
+    sites.sort(function (a, b) { return b[1] - a[1]; });
+    var ore = 0;
+    for (var i = 0; i < Math.min(sites.length, nb + g.nOre); i++) {
+      var isOre = ore < g.nOre && Math.random() < g.nOre / (nb + g.nOre); if (isOre) ore++;
+      this.P.push(mkPart(sites[i][0], sites[i][1], 0, 0, rb * (isOre ? 0.35 + Math.random() * 0.25 : 0.8 + Math.random() * 0.4), isOre ? 0.16 : 1, isOre ? 'ore' : 'ball'));
+    }
   } else if (this.kind === 'mand') {
     var cxj = W / 2; this.geo = { top: H * 0.2, bot: H * 0.86, xl0: cxj - 95, xl1: cxj - 14, xr0: cxj + 95, xr1: cxj + 0, amp: 12 };
   } else if (this.kind === 'rod') {
@@ -723,6 +737,9 @@ MillAnim.prototype.reset = function () {
     this.geo = { cx: W / 2, cy: H / 2, R: Math.min(W, H) * 0.43 };
   }
 };
+/* una partícula: todas con los mismos campos desde que nacen, para que el motor de JavaScript no recompile la
+   simulación cada vez que una gana un campo (el golpe, las grietas o el corrimiento que le pone la figura) */
+function mkPart(x, y, vx, vy, r, m, k) { return { x: x, y: y, vx: vx, vy: vy, r: r, m: m, k: k, life: 0, hit: 0, cr: 0, sq: 0, jit: null }; }
 MillAnim.prototype.mkBallIn = function (kind, r) {
   var g = this.geo, a, rad, x, y, tries = 0;
   do { a = Math.PI * (0.15 + Math.random() * 0.7); rad = Math.sqrt(Math.random()) * (g.R - r - 2); x = g.cx + rad * Math.cos(a); y = g.cy + rad * Math.sin(a); tries++; } while (y < g.cy - g.R * 0.1 && tries < 30);
@@ -750,7 +767,7 @@ MillAnim.prototype.split = function (p, n, impulse) {
   var nr = p.r / Math.sqrt(n) * 0.97, off = Math.max(0, p.r - nr) * 0.95, a0 = Math.random() * Math.PI * 2, out = [];
   for (var i = 0; i < n; i++) {
     var a = a0 + i * Math.PI * 2 / n, s = (impulse || 40) * (0.4 + Math.random());
-    out.push({ x: p.x + Math.cos(a) * off, y: p.y + Math.sin(a) * off, vx: p.vx + Math.cos(a) * s, vy: p.vy + Math.sin(a) * s, r: nr, m: p.m / n, k: 'ore', life: 0 });
+    out.push(mkPart(p.x + Math.cos(a) * off, p.y + Math.sin(a) * off, p.vx + Math.cos(a) * s, p.vy + Math.sin(a) * s, nr, p.m / n, 'ore'));
   }
   this.stats.broken++;
   this.fx.push({ x: p.x, y: p.y, t: 0, s: p.r * 1.6 });
@@ -774,8 +791,12 @@ function segContact(p, x1, y1, x2, y2) {
 }
 MillAnim.prototype.step = function (dtFrame) {
   if (!this.W || !this.kind) return;
-  var sub = this.kind === 'bolas' ? 10 : 6, dt = Math.min(dtFrame, 1 / 30) * this.speed / sub;
-  for (var s = 0; s < sub; s++) { this.t += dt; this['step_' + this.kind](dt); }
+  /* el paso de la integración: en la carga de bolas cada partícula toca a varias a la vez y el contacto rígido pide pasos
+     de poco más de un milisegundo; con pasos más largos (cuadros lentos o la velocidad 2×) la pila se vuelve inestable y
+     lanza bolas a decenas de miles de px/s */
+  var span = Math.min(dtFrame, 1 / 30) * this.speed, sub = this.kind === 'bolas' ? Math.min(30, Math.max(8, Math.ceil(span / 0.0014))) : 6, dt = this.kind === 'bolas' ? Math.min(0.0014, span / sub) : span / sub;
+  if (this.kind === 'bolas') this.stepBolas(dt, sub);
+  else for (var s = 0; s < sub; s++) { this.t += dt; this['step_' + this.kind](dt); }
   for (var i = this.fx.length - 1; i >= 0; i--) { this.fx[i].t += dtFrame; if (this.fx[i].t > 0.45) this.fx.splice(i, 1); }
 };
 /* fuerzas entre partículas (O(n²); n < 160) */
@@ -816,34 +837,136 @@ function keepIn(p, ix, iy, dist, wvx) {
   if (vn < 0) { p.vx -= 1.3 * vn * ix; p.vy -= 1.3 * vn * iy; }
 }
 /* ---------- molino de bolas ---------- */
-MillAnim.prototype.step_bolas = function (dt) {
-  var g = this.geo, P = this.P, G = 1700, R = g.R, wc = Math.sqrt(G / (R - g.rb)), w = this.prm.phi * wc;
-  this.ang += w * dt;
-  var A = P.map(function () { return { x: 0, y: 0 }; }), kn = 2.4e5, cn = 2 * 0.25 * Math.sqrt(kn), self = this;
-  this.pairForces(A, kn, cn, 0.12, function (a, b, vn, i, j) {
-    if (a.k !== b.k && vn > 120) {
-      var ore = a.k === 'ore' ? a : b;
-      if (!ore.hit || self.t - ore.hit > 0.15) { ore.hit = self.t; self.stats.impacts++; if (ore.r > g.rb * 0.16 && Math.random() < Math.min(0.5, vn / 900)) ore.cr = (ore.cr || 0) + 1; if (vn > 220 && Math.random() < 0.25) self.fx.push({ x: (a.x + b.x) / 2, y: (a.y + b.y) / 2, t: 0, s: 6 + vn / 40 }); }
-    }
-  });
-  for (var i = 0; i < P.length; i++) {
-    var p = P[i], dx = p.x - g.cx, dy = p.y - g.cy, d = Math.sqrt(dx * dx + dy * dy), ov = d + p.r - R;
-    if (ov > 0) { var nx = -dx / d, ny = -dy / d; contact(p, nx, ny, ov, -w * dy, w * dx, kn * p.m, cn * p.m, 0.4, A[i]); }
-    for (var l = 0; l < g.nl; l++) {
-      var a = this.ang + l * Math.PI * 2 / g.nl, ca = Math.cos(a), sa = Math.sin(a), x1 = g.cx + R * ca, y1 = g.cy + R * sa, x2 = g.cx + (R - g.rb * g.lh) * ca, y2 = g.cy + (R - g.rb * g.lh) * sa;
-      var c = segContact(p, x1, y1, x2, y2);
-      if (c) contact(p, c.nx, c.ny, c.ov, -w * (c.cy - g.cy), w * (c.cx - g.cx), kn * p.m, cn * p.m, 0.3, A[i]);
+/* Con bolas de 5 cm la carga es un millar de partículas: las sub-iteraciones del cuadro corren sobre arreglos numéricos
+   (posición, velocidad, radio y masa), los contactos se buscan en una malla de celdas del tamaño de una bola (cada
+   partícula solo mira las nueve celdas de alrededor) y los levantadores, solo los dos que la partícula tiene a los lados.
+   La fractura, la descarga y la alimentación van una vez por cuadro. */
+MillAnim.prototype.stepBolas = function (dt, sub) {
+  var g = this.geo, P = this.P, n = P.length, G = 1700, R = g.R, wc = Math.sqrt(G / (R - g.rb)), w = this.prm.phi * wc;
+  var D = this.dem;
+  if (!D || D.cap < n || D.nx !== g.gnx) D = this.dem = demAlloc(Math.max(n * 2 + 64, D ? D.cap : 0), g.gnx);
+  // un contacto algo más blando que el de las bolas grandes: aguanta pasos de 1,4 ms y la carga se hunde menos de un décimo de radio
+  D.n = n; D.kn = 8e4; D.cn = 2 * 0.25 * Math.sqrt(D.kn); D.mu = 0.12; D.cs = g.cs; D.x0 = g.cx - R - g.cs; D.y0 = g.cy - R - g.cs;
+  D.cx = g.cx; D.cy = g.cy; D.R = R; D.lp = R - g.lhp; D.nl = g.nl; D.w = w; D.G = G; D.dt = dt; D.vmax = 3 * Math.sqrt(4 * G * R);
+  this.loadBolas(n);
+  for (var st = 0; st < sub; st++) {
+    this.t += dt; this.ang += w * dt; D.ang = this.ang; D.nh = 0;
+    demGrid(D); demPairs(D); demWalls(D); demInteg(D);
+    for (var h = 0; h < D.nh; h++) { var i = D.hI[h], j = D.hJ[h]; this.hitOre(D.K[i] ? P[i] : P[j], D.hV[h], (D.X[i] + D.X[j]) / 2, (D.Y[i] + D.Y[j]) / 2); }
+  }
+  this.saveBolas(n, dt * sub);
+  this.renewBolas(dt * sub);
+};
+/* los arreglos de la simulación: posición, velocidad, radio, masa, tipo (1 = mineral), aceleración, la malla y los golpes */
+function demAlloc(cap, nx) {
+  var F = function () { return new Float64Array(cap); }, I = function () { return new Int32Array(cap); };
+  return { cap: cap, nx: nx, n: 0, X: F(), Y: F(), VX: F(), VY: F(), RA: F(), M: F(), K: new Uint8Array(cap), AX: F(), AY: F(), next: I(), cell: I(), head: new Int32Array(nx * nx),
+    hI: new Int32Array(512), hJ: new Int32Array(512), hV: new Float64Array(512), nh: 0,
+    kn: 0, cn: 0, mu: 0, cs: 1, x0: 0, y0: 0, cx: 0, cy: 0, R: 1, lp: 1, nl: 1, w: 0, G: 0, dt: 0, vmax: 0, ang: 0 };
+}
+function demGrid(D) {
+  var n = D.n, X = D.X, Y = D.Y, head = D.head, next = D.next, cell = D.cell, AX = D.AX, AY = D.AY, nx = D.nx, cs = D.cs, x0 = D.x0, y0 = D.y0;
+  head.fill(-1);
+  for (var i = 0; i < n; i++) {
+    var ix = Math.floor((X[i] - x0) / cs), iy = Math.floor((Y[i] - y0) / cs);
+    ix = ix < 0 ? 0 : ix >= nx ? nx - 1 : ix; iy = iy < 0 ? 0 : iy >= nx ? nx - 1 : iy;
+    var c = iy * nx + ix; cell[i] = c; next[i] = head[c]; head[c] = i; AX[i] = 0; AY[i] = 0;
+  }
+}
+// bola con bola, bola con mineral y mineral con mineral: resorte, amortiguador y fricción de Coulomb
+function demPairs(D) {
+  var n = D.n, X = D.X, Y = D.Y, VX = D.VX, VY = D.VY, RA = D.RA, M = D.M, K = D.K, AX = D.AX, AY = D.AY, head = D.head, next = D.next, cell = D.cell, nx = D.nx;
+  var kn = D.kn, cn = D.cn, mu = D.mu, hI = D.hI, hJ = D.hJ, hV = D.hV, nh = D.nh;
+  for (var i = 0; i < n; i++) {
+    var xi = X[i], yi = Y[i], ri = RA[i], mi = M[i], ci = cell[i], cx0 = ci % nx, cy0 = (ci - cx0) / nx;
+    // media vecindad: la celda propia (solo las que van después en su lista) y las cuatro de adelante; cada pareja una vez
+    for (var q = 0; q < 5; q++) {
+      var cx = cx0 + (q === 0 ? 0 : q === 1 ? 1 : q - 3), cy = cy0 + (q < 2 ? 0 : 1);
+      if (cx < 0 || cx >= nx || cy >= nx) continue;
+      {
+        for (var j = q === 0 ? next[i] : head[cy * nx + cx]; j >= 0; j = next[j]) {
+          var dx = X[j] - xi, dy = Y[j] - yi, rs = ri + RA[j];
+          if (dx > rs || dx < -rs || dy > rs || dy < -rs) continue;
+          var d2 = dx * dx + dy * dy; if (d2 >= rs * rs || d2 < 1e-8) continue;
+          var d = Math.sqrt(d2), ux = dx / d, uy = dy / d, ov = rs - d, mj = M[j];
+          var rvx = VX[j] - VX[i], rvy = VY[j] - VY[i], vn = rvx * ux + rvy * uy;
+          var mEff = mi * mj / (mi + mj), fn = kn * mEff * ov - cn * mEff * vn; if (fn < 0) fn = 0;
+          var vt = -rvx * uy + rvy * ux, ft = -vt * cn * mEff * 0.8, lim = mu * fn;
+          if (ft > lim) ft = lim; else if (ft < -lim) ft = -lim;
+          var fx = fn * ux - ft * uy, fy = fn * uy + ft * ux;
+          AX[i] -= fx / mi; AY[i] -= fy / mi; AX[j] += fx / mj; AY[j] += fy / mj;
+          if (vn < -120 && K[i] !== K[j] && nh < 512) { hI[nh] = i; hJ[nh] = j; hV[nh] = -vn; nh++; }
+        }
+      }
     }
   }
-  this.integrate(A, dt, G);
-  /* fractura de mineral y renovación continua (descarga de finos, nueva alimentación) */
+  D.nh = nh;
+}
+// la pared y los levantadores, solo cerca de la pared, y solo los dos levantadores que la partícula tiene a los lados
+function demWalls(D) {
+  var n = D.n, X = D.X, Y = D.Y, RA = D.RA, cx = D.cx, cy = D.cy, R = D.R, lp = D.lp, w = D.w, ang = D.ang, step = Math.PI * 2 / D.nl;
+  for (var i = 0; i < n; i++) {
+    var qx = X[i] - cx, qy = Y[i] - cy, dd = Math.sqrt(qx * qx + qy * qy), rq = RA[i]; if (dd + rq < lp) continue;
+    var ow = dd + rq - R;
+    if (ow > 0) demWallF(D, i, -qx / dd, -qy / dd, ow, -w * qy, w * qx, 0.4);
+    var l0 = Math.floor((Math.atan2(qy, qx) - ang) / step);
+    for (var l = l0; l <= l0 + 1; l++) {
+      var an = ang + l * step, ca = Math.cos(an), sa = Math.sin(an), x1 = cx + R * ca, y1 = cy + R * sa, sx = (lp - R) * ca, sy = (lp - R) * sa;
+      var tt = ((X[i] - x1) * sx + (Y[i] - y1) * sy) / (sx * sx + sy * sy); tt = tt < 0 ? 0 : tt > 1 ? 1 : tt;
+      var px = x1 + tt * sx, py = y1 + tt * sy, ex = X[i] - px, ey = Y[i] - py, de = Math.sqrt(ex * ex + ey * ey);
+      if (de < rq && de > 1e-6) demWallF(D, i, ex / de, ey / de, rq - de, -w * (py - cy), w * (px - cx), 0.3);
+    }
+  }
+}
+/* el contacto de la partícula i con la pared o un levantador que se mueve a (wvx, wvy); (nx, ny) apunta hacia la partícula */
+function demWallF(D, i, nx, ny, ov, wvx, wvy, mu) {
+  var rvx = D.VX[i] - wvx, rvy = D.VY[i] - wvy, vn = rvx * nx + rvy * ny;
+  var fn = D.kn * ov - D.cn * vn; if (fn < 0) fn = 0;
+  var vt = -rvx * ny + rvy * nx, ft = -vt * D.cn * 1.4, lim = mu * fn;
+  if (ft > lim) ft = lim; else if (ft < -lim) ft = -lim;
+  D.AX[i] += fn * nx - ft * ny; D.AY[i] += fn * ny + ft * nx;
+}
+// la integración, con un tope de rapidez de tres veces la de una caída libre de un diámetro del tambor
+function demInteg(D) {
+  var n = D.n, X = D.X, Y = D.Y, VX = D.VX, VY = D.VY, AX = D.AX, AY = D.AY, dt = D.dt, G = D.G, vmax = D.vmax, vmax2 = vmax * vmax;
+  for (var i = 0; i < n; i++) {
+    VX[i] += AX[i] * dt; VY[i] += (AY[i] + G) * dt;
+    var v2 = VX[i] * VX[i] + VY[i] * VY[i]; if (v2 > vmax2) { var kf = vmax / Math.sqrt(v2); VX[i] *= kf; VY[i] *= kf; }
+    X[i] += VX[i] * dt; Y[i] += VY[i] * dt;
+  }
+}
+/* de las partículas a los arreglos y de vuelta */
+MillAnim.prototype.loadBolas = function (n) {
+  var P = this.P, D = this.dem;
+  for (var i = 0; i < n; i++) { var p = P[i]; D.X[i] = p.x; D.Y[i] = p.y; D.VX[i] = p.vx; D.VY[i] = p.vy; D.RA[i] = p.r; D.M[i] = p.m; D.K[i] = p.k === 'ore' ? 1 : 0; }
+};
+MillAnim.prototype.saveBolas = function (n, dt) {
+  var P = this.P, D = this.dem;
+  for (var i = 0; i < n; i++) { var e = P[i]; e.x = D.X[i]; e.y = D.Y[i]; e.vx = D.VX[i]; e.vy = D.VY[i]; e.life += dt; }
+};
+/* fractura de mineral y renovación continua (descarga de finos, nueva alimentación), una vez por cuadro y aparte de
+   las sub-iteraciones: lo que corre de vez en cuando no debe hacer recompilar el ciclo de los contactos */
+MillAnim.prototype.renewBolas = function (span) {
+  var g = this.geo, P = this.P, R = g.R;
+  var nOre = 0;
   for (var k = P.length - 1; k >= 0; k--) {
-    var q = P[k];
-    if (q.k === 'ore' && q.cr >= 3 && q.r > g.rb * 0.17) { var fr = this.split(q, 2, 30); P.splice(k, 1); for (var f = 0; f < fr.length; f++) P.push(fr[f]); }
+    var o = P[k]; if (o.k !== 'ore') continue; nOre++;
+    if (o.cr >= 3 && o.r > g.rb * 0.17) { var fr = this.split(o, 2, 30); P.splice(k, 1); for (var f = 0; f < fr.length; f++) P.push(fr[f]); nOre++; }
   }
-  var ores = P.filter(function (q) { return q.k === 'ore'; });
-  if (ores.length > 80) { for (var z = 0; z < P.length; z++) if (P[z].k === 'ore' && P[z].r < g.rb * 0.2 && Math.random() < 0.5) { P.splice(z, 1); this.stats.out++; break; } }
-  this.spawnT += dt; if (this.spawnT > 0.35 && ores.length < 60) { this.spawnT = 0; var o = { x: g.cx - R * 0.15, y: g.cy - R * 0.1, vx: 0, vy: 0, r: g.rb * (0.45 + Math.random() * 0.2), m: 0.16, k: 'ore', life: 0 }; P.push(o); }
+  for (var z = P.length - 1, gone = 0; z >= 0 && nOre > g.nOre * 1.15 && gone < 5; z--) if (P[z].k === 'ore' && P[z].r < g.rb * 0.2) { P.splice(z, 1); this.stats.out++; nOre--; gone++; }
+  // el mineral nuevo entra por el muñón (cerca del centro del tambor) solo donde no pisa otra partícula
+  this.spawnT += span;
+  for (var tr = 0; tr < 3 && this.spawnT > 0.012 && nOre < g.nOre; tr++) {
+    var nw = mkPart(g.cx - R * 0.15 + (Math.random() - 0.5) * R * 0.25, g.cy - R * 0.1 + (Math.random() - 0.5) * R * 0.25, 0, 0, g.rb * (0.45 + Math.random() * 0.2), 0.16, 'ore');
+    if (P.every(function (t2) { var ex2 = t2.x - nw.x, ey2 = t2.y - nw.y, rr = t2.r + nw.r; return ex2 * ex2 + ey2 * ey2 > rr * rr; })) { this.spawnT = 0; P.push(nw); nOre++; }
+  }
+};
+/* un golpe bola-mineral: cuenta para la fractura y a veces deja un destello */
+MillAnim.prototype.hitOre = function (ore, vh, x, y) {
+  if (ore.hit && this.t - ore.hit <= 0.15) return;
+  ore.hit = this.t; this.stats.impacts++;
+  if (ore.r > this.geo.rb * 0.16 && Math.random() < Math.min(0.5, vh / 900)) ore.cr = (ore.cr || 0) + 1;
+  if (vh > 260 && Math.random() < 0.06) this.fx.push({ x: x, y: y, t: 0, s: 3 + Math.min(vh, 1600) / 90 });
 };
 /* ---------- trituradora de mandíbulas ---------- */
 MillAnim.prototype.jaw = function (t) {
@@ -968,6 +1091,14 @@ MillAnim.prototype.step_disc = function (dt) {
   }
 };
 /* ---------- dibujo ---------- */
+var BALL_SPR = {};
+function ballSprite(bp) {
+  var k = bp ? 'b' : 'l'; if (BALL_SPR[k]) return BALL_SPR[k];
+  var cv = document.createElement('canvas'), N = 48; cv.width = cv.height = N; var c = cv.getContext('2d'), r = N / 2;
+  var gr = c.createRadialGradient(r - r * .35, r - r * .35, r * .1, r, r, r); gr.addColorStop(0, bp ? '#ffffff' : '#f1f3f6'); gr.addColorStop(.55, bp ? '#9fb6cc' : '#8e98a6'); gr.addColorStop(1, bp ? '#4c6d8c' : '#3d4550');
+  c.fillStyle = gr; c.beginPath(); c.arc(r, r, r - 0.5, 0, Math.PI * 2); c.fill();
+  return (BALL_SPR[k] = cv);
+}
 function mixHex(a, b, t) { var pa = parseInt(a.slice(1), 16), pb = parseInt(b.slice(1), 16); var r = Math.round(((pa >> 16) & 255) * (1 - t) + ((pb >> 16) & 255) * t), g = Math.round(((pa >> 8) & 255) * (1 - t) + ((pb >> 8) & 255) * t), bl = Math.round((pa & 255) * (1 - t) + (pb & 255) * t); return 'rgb(' + r + ',' + g + ',' + bl + ')'; }
 MillAnim.prototype.draw = function () {
   var c = this.ctx, W = this.W, H = this.H; if (!W || this.virt) return;
@@ -987,11 +1118,10 @@ MillAnim.prototype.draw = function () {
     c.fillStyle = body; c.beginPath(); c.arc(g.cx, g.cy, g.R, 0, Math.PI * 2); c.fill();
     c.strokeStyle = ink; c.lineWidth = 7; c.beginPath(); c.arc(g.cx, g.cy, g.R + 3.5, 0, Math.PI * 2); c.stroke();
     c.lineWidth = 4; c.strokeStyle = steel;
-    for (var l = 0; l < g.nl; l++) { var a = this.ang + l * Math.PI * 2 / g.nl; c.beginPath(); c.moveTo(g.cx + g.R * Math.cos(a), g.cy + g.R * Math.sin(a)); c.lineTo(g.cx + (g.R - g.rb * g.lh) * Math.cos(a), g.cy + (g.R - g.rb * g.lh) * Math.sin(a)); c.stroke(); }
-    this.P.forEach(function (p) {
-      if (p.k === 'ball') { var gr = c.createRadialGradient(p.x - p.r * .35, p.y - p.r * .35, p.r * .1, p.x, p.y, p.r); gr.addColorStop(0, bp ? '#ffffff' : '#f1f3f6'); gr.addColorStop(.55, bp ? '#9fb6cc' : '#8e98a6'); gr.addColorStop(1, bp ? '#4c6d8c' : '#3d4550'); c.fillStyle = gr; c.beginPath(); c.arc(p.x, p.y, p.r, 0, Math.PI * 2); c.fill(); }
-      else drawOre(p);
-    });
+    for (var l = 0; l < g.nl; l++) { var a = this.ang + l * Math.PI * 2 / g.nl; c.beginPath(); c.moveTo(g.cx + g.R * Math.cos(a), g.cy + g.R * Math.sin(a)); c.lineTo(g.cx + (g.R - g.lhp) * Math.cos(a), g.cy + (g.R - g.lhp) * Math.sin(a)); c.stroke(); }
+    // las bolas: un mismo dibujo de bola de acero (degradado) para todas, escalado a cada una
+    var spr = ballSprite(bp);
+    this.P.forEach(function (p) { if (p.k === 'ball') c.drawImage(spr, p.x - p.r, p.y - p.r, 2 * p.r, 2 * p.r); else drawOre(p); });
     /* flecha de giro */
     c.strokeStyle = ink; c.fillStyle = ink; c.lineWidth = 2;
     c.beginPath(); c.arc(g.cx, g.cy, g.R + 18, -Math.PI * 0.42, -Math.PI * 0.12); c.stroke();
@@ -1001,7 +1131,7 @@ MillAnim.prototype.draw = function () {
     if (this.prm.phi < 0.98) {
       var wv = this.prm.phi * Math.sqrt(1700 / (g.R - g.rb)), th = [];
       this.P.forEach(function (p) {
-        if (p.k !== 'ball') return; var dx = p.x - g.cx, dy = p.y - g.cy, d = Math.sqrt(dx * dx + dy * dy); if (d < g.R - g.rb * 2.3) return;
+        if (p.k !== 'ball') return; var dx = p.x - g.cx, dy = p.y - g.cy, d = Math.sqrt(dx * dx + dy * dy); if (d < g.R - g.lhp - g.rb * 2.3) return;
         var vt = (p.vx * -dy + p.vy * dx) / d; if (vt < 0.25 * wv * d) return;
         var a = Math.atan2(dy, dx); if (a < 0) a += Math.PI * 2; if (a > Math.PI * 0.25 && a < Math.PI * 1.75) th.push(a);
       });
@@ -1436,9 +1566,13 @@ FMill.prototype.draw = function (anim, res) {
 };
 
 /* ---------- molino de bolas ---------- */
-/* El tambor está abierto entre y0 y y1 por la mitad que mira al lector. La carga del lienzo (una sección) se repite en
-   capas a lo largo del tambor con un corrimiento propio de cada partícula: en la artesa quedan solo las que están en la
-   mitad de atrás (las de adelante se fueron con el corte) y detrás del corte de y0 se ve la sección entera. */
+/* El tambor está abierto entre y0 y y1 por la mitad que mira al lector. La carga del lienzo (una sección con bolas de
+   5 cm) se repite en capas a lo largo de todo el tambor, separadas un poco más que un diámetro de bola y con un
+   corrimiento propio de cada partícula en cada capa: en la artesa quedan solo las que están en la mitad de atrás (las
+   de adelante se fueron con el corte) y en el corte de y0 se ve la sección entera. Las capas de más adentro van más
+   oscuras. Como cada capa tapa casi toda la de atrás, de una capa de atrás se dibujan solo las partículas que no tienen
+   otra delante en la capa siguiente (las del borde de la carga y las que vuelan); las capas se pintan de atrás hacia
+   adelante, y dentro de cada una en el orden de profundidad de la sección. */
 FMill.prototype.drawBolas = function (anim, res) {
   var D = this.D, C = this.C, c = this.ctx, g = anim.geo, ZA = D.ZA, th = -(anim.ang || 0), px = this.px, blue = this.blue(), self = this;
   var pt = function (t, r, y) { return [r * Math.cos(t), y, ZA + r * Math.sin(t)]; }, pr = function (p) { return C.pr(p[0], p[1], p[2]); };
@@ -1458,7 +1592,7 @@ FMill.prototype.drawBolas = function (anim, res) {
   for (j = 0; j < 7; j++) for (i = 0; i < 26; i++) { t = (i / 26) * Math.PI * 2 + th; if (!vis(t, 0.15)) continue; hs.push(pr(pt(t, Tr.r + 0.05, Tr.y1 - 8 - j * 10.5))); }
   this.setG('bm.holes', '<path class="ml-hole" d="' + dotPath(hs, 0.9) + '"/>');
   // ---- los levantadores: barras a lo largo del revestimiento de atrás, y su sección en el corte de y0
-  var s = D.R / g.R, lh = g.rb * g.lh * s, nl = g.nl || D.lifters, hw = 4.5 / D.R, ink = blue ? '#06182b' : '#3b4148';
+  var s = D.R / g.R, lh = (g.lhp || g.rb * g.lh) * s, nl = g.nl || D.lifters, hw = 4.5 / D.R, ink = blue ? '#06182b' : '#3b4148';
   var face = function (pts, sh) { self.poly(pts.map(pr)); c.fillStyle = self.metal(sh, blue); c.fill(); c.strokeStyle = ink; c.lineWidth = 0.45 * px; c.stroke(); };
   var lit = function (n) { return 0.3 + 0.55 * Math.max(0, n[0] * C.L[0] + n[1] * C.L[2]); };
   c.save(); this.poly(D.vis); c.clip();
@@ -1473,22 +1607,50 @@ FMill.prototype.drawBolas = function (anim, res) {
   }
   c.restore();
   // ---- la carga: capas a lo largo del tambor
-  var TROUGH = !!window.ML_TROUGH, NL = 9, dy = (K.y1 - K.y0) / NL, P = anim.P, mat = (res && res.mat && res.mat.color) || '#b9b1a3', inside = [], trough = [];
-  for (i = 0; i < P.length; i++) {
-    var p = P[i]; if (!p.jit || p.jit.length < NL + 2) { p.jit = []; for (j = 0; j < NL + 2; j++) p.jit.push([Math.random() - 0.5, (Math.random() - 0.5) * 0.6, (Math.random() - 0.5) * 0.6]); }
-    var u = (p.x - g.cx) * s, v = (g.cy - p.y) * s, rr = p.r * s;
-    for (j = 0; j < NL + 2; j++) {
-      var jj = p.jit[j], uu = u + jj[1] * rr, vv = v + jj[2] * rr, yy;
-      if (j < 2) yy = K.y0 - (j ? dy * (1.2 + 0.7 * jj[0]) : rr * (1.02 + 0.3 * Math.abs(jj[0])));
-      else { if (!back(uu, vv) || !TROUGH) continue; yy = K.y0 + dy * (j - 2 + 0.5 + 0.7 * jj[0]); }
-      var e = { q: C.pr(uu, yy, ZA + vv), d: C.depth(uu, yy, ZA + vv), r: rr * this.kk, k: p.k, dim: j === 1 ? 0.62 : 1 };
-      (j < 2 ? inside : trough).push(e);
-    }
+  var P = anim.P, n = P.length, mat = (res && res.mat && res.mat.color) || '#b9b1a3', rb = (g.rb || 9) * s;
+  /* con un equipo lento se dibujan menos capas (this.bq baja de 1 a 0,5 si el cuadro pasa de 14 ms, y vuelve a subir) */
+  var t00 = performance.now(), bq = this.bq || 1, NL = Math.max(6, Math.round((K.y1 - K.y0) / (2.3 * rb) * bq)), dy = (K.y1 - K.y0) / NL;
+  var o0 = C.pr(0, 0, ZA), oy = C.pr(0, dy, ZA), Dx = oy[0] - o0[0], Dy = oy[1] - o0[1];
+  // la sección en pantalla (en el plano de y0) y su orden de profundidad
+  var base = new Array(n), ord = [];
+  for (i = 0; i < n; i++) {
+    var p = P[i]; if (!p.jit || p.jit.length < NL + 2) { p.jit = []; for (j = 0; j < NL + 2; j++) p.jit.push([Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5]); }
+    var u = (p.x - g.cx) * s, v = (g.cy - p.y) * s, q = C.pr(u, K.y0, ZA + v);
+    base[i] = { p: p, u: u, v: v, rr: p.r * s, X: q[0], Y: q[1], d: C.depth(u, 0, ZA + v), bk: back(u, v), ms: 1 };
+    ord.push(i);
   }
-  var bydepth = function (a2, b2) { return a2.d - b2.d; };
-  inside.sort(bydepth); trough.sort(bydepth);
+  ord.sort(function (a2, b2) { return base[a2].d - base[b2].d; });
+  /* ¿desde qué capa se ve cada partícula? La capa siguiente queda corrida D en pantalla: la partícula de la capa j la tapa
+     la capa j + m si en la sección hay otra partícula en el punto corrido m·D. m* es la primera m que la tapa: la
+     partícula se dibuja solo en sus últimas m* capas (las del fondo de la carga, en una o dos; las del borde que da hacia
+     el corrimiento y las que vuelan, en todas). Una malla en pantalla de las de la mitad de atrás */
+  var cell = 2.4 * rb * this.kk, grid = {}, kx = function (x) { return Math.floor(x / cell); };
+  for (i = 0; i < n; i++) if (base[i].bk) { var kk2 = kx(base[i].X) + ',' + kx(base[i].Y); (grid[kk2] || (grid[kk2] = [])).push(i); }
+  var covered = function (x, y) {
+    var gx = kx(x), gy = kx(y);
+    for (var a3 = gx - 1; a3 <= gx + 1; a3++) for (var b3 = gy - 1; b3 <= gy + 1; b3++) {
+      var L3 = grid[a3 + ',' + b3]; if (!L3) continue;
+      for (var m3 = 0; m3 < L3.length; m3++) { var f3 = base[L3[m3]], r3 = 0.95 * f3.rr * self.kk; if ((f3.X - x) * (f3.X - x) + (f3.Y - y) * (f3.Y - y) < r3 * r3) return true; }
+    }
+    return false;
+  };
+  for (i = 0; i < n; i++) {
+    var e0 = base[i]; e0.ms = NL + 2; if (!e0.bk) continue;
+    for (var m = 1; m <= NL + 1; m++) if (covered(e0.X - m * Dx, e0.Y - m * Dy)) { e0.ms = m; break; }
+  }
+  /* cada capa de la artesa va girada un poco alrededor del eje (hasta un diámetro y medio de bola en la pared) y cada
+     partícula (también los granos de mineral), corrida hasta media bola: así las bolas de capas vecinas no quedan en fila a lo largo del tambor */
+  var rotA = [0, 0]; for (j = 0; j < NL; j++) { var hz = Math.sin((j + 1) * 91.7) * 43758.5453; rotA.push((hz - Math.floor(hz) - 0.5) * 2 * 1.5 * 2 * rb / D.R); }
+  var self2 = this, put = function (e, jj, yy, dim, al) {
+    var jr = Math.max(e.rr, 0.9 * rb), u0 = e.u + jj[1] * jr, v0 = e.v + jj[2] * jr, ca = Math.cos(al), sa = Math.sin(al), uu = u0 * ca - v0 * sa, vv = u0 * sa + v0 * ca, q2 = C.pr(uu, yy, ZA + vv);
+    self2.sprite(q2[0], q2[1], e.rr * self2.kk, e.p.k, dim, mat, blue);
+  };
+  // detrás y en el corte de y0: la sección entera (de la mitad de atrás, solo lo que asoma por delante de la capa siguiente)
   c.save(); this.poly(D.ell0); c.clip(); this.poly(D.vis); c.clip();
-  for (i = 0; i < inside.length; i++) this.grain(inside[i], mat, blue);
+  for (var jl = 1; jl >= 0; jl--) for (i = 0; i < n; i++) {
+    var e1 = base[ord[i]], jj1 = e1.p.jit[jl]; if (e1.bk && e1.ms <= NL + jl) continue;
+    put(e1, jj1, K.y0 - (jl ? dy * (1.2 + 0.7 * jj1[0]) : e1.rr * (1.02 + 0.3 * Math.abs(jj1[0]))), jl ? 0.5 : 0.74, 0);
+  }
   // la sección de los levantadores en el corte (la mitad de adelante)
   for (i = 0; i < nl; i++) {
     t = th - i * Math.PI * 2 / nl; if (back(Math.cos(t), Math.sin(t))) continue;
@@ -1496,17 +1658,60 @@ FMill.prototype.drawBolas = function (anim, res) {
     c.fillStyle = blue ? '#4d6f93' : '#5b6168'; c.fill(); c.strokeStyle = ink; c.lineWidth = 0.45 * px; c.stroke();
   }
   c.restore();
+  // la artesa: capa por capa hacia el lector; en la última (la de más adelante) van todas las de la mitad de atrás
   c.save(); this.poly(D.vis); c.clip();
-  for (i = 0; i < trough.length; i++) this.grain(trough[i], mat, blue);
+  /* debajo, la sombra del cuerpo de la carga: cada partícula del lecho (con al menos tres vecinas) barre una franja oscura
+     a lo largo del tambor, y por los huecos entre bolas se ve oscuro, como los intersticios de una carga real, en vez
+     del revestimiento. Las que vuelan no dejan sombra */
+  var sh = [], nr2 = Math.pow(2.3 * rb * this.kk, 2);
+  for (i = 0; i < n; i++) {
+    var e3 = base[i]; if (!e3.bk || e3.p.k !== 'ball') continue;
+    var gx3 = kx(e3.X), gy3 = kx(e3.Y), nb3 = 0;
+    for (var a4 = gx3 - 1; a4 <= gx3 + 1; a4++) for (var b4 = gy3 - 1; b4 <= gy3 + 1; b4++) { var L4 = grid[a4 + ',' + b4]; if (L4) for (var m4 = 0; m4 < L4.length; m4++) { var f4 = base[L4[m4]]; if ((f4.X - e3.X) * (f4.X - e3.X) + (f4.Y - e3.Y) * (f4.Y - e3.Y) < nr2) nb3++; } }
+    if (nb3 >= 4) sh.push(e3);
+  }
+  if (sh.length) {
+    c.beginPath();
+    for (i = 0; i < sh.length; i++) { var e4 = sh[i]; c.moveTo(e4.X + 0.5 * Dx, e4.Y + 0.5 * Dy); c.lineTo(e4.X + (NL - 0.5) * Dx, e4.Y + (NL - 0.5) * Dy); }
+    c.lineCap = 'round'; c.lineWidth = 1.7 * rb * this.kk; c.strokeStyle = blue ? '#0b1d30' : '#2c3138'; c.stroke(); c.lineCap = 'butt';
+  }
+  for (j = 0; j < NL; j++) {
+    for (i = 0; i < n; i++) {
+      var e2 = base[ord[i]]; if (!e2.bk || j < NL - e2.ms) continue;
+      // el mineral va repartido entre las bolas: cada grano aparece en una de cada tres capas, no en fila a lo largo del tambor
+      if (e2.p.k === 'ore' && j < NL - 1 && e2.p.jit[j + 2][0] > -0.17) continue;
+      var jj2 = e2.p.jit[j + 2], yy2 = K.y0 + dy * (j + 0.5 + 0.5 * jj2[0]);
+      put(e2, jj2, yy2, 0.74 + 0.26 * (yy2 - K.y0) / (K.y1 - K.y0), rotA[j + 2]);
+    }
+  }
   // los golpes: un destello donde chocan bola y mineral, en el corte
+  // en una capa cualquiera del tambor si el golpe cae en la mitad de atrás; si no, en el corte de y0
   (anim.fx || []).forEach(function (f) {
     var al = 1 - f.t / 0.45; if (al <= 0) return;
-    var q2 = C.pr((f.x - g.cx) * s, K.y0 + 1, ZA + (g.cy - f.y) * s), L = (1.4 + f.s * 0.1) * px;
+    var fu = (f.x - g.cx) * s, fv = (g.cy - f.y) * s, h = Math.sin(f.x * 12.9898 + f.y * 78.233) * 43758.5453, fy = back(fu, fv) ? K.y0 + (K.y1 - K.y0) * (h - Math.floor(h)) : K.y0 + 1;
+    var q2 = C.pr(fu, fy, ZA + fv), L = (1.4 + Math.min(f.s, 46) * 0.1) * px;
     c.strokeStyle = '#C8452B'; c.globalAlpha = 0.85 * al; c.lineWidth = 1.1 * px; c.beginPath();
     for (var k2 = 0; k2 < 6; k2++) { var an = k2 * Math.PI / 3; c.moveTo(q2[0] + Math.cos(an) * L * 0.35, q2[1] + Math.sin(an) * L * 0.35); c.lineTo(q2[0] + Math.cos(an) * L, q2[1] + Math.sin(an) * L); }
     c.stroke(); c.globalAlpha = 1;
   });
   c.restore();
+  var tb = performance.now() - t00; this.bt = this.bt == null ? tb : this.bt * 0.9 + tb * 0.1; this.bn = (this.bn || 0) + 1;
+  if (this.bn % 30 === 0) { if (this.bt > 14 && bq > 0.5) this.bq = Math.max(0.5, bq - 0.1); else if (this.bt < 7 && bq < 1) this.bq = Math.min(1, bq + 0.1); }
+};
+/* una bola de acero o un grano de mineral dibujados una vez (por tono y por brillo) y escalados a cada partícula: con
+   miles por cuadro, dibujar cada una con sus arcos sería demasiado */
+FMill.prototype.sprite = function (X, Y, R, kind, dim, mat, blue) {
+  var lv = Math.max(0, Math.min(5, Math.round((dim - 0.5) / 0.1))), key = kind + '|' + (kind === 'ball' ? '' : mat) + '|' + (blue ? 1 : 0) + '|' + lv;
+  var cache = this.spr || (this.spr = {}), cv = cache[key];
+  if (!cv) {
+    cv = document.createElement('canvas'); var N = 40; cv.width = cv.height = N;
+    var c2 = cv.getContext('2d'), save = this.ctx, savePx = this.px; this.ctx = c2; this.px = N / 2 / 10;
+    c2.setTransform(N / 20, 0, 0, N / 20, N / 2, N / 2);
+    this.grain({ q: [0, 0], r: 9.4, k: kind, dim: 0.5 + lv * 0.1 }, mat, blue);
+    this.ctx = save; this.px = savePx; cache[key] = cv;
+  }
+  if (R < 0.05) return;
+  this.ctx.drawImage(cv, X - R * 10 / 9.4, Y - R * 10 / 9.4, 2 * R * 10 / 9.4, 2 * R * 10 / 9.4);
 };
 /* una bola de acero o un grano de mineral; dim < 1 oscurece lo que está más adentro del tambor */
 FMill.prototype.grain = function (e, mat, blue) {
@@ -1847,7 +2052,7 @@ var SVGI = {
 var CAPS = {
   bolas: function (r) {
     var b = r.ball, t = { 'Deslizamiento': 'la carga apenas se levanta y resbala contra la pared: casi no hay molienda.', 'Cascada': 'las bolas ruedan sobre la superficie de la carga: molienda fina por atrición, con poco impacto.', 'Catarata': 'las bolas se despegan en el hombro y caen sobre el pie de la carga: el régimen de impacto que se busca en la operación normal.', 'Catarata intensa': 'las bolas vuelan por encima de la carga y golpean el revestimiento: más desgaste que molienda.', 'Centrifugado': 'la fuerza centrífuga supera al peso y la carga gira pegada a la pared: no hay molienda.' }[b.reg];
-    return '<b>Simulación de elementos discretos.</b> Bolas de acero y mineral dentro del tambor con levantadores, girando a φ = ' + fmtN(b.phi, 0) + ' % de la velocidad crítica. En régimen de <b>' + b.reg.toLowerCase() + '</b> ' + t + ' Los destellos son impactos bola-mineral; el mineral se fractura con impactos repetidos y los finos se descargan. En la planta: N<sub>c</sub> = ' + fmtN(b.Nc, 1) + ' rpm y N = ' + fmtN(b.N, 1) + ' rpm para D = ' + fmtN(b.D, 1) + ' m.';
+    return '<b>Simulación de elementos discretos.</b> Unas ' + fmtN(Math.round(0.8 * b.J / 100 * 3364 / 50) * 50, 0) + ' bolas de acero de 4 a 6 cm (en promedio las de 5 cm del cálculo de N<sub>c</sub>) y granos de mineral en una sección del tambor, con sus levantadores, girando a φ = ' + fmtN(b.phi, 0) + ' % de la velocidad crítica. En régimen de <b>' + b.reg.toLowerCase() + '</b> ' + t + ' Los destellos son impactos bola-mineral; el mineral se fractura con impactos repetidos y los finos se descargan. En la planta: N<sub>c</sub> = ' + fmtN(b.Nc, 1) + ' rpm y N = ' + fmtN(b.N, 1) + ' rpm para D = ' + fmtN(b.D, 1) + ' m.';
   },
   mand: function () { return '<b>Compresión.</b> La mandíbula móvil oscila impulsada por la excéntrica y aprieta el material contra la fija. Una partícula se fractura cuando queda atrapada entre las dos; los fragmentos descienden hasta pasar por la abertura de descarga, que fija el tamaño máximo del producto. No produce finos.'; },
   rod: function () { return '<b>Compresión entre rodillos.</b> Los rodillos giran en sentidos opuestos y arrastran el material por fricción hacia la separación. Solo pasan las partículas que caben; las demás se fracturan en la línea de contacto. Por eso el producto es uniforme (n alto) y con pocos finos.'; },
@@ -1857,7 +2062,7 @@ var CAPS = {
 
 /* lo que la máquina en isométrico le agrega al pie (vista «Máquina»); el resto del pie describe la simulación */
 var FIGCAP = {
-  bolas: '<b>La máquina.</b> Molino de bolas de 3 m con la mitad del tambor que mira al lector quitada entre dos planos: en la artesa de atrás giran los levantadores y al fondo, en el corte del lado de la descarga, está la carga de la simulación. La corona y el piñón mueven el tambor; el mineral entra por el muñón de la izquierda y sale por el trommel de la derecha.',
+  bolas: '<b>La máquina.</b> Molino de bolas de 3 m con la mitad del tambor que mira al lector quitada entre dos planos: en la artesa de atrás giran los levantadores con la carga de la simulación a lo largo de todo el tambor, y en el corte del lado de la descarga se ve la sección entera de la carga. La corona y el piñón mueven el tambor; el mineral entra por el muñón de la izquierda y sale por el trommel de la derecha.',
   mand: '<b>La máquina.</b> Trituradora de mandíbulas de un solo toggle con la placa lateral de adelante quitada. El eje excéntrico, arriba, mueve la biela; el toggle la empuja abajo contra la mandíbula fija y la varilla con su resorte la devuelve. Las rocas de la simulación van en el plano del corte.',
   rod: '<b>La máquina.</b> Molino de rodillos dobles con la tapa lateral de adelante quitada. El rodillo de la derecha es flotante: sus chumaceras se apoyan en resortes que ceden si entra algo que no se rompe. Cada rodillo lleva su polea, sus correas y su motor.',
   mart: '<b>La máquina.</b> Molino de martillos con la tapa de adelante quitada. El rotor en voladizo gira con sus cuatro filas de martillos; el material entra por el chute de arriba y sale por la criba perforada de abajo hacia la tolva de descarga.',
