@@ -15,7 +15,7 @@
 function FStill(host, D) {
   this.host = host; this.D = D; this.svg = host.querySelector('svg'); this.C = xCam(D.P);
   var self = this, q = function (s) { return self.svg.querySelector('[data-live="' + s + '"]'); };
-  this.el = {}; ['mirilla', 'tneedle', 'sneedle', 'gauge', 'hydro', 'beak'].forEach(function (k) { self.el[k] = q(k); });
+  this.el = {}; ['mirilla', 'tneedle', 'sneedle', 'gauge', 'hydro', 'beak', 'trays', 'funnel', 'tneedleH', 'magled'].forEach(function (k) { self.el[k] = q(k); });
   this.jarEl = [0, 1, 2].map(function (i) { return q('jar' + i); });
   this.streamEl = [0, 1, 2].map(function (i) { return q('stream' + i); });
   this.leverEl = [0, 1, 2].map(function (i) { return q('lever' + i); });
@@ -93,3 +93,102 @@ FStill.prototype.highlight = function (key) {
   if (key === this.pick) return; this.pick = key;
   Array.prototype.forEach.call(this.svg.querySelectorAll('.it[data-pick]'), function (g) { g.classList.toggle('st-on', !!key && g.getAttribute('data-pick') === key); });
 };
+
+/* ====================================================================
+   El alambique con columna (out-col): además de lo de arriba, cada cuadro
+   recibe del explorador el cálculo plato a plato del instante:
+   · n, los platos de la columna (N − 1) y xs, el color del líquido de
+     cada uno, del de arriba al de abajo: se dibujan hasta 12 (con más, se
+     toman 12 repartidos) con su vertedero, su bajante y su líquido;
+   · R, la razón de reflujo: el embudo de la cabeza pasa R/(R + 1) del
+     ciclo devolviendo el condensado a la columna y el resto echándolo a la
+     copa del destilado; con reflujo total no sale nunca;
+   · Ttop, la temperatura del vapor en la cabeza (su termómetro).
+   ==================================================================== */
+FStill.prototype.trayGeom = function (shown) {
+  var D = this.D, C = this.C, K = D.COL, F = { o: [D.PC[0], D.PC[1], 0], a: [0, 0, 1], u: D.T, v: D.HV };
+  var Rr = K.r - 0.12, c = 6.4, w = Math.sqrt(Rr * Rr - c * c), sp = shown > 1 ? (K.t1 - K.t0) / (shown - 1) : (K.t1 - K.t0);
+  var zs = []; for (var k = 0; k < shown; k++) zs.push(shown > 1 ? K.t1 - (K.t1 - K.t0) * k / (shown - 1) : (K.t0 + K.t1) / 2);
+  var arc = function (r, t0, t1, n) { var o = []; for (var i = 0; i <= n; i++) { var tt = t0 + (t1 - t0) * i / n; o.push([r * Math.cos(tt), r * Math.sin(tt)]); } return o; };
+  var A0 = Math.acos(c / Rr), A1 = Math.acos((c + 0.25) / Rr);
+  // el plato k deja su bajante del lado sd (+1 a la derecha, −1 a la izquierda); los lados se alternan
+  var side = function (k) { return k % 2 === 0 ? -1 : 1; };
+  var plate = function (sd) { return sd < 0 ? arc(Rr, Math.PI + A0, 2 * Math.PI, 28).concat([[-c, 0]]) : arc(Rr, Math.PI, 2 * Math.PI - A0, 28).concat([[c, 0]]); };
+  var dcPoly = function (sd) { return sd > 0 ? arc(Rr, 2 * Math.PI - A1, 2 * Math.PI, 10).concat([[c + 0.25, 0]]) : arc(Rr, Math.PI, Math.PI + A1, 10).concat([[-(c + 0.25), 0]]); };
+  var apron = function (sd) { var u0 = sd * c, u1 = sd * (c + 0.25); return [[Math.min(u0, u1), -w], [Math.max(u0, u1), -w], [Math.max(u0, u1), 0], [Math.min(u0, u1), 0]]; };
+  var P = function (poly, z0, z1, cls) { return prismSvg(C, poly, z0, z1, { F: F, tone: 'mid', cls: cls, crease: 'faint' }); };
+  var out = [], th = 0.35, hl = 1.3, hw = 1.8;
+  // de abajo hacia arriba: la bajante del plato (que cae al de abajo o al calderín), el plato, su líquido y sus burbujas
+  for (var k = shown - 1; k >= 0; k--) {
+    var z = zs[k], sd = side(k), zLow = k === shown - 1 ? K.zb + 0.4 : zs[k + 1] + th, dcTop = z + th + hw;
+    var lvl = Math.min(dcTop - 0.4, zLow + Math.max(1.2, 0.42 * (z - zLow)));
+    out.push(P(dcPoly(sd), zLow, lvl, 'st-tliq st-t' + k));
+    out.push(P(apron(sd), z - 0.55 * Math.max(4, z - zLow), dcTop, 'cu'));
+    out.push(P(plate(sd), z, z + th, 'cu'));
+    out.push(P(plate(sd).map(function (q, i, a) { return q; }), z + th, z + th + hl, 'st-tliq st-t' + k));
+    out.push('<g data-tb="' + k + '"></g>');
+  }
+  out.push('<path data-reflux class="st-stream" d=""/>');
+  return { html: out.join(''), zs: zs, sp: sp, Rr: Rr, c: c, side: side, F: F };
+};
+FStill.prototype.updateCol = function (s) {
+  var D = this.D, C = this.C, self = this, dt = Math.max(0, Math.min(0.1, s.dt || 0)); if (!D.COL || !this.el.trays) return;
+  var shown = Math.max(0, Math.min(12, s.n || 0));
+  if (this.trayKey !== shown) {
+    this.trayKey = shown; this.tg = shown ? this.trayGeom(shown) : null;
+    this.el.trays.innerHTML = this.tg ? this.tg.html : '';
+    this.tb = []; Array.prototype.forEach.call(this.el.trays.querySelectorAll('[data-tb]'), function (g) { self.tb[+g.getAttribute('data-tb')] = g; });
+    this.refl = this.el.trays.querySelector('[data-reflux]');
+  }
+  // el color de cada plato
+  var st = this.svg.style, f = function (v, d) { return 'rgb(' + v.map(function (x) { return Math.max(0, Math.min(255, Math.round(x * d))); }).join(',') + ')'; };
+  for (var k = 0; k < shown; k++) { var col = s.xs && s.xs[k]; if (!col) continue; st.setProperty('--st-t' + k, f(col, 1)); st.setProperty('--st-t' + k + '-0', f(col, 0.86)); st.setProperty('--st-t' + k + '-e', f(col, 0.6)); }
+  // las burbujas del vapor que atraviesa el líquido de cada plato
+  var tg = this.tg, P3 = function (u, v, z) { return self.C.pr(D.PC[0] + D.T[0] * u + D.HV[0] * v, D.PC[1] + D.T[1] * u + D.HV[1] * v, z); };
+  this.fx = (this.fx || 0) + dt;
+  if (tg) for (var j = 0; j < shown; j++) {
+    var z = tg.zs[j] + 0.35 + 1.3, sd = tg.side(j), h = [];
+    if (s.run) for (var b = 0; b < 9; b++) {
+      var hu = hashF(j * 13 + b), hv = hashF(j * 7 + b * 3 + 1), ph = (hashF(b + j) + this.fx * (0.9 + hu)) % 1;
+      var u = -sd * tg.c + sd * (2 * tg.c) * hu * 0.92 - sd * 0.4, v = -(0.3 + 0.62 * hv) * Math.sqrt(Math.max(0, tg.Rr * tg.Rr - u * u)), q = P3(u, v, z + 0.05);
+      var r = (0.18 + 0.32 * ph) * self.k;
+      h.push('<circle class="st-tbub" cx="' + q[0].toFixed(2) + '" cy="' + q[1].toFixed(2) + '" r="' + r.toFixed(2) + '" style="opacity:' + (0.85 * (1 - ph)).toFixed(2) + '"/>');
+    }
+    var key = h.join(''); if (this.tb[j] && this.tb[j]._h !== key) { this.tb[j].innerHTML = key; this.tb[j]._h = key; }
+  }
+  // el embudo: un ciclo de 2,4 s; durante 1/(R + 1) del ciclo el electroimán lo jala y su pico echa a la copa
+  var R = s.R, fD = isFinite(R) ? 1 / (R + 1) : 0, cyc = 2.4;
+  this.ph = ((this.ph || 0) + dt / cyc) % 1;
+  var take = s.run && this.ph < fD, Hd = D.HEAD;
+  this.tilt = this.tilt == null ? 0 : this.tilt + ((take ? 1 : 0) - this.tilt) * (s.snap ? 1 : Math.min(1, dt * 14));
+  // cuelga del gancho por un alambre; el cono abajo, donde se ve por debajo de la brida de arriba, y el vástago hasta
+  // el pico: inclinado, el pico queda sobre la copa
+  var piv = Hd.hookZ, L0 = 9.6, Lc = 4.6, L1 = piv - Hd.cupZ - 1.2, rT = 3.4, rN = 0.6, rS = 0.38, a = this.tilt * Math.asin(Math.min(0.9, Hd.cupU / L1));
+  var rot = function (u, z) { var dz = z - piv; return [u * Math.cos(a) - dz * Math.sin(a), piv + u * Math.sin(a) + dz * Math.cos(a)]; };
+  var mouth = rot(0, piv - L0), tip = rot(0, piv - L1);
+  var Q = function (u, z) { var q = rot(u, z); return P3(q[0], 0, q[1]); };
+  var cone = [Q(-rT, piv - L0), Q(rT, piv - L0), Q(rN, piv - L0 - Lc), Q(rS, piv - L0 - Lc - 0.6), Q(rS, piv - L1), Q(-rS, piv - L1), Q(-rS, piv - L0 - Lc - 0.6), Q(-rN, piv - L0 - Lc)];
+  var lip = [Q(-rT, piv - L0), Q(rT, piv - L0)], arm = [Q(-rT + 0.4, piv - L0 - 0.9), Q(-rT - 2.2, piv - L0 - 0.9)];
+  var hang = [P3(0, 0, piv), Q(0, piv - L0)];
+  var pth = function (pp) { return 'M' + pp.map(function (q) { return q[0].toFixed(2) + ' ' + q[1].toFixed(2); }).join('L') + 'Z'; };
+  var seg = function (pp, c) { return '<path class="' + c + '" d="M' + pp[0][0].toFixed(2) + ' ' + pp[0][1].toFixed(2) + 'L' + pp[1][0].toFixed(2) + ' ' + pp[1][1].toFixed(2) + '"/>'; };
+  this.offs2 = (this.offs2 || 0) - dt * 22;
+  var hh = [seg(hang, 'st-hang'), '<path class="st-funnel" d="' + pth(cone) + '"/>', seg(lip, 'st-lip'), seg(arm, 'st-arm')];
+  if (s.run) {
+    // las gotas del condensado que caen del condensador a la boca del embudo
+    for (var g = 0; g < 4; g++) { var u2 = (g * 0.25 + this.fx * 1.3) % 1, zz = Hd.g1 - u2 * (Hd.g1 - mouth[1] - 0.2), qd = P3((g % 2 ? 1.1 : -1.1), 0, zz); hh.push('<circle class="st-drip" cx="' + qd[0].toFixed(2) + '" cy="' + qd[1].toFixed(2) + '" r="' + (0.3 * this.k).toFixed(2) + '"/>'); }
+    // el chorro del pico: a la copa (destilado) o derecho a la columna (reflujo)
+    var e0 = P3(tip[0], 0, tip[1]), e1 = take ? P3(tip[0], 0, Hd.cupZ - 0.6) : P3(tip[0], 0, D.COL.zt);
+    hh.push('<path class="st-stream" style="stroke-dashoffset:' + this.offs2.toFixed(1) + '" d="M' + e0[0].toFixed(2) + ' ' + e0[1].toFixed(2) + 'L' + e1[0].toFixed(2) + ' ' + e1[1].toFixed(2) + '"/>');
+  }
+  this.el.funnel.innerHTML = hh.join('');
+  // el reflujo que cae de la cabeza al plato de arriba
+  if (this.refl) {
+    var on = s.run && !take && tg, a3 = P3(0, 0, D.COL.zt), b3 = tg ? P3(0, 0, tg.zs[0] + 0.35 + 1.3) : a3;
+    this.refl.setAttribute('d', on ? 'M' + a3[0].toFixed(2) + ' ' + a3[1].toFixed(2) + 'L' + b3[0].toFixed(2) + ' ' + b3[1].toFixed(2) : '');
+    this.refl.style.strokeDashoffset = this.offs2.toFixed(1);
+  }
+  if (this.el.magled) this.el.magled.setAttribute('class', take ? 'st-led on' : 'st-led');
+  if (this.el.tneedleH) { var tv = Math.max(0, Math.min(1.02, (s.Ttop || 0) / 120)); this.el.tneedleH.setAttribute('transform', 'rotate(' + (225 - 270 * tv).toFixed(1) + ')'); this.el.tneedleH.style.opacity = s.Ttop == null ? 0 : 1; }
+};
+function hashF(i) { var s = Math.sin(i * 127.1 + 311.7) * 43758.5453; return s - Math.floor(s); }
