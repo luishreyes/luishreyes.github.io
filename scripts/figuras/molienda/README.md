@@ -28,6 +28,22 @@ cinco equipos del explorador, cada uno una máquina real abierta para ver por de
   cunas, el eje en dos chumaceras sobre su pedestal, la polea y las correas al motor, sobre una fundación en L. Se quita la
   mitad de abajo de la puerta y del disco fijo, entre el cubo y el anillo de los pernos.
 
+Y en la pestaña «Granulometría», la **tamizadora de golpeteo** (`tamiz.mjs`), vista «Máquina» de la tarjeta Tamizadora (el
+esquema de siempre queda en «Esquema», y es la vista con que abre en pantallas angostas). Es una tamizadora de laboratorio
+para tamices de 8″ (200 mm) de media altura, con los datos del fabricante del equipo de referencia: 278 ± 10 oscilaciones por
+minuto en una órbita horizontal de 28,6 × 11,1 mm y 150 ± 10 golpes por minuto de un martillo de 2,44 kg sobre el corcho de
+la tapa. La pila va sobre el plato portatamices (el fondo, los tamices del análisis con el más fino abajo y la tapa), con las
+dos varillas roscadas y la barra de sujeción con sus perillas; atrás, la torre con la corredera, el pivote, el brazo y el
+martillo; abajo, la caja con el temporizador de siete segmentos, el piloto, los botones, el interruptor, la placa, las
+rejillas y el cable al enchufe del piso. Se quita la mitad de la pila que mira al lector. Hay una figura por número de
+tamices (de 3 a 9, `tamiz-3.svg` … `tamiz-9.svg`), porque la pila real lleva solo los tamices del análisis, y la página pide
+la que corresponde. La mueve la muestra de la tamizadora del explorador (`SieveAnim`, que corre en un lienzo virtual mientras
+se ve la máquina): `FSieve` (`tamiz-live.js`) pinta la trama de cada malla con un paso que crece con su abertura, deja caer
+cada partícula por la pila hasta el tamiz que la retiene (en la mitad de atrás) y, mientras dura el ensayo, mueve la pila en
+su órbita, sube y deja caer el martillo (el brazo se redibuja como un prisma en su ángulo) y hace saltar los granos con cada
+golpe; el temporizador cuenta los 10 minutos del ensayo. La trama y los granos van en escala logarítmica de tamaño. Las
+etiquetas dan, para cada tamiz y el fondo, lo retenido en la muestra y en la tabla.
+
 **La mueve la simulación del explorador.** `MillAnim` (elementos discretos) corre en un lienzo virtual de 900 × 490 px
 mientras se ve la máquina (`DEMW`, `DEMH` en `geo.mjs`), y cada figura pone esa escena en su plano de corte con la
 relación de `geo.mjs`: en el molino de bolas el tambor de radio 0,42·min(W, H) del lienzo es el revestimiento de
@@ -67,8 +83,9 @@ en dos dimensiones del lienzo, con sus anotaciones (hombro, pie, sentido de giro
 | `geo.mjs` | Medidas y la relación con el lienzo de partículas de cada equipo (`BM`, `JC`, `RC`, `HM`, `DS`, `jcMove`). Sin imports: corre en el build y en la página. |
 | `xprism.mjs` | Prismas de sección cóncava en cualquier marco (los mismos de las otras figuras). |
 | `live.js` | `FMill`: lo que gira y lo que se mueve, y las partículas en el plano de cada máquina. |
+| `tamiz.mjs`, `tamiz-live.js` | La tamizadora (`--eq=tamiz --n=3…9`) y `FSieve`, que la mueve con la muestra del explorador. |
 | `ml.css` | Fundición, acero, concreto, motor, corona, criba, correas, cortes y lo vivo. El tema blueprint va en el explorador. |
-| `splice.mjs` | Mete el código y los datos en el HTML publicado (marcadores `MLFIG_*`) y copia los SVG a `simulaciones/fig/molienda/`. |
+| `splice.mjs` | Mete el código y los datos en el HTML publicado (marcadores `MLFIG_*`, con `ML_FIGS` y `ML_TAMIZ`) y copia los SVG a `simulaciones/fig/molienda/`. |
 
 ```sh
 node build.mjs --eq=bolas --audit   # minuto y medio; debe terminar en «audit passed»
@@ -76,6 +93,7 @@ node build.mjs --eq=mand --audit    # unos 15 s
 node build.mjs --eq=rod --audit
 node build.mjs --eq=mart --audit
 node build.mjs --eq=disc --audit    # minuto y cuarto
+for n in 3 4 5 6 7 8 9; do node build.mjs --eq=tamiz --n=$n --audit; done   # unos 25 s cada una
 node splice.mjs
 ```
 
@@ -97,3 +115,7 @@ Reglas que salieron de armarlas, para la próxima:
   vecinos de media vecindad, y lo que corre de vez en cuando (fractura, descarga, alimentación) va aparte, una vez por
   cuadro; todas las partículas nacen con los mismos campos (`mkPart`). El paso no pasa de 1,4 ms: con pasos más largos
   la pila de bolas se vuelve inestable y las lanza a decenas de miles de px/s.
+- Una pieza que se mueve girando (el brazo del martillo) no se mueve bien con una transformación del SVG: un giro alrededor de
+  un eje que no mira al lector deforma la pieza en pantalla. Se redibuja en su ángulo como un prisma en un marco girado.
+- Cuando el número de piezas de una pila cambia con el caso, va una figura por cada número, con la misma cámara: así se
+  cambia de una a otra sin que se mueva el dibujo.

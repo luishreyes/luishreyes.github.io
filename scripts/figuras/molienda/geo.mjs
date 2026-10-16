@@ -62,3 +62,15 @@ export const HMR = (() => { const Rc = 0.42 * Math.min(DEMW, DEMH); return { Rc:
 export const DS = { AZ: 62, EL: 28, zc: 105, R: 30, yr: -4, gap: 0.5, r0: 12, rw: 31 };
 export const DSDEM = (() => { const R = 0.43 * Math.min(DEMW, DEMH); return { cx: DEMW / 2, cy: DEMH / 2, R, s: DS.R / R }; })();
 export function dsMap(px, py) { return [(px - DSDEM.cx) * DSDEM.s, DS.zc + (DSDEM.cy - py) * DSDEM.s]; }
+/* tamizadora de golpeteo para tamices de 8″ (200 mm) de media altura, como las de laboratorio (hasta 13 tamices de 25 mm de
+   marco): 278 ± 10 oscilaciones por minuto en una órbita horizontal de 28,6 × 11,1 mm y 150 ± 10 golpes por minuto del
+   martillo de 2,44 kg sobre el corcho de la tapa. La pila va sobre el plato portatamices: el fondo, los n tamices del
+   análisis (el más fino abajo) y la tapa, apretados por la barra de sujeción con sus dos perillas en las varillas.
+   El frente de la máquina mira a +y y su costado derecho a +x; el eje de la pila está en x = y = 0. */
+export const TZ = { AZ: 45, EL: 30, r: 10.15, ri: 9.95, h: 2.54, z0: 29.7, osc: 278, taps: 150, ox: 1.43, oy: 0.56, lift: 1.4, rodX: 17, rodTop: 76, ext: 4.6 };
+// las alturas de la pila de n tamices: el fondo de cada tamiz (de abajo hacia arriba), la tapa, el corcho y el martillo
+export function tzStack(n) {
+  const zb = []; for (let k = 0; k < n; k++) zb.push(TZ.z0 + TZ.h * (k + 1));
+  const top = TZ.z0 + TZ.h * (n + 1);
+  return { zb, top, mesh: zb.map((z) => z + 0.28), pan: TZ.z0 + 0.2, cork: top + 2.2, arm: top + 14.2 };
+}
