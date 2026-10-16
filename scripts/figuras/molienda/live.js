@@ -43,9 +43,13 @@ FMill.prototype.draw = function (anim, res) {
 };
 
 /* ---------- molino de bolas ---------- */
-/* El tambor está abierto entre y0 y y1 por la mitad que mira al lector. La carga del lienzo (una sección) se repite en
-   capas a lo largo del tambor con un corrimiento propio de cada partícula: en la artesa quedan solo las que están en la
-   mitad de atrás (las de adelante se fueron con el corte) y detrás del corte de y0 se ve la sección entera. */
+/* El tambor está abierto entre y0 y y1 por la mitad que mira al lector. La carga del lienzo (una sección con bolas de
+   5 cm) se repite en capas a lo largo de todo el tambor, separadas un poco más que un diámetro de bola y con un
+   corrimiento propio de cada partícula en cada capa: en la artesa quedan solo las que están en la mitad de atrás (las
+   de adelante se fueron con el corte) y en el corte de y0 se ve la sección entera. Las capas de más adentro van más
+   oscuras. Como cada capa tapa casi toda la de atrás, de una capa de atrás se dibujan solo las partículas que no tienen
+   otra delante en la capa siguiente (las del borde de la carga y las que vuelan); las capas se pintan de atrás hacia
+   adelante, y dentro de cada una en el orden de profundidad de la sección. */
 FMill.prototype.drawBolas = function (anim, res) {
   var D = this.D, C = this.C, c = this.ctx, g = anim.geo, ZA = D.ZA, th = -(anim.ang || 0), px = this.px, blue = this.blue(), self = this;
   var pt = function (t, r, y) { return [r * Math.cos(t), y, ZA + r * Math.sin(t)]; }, pr = function (p) { return C.pr(p[0], p[1], p[2]); };
@@ -65,7 +69,7 @@ FMill.prototype.drawBolas = function (anim, res) {
   for (j = 0; j < 7; j++) for (i = 0; i < 26; i++) { t = (i / 26) * Math.PI * 2 + th; if (!vis(t, 0.15)) continue; hs.push(pr(pt(t, Tr.r + 0.05, Tr.y1 - 8 - j * 10.5))); }
   this.setG('bm.holes', '<path class="ml-hole" d="' + dotPath(hs, 0.9) + '"/>');
   // ---- los levantadores: barras a lo largo del revestimiento de atrás, y su sección en el corte de y0
-  var s = D.R / g.R, lh = g.rb * g.lh * s, nl = g.nl || D.lifters, hw = 4.5 / D.R, ink = blue ? '#06182b' : '#3b4148';
+  var s = D.R / g.R, lh = (g.lhp || g.rb * g.lh) * s, nl = g.nl || D.lifters, hw = 4.5 / D.R, ink = blue ? '#06182b' : '#3b4148';
   var face = function (pts, sh) { self.poly(pts.map(pr)); c.fillStyle = self.metal(sh, blue); c.fill(); c.strokeStyle = ink; c.lineWidth = 0.45 * px; c.stroke(); };
   var lit = function (n) { return 0.3 + 0.55 * Math.max(0, n[0] * C.L[0] + n[1] * C.L[2]); };
   c.save(); this.poly(D.vis); c.clip();
@@ -80,22 +84,50 @@ FMill.prototype.drawBolas = function (anim, res) {
   }
   c.restore();
   // ---- la carga: capas a lo largo del tambor
-  var TROUGH = !!window.ML_TROUGH, NL = 9, dy = (K.y1 - K.y0) / NL, P = anim.P, mat = (res && res.mat && res.mat.color) || '#b9b1a3', inside = [], trough = [];
-  for (i = 0; i < P.length; i++) {
-    var p = P[i]; if (!p.jit || p.jit.length < NL + 2) { p.jit = []; for (j = 0; j < NL + 2; j++) p.jit.push([Math.random() - 0.5, (Math.random() - 0.5) * 0.6, (Math.random() - 0.5) * 0.6]); }
-    var u = (p.x - g.cx) * s, v = (g.cy - p.y) * s, rr = p.r * s;
-    for (j = 0; j < NL + 2; j++) {
-      var jj = p.jit[j], uu = u + jj[1] * rr, vv = v + jj[2] * rr, yy;
-      if (j < 2) yy = K.y0 - (j ? dy * (1.2 + 0.7 * jj[0]) : rr * (1.02 + 0.3 * Math.abs(jj[0])));
-      else { if (!back(uu, vv) || !TROUGH) continue; yy = K.y0 + dy * (j - 2 + 0.5 + 0.7 * jj[0]); }
-      var e = { q: C.pr(uu, yy, ZA + vv), d: C.depth(uu, yy, ZA + vv), r: rr * this.kk, k: p.k, dim: j === 1 ? 0.62 : 1 };
-      (j < 2 ? inside : trough).push(e);
-    }
+  var P = anim.P, n = P.length, mat = (res && res.mat && res.mat.color) || '#b9b1a3', rb = (g.rb || 9) * s;
+  /* con un equipo lento se dibujan menos capas (this.bq baja de 1 a 0,5 si el cuadro pasa de 14 ms, y vuelve a subir) */
+  var t00 = performance.now(), bq = this.bq || 1, NL = Math.max(6, Math.round((K.y1 - K.y0) / (2.3 * rb) * bq)), dy = (K.y1 - K.y0) / NL;
+  var o0 = C.pr(0, 0, ZA), oy = C.pr(0, dy, ZA), Dx = oy[0] - o0[0], Dy = oy[1] - o0[1];
+  // la sección en pantalla (en el plano de y0) y su orden de profundidad
+  var base = new Array(n), ord = [];
+  for (i = 0; i < n; i++) {
+    var p = P[i]; if (!p.jit || p.jit.length < NL + 2) { p.jit = []; for (j = 0; j < NL + 2; j++) p.jit.push([Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5]); }
+    var u = (p.x - g.cx) * s, v = (g.cy - p.y) * s, q = C.pr(u, K.y0, ZA + v);
+    base[i] = { p: p, u: u, v: v, rr: p.r * s, X: q[0], Y: q[1], d: C.depth(u, 0, ZA + v), bk: back(u, v), ms: 1 };
+    ord.push(i);
   }
-  var bydepth = function (a2, b2) { return a2.d - b2.d; };
-  inside.sort(bydepth); trough.sort(bydepth);
+  ord.sort(function (a2, b2) { return base[a2].d - base[b2].d; });
+  /* ¿desde qué capa se ve cada partícula? La capa siguiente queda corrida D en pantalla: la partícula de la capa j la tapa
+     la capa j + m si en la sección hay otra partícula en el punto corrido m·D. m* es la primera m que la tapa: la
+     partícula se dibuja solo en sus últimas m* capas (las del fondo de la carga, en una o dos; las del borde que da hacia
+     el corrimiento y las que vuelan, en todas). Una malla en pantalla de las de la mitad de atrás */
+  var cell = 2.4 * rb * this.kk, grid = {}, kx = function (x) { return Math.floor(x / cell); };
+  for (i = 0; i < n; i++) if (base[i].bk) { var kk2 = kx(base[i].X) + ',' + kx(base[i].Y); (grid[kk2] || (grid[kk2] = [])).push(i); }
+  var covered = function (x, y) {
+    var gx = kx(x), gy = kx(y);
+    for (var a3 = gx - 1; a3 <= gx + 1; a3++) for (var b3 = gy - 1; b3 <= gy + 1; b3++) {
+      var L3 = grid[a3 + ',' + b3]; if (!L3) continue;
+      for (var m3 = 0; m3 < L3.length; m3++) { var f3 = base[L3[m3]], r3 = 0.95 * f3.rr * self.kk; if ((f3.X - x) * (f3.X - x) + (f3.Y - y) * (f3.Y - y) < r3 * r3) return true; }
+    }
+    return false;
+  };
+  for (i = 0; i < n; i++) {
+    var e0 = base[i]; e0.ms = NL + 2; if (!e0.bk) continue;
+    for (var m = 1; m <= NL + 1; m++) if (covered(e0.X - m * Dx, e0.Y - m * Dy)) { e0.ms = m; break; }
+  }
+  /* cada capa de la artesa va girada un poco alrededor del eje (hasta un diámetro y medio de bola en la pared) y cada
+     partícula (también los granos de mineral), corrida hasta media bola: así las bolas de capas vecinas no quedan en fila a lo largo del tambor */
+  var rotA = [0, 0]; for (j = 0; j < NL; j++) { var hz = Math.sin((j + 1) * 91.7) * 43758.5453; rotA.push((hz - Math.floor(hz) - 0.5) * 2 * 1.5 * 2 * rb / D.R); }
+  var self2 = this, put = function (e, jj, yy, dim, al) {
+    var jr = Math.max(e.rr, 0.9 * rb), u0 = e.u + jj[1] * jr, v0 = e.v + jj[2] * jr, ca = Math.cos(al), sa = Math.sin(al), uu = u0 * ca - v0 * sa, vv = u0 * sa + v0 * ca, q2 = C.pr(uu, yy, ZA + vv);
+    self2.sprite(q2[0], q2[1], e.rr * self2.kk, e.p.k, dim, mat, blue);
+  };
+  // detrás y en el corte de y0: la sección entera (de la mitad de atrás, solo lo que asoma por delante de la capa siguiente)
   c.save(); this.poly(D.ell0); c.clip(); this.poly(D.vis); c.clip();
-  for (i = 0; i < inside.length; i++) this.grain(inside[i], mat, blue);
+  for (var jl = 1; jl >= 0; jl--) for (i = 0; i < n; i++) {
+    var e1 = base[ord[i]], jj1 = e1.p.jit[jl]; if (e1.bk && e1.ms <= NL + jl) continue;
+    put(e1, jj1, K.y0 - (jl ? dy * (1.2 + 0.7 * jj1[0]) : e1.rr * (1.02 + 0.3 * Math.abs(jj1[0]))), jl ? 0.5 : 0.74, 0);
+  }
   // la sección de los levantadores en el corte (la mitad de adelante)
   for (i = 0; i < nl; i++) {
     t = th - i * Math.PI * 2 / nl; if (back(Math.cos(t), Math.sin(t))) continue;
@@ -103,17 +135,60 @@ FMill.prototype.drawBolas = function (anim, res) {
     c.fillStyle = blue ? '#4d6f93' : '#5b6168'; c.fill(); c.strokeStyle = ink; c.lineWidth = 0.45 * px; c.stroke();
   }
   c.restore();
+  // la artesa: capa por capa hacia el lector; en la última (la de más adelante) van todas las de la mitad de atrás
   c.save(); this.poly(D.vis); c.clip();
-  for (i = 0; i < trough.length; i++) this.grain(trough[i], mat, blue);
+  /* debajo, la sombra del cuerpo de la carga: cada partícula del lecho (con al menos tres vecinas) barre una franja oscura
+     a lo largo del tambor, y por los huecos entre bolas se ve oscuro, como los intersticios de una carga real, en vez
+     del revestimiento. Las que vuelan no dejan sombra */
+  var sh = [], nr2 = Math.pow(2.3 * rb * this.kk, 2);
+  for (i = 0; i < n; i++) {
+    var e3 = base[i]; if (!e3.bk || e3.p.k !== 'ball') continue;
+    var gx3 = kx(e3.X), gy3 = kx(e3.Y), nb3 = 0;
+    for (var a4 = gx3 - 1; a4 <= gx3 + 1; a4++) for (var b4 = gy3 - 1; b4 <= gy3 + 1; b4++) { var L4 = grid[a4 + ',' + b4]; if (L4) for (var m4 = 0; m4 < L4.length; m4++) { var f4 = base[L4[m4]]; if ((f4.X - e3.X) * (f4.X - e3.X) + (f4.Y - e3.Y) * (f4.Y - e3.Y) < nr2) nb3++; } }
+    if (nb3 >= 4) sh.push(e3);
+  }
+  if (sh.length) {
+    c.beginPath();
+    for (i = 0; i < sh.length; i++) { var e4 = sh[i]; c.moveTo(e4.X + 0.5 * Dx, e4.Y + 0.5 * Dy); c.lineTo(e4.X + (NL - 0.5) * Dx, e4.Y + (NL - 0.5) * Dy); }
+    c.lineCap = 'round'; c.lineWidth = 1.7 * rb * this.kk; c.strokeStyle = blue ? '#0b1d30' : '#2c3138'; c.stroke(); c.lineCap = 'butt';
+  }
+  for (j = 0; j < NL; j++) {
+    for (i = 0; i < n; i++) {
+      var e2 = base[ord[i]]; if (!e2.bk || j < NL - e2.ms) continue;
+      // el mineral va repartido entre las bolas: cada grano aparece en una de cada tres capas, no en fila a lo largo del tambor
+      if (e2.p.k === 'ore' && j < NL - 1 && e2.p.jit[j + 2][0] > -0.17) continue;
+      var jj2 = e2.p.jit[j + 2], yy2 = K.y0 + dy * (j + 0.5 + 0.5 * jj2[0]);
+      put(e2, jj2, yy2, 0.74 + 0.26 * (yy2 - K.y0) / (K.y1 - K.y0), rotA[j + 2]);
+    }
+  }
   // los golpes: un destello donde chocan bola y mineral, en el corte
+  // en una capa cualquiera del tambor si el golpe cae en la mitad de atrás; si no, en el corte de y0
   (anim.fx || []).forEach(function (f) {
     var al = 1 - f.t / 0.45; if (al <= 0) return;
-    var q2 = C.pr((f.x - g.cx) * s, K.y0 + 1, ZA + (g.cy - f.y) * s), L = (1.4 + f.s * 0.1) * px;
+    var fu = (f.x - g.cx) * s, fv = (g.cy - f.y) * s, h = Math.sin(f.x * 12.9898 + f.y * 78.233) * 43758.5453, fy = back(fu, fv) ? K.y0 + (K.y1 - K.y0) * (h - Math.floor(h)) : K.y0 + 1;
+    var q2 = C.pr(fu, fy, ZA + fv), L = (1.4 + Math.min(f.s, 46) * 0.1) * px;
     c.strokeStyle = '#C8452B'; c.globalAlpha = 0.85 * al; c.lineWidth = 1.1 * px; c.beginPath();
     for (var k2 = 0; k2 < 6; k2++) { var an = k2 * Math.PI / 3; c.moveTo(q2[0] + Math.cos(an) * L * 0.35, q2[1] + Math.sin(an) * L * 0.35); c.lineTo(q2[0] + Math.cos(an) * L, q2[1] + Math.sin(an) * L); }
     c.stroke(); c.globalAlpha = 1;
   });
   c.restore();
+  var tb = performance.now() - t00; this.bt = this.bt == null ? tb : this.bt * 0.9 + tb * 0.1; this.bn = (this.bn || 0) + 1;
+  if (this.bn % 30 === 0) { if (this.bt > 14 && bq > 0.5) this.bq = Math.max(0.5, bq - 0.1); else if (this.bt < 7 && bq < 1) this.bq = Math.min(1, bq + 0.1); }
+};
+/* una bola de acero o un grano de mineral dibujados una vez (por tono y por brillo) y escalados a cada partícula: con
+   miles por cuadro, dibujar cada una con sus arcos sería demasiado */
+FMill.prototype.sprite = function (X, Y, R, kind, dim, mat, blue) {
+  var lv = Math.max(0, Math.min(5, Math.round((dim - 0.5) / 0.1))), key = kind + '|' + (kind === 'ball' ? '' : mat) + '|' + (blue ? 1 : 0) + '|' + lv;
+  var cache = this.spr || (this.spr = {}), cv = cache[key];
+  if (!cv) {
+    cv = document.createElement('canvas'); var N = 40; cv.width = cv.height = N;
+    var c2 = cv.getContext('2d'), save = this.ctx, savePx = this.px; this.ctx = c2; this.px = N / 2 / 10;
+    c2.setTransform(N / 20, 0, 0, N / 20, N / 2, N / 2);
+    this.grain({ q: [0, 0], r: 9.4, k: kind, dim: 0.5 + lv * 0.1 }, mat, blue);
+    this.ctx = save; this.px = savePx; cache[key] = cv;
+  }
+  if (R < 0.05) return;
+  this.ctx.drawImage(cv, X - R * 10 / 9.4, Y - R * 10 / 9.4, 2 * R * 10 / 9.4, 2 * R * 10 / 9.4);
 };
 /* una bola de acero o un grano de mineral; dim < 1 oscurece lo que está más adentro del tambor */
 FMill.prototype.grain = function (e, mat, blue) {
