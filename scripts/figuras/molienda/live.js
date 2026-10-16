@@ -38,6 +38,7 @@ FMill.prototype.draw = function (anim, res) {
   else if (this.D.eq === 'mand') this.drawMand(anim, res);
   else if (this.D.eq === 'rod') this.drawRod(anim, res);
   else if (this.D.eq === 'mart') this.drawMart(anim, res);
+  else if (this.D.eq === 'disc') this.drawDisc(anim, res);
   c.setTransform(1, 0, 0, 1, 0, 0);
 };
 
@@ -291,3 +292,45 @@ FMill.prototype.metal = function (sh, blue) {
   var b = blue ? [70, 104, 140] : [118, 128, 140], hi = blue ? [150, 185, 215] : [205, 212, 220];
   return 'rgb(' + Math.round(b[0] + (hi[0] - b[0]) * sh) + ',' + Math.round(b[1] + (hi[1] - b[1]) * sh) + ',' + Math.round(b[2] + (hi[2] - b[2]) * sh) + ')';
 };
+/* ---------- molino de discos ---------- */
+/* La cara del rotor gira con el ángulo del lienzo (sus ranuras, como en el lienzo) y lleva el color de la temperatura de
+   salida; las partículas del lienzo (ρ, θ desde el ojo) van en la luz entre los dos discos. Todo esto vive en el lugar del
+   rotor en el orden de pintura del SVG: la puerta y el disco fijo, que van delante, lo tapan salvo en la mitad abierta. */
+FMill.prototype.drawDisc = function (anim, res) {
+  var D = this.D, C = this.C, g = anim.geo, s = D.R / g.R, ZC = D.zc, th = anim.ang || 0, blue = this.blue(), k = this.kk, i, u;
+  var P2 = function (x, y, z) { var q = C.pr(x, y, z); return q[0].toFixed(1) + ' ' + q[1].toFixed(1); };
+  // del lienzo (y hacia abajo) al plano de la cara: x = ρ·s·cos θ, z = zc − ρ·s·sen θ
+  var heat = Math.max(0, Math.min(1, ((res && res.Tout) - 30) / 70)) || 0, over = res && res.mat && res.mat.tmax && res.Tout > res.mat.tmax;
+  var base = blue ? [52, 86, 122] : [150, 158, 167], hot = over ? [222, 140, 116] : [226, 186, 140], col = [0, 1, 2].map(function (j) { return Math.round(base[j] + (hot[j] - base[j]) * heat * 0.8); });
+  var face = 'M'; for (i = 0; i < 72; i++) { var a = i / 72 * Math.PI * 2; face += (i ? 'L' : '') + P2(D.R * Math.cos(a), D.yr + 0.02, ZC + D.R * Math.sin(a)); }
+  var html = '<path d="' + face + 'Z" style="fill:rgb(' + col.join(',') + ');stroke:none"/>';
+  // las ranuras: 24 barras curvas de 0,22 R a R, como las del lienzo
+  var gr = '';
+  for (var b = 0; b < 24; b++) {
+    var a2 = th + b * Math.PI / 12; gr += 'M';
+    for (u = 0; u <= 10; u++) { var rr = D.R * (0.22 + 0.78 * u / 10), aa = a2 + u * 0.06; gr += (u ? 'L' : '') + P2(rr * Math.cos(aa), D.yr + 0.03, ZC - rr * Math.sin(aa)); }
+  }
+  html += '<path class="ds-groove" d="' + gr + '"/>';
+  // las partículas: gruesas cerca del ojo, finas en la periferia (seis tonos del color del material)
+  var mat = (res && res.mat && res.mat.color) || '#b9b1a3', bins = [[], [], [], [], [], []], P = anim.P;
+  for (i = 0; i < P.length; i++) {
+    var p = P[i], f = Math.max(0, Math.min(1, (p.r - 2) / 5)), x = (p.x - g.cx) * s, z = ZC + (g.cy - p.y) * s, q = C.pr(x, D.yg, z), r = Math.max(1.1, p.r * 1.35 * s * k);
+    bins[Math.min(5, Math.floor(f * 6))].push([q, r]);
+  }
+  for (i = 0; i < 6; i++) {
+    if (!bins[i].length) continue;
+    var d = '';
+    bins[i].forEach(function (e) { var X = e[0][0], Y = e[0][1], r = e[1]; d += 'M' + (X - r).toFixed(1) + ' ' + Y.toFixed(1) + 'a' + r.toFixed(2) + ' ' + r.toFixed(2) + ' 0 1 0 ' + (2 * r).toFixed(2) + ' 0a' + r.toFixed(2) + ' ' + r.toFixed(2) + ' 0 1 0 ' + (-2 * r).toFixed(2) + ' 0'; });
+    html += '<path class="ds-grain" d="' + d + '" style="fill:' + mixHexF(mat, blue ? '#ffffff' : '#fff7ea', (1 - (i + 0.5) / 6) * 0.45) + '"/>';
+  }
+  this.setG('ds.face', html);
+  // lo que hay en la tolva, con el color del material
+  var hp = D.heap.map(function (q) { return C.pr(q[0], q[1], q[2]); }), dots = [];
+  for (i = 0; i < 26; i++) { var fx = ((i * 0.618) % 1), fy = ((i * 0.381 + 0.17) % 1); dots.push([D.heap[0][0] + (D.heap[1][0] - D.heap[0][0]) * (0.06 + 0.88 * fx), D.heap[0][1] + (D.heap[2][1] - D.heap[0][1]) * (0.08 + 0.84 * fy), D.heap[0][2]]); }
+  this.setG('ds.heap', '<path d="M' + hp.map(function (q) { return q[0].toFixed(1) + ' ' + q[1].toFixed(1); }).join('L') + 'Z" style="fill:' + mat + ';stroke:none"/><path class="ds-speck" d="' + dotPath(dots.map(function (q) { return C.pr(q[0], q[1], q[2]); }), 0.9) + '"/>');
+  // los agujeros del alma de la polea, que gira con el rotor
+  var sv = [], Sh = D.sheave;
+  for (i = 0; i < 5; i++) { var t = -th + i * Math.PI * 2 / 5; sv.push(C.pr(Sh.r * Math.cos(t), Sh.y, ZC + Sh.r * Math.sin(t))); }
+  this.setG('ds.sheave', '<path class="ml-hole" d="' + dotPath(sv, 2.2 * this.kk / 2.5) + '"/>');
+};
+function mixHexF(a, b, t) { var pa = parseInt(a.slice(1), 16), pb = parseInt(b.slice(1), 16); return 'rgb(' + [16, 8, 0].map(function (sh) { return Math.round(((pa >> sh) & 255) * (1 - t) + ((pb >> sh) & 255) * t); }).join(',') + ')'; }
