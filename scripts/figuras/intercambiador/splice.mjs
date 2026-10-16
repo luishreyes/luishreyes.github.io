@@ -25,5 +25,12 @@ const put = (a, b, body) => {
 };
 put("/*HXFIG_START*/", "/*HXFIG_END*/", js);
 put("/*HXFIG_CSS_START*/", "/*HXFIG_CSS_END*/", css);
+// el intercambiador de placas (scripts/figuras/placas): una sola figura
+const PLD = join(HERE, "../placas/out");
+if (existsSync(join(PLD, "placas.svg"))) {
+  copyFileSync(join(PLD, "placas.svg"), join(FIG, "placas.svg"));
+  put("/*PLFIG_START*/", "/*PLFIG_END*/", readFileSync(join(PLD, "fig.js"), "utf8").trim() + "\nvar PL_FIG = " + readFileSync(join(PLD, "placas.json"), "utf8").trim() + ";");
+  put("/*PLFIG_CSS_START*/", "/*PLFIG_CSS_END*/", readFileSync(join(PLD, "fig.css"), "utf8").trim());
+}
 writeFileSync(PAGE, page);
-console.log("Explorador_Intercambiadores.html", page.length, "· fig/intercambiador: 9 SVG");
+console.log("Explorador_Intercambiadores.html", page.length, "· fig/intercambiador: tubos y coraza (9)" + (existsSync(join(PLD, "placas.svg")) ? " y placas" : ""));
