@@ -315,6 +315,19 @@ table.t tr:hover td { background: var(--accent-50); }
 /* barra de pestañas a 1280 */
 @media (max-width: 1400px) { .tabs button { padding-left: 12px; padding-right: 12px; } }
 @media (max-width: 1320px) { .tabs button { padding-left: 9px; padding-right: 9px; font-size: 13px; gap: 6px; } .tabs .canv { padding: 0 8px; } }
+.sc-law { display: grid; grid-template-columns: minmax(260px, 1fr) minmax(320px, 1.4fr); gap: 18px; align-items: center; }
+.sc-eq { font-size: 15px; }
+.sc-seg { flex-wrap: wrap; }
+.sc-seg button { flex: 1 1 30%; border-bottom: 1px solid var(--text); }
+.sc-why { margin: 14px 0 6px; font-size: 13.5px; line-height: 1.55; }
+.sc-why b { color: var(--accent-700); }
+.sc-big { margin-top: 10px; }
+.sc-seg button small { display: block; font-size: 10.5px; font-weight: 600; opacity: .8; margin-top: 1px; font-family: var(--font-mono); }
+.sc-big .kpi.keep { background: color-mix(in srgb, var(--accent) 14%, transparent); box-shadow: inset 0 3px 0 var(--accent); }
+table.sc-mat td.k { font-weight: 800; background: color-mix(in srgb, var(--accent) 16%, transparent); }
+table.sc-mat td small { display: block; font-size: 10.5px; color: var(--n600); font-weight: 600; }
+table.sc-mat tr.on td { border-top: 2px solid var(--text); border-bottom: 2px solid var(--text); }
+@media (max-width: 900px) { .sc-law { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
@@ -464,8 +477,18 @@ table.t tr:hover td { background: var(--accent-50); }
 
     <!-- 5 · escalado y calor -->
     <section class="panel" data-panel="es">
-      <div class="ph"><h2>Escalado y transferencia de calor</h2><span class="lbl" id="esLbl"></span><p>Con semejanza geométrica, D₂/D₁ = (V₂/V₁)^⅓ y cada criterio fija una velocidad distinta en la planta. Ninguno conserva todo a la vez: elija el que protege el resultado del proceso. Abajo, el calentamiento del lote por la camisa con la correlación de las diapositivas.</p></div>
-      <div class="card"><div class="card-h"><span class="t">Cuatro criterios de escalado</span><span class="sp"></span><span id="scLbl"></span></div><div class="card-b" style="overflow-x:auto"><table class="t" id="scTable"></table><svg class="ch" id="svgSc" viewBox="0 0 900 250" style="margin-top:14px"></svg></div></div>
+      <div class="ph"><h2>Escalado y transferencia de calor</h2><span class="lbl" id="esLbl"></span><p>Con semejanza geométrica todo el tanque crece con un solo factor, R = D₂/D₁ = (V₂/V₁)^⅓, y queda una sola decisión: la velocidad de la otra escala. La regla es N₂ = N₁·(D₁/D₂)ⁿ, y el exponente n lo fija la variable que se quiere conservar, la que protege el resultado del proceso. Ninguna elección conserva todo a la vez. Abajo, el calentamiento del lote por la camisa con la correlación de las diapositivas.</p></div>
+      <div class="card"><div class="card-h"><span class="t">La ley de escalado</span><span class="sp"></span><span id="scLbl"></span></div><div class="card-b">
+        <div class="sc-law"><div class="sc-eq" id="scEq"></div><div class="sc-pick"><div class="small" style="margin-bottom:6px">¿Qué hay que conservar al cambiar de escala?</div><div class="seg sc-seg" id="scSeg"></div></div></div>
+        <div class="sc-why" id="scWhy"></div>
+        <div class="kpis sc-big" id="scBig"></div>
+      </div></div>
+      <div class="card"><div class="card-h"><span class="t">Lo que le pasa a todo lo demás</span><span class="sp"></span><span id="scMatLbl"></span></div><div class="card-b" style="overflow-x:auto"><table class="t sc-mat" id="scMat"></table><p class="small" id="scMatNote" style="margin:10px 0 0"></p></div></div>
+      <div class="two eq2">
+        <div class="card"><div class="card-h"><span class="t">Velocidad contra tamaño</span><span class="sp"></span><span>log-log</span></div><div class="card-b"><svg class="ch" id="svgScN" viewBox="0 0 520 330"></svg><p class="small" id="scNNote" style="margin:8px 0 0"></p></div></div>
+        <div class="card"><div class="card-h"><span class="t">Potencia en la otra escala</span><span class="sp"></span><span>escala logarítmica</span></div><div class="card-b"><svg class="ch" id="svgSc" viewBox="0 0 520 330"></svg></div></div>
+      </div>
+      <div class="card"><div class="card-h"><span class="t">Los seis criterios con los números del caso</span><span class="sp"></span><span id="scTabLbl"></span></div><div class="card-b" style="overflow-x:auto"><table class="t" id="scTable"></table><p class="small" style="margin:10px 0 0">Aquí la potencia sale del número de potencia de la otra escala, con su Reynolds (y su Froude sin bafles), y θ₉₅ de Grenville con el mismo factor de bafles y de H/T del caso actual: por eso puede diferir un poco de las leyes de la tabla de arriba, que suponen Np constante.</p></div></div>
       <div class="two eq2">
         <div class="card"><div class="card-h"><span class="t">Calentamiento por la camisa</span><span class="sp"></span><span>T(t) del lote</span></div><div class="card-b"><svg class="ch hov" id="svgHeat" viewBox="0 0 520 330"></svg><div class="readout" id="heatRead"></div></div></div>
         <div class="card"><div class="card-h"><span class="t">Coeficientes</span></div><div class="card-b"><div class="spec" id="specHeat"></div><p class="small" id="heatNote" style="margin:10px 0 0"></p></div></div>
@@ -608,6 +631,17 @@ function zwS(imp, TD, CT) { // S de la tabla 9.4 (C/T = 1/4), interpolado en T/D
   else { var k = TD < 3 ? 0 : 1; s = pts[k][1] + (pts[k + 1][1] - pts[k][1]) * (TD - pts[k][0]); }
   return Math.max(2, s) * (1 + 0.8 * Math.max(0, CT - 0.25));
 }
+/* θ₉₅ (Grenville): N·θ ∝ Np^(−1/3)·(T/D)² en turbulento y ∝ 1/Re en transición; sin bafles ×2,5 (orientativo) y tanques altos ×(H/T)^2,43 */
+function th95Of(imp, N, Np, Re, dt, baff, HT) {
+  var th = null, src = '';
+  if (!imp.close) {
+    if (Re >= 6370) { th = 5.20 / (N * Math.cbrt(Np)) / (dt * dt); src = 'Grenville, turbulento'; }
+    else if (Re >= 200) { th = 33500 / (N * Math.cbrt(Np) * Re) / (dt * dt); src = 'Grenville, transición'; }
+    if (th && !baff) { th *= 2.5; src += ' (sin bafles, ×2,5 orientativo)'; }
+    if (th && HT > 1.05) th *= Math.pow(HT, 2.43);
+  } else if (Re < 100) { th = (imp.id === 'cinta' ? 40 : 250) / N; src = imp.id === 'cinta' ? 'cinta con Re < 100, N·θ ≈ 40' : 'ancla con Re < 100, N·θ ≈ 250 (orientativo)'; }
+  return { th: th, src: src };
+}
 function motorFor(P, eta, FS) { var need = P / eta * FS; for (var i = 0; i < IEC.length; i++) if (IEC[i] >= need - 1e-9) return IEC[i]; return null; }
 
 function compute(s) {
@@ -635,13 +669,7 @@ function compute(s) {
   var reg = Re < 10 ? 'laminar' : (Re < 1e4 ? 'transición' : 'turbulento');
   var Q = imp.NQ * N * D * D * D * (close ? 1 : ramp(Math.log10(Re), 0.3, 2.3) * 0.85 + 0.15), tc = V / Q;
   // tiempo de mezclado (95 %), Grenville: turbulento y transición; en laminar no hay correlación general
-  var th95 = null, th95src = '';
-  if (!close) {
-    if (Re >= 6370) { th95 = 5.20 / (N * Math.cbrt(Np)) * Math.pow(T / D, 2); th95src = 'Grenville, turbulento'; }
-    else if (Re >= 200) { th95 = 33500 / (N * Math.cbrt(Np) * Re) * Math.pow(T / D, 2); th95src = 'Grenville, transición'; }
-    if (th95 && !baff) { th95 *= 2.5; th95src += ' (sin bafles, ×2,5 orientativo)'; }
-    if (th95 && s.HT > 1.05) th95 *= Math.pow(s.HT, 2.43);
-  } else if (Re < 100) { th95 = (imp.id === 'cinta' ? 40 : 250) / N; th95src = imp.id === 'cinta' ? 'cinta con Re < 100, N·θ ≈ 40' : 'ancla con Re < 100, N·θ ≈ 250 (orientativo)'; }
+  var thq = th95Of(imp, N, Np, Re, dt, baff, s.HT), th95 = thq.th, th95src = thq.src;
   // McCabe (99 %): turbina n·t_T·(D/T)²·(T/H) ≈ 4 (36 rev para D/T = 1/3, ec. 9.30 y fig. 9.16); HE-3 ec. 9.32
   var tT = (!close && imp.kind === 'radial' && Re > 2000) ? 4.0 / N * Math.pow(T / D, 2) * (H / T) : (imp.id === 'hidro' && Re > 2000 ? 16.9 / N * Math.pow(T / D, 1.67) * Math.pow(H / T, 0.5) : null);
   var vx = vortex(imp, s, geo, omega, Re, baff);
@@ -672,21 +700,38 @@ function compute(s) {
   R.warn = diagnose(R);
   return R;
 }
-/* escalado con similitud geométrica, cuatro criterios (tabla 3 de la Lectura 06) */
+/* Escalado con similitud geométrica: D₂/D₁ = (V₂/V₁)^(1/3) = R y N₂ = N₁·R^(−n). El exponente n sale de la variable que se
+   quiere conservar. Los cuatro primeros son los de la tabla 3 de la Lectura 06; Froude y la suspensión completa
+   (Zwietering, ya en el panel 04) completan la familia. Las potencias y los tiempos de la planta se recalculan con Np(Re). */
+var SCALE_CRIT = [
+  { id: 'tm', short: 'θ₉₅ igual', name: 'Tiempo de mezclado constante', keep: 'N (y θ₉₅)', n: 0, use: 'reacciones rápidas y homogeneización crítica' },
+  { id: 'fr', short: 'Froude', name: 'Froude constante', keep: 'Fr = N²D/g', n: 0.5, use: 'superficie libre y vórtice sin bafles, arrastre de aire, sólidos que flotan', ext: true },
+  { id: 'pv', short: 'P/V', name: 'P/V constante', keep: 'P/V', n: 2 / 3, use: 'gas-líquido, fermentación (kLa), suspensión de finos' },
+  { id: 'js', short: 'Suspensión', name: 'Suspensión completa', keep: 'N/Nⱼₛ', n: 0.85, use: 'sólidos que deben quedar en suspensión', ext: true },
+  { id: 'tip', short: 'Punta', name: 'Velocidad de punta constante', keep: 'πND', n: 1, use: 'cizalla: emulsiones, cultivos celulares, cristales' },
+  { id: 're', short: 'Reynolds', name: 'Reynolds constante', keep: 'ρND²/μ', n: 2, use: 'macromezcla y calor cuando manda el régimen; casi nunca en planta' }];
+/* exponentes de R en turbulento (Np constante) para cada magnitud con N ∝ R^(−n) */
+var SCALE_EXP = [
+  { k: 'N', name: 'N', ex: function (n) { return -n; } },
+  { k: 'P', name: 'P', ex: function (n) { return 5 - 3 * n; } },
+  { k: 'PV', name: 'P/V', ex: function (n) { return 2 - 3 * n; } },
+  { k: 'tq', name: 'Par', ex: function (n) { return 5 - 2 * n; } },
+  { k: 'tip', name: 'Punta πND', ex: function (n) { return 1 - n; } },
+  { k: 'Re', name: 'Re', ex: function (n) { return 2 - n; } },
+  { k: 'Fr', name: 'Fr', ex: function (n) { return 1 - 2 * n; } },
+  { k: 'th', name: 'θ₉₅', ex: function (n) { return n; } },
+  { k: 'QV', name: 'q/V', ex: function (n) { return -n; } },
+  { k: 'js', name: 'N/Nⱼₛ', ex: function (n) { return 0.85 - n; } }];
 function scaleUp(R) {
-  var s = R.s, Rf = Math.cbrt(s.V2 / R.geo.V), crit = [
-    { id: 'pv', name: 'P/V constante', n: Math.pow(Rf, -2 / 3), use: 'gas-líquido, fermentación, suspensión de finos' },
-    { id: 'tip', name: 'Velocidad de punta constante', n: 1 / Rf, use: 'cizalla: emulsiones, cultivos celulares' },
-    { id: 're', name: 'Reynolds constante', n: Math.pow(Rf, -2), use: 'macromezcla, transferencia de calor' },
-    { id: 'tm', name: 'Tiempo de mezclado constante', n: 1, use: 'reacciones rápidas' }];
+  var s = R.s, Rf = Math.cbrt(s.V2 / R.geo.V), crit = SCALE_CRIT.map(function (c) { return Object.assign({}, c, { f: Math.pow(Rf, -c.n) }); });
   var D2 = R.geo.D * Rf, V2 = R.geo.V * Rf * Rf * Rf;
   crit.forEach(function (c) {
-    var N2 = R.N * c.n, Re2 = R.P.rho * N2 * D2 * D2 / R.P.mu, Np2 = npOf(R.imp, Re2, R.baff, N2 * N2 * D2 / G);
-    c.N2 = N2; c.rpm2 = N2 * 60; c.Re2 = Re2; c.P2 = Np2 * R.P.rho * Math.pow(N2, 3) * Math.pow(D2, 5); c.PV2 = c.P2 / V2; c.tip2 = Math.PI * N2 * D2;
-    c.th2 = Re2 >= 6370 ? 5.2 / (N2 * Math.cbrt(Np2)) * Math.pow(1 / R.geo.dt, 2) : (Re2 >= 200 ? 33500 / (N2 * Math.cbrt(Np2) * Re2) * Math.pow(1 / R.geo.dt, 2) : null);
+    var N2 = R.N * c.f, Re2 = R.P.rho * N2 * D2 * D2 / R.P.mu, Fr2 = N2 * N2 * D2 / G, Np2 = npOf(R.imp, Re2, R.baff, Fr2);
+    c.N2 = N2; c.rpm2 = N2 * 60; c.Re2 = Re2; c.Fr2 = Fr2; c.Np2 = Np2; c.P2 = Np2 * R.P.rho * Math.pow(N2, 3) * Math.pow(D2, 5); c.PV2 = c.P2 / V2; c.tip2 = Math.PI * N2 * D2;
+    c.tq2 = c.P2 / (2 * Math.PI * N2); c.th2 = th95Of(R.imp, N2, Np2, Re2, R.geo.dt, R.baff, s.HT).th;
     if (R.sol && R.sol.Njs) { var Njs2 = R.sol.Njs * Math.pow(Rf, -0.85); c.js2 = N2 / Njs2; }
   });
-  return { R: Rf, D2: D2, T2: R.geo.T * Rf, V2: V2, crit: crit };
+  return { R: Rf, D2: D2, T2: R.geo.T * Rf, V2: V2, crit: crit, tq: R.Pw / (2 * Math.PI * R.N) };
 }
 function diagnose(R) {
   var w = [], s = R.s, imp = R.imp;
@@ -1581,7 +1626,7 @@ function fV(V) { return V < 1 ? fmtN(V * 1000, V < 0.01 ? 2 : (V < 0.1 ? 1 : 0))
 function fT(s) { if (s === null || s === undefined || !isFinite(s)) return '—'; return s < 60 ? fmtN(s, s < 10 ? 1 : 0) + ' s' : (s < 3600 ? fmtN(s / 60, 1) + ' min' : fmtN(s / 3600, 1) + ' h'); }
 function fL(m) { return m < 1 ? fmtN(m * 1000, 0) + ' mm' : fmtN(m, 2) + ' m'; }
 function fRPM(r) { return fmtN(r, r < 10 ? 1 : 0); }
-function fPV(x) { return fmtN(x, x < 1 ? 3 : (x < 10 ? 2 : (x < 100 ? 1 : 0))); }
+function fPV(x) { return x > 0 && x < 0.001 ? fmtSci(x, 2) : fmtN(x, x < 1 ? 3 : (x < 10 ? 2 : (x < 100 ? 1 : 0))); }
 
 /* ---------- controles ---------- */
 var SLIDERS = ['lT', 'HT', 'DT', 'CT', 'lrpm', 'etaM', 'FS', 'Tf', 'pMu', 'cRho', 'cMuExp', 'ldp', 'rhoS', 'X', 'vvm', 'lV2', 'Tw', 'T0', 'Tgoal', 'tH'];
@@ -1597,6 +1642,8 @@ function buildControls() {
   $('#resetAll').addEventListener('click', function () { state = cfgState('proyecto'); update(); if (tscene) tscene.reset(); });
   $('#toCfg').addEventListener('click', function () { setTab('cf'); window.scrollTo(0, 0); if (window.innerWidth < 900) { $('#ctl').classList.remove('open'); $('#mobCtl').textContent = 'Controles'; } });
   $('#cfgCards').addEventListener('click', function (e) { var b = e.target.closest('button[data-cfg]'); if (b) loadCfg(b.dataset.cfg); });
+  // el criterio de escalado que se mira: el selector y las filas de la matriz
+  ['#scSeg', '#scMat'].forEach(function (id) { $(id).addEventListener('click', function (e) { var b = e.target.closest('[data-sc]'); if (b && b.dataset.sc !== SCK) { SCK = b.dataset.sc; renderScale(); } }); });
   $('#status').addEventListener('click', function () { setTab('ta'); setTimeout(function () { $('#diagCard').scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 50); });
   $$('.tabs [role=tab]').forEach(function (b) { b.addEventListener('click', function () { setTab(b.dataset.tab); }); });
   $$('.tabs .canv button').forEach(function (b) { b.addEventListener('click', function () { document.documentElement.setAttribute('data-canvas', b.dataset.canvas); $$('.tabs .canv button').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); }); store.set('canvas', b.dataset.canvas); tscene && tscene.layout(); renderTab(); }); });
@@ -1937,20 +1984,117 @@ function renderSolids() {
 
 /* ---------- 5 · escalado y calor ---------- */
 var HTC = null;
+/* el criterio de escalado que se mira: es una opción de vista, no cambia el sistema */
+var SCK = 'pv';
+/* qué conserva cada criterio, de dónde sale su exponente y para qué se usa */
+var SC_TXT = {
+  tm: { keep: 'el tiempo de mezclado θ₉₅', der: 'En turbulento Grenville da θ₉₅ = 5,20·Nₚ<sup>−1/3</sup>·(T/D)²/N. Con la misma geometría Nₚ y T/D no cambian, así que N·θ₉₅ es una constante del tanque: conservar θ₉₅ es conservar N, y n = 0.', src: 'Lectura 06, tabla 3' },
+  fr: { keep: 'el número de Froude, Fr = N²D/g', der: 'Fr₁ = Fr₂ pide N₂²D₂ = N₁²D₁, es decir N₂ = N₁·(D₁/D₂)<sup>1/2</sup>. El Froude compara la inercia con la gravedad y fija la forma de la superficie libre: el vórtice de un tanque sin bafles queda igual de hondo con relación a T.', src: 'no está en las diapositivas: el Froude solo aparece en la corrección de Nₚ sin bafles de la Lectura 06' },
+  pv: { keep: 'la potencia por volumen, P/V', der: 'En turbulento P = Nₚ·ρ·N³·D⁵ y V ∝ D³, así que P/V ∝ N³·D². Conservarla pide N³D² igual en las dos escalas: N₂ = N₁·(D₁/D₂)<sup>2/3</sup>. Igual P/V es igual disipación media ε = P/(ρV), la intensidad de la turbulencia que rompe burbujas y gotas y fija el k<sub>L</sub>a.', src: 'Sesión 09 y Lectura 06' },
+  js: { keep: 'el margen sobre la suspensión completa, N/Nⱼₛ', der: 'Zwietering da Nⱼₛ = S·ν<sup>0,1</sup>·dₚ<sup>0,2</sup>·(gΔρ/ρ)<sup>0,45</sup>·X<sup>0,13</sup>·D<sup>−0,85</sup>. Con la misma geometría S no cambia y con los mismos sólidos y el mismo líquido todo lo demás tampoco, así que Nⱼₛ ∝ D<sup>−0,85</sup>: para seguir al mismo múltiplo de Nⱼₛ, n = 0,85.', src: 'la correlación es la de la Sesión 09; el criterio de escalado que sale de ella no está en las diapositivas' },
+  tip: { keep: 'la velocidad de punta, πND', der: 'πN₂D₂ = πN₁D₁ da N₂ = N₁·(D₁/D₂). La punta fija la cizalla más alta del tanque, la que rompe gotas, flóculos, células o la pectina precipitada.', src: 'Sesión 09 y Lectura 06' },
+  re: { keep: 'el número de Reynolds, ρND²/μ', der: 'ρN₂D₂²/μ = ρN₁D₁²/μ con el mismo líquido da N₂ = N₁·(D₁/D₂)². Conserva el régimen, y con él el Nₚ y el Nusselt de la camisa.', src: 'Sesión 09 y Lectura 06' }
+};
+function scN(n) { return n === 0 ? '0' : (Math.abs(n - 0.5) < 1e-9 ? '½' : (Math.abs(n - 2 / 3) < 1e-9 ? '⅔' : fmtN(n, n % 1 ? 2 : 0))); }
+/* un exponente de R como fracción legible: −2/3, 1/3, 0,55… */
+function scExp(x) {
+  if (Math.abs(x) < 1e-9) return '';
+  var sg = x < 0 ? '−' : '', a = Math.abs(x), k;
+  for (k = 1; k <= 3; k++) { var m = a * k; if (Math.abs(m - Math.round(m)) < 1e-6) return sg + (k === 1 ? String(Math.round(m)) : Math.round(m) + '/' + k); }
+  return sg + fmtN(a, 2);
+}
+function scMul(f) { var d = function (v) { return v < 10 ? (v < 1.995 ? 2 : 1) : 0; }; return Math.abs(f - 1) < 0.005 ? 'igual' : (f >= 1 ? '×' + fmtN(f, d(f)) : '÷' + fmtN(1 / f, d(1 / f))); }
 function renderScale() {
-  var r = R, sc = r.scale;
+  var r = R, sc = r.scale, Rf = sc.R, crit = sc.crit, hasJs = !!(r.sol && r.sol.Njs), c = byId(crit, SCK) || crit[2], up = Rf >= 1;
   $('#esLbl').textContent = 'de ' + fV(r.geo.V) + ' a ' + fV(sc.V2);
   $('#scLbl').textContent = 'T₂ = ' + fL(sc.T2) + ' · D₂ = ' + fL(sc.D2);
-  $('#scTable').innerHTML = '<tr><th>Criterio</th><th>N₂</th><th>N₂/N₁</th><th>P₂</th><th>P₂/V₂</th><th>Punta</th><th>Re₂</th><th>θ₉₅</th>' + (r.sol && r.sol.Njs ? '<th>N₂/Nⱼₛ₂</th>' : '') + '<th style="text-align:left">Para</th></tr>'
-    + '<tr style="color:var(--n600)"><td>Escala actual</td><td>' + fRPM(r.N * 60) + ' rpm</td><td>1</td><td>' + fW(r.Pw) + '</td><td>' + fmtN(r.PV / 1000, 3) + '</td><td>' + fmtN(r.tip, 2) + '</td><td>' + fmtRe(r.Re) + '</td><td>' + fT(r.th95) + '</td>' + (r.sol && r.sol.Njs ? '<td>' + fmtN(r.sol.ratio, 2) + '</td>' : '') + '<td></td></tr>'
-    + sc.crit.map(function (c) { return '<tr><td>' + esc(c.name) + '</td><td>' + fRPM(c.rpm2) + ' rpm</td><td>' + fmtN(c.n, 3) + '</td><td>' + fW(c.P2) + '</td><td>' + fPV(c.PV2 / 1000) + '</td><td>' + fmtN(c.tip2, 2) + '</td><td>' + fmtRe(c.Re2) + '</td><td>' + fT(c.th2) + '</td>' + (r.sol && r.sol.Njs ? '<td' + (c.js2 < 1 ? ' style="color:var(--redline);font-weight:800"' : '') + '>' + fmtN(c.js2, 2) + '</td>' : '') + '<td style="text-align:left;font-weight:500;color:var(--n700)">' + esc(c.use) + '</td></tr>'; }).join('');
-  // barras de potencia (escala logarítmica)
-  var ps = sc.crit.map(function (c) { return c.P2; }).concat([r.Pw]), pmx = Math.max.apply(null, ps), pmn = Math.min.apply(null, ps), lo = Math.floor(L10(pmn)) , hi = Math.ceil(L10(pmx)) + 0.001, X0 = 230, X1 = 730, out = '';
-  var X = function (v) { return X0 + (L10(v) - lo) / (hi - lo) * (X1 - X0); };
-  for (var e = lo; e <= hi; e++) { out += LN(X(Math.pow(10, e)), 8, X(Math.pow(10, e)), 230, 'stroke:var(--n300);stroke-width:.7'); out += TX(X(Math.pow(10, e)), 246, fW(Math.pow(10, e)), { a: 'middle', fs: 10, c: MUT }); }
-  sc.crit.forEach(function (c, i) { var y = 14 + i * 52; out += TX(X0 - 10, y + 22, c.name, { a: 'end', fs: 12, fw: 700 }); out += E('rect', { x: X0, y: y + 4, width: r1(Math.max(1, X(c.P2) - X0)), height: 26, style: 'fill:' + (c.js2 !== undefined && c.js2 < 1 ? 'var(--redline)' : 'var(--accent-300)') }); out += TX(X(c.P2) + 6, y + 22, fW(c.P2) + ' · ' + fRPM(c.rpm2) + ' rpm', { fs: 11.5, fw: 700 }); });
-  out += LN(X(r.Pw), 8, X(r.Pw), 222, 'stroke:var(--ink);stroke-width:1.4;stroke-dasharray:5 4'); out += TX(X(r.Pw) + 4, 8 + 214, 'escala actual', { fs: 10, c: 'var(--ink)' });
+  // la ley con los números del caso
+  var nT = c.n === 0 ? '0' : (Math.abs(c.n - 0.5) < 1e-9 ? '\\tfrac{1}{2}' : (Math.abs(c.n - 2 / 3) < 1e-9 ? '\\tfrac{2}{3}' : n2(c.n, c.n % 1 ? 2 : 0)));
+  tex('scEq', '\\begin{aligned}R&=\\frac{D_2}{D_1}=\\left(\\frac{V_2}{V_1}\\right)^{1/3}=' + n2(Rf, Rf < 1 ? 3 : 2) + '\\\\[2pt]N_2&=N_1\\left(\\frac{D_1}{D_2}\\right)^{n}=N_1\\,R^{-n}\\\\[2pt]&=' + n2(r.N * 60, r.N * 60 < 10 ? 1 : 0) + '\\ \\text{rpm}\\times' + n2(Rf, Rf < 1 ? 3 : 2) + '^{-' + nT + '}=' + n2(c.rpm2, c.rpm2 < 10 ? 1 : 0) + '\\ \\text{rpm}\\end{aligned}', true);
+  // el selector
+  $('#scSeg').innerHTML = crit.map(function (q) { return '<button type="button" data-sc="' + q.id + '" aria-pressed="' + (q.id === c.id) + '">' + esc(q.short) + '<small>n = ' + scN(q.n) + '</small></button>'; }).join('');
+  // por qué, para qué y qué cuesta
+  var t = SC_TXT[c.id], ex = function (k) { return SCALE_EXP.filter(function (q) { return q.k === k; })[0].ex(c.n); }, fx = function (k) { return Math.pow(Rf, ex(k)); };
+  var lose = { tm: ['PV', 'tip', 'P'], fr: ['PV', 'th', 'tip'], pv: ['th', 'tip', 'QV'], js: ['PV', 'th', 'tip'], tip: ['PV', 'th', 'Re'], re: ['PV', 'tip', 'th'] }[c.id];
+  var WN = { PV: 'la P/V', th: 'el θ₉₅', tip: 'la velocidad de punta', P: 'la potencia', QV: 'el bombeo por volumen q/V', Re: 'el Reynolds' };
+  var cost = lose.map(function (k) { var e = ex(k); return WN[k] + ' cambia con R' + (e ? '<sup>' + scExp(e) + '</sup>' : '⁰') + ', ' + scMul(fx(k)); }).join('; ');
+  var verdict = {
+    tm: up ? 'Al crecer, la potencia sube con R⁵: subir de escala con el mismo θ₉₅ se vuelve imposible pronto, y en planta se acepta un θ₉₅ mayor o se divide la alimentación.' : 'Al reducir la escala con el mismo N el tanque chico queda con mucha menos P/V: mezcla igual de rápido, pero no reproduce la turbulencia de la planta.',
+    fr: 'Solo importa cuando hay superficie libre que se deforma: sin bafles, o con sólidos que flotan y hay que hundir desde la superficie. Con bafles el vórtice no se forma y el Froude deja de mandar.',
+    pv: up ? 'Es el compromiso de la industria (Sesión 09): la turbulencia media queda igual, pero el tanque grande mezcla más despacio y la punta corre más rápido, con más cizalla junto a las palas.' : 'Al bajar de escala con la misma P/V el tanque chico mezcla más rápido que la planta: un ensayo de laboratorio a P/V constante subestima el θ₉₅ industrial.',
+    js: (hasJs ? 'Con los sólidos de este caso, Nⱼₛ₂ = ' + fRPM(r.sol.Njs * 60 * Math.pow(Rf, -0.85)) + ' rpm y la otra escala opera al mismo ' + fmtN(r.sol.ratio, 2) + '·Nⱼₛ. ' : 'Este caso no tiene sólidos: el criterio se muestra con la misma ley, pero no hay Nⱼₛ que respetar. ') + 'Pide menos P/V que P/V constante al crecer, porque un impulsor grande levanta los sólidos con menos velocidad.',
+    tip: up ? 'La cizalla máxima queda igual, pero la P/V cae y el mezclado se hace más lento. Gasta menos potencia que P/V constante: P ∝ R² en lugar de R³.' : 'Al bajar de escala con la misma punta el tanque chico recibe más P/V que la planta.',
+    re: up ? 'En la planta la velocidad queda tan baja que el tanque casi no se agita: con R = ' + fmtN(Rf, 2) + ' la P/V se divide por ' + fmtN(1 / fx('PV'), 0) + '. Por eso casi nunca se usa al subir de escala; sirve para entender la transición laminar.' : 'Al bajar de escala el tanque chico necesita velocidades enormes para el mismo Reynolds.'
+  }[c.id];
+  $('#scWhy').innerHTML = '<p style="margin:0 0 6px"><b>Conserva ' + t.keep + '.</b> ' + t.der + '</p>'
+    + '<p style="margin:0 0 6px"><b>Se usa para</b> ' + esc(c.use) + '. <b>Lo que cuesta:</b> ' + cost + '. ' + verdict + '</p>'
+    + '<p class="small" style="margin:0">Fuente: ' + t.src + (c.ext ? '. Se agrega aquí porque completa la lista de lo que se puede conservar' : '') + '.</p>';
+  // los números grandes de la otra escala
+  var mot = motorFor(c.P2 / 1000, state.etaM, state.FS), K = function (lbl, v, u, keep, bad) { return '<div class="kpi' + (keep ? ' keep' : '') + (bad ? ' bad' : '') + '"><div class="lbl">' + lbl + '</div><div class="v">' + v + '</div><div class="u">' + u + '</div></div>'; };
+  var big = K('Velocidad N₂', fRPM(c.rpm2) + '<small>rpm</small>', scMul(c.f) + ' · escala 1: ' + fRPM(r.N * 60) + ' rpm', c.id === 'tm')
+    + K('Potencia P₂', fW(c.P2), mot ? 'motor IEC ' + fmtN(mot, mot < 1 ? 2 : (mot < 10 ? 1 : 0)) + ' kW' : 'más de 315 kW', false, !mot)
+    + K('P₂/V₂', fPV(c.PV2 / 1000) + '<small>kW/m³</small>', scMul(c.PV2 / r.PV) + ' · ' + pvClass(c.PV2 / 1000), c.id === 'pv')
+    + K('Punta πN₂D₂', fmtN(c.tip2, 2) + '<small>m/s</small>', scMul(c.tip2 / r.tip) + ' · escala 1: ' + fmtN(r.tip, 2), c.id === 'tip', c.tip2 > 6)
+    + K('Mezclado θ₉₅', c.th2 ? fT(c.th2) : '—', c.th2 && r.th95 ? scMul(c.th2 / r.th95) + ' · escala 1: ' + fT(r.th95) : 'sin correlación en este régimen', c.id === 'tm')
+    + (hasJs ? K('N₂/Nⱼₛ₂', fmtN(c.js2, 2), c.js2 < 1 ? 'por debajo: sedimenta' : (c.js2 < 1.2 ? 'apenas sobre Nⱼₛ' : 'suspensión completa'), c.id === 'js', c.js2 < 1)
+      : K('Reynolds Re₂', fmtRe(c.Re2), scMul(c.Re2 / r.Re) + ' · ' + (c.Re2 > 1e4 ? 'turbulento' : (c.Re2 < 10 ? 'laminar' : 'transición')), c.id === 're', c.Re2 < 1e4 && r.Re >= 1e4));
+  $('#scBig').innerHTML = big;
+  // la matriz: exponente de R y factor numérico de cada magnitud con cada criterio
+  var cols = SCALE_EXP.filter(function (q) { return q.k !== 'js' || hasJs; });
+  var held = function (q, e) { return Math.abs(e) < 1e-9; };
+  $('#scMatLbl').textContent = 'R = ' + fmtN(Rf, Rf < 1 ? 3 : 2);
+  $('#scMat').innerHTML = '<tr><th style="text-align:left">Criterio</th><th>n</th>' + cols.map(function (q) { return '<th>' + esc(q.name) + '</th>'; }).join('') + '</tr>'
+    + crit.map(function (q) {
+      return '<tr data-sc="' + q.id + '"' + (q.id === c.id ? ' class="on"' : '') + ' style="cursor:pointer"><td style="text-align:left;font-weight:700">' + esc(q.short) + '</td><td>' + scN(q.n) + '</td>' + cols.map(function (k) {
+        var e = k.ex(q.n), f = Math.pow(Rf, e);
+        return held(k, e) ? '<td class="k">igual<small>R⁰</small></td>' : '<td>' + scMul(f) + '<small>R<sup>' + scExp(e) + '</sup></small></td>';
+      }).join('') + '</tr>';
+    }).join('');
+  $('#scMatNote').innerHTML = 'Cada casilla es el factor de la otra escala sobre la actual, con su exponente de R debajo. Salen de la misma geometría con Nₚ constante (turbulento): P = Nₚ·ρ·N³·D⁵, V ∝ D³, par = P/(2πN), q = N<sub>Q</sub>·N·D³, N·θ₉₅ constante (Grenville)' + (hasJs ? ' y Nⱼₛ ∝ D<sup>−0,85</sup> (Zwietering)' : '') + '. Resaltado lo que cada criterio conserva; toque una fila para elegirlo. Ninguna fila deja todo igual: escalar es escoger qué se sacrifica.'
+    + (r.Re < 1e4 ? ' <b>El caso no está en turbulento (Re = ' + fmtRe(r.Re) + '):</b> Nₚ cambia con el Reynolds y estas leyes son solo aproximadas; la tabla de abajo usa el Nₚ de cada escala.' : '');
+  // velocidad contra tamaño: cada criterio es una recta de pendiente −n en log-log, de la escala actual al impulsor de la otra
+  var D1 = r.geo.D, D2 = sc.D2, N1 = r.N * 60, Njs1 = hasJs ? r.sol.Njs * 60 : 0, ys = [N1];
+  crit.forEach(function (q) { ys.push(q.rpm2); });
+  if (hasJs) ys.push(Njs1, Njs1 * Math.pow(Rf, -0.85));
+  var ya = Math.min.apply(null, ys) / 1.6, yb = Math.max.apply(null, ys) * 1.6;
+  if (L10(yb / ya) < 1.2) { var mid = Math.sqrt(ya * yb); ya = mid / 4; yb = mid * 4; }
+  // del lado de la otra escala quedan 125 px libres para las etiquetas
+  var span = Math.abs(L10(D2 / D1)) + L10(1.35), tot = span * 370 / 245, xa = up ? D1 / 1.35 : D2 / Math.pow(10, tot - span), xb = up ? D2 * Math.pow(10, tot - span) : D1 * 1.35;
+  var a = axes({ x0: 60, x1: 430, y0: 12, y1: 284, xmin: xa, xmax: xb, ymin: ya, ymax: yb, xlog: true, ylog: true, xlab: 'diámetro del impulsor D (m) · D₁ = ' + fL(D1) + ' · D₂ = ' + fL(D2), ylab: 'N (rpm)', clip: 'cpScN' }), o = a.svg, labs = [];
+  var seg = function (N0, n) { return poly([[a.X(D1), a.Y(N0)], [a.X(D2), a.Y(N0 * Math.pow(Rf, -n))]]); };
+  o += LN(a.X(D2), 12, a.X(D2), 284, 'stroke:var(--ink);stroke-width:1;stroke-dasharray:3 4');
+  if (hasJs) { o += PATH(seg(Njs1, 0.85), 'stroke:var(--redline);stroke-width:1.6;stroke-dasharray:6 4', 'cpScN'); labs.push({ y: a.Y(Njs1 * Math.pow(Rf, -0.85)), t: 'Nⱼₛ · ' + fRPM(Njs1 * Math.pow(Rf, -0.85)) + ' rpm', c: 'var(--redline)', w: 700 }); }
+  crit.forEach(function (q) { if (q.id !== c.id) o += PATH(seg(N1, q.n), 'stroke:var(--n500);stroke-width:1.3;opacity:.8', 'cpScN'); });
+  o += PATH(seg(N1, c.n), 'stroke:var(--hl);stroke-width:3', 'cpScN');
+  crit.forEach(function (q) { var on = q.id === c.id; if (!on) o += E('circle', { cx: r1(a.X(D2)), cy: r1(a.Y(q.rpm2)), r: 3.2, style: 'fill:var(--n500)' }); labs.push({ y: a.Y(q.rpm2), t: q.short + ' · ' + fRPM(q.rpm2) + ' rpm', c: on ? 'var(--hl)' : 'var(--n600)', w: on ? 800 : 600 }); });
+  o += dot(a.X(D2), a.Y(c.rpm2), 6.5);
+  o += dot(a.X(D1), a.Y(N1), 5.5, 'var(--ink)') + TX(a.X(D1) + (up ? 8 : -8), a.Y(N1) + (up ? -10 : 18), 'escala actual · ' + fRPM(N1) + ' rpm', { fs: 10.5, fw: 700, a: up ? 'start' : 'end' });
+  // las etiquetas junto a la otra escala, sin encimarse
+  labs.sort(function (p, q) { return p.y - q.y; });
+  for (var i = 1; i < labs.length; i++) if (labs[i].y - labs[i - 1].y < 12.5) labs[i].y = labs[i - 1].y + 12.5;
+  var over = labs.length ? labs[labs.length - 1].y - 278 : 0; if (over > 0) labs.forEach(function (l) { l.y -= over; });
+  labs.forEach(function (l) { o += TX(a.X(D2) + (up ? 10 : -10), l.y + 3.5, l.t, { fs: 10, fw: l.w, c: l.c, a: up ? 'start' : 'end' }); });
+  $('#svgScN').innerHTML = o;
+  $('#scNNote').innerHTML = 'Con N ∝ D<sup>−n</sup> cada criterio es una recta de pendiente −n que sale de la escala actual; la vertical punteada es el impulsor de la otra escala. Cuanto mayor el salto de tamaño, más se abren las rectas: con R = ' + fmtN(Rf, Rf < 1 ? 3 : 2) + ' el Reynolds constante lleva la velocidad a ' + fRPM(byId(crit, 're').rpm2) + ' rpm y el θ₉₅ constante la deja en ' + fRPM(N1) + ' rpm.' + (hasJs ? ' La recta roja es Nⱼₛ, que cambia con D<sup>−0,85</sup>: por debajo de ella los sólidos se asientan.' : '');
+  // potencia en la otra escala con cada criterio (escala logarítmica)
+  var ps = crit.map(function (q) { return q.P2; }).concat([r.Pw]), lo = Math.floor(L10(Math.min.apply(null, ps))), hi = Math.ceil(L10(Math.max.apply(null, ps)) + 1e-9);
+  if (hi - lo < 2) hi = lo + 2;
+  var X0 = 96, X1 = 404, X = function (v) { return X0 + (L10(v) - lo) / (hi - lo) * (X1 - X0); }, out = E('rect', { x: 0, y: 0, width: 520, height: 330, class: 'chart-bg' });
+  var dec = function (e) { var v = Math.pow(10, e); return e >= 3 ? fmtN(v / 1000, e > 3 ? 0 : 0) + ' kW' : (e >= 0 ? fmtN(v, 0) + ' W' : fmtN(v, -e) + ' W'); }, every = hi - lo > 5 ? 2 : 1;
+  for (var e = lo; e <= hi; e++) { var xe = X(Math.pow(10, e)); out += LN(xe, 6, xe, 282, 'stroke:var(--n300);stroke-width:.7'); if ((e - lo) % every === 0) out += TX(xe, 300, dec(e), { a: 'middle', fs: 10, c: MUT }); }
+  crit.forEach(function (q, i) {
+    var y = 10 + i * 45, on = q.id === c.id, bad = q.js2 !== undefined && q.js2 < 1, w = Math.max(1, X(q.P2) - X0);
+    out += TX(X0 - 8, y + 15, q.short, { a: 'end', fs: 12, fw: on ? 800 : 650, c: on ? 'var(--hl)' : null }) + TX(X0 - 8, y + 28, fRPM(q.rpm2) + ' rpm', { a: 'end', fs: 10, c: MUT });
+    out += E('rect', { x: X0, y: y + 3, width: r1(w), height: 22, style: 'fill:' + (bad ? 'var(--redline)' : (on ? 'var(--hl)' : 'var(--accent-300)')) });
+    out += TX(X0 + w + 6, y + 18, fW(q.P2), { fs: 11.5, fw: 700 });
+  });
+  out += LN(X(r.Pw), 6, X(r.Pw), 282, 'stroke:var(--ink);stroke-width:1.4;stroke-dasharray:5 4') + TX(X(r.Pw) + 4, 318, 'escala actual ' + fW(r.Pw), { fs: 10, c: 'var(--ink)', a: X(r.Pw) > 300 ? 'end' : 'start' });
   $('#svgSc').innerHTML = out;
+  // la tabla de los seis criterios con el Nₚ de cada escala
+  $('#scTabLbl').textContent = 'Nₚ con el Re de cada escala';
+  $('#scTable').innerHTML = '<tr><th style="text-align:left">Criterio</th><th>N₂</th><th>N₂/N₁</th><th>P₂</th><th>P₂/V₂ (kW/m³)</th><th>Punta (m/s)</th><th>Re₂</th><th>Nₚ₂</th><th>θ₉₅</th>' + (hasJs ? '<th>N₂/Nⱼₛ₂</th>' : '') + '</tr>'
+    + '<tr style="color:var(--n600)"><td style="text-align:left">Escala actual</td><td>' + fRPM(r.N * 60) + ' rpm</td><td>1</td><td>' + fW(r.Pw) + '</td><td>' + fPV(r.PV / 1000) + '</td><td>' + fmtN(r.tip, 2) + '</td><td>' + fmtRe(r.Re) + '</td><td>' + fmtN(r.Np, 2) + '</td><td>' + fT(r.th95) + '</td>' + (hasJs ? '<td>' + fmtN(r.sol.ratio, 2) + '</td>' : '') + '</tr>'
+    + crit.map(function (q) { return '<tr' + (q.id === c.id ? ' class="on"' : '') + '><td style="text-align:left;min-width:190px">' + esc(q.name) + '<small style="display:block;font-weight:500;color:var(--n600);white-space:normal">' + esc(q.use) + '</small></td><td>' + fRPM(q.rpm2) + ' rpm</td><td>' + fmtN(q.f, q.f < 0.1 ? 3 : 2) + '</td><td>' + fW(q.P2) + '</td><td>' + fPV(q.PV2 / 1000) + '</td><td' + (q.tip2 > 6 ? ' style="color:var(--redline);font-weight:800"' : '') + '>' + fmtN(q.tip2, 2) + '</td><td>' + fmtRe(q.Re2) + '</td><td>' + fmtN(q.Np2, 2) + '</td><td>' + fT(q.th2) + '</td>' + (hasJs ? '<td' + (q.js2 < 1 ? ' style="color:var(--redline);font-weight:800"' : '') + '>' + fmtN(q.js2, 2) + '</td>' : '') + '</tr>'; }).join('');
   // calentamiento
   var hq = r.heat, s = state, mcp = hq.mass * r.P.cp, tau = mcp / (hq.U * hq.Aj), tauR = hq.Areq ? mcp / (hq.U * hq.Areq) : null;
   var tEnd = Math.max(s.tH * 60 * 1.5, hq.t ? hq.t * 1.4 : 0, 600), pts = [], ptsR = [];
@@ -1986,7 +2130,7 @@ function renderEqs() {
     ['Suspensión (Zwietering)', '\\begin{aligned}N_{js}&=S\\,\\nu^{0{,}1}d_p^{0{,}2}\\left(\\frac{g\\,\\Delta\\rho}{\\rho}\\right)^{0{,}45}X^{0{,}13}D^{-0{,}85}' + (so && so.Njs ? '\\\\&=' + n2(so.Njs, 3) + '\\ \\text{rev/s}=' + n2(so.Njs * 60, 0) + '\\ \\text{rpm}' : '') + '\\end{aligned}', 'S de la tabla 9.4 según impulsor, T/D y C/T. X es 100 × masa de sólido / masa de líquido.'],
     ['Escalas de turbulencia', '\\varepsilon=\\frac{P}{\\rho V}=' + n2(r.eps, 4) + '\\ \\tfrac{\\text{W}}{\\text{kg}},\\qquad \\eta=\\left(\\frac{\\nu^3}{\\varepsilon}\\right)^{1/4}=' + n2(r.etaK * 1e6, 0) + '\\ \\mu\\text{m}', 'Los remolinos más pequeños: cerca del impulsor ε es hasta ' + fmtN(imp.emax, 0) + ' veces la media.'],
     ['Vórtice (Rankine)', '\\begin{aligned}z(r)&=\\frac{\\Omega_f^2r^2}{2g}&&(r<r_c)\\\\z(r)&=\\frac{\\Omega_f^2r_c^2}{g}\\left(1-\\frac{r_c^2}{2r^2}\\right)&&(r>r_c)\\end{aligned}', 'Núcleo de radio r<sub>c</sub> ≈ 0,55·D que gira a Ω<sub>f</sub> = κ·ω (κ ≈ 0,42 en turbulento, Nagata). Solo sin bafles.'],
-    ['Escalado geométrico', '\\begin{aligned}&N_2=N_1\\left(\\frac{D_1}{D_2}\\right)^{n}\\\\&n=\\tfrac{2}{3}\\ (P/V),\\ 1\\ (\\pi N D),\\ 2\\ (Re),\\ 0\\ (\\theta)\\end{aligned}', 'Del ejemplo de las diapositivas (1:10 en D): N₂ = 0,22·N₁ con P/V, 0,1·N₁ con la punta y 0,01·N₁ con Re.'],
+    ['Escalado geométrico', '\\begin{aligned}&R=\\frac{D_2}{D_1}=\\left(\\frac{V_2}{V_1}\\right)^{1/3},\\quad N_2=N_1\\left(\\frac{D_1}{D_2}\\right)^{n}\\\\&n=0\\ (\\theta_{95}),\\ \\tfrac{1}{2}\\ (Fr),\\ \\tfrac{2}{3}\\ (P/V),\\ 0{,}85\\ (N_{js}),\\ 1\\ (\\pi N D),\\ 2\\ (Re)\\end{aligned}', 'Del ejemplo de las diapositivas (1:10 en D): N₂ = 0,22·N₁ con P/V, 0,1·N₁ con la punta y 0,01·N₁ con Re. El Froude y la suspensión completa no están en las diapositivas: salen de Fr = N²D/g y de Zwietering (Nⱼₛ ∝ D^−0,85). La pestaña 5 muestra qué le pasa a todo lo demás con cada uno.'],
     ['Transferencia de calor', '\\begin{aligned}Nu&=\\frac{hT}{k}=0{,}36\\,Re^{0{,}67}Pr^{0{,}33}\\left(\\frac{\\mu}{\\mu_w}\\right)^{0{,}14}\\\\&=' + n2(r.heat.Nu, 0) + '\\ \\Rightarrow\\ h=' + n2(r.heat.hj, 0) + '\\ \\tfrac{\\text{W}}{\\text{m}^2\\text{K}}\\end{aligned}', 'La correlación de las diapositivas. El lote se calienta como T = T<sub>w</sub> − (T<sub>w</sub> − T₀)·e<sup>−t·UA/(m·c<sub>p</sub>)</sup>.'],
     ['Gas (Rushton)', '\\begin{aligned}&Fl=\\frac{Q_g}{ND^3},\\quad Fl_F=30\\,Fr\\left(\\frac{D}{T}\\right)^{3{,}5}\\\\&N_{CD}=\\frac{4\\,Q_g^{0{,}5}\\,T^{0{,}25}}{D^2}\\end{aligned}', 'Inundación y dispersión completa (Nienow). Potencia gaseada: P<sub>g</sub>/P = 1 − 12,6·Fl si Fl &lt; 0,035 y 0,62 − 1,85·Fl si no (Cui et al.).'],
     ['Transferencia de oxígeno', 'k_La=C\\left(\\frac{P_g}{V}\\right)^{\\alpha}v_s^{\\beta}' + (gq ? '=' + n2(gq.kLa * 3600, 0) + '\\ \\text{h}^{-1}' : ''), 'van\'t Riet: C = 0,026, α = 0,4, β = 0,5 en agua; C = 0,002, α = 0,7, β = 0,2 con sales (SI).']
@@ -2032,7 +2176,7 @@ function renderConfigs() {
     '<b>Deflectores (01):</b> quite los bafles y mire la vista en planta de la pestaña 1. Con Re por encima de 300 el líquido gira en bloque, aparece el vórtice y Nₚ cae a una fracción del valor con bafles, corregida con el número de Froude.',
     '<b>Operación (03):</b> doble la velocidad. En turbulento la potencia se multiplica por ocho (P ∝ N³) y θ₉₅ solo baja a la mitad; la pestaña 3 lo muestra contra N.',
     '<b>Fluido (04):</b> pase a un líquido más viscoso, como la glicerina, con la misma geometría. El Reynolds cae y el punto recorre la curva de la pestaña 2: en transición Nₚ queda algo por debajo del turbulento y, ya en laminar, crece con Nₚ·Re constante y la potencia es proporcional a la viscosidad.',
-    '<b>Escalado (06):</b> suba el volumen de la planta y compare los cuatro criterios en la pestaña 5. Con la misma P/V la velocidad de punta crece; con la misma punta, la P/V cae.'
+    '<b>Escalado (06):</b> en la pestaña 5 escoja qué conservar y mire la matriz: con la misma P/V la punta crece y el θ₉₅ se alarga; con la misma punta la P/V cae. Ningún criterio deja todo igual.'
   ].map(function (x) { return '<li>' + x + '</li>'; }).join('');
 }
 
