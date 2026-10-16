@@ -1,0 +1,75 @@
+# Equipos de molienda en isométrico (skill `anatomy`)
+
+Figuras de la pestaña «Equipo en operación» del Explorador de molienda y tamizado (POU 2026-20), vista «Máquina». Son
+cuatro de los cinco equipos del explorador, cada uno una máquina real abierta para ver por dentro:
+
+- **molino de bolas** (`bolas.mjs`): tambor de 3 m con revestimiento y 14 levantadores, bridas, cabezas cónicas,
+  muñones en chumaceras sobre pedestales de concreto, corona y piñón con sus chumaceras, acople, reductor y motor, tolva
+  con su chute que entra por el muñón de alimentación y trommel de descarga con su tolva. Entre dos planos (y = −118 y
+  122 cm) se quita la mitad del tambor que mira al lector: queda la artesa de atrás con sus levantadores y, al fondo,
+  el corte del lado de la descarga con la sección entera de la carga;
+- **trituradora de mandíbulas** de un solo toggle, 600 × 900 mm (`mand.mjs`): bastidor de placas con la pared de adelante
+  y el bloque del toggle, mandíbulas corrugadas, placa de desgaste de la tolva, biela colgada del eje excéntrico, toggle
+  entre sus asientos con las lainas de ajuste, varilla de tensión con su resorte, chumacera y volante con canales,
+  correas al motor sobre su base deslizante y banda de descarga. Se quita la placa lateral de adelante (con su chumacera,
+  su volante y la punta del eje);
+- **molino de rodillos dobles**, 600 × 400 mm (`rod.mjs`): dos rodillos en chumaceras sobre un bastidor de cuatro patas,
+  el de la derecha flotante sobre su placa deslizante con los resortes de alivio contra un tope, carcasa con la tolva
+  hasta la boca, caja de producto y, atrás, poleas con correas a dos motores a la altura de los ejes. Se quita la tapa
+  lateral de adelante de la carcasa;
+- **molino de martillos** de rotor en voladizo, carcasa de 80 cm (`mart.mjs`): carcasa con la criba perforada abajo, boca
+  con chute y tolva arriba a la izquierda, cunas, tolva de descarga, eje en dos chumaceras sobre su pedestal, polea y
+  correas al motor. El rotor tiene cubo, cuatro discos con pasadores y cuatro filas de tres martillos rígidos. Se quita
+  la tapa de adelante.
+
+El molino de discos no tiene figura: sigue con su animación en el plano.
+
+**La mueve la simulación del explorador.** `MillAnim` (elementos discretos) corre en un lienzo virtual de 900 × 490 px
+mientras se ve la máquina (`DEMW`, `DEMH` en `geo.mjs`), y cada figura pone esa escena en su plano de corte con la
+relación de `geo.mjs`: en el molino de bolas el tambor de radio 0,42·min(W, H) del lienzo es el revestimiento de
+145 cm; en la trituradora, 0,316 cm por px (la boca de arriba mide 60 cm); en los rodillos, 0,18 cm/px (rodillos de
+60 cm); en los martillos, 0,194 cm/px (carcasa de 80 cm). Con eso:
+
+- **bolas**: el tambor gira con el ángulo del lienzo (los pernos del casco, los dientes de la corona y del piñón con
+  la relación de radios y los agujeros del trommel), los levantadores corren por la artesa y aparecen en sección en el
+  corte, y la carga va al fondo, en el corte de la descarga, con una capa más adentro (más oscura);
+- **mandíbulas**: la biela sigue a la cara móvil del lienzo (`jcMove`: giro alrededor de la punta de arriba y
+  traslado) y sube y baja con el muñón excéntrico, que gira en su buje; el toggle va de su asiento en la biela al del
+  bastidor; la varilla sigue a la oreja por el bloque y el resorte se comprime; giran los rayos del volante y la
+  chaveta del eje; las rocas van en el plano del corte, detrás de las mandíbulas y de la biela;
+- **rodillos**: giran en sentidos opuestos (las juntas de su superficie, los pernos de sus caras y de sus cubos) y las
+  partículas van en el plano de las caras de adelante, detrás de las chumaceras, la viga y los propios rodillos;
+- **martillos**: el rotor entero se arma en cada cuadro (discos, pasadores y martillos, de atrás hacia adelante) y las
+  partículas van dentro de la boca de la carcasa y del chute.
+
+Los destellos de fractura del lienzo se pintan en el mismo plano. La vista «Corte» del explorador vuelve a la sección
+en dos dimensiones del lienzo, con sus anotaciones (hombro, pie, sentido de giro).
+
+| Archivo | Qué es |
+|---|---|
+| `build.mjs` | `node build.mjs --eq=bolas\|mand\|rod\|mart [--audit] [--fast]`: geometría del equipo, orden de pintura (`A.settle`) y audit. Escribe `out/molino-{eq}.svg` y `.json`, `out/fig.js`, `out/fig.css` y `preview.html`. `--js` solo rehace `fig.js` y `fig.css`. |
+| `bolas.mjs`, `mand.mjs`, `rod.mjs`, `mart.mjs` | Cada equipo: su cámara (`camera`) y sus piezas (`build`), con los datos que necesita la página. |
+| `helpers.mjs` | Cajas, prismas en cualquier marco, cuerpos torneados, coronas, tubos, esferas, asientos, diales. |
+| `geo.mjs` | Medidas y la relación con el lienzo de partículas de cada equipo (`BM`, `JC`, `RC`, `HM`, `jcMove`). Sin imports: corre en el build y en la página. |
+| `xprism.mjs` | Prismas de sección cóncava en cualquier marco (los mismos de las otras figuras). |
+| `live.js` | `FMill`: lo que gira y lo que se mueve, y las partículas en el plano de cada máquina. |
+| `ml.css` | Fundición, acero, concreto, motor, corona, criba, correas, cortes y lo vivo. El tema blueprint va en el explorador. |
+| `splice.mjs` | Mete el código y los datos en el HTML publicado (marcadores `MLFIG_*`) y copia los SVG a `simulaciones/fig/molienda/`. |
+
+```sh
+node build.mjs --eq=bolas --audit   # minuto y medio; debe terminar en «audit passed»
+node build.mjs --eq=mand --audit    # unos 15 s
+node build.mjs --eq=rod --audit
+node build.mjs --eq=mart --audit
+node splice.mjs
+```
+
+Reglas que salieron de armarlas, para la próxima:
+
+- Lo que abraza a otra pieza (coronas, chumaceras, cunas, poleas, cubos) se parte por el plano del eje que mira al
+  lector, y una pieza que cruza otra (un eje por una placa, la varilla por el bloque del toggle) se dibuja solo donde
+  se ve, sin hueco: así el audit no encuentra ciclos de profundidad.
+- Un corte que tiene que mostrar una sección de la carga va por un plano que mire al lector y deje libre esa sección:
+  en el molino de bolas una ventana en el casco mostraba una nube de bolas sin régimen legible.
+- Las partículas del lienzo van en el plano del corte; lo que está delante de ese plano (chumaceras, vigas, la biela)
+  se recorta del lienzo en vivo con sus siluetas.
