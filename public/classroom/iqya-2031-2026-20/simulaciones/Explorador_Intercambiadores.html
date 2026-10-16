@@ -539,12 +539,12 @@ table.t tr:hover td { background: var(--accent-50); }
     <button type="button" class="status" id="status" title="Ver el diagnóstico"><i></i><span id="statusTxt">Diseño sano</span></button>
   </div>
   <div class="kpis">
-    <div class="kpi" id="kQc"><div class="lbl">Carga térmica Q</div><div class="v" id="kQ">—</div><div class="u" id="kQu">—</div></div>
-    <div class="kpi" id="kTc"><div class="lbl" id="kTl">Salida del frío</div><div class="v" id="kT">—</div><div class="u" id="kTu">—</div></div>
+    <div class="kpi" id="kQc"><div class="lbl">Calor transferido Q</div><div class="v" id="kQ">—</div><div class="u" id="kQu">—</div></div>
+    <div class="kpi" id="kTc"><div class="lbl">Salida del caliente</div><div class="v" id="kT">—</div><div class="u" id="kTu">—</div></div>
+    <div class="kpi" id="kT2c"><div class="lbl">Salida del frío</div><div class="v" id="kT2">—</div><div class="u" id="kT2u">—</div></div>
     <div class="kpi" id="kFc"><div class="lbl">Factor F</div><div class="v" id="kF">—</div><div class="u" id="kFu">—</div></div>
     <div class="kpi"><div class="lbl">U de diseño</div><div class="v" id="kU">—</div><div class="u" id="kUu">—</div></div>
-    <div class="kpi" id="kAc"><div class="lbl">Área requerida</div><div class="v" id="kA">—</div><div class="u" id="kAu">—</div></div>
-    <div class="kpi" id="kEc"><div class="lbl">Con este equipo</div><div class="v" id="kE">—</div><div class="u" id="kEu">—</div></div>
+    <div class="kpi" id="kAc"><div class="lbl">Área instalada</div><div class="v" id="kA">—</div><div class="u" id="kAu">—</div></div>
   </div>
 </header>
 
@@ -560,7 +560,6 @@ table.t tr:hover td { background: var(--accent-50); }
       <div class="sl" id="mhRow"><div class="row"><span>Caudal ṁ<sub>c</sub></span><b id="vmh"></b></div><input type="range" id="lmh" min="-1.3" max="2.5" step="0.005"></div>
       <div class="sl" id="ThiRow"><div class="row"><span>Temperatura de entrada</span><b id="vThi"></b></div><input type="range" id="Thi" min="5" max="200" step="0.5"></div>
       <div class="sl" id="pSRow"><div class="row"><span>Presión del vapor</span><b id="vpSteam"></b></div><input type="range" id="pSteam" min="1.2" max="10" step="0.05"><div class="hint" id="pSHint"></div></div>
-      <div class="sl" id="ThoRow"><div class="row"><span>Temperatura de salida objetivo</span><b id="vTho"></b></div><input type="range" id="Tho" min="2" max="190" step="0.1"></div>
       <div class="sl" id="pMuRow"><div class="row"><span>Viscosidad del extracto μ</span><b id="vpMu"></b></div><input type="range" id="pMu" min="0.5" max="40" step="0.1"><div class="hint">Dato a medir con el viscosímetro del laboratorio</div></div>
     </section>
     <section><h2><span class="n">02</span> Fluido frío</h2>
@@ -568,9 +567,6 @@ table.t tr:hover td { background: var(--accent-50); }
       <div class="sl" id="airHintRow"><div class="hint" id="airHint"></div></div>
       <div class="sl"><div class="row"><span>Caudal ṁ<sub>f</sub></span><b id="vmc"></b></div><input type="range" id="lmc" min="-1.3" max="2.5" step="0.005"><div class="hint" id="mcHint"></div></div>
       <div class="sl"><div class="row"><span>Temperatura de entrada</span><b id="vTci"></b></div><input type="range" id="Tci" min="-5" max="150" step="0.5"></div>
-      <div class="sl" id="TcoMaxRow"><div class="row"><span>Salida máxima permitida</span><b id="vTcoMax"></b></div><input type="range" id="TcoMax" min="5" max="160" step="0.5"><div class="hint">Restricción de la red de servicios (Taller 5)</div></div>
-      <div class="sl" id="TcoRow"><div class="row"><span>Temperatura de salida objetivo</span><b id="vTco"></b></div><input type="range" id="Tco" min="10" max="190" step="0.5"></div>
-      <div class="sl"><div class="row"><span>Lo que fija el diseño</span></div><div class="seg" id="tgtSeg" style="margin-top:6px"><button type="button" data-v="hot">Enfriar el caliente</button><button type="button" data-v="cold">Calentar el frío</button></div><div class="hint" id="tgtHint"></div></div>
     </section>
     <section><h2><span class="n">03</span> Arreglo</h2>
       <div class="mills" id="arrBtns"></div>
@@ -622,7 +618,14 @@ table.t tr:hover td { background: var(--accent-50); }
         <div class="sl"><div class="row"><span>cₚ del frío</span><b id="vcpCold"></b></div><input type="range" id="cpCold" min="1.5" max="4.4" step="0.005"><div class="hint">Al escoger otro fluido se carga su cₚ a 25 °C, el valor de tabla que suele dar un enunciado.</div></div>
       </div>
     </section>
-    <section><h2><span class="n">06</span> Vista</h2>
+    <section><h2><span class="n">06</span> Lo que pide el proceso</h2>
+      <div class="sl" style="margin-top:0"><div class="hint">No entra en el cálculo: las salidas las da el equipo instalado. Con esto se revisa si el equipo cumple y qué área pediría el objetivo.</div></div>
+      <div class="sl"><div class="row"><span>Lo que se exige</span></div><div class="seg" id="tgtSeg" style="margin-top:6px"><button type="button" data-v="hot">Enfriar el caliente</button><button type="button" data-v="cold">Calentar el frío</button></div><div class="hint" id="tgtHint"></div></div>
+      <div class="sl" id="ThoRow"><div class="row"><span>Salida objetivo del caliente</span><b id="vTho"></b></div><input type="range" id="Tho" min="2" max="190" step="0.1"><div class="hint">El caliente debe salir a esta temperatura o por debajo</div></div>
+      <div class="sl" id="TcoRow"><div class="row"><span>Salida objetivo del frío</span><b id="vTco"></b></div><input type="range" id="Tco" min="10" max="190" step="0.5"><div class="hint">El frío debe salir a esta temperatura o por encima</div></div>
+      <div class="sl" id="TcoMaxRow"><div class="row"><span>Retorno máximo del frío</span><b id="vTcoMax"></b></div><input type="range" id="TcoMax" min="5" max="160" step="0.5"><div class="hint">Restricción de la red de servicios (Taller 5)</div></div>
+    </section>
+    <section><h2><span class="n">07</span> Vista</h2>
       <label class="toggle"><input type="checkbox" id="grid"> Cuadrícula en las gráficas</label>
       <button type="button" class="seg inline" id="resetAll" style="margin-top:14px;padding:7px 12px;font-weight:700;font-size:12.5px;cursor:pointer">Volver al caso de este equipo</button>
     </section>
@@ -664,9 +667,9 @@ table.t tr:hover td { background: var(--accent-50); }
 
     <!-- 2 · balance -->
     <section class="panel" data-panel="ba">
-      <div class="ph"><h2>¿Cierra el balance?</h2><span class="lbl">antes de cualquier área</span><p>Lo primero es la energía: el calor que entrega el caliente lo tiene que recibir el frío, Q = ṁ<sub>c</sub>c<sub>p,c</sub>ΔT<sub>c</sub> = ṁ<sub>f</sub>c<sub>p,f</sub>ΔT<sub>f</sub>. Si con los caudales y los límites dados no cierra, ningún intercambiador lo arregla: el Taller 5 empieza justo aquí.</p></div>
+      <div class="ph"><h2>El balance y lo que pide el proceso</h2><span class="lbl">antes de cualquier área</span><p>El calor que entrega el caliente lo recibe el frío, Q = ṁ<sub>c</sub>c<sub>p,c</sub>ΔT<sub>c</sub> = ṁ<sub>f</sub>c<sub>p,f</sub>ΔT<sub>f</sub>, siempre: el balance cierra. El equipo decide cuánto calor pasa, y de ahí salen las dos salidas. Lo que sí puede ser imposible es lo que pide el proceso: si para llevar el caliente a su objetivo el frío tendría que volver por encima de su límite, ningún intercambiador lo logra con esos caudales. El Taller 5 empieza justo aquí.</p></div>
       <div class="two eq2">
-        <div class="card"><div class="card-h"><span class="t">Calor que entrega contra calor que cabe</span></div><div class="card-b"><svg class="ch" id="svgBal" viewBox="0 0 520 300"></svg></div></div>
+        <div class="card"><div class="card-h"><span class="t">Lo que pasa en el equipo y lo que pide el proceso</span></div><div class="card-b"><svg class="ch" id="svgBal" viewBox="0 0 520 300"></svg></div></div>
         <div class="card"><div class="card-h"><span class="t">Viabilidad</span><span class="sp"></span><span>Taller 5 · parte A</span></div><div class="card-b"><div class="spec" id="specBal"></div></div></div>
       </div>
       <div class="card"><div class="card-h"><span class="t">Alternativas cuantificadas</span><span class="sp"></span><span>Taller 5 · parte B</span></div><div class="card-b" style="overflow-x:auto"><table class="t" id="altTable"></table><p class="small" id="altNote" style="margin:10px 0 0"></p></div></div>
@@ -683,7 +686,7 @@ table.t tr:hover td { background: var(--accent-50); }
 
     <!-- 4 · ε-NTU -->
     <section class="panel" data-panel="en">
-      <div class="ph"><h2>Efectividad y NTU</h2><span class="lbl">evaluación de un equipo existente</span><p>Con el área conocida, ε-NTU da las temperaturas de salida sin iterar: ε = Q/Q<sub>máx</sub>, Q<sub>máx</sub> = C<sub>mín</sub>(T<sub>c,ent</sub> − T<sub>f,ent</sub>) y NTU = UA/C<sub>mín</sub>. Con el área requerida debe devolver exactamente las mismas temperaturas que el LMTD: son el mismo modelo.</p></div>
+      <div class="ph"><h2>Efectividad y NTU</h2><span class="lbl">lo que hace el equipo instalado</span><p>Con el área conocida, ε-NTU da las temperaturas de salida sin suponerlas: ε = Q/Q<sub>máx</sub>, Q<sub>máx</sub> = C<sub>mín</sub>(T<sub>c,ent</sub> − T<sub>f,ent</sub>) y NTU = UA/C<sub>mín</sub>. Es el cálculo del que salen las salidas en todo el explorador. Con el área que pide el objetivo devuelve exactamente la salida objetivo: LMTD y ε-NTU son el mismo modelo.</p></div>
       <div class="two">
         <div class="card"><div class="card-h"><span class="t">ε contra NTU</span><span class="sp"></span><span id="enLbl"></span></div><div class="card-b"><svg class="ch hov" id="svgE" viewBox="0 0 560 380"></svg><div class="readout" id="eRead"></div></div></div>
         <div class="card"><div class="card-h"><span class="t">Verificación</span><span class="sp"></span><span>Taller 5 · parte D</span></div><div class="card-b"><div class="spec" id="specEn"></div><p class="small" id="enNote" style="margin:10px 0 0"></p></div></div>
@@ -935,11 +938,14 @@ function epsOf(arr, Ns, NTU, Cr) {
   if (Ns === 1) return e1;
   if (Math.abs(Cr - 1) < 1e-9) return Ns * e1 / (1 + (Ns - 1) * e1);
   var z = Math.pow((1 - e1 * Cr) / (1 - e1), Ns);
-  return (z - 1) / (z - Cr);
+  return isFinite(z) ? (z - 1) / (z - Cr) : 1;
 }
 function lmtdOf(d1, d2) { if (d1 <= 0 || d2 <= 0) return NaN; return Math.abs(d1 - d2) < 1e-6 ? d1 : (d1 - d2) / Math.log(d1 / d2); }
 
-function compute(s) {
+/* El cálculo con las dos salidas que se le den: el balance, la ΔTml, F y el área que harían falta para llegar a ellas
+   (diseño), y lo que hace el equipo instalado con ε-NTU (evaluación). compute() lo usa de dos maneras: con la salida que
+   devuelve el propio equipo, que es la operación, y con la que pide el proceso, que es el diseño contra el que se compara. */
+function designFor(s) {
   var eq = s.eq || 'st';
   // en el aeroenfriador el frío es siempre el aire del ambiente y no tiene límite de retorno: se deriva aquí, sin tocar el estado
   if (eq === 'ac') s = Object.assign({}, s, { cold: 'aire', TcoMax: Math.max(s.TcoMax, s.Thi), cpCold: 1.006 });
@@ -1043,6 +1049,51 @@ function compute(s) {
     d1: d1, d2: d2, LMTD: LMTD, P: Pp, R: Rr, Fr: Fr, F: Fr.F, cross: cross, geo: geo, mat: mat, tube: tube, shell: shell, tubeF: tubeF, shellF: shellF,
     Tw: Tw, Uc: Uc, Ud: Ud, res: res, Ugeo: 1 / (1 / ho + Rw + d / (di * hi)), Rw: Rw, Areq: Areq, AreqC: AreqC, Aav: Aav, over: isFinite(Areq) ? Aav / Areq - 1 : NaN,
     rate: rate, NTUreq: NTUreq, epsReq: epsReq, dPt: dPt, dPs: dPs, vt: vt, Ch: Chr, Cc: Ccr };
+  return R;
+}
+/* La operación. Con las entradas, los caudales y el equipo instalado, las salidas son una consecuencia: las da ε-NTU con
+   el área y el U del equipo. Las propiedades y los coeficientes se toman a la temperatura media de cada corriente, que
+   depende de esas salidas, así que se itera hasta que la salida con la que se evalúan es la misma que devuelve el equipo.
+   El balance cierra siempre: el calor que cede el caliente es el que recibe el frío.
+   Lo que pide el proceso (la salida objetivo y el límite de retorno del frío) no entra en la operación: con él se
+   calcula aparte el diseño (R.spec), que dice qué área haría falta y si el objetivo es posible con estos caudales. */
+function compute(s) {
+  var hf = byId(FLUIDS, s.hot), cf = byId(FLUIDS, s.eq === 'ac' ? 'aire' : s.cold), steam = !!hf.steam, key = steam ? 'Tco' : 'Tho', side = steam ? 'cold' : 'hot';
+  var Thi = steam ? waterTsat(s.pSteam) : s.Thi, R = null, k, o;
+  // punto de partida: la mitad del calor máximo con las propiedades de las entradas, así las dos salidas arrancan entre
+  // las dos entradas aunque un caudal sea mucho mayor que el otro
+  var Ch0 = steam ? Infinity : s.mh * (s.constProps ? s.cpHot * 1000 : hf.props(Thi, s).cp);
+  var Cc0 = s.mc * (s.constProps ? (s.eq === 'ac' ? 1006 : s.cpCold * 1000) : cf.props(s.Tci, s).cp), Q0 = 0.5 * Math.min(Ch0, Cc0) * (Thi - s.Tci);
+  var x = steam ? s.Tci + Q0 / Cc0 : Thi - Q0 / Ch0;
+  // iteración directa; si oscila (fluidos muy viscosos, donde h cambia mucho con la temperatura) se amortigua el paso
+  var w = 1, dprev = null;
+  for (k = 0; k < 80; k++) {
+    o = { target: side }; o[key] = x;
+    R = designFor(Object.assign({}, s, o));
+    var d = R.rate[key] - x;
+    if (!isFinite(d) || Math.abs(d) < 1e-7) break;
+    if (dprev !== null && d * dprev < 0) w = Math.max(0.05, w * 0.5);
+    x += w * d; dprev = d;
+  }
+  o = { target: side }; o[key] = x; R = designFor(Object.assign({}, s, o));
+  var b = R.bal;
+  b.closes = true; b.limit = null; b.Qcmax = null; b.mcNeed = null;
+  b.physical = R.Thi > R.Tci + 1e-9 && b.Q > 0;
+  // lo que pide el proceso: el diseño con la salida objetivo y el límite de retorno del frío
+  var sp = designFor(s), sb = sp.bal, tg = sp.target, AC = R.eq === 'ac';
+  var goal = tg === 'hot' ? s.Tho : s.Tco;
+  R.spec = { target: tg, goal: goal, Q: sb.Q, Tho: sb.Tho, Tco: sb.Tco, mh: sb.mh, cph: sb.cph, cpc: sb.cpc, lam: sb.lam,
+    limit: AC ? null : sb.limit, Qcmax: AC ? null : sb.Qcmax, mcNeed: AC ? null : sb.mcNeed, limitOk: AC || sb.closes, physical: sb.physical,
+    d1: sp.d1, d2: sp.d2, LMTD: sp.LMTD, P: sp.P, R: sp.R, Fr: sp.Fr, F: sp.F, NH: sp.NH, Ud: sp.Ud, Uc: sp.Uc, Areq: sp.Areq, AreqC: sp.AreqC,
+    NTUreq: sp.NTUreq, epsReq: sp.epsReq, Ch: sp.Ch, Cc: sp.Cc, Cmin: sp.rate.Cmin, Cr: sp.rate.Cr, cross: sp.cross };
+  var sc = R.spec;
+  // ¿llega el equipo? y ¿el frío vuelve dentro de su límite?
+  sc.met = tg === 'hot' ? b.Tho <= goal + 0.05 : b.Tco >= goal - 0.05;
+  sc.coldOk = AC || tg !== 'hot' || b.Tco <= s.TcoMax + 0.05;
+  sc.ok = sc.physical && sc.limitOk && sc.Fr.ok && isFinite(sc.Areq);
+  R.target = tg;
+  R.Areq = sc.Areq; R.AreqC = sc.AreqC; R.NTUreq = sc.NTUreq; R.epsReq = sc.epsReq;
+  R.over = sc.ok ? R.Aav / sc.Areq - 1 : NaN;
   R.warn = diagnose(R);
   return R;
 }
@@ -1076,10 +1127,12 @@ function criteria(R) {
   var s = R.s, b = R.bal, g = R.geo, geomOn = !(s.Umode === 'dato' && s.Amode === 'dato'), out = [];
   var band = function (v, ok0, ok1, w0, w1) { return v >= ok0 && v <= ok1 ? 'ok' : (v >= w0 && v <= w1 ? 'w' : 'c'); };
   var add = function (name, val, rule, st) { out.push({ n: name, v: val, r: rule, st: st }); };
-  add('Balance de energía', R.target === 'hot' ? (b.closes ? 'cierra' : 'déficit ' + fmtN(100 * (b.Q - b.Qcmax) / b.Q, 0) + ' %') : 'cierra', 'el frío absorbe la carga', b.physical ? (b.closes ? 'ok' : 'c') : 'c');
+  var sc = R.spec, hotT = R.target === 'hot', opT = hotT ? b.Tho : b.Tco;
+  add('Objetivo del proceso', (hotT ? 'el caliente sale a ' : 'el frío sale a ') + fmtN(opT, 1) + ' °C', (hotT ? '≤ ' : '≥ ') + fmtN(sc.goal, 1) + ' °C', b.physical && sc.met ? 'ok' : 'c');
+  if (hotT && sc.limit != null) add('Retorno del frío', fmtN(b.Tco, 1) + ' °C', '≤ ' + fmtN(sc.limit, 1) + ' °C (red de servicios)', sc.coldOk ? 'ok' : (sc.limitOk ? 'w' : 'c'));
   if ((isST(R.arr) || R.eq === 'pl' || R.eq === 'ac') && !R.steam) add('Factor F', R.Fr.ok ? fmtN(R.F, 3) : 'imposible', R.eq === 'pl' ? 'McCabe: ≈ 0,9 a 0,95' : '≥ 0,8 (lectura: ≥ 0,75)', !R.Fr.ok ? 'c' : band(R.F, 0.8, 1.01, 0.75, 1.01));
   else add('Factor F', '1', R.steam ? 'un lado a T constante' : (R.arr === 'paralelo' ? 'paralelo: ΔTml propia' : 'contracorriente pura'), 'ok');
-  add('Sobrediseño', isFinite(R.over) ? (R.over >= 0 ? '+' : '') + fmtN(100 * R.over, 0) + ' %' : '—', '10 a 20 %', !isFinite(R.over) || R.over < -0.005 ? 'c' : (R.over >= 0.0999 && R.over <= 0.2001 ? 'ok' : 'w'));
+  add('Sobrediseño', isFinite(R.over) ? (R.over >= 0 ? '+' : '') + fmtN(100 * R.over, 0) + ' %' : 'objetivo imposible', '10 a 20 % sobre lo que pide el objetivo', !isFinite(R.over) || R.over < -0.005 ? 'c' : (R.over >= 0.0999 && R.over <= 0.2001 ? 'ok' : 'w'));
   if (R.eq !== 'st') { criteriaEq(R, add, band, geomOn); return out; }
   var vt = R.vt;
   add('Velocidad en tubos', fmtN(R.tube.u, 2) + ' m/s', fmtN(vt[0], 1) + ' a ' + fmtN(vt[1], 1) + ' m/s', geomOn ? band(R.tube.u, vt[0], vt[1], 0.6 * vt[0], 1.4 * vt[1]) : 'na');
@@ -1104,23 +1157,28 @@ function foulingRun(R, months, tau, tmax, n) {
 function diagnose(R) {
   var w = [], s = R.s, b = R.bal, g = R.geo;
   function add(sev, t) { w.push({ sev: sev, t: t }); }
-  if (!b.physical) add('c', R.Thi <= R.Tci ? 'El caliente entra a ' + fmtN(R.Thi, 1) + ' °C y el frío a ' + fmtN(R.Tci, 1) + ' °C: sin una diferencia a favor del caliente no hay intercambio posible.' : 'Las temperaturas no son posibles: el frío no puede salir más caliente que la entrada del caliente, ni el caliente más frío que la entrada del frío' + (R.arr === 'paralelo' ? '; en paralelo, además, el frío nunca supera la salida del caliente' : '') + ' (segunda ley).');
-  if (R.target === 'hot' && !b.closes) {
-    add('c', 'El balance no cierra: el caliente debe ceder ' + fmtKW(b.Q / 1000) + ' kW, pero con ' + fmtN(s.mc, 2) + ' kg/s el frío solo puede absorber ' + fmtKW(b.Qcmax / 1000) + ' kW sin pasar de ' + fmtN(s.TcoMax, 0) + ' °C (' + fmtN(100 * b.Qcmax / b.Q, 0) + ' % de la carga). Ninguna área arregla un déficit de balance: hace falta al menos ' + fmtN(b.mcNeed, 2) + ' kg/s de ' + R.cf.name.toLowerCase() + ', u otra decisión (Taller 5).');
+  var sc = R.spec, hotT = R.target === 'hot', who = hotT ? 'el caliente' : 'el frío', opT = hotT ? b.Tho : b.Tco, cold = R.cf.name.toLowerCase();
+  if (!b.physical) add('c', 'El caliente entra a ' + fmtN(R.Thi, 1) + ' °C y el frío a ' + fmtN(R.Tci, 1) + ' °C: sin una diferencia a favor del caliente no hay intercambio posible.');
+  // lo que pide el proceso: primero si es posible, después si este equipo llega
+  if (b.physical && !sc.physical) add('c', 'Lo que pide el proceso viola la segunda ley: ' + (hotT ? 'para que el caliente salga a ' + fmtN(sc.goal, 1) + ' °C, el frío tendría que salir a ' + fmtN(sc.Tco, 1) + ' °C' : 'para que el frío salga a ' + fmtN(sc.goal, 1) + ' °C, el caliente tendría que salir a ' + fmtN(sc.Tho, 1) + ' °C') + ', y el frío no puede salir más caliente que la entrada del caliente ni el caliente más frío que la entrada del frío' + (R.arr === 'paralelo' ? '; en paralelo, además, el frío nunca supera la salida del caliente' : '') + '. Ningún equipo lo logra: cambie el objetivo o los caudales.');
+  else if (b.physical && !sc.limitOk) {
+    add('c', 'Lo que pide el proceso no es posible con estos caudales: para que el caliente salga a ' + fmtN(sc.goal, 1) + ' °C tiene que ceder ' + fmtKW(sc.Q / 1000) + ' kW, y con ' + fmtN(s.mc, 2) + ' kg/s el frío tendría que volver a ' + fmtN(sc.Tco, 1) + ' °C. Dentro de su límite de ' + fmtN(sc.limit, 0) + ' °C solo absorbe ' + fmtKW(sc.Qcmax / 1000) + ' kW (' + fmtN(100 * sc.Qcmax / sc.Q, 0) + ' % de la carga). Ninguna área lo arregla: hace falta al menos ' + fmtN(sc.mcNeed, 2) + ' kg/s de ' + cold + ', u otra decisión (Taller 5, partes A y B).');
   }
-  if (b.physical && R.eq === 'st' && isST(R.arr) && !R.steam) {
-    if (!R.Fr.ok) add('c', 'Con ' + NCOR[R.Ns] + ' esta combinación de temperaturas es imposible (el logaritmo de F se vuelve negativo): ' + (R.Ns < 3 ? 'pase a ' + NCOR[R.Ns + 1] + ' en serie o a contracorriente pura.' : 'hace falta más corazas o contracorriente pura.'));
-    else if (R.F < 0.75) add('c', 'F = ' + fmtN(R.F, 3) + ' está por debajo de 0,75: el diseño queda en la zona empinada de la curva, donde un pequeño error en las temperaturas cambia mucho el área. Agregue una coraza (Lectura 08).');
+  else if (b.physical && R.eq === 'st' && isST(R.arr) && !R.steam && !sc.Fr.ok) add('c', 'Con ' + NCOR[R.Ns] + ' lo que pide el proceso es imposible (el logaritmo de F se vuelve negativo): ninguna área de este arreglo lleva ' + who + ' a ' + fmtN(sc.goal, 1) + ' °C. ' + (R.Ns < 3 ? 'Pase a ' + NCOR[R.Ns + 1] + ' en serie o a contracorriente pura.' : 'Hacen falta más corazas o contracorriente pura.'));
+  if (b.physical && !sc.met) add('c', 'No llega al objetivo: con ' + fmtN(R.Aav, 1) + ' m² ' + who + ' sale a ' + fmtN(opT, 1) + ' °C y el proceso pide ' + (hotT ? 'a lo sumo ' : 'al menos ') + fmtN(sc.goal, 1) + ' °C' + (hotT && !sc.coldOk ? ', y el ' + cold + ' vuelve a ' + fmtN(b.Tco, 1) + ' °C, sobre su límite de ' + fmtN(sc.limit, 0) + ' °C' : '') + '.' + (isFinite(R.over) ? ' El objetivo pide ' + fmtN(R.Areq, 1) + ' m² con este U.' : ''));
+  if (b.physical && hotT && sc.limitOk && !sc.coldOk) add('w', 'Con este equipo el ' + cold + ' vuelve a ' + fmtN(b.Tco, 1) + ' °C, sobre su límite de ' + fmtN(sc.limit, 0) + ' °C: el equipo transfiere más de lo que pide el objetivo (el caliente sale a ' + fmtN(b.Tho, 1) + ' °C) y ese calor de más lo lleva el frío. En la planta se regula: más caudal de frío o un bypass del caliente.');
+  // F del equipo en operación (siempre existe: sale de ε-NTU); si lo que no tiene solución es el objetivo, ya se dijo arriba
+  if (b.physical && R.eq === 'st' && isST(R.arr) && !R.steam && R.Fr.ok) {
+    if (R.F < 0.75) add('c', 'F = ' + fmtN(R.F, 3) + ' está por debajo de 0,75: el diseño queda en la zona empinada de la curva, donde un pequeño error en las temperaturas cambia mucho el área. Agregue una coraza (Lectura 08).');
     else if (R.F < 0.8) add('w', 'F = ' + fmtN(R.F, 3) + ': aceptable para la lectura (≥ 0,75), pero McCabe recomienda rediseñar por debajo de 0,8.');
   }
   if (R.cross && R.arr === '1-n' && R.Fr.ok) add('w', 'Hay cruce de temperaturas (el frío sale más caliente que el caliente): una sola coraza 1-2 lo tolera mal; dos corazas se acercan a la contracorriente.');
   if (R.arr === 'paralelo' && b.physical && R.rate.NTU > 2) add('w', 'En paralelo la efectividad tiene techo 1/(1 + Cr) = ' + fmtN(1 / (1 + R.rate.Cr), 3) + ': más área ya casi no sirve. En contracorriente el mismo equipo llegaría a ε = ' + fmtN(epsOf('contra', 1, R.rate.NTU, R.rate.Cr), 3) + '.');
-  var closes = !(R.target === 'hot' && !b.closes);
-  if (isFinite(R.over) && closes) {
-    if (s.Amode === 'dato' && Math.abs(R.over) <= 0.005) add('ok', 'El área dada coincide con la requerida (' + fmtN(R.Areq, 1) + ' m²): el equipo cumple justo, sin margen para ensuciamiento ni errores en las propiedades.');
-    else if (R.over < -0.005) add('c', 'Área insuficiente: el equipo tiene ' + fmtN(R.Aav, 1) + ' m² y la carga pide ' + fmtN(R.Areq, 1) + ' m². Con este equipo el caliente sale a ' + fmtN(R.rate.Tho, 1) + ' °C (ε-NTU).');
-    else if (R.over < 0.1) add('w', 'Sobrediseño de solo ' + fmtN(100 * R.over, 0) + ' %: poco margen para errores en propiedades o ensuciamiento mayor (se busca 10 a 20 %).');
-    else if (R.over > 0.5) add('w', 'Sobrediseño de ' + fmtN(100 * R.over, 0) + ' %: el equipo es mucho más grande de lo necesario. Reduzca la longitud o la coraza.');
+  var closes = b.physical;
+  if (isFinite(R.over) && b.physical && sc.met) {
+    if (Math.abs(R.over) <= 0.005) add('ok', 'El área instalada es la que pide el objetivo (' + fmtN(R.Areq, 1) + ' m²): ' + who + ' sale justo a ' + fmtN(opT, 1) + ' °C, sin margen para ensuciamiento ni errores en las propiedades.');
+    else if (R.over < 0.1) add('w', 'Sobrediseño de solo ' + fmtN(100 * R.over, 0) + ' % sobre lo que pide el objetivo: poco margen para errores en propiedades o ensuciamiento mayor (se busca 10 a 20 %).');
+    else if (R.over > 0.5) add('w', 'Sobrediseño de ' + fmtN(100 * R.over, 0) + ' %: el equipo es mucho más grande de lo que pide el objetivo (' + who + ' sale a ' + fmtN(opT, 1) + ' °C contra ' + fmtN(sc.goal, 1) + ' °C). Con menos área cumpliría igual.');
   }
   var geomOn = !(s.Umode === 'dato' && s.Amode === 'dato');
   if (!geomOn) add('ok', 'U y A son datos del enunciado: la geometría de los controles solo da forma al dibujo y no entra en el cálculo, así que no se revisan sus velocidades ni sus caídas de presión.');
@@ -1147,7 +1205,7 @@ function finishDiag(R, w, add, closes, geomOn) {
   // cada fluido trae el intervalo de temperatura de sus datos (FLUIDS[].T): fuera de él las propiedades se extrapolan
   [[R.hf, 'caliente', R.steam ? null : [R.Thi, b.Tho]], [R.cf, 'frío', [R.Tci, b.Tco]]].forEach(function (q) {
     var f = q[0], ts = q[2]; if (!f.T || !ts) return;
-    if (!(b.physical && closes)) ts = [ts[0]]; // sin balance posible la salida es hipotética: solo se revisa la entrada
+    if (!(b.physical && closes)) ts = [ts[0]]; // sin intercambio posible solo se revisa la entrada
     var hi = Math.max.apply(null, ts), lo = Math.min.apply(null, ts), up = hi > f.T[1] + 0.05;
     if (!up && !(lo < f.T[0] - 0.05)) return;
     add('w', 'El fluido ' + q[1] + ' (' + f.short + ') ' + (up ? 'llega a ' + fmtN(hi, 1) : 'baja a ' + fmtN(lo, 1)) + ' °C, fuera del intervalo de sus datos de propiedades (' + f.T[0] + ' a ' + f.T[1] + ' °C): ahí se extrapolan y el resultado es menos confiable.' + (f.id === 'etanol' && up && hi > 78 ? ' A presión atmosférica el etanol hierve a 78 °C.' : (f.id === 'pectina' && up ? ' A presión atmosférica el extracto, que es casi agua, hierve cerca de 100 °C.' : '')));
@@ -1161,12 +1219,12 @@ function finishDiag(R, w, add, closes, geomOn) {
     else add('w', 'El fluido caliente (' + fmtN(R.Thi, 0) + ' °C) va por la coraza: McCabe sugiere los muy calientes por los tubos, por seguridad y para no perder calor por la coraza.');
   }
   if ((R.hf.id === 'pectina' || R.cf.id === 'pectina') && (R.mat.id === 'cs' || R.mat.id === 'adm')) add('c', 'El extracto es ácido (pH 1,5 a 2,5): ' + R.mat.name.toLowerCase() + ' se corroe. Use acero inoxidable 316 o titanio.');
-  if (!w.some(function (x) { return x.sev !== 'ok'; })) w.unshift({ sev: 'ok', t: 'Diseño coherente: el balance cierra, F está en zona segura, el área tiene margen' + (geomOn ? ' y las velocidades y caídas de presión están en rango.' : '.') });
+  if (!w.some(function (x) { return x.sev !== 'ok'; })) w.unshift({ sev: 'ok', t: 'El equipo cumple: llega al objetivo' + (isFinite(R.over) && R.over > 0.005 ? ' con margen' : '') + ', F está en zona segura' + (geomOn ? ' y las velocidades y caídas de presión están en rango.' : '.') });
   return w;
 }
 /* ====================================================================
    Los otros equipos: placas con empaques, doble tubo y aeroenfriador.
-   compute() hace el balance y la ΔTml de todos; aquí van la geometría,
+   designFor() hace el balance y la ΔTml de todos; aquí van la geometría,
    los coeficientes, F, la efectividad y las caídas de presión de cada uno.
    · Placas (McCabe, cap. 15): Nu = 0,37·Re^0,67·Pr^0,33 con Dₑ = 2·b
      (h sobre el área nominal de la placa), f = 2,5·Re^−0,3 en Fanning,
@@ -1205,7 +1263,7 @@ function epsCrossN(NTU, Cr, N) {
   var e1 = epsCross(NTU / N, Cr); if (N === 1) return e1;
   if (Cr < 1e-9) return 1 - Math.exp(-NTU);
   if (Math.abs(Cr - 1) < 1e-9) return N * e1 / (1 + (N - 1) * e1);
-  var z = Math.pow((1 - e1 * Cr) / (1 - e1), N); return (z - 1) / (z - Cr);
+  var z = Math.pow((1 - e1 * Cr) / (1 - e1), N); return isFinite(z) ? (z - 1) / (z - Cr) : 1;
 }
 function epsCounter(NTU, Cr) { if (Cr < 1e-9) return 1 - Math.exp(-NTU); if (Math.abs(Cr - 1) < 1e-9) return NTU / (1 + NTU); var e = Math.exp(-NTU * (1 - Cr)); return (1 - e) / (1 - Cr * e); }
 /* F de un arreglo cualquiera a partir de su ε(NTU): el NTU de contracorriente que da la misma ε dividido por el NTU del
@@ -1226,7 +1284,7 @@ function plateSide(P, m, nch, b, w, Lflow) {
   return { P: P, u: u, Re: Re, Pr: Pr, Nu: Nu, h: Nu * P.k / De, f: f, dP: 2 * f * P.rho * u * u * Lflow / De, n: nch, De: De, reg: Re >= 400 ? 'turbulento (canales corrugados)' : (Re >= 100 ? 'transición (canales corrugados)' : 'laminar') };
 }
 
-/* compute() de los equipos que no son de tubos y coraza. C trae el balance, la ΔTml y lo que ya se sabe. */
+/* designFor() de los equipos que no son de tubos y coraza. C trae el balance, la ΔTml y lo que ya se sabe. */
 function computeEq(eq, s, C) {
   var hf = C.hf, cf = C.cf, steam = C.steam, bal = C.bal, mh = C.mh, mc = s.mc, pc = function (fl, T) { return fl.props(T, s); };
   var Thi = C.Thi, Tci = C.Tci, Tho = bal.Tho, Tco = bal.Tco, Q = bal.Q, mat = byId(MATS, s.mat);
@@ -1331,7 +1389,6 @@ function computeEq(eq, s, C) {
     d1: C.d1, d2: C.d2, LMTD: LMTD, P: C.Pp, R: C.Rr, Fr: Fr, F: Fv, NH: NH, cross: C.cross, geo: geo, mat: mat, tube: tube, shell: shell, tubeF: tubeF, shellF: shellF,
     Tw: Tw, Uc: Uc, Ud: Ud, res: res, Ugeo: Ugeo, Rw: Rw, Areq: Areq, AreqC: AreqC, Aav: Aav, over: isFinite(Areq) ? Aav / Areq - 1 : NaN,
     rate: rate, NTUreq: NTUreq, epsReq: epsReq, dPt: dPt, dPs: dPs, vt: vt, vs: vs, Ch: Chr, Cc: Ccr };
-  R.warn = diagnose(R);
   return R;
 }
 
@@ -3202,7 +3259,7 @@ function clone(o) { return JSON.parse(JSON.stringify(o)); }
 var L10 = Math.log10;
 
 var TALLER = { hot: 'glicerina', cold: 'agua', lmh: L10(5.5), Thi: 140, Tho: 85, lmc: L10(13), Tci: 28, TcoMax: 42, Tco: 40, target: 'hot', pSteam: 2, hCond: 8000, pMu: 2,
-  arr: '2-n', Np: 2, hotShell: true, head: 'BEM', tube: '34-16', layout: 'sq', shellIdx: 3, lenIdx: 0, baff: 0.4, mat: 'cs', Amode: 'geom', Adato: 30,
+  arr: '2-n', Np: 2, hotShell: true, head: 'BEM', tube: '34-16', layout: 'rsq', shellIdx: 2, lenIdx: 0, baff: 0.4, mat: 'cs', Amode: 'geom', Adato: 30,
   Umode: 'dato', Uclean: 480, Rd: 0.0004, rfHot: 0.0002, rfCold: 0.0003, shellCorr: 'kern', constProps: true, cpHot: 2.45, cpCold: 4.18, months: 12, tau: 4, cEnergy: 0.12, hours: 8000, life: 10, nSer: 2, grid: true,
   eq: 'st', plW: 3, plL: 3, plB: 1, plT: 2, plN: 101, plSec: 1, dpSize: '3x2', dpLen: 2, dpN: 6, dpArr: 'contra', acFin: 'f10', acFh: 1, acRows: 4, acTpr: 40, acLen: 2, acPass: 2 };
 var BASE = clone(TALLER);
@@ -3214,41 +3271,38 @@ function cp25(id) { var f = byId(FLUIDS, id); return f.steam ? null : Math.round
    proyecto con datos supuestos o «Ejemplo del explorador» si los números son ilustrativos (y la nota lo dice).
    Fijan sus fluidos; conservan la vista y los supuestos de campaña y costos que el estudiante haya puesto. */
 var CONFIGS = [
-  { id: 'taller', name: 'Taller 5 rediseñado: 13 kg/s de agua', src: 'Taller 5 · partes C y D', s: {},
-    desc: 'El equipo del taller con la alternativa de subir el agua a 13 kg/s. La glicerina va por la coraza de un 2-4 (dos corazas en serie) y se enfría de 140 a 85 °C; el agua de torre entra a 28 °C y no puede volver a más de 42 °C. U limpio, Rd y los cₚ son los del enunciado.',
-    note: '13 kg/s es una de las alternativas válidas: el taller deja abierta la decisión, y el mínimo para no pasar de 42 °C es 12,66 kg/s. El taller pide el área requerida, que con 13 kg/s es de 24,41 m²; la geometría instalada (dos corazas de 13¼″ con 100 tubos de ¾″ y 8 pies, 29,2 m²) es del explorador.' },
-  { id: 'taller0', name: 'Taller 5 tal como llega', src: 'Taller 5 · parte A', s: { lmc: L10(3.8) },
-    desc: 'La especificación del cliente, con 3,8 kg/s de agua. El agua tendría que volver a casi 75 °C: el balance no cierra, ningún área lo arregla y la pestaña 2 cuantifica las alternativas.',
-    note: 'Respecto al rediseño solo cambia el caudal de agua; todo lo demás es igual.' },
+  { id: 'taller', name: 'Taller 5 rediseñado: 13 kg/s de agua', src: 'Taller 5 · partes C y D', s: { Amode: 'dato', Adato: 24.41 },
+    desc: 'El equipo del taller con la alternativa de subir el agua a 13 kg/s. La glicerina entra a 140 °C por la coraza de un 2-4 (dos corazas en serie) y el agua de torre a 28 °C por los tubos; el proceso pide la glicerina a 85 °C o menos y la red de servicios no recibe el agua a más de 42 °C. Con los 24,41 m² de la parte C, el equipo deja la glicerina en 85,0 °C y el agua en 41,6 °C, como la verificación de la parte D. U limpio, Rd y los cₚ son los del enunciado.',
+    note: '13 kg/s es una de las alternativas válidas: el taller deja abierta la decisión, y el mínimo para no pasar de 42 °C es 12,66 kg/s. El área instalada es la que pide el taller; la geometría del dibujo (dos corazas de 12″ con 85 tubos de ¾″ en cuadro girado y 8 pies, 24,8 m²) es del explorador. Pase el área a «La de la geometría» en el panel 04: con esos 24,8 m² la glicerina sale a 84,4 °C y el agua a 41,8 °C.' },
+  { id: 'taller0', name: 'Taller 5 tal como llega', src: 'Taller 5 · parte A', s: { lmc: L10(3.8), Amode: 'dato', Adato: 24.41 },
+    desc: 'La especificación del cliente, con 3,8 kg/s de agua, en el mismo equipo de 24,41 m². El balance cierra, como siempre: el equipo deja la glicerina en 91,8 °C y devuelve el agua a 68,9 °C. Lo que no es posible es lo que pide el proceso: para llegar a 85 °C el agua tendría que volver a casi 75 °C, muy por encima de su límite de 42 °C, y ningún área lo arregla. La pestaña 2 cuantifica las alternativas.',
+    note: 'Respecto al rediseño solo cambia el caudal de agua. El taller plantea la parte A antes de que haya equipo; el explorador le pone el del rediseño para mostrar qué pasaría si se operara con el agua de la especificación.' },
   { id: 'diap1', name: 'El área de un 2-4 que enfría aceite', src: 'Intercambiadores I · Sesión 11', aIsResult: true, s: { hot: 'aceite', lmh: L10(3), cpHot: 2.5, Thi: 90, Tho: 40, cold: 'agua', lmc: L10(2), cpCold: 4.186, Tci: 20, TcoMax: 70, hotShell: false, Uclean: 350, Rd: 0, Amode: 'dato', Adato: 61.4, tube: '34-16', layout: 'tri', shellIdx: 3, lenIdx: 1, baff: 0.3 },
     desc: 'El ejemplo de diseño de la sesión: enfriar 3 kg/s de aceite de 90 a 40 °C con 2 kg/s de agua que entra a 20 °C, en dos corazas con cuatro pasos por tubos y un U de diseño de 350 W/m²K. Lo que se busca es el área: Q = 375 kW, el agua sale a 64,8 °C, ΔTml = 22,5 °C y F = 0,776, cerca del mínimo de 0,75, y salen 61,4 m².',
-    note: 'En la diapositiva el área es el resultado; el explorador le pone esos mismos 61,4 m² al equipo para la verificación por ε-NTU. También son del explorador el límite de 70 °C para la salida del agua, que la diapositiva no fija, y el aviso de sales a 64,8 °C. Los cₚ son los de la diapositiva (2,5 y 4,186 kJ/kg·K), constantes.' },
-  { id: 'diap2', name: 'Flujo paralelo: la efectividad tiene techo', src: 'Intercambiadores II · Sesión 12', s: { eq: 'dp', dpArr: 'paralelo', dpSize: '4x3', dpLen: 2, dpN: 9, hot: 'aceite', lmh: L10(1.2), cpHot: 2.1, Thi: 110, Tho: 51, cold: 'aguap', lmc: L10(1), cpCold: 4.2, Tci: 15, TcoMax: 90, Uclean: 500, Rd: 0, Amode: 'dato', Adato: 30, hotShell: false, tube: '34-16', layout: 'tri', shellIdx: 4, lenIdx: 0, baff: 0.3 },
-    // la diapositiva da el equipo y busca las salidas; el explorador diseña con la salida del aceite fija, así que
-    // se le pone la que da ese mismo equipo (ε-NTU con los 30 m²) y el área requerida sale igual a la dada
-    fit: function (s) { s.Tho = compute(mstate(s)).rate.Tho; },
+    note: 'En la diapositiva el área es el resultado; el explorador instala esos mismos 61,4 m² y calcula con ε-NTU lo que hace el equipo: el aceite sale a 40 °C y el agua a 64,8 °C, las temperaturas de la diapositiva. También son del explorador el límite de 70 °C para la salida del agua, que la diapositiva no fija, y el aviso de sales a 64,8 °C. Los cₚ son los de la diapositiva (2,5 y 4,186 kJ/kg·K), constantes.' },
+  { id: 'diap2', eq: 'dp', name: 'Flujo paralelo: la efectividad tiene techo', src: 'Intercambiadores II · Sesión 12', s: { eq: 'dp', dpArr: 'paralelo', dpSize: '4x3', dpLen: 2, dpN: 9, hot: 'aceite', lmh: L10(1.2), cpHot: 2.1, Thi: 110, Tho: 51, cold: 'aguap', lmc: L10(1), cpCold: 4.2, Tci: 15, TcoMax: 90, Uclean: 500, Rd: 0, Amode: 'dato', Adato: 30, hotShell: false, tube: '34-16', layout: 'tri', shellIdx: 4, lenIdx: 0, baff: 0.3 },
     desc: 'El ejemplo de ε-NTU de la sesión: un equipo en flujo paralelo de 30 m² con U = 500 W/m²K, 1,2 kg/s de aceite (cₚ 2,1) que entra a 110 °C y 1 kg/s de agua (cₚ 4,2) que entra a 15 °C. ε = 0,625, el techo 1/(1 + Cr): las dos salidas quedan en 50,6 °C con Q = 149,6 kW y más área ya no sirve.',
-    note: 'La diapositiva da el equipo y busca las salidas; el explorador diseña al revés, así que la tarjeta fija la salida del aceite en la que da ese equipo (50,63 °C) y el área requerida sale igual a los 30 m². El indicador «Con este equipo» repite el cálculo de la diapositiva (ε = 0,62495). El límite de 90 °C para el agua es del explorador. Pase a contracorriente en el panel 03: el mismo equipo enfría más el aceite (pestaña 4). La diapositiva no dice qué equipo es: como un 1-1 en paralelo es un doble tubo, el explorador lo dibuja con nueve horquillas de 4″ × 3″, que dan unos 30 m².' },
+    note: 'La diapositiva da el equipo y busca las salidas, que es justo lo que calcula el explorador: ε = 0,62495 y las salidas de la diapositiva. El objetivo de 51 °C para el aceite y el límite de 90 °C para el agua son del explorador: con ese objetivo bastarían unos 16 m², y los otros 14 m² solo bajan el aceite de 51 a 50,6 °C, porque el paralelo tiene techo. Pase a contracorriente en el panel 03: el mismo equipo enfría más el aceite (pestaña 4). La diapositiva no dice qué equipo es: como un 1-1 en paralelo es un doble tubo, el explorador lo dibuja con nueve horquillas de 4″ × 3″, que dan unos 30 m².' },
   { id: 'pectina', name: 'Enfriar el extracto antes del etanol', src: 'Proyecto · datos supuestos', s: { hot: 'pectina', pMu: 2.5, lmh: L10(3), Thi: 88, Tho: 40, cold: 'agua', lmc: L10(10), Tci: 25, TcoMax: 42, hotShell: false, arr: '2-n', Np: 6, tube: '34-16', layout: 'sq', shellIdx: 4, lenIdx: 1, baff: 0.4, mat: 'ss', Umode: 'geom', constProps: false, cpHot: cp25('pectina'), rfHot: 0.0004, rfCold: 0.0003 },
-    desc: 'El extracto ácido sale de la extracción a 88 °C, el punto de consigna del TIC en las diapositivas de agitación, y aquí se enfría a 40 °C antes de la precipitación con etanol. Va por los tubos de acero inoxidable 316, con seis pasos en cada una de dos corazas, y U se calcula con la geometría.',
+    desc: 'El extracto ácido sale de la extracción a 88 °C, el punto de consigna del TIC en las diapositivas de agitación, y debe llegar a la precipitación con etanol a 40 °C o menos. Va por los tubos de acero inoxidable 316, con seis pasos en cada una de dos corazas, y U se calcula con la geometría.',
     note: 'Proyecto con datos supuestos: los 40 °C de llegada a la precipitación, los caudales (3 kg/s de extracto y 10 kg/s de agua de torre que entra a 25 °C, con el límite de 42 °C del Taller 5), la geometría y la viscosidad del extracto (2,5 mPa·s). La Sesión 11 deja este intercambiador como aplicación al proyecto, sin números. Cambie la viscosidad en el panel 01 por la que midan en el laboratorio.' },
   { id: 'vapor', name: 'Calentar con vapor que condensa', src: 'Ejemplo del explorador · Lectura 08', s: { hot: 'vapor', pSteam: 2, cold: 'aguap', lmc: L10(5), Tci: 25, Tco: 85, target: 'cold', arr: '1-n', Np: 4, hotShell: true, tube: '34-16', layout: 'sq', shellIdx: 3, lenIdx: 1, baff: 0.4, mat: 'ss', Umode: 'geom', constProps: false, rfHot: 0.0001, rfCold: 0.0002 },
-    desc: 'Vapor saturado a 2 bar condensa en la coraza y calienta 5 kg/s de agua de proceso de 25 a 85 °C en un 1-4 de acero inoxidable. El vapor no cambia de temperatura: Cr = 0, F = 1 en cualquier arreglo y su caudal sale del balance.',
-    note: 'Los números son propios del explorador: la presión del vapor, el caudal y las temperaturas del agua y el equipo son ilustrativos; la regla de Cr = 0 es la de la Lectura 08. Mientras el caliente sea vapor, el lado de la coraza y lo que fija el diseño quedan bloqueados, y las corazas en serie no hacen falta.' },
+    desc: 'Vapor saturado a 2 bar condensa en la coraza y calienta 5 kg/s de agua de proceso que entra a 25 °C y debe salir a 85 °C o más, en un 1-4 de acero inoxidable. El vapor no cambia de temperatura: Cr = 0, F = 1 en cualquier arreglo y su caudal sale del balance.',
+    note: 'Los números son propios del explorador: la presión del vapor, el caudal y las temperaturas del agua y el equipo son ilustrativos; la regla de Cr = 0 es la de la Lectura 08. Mientras el caliente sea vapor, el lado de la coraza y lo que se exige quedan bloqueados, y las corazas en serie no hacen falta.' },
   { id: 'aceite', name: 'U calculado por geometría: enfriador de aceite', src: 'Ejemplo del explorador', s: { hot: 'aceite', lmh: L10(5), Thi: 150, Tho: 80, cold: 'agua', lmc: L10(14), Tci: 25, TcoMax: 40, hotShell: true, arr: '1-n', Np: 4, tube: '1-14', layout: 'sq', shellIdx: 7, lenIdx: 1, baff: 0.2, head: 'AES', Umode: 'geom', constProps: false, cpHot: cp25('aceite'), rfHot: 0.0002, rfCold: 0.0003 },
-    desc: 'Se enfrían 5 kg/s de aceite ligero de 150 a 80 °C con 14 kg/s de agua de torre que entra a 25 °C, en un 1-4 de cabezal flotante (AES) con el aceite por la coraza. Aquí U no es un dato: sale de las dos películas, la pared y el ensuciamiento.',
+    desc: 'Se enfrían 5 kg/s de aceite ligero que entra a 150 °C y debe salir a 80 °C o menos, con 14 kg/s de agua de torre que entra a 25 °C, en un 1-4 de cabezal flotante (AES) con el aceite por la coraza. Aquí U no es un dato: sale de las dos películas, la pared y el ensuciamiento.',
     note: 'Los números son propios del explorador: caudales, temperaturas y equipo son ilustrativos, escogidos para que el Reynolds de coraza, de unos 3300, quede dentro del rango de Kern. En la pestaña 5 se ve qué resistencia manda; compare Kern con Donohue en el panel 05.' },
   { id: 'mc155', eq: 'pl', name: 'Agua helada con agua del lago', src: 'McCabe · ejemplo 15.5', s: { eq: 'pl', hot: 'aguap', cold: 'agua', lmh: L10(252.4), lmc: L10(252.4), Thi: 15.56, Tho: 6.67, Tci: 5, TcoMax: 14, Tco: 13.9, target: 'hot', constProps: false, cpHot: cp25('aguap'), cpCold: cp25('agua'), Umode: 'geom', Amode: 'geom', rfHot: 0, rfCold: 0, mat: 'ss', plW: 3, plL: 3, plB: 1, plT: 2, plN: 337, plSec: 2 },
     desc: 'El proyecto de enfriamiento con agua del lago de la Universidad de Cornell. Cada unidad enfría hasta 4 000 gal/min (252 kg/s) de agua de 60 a 44 °F (15,6 a 6,7 °C) con un caudal igual de agua del lago Cayuga que entra a 41 °F (5 °C). Placas de inoxidable de 1 m de ancho y 0,7 mm, separadas 3 mm, a 0,5 m/s: U ≈ 5 200 W/m²K, Nₕ = 5,33, F ≈ 0,9 y 3,6 m de placa, que McCabe parte en dos secciones de 1,8 m en serie para no pasar de unos 4 m de alto. Δp ≈ 0,74 bar.',
     note: 'McCabe cuenta 147 canales por lado (295 placas por sección), pero 0,252 m³/s a 1,5×10⁻³ m³/s por canal son 168 canales: el explorador usa 337 placas por sección, que es lo que da 0,5 m/s. Sin ensuciamiento, como el libro: el equipo queda justo, y el mismo McCabe sugiere agregar 10 % de área en placas. El inoxidable del explorador tiene k = 16 W/m·K (McCabe: 16,3), y las propiedades se toman a la temperatura media de cada corriente: U sale 1 % más alto que los 5 170 del libro.' },
   { id: 'plpect', eq: 'pl', name: 'El extracto en placas', src: 'Proyecto · datos supuestos', s: { eq: 'pl', hot: 'pectina', pMu: 2.5, lmh: L10(3), Thi: 88, Tho: 40, cold: 'agua', lmc: L10(10), Tci: 25, TcoMax: 42, target: 'hot', constProps: false, cpHot: cp25('pectina'), cpCold: cp25('agua'), Umode: 'geom', Amode: 'geom', rfHot: 0.0002, rfCold: 0.0001, mat: 'ss', plW: 1, plL: 2, plB: 1, plT: 1, plN: 19, plSec: 1 },
-    desc: 'Las mismas corrientes de «Enfriar el extracto antes del etanol», ahora en un intercambiador de placas de acero inoxidable, el equipo típico de la industria de alimentos: el extracto de 88 a 40 °C con agua de torre que entra a 25 °C.',
+    desc: 'Las mismas corrientes de «Enfriar el extracto antes del etanol», ahora en un intercambiador de placas de acero inoxidable, el equipo típico de la industria de alimentos: el extracto entra a 88 °C y debe salir a 40 °C o menos, con agua de torre que entra a 25 °C.',
     note: 'Datos supuestos, como en la tarjeta de tubos y coraza: compare las dos en área, U y costo. El ensuciamiento es la mitad del de tubos y coraza porque las placas tienen esfuerzo cortante alto (McCabe). Con 3 kg/s de extracto contra 10 kg/s de agua los caudales están desbalanceados: un solo paso por lado deja el extracto lento; McCabe haría dos pasos para el extracto.' },
   { id: 'dpcc', eq: 'dp', name: 'Doble tubo con U de la geometría', src: 'Ejemplo del explorador', s: { eq: 'dp', dpArr: 'contra', hot: 'etanol', lmh: L10(0.8), Thi: 70, Tho: 35, cold: 'agua', lmc: L10(1.7), Tci: 25, TcoMax: 40, target: 'hot', hotShell: false, constProps: false, cpHot: cp25('etanol'), cpCold: cp25('agua'), Umode: 'geom', Amode: 'geom', rfHot: 0.0002, rfCold: 0.0003, mat: 'ss', dpSize: '25x114', dpLen: 2, dpN: 5 },
-    desc: 'Se enfría 0,8 kg/s de etanol de 70 a 35 °C con 1,7 kg/s de agua de torre en un banco de cinco horquillas de 2½″ × 1¼″ en contracorriente: la carga pequeña para la que la lectura recomienda el doble tubo. El etanol va por dentro y el agua por el ánulo.',
+    desc: 'Se enfría 0,8 kg/s de etanol que entra a 70 °C hasta 35 °C o menos, con 1,7 kg/s de agua de torre en un banco de cinco horquillas de 2½″ × 1¼″ en contracorriente: la carga pequeña para la que la lectura recomienda el doble tubo. El etanol va por dentro y el agua por el ánulo.',
     note: 'Los números son propios del explorador. Pruebe el paralelo en el panel 03 y compare las dos curvas en la pestaña 3; o pase el etanol al ánulo y mire en la pestaña 5 cómo cambia qué resistencia manda.' },
   { id: 'aero', eq: 'ac', name: 'Aeroenfriador de agua de proceso', src: 'Ejemplo del explorador', s: { eq: 'ac', hot: 'aguap', lmh: L10(8), Thi: 80, Tho: 55, lmc: L10(48), Tci: 30, target: 'hot', constProps: false, cpHot: cp25('aguap'), Umode: 'geom', Amode: 'geom', rfHot: 0.0002, rfCold: 0.0001, mat: 'cs', acFin: 'f10', acFh: 0, acRows: 4, acTpr: 22, acLen: 1, acPass: 4 },
-    desc: 'Se enfrían 8 kg/s de agua de proceso de 80 a 55 °C con 48 kg/s de aire a 30 °C, en un haz de cuatro filas de 22 tubos de 1″ con aletas de aluminio de ½″, cuatro pasos y 26 pies de largo, con los ventiladores abajo. Sin agua de torre: a cambio de mucha área.',
+    desc: 'Se enfrían 8 kg/s de agua de proceso que entra a 80 °C hasta 55 °C o menos, con 48 kg/s de aire a 30 °C, en un haz de cuatro filas de 22 tubos de 1″ con aletas de aluminio de ½″, cuatro pasos y 26 pies de largo, con los ventiladores abajo. Sin agua de torre: a cambio de mucha área.',
     note: 'Los números son propios del explorador. El aire entra a 30 °C, una temperatura de diseño de día caluroso; el proceso no puede bajar mucho de 50 °C (McCabe: unos 20 °C sobre el aire). El coeficiente del aire y su caída de presión vienen de correlaciones externas al curso.' }
 ];
 /* al cargar una tarjeta se conservan la vista y los supuestos de las pestañas de ensuciamiento y costos */
@@ -3256,7 +3310,6 @@ var KEEP_VIEW = ['grid'], KEEP_STUDY = ['months', 'tau', 'cEnergy', 'hours', 'li
 function cfgState(id, from) {
   var c = byId(CONFIGS, id), s = Object.assign(clone(BASE), clone(c.s));
   if (from) KEEP_VIEW.concat(KEEP_STUDY).forEach(function (k) { s[k] = from[k]; });
-  if (c.fit) c.fit(s);
   s.cfg = c.id; s.cfgMod = false; return s;
 }
 var state = cfgState('taller');
@@ -3365,10 +3418,10 @@ function show(id, on) { var el = document.getElementById(id); if (el) el.style.d
 
 function update() {
   var s = state, hf = byId(FLUIDS, s.hot), cf = byId(FLUIDS, s.eq === 'ac' ? 'aire' : s.cold), steam = !!hf.steam;
-  // con vapor, compute() deriva el lado (coraza), lo que fija el diseño (la salida del frío) y una sola coraza: se
+  // con vapor, compute() deriva el lado (coraza), lo que se exige (la salida del frío) y una sola coraza: se
   // muestran y se bloquean aquí, pero el estado guarda lo que el estudiante tenía para cuando vuelva a un líquido
   R = compute(mstate(s));
-  var r = R, b = r.bal, g = r.geo;
+  var r = R, b = r.bal, g = r.geo, sc = r.spec;
   pressed('#hotBtns .opt', 'f', s.hot); pressed('#coldBtns .opt', 'f', s.cold); pressed('#arrBtns .mill', 'a', shellsOf(r.arr) > 1 ? 'serie' : r.arr); pressed('#NsSeg button', 'v', shellsOf(r.arr)); pressed('#tubeBtns .opt', 't', s.tube);
   pressed('#tgtSeg button', 'v', r.target); pressed('#laySeg button', 'v', s.layout); pressed('#headSeg button', 'v', s.head); pressed('#AmodeSeg button', 'v', s.Amode); pressed('#UmodeSeg button', 'v', s.Umode); pressed('#corrSeg button', 'v', s.shellCorr);
   pressed('#NpSeg button', 'v', s.Np); pressed('#lenSeg button', 'v', s.lenIdx); pressed('#sideSeg button', 'v', r.hotShell ? '1' : '0'); pressed('#propSeg button', 'v', s.constProps ? '1' : '0');
@@ -3393,13 +3446,13 @@ function update() {
   show('mhRow', !steam);
   $('#vTci').previousElementSibling.textContent = AC ? 'Temperatura del aire' : 'Temperatura de entrada'; show('ThiRow', !steam); show('pSRow', steam); show('ThoRow', r.target === 'hot'); show('pMuRow', s.hot === 'pectina' || s.cold === 'pectina');
   setV('vmh', steam ? fmtN(b.mh, 3) + ' kg/s' : fmtN(Math.pow(10, s.lmh), 2) + ' kg/s'); setV('vThi', fmtN(s.Thi, 1) + ' °C'); setV('vTho', fmtN(s.Tho, 1) + ' °C'); setV('vpMu', fmtN(s.pMu, 1) + ' mPa·s');
-  setV('vpSteam', fmtN(s.pSteam, 2) + ' bar abs'); $('#pSHint').textContent = 'Tsat = ' + fmtN(r.Thi, 1) + ' °C · λ = ' + fmtN(b.lam / 1000, 0) + ' kJ/kg · vapor necesario ' + fmtN(b.mh * 3600, 0) + ' kg/h';
+  setV('vpSteam', fmtN(s.pSteam, 2) + ' bar abs'); $('#pSHint').textContent = 'Tsat = ' + fmtN(r.Thi, 1) + ' °C · λ = ' + fmtN(b.lam / 1000, 0) + ' kJ/kg · condensan ' + fmtN(b.mh * 3600, 0) + ' kg/h';
   // frío
   show('TcoMaxRow', r.target === 'hot' && !AC); show('TcoRow', r.target === 'cold');
   setV('vmc', fmtN(Math.pow(10, s.lmc), 2) + ' kg/s'); setV('vTci', fmtN(s.Tci, 1) + ' °C'); setV('vTcoMax', fmtN(s.TcoMax, 1) + ' °C'); setV('vTco', fmtN(s.Tco, 1) + ' °C');
-  $('#mcHint').textContent = r.target === 'hot' ? 'Mínimo para no pasar del límite: ' + fmtN(b.mcNeed, 2) + ' kg/s' : '';
+  $('#mcHint').textContent = r.target === 'hot' && sc.mcNeed != null && isFinite(sc.mcNeed) ? 'El objetivo sin pasar de ' + fmtN(s.TcoMax, 0) + ' °C pide al menos ' + fmtN(sc.mcNeed, 2) + ' kg/s' : '';
   $$('#tgtSeg button').forEach(function (x) { x.disabled = steam; });
-  $('#tgtHint').textContent = steam ? 'Con vapor se fija la salida del frío y el caudal de vapor sale del balance.' : '';
+  $('#tgtHint').textContent = steam ? 'Con vapor se exige la salida del frío: el vapor condensa a temperatura constante y su caudal sale del balance.' : '';
   // arreglo
   show('NpRow', ST && isST(r.arr)); show('NsRow', ST && shellsOf(r.arr) > 1);
   $$('#arrBtns .mill').forEach(function (x) { x.disabled = steam && x.dataset.a === 'serie'; x.title = x.disabled ? 'Con vapor que condensa, F = 1 en cualquier arreglo: una coraza basta' : ''; });
@@ -3432,35 +3485,40 @@ function update() {
   setV('vcEnergy', 'US$ ' + fmtN(s.cEnergy, 2) + '/kWh'); setV('vhours', fmtN(s.hours, 0) + ' h'); setV('vlife', fmtN(s.life, 0) + ' años');
   var cg = byId(CONFIGS, s.cfg);
   $('#cfgNow').innerHTML = esc(cg.name) + '<small>' + esc(s.cfgMod ? 'con sus cambios' : cg.src) + '</small>';
-  $('#ctx').innerHTML = '<b>' + esc(cg.name) + (s.cfgMod ? ', modificado' : '') + '</b> · ' + esc(arrLabel(r)) + ' · ' + esc(hf.short) + ' ' + fmtN(r.Thi, 0) + ' → ' + trimN(b.Tho, 1) + ' °C · ' + esc(cf.short) + ' ' + fmtN(r.Tci, 0) + ' → ' + fmtN(b.Tco, 1) + ' °C';
+  $('#ctx').innerHTML = '<b>' + esc(cg.name) + (s.cfgMod ? ', modificado' : '') + '</b> · ' + esc(arrLabel(r)) + ' · ' + (steam ? 'vapor que condensa a ' + fmtN(r.Thi, 1) + ' °C' : esc(hf.short) + ' ' + fmtN(r.Thi, 0) + ' → ' + trimN(b.Tho, 1) + ' °C') + ' · ' + esc(cf.short) + ' ' + fmtN(r.Tci, 0) + ' → ' + fmtN(b.Tco, 1) + ' °C';
   renderKPIs();
   var sev = r.warn.some(function (w) { return w.sev === 'c'; }) ? 'inv' : (r.warn.some(function (w) { return w.sev === 'w'; }) ? 'adv' : '');
-  $('#status').className = 'status' + (sev ? ' ' + sev : ''); $('#statusTxt').textContent = !b.closes ? 'El balance no cierra' : (sev === 'inv' ? 'No cumple' : (sev === 'adv' ? 'Con advertencias' : 'Diseño sano'));
+  $('#status').className = 'status' + (sev ? ' ' + sev : ''); $('#statusTxt').textContent = !b.physical ? 'Sin intercambio' : (!sc.physical || !sc.limitOk || !sc.Fr.ok ? 'Objetivo imposible' : (!sc.met ? 'No llega al objetivo' : (sev === 'inv' ? 'No cumple' : (sev === 'adv' ? 'Con advertencias' : 'Diseño sano'))));
   if (hscene) hscene.configure(R);
   renderTab();
 }
 function renderKPIs() {
-  var r = R, b = r.bal;
-  setV('kQ', fkW(b.Q) + '<small>kW</small>'); setV('kQu', r.target === 'hot' ? (b.closes ? 'el balance cierra' : 'el frío absorbe ' + fmtN(100 * b.Qcmax / b.Q, 0) + ' %') : (r.steam ? 'vapor ' + fmtN(b.mh * 3600, 0) + ' kg/h' : 'el caliente sale a ' + fmtN(b.Tho, 1) + ' °C'));
-  $('#kQc').classList.toggle('bad', !b.closes || !b.physical);
-  if (r.target === 'hot') { $('#kTl').textContent = 'Salida del frío'; setV('kT', fmtN(b.Tco, 1) + '<small>°C</small>'); setV('kTu', 'límite ' + fmtN(r.s.TcoMax, 0) + ' °C · ' + esc(r.cf.name.split(' ')[0].toLowerCase()) + ' ' + fmtN(Math.pow(10, r.s.lmc), 2) + ' kg/s'); $('#kTc').classList.toggle('bad', !b.closes); }
-  else { $('#kTl').textContent = 'Salida del caliente'; setV('kT', fmtN(b.Tho, 1) + '<small>°C</small>'); setV('kTu', r.steam ? 'condensado saturado' : 'por balance'); $('#kTc').classList.toggle('bad', !b.physical); }
+  var r = R, b = r.bal, sc = r.spec, hotT = r.target === 'hot', AC = r.eq === 'ac', lim = hotT && sc.limit != null;
+  var cumple = function (ok) { return ok ? ' · cumple' : ' · no llega'; }, mh = Math.pow(10, r.s.lmh), mc = Math.pow(10, r.s.lmc);
+  setV('kQ', fkW(b.Q) + '<small>kW</small>'); setV('kQu', r.steam ? 'condensan ' + fmtN(b.mh * 3600, 0) + ' kg/h de vapor' : 'cede el caliente = recibe el frío');
+  $('#kQc').classList.toggle('bad', !b.physical);
+  // las dos salidas son de la operación; el objetivo y el límite van debajo, para comparar
+  setV('kT', fmtN(b.Tho, 1) + '<small>°C</small>');
+  setV('kTu', r.steam ? 'condensado saturado' : (hotT ? 'objetivo ≤ ' + fmtN(sc.goal, 1) + ' °C' + cumple(sc.met) : esc(r.hf.short) + ' ' + fmtN(mh, 2) + ' kg/s'));
+  $('#kTc').classList.toggle('bad', hotT && !sc.met);
+  setV('kT2', fmtN(b.Tco, 1) + '<small>°C</small>');
+  setV('kT2u', !hotT ? 'objetivo ≥ ' + fmtN(sc.goal, 1) + ' °C' + cumple(sc.met) : (lim ? 'límite ' + fmtN(sc.limit, 0) + ' °C · ' + esc(r.cf.name.split(' ')[0].toLowerCase()) + ' ' + fmtN(mc, 2) + ' kg/s' : (AC ? 'aire ' + fmtN(mc, 1) + ' kg/s' : esc(r.cf.short) + ' ' + fmtN(mc, 2) + ' kg/s')));
+  $('#kT2c').classList.toggle('bad', (!hotT && !sc.met) || !sc.coldOk);
   var Fone = r.steam || r.eq === 'dp' || (r.eq === 'st' && !isST(r.arr));
   setV('kF', Fone ? '1' : (r.Fr.ok ? fmtN(r.F, 3) : 'imposible'));
   setV('kFu', r.arr === 'paralelo' ? 'paralelo: ΔTml propia' : (r.steam ? 'un lado a T constante' : (r.eq === 'dp' ? 'contracorriente pura' : (r.eq === 'pl' ? 'Nₕ ' + fmtN(r.NH, 2) + ' · McCabe · ΔTml ' + fmtN(r.LMTD, 1) + ' °C' : (r.eq === 'ac' ? 'flujo cruzado · ΔTml ' + fmtN(r.LMTD, 1) + ' °C' : 'P ' + fmtN(r.P, 3) + ' · R ' + fmtN(r.R, 2) + ' · ΔTml ' + fmtN(r.LMTD, 1) + ' °C')))));
   $('#kFc').classList.toggle('bad', !Fone && (!r.Fr.ok || r.F < 0.75));
   setV('kU', fmtN(r.Ud, 0) + '<small>W/m²K</small>'); setV('kUu', 'limpio ' + fmtN(r.Uc, 0) + (r.s.Umode === 'dato' ? ' · dato' : ' · calculado'));
-  setV('kA', isFinite(r.Areq) ? fmtN(r.Areq, r.Areq < 10 ? 2 : 1) + '<small>m²</small>' : '—'); setV('kAu', 'disponible ' + fA(r.Aav) + (isFinite(r.over) ? ' · ' + (r.over >= 0 ? '+' : '') + fmtN(100 * r.over, 0) + ' %' : ''));
-  $('#kAc').classList.toggle('bad', isFinite(r.over) && r.over < 0);
-  var rt = r.rate;
-  setV('kE', 'ε ' + fmtN(rt.eps, 3)); setV('kEu', 'NTU ' + fmtN(rt.NTU, 2) + ' · caliente sale a ' + fmtN(rt.Tho, 1) + ' °C');
+  setV('kA', fmtN(r.Aav, r.Aav < 10 ? 2 : 1) + '<small>m²</small>');
+  setV('kAu', isFinite(r.over) ? 'el objetivo pide ' + fA(r.Areq) + ' · ' + (r.over >= 0 ? '+' : '') + fmtN(100 * r.over, 0) + ' %' : (!sc.physical || !sc.limitOk || !sc.Fr.ok ? 'el objetivo no es posible' : '—'));
+  $('#kAc').classList.toggle('bad', !sc.met || !isFinite(r.over));
 }
 function renderTab() {
   if (!R) return;
   var np = !R.bal.physical;
   $$('.panel').forEach(function (p) { p.classList.toggle('nophys', np && p.dataset.panel !== 'cf'); });
   if (tab === 'cf') { renderConfigs(); return; } // las configuraciones se ven aunque el sistema en pantalla no sea posible
-  if (np) { var m = R.warn[0] ? R.warn[0].t : ''; $$('.np-msg').forEach(function (el) { el.innerHTML = '<b>Así no hay diseño posible.</b> ' + esc(m) + ' Corrija las temperaturas o los caudales en los controles.'; }); renderWarn(); return; }
+  if (np) { var m = R.warn[0] ? R.warn[0].t : ''; $$('.np-msg').forEach(function (el) { el.innerHTML = '<b>Así no hay intercambio posible.</b> ' + esc(m) + ' Corrija las temperaturas de entrada en los controles.'; }); renderWarn(); return; }
   if (tab === 'in') renderInside();
   else if (tab === 'ba') renderBalance();
   else if (tab === 'lm') renderLmtd();
@@ -3501,8 +3559,11 @@ var PROF = null, lastWarn = '';
 function renderInside() {
   var r = R, g = r.geo, b = r.bal;
   $('#inLbl').textContent = arrLabel(r) + (r.eq === 'st' ? ' · ' + g.head.id : '');
-  var rt = r.rate, keyT = r.target === 'hot' ? rt.Tho : rt.Tco, goal = r.target === 'hot' ? b.Tho : b.Tco, who = r.target === 'hot' ? 'el caliente' : 'el frío';
-  var opNote = !b.closes ? ' El balance no cierra: el dibujo muestra lo que alcanza a hacer el equipo con los caudales dados.' : (Math.abs(keyT - goal) < 0.25 ? '' : ' El dibujo muestra el equipo instalado operando con U de diseño: con ' + fA(r.Aav) + (isFinite(r.over) ? ' (' + (r.over >= 0 ? '+' : '') + fmtN(100 * r.over, 0) + ' % sobre lo requerido)' : '') + ', ' + who + ' sale a ' + fT(keyT) + ' y no a ' + fT(goal) + (r.target === 'hot' && r.cf.id === 'agua' && rt.Tco > r.s.TcoMax + 0.05 ? '; el agua vuelve a ' + fT(rt.Tco) + ', sobre su límite, si no se regula su caudal.' : '.'));
+  var sc = r.spec, hotT = r.target === 'hot', opT = hotT ? b.Tho : b.Tco, who = hotT ? 'el caliente' : 'el frío';
+  // las salidas son las del equipo instalado; lo que pide el proceso solo se compara
+  var opNote = ' Las salidas no se fijan: son las que da este equipo con sus caudales y su U de diseño.';
+  if (!sc.met) opNote += ' Con ' + fA(r.Aav) + ' ' + who + ' sale a ' + fT(opT) + ' y el proceso pide ' + (hotT ? 'a lo sumo ' : 'al menos ') + fT(sc.goal) + (isFinite(r.over) ? ': haría falta ' + fA(r.Areq) + '.' : ', que con estos caudales no es posible (pestaña 2).');
+  if (!sc.coldOk) opNote += ' El ' + r.cf.name.toLowerCase() + ' vuelve a ' + fT(b.Tco) + ', sobre su límite de ' + fT(sc.limit) + '.';
   var lead = r.eq === 'pl' ? (r.steam ? 'El vapor condensa en los canales impares y el frío corre por los pares, de abajo hacia arriba: cada placa tiene vapor de un lado y frío del otro. ' : 'El caliente y el frío corren por canales alternos entre las placas, en contracorriente: cada placa tiene caliente de un lado y frío del otro, y las corrugaciones hacen turbulento el flujo. ')
     : r.eq === 'dp' ? 'El ' + (r.hotShell ? 'caliente' : 'frío') + ' corre por el ánulo y el ' + (r.hotShell ? 'frío' : 'caliente') + ' por el tubo interior, en ' + (r.arr === 'paralelo' ? 'paralelo' : 'contracorriente') + ', a lo largo de ' + g.nhp + (g.nhp === 1 ? ' horquilla' : ' horquillas') + '. '
     : r.eq === 'ac' ? 'El proceso recorre los tubos aleteados en ' + (g.Np === 1 ? 'un solo paso' : g.Np + ' pasos, de la fila de arriba hacia abajo') + '; los ventiladores empujan el aire de abajo hacia arriba a través del haz. '
@@ -3519,8 +3580,8 @@ function renderInside() {
   var chips = ['<span class="chip acc">Q ' + fkW(b.Q) + ' kW</span>', '<span class="chip">ε ' + fmtN(r.rate.eps, 3) + ' · NTU ' + fmtN(r.rate.NTU, 2) + '</span>'];
   if (r.tube.u != null) chips.push('<span class="chip">' + r.lab.sa + ' ' + fmtN(r.tube.u, 2) + ' m/s · Re ' + fmtN(r.tube.Re, 0) + '</span>');
   if (r.shell.u != null) chips.push('<span class="chip">' + r.lab.sb + ' ' + fmtN(r.shell.u, 2) + ' m/s · Re ' + fmtN(r.shell.Re, 0) + '</span>');
-  if (!b.closes) chips.push('<span class="chip red">el balance no cierra</span>');
-  else if (isFinite(r.over) && r.over < 0) chips.push('<span class="chip red">área insuficiente</span>');
+  if (!r.spec.met) chips.push('<span class="chip red">no llega al objetivo</span>');
+  if (!r.spec.coldOk) chips.push('<span class="chip red">el frío vuelve sobre su límite</span>');
   $('#hud').innerHTML = chips.join('');
   renderWarn();
 }
@@ -3559,34 +3620,45 @@ function renderProf() {
 
 /* ---------- 2 · balance ---------- */
 function renderBalance() {
-  var r = R, b = r.bal, s = mstate(state), hot = r.target === 'hot';
-  var Qh = b.Q, Qc = hot ? b.Qcmax : b.Q, mx = Math.max(Qh, Qc) * 1.15, X0 = 150, X1 = 480, X = function (q) { return X0 + (X1 - X0) * q / mx; }, o = '';
-  o += TX(X0 - 10, 64, 'Debe ceder el caliente', { a: 'end', fs: 12, fw: 700 }) + TX(X0 - 10, 80, (r.steam ? 'vapor que condensa' : r.hf.short), { a: 'end', fs: 10.5, c: MUT });
-  o += E('rect', { x: X0, y: 50, width: r1(X(Qh) - X0), height: 34, style: 'fill:' + HOTC + ';opacity:.85' }) + TX(X(Qh) + 6, 72, fkW(Qh) + ' kW', { fs: 12, fw: 750 });
-  o += TX(X0 - 10, 144, hot ? 'Cabe en el frío' : 'Recibe el frío', { a: 'end', fs: 12, fw: 700 }) + TX(X0 - 10, 160, hot ? 'sin pasar de ' + fmtN(s.TcoMax, 0) + ' °C' : '', { a: 'end', fs: 10.5, c: MUT });
-  o += E('rect', { x: X0, y: 130, width: r1(X(Qc) - X0), height: 34, style: 'fill:' + COLDC + ';opacity:.85' }) + TX(X(Qc) + 6, 152, fkW(Qc) + ' kW', { fs: 12, fw: 750 });
-  if (hot && !b.closes) { o += E('rect', { x: r1(X(Qc)), y: 130, width: r1(X(Qh) - X(Qc)), height: 34, style: 'fill:none;stroke:var(--redline);stroke-width:2;stroke-dasharray:5 3' }); o += TX((X(Qc) + X(Qh)) / 2, 186, 'déficit ' + fkW(Qh - Qc) + ' kW (' + fmtN(100 * (Qh - Qc) / Qh, 0) + ' %)', { a: 'middle', fs: 12, fw: 750, c: 'var(--redline)' }); }
-  else o += TX(X0, 200, hot ? 'Sobran ' + fkW(Qc - Qh) + ' kW de capacidad en el frío' : 'Balance cerrado por construcción', { fs: 12, fw: 700, c: 'var(--ok)' });
-  o += TX(X0, 236, 'C = ṁ·cₚ:  caliente ' + (r.steam ? '∞ (condensa)' : fmtN(r.Ch, 0) + ' W/K') + ' · frío ' + fmtN(r.Cc, 0) + ' W/K', { fs: 11, c: MUT });
-  o += TX(X0, 254, 'cₚ usados: ' + (r.steam ? 'λ ' + fmtN(b.lam / 1000, 0) + ' kJ/kg' : fmtN(b.cph / 1000, 3)) + ' y ' + fmtN(b.cpc / 1000, 3) + ' kJ/kg·K ' + (s.constProps ? '(constantes)' : '(a la temperatura media)'), { fs: 11, c: MUT });
+  var r = R, b = r.bal, sc = r.spec, s = mstate(state), hot = sc.target === 'hot', lim = hot && sc.limit != null;
+  // arriba la operación (lo que cede el caliente es lo que recibe el frío); abajo, lo que pide el objetivo contra lo que cabe en el frío
+  var Qcap = lim ? sc.Qcmax : null, mx = Math.max(b.Q, sc.Q, Qcap || 0) * 1.15, X0 = 168, X1 = 470, X = function (q) { return X0 + (X1 - X0) * Math.max(0, q) / mx; }, o = '';
+  var bar = function (y, lbl, sub, q, col, op) { return TX(X0 - 10, y + 13, lbl, { a: 'end', fs: 12, fw: 700 }) + TX(X0 - 10, y + 27, sub, { a: 'end', fs: 10.5, c: MUT }) + E('rect', { x: X0, y: y, width: r1(X(q) - X0), height: 28, style: 'fill:' + col + ';opacity:' + op }) + TX(X(q) + 6, y + 19, fkW(q) + ' kW', { fs: 12, fw: 750 }); };
+  o += TX(10, 16, 'EN EL EQUIPO', { fs: 10, fw: 750, c: MUT });
+  o += bar(26, 'Cede el caliente', r.steam ? 'vapor que condensa' : r.hf.short + ' · ' + fmtN(r.Thi, 1) + ' → ' + fmtN(b.Tho, 1) + ' °C', b.Q, HOTC, 0.85);
+  o += bar(64, 'Recibe el frío', r.cf.short + ' · ' + fmtN(r.Tci, 1) + ' → ' + fmtN(b.Tco, 1) + ' °C', b.Q, COLDC, 0.85);
+  o += TX(X0, 112, 'Son iguales: el balance cierra siempre', { fs: 11.5, fw: 700, c: 'var(--ok)' });
+  o += LN(10, 126, 510, 126, 'stroke:var(--n300);stroke-width:1');
+  o += TX(10, 144, 'LO QUE PIDE EL PROCESO', { fs: 10, fw: 750, c: MUT });
+  o += bar(154, 'Pide el objetivo', hot ? 'el caliente a ' + fmtN(sc.goal, 1) + ' °C' : 'el frío a ' + fmtN(sc.goal, 1) + ' °C', sc.Q, hot ? HOTC : COLDC, 0.45);
+  if (lim) {
+    o += bar(192, 'Cabe en el frío', 'sin pasar de ' + fmtN(sc.limit, 0) + ' °C', Qcap, COLDC, 0.45);
+    if (!sc.limitOk) { o += E('rect', { x: r1(X(Qcap)), y: 192, width: r1(X(sc.Q) - X(Qcap)), height: 28, style: 'fill:none;stroke:var(--redline);stroke-width:2;stroke-dasharray:5 3' }); o += TX(X0, 238, 'Déficit de ' + fkW(sc.Q - Qcap) + ' kW (' + fmtN(100 * (sc.Q - Qcap) / sc.Q, 0) + ' %): con este caudal de frío', { fs: 11.5, fw: 750, c: 'var(--redline)' }) + TX(X0, 253, 'el objetivo no es posible', { fs: 11.5, fw: 750, c: 'var(--redline)' }); }
+    else o += TX(X0, 238, 'Sobran ' + fkW(Qcap - sc.Q) + ' kW de capacidad en el frío:', { fs: 11.5, fw: 700, c: 'var(--ok)' }) + TX(X0, 253, 'el objetivo es posible', { fs: 11.5, fw: 700, c: 'var(--ok)' });
+  } else o += TX(X0, 206, sc.physical ? (b.Q >= sc.Q - 1 ? 'El equipo transfiere lo que pide el objetivo' : 'Al equipo le faltan ' + fkW(sc.Q - b.Q) + ' kW para el objetivo') : 'El objetivo viola la segunda ley', { fs: 11.5, fw: 700, c: sc.physical && b.Q >= sc.Q - 1 ? 'var(--ok)' : 'var(--redline)' });
+  o += TX(10, 274, 'C = ṁ·cₚ:  caliente ' + (r.steam ? '∞ (condensa)' : fmtN(r.Ch, 0) + ' W/K') + ' · frío ' + fmtN(r.Cc, 0) + ' W/K', { fs: 11, c: MUT });
+  o += TX(10, 291, 'cₚ usados: ' + (r.steam ? 'λ ' + fmtN(b.lam / 1000, 0) + ' kJ/kg' : fmtN(b.cph / 1000, 3)) + ' y ' + fmtN(b.cpc / 1000, 3) + ' kJ/kg·K ' + (s.constProps ? '(constantes)' : '(a la temperatura media)'), { fs: 11, c: MUT });
   $('#svgBal').innerHTML = o;
-  var rows = [['Carga que debe ceder el caliente', fkW(b.Q) + ' kW']];
-  if (hot) rows = rows.concat([['Máximo que absorbe el frío dentro del límite', fkW(b.Qcmax) + ' kW'], ['Déficit', b.closes ? 'ninguno' : fkW(b.Q - b.Qcmax) + ' kW · ' + fmtN(100 * (b.Q - b.Qcmax) / b.Q, 1) + ' %'], ['Salida del frío si absorbe toda la carga', fT(b.Tco)], ['Caudal mínimo del frío', fmtN(b.mcNeed, 2) + ' kg/s'], ['¿Es viable?', b.closes ? 'sí' : 'no']]);
-  else rows = rows.concat([['Salida del caliente', fT(b.Tho)], r.steam ? ['Vapor necesario', fmtN(b.mh, 3) + ' kg/s · ' + fmtN(b.mh * 3600, 0) + ' kg/h'] : ['Caudal del caliente', fmtN(s.mh, 2) + ' kg/s']]);
-  rows.push(['¿Posible por segunda ley?', b.physical ? 'sí' : 'no']);
+  var possible = sc.physical && sc.limitOk;
+  var rows = [['Calor que pide el objetivo', fkW(sc.Q) + ' kW']];
+  if (lim) rows = rows.concat([['Máximo que absorbe el frío dentro del límite', fkW(sc.Qcmax) + ' kW'], ['Déficit', sc.limitOk ? 'ninguno' : fkW(sc.Q - sc.Qcmax) + ' kW · ' + fmtN(100 * (sc.Q - sc.Qcmax) / sc.Q, 1) + ' %'], ['Salida del frío si absorbe toda la carga', fT(sc.Tco)], ['Caudal mínimo del frío', fmtN(sc.mcNeed, 2) + ' kg/s']]);
+  else rows = rows.concat([['Salida del caliente que pide', fT(sc.Tho)], r.steam ? ['Vapor que pide', fmtN(sc.mh, 3) + ' kg/s · ' + fmtN(sc.mh * 3600, 0) + ' kg/h'] : ['Caudal del caliente', fmtN(s.mh, 2) + ' kg/s']]);
+  rows.push(['¿Es posible el objetivo?', possible ? 'sí' : (sc.physical ? 'no: el frío pasa de su límite' : 'no: viola la segunda ley')]);
+  rows.push(['Con este equipo', fkW(b.Q) + ' kW · ' + fmtN(100 * b.Q / sc.Q, 0) + ' % de lo que pide']);
   $('#specBal').innerHTML = rows.map(function (q) { return '<div>' + q[0] + '</div><div class="v">' + q[1] + '</div>'; }).join('');
-  // alternativas
+  // alternativas (Taller 5, parte B): cada una con el mismo U de diseño y el mismo arreglo; A es la que pide el objetivo
   var alts = [];
-  if (hot && !b.closes) {
-    var r1_ = withS({ lmc: L10(b.mcNeed * 1.0001) }), r2 = withS({ TcoMax: b.Tco + 0.01 }), Qc0 = b.Qcmax, Tho3 = r.Thi - Qc0 / r.Ch, r3 = withS({ Tho: Tho3 }), mh4 = Qc0 / (b.cph * (r.Thi - s.Tho)), r4 = withS({ lmh: L10(Math.max(mh4, 1e-3)) });
-    alts.push(['Subir el caudal del frío', 'de ' + fmtN(s.mc, 2) + ' a ' + fmtN(b.mcNeed, 2) + ' kg/s (×' + fmtN(b.mcNeed / s.mc, 2) + ')', 'F ' + fmtN(r1_.F, 3) + ' · A ' + fA(r1_.Areq), 'Cumple la carga y el límite', 'Más bombeo y más agua de la red', b.closes ? 'ya cumple' : 'sí']);
-    alts.push(['Relajar el límite de retorno', 'el frío saldría a ' + fT(b.Tco), r2.Fr.ok ? 'F ' + fmtN(r2.F, 3) + ' · A ' + fA(r2.Areq) : 'F imposible', 'No cambia los caudales', 'La red de servicios fija el límite: no lo decide el diseñador solo', 'solo con permiso']);
+  if (lim && sc.physical && !sc.limitOk) {
+    var r1_ = withS({ lmc: L10(sc.mcNeed * 1.0001) }), r2 = withS({ TcoMax: sc.Tco + 0.01 }), Qc0 = sc.Qcmax, Tho3 = r.Thi - Qc0 / sc.Ch, r3 = withS({ Tho: Tho3 }), mh4 = Qc0 / (sc.cph * (r.Thi - s.Tho)), r4 = withS({ lmh: L10(Math.max(mh4, 1e-3)) });
+    alts.push(['Subir el caudal del frío', 'de ' + fmtN(s.mc, 2) + ' a ' + fmtN(sc.mcNeed, 2) + ' kg/s (×' + fmtN(sc.mcNeed / s.mc, 2) + ')', 'F ' + fmtN(r1_.spec.F, 3) + ' · A ' + fA(r1_.Areq), 'Cumple la carga y el límite', 'Más bombeo y más agua de la red', 'sí']);
+    alts.push(['Relajar el límite de retorno', 'el frío saldría a ' + fT(sc.Tco), r2.spec.Fr.ok ? 'F ' + fmtN(r2.spec.F, 3) + ' · A ' + fA(r2.Areq) : 'F imposible', 'No cambia los caudales', 'La red de servicios fija el límite: no lo decide el diseñador solo', 'solo con permiso']);
     alts.push(['Aceptar menos enfriamiento', 'el caliente saldría a ' + fT(Tho3), 'A ' + fA(r3.Areq), 'Sin tocar servicios', 'No cumple el objetivo de proceso', 'no']);
     alts.push(['Bajar el caudal del caliente', 'de ' + fmtN(s.mh, 2) + ' a ' + fmtN(mh4, 2) + ' kg/s (' + fmtN(100 * mh4 / s.mh, 0) + ' %)', 'A ' + fA(r4.Areq), 'Cumple temperaturas', 'Recorta la producción', 'no']);
+    alts.push(['Dejar todo como está', 'nada', 'el caliente sale a ' + fT(b.Tho) + ' y el frío vuelve a ' + fT(b.Tco), 'Sin inversión', 'No cumple ni el objetivo ni el límite', 'no']);
   }
   $('#altTable').style.display = alts.length ? '' : 'none';
   $('#altTable').innerHTML = alts.length ? '<tr><th>Alternativa</th><th>Qué se modifica</th><th>Efecto</th><th>Ventaja</th><th>Desventaja</th><th>¿Viable?</th></tr>' + alts.map(function (a) { return '<tr><td>' + esc(a[0]) + '</td><td style="text-align:left">' + esc(a[1]) + '</td><td>' + esc(a[2]) + '</td><td style="text-align:left">' + esc(a[3]) + '</td><td style="text-align:left">' + esc(a[4]) + '</td><td>' + esc(a[5]) + '</td></tr>'; }).join('') : '';
-  $('#altNote').textContent = !hot ? 'Con el frío como objetivo el balance siempre cierra: el caudal del caliente (o del vapor) se ajusta.' : (b.closes ? 'El balance cierra: con ' + fmtN(s.mc, 2) + ' kg/s el frío tiene ' + fmtN(100 * (s.mc / b.mcNeed - 1), 1) + ' % de caudal por encima del mínimo (' + fmtN(b.mcNeed, 2) + ' kg/s). Las alternativas del Taller 5 aparecen cuando el caso no cierra: cargue «Taller 5 tal como llega» en la pestaña 9.' : 'Cada alternativa se calculó con el mismo U de diseño y el mismo arreglo. Otras ideas del taller: un segundo servicio o etapa, agua helada, un aeroenfriador antes del agua.');
+  $('#altNote').textContent = !lim ? 'Cuando lo que se exige es calentar el frío no hay un límite de retorno que revisar. Las alternativas del Taller 5 aparecen cuando el objetivo pide enfriar el caliente y el frío no alcanza: cargue «Taller 5 tal como llega» en la pestaña 9.' : (!sc.physical ? 'El objetivo viola la segunda ley: corrija la salida objetivo o los caudales en los controles.' : (sc.limitOk ? 'El objetivo es posible: con ' + fmtN(s.mc, 2) + ' kg/s el frío tiene ' + fmtN(100 * (s.mc / sc.mcNeed - 1), 1) + ' % de caudal por encima del mínimo (' + fmtN(sc.mcNeed, 2) + ' kg/s). Las alternativas del Taller 5 aparecen cuando no lo es: cargue «Taller 5 tal como llega» en la pestaña 9.' : 'Cada alternativa se calculó con el mismo U de diseño y el mismo arreglo; el área es la que pediría el objetivo. La última fila es lo que pasa con el equipo instalado si no se cambia nada. Otras ideas del taller: un segundo servicio o etapa, agua helada, un aeroenfriador antes del agua.'));
 }
 
 /* ---------- 3 · LMTD y F ---------- */
@@ -3610,17 +3682,22 @@ function renderLmtd() {
   if (isST(r.arr) && !r.steam) {
     var cpts = []; for (var i = 1; i <= 200; i++) { var P2 = i / 201, f2 = Fshells(P2, r.R, r.Ns); if (f2.ok && f2.F >= 0.5) cpts.push([a.X(P2), a.Y(f2.F)]); else if (cpts.length) break; }
     out += PATH(poly(cpts), 'stroke:var(--ink);stroke-width:2.6', 'cpF');
-    if (r.Fr.ok) out += dot(a.X(r.P), a.Y(r.F), 6) + TX(a.X(r.P) + 9, a.Y(r.F) - 8, 'F ' + fmtN(r.F, 3), { fs: 12, fw: 750 });
-    else out += TX(299, 60, 'Con ' + NCOR[r.Ns] + ' este P no tiene solución para R = ' + fmtN(r.R, 2), { a: 'middle', fs: 12, fw: 700, c: 'var(--redline)' });
+    // el punto del objetivo y el de la operación; cerca de F = 1 las etiquetas van abajo y a lados opuestos
+    var sc0 = r.spec, same = sc0.Fr.ok && Math.abs(sc0.P - r.P) < 0.012, opLeft = same ? r.P > 0.6 : r.P < sc0.P;
+    var lab = function (P, F, txt, big, left) { var x = a.X(P), y = a.Y(F); return TX(x + (left ? -9 : 9), y + (F > 0.95 ? 18 : -8), txt, { fs: big ? 12 : 11, fw: big ? 750 : null, a: left ? 'end' : null }); };
+    if (sc0.Fr.ok && !same) out += dot(a.X(sc0.P), a.Y(sc0.F), 5, 'var(--ink)') + lab(sc0.P, sc0.F, 'objetivo · F ' + fmtN(sc0.F, 3), false, !opLeft);
+    if (r.Fr.ok) out += dot(a.X(r.P), a.Y(r.F), 6) + lab(r.P, r.F, (same ? 'objetivo y operación' : 'operación') + ' · F ' + fmtN(r.F, 3), true, opLeft);
+    if (!sc0.Fr.ok) out += TX(299, 60, 'Con ' + NCOR[r.Ns] + ' el objetivo no tiene solución (P = ' + fmtN(sc0.P, 3) + ', R = ' + fmtN(sc0.R, 2) + ')', { a: 'middle', fs: 12, fw: 700, c: 'var(--redline)' });
   } else out += TX(299, 60, r.steam ? 'Con un lado a temperatura constante F = 1' : (r.arr === 'contra' ? 'Contracorriente pura: F = 1' : 'Paralelo: se usa su propia ΔTml'), { a: 'middle', fs: 12, fw: 700, c: MUT });
   out += '<g id="fCur"></g>';
   $('#svgF').innerHTML = out; FCH = a;
-  var Pr = (b.Tco - r.Tci) / (r.Thi - r.Tci), Rr = (r.Thi - b.Tho) / (b.Tco - r.Tci);
-  var rows = [['Diferencias terminales ΔT₁ · ΔT₂', fmtN(r.d1, 2) + ' · ' + fmtN(r.d2, 2) + ' °C'], ['ΔTml ' + (r.arr === 'paralelo' ? '(paralelo)' : '(contracorriente)'), fmtN(r.LMTD, 2) + ' °C'], ['Media aritmética (sobrestima)', fmtN((r.d1 + r.d2) / 2, 2) + ' °C'],
-    ['P y R (coraza y tubos, diapositivas)', fmtN(r.P, 3) + ' · ' + fmtN(r.R, 3)], ['P y R (caliente y frío, lectura)', fmtN(Pr, 3) + ' · ' + fmtN(Rr, 3)], ['F', r.Fr.ok ? fmtN(r.F, 4) : 'imposible'],
-    ['U limpio · U sucio', fmtN(r.Uc, 1) + ' · ' + fmtN(r.Ud, 1) + ' W/m²K'], ['Área requerida (sucio)', fA(r.Areq)], ['Área con U limpio', fA(r.AreqC)], ['Área que compra el ensuciamiento', isFinite(r.Areq) ? fA(r.Areq - r.AreqC) + ' · +' + fmtN(100 * (r.Areq / r.AreqC - 1), 1) + ' %' : '—'], ['Área disponible · sobrediseño', fA(r.Aav) + (isFinite(r.over) ? ' · ' + (r.over >= 0 ? '+' : '') + fmtN(100 * r.over, 1) + ' %' : '')]];
+  var sc = r.spec, Pr = (sc.Tco - r.Tci) / (r.Thi - r.Tci), Rr = (r.Thi - sc.Tho) / (sc.Tco - r.Tci);
+  var rows = [['Salidas que pide el objetivo', 'caliente ' + fT(sc.Tho) + ' · frío ' + fT(sc.Tco) + (sc.physical && !sc.limitOk ? ' (sobre su límite)' : '')], ['Diferencias terminales ΔT₁ · ΔT₂', fmtN(sc.d1, 2) + ' · ' + fmtN(sc.d2, 2) + ' °C'], ['ΔTml ' + (r.arr === 'paralelo' ? '(paralelo)' : '(contracorriente)'), fmtN(sc.LMTD, 2) + ' °C'], ['Media aritmética (sobrestima)', fmtN((sc.d1 + sc.d2) / 2, 2) + ' °C'],
+    ['P y R (coraza y tubos, diapositivas)', fmtN(sc.P, 3) + ' · ' + fmtN(sc.R, 3)], ['P y R (caliente y frío, lectura)', fmtN(Pr, 3) + ' · ' + fmtN(Rr, 3)], ['F', sc.Fr.ok ? fmtN(sc.F, 4) : 'imposible'],
+    ['U limpio · U sucio', fmtN(sc.Uc, 1) + ' · ' + fmtN(sc.Ud, 1) + ' W/m²K'], ['Área que pide el objetivo (sucio)', fA(sc.Areq)], ['Área con U limpio', fA(sc.AreqC)], ['Área que compra el ensuciamiento', isFinite(sc.Areq) ? fA(sc.Areq - sc.AreqC) + ' · +' + fmtN(100 * (sc.Areq / sc.AreqC - 1), 1) + ' %' : '—'], ['Área instalada · sobrediseño', fA(r.Aav) + (isFinite(r.over) ? ' · ' + (r.over >= 0 ? '+' : '') + fmtN(100 * r.over, 1) + ' %' : '')],
+    ['Operación: ΔTml · F', fmtN(r.LMTD, 2) + ' °C · ' + (r.Fr.ok ? fmtN(r.F, 3) : '—')]];
   $('#specLm').innerHTML = rows.map(function (q) { return '<div>' + q[0] + '</div><div class="v">' + q[1] + '</div>'; }).join('');
-  $('#lmNote').textContent = 'Las dos convenciones de P y R dan el mismo F para estas corazas, porque F(P, R) = F(P·R, 1/R). Con N corazas, F se evalúa con el P* por coraza del Taller 5.' + (isST(r.arr) && r.Ns < 3 && r.Fr.ok && r.F < 0.9 && Fshells(r.P, r.R, r.Ns + 1).ok ? ' Pruebe ' + NCOR[r.Ns + 1] + ': con las mismas temperaturas F sube a ' + fmtN(Fshells(r.P, r.R, r.Ns + 1).F, 3) + '.' : '');
+  $('#lmNote').textContent = (sc.physical && !sc.limitOk ? 'El objetivo no es posible con estos caudales: el frío tendría que volver a ' + fT(sc.Tco) + ', sobre su límite de ' + fT(sc.limit) + '. La tarjeta muestra el área que haría falta si se aceptara ese retorno. ' : '') + 'La tarjeta diseña para lo que pide el proceso, como la parte C del Taller 5: con la salida objetivo, ¿qué área hace falta? La última fila es la operación del equipo instalado, con las salidas que él da; si el área instalada es la que pide el objetivo, las dos coinciden. Las dos convenciones de P y R dan el mismo F para estas corazas, porque F(P, R) = F(P·R, 1/R). Con N corazas, F se evalúa con el P* por coraza del Taller 5.' + (isST(r.arr) && r.Ns < 3 && sc.Fr.ok && sc.F < 0.9 && Fshells(sc.P, sc.R, r.Ns + 1).ok ? ' Pruebe ' + NCOR[r.Ns + 1] + ': con las mismas temperaturas F sube a ' + fmtN(Fshells(sc.P, sc.R, r.Ns + 1).F, 3) + '.' : '');
 }
 
 /* ---------- 4 · ε-NTU ---------- */
@@ -3631,16 +3708,16 @@ function renderEnt() {
   [0, 0.25, 0.5, 0.75, 1].forEach(function (Cr) { var pts = []; for (var i = 0; i <= 120; i++) { var n = nmax * i / 120; pts.push([a.X(n), a.Y(r.epsFn(n, Cr))]); } out += PATH(poly(pts), 'stroke:var(--n400);stroke-width:1.1', 'cpE'); var lp = pts[pts.length - 1]; out += TX(lp[0] - 4, lp[1] - 4, 'Cr ' + fmtN(Cr, 2), { a: 'end', fs: 9.5, c: MUT }); });
   var cp = []; for (var i = 0; i <= 160; i++) { var n2 = nmax * i / 160; cp.push([a.X(n2), a.Y(r.epsFn(n2, rt.Cr))]); }
   out += PATH(poly(cp), 'stroke:var(--hl);stroke-width:2.6', 'cpE');
-  if (isFinite(r.NTUreq)) out += dot(a.X(r.NTUreq), a.Y(r.epsReq), 5, 'var(--ink)') + TX(a.X(r.NTUreq) + 8, a.Y(r.epsReq) + 16, 'con el área requerida', { fs: 10.5 });
+  if (isFinite(r.NTUreq)) out += dot(a.X(r.NTUreq), a.Y(r.epsReq), 5, 'var(--ink)') + TX(a.X(r.NTUreq) + 8, a.Y(r.epsReq) + 16, 'con el área del objetivo', { fs: 10.5 });
   out += dot(a.X(rt.NTU), a.Y(rt.eps), 6) + TX(a.X(rt.NTU) + 8, a.Y(rt.eps) - 8, 'este equipo · ε ' + fmtN(rt.eps, 3), { fs: 11.5, fw: 750 });
   out += '<g id="eCur"></g>';
   $('#svgE').innerHTML = out; ECH = { a: a, kind: kind };
   $('#enLbl').textContent = r.eq === 'pl' ? 'contracorriente con el F de McCabe' : (r.eq === 'ac' ? 'flujo cruzado, ' + r.geo.Np + (r.geo.Np === 1 ? ' paso' : ' pasos en contra-cruce') : (isST(r.arr) ? NCOR[r.Ns] + ', ' + [2, 4, 6].map(function (q) { return q * r.Ns; }).join(', ') + '… pasos' : (r.arr === 'contra' ? 'contracorriente' : 'paralelo')));
   var b = r.bal, rows = [['C caliente · C frío', (r.steam ? '∞' : fmtN(r.Ch, 0)) + ' · ' + fmtN(r.Cc, 0) + ' W/K'], ['Cmín (fluido)', fmtN(rt.Cmin, 0) + ' W/K · ' + rt.minSide], ['Cr = Cmín/Cmáx', fmtN(rt.Cr, 3)], ['Qmáx = Cmín(Tc,ent − Tf,ent)', fkW(rt.Cmin * (r.Thi - r.Tci)) + ' kW'],
-    ['Con el área requerida: NTU · ε', isFinite(r.NTUreq) ? fmtN(r.NTUreq, 3) + ' · ' + fmtN(r.epsReq, 3) : '—'], ['Con el área instalada: NTU · ε', fmtN(rt.NTU, 3) + ' · ' + fmtN(rt.eps, 3)], ['Q con este equipo', fkW(rt.Q) + ' kW' + (isFinite(b.Q) ? ' (' + fmtN(100 * rt.Q / b.Q, 0) + ' % de la carga)' : '')], ['Salidas con este equipo', 'caliente ' + fT(rt.Tho) + ' · frío ' + fT(rt.Tco)]];
+    ['Con el área del objetivo: NTU · ε', isFinite(r.NTUreq) ? fmtN(r.NTUreq, 3) + ' · ' + fmtN(r.epsReq, 3) : '—'], ['Con el área instalada: NTU · ε', fmtN(rt.NTU, 3) + ' · ' + fmtN(rt.eps, 3)], ['Q con este equipo', fkW(rt.Q) + ' kW' + (isFinite(r.spec.Q) && r.spec.Q > 0 ? ' (' + fmtN(100 * rt.Q / r.spec.Q, 0) + ' % del objetivo)' : '')], ['Salidas con este equipo', 'caliente ' + fT(rt.Tho) + ' · frío ' + fT(rt.Tco)]];
   $('#specEn').innerHTML = rows.map(function (q) { return '<div>' + q[0] + '</div><div class="v">' + q[1] + '</div>'; }).join('');
-  var Qreq = isFinite(r.epsReq) ? r.epsReq * rt.Cmin * (r.Thi - r.Tci) : NaN;
-  $('#enNote').textContent = isFinite(Qreq) ? 'Con el área requerida, ε-NTU devuelve Q = ' + fkW(Qreq) + ' kW contra ' + fkW(b.Q) + ' kW del LMTD (diferencia ' + fmtN(100 * Math.abs(Qreq / b.Q - 1), 3) + ' %): son el mismo modelo, solo cambia qué se despeja. Leídos en las gráficas difieren un poco.' + (r.arr === 'paralelo' ? ' En paralelo ε nunca pasa de 1/(1 + Cr) = ' + fmtN(1 / (1 + rt.Cr), 3) + '.' : '') : 'Sin área requerida (el diseño no es posible): la gráfica muestra solo el equipo actual.';
+  var Qreq = isFinite(r.epsReq) ? r.epsReq * r.spec.Cmin * (r.Thi - r.Tci) : NaN;
+  $('#enNote').textContent = (isFinite(Qreq) ? 'Con el área que pide el objetivo, ε-NTU devuelve Q = ' + fkW(Qreq) + ' kW contra ' + fkW(r.spec.Q) + ' kW del LMTD (diferencia ' + fmtN(100 * Math.abs(Qreq / r.spec.Q - 1), 3) + ' %): son el mismo modelo, solo cambia qué se despeja. Leídos en las gráficas difieren un poco. ' : 'El objetivo no es posible con estos caudales: no hay un área que lo cumpla, y la gráfica muestra solo el equipo instalado. ') + 'Con el área instalada, ε-NTU da la operación: son las salidas que muestra el explorador en todas las pestañas.' + (r.arr === 'paralelo' ? ' En paralelo ε nunca pasa de 1/(1 + Cr) = ' + fmtN(1 / (1 + rt.Cr), 3) + '.' : '');
 }
 
 /* ---------- 5 · coeficientes y ΔP ---------- */
@@ -3719,10 +3796,10 @@ function renderCost() {
   var acid = r.hf.id === 'pectina' || r.cf.id === 'pectina';
   var res = MATS.filter(function (m) { return r.eq !== 'pl' || m.id === 'ss' || m.id === 'ti'; }).map(function (m) { var q = withS({ mat: m.id }), eq = econ(q, s); return { m: m, q: q, e: eq }; });
   $('#matTitle').textContent = r.eq === 'pl' ? 'Comparación de materiales de las placas' : 'Comparación de materiales de los tubos';
-  var best = res.filter(function (x) { return (!acid || x.m.acid) && isFinite(x.q.over) && x.q.over >= 0; }).sort(function (a, b) { return a.e.totY - b.e.totY; })[0];
-  $('#matTable').innerHTML = '<tr><th>Material</th><th>k (W/m·K)</th><th>U de diseño</th><th>Área requerida</th><th>Sobrediseño</th><th>Compra</th><th>Total por año</th><th>¿Sirve?</th></tr>' + res.map(function (x) {
+  var best = res.filter(function (x) { return (!acid || x.m.acid) && isFinite(x.q.over) && x.q.spec.met; }).sort(function (a, b) { return a.e.totY - b.e.totY; })[0];
+  $('#matTable').innerHTML = '<tr><th>Material</th><th>k (W/m·K)</th><th>U de diseño</th><th>Área que pide el objetivo</th><th>Sobrediseño</th><th>Compra</th><th>Total por año</th><th>¿Sirve?</th></tr>' + res.map(function (x) {
     var ok = (!acid || x.m.acid), ov = x.q.over;
-    return '<tr' + (x.m.id === r.mat.id ? ' class="cur"' : '') + '><td>' + esc(x.m.name) + (best && best.m.id === x.m.id ? ' <span class="pill ok">más barato</span>' : '') + '</td><td>' + x.m.k + '</td><td>' + fmtN(x.q.Ud, 0) + ' W/m²K</td><td>' + fA(x.q.Areq) + '</td><td' + (isFinite(ov) && ov < 0 ? ' class="bad"' : '') + '>' + (isFinite(ov) ? (ov >= 0 ? '+' : '') + fmtN(100 * ov, 0) + ' %' : '—') + '</td><td>' + usd(x.e.buy) + '</td><td>' + usd(x.e.totY) + '</td><td' + (ok ? '' : ' class="bad"') + '>' + (ok ? (isFinite(ov) && ov < 0 ? 'falta área' : 'sí') : 'no: se corroe') + '</td></tr>';
+    return '<tr' + (x.m.id === r.mat.id ? ' class="cur"' : '') + '><td>' + esc(x.m.name) + (best && best.m.id === x.m.id ? ' <span class="pill ok">más barato</span>' : '') + '</td><td>' + x.m.k + '</td><td>' + fmtN(x.q.Ud, 0) + ' W/m²K</td><td>' + fA(x.q.Areq) + '</td><td' + (isFinite(ov) && ov < 0 ? ' class="bad"' : '') + '>' + (isFinite(ov) ? (ov >= 0 ? '+' : '') + fmtN(100 * ov, 0) + ' %' : '—') + '</td><td>' + usd(x.e.buy) + '</td><td>' + usd(x.e.totY) + '</td><td' + (ok && x.q.spec.met ? '' : ' class="bad"') + '>' + (ok ? (!isFinite(ov) ? 'objetivo imposible' : (!x.q.spec.met ? 'no llega' : 'sí')) : 'no: se corroe') + '</td></tr>';
   }).join('');
   $('#matNote').textContent = (r.s.Umode === 'dato' ? 'Con U como dato el material no cambia U ni el área: solo el precio. ' : (r.eq === 'pl' ? 'En placas la pared es tan delgada que pesa algo más en 1/U, pero las placas se hacen en acero inoxidable o titanio: el acero al carbono y el latón no se estampan en láminas de menos de 1 mm. ' : 'La pared casi nunca manda en 1/U: cambiar de material mueve poco el área y mucho el precio. ')) + (acid ? 'El extracto es ácido (pH 1,5 a 2,5): solo el acero inoxidable 316 y el titanio lo resisten.' : (r.eq === 'pl' ? 'El titanio se usa con agua de mar y medios con cloruros.' : 'Admiralty y Cu-Ni se usan con agua de mar o de torre agresiva; el titanio, con medios muy corrosivos.'));
 }
@@ -3733,23 +3810,29 @@ function lc1(s) { return s.charAt(0).toLowerCase() + s.slice(1); }
 function cfgFacts(c, st, r) {
   if (r.eq !== 'st') return cfgFactsEq(c, st, r);
   var g = r.geo, side = function (f, shell) { return f.name + (shell ? ' por la coraza' : ' por los tubos'); };
-  var mh = Math.pow(10, st.lmh), mc = Math.pow(10, st.lmc), hot = r.target === 'hot';
-  var hotTxt = r.steam ? 'vapor a ' + trimN(st.pSteam, 2) + ' bar abs, condensa a ' + fmtN(r.Thi, 0) + ' °C' : trimN(mh, 2) + ' kg/s · ' + (hot ? trimN(st.Thi, 1) + ' → ' + trimN(st.Tho, 1) + ' °C' : 'entra a ' + trimN(st.Thi, 1) + ' °C');
-  var coldTxt = trimN(mc, 2) + ' kg/s · ' + (hot ? 'entra a ' + trimN(st.Tci, 1) + ' °C y sale a ' + trimN(st.TcoMax, 1) + ' °C como máximo' : trimN(st.Tci, 1) + ' → ' + trimN(st.Tco, 1) + ' °C');
+  var mh = Math.pow(10, st.lmh), mc = Math.pow(10, st.lmc);
+  var hotTxt = r.steam ? 'vapor a ' + trimN(st.pSteam, 2) + ' bar abs, condensa a ' + fmtN(r.Thi, 0) + ' °C' : trimN(mh, 2) + ' kg/s · entra a ' + trimN(st.Thi, 1) + ' °C';
+  var coldTxt = trimN(mc, 2) + ' kg/s · entra a ' + trimN(st.Tci, 1) + ' °C';
   var lay = LAYOUTS.filter(function (l) { return l.id === st.layout; })[0], mat = /^(cs|ss|ti)$/.test(r.mat.id) ? lc1(r.mat.name) : r.mat.name;
   var Utxt = st.Umode === 'dato' ? (st.Rd ? 'U limpio = ' + fmtN(st.Uclean, 0) + ' W/m²K como dato, Rd = ' + fRf(st.Rd) + ' m²K/W' : 'U = ' + fmtN(st.Uclean, 0) + ' W/m²K como dato, sin Rd aparte') : 'U con la geometría (' + (r.steam ? 'condensación' : (st.shellCorr === 'kern' ? 'Kern' : 'Donohue')) + ' en la coraza)';
   var cpTxt = st.constProps ? (r.steam ? 'cₚ del frío constante, ' + trimN(st.cpCold, 3) : 'cₚ constantes, ' + trimN(st.cpHot, 3) + ' y ' + trimN(st.cpCold, 3)) + ' kJ/kg·K' : 'propiedades a la temperatura media';
-  return [['Fluidos', side(r.hf, r.hotShell) + ' · ' + lc1(side(r.cf, !r.hotShell))], ['Caliente', hotTxt], ['Frío', coldTxt],
+  return [['Fluidos', side(r.hf, r.hotShell) + ' · ' + lc1(side(r.cf, !r.hotShell))], ['Caliente', hotTxt], ['Frío', coldTxt], ['Pide', cfgGoal(st, r)],
     ['Equipo', arrLabel(r) + ' · ' + g.head.id + ' · coraza de ' + trimN(SHELL_IN[st.shellIdx], 2) + '″ · tubos de ' + LEN_FT[st.lenIdx] + ' pies'],
     ['Haz', g.tb.name.replace(' · ', ' ') + ' en ' + lc1(lay.name) + ' · ' + g.Nt + ' tubos por coraza · ' + mat],
     ['Cálculo', Utxt + ' · ' + (st.Amode === 'dato' ? (c.aIsResult ? 'A instalada = ' + trimN(st.Adato, 1) + ' m², la que pide el cálculo' : 'A = ' + trimN(st.Adato, 1) + ' m² como dato') : 'A de la geometría') + ' · ' + cpTxt]];
 }
+/* lo que pide el proceso en cada tarjeta: no entra en el cálculo de las salidas */
+function cfgGoal(st, r) {
+  if (r.target !== 'hot') return 'el frío a ' + trimN(st.Tco, 1) + ' °C o más';
+  return 'el caliente a ' + trimN(st.Tho, 1) + ' °C o menos' + (r.eq !== 'ac' && st.TcoMax < 150 ? ' · el frío vuelve a ' + trimN(st.TcoMax, 1) + ' °C como máximo' : '');
+}
 function cfgResult(r, c) {
-  var b = r.bal, sev = r.warn.some(function (w) { return w.sev === 'c'; }) ? 'no cumple' : (r.warn.some(function (w) { return w.sev === 'w'; }) ? 'con advertencias' : 'diseño sano');
-  if (!b.physical) return 'las temperaturas no son posibles (segunda ley)';
-  if (r.target === 'hot' && !b.closes) return 'Q = ' + fkW(b.Q) + ' kW · el balance no cierra: el frío absorbe ' + fmtN(100 * b.Qcmax / b.Q, 0) + ' % de la carga';
-  return 'Q = ' + fkW(b.Q) + ' kW' + (r.steam ? ' · vapor ' + fmtN(b.mh * 3600, 0) + ' kg/h' : '') + ' · F = ' + (r.Fr.ok ? fmtN(r.F, 3) : 'imposible') + ' · U = ' + fmtN(r.Ud, 0) + ' W/m²K · A = ' + fA(r.Areq)
-    + ' (' + (r.s.Amode === 'dato' && !(c && c.aIsResult) ? 'dada ' : 'instalada ') + fA(r.Aav) + (isFinite(r.over) ? ', ' + (r.over >= 0 ? '+' : '') + fmtN(100 * r.over, 0) + ' %' : '') + ') · ' + sev;
+  var b = r.bal, sc = r.spec, sev = r.warn.some(function (w) { return w.sev === 'c'; }) ? 'no cumple' : (r.warn.some(function (w) { return w.sev === 'w'; }) ? 'con advertencias' : 'diseño sano');
+  if (!b.physical) return 'sin una diferencia a favor del caliente no hay intercambio posible';
+  var outs = 'Q = ' + fkW(b.Q) + ' kW · el caliente sale a ' + fT(b.Tho) + ' y el frío a ' + fT(b.Tco) + (r.steam ? ' · vapor ' + fmtN(b.mh * 3600, 0) + ' kg/h' : '');
+  if (!sc.physical || !sc.limitOk || !sc.Fr.ok) return outs + ' · el objetivo no es posible' + (sc.physical && !sc.limitOk ? ': el frío tendría que volver a ' + fT(sc.Tco) : '');
+  return outs + ' · F = ' + (r.Fr.ok ? fmtN(r.F, 3) : 'imposible') + ' · U = ' + fmtN(r.Ud, 0) + ' W/m²K · A ' + (r.s.Amode === 'dato' && !(c && c.aIsResult) ? 'dada ' : 'instalada ') + fA(r.Aav)
+    + ' (el objetivo pide ' + fA(r.Areq) + (isFinite(r.over) ? ', ' + (r.over >= 0 ? '+' : '') + fmtN(100 * r.over, 0) + ' %' : '') + ') · ' + (sc.met ? sev : 'no llega al objetivo');
 }
 /* el resultado de cada tarjeta depende solo de la tarjeta (lo que se conserva al cargarla no entra en compute): se calcula una vez */
 var CFG_R = {};
@@ -3766,11 +3849,13 @@ function renderConfigs() {
   }).join('');
   $('#cfgIdeas').innerHTML = [
     '<b>Equipo (00):</b> cada equipo abre en su caso del curso. Lleve las mismas corrientes de una tarjeta de tubos y coraza a placas o a doble tubo (las del extracto están en las dos) y compare U, área y costo.',
-    '<b>Fluido caliente (01):</b> escoja el vapor saturado. Pasa a la coraza, F vale 1 en cualquier arreglo y lo que fija el diseño es la salida del frío; vuelva al líquido y el equipo recupera lo que tenía.',
+    '<b>Fluido caliente (01):</b> escoja el vapor saturado. Pasa a la coraza, F vale 1 en cualquier arreglo y lo que se exige pasa a ser la salida del frío; vuelva al líquido y el equipo recupera lo que tenía.',
+    '<b>Fluido frío (02):</b> en el Taller 5 rediseñado, baje el agua hacia 3,8 kg/s. El balance sigue cerrando: la glicerina sale cada vez más caliente, el agua vuelve cada vez más caliente y, bajo 12,66 kg/s, el objetivo deja de ser posible.',
     '<b>Arreglo (03):</b> cambie el número de corazas en serie y compare F en la pestaña 3. Cuando las temperaturas se cruzan, una sola coraza no alcanza.',
     '<b>Geometría (04):</b> cierre el espaciado de bafles y mire cómo suben la velocidad, el coeficiente y la caída de presión de la coraza en la pestaña 5.',
     '<b>Coeficiente global (05):</b> alterne entre «U como dato» y «Calcular con la geometría» para ver qué resistencia manda en 1/U.',
-    '<b>Coeficiente global (05):</b> alterne entre «cₚ constantes» y «A la temperatura media». Es la parte E del Taller 5: cuánto cambian la carga, el caudal de agua y el área.'
+    '<b>Coeficiente global (05):</b> alterne entre «cₚ constantes» y «A la temperatura media». Es la parte E del Taller 5: cuánto cambian la carga, el caudal de agua y el área.',
+    '<b>Lo que pide el proceso (06):</b> mueva la salida objetivo. Las salidas del equipo no cambian, porque el objetivo no entra en el cálculo; cambian el área que pediría y el sobrediseño.'
   ].map(function (x) { return '<li>' + x + '</li>'; }).join('');
 }
 
@@ -3778,11 +3863,11 @@ function renderConfigs() {
 function tex(id, s, disp) { var el = typeof id === 'string' ? document.getElementById(id) : id; if (!el) return; if (window.katex) { try { window.katex.render(s, el, { throwOnError: false, displayMode: !!disp }); return; } catch (e) { } } el.textContent = s; }
 function n2(x, d) { return fmtN(x, d).replace(',', '{,}').replace(/ /g, '\\,').replace('−', '-'); }
 function renderEqs() {
-  var r = R, b = r.bal, g = r.geo, rt = r.rate;
+  var r = R, b = r.bal, g = r.geo, rt = r.rate, sc = r.spec;
   var items = [
-    ['Balance de energía', '\\begin{aligned}Q&=\\dot m_c c_{p,c}(T_{c,e}-T_{c,s})\\\\&=\\dot m_f c_{p,f}(T_{f,s}-T_{f,e})=' + n2(b.Q / 1000, 1) + '\\ \\text{kW}\\end{aligned}', 'Si con los caudales fijados no cierra, no hay área que lo arregle (Taller 5, parte A).'],
-    ['Ecuación de diseño', '\\begin{aligned}A&=\\frac{Q}{U\\,\\Delta T_{ml}\\,F}\\\\&=\\frac{' + n2(b.Q, 0) + '}{(' + n2(r.Ud, 1) + ')(' + n2(r.LMTD, 2) + ')(' + n2(r.F, 3) + ')}=' + n2(r.Areq, 2) + '\\ \\text{m}^2\\end{aligned}', 'La ΔTml se calcula siempre como si fuera contracorriente pura (Lectura 08, sección 4).'],
-    ['Media logarítmica', '\\Delta T_{ml}=\\frac{\\Delta T_1-\\Delta T_2}{\\ln(\\Delta T_1/\\Delta T_2)}=\\frac{' + n2(r.d1, 2) + '-' + n2(r.d2, 2) + '}{\\ln(' + n2(r.d1, 2) + '/' + n2(r.d2, 2) + ')}=' + n2(r.LMTD, 2) + '\\ ^\\circ\\text{C}', 'Siempre menor o igual que la media aritmética: usar la aritmética sobrestima la fuerza impulsora y subestima el área.'],
+    ['Balance de energía', '\\begin{aligned}Q&=\\dot m_c c_{p,c}(T_{c,e}-T_{c,s})\\\\&=\\dot m_f c_{p,f}(T_{f,s}-T_{f,e})=' + n2(b.Q / 1000, 1) + '\\ \\text{kW}\\end{aligned}', 'Con el equipo instalado cierra siempre: Q es el que da el equipo y de él salen las dos salidas. Lo que puede no ser posible es el objetivo, si el frío no alcanza dentro de su límite (Taller 5, parte A).'],
+    ['Ecuación de diseño (para el objetivo)', '\\begin{aligned}A&=\\frac{Q}{U\\,\\Delta T_{ml}\\,F}\\\\&=\\frac{' + n2(sc.Q, 0) + '}{(' + n2(sc.Ud, 1) + ')(' + n2(sc.LMTD, 2) + ')(' + n2(sc.F, 3) + ')}=' + n2(sc.Areq, 2) + '\\ \\text{m}^2\\end{aligned}', 'Con las salidas que pide el proceso. La ΔTml se calcula siempre como si fuera contracorriente pura (Lectura 08, sección 4).'],
+    ['Media logarítmica', '\\Delta T_{ml}=\\frac{\\Delta T_1-\\Delta T_2}{\\ln(\\Delta T_1/\\Delta T_2)}=\\frac{' + n2(sc.d1, 2) + '-' + n2(sc.d2, 2) + '}{\\ln(' + n2(sc.d1, 2) + '/' + n2(sc.d2, 2) + ')}=' + n2(sc.LMTD, 2) + '\\ ^\\circ\\text{C}', 'Con las salidas del objetivo. Siempre menor o igual que la media aritmética: usar la aritmética sobrestima la fuerza impulsora y subestima el área.'],
     ['Factor F (1-2N, Bowman-Mueller-Nagle)', 'F=\\frac{\\sqrt{R^2+1}\\,\\ln\\frac{1-P}{1-RP}}{(R-1)\\ln\\frac{2-P(R+1-\\sqrt{R^2+1})}{2-P(R+1+\\sqrt{R^2+1})}}', 'P = (t₂ − t₁)/(T₁ − t₁), R = (T₁ − T₂)/(t₂ − t₁), con T la coraza y t los tubos. Vale para 2, 4, 6… pasos en una coraza.'],
     ['N corazas en serie (Taller 5)', '\\begin{aligned}P^*&=\\frac{1-\\left(\\frac{1-PR}{1-P}\\right)^{1/N}}{R-\\left(\\frac{1-PR}{1-P}\\right)^{1/N}}\\\\F&=F_{1\\text{-}2}(P^*,R)' + (r.Ns === 2 && r.Fr.ok && r.Fr.Ps ? '\\quad P^*=' + n2(r.Fr.Ps, 4) : '') + '\\end{aligned}', 'Se evalúa la fórmula de una coraza con el P de cada coraza.'],
     ['Efectividad', '\\begin{aligned}\\varepsilon&=\\frac{Q}{C_{min}(T_{c,e}-T_{f,e})}\\\\NTU&=\\frac{UA}{C_{min}}=' + n2(rt.NTU, 3) + ',\\quad C_r=' + n2(rt.Cr, 3) + '\\end{aligned}', 'Con un lado que cambia de fase (Cr = 0): ε = 1 − e^(−NTU) en cualquier arreglo.'.replace('e^(−NTU)', 'e⁻ᴺᵀᵁ')],
@@ -3856,9 +3941,10 @@ function renderLmtdEq() {
     var pts = []; for (var i = 0; i <= 200; i++) { var nh = 10 * i / 200; pts.push([a.X(nh), a.Y(Fplate(nh))]); }
     out += PATH(poly(pts), 'stroke:var(--ink);stroke-width:2.4', 'cpF');
     [[3, 0.95, 'McCabe: ≈ 0,95 con Nₕ = 3'], [5.333, 0.9, 'ejemplo 15.5: ≈ 0,9 con 5,33']].forEach(function (q) { out += E('circle', { cx: r1(a.X(q[0])), cy: r1(a.Y(q[1])), r: 4.5, style: 'fill:var(--paper);stroke:var(--ink);stroke-width:1.6' }) + TX(a.X(q[0]) + 8, a.Y(q[1]) - 9, q[2], { fs: 10.5, c: MUT }); });
-    if (isFinite(r.NH)) out += dot(a.X(Math.min(10, r.NH)), a.Y(r.F), 6) + TX(a.X(Math.min(10, r.NH)) + 9, a.Y(r.F) + 18, 'este equipo · F ' + fmtN(r.F, 3), { fs: 12, fw: 750 });
+    if (isFinite(r.spec.NH) && Math.abs(r.spec.NH - r.NH) > 0.08) out += dot(a.X(Math.min(10, r.spec.NH)), a.Y(r.spec.F), 5, 'var(--ink)') + TX(a.X(Math.min(10, r.spec.NH)) + 8, a.Y(r.spec.F) - 9, 'objetivo · F ' + fmtN(r.spec.F, 3), { fs: 11 });
+    if (isFinite(r.NH)) out += dot(a.X(Math.min(10, r.NH)), a.Y(r.F), 6) + TX(a.X(Math.min(10, r.NH)) + 9, a.Y(r.F) + 18, 'operación · F ' + fmtN(r.F, 3), { fs: 12, fw: 750 });
     $('#fLeg').innerHTML = '<span><i></i>interpolación entre los valores de McCabe</span>';
-    rows = [['Diferencias terminales ΔT₁ · ΔT₂', fmtN(r.d1, 2) + ' · ' + fmtN(r.d2, 2) + ' °C'], ['ΔTml (contracorriente)', fmtN(r.LMTD, 2) + ' °C'], ['Nₕ = ΔT de la corriente / ΔTml', fmtN(r.NH, 2)], ['F (McCabe)', fmtN(r.F, 3)]];
+    rows = [['Diferencias terminales ΔT₁ · ΔT₂', fmtN(r.spec.d1, 2) + ' · ' + fmtN(r.spec.d2, 2) + ' °C'], ['ΔTml (contracorriente)', fmtN(r.spec.LMTD, 2) + ' °C'], ['Nₕ = ΔT de la corriente / ΔTml', fmtN(r.spec.NH, 2)], ['F (McCabe)', fmtN(r.spec.F, 3)]];
     $('#lmNote').textContent = 'McCabe explica que F baja con Nₕ porque en los canales de los extremos el fluido intercambia por un solo lado y porque el flujo en zigzag se aparta del modelo ideal; da ≈ 0,95 con Nₕ = 3 y ≈ 0,9 en su ejemplo 15.5 (Nₕ = 5,33). Entre esos dos valores la recta es del explorador. Con flujos desbalanceados se hacen dos o más pasos para el caudal menor, y F queda entre 0,7 y 0,9.';
   } else if (r.eq === 'ac') {
     $('#fTitle').textContent = 'F del flujo cruzado contra NTU';
@@ -3868,9 +3954,10 @@ function renderLmtdEq() {
       var p2 = []; for (var i = 1; i <= 120; i++) { var n = 4 * i / 120, f = Fgen(r.epsFn(n, Cr), Cr, r.epsFn); if (f.ok) p2.push([a.X(n), a.Y(Math.min(1, f.F))]); }
       out += PATH(poly(p2), 'stroke:' + (Math.abs(Cr - r.rate.Cr) < 0.13 ? 'var(--hl)' : 'var(--n400)') + ';stroke-width:1.3', 'cpF'); if (p2.length) { var lp = p2[p2.length - 1]; out += TX(lp[0] - 4, lp[1] + 13, 'Cr ' + fmtN(Cr, 2), { a: 'end', fs: 9.5, c: MUT }); }
     });
-    if (r.Fr.ok && isFinite(r.NTUreq)) out += dot(a.X(Math.min(4, r.NTUreq)), a.Y(r.F), 6) + TX(a.X(Math.min(4, r.NTUreq)) + 9, a.Y(r.F) - 9, 'este diseño · F ' + fmtN(r.F, 3), { fs: 12, fw: 750 });
+    if (r.spec.Fr.ok && isFinite(r.NTUreq) && Math.abs(r.NTUreq - r.rate.NTU) > 0.04) out += dot(a.X(Math.min(4, r.NTUreq)), a.Y(r.spec.F), 5, 'var(--ink)') + TX(a.X(Math.min(4, r.NTUreq)) + 8, a.Y(r.spec.F) + 16, 'objetivo · F ' + fmtN(r.spec.F, 3), { fs: 11 });
+    if (r.Fr.ok) out += dot(a.X(Math.min(4, r.rate.NTU)), a.Y(r.F), 6) + TX(a.X(Math.min(4, r.rate.NTU)) + 9, a.Y(r.F) - 9, 'operación · F ' + fmtN(r.F, 3), { fs: 12, fw: 750 });
     $('#fLeg').innerHTML = '<span><i></i>' + r.geo.Np + (r.geo.Np === 1 ? ' paso' : ' pasos en contra-cruce') + '</span>';
-    rows = [['ΔTml (contracorriente)', fmtN(r.LMTD, 2) + ' °C'], ['Cr', fmtN(r.rate.Cr, 3)], ['F del flujo cruzado', r.Fr.ok ? fmtN(r.F, 3) : 'imposible']];
+    rows = [['ΔTml (contracorriente)', fmtN(r.spec.LMTD, 2) + ' °C'], ['Cr', fmtN(r.spec.Cr, 3)], ['F del flujo cruzado', r.spec.Fr.ok ? fmtN(r.spec.F, 3) : 'imposible']];
     $('#lmNote').textContent = 'El aire cruza el haz y el proceso lo recorre por pasos: el F sale de comparar la efectividad del flujo cruzado (ambos fluidos sin mezclar, aproximación de Incropera, y los pasos combinados en contra-cruce) con la de una contracorriente del mismo NTU. Con más pasos el equipo se acerca a la contracorriente y F sube.';
   } else {
     $('#fTitle').textContent = 'El mismo equipo en contracorriente y en paralelo';
@@ -3882,10 +3969,10 @@ function renderLmtdEq() {
     out += ln(hs ? pp.shell : pp.tubes[0], HOTC, '5 4', 1.6) + ln(hs ? pp.tubes[0] : pp.shell, COLDC, '5 4', 1.6) + ln(hs ? pc.shell : pc.tubes[0], HOTC, 'none', 2.6) + ln(hs ? pc.tubes[0] : pc.shell, COLDC, 'none', 2.6);
     $('#fLeg').innerHTML = '<span><i></i>contracorriente</span><span><i class="k"></i>paralelo</span>';
     var lmC = r.arr === 'paralelo' ? lmtdOf(r.Thi - pc.Tco, pc.Tho - r.Tci) : r.LMTD;
-    rows = [['Diferencias terminales ΔT₁ · ΔT₂', fmtN(r.d1, 2) + ' · ' + fmtN(r.d2, 2) + ' °C'], ['ΔTml ' + (r.arr === 'paralelo' ? '(paralelo)' : '(contracorriente)'), fmtN(r.LMTD, 2) + ' °C'], ['F', '1 · un solo paso por lado'], ['Mismo equipo en contracorriente', 'Q ' + fkW(pc.Q) + ' kW'], ['Mismo equipo en paralelo', 'Q ' + fkW(pp.Q) + ' kW']];
+    rows = [['Diferencias terminales ΔT₁ · ΔT₂', fmtN(r.spec.d1, 2) + ' · ' + fmtN(r.spec.d2, 2) + ' °C'], ['ΔTml ' + (r.arr === 'paralelo' ? '(paralelo)' : '(contracorriente)'), fmtN(r.spec.LMTD, 2) + ' °C'], ['F', '1 · un solo paso por lado'], ['Mismo equipo en contracorriente', 'Q ' + fkW(pc.Q) + ' kW'], ['Mismo equipo en paralelo', 'Q ' + fkW(pp.Q) + ' kW']];
     $('#lmNote').textContent = 'En un doble tubo cada fluido hace un solo paso: no hay F que corregir. En contracorriente la diferencia de temperatura es pareja a lo largo del equipo; en paralelo es grande a la entrada y se cierra a la salida, y el frío nunca supera la salida del caliente. Con las mismas horquillas, la contracorriente transfiere más.';
   }
-  rows = rows.concat([['U limpio · U sucio', fmtN(r.Uc, 1) + ' · ' + fmtN(r.Ud, 1) + ' W/m²K'], ['Área requerida (sucio)', fA(r.Areq)], ['Área con U limpio', fA(r.AreqC)], ['Área disponible · sobrediseño', fA(r.Aav) + (isFinite(r.over) ? ' · ' + (r.over >= 0 ? '+' : '') + fmtN(100 * r.over, 1) + ' %' : '')]]);
+  rows = [['Salidas que pide el objetivo', 'caliente ' + fT(r.spec.Tho) + ' · frío ' + fT(r.spec.Tco)]].concat(rows).concat([['U limpio · U sucio', fmtN(r.spec.Uc, 1) + ' · ' + fmtN(r.spec.Ud, 1) + ' W/m²K'], ['Área que pide el objetivo (sucio)', fA(r.Areq)], ['Área con U limpio', fA(r.AreqC)], ['Área instalada · sobrediseño', fA(r.Aav) + (isFinite(r.over) ? ' · ' + (r.over >= 0 ? '+' : '') + fmtN(100 * r.over, 1) + ' %' : '')], ['Operación: ΔTml · F', fmtN(r.LMTD, 2) + ' °C · ' + (r.Fr.ok ? fmtN(r.F, 3) : '—')]]);
   out += '<g id="fCur"></g>'; $('#svgF').innerHTML = out; FCH = a; $('#fRead').textContent = '';
   $('#specLm').innerHTML = rows.map(function (q) { return '<div>' + q[0] + '</div><div class="v">' + q[1] + '</div>'; }).join('');
 }
@@ -3980,14 +4067,14 @@ function eqAssump(r) {
   return base + 'Las aletas usan la eficiencia de McCabe (ec. 15.18) y el área de afuera de las diapositivas I. El coeficiente del aire (Briggs y Young), su caída de presión (Robinson y Briggs) y el flujo cruzado (aproximación de Incropera) son externos al material del curso; el costo de compra es una estimación propia del explorador. Úselo para entender el orden de magnitud y por qué un aeroenfriador necesita tanta área.';
 }
 function cfgFactsEq(c, st, r) {
-  var g = r.geo, mh = Math.pow(10, st.lmh), mc = Math.pow(10, st.lmc), hot = r.target === 'hot';
-  var hotTxt = r.steam ? 'vapor a ' + trimN(st.pSteam, 2) + ' bar abs, condensa a ' + fmtN(r.Thi, 0) + ' °C' : r.hf.name + ' · ' + trimN(mh, 2) + ' kg/s · ' + (hot ? trimN(st.Thi, 1) + ' → ' + trimN(st.Tho, 1) + ' °C' : 'entra a ' + trimN(st.Thi, 1) + ' °C');
-  var coldTxt = r.eq === 'ac' ? 'aire · ' + trimN(mc, 1) + ' kg/s · entra a ' + trimN(st.Tci, 1) + ' °C' : r.cf.name + ' · ' + trimN(mc, 2) + ' kg/s · ' + (hot ? 'entra a ' + trimN(st.Tci, 1) + ' °C' + (st.TcoMax < 150 ? ' y sale a ' + trimN(st.TcoMax, 1) + ' °C como máximo' : '') : trimN(st.Tci, 1) + ' → ' + trimN(st.Tco, 1) + ' °C');
+  var g = r.geo, mh = Math.pow(10, st.lmh), mc = Math.pow(10, st.lmc);
+  var hotTxt = r.steam ? 'vapor a ' + trimN(st.pSteam, 2) + ' bar abs, condensa a ' + fmtN(r.Thi, 0) + ' °C' : r.hf.name + ' · ' + trimN(mh, 2) + ' kg/s · entra a ' + trimN(st.Thi, 1) + ' °C';
+  var coldTxt = r.eq === 'ac' ? 'aire · ' + trimN(mc, 1) + ' kg/s · entra a ' + trimN(st.Tci, 1) + ' °C' : r.cf.name + ' · ' + trimN(mc, 2) + ' kg/s · entra a ' + trimN(st.Tci, 1) + ' °C';
   var eqTxt = r.eq === 'pl' ? g.Npl + ' placas de ' + trimN(g.w, 2) + ' × ' + trimN(g.Lp, 2) + ' m' + (g.nSec > 1 ? ' en ' + g.nSec + ' secciones en serie' : '') + ' · b = ' + fmtN(g.b * 1000, 0) + ' mm · ' + fmtN(g.tp * 1000, 1) + ' mm de ' + r.mat.name.toLowerCase()
     : (r.eq === 'dp' ? g.nhp + ' horquillas de ' + g.size.name + ' con ramas de ' + DP_LEN[st.dpLen] + ' pies · ' + (r.arr === 'paralelo' ? 'paralelo' : 'contracorriente') + ' · ' + (r.hotShell ? 'el caliente por el ánulo' : 'el caliente por el tubo interior')
     : g.Nt + ' tubos de 1″ en ' + g.nRows + ' filas y ' + g.Np + (g.Np === 1 ? ' paso' : ' pasos') + ' · ' + trimN(g.Lt, 1) + ' m · ' + g.fin.fpi + ' aletas por pulgada');
   var Utxt = st.Umode === 'dato' ? 'U = ' + fmtN(st.Uclean, 0) + ' W/m²K como dato' + (st.Rd ? ', Rd = ' + fRf(st.Rd) + ' m²K/W' : '') : 'U con la geometría';
-  return [['Caliente', hotTxt], ['Frío', coldTxt], ['Equipo', eqTxt], ['Cálculo', Utxt + ' · ' + (st.Amode === 'dato' ? 'A = ' + trimN(st.Adato, 1) + ' m² como dato' : 'A de la geometría') + ' · ' + (st.constProps ? 'cₚ constantes' : 'propiedades a la temperatura media')]];
+  return [['Caliente', hotTxt], ['Frío', coldTxt], ['Pide', cfgGoal(st, r)], ['Equipo', eqTxt], ['Cálculo', Utxt + ' · ' + (st.Amode === 'dato' ? 'A = ' + trimN(st.Adato, 1) + ' m² como dato' : 'A de la geometría') + ' · ' + (st.constProps ? 'cₚ constantes' : 'propiedades a la temperatura media')]];
 }
 </script>
 </body>
