@@ -1,7 +1,7 @@
 # Equipos de molienda en isométrico (skill `anatomy`)
 
-Figuras de la pestaña «Equipo en operación» del Explorador de molienda y tamizado (POU 2026-20), vista «Máquina». Son
-cuatro de los cinco equipos del explorador, cada uno una máquina real abierta para ver por dentro:
+Figuras de la pestaña «Equipo en operación» del Explorador de molienda y tamizado (POU 2026-20), vista «Máquina». Son los
+cinco equipos del explorador, cada uno una máquina real abierta para ver por dentro:
 
 - **molino de bolas** (`bolas.mjs`): tambor de 3 m con revestimiento y 14 levantadores, bridas, cabezas cónicas,
   muñones en chumaceras sobre pedestales de concreto, corona y piñón con sus chumaceras, acople, reductor y motor, tolva
@@ -20,15 +20,20 @@ cuatro de los cinco equipos del explorador, cada uno una máquina real abierta p
 - **molino de martillos** de rotor en voladizo, carcasa de 80 cm (`mart.mjs`): carcasa con la criba perforada abajo, boca
   con chute y tolva arriba a la izquierda, cunas, tolva de descarga, eje en dos chumaceras sobre su pedestal, polea y
   correas al motor. El rotor tiene cubo, cuatro discos con pasadores y cuatro filas de tres martillos rígidos. Se quita
-  la tapa de adelante.
-
-El molino de discos no tiene figura: sigue con su animación en el plano.
+  la tapa de adelante;
+- **molino de discos** de atrición de un solo rotor, discos de 60 cm (`disc.mjs`), como lo describe McCabe: el rotor con su
+  placa ranurada frente al disco fijo, que va en la puerta; la tolva con su compuerta y el tubo que entra por el ojo del
+  disco fijo (con un codo fundido), cuatro varillas con resortes, arandelas, tuercas y contratuercas que sostienen la puerta
+  y ajustan la luz, la carcasa con su brida, el prensaestopas y la boca de descarga sobre el recipiente del producto, las
+  cunas, el eje en dos chumaceras sobre su pedestal, la polea y las correas al motor, sobre una fundación en L. Se quita la
+  mitad de abajo de la puerta y del disco fijo, entre el cubo y el anillo de los pernos.
 
 **La mueve la simulación del explorador.** `MillAnim` (elementos discretos) corre en un lienzo virtual de 900 × 490 px
 mientras se ve la máquina (`DEMW`, `DEMH` en `geo.mjs`), y cada figura pone esa escena en su plano de corte con la
 relación de `geo.mjs`: en el molino de bolas el tambor de radio 0,42·min(W, H) del lienzo es el revestimiento de
 145 cm; en la trituradora, 0,316 cm por px (la boca de arriba mide 60 cm); en los rodillos, 0,18 cm/px (rodillos de
-60 cm); en los martillos, 0,194 cm/px (carcasa de 80 cm). Con eso:
+60 cm); en los martillos, 0,194 cm/px (carcasa de 80 cm); en los discos, 0,142 cm/px (el disco del lienzo, de radio 0,43·min(W, H), es
+el rotor de 60 cm). Con eso:
 
 - **bolas**: el tambor gira con el ángulo del lienzo (los pernos del casco, los dientes de la corona y del piñón con
   la relación de radios y los agujeros del trommel), los levantadores corren por la artesa y aparecen en sección en el
@@ -40,17 +45,21 @@ relación de `geo.mjs`: en el molino de bolas el tambor de radio 0,42·min(W, H)
 - **rodillos**: giran en sentidos opuestos (las juntas de su superficie, los pernos de sus caras y de sus cubos) y las
   partículas van en el plano de las caras de adelante, detrás de las chumaceras, la viga y los propios rodillos;
 - **martillos**: el rotor entero se arma en cada cuadro (discos, pasadores y martillos, de atrás hacia adelante) y las
-  partículas van dentro de la boca de la carcasa y del chute.
+  partículas van dentro de la boca de la carcasa y del chute;
+- **discos**: la cara del rotor gira con sus 24 ranuras curvas y toma el color de la temperatura de salida, como en el
+  lienzo; las partículas van en la luz entre los discos, gruesas cerca del ojo y finas en la periferia, y giran los
+  agujeros del alma de la polea. Todo eso va en el SVG, en el lugar del rotor en el orden de pintura (`ds.face`), no en el
+  lienzo: la puerta y el disco fijo lo tapan solos fuera de la mitad abierta. La tolva muestra el material con su color.
 
 Los destellos de fractura del lienzo se pintan en el mismo plano. La vista «Corte» del explorador vuelve a la sección
 en dos dimensiones del lienzo, con sus anotaciones (hombro, pie, sentido de giro).
 
 | Archivo | Qué es |
 |---|---|
-| `build.mjs` | `node build.mjs --eq=bolas\|mand\|rod\|mart [--audit] [--fast]`: geometría del equipo, orden de pintura (`A.settle`) y audit. Escribe `out/molino-{eq}.svg` y `.json`, `out/fig.js`, `out/fig.css` y `preview.html`. `--js` solo rehace `fig.js` y `fig.css`. |
-| `bolas.mjs`, `mand.mjs`, `rod.mjs`, `mart.mjs` | Cada equipo: su cámara (`camera`) y sus piezas (`build`), con los datos que necesita la página. |
+| `build.mjs` | `node build.mjs --eq=bolas\|mand\|rod\|mart\|disc [--audit] [--fast]`: geometría del equipo, orden de pintura (`A.settle`) y audit. Escribe `out/molino-{eq}.svg` y `.json`, `out/fig.js`, `out/fig.css` y `preview.html`. `--js` solo rehace `fig.js` y `fig.css`. |
+| `bolas.mjs`, `mand.mjs`, `rod.mjs`, `mart.mjs`, `disc.mjs` | Cada equipo: su cámara (`camera`) y sus piezas (`build`), con los datos que necesita la página. |
 | `helpers.mjs` | Cajas, prismas en cualquier marco, cuerpos torneados, coronas, tubos, esferas, asientos, diales. |
-| `geo.mjs` | Medidas y la relación con el lienzo de partículas de cada equipo (`BM`, `JC`, `RC`, `HM`, `jcMove`). Sin imports: corre en el build y en la página. |
+| `geo.mjs` | Medidas y la relación con el lienzo de partículas de cada equipo (`BM`, `JC`, `RC`, `HM`, `DS`, `jcMove`). Sin imports: corre en el build y en la página. |
 | `xprism.mjs` | Prismas de sección cóncava en cualquier marco (los mismos de las otras figuras). |
 | `live.js` | `FMill`: lo que gira y lo que se mueve, y las partículas en el plano de cada máquina. |
 | `ml.css` | Fundición, acero, concreto, motor, corona, criba, correas, cortes y lo vivo. El tema blueprint va en el explorador. |
@@ -61,6 +70,7 @@ node build.mjs --eq=bolas --audit   # minuto y medio; debe terminar en «audit p
 node build.mjs --eq=mand --audit    # unos 15 s
 node build.mjs --eq=rod --audit
 node build.mjs --eq=mart --audit
+node build.mjs --eq=disc --audit    # minuto y cuarto
 node splice.mjs
 ```
 
@@ -72,4 +82,8 @@ Reglas que salieron de armarlas, para la próxima:
 - Un corte que tiene que mostrar una sección de la carga va por un plano que mire al lector y deje libre esa sección:
   en el molino de bolas una ventana en el casco mostraba una nube de bolas sin régimen legible.
 - Las partículas del lienzo van en el plano del corte; lo que está delante de ese plano (chumaceras, vigas, la biela)
-  se recorta del lienzo en vivo con sus siluetas.
+  se recorta del lienzo en vivo con sus siluetas. Si lo que tapa es mucho y variado (la puerta del molino de discos, su
+  tubo, sus varillas), es más simple pintarlas en el SVG, en el lugar de la pieza de atrás en el orden de pintura.
+- Una pieza que abraza a otra y cruza la línea donde se parte el casco (una cuna) queda en una sola mitad, o hay ciclo.
+- Un codo de tubo visto de canto se pliega en pantalla: va como pieza fundida (una esfera) con el paso de cada tramo solo
+  hacia su lado, y el hueco del tubo se mide sobre su línea para que la boca de cada tramo quede adentro de la esfera.

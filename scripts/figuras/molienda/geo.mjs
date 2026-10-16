@@ -56,3 +56,9 @@ export const RCR = (() => { const R = Math.min(0.2 * DEMW, 0.34 * DEMH); return 
 export const HM = { AZ: 66, EL: 28, s: 0.194, zc: 112, W2: 28 };
 export function hmMap(px, py) { return [(px - DEMW / 2) * HM.s, HM.zc + (DEMH / 2 + 4 - py) * HM.s]; }
 export const HMR = (() => { const Rc = 0.42 * Math.min(DEMW, DEMH); return { Rc: Rc * HM.s, rr: 0.18 * Rc * HM.s, L: 0.62 * Rc * HM.s }; })();
+/* molino de discos de atrición de un solo rotor (discos de 60 cm, McCabe: de 250 a 1400 mm): el disco del lienzo, de radio
+   0,43·min(W, H) en (W/2, H/2) y visto de frente, es la cara del rotor. El eje va a lo largo de y y la puerta, con el disco
+   fijo, mira a +y; la cara del rotor está en y = yr y las partículas van en la luz entre los dos discos. */
+export const DS = { AZ: 62, EL: 28, zc: 105, R: 30, yr: -4, gap: 0.5, r0: 12, rw: 31 };
+export const DSDEM = (() => { const R = 0.43 * Math.min(DEMW, DEMH); return { cx: DEMW / 2, cy: DEMH / 2, R, s: DS.R / R }; })();
+export function dsMap(px, py) { return [(px - DSDEM.cx) * DSDEM.s, DS.zc + (DSDEM.cy - py) * DSDEM.s]; }
