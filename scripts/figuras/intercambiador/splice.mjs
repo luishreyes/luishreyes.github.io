@@ -1,8 +1,8 @@
 /* Mete la figura en el Explorador de intercambiadores publicado: el código en vivo y los datos de las nueve figuras
    entre /*HXFIG_START*\/ y /*HXFIG_END*\/, el CSS entre /*HXFIG_CSS_START*\/ y /*HXFIG_CSS_END*\/, y copia los SVG a
    simulaciones/fig/intercambiador/, de donde la página los pide cuando hacen falta. Correr después de node build.mjs --all.
-   Si están construidas, mete también la de placas (../placas, marcadores PLFIG_*) y la de doble tubo (../doble-tubo,
-   marcadores DPFIG_*). */
+   Si están construidas, mete también la de placas (../placas, marcadores PLFIG_*), la de doble tubo (../doble-tubo,
+   marcadores DPFIG_*) y las del aeroenfriador (../aeroenfriador, marcadores ACFIG_*). */
 import { readFileSync, writeFileSync, mkdirSync, copyFileSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -41,5 +41,13 @@ if (existsSync(join(DPD, "doble.svg"))) {
   put("/*DPFIG_START*/", "/*DPFIG_END*/", readFileSync(join(DPD, "fig.js"), "utf8").trim() + "\nvar DP_FIG = " + readFileSync(join(DPD, "doble.json"), "utf8").trim() + ";");
   put("/*DPFIG_CSS_START*/", "/*DPFIG_CSS_END*/", readFileSync(join(DPD, "fig.css"), "utf8").trim());
 }
+// el aeroenfriador (scripts/figuras/aeroenfriador): una figura para pasos pares y otra para impares
+const ACD = join(HERE, "../aeroenfriador/out"), acOk = ["par", "impar"].every((t) => existsSync(join(ACD, `aero-${t}.svg`)));
+if (acOk) {
+  const acs = {};
+  for (const t of ["par", "impar"]) { copyFileSync(join(ACD, `aero-${t}.svg`), join(FIG, `aero-${t}.svg`)); acs[t] = JSON.parse(readFileSync(join(ACD, `aero-${t}.json`), "utf8")); }
+  put("/*ACFIG_START*/", "/*ACFIG_END*/", readFileSync(join(ACD, "fig.js"), "utf8").trim() + "\nvar AC_FIGS = " + JSON.stringify(acs) + ";");
+  put("/*ACFIG_CSS_START*/", "/*ACFIG_CSS_END*/", readFileSync(join(ACD, "fig.css"), "utf8").trim());
+}
 writeFileSync(PAGE, page);
-console.log("Explorador_Intercambiadores.html", page.length, "· fig/intercambiador: tubos y coraza (9)" + (existsSync(join(PLD, "placas.svg")) ? ", placas" : "") + (existsSync(join(DPD, "doble.svg")) ? ", doble tubo" : ""));
+console.log("Explorador_Intercambiadores.html", page.length, "· fig/intercambiador: tubos y coraza (9)" + (existsSync(join(PLD, "placas.svg")) ? ", placas" : "") + (existsSync(join(DPD, "doble.svg")) ? ", doble tubo" : "") + (acOk ? ", aeroenfriador (2)" : ""));
