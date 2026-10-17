@@ -35,6 +35,14 @@ routes.ts             ← Definición de rutas
 App.tsx               ← Router principal
 ```
 
+## Contenido: el portafolio docente y la web (decisiones del 17 oct 2026)
+
+La web y el portafolio docente impreso (el dossier, en un repo privado) se alimentan de la misma información, pero sirven a públicos distintos: el documento a un comité, la web a estudiantes, colegas y empresas.
+- **La web sigue los capítulos del documento:** Declaración (portada), Contexto, Trayectoria, Docencia, Formación a escala, Escuela, Investigación, Liderazgo y servicio, Reconocimiento y Lo que sigue. Las páginas de datos (productos, financiamiento, cursos, comités…) son interiores de cada capítulo.
+- **El texto sale del último borrador de cada sección, adaptado a un lector público**, nunca copiado, y en los dos idiomas (la traducción al inglés la revisa el profesor). Los archivos del repo privado no se copian: los datos pasan uno por uno.
+- **La web nunca dice ni insinúa para qué se escribió el documento.** Nada de comités, ascensos ni argumentos dirigidos a un evaluador.
+- **Nada de dinero.** Sí entran, adaptados: la comparación con pares (sin nombres de colegas), los nombres de pregrado, las razones personales de la trayectoria y el doctorado en curso de Carlos Yesiel González Murcia (codirigido).
+
 ## Productos (publicaciones, patentes, libros, conferencias)
 
 La página `/research/products`, las cifras de citas, índice h e i10 del resumen de investigación, el CV en PDF y la sección de Scholarship of Teaching leen **`public/data/products.json`**, un arreglo versionado en el repo. Ya no dependen de Supabase (`services/products.ts` hace un `fetch` del archivo al cargar la app).
@@ -42,7 +50,7 @@ La página `/research/products`, las cifras de citas, índice h e i10 del resume
 - **Agregar o corregir un producto:** editar el JSON (en GitHub o aquí) y pushear a `main`; el deploy lo publica. Cada entrada tiene la forma de `Product` (`types.ts`) más `citations` (número o `null`). `type` debe ser un `ProductType`, `researchAreas` uno de los ocho `ResearchArea`, `publicationDate` en `AAAA-MM-DD` y `doi` único (la lista lo usa como `key`; para lo que no tiene DOI se usa un identificador propio, como ya hacen las patentes y los libros autopublicados).
 - **Las citas son una foto fija:** se actualizan a mano en `citations`.
 - `scripts/export-supabase.mjs` + el workflow manual `export-supabase.yml` hicieron la migración desde Supabase (oct 2026); solo se vuelven a correr para un rescate, y sobrescriben el archivo.
-- ⚠️ Solo datos bibliográficos públicos. Nada del registro privado de titularidad (estudiantes dirigidos, financiación, notas, montos) entra aquí.
+- ⚠️ Nada de dinero: ni montos, ni ingresos, ni financiación de estudiantes (decisión del profesor, 17 oct 2026).
 
 ### Imágenes (ya no salen de Supabase)
 
@@ -182,7 +190,7 @@ Si un curso define `gradualRelease: true`, quien entra con el **código de estud
 ## Convenciones
 
 ### Colores (Tailwind)
-- **Páginas del portafolio** (todo lo que no es `/classroom`): la paleta del dossier de titularidad, en `papel-*`, `tinta-*` y `resaltador` (ver «Línea gráfica del portafolio»).
+- **Páginas del portafolio** (todo lo que no es `/classroom`): la paleta del portafolio docente impreso, en `papel-*`, `tinta-*` y `resaltador` (ver «Línea gráfica del portafolio»).
 - **Classroom:** los tokens `brand-*` de siempre, que cada curso puede re-tematizar:
   - `brand-dark`: #1A1A1A (texto, fondos oscuros, callouts)
   - `brand-yellow`: #FFBF00 (acentos principales)
@@ -190,7 +198,7 @@ Si un curso define `gradualRelease: true`, quien entra con el **código de estud
   - `brand-gray`: #555555 (texto secundario)
 
 ### Línea gráfica del portafolio (la del dossier, pasada por el skill)
-Desde oct 2026 las páginas del portafolio siguen la línea gráfica del dossier de titularidad, para que la web y el portafolio docente impreso se lean como una sola pieza, y **pasan el inspector del skill `design-taste-frontend` con 0 FAIL** (pedido del profesor). Se rehízo a mano: nada se copió del repo privado.
+Desde oct 2026 las páginas del portafolio siguen la línea gráfica del portafolio docente impreso (el dossier), para que la web y el documento se lean como una sola pieza, y **pasan el inspector del skill `design-taste-frontend` con 0 FAIL** (pedido del profesor). Se rehízo a mano: nada se copió del repo privado.
 - **Dónde vive:** `components/portafolio-theme.css`, todo bajo `.portafolio`, que `App.tsx` pone en las rutas fuera de `/classroom`. El aula conserva sus temas y los `brand-*`. El menú (`Navbar.tsx`) y el botón de subir son compartidos y ya hablan esta línea también dentro del aula.
 - **Color:** papel gris frío (`papel-0` #F5F5F3 de fondo, `papel-100` #EBEBEC hundido, `papel-200` #DCDCDE portada), tinta grafito (`tinta-800` #3A3A3B para leer, `tinta-900` #1D1D1B para títulos y aperturas oscuras) y el amarillo Uniandes `resaltador` #FFE900 **solo como resaltador**: el punto de las palabras de apertura, el subrayado de marcador (`.a-resaltado`), el ítem activo del menú y lo que se toca en un gráfico. Nunca como fondo de un bloque ni como texto.
 - **Letra:** Archivo autoalojada (`@fontsource-variable/archivo`), sin Typekit ni CDN. **Cinco tamaños** en todo el sitio: 15, 18, `--t-l`, `--t-titulo` y `--t-marca`.

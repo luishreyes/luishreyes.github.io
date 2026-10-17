@@ -16,7 +16,7 @@ export default {
         'brand-yellow-dark': 'rgb(var(--brand-yellow-dark) / <alpha-value>)',
         'brand-dark': 'rgb(var(--brand-dark) / <alpha-value>)',
         'brand-gray': 'rgb(var(--brand-gray) / <alpha-value>)',
-        // Línea gráfica del portafolio, la misma del dossier de titularidad
+        // Línea gráfica del portafolio, la misma del portafolio docente impreso
         // (components/portafolio-theme.css): papel gris frío, tinta grafito y el
         // amarillo Uniandes solo como resaltador, nunca como fondo ni como texto.
         papel: { 0: '#F5F5F3', 100: '#EBEBEC', 200: '#DCDCDE', 300: '#CDCDD0', 400: '#BDBDC1' },
