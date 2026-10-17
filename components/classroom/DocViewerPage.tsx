@@ -76,8 +76,8 @@ const DocViewer: React.FC<{ course: Course; splat: string }> = ({ course, splat 
             <Link to={`/classroom/${courseSlug}`}>Inicio del curso</Link>
           </nav>
           <span className="titulo" title={title}>{title}</span>
-          <a className="completa" href={src} target="_blank" rel="noopener noreferrer" title="Abrir en pantalla completa (pestaña nueva)">
-            Pantalla completa <span aria-hidden="true">↗</span>
+          <a className="completa" href={src} target="_blank" rel="noopener noreferrer" title="Abrir en pantalla completa (pestaña nueva)" aria-label="Pantalla completa">
+            <span className="txt">Pantalla completa</span> <span aria-hidden="true">↗</span>
           </a>
         </div>
       ) : (
