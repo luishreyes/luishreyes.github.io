@@ -33,8 +33,9 @@ export const CourseLandingPage: React.FC = () => {
     return <NarrativasLandingPage course={course} />;
   }
 
-  // Identidad gráfica propia de POU (IQYA-2031): sistema «Industry».
-  if (course.slug === 'iqya-2031-2026-20') {
+  // Identidad gráfica propia de POU (IQYA-2031). Cubre todos los semestres
+  // del curso, no uno solo: cada semestre nuevo nace como clon del anterior.
+  if (course.slug.startsWith('iqya-2031-')) {
     return <PouLandingPage course={course} />;
   }
 

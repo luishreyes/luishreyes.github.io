@@ -46,9 +46,14 @@ export const pou202710Course: Course = {
     ],
   },
 
-  // El material de 2027-10 todavía no existe. Solo está la página del curso,
-  // servida como documento igual que el programa y el cronograma. No se
-  // apunta al material de pectina, que confundiría a quien entre.
+  // El material todavía es el de pectina: se hereda entero del semestre
+  // anterior y los enlaces apuntan a /classroom/iqya-2031-2026-20/, donde los
+  // archivos ya están. No se duplican 302 MB en el repositorio para una vista
+  // previa. A medida que se escriba el material de aceite esencial, cada
+  // entrada se copia a /classroom/iqya-2031-2027-10/ y se le cambia el enlace.
+  //
+  // OJO: mientras tanto, esos documentos son los MISMOS del curso vivo.
+  // Editarlos desde aquí cambia lo que ven los estudiantes de 2026-20.
   readings: [
     {
       slug: 'pagina-del-curso',
@@ -59,8 +64,6 @@ export const pou202710Course: Course = {
       category: 'guia',
       href: '/classroom/iqya-2031-2027-10/pagina.html',
     },
+    ...pou202620Course.readings,
   ],
-  presentations: [],
-  simulations: [],
-  cronograma: undefined,
 };
