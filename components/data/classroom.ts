@@ -46,6 +46,13 @@ export interface Presentation {
   date?: string;
   description?: string;
   file: string;
+  /**
+   * Curso en cuya carpeta pública vive el archivo, cuando no es el propio.
+   * Un semestre clonado hereda las piezas del anterior sin copiar sus
+   * archivos: apuntan a la carpeta del semestre anterior hasta que se
+   * actualizan y se publican en la propia. Sin definir, es el curso actual.
+   */
+  carpeta?: string;
   /** Temática agnóstica al curso — agrupa presentaciones de distintas cohortes EDCO
    *  que tratan el mismo tema (ver EduProLandingPage). Opcional: solo lo usan
    *  las presentaciones de Professional Education (course.kind === 'professional'). */
@@ -66,6 +73,13 @@ export interface Simulation {
    * `public/classroom/{slug}/simulaciones/`. NO es ruta completa.
    */
   file: string;
+  /**
+   * Curso en cuya carpeta pública vive el archivo, cuando no es el propio.
+   * Un semestre clonado hereda las piezas del anterior sin copiar sus
+   * archivos: apuntan a la carpeta del semestre anterior hasta que se
+   * actualizan y se publican en la propia. Sin definir, es el curso actual.
+   */
+  carpeta?: string;
   /** Etiquetas temáticas para la tarjeta del índice. */
   tags?: string[];
   /** Foto B&W opcional de la tarjeta (800px). */

@@ -320,7 +320,7 @@ export const PouMaterialPage: React.FC<{ course: Course }> = ({ course }) => {
                         <Fila key={p.id} toggle={botonActividad('pres', p.id, p.title)}>
                           <a
                             className="pou-item"
-                            href={`/classroom/${course.slug}/slides/${p.file}`}
+                            href={`/classroom/${p.carpeta ?? course.slug}/slides/${p.file}`}
                             target="_blank"
                             rel="noopener noreferrer"
                           >
@@ -337,7 +337,16 @@ export const PouMaterialPage: React.FC<{ course: Course }> = ({ course }) => {
                         <Fila key={s.id} toggle={botonActividad('sim', s.id, s.title)}>
                           <Link
                             className="pou-item"
-                            to={toViewer(course.slug, `/classroom/${course.slug}/simulaciones/${s.file}`)}
+                            // Un simulador heredado vive en la carpeta de otro curso: se abre
+                            // directo, en pestaña nueva, porque el visor solo carga los propios.
+                            to={
+                              s.carpeta && s.carpeta !== course.slug
+                                ? `/classroom/${s.carpeta}/simulaciones/${s.file}`
+                                : toViewer(course.slug, `/classroom/${course.slug}/simulaciones/${s.file}`)
+                            }
+                            reloadDocument={!!s.carpeta && s.carpeta !== course.slug}
+                            target={s.carpeta && s.carpeta !== course.slug ? '_blank' : undefined}
+                            rel={s.carpeta && s.carpeta !== course.slug ? 'noopener noreferrer' : undefined}
                           >
                             <span className="n">Simulación</span>
                             <span style={{ flex: 1, minWidth: 0 }}>
