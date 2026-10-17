@@ -16,6 +16,11 @@ import { pou202620Course } from './pou-2026-20';
 //     pectina, heredados de 2026-20. Ya es propio de 2027-10: el reto.
 //   · `schedule` y `cronograma` esperan el calendario oficial de 2027-10.
 //   · Falta el banner propio del semestre.
+// Material ya reescrito para aceite esencial: vive en /classroom/iqya-2031-2027-10/.
+// Cada semana que se migra suma aquí sus ids y slugs.
+const PRESENTACIONES_PROPIAS = new Set(['presentacion-del-curso', 'trabajo-en-equipo']);
+const LECTURAS_PROPIAS = new Set(['lectura-01-operaciones-unitarias']);
+
 export const pou202710Course: Course = {
   ...pou202620Course,
 
@@ -75,7 +80,16 @@ export const pou202710Course: Course = {
   // donde están sus archivos: el sitio arma su ruta con el slug del curso, y
   // copiar `slides/` duplicaría 240 MB. Al actualizar una pieza para 2027-10 y
   // publicarla en la carpeta propia, se le quita `carpeta`.
-  presentations: pou202620Course.presentations.map((p) => ({ ...p, carpeta: 'iqya-2031-2026-20' })),
+  presentations: pou202620Course.presentations.map((p) => {
+    if (!PRESENTACIONES_PROPIAS.has(p.id)) return { ...p, carpeta: 'iqya-2031-2026-20' };
+    return p.id === 'presentacion-del-curso'
+      ? {
+          ...p,
+          description:
+            'La sesión inaugural completa: bienvenida y la planta de aceite esencial, equipo docente, objetivos y resultados ABET, las ocho estaciones del proceso, metodología, módulos y ritmo del semestre, evaluación, uso de IA y expectativas.',
+        }
+      : p;
+  }),
   simulations: (pou202620Course.simulations ?? []).map((sim) => ({ ...sim, carpeta: 'iqya-2031-2026-20' })),
 
   // La metodología es la misma; solo cambia de qué planta se habla.
@@ -93,8 +107,8 @@ export const pou202710Course: Course = {
     })),
   },
 
-  // El material todavía es el de pectina: se hereda entero del semestre
-  // anterior y los enlaces apuntan a /classroom/iqya-2031-2026-20/, donde los
+  // Salvo lo que nombran PRESENTACIONES_PROPIAS y LECTURAS_PROPIAS, el material
+  // todavía es el de pectina: se hereda del semestre anterior y los enlaces apuntan a /classroom/iqya-2031-2026-20/, donde los
   // archivos ya están. No se duplican 302 MB en el repositorio para una vista
   // previa. A medida que se escriba el material de aceite esencial, cada
   // entrada se copia a /classroom/iqya-2031-2027-10/ y se le cambia el enlace.
@@ -112,7 +126,9 @@ export const pou202710Course: Course = {
       href: '/classroom/iqya-2031-2027-10/pagina.html',
     },
     ...pou202620Course.readings.map((r) =>
-      r.slug === 'reto-pectina'
+      LECTURAS_PROPIAS.has(r.slug)
+        ? { ...r, href: r.href?.replace('/iqya-2031-2026-20/', '/iqya-2031-2027-10/') }
+        : r.slug === 'reto-pectina'
         ? {
             ...r,
             slug: 'reto-aceite-esencial',
