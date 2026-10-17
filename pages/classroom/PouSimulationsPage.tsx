@@ -7,6 +7,7 @@ import { useCourseRelease } from '../../components/classroom/courseRelease';
 import { usePublishControls } from '../../components/classroom/PouPublishControls';
 import { itemKey } from '../../components/classroom/publishState';
 import '../../components/classroom/pou-theme.css';
+import '../../components/classroom/pou-2027-theme.css';
 
 // Simuladores de POU en una sola página, con la identidad «Industry». Siguen la
 // misma regla que «Material del curso»: el estudiante ve solo los que el equipo
@@ -73,7 +74,7 @@ const PouSimulations: React.FC<{ course: Course }> = ({ course }) => {
         animate: { opacity: 1, y: 0 },
         transition: { duration: 0.35 },
       }}
-      className="pou-ds"
+      className={course.identidad === 'uniandes' ? 'pou-ds pou-uniandes' : 'pou-ds'}
       style={{ minHeight: '100vh', paddingTop: '64px' }}
     >
       <header className="pou-hero" style={{ padding: '56px 0 40px' }}>
