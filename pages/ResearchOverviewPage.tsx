@@ -1,21 +1,32 @@
-import React, { useRef } from 'react';
-import { Link } from 'react-router-dom';
-import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion';
+import React from 'react';
 import { PageWrapper } from '../components/PageWrapper';
 import { StatsSection } from '../components/StatsSection';
-import { Sube, SALE } from '../components/Sube';
+import { Sube } from '../components/Sube';
+import { Apertura, Cabecera } from '../components/Apertura';
 import { useI18n, localize } from '../context/i18n';
 import { metrics, awardsByRole } from '../components/data/metrics';
 import { ProductsOverTimeChart } from '../components/ProductsOverTimeChart';
 import { ResearchConnectionsGraph } from '../components/ResearchConnectionsGraph';
 import { useAppData } from '../context/AppDataContext';
 
+/** El dossier marca con el resaltador la frase que manda: aquí, la primera de la visión. */
+const conResaltado = (texto: string) => {
+  const corte = texto.indexOf('. ');
+  if (corte < 0) return texto;
+  return (
+    <>
+      <span className="a-resaltado">{texto.slice(0, corte + 1)}</span>
+      {texto.slice(corte + 1)}
+    </>
+  );
+};
+
 export const ResearchOverviewPage: React.FC = () => {
   const { citationData, products } = useAppData();
   const { t, lang } = useI18n();
   const { research } = metrics;
   const researchAwards = awardsByRole('research');
-  const reduce = useReducedMotion();
+  const ceja = `02 · ${t('nav.research')}`;
 
   const stats = [
     { label: t('stats.products'), value: products.length },
@@ -34,82 +45,48 @@ export const ResearchOverviewPage: React.FC = () => {
       })),
   ];
 
-  // La foto de la apertura se acerca despacio mientras la página sube.
-  const aperturaRef = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({ target: aperturaRef, offset: ['start start', 'end start'] });
-  const escala = useTransform(scrollYProgress, [0, 1], [1, 1.12]);
-
   return (
     <PageWrapper noPadding>
-      {/* ── Apertura: el nombre de la sección en grande y la foto a sangre ── */}
-      <section ref={aperturaRef} className="a-navy pt-16">
-        <div className="grid lg:grid-cols-2 lg:min-h-[calc(100svh-4rem)]">
-          <div className="relative overflow-hidden h-[42svh] min-h-[260px] lg:h-auto lg:order-2">
-            <motion.img
-              src="/images/site/generated-image-september-02-2025-1-07pm.jpg"
-              alt={t('research.overview.hero.alt')}
-              className="a-foto a-bn"
-              style={reduce ? undefined : { scale: escala }}
-            />
-          </div>
-          <div className="a-c a-c-izq flex flex-col justify-end py-14 lg:py-24">
-            <motion.h1
-              className="a-h1 text-white"
-              initial={{ opacity: 0, y: 28 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: SALE }}
-            >
-              {t('nav.research')}<span className="text-andes-yellow">.</span>
-            </motion.h1>
-            <motion.p
-              className="mt-8 a-texto text-[clamp(20px,1.8vw,26px)] leading-[1.35] max-w-[30ch]"
-              initial={{ opacity: 0, y: 22 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, ease: SALE, delay: 0.12 }}
-            >
-              {t('research.overview.subtitle')}
-            </motion.p>
-            <motion.div
-              className="mt-10"
-              initial={{ opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: SALE, delay: 0.24 }}
-            >
-              <Link to="/research/program" className="a-boton">
-                {t('research.overview.vision.cta')} <span aria-hidden="true">→</span>
-              </Link>
-            </motion.div>
-          </div>
-        </div>
-      </section>
+      <Apertura
+        numero="02"
+        palabra={t('nav.research').toLowerCase()}
+        entrada={t('research.overview.subtitle')}
+        foto={{ src: '/images/site/generated-image-september-02-2025-1-07pm.jpg', alt: t('research.overview.hero.alt') }}
+        accion={{ to: '/research/program', label: t('research.overview.vision.cta') }}
+      />
 
-      {/* ── Visión y cifras, sobre el amarillo ── */}
-      <section className="a-amarillo a-campo">
+      {/* ── Visión y cifras ── */}
+      <section className="a-papel a-campo">
         <div className="a-c">
-          <Sube><h2 className="a-h2">{t('research.overview.vision.title')}</h2></Sube>
+          <Sube><Cabecera ceja={ceja} titulo={t('research.overview.vision.title')} /></Sube>
           <Sube delay={0.06}>
-            <p className="mt-8 a-texto">{t('research.overview.vision.text')}</p>
+            <p className="mt-10 a-texto">{conResaltado(t('research.overview.vision.text'))}</p>
           </Sube>
-          <Sube delay={0.1} className="mt-16 sm:mt-24">
+          <Sube delay={0.1} className="mt-16 sm:mt-20">
             <StatsSection stats={stats} isLoading={citationData.isLoading} />
           </Sube>
         </div>
       </section>
 
       {/* ── Producción en el tiempo ── */}
-      <section className="a-nieve a-campo">
+      <section className="a-hundido a-campo">
         <div className="a-c">
-          <Sube>
+          <Sube><Cabecera ceja={ceja} titulo={t('research.overview.chart.title')} className="mb-10" /></Sube>
+          <Sube delay={0.06}>
             <ProductsOverTimeChart products={products} />
+            <p className="a-pie">Fig. 2.1 · {t('research.overview.chart.caption')}</p>
           </Sube>
         </div>
       </section>
 
       {/* ── Red de áreas: lo único del sitio que se puede tocar ── */}
-      <section className="a-navy a-campo">
+      <section className="a-oscuro a-campo">
         <div className="a-c">
           <Sube>
-            <ResearchConnectionsGraph products={products} />
+            <span className="a-ceja">{ceja} · {t('research.overview.network.label')}</span>
+            <div className="mt-10">
+              <ResearchConnectionsGraph products={products} />
+            </div>
           </Sube>
         </div>
       </section>

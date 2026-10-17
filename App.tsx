@@ -155,9 +155,9 @@ const App: React.FC = () => {
   return (
     <I18nProvider>
     <AppDataContext.Provider value={contextValue}>
-      {/* El portafolio habla con la identidad Uniandes (.andes); el aula conserva el tema de cada curso. */}
+      {/* El portafolio habla con la línea del dossier de titularidad (.portafolio); el aula conserva el tema de cada curso. */}
       <MotionConfig reducedMotion="user">
-      <main className={`relative ${enAula ? '' : 'andes'}`}>
+      <main className={`relative ${enAula ? '' : 'portafolio'}`}>
         <Navbar onDownloadCv={handleDownloadCv} />
         <div>
           <AnimatePresence mode="wait">
