@@ -17,8 +17,8 @@ export const SiteFooter: React.FC<{ onDownloadCv: () => void }> = ({ onDownloadC
       <div className="a-c pt-20 pb-10 sm:pt-28">
         <div className="grid gap-12 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
           <p className="a-marca" aria-hidden="true">{t('footer.wordmark')}.</p>
-          <div className="lg:border-l lg:border-tinta-500 lg:pl-10">
-            <div className="border-t border-tinta-500 pt-6">
+          <div className="lg:border-l-2 lg:border-tinta-900 lg:pl-10">
+            <div className="border-t-2 border-tinta-900 pt-6">
               <p className="a-versal text-[15px] leading-[1.9] text-tinta-900">
                 Luis H.<br />Reyes
               </p>
@@ -54,7 +54,7 @@ export const SiteFooter: React.FC<{ onDownloadCv: () => void }> = ({ onDownloadC
             </div>
           </div>
         </div>
-        <div className="mt-16 flex flex-wrap justify-between gap-4 border-t border-tinta-500 pt-4">
+        <div className="mt-16 flex flex-wrap justify-between gap-4 border-t-2 border-tinta-900 pt-4">
           <span className="a-meta">{t('footer.unit')} · Universidad de los Andes</span>
           <span className="a-meta">© {new Date().getFullYear()}</span>
         </div>

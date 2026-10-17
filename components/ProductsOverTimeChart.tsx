@@ -144,7 +144,7 @@ export const ProductsOverTimeChart = ({ products }: { products: Product[] }) => 
                 if (isNaN(y) || value > yAxisMax) return null;
                 return (
                   <g key={i}>
-                    <text x={margin.left - 8} y={y + 4} textAnchor="end" fontSize="12" fontFamily="IBM Plex Mono, monospace" fill="#76767A">{value}</text>
+                    <text x={margin.left - 8} y={y + 4} textAnchor="end" fontSize="15" fill="#76767A">{value}</text>
                     {i > 0 && <line x1={margin.left} y1={y} x2={chartWidth - margin.right} y2={y} stroke="#DCDCDE" />}
                   </g>
                 );
@@ -197,8 +197,8 @@ export const ProductsOverTimeChart = ({ products }: { products: Product[] }) => 
                   x={xScale(year)}
                   y={innerHeight + margin.top + 20}
                   textAnchor="middle"
-                  fontSize="12"
-                  fontFamily="IBM Plex Mono, monospace"
+                  fontSize="15"
+                 
                   fill="#76767A"
                 >
                   {year}

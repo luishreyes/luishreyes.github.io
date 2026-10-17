@@ -198,7 +198,7 @@ export const ResearchConnectionsGraph: React.FC<ResearchConnectionsGraphProps> =
     return (
         <div className="w-full">
             <div className="lg:grid lg:grid-cols-2 lg:gap-12 lg:items-center">
-                <div ref={svgContainerRef} className="w-full max-w-lg mx-auto">
+                <div ref={svgContainerRef} className="w-full max-w-xl mx-auto">
                     <svg width="100%" height={height} viewBox={`0 0 ${width} ${height}`}>
                         <g>
                             {ribbons.map((ribbon) => {
@@ -247,8 +247,7 @@ export const ResearchConnectionsGraph: React.FC<ResearchConnectionsGraphProps> =
                     </svg>
                 </div>
                 <div className="mt-8 lg:mt-0">
-                    <h2 className="a-h3">Interdisciplinary Research Network</h2>
-                    <p className="mt-4 a-texto a-sec">
+                    <p className="a-texto a-sec">
                         This visualization maps the connections between my core research areas. Each colored arc represents a research area, with its size proportional to the total number of publications. Each thin, grey line represents a single publication that bridges two fields, illustrating the web of interdisciplinary collaboration. Hover over an arc or legend item to highlight its specific connections.
                     </p>
                     <div className="mt-8">

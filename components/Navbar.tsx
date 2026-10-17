@@ -141,13 +141,13 @@ export const Navbar = ({ onDownloadCv }: NavbarProps) => {
       ? location.pathname === '/recognition'
       : location.pathname.startsWith(item.pathPrefix);
 
-  // El cabezal del dossier: el nombre en versales espaciadas, papel plano y un filete abajo.
+  // El cabezal del dossier: el nombre en versales espaciadas sobre el papel plano.
   return (
-    <nav ref={navRef} className="fixed top-0 w-full z-30 bg-papel-0 border-b border-papel-300 font-archivo text-tinta-800">
+    <nav ref={navRef} className="fixed top-0 w-full z-30 bg-papel-0 font-archivo text-tinta-800">
       <div className="flex items-stretch justify-between h-16">
         <Link
           to="/"
-          className="flex items-center pl-4 sm:pl-6 xl:pl-8 pr-4 text-[13px] font-light uppercase tracking-[0.42em] text-tinta-900 whitespace-nowrap hover:bg-resaltador-suave transition-colors"
+          className="flex items-center pl-4 sm:pl-6 xl:pl-8 pr-4 text-[15px] font-light uppercase tracking-[0.24em] sm:tracking-[0.42em] text-tinta-900 whitespace-nowrap hover:bg-resaltador-suave transition-colors"
         >
           Luis H. Reyes
         </Link>
@@ -175,7 +175,7 @@ export const Navbar = ({ onDownloadCv }: NavbarProps) => {
                     aria-current={active ? 'page' : undefined}
                   >
                     {/* El activo lleva el subrayado de marcador del dossier */}
-                    <span className={active ? 'bg-[linear-gradient(transparent_58%,#FFE900_58%)]' : ''}>{item.title}</span>
+                    <span className={active ? 'underline decoration-resaltador decoration-[0.5em] underline-offset-[-0.32em] [text-decoration-skip-ink:none]' : ''}>{item.title}</span>
                     {item.subItems && <Chevron open={openDesktopMenu === item.id} />}
                   </button>
                   <AnimatePresence>
@@ -187,7 +187,7 @@ export const Navbar = ({ onDownloadCv }: NavbarProps) => {
                           exit: { opacity: 0, y: 8 },
                           transition: { duration: 0.18 },
                         }}
-                        className={`absolute top-full w-72 bg-papel-0 border border-papel-300 border-t-2 border-t-tinta-900 ${dropdownPositionClass}`}
+                        className={`absolute top-full w-72 bg-papel-0 border-t-2 border-tinta-900 shadow-[0_18px_36px_-14px_rgba(29,29,27,0.35)] ${dropdownPositionClass}`}
                       >
                         <div className="py-2">
                           {item.subItems.map((subItem) => (
@@ -269,7 +269,7 @@ export const Navbar = ({ onDownloadCv }: NavbarProps) => {
                       <>
                         <button
                           onClick={() => setOpenMobileSubMenu(openMobileSubMenu === item.id ? null : item.id)}
-                          className={`w-full flex justify-between items-center py-3 text-lg text-tinta-900 border-b border-papel-300 ${active ? 'font-semibold' : ''}`}
+                          className={`w-full flex justify-between items-center py-3 text-lg text-tinta-900 ${active ? 'font-semibold' : ''}`}
                           aria-expanded={openMobileSubMenu === item.id}
                         >
                           <span>{item.title}</span>
@@ -309,7 +309,7 @@ export const Navbar = ({ onDownloadCv }: NavbarProps) => {
                     ) : (
                       <button
                         onClick={() => navigate(item.defaultPath)}
-                        className={`block w-full text-left py-3 text-lg text-tinta-900 border-b border-papel-300 ${active ? 'font-semibold' : ''}`}
+                        className={`block w-full text-left py-3 text-lg text-tinta-900 ${active ? 'font-semibold' : ''}`}
                         aria-current={active ? 'page' : undefined}
                       >
                         {item.title}

@@ -8,9 +8,12 @@
 
    Una sola grotesca, Archivo, en tres voces: bold compacta para palabras de
    apertura, títulos y cifras; light en versales espaciadas para el nombre;
-   regular para leer. IBM Plex Mono solo para metadatos (fechas, códigos,
-   pies de figura). Esquinas rectas, sin sombras, sin tarjetas: los bloques
-   se separan con aire, con un paso de tono del papel o con un filete.
+   regular para leer. Esquinas rectas, sin sombras, sin tarjetas: los bloques
+   se separan con aire, con un paso de tono del papel o con un filete de 2 px.
+
+   Pasa las reglas de la casa del skill design-taste-frontend: del dossier se
+   quedan fuera los rótulos en versalitas sobre los títulos, los números de
+   sección, la mono de los metadatos y los filetes de 1 px (scripts/inspect.mjs).
 
    Todo vive bajo .portafolio, que App.tsx pone en las rutas fuera de
    /classroom: los cursos conservan sus temas y los tokens brand-*.
@@ -21,16 +24,13 @@
   --tinta-500: #76767A;  --tinta-400: #8E8E92;  --tinta-300: #A9A9AD;
   --amarillo: #FFE900;  --amarillo-suave: #FFF4A3;
   --tipo: "Archivo Variable", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
-  /* Escala de pantalla: la del dossier, crecida para leer en un monitor. */
-  --t-meta: 13px;
+  /* Cinco tamaños en todo el sitio (el skill pone ahí el techo): la escala del
+     dossier, crecida para leer en un monitor. */
   --t-s: 15px;
   --t-m: 18px;
   --t-l: clamp(22px, 2.2vw, 30px);
   --t-titulo: clamp(34px, 4.4vw, 64px);
   --t-marca: clamp(56px, 10.5vw, 168px);
-  --t-cifra: clamp(44px, 5vw, 72px);
-  --t-numero: clamp(120px, 20vw, 300px);
   --margen: clamp(16px, 4vw, 64px);
   --ancho: 1240px;
 
@@ -79,23 +79,24 @@
 .portafolio .a-oscuro .a-titulo.con-filete { border-color: var(--tinta-600); }
 .portafolio .a-h3 { font-size: var(--t-l); line-height: 1.15; letter-spacing: -.02em; font-weight: 600; color: var(--tinta-900); }
 .portafolio .a-oscuro .a-h3 { color: #FFFFFF; }
-/* Rótulo de sección («02 · Investigación»): versalitas pequeñas, como en el dossier. */
-.portafolio .a-ceja { display: block; font-size: var(--t-meta); line-height: 1.3; letter-spacing: .08em; text-transform: uppercase;
-                      font-weight: 500; color: var(--tinta-600); }
+/* Rótulo de un grupo de enlaces (en el pie): frase normal, nunca encima de un título. */
+.portafolio .a-ceja { display: block; font-size: var(--t-s); line-height: 1.3; color: var(--tinta-600); }
 .portafolio .a-oscuro .a-ceja { color: var(--tinta-300); }
 /* El nombre: light en versales espaciadas. */
 .portafolio .a-versal { font-weight: 300; letter-spacing: .42em; text-transform: uppercase; }
-.portafolio .a-entrada { font-size: clamp(19px, 1.6vw, 23px); line-height: 1.45; font-weight: 300; color: var(--tinta-800); }
+.portafolio .a-entrada { font-size: var(--t-l); line-height: 1.32; font-weight: 300; color: var(--tinta-800); }
 .portafolio .a-oscuro .a-entrada { color: var(--papel-200); }
 .portafolio .a-texto { max-width: 64ch; }
 .portafolio .a-texto + .a-texto { margin-top: .9em; }
 .portafolio .a-s { font-size: var(--t-s); }
 .portafolio .a-sec { color: var(--tinta-600); }
 .portafolio .a-oscuro .a-sec { color: var(--tinta-300); }
-.portafolio .a-meta { font-family: var(--mono); font-size: var(--t-meta); line-height: 1.4; color: var(--tinta-600); }
+.portafolio .a-meta { font-size: var(--t-s); line-height: 1.4; color: var(--tinta-600); font-variant-numeric: tabular-nums; }
 .portafolio .a-oscuro .a-meta { color: var(--tinta-400); }
-/* El subrayado de marcador: la única «gradiente» del sistema. */
-.portafolio .a-resaltado { background: linear-gradient(transparent 58%, var(--amarillo) 58%); color: var(--tinta-900); }
+/* El subrayado de marcador del dossier, hecho con un subrayado grueso que pasa por detrás
+   de la mitad baja de las letras (sin degradado). */
+.portafolio .a-resaltado { color: var(--tinta-900); text-decoration-line: underline; text-decoration-color: var(--amarillo);
+                           text-decoration-thickness: .5em; text-underline-offset: -.32em; text-decoration-skip-ink: none; }
 
 /* ── Enlaces y botón ────────────────────────────────────────────── */
 .portafolio .a-enlace { color: var(--tinta-900); text-decoration: underline; text-decoration-thickness: 1px;
@@ -111,23 +112,18 @@
 .portafolio .a-oscuro .a-boton { background: var(--papel-0); color: var(--tinta-900); }
 .portafolio .a-oscuro .a-boton:hover { background: var(--amarillo); }
 
-/* ── Número de sección gigante, tono sobre tono ─────────────────── */
-.portafolio .a-numero { font-size: var(--t-numero); line-height: .8; letter-spacing: -.06em; font-weight: 700;
-                        color: var(--tinta-700); font-variant-numeric: tabular-nums; }
-
 /* ── Cifras ─────────────────────────────────────────────────────── */
 .portafolio .a-cifras { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
                         gap: clamp(36px, 5vw, 64px) clamp(24px, 3vw, 48px); }
-.portafolio .a-cifras > div { border-top: 1px solid var(--tinta-500); padding-top: 14px; }
-.portafolio .a-cifras b { display: block; font-size: var(--t-cifra); line-height: 1; letter-spacing: -.04em; font-weight: 700;
+.portafolio .a-cifras b { display: block; font-size: var(--t-titulo); line-height: 1; letter-spacing: -.04em; font-weight: 700;
                           color: var(--tinta-900); font-variant-numeric: tabular-nums; }
 .portafolio .a-cifras span { display: block; font-size: var(--t-s); line-height: 1.35; margin-top: .6em; max-width: 26ch; color: var(--tinta-800); }
-.portafolio .a-cifras .a-meta { margin-top: .5em; }
+.portafolio .a-cifras .a-meta { margin-top: .4em; }
 
-/* ── Filas con filete, no tarjetas ──────────────────────────────── */
+/* ── Filas bajo el filete del título, no tarjetas ───────────────── */
 .portafolio .a-filas { list-style: none; padding: 0; margin: 0; border-top: 2px solid var(--tinta-900); }
 .portafolio .a-fila { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 4px 24px;
-                      padding: 20px 4px; border-bottom: 1px solid var(--papel-400); color: var(--tinta-800);
+                      padding: 20px 4px; border-bottom: 2px solid var(--papel-300); color: var(--tinta-800);
                       text-decoration: none; transition: background-color .18s ease; }
 .portafolio a.a-fila:hover { background: var(--amarillo-suave); }
 .portafolio .a-fila .q { font-size: var(--t-l); line-height: 1.12; letter-spacing: -.02em; font-weight: 600; color: var(--tinta-900); }
@@ -137,10 +133,10 @@
 /* ── Fotos y figuras ────────────────────────────────────────────── */
 .portafolio .a-foto { display: block; width: 100%; height: 100%; object-fit: cover; }
 .portafolio .a-bn { filter: grayscale(1) contrast(1.05); }
-.portafolio .a-pie { font-family: var(--mono); font-size: var(--t-meta); color: var(--tinta-600); margin-top: 12px; }
+.portafolio .a-pie { font-size: var(--t-s); color: var(--tinta-600); margin-top: 14px; }
 
 @media (max-width: 759px) {
-  .portafolio { --t-marca: clamp(48px, 15vw, 80px); --t-numero: clamp(96px, 30vw, 140px); }
+  .portafolio { --t-marca: clamp(48px, 15vw, 80px); }
 }
 @media (prefers-reduced-motion: reduce) {
   .portafolio *, .portafolio *::before, .portafolio *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }

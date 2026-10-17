@@ -1,12 +1,9 @@
 import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion';
-import { useI18n } from '../context/i18n';
 import { SALE } from './Sube';
 
 interface AperturaProps {
-  /** Número de la sección en el portafolio («02»). */
-  numero: string;
   /** Palabra de apertura, en minúscula; el punto amarillo lo pone el componente. */
   palabra: string;
   entrada?: string;
@@ -15,10 +12,9 @@ interface AperturaProps {
 }
 
 /** Apertura de sección, como las del dossier: la foto en blanco y negro a sangre y,
- *  en el panel de tinta, el número enorme tono sobre tono, el rótulo «sección» y la
- *  palabra de apertura con su punto amarillo. */
-export const Apertura: React.FC<AperturaProps> = ({ numero, palabra, entrada, foto, accion }) => {
-  const { t } = useI18n();
+ *  en el panel de tinta, la palabra de apertura con su punto amarillo. Sin el número
+ *  de sección ni el rótulo del dossier: el skill de diseño no los admite. */
+export const Apertura: React.FC<AperturaProps> = ({ palabra, entrada, foto, accion }) => {
   const reduce = useReducedMotion();
   const ref = useRef<HTMLElement>(null);
   // La foto se acerca despacio mientras la página sube.
@@ -36,22 +32,10 @@ export const Apertura: React.FC<AperturaProps> = ({ numero, palabra, entrada, fo
             style={{ objectPosition: foto.posicion ?? 'center', ...(reduce ? {} : { scale: escala }) }}
           />
         </div>
-        <div className="a-c a-c-der flex flex-col justify-between gap-10 py-12 lg:py-16">
-          <motion.p
-            className="a-numero"
-            aria-hidden="true"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1.1, ease: SALE }}
-          >
-            {numero}
-          </motion.p>
+        <div className="a-c a-c-der flex flex-col justify-end py-12 lg:py-16">
           <div>
-            <div className="border-t border-tinta-600 pt-4">
-              <span className="a-ceja">{numero} · {t('common.section')}</span>
-            </div>
             <motion.h1
-              className="a-marca mt-6"
+              className="a-marca"
               initial={{ opacity: 0, y: 26 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, ease: SALE }}
@@ -87,10 +71,7 @@ export const Apertura: React.FC<AperturaProps> = ({ numero, palabra, entrada, fo
   );
 };
 
-/** Cabecera de un bloque de lectura: el rótulo de sección y el título con punto sobre su filete. */
-export const Cabecera: React.FC<{ ceja: string; titulo: string; className?: string }> = ({ ceja, titulo, className = '' }) => (
-  <header className={className}>
-    <span className="a-ceja">{ceja}</span>
-    <h2 className="a-titulo con-filete mt-3">{titulo}.</h2>
-  </header>
+/** Cabecera de un bloque de lectura: el título con punto sobre su filete de 2 px. */
+export const Cabecera: React.FC<{ titulo: string; className?: string }> = ({ titulo, className = '' }) => (
+  <h2 className={`a-titulo con-filete ${className}`}>{titulo}.</h2>
 );
