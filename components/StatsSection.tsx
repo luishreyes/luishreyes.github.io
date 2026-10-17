@@ -1,9 +1,6 @@
-
-
-
-import React, { useEffect } from 'react';
-// FIX: Removed 'Variants' from framer-motion import to resolve module export error.
-import { motion, useMotionValue, useTransform, animate } from 'framer-motion';
+import React, { useEffect, useState } from 'react';
+import { animate, useReducedMotion } from 'framer-motion';
+import { useI18n } from '../context/i18n';
 
 interface Stat {
   label: string;
@@ -17,61 +14,39 @@ interface StatsSectionProps {
   isLoading: boolean;
 }
 
-const cardVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: {
-      delay: i * 0.1,
-      duration: 0.5,
-      // FIX: Added 'as const' to prevent TypeScript from widening the string literal type, which caused a type error.
-      ease: 'easeOut' as const,
-    },
-  }),
+/** Cuenta hasta la cifra una sola vez, con el separador de miles del idioma. */
+const Cifra: React.FC<{ value: number | string }> = ({ value }) => {
+  const { lang } = useI18n();
+  const reduce = useReducedMotion();
+  const isNumber = typeof value === 'number';
+  const [shown, setShown] = useState(isNumber && !reduce ? 0 : value);
+
+  useEffect(() => {
+    if (!isNumber || reduce) {
+      setShown(value);
+      return;
+    }
+    const controls = animate(0, value as number, {
+      duration: 1.4,
+      ease: [0.22, 0.8, 0.3, 1],
+      onUpdate: (v) => setShown(Math.round(v)),
+    });
+    return () => controls.stop();
+  }, [value, isNumber, reduce]);
+
+  if (typeof shown !== 'number') return <>{shown}</>;
+  return <>{shown.toLocaleString(lang === 'es' ? 'es-CO' : 'en-US')}</>;
 };
 
-// FIX: Changed component to React.FC to resolve TypeScript error with the 'key' prop.
-const StatCard: React.FC<{ label: string; value: string | number; note?: string; index: number }> = ({ label, value, note, index }) => {
-    const isNumber = typeof value === 'number';
-    const count = useMotionValue(0);
-    const rounded = useTransform(count, latest => Math.round(latest as number));
-
-    useEffect(() => {
-        if (isNumber) {
-            const animation = animate(count, value, {
-                duration: 1.5,
-                ease: "easeOut",
-            });
-            return () => animation.stop();
-        }
-    }, [value, isNumber, count]);
-
-    return (
-        <motion.div
-          // FIX: Spread motion props to avoid TypeScript type errors.
-          {...{
-            custom: index,
-            initial: "hidden",
-            animate: "visible",
-            variants: cardVariants,
-          }}
-          className="bg-white p-6 rounded-lg shadow-lg text-center border border-yellow-400/40"
-        >
-          <p className="text-4xl font-bold text-yellow-500 h-10 flex items-center justify-center">
-            {isNumber ? <motion.span>{rounded}</motion.span> : value}
-          </p>
-          <p className="text-brand-gray mt-2">{label}</p>
-          {note && (
-            <p className="mt-2 font-mono text-[11px] uppercase tracking-wider text-zinc-400">{note}</p>
-          )}
-        </motion.div>
-    );
-};
-
+/** Cifras sueltas sobre el campo de color, sin caja. */
 export const StatsSection = ({ stats }: StatsSectionProps) => (
-    <div className="grid grid-cols-2 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-        {/* FIX: Replaced spread props with explicit props to resolve TypeScript error regarding the 'key' prop. */}
-        {stats.map((stat, index) => <StatCard key={stat.label} label={stat.label} value={stat.value} note={stat.note} index={index} />)}
-    </div>
+  <div className="a-cifras grande">
+    {stats.map((stat) => (
+      <div key={stat.label}>
+        <b><Cifra value={stat.value} /></b>
+        <span>{stat.label}</span>
+        {stat.note && <span className="nota">{stat.note}</span>}
+      </div>
+    ))}
+  </div>
 );

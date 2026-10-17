@@ -28,4 +28,9 @@ export const nav = {
   'nav.recognition':       { en: 'Recognition',             es: 'Reconocimientos' },
   'nav.classroom':         { en: 'Classroom',               es: 'Aula' },
   'nav.downloadCv':        { en: 'Download CV',             es: 'Descargar CV' },
+  'nav.menu':              { en: 'Menu',                    es: 'Menú' },
+  'footer.role':           { en: 'Associate Professor, Department of Chemical and Food Engineering, Universidad de los Andes, Bogotá.', es: 'Profesor Asociado del Departamento de Ingeniería Química y de Alimentos, Universidad de los Andes, Bogotá.' },
+  'footer.contact':        { en: 'Write to me',             es: 'Escríbame' },
+  'footer.profiles':       { en: 'Elsewhere',               es: 'En otros sitios' },
+  'footer.photography':    { en: 'Photography',             es: 'Fotografía' },
 } as const;

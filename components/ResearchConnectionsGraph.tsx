@@ -125,7 +125,7 @@ export const ResearchConnectionsGraph: React.FC<ResearchConnectionsGraphProps> =
         const totalProductsCount = Object.values(productCounts).reduce((sum, count) => sum + count, 0);
         if(totalProductsCount === 0) return { areaData: [], ribbons: [] };
 
-        const palette = generateColorPalette('#FBBF24', '#1F2937', areas.length);
+        const palette = generateColorPalette('#FFF500', '#8C99A6', areas.length);
 
         const gapAngle = 0.04; 
         const totalGapSpace = areas.length * gapAngle;
@@ -208,12 +208,12 @@ export const ResearchConnectionsGraph: React.FC<ResearchConnectionsGraphProps> =
                                         key={ribbon.key}
                                         d={ribbon.path}
                                         fill="none"
-                                        stroke="#4a5568"
+                                        stroke="#DDE2E8"
                                         strokeWidth="1"
                                         // FIX: Spread motion props to avoid TypeScript type errors.
                                         {...{
                                             initial: { opacity: 0 },
-                                            animate: { opacity: isDimmed ? 0.03 : 0.2 },
+                                            animate: { opacity: isDimmed ? 0.04 : 0.22 },
                                             transition: { duration: 0.3 },
                                         }}
                                     />
@@ -246,22 +246,25 @@ export const ResearchConnectionsGraph: React.FC<ResearchConnectionsGraphProps> =
                     </svg>
                 </div>
                 <div className="mt-8 lg:mt-0">
-                    <h2 className="text-3xl font-bold tracking-tight text-brand-dark text-center lg:text-left">Interdisciplinary Research Network</h2>
-                    <p className="mt-4 text-brand-gray leading-relaxed text-center lg:text-left max-w-3xl mx-auto lg:mx-0">
+                    <h2 className="a-h3">Interdisciplinary Research Network</h2>
+                    <p className="mt-4 a-texto a-sec">
                         This visualization maps the connections between my core research areas. Each colored arc represents a research area, with its size proportional to the total number of publications. Each thin, grey line represents a single publication that bridges two fields, illustrating the web of interdisciplinary collaboration. Hover over an arc or legend item to highlight its specific connections.
                     </p>
                     <div className="mt-8">
-                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-1 gap-y-3 gap-x-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-y-1 gap-x-4">
                             {areaData.map(area => (
-                                <div 
-                                    key={area.id} 
-                                    className="flex items-center space-x-3 p-2 rounded-lg transition-colors duration-200 hover:bg-zinc-100 cursor-pointer"
+                                <button
+                                    type="button"
+                                    key={area.id}
+                                    className={`flex items-center gap-3 px-2 py-2 text-left transition-colors duration-200 hover:bg-white/5 ${hoveredArea === area.id ? 'bg-white/10' : ''}`}
                                     onMouseEnter={() => setHoveredArea(area.id)}
                                     onMouseLeave={() => setHoveredArea(null)}
+                                    onClick={() => setHoveredArea(hoveredArea === area.id ? null : area.id)}
+                                    aria-pressed={hoveredArea === area.id}
                                 >
-                                    <div className="w-4 h-4 rounded-full flex-shrink-0" style={{ backgroundColor: area.color }}></div>
-                                    <span className="text-sm text-brand-dark font-medium">{localize(area.title, lang)}</span>
-                                </div>
+                                    <span className="w-4 h-4 flex-shrink-0" style={{ backgroundColor: area.color }} aria-hidden="true"></span>
+                                    <span className="text-[15px]">{localize(area.title, lang)}</span>
+                                </button>
                             ))}
                         </div>
                     </div>

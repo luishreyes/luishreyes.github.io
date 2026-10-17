@@ -5,6 +5,7 @@ import '@fontsource-variable/source-sans-3';
 import '@fontsource-variable/big-shoulders-display';
 import '@fontsource-variable/archivo';
 import './index.css';
+import './components/andes-theme.css';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
