@@ -18,8 +18,22 @@ import { pou202620Course } from './pou-2026-20';
 //   · Falta el banner propio del semestre.
 // Material ya reescrito para aceite esencial: vive en /classroom/iqya-2031-2027-10/.
 // Cada semana que se migra suma aquí sus ids y slugs.
-const PRESENTACIONES_PROPIAS = new Set(['presentacion-del-curso', 'trabajo-en-equipo']);
-const LECTURAS_PROPIAS = new Set(['lectura-01-operaciones-unitarias']);
+const PRESENTACIONES_PROPIAS = new Set([
+  'presentacion-del-curso', 'trabajo-en-equipo',
+  'diagramas-ingenieria', 'pid-instrumentacion',
+]);
+const LECTURAS_PROPIAS = new Set([
+  'lectura-01-operaciones-unitarias',
+  'lectura-02-diagramas-ingenieria', 'taller-01-analisis-de-pfd',
+]);
+
+// Descripciones que en 2026-20 hablaban de la planta de pectina.
+const DESCRIPCIONES: Record<string, string> = {
+  'presentacion-del-curso':
+    'La sesión inaugural completa: bienvenida y la planta de aceite esencial, equipo docente, objetivos y resultados ABET, las ocho estaciones del proceso, metodología, módulos y ritmo del semestre, evaluación, uso de IA y expectativas.',
+  'diagramas-ingenieria':
+    'BFD, PFD y P&ID: el lenguaje visual de la ingeniería química. Simbología de equipos e instrumentos, codificación de equipos (Turton), balance de masa y mejores prácticas, aplicados a la planta de aceite esencial.',
+};
 
 export const pou202710Course: Course = {
   ...pou202620Course,
@@ -80,16 +94,11 @@ export const pou202710Course: Course = {
   // donde están sus archivos: el sitio arma su ruta con el slug del curso, y
   // copiar `slides/` duplicaría 240 MB. Al actualizar una pieza para 2027-10 y
   // publicarla en la carpeta propia, se le quita `carpeta`.
-  presentations: pou202620Course.presentations.map((p) => {
-    if (!PRESENTACIONES_PROPIAS.has(p.id)) return { ...p, carpeta: 'iqya-2031-2026-20' };
-    return p.id === 'presentacion-del-curso'
-      ? {
-          ...p,
-          description:
-            'La sesión inaugural completa: bienvenida y la planta de aceite esencial, equipo docente, objetivos y resultados ABET, las ocho estaciones del proceso, metodología, módulos y ritmo del semestre, evaluación, uso de IA y expectativas.',
-        }
-      : p;
-  }),
+  presentations: pou202620Course.presentations.map((p) =>
+    PRESENTACIONES_PROPIAS.has(p.id)
+      ? { ...p, description: DESCRIPCIONES[p.id] ?? p.description }
+      : { ...p, carpeta: 'iqya-2031-2026-20' },
+  ),
   simulations: (pou202620Course.simulations ?? []).map((sim) => ({ ...sim, carpeta: 'iqya-2031-2026-20' })),
 
   // La metodología es la misma; solo cambia de qué planta se habla.
