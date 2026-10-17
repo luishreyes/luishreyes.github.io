@@ -21,9 +21,13 @@ export const pou202710Course: Course = {
 
   slug: 'iqya-2031-2027-10',
   term: '2027-10',
-  hidden: true,
+  // La tarjeta SÍ aparece en el índice del aula: el profesor necesita poder
+  // entrar al curso desde ahí. Lo que restringe el acceso es la reja, no
+  // esconder el curso.
+  //
   // Solo entra el equipo docente: la reja muestra una sola puerta y pide
-  // `staffAccessCode`, el mismo del semestre anterior.
+  // `staffAccessCode`, el mismo del semestre anterior. Un estudiante que
+  // llegue a la tarjeta ve que el semestre se está armando y no pasa.
   staffOnlyAccess: true,
 
   tagline:
