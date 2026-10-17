@@ -125,7 +125,7 @@ const findEntry = (
   const reading = course.readings?.find((r) => r.href === src);
   if (reading) return { title: reading.title, week: reading.week, kind: 'reading', id: reading.slug };
   const sim = course.simulations?.find(
-    (s) => `/classroom/${course.slug}/simulaciones/${s.file}` === src,
+    (s) => `/classroom/${s.carpeta ?? course.slug}/simulaciones/${s.file}` === src,
   );
   if (sim) return { title: sim.title, week: sim.week, kind: 'sim', id: sim.id };
   return null;

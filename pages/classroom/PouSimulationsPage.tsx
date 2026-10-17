@@ -181,7 +181,13 @@ const SimCard: React.FC<{ s: Simulation; slug: string; k: string; toggle: React.
     <i className="corner tr" aria-hidden="true" />
     <i className="corner bl" aria-hidden="true" />
     <i className="corner br" aria-hidden="true" />
-    <Link to={toViewer(slug, s.file)}>
+    <Link
+      // Un simulador heredado vive en la carpeta de otro curso: se abre directo.
+      to={s.carpeta && s.carpeta !== slug ? `/classroom/${s.carpeta}/simulaciones/${s.file}` : toViewer(slug, s.file)}
+      reloadDocument={!!s.carpeta && s.carpeta !== slug}
+      target={s.carpeta && s.carpeta !== slug ? '_blank' : undefined}
+      rel={s.carpeta && s.carpeta !== slug ? 'noopener noreferrer' : undefined}
+    >
       <div className="shot">
         {s.bannerImg ? <img src={s.bannerImg} alt="" loading="lazy" /> : <span className="wkn">{pad(s.week ?? 0)}</span>}
       </div>

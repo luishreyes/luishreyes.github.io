@@ -71,6 +71,13 @@ export const pou202710Course: Course = {
     ],
   },
 
+  // Presentaciones y simuladores se heredan apuntando a la carpeta de 2026-20,
+  // donde están sus archivos: el sitio arma su ruta con el slug del curso, y
+  // copiar `slides/` duplicaría 240 MB. Al actualizar una pieza para 2027-10 y
+  // publicarla en la carpeta propia, se le quita `carpeta`.
+  presentations: pou202620Course.presentations.map((p) => ({ ...p, carpeta: 'iqya-2031-2026-20' })),
+  simulations: (pou202620Course.simulations ?? []).map((sim) => ({ ...sim, carpeta: 'iqya-2031-2026-20' })),
+
   // La metodología es la misma; solo cambia de qué planta se habla.
   methodology: {
     ...pou202620Course.methodology,
