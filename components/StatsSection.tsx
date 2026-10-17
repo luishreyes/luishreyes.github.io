@@ -38,14 +38,14 @@ const Cifra: React.FC<{ value: number | string }> = ({ value }) => {
   return <>{shown.toLocaleString(lang === 'es' ? 'es-CO' : 'en-US')}</>;
 };
 
-/** Cifras sueltas sobre el campo de color, sin caja. */
+/** Cifras grandes como en el dossier: cada una bajo un filete, sin caja; la nota va en mono. */
 export const StatsSection = ({ stats }: StatsSectionProps) => (
-  <div className="a-cifras grande">
+  <div className="a-cifras">
     {stats.map((stat) => (
       <div key={stat.label}>
         <b><Cifra value={stat.value} /></b>
         <span>{stat.label}</span>
-        {stat.note && <span className="nota">{stat.note}</span>}
+        {stat.note && <span className="a-meta">{stat.note}</span>}
       </div>
     ))}
   </div>

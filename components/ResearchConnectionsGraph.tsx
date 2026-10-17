@@ -125,7 +125,7 @@ export const ResearchConnectionsGraph: React.FC<ResearchConnectionsGraphProps> =
         const totalProductsCount = Object.values(productCounts).reduce((sum, count) => sum + count, 0);
         if(totalProductsCount === 0) return { areaData: [], ribbons: [] };
 
-        const palette = generateColorPalette('#FFF500', '#8C99A6', areas.length);
+        const palette = generateColorPalette('#EBEBEC', '#5E5E61', areas.length);
 
         const gapAngle = 0.04; 
         const totalGapSpace = areas.length * gapAngle;
@@ -203,17 +203,18 @@ export const ResearchConnectionsGraph: React.FC<ResearchConnectionsGraphProps> =
                         <g>
                             {ribbons.map((ribbon) => {
                                 const isDimmed = hoveredArea && hoveredArea !== ribbon.source && hoveredArea !== ribbon.target;
+                                const isLit = hoveredArea && !isDimmed;
                                 return (
                                     <motion.path
                                         key={ribbon.key}
                                         d={ribbon.path}
                                         fill="none"
-                                        stroke="#DDE2E8"
+                                        stroke={isLit ? '#FFE900' : '#CDCDD0'}
                                         strokeWidth="1"
                                         // FIX: Spread motion props to avoid TypeScript type errors.
                                         {...{
                                             initial: { opacity: 0 },
-                                            animate: { opacity: isDimmed ? 0.04 : 0.22 },
+                                            animate: { opacity: isDimmed ? 0.04 : isLit ? 0.55 : 0.2 },
                                             transition: { duration: 0.3 },
                                         }}
                                     />
@@ -237,7 +238,7 @@ export const ResearchConnectionsGraph: React.FC<ResearchConnectionsGraphProps> =
                                     >
                                         <path
                                             d={describeThickArc(centerX, centerY, innerRadius, outerRadius, area.startAngle, area.endAngle)}
-                                            fill={area.color}
+                                            fill={hoveredArea === area.id ? '#FFE900' : area.color}
                                         />
                                     </motion.g>
                                 );
@@ -256,13 +257,13 @@ export const ResearchConnectionsGraph: React.FC<ResearchConnectionsGraphProps> =
                                 <button
                                     type="button"
                                     key={area.id}
-                                    className={`flex items-center gap-3 px-2 py-2 text-left transition-colors duration-200 hover:bg-white/5 ${hoveredArea === area.id ? 'bg-white/10' : ''}`}
+                                    className={`flex items-center gap-3 px-2 py-2 text-left transition-colors duration-200 hover:bg-white/5 ${hoveredArea === area.id ? 'bg-white/10 text-white' : ''}`}
                                     onMouseEnter={() => setHoveredArea(area.id)}
                                     onMouseLeave={() => setHoveredArea(null)}
                                     onClick={() => setHoveredArea(hoveredArea === area.id ? null : area.id)}
                                     aria-pressed={hoveredArea === area.id}
                                 >
-                                    <span className="w-4 h-4 flex-shrink-0" style={{ backgroundColor: area.color }} aria-hidden="true"></span>
+                                    <span className="w-4 h-4 flex-shrink-0" style={{ backgroundColor: hoveredArea === area.id ? '#FFE900' : area.color }} aria-hidden="true"></span>
                                     <span className="text-[15px]">{localize(area.title, lang)}</span>
                                 </button>
                             ))}

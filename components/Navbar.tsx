@@ -10,13 +10,13 @@ interface NavbarProps {
 function LangToggle({ className = '' }: { className?: string }) {
   const { lang, setLang } = useI18n();
   const cls = (on: boolean) =>
-    on ? 'text-andes-navy font-semibold' : 'text-andes-sec hover:text-andes-navy transition-colors';
+    on ? 'text-tinta-900 font-semibold' : 'text-tinta-500 hover:text-tinta-900 transition-colors';
   return (
     <div className={`flex items-center gap-1.5 text-[15px] ${className}`}>
       <button onClick={() => setLang('en')} className={cls(lang === 'en')} aria-label="English" aria-pressed={lang === 'en'}>
         EN
       </button>
-      <span className="text-andes-sec" aria-hidden="true">/</span>
+      <span className="text-tinta-400" aria-hidden="true">/</span>
       <button onClick={() => setLang('es')} className={cls(lang === 'es')} aria-label="Español" aria-pressed={lang === 'es'}>
         ES
       </button>
@@ -141,13 +141,13 @@ export const Navbar = ({ onDownloadCv }: NavbarProps) => {
       ? location.pathname === '/recognition'
       : location.pathname.startsWith(item.pathPrefix);
 
-  // Barra plana sobre blanco: la marca en un bloque azul noche, como la barra del aula de POU 2027-10.
+  // El cabezal del dossier: el nombre en versales espaciadas, papel plano y un filete abajo.
   return (
-    <nav ref={navRef} className="fixed top-0 w-full z-30 bg-white font-dax text-andes-navy">
+    <nav ref={navRef} className="fixed top-0 w-full z-30 bg-papel-0 border-b border-papel-300 font-archivo text-tinta-800">
       <div className="flex items-stretch justify-between h-16">
         <Link
           to="/"
-          className="flex items-center bg-andes-navy text-white px-5 sm:px-6 text-[17px] font-semibold tracking-[-0.01em] whitespace-nowrap hover:bg-andes-deep transition-colors"
+          className="flex items-center pl-4 sm:pl-6 xl:pl-8 pr-4 text-[13px] font-light uppercase tracking-[0.42em] text-tinta-900 whitespace-nowrap hover:bg-resaltador-suave transition-colors"
         >
           Luis H. Reyes
         </Link>
@@ -169,22 +169,14 @@ export const Navbar = ({ onDownloadCv }: NavbarProps) => {
                         setOpenDesktopMenu(null);
                       }
                     }}
-                    className={`${active ? 'text-andes-navy' : 'text-andes-sec hover:text-andes-navy'} relative flex items-center gap-1 px-3 text-[15px] transition-colors`}
+                    className={`${active ? 'text-tinta-900' : 'text-tinta-600 hover:text-tinta-900'} relative flex items-center gap-1 px-3 text-[15px] transition-colors`}
                     aria-haspopup={!!item.subItems}
                     aria-expanded={item.subItems ? openDesktopMenu === item.id : undefined}
                     aria-current={active ? 'page' : undefined}
                   >
-                    {item.title}
+                    {/* El activo lleva el subrayado de marcador del dossier */}
+                    <span className={active ? 'bg-[linear-gradient(transparent_58%,#FFE900_58%)]' : ''}>{item.title}</span>
                     {item.subItems && <Chevron open={openDesktopMenu === item.id} />}
-                    {active && (
-                      <motion.span
-                        {...{
-                          layoutId: 'marca-activa',
-                          transition: { type: 'spring', stiffness: 300, damping: 28 },
-                        }}
-                        className="absolute bottom-0 left-3 right-3 h-1 bg-andes-yellow"
-                      />
-                    )}
                   </button>
                   <AnimatePresence>
                     {item.subItems && openDesktopMenu === item.id && (
@@ -195,7 +187,7 @@ export const Navbar = ({ onDownloadCv }: NavbarProps) => {
                           exit: { opacity: 0, y: 8 },
                           transition: { duration: 0.18 },
                         }}
-                        className={`absolute top-full w-72 bg-white shadow-[0_18px_40px_-12px_rgba(25,34,47,0.28)] ${dropdownPositionClass}`}
+                        className={`absolute top-full w-72 bg-papel-0 border border-papel-300 border-t-2 border-t-tinta-900 ${dropdownPositionClass}`}
                       >
                         <div className="py-2">
                           {item.subItems.map((subItem) => (
@@ -205,7 +197,7 @@ export const Navbar = ({ onDownloadCv }: NavbarProps) => {
                                 navigate(subItem.path);
                                 setOpenDesktopMenu(null);
                               }}
-                              className={`${location.pathname === subItem.path ? 'bg-andes-paper text-andes-navy' : 'text-andes-sec hover:text-andes-navy hover:bg-andes-surface'} block w-full text-left px-5 py-2.5 text-[15px] transition-colors`}
+                              className={`${location.pathname === subItem.path ? 'bg-papel-100 text-tinta-900 font-semibold' : 'text-tinta-600 hover:text-tinta-900 hover:bg-resaltador-suave'} block w-full text-left px-5 py-2.5 text-[15px] transition-colors`}
                               aria-current={location.pathname === subItem.path ? 'page' : undefined}
                             >
                               {subItem.title}
@@ -222,7 +214,7 @@ export const Navbar = ({ onDownloadCv }: NavbarProps) => {
           <LangToggle className="ml-6" />
           <button
             onClick={onDownloadCv}
-            className="ml-6 flex items-center gap-2 text-[15px] text-andes-sec hover:text-andes-navy transition-colors"
+            className="ml-6 flex items-center gap-2 text-[15px] text-tinta-600 hover:text-tinta-900 transition-colors"
           >
             <DownloadIcon />
             CV
@@ -234,7 +226,7 @@ export const Navbar = ({ onDownloadCv }: NavbarProps) => {
           <LangToggle className="mr-2" />
           <button
             onClick={onDownloadCv}
-            className="p-2.5 text-andes-sec hover:text-andes-navy transition-colors"
+            className="p-2.5 text-tinta-600 hover:text-tinta-900 transition-colors"
             aria-label={t('nav.downloadCv')}
           >
             <DownloadIcon className="h-6 w-6" />
@@ -244,7 +236,7 @@ export const Navbar = ({ onDownloadCv }: NavbarProps) => {
             aria-controls="mobile-menu"
             aria-expanded={isMobileMenuOpen}
             aria-label={t('nav.menu')}
-            className="p-2.5 text-andes-navy hover:bg-andes-surface transition-colors"
+            className="p-2.5 text-tinta-900 hover:bg-papel-100 transition-colors"
           >
             {isMobileMenuOpen ? (
               <svg className="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
@@ -265,7 +257,7 @@ export const Navbar = ({ onDownloadCv }: NavbarProps) => {
               exit: { opacity: 0, y: -12 },
               transition: { duration: 0.22, ease: 'easeOut' },
             }}
-            className="xl:hidden absolute w-full max-h-[calc(100svh-4rem)] overflow-y-auto bg-white shadow-[0_18px_40px_-12px_rgba(25,34,47,0.28)]"
+            className="xl:hidden absolute w-full max-h-[calc(100svh-4rem)] overflow-y-auto bg-papel-0 border-b-2 border-tinta-900"
             id="mobile-menu"
           >
             <div className="px-4 sm:px-6 py-3">
@@ -277,7 +269,7 @@ export const Navbar = ({ onDownloadCv }: NavbarProps) => {
                       <>
                         <button
                           onClick={() => setOpenMobileSubMenu(openMobileSubMenu === item.id ? null : item.id)}
-                          className={`w-full flex justify-between items-center py-3 text-lg ${active ? 'text-andes-navy font-semibold' : 'text-andes-navy'}`}
+                          className={`w-full flex justify-between items-center py-3 text-lg text-tinta-900 border-b border-papel-300 ${active ? 'font-semibold' : ''}`}
                           aria-expanded={openMobileSubMenu === item.id}
                         >
                           <span>{item.title}</span>
@@ -296,14 +288,14 @@ export const Navbar = ({ onDownloadCv }: NavbarProps) => {
                                 },
                                 transition: { duration: 0.25, ease: 'easeInOut' },
                               }}
-                              className="overflow-hidden bg-andes-surface"
+                              className="overflow-hidden bg-papel-100"
                             >
                               <div className="py-1">
                                 {item.subItems.map((subItem) => (
                                   <button
                                     key={subItem.path}
                                     onClick={() => navigate(subItem.path)}
-                                    className={`${location.pathname === subItem.path ? 'bg-andes-paper text-andes-navy font-semibold' : 'text-andes-sec'} block w-full text-left px-4 py-2.5 text-base`}
+                                    className={`${location.pathname === subItem.path ? 'text-tinta-900 font-semibold' : 'text-tinta-600'} block w-full text-left px-4 py-2.5 text-base`}
                                     aria-current={location.pathname === subItem.path ? 'page' : undefined}
                                   >
                                     {subItem.title}
@@ -317,7 +309,7 @@ export const Navbar = ({ onDownloadCv }: NavbarProps) => {
                     ) : (
                       <button
                         onClick={() => navigate(item.defaultPath)}
-                        className={`block w-full text-left py-3 text-lg text-andes-navy ${active ? 'font-semibold' : ''}`}
+                        className={`block w-full text-left py-3 text-lg text-tinta-900 border-b border-papel-300 ${active ? 'font-semibold' : ''}`}
                         aria-current={active ? 'page' : undefined}
                       >
                         {item.title}

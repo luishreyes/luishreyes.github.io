@@ -41,7 +41,7 @@ export const ScrollToTopButton = () => {
             exit: { opacity: 0, scale: 0.8 },
             transition: { duration: 0.2, ease: 'easeOut' },
           }}
-          className="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 bg-andes-navy text-white p-3 shadow-[0_12px_28px_-10px_rgba(25,34,47,0.5)] hover:bg-andes-deep focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-offset-[3px] focus-visible:outline-andes-olive transition-colors duration-200 z-40"
+          className="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 bg-tinta-900 text-papel-0 p-3 border border-tinta-600 hover:bg-tinta-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[3px] focus-visible:outline-tinta-900 transition-colors duration-200 z-40"
           aria-label="Scroll to top"
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>

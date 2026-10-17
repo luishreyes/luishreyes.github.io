@@ -7,43 +7,57 @@ const PERFILES = [
   { name: 'LinkedIn', url: 'https://co.linkedin.com/in/luishreyes' },
 ];
 
-/** Cierre del portafolio: el nombre vuelve a todo el ancho sobre azul noche. */
+/** Cierre del portafolio, armado como la portada del dossier: la palabra de
+ *  apertura a la izquierda y, al otro lado del eje vertical, el filete que abre
+ *  el bloque del nombre en versales espaciadas. */
 export const SiteFooter: React.FC<{ onDownloadCv: () => void }> = ({ onDownloadCv }) => {
   const { t } = useI18n();
   return (
-    <footer className="a-hondo">
-      <div className="a-c pt-24 pb-12 sm:pt-32">
-        <p className="a-h1 text-andes-yellow" aria-hidden="true">Luis H. Reyes.</p>
-        <div className="mt-12 grid gap-10 md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)_minmax(0,1fr)]">
-          <p className="max-w-[38ch]">{t('footer.role')}</p>
-          <div>
-            <p className="a-s a-sec">{t('footer.contact')}</p>
-            <a className="a-enlace mt-2 inline-block" href="mailto:lh.reyes@uniandes.edu.co">
-              lh.reyes@uniandes.edu.co
-            </a>
-            <div className="mt-6">
-              <button type="button" onClick={onDownloadCv} className="a-boton">
-                {t('nav.downloadCv')}
-              </button>
+    <footer className="a-portada">
+      <div className="a-c pt-20 pb-10 sm:pt-28">
+        <div className="grid gap-12 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
+          <p className="a-marca" aria-hidden="true">{t('footer.wordmark')}.</p>
+          <div className="lg:border-l lg:border-tinta-500 lg:pl-10">
+            <div className="border-t border-tinta-500 pt-6">
+              <p className="a-versal text-[15px] leading-[1.9] text-tinta-900">
+                Luis H.<br />Reyes
+              </p>
+              <p className="mt-6 a-s max-w-[40ch]">{t('footer.role')}</p>
+            </div>
+            <div className="mt-10 grid gap-8 sm:grid-cols-2">
+              <div>
+                <span className="a-ceja">{t('footer.contact')}</span>
+                <a className="a-enlace mt-2 inline-block a-s" href="mailto:lh.reyes@uniandes.edu.co">
+                  lh.reyes@uniandes.edu.co
+                </a>
+                <div className="mt-5">
+                  <button type="button" onClick={onDownloadCv} className="a-boton">
+                    {t('nav.downloadCv')}
+                  </button>
+                </div>
+              </div>
+              <div>
+                <span className="a-ceja">{t('footer.profiles')}</span>
+                <ul className="mt-2 space-y-1.5 a-s">
+                  {PERFILES.map((p) => (
+                    <li key={p.name}>
+                      <a className="a-enlace" href={p.url} target="_blank" rel="noopener noreferrer">{p.name}</a>
+                    </li>
+                  ))}
+                  <li>
+                    <a className="a-enlace" href="https://luishreyes.myportfolio.com" target="_blank" rel="noopener noreferrer">
+                      {t('footer.photography')}
+                    </a>
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
-          <div>
-            <p className="a-s a-sec">{t('footer.profiles')}</p>
-            <ul className="mt-2 space-y-2">
-              {PERFILES.map((p) => (
-                <li key={p.name}>
-                  <a className="a-enlace" href={p.url} target="_blank" rel="noopener noreferrer">{p.name}</a>
-                </li>
-              ))}
-              <li>
-                <a className="a-enlace" href="https://luishreyes.myportfolio.com" target="_blank" rel="noopener noreferrer">
-                  {t('footer.photography')}
-                </a>
-              </li>
-            </ul>
-          </div>
         </div>
-        <p className="a-s a-sec mt-20">© {new Date().getFullYear()} Luis H. Reyes</p>
+        <div className="mt-16 flex flex-wrap justify-between gap-4 border-t border-tinta-500 pt-4">
+          <span className="a-meta">{t('footer.unit')} · Universidad de los Andes</span>
+          <span className="a-meta">© {new Date().getFullYear()}</span>
+        </div>
       </div>
     </footer>
   );

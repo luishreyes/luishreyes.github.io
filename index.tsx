@@ -1,11 +1,13 @@
 import '@fontsource-variable/manrope';
 import '@fontsource-variable/jetbrains-mono';
 import '@fontsource-variable/source-sans-3';
-// Identidad del curso Narrativas Visuales (IQYA-3751): display + texto
+// Narrativas Visuales (IQYA-3751) y la línea del portafolio (Archivo, como el dossier)
 import '@fontsource-variable/big-shoulders-display';
 import '@fontsource-variable/archivo';
 import './index.css';
-import './components/andes-theme.css';
+import './components/portafolio-theme.css';
+import '@fontsource/ibm-plex-mono/400.css';
+import '@fontsource/ibm-plex-mono/500.css';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
