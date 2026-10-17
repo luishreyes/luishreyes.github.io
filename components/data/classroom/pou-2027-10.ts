@@ -22,6 +22,9 @@ export const pou202710Course: Course = {
   slug: 'iqya-2031-2027-10',
   term: '2027-10',
   hidden: true,
+  // Solo entra el equipo docente: la reja muestra una sola puerta y pide
+  // `staffAccessCode`, el mismo del semestre anterior.
+  staffOnlyAccess: true,
 
   tagline:
     'Diseñe una planta de aceite esencial a partir de cáscara de cítricos',

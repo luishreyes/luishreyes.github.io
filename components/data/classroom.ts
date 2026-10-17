@@ -185,6 +185,13 @@ export interface Course {
    */
   staffAccessCode?: string;
   /**
+   * Curso al que solo entra el equipo docente: la reja muestra únicamente la
+   * puerta de profesor y pide `staffAccessCode`. Se usa en los semestres que
+   * todavía se están armando, para poder verlos sin abrirle la puerta a nadie
+   * más. Requiere `staffAccessCode`; sin él no tiene efecto.
+   */
+  staffOnlyAccess?: boolean;
+  /**
    * Entrega gradual del material. Si es `true`, quien entra con `accessCode`
    * (los estudiantes) solo ve el material de las semanas ya transcurridas y de
    * la semana en curso; las semanas futuras aparecen listadas pero cerradas.
