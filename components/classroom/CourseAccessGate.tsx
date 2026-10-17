@@ -129,10 +129,14 @@ export const CourseAccessGate: React.FC<CourseAccessGateProps> = ({ course, chil
     );
   };
 
+  // Un curso en preparación solo tiene puerta de profesor.
+  const soloProfesor = !!course.staffOnlyAccess && !!course.staffAccessCode;
+
   // Con Enter se entra como estudiante, que es el caso de casi todo el mundo.
+  // En un curso de solo profesor no hay otra puerta.
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    entrar('student');
+    entrar(soloProfesor ? 'staff' : 'student');
   };
 
   // Acento de color (siempre, incluso archivados) + tipografía de curso
@@ -179,9 +183,11 @@ export const CourseAccessGate: React.FC<CourseAccessGateProps> = ({ course, chil
           <div className="p-6">
             <h2 className="text-lg font-semibold text-brand-dark">Acceso restringido</h2>
             <p className="text-sm text-brand-gray mt-1 leading-relaxed">
-              {course.staffAccessCode
-                ? 'Este espacio está reservado para el curso. Escriba su código y entre por la puerta que le corresponde.'
-                : 'Este espacio está reservado para estudiantes del curso. Ingrese el código que le entregó el profesor para continuar.'}
+              {soloProfesor
+                ? 'Este semestre todavía se está armando y solo lo ve el equipo docente. Escriba el código del equipo para continuar.'
+                : course.staffAccessCode
+                  ? 'Este espacio está reservado para el curso. Escriba su código y entre por la puerta que le corresponde.'
+                  : 'Este espacio está reservado para estudiantes del curso. Ingrese el código que le entregó el profesor para continuar.'}
             </p>
 
             <form onSubmit={handleSubmit} className="mt-5 space-y-3">
@@ -204,7 +210,14 @@ export const CourseAccessGate: React.FC<CourseAccessGateProps> = ({ course, chil
               {error && (
                 <p id="course-code-error" className="text-xs text-red-600">{error}</p>
               )}
-              {course.staffAccessCode ? (
+              {soloProfesor ? (
+                <button
+                  type="submit"
+                  className="w-full py-3 rounded-md bg-brand-yellow text-brand-dark font-semibold shadow-sm hover:bg-brand-yellow-dark transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-yellow"
+                >
+                  Acceder como profesor
+                </button>
+              ) : course.staffAccessCode ? (
                 <div className="grid gap-2 sm:grid-cols-2">
                   <button
                     type="submit"
