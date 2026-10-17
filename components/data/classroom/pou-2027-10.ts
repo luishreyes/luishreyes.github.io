@@ -21,11 +21,19 @@ import { pou202620Course } from './pou-2026-20';
 const PRESENTACIONES_PROPIAS = new Set([
   'presentacion-del-curso', 'trabajo-en-equipo',
   'diagramas-ingenieria', 'pid-instrumentacion',
+  'propiedades-solidos-particulados', 'reduccion-de-tamano',
 ]);
 const LECTURAS_PROPIAS = new Set([
   'lectura-01-operaciones-unitarias',
   'lectura-02-diagramas-ingenieria', 'taller-01-analisis-de-pfd',
+  'lectura-03-reduccion-tamano', 'taller-02-analisis-granulometrico',
 ]);
+
+// Resúmenes de lecturas y talleres que cambiaron de caso para aceite esencial.
+const RESUMENES: Record<string, string> = {
+  'taller-02-analisis-granulometrico':
+    'Se resuelve en un cuaderno de Google Colab, que se abre desde la página con un clic. Tres casos de la planta: la cáscara que sale del desgarrador, que se juzga contra tres criterios del extractor; dos equipos de desgarrado que compiten por preparar la carga y donde ninguno domina al otro; y una carta de control del D50 con las muestras de una semana. Incluye el ajuste de los tres modelos clásicos de distribución, log-normal, Rosin-Rammler y Gates-Gaudin-Schuhmann, y cinco preguntas de análisis con sustento bibliográfico en formato IEEE. En parejas, con pareja distinta a la del Taller 1.',
+};
 
 // Descripciones que en 2026-20 hablaban de la planta de pectina.
 const DESCRIPCIONES: Record<string, string> = {
@@ -99,7 +107,19 @@ export const pou202710Course: Course = {
       ? { ...p, description: DESCRIPCIONES[p.id] ?? p.description }
       : { ...p, carpeta: 'iqya-2031-2026-20' },
   ),
-  simulations: (pou202620Course.simulations ?? []).map((sim) => ({ ...sim, carpeta: 'iqya-2031-2026-20' })),
+  // Los simuladores se siguen sirviendo desde 2026-20. El de molienda trae la
+  // cáscara cítrica seca de la planta de pectina: en 2027-10 deja de ser «la
+  // del proyecto», porque la cáscara de aceite esencial se desgarra húmeda.
+  simulations: (pou202620Course.simulations ?? []).map((sim) => ({
+    ...sim,
+    carpeta: 'iqya-2031-2026-20',
+    description:
+      sim.id === 'explorador-molienda'
+        ? sim.description
+            .replace('Seleccione el equipo de reducción de tamaño del proyecto', 'Seleccione un equipo de reducción de tamaño')
+            .replace('o la cáscara cítrica seca del proyecto, con Wi editable)', 'o cáscara cítrica seca, con Wi editable)')
+        : sim.description,
+  })),
 
   // La metodología es la misma; solo cambia de qué planta se habla.
   methodology: {
@@ -136,7 +156,11 @@ export const pou202710Course: Course = {
     },
     ...pou202620Course.readings.map((r) =>
       LECTURAS_PROPIAS.has(r.slug)
-        ? { ...r, href: r.href?.replace('/iqya-2031-2026-20/', '/iqya-2031-2027-10/') }
+        ? {
+            ...r,
+            summary: RESUMENES[r.slug] ?? r.summary,
+            href: r.href?.replace('/iqya-2031-2026-20/', '/iqya-2031-2027-10/'),
+          }
         : r.slug === 'reto-pectina'
         ? {
             ...r,
