@@ -113,18 +113,19 @@ export const ProductsOverTimeChart = ({ products }: { products: Product[] }) => 
   }, [xAxisTicks, innerWidth]);
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-lg border border-yellow-400/40 max-w-5xl mx-auto">
-      <h2 className="text-2xl font-semibold text-brand-dark text-center mb-4">Products Over Time</h2>
-      {/* Filter Buttons */}
-      <div className="flex flex-wrap gap-2 justify-center mb-6">
+    <div>
+      <h2 className="a-h2">Products Over Time</h2>
+      {/* Filter Buttons: cuadrados, el activo en azul noche */}
+      <div className="flex flex-wrap gap-2 mt-10 mb-8">
         {uniqueTypes.map(type => (
           <button
             key={type}
             onClick={() => setActiveFilter(type)}
-            className={`px-4 py-2 text-sm font-semibold rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2 ${
+            aria-pressed={activeFilter === type}
+            className={`min-h-[40px] px-4 text-[15px] transition-colors duration-200 ${
               activeFilter === type
-                ? 'bg-yellow-400 text-brand-dark shadow-md'
-                : 'bg-white text-brand-gray hover:bg-zinc-100 border border-zinc-200'
+                ? 'bg-andes-navy text-white'
+                : 'bg-andes-surface text-andes-sec hover:bg-andes-paper hover:text-andes-navy'
             }`}
           >
             {type}
@@ -144,16 +145,15 @@ export const ProductsOverTimeChart = ({ products }: { products: Product[] }) => 
                 if (isNaN(y) || value > yAxisMax) return null;
                 return (
                   <g key={i}>
-                    <text x={margin.left - 8} y={y + 4} textAnchor="end" fontSize="12" fill="#555555">{value}</text>
-                    {i > 0 && <line x1={margin.left} y1={y} x2={chartWidth - margin.right} y2={y} stroke="#f4f4f5" />}
+                    <text x={margin.left - 8} y={y + 4} textAnchor="end" fontSize="13" fill="#525C64">{value}</text>
+                    {i > 0 && <line x1={margin.left} y1={y} x2={chartWidth - margin.right} y2={y} stroke="#E8ECF0" />}
                   </g>
                 );
               })}
             </g>
             
             {/* Axes Lines */}
-            <line x1={margin.left} y1={margin.top} x2={margin.left} y2={innerHeight + margin.top} stroke="#e4e4e7" />
-            <line x1={margin.left} y1={innerHeight + margin.top} x2={chartWidth - margin.right} y2={innerHeight + margin.top} stroke="#e4e4e7" />
+            <line x1={margin.left} y1={innerHeight + margin.top} x2={chartWidth - margin.right} y2={innerHeight + margin.top} stroke="#D3D9DF" />
             
             {/* Bars */}
             <g>
@@ -183,8 +183,7 @@ export const ProductsOverTimeChart = ({ products }: { products: Product[] }) => 
                         exit: { y: innerHeight + margin.top, height: 0 },
                         transition: { type: 'spring', stiffness: 200, damping: 20 },
                       }}
-                      fill="#FBBF24"
-                      rx="2"
+                      fill="#19222F"
                     />
                   </motion.g>
                 ))}
@@ -199,8 +198,8 @@ export const ProductsOverTimeChart = ({ products }: { products: Product[] }) => 
                   x={xScale(year)}
                   y={innerHeight + margin.top + 20}
                   textAnchor="middle"
-                  fontSize="12"
-                  fill="#555555"
+                  fontSize="13"
+                  fill="#525C64"
                 >
                   {year}
                 </text>

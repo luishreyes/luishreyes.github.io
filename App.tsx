@@ -2,12 +2,13 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
+import { SiteFooter } from './components/SiteFooter';
 import { AboutPage } from './pages/AboutPage';
 import { ResearchOverviewPage } from './pages/ResearchOverviewPage';
 import { ProductsPage } from './pages/ProductsPage';
 import { GrantsPage } from './pages/GrantsPage';
 import { StudentsPage } from './pages/StudentsPage';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, MotionConfig } from 'framer-motion';
 import { TeachingOverviewPage } from './pages/teaching/TeachingOverviewPage';
 import { TeachingPhilosophyPage } from './pages/teaching/TeachingPhilosophyPage';
 import { CoursesPage } from './pages/teaching/CoursesPage';
@@ -72,6 +73,7 @@ const App: React.FC = () => {
   });
 
   const location = useLocation();
+  const enAula = location.pathname.startsWith('/classroom');
 
   useEffect(() => {
     const loadInitialData = async () => {
@@ -153,7 +155,9 @@ const App: React.FC = () => {
   return (
     <I18nProvider>
     <AppDataContext.Provider value={contextValue}>
-      <main className="relative">
+      {/* El portafolio habla con la identidad Uniandes (.andes); el aula conserva el tema de cada curso. */}
+      <MotionConfig reducedMotion="user">
+      <main className={`relative ${enAula ? '' : 'andes'}`}>
         <Navbar onDownloadCv={handleDownloadCv} />
         <div>
           <AnimatePresence mode="wait">
@@ -200,8 +204,10 @@ const App: React.FC = () => {
             </Routes>
           </AnimatePresence>
         </div>
+        {!enAula && <SiteFooter onDownloadCv={handleDownloadCv} />}
         <ScrollToTopButton />
       </main>
+      </MotionConfig>
     </AppDataContext.Provider>
     </I18nProvider>
   );
