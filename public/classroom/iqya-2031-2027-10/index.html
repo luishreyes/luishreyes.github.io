@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Proyecto de Operaciones Unitarias · IQYA-2031 · 2027-10</title>
+<meta name="description" content="Dieciséis semanas para diseñar, dimensionar y simular una planta de aceite esencial de cáscara de cítricos.">
+<link rel="stylesheet" href="assets/identidad.css">
+<style>
+/* ===================================================================
+   POU 2027-10 · página del curso
+   Dirección «Colour chapters», semilla 261798434, paleta y tipografía
+   conservadas de la marca institucional.
+   La idea: el tren de proceso de la planta es la secuencia de campos.
+   =================================================================== */
+
+body { margin:0; background:var(--blanco); color:var(--gris-1);
+       font-family:var(--tipo); font-size:var(--t-m); line-height:1.55;
+       -webkit-font-smoothing:antialiased; }
+img { display:block; max-width:100%; }
+
+/* ── El mosaico del masthead ──────────────────────────────────────── */
+:root { --t-sigla: clamp(120px, 19vw, 300px); }
+.masthead { position:relative; }
+.mosaico { display:grid; grid-template-columns:repeat(6,1fr); grid-template-rows:repeat(2,1fr);
+           height:52svh; min-height:320px; gap:0; }
+.mosaico > * { overflow:hidden; }
+.mosaico img { width:100%; height:100%; object-fit:cover;
+               filter:grayscale(1) contrast(1.05); }
+.m-ancha { grid-column:span 2; }
+.m-alta  { grid-row:span 2; }
+.t-amarillo { background:var(--amarillo); }
+.t-navy     { background:var(--navy); }
+.t-papel    { background:var(--papel); }
+
+.barra { position:absolute; inset:0 0 auto 0; display:flex; align-items:stretch; z-index:2; }
+.logo { background:var(--navy); color:#fff; font-size:var(--t-s); font-weight:500;
+        padding:14px 20px; letter-spacing:-.01em; white-space:nowrap; }
+.pestana { background:var(--amarillo); display:flex; align-items:center; gap:28px;
+           padding:0 24px; flex:0 1 auto; max-width:42%; }
+.pestana a { color:var(--navy); font-size:var(--t-s); text-decoration:none; white-space:nowrap; }
+.pestana a:hover { text-decoration:underline; }
+.barra .accion { margin-left:auto; display:flex; align-items:center; padding:0 clamp(16px,4vw,64px);
+                 background:var(--navy); }
+.barra .accion a { color:#fff; font-size:var(--t-s); }
+
+.titular { padding:clamp(40px,6vw,104px) clamp(16px,4vw,64px) clamp(56px,8vw,120px);
+           display:grid; grid-template-columns:1fr; gap:clamp(24px,3vw,40px); }
+.standfirst { font-size:var(--t-m); max-width:30ch; margin:0; }
+.titular h1 { font-size:var(--t-xl); line-height:.9; letter-spacing:-.045em;
+              margin:0; max-width:14ch; font-weight:var(--peso-titulo); }
+.primaria { display:inline-block; background:var(--navy); color:#fff; text-decoration:none;
+            font-size:var(--t-m); font-weight:500; padding:17px 32px; min-height:44px;
+            border-radius:var(--radio); justify-self:start; }
+.primaria:hover { background:#0E141D; }
+
+@media (min-width:860px) {
+  .titular { grid-template-columns:42% 1fr; align-items:start;
+             column-gap:clamp(32px,4vw,72px); }
+  .standfirst { grid-column:1; grid-row:1; }
+  .titular h1 { grid-column:2; grid-row:1 / span 2; max-width:none; }
+  .primaria   { grid-column:1; grid-row:2; align-self:start; }
+}
+
+/* ── Campos ───────────────────────────────────────────────────────── */
+.campo { padding:clamp(64px,10vw,140px) clamp(16px,4vw,64px); min-height:90svh;
+         display:flex; flex-direction:column; justify-content:center; }
+.campo > * { max-width:1360px; width:100%; }
+.campo h2 { font-size:var(--t-xl); line-height:.9; letter-spacing:-.04em;
+            margin:0 0 .4em; max-width:13ch; font-weight:var(--peso-titulo); }
+.campo p { max-width:62ch; margin:0 0 .9em; }
+.amarillo { background:var(--amarillo); color:var(--navy); }
+.navy { background:var(--navy); color:#EDEFF2; }
+.navy a { color:var(--amarillo); }
+.nieve { background:#FFFFFF; }
+.papel { background:var(--papel); }
+
+/* El enunciado del campo amarillo: declaración, no titular. */
+.enunciado { font-size:var(--t-l); line-height:1.14; letter-spacing:-.02em;
+             max-width:24ch; font-weight:var(--peso-titulo); margin:0 0 clamp(28px,4vw,48px); }
+.cifras { display:flex; flex-wrap:wrap; gap:clamp(28px,5vw,80px); }
+.cifras div { flex:1 1 180px; max-width:26ch; }
+.cifras b { display:block; font-size:var(--t-l); line-height:1;
+            letter-spacing:-.03em; font-weight:var(--peso-titulo); }
+.cifras span { display:block; font-size:var(--t-s); margin-top:.4em; }
+
+/* ── El tren de proceso: bandas en rampa ──────────────────────────── */
+.tren { display:flex; flex-direction:column; }
+.paso { display:grid; grid-template-columns:1fr; gap:4px; padding:22px clamp(16px,3vw,32px);
+        align-items:baseline; }
+.paso .n { font-size:var(--t-s); }
+.paso .q { font-size:var(--t-l); line-height:1.05; letter-spacing:-.02em;
+           font-weight:var(--peso-titulo); margin:0; }
+.paso .op { font-size:var(--t-s); }
+@media (min-width:760px) {
+  .paso { grid-template-columns:4.5rem 1fr 15rem; gap:clamp(16px,3vw,40px); align-items:center; }
+  .paso .op { text-align:right; }
+}
+.p1{background:#0E141D;color:#D8DDE4}.p2{background:#19222F;color:#DDE2E8}
+.p3{background:#26323F;color:#E2E6EB}.p4{background:#36444F;color:#E7EAEE}
+.p5{background:#4A5963;color:#EDEFF2}
+.p6{background:#687680;color:#FFFFFF}.p7{background:#FFF500;color:var(--navy)}
+.paso.p7 .q { font-weight:var(--peso-titulo); }
+
+/* ── Material, como un solo párrafo a escala de cartel ────────────── */
+.listado { font-size:var(--t-l); line-height:1.18; letter-spacing:-.025em;
+           max-width:34ch; margin:0; font-weight:var(--peso-titulo); }
+.listado a { color:inherit; text-decoration:none; }
+.listado a:hover { text-decoration:underline; text-decoration-thickness:2px; }
+.conteo { font-size:var(--t-s); margin:clamp(24px,3vw,36px) 0 0; }
+
+.dupla { display:grid; grid-template-columns:1fr; gap:clamp(32px,5vw,72px); align-items:center; }
+@media (min-width:900px){ .dupla { grid-template-columns:1.05fr .95fr; } }
+.dupla img { width:100%; height:auto; }
+
+/* ── Equipo ───────────────────────────────────────────────────────── */
+.gente { display:grid; grid-template-columns:1fr; gap:clamp(24px,3vw,40px); margin-top:clamp(32px,4vw,56px); }
+@media (min-width:720px){ .gente { grid-template-columns:repeat(3,1fr); } }
+.gente b { display:block; font-size:var(--t-l); line-height:1.1;
+           letter-spacing:-.02em; font-weight:var(--peso-titulo); }
+.gente span { display:block; font-size:var(--t-s); margin-top:.3em; }
+.gente a { font-size:var(--t-s); }
+
+/* ── Cierre ───────────────────────────────────────────────────────── */
+.cierre { background:var(--navy); color:#EDEFF2; padding:clamp(48px,7vw,96px) clamp(16px,4vw,64px); }
+.cierre .sigla { font-size:var(--t-sigla); line-height:.78; letter-spacing:-.055em;
+                 margin:0 0 .12em; font-weight:var(--peso-titulo); color:var(--amarillo); }
+.cierre p { max-width:70ch; margin:0 0 .6em; font-size:var(--t-s); }
+.credits { font-size:var(--t-s); max-width:none; }
+.credits a { color:var(--amarillo); }
+
+@media (max-width:759px) {
+  .enunciado, .listado { font-size:24px; line-height:1.2; }
+}
+
+/* ── Movimiento ───────────────────────────────────────────────────── */
+.linea { display:block; overflow:hidden; }
+.linea > span { display:block; transform:translateY(102%); }
+.sube { opacity:0; transform:translateY(22px); }
+.entra .sube { opacity:1; transform:none;
+               transition:opacity .62s cubic-bezier(.22,.8,.3,1), transform .62s cubic-bezier(.22,.8,.3,1); }
+.entra .sube:nth-child(2){transition-delay:.08s}
+.entra .sube:nth-child(3){transition-delay:.16s}
+.entra .sube:nth-child(4){transition-delay:.24s}
+.entra .sube:nth-child(5){transition-delay:.32s}
+.entra .sube:nth-child(6){transition-delay:.40s}
+.entra .sube:nth-child(7){transition-delay:.48s}
+a, .primaria, .pestana a { transition:transform .18s ease, background-color .18s ease; }
+.primaria:active { transform:translateY(1px); }
+.paso { transition:transform .3s cubic-bezier(.22,.8,.3,1); }
+.paso:hover { transform:translateX(10px); }
+@media (prefers-reduced-motion:reduce) {
+  .linea > span, .sube { transform:none !important; opacity:1 !important; transition:none !important; }
+  .paso:hover { transform:none; }
+}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <nav class="barra">
+    <span class="logo">Uniandes · IQYA-2031</span>
+    <span class="pestana">
+      <a href="#proyecto">El proyecto</a>
+      <a href="#proceso">La planta</a>
+      <a href="#material">Material</a>
+    </span>
+    <span class="accion"><a href="#material">Entrar</a></span>
+  </nav>
+
+  <div class="mosaico">
+    <div class="m-ancha"><img src="assets/hero-naranjas.jpg" alt="Lámina botánica de cuatro variedades de naranja amarga, grabada en 1801." width="1574" height="1686"></div>
+    <div class="t-amarillo m-alta"></div>
+    <div><img src="assets/hero-rama.jpg" alt="Rama de cítrico con dos frutos, acuarela del archivo Wellcome." width="1728" height="1774"></div>
+    <div class="t-navy"></div>
+    <div class="t-papel"></div>
+    <div><img src="assets/hero-limones.jpg" alt="Lámina botánica de limas y limones dulces, grabada en 1801." width="1574" height="1685"></div>
+    <div class="t-navy"></div>
+    <div class="m-ancha"><img src="assets/alambique.jpg" alt="Grabado en madera de un boticario sacando líquido de un alambique primitivo." width="1767" height="1379"></div>
+    <div class="t-amarillo"></div>
+  </div>
+
+  <div class="titular entra">
+    <p class="standfirst sube">Proyecto de Operaciones Unitarias. Dieciséis semanas, un equipo y una planta que tiene que funcionar en el papel.</p>
+    <h1 class="sube">Una planta de aceite esencial</h1>
+    <a class="primaria sube" href="#material">Entrar al material</a>
+  </div>
+</header>
+
+<main>
+
+<section class="campo amarillo" id="proyecto">
+  <p class="enunciado">La planta manda el temario</p>
+  <p>Aquí las operaciones unitarias no llegan en el orden del libro. Cada una entra la semana en que el equipo la necesita para cerrar un balance de su propia planta.</p>
+  <div class="cifras">
+    <div><b>16</b><span>Semanas, de la cáscara al aceite rectificado</span></div>
+    <div><b>6</b><span>Operaciones unitarias, cada una con su lectura y su taller</span></div>
+    <div><b>4</b><span>Bitácoras de cálculo por equipo</span></div>
+  </div>
+</section>
+
+<section class="campo nieve">
+  <div class="dupla">
+    <div>
+      <h2>Un residuo de juguera</h2>
+      <p>Cáscara de lima Tahití que sale de una juguera, con 70 a 75 % de humedad y entre 0,5 y 3 % de aceite esencial. El aceite es 90 a 95 % limoneno, y el limoneno hierve a 176 °C.</p>
+      <p>Pero arrastrado con vapor sale por debajo de 100 °C, porque el agua y el aceite son inmiscibles y suman presiones parciales. Esa diferencia, 176 contra 98, es el curso entero en una línea.</p>
+      <p>En equilibrio cada kilo de vapor debería arrastrar 650 gramos de aceite. En planta arrastra trece. Explicar ese factor de cincuenta es la primera bitácora.</p>
+    </div>
+    <img src="assets/lamina-blanco.jpg" alt="Lámina de Citrus madurensis con rama, hojas y frutos, de la Flora de Filipinas." width="1182" height="1319" loading="lazy">
+  </div>
+</section>
+
+<section class="campo navy" id="proceso">
+  <h2>La planta, de arriba abajo</h2>
+  <p>Siete etapas. Cada una es una operación del curso, y cada una entra la semana en que el equipo la necesita para cerrar balances.</p>
+  <div class="tren" style="margin-top:clamp(36px,5vw,64px)">
+    <div class="paso p1"><span class="n">Etapa 1</span><p class="q">Lavado y acondicionamiento</p><span class="op">Agitación</span></div>
+    <div class="paso p2"><span class="n">Etapa 2</span><p class="q">Desgarrado a 5 a 10 mm</p><span class="op">Manejo de sólidos</span></div>
+    <div class="paso p3"><span class="n">Etapa 3</span><p class="q">Arrastre de vapor</p><span class="op">Destilación</span></div>
+    <div class="paso p4"><span class="n">Etapa 4</span><p class="q">Condensación</p><span class="op">Intercambio de calor</span></div>
+    <div class="paso p5"><span class="n">Etapa 5</span><p class="q">Decantador florentino</p><span class="op">Separación mecánica</span></div>
+    <div class="paso p6"><span class="n">Etapa 6</span><p class="q">Winterización a 5 a 10 °C</p><span class="op">Filtración</span></div>
+    <div class="paso p7"><span class="n">Etapa 7</span><p class="q">Rectificación al vacío</p><span class="op">Destilación</span></div>
+  </div>
+</section>
+
+<section class="campo papel">
+  <h2>La clase es el taller</h2>
+  <p>La lectura llega antes. Usted la trabaja en su casa, contesta un quiz al entrar al salón, y lo que queda de la sesión se hace en parejas sobre el problema del día. El diseño de la planta avanza por fuera, en equipos de cuatro o cinco, y se sustenta en bitácoras.</p>
+  <p>Las parejas rotan taller a taller, y no se repite compañero.</p>
+  <div class="cifras" style="margin-top:clamp(32px,4vw,56px)">
+    <div><b>Lee</b><span>La lectura de la semana, antes de la clase</span></div>
+    <div><b>Responde</b><span>Un quiz corto al iniciar la sesión</span></div>
+    <div><b>Resuelve</b><span>El taller, en parejas, dentro de la clase</span></div>
+    <div><b>Diseña</b><span>La planta, en equipo, durante todo el semestre</span></div>
+  </div>
+</section>
+
+<section class="campo nieve" id="material">
+  <h2>Lo que va a usar</h2>
+  <p class="listado"><a href="#">Las operaciones unitarias</a>, <a href="#">Los diagramas de ingeniería</a>, <a href="#">Reducción de tamaño</a>, <a href="#">Equilibrio de inmiscibles y arrastre de vapor</a>, <a href="#">Transporte de líquidos</a>, <a href="#">Bombas industriales</a>, <a href="#">Fundamentos de agitación</a>, <a href="#">Mezclado y escalado</a>, <a href="#">Intercambiadores de calor</a>, <a href="#">Filtración industrial</a>, <a href="#">Destilación flash</a>, <a href="#">Destilación por lotes</a>, <a href="#">Destilación continua</a>, <a href="#">Azeótropos</a>, <a href="#">Comunicación visual de resultados</a>.</p>
+  <p class="conteo">Quince lecturas, veinte presentaciones y once talleres resueltos, cada uno con su versión en PDF. Los diagramas se entregan en PBD, PFD y P&amp;ID; la simulación, en ASPEN Plus.</p>
+</section>
+
+<section class="campo papel" id="evaluacion">
+  <h2>Cómo se califica</h2>
+  <div class="cifras">
+    <div><b>20 %</b><span>Talleres en parejas</span></div>
+    <div><b>20 %</b><span>Bitácoras de cálculo</span></div>
+    <div><b>20 %</b><span>Entrega final del proyecto</span></div>
+    <div><b>10 %</b><span>Quices de lectura previa</span></div>
+    <div><b>10 %</b><span>Sustentaciones de bitácora</span></div>
+    <div><b>10 %</b><span>Sesiones complementarias</span></div>
+    <div><b>10 %</b><span>Presentación final en pósters</span></div>
+  </div>
+</section>
+
+<section class="campo navy" id="equipo">
+  <h2>Quién dicta el curso</h2>
+  <div class="gente">
+    <div><b>Luis H. Reyes</b><span>Profesor</span><a href="mailto:lh.reyes@uniandes.edu.co">lh.reyes@uniandes.edu.co</a></div>
+    <div><b>Andrés F. Infante</b><span>Asistente</span><a href="mailto:af.infante@uniandes.edu.co">af.infante@uniandes.edu.co</a></div>
+    <div><b>Dana Catalina Mora</b><span>Monitora</span><a href="mailto:dc.morat1@uniandes.edu.co">dc.morat1@uniandes.edu.co</a></div>
+  </div>
+  <p style="margin-top:clamp(36px,5vw,64px)">Las sesiones magistrales y los talleres quedan en el cronograma del semestre, que se publica cuando Registro confirme el calendario de 2027-10.</p>
+</section>
+
+</main>
+
+<footer class="cierre">
+  <p class="sigla">POU</p>
+  <p>Proyecto de Operaciones Unitarias · IQYA-2031 · Universidad de los Andes · Departamento de Ingeniería Química y de Alimentos · Periodo 2027-10.</p>
+  <p class="credits">Imágenes: <a href="https://commons.wikimedia.org/wiki/File:Citrus_-_Citronier._(5_types_of_bitter_orange,_sweet_lemon,_and_sweet_lime)_(NYPL_b14485031-1110822).tiff">«Citrus, Citronier, cinco tipos de naranja amarga, limón dulce y lima dulce»</a>, digitalizada por la New York Public Library, <a href="https://creativecommons.org/publicdomain/mark/1.0/">dominio público</a>, vía Wikimedia Commons; <a href="https://commons.wikimedia.org/wiki/File:Citrus_aurantium_-_Citronier_oranger._(Bitter_orange)_(NYPL_b14485031-1110829).tiff">«Citrus aurantium, Citronier oranger»</a>, digitalizada por la New York Public Library, <a href="https://creativecommons.org/publicdomain/mark/1.0/">dominio público</a>, vía Wikimedia Commons; <a href="https://commons.wikimedia.org/wiki/File:An_apothecary_drawing_liquid_from_a_primitive_distillation_m_Wellcome_V0010767.jpg">«Un boticario sacando líquido de un alambique primitivo»</a>, <a href="https://creativecommons.org/licenses/by/4.0">CC BY 4.0</a>, vía Wikimedia Commons; <a href="https://commons.wikimedia.org/wiki/File:Yuzu_orange_plant_(Citrus_species);_branch_with_two_fruit._Wellcome_V0043738.jpg">«Rama de cítrico con dos frutos»</a>, <a href="https://creativecommons.org/licenses/by/4.0">CC BY 4.0</a>, vía Wikimedia Commons; <a href="https://commons.wikimedia.org/wiki/File:Citrus_madurensis_Blanco1.185.jpg">«Citrus madurensis»</a> de Francisco Manuel Blanco, <a href="https://creativecommons.org/publicdomain/mark/1.0/">dominio público</a>, vía Wikimedia Commons.</p>
+</footer>
+
+<script>
+// Entrada por partes de cada sección. Sin script, todo queda visible:
+// la clase .entra solo añade la transición, nunca esconde contenido.
+(function () {
+  var bloques = document.querySelectorAll('.campo, .titular, .cierre, .dupla, .tren');
+  bloques.forEach(function (b) {
+    Array.prototype.forEach.call(b.children, function (h) { h.classList.add('sube'); });
+  });
+  if (!('IntersectionObserver' in window)) {
+    bloques.forEach(function (b) { b.classList.add('entra'); });
+    return;
+  }
+  var obs = new IntersectionObserver(function (entradas) {
+    entradas.forEach(function (e) {
+      if (e.isIntersecting) { e.target.classList.add('entra'); obs.unobserve(e.target); }
+    });
+  }, { rootMargin: '0px 0px -12% 0px', threshold: 0.08 });
+  bloques.forEach(function (b) { obs.observe(b); });
+})();
+</script>
+</body>
+</html>

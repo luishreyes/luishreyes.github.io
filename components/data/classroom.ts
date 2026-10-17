@@ -328,6 +328,7 @@ export interface Course {
 
 import { pouCourse } from './classroom/pou';
 import { pou202620Course } from './classroom/pou-2026-20';
+import { pou202710Course } from './classroom/pou-2027-10';
 import { narrativas202620Course } from './classroom/narrativas-2026-20';
 import { seminario202620Course } from './classroom/seminario-2026-20';
 import { spdpCourse } from './classroom/spdp';
@@ -335,6 +336,7 @@ import { dpro4300Course } from './classroom/dpro-4300';
 import { eduProCourse } from './classroom/edu-pro';
 
 export const classroomData: Course[] = [
+  pou202710Course,
   pou202620Course,
   narrativas202620Course,
   seminario202620Course,
