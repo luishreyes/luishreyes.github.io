@@ -37,6 +37,15 @@ export const pou202710Course: Course = {
 
   bannerUrl: '/classroom/iqya-2031-2027-10/banner.jpg',
 
+  challenges: {
+    label: 'Hervir a 98 lo que hierve a 176',
+    term: '2027-10',
+    eyebrow: 'Reto del semestre',
+    description:
+      'Diseñe y dimensione una planta que extrae aceite esencial de la cáscara que deja una juguera. Abra la guía completa del proyecto.',
+    href: '/classroom/iqya-2031-2027-10/reto-aceite-esencial.html',
+  },
+
   project: {
     ...pou202620Course.project!,
     title: 'Planta de aceite esencial de cáscara de cítricos',
@@ -68,6 +77,19 @@ export const pou202710Course: Course = {
       category: 'guia',
       href: '/classroom/iqya-2031-2027-10/pagina.html',
     },
-    ...pou202620Course.readings,
+    ...pou202620Course.readings.map((r) =>
+      r.slug === 'reto-pectina'
+        ? {
+            ...r,
+            slug: 'reto-aceite-esencial',
+            title: 'Guía del reto: hervir a 98 lo que hierve a 176',
+            summary:
+              'La guía del proyecto semestral: diseñar y dimensionar una planta que extrae aceite esencial de la cáscara de cítricos que deja una juguera. Las ocho etapas a integrar, cómo elegir la materia prima, por qué el extractor pide cincuenta veces más vapor que el equilibrio, qué validar en ASPEN Plus y dónde no confiar, los entregables y la rúbrica de cada bitácora.',
+            date: '2026-10-17',
+            tags: ['proyecto', 'reto', 'aceite esencial', 'guía'],
+            href: '/classroom/iqya-2031-2027-10/reto-aceite-esencial.html',
+          }
+        : r,
+    ),
   ],
 };
