@@ -112,19 +112,17 @@ export const pou202710Course: Course = {
       ? { ...p, description: DESCRIPCIONES[p.id] ?? p.description }
       : { ...p, carpeta: 'iqya-2031-2026-20' },
   ),
-  // Los simuladores se siguen sirviendo desde 2026-20. El de molienda trae la
-  // cáscara cítrica seca de la planta de pectina: en 2027-10 deja de ser «la
-  // del proyecto», porque la cáscara de aceite esencial se desgarra húmeda.
-  simulations: (pou202620Course.simulations ?? []).map((sim) => ({
-    ...sim,
-    carpeta: 'iqya-2031-2026-20',
-    description:
-      sim.id === 'explorador-molienda'
-        ? sim.description
-            .replace('Seleccione el equipo de reducción de tamaño del proyecto', 'Seleccione un equipo de reducción de tamaño')
-            .replace('o la cáscara cítrica seca del proyecto, con Wi editable)', 'o cáscara cítrica seca, con Wi editable)')
-        : sim.description,
-  })),
+  // Los simuladores se sirven desde 2026-20, salvo los que ya tienen versión
+  // 2027-10. El de molienda trae la cáscara húmeda y el molino de cuchillas.
+  simulations: (pou202620Course.simulations ?? []).map((sim) =>
+    sim.id === 'explorador-molienda'
+      ? {
+          ...sim,
+          description:
+            'Seleccione un equipo de reducción de tamaño y véalo operar, con su animación de física de partículas. Arranca con la cáscara cítrica húmeda de la planta de aceite esencial en un molino de cuchillas: el rotor corta contra las cuchillas fijas de la carcasa y la criba fija el tamaño. Esa cáscara no tiene índice de Bond, así que su energía se fija por consumo específico, entre 5 y 20 kWh/t, y se pasa a sólido seco con su agua; si la pone en un molino de impacto o de compresión, el simulador la marca inviable. Con los demás materiales (caliza, carbón, maíz, azúcar, arcilla y cáscara seca) calcula la energía con la Ley de Bond y los factores de Rowland, compara Bond, Kick y Rittinger, lleva la energía hasta el motor estándar IEC y resuelve el balance térmico. La granulometría usa Rosin-Rammler con tamizado ASTM E11 o Tyler y una tamizadora animada.',
+        }
+      : { ...sim, carpeta: 'iqya-2031-2026-20' },
+  ),
 
   // La metodología es la misma; solo cambia de qué planta se habla.
   methodology: {
