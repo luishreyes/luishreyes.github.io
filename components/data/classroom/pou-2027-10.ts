@@ -54,7 +54,7 @@ export const pou202710Course: Course = {
         'Qué se diseña este semestre, el tren de proceso de la planta de aceite esencial, cómo se trabaja en clase y cómo se califica.',
       date: '2026-10-17',
       category: 'guia',
-      href: '/classroom/iqya-2031-2027-10/index.html',
+      href: '/classroom/iqya-2031-2027-10/pagina.html',
     },
   ],
   presentations: [],
