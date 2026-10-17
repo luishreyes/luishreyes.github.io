@@ -571,7 +571,7 @@
         position: static !important;
         overflow-y: auto;
         height: auto;
-        background: #f2f2f2;
+        background: #FFFFFF;
       }
       .stage {
         position: static !important;
@@ -594,9 +594,10 @@
         visibility: visible !important;
         pointer-events: auto !important;
         overflow: visible !important;
-        box-shadow: 0 2px 12px rgba(0,0,0,.10) !important;
-        border-radius: 6px !important;
-        margin-bottom: 12px !important;
+        /* Sin tarjetas: las diapositivas se separan por el tono de su fondo. */
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        margin-bottom: 0 !important;
       }
       .rail, .rail-resize { display: none !important; }
       .overlay { display: none !important; }
@@ -940,10 +941,9 @@
       const pdfBtn = overlay.querySelector('.pdf');
       if (pdfBtn) pdfBtn.addEventListener('click', () => {
         // Si el deck declara un PDF de documento ya generado, se descarga ese.
-        // Depender de window.print() obliga al usuario a acertar con el tamaño
-        // de hoja y a encender «Gráficos de fondo», que viene apagado: sin eso
-        // las diapositivas oscuras salen en blanco. El archivo generado no
-        // tiene ese problema y además trae expandido lo interactivo.
+        // window.print() depende de que el usuario acierte con el tamaño de
+        // hoja y encienda «Gráficos de fondo», que viene apagado: sin eso las
+        // diapositivas oscuras salen en blanco.
         const doc = this.getAttribute('data-doc-pdf');
         if (doc) {
           const a = document.createElement('a');
