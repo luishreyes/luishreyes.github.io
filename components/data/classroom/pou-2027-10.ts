@@ -50,13 +50,39 @@ export const pou202710Course: Course = {
     ...pou202620Course.project!,
     title: 'Planta de aceite esencial de cáscara de cítricos',
     overview:
-      'Diseño integral de una planta que toma la cáscara que deja una juguera, con 70 a 75 % de humedad y entre 0,5 y 3 % de aceite esencial en base húmeda, y la lleva hasta aceite rectificado. El tren tiene siete etapas: lavado y acondicionamiento, desgarrado a 5 a 10 mm, arrastre de vapor, condensación, decantador florentino, winterización a 5 a 10 °C y rectificación al vacío entre 10 y 20 mbar. La decisión que se toma en el desgarrado reaparece en el rendimiento del arrastre, y la pureza que se le exija a la columna es una decisión económica, no un número dado.',
+      'Diseño integral de una planta que toma la cáscara que deja una juguera, con 70 a 75 % de humedad y entre 0,5 y 3 % de aceite esencial en base húmeda, y la lleva hasta aceite rectificado. El proceso físico tiene siete pasos: lavado y acondicionamiento, desgarrado a 5 a 10 mm, arrastre de vapor, condensación, decantador florentino, winterización a 5 a 10 °C y rectificación al vacío entre 10 y 20 mbar. La decisión que se toma en el desgarrado reaparece en el rendimiento del arrastre, y la pureza que se le exija a la columna es una decisión económica, no un número dado.',
     rawMaterials: [
       { name: 'Cáscara de lima Tahití', outcome: 'Residuo de exportación colombiano · aceite destilado de grado comercial' },
       { name: 'Cáscara de naranja Valencia', outcome: 'Mayor volumen disponible · aceite con 90 a 95 % de limoneno' },
       { name: 'Cáscara de mandarina', outcome: 'Perfil de oxigenados distinto · afecta el corte de la columna' },
       { name: 'Cáscara de toronja', outcome: 'Menor rendimiento, mayor valor por nota aromática' },
     ],
+    // Formato «Etapa · Operación»: el landing de 2027-10 lo parte en dos.
+    scope: [
+      'Selección y caracterización de la materia prima · Materia prima',
+      'Diagramas del proceso: PBD, PFD y P&ID · Diagramas',
+      'Lavado, acondicionamiento y desgarrado · Sólidos y agitación',
+      'Arrastre de vapor: el extractor · Destilación',
+      'Transporte de fluidos y servicios · Fluidos',
+      'Condensación y decantador florentino · Intercambio de calor',
+      'Winterización y filtración de ceras · Filtración',
+      'Rectificación al vacío: la columna que hace el producto · Destilación',
+    ],
+  },
+
+  // La metodología es la misma; solo cambia de qué planta se habla.
+  methodology: {
+    ...pou202620Course.methodology,
+    summary:
+      'Aprendizaje orientado a proyectos y basado en problemas (PO-PBL), con aula invertida. Durante todo el semestre su equipo diseña una planta real: la que saca aceite esencial de la cáscara de cítricos que deja una juguera. El proyecto le da contexto a cada tema, y cada tema llega la semana en que su equipo lo va a usar.',
+    phases: pou202620Course.methodology.phases.map((f) => ({
+      ...f,
+      items: f.items.map((it) =>
+        it === 'Aplicación de los conceptos al diseño de la planta de pectina.'
+          ? 'Aplicación de los conceptos al diseño de la planta de aceite esencial.'
+          : it,
+      ),
+    })),
   },
 
   // El material todavía es el de pectina: se hereda entero del semestre

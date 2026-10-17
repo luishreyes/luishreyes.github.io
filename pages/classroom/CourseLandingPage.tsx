@@ -10,6 +10,7 @@ import { NotFoundInClassroom } from './NotFoundInClassroom';
 import { EduProLandingPage } from './EduProLandingPage';
 import { NarrativasLandingPage } from './NarrativasLandingPage';
 import { PouLandingPage } from './PouLandingPage';
+import { Pou2027LandingPage } from './Pou2027LandingPage';
 import { SpdpLandingPage } from './SpdpLandingPage';
 
 // Documento interno del curso: se puede abrir en el visor de la misma página.
@@ -33,8 +34,12 @@ export const CourseLandingPage: React.FC = () => {
     return <NarrativasLandingPage course={course} />;
   }
 
-  // Identidad gráfica propia de POU (IQYA-2031). Cubre todos los semestres
-  // del curso, no uno solo: cada semestre nuevo nace como clon del anterior.
+  // POU 2027-10 estrena la identidad institucional, con landing propio.
+  if (course.slug === 'iqya-2031-2027-10') {
+    return <Pou2027LandingPage course={course} />;
+  }
+
+  // Identidad «Industry» de POU (IQYA-2031) para los demás semestres.
   if (course.slug.startsWith('iqya-2031-')) {
     return <PouLandingPage course={course} />;
   }
