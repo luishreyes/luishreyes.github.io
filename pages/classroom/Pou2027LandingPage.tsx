@@ -5,14 +5,14 @@ import type { Course } from '../../components/data/classroom';
 import { CourseAccessGate } from '../../components/classroom/CourseAccessGate';
 import { useCourseRelease } from '../../components/classroom/courseRelease';
 import { TodayButton } from '../../components/classroom/TodayButton';
-import '../../components/classroom/pou-2027-theme.css';
+import { Pou27Barra, Pou27Mosaico } from '../../components/classroom/Pou27Cabecera';
 
 // Landing de POU 2027-10. Mismo contenido y misma función que la del semestre
 // anterior (ficha, accesos, reto, alcance, equipo, objetivos, evaluación,
 // metodología, IA y reglas), con la identidad institucional y la dirección
 // «colour chapters» de la skill de diseño. Cada bloque es un capítulo de color.
 
-const A = '/classroom/iqya-2031-2027-10/assets';
+const A = '/classroom/iqya-2031-2027-10/assets'; // la lámina del reto
 
 // Documento interno del curso: se abre en el visor de la misma página.
 const isInternalDoc = (slug: string, href?: string): boolean =>
@@ -142,30 +142,8 @@ export const Pou2027LandingPage: React.FC<{ course: Course }> = ({ course }) => 
         <div className="pou27" style={{ minHeight: '100vh', paddingTop: '64px' }}>
           {/* ── Barra y mosaico ─────────────────────────────────────── */}
           <header>
-            <div className="barra">
-              <Link className="marca" to="/classroom">
-                Aula · {course.code} · {course.term}
-              </Link>
-              <nav aria-label="Accesos del curso">
-                <Link to={`/classroom/${course.slug}/readings`}>Material</Link>
-                {(course.simulations?.length ?? 0) > 0 && (
-                  <Link to={`/classroom/${course.slug}/simulations`}>Simuladores</Link>
-                )}
-                {cronograma?.href && docLink(cronograma.href, 'Cronograma')}
-              </nav>
-            </div>
-
-            <div className="mosaico" aria-hidden="true">
-              <div className="m-ancha"><img src={`${A}/hero-naranjas.jpg`} alt="" width={1421} height={1124} /></div>
-              <div className="t-am m-alta" />
-              <div className="m-oculta"><img src={`${A}/hero-rama.jpg`} alt="" width={1459} height={1182} /></div>
-              <div className="t-nv m-oculta" />
-              <div className="t-pp m-oculta" />
-              <div className="m-oculta"><img src={`${A}/hero-limones.jpg`} alt="" width={1344} height={999} /></div>
-              <div className="t-nv m-oculta" />
-              <div className="m-ancha"><img src={`${A}/alambique.jpg`} alt="" width={1500} height={1171} /></div>
-              <div className="t-am m-oculta" />
-            </div>
+            <Pou27Barra course={course} enInicio />
+            <Pou27Mosaico course={course} />
 
             <div className="titular c">
               <h1>

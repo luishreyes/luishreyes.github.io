@@ -7,7 +7,7 @@ import { useCourseRelease, fmtReleaseDate } from '../../components/classroom/cou
 import { itemKey } from '../../components/classroom/publishState';
 import { usePublishControls } from '../../components/classroom/PouPublishControls';
 import '../../components/classroom/pou-theme.css';
-import '../../components/classroom/pou-2027-theme.css';
+import { Pou27Cabecera } from '../../components/classroom/Pou27Cabecera';
 
 // Material del curso de POU con la identidad «Industry»: cada semana es una
 // hoja numerada con sus marcas de registro. Todo arranca colapsado y se abre
@@ -131,6 +131,7 @@ export const PouMaterialPage: React.FC<{ course: Course }> = ({ course }) => {
         className={course.identidad === 'uniandes' ? 'pou-ds pou-uniandes' : 'pou-ds'}
         style={{ minHeight: '100vh', paddingTop: '64px' }}
       >
+        {course.identidad === 'uniandes' && <Pou27Cabecera course={course} activa="material" />}
         <header className="pou-hero" style={{ padding: '56px 0 40px' }}>
           <div className="pou-wrap">
             <p className="pou-eyebrow">
@@ -173,7 +174,7 @@ export const PouMaterialPage: React.FC<{ course: Course }> = ({ course }) => {
             <>
               {/* Material transversal */}
               {transversal.length > 0 && (
-                <details className="pou-sheet" open={abierta === 'transversal'}>
+                <details className="pou-sheet transversal" open={abierta === 'transversal'}>
                   <Marks />
                   <summary onClick={alternar('transversal')}>
                     <span className="wk" aria-hidden="true">00</span>
@@ -295,7 +296,9 @@ export const PouMaterialPage: React.FC<{ course: Course }> = ({ course }) => {
                 }
 
                 return (
-                  <details className="pou-sheet" key={w} open={abierta === `s${w}`}>
+                  <details
+                    className={`pou-sheet${w === enCurso && abierta_ ? ' en-curso' : ''}`}
+                    key={w} open={abierta === `s${w}`}>
                     <Marks />
                     <summary onClick={alternar(`s${w}`)}>{cabecera}</summary>
                     <div className="body">

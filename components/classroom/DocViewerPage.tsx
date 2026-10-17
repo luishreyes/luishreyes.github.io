@@ -5,6 +5,7 @@ import type { Course } from '../data/classroom';
 import { NotFoundInClassroom } from '../../pages/classroom/NotFoundInClassroom';
 import { CourseAccessGate } from './CourseAccessGate';
 import { useCourseRelease, fmtReleaseDate } from './courseRelease';
+import './pou-2027-theme.css';
 
 // Visor en la misma página para los documentos HTML autocontenidos del curso
 // (lecturas, guías y simulaciones). Antes cada uno abría en una pestaña nueva
@@ -65,6 +66,21 @@ const DocViewer: React.FC<{ course: Course; splat: string }> = ({ course, splat 
 
   return (
     <div className="fixed left-0 right-0 bottom-0 top-16 flex flex-col bg-zinc-100">
+      {course.identidad === 'uniandes' ? (
+        // Curso con identidad institucional: la barra del visor es la del curso.
+        <div className="pou27 visor-barra">
+          <Link className="marca" to={`/classroom/${courseSlug}/readings`}>
+            <span aria-hidden="true">←</span> Material del curso
+          </Link>
+          <nav aria-label="Curso">
+            <Link to={`/classroom/${courseSlug}`}>Inicio del curso</Link>
+          </nav>
+          <span className="titulo" title={title}>{title}</span>
+          <a className="completa" href={src} target="_blank" rel="noopener noreferrer" title="Abrir en pantalla completa (pestaña nueva)">
+            Pantalla completa <span aria-hidden="true">↗</span>
+          </a>
+        </div>
+      ) : (
       <div className="flex-shrink-0 h-12 flex items-center gap-3 px-3 sm:px-5 border-b border-zinc-200 bg-white">
         <Link
           to={`/classroom/${courseSlug}/readings`}
@@ -92,6 +108,7 @@ const DocViewer: React.FC<{ course: Course; splat: string }> = ({ course, splat 
           Pantalla completa <span aria-hidden="true">↗</span>
         </a>
       </div>
+      )}
       <iframe src={src} title={title} className="flex-1 w-full border-0 bg-white" />
     </div>
   );
