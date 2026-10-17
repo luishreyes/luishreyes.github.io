@@ -29,6 +29,7 @@ export const pou202710Course: Course = {
   // `staffAccessCode`, el mismo del semestre anterior. Un estudiante que
   // llegue a la tarjeta ve que el semestre se está armando y no pasa.
   staffOnlyAccess: true,
+  identidad: 'uniandes',
 
   tagline:
     'Diseñe una planta de aceite esencial a partir de cáscara de cítricos',

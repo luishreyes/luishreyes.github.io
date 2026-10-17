@@ -192,6 +192,12 @@ export interface Course {
    */
   staffOnlyAccess?: boolean;
   /**
+   * Identidad gráfica del curso. `'uniandes'` aplica la identidad
+   * institucional (amarillo, azul noche, oliva y Dax) a las páginas propias
+   * del curso. Sin definir, cada curso usa la suya de siempre.
+   */
+  identidad?: 'uniandes';
+  /**
    * Entrega gradual del material. Si es `true`, quien entra con `accessCode`
    * (los estudiantes) solo ve el material de las semanas ya transcurridas y de
    * la semana en curso; las semanas futuras aparecen listadas pero cerradas.

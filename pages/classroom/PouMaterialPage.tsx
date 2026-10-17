@@ -7,6 +7,7 @@ import { useCourseRelease, fmtReleaseDate } from '../../components/classroom/cou
 import { itemKey } from '../../components/classroom/publishState';
 import { usePublishControls } from '../../components/classroom/PouPublishControls';
 import '../../components/classroom/pou-theme.css';
+import '../../components/classroom/pou-2027-theme.css';
 
 // Material del curso de POU con la identidad «Industry»: cada semana es una
 // hoja numerada con sus marcas de registro. Todo arranca colapsado y se abre
@@ -127,7 +128,7 @@ export const PouMaterialPage: React.FC<{ course: Course }> = ({ course }) => {
           animate: { opacity: 1, y: 0 },
           transition: { duration: 0.35 },
         }}
-        className="pou-ds"
+        className={course.identidad === 'uniandes' ? 'pou-ds pou-uniandes' : 'pou-ds'}
         style={{ minHeight: '100vh', paddingTop: '64px' }}
       >
         <header className="pou-hero" style={{ padding: '56px 0 40px' }}>
