@@ -7,13 +7,13 @@ import { pou202620Course } from './pou-2026-20';
 // recuperaba el solvente. Aquí la destilación hace el producto dos veces:
 // el arrastre de vapor lo extrae y la rectificación al vacío lo especifica.
 //
-// CURSO OCULTO. `hidden: true` lo saca del índice del aula: no aparece
-// listado para estudiantes y solo se entra por URL directa con el código.
-// Es una vista previa para el equipo docente mientras se arma el semestre.
+// SOLO EQUIPO DOCENTE. La tarjeta aparece en el índice del aula, pero la reja
+// (`staffOnlyAccess`) tiene una sola puerta, la de profesor. Es una vista
+// previa mientras se arma el semestre.
 //
 // PENDIENTE antes de abrirlo a estudiantes:
-//   · `modules`, `readings` y `presentations` todavía describen el proyecto
-//     de pectina, heredados de 2026-20. Hay que reescribirlos.
+//   · `modules`, `presentations` y casi todo `readings` todavía son los de
+//     pectina, heredados de 2026-20. Ya es propio de 2027-10: el reto.
 //   · `schedule` y `cronograma` esperan el calendario oficial de 2027-10.
 //   · Falta el banner propio del semestre.
 export const pou202710Course: Course = {
