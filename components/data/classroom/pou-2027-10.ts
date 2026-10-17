@@ -27,10 +27,15 @@ const LECTURAS_PROPIAS = new Set([
   'lectura-01-operaciones-unitarias',
   'lectura-02-diagramas-ingenieria', 'taller-01-analisis-de-pfd',
   'lectura-03-reduccion-tamano', 'taller-02-analisis-granulometrico',
+  // Material permanente
+  'programa-del-curso', 'bitacoras-de-calculo', 'informe-final',
+  'trabajo-en-equipo', 'contrato-de-equipo', 'busqueda-bibliografica',
 ]);
 
 // Resúmenes de lecturas y talleres que cambiaron de caso para aceite esencial.
 const RESUMENES: Record<string, string> = {
+  'programa-del-curso':
+    'El programa completo de IQYA-2031 para 2027-10: horarios y equipo, descripción y metodología (PO-PBL y aula invertida), el reto de la planta de aceite esencial, resultados ABET, contenido por módulo, distribución de la nota, entregas por semana, escala AIAS de uso de IA y políticas del curso.',
   'taller-02-analisis-granulometrico':
     'Se resuelve en un cuaderno de Google Colab, que se abre desde la página con un clic. Tres casos de la planta: la cáscara que sale del desgarrador, que se juzga contra tres criterios del extractor; dos equipos de desgarrado que compiten por preparar la carga y donde ninguno domina al otro; y una carta de control del D50 con las muestras de una semana. Incluye el ajuste de los tres modelos clásicos de distribución, log-normal, Rosin-Rammler y Gates-Gaudin-Schuhmann, y cinco preguntas de análisis con sustento bibliográfico en formato IEEE. En parejas, con pareja distinta a la del Taller 1.',
 };
