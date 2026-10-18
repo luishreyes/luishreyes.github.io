@@ -1,9 +1,4 @@
 export const nav = {
-  'nav.principles':        { en: 'Guiding Principles',      es: 'Principios Rectores' },
-  'nav.principles.teaching': { en: 'Teaching Purpose',      es: 'Propósito Docente' },
-  'nav.principles.research': { en: 'Research Purpose',      es: 'Propósito Investigador' },
-  'nav.principles.service':  { en: 'Service Purpose',       es: 'Propósito de Servicio' },
-  'nav.principles.philosophy': { en: 'Teaching Philosophy', es: 'Filosofía de Enseñanza' },
   'nav.about':             { en: 'About',                   es: 'Perfil' },
   'nav.context':           { en: 'Context',                 es: 'Contexto' },
   'nav.next':              { en: 'What’s next',             es: 'Lo que sigue' },
@@ -15,7 +10,6 @@ export const nav = {
   'nav.research.program':  { en: 'Research program',        es: 'Programa de investigación' },
   'nav.research.products': { en: 'Products',                es: 'Productos' },
   'nav.research.grants':   { en: 'Projects',                es: 'Proyectos' },
-  'nav.research.students': { en: 'Grad Students',           es: 'Estudiantes de Posgrado' },
   'nav.teaching':          { en: 'Teaching',                es: 'Docencia' },
   'nav.teaching.overview': { en: 'Overview',                es: 'Visión general' },
   'nav.teaching.courses':  { en: 'Courses taught',          es: 'Cursos impartidos' },

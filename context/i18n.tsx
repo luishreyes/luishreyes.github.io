@@ -5,7 +5,6 @@ import { research } from './strings/research';
 import { teaching } from './strings/teaching';
 import { recognition } from './strings/recognition';
 import { service } from './strings/service';
-import { future } from './strings/future';
 import { principles } from './strings/principles';
 import { classroom } from './strings/classroom';
 import { contextChapter } from './strings/context';
@@ -27,7 +26,6 @@ const ui = {
   ...teaching,
   ...recognition,
   ...service,
-  ...future,
   ...principles,
   ...classroom,
   ...contextChapter,
