@@ -235,9 +235,9 @@ export const ProductsPage = () => {
           {/* La foto acompaña las herramientas en pantallas grandes; en el teléfono la lista va primero. */}
           <figure className="hidden lg:block">
             <div className="overflow-hidden aspect-[4/3]">
-              <img src={fotos.acofiPonencia.src} alt={localize(fotos.acofiPonencia.alt, lang)} className="a-foto a-bn" style={{ objectPosition: '62% center' }} />
+              <img src={fotos.acofi.src} alt={localize(fotos.acofi.alt, lang)} className="a-foto a-bn" style={{ objectPosition: fotos.acofi.foco }} />
             </div>
-            <figcaption className="a-pie">{localize(fotos.acofiPonencia.alt, lang)}.</figcaption>
+            <figcaption className="a-pie">{localize(fotos.acofi.alt, lang)}.</figcaption>
           </figure>
         </div>
       </section>

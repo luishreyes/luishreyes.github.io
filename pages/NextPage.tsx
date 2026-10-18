@@ -120,7 +120,7 @@ export const NextPage: React.FC = () => {
           <Sube><Cabecera titulo={t('next.with.title')} /></Sube>
           <div className="mt-12 grid gap-12 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:items-start">
             <Sube><p className="a-texto">{t('next.with.p1')}</p></Sube>
-            <Sube delay={0.08}><Figura foto={fotos.aiche2025} pie={t('next.with.photo')} lang={lang} /></Sube>
+            <Sube delay={0.08}><Figura foto={fotos.acofi} pie={t('next.with.photo')} lang={lang} /></Sube>
           </div>
           <div className="mt-20 grid gap-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-start">
             <Sube><Figura foto={fotos.sesionOlga} pie={t('next.same.photo')} lang={lang} /></Sube>

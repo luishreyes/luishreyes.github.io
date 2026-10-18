@@ -62,7 +62,7 @@ export const fotos = {
   aiche2019: f('congresos/2019-aiche-annual-meeting.jpg', 'At the AIChE Annual Meeting, 2019', 'En el congreso anual de AIChE, 2019', '45% 45%'),
   aiche2025: f('congresos/2025-aiche-boston.jpg', 'The group at AIChE, Boston 2025', 'El grupo en AIChE, Boston 2025', '45% 40%'),
   boom: f('congresos/boom-estudiantes.jpg', 'Students of the group at the Bogotá Microbial Meeting (BOOM)', 'Estudiantes del grupo en el Bogotá Microbial Meeting (BOOM)', '50% 35%'),
-  acofi: f('congresos/2025-acofi.jpg', 'At the ACOFI engineering education meeting, 2025', 'En el encuentro de educación en ingeniería de ACOFI, 2025', '50% 35%'),
+  acofi: f('congresos/2025-acofi.jpg', 'At the ACOFI engineering education meeting, 2025: Gabriela Meléndez Plata, Martha Lizeth Castellanos Ordóñez, Luis H. Reyes, Juan Carlos Cruz and Natalia Paola Esmeral Lascano', 'En el encuentro de educación en ingeniería de ACOFI, 2025: Gabriela Meléndez Plata, Martha Lizeth Castellanos Ordóñez, Luis H. Reyes, Juan Carlos Cruz y Natalia Paola Esmeral Lascano', '50% 30%'),
   acofiGabriela: f('congresos/2025-acofi-presentacion-gabriela-martha.jpg', 'Gabriela Meléndez presents bacterial growth results at ACOFI, 2025', 'Gabriela Meléndez presenta resultados de crecimiento bacteriano en ACOFI, 2025', '20% 50%'),
   acofiPonencia: f('congresos/2025-acofi-ponencia-educacion-aumentada-ia.jpg', 'His talk on AI-augmented engineering education at ACOFI, 2025', 'Su ponencia sobre educación en ingeniería aumentada por IA en ACOFI, 2025', '40% 45%'),
   palmaCharla: f('congresos/2025-congreso-palma-charla-ia.jpg', 'His talk on artificial intelligence at the oil palm growers’ congress, 2025', 'Su charla sobre inteligencia artificial en el congreso de palmicultores, 2025', '30% 50%'),
