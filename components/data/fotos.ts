@@ -47,7 +47,7 @@ export const fotos = {
   grabacionMooc: f('docencia/grabacion-mooc.jpg', 'Recording the introduction of the Coursera course on generative AI', 'La grabación de la introducción del curso de Coursera sobre IA generativa', '55% 12%'),
   postersPou: f('docencia/posters-pou.jpg', 'Poster session of the Unit Operations Project', 'Sesión de pósteres de Proyecto de Operaciones Unitarias', '50% 40%'),
   pouDiagrama: f('docencia/pou-actividad-diagrama-proceso.jpg', 'Students building a process diagram with sticky notes in the Unit Operations Project', 'Estudiantes arman un diagrama de proceso con notas adhesivas en Proyecto de Operaciones Unitarias', '35% 35%'),
-  pouNpsh: f('docencia/pou-portatiles-taller-npsh.jpg', 'Laptops on the system curve and available NPSH workshop', 'Portátiles en el taller de curva del sistema y NPSH disponible', '60% 60%'),
+  pouNpsh: f('docencia/pou-portatiles-taller-npsh.jpg', 'Laptops on the system curve and available NPSH workshop', 'Portátiles en el taller de curva del sistema y NPSH disponible', '50% 6%'),
   pouRetro: f('docencia/pou-retroalimentacion.jpg', 'A feedback session with a team in the Unit Operations Project', 'Una sesión de retroalimentación con un equipo de Proyecto de Operaciones Unitarias', '25% 45%'),
   salidaBbc: f('docencia/ou-salida-tecnica-bbc.jpg', 'Unit Operations technical visit to Bogotá Beer Company (BBC)', 'Salida técnica de Operaciones Unitarias a Bogotá Beer Company (BBC)', '50% 70%'),
   ptarSalitre: f('docencia/ptar-salitre-visita-estudiantes.jpg', 'With students of the chemical engineering student council at the Salitre wastewater plant', 'Con estudiantes del consejo estudiantil de ingeniería química en la PTAR Salitre', '50% 30%'),

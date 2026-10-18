@@ -37,7 +37,7 @@ export const contextChapter = {
   'context.stat.global':  { en: 'of 3,839 students in 16 countries used AI in their studies (2024)', es: 'de 3.839 estudiantes de 16 países usaba IA en sus estudios (2024)' },
   'context.stat.uk':      { en: 'of students in the United Kingdom used it in 2025; 66 % in 2024', es: 'de los estudiantes del Reino Unido la usaba en 2025; el 66 % en 2024' },
   'context.stat.us':      { en: 'of 95,513 students at 20 public research universities in the United States had used it in 2023-2024', es: 'de 95.513 estudiantes en 20 universidades públicas de investigación de Estados Unidos la había usado en 2023-2024' },
-  'context.students.photo': { en: 'Unit Operations Project, 2026: each student arrives with the tools they bring.', es: 'Proyecto de Operaciones Unitarias, 2026: cada estudiante llega con las herramientas que trae.' },
+  'context.students.photo': { en: 'The system curve and available NPSH workshop, Unit Operations Project, 2026.', es: 'El taller de curva del sistema y NPSH disponible, en Proyecto de Operaciones Unitarias, 2026.' },
 
   // La inteligencia artificial
   'context.ai.title':     { en: 'Artificial intelligence', es: 'La inteligencia artificial' },
