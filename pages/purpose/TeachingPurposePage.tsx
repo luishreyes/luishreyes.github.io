@@ -164,7 +164,7 @@ export const TeachingPurposePage: React.FC = () => {
         titulo={t('tch.pu.title')}
         entrada={<p>{t('tch.pu.lead')}</p>}
         accion={{ to: '/teaching/philosophy', label: t('tch.pu.cta') }}
-        foto={{ src: fotos.cervezaProteinas.src, alt: localize(fotos.cervezaProteinas.alt, lang) }}
+        foto={{ src: fotos.cervezaCierre.src, alt: localize(fotos.cervezaCierre.alt, lang), posicion: fotos.cervezaCierre.foco }}
       />
 
       {/* ── Por qué enseño y de dónde viene la manera de hacerlo ── */}
