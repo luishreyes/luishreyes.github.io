@@ -34,8 +34,8 @@ interface Caso {
   titulo: UIKey;
   parrafos: UIKey[];
   foto?: { f: Foto; pie?: UIKey; pos?: string };
-  /** Una segunda foto, debajo del texto. */
-  fotoTexto?: { f: Foto; pie?: UIKey; pos?: string };
+  /** Fotos de una misma escena debajo del texto, lado a lado y con un solo pie. */
+  fotosTexto?: { fotos: { f: Foto; pos?: string }[]; pie: UIKey };
   estudiantes: Estudiante[];
   publicaciones: Publicacion[];
   /** Título de la lista de publicaciones, cuando no es «Dónde se publicó». */
@@ -157,7 +157,10 @@ const CASOS: Caso[] = [
     titulo: 'rc.case.air.title',
     parrafos: ['rc.case.air.p1', 'rc.case.air.p2', 'rc.case.air.p3', 'rc.case.air.p4'],
     foto: { f: fotos.acofiGabriela, pie: 'rc.case.air.photo', pos: 'center 55%' },
-    fotoTexto: { f: fotos.paraisoVecinos, pie: 'rc.case.air.photo2', pos: 'center 40%' },
+    fotosTexto: {
+      fotos: [{ f: fotos.paraisoVecinos, pos: 'center 40%' }, { f: fotos.paraisoGabriela, pos: 'center 40%' }],
+      pie: 'rc.case.air.photo2',
+    },
     estudiantes: [
       { nombre: 'Gabriela Meléndez Plata', nivel: 'rc.lvl.ms.2026', foto: retrato('gabriela-melendez-plata') },
       { nombre: 'Jesús Rafael Acevedo Mastrogiacomo', nivel: 'rc.lvl.ms.co.2026', foto: retrato('jesus-rafael-acevedo') },
@@ -219,19 +222,23 @@ const BloqueCaso: React.FC<{ caso: Caso; fondo: string }> = ({ caso, fondo }) =>
                 </ul>
               </Sube>
             )}
-            {caso.fotoTexto && (
+            {caso.fotosTexto && (
               <Sube className="mt-12">
                 <figure>
-                  <div className="overflow-hidden aspect-[3/2]">
-                    <img
-                      src={caso.fotoTexto.f.src}
-                      alt={localize(caso.fotoTexto.f.alt, lang)}
-                      loading="lazy"
-                      className="a-foto a-bn"
-                      style={{ objectPosition: caso.fotoTexto.pos ?? 'center' }}
-                    />
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {caso.fotosTexto.fotos.map((x) => (
+                      <div key={x.f.src} className="overflow-hidden aspect-[3/2]">
+                        <img
+                          src={x.f.src}
+                          alt={localize(x.f.alt, lang)}
+                          loading="lazy"
+                          className="a-foto a-bn"
+                          style={{ objectPosition: x.pos ?? 'center' }}
+                        />
+                      </div>
+                    ))}
                   </div>
-                  <figcaption className="a-pie">{caso.fotoTexto.pie ? t(caso.fotoTexto.pie) : localize(caso.fotoTexto.f.alt, lang)}.</figcaption>
+                  <figcaption className="a-pie">{t(caso.fotosTexto.pie)}.</figcaption>
                 </figure>
               </Sube>
             )}
