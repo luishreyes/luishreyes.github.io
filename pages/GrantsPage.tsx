@@ -1,8 +1,9 @@
 import React, { useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { PageWrapper } from '../components/PageWrapper';
 import { EncabezadoPagina } from '../components/Apertura';
 import { Sube } from '../components/Sube';
-import { grantsData } from '../components/data/grants';
+import { grantsData, computeCreditsData, type Proyecto } from '../components/data/grants';
 import { useI18n, localize, fill } from '../context/i18n';
 import { fotos } from '../components/data/fotos';
 import type { Grant } from '../types';
@@ -11,9 +12,12 @@ type Orden = 'newest' | 'oldest';
 
 const fin = (g: Grant) => g.endYear ?? g.startYear;
 
+/** Investigador principal o coinvestigador principal, también «por la Universidad de los Andes». */
+const esPrincipal = (g: Grant) => /principal investigator/i.test(localize(g.role, 'en'));
+
 /** Registro de proyectos: los años en su columna, el título, quién lo financió y el papel
- *  del profesor. Los que siguen en curso van aparte de los concluidos. */
-const Registro: React.FC<{ grants: Grant[] }> = ({ grants }) => {
+ *  del profesor, con la clase del proyecto. Los que siguen en curso van aparte de los concluidos. */
+const Registro: React.FC<{ grants: (Grant | Proyecto)[] }> = ({ grants }) => {
   const { t, lang } = useI18n();
   return (
     <ul className="a-registro">
@@ -33,7 +37,12 @@ const Registro: React.FC<{ grants: Grant[] }> = ({ grants }) => {
           </div>
           <p className="text-tinta-800 lg:pt-[.3em]">
             {localize(g.role, lang)}
-            {g.area === 'education' && <span className="block a-s text-tinta-600 mt-1">{t('grants.area.education')}</span>}
+            {'kind' in g && (
+              <span className="block a-s text-tinta-600 mt-1">
+                {t(g.kind === 'research' ? 'rc.pr.kind.research' : 'rc.pr.kind.consultancy')}
+                {g.area === 'education' && ` · ${t('grants.area.education')}`}
+              </span>
+            )}
           </p>
         </Sube>
       ))}
@@ -45,7 +54,7 @@ export const GrantsPage = () => {
   const { t, lang } = useI18n();
   const [orden, setOrden] = useState<Orden>('newest');
 
-  const ordenar = (lista: Grant[]) =>
+  const ordenar = <T extends Grant>(lista: T[]) =>
     [...lista].sort((a, b) => {
       const d = fin(b) - fin(a) || b.startYear - a.startYear;
       return orden === 'newest' ? d : -d;
@@ -61,11 +70,20 @@ export const GrantsPage = () => {
     [orden],
   );
 
+  const intro = fill(t('rc.pr.intro'), {
+    n: grantsData.length,
+    first: primerAno,
+    research: grantsData.filter((g) => g.kind === 'research').length,
+    consult: grantsData.filter((g) => g.kind === 'consultancy').length,
+    pi: grantsData.filter(esPrincipal).length,
+    active: enCurso.length,
+  });
+
   return (
     <PageWrapper noPadding>
       <EncabezadoPagina
-        titulo={t('grants.title')}
-        entrada={<p className="[text-wrap:pretty]">{fill(t('grants.intro'), { n: grantsData.length, first: primerAno, active: enCurso.length })}</p>}
+        titulo={t('rc.pr.title')}
+        entrada={<p className="[text-wrap:pretty]">{intro}</p>}
         foto={{ src: fotos.enel.src, alt: localize(fotos.enel.alt, lang), posicion: 'center 40%' }}
       >
         <div className="mt-10">
@@ -87,11 +105,20 @@ export const GrantsPage = () => {
         </div>
       </section>
 
-      {/* ── Dónde se hace el trabajo: la planta, la industria, el laboratorio ── */}
+      {/* ── Tres etapas, y dónde se hace el trabajo: la planta, la industria, el laboratorio ── */}
       <section className="a-portada a-campo">
         <div className="a-c">
-          <Sube><h2 className="a-h3 mb-10">{t('grants.work.title')}.</h2></Sube>
-          <ul className="grid gap-x-6 gap-y-10 md:grid-cols-3">
+          <Sube><h2 className="a-h3">{t('rc.pr.stages.title')}.</h2></Sube>
+          <div className="mt-8 grid gap-x-16 gap-y-6 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]">
+            <Sube><p className="a-texto">{t('rc.pr.stages.p1')}</p></Sube>
+            <Sube delay={0.06}>
+              <p className="a-texto">{t('rc.pr.stages.p2')}</p>
+              <Link to="/research/program#el-colegio" className="a-enlace inline-block mt-4">
+                {t('rc.pr.stages.link')} <span aria-hidden="true">→</span>
+              </Link>
+            </Sube>
+          </div>
+          <ul className="mt-14 grid gap-x-6 gap-y-10 md:grid-cols-3">
             {[
               { f: fotos.ecofarm, pos: 'center 35%' },
               { f: fotos.laboratorio, pos: '55% center' },
@@ -114,6 +141,15 @@ export const GrantsPage = () => {
         <div className="a-c">
           <Sube><h2 className="a-h3 mb-8">{t('grants.done.title')}.</h2></Sube>
           <Registro grants={concluidos} />
+        </div>
+      </section>
+
+      {/* ── Créditos de cómputo: aparte, porque no fueron un proyecto ── */}
+      <section className="a-papel a-campo">
+        <div className="a-c">
+          <Sube><h2 className="a-h3">{t('rc.pr.credits.title')}.</h2></Sube>
+          <Sube delay={0.06}><p className="mt-6 mb-10 a-texto">{t('rc.pr.credits.text')}</p></Sube>
+          <Registro grants={computeCreditsData} />
         </div>
       </section>
     </PageWrapper>
