@@ -18,6 +18,7 @@ import {
 import { eduProCourse } from '../../components/data/classroom/edu-pro';
 import { useI18n, fill, localize, cardinal, type UIKey, type Lang } from '../../context/i18n';
 import { fotos, type Foto } from '../../components/data/fotos';
+import { logosOrganizaciones, type Logo } from '../../components/data/logos';
 
 /** Formación a escala: el curso de Coursera, los cursos abiertos de Educación Continua y la
  *  formación para organizaciones. Todas las cifras salen de components/data/edco.ts; ninguna
@@ -143,6 +144,12 @@ export const ContinuingEducationPage = () => {
   const horas = deRegistro.filter((c) => isTaught(c, hoy)).reduce((s, c) => s + (c.edcoRecord?.hours ?? 0), 0);
   const externas = organizaciones.filter((o) => o.external).length;
   const listaOrganizaciones = [...organizaciones].sort((a, b) => b.n - a.n || nombre(a.name).localeCompare(nombre(b.name), 'es'));
+  // El muro de logos va en el mismo orden que la tabla.
+  const orden = new Map(listaOrganizaciones.map((o, i) => [o.id, i]));
+  const muro = logosOrganizaciones
+    .filter((l) => orden.has(l.org))
+    .sort((a, b) => (orden.get(a.org) ?? 0) - (orden.get(b.org) ?? 0));
+  const altLogo = (l: Logo) => nombre(l.alt ?? edcoOrganizations[l.org].name);
 
   const stats = [
     ...(moocEs ? [{ label: t('training.stat.mooc'), value: moocEs.attendees, note: fill(t('training.stat.mooc.note'), { pct: pct(moocEs.completionRate) }) }] : []),
@@ -343,6 +350,26 @@ export const ContinuingEducationPage = () => {
               </figure>
             </Sube>
           </div>
+
+          {/* El muro de logos: el mismo peso visual para todos (área constante, con tope de ancho y alto). */}
+          <Sube className="mt-20">
+            <figure>
+              <ul className="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-7 border-t-2 border-tinta-900">
+                {muro.map((l) => {
+                  const area = 2600, maxW = 120, maxH = 52;
+                  let h = Math.sqrt(area / l.ratio), w = h * l.ratio;
+                  if (w > maxW) { w = maxW; h = w / l.ratio; }
+                  if (h > maxH) { h = maxH; w = h * l.ratio; }
+                  return (
+                    <li key={l.slug} className="flex items-center justify-center h-24 sm:h-28 px-3 border-b-2 border-papel-300">
+                      <img src={`/images/portafolio/logos/${l.slug}.svg`} alt={altLogo(l)} loading="lazy" className="block max-w-full h-auto opacity-80" style={{ width: Math.round(w) }} />
+                    </li>
+                  );
+                })}
+              </ul>
+              <figcaption className="a-pie">{fill(t('training.orgs.wall'), { year: desde })}</figcaption>
+            </figure>
+          </Sube>
         </div>
       </section>
 
