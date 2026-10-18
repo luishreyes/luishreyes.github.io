@@ -45,11 +45,11 @@ export const ServicePurposePage: React.FC = () => {
         <div className={`a-c ${PLIEGO}`}>
           <div className={MARGEN}>
             <Sube><h2 className="a-h3">{t('svc.purpose.h2')}</h2></Sube>
-            {/* Junto a lo que Uniandes le dio: el campus */}
+            {/* Junto a la conversación con un estudiante de colegio que decide si la ingeniería es para él */}
             <Sube delay={0.08}>
               <figure className="mt-10">
-                <img src="/images/site/campus-mision-historia-y-simbolos-0.webp" alt={t('purpose.service.photo.alt')} loading="lazy" className="a-bn w-full aspect-[4/3] object-cover" />
-                <figcaption className="a-pie">{t('purpose.service.photo.alt')}</figcaption>
+                <img src={fotos.scoutingBarranca.src} alt={localize(fotos.scoutingBarranca.alt, lang)} loading="lazy" className="a-bn w-full aspect-[4/3] object-cover" style={{ objectPosition: fotos.scoutingBarranca.foco }} />
+                <figcaption className="a-pie">{localize(fotos.scoutingBarranca.alt, lang)}.</figcaption>
               </figure>
             </Sube>
           </div>
