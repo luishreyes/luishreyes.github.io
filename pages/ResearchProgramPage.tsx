@@ -45,7 +45,7 @@ interface Caso {
 const doi = (d: string) => `https://doi.org/${d}`;
 const retrato = (slug: string) => `/images/students/${slug}.jpg`;
 
-/** Los cinco casos, con lo que se publicó de cada uno y sus estudiantes. Lo que sigue en
+/** Los seis casos, con lo que se publicó de cada uno y sus estudiantes. Lo que sigue en
  *  revisión se nombra sin sus cifras; de la serie con Enel, solo lo que es público. */
 const CASOS: Caso[] = [
   {
@@ -68,20 +68,44 @@ const CASOS: Caso[] = [
   {
     id: 'lisosomales',
     titulo: 'rc.case.lyso.title',
-    parrafos: ['rc.case.lyso.p1', 'rc.case.lyso.p2', 'rc.case.lyso.p3', 'rc.case.lyso.p4'],
+    parrafos: ['rc.case.lyso.p1', 'rc.case.lyso.p2', 'rc.case.lyso.p3'],
     foto: { f: fotos.academiaMedicina, pie: 'rc.case.lyso.photo', pos: 'center 40%' },
     estudiantes: [
       { nombre: 'Andrés Felipe Leal', nivel: 'rc.lvl.phd.co', foto: retrato('andres-felipe-leal') },
-      { nombre: 'Julian Daniel Torres Vanegas', nivel: 'rc.lvl.phd', foto: retrato('julian-daniel-torres-vanegas') },
       { nombre: 'Carlos Manuel Ramírez Acosta', nivel: 'rc.lvl.ms', foto: retrato('carlos-manuel-ramirez-acosta') },
       { nombre: 'Carlos Emilio Torres Garay', nivel: 'rc.lvl.ms.co', foto: retrato('carlos-emilio-torres-garay') },
-      { nombre: 'David Arango', nivel: 'rc.lvl.ms.co', foto: retrato('david-arango-saavedra') },
     ],
     publicaciones: [
-      { donde: 'Pharmaceutics', ano: 2021, href: doi('10.3390/pharmaceutics13030428') },
+      { donde: 'Journal of Molecular Medicine', ano: 2020, href: doi('10.1007/s00109-020-01935-6') },
+      { donde: 'Pharmaceutics', ano: 2022, href: doi('10.3390/pharmaceutics14020315') },
       { donde: 'Scientific Reports', ano: 2022, href: doi('10.1038/s41598-022-19407-x') },
       { donde: 'International Journal of Molecular Sciences', ano: 2022, href: doi('10.3390/ijms231810672') },
-      { donde: 'Frontiers in Bioengineering and Biotechnology', ano: 2024, href: doi('10.3389/fbioe.2024.1420183') },
+    ],
+    ods: [3, 9],
+  },
+  {
+    id: 'nanoparticulas',
+    titulo: 'rc.case.nano.title',
+    parrafos: ['rc.case.nano.p1', 'rc.case.nano.p2', 'rc.case.nano.p3', 'rc.case.nano.p4'],
+    foto: { f: fotos.laboratorio, pos: '40% 35%' },
+    estudiantes: [
+      { nombre: 'Julian Daniel Torres Vanegas', nivel: 'rc.lvl.phd', foto: retrato('julian-daniel-torres-vanegas') },
+      { nombre: 'Erika Alejandra Díaz Ramírez', nivel: 'rc.lvl.ms.co', foto: retrato('erika-alejandra-diaz-ramirez') },
+      { nombre: 'David Arango', nivel: 'rc.lvl.ms.co', foto: retrato('david-arango-saavedra') },
+      { nombre: 'Laura Tatiana Salgado', nivel: 'rc.lvl.ms.co', foto: retrato('laura-tatiana-salgado') },
+      { nombre: 'Cristian F. Rodríguez', nivel: 'rc.lvl.ms.co', foto: retrato('cristian-f-rodriguez') },
+    ],
+    publicaciones: [
+      { donde: 'Pharmaceutics', ano: 2020, href: doi('10.3390/pharmaceutics12060561') },
+      { donde: 'Pharmaceutics', ano: 2021, href: doi('10.3390/pharmaceutics13030428') },
+      { donde: 'Frontiers in Chemistry', ano: 2022, href: doi('10.3389/fchem.2022.974218') },
+      { donde: 'Nanomaterials', ano: 2023, href: doi('10.3390/nano13111782') },
+      { donde: 'Nanoscale Advances (editorial)', ano: 2024, href: doi('10.1039/d4na90074j') },
+      { donde: 'Frontiers in Bioengineering and Biotechnology (Parkinson)', ano: 2024, href: doi('10.3389/fbioe.2024.1420183') },
+      { donde: 'ACS Omega', ano: 2024, href: doi('10.1021/acsomega.4c07415') },
+      { donde: 'Frontiers in Bioengineering and Biotechnology (LG11)', ano: 2024, href: doi('10.3389/fbioe.2024.1450694') },
+      { donde: 'Expert Opinion on Drug Delivery', ano: 2025, href: doi('10.1080/17425247.2025.2506829') },
+      { donde: 'Scientific Reports', ano: 2025, href: doi('10.1038/s41598-025-04495-2') },
       { donde: 'Nanocarriers for Nucleic Acids and Proteins, CRC Press', ano: 2025, href: doi('10.1201/9781003473183') },
     ],
     ods: [3, 9],
@@ -110,11 +134,12 @@ const CASOS: Caso[] = [
   {
     id: 'sonido',
     titulo: 'rc.case.sound.title',
-    parrafos: ['rc.case.sound.p1', 'rc.case.sound.p2', 'rc.case.sound.p3'],
+    parrafos: ['rc.case.sound.p1', 'rc.case.sound.p2', 'rc.case.sound.p3', 'rc.case.sound.p4'],
     foto: { f: fotos.gradoBrayan, pie: 'rc.case.sound.photo', pos: 'center 35%' },
     estudiantes: [
       { nombre: 'Brayan Rodríguez', nivel: 'rc.lvl.phd.felipe', foto: retrato('brayan-rodriguez') },
       { nombre: 'Martha Liliana Díaz-Bustamante', nivel: 'rc.lvl.phd.now', foto: '/images/testimonials/martha-liliana-diaz-bustamante.jpg' },
+      { nombre: 'Carlos Yesiel González Murcia', nivel: 'rc.lvl.phd.co.now' },
     ],
     publicaciones: [
       { donde: 'Applied Sciences', ano: 2020, href: doi('10.3390/app10249008') },
