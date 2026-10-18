@@ -1,107 +1,84 @@
-
-
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React from 'react';
+import { Link } from 'react-router-dom';
 import type { Committee } from '../types';
-import { useI18n, localize } from '../context/i18n';
+import { useI18n, localize, fill, type UIKey } from '../context/i18n';
+import { Sube } from './Sube';
 
-const ChevronIcon = ({ open }: { open: boolean }) => (
-    <motion.svg
-        xmlns="http://www.w3.org/2000/svg"
-        className="h-5 w-5 transition-transform"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        strokeWidth={2}
-        // FIX: Spread motion props to avoid TypeScript type errors.
-        {...{
-            animate: { rotate: open ? 180 : 0 },
-            transition: { duration: 0.3 },
-        }}
-    >
-        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-    </motion.svg>
-);
+const NIVEL: Record<NonNullable<Committee['level']>, UIKey> = {
+  National: 'committees.national',
+  University: 'committees.university',
+  Faculty: 'committees.faculty',
+  Department: 'committees.department',
+};
 
-export const CommitteeCard = ({ committee }: { committee: Committee }) => {
-    const { lang } = useI18n();
-    const [isExpanded, setIsExpanded] = useState(false);
-    const hasDetails = committee.description.length > 0;
-    const yearDisplay = committee.endYear ? `${committee.startYear} - ${committee.endYear}` : committee.startYear.toString();
-    const titleText = localize(committee.title, lang);
+/** Los años del cargo: uno solo si empezó y terminó el mismo año. */
+export const useAnios = () => {
+  const { t } = useI18n();
+  return (c: Pick<Committee, 'startYear' | 'endYear'>) => {
+    if (c.endYear === 'Present') return fill(t('committees.since'), { year: c.startYear });
+    if (!c.endYear || c.endYear === c.startYear) return String(c.startYear);
+    return `${c.startYear}–${c.endYear}`;
+  };
+};
 
-    const cardContent = (
-        <div className="flex justify-between items-start gap-4">
-            <div>
-                <h3 className="text-lg font-bold text-brand-dark">{titleText}</h3>
-                {committee.role && (
-                    <p className="text-sm font-semibold text-yellow-500 mt-1">{localize(committee.role, lang)}</p>
-                )}
-            </div>
-            <span className="flex-shrink-0 bg-amber-100 text-amber-800 text-xs font-semibold px-2.5 py-1 rounded-full mt-1">{yearDisplay}</span>
+/** Una fila del registro de cargos: años · comité · papel. Los vigentes muestran todo
+ *  lo que hacen; los anteriores guardan el detalle en un desplegable nativo. */
+export const CommitteeCard: React.FC<{
+  committee: Committee;
+  open?: boolean;
+  link?: { to: string; label: string };
+  /** Fotos del cargo, cuando las hay (el capítulo de AIChE, la Academia Joven). */
+  fotos?: { src: string; alt: string }[];
+}> = ({ committee, open = false, link, fotos = [] }) => {
+  const { t, lang } = useI18n();
+  const anios = useAnios();
+  const donde = [
+    committee.role ? localize(committee.role, lang) : null,
+    committee.level ? t(NIVEL[committee.level]) : null,
+  ].filter(Boolean).join(' · ');
+
+  const detalle = (
+    <>
+      {committee.description.map((p, i) => (
+        <p key={i} className="a-texto">{localize(p, lang)}</p>
+      ))}
+      {link && (
+        <p className="mt-4">
+          <Link to={link.to} className="a-enlace">{link.label} <span aria-hidden="true">→</span></Link>
+        </p>
+      )}
+    </>
+  );
+
+  return (
+    <Sube as="li">
+      <span className="cuando">{anios(committee)}</span>
+      {/* Abiertos, la foto va al lado del texto; compactos, en fila debajo, para no dejar un hueco. */}
+      <div className={fotos.length && open ? 'lg:grid lg:grid-cols-[minmax(0,1fr)_260px] lg:gap-12' : undefined}>
+        <div>
+          <p className="que">{localize(committee.title, lang)}</p>
+          {donde && <p className="donde">{donde}</p>}
+          {committee.description.length > 0 && (open ? (
+            // Lo vigente se lee en dos columnas a lo ancho cuando no hay foto al lado.
+            <div className={fotos.length ? 'detalle' : 'detalle lg:!max-w-none lg:columns-2 lg:gap-12 [&_p]:break-inside-avoid-column'}>{detalle}</div>
+          ) : (
+            <details className="group mt-3">
+              <summary className="inline-flex items-center gap-2 cursor-pointer list-none text-tinta-900 underline underline-offset-[3px] decoration-1 hover:bg-resaltador-suave [&::-webkit-details-marker]:hidden">
+                {t('committees.more')}
+                <span aria-hidden="true" className="inline-block transition-transform duration-200 group-open:rotate-90">→</span>
+              </summary>
+              <div className="mt-4 max-w-[64ch]">{detalle}</div>
+            </details>
+          ))}
         </div>
-    );
-
-    if (!hasDetails) {
-        return (
-            <div className="bg-white p-6 rounded-lg shadow-lg border border-yellow-400/40 w-full">
-                {cardContent}
-            </div>
-        );
-    }
-
-    return (
-        <div className="bg-white rounded-lg shadow-lg border border-yellow-400/40 w-full overflow-hidden">
-            <button
-                onClick={() => setIsExpanded(!isExpanded)}
-                className="w-full text-left p-6 hover:bg-zinc-50 transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400"
-                aria-expanded={isExpanded}
-                aria-controls={`committee-details-${titleText.replace(/\s/g, '')}`}
-            >
-                <div className="flex justify-between items-start gap-4">
-                    <div className="flex-grow">
-                        <h3 className="text-lg font-bold text-brand-dark">{titleText}</h3>
-                        {committee.role && (
-                            <p className="text-sm font-semibold text-yellow-500 mt-1">{localize(committee.role, lang)}</p>
-                        )}
-                    </div>
-                    <div className="flex-shrink-0 flex items-center gap-4">
-                         <span className="bg-amber-100 text-amber-800 text-xs font-semibold px-2.5 py-1 rounded-full mt-1">{yearDisplay}</span>
-                        <div className="flex items-center gap-1 text-sm font-medium text-brand-gray">
-                            <span className="hidden sm:inline">Details</span> 
-                            <ChevronIcon open={isExpanded} />
-                        </div>
-                    </div>
-                </div>
-            </button>
-            <AnimatePresence initial={false}>
-                {isExpanded && (
-                    <motion.section
-                        id={`committee-details-${titleText.replace(/\s/g, '')}`}
-                        key="content"
-                        // FIX: Spread motion props to avoid TypeScript type errors.
-                        {...{
-                            initial: "collapsed",
-                            animate: "open",
-                            exit: "collapsed",
-                            variants: {
-                                open: { opacity: 1, height: 'auto' },
-                                collapsed: { opacity: 0, height: 0 }
-                            },
-                            transition: { duration: 0.4, ease: 'easeInOut' },
-                        }}
-                        className="overflow-hidden"
-                    >
-                        <div className="px-6 pb-6 pt-4 border-t border-zinc-200">
-                            <div className="space-y-4 text-brand-gray text-base leading-relaxed">
-                                {committee.description.map((paragraph, index) => (
-                                    <p key={index}>{localize(paragraph, lang)}</p>
-                                ))}
-                            </div>
-                        </div>
-                    </motion.section>
-                )}
-            </AnimatePresence>
-        </div>
-    );
+        {fotos.length > 0 && (
+          <div className={open ? 'mt-6 lg:mt-1 grid grid-cols-2 lg:grid-cols-1 gap-3 max-w-[420px]' : 'mt-6 grid grid-cols-2 gap-3 sm:gap-4 max-w-[600px]'}>
+            {fotos.map((f) => (
+              <img key={f.src} src={f.src} alt={f.alt} loading="lazy" className="block w-full aspect-[3/2] object-cover" />
+            ))}
+          </div>
+        )}
+      </div>
+    </Sube>
+  );
 };

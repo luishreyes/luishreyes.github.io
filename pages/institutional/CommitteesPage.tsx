@@ -1,131 +1,82 @@
-
-
-
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { PageWrapper } from '../../components/PageWrapper';
-import { useI18n } from '../../context/i18n';
+import { EncabezadoPagina } from '../../components/Apertura';
+import { Sube } from '../../components/Sube';
 import { CommitteeCard } from '../../components/CommitteeCard';
+import { useI18n, fill, localize } from '../../context/i18n';
+import { fotos } from '../../components/data/fotos';
 import { committeesData, leadershipRolesData } from '../../components/data/institutional';
-// FIX: Removed 'Variants' from framer-motion import to resolve module export error.
-import { motion } from 'framer-motion';
 import type { Committee } from '../../types';
 
-const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-        opacity: 1,
-        transition: {
-            staggerChildren: 0.1,
-        },
-    },
-};
-
-const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-        opacity: 1,
-        y: 0,
-        transition: {
-            duration: 0.5,
-            // FIX: Added 'as const' to prevent TypeScript from widening the string literal type, which caused a type error.
-            ease: "easeOut" as const,
-        },
-    },
-};
+const ESTE_ANIO = new Date().getFullYear();
+const vigente = (c: Committee) => c.endYear === 'Present' || (typeof c.endYear === 'number' && c.endYear >= ESTE_ANIO);
+const fin = (c: Committee) => (c.endYear === 'Present' ? Infinity : c.endYear ?? c.startYear);
 
 export const CommitteesPage: React.FC = () => {
-    const { t } = useI18n();
+  const { t, lang } = useI18n();
 
-    // FIX: Changed component to React.FC to resolve TypeScript error with the 'key' prop.
-    const CommitteeSection: React.FC<{ title: string; committees: Committee[]; isLeadership?: boolean }> = ({ title, committees, isLeadership = false }) => {
-        if (committees.length === 0 && !isLeadership) return null;
-        return (
-            <div className="mb-12">
-                <h2 className="text-2xl font-semibold text-brand-dark mb-6 pb-2 border-b-2 border-yellow-400">{title}</h2>
-                <motion.div
-                    className="space-y-6"
-                    // FIX: Spread motion props to avoid TypeScript type errors.
-                    {...{
-                        variants: containerVariants,
-                        initial: "hidden",
-                        animate: "visible",
-                    }}
-                >
-                    {committees.map((committee, index) => (
-                        <motion.div key={index} {...{variants: itemVariants}}>
-                            <CommitteeCard committee={committee} />
-                        </motion.div>
-                    ))}
+  // La iniciativa de IA tiene su propia página; aquí queda en el registro, ya cerrada.
+  const iniciativa: Committee = {
+    title: { en: t('committees.ai.title'), es: t('committees.ai.title') },
+    role: { en: t('committees.ai.role'), es: t('committees.ai.role') },
+    startYear: 2024,
+    endYear: 2026,
+    level: 'Faculty',
+    description: [{ en: t('committees.ai.desc'), es: t('committees.ai.desc') }],
+  };
 
-                    {isLeadership && (
-                        <motion.div {...{variants: itemVariants}}>
-                            <div className="bg-white p-6 rounded-lg shadow-lg border border-zinc-200 w-full flex flex-col sm:flex-row items-center justify-between gap-4 transition-transform duration-300 hover:-translate-y-1">
-                                <div className="flex-grow text-center sm:text-left">
-                                    <h3 className="text-lg font-bold text-brand-dark">{t('committees.ai.title')}</h3>
-                                    <p className="text-sm font-semibold text-yellow-500 mt-1">{t('committees.ai.role')}</p>
-                                    <p className="mt-2 text-sm text-brand-gray">{t('committees.ai.desc')}</p>
-                                </div>
-                                <div className="flex-shrink-0">
-                                    <Link
-                                        to="/service/augmented-intelligence"
-                                        className="inline-block bg-yellow-400 text-brand-dark font-semibold px-6 py-2 rounded-lg shadow-md hover:bg-yellow-500 transition-colors duration-300 text-sm"
-                                    >
-                                        {t('committees.learnMore')}
-                                    </Link>
-                                </div>
-                            </div>
-                        </motion.div>
-                    )}
-                </motion.div>
-            </div>
-        );
-    };
+  const todos = [...leadershipRolesData, ...committeesData];
+  const actuales = todos.filter(vigente).sort((a, b) => b.startYear - a.startYear);
+  const anteriores = [...todos.filter((c) => !vigente(c)), iniciativa].sort(
+    (a, b) => fin(b) - fin(a) || b.startYear - a.startYear,
+  );
+  const primero = Math.min(...todos.map((c) => c.startYear));
 
-    const groupedCommittees = committeesData.reduce((acc, committee) => {
-        const level = committee.level || 'Other';
-        if (!acc[level]) {
-            acc[level] = [];
-        }
-        acc[level].push(committee);
-        return acc;
-    }, {} as Record<string, Committee[]>);
+  // Las fotos van con el cargo al que pertenecen, y solo con ese.
+  const foto = (f: { src: string; alt: { en: string; es: string } | string }) => ({ src: f.src, alt: localize(f.alt, lang) });
+  const fotosDe = (c: Committee) => {
+    const titulo = typeof c.title === 'string' ? c.title : c.title.en;
+    if (titulo.includes('Academia Joven')) return [foto(fotos.academiaJoven)];
+    if (titulo.includes('AIChE Student Chapter')) return [foto(fotos.fenomenosTransporte), foto(fotos.chemECar)];
+    return undefined;
+  };
 
-    const order: (Committee['level'])[] = ['National', 'University', 'Faculty', 'Department'];
+  return (
+    <PageWrapper noPadding>
+      <EncabezadoPagina
+        titulo={t('committees.title')}
+        entrada={<p>{fill(t('committees.sub'), { first: primero })}</p>}
+        foto={{ src: '/images/uniandes-bw.jpg', alt: t('service.img.building'), posicion: '62% 50%' }}
+      />
 
-    return (
-        <PageWrapper noPadding>
-            <div className="pt-16">
-                <div className="sticky top-16 bg-zinc-50/95 backdrop-blur-sm z-20 py-6 border-b border-zinc-200">
-                    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-brand-dark text-left">{t('committees.title')}</h1>
-                        <p className="mt-4 text-brand-gray leading-relaxed text-left">
-                            {t('committees.sub')}
-                        </p>
-                    </div>
-                </div>
+      {/* ── Lo vigente, abierto ── */}
+      <section className="a-hundido a-campo">
+        <div className="a-c">
+          <Sube><h2 className="a-h3">{t('committees.current')}</h2></Sube>
+          <ul className="a-registro !mt-8">
+            {actuales.map((c) => (
+              <CommitteeCard key={`${c.startYear}-${typeof c.title === 'string' ? c.title : c.title.en}`} committee={c} fotos={fotosDe(c)} open />
+            ))}
+          </ul>
+        </div>
+      </section>
 
-                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                    <div className="space-y-16">
-                        {/* Leadership Roles Section */}
-                        <CommitteeSection title={t('committees.leadership')} committees={leadershipRolesData} isLeadership />
-
-                        {/* Committee Service Section */}
-                        <div>
-                            <h2 className="text-3xl font-bold tracking-tight text-brand-dark text-left mb-10">{t('committees.committee')}</h2>
-                            {order.map(level => (
-                                level && groupedCommittees[level] && (
-                                    <CommitteeSection
-                                        key={level}
-                                        title={level === 'National' ? t('committees.national') : level === 'University' ? t('committees.university') : level === 'Faculty' ? t('committees.faculty') : t('committees.department')}
-                                        committees={groupedCommittees[level]}
-                                    />
-                                )
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </PageWrapper>
-    );
+      {/* ── Lo anterior, compacto ── */}
+      <section className="a-papel a-campo">
+        <div className="a-c">
+          <Sube><h2 className="a-h3">{t('committees.past')}</h2></Sube>
+          <ul className="a-registro !mt-8">
+            {anteriores.map((c) => (
+              <CommitteeCard
+                key={`${c.startYear}-${typeof c.title === 'string' ? c.title : c.title.en}`}
+                committee={c}
+                fotos={fotosDe(c)}
+                link={c === iniciativa ? { to: '/service/augmented-intelligence', label: t('committees.learnMore') } : undefined}
+              />
+            ))}
+          </ul>
+        </div>
+      </section>
+    </PageWrapper>
+  );
 };

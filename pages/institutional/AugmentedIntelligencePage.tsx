@@ -1,284 +1,249 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { PageWrapper } from '../../components/PageWrapper';
-// FIX: Removed 'Variants' from framer-motion import to resolve module export error.
-import { motion } from 'framer-motion';
-import { useI18n } from '../../context/i18n';
+import { EncabezadoPagina } from '../../components/Apertura';
+import { StatsSection } from '../../components/StatsSection';
+import { Sube } from '../../components/Sube';
+import { useI18n, localize, type UIKey } from '../../context/i18n';
+import { fotos } from '../../components/data/fotos';
 
-const cardVariants = {
-  offscreen: { y: 50, opacity: 0 },
-  onscreen: {
-    y: 0,
-    opacity: 1,
-    // FIX: Added 'as const' to prevent TypeScript from widening the string literal type, which caused a type error.
-    transition: { type: "spring" as const, bounce: 0.4, duration: 0.8 }
-  }
+const VIMEO_ID = '1111471808';
+
+/** El resaltador en la frase que manda: la primera del párrafo. */
+const conResaltado = (texto: string) => {
+  const corte = texto.indexOf('. ');
+  if (corte < 0) return texto;
+  return (
+    <>
+      <span className="a-resaltado">{texto.slice(0, corte + 1)}</span>
+      {texto.slice(corte + 1)}
+    </>
+  );
 };
 
-const timelineItemVariants = {
-  offscreen: { x: -30, opacity: 0 },
-  onscreen: {
-    x: 0,
-    opacity: 1,
-    transition: {
-      duration: 0.5, 
-      // FIX: Added 'as const' to prevent TypeScript from widening the string literal type, which caused a type error.
-      ease: 'easeOut' as const
-    }
-  }
-};
+// Las cifras de la primera convocatoria (informe de cierre de la iniciativa).
+const CATEGORIAS: { key: UIKey; n: number }[] = [
+  { key: 'ai.cat.optimization', n: 15 },
+  { key: 'ai.cat.learning', n: 11 },
+  { key: 'ai.cat.skills', n: 4 },
+];
 
-// FIX: Made children optional to fix TypeScript errors.
-const Section = ({ title, children, bg = 'bg-zinc-50' }: { title: string; children?: React.ReactNode; bg?: string }) => (
-  <motion.div 
-    // FIX: Spread motion props to avoid TypeScript type errors.
-    {...{
-        initial: "offscreen",
-        whileInView: "onscreen",
-        viewport: { once: true, amount: 0.1 },
-        variants: { onscreen: { transition: { staggerChildren: 0.2 } } },
-    }}
-    className={`py-16 ${bg} -mx-4 -mb-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 mt-16`}
-  >
-    <div className="max-w-4xl mx-auto">
-      <motion.h2 {...{variants: cardVariants}} className="text-3xl font-bold tracking-tight text-brand-dark text-left">{title}</motion.h2>
-      <div className="mt-12">{children}</div>
-    </div>
-  </motion.div>
-);
-
-const IconListItem = ({ icon, children }: { icon: React.ReactNode; children: React.ReactNode }) => (
-    <motion.li {...{variants: cardVariants}} className="flex items-start gap-4">
-        <div className="flex-shrink-0 mt-1 bg-yellow-400/20 p-2 rounded-full">
-            {icon}
-        </div>
-        <div>{children}</div>
-    </motion.li>
-);
-
-const CheckIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-    </svg>
-);
+const ETAPAS = [1, 2, 3] as const;
 
 export const AugmentedIntelligencePage: React.FC = () => {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
+
+  // El alcance va arriba, en el encabezado; el embudo de la convocatoria, en su sección.
+  const alcance = [
+    { label: t('ai.impact.users'), value: '~470' },
+    { label: t('ai.impact.interactions'), value: 10817 },
+  ];
+  const convocatoria = [
+    { label: t('ai.impact.projects'), value: 30 },
+    { label: t('ai.impact.selected'), value: 26 },
+  ];
+
+  const lista = 'mt-4 border-t-2 border-tinta-900';
+  const item = 'py-3.5 border-b-2 border-papel-300';
+
   return (
     <PageWrapper noPadding>
-      <div className="pt-16">
-        <div className="sticky top-16 bg-zinc-50/95 backdrop-blur-sm z-20 py-6 border-b border-zinc-200">
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-brand-dark text-left">{t('ai.title')}</h1>
-                <p className="mt-4 text-brand-gray leading-relaxed">
-                    {t('ai.sub')}
-                </p>
+      <EncabezadoPagina
+        titulo={t('ai.title')}
+        entrada={<p>{t('ai.sub')}</p>}
+        foto={{ src: fotos.acofiPonencia.src, alt: localize(fotos.acofiPonencia.alt, lang), posicion: '66% 50%' }}
+      >
+        {/* La prueba del proyecto, arriba y en tinta. */}
+        <Sube delay={0.2} className="mt-12">
+          <StatsSection stats={alcance} isLoading={false} />
+        </Sube>
+        <Sube delay={0.28} className="mt-12">
+          <a href={`https://vimeo.com/${VIMEO_ID}`} target="_blank" rel="noopener noreferrer" className="a-boton">
+            {t('ai.video.cta')} <span aria-hidden="true">↗</span>
+          </a>
+        </Sube>
+      </EncabezadoPagina>
+
+      {/* ── La prueba primero: lo que logró la primera convocatoria ── */}
+      <section className="a-hundido a-campo">
+        <div className="a-c">
+          <Sube><h2 className="a-h3">{t('ai.call.title')}</h2></Sube>
+          <div className="mt-8 grid gap-12 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:gap-16">
+            <div>
+              <Sube delay={0.06}><p className="a-texto font-semibold text-tinta-900">{t('ai.impact.departments')}</p></Sube>
+              <Sube delay={0.1}><p className="mt-6 a-texto">{conResaltado(t('ai.impact.limits'))}</p></Sube>
             </div>
+            <Sube delay={0.08}>
+              <div className="mb-12 [&_.a-cifras]:!grid-cols-2">
+                <StatsSection stats={convocatoria} isLoading={false} />
+              </div>
+              <table className="a-tabla">
+                <caption className="text-left font-semibold text-tinta-900 pb-3">{t('ai.categories')}</caption>
+                <thead>
+                  <tr>
+                    <th scope="col">{t('ai.categories.category')}</th>
+                    <th scope="col" className="num">{t('ai.categories.count')}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {CATEGORIAS.map((c) => (
+                    <tr key={c.key}>
+                      <td>{t(c.key)}</td>
+                      <td className="num">{c.n}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </Sube>
+          </div>
         </div>
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            {/* Executive Summary */}
-            <motion.div 
-                // FIX: Spread motion props to avoid TypeScript type errors.
-                {...{
-                    initial: { opacity: 0, y: 20 },
-                    animate: { opacity: 1, y: 0 },
-                    transition: { duration: 0.5, delay: 0.1 }
-                }}
-            >
-                <h2 className="text-2xl font-semibold tracking-tight text-brand-dark mt-8">{t('ai.transforming')}</h2>
-                <p className="mt-6 text-lg text-brand-gray leading-relaxed">
-                    {t('ai.summary.pre')}<strong>Augmented Intelligence Uniandes</strong>{t('ai.summary.post')}
-                </p>
-            </motion.div>
-            
-            <Section title={t('ai.myRole')} bg="bg-transparent">
-                 <motion.div 
-                    // FIX: Spread motion props to avoid TypeScript type errors.
-                    {...{
-                        initial: "offscreen",
-                        whileInView: "onscreen",
-                        viewport: { once: true, amount: 0.2 },
-                        variants: { onscreen: { transition: { staggerChildren: 0.1 } } },
-                    }}
-                    className="grid md:grid-cols-2 gap-12"
-                 >
-                    <motion.div {...{variants: cardVariants}}>
-                        <h3 className="text-2xl font-semibold text-brand-dark mb-4">{t('ai.leadership')}</h3>
-                        <ul className="space-y-3 text-brand-gray">
-                            <li><strong>{t('ai.lead.1.strong')}</strong>{t('ai.lead.1.text')}</li>
-                            <li><strong>{t('ai.lead.2.strong')}</strong>{t('ai.lead.2.text')}</li>
-                            <li><strong>{t('ai.lead.3.strong')}</strong>{t('ai.lead.3.text')}</li>
-                            <li><strong>{t('ai.lead.4.strong')}</strong>{t('ai.lead.4.text')}</li>
-                        </ul>
-                    </motion.div>
-                    <motion.div {...{variants: cardVariants}}>
-                        <h3 className="text-2xl font-semibold text-brand-dark mb-4">{t('ai.management')}</h3>
-                        <ul className="space-y-3 text-brand-gray">
-                            <li>{t('ai.mgmt.1')}</li>
-                            <li>{t('ai.mgmt.2')}</li>
-                            <li>{t('ai.mgmt.3')}</li>
-                        </ul>
-                    </motion.div>
-                 </motion.div>
-            </Section>
+      </section>
 
-            <Section title={t('ai.impact')}>
-                <motion.div {...{variants: cardVariants}}>
-                    <h3 className="text-2xl font-semibold text-brand-dark text-left mb-6">{t('ai.call.title')}</h3>
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 text-center">
-                        <div className="bg-white p-6 rounded-lg shadow-md border border-yellow-400/40">
-                            <p className="text-4xl font-bold text-yellow-400">30</p>
-                            <p className="text-brand-gray">{t('ai.impact.projects')}</p>
-                        </div>
-                        <div className="bg-white p-6 rounded-lg shadow-md border border-yellow-400/40">
-                            <p className="text-4xl font-bold text-yellow-400">26</p>
-                            <p className="text-brand-gray">{t('ai.impact.selected')}</p>
-                        </div>
-                        <div className="bg-white p-6 rounded-lg shadow-md border border-yellow-400/40">
-                            <p className="text-4xl font-bold text-yellow-400">~470</p>
-                            <p className="text-brand-gray">{t('ai.impact.users')}</p>
-                        </div>
-                        <div className="bg-white p-6 rounded-lg shadow-md border border-yellow-400/40">
-                            <p className="text-4xl font-bold text-yellow-400">10,817</p>
-                            <p className="text-brand-gray">{t('ai.impact.interactions')}</p>
-                        </div>
-                    </div>
-                    <p className="text-center mt-6 text-brand-gray">{t('ai.impact.all')} <strong>{t('ai.impact.all2')}</strong></p>
-                    <p className="text-left mt-6 text-brand-gray">{t('ai.impact.limits')}</p>
-                </motion.div>
-                
-                <motion.div {...{variants: cardVariants}} className="mt-12">
-                     <h3 className="text-2xl font-semibold text-brand-dark text-left mb-6">{t('ai.categories')}</h3>
-                     <div className="grid sm:grid-cols-3 gap-6 text-center">
-                        <div className="bg-white p-4 rounded-lg shadow-sm border border-yellow-400/40">
-                            <p className="font-bold text-brand-dark">{t('ai.cat.optimization')}</p>
-                            <p className="text-sm text-brand-gray">(15 {t('ai.cat.projects')})</p>
-                        </div>
-                        <div className="bg-white p-4 rounded-lg shadow-sm border border-yellow-400/40">
-                            <p className="font-bold text-brand-dark">{t('ai.cat.learning')}</p>
-                            <p className="text-sm text-brand-gray">(11 {t('ai.cat.projects')})</p>
-                        </div>
-                        <div className="bg-white p-4 rounded-lg shadow-sm border border-yellow-400/40">
-                           <p className="font-bold text-brand-dark">{t('ai.cat.skills')}</p>
-                           <p className="text-sm text-brand-gray">(4 {t('ai.cat.projects')})</p>
-                        </div>
-                     </div>
-                </motion.div>
-            </Section>
+      {/* ── El único video del sitio, grande ── */}
+      <section className="a-oscuro a-campo">
+        <div className="a-c grid gap-10 lg:gap-14 lg:grid-cols-[minmax(0,1.75fr)_minmax(0,1fr)] lg:items-end">
+          <Sube className="order-2 lg:order-1">
+            <div className="aspect-video bg-tinta-800">
+              <iframe
+                src={`https://player.vimeo.com/video/${VIMEO_ID}?title=0&byline=0&portrait=0`}
+                className="block w-full h-full"
+                allow="autoplay; fullscreen; picture-in-picture"
+                allowFullScreen
+                loading="lazy"
+                title={t('ai.video.title')}
+              />
+            </div>
+          </Sube>
+          <div className="order-1 lg:order-2">
+            <Sube><h2 className="a-h3">{t('ai.global')}</h2></Sube>
+            <Sube delay={0.06}><p className="mt-6">{t('ai.openai.text')}</p></Sube>
+            <Sube delay={0.1}>
+              <p className="mt-8 flex flex-wrap gap-x-8 gap-y-3">
+                <Link to="/recognition" className="a-enlace">{t('ai.recognition.link')} <span aria-hidden="true">→</span></Link>
+                <a href={`https://vimeo.com/${VIMEO_ID}`} target="_blank" rel="noopener noreferrer" className="a-enlace">
+                  {t('ai.video.cta')} <span aria-hidden="true">↗</span>
+                </a>
+              </p>
+            </Sube>
+          </div>
+        </div>
+      </section>
 
-            <Section title={t('ai.global')} bg="bg-transparent">
-                 <motion.div {...{variants: cardVariants}}>
-                    <div className="bg-white p-8 rounded-lg shadow-lg border border-yellow-400/40 flex flex-col items-start gap-6">
-                        <div className="flex items-center gap-4 w-full">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/OpenAI_Logo.svg/1200px-OpenAI_Logo.svg.png" alt="OpenAI Logo" className="h-12 w-auto object-contain flex-shrink-0" />
-                            <div className="flex-grow">
-                                <h3 className="text-xl font-semibold text-brand-dark">{t('ai.openai')}</h3>
-                            </div>
-                        </div>
-                        <p className="text-brand-gray">
-                            {t('ai.openai.text')}
-                        </p>
+      {/* ── Mi papel ── */}
+      <section className="a-papel a-campo">
+        <div className="a-c grid gap-12 lg:gap-16 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
+          <div>
+            <Sube><h2 className="a-h3">{t('ai.myRole')}</h2></Sube>
+            <Sube delay={0.06}>
+              <p className="mt-6 a-texto">
+                {t('ai.summary.pre')}<strong className="font-semibold text-tinta-900">Augmented Intelligence Uniandes</strong>{t('ai.summary.post')}
+              </p>
+            </Sube>
+            <div className="mt-12 grid gap-10 sm:grid-cols-2">
+              <Sube>
+                <h3 className="font-semibold text-tinta-900">{t('ai.leadership')}</h3>
+                <ul className={lista}>
+                  {([1, 2, 3, 4] as const).map((n) => (
+                    <li key={n} className={item}>
+                      <strong className="font-semibold text-tinta-900">{t(`ai.lead.${n}.strong` as UIKey)}</strong>
+                      {t(`ai.lead.${n}.text` as UIKey)}
+                    </li>
+                  ))}
+                </ul>
+              </Sube>
+              <Sube delay={0.08}>
+                <h3 className="font-semibold text-tinta-900">{t('ai.management')}</h3>
+                <ul className={lista}>
+                  {([1, 2, 3] as const).map((n) => (
+                    <li key={n} className={item}>{t(`ai.mgmt.${n}` as UIKey)}</li>
+                  ))}
+                </ul>
+              </Sube>
+            </div>
+          </div>
+          <Sube delay={0.12} className="lg:pt-2">
+            <figure>
+              <div className="overflow-hidden aspect-[4/3]">
+                <img
+                  src={fotos.palmaCharla.src}
+                  alt={localize(fotos.palmaCharla.alt, lang)}
+                  loading="lazy"
+                  className="a-foto"
+                  style={{ objectPosition: '17% 50%' }}
+                />
+              </div>
+              <figcaption className="a-pie">{localize(fotos.palmaCharla.alt, lang)}.</figcaption>
+            </figure>
+          </Sube>
+        </div>
+      </section>
 
-                        <div className="w-full aspect-video rounded-lg overflow-hidden mt-2 shadow-inner border border-zinc-200">
-                            <iframe
-                                src="https://player.vimeo.com/video/1111471808?title=0&byline=0&portrait=0"
-                                className="w-full h-full"
-                                frameBorder="0"
-                                allow="autoplay; fullscreen; picture-in-picture"
-                                allowFullScreen
-                                title="Engineering a better way to teach with generative AI"
-                            ></iframe>
-                        </div>
+      {/* ── El marco y sus principios ── */}
+      <section className="a-hundido a-campo">
+        <div className="a-c grid gap-14 lg:gap-20 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
+          <div>
+            <Sube><h2 className="a-h3">{t('ai.framework')}</h2></Sube>
+            <Sube delay={0.06}>
+              <blockquote className="a-cita mt-12">{t('ai.framework.quote')}</blockquote>
+              <p className="a-quien">{t('ai.framework.source')}</p>
+            </Sube>
+          </div>
+          <Sube delay={0.1} className="lg:pt-1">
+            <h3 className="font-semibold text-tinta-900">{t('ai.principles')}</h3>
+            <ul className={lista}>
+              {([1, 2, 3, 4] as const).map((n) => (
+                <li key={n} className={item}>
+                  <strong className="font-semibold text-tinta-900">{t(`ai.prin.${n}.strong` as UIKey)}</strong>
+                  {t(`ai.prin.${n}.text` as UIKey)}
+                </li>
+              ))}
+            </ul>
+          </Sube>
+        </div>
+      </section>
 
-                        <div className="mt-2 self-start">
-                            <Link
-                                to="/recognition"
-                                className="text-yellow-500 font-medium hover:underline hover:text-yellow-400 transition-colors"
-                            >
-                                {t('ai.recognition.link')}
-                            </Link>
-                        </div>
-                    </div>
-                </motion.div>
-            </Section>
-
-            <Section title={t('ai.pedagogical')} bg="bg-transparent">
-                 <motion.div {...{variants: cardVariants}}>
-                    <h3 className="text-2xl font-semibold text-brand-dark mb-4">{t('ai.framework')}</h3>
-                    <blockquote className="mt-4 p-6 bg-zinc-100 border-l-4 border-yellow-400 rounded-r-lg italic text-brand-dark text-lg">
-                        {t('ai.framework.quote')}
-                    </blockquote>
-                 </motion.div>
-                 <motion.div {...{variants: cardVariants}} className="mt-12">
-                     <h3 className="text-2xl font-semibold text-brand-dark mb-6">{t('ai.principles')}</h3>
-                     <ol className="space-y-3 text-brand-gray list-decimal list-inside">
-                        <li><strong>{t('ai.prin.1.strong')}</strong>{t('ai.prin.1.text')}</li>
-                        <li><strong>{t('ai.prin.2.strong')}</strong>{t('ai.prin.2.text')}</li>
-                        <li><strong>{t('ai.prin.3.strong')}</strong>{t('ai.prin.3.text')}</li>
-                        <li><strong>{t('ai.prin.4.strong')}</strong>{t('ai.prin.4.text')}</li>
-                     </ol>
-                 </motion.div>
-            </Section>
-
-            <Section title={t('ai.implementation')}>
-                 <motion.div 
-                    // FIX: Spread motion props to avoid TypeScript type errors.
-                    {...{
-                        initial: "offscreen",
-                        whileInView: "onscreen",
-                        viewport: { once: true, amount: 0.1 },
-                        variants: { onscreen: { transition: { staggerChildren: 0.2 } } },
-                    }}
-                    className="relative border-l-2 border-zinc-200"
-                 >
-                    <motion.div {...{variants: timelineItemVariants}} className="relative pl-8 pb-8">
-                        <div className="absolute left-0 top-1.5 w-4 h-4 bg-yellow-400 rounded-full -translate-x-1/2 border-4 border-white"></div>
-                        <p className="font-bold text-lg text-brand-dark">{t('ai.stage1.title')} <span className="text-sm font-normal text-brand-gray">{t('ai.stage1.date')}</span></p>
-                        <ul className="list-disc list-inside mt-2 text-brand-gray">
-                            <li>{t('ai.stage1.1')}</li>
-                            <li>{t('ai.stage1.2')}</li>
-                            <li>{t('ai.stage1.3')}</li>
-                        </ul>
-                    </motion.div>
-                    <motion.div {...{variants: timelineItemVariants}} className="relative pl-8 pb-8">
-                         <div className="absolute left-0 top-1.5 w-4 h-4 bg-yellow-400 rounded-full -translate-x-1/2 border-4 border-white"></div>
-                        <p className="font-bold text-lg text-brand-dark">{t('ai.stage2.title')} <span className="text-sm font-normal text-brand-gray">{t('ai.stage2.date')}</span></p>
-                        <ul className="list-disc list-inside mt-2 text-brand-gray">
-                            <li>{t('ai.stage2.1')}</li>
-                            <li>{t('ai.stage2.2')}</li>
-                            <li>{t('ai.stage2.3')}</li>
-                        </ul>
-                    </motion.div>
-                     <motion.div {...{variants: timelineItemVariants}} className="relative pl-8">
-                         <div className="absolute left-0 top-1.5 w-4 h-4 bg-yellow-400 rounded-full -translate-x-1/2 border-4 border-white"></div>
-                        <p className="font-bold text-lg text-brand-dark">{t('ai.stage3.title')} <span className="text-sm font-normal text-brand-gray">{t('ai.stage3.date')}</span></p>
-                         <ul className="list-disc list-inside mt-2 text-brand-gray">
-                            <li>{t('ai.stage3.1')}</li>
-                            <li>{t('ai.stage3.2')}</li>
-                            <li>{t('ai.stage3.3')}</li>
-                        </ul>
-                    </motion.div>
-                 </motion.div>
-            </Section>
-
-            {/* FIX: Completed the truncated Section component, added children to resolve the missing prop error, and added necessary closing tags. */}
-            <Section title={t('ai.projection')} bg="bg-zinc-50">
-                 <motion.div 
-                    {...{
-                        initial: "offscreen",
-                        whileInView: "onscreen",
-                        viewport: { once: true, amount: 0.1 },
-                        variants: cardVariants,
-                    }}
-                 >
-                    <h3 className="text-2xl font-semibold text-brand-dark mb-4">{t('ai.futureVision')}</h3>
-                    <p className="text-brand-gray leading-relaxed">
-                        {t('ai.futureVision.text')}
+      {/* ── Cómo corrió la convocatoria ── */}
+      <section className="a-papel a-campo">
+        <div className="a-c grid gap-12 lg:gap-16 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] lg:items-start">
+          <div>
+            <Sube><h2 className="a-h3">{t('ai.implementation')}</h2></Sube>
+            <ol className="a-registro !mt-8">
+              {ETAPAS.map((n, i) => (
+                <Sube as="li" key={n} delay={0.06 * i}>
+                  <span className="cuando">{t(`ai.stage${n}.date` as UIKey)}</span>
+                  <div>
+                    <p className="que">{t(`ai.stage${n}.title` as UIKey)}</p>
+                    <p className="detalle">
+                      {t(`ai.stage${n}.1` as UIKey)} {t(`ai.stage${n}.2` as UIKey)} {t(`ai.stage${n}.3` as UIKey)}
                     </p>
-                 </motion.div>
-            </Section>
+                  </div>
+                </Sube>
+              ))}
+            </ol>
+          </div>
+          <Sube delay={0.1} className="overflow-hidden aspect-[4/3] lg:aspect-[4/5]">
+            <img src="/images/site/uandes-2.jpg" alt={t('service.img.learning')} loading="lazy" className="a-foto a-bn" style={{ objectPosition: '50% 55%' }} />
+          </Sube>
         </div>
-      </div>
+      </section>
+
+      {/* ── Lo que continúa ── */}
+      <section className="a-oscuro a-campo">
+        <div className="a-c grid gap-12 lg:gap-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)] lg:items-center">
+          <Sube className="overflow-hidden aspect-square max-w-[420px]">
+            <img src="/images/site/1756469286343.jpg" alt={t('service.img.portrait')} loading="lazy" className="a-foto" />
+          </Sube>
+          <div>
+            <Sube><h2 className="a-h3">{t('ai.futureVision')}</h2></Sube>
+            <Sube delay={0.06}><p className="mt-6 a-texto">{t('ai.futureVision.text')}</p></Sube>
+            <Sube delay={0.1}>
+              <p className="mt-8">
+                <Link to="/service/committees" className="a-enlace">{t('service.leadership.title')} <span aria-hidden="true">→</span></Link>
+              </p>
+            </Sube>
+          </div>
+        </div>
+      </section>
     </PageWrapper>
   );
 };

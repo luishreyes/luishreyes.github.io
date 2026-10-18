@@ -1,45 +1,38 @@
-
-
-import React, { useRef } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { PageWrapper } from '../../components/PageWrapper';
-import { useI18n, fill } from '../../context/i18n';
 import { StatsSection } from '../../components/StatsSection';
+import { Sube } from '../../components/Sube';
+import { Apertura, Cabecera } from '../../components/Apertura';
+import { useI18n, fill, localize, type Lang } from '../../context/i18n';
+import { fotos } from '../../components/data/fotos';
 import { metrics } from '../../components/data/metrics';
-// FIX: Removed 'Variants' from framer-motion import to resolve module export error.
-import { motion, useScroll, useTransform } from 'framer-motion';
-
-// serviceItems defined inside component to use translations
-
-const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-        opacity: 1,
-        transition: {
-            staggerChildren: 0.1,
-            delayChildren: 0.3,
-        },
-    },
-};
-
-const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-        opacity: 1,
-        y: 0,
-        transition: {
-            duration: 0.5,
-            // FIX: Added 'as const' to prevent TypeScript from widening the string literal type, which caused a type error.
-            ease: "easeOut" as const,
-        },
-    },
-};
+import { editorialData } from '../../components/data/institutional';
+import { editedBooksData } from '../../components/data/editorships';
+import { totalReviews, totalJournalsReviewed } from '../../components/data/peerReview';
 
 const { service } = metrics;
 
+/** El dossier marca con el resaltador la frase que manda: aquí, la primera. */
+const conResaltado = (texto: string) => {
+  const corte = texto.indexOf('. ');
+  if (corte < 0) return texto;
+  return (
+    <>
+      <span className="a-resaltado">{texto.slice(0, corte + 1)}</span>
+      {texto.slice(corte + 1)}
+    </>
+  );
+};
+
+/** «A, B y C» en el idioma de la página. */
+const enumerar = (items: string[], y: string) =>
+  items.length < 2 ? items.join('') : `${items.slice(0, -1).join(', ')} ${y} ${items[items.length - 1]}`;
+
+const numero = (n: number, lang: Lang) => n.toLocaleString(lang === 'es' ? 'es-CO' : 'en-US');
+
 export const InstitutionalOverviewPage: React.FC = () => {
-  const { t } = useI18n();
-  const headerRef = useRef<HTMLDivElement>(null);
+  const { t, lang } = useI18n();
 
   const stats = [
     { label: t('stats.editorialBoards'), value: service.editorialBoards, note: fill(t('stats.editorialBoards.note'), { since: service.editorialBoardsSince }) },
@@ -50,156 +43,120 @@ export const InstitutionalOverviewPage: React.FC = () => {
     { label: t('stats.outreach'), value: service.outreachActivities },
   ];
 
-  const serviceItems = [
+  // Cada frente lleva lo que mejor lo muestra: una foto del lugar, las portadas de los
+  // libros o, donde no hay foto honesta, la cifra que lo prueba.
+  const foto = (src: string, alt: string, posicion = 'center') => (
+    <img src={src} alt={alt} loading="lazy" className="a-foto a-bn aspect-[3/2]" style={{ objectPosition: posicion }} />
+  );
+
+  const areas: { to: string; title: string; desc: string; media: React.ReactNode }[] = [
     {
+      to: '/service/committees',
       title: t('service.leadership.title'),
-      description: t('service.leadership.desc'),
-      icon: (
-          <img src="https://cdn-icons-png.flaticon.com/512/9942/9942521.png" alt="Service & Leadership Icon" className="h-8 w-8" />
-      ),
-      link: '/service/committees'
+      desc: t('service.leadership.desc'),
+      media: foto(fotos.fenomenosTransporte.src, localize(fotos.fenomenosTransporte.alt, lang), '50% 38%'),
     },
     {
+      to: '/service/augmented-intelligence',
       title: t('service.ai.title'),
-      description: t('service.ai.desc'),
-      icon: (
-          <img src="https://icons.veryicon.com/png/o/education-technology/alibaba-cloud-iot-business-department/ai-27.png" alt="Augmented Intelligence Icon" className="h-8 w-8" />
-      ),
-      link: '/service/augmented-intelligence'
+      desc: t('service.ai.desc'),
+      media: foto(fotos.acofiPonencia.src, localize(fotos.acofiPonencia.alt, lang), '62% 50%'),
     },
     {
+      to: '/service/editorial',
       title: t('service.editorial.title'),
-      description: t('service.editorial.desc'),
-      icon: (
-          <img src="https://cdn-icons-png.flaticon.com/512/4598/4598321.png" alt="Editorial Contributions Icon" className="h-8 w-8" />
+      desc: fill(t('service.editorial.desc'), { boards: enumerar(editorialData.map((b) => b.journal), t('service.and')) }),
+      media: (
+        <div className="a-cifras !grid-cols-2 aspect-[3/2] content-center bg-papel-200 px-8">
+          <div>
+            <b>{numero(totalReviews, lang)}</b>
+            <span>{t('peerReview.reviews')}</span>
+          </div>
+          <div>
+            <b>{totalJournalsReviewed}</b>
+            <span>{t('peerReview.journals')}</span>
+          </div>
+        </div>
       ),
-      link: '/service/editorial'
     },
     {
+      to: '/service/editorships',
       title: t('service.editorships.title'),
-      description: t('service.editorships.desc'),
-      icon: (
-          // Lucide "library-big"
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="h-8 w-8 text-brand-dark" aria-hidden="true">
-            <rect width="8" height="18" x="3" y="3" rx="1" />
-            <path d="M7 3v18" />
-            <path d="M20.4 18.9c.2.5-.1 1.1-.6 1.3l-1.9.7c-.5.2-1.1-.1-1.3-.6L11.1 5.1c-.2-.5.1-1.1.6-1.3l1.9-.7c.5-.2 1.1.1 1.3.6Z" />
-          </svg>
+      desc: t('service.editorships.desc'),
+      media: (
+        <div className="grid grid-cols-3 gap-4 items-end">
+          {editedBooksData.map((book) => (
+            <img
+              key={book.title}
+              src={book.cover}
+              alt={fill(t('editorships.coverAlt'), { title: book.title })}
+              loading="lazy"
+              className="block w-full aspect-[5/7] object-cover"
+            />
+          ))}
+        </div>
       ),
-      link: '/service/editorships'
     },
     {
+      to: '/service/outreach',
       title: t('service.outreach.title'),
-      description: t('service.outreach.desc'),
-      icon: (
-          <img src="https://cdn-icons-png.flaticon.com/512/2112/2112735.png" alt="Outreach Icon" className="h-8 w-8" />
-      ),
-      link: '/service/outreach'
-    }
+      desc: t('service.outreach.desc'),
+      media: foto(fotos.scoutingSelfie.src, localize(fotos.scoutingSelfie.alt, lang), '50% 45%'),
+    },
   ];
-  const { scrollYProgress } = useScroll({
-    target: headerRef,
-    offset: ["start end", "end start"]
-  });
-  const frameRotate = useTransform(scrollYProgress, [0, 1], [1, -2]);
-  const imageRotate = useTransform(scrollYProgress, [0, 1], [-1, 1]);
 
   return (
     <PageWrapper noPadding>
-      {/* Header Section */}
-      <div ref={headerRef} className="relative bg-zinc-800 overflow-hidden p-6 sm:p-8">
-        {/* Dephased frame */}
-        <motion.div
-          className="absolute inset-2 sm:inset-4 rounded-2xl border-2 border-yellow-400 pointer-events-none"
-          style={{ rotate: frameRotate }}
-        />
+      <Apertura
+        palabra={t('nav.service').toLowerCase()}
+        entrada={t('service.overview.sub')}
+        foto={{ src: fotos.palmaCharla.src, alt: localize(fotos.palmaCharla.alt, lang), posicion: '16% 50%' }}
+        accion={{ to: '/service/committees', label: t('service.overview.cta') }}
+      />
 
-        {/* Main content with image background */}
-        <motion.div
-          className="relative rounded-2xl shadow-xl z-10 overflow-hidden"
-          style={{ rotate: imageRotate }}
-        >
-          <img 
-              src="/images/site/img-4560-2.jpg" 
-              alt="Uniandes campus building, symbolizing the institution's commitment to service and community engagement."
-              className="absolute inset-0 w-full h-full object-cover object-center"
-          />
-          <div className="absolute inset-0 bg-white mix-blend-saturation pointer-events-none"></div>
-          <div className="absolute inset-0 bg-zinc-900/60 mix-blend-multiply" />
-          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-48 pb-24">
-              <motion.div
-                  {...{
-                    initial: { opacity: 0, x: -20 },
-                    animate: { opacity: 1, x: 0 },
-                    transition: { duration: 0.6, ease: 'easeOut' },
-                  }}
-                  className="text-left max-w-3xl"
-              >
-                  <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white [text-shadow:0_2px_4px_rgba(0,0,0,0.5)]">
-                      {t('service.overview.title')}
-                  </h1>
-                  <p className="mt-6 text-xl text-zinc-200 leading-relaxed [text-shadow:0_1px_2px_rgba(0,0,0,0.5)]">
-                      {t('service.overview.sub')}
-                  </p>
-              </motion.div>
-          </div>
-        </motion.div>
-      </div>
-      
-      {/* Content Section */}
-      <div className="bg-white">
-        <div className="max-w-7xl mx-auto py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
+      {/* ── Qué es el servicio y cuánto pesa ── */}
+      <section className="a-papel a-campo">
+        <div className="a-c">
+          <Sube><Cabecera titulo={t('service.overview.lead.title')} /></Sube>
+          <Sube delay={0.06}>
+            <p className="mt-10 a-texto">{conResaltado(t('service.overview.text'))}</p>
+          </Sube>
+          <Sube delay={0.1} className="mt-16 sm:mt-20">
             <StatsSection stats={stats} isLoading={false} />
-
-            <div className="mt-16" />
-
-            <motion.div
-              {...{
-                initial: { opacity: 0, y: 20 },
-                whileInView: { opacity: 1, y: 0 },
-                viewport: { once: true, amount: 0.2 },
-                transition: { duration: 0.5 },
-              }}
-              className="text-center max-w-4xl mx-auto mb-16"
-            >
-              <p className="text-brand-gray text-lg leading-relaxed">
-                {t('service.overview.text')}
-              </p>
-            </motion.div>
-            <motion.div
-              className="grid grid-cols-1 md:grid-cols-2 gap-8"
-              // FIX: Spread motion props to avoid TypeScript type errors.
-              {...{
-                variants: containerVariants,
-                initial: "hidden",
-                whileInView: "visible",
-                viewport: { once: true, amount: 0.1 },
-              }}
-            >
-              {serviceItems.map((item, index) => (
-                  <motion.div
-                      key={item.title}
-                      // FIX: Spread motion props to avoid TypeScript type errors.
-                      {...{variants: itemVariants}}
-                      // An odd card out spans the whole last row instead of leaving a hole.
-                      className={`h-full ${serviceItems.length % 2 === 1 && index === serviceItems.length - 1 ? 'md:col-span-2' : ''}`}
-                  >
-                      <Link
-                          to={item.link}
-                          className="bg-white p-8 rounded-lg shadow-lg border border-zinc-100 text-center flex flex-col items-center h-full w-full transition-all duration-300 hover:-translate-y-2 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-400"
-                          aria-label={`${t('service.learnAbout')} ${item.title}`}
-                      >
-                          <div className="bg-yellow-400/20 p-4 rounded-full mb-4">
-                              {item.icon}
-                          </div>
-                          <h3 className="text-xl font-semibold text-brand-dark mb-2">{item.title}</h3>
-                          <p className="text-brand-gray text-sm flex-grow">{item.description}</p>
-                      </Link>
-                  </motion.div>
-              ))}
-            </motion.div>
+          </Sube>
         </div>
-      </div>
+      </section>
+
+      {/* ── Los cinco frentes: filas grandes que llevan a cada página ── */}
+      <section className="a-hundido a-campo">
+        <div className="a-c">
+          {/* Las filas son el título de la sección: su nombre queda para los lectores de pantalla. */}
+          <h2 className="sr-only">{t('service.areas.title')}</h2>
+          <ul className="border-t-2 border-tinta-900">
+            {areas.map((area, i) => (
+              <Sube as="li" key={area.to} delay={0.04 * i}>
+                <Link
+                  to={area.to}
+                  className="group grid gap-x-12 gap-y-6 py-10 sm:py-12 sm:grid-cols-[minmax(0,1fr)_minmax(0,300px)] lg:grid-cols-[minmax(0,1fr)_minmax(0,440px)] sm:items-center border-b-2 border-papel-300 text-tinta-800 no-underline transition-colors duration-200 hover:bg-resaltador-suave focus-visible:bg-resaltador-suave"
+                >
+                  <div>
+                    <h3 className="a-h3 lg:!text-[length:var(--t-titulo)] lg:!leading-[1.04] lg:!tracking-[-0.04em] lg:!font-bold">
+                      {area.title.split(' ').slice(0, -1).join(' ')}{' '}
+                      {/* La flecha va pegada a la última palabra: nunca queda sola en una línea. */}
+                      <span className="whitespace-nowrap">
+                        {area.title.split(' ').slice(-1)[0]}{'\u00a0'}
+                        <span aria-hidden="true" className="inline-block transition-transform duration-200 group-hover:translate-x-1.5">→</span>
+                      </span>
+                    </h3>
+                    <p className="mt-5 a-texto">{area.desc}</p>
+                  </div>
+                  <Sube delay={0.12} className="overflow-hidden">{area.media}</Sube>
+                </Link>
+              </Sube>
+            ))}
+          </ul>
+        </div>
+      </section>
     </PageWrapper>
   );
 };
