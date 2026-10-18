@@ -61,6 +61,7 @@ export const credentialsData: Credential[] = [
     { title: 'Get started with Copilot for Microsoft 365', issuer: 'Microsoft', date: 'Issued 2024' },
     { title: 'Graphic Design Specialization', issuer: 'California Institute of the Arts', date: 'Issued Jun 2020' },
     { title: 'Ideas from the History of Graphic Design', issuer: 'California Institute of the Arts', date: 'Issued Jun 2020' },
+    { title: 'Imágenes generativas con Inteligencia Artificial: enfoque fotográfico', issuer: 'Universidad de los Andes, Facultad de Artes y Humanidades', date: 'Issued Aug 2026' },
     { title: 'Ingenierías y Administración', issuer: 'CITI Program', date: 'Issued Aug 2025' },
     { title: 'Industrial Biotechnology', issuer: 'The University of Manchester', date: 'Issued May 2020' },
     { title: 'Innovative Teaching with ChatGPT', issuer: 'Vanderbilt University', date: 'Issued Apr 2024' },
