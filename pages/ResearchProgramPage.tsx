@@ -133,7 +133,7 @@ const CASOS: Caso[] = [
     estudiantes: [
       { nombre: 'Gabriela Meléndez Plata', nivel: 'rc.lvl.ms.2026', foto: retrato('gabriela-melendez-plata') },
       { nombre: 'Jesús Rafael Acevedo Mastrogiacomo', nivel: 'rc.lvl.ms.co.2026', foto: retrato('jesus-rafael-acevedo') },
-      { nombre: 'Martha Lizeth Castellanos Ordóñez', nivel: 'rc.lvl.phd.now' },
+      { nombre: 'Martha Lizeth Castellanos Ordóñez', nivel: 'rc.lvl.phd.now', foto: retrato('martha-lizeth-castellanos-ordonez') },
       { nombre: 'Mariana García Alba', nivel: 'rc.lvl.ug.2024' },
       { nombre: 'Esteban Muñoz Cardona', nivel: 'rc.lvl.ug.2024' },
     ],
