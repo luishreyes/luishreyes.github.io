@@ -56,14 +56,13 @@ export const TestimonialsPage = () => {
   const { t, lang } = useI18n();
   const [activeFilter, setActiveFilter] = useState<FilterCategory>('All');
 
-  const { destacados, resto, total } = useMemo(() => {
+  const { personas, total } = useMemo(() => {
     const vista = activeFilter === 'All' ? testimonials : testimonials.filter((q) => q.category === activeFilter);
-    const personas = agrupar(vista);
-    const elegidos = DESTACADOS.map((n) => personas.find((p) => p.name === n)).filter((p): p is Persona => Boolean(p)).slice(0, 3);
+    const todas = agrupar(vista);
+    const elegidos = DESTACADOS.map((n) => todas.find((p) => p.name === n)).filter((p): p is Persona => Boolean(p)).slice(0, 3);
     return {
-      destacados: elegidos,
-      resto: personas.filter((p) => !elegidos.includes(p)),
-      total: { quotes: vista.length, people: personas.length },
+      personas: [...elegidos, ...todas.filter((p) => !elegidos.includes(p))],
+      total: { quotes: vista.length, people: todas.length },
     };
   }, [activeFilter]);
 
@@ -88,17 +87,18 @@ export const TestimonialsPage = () => {
         <p className="a-meta mt-5" aria-live="polite">{fill(t('testimonials.count'), total)}</p>
       </EncabezadoPagina>
 
-      {/* ── Tres voces grandes ── */}
+      {/* ── Todas las voces con el mismo formato: foto grande y la cita a la derecha ── */}
       <section className="a-papel pb-24 sm:pb-32">
         <div className="a-c space-y-20 sm:space-y-28">
-          {destacados.map((p, i) => {
+          {personas.map((p, i) => {
             const [principal, ...otras] = ordenarCitas(p);
             return (
-              <Sube key={`${activeFilter}-${p.name}`} delay={0.04 * i}>
+              <Sube key={`${activeFilter}-${p.name}`} delay={0.04 * (i % 3)}>
                 <figure className="grid gap-8 md:grid-cols-[minmax(0,280px)_minmax(0,1fr)] md:gap-14 border-t-2 border-tinta-900 pt-10">
                   <img
                     src={p.imageUrl}
                     alt={fill(t('testimonials.photo'), { name: p.name })}
+                    loading={i < 3 ? undefined : 'lazy'}
                     className="a-bn w-full max-w-[280px] aspect-[4/5] object-cover object-top"
                   />
                   <div>
@@ -126,40 +126,6 @@ export const TestimonialsPage = () => {
         </div>
       </section>
 
-      {/* ── El resto, en columnas y sin cajas ── */}
-      {resto.length > 0 && (
-        <section className="a-hundido a-campo">
-          <div className="a-c">
-            <Sube><h2 className="a-h3">{t('testimonials.more')}.</h2></Sube>
-            <div className="mt-12 lg:columns-2 lg:gap-16">
-              {resto.map((p, i) => (
-                <Sube key={`${activeFilter}-${p.name}`} delay={0.03 * (i % 4)} className="break-inside-avoid pb-14">
-                  <div className="flex items-end gap-5 border-t-2 border-tinta-900 pt-6">
-                    <img
-                      src={p.imageUrl}
-                      alt={fill(t('testimonials.photo'), { name: p.name })}
-                      loading="lazy"
-                      className="a-bn w-[140px] h-[140px] object-cover object-top flex-shrink-0"
-                    />
-                    <div className="min-w-0">
-                      <span className="block text-[18px] leading-tight font-semibold text-tinta-900">{p.name}</span>
-                      <span className="a-meta block mt-1">{localize(p.role, lang)}</span>
-                    </div>
-                  </div>
-                  {p.quotes.map((q) => (
-                    <div key={q.category} className="mt-6">
-                      <blockquote className="space-y-4 text-tinta-900">
-                        <Parrafos quote={q} lang={lang} />
-                      </blockquote>
-                      <p className="a-meta mt-3">{localize(q.context, lang)}</p>
-                    </div>
-                  ))}
-                </Sube>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
     </PageWrapper>
   );
 };
