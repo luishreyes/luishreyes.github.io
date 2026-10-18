@@ -73,6 +73,7 @@ export const teachingChapter = {
   'tch.more.sotl.t':        { en: 'Scholarship of teaching', es: 'Investigación sobre mi docencia' },
   'tch.more.sotl':          { en: '{papers} research articles, a critical review and {talks} conference talks on my own courses.', es: '{papers} artículos de investigación, una revisión crítica y {talks} ponencias sobre mis propios cursos.' },
   'tch.more.sotl.short':    { en: '{papers} research articles and a critical review on my own courses.', es: '{papers} artículos de investigación y una revisión crítica sobre mis propios cursos.' },
+  'tch.more.training':      { en: '{n} continuing education and executive courses since {year}, for companies, public bodies and open groups.', es: '{n} cursos de educación continua y formación ejecutiva desde {year}, para empresas, entidades públicas y grupos abiertos.' },
   'tch.more.testimonials.t': { en: 'Testimonials', es: 'Testimonios' },
   'tch.more.testimonials':  { en: '{quotes} testimonials from {people} former students.', es: '{quotes} testimonios de {people} egresados.' },
 

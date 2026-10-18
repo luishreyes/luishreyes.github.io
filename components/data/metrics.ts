@@ -1,6 +1,6 @@
 import type { Recognition } from '../../types';
 import { teachingData, courseCatalog } from './teaching';
-import { edcoCoursesData } from './edco';
+import { edcoCoursesData, trainingCourses, moocCourses } from './edco';
 import { grantsData } from './grants';
 import { awardsData } from './awards';
 import { editorialData, leadershipRolesData, committeesData } from './institutional';
@@ -23,9 +23,6 @@ const sum = (values: number[]) => values.reduce((total, value) => total + value,
 
 // ── Teaching ────────────────────────────────────────────────────────────────
 
-const MOOC_CLIENT = 'Coursera (MOOC)';
-const moocCourses = edcoCoursesData.filter((course) => course.client === MOOC_CLIENT);
-const inPersonEdco = edcoCoursesData.filter((course) => course.client !== MOOC_CLIENT);
 
 const evaluations = teachingData
   .map((course) => course.evaluation)
@@ -38,7 +35,9 @@ const teaching = {
   firstYear: Math.min(...teachingData.map((course) => course.year)),
   courses: teachingData.length + edcoCoursesData.length,
   universityCourses: teachingData.length,
-  continuingEdCourses: edcoCoursesData.length,
+  // Formación a escala: Educación Continuada y formación ejecutiva (sin Coursera ni la escuela
+  // de verano), como la cuenta su página. `attendees` es 0 cuando no hay dato.
+  continuingEdCourses: trainingCourses.length,
   uniqueCourseTitles: new Set([
     ...teachingData.map((course) => courseTitle(course.title)),
     ...edcoCoursesData.map((course) => course.title),
@@ -47,7 +46,7 @@ const teaching = {
   // Kept apart on purpose: summed into one figure, MOOC enrolments swamp the
   // rest and the headline reads as classroom students.
   universityStudents: sum(teachingData.map((course) => course.students || 0)),
-  continuingEdParticipants: sum(inPersonEdco.map((course) => course.attendees)),
+  continuingEdParticipants: sum(trainingCourses.map((course) => course.attendees)),
   moocEnrolments: sum(moocCourses.map((course) => course.attendees)),
   moocCompletions: sum(
     moocCourses.map((course) => Math.round(course.attendees * (course.completionRate ?? 0))),

@@ -7,7 +7,7 @@ import { Apertura, Cabecera } from '../../components/Apertura';
 import { useI18n, fill, localize, cardinal } from '../../context/i18n';
 import { teachingData, testimonials, courseCatalog, type Testimonial } from '../../components/data/teaching';
 import { educationPapers, sotlProducts } from '../../components/data/educationResearch';
-import { edcoCoursesData } from '../../components/data/edco';
+import { trainingCourses } from '../../components/data/edco';
 import { professionalDevelopmentData } from '../../components/data/professionalDevelopment';
 import { metrics, flagshipAward, graduateByName } from '../../components/data/metrics';
 import { pou202620Course } from '../../components/data/classroom/pou-2026-20';
@@ -44,7 +44,7 @@ const pandoraEstudiantes = pandora.reduce((s, c) => s + c.students, 0);
 // Los simuladores del aula de Proyecto de Operaciones Unitarias (el manual de diagramas va aparte).
 const simuladores = (pou202620Course.simulations ?? []).filter((s) => s.id !== 'manual-diagramas').length;
 
-const primerAnoEdco = Math.min(...edcoCoursesData.map((c) => c.year));
+const primerAnoFormacion = Math.min(...trainingCourses.map((c) => c.year));
 const primerAnoDesarrollo = Math.min(...professionalDevelopmentData.map((a) => Number(a.period.slice(0, 4))));
 
 export const TeachingOverviewPage: React.FC = () => {
@@ -101,7 +101,7 @@ export const TeachingOverviewPage: React.FC = () => {
       })(),
     },
     { to: '/teaching/testimonials', titulo: t('tch.more.testimonials.t'), texto: fill(t('tch.more.testimonials'), { quotes: testimonials.length, people: personas }) },
-    { to: '/teaching/continuing-education', titulo: t('nav.teaching.continuing'), texto: fill(t('teaching.more.contEd'), { n: edcoCoursesData.length, year: primerAnoEdco }) },
+    { to: '/teaching/continuing-education', titulo: t('training.title'), texto: fill(t('tch.more.training'), { n: trainingCourses.length, year: primerAnoFormacion }) },
     { to: '/teaching/professional-development', titulo: t('profdev.title'), texto: fill(t('teaching.more.profdev'), { n: professionalDevelopmentData.length, year: primerAnoDesarrollo }) },
   ];
 

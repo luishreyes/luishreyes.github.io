@@ -138,7 +138,7 @@ const Curso: React.FC<{ curso: CourseRecord; children?: React.ReactNode; delay?:
 const Ediciones: React.FC = () => {
   const { t, lang } = useI18n();
   return (
-    <div className="mt-8 max-w-[64ch]">
+    <div className="mt-8 mb-10 max-w-[64ch]">
       <p className="font-semibold text-tinta-900">{t('tch.co.editions')}</p>
       <table className="a-tabla mt-3 hidden md:table">
         <thead>
@@ -302,7 +302,7 @@ export const CoursesPage: React.FC = () => {
               <div className={`mt-12 grid gap-x-16 gap-y-12 ${fotosTema[tema] ? 'lg:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)]' : ''}`}>
                 <div>
                   {tema === 'process' && (
-                    <Sube className="mb-12">
+                    <Sube className="mb-20">
                       <p className="a-texto text-tinta-900">{t('tch.co.process.intro')}</p>
                       <Link to="/teaching/unit-ops" className="a-enlace inline-block mt-4">{t('tch.co.process.cta')} <span aria-hidden="true">→</span></Link>
                       <div className="mt-8 flex flex-wrap gap-x-6 gap-y-2 a-s text-tinta-800">
