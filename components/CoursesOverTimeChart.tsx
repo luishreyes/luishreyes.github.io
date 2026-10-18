@@ -172,7 +172,7 @@ export const CoursesOverTimeChart = ({ courses }: { courses: TaughtCourse[] }) =
 // ── Una serie por semestre ─────────────────────────────────────────────────
 
 export interface SerieBand { from: number; to: number; label: string }
-export interface SerieEvent { at: number; label: string }
+export interface SerieEvent { at: number; label: string; /** Fila del rótulo en pantallas anchas (0 arriba), para que una línea no cruce otro rótulo. */ row?: number }
 
 interface SemesterSeriesProps {
   /** Los semestres del eje, en orden (2017-20, 2018-10…). */
@@ -198,6 +198,7 @@ interface SemesterSeriesProps {
  *  se lee arriba. En el teléfono, los rótulos de las franjas y los hitos que no caben van
  *  debajo, como lista. */
 export const SemesterSeriesChart: React.FC<SemesterSeriesProps> = ({ terms, values, min, max, ticks, bands = [], events = [], describe, gapNote, label }) => {
+  const { t } = useI18n();
   const ref = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(0);
   const ultimo = values.map((v, i) => (v === null ? -1 : i)).filter((i) => i >= 0).pop() ?? 0;
@@ -212,7 +213,7 @@ export const SemesterSeriesChart: React.FC<SemesterSeriesProps> = ({ terms, valu
 
   const ancho = width >= 900;
   const filasHitos = events.length && ancho ? 3 : events.length ? 1 : 0;
-  const top = 34 + filasHitos * 20;
+  const top = (filasHitos ? 20 : 10) + filasHitos * 20;
   const phone = width > 0 && width < 600;
   const height = (phone ? 260 : 320) + filasHitos * 20;
   const margin = { top, right: phone ? 6 : 12, bottom: 40, left: 44 };
@@ -252,7 +253,7 @@ export const SemesterSeriesChart: React.FC<SemesterSeriesProps> = ({ terms, valu
               <g key={b.label}>
                 <rect x={margin.left + b.from * slot} y={margin.top} width={(b.to - b.from + 1) * slot} height={innerHeight} fill={k % 2 ? '#DCDCDE' : '#EBEBEC'} />
                 {cabe(b) && (
-                  <text x={margin.left + b.from * slot + 8} y={margin.top - 10} fontSize="15" fill="#4A4A4C">{b.label}</text>
+                  <text x={margin.left + b.from * slot + 8} y={margin.top + 18} fontSize="15" fill="#4A4A4C">{b.label}</text>
                 )}
               </g>
             ))}
@@ -265,7 +266,7 @@ export const SemesterSeriesChart: React.FC<SemesterSeriesProps> = ({ terms, valu
             ))}
 
             {events.map((e, k) => {
-              const fila = ancho ? k % 3 : 0;
+              const fila = ancho ? e.row ?? k % 3 : 0;
               const ty = 16 + fila * 20;
               const derecha = x(e.at) > width - 180;
               return (
@@ -314,7 +315,7 @@ export const SemesterSeriesChart: React.FC<SemesterSeriesProps> = ({ terms, valu
       {width > 0 && (franjasFuera.length > 0 || (!ancho && events.length > 0)) && (
         <ul className="mt-4 grid gap-x-8 gap-y-1 sm:grid-cols-2 a-s text-tinta-800">
           {franjasFuera.map((b) => (
-            <li key={b.label}><span className="tabular-nums text-tinta-600">{terms[b.from]} · {terms[b.to]}</span> {b.label}</li>
+            <li key={b.label}><span className="tabular-nums text-tinta-600">{fill(t('tch.range'), { a: terms[b.from], b: terms[b.to] })}</span> {b.label}</li>
           ))}
           {!ancho && events.map((e) => (
             <li key={e.label}><span className="tabular-nums text-tinta-600">{terms[e.at]}</span> {e.label}</li>

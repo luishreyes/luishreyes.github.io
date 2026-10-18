@@ -59,10 +59,10 @@ export const ResearchOverviewPage: React.FC = () => {
   ];
 
   const seriesPub: Serie[] = [
-    { key: 'articles', label: t('rc.class.articles'), color: '#1D1D1B' },
-    { key: 'chapters', label: t('rc.class.chapters'), color: '#5E5E61' },
-    { key: 'books', label: t('rc.class.books'), color: '#8E8E92' },
-    { key: 'other', label: t('rc.class.other'), color: '#BDBDC1' },
+    { key: 'articles', label: t('rc.class.articles'), uno: t('rc.class.articles.one'), color: '#1D1D1B' },
+    { key: 'chapters', label: t('rc.class.chapters'), uno: t('rc.class.chapters.one'), color: '#5E5E61' },
+    { key: 'books', label: t('rc.class.books'), uno: t('rc.class.books.one'), color: '#8E8E92' },
+    { key: 'other', label: t('rc.class.other'), uno: t('rc.class.other.one'), color: '#BDBDC1' },
   ];
   const citas = useMemo(
     () => Object.fromEntries(Object.entries(scholar.perYear).map(([a, v]) => [a, { cites: v }])) as Record<number, Record<string, number>>,
@@ -94,7 +94,8 @@ export const ResearchOverviewPage: React.FC = () => {
   return (
     <PageWrapper noPadding>
       <Apertura
-        palabra={t('nav.research').toLowerCase()}
+        // «investigación.» no cabe en el panel entre 1100 y 1500 px: el guion suave la parte solo si hace falta.
+        palabra={t('nav.research').toLowerCase().replace('investigación', 'investiga\u00ADción')}
         entrada={t('rc.ov.lead')}
         foto={{ src: fotos.laboratorio.src, alt: localize(fotos.laboratorio.alt, lang), posicion: '60% center' }}
         accion={{ to: '/research/program', label: t('rc.ov.cta') }}

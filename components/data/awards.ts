@@ -7,7 +7,7 @@ import type { Localized } from '../../context/i18n';
 export const awardsData: Recognition[] = [
   {
     title: "Award for Innovation in Chemical Engineering Education",
-    awarder: { en: "AIChE Education Division", es: "División de Educación de AIChE" },
+    awarder: { en: "AIChE Education Division", es: "División de Educación del AIChE" },
     shortName: "AIChE",
     role: 'teaching',
     category: { en: "Innovation in Chemical Engineering Education", es: "Innovación en la educación en ingeniería química" },

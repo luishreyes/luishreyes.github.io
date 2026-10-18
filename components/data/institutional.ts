@@ -295,7 +295,7 @@ export const committeesData: Committee[] = [
               es: "En octubre de 2024 la Universidad de los Andes publicó sus Lineamientos para el uso de inteligencia artificial generativa, con recomendaciones para estudiantes, profesores, investigadores y personal administrativo, organizadas según quién usa las herramientas y para qué. La Universidad los presenta como un marco que se actualizará a medida que cambie la tecnología.",
             },
             {
-              en: "Representing the School of Engineering, with Dean Rubby Casallas and Professor Juan Carlos Cruz, I took part in the whole discussion and wrote the first version of the section on the use of generative AI in research. The closing note of the document acknowledges the significant contributions of the three of us to its content.",
+              en: "On behalf of the School of Engineering, with Dean Rubby Casallas and Professor Juan Carlos Cruz, I took part in the whole discussion and wrote the first version of the section on the use of generative AI in research. The closing note of the document acknowledges the significant contributions of the three of us to its content.",
               es: "En representación de la Facultad de Ingeniería, con la decana Rubby Casallas y el profesor Juan Carlos Cruz, participé en toda la discusión y escribí la primera versión de la sección sobre el uso de la IA generativa en la investigación. La nota final del documento reconoce los aportes significativos de los tres a su contenido.",
             }
         ]
@@ -353,7 +353,7 @@ export const committeesData: Committee[] = [
           en: 'Nanotech LATAM Forum, first edition',
           es: 'Foro Nanotech LATAM, primera edición',
         },
-        role: { en: 'Organizing Committee Member', es: 'Miembro del Comité Organizador' },
+        role: { en: 'Member of the organizing committee', es: 'Miembro del comité organizador' },
         startYear: 2023,
         endYear: 2023,
         level: 'Faculty',

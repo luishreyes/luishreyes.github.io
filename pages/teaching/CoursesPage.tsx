@@ -178,7 +178,7 @@ const ComposicionBiotec: React.FC = () => {
   const filas = [...biotechCohorts]
     .map((c) => ({ ...c, share: c.graduate / (c.graduate + c.undergraduate) }))
     .sort((a, b) => b.share - a.share);
-  const pct = (x: number) => `${Math.round(x * 100)} %`;
+  const pct = (x: number) => `${Math.round(x * 100)} %`;
   return (
     <figure className="mt-8 max-w-[640px]">
       <div className="flex flex-wrap gap-x-6 gap-y-1 a-s text-tinta-800" aria-hidden="true">

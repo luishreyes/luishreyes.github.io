@@ -1,10 +1,12 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion, useInView, useReducedMotion } from 'framer-motion';
 import { useI18n } from '../context/i18n';
 
 export interface Serie {
   key: string;
   label: string;
+  /** La etiqueta en singular, para leer «1 libro» y no «1 libros». */
+  uno?: string;
   /** Tono de gris de la serie: el amarillo queda para el año que se toca. */
   color: string;
 }
@@ -32,6 +34,8 @@ export const BarrasPorAno: React.FC<BarrasPorAnoProps> = ({ data, series, inicia
   const reduce = useReducedMotion();
   const caja = useRef<HTMLDivElement>(null);
   const [ancho, setAncho] = useState(640);
+  // Las barras crecen una sola vez, cuando el gráfico asoma en pantalla.
+  const visto = useInView(caja, { once: true, margin: '0px 0px -10% 0px' });
 
   useEffect(() => {
     const el = caja.current;
@@ -63,8 +67,10 @@ export const BarrasPorAno: React.FC<BarrasPorAnoProps> = ({ data, series, inicia
   const barra = Math.max(4, banda * 0.66);
   const y = (v: number) => M.top + (ALTO - M.top - M.bottom) * (1 - v / techo);
   const x = (a: number) => M.left + (a - anos[0]) * banda + (banda - barra) / 2;
-  // En el teléfono no caben todos los años: se rotula uno de cada cinco, más el primero y el último.
-  const rotular = (a: number, i: number) => banda >= 34 || i === 0 || i === anos.length - 1 || a % 5 === 0;
+  // Si no caben todos los años, se rotula uno de cada cinco, más el primero y el último
+  // cuando no queda pegado a otro rótulo.
+  const rotular = (a: number, i: number) =>
+    banda >= 46 || i === 0 || a % 5 === 0 || (i === anos.length - 1 && a % 5 >= 2);
 
   const numero = (n: number) => n.toLocaleString(lang === 'es' ? 'es-CO' : 'en-US');
   const valores = series.map((s) => ({ ...s, v: data[activo]?.[s.key] ?? 0 }));
@@ -80,7 +86,7 @@ export const BarrasPorAno: React.FC<BarrasPorAnoProps> = ({ data, series, inicia
         </span>
         {series.length > 1 && (
           <span className="a-s text-tinta-700 tabular-nums">
-            {valores.filter((s) => s.v > 0).map((s) => `${numero(s.v)} ${s.label.toLowerCase()}`).join(' · ')}
+            {valores.filter((s) => s.v > 0).map((s) => `${numero(s.v)} ${(s.v === 1 && s.uno ? s.uno : s.label).toLowerCase()}`).join(' · ')}
           </span>
         )}
       </div>
@@ -126,9 +132,8 @@ export const BarrasPorAno: React.FC<BarrasPorAnoProps> = ({ data, series, inicia
                       x={x(a)}
                       width={barra}
                       fill={s.color}
-                      initial={{ y: y(0), height: 0 }}
-                      whileInView={{ y: y0, height: h }}
-                      viewport={{ once: true }}
+                      initial={{ attrY: y(0), height: 0 }}
+                      animate={visto || reduce ? { attrY: y0, height: h } : { attrY: y(0), height: 0 }}
                       transition={reduce ? { duration: 0 } : { duration: 0.7, ease: [0.22, 0.8, 0.3, 1], delay: i * 0.02 }}
                     />
                   );

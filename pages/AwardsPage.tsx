@@ -357,15 +357,9 @@ export const AwardsPage: React.FC = () => {
                 <div>
                   <h3 className="que">{localize(a.title, lang)}</h3>
                   <p className="donde">{localize(a.awarder, lang)} · <Fuente href={a.url} label={t('awards.source')} /></p>
-                  <p className="detalle a-texto">{localize(a.summary[0], lang)}</p>
-                  {a.summary.length > 1 && (
-                    <details className="mt-4">
-                      <summary className="a-s cursor-pointer text-tinta-900 underline underline-offset-4 w-fit">{t('awards.more')}</summary>
-                      <div className="mt-4 space-y-3">
-                        {a.summary.slice(1).map((p, j) => <p key={j} className="a-texto">{localize(p, lang)}</p>)}
-                      </div>
-                    </details>
-                  )}
+                  <div className="detalle lg:!max-w-none lg:columns-2 lg:gap-12 [&_p]:break-inside-avoid-column">
+                    {a.summary.map((p, j) => <p key={j} className="a-texto">{localize(p, lang)}</p>)}
+                  </div>
                 </div>
               </Sube>
             ))}

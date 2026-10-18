@@ -39,8 +39,9 @@ const Registro: React.FC<{ grants: (Grant | Proyecto)[] }> = ({ grants }) => {
             {localize(g.role, lang)}
             {'kind' in g && (
               <span className="block a-s text-tinta-600 mt-1">
-                {t(g.kind === 'research' ? 'rc.pr.kind.research' : 'rc.pr.kind.consultancy')}
-                {g.area === 'education' && ` · ${t('grants.area.education')}`}
+                {g.area === 'education'
+                  ? t('grants.area.education')
+                  : t(g.kind === 'research' ? 'rc.pr.kind.research' : 'rc.pr.kind.consultancy')}
               </span>
             )}
           </p>

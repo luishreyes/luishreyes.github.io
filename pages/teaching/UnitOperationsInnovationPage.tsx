@@ -59,12 +59,13 @@ export const UnitOperationsInnovationPage: React.FC = () => {
     { from: ix('2024-10'), to: TERMS.length - 1, label: t('tch.uo.band.pou') },
   ];
   const hitos = [
-    { at: ix('2019-10'), label: t('tch.uo.ev.p2019') },
-    { at: ix('2020-20'), label: t('tch.uo.ev.p2021') },
-    { at: ix('2023-20'), label: t('tch.uo.ev.aias') },
-    { at: ix('2025-10'), label: t('tch.uo.ev.p2025') },
-    { at: ix('2025-20'), label: t('tch.uo.ev.redesign') },
-    ...(award ? [{ at: TERMS.length - 1, label: t('tch.uo.ev.award') }] : []),
+    // Las filas evitan que la línea de un hito cruce el rótulo de otro.
+    { at: ix('2019-10'), label: t('tch.uo.ev.p2019'), row: 0 },
+    { at: ix('2020-20'), label: t('tch.uo.ev.p2021'), row: 1 },
+    { at: ix('2023-20'), label: t('tch.uo.ev.aias'), row: 0 },
+    { at: ix('2025-10'), label: t('tch.uo.ev.p2025'), row: 2 },
+    { at: ix('2025-20'), label: t('tch.uo.ev.redesign'), row: 1 },
+    ...(award ? [{ at: TERMS.length - 1, label: t('tch.uo.ev.award'), row: 0 }] : []),
   ].filter((h) => h.at >= 0);
 
   const cursos: { when: UIKey; title: string; code: string; parrafos: React.ReactNode[] }[] = [

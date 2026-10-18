@@ -3,7 +3,6 @@ export const recognition = {
   'awards.subtitle':         { en: 'Grouped by what they recognize: teaching, research, membership, what my students achieved and what came before Uniandes. Most of the research distinctions belong to a team.', es: 'Agrupados por lo que reconocen: la docencia, la investigación, la pertenencia, lo que lograron mis estudiantes y lo que vino antes de Uniandes. Casi todos los de investigación son de equipo.' },
   'awards.cta':              { en: 'The course behind the 2026 AIChE award', es: 'El curso detrás del premio del AIChE de 2026' },
   'awards.authors':          { en: 'Authors:',               es: 'Autores:' },
-  'awards.more':             { en: 'More about it',          es: 'Más detalles' },
   'awards.source':           { en: 'Source',                 es: 'Fuente' },
 
   // La línea de tiempo: una fila por lo que reconocen.

@@ -2,7 +2,7 @@
 // proyectos, contados para un lector público. En los dos idiomas.
 export const researchChapter = {
   // ── Resumen (/research) ──
-  'rc.ov.lead':        { en: 'Biological engineering for health, food and the environment, done with the students who learn it in the laboratory.', es: 'Ingeniería biológica para la salud, los alimentos y el ambiente, hecha con los estudiantes que la aprenden en el laboratorio.' },
+  'rc.ov.lead':        { en: 'Biological engineering for health, food and the environment, done with my students.', es: 'Ingeniería biológica para la salud, los alimentos y el ambiente, hecha con mis estudiantes.' },
   'rc.ov.cta':         { en: 'Five cases and their results', es: 'Cinco casos y sus resultados' },
 
   'rc.fig.title':      { en: 'My research in figures', es: 'Mi investigación en cifras' },
@@ -39,6 +39,10 @@ export const researchChapter = {
   'rc.class.chapters':     { en: 'Book chapters', es: 'Capítulos de libro' },
   'rc.class.books':        { en: 'Books', es: 'Libros' },
   'rc.class.other':        { en: 'Others', es: 'Otras' },
+  'rc.class.articles.one': { en: 'Article', es: 'Artículo' },
+  'rc.class.chapters.one': { en: 'Book chapter', es: 'Capítulo de libro' },
+  'rc.class.books.one':    { en: 'Book', es: 'Libro' },
+  'rc.class.other.one':    { en: 'Other', es: 'Otra' },
   'rc.class.cites':        { en: 'Citations', es: 'Citas' },
 
   'rc.lines.title':    { en: 'Eight lines of research', es: 'Ocho líneas de investigación' },
@@ -73,7 +77,7 @@ export const researchChapter = {
   'rc.more.students':  { en: '{grad} graduates and {cur} students working with the group now', es: '{grad} egresados y {cur} estudiantes que trabajan hoy con el grupo' },
 
   // ── Filosofía (/research/purpose) ──
-  'rc.ph.title':       { en: 'Engineering biology, forming people', es: 'Ingeniería biológica, formación de personas' },
+  'rc.ph.title':       { en: 'Engineering biology, forming people', es: 'Ingeniar la biología, formar personas' },
   'rc.ph.lead':        { en: 'Research is also a way of forming people. I like teaching and I like research, and in the laboratory I do both at once.', es: 'Investigar también es formar. Me gusta enseñar y me gusta investigar, y en el laboratorio hago las dos cosas a la vez.' },
   'rc.ph.cta':         { en: 'See the five cases', es: 'Ver los cinco casos' },
   'rc.ph.h2':          { en: 'Research is also forming people', es: 'Investigar también es formar' },

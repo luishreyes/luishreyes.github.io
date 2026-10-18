@@ -141,7 +141,8 @@ export const InstitutionalOverviewPage: React.FC = () => {
           <Sube delay={0.1} className="mt-20 sm:mt-24">
             <h2 className="a-h3">{t('svc.figures.title')}.</h2>
           </Sube>
-          <Sube delay={0.12} className="mt-10">
+          {/* Nueve cifras: en pantallas anchas, tres por fila. */}
+          <Sube delay={0.12} className="mt-10 lg:[&>.a-cifras]:!grid-cols-3">
             <StatsSection stats={stats} isLoading={false} />
           </Sube>
         </div>

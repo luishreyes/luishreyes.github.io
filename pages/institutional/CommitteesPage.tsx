@@ -50,7 +50,10 @@ const SemanasEtica: React.FC = () => {
       <ul className="mt-6 border-t-2 border-tinta-900 pt-3">
         {filas.map((f) => (
           <li key={f.s} className="grid grid-cols-[4.5rem_minmax(0,1fr)] items-center gap-3 py-1 transition-colors hover:bg-resaltador-suave">
-            <span className="a-meta">{semestre(f.s)}</span>
+            <span className="a-meta leading-tight">
+              {semestre(f.s)}
+              {f.enCurso && <span className="block">{t('svc.ethics.fig.current')}</span>}
+            </span>
             <span className="flex flex-wrap gap-[3px]" aria-label={`${semestre(f.s)}: ${f.semanas}`}>
               {Array.from({ length: weeksPerSemester }, (_, i) => (
                 <span
@@ -59,7 +62,6 @@ const SemanasEtica: React.FC = () => {
                   className={`block w-3 h-3 sm:w-3.5 sm:h-3.5 ${i < f.semanas ? 'bg-tinta-900' : 'bg-papel-300'}`}
                 />
               ))}
-              {f.enCurso && <span className="a-meta ml-2 leading-none self-center">{t('svc.ethics.fig.current')}</span>}
             </span>
           </li>
         ))}

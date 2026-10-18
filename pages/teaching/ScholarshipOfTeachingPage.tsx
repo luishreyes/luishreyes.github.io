@@ -70,7 +70,7 @@ export const ScholarshipOfTeachingPage: React.FC = () => {
 
   const cifras = [
     { label: fill(t('tch.so.fig.students'), { cohorts: cardinal(study.cohorts, lang) }), value: study.students },
-    { label: fill(t('tch.so.fig.motivation'), { before: study.sustainedMotivation.before }), value: `${study.sustainedMotivation.now} %` },
+    { label: fill(t('tch.so.fig.motivation'), { before: study.sustainedMotivation.before }), value: `${study.sustainedMotivation.now} %` },
     { label: t('tch.so.fig.refs'), value: `${study.references.before} → ${study.references.after}` },
   ];
 
