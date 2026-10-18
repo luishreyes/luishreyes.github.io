@@ -40,7 +40,7 @@ export const researchLinesMap: Record<ResearchArea, ResearchLine> = {
   },
    'Multisensory Experience Design': {
     id: 'Multisensory Experience Design',
-    title: { en: 'Sensory Product Design', es: 'Diseño Sensorial de Productos' },
+    title: { en: 'Multisensory Experience Design', es: 'Diseño de Experiencias Multisensoriales' },
     description: {
       en: "We investigate how the interplay of senses—such as sound, smell, and sight—shapes human perception and behavior. By leveraging crossmodal correspondences and computational models, we design immersive sensory experiences that enhance consumer products, promote well-being, and drive sustainable choices.",
       es: "Investigo cómo la interacción de los sentidos —como el oído, el olfato y la vista— moldea la percepción y el comportamiento humanos. Aprovechando las correspondencias crossmodales y modelos computacionales, diseño experiencias sensoriales inmersivas que enriquecen los productos de consumo, promueven el bienestar e impulsan decisiones sostenibles.",
@@ -60,8 +60,8 @@ export const researchLinesMap: Record<ResearchArea, ResearchLine> = {
     id: 'Scholarship of Teaching & Learning',
     title: { en: 'Scholarship of Teaching & Learning', es: 'Investigación sobre la Enseñanza y el Aprendizaje' },
     description: {
-      en: "Research on teaching and learning practices to improve educational outcomes.",
-      es: "Investigación sobre las prácticas de enseñanza y aprendizaje para mejorar los resultados educativos.",
+      en: "I research my own teaching: what students learn when a course is redesigned around projects, how artificial intelligence changes feedback and the classroom, and how to measure it. It is the newest line of the program.",
+      es: "Investigo mi propia docencia: qué aprenden los estudiantes cuando un curso se rediseña por proyectos, cómo cambia la inteligencia artificial la retroalimentación y el aula, y cómo medirlo. Es la línea más reciente del programa.",
     },
     icon: React.createElement('img', { src: "https://cdn-icons-png.flaticon.com/512/9552/9552474.png", alt: "SOTL Icon", className: "h-8 w-8" })
   },

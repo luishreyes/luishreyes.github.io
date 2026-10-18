@@ -2,6 +2,7 @@
 
 
 import type { Recognition } from '../../types';
+import type { Localized } from '../../context/i18n';
 
 export const awardsData: Recognition[] = [
   {
@@ -23,8 +24,8 @@ export const awardsData: Recognition[] = [
         es: "La innovación reconocida es el rediseño del curso Proyecto de Operaciones Unitarias (POU) en la Universidad de los Andes: un curso donde los estudiantes llevan un problema de diseño a lo largo de todo el semestre y donde la IA generativa entra bajo límites cognitivos explícitos, no como atajo. Afinado durante siete años y documentado en publicaciones arbitradas, el modelo mejoró con significancia estadística la comunicación escrita y el rigor investigativo de los estudiantes, mientras el desempeño técnico se mantuvo estable."
       },
       {
-        en: "The distinction singles out one specific pedagogical innovation, created or implemented in a real course and judged by its documented impact on teaching effectiveness and student learning. Every earlier recipient on its list of winners, which starts in 2014, was a professor at a university in the United States. This is the first time it goes to a professor at a university outside the United States, and the first time in Latin America.",
-        es: "La distinción reconoce una innovación pedagógica específica, creada o implementada en un curso real y juzgada por su impacto documentado en la efectividad de la enseñanza y en el aprendizaje de los estudiantes. Todos los ganadores anteriores de su lista, que empieza en 2014, eran profesores de universidades de Estados Unidos. Es la primera vez que lo recibe un profesor de una universidad de fuera de ese país, y la primera en América Latina."
+        en: "The distinction singles out one specific pedagogical innovation, created or implemented in a real course and judged by its documented impact on teaching effectiveness and student learning.",
+        es: "La distinción reconoce una innovación pedagógica específica, creada o implementada en un curso real y juzgada por su impacto documentado en la efectividad de la enseñanza y en el aprendizaje de los estudiantes."
       },
       {
         en: "It will be presented at the Education Division dinner during the AIChE Annual Meeting in Minneapolis on November 10, 2026.",
@@ -44,16 +45,12 @@ export const awardsData: Recognition[] = [
     authors: ["Luis H. Reyes"],
     summary: [
       {
-        en: "Selected from more than 300 applications for OpenAI's inaugural Global Faculty AI Project, an initiative to recognize and support innovative uses of AI in higher education.",
-        es: "Seleccionado entre más de 300 postulaciones para el primer Global Faculty AI Project de OpenAI, una iniciativa para reconocer y apoyar usos innovadores de la IA en la educación superior."
+        en: "In 2025 OpenAI selected me for the first call of its Global Faculty AI Project, to which more than 300 professors from around the world applied, with the same course, Project of Unit Operations.",
+        es: "En 2025 OpenAI me seleccionó en la primera convocatoria de su Global Faculty AI Project, a la que se postularon más de 300 profesores de todo el mundo, con el mismo curso, Proyecto de Operaciones Unitarias."
       },
       {
-        en: "My project focuses on co-designing AI tools with students to create personalized, real-time feedback, enhancing deep learning and critical thinking in a core chemical engineering course.",
-        es: "Mi proyecto se centra en co-diseñar herramientas de IA con los estudiantes para generar retroalimentación personalizada y en tiempo real, fortaleciendo el aprendizaje profundo y el pensamiento crítico en un curso fundamental de ingeniería química."
-      },
-      {
-        en: "This recognition highlights a commitment to pioneering pedagogical approaches that leverage AI to augment student intelligence and prepare them for future challenges.",
-        es: "Este reconocimiento resalta un compromiso con enfoques pedagógicos pioneros que aprovechan la IA para potenciar la inteligencia de los estudiantes y prepararlos para los retos del futuro."
+        en: "The project co-designs AI tools with the students to give them personalized, real-time feedback in a core chemical engineering course.",
+        es: "El proyecto codiseña herramientas de IA con los estudiantes para darles retroalimentación personalizada y en tiempo real en un curso fundamental de ingeniería química."
       }
     ],
     url: "https://academy.openai.com/public/videos/luis-h-reyes-project-of-unit-operations-2025-08-20",
@@ -128,35 +125,6 @@ export const awardsData: Recognition[] = [
     imageUrl: "https://www.abmgood.com/assets/images/category/cate-icon/crispr-knock-in-repair-template.png",
   },
   {
-    title: { en: "III Rebeca Uribe Bone National Award", es: "III Premio Nacional Rebeca Uribe Bone" },
-    awarder: { en: "Colombian Professional Council of Chemical Engineering (CPIQ)", es: "Consejo Profesional de Ingeniería Química de Colombia (CPIQ)" },
-    role: 'teaching',
-    category: { en: "Best Chemical Engineering Degree Project", es: "Mejor trabajo de grado en ingeniería química" },
-    year: 2023,
-    projectTitle: "Purificación del Péptido Polygly y Evaluación de sus Propiedades Interfaciales y Emulsificantes",
-    authors: [
-        "Mishel Porras Ariza",
-        "Luis H. Reyes (Co-director)",
-        "Diego Pradilla (Co-director)"
-    ],
-    summary: [
-      {
-        en: "This award recognizes excellence in co-directing the Best Chemical Engineering Degree Project, an honor specifically celebrating work developed by women in the field.",
-        es: "Este premio reconoce la excelencia en la codirección del mejor trabajo de grado en ingeniería química, una distinción que celebra específicamente el trabajo desarrollado por mujeres en el campo."
-      },
-      {
-        en: "The winning project, by a student from the Universidad de Pamplona, focused on the purification of the Polygly peptide and the evaluation of its interfacial and emulsifying properties.",
-        es: "El proyecto ganador, de una estudiante de la Universidad de Pamplona, se centró en la purificación del péptido Polygly y la evaluación de sus propiedades interfaciales y emulsificantes."
-      },
-      {
-        en: "This recognition underscores a commitment to fostering high-impact research and mentoring the next generation of female chemical engineers in Colombia.",
-        es: "Este reconocimiento subraya un compromiso con el fomento de la investigación de alto impacto y la mentoría de la próxima generación de ingenieras químicas en Colombia."
-      }
-    ],
-    url: "https://cpiq.gov.co/2023/12/01/ganadores-iii-premio-nacional-rebeca-uribe-bone/",
-    imageUrl: "https://static.thenounproject.com/png/66903-200.png",
-  },
-  {
     title: "Editor's Choice Article",
     awarder: "Pharmaceutics (MDPI)",
     role: 'research',
@@ -170,16 +138,8 @@ export const awardsData: Recognition[] = [
     ],
     summary: [
       {
-        en: "This publication was selected as one of the 'Editor's Choice Articles' from approximately 3,600 papers published between 2020 and 2021.",
-        es: "Esta publicación fue seleccionada como uno de los «Editor's Choice Articles» entre aproximadamente 3.600 artículos publicados entre 2020 y 2021."
-      },
-      {
-        en: "The recognition highlights the work's significant contribution to the scientific field, placing it within the top 8% of articles to receive this distinction.",
-        es: "El reconocimiento resalta la contribución significativa del trabajo al campo científico, ubicándolo dentro del 8% superior de artículos que reciben esta distinción."
-      },
-      {
-        en: "This honor is designed to increase the article's visibility and promote its citation within the academic and scientific communities.",
-        es: "Esta distinción busca aumentar la visibilidad del artículo y promover su citación dentro de las comunidades académicas y científicas."
+        en: "In 2021 the journal Pharmaceutics chose as an Editor's Choice article the review on delivery systems for nucleic acids and proteins that I wrote with Julián D. Torres-Vanegas, then my doctoral student, and Juan Carlos Cruz, among some 3,600 articles published in 2020 and 2021.",
+        es: "En 2021 la revista Pharmaceutics eligió como Editor's Choice la revisión sobre sistemas de entrega de ácidos nucleicos y proteínas que escribí con Julián D. Torres-Vanegas, entonces mi doctorando, y Juan Carlos Cruz, entre unos 3.600 artículos publicados en 2020 y 2021."
       }
     ],
     url: "https://doi.org/10.3390/pharmaceutics13030428",
@@ -251,4 +211,61 @@ export const awardsData: Recognition[] = [
     url: "https://www.uis.edu.co/",
     imageUrl: "/images/icons/graduation-cap.svg",
   }
+];
+
+/**
+ * Lo que les reconocieron a sus estudiantes. Va aparte de `awardsData` porque el
+ * reconocimiento es de ellos: el profesor dirigió o codirigió el trabajo.
+ */
+export interface StudentRecognition {
+  year: number;
+  /** Cuando el año no es exacto (lo reunido hasta 2020). */
+  yearLabel?: Localized;
+  title: Localized;
+  awarder: Localized;
+  students: { name: string; imageUrl?: string }[];
+  summary: Localized;
+  url?: string;
+}
+
+export const studentRecognitionsData: StudentRecognition[] = [
+  {
+    year: 2023,
+    title: { en: 'III Rebeca Uribe Bone National Award', es: 'III Premio Nacional Rebeca Uribe Bone' },
+    awarder: {
+      en: 'Consejo Profesional de Ingeniería Química de Colombia (CPIQ)',
+      es: 'Consejo Profesional de Ingeniería Química de Colombia (CPIQ)',
+    },
+    students: [{ name: 'Mishel Porras Ariza' }],
+    summary: {
+      en: 'The award goes to the best chemical engineering degree project by a woman. In 2023 it went to Mishel Porras Ariza, of the Universidad de Pamplona, for her work on the purification of the Polygly peptide and its interfacial and emulsifying properties, which I co-directed with Diego Pradilla.',
+      es: 'El premio reconoce el mejor trabajo de grado en ingeniería química hecho por una mujer. En 2023 lo recibió Mishel Porras Ariza, de la Universidad de Pamplona, por su trabajo sobre la purificación del péptido Polygly y sus propiedades interfaciales y emulsificantes, que codirigí con Diego Pradilla.',
+    },
+    url: 'https://cpiq.gov.co/2023/12/01/ganadores-iii-premio-nacional-rebeca-uribe-bone/',
+  },
+  {
+    year: 2020,
+    yearLabel: { en: 'Until 2020', es: 'Hasta 2020' },
+    title: { en: 'Mention as best undergraduate projects', es: 'Mención como mejores proyectos de grado' },
+    awarder: { en: 'Universidad de los Andes', es: 'Universidad de los Andes' },
+    students: [{ name: 'Manuela Alvarado Obando' }, { name: 'Alexandra Cediel Ulloa' }],
+    summary: {
+      en: 'Two of the undergraduate projects I directed at Uniandes received a mention as best undergraduate projects.',
+      es: 'Dos de los proyectos de grado que dirigí en Uniandes recibieron mención como mejores proyectos de grado.',
+    },
+  },
+  {
+    year: 2020,
+    yearLabel: { en: 'Until 2020', es: 'Hasta 2020' },
+    title: { en: 'Selected for the Otto de Greiff Award', es: 'Seleccionados para el Premio Otto de Greiff' },
+    awarder: { en: 'Universidad de los Andes', es: 'Universidad de los Andes' },
+    students: [
+      { name: 'Carlos Manuel Ramírez Acosta', imageUrl: '/images/students/carlos-manuel-ramirez-acosta.jpg' },
+      { name: 'Jorge Luis Patarroyo', imageUrl: '/images/students/jorge-luis-patarroyo.jpg' },
+    ],
+    summary: {
+      en: 'The University selected two more of the undergraduate projects I directed for the Otto de Greiff Award, which recognizes the best undergraduate theses of eight Colombian universities.',
+      es: 'La Universidad seleccionó otros dos de los proyectos de grado que dirigí para el Premio Otto de Greiff, que reconoce los mejores trabajos de grado de ocho universidades del país.',
+    },
+  },
 ];

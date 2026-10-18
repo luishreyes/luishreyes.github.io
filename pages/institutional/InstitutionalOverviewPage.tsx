@@ -7,13 +7,13 @@ import { Apertura, Cabecera } from '../../components/Apertura';
 import { useI18n, fill, localize, type Lang } from '../../context/i18n';
 import { fotos } from '../../components/data/fotos';
 import { metrics } from '../../components/data/metrics';
-import { editorialData } from '../../components/data/institutional';
+import { editorialData, ethicsCasesEstimate, evaluationCallsData, leadershipRolesData } from '../../components/data/institutional';
 import { editedBooksData } from '../../components/data/editorships';
 import { totalReviews, totalJournalsReviewed } from '../../components/data/peerReview';
 
 const { service } = metrics;
 
-/** El dossier marca con el resaltador la frase que manda: aquí, la primera. */
+/** El resaltador en la frase que manda: la primera. */
 const conResaltado = (texto: string) => {
   const corte = texto.indexOf('. ');
   if (corte < 0) return texto;
@@ -31,22 +31,41 @@ const enumerar = (items: string[], y: string) =>
 
 const numero = (n: number, lang: Lang) => n.toLocaleString(lang === 'es' ? 'es-CO' : 'en-US');
 
+// Las cifras que vienen de un registro con su propio número (la cohorte del AIChE, la red AIGEN).
+const MENTORES_COHORTE = 34;
+const UNIVERSIDADES_AIGEN = 55;
+
 export const InstitutionalOverviewPage: React.FC = () => {
   const { t, lang } = useI18n();
 
+  const propuestas = evaluationCallsData.reduce((s, c) => s + c.proposals, 0);
+  const nacionales = evaluationCallsData.filter((c) => c.scope === 'national').reduce((s, c) => s + c.proposals, 0);
+  const etica = Math.floor(ethicsCasesEstimate / 100) * 100;
+  const tieneMentor = leadershipRolesData.some((r) => localize(r.title, 'en').startsWith('Future Faculty Mentoring Program'));
+
+  // Las cifras del capítulo: casi todas son conteos; la del Comité de Ética es un estimado y lo dice.
   const stats = [
-    { label: t('stats.editorialBoards'), value: service.editorialBoards, note: fill(t('stats.editorialBoards.note'), { since: service.editorialBoardsSince }) },
-    { label: t('stats.editedBooks'), value: service.editedBooks, note: t('stats.editedBooks.note') },
-    { label: t('stats.guestEditorships'), value: service.guestEditorships, note: fill(t('stats.guestEditorships.note'), { since: service.guestEditorshipsSince }) },
-    { label: t('stats.committees'), value: service.committees, note: t('stats.committees.note') },
-    { label: t('stats.leadershipRoles'), value: service.leadershipRoles },
-    { label: t('stats.outreach'), value: service.outreachActivities },
+    { label: t('svc.fig.boards'), value: service.editorialBoards },
+    { label: t('svc.fig.books'), value: service.editedBooks },
+    { label: t('svc.fig.issues'), value: service.guestEditorships },
+    { label: fill(t('svc.fig.reviews'), { journals: totalJournalsReviewed }), value: totalReviews },
+    { label: fill(t('svc.fig.proposals'), { calls: evaluationCallsData.length, national: nacionales }), value: propuestas },
+    { label: t('svc.fig.ethics'), value: `${numero(etica, lang)}+`, note: t('svc.fig.ethics.note') },
+    { label: t('svc.fig.ai'), value: '~470' },
+    ...(tieneMentor ? [{ label: t('svc.fig.mentor'), value: fill(t('svc.fig.mentor.value'), { n: MENTORES_COHORTE }) }] : []),
+    { label: t('svc.fig.aigen'), value: UNIVERSIDADES_AIGEN },
   ];
 
   // Cada frente lleva lo que mejor lo muestra: una foto del lugar, las portadas de los
   // libros o, donde no hay foto honesta, la cifra que lo prueba.
   const foto = (src: string, alt: string, posicion = 'center') => (
     <img src={src} alt={alt} loading="lazy" className="a-foto a-bn aspect-[3/2]" style={{ objectPosition: posicion }} />
+  );
+  const cifras = (a: { n: number; label: string }, b: { n: number; label: string }) => (
+    <div className="a-cifras !grid-cols-2 aspect-[3/2] content-center bg-papel-200 px-8">
+      <div><b>{numero(a.n, lang)}</b><span>{a.label}</span></div>
+      <div><b>{numero(b.n, lang)}</b><span>{b.label}</span></div>
+    </div>
   );
 
   const areas: { to: string; title: string; desc: string; media: React.ReactNode }[] = [
@@ -66,18 +85,7 @@ export const InstitutionalOverviewPage: React.FC = () => {
       to: '/service/editorial',
       title: t('service.editorial.title'),
       desc: fill(t('service.editorial.desc'), { boards: enumerar(editorialData.map((b) => b.journal), t('service.and')) }),
-      media: (
-        <div className="a-cifras !grid-cols-2 aspect-[3/2] content-center bg-papel-200 px-8">
-          <div>
-            <b>{numero(totalReviews, lang)}</b>
-            <span>{t('peerReview.reviews')}</span>
-          </div>
-          <div>
-            <b>{totalJournalsReviewed}</b>
-            <span>{t('peerReview.journals')}</span>
-          </div>
-        </div>
-      ),
+      media: cifras({ n: totalReviews, label: t('peerReview.reviews') }, { n: totalJournalsReviewed, label: t('peerReview.journals') }),
     },
     {
       to: '/service/editorships',
@@ -98,6 +106,12 @@ export const InstitutionalOverviewPage: React.FC = () => {
       ),
     },
     {
+      to: '/service/committees#evaluar',
+      title: t('svc.eval.row.title'),
+      desc: t('svc.eval.row.desc'),
+      media: cifras({ n: propuestas, label: t('svc.eval.proposals') }, { n: evaluationCallsData.length, label: t('svc.eval.calls') }),
+    },
+    {
       to: '/service/outreach',
       title: t('service.outreach.title'),
       desc: t('service.outreach.desc'),
@@ -109,25 +123,31 @@ export const InstitutionalOverviewPage: React.FC = () => {
     <PageWrapper noPadding>
       <Apertura
         palabra={t('nav.service').toLowerCase()}
-        entrada={t('service.overview.sub')}
+        entrada={t('svc.overview.sub')}
         foto={{ src: fotos.palmaCharla.src, alt: localize(fotos.palmaCharla.alt, lang), posicion: '16% 50%' }}
-        accion={{ to: '/service/committees', label: t('service.overview.cta') }}
+        accion={{ to: '/service/purpose', label: t('svc.overview.cta') }}
       />
 
-      {/* ── Qué es el servicio y cuánto pesa ── */}
+      {/* ── El ecosistema y las cifras del capítulo ── */}
       <section className="a-papel a-campo">
         <div className="a-c">
-          <Sube><Cabecera titulo={t('service.overview.lead.title')} /></Sube>
+          <Sube><Cabecera titulo={t('svc.overview.lead.title')} /></Sube>
           <Sube delay={0.06}>
-            <p className="mt-10 a-texto">{conResaltado(t('service.overview.text'))}</p>
+            <p className="mt-10 a-texto">{conResaltado(t('svc.overview.lead.text'))}</p>
           </Sube>
-          <Sube delay={0.1} className="mt-16 sm:mt-20">
+          <Sube delay={0.08} className="mt-6">
+            <Link to="/service/purpose" className="a-enlace">{t('svc.overview.lead.link')} <span aria-hidden="true">→</span></Link>
+          </Sube>
+          <Sube delay={0.1} className="mt-20 sm:mt-24">
+            <h2 className="a-h3">{t('svc.figures.title')}.</h2>
+          </Sube>
+          <Sube delay={0.12} className="mt-10">
             <StatsSection stats={stats} isLoading={false} />
           </Sube>
         </div>
       </section>
 
-      {/* ── Los cinco frentes: filas grandes que llevan a cada página ── */}
+      {/* ── Los frentes: filas grandes que llevan a cada página ── */}
       <section className="a-hundido a-campo">
         <div className="a-c">
           {/* Las filas son el título de la sección: su nombre queda para los lectores de pantalla. */}
@@ -144,7 +164,7 @@ export const InstitutionalOverviewPage: React.FC = () => {
                       {area.title.split(' ').slice(0, -1).join(' ')}{' '}
                       {/* La flecha va pegada a la última palabra: nunca queda sola en una línea. */}
                       <span className="whitespace-nowrap">
-                        {area.title.split(' ').slice(-1)[0]}{'\u00a0'}
+                        {area.title.split(' ').slice(-1)[0]}{' '}
                         <span aria-hidden="true" className="inline-block transition-transform duration-200 group-hover:translate-x-1.5">→</span>
                       </span>
                     </h3>

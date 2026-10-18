@@ -3,35 +3,48 @@ import { Link } from 'react-router-dom';
 import { PageWrapper } from '../../components/PageWrapper';
 import { EncabezadoPagina } from '../../components/Apertura';
 import { Sube } from '../../components/Sube';
-import { useI18n, localize } from '../../context/i18n';
+import { useI18n, localize, fill, type UIKey } from '../../context/i18n';
+import { editorialData } from '../../components/data/institutional';
 import { graduatedStudentsData } from '../../components/data/students';
 import { fotos } from '../../components/data/fotos';
 import type { GraduatedStudent } from '../../types';
 import { PLIEGO, MARGEN, Resaltar, Retrato } from './TeachingPurposePage';
 
-// «El estudiante más fuerte se vuelve un multiplicador»: egresados del grupo que hoy enseñan,
-// con el cargo de su ficha.
+// «El estudiante que asesoro hoy será un nodo en la red de mañana»: egresados del grupo que
+// hoy enseñan, con el cargo de su ficha.
 const DOCENTES = ['Brayan Rodríguez', 'Julian Daniel Torres Vanegas', 'Cristian F. Rodríguez', 'Tatiana Carolina Beltrán González'];
+
+// Dónde ocurre el servicio: las páginas del capítulo, con el título y la descripción de cada una.
+const PAGINAS: { to: string; titulo: UIKey; texto: UIKey }[] = [
+  { to: '/service/augmented-intelligence', titulo: 'service.ai.title', texto: 'service.ai.desc' },
+  { to: '/service/committees', titulo: 'service.leadership.title', texto: 'service.leadership.desc' },
+  { to: '/service/committees#evaluar', titulo: 'svc.eval.row.title', texto: 'svc.eval.row.desc' },
+  { to: '/service/editorial', titulo: 'service.editorial.title', texto: 'service.editorial.desc' },
+  { to: '/service/editorships', titulo: 'service.editorships.title', texto: 'service.editorships.desc' },
+  { to: '/service/outreach', titulo: 'service.outreach.title', texto: 'service.outreach.desc' },
+];
 
 export const ServicePurposePage: React.FC = () => {
   const { t, lang } = useI18n();
   const todos = [...graduatedStudentsData.phd, ...graduatedStudentsData.ms];
+  const nombres = editorialData.map((b) => b.journal);
+  const revistas = `${nombres.slice(0, -1).join(', ')} ${t('service.and')} ${nombres[nombres.length - 1]}`;
   const docentes = DOCENTES.map((n) => todos.find((g) => g.name === n)).filter((g): g is GraduatedStudent => Boolean(g));
 
   return (
     <PageWrapper noPadding>
       <EncabezadoPagina
-        titulo={t('purpose.service.title')}
-        entrada={<p>{t('purpose.service.sub')}</p>}
-        accion={{ to: '/service', label: t('purpose.service.cta') }}
+        titulo={t('svc.purpose.title')}
+        entrada={<p>{t('svc.purpose.sub')}</p>}
+        accion={{ to: '/service', label: t('svc.purpose.cta') }}
         foto={{ src: fotos.scoutingSelfie.src, alt: localize(fotos.scoutingSelfie.alt, lang) }}
       />
 
-      {/* ── Las instituciones son ecosistemas ── */}
+      {/* ── Lo que Uniandes me dio, y la participación ── */}
       <section className="a-papel pt-6 pb-20 sm:pb-28">
         <div className={`a-c ${PLIEGO}`}>
           <div className={MARGEN}>
-            <Sube><h2 className="a-h3">{t('purpose.service.h2')}</h2></Sube>
+            <Sube><h2 className="a-h3">{t('svc.purpose.h2')}</h2></Sube>
             {/* Junto a lo que Uniandes le dio: el campus */}
             <Sube delay={0.08}>
               <figure className="mt-10">
@@ -41,9 +54,9 @@ export const ServicePurposePage: React.FC = () => {
             </Sube>
           </div>
           <div className="space-y-6">
-            <Sube><p className="a-texto">{t('purpose.service.p1')}</p></Sube>
+            <Sube><p className="a-texto">{t('svc.purpose.p1')}</p></Sube>
             <Sube delay={0.06}>
-              <p className="a-texto"><Resaltar texto={t('purpose.service.p2')} frase={t('purpose.service.mark')} /></p>
+              <p className="a-texto"><Resaltar texto={t('svc.purpose.p2')} frase={t('svc.purpose.mark')} /></p>
             </Sube>
           </div>
         </div>
@@ -64,23 +77,23 @@ export const ServicePurposePage: React.FC = () => {
             <Sube delay={0.06}><figcaption className="a-pie">{localize(fotos.acofiPonencia.alt, lang)}</figcaption></Sube>
           </figure>
           <div className="space-y-6">
-            <Sube><p className="a-texto">{t('purpose.service.p3')}</p></Sube>
-            <Sube delay={0.06}><p className="a-texto">{t('purpose.service.p4')}</p></Sube>
+            <Sube><p className="a-texto">{t('svc.purpose.p3')}</p></Sube>
+            <Sube delay={0.06}><p className="a-texto">{t('svc.purpose.p4')}</p></Sube>
           </div>
         </div>
       </section>
 
-      {/* ── Lo que me sostiene, y la cadena que sigue ── */}
+      {/* ── Lo que me sostiene, y la red que sigue ── */}
       <section className="a-papel a-campo">
         <div className={`a-c ${PLIEGO}`}>
           <div className={MARGEN}>
             <Sube delay={0.08}>
-              <blockquote className="a-cita">{t('purpose.service.quote')}</blockquote>
+              <blockquote className="a-cita">{t('svc.purpose.quote')}</blockquote>
             </Sube>
           </div>
           <div className="space-y-6">
-            <Sube><p className="a-texto">{t('purpose.service.p5')}</p></Sube>
-            <Sube delay={0.06}><p className="a-texto">{t('purpose.service.p6')}</p></Sube>
+            <Sube><p className="a-texto">{t('svc.purpose.p5')}</p></Sube>
+            <Sube delay={0.06}><p className="a-texto">{t('svc.purpose.p6')}</p></Sube>
           </div>
         </div>
         <div className="a-c mt-16">
@@ -103,10 +116,31 @@ export const ServicePurposePage: React.FC = () => {
             </Link>
           </Sube>
         </div>
-        {/* Diversidad, adaptación e interconexión: el cierre */}
-        <div className={`a-c ${PLIEGO} mt-20 sm:mt-28`}>
-          <div className="hidden lg:block" />
-          <Sube><p className="a-texto text-tinta-900">{t('purpose.service.p7')}</p></Sube>
+      </section>
+
+      {/* ── Dónde ocurre el servicio: las páginas del capítulo ── */}
+      <section className="a-hundido a-campo">
+        <div className={`a-c ${PLIEGO}`}>
+          <div className={MARGEN}>
+            <Sube><h2 className="a-h3">{t('svc.purpose.where')}</h2></Sube>
+            <Sube delay={0.08}>
+              <figure className="mt-10">
+                <img src={fotos.ptarSalitre.src} alt={localize(fotos.ptarSalitre.alt, lang)} loading="lazy" className="a-bn w-full aspect-[4/3] object-cover" />
+                <figcaption className="a-pie">{localize(fotos.ptarSalitre.alt, lang)}</figcaption>
+              </figure>
+            </Sube>
+          </div>
+          <ul className="a-filas">
+            {PAGINAS.map((p, i) => (
+              <Sube as="li" key={p.to} delay={0.05 * i}>
+                <Link to={p.to} className="a-fila">
+                  <span className="q">{t(p.titulo)}</span>
+                  <span className="d">{fill(t(p.texto), { boards: revistas })}</span>
+                  <span className="ir" aria-hidden="true">→</span>
+                </Link>
+              </Sube>
+            ))}
+          </ul>
         </div>
       </section>
     </PageWrapper>

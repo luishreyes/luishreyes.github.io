@@ -1,5 +1,26 @@
-import React from 'react';
 import type { Localized } from '../../context/i18n';
+
+/**
+ * Los nombres de los cursos, como los registra la Universidad (y como los traen sus
+ * programas). Los que se registran en inglés se quedan en inglés en los dos idiomas.
+ */
+export const COURSE = {
+  ou:        { en: 'Unit Operations', es: 'Operaciones Unitarias' },
+  pi2:       { en: 'Integrated Project 2', es: 'Proyecto Integrado 2' },
+  pou:       { en: 'Unit Operations Project', es: 'Proyecto de Operaciones Unitarias' },
+  challenge: 'Chemical Engineering Challenge',
+  chemfood:  'ChemFood Challenge',
+  pmdi:      { en: 'Multidisciplinary Design Project in Engineering', es: 'Proyecto de Diseño Multidisciplinario en Ingeniería' },
+  spdp:      { en: 'Professional Development Project Seminar', es: 'Seminario de Proyecto de Desarrollo Profesional' },
+  beer:      'From yeast to beer: The scientific principles of brewing',
+  biotec:    { en: 'Industrial Biotechnology', es: 'Biotecnología Industrial' },
+  dpro:      { en: 'Systemic Design of Bioproducts', es: 'Diseño Sistémico de Bioproductos' },
+  fdb:       { en: 'Fundamentals of Bioproduct Design', es: 'Fundamentos de Diseño de Bioproductos' },
+  micro:     { en: 'Food Microbiology', es: 'Microbiología de Alimentos' },
+  dexp:      { en: 'Experimental Design in Chemical Engineering', es: 'Diseño Experimental en Ingeniería Química' },
+  pandora:   { en: 'Pandora’s Lab: From “Eureka!” to disaster', es: 'El Laboratorio de Pandora: Del «¡Eureka!» al desastre' },
+  mgi:       { en: 'Generative AI Applications in Engineering Project Management', es: 'Aplicaciones de IA Generativa en la Gestión de Proyectos de Ingeniería' },
+} satisfies Record<string, Localized>;
 
 export interface TaughtCourse {
   term: string;
@@ -14,134 +35,91 @@ export interface TaughtCourse {
 
 export const teachingData: TaughtCourse[] = [
   // 2026
-  { term: '2026-20', year: 2026, code: 'MGI-4307', title: { en: 'Generative AI Applications in Project Management', es: 'Aplicaciones de IA Generativa en la Gestión de Proyectos' }, students: 49, type: 'Elective', level: 'Graduate', evaluation: null },
-  { term: '2026-10', year: 2026, code: 'IQYA-2031', title: { en: 'Unit Operations Project', es: 'Proyecto de Operaciones Unitarias' }, students: 29, type: 'Core', level: 'Undergraduate', evaluation: 155 },
-  { term: '2026-10', year: 2026, code: 'IQYA-4100', title: { en: 'Industrial Biotechnology', es: 'Biotecnología Industrial' }, students: 16, type: 'Elective', level: 'Graduate', evaluation: 137 },
-  { term: '2026-10', year: 2026, code: 'DPRO-4300', title: { en: 'Systemic Bioproducts Design', es: 'Diseño Sistémico de Bioproductos' }, students: 16, type: 'Core', level: 'Graduate', evaluation: null },
+  { term: '2026-20', year: 2026, code: 'MGI-4307', title: COURSE.mgi, students: 49, type: 'Elective', level: 'Graduate', evaluation: null },
+  { term: '2026-10', year: 2026, code: 'IQYA-2031', title: COURSE.pou, students: 29, type: 'Core', level: 'Undergraduate', evaluation: 155 },
+  { term: '2026-10', year: 2026, code: 'IQYA-4100', title: COURSE.biotec, students: 16, type: 'Elective', level: 'Graduate', evaluation: 137 },
+  { term: '2026-10', year: 2026, code: 'DPRO-4300', title: COURSE.dpro, students: 16, type: 'Core', level: 'Graduate', evaluation: null },
+  { term: '2026-10', year: 2026, code: 'IQYA-3050', title: COURSE.spdp, students: 19, type: 'Core', level: 'Undergraduate', evaluation: null },
 
   // 2025
-  { term: '2025-20', year: 2025, code: 'MGI-4307', title: { en: 'Generative AI Applications in Project Management', es: 'Aplicaciones de IA Generativa en la Gestión de Proyectos' }, students: 45, type: 'Elective', level: 'Graduate', evaluation: null },
-  { term: '2025-20', year: 2025, code: 'CBP-C1320', title: { en: 'Pandora\'s Laboratory', es: 'El Laboratorio de Pandora' }, students: 37, type: 'CBU', level: 'Undergraduate', evaluation: 157 },
-  { term: '2025-20', year: 2025, code: 'IQYA-2031', title: { en: 'Unit Operations Project', es: 'Proyecto de Operaciones Unitarias' }, students: 32, type: 'Core', level: 'Undergraduate', evaluation: 156 },
-  { term: '2025-10', year: 2025, code: 'DPRO-4300', title: { en: 'Systemic Bioproducts Design', es: 'Diseño Sistémico de Bioproductos' }, students: 23, type: 'Core', level: 'Graduate', evaluation: 155 },
-  { term: '2025-10', year: 2025, code: 'IQYA-4100', title: { en: 'Industrial Biotechnology', es: 'Biotecnología Industrial' }, students: 7, type: 'Elective', level: 'Graduate', evaluation: 158 },
+  { term: '2025-20', year: 2025, code: 'MGI-4307', title: COURSE.mgi, students: 45, type: 'Elective', level: 'Graduate', evaluation: null },
+  { term: '2025-20', year: 2025, code: 'CBP-C1320', title: COURSE.pandora, students: 37, type: 'CBU', level: 'Undergraduate', evaluation: 157 },
+  { term: '2025-20', year: 2025, code: 'IQYA-2031', title: COURSE.pou, students: 32, type: 'Core', level: 'Undergraduate', evaluation: 156 },
+  { term: '2025-10', year: 2025, code: 'DPRO-4300', title: COURSE.dpro, students: 23, type: 'Core', level: 'Graduate', evaluation: 155 },
+  { term: '2025-10', year: 2025, code: 'IQYA-4100', title: COURSE.biotec, students: 7, type: 'Elective', level: 'Graduate', evaluation: 158 },
+  { term: '2025-20', year: 2025, code: 'IQYA-3050', title: COURSE.spdp, students: 22, type: 'Core', level: 'Undergraduate', evaluation: null },
+  { term: '2025-10', year: 2025, code: 'IQYA-3050', title: COURSE.spdp, students: 18, type: 'Core', level: 'Undergraduate', evaluation: null },
 
   // 2024
-  { term: '2024-20', year: 2024, code: 'CBP-C1320', title: { en: 'Pandora\'s Laboratory', es: 'El Laboratorio de Pandora' }, students: 37, type: 'CBU', level: 'Undergraduate', evaluation: 158 },
-  { term: '2024-20', year: 2024, code: 'IQYA-2031', title: { en: 'Unit Operations Project', es: 'Proyecto de Operaciones Unitarias' }, students: 16, type: 'Core', level: 'Undergraduate', evaluation: 149 },
-  { term: '2024-20', year: 2024, code: 'IQYA-3012', title: { en: 'Food Microbiology', es: 'Microbiología de Alimentos' }, students: 4, type: 'Core', level: 'Undergraduate', evaluation: 154 },
-  { term: '2024-10', year: 2024, code: 'DPRO-4300', title: { en: 'Systemic Bioproducts Design', es: 'Diseño Sistémico de Bioproductos' }, students: 18, type: 'Core', level: 'Graduate', evaluation: 155 },
-  { term: '2024-10', year: 2024, code: 'IQYA-2031', title: { en: 'Unit Operations Project', es: 'Proyecto de Operaciones Unitarias' }, students: 24, type: 'Core', level: 'Undergraduate', evaluation: 149 },
-  { term: '2024-10', year: 2024, code: 'IQYA-3012', title: { en: 'Food Microbiology', es: 'Microbiología de Alimentos' }, students: 21, type: 'Core', level: 'Undergraduate', evaluation: 155 },
+  { term: '2024-20', year: 2024, code: 'CBP-C1320', title: COURSE.pandora, students: 37, type: 'CBU', level: 'Undergraduate', evaluation: 158 },
+  { term: '2024-20', year: 2024, code: 'IQYA-2031', title: COURSE.pou, students: 16, type: 'Core', level: 'Undergraduate', evaluation: 149 },
+  { term: '2024-20', year: 2024, code: 'IQYA-3012', title: COURSE.micro, students: 4, type: 'Core', level: 'Undergraduate', evaluation: 154 },
+  { term: '2024-10', year: 2024, code: 'DPRO-4300', title: COURSE.dpro, students: 18, type: 'Core', level: 'Graduate', evaluation: 155 },
+  { term: '2024-10', year: 2024, code: 'IQYA-2031', title: COURSE.pou, students: 24, type: 'Core', level: 'Undergraduate', evaluation: 149 },
+  { term: '2024-10', year: 2024, code: 'IQYA-3012', title: COURSE.micro, students: 21, type: 'Core', level: 'Undergraduate', evaluation: 155 },
+  { term: '2024-20', year: 2024, code: 'IQYA-3050', title: COURSE.spdp, students: 14, type: 'Core', level: 'Undergraduate', evaluation: null },
+  { term: '2024-10', year: 2024, code: 'IQYA-3050', title: COURSE.spdp, students: 12, type: 'Core', level: 'Undergraduate', evaluation: null },
   
   // 2023
-  { term: '2023-20', year: 2023, code: 'CBP-C1320', title: { en: 'Pandora\'s Laboratory', es: 'El Laboratorio de Pandora' }, students: 36, type: 'CBU', level: 'Undergraduate', evaluation: 158 },
-  { term: '2023-20', year: 2023, code: 'IQYA-2032', title: { en: 'Integrated Project 2', es: 'Proyecto Integrador 2' }, students: 18, type: 'Core', level: 'Undergraduate', evaluation: 152 },
-  { term: '2023-20', year: 2023, code: 'IQYA-3602', title: { en: 'ChemFood Challenge', es: 'Reto ChemFood' }, students: 24, type: 'Elective', level: 'Undergraduate', evaluation: 160 },
+  { term: '2023-20', year: 2023, code: 'CBP-C1320', title: COURSE.pandora, students: 36, type: 'CBU', level: 'Undergraduate', evaluation: 158 },
+  { term: '2023-20', year: 2023, code: 'IQYA-2032', title: COURSE.pi2, students: 18, type: 'Core', level: 'Undergraduate', evaluation: 152 },
+  { term: '2023-20', year: 2023, code: 'IQYA-3602', title: COURSE.chemfood, students: 24, type: 'Elective', level: 'Undergraduate', evaluation: 160 },
   { term: '2023-20', year: 2023, code: 'IQYA-3901', title: { en: 'IQUI Special Project', es: 'Proyecto Especial IQUI' }, students: 2, type: 'Elective', level: 'Undergraduate', evaluation: 153 },
-  { term: '2023-20', year: 2023, code: 'IQYA-4100', title: { en: 'Industrial Biotechnology', es: 'Biotecnología Industrial' }, students: 17, type: 'Elective', level: 'Graduate', evaluation: 141 },
-  { term: '2023-10', year: 2023, code: 'IQYA-3601', title: { en: 'Chemical Engineering Challenge', es: 'Reto de Ingeniería Química' }, students: 27, type: 'Elective', level: 'Undergraduate', evaluation: 157 },
-  { term: '2023-10', year: 2023, code: 'IQYA-2032', title: { en: 'Integrated Project 2', es: 'Proyecto Integrador 2' }, students: 29, type: 'Core', level: 'Undergraduate', evaluation: 143 },
-  { term: '2023-10', year: 2023, code: 'DPRO-4300', title: { en: 'Systemic Bioproducts Design', es: 'Diseño Sistémico de Bioproductos' }, students: 15, type: 'Core', level: 'Graduate', evaluation: 153 },
+  { term: '2023-20', year: 2023, code: 'IQYA-4100', title: COURSE.biotec, students: 17, type: 'Elective', level: 'Graduate', evaluation: 141 },
+  { term: '2023-10', year: 2023, code: 'IQYA-3601', title: COURSE.challenge, students: 27, type: 'Elective', level: 'Undergraduate', evaluation: 157 },
+  { term: '2023-10', year: 2023, code: 'IQYA-2032', title: COURSE.pi2, students: 29, type: 'Core', level: 'Undergraduate', evaluation: 143 },
+  { term: '2023-10', year: 2023, code: 'DPRO-4300', title: COURSE.dpro, students: 15, type: 'Core', level: 'Graduate', evaluation: 153 },
+  { term: '2023-20', year: 2023, code: 'IQYA-3050', title: COURSE.spdp, students: 12, type: 'Core', level: 'Undergraduate', evaluation: null },
+  { term: '2023-10', year: 2023, code: 'IQYA-3050', title: COURSE.spdp, students: 11, type: 'Core', level: 'Undergraduate', evaluation: null },
 
   // 2022
-  { term: '2022-20', year: 2022, code: 'IQUI-4230', title: { en: 'Industrial Biotechnology', es: 'Biotecnología Industrial' }, students: 26, type: 'Elective', level: 'Graduate', evaluation: 152 },
-  { term: '2022-20', year: 2022, code: 'IQUI-3094', title: { en: 'Project Seminar', es: 'Seminario de Proyecto' }, students: 38, type: 'Core', level: 'Undergraduate', evaluation: 157 },
-  { term: '2022-20', year: 2022, code: 'IQUI-2032', title: { en: 'Integrated Project 2', es: 'Proyecto Integrador 2' }, students: 36, type: 'Core', level: 'Undergraduate', evaluation: 135 },
-  { term: '2022-20', year: 2022, code: 'CBP-C1320', title: { en: 'Pandora\'s Laboratory', es: 'El Laboratorio de Pandora' }, students: 27, type: 'CBU', level: 'Undergraduate', evaluation: 158 },
-  { term: '2022-20', year: 2022, code: 'IALI-3094', title: { en: 'Project Seminar', es: 'Seminario de Proyecto' }, students: 2, type: 'Core', level: 'Undergraduate', evaluation: 151 },
-  { term: '2022-10', year: 2022, code: 'IQUI-3094', title: { en: 'Project Seminar', es: 'Seminario de Proyecto' }, students: 50, type: 'Core', level: 'Undergraduate', evaluation: 155 },
+  { term: '2022-20', year: 2022, code: 'IQUI-4230', title: COURSE.biotec, students: 26, type: 'Elective', level: 'Graduate', evaluation: 152 },
+  { term: '2022-20', year: 2022, code: 'IQUI-3094', title: COURSE.spdp, students: 38, type: 'Core', level: 'Undergraduate', evaluation: 157 },
+  { term: '2022-20', year: 2022, code: 'IQUI-2032', title: COURSE.pi2, students: 36, type: 'Core', level: 'Undergraduate', evaluation: 135 },
+  { term: '2022-20', year: 2022, code: 'CBP-C1320', title: COURSE.pandora, students: 27, type: 'CBU', level: 'Undergraduate', evaluation: 158 },
+  { term: '2022-20', year: 2022, code: 'IALI-3094', title: COURSE.spdp, students: 2, type: 'Core', level: 'Undergraduate', evaluation: 151 },
+  { term: '2022-10', year: 2022, code: 'IQUI-3094', title: COURSE.spdp, students: 50, type: 'Core', level: 'Undergraduate', evaluation: 155 },
   { term: '2022-10', year: 2022, code: 'IQUI-3090', title: { en: 'Thesis Project Seminar', es: 'Seminario de Proyecto de Tesis' }, students: 8, type: 'Core', level: 'Undergraduate', evaluation: 156 },
-  { term: '2022-10', year: 2022, code: 'IQUI-2032', title: { en: 'Integrated Project 2', es: 'Proyecto Integrador 2' }, students: 79, type: 'Core', level: 'Undergraduate', evaluation: 143 },
-  { term: '2022-10', year: 2022, code: 'IALI-3101', title: { en: 'From Yeast to Beer', es: 'De la Levadura a la Cerveza' }, students: 59, type: 'Elective', level: 'Undergraduate', evaluation: 154 },
-  { term: '2022-10', year: 2022, code: 'IALI-3094', title: { en: 'Project Seminar', es: 'Seminario de Proyecto' }, students: 5, type: 'Core', level: 'Undergraduate', evaluation: 141 },
-  { term: '2022-10', year: 2022, code: 'DPRO-4300', title: { en: 'Systemic Bioproducts Design', es: 'Diseño Sistémico de Bioproductos' }, students: 30, type: 'Core', level: 'Graduate', evaluation: 140 },
+  { term: '2022-10', year: 2022, code: 'IQUI-2032', title: COURSE.pi2, students: 79, type: 'Core', level: 'Undergraduate', evaluation: 143 },
+  { term: '2022-10', year: 2022, code: 'IALI-3101', title: COURSE.beer, students: 59, type: 'Elective', level: 'Undergraduate', evaluation: 154 },
+  { term: '2022-10', year: 2022, code: 'IALI-3094', title: COURSE.spdp, students: 5, type: 'Core', level: 'Undergraduate', evaluation: 141 },
+  { term: '2022-10', year: 2022, code: 'DPRO-4300', title: COURSE.dpro, students: 30, type: 'Core', level: 'Graduate', evaluation: 140 },
 
   // 2021
-  { term: '2021-20', year: 2021, code: 'IQUI-4230', title: { en: 'Industrial Biotechnology', es: 'Biotecnología Industrial' }, students: 13, type: 'Elective', level: 'Graduate', evaluation: 160 },
-  { term: '2021-20', year: 2021, code: 'IQUI-2032', title: { en: 'Integrated Project 2', es: 'Proyecto Integrador 2' }, students: 86, type: 'Core', level: 'Undergraduate', evaluation: 141 },
-  { term: '2021-20', year: 2021, code: 'CBP-C1320', title: { en: 'Pandora\'s Laboratory', es: 'El Laboratorio de Pandora' }, students: 31, type: 'CBU', level: 'Undergraduate', evaluation: 157 },
-  { term: '2021-10', year: 2021, code: 'IQUI-3350', title: { en: 'Chemical Engineering Challenge', es: 'Reto de Ingeniería Química' }, students: 14, type: 'Elective', level: 'Undergraduate', evaluation: 159 },
-  { term: '2021-10', year: 2021, code: 'IQUI-3010', title: { en: 'Unit Operations', es: 'Operaciones Unitarias' }, students: 36, type: 'Core', level: 'Undergraduate', evaluation: 153 },
-  { term: '2021-10', year: 2021, code: 'IALI-3101', title: { en: 'From Yeast to Beer', es: 'De la Levadura a la Cerveza' }, students: 10, type: 'Elective', level: 'Undergraduate', evaluation: 159 },
+  { term: '2021-20', year: 2021, code: 'IQUI-4230', title: COURSE.biotec, students: 13, type: 'Elective', level: 'Graduate', evaluation: 160 },
+  { term: '2021-20', year: 2021, code: 'IQUI-2032', title: COURSE.pi2, students: 86, type: 'Core', level: 'Undergraduate', evaluation: 141 },
+  { term: '2021-20', year: 2021, code: 'CBP-C1320', title: COURSE.pandora, students: 31, type: 'CBU', level: 'Undergraduate', evaluation: 157 },
+  { term: '2021-10', year: 2021, code: 'IQUI-3350', title: COURSE.challenge, students: 14, type: 'Elective', level: 'Undergraduate', evaluation: 159 },
+  { term: '2021-10', year: 2021, code: 'IQUI-3010', title: COURSE.ou, students: 36, type: 'Core', level: 'Undergraduate', evaluation: 153 },
+  { term: '2021-10', year: 2021, code: 'IALI-3101', title: COURSE.beer, students: 10, type: 'Elective', level: 'Undergraduate', evaluation: 159 },
 
   // 2020
-  { term: '2020-20', year: 2020, code: 'IQUI-3010', title: { en: 'Unit Operations', es: 'Operaciones Unitarias' }, students: 49, type: 'Core', level: 'Undergraduate', evaluation: 152 },
-  { term: '2020-20', year: 2020, code: 'IING-3000', title: { en: 'Multidisciplinary Design Project in Engineering', es: 'Proyecto de Diseño Multidisciplinario en Ingeniería' }, students: 38, type: 'Elective', level: 'Undergraduate', evaluation: 152 },
-  { term: '2020-20', year: 2020, code: 'IQUI-3520', title: { en: 'Bioproducts Design Fundamentals', es: 'Fundamentos de Diseño de Bioproductos' }, students: 27, type: 'Elective', level: 'Undergraduate', evaluation: 154 },
-  { term: '2020-10', year: 2020, code: 'DPRO-4300', title: { en: 'Systemic Bioproducts Design', es: 'Diseño Sistémico de Bioproductos' }, students: 21, type: 'Core', level: 'Graduate', evaluation: null },
-  { term: '2020-10', year: 2020, code: 'IQUI-4230', title: { en: 'Industrial Biotechnology', es: 'Biotecnología Industrial' }, students: 16, type: 'Elective', level: 'Graduate', evaluation: null },
-  { term: '2020-10', year: 2020, code: 'IQUI-3350', title: { en: 'Chemical Engineering Challenge', es: 'Reto de Ingeniería Química' }, students: 17, type: 'Elective', level: 'Undergraduate', evaluation: null },
-  { term: '2020-10', year: 2020, code: 'IQUI-3010', title: { en: 'Unit Operations', es: 'Operaciones Unitarias' }, students: 56, type: 'Core', level: 'Undergraduate', evaluation: null },
+  { term: '2020-20', year: 2020, code: 'IQUI-3010', title: COURSE.ou, students: 49, type: 'Core', level: 'Undergraduate', evaluation: 152 },
+  { term: '2020-20', year: 2020, code: 'IING-3000', title: COURSE.pmdi, students: 38, type: 'Elective', level: 'Undergraduate', evaluation: 152 },
+  { term: '2020-20', year: 2020, code: 'IQUI-3520', title: COURSE.fdb, students: 27, type: 'Elective', level: 'Undergraduate', evaluation: 154 },
+  { term: '2020-10', year: 2020, code: 'DPRO-4300', title: COURSE.dpro, students: 21, type: 'Core', level: 'Graduate', evaluation: null },
+  { term: '2020-10', year: 2020, code: 'IQUI-4230', title: COURSE.biotec, students: 16, type: 'Elective', level: 'Graduate', evaluation: null },
+  { term: '2020-10', year: 2020, code: 'IQUI-3350', title: COURSE.challenge, students: 17, type: 'Elective', level: 'Undergraduate', evaluation: null },
+  { term: '2020-10', year: 2020, code: 'IQUI-3010', title: COURSE.ou, students: 56, type: 'Core', level: 'Undergraduate', evaluation: null },
   
   // 2019
-  { term: '2019-20', year: 2019, code: 'IQUI-3010', title: { en: 'Unit Operations', es: 'Operaciones Unitarias' }, students: 75, type: 'Core', level: 'Undergraduate', evaluation: 152 },
-  { term: '2019-20', year: 2019, code: 'IQUI-3518', title: { en: 'From Yeast to Beer', es: 'De la Levadura a la Cerveza' }, students: 25, type: 'Elective', level: 'Undergraduate', evaluation: 162 },
-  { term: '2019-10', year: 2019, code: 'DPRO-4300', title: { en: 'Systemic Bioproducts Design', es: 'Diseño Sistémico de Bioproductos' }, students: 11, type: 'Core', level: 'Graduate', evaluation: 158 },
-  { term: '2019-10', year: 2019, code: 'IQUI-3010', title: { en: 'Unit Operations', es: 'Operaciones Unitarias' }, students: 68, type: 'Core', level: 'Undergraduate', evaluation: 153 },
-  { term: '2019-10', year: 2019, code: 'IQUI-3350', title: { en: 'Chemical Engineering Challenge', es: 'Reto de Ingeniería Química' }, students: 21, type: 'Elective', level: 'Undergraduate', evaluation: 163 },
-  { term: '2019-10', year: 2019, code: 'IQUI-4230', title: { en: 'Industrial Biotechnology', es: 'Biotecnología Industrial' }, students: 26, type: 'Elective', level: 'Graduate', evaluation: 159 },
+  { term: '2019-20', year: 2019, code: 'IQUI-3010', title: COURSE.ou, students: 75, type: 'Core', level: 'Undergraduate', evaluation: 152 },
+  { term: '2019-20', year: 2019, code: 'IQUI-3518', title: COURSE.beer, students: 25, type: 'Elective', level: 'Undergraduate', evaluation: 162 },
+  { term: '2019-10', year: 2019, code: 'DPRO-4300', title: COURSE.dpro, students: 11, type: 'Core', level: 'Graduate', evaluation: 158 },
+  { term: '2019-10', year: 2019, code: 'IQUI-3010', title: COURSE.ou, students: 68, type: 'Core', level: 'Undergraduate', evaluation: 153 },
+  { term: '2019-10', year: 2019, code: 'IQUI-3350', title: COURSE.challenge, students: 21, type: 'Elective', level: 'Undergraduate', evaluation: 163 },
+  { term: '2019-10', year: 2019, code: 'IQUI-4230', title: COURSE.biotec, students: 26, type: 'Elective', level: 'Graduate', evaluation: 159 },
   
   // 2018
-  { term: '2018-20', year: 2018, code: 'IQUI-3010', title: { en: 'Unit Operations', es: 'Operaciones Unitarias' }, students: 50, type: 'Core', level: 'Undergraduate', evaluation: 153 },
-  { term: '2018-20', year: 2018, code: 'IQUI-3518', title: { en: 'From Yeast to Beer', es: 'De la Levadura a la Cerveza' }, students: 30, type: 'Elective', level: 'Undergraduate', evaluation: 161 },
-  { term: '2018-10', year: 2018, code: 'IQUI-2200', title: { en: 'Experimental Design in Chemical Engineering', es: 'Diseño Experimental en Ingeniería Química' }, students: 58, type: 'Core', level: 'Undergraduate', evaluation: 156 },
-  { term: '2018-10', year: 2018, code: 'IQUI-3010', title: { en: 'Unit Operations', es: 'Operaciones Unitarias' }, students: 68, type: 'Core', level: 'Undergraduate', evaluation: 154 },
+  { term: '2018-20', year: 2018, code: 'IQUI-3010', title: COURSE.ou, students: 50, type: 'Core', level: 'Undergraduate', evaluation: 153 },
+  { term: '2018-20', year: 2018, code: 'IQUI-3518', title: COURSE.beer, students: 30, type: 'Elective', level: 'Undergraduate', evaluation: 161 },
+  { term: '2018-10', year: 2018, code: 'IQUI-2200', title: COURSE.dexp, students: 58, type: 'Core', level: 'Undergraduate', evaluation: 156 },
+  { term: '2018-10', year: 2018, code: 'IQUI-3010', title: COURSE.ou, students: 68, type: 'Core', level: 'Undergraduate', evaluation: 154 },
 
   // 2017
-  { term: '2017-20', year: 2017, code: 'IQUI-2200', title: { en: 'Experimental Design in Chemical Engineering', es: 'Diseño Experimental en Ingeniería Química' }, students: 50, type: 'Core', level: 'Undergraduate', evaluation: 154 },
-  { term: '2017-20', year: 2017, code: 'IQUI-3010', title: { en: 'Unit Operations', es: 'Operaciones Unitarias' }, students: 21, type: 'Core', level: 'Undergraduate', evaluation: 160 },
+  { term: '2017-20', year: 2017, code: 'IQUI-2200', title: COURSE.dexp, students: 50, type: 'Core', level: 'Undergraduate', evaluation: 154 },
+  { term: '2017-20', year: 2017, code: 'IQUI-3010', title: COURSE.ou, students: 21, type: 'Core', level: 'Undergraduate', evaluation: 160 },
 ];
-
-export interface TeachingPillar {
-  title: Localized;
-  icon: React.ReactNode;
-  description: Localized;
-}
-
-export const teachingPillars: TeachingPillar[] = [
-  {
-    title: { en: 'Fundamentals as Foundation, Not Formulas as Solutions', es: 'Fundamentos como cimiento, no fórmulas como soluciones' },
-    icon: React.createElement('img', { src: "https://cdn-icons-png.flaticon.com/512/1606/1606208.png", className: "h-8 w-8", alt: "Fundamentals Icon" }),
-    description: {
-      en: "I invest intensive time ensuring students understand core principles: conservation laws, thermodynamic principles, transport phenomena. When students truly grasp these fundamentals, they don't need a formula sheet for every case. They can derive what they need, recognize patterns, and build solutions. As Professor Ramírez taught me, when you understand the fundamentals, everything else falls into place naturally.",
-      es: "Invierto tiempo intensivo en asegurar que los estudiantes comprendan los principios fundamentales: leyes de conservación, principios termodinámicos, fenómenos de transporte. Cuando los estudiantes realmente comprenden estos fundamentos, no necesitan una hoja de fórmulas para cada caso. Pueden deducir lo que requieren, reconocer patrones y construir soluciones. Como me enseñó el profesor Ramírez, cuando entiendes los fundamentos, todo lo demás encaja de forma natural."
-    },
-  },
-  {
-    title: { en: 'Active Construction with Bidirectional Curiosity', es: 'Construcción activa con curiosidad bidireccional' },
-    icon: React.createElement('img', { src: "https://cdn-icons-png.flaticon.com/512/1969/1969057.png", className: "h-8 w-8", alt: "Bidirectional Curiosity Icon" }),
-    description: {
-      en: "I rigorously teach fundamentals, then guide students through increasingly complex problems where they build from these principles. But learning flows both ways. Their questions and approaches often reveal angles I hadn't considered. This mutual curiosity creates a learning laboratory where I explicitly acknowledge that I'm learning alongside them, removing artificial hierarchies that inhibit genuine inquiry.",
-      es: "Enseño los fundamentos con rigor y luego guío a los estudiantes a través de problemas cada vez más complejos en los que construyen a partir de esos principios. Pero el aprendizaje fluye en ambos sentidos. Sus preguntas y enfoques a menudo revelan ángulos que yo no había considerado. Esta curiosidad mutua crea un laboratorio de aprendizaje en el que reconozco de forma explícita que estoy aprendiendo junto a ellos, eliminando jerarquías artificiales que inhiben la indagación genuina."
-    },
-  },
-  {
-    title: { en: 'Networks Over Isolated Knowledge', es: 'Redes por encima del conocimiento aislado' },
-    icon: React.createElement('img', { src: "https://cdn-icons-png.flaticon.com/512/1239/1239608.png", className: "h-8 w-8", alt: "Networks Icon" }),
-    description: {
-      en: "Real-world connections extend beyond case studies. I view my role as a node connector: linking students with peers, industry professionals, researchers, and alumni. I model this through diverse research collaborations, showing students that even experts rely on networks rather than isolated expertise. Knowing when and how to seek help matters as much as individual capability.",
-      es: "Las conexiones del mundo real van más allá de los casos de estudio. Concibo mi rol como el de un conector de nodos: vinculo a los estudiantes con sus pares, profesionales de la industria, investigadores y egresados. Modelo esto a través de diversas colaboraciones de investigación, mostrando a los estudiantes que incluso los expertos dependen de redes en lugar de una experticia aislada. Saber cuándo y cómo pedir ayuda importa tanto como la capacidad individual."
-    },
-  },
-  {
-    title: { en: 'Social Learning as Evolutionary Pressure', es: 'El aprendizaje social como presión evolutiva' },
-    icon: React.createElement('img', { src: "https://cdn-icons-png.flaticon.com/512/1956/1956643.png", className: "h-8 w-8", alt: "Social Learning Icon" }),
-    description: {
-      en: "Team-based and experiential learning aren't just pedagogical tools; they're evolutionary pressures that develop adaptability. By constantly changing team compositions and challenge contexts, I create environments where students must continuously adapt their collaboration strategies. This mirrors the professional world where adaptability and teamwork matter more than specialized knowledge.",
-      es: "El aprendizaje en equipo y experiencial no son solo herramientas pedagógicas; son presiones evolutivas que desarrollan la adaptabilidad. Al cambiar constantemente la composición de los equipos y los contextos de los retos, creo entornos en los que los estudiantes deben adaptar continuamente sus estrategias de colaboración. Esto refleja el mundo profesional, donde la adaptabilidad y el trabajo en equipo importan más que el conocimiento especializado."
-    },
-  },
-  {
-    title: { en: 'Confidence Through Mastery and Evolution', es: 'Confianza a través del dominio y la evolución' },
-    icon: React.createElement('img', { src: "https://cdn-icons-png.flaticon.com/512/11244/11244296.png", className: "h-8 w-8", alt: "Confidence and Mastery Icon" }),
-    description: {
-      en: "When I tell students \"you are capable,\" it's based on genuine mastery of fundamentals combined with the confidence to ask for help when needed. I maintain high standards while adapting methods. If current students connect better through computational tools or industrial examples, I adjust the path, not the destination. The rigor remains; the delivery evolves.",
-      es: "Cuando les digo a los estudiantes «eres capaz», se basa en un dominio genuino de los fundamentos combinado con la confianza para pedir ayuda cuando se necesita. Mantengo altos estándares mientras adapto los métodos. Si los estudiantes actuales conectan mejor a través de herramientas computacionales o ejemplos industriales, ajusto el camino, no el destino. El rigor permanece; la forma de enseñarlo evoluciona."
-    },
-  }
-];
-
 
 export interface Testimonial {
   quote: Localized;
@@ -169,7 +147,7 @@ export const testimonials: Testimonial[] = [
     },
     name: "Angie Daniela Bolaños Barbosa",
     graduateName: "Angie Daniela Bolaños Barbosa",
-    info: { en: "University Tutor at Fundación Alquería Cavelier", es: "Tutora universitaria en la Fundación Alquería Cavelier" },
+    info: { en: "Co-founder at Moxacá Brewery", es: "Cofundadora de Moxacá Brewery" },
     imageUrl: "/images/students/angie-daniela-bolanos-barbosa.jpg",
     context: { en: "Undergraduate, Thesis & M.S. Mentorship", es: "Mentoría de pregrado, tesis y maestría" },
     category: 'Research Advising'
@@ -251,29 +229,29 @@ export const testimonials: Testimonial[] = [
     name: "Diego Alejandro Peñaloza Mayorga",
     info: { en: "Packaging Team Lead at Central Cervecera de Colombia", es: "Líder de Equipo de Envasado en Central Cervecera de Colombia" },
     imageUrl: "/images/testimonials/img-5790.jpg",
-    context: { en: "Course: From Yeast to Beer", es: "Curso: De la Levadura a la Cerveza" },
+    context: { en: "Course: From yeast to beer", es: "Curso: From yeast to beer" },
     category: 'Teaching & Mentorship'
   },
   {
     quote: {
-      en: "'From Yeast to Beer' is built on a simple, captivating idea: understanding the beer in your hand. It sparks an innate curiosity that turns every sip into a question of 'how?' and 'why?' For me, this was the first course that truly felt like applied Chemical Engineering. We were challenged to think and act as engineers facing a real problem where our decisions directly impacted a tangible product. It’s a powerful way to learn.",
-      es: "«De la Levadura a la Cerveza» se construye sobre una idea simple y cautivadora: entender la cerveza que tienes en la mano. Despierta una curiosidad innata que convierte cada sorbo en una pregunta de «¿cómo?» y «¿por qué?». Para mí, este fue el primer curso que realmente se sintió como Ingeniería Química aplicada. Se nos retó a pensar y actuar como ingenieros frente a un problema real, donde nuestras decisiones impactaban directamente un producto tangible. Es una forma poderosa de aprender."
+      en: "'From yeast to beer' is built on a simple, captivating idea: understanding the beer in your hand. It sparks an innate curiosity that turns every sip into a question of 'how?' and 'why?' For me, this was the first course that truly felt like applied Chemical Engineering. We were challenged to think and act as engineers facing a real problem where our decisions directly impacted a tangible product. It’s a powerful way to learn.",
+      es: "«From yeast to beer» se construye sobre una idea simple y cautivadora: entender la cerveza que tiene en la mano. Despierta una curiosidad innata que convierte cada sorbo en una pregunta de «¿cómo?» y «¿por qué?». Para mí, este fue el primer curso que realmente se sintió como Ingeniería Química aplicada. Se nos retó a pensar y actuar como ingenieros frente a un problema real, donde nuestras decisiones impactaban directamente un producto tangible. Es una forma poderosa de aprender."
     },
     name: "Jason Bernal Sánchez",
     info: { en: "Integration Lead Engineer at Kanadevia Inova", es: "Ingeniero líder de integración en Kanadevia Inova" },
     imageUrl: "/images/testimonials/img-5798.jpg",
-    context: { en: "Course: From Yeast to Beer", es: "Curso: De la Levadura a la Cerveza" },
+    context: { en: "Course: From yeast to beer", es: "Curso: From yeast to beer" },
     category: 'Teaching & Mentorship'
   },
   {
     quote: {
-      en: "'From Yeast to Beer,' or as I like to call it, the 'Pola class,' is a student's first true taste of the real world of a chemical engineer. It’s where you get to manage a process and design your own product from start to finish. Luis H. ensures we tackle topics of equal or greater relevance, such as analyzing the process's environmental impact, designing and marketing a brand, and managing the product financially. This holistic approach wouldn't be possible without the passion Luis H. inspires in his students.",
-      es: "«De la Levadura a la Cerveza», o como me gusta llamarla, la «clase de la pola», es el primer verdadero acercamiento de un estudiante al mundo real de un ingeniero químico. Es donde llegas a gestionar un proceso y a diseñar tu propio producto de principio a fin. Luis H. se asegura de que abordemos temas de igual o mayor relevancia, como analizar el impacto ambiental del proceso, diseñar y comercializar una marca y gestionar el producto financieramente. Este enfoque holístico no sería posible sin la pasión que Luis H. inspira en sus estudiantes."
+      en: "'From yeast to beer,' or as I like to call it, the 'Pola class,' is a student's first true taste of the real world of a chemical engineer. It’s where you get to manage a process and design your own product from start to finish. Luis H. ensures we tackle topics of equal or greater relevance, such as analyzing the process's environmental impact, designing and marketing a brand, and managing the product financially. This holistic approach wouldn't be possible without the passion Luis H. inspires in his students.",
+      es: "«From yeast to beer», o como me gusta llamarla, la «clase de la pola», es el primer verdadero acercamiento de un estudiante al mundo real de un ingeniero químico. Es donde llega a gestionar un proceso y a diseñar su propio producto de principio a fin. Luis H. se asegura de que abordemos temas de igual o mayor relevancia, como analizar el impacto ambiental del proceso, diseñar y comercializar una marca y gestionar el producto financieramente. Este enfoque holístico no sería posible sin la pasión que Luis H. inspira en sus estudiantes."
     },
     name: "Camilo Zarate",
     info: { en: "Senior Associate at PwC", es: "Asociado sénior en PwC" },
     imageUrl: "/images/testimonials/img-5784.jpg",
-    context: { en: "Course: From Yeast to Beer", es: "Curso: De la Levadura a la Cerveza" },
+    context: { en: "Course: From yeast to beer", es: "Curso: From yeast to beer" },
     category: 'Teaching & Mentorship'
   },
   {
@@ -283,7 +261,7 @@ export const testimonials: Testimonial[] = [
     },
     name: "Camila Ocasión",
     graduateName: "Camila Ocasión Martínez",
-    info: { en: "M.S. in Chemical Engineering, Director of Corporate Responsibility at Hevolución", es: "M.Sc. en Ingeniería Química, Directora de Responsabilidad Corporativa en Hevolución" },
+    info: { en: "Consultant at Excelsa", es: "Consultora en Excelsa" },
     imageUrl: "/images/students/camila-ocasion-martinez.jpg",
     context: { en: "Course: Multiple Engineering Courses", es: "Curso: Varios cursos de ingeniería" },
     category: 'Teaching & Mentorship'
@@ -295,7 +273,7 @@ export const testimonials: Testimonial[] = [
     },
     name: "Carlos Manuel Ramírez Acosta",
     graduateName: "Carlos Manuel Ramírez Acosta",
-    info: { en: "Research Professional at Vecol S.A.", es: "Profesional de investigación en Vecol S.A." },
+    info: { en: "Regional Qualification Expert at Sanofi", es: "Experto Regional de Calificación en Sanofi" },
     imageUrl: "/images/students/carlos-manuel-ramirez-acosta.jpg",
     context: { en: "M.S. Thesis Advisee", es: "Dirigido de tesis de maestría" },
     category: 'Research Advising'
@@ -307,7 +285,7 @@ export const testimonials: Testimonial[] = [
     },
     name: "Carlos Manuel Ramírez Acosta",
     graduateName: "Carlos Manuel Ramírez Acosta",
-    info: { en: "Research Professional at Vecol S.A.", es: "Profesional de investigación en Vecol S.A." },
+    info: { en: "Regional Qualification Expert at Sanofi", es: "Experto Regional de Calificación en Sanofi" },
     imageUrl: "/images/students/carlos-manuel-ramirez-acosta.jpg",
     context: { en: "Course: Experimental Design", es: "Curso: Diseño Experimental" },
     category: 'Teaching & Mentorship'
@@ -343,7 +321,7 @@ export const testimonials: Testimonial[] = [
     },
     name: "Olga Lucía Acuña",
     graduateName: "Olga Lucía Acuña",
-    info: { en: "M.S. in Chemical Engineering", es: "M.Sc. en Ingeniería Química" },
+    info: { en: "Jr. Solutions Engineer at Arcaise LLC", es: "Ingeniera de soluciones júnior en Arcaise LLC" },
     imageUrl: "/images/students/olga-lucia-acuna.jpg",
     context: { en: "Course Student & Graduate Assistant", es: "Estudiante del curso y asistente graduada" },
     category: 'Teaching & Mentorship'
@@ -355,7 +333,7 @@ export const testimonials: Testimonial[] = [
     },
     name: "Olga Lucía Acuña",
     graduateName: "Olga Lucía Acuña",
-    info: { en: "M.S. in Chemical Engineering", es: "M.Sc. en Ingeniería Química" },
+    info: { en: "Jr. Solutions Engineer at Arcaise LLC", es: "Ingeniera de soluciones júnior en Arcaise LLC" },
     imageUrl: "/images/students/olga-lucia-acuna.jpg",
     context: { en: "M.S. Thesis Advisee", es: "Dirigida de tesis de maestría" },
     category: 'Research Advising'
@@ -367,7 +345,7 @@ export const testimonials: Testimonial[] = [
     },
     name: "Valentina Quezada",
     graduateName: "Valentina Quezada Pérez",
-    info: { en: "Researcher at Universidad de los Andes", es: "Investigadora en la Universidad de los Andes" },
+    info: { en: "Scientific Writer at Sanofi", es: "Redactora científica en Sanofi" },
     imageUrl: "/images/students/valentina-quezada-perez.jpg",
     context: { en: "Mentorship Experience", es: "Experiencia de mentoría" },
     category: 'Teaching & Mentorship'
@@ -379,7 +357,7 @@ export const testimonials: Testimonial[] = [
     },
     name: "Valentina Quezada",
     graduateName: "Valentina Quezada Pérez",
-    info: { en: "Researcher at Universidad de los Andes", es: "Investigadora en la Universidad de los Andes" },
+    info: { en: "Scientific Writer at Sanofi", es: "Redactora científica en Sanofi" },
     imageUrl: "/images/students/valentina-quezada-perez.jpg",
     context: { en: "Undergraduate Researcher & M.S. Thesis Advisee", es: "Investigadora de pregrado y dirigida de tesis de maestría" },
     category: 'Research Advising'
@@ -430,4 +408,263 @@ export const testimonials: Testimonial[] = [
     context: { en: "General Mentorship", es: "Mentoría general" },
     category: 'Teaching & Mentorship'
   }
+];
+
+// ── Los cursos que creé o rediseñé, agrupados por lo que enseñan ────────────
+
+export type CourseTheme = 'process' | 'bio' | 'general' | 'ai';
+
+export interface CourseRecord {
+  id: string;
+  theme: CourseTheme;
+  title: Localized;
+  /** Los códigos con que se ha dictado, en orden. Con ellos se cuentan sus secciones en teachingData. */
+  codes: string[];
+  /** Semestre en que lo creé o lo rediseñé. */
+  since: string;
+  action: 'created' | 'redesigned';
+  /** Con quién lo creé o lo rediseñé. */
+  partners?: string[];
+  /** Qué tiene el curso y qué cambió en él. Párrafos separados por una línea en blanco. */
+  text: Localized;
+}
+
+/** Diez creados y cinco rediseñados (docencia/cursos.json del portafolio docente, 11 oct 2026). */
+export const courseCatalog: CourseRecord[] = [
+  // Procesos y proyectos
+  {
+    id: 'ou', theme: 'process', title: COURSE.ou, codes: ['IQUI-3010'], since: '2017-20', action: 'redesigned',
+    text: {
+      en: 'I redesigned it from 2017 with Nicolás Ríos Ratkovich and the support of the Center for Innovation in Technology and Education (Conecta-TE): a flipped classroom with an e-book of seven modules and a joint project with Modeling and Simulation. In 2020-10 I built its version 2.0, a project-oriented, problem-based course.',
+      es: 'Lo rediseñé desde 2017 con Nicolás Ríos Ratkovich y el acompañamiento del Centro de Innovación en Tecnología y Educación (Conecta-TE): un aula invertida con un libro electrónico de siete módulos y un proyecto conjunto con Modelamiento y Simulación. En 2020-10 armé su versión 2.0, un curso orientado a proyectos y basado en problemas.',
+    },
+  },
+  {
+    id: 'challenge', theme: 'process', title: COURSE.challenge, codes: ['IQUI-3350', 'IQYA-3601'], since: '2019-10', action: 'created', partners: ['Diego Pradilla'],
+    text: {
+      en: 'Student teams solve a real problem for a company, tied to a Sustainable Development Goal, with one advisor from the university and one from the company, and defend their solution before a jury. As in every course of our department that has a project, they work with Integrated Product and Process Design (DIPP, from its Spanish name), the design philosophy of the Department of Chemical and Food Engineering. Each semester is a different edition, and we studied the course in the 2020 article.',
+      es: 'Equipos de estudiantes resuelven un problema real de una empresa, ligado a un Objetivo de Desarrollo Sostenible, con un asesor de la universidad y otro de la empresa, y defienden su solución ante un jurado. Como en todo curso de nuestro departamento que tiene un proyecto, trabajan con el Diseño Integrado de Productos y Procesos (DIPP), la filosofía de diseño del Departamento de Ingeniería Química y de Alimentos. Cada semestre es una edición distinta, y estudiamos el curso en el artículo de 2020.',
+    },
+  },
+  {
+    id: 'pmdi', theme: 'process', title: COURSE.pmdi, codes: ['IING-3000'], since: '2020-20', action: 'redesigned', partners: ['Óscar Álvarez', 'Diego Pradilla'],
+    text: {
+      en: 'A School of Engineering course that Juan Carlos Briceño and Carola Hernández created in 2017. In 2020-20 I coordinated it with Óscar Álvarez. It ran online because of the pandemic, in three phases (opportunity, creativity and innovation), and the teams presented their solutions to companies.',
+      es: 'Un curso de la Facultad de Ingeniería que habían creado en 2017 Juan Carlos Briceño y Carola Hernández. En 2020-20 lo coordiné con Óscar Álvarez. Fue virtual, por la pandemia, en tres fases (oportunidad, creatividad e innovación), y los equipos presentaban sus soluciones ante empresas.',
+    },
+  },
+  {
+    id: 'pi2', theme: 'process', title: COURSE.pi2, codes: ['IQUI-2032', 'IQYA-2032'], since: '2021-20', action: 'created',
+    text: {
+      en: 'It came with the School’s curriculum reform: unit operations taught through projects, with up to 86 students per group. Its story is told on the Unit Operations page.',
+      es: 'Llegó con la reforma curricular de la Facultad: las operaciones unitarias por proyectos, con hasta 86 estudiantes por grupo. Su historia está en la página de Operaciones Unitarias.',
+    },
+  },
+  {
+    id: 'spdp', theme: 'process', title: COURSE.spdp, codes: ['IQUI-3094', 'IALI-3094', 'IQYA-3050'], since: '2022-10', action: 'created', partners: ['Diego Pradilla'],
+    text: {
+      en: 'Alicia Porras helped us, and since 2024-20 I teach it alone. It is a one-credit course in which each student, with a mentor, turns an innovation challenge or a research question into the proposal for their professional development project. The deep work happens with the mentors; I organize the deliverables and teach the sessions on design tools, artificial intelligence, ethics and visual narratives.\n\nFrom the first semester the proposal goes through the School’s ethics committee, and over the semesters the value proposition, the flowchart, the mentor’s signature on each deliverable, the Research Ethics certificate and the AI Assessment Scale (AIAS) were added. It had 11 students in 2023-10 and has 31 in 2026-20. Its semesters as IQYA-3050 have no evaluation on record: the system requires a minimum number of responses.',
+      es: 'Nos ayudó Alicia Porras, y desde 2024-20 lo dicto solo. Es un curso de un crédito en el que cada estudiante, con su mentor, convierte un reto de innovación o una pregunta de investigación en la propuesta de su proyecto de desarrollo profesional. El trabajo de fondo lo hacen con sus mentores; yo organizo las entregas y dicto las sesiones de herramientas de diseño, de inteligencia artificial, de ética y de narrativas visuales.\n\nDesde el primer semestre la propuesta pasa por el comité de ética de la Facultad, y con los semestres se sumaron la propuesta de valor, el flujograma, la firma del mentor en cada entrega, el certificado de Ética de la Investigación y la escala de evaluación de la IA (AI Assessment Scale, AIAS). En 2023-10 tuvo 11 estudiantes, y en 2026-20 tiene 31. Sus semestres como IQYA-3050 no tienen evaluación en el registro: el sistema exige un mínimo de respuestas.',
+    },
+  },
+  {
+    id: 'chemfood', theme: 'process', title: COURSE.chemfood, codes: ['IQYA-3602'], since: '2023-20', action: 'created', partners: ['Óscar Álvarez'],
+    text: {
+      en: 'We created it after the Belcorp edition of the Chemical Engineering Challenge. Its Chr. Hansen Edition had two guided challenges, “Mi primer queso” (my first cheese) and “El yogurt”, and two dairy product challenges, with sessions taught by Chr. Hansen Colombia S.A.S. It ran one semester, with 24 students.',
+      es: 'Lo creamos después de la edición Belcorp del Chemical Engineering Challenge. Su Chr. Hansen Edition tuvo dos retos guiados, «Mi primer queso» y «El yogurt», y dos desafíos de productos lácteos, con sesiones dictadas por Chr. Hansen Colombia S.A.S. Se dictó un semestre, con 24 estudiantes.',
+    },
+  },
+  {
+    id: 'pou', theme: 'process', title: COURSE.pou, codes: ['IQYA-2031'], since: '2024-10', action: 'created',
+    text: {
+      en: 'The course took this name and this code in 2024-10, and in 2025-20 I changed it from the ground up: a flipped classroom and a plant that the teams design across seven modules. For this course I received the 2026 award for innovation in chemical engineering education of the American Institute of Chemical Engineers (AIChE).',
+      es: 'El curso tomó este nombre y este código en 2024-10, y en 2025-20 lo volví a cambiar a fondo: un aula invertida y una planta que los equipos diseñan a lo largo de siete módulos. Por este curso recibí en 2026 el premio a la innovación en la educación en ingeniería química del American Institute of Chemical Engineers (AIChE).',
+    },
+  },
+  // Biotecnología y bioprocesos
+  {
+    id: 'beer', theme: 'bio', title: COURSE.beer, codes: ['IQUI-3518', 'IALI-3101'], since: '2018-20', action: 'created',
+    text: {
+      en: 'Since 2021 it has also run as IALI-3101, for Food Engineering. From the first version, industry and alumni were in the classroom: Bavaria replicated the beers of the second project and the final was a sensory panel at Bar Corona; Julián Becerra, co-founder of Cervecería Moonshine S.A.S. (Moonshine), and Camilo Rojas, of Chelarte S.A.S. (Chelarte), both chemical engineering graduates, gave talks, and the first project was to replicate Chelarte’s Cerveza Raquel. Each team designs a beer, with its brand, its formulation and its process, following DIPP, and presents it to a jury.\n\nIn 2021 I made it an eight-week course graded only on the project, with two iterations of the home-brewed beer and a presentation by roles, and in 2022-10 it had 59 students and six breweries on the schedule.',
+      es: 'Desde 2021 se dicta también como IALI-3101, para Ingeniería de Alimentos. Desde la primera versión la industria y los egresados estuvieron en el aula: Bavaria replicaba las cervezas del segundo proyecto y la final fue un panel sensorial en el Bar Corona; Julián Becerra, cofundador de Cervecería Moonshine S.A.S. (Moonshine), y Camilo Rojas, de Chelarte S.A.S. (Chelarte), los dos egresados de Ingeniería Química, daban charlas, y el primer proyecto era replicar la Cerveza Raquel de Chelarte. Cada equipo idea una cerveza, con su marca, su formulación y su proceso, siguiendo el DIPP, y la presenta ante un jurado.\n\nEn 2021 lo pasé a ocho semanas, calificado solo por el proyecto, con dos iteraciones de la cerveza hecha en casa y una presentación por roles, y en 2022-10 tuvo 59 estudiantes y seis cervecerías en el cronograma.',
+    },
+  },
+  {
+    id: 'biotec', theme: 'bio', title: COURSE.biotec, codes: ['IQUI-4230', 'IQYA-4100'], since: '2019-10', action: 'created',
+    text: {
+      en: 'A master’s elective. The first version had exams, case studies, article summaries and a bioethics session. The second, in 2020-10, brought debates on ethical dilemmas and a home laboratory in which students built their own fermenter with bottles, hoses and a drill. In 2023-20 I taught it with the Department of Biological Sciences, under a double code (CBIO-4339) and with María Francisca Villegas, around recombinant proteins. In 2025-10 a review article written in English came in, and in 2026-10 generative artificial intelligence, with a workshop and its use to structure that article.',
+      es: 'Es una electiva de maestría. La primera versión tenía parciales, casos de estudio, resúmenes de artículos y una sesión de bioética. En la segunda, en 2020-10, entraron los debates sobre dilemas éticos y un laboratorio casero, en el que los estudiantes construían su propio fermentador con botellas, mangueras y un taladro. En 2023-20 lo dicté con el Departamento de Ciencias Biológicas, con doble código (CBIO-4339) y con María Francisca Villegas, alrededor de las proteínas recombinantes. En 2025-10 entró un artículo de revisión escrito en inglés, y en 2026-10 la inteligencia artificial generativa, con un taller y su uso para estructurar ese artículo.',
+    },
+  },
+  {
+    id: 'dpro', theme: 'bio', title: COURSE.dpro, codes: ['DPRO-4300'], since: '2019-10', action: 'redesigned',
+    text: {
+      en: 'A required course of the Master’s in Product and Process Design, taught intensively: eight weeks in three blocks of Thursdays and Fridays. Until 2022 it was an in silico molecular project: each team improved an enzyme, wrote in Authorea and ran virtual labs in Labster, and in 2022-10 presented its value proposition on a poster and a paper prototype. That semester I taught it online. I could not be at the university for personal reasons, and the Department was considering offering the master’s online, so we took it as a trial. The students did not like it.\n\nSince 2023 I have given more weight to theoretical understanding, with a short exam at the end of each day and topics of ethics, sustainability and regulation, and since 2024-10 I teach it with Andrés Fernando González Barrios. In 2026-10 we redesigned it by scales (molecule, cell, bioprocess, techno-economics and scale-up), with tools such as AlphaFold 3, Boltz-2, GROMACS and COBRApy, and with the course’s first policy on the use of AI.',
+      es: 'Es un curso obligatorio de la Maestría en Diseño de Productos y Procesos, intensivo: ocho semanas en tres bloques de jueves y viernes. Hasta 2022 fue un proyecto molecular in silico: cada equipo mejoraba una enzima, escribía en Authorea y hacía laboratorios virtuales en Labster, y en 2022-10 presentaba su propuesta de valor en un póster y en un prototipo de papel. Ese semestre lo dicté con clases virtuales. Yo no podía estar en la universidad por razones personales, y el Departamento estaba considerando ofrecer la maestría de manera virtual, así que lo tomamos como un ensayo. A los estudiantes no les gustó.\n\nDesde 2023 le di más peso a la comprensión teórica, con un examen corto al final de cada día y con temas de ética, sostenibilidad y regulación, y desde 2024-10 lo dicto con Andrés Fernando González Barrios. En 2026-10 lo rediseñamos por escalas (molécula, célula, bioproceso, tecnoeconomía y escalamiento), con herramientas como AlphaFold 3, Boltz-2, GROMACS y COBRApy, y con la primera política de uso de IA del curso.',
+    },
+  },
+  {
+    id: 'fdb', theme: 'bio', title: COURSE.fdb, codes: ['IQUI-3520'], since: '2020-20', action: 'created',
+    text: {
+      en: 'The undergraduate version of the Systemic Design project, entirely in silico because of the pandemic, with creativity sessions, a value proposition, guests and an expert panel. I taught it one semester, to 27 students.',
+      es: 'La versión de pregrado del proyecto de Diseño Sistémico, todo in silico por la pandemia, con sesiones de creatividad, una propuesta de valor, invitados y un panel de expertos. Lo dicté un semestre, a 27 estudiantes.',
+    },
+  },
+  {
+    id: 'micro', theme: 'bio', title: COURSE.micro, codes: ['IQYA-3012'], since: '2024-10', action: 'redesigned',
+    text: {
+      en: 'What was new were the MicroBlogs Alimentarios, four opinion columns across the semester; the first, “Voces de la MicroCocina”, asks students to explore how microorganisms have shaped Colombian cuisine.',
+      es: 'Lo nuevo fueron los MicroBlogs Alimentarios, cuatro columnas de opinión a lo largo del semestre; la primera, «Voces de la MicroCocina», pide explorar cómo los microorganismos han moldeado la gastronomía colombiana.',
+    },
+  },
+  // Formación general
+  {
+    id: 'dexp', theme: 'general', title: COURSE.dexp, codes: ['IQUI-2200'], since: '2017-20', action: 'redesigned',
+    text: {
+      en: 'I redesigned it when I arrived, in 2017, and taught it two semesters to 108 students. It had experiments at home, a project each student chose and a session on bias in research.',
+      es: 'Lo rediseñé al llegar, en 2017, y lo dicté dos semestres a 108 estudiantes. Tenía experimentos en casa, un proyecto que escogía cada estudiante y una sesión sobre los sesgos en la investigación.',
+    },
+  },
+  {
+    id: 'pandora', theme: 'general', title: COURSE.pandora, codes: ['CBP-C1320'], since: '2021-20', action: 'created', partners: ['Juan Carlos Cruz'],
+    text: {
+      en: 'A course of the Ciclo Básico Uniandino, the university’s core curriculum, in its Scientific Thinking area, open to students of every major. It starts from Pandora’s Lab, Paul A. Offit’s book on the times when science done badly or misunderstood had terrible consequences, and it borrows the book’s name with his permission. The course works on critical thinking through those cases, so that students think about the social, health and ethical problems that technologies such as artificial intelligence, gene editing, stem cells or transhumanism can bring. Each semester has conversations, debates and seven sessions with guests, and since 2025-20 artificial intelligence is one of the course’s cases. In five semesters it has taken 168 students.',
+      es: 'Es un curso del Ciclo Básico Uniandino, en el área de Pensamiento Científico, abierto a estudiantes de todas las carreras. Parte de Pandora’s Lab, el libro de Paul A. Offit sobre las veces en que una ciencia mal hecha o mal entendida tuvo consecuencias terribles, y lleva su nombre con la autorización del autor. El curso trabaja el pensamiento crítico a partir de esos casos, para que los estudiantes piensen en los problemas sociales, de salud y éticos que pueden traer tecnologías como la inteligencia artificial, la edición genética, las células madre o el transhumanismo. Cada semestre hay conversatorios, debates y siete sesiones con invitados, y desde 2025-20 la inteligencia artificial es uno de los casos del curso. En cinco semestres ha recibido a 168 estudiantes.',
+    },
+  },
+  // Inteligencia artificial
+  {
+    id: 'mgi', theme: 'ai', title: COURSE.mgi, codes: ['MGI-4307'], since: '2025-20', action: 'created', partners: ['Juan Carlos Cruz'],
+    text: {
+      en: 'An online elective of the Master’s in Engineering Management: eight weeks, with one live session a week, that uses content from our open course on Coursera, Fundamentos del uso de IA Generativa. It has had two cohorts, of 45 students in 2025-20 and 49 in 2026-20, and it has no evaluation on record.',
+      es: 'Una electiva virtual de la Maestría en Gerencia de Ingeniería: ocho semanas, con una sesión en vivo por semana, que usa contenido de nuestro curso abierto en Coursera, Fundamentos del uso de IA Generativa. Lleva dos cohortes, de 45 estudiantes en 2025-20 y de 49 en 2026-20, y no tiene evaluación en el registro.',
+    },
+  },
+];
+
+/** Las ediciones del Chemical Engineering Challenge, con las razones sociales de las empresas. */
+export const challengeEditions: { term: string; with: Localized; challenges: Localized }[] = [
+  {
+    term: '2019-10',
+    with: { en: 'With Diego Pradilla', es: 'Con Diego Pradilla' },
+    challenges: {
+      en: 'Cocoa pulp and juice with Sucesores de José Jesús Restrepo & Cía. S.A. (Casa Luker), yeasts with Bavaria & Cía. S. C. A. (Bavaria), a cosmetic formulation with a contract manufacturer, and whey',
+      es: 'Pulpa y jugo de cacao con Sucesores de José Jesús Restrepo & Cía. S.A. (Casa Luker), levaduras con Bavaria & Cía. S. C. A. (Bavaria), una formulación cosmética con una maquiladora y el suero lácteo',
+    },
+  },
+  {
+    term: '2020-10',
+    with: { en: 'With Diego Pradilla', es: 'Con Diego Pradilla' },
+    challenges: {
+      en: 'Protein in milk with Productos Naturales de la Sabana S.A.S. BIC (Alquería), an adhesive made from Bavaria’s trub, and surfactants with Loraine Cosmetics',
+      es: 'Proteína en leche con Productos Naturales de la Sabana S.A.S. BIC (Alquería), un pegante hecho con el trub de Bavaria y surfactantes con Loraine Cosmetics',
+    },
+  },
+  {
+    term: '2021-10',
+    with: { en: 'With Óscar Álvarez', es: 'Con Óscar Álvarez' },
+    challenges: { en: 'Belcorp Edition, with Bel Star S.A. (Belcorp)', es: 'Belcorp Edition, con Bel Star S.A. (Belcorp)' },
+  },
+  {
+    term: '2023-10',
+    with: { en: 'On my own, in English', es: 'Solo, en inglés' },
+    challenges: { en: 'Brewing edition, with craft breweries', es: 'Brewing edition, con cervecerías artesanales' },
+  },
+];
+
+/**
+ * Biotecnología Industrial: estudiantes de posgrado y de pregrado en cada grupo, como los
+ * dio el profesor (11 oct 2026). En 2023-20 cuenta los dos códigos del curso, IQYA-4100 y
+ * CBIO-4339; por eso la página muestra la proporción y no reemplaza los inscritos de
+ * teachingData, que son los de la sección IQYA-4100.
+ */
+export const biotechCohorts: { term: string; graduate: number; undergraduate: number; evaluation: number; bothCodes?: boolean }[] = [
+  { term: '2021-20', graduate: 7, undergraduate: 7, evaluation: 160 },
+  { term: '2022-20', graduate: 9, undergraduate: 16, evaluation: 152 },
+  { term: '2023-20', graduate: 11, undergraduate: 23, evaluation: 141, bothCodes: true },
+  { term: '2025-10', graduate: 5, undergraduate: 2, evaluation: 158 },
+  { term: '2026-10', graduate: 4, undergraduate: 10, evaluation: 137 },
+];
+
+/**
+ * Mi puntaje global de evaluación docente por semestre. Son lecturas de las gráficas del
+ * sistema de evaluación, que no muestra los números, y pueden variar en un punto.
+ * 2020-10 no tuvo evaluación, por la pandemia.
+ */
+export const globalEvaluation: { term: string; score: number | null }[] = [
+  { term: '2017-20', score: 157 }, { term: '2018-10', score: 155 }, { term: '2018-20', score: 157 },
+  { term: '2019-10', score: 157 }, { term: '2019-20', score: 157 }, { term: '2020-10', score: null },
+  { term: '2020-20', score: 153 }, { term: '2021-10', score: 157 }, { term: '2021-20', score: 152 },
+  { term: '2022-10', score: 147 }, { term: '2022-20', score: 148 }, { term: '2023-10', score: 151 },
+  { term: '2023-20', score: 150 }, { term: '2024-10', score: 152 }, { term: '2024-20', score: 153 },
+  { term: '2025-10', score: 157 }, { term: '2025-20', score: 156 }, { term: '2026-10', score: 146 },
+];
+
+/** Lo que pasó en los semestres en que la evaluación de un curso bajó, y qué hice con eso. */
+export const evaluationLessons: { terms: Localized; course: Localized; scores: string; happened: Localized; did: Localized }[] = [
+  {
+    terms: { en: '2021-20 and 2022-10', es: '2021-20 y 2022-10' },
+    course: COURSE.pi2,
+    scores: '141 · 143',
+    happened: {
+      en: 'With the reform the course became project-based, with up to 86 students per group and no assessed theory. The theory came in training sessions that not every team member took, and the students asked for more guidance.',
+      es: 'Con la reforma, el curso pasó a ser por proyectos, con hasta 86 estudiantes por grupo y sin teoría evaluada. La teoría llegaba en capacitaciones que no tomaba todo el equipo, y los estudiantes pedían más guía.',
+    },
+    did: {
+      en: 'A project course also needs guided theory. From 2022-20 I gave it back: first weekly videos with quizzes, and in 2023-20 assessed workshops and guided labs.',
+      es: 'Un curso por proyectos también necesita teoría guiada. Desde 2022-20 se la fui devolviendo: primero videos semanales con quices, y en 2023-20 talleres evaluados y laboratorios guiados.',
+    },
+  },
+  {
+    terms: { en: '2022-20', es: '2022-20' },
+    course: COURSE.pi2,
+    scores: '135',
+    happened: {
+      en: 'It was the first semester of that adjustment, and the new design was still settling.',
+      es: 'Fue el primer semestre de ese ajuste, y el diseño nuevo todavía se estaba acomodando.',
+    },
+    did: {
+      en: 'I kept adjusting it, and the evaluation rose to 143, 152, 149, 149, 156 and 155.',
+      es: 'Lo seguí ajustando, y la evaluación subió a 143, 152, 149, 149, 156 y 155.',
+    },
+  },
+  {
+    terms: { en: '2022-10', es: '2022-10' },
+    course: COURSE.dpro,
+    scores: '140',
+    happened: {
+      en: 'I taught it with online classes, as a trial.',
+      es: 'Lo dicté con clases virtuales, como un ensayo.',
+    },
+    did: {
+      en: 'I went back to the classroom and gave more weight to theory: 153, 155 and 155.',
+      es: 'Volví a la presencialidad y le di más peso a la teoría: 153, 155 y 155.',
+    },
+  },
+  {
+    terms: { en: '2022-10', es: '2022-10' },
+    course: { en: 'Professional Development Project Seminar, Food Engineering section', es: 'Seminario de Proyecto de Desarrollo Profesional, sección de Ingeniería de Alimentos' },
+    scores: '141',
+    happened: {
+      en: 'Five students, in the first semester of the course. The Chemical Engineering section scored 155.',
+      es: 'Cinco estudiantes, en el primer semestre del curso. La sección de Ingeniería Química sacó 155.',
+    },
+    did: {
+      en: 'With five responses the figure says little on its own, and I kept the course as it was.',
+      es: 'Con cinco respuestas la cifra dice poco por sí sola, y dejé el curso como estaba.',
+    },
+  },
+  {
+    terms: { en: '2023-20 and 2026-10', es: '2023-20 y 2026-10' },
+    course: COURSE.biotec,
+    scores: '141 · 137',
+    happened: {
+      en: 'About two in three students were undergraduates, in a master’s elective, and in those two semesters the course also had three exams.',
+      es: 'Cerca de dos de cada tres estudiantes eran de pregrado, en una electiva de maestría, y en esos dos semestres el curso tuvo además tres parciales.',
+    },
+    did: {
+      en: 'I keep it as a master’s course, and I teach it again in 2027-10.',
+      es: 'Lo mantengo como curso de maestría y lo vuelvo a dictar en 2027-10.',
+    },
+  },
 ];

@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { researchLinesMap } from './data/research';
 import { useI18n, localize } from '../context/i18n';
+import { esPublicacion } from './data/citations';
 import type { ResearchArea, Product } from '../types';
 
 interface ResearchConnectionsGraphProps {
@@ -66,7 +67,7 @@ const describeThickArc = (x: number, y: number, innerRadius: number, outerRadius
 };
 
 export const ResearchConnectionsGraph: React.FC<ResearchConnectionsGraphProps> = ({ products }) => {
-    const { lang } = useI18n();
+    const { t, lang } = useI18n();
     const svgContainerRef = useRef<HTMLDivElement>(null);
     const [dimensions, setDimensions] = useState({ width: 400, height: 400 });
     const [hoveredArea, setHoveredArea] = useState<ResearchArea | null>(null);
@@ -86,16 +87,18 @@ export const ResearchConnectionsGraph: React.FC<ResearchConnectionsGraphProps> =
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    const { areaData, ribbons } = useMemo(() => {
-        if (!products || products.length === 0) {
-            return { areaData: [], ribbons: [] };
+    const { areaData, ribbons, counts } = useMemo(() => {
+        // Solo las publicaciones: ni ponencias, ni patentes, ni la publicación secundaria.
+        const pubs = (products ?? []).filter(esPublicacion);
+        if (pubs.length === 0) {
+            return { areaData: [], ribbons: [], counts: {} as Record<string, number> };
         }
         
-        const coreResearchAreas = Object.values(researchLinesMap).filter(line => line.id !== 'Scholarship of Teaching & Learning');
+        const coreResearchAreas = Object.values(researchLinesMap);
 
         const productCounts: Record<string, number> = {};
         coreResearchAreas.forEach(a => productCounts[a.id] = 0);
-        products.forEach(p => {
+        pubs.forEach(p => {
             p.researchAreas?.forEach(areaId => {
                 if (productCounts.hasOwnProperty(areaId)) {
                     productCounts[areaId]++;
@@ -103,11 +106,11 @@ export const ResearchConnectionsGraph: React.FC<ResearchConnectionsGraphProps> =
             });
         });
 
-        const areas = coreResearchAreas.filter(a => productCounts[a.id] > 0);
+        const areas = coreResearchAreas.filter(a => productCounts[a.id] > 0).sort((a, b) => productCounts[b.id] - productCounts[a.id]);
         const areaIndexMap = new Map(areas.map((area, i) => [area.id, i]));
         
         const links: { source: ResearchArea; target: ResearchArea; key: string }[] = [];
-        products.forEach((product) => {
+        pubs.forEach((product) => {
             const productAreas = product.researchAreas?.filter(area => areaIndexMap.has(area));
             if (productAreas && productAreas.length > 1) {
                 for (let i = 0; i < productAreas.length; i++) {
@@ -123,7 +126,7 @@ export const ResearchConnectionsGraph: React.FC<ResearchConnectionsGraphProps> =
         });
         
         const totalProductsCount = Object.values(productCounts).reduce((sum, count) => sum + count, 0);
-        if(totalProductsCount === 0) return { areaData: [], ribbons: [] };
+        if(totalProductsCount === 0) return { areaData: [], ribbons: [], counts: productCounts };
 
         const palette = generateColorPalette('#EBEBEC', '#5E5E61', areas.length);
 
@@ -181,7 +184,7 @@ export const ResearchConnectionsGraph: React.FC<ResearchConnectionsGraphProps> =
             return { ...link, path };
         }).filter((r): r is NonNullable<typeof r> => r !== null);
 
-        return { areaData: processedAreaData, ribbons: processedRibbons };
+        return { areaData: processedAreaData, ribbons: processedRibbons, counts: productCounts };
 
     }, [products, dimensions]);
 
@@ -192,7 +195,7 @@ export const ResearchConnectionsGraph: React.FC<ResearchConnectionsGraphProps> =
     const innerRadius = Math.max(5, outerRadius - 15);
 
     if (areaData.length === 0) {
-        return <div style={{ minHeight: 400 }} className="flex items-center justify-center text-brand-gray">No connections to display.</div>;
+        return <p style={{ minHeight: 400 }} className="a-texto a-sec">{t('rc.lines.empty')}</p>;
     }
 
     return (
@@ -247,23 +250,22 @@ export const ResearchConnectionsGraph: React.FC<ResearchConnectionsGraphProps> =
                     </svg>
                 </div>
                 <div className="mt-8 lg:mt-0">
-                    <p className="a-texto a-sec">
-                        This visualization maps the connections between my core research areas. Each colored arc represents a research area, with its size proportional to the total number of publications. Each thin, grey line represents a single publication that bridges two fields, illustrating the web of interdisciplinary collaboration. Hover over an arc or legend item to highlight its specific connections.
-                    </p>
+                    <p className="a-texto a-sec">{t('rc.lines.graph')}</p>
                     <div className="mt-8">
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-y-1 gap-x-4">
                             {areaData.map(area => (
                                 <button
                                     type="button"
                                     key={area.id}
-                                    className={`flex items-center gap-3 px-2 py-2 text-left transition-colors duration-200 hover:bg-white/5 ${hoveredArea === area.id ? 'bg-white/10 text-white' : ''}`}
+                                    className={`w-full flex items-center gap-3 px-2 py-2 text-left transition-colors duration-200 hover:bg-white/5 ${hoveredArea === area.id ? 'bg-white/10 text-white' : ''}`}
                                     onMouseEnter={() => setHoveredArea(area.id)}
                                     onMouseLeave={() => setHoveredArea(null)}
                                     onClick={() => setHoveredArea(hoveredArea === area.id ? null : area.id)}
                                     aria-pressed={hoveredArea === area.id}
                                 >
                                     <span className="w-4 h-4 flex-shrink-0" style={{ backgroundColor: hoveredArea === area.id ? '#FFE900' : area.color }} aria-hidden="true"></span>
-                                    <span className="text-[15px]">{localize(area.title, lang)}</span>
+                                    <span className="text-[15px] flex-1">{localize(area.title, lang)}</span>
+                                    <span className="text-[15px] tabular-nums">{counts[area.id]}</span>
                                 </button>
                             ))}
                         </div>

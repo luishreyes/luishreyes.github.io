@@ -44,7 +44,7 @@ export const research = {
   'stats.avgEvaluation':    { en: 'Avg. Evaluation Score',  es: 'Promedio de Evaluación' },
   'stats.uniqueCourses':    { en: 'Unique Course Titles',    es: 'Títulos de Cursos Únicos' },
   'stats.totalCourses.note':{ en: 'University and continuing education', es: 'Universitarios y de educación continua' },
-  'stats.award.note':       { en: 'First awarded outside the United States', es: 'El primero otorgado fuera de Estados Unidos' },
+  'stats.award.note':       { en: 'Every earlier recipient, since 2014, was a professor at a university in the United States', es: 'Todos los ganadores anteriores, desde 2014, eran profesores de universidades de Estados Unidos' },
   'stats.eduGrants':        { en: 'Funded Education Research',  es: 'Proyectos de Investigación en Docencia' },
   'stats.eduGrants.note':   { en: 'Currently under way',         es: 'Actualmente en curso' },
 

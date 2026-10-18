@@ -24,11 +24,13 @@ const fecha = (texto: string, lang: Lang) => {
   return texto;
 };
 
-/** Las fotos que pertenecen a una entrada: el estreno del documental, el panel de ECOS, el
- *  profesor en su perfil y los egresados que firman lo que la entrada lleva al público. */
+/** Las fotos que pertenecen a una entrada: el estreno del documental, el panel de ECOS, la
+ *  charla en el congreso de palmicultores, el profesor en su perfil y los egresados que firman
+ *  lo que la entrada lleva al público. */
 const FOTOS: { match: RegExp; src: string; alt: Localized; ancho?: boolean }[] = [
   { match: /Visionarios/, ...fotos.visionarios },
   { match: /^ECOS/, ...fotos.ecos, ancho: true },
+  { match: /Oil Palm Growers/, ...fotos.palmaCharla, ancho: true },
   { match: /^Profile in Puntos/, src: '/images/site/1756469286343.jpg', alt: 'Luis H. Reyes' },
   { match: /Brayan Rodríguez/, src: '/images/students/brayan-rodriguez.jpg', alt: 'Brayan Rodríguez' },
   { match: /Becerra-Encinales/, src: '/images/students/julian-fernando-becerra-encinales.jpg', alt: 'Julián F. Becerra-Encinales' },

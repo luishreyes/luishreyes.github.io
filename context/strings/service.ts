@@ -1,14 +1,10 @@
 export const service = {
-  // Service Overview
-  'service.overview.sub':    { en: 'Committees, editorial work, an initiative on generative AI and outreach to the public.', es: 'Comités, trabajo editorial, una iniciativa de IA generativa y divulgación para el público.' },
-  'service.overview.cta':    { en: 'Committees and leadership roles', es: 'Comités y cargos de liderazgo' },
-  'service.overview.lead.title': { en: 'Beyond research and teaching', es: 'Más allá de investigar y enseñar' },
-  'service.overview.text':   { en: 'Service is the part of the job that keeps an academic community running and connects its work with the public. Mine goes to institutional governance and leadership, to the integrity of scientific publishing, to educational innovation with new technologies, and to outreach and scouting for the next generation of scientists and engineers.', es: 'El servicio es la parte del oficio que mantiene en marcha una comunidad académica y conecta su trabajo con el público. El mío va a la gobernanza y el liderazgo institucional, a la integridad de la publicación científica, a la innovación educativa con nuevas tecnologías y a la divulgación y la captación de la próxima generación de científicos e ingenieros.' },
-  'service.areas.title':     { en: 'Five areas of service', es: 'Cinco frentes de servicio' },
+  // Service Overview (la apertura del capítulo lee sus textos de serviceChapter.ts)
+  'service.areas.title':     { en: 'The areas of service', es: 'Los frentes del servicio' },
 
   // Service areas (rows of the overview)
   'service.leadership.title': { en: 'Committees and leadership', es: 'Comités y liderazgo' },
-  'service.leadership.desc':  { en: 'Elected and appointed roles at the national, university, School and department levels, from the Faculty Council to the Research Ethics Committee and the Academia Joven de Colombia.', es: 'Cargos electos y designados en el ámbito nacional, universitario, de Facultad y de departamento, del Consejo de Facultad al Comité de Ética en Investigación y la Academia Joven de Colombia.' },
+  'service.leadership.desc':  { en: 'Elected and appointed roles, from the Council of the School of Engineering and its Research Ethics Committee to the direction of the GDPP and the Research Committee of AIGEN.', es: 'Cargos electos y designados, del Consejo de la Facultad de Ingeniería y su Comité de Ética en Investigación a la dirección del GDPP y el Comité de Investigación de AIGEN.' },
   'service.ai.title':         { en: 'Augmented Intelligence Uniandes', es: 'Inteligencia Aumentada Uniandes' },
   'service.ai.desc':          { en: 'Co-founder and co-leader of the School of Engineering initiative that, from June 2024 to 2026, brought generative AI into its courses and rethought how they are taught.', es: 'Cofundador y colíder de la iniciativa de la Facultad de Ingeniería que, de junio de 2024 a 2026, llevó la IA generativa a sus cursos y repensó la manera de enseñarlos.' },
   'service.editorial.title':  { en: 'Editorial boards and peer review', es: 'Comités editoriales y evaluación por pares' },
@@ -16,7 +12,7 @@ export const service = {
   'service.editorships.title': { en: 'Edited books and guest editorships', es: 'Libros editados y ediciones invitadas' },
   'service.editorships.desc':  { en: 'Books edited for Elsevier, CRC Press and IntechOpen, and special issues curated as guest editor for journals published by Elsevier, the Royal Society of Chemistry, Frontiers and MDPI.', es: 'Libros editados para Elsevier, CRC Press e IntechOpen, y números especiales curados como editor invitado para revistas de Elsevier, la Royal Society of Chemistry, Frontiers y MDPI.' },
   'service.outreach.title':   { en: 'Outreach and scouting', es: 'Divulgación y captación' },
-  'service.outreach.desc':    { en: 'School visits, fairs and workshops in our labs for prospective students, columns and interviews in the press, and an episode of the documentary series Visionarios.', es: 'Visitas a colegios, ferias y talleres en nuestros laboratorios para aspirantes, columnas y entrevistas en la prensa, y un episodio de la serie documental Visionarios.' },
+  'service.outreach.desc':    { en: 'Columns and interviews in the press, an episode of the documentary series Visionarios, talks for the sectors we work with, and school visits, fairs and workshops in our labs for prospective students.', es: 'Columnas y entrevistas en la prensa, un episodio de la serie documental Visionarios, charlas para los sectores con los que trabajamos y visitas a colegios, ferias y talleres en nuestros laboratorios para aspirantes.' },
   'service.and':              { en: 'and', es: 'y' },
 
   // Pictures (alt text says what is in the frame, nothing more)
@@ -26,7 +22,7 @@ export const service = {
 
   // Committees / Leadership
   'committees.title':        { en: 'Committees and leadership', es: 'Comités y liderazgo' },
-  'committees.sub':          { en: 'Elected and appointed roles at the national, university, School and department levels, since {first}.', es: 'Cargos electos y designados en el ámbito nacional, universitario, de Facultad y de departamento, desde {first}.' },
+  'committees.sub':          { en: 'The University’s governance, the GDPP, the elected and appointed roles I have held since {first}, and the evaluation of other people’s work.', es: 'El gobierno de la Universidad, el GDPP, los cargos electos y designados que he tenido desde {first} y la evaluación del trabajo de otros.' },
   'committees.current':      { en: 'Current roles', es: 'Cargos vigentes' },
   'committees.past':         { en: 'Earlier roles', es: 'Cargos anteriores' },
   'committees.since':        { en: 'Since {year}', es: 'Desde {year}' },
@@ -89,18 +85,19 @@ export const service = {
 
   // Outreach
   'outreach.title':          { en: 'Outreach and scouting', es: 'Divulgación y captación' },
-  'outreach.sub':            { en: 'School visits, fairs and workshops in our labs, columns and interviews in the press, and a documentary episode.', es: 'Visitas a colegios, ferias y talleres en nuestros laboratorios, columnas y entrevistas en la prensa, y un episodio documental.' },
+  'outreach.sub':            { en: 'I also write and speak for people who do not read scientific journals: columns, interviews, a documentary episode, talks for the sectors we work with, and visits, fairs and workshops for school students.', es: 'Escribo y hablo también para quien no lee revistas científicas: columnas, entrevistas, un episodio documental, charlas para los sectores con los que trabajamos y visitas, ferias y talleres para estudiantes de colegio.' },
   'outreach.watch':          { en: 'Watch the Visionarios episode', es: 'Ver el episodio de Visionarios' },
   'outreach.watchShort':     { en: 'Watch the episode on YouTube', es: 'Ver el episodio en YouTube' },
   'outreach.press.title':    { en: 'In the press and on screen', es: 'En la prensa y en pantalla' },
   'outreach.press.lead':     { en: 'Columns, interviews and a documentary that take our work to a general audience.', es: 'Columnas, entrevistas y un documental que llevan nuestro trabajo a un público general.' },
-  'outreach.events.title':   { en: 'At schools, fairs and on campus', es: 'En colegios, ferias y en el campus' },
-  'outreach.events.lead':    { en: 'Talks, fairs and hands-on workshops for prospective students and their families, at their schools, online and on campus.', es: 'Charlas, ferias y talleres prácticos para aspirantes y sus familias, en sus colegios, en línea y en el campus.' },
+  'outreach.events.title':   { en: 'Talks, schools, fairs and campus', es: 'Charlas, colegios, ferias y campus' },
+  'outreach.events.lead':    { en: 'Talks for the sectors we work with, and fairs and hands-on workshops for prospective students and their families, at their schools, online and on campus.', es: 'Charlas para los sectores con los que trabajamos, y ferias y talleres prácticos para aspirantes y sus familias, en sus colegios, en línea y en el campus.' },
   'outreach.type.School Visit':     { en: 'School visit', es: 'Visita a colegio' },
   'outreach.type.University Event': { en: 'University event', es: 'Evento universitario' },
   'outreach.type.Virtual Event':    { en: 'Virtual event', es: 'Evento virtual' },
   'outreach.type.Fair':             { en: 'Fair', es: 'Feria' },
   'outreach.type.Media Feature':    { en: 'In the media', es: 'En medios' },
+  'outreach.type.Talk':             { en: 'Talk', es: 'Charla' },
 
   // Augmented Intelligence
   'ai.title':                { en: 'Augmented Intelligence', es: 'Inteligencia Aumentada' },

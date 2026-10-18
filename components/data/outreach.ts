@@ -7,7 +7,7 @@ export interface OutreachActivity {
   title: Localized;
   location: Localized;
   description: Localized;
-  type: 'School Visit' | 'University Event' | 'Virtual Event' | 'Fair' | 'Media Feature';
+  type: 'School Visit' | 'University Event' | 'Virtual Event' | 'Fair' | 'Media Feature' | 'Talk';
   url?: string;
 }
 
@@ -19,7 +19,7 @@ export const outreachData: OutreachActivity[] = [
       en: 'Expert source in Puntos: cooking oils',
       es: 'Fuente experta en Puntos: aceites de cocina',
     },
-    location: 'Puntos, Universidad de los Andes',
+    location: { en: 'Puntos, Universidad de los Andes', es: 'Puntos, Universidad de los Andes' },
     description: {
       en: "Consulted as an expert, with Juan Carlos Cruz, for «¿Cuál es el mejor aceite para cocinar?», an article by Mauricio Laguna Cardozo. My part was the food engineering behind solid fats: margarine solidifies through hydrogenation, which generates trans fatty acids, and the industry does it for reasons of storage and transport.",
       es: "Consultado como experto, con Juan Carlos Cruz, para «¿Cuál es el mejor aceite para cocinar?», un artículo de Mauricio Laguna Cardozo. Mi parte fue la ingeniería de alimentos detrás de las grasas sólidas: la margarina se solidifica por hidrogenación, lo que genera ácidos grasos trans, y la industria lo hace por razones de almacenamiento y transporte.",
@@ -33,10 +33,10 @@ export const outreachData: OutreachActivity[] = [
       en: 'Profile in Puntos',
       es: 'Perfil en Puntos',
     },
-    location: 'Puntos, Universidad de los Andes',
+    location: { en: 'Puntos, Universidad de los Andes', es: 'Puntos, Universidad de los Andes' },
     description: {
-      en: "«Luis H. Reyes: educación, IA y mucha química», a profile by Mauricio Laguna Cardozo on the AIChE Award for Innovation in Chemical Engineering Education, the seven years the redesign of Project of Unit Operations took, the blind evaluations by external reviewers used to check its effect, and the limits of project-based learning.",
-      es: "«Luis H. Reyes: educación, IA y mucha química», un perfil de Mauricio Laguna Cardozo sobre el premio del AIChE a la innovación en la educación en ingeniería química, los siete años que tomó el rediseño de Proyecto de Operaciones Unitarias, las evaluaciones a ciegas con evaluadores externos con las que se verificó su efecto y los límites del aprendizaje basado en proyectos.",
+      en: "«Luis H. Reyes: educación, IA y mucha química», a profile by Mauricio Laguna Cardozo on the AIChE Award for Innovation in Chemical Engineering Education, the seven years the redesign of Project of Unit Operations took, the independent evaluator who graded the students' work again with the same rubric to check its effect, and the limits of project-based learning.",
+      es: "«Luis H. Reyes: educación, IA y mucha química», un perfil de Mauricio Laguna Cardozo sobre el premio del AIChE a la innovación en la educación en ingeniería química, los siete años que tomó el rediseño de Proyecto de Operaciones Unitarias, el evaluador independiente que volvió a calificar los trabajos de los estudiantes con la misma rúbrica para verificar su efecto y los límites del aprendizaje basado en proyectos.",
     },
     type: 'Media Feature',
   },
@@ -44,16 +44,16 @@ export const outreachData: OutreachActivity[] = [
     year: 2026,
     date: 'September',
     title: {
-      en: 'Visionarios — Universidad de los Andes documentary series',
-      es: 'Visionarios — serie documental de la Universidad de los Andes',
+      en: 'Visionarios, a documentary series of the Universidad de los Andes',
+      es: 'Visionarios, serie documental de la Universidad de los Andes',
     },
     location: {
       en: 'Universidad de los Andes · Full episode on YouTube and Puntos',
       es: 'Universidad de los Andes · Episodio completo en YouTube y Puntos',
     },
     description: {
-      en: 'A documentary episode on my trajectory, one of four professors profiled in the new season of Visionarios. It goes back to the teacher in Ocaña who graded me by having me teach the class on alkanes — where both the science and the teaching started — through the decision to turn down industry for the classroom, the doctorate at Texas A&M and the work at NREL, the return to Colombia under the «Es tiempo de volver» call, and the use of CRISPR-Cas9 to design therapies for orphan diseases such as Morquio IV A. It also takes in the black-and-white photography, which follows the same multiscale logic as the science. The closing argument is the one I care about: research is a way of teaching, and the papers and the awards are beautiful by-products.',
-      es: 'Un episodio documental sobre mi trayectoria, uno de los cuatro profesores perfilados en la nueva temporada de Visionarios. Vuelve a la profesora de Ocaña que me evaluaba poniéndome a dictar la clase de alcanos —donde arrancaron a la vez la ciencia y la docencia—, pasa por la decisión de dejar la industria por el aula, el doctorado en Texas A&M y el trabajo en el NREL, el regreso a Colombia con la convocatoria «Es tiempo de volver», y el uso de CRISPR-Cas9 para diseñar terapias contra enfermedades huérfanas como el síndrome de Morquio IV A. Recoge también la fotografía en blanco y negro, que sigue la misma lógica multiescala de la ciencia. El cierre es el argumento que me importa: la investigación es una forma de hacer docencia, y los papers y los premios son subproductos bonitos.',
+      en: 'A documentary episode on my trajectory, one of four professors profiled in the new season of Visionarios. It goes back to the teacher in Ocaña who graded me by having me teach the class on alkanes, where the science and the teaching started at the same time. Then come the decision to turn down industry for the classroom, the doctorate at Texas A&M and the work at NREL, the return to Colombia under the «Es tiempo de volver» call, and the use of CRISPR-Cas9 to design therapies for orphan diseases such as Morquio IV A. It also takes in the black-and-white photography, which follows the same multiscale logic as the science. The closing argument is the one I care about: research is a way of teaching, and the papers and the awards are beautiful by-products.',
+      es: 'Un episodio documental sobre mi trayectoria, uno de los cuatro profesores perfilados en la nueva temporada de Visionarios. Vuelve a la profesora de Ocaña que me evaluaba poniéndome a dictar la clase de alcanos, donde arrancaron a la vez la ciencia y la docencia. Luego pasa por la decisión de dejar la industria por el aula, el doctorado en Texas A&M y el trabajo en el NREL, el regreso a Colombia con la convocatoria «Es tiempo de volver» y el uso de CRISPR-Cas9 para diseñar terapias contra enfermedades huérfanas como el síndrome de Morquio IV A. Recoge también la fotografía en blanco y negro, que sigue la misma lógica multiescala de la ciencia. El cierre es el argumento que me importa: la investigación es una forma de hacer docencia, y los papers y los premios son subproductos bonitos.',
     },
     type: 'Media Feature',
     url: 'https://youtu.be/fQQH2BbAbUM',
@@ -65,7 +65,7 @@ export const outreachData: OutreachActivity[] = [
       en: 'ECOS 2025: panel on technology-based entrepreneurship',
       es: 'ECOS 2025: panel sobre emprendimiento de base tecnológica',
     },
-    location: 'Teatro Panorama, Bogotá',
+    location: { en: 'Teatro Panorama, Bogotá', es: 'Teatro Panorama, Bogotá' },
     description: {
       en: "At ECOS, the conference of the Universidad de los Andes Innovation Ecosystem organized with the master's and doctoral programs in Technological Innovation Management, I moderated the panel «Innovación y emprendimiento: apostando por el emprendimiento de base tecnológica», with Carlos Augusto López (GLYA), Ciro Gélvez (WSEEDS), and Felipe Torres (Prami).",
       es: "En ECOS, la conferencia del Ecosistema de Innovación de la Universidad de los Andes organizada con los programas de Maestría y Doctorado en Gestión de la Innovación Tecnológica, moderé el panel «Innovación y emprendimiento: apostando por el emprendimiento de base tecnológica», con Carlos Augusto López (GLYA), Ciro Gélvez (WSEEDS) y Felipe Torres (Prami).",
@@ -73,10 +73,27 @@ export const outreachData: OutreachActivity[] = [
     type: 'University Event',
   },
   {
+    year: 2025,
+    date: 'June',
+    title: {
+      en: 'Talk on artificial intelligence at the 53rd National Congress of Oil Palm Growers',
+      es: 'Charla sobre inteligencia artificial en el 53.º Congreso Nacional de Cultivadores de Palma de Aceite',
+    },
+    location: {
+      en: 'Cali · Federación Nacional de Cultivadores de Palma de Aceite (Fedepalma)',
+      es: 'Cali · Federación Nacional de Cultivadores de Palma de Aceite (Fedepalma)',
+    },
+    description: {
+      en: "«Transformación digital a través de IA en cultivos de palma», a talk with Juan Carlos Cruz for the growers and technicians who gathered at the national congress of the oil palm sector, held from June 11 to 13, 2025.",
+      es: "«Transformación digital a través de IA en cultivos de palma», una charla con Juan Carlos Cruz para los cultivadores y técnicos reunidos en el congreso nacional del sector palmero, que se hizo del 11 al 13 de junio de 2025.",
+    },
+    type: 'Talk',
+  },
+  {
     year: 2024,
     date: 'October 1-2',
-    title: 'Uniandes Fest - Labilab',
-    location: 'Bogotá, Colombia',
+    title: 'Uniandes Fest: Labilab',
+    location: { en: 'Bogotá, Colombia', es: 'Bogotá, Colombia' },
     description: {
       en: 'Engaged with prospective students and families at the university-wide festival, showcasing hands-on experiments from the Labilab.',
       es: 'Interacción con aspirantes y familias en el festival institucional, presentando experimentos prácticos del Labilab.',
@@ -87,10 +104,10 @@ export const outreachData: OutreachActivity[] = [
     year: 2024,
     date: 'October 4',
     title: {
-      en: 'The Impact of Chemical Engineers in Pharmaceuticals',
+      en: 'The impact of chemical engineers in pharmaceuticals',
       es: 'El impacto de los ingenieros químicos en la industria farmacéutica',
     },
-    location: 'Vermont School, Bogotá (10th Grade)',
+    location: { en: 'Vermont School, Bogotá (tenth grade)', es: 'Vermont School, Bogotá (grado décimo)' },
     description: {
       en: 'Presented to 10th-grade students on the crucial role of chemical engineering in developing and manufacturing pharmaceuticals.',
       es: 'Presentación a estudiantes de décimo grado sobre el papel crucial de la ingeniería química en el desarrollo y la fabricación de productos farmacéuticos.',
@@ -100,8 +117,8 @@ export const outreachData: OutreachActivity[] = [
   {
     year: 2024,
     date: 'May 4',
-    title: 'Family Fest - Labilab',
-    location: 'Bogotá, Colombia',
+    title: 'Family Fest: Labilab',
+    location: { en: 'Bogotá, Colombia', es: 'Bogotá, Colombia' },
     description: {
       en: 'Participated in the university\'s Family Fest, demonstrating exciting chemical and food engineering concepts to a general audience.',
       es: 'Participación en el Family Fest de la universidad, demostrando conceptos llamativos de ingeniería química y de alimentos a un público general.',
@@ -146,10 +163,10 @@ export const outreachData: OutreachActivity[] = [
     year: 2023,
     date: 'October 28',
     title: {
-      en: 'Food Engineering: A Design Matinee',
+      en: 'Food engineering: a design matinee',
       es: 'Ingeniería de Alimentos: una matiné de diseño',
     },
-    location: 'Universidad de los Andes Laboratories, Bogotá',
+    location: { en: 'Universidad de los Andes laboratories, Bogotá', es: 'Laboratorios de la Universidad de los Andes, Bogotá' },
     description: {
       en: 'Hosted a hands-on workshop for high school students to explore the creative and scientific aspects of food engineering through a design challenge.',
       es: 'Taller práctico para estudiantes de secundaria que exploraron los aspectos creativos y científicos de la ingeniería de alimentos a través de un reto de diseño.',
@@ -160,10 +177,10 @@ export const outreachData: OutreachActivity[] = [
     year: 2023,
     date: 'May 6',
     title: {
-      en: 'Uniandes Picnic: Taste Food Engineering',
+      en: 'Uniandes Picnic: taste food engineering',
       es: 'Picnic Uniandes: saborea la ingeniería de alimentos',
     },
-    location: 'Bogotá, Colombia',
+    location: { en: 'Bogotá, Colombia', es: 'Bogotá, Colombia' },
     description: {
       en: 'An interactive session during the Uniandes Picnic event, introducing the science of food engineering in a fun and accessible way.',
       es: 'Sesión interactiva durante el evento Picnic Uniandes, que introdujo la ciencia de la ingeniería de alimentos de forma divertida y accesible.',
@@ -191,10 +208,10 @@ export const outreachData: OutreachActivity[] = [
     year: 2022,
     date: 'November 26',
     title: {
-      en: 'Food Engineering: A Design Matinee',
+      en: 'Food engineering: a design matinee',
       es: 'Ingeniería de Alimentos: una matiné de diseño',
     },
-    location: 'Universidad de los Andes Laboratories, Bogotá',
+    location: { en: 'Universidad de los Andes laboratories, Bogotá', es: 'Laboratorios de la Universidad de los Andes, Bogotá' },
     description: {
       en: 'Led a design-focused workshop in the university labs, guiding prospective students through the principles of food product development.',
       es: 'Taller centrado en el diseño realizado en los laboratorios de la universidad, guiando a los aspirantes a través de los principios del desarrollo de productos alimentarios.',
@@ -205,10 +222,10 @@ export const outreachData: OutreachActivity[] = [
     year: 2022,
     date: 'October 5',
     title: {
-      en: 'University School Fair',
+      en: 'University fair for schools',
       es: 'Feria universitaria de colegios',
     },
-    location: 'Bogotá, Colombia',
+    location: { en: 'Bogotá, Colombia', es: 'Bogotá, Colombia' },
     description: {
       en: 'Represented the Chemical and Food Engineering department at a major school fair, speaking with students and parents about our programs.',
       es: 'Representación del Departamento de Ingeniería Química y de Alimentos en una importante feria de colegios, conversando con estudiantes y padres sobre nuestros programas.',
@@ -236,7 +253,7 @@ export const outreachData: OutreachActivity[] = [
     year: 2021,
     date: 'March 15',
     title: {
-      en: 'Virtual Scouting Seminar',
+      en: 'Virtual scouting seminar',
       es: 'Seminario virtual de captación',
     },
     location: { en: 'Online', es: 'En línea' },
@@ -250,10 +267,10 @@ export const outreachData: OutreachActivity[] = [
     year: 2020,
     date: 'April 29',
     title: {
-      en: 'Outreach Talk at New Cambridge School',
+      en: 'Outreach talk at New Cambridge School',
       es: 'Charla de divulgación en el New Cambridge School',
     },
-    location: 'Bucaramanga, Colombia',
+    location: { en: 'Bucaramanga, Colombia', es: 'Bucaramanga, Colombia' },
     description: {
       en: 'Visited New Cambridge School to inspire students about careers in engineering and science.',
       es: 'Visita al New Cambridge School para inspirar a los estudiantes sobre las carreras en ingeniería y ciencia.',
@@ -264,7 +281,7 @@ export const outreachData: OutreachActivity[] = [
     year: 2020,
     date: 'April 22',
     title: {
-      en: 'Virtual Scouting Seminars',
+      en: 'Virtual scouting seminars',
       es: 'Seminarios virtuales de captación',
     },
     location: { en: 'Online', es: 'En línea' },

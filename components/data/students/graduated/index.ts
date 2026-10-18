@@ -43,6 +43,7 @@ import jesusAcevedo from './ms/jesus-rafael-acevedo-mastrogiacomo';
 import lauraDanielLeon from './ms/laura-daniela-leon';
 import gabrielaMelendez from './ms/gabriela-melendez-plata';
 import andresBecerra from './ms/andres-felipe-becerra-zarrate';
+import erikaDiaz from './ms/erika-alejandra-diaz-ramirez';
 
 export const graduatedStudentsData: {
     phd: GraduatedStudent[];
@@ -64,6 +65,7 @@ export const graduatedStudentsData: {
         arielColi,
         saulGomez,
         cristianRodriguez,
+        erikaDiaz,
         andresMantilla,
         olgaAcuna,
         halilKizilates,

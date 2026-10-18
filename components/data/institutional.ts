@@ -143,8 +143,8 @@ export const leadershipRolesData: Committee[] = [
           es: 'XXXI Congreso Interamericano y XXXIII Congreso Colombiano de Ingeniería Química',
         },
         role: {
-          en: 'Thematic Area Leader: Food Engineering',
-          es: 'Líder de Área Temática: Ingeniería de Alimentos',
+          en: 'Leader of the food engineering thematic area',
+          es: 'Líder del área temática de Ingeniería de Alimentos',
         },
         startYear: 2025,
         endYear: 2025,
@@ -169,39 +169,35 @@ export const leadershipRolesData: Committee[] = [
         endYear: 'Present',
         description: [
             {
-              en: "In 2025 I retook the directorship of the GDPP and proposed renewing the group, a process that is still under way. The proposal seeks a more agile, collaborative, and market-oriented group, aligned with Colombia's national priorities in sustainability, energy transition, and agro-industry, and closer to industry.",
-              es: "En 2025 retomé la dirección del GDPP y propuse renovar el grupo, un proceso que sigue en curso. La propuesta busca un grupo más ágil, colaborativo y orientado al mercado, alineado con las prioridades nacionales de Colombia en sostenibilidad, transición energética y agroindustria, y más cercano a la industria.",
+              en: "In 2025 I took up the directorship of the GDPP again, this time with a proposal to renew the group, which the group is still discussing. The proposal seeks a more agile and collaborative group, closer to industry and aligned with Colombia's national priorities in sustainability, energy transition and agro-industry.",
+              es: "En 2025 volví a dirigir el GDPP, esta vez con una propuesta para renovar el grupo, que el grupo todavía discute. La propuesta busca un grupo más ágil y colaborativo, más cercano a la industria y alineado con las prioridades nacionales de Colombia en sostenibilidad, transición energética y agroindustria.",
             },
             {
-              en: "The proposal reorganizes the group's research capabilities into five specialized, interconnected clusters: Industrial Sustainability, Bio-innovation & Advanced Materials, Digital Process Engineering, Product & Experience Innovation, and Agri-Food Systems Engineering. The members of the group chose the name «cluster» by vote.",
-              es: "La propuesta reorganiza las capacidades de investigación del grupo en cinco clústeres especializados e interconectados: Sostenibilidad Industrial, Bioinnovación y Materiales Avanzados, Ingeniería Digital de Procesos, Innovación de Productos y Experiencias, e Ingeniería de Sistemas Agroalimentarios. El nombre de «clúster» lo eligieron por votación los miembros del grupo.",
+              en: "The proposal reorganizes the group's research capabilities into five interconnected clusters: industrial sustainability, bio-innovation and advanced materials, digital process engineering, product and experience innovation, and agri-food systems engineering. The members of the group chose the name «cluster» by vote.",
+              es: "La propuesta reorganiza las capacidades de investigación del grupo en cinco clústeres interconectados: sostenibilidad industrial, bioinnovación y materiales avanzados, ingeniería digital de procesos, innovación de productos y experiencias, e ingeniería de sistemas agroalimentarios. El nombre de «clúster» lo eligieron por votación los miembros del grupo.",
             },
             {
-              en: "The proposal reframes our mission to develop and transfer tangible scientific and technological solutions. Our approach is grounded in two methodological pillars: integrated product and process design and multiscale design, ensuring we deliver rational, robust, and complete solutions.",
-              es: "La propuesta replantea nuestra misión de desarrollar y transferir soluciones científicas y tecnológicas tangibles. Nuestro enfoque se fundamenta en dos pilares metodológicos: el diseño integrado de productos y procesos y el diseño multiescala, asegurando que entreguemos soluciones racionales, robustas y completas.",
+              en: "All five rest on two methodological pillars, integrated product and process design and multiscale design, and aim to close the gap between academia and Colombian industry.",
+              es: "Los cinco se apoyan en dos pilares de método, el diseño integrado de productos y procesos y el diseño multiescala, y apuntan a cerrar la brecha entre la academia y la industria colombiana.",
             }
         ]
     },
     {
         title: {
-          en: 'Faculty Representative, School of Engineering',
-          es: 'Representante Profesoral, Facultad de Ingeniería',
+          en: 'Professors’ representative to the Council of the School of Engineering',
+          es: 'Representante de los profesores ante el Consejo de la Facultad de Ingeniería',
         },
-        role: { en: 'Faculty Representative', es: 'Representante Profesoral' },
+        role: { en: 'Elected by the professors', es: 'Elegido por los profesores' },
         startYear: 2022,
         endYear: 2024,
         description: [
             {
-              en: "As the elected faculty representative, my primary responsibility was to attend and actively participate in the discussions of the Faculty Council.",
-              es: "Como representante profesoral electo, mi responsabilidad principal era asistir y participar activamente en las discusiones del Consejo de Facultad.",
+              en: "The professors of the School elect their representative to its Council, which has a voice and a vote in the Council's decisions. My role was to carry the professors' voice to the Council.",
+              es: "Los profesores de la Facultad eligen a su representante ante el Consejo, con voz y voto en sus decisiones. Mi papel fue llevar la voz de los profesores al Consejo.",
             },
             {
-              en: "I served as a key liaison, fostering communication between the faculty members and the Council, ensuring their perspectives were heard and considered.",
-              es: "Actué como un enlace clave, fomentando la comunicación entre los profesores y el Consejo, asegurando que sus perspectivas fueran escuchadas y consideradas.",
-            },
-            {
-              en: "In this role, I had both a voice and a vote in the Council's decisions, contributing to the strategic direction and governance of the School of Engineering.",
-              es: "En este rol tuve voz y voto en las decisiones del Consejo, contribuyendo a la dirección estratégica y la gobernanza de la Facultad de Ingeniería.",
+              en: "In practice that meant listening: in several meetings I took the professors' questions to the Council and to the University's leadership, and brought the answers back to them.",
+              es: "En la práctica, eso fue escuchar: en varias reuniones llevé las dudas de los profesores al Consejo y a las directivas de la Universidad, y les traje de vuelta las respuestas.",
             }
         ]
     },
@@ -223,8 +219,8 @@ export const leadershipRolesData: Committee[] = [
               es: "Mis responsabilidades incluían velar por el cumplimiento de los objetivos estratégicos del grupo, elaborar informes anuales de gestión y promover la investigación interdisciplinaria gestionando propuestas de proyectos para convocatorias de financiación internas y externas.",
             },
             {
-              en: "Additionally, I managed the group's budget, proposed strategic alliances with other research entities and private organizations, ensured timely reporting to funding agencies, and maintained up-to-date records of the group's researchers and activities across various databases.",
-              es: "Adicionalmente, administré el presupuesto del grupo, propuse alianzas estratégicas con otras entidades de investigación y organizaciones privadas, garanticé la entrega oportuna de informes a las agencias de financiación y mantuve actualizados los registros de los investigadores y las actividades del grupo en diversas bases de datos.",
+              en: "I also proposed alliances with other research groups and with companies, and kept the group's records of researchers and activities up to date in the national and institutional databases.",
+              es: "También propuse alianzas con otros grupos de investigación y con empresas, y mantuve al día los registros de los investigadores y las actividades del grupo en las bases de datos nacionales e institucionales.",
             }
         ]
     },
@@ -233,8 +229,8 @@ export const leadershipRolesData: Committee[] = [
 export const committeesData: Committee[] = [
     {
         title: {
-          en: 'Senior Researcher (IS) — National System of Science, Technology and Innovation',
-          es: 'Investigador Senior (IS) — Sistema Nacional de Ciencia, Tecnología e Innovación',
+          en: 'Senior Researcher (IS), National System of Science, Technology and Innovation',
+          es: 'Investigador Senior (IS), Sistema Nacional de Ciencia, Tecnología e Innovación',
         },
         role: { en: 'Minciencias Classification', es: 'Categoría Minciencias' },
         startYear: 2025,
@@ -244,10 +240,6 @@ export const committeesData: Committee[] = [
             {
               en: "Senior Researcher is the highest category in the researcher classification of Colombia's Ministry of Science, Technology and Innovation (Minciencias). It is awarded through the National Call for the Recognition and Measurement of Research Groups and Researchers, and requires a sustained record of peer-reviewed production, doctoral supervision, and demonstrated scientific leadership.",
               es: "Investigador Senior es la categoría más alta en la clasificación de investigadores del Ministerio de Ciencia, Tecnología e Innovación (Minciencias). Se otorga a través de la Convocatoria Nacional para el Reconocimiento y Medición de Grupos de Investigación e Investigadores, y exige una trayectoria sostenida de producción arbitrada, dirección de tesis doctorales y liderazgo científico demostrado.",
-            },
-            {
-              en: "I am also a recognized peer evaluator for Minciencias. Since 2018 I have evaluated 15 proposals for Colciencias and Minciencias in seven calls and processes, among them calls of the General System of Royalties and the national preselection for the Research Grants of the International Centre for Genetic Engineering and Biotechnology (ICGEB), and I have served on four expert panels.",
-              es: "También soy par evaluador reconocido por Minciencias. Desde 2018 he evaluado 15 propuestas para Colciencias y Minciencias en siete convocatorias y procesos, entre ellos convocatorias del Sistema General de Regalías y la preselección nacional para los Research Grants del International Centre for Genetic Engineering and Biotechnology (ICGEB), y he integrado cuatro paneles de expertos.",
             }
         ]
     },
@@ -290,31 +282,27 @@ export const committeesData: Committee[] = [
     },
     {
         title: {
-          en: 'Generative AI (GenAI) Usage Guidelines Committee',
-          es: 'Comité de Lineamientos para el Uso de la IA Generativa (GenAI)',
+          en: 'Guidelines for the use of generative AI at the Universidad de los Andes',
+          es: 'Lineamientos para el uso de inteligencia artificial generativa en la Universidad de los Andes',
         },
-        role: { en: 'Committee Member', es: 'Miembro del Comité' },
+        role: { en: 'Contributions on behalf of the School of Engineering', es: 'Aportes en representación de la Facultad de Ingeniería' },
         startYear: 2024,
         endYear: 2024,
         level: 'University',
         description: [
             {
-              en: "In October 2024, Universidad de los Andes launched its 'Guidelines for the use of generative artificial intelligence (GenAI),' a pioneering document in Colombia that provides a comprehensive set of orientations for students, professors, and administrative staff on the use of this transformative technology.",
-              es: "En octubre de 2024, la Universidad de los Andes lanzó sus «Lineamientos para el uso de la inteligencia artificial generativa (GenAI)», un documento pionero en Colombia que ofrece un conjunto integral de orientaciones para estudiantes, profesores y personal administrativo sobre el uso de esta tecnología transformadora.",
+              en: "In October 2024 the Universidad de los Andes published its Guidelines for the use of generative artificial intelligence, with recommendations for students, professors, researchers and staff, organized by who uses the tools and for what. The University presents them as a framework that will be updated as the technology changes.",
+              es: "En octubre de 2024 la Universidad de los Andes publicó sus Lineamientos para el uso de inteligencia artificial generativa, con recomendaciones para estudiantes, profesores, investigadores y personal administrativo, organizadas según quién usa las herramientas y para qué. La Universidad los presenta como un marco que se actualizará a medida que cambie la tecnología.",
             },
             {
-              en: "The creation of these guidelines was a collaborative and multidisciplinary process involving multiple university entities. As part of the team representing the School of Engineering, alongside Dean Rubby Casallas and Professor Juan Carlos Cruz, I took part in the entire discussion and wrote the first version of the section for researchers. The document's closing note acknowledges these contributions.",
-              es: "La creación de estos lineamientos fue un proceso colaborativo y multidisciplinario en el que participaron múltiples dependencias de la universidad. Como parte del equipo que representó a la Facultad de Ingeniería, junto a la decana Rubby Casallas y el profesor Juan Carlos Cruz, participé en toda la discusión y escribí la primera versión de la sección dirigida a los investigadores. La nota final del documento reconoce esos aportes.",
-            },
-            {
-              en: "The final document provides concrete recommendations categorized by user type and activity, setting a new standard for GenAI policy in Colombian higher education. It is designed as a dynamic framework, subject to updates as the technology evolves, to guide the university community on the responsible and ethical use of GenAI tools.",
-              es: "El documento final ofrece recomendaciones concretas categorizadas por tipo de usuario y actividad, estableciendo un nuevo estándar para la política sobre GenAI en la educación superior colombiana. Está concebido como un marco dinámico, sujeto a actualizaciones a medida que la tecnología evoluciona, para orientar a la comunidad universitaria sobre el uso responsable y ético de las herramientas de GenAI.",
+              en: "Representing the School of Engineering, with Dean Rubby Casallas and Professor Juan Carlos Cruz, I took part in the whole discussion and wrote the first version of the section on the use of generative AI in research. The closing note of the document acknowledges the significant contributions of the three of us to its content.",
+              es: "En representación de la Facultad de Ingeniería, con la decana Rubby Casallas y el profesor Juan Carlos Cruz, participé en toda la discusión y escribí la primera versión de la sección sobre el uso de la IA generativa en la investigación. La nota final del documento reconoce los aportes significativos de los tres a su contenido.",
             }
         ]
     },
     {
         title: {
-          en: 'Research and Doctorate Committee, Faculty of Engineering',
+          en: 'Research and Doctorate Committee, School of Engineering',
           es: 'Comité de Investigaciones y Doctorado, Facultad de Ingeniería',
         },
         role: { en: 'Representative of the Department of Chemical and Food Engineering', es: 'Representante del Departamento de Ingeniería Química y de Alimentos' },
@@ -323,22 +311,22 @@ export const committeesData: Committee[] = [
         level: 'Faculty',
         description: [
             {
-              en: "The Research and Doctorate Committee is an advisory body to the Faculty Council, supporting strategic decisions to promote and strengthen research within the Faculty of Engineering. It plays a central role in the university's research ecosystem.",
-              es: "El Comité de Investigaciones y Doctorado es un órgano asesor del Consejo de Facultad que apoya las decisiones estratégicas para promover y fortalecer la investigación dentro de la Facultad de Ingeniería. Desempeña un papel central en el ecosistema de investigación de la universidad.",
+              en: "The Research and Doctorate Committee advises the Council of the School of Engineering on the decisions that promote and strengthen research in the School.",
+              es: "El Comité de Investigaciones y Doctorado asesora al Consejo de la Facultad de Ingeniería en las decisiones que promueven y fortalecen la investigación en la Facultad.",
             },
             {
               en: "Our responsibilities include designing strategies to increase research activity, ensuring its quality and impact, suggesting methods for measuring research output, and advising the Dean on resource allocation. We also contribute to the efficient management of research infrastructure and propose strategies for disseminating research findings.",
               es: "Nuestras responsabilidades incluyen diseñar estrategias para incrementar la actividad investigativa, asegurar su calidad e impacto, sugerir métodos para medir la producción investigativa y asesorar al decano en la asignación de recursos. También contribuimos a la gestión eficiente de la infraestructura de investigación y proponemos estrategias para difundir los hallazgos de investigación.",
             },
             {
-              en: "As the representative of my department, I maintain ongoing communication with my department's director and faculty, bringing their perspectives and feedback to the committee's discussions to ensure departmental alignment with the Faculty's research goals.",
-              es: "Como representante de mi departamento, mantengo una comunicación constante con el director y los profesores de mi departamento, llevando sus perspectivas y comentarios a las discusiones del comité para asegurar la alineación del departamento con los objetivos de investigación de la Facultad.",
+              en: "As the representative of my department, I kept in touch with its director and professors and took their views to the committee's discussions.",
+              es: "Como representante de mi departamento, mantuve la comunicación con su director y sus profesores, y llevé sus opiniones a las discusiones del comité.",
             }
         ]
     },
     {
         title: {
-          en: 'Research Ethics Committee, Faculty of Engineering',
+          en: 'Research Ethics Committee, School of Engineering',
           es: 'Comité de Ética en Investigación, Facultad de Ingeniería',
         },
         role: { en: 'Committee Member', es: 'Miembro del Comité' },
@@ -347,16 +335,16 @@ export const committeesData: Committee[] = [
         level: 'Faculty',
         description: [
             {
-              en: "As a member of the Research Ethics Committee for the Faculty of Engineering, I am one of three appointed professors responsible for upholding the ethical standards of research involving living beings. The committee operates as a satellite body of the central University Ethics Committee, adhering to both Colombian national regulations (Resolution 008430 of 1993) and international research ethics standards.",
-              es: "Como miembro del Comité de Ética en Investigación de la Facultad de Ingeniería, soy uno de los tres profesores designados responsables de velar por los estándares éticos de la investigación que involucra seres vivos. El comité funciona como un órgano satélite del Comité de Ética central de la Universidad, acogiéndose tanto a la normativa nacional colombiana (Resolución 008430 de 1993) como a los estándares internacionales de ética en investigación.",
+              en: "As a member of the Research Ethics Committee of the School of Engineering, I am one of three appointed professors responsible for upholding the ethical standards of research involving living beings. The committee operates as a satellite body of the central University Ethics Committee, under Colombian regulations (Resolution 008430 of 1993) and international research ethics standards.",
+              es: "Como miembro del Comité de Ética en Investigación de la Facultad de Ingeniería, soy uno de los tres profesores designados para velar por los estándares éticos de la investigación que involucra seres vivos. El comité funciona como un órgano satélite del Comité de Ética central de la Universidad, bajo la normativa colombiana (Resolución 008430 de 1993) y los estándares internacionales de ética en investigación.",
             },
             {
-              en: "Our primary role is to review and provide ethical approval for all research projects conducted by undergraduate, master's, and doctoral students within the Faculty of Engineering. We evaluate project proposals to ensure they address all ethical considerations before any data collection begins, as the committee does not grant retroactive approvals.",
-              es: "Nuestra función principal es revisar y otorgar la aprobación ética a todos los proyectos de investigación realizados por estudiantes de pregrado, maestría y doctorado dentro de la Facultad de Ingeniería. Evaluamos las propuestas de proyecto para asegurar que aborden todas las consideraciones éticas antes de que comience cualquier recolección de datos, ya que el comité no concede aprobaciones retroactivas.",
+              en: "The committee reviews the research protocols of every department of the School, from undergraduate, master's and doctoral projects, classifies their level of risk and grants the ethical approval before any data collection begins; it does not grant approvals retroactively.",
+              es: "El comité revisa los protocolos de investigación de todos los departamentos de la Facultad, de proyectos de pregrado, maestría y doctorado, clasifica su nivel de riesgo y otorga el aval ético antes de que empiece la toma de datos; no concede avales retroactivos.",
             },
             {
-              en: "This service is crucial for maintaining the integrity of our research and ensuring that all investigations, even those classified as 'no risk,' are conducted responsibly and with the highest ethical diligence.",
-              es: "Este servicio es crucial para mantener la integridad de nuestra investigación y asegurar que todas las indagaciones, incluso las clasificadas como «sin riesgo», se realicen de manera responsable y con la mayor diligencia ética.",
+              en: "We review about ten cases a week, and sometimes many more. By my estimate, that is more than 1,800 cases since I joined in 2021, counting only the weeks of classes.",
+              es: "Revisamos unos diez casos por semana, y a veces muchos más. Según mi estimado, son más de 1.800 casos desde que entré en 2021, contando solo las semanas de clase.",
             }
         ]
     },
@@ -441,4 +429,108 @@ export const committeesData: Committee[] = [
             }
         ]
     }
+];
+
+// ── Comité de Ética en Investigación: la carga ──────────────────────────────
+
+/**
+ * La carga del Comité de Ética en Investigación es un estimado, no un conteo: unos diez
+ * casos por semana, solo en las semanas de clase de cada semestre completo desde 2021-10,
+ * más las semanas que llevaba el semestre en curso al corte. Las intersemestrales y las
+ * semanas con más casos no entran, así que la cifra se dice como «más de».
+ */
+export const ethicsCommitteeLoad = {
+  casesPerWeek: 10,
+  weeksPerSemester: 16,
+  fullSemesters: ['2021-10', '2021-20', '2022-10', '2022-20', '2023-10', '2023-20', '2024-10', '2024-20', '2025-10', '2025-20', '2026-10'],
+  currentSemester: '2026-20',
+  weeksIntoCurrentSemester: 8,
+  asOf: '2026-10-01',
+};
+
+export const ethicsWeeks =
+  ethicsCommitteeLoad.fullSemesters.length * ethicsCommitteeLoad.weeksPerSemester + ethicsCommitteeLoad.weeksIntoCurrentSemester;
+export const ethicsCasesEstimate = ethicsWeeks * ethicsCommitteeLoad.casesPerWeek;
+
+// ── Evaluar a otros ─────────────────────────────────────────────────────────
+
+/**
+ * Convocatorias en las que evaluó propuestas. Se hicieron bajo acuerdo de confidencialidad:
+ * aquí solo va lo que se puede contar (el año, el tipo de proceso, cuántas propuestas y si
+ * hubo panel), nunca las propuestas, sus códigos ni sus autores.
+ *  - `national`: procesos de Colciencias y Minciencias, incluidos los del Sistema General de
+ *    Regalías, la preselección nacional para el ICGEB y la Comisión Nacional de Expertos.
+ *  - `university`: convocatorias internas de otras universidades del país.
+ */
+export interface EvaluationCall {
+  year: number;
+  scope: 'national' | 'university';
+  proposals: number;
+  panel?: boolean;
+  /** Lo que el proceso tuvo de particular y se puede decir. */
+  note?: 'royalties' | 'icgeb' | 'experts';
+}
+
+export const evaluationCallsData: EvaluationCall[] = [
+  { year: 2018, scope: 'national', proposals: 1, panel: true },
+  { year: 2019, scope: 'national', proposals: 1, note: 'royalties' },
+  { year: 2019, scope: 'university', proposals: 1 },
+  { year: 2020, scope: 'university', proposals: 1 },
+  { year: 2021, scope: 'national', proposals: 2, panel: true },
+  { year: 2021, scope: 'national', proposals: 1, panel: true, note: 'royalties' },
+  { year: 2021, scope: 'national', proposals: 1, note: 'royalties' },
+  { year: 2021, scope: 'university', proposals: 1 },
+  { year: 2022, scope: 'university', proposals: 1 },
+  { year: 2024, scope: 'national', proposals: 1, panel: true, note: 'icgeb' },
+  { year: 2024, scope: 'university', proposals: 1 },
+  { year: 2024, scope: 'university', proposals: 1 },
+  { year: 2025, scope: 'university', proposals: 1 },
+  { year: 2026, scope: 'national', proposals: 8, note: 'experts' },
+];
+
+/** Las siete convocatorias universitarias fueron de seis universidades distintas, que no se nombran. */
+export const evaluationUniversities = 6;
+
+export interface EvaluationRecord {
+  year: number;
+  what: Localized;
+  where: Localized;
+}
+
+/** Evaluación de profesores de otras universidades. No se nombra a ningún evaluado. */
+export const facultyEvaluationsData: EvaluationRecord[] = [
+  {
+    year: 2021,
+    what: { en: 'Evaluation committee of a faculty hiring competition', es: 'Comité evaluador de un concurso profesoral' },
+    where: { en: 'Universidad Industrial de Santander (UIS)', es: 'Universidad Industrial de Santander (UIS)' },
+  },
+  {
+    year: 2025,
+    what: { en: 'External evaluator of a professor’s academic record', es: 'Evaluador externo de la trayectoria de un profesor' },
+    where: { en: 'Universidad de Antioquia', es: 'Universidad de Antioquia' },
+  },
+  {
+    year: 2025,
+    what: { en: 'External evaluator of a professor’s academic record', es: 'Evaluador externo de la trayectoria de un profesor' },
+    where: { en: 'Another Colombian university', es: 'Otra universidad del país' },
+  },
+];
+
+/** Jurados fuera de Uniandes. Los jurados de estudiantes de Uniandes van con su escuela. */
+export const externalJuriesData: EvaluationRecord[] = [
+  {
+    year: 2018,
+    what: { en: 'Evaluator of undergraduate theses, appropriate technologies area', es: 'Evaluador de trabajos de grado de pregrado, área de Tecnologías Apropiadas' },
+    where: { en: 'Concurso Nacional Otto de Greiff, which awards the best undergraduate theses of eight universities', es: 'Concurso Nacional Otto de Greiff, que premia los mejores trabajos de grado de ocho universidades' },
+  },
+  {
+    year: 2018,
+    what: { en: 'Evaluator of a master’s thesis proposal', es: 'Evaluador de un anteproyecto de tesis de maestría' },
+    where: { en: 'Universidad Icesi', es: 'Universidad Icesi' },
+  },
+  {
+    year: 2024,
+    what: { en: 'Examiner of a doctoral thesis, manuscript and defense', es: 'Jurado de una tesis doctoral, manuscrito y sustentación' },
+    where: { en: 'Universidad de Antioquia', es: 'Universidad de Antioquia' },
+  },
 ];
