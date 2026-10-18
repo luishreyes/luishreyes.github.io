@@ -1,4 +1,5 @@
 import type { Localized } from '../../context/i18n';
+import { fotos, type Foto } from './fotos';
 
 export interface DevelopmentActivity {
   period: string;
@@ -6,6 +7,8 @@ export interface DevelopmentActivity {
   institution?: Localized;
   description: Localized;
   details?: Localized[];
+  /** Foto de la actividad, si la hay: va debajo de su ficha, con la descripción del catálogo como pie. */
+  foto?: Foto;
 }
 
 export const professionalDevelopmentData: DevelopmentActivity[] = [
@@ -76,6 +79,7 @@ export const professionalDevelopmentData: DevelopmentActivity[] = [
         period: '2019',
         title: { en: 'KAOSPilot: The Art and Craft of Facilitating Learning Spaces', es: 'KAOSPilot: El Arte y Oficio de Facilitar Espacios de Aprendizaje' },
         institution: 'KAOSPilot',
+        foto: fotos.kaospilot,
         description: {
             en: "This course focused on experiential learning and the design of project-type courses, providing tools to create dynamic and engaging learning environments.",
             es: "Este curso se centró en el aprendizaje experiencial y el diseño de cursos de tipo proyecto, brindando herramientas para crear entornos de aprendizaje dinámicos y atractivos."

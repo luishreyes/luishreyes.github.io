@@ -50,6 +50,14 @@ export const ProfessionalDevelopmentPage = () => {
                       {a.details.map((d, k) => <li key={k}>{localize(d, lang)}</li>)}
                     </ul>
                   )}
+                  {a.foto && (
+                    <figure className="mt-6 max-w-[640px]">
+                      <div className="overflow-hidden aspect-[2/1]">
+                        <img src={a.foto.src} alt={localize(a.foto.alt, lang)} loading="lazy" className="a-foto a-bn" style={{ objectPosition: a.foto.foco }} />
+                      </div>
+                      <figcaption className="a-pie">{localize(a.foto.alt, lang)}.</figcaption>
+                    </figure>
+                  )}
                 </div>
               </Sube>
             ))}
