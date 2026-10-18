@@ -30,7 +30,7 @@ export const ProfessionalDevelopmentPage = () => {
           </>
         }
         accion={{ to: '/teaching/scholarship', label: t('profdev.cta') }}
-        foto={{ src: fotos.recienLlegado.src, alt: localize(fotos.recienLlegado.alt, lang) }}
+        foto={{ src: fotos.disenoCursos.src, alt: localize(fotos.disenoCursos.alt, lang), posicion: fotos.disenoCursos.foco }}
       />
 
       {/* ── El registro, año por año ── */}

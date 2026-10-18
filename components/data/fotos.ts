@@ -71,6 +71,7 @@ export const fotos = {
   santoTomas: f('congresos/charla-santo-tomas-ingenieria-biologica.jpg', 'His invited talk on biological engineering at Universidad Santo Tomás', 'Su charla por invitación sobre ingeniería biológica en la Universidad Santo Tomás', '48% 62%'),
   acs2026: f('congresos/2026-acs-fall-chicago.jpg', 'With Gabriela Meléndez at ACS Fall 2026, Chicago', 'Con Gabriela Meléndez en ACS Fall 2026, Chicago', '65% 45%'),
   // Trayectoria
+  disenoCursos: f('trayectoria/2019-modulo-diseno-integrado-de-cursos.jpg', 'The group that completed the Teacher Training Module: Integrated Course Design, taught by Eduardo Escallón Largacha, Dean of the School of Education, 2019', 'El grupo que terminó el Módulo de Formación Docente: Diseño Integrado de Cursos, dictado por Eduardo Escallón Largacha, decano de la Facultad de Educación, 2019', '50% 35%'),
   recienLlegado: f('trayectoria/recien-llegado.jpg', 'Newly arrived at Uniandes, with the first students of the group', 'Recién llegado a Uniandes, con los primeros estudiantes del grupo', '50% 30%'),
   // Aperturas de capítulo: fotos del profesor, una por capítulo (índice de la portada y encabezado de cada uno)
   portadaContexto: f('portadas/contexto.jpg', 'A stone wall with tall buildings behind it; a person walks along the top', 'Un muro de piedra con edificios altos detrás; una persona camina sobre él', '0% 50%'),

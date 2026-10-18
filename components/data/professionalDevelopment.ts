@@ -95,8 +95,8 @@ export const professionalDevelopmentData: DevelopmentActivity[] = [
         title: { en: 'Teacher Training Module: Integrated Course Design', es: 'Módulo de Formación Docente: Diseño Integrado de Cursos' },
         institution: 'Universidad de los Andes',
         description: {
-            en: "This module, given by the Dean of the School of Education, focused on teaching philosophy and the necessity of designing courses that emphasize the skills and aptitudes to be instilled in students.",
-            es: "Este módulo, dictado por el decano de la Facultad de Educación, se enfocó en la filosofía de enseñanza y en la necesidad de diseñar cursos que enfaticen las habilidades y aptitudes que se busca inculcar en los estudiantes."
+            en: "This module, given by Eduardo Escallón Largacha, then Dean of the School of Education, focused on teaching philosophy and the necessity of designing courses that emphasize the skills and aptitudes to be instilled in students.",
+            es: "Este módulo, dictado por Eduardo Escallón Largacha, entonces decano de la Facultad de Educación, se enfocó en la filosofía de enseñanza y en la necesidad de diseñar cursos que enfaticen las habilidades y aptitudes que se busca inculcar en los estudiantes."
         }
     },
     {
