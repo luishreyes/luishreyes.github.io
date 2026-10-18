@@ -4,6 +4,7 @@ import { Routes, Route, useLocation } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
 import { SiteFooter } from './components/SiteFooter';
 import { AboutPage } from './pages/AboutPage';
+import { TrajectoryPage } from './pages/TrajectoryPage';
 import { ResearchOverviewPage } from './pages/ResearchOverviewPage';
 import { ProductsPage } from './pages/ProductsPage';
 import { GrantsPage } from './pages/GrantsPage';
@@ -146,6 +147,13 @@ const App: React.FC = () => {
     );
   };
 
+  // Cualquier botón del portafolio puede pedir el CV sin recibir el manejador por props.
+  useEffect(() => {
+    const pedir = () => handleDownloadCv();
+    window.addEventListener('lhr:descargar-cv', pedir);
+    return () => window.removeEventListener('lhr:descargar-cv', pedir);
+  });
+
   const contextValue = useMemo(() => ({
     products,
     productsLoading,
@@ -163,6 +171,7 @@ const App: React.FC = () => {
           <AnimatePresence mode="wait">
             <Routes location={location} key={location.pathname}>
               <Route path="/" element={<AboutPage />} />
+              <Route path="/trajectory" element={<TrajectoryPage />} />
               <Route path="/principles/teaching" element={<TeachingPurposePage />} />
               <Route path="/principles/research" element={<ResearchPurposePage />} />
               <Route path="/principles/service" element={<ServicePurposePage />} />

@@ -26,6 +26,7 @@ export const nav = {
   'nav.service.editorships': { en: 'Edited Books & Guest Editorships', es: 'Libros editados y ediciones invitadas' },
   'nav.service.outreach':  { en: 'Outreach & Scouting',     es: 'Divulgación y Scouting' },
   'nav.recognition':       { en: 'Recognition',             es: 'Reconocimientos' },
+  'nav.trajectory':        { en: 'Trajectory',              es: 'Trayectoria' },
   'nav.classroom':         { en: 'Classroom',               es: 'Aula' },
   'nav.downloadCv':        { en: 'Download CV',             es: 'Descargar CV' },
   'nav.menu':              { en: 'Menu',                    es: 'Menú' },

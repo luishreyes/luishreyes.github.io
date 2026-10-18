@@ -1,5 +1,6 @@
 export const ROUTES: Record<string, string> = {
   'about':                                '/',
+  'trajectory':                           '/trajectory',
   'principles.teaching':                  '/principles/teaching',
   'principles.research':                  '/principles/research',
   'principles.service':                   '/principles/service',

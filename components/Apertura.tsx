@@ -79,7 +79,7 @@ export const Cabecera: React.FC<{ titulo: string; className?: string }> = ({ tit
 interface EncabezadoProps {
   titulo: string;
   entrada?: React.ReactNode;
-  accion?: { to?: string; href?: string; label: string };
+  accion?: { to?: string; href?: string; onClick?: () => void; label: string };
   /** Foto opcional a la derecha: con ella la primera pantalla tiene su imagen dominante. */
   foto?: { src: string; alt: string; posicion?: string };
   children?: React.ReactNode;
@@ -117,7 +117,9 @@ export const EncabezadoPagina: React.FC<EncabezadoProps> = ({ titulo, entrada, a
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: SALE, delay: 0.18 }}
           >
-            {accion.to ? (
+            {accion.onClick ? (
+              <button type="button" onClick={accion.onClick} className="a-boton">{accion.label}</button>
+            ) : accion.to ? (
               <Link to={accion.to} className="a-boton">{accion.label} <span aria-hidden="true">→</span></Link>
             ) : (
               <a href={accion.href} target="_blank" rel="noopener noreferrer" className="a-boton">

@@ -252,6 +252,7 @@ Instalado en `.claude/skills/design-taste-frontend/` desde [Leonxlnx/taste-skill
 - **Portafolio principal y Classroom index:** Inglés
 - **Contenido de cursos (lecturas, presentaciones, landing):** Español con tildes correctas (á, é, í, ó, ú, ñ, ü)
 - **Nunca** publicar texto en español sin acentos
+- **El español del sitio trata de usted, nunca de tú** (pedido del profesor, 18 oct 2026): «Escríbame», «consulte», «vea».
 
 ### Git
 - Commits descriptivos con footer `Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>`

@@ -1,486 +1,124 @@
-
-
-
-import React, { useRef, useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { SocialLinks } from '../components/SocialLinks';
-import { useI18n, localize } from '../context/i18n';
-// FIX: Removed 'Variants' from framer-motion import to resolve module export error.
-import { motion, useScroll, useTransform } from 'framer-motion';
-import { educationData, specializationsData, credentialsData } from '../components/data/education';
-import { workExperienceData } from '../components/data/experience';
+import { motion } from 'framer-motion';
+import { PageWrapper } from '../components/PageWrapper';
+import { Cabecera } from '../components/Apertura';
+import { Sube, SALE } from '../components/Sube';
+import { Vectores } from '../components/Vectores';
+import { useI18n, type UIKey } from '../context/i18n';
 
-const cardVariants = {
-  offscreen: {
-    y: 50,
-    opacity: 0
-  },
-  onscreen: {
-    y: 0,
-    opacity: 1,
-    transition: {
-      // FIX: Added 'as const' to prevent TypeScript from widening the string literal type, which caused a type error.
-      type: "spring" as const,
-      bounce: 0.4,
-      duration: 0.8
-    }
-  }
-};
+/** El contenido del sitio, como el índice del portafolio docente: cada capítulo con su foto. */
+const CAPITULOS: { to: string; nombre: UIKey; linea: UIKey; foto: string }[] = [
+  { to: '/trajectory', nombre: 'nav.trajectory', linea: 'home.contents.trajectory', foto: '/images/site/campus-mision-historia-y-simbolos-0.webp' },
+  { to: '/teaching', nombre: 'nav.teaching', linea: 'home.contents.teaching', foto: '/images/site/uandes-2.jpg' },
+  { to: '/research', nombre: 'nav.research', linea: 'home.contents.research', foto: '/images/site/generated-image-september-02-2025-1-07pm.jpg' },
+  { to: '/service', nombre: 'nav.service', linea: 'home.contents.service', foto: '/images/site/img-4560-2.jpg' },
+  { to: '/recognition', nombre: 'nav.recognition', linea: 'home.contents.recognition', foto: '/images/uniandes-bw.jpg' },
+  { to: '/classroom', nombre: 'nav.classroom', linea: 'home.contents.classroom', foto: '/classroom/iqya-2031-2026-20/banner.jpg' },
+];
 
-const timelineItemVariants = {
-  offscreen: {
-    x: -30,
-    opacity: 0
-  },
-  onscreen: {
-    x: 0,
-    opacity: 1,
-    transition: {
-      duration: 0.5,
-      // FIX: Added 'as const' to prevent TypeScript from widening the string literal type, which caused a type error.
-      ease: 'easeOut' as const
-    }
-  }
-};
-
-// FIX: Made children optional to fix TypeScript error.
-const IconWrapper = ({ children }: { children?: React.ReactNode }) => (
-    <div className="flex items-center justify-center h-16 w-16 bg-yellow-400/20 rounded-full mb-6">
-        {children}
-    </div>
-);
-
-// Icons as components
-const ResearchersIcon = () => (
-    <img src="https://cdn-icons-png.flaticon.com/512/7388/7388554.png" alt="Researchers and Academics Icon" className="h-8 w-8" />
-);
-
-const StudentsIcon = () => (
-    <img src="https://cdn-icons-png.flaticon.com/512/948/948256.png" alt="Engineering Students Icon" className="h-8 w-8" />
-);
-
-const IndustryIcon = () => (
-    <img src="https://cdn-icons-png.flaticon.com/512/2891/2891415.png" alt="Companies Icon" className="h-8 w-8" />
-);
-
-const CertificateIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-    </svg>
-);
-
-const heroVariants = {
-    hidden: { opacity: 0 },
-    visible: { 
-      opacity: 1,
-      transition: { 
-        duration: 0.5,
-        staggerChildren: 0.15 
-      } 
-    },
-};
-
-const heroChildVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { 
-      opacity: 1, 
-      y: 0,
-      // FIX: Added 'as const' to prevent TypeScript from widening the string literal type, which caused a type error.
-      transition: { duration: 0.6, ease: 'easeOut' as const } 
-    },
-};
-
-export const AboutPage = () => {
-  const { t, lang } = useI18n();
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
-  
-  // Hero Image Scroll Animation
-  const { scrollY } = useScroll();
-  const heroFrameRotate = useTransform(scrollY, [0, 300], [0, -3], { clamp: true });
-  const heroImageRotate = useTransform(scrollY, [0, 300], [0, 2], { clamp: true });
-  const heroImageScale = useTransform(scrollY, [0, 300], [1, 1.05], { clamp: true });
-
-  // Professional Purpose Image Scroll Animation
-  const purposeRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress: purposeScrollYProgress } = useScroll({
-    target: purposeRef,
-    offset: ["start end", "end start"]
-  });
-  const purposeFrameRotate = useTransform(purposeScrollYProgress, [0, 1], [-3, 3]);
-  const purposeImageRotate = useTransform(purposeScrollYProgress, [0, 1], [2, -2]);
-  const purposeImageScale = useTransform(purposeScrollYProgress, [0, 1], [1, 1.05]);
+/** Portada: la declaración. La primera pantalla es solo palabras (la dirección
+ *  «type-only-statement» del skill); las fotos llegan después, grandes y pocas. */
+export const AboutPage: React.FC = () => {
+  const { t } = useI18n();
 
   return (
-    <motion.div
-      // FIX: Spread motion props to avoid TypeScript type errors.
-      {...{
-        initial: { opacity: 0 },
-        animate: { opacity: 1 },
-        exit: { opacity: 0 },
-        transition: { duration: 0.5 },
-      }}
-    >
-      {/* Hero Section */}
-      <div className="relative min-h-screen w-full flex items-center justify-center bg-zinc-50 overflow-hidden">
+    <PageWrapper noPadding>
+      {/* ── Primera pantalla: la convicción, el nombre y una acción ── */}
+      <section className="a-portada pt-16">
+        <div className="a-c flex min-h-[calc(100svh-4rem)] flex-col justify-between gap-16 py-14 sm:py-20">
+          <motion.h1
+            className="a-declara"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, ease: SALE }}
+          >
+            {t('home.statement')}
+          </motion.h1>
           <motion.div
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] h-[80vh] max-w-6xl max-h-[700px] border-4 border-yellow-400 rounded-3xl"
-            initial={{ opacity: 0, rotate: -15, scale: 0.8 }}
-            animate={{ opacity: 1, rotate: -6, scale: 1 }}
-            transition={{ duration: 1, ease: 'easeOut', delay: 0.2 }}
-          />
-          <div className="relative z-10 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 grid md:grid-cols-2 gap-16 items-center pt-28 pb-16 md:pt-0 md:pb-0">
-              {/* Text Content */}
-              <motion.div
-                {...{
-                  variants: heroVariants,
-                  initial: 'hidden',
-                  animate: 'visible',
-                }}
-              >
-                <motion.p
-                  {...{ variants: heroChildVariants }}
-                  className="font-mono text-base md:text-lg tracking-widest text-brand-gray"
-                >
-                  {t('about.hero.greeting')}
-                </motion.p>
-                <motion.h1
-                  {...{ variants: heroChildVariants }}
-                  className="mt-2 text-5xl md:text-7xl lg:text-8xl font-extrabold tracking-tighter text-brand-dark"
-                >
-                  Luis H. Reyes.
-                </motion.h1>
-                <motion.h2
-                  {...{ variants: heroChildVariants }}
-                  className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tighter text-brand-dark mt-4"
-                >
-                  {t('about.hero.tagline')}
-                </motion.h2>
-                <motion.p
-                  {...{ variants: heroChildVariants }}
-                  className="mt-8 max-w-3xl text-lg text-brand-gray leading-relaxed"
-                >
-                  {t('about.hero.bio')}
-                </motion.p>
-                <motion.div
-                  {...{ variants: heroChildVariants }}
-                  className="mt-10"
-                >
-                  <Link
-                    to="/teaching"
-                    className="inline-block bg-yellow-400 text-brand-dark font-semibold px-8 py-3 rounded-lg shadow-md hover:bg-yellow-500 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-zinc-50 focus:ring-yellow-400"
-                  >
-                    {t('about.hero.cta')}
-                  </Link>
-                </motion.div>
-                <motion.div
-                  {...{ variants: heroChildVariants }}
-                  className="mt-6"
-                >
-                  <SocialLinks />
-                </motion.div>
-              </motion.div>
+            className="grid gap-8 md:grid-cols-[minmax(0,1fr)_auto] md:items-end"
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: SALE, delay: 0.2 }}
+          >
+            <p className="a-entrada max-w-[40ch]">
+              <strong className="font-semibold text-tinta-900">Luis H. Reyes.</strong> {t('home.who')}
+            </p>
+            <a className="a-boton justify-self-start" href="mailto:lh.reyes@uniandes.edu.co">
+              {t('home.cta')} <span aria-hidden="true">→</span>
+            </a>
+          </motion.div>
+        </div>
+      </section>
 
-              {/* Image Content */}
-              <motion.div
-                className="flex justify-center items-center"
-                {...{
-                    initial: { opacity: 0, x: 50 },
-                    animate: { opacity: 1, x: 0 },
-                    transition: { duration: 0.8, ease: 'easeOut', delay: 0.4 },
-                }}
-              >
-                <div className="relative w-full max-w-sm mx-auto">
-                  {/* Dephased frame */}
-                  <motion.div
-                    className="absolute top-4 right-[-12px] bottom-[-12px] left-4 rounded-2xl border-2 border-yellow-400"
-                    style={{ rotate: heroFrameRotate }}
-                  />
-
-                  {/* Main image */}
-                  <motion.div
-                    className="relative rounded-2xl shadow-xl z-10 overflow-hidden h-96 md:h-[65vh] md:max-h-[600px]"
-                    style={{ rotate: heroImageRotate, scale: heroImageScale }}
-                  >
-                    <img
-                      src="/images/site/uandes-2.jpg"
-                      alt="Luis H. Reyes"
-                      className="w-full h-full object-cover object-top"
-                    />
-                    <div className="absolute inset-0 bg-white mix-blend-saturation pointer-events-none"></div>
-                  </motion.div>
-                </div>
-              </motion.div>
+      {/* ── La declaración ── */}
+      <section className="a-papel a-campo">
+        <div className="a-c">
+          <Sube><Cabecera titulo={t('home.declaration.title')} /></Sube>
+          <div className="mt-12 grid gap-12 lg:grid-cols-[minmax(0,0.75fr)_minmax(0,1.25fr)]">
+            <Sube>
+              <img src="/images/site/1756469286343.jpg" alt={t('home.portrait.alt')} className="a-bn w-full aspect-[4/5] object-cover" />
+            </Sube>
+            <Sube delay={0.08}>
+              <p className="a-texto">{t('home.declaration.p1')}</p>
+              <p className="a-texto">
+                {t('home.declaration.p2a')} <span className="a-resaltado">{t('home.declaration.p2b')}</span>{' '}
+                {t('home.declaration.p2c')}
+              </p>
+              <p className="a-texto">{t('home.declaration.p3')}</p>
+              <p className="a-texto">{t('home.declaration.p4')}</p>
+              <p className="a-texto font-semibold text-tinta-900">{t('home.declaration.p5')}</p>
+            </Sube>
           </div>
-      </div>
+        </div>
+      </section>
 
-      {/* Main Content */}
-      <div id="main-content" className="bg-white">
-          <div className="max-w-7xl mx-auto py-20 px-4 sm:px-6 lg:px-8">
-              
-              {/* Professional Purpose Section */}
-              <motion.div 
-                // FIX: Spread motion props to avoid TypeScript type errors.
-                {...{
-                    initial: "offscreen",
-                    whileInView: "onscreen",
-                    viewport: { once: true, amount: 0.4 },
-                    variants: { onscreen: { transition: { staggerChildren: 0.2 } } },
-                }}
-                className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16 items-center max-w-5xl mx-auto"
-              >
-                  <motion.div ref={purposeRef} {...{variants: cardVariants}} className="md:col-span-4 flex justify-center">
-                      <div className="relative w-56 h-56 mx-auto">
-                          {/* Dephased frame */}
-                          <motion.div
-                            className="absolute top-3 right-[-9px] bottom-[-9px] left-3 rounded-2xl border-2 border-yellow-400"
-                            style={{ rotate: purposeFrameRotate }}
-                          />
+      {/* ── La gente para la que existe todo lo anterior ── */}
+      <Sube>
+        <img src="/images/site/04.png" alt={t('home.band.alt')} loading="lazy" className="a-bn block w-full h-[46svh] min-h-[240px] object-cover" />
+      </Sube>
 
-                          {/* Main image */}
-                          <motion.div
-                            className="relative w-full h-full rounded-2xl shadow-xl z-10 overflow-hidden"
-                            style={{ rotate: purposeImageRotate, scale: purposeImageScale }}
-                          >
-                              <img
-                                  src="/images/site/1756469286343.jpg"
-                                  alt="Luis H. Reyes"
-                                  className="w-full h-full object-cover"
-                              />
-                              <div className="absolute inset-0 bg-white mix-blend-saturation pointer-events-none"></div>
-                          </motion.div>
-                      </div>
-                  </motion.div>
-                  <motion.div {...{variants: cardVariants}} className="md:col-span-8 text-center md:text-left">
-                      <h2 className="text-3xl font-bold tracking-tight text-brand-dark">{t('about.purpose.title')}</h2>
-                      <p className="mt-6 text-brand-gray leading-relaxed text-lg">
-                          {t('about.purpose.text')}
-                      </p>
-                  </motion.div>
-              </motion.div>
+      {/* ── Lo único de la portada que se toca: la suma de vectores ── */}
+      <section className="a-oscuro a-campo">
+        <div className="a-c">
+          <Sube><Cabecera titulo={t('home.vectors.title')} /></Sube>
+          <Sube delay={0.06}>
+            <p className="mt-8 a-texto a-sec">{t('purpose.teaching.p3')}</p>
+          </Sube>
+          <Sube delay={0.1} className="mt-14">
+            <Vectores />
+          </Sube>
+          <Sube className="mt-12">
+            <Link to="/principles/teaching" className="a-enlace">
+              {t('home.vectors.more')} <span aria-hidden="true">→</span>
+            </Link>
+          </Sube>
+        </div>
+      </section>
 
-              {/* Mission & Approach Section */}
-              <div className="mt-24">
-                  <h2 className="text-3xl font-bold tracking-tight text-brand-dark text-center">{t('about.mission.title')}</h2>
-                  <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
-
-                      <motion.div {...{initial:"offscreen", whileInView:"onscreen", viewport:{ once: true, amount: 0.5 }, variants:cardVariants}} className="flex flex-col items-center">
-                          <IconWrapper><ResearchersIcon /></IconWrapper>
-                          <h3 className="text-xl font-semibold text-brand-dark">{t('about.mission.researchers.title')}</h3>
-                          <p className="mt-2 text-brand-gray">{t('about.mission.researchers.text')}</p>
-                      </motion.div>
-
-                      <motion.div {...{initial:"offscreen", whileInView:"onscreen", viewport:{ once: true, amount: 0.5 }, variants:cardVariants}} className="flex flex-col items-center">
-                          <IconWrapper><StudentsIcon /></IconWrapper>
-                          <h3 className="text-xl font-semibold text-brand-dark">{t('about.mission.students.title')}</h3>
-                          <p className="mt-2 text-brand-gray">{t('about.mission.students.text')}</p>
-                      </motion.div>
-
-                      <motion.div {...{initial:"offscreen", whileInView:"onscreen", viewport:{ once: true, amount: 0.5 }, variants:cardVariants}} className="flex flex-col items-center">
-                          <IconWrapper><IndustryIcon /></IconWrapper>
-                          <h3 className="text-xl font-semibold text-brand-dark">{t('about.mission.industry.title')}</h3>
-                          <p className="mt-2 text-brand-gray">{t('about.mission.industry.text')}</p>
-                      </motion.div>
-                  </div>
-              </div>
-
-              {/* Academic Background Section */}
-              <div className="mt-24">
-                  <motion.h2 
-                      // FIX: Spread motion props to avoid TypeScript type errors.
-                      {...{
-                          initial: "offscreen",
-                          whileInView: "onscreen",
-                          viewport: { once: true, amount: 0.5 },
-                          variants: cardVariants,
-                      }}
-                      className="text-3xl font-bold tracking-tight text-brand-dark text-center"
-                  >
-                      {t('about.education.title')}
-                  </motion.h2>
-                  <div className="mt-12 max-w-3xl mx-auto">
-                      <motion.div 
-                          // FIX: Spread motion props to avoid TypeScript type errors.
-                          {...{
-                              initial: "offscreen",
-                              whileInView: "onscreen",
-                              viewport: { once: true, amount: 0.3 },
-                              variants: { onscreen: { transition: { staggerChildren: 0.2 } } },
-                          }}
-                          className="relative border-l-2 border-zinc-200"
-                      >
-                          {educationData.map((edu, index) => (
-                              <motion.div 
-                                  key={index} 
-                                  {...{variants: timelineItemVariants}}
-                                  className="relative pl-8 pb-8 last:pb-0"
-                              >
-                                  <div className="absolute left-0 top-1.5 w-4 h-4 bg-yellow-400 rounded-full -translate-x-1/2 border-4 border-white"></div>
-                                  <p className="font-bold text-lg text-brand-dark">{localize(edu.degree, lang)}, {localize(edu.field, lang)}</p>
-                                  <p className="text-brand-gray">{edu.institution} <span className="font-normal text-brand-gray">({edu.year})</span></p>
-                                  <p className="text-sm text-zinc-500">{edu.location}</p>
-                              </motion.div>
-                          ))}
-                      </motion.div>
-                  </div>
-              </div>
-              
-              {/* Work Experience Section */}
-              <div className="mt-24">
-                  <motion.h2 
-                      // FIX: Spread motion props to avoid TypeScript type errors.
-                      {...{
-                          initial: "offscreen",
-                          whileInView: "onscreen",
-                          viewport: { once: true, amount: 0.5 },
-                          variants: cardVariants,
-                      }}
-                      className="text-3xl font-bold tracking-tight text-brand-dark text-center"
-                  >
-                      {t('about.experience.title')}
-                  </motion.h2>
-                  <div className="mt-12 max-w-3xl mx-auto">
-                      <motion.div 
-                          // FIX: Spread motion props to avoid TypeScript type errors.
-                          {...{
-                              initial: "offscreen",
-                              whileInView: "onscreen",
-                              viewport: { once: true, amount: 0.3 },
-                              variants: { onscreen: { transition: { staggerChildren: 0.2 } } },
-                          }}
-                          className="relative border-l-2 border-zinc-200"
-                      >
-                          {workExperienceData.map((exp, index) => (
-                              <motion.div 
-                                  key={index} 
-                                  {...{variants: timelineItemVariants}}
-                                  className="relative pl-8 pb-8 last:pb-0"
-                              >
-                                  <div className="absolute left-0 top-1.5 w-4 h-4 bg-yellow-400 rounded-full -translate-x-1/2 border-4 border-white"></div>
-                                  <p className="font-bold text-lg text-brand-dark">{localize(exp.role, lang)}</p>
-                                  <p className="text-brand-gray">{exp.company} <span className="font-normal text-brand-gray">({exp.period})</span></p>
-                                  <p className="text-sm text-zinc-500">{exp.location}</p>
-                              </motion.div>
-                          ))}
-                      </motion.div>
-                  </div>
-              </div>
-
-              {/* Continuing Education & Specializations */}
-              <div className="mt-24">
-                  <motion.h2 
-                      // FIX: Spread motion props to avoid TypeScript type errors.
-                      {...{
-                          initial: "offscreen",
-                          whileInView: "onscreen",
-                          viewport: { once: true, amount: 0.5 },
-                          variants: cardVariants,
-                      }}
-                      className="text-3xl font-bold tracking-tight text-brand-dark text-center"
-                  >
-                      {t('about.continuing.title')}
-                  </motion.h2>
-                  <div className="mt-12 max-w-3xl mx-auto">
-                      <motion.div 
-                          // FIX: Spread motion props to avoid TypeScript type errors.
-                          {...{
-                              initial: "offscreen",
-                              whileInView: "onscreen",
-                              viewport: { once: true, amount: 0.3 },
-                              variants: { onscreen: { transition: { staggerChildren: 0.2 } } },
-                          }}
-                          className="relative border-l-2 border-zinc-200"
-                      >
-                          {specializationsData.map((spec, index) => (
-                              <motion.div 
-                                  key={index} 
-                                  {...{variants: timelineItemVariants}}
-                                  className="relative pl-8 pb-8 last:pb-0"
-                              >
-                                  <div className="absolute left-0 top-1.5 w-4 h-4 bg-yellow-400 rounded-full -translate-x-1/2 border-4 border-white"></div>
-                                  <p className="font-bold text-lg text-brand-dark">{spec.title}</p>
-                                  <p className="text-brand-gray">{spec.institution} <span className="font-normal text-brand-gray">({spec.date})</span></p>
-                              </motion.div>
-                          ))}
-                      </motion.div>
-                  </div>
-              </div>
-
-              {/* Licenses & Certifications Section */}
-              <div className="mt-24 bg-zinc-50 p-12 rounded-2xl">
-                <motion.h2 
-                      // FIX: Spread motion props to avoid TypeScript type errors.
-                      {...{
-                          initial: "offscreen",
-                          whileInView: "onscreen",
-                          viewport: { once: true, amount: 0.5 },
-                          variants: cardVariants,
-                      }}
-                      className="text-3xl font-bold tracking-tight text-brand-dark text-center"
-                  >
-                      {t('about.licenses.title')}
-                  </motion.h2>
-                  <div className="mt-12 overflow-hidden relative">
-                     {/* Gradient Fades for seamless effect */}
-                    <div className="absolute top-0 bottom-0 left-0 w-16 bg-gradient-to-r from-zinc-50 to-transparent z-10 pointer-events-none" />
-                    <div className="absolute top-0 bottom-0 right-0 w-16 bg-gradient-to-l from-zinc-50 to-transparent z-10 pointer-events-none" />
-
-                      <motion.div
-                          className="flex gap-6"
-                          animate={{
-                            // Card width (w-80 -> 320px) + gap (gap-6 -> 24px)
-                            x: [0, -((320 + 24) * credentialsData.length)],
-                          }}
-                          transition={{
-                            ease: 'linear',
-                            duration: credentialsData.length * 2, // 2 seconds per card
-                            repeat: Infinity,
-                          }}
-                      >
-                          {[...credentialsData, ...credentialsData].map((cred, index) => (
-                              <div
-                                  key={index}
-                                  className="bg-white p-4 rounded-lg shadow-md border border-yellow-400/40 flex-shrink-0 w-80 min-h-[110px] flex items-start space-x-4"
-                              >
-                                  <div className="flex-shrink-0 mt-1">
-                                    <CertificateIcon />
-                                  </div>
-                                  <div>
-                                    <p className="font-semibold text-brand-dark">{cred.title}</p>
-                                    <p className="text-sm text-brand-gray">{cred.issuer}</p>
-                                    <p className="text-xs text-zinc-500">{cred.date}</p>
-                                  </div>
-                              </div>
-                          ))}
-                      </motion.div>
-                  </div>
-              </div>
-
-              {/* CTA Section */}
-              <motion.div 
-                // FIX: Spread motion props to avoid TypeScript type errors.
-                {...{
-                    initial: "offscreen",
-                    whileInView: "onscreen",
-                    viewport: { once: true, amount: 0.5 },
-                    variants: cardVariants,
-                }}
-                className="mt-24 text-center max-w-3xl mx-auto"
-              >
-                  <h2 className="text-3xl font-bold tracking-tight text-brand-dark">{t('about.collab.title')}</h2>
-                  <p className="mt-6 text-brand-gray leading-relaxed text-lg">
-                      {t('about.collab.text')}
-                  </p>
-                  <div className="mt-8">
-                       <a href="mailto:lh.reyes@uniandes.edu.co?subject=I%20saw%20your%20teaching%20portfolio.%20Let's%20talk." className="inline-block bg-yellow-400 text-brand-dark font-semibold px-8 py-3 rounded-lg shadow-md hover:bg-yellow-500 transition-colors duration-300">
-                          {t('about.collab.cta')}
-                       </a>
-                  </div>
-              </motion.div>
-
-          </div>
-      </div>
-    </motion.div>
+      {/* ── Contenido ── */}
+      <section className="a-hundido a-campo">
+        <div className="a-c">
+          <Sube><Cabecera titulo={t('home.contents.title')} className="mb-2" /></Sube>
+          <ul>
+            {CAPITULOS.map((c, i) => (
+              <Sube as="li" key={c.to} delay={0.04 * i}>
+                <Link
+                  to={c.to}
+                  className="group grid grid-cols-[6rem_minmax(0,1fr)_auto] sm:grid-cols-[12rem_minmax(0,1fr)_auto] items-center gap-5 sm:gap-8 py-5 border-b-2 border-papel-300 transition-colors hover:bg-resaltador-suave"
+                >
+                  <img src={c.foto} alt="" loading="lazy" className="a-bn w-full aspect-[16/10] object-cover" />
+                  <span>
+                    <span className="block a-h3">{t(c.nombre)}</span>
+                    <span className="block a-s a-sec mt-1">{t(c.linea)}</span>
+                  </span>
+                  <span className="a-h3 pr-2 transition-transform group-hover:translate-x-1" aria-hidden="true">→</span>
+                </Link>
+              </Sube>
+            ))}
+          </ul>
+        </div>
+      </section>
+    </PageWrapper>
   );
 };
