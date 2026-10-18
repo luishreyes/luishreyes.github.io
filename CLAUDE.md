@@ -37,10 +37,10 @@ App.tsx               ← Router principal
 
 ## Contenido: el portafolio docente y la web (decisiones del 17 oct 2026)
 
-La web y el portafolio docente impreso (el dossier, en un repo privado) se alimentan de la misma información, pero sirven a públicos distintos: el documento a un comité, la web a estudiantes, colegas y empresas.
+La web y el portafolio docente impreso (el dossier, en un repo privado) se alimentan de la misma información, pero sirven a públicos distintos: la web le habla a estudiantes, colegas y empresas.
 - **La web sigue los capítulos del documento:** Declaración (portada), Contexto, Trayectoria, Docencia, Formación a escala, Escuela, Investigación, Liderazgo y servicio, Reconocimiento y Lo que sigue. Las páginas de datos (productos, financiamiento, cursos, comités…) son interiores de cada capítulo.
 - **El texto sale del último borrador de cada sección, adaptado a un lector público**, nunca copiado, y en los dos idiomas (la traducción al inglés la revisa el profesor). Los archivos del repo privado no se copian: los datos pasan uno por uno.
-- **La web nunca dice ni insinúa para qué se escribió el documento.** Nada de comités, ascensos ni argumentos dirigidos a un evaluador.
+- **La web no habla del documento impreso ni de su propósito.** Cuenta lo que hay, sin argumentos dirigidos a un evaluador. Tampoco los mensajes de commit ni los comentarios del código.
 - **Nada de dinero.** Sí entran, adaptados: la comparación con pares (sin nombres de colegas), los nombres de pregrado, las razones personales de la trayectoria y el doctorado en curso de Carlos Yesiel González Murcia (codirigido).
 
 ## Productos (publicaciones, patentes, libros, conferencias)
