@@ -16,21 +16,14 @@ const prioritizedImageUrls = [
   // Principles
   '/images/site/campus-mision-historia-y-simbolos-0.webp', // Teaching Purpose
   '/images/site/generales-campus-2015-2015-69.jpg', // Research Purpose
-  'https://ingenieria.uniandes.edu.co/sites/default/files/actualidad_0.jpg', // Service Purpose
   '/images/uniandes-bw.jpg', // Teaching Philosophy
 
-  // Research
-  '/images/site/generated-image-september-02-2025-1-07pm.jpg', // Research Overview
-  
   // Teaching
   '/images/site/04.png', // Teaching Overview
 
   // Service
   '/images/site/img-4560-2.jpg', // Institutional Overview
   
-  // Recognition
-  'https://pbs.twimg.com/media/DWKm7gvXcAIISbY?format=jpg&name=4096x4096', // Awards Page
-
 ];
 
 // Use a Set to ensure there are no duplicate URLs in the final queue.

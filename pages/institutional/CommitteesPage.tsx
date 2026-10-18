@@ -71,30 +71,6 @@ const SemanasEtica: React.FC = () => {
   );
 };
 
-/** La propuesta de renovación del GDPP: cinco clústeres sobre sus dos pilares de método. */
-const Clusteres: React.FC = () => {
-  const { t } = useI18n();
-  const clusteres: UIKey[] = ['svc.gdpp.c1', 'svc.gdpp.c2', 'svc.gdpp.c3', 'svc.gdpp.c4', 'svc.gdpp.c5'];
-  const pilares: UIKey[] = ['svc.gdpp.p.a', 'svc.gdpp.p.b'];
-  return (
-    <figure>
-      <h3 className="a-h3">{t('svc.gdpp.fig.title')}</h3>
-      <ul className="mt-6 grid gap-2 sm:grid-cols-5">
-        {clusteres.map((c) => (
-          <li key={c} className="bg-papel-200 px-4 py-5 sm:min-h-[8.5rem] font-semibold leading-snug text-tinta-900 transition-colors hover:bg-resaltador-suave">
-            {t(c)}
-          </li>
-        ))}
-      </ul>
-      <ul className="mt-2 grid gap-2">
-        {pilares.map((p) => (
-          <li key={p} className="bg-tinta-900 px-4 py-3 text-papel-0 a-s">{t(p)}</li>
-        ))}
-      </ul>
-      <figcaption className="a-pie">{t('svc.gdpp.fig.caption')}</figcaption>
-    </figure>
-  );
-};
 
 /** Las propuestas evaluadas, año por año: un cuadro por propuesta. */
 const PorAnio: React.FC = () => {
@@ -230,12 +206,11 @@ export const CommitteesPage: React.FC = () => {
         </div>
       </section>
 
-      {/* ── El GDPP: dos periodos y la propuesta de renovación ── */}
+      {/* ── El GDPP: dos periodos de dirección ── */}
       <section className="a-papel a-campo">
         <div className="a-c">
           <Sube><Cabecera titulo={t('svc.gdpp.title')} /></Sube>
           <Sube delay={0.06}><p className="mt-10 a-texto">{t('svc.gdpp.p1')}</p></Sube>
-          <Sube delay={0.1} className="mt-14"><Clusteres /></Sube>
         </div>
       </section>
 

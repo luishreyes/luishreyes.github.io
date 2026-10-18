@@ -1,11 +1,12 @@
-import React, { useDeferredValue, useMemo, useState } from 'react';
+import React from 'react';
+import { comillar } from '../components/comillas';
 import { Link } from 'react-router-dom';
 import { PageWrapper } from '../components/PageWrapper';
 import { EncabezadoPagina, Cabecera } from '../components/Apertura';
 import { Sube } from '../components/Sube';
 import { fotos } from '../components/data/fotos';
 import { studentsData, graduatedStudentsData } from '../components/data/students';
-import { undergraduateStudents, UNDERGRADUATE_RECORD_SINCE, type UndergraduateStudent } from '../components/data/students/undergraduate';
+import { undergraduateSummary, UNDERGRADUATE_RECORD_SINCE } from '../components/data/students/undergraduate';
 import { testimonials, type Testimonial } from '../components/data/teaching';
 import { graduateByName } from '../components/data/metrics';
 import { useI18n, localize, fill, type UIKey, type Lang } from '../context/i18n';
@@ -21,8 +22,6 @@ const Rico: React.FC<{ texto: string }> = ({ texto }) => (
 );
 
 const comillas = (texto: string, lang: Lang) => (lang === 'es' ? `«${texto}»` : `“${texto}”`);
-const plano = (s: string) => s.normalize('NFD').replace(/\p{Diacritic}/gu, '').replace(/\*/g, '').toLowerCase();
-const unir = (lista: string[], y: string) => (lista.length < 2 ? lista.join('') : `${lista.slice(0, -1).join(', ')} ${y} ${lista[lista.length - 1]}`);
 
 const Figura: React.FC<{ src: string; alt: string; pie: string; proporcion?: string; posicion?: string; className?: string }> = ({
   src, alt, pie, proporcion = 'aspect-[4/3]', posicion = 'center', className = '',
@@ -96,114 +95,12 @@ const rolDe = (q: Testimonial) => (q.graduateName ? graduateByName(q.graduateNam
 const testimonioDe = (nombre: string) => testimonials.find((q) => q.name === nombre && q.category === 'Research Advising');
 
 const Parrafos: React.FC<{ q: Testimonial; lang: Lang; className?: string }> = ({ q, lang, className = '' }) => {
-  const partes = localize(q.quote, lang).split('\n\n');
+  const partes = comillar(localize(q.quote, lang), lang);
   return (
     <>
       {partes.map((p, i) => (
-        <p key={i} className={`${className} ${i ? 'mt-4' : ''}`}>
-          {i === 0 ? (lang === 'es' ? '«' : '“') : ''}{p}{i === partes.length - 1 ? (lang === 'es' ? '»' : '”') : ''}
-        </p>
+        <p key={i} className={`${className} ${i ? 'mt-4' : ''}`}>{p}</p>
       ))}
-    </>
-  );
-};
-
-/** Una persona de pregrado: su nombre, cada proyecto con su periodo y tipo, y con quién lo codirigí. */
-const Pregrado: React.FC<{ p: UndergraduateStudent }> = ({ p }) => {
-  const { t } = useI18n();
-  return (
-    <li className="grid gap-2 py-5 border-t-2 border-papel-300 md:grid-cols-[15rem_minmax(0,1fr)] md:gap-10">
-      <div>
-        <p className="font-semibold leading-snug text-tinta-900">{p.name}</p>
-        {p.alsoMasters && <p className="a-s mt-1 text-tinta-600">{t('school.ug.also')}</p>}
-      </div>
-      <div>
-        {p.works.map((w) => (
-          <div key={w.period + w.title} className="mb-3 last:mb-0">
-            <p className="a-meta">
-              {w.period} · {unir(w.types.map((tp) => t(`school.ug.type.${tp}` as UIKey)), t('school.ug.and').toLowerCase())}
-            </p>
-            <p className="mt-1 leading-snug text-tinta-800 max-w-[70ch]"><Rico texto={w.title} /></p>
-          </div>
-        ))}
-        {p.coadvisors.length > 0 && (
-          <p className="a-s mt-2 text-tinta-600">{fill(t('school.ug.with'), { names: unir(p.coadvisors, t('school.ug.and')) })}</p>
-        )}
-      </div>
-    </li>
-  );
-};
-
-const ListaPregrado: React.FC = () => {
-  const { t } = useI18n();
-  const [q, setQ] = useState('');
-  // Solo se pinta la lista de los años abiertos: un <details> cerrado no necesita sus 30 filas.
-  const [abiertos, setAbiertos] = useState<Set<string>>(() => new Set());
-  const alternar = (ano: string, abierto: boolean) =>
-    setAbiertos((prev) => { const n = new Set(prev); if (abierto) n.add(ano); else n.delete(ano); return n; });
-  const busqueda = useDeferredValue(q);
-  const cuenta = (n: number) => (n === 1 ? t('school.ug.count1') : fill(t('school.ug.count'), { n }));
-
-  const porAno = useMemo(() => {
-    const m = new Map<string, UndergraduateStudent[]>();
-    for (const p of undergraduateStudents) {
-      const ano = p.works[0].period.slice(0, 4);
-      if (!m.has(ano)) m.set(ano, []);
-      m.get(ano)!.push(p);
-    }
-    return [...m.entries()];
-  }, []);
-
-  const hallados = useMemo(() => {
-    const k = plano(busqueda.trim());
-    if (!k) return null;
-    return undergraduateStudents.filter((p) => plano([p.name, ...p.coadvisors, ...p.works.map((w) => w.title)].join(' ')).includes(k));
-  }, [busqueda]);
-
-  return (
-    <>
-      <div className="mt-10 grid gap-4 sm:grid-cols-[minmax(0,26rem)_auto] sm:items-end sm:gap-8">
-        <label className="block">
-          <span className="a-s text-tinta-600">{t('school.ug.search')}</span>
-          <input
-            type="search"
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            className="mt-2 block w-full min-h-[48px] px-4 bg-papel-100 text-tinta-900 border-0 border-b-2 border-tinta-900 focus:outline-none focus-visible:outline-2 focus-visible:outline-tinta-900"
-          />
-        </label>
-        <p className="a-meta" aria-live="polite">{cuenta(hallados ? hallados.length : undergraduateStudents.length)}</p>
-      </div>
-
-      {hallados ? (
-        hallados.length ? (
-          <ul className="mt-8 border-b-2 border-papel-300">
-            {hallados.map((p) => <Pregrado key={p.name} p={p} />)}
-          </ul>
-        ) : (
-          <p className="mt-8 a-texto">{t('school.ug.none')}</p>
-        )
-      ) : (
-        <div className="mt-8 border-t-2 border-tinta-900">
-          {porAno.map(([ano, gente]) => (
-            <details key={ano} className="group border-b-2 border-papel-300" onToggle={(e) => alternar(ano, (e.currentTarget as HTMLDetailsElement).open)}>
-              <summary className="flex cursor-pointer list-none items-baseline justify-between gap-6 py-5 transition-colors hover:bg-resaltador-suave [&::-webkit-details-marker]:hidden">
-                <span className="text-[length:var(--t-l)] font-semibold leading-none tabular-nums text-tinta-900">{ano}</span>
-                <span className="a-meta">
-                  {cuenta(gente.length)}
-                  <span aria-hidden="true" className="ml-3 inline-block w-4 text-center text-tinta-900 group-open:hidden">+</span>
-                  <span aria-hidden="true" className="ml-3 hidden w-4 text-center text-tinta-900 group-open:inline-block">−</span>
-                </span>
-              </summary>
-              {abiertos.has(ano) && (
-                <ul className="pb-4">
-                  {gente.map((p) => <Pregrado key={p.name} p={p} />)}
-                </ul>
-              )}
-            </details>
-          ))}
-        </div>
-      )}
     </>
   );
 };
@@ -286,7 +183,7 @@ export const SchoolPage: React.FC = () => {
                 <Sube as="li" key={titulo} delay={0.05 * i} className="py-8 border-b-2 border-papel-300">
                   <h3 className="a-h3">{t(titulo)}.</h3>
                   <p className="a-texto mt-4">
-                    <Rico texto={fill(t(texto), { n: 13, total: undergraduateStudents.length })} />
+                    <Rico texto={fill(t(texto), { n: 13, total: undergraduateSummary.total })} />
                   </p>
                 </Sube>
               ))}
@@ -310,7 +207,7 @@ export const SchoolPage: React.FC = () => {
               <Figura src={fotos.cervezaGlucanos.src} alt={localize(fotos.cervezaGlucanos.alt, lang)} pie={t('school.course.photo')} proporcion="aspect-[4/3] lg:aspect-[4/5]" posicion="center 75%" />
             </Sube>
             <div>
-              {(['school.course.p1', 'school.course.p2', 'school.course.p3', 'school.course.p4', 'school.course.p5'] as UIKey[]).map((k, i) => (
+              {(['school.course.p1', 'school.course.p2', 'school.course.p3', 'school.course.p5'] as UIKey[]).map((k, i) => (
                 <Sube key={k} className={i ? 'mt-4' : ''}><p className="a-texto"><Rico texto={t(k)} /></p></Sube>
               ))}
             </div>
@@ -473,7 +370,7 @@ export const SchoolPage: React.FC = () => {
           <Sube className="mt-14">
             <div className="a-cifras">
               <div><b>174</b><span>{t('school.n.people')}</span></div>
-              <div><b>{undergraduateStudents.length}</b><span>{t('school.n.ug')}</span></div>
+              <div><b>{undergraduateSummary.total}</b><span>{t('school.n.ug')}</span></div>
               <div><b>40</b><span>{t('school.n.ms')}</span></div>
               <div><b>{doctorado}</b><span>{t('school.n.phd')}</span></div>
               <div><b>13</b><span>{t('school.n.coauthors')}</span></div>
@@ -511,7 +408,37 @@ export const SchoolPage: React.FC = () => {
         <div className="a-c">
           <Sube><Cabecera titulo={t('school.ug.title')} /></Sube>
           <Sube className="mt-10"><p className="a-texto">{fill(t('school.ug.intro'), { since: UNDERGRADUATE_RECORD_SINCE })}</p></Sube>
-          <ListaPregrado />
+          {/* Sin nombres: cuántos, en qué proyectos y dónde están hoy (decisión del profesor). */}
+          <div className="mt-14 grid gap-14 lg:grid-cols-2">
+            <Sube>
+              <Barras
+                titulo={t('school.ug.years.title')}
+                pie={fill(t('school.ug.years.caption'), { since: UNDERGRADUATE_RECORD_SINCE })}
+                filas={undergraduateSummary.porAno.map(([a, n]) => ({ nombre: String(a), n }))}
+              />
+            </Sube>
+            <Sube delay={0.06}>
+              <Barras
+                titulo={t('school.ug.types.title')}
+                pie={fill(t('school.ug.types.caption'), { n: undergraduateSummary.codirigidos })}
+                filas={undergraduateSummary.porTipo.map(([k, n]) => ({ nombre: t(`school.ug.type.${k}` as UIKey), n }))}
+              />
+            </Sube>
+            <Sube>
+              <Barras
+                titulo={t('school.ug.dest.title')}
+                pie={fill(t('school.ug.dest.caption'), { known: undergraduateSummary.conDato, total: undergraduateSummary.total, abroad: undergraduateSummary.fueraDeColombia })}
+                filas={undergraduateSummary.destinos.map(([k, n]) => ({ nombre: t(`school.ug.dest.${k}` as UIKey), n, suave: k === 'sinDato' }))}
+              />
+            </Sube>
+            <Sube delay={0.06}>
+              <Barras
+                titulo={t('school.ug.sect.title')}
+                pie={fill(t('school.ug.sect.caption'), { n: undergraduateSummary.destinos[0][1] })}
+                filas={undergraduateSummary.sectores.map(([k, n]) => ({ nombre: t(`school.ug.sect.${k}` as UIKey), n }))}
+              />
+            </Sube>
+          </div>
           <div className="mt-12">
             <Link to="/research/students" className="a-enlace">{t('school.ug.graduate')} <span aria-hidden="true">→</span></Link>
           </div>

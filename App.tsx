@@ -7,6 +7,8 @@ import { AboutPage } from './pages/AboutPage';
 import { TrajectoryPage } from './pages/TrajectoryPage';
 import { ContextPage } from './pages/ContextPage';
 import { NextPage } from './pages/NextPage';
+import { FocoFotos } from './components/FocoFotos';
+import { scholar } from './components/data/citations';
 import { SchoolPage } from './pages/SchoolPage';
 import { StrategiesPage } from './pages/teaching/StrategiesPage';
 import { ResearchOverviewPage } from './pages/ResearchOverviewPage';
@@ -95,25 +97,13 @@ const App: React.FC = () => {
           ...dbCitations
         };
 
-        const numericCounts: number[] = Object.values(allCounts).filter((c): c is number => c !== null);
-        const total = numericCounts.reduce((sum, count) => sum + count, 0);
-
-        numericCounts.sort((a, b) => b - a);
-        let hIndex = 0;
-        for (let i = 0; i < numericCounts.length; i++) {
-          if (numericCounts[i] >= i + 1) {
-            hIndex = i + 1;
-          } else {
-            break;
-          }
-        }
-        const i10Index = numericCounts.filter(c => c >= 10).length;
-
+        // Las cifras globales (citas, h, i10) son las del perfil de Google Scholar, la fuente
+        // oficial; los conteos de cada producto siguen siendo los de la lista.
         setCitationData({
           counts: allCounts,
-          total,
-          hIndex,
-          i10Index,
+          total: scholar.citations,
+          hIndex: scholar.hIndex,
+          i10Index: scholar.i10Index,
           isLoading: false,
         });
 
@@ -226,6 +216,7 @@ const App: React.FC = () => {
             </Routes>
           </AnimatePresence>
         </div>
+        {!enAula && <FocoFotos />}
         {!enAula && <SiteFooter onDownloadCv={handleDownloadCv} />}
         <ScrollToTopButton />
       </main>

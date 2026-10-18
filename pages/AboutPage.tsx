@@ -88,7 +88,7 @@ export const AboutPage: React.FC = () => {
         <div className="a-c">
           <Sube><Cabecera titulo={t('home.vectors.title')} /></Sube>
           <Sube delay={0.06}>
-            <p className="mt-8 a-texto a-sec">{t('purpose.teaching.p3')}</p>
+            <p className="mt-8 a-texto a-sec">{t('tch.pu.v1')}</p>
           </Sube>
           <Sube delay={0.1} className="mt-14">
             <Vectores />

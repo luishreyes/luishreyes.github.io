@@ -169,16 +169,8 @@ export const leadershipRolesData: Committee[] = [
         endYear: 'Present',
         description: [
             {
-              en: "In 2025 I took up the directorship of the GDPP again, this time with a proposal to renew the group, which the group is still discussing. The proposal seeks a more agile and collaborative group, closer to industry and aligned with Colombia's national priorities in sustainability, energy transition and agro-industry.",
-              es: "En 2025 volví a dirigir el GDPP, esta vez con una propuesta para renovar el grupo, que el grupo todavía discute. La propuesta busca un grupo más ágil y colaborativo, más cercano a la industria y alineado con las prioridades nacionales de Colombia en sostenibilidad, transición energética y agroindustria.",
-            },
-            {
-              en: "The proposal reorganizes the group's research capabilities into five interconnected clusters: industrial sustainability, bio-innovation and advanced materials, digital process engineering, product and experience innovation, and agri-food systems engineering. The members of the group chose the name «cluster» by vote.",
-              es: "La propuesta reorganiza las capacidades de investigación del grupo en cinco clústeres interconectados: sostenibilidad industrial, bioinnovación y materiales avanzados, ingeniería digital de procesos, innovación de productos y experiencias, e ingeniería de sistemas agroalimentarios. El nombre de «clúster» lo eligieron por votación los miembros del grupo.",
-            },
-            {
-              en: "All five rest on two methodological pillars, integrated product and process design and multiscale design, and aim to close the gap between academia and Colombian industry.",
-              es: "Los cinco se apoyan en dos pilares de método, el diseño integrado de productos y procesos y el diseño multiescala, y apuntan a cerrar la brecha entre la academia y la industria colombiana.",
+              en: "In 2025 I took up the directorship of the GDPP again.",
+              es: "En 2025 volví a dirigir el GDPP."
             }
         ]
     },

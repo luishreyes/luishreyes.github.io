@@ -15,6 +15,7 @@ export const nav = {
   'nav.teaching':          { en: 'Teaching',                es: 'Docencia' },
   'nav.teaching.overview': { en: 'Overview',                es: 'Visión general' },
   'nav.teaching.courses':  { en: 'Courses taught',          es: 'Cursos impartidos' },
+  'nav.teaching.strategies': { en: 'Strategies and materials', es: 'Estrategias y material' },
   'nav.teaching.unitops':  { en: 'Unit Operations',         es: 'Operaciones Unitarias' },
   'nav.teaching.continuing': { en: 'Training at scale',     es: 'Formación a escala' },
   'nav.teaching.testimonials': { en: 'Testimonials',        es: 'Testimonios' },

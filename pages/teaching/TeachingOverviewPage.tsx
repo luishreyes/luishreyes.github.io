@@ -1,4 +1,5 @@
 import React from 'react';
+import { comillar } from '../../components/comillas';
 import { Link } from 'react-router-dom';
 import { PageWrapper } from '../../components/PageWrapper';
 import { StatsSection } from '../../components/StatsSection';
@@ -17,13 +18,6 @@ import { fotos } from '../../components/data/fotos';
 
 const { teaching } = metrics;
 const teachingAward = flagshipAward('teaching');
-
-/** Primera frase de un testimonio, con puntos suspensivos si sigue más texto. */
-const primeraFrase = (texto: string) => {
-  const m = texto.match(/^.+?(?<!\b[A-Z])[.!?](?=\s|$)/);
-  const frase = m ? m[0] : texto;
-  return frase.length < texto.trim().length ? `${frase} …` : frase;
-};
 
 // Cuatro voces de cursos distintos, en el orden en que se leen mejor.
 const VOCES: { name: string; category: Testimonial['category'] }[] = [
@@ -173,16 +167,25 @@ export const TeachingOverviewPage: React.FC = () => {
           <Sube delay={0.06}>
             <p className="mt-8 a-texto">{t('tch.ov.voices.text')}</p>
           </Sube>
-          <ul className="mt-12 grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12">
+          {/* Cada testimonio completo, con el retrato al lado (como en Operaciones Unitarias). */}
+          <ul className="mt-12 grid gap-16 lg:grid-cols-2">
             {voces.map((v, i) => {
               const graduado = v.graduateName ? graduateByName(v.graduateName) : undefined;
               return (
                 <Sube as="li" key={v.name} delay={0.06 * i}>
-                  <img src={v.imageUrl} alt={v.name} loading="lazy" className="a-bn w-full aspect-[4/5] object-cover object-top" />
-                  <p className="mt-4 text-[15px] sm:text-[18px] text-tinta-900">{primeraFrase(localize(v.quote, lang))}</p>
-                  <p className="mt-3 font-semibold leading-tight text-tinta-900">{v.name}</p>
-                  <p className="a-meta mt-1">{localize(v.context, lang)}</p>
-                  <p className="a-meta">{localize(graduado?.currentPosition || v.info, lang)}</p>
+                  <figure className="grid gap-6 sm:grid-cols-[180px_minmax(0,1fr)]">
+                    <img src={v.imageUrl} alt={v.name} loading="lazy" className="a-bn w-[180px] aspect-[4/5] object-cover object-top" />
+                    <div>
+                      <blockquote className="space-y-4 text-tinta-900">
+                        {comillar(localize(v.quote, lang), lang).map((par, k) => <p key={k}>{par}</p>)}
+                      </blockquote>
+                      <figcaption className="mt-5">
+                        <span className="block font-semibold leading-tight text-tinta-900">{v.name}</span>
+                        <span className="a-meta block mt-1">{localize(v.context, lang)}</span>
+                        <span className="a-meta block">{localize(graduado?.currentPosition || v.info, lang)}</span>
+                      </figcaption>
+                    </div>
+                  </figure>
                 </Sube>
               );
             })}

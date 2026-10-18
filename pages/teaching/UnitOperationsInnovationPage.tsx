@@ -1,4 +1,5 @@
 import React from 'react';
+import { comillar } from '../../components/comillas';
 import { Link } from 'react-router-dom';
 import { PageWrapper } from '../../components/PageWrapper';
 import { EncabezadoPagina, Cabecera } from '../../components/Apertura';
@@ -246,9 +247,7 @@ export const UnitOperationsInnovationPage: React.FC = () => {
                     <img src={v.imageUrl} alt={fill(t('testimonials.photo'), { name: v.name })} loading="lazy" className="a-bn w-[180px] aspect-[4/5] object-cover object-top" />
                     <div>
                       <blockquote className="space-y-4 text-tinta-900">
-                        {localize(v.quote, lang).split('\n\n').map((par, k, arr) => (
-                          <p key={k}>{k === 0 ? '«' : ''}{par}{k === arr.length - 1 ? '»' : ''}</p>
-                        ))}
+                        {comillar(localize(v.quote, lang), lang).map((par, k) => <p key={k}>{par}</p>)}
                       </blockquote>
                       <figcaption className="mt-5">
                         <span className="block font-semibold text-tinta-900">{v.name}</span>
