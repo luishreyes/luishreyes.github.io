@@ -8,6 +8,9 @@ import { service } from './strings/service';
 import { future } from './strings/future';
 import { principles } from './strings/principles';
 import { classroom } from './strings/classroom';
+import { contextChapter } from './strings/context';
+import { next } from './strings/next';
+import { trajectory } from './strings/trajectory';
 
 export type Lang = 'en' | 'es';
 
@@ -22,6 +25,9 @@ const ui = {
   ...future,
   ...principles,
   ...classroom,
+  ...contextChapter,
+  ...next,
+  ...trajectory,
 };
 
 export type UIKey = keyof typeof ui;

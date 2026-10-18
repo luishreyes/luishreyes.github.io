@@ -1,17 +1,21 @@
 
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+/** Aparece cuando el lector vuelve a subir, no mientras lee hacia abajo: así nunca
+ *  tapa el texto que se está leyendo, sobre todo en el teléfono. */
 export const ScrollToTopButton = () => {
   const [isVisible, setIsVisible] = useState(false);
+  const ultimoY = useRef(0);
 
   const toggleVisibility = () => {
-    if (window.pageYOffset > 300) {
-      setIsVisible(true);
-    } else {
-      setIsVisible(false);
-    }
+    const y = window.scrollY;
+    const subiendo = y < ultimoY.current - 4;
+    const bajando = y > ultimoY.current + 4;
+    if (y < 600 || bajando) setIsVisible(false);
+    else if (subiendo) setIsVisible(true);
+    if (subiendo || bajando) ultimoY.current = y;
   };
 
   const scrollToTop = () => {
@@ -22,7 +26,7 @@ export const ScrollToTopButton = () => {
   };
 
   useEffect(() => {
-    window.addEventListener('scroll', toggleVisibility);
+    window.addEventListener('scroll', toggleVisibility, { passive: true });
 
     return () => {
       window.removeEventListener('scroll', toggleVisibility);

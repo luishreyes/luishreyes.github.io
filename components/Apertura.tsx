@@ -100,7 +100,17 @@ export const EncabezadoPagina: React.FC<EncabezadoProps> = ({ titulo, entrada, a
         >
           {titulo}.
         </motion.h1>
-        {entrada && (
+        {/* Una entrada de texto va en <p>: en un div el inspector la mide como un título. */}
+        {entrada && (typeof entrada === 'string' ? (
+          <motion.p
+            className="a-entrada mt-8 max-w-[44ch]"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.65, ease: SALE, delay: 0.1 }}
+          >
+            {entrada}
+          </motion.p>
+        ) : (
           <motion.div
             className="a-entrada mt-8 max-w-[44ch]"
             initial={{ opacity: 0, y: 16 }}
@@ -109,7 +119,7 @@ export const EncabezadoPagina: React.FC<EncabezadoProps> = ({ titulo, entrada, a
           >
             {entrada}
           </motion.div>
-        )}
+        ))}
         {accion && (
           <motion.div
             className="mt-9"

@@ -1,14 +1,33 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { PageWrapper } from '../components/PageWrapper';
-import { EncabezadoPagina } from '../components/Apertura';
+import { EncabezadoPagina, Cabecera } from '../components/Apertura';
 import { Sube } from '../components/Sube';
-import { useI18n, localize } from '../context/i18n';
+import { fotos, type Foto } from '../components/data/fotos';
+import { useI18n, localize, type UIKey } from '../context/i18n';
 import { educationData, specializationsData, credentialsData } from '../components/data/education';
 import { workExperienceData } from '../components/data/experience';
 
-/** Trayectoria: lo que antes vivía en la portada (formación, experiencia, cursos y
- *  certificados), en registros con el año en su columna. El relato por tramos del
- *  portafolio docente entra aquí cuando esté adaptado. */
+/** Trayectoria: los cinco tramos, cada uno con la decisión que lo explica, y después
+ *  la hoja de vida (formación, experiencia, cursos y certificados) en registros. */
+
+type Bloque = { tipo: 'p' | 'decision'; clave: UIKey } | { tipo: 'razones'; claves: UIKey[] } | { tipo: 'cierre'; clave: UIKey };
+const TRAMOS: { años: UIKey; titulo: UIKey; foto?: { f: Foto; pie: UIKey }; bloques: Bloque[] }[] = [
+  { años: 't1.years', titulo: 't1.title', bloques: [{ tipo: 'p', clave: 't1.p1' }, { tipo: 'decision', clave: 't1.decision' }] },
+  { años: 't2.years', titulo: 't2.title', bloques: [{ tipo: 'p', clave: 't2.p1' }, { tipo: 'p', clave: 't2.p2' }, { tipo: 'decision', clave: 't2.decision' }, { tipo: 'p', clave: 't2.p3' }] },
+  { años: 't3.years', titulo: 't3.title', bloques: [
+    { tipo: 'p', clave: 't3.p1' }, { tipo: 'decision', clave: 't3.reasons' },
+    { tipo: 'razones', claves: ['t3.r1', 't3.r2', 't3.r3', 't3.r4'] },
+    { tipo: 'p', clave: 't3.p2' }, { tipo: 'p', clave: 't3.p3' }, { tipo: 'decision', clave: 't3.decision' }, { tipo: 'p', clave: 't3.p4' },
+  ] },
+  { años: 't4.years', titulo: 't4.title', foto: { f: fotos.reto2019, pie: 't4.photo' }, bloques: [
+    { tipo: 'p', clave: 't4.p1' }, { tipo: 'decision', clave: 't4.decision' }, { tipo: 'p', clave: 't4.p2' }, { tipo: 'p', clave: 't4.p3' },
+  ] },
+  { años: 't5.years', titulo: 't5.title', foto: { f: fotos.grabacionMooc, pie: 't5.photo' }, bloques: [
+    { tipo: 'p', clave: 't5.p1' }, { tipo: 'decision', clave: 't5.decision1' }, { tipo: 'p', clave: 't5.p2' },
+    { tipo: 'decision', clave: 't5.decision2' }, { tipo: 'p', clave: 't5.p3' }, { tipo: 'cierre', clave: 't5.close' },
+  ] },
+];
 export const TrajectoryPage: React.FC = () => {
   const { t, lang } = useI18n();
   return (
@@ -20,9 +39,65 @@ export const TrajectoryPage: React.FC = () => {
         accion={{ label: t('nav.downloadCv'), onClick: () => window.dispatchEvent(new Event('lhr:descargar-cv')) }}
       />
 
+      {/* ── Los cinco tramos ── */}
       <section className="a-papel pb-20 sm:pb-28">
         <div className="a-c">
-          <Sube><h2 className="a-h3">{t('about.education.title')}.</h2></Sube>
+          <Sube><Cabecera titulo={t('trajectory.story.title')} /></Sube>
+          <ol className="mt-4">
+            {TRAMOS.map((tr) => (
+              <li key={tr.años} className="grid gap-8 lg:grid-cols-[17rem_minmax(0,1fr)] lg:gap-16 py-14 border-b-2 border-papel-300 last:border-b-0">
+                <div>
+                  <Sube>
+                    <p className="text-[length:var(--t-l)] leading-tight font-light text-tinta-600 tabular-nums">{t(tr.años)}</p>
+                  </Sube>
+                  {tr.foto && (
+                    <Sube className="mt-8 hidden lg:block">
+                      <figure>
+                        <img src={tr.foto.f.src} alt={localize(tr.foto.f.alt, lang)} loading="lazy" className="a-bn w-full aspect-[4/3] object-cover" />
+                        <figcaption className="a-pie">{t(tr.foto.pie)}</figcaption>
+                      </figure>
+                    </Sube>
+                  )}
+                </div>
+                <div>
+                  <Sube><h3 className="a-h3 mb-6 max-w-[30ch]">{t(tr.titulo)}.</h3></Sube>
+                  {tr.bloques.map((b, i) =>
+                    b.tipo === 'razones' ? (
+                      <Sube key={i} className="my-6">
+                        <ul className="grid gap-x-8 sm:grid-cols-2 border-t-2 border-tinta-900">
+                          {b.claves.map((k) => <li key={k} className="py-4 border-b-2 border-papel-300 text-tinta-800">{t(k)}</li>)}
+                        </ul>
+                      </Sube>
+                    ) : (
+                      <Sube key={i}>
+                        <p className={`a-texto ${i ? 'mt-4' : ''} ${b.tipo === 'decision' ? 'font-semibold text-tinta-900' : ''}`}>
+                          {b.tipo === 'cierre' ? <span className="a-resaltado font-semibold">{t(b.clave)}</span> : t(b.clave)}
+                        </p>
+                      </Sube>
+                    ),
+                  )}
+                  {tr.foto && (
+                    <Sube className="mt-8 lg:hidden">
+                      <figure>
+                        <img src={tr.foto.f.src} alt={localize(tr.foto.f.alt, lang)} loading="lazy" className="a-bn w-full aspect-[4/3] object-cover" />
+                        <figcaption className="a-pie">{t(tr.foto.pie)}</figcaption>
+                      </figure>
+                    </Sube>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ol>
+          <Sube className="mt-6">
+            <Link to="/context" className="a-enlace">{t('trajectory.context.link')} <span aria-hidden="true">→</span></Link>
+          </Sube>
+        </div>
+      </section>
+
+      <section className="a-hundido a-campo">
+        <div className="a-c">
+          <Sube><Cabecera titulo={t('trajectory.record.title')} /></Sube>
+          <Sube className="mt-12"><h2 className="a-h3">{t('about.education.title')}.</h2></Sube>
           <ul className="a-registro mt-6">
             {educationData.map((e) => (
               <Sube as="li" key={e.institution}>
@@ -37,7 +112,7 @@ export const TrajectoryPage: React.FC = () => {
         </div>
       </section>
 
-      <section className="a-hundido a-campo">
+      <section className="a-papel a-campo">
         <div className="a-c">
           <Sube><h2 className="a-h3">{t('about.experience.title')}.</h2></Sube>
           <ul className="a-registro mt-6">
@@ -67,7 +142,7 @@ export const TrajectoryPage: React.FC = () => {
         </div>
       </section>
 
-      <section className="a-papel a-campo">
+      <section className="a-hundido a-campo">
         <div className="a-c">
           <Sube><h2 className="a-h3">{t('about.continuing.title')}.</h2></Sube>
           <ul className="a-registro mt-6">
@@ -86,7 +161,7 @@ export const TrajectoryPage: React.FC = () => {
         </div>
       </section>
 
-      <section className="a-hundido a-campo">
+      <section className="a-papel a-campo">
         <div className="a-c">
           <Sube><h2 className="a-h3">{t('about.licenses.title')}.</h2></Sube>
           <ul className="mt-8 grid gap-x-10 gap-y-6 sm:grid-cols-2 lg:grid-cols-3 border-t-2 border-tinta-900 pt-8">

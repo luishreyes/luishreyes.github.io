@@ -33,7 +33,7 @@ export const about = {
   'home.contents.classroom': { en: 'The material of my current courses.', es: 'El material de mis cursos actuales.' },
   // ── Trayectoria ──
   'trajectory.title':      { en: 'Trajectory', es: 'Trayectoria' },
-  'trajectory.intro':      { en: 'Where I studied, where I have worked and what I keep learning.', es: 'Dónde estudié, dónde he trabajado y lo que sigo aprendiendo.' },
+  'trajectory.intro':      { en: 'The decisions that brought me here.', es: 'Las decisiones que me trajeron hasta aquí.' },
   'about.hero.greeting':   { en: 'Hi, my name is',          es: 'Hola, mi nombre es' },
   'about.hero.tagline':    { en: 'I engineer biology for a better future.', es: 'Hago ingeniería biológica para un futuro mejor.' },
   'about.hero.bio':        { en: 'I am an Associate Professor at Universidad de los Andes, leading research at the convergence of biotechnology, nanotechnology, and AI to transform complex challenges into sustainable, high-impact solutions.', es: 'Soy Profesor Asociado en la Universidad de los Andes, liderando investigación en la convergencia de biotecnología, nanotecnología e IA para transformar desafíos complejos en soluciones sostenibles de alto impacto.' },

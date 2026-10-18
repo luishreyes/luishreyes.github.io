@@ -5,6 +5,8 @@ import { Navbar } from './components/Navbar';
 import { SiteFooter } from './components/SiteFooter';
 import { AboutPage } from './pages/AboutPage';
 import { TrajectoryPage } from './pages/TrajectoryPage';
+import { ContextPage } from './pages/ContextPage';
+import { NextPage } from './pages/NextPage';
 import { ResearchOverviewPage } from './pages/ResearchOverviewPage';
 import { ProductsPage } from './pages/ProductsPage';
 import { GrantsPage } from './pages/GrantsPage';
@@ -172,6 +174,8 @@ const App: React.FC = () => {
             <Routes location={location} key={location.pathname}>
               <Route path="/" element={<AboutPage />} />
               <Route path="/trajectory" element={<TrajectoryPage />} />
+              <Route path="/context" element={<ContextPage />} />
+              <Route path="/next" element={<NextPage />} />
               <Route path="/principles/teaching" element={<TeachingPurposePage />} />
               <Route path="/principles/research" element={<ResearchPurposePage />} />
               <Route path="/principles/service" element={<ServicePurposePage />} />
