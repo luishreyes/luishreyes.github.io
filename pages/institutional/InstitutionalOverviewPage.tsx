@@ -115,7 +115,7 @@ export const InstitutionalOverviewPage: React.FC = () => {
       to: '/service/outreach',
       title: t('service.outreach.title'),
       desc: t('service.outreach.desc'),
-      media: foto(fotos.scoutingSelfie.src, localize(fotos.scoutingSelfie.alt, lang), '50% 45%'),
+      media: foto(fotos.scoutingFeria.src, localize(fotos.scoutingFeria.alt, lang), fotos.scoutingFeria.foco),
     },
   ];
 

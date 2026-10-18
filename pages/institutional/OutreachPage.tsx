@@ -110,7 +110,7 @@ export const OutreachPage: React.FC = () => {
               <Sube delay={0.06}><p className="mt-6 a-texto">{t('outreach.events.lead')}</p></Sube>
             </div>
             <Sube delay={0.1} className="overflow-hidden aspect-[16/9]">
-              <img src={fotos.scoutingSelfie.src} alt={localize(fotos.scoutingSelfie.alt, lang)} loading="lazy" className="a-foto" style={{ objectPosition: '50% 40%' }} />
+              <img src={fotos.scoutingFeria.src} alt={localize(fotos.scoutingFeria.alt, lang)} loading="lazy" className="a-foto" style={{ objectPosition: fotos.scoutingFeria.foco }} />
             </Sube>
           </div>
           <ul className="a-registro !mt-12">
