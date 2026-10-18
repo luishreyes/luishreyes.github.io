@@ -123,7 +123,7 @@ export const GrantsPage = () => {
             {[
               { f: fotos.ecofarm, pos: 'center 35%' },
               { f: fotos.laboratorio, pos: '55% center' },
-              { f: fotos.sesionOlga, pos: 'center 30%' },
+              { f: fotos.enelMuna, pos: fotos.enelMuna.foco },
             ].map(({ f, pos }, i) => (
               <Sube as="li" key={f.src} delay={0.08 * i}>
                 <figure>

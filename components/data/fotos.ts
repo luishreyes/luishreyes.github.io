@@ -62,6 +62,7 @@ export const fotos = {
   visionarios: f('divulgacion/2026-estreno-visionarios.jpg', 'At the premiere of his Visionarios episode, 2026', 'En el estreno de su episodio de Visionarios, 2026', '50% 30%'),
   ecos: f('colaboracion/2025-ecos-innovacion-panel.jpg', 'The entrepreneurship panel he moderated at ECOS, 2025', 'El panel de emprendimiento que moderó en ECOS, 2025', '55% 45%'),
   ecofarm: f('colaboracion/ecofarm-visita-consultoria.jpg', 'A plant visit during an industry consultancy', 'Visita a una planta durante una consultoría para la industria', '45% 45%'),
+  enelMuna: f('colaboracion/enel-muna-laboratorio.jpg', 'In the laboratory, on the Muña Reservoir project for Emgesa (now Enel Colombia)', 'En el laboratorio, con el proyecto del embalse del Muña para Emgesa (hoy Enel Colombia)', '45% 25%'),
   enel: f('colaboracion/visita-enel.jpg', 'Field visit with Enel at the El Paraíso hydroelectric plant', 'Visita de campo con Enel en la Central Hidroeléctrica El Paraíso', '50% 25%'),
   // Congresos
   aiche2018: f('congresos/2018-aiche-annual-meeting.jpg', 'The group at the AIChE Annual Meeting, 2018', 'El grupo en el congreso anual de AIChE, 2018', '50% 45%'),
