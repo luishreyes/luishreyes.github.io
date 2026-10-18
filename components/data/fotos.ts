@@ -65,6 +65,7 @@ export const fotos = {
   ecofarm: f('colaboracion/ecofarm-visita-consultoria.jpg', 'A plant visit during an industry consultancy', 'Visita a una planta durante una consultoría para la industria', '45% 45%'),
   enelMuna: f('colaboracion/enel-muna-laboratorio.jpg', 'In the laboratory, on the Muña Reservoir project for Emgesa (now Enel Colombia)', 'En el laboratorio, con el proyecto del embalse del Muña para Emgesa (hoy Enel Colombia)', '45% 25%'),
   enel: f('colaboracion/visita-enel.jpg', 'Field visit with Enel at the El Paraíso hydroelectric plant', 'Visita de campo con Enel en la Central Hidroeléctrica El Paraíso', '50% 25%'),
+  paraisoVecinos: f('colaboracion/paraiso-vecinos.jpg', 'Two residents of the rural area next to the El Paraíso Hydroelectric Power Plant', 'Dos habitantes de la zona rural vecina de la Central Hidroeléctrica El Paraíso', '50% 40%'),
   // Congresos
   aiche2018: f('congresos/2018-aiche-annual-meeting.jpg', 'The group at the AIChE Annual Meeting, 2018', 'El grupo en el congreso anual de AIChE, 2018', '50% 45%'),
   aiche2019: f('congresos/2019-aiche-annual-meeting.jpg', 'At the AIChE Annual Meeting, 2019', 'En el congreso anual de AIChE, 2019', '45% 45%'),

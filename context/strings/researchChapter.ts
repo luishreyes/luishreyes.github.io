@@ -163,6 +163,7 @@ export const researchChapter = {
   'rc.case.air.v3':       { en: 'Video 3: the control technologies', es: 'Video 3: las tecnologías de control' },
   'rc.case.air.talk':     { en: 'Talk at ACOFI, 2025 (in Spanish)', es: 'Ponencia en ACOFI, 2025' },
   'rc.case.air.photo':    { en: 'Gabriela Meléndez presents bacterial growth results at ACOFI, 2025', es: 'Gabriela Meléndez presenta resultados de crecimiento bacteriano en ACOFI, 2025' },
+  'rc.case.air.photo2':   { en: 'Two residents of the rural area next to the plant, where we will install one of the racks of the corrosion study. They told us they have noticed a great improvement in their quality of life', es: 'Dos habitantes de la zona rural vecina de la central, donde instalaremos una de las bancadas del estudio de corrosión. Nos contaron que han notado una gran mejora en su calidad de vida' },
 
   'rc.pat.title':      { en: 'Patents', es: 'Patentes' },
   'rc.pat.bio.title':  { en: 'Modular bioreactor with interchangeable parts', es: 'Biorreactor modular con partes intercambiables' },

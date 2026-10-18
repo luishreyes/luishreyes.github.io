@@ -34,6 +34,8 @@ interface Caso {
   titulo: UIKey;
   parrafos: UIKey[];
   foto?: { f: Foto; pie?: UIKey; pos?: string };
+  /** Una segunda foto, debajo del texto. */
+  fotoTexto?: { f: Foto; pie?: UIKey; pos?: string };
   estudiantes: Estudiante[];
   publicaciones: Publicacion[];
   /** Título de la lista de publicaciones, cuando no es «Dónde se publicó». */
@@ -155,6 +157,7 @@ const CASOS: Caso[] = [
     titulo: 'rc.case.air.title',
     parrafos: ['rc.case.air.p1', 'rc.case.air.p2', 'rc.case.air.p3', 'rc.case.air.p4'],
     foto: { f: fotos.acofiGabriela, pie: 'rc.case.air.photo', pos: 'center 55%' },
+    fotoTexto: { f: fotos.paraisoVecinos, pie: 'rc.case.air.photo2', pos: 'center 40%' },
     estudiantes: [
       { nombre: 'Gabriela Meléndez Plata', nivel: 'rc.lvl.ms.2026', foto: retrato('gabriela-melendez-plata') },
       { nombre: 'Jesús Rafael Acevedo Mastrogiacomo', nivel: 'rc.lvl.ms.co.2026', foto: retrato('jesus-rafael-acevedo') },
@@ -214,6 +217,22 @@ const BloqueCaso: React.FC<{ caso: Caso; fondo: string }> = ({ caso, fondo }) =>
                     <li key={e.href}><Externo href={e.href}>{t(e.etiqueta)}</Externo></li>
                   ))}
                 </ul>
+              </Sube>
+            )}
+            {caso.fotoTexto && (
+              <Sube className="mt-12">
+                <figure>
+                  <div className="overflow-hidden aspect-[3/2]">
+                    <img
+                      src={caso.fotoTexto.f.src}
+                      alt={localize(caso.fotoTexto.f.alt, lang)}
+                      loading="lazy"
+                      className="a-foto a-bn"
+                      style={{ objectPosition: caso.fotoTexto.pos ?? 'center' }}
+                    />
+                  </div>
+                  <figcaption className="a-pie">{caso.fotoTexto.pie ? t(caso.fotoTexto.pie) : localize(caso.fotoTexto.f.alt, lang)}.</figcaption>
+                </figure>
               </Sube>
             )}
           </div>
