@@ -116,6 +116,7 @@ export const researchChapter = {
   'rc.lvl.phd.felipe':    { en: 'Doctorate, with Felipe Reinoso-Carvalho', es: 'Doctorado, con Felipe Reinoso-Carvalho' },
   'rc.lvl.ms':            { en: 'Master’s', es: 'Maestría' },
   'rc.lvl.ms.co':         { en: 'Master’s, co-advised', es: 'Maestría, codirigida' },
+  'rc.lvl.ms.now':        { en: 'Master’s, in progress', es: 'Maestría, en curso' },
   'rc.lvl.ms.2026':       { en: 'Master’s, 2026', es: 'Maestría, 2026' },
   'rc.lvl.ms.co.2026':    { en: 'Master’s, co-advised, 2026', es: 'Maestría, codirigida, 2026' },
   'rc.lvl.ug.2024':       { en: 'Undergraduate project, 2024, with Jorge Mario Gómez', es: 'Proyecto de grado, 2024, con Jorge Mario Gómez' },
