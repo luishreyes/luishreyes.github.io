@@ -10,15 +10,15 @@ import { useI18n, type UIKey } from '../context/i18n';
 
 /** El contenido del sitio, en el orden de los capítulos del portafolio docente, cada uno con su foto. */
 const CAPITULOS: { to: string; nombre: UIKey; linea: UIKey; foto: string }[] = [
-  { to: '/context', nombre: 'nav.context', linea: 'home.contents.context', foto: fotos.pouNpsh.src },
-  { to: '/trajectory', nombre: 'nav.trajectory', linea: 'home.contents.trajectory', foto: fotos.recienLlegado.src },
-  { to: '/teaching', nombre: 'nav.teaching', linea: 'home.contents.teaching', foto: fotos.cursoGrupo.src },
-  { to: '/teaching/continuing-education', nombre: 'nav.teaching.continuing', linea: 'home.contents.training', foto: fotos.grabacionMooc.src },
-  { to: '/school', nombre: 'nav.students', linea: 'home.contents.students', foto: fotos.gradoBrayan.src },
-  { to: '/research', nombre: 'nav.research', linea: 'home.contents.research', foto: fotos.laboratorio.src },
-  { to: '/service', nombre: 'nav.service', linea: 'home.contents.service', foto: fotos.scoutingPlanta.src },
-  { to: '/recognition', nombre: 'nav.recognition', linea: 'home.contents.recognition', foto: fotos.academiaMedicina.src },
-  { to: '/next', nombre: 'nav.next', linea: 'home.contents.next', foto: fotos.acofiPonencia.src },
+  { to: '/context', nombre: 'nav.context', linea: 'home.contents.context', foto: fotos.portadaContexto.src },
+  { to: '/trajectory', nombre: 'nav.trajectory', linea: 'home.contents.trajectory', foto: fotos.portadaTrayectoria.src },
+  { to: '/teaching', nombre: 'nav.teaching', linea: 'home.contents.teaching', foto: fotos.portadaDocencia.src },
+  { to: '/teaching/continuing-education', nombre: 'nav.teaching.continuing', linea: 'home.contents.training', foto: fotos.portadaFormacion.src },
+  { to: '/school', nombre: 'nav.students', linea: 'home.contents.students', foto: fotos.portadaEscuela.src },
+  { to: '/research', nombre: 'nav.research', linea: 'home.contents.research', foto: fotos.portadaInvestigacion.src },
+  { to: '/service', nombre: 'nav.service', linea: 'home.contents.service', foto: fotos.portadaServicio.src },
+  { to: '/recognition', nombre: 'nav.recognition', linea: 'home.contents.recognition', foto: fotos.portadaReconocimiento.src },
+  { to: '/next', nombre: 'nav.next', linea: 'home.contents.next', foto: fotos.portadaLoQueSigue.src },
   { to: '/classroom', nombre: 'nav.classroom', linea: 'home.contents.classroom', foto: '/classroom/iqya-2031-2026-20/banner.jpg' },
 ];
 

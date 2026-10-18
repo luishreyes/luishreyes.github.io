@@ -97,7 +97,7 @@ export const ResearchOverviewPage: React.FC = () => {
         // «investigación.» no cabe en el panel entre 1100 y 1500 px: el guion suave la parte solo si hace falta.
         palabra={t('nav.research').toLowerCase().replace('investigación', 'investiga\u00ADción')}
         entrada={t('rc.ov.lead')}
-        foto={{ src: fotos.laboratorio.src, alt: localize(fotos.laboratorio.alt, lang), posicion: '60% center' }}
+        foto={{ src: fotos.portadaInvestigacion.src, alt: localize(fotos.portadaInvestigacion.alt, lang), posicion: fotos.portadaInvestigacion.foco }}
         accion={{ to: '/research/program', label: t('rc.ov.cta') }}
       />
 

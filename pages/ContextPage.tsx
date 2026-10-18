@@ -144,7 +144,7 @@ export const ContextPage: React.FC = () => {
       <EncabezadoPagina
         titulo={t('context.title')}
         entrada={t('context.lead')}
-        foto={{ src: fotos.recienLlegado.src, alt: localize(fotos.recienLlegado.alt, lang), posicion: 'center 35%' }}
+        foto={{ src: fotos.portadaContexto.src, alt: localize(fotos.portadaContexto.alt, lang), posicion: fotos.portadaContexto.foco }}
         accion={{ label: t('context.sources.cta'), onClick: () => document.getElementById('fuentes')?.scrollIntoView({ behavior: 'smooth' }) }}
       />
 

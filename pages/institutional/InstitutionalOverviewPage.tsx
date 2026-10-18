@@ -124,7 +124,7 @@ export const InstitutionalOverviewPage: React.FC = () => {
       <Apertura
         palabra={t('nav.service').toLowerCase()}
         entrada={t('svc.overview.sub')}
-        foto={{ src: fotos.palmaCharla.src, alt: localize(fotos.palmaCharla.alt, lang), posicion: '16% 50%' }}
+        foto={{ src: fotos.portadaServicio.src, alt: localize(fotos.portadaServicio.alt, lang), posicion: fotos.portadaServicio.foco }}
         accion={{ to: '/service/purpose', label: t('svc.overview.cta') }}
       />
 

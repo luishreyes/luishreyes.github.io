@@ -66,6 +66,16 @@ export const fotos = {
   acs2026: f('congresos/2026-acs-fall-chicago.jpg', 'With Gabriela Meléndez at ACS Fall 2026, Chicago', 'Con Gabriela Meléndez en ACS Fall 2026, Chicago', '65% 45%'),
   // Trayectoria
   recienLlegado: f('trayectoria/recien-llegado.jpg', 'Newly arrived at Uniandes, with the first students of the group', 'Recién llegado a Uniandes, con los primeros estudiantes del grupo', '50% 30%'),
+  // Aperturas de capítulo: fotos del profesor, una por capítulo (índice de la portada y encabezado de cada uno)
+  portadaContexto: f('portadas/contexto.jpg', 'A stone wall with tall buildings behind it; a person walks along the top', 'Un muro de piedra con edificios altos detrás; una persona camina sobre él', '0% 50%'),
+  portadaTrayectoria: f('portadas/trayectoria.jpg', 'A concrete spiral staircase; a student walks down beside it', 'Una escalera en espiral de concreto; una estudiante baja a su lado', '62% 50%'),
+  portadaDocencia: f('portadas/docencia.jpg', 'An empty classroom with desks and tall windows', 'Un salón vacío, con pupitres y ventanales', '60% 50%'),
+  portadaFormacion: f('portadas/formacion.jpg', 'A building atrium seen from below, with its floors and skylight', 'El atrio de un edificio visto desde abajo, con sus pisos y el tragaluz', '50% 50%'),
+  portadaEscuela: f('portadas/escuela.jpg', 'Stairs and walkways of a building, with students going up and down', 'Escaleras y pasillos de un edificio, con estudiantes que suben y bajan', '55% 50%'),
+  portadaInvestigacion: f('portadas/investigacion.jpg', 'Two studio lights against a black background', 'Dos lámparas de estudio sobre un fondo negro', '50% 45%'),
+  portadaServicio: f('portadas/servicio.jpg', 'Students in a courtyard under a tree', 'Estudiantes en un patio, bajo un árbol', '30% 50%'),
+  portadaReconocimiento: f('portadas/reconocimiento.jpg', 'A dark corridor opening onto a terrace where people sit', 'Un pasillo oscuro que da a una terraza donde hay gente sentada', '50% 50%'),
+  portadaLoQueSigue: f('portadas/lo-que-sigue.jpg', 'A person crosses a brick floor, seen from above', 'Una persona cruza un piso de ladrillo, vista desde arriba', '60% 50%'),
 };
 
 /** Todas las fotos, para recorrerlas. */

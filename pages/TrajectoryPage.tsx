@@ -35,7 +35,7 @@ export const TrajectoryPage: React.FC = () => {
       <EncabezadoPagina
         titulo={t('trajectory.title')}
         entrada={t('trajectory.intro')}
-        foto={{ src: '/images/site/1756469286343.jpg', alt: t('home.portrait.alt'), posicion: 'center 20%' }}
+        foto={{ src: fotos.portadaTrayectoria.src, alt: localize(fotos.portadaTrayectoria.alt, lang), posicion: fotos.portadaTrayectoria.foco }}
         accion={{ label: t('nav.downloadCv'), onClick: () => window.dispatchEvent(new Event('lhr:descargar-cv')) }}
       />
 

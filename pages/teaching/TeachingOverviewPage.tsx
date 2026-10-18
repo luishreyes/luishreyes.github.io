@@ -109,7 +109,7 @@ export const TeachingOverviewPage: React.FC = () => {
       <Apertura
         palabra={t('nav.teaching').toLowerCase()}
         entrada={t('tch.ov.lead')}
-        foto={{ src: fotos.cursoGrupo.src, alt: localize(fotos.cursoGrupo.alt, lang), posicion: '60% 60%' }}
+        foto={{ src: fotos.portadaDocencia.src, alt: localize(fotos.portadaDocencia.alt, lang), posicion: fotos.portadaDocencia.foco }}
         accion={{ to: '/teaching/purpose', label: t('tch.ov.cta') }}
       />
 

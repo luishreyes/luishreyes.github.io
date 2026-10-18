@@ -207,6 +207,7 @@ export const AwardsPage: React.FC = () => {
         titulo={t('awards.title')}
         entrada={<p><Resaltar texto={subtitulo} desde={equipo} /></p>}
         accion={{ to: '/teaching/unit-ops', label: t('awards.cta') }}
+        foto={{ src: fotos.portadaReconocimiento.src, alt: localize(fotos.portadaReconocimiento.alt, lang), posicion: fotos.portadaReconocimiento.foco }}
       />
 
       {/* ── Los doce, en el tiempo ── */}

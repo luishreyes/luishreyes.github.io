@@ -37,7 +37,7 @@ export const NextPage: React.FC = () => {
       <EncabezadoPagina
         titulo={t('next.title')}
         entrada={t('next.lead')}
-        foto={{ src: fotos.acofiPonencia.src, alt: localize(fotos.acofiPonencia.alt, lang) }}
+        foto={{ src: fotos.portadaLoQueSigue.src, alt: localize(fotos.portadaLoQueSigue.alt, lang), posicion: fotos.portadaLoQueSigue.foco }}
         accion={{ to: '/research/grants', label: t('next.now.link') }}
       />
 

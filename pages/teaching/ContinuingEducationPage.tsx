@@ -196,7 +196,7 @@ export const ContinuingEducationPage = () => {
       <EncabezadoPagina
         titulo={t('training.title')}
         entrada={t('training.lead')}
-        foto={{ src: '/images/site/img-4560-2.jpg', alt: t('training.hero.alt'), posicion: '18% 50%' }}
+        foto={{ src: fotos.portadaFormacion.src, alt: localize(fotos.portadaFormacion.alt, lang), posicion: fotos.portadaFormacion.foco }}
         accion={moocEs?.url ? { href: moocEs.url, label: t('training.cta') } : undefined}
       />
 

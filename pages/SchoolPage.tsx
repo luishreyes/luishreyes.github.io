@@ -136,7 +136,7 @@ export const SchoolPage: React.FC = () => {
             <p className="mt-6 text-[length:var(--t-m)] font-normal leading-[1.55] text-tinta-800 [text-wrap:pretty]">{t('school.intro')}</p>
           </>
         }
-        foto={{ src: fotos.laboratorio.src, alt: t('school.photo'), posicion: 'center 40%' }}
+        foto={{ src: fotos.portadaEscuela.src, alt: localize(fotos.portadaEscuela.alt, lang), posicion: fotos.portadaEscuela.foco }}
         accion={{ label: t('school.cta'), onClick: () => irA('pregrado') }}
       />
 
