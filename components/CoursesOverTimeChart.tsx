@@ -32,7 +32,8 @@ export const CoursesOverTimeChart = ({ courses }: { courses: TaughtCourse[] }) =
   const [medida, setMedida] = useState<Medida>('students');
   const [activeYear, setActiveYear] = useState<number | null>(null);
   const chartContainerRef = useRef<HTMLDivElement>(null);
-  const [chartWidth, setChartWidth] = useState(800);
+  // Se mide la caja antes de dibujar: con un ancho de partida fijo, el gráfico estiraba su columna en el teléfono.
+  const [chartWidth, setChartWidth] = useState(0);
 
   useEffect(() => {
     const handleResize = () => {
@@ -106,7 +107,7 @@ export const CoursesOverTimeChart = ({ courses }: { courses: TaughtCourse[] }) =
         </div>
       </div>
 
-      <div ref={chartContainerRef} className="w-full">
+      <div ref={chartContainerRef} className="w-full min-w-0">
         {chartWidth > 0 && (
           <svg width={chartWidth} height={chartHeight} role="img" aria-label={t('tch.ov.chart.title')}>
             {Array.from({ length: 5 }).map((_, i) => {

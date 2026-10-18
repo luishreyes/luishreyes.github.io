@@ -33,14 +33,16 @@ export const BarrasPorAno: React.FC<BarrasPorAnoProps> = ({ data, series, inicia
   const { t, lang } = useI18n();
   const reduce = useReducedMotion();
   const caja = useRef<HTMLDivElement>(null);
-  const [ancho, setAncho] = useState(640);
+  // El ancho sale de la caja; mientras no se ha medido, el gráfico no ocupa nada, para no
+  // estirar la columna que lo contiene (en el teléfono quedaba de 640 px y se salía).
+  const [ancho, setAncho] = useState(0);
   // Las barras crecen una sola vez, cuando el gráfico asoma en pantalla.
   const visto = useInView(caja, { once: true, margin: '0px 0px -10% 0px' });
 
   useEffect(() => {
     const el = caja.current;
     if (!el) return;
-    const medir = () => setAncho(el.offsetWidth || 640);
+    const medir = () => setAncho(el.clientWidth);
     medir();
     const ro = new ResizeObserver(medir);
     ro.observe(el);
@@ -76,7 +78,7 @@ export const BarrasPorAno: React.FC<BarrasPorAnoProps> = ({ data, series, inicia
   const valores = series.map((s) => ({ ...s, v: data[activo]?.[s.key] ?? 0 }));
 
   return (
-    <figure>
+    <figure className="min-w-0">
       {/* La lectura del año escogido */}
       <div className="flex flex-wrap items-baseline gap-x-5 gap-y-1 min-h-[3.2em]" aria-live="polite">
         <span className="a-h3 tabular-nums">{activo}</span>
@@ -91,8 +93,8 @@ export const BarrasPorAno: React.FC<BarrasPorAnoProps> = ({ data, series, inicia
         )}
       </div>
 
-      <div ref={caja} className="mt-4 w-full">
-        <svg width={ancho} height={ALTO} role="group" aria-label={unidad} className="block overflow-visible">
+      <div ref={caja} className="mt-4 w-full min-w-0">
+        {ancho > 0 && <svg width={ancho} height={ALTO} role="group" aria-label={unidad} className="block overflow-visible">
           {marcas.map((v) => (
             <g key={v}>
               <text x={M.left - 10} y={y(v) + 5} textAnchor="end" fontSize="15" fill="#5E5E61">{numero(v)}</text>
@@ -147,7 +149,7 @@ export const BarrasPorAno: React.FC<BarrasPorAnoProps> = ({ data, series, inicia
               </g>
             );
           })}
-        </svg>
+        </svg>}
       </div>
 
       {series.length > 1 && (

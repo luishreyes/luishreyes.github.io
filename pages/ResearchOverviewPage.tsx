@@ -128,12 +128,12 @@ export const ResearchOverviewPage: React.FC = () => {
         <div className="a-c">
           <Sube><Cabecera titulo={t('rc.chart.title')} /></Sube>
           <div className="mt-12 grid gap-x-16 gap-y-16 lg:grid-cols-2">
-            <Sube>
+            <Sube className="min-w-0">
               <h3 className="a-h3 mb-6">{t('rc.chart.pubs.title')}</h3>
               <BarrasPorAno data={publicationsPerYear} series={seriesPub} inicial={2025} unidad={t('rc.chart.pubs.unit')} />
               <p className="a-pie">{t('rc.chart.pubs.caption')}</p>
             </Sube>
-            <Sube delay={0.08}>
+            <Sube delay={0.08} className="min-w-0">
               <h3 className="a-h3 mb-6">{t('rc.chart.cites.title')}</h3>
               <BarrasPorAno
                 data={citas}
