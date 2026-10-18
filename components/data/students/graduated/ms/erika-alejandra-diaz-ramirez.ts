@@ -1,8 +1,7 @@
 import type { GraduatedStudent } from '../../../../types';
 
-// Codirigida en la Maestría en Ingeniería Biomédica; su tesis se sustentó en 2023-10. Sin foto ni cargo
-// actual por ahora: las páginas muestran sus iniciales en lugar del retrato. El título de la tesis va como
-// se registró, en español.
+// Codirigida en la Maestría en Ingeniería Biomédica; su tesis se sustentó en 2023-10. La foto y el cargo
+// actual los dio el profesor (18 oct 2026). El título de la tesis va como se registró, en español.
 const student: GraduatedStudent = {
     name: 'Erika Alejandra Díaz Ramírez',
     degree: 'M.S.',
@@ -23,7 +22,8 @@ const student: GraduatedStudent = {
             answer: { en: 'In the article she published as first author in ACS Omega (2024), the drug-loaded nanobioconjugates were compatible with blood and more effective against melanoma cells than the free drugs, also in three-dimensional tumor models.', es: 'En el artículo que publicó como primera autora en ACS Omega (2024), los nanobioconjugados cargados resultaron compatibles con la sangre y más eficaces contra las células de melanoma que los fármacos libres, también en modelos tridimensionales de tumor.' }
         }
     ],
-    imageUrl: '',
+    currentPosition: { en: 'Field Clinical Specialist at Boston Scientific', es: 'Field Clinical Specialist en Boston Scientific' },
+    imageUrl: '/images/students/erika-alejandra-diaz-ramirez.jpg',
 };
 
 export default student;

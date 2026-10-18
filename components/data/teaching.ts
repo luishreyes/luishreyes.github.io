@@ -154,6 +154,17 @@ export const testimonials: Testimonial[] = [
   },
   {
     quote: {
+      en: "During my doctorate, Luis has been fundamental to my growth as a researcher and also as a person. He has always had the patience to listen to my doubts, to accompany me when I was stuck and to help me find new perspectives when I did not know how to move forward. Although he has taught me to take on my research independently and to recognize that this is my own process, his guidance has made the road feel like real teamwork. With him I can talk not only about academic matters, but also share personal experiences and say what I think without feeling judged. His closeness, his patience and his understanding of the difficulties of doing a doctorate have taken his guidance far beyond the strictly academic. I deeply value everything he has taught me, the trust he has placed in me and, above all, the inspiration he gives me to want to be a better researcher every day.",
+      es: "Durante mi doctorado, Luis ha sido una persona fundamental en mi crecimiento como investigadora y también a nivel personal. Siempre ha tenido la paciencia para escuchar mis dudas, acompañarme en los momentos de estancamiento y ayudarme a encontrar nuevas perspectivas cuando no sabía cómo avanzar. Aunque me ha enseñado a asumir mi investigación con independencia y a reconocer que este es mi propio proceso, su acompañamiento ha hecho que el camino se sienta como un verdadero trabajo en equipo. Con él puedo hablar no solo de temas académicos, sino también compartir experiencias personales y expresar lo que pienso sin sentirme juzgada. Su cercanía, paciencia y capacidad para comprender las dificultades que implica hacer un doctorado han hecho que su orientación vaya mucho más allá de lo estrictamente académico. Valoro profundamente todo lo que me ha enseñado, la confianza que ha depositado en mí y, sobre todo, la inspiración que me brinda para querer ser cada día una mejor investigadora."
+    },
+    name: "Martha Liliana Díaz Bustamante",
+    info: { en: "Doctoral student in Engineering", es: "Doctoranda en Ingeniería" },
+    imageUrl: "/images/testimonials/martha-liliana-diaz-bustamante.jpg",
+    context: { en: "Doctoral advising", es: "Dirección de doctorado" },
+    category: 'Research Advising'
+  },
+  {
+    quote: {
       en: "During my doctorate, I had the opportunity to have Luis H. Reyes as my main supervisor. His guidance was characterized by an academic openness that allowed me to explore my own research interests, combined with constant guidance that fostered autonomy in my formative process. Furthermore, his supervisory style was considerate and respectful of my time, offering solid academic guidance while respecting my work rhythms. His approachability, genuineness, and willingness to provide support with resources and tools were fundamental to my growth as a researcher.",
       es: "Durante mi doctorado tuve la oportunidad de contar con Luis H. Reyes como mi supervisor principal. Su acompañamiento se caracterizó por una apertura académica que me permitió explorar mis propios intereses de investigación, combinada con una orientación constante que fomentó la autonomía en mi proceso formativo. Además, su estilo de supervisión fue considerado y respetuoso de mi tiempo, brindando una guía académica sólida a la vez que respetaba mis ritmos de trabajo. Su cercanía, autenticidad y disposición para apoyar con recursos y herramientas fueron fundamentales para mi crecimiento como investigador."
     },
@@ -235,7 +246,7 @@ export const testimonials: Testimonial[] = [
   {
     quote: {
       en: "'From yeast to beer' is built on a simple, captivating idea: understanding the beer in your hand. It sparks an innate curiosity that turns every sip into a question of 'how?' and 'why?' For me, this was the first course that truly felt like applied Chemical Engineering. We were challenged to think and act as engineers facing a real problem where our decisions directly impacted a tangible product. It’s a powerful way to learn.",
-      es: "«From yeast to beer» se construye sobre una idea simple y cautivadora: entender la cerveza que tiene en la mano. Despierta una curiosidad innata que convierte cada sorbo en una pregunta de «¿cómo?» y «¿por qué?». Para mí, este fue el primer curso que realmente se sintió como Ingeniería Química aplicada. Se nos retó a pensar y actuar como ingenieros frente a un problema real, donde nuestras decisiones impactaban directamente un producto tangible. Es una forma poderosa de aprender."
+      es: "«From yeast to beer» se construye sobre una idea simple y cautivadora: entender la cerveza que tienes en la mano. Despierta una curiosidad innata que convierte cada sorbo en una pregunta de «¿cómo?» y «¿por qué?». Para mí, este fue el primer curso que realmente se sintió como Ingeniería Química aplicada. Se nos retó a pensar y actuar como ingenieros frente a un problema real, donde nuestras decisiones impactaban directamente un producto tangible. Es una forma poderosa de aprender."
     },
     name: "Jason Bernal Sánchez",
     info: { en: "Integration Lead Engineer at Kanadevia Inova", es: "Ingeniero líder de integración en Kanadevia Inova" },
@@ -246,7 +257,7 @@ export const testimonials: Testimonial[] = [
   {
     quote: {
       en: "'From yeast to beer,' or as I like to call it, the 'Pola class,' is a student's first true taste of the real world of a chemical engineer. It’s where you get to manage a process and design your own product from start to finish. Luis H. ensures we tackle topics of equal or greater relevance, such as analyzing the process's environmental impact, designing and marketing a brand, and managing the product financially. This holistic approach wouldn't be possible without the passion Luis H. inspires in his students.",
-      es: "«From yeast to beer», o como me gusta llamarla, la «clase de la pola», es el primer verdadero acercamiento de un estudiante al mundo real de un ingeniero químico. Es donde llega a gestionar un proceso y a diseñar su propio producto de principio a fin. Luis H. se asegura de que abordemos temas de igual o mayor relevancia, como analizar el impacto ambiental del proceso, diseñar y comercializar una marca y gestionar el producto financieramente. Este enfoque holístico no sería posible sin la pasión que Luis H. inspira en sus estudiantes."
+      es: "«From yeast to beer», o como me gusta llamarla, la «clase de la pola», es el primer verdadero acercamiento de un estudiante al mundo real de un ingeniero químico. Es donde llegas a gestionar un proceso y a diseñar tu propio producto de principio a fin. Luis H. se asegura de que abordemos temas de igual o mayor relevancia, como analizar el impacto ambiental del proceso, diseñar y comercializar una marca y gestionar el producto financieramente. Este enfoque holístico no sería posible sin la pasión que Luis H. inspira en sus estudiantes."
     },
     name: "Camilo Zarate",
     info: { en: "Senior Associate at PwC", es: "Asociado sénior en PwC" },
@@ -537,7 +548,7 @@ export const courseCatalog: CourseRecord[] = [
     id: 'mgi', theme: 'ai', title: COURSE.mgi, codes: ['MGI-4307'], since: '2025-20', action: 'created', partners: ['Juan Carlos Cruz'],
     text: {
       en: 'An online elective of the Master’s in Engineering Management: eight weeks, with one live session a week, that uses content from our open course on Coursera, Fundamentos del uso de IA Generativa. It has had two cohorts, of 45 students in 2025-20 and 49 in 2026-20, and it has no evaluation on record.',
-      es: 'Una electiva virtual de la Maestría en Gerencia de Ingeniería: ocho semanas, con una sesión en vivo por semana, que usa contenido de nuestro curso abierto en Coursera, Fundamentos del uso de IA Generativa. Lleva dos cohortes, de 45 estudiantes en 2025-20 y de 49 en 2026-20, y no tiene evaluación en el registro.',
+      es: 'Una electiva virtual de la Maestría en Gerencia de la Ingeniería: ocho semanas, con una sesión en vivo por semana, que usa contenido de nuestro curso abierto en Coursera, Fundamentos del uso de IA Generativa. Lleva dos cohortes, de 45 estudiantes en 2025-20 y de 49 en 2026-20, y no tiene evaluación en el registro.',
     },
   },
 ];

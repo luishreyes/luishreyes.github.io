@@ -108,6 +108,11 @@ export const StrategiesPage: React.FC = () => {
         <div className="a-c space-y-20 sm:space-y-28">
           <Bloque titulo={t('tch.st.read.t')}>
             <Sube><p className="a-texto">{t('tch.st.read')}</p></Sube>
+            <Sube className="mt-4">
+              <a href="https://open.spotify.com/show/2N3EYNS4OJeZzWF1iZvwad" target="_blank" rel="noopener noreferrer" className="a-enlace">
+                {t('tch.st.podcast')} <span aria-hidden="true">↗</span>
+              </a>
+            </Sube>
           </Bloque>
           <Bloque titulo={t('tch.st.debate.t')}>
             <Sube><p className="a-texto">{t('tch.st.debate')}</p></Sube>

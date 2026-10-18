@@ -66,7 +66,7 @@ const Barras: React.FC<{ titulo: string; pie: string; filas: { nombre: string; n
 // Agregados de los egresados de maestría y doctorado según su cargo de hoy, y de las empresas que
 // tienen a tres o más de mis estudiantes (de pregrado y de posgrado). Sin nombres de pregrado.
 const DESTINOS: { clave: UIKey; n: number }[] = [
-  { clave: 'school.dest.industry', n: 22 },
+  { clave: 'school.dest.industry', n: 23 },
   { clave: 'school.dest.public', n: 1 },
   { clave: 'school.dest.academia', n: 9 },
   { clave: 'school.dest.phd', n: 2 },
@@ -371,10 +371,11 @@ export const SchoolPage: React.FC = () => {
             <div className="a-cifras">
               <div><b>174</b><span>{t('school.n.people')}</span></div>
               <div><b>{undergraduateSummary.total}</b><span>{t('school.n.ug')}</span></div>
-              <div><b>40</b><span>{t('school.n.ms')}</span></div>
+              <div><b>39</b><span>{t('school.n.ms')}</span></div>
               <div><b>{doctorado}</b><span>{t('school.n.phd')}</span></div>
               <div><b>13</b><span>{t('school.n.coauthors')}</span></div>
               <div><b>33</b><span>{t('school.n.talks')}</span></div>
+              <div><b>61</b><span>{t('school.n.juries')}</span></div>
             </div>
           </Sube>
           <div className="mt-16 grid gap-x-14 gap-y-4 lg:grid-cols-2">

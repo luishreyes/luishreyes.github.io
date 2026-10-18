@@ -3,7 +3,7 @@ import type { Localized } from '../../context/i18n';
 /**
  * Formación a escala: los cursos y grupos de la Dirección de Educación Continua (EDCO) de la
  * Universidad de los Andes, abiertos y para organizaciones; los de la Educación Ejecutiva de la
- * Facultad de Administración; los cursos de Coursera y la escuela de verano de CABBIO.
+ * Facultad de Administración; los cursos de Coursera y el curso de posgrado de CABBIO con Minciencias.
  *
  * Donde un curso está en el registro oficial de Educación Continua, las cifras (inscritos, horas,
  * fechas) son las de ese registro, y el nombre es el que la Universidad le dio. Los cursos que el
@@ -73,7 +73,7 @@ export const edcoOrganizations: Record<EdcoOrgId, { name: Localized; detail?: Lo
   cocrea: { name: 'Corporación Colombia Crea Talento (CoCrea)', external: true },
   eljuri: { name: 'Corporación Empresarial Eljuri (Grupo Eljuri, Ecuador)', external: true },
   vecol: { name: 'Empresa Colombiana de Productos Veterinarios (Vecol)', external: true },
-  ceiba: { name: 'Fundación CEIBA', external: true },
+  ceiba: { name: 'Fundación CeiBA', external: true },
   fsfb: { name: 'Fundación Santa Fe de Bogotá', external: true },
   semillas: {
     name: {
@@ -245,7 +245,7 @@ export const edcoCoursesData: EdcoCourse[] = [
   },
   {
     year: 2025, title: TRANSFORMANDO, titleEn: TRANSFORMANDO_EN, group: grupo(1), type: 'Corporate Course', channel: 'edco',
-    client: BOLIVAR, org: 'bolivar', attendees: 15, role: 'Instructor', start: '2025-10-09', end: '2025-11-10', edcoRecord: { hours: 12 },
+    client: BOLIVAR, org: 'bolivar', attendees: 15, role: 'Instructor', start: '2025-10-09', end: '2025-11-18', edcoRecord: { hours: 12 },
   },
   {
     year: 2025, title: 'Masa madre: Sabor y ciencia', titleEn: 'Sourdough: flavour and science (workshop)', type: 'Open Course', channel: 'edco',
@@ -273,8 +273,14 @@ export const edcoCoursesData: EdcoCourse[] = [
     attendees: 34, role: 'Instructor', start: '2025-07-14', end: '2025-08-08', edcoRecord: { hours: 12 },
   },
   {
-    year: 2025, title: 'Biotecnología Marina: De la Bioprospección al Escalado', titleEn: 'Marine Biotechnology: From Bioprospecting to Scale-up',
-    type: 'Summer School', channel: 'other', client: 'CABBIO', attendees: 19, role: 'Instructor',
+    year: 2025, title: 'Biotecnología Marina: de la bioprospección al escalado', titleEn: 'Marine Biotechnology: from bioprospecting to scale-up',
+    type: 'Summer School', channel: 'other',
+    client: 'Centro Latinoamericano de Biotecnología (CABBIO), con el Ministerio de Ciencia, Tecnología e Innovación (Minciencias)',
+    attendees: 19, role: 'Instructor', start: '2025-07-14', end: '2025-07-25',
+    note: {
+      en: 'CABBIO course COL09, for master’s and doctoral students, at Universidad de los Andes; taught between Biological Sciences and Engineering',
+      es: 'Curso CABBIO COL09, para estudiantes de maestría y doctorado, en la Universidad de los Andes; lo dictamos entre Ciencias Biológicas e Ingeniería',
+    },
   },
   {
     year: 2025, title: 'Inteligencia Artificial Generativa para Químicos', titleEn: 'Generative artificial intelligence for chemists', type: 'Corporate Course', channel: 'edco',
@@ -298,7 +304,7 @@ export const edcoCoursesData: EdcoCourse[] = [
     client: 'Bancolombia S. A.', org: 'bancolombia', attendees: 50, role: 'Instructor', start: '2025-01-20', end: '2025-01-31',
   },
   {
-    year: 2025, title: 'Liderazgo para la alta gerencia en la transformación digital', titleEn: 'Leadership for senior management in digital transformation',
+    year: 2025, title: 'Taller IA generativa líderes vicepresidencia', titleEn: 'Generative AI workshop for vice-presidency leaders',
     type: 'Corporate Course', channel: 'edco', client: 'Bancolombia S. A., Vicepresidencia de Riesgos', org: 'bancolombia',
     attendees: 20, role: 'Instructor', edcoRecord: { hours: 4 },
   },
@@ -352,7 +358,7 @@ export const edcoCoursesData: EdcoCourse[] = [
   },
   {
     year: 2021, title: 'Programa investigación para el desarrollo regional', titleEn: 'Research programme for regional development', type: 'Corporate Course', channel: 'edco',
-    client: 'Fundación CEIBA', org: 'ceiba', attendees: 86, role: 'Instructor', start: '2021-10-04', end: '2021-11-24', edcoRecord: { hours: 1 },
+    client: 'Fundación CeiBA', org: 'ceiba', attendees: 86, role: 'Instructor', start: '2021-10-04', end: '2021-11-24', edcoRecord: { hours: 1 },
   },
   {
     year: 2021, title: 'Perfección cervecera y emprendimiento', titleEn: 'Brewing perfection and entrepreneurship', type: 'Open Course', channel: 'edco',
