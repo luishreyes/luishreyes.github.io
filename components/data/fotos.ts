@@ -38,6 +38,7 @@ export const fotos = {
   // Docencia
   cervezaGlucanos: f('docencia/cerveza-degradacion-glucanos.jpg', 'Teams at the boards working out the breakdown of beta-glucans, From yeast to beer', 'Equipos en los tableros con la degradación de los beta-glucanos, From yeast to beer', '50% 55%'),
   cervezaProteinas: f('docencia/cerveza-degradacion-proteinas.jpg', 'Students writing the conditions for protein breakdown during mashing', 'Estudiantes escriben las condiciones de la degradación de proteínas en la maceración', '45% 40%'),
+  cervezaBavaria: f('docencia/cerveza-invitado-bavaria.jpg', 'A guest from Bavaria speaks to the class in From yeast to beer', 'Un invitado de Bavaria habla en clase, en From yeast to beer', '60% 45%'),
   cursoGrupo: f('docencia/curso-grupo.jpg', 'A Unit Operations Project class, 2026', 'Un grupo de Proyecto de Operaciones Unitarias, 2026', '50% 55%'),
   equiposTapabocas: f('docencia/equipos-tapabocas.jpg', 'Teams at work in Systemic Design of Bioproducts', 'Equipos trabajando en Diseño Sistémico de Bioproductos', '50% 70%'),
   grabacionMooc: f('docencia/grabacion-mooc.jpg', 'Recording the introduction of the Coursera course on generative AI', 'La grabación de la introducción del curso de Coursera sobre IA generativa', '55% 12%'),
