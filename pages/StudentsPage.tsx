@@ -139,7 +139,7 @@ export const StudentsPage = () => {
     <PageWrapper noPadding>
       <EncabezadoPagina
         titulo={t('students.title')}
-        foto={{ src: fotos.egresadosAiche.src, alt: localize(fotos.egresadosAiche.alt, lang) }}
+        foto={{ src: fotos.boom.src, alt: localize(fotos.boom.alt, lang), posicion: fotos.boom.foco }}
         entrada={
           <p className="[text-wrap:pretty]">
             {fill(t('students.intro'), {
