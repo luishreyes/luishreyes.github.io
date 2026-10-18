@@ -85,7 +85,7 @@ export const ScholarshipOfTeachingPage: React.FC = () => {
         titulo={t('tch.so.title')}
         entrada={<p>{lead.charAt(0).toUpperCase() + lead.slice(1)}</p>}
         accion={{ to: '/teaching/unit-ops', label: t('tch.so.cta') }}
-        foto={{ src: fotos.acofiPonencia.src, alt: localize(fotos.acofiPonencia.alt, lang), posicion: '70% center' }}
+        foto={{ src: fotos.wil.src, alt: localize(fotos.wil.alt, lang), posicion: fotos.wil.foco }}
       />
 
       {/* ── Cómo empezó, y el cuidado de estudiar un curso propio ── */}
