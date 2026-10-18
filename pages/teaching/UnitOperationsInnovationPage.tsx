@@ -11,7 +11,7 @@ import { flagshipAward, graduateByName } from '../../components/data/metrics';
 import { pou202620Course } from '../../components/data/classroom/pou-2026-20';
 import { SemesterSeriesChart } from '../../components/CoursesOverTimeChart';
 import { Resaltar } from '../purpose/TeachingPurposePage';
-import { fotos } from '../../components/data/fotos';
+import { fotos, type Foto } from '../../components/data/fotos';
 
 // Tres cursos para un mismo propósito: Operaciones Unitarias (IQUI-3010), Proyecto Integrado 2
 // (IQUI-2032, después IQYA-2032) y Proyecto de Operaciones Unitarias (IQYA-2031). El gráfico y
@@ -69,10 +69,11 @@ export const UnitOperationsInnovationPage: React.FC = () => {
     ...(award ? [{ at: TERMS.length - 1, label: t('tch.uo.ev.award'), row: 0 }] : []),
   ].filter((h) => h.at >= 0);
 
-  const cursos: { when: UIKey; title: string; code: string; parrafos: React.ReactNode[] }[] = [
+  const cursos: { when: UIKey; title: string; code: string; parrafos: React.ReactNode[]; foto?: Foto }[] = [
     {
       when: 'tch.uo.ou.when', title: localize(COURSE.ou, lang), code: 'IQUI-3010',
       parrafos: [t('tch.uo.ou.p1'), t('tch.uo.ou.p2'), t('tch.uo.ou.p3'), t('tch.uo.ou.p4')],
+      foto: fotos.salidaBbc,
     },
     {
       when: 'tch.uo.pi2.when', title: localize(COURSE.pi2, lang), code: 'IQUI-2032 · IQYA-2032',
@@ -176,6 +177,14 @@ export const UnitOperationsInnovationPage: React.FC = () => {
                   {c.parrafos.map((p, k) => (
                     <p key={k} className={`detalle ${k === 0 ? 'text-tinta-900' : ''}`}>{p}</p>
                   ))}
+                  {c.foto && (
+                    <figure className="mt-6 max-w-[420px]">
+                      <div className="overflow-hidden aspect-[3/4]">
+                        <img src={c.foto.src} alt={localize(c.foto.alt, lang)} loading="lazy" className="a-foto a-bn" style={{ objectPosition: c.foto.foco }} />
+                      </div>
+                      <figcaption className="a-pie">{localize(c.foto.alt, lang)}.</figcaption>
+                    </figure>
+                  )}
                 </div>
               </Sube>
             ))}

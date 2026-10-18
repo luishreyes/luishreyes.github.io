@@ -48,6 +48,7 @@ export const fotos = {
   pouDiagrama: f('docencia/pou-actividad-diagrama-proceso.jpg', 'Students building a process diagram with sticky notes in the Unit Operations Project', 'Estudiantes arman un diagrama de proceso con notas adhesivas en Proyecto de Operaciones Unitarias', '35% 35%'),
   pouNpsh: f('docencia/pou-portatiles-taller-npsh.jpg', 'Laptops on the system curve and available NPSH workshop', 'Portátiles en el taller de curva del sistema y NPSH disponible', '60% 60%'),
   pouRetro: f('docencia/pou-retroalimentacion.jpg', 'A feedback session with a team in the Unit Operations Project', 'Una sesión de retroalimentación con un equipo de Proyecto de Operaciones Unitarias', '25% 45%'),
+  salidaBbc: f('docencia/ou-salida-tecnica-bbc.jpg', 'Unit Operations technical visit to Bogotá Beer Company (BBC)', 'Salida técnica de Operaciones Unitarias a Bogotá Beer Company (BBC)', '50% 70%'),
   ptarSalitre: f('docencia/ptar-salitre-visita-estudiantes.jpg', 'With students of the chemical engineering student council at the Salitre wastewater plant', 'Con estudiantes del consejo estudiantil de ingeniería química en la PTAR Salitre', '50% 30%'),
   reto2019: f('docencia/reto-2019-casa-luker-bavaria.jpg', 'The first Chemical Engineering Challenge, 2019, with its company challenges on the board', 'El primer Chemical Engineering Challenge, 2019, con los retos de las empresas en el tablero', '50% 70%'),
   // Liderazgo y servicio
