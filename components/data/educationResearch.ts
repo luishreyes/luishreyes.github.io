@@ -1,4 +1,5 @@
 import type { Localized } from '../../context/i18n';
+import type { Product } from '../../types';
 
 /**
  * La investigación sobre mi propia docencia: los cuatro artículos, con el diseño de cada
@@ -130,4 +131,17 @@ export const pouLongitudinalStudy = {
   /** Revisiones de literatura con IA reglada por la AIAS frente a las de los semestres sin IA. */
   references: { before: 8, after: 20, p: 0.045 },
   highImpactSources: { before: 3, after: 13, p: 0.043 },
+};
+
+/** Los productos del área de docencia en products.json, partidos como los cuenta el capítulo:
+ *  artículos de investigación, otras publicaciones y ponencias, del más reciente al más antiguo. */
+export const sotlProducts = (products: Product[]) => {
+  const propios = products
+    .filter((p) => p.researchAreas?.includes('Scholarship of Teaching & Learning'))
+    .sort((a, b) => b.publicationDate.localeCompare(a.publicationDate));
+  return {
+    papers: propios.filter((p) => p.type === 'Research Paper'),
+    talks: propios.filter((p) => p.type === 'Conference'),
+    other: propios.filter((p) => p.type !== 'Research Paper' && p.type !== 'Conference'),
+  };
 };

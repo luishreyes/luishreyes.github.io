@@ -41,6 +41,12 @@ const SemanasEtica: React.FC = () => {
   return (
     <figure>
       <h3 className="a-h3">{t('svc.ethics.fig.title')}</h3>
+      <p className="mt-6 flex flex-wrap items-baseline gap-x-4 gap-y-1">
+        <b className="text-[length:var(--t-titulo)] leading-none font-bold tracking-tight text-tinta-900 tabular-nums">
+          {numero(Math.floor(ethicsCasesEstimate / 100) * 100, lang)}+
+        </b>
+        <span className="a-s text-tinta-800">{fill(t('svc.ethics.fig.total'), { weeks: ethicsWeeks })}</span>
+      </p>
       <ul className="mt-6 border-t-2 border-tinta-900 pt-3">
         {filas.map((f) => (
           <li key={f.s} className="grid grid-cols-[4.5rem_minmax(0,1fr)] items-center gap-3 py-1 transition-colors hover:bg-resaltador-suave">
@@ -58,12 +64,6 @@ const SemanasEtica: React.FC = () => {
           </li>
         ))}
       </ul>
-      <p className="mt-6 flex flex-wrap items-baseline gap-x-4 gap-y-1 border-t-2 border-papel-300 pt-4">
-        <b className="text-[length:var(--t-titulo)] leading-none font-bold tracking-tight text-tinta-900 tabular-nums">
-          {numero(Math.floor(ethicsCasesEstimate / 100) * 100, lang)}+
-        </b>
-        <span className="a-s text-tinta-800">{fill(t('svc.ethics.fig.total'), { weeks: ethicsWeeks })}</span>
-      </p>
       <figcaption className="a-pie max-w-[52ch]">{t('svc.ethics.fig.caption')}</figcaption>
     </figure>
   );
@@ -301,7 +301,7 @@ export const CommitteesPage: React.FC = () => {
               </tbody>
             </table>
           </Sube>
-          <div className="mt-16 grid gap-14 md:grid-cols-2 md:gap-12">
+          <div className="mt-24 grid gap-24 md:grid-cols-2 md:gap-12">
             <Registro titulo="svc.eval.faculty.title" filas={facultyEvaluationsData} />
             <Registro titulo="svc.eval.juries.title" filas={externalJuriesData} />
           </div>

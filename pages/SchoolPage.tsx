@@ -137,6 +137,10 @@ const Pregrado: React.FC<{ p: UndergraduateStudent }> = ({ p }) => {
 const ListaPregrado: React.FC = () => {
   const { t } = useI18n();
   const [q, setQ] = useState('');
+  // Solo se pinta la lista de los años abiertos: un <details> cerrado no necesita sus 30 filas.
+  const [abiertos, setAbiertos] = useState<Set<string>>(() => new Set());
+  const alternar = (ano: string, abierto: boolean) =>
+    setAbiertos((prev) => { const n = new Set(prev); if (abierto) n.add(ano); else n.delete(ano); return n; });
   const busqueda = useDeferredValue(q);
   const cuenta = (n: number) => (n === 1 ? t('school.ug.count1') : fill(t('school.ug.count'), { n }));
 
@@ -182,7 +186,7 @@ const ListaPregrado: React.FC = () => {
       ) : (
         <div className="mt-8 border-t-2 border-tinta-900">
           {porAno.map(([ano, gente]) => (
-            <details key={ano} className="group border-b-2 border-papel-300">
+            <details key={ano} className="group border-b-2 border-papel-300" onToggle={(e) => alternar(ano, (e.currentTarget as HTMLDetailsElement).open)}>
               <summary className="flex cursor-pointer list-none items-baseline justify-between gap-6 py-5 transition-colors hover:bg-resaltador-suave [&::-webkit-details-marker]:hidden">
                 <span className="text-[length:var(--t-l)] font-semibold leading-none tabular-nums text-tinta-900">{ano}</span>
                 <span className="a-meta">
@@ -191,9 +195,11 @@ const ListaPregrado: React.FC = () => {
                   <span aria-hidden="true" className="ml-3 hidden w-4 text-center text-tinta-900 group-open:inline-block">−</span>
                 </span>
               </summary>
-              <ul className="pb-4">
-                {gente.map((p) => <Pregrado key={p.name} p={p} />)}
-              </ul>
+              {abiertos.has(ano) && (
+                <ul className="pb-4">
+                  {gente.map((p) => <Pregrado key={p.name} p={p} />)}
+                </ul>
+              )}
             </details>
           ))}
         </div>
@@ -277,9 +283,9 @@ export const SchoolPage: React.FC = () => {
                 ['school.kept.peer.t', 'school.kept.peer.p'],
                 ['school.kept.grad.t', 'school.kept.grad.p'],
               ] as [UIKey, UIKey][]).map(([titulo, texto], i) => (
-                <Sube as="li" key={titulo} delay={0.05 * i} className="grid gap-3 py-8 border-b-2 border-papel-300 md:grid-cols-[13rem_minmax(0,1fr)] md:gap-10">
-                  <p className="text-[length:var(--t-l)] font-semibold leading-tight tracking-[-0.02em] text-tinta-900">{t(titulo)}</p>
-                  <p className="a-texto">
+                <Sube as="li" key={titulo} delay={0.05 * i} className="py-8 border-b-2 border-papel-300">
+                  <h3 className="a-h3">{t(titulo)}.</h3>
+                  <p className="a-texto mt-4">
                     <Rico texto={fill(t(texto), { n: 13, total: undergraduateStudents.length })} />
                   </p>
                 </Sube>
@@ -301,7 +307,7 @@ export const SchoolPage: React.FC = () => {
           <Sube><Cabecera titulo={t('school.course.title')} /></Sube>
           <div className="mt-12 grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-start">
             <Sube className="lg:sticky lg:top-24">
-              <Figura src={fotos.cervezaGlucanos.src} alt={localize(fotos.cervezaGlucanos.alt, lang)} pie={t('school.course.photo')} proporcion="aspect-[4/3] lg:aspect-[4/5]" />
+              <Figura src={fotos.cervezaGlucanos.src} alt={localize(fotos.cervezaGlucanos.alt, lang)} pie={t('school.course.photo')} proporcion="aspect-[4/3] lg:aspect-[4/5]" posicion="center 75%" />
             </Sube>
             <div>
               {(['school.course.p1', 'school.course.p2', 'school.course.p3', 'school.course.p4', 'school.course.p5'] as UIKey[]).map((k, i) => (
@@ -430,7 +436,8 @@ export const SchoolPage: React.FC = () => {
         <div className="a-c">
           <Sube><Cabecera titulo={t('school.voices.title')} /></Sube>
           <Sube className="mt-10">
-            <p className="a-entrada max-w-[56ch]">
+            <p className="a-texto">{t('school.voices.intro')}</p>
+            <p className="a-entrada mt-4 max-w-[56ch]">
               {t('school.voices.leadA')} <span className="a-resaltado font-semibold">{t('school.voices.leadB')}</span>.
             </p>
           </Sube>
@@ -489,9 +496,9 @@ export const SchoolPage: React.FC = () => {
             <div>
               <Sube><h3 className="a-h3">{t('school.table.title')}.</h3></Sube>
               <Sube className="mt-6"><p className="a-texto">{t('school.table.p1')}</p></Sube>
-              <div className="mt-8 grid grid-cols-[minmax(0,0.75fr)_minmax(0,1fr)] gap-4">
-                <Sube><Figura src={fotos.sesionOlga.src} alt={localize(fotos.sesionOlga.alt, lang)} pie={t('school.table.olga')} proporcion="aspect-[3/4]" /></Sube>
-                <Sube delay={0.06}><Figura src={fotos.mentoria.src} alt={localize(fotos.mentoria.alt, lang)} pie={t('school.table.enrique')} proporcion="aspect-[3/4]" posicion="60% center" /></Sube>
+              <div className="mt-8 grid gap-4 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.78fr)]">
+                <Sube><Figura src={fotos.sesionOlga.src} alt={localize(fotos.sesionOlga.alt, lang)} pie={t('school.table.olga')} proporcion="aspect-[4/3] sm:aspect-[3/4]" posicion="center 35%" /></Sube>
+                <Sube delay={0.06}><Figura src={fotos.mentoria.src} alt={localize(fotos.mentoria.alt, lang)} pie={t('school.table.enrique')} proporcion="aspect-[4/3]" /></Sube>
               </div>
               <Sube className="mt-8"><p className="a-texto"><Rico texto={t('school.table.p2')} /></p></Sube>
             </div>

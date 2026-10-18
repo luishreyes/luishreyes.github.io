@@ -174,7 +174,8 @@ const BloqueCaso: React.FC<{ caso: Caso; fondo: string }> = ({ caso, fondo }) =>
   return (
     <section id={caso.id} className={`${fondo} a-campo scroll-mt-16`}>
       <div className="a-c">
-        <Sube><Cabecera titulo={t(caso.titulo)} /></Sube>
+        {/* En el teléfono el título del caso baja al tamaño de lectura grande: cabe en dos líneas. */}
+        <Sube><Cabecera titulo={t(caso.titulo)} className="max-[639px]:!text-[length:var(--t-l)]" /></Sube>
         <div className="mt-12 grid gap-x-16 gap-y-12 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]">
           <div>
             {caso.parrafos.map((p, i) => (

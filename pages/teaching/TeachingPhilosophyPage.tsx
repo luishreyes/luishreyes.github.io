@@ -6,39 +6,22 @@ import { EncabezadoPagina } from '../../components/Apertura';
 import { Sube } from '../../components/Sube';
 import { useI18n, localize, type UIKey } from '../../context/i18n';
 import { fotos, type Foto } from '../../components/data/fotos';
-import { PLIEGO, MARGEN, Resaltar, Retrato, SumaVectorial, cargoDe, testimoniosDe } from '../purpose/TeachingPurposePage';
+import { PLIEGO, MARGEN, Resaltar, Retrato, cargoDe, testimoniosDe } from '../purpose/TeachingPurposePage';
 
-const MARCO: { titulo: UIKey; texto: UIKey }[] = [
-  { titulo: 'philosophy.fw1.title', texto: 'philosophy.fw1.desc' },
-  { titulo: 'philosophy.fw2.title', texto: 'philosophy.fw2.desc' },
-];
-
-const PRACTICAS: [UIKey, UIKey][] = [
-  ['philosophy.practice1.bold', 'philosophy.practice1.text'],
-  ['philosophy.practice2.bold', 'philosophy.practice2.text'],
-  ['philosophy.practice3.bold', 'philosophy.practice3.text'],
-  ['philosophy.practice4.bold', 'philosophy.practice4.text'],
-  ['philosophy.practice5.bold', 'philosophy.practice5.text'],
-];
-
-const EN_LA_PRACTICA: [UIKey, UIKey][] = [
-  ['philosophy.inPractice.assessment.bold', 'philosophy.inPractice.assessment.text'],
-  ['philosophy.inPractice.content.bold', 'philosophy.inPractice.content.text'],
-  ['philosophy.inPractice.feedback.bold', 'philosophy.inPractice.feedback.text'],
-  ['philosophy.inPractice.tracking.bold', 'philosophy.inPractice.tracking.text'],
-];
+// Lo que el enfoque pide en mis cursos, en el orden del texto.
+const EN_MIS_CURSOS: UIKey[] = ['tch.ph.c1', 'tch.ph.c2', 'tch.ph.c3', 'tch.ph.c4', 'tch.ph.c5'];
 
 // Estudiantes de dos de los cursos, con lo que escribieron en la página de testimonios.
 const EXALUMNOS = ['Daniela Aristizabal', 'David Santamaría', 'Jason Bernal Sánchez', 'Camilo Zarate'];
 
 /** Una foto del margen, con su pie. */
-const FotoMargen: React.FC<{ foto: Foto; forma?: string; delay?: number }> = ({ foto, forma = 'aspect-[4/3]', delay = 0.08 }) => {
+const FotoMargen: React.FC<{ foto: Foto; pie: string; forma?: string; delay?: number }> = ({ foto, pie, forma = 'aspect-[4/3]', delay = 0.08 }) => {
   const { lang } = useI18n();
   return (
     <Sube delay={delay}>
       <figure className="mt-10">
         <img src={foto.src} alt={localize(foto.alt, lang)} loading="lazy" className={`a-bn w-full object-cover ${forma}`} />
-        <figcaption className="a-pie">{localize(foto.alt, lang)}</figcaption>
+        <figcaption className="a-pie">{pie}</figcaption>
       </figure>
     </Sube>
   );
@@ -67,6 +50,7 @@ const Bloque: React.FC<{ titulo: string; children: React.ReactNode; margen?: Rea
   </div>
 );
 
+/** La segunda idea de la filosofía docente: el constructivismo co-adaptativo. */
 export const TeachingPhilosophyPage: React.FC = () => {
   const { t, lang } = useI18n();
   const exalumnos = testimoniosDe(EXALUMNOS);
@@ -79,64 +63,47 @@ export const TeachingPhilosophyPage: React.FC = () => {
   return (
     <PageWrapper noPadding>
       <EncabezadoPagina
-        titulo={t('philosophy.title')}
-        entrada={<p>{t('philosophy.sub')}</p>}
-        accion={{ to: '/teaching/courses', label: t('philosophy.cta') }}
+        titulo={t('tch.ph.title')}
+        entrada={<p>{t('tch.ph.lead')}</p>}
+        accion={{ to: '/teaching/courses', label: t('tch.ph.cta') }}
         foto={{ src: fotos.pouDiagrama.src, alt: localize(fotos.pouDiagrama.alt, lang) }}
       />
 
-      {/* ── El marco: constructivismo co-adaptativo ── */}
+      {/* ── Los estudiantes de hoy ── */}
       <section className="a-papel pt-6 pb-20 sm:pb-28">
         <div className={`a-c ${PLIEGO}`}>
           <div className={MARGEN}>
-            <Sube><h2 className="a-h3">{sinCorte(t('philosophy.framework'))}</h2></Sube>
+            <Sube><h2 className="a-h3">{t('tch.ph.today')}</h2></Sube>
             <Sube delay={0.08} className="mt-12">
-              <blockquote className="a-cita">{t('philosophy.quote')}</blockquote>
+              <blockquote className="a-cita">{t('tch.ph.quote')}</blockquote>
             </Sube>
           </div>
           <div className="space-y-6">
-            <Sube><p className="a-texto">{t('philosophy.intro')}</p></Sube>
-            {MARCO.map((m, i) => (
-              <Sube key={m.titulo} delay={0.06 * (i + 1)} className="!mt-10">
-                <h3 className="font-semibold text-tinta-900">{sinCorte(t(m.titulo))}</h3>
-                <p className="a-texto mt-2">{t(m.texto)}</p>
-              </Sube>
-            ))}
+            <Sube><p className="a-texto">{t('tch.ph.p1')}</p></Sube>
+            <Sube delay={0.06}><p className="a-texto">{t('tch.ph.p2')}</p></Sube>
           </div>
         </div>
       </section>
 
-      {/* ── El principio central, con la suma para tocarla ── */}
+      {/* ── El enfoque y lo que pide en mis cursos ── */}
       <section className="a-hundido a-campo">
-        <div className={`a-c ${PLIEGO}`}>
-          <div className={`${MARGEN} order-2 lg:order-1`}>
-            <Sube delay={0.1}><SumaVectorial /></Sube>
-          </div>
-          <div className="order-1 lg:order-2">
-            <Sube><h3 className="a-h3">{t('philosophy.fw3.title')}</h3></Sube>
-            <Sube delay={0.06}><p className="a-texto mt-6">{t('philosophy.fw3.desc')}</p></Sube>
-          </div>
-        </div>
-      </section>
-
-      {/* ── La equidad y las cinco prácticas ── */}
-      <section className="a-papel a-campo">
-        <Bloque titulo={t('philosophy.equity')}>
-          <Sube><p className="a-texto">{t('philosophy.equity.p')}</p></Sube>
+        <Bloque titulo={t('tch.ph.approach')}>
+          <Sube><p className="a-texto text-tinta-900">{t('tch.ph.a1')}</p></Sube>
         </Bloque>
         <Bloque
-          titulo={t('philosophy.practices')}
+          titulo={t('tch.ph.inCourses')}
           className="mt-20 sm:mt-28"
           fijo={false}
-          margen={<><FotoMargen foto={fotos.cervezaGlucanos} /><FotoMargen foto={fotos.mentoria} delay={0.12} /></>}
+          margen={<><FotoMargen foto={fotos.reto2019} pie={t('tch.ph.photo.reto')} /><FotoMargen foto={fotos.cervezaGlucanos} pie={t('tch.ph.photo.beer')} delay={0.12} /></>}
         >
-          <ol className="list-decimal pl-6 space-y-6 max-w-[64ch] marker:font-semibold marker:text-tinta-900">
-            {PRACTICAS.map(([negrita, texto], i) => (
-              <Sube as="li" key={negrita} delay={0.05 * i} className="pl-2">
-                <strong className="font-semibold text-tinta-900">{t(negrita)}</strong>{t(texto)}
+          <ul className="border-t-2 border-tinta-900 max-w-[64ch]">
+            {EN_MIS_CURSOS.map((clave, i) => (
+              <Sube as="li" key={clave} delay={0.05 * i} className="py-4 border-b-2 border-papel-300 text-tinta-900">
+                {clave === 'tch.ph.c5' ? <Resaltar texto={t(clave)} frase={t('tch.ph.mark')} /> : t(clave)}
               </Sube>
             ))}
-          </ol>
+          </ul>
+          <Sube><p className="a-texto !mt-10">{t('tch.ph.p3')}</p></Sube>
         </Bloque>
       </section>
 
@@ -145,45 +112,28 @@ export const TeachingPhilosophyPage: React.FC = () => {
         <div className="overflow-hidden h-[52svh] min-h-[280px] max-h-[620px]">
           <motion.img
             src="/images/site/04.png"
-            alt={t('philosophy.campus.alt')}
+            alt={t('tch.ph.campus')}
             loading="lazy"
             className="a-foto a-bn"
             style={{ objectPosition: 'center 70%', ...(reduce ? {} : { scale: escala }) }}
           />
         </div>
-        <figcaption className="a-c a-pie">{t('philosophy.campus.alt')}</figcaption>
+        <figcaption className="a-c a-pie">{t('tch.ph.campus')}</figcaption>
       </figure>
 
-      {/* ── La base estoica y la filosofía en la práctica ── */}
+      {/* ── Lo que documento ── */}
       <section className="a-papel a-campo">
-        <Bloque titulo={t('philosophy.stoic')}>
-          <Sube><p className="a-texto">{t('philosophy.stoic.p')}</p></Sube>
-        </Bloque>
-        <Bloque titulo={t('philosophy.inPractice')} className="mt-20 sm:mt-28" margen={<FotoMargen foto={fotos.postersPou} />}>
-          <ul className="list-disc pl-6 space-y-4 max-w-[64ch] marker:text-tinta-900">
-            {EN_LA_PRACTICA.map(([negrita, texto], i) => (
-              <Sube as="li" key={negrita} delay={0.05 * i} className="pl-2">
-                <strong className="font-semibold text-tinta-900">{t(negrita)}</strong>{t(texto)}
-              </Sube>
-            ))}
-          </ul>
-        </Bloque>
-      </section>
-
-      {/* ── La transformación ── */}
-      <section className="a-portada a-campo">
-        <Bloque titulo={t('philosophy.transformation')} margen={<FotoMargen foto={fotos.sesionOlga} forma="aspect-[4/3] object-[50%_30%]" />}>
-          <Sube><p className="a-texto">{t('philosophy.transformation.p1')}</p></Sube>
-          <Sube delay={0.06}>
-            <p className="a-texto text-tinta-900">
-              <Resaltar texto={t('philosophy.transformation.p2')} frase={t('philosophy.mark')} />
-            </p>
+        <Bloque titulo={t('tch.ph.record')} margen={<FotoMargen foto={fotos.postersPou} pie={t('tch.ph.photo.posters')} />}>
+          <Sube><p className="a-texto">{t('tch.ph.r1')}</p></Sube>
+          <Sube delay={0.06} className="flex flex-wrap gap-x-8 gap-y-3">
+            <Link to="/teaching/scholarship" className="a-enlace">{t('tch.ph.r.sotl')} <span aria-hidden="true">→</span></Link>
+            <Link to="/teaching/unit-ops" className="a-enlace">{t('tch.ph.r.unitops')} <span aria-hidden="true">→</span></Link>
           </Sube>
         </Bloque>
       </section>
 
       {/* ── Quienes pasaron por esos cursos ── */}
-      <section className="a-papel a-campo">
+      <section className="a-hundido a-campo">
         <div className="a-c">
           <ul className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12">
             {exalumnos.map((x, i) => (
@@ -198,11 +148,20 @@ export const TeachingPhilosophyPage: React.FC = () => {
             ))}
           </ul>
           <Sube className="mt-10 flex flex-wrap items-baseline gap-x-8 gap-y-3">
-            <p className="a-pie !mt-0">{t('philosophy.students')}</p>
+            <p className="a-pie !mt-0">{t('tch.ph.students')}</p>
             <Link to="/teaching/testimonials" className="a-enlace">
-              {t('philosophy.students.cta')} <span aria-hidden="true">→</span>
+              {t('tch.ph.students.cta')} <span aria-hidden="true">→</span>
             </Link>
           </Sube>
+          <ul className="a-filas mt-20">
+            <Sube as="li">
+              <Link to="/teaching/purpose" className="a-fila">
+                <span className="q">{t('tch.pu.title')}</span>
+                <span className="d">{t('tch.ph.prev')}</span>
+                <span className="ir" aria-hidden="true">→</span>
+              </Link>
+            </Sube>
+          </ul>
         </div>
       </section>
     </PageWrapper>

@@ -86,7 +86,8 @@ export const school = {
 
   // ── Lo que dicen ellos ──
   'school.voices.title': { en: 'In their words', es: 'Lo que dicen ellos' },
-  'school.voices.leadA': { en: 'Several of the students I advised wrote about what it was like to work with me. They agree on the same things:', es: 'Varios de mis dirigidos escribieron sobre lo que fue trabajar conmigo. Coinciden en lo mismo:' },
+  'school.voices.intro': { en: 'Several of the students I advised wrote about what it was like to work with me.', es: 'Varios de mis dirigidos escribieron sobre lo que fue trabajar conmigo.' },
+  'school.voices.leadA': { en: 'They agree on the same things:', es: 'Coinciden en lo mismo:' },
   'school.voices.leadB': { en: 'clear goals, freedom to explore and trust', es: 'objetivos claros, libertad para explorar y confianza' },
   'school.voices.more':  { en: 'Testimonials from my courses', es: 'Los testimonios de mis cursos' },
 

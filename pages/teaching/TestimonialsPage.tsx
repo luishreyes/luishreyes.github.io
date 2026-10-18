@@ -74,12 +74,11 @@ export const TestimonialsPage = () => {
   return (
     <PageWrapper noPadding>
       <EncabezadoPagina
-        titulo={t('testimonials.title')}
-        entrada={<p>{t('testimonials.lead')}</p>}
+        titulo={t('tch.te.title')}
+        entrada={<p>{t('tch.te.lead')}</p>}
         foto={{ src: fotos.ptarSalitre.src, alt: localize(fotos.ptarSalitre.alt, lang), posicion: 'center 35%' }}
       >
-        <p className="mt-6 a-texto text-tinta-800">{t('testimonials.sub')}</p>
-        <div className="a-filtros mt-10" role="group" aria-label={t('testimonials.title')}>
+        <div className="a-filtros mt-10" role="group" aria-label={t('tch.te.title')}>
           {filterOptions.map((option) => (
             <button key={option} type="button" onClick={() => setActiveFilter(option)} aria-pressed={activeFilter === option}>
               {t(categoryLabelKey[option])}

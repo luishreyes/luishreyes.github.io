@@ -201,7 +201,8 @@ export const ResearchOverviewPage: React.FC = () => {
       {/* ── Ponencias ── */}
       <section className="a-portada a-campo">
         <div className="a-c grid gap-x-16 gap-y-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-center">
-          <Sube>
+          {/* En pantallas angostas el texto va primero: el pie de la foto no queda encima del título. */}
+          <Sube className="order-2 lg:order-1">
             <figure>
               <div className="overflow-hidden aspect-[16/9]">
                 <img src={fotos.aiche2025.src} alt={localize(fotos.aiche2025.alt, lang)} loading="lazy" className="a-foto a-bn" />
@@ -209,7 +210,7 @@ export const ResearchOverviewPage: React.FC = () => {
               <figcaption className="a-pie">{localize(fotos.aiche2025.alt, lang)}.</figcaption>
             </figure>
           </Sube>
-          <div>
+          <div className="order-1 lg:order-2">
             <Sube><h2 className="a-titulo">{t('rc.talks.title')}.</h2></Sube>
             <Sube delay={0.06}>
               <p className="mt-6 a-texto">{t('rc.talks.text')}</p>

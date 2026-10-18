@@ -4,30 +4,19 @@ import { PageWrapper } from '../../components/PageWrapper';
 import { StatsSection } from '../../components/StatsSection';
 import { Sube } from '../../components/Sube';
 import { Apertura, Cabecera } from '../../components/Apertura';
-import { useI18n, fill, localize, num, cardinal } from '../../context/i18n';
-import { teachingData, testimonials, type TaughtCourse, type Testimonial } from '../../components/data/teaching';
+import { useI18n, fill, localize, cardinal } from '../../context/i18n';
+import { teachingData, testimonials, courseCatalog, type Testimonial } from '../../components/data/teaching';
+import { educationPapers, sotlProducts } from '../../components/data/educationResearch';
 import { edcoCoursesData } from '../../components/data/edco';
-import { cycleTurns } from '../../components/data/educationResearch';
-import { grantsData } from '../../components/data/grants';
 import { professionalDevelopmentData } from '../../components/data/professionalDevelopment';
 import { metrics, flagshipAward, graduateByName } from '../../components/data/metrics';
+import { pou202620Course } from '../../components/data/classroom/pou-2026-20';
+import { useAppData } from '../../context/AppDataContext';
 import { CoursesOverTimeChart } from '../../components/CoursesOverTimeChart';
 import { fotos } from '../../components/data/fotos';
 
 const { teaching } = metrics;
 const teachingAward = flagshipAward('teaching');
-
-/** El dossier marca con el resaltador la frase que manda: aquí, la primera del enfoque. */
-const conResaltado = (texto: string) => {
-  const corte = texto.indexOf('. ');
-  if (corte < 0) return texto;
-  return (
-    <>
-      <span className="a-resaltado">{texto.slice(0, corte + 1)}</span>
-      {texto.slice(corte + 1)}
-    </>
-  );
-};
 
 /** Primera frase de un testimonio, con puntos suspensivos si sigue más texto. */
 const primeraFrase = (texto: string) => {
@@ -40,7 +29,7 @@ const primeraFrase = (texto: string) => {
 const VOCES: { name: string; category: Testimonial['category'] }[] = [
   { name: 'Jason Bernal Sánchez', category: 'Teaching & Mentorship' },
   { name: 'Daniela Aristizabal', category: 'Teaching & Mentorship' },
-  { name: 'Carlos Manuel Ramírez Acosta', category: 'Research Advising' },
+  { name: 'Carlos Manuel Ramírez Acosta', category: 'Teaching & Mentorship' },
   { name: 'Julian Daniel Torres Vanegas', category: 'Teaching & Mentorship' },
 ];
 const voces = VOCES.map((v) => testimonials.find((x) => x.name === v.name && x.category === v.category)).filter(
@@ -48,75 +37,100 @@ const voces = VOCES.map((v) => testimonials.find((x) => x.name === v.name && x.c
 );
 const personas = new Set(testimonials.map((x) => x.name)).size;
 
-// La serie de Operaciones Unitarias, para la fila que lleva a su caso.
-const UNIT_OPS_CODES = ['IQUI-3010', 'IQUI-2032', 'IQYA-2032', 'IQYA-2031'];
-const serie = teachingData
-  .filter((c) => UNIT_OPS_CODES.includes(c.code) && c.evaluation !== null)
-  .sort((a, b) => a.term.localeCompare(b.term));
-const iMin = serie.reduce((lo, c, i) => ((c.evaluation as number) < (serie[lo].evaluation as number) ? i : lo), 0);
-const minimo = serie[iMin].evaluation as number;
-const recuperado = Math.max(...serie.slice(iMin).map((c) => c.evaluation as number));
+// El Laboratorio de Pandora: estudiantes y semestres, del registro de cursos.
+const pandora = teachingData.filter((c) => c.code === 'CBP-C1320');
+const pandoraEstudiantes = pandora.reduce((s, c) => s + c.students, 0);
+
+// Los simuladores del aula de Proyecto de Operaciones Unitarias (el manual de diagramas va aparte).
+const simuladores = (pou202620Course.simulations ?? []).filter((s) => s.id !== 'manual-diagramas').length;
 
 const primerAnoEdco = Math.min(...edcoCoursesData.map((c) => c.year));
 const primerAnoDesarrollo = Math.min(...professionalDevelopmentData.map((a) => Number(a.period.slice(0, 4))));
 
-// Los cursos de educación continua entran al gráfico con su tipo.
-const cursosEdco: TaughtCourse[] = edcoCoursesData.map((course) => ({
-  term: `${course.year}-EDCO`,
-  year: course.year,
-  code: 'EDCO',
-  title: course.title,
-  students: course.attendees,
-  type: course.type === 'Corporate Course' ? 'Corporate' : course.client === 'Coursera (MOOC)' ? 'Coursera' : 'EDCO',
-  evaluation: null,
-  level: null,
-}));
-const todosLosCursos = [...teachingData, ...cursosEdco];
-
 export const TeachingOverviewPage: React.FC = () => {
   const { t, lang } = useI18n();
+  const { products } = useAppData();
   const miles = (n: number) => n.toLocaleString(lang === 'es' ? 'es-CO' : 'en-US');
+  const { talks } = sotlProducts(products);
 
   const stats = [
-    { label: t('teaching.stat.courses'), value: teaching.courses },
-    { label: t('teaching.stat.uniStudents'), value: teaching.universityStudents, note: fill(t('teaching.stat.uniStudents.note'), { firstYear: teaching.firstYear }) },
-    { label: t('teaching.stat.contEd'), value: teaching.continuingEdParticipants },
-    { label: t('teaching.stat.mooc'), value: teaching.moocEnrolments, note: fill(t('teaching.stat.mooc.note'), { n: miles(teaching.moocCompletions) }) },
-    ...(teaching.averageEvaluation !== null
-      ? [{ label: t('teaching.stat.evaluation'), value: num(teaching.averageEvaluation, lang, 1), note: fill(t('teaching.stat.evaluation.note'), { n: teaching.evaluatedRuns }) }]
-      : []),
-    { label: t('teaching.stat.unique'), value: teaching.uniqueCourseTitles },
+    {
+      label: fill(t('tch.ov.fig.students'), { year: teaching.firstYear }),
+      value: teaching.universityStudents,
+      note: fill(t('tch.ov.fig.students.note'), { n: teaching.sections }),
+    },
+    {
+      label: t('tch.ov.fig.courses'),
+      value: courseCatalog.length,
+      note: fill(t('tch.ov.fig.courses.note'), { created: teaching.createdCourses, redesigned: teaching.redesignedCourses }),
+    },
+    {
+      label: t('tch.ov.fig.papers'),
+      value: educationPapers.length,
+      note: talks.length ? fill(t('tch.ov.fig.papers.note'), { n: talks.length }) : undefined,
+    },
+    {
+      label: t('tch.ov.fig.pandora'),
+      value: pandoraEstudiantes,
+      note: fill(t('tch.ov.fig.pandora.note'), { n: cardinal(pandora.length, lang) }),
+    },
+    {
+      label: t('tch.ov.fig.sims'),
+      value: simuladores,
+      note: fill(t('tch.ov.fig.sims.note'), { term: pou202620Course.term }),
+    },
     ...(teachingAward
-      ? [{ label: `${localize(teachingAward.title, lang)}, ${localize(teachingAward.awarder, lang)}`, value: String(teachingAward.year), note: t('teaching.stat.award.note') }]
+      ? [{ label: t('tch.ov.fig.aiche'), value: t('tch.ov.fig.first'), note: t('tch.ov.fig.aiche.note') }]
       : []),
-    { label: t('teaching.stat.eduGrants'), value: teaching.educationGrants },
   ];
 
-  const mayuscula = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
   const filas = [
-    { to: '/teaching/courses', titulo: t('courses.title'), texto: fill(t('teaching.more.courses'), { runs: teaching.universityCourses, firstYear: teaching.firstYear }) },
-    { to: '/teaching/unit-ops', titulo: t('unitops.nav'), texto: fill(t('teaching.more.unitops'), { low: minimo, peak: recuperado }) },
-    { to: '/teaching/scholarship', titulo: t('sotl.title'), texto: mayuscula(fill(t('teaching.more.sotl'), { papers: cardinal(cycleTurns.length, lang), grants: cardinal(grantsData.filter((g) => g.area === 'education').length, lang) })) },
-    { to: '/teaching/continuing-education', titulo: t('contEd.title'), texto: fill(t('teaching.more.contEd'), { n: edcoCoursesData.length, year: primerAnoEdco }) },
-    { to: '/teaching/testimonials', titulo: t('testimonials.title'), texto: fill(t('teaching.more.testimonials'), { quotes: testimonials.length, people: personas }) },
+    { to: '/teaching/purpose', titulo: t('tch.more.philosophy.t'), texto: t('tch.more.philosophy') },
+    { to: '/teaching/courses', titulo: t('tch.more.courses.t'), texto: fill(t('tch.more.courses'), { n: courseCatalog.length, year: teaching.firstYear }) },
+    { to: '/teaching/strategies', titulo: t('tch.more.strategies.t'), texto: t('tch.more.strategies') },
+    { to: '/teaching/unit-ops', titulo: t('tch.more.unitops.t'), texto: fill(t('tch.more.unitops'), { year: teachingAward?.year ?? 2026 }) },
+    {
+      to: '/teaching/scholarship',
+      titulo: t('tch.more.sotl.t'),
+      texto: (() => {
+        const papers = cardinal(educationPapers.length, lang);
+        const texto = talks.length
+          ? fill(t('tch.more.sotl'), { papers, talks: cardinal(talks.length, lang) })
+          : fill(t('tch.more.sotl.short'), { papers });
+        return texto.charAt(0).toUpperCase() + texto.slice(1);
+      })(),
+    },
+    { to: '/teaching/testimonials', titulo: t('tch.more.testimonials.t'), texto: fill(t('tch.more.testimonials'), { quotes: testimonials.length, people: personas }) },
+    { to: '/teaching/continuing-education', titulo: t('nav.teaching.continuing'), texto: fill(t('teaching.more.contEd'), { n: edcoCoursesData.length, year: primerAnoEdco }) },
     { to: '/teaching/professional-development', titulo: t('profdev.title'), texto: fill(t('teaching.more.profdev'), { n: professionalDevelopmentData.length, year: primerAnoDesarrollo }) },
+  ];
+
+  const enClase = [
+    { foto: fotos.equiposTapabocas, pie: t('tch.ov.class.dpro') },
+    { foto: fotos.reto2019, pie: t('tch.ov.class.reto') },
   ];
 
   return (
     <PageWrapper noPadding>
       <Apertura
         palabra={t('nav.teaching').toLowerCase()}
-        entrada={t('teaching.overview.subtitle')}
+        entrada={t('tch.ov.lead')}
         foto={{ src: fotos.cursoGrupo.src, alt: localize(fotos.cursoGrupo.alt, lang), posicion: '60% 60%' }}
-        accion={{ to: '/teaching/unit-ops', label: t('teaching.overview.cta') }}
+        accion={{ to: '/teaching/purpose', label: t('tch.ov.cta') }}
       />
 
-      {/* ── Enfoque y cifras ── */}
+      {/* ── Lo que enseño, en cifras ── */}
       <section className="a-papel a-campo">
         <div className="a-c">
-          <Sube><Cabecera titulo={t('teaching.overview.approach.title')} /></Sube>
+          <Sube><Cabecera titulo={t('tch.ov.what.title')} /></Sube>
           <Sube delay={0.06}>
-            <p className="mt-10 a-texto">{conResaltado(t('teaching.overview.approach.text'))}</p>
+            <p className="mt-10 a-texto text-tinta-900">
+              {fill(t('tch.ov.what.a'), { year: teaching.firstYear, sections: teaching.sections, students: miles(teaching.universityStudents) })}{' '}
+              <span className="a-resaltado">
+                {fill(t('tch.ov.what.b'), { created: cardinal(teaching.createdCourses, lang), redesigned: cardinal(teaching.redesignedCourses, lang) })}
+              </span>{' '}
+              {t('tch.ov.what.c')}
+            </p>
           </Sube>
           {/* Más aire entre filas de cifras: la nota de una cifra no debe leerse como rótulo de la de abajo. */}
           <Sube delay={0.1} className="mt-16 sm:mt-20 [&_.a-cifras]:!gap-y-[88px]">
@@ -125,26 +139,26 @@ export const TeachingOverviewPage: React.FC = () => {
         </div>
       </section>
 
-      {/* ── En clase: tres cursos en marcha ── */}
+      {/* ── En el aula ── */}
       <section className="a-portada a-campo">
         <div className="a-c">
-          <Sube><Cabecera titulo={t('teaching.overview.class.title')} /></Sube>
+          <Sube><Cabecera titulo={t('tch.ov.class.title')} /></Sube>
           <div className="mt-12 grid gap-x-6 gap-y-10 md:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
             <Sube as="div" className="md:row-span-2">
               <figure>
                 <div className="overflow-hidden aspect-[4/3]">
-                  <img src={fotos.cervezaGlucanos.src} alt={localize(fotos.cervezaGlucanos.alt, lang)} loading="lazy" className="a-foto" />
+                  <img src={fotos.cervezaGlucanos.src} alt={localize(fotos.cervezaGlucanos.alt, lang)} loading="lazy" className="a-foto a-bn" />
                 </div>
-                <figcaption className="a-pie">{localize(fotos.cervezaGlucanos.alt, lang)}</figcaption>
+                <figcaption className="a-pie">{t('tch.ov.class.beer')}</figcaption>
               </figure>
             </Sube>
-            {[fotos.equiposTapabocas, fotos.reto2019].map((f, i) => (
-              <Sube key={f.src} delay={0.08 * (i + 1)}>
+            {enClase.map(({ foto, pie }, i) => (
+              <Sube key={foto.src} delay={0.08 * (i + 1)}>
                 <figure>
                   <div className="overflow-hidden aspect-[16/10]">
-                    <img src={f.src} alt={localize(f.alt, lang)} loading="lazy" className="a-foto" />
+                    <img src={foto.src} alt={localize(foto.alt, lang)} loading="lazy" className="a-foto a-bn" />
                   </div>
-                  <figcaption className="a-pie">{localize(f.alt, lang)}</figcaption>
+                  <figcaption className="a-pie">{pie}</figcaption>
                 </figure>
               </Sube>
             ))}
@@ -152,12 +166,12 @@ export const TeachingOverviewPage: React.FC = () => {
         </div>
       </section>
 
-      {/* ── Las voces: cuatro estudiantes con su foto ── */}
+      {/* ── Las voces: cuatro egresados con su foto ── */}
       <section className="a-hundido a-campo">
         <div className="a-c">
-          <Sube><Cabecera titulo={t('teaching.overview.voices.title')} /></Sube>
+          <Sube><Cabecera titulo={t('tch.ov.voices.title')} /></Sube>
           <Sube delay={0.06}>
-            <p className="mt-8 a-texto">{fill(t('teaching.overview.voices.text'), { people: personas })}</p>
+            <p className="mt-8 a-texto">{t('tch.ov.voices.text')}</p>
           </Sube>
           <ul className="mt-12 grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12">
             {voces.map((v, i) => {
@@ -175,27 +189,27 @@ export const TeachingOverviewPage: React.FC = () => {
           </ul>
           <Sube className="mt-12">
             <Link to="/teaching/testimonials" className="a-enlace">
-              {t('teaching.overview.voices.cta')} <span aria-hidden="true">→</span>
+              {t('tch.ov.voices.cta')} <span aria-hidden="true">→</span>
             </Link>
           </Sube>
         </div>
       </section>
 
-      {/* ── Cursos en el tiempo ── */}
+      {/* ── Estudiantes por año ── */}
       <section className="a-papel a-campo">
         <div className="a-c">
-          <Sube><Cabecera titulo={t('teaching.overview.chart.title')} className="mb-10" /></Sube>
+          <Sube><Cabecera titulo={t('tch.ov.chart.title')} className="mb-10" /></Sube>
           <Sube delay={0.06}>
-            <CoursesOverTimeChart courses={todosLosCursos} />
-            <p className="a-pie">{t('teaching.overview.chart.caption')}</p>
+            <CoursesOverTimeChart courses={teachingData} />
+            <p className="a-pie">{t('tch.ov.chart.caption')}</p>
           </Sube>
         </div>
       </section>
 
-      {/* ── El resto de la docencia ── */}
+      {/* ── Las páginas del capítulo ── */}
       <section className="a-hundido a-campo">
         <div className="a-c">
-          <Sube><h2 className="a-titulo mb-10">{t('teaching.overview.more.title')}.</h2></Sube>
+          <Sube><h2 className="a-titulo mb-10">{t('tch.ov.more.title')}.</h2></Sube>
           <ul className="a-filas">
             {filas.map((f, i) => (
               <Sube as="li" key={f.to} delay={0.05 * i}>

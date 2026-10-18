@@ -57,7 +57,7 @@ export const awardsData: Recognition[] = [
     imageUrl: "https://img.icons8.com/?size=512&id=4KY3tfAid4dZ&format=png",
   },
   {
-    title: { en: "Best Research Work", es: "Mejor Trabajo de Investigación" },
+    title: { en: "Best research work", es: "Mejor trabajo de investigación" },
     awarder: { en: "National Academy of Medicine of Colombia", es: "Academia Nacional de Medicina de Colombia" },
     shortName: "Academia Nacional de Medicina",
     role: 'research',
@@ -95,7 +95,7 @@ export const awardsData: Recognition[] = [
     imageUrl: "https://static.thenounproject.com/png/1862029-200.png",
   },
   {
-    title: { en: "Honorable Mention in Sciences", es: "Mención de Honor en Ciencias" },
+    title: { en: "Honorable mention in sciences", es: "Mención de honor en ciencias" },
     awarder: "Fundación Alejandro Ángel Escobar",
     shortName: "Alejandro Ángel Escobar",
     role: 'research',
@@ -191,7 +191,7 @@ export const awardsData: Recognition[] = [
     imageUrl: "/images/icons/award.svg",
   },
   {
-    title: { en: "Cum Laude Distinction", es: "Grado cum laude" },
+    title: { en: "Cum laude distinction", es: "Grado cum laude" },
     awarder: "Universidad Industrial de Santander",
     shortName: "UIS",
     category: { en: "Academic merit", es: "Mérito académico" },

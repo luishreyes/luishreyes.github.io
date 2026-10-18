@@ -150,6 +150,10 @@ export const SumaVectorial: React.FC = () => {
 
 const EXALUMNOS = ['Juanita Sierra', 'Carlos Manuel Ramírez Acosta', 'Fabio Esteban Herrera', 'Camila Ocasión'];
 
+/** La primera idea de la filosofía docente: fundamentos sostenidos con rigor. La manera de
+ *  enseñar viene de dos profesores de la UIS que ya murieron; no se cita a ninguno entre
+ *  comillas, porque era la filosofía de sus clases y no una frase. La cita del margen es
+ *  del propio texto. */
 export const TeachingPurposePage: React.FC = () => {
   const { t, lang } = useI18n();
   const exalumnos = testimoniosDe(EXALUMNOS);
@@ -157,52 +161,54 @@ export const TeachingPurposePage: React.FC = () => {
   return (
     <PageWrapper noPadding>
       <EncabezadoPagina
-        titulo={t('purpose.teaching.title')}
-        entrada={<p>{t('purpose.teaching.sub')}</p>}
-        accion={{ to: '/teaching/philosophy', label: t('purpose.teaching.cta') }}
+        titulo={t('tch.pu.title')}
+        entrada={<p>{t('tch.pu.lead')}</p>}
+        accion={{ to: '/teaching/philosophy', label: t('tch.pu.cta') }}
         foto={{ src: fotos.cervezaProteinas.src, alt: localize(fotos.cervezaProteinas.alt, lang) }}
       />
 
-      {/* ── De dónde viene: la vocación y la frase de Álvaro Ramírez ── */}
+      {/* ── Por qué enseño y de dónde viene la manera de hacerlo ── */}
       <section className="a-papel pt-6 pb-20 sm:pb-28">
         <div className={`a-c ${PLIEGO}`}>
           <div className={MARGEN}>
-            <Sube><h2 className="a-h3">{t('purpose.teaching.h2')}</h2></Sube>
+            <Sube><h2 className="a-h3">{t('tch.pu.why')}</h2></Sube>
+            <Sube delay={0.08} className="mt-12">
+              <blockquote className="a-cita">{t('tch.pu.quote')}</blockquote>
+            </Sube>
           </div>
           <div className="space-y-6">
-            <Sube><p className="a-texto">{t('purpose.teaching.p1')}</p></Sube>
-            <Sube delay={0.06} className="!my-14">
-              <blockquote className="a-cita !max-w-[46ch]">{t('purpose.teaching.quote')}</blockquote>
-              <span className="a-quien">{t('purpose.teaching.quote.who')}</span>
+            <Sube><p className="a-texto text-tinta-900">{t('tch.pu.p1')}</p></Sube>
+            <Sube delay={0.04}><p className="a-texto">{t('tch.pu.p2')}</p></Sube>
+            <Sube delay={0.06}><p className="a-texto">{t('tch.pu.p3')}</p></Sube>
+            <Sube delay={0.08}>
+              <p className="a-texto">
+                {t('tch.pu.p4')}{' '}
+                <Link to="/trajectory" className="a-enlace whitespace-nowrap">{t('tch.pu.p4.cta')} <span aria-hidden="true">→</span></Link>
+              </p>
             </Sube>
-            <Sube delay={0.06}><p className="a-texto">{t('purpose.teaching.p2')}</p></Sube>
           </div>
         </div>
       </section>
 
-      {/* ── La metáfora vectorial, con la suma para tocarla ── */}
+      {/* ── La imagen de los vectores, con la suma para tocarla ── */}
       <section className="a-hundido a-campo">
         <div className={`a-c ${PLIEGO}`}>
           <div className={`${MARGEN} order-2 lg:order-1`}>
             <Sube delay={0.1}><SumaVectorial /></Sube>
           </div>
           <div className="space-y-6 order-1 lg:order-2">
-            <Sube><p className="a-texto">{t('purpose.teaching.p3')}</p></Sube>
-            <Sube delay={0.06}><p className="a-texto">{t('purpose.teaching.p4')}</p></Sube>
-            <Sube delay={0.1}>
-              <p className="a-texto"><Resaltar texto={t('purpose.teaching.p5')} frase={t('purpose.teaching.mark')} /></p>
+            <Sube><h2 className="a-h3">{t('tch.pu.vectors')}</h2></Sube>
+            <Sube delay={0.04}><p className="a-texto">{t('tch.pu.v1')}</p></Sube>
+            <Sube delay={0.08}>
+              <p className="a-texto text-tinta-900"><Resaltar texto={t('tch.pu.v2')} frase={t('tch.pu.mark')} /></p>
             </Sube>
           </div>
         </div>
       </section>
 
-      {/* ── «Algunos vuelven años después a decírmelo»: quienes volvieron ── */}
+      {/* ── Algunos vuelven años después a contarlo ── */}
       <section className="a-papel a-campo">
-        <div className={`a-c ${PLIEGO}`}>
-          <div className="hidden lg:block" />
-          <Sube><p className="a-texto">{t('purpose.teaching.p6')}</p></Sube>
-        </div>
-        <div className="a-c mt-14">
+        <div className="a-c">
           <ul className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12">
             {exalumnos.map((x, i) => (
               <Retrato
@@ -216,19 +222,26 @@ export const TeachingPurposePage: React.FC = () => {
             ))}
           </ul>
           <Sube className="mt-10 flex flex-wrap items-baseline gap-x-8 gap-y-3">
-            <p className="a-pie !mt-0">{t('purpose.teaching.students')}</p>
+            <p className="a-pie !mt-0">{t('tch.pu.students')}</p>
             <Link to="/teaching/testimonials" className="a-enlace">
-              {t('purpose.teaching.students.cta')} <span aria-hidden="true">→</span>
+              {t('tch.pu.students.cta')} <span aria-hidden="true">→</span>
             </Link>
           </Sube>
         </div>
-        {/* El aula que quiero: el cierre */}
-        <div className={`a-c ${PLIEGO} mt-20 sm:mt-28`}>
-          <div className="hidden lg:block" />
-          <div className="space-y-6">
-            <Sube><p className="a-texto">{t('purpose.teaching.p7')}</p></Sube>
-            <Sube delay={0.06}><p className="a-texto text-tinta-900">{t('purpose.teaching.p8')}</p></Sube>
-          </div>
+      </section>
+
+      {/* ── La segunda idea ── */}
+      <section className="a-hundido a-campo">
+        <div className="a-c">
+          <ul className="a-filas">
+            <Sube as="li">
+              <Link to="/teaching/philosophy" className="a-fila">
+                <span className="q">{t('tch.pu.cta')}</span>
+                <span className="d">{t('tch.pu.next')}</span>
+                <span className="ir" aria-hidden="true">→</span>
+              </Link>
+            </Sube>
+          </ul>
         </div>
       </section>
     </PageWrapper>

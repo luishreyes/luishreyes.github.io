@@ -1,30 +1,31 @@
 import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { PageWrapper } from '../../components/PageWrapper';
-import { EncabezadoPagina } from '../../components/Apertura';
+import { EncabezadoPagina, Cabecera } from '../../components/Apertura';
 import { StatsSection } from '../../components/StatsSection';
 import { Sube } from '../../components/Sube';
 import { useI18n, localize, fill, num, cardinal, type UIKey } from '../../context/i18n';
-import { cycleTurns, pouLongitudinalStudy } from '../../components/data/educationResearch';
+import { educationPapers, criticalReview, pouLongitudinalStudy, sotlProducts } from '../../components/data/educationResearch';
 import { awardsData } from '../../components/data/awards';
 import { grantsData } from '../../components/data/grants';
 import { graduateByName } from '../../components/data/metrics';
 import type { Product } from '../../types';
 import { useAppData } from '../../context/AppDataContext';
+import { Resaltar } from '../purpose/TeachingPurposePage';
 import { fotos } from '../../components/data/fotos';
 
 const study = pouLongitudinalStudy;
 
-const turnAward = (turn: (typeof cycleTurns)[number]) =>
-  turn.recognizedBy ? awardsData.find((a) => localize(a.awarder, 'en') === turn.recognizedBy) : undefined;
-
-// Grants tagged area: 'education' in the grant record. Tagging a new one there
-// lists it here without touching this page.
+// Proyectos marcados con area: 'education' en el registro de proyectos; marcar uno nuevo allá lo
+// lista aquí sin tocar esta página.
 const educationGrants = grantsData
   .filter((g) => g.area === 'education')
   .sort((a, b) => b.startYear - a.startYear);
 
-// Coautores del estudio más reciente que son egresados del grupo, con su ficha.
+// La selección de OpenAI, en el registro de reconocimientos.
+const openai = awardsData.find((a) => localize(a.awarder, 'en') === 'OpenAI');
+
+// Coautores del estudio de 2025 que son egresados del grupo, con su ficha.
 const COAUTORES = ['Olga Lucía Acuña', 'Angie Daniela Bolaños Barbosa', 'Julian Daniel Torres Vanegas'];
 const coautores = COAUTORES.map((n) => graduateByName(n)).filter((g): g is NonNullable<ReturnType<typeof graduateByName>> => Boolean(g));
 
@@ -38,65 +39,129 @@ const RESPONSABILIDADES: [UIKey, UIKey][] = [
 /** Enlace de un producto: su URL, o su DOI cuando es un DOI de verdad. */
 const enlace = (p: Product) => p.url || (p.doi.startsWith('10.') ? `https://doi.org/${p.doi}` : null);
 
+/** Una entrada de bibliografía de products.json, con el año en su columna. */
+const Entrada: React.FC<{ pub: Product; delay: number }> = ({ pub, delay }) => {
+  const { t } = useI18n();
+  const url = enlace(pub);
+  return (
+    <Sube as="li" delay={delay}>
+      <span className="cuando">{pub.publicationDate.slice(0, 4)}</span>
+      <div>
+        {url ? (
+          <a href={url} target="_blank" rel="noopener noreferrer" className="text-[18px] leading-snug font-semibold text-tinta-900 underline decoration-1 underline-offset-[3px] hover:bg-resaltador-suave transition-colors">
+            {pub.title} <span aria-hidden="true">↗</span>
+          </a>
+        ) : (
+          <p className="text-[18px] leading-snug font-semibold text-tinta-900">{pub.title}</p>
+        )}
+        <p className="donde">{pub.authors.join(', ')}</p>
+        <p className="donde mt-0">
+          <em>{pub.publicationVenue}</em> · {t(`sotl.type.${pub.type}` as UIKey)}
+        </p>
+      </div>
+    </Sube>
+  );
+};
+
 export const ScholarshipOfTeachingPage: React.FC = () => {
   const { products } = useAppData();
   const { t, lang } = useI18n();
-
-  const sotlPublications = useMemo(
-    () =>
-      products
-        .filter((p) => p.researchAreas?.includes('Scholarship of Teaching & Learning'))
-        .sort((a, b) => new Date(b.publicationDate).getTime() - new Date(a.publicationDate).getTime()),
-    [products],
-  );
-
-  const pasos = [
-    { title: t('sotl.cycle.s1'), desc: t('sotl.cycle.s1d') },
-    { title: t('sotl.cycle.s2'), desc: t('sotl.cycle.s2d') },
-    { title: t('sotl.cycle.s3'), desc: t('sotl.cycle.s3d') },
-  ];
+  const { talks, other } = useMemo(() => sotlProducts(products), [products]);
 
   const cifras = [
-    { label: fill(t('sotl.fig.students'), { cohorts: cardinal(study.cohorts, lang) }), value: study.students },
-    { label: fill(t('sotl.fig.motivation'), { before: study.sustainedMotivation.before }), value: `${study.sustainedMotivation.now}%` },
-    {
-      label: fill(t('sotl.fig.blind'), { pLow: num(study.blindEvaluation.pLow, lang, 3), pHigh: num(study.blindEvaluation.pHigh, lang, 3) }),
-      value: study.blindEvaluation.criteria,
-    },
-    { label: t('sotl.fig.papers'), value: cycleTurns.length },
+    { label: fill(t('tch.so.fig.students'), { cohorts: cardinal(study.cohorts, lang) }), value: study.students },
+    { label: fill(t('tch.so.fig.motivation'), { before: study.sustainedMotivation.before }), value: `${study.sustainedMotivation.now} %` },
+    { label: t('tch.so.fig.refs'), value: `${study.references.before} → ${study.references.after}` },
   ];
+
+  // Mientras llegan los productos, la entrada cuenta solo los artículos.
+  const lead = talks.length && other.length
+    ? fill(t('tch.so.lead'), { papers: cardinal(educationPapers.length, lang), other: cardinal(other.length, lang), talks: cardinal(talks.length, lang) })
+    : fill(t('tch.more.sotl.short'), { papers: cardinal(educationPapers.length, lang) });
 
   return (
     <PageWrapper noPadding>
       <EncabezadoPagina
-        titulo={t('sotl.title')}
-        entrada={<p>{t('sotl.sub')}</p>}
-        accion={{ to: '/teaching/unit-ops', label: t('sotl.caseCta') }}
+        titulo={t('tch.so.title')}
+        entrada={<p>{lead.charAt(0).toUpperCase() + lead.slice(1)}</p>}
+        accion={{ to: '/teaching/unit-ops', label: t('tch.so.cta') }}
         foto={{ src: fotos.acofiPonencia.src, alt: localize(fotos.acofiPonencia.alt, lang), posicion: '70% center' }}
       />
 
-      {/* ── Las cifras del estudio junto al párrafo que las cuenta ── */}
+      {/* ── Cómo empezó, y el cuidado de estudiar un curso propio ── */}
+      <section className="a-papel pt-6 pb-20 sm:pb-28">
+        <div className="a-c grid gap-y-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-x-16">
+          <Sube><h2 className="a-h3">{t('tch.so.start')}</h2></Sube>
+          <div className="space-y-6">
+            <Sube><p className="a-texto">{t('tch.so.s1')}</p></Sube>
+            <Sube delay={0.05}>
+              <p className="a-texto text-tinta-900"><Resaltar texto={t('tch.so.s2')} frase={t('tch.so.mark')} /></p>
+            </Sube>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Los estudios: cuatro artículos y la revisión ── */}
       <section className="a-hundido a-campo">
         <div className="a-c">
-          <Sube><h2 className="a-h3">{t('sotl.figures.title')}.</h2></Sube>
-          <div className="mt-12 grid gap-x-16 gap-y-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-start">
-            <Sube delay={0.04}>
-              <p className="text-tinta-900">
-                {fill(t('sotl.intro2'), {
-                  students: study.students,
-                  cohorts: cardinal(study.cohorts, lang),
-                  citation: `${study.paper.authors}, ${study.paper.year}`,
-                  test: t('sotl.test.anova'),
-                  f: num(study.writtenCommunication.f, lang, 2),
-                  p: num(study.writtenCommunication.pBelow, lang, 3),
-                  criteria: cardinal(study.blindEvaluation.criteria, lang),
-                  pLow: num(study.blindEvaluation.pLow, lang, 3),
-                  pHigh: num(study.blindEvaluation.pHigh, lang, 3),
-                  motivationNow: study.sustainedMotivation.now,
-                  motivationBefore: study.sustainedMotivation.before,
-                })}
-              </p>
+          <Sube><Cabecera titulo={t('tch.so.studies')} className="mb-12" /></Sube>
+          <ol className="a-registro">
+            {educationPapers.map((paper, i) => (
+              <Sube as="li" key={paper.doi} delay={0.04 * i}>
+                <span className="cuando">{paper.year}</span>
+                <div>
+                  <h3 className="que">{localize(paper.design, lang)}</h3>
+                  <p className="detalle">{localize(paper.summary, lang)}</p>
+                  <p className="donde mt-3">
+                    <a href={`https://doi.org/${paper.doi}`} target="_blank" rel="noopener noreferrer" className="a-enlace">
+                      {`${paper.authors} (${paper.year})`}
+                    </a>
+                    {', '}<em>{paper.journal}</em>{` ${paper.locator}`}
+                  </p>
+                </div>
+              </Sube>
+            ))}
+            <Sube as="li" delay={0.04 * educationPapers.length}>
+              <span className="cuando">{criticalReview.year}</span>
+              <div>
+                <h3 className="que">{localize(criticalReview.design, lang)}</h3>
+                <p className="detalle">{localize(criticalReview.summary, lang)}</p>
+                <p className="donde mt-3">
+                  <em>{criticalReview.journal}</em>, {localize(criticalReview.status, lang)}.
+                </p>
+              </div>
             </Sube>
+          </ol>
+        </div>
+      </section>
+
+      {/* ── Lo que encontró el estudio de 2025, junto a sus cifras ── */}
+      <section className="a-papel a-campo">
+        <div className="a-c">
+          <Sube><Cabecera titulo={t('tch.so.findings')} /></Sube>
+          <div className="mt-12 grid gap-x-16 gap-y-14 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-start">
+            <div className="space-y-6">
+              <Sube>
+                <p className="a-texto text-tinta-900">
+                  {fill(t('tch.so.f1'), {
+                    students: study.students,
+                    cohorts: cardinal(study.cohorts, lang),
+                    citation: `${study.paper.authors}, ${study.paper.year}`,
+                    f: num(study.writtenCommunication.f, lang, 2),
+                    p: num(study.writtenCommunication.pBelow, lang, 3),
+                    pLow: num(study.independentEvaluator.pLow, lang, 3),
+                    pHigh: num(study.independentEvaluator.pHigh, lang, 3),
+                    now: study.sustainedMotivation.now,
+                    before: study.sustainedMotivation.before,
+                  })}
+                </p>
+              </Sube>
+              <Sube delay={0.04}>
+                <p className="a-texto">
+                  {fill(t('tch.so.f2'), { rBefore: study.references.before, rAfter: study.references.after, rp: num(study.references.p, lang, 3) })}
+                </p>
+              </Sube>
+            </div>
             <Sube delay={0.08} className="[&_.a-cifras]:!gap-y-[88px]">
               <StatsSection stats={cifras} isLoading={false} />
             </Sube>
@@ -104,75 +169,66 @@ export const ScholarshipOfTeachingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* ── El método y el ciclo, en dos columnas ── */}
-      <section className="a-papel a-campo">
-        <div className="a-c">
-          <div className="grid gap-x-16 gap-y-6 lg:grid-cols-2">
-            <Sube><p className="text-tinta-900">{t('sotl.intro1')}</p></Sube>
-            <Sube delay={0.06}><p className="text-tinta-900">{t('sotl.intro3')}</p></Sube>
-          </div>
-          <Sube delay={0.1} className="mt-12">
-            <p className="a-texto text-tinta-800">{t('sotl.case')}</p>
-            <Link to="/teaching/unit-ops" className="a-enlace inline-block mt-4">
-              {t('sotl.caseCta')} <span aria-hidden="true">→</span>
-            </Link>
-          </Sube>
-        </div>
-      </section>
-
-      {/* ── El ciclo ── */}
+      {/* ── El marco CASF y la selección de OpenAI ── */}
       <section className="a-hundido a-campo">
         <div className="a-c">
-          <Sube><h2 className="a-h3">{t('sotl.cycle.title')}.</h2></Sube>
-          <Sube delay={0.04}>
-            <p className="mt-4 a-texto">
-              {fill(t('sotl.cycle.sub'), { times: cardinal(cycleTurns.length, lang), sinceYear: cycleTurns[0].paper.year })}
-            </p>
-          </Sube>
-          <ol className="mt-14 grid gap-x-10 gap-y-12 lg:grid-cols-3">
-            {pasos.map((paso, i) => (
-              <Sube as="li" key={paso.title} delay={0.08 * i} className="border-t-2 border-tinta-900 pt-6">
-                <h3 className="a-titulo">{paso.title}.</h3>
-                <p className="mt-5 text-tinta-800">{paso.desc}</p>
-              </Sube>
-            ))}
-          </ol>
-          <Sube delay={0.2}><p className="mt-12 a-entrada">{t('sotl.cycle.return')}</p></Sube>
-
-          <Sube className="mt-24"><h2 className="a-h3 mb-8">{t('sotl.cycle.turns')}.</h2></Sube>
-          <ol className="a-registro">
-            {cycleTurns.map((turn, i) => {
-              const award = turnAward(turn);
-              return (
-                <Sube as="li" key={turn.years} delay={0.05 * i}>
-                  <span className="cuando">{turn.years.replace('-', '–')}</span>
-                  <div>
-                    <p className="que">{localize(turn.change, lang)}</p>
-                    <p className="donde">
-                      <a href={`https://doi.org/${turn.paper.doi}`} target="_blank" rel="noopener noreferrer" className="a-enlace">
-                        {`${turn.paper.authors} (${turn.paper.year})`}
-                      </a>
-                      {`, ${turn.paper.journal} ${turn.paper.locator}`}
-                    </p>
-                    {award && (
-                      <p className="detalle text-tinta-900">
-                        <span className="a-resaltado">{fill(t('sotl.turn.recognized'), { award: localize(award.title, lang), year: award.year })}</span>
-                      </p>
-                    )}
-                  </div>
-                </Sube>
-              );
-            })}
-          </ol>
+          <Sube><Cabecera titulo={t('tch.so.casf')} /></Sube>
+          <div className="mt-10 grid gap-x-16 gap-y-6 lg:grid-cols-2">
+            <Sube><p className="a-texto">{t('tch.so.c1')}</p></Sube>
+            <Sube delay={0.05}>
+              <p className="a-texto">{t('tch.so.c2')}</p>
+              <Link to="/service/augmented-intelligence" className="a-enlace inline-block mt-4">{t('tch.so.casf.cta')} <span aria-hidden="true">→</span></Link>
+              <p className="a-texto mt-10 text-tinta-900">{t('tch.so.openai')}</p>
+              {openai?.url && (
+                <a href={openai.url} target="_blank" rel="noopener noreferrer" className="a-enlace inline-block mt-4">
+                  {t('tch.so.openai.cta')} <span aria-hidden="true">↗</span>
+                </a>
+              )}
+            </Sube>
+          </div>
         </div>
       </section>
+
+      {/* ── Otras publicaciones ── */}
+      {other.length > 0 && (
+        <section className="a-papel a-campo">
+          <div className="a-c">
+            <Sube><Cabecera titulo={t('tch.so.other')} /></Sube>
+            <Sube delay={0.04}><p className="mt-8 mb-12 a-texto">{t('tch.so.other.text')}</p></Sube>
+            <ol className="a-registro">
+              {other.map((pub, i) => <Entrada key={pub.doi} pub={pub} delay={0.03 * (i % 5)} />)}
+            </ol>
+          </div>
+        </section>
+      )}
+
+      {/* ── Ponencias ── */}
+      {talks.length > 0 && (
+        <section className="a-hundido a-campo">
+          <div className="a-c">
+            <Sube><Cabecera titulo={t('tch.so.talks')} /></Sube>
+            <div className="mt-8 mb-12 grid gap-x-16 gap-y-8 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] lg:items-start">
+              <Sube><p className="a-texto">{t('tch.so.talks.text')}</p></Sube>
+              <Sube delay={0.06}>
+                <figure>
+                  <img src={fotos.aiche2025.src} alt={localize(fotos.aiche2025.alt, lang)} loading="lazy" className="a-bn w-full aspect-[16/10] object-cover" />
+                  <figcaption className="a-pie">{t('tch.so.talks.photo')}</figcaption>
+                </figure>
+              </Sube>
+            </div>
+            <ol className="a-registro">
+              {talks.map((pub, i) => <Entrada key={pub.doi} pub={pub} delay={0.03 * (i % 5)} />)}
+            </ol>
+          </div>
+        </section>
+      )}
 
       {/* ── Escrito con estudiantes ── */}
       <section className="a-papel a-campo">
         <div className="a-c">
-          <Sube><h2 className="a-h3">{t('sotl.coauthors.title')}.</h2></Sube>
+          <Sube><Cabecera titulo={t('tch.so.coauthors')} /></Sube>
           <Sube delay={0.04}>
-            <p className="mt-4 a-texto">{fill(t('sotl.coauthors.text'), { year: study.paper.year })}</p>
+            <p className="mt-8 a-texto">{fill(t('tch.so.coauthors.text'), { year: study.paper.year })}</p>
           </Sube>
           <ul className="mt-12 grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-12">
             {coautores.map((c, i) => (
@@ -187,16 +243,16 @@ export const ScholarshipOfTeachingPage: React.FC = () => {
         </div>
       </section>
 
-      {/* ── Con financiación ── */}
+      {/* ── Más allá de mis cursos ── */}
       {educationGrants.length > 0 && (
         <section className="a-hundido a-campo">
           <div className="a-c">
-            <Sube><h2 className="a-h3">{t('sotl.funded.title')}.</h2></Sube>
-            <Sube delay={0.04}><p className="mt-4 a-texto">{t('sotl.funded.sub')}</p></Sube>
+            <Sube><Cabecera titulo={t('tch.so.beyond')} /></Sube>
+            <Sube delay={0.04}><p className="mt-8 a-texto">{t('tch.so.beyond.text')}</p></Sube>
             <ol className="a-registro mt-12">
               {educationGrants.map((grant, i) => (
                 <Sube as="li" key={grant.title} delay={0.05 * i}>
-                  <span className="cuando">{grant.startYear}{grant.endYear ? `–${grant.endYear}` : ''}</span>
+                  <span className="cuando">{grant.startYear}{grant.endYear ? `${lang === 'es' ? ' a ' : ' to '}${grant.endYear}` : ''}</span>
                   <div>
                     <p className="text-[18px] leading-snug font-semibold text-tinta-900">{grant.title}</p>
                     <p className="donde">{grant.organization}</p>
@@ -233,36 +289,6 @@ export const ScholarshipOfTeachingPage: React.FC = () => {
               </Sube>
             ))}
           </dl>
-        </div>
-      </section>
-
-      {/* ── Publicaciones, como bibliografía ── */}
-      <section className="a-hundido a-campo">
-        <div className="a-c">
-          <Sube><h2 className="a-h3 mb-8">{t('sotl.publications')}.</h2></Sube>
-          <ol className="a-registro">
-            {sotlPublications.map((pub, i) => {
-              const url = enlace(pub);
-              return (
-                <Sube as="li" key={pub.doi} delay={0.03 * (i % 5)}>
-                  <span className="cuando">{pub.publicationDate.slice(0, 4)}</span>
-                  <div>
-                    {url ? (
-                      <a href={url} target="_blank" rel="noopener noreferrer" className="text-[18px] leading-snug font-semibold text-tinta-900 underline decoration-1 underline-offset-[3px] hover:bg-resaltador-suave transition-colors">
-                        {pub.title} <span aria-hidden="true">↗</span>
-                      </a>
-                    ) : (
-                      <p className="text-[18px] leading-snug font-semibold text-tinta-900">{pub.title}</p>
-                    )}
-                    <p className="donde">{pub.authors.join(', ')}</p>
-                    <p className="donde mt-0">
-                      <em>{pub.publicationVenue}</em> · {t(`sotl.type.${pub.type}` as UIKey)}
-                    </p>
-                  </div>
-                </Sube>
-              );
-            })}
-          </ol>
         </div>
       </section>
     </PageWrapper>

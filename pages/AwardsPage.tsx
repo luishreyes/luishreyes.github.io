@@ -167,9 +167,11 @@ const DeEstudiantes: React.FC<{ r: StudentRecognition }> = ({ r }) => {
       <div className={conFoto.length ? 'lg:grid lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-12' : undefined}>
         <div>
           <h3 className="que">{r.students.map((s) => s.name).join(lang === 'es' ? ' y ' : ' and ')}</h3>
-          <p className="donde">{localize(r.title, lang)} · {localize(r.awarder, lang)}</p>
+          <p className="donde">
+            {localize(r.title, lang)} · {localize(r.awarder, lang)}
+            {r.url && <> · <Fuente href={r.url} label={t('awards.source')} /></>}
+          </p>
           <p className="detalle a-texto">{localize(r.summary, lang)}</p>
-          {r.url && <p className="mt-4 a-s"><Fuente href={r.url} label={t('awards.source')} /></p>}
         </div>
         {conFoto.length > 0 && (
           <ul className="mt-6 lg:mt-1 grid grid-cols-2 gap-4 max-w-[320px]">
@@ -208,7 +210,7 @@ export const AwardsPage: React.FC = () => {
       />
 
       {/* ── Los doce, en el tiempo ── */}
-      <section className="a-papel pb-20 sm:pb-28">
+      <section className="a-papel pt-8 pb-20 sm:pb-28">
         <div className="a-c">
           <Sube><Linea /></Sube>
         </div>
@@ -289,7 +291,7 @@ export const AwardsPage: React.FC = () => {
               <Sube><p className="a-pie mt-10 max-w-[72ch]">{t('awards.national.coauthors')}</p></Sube>
             </>
           )}
-          <ul className="a-registro mt-20">
+          <ul className="a-registro !mt-20">
             {senior && (
               <Sube as="li">
                 <span className="cuando">{senior.startYear}</span>
@@ -305,9 +307,8 @@ export const AwardsPage: React.FC = () => {
                 <span className="cuando">{editor.year}</span>
                 <div>
                   <h3 className="que">{localize(editor.title, lang)}</h3>
-                  <p className="donde">{localize(editor.awarder, lang)} · <i>{editor.projectTitle}</i></p>
+                  <p className="donde">{localize(editor.awarder, lang)} · <i>{editor.projectTitle}</i> · <Fuente href={editor.url} label={t('awards.source')} /></p>
                   {editor.summary.map((p, i) => <p key={i} className="detalle a-texto">{localize(p, lang)}</p>)}
-                  <p className="mt-4 a-s"><Fuente href={editor.url} label={t('awards.source')} /></p>
                 </div>
               </Sube>
             )}
@@ -339,7 +340,7 @@ export const AwardsPage: React.FC = () => {
         <div className="a-c">
           <Sube><Cabecera titulo={t('awards.students.title')} /></Sube>
           <Sube delay={0.06}><p className="mt-10 a-texto">{t('awards.students.lead')}</p></Sube>
-          <ul className="a-registro mt-10">
+          <ul className="a-registro !mt-10">
             {studentRecognitionsData.map((r) => <DeEstudiantes key={localize(r.title, 'en')} r={r} />)}
           </ul>
         </div>
@@ -349,13 +350,13 @@ export const AwardsPage: React.FC = () => {
       <section id="antes" className="a-papel a-campo scroll-mt-16">
         <div className="a-c">
           <Sube><Cabecera titulo={t('awards.before.title')} /></Sube>
-          <ul className="a-registro mt-12">
+          <ul className="a-registro !mt-12">
             {antes.map((a, i) => (
               <Sube as="li" key={a.url + a.year} delay={0.04 * i}>
                 <span className="cuando">{a.year}</span>
                 <div>
                   <h3 className="que">{localize(a.title, lang)}</h3>
-                  <p className="donde">{localize(a.awarder, lang)}</p>
+                  <p className="donde">{localize(a.awarder, lang)} · <Fuente href={a.url} label={t('awards.source')} /></p>
                   <p className="detalle a-texto">{localize(a.summary[0], lang)}</p>
                   {a.summary.length > 1 && (
                     <details className="mt-4">
@@ -365,7 +366,6 @@ export const AwardsPage: React.FC = () => {
                       </div>
                     </details>
                   )}
-                  <p className="mt-4 a-s"><Fuente href={a.url} label={t('awards.source')} /></p>
                 </div>
               </Sube>
             ))}
