@@ -96,7 +96,7 @@ const CASOS: Caso[] = [
       { nombre: 'Cristian F. Rodríguez', nivel: 'rc.lvl.ms.co', foto: retrato('cristian-f-rodriguez') },
       { nombre: 'Saúl Camilo Gómez Tinoco', nivel: 'rc.lvl.ms.co', foto: retrato('saul-camilo-gomez-tinoco') },
       { nombre: 'Valentina Quezada Pérez', nivel: 'rc.lvl.ms.co', foto: retrato('valentina-quezada-perez') },
-      { nombre: 'Paola Ruiz Puentes', nivel: 'rc.lvl.ms.co' },
+      { nombre: 'Paola Ruiz Puentes', nivel: 'rc.lvl.ms.co', foto: retrato('paola-ruiz-puentes') },
     ],
     publicaciones: [
       { donde: 'Antibiotics', ano: 2020, href: doi('10.3390/antibiotics9120854') },
@@ -114,7 +114,7 @@ const CASOS: Caso[] = [
     foto: { f: fotos.gradoBrayan, pie: 'rc.case.sound.photo', pos: 'center 35%' },
     estudiantes: [
       { nombre: 'Brayan Rodríguez', nivel: 'rc.lvl.phd.felipe', foto: retrato('brayan-rodriguez') },
-      { nombre: 'Martha Liliana Díaz-Bustamante', nivel: 'rc.lvl.phd.now' },
+      { nombre: 'Martha Liliana Díaz-Bustamante', nivel: 'rc.lvl.phd.now', foto: '/images/testimonials/martha-liliana-diaz-bustamante.jpg' },
     ],
     publicaciones: [
       { donde: 'Applied Sciences', ano: 2020, href: doi('10.3390/app10249008') },
