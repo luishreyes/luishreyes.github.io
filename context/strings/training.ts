@@ -2,7 +2,7 @@
 // Las cifras no se escriben aquí: la página las calcula de components/data/edco.ts y las pasa con fill().
 export const training = {
   'training.title':     { en: 'Training at scale', es: 'Formación a escala' },
-  'training.lead':      { en: 'A growing part of my teaching happens outside the undergraduate classroom: with people who already work, and with thousands who study online.', es: 'Una parte creciente de mi docencia ocurre fuera del aula de pregrado: con personas que ya trabajan y con miles que estudian en línea.' },
+  'training.lead':      { en: 'A growing part of my teaching happens outside the undergraduate classroom: with working people and with thousands online.', es: 'Una parte creciente de mi docencia ocurre fuera del aula de pregrado: con quienes ya trabajan y con miles en línea.' },
   'training.cta':       { en: 'The course on Coursera', es: 'El curso en Coursera' },
   'training.hero.alt':  { en: 'Luis H. Reyes presenting the parts of a prompt at the 53rd National Congress of Oil Palm Growers, 2025', es: 'Luis H. Reyes presenta las partes de un prompt en el 53.º Congreso Nacional de Cultivadores de Palma de Aceite, 2025' },
 

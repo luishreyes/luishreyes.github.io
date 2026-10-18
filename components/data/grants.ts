@@ -7,7 +7,7 @@ export interface Proyecto extends Grant {
 
 /** Los 19 proyectos en que ha participado el profesor desde 2018: 8 de investigación y
  *  11 de consultoría. Sin montos. El apoyo para presentar la patente del biorreactor modular
- *  no es un proyecto (la patente está en Productos), y los créditos de cómputo de Rescale
+ *  no es un proyecto (la patente está con las demás, en el programa de investigación), y los créditos de cómputo de Rescale
  *  van aparte, en `computeCreditsData`. */
 export const grantsData: Proyecto[] = [
   {
@@ -17,7 +17,7 @@ export const grantsData: Proyecto[] = [
     organization: 'NOVUS Tríada 2025 (Pontificia Universidad Católica de Chile, Instituto Tecnológico y de Estudios Superiores de Monterrey, Universidad de los Andes)',
     role: { en: 'Lead investigator for Universidad de los Andes', es: 'Responsable por la Universidad de los Andes' },
     status: 'In Progress',
-    kind: 'research'
+    kind: 'research',
     area: 'education'
   },
   {
@@ -54,7 +54,7 @@ export const grantsData: Proyecto[] = [
     organization: 'Universidad de los Andes (Horizontes Conectados)',
     role: { en: 'Co-investigator', es: 'Coinvestigador' },
     status: 'In Progress',
-    kind: 'research'
+    kind: 'research',
     area: 'education'
   },
   {

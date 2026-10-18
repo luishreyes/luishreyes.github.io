@@ -1,5 +1,5 @@
 import type { Recognition } from '../../types';
-import { teachingData } from './teaching';
+import { teachingData, courseCatalog } from './teaching';
 import { edcoCoursesData } from './edco';
 import { grantsData } from './grants';
 import { awardsData } from './awards';
@@ -53,9 +53,14 @@ const teaching = {
     moocCourses.map((course) => Math.round(course.attendees * (course.completionRate ?? 0))),
   ),
 
-  /** Mean of the institutional evaluation score across course runs. The scale's
-   *  definition is not documented; higher is better and observed values run to
-   *  the mid-160s. Null when nothing has been evaluated yet. */
+  /** Sections taught at the university and the courses created or redesigned. */
+  sections: teachingData.length,
+  createdCourses: courseCatalog.filter((course) => course.action === 'created').length,
+  redesignedCourses: courseCatalog.filter((course) => course.action === 'redesigned').length,
+
+  /** Mean of the evaluation given to the course runs that have one. Pages show how
+   *  the evaluation changed, never a scale or a comparison. Null when nothing has
+   *  been evaluated yet. */
   averageEvaluation: evaluations.length > 0 ? sum(evaluations) / evaluations.length : null,
   evaluatedRuns: evaluations.length,
 

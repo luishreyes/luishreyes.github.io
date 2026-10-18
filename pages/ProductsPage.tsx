@@ -9,6 +9,7 @@ import { useI18n, localize, fill, type UIKey } from '../context/i18n';
 import { researchLinesMap } from '../components/data/research';
 import { editedBooksData } from '../components/data/editorships';
 import { fotos, type Foto } from '../components/data/fotos';
+import { scholar, esPublicacion, SECONDARY } from '../components/data/citations';
 import type { Product, ProductType, ResearchArea } from '../types';
 
 type Orden = 'newest' | 'oldest' | 'cited';
@@ -116,6 +117,16 @@ export const ProductsPage = () => {
     setTipos((prev) => (prev.includes(tipo) ? prev.filter((x) => x !== tipo) : [...prev, tipo]));
 
   const numero = (n: number) => n.toLocaleString(lang === 'es' ? 'es-CO' : 'en-US');
+  // La cifra de citas es la del perfil de Google Scholar, con su fecha; lo secundario no se cuenta.
+  const intro = fill(t('rc.products.intro'), {
+    pubs: products.filter(esPublicacion).length,
+    first: primerAno ?? '',
+    patents: products.filter((p) => p.type === 'Patent').length,
+    talks: products.filter((p) => p.type === 'Conference').length,
+    cites: numero(scholar.citations),
+    date: new Date(`${scholar.asOf}T12:00:00`).toLocaleDateString(lang === 'es' ? 'es-CO' : 'en-GB', { day: 'numeric', month: 'long', year: 'numeric' }),
+  });
+  const ficha = (p: Product) => (p.status === SECONDARY ? { ...p, status: t('rc.products.secondary') } : p);
 
   return (
     <PageWrapper noPadding>
@@ -125,7 +136,7 @@ export const ProductsPage = () => {
           <p className="[text-wrap:pretty]">
             {productsLoading
               ? t('products.loading')
-              : fill(t('products.intro'), { n: products.length, first: primerAno ?? '', cites: numero(citationData.total) })}
+              : intro}
           </p>
         }
       />
@@ -267,7 +278,7 @@ export const ProductsPage = () => {
                     {g.items.map((p, i) => (
                       <Sube as="li" key={p.doi} delay={0.03 * Math.min(i, 5)} className="border-b-2 border-papel-300">
                         <ProductSection
-                          product={p}
+                          product={ficha(p)}
                           citationCount={citas[p.doi] ?? null}
                           cover={PORTADAS[p.doi]}
                           showYear={g.ano === null}

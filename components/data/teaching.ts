@@ -429,7 +429,7 @@ export interface CourseRecord {
   text: Localized;
 }
 
-/** Diez creados y cinco rediseñados (docencia/cursos.json del portafolio docente, 11 oct 2026). */
+/** Diez creados y cinco rediseñados, con el semestre en que lo hice y con quién. */
 export const courseCatalog: CourseRecord[] = [
   // Procesos y proyectos
   {
@@ -573,8 +573,8 @@ export const challengeEditions: { term: string; with: Localized; challenges: Loc
 ];
 
 /**
- * Biotecnología Industrial: estudiantes de posgrado y de pregrado en cada grupo, como los
- * dio el profesor (11 oct 2026). En 2023-20 cuenta los dos códigos del curso, IQYA-4100 y
+ * Biotecnología Industrial: estudiantes de posgrado y de pregrado en cada grupo, según la
+ * lista de cada semestre. En 2023-20 cuenta los dos códigos del curso, IQYA-4100 y
  * CBIO-4339; por eso la página muestra la proporción y no reemplaza los inscritos de
  * teachingData, que son los de la sección IQYA-4100.
  */

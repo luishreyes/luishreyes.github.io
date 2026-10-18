@@ -104,16 +104,19 @@ const PorAño: React.FC<{ enCurso: number }> = ({ enCurso }) => {
       </p>
       <ul className="mt-6 border-t-2 border-tinta-900">
         {porAño.map((f, i) => (
-          <Sube as="li" key={f.year} delay={0.04 * i} className="grid grid-cols-[3.5rem_minmax(0,1fr)_3rem] items-center gap-x-4 py-3 border-b-2 border-papel-300 transition-colors hover:bg-resaltador-suave">
+          <Sube as="li" key={f.year} delay={0.04 * i} className="grid grid-cols-[3.5rem_minmax(0,1fr)] items-center gap-x-4 py-3 border-b-2 border-papel-300 transition-colors hover:bg-resaltador-suave">
             <span className="a-meta">{f.year}</span>
             <div>
-              <div className="flex h-5 gap-[2px]" style={{ width: `${(f.total / maxAño) * 100}%` }} aria-hidden="true">
-                {f.open > 0 && <span className="h-full bg-tinta-900" style={{ flex: `${f.open} 1 0` }} />}
-                {f.org > 0 && <span className="h-full bg-tinta-500" style={{ flex: `${f.org} 1 0` }} />}
+              {/* La barra y, pegada a ella, la cifra del año. */}
+              <div className="flex items-center gap-3">
+                <div className="flex h-5 gap-[2px]" style={{ width: `calc((100% - 3.5rem) * ${f.total / maxAño})` }} aria-hidden="true">
+                  {f.open > 0 && <span className="h-full bg-tinta-900" style={{ flex: `${f.open} 1 0` }} />}
+                  {f.org > 0 && <span className="h-full bg-tinta-500" style={{ flex: `${f.org} 1 0` }} />}
+                </div>
+                <b className="text-[length:var(--t-l)] leading-none font-semibold text-tinta-900 tabular-nums">{f.total}</b>
               </div>
               <p className="a-s text-tinta-700 mt-1.5">{fill(t('training.chart.row'), { open: f.open, org: f.org })}</p>
             </div>
-            <b className="text-right text-[length:var(--t-l)] leading-none font-semibold text-tinta-900 tabular-nums">{f.total}</b>
           </Sube>
         ))}
       </ul>
@@ -198,7 +201,7 @@ export const ContinuingEducationPage = () => {
       />
 
       {/* ── Fuera del aula ── */}
-      <section className="a-papel pb-20 sm:pb-28">
+      <section className="a-papel pt-10 sm:pt-16 pb-20 sm:pb-28">
         <div className="a-c">
           <Sube><Cabecera titulo={t('training.out.title')} /></Sube>
           <div className="mt-12 grid gap-12 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:items-start">

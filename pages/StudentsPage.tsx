@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { PageWrapper } from '../components/PageWrapper';
 import { EncabezadoPagina } from '../components/Apertura';
 import { Sube } from '../components/Sube';
@@ -19,6 +20,23 @@ const FOTO_DE_GRADO: Record<string, Foto> = {
 
 /** La tesis entre comillas del idioma: «…» en español, “…” en inglés. */
 const comillas = (texto: string, lang: 'en' | 'es') => (lang === 'es' ? `«${texto}»` : `“${texto}”`);
+
+/** Iniciales para quien no tiene foto: la del nombre y la del primer apellido. */
+const iniciales = (nombre: string) => {
+  const p = nombre.split(/\s+/).filter(Boolean);
+  const apellido = p.length >= 4 ? p[p.length - 2] : p[p.length - 1];
+  return `${p[0][0]}${p.length > 1 ? apellido[0] : ''}`;
+};
+
+/** El retrato del egresado o, si no hay foto, un bloque con sus iniciales del mismo tamaño. */
+const Retrato: React.FC<{ alumno: GraduatedStudent; className: string; alt?: string; lazy?: boolean }> = ({ alumno, className, alt = '', lazy }) =>
+  alumno.imageUrl ? (
+    <img src={alumno.imageUrl} alt={alt} loading={lazy ? 'lazy' : undefined} className={`a-bn object-cover object-top ${className}`} />
+  ) : (
+    <span aria-hidden="true" className={`flex items-end bg-papel-300 p-3 ${className}`}>
+      <span className="text-[length:var(--t-l)] font-semibold leading-none text-tinta-700">{iniciales(alumno.name)}</span>
+    </span>
+  );
 
 const porAno = (a: GraduatedStudent, b: GraduatedStudent) =>
   b.graduationYear - a.graduationYear ||
@@ -59,7 +77,7 @@ const DialogoTesis: React.FC<{ alumno: GraduatedStudent | null; onClose: () => v
         <div className="p-6 sm:p-10">
           <div className="flex flex-col-reverse gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
             <div className="flex items-center gap-5">
-              <img src={alumno.imageUrl} alt={alumno.name} className="a-bn w-20 h-24 sm:w-24 sm:h-28 object-cover object-top flex-none" />
+              <Retrato alumno={alumno} alt={alumno.name} className="w-20 h-24 sm:w-24 sm:h-28 flex-none" />
               <div>
                 <h2 id="tesis-titulo" className="a-h3">{alumno.name}</h2>
                 <p className="a-meta mt-2">{meta(alumno)}</p>
@@ -142,6 +160,9 @@ export const StudentsPage = () => {
             ))}
           </div>
         </div>
+        <Link to="/school" className="a-enlace mt-8 inline-block">
+          {t('school.toSchool')} <span aria-hidden="true">→</span>
+        </Link>
       </EncabezadoPagina>
 
       {/* ── Quienes trabajan hoy con el grupo: una lista limpia, el programa en su columna ── */}
@@ -189,11 +210,11 @@ export const StudentsPage = () => {
                     className="grid grid-cols-[7rem_minmax(0,1fr)] gap-x-5 gap-y-6 py-8 border-b-2 border-papel-300 sm:grid-cols-[12rem_minmax(0,1fr)] sm:gap-x-8 lg:grid-cols-[17rem_minmax(0,1fr)_minmax(0,1fr)] lg:gap-x-12 lg:py-10"
                   >
                     <button type="button" onClick={() => setAbierto(s)} className="block group" aria-label={`${t('students.thesis.show')}: ${s.name}`}>
-                      <img
-                        src={s.imageUrl}
+                      <Retrato
+                        alumno={s}
                         alt={s.name}
-                        loading="lazy"
-                        className="a-bn w-full aspect-[4/5] object-cover object-top transition-transform duration-300 [@media(hover:hover)]:group-hover:-translate-y-1"
+                        lazy
+                        className="w-full aspect-[4/5] transition-transform duration-300 [@media(hover:hover)]:group-hover:-translate-y-1"
                       />
                     </button>
                     <div>
@@ -250,11 +271,10 @@ export const StudentsPage = () => {
                       className="block w-full text-left group"
                       aria-label={`${t('students.thesis.show')}: ${s.name}`}
                     >
-                      <img
-                        src={s.imageUrl}
-                        alt=""
-                        loading="lazy"
-                        className="a-bn w-full aspect-[4/5] object-cover object-top transition-transform duration-300 [@media(hover:hover)]:group-hover:-translate-y-1"
+                      <Retrato
+                        alumno={s}
+                        lazy
+                        className="w-full aspect-[4/5] transition-transform duration-300 [@media(hover:hover)]:group-hover:-translate-y-1"
                       />
                       <span className="block mt-4 font-semibold leading-tight text-tinta-900 [@media(hover:hover)]:group-hover:underline underline-offset-4 decoration-1">
                         {s.name}
