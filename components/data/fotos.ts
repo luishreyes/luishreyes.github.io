@@ -67,6 +67,7 @@ export const fotos = {
   acofiGabriela: f('congresos/2025-acofi-presentacion-gabriela-martha.jpg', 'Gabriela Meléndez presents bacterial growth results at ACOFI, 2025', 'Gabriela Meléndez presenta resultados de crecimiento bacteriano en ACOFI, 2025', '20% 50%'),
   acofiPonencia: f('congresos/2025-acofi-ponencia-educacion-aumentada-ia.jpg', 'His talk on AI-augmented engineering education at ACOFI, 2025', 'Su ponencia sobre educación en ingeniería aumentada por IA en ACOFI, 2025', '40% 45%'),
   palmaCharla: f('congresos/2025-congreso-palma-charla-ia.jpg', 'His talk on artificial intelligence at the oil palm growers’ congress, 2025', 'Su charla sobre inteligencia artificial en el congreso de palmicultores, 2025', '30% 50%'),
+  santoTomas: f('congresos/charla-santo-tomas-ingenieria-biologica.jpg', 'His invited talk on biological engineering at Universidad Santo Tomás', 'Su charla por invitación sobre ingeniería biológica en la Universidad Santo Tomás', '48% 62%'),
   acs2026: f('congresos/2026-acs-fall-chicago.jpg', 'With Gabriela Meléndez at ACS Fall 2026, Chicago', 'Con Gabriela Meléndez en ACS Fall 2026, Chicago', '65% 45%'),
   // Trayectoria
   recienLlegado: f('trayectoria/recien-llegado.jpg', 'Newly arrived at Uniandes, with the first students of the group', 'Recién llegado a Uniandes, con los primeros estudiantes del grupo', '50% 30%'),

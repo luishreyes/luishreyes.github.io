@@ -206,9 +206,9 @@ export const ResearchOverviewPage: React.FC = () => {
           <Sube className="order-2 lg:order-1">
             <figure>
               <div className="overflow-hidden aspect-[16/9]">
-                <img src={fotos.aiche2025.src} alt={localize(fotos.aiche2025.alt, lang)} loading="lazy" className="a-foto a-bn" />
+                <img src={fotos.santoTomas.src} alt={localize(fotos.santoTomas.alt, lang)} loading="lazy" className="a-foto a-bn" />
               </div>
-              <figcaption className="a-pie">{localize(fotos.aiche2025.alt, lang)}.</figcaption>
+              <figcaption className="a-pie">{localize(fotos.santoTomas.alt, lang)}.</figcaption>
             </figure>
           </Sube>
           <div className="order-1 lg:order-2">
