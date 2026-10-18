@@ -493,18 +493,18 @@ export interface EvaluationRecord {
 export const facultyEvaluationsData: EvaluationRecord[] = [
   {
     year: 2021,
-    what: { en: 'Evaluation committee of a faculty hiring competition', es: 'Comité evaluador de un concurso profesoral' },
-    where: { en: 'Universidad Industrial de Santander (UIS)', es: 'Universidad Industrial de Santander (UIS)' },
+    what: { en: 'Evaluation committee of a competition to hire career professors', es: 'Comité evaluador de un concurso para contratar profesores de carrera' },
+    where: { en: 'Universidad Industrial de Santander (UIS), School of Microbiology, biochemistry area', es: 'Universidad Industrial de Santander (UIS), Escuela de Microbiología, área de Bioquímica' },
   },
   {
     year: 2025,
-    what: { en: 'External evaluator of a professor’s academic record', es: 'Evaluador externo de la trayectoria de un profesor' },
-    where: { en: 'Universidad de Antioquia', es: 'Universidad de Antioquia' },
+    what: { en: 'External peer evaluator of a promotion to full professor', es: 'Par evaluador externo de un ascenso a profesor titular' },
+    where: { en: 'Universidad de Antioquia, Department of Chemical Engineering', es: 'Universidad de Antioquia, Departamento de Ingeniería Química' },
   },
   {
     year: 2025,
-    what: { en: 'External evaluator of a professor’s academic record', es: 'Evaluador externo de la trayectoria de un profesor' },
-    where: { en: 'Another Colombian university', es: 'Otra universidad del país' },
+    what: { en: 'External peer evaluator of a promotion to associate professor, with an oral defence', es: 'Par evaluador externo de un ascenso a profesor asociado, con sustentación oral' },
+    where: { en: 'Universidad de Cartagena, School of Engineering', es: 'Universidad de Cartagena, Facultad de Ingeniería' },
   },
 ];
 
