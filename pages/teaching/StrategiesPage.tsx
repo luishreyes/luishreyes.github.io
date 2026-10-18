@@ -63,7 +63,7 @@ export const StrategiesPage: React.FC = () => {
         titulo={t('tch.st.title')}
         entrada={<p>{t('tch.st.lead')}</p>}
         accion={{ label: t('tch.st.cta'), onClick: () => document.getElementById('simuladores')?.scrollIntoView({ behavior: 'smooth' }) }}
-        foto={{ src: fotos.pouNpsh.src, alt: localize(fotos.pouNpsh.alt, lang), posicion: 'center 40%' }}
+        foto={{ src: fotos.pouRetro.src, alt: localize(fotos.pouRetro.alt, lang), posicion: fotos.pouRetro.foco }}
       />
 
       {/* ── El proyecto ── */}
