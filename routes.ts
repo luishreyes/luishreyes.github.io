@@ -3,6 +3,8 @@ export const ROUTES: Record<string, string> = {
   'trajectory':                           '/trajectory',
   'context':                              '/context',
   'next':                                 '/next',
+  'school':                               '/school',
+  'teaching.strategies':                  '/teaching/strategies',
   'principles.teaching':                  '/teaching/purpose',
   'principles.research':                  '/research/purpose',
   'principles.service':                   '/service/purpose',

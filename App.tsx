@@ -7,6 +7,8 @@ import { AboutPage } from './pages/AboutPage';
 import { TrajectoryPage } from './pages/TrajectoryPage';
 import { ContextPage } from './pages/ContextPage';
 import { NextPage } from './pages/NextPage';
+import { SchoolPage } from './pages/SchoolPage';
+import { StrategiesPage } from './pages/teaching/StrategiesPage';
 import { ResearchOverviewPage } from './pages/ResearchOverviewPage';
 import { ProductsPage } from './pages/ProductsPage';
 import { GrantsPage } from './pages/GrantsPage';
@@ -176,6 +178,8 @@ const App: React.FC = () => {
               <Route path="/trajectory" element={<TrajectoryPage />} />
               <Route path="/context" element={<ContextPage />} />
               <Route path="/next" element={<NextPage />} />
+              <Route path="/school" element={<SchoolPage />} />
+              <Route path="/teaching/strategies" element={<StrategiesPage />} />
               {/* Cada filosofía abre su capítulo; las direcciones viejas de /principles redirigen. */}
               <Route path="/teaching/purpose" element={<TeachingPurposePage />} />
               <Route path="/teaching/philosophy" element={<TeachingPhilosophyPage />} />

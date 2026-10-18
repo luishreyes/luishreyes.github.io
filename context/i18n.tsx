@@ -11,6 +11,11 @@ import { classroom } from './strings/classroom';
 import { contextChapter } from './strings/context';
 import { next } from './strings/next';
 import { trajectory } from './strings/trajectory';
+import { school } from './strings/school';
+import { training } from './strings/training';
+import { teachingChapter } from './strings/teachingChapter';
+import { researchChapter } from './strings/researchChapter';
+import { serviceChapter } from './strings/serviceChapter';
 
 export type Lang = 'en' | 'es';
 
@@ -28,6 +33,11 @@ const ui = {
   ...contextChapter,
   ...next,
   ...trajectory,
+  ...school,
+  ...training,
+  ...teachingChapter,
+  ...researchChapter,
+  ...serviceChapter,
 };
 
 export type UIKey = keyof typeof ui;
