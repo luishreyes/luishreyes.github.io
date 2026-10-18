@@ -1,104 +1,89 @@
-
-
 import React from 'react';
 import { PageWrapper } from '../../components/PageWrapper';
-import { useI18n, localize } from '../../context/i18n';
+import { EncabezadoPagina } from '../../components/Apertura';
+import { Sube } from '../../components/Sube';
+import { useI18n, localize, fill, type UIKey } from '../../context/i18n';
 import { professionalDevelopmentData } from '../../components/data/professionalDevelopment';
-// FIX: Removed 'Variants' from framer-motion import to resolve module export error.
-import { motion } from 'framer-motion';
+import { fotos } from '../../components/data/fotos';
 
-const containerVariants = {
-  offscreen: {},
-  onscreen: {
-    transition: {
-      staggerChildren: 0.1,
-    },
-  },
-};
+// Las actividades que fueron en la propia universidad, contadas desde el registro.
+const enUniandes = professionalDevelopmentData.filter((a) =>
+  localize(a.institution, 'en').includes('Universidad de los Andes'),
+).length;
 
-const timelineItemVariants = {
-  offscreen: {
-    x: -30,
-    opacity: 0,
-  },
-  onscreen: {
-    x: 0,
-    opacity: 1,
-    transition: {
-      duration: 0.5,
-      // FIX: Added 'as const' to prevent TypeScript from widening the string literal type, which caused a type error.
-      ease: 'easeOut' as const,
-    },
-  },
-};
-
-const ListIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-    </svg>
-);
+const CAMPUS: { src: string; alt: UIKey }[] = [
+  { src: '/images/site/campus-mision-historia-y-simbolos-0.webp', alt: 'profdev.place.alt1' },
+  { src: '/images/site/generales-campus-2015-2015-69.jpg', alt: 'profdev.place.alt2' },
+  { src: '/images/uniandes-bw.jpg', alt: 'profdev.place.alt3' },
+];
 
 export const ProfessionalDevelopmentPage = () => {
-    const { t, lang } = useI18n();
-    return (
-        <PageWrapper noPadding>
-            <div className="pt-16">
-                <div className="sticky top-16 bg-zinc-50/95 backdrop-blur-sm z-20 py-6 border-b border-zinc-200">
-                    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-brand-dark text-left">{t('profdev.title')}</h1>
-                        <p className="mt-4 text-brand-gray leading-relaxed">
-                            {t('profdev.sub')}
-                        </p>
-                    </div>
-                </div>
+  const { t, lang } = useI18n();
+  return (
+    <PageWrapper noPadding>
+      <EncabezadoPagina
+        titulo={t('profdev.title')}
+        entrada={
+          <>
+            <p>{t('profdev.lead')}</p>
+            <p className="mt-6 text-[18px] leading-[1.55] font-normal text-tinta-800">{t('profdev.sub')}</p>
+          </>
+        }
+        accion={{ to: '/teaching/scholarship', label: t('profdev.cta') }}
+        foto={{ src: fotos.recienLlegado.src, alt: localize(fotos.recienLlegado.alt, lang) }}
+      />
 
-                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                    <motion.div 
-                        // FIX: Spread motion props to avoid TypeScript type errors.
-                        {...{
-                          initial: "offscreen",
-                          whileInView: "onscreen",
-                          viewport: { once: true, amount: 0.1 },
-                          variants: containerVariants,
-                        }}
-                        className="relative border-l-2 border-zinc-200 md:ml-24"
-                    >
-                        {professionalDevelopmentData.map((activity, index) => (
-                            <motion.div 
-                                key={index} 
-                                // FIX: Spread motion props to avoid TypeScript type errors.
-                                {...{variants: timelineItemVariants}}
-                                className="relative pl-10 pb-12 last:pb-0"
-                            >
-                                <div className="absolute left-0 top-1 w-5 h-5 bg-yellow-400 rounded-full -translate-x-1/2 border-4 border-white"></div>
-                                
-                                <div className="ml-2">
-                                    <p className="md:absolute md:-left-36 md:top-0 md:text-right md:w-28 mb-2 md:mb-0">
-                                        <span className="text-sm font-semibold text-yellow-800 bg-yellow-100 inline-block px-2 py-1 rounded-md">{activity.period}</span>
-                                    </p>
-                                    <h3 className="font-bold text-xl text-brand-dark">{localize(activity.title, lang)}</h3>
-                                    {activity.institution && (
-                                        <p className="text-brand-gray font-medium">{localize(activity.institution, lang)}</p>
-                                    )}
-                                    <p className="mt-2 text-brand-gray">{localize(activity.description, lang)}</p>
-                                    {activity.details && (
-                                        <ul className="mt-4 space-y-2">
-                                            {activity.details.map((detail, i) => (
-                                                <li key={i} className="flex items-start gap-3">
-                                                    <div className="flex-shrink-0 pt-1">
-                                                        <ListIcon />
-                                                    </div>
-                                                    <span className="text-brand-gray text-sm">{localize(detail, lang)}</span>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    )}
-                                </div>
-                            </motion.div>
-                        ))}
-                    </motion.div>
+      {/* ── El registro, año por año ── */}
+      <section className="a-papel pt-10 sm:pt-14 pb-24 sm:pb-32">
+        <div className="a-c">
+          <Sube><h2 className="a-h3 mb-8">{t('profdev.record.title')}.</h2></Sube>
+          <ol className="a-registro">
+            {professionalDevelopmentData.map((a, i) => (
+              <Sube as="li" key={`${a.period}-${i}`} delay={0.03 * (i % 4)}>
+                <span className="cuando">{a.period.replace('-', '–')}</span>
+                <div>
+                  <p className="que">{localize(a.title, lang)}</p>
+                  {a.institution && <p className="donde">{localize(a.institution, lang)}</p>}
+                  <p className="detalle text-tinta-800">{localize(a.description, lang)}</p>
+                  {a.details && (
+                    <ul className="detalle list-disc pl-5 space-y-2 text-tinta-800 marker:text-tinta-500">
+                      {a.details.map((d, k) => <li key={k}>{localize(d, lang)}</li>)}
+                    </ul>
+                  )}
                 </div>
-            </div>
-        </PageWrapper>
-    );
+              </Sube>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      {/* ── Donde fue la mayor parte ── */}
+      <section className="a-hundido a-campo">
+        <div className="a-c">
+          <Sube><h2 className="a-h3">{t('profdev.place.title')}.</h2></Sube>
+          <Sube delay={0.04}>
+            <p className="mt-4 a-texto">{fill(t('profdev.place.text'), { n: enUniandes, total: professionalDevelopmentData.length })}</p>
+          </Sube>
+          <div className="mt-12 grid gap-6 md:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
+            <Sube className="md:row-span-2">
+              <figure className="h-full">
+                <div className="overflow-hidden aspect-[4/3] md:aspect-auto md:h-full">
+                  <img src={CAMPUS[0].src} alt={t(CAMPUS[0].alt)} loading="lazy" className="a-foto a-bn" />
+                </div>
+              </figure>
+            </Sube>
+            {CAMPUS.slice(1).map((c, i) => (
+              <Sube key={c.src} delay={0.08 * (i + 1)}>
+                <figure>
+                  <div className="overflow-hidden aspect-[16/10]">
+                    <img src={c.src} alt={t(c.alt)} loading="lazy" className="a-foto a-bn" />
+                  </div>
+                </figure>
+              </Sube>
+            ))}
+          </div>
+        </div>
+      </section>
+    </PageWrapper>
+  );
 };

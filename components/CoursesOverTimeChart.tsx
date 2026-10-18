@@ -1,219 +1,155 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { TaughtCourse } from '../components/data/teaching';
-import { useI18n, localize } from '../context/i18n';
-
-const typeLabel: Record<string, { en: string; es: string }> = {
-  'All': { en: 'All', es: 'Todos' },
-  'Core': { en: 'Core', es: 'Obligatorio' },
-  'Elective': { en: 'Elective', es: 'Electivo' },
-  'CBU': { en: 'CBU', es: 'CBU' },
-  'EDCO': { en: 'EDCO', es: 'EDCO' },
-  'Corporate': { en: 'Corporate', es: 'Corporativo' },
-  'Coursera': { en: 'Coursera', es: 'Coursera' },
-};
+import { useI18n, fill, type UIKey } from '../context/i18n';
 
 type CourseType = TaughtCourse['type'];
+
+const typeKey: Record<CourseType | 'All', UIKey> = {
+  All: 'teaching.type.all',
+  Core: 'teaching.type.core',
+  Elective: 'teaching.type.elective',
+  CBU: 'teaching.type.cbu',
+  EDCO: 'teaching.type.edco',
+  Corporate: 'teaching.type.corporate',
+  Coursera: 'teaching.type.coursera',
+};
+const types: (CourseType | 'All')[] = ['All', 'Core', 'Elective', 'CBU', 'EDCO', 'Corporate', 'Coursera'];
 
 interface ChartData {
   year: number;
   count: number;
 }
 
-// Chart height is constant, width will be dynamic.
-const chartHeight = 300;
-const margin = { top: 20, right: 20, bottom: 40, left: 40 };
+const chartHeight = 320;
+const margin = { top: 28, right: 8, bottom: 40, left: 40 };
 
-// Helper to process raw course data into yearly counts
 const processData = (courses: TaughtCourse[], filter: CourseType | 'All'): ChartData[] => {
-  const filteredCourses = filter === 'All' ? courses : courses.filter(p => p.type === filter);
-  
-  const countsByYear: { [year: number]: number } = {};
-
-  filteredCourses.forEach(p => {
-    countsByYear[p.year] = (countsByYear[p.year] || 0) + 1;
+  const filtered = filter === 'All' ? courses : courses.filter((c) => c.type === filter);
+  const countsByYear: Record<number, number> = {};
+  filtered.forEach((c) => {
+    countsByYear[c.year] = (countsByYear[c.year] || 0) + 1;
   });
-
   return Object.entries(countsByYear)
     .map(([year, count]) => ({ year: parseInt(year), count }))
     .sort((a, b) => a.year - b.year);
 };
 
+/** Cursos dictados por año, como el gráfico de productos: filtros cuadrados, barras en
+ *  tinta y la barra que se toca en el resaltador, con su número encima. */
 export const CoursesOverTimeChart = ({ courses }: { courses: TaughtCourse[] }) => {
-  const { lang } = useI18n();
+  const { t } = useI18n();
   const [activeFilter, setActiveFilter] = useState<CourseType | 'All'>('All');
+  const [activeYear, setActiveYear] = useState<number | null>(null);
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const [chartWidth, setChartWidth] = useState(800);
 
   useEffect(() => {
     const handleResize = () => {
-      if (chartContainerRef.current) {
-        setChartWidth(chartContainerRef.current.offsetWidth);
-      }
+      if (chartContainerRef.current) setChartWidth(chartContainerRef.current.offsetWidth);
     };
-
-    handleResize(); // Set initial width
+    handleResize();
     window.addEventListener('resize', handleResize);
-
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-  
-  const innerWidth = chartWidth > (margin.left + margin.right) ? chartWidth - margin.left - margin.right : 0;
+
+  const innerWidth = Math.max(0, chartWidth - margin.left - margin.right);
   const innerHeight = chartHeight - margin.top - margin.bottom;
 
-  const uniqueTypes = useMemo(() => ['All', 'Core', 'Elective', 'CBU', 'EDCO', 'Corporate', 'Coursera'] as (CourseType | 'All')[], []);
   const chartData = useMemo(() => processData(courses, activeFilter), [courses, activeFilter]);
 
-  const { overallMinYear, overallMaxYear } = useMemo(() => {
-    if (courses.length === 0) {
-      const currentYear = new Date().getFullYear();
-      return { overallMinYear: currentYear, overallMaxYear: currentYear };
-    }
-    const years = courses.map(p => p.year);
-
-    return {
-      overallMinYear: Math.min(...years),
-      overallMaxYear: Math.max(...years),
-    };
+  const { minYear, maxYear } = useMemo(() => {
+    const years = courses.map((c) => c.year);
+    const now = new Date().getFullYear();
+    return years.length ? { minYear: Math.min(...years), maxYear: Math.max(...years) } : { minYear: now, maxYear: now };
   }, [courses]);
 
-  const maxCount = useMemo(() => {
-    if (chartData.length === 0) return 1;
-    return Math.max(1, ...chartData.map(d => d.count));
-  }, [chartData]);
-  
+  const maxCount = Math.max(1, ...chartData.map((d) => d.count));
   const yAxisMax = Math.ceil(maxCount / 4) * 4 || 4;
 
-  const paddedMinYear = overallMinYear - 1;
-  const paddedMaxYear = overallMaxYear + 1;
-  const yearSpan = paddedMaxYear - paddedMinYear;
+  const slots = maxYear - minYear + 1;
+  const slot = innerWidth / slots;
+  const xScale = (year: number) => margin.left + (year - minYear + 0.5) * slot;
+  const yScale = (count: number) => margin.top + innerHeight - (innerHeight * count) / yAxisMax;
+  const barWidth = Math.max(6, slot * 0.62);
 
-  const xScale = (year: number) => {
-    if (yearSpan <= 1 || innerWidth <= 0) return margin.left + innerWidth / 2;
-    return margin.left + ((year - paddedMinYear) / yearSpan) * innerWidth;
-  };
+  // Un año por cada 56 px; en el teléfono, uno de cada dos.
+  const stride = Math.max(1, Math.ceil(slots / Math.max(1, Math.floor(innerWidth / 56))));
+  const ticks = Array.from({ length: slots }, (_, i) => minYear + i).filter((_, i) => i % stride === 0);
 
-  const yScale = (count: number) => {
-    return margin.top + innerHeight - (innerHeight * count) / yAxisMax;
-  };
-  
-  const barWidth = Math.max(5, (innerWidth / yearSpan) * 0.7);
-
-  const xAxisTicks = useMemo(() => {
-    if (yearSpan <= 1) return [overallMinYear];
-    const ticks = [];
-    for (let i = overallMinYear; i <= overallMaxYear; i++) {
-        ticks.push(i);
-    }
-    return ticks;
-  }, [overallMinYear, overallMaxYear, yearSpan]);
-
-
-  // Filter X-axis ticks to prevent them from overlapping on smaller screens.
-  const filteredXAxisTicks = useMemo(() => {
-    if (innerWidth <= 0) return [];
-    const maxTicks = Math.floor(innerWidth / 60); // Allow one tick per 60px
-    if (xAxisTicks.length <= maxTicks) {
-      return xAxisTicks;
-    }
-    const stride = Math.ceil(xAxisTicks.length / maxTicks);
-    return xAxisTicks.filter((_, i) => i % stride === 0);
-  }, [xAxisTicks, innerWidth]);
+  const baseline = margin.top + innerHeight;
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-lg border border-zinc-100 max-w-5xl mx-auto">
-      <h2 className="text-2xl font-semibold text-brand-dark text-center mb-4">{lang === 'es' ? 'Cursos dictados a lo largo del tiempo' : 'Courses Taught Over Time'}</h2>
-      {/* Filter Buttons */}
-      <div className="flex flex-wrap gap-2 justify-center mb-6">
-        {uniqueTypes.map(type => (
+    <div>
+      <div className="a-filtros mb-8">
+        {types.map((type) => (
           <button
             key={type}
-            onClick={() => setActiveFilter(type)}
-            className={`px-4 py-2 text-sm font-semibold rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2 ${
-              activeFilter === type
-                ? 'bg-yellow-400 text-brand-dark shadow-md'
-                : 'bg-white text-brand-gray hover:bg-zinc-100 border border-zinc-200'
-            }`}
+            type="button"
+            onClick={() => { setActiveFilter(type); setActiveYear(null); }}
+            aria-pressed={activeFilter === type}
           >
-            {localize(typeLabel[type], lang)}
+            {t(typeKey[type])}
           </button>
         ))}
       </div>
-      
-      {/* SVG Chart */}
+
       <div ref={chartContainerRef} className="w-full">
         {chartWidth > 0 && (
-          <svg width={chartWidth} height={chartHeight}>
-            {/* Y Axis Gridlines and Labels */}
-            <g>
-              {Array.from({ length: 5 }).map((_, i) => {
-                const value = Math.round(yAxisMax / 4 * i);
-                const y = yScale(value);
-                if (isNaN(y) || value > yAxisMax) return null;
+          <svg width={chartWidth} height={chartHeight} role="img" aria-label={t('teaching.overview.chart.title')}>
+            {Array.from({ length: 5 }).map((_, i) => {
+              const value = Math.round((yAxisMax / 4) * i);
+              const y = yScale(value);
+              return (
+                <g key={i}>
+                  <text x={margin.left - 10} y={y + 5} textAnchor="end" fontSize="15" fill="#76767A">{value}</text>
+                  {i > 0 && <line x1={margin.left} y1={y} x2={chartWidth - margin.right} y2={y} stroke="#DCDCDE" />}
+                </g>
+              );
+            })}
+            <line x1={margin.left} y1={baseline} x2={chartWidth - margin.right} y2={baseline} stroke="#76767A" />
+
+            <AnimatePresence>
+              {chartData.map(({ year, count }) => {
+                const on = activeYear === year;
                 return (
-                  <g key={i}>
-                    <text x={margin.left - 8} y={y + 4} textAnchor="end" fontSize="12" fill="#555555">{value}</text>
-                    {i > 0 && <line x1={margin.left} y1={y} x2={chartWidth - margin.right} y2={y} stroke="#f4f4f5" />}
-                  </g>
+                  <motion.g
+                    key={`${activeFilter}-${year}`}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    onMouseEnter={() => setActiveYear(year)}
+                    onMouseLeave={() => setActiveYear(null)}
+                    onClick={() => setActiveYear(on ? null : year)}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <title>{fill(t('teaching.chart.bar'), { count, year })}</title>
+                    {/* La franja entera responde al dedo, no solo la barra */}
+                    <rect x={xScale(year) - slot / 2} y={margin.top} width={slot} height={innerHeight} fill="transparent" />
+                    <motion.rect
+                      x={xScale(year) - barWidth / 2}
+                      width={barWidth}
+                      initial={{ y: baseline, height: 0 }}
+                      animate={{ y: yScale(count), height: Math.max(0, baseline - yScale(count)) }}
+                      transition={{ type: 'spring', stiffness: 200, damping: 22 }}
+                      fill={on ? '#FFE900' : '#3A3A3B'}
+                    />
+                    {on && (
+                      <text x={xScale(year)} y={yScale(count) - 8} textAnchor="middle" fontSize="15" fontWeight="600" fill="#1D1D1B">
+                        {count}
+                      </text>
+                    )}
+                  </motion.g>
                 );
               })}
-            </g>
-            
-            {/* Axes Lines */}
-            <line x1={margin.left} y1={margin.top} x2={margin.left} y2={innerHeight + margin.top} stroke="#e4e4e7" />
-            <line x1={margin.left} y1={innerHeight + margin.top} x2={chartWidth - margin.right} y2={innerHeight + margin.top} stroke="#e4e4e7" />
-            
-            {/* Bars */}
-            <g>
-              <AnimatePresence>
-                {chartData.map(({ year, count }) => (
-                  <motion.g
-                    key={year}
-                    // FIX: Spread motion props to avoid TypeScript type errors.
-                    {...{
-                      initial: { opacity: 0 },
-                      animate: { opacity: 1 },
-                      exit: { opacity: 0 },
-                      transition: { duration: 0.3 },
-                    }}
-                  >
-                    <title>{`Year: ${year}, Count: ${count}`}</title>
-                    <motion.rect
-                      // FIX: Spread motion props to avoid TypeScript type errors.
-                      {...{
-                        x: xScale(year) - barWidth / 2,
-                        width: barWidth,
-                        initial: { y: innerHeight + margin.top, height: 0 },
-                        animate: { 
-                            y: yScale(count), 
-                            height: Math.max(0, innerHeight + margin.top - yScale(count))
-                        },
-                        exit: { y: innerHeight + margin.top, height: 0 },
-                        transition: { type: 'spring', stiffness: 200, damping: 20 },
-                      }}
-                      fill="#FBBF24"
-                      rx="2"
-                    />
-                  </motion.g>
-                ))}
-              </AnimatePresence>
-            </g>
+            </AnimatePresence>
 
-            {/* X-Axis Labels */}
-            <g>
-              {filteredXAxisTicks.map(year => (
-                <text
-                  key={year}
-                  x={xScale(year)}
-                  y={innerHeight + margin.top + 20}
-                  textAnchor="middle"
-                  fontSize="12"
-                  fill="#555555"
-                >
-                  {year}
-                </text>
-              ))}
-            </g>
+            {ticks.map((year) => (
+              <text key={year} x={xScale(year)} y={baseline + 24} textAnchor="middle" fontSize="15" fill="#76767A">
+                {year}
+              </text>
+            ))}
           </svg>
         )}
       </div>
