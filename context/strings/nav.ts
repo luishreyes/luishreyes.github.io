@@ -3,6 +3,8 @@ export const nav = {
   'nav.context':           { en: 'Context',                 es: 'Contexto' },
   'nav.next':              { en: 'What’s next',             es: 'Lo que sigue' },
   'nav.students':          { en: 'Students',                es: 'Estudiantes' },
+  'nav.students.school':   { en: 'Overview',                es: 'Escuela' },
+  'nav.students.graduate': { en: 'Master’s and doctoral',   es: 'Maestría y doctorado' },
   'nav.purpose':           { en: 'Purpose',                 es: 'Propósito' },
   'nav.teaching.philosophy': { en: 'Teaching philosophy',   es: 'Filosofía de enseñanza' },
   'nav.research':          { en: 'Research',                es: 'Investigación' },

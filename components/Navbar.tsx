@@ -74,9 +74,13 @@ const navItems = (t: (key: import('../context/i18n').UIKey) => string) => [
   {
     id: 'students',
     title: t('nav.students'),
-    defaultPath: '/research/students',
-    pathPrefix: '/research/students',
-    match: (p: string) => p === '/research/students',
+    defaultPath: '/school',
+    pathPrefix: '/school',
+    match: (p: string) => p === '/school' || p === '/research/students',
+    subItems: [
+      { title: t('nav.students.school'), path: '/school' },
+      { title: t('nav.students.graduate'), path: '/research/students' },
+    ],
   },
   {
     id: 'research',

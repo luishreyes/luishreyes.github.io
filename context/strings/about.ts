@@ -29,7 +29,7 @@ export const about = {
   'home.contents.trajectory': { en: 'Five stretches and the decisions behind them.', es: 'Cinco tramos y las decisiones que los explican.' },
   'home.contents.teaching': { en: 'The courses I created and redesigned, and how my students learn.', es: 'Los cursos que creé y rediseñé, y cómo aprenden mis estudiantes.' },
   'home.contents.training': { en: 'Training in artificial intelligence for organizations, and a Coursera course.', es: 'Formación en inteligencia artificial para organizaciones y un curso en Coursera.' },
-  'home.contents.students': { en: 'The master’s and doctoral students I have advised, and where they are today.', es: 'Los estudiantes de maestría y doctorado que he dirigido, y dónde están hoy.' },
+  'home.contents.students': { en: 'The undergraduate, master’s and doctoral students I have advised, and where they are today.', es: 'Quienes he dirigido en pregrado, maestría y doctorado, y dónde están hoy.' },
   'home.contents.research': { en: 'Biological engineering: research lines, publications and projects.', es: 'Ingeniería biológica: líneas, publicaciones y proyectos.' },
   'home.contents.service': { en: 'Leadership, editorial work and outreach.', es: 'Liderazgo, trabajo editorial y divulgación.' },
   'home.contents.recognition': { en: 'Awards and distinctions.', es: 'Premios y distinciones.' },

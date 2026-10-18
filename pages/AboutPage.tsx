@@ -14,7 +14,7 @@ const CAPITULOS: { to: string; nombre: UIKey; linea: UIKey; foto: string }[] = [
   { to: '/trajectory', nombre: 'nav.trajectory', linea: 'home.contents.trajectory', foto: fotos.recienLlegado.src },
   { to: '/teaching', nombre: 'nav.teaching', linea: 'home.contents.teaching', foto: fotos.cursoGrupo.src },
   { to: '/teaching/continuing-education', nombre: 'nav.teaching.continuing', linea: 'home.contents.training', foto: fotos.grabacionMooc.src },
-  { to: '/research/students', nombre: 'nav.students', linea: 'home.contents.students', foto: fotos.gradoBrayan.src },
+  { to: '/school', nombre: 'nav.students', linea: 'home.contents.students', foto: fotos.gradoBrayan.src },
   { to: '/research', nombre: 'nav.research', linea: 'home.contents.research', foto: fotos.laboratorio.src },
   { to: '/service', nombre: 'nav.service', linea: 'home.contents.service', foto: fotos.scoutingPlanta.src },
   { to: '/recognition', nombre: 'nav.recognition', linea: 'home.contents.recognition', foto: fotos.academiaMedicina.src },
