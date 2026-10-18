@@ -320,6 +320,9 @@ export const ContinuingEducationPage = () => {
               <Sube><p className="a-texto mt-4">{fill(t('training.orgs.p2'), { n: cardinal(contraloria, lang) })}</p></Sube>
               <Sube><p className="a-texto mt-4">{t('training.orgs.p3')}</p></Sube>
               <Sube><p className="a-texto mt-4">{t('training.orgs.p4')}</p></Sube>
+              <Sube className="mt-10">
+                <Figura foto={fotos.ecopetrolOilGas} pie={t('training.orgs.photo')} lang={lang} />
+              </Sube>
             </div>
             <Sube delay={0.06}>
               <figure>

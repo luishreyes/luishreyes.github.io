@@ -45,6 +45,7 @@ export const fotos = {
   cursoGrupo: f('docencia/curso-grupo.jpg', 'A Unit Operations Project class, 2026', 'Un grupo de Proyecto de Operaciones Unitarias, 2026', '50% 55%'),
   equiposTapabocas: f('docencia/equipos-tapabocas.jpg', 'Teams at work in Systemic Design of Bioproducts', 'Equipos trabajando en Diseño Sistémico de Bioproductos', '50% 70%'),
   grabacionMooc: f('docencia/grabacion-mooc.jpg', 'Recording the introduction of the Coursera course on generative AI', 'La grabación de la introducción del curso de Coursera sobre IA generativa', '55% 12%'),
+  ecopetrolOilGas: f('docencia/ecopetrol-oil-gas-2026.jpg', 'The Cartagena group of the artificial intelligence programme for Ecopetrol S. A., 2026', 'El grupo de Cartagena del programa de inteligencia artificial para Ecopetrol S. A., 2026', '50% 40%'),
   postersPou: f('docencia/posters-pou.jpg', 'Poster session of the Unit Operations Project', 'Sesión de pósteres de Proyecto de Operaciones Unitarias', '50% 40%'),
   pouDiagrama: f('docencia/pou-actividad-diagrama-proceso.jpg', 'Students building a process diagram with sticky notes in the Unit Operations Project', 'Estudiantes arman un diagrama de proceso con notas adhesivas en Proyecto de Operaciones Unitarias', '35% 35%'),
   pouNpsh: f('docencia/pou-portatiles-taller-npsh.jpg', 'Laptops on the system curve and available NPSH workshop', 'Portátiles en el taller de curva del sistema y NPSH disponible', '50% 6%'),
