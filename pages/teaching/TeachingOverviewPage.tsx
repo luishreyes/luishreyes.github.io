@@ -141,7 +141,7 @@ export const TeachingOverviewPage: React.FC = () => {
             <Sube as="div" className="md:row-span-2">
               <figure>
                 <div className="overflow-hidden aspect-[4/3]">
-                  <img src={fotos.cervezaGlucanos.src} alt={localize(fotos.cervezaGlucanos.alt, lang)} loading="lazy" className="a-foto a-bn" />
+                  <img src={fotos.cervezaBavaria.src} alt={localize(fotos.cervezaBavaria.alt, lang)} loading="lazy" className="a-foto a-bn" style={{ objectPosition: fotos.cervezaBavaria.foco }} />
                 </div>
                 <figcaption className="a-pie">{t('tch.ov.class.beer')}</figcaption>
               </figure>

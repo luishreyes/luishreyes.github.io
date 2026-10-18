@@ -204,7 +204,7 @@ export const SchoolPage: React.FC = () => {
           <Sube><Cabecera titulo={t('school.course.title')} /></Sube>
           <div className="mt-12 grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-start">
             <Sube className="lg:sticky lg:top-24">
-              <Figura src={fotos.cervezaBavaria.src} alt={localize(fotos.cervezaBavaria.alt, lang)} pie={t('school.course.photo')} proporcion="aspect-[4/3] lg:aspect-[4/5]" posicion="70% 50%" />
+              <Figura src={fotos.cervezaPremio.src} alt={localize(fotos.cervezaPremio.alt, lang)} pie={t('school.course.photo')} proporcion="aspect-[4/3] lg:aspect-[4/5]" posicion={fotos.cervezaPremio.foco} />
             </Sube>
             <div>
               {(['school.course.p1', 'school.course.p2', 'school.course.p3', 'school.course.p5'] as UIKey[]).map((k, i) => (

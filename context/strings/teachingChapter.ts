@@ -41,7 +41,7 @@ export const teachingChapter = {
   'tch.ov.fig.aiche':         { en: 'professor from a university outside the United States to receive the award for innovation in education of the American Institute of Chemical Engineers (AIChE)', es: 'profesor de una universidad de fuera de Estados Unidos con el premio a la innovación educativa del American Institute of Chemical Engineers (AIChE)' },
   'tch.ov.fig.aiche.note':    { en: 'on its list of winners, which starts in 2014', es: 'en su lista de ganadores, que empieza en 2014' },
   'tch.ov.class.title':   { en: 'In class', es: 'En el aula' },
-  'tch.ov.class.beer':    { en: 'From yeast to beer. The teams explain the stages of mashing on the board, such as the breakdown of β-glucans.', es: 'From yeast to beer. Los equipos explican en el tablero las etapas de la maceración, como la degradación de los β-glucanos.' },
+  'tch.ov.class.beer':  { en: 'From yeast to beer. A guest from Bavaria speaks to the class.', es: 'From yeast to beer. Un invitado de Bavaria habla en clase.' },
   'tch.ov.class.dpro':    { en: 'Systemic Design of Bioproducts. The teams at work in class, wearing masks.', es: 'Diseño Sistémico de Bioproductos. Los equipos trabajan en clase, con tapabocas.' },
   'tch.ov.class.reto':    { en: 'Chemical Engineering Challenge, in its first edition (2019-10). On the board, the challenges of Casa Luker, a contract manufacturer and Bavaria, each with its teams.', es: 'Chemical Engineering Challenge, en su primera edición (2019-10). En el tablero, los retos de Casa Luker, de una maquiladora y de Bavaria, cada uno con sus equipos.' },
   'tch.ov.voices.title':  { en: 'In their words', es: 'En sus palabras' },

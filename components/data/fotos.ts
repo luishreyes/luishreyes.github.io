@@ -25,6 +25,7 @@ export const fotos = {
   gradoOlga: f('grados/2025-maestria-olga-lucia-acuna.jpg', 'Olga Lucía Acuña at her master’s graduation, 2025', 'Olga Lucía Acuña en su grado de maestría, 2025', '50% 30%'),
   // Escuela: el grupo
   palmaJulian: f('escuela/2025-congreso-palma-con-julian-becerra.jpg', 'With Julián Becerra at the 53rd National Congress of Oil Palm Growers, 2025', 'Con Julián Becerra en el 53.º Congreso Nacional de Cultivadores de Palma de Aceite, 2025', '50% 35%'),
+  cervezaPremio: f('escuela/cerveza-premio-bavaria.jpg', 'The best beer award of From yeast to beer, presented at Bavaria at the end of the course', 'El premio a la mejor cerveza de From yeast to beer, entregado en Bavaria al cerrar el curso', '15% 50%'),
   camilaJenga: f('escuela/camila-henao-jenga.jpg', 'María Camila Henao in the laboratory office', 'María Camila Henao en la oficina del laboratorio', '50% 35%'),
   sables: f('escuela/carlos-sables-de-luz.jpg', 'Carlos and the professor with light sabers', 'Carlos y el profesor con sables de luz', '50% 40%'),
   egresadosAiche: f('escuela/egresados-en-aiche.jpg', 'Graduates of the group at an AIChE poster session', 'Egresados del grupo en una sesión de pósteres de AIChE', '50% 30%'),
