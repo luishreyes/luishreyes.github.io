@@ -1,191 +1,209 @@
-
-
-
-import React, { useRef } from 'react';
+import React from 'react';
+import { Link } from 'react-router-dom';
 import { PageWrapper } from '../components/PageWrapper';
+import { EncabezadoPagina, Cabecera } from '../components/Apertura';
+import { Sube } from '../components/Sube';
 import { awardsData } from '../components/data/awards';
-import { useI18n, localize } from '../context/i18n';
-// FIX: Removed 'Variants' from framer-motion import to resolve module export error.
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { graduatedStudentsData } from '../components/data/students';
+import { committeesData } from '../components/data/institutional';
+import { fotos, type Foto } from '../components/data/fotos';
+import { useI18n, localize, type Lang } from '../context/i18n';
+import type { Recognition, GraduatedStudent, Committee } from '../types';
 
-const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-        opacity: 1,
-        transition: {
-            staggerChildren: 0.2,
-        },
-    },
+// El premio que encabeza la página, las dos distinciones nacionales de 2023 (van juntas y con
+// el mismo peso) y el resto como registro. Todo sale de awards.ts.
+const AICHE = 'AIChE Education Division';
+const NACIONALES = ['National Academy of Medicine of Colombia', 'Fundación Alejandro Ángel Escobar'];
+const FOTO_NACIONAL: Record<string, Foto> = {
+  'National Academy of Medicine of Colombia': fotos.academiaMedicina,
+  'Fundación Alejandro Ángel Escobar': fotos.angelEscobar,
+};
+// Coautores del grupo en el trabajo de 2023, con su ficha de egresado.
+const COAUTORES = ['Andrés Felipe Leal', 'Carlos Emilio Torres Garay', 'Valentina Quezada Pérez', 'Saúl Camilo Gómez Tinoco'];
+
+const autores = (a: Recognition) =>
+  a.authors.map((autor, i) => (
+    <React.Fragment key={autor}>
+      {autor.includes('Reyes') ? <strong className="font-semibold text-tinta-900">{autor}</strong> : autor}
+      {i < a.authors.length - 1 ? ', ' : ''}
+    </React.Fragment>
+  ));
+
+const Fuente: React.FC<{ href: string; label: string }> = ({ href, label }) => (
+  <a href={href} target="_blank" rel="noopener noreferrer" className="a-enlace">
+    {label} <span aria-hidden="true">↗</span>
+  </a>
+);
+
+/** Una de las dos distinciones nacionales de 2023: las dos llevan la misma forma. */
+const Nacional: React.FC<{ a: Recognition; foto?: Foto; lang: Lang; delay: number }> = ({ a, foto, lang, delay }) => {
+  const { t } = useI18n();
+  return (
+    <Sube delay={delay}>
+      <article>
+        {foto && (
+          <figure className="mb-8">
+            <img src={foto.src} alt={localize(foto.alt, lang)} loading="lazy" className="a-bn w-full aspect-[4/3] object-cover" />
+            <figcaption className="a-pie">{localize(foto.alt, lang)}</figcaption>
+          </figure>
+        )}
+        <h3 className="a-h3">{localize(a.title, lang)}</h3>
+        <p className="a-meta mt-3">{localize(a.awarder, lang)} · {localize(a.category, lang)} · {a.year}</p>
+        <div className="mt-6 space-y-4">
+          {a.summary.map((p, i) => <p key={i} className="a-texto">{localize(p, lang)}</p>)}
+        </div>
+        <p className="a-s mt-6 text-tinta-700 max-w-[64ch]">{t('awards.authors')} {autores(a)}</p>
+        <p className="mt-6"><Fuente href={a.url} label={t('awards.source')} /></p>
+      </article>
+    </Sube>
+  );
 };
 
-const itemVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: {
-        opacity: 1,
-        y: 0,
-        transition: {
-            duration: 0.6,
-            // FIX: Added 'as const' to prevent TypeScript from widening the string literal type, which caused a type error.
-            ease: "easeOut" as const,
-        },
-    },
-};
+export const AwardsPage: React.FC = () => {
+  const { t, lang } = useI18n();
+  const aiche = awardsData.find((a) => localize(a.awarder, 'en') === AICHE);
+  const nacionales = NACIONALES.map((n) => awardsData.find((a) => localize(a.awarder, 'en') === n)).filter((a): a is Recognition => Boolean(a));
+  const otros = awardsData.filter((a) => a !== aiche && !nacionales.includes(a)).sort((x, y) => y.year - x.year);
+  // La Academia Joven de Colombia no es un premio sino un ingreso por méritos: viene de los
+  // comités (institutional.ts) y entra al registro con su año.
+  const academia = committeesData.find((c: Committee) => localize(c.title, 'en') === 'Academia Joven de Colombia');
+  const filas = [
+    ...otros.map((a) => ({
+      clave: a.url + a.year,
+      year: a.year,
+      titulo: localize(a.title, lang),
+      donde: `${localize(a.awarder, lang)} · ${localize(a.category, lang)}`,
+      linea: `${t('awards.work')} ${a.projectTitle}`,
+      mas: a.summary.map((p) => localize(p, lang)),
+      autores: a.authors.length > 1 ? <p className="a-s text-tinta-700 max-w-[64ch]">{t('awards.authors')} {autores(a)}</p> : null,
+      url: a.url,
+    })),
+    ...(academia
+      ? [{
+          clave: 'academia-joven',
+          year: academia.startYear,
+          titulo: localize(academia.title, lang),
+          donde: `${academia.role ? localize(academia.role, lang) : ''} · ${t('awards.academia.since')} ${academia.startYear}`,
+          // Sin enlace de fuente: su descripción entera va a la vista, sin «Más detalles».
+          linea: academia.description.map((p) => localize(p, lang)).join(' '),
+          mas: [] as string[],
+          autores: null,
+          url: '',
+        }]
+      : []),
+  ].sort((x, y) => y.year - x.year);
+  const todos = [...graduatedStudentsData.phd, ...graduatedStudentsData.ms];
+  const coautores = COAUTORES.map((n) => todos.find((g) => g.name === n)).filter((g): g is GraduatedStudent => Boolean(g));
 
+  return (
+    <PageWrapper noPadding>
+      <EncabezadoPagina
+        titulo={t('awards.title')}
+        entrada={<p>{t('awards.subtitle')}</p>}
+        accion={{ to: '/teaching/unit-ops', label: t('awards.cta') }}
+      />
 
-// FIX: Changed component to React.FC to resolve TypeScript error with the 'key' prop.
-const RecognitionCard: React.FC<{ recognition: typeof awardsData[0] }> = ({ recognition }) => {
-    const { t, lang } = useI18n();
-    const imageContainerRef = useRef<HTMLDivElement>(null);
-
-    const { scrollYProgress } = useScroll({
-        target: imageContainerRef,
-        offset: ['start end', 'end start']
-    });
-
-    const frameRotate = useTransform(scrollYProgress, [0, 1], [-3, 3]);
-    const imageRotate = useTransform(scrollYProgress, [0, 1], [2, -2]);
-    const imageScale = useTransform(scrollYProgress, [0, 1], [1.05, 1]);
-
-    return (
-        <motion.div 
-            {...{variants: itemVariants}}
-            className="bg-white rounded-xl shadow-lg border border-yellow-400/40 overflow-hidden"
-        >
-            <div className="md:flex md:items-center">
-                <div className="w-full md:w-56 flex justify-center p-6 md:flex-shrink-0">
-                    <div ref={imageContainerRef} className="relative w-40 h-40">
-                        {/* Dephased frame */}
-                        <motion.div
-                            className="absolute top-2 right-[-6px] bottom-[-6px] left-2 rounded-2xl border-2 border-yellow-400"
-                            style={{ rotate: frameRotate }}
-                        />
-
-                        {/* Main image */}
-                        <motion.div
-                            className="relative w-full h-full rounded-2xl shadow-xl z-10 overflow-hidden"
-                            style={{ rotate: imageRotate, scale: imageScale }}
-                        >
-                            <img
-                                className="w-full h-full object-contain object-center p-4"
-                                src={recognition.imageUrl}
-                                alt={`Icon for ${localize(recognition.title, lang)}`}
-                            />
-                            <div className="absolute inset-0 bg-white mix-blend-saturation pointer-events-none"></div>
-                        </motion.div>
-                    </div>
+      {/* ── El premio de AIChE: su propio bloque, con el peso que tiene ── */}
+      {aiche && (
+        <section className="a-oscuro a-campo">
+          <div className="a-c">
+            <Sube>
+              <h2 className="text-[length:var(--t-l)] md:text-[length:var(--t-titulo)] leading-[1.04] tracking-[-.04em] font-bold text-white lg:max-w-[24ch]">
+                {localize(aiche.title, lang)}
+              </h2>
+            </Sube>
+            <div className="mt-12 grid gap-12 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:gap-16">
+              <div>
+                <Sube delay={0.06}>
+                  <p className="a-entrada max-w-[40ch]">{t('awards.lead.first')}</p>
+                  <p className="a-meta mt-5">{localize(aiche.awarder, lang)} · {aiche.year}</p>
+                </Sube>
+                <div className="mt-10 space-y-4">
+                  {aiche.summary.map((p, i) => (
+                    <Sube key={i} delay={0.04 * i}><p className="a-texto">{localize(p, lang)}</p></Sube>
+                  ))}
                 </div>
-                <div className="p-8 pt-0 md:pt-8 md:pl-0 flex-grow flex flex-col justify-between">
-                    <div>
-                        <div className="flex flex-col sm:flex-row justify-between sm:items-baseline gap-2 mb-2">
-                            <h2 className="text-2xl font-bold text-brand-dark leading-tight">{localize(recognition.title, lang)}</h2>
-                            <span className="text-sm font-semibold bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full whitespace-nowrap flex-shrink-0">{recognition.year}</span>
-                        </div>
-                        <p className="block text-sm font-semibold text-yellow-500 uppercase tracking-wide">{localize(recognition.awarder, lang)} - {localize(recognition.category, lang)}</p>
-                        
-                        <p className="mt-4 text-brand-dark italic font-medium">{t('awards.work')} "{recognition.projectTitle}"</p>
-
-                        <p className="mt-2 text-sm text-brand-gray">
-                            {t('awards.authors')} {recognition.authors.map((author, i) => (
-                                <React.Fragment key={i}>
-                                    {author.includes('Reyes') ? <strong className="font-semibold text-brand-dark">{author}</strong> : author}
-                                    {i < recognition.authors.length - 1 ? ', ' : ''}
-                                </React.Fragment>
-                            ))}
-                        </p>
-
-                        <div className="mt-4 space-y-3 text-brand-gray text-base">
-                            {recognition.summary.map((paragraph, i) => (
-                                <p key={i}>{localize(paragraph, lang)}</p>
-                            ))}
-                        </div>
-                    </div>
-                    <div className="mt-6">
-                        <a 
-                            href={recognition.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-block bg-yellow-400 text-brand-dark font-semibold px-6 py-2 rounded-lg shadow-md hover:bg-yellow-500 transition-colors duration-300 text-sm"
-                        >
-                            {t('awards.learnMore')}
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </motion.div>
-    );
-};
-
-export const AwardsPage = () => {
-    const { t } = useI18n();
-    const headerRef = useRef<HTMLDivElement>(null);
-    const { scrollYProgress } = useScroll({
-      target: headerRef,
-      offset: ["start end", "end start"]
-    });
-    const frameRotate = useTransform(scrollYProgress, [0, 1], [1, -2]);
-    const imageRotate = useTransform(scrollYProgress, [0, 1], [-1, 1]);
-
-    return (
-        <PageWrapper noPadding>
-          {/* Header Section */}
-          <div ref={headerRef} className="relative bg-zinc-800 overflow-hidden p-6 sm:p-8">
-            {/* Dephased frame */}
-            <motion.div
-              className="absolute inset-2 sm:inset-4 rounded-2xl border-2 border-yellow-400 pointer-events-none"
-              style={{ rotate: frameRotate }}
-            />
-
-            {/* Main content with image background */}
-            <motion.div
-              className="relative rounded-2xl shadow-xl z-10 overflow-hidden"
-              style={{ rotate: imageRotate }}
-            >
-              <img 
-                  src="https://pbs.twimg.com/media/DWKm7gvXcAIISbY?format=jpg&name=4096x4096" 
-                  alt="A close-up of an elegant award, symbolizing recognition and achievement"
-                  className="absolute inset-0 w-full h-full object-cover object-top"
-              />
-              <div className="absolute inset-0 bg-white mix-blend-saturation pointer-events-none"></div>
-              <div className="absolute inset-0 bg-zinc-900/60 mix-blend-multiply" />
-              <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-48 pb-24">
-                  <motion.div
-                      // FIX: Spread motion props to avoid TypeScript type errors.
-                      {...{
-                        initial: { opacity: 0, x: -20 },
-                        animate: { opacity: 1, x: 0 },
-                        transition: { duration: 0.6, ease: 'easeOut' },
-                      }}
-                      className="text-left max-w-3xl"
-                  >
-                      <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white [text-shadow:0_2px_4px_rgba(0,0,0,0.5)]">
-                          {t('awards.title')}
-                      </h1>
-                      <p className="mt-6 text-xl text-zinc-200 leading-relaxed [text-shadow:0_1px_2px_rgba(0,0,0,0.5)]">
-                          {t('awards.subtitle')}
-                      </p>
-                  </motion.div>
+                <Sube className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4">
+                  <Link to="/teaching/unit-ops" className="a-boton">
+                    {t('awards.lead.course')} <span aria-hidden="true">→</span>
+                  </Link>
+                  <Fuente href={aiche.url} label={t('awards.lead.page')} />
+                </Sube>
               </div>
-            </motion.div>
-          </div>
-          
-          {/* Content Section */}
-          <div className="bg-white">
-            <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
-                <motion.div 
-                    className="space-y-12"
-                    // FIX: Spread motion props to avoid TypeScript type errors.
-                    {...{
-                        variants: containerVariants,
-                        initial: "hidden",
-                        animate: "visible",
-                    }}
-                >
-                    {awardsData.map((award, index) => (
-                        <RecognitionCard key={index} recognition={award} />
-                    ))}
-                </motion.div>
+              <Sube delay={0.12} className="lg:sticky lg:top-28 lg:self-start">
+                <figure>
+                  <img src={fotos.cursoGrupo.src} alt={localize(fotos.cursoGrupo.alt, lang)} className="a-bn w-full aspect-[4/3] object-cover" />
+                  <figcaption className="a-pie !text-tinta-300">{localize(fotos.cursoGrupo.alt, lang)}</figcaption>
+                </figure>
+              </Sube>
             </div>
           </div>
-        </PageWrapper>
-    );
+        </section>
+      )}
+
+      {/* ── Las dos distinciones nacionales de 2023, juntas y con el mismo peso ── */}
+      {nacionales.length > 0 && (
+        <section className="a-hundido a-campo">
+          <div className="a-c">
+            <Sube><Cabecera titulo={t('awards.national.title')} /></Sube>
+            <Sube delay={0.06}>
+              <p className="a-entrada mt-8 max-w-[52ch]">{nacionales[0].projectTitle}</p>
+            </Sube>
+            <div className="mt-14 grid gap-14 md:grid-cols-2 md:gap-12">
+              {nacionales.map((a, i) => <Nacional key={a.url} a={a} foto={FOTO_NACIONAL[localize(a.awarder, 'en')]} lang={lang} delay={0.06 * i} />)}
+            </div>
+            <ul className="mt-20 grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12">
+              {coautores.map((g, i) => (
+                <Sube as="li" key={g.name} delay={0.06 * i}>
+                  <img src={g.imageUrl} alt={g.name} loading="lazy" className="a-bn w-full aspect-[4/5] object-cover object-top" />
+                  <p className="mt-4 font-semibold leading-tight text-tinta-900">{g.name}</p>
+                  <p className="a-meta mt-1">{g.program ? localize(g.program, lang) : g.degree} · {g.graduationYear}</p>
+                </Sube>
+              ))}
+            </ul>
+            <Sube><p className="a-pie mt-10">{t('awards.national.coauthors')}</p></Sube>
+          </div>
+        </section>
+      )}
+
+      {/* ── El resto, como registro: año, distinción, quién la da y el trabajo; al margen, la Academia Joven ── */}
+      <section className="a-papel a-campo">
+        <div className="a-c">
+          <Sube><Cabecera titulo={t('awards.others')} /></Sube>
+          <div className="grid gap-12 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:gap-16">
+            <ul className="a-registro !border-t-0 mt-2">
+              {filas.map((f, i) => (
+                <Sube as="li" key={f.clave} delay={0.04 * i}>
+                  <span className="cuando">{f.year}</span>
+                  <div>
+                    <h3 className="que">{f.titulo}</h3>
+                    <p className="donde">{f.donde}</p>
+                    <p className="detalle a-texto">{f.linea}</p>
+                    {f.mas.length > 0 && (
+                      <details className="mt-4">
+                        <summary className="a-s cursor-pointer text-tinta-900 underline underline-offset-4 w-fit">{t('awards.more')}</summary>
+                        <div className="mt-4 space-y-3">
+                          {f.mas.map((p, j) => <p key={j} className="a-texto">{p}</p>)}
+                          {f.autores}
+                        </div>
+                      </details>
+                    )}
+                    {f.url && <p className="mt-4 a-s"><Fuente href={f.url} label={t('awards.source')} /></p>}
+                  </div>
+                </Sube>
+              ))}
+            </ul>
+            {academia && (
+              <Sube delay={0.1} className="lg:sticky lg:top-28 lg:self-start lg:mt-8">
+                <figure>
+                  <img src={fotos.academiaJoven.src} alt={localize(fotos.academiaJoven.alt, lang)} loading="lazy" className="a-bn w-full aspect-square object-cover object-top" />
+                  <figcaption className="a-pie">{localize(fotos.academiaJoven.alt, lang)}</figcaption>
+                </figure>
+              </Sube>
+            )}
+          </div>
+        </div>
+      </section>
+    </PageWrapper>
+  );
 };
