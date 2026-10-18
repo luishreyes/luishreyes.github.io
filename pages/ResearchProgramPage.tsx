@@ -139,7 +139,7 @@ const CASOS: Caso[] = [
     estudiantes: [
       { nombre: 'Brayan Rodríguez', nivel: 'rc.lvl.phd.felipe', foto: retrato('brayan-rodriguez') },
       { nombre: 'Martha Liliana Díaz-Bustamante', nivel: 'rc.lvl.phd.now', foto: '/images/testimonials/martha-liliana-diaz-bustamante.jpg' },
-      { nombre: 'Carlos Yesiel González Murcia', nivel: 'rc.lvl.phd.co.now' },
+      { nombre: 'Carlos Yesiel González Murcia', nivel: 'rc.lvl.phd.co.now', foto: retrato('carlos-yesiel-gonzalez-murcia') },
     ],
     publicaciones: [
       { donde: 'Applied Sciences', ano: 2020, href: doi('10.3390/app10249008') },
