@@ -159,7 +159,7 @@ export const TeachingPurposePage: React.FC = () => {
       <EncabezadoPagina
         titulo={t('purpose.teaching.title')}
         entrada={<p>{t('purpose.teaching.sub')}</p>}
-        accion={{ to: '/principles/philosophy', label: t('purpose.teaching.cta') }}
+        accion={{ to: '/teaching/philosophy', label: t('purpose.teaching.cta') }}
         foto={{ src: fotos.cervezaProteinas.src, alt: localize(fotos.cervezaProteinas.alt, lang) }}
       />
 

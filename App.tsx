@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
 import { SiteFooter } from './components/SiteFooter';
 import { AboutPage } from './pages/AboutPage';
@@ -176,10 +176,15 @@ const App: React.FC = () => {
               <Route path="/trajectory" element={<TrajectoryPage />} />
               <Route path="/context" element={<ContextPage />} />
               <Route path="/next" element={<NextPage />} />
-              <Route path="/principles/teaching" element={<TeachingPurposePage />} />
-              <Route path="/principles/research" element={<ResearchPurposePage />} />
-              <Route path="/principles/service" element={<ServicePurposePage />} />
-              <Route path="/principles/philosophy" element={<TeachingPhilosophyPage />} />
+              {/* Cada filosofía abre su capítulo; las direcciones viejas de /principles redirigen. */}
+              <Route path="/teaching/purpose" element={<TeachingPurposePage />} />
+              <Route path="/teaching/philosophy" element={<TeachingPhilosophyPage />} />
+              <Route path="/research/purpose" element={<ResearchPurposePage />} />
+              <Route path="/service/purpose" element={<ServicePurposePage />} />
+              <Route path="/principles/teaching" element={<Navigate to="/teaching/purpose" replace />} />
+              <Route path="/principles/philosophy" element={<Navigate to="/teaching/philosophy" replace />} />
+              <Route path="/principles/research" element={<Navigate to="/research/purpose" replace />} />
+              <Route path="/principles/service" element={<Navigate to="/service/purpose" replace />} />
               <Route path="/research" element={<ResearchOverviewPage />} />
               <Route path="/research/program" element={<ResearchProgramPage />} />
               <Route path="/research/products" element={<ProductsPage />} />

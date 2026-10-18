@@ -36,30 +36,21 @@ const Chevron = ({ open, className = 'w-4 h-4' }: { open: boolean; className?: s
   </svg>
 );
 
+/** El menú sigue los capítulos del portafolio docente: Perfil (Contexto, Trayectoria,
+ *  Reconocimiento, Lo que sigue), Docencia con la formación a escala, Estudiantes,
+ *  Investigación, Servicio y el Aula. Cada filosofía abre su capítulo. */
 const navItems = (t: (key: import('../context/i18n').UIKey) => string) => [
   {
-    id: 'principles',
-    title: t('nav.principles'),
-    defaultPath: '/principles/teaching',
-    pathPrefix: '/principles',
+    id: 'about',
+    title: t('nav.about'),
+    defaultPath: '/context',
+    pathPrefix: '/context',
+    match: (p: string) => ['/context', '/trajectory', '/recognition', '/next'].includes(p),
     subItems: [
-      { title: t('nav.principles.teaching'), path: '/principles/teaching' },
-      { title: t('nav.principles.research'), path: '/principles/research' },
-      { title: t('nav.principles.service'), path: '/principles/service' },
-      { title: t('nav.principles.philosophy'), path: '/principles/philosophy' },
-    ],
-  },
-  {
-    id: 'research',
-    title: t('nav.research'),
-    defaultPath: '/research',
-    pathPrefix: '/research',
-    subItems: [
-      { title: t('nav.research.overview'), path: '/research' },
-      { title: t('nav.research.program'), path: '/research/program' },
-      { title: t('nav.research.products'), path: '/research/products' },
-      { title: t('nav.research.grants'), path: '/research/grants' },
-      { title: t('nav.research.students'), path: '/research/students' },
+      { title: t('nav.context'), path: '/context' },
+      { title: t('nav.trajectory'), path: '/trajectory' },
+      { title: t('nav.recognition'), path: '/recognition' },
+      { title: t('nav.next'), path: '/next' },
     ],
   },
   {
@@ -67,14 +58,38 @@ const navItems = (t: (key: import('../context/i18n').UIKey) => string) => [
     title: t('nav.teaching'),
     defaultPath: '/teaching',
     pathPrefix: '/teaching',
+    match: (p: string) => p.startsWith('/teaching'),
     subItems: [
       { title: t('nav.teaching.overview'), path: '/teaching' },
+      { title: t('nav.purpose'), path: '/teaching/purpose' },
+      { title: t('nav.teaching.philosophy'), path: '/teaching/philosophy' },
       { title: t('nav.teaching.courses'), path: '/teaching/courses' },
-      { title: t('nav.teaching.scholarship'), path: '/teaching/scholarship' },
       { title: t('nav.teaching.unitops'), path: '/teaching/unit-ops' },
-      { title: t('nav.teaching.continuing'), path: '/teaching/continuing-education' },
+      { title: t('nav.teaching.scholarship'), path: '/teaching/scholarship' },
       { title: t('nav.teaching.testimonials'), path: '/teaching/testimonials' },
+      { title: t('nav.teaching.continuing'), path: '/teaching/continuing-education' },
       { title: t('nav.teaching.profdev'), path: '/teaching/professional-development' },
+    ],
+  },
+  {
+    id: 'students',
+    title: t('nav.students'),
+    defaultPath: '/research/students',
+    pathPrefix: '/research/students',
+    match: (p: string) => p === '/research/students',
+  },
+  {
+    id: 'research',
+    title: t('nav.research'),
+    defaultPath: '/research',
+    pathPrefix: '/research',
+    match: (p: string) => p.startsWith('/research') && p !== '/research/students',
+    subItems: [
+      { title: t('nav.research.overview'), path: '/research' },
+      { title: t('nav.purpose'), path: '/research/purpose' },
+      { title: t('nav.research.program'), path: '/research/program' },
+      { title: t('nav.research.products'), path: '/research/products' },
+      { title: t('nav.research.grants'), path: '/research/grants' },
     ],
   },
   {
@@ -82,8 +97,10 @@ const navItems = (t: (key: import('../context/i18n').UIKey) => string) => [
     title: t('nav.service'),
     defaultPath: '/service',
     pathPrefix: '/service',
+    match: (p: string) => p.startsWith('/service'),
     subItems: [
       { title: t('nav.service.overview'), path: '/service' },
+      { title: t('nav.purpose'), path: '/service/purpose' },
       { title: t('nav.service.ai'), path: '/service/augmented-intelligence' },
       { title: t('nav.service.leadership'), path: '/service/committees' },
       { title: t('nav.service.editorial'), path: '/service/editorial' },
@@ -91,8 +108,7 @@ const navItems = (t: (key: import('../context/i18n').UIKey) => string) => [
       { title: t('nav.service.outreach'), path: '/service/outreach' },
     ],
   },
-  { id: 'recognition', title: t('nav.recognition'), defaultPath: '/recognition', pathPrefix: '/recognition' },
-  { id: 'classroom', title: t('nav.classroom'), defaultPath: '/classroom', pathPrefix: '/classroom' },
+  { id: 'classroom', title: t('nav.classroom'), defaultPath: '/classroom', pathPrefix: '/classroom', match: (p: string) => p.startsWith('/classroom') },
 ];
 
 
@@ -136,10 +152,7 @@ export const Navbar = ({ onDownloadCv }: NavbarProps) => {
   }, [location.pathname]);
 
 
-  const isActive = (item: ReturnType<typeof navItems>[number]) =>
-    item.pathPrefix === '/recognition'
-      ? location.pathname === '/recognition'
-      : location.pathname.startsWith(item.pathPrefix);
+  const isActive = (item: ReturnType<typeof navItems>[number]) => item.match(location.pathname);
 
   // El cabezal del dossier: el nombre en versales espaciadas sobre el papel plano.
   return (

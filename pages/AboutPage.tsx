@@ -5,15 +5,20 @@ import { PageWrapper } from '../components/PageWrapper';
 import { Cabecera } from '../components/Apertura';
 import { Sube, SALE } from '../components/Sube';
 import { Vectores } from '../components/Vectores';
+import { fotos } from '../components/data/fotos';
 import { useI18n, type UIKey } from '../context/i18n';
 
-/** El contenido del sitio, como el índice del portafolio docente: cada capítulo con su foto. */
+/** El contenido del sitio, en el orden de los capítulos del portafolio docente, cada uno con su foto. */
 const CAPITULOS: { to: string; nombre: UIKey; linea: UIKey; foto: string }[] = [
-  { to: '/trajectory', nombre: 'nav.trajectory', linea: 'home.contents.trajectory', foto: '/images/site/campus-mision-historia-y-simbolos-0.webp' },
-  { to: '/teaching', nombre: 'nav.teaching', linea: 'home.contents.teaching', foto: '/images/site/uandes-2.jpg' },
-  { to: '/research', nombre: 'nav.research', linea: 'home.contents.research', foto: '/images/site/generated-image-september-02-2025-1-07pm.jpg' },
-  { to: '/service', nombre: 'nav.service', linea: 'home.contents.service', foto: '/images/site/img-4560-2.jpg' },
-  { to: '/recognition', nombre: 'nav.recognition', linea: 'home.contents.recognition', foto: '/images/uniandes-bw.jpg' },
+  { to: '/context', nombre: 'nav.context', linea: 'home.contents.context', foto: fotos.pouNpsh.src },
+  { to: '/trajectory', nombre: 'nav.trajectory', linea: 'home.contents.trajectory', foto: fotos.recienLlegado.src },
+  { to: '/teaching', nombre: 'nav.teaching', linea: 'home.contents.teaching', foto: fotos.cursoGrupo.src },
+  { to: '/teaching/continuing-education', nombre: 'nav.teaching.continuing', linea: 'home.contents.training', foto: fotos.grabacionMooc.src },
+  { to: '/research/students', nombre: 'nav.students', linea: 'home.contents.students', foto: fotos.gradoBrayan.src },
+  { to: '/research', nombre: 'nav.research', linea: 'home.contents.research', foto: fotos.laboratorio.src },
+  { to: '/service', nombre: 'nav.service', linea: 'home.contents.service', foto: fotos.scoutingPlanta.src },
+  { to: '/recognition', nombre: 'nav.recognition', linea: 'home.contents.recognition', foto: fotos.academiaMedicina.src },
+  { to: '/next', nombre: 'nav.next', linea: 'home.contents.next', foto: fotos.acofiPonencia.src },
   { to: '/classroom', nombre: 'nav.classroom', linea: 'home.contents.classroom', foto: '/classroom/iqya-2031-2026-20/banner.jpg' },
 ];
 
@@ -89,7 +94,7 @@ export const AboutPage: React.FC = () => {
             <Vectores />
           </Sube>
           <Sube className="mt-12">
-            <Link to="/principles/teaching" className="a-enlace">
+            <Link to="/teaching/purpose" className="a-enlace">
               {t('home.vectors.more')} <span aria-hidden="true">→</span>
             </Link>
           </Sube>
