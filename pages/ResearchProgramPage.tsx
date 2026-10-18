@@ -135,8 +135,6 @@ const CASOS: Caso[] = [
       { nombre: 'Jesús Rafael Acevedo Mastrogiacomo', nivel: 'rc.lvl.ms.co.2026', foto: retrato('jesus-rafael-acevedo') },
       { nombre: 'Martha Lizeth Castellanos Ordóñez', nivel: 'rc.lvl.phd.now', foto: retrato('martha-lizeth-castellanos-ordonez') },
       { nombre: 'Andrés Felipe Infante Bravo', nivel: 'rc.lvl.ms.now', foto: retrato('andres-felipe-infante-bravo') },
-      { nombre: 'Mariana García Alba', nivel: 'rc.lvl.ug.2024' },
-      { nombre: 'Esteban Muñoz Cardona', nivel: 'rc.lvl.ug.2024' },
     ],
     publicaciones: [
       { donde: 'Processes', ano: 2025, href: doi('10.3390/pr13041077') },
