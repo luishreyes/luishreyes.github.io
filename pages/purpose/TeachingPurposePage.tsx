@@ -1,82 +1,249 @@
-
-
-
-
-
-import React from 'react';
+import React, { useId, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { PageWrapper } from '../../components/PageWrapper';
-import { motion } from 'framer-motion';
-import { useI18n } from '../../context/i18n';
+import { EncabezadoPagina } from '../../components/Apertura';
+import { Sube } from '../../components/Sube';
+import { useI18n, localize, num, type UIKey } from '../../context/i18n';
+import { testimonials, type Testimonial } from '../../components/data/teaching';
+import { graduatedStudentsData } from '../../components/data/students';
+import { fotos } from '../../components/data/fotos';
 
+/* Las cuatro páginas de lectura (los tres propósitos y la filosofía) se arman como las
+   páginas de lectura del portafolio impreso: un margen a la izquierda con el título del
+   bloque, la cita o la figura, y el texto a la derecha en una medida cómoda. */
+export const PLIEGO = 'grid gap-y-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-x-16';
+export const MARGEN = 'lg:sticky lg:top-28 lg:self-start';
+
+/** Resalta con el marcador una frase que ya está en el párrafo (una sola por página). */
+export const Resaltar: React.FC<{ texto: string; frase: string }> = ({ texto, frase }) => {
+  const i = texto.indexOf(frase);
+  if (i < 0) return <>{texto}</>;
+  return (
+    <>
+      {texto.slice(0, i)}
+      <span className="a-resaltado">{frase}</span>
+      {texto.slice(i + frase.length)}
+    </>
+  );
+};
+
+/** Retrato de una persona con su nombre y, debajo, de dónde viene y dónde está. */
+export const Retrato: React.FC<{ src: string; nombre: string; linea: string; detalle?: string; delay?: number; cuadrado?: boolean }> = ({
+  src,
+  nombre,
+  linea,
+  detalle,
+  delay = 0,
+  cuadrado = false,
+}) => (
+  <Sube as="li" delay={delay}>
+    <img src={src} alt={nombre} loading="lazy" className={`a-bn w-full object-cover object-top ${cuadrado ? 'aspect-square' : 'aspect-[4/5]'}`} />
+    <p className="mt-4 font-semibold leading-tight text-tinta-900">{nombre}</p>
+    <p className="a-meta mt-1">{linea}</p>
+    {detalle && <p className="a-s mt-2 text-tinta-700">{detalle}</p>}
+  </Sube>
+);
+
+/** Cargo actual de quien dio un testimonio: el de su ficha de egresado, si la tiene. */
+export const cargoDe = (x: Testimonial) => {
+  const ficha = x.graduateName
+    ? [...graduatedStudentsData.phd, ...graduatedStudentsData.ms].find((g) => g.name === x.graduateName)
+    : undefined;
+  return ficha?.currentPosition ?? x.info;
+};
+
+export const testimoniosDe = (nombres: string[]) =>
+  nombres
+    .map((n) => testimonials.find((x) => x.name === n && x.category === 'Teaching & Mentorship'))
+    .filter((x): x is Testimonial => Boolean(x));
+
+const CASOS: { clave: UIKey; angulo: number }[] = [
+  { clave: 'vector.aligned', angulo: 0 },
+  { clave: 'vector.orthogonal', angulo: 90 },
+  { clave: 'vector.opposed', angulo: 180 },
+];
+
+/** La suma vectorial del ensayo, para tocarla: el estudiante llega con su vector, el
+ *  educador suma el suyo con el ángulo que escoja y la resultante (con el marcador) dice
+ *  cuánto avanza y cuánto se desvía. Las frases que acompañan cada caso son del texto. */
+export const SumaVectorial: React.FC = () => {
+  const { t, lang } = useI18n();
+  const id = useId().replace(/:/g, '');
+  const [angulo, setAngulo] = useState(90);
+  const rad = (angulo * Math.PI) / 180;
+  const L = 150;
+  const O = { x: 24, y: 236 };
+  const S = { x: O.x + L, y: O.y };
+  const E = { x: S.x + L * Math.cos(rad), y: S.y - L * Math.sin(rad) };
+  const avance = Math.max(0, 1 + Math.cos(rad));
+  const desvio = Math.max(0, Math.sin(rad));
+  const nula = Math.hypot(E.x - O.x, E.y - O.y) < 4;
+  const frase: UIKey =
+    angulo <= 25 ? 'vector.say.aligned'
+    : angulo >= 155 ? 'vector.say.opposed'
+    : angulo >= 70 && angulo <= 110 ? 'vector.say.orthogonal'
+    : 'vector.say.between';
+
+  const punta = (nombre: string, color: string) => (
+    <marker id={`${id}-${nombre}`} viewBox="0 0 10 10" refX="8" refY="5" markerUnits="userSpaceOnUse" markerWidth="18" markerHeight="18" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill={color} />
+    </marker>
+  );
+
+  return (
+    <figure>
+      <ul className="mb-3 flex flex-wrap gap-x-6 gap-y-2 a-s text-tinta-700" aria-hidden="true">
+        <li className="flex items-center gap-2"><span className="inline-block w-7 h-[6px] bg-tinta-400" />{t('vector.student')}</li>
+        <li className="flex items-center gap-2"><span className="inline-block w-7 h-[6px] bg-tinta-700" />{t('vector.educator')}</li>
+        <li className="flex items-center gap-2">
+          <span className="relative inline-block w-7 h-[12px] bg-resaltador"><span className="absolute inset-x-0 top-[4.5px] h-[3px] bg-tinta-900" /></span>
+          {t('vector.resultant')}
+        </li>
+      </ul>
+      <svg viewBox="0 66 360 196" className="w-full h-auto" role="img"
+        aria-label={`${t('vector.angle')}: ${angulo}°. ${t('vector.forward')} ${num(avance, lang, 2)}, ${t('vector.sideways')} ${num(desvio, lang, 2)}.`}>
+        <defs>
+          {punta('e', '#8E8E92')}
+          {punta('d', '#4A4A4C')}
+          {punta('r', '#1D1D1B')}
+        </defs>
+        {/* La resultante lleva el marcador debajo: es lo que cambia cuando se toca. */}
+        {nula ? (
+          <circle cx={O.x} cy={O.y} r="9" fill="#FFE900" />
+        ) : (
+          <line x1={O.x} y1={O.y} x2={E.x} y2={E.y} stroke="#FFE900" strokeWidth="16" strokeLinecap="round" />
+        )}
+        <line x1={O.x} y1={O.y} x2={S.x - 6} y2={S.y} stroke="#8E8E92" strokeWidth="6" markerEnd={`url(#${id}-e)`} />
+        {!nula && (
+          <line x1={S.x} y1={S.y} x2={E.x - 6 * Math.cos(rad)} y2={E.y + 6 * Math.sin(rad)} stroke="#4A4A4C" strokeWidth="6" markerEnd={`url(#${id}-d)`} />
+        )}
+        {nula ? (
+          <circle cx={O.x} cy={O.y} r="3" fill="#1D1D1B" />
+        ) : (
+          <line x1={O.x} y1={O.y} x2={E.x} y2={E.y} stroke="#1D1D1B" strokeWidth="3" markerEnd={`url(#${id}-r)`} />
+        )}
+      </svg>
+      <div className="mt-6 a-cifras !grid-cols-2" aria-live="polite">
+        <div><b>{num(avance, lang, 2)}</b><span>{t('vector.forward')}</span></div>
+        <div><b>{num(desvio, lang, 2)}</b><span>{t('vector.sideways')}</span></div>
+      </div>
+      <p className="mt-6 a-texto text-tinta-900">{t(frase)}</p>
+      <div className="mt-8 a-filtros" role="group" aria-label={t('vector.presets')}>
+        {CASOS.map((c) => (
+          <button key={c.clave} type="button" aria-pressed={angulo === c.angulo} onClick={() => setAngulo(c.angulo)}>
+            {t(c.clave)}
+          </button>
+        ))}
+      </div>
+      <label className="mt-6 block a-s text-tinta-800">
+        {t('vector.angle')}: <span className="font-semibold tabular-nums text-tinta-900">{angulo}°</span>
+        <input
+          type="range" min={0} max={180} step={5} value={angulo}
+          onChange={(e) => setAngulo(Number(e.target.value))}
+          className="mt-2 block w-full h-11 cursor-pointer accent-[#1D1D1B]"
+        />
+      </label>
+      <figcaption className="a-pie">{t('vector.caption')} {t('vector.unit')}</figcaption>
+    </figure>
+  );
+};
+
+const EXALUMNOS = ['Juanita Sierra', 'Carlos Manuel Ramírez Acosta', 'Fabio Esteban Herrera', 'Camila Ocasión'];
+
+/** La primera idea de la filosofía docente: fundamentos sostenidos con rigor. La manera de
+ *  enseñar viene de dos profesores de la UIS que ya murieron; no se cita a ninguno entre
+ *  comillas, porque era la filosofía de sus clases y no una frase. La cita del margen es
+ *  del propio texto. */
 export const TeachingPurposePage: React.FC = () => {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
+  const exalumnos = testimoniosDe(EXALUMNOS);
+
   return (
     <PageWrapper noPadding>
-      {/* Header Section */}
-      <div className="relative bg-zinc-800 overflow-hidden p-6 sm:p-8">
-          {/* Dephased frame */}
-          <motion.div
-            className="absolute inset-2 sm:inset-4 rounded-2xl border-2 border-yellow-400 pointer-events-none"
-          />
+      <EncabezadoPagina
+        titulo={t('tch.pu.title')}
+        entrada={<p>{t('tch.pu.lead')}</p>}
+        accion={{ to: '/teaching/philosophy', label: t('tch.pu.cta') }}
+        foto={{ src: fotos.cervezaProteinas.src, alt: localize(fotos.cervezaProteinas.alt, lang) }}
+      />
 
-          {/* Main content with image background */}
-          <motion.div
-            className="relative rounded-2xl shadow-xl z-10 overflow-hidden"
-          >
-            <img 
-                src="/images/site/campus-mision-historia-y-simbolos-0.webp" 
-                alt="A modern classroom with flexible seating arrangements, representing active learning."
-                className="absolute inset-0 w-full h-full object-cover object-center"
-            />
-            <div className="absolute inset-0 bg-white mix-blend-saturation pointer-events-none"></div>
-            <div className="absolute inset-0 bg-zinc-900/60 mix-blend-multiply" />
-            <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-48 pb-24">
-                <motion.div
-                    // FIX: Spread motion props to avoid TypeScript type errors.
-                    {...{
-                      initial: { opacity: 0, x: -20 },
-                      animate: { opacity: 1, x: 0 },
-                      transition: { duration: 0.6, ease: 'easeOut' },
-                    }}
-                    className="text-left max-w-3xl"
-                >
-                    <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white [text-shadow:0_2px_4px_rgba(0,0,0,0.5)]">
-                        {t('purpose.teaching.title')}
-                    </h1>
-                    <p className="mt-6 text-xl text-zinc-200 leading-relaxed [text-shadow:0_1px_2px_rgba(0,0,0,0.5)]">
-                        {t('purpose.teaching.sub')}
-                    </p>
-                </motion.div>
-            </div>
-        </motion.div>
-      </div>
-      
-      {/* Content Section */}
-      <div className="bg-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
-            <motion.div
-                // FIX: Spread motion props to avoid TypeScript type errors.
-                {...{
-                  initial: { opacity: 0, y: 30 },
-                  animate: { opacity: 1, y: 0 },
-                  transition: { duration: 0.6, ease: 'easeOut' },
-                }}
-                className="text-left"
-            >
-                <h2 className="text-3xl font-bold tracking-tight text-brand-dark text-left mb-8">{t('purpose.teaching.h2')}</h2>
-                <div className="space-y-6 text-lg text-brand-gray leading-relaxed">
-                    <p>{t('purpose.teaching.p1')}</p>
-                    <p>{t('purpose.teaching.p2')}</p>
-                    <p>{t('purpose.teaching.p3')}</p>
-                    <p>{t('purpose.teaching.p4')}</p>
-                    <p>{t('purpose.teaching.p5')}</p>
-                    <p>{t('purpose.teaching.p6')}</p>
-                    <p>{t('purpose.teaching.p7')}</p>
-                    <p>{t('purpose.teaching.p8')}</p>
-                </div>
-            </motion.div>
+      {/* ── Por qué enseño y de dónde viene la manera de hacerlo ── */}
+      <section className="a-papel pt-6 pb-20 sm:pb-28">
+        <div className={`a-c ${PLIEGO}`}>
+          <div className={MARGEN}>
+            <Sube><h2 className="a-h3">{t('tch.pu.why')}</h2></Sube>
+            <Sube delay={0.08} className="mt-12">
+              <blockquote className="a-cita">{t('tch.pu.quote')}</blockquote>
+            </Sube>
+          </div>
+          <div className="space-y-6">
+            <Sube><p className="a-texto text-tinta-900">{t('tch.pu.p1')}</p></Sube>
+            <Sube delay={0.04}><p className="a-texto">{t('tch.pu.p2')}</p></Sube>
+            <Sube delay={0.06}><p className="a-texto">{t('tch.pu.p3')}</p></Sube>
+            <Sube delay={0.08}>
+              <p className="a-texto">
+                {t('tch.pu.p4')}{' '}
+                <Link to="/trajectory" className="a-enlace whitespace-nowrap">{t('tch.pu.p4.cta')} <span aria-hidden="true">→</span></Link>
+              </p>
+            </Sube>
+          </div>
         </div>
-      </div>
+      </section>
+
+      {/* ── La imagen de los vectores, con la suma para tocarla ── */}
+      <section className="a-hundido a-campo">
+        <div className={`a-c ${PLIEGO}`}>
+          <div className={`${MARGEN} order-2 lg:order-1`}>
+            <Sube delay={0.1}><SumaVectorial /></Sube>
+          </div>
+          <div className="space-y-6 order-1 lg:order-2">
+            <Sube><h2 className="a-h3">{t('tch.pu.vectors')}</h2></Sube>
+            <Sube delay={0.04}><p className="a-texto">{t('tch.pu.v1')}</p></Sube>
+            <Sube delay={0.08}>
+              <p className="a-texto text-tinta-900"><Resaltar texto={t('tch.pu.v2')} frase={t('tch.pu.mark')} /></p>
+            </Sube>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Algunos vuelven años después a contarlo ── */}
+      <section className="a-papel a-campo">
+        <div className="a-c">
+          <ul className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12">
+            {exalumnos.map((x, i) => (
+              <Retrato
+                key={x.name}
+                src={x.imageUrl}
+                nombre={x.name}
+                linea={localize(x.context, lang)}
+                detalle={localize(cargoDe(x), lang)}
+                delay={0.06 * i}
+              />
+            ))}
+          </ul>
+          <Sube className="mt-10 flex flex-wrap items-baseline gap-x-8 gap-y-3">
+            <p className="a-pie !mt-0">{t('tch.pu.students')}</p>
+            <Link to="/teaching/testimonials" className="a-enlace">
+              {t('tch.pu.students.cta')} <span aria-hidden="true">→</span>
+            </Link>
+          </Sube>
+        </div>
+      </section>
+
+      {/* ── La segunda idea ── */}
+      <section className="a-hundido a-campo">
+        <div className="a-c">
+          <ul className="a-filas">
+            <Sube as="li">
+              <Link to="/teaching/philosophy" className="a-fila">
+                <span className="q">{t('tch.pu.cta')}</span>
+                <span className="d">{t('tch.pu.next')}</span>
+                <span className="ir" aria-hidden="true">→</span>
+              </Link>
+            </Sube>
+          </ul>
+        </div>
+      </section>
     </PageWrapper>
   );
 };

@@ -1,178 +1,169 @@
-
-
-
-
-
-
-import React from 'react';
+import React, { useRef } from 'react';
+import { Link } from 'react-router-dom';
+import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
 import { PageWrapper } from '../../components/PageWrapper';
-import { motion } from 'framer-motion';
-import { useI18n } from '../../context/i18n';
+import { EncabezadoPagina } from '../../components/Apertura';
+import { Sube } from '../../components/Sube';
+import { useI18n, localize, type UIKey } from '../../context/i18n';
+import { fotos, type Foto } from '../../components/data/fotos';
+import { PLIEGO, MARGEN, Resaltar, Retrato, cargoDe, testimoniosDe } from '../purpose/TeachingPurposePage';
 
-const frameworkItems = [
-    {
-        titleKey: "philosophy.fw1.title",
-        icon: "https://png.pngtree.com/png-clipart/20230429/original/pngtree-scaffolding-line-icon-png-image_9119622.png",
-        descriptionKey: "philosophy.fw1.desc"
-    },
-    {
-        titleKey: "philosophy.fw2.title",
-        icon: "https://www.svgrepo.com/show/335231/infinity.svg",
-        descriptionKey: "philosophy.fw2.desc"
-    },
-    {
-        titleKey: "philosophy.fw3.title",
-        icon: "https://icons.veryicon.com/png/o/miscellaneous/xdh-font-graphics-library/direction-17.png",
-        descriptionKey: "philosophy.fw3.desc"
-    }
-] as const;
+// Lo que el enfoque pide en mis cursos, en el orden del texto.
+const EN_MIS_CURSOS: UIKey[] = ['tch.ph.c1', 'tch.ph.c2', 'tch.ph.c3', 'tch.ph.c4', 'tch.ph.c5'];
 
-const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-        opacity: 1,
-        transition: {
-            staggerChildren: 0.1,
-            delayChildren: 0.2,
-        },
-    },
+// Estudiantes de dos de los cursos, con lo que escribieron en la página de testimonios.
+const EXALUMNOS = ['Daniela Aristizabal', 'David Santamaría', 'Jason Bernal Sánchez', 'Camilo Zarate'];
+
+/** Una foto del margen, con su pie. */
+const FotoMargen: React.FC<{ foto: Foto; pie: string; forma?: string; delay?: number }> = ({ foto, pie, forma = 'aspect-[4/3]', delay = 0.08 }) => {
+  const { lang } = useI18n();
+  return (
+    <Sube delay={delay}>
+      <figure className="mt-10">
+        <img src={foto.src} alt={localize(foto.alt, lang)} loading="lazy" className={`a-bn w-full object-cover ${forma}`} />
+        <figcaption className="a-pie">{pie}</figcaption>
+      </figure>
+    </Sube>
+  );
 };
 
-const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-        opacity: 1,
-        y: 0,
-        transition: {
-            duration: 0.5,
-            ease: "easeOut" as const,
-        },
-    },
-};
+/** Las palabras con guion («co-adaptation») no se parten al final de la línea. */
+const sinCorte = (texto: string) =>
+  texto.split(/(\S*-\S*)/).map((trozo, i) => (trozo.includes('-') ? <span key={i} className="whitespace-nowrap">{trozo}</span> : trozo));
 
+/** Un bloque del ensayo: su título en el margen, con las fotos que le tocan debajo, y el texto
+ *  a la derecha. En el teléfono el texto va antes que las fotos. El margen se queda fijo solo
+ *  cuando cabe en la pantalla. */
+const Bloque: React.FC<{ titulo: string; children: React.ReactNode; margen?: React.ReactNode; fijo?: boolean; className?: string }> = ({
+  titulo,
+  children,
+  margen,
+  fijo = true,
+  className = '',
+}) => (
+  <div className={`a-c grid gap-y-8 lg:gap-y-0 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:grid-rows-[auto_1fr] lg:gap-x-16 ${className}`}>
+    <div className={`lg:col-start-1 lg:row-start-1 ${fijo && !margen ? MARGEN : ''}`}>
+      <Sube><h2 className="a-h3">{sinCorte(titulo)}</h2></Sube>
+    </div>
+    <div className="space-y-6 lg:col-start-2 lg:row-start-1 lg:row-span-2">{children}</div>
+    {margen && <div className={`lg:col-start-1 lg:row-start-2 ${fijo ? MARGEN : ''}`}>{margen}</div>}
+  </div>
+);
 
-export const TeachingPhilosophyPage = () => {
-  const { t } = useI18n();
+/** La segunda idea de la filosofía docente: el constructivismo co-adaptativo. */
+export const TeachingPhilosophyPage: React.FC = () => {
+  const { t, lang } = useI18n();
+  const exalumnos = testimoniosDe(EXALUMNOS);
+  const reduce = useReducedMotion();
+  const banda = useRef<HTMLDivElement>(null);
+  // La foto de los estudiantes se acerca despacio mientras pasa.
+  const { scrollYProgress } = useScroll({ target: banda, offset: ['start end', 'end start'] });
+  const escala = useTransform(scrollYProgress, [0, 1], [1, 1.08]);
+
   return (
     <PageWrapper noPadding>
-      {/* Header Section */}
-      <div className="relative bg-zinc-800 overflow-hidden p-6 sm:p-8">
-          {/* Dephased frame */}
-          <motion.div
-            className="absolute inset-2 sm:inset-4 rounded-2xl border-2 border-yellow-400 pointer-events-none"
-          />
+      <EncabezadoPagina
+        titulo={t('tch.ph.title')}
+        entrada={<p>{t('tch.ph.lead')}</p>}
+        accion={{ to: '/teaching/courses', label: t('tch.ph.cta') }}
+        foto={{ src: fotos.pouDiagrama.src, alt: localize(fotos.pouDiagrama.alt, lang) }}
+      />
 
-          {/* Main content with image background */}
-          <motion.div
-            className="relative rounded-2xl shadow-xl z-10 overflow-hidden"
-          >
-            <img 
-                src="/images/uniandes-bw.jpg"
-                alt="Universidad de los Andes campus building"
-                className="absolute inset-0 w-full h-full object-cover object-center"
-            />
-            {/* Image is already B&W, no saturation filter needed */}
-            <div className="absolute inset-0 bg-zinc-900/60 mix-blend-multiply" />
-            <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-48 pb-24">
-                <motion.div
-                    // FIX: Spread motion props to avoid TypeScript type errors.
-                    {...{
-                      initial: { opacity: 0, x: -20 },
-                      animate: { opacity: 1, x: 0 },
-                      transition: { duration: 0.6, ease: 'easeOut' },
-                    }}
-                    className="text-left max-w-3xl"
-                >
-                    <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white [text-shadow:0_2px_4px_rgba(0,0,0,0.5)]">
-                        {t('philosophy.title')}
-                    </h1>
-                    <p className="mt-6 text-xl text-zinc-200 leading-relaxed [text-shadow:0_1px_2px_rgba(0,0,0,0.5)]">
-                        {t('philosophy.sub')}
-                    </p>
-                </motion.div>
-            </div>
-        </motion.div>
-      </div>
-      
-      {/* Content Section */}
-      <div className="bg-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
-            <motion.div 
-                // FIX: Spread motion props to avoid TypeScript type errors.
-                {...{
-                  initial: { opacity: 0, y: 20 },
-                  animate: { opacity: 1, y: 0 },
-                  transition: { duration: 0.5 },
-                }}
-                className="text-left space-y-12 text-lg text-brand-gray leading-relaxed"
-            >
-                <div>
-                    <p className="mb-10">{t('philosophy.intro')}</p>
-                    <h3 className="text-3xl font-bold tracking-tight text-brand-dark mb-8">{t('philosophy.framework')}</h3>
-                    <motion.div 
-                        className="mt-8 flex flex-col gap-8"
-                        variants={containerVariants}
-                        initial="hidden"
-                        animate="visible"
-                    >
-                        {frameworkItems.map(item => (
-                            <motion.div
-                                key={item.titleKey}
-                                variants={itemVariants}
-                                className="flex flex-col md:flex-row items-start text-left p-8 bg-zinc-50 rounded-lg border border-zinc-200 transition-shadow hover:shadow-lg gap-6"
-                            >
-                                <div className="flex-shrink-0 bg-yellow-400/20 p-4 rounded-full">
-                                    <img src={item.icon} alt={`${t(item.titleKey)} icon`} className="h-10 w-10 object-contain" />
-                                </div>
-                                <div>
-                                    <h4 className="text-xl font-bold text-brand-dark mb-2">{t(item.titleKey)}</h4>
-                                    <p className="text-brand-gray text-base leading-relaxed">{t(item.descriptionKey)}</p>
-                                </div>
-                            </motion.div>
-                        ))}
-                    </motion.div>
-                </div>
-
-                <div>
-                    <h3 className="text-3xl font-bold tracking-tight text-brand-dark mb-4">{t('philosophy.equity')}</h3>
-                    <p>{t('philosophy.equity.p')}</p>
-                </div>
-
-                <div className="mt-12 bg-white rounded-lg shadow-xl border border-yellow-400/40 p-8 md:p-12">
-                    <h2 className="text-3xl font-bold tracking-tight text-brand-dark mb-8 text-center">{t('philosophy.practices')}</h2>
-                    <ol className="space-y-8 text-lg text-brand-gray leading-relaxed list-decimal list-outside ml-5">
-                        <li><strong>{t('philosophy.practice1.bold')}</strong>{t('philosophy.practice1.text')}</li>
-                        <li><strong>{t('philosophy.practice2.bold')}</strong>{t('philosophy.practice2.text')}</li>
-                        <li><strong>{t('philosophy.practice3.bold')}</strong>{t('philosophy.practice3.text')}</li>
-                        <li><strong>{t('philosophy.practice4.bold')}</strong>{t('philosophy.practice4.text')}</li>
-                        <li><strong>{t('philosophy.practice5.bold')}</strong>{t('philosophy.practice5.text')}</li>
-                    </ol>
-                </div>
-
-                <div className="grid md:grid-cols-2 gap-12 mt-16">
-                    <div>
-                        <h3 className="text-3xl font-bold tracking-tight text-brand-dark mb-4">{t('philosophy.stoic')}</h3>
-                        <p>{t('philosophy.stoic.p')}</p>
-                    </div>
-                     <div>
-                        <h3 className="text-3xl font-bold tracking-tight text-brand-dark mb-4">{t('philosophy.inPractice')}</h3>
-                        <ul className="space-y-4 text-lg text-brand-gray leading-relaxed list-disc list-outside ml-5">
-                            <li><strong>{t('philosophy.inPractice.assessment.bold')}</strong>{t('philosophy.inPractice.assessment.text')}</li>
-                            <li><strong>{t('philosophy.inPractice.content.bold')}</strong>{t('philosophy.inPractice.content.text')}</li>
-                            <li><strong>{t('philosophy.inPractice.feedback.bold')}</strong>{t('philosophy.inPractice.feedback.text')}</li>
-                            <li><strong>{t('philosophy.inPractice.tracking.bold')}</strong>{t('philosophy.inPractice.tracking.text')}</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div className="mt-12 p-8 bg-zinc-100 border-l-4 border-yellow-400 rounded-r-lg">
-                    <h3 className="text-3xl font-bold tracking-tight text-brand-dark mb-4">{t('philosophy.transformation')}</h3>
-                    <p>{t('philosophy.transformation.p1')}</p>
-                    <p className="mt-4 font-semibold text-brand-dark">{t('philosophy.transformation.p2')}</p>
-                </div>
-              </motion.div>
+      {/* ── Los estudiantes de hoy ── */}
+      <section className="a-papel pt-6 pb-20 sm:pb-28">
+        <div className={`a-c ${PLIEGO}`}>
+          <div className={MARGEN}>
+            <Sube><h2 className="a-h3">{t('tch.ph.today')}</h2></Sube>
+            <Sube delay={0.08} className="mt-12">
+              <blockquote className="a-cita">{t('tch.ph.quote')}</blockquote>
+            </Sube>
+          </div>
+          <div className="space-y-6">
+            <Sube><p className="a-texto">{t('tch.ph.p1')}</p></Sube>
+            <Sube delay={0.06}><p className="a-texto">{t('tch.ph.p2')}</p></Sube>
+          </div>
         </div>
-      </div>
+      </section>
+
+      {/* ── El enfoque y lo que pide en mis cursos ── */}
+      <section className="a-hundido a-campo">
+        <Bloque titulo={t('tch.ph.approach')}>
+          <Sube><p className="a-texto text-tinta-900">{t('tch.ph.a1')}</p></Sube>
+        </Bloque>
+        <Bloque
+          titulo={t('tch.ph.inCourses')}
+          className="mt-20 sm:mt-28"
+          fijo={false}
+          margen={<><FotoMargen foto={fotos.reto2019} pie={t('tch.ph.photo.reto')} /><FotoMargen foto={fotos.cervezaGlucanos} pie={t('tch.ph.photo.beer')} delay={0.12} /></>}
+        >
+          <ul className="border-t-2 border-tinta-900 max-w-[64ch]">
+            {EN_MIS_CURSOS.map((clave, i) => (
+              <Sube as="li" key={clave} delay={0.05 * i} className="py-4 border-b-2 border-papel-300 text-tinta-900">
+                {clave === 'tch.ph.c5' ? <Resaltar texto={t(clave)} frase={t('tch.ph.mark')} /> : t(clave)}
+              </Sube>
+            ))}
+          </ul>
+          <Sube><p className="a-texto !mt-10">{t('tch.ph.p3')}</p></Sube>
+        </Bloque>
+      </section>
+
+      {/* ── Para quiénes: la foto del campus a todo el ancho ── */}
+      <figure ref={banda} className="a-papel">
+        <div className="overflow-hidden h-[52svh] min-h-[280px] max-h-[620px]">
+          <motion.img
+            src="/images/site/04.png"
+            alt={t('tch.ph.campus')}
+            loading="lazy"
+            className="a-foto a-bn"
+            style={{ objectPosition: 'center 70%', ...(reduce ? {} : { scale: escala }) }}
+          />
+        </div>
+        <figcaption className="a-c a-pie">{t('tch.ph.campus')}</figcaption>
+      </figure>
+
+      {/* ── Lo que documento ── */}
+      <section className="a-papel a-campo">
+        <Bloque titulo={t('tch.ph.record')} margen={<FotoMargen foto={fotos.postersPou} pie={t('tch.ph.photo.posters')} />}>
+          <Sube><p className="a-texto">{t('tch.ph.r1')}</p></Sube>
+          <Sube delay={0.06} className="flex flex-wrap gap-x-8 gap-y-3">
+            <Link to="/teaching/scholarship" className="a-enlace">{t('tch.ph.r.sotl')} <span aria-hidden="true">→</span></Link>
+            <Link to="/teaching/unit-ops" className="a-enlace">{t('tch.ph.r.unitops')} <span aria-hidden="true">→</span></Link>
+          </Sube>
+        </Bloque>
+      </section>
+
+      {/* ── Quienes pasaron por esos cursos ── */}
+      <section className="a-hundido a-campo">
+        <div className="a-c">
+          <ul className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-12">
+            {exalumnos.map((x, i) => (
+              <Retrato
+                key={x.name}
+                src={x.imageUrl}
+                nombre={x.name}
+                linea={localize(x.context, lang)}
+                detalle={localize(cargoDe(x), lang)}
+                delay={0.06 * i}
+              />
+            ))}
+          </ul>
+          <Sube className="mt-10 flex flex-wrap items-baseline gap-x-8 gap-y-3">
+            <p className="a-pie !mt-0">{t('tch.ph.students')}</p>
+            <Link to="/teaching/testimonials" className="a-enlace">
+              {t('tch.ph.students.cta')} <span aria-hidden="true">→</span>
+            </Link>
+          </Sube>
+          <ul className="a-filas mt-20">
+            <Sube as="li">
+              <Link to="/teaching/purpose" className="a-fila">
+                <span className="q">{t('tch.pu.title')}</span>
+                <span className="d">{t('tch.ph.prev')}</span>
+                <span className="ir" aria-hidden="true">→</span>
+              </Link>
+            </Sube>
+          </ul>
+        </div>
+      </section>
     </PageWrapper>
   );
 };

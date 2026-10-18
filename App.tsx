@@ -1,13 +1,21 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
+import { SiteFooter } from './components/SiteFooter';
 import { AboutPage } from './pages/AboutPage';
+import { TrajectoryPage } from './pages/TrajectoryPage';
+import { ContextPage } from './pages/ContextPage';
+import { NextPage } from './pages/NextPage';
+import { FocoFotos } from './components/FocoFotos';
+import { scholar } from './components/data/citations';
+import { SchoolPage } from './pages/SchoolPage';
+import { StrategiesPage } from './pages/teaching/StrategiesPage';
 import { ResearchOverviewPage } from './pages/ResearchOverviewPage';
 import { ProductsPage } from './pages/ProductsPage';
 import { GrantsPage } from './pages/GrantsPage';
 import { StudentsPage } from './pages/StudentsPage';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence, MotionConfig } from 'framer-motion';
 import { TeachingOverviewPage } from './pages/teaching/TeachingOverviewPage';
 import { TeachingPhilosophyPage } from './pages/teaching/TeachingPhilosophyPage';
 import { CoursesPage } from './pages/teaching/CoursesPage';
@@ -72,6 +80,7 @@ const App: React.FC = () => {
   });
 
   const location = useLocation();
+  const enAula = location.pathname.startsWith('/classroom');
 
   useEffect(() => {
     const loadInitialData = async () => {
@@ -88,25 +97,13 @@ const App: React.FC = () => {
           ...dbCitations
         };
 
-        const numericCounts: number[] = Object.values(allCounts).filter((c): c is number => c !== null);
-        const total = numericCounts.reduce((sum, count) => sum + count, 0);
-
-        numericCounts.sort((a, b) => b - a);
-        let hIndex = 0;
-        for (let i = 0; i < numericCounts.length; i++) {
-          if (numericCounts[i] >= i + 1) {
-            hIndex = i + 1;
-          } else {
-            break;
-          }
-        }
-        const i10Index = numericCounts.filter(c => c >= 10).length;
-
+        // Las cifras globales (citas, h, i10) son las del perfil de Google Scholar, la fuente
+        // oficial; los conteos de cada producto siguen siendo los de la lista.
         setCitationData({
           counts: allCounts,
-          total,
-          hIndex,
-          i10Index,
+          total: scholar.citations,
+          hIndex: scholar.hIndex,
+          i10Index: scholar.i10Index,
           isLoading: false,
         });
 
@@ -144,6 +141,13 @@ const App: React.FC = () => {
     );
   };
 
+  // Cualquier botón del portafolio puede pedir el CV sin recibir el manejador por props.
+  useEffect(() => {
+    const pedir = () => handleDownloadCv();
+    window.addEventListener('lhr:descargar-cv', pedir);
+    return () => window.removeEventListener('lhr:descargar-cv', pedir);
+  });
+
   const contextValue = useMemo(() => ({
     products,
     productsLoading,
@@ -153,16 +157,28 @@ const App: React.FC = () => {
   return (
     <I18nProvider>
     <AppDataContext.Provider value={contextValue}>
-      <main className="relative">
+      {/* El portafolio habla con la línea del portafolio docente impreso (.portafolio); el aula conserva el tema de cada curso. */}
+      <MotionConfig reducedMotion="user">
+      <main className={`relative ${enAula ? '' : 'portafolio'}`}>
         <Navbar onDownloadCv={handleDownloadCv} />
         <div>
           <AnimatePresence mode="wait">
             <Routes location={location} key={location.pathname}>
               <Route path="/" element={<AboutPage />} />
-              <Route path="/principles/teaching" element={<TeachingPurposePage />} />
-              <Route path="/principles/research" element={<ResearchPurposePage />} />
-              <Route path="/principles/service" element={<ServicePurposePage />} />
-              <Route path="/principles/philosophy" element={<TeachingPhilosophyPage />} />
+              <Route path="/trajectory" element={<TrajectoryPage />} />
+              <Route path="/context" element={<ContextPage />} />
+              <Route path="/next" element={<NextPage />} />
+              <Route path="/school" element={<SchoolPage />} />
+              <Route path="/teaching/strategies" element={<StrategiesPage />} />
+              {/* Cada filosofía abre su capítulo; las direcciones viejas de /principles redirigen. */}
+              <Route path="/teaching/purpose" element={<TeachingPurposePage />} />
+              <Route path="/teaching/philosophy" element={<TeachingPhilosophyPage />} />
+              <Route path="/research/purpose" element={<ResearchPurposePage />} />
+              <Route path="/service/purpose" element={<ServicePurposePage />} />
+              <Route path="/principles/teaching" element={<Navigate to="/teaching/purpose" replace />} />
+              <Route path="/principles/philosophy" element={<Navigate to="/teaching/philosophy" replace />} />
+              <Route path="/principles/research" element={<Navigate to="/research/purpose" replace />} />
+              <Route path="/principles/service" element={<Navigate to="/service/purpose" replace />} />
               <Route path="/research" element={<ResearchOverviewPage />} />
               <Route path="/research/program" element={<ResearchProgramPage />} />
               <Route path="/research/products" element={<ProductsPage />} />
@@ -200,8 +216,11 @@ const App: React.FC = () => {
             </Routes>
           </AnimatePresence>
         </div>
+        {!enAula && <FocoFotos />}
+        {!enAula && <SiteFooter onDownloadCv={handleDownloadCv} />}
         <ScrollToTopButton />
       </main>
+      </MotionConfig>
     </AppDataContext.Provider>
     </I18nProvider>
   );

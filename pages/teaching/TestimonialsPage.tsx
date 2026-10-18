@@ -1,162 +1,165 @@
-
-
-
 import React, { useMemo, useState } from 'react';
 import { PageWrapper } from '../../components/PageWrapper';
-import { useI18n, localize, type UIKey, type Lang } from '../../context/i18n';
+import { EncabezadoPagina } from '../../components/Apertura';
+import { Sube } from '../../components/Sube';
+import { useI18n, localize, fill, type UIKey, type Lang } from '../../context/i18n';
 import { testimonials, type Testimonial } from '../../components/data/teaching';
 import { graduateByName } from '../../components/data/metrics';
-// FIX: Removed 'Variants' from framer-motion import to resolve module export error.
-import { motion } from 'framer-motion';
+import { fotos } from '../../components/data/fotos';
 
-const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-        opacity: 1,
-        transition: {
-            staggerChildren: 0.1,
-        },
-    },
+type FilterCategory = 'All' | Testimonial['category'];
+const filterOptions: FilterCategory[] = ['All', 'Teaching & Mentorship', 'Research Advising'];
+const categoryLabelKey: Record<FilterCategory, UIKey> = {
+  All: 'testimonials.filter.all',
+  'Teaching & Mentorship': 'testimonials.filter.teaching',
+  'Research Advising': 'testimonials.filter.research',
 };
 
-const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-        opacity: 1,
-        y: 0,
-        transition: {
-            duration: 0.5,
-            // FIX: Added 'as const' to prevent TypeScript from widening the string literal type, which caused a type error.
-            ease: "easeOut" as const,
-        },
-    },
-};
-
-// FIX: Changed component to React.FC to resolve TypeScript error with the 'key' prop.
 // A graduate's job is stated once, in their student record. The testimonial's
 // own info is the fallback for people who have no record, or whose record does
 // not list a position.
 const currentRole = (testimonial: Testimonial) => {
-    const graduate = testimonial.graduateName ? graduateByName(testimonial.graduateName) : undefined;
-    return graduate?.currentPosition || testimonial.info;
+  const graduate = testimonial.graduateName ? graduateByName(testimonial.graduateName) : undefined;
+  return graduate?.currentPosition || testimonial.info;
 };
 
-const TestimonialCard: React.FC<{ testimonial: Testimonial; lang: Lang }> = ({ testimonial, lang }) => (
-    <motion.div
-        className="w-full h-full bg-white rounded-lg shadow-lg border border-yellow-400/40 flex flex-col p-8"
-        // FIX: Spread motion props to avoid TypeScript type errors.
-        {...{variants: itemVariants}}
-    >
-        <div className="flex items-center mb-4">
-            <img
-                className="w-20 h-20 rounded-full object-cover object-center border-4 border-zinc-100 shadow-sm"
-                src={testimonial.imageUrl}
-                alt={`Photo of ${testimonial.name}`}
-            />
-            <div className="ml-4 text-left">
-                <p className="font-semibold text-brand-dark text-lg">{testimonial.name}</p>
-                <p className="text-sm text-brand-gray">{localize(currentRole(testimonial), lang)}</p>
-                <p className="text-xs text-zinc-500 mt-1 font-medium uppercase tracking-wider">{localize(testimonial.context, lang)}</p>
-            </div>
-        </div>
+// Las tres voces que van grandes, en este orden, si tienen testimonio en la vista.
+const DESTACADOS = ['Carlos Manuel Ramírez Acosta', 'Jason Bernal Sánchez', 'Julian Daniel Torres Vanegas', 'Brayan Rodríguez'];
 
-        <div className="w-full text-left flex-grow">
-            <blockquote className="space-y-4">
-                {localize(testimonial.quote, lang).split('\n\n').map((paragraph, index, arr) => (
-                    <p key={index} className="text-brand-gray italic text-sm leading-relaxed">
-                        {index === 0 && `"`}
-                        {paragraph}
-                        {index === arr.length - 1 && `"`}
-                    </p>
-                ))}
-            </blockquote>
-        </div>
-    </motion.div>
+interface Persona {
+  name: string;
+  imageUrl: string;
+  role: Testimonial['info'];
+  quotes: Testimonial[];
+}
+
+/** Una persona aparece una sola vez, con todos sus testimonios de la vista. */
+const agrupar = (lista: Testimonial[]): Persona[] => {
+  const porNombre = new Map<string, Persona>();
+  for (const q of lista) {
+    const p = porNombre.get(q.name);
+    if (p) p.quotes.push(q);
+    else porNombre.set(q.name, { name: q.name, imageUrl: q.imageUrl, role: currentRole(q), quotes: [q] });
+  }
+  return [...porNombre.values()].sort((a, b) => a.name.localeCompare(b.name));
+};
+
+const Parrafos: React.FC<{ quote: Testimonial; lang: Lang; className?: string }> = ({ quote, lang, className }) => (
+  <>
+    {localize(quote.quote, lang).split('\n\n').map((par, i) => (
+      <p key={i} className={className}>{par}</p>
+    ))}
+  </>
 );
 
-type FilterCategory = 'All' | 'Teaching & Mentorship' | 'Research Advising';
-const filterOptions: FilterCategory[] = ['All', 'Teaching & Mentorship', 'Research Advising'];
-const categoryLabelKey: Record<string, UIKey> = {
-    'All': 'testimonials.filter.all',
-    'Teaching & Mentorship': 'testimonials.filter.teaching',
-    'Research Advising': 'testimonials.filter.research',
-};
-
 export const TestimonialsPage = () => {
-    const { t, lang } = useI18n();
-    const [activeFilter, setActiveFilter] = useState<FilterCategory>('All');
+  const { t, lang } = useI18n();
+  const [activeFilter, setActiveFilter] = useState<FilterCategory>('All');
 
-    // FIX: Added explicit type annotation to resolve 'unknown' type errors.
-    const filteredTestimonials: Record<string, Testimonial[]> = useMemo(() => {
-        const sorted = [...testimonials].sort((a, b) => a.name.localeCompare(b.name));
-        
-        const teaching = sorted.filter(t => t.category === 'Teaching & Mentorship');
-        const advising = sorted.filter(t => t.category === 'Research Advising');
+  const { destacados, resto, total } = useMemo(() => {
+    const vista = activeFilter === 'All' ? testimonials : testimonials.filter((q) => q.category === activeFilter);
+    const personas = agrupar(vista);
+    const elegidos = DESTACADOS.map((n) => personas.find((p) => p.name === n)).filter((p): p is Persona => Boolean(p)).slice(0, 3);
+    return {
+      destacados: elegidos,
+      resto: personas.filter((p) => !elegidos.includes(p)),
+      total: { quotes: vista.length, people: personas.length },
+    };
+  }, [activeFilter]);
 
-        switch (activeFilter) {
-            case 'Teaching & Mentorship':
-                return { 'Teaching & Mentorship': teaching };
-            case 'Research Advising':
-                return { 'Research Advising': advising };
-            case 'All':
-            default:
-                 return {
-                    'Teaching & Mentorship': teaching,
-                    'Research Advising': advising,
-                };
-        }
-    }, [activeFilter]);
+  // La cita grande es la más corta de la persona; la otra, si hay, va a tamaño de lectura.
+  const ordenarCitas = (p: Persona) =>
+    [...p.quotes].sort((a, b) => localize(a.quote, lang).length - localize(b.quote, lang).length);
 
-    return (
-        <PageWrapper noPadding>
-            <div className="pt-16">
-                <div className="sticky top-16 bg-zinc-50/95 backdrop-blur-sm z-20 py-6 border-b border-zinc-200">
-                    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-brand-dark text-left">{t('testimonials.title')}</h1>
-                        <p className="mt-4 text-brand-gray leading-relaxed text-left">
-                            {t('testimonials.sub')}
-                        </p>
-                        <div className="flex flex-wrap gap-2 justify-center mt-6">
-                            {filterOptions.map(option => (
-                                <button
-                                    key={option}
-                                    onClick={() => setActiveFilter(option)}
-                                    className={`px-4 py-2 text-sm font-semibold rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2 ${
-                                    activeFilter === option
-                                        ? 'bg-yellow-400 text-brand-dark shadow-md'
-                                        : 'bg-white text-brand-gray hover:bg-zinc-100 border border-zinc-200'
-                                    }`}
-                                >
-                                    {t(categoryLabelKey[option])}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                </div>
+  return (
+    <PageWrapper noPadding>
+      <EncabezadoPagina
+        titulo={t('tch.te.title')}
+        entrada={<p>{t('tch.te.lead')}</p>}
+        foto={{ src: fotos.ptarSalitre.src, alt: localize(fotos.ptarSalitre.alt, lang), posicion: 'center 35%' }}
+      >
+        <div className="a-filtros mt-10" role="group" aria-label={t('tch.te.title')}>
+          {filterOptions.map((option) => (
+            <button key={option} type="button" onClick={() => setActiveFilter(option)} aria-pressed={activeFilter === option}>
+              {t(categoryLabelKey[option])}
+            </button>
+          ))}
+        </div>
+        <p className="a-meta mt-5" aria-live="polite">{fill(t('testimonials.count'), total)}</p>
+      </EncabezadoPagina>
 
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                    {Object.entries(filteredTestimonials).map(([category, list]) => (
-                        list.length > 0 && (
-                            <div key={category} className="mb-16">
-                                <h2 className="text-3xl font-bold tracking-tight text-brand-dark text-left mb-8 pb-2 border-b-2 border-yellow-400">{t(categoryLabelKey[category])}</h2>
-                                <motion.div
-                                    className="grid grid-cols-1 lg:grid-cols-2 gap-8"
-                                    // FIX: Spread motion props to avoid TypeScript type errors.
-                                    {...{
-                                        variants: containerVariants,
-                                        initial: "hidden",
-                                        animate: "visible",
-                                    }}
-                                >
-                                    {list.map((testimonial, index) => (
-                                        <TestimonialCard key={`${testimonial.name}-${testimonial.category}-${index}`} testimonial={testimonial} lang={lang} />
-                                    ))}
-                                </motion.div>
-                            </div>
-                        )
+      {/* ── Tres voces grandes ── */}
+      <section className="a-papel pb-24 sm:pb-32">
+        <div className="a-c space-y-20 sm:space-y-28">
+          {destacados.map((p, i) => {
+            const [principal, ...otras] = ordenarCitas(p);
+            return (
+              <Sube key={`${activeFilter}-${p.name}`} delay={0.04 * i}>
+                <figure className="grid gap-8 md:grid-cols-[minmax(0,280px)_minmax(0,1fr)] md:gap-14 border-t-2 border-tinta-900 pt-10">
+                  <img
+                    src={p.imageUrl}
+                    alt={fill(t('testimonials.photo'), { name: p.name })}
+                    className="a-bn w-full max-w-[280px] aspect-[4/5] object-cover object-top"
+                  />
+                  <div>
+                    <blockquote className="a-cita space-y-4 max-w-[40ch]">
+                      <Parrafos quote={principal} lang={lang} />
+                    </blockquote>
+                    <figcaption className="mt-6">
+                      <span className="block text-[18px] font-semibold text-tinta-900">{p.name}</span>
+                      <span className="a-meta block">{localize(p.role, lang)}</span>
+                      <span className="a-meta block">{localize(principal.context, lang)}</span>
+                    </figcaption>
+                    {otras.map((q) => (
+                      <div key={q.category} className="mt-10 max-w-[64ch]">
+                        <blockquote className="space-y-4 text-tinta-900">
+                          <Parrafos quote={q} lang={lang} />
+                        </blockquote>
+                        <p className="a-meta mt-3">{localize(q.context, lang)}</p>
+                      </div>
                     ))}
-                </div>
+                  </div>
+                </figure>
+              </Sube>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* ── El resto, en columnas y sin cajas ── */}
+      {resto.length > 0 && (
+        <section className="a-hundido a-campo">
+          <div className="a-c">
+            <Sube><h2 className="a-h3">{t('testimonials.more')}.</h2></Sube>
+            <div className="mt-12 lg:columns-2 lg:gap-16">
+              {resto.map((p, i) => (
+                <Sube key={`${activeFilter}-${p.name}`} delay={0.03 * (i % 4)} className="break-inside-avoid pb-14">
+                  <div className="flex items-end gap-5 border-t-2 border-tinta-900 pt-6">
+                    <img
+                      src={p.imageUrl}
+                      alt={fill(t('testimonials.photo'), { name: p.name })}
+                      loading="lazy"
+                      className="a-bn w-[140px] h-[140px] object-cover object-top flex-shrink-0"
+                    />
+                    <div className="min-w-0">
+                      <span className="block text-[18px] leading-tight font-semibold text-tinta-900">{p.name}</span>
+                      <span className="a-meta block mt-1">{localize(p.role, lang)}</span>
+                    </div>
+                  </div>
+                  {p.quotes.map((q) => (
+                    <div key={q.category} className="mt-6">
+                      <blockquote className="space-y-4 text-tinta-900">
+                        <Parrafos quote={q} lang={lang} />
+                      </blockquote>
+                      <p className="a-meta mt-3">{localize(q.context, lang)}</p>
+                    </div>
+                  ))}
+                </Sube>
+              ))}
             </div>
-        </PageWrapper>
-    );
+          </div>
+        </section>
+      )}
+    </PageWrapper>
+  );
 };

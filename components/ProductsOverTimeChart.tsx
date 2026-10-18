@@ -1,214 +1,166 @@
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { motion, useInView, useReducedMotion } from 'framer-motion';
+import { useI18n } from '../context/i18n';
 
-
-import React, { useState, useMemo, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import type { Product, ProductType } from '../types';
-
-interface ChartData {
-  year: number;
-  count: number;
+export interface Serie {
+  key: string;
+  label: string;
+  /** La etiqueta en singular, para leer «1 libro» y no «1 libros». */
+  uno?: string;
+  /** Tono de gris de la serie: el amarillo queda para el año que se toca. */
+  color: string;
 }
 
-// Chart height is constant, width will be dynamic.
-const chartHeight = 300;
-const margin = { top: 20, right: 20, bottom: 40, left: 40 };
+interface BarrasPorAnoProps {
+  /** Valores por año y por serie. Los años sin dato se dibujan vacíos. */
+  data: Record<number, Record<string, number>>;
+  series: Serie[];
+  /** Año que se lee al abrir la página. */
+  inicial?: number;
+  /** Nombre de la cifra para la lectura: «publicaciones», «citas». */
+  unidad: string;
+  /** Nota que sigue a la cifra del año, como «hasta septiembre». */
+  notaAno?: Record<number, string>;
+}
 
-// Helper to process raw product data into yearly counts
-const processData = (products: Product[], filter: ProductType | 'All'): ChartData[] => {
-  const filteredProducts = filter === 'All' ? products : products.filter(p => p.type === filter);
-  
-  const countsByYear: { [year: string]: number } = {};
+const ALTO = 260;
+const M = { top: 12, right: 8, bottom: 32, left: 44 };
 
-  filteredProducts.forEach(p => {
-    const yearMatch = p.publicationDate.match(/^\d{4}/);
-    if (yearMatch) {
-      const year = yearMatch[0];
-      countsByYear[year] = (countsByYear[year] || 0) + 1;
-    }
-  });
-
-  return Object.entries(countsByYear)
-    .map(([year, count]) => ({ year: parseInt(year), count }))
-    .sort((a, b) => a.year - b.year);
-};
-
-export const ProductsOverTimeChart = ({ products }: { products: Product[] }) => {
-  const [activeFilter, setActiveFilter] = useState<ProductType | 'All'>('All');
-  const chartContainerRef = useRef<HTMLDivElement>(null);
-  const [chartWidth, setChartWidth] = useState(800);
+/** Barras apiladas por año, para tocar: cada año se puede escoger (con el ratón, el dedo o
+ *  el teclado) y la lectura de arriba dice sus cifras. Gris para las series; el amarillo
+ *  marca el año escogido. */
+export const BarrasPorAno: React.FC<BarrasPorAnoProps> = ({ data, series, inicial, unidad, notaAno }) => {
+  const { t, lang } = useI18n();
+  const reduce = useReducedMotion();
+  const caja = useRef<HTMLDivElement>(null);
+  const [ancho, setAncho] = useState(640);
+  // Las barras crecen una sola vez, cuando el gráfico asoma en pantalla.
+  const visto = useInView(caja, { once: true, margin: '0px 0px -10% 0px' });
 
   useEffect(() => {
-    const handleResize = () => {
-      if (chartContainerRef.current) {
-        setChartWidth(chartContainerRef.current.offsetWidth);
-      }
-    };
-
-    handleResize(); // Set initial width
-    window.addEventListener('resize', handleResize);
-
-    return () => window.removeEventListener('resize', handleResize);
+    const el = caja.current;
+    if (!el) return;
+    const medir = () => setAncho(el.offsetWidth || 640);
+    medir();
+    const ro = new ResizeObserver(medir);
+    ro.observe(el);
+    return () => ro.disconnect();
   }, []);
-  
-  const innerWidth = chartWidth > (margin.left + margin.right) ? chartWidth - margin.left - margin.right : 0;
-  const innerHeight = chartHeight - margin.top - margin.bottom;
 
-  const uniqueTypes = useMemo(() => ['All', ...new Set(products.map(p => p.type))] as (ProductType | 'All')[], [products]);
-  const chartData = useMemo(() => processData(products, activeFilter), [products, activeFilter]);
+  const anos = useMemo(() => {
+    const ks = Object.keys(data).map(Number);
+    const desde = Math.min(...ks);
+    const hasta = Math.max(...ks);
+    return Array.from({ length: hasta - desde + 1 }, (_, i) => desde + i);
+  }, [data]);
 
-  const { overallMinYear, overallMaxYear } = useMemo(() => {
-    if (products.length === 0) {
-      const currentYear = new Date().getFullYear();
-      return { overallMinYear: currentYear, overallMaxYear: currentYear };
-    }
-    const years = products.map(p => {
-        const yearMatch = p.publicationDate.match(/^\d{4}/);
-        return yearMatch ? parseInt(yearMatch[0]) : null;
-    }).filter((y): y is number => y !== null);
+  const total = (a: number) => series.reduce((s, x) => s + (data[a]?.[x.key] ?? 0), 0);
+  const maximo = Math.max(1, ...anos.map(total));
+  const paso = maximo > 400 ? 200 : maximo > 40 ? 10 : maximo > 20 ? 5 : 2;
+  const techo = Math.ceil(maximo / paso) * paso;
+  const marcas = Array.from({ length: Math.floor(techo / paso) + 1 }, (_, i) => i * paso).filter((v, i, arr) => arr.length <= 6 || i % 2 === 0 || v === techo);
 
-    if (years.length === 0) {
-      const currentYear = new Date().getFullYear();
-      return { overallMinYear: currentYear, overallMaxYear: currentYear };
-    }
+  const [activo, setActivo] = useState<number>(inicial ?? anos[anos.length - 1]);
 
-    return {
-      overallMinYear: Math.min(...years),
-      overallMaxYear: Math.max(...years),
-    };
-  }, [products]);
+  const interior = Math.max(0, ancho - M.left - M.right);
+  const banda = interior / anos.length;
+  const barra = Math.max(4, banda * 0.66);
+  const y = (v: number) => M.top + (ALTO - M.top - M.bottom) * (1 - v / techo);
+  const x = (a: number) => M.left + (a - anos[0]) * banda + (banda - barra) / 2;
+  // Si no caben todos los años, se rotula uno de cada cinco, más el primero y el último
+  // cuando no queda pegado a otro rótulo.
+  const rotular = (a: number, i: number) =>
+    banda >= 46 || i === 0 || a % 5 === 0 || (i === anos.length - 1 && a % 5 >= 2);
 
-  const maxCount = useMemo(() => {
-    if (chartData.length === 0) return 1;
-    return Math.max(1, ...chartData.map(d => d.count));
-  }, [chartData]);
-  
-  const yAxisMax = Math.ceil(maxCount / 4) * 4 || 4;
-
-  const paddedMinYear = overallMinYear - 1;
-  const paddedMaxYear = overallMaxYear + 1;
-  const yearSpan = paddedMaxYear - paddedMinYear;
-
-  const xScale = (year: number) => {
-    if (yearSpan <= 1 || innerWidth <= 0) return margin.left + innerWidth / 2;
-    return margin.left + ((year - paddedMinYear) / yearSpan) * innerWidth;
-  };
-
-  const yScale = (count: number) => {
-    return margin.top + innerHeight - (innerHeight * count) / yAxisMax;
-  };
-  
-  const barWidth = Math.max(5, (innerWidth / yearSpan) * 0.7);
-
-  const xAxisTicks = useMemo(() => chartData.map(d => d.year), [chartData]);
-
-  // Filter X-axis ticks to prevent them from overlapping on smaller screens.
-  const filteredXAxisTicks = useMemo(() => {
-    if (innerWidth <= 0) return [];
-    const maxTicks = Math.floor(innerWidth / 60); // Allow one tick per 60px
-    if (xAxisTicks.length <= maxTicks) {
-      return xAxisTicks;
-    }
-    const stride = Math.ceil(xAxisTicks.length / maxTicks);
-    return xAxisTicks.filter((_, i) => i % stride === 0);
-  }, [xAxisTicks, innerWidth]);
+  const numero = (n: number) => n.toLocaleString(lang === 'es' ? 'es-CO' : 'en-US');
+  const valores = series.map((s) => ({ ...s, v: data[activo]?.[s.key] ?? 0 }));
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-lg border border-yellow-400/40 max-w-5xl mx-auto">
-      <h2 className="text-2xl font-semibold text-brand-dark text-center mb-4">Products Over Time</h2>
-      {/* Filter Buttons */}
-      <div className="flex flex-wrap gap-2 justify-center mb-6">
-        {uniqueTypes.map(type => (
-          <button
-            key={type}
-            onClick={() => setActiveFilter(type)}
-            className={`px-4 py-2 text-sm font-semibold rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2 ${
-              activeFilter === type
-                ? 'bg-yellow-400 text-brand-dark shadow-md'
-                : 'bg-white text-brand-gray hover:bg-zinc-100 border border-zinc-200'
-            }`}
-          >
-            {type}
-          </button>
-        ))}
-      </div>
-      
-      {/* SVG Chart */}
-      <div ref={chartContainerRef} className="w-full">
-        {chartWidth > 0 && (
-          <svg width={chartWidth} height={chartHeight}>
-            {/* Y Axis Gridlines and Labels */}
-            <g>
-              {Array.from({ length: 5 }).map((_, i) => {
-                const value = Math.round(yAxisMax / 4 * i);
-                const y = yScale(value);
-                if (isNaN(y) || value > yAxisMax) return null;
-                return (
-                  <g key={i}>
-                    <text x={margin.left - 8} y={y + 4} textAnchor="end" fontSize="12" fill="#555555">{value}</text>
-                    {i > 0 && <line x1={margin.left} y1={y} x2={chartWidth - margin.right} y2={y} stroke="#f4f4f5" />}
-                  </g>
-                );
-              })}
-            </g>
-            
-            {/* Axes Lines */}
-            <line x1={margin.left} y1={margin.top} x2={margin.left} y2={innerHeight + margin.top} stroke="#e4e4e7" />
-            <line x1={margin.left} y1={innerHeight + margin.top} x2={chartWidth - margin.right} y2={innerHeight + margin.top} stroke="#e4e4e7" />
-            
-            {/* Bars */}
-            <g>
-              <AnimatePresence>
-                {chartData.map(({ year, count }) => (
-                  <motion.g
-                    key={year}
-                    // FIX: Spread motion props to avoid TypeScript type errors.
-                    {...{
-                      initial: { opacity: 0 },
-                      animate: { opacity: 1 },
-                      exit: { opacity: 0 },
-                      transition: { duration: 0.3 },
-                    }}
-                  >
-                    <title>{`Year: ${year}, Count: ${count}`}</title>
-                    <motion.rect
-                      // FIX: Spread motion props to avoid TypeScript type errors.
-                      {...{
-                        x: xScale(year) - barWidth / 2,
-                        width: barWidth,
-                        initial: { y: innerHeight + margin.top, height: 0 },
-                        animate: { 
-                            y: yScale(count), 
-                            height: Math.max(0, innerHeight + margin.top - yScale(count))
-                        },
-                        exit: { y: innerHeight + margin.top, height: 0 },
-                        transition: { type: 'spring', stiffness: 200, damping: 20 },
-                      }}
-                      fill="#FBBF24"
-                      rx="2"
-                    />
-                  </motion.g>
-                ))}
-              </AnimatePresence>
-            </g>
-
-            {/* X-Axis Labels */}
-            <g>
-              {filteredXAxisTicks.map(year => (
-                <text
-                  key={year}
-                  x={xScale(year)}
-                  y={innerHeight + margin.top + 20}
-                  textAnchor="middle"
-                  fontSize="12"
-                  fill="#555555"
-                >
-                  {year}
-                </text>
-              ))}
-            </g>
-          </svg>
+    <figure>
+      {/* La lectura del año escogido */}
+      <div className="flex flex-wrap items-baseline gap-x-5 gap-y-1 min-h-[3.2em]" aria-live="polite">
+        <span className="a-h3 tabular-nums">{activo}</span>
+        <span className="text-tinta-900 font-semibold tabular-nums">
+          {numero(total(activo))} {unidad}
+          {notaAno?.[activo] && <span className="font-normal text-tinta-600"> ({notaAno[activo]})</span>}
+        </span>
+        {series.length > 1 && (
+          <span className="a-s text-tinta-700 tabular-nums">
+            {valores.filter((s) => s.v > 0).map((s) => `${numero(s.v)} ${(s.v === 1 && s.uno ? s.uno : s.label).toLowerCase()}`).join(' · ')}
+          </span>
         )}
       </div>
-    </div>
+
+      <div ref={caja} className="mt-4 w-full">
+        <svg width={ancho} height={ALTO} role="group" aria-label={unidad} className="block overflow-visible">
+          {marcas.map((v) => (
+            <g key={v}>
+              <text x={M.left - 10} y={y(v) + 5} textAnchor="end" fontSize="15" fill="#5E5E61">{numero(v)}</text>
+              <line x1={M.left} x2={ancho - M.right} y1={y(v)} y2={y(v)} stroke={v === 0 ? '#1D1D1B' : '#CDCDD0'} strokeWidth={v === 0 ? 2 : 1} />
+            </g>
+          ))}
+          {anos.map((a, i) => {
+            let base = 0;
+            const sel = a === activo;
+            return (
+              <g
+                key={a}
+                role="button"
+                tabIndex={0}
+                aria-pressed={sel}
+                aria-label={`${a}: ${numero(total(a))} ${unidad}`}
+                onMouseEnter={() => setActivo(a)}
+                onFocus={() => setActivo(a)}
+                onClick={() => setActivo(a)}
+                onKeyDown={(e) => {
+                  if (e.key === 'ArrowRight' && i < anos.length - 1) setActivo(anos[i + 1]);
+                  if (e.key === 'ArrowLeft' && i > 0) setActivo(anos[i - 1]);
+                }}
+                className="cursor-pointer outline-none"
+              >
+                {/* La banda entera recibe el toque, aunque el año no tenga barra. */}
+                <rect x={M.left + i * banda} y={M.top} width={banda} height={ALTO - M.top - M.bottom} fill={sel ? '#FFF4A3' : 'transparent'} />
+                {series.map((s) => {
+                  const v = data[a]?.[s.key] ?? 0;
+                  if (!v) return null;
+                  const y0 = y(base + v);
+                  const h = y(base) - y0;
+                  base += v;
+                  return (
+                    <motion.rect
+                      key={s.key}
+                      x={x(a)}
+                      width={barra}
+                      fill={s.color}
+                      initial={{ attrY: y(0), height: 0 }}
+                      animate={visto || reduce ? { attrY: y0, height: h } : { attrY: y(0), height: 0 }}
+                      transition={reduce ? { duration: 0 } : { duration: 0.7, ease: [0.22, 0.8, 0.3, 1], delay: i * 0.02 }}
+                    />
+                  );
+                })}
+                {sel && <rect x={x(a)} y={y(0) + 4} width={barra} height={5} fill="#FFE900" />}
+                {rotular(a, i) && (
+                  <text x={x(a) + barra / 2} y={ALTO - 6} textAnchor="middle" fontSize="15" fill={sel ? '#1D1D1B' : '#5E5E61'} fontWeight={sel ? 700 : 400}>
+                    {a}
+                  </text>
+                )}
+              </g>
+            );
+          })}
+        </svg>
+      </div>
+
+      {series.length > 1 && (
+        <ul className="mt-5 flex flex-wrap gap-x-6 gap-y-2 a-s text-tinta-800" aria-hidden="true">
+          {series.map((s) => (
+            <li key={s.key} className="flex items-center gap-2">
+              <span className="inline-block w-4 h-4" style={{ background: s.color }} />
+              {s.label}
+            </li>
+          ))}
+        </ul>
+      )}
+      <p className="a-s text-tinta-600 mt-3">{t('rc.chart.hint')}</p>
+    </figure>
   );
 };

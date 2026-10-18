@@ -9,51 +9,48 @@ interface NavbarProps {
 
 function LangToggle({ className = '' }: { className?: string }) {
   const { lang, setLang } = useI18n();
+  const cls = (on: boolean) =>
+    on ? 'text-tinta-900 font-semibold' : 'text-tinta-500 hover:text-tinta-900 transition-colors';
   return (
-    <div className={`flex items-center gap-1 text-xs font-semibold tracking-wide ${className}`}>
-      <button
-        onClick={() => setLang('en')}
-        className={lang === 'en' ? 'text-brand-dark' : 'text-brand-gray hover:text-brand-dark transition-colors'}
-        aria-label="English"
-      >
+    <div className={`flex items-center gap-1.5 text-[15px] ${className}`}>
+      <button onClick={() => setLang('en')} className={cls(lang === 'en')} aria-label="English" aria-pressed={lang === 'en'}>
         EN
       </button>
-      <span className="text-brand-gray/40">/</span>
-      <button
-        onClick={() => setLang('es')}
-        className={lang === 'es' ? 'text-brand-dark' : 'text-brand-gray hover:text-brand-dark transition-colors'}
-        aria-label="Español"
-      >
+      <span className="text-tinta-400" aria-hidden="true">/</span>
+      <button onClick={() => setLang('es')} className={cls(lang === 'es')} aria-label="Español" aria-pressed={lang === 'es'}>
         ES
       </button>
     </div>
   );
 }
 
+const DownloadIcon = ({ className = 'h-5 w-5' }: { className?: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75} aria-hidden="true">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+  </svg>
+);
+
+const Chevron = ({ open, className = 'w-4 h-4' }: { open: boolean; className?: string }) => (
+  <svg className={`${className} transition-transform ${open ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+  </svg>
+);
+
+/** El menú sigue los capítulos del portafolio docente: Perfil (Contexto, Trayectoria,
+ *  Reconocimiento, Lo que sigue), Docencia con la formación a escala, Estudiantes,
+ *  Investigación, Servicio y el Aula. Cada filosofía abre su capítulo. */
 const navItems = (t: (key: import('../context/i18n').UIKey) => string) => [
   {
-    id: 'principles',
-    title: t('nav.principles'),
-    defaultPath: '/principles/teaching',
-    pathPrefix: '/principles',
+    id: 'about',
+    title: t('nav.about'),
+    defaultPath: '/context',
+    pathPrefix: '/context',
+    match: (p: string) => ['/context', '/trajectory', '/recognition', '/next'].includes(p),
     subItems: [
-      { title: t('nav.principles.teaching'), path: '/principles/teaching' },
-      { title: t('nav.principles.research'), path: '/principles/research' },
-      { title: t('nav.principles.service'), path: '/principles/service' },
-      { title: t('nav.principles.philosophy'), path: '/principles/philosophy' },
-    ],
-  },
-  {
-    id: 'research',
-    title: t('nav.research'),
-    defaultPath: '/research',
-    pathPrefix: '/research',
-    subItems: [
-      { title: t('nav.research.overview'), path: '/research' },
-      { title: t('nav.research.program'), path: '/research/program' },
-      { title: t('nav.research.products'), path: '/research/products' },
-      { title: t('nav.research.grants'), path: '/research/grants' },
-      { title: t('nav.research.students'), path: '/research/students' },
+      { title: t('nav.context'), path: '/context' },
+      { title: t('nav.trajectory'), path: '/trajectory' },
+      { title: t('nav.recognition'), path: '/recognition' },
+      { title: t('nav.next'), path: '/next' },
     ],
   },
   {
@@ -61,14 +58,43 @@ const navItems = (t: (key: import('../context/i18n').UIKey) => string) => [
     title: t('nav.teaching'),
     defaultPath: '/teaching',
     pathPrefix: '/teaching',
+    match: (p: string) => p.startsWith('/teaching'),
     subItems: [
       { title: t('nav.teaching.overview'), path: '/teaching' },
+      { title: t('nav.purpose'), path: '/teaching/purpose' },
+      { title: t('nav.teaching.philosophy'), path: '/teaching/philosophy' },
       { title: t('nav.teaching.courses'), path: '/teaching/courses' },
-      { title: t('nav.teaching.scholarship'), path: '/teaching/scholarship' },
+      { title: t('nav.teaching.strategies'), path: '/teaching/strategies' },
       { title: t('nav.teaching.unitops'), path: '/teaching/unit-ops' },
-      { title: t('nav.teaching.continuing'), path: '/teaching/continuing-education' },
+      { title: t('nav.teaching.scholarship'), path: '/teaching/scholarship' },
       { title: t('nav.teaching.testimonials'), path: '/teaching/testimonials' },
+      { title: t('nav.teaching.continuing'), path: '/teaching/continuing-education' },
       { title: t('nav.teaching.profdev'), path: '/teaching/professional-development' },
+    ],
+  },
+  {
+    id: 'students',
+    title: t('nav.students'),
+    defaultPath: '/school',
+    pathPrefix: '/school',
+    match: (p: string) => p === '/school' || p === '/research/students',
+    subItems: [
+      { title: t('nav.students.school'), path: '/school' },
+      { title: t('nav.students.graduate'), path: '/research/students' },
+    ],
+  },
+  {
+    id: 'research',
+    title: t('nav.research'),
+    defaultPath: '/research',
+    pathPrefix: '/research',
+    match: (p: string) => p.startsWith('/research') && p !== '/research/students',
+    subItems: [
+      { title: t('nav.research.overview'), path: '/research' },
+      { title: t('nav.purpose'), path: '/research/purpose' },
+      { title: t('nav.research.program'), path: '/research/program' },
+      { title: t('nav.research.products'), path: '/research/products' },
+      { title: t('nav.research.grants'), path: '/research/grants' },
     ],
   },
   {
@@ -76,8 +102,10 @@ const navItems = (t: (key: import('../context/i18n').UIKey) => string) => [
     title: t('nav.service'),
     defaultPath: '/service',
     pathPrefix: '/service',
+    match: (p: string) => p.startsWith('/service'),
     subItems: [
       { title: t('nav.service.overview'), path: '/service' },
+      { title: t('nav.purpose'), path: '/service/purpose' },
       { title: t('nav.service.ai'), path: '/service/augmented-intelligence' },
       { title: t('nav.service.leadership'), path: '/service/committees' },
       { title: t('nav.service.editorial'), path: '/service/editorial' },
@@ -85,8 +113,7 @@ const navItems = (t: (key: import('../context/i18n').UIKey) => string) => [
       { title: t('nav.service.outreach'), path: '/service/outreach' },
     ],
   },
-  { id: 'recognition', title: t('nav.recognition'), defaultPath: '/recognition', pathPrefix: '/recognition' },
-  { id: 'classroom', title: t('nav.classroom'), defaultPath: '/classroom', pathPrefix: '/classroom' },
+  { id: 'classroom', title: t('nav.classroom'), defaultPath: '/classroom', pathPrefix: '/classroom', match: (p: string) => p.startsWith('/classroom') },
 ];
 
 
@@ -116,7 +143,7 @@ export const Navbar = ({ onDownloadCv }: NavbarProps) => {
   // Close mobile menu on page change or resize to desktop
   useEffect(() => {
     const handleResize = () => {
-        if (window.innerWidth >= 768) {
+        if (window.innerWidth >= 1280) {
             setIsMobileMenuOpen(false);
         }
     };
@@ -130,229 +157,184 @@ export const Navbar = ({ onDownloadCv }: NavbarProps) => {
   }, [location.pathname]);
 
 
+  const isActive = (item: ReturnType<typeof navItems>[number]) => item.match(location.pathname);
+
+  // El cabezal del dossier: el nombre en versales espaciadas sobre el papel plano.
   return (
-    <nav ref={navRef} className="fixed top-0 w-full z-30 bg-white/80 backdrop-blur-md shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          <div className="flex-shrink-0">
-             <Link
-                to="/"
-                className="text-xl font-bold text-brand-dark tracking-tight transition-opacity hover:opacity-80"
-             >
-                LHR
-             </Link>
-          </div>
+    <nav ref={navRef} className="fixed top-0 w-full z-30 bg-papel-0 font-archivo text-tinta-800">
+      <div className="flex items-stretch justify-between h-16">
+        <Link
+          to="/"
+          className="flex items-center pl-4 sm:pl-6 xl:pl-8 pr-4 text-[15px] font-light uppercase tracking-[0.24em] sm:tracking-[0.42em] text-tinta-900 whitespace-nowrap hover:bg-resaltador-suave transition-colors"
+        >
+          Luis H. Reyes
+        </Link>
 
-          {/* Desktop Menu */}
-          <div className="hidden md:flex items-center justify-center">
-            <div className="flex items-baseline space-x-2 md:space-x-4">
-                {items.map((item) => {
-                const isParentActive = item.pathPrefix === '/recognition'
-                  ? location.pathname === '/recognition'
-                  : location.pathname.startsWith(item.pathPrefix);
-
-                let dropdownPositionClass = 'left-1/2 -translate-x-1/2';
-                if (item.id === 'research') {
-                    dropdownPositionClass = 'left-0';
-                } else if (item.id === 'institutional') {
-                    dropdownPositionClass = 'right-0';
-                }
-
-                return (
-                    <div
-                    key={item.id}
-                    className="relative"
-                    >
-                    <button
-                        onClick={() => {
-                            if (item.subItems) {
-                                setOpenDesktopMenu(openDesktopMenu === item.id ? null : item.id);
-                            } else {
-                                navigate(item.defaultPath);
-                                setOpenDesktopMenu(null);
-                            }
-                        }}
-                        className={`${
-                        isParentActive
-                            ? 'text-brand-dark'
-                            : 'text-brand-gray hover:text-brand-dark'
-                        } relative px-3 py-2 text-sm font-medium rounded-md transition-colors flex items-center`}
-                        aria-haspopup={!!item.subItems}
-                        aria-expanded={openDesktopMenu === item.id}
-                        aria-current={isParentActive ? 'page' : undefined}
-                    >
-                        {item.title}
-                        {item.subItems && (
-                        <svg className={`w-4 h-4 ml-1 transition-transform transform ${openDesktopMenu === item.id ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
-                        )}
-                        {isParentActive && (
-                        <motion.div
-                            {...{
-                                layoutId: "underline",
-                                transition: { type: 'spring', stiffness: 300, damping: 25 },
-                            }}
-                            className="absolute bottom-0 left-0 right-0 h-0.5 bg-yellow-400"
-                        />
-                        )}
-                    </button>
-                    <AnimatePresence>
-                        {item.subItems && openDesktopMenu === item.id && (
-                        <motion.div
-                            {...{
-                                initial: { opacity: 0, y: 10 },
-                                animate: { opacity: 1, y: 0 },
-                                exit: { opacity: 0, y: 10 },
-                                transition: { duration: 0.2 },
-                            }}
-                            className={`absolute top-full mt-2 w-60 bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 ${dropdownPositionClass}`}
-                        >
-                            <div className="py-1">
-                            {item.subItems.map(subItem => (
-                                <button
-                                    key={subItem.path}
-                                    onClick={() => {
-                                    navigate(subItem.path);
-                                    setOpenDesktopMenu(null);
-                                    }}
-                                    className={`${
-                                    location.pathname === subItem.path ? 'bg-zinc-100 text-brand-dark' : 'text-brand-gray'
-                                    } block w-full text-left px-4 py-2 text-sm hover:bg-zinc-100 transition-colors`}
-                                >
-                                {subItem.title}
-                                </button>
-                            ))}
-                            </div>
-                        </motion.div>
-                        )}
-                    </AnimatePresence>
-                    </div>
-                )
-                })}
-            </div>
-            <span className="w-px h-4 bg-brand-gray/20 mx-3" />
-            <LangToggle />
-            <button
-                onClick={onDownloadCv}
-                className="hidden md:flex items-center ml-4 text-brand-gray hover:text-brand-dark transition-colors duration-200 focus:outline-none"
-                aria-label={t('nav.downloadCv')}
-            >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                </svg>
-            </button>
-          </div>
-
-          {/* Mobile Menu Button */}
-          <div className="md:hidden flex items-center gap-2">
-            <LangToggle />
-            <button
-              onClick={onDownloadCv}
-              className="p-2 rounded-md text-brand-gray hover:text-brand-dark transition-colors duration-200 focus:outline-none"
-              aria-label={t('nav.downloadCv')}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-              </svg>
-            </button>
-            <button
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              aria-controls="mobile-menu"
-              aria-expanded={isMobileMenuOpen}
-              className="inline-flex items-center justify-center p-2 rounded-md text-brand-gray hover:text-brand-dark hover:bg-zinc-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-yellow-400"
-            >
-              <span className="sr-only">Open main menu</span>
-              <AnimatePresence initial={false} mode="wait">
-                  <motion.div
-                    {...{
-                        key: isMobileMenuOpen ? 'close' : 'open',
-                        initial: { rotate: -90, opacity: 0 },
-                        animate: { rotate: 0, opacity: 1 },
-                        exit: { rotate: 90, opacity: 0 },
-                        transition: { duration: 0.2 },
+        {/* Menú de escritorio: solo desde 1280 px, donde cabe completo */}
+        <div className="hidden xl:flex items-stretch pr-8">
+          <div className="flex items-stretch gap-1">
+            {items.map((item) => {
+              const active = isActive(item);
+              const dropdownPositionClass = item.id === 'institutional' ? 'right-0' : 'left-0';
+              return (
+                <div key={item.id} className="relative flex">
+                  <button
+                    onClick={() => {
+                      if (item.subItems) {
+                        setOpenDesktopMenu(openDesktopMenu === item.id ? null : item.id);
+                      } else {
+                        navigate(item.defaultPath);
+                        setOpenDesktopMenu(null);
+                      }
                     }}
+                    className={`${active ? 'text-tinta-900' : 'text-tinta-600 hover:text-tinta-900'} relative flex items-center gap-1 px-3 text-[15px] transition-colors`}
+                    aria-haspopup={!!item.subItems}
+                    aria-expanded={item.subItems ? openDesktopMenu === item.id : undefined}
+                    aria-current={active ? 'page' : undefined}
                   >
-                  {isMobileMenuOpen ? (
-                      <svg className="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                  ) : (
-                      <svg className="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
-                  )}
-                  </motion.div>
-              </AnimatePresence>
-            </button>
+                    {/* El activo lleva el subrayado de marcador del dossier */}
+                    <span className={active ? 'underline decoration-resaltador decoration-[0.5em] underline-offset-[-0.32em] [text-decoration-skip-ink:none]' : ''}>{item.title}</span>
+                    {item.subItems && <Chevron open={openDesktopMenu === item.id} />}
+                  </button>
+                  <AnimatePresence>
+                    {item.subItems && openDesktopMenu === item.id && (
+                      <motion.div
+                        {...{
+                          initial: { opacity: 0, y: 8 },
+                          animate: { opacity: 1, y: 0 },
+                          exit: { opacity: 0, y: 8 },
+                          transition: { duration: 0.18 },
+                        }}
+                        className={`absolute top-full w-72 bg-papel-0 border-t-2 border-tinta-900 shadow-[0_18px_36px_-14px_rgba(29,29,27,0.35)] ${dropdownPositionClass}`}
+                      >
+                        <div className="py-2">
+                          {item.subItems.map((subItem) => (
+                            <button
+                              key={subItem.path}
+                              onClick={() => {
+                                navigate(subItem.path);
+                                setOpenDesktopMenu(null);
+                              }}
+                              className={`${location.pathname === subItem.path ? 'bg-papel-100 text-tinta-900 font-semibold' : 'text-tinta-600 hover:text-tinta-900 hover:bg-resaltador-suave'} block w-full text-left px-5 py-2.5 text-[15px] transition-colors`}
+                              aria-current={location.pathname === subItem.path ? 'page' : undefined}
+                            >
+                              {subItem.title}
+                            </button>
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              );
+            })}
           </div>
+          <LangToggle className="ml-6" />
+          <button
+            onClick={onDownloadCv}
+            className="ml-6 flex items-center gap-2 text-[15px] text-tinta-600 hover:text-tinta-900 transition-colors"
+          >
+            <DownloadIcon />
+            CV
+          </button>
+        </div>
 
+        {/* Teléfono y tableta */}
+        <div className="xl:hidden flex items-center gap-1 pr-2 sm:pr-4">
+          <LangToggle className="mr-2" />
+          <button
+            onClick={onDownloadCv}
+            className="p-2.5 text-tinta-600 hover:text-tinta-900 transition-colors"
+            aria-label={t('nav.downloadCv')}
+          >
+            <DownloadIcon className="h-6 w-6" />
+          </button>
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-controls="mobile-menu"
+            aria-expanded={isMobileMenuOpen}
+            aria-label={t('nav.menu')}
+            className="p-2.5 text-tinta-900 hover:bg-papel-100 transition-colors"
+          >
+            {isMobileMenuOpen ? (
+              <svg className="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+            ) : (
+              <svg className="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
+            )}
+          </button>
         </div>
       </div>
 
-      {/* Mobile Menu Panel */}
+      {/* Panel del menú en teléfono y tableta */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
             {...{
-                initial: { opacity: 0, y: -20 },
-                animate: { opacity: 1, y: 0 },
-                exit: { opacity: 0, y: -20 },
-                transition: { duration: 0.3, ease: 'easeInOut' },
+              initial: { opacity: 0, y: -12 },
+              animate: { opacity: 1, y: 0 },
+              exit: { opacity: 0, y: -12 },
+              transition: { duration: 0.22, ease: 'easeOut' },
             }}
-            className="md:hidden absolute w-full bg-white border-t border-zinc-200 shadow-lg"
+            className="xl:hidden absolute w-full max-h-[calc(100svh-4rem)] overflow-y-auto bg-papel-0 border-b-2 border-tinta-900"
             id="mobile-menu"
           >
-            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-              {items.map(item => {
-                const isParentActive = item.pathPrefix === '/recognition'
-                  ? location.pathname === '/recognition'
-                  : location.pathname.startsWith(item.pathPrefix);
+            <div className="px-4 sm:px-6 py-3">
+              {items.map((item) => {
+                const active = isActive(item);
                 return (
-                    <div key={item.id}>
+                  <div key={item.id}>
                     {item.subItems ? (
-                        <>
+                      <>
                         <button
-                            onClick={() => setOpenMobileSubMenu(openMobileSubMenu === item.id ? null : item.id)}
-                            className={`w-full flex justify-between items-center px-3 py-2 text-base font-medium rounded-md transition-colors ${isParentActive ? 'text-brand-dark' : 'text-brand-gray'}`}
+                          onClick={() => setOpenMobileSubMenu(openMobileSubMenu === item.id ? null : item.id)}
+                          className={`w-full flex justify-between items-center py-3 text-lg text-tinta-900 ${active ? 'font-semibold' : ''}`}
+                          aria-expanded={openMobileSubMenu === item.id}
                         >
-                            <span>{item.title}</span>
-                            <svg className={`w-5 h-5 transition-transform transform ${openMobileSubMenu === item.id ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                          <span>{item.title}</span>
+                          <Chevron open={openMobileSubMenu === item.id} className="w-5 h-5" />
                         </button>
                         <AnimatePresence>
-                            {openMobileSubMenu === item.id && (
+                          {openMobileSubMenu === item.id && (
                             <motion.div
-                                {...{
-                                    initial: "collapsed",
-                                    animate: "open",
-                                    exit: "collapsed",
-                                    variants: {
-                                        open: { opacity: 1, height: 'auto' },
-                                        collapsed: { opacity: 0, height: 0 }
-                                    },
-                                    transition: { duration: 0.3, ease: 'easeInOut' },
-                                }}
-                                className="pl-4 border-l-2 border-yellow-400/50 ml-3 overflow-hidden"
+                              {...{
+                                initial: 'collapsed',
+                                animate: 'open',
+                                exit: 'collapsed',
+                                variants: {
+                                  open: { opacity: 1, height: 'auto' },
+                                  collapsed: { opacity: 0, height: 0 },
+                                },
+                                transition: { duration: 0.25, ease: 'easeInOut' },
+                              }}
+                              className="overflow-hidden bg-papel-100"
                             >
-                                <div className="py-1">
-                                    {item.subItems.map(subItem => (
-                                    <button
-                                        key={subItem.path}
-                                        onClick={() => navigate(subItem.path)}
-                                        className={`${location.pathname === subItem.path ? 'bg-zinc-100 text-brand-dark' : 'text-brand-gray'} block w-full text-left px-3 py-2 rounded-md text-base font-medium hover:bg-zinc-50 transition-colors`}
-                                    >
-                                        {subItem.title}
-                                    </button>
-                                    ))}
-                                </div>
+                              <div className="py-1">
+                                {item.subItems.map((subItem) => (
+                                  <button
+                                    key={subItem.path}
+                                    onClick={() => navigate(subItem.path)}
+                                    className={`${location.pathname === subItem.path ? 'text-tinta-900 font-semibold' : 'text-tinta-600'} block w-full text-left px-4 py-2.5 text-base`}
+                                    aria-current={location.pathname === subItem.path ? 'page' : undefined}
+                                  >
+                                    {subItem.title}
+                                  </button>
+                                ))}
+                              </div>
                             </motion.div>
-                            )}
+                          )}
                         </AnimatePresence>
-                        </>
+                      </>
                     ) : (
-                        <button
+                      <button
                         onClick={() => navigate(item.defaultPath)}
-                        className={`${location.pathname === item.defaultPath ? 'bg-zinc-100 text-brand-dark' : 'text-brand-gray'} block w-full text-left px-3 py-2 rounded-md text-base font-medium hover:bg-zinc-50 transition-colors`}
-                        >
+                        className={`block w-full text-left py-3 text-lg text-tinta-900 ${active ? 'font-semibold' : ''}`}
+                        aria-current={active ? 'page' : undefined}
+                      >
                         {item.title}
-                        </button>
+                      </button>
                     )}
-                    </div>
-                )
+                  </div>
+                );
               })}
             </div>
           </motion.div>

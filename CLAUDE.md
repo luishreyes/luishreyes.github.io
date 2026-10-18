@@ -35,6 +35,14 @@ routes.ts             ← Definición de rutas
 App.tsx               ← Router principal
 ```
 
+## Contenido: el portafolio docente y la web (decisiones del 17 oct 2026)
+
+La web y el portafolio docente impreso (el dossier, en un repo privado) se alimentan de la misma información, pero sirven a públicos distintos: la web le habla a estudiantes, colegas y empresas.
+- **La web sigue los capítulos del documento:** Declaración (portada), Contexto, Trayectoria, Docencia, Formación a escala, Escuela, Investigación, Liderazgo y servicio, Reconocimiento y Lo que sigue. Las páginas de datos (productos, financiamiento, cursos, comités…) son interiores de cada capítulo.
+- **El texto sale del último borrador de cada sección, adaptado a un lector público**, nunca copiado, y en los dos idiomas (la traducción al inglés la revisa el profesor). Los archivos del repo privado no se copian: los datos pasan uno por uno.
+- **La web no habla del documento impreso ni de su propósito.** Cuenta lo que hay, sin argumentos dirigidos a un evaluador. Tampoco los mensajes de commit ni los comentarios del código.
+- **Nada de dinero.** Sí entran, adaptados: la comparación con pares (sin nombres de colegas), los nombres de pregrado, las razones personales de la trayectoria y el doctorado en curso de Carlos Yesiel González Murcia (codirigido).
+
 ## Productos (publicaciones, patentes, libros, conferencias)
 
 La página `/research/products`, las cifras de citas, índice h e i10 del resumen de investigación, el CV en PDF y la sección de Scholarship of Teaching leen **`public/data/products.json`**, un arreglo versionado en el repo. Ya no dependen de Supabase (`services/products.ts` hace un `fetch` del archivo al cargar la app).
@@ -42,7 +50,7 @@ La página `/research/products`, las cifras de citas, índice h e i10 del resume
 - **Agregar o corregir un producto:** editar el JSON (en GitHub o aquí) y pushear a `main`; el deploy lo publica. Cada entrada tiene la forma de `Product` (`types.ts`) más `citations` (número o `null`). `type` debe ser un `ProductType`, `researchAreas` uno de los ocho `ResearchArea`, `publicationDate` en `AAAA-MM-DD` y `doi` único (la lista lo usa como `key`; para lo que no tiene DOI se usa un identificador propio, como ya hacen las patentes y los libros autopublicados).
 - **Las citas son una foto fija:** se actualizan a mano en `citations`.
 - `scripts/export-supabase.mjs` + el workflow manual `export-supabase.yml` hicieron la migración desde Supabase (oct 2026); solo se vuelven a correr para un rescate, y sobrescriben el archivo.
-- ⚠️ Solo datos bibliográficos públicos. Nada del registro privado de titularidad (estudiantes dirigidos, financiación, notas, montos) entra aquí.
+- ⚠️ Nada de dinero: ni montos, ni ingresos, ni financiación de estudiantes (decisión del profesor, 17 oct 2026).
 
 ### Imágenes (ya no salen de Supabase)
 
@@ -181,11 +189,22 @@ Si un curso define `gradualRelease: true`, quien entra con el **código de estud
 
 ## Convenciones
 
-### Colores del portafolio (Tailwind)
-- `brand-dark`: #1A1A1A (texto, fondos oscuros, callouts)
-- `brand-yellow`: #FFBF00 (acentos principales)
-- `brand-yellow-dark`: #E6AC00 (acentos hover)
-- `brand-gray`: #555555 (texto secundario)
+### Colores (Tailwind)
+- **Páginas del portafolio** (todo lo que no es `/classroom`): la paleta del portafolio docente impreso, en `papel-*`, `tinta-*` y `resaltador` (ver «Línea gráfica del portafolio»).
+- **Classroom:** los tokens `brand-*` de siempre, que cada curso puede re-tematizar:
+  - `brand-dark`: #1A1A1A (texto, fondos oscuros, callouts)
+  - `brand-yellow`: #FFBF00 (acentos principales)
+  - `brand-yellow-dark`: #E6AC00 (acentos hover)
+  - `brand-gray`: #555555 (texto secundario)
+
+### Línea gráfica del portafolio (la del dossier, pasada por el skill)
+Desde oct 2026 las páginas del portafolio siguen la línea gráfica del portafolio docente impreso (el dossier), para que la web y el documento se lean como una sola pieza, y **pasan el inspector del skill `design-taste-frontend` con 0 FAIL** (pedido del profesor). Se rehízo a mano: nada se copió del repo privado.
+- **Dónde vive:** `components/portafolio-theme.css`, todo bajo `.portafolio`, que `App.tsx` pone en las rutas fuera de `/classroom`. El aula conserva sus temas y los `brand-*`. El menú (`Navbar.tsx`) y el botón de subir son compartidos y ya hablan esta línea también dentro del aula.
+- **Color:** papel gris frío (`papel-0` #F5F5F3 de fondo, `papel-100` #EBEBEC hundido, `papel-200` #DCDCDE portada), tinta grafito (`tinta-800` #3A3A3B para leer, `tinta-900` #1D1D1B para títulos y aperturas oscuras) y el amarillo Uniandes `resaltador` #FFE900 **solo como resaltador**: el punto de las palabras de apertura, el subrayado de marcador (`.a-resaltado`), el ítem activo del menú y lo que se toca en un gráfico. Nunca como fondo de un bloque ni como texto.
+- **Letra:** Archivo autoalojada (`@fontsource-variable/archivo`), sin Typekit ni CDN. **Cinco tamaños** en todo el sitio: 15, 18, `--t-l`, `--t-titulo` y `--t-marca`.
+- **Piezas** (`components/Apertura.tsx`, `Sube.tsx`, `StatsSection.tsx`): `Apertura` para las páginas de sección (foto en blanco y negro a sangre y la palabra en minúscula con punto amarillo), `EncabezadoPagina` para las interiores (título con punto sobre filete de 2 px, entrada y foto opcional; **nunca fijo**), `Cabecera` para el título de cada bloque, `Sube` para la entrada de cada bloque. Clases: `a-c` (el único borde izquierdo), `a-campo`, `a-papel`/`a-hundido`/`a-portada`/`a-oscuro`, `a-registro` (cronologías: año en su columna), `a-tabla`, `a-filtros`, `a-cifras`, `a-cita`, `a-boton`, `a-enlace`.
+- **Lo que el skill no admite y por eso se quedó fuera del dossier:** rótulos en versalitas sobre los títulos, números de sección (01, 02…), mono en los metadatos, filetes de 1 px (los de 2 px sí pasan) y el degradado del marcador (se hace con un subrayado grueso). Tampoco tarjetas con borde, sombras en reposo, íconos encima de tarjetas, texto centrado ni texto amarillo.
+- **Fotos:** el skill pide al menos cuatro fotos reales por página. Sirven las públicas del repo (`public/images/students`, `testimonials`, `books`, `site`, los banners del aula); nada enlazado desde otros servidores. Medir con `scripts/inspect.mjs` (en la nube, con Playwright: ver la sección del skill).
 
 ### Imágenes
 - Banners siempre en **blanco y negro** (convertir con `sips -m` y perfil Gray Gamma 2.2)
@@ -193,6 +212,7 @@ Si un curso define `gradualRelease: true`, quien entra con el **código de estud
 - Iconos de redes sociales en grayscale con hover a color
 
 ### Tipografía
+- Las páginas del portafolio van en **Archivo Variable** (`@fontsource-variable/archivo`), como el dossier.
 - Las fuentes **Manrope Variable** (sans) y **JetBrains Mono Variable** (mono) van **autoalojadas** vía `@fontsource-variable/manrope` y `@fontsource-variable/jetbrains-mono` (NPM). Importadas desde `index.tsx`. No usar Google Fonts CDN — el portafolio funciona offline y el load es más rápido.
 - El CSS extra `public/classroom-fonts.css` declara las mismas familias para los archivos HTML autocontenidos del Classroom (presentaciones).
 
@@ -220,17 +240,19 @@ Instalado en `.claude/skills/anatomy/` desde [wheresryan22/anatomy](https://gith
 ### Skill `design-taste-frontend` (taste skill: dirección de arte de páginas)
 Instalado en `.claude/skills/design-taste-frontend/` desde [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill) (MIT, v2.0.0, commit `f624f37`, oct 2026), sin cambios. Se invoca con `/design-taste-frontend`. Le da dirección de arte a una página pública para que no se vea genérica: `scripts/draw.mjs` reparte direcciones sacadas de un estudio de 247 sitios, `scripts/lint.mjs` revisa el código y `scripts/inspect.mjs` mide la página en Chromium a 1440, 768 y 390 px y guarda capturas, que luego se critican y se corrigen (hasta tres rondas).
 - **Dónde sí:** las páginas públicas del portafolio (inicio, investigación, docencia, estudiantes), las landings de los cursos y el rediseño de cualquier página que se vea de plantilla. **Dónde no:** simuladores, Material, visores y demás pantallas de aplicación (el propio skill las excluye), ni lecturas, programas y presentaciones, que siguen sus guías (`LECTURAS-HTML.md`, `PROGRAMA.md`, `PRESENTATIONS.md`, `EDCO-SLIDES.md`).
-- **La identidad del sitio manda sobre el estilo del skill.** Este archivo y las guías de cada curso ganan siempre: colores `brand-*`, Manrope y JetBrains Mono autoalojadas, íconos SVG Lucide (principio #6), KaTeX, español con tildes y las identidades propias del SPDP y de Narrativas Visuales. Al repartir dirección se pasa `--keep palette,type`, para que el skill proponga solo la composición. Cuando la identidad exige algo que el skill prohíbe (el número de la tarjeta como marca de agua, una etiqueta en mono, el hover con sombra del principio #8, una tabla con líneas), se conserva, se pasa `--allow <regla>` a `inspect.mjs` (o el comentario `taste-skill-ignore` en la línea para `lint.mjs`) y se dice en el reporte.
+- **En el portafolio, el skill manda:** cada página debe pasar `inspect.mjs` con 0 FAIL, con la paleta y la letra de la «Línea gráfica del portafolio». Al repartir dirección se pasa `--keep palette,type`, para que el skill proponga solo la composición.
+- **En el aula, la identidad de cada curso manda sobre el skill:** colores `brand-*`, íconos SVG Lucide (principio #6), KaTeX, español con tildes y las identidades propias del SPDP y de Narrativas Visuales. Cuando esa identidad exige algo que el skill prohíbe (el número de la tarjeta como marca de agua, una etiqueta en mono, el hover con sombra del principio #8), se conserva, se pasa `--allow <regla>` a `inspect.mjs` (o el comentario `taste-skill-ignore` en la línea para `lint.mjs`) y se dice en el reporte.
 - **Nada de CDN:** su biblioteca carga fuentes de Google Fonts y Fontshare y fotos de Lorem Picsum. Aquí no: una fuente nueva se autoaloja con `@fontsource` y las fotos van a `public/images/...` con ruta relativa.
 - **Imágenes de archivo:** `scripts/assets.mjs` busca fotos, mapas y grabados con licencia abierta (Openverse, Wikimedia Commons, Art Institute of Chicago, el Met; con `--video`, Internet Archive y NASA). Descargar siempre con `--get <ref> --to public/images/site/` (sin `--to` cae en `assets/` de la raíz, que no se publica) y poner el crédito en la página (`--credits` lo imprime).
 - **Archivos de trabajo:** la dirección repartida y las capturas del inspector quedan en `.taste-skill/`, ignorado en git. El historial de direcciones va a `~/.taste-skill/history.json` (se mueve con `TASTE_SKILL_HISTORY`).
-- ⚠️ **El inspector no corre en las sesiones en la nube:** ahí el proceso es root y Chromium exige `--no-sandbox`, que el skill no pasa. En el Mac funciona tal cual. En la nube se corre `lint.mjs` y las capturas se toman con Playwright (`executablePath: '/opt/pw-browsers/chromium'`), como dice el propio skill para cuando no hay inspector.
+- ⚠️ **El inspector no corre en las sesiones en la nube:** ahí el proceso es root y Chromium exige `--no-sandbox`, que el skill no pasa. En el Mac funciona tal cual. En la nube se corren sus mismas mediciones (`lib/probe.mjs`, `frame` y `lib/rules.mjs` → `judge`) dentro de una página de Playwright (el Playwright global ya encuentra Chromium), con el mismo recorrido de capturas a 1440, 768 y 390 px. Los archivos abiertos (Openverse, Wikimedia, el Met) y Typekit están bloqueados en la red de la nube.
 - No se instalaron los demás skills del repositorio (`redesign-existing-projects` y los de estilo): piden cambiar la fuente, usar Phosphor en vez de Lucide y rellenar con fotos de Picsum, cosas que chocan con estas reglas. Para rediseñar basta este, con su caso especial «Redesign or review of an existing page».
 
 ### Idioma
 - **Portafolio principal y Classroom index:** Inglés
 - **Contenido de cursos (lecturas, presentaciones, landing):** Español con tildes correctas (á, é, í, ó, ú, ñ, ü)
 - **Nunca** publicar texto en español sin acentos
+- **El español del sitio trata de usted, nunca de tú** (pedido del profesor, 18 oct 2026): «Escríbame», «consulte», «vea».
 
 ### Git
 - Commits descriptivos con footer `Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>`

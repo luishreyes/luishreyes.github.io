@@ -1,345 +1,294 @@
-import React, { useRef, useState, useEffect } from 'react';
-import { PageWrapper } from '../../components/PageWrapper';
-import { motion, AnimatePresence } from 'framer-motion';
+import React from 'react';
+import { comillar } from '../../components/comillas';
 import { Link } from 'react-router-dom';
-import { useI18n, fill } from '../../context/i18n';
-import { teachingData } from '../../components/data/teaching';
+import { PageWrapper } from '../../components/PageWrapper';
+import { EncabezadoPagina, Cabecera } from '../../components/Apertura';
+import { Sube } from '../../components/Sube';
+import { useI18n, fill, localize, type UIKey } from '../../context/i18n';
+import { teachingData, testimonials, COURSE, type Testimonial } from '../../components/data/teaching';
 import { educationPapers } from '../../components/data/educationResearch';
-import { flagshipAward } from '../../components/data/metrics';
+import { flagshipAward, graduateByName } from '../../components/data/metrics';
+import { pou202620Course } from '../../components/data/classroom/pou-2026-20';
+import { SemesterSeriesChart } from '../../components/CoursesOverTimeChart';
+import { Resaltar } from '../purpose/TeachingPurposePage';
+import { fotos } from '../../components/data/fotos';
 
-// The Unit Operations course keeps its identity across renamings and code
-// changes: Unit Operations (IQUI-3010) became Integrated Project 2 under the
-// 2021 curriculum reform, then Unit Operations Project. Everything on this
-// page — the chart and the figures quoted in the prose — is derived from the
-// teaching record, so a new term shows up here as soon as it is logged there.
+// Tres cursos para un mismo propósito: Operaciones Unitarias (IQUI-3010), Proyecto Integrado 2
+// (IQUI-2032, después IQYA-2032) y Proyecto de Operaciones Unitarias (IQYA-2031). El gráfico y
+// las cifras salen del registro de cursos, así que un semestre nuevo aparece en cuanto se anota.
 const UNIT_OPS_CODES = ['IQUI-3010', 'IQUI-2032', 'IQYA-2032', 'IQYA-2031'];
-// Pandora's Laboratory ran unchanged over the same period and serves as the
-// reference benchmark.
-const BENCHMARK_CODE = 'CBP-C1320';
+const runs = teachingData.filter((c) => UNIT_OPS_CODES.includes(c.code)).sort((a, b) => a.term.localeCompare(b.term));
 
-interface ScorePoint {
-  term: string;
-  score: number;
-}
+// El eje: todos los semestres entre el primero y el último dictados, con los huecos.
+const TERMS = (() => {
+  const out: string[] = [];
+  const [a0, s0] = runs[0].term.split('-').map(Number);
+  const [a1, s1] = runs[runs.length - 1].term.split('-').map(Number);
+  for (let a = a0, s = s0; a < a1 || (a === a1 && s <= s1); s === 10 ? (s = 20) : ((s = 10), a++)) out.push(`${a}-${s}`);
+  return out;
+})();
+const runAt = TERMS.map((term) => runs.find((r) => r.term === term));
+const ix = (term: string) => TERMS.indexOf(term);
 
-const evaluationScores: ScorePoint[] = teachingData
-  .filter((c) => UNIT_OPS_CODES.includes(c.code) && c.evaluation !== null)
-  .sort((a, b) => a.term.localeCompare(b.term))
-  .map((c) => ({ term: c.term.slice(2), score: c.evaluation as number }));
-
-const benchmarkRuns = teachingData.filter((c) => c.code === BENCHMARK_CODE && c.evaluation !== null);
-const benchmark = benchmarkRuns.reduce((sum, c) => sum + (c.evaluation as number), 0) / benchmarkRuns.length;
-
-const termIndex = (term: string) => evaluationScores.findIndex((d) => d.term === term);
-const REFORM_START = termIndex('21-20');    // course becomes Integrated Project 2
-const SYNTHESIS_START = termIndex('24-10'); // course becomes Unit Operations Project
-
-// Figures quoted in the narrative, derived so the prose cannot drift from the chart.
-const traditionalRuns = evaluationScores.slice(0, REFORM_START);
-const traditionalAvg = traditionalRuns.reduce((sum, d) => sum + d.score, 0) / traditionalRuns.length;
-
-const lowestIndex = evaluationScores.reduce((lo, d, i) => (d.score < evaluationScores[lo].score ? i : lo), 0);
-const lowest = evaluationScores[lowestIndex];
-
-const peakIndex = evaluationScores.reduce(
-  (hi, d, i) => (i > lowestIndex && d.score > evaluationScores[hi].score ? i : hi),
-  lowestIndex,
-);
-const peak = evaluationScores[peakIndex];
-const recoverySemesters = peakIndex - lowestIndex + 1;
-
-const latest = evaluationScores[evaluationScores.length - 1];
-
-const fullTerm = (term: string) => `20${term}`;
 const award = flagshipAward('teaching');
-const decimal = (value: number, lang: string) =>
-  lang === 'es' ? value.toFixed(1).replace('.', ',') : value.toFixed(1);
+const studyPaper = educationPapers.find((p) => p.year === 2025) ?? educationPapers[educationPapers.length - 1];
+const unitOpsPapers = educationPapers.filter((p) => p.course === 'unitops');
 
-
-const ScoreChart = () => {
-  const { t, lang } = useI18n();
-  const chartRef = useRef<HTMLDivElement>(null);
-  const [width, setWidth] = useState(0);
-  const height = 350;
-  const margin = { top: 60, right: 40, bottom: 60, left: 50 };
-
-  useEffect(() => {
-    const handleResize = () => {
-      if (chartRef.current) setWidth(chartRef.current.offsetWidth);
-    };
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  if (width === 0) return <div ref={chartRef} className="h-[350px] w-full animate-pulse bg-zinc-100 rounded-xl" />;
-
-  const innerWidth = width - margin.left - margin.right;
-  const innerHeight = height - margin.top - margin.bottom;
-  const minScore = 130;
-  const maxScore = 170;
-
-  const xScale = (index: number) => margin.left + (index / (evaluationScores.length - 1)) * innerWidth;
-  const yScale = (score: number) => margin.top + innerHeight - ((score - minScore) / (maxScore - minScore)) * innerHeight;
-  const points = evaluationScores.map((d, i) => `${xScale(i)},${yScale(d.score)}`).join(' ');
-
-  // Phase bands break halfway between the last run of one era and the first of the next.
-  const reformEdge = REFORM_START - 0.5;
-  const synthesisEdge = SYNTHESIS_START - 0.5;
-
-  return (
-    <div ref={chartRef} className="bg-white p-6 rounded-lg shadow-lg border border-yellow-400/40 overflow-hidden relative">
-      <h3 className="text-xl font-bold text-brand-dark mb-2 text-center">{t('unitops.chart.title')}</h3>
-      <p className="text-xs text-brand-gray text-center mb-8 uppercase tracking-widest">{t('unitops.chart.scale')}</p>
-      
-      <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} className="overflow-visible">
-        {/* Phase backgrounds - following site's subtle palette */}
-        <rect x={margin.left} y={margin.top} width={xScale(reformEdge) - margin.left} height={innerHeight} fill="#f4f4f5" />
-        <rect x={xScale(reformEdge)} y={margin.top} width={xScale(synthesisEdge) - xScale(reformEdge)} height={innerHeight} fill="#fff7ed" />
-        <rect x={xScale(synthesisEdge)} y={margin.top} width={width - margin.right - xScale(synthesisEdge)} height={innerHeight} fill="#fefce8" />
-
-        {/* Phase Labels */}
-        <text x={margin.left + (xScale(reformEdge) - margin.left)/2} y={margin.top - 20} textAnchor="middle" className="text-[10px] font-bold fill-zinc-400 uppercase tracking-widest">{t('unitops.phase.traditional')}</text>
-        <text x={xScale(reformEdge) + (xScale(synthesisEdge) - xScale(reformEdge))/2} y={margin.top - 20} textAnchor="middle" className="text-[10px] font-bold fill-orange-400 uppercase tracking-widest">{t('unitops.phase.reform')}</text>
-        <text x={xScale(synthesisEdge) + (width - margin.right - xScale(synthesisEdge))/2} y={margin.top - 20} textAnchor="middle" className="text-[10px] font-bold fill-yellow-600 uppercase tracking-widest">{t('unitops.phase.synthesis')}</text>
-
-        {/* Horizontal Grid */}
-        {[130, 140, 150, 160, 170].map(val => (
-          <g key={val}>
-            <line x1={margin.left} y1={yScale(val)} x2={width - margin.right} y2={yScale(val)} stroke="#e4e4e7" strokeWidth="1" />
-            <text x={margin.left - 10} y={yScale(val) + 4} textAnchor="end" className="text-[10px] fill-zinc-500 font-medium">{val}</text>
-          </g>
-        ))}
-
-        {/* Ref Benchmark */}
-        <line x1={margin.left} y1={yScale(benchmark)} x2={width - margin.right} y2={yScale(benchmark)} stroke="#94a3b8" strokeWidth="1.5" strokeDasharray="4 4" />
-        <text x={width - margin.right} y={yScale(benchmark) - 6} textAnchor="end" className="text-[8px] fill-slate-500 font-bold uppercase">{`${t('unitops.chart.benchmark')} (${decimal(benchmark, lang)})`}</text>
-
-        {/* Main path */}
-        <motion.polyline
-          fill="none"
-          stroke="#FBBF24"
-          strokeWidth="3"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          points={points}
-          initial={{ pathLength: 0 }}
-          animate={{ pathLength: 1 }}
-          transition={{ duration: 1.5, ease: "easeInOut" }}
-        />
-
-        {/* Points */}
-        {evaluationScores.map((d, i) => (
-          <g key={i}>
-            <motion.circle
-              cx={xScale(i)}
-              cy={yScale(d.score)}
-              r="4.5"
-              fill="white"
-              stroke="#FBBF24"
-              strokeWidth="2.5"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 + i * 0.05 }}
-            />
-            <text
-              x={xScale(i)}
-              y={height - margin.bottom + 25}
-              textAnchor="middle"
-              className="text-[9px] font-bold fill-zinc-500"
-              transform={`rotate(45, ${xScale(i)}, ${height - margin.bottom + 25})`}
-            >
-              {d.term}
-            </text>
-          </g>
-        ))}
-      </svg>
-    </div>
-  );
+// Cuatro simuladores del aula del curso, con su nombre en los dos idiomas.
+const SIMULADORES: Record<string, UIKey> = {
+  'explorador-bombas-centrifugas': 'tch.sim.explorador-bombas-centrifugas',
+  'explorador-intercambiadores': 'tch.sim.explorador-intercambiadores',
+  'explorador-mccabe-thiele': 'tch.sim.explorador-mccabe-thiele',
+  'explorador-filtracion': 'tch.sim.explorador-filtracion',
 };
+const simuladores = (pou202620Course.simulations ?? []).filter((s) => s.id in SIMULADORES);
+const nSimuladores = (pou202620Course.simulations ?? []).filter((s) => s.id !== 'manual-diagramas').length;
+
+// Dos estudiantes que tomaron el curso y lo cuentan en su testimonio.
+const VOCES = ['Olga Lucía Acuña', 'Juanita Sierra'];
+const voces = VOCES.map((name) => testimonials.find((x) => x.name === name && x.category === 'Teaching & Mentorship')).filter(
+  (x): x is Testimonial => Boolean(x),
+);
 
 export const UnitOperationsInnovationPage: React.FC = () => {
   const { t, lang } = useI18n();
+
+  const bandas = [
+    { from: 0, to: ix('2019-20'), label: t('tch.uo.band.ou1') },
+    { from: ix('2020-10'), to: ix('2021-10'), label: t('tch.uo.band.ou2') },
+    { from: ix('2021-20'), to: ix('2023-20'), label: t('tch.uo.band.pi2') },
+    { from: ix('2024-10'), to: TERMS.length - 1, label: t('tch.uo.band.pou') },
+  ];
+  const hitos = [
+    // Las filas evitan que la línea de un hito cruce el rótulo de otro.
+    { at: ix('2019-10'), label: t('tch.uo.ev.p2019'), row: 0 },
+    { at: ix('2020-20'), label: t('tch.uo.ev.p2021'), row: 1 },
+    { at: ix('2023-20'), label: t('tch.uo.ev.aias'), row: 0 },
+    { at: ix('2025-10'), label: t('tch.uo.ev.p2025'), row: 2 },
+    { at: ix('2025-20'), label: t('tch.uo.ev.redesign'), row: 1 },
+    ...(award ? [{ at: TERMS.length - 1, label: t('tch.uo.ev.award'), row: 0 }] : []),
+  ].filter((h) => h.at >= 0);
+
+  const cursos: { when: UIKey; title: string; code: string; parrafos: React.ReactNode[] }[] = [
+    {
+      when: 'tch.uo.ou.when', title: localize(COURSE.ou, lang), code: 'IQUI-3010',
+      parrafos: [t('tch.uo.ou.p1'), t('tch.uo.ou.p2'), t('tch.uo.ou.p3'), t('tch.uo.ou.p4')],
+    },
+    {
+      when: 'tch.uo.pi2.when', title: localize(COURSE.pi2, lang), code: 'IQUI-2032 · IQYA-2032',
+      parrafos: [t('tch.uo.pi2.p1'), t('tch.uo.pi2.p2')],
+    },
+    {
+      when: 'tch.uo.pou.when', title: localize(COURSE.pou, lang), code: 'IQYA-2031',
+      parrafos: [
+        t('tch.uo.pou.p1'),
+        <Resaltar key="p2" texto={t('tch.uo.pou.p2')} frase={t('tch.uo.pou.mark')} />,
+        t('tch.uo.pou.p3'),
+      ],
+    },
+  ];
+
   return (
     <PageWrapper noPadding>
-      <div className="pt-16">
-        <div className="sticky top-16 bg-zinc-50/95 backdrop-blur-sm z-20 py-6 border-b border-zinc-200">
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-brand-dark text-left">{t('unitops.title')}</h1>
-                <p className="mt-4 text-brand-gray leading-relaxed font-medium">
-                    {t('unitops.sub')}
-                </p>
-            </div>
-        </div>
+      <EncabezadoPagina
+        titulo={t('tch.uo.title')}
+        entrada={<p>{t('tch.uo.lead')}</p>}
+        accion={{ href: `https://doi.org/${studyPaper.doi}`, label: fill(t('tch.uo.cta'), { year: studyPaper.year }) }}
+        foto={{ src: fotos.postersPou.src, alt: localize(fotos.postersPou.alt, lang) }}
+      />
 
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-20">
-          <motion.aside
-            initial={{ opacity: 0, y: 12 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="bg-brand-dark rounded-xl p-8 sm:p-10 shadow-xl border border-yellow-400/30"
-          >
-            <div className="sm:flex sm:items-start sm:gap-8">
-              <img
-                src="/images/aiche-logo.svg"
-                alt="AIChE"
-                className="w-24 h-24 flex-shrink-0 mx-auto sm:mx-0 invert opacity-90"
-              />
-              <div className="mt-6 sm:mt-0 min-w-0">
-                <p className="text-xs font-bold uppercase tracking-widest text-yellow-400">{fill(t('unitops.award.eyebrow'), { year: award?.year ?? '' })}</p>
-                <h2 className="mt-2 text-2xl font-bold text-white leading-tight">{t('unitops.award.title')}</h2>
-                <p className="mt-4 text-zinc-300 italic leading-relaxed">{t('unitops.award.citation')}</p>
-                <p className="mt-4 text-sm text-zinc-400 leading-relaxed">{t('unitops.award.note')}</p>
-                <div className="mt-6 flex flex-wrap gap-3">
-                  <Link
-                    to="/recognition"
-                    className="inline-flex items-center text-xs font-bold uppercase tracking-wider text-brand-dark bg-yellow-400 px-4 py-2 rounded hover:bg-yellow-500 transition-colors"
-                  >
-                    {t('unitops.award.cta')}
+      {/* ── El reconocimiento ── */}
+      {award && (
+        <section className="a-oscuro a-campo">
+          <div className="a-c grid gap-12 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] lg:items-center">
+            <div>
+              <Sube><h2 className="a-titulo">{fill(t('tch.uo.award.heading'), { year: award.year })}.</h2></Sube>
+              <Sube delay={0.06}>
+                <p className="a-entrada mt-8 max-w-[40ch]">
+                  {fill(t('tch.uo.award.name'), { awarder: localize(award.awarder, lang) })}
+                </p>
+              </Sube>
+              <Sube delay={0.1}>
+                <p className="mt-8 a-texto text-papel-100">{t('tch.uo.award.note')}</p>
+                <p className="mt-4 a-texto text-papel-200">{t('tch.uo.award.citation')}</p>
+                <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4">
+                  <Link to="/recognition" className="a-boton">
+                    {t('tch.uo.award.cta')} <span aria-hidden="true">→</span>
                   </Link>
-                  <a
-                    href="https://www.aiche.org/community/awards/award-innovation-chemical-engineering-education"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center text-xs font-bold uppercase tracking-wider text-yellow-400 border border-yellow-400/50 px-4 py-2 rounded hover:bg-yellow-400/10 transition-colors"
-                  >
-                    {t('unitops.award.ctaAiche')} &#8599;
+                  <a href={award.url} target="_blank" rel="noopener noreferrer" className="a-enlace">
+                    {t('tch.uo.award.aiche')} <span aria-hidden="true">↗</span>
                   </a>
                 </div>
-              </div>
+              </Sube>
             </div>
-          </motion.aside>
+            <Sube delay={0.12} className="hidden lg:block">
+              <img src="/images/aiche-logo.svg" alt="AIChE" className="w-full max-w-[320px] ml-auto invert opacity-90" />
+            </Sube>
+          </div>
+        </section>
+      )}
 
-          <section>
-            <h2 className="text-2xl font-bold tracking-tight text-brand-dark mb-6">{t('unitops.context')}</h2>
-            <p className="text-lg text-brand-gray leading-relaxed">
-              {t('unitops.context.text1')}<span className="font-semibold text-brand-dark">{t('unitops.context.school')}</span>{t('unitops.context.text2')}<span className="font-semibold text-brand-dark">{t('unitops.context.dept')}</span>{t('unitops.context.text3')}
-            </p>
-          </section>
-
-          <section className="space-y-12">
-            <h2 className="text-2xl font-bold tracking-tight text-brand-dark uppercase tracking-widest flex items-center gap-4">
-               {t('unitops.evolution')}
-               <span className="flex-grow h-px bg-zinc-200"></span>
-            </h2>
-            
-            <div className="space-y-10">
-              <motion.div 
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="bg-white p-8 rounded-lg shadow-md border border-zinc-100 border-l-4 border-l-zinc-800"
-              >
-                <div className="flex justify-between items-start mb-4">
-                  <h3 className="text-xl font-bold text-brand-dark">{t('unitops.phase1.title')}</h3>
-                  <span className="text-xs font-bold uppercase bg-zinc-100 px-2 py-1 rounded">{t('unitops.phase1.tag')}</span>
-                </div>
-                <p className="text-brand-gray leading-relaxed">
-                  {`${t('unitops.phase1.textPre')}${decimal(traditionalAvg, lang)}${t('unitops.phase1.textPost')}`}
-                </p>
-              </motion.div>
-
-              <motion.div 
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="bg-white p-8 rounded-lg shadow-md border border-zinc-100 border-l-4 border-l-red-500"
-              >
-                <div className="flex justify-between items-start mb-4">
-                  <h3 className="text-xl font-bold text-brand-dark">{t('unitops.phase2.title')}</h3>
-                  <span className="text-xs font-bold uppercase bg-red-50 text-red-600 px-2 py-1 rounded">{t('unitops.phase2.tag')}</span>
-                </div>
-                <p className="text-brand-gray leading-relaxed mb-4">
-                  {t('unitops.phase2.text1').split('{ip2}')[0]}<span className="font-medium text-brand-dark">{t('unitops.phase2.ip2')}</span>{t('unitops.phase2.text1').split('{ip2}')[1]}
-                </p>
-                <p className="text-brand-gray leading-relaxed">
-                  {t('unitops.phase2.text2pre')}<span className="text-red-600 font-bold">{`${t('unitops.phase2.lowOf')}${lowest.score} ${t('unitops.phase2.lowIn')} ${fullTerm(lowest.term)}`}</span>{t('unitops.phase2.text2post')}
-                </p>
-              </motion.div>
-
-              <motion.div 
-                initial={{ opacity: 0, y: 10 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="bg-white p-8 rounded-lg shadow-md border border-zinc-100 border-l-4 border-l-yellow-400"
-              >
-                <div className="flex justify-between items-start mb-4">
-                  <h3 className="text-xl font-bold text-brand-dark">{t('unitops.phase3.title')}</h3>
-                  <span className="text-xs font-bold uppercase bg-yellow-50 text-yellow-600 px-2 py-1 rounded">{t('unitops.phase3.tag')}</span>
-                </div>
-                <p className="text-brand-gray leading-relaxed">
-                  {t('unitops.phase3.text1')}<span className="font-semibold text-brand-dark">{t('unitops.phase3.genai')}</span>{fill(t('unitops.phase3.text2'), { peakTerm: fullTerm(peak.term) })}<span className="font-bold text-brand-dark">{t('unitops.phase3.fifty')}</span>{t('unitops.phase3.text3')}<span className="font-medium text-brand-dark italic">{t('unitops.phase3.insilico')}</span>{t('unitops.phase3.text4')}<span className="font-semibold text-brand-dark">{t('unitops.phase3.aspen')}</span>{t('unitops.phase3.text5')}<span className="font-bold text-brand-dark">{peak.score}</span>{t('unitops.phase3.text5b')}<span className="font-bold text-brand-dark">{fullTerm(peak.term)}</span>{t('unitops.phase3.text5c')}<span className="font-bold text-brand-dark">{`${latest.score} (${fullTerm(latest.term)})`}</span>{t('unitops.phase3.text6')}<span className="font-bold text-brand-dark">{decimal(traditionalAvg, lang)}</span>{t('unitops.phase3.text7')}
-                </p>
-              </motion.div>
-            </div>
-          </section>
-
-          <section className="bg-zinc-50 -mx-4 px-4 py-16 sm:-mx-8 sm:px-8 lg:-mx-12 lg:px-12 rounded-xl">
-            <div className="max-w-4xl mx-auto">
-              <h2 className="text-2xl font-bold tracking-tight text-brand-dark mb-10 text-center uppercase tracking-widest">{t('unitops.impact')}</h2>
-              <ScoreChart />
-              <p className="mt-8 text-xs text-center text-brand-gray italic">
-                {`${t('unitops.chart.notePre')}${decimal(benchmark, lang)}${t('unitops.chart.notePost')}`}
-              </p>
-            </div>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-bold tracking-tight text-brand-dark mb-8">{t('unitops.lessons')}</h2>
-            <div className="grid md:grid-cols-2 gap-x-12 gap-y-8">
-              {[
-                { title: t('unitops.lesson1.title'), desc: t('unitops.lesson1.desc') },
-                { title: t('unitops.lesson2.title'), desc: `${t('unitops.lesson2.descPre')}${lowest.score}${t('unitops.lesson2.descTo')}${peak.score}${t('unitops.lesson2.descOver')}${recoverySemesters}${t('unitops.lesson2.descPost')}` },
-                { title: t('unitops.lesson3.title'), desc: t('unitops.lesson3.desc') },
-                { title: t('unitops.lesson4.title'), desc: t('unitops.lesson4.desc') }
-              ].map((lesson, idx) => (
-                <div key={idx} className="space-y-2">
-                  <h4 className="font-bold text-brand-dark flex items-center gap-2">
-                    <span className="w-6 h-6 flex items-center justify-center bg-yellow-400/20 text-yellow-600 rounded text-xs font-mono">{idx + 1}</span>
-                    {lesson.title}
-                  </h4>
-                  <p className="text-brand-gray text-sm leading-relaxed pl-8">{lesson.desc}</p>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          <section className="pt-10">
-            <h2 className="text-2xl font-bold tracking-tight text-brand-dark mb-8 uppercase tracking-widest flex items-center gap-4">
-              {t('unitops.scholarly')}
-              <span className="flex-grow h-px bg-zinc-200"></span>
-            </h2>
-            <div className="space-y-6">
-              {educationPapers.map((paper, idx) => (
-                <div key={idx} className="bg-white p-6 rounded-lg border border-zinc-100 shadow-sm transition-all hover:border-yellow-400/40">
-                  <h3 className="text-lg font-bold text-brand-dark mb-2 leading-tight">
-                    <a href={`https://doi.org/${paper.doi}`} target="_blank" rel="noopener noreferrer" className="hover:text-yellow-600 transition-colors">
-                      {paper.title}
-                    </a>
-                  </h3>
-                  <p className="text-xs text-brand-gray mb-1 uppercase tracking-wider font-semibold">{paper.authorsFull} ({paper.year})</p>
-                  <p className="text-xs text-yellow-600 font-bold mb-4 uppercase tracking-tighter">{`${paper.journal}, ${paper.locator}`}</p>
-                  <a href={`https://doi.org/${paper.doi}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-xs font-bold text-brand-dark bg-yellow-400 px-3 py-1.5 rounded hover:bg-yellow-500 transition-colors">
-                    DOI: {paper.doi}
-                  </a>
-                </div>
-              ))}
-            </div>
-            <p className="mt-8 text-sm text-brand-gray leading-relaxed">
-              {t('unitops.sotlLink')}{' '}
-              <Link to="/teaching/scholarship" className="font-semibold text-brand-dark underline decoration-yellow-400 decoration-2 underline-offset-4 hover:text-yellow-600 transition-colors">
-                {t('unitops.sotlLinkCta')}
-              </Link>
-            </p>
-          </section>
-
-          <section className="text-center py-12 border-t border-zinc-100">
-            <p className="text-2xl font-bold tracking-tighter text-brand-dark max-w-3xl mx-auto leading-relaxed">
-              {t('unitops.quote')}
-            </p>
-          </section>
+      {/* ── La evaluación de los tres cursos, a todo el ancho ── */}
+      <section className="a-papel a-campo">
+        <div className="a-c">
+          <Sube><Cabecera titulo={t('tch.uo.chart.title')} /></Sube>
+          <Sube delay={0.04}><p className="mt-8 a-texto">{t('tch.uo.chart.text')}</p></Sube>
+          <Sube delay={0.08} className="mt-10">
+            <SemesterSeriesChart
+              terms={TERMS}
+              values={runAt.map((r) => r?.evaluation ?? null)}
+              min={130}
+              max={165}
+              ticks={[135, 145, 155, 165]}
+              bands={bandas}
+              events={hitos}
+              label={fill(t('tch.uo.chart.label'), { first: TERMS[0], last: TERMS[TERMS.length - 1] })}
+              gapNote={(i) => (runAt[i] ? t('tch.uo.chart.none') : t('tch.uo.chart.notTaught'))}
+              describe={(i) => {
+                const r = runAt[i];
+                return (
+                  <>
+                    <span className="font-semibold tabular-nums">{TERMS[i]}</span>
+                    {' · '}
+                    {r ? `${localize(r.title, lang)} (${r.code})` : t('tch.uo.chart.notTaught')}
+                    {r && ' · '}
+                    {r && (r.evaluation !== null ? <span className="font-semibold tabular-nums">{r.evaluation}</span> : t('tch.uo.chart.none'))}
+                  </>
+                );
+              }}
+            />
+            <p className="a-pie max-w-[64ch]">{t('tch.uo.chart.caption')}</p>
+          </Sube>
         </div>
-      </div>
+      </section>
+
+      {/* ── Los tres cursos ── */}
+      <section className="a-hundido a-campo">
+        <div className="a-c">
+          <Sube><Cabecera titulo={t('tch.uo.three')} className="mb-12" /></Sube>
+          <ol className="a-registro">
+            {cursos.map((c, i) => (
+              <Sube as="li" key={c.code} delay={0.05 * i}>
+                <span className="cuando">{t(c.when)}</span>
+                <div>
+                  <h3 className="que">{c.title}</h3>
+                  <p className="donde">{c.code}</p>
+                  {c.parrafos.map((p, k) => (
+                    <p key={k} className={`detalle ${k === 0 ? 'text-tinta-900' : ''}`}>{p}</p>
+                  ))}
+                </div>
+              </Sube>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      {/* ── El estudio de 2025 ── */}
+      <section className="a-papel a-campo">
+        <div className="a-c">
+          <Sube><Cabecera titulo={t('tch.uo.study.title')} /></Sube>
+          <div className="mt-10 grid gap-x-16 gap-y-6 lg:grid-cols-2">
+            <Sube><p className="a-texto">{t('tch.uo.study.p1')}</p></Sube>
+            <Sube delay={0.05}>
+              <p className="a-texto">{t('tch.uo.study.p2')}</p>
+              <Link to="/teaching/scholarship" className="a-enlace inline-block mt-4">{t('tch.uo.study.cta')} <span aria-hidden="true">→</span></Link>
+            </Sube>
+          </div>
+        </div>
+      </section>
+
+      {/* ── El curso hoy: los simuladores de su aula ── */}
+      <section className="a-hundido a-campo">
+        <div className="a-c">
+          <Sube><Cabecera titulo={t('tch.uo.today.title')} /></Sube>
+          <Sube delay={0.05}>
+            <p className="mt-8 a-texto">
+              {fill(t('tch.uo.today.text'), { term: pou202620Course.term, n: nSimuladores })}
+            </p>
+          </Sube>
+          <div className="mt-12 grid gap-x-8 gap-y-10 lg:grid-cols-[minmax(0,0.75fr)_minmax(0,1.6fr)] lg:items-start">
+            <Sube>
+              <figure>
+                <div className="overflow-hidden aspect-[3/4]">
+                  <img src={fotos.pouNpsh.src} alt={localize(fotos.pouNpsh.alt, lang)} loading="lazy" className="a-foto a-bn" />
+                </div>
+                <figcaption className="a-pie">{t('tch.uo.today.photo')}</figcaption>
+              </figure>
+            </Sube>
+            <div className="grid gap-x-6 gap-y-8 sm:grid-cols-2">
+              {simuladores.map((s, i) => (
+                <Sube key={s.id} delay={0.06 * (i + 1)}>
+                  <figure>
+                    <div data-ui className="overflow-hidden bg-white aspect-[16/10]">
+                      <img src={s.bannerImg} alt={t(SIMULADORES[s.id])} loading="lazy" className="block w-full h-full object-cover" />
+                    </div>
+                    <figcaption className="a-pie">{t(SIMULADORES[s.id])}</figcaption>
+                  </figure>
+                </Sube>
+              ))}
+            </div>
+          </div>
+          <Sube className="mt-10">
+            <Link to="/teaching/strategies" className="a-enlace">{t('tch.uo.today.cta')} <span aria-hidden="true">→</span></Link>
+          </Sube>
+        </div>
+      </section>
+
+      {/* ── Dos estudiantes del curso ── */}
+      <section className="a-papel a-campo">
+        <div className="a-c">
+          <Sube><Cabecera titulo={t('tch.uo.voices')} /></Sube>
+          <div className="mt-12 grid gap-16 lg:grid-cols-2">
+            {voces.map((v, i) => {
+              const graduado = v.graduateName ? graduateByName(v.graduateName) : undefined;
+              return (
+                <Sube key={v.name} delay={0.08 * i}>
+                  <figure className="grid gap-6 sm:grid-cols-[180px_minmax(0,1fr)]">
+                    <img src={v.imageUrl} alt={fill(t('testimonials.photo'), { name: v.name })} loading="lazy" className="a-bn w-[180px] aspect-[4/5] object-cover object-top" />
+                    <div>
+                      <blockquote className="space-y-4 text-tinta-900">
+                        {comillar(localize(v.quote, lang), lang).map((par, k) => <p key={k}>{par}</p>)}
+                      </blockquote>
+                      <figcaption className="mt-5">
+                        <span className="block font-semibold text-tinta-900">{v.name}</span>
+                        <span className="a-meta block">{localize(v.context, lang)}</span>
+                        <span className="a-meta block">{localize(graduado?.currentPosition || v.info, lang)}</span>
+                      </figcaption>
+                    </div>
+                  </figure>
+                </Sube>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Los tres artículos ── */}
+      <section className="a-hundido a-campo">
+        <div className="a-c">
+          <Sube><Cabecera titulo={t('tch.uo.papers')} className="mb-12" /></Sube>
+          <ol className="a-registro">
+            {unitOpsPapers.map((paper, i) => (
+              <Sube as="li" key={paper.doi} delay={0.05 * i}>
+                <span className="cuando">{paper.year}</span>
+                <div>
+                  <a href={`https://doi.org/${paper.doi}`} target="_blank" rel="noopener noreferrer" className="block text-[18px] leading-snug font-semibold text-tinta-900 underline decoration-1 underline-offset-[3px] hover:bg-resaltador-suave transition-colors">
+                    {paper.title} <span aria-hidden="true">↗</span>
+                  </a>
+                  <p className="donde">{paper.authorsFull}</p>
+                  <p className="donde mt-0"><em>{paper.journal}</em>, {paper.locator}. doi:{paper.doi}</p>
+                </div>
+              </Sube>
+            ))}
+          </ol>
+          <Sube className="mt-10">
+            <p className="a-texto">
+              {t('tch.uo.papers.more')}{' '}
+              <Link to="/teaching/scholarship" className="a-enlace">{t('tch.uo.papers.cta')} <span aria-hidden="true">→</span></Link>
+            </p>
+          </Sube>
+        </div>
+      </section>
     </PageWrapper>
   );
 };

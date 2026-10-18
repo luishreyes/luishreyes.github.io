@@ -1,146 +1,231 @@
-import React, { useRef } from 'react';
+import React from 'react';
+import { comillar } from '../../components/comillas';
+import { Link } from 'react-router-dom';
 import { PageWrapper } from '../../components/PageWrapper';
 import { StatsSection } from '../../components/StatsSection';
-import { useI18n, fill, localize } from '../../context/i18n';
-import { teachingData, type TaughtCourse } from '../../components/data/teaching';
-import { edcoCoursesData } from '../../components/data/edco';
-import { metrics, flagshipAward } from '../../components/data/metrics';
+import { Sube } from '../../components/Sube';
+import { Apertura, Cabecera } from '../../components/Apertura';
+import { useI18n, fill, localize, cardinal } from '../../context/i18n';
+import { teachingData, testimonials, courseCatalog, type Testimonial } from '../../components/data/teaching';
+import { educationPapers, sotlProducts } from '../../components/data/educationResearch';
+import { trainingCourses } from '../../components/data/edco';
+import { professionalDevelopmentData } from '../../components/data/professionalDevelopment';
+import { metrics, flagshipAward, graduateByName } from '../../components/data/metrics';
+import { pou202620Course } from '../../components/data/classroom/pou-2026-20';
+import { useAppData } from '../../context/AppDataContext';
 import { CoursesOverTimeChart } from '../../components/CoursesOverTimeChart';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { fotos } from '../../components/data/fotos';
 
 const { teaching } = metrics;
 const teachingAward = flagshipAward('teaching');
-const averageEvaluationDisplay = teaching.averageEvaluation !== null
-    ? teaching.averageEvaluation.toFixed(1)
-    : 'N/A';
+
+// Cuatro voces de cursos distintos, en el orden en que se leen mejor.
+const VOCES: { name: string; category: Testimonial['category'] }[] = [
+  { name: 'Jason Bernal Sánchez', category: 'Teaching & Mentorship' },
+  { name: 'Daniela Aristizabal', category: 'Teaching & Mentorship' },
+  { name: 'Carlos Manuel Ramírez Acosta', category: 'Teaching & Mentorship' },
+  { name: 'Julian Daniel Torres Vanegas', category: 'Teaching & Mentorship' },
+];
+const voces = VOCES.map((v) => testimonials.find((x) => x.name === v.name && x.category === v.category)).filter(
+  (x): x is Testimonial => Boolean(x),
+);
+const personas = new Set(testimonials.map((x) => x.name)).size;
+
+// El Laboratorio de Pandora: estudiantes y semestres, del registro de cursos.
+const pandora = teachingData.filter((c) => c.code === 'CBP-C1320');
+const pandoraEstudiantes = pandora.reduce((s, c) => s + c.students, 0);
+
+// Los simuladores del aula de Proyecto de Operaciones Unitarias (el manual de diagramas va aparte).
+const simuladores = (pou202620Course.simulations ?? []).filter((s) => s.id !== 'manual-diagramas').length;
+
+const primerAnoFormacion = Math.min(...trainingCourses.map((c) => c.year));
+const primerAnoDesarrollo = Math.min(...professionalDevelopmentData.map((a) => Number(a.period.slice(0, 4))));
 
 export const TeachingOverviewPage: React.FC = () => {
   const { t, lang } = useI18n();
+  const { products } = useAppData();
+  const miles = (n: number) => n.toLocaleString(lang === 'es' ? 'es-CO' : 'en-US');
+  const { talks } = sotlProducts(products);
 
-  // A figure earns a tile only if it can be quoted on its own. Course counts
-  // sliced three ways said the same thing three times; recognition and funded
-  // education research say something the counts cannot.
   const stats = [
-    { label: t('stats.totalCourses'), value: teaching.courses, note: t('stats.totalCourses.note') },
-    { label: t('stats.uniStudents'), value: teaching.universityStudents, note: fill(t('stats.uniStudents.note'), { firstYear: teaching.firstYear }) },
-    { label: t('stats.contEdStudents'), value: teaching.continuingEdParticipants, note: t('stats.contEdStudents.note') },
-    { label: t('stats.moocLearners'), value: teaching.moocEnrolments, note: `${teaching.moocCompletions.toLocaleString()} ${t('stats.moocLearners.note')}` },
-    { label: t('stats.avgEvaluation'), value: averageEvaluationDisplay, note: `${teaching.evaluatedRuns} ${t('stats.avgEvaluation.runs')}` },
-    { label: t('stats.uniqueCourses'), value: teaching.uniqueCourseTitles },
-    ...(teachingAward ? [{ label: localize(teachingAward.title, lang), value: `${teachingAward.shortName ?? ''} ${teachingAward.year}`.trim(), note: t('stats.award.note') }] : []),
-    { label: t('stats.eduGrants'), value: teaching.educationGrants, note: t('stats.eduGrants.note') },
+    {
+      label: fill(t('tch.ov.fig.students'), { year: teaching.firstYear }),
+      value: teaching.universityStudents,
+      note: fill(t('tch.ov.fig.students.note'), { n: teaching.sections }),
+    },
+    {
+      label: t('tch.ov.fig.courses'),
+      value: courseCatalog.length,
+      note: fill(t('tch.ov.fig.courses.note'), { created: teaching.createdCourses, redesigned: teaching.redesignedCourses }),
+    },
+    {
+      label: t('tch.ov.fig.papers'),
+      value: educationPapers.length,
+      note: talks.length ? fill(t('tch.ov.fig.papers.note'), { n: talks.length }) : undefined,
+    },
+    {
+      label: t('tch.ov.fig.pandora'),
+      value: pandoraEstudiantes,
+      note: fill(t('tch.ov.fig.pandora.note'), { n: cardinal(pandora.length, lang) }),
+    },
+    {
+      label: t('tch.ov.fig.sims'),
+      value: simuladores,
+      note: fill(t('tch.ov.fig.sims.note'), { term: pou202620Course.term }),
+    },
+    ...(teachingAward
+      ? [{ label: t('tch.ov.fig.aiche'), value: t('tch.ov.fig.first'), note: t('tch.ov.fig.aiche.note') }]
+      : []),
   ];
 
+  const filas = [
+    { to: '/teaching/purpose', titulo: t('tch.more.philosophy.t'), texto: t('tch.more.philosophy') },
+    { to: '/teaching/courses', titulo: t('tch.more.courses.t'), texto: fill(t('tch.more.courses'), { n: courseCatalog.length, year: teaching.firstYear }) },
+    { to: '/teaching/strategies', titulo: t('tch.more.strategies.t'), texto: t('tch.more.strategies') },
+    { to: '/teaching/unit-ops', titulo: t('tch.more.unitops.t'), texto: fill(t('tch.more.unitops'), { year: teachingAward?.year ?? 2026 }) },
+    {
+      to: '/teaching/scholarship',
+      titulo: t('tch.more.sotl.t'),
+      texto: (() => {
+        const papers = cardinal(educationPapers.length, lang);
+        const texto = talks.length
+          ? fill(t('tch.more.sotl'), { papers, talks: cardinal(talks.length, lang) })
+          : fill(t('tch.more.sotl.short'), { papers });
+        return texto.charAt(0).toUpperCase() + texto.slice(1);
+      })(),
+    },
+    { to: '/teaching/testimonials', titulo: t('tch.more.testimonials.t'), texto: fill(t('tch.more.testimonials'), { quotes: testimonials.length, people: personas }) },
+    { to: '/teaching/continuing-education', titulo: t('training.title'), texto: fill(t('tch.more.training'), { n: trainingCourses.length, year: primerAnoFormacion }) },
+    { to: '/teaching/professional-development', titulo: t('profdev.title'), texto: fill(t('teaching.more.profdev'), { n: professionalDevelopmentData.length, year: primerAnoDesarrollo }) },
+  ];
 
-  // Map continuing education courses to the TaughtCourse type for the chart
-  const mappedEdcoCourses: TaughtCourse[] = edcoCoursesData.map(course => {
-    let courseType: TaughtCourse['type'] = 'EDCO';
-    if (course.type === 'Corporate Course') {
-      courseType = 'Corporate';
-    } else if (course.client === 'Coursera (MOOC)') {
-      courseType = 'Coursera';
-    }
-
-    return {
-      term: `${course.year}-EDCO`,
-      year: course.year,
-      code: 'EDCO',
-      title: course.title,
-      students: course.attendees,
-      type: courseType,
-      evaluation: null,
-      level: null,
-    };
-  });
-
-  const allCourses = [...teachingData, ...mappedEdcoCourses];
-
-  const headerRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: headerRef,
-    offset: ["start end", "end start"]
-  });
-  const frameRotate = useTransform(scrollYProgress, [0, 1], [1, -2]);
-  const imageRotate = useTransform(scrollYProgress, [0, 1], [-1, 1]);
+  const enClase = [
+    { foto: fotos.equiposTapabocas, pie: t('tch.ov.class.dpro') },
+    { foto: fotos.reto2019, pie: t('tch.ov.class.reto') },
+  ];
 
   return (
     <PageWrapper noPadding>
-      {/* Header Section */}
-      <div ref={headerRef} className="relative bg-zinc-800 overflow-hidden p-6 sm:p-8">
-        {/* Dephased frame */}
-        <motion.div
-          className="absolute inset-2 sm:inset-4 rounded-2xl border-2 border-yellow-400 pointer-events-none"
-          style={{ rotate: frameRotate }}
-        />
+      <Apertura
+        palabra={t('nav.teaching').toLowerCase()}
+        entrada={t('tch.ov.lead')}
+        foto={{ src: fotos.cursoGrupo.src, alt: localize(fotos.cursoGrupo.alt, lang), posicion: '60% 60%' }}
+        accion={{ to: '/teaching/purpose', label: t('tch.ov.cta') }}
+      />
 
-        {/* Main content with image background */}
-        <motion.div
-          className="relative rounded-2xl shadow-xl z-10 overflow-hidden"
-          style={{ rotate: imageRotate }}
-        >
-          <img 
-              src="/images/site/04.png" 
-              alt="A professor engaging with students in a modern, collaborative classroom setting at Uniandes"
-              className="absolute inset-0 w-full h-full object-cover object-center"
-          />
-          <div className="absolute inset-0 bg-white mix-blend-saturation pointer-events-none"></div>
-          <div className="absolute inset-0 bg-zinc-900/60 mix-blend-multiply" />
-          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-48 pb-24">
-              <motion.div
-                  // FIX: Spread motion props to avoid TypeScript type errors.
-                  {...{
-                    initial: { opacity: 0, x: -20 },
-                    animate: { opacity: 1, x: 0 },
-                    transition: { duration: 0.6, ease: 'easeOut' },
-                  }}
-                  className="text-left max-w-3xl"
-              >
-                  <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white [text-shadow:0_2px_4px_rgba(0,0,0,0.5)]">
-                      {t('teaching.overview.title')}
-                  </h1>
-                  <p className="mt-6 text-xl text-zinc-200 leading-relaxed [text-shadow:0_1px_2px_rgba(0,0,0,0.5)]">
-                      {t('teaching.overview.subtitle')}
-                  </p>
-              </motion.div>
-          </div>
-        </motion.div>
-      </div>
-      
-      {/* Content Section */}
-      <div className="bg-white">
-        <div className="max-w-7xl mx-auto py-16 sm:py-20 px-4 sm:px-6 lg:px-8">
+      {/* ── Lo que enseño, en cifras ── */}
+      <section className="a-papel a-campo">
+        <div className="a-c">
+          <Sube><Cabecera titulo={t('tch.ov.what.title')} /></Sube>
+          <Sube delay={0.06}>
+            <p className="mt-10 a-texto text-tinta-900">
+              {fill(t('tch.ov.what.a'), { year: teaching.firstYear, sections: teaching.sections, students: miles(teaching.universityStudents) })}{' '}
+              <span className="a-resaltado">
+                {fill(t('tch.ov.what.b'), { created: cardinal(teaching.createdCourses, lang), redesigned: cardinal(teaching.redesignedCourses, lang) })}
+              </span>{' '}
+              {t('tch.ov.what.c')}
+            </p>
+          </Sube>
+          {/* Más aire entre filas de cifras: la nota de una cifra no debe leerse como rótulo de la de abajo. */}
+          <Sube delay={0.1} className="mt-16 sm:mt-20 [&_.a-cifras]:!gap-y-[88px]">
             <StatsSection stats={stats} isLoading={false} />
-
-            <motion.div 
-              // FIX: Spread motion props to avoid TypeScript type errors.
-              {...{
-                initial: { opacity: 0, y: 20 },
-                whileInView: { opacity: 1, y: 0 },
-                viewport: { once: true, amount: 0.2 },
-                transition: { duration: 0.5, delay: 0.2 },
-              }}
-              className="mt-16 max-w-4xl mx-auto text-center"
-            >
-              <h2 className="text-2xl font-semibold text-brand-dark">{t('teaching.overview.approach.title')}</h2>
-              <p className="mt-4 text-brand-gray leading-relaxed text-lg">
-                {t('teaching.overview.approach.text')}
-              </p>
-            </motion.div>
-            
-            <motion.div
-              // FIX: Spread motion props to avoid TypeScript type errors.
-              {...{
-                initial: { opacity: 0, y: 20 },
-                whileInView: { opacity: 1, y: 0 },
-                viewport: { once: true, amount: 0.2 },
-                transition: { duration: 0.5, delay: 0.2 },
-              }}
-              className="mt-20"
-            >
-              <CoursesOverTimeChart courses={allCourses} />
-            </motion.div>
+          </Sube>
         </div>
-      </div>
+      </section>
+
+      {/* ── En el aula ── */}
+      <section className="a-portada a-campo">
+        <div className="a-c">
+          <Sube><Cabecera titulo={t('tch.ov.class.title')} /></Sube>
+          <div className="mt-12 grid gap-x-6 gap-y-10 md:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
+            <Sube as="div" className="md:row-span-2">
+              <figure>
+                <div className="overflow-hidden aspect-[4/3]">
+                  <img src={fotos.cervezaGlucanos.src} alt={localize(fotos.cervezaGlucanos.alt, lang)} loading="lazy" className="a-foto a-bn" />
+                </div>
+                <figcaption className="a-pie">{t('tch.ov.class.beer')}</figcaption>
+              </figure>
+            </Sube>
+            {enClase.map(({ foto, pie }, i) => (
+              <Sube key={foto.src} delay={0.08 * (i + 1)}>
+                <figure>
+                  <div className="overflow-hidden aspect-[16/10]">
+                    <img src={foto.src} alt={localize(foto.alt, lang)} loading="lazy" className="a-foto a-bn" />
+                  </div>
+                  <figcaption className="a-pie">{pie}</figcaption>
+                </figure>
+              </Sube>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Las voces: cuatro egresados con su foto ── */}
+      <section className="a-hundido a-campo">
+        <div className="a-c">
+          <Sube><Cabecera titulo={t('tch.ov.voices.title')} /></Sube>
+          <Sube delay={0.06}>
+            <p className="mt-8 a-texto">{t('tch.ov.voices.text')}</p>
+          </Sube>
+          {/* Cada testimonio completo, con el retrato al lado (como en Operaciones Unitarias). */}
+          <ul className="mt-12 grid gap-16 lg:grid-cols-2">
+            {voces.map((v, i) => {
+              const graduado = v.graduateName ? graduateByName(v.graduateName) : undefined;
+              return (
+                <Sube as="li" key={v.name} delay={0.06 * i}>
+                  <figure className="grid gap-6 sm:grid-cols-[180px_minmax(0,1fr)]">
+                    <img src={v.imageUrl} alt={v.name} loading="lazy" className="a-bn w-[180px] aspect-[4/5] object-cover object-top" />
+                    <div>
+                      <blockquote className="space-y-4 text-tinta-900">
+                        {comillar(localize(v.quote, lang), lang).map((par, k) => <p key={k}>{par}</p>)}
+                      </blockquote>
+                      <figcaption className="mt-5">
+                        <span className="block font-semibold leading-tight text-tinta-900">{v.name}</span>
+                        <span className="a-meta block mt-1">{localize(v.context, lang)}</span>
+                        <span className="a-meta block">{localize(graduado?.currentPosition || v.info, lang)}</span>
+                      </figcaption>
+                    </div>
+                  </figure>
+                </Sube>
+              );
+            })}
+          </ul>
+          <Sube className="mt-12">
+            <Link to="/teaching/testimonials" className="a-enlace">
+              {t('tch.ov.voices.cta')} <span aria-hidden="true">→</span>
+            </Link>
+          </Sube>
+        </div>
+      </section>
+
+      {/* ── Estudiantes por año ── */}
+      <section className="a-papel a-campo">
+        <div className="a-c">
+          <Sube><Cabecera titulo={t('tch.ov.chart.title')} className="mb-10" /></Sube>
+          <Sube delay={0.06}>
+            <CoursesOverTimeChart courses={teachingData} />
+            <p className="a-pie">{t('tch.ov.chart.caption')}</p>
+          </Sube>
+        </div>
+      </section>
+
+      {/* ── Las páginas del capítulo ── */}
+      <section className="a-hundido a-campo">
+        <div className="a-c">
+          <Sube><h2 className="a-titulo mb-10">{t('tch.ov.more.title')}.</h2></Sube>
+          <ul className="a-filas">
+            {filas.map((f, i) => (
+              <Sube as="li" key={f.to} delay={0.05 * i}>
+                <Link to={f.to} className="a-fila">
+                  <span className="q">{f.titulo}</span>
+                  <span className="d">{f.texto}</span>
+                  <span className="ir" aria-hidden="true">→</span>
+                </Link>
+              </Sube>
+            ))}
+          </ul>
+        </div>
+      </section>
     </PageWrapper>
   );
 };

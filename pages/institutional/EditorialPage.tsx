@@ -1,152 +1,186 @@
-
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { PageWrapper } from '../../components/PageWrapper';
+import { EncabezadoPagina } from '../../components/Apertura';
+import { Sube } from '../../components/Sube';
 import { editorialData } from '../../components/data/institutional';
-import { reviewedJournals, reviewsByArea, reviewAreaLabels, totalReviews, totalJournalsReviewed, ORCID_URL } from '../../components/data/peerReview';
-import { useI18n, localize } from '../../context/i18n';
+import { editedBooksData } from '../../components/data/editorships';
+import {
+  reviewedJournals,
+  reviewsByArea,
+  reviewAreaLabels,
+  totalReviews,
+  totalJournalsReviewed,
+  ORCID_URL,
+} from '../../components/data/peerReview';
+import { useI18n, localize, fill, cardinal, type Lang } from '../../context/i18n';
 
-const eceIcons = [
-  <img src="https://cdn-icons-png.flaticon.com/512/8998/8998530.png" alt="Manuscript Evaluation Icon" className="w-8 h-8" />,
-  <img src="https://cdn-icons-png.flaticon.com/512/263/263075.png" alt="Special Issue Development Icon" className="w-8 h-8" />,
-  <img src="https://cdn-icons-png.flaticon.com/512/15766/15766048.png" alt="Academic & Industry Impact Icon" className="w-8 h-8" />,
-];
+const MESES: Record<string, [string, string]> = {
+  Jan: ['January', 'enero'], Feb: ['February', 'febrero'], Mar: ['March', 'marzo'], Apr: ['April', 'abril'],
+  May: ['May', 'mayo'], Jun: ['June', 'junio'], Jul: ['July', 'julio'], Aug: ['August', 'agosto'],
+  Sep: ['September', 'septiembre'], Oct: ['October', 'octubre'], Nov: ['November', 'noviembre'], Dec: ['December', 'diciembre'],
+};
 
-const discoverBiotechIcons = [
-  <img src="https://cdn-icons-png.flaticon.com/512/13296/13296573.png" alt="Manuscript Evaluation Icon" className="w-8 h-8" />,
-  <img src="https://cdn-icons-png.flaticon.com/512/263/263075.png" alt="Special Issue Coordination Icon" className="w-8 h-8" />,
-  <img src="https://cdn-icons-png.flaticon.com/512/1212/1212158.png" alt="Quality Assurance Icon" className="w-8 h-8" />,
-];
+/** 'Sep 2022' → «September 2022» o «septiembre de 2022». */
+const mesAnio = (texto: string, lang: Lang) => {
+  const [mes, anio] = texto.split(' ');
+  const nombre = MESES[mes];
+  if (!nombre || !anio) return texto;
+  return lang === 'es' ? `${nombre[1]} de ${anio}` : `${nombre[0]} ${anio}`;
+};
+
+/** «Manuscript Evaluation: Oversee…» → el rótulo en negrita y el resto en texto. */
+const responsabilidad = (texto: string) => {
+  const corte = texto.indexOf(': ');
+  if (corte < 0) return texto;
+  return (
+    <>
+      <strong className="font-semibold text-tinta-900">{texto.slice(0, corte)}.</strong>{' '}
+      {texto.charAt(corte + 2).toUpperCase() + texto.slice(corte + 3)}
+    </>
+  );
+};
+
+const numero = (n: number, lang: Lang) => n.toLocaleString(lang === 'es' ? 'es-CO' : 'en-US');
 
 export const EditorialPage: React.FC = () => {
   const { t, lang } = useI18n();
+  const maxArea = Math.max(...reviewsByArea.map((a) => a.reviews));
+
   return (
     <PageWrapper noPadding>
-        <div className="pt-16">
-            <div className="sticky top-16 bg-zinc-50/95 backdrop-blur-sm z-20 py-6 border-b border-zinc-200">
-                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-brand-dark text-left">{t('editorial.title')}</h1>
-                    <p className="mt-4 text-lg text-left text-brand-gray">
-                        {t('editorial.sub')}
-                    </p>
-                </div>
+      <EncabezadoPagina
+        titulo={t('editorial.title')}
+        entrada={<p>{fill(t('editorial.sub'), { count: cardinal(editorialData.length, lang) })}</p>}
+        foto={{ src: '/images/site/1756469286343.jpg', alt: t('service.img.portrait'), posicion: '50% 30%' }}
+      >
+        {/* La prueba arriba: lo que dice el registro público de ORCID. */}
+        <Sube delay={0.24} className="mt-12">
+          <div className="a-cifras">
+            <div>
+              <b>{numero(totalReviews, lang)}</b>
+              <span>{t('peerReview.reviews')}</span>
             </div>
-            
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <div className="space-y-8">
-                    {editorialData.map((role, index) => {
-                      const icons = role.journal.includes('Education for Chemical Engineers') 
-                          ? eceIcons 
-                          : discoverBiotechIcons;
-                      return (
-                        <div key={index} className="bg-white rounded-xl shadow-lg border border-yellow-400/40 overflow-hidden flex flex-col md:flex-row">
-                            <div className="md:w-1/3 flex items-center justify-center p-6 bg-zinc-50">
-                                <img className="h-48 w-auto object-contain" src={role.imageUrl} alt={`Logo for ${role.journal}`} />
-                            </div>
-                            <div className="p-8 flex flex-col justify-between md:w-2/3">
-                                <div>
-                                    <div className="flex flex-col sm:flex-row justify-between sm:items-baseline gap-2 mb-2">
-                                        <h3 className="text-2xl font-bold text-brand-dark leading-tight">{role.journal}</h3>
-                                    </div>
-                                    <p className="block text-sm font-semibold text-yellow-500 uppercase tracking-wide">{localize(role.role, lang)} ({role.startDate} - {role.endDate})</p>
-
-                                    <p className="mt-4 text-brand-gray text-base">{localize(role.description, lang)}</p>
-
-                                    <ul className="mt-5 list-none space-y-4 text-brand-gray">
-                                        {role.responsibilities.map((resp, i) => (
-                                            <li key={i} className="flex items-start">
-                                                <div className="flex-shrink-0 mr-4 w-8 h-8 flex items-center justify-center">
-                                                    {icons[i % icons.length]}
-                                                </div>
-                                                <span className="leading-relaxed text-sm">{localize(resp, lang)}</span>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                                <div className="mt-6">
-                                    <a 
-                                        href={role.journalUrl}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="inline-block bg-yellow-400 text-brand-dark font-semibold px-6 py-2 rounded-lg shadow-md hover:bg-yellow-500 transition-colors duration-300 text-sm"
-                                    >
-                                        {t('editorial.visitJournal')}
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                      )
-                    })}
-                </div>
-
-                {/* One-time appointments live on their own page, not among the boards */}
-                <Link
-                    to="/service/editorships"
-                    className="group mt-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl border border-zinc-200 bg-zinc-50 px-6 py-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400"
-                >
-                    <p className="text-sm text-brand-gray leading-relaxed max-w-2xl">{t('editorial.editorships.text')}</p>
-                    <span className="inline-flex items-center gap-2 whitespace-nowrap text-sm font-semibold text-brand-dark border-b-2 border-brand-yellow group-hover:border-brand-yellow-dark transition-colors">
-                        {t('editorial.editorships.link')}
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4" aria-hidden="true"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
-                    </span>
-                </Link>
-
-                {/* Peer review: aggregate only, from the public ORCID record */}
-                <section className="mt-20">
-                    <h2 className="text-3xl font-bold tracking-tight text-brand-dark mb-3">{t('peerReview.title')}</h2>
-                    <p className="text-brand-gray leading-relaxed max-w-3xl">{t('peerReview.lead')}</p>
-
-                    <div className="mt-8 flex flex-wrap items-end gap-x-10 gap-y-4">
-                        <p className="flex items-baseline gap-2">
-                            <span className="text-5xl font-bold text-brand-dark tabular-nums">{totalReviews}</span>
-                            <span className="text-brand-gray">{t('peerReview.reviews')}</span>
-                        </p>
-                        <p className="flex items-baseline gap-2">
-                            <span className="text-5xl font-bold text-brand-dark tabular-nums">{totalJournalsReviewed}</span>
-                            <span className="text-brand-gray">{t('peerReview.journals')}</span>
-                        </p>
-                        <a
-                            href={ORCID_URL}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-block bg-yellow-400 text-brand-dark font-semibold px-5 py-2 rounded-lg shadow-md hover:bg-yellow-500 transition-colors text-sm"
-                        >
-                            {t('peerReview.orcid')} &#8599;
-                        </a>
-                    </div>
-
-                    <h3 className="mt-12 mb-4 text-sm font-bold uppercase tracking-widest text-brand-dark">{t('peerReview.areasTitle')}</h3>
-                    <ul className="space-y-3 max-w-3xl">
-                        {reviewsByArea.map(({ area, reviews, journals }) => (
-                            <li key={area}>
-                                <div className="flex items-baseline justify-between gap-4 text-sm">
-                                    <span className="text-brand-dark font-medium">{localize(reviewAreaLabels[area], lang)}</span>
-                                    <span className="text-brand-gray whitespace-nowrap tabular-nums">
-                                        {reviews} · {journals} {t('peerReview.journalsShort')}
-                                    </span>
-                                </div>
-                                <div className="mt-1 h-2 bg-zinc-100 rounded-full overflow-hidden">
-                                    <div className="h-full bg-yellow-400 rounded-full" style={{ width: `${(reviews / totalReviews) * 100}%` }} />
-                                </div>
-                            </li>
-                        ))}
-                    </ul>
-
-                    <h3 className="mt-12 mb-4 text-sm font-bold uppercase tracking-widest text-brand-dark">{t('peerReview.journalsTitle')}</h3>
-                    <ul className="grid sm:grid-cols-2 gap-x-8 gap-y-1 text-sm max-w-4xl">
-                        {reviewedJournals.map(({ journal, reviews }) => (
-                            <li key={journal} className="flex items-baseline justify-between gap-3 border-b border-zinc-100 py-1.5">
-                                <span className="text-brand-gray">{journal}</span>
-                                <span className="text-brand-dark font-semibold tabular-nums">{reviews ?? '·'}</span>
-                            </li>
-                        ))}
-                    </ul>
-
-                    <p className="mt-8 text-xs text-brand-gray italic max-w-3xl">{t('peerReview.note')}</p>
-                </section>
+            <div>
+              <b>{totalJournalsReviewed}</b>
+              <span>{t('peerReview.journals')}</span>
             </div>
+          </div>
+        </Sube>
+        <Sube delay={0.3} className="mt-12">
+          <a href={ORCID_URL} target="_blank" rel="noopener noreferrer" className="a-boton">
+            {t('peerReview.orcid')} <span aria-hidden="true">↗</span>
+          </a>
+        </Sube>
+      </EncabezadoPagina>
+
+      {/* ── Las tres sillas, compactas ── */}
+      <section className="a-hundido a-campo">
+        <div className="a-c">
+          <Sube><h2 className="a-h3">{t('editorial.boards')}</h2></Sube>
+          <ul className="a-registro !mt-8">
+            {editorialData.map((role, i) => (
+              <Sube as="li" key={role.journal} delay={0.05 * i}>
+                <span className="cuando">{fill(t('editorial.since'), { date: mesAnio(role.startDate, lang) })}</span>
+                <div>
+                  <p className="que">
+                    <a href={role.journalUrl} target="_blank" rel="noopener noreferrer" className="hover:bg-resaltador-suave transition-colors">
+                      {role.journal}
+                    </a>
+                  </p>
+                  <p className="donde">{localize(role.role, lang)}</p>
+                  <div className="detalle grid gap-x-12 gap-y-5 lg:!max-w-none lg:grid-cols-2">
+                    <p>{localize(role.description, lang)}</p>
+                    <ul className="space-y-3">
+                      {role.responsibilities.map((r, j) => (
+                        <li key={j}>{responsabilidad(localize(r, lang))}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <p className="mt-5">
+                    <a href={role.journalUrl} target="_blank" rel="noopener noreferrer" className="a-enlace">
+                      {t('editorial.visitJournal')} <span aria-hidden="true">↗</span>
+                    </a>
+                  </p>
+                </div>
+              </Sube>
+            ))}
+          </ul>
         </div>
+      </section>
+
+      {/* ── La evaluación por pares, por área, con el índice de revistas ── */}
+      <section className="a-papel a-campo">
+        <div className="a-c">
+          <Sube><h2 className="a-h3">{t('peerReview.title')}</h2></Sube>
+          <Sube delay={0.06}><p className="mt-6 a-texto">{t('peerReview.lead')}</p></Sube>
+          <Sube delay={0.1}><h3 className="mt-14 font-semibold text-tinta-900">{t('peerReview.areasTitle')}</h3></Sube>
+          <div className="mt-6 columns-1 md:columns-2 lg:columns-3 gap-x-12">
+            {reviewsByArea.map(({ area, reviews, journals }, i) => (
+              <Sube key={area} delay={0.04 * i} className="break-inside-avoid mb-20">
+                <table className="a-tabla">
+                  <caption className="text-left pb-4">
+                    <span className="block text-[length:var(--t-l)] leading-[1.15] tracking-[-0.02em] font-semibold text-tinta-900">
+                      {localize(reviewAreaLabels[area], lang)}
+                    </span>
+                    <span className="mt-2 block text-tinta-700">
+                      {reviews} {t('peerReview.reviewsShort')} · {journals} {t('peerReview.journalsShort')}
+                    </span>
+                    <span className="mt-3 block h-2 bg-papel-300" aria-hidden="true">
+                      <span className="block h-full bg-tinta-900" style={{ width: `${(reviews / maxArea) * 100}%` }} />
+                    </span>
+                  </caption>
+                  <thead className="sr-only">
+                    <tr>
+                      <th scope="col">{t('peerReview.journal')}</th>
+                      <th scope="col">{t('peerReview.reviewsShort')}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {reviewedJournals.filter((j) => j.area === area).map((j) => (
+                      <tr key={j.journal}>
+                        <td className="!py-2.5">{j.journal}</td>
+                        <td className="num !py-2.5 !pr-0 font-semibold text-tinta-900">{j.reviews ?? '–'}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </Sube>
+            ))}
+          </div>
+          <p className="mt-4 a-s a-sec max-w-[72ch]">{t('peerReview.note')}</p>
+        </div>
+      </section>
+
+      {/* ── Los encargos puntuales tienen su página ── */}
+      <section className="a-hundido a-campo">
+        <div className="a-c grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-end">
+          <div>
+            <Sube><h2 className="a-h3">{t('editorial.editorships.link')}</h2></Sube>
+            <Sube delay={0.06}><p className="mt-6 a-texto">{t('editorial.editorships.text')}</p></Sube>
+            <Sube delay={0.1}>
+              <p className="mt-8">
+                <Link to="/service/editorships" className="a-boton">
+                  {t('editorial.editorships.link')} <span aria-hidden="true">→</span>
+                </Link>
+              </p>
+            </Sube>
+          </div>
+          <Sube delay={0.08}>
+            <Link to="/service/editorships" className="grid grid-cols-3 gap-4 sm:gap-6 items-end" aria-label={t('editorial.editorships.link')}>
+              {editedBooksData.map((book) => (
+                <img
+                  key={book.title}
+                  src={book.cover}
+                  alt={fill(t('editorships.coverAlt'), { title: book.title })}
+                  loading="lazy"
+                  className="block w-full aspect-[5/7] object-cover transition-transform duration-200 hover:-translate-y-1"
+                />
+              ))}
+            </Link>
+          </Sube>
+        </div>
+      </section>
     </PageWrapper>
   );
 };

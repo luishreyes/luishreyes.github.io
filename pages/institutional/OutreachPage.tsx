@@ -1,137 +1,123 @@
-
-
 import React from 'react';
 import { PageWrapper } from '../../components/PageWrapper';
-import { outreachData } from '../../components/data/outreach';
-import { useI18n, localize } from '../../context/i18n';
-// FIX: Removed 'Variants' from framer-motion import to resolve module export error.
-import { motion } from 'framer-motion';
+import { EncabezadoPagina } from '../../components/Apertura';
+import { Sube } from '../../components/Sube';
+import { outreachData, type OutreachActivity } from '../../components/data/outreach';
+import { useI18n, localize, type Lang, type Localized, type UIKey } from '../../context/i18n';
+import { fotos } from '../../components/data/fotos';
 
-const containerVariants = {
-  offscreen: {},
-  onscreen: {
-    transition: {
-      staggerChildren: 0.1,
-    },
-  },
+const MESES: Record<string, string> = {
+  January: 'enero', February: 'febrero', March: 'marzo', April: 'abril', May: 'mayo', June: 'junio',
+  July: 'julio', August: 'agosto', September: 'septiembre', October: 'octubre', November: 'noviembre', December: 'diciembre',
 };
 
-const timelineItemVariants = {
-  offscreen: {
-    x: -30,
-    opacity: 0,
-  },
-  onscreen: {
-    x: 0,
-    opacity: 1,
-    transition: {
-      duration: 0.5,
-      // FIX: Added 'as const' to prevent TypeScript from widening the string literal type, which caused a type error.
-      ease: 'easeOut' as const,
-    },
-  },
+/** Las fechas del registro vienen en inglés («September 24», «Vol. 45, No. 3»); en español se dicen como en español. */
+const fecha = (texto: string, lang: Lang) => {
+  if (lang === 'en') return texto;
+  let m = texto.match(/^([A-Z][a-z]+) (\d+(?:-\d+)?)$/);
+  if (m && MESES[m[1]]) return `${m[2]} de ${MESES[m[1]]}`;
+  if (/^[A-Z][a-z]+(-[A-Z][a-z]+)?$/.test(texto)) return texto.split('-').map((x) => MESES[x] ?? x).join('-');
+  m = texto.match(/^Vol\. (\d+), No\. (\d+)$/);
+  if (m) return `vol. ${m[1]}, n.º ${m[2]}`;
+  m = texto.match(/^Issue (\d+)$/);
+  if (m) return `n.º ${m[1]}`;
+  return texto;
 };
 
-const getTypeIcon = (type: string) => {
-  const iconClass = "h-5 w-5 text-brand-gray";
-  switch (type) {
-    case 'School Visit':
-      return <svg xmlns="http://www.w3.org/2000/svg" className={iconClass} viewBox="0 0 20 20" fill="currentColor"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" /></svg>;
-    case 'University Event':
-      return <svg xmlns="http://www.w3.org/2000/svg" className={iconClass} viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M4 2a2 2 0 00-2 2v11a3 3 0 106 0V4a2 2 0 00-2-2H4zm1.5 2.5a.5.5 0 00-1 0v8.586a.5.5 0 00.5.5a2.5 2.5 0 005 0a.5.5 0 00.5-.5V4.5a.5.5 0 00-1 0v8.086a1.5 1.5 0 01-3 0V4.5z" clipRule="evenodd" /><path d="M10.5 3.5a.5.5 0 01.5-.5h3a.5.5 0 010 1h-3a.5.5 0 01-.5-.5zM10.5 6.5a.5.5 0 01.5-.5h3a.5.5 0 010 1h-3a.5.5 0 01-.5-.5zm0 3a.5.5 0 01.5-.5h3a.5.5 0 010 1h-3a.5.5 0 01-.5-.5z" /></svg>;
-    case 'Virtual Event':
-      return <svg xmlns="http://www.w3.org/2000/svg" className={iconClass} viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M3 5a2 2 0 012-2h10a2 2 0 012 2v8a2 2 0 01-2 2h-2.22l.123.489.804.804A1 1 0 0113 18H7a1 1 0 01-.707-1.707l.804-.804L7.22 15H5a2 2 0 01-2-2V5zm2-1a1 1 0 00-1 1v8a1 1 0 001 1h10a1 1 0 001-1V5a1 1 0 00-1-1H5z" clipRule="evenodd" /></svg>;
-    case 'Fair':
-      return <svg xmlns="http://www.w3.org/2000/svg" className={iconClass} viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" /></svg>;
-    case 'Media Feature':
-      return <svg xmlns="http://www.w3.org/2000/svg" className={iconClass} viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zm12.553 1.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" clipRule="evenodd" /></svg>;
-    default:
-      return null;
-  }
-};
+/** Las fotos que pertenecen a una entrada: el estreno del documental, el panel de ECOS, la
+ *  charla en el congreso de palmicultores, el profesor en su perfil y los egresados que firman
+ *  lo que la entrada lleva al público. */
+const FOTOS: { match: RegExp; src: string; alt: Localized; ancho?: boolean }[] = [
+  { match: /Visionarios/, ...fotos.visionarios },
+  { match: /^ECOS/, ...fotos.ecos, ancho: true },
+  { match: /Oil Palm Growers/, ...fotos.palmaCharla, ancho: true },
+  { match: /^Profile in Puntos/, src: '/images/site/1756469286343.jpg', alt: 'Luis H. Reyes' },
+  { match: /Brayan Rodríguez/, src: '/images/students/brayan-rodriguez.jpg', alt: 'Brayan Rodríguez' },
+  { match: /Becerra-Encinales/, src: '/images/students/julian-fernando-becerra-encinales.jpg', alt: 'Julián F. Becerra-Encinales' },
+];
 
-const typeLabels: Record<string, { en: string; es: string }> = {
-  'School Visit': { en: 'School Visit', es: 'Visita a colegio' },
-  'University Event': { en: 'University Event', es: 'Evento universitario' },
-  'Virtual Event': { en: 'Virtual Event', es: 'Evento virtual' },
-  'Fair': { en: 'Fair', es: 'Feria' },
-  'Media Feature': { en: 'Media Feature', es: 'Aparición en medios' },
+const Entrada: React.FC<{ a: OutreachActivity }> = ({ a }) => {
+  const { t, lang } = useI18n();
+  const texto = `${localize(a.title, 'en')} ${localize(a.description, 'en')}`;
+  const persona = FOTOS.find((p) => p.match.test(texto));
+
+  return (
+    <Sube as="li">
+      <span className="cuando">
+        <span className="block font-semibold text-tinta-900">{a.year}</span>
+        {fecha(a.date, lang)}
+      </span>
+      <div className={persona ? `sm:grid sm:gap-10 ${persona.ancho ? 'sm:grid-cols-[minmax(0,1fr)_260px]' : 'sm:grid-cols-[minmax(0,1fr)_180px]'}` : undefined}>
+        <div>
+          <p className="que">{localize(a.title, lang)}</p>
+          <p className="donde">
+            {localize(a.location, lang)} · {t(`outreach.type.${a.type}` as UIKey)}
+          </p>
+          <p className="detalle a-texto">{localize(a.description, lang)}</p>
+          {a.url && (
+            <p className="mt-6 pb-8">
+              <a href={a.url} target="_blank" rel="noopener noreferrer" className="a-boton">
+                {t('outreach.watchShort')} <span aria-hidden="true">↗</span>
+              </a>
+            </p>
+          )}
+        </div>
+        {persona && (
+          <img
+            src={persona.src}
+            alt={localize(persona.alt, lang)}
+            loading="lazy"
+            className={`mt-6 sm:mt-1 sm:w-full object-cover object-top a-bn ${persona.ancho ? 'w-[260px] aspect-[4/3]' : 'w-[150px] aspect-[4/5]'}`}
+          />
+        )}
+      </div>
+    </Sube>
+  );
 };
 
 export const OutreachPage: React.FC = () => {
   const { t, lang } = useI18n();
+  const prensa = outreachData.filter((a) => a.type === 'Media Feature');
+  const eventos = outreachData.filter((a) => a.type !== 'Media Feature');
+  const episodio = outreachData.find((a) => a.url);
+
   return (
     <PageWrapper noPadding>
-        <div className="pt-16">
-            <div className="sticky top-16 bg-zinc-50/95 backdrop-blur-sm z-20 py-6 border-b border-zinc-200">
-                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-brand-dark text-left">{t('outreach.title')}</h1>
-                    <p className="mt-4 text-brand-gray leading-relaxed">
-                        {t('outreach.sub')}
-                    </p>
-                </div>
-            </div>
-            
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <motion.div 
-                    // FIX: Spread motion props to avoid TypeScript type errors.
-                    {...{
-                      initial: "offscreen",
-                      whileInView: "onscreen",
-                      viewport: { once: true, amount: 0.1 },
-                      variants: containerVariants,
-                    }}
-                    className="relative border-l-2 border-zinc-200"
-                >
-                    {outreachData.map((activity, index) => (
-                        <motion.div 
-                            key={index} 
-                            // FIX: Spread motion props to avoid TypeScript type errors.
-                            {...{variants: timelineItemVariants}}
-                            className="relative pl-10 pb-12 last:pb-0"
-                        >
-                            <div className="absolute left-0 top-1 w-5 h-5 bg-yellow-400 rounded-full -translate-x-1/2 border-4 border-white"></div>
-                            
-                            <div className="ml-2">
-                                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2">
-                                    <h3 className="font-bold text-xl text-brand-dark">{localize(activity.title, lang)}</h3>
-                                    <span className="text-sm font-semibold text-yellow-800 bg-yellow-100 inline-block px-2 py-1 rounded-md mt-2 sm:mt-0">{activity.year}</span>
-                                </div>
-                                
-                                <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-brand-gray mb-3">
-                                    <div className="flex items-center gap-2">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-brand-gray" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                            <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                        </svg>
-                                        <span>{activity.date}</span>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        {getTypeIcon(activity.type)}
-                                        <span>{localize(typeLabels[activity.type], lang)}</span>
-                                    </div>
-                                </div>
+      <EncabezadoPagina
+        titulo={t('outreach.title')}
+        entrada={<p>{t('outreach.sub')}</p>}
+        accion={episodio?.url ? { href: episodio.url, label: t('outreach.watch') } : undefined}
+        foto={{ src: fotos.scoutingPlanta.src, alt: localize(fotos.scoutingPlanta.alt, lang), posicion: '50% 45%' }}
+      />
 
-                                <p className="font-medium text-brand-dark">{localize(activity.location, lang)}</p>
-                                <p className="mt-2 text-brand-gray">{localize(activity.description, lang)}</p>
-                                {activity.url && (
-                                    <a
-                                        href={activity.url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-brand-dark border-b-2 border-brand-yellow hover:border-brand-yellow-dark transition-colors"
-                                    >
-                                        {lang === 'es' ? 'Ver el episodio' : 'Watch the episode'}
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                                            <path strokeLinecap="round" strokeLinejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                        </svg>
-                                    </a>
-                                )}
-                            </div>
-                        </motion.div>
-                    ))}
-                </motion.div>
-            </div>
+      {/* ── En la prensa y en pantalla ── */}
+      <section className="a-hundido a-campo">
+        <div className="a-c">
+          <Sube><h2 className="a-h3">{t('outreach.press.title')}</h2></Sube>
+          <Sube delay={0.06}><p className="mt-6 a-texto">{t('outreach.press.lead')}</p></Sube>
+          <ul className="a-registro !mt-8">
+            {prensa.map((a, i) => <Entrada key={`${a.year}-${i}`} a={a} />)}
+          </ul>
         </div>
+      </section>
+
+      {/* ── En colegios, ferias y en el campus ── */}
+      <section className="a-papel a-campo">
+        <div className="a-c">
+          <div className="grid gap-10 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] lg:items-end">
+            <div>
+              <Sube><h2 className="a-h3">{t('outreach.events.title')}</h2></Sube>
+              <Sube delay={0.06}><p className="mt-6 a-texto">{t('outreach.events.lead')}</p></Sube>
+            </div>
+            <Sube delay={0.1} className="overflow-hidden aspect-[16/9]">
+              <img src={fotos.scoutingSelfie.src} alt={localize(fotos.scoutingSelfie.alt, lang)} loading="lazy" className="a-foto" style={{ objectPosition: '50% 40%' }} />
+            </Sube>
+          </div>
+          <ul className="a-registro !mt-12">
+            {eventos.map((a, i) => <Entrada key={`${a.year}-${i}`} a={a} />)}
+          </ul>
+        </div>
+      </section>
     </PageWrapper>
   );
 };

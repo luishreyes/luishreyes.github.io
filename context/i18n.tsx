@@ -5,9 +5,16 @@ import { research } from './strings/research';
 import { teaching } from './strings/teaching';
 import { recognition } from './strings/recognition';
 import { service } from './strings/service';
-import { future } from './strings/future';
 import { principles } from './strings/principles';
 import { classroom } from './strings/classroom';
+import { contextChapter } from './strings/context';
+import { next } from './strings/next';
+import { trajectory } from './strings/trajectory';
+import { school } from './strings/school';
+import { training } from './strings/training';
+import { teachingChapter } from './strings/teachingChapter';
+import { researchChapter } from './strings/researchChapter';
+import { serviceChapter } from './strings/serviceChapter';
 
 export type Lang = 'en' | 'es';
 
@@ -19,9 +26,16 @@ const ui = {
   ...teaching,
   ...recognition,
   ...service,
-  ...future,
   ...principles,
   ...classroom,
+  ...contextChapter,
+  ...next,
+  ...trajectory,
+  ...school,
+  ...training,
+  ...teachingChapter,
+  ...researchChapter,
+  ...serviceChapter,
 };
 
 export type UIKey = keyof typeof ui;
