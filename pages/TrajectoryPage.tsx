@@ -129,12 +129,12 @@ export const TrajectoryPage: React.FC = () => {
           {/* La Universidad de los Andes, donde trabaja desde 2017 */}
           <div className="mt-14 grid gap-4 sm:grid-cols-3">
             {[
-              '/images/uniandes-bw.jpg',
-              '/images/site/campus-mision-historia-y-simbolos-0.webp',
-              '/images/site/generales-campus-2015-2015-69.jpg',
-            ].map((src, i) => (
-              <Sube key={src} delay={0.06 * i}>
-                <img src={src} alt="Universidad de los Andes" loading="lazy" className="a-bn w-full aspect-[4/3] object-cover" />
+              { src: '/images/uniandes-bw.jpg', alt: 'Universidad de los Andes', pos: 'center' },
+              { src: fotos.estudiantesConversando.src, alt: localize(fotos.estudiantesConversando.alt, lang), pos: fotos.estudiantesConversando.foco },
+              { src: '/images/site/generales-campus-2015-2015-69.jpg', alt: 'Universidad de los Andes', pos: 'center' },
+            ].map((x, i) => (
+              <Sube key={x.src} delay={0.06 * i}>
+                <img src={x.src} alt={x.alt} loading="lazy" className="a-bn w-full aspect-[4/3] object-cover" style={{ objectPosition: x.pos }} />
               </Sube>
             ))}
           </div>
