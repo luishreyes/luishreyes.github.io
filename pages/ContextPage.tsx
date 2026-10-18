@@ -229,10 +229,7 @@ export const ContextPage: React.FC = () => {
           <Sube><Cabecera titulo={t('context.university.title')} /></Sube>
           <div className="mt-12 grid gap-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-start">
             <Sube>
-              <figure>
-                <img src="/images/site/campus-mision-historia-y-simbolos-0.webp" alt={t('context.university.photo')} loading="lazy" className="a-bn w-full aspect-[4/3] object-cover" />
-                <figcaption className="a-pie">{t('context.university.photo')}</figcaption>
-              </figure>
+              <Figura foto={fotos.estudiantesU} pie={t('context.university.photo')} lang={lang} />
             </Sube>
             <div>
               <Sube><p className="a-texto">{t('context.university.p1')}</p></Sube>
