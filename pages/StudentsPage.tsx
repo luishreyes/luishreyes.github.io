@@ -1,316 +1,276 @@
-
-
-
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { PageWrapper } from '../components/PageWrapper';
-import { useI18n, localize } from '../context/i18n';
+import { EncabezadoPagina } from '../components/Apertura';
+import { Sube } from '../components/Sube';
+import { useI18n, localize, fill, cardinal } from '../context/i18n';
 import { studentsData, graduatedStudentsData } from '../components/data/students';
-import type { GraduatedStudent } from '../types';
-import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
+import { fotos, type Foto } from '../components/data/fotos';
+import type { CurrentStudent, GraduatedStudent } from '../types';
 
-const ChevronIcon = ({ open }: { open: boolean }) => (
-    <motion.svg
-        xmlns="http://www.w3.org/2000/svg"
-        className="h-5 w-5 ml-2 transition-transform"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        strokeWidth={2}
-        // FIX: Spread motion props to avoid TypeScript type errors.
-        {...{
-            animate: { rotate: open ? 180 : 0 },
-            transition: { duration: 0.3 },
-        }}
+type Filtro = 'all' | 'current' | 'alumni';
+
+// Las fotos de grado que existen, por el nombre tal como está en la ficha del egresado.
+const FOTO_DE_GRADO: Record<string, Foto> = {
+  'Brayan Rodríguez': fotos.gradoBrayan,
+  'Julián Fernando Becerra-Encinales': fotos.gradoJulian,
+  'Olga Lucía Acuña': fotos.gradoOlga,
+  'Carlos Manuel Ramírez Acosta': fotos.gradoCarlos,
+};
+
+/** La tesis entre comillas del idioma: «…» en español, “…” en inglés. */
+const comillas = (texto: string, lang: 'en' | 'es') => (lang === 'es' ? `«${texto}»` : `“${texto}”`);
+
+const porAno = (a: GraduatedStudent, b: GraduatedStudent) =>
+  b.graduationYear - a.graduationYear ||
+  localize(a.program, 'en').localeCompare(localize(b.program, 'en')) ||
+  a.name.localeCompare(b.name);
+
+/** Programa y año de grado: lo que va bajo el nombre. */
+const useMetaGrado = () => {
+  const { t, lang } = useI18n();
+  return (s: GraduatedStudent) => {
+    const grado = s.degree === 'M.S.' ? t('students.row.ms') : t('students.row.phd');
+    return `${s.program ? localize(s.program, lang) : grado} · ${s.graduationYear}`;
+  };
+};
+
+/** El resumen de la tesis, en un diálogo nativo: foco atrapado y Escape sin código extra. */
+const DialogoTesis: React.FC<{ alumno: GraduatedStudent | null; onClose: () => void }> = ({ alumno, onClose }) => {
+  const { t, lang } = useI18n();
+  const meta = useMetaGrado();
+  const ref = useRef<HTMLDialogElement>(null);
+
+  useEffect(() => {
+    const d = ref.current;
+    if (!d) return;
+    if (alumno && !d.open) d.showModal();
+    if (!alumno && d.open) d.close();
+  }, [alumno]);
+
+  return (
+    <dialog
+      ref={ref}
+      onClose={onClose}
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+      aria-labelledby="tesis-titulo"
+      className="w-[min(100vw-2rem,56rem)] max-h-[88svh] p-0 bg-papel-0 text-tinta-800 backdrop:bg-tinta-900/70"
     >
-        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-    </motion.svg>
-);
-
-// FIX: Changed component to React.FC to resolve TypeScript error with the 'key' prop.
-const GraduatedStudentCard: React.FC<{ student: GraduatedStudent }> = ({ student }) => {
-    const [isExpanded, setIsExpanded] = useState(false);
-    const { t, lang } = useI18n();
-    const showLabel = t('students.thesis.show');
-    const hideLabel = t('students.thesis.hide');
-    const imageContainerRef = useRef<HTMLDivElement>(null);
-
-    const { scrollYProgress } = useScroll({
-        target: imageContainerRef,
-        offset: ['start end', 'end start']
-    });
-
-    const frameRotate = useTransform(scrollYProgress, [0, 1], [-3, 3]);
-    const imageRotate = useTransform(scrollYProgress, [0, 1], [2, -2]);
-    const imageScale = useTransform(scrollYProgress, [0, 1], [1.05, 1]);
-
-    return (
-        <motion.div 
-            // FIX: Spread motion props to avoid TypeScript type errors.
-            {...{
-                layout: true,
-                initial: { opacity: 0, y: 20 },
-                animate: { opacity: 1, y: 0 },
-                exit: { opacity: 0, y: -20 },
-                transition: { duration: 0.5 },
-            }}
-            className="bg-white rounded-lg shadow-lg border border-yellow-400/40 overflow-hidden"
-        >
-            <div className="md:flex md:items-center">
-                <div className="w-full md:w-56 flex justify-center p-6 md:flex-shrink-0">
-                    <div ref={imageContainerRef} className="relative w-40 h-40">
-                        {/* Dephased frame */}
-                        <motion.div
-                            className="absolute top-2 right-[-6px] bottom-[-6px] left-2 rounded-2xl border-2 border-yellow-400"
-                            style={{ rotate: frameRotate }}
-                        />
-
-                        {/* Main image */}
-                        <motion.div
-                            className="relative w-full h-full rounded-2xl shadow-xl z-10 overflow-hidden"
-                            style={{ rotate: imageRotate, scale: imageScale }}
-                        >
-                            <img
-                                className="w-full h-full object-cover object-center"
-                                src={student.imageUrl}
-                                alt={`${t('students.photo.alt')} ${student.name}`}
-                            />
-                            <div className="absolute inset-0 bg-white mix-blend-saturation pointer-events-none"></div>
-                        </motion.div>
-                    </div>
-                </div>
-                <div className="p-8 pt-0 md:pt-8 md:pl-0 flex-grow text-center md:text-left">
-                    <div className="uppercase tracking-wide text-sm text-yellow-500 font-semibold">{student.degree} - {t('students.graduated')} {student.graduationYear}</div>
-                    <h3 className="block mt-1 text-2xl leading-tight font-bold text-brand-dark">{student.name}</h3>
-                    
-                    {(student.program || student.currentPosition) && (
-                        <div className="mt-2 text-brand-gray space-y-1">
-                            {student.program && <p>{localize(student.program, lang)}</p>}
-                            {student.currentPosition && (
-                                <p className="flex items-center gap-2 justify-center md:justify-start flex-wrap">
-                                    <span>{localize(student.currentPosition, lang)}</span>
-                                    {student.linkedinUrl && (
-                                        <a
-                                            href={student.linkedinUrl}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="inline-flex items-center text-[#0077B5] hover:text-[#005582] transition-colors"
-                                            title={`${student.name} ${t('students.linkedin.title')}`}
-                                        >
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                                                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-                                            </svg>
-                                        </a>
-                                    )}
-                                </p>
-                            )}
-                            {!student.currentPosition && student.linkedinUrl && (
-                                <p className="flex items-center gap-2 justify-center md:justify-start">
-                                    <a
-                                        href={student.linkedinUrl}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="inline-flex items-center text-[#0077B5] hover:text-[#005582] transition-colors"
-                                        title={`${student.name} ${t('students.linkedin.title')}`}
-                                    >
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                                            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-                                        </svg>
-                                        <span className="text-sm ml-1">LinkedIn</span>
-                                    </a>
-                                </p>
-                            )}
-                        </div>
-                    )}
-                    {!student.program && !student.currentPosition && student.linkedinUrl && (
-                        <div className="mt-2">
-                            <a
-                                href={student.linkedinUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-flex items-center text-[#0077B5] hover:text-[#005582] transition-colors"
-                                title={`${student.name} ${t('students.linkedin.title')}`}
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-                                </svg>
-                                <span className="text-sm ml-1">LinkedIn</span>
-                            </a>
-                        </div>
-                    )}
-
-                    <p className="mt-4 text-brand-gray italic">"{student.thesisTitle}"</p>
-                    
-                     <div className="mt-6">
-                        <button
-                            onClick={() => setIsExpanded(!isExpanded)}
-                            className="flex items-center font-semibold text-yellow-500 hover:text-yellow-400 transition-colors duration-200 mx-auto md:mx-0"
-                            aria-expanded={isExpanded}
-                        >
-                            {isExpanded ? hideLabel : showLabel}
-                            <ChevronIcon open={isExpanded} />
-                        </button>
-                        <AnimatePresence initial={false}>
-                            {isExpanded && (
-                                <motion.div
-                                    key="content"
-                                    // FIX: Spread motion props to avoid TypeScript type errors.
-                                    {...{
-                                        initial: "collapsed",
-                                        animate: "open",
-                                        exit: "collapsed",
-                                        variants: {
-                                            open: { opacity: 1, height: 'auto' },
-                                            collapsed: { opacity: 0, height: 0 }
-                                        },
-                                        transition: { duration: 0.4, ease: 'easeInOut' },
-                                    }}
-                                    className="overflow-hidden"
-                                >
-                                    <div className="mt-4 space-y-4 pt-4 border-t border-zinc-200">
-                                        {student.laymanSummary.map((item, i) => (
-                                            <div key={i}>
-                                                <h4 className="font-semibold text-brand-dark">{localize(item.question, lang)}</h4>
-                                                <p className="mt-1 text-brand-gray">{localize(item.answer, lang)}</p>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-                    </div>
-                </div>
+      {alumno && (
+        <div className="p-6 sm:p-10">
+          <div className="flex flex-col-reverse gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
+            <div className="flex items-center gap-5">
+              <img src={alumno.imageUrl} alt={alumno.name} className="a-bn w-20 h-24 sm:w-24 sm:h-28 object-cover object-top flex-none" />
+              <div>
+                <h2 id="tesis-titulo" className="a-h3">{alumno.name}</h2>
+                <p className="a-meta mt-2">{meta(alumno)}</p>
+                {alumno.currentPosition && <p className="a-s mt-1 text-tinta-800">{localize(alumno.currentPosition, lang)}</p>}
+              </div>
             </div>
-        </motion.div>
-    );
+            <button type="button" onClick={onClose} className="a-boton flex-none self-end sm:self-auto !min-h-[44px] !px-5">
+              {t('students.thesis.close')}
+            </button>
+          </div>
+          {FOTO_DE_GRADO[alumno.name] && (
+            <figure className="mt-8">
+              <img src={FOTO_DE_GRADO[alumno.name].src} alt={localize(FOTO_DE_GRADO[alumno.name].alt, lang)} className="a-bn w-full max-h-[50svh] object-cover" />
+              <figcaption className="a-pie">{localize(FOTO_DE_GRADO[alumno.name].alt, lang)}.</figcaption>
+            </figure>
+          )}
+          <p className="a-s text-tinta-600 mt-8">{t('students.thesis')}</p>
+          <p className="mt-1 font-semibold leading-snug text-tinta-900 max-w-[60ch]">{comillas(alumno.thesisTitle, lang)}</p>
+          <div className="mt-8 space-y-6 border-t-2 border-tinta-900 pt-6">
+            {alumno.laymanSummary.map((item, i) => (
+              <div key={i}>
+                <p className="font-semibold text-tinta-900">{localize(item.question, lang)}</p>
+                <p className="mt-1 a-texto">{localize(item.answer, lang)}</p>
+              </div>
+            ))}
+          </div>
+          {alumno.linkedinUrl && (
+            <a href={alumno.linkedinUrl} target="_blank" rel="noopener noreferrer" className="a-enlace inline-block mt-8">
+              {t('students.linkedin')} <span aria-hidden="true">↗</span>
+            </a>
+          )}
+        </div>
+      )}
+    </dialog>
+  );
 };
-
-const sortGraduatedStudents = (a: GraduatedStudent, b: GraduatedStudent): number => {
-  // 1. Sort by graduation year (descending)
-  if (a.graduationYear !== b.graduationYear) {
-    return b.graduationYear - a.graduationYear;
-  }
-  // 2. Sort by program (alphabetical, treating undefined as first)
-  const programA = localize(a.program, 'en');
-  const programB = localize(b.program, 'en');
-  const programCompare = programA.localeCompare(programB);
-  if (programCompare !== 0) {
-    return programCompare;
-  }
-  // 3. Sort by name (alphabetical)
-  return a.name.localeCompare(b.name);
-};
-
 
 export const StudentsPage = () => {
-    const { t, lang } = useI18n();
-    const [activeFilter, setActiveFilter] = useState<'All' | 'Current' | 'Alumni'>('All');
+  const { t, lang } = useI18n();
+  const meta = useMetaGrado();
+  const [filtro, setFiltro] = useState<Filtro>('all');
+  const [abierto, setAbierto] = useState<GraduatedStudent | null>(null);
 
-    const sortedPhdGraduates = useMemo(() => 
-        [...graduatedStudentsData.phd].sort(sortGraduatedStudents), 
-        []
-    );
+  const doctores = useMemo(() => [...graduatedStudentsData.phd].sort(porAno), []);
+  const magisteres = useMemo(() => [...graduatedStudentsData.ms].sort(porAno), []);
+  const actuales: CurrentStudent[] = [...studentsData.phd, ...studentsData.ms];
+  const egresados = doctores.length + magisteres.length;
 
-    const sortedMsGraduates = useMemo(() =>
-        [...graduatedStudentsData.ms].sort(sortGraduatedStudents),
-        []
-    );
+  const filtros: { id: Filtro; label: string; n: number }[] = [
+    { id: 'all', label: t('students.filter.all'), n: actuales.length + egresados },
+    { id: 'current', label: t('students.filter.current'), n: actuales.length },
+    { id: 'alumni', label: t('students.filter.alumni'), n: egresados },
+  ];
 
-    const filterOptions: ('All' | 'Current' | 'Alumni')[] = ['All', 'Current', 'Alumni'];
+  const verActuales = filtro !== 'alumni';
+  const verEgresados = filtro !== 'current';
 
-    return (
-        <PageWrapper noPadding>
-            <div className="pt-16">
-                 <div className="sticky top-16 bg-zinc-50/95 backdrop-blur-sm z-20 py-6 border-b border-zinc-200">
-                    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-brand-dark text-left">{t('students.title')}</h1>
-                         <div className="flex items-center justify-center mt-4 space-x-4">
-                            <div className="flex gap-2">
-                                {filterOptions.map(filter => (
-                                     <button
-                                        key={filter}
-                                        onClick={() => setActiveFilter(filter)}
-                                        className={`px-4 py-2 text-sm font-semibold rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:ring-offset-2 ${
-                                            activeFilter === filter
-                                            ? 'bg-yellow-400 text-brand-dark shadow-md'
-                                            : 'bg-white text-brand-gray hover:bg-zinc-100 border border-zinc-200'
-                                        }`}
-                                    >
-                                        {filter === 'All' ? t('students.filter.all') : filter === 'Current' ? t('students.filter.current') : t('students.filter.alumni')}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
+  return (
+    <PageWrapper noPadding>
+      <EncabezadoPagina
+        titulo={t('students.title')}
+        foto={{ src: fotos.egresadosAiche.src, alt: localize(fotos.egresadosAiche.alt, lang) }}
+        entrada={
+          <p className="[text-wrap:pretty]">
+            {fill(t('students.intro'), {
+              phd: cardinal(doctores.length, lang),
+              ms: magisteres.length,
+              cur: cardinal(actuales.length, lang),
+            })}
+          </p>
+        }
+      >
+        <div className="mt-10">
+          <span className="a-s text-tinta-600">{t('students.filter.label')}</span>
+          <div className="a-filtros mt-2">
+            {filtros.map((f) => (
+              <button key={f.id} type="button" aria-pressed={filtro === f.id} onClick={() => setFiltro(f.id)} className="whitespace-nowrap">
+                {f.label} {f.n}
+              </button>
+            ))}
+          </div>
+        </div>
+      </EncabezadoPagina>
+
+      {/* ── Quienes trabajan hoy con el grupo: una lista limpia, el programa en su columna ── */}
+      {verActuales && (
+        <section className="a-hundido a-campo">
+          <div className="a-c">
+            <Sube><h2 className="a-h3 mb-8">{t('students.current')}.</h2></Sube>
+            <div className="grid gap-x-14 gap-y-10 lg:grid-cols-[minmax(0,1fr)_22rem]">
+            <ul className="a-registro">
+              {actuales.map((s, i) => (
+                <Sube as="li" key={s.name} delay={0.04 * Math.min(i, 4)}>
+                  <span className="cuando">{s.degree === 'M.S.' ? t('students.row.ms') : t('students.row.phd')}</span>
+                  <div>
+                    <p className="que">{s.name}</p>
+                    <p className="detalle text-tinta-800">{localize(s.info, lang)}</p>
+                  </div>
+                </Sube>
+              ))}
+            </ul>
+            <Sube delay={0.1}>
+              <figure className="lg:sticky lg:top-24">
+                <div className="overflow-hidden aspect-[4/3] lg:aspect-[4/5]">
+                  <img src={fotos.marthaAiche.src} alt={localize(fotos.marthaAiche.alt, lang)} loading="lazy" className="a-foto a-bn" style={{ objectPosition: 'center 30%' }} />
                 </div>
-                 <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                    <motion.div layout className="space-y-16">
-                        
-                        <AnimatePresence>
-                            { (activeFilter === 'All' || activeFilter === 'Current') && (
-                                <motion.div layout initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                                    <h2 className="text-3xl font-bold tracking-tight text-brand-dark text-left mb-10">{t('students.current')}</h2>
-
-                                    {studentsData.phd.length > 0 && (
-                                        <div className="mb-12">
-                                            <h3 className="text-2xl font-semibold text-brand-dark mb-6">{t('students.phd')}</h3>
-                                            <div className="bg-white p-8 rounded-lg shadow-lg border border-yellow-400/40">
-                                                <ul className="space-y-4 text-brand-gray text-lg list-disc list-inside">
-                                                    {studentsData.phd.map(student => (
-                                                        <li key={student.name}><span className="font-medium text-brand-dark">{student.name}</span> - {localize(student.info, lang)}</li>
-                                                    ))}
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {studentsData.ms.length > 0 && (
-                                         <div>
-                                            <h3 className="text-2xl font-semibold text-brand-dark mb-6">{t('students.ms')}</h3>
-                                            <div className="bg-white p-8 rounded-lg shadow-lg border border-yellow-400/40">
-                                                <ul className="space-y-4 text-brand-gray text-lg list-disc list-inside">
-                                                    {studentsData.ms.map(student => (
-                                                        <li key={student.name}><span className="font-medium text-brand-dark">{student.name}</span> - {localize(student.info, lang)}</li>
-                                                    ))}
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    )}
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-
-                        <AnimatePresence>
-                            { (activeFilter === 'All' || activeFilter === 'Alumni') && (
-                                <motion.div layout initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                                    <h2 className="text-3xl font-bold tracking-tight text-brand-dark text-left mb-10">{t('students.alumni')}</h2>
-
-                                    {graduatedStudentsData.phd.length > 0 && (
-                                        <div className="mb-12">
-                                             <h3 className="text-2xl font-semibold text-brand-dark mb-6">{t('students.phd.graduates')}</h3>
-                                            <motion.div layout className="space-y-8">
-                                                {sortedPhdGraduates.map(student => (
-                                                    <GraduatedStudentCard key={student.name} student={student} />
-                                                ))}
-                                            </motion.div>
-                                        </div>
-                                    )}
-
-                                    {graduatedStudentsData.ms.length > 0 && (
-                                         <div>
-                                             <h3 className="text-2xl font-semibold text-brand-dark mb-6">{t('students.ms.graduates')}</h3>
-                                            <motion.div layout className="space-y-8">
-                                                {sortedMsGraduates.map(student => (
-                                                    <GraduatedStudentCard key={student.name} student={student} />
-                                                ))}
-                                            </motion.div>
-                                        </div>
-                                    )}
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-                    </motion.div>
-                 </div>
+                <figcaption className="a-pie">{localize(fotos.marthaAiche.alt, lang)}.</figcaption>
+              </figure>
+            </Sube>
             </div>
-        </PageWrapper>
-    );
+          </div>
+        </section>
+      )}
+
+      {verEgresados && (
+        <>
+          {/* ── Los doctores: retrato grande, el cargo de hoy y la tesis ── */}
+          <section className="a-papel a-campo">
+            <div className="a-c">
+              <Sube><h2 className="a-h3 mb-8">{t('students.phd.graduates')}.</h2></Sube>
+              <ul className="border-t-2 border-tinta-900">
+                {doctores.map((s, i) => (
+                  <Sube
+                    as="li"
+                    key={s.name}
+                    delay={0.05 * Math.min(i, 3)}
+                    className="grid grid-cols-[7rem_minmax(0,1fr)] gap-x-5 gap-y-6 py-8 border-b-2 border-papel-300 sm:grid-cols-[12rem_minmax(0,1fr)] sm:gap-x-8 lg:grid-cols-[17rem_minmax(0,1fr)_minmax(0,1fr)] lg:gap-x-12 lg:py-10"
+                  >
+                    <button type="button" onClick={() => setAbierto(s)} className="block group" aria-label={`${t('students.thesis.show')}: ${s.name}`}>
+                      <img
+                        src={s.imageUrl}
+                        alt={s.name}
+                        loading="lazy"
+                        className="a-bn w-full aspect-[4/5] object-cover object-top transition-transform duration-300 [@media(hover:hover)]:group-hover:-translate-y-1"
+                      />
+                    </button>
+                    <div>
+                      <h3 className="a-h3">{s.name}</h3>
+                      <p className="a-meta mt-3">{meta(s)}</p>
+                      {s.currentPosition && <p className="mt-3 text-tinta-800 max-w-[40ch]">{localize(s.currentPosition, lang)}</p>}
+                    </div>
+                    <div className="col-span-2 lg:col-span-1">
+                      <p className="a-s text-tinta-600">{t('students.thesis')}</p>
+                      <p className="mt-1 font-semibold leading-snug text-tinta-900 max-w-[52ch]">{comillas(s.thesisTitle, lang)}</p>
+                      <button type="button" onClick={() => setAbierto(s)} className="a-enlace a-s mt-4">
+                        {t('students.thesis.show')} <span aria-hidden="true">→</span>
+                      </button>
+                    </div>
+                  </Sube>
+                ))}
+              </ul>
+            </div>
+          </section>
+
+          {/* ── La vida del grupo: tres fotos de su día a día, cada una con su pie ── */}
+          <section className="a-portada a-campo">
+            <div className="a-c">
+              <Sube><h2 className="a-h3 mb-10">{t('students.life.title')}.</h2></Sube>
+              <ul className="grid gap-x-6 gap-y-10 md:grid-cols-[minmax(0,5fr)_minmax(0,2.8fr)_minmax(0,5fr)]">
+                {[
+                  { f: fotos.recienLlegado, aspecto: 'aspect-[4/3]', pos: 'center' },
+                  { f: fotos.camilaJenga, aspecto: 'aspect-[3/4]', pos: 'center' },
+                  { f: fotos.acs2026, aspecto: 'aspect-[4/3]', pos: '70% center' },
+                ].map(({ f, aspecto, pos }, i) => (
+                  <Sube as="li" key={f.src} delay={0.08 * i}>
+                    <figure>
+                      <div className={`overflow-hidden ${aspecto}`}>
+                        <img src={f.src} alt={localize(f.alt, lang)} loading="lazy" className="a-foto a-bn" style={{ objectPosition: pos }} />
+                      </div>
+                      <figcaption className="a-pie">{localize(f.alt, lang)}.</figcaption>
+                    </figure>
+                  </Sube>
+                ))}
+              </ul>
+            </div>
+          </section>
+
+          {/* ── Los magísteres: una cuadrícula de retratos, la tesis a un toque ── */}
+          <section className="a-hundido a-campo">
+            <div className="a-c">
+              <Sube><h2 className="a-h3 mb-10">{t('students.ms.graduates')}.</h2></Sube>
+              <ul className="grid grid-cols-2 gap-x-4 gap-y-10 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-4 xl:grid-cols-5 xl:gap-y-14">
+                {magisteres.map((s, i) => (
+                  <Sube as="li" key={s.name} delay={0.04 * (i % 5)}>
+                    <button
+                      type="button"
+                      onClick={() => setAbierto(s)}
+                      className="block w-full text-left group"
+                      aria-label={`${t('students.thesis.show')}: ${s.name}`}
+                    >
+                      <img
+                        src={s.imageUrl}
+                        alt=""
+                        loading="lazy"
+                        className="a-bn w-full aspect-[4/5] object-cover object-top transition-transform duration-300 [@media(hover:hover)]:group-hover:-translate-y-1"
+                      />
+                      <span className="block mt-4 font-semibold leading-tight text-tinta-900 [@media(hover:hover)]:group-hover:underline underline-offset-4 decoration-1">
+                        {s.name}
+                      </span>
+                    </button>
+                    <p className="a-meta mt-1 !text-tinta-700">{meta(s)}</p>
+                    {s.currentPosition && <p className="mt-2 leading-snug text-tinta-800">{localize(s.currentPosition, lang)}</p>}
+                  </Sube>
+                ))}
+              </ul>
+            </div>
+          </section>
+        </>
+      )}
+
+      <DialogoTesis alumno={abierto} onClose={() => setAbierto(null)} />
+    </PageWrapper>
+  );
 };
