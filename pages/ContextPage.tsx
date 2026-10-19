@@ -217,7 +217,7 @@ export const ContextPage: React.FC = () => {
               </Sube>
             </div>
             <Sube delay={0.08}>
-              <Figura foto={fotos.enel} pie={t('context.research.photo')} lang={lang} />
+              <Figura foto={fotos.paraisoSemilla} pie={t('context.research.photo')} lang={lang} proporcion="aspect-[4/3] lg:aspect-[4/5]" />
             </Sube>
           </div>
         </div>
