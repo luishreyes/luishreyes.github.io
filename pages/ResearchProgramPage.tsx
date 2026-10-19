@@ -33,6 +33,8 @@ interface Caso {
   id: string;
   titulo: UIKey;
   parrafos: UIKey[];
+  /** Lo que pone el profesor en el caso. */
+  papel: UIKey;
   foto?: { f: Foto; pie?: UIKey; pos?: string };
   /** Fotos de una misma escena, en una franja a todo el ancho debajo del caso y con un solo pie. */
   franja?: { fotos: { f: Foto; pos?: string }[]; pie: UIKey };
@@ -53,6 +55,7 @@ const CASOS: Caso[] = [
   {
     id: 'raices',
     titulo: 'rc.case.roots.title',
+    papel: 'rc.case.roots.role',
     parrafos: ['rc.case.roots.p1', 'rc.case.roots.p2', 'rc.case.roots.p3'],
     estudiantes: [],
     tituloPubs: 'rc.case.roots.timeline',
@@ -70,6 +73,7 @@ const CASOS: Caso[] = [
   {
     id: 'lisosomales',
     titulo: 'rc.case.lyso.title',
+    papel: 'rc.case.lyso.role',
     parrafos: ['rc.case.lyso.p1', 'rc.case.lyso.p2', 'rc.case.lyso.p3'],
     foto: { f: fotos.academiaMedicina, pie: 'rc.case.lyso.photo', pos: 'center 40%' },
     estudiantes: [
@@ -88,6 +92,7 @@ const CASOS: Caso[] = [
   {
     id: 'nanoparticulas',
     titulo: 'rc.case.nano.title',
+    papel: 'rc.case.nano.role',
     parrafos: ['rc.case.nano.p1', 'rc.case.nano.p2', 'rc.case.nano.p3', 'rc.case.nano.p4'],
     foto: { f: fotos.laboratorio, pos: '40% 35%' },
     estudiantes: [
@@ -115,6 +120,7 @@ const CASOS: Caso[] = [
   {
     id: 'peptidos',
     titulo: 'rc.case.amp.title',
+    papel: 'rc.case.amp.role',
     parrafos: ['rc.case.amp.p1', 'rc.case.amp.p2', 'rc.case.amp.p3', 'rc.case.amp.p4'],
     foto: { f: fotos.mentoria, pos: 'center 40%' },
     estudiantes: [
@@ -136,6 +142,7 @@ const CASOS: Caso[] = [
   {
     id: 'sonido',
     titulo: 'rc.case.sound.title',
+    papel: 'rc.case.sound.role',
     parrafos: ['rc.case.sound.p1', 'rc.case.sound.p2', 'rc.case.sound.p3', 'rc.case.sound.p4'],
     foto: { f: fotos.gradoBrayan, pie: 'rc.case.sound.photo', pos: 'center 35%' },
     estudiantes: [
@@ -155,6 +162,7 @@ const CASOS: Caso[] = [
   {
     id: 'el-colegio',
     titulo: 'rc.case.air.title',
+    papel: 'rc.case.air.role',
     parrafos: ['rc.case.air.p1', 'rc.case.air.p2', 'rc.case.air.p3', 'rc.case.air.p4'],
     foto: { f: fotos.acofiGabriela, pie: 'rc.case.air.photo', pos: 'center 55%' },
     franja: {
@@ -201,8 +209,8 @@ const Externo: React.FC<{ href: string; children: React.ReactNode; className?: s
   </a>
 );
 
-/** Un caso: el texto con sus resultados a la izquierda; a la derecha, la foto, los
- *  estudiantes, dónde se publicó y los ODS a los que aporta. */
+/** Un caso: el texto con sus resultados a la izquierda; a la derecha, la foto, el papel del
+ *  profesor, los estudiantes, dónde se publicó y los ODS a los que aporta. */
 const BloqueCaso: React.FC<{ caso: Caso; fondo: string }> = ({ caso, fondo }) => {
   const { t, lang } = useI18n();
   return (
@@ -245,6 +253,11 @@ const BloqueCaso: React.FC<{ caso: Caso; fondo: string }> = ({ caso, fondo }) =>
                 </figure>
               </Sube>
             )}
+
+            <Sube delay={0.09}>
+              <h3 className="font-semibold text-tinta-900">{t('rc.pg.role')}</h3>
+              <p className="mt-4 pt-3 border-t-2 border-tinta-900 text-tinta-800 leading-relaxed">{t(caso.papel)}</p>
+            </Sube>
 
             {caso.estudiantes.length > 0 && (
               <Sube delay={0.1}>
