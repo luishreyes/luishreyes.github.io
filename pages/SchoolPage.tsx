@@ -65,12 +65,10 @@ const Barras: React.FC<{ titulo: string; pie: string; filas: { nombre: string; n
 };
 
 // Agregados de los egresados de maestría y doctorado según su cargo de hoy, de las empresas que tienen a
-// tres o más de mis estudiantes (de pregrado y de posgrado) y de las codirecciones por colega. Todo sale de
+// tres o más de mis estudiantes (de pregrado y de posgrado). Todo sale de
 // components/data/students/school.ts, que se genera aparte: ninguna cifra de esta página se escribe a mano.
 const DESTINOS = F.graduates.destinations.map(([k, n]) => ({ clave: `school.dest.${k}` as UIKey, n: n as number }));
 const EMPRESAS = F.firms as [string, number][];
-const COLEGAS = (F.colleaguesList as [string, number][]).filter(([, n]) => n > 1);
-const COLEGAS_UNO = (F.colleaguesList as [string, number][]).filter(([, n]) => n === 1).map(([nombre]) => nombre);
 
 /** Cifra en palabras (cardinal, de 2 a 10) con mayúscula inicial si abre la frase. */
 const palabra = (n: number, lang: Lang, may = false) => {
@@ -387,15 +385,9 @@ export const SchoolPage: React.FC = () => {
               <p className="a-texto">{fill(t('school.n.p2'), { total: F.undergrad, known: F.ug.known, abroad: F.ug.abroad, ...Object.fromEntries(F.ug.destinations.map(([k, n]) => [({ industria: 'industry', posgrado: 'grad', academia: 'academia', emprendimiento: 'own', sinDato: 'none' } as Record<string, string>)[k as string], n])) })}</p>
               <p className="a-texto">{fill(t('school.n.p3'), F.talks)}</p>
             </Sube>
-            <Sube delay={0.06}><p className="a-texto">{fill(t('school.n.p4'), { coAdvised: F.coAdvised, record: F.record, colleagues: F.colleagues, cruz: F.withCruz })}</p></Sube>
+            <Sube delay={0.06}><p className="a-texto">{fill(t('school.n.p4'), { coAdvised: F.coAdvised, record: F.record, colleagues: F.colleagues })}</p></Sube>
           </div>
-          <div className="mt-16 grid gap-16 lg:grid-cols-2 lg:items-start">
-            <Sube>
-              <Barras titulo={t('school.n.colleagues')} pie={t('school.n.colleagues.caption')} filas={COLEGAS.map(([nombre, n]) => ({ nombre, n }))} />
-              {COLEGAS_UNO.length > 0 && (
-                <p className="a-s mt-4 text-tinta-800">{COLEGAS_UNO.join(', ').replace(/, ([^,]*)$/, lang === 'es' ? ' y $1' : ' and $1')}: {t('school.n.othersEach')}.</p>
-              )}
-            </Sube>
+          <div className="mt-16">
             <div>
               <Sube><h3 className="a-h3">{t('school.table.title')}.</h3></Sube>
               <Sube className="mt-6"><p className="a-texto">{t('school.table.p1')}</p></Sube>
