@@ -86,11 +86,7 @@ export const ServicePurposePage: React.FC = () => {
       {/* ── Lo que me sostiene, y la red que sigue ── */}
       <section className="a-papel a-campo">
         <div className={`a-c ${PLIEGO}`}>
-          <div className={MARGEN}>
-            <Sube delay={0.08}>
-              <blockquote className="a-cita">{t('svc.purpose.quote')}</blockquote>
-            </Sube>
-          </div>
+          <div className={MARGEN} />
           <div className="space-y-6">
             <Sube><p className="a-texto">{t('svc.purpose.p5')}</p></Sube>
             <Sube delay={0.06}><p className="a-texto">{t('svc.purpose.p6')}</p></Sube>

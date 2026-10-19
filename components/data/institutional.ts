@@ -319,7 +319,7 @@ export const committeesData: Committee[] = [
     {
         title: {
           en: 'Research Ethics Committee, School of Engineering',
-          es: 'Comité de Ética en Investigación, Facultad de Ingeniería',
+          es: 'Comité de Ética de la Investigación, Facultad de Ingeniería',
         },
         role: { en: 'Committee Member', es: 'Miembro del Comité' },
         startYear: 2021,
@@ -328,7 +328,7 @@ export const committeesData: Committee[] = [
         description: [
             {
               en: "As a member of the Research Ethics Committee of the School of Engineering, I am one of three appointed professors responsible for upholding the ethical standards of research involving living beings. The committee operates as a satellite body of the central University Ethics Committee, under Colombian regulations (Resolution 008430 of 1993) and international research ethics standards.",
-              es: "Como miembro del Comité de Ética en Investigación de la Facultad de Ingeniería, soy uno de los tres profesores designados para velar por los estándares éticos de la investigación que involucra seres vivos. El comité funciona como un órgano satélite del Comité de Ética central de la Universidad, bajo la normativa colombiana (Resolución 008430 de 1993) y los estándares internacionales de ética en investigación.",
+              es: "Como miembro del Comité de Ética de la Investigación de la Facultad de Ingeniería, soy uno de los tres profesores designados para velar por los estándares éticos de la investigación que involucra seres vivos. El comité funciona como un órgano satélite del Comité de Ética central de la Universidad, bajo la normativa colombiana (Resolución 008430 de 1993) y los estándares internacionales de ética en investigación.",
             },
             {
               en: "The committee reviews the research protocols of every department of the School, from undergraduate, master's and doctoral projects, classifies their level of risk and grants the ethical approval before any data collection begins; it does not grant approvals retroactively.",
@@ -423,10 +423,10 @@ export const committeesData: Committee[] = [
     }
 ];
 
-// ── Comité de Ética en Investigación: la carga ──────────────────────────────
+// ── Comité de Ética de la Investigación: la carga ──────────────────────────────
 
 /**
- * La carga del Comité de Ética en Investigación es un estimado, no un conteo: unos diez
+ * La carga del Comité de Ética de la Investigación es un estimado, no un conteo: unos diez
  * casos por semana, solo en las semanas de clase de cada semestre completo desde 2021-10,
  * más las semanas que llevaba el semestre en curso al corte. Las intersemestrales y las
  * semanas con más casos no entran, así que la cifra se dice como «más de».
