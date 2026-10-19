@@ -150,7 +150,7 @@ export const SumaVectorial: React.FC = () => {
 
 const EXALUMNOS = ['Juanita Sierra', 'Carlos Manuel Ramírez Acosta', 'Fabio Esteban Herrera', 'Camila Ocasión'];
 
-/** La primera idea de la filosofía docente: fundamentos sostenidos con rigor. La manera de
+/** La primera idea de la filosofía docente: los fundamentos, enseñados con rigor. La manera de
  *  enseñar viene de dos profesores de la UIS que ya murieron; no se cita a ninguno entre
  *  comillas, porque era la filosofía de sus clases y no una frase. La cita del margen es
  *  del propio texto. */

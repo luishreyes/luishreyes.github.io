@@ -1,6 +1,6 @@
 export const principles = {
   // Teaching Purpose
-  'purpose.teaching.title':  { en: 'Fundamentals, held with rigor', es: 'Fundamentos, sostenidos con rigor' },
+  'purpose.teaching.title':  { en: 'Fundamentals, held with rigor', es: 'Los fundamentos, enseñados con rigor' },
   'purpose.teaching.sub':    { en: 'Teaching the fundamentals deeply enough that students can build their own solutions, and evolving alongside each cohort to find out what they can actually do.', es: 'Enseñar los fundamentos con la profundidad suficiente para que los estudiantes construyan sus propias soluciones, y evolucionar junto a cada generación para descubrir lo que realmente pueden lograr.' },
   'purpose.teaching.h2':     { en: 'My teaching purpose',    es: 'Mi propósito docente' },
 
