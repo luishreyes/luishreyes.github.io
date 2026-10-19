@@ -256,7 +256,7 @@ const BloqueCaso: React.FC<{ caso: Caso; fondo: string }> = ({ caso, fondo }) =>
 
             <Sube delay={0.09}>
               <h3 className="font-semibold text-tinta-900">{t('rc.pg.role')}</h3>
-              <p className="mt-4 pt-3 border-t-2 border-tinta-900 text-tinta-800 leading-relaxed">{t(caso.papel)}</p>
+              <p className="mt-4 pt-3 border-t-2 border-tinta-900 text-tinta-800 leading-relaxed"><Rico texto={t(caso.papel)} /></p>
             </Sube>
 
             {caso.estudiantes.length > 0 && (
