@@ -13,19 +13,6 @@ import { ResearchConnectionsGraph } from '../components/ResearchConnectionsGraph
 import { scholar, publications, publicationsPerYear, SCHOLAR_URL, esPublicacion } from '../components/data/citations';
 import { useAppData } from '../context/AppDataContext';
 
-/** Resalta con el marcador una frase que ya está en el párrafo (una sola por página). */
-const Resaltar: React.FC<{ texto: string; frase: string }> = ({ texto, frase }) => {
-  const i = texto.indexOf(frase);
-  if (i < 0) return <>{texto}</>;
-  return (
-    <>
-      {texto.slice(0, i)}
-      <span className="a-resaltado">{frase}</span>
-      {texto.slice(i + frase.length)}
-    </>
-  );
-};
-
 /** Coautores de cada unidad de la Universidad, por la afiliación con que firman. */
 const UNIDADES: { clave: UIKey; n: number }[] = [
   { clave: 'rc.unit.bme', n: 56 },
@@ -54,7 +41,6 @@ export const ResearchOverviewPage: React.FC = () => {
     { label: t('rc.fig.q'), value: `${publications.q1 + publications.q2}/${publications.articles}`, note: t('rc.fig.q.note') },
     { label: t('rc.fig.cites'), value: scholar.citations, note: fill(t('rc.fig.cites.note'), { date: fecha(scholar.asOf, lang) }) },
     { label: fill(t('rc.fig.h'), { i10: scholar.i10Index }), value: scholar.hIndex, note: fill(t('rc.fig.cites.note'), { date: fecha(scholar.asOf, lang) }) },
-    { label: fill(t('rc.fig.students'), { mentored: publications.studentFirstMentored }), value: publications.studentFirstDirected, note: fill(t('rc.fig.students.note'), { articles: publications.articles }) },
     { label: t('rc.fig.senior.label'), value: t('rc.fig.senior'), note: t('rc.fig.senior.note') },
   ];
 
@@ -111,9 +97,6 @@ export const ResearchOverviewPage: React.FC = () => {
           <div className="mt-16 grid gap-x-16 gap-y-6 lg:grid-cols-2">
             <Sube><p className="a-texto">{t('rc.fig.p1')}</p></Sube>
             <Sube delay={0.06}><p className="a-texto">{t('rc.fig.p2')}</p></Sube>
-            <Sube delay={0.1} className="lg:col-span-2">
-              <p className="a-texto text-tinta-900"><Resaltar texto={t('rc.fig.p3')} frase={t('rc.fig.p3.mark')} /></p>
-            </Sube>
           </div>
           <Sube className="mt-8">
             <a href={SCHOLAR_URL} target="_blank" rel="noopener noreferrer" className="a-enlace">

@@ -170,6 +170,7 @@ const App: React.FC = () => {
               <Route path="/next" element={<NextPage />} />
               <Route path="/school" element={<SchoolPage />} />
               <Route path="/teaching/strategies" element={<StrategiesPage />} />
+              <Route path="/simulators" element={<Navigate to="/teaching/strategies#simuladores" replace />} />
               {/* Cada filosofía abre su capítulo; las direcciones viejas de /principles redirigen. */}
               <Route path="/teaching/purpose" element={<TeachingPurposePage />} />
               <Route path="/teaching/philosophy" element={<TeachingPhilosophyPage />} />

@@ -5,14 +5,21 @@ import { EncabezadoPagina, Cabecera } from '../../components/Apertura';
 import { Sube } from '../../components/Sube';
 import { useI18n, localize, fill, type UIKey, type Lang } from '../../context/i18n';
 import { pou202620Course } from '../../components/data/classroom/pou-2026-20';
+import { classroomData, type Simulation } from '../../components/data/classroom';
 import { fotos, type Foto } from '../../components/data/fotos';
 
 /** Estrategias y material de los cursos: los ocho bloques, los simuladores del aula de Proyecto
  *  de Operaciones Unitarias y el material del curso. Las cifras del aula se leen de sus datos. */
 
 const AULA = `/classroom/${pou202620Course.slug}`;
-const simulaciones = pou202620Course.simulations ?? [];
+/** Los simuladores salen del semestre más reciente de Proyecto de Operaciones Unitarias, que hereda los de los
+ *  anteriores: uno nuevo aparece aquí en cuanto entra a los datos del curso. Se abren directo, sin el código del aula. */
+const pouReciente = classroomData
+  .filter((c) => c.slug.startsWith('iqya-2031-'))
+  .sort((a, b) => b.term.localeCompare(a.term))[0];
+const simulaciones = pouReciente.simulations ?? [];
 const simuladores = simulaciones.filter((s) => s.id !== 'manual-diagramas');
+const urlSimulador = (s: Simulation) => `/classroom/${s.carpeta ?? pouReciente.slug}/simulaciones/${s.file}`;
 const material = pou202620Course.readings ?? [];
 // Guías de trabajo: sin el programa ni el cronograma, que son del curso y no del proyecto.
 const guias = material.filter((r) => r.category === 'guia' && !['programa-del-curso', 'cronograma-interactivo'].includes(r.slug));
@@ -48,6 +55,12 @@ const Figura: React.FC<{ foto: Foto; pie: string; lang: Lang; forma?: string }> 
 
 export const StrategiesPage: React.FC = () => {
   const { t, lang } = useI18n();
+  // /simulators llega con #simuladores; PageWrapper sube al tope primero y aquí se baja al bloque.
+  React.useEffect(() => {
+    if (window.location.hash !== '#simuladores') return;
+    const id = window.setTimeout(() => document.getElementById('simuladores')?.scrollIntoView(), 80);
+    return () => window.clearTimeout(id);
+  }, []);
   const nombre = (id: string, titulo: string) => {
     const clave = `tch.sim.${id}` as UIKey;
     try {
@@ -82,21 +95,20 @@ export const StrategiesPage: React.FC = () => {
           <div className="mt-10 grid gap-x-16 gap-y-6 lg:grid-cols-2">
             <Sube><p className="a-texto text-tinta-900">{fill(t('tch.st.sims'), { n: simuladores.length })}</p></Sube>
             <Sube delay={0.05}>
-              <p className="a-texto">{fill(t('tch.st.sims.where'), { term: pou202620Course.term })}</p>
-              <Link to={`${AULA}/simulations`} className="a-boton mt-8">
-                {t('tch.st.sims.cta')} <span aria-hidden="true">→</span>
-              </Link>
+              <p className="a-texto">{t('tch.st.sims.where')}</p>
             </Sube>
           </div>
           <ul className="mt-14 grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-10">
             {simulaciones.map((s, i) => (
               <Sube as="li" key={s.id} delay={0.03 * (i % 4)}>
-                <figure>
-                  <div data-ui className="overflow-hidden bg-white aspect-[16/10]">
-                    <img src={s.bannerImg} alt={nombre(s.id, s.title)} loading="lazy" className="block w-full h-full object-cover" />
-                  </div>
-                  <figcaption className="mt-3 a-s text-tinta-900">{nombre(s.id, s.title)}</figcaption>
-                </figure>
+                <a href={urlSimulador(s)} target="_blank" rel="noopener noreferrer" className="group block">
+                  <figure>
+                    <div data-ui className="overflow-hidden bg-white aspect-[16/10]">
+                      <img src={s.bannerImg} alt={nombre(s.id, s.title)} loading="lazy" className="block w-full h-full object-cover transition-opacity group-hover:opacity-85" />
+                    </div>
+                    <figcaption className="mt-3 a-s text-tinta-900 group-hover:underline">{nombre(s.id, s.title)} <span aria-hidden="true">↗</span></figcaption>
+                  </figure>
+                </a>
               </Sube>
             ))}
           </ul>
