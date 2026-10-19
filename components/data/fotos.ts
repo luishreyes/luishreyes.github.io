@@ -50,6 +50,7 @@ export const fotos = {
   estudiantesU: f('docencia/estudiantes-en-la-u.jpg', 'Students working at Universidad de los Andes, seen through a window', 'Estudiantes trabajando en la Universidad de los Andes, vistos a través de un vidrio', '72% 50%'),
   estudiantesConversando: f('docencia/estudiantes-conversando.jpg', 'Two students talking in a courtyard of Universidad de los Andes', 'Dos estudiantes conversan en un patio de la Universidad de los Andes', '50% 97%'),
   postersPou: f('docencia/posters-pou.jpg', 'Poster session of the Unit Operations Project', 'Sesión de pósteres de Proyecto de Operaciones Unitarias', '50% 40%'),
+  pouPosterEstudiante: f('docencia/pou-poster-estudiante.jpg', 'A student with her team’s poster at the Unit Operations Project poster session', 'Una estudiante con el póster de su equipo en la sesión de pósteres de Proyecto de Operaciones Unitarias', '45% 40%'),
   pouDiagrama: f('docencia/pou-actividad-diagrama-proceso.jpg', 'Students building a process diagram with sticky notes in the Unit Operations Project', 'Estudiantes arman un diagrama de proceso con notas adhesivas en Proyecto de Operaciones Unitarias', '35% 35%'),
   pouNpsh: f('docencia/pou-portatiles-taller-npsh.jpg', 'Laptops on the system curve and available NPSH workshop', 'Portátiles en el taller de curva del sistema y NPSH disponible', '50% 6%'),
   pouRetro: f('docencia/pou-retroalimentacion.jpg', 'A feedback session with a team in the Unit Operations Project', 'Una sesión de retroalimentación con un equipo de Proyecto de Operaciones Unitarias', '25% 45%'),

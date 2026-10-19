@@ -126,7 +126,7 @@ export const StrategiesPage: React.FC = () => {
       {/* ── Escribir, jugar y la IA con reglas ── */}
       <section className="a-hundido a-campo">
         <div className="a-c space-y-20 sm:space-y-28">
-          <Bloque titulo={t('tch.st.write.t')} foto={<Figura foto={fotos.postersPou} pie={t('tch.st.write.photo')} lang={lang} />}>
+          <Bloque titulo={t('tch.st.write.t')} foto={<Figura foto={fotos.pouPosterEstudiante} pie={t('tch.st.write.photo')} lang={lang} />}>
             <Sube><p className="a-texto">{t('tch.st.write')}</p></Sube>
           </Bloque>
           <Bloque titulo={t('tch.st.play.t')}>
