@@ -243,7 +243,7 @@ export const StudentsPage = () => {
                 {[
                   { f: fotos.recienLlegado, aspecto: 'aspect-[4/3]', pos: 'center' },
                   { f: fotos.camilaJenga, aspecto: 'aspect-[3/4]', pos: 'center' },
-                  { f: fotos.acs2026, aspecto: 'aspect-[4/3]', pos: '70% center' },
+                  { f: fotos.mapeLaboratorio, aspecto: 'aspect-[4/3]', pos: '50% 35%' },
                 ].map(({ f, aspecto, pos }, i) => (
                   <Sube as="li" key={f.src} delay={0.08 * i}>
                     <figure>

@@ -32,6 +32,7 @@ export const fotos = {
   fabricato: f('escuela/fabricato-canamo-exhibicion.jpg', 'Hemp to fabric, step by step, at Fabricato', 'Del cáñamo a la tela, paso a paso, en Fabricato', '45% 45%'),
   gimnasio: f('escuela/gimnasio-con-estudiantes.jpg', 'With two students at the gym', 'Con dos estudiantes en el gimnasio', '40% 40%'),
   laboratorio: f('escuela/laboratorio-juan-david-cristian-erika.jpg', 'Erika Díaz, Cristian F. Rodríguez and Juan David Sánchez in the laboratory', 'Erika Díaz, Cristian F. Rodríguez y Juan David Sánchez en el laboratorio', '40% 35%'),
+  mapeLaboratorio: f('escuela/jonatan-garcia-mape-laboratorio.jpg', 'Jonatan García Mape in the laboratory', 'Jonatan García Mape en el laboratorio', '50% 35%'),
   marthaAiche: f('escuela/martha-diaz-aiche.jpg', 'With doctoral student Martha Liliana Díaz at AIChE', 'Con la doctoranda Martha Liliana Díaz en AIChE', '60% 45%'),
   medellin: f('escuela/medellin-charla-visita-fabricato.jpg', 'In Medellín, on the visit to Fabricato at the invitation of a graduate', 'En Medellín, en la visita a Fabricato por invitación de una egresada', '50% 60%'),
   mentoria: f('escuela/mentoria-enrique-cristian-juan-carlos.jpg', 'A mentoring session with Enrique Lozano, Cristian F. Rodríguez and Juan Carlos Cruz', 'Una sesión de mentoría con Enrique Lozano, Cristian F. Rodríguez y Juan Carlos Cruz', '50% 40%'),
