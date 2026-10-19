@@ -18,6 +18,7 @@ export const fotos = {
   academiaMedicina: f('premios/2023-academia-nacional-de-medicina.jpg', 'Four people with the National Academy of Medicine of Colombia diploma, 2023', 'Cuatro personas con el diploma de la Academia Nacional de Medicina de Colombia, 2023', '50% 40%'),
   angelEscobar: f('premios/2023-alejandro-angel-escobar-mencion.jpg', 'The team with the 2023 honorable mention of Fundación Alejandro Ángel Escobar', 'El equipo con la mención de honor 2023 de la Fundación Alejandro Ángel Escobar', '50% 35%'),
   academiaJoven: f('reconocimiento/academia-joven-ingreso.jpg', 'Joining the Academia Joven de Colombia', 'El ingreso a la Academia Joven de Colombia', '40% 30%'),
+  retratoVoceria: f('trayectoria/retrato-taller-voceria-2025.jpg', 'Luis H. Reyes at the Taller de Vocería 4.0 of Universidad de los Andes, 2025', 'Luis H. Reyes en el Taller de Vocería 4.0 de la Universidad de los Andes, 2025', '50% 30%'),
   // Escuela: grados
   gradoCarlos: f('grados/2021-maestria-carlos-ramirez.jpg', 'Carlos Manuel Ramírez Acosta with his master’s diploma, 2021', 'Carlos Manuel Ramírez Acosta con su diploma de maestría, 2021', '50% 30%'),
   gradoBrayan: f('grados/2025-doctorado-brayan-rodriguez.jpg', 'Brayan Rodríguez with his Doctor of Engineering diploma, between his two advisors, 2025', 'Brayan Rodríguez con su diploma de Doctor en Ingeniería, entre sus dos directores, 2025', '50% 25%'),

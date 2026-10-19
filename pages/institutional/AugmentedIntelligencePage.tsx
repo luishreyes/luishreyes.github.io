@@ -231,7 +231,7 @@ export const AugmentedIntelligencePage: React.FC = () => {
       <section className="a-oscuro a-campo">
         <div className="a-c grid gap-12 lg:gap-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)] lg:items-center">
           <Sube className="overflow-hidden aspect-square max-w-[420px]">
-            <img src="/images/site/1756469286343.jpg" alt={t('service.img.portrait')} loading="lazy" className="a-foto" />
+            <img src={fotos.retratoVoceria.src} alt={localize(fotos.retratoVoceria.alt, lang)} loading="lazy" className="a-foto a-bn" />
           </Sube>
           <div>
             <Sube><h2 className="a-h3">{t('ai.futureVision')}</h2></Sube>
