@@ -35,7 +35,7 @@ const teaching = {
   firstYear: Math.min(...teachingData.map((course) => course.year)),
   courses: teachingData.length + edcoCoursesData.length,
   universityCourses: teachingData.length,
-  // Formación a escala: Educación Continuada y formación ejecutiva (sin Coursera ni la escuela
+  // Formación a escala: Educación Continua y formación ejecutiva (sin Coursera ni la escuela
   // de verano), como la cuenta su página. `attendees` es 0 cuando no hay dato.
   continuingEdCourses: trainingCourses.length,
   uniqueCourseTitles: new Set([
