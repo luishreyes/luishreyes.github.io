@@ -45,5 +45,6 @@ export const trajectory = {
   't5.photo':  { en: 'Recording the introduction of the Coursera course on generative AI.', es: 'La grabación de la introducción del curso de Coursera sobre IA generativa.' },
 
   'trajectory.record.title': { en: 'The record', es: 'La hoja de vida' },
+  'trajectory.logos.caption': { en: 'The universities, companies and laboratories where I have studied, worked or trained, in the order I arrived.', es: 'Las universidades, empresas y laboratorios donde he estudiado, trabajado o me he formado, en el orden en que llegué.' },
   'trajectory.context.link': { en: 'What changed around me since 2017, in Context', es: 'Lo que cambió alrededor desde 2017, en Contexto' },
 };

@@ -5,6 +5,8 @@ import { EncabezadoPagina } from '../../components/Apertura';
 import { Sube } from '../../components/Sube';
 import { editorialData } from '../../components/data/institutional';
 import { editedBooksData } from '../../components/data/editorships';
+import { logosComites } from '../../components/data/logos';
+import { LogoGris } from '../../components/MuroLogos';
 import {
   reviewedJournals,
   reviewsByArea,
@@ -83,12 +85,19 @@ export const EditorialPage: React.FC = () => {
               <Sube as="li" key={role.journal} delay={0.05 * i}>
                 <span className="cuando">{fill(t('editorial.since'), { date: mesAnio(role.startDate, lang) })}</span>
                 <div>
-                  <p className="que">
-                    <a href={role.journalUrl} target="_blank" rel="noopener noreferrer" className="hover:bg-resaltador-suave transition-colors">
-                      {role.journal}
-                    </a>
-                  </p>
-                  <p className="donde">{localize(role.role, lang)}</p>
+                  <div className="flex items-start justify-between gap-8">
+                    <div>
+                      <p className="que">
+                        <a href={role.journalUrl} target="_blank" rel="noopener noreferrer" className="hover:bg-resaltador-suave transition-colors">
+                          {role.journal}
+                        </a>
+                      </p>
+                      <p className="donde">{localize(role.role, lang)}</p>
+                    </div>
+                    {logosComites[role.journal] && (
+                      <LogoGris slug={logosComites[role.journal].slug} ratio={logosComites[role.journal].ratio} alt={localize(logosComites[role.journal].name, lang)} className="shrink-0 mt-1" />
+                    )}
+                  </div>
                   <div className="detalle grid gap-x-12 gap-y-5 lg:!max-w-none lg:grid-cols-2">
                     <p>{localize(role.description, lang)}</p>
                     <ul className="space-y-3">

@@ -7,6 +7,8 @@ import { fotos, type Foto } from '../components/data/fotos';
 import { useI18n, localize, type UIKey } from '../context/i18n';
 import { educationData, specializationsData, credentialsData } from '../components/data/education';
 import { workExperienceData } from '../components/data/experience';
+import { logosTrayectoria } from '../components/data/logos';
+import { MuroLogos } from '../components/MuroLogos';
 
 /** Trayectoria: los cinco tramos, cada uno con la decisión que lo explica, y después
  *  la hoja de vida (formación, experiencia, cursos y certificados) en registros. */
@@ -126,6 +128,13 @@ export const TrajectoryPage: React.FC = () => {
               </Sube>
             ))}
           </ul>
+          <Sube className="mt-14">
+            <MuroLogos
+              logos={logosTrayectoria.map((l) => ({ slug: l.slug, ratio: l.ratio, alt: localize(l.name, lang) }))}
+              columnas="grid-cols-3 md:grid-cols-5 lg:grid-cols-9"
+              pie={t('trajectory.logos.caption')}
+            />
+          </Sube>
           {/* La Universidad de los Andes, donde trabaja desde 2017 */}
           <div className="mt-14 grid gap-4 sm:grid-cols-3">
             {[

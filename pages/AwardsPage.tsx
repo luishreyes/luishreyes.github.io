@@ -7,6 +7,8 @@ import { awardsData, studentRecognitionsData, type StudentRecognition } from '..
 import { graduatedStudentsData } from '../components/data/students';
 import { committeesData } from '../components/data/institutional';
 import { fotos, type Foto } from '../components/data/fotos';
+import { logosReconocimiento } from '../components/data/logos';
+import { MuroLogos } from '../components/MuroLogos';
 import { useI18n, localize, fill, type Lang, type UIKey } from '../context/i18n';
 import type { Recognition, GraduatedStudent } from '../types';
 
@@ -210,10 +212,17 @@ export const AwardsPage: React.FC = () => {
         foto={{ src: fotos.portadaReconocimiento.src, alt: localize(fotos.portadaReconocimiento.alt, lang), posicion: fotos.portadaReconocimiento.foco }}
       />
 
-      {/* ── Los doce, en el tiempo ── */}
+      {/* ── Los doce, en el tiempo, y quién los otorgó ── */}
       <section className="a-papel pt-8 pb-20 sm:pb-28">
         <div className="a-c">
           <Sube><Linea /></Sube>
+          <Sube className="mt-20">
+            <MuroLogos
+              logos={logosReconocimiento.map((l) => ({ slug: l.slug, ratio: l.ratio, alt: localize(l.name, lang) }))}
+              columnas="grid-cols-3 md:grid-cols-4 lg:grid-cols-6"
+              pie={t('awards.logos.caption')}
+            />
+          </Sube>
         </div>
       </section>
 

@@ -8,6 +8,7 @@ export const recognition = {
   // La línea de tiempo: una fila por lo que reconocen.
   'awards.timeline.title':   { en: '{n} recognitions over time', es: '{n} reconocimientos en el tiempo' },
   'awards.timeline.caption': { en: 'Each mark is a recognition, in the year it was given. The 2020 mark gathers the mentions and selections of undergraduate projects up to that year.', es: 'Cada marca es un reconocimiento, en el año en que se otorgó. La marca de 2020 reúne las menciones y selecciones de proyectos de grado hasta ese año.' },
+  'awards.logos.caption':    { en: 'The institutions that granted them, in the same order as the timeline.', es: 'Las instituciones que los otorgaron, en el mismo orden de la línea de tiempo.' },
   'awards.lane.teaching':    { en: 'For teaching',           es: 'Por la docencia' },
   'awards.lane.research':    { en: 'For research',           es: 'Por la investigación' },
   'awards.lane.membership':  { en: 'Membership',             es: 'Pertenencia' },
