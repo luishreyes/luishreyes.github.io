@@ -9,23 +9,15 @@ import { metrics } from '../components/data/metrics';
 import { graduatedStudentsData, studentsData } from '../components/data/students';
 import { fotos } from '../components/data/fotos';
 import { BarrasPorAno, type Serie } from '../components/ProductsOverTimeChart';
-import { ResearchConnectionsGraph } from '../components/ResearchConnectionsGraph';
-import { scholar, publications, publicationsPerYear, SCHOLAR_URL, esPublicacion, webOfScience } from '../components/data/citations';
+import { lineas2020, lineasNuevas, type LineaHoy } from '../components/data/researchLines2020';
+import { scholar, publications, publicationsPerYear, SCHOLAR_URL, esPublicacion, webOfScience, authorship } from '../components/data/citations';
 import { useAppData } from '../context/AppDataContext';
+import { ResearchNetworkMap } from '../components/ResearchNetworkMap';
 
-/** Coautores de cada unidad de la Universidad, por la afiliación con que firman. */
-const UNIDADES: { clave: UIKey; n: number }[] = [
-  { clave: 'rc.unit.bme', n: 56 },
-  { clave: 'rc.unit.own', n: 50 },
-  { clave: 'rc.unit.eee', n: 8 },
-  { clave: 'rc.unit.adm', n: 4 },
-  { clave: 'rc.unit.sis', n: 2 },
-  { clave: 'rc.unit.micro', n: 2 },
-  { clave: 'rc.unit.cider', n: 2 },
-  { clave: 'rc.unit.ai', n: 1 },
-  { clave: 'rc.unit.cifi', n: 1 },
-  { clave: 'rc.unit.bio', n: 1 },
-];
+/** Texto con nombres de especies entre asteriscos, en cursiva. */
+const Cursiva: React.FC<{ texto: string }> = ({ texto }) => (
+  <>{texto.split('*').map((trozo, i) => (i % 2 ? <i key={i}>{trozo}</i> : <React.Fragment key={i}>{trozo}</React.Fragment>))}</>
+);
 
 const fecha = (iso: string, lang: 'en' | 'es') =>
   new Date(`${iso}T12:00:00`).toLocaleDateString(lang === 'es' ? 'es-CO' : 'en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
@@ -59,8 +51,6 @@ export const ResearchOverviewPage: React.FC = () => {
     patents: products.filter((p) => p.type === 'Patent').length || publications.patents,
     talks: products.filter((p) => p.type === 'Conference').length,
   }), [products]);
-
-  const maxUnidad = Math.max(...UNIDADES.map((u) => u.n));
 
   const interiores = [
     { to: '/research/purpose', q: t('nav.purpose'), d: t('rc.more.purpose') },
@@ -116,10 +106,13 @@ export const ResearchOverviewPage: React.FC = () => {
       <section className="a-hundido a-campo">
         <div className="a-c">
           <Sube><Cabecera titulo={t('rc.chart.title')} /></Sube>
+          <Sube delay={0.06}>
+            <p className="mt-8 a-texto max-w-[68ch]">{fill(t('rc.chart.authors'), { since: authorship.since, last: authorship.last, second: authorship.secondToLast, n: authorship.articles })}</p>
+          </Sube>
           <div className="mt-12 grid gap-x-16 gap-y-16 lg:grid-cols-2">
             <Sube className="min-w-0">
               <h3 className="a-h3 mb-6">{t('rc.chart.pubs.title')}</h3>
-              <BarrasPorAno data={publicationsPerYear} series={seriesPub} inicial={2025} unidad={t('rc.chart.pubs.unit')} />
+              <BarrasPorAno data={publicationsPerYear} series={seriesPub} inicial={2025} unidad={t('rc.chart.pubs.unit')} claroAntes={2017} hitos={{ 2017: t('rc.chart.arrival') }} />
               <p className="a-pie">{t('rc.chart.pubs.caption')}</p>
             </Sube>
             <Sube delay={0.08} className="min-w-0">
@@ -130,6 +123,8 @@ export const ResearchOverviewPage: React.FC = () => {
                 inicial={2025}
                 unidad={t('rc.chart.cites.unit')}
                 notaAno={{ 2026: t('rc.chart.cites.partial') }}
+                claroAntes={2017}
+                hitos={{ 2017: t('rc.chart.arrival') }}
               />
               <p className="a-pie">{t('rc.chart.cites.caption')}</p>
             </Sube>
@@ -137,17 +132,39 @@ export const ResearchOverviewPage: React.FC = () => {
         </div>
       </section>
 
-      {/* ── Las ocho líneas y cómo se cruzan: lo que se toca en la página ── */}
+      {/* ── Las líneas: las cinco de 2020, que siguen abiertas, y las cuatro que se sumaron, cada una con un trabajo de hoy ── */}
       <section className="a-oscuro a-campo">
         <div className="a-c">
-          <Sube><Cabecera titulo={t('rc.lines.title')} className="mb-12" /></Sube>
-          <Sube delay={0.06}>
-            <ResearchConnectionsGraph products={products} />
+          <Sube><Cabecera titulo={t('rc.l20.title')} /></Sube>
+          <div className="mt-12 grid gap-x-16 gap-y-6 lg:grid-cols-2">
+            <Sube><p className="a-texto">{t('rc.l20.p1')}</p></Sube>
+            <Sube delay={0.06}><p className="a-texto">{t('rc.l20.p2')}</p></Sube>
+          </div>
+          <Sube className="mt-16">
+            <figure>
+              {([['rc.l20.open', lineas2020, false], ['rc.l20.new', lineasNuevas, true]] as [UIKey, LineaHoy[], boolean][]).map(([titulo, filas, nueva]) => (
+                <div key={titulo} className={nueva ? 'mt-14' : ''}>
+                  <h3 className="flex items-center gap-3 pb-3 border-b-2 border-papel-100 font-semibold text-white">
+                    {nueva && <span className="inline-block w-3 h-3 bg-resaltador" aria-hidden="true" />}
+                    {t(titulo)}
+                  </h3>
+                  <ul>
+                    {filas.map((f) => (
+                      <li key={localize(f.linea, 'es')} className="grid gap-x-10 gap-y-2 py-5 border-b-2 border-tinta-700 md:grid-cols-[minmax(0,18rem)_minmax(0,1fr)]">
+                        <span className="font-semibold text-white leading-snug">{localize(f.linea, lang)}</span>
+                        <span className="text-papel-200 max-w-[70ch]"><Cursiva texto={localize(f.hoy, lang)} /></span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+              <figcaption className="a-s text-tinta-300 mt-6 max-w-[64ch]">{t('rc.l20.caption')}</figcaption>
+            </figure>
           </Sube>
         </div>
       </section>
 
-      {/* ── Con quién: Juan Carlos Cruz, las unidades de la Universidad y la red de fuera ── */}
+      {/* ── Con quién: Juan Carlos Cruz y el mapa de la red, dentro y fuera de la Universidad ── */}
       <section className="a-papel a-campo">
         <div className="a-c">
           <Sube><Cabecera titulo={t('rc.net.title')} /></Sube>
@@ -166,24 +183,7 @@ export const ResearchOverviewPage: React.FC = () => {
             </Sube>
           </div>
           <Sube className="mt-16">
-            <figure>
-              <h3 className="a-h3">{t('rc.net.units')}</h3>
-              <ul className="mt-8 border-t-2 border-tinta-900">
-                {UNIDADES.map((u) => (
-                  <li
-                    key={u.clave}
-                    className="grid grid-cols-[minmax(0,1fr)_3rem] md:grid-cols-[minmax(0,22rem)_minmax(0,1fr)_3rem] gap-x-6 gap-y-2 items-center py-3 border-b-2 border-papel-300 transition-colors [@media(hover:hover)]:hover:bg-resaltador-suave"
-                  >
-                    <span className="a-s text-tinta-900">{t(u.clave)}</span>
-                    <span className="hidden md:block h-3 bg-papel-200" aria-hidden="true">
-                      <span className="block h-full bg-tinta-800" style={{ width: `${(u.n / maxUnidad) * 100}%` }} />
-                    </span>
-                    <span className="a-s text-tinta-900 font-semibold tabular-nums text-right">{numero(u.n)}</span>
-                  </li>
-                ))}
-              </ul>
-              <figcaption className="a-pie">{t('rc.net.units.caption')}</figcaption>
-            </figure>
+            <ResearchNetworkMap />
           </Sube>
         </div>
       </section>

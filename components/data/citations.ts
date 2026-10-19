@@ -25,6 +25,15 @@ export const webOfScience = {
   citingPatents: 13,
 };
 
+/** Cómo firma el grupo: el último lugar es de quien tuvo la idea, y el penúltimo, de quien la construyó con él en un
+ *  tema que es más del otro. Artículos de investigación y de revisión desde 2018, contados uno por uno. */
+export const authorship = {
+  since: 2018,
+  articles: 70,
+  last: 18,
+  secondToLast: 22,
+};
+
 export const scholar = {
   /** Fecha de la foto del perfil (AAAA-MM-DD). */
   asOf: '2026-10-02',

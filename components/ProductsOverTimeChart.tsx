@@ -21,15 +21,21 @@ interface BarrasPorAnoProps {
   unidad: string;
   /** Nota que sigue a la cifra del año, como «hasta septiembre». */
   notaAno?: Record<number, string>;
+  /** Los años anteriores a este van más claros (los de antes de llegar a Uniandes). */
+  claroAntes?: number;
+  /** Rótulos con flecha sobre algunos años, como la llegada a Uniandes en 2017. */
+  hitos?: Record<number, string>;
 }
 
 const ALTO = 260;
 const M = { top: 12, right: 8, bottom: 32, left: 44 };
+/** Espacio arriba de las barras para los rótulos de los hitos. */
+const HITO = 34;
 
 /** Barras apiladas por año, para tocar: cada año se puede escoger (con el ratón, el dedo o
  *  el teclado) y la lectura de arriba dice sus cifras. Gris para las series; el amarillo
  *  marca el año escogido. */
-export const BarrasPorAno: React.FC<BarrasPorAnoProps> = ({ data, series, inicial, unidad, notaAno }) => {
+export const BarrasPorAno: React.FC<BarrasPorAnoProps> = ({ data, series, inicial, unidad, notaAno, claroAntes, hitos }) => {
   const { t, lang } = useI18n();
   const reduce = useReducedMotion();
   const caja = useRef<HTMLDivElement>(null);
@@ -67,7 +73,8 @@ export const BarrasPorAno: React.FC<BarrasPorAnoProps> = ({ data, series, inicia
   const interior = Math.max(0, ancho - M.left - M.right);
   const banda = interior / anos.length;
   const barra = Math.max(4, banda * 0.66);
-  const y = (v: number) => M.top + (ALTO - M.top - M.bottom) * (1 - v / techo);
+  const arriba = M.top + (hitos ? HITO : 0);
+  const y = (v: number) => arriba + (ALTO - arriba - M.bottom) * (1 - v / techo);
   const x = (a: number) => M.left + (a - anos[0]) * banda + (banda - barra) / 2;
   // Si no caben todos los años, se rotula uno de cada cinco, más el primero y el último
   // cuando no queda pegado a otro rótulo.
@@ -134,6 +141,7 @@ export const BarrasPorAno: React.FC<BarrasPorAnoProps> = ({ data, series, inicia
                       x={x(a)}
                       width={barra}
                       fill={s.color}
+                      opacity={claroAntes != null && a < claroAntes ? 0.38 : 1}
                       initial={{ attrY: y(0), height: 0 }}
                       animate={visto || reduce ? { attrY: y0, height: h } : { attrY: y(0), height: 0 }}
                       transition={reduce ? { duration: 0 } : { duration: 0.7, ease: [0.22, 0.8, 0.3, 1], delay: i * 0.02 }}
@@ -141,6 +149,15 @@ export const BarrasPorAno: React.FC<BarrasPorAnoProps> = ({ data, series, inicia
                   );
                 })}
                 {sel && <rect x={x(a)} y={y(0) + 4} width={barra} height={5} fill="#FFE900" />}
+                {hitos?.[a] && (() => {
+                  // El rótulo va arriba y la flecha baja hasta la barra; cerca del borde derecho se alinea a la derecha.
+                  const cx = x(a) + barra / 2, cerca = cx > ancho - 110;
+                  return <g aria-hidden="true">
+                    <text x={cerca ? cx + 4 : cx - 4} y={M.top + 12} textAnchor={cerca ? 'end' : 'start'} fontSize="15" fill="#1D1D1B" fontWeight={600}>{hitos[a]}</text>
+                    <line x1={cx} x2={cx} y1={M.top + 18} y2={y(total(a)) - 6} stroke="#1D1D1B" strokeWidth={2} />
+                    <path d={`M ${cx - 4} ${y(total(a)) - 10} L ${cx} ${y(total(a)) - 4} L ${cx + 4} ${y(total(a)) - 10}`} fill="none" stroke="#1D1D1B" strokeWidth={2} />
+                  </g>;
+                })()}
                 {rotular(a, i) && (
                   <text x={x(a) + barra / 2} y={ALTO - 6} textAnchor="middle" fontSize="15" fill={sel ? '#1D1D1B' : '#5E5E61'} fontWeight={sel ? 700 : 400}>
                     {a}
