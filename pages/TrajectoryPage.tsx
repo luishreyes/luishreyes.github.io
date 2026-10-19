@@ -25,7 +25,7 @@ const TRAMOS: { años: UIKey; titulo: UIKey; foto?: { f: Foto; pie: UIKey }; blo
   ] },
   { años: 't5.years', titulo: 't5.title', foto: { f: fotos.grabacionMooc, pie: 't5.photo' }, bloques: [
     { tipo: 'p', clave: 't5.p1' }, { tipo: 'decision', clave: 't5.decision1' }, { tipo: 'p', clave: 't5.p2' },
-    { tipo: 'decision', clave: 't5.decision2' }, { tipo: 'p', clave: 't5.p3' }, { tipo: 'cierre', clave: 't5.close' },
+    { tipo: 'decision', clave: 't5.decision2' }, { tipo: 'p', clave: 't5.p3' },
   ] },
 ];
 export const TrajectoryPage: React.FC = () => {
