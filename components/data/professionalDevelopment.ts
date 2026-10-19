@@ -13,6 +13,15 @@ export interface DevelopmentActivity {
 
 export const professionalDevelopmentData: DevelopmentActivity[] = [
     {
+        period: '2025',
+        title: { en: 'Spokesperson Workshop 4.0: Communicate with Impact', es: 'Taller de Vocería 4.0: Comunica con impacto' },
+        institution: { en: 'Universidad de los Andes, Office of the President', es: 'Universidad de los Andes, Rectoría' },
+        description: {
+            en: "A workshop in three three-hour sessions, in August 2025, on telling one's own story, on the power of a well-told story and on spokesperson tools for the media. It was taught by Lina Echeverri Cañas, a mentor in marketing and personal branding; Ricardo Corredor Cure, director of the Center for Journalism Studies; and Andrés Ruiz Zuluaga, director of Strategic Communication at the University.",
+            es: "Taller en tres sesiones de tres horas, en agosto de 2025: «De lo invisible a lo inolvidable: aprende a contar tu historia», «El poder de un cuento bien echado» y «Conecta y persuade: herramientas de vocería en medios». Lo dictaron Lina Echeverri Cañas, mentora en marketing y marca personal; Ricardo Corredor Cure, director del Centro de Estudios de Periodismo, y Andrés Ruiz Zuluaga, director de Comunicación Estratégica de la Universidad."
+        }
+    },
+    {
         period: '2024',
         title: { en: 'Innovative Teaching with ChatGPT', es: 'Enseñanza Innovadora con ChatGPT' },
         institution: { en: 'Vanderbilt University (via Coursera)', es: 'Vanderbilt University (vía Coursera)' },
