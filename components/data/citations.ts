@@ -5,13 +5,25 @@
  * - Citas, índice h e índice i10: el perfil público de Google Scholar del profesor,
  *   que es la fuente oficial (la suma de `citations` de products.json da otra cifra,
  *   porque Google Scholar cuenta registros que la lista no tiene).
- * - Publicaciones por año, cuartiles y primeros autores: el registro de la producción
+ * - Publicaciones por año y cuartiles: el registro de la producción
  *   del profesor, contado por año de publicación del volumen.
  */
 
 import type { Product } from '../../types';
 
 export const SCHOLAR_URL = 'https://scholar.google.com/citations?user=2vO8IrIAAAAJ&hl=en';
+
+/** Web of Science Core Collection: solo cuenta las citas de las revistas, los libros y los congresos de su
+ *  colección principal, y por eso sus cifras son menores que las de Google Scholar. Van en el texto, no como
+ *  cifra grande. Foto fija del panel de métricas del perfil. */
+export const webOfScience = {
+  asOf: '2026-10-19',
+  publications: 112,
+  citations: 1650,
+  citationsWithoutSelf: 1534,
+  hIndex: 23,
+  citingPatents: 13,
+};
 
 export const scholar = {
   /** Fecha de la foto del perfil (AAAA-MM-DD). */
@@ -67,12 +79,6 @@ export const publications = {
   q2: 21,
   /** Artículos desde julio de 2017, cuando el profesor llegó a la Universidad de los Andes. */
   articlesSince2017: 71,
-  /** Artículos con un estudiante que el profesor dirigió o codirigió como primer autor, y
-   *  con un estudiante a quien acompañó como mentor. */
-  studentFirstDirected: 46,
-  studentFirstMentored: 11,
-  /** Artículos que firma al menos un estudiante que el profesor dirigió. */
-  withDirectedStudent: 54,
   /** Ponencias en congresos desde 2017, y cuántas en el AIChE Annual Meeting. */
   talksSince2017: 42,
   talksAiche: 10,

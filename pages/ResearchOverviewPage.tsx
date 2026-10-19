@@ -10,7 +10,7 @@ import { graduatedStudentsData, studentsData } from '../components/data/students
 import { fotos } from '../components/data/fotos';
 import { BarrasPorAno, type Serie } from '../components/ProductsOverTimeChart';
 import { ResearchConnectionsGraph } from '../components/ResearchConnectionsGraph';
-import { scholar, publications, publicationsPerYear, SCHOLAR_URL, esPublicacion } from '../components/data/citations';
+import { scholar, publications, publicationsPerYear, SCHOLAR_URL, esPublicacion, webOfScience } from '../components/data/citations';
 import { useAppData } from '../context/AppDataContext';
 
 /** Coautores de cada unidad de la Universidad, por la afiliación con que firman. */
@@ -97,6 +97,12 @@ export const ResearchOverviewPage: React.FC = () => {
           <div className="mt-16 grid gap-x-16 gap-y-6 lg:grid-cols-2">
             <Sube><p className="a-texto">{t('rc.fig.p1')}</p></Sube>
             <Sube delay={0.06}><p className="a-texto">{t('rc.fig.p2')}</p></Sube>
+            <Sube delay={0.1} className="lg:col-span-2">
+              <p className="a-texto">{fill(t('rc.fig.wos'), {
+                date: fecha(webOfScience.asOf, lang), pubs: webOfScience.publications, cites: numero(webOfScience.citations),
+                noself: numero(webOfScience.citationsWithoutSelf), h: webOfScience.hIndex, patents: webOfScience.citingPatents,
+              })}</p>
+            </Sube>
           </div>
           <Sube className="mt-8">
             <a href={SCHOLAR_URL} target="_blank" rel="noopener noreferrer" className="a-enlace">
