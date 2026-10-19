@@ -222,7 +222,7 @@ export const committeesData: Committee[] = [
     {
         title: {
           en: 'Senior Researcher (IS), National System of Science, Technology and Innovation',
-          es: 'Investigador Senior (IS), Sistema Nacional de Ciencia, Tecnología e Innovación',
+          es: 'Investigador Sénior (IS), Sistema Nacional de Ciencia, Tecnología e Innovación',
         },
         role: { en: 'Minciencias Classification', es: 'Categoría Minciencias' },
         startYear: 2025,
@@ -231,7 +231,7 @@ export const committeesData: Committee[] = [
         description: [
             {
               en: "Senior Researcher is the highest category in the researcher classification of Colombia's Ministry of Science, Technology and Innovation (Minciencias). It is awarded through the National Call for the Recognition and Measurement of Research Groups and Researchers, and requires a sustained record of peer-reviewed production, doctoral supervision, and demonstrated scientific leadership.",
-              es: "Investigador Senior es la categoría más alta en la clasificación de investigadores del Ministerio de Ciencia, Tecnología e Innovación (Minciencias). Se otorga a través de la Convocatoria Nacional para el Reconocimiento y Medición de Grupos de Investigación e Investigadores, y exige una trayectoria sostenida de producción arbitrada, dirección de tesis doctorales y liderazgo científico demostrado.",
+              es: "Investigador Sénior es la categoría más alta en la clasificación de investigadores del Ministerio de Ciencia, Tecnología e Innovación (Minciencias). Se otorga a través de la Convocatoria Nacional para el Reconocimiento y Medición de Grupos de Investigación e Investigadores, y exige una trayectoria sostenida de producción arbitrada, dirección de tesis doctorales y liderazgo científico demostrado.",
             }
         ]
     },

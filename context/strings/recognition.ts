@@ -18,7 +18,7 @@ export const recognition = {
   'awards.tl.editor':        { en: 'Editor’s Choice, Pharmaceutics', es: 'Editor’s Choice, Pharmaceutics' },
   'awards.tl.anm':           { en: 'National Academy of Medicine award', es: 'Premio de la Academia Nacional de Medicina' },
   'awards.tl.faae':          { en: 'Honorable mention, Alejandro Ángel Escobar', es: 'Mención de honor, Alejandro Ángel Escobar' },
-  'awards.tl.senior':        { en: 'Senior Researcher, Minciencias', es: 'Investigador Senior, Minciencias' },
+  'awards.tl.senior':        { en: 'Senior Researcher, Minciencias', es: 'Investigador Sénior, Minciencias' },
   'awards.tl.academia':      { en: 'Academia Joven de Colombia', es: 'Academia Joven de Colombia' },
   'awards.tl.undergrad':     { en: 'Best undergraduate projects and Otto de Greiff selections', es: 'Mejores proyectos de grado y selecciones al Otto de Greiff' },
   'awards.tl.rebeca':        { en: 'Rebeca Uribe Bone award, Mishel Porras Ariza', es: 'Premio Rebeca Uribe Bone, Mishel Porras Ariza' },
@@ -35,11 +35,11 @@ export const recognition = {
   // Por la investigación: las dos distinciones de 2023 van juntas y con el mismo peso.
   'awards.research.title':   { en: 'For research',           es: 'Por la investigación' },
   'awards.research.intro':   { en: 'In 2023 the project on CRISPR/nCas9 genome editing for two rare diseases, GM2 gangliosidoses and mucopolysaccharidosis IVA, received two national distinctions. It is the project I led at Uniandes with Carlos Javier Alméciga and Angela Espejo, of the Pontificia Universidad Javeriana, and with Juan Carlos Cruz.', es: 'En 2023 el proyecto de edición genómica con CRISPR/nCas9 para dos enfermedades raras, las gangliosidosis GM2 y la mucopolisacaridosis IVA, recibió dos reconocimientos nacionales. Es el proyecto que dirigí por Uniandes con Carlos Javier Alméciga y Angela Espejo, de la Pontificia Universidad Javeriana, y con Juan Carlos Cruz.' },
-  'awards.national.title':   { en: 'One work, two national distinctions', es: 'Un trabajo, dos distinciones' },
+  'awards.national.title':   { en: 'One work, two national distinctions', es: 'Las dos distinciones de 2023' },
   'awards.national.coauthors': { en: 'Among the eleven authors of the work awarded by the Academy are Andrés Felipe Leal, the doctoral student I co-advised, and three of my master’s students: Carlos Emilio Torres Garay, Valentina Quezada Pérez and Saúl Camilo Gómez Tinoco.', es: 'Entre los once autores del trabajo premiado por la Academia están Andrés Felipe Leal, el doctorando que codirigí, y tres de mis estudiantes de maestría: Carlos Emilio Torres Garay, Valentina Quezada Pérez y Saúl Camilo Gómez Tinoco.' },
-  'awards.senior.title':     { en: 'Senior Researcher',      es: 'Investigador Senior' },
+  'awards.senior.title':     { en: 'Senior Researcher',      es: 'Investigador Sénior' },
   'awards.senior.awarder':   { en: 'Ministry of Science, Technology and Innovation (Minciencias)', es: 'Ministerio de Ciencia, Tecnología e Innovación (Minciencias)' },
-  'awards.senior.text':      { en: 'In 2025 Minciencias classified me as Senior Researcher, the highest category of its national classification of researchers. In 2020 I was an Associate Researcher.', es: 'En 2025 Minciencias me clasificó como Investigador Senior, la categoría más alta de su clasificación de investigadores. En 2020 era Investigador Asociado.' },
+  'awards.senior.text':      { en: 'In 2025 Minciencias classified me as Senior Researcher, the highest category of its national classification of researchers. In 2020 I was an Associate Researcher.', es: 'En 2025 Minciencias me clasificó como Investigador Sénior, la categoría más alta para investigadores. En 2020 era Investigador Asociado.' },
 
   // Pertenencia
   'awards.academia.title':   { en: 'The Academia Joven de Colombia', es: 'La Academia Joven de Colombia' },
@@ -48,7 +48,7 @@ export const recognition = {
 
   // Lo que les reconocieron a sus estudiantes
   'awards.students.title':   { en: 'What my students were recognized for', es: 'Lo que les reconocieron a mis estudiantes' },
-  'awards.students.lead':    { en: 'These recognitions belong to them. I directed or co-directed the work.', es: 'Estos reconocimientos son de ellos. Yo dirigí o codirigí el trabajo.' },
+  'awards.students.lead':    { en: 'These recognitions belong to them. I directed or co-directed the work.', es: 'Estos reconocimientos son de ellos; yo dirigí o codirigí sus trabajos.' },
 
   // Antes de Uniandes
   'awards.before.title':     { en: 'Before Uniandes',        es: 'Antes de Uniandes' },

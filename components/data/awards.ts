@@ -17,11 +17,11 @@ export const awardsData: Recognition[] = [
     summary: [
       {
         en: "The Education Division of the American Institute of Chemical Engineers named me the 2026 recipient of its Award for Innovation in Chemical Engineering Education. The award page lists it as «Integrating generative AI into chemical engineering education through project-based unit operations».",
-        es: "La División de Educación del American Institute of Chemical Engineers me designó como el galardonado 2026 de su Award for Innovation in Chemical Engineering Education. La página del premio lo registra como «Integrating generative AI into chemical engineering education through project-based unit operations» (la integración de la IA generativa en la educación en ingeniería química mediante operaciones unitarias basadas en proyectos)."
+        es: "La División de Educación del American Institute of Chemical Engineers me otorgó su Award for Innovation in Chemical Engineering Education de 2026. La página del premio lo registra como «Integrating generative AI into chemical engineering education through project-based unit operations» (la integración de la IA generativa en la educación en ingeniería química mediante operaciones unitarias basadas en proyectos)."
       },
       {
         en: "The recognized innovation is the redesign of Project of Unit Operations (POU) at Universidad de los Andes: a course where students carry a design problem through the whole semester, and where generative AI enters under explicit cognitive boundaries instead of as a shortcut. Refined over seven years and documented in peer-reviewed work, the model improved students' written communication and the rigor of their research with statistical significance, while technical performance held steady.",
-        es: "La innovación reconocida es el rediseño del curso Proyecto de Operaciones Unitarias (POU) en la Universidad de los Andes: un curso donde los estudiantes llevan un problema de diseño a lo largo de todo el semestre y donde la IA generativa entra bajo límites cognitivos explícitos, no como atajo. Afinado durante siete años y documentado en publicaciones arbitradas, el modelo mejoró con significancia estadística la comunicación escrita y el rigor investigativo de los estudiantes, mientras el desempeño técnico se mantuvo estable."
+        es: "La innovación reconocida es el rediseño del curso Proyecto de Operaciones Unitarias (POU) en la Universidad de los Andes: un curso en el que los estudiantes llevan un problema de diseño a lo largo de todo el semestre y usan la IA generativa con límites cognitivos explícitos. El modelo, que se afinó durante siete años y está documentado en publicaciones arbitradas, mejoró de manera estadísticamente significativa la comunicación escrita y el rigor investigativo de los estudiantes, y el desempeño técnico se mantuvo estable."
       },
       {
         en: "The distinction singles out one specific pedagogical innovation, created or implemented in a real course and judged by its documented impact on teaching effectiveness and student learning.",
@@ -80,15 +80,15 @@ export const awardsData: Recognition[] = [
     summary: [
       {
         en: "This study aims to strengthen the national biotechnology industry and advance gene therapy in Colombia by using precise genome editing techniques to correct genetic defects in patients with rare diseases.",
-        es: "Este estudio busca fortalecer la industria biotecnológica nacional y avanzar en la terapia génica en Colombia mediante técnicas precisas de edición genómica para corregir defectos genéticos en pacientes con enfermedades raras."
+        es: "El estudio busca fortalecer la industria biotecnológica nacional y la terapia génica en Colombia con técnicas precisas de edición genómica que corrijan defectos genéticos en pacientes con enfermedades raras."
       },
       {
         en: "The research evaluates the potential of CRISPR, a tool that can locate and repair specific sections of DNA, for treating these conditions. The work is a testament to Colombia's capacity for high-quality scientific innovation.",
-        es: "La investigación evalúa el potencial de CRISPR, una herramienta capaz de localizar y reparar secciones específicas del ADN, para tratar estas afecciones. El trabajo es testimonio de la capacidad de Colombia para la innovación científica de alta calidad."
+        es: "La investigación evalúa el potencial de CRISPR, una herramienta capaz de localizar y reparar secciones específicas del ADN, para tratar estas afecciones."
       },
       {
         en: "The result of five years of collaborative work, this project provides new hope and solutions for populations suffering from difficult-to-treat diseases, demonstrating that impactful scientific advances can be made locally.",
-        es: "Resultado de cinco años de trabajo colaborativo, este proyecto ofrece nueva esperanza y soluciones para las poblaciones que padecen enfermedades de difícil tratamiento, demostrando que es posible lograr avances científicos de impacto a nivel local."
+        es: "Es el resultado de cinco años de trabajo en colaboración y muestra que en Colombia se pueden lograr avances científicos de impacto en enfermedades de difícil tratamiento."
       }
     ],
     url: "https://anmdecolombia.org.co/resultados-premios-anm-a-la-investigacion-cientifica-en-salud-humana-2023/",
@@ -106,19 +106,19 @@ export const awardsData: Recognition[] = [
     summary: [
       {
         en: "This project addresses severe, rare genetic disorders like Tay-Sachs disease and Mucopolysaccharidosis IVA (MPS IVA), which currently have no effective treatments. These diseases are caused by single gene mutations, making gene therapy a promising avenue for a cure.",
-        es: "Este proyecto aborda trastornos genéticos raros y severos, como la enfermedad de Tay-Sachs y la mucopolisacaridosis IVA (MPS IVA), que actualmente no cuentan con tratamientos efectivos. Estas enfermedades son causadas por mutaciones en un solo gen, lo que convierte a la terapia génica en una vía prometedora hacia una cura."
+        es: "Este proyecto aborda trastornos genéticos raros y severos, como la enfermedad de Tay-Sachs y la mucopolisacaridosis IVA (MPS IVA), que actualmente no cuentan con tratamientos efectivos. Las causan mutaciones en un solo gen, y por eso la terapia génica es una vía prometedora hacia una cura."
       },
       {
         en: "The research developed and tested a novel, safer gene-editing strategy using CRISPR/nCas9. This system was delivered into patient cells and mouse models using innovative, non-viral vectors made from iron-oxide nanoparticles (IONPs), overcoming key safety and cost challenges associated with traditional viral vectors.",
-        es: "La investigación desarrolló y probó una estrategia de edición genética novedosa y más segura basada en CRISPR/nCas9. Este sistema se introdujo en células de pacientes y en modelos murinos mediante vectores no virales innovadores fabricados con nanopartículas de óxido de hierro (IONPs), superando retos clave de seguridad y costo asociados a los vectores virales tradicionales."
+        es: "La investigación desarrolló y probó una estrategia de edición genética novedosa y más segura basada en CRISPR/nCas9. Este sistema se introdujo en células de pacientes y en modelos murinos con vectores no virales de nanopartículas de óxido de hierro, que evitan los problemas de seguridad y de costo de los vectores virales tradicionales."
       },
       {
         en: "The therapy proved highly successful. In vitro, it corrected the genetic defect in patient cells, restoring enzyme function and reducing cellular stress. In vivo, treating newborn mice with MPS IVA led to significant therapeutic effects, increasing enzyme activity in key tissues (including bone) and reducing disease markers without observable toxicity.",
-        es: "La terapia resultó altamente exitosa. In vitro corrigió el defecto genético en células de pacientes, restaurando la función enzimática y reduciendo el estrés celular. In vivo, el tratamiento de ratones recién nacidos con MPS IVA produjo efectos terapéuticos significativos, aumentando la actividad enzimática en tejidos clave (incluido el hueso) y reduciendo los marcadores de la enfermedad sin toxicidad observable."
+        es: "In vitro corrigió el defecto genético en células de pacientes, restauró la función enzimática y redujo el estrés celular. In vivo, en ratones recién nacidos con MPS IVA, el tratamiento aumentó la actividad enzimática en tejidos clave, incluido el hueso, y redujo los marcadores de la enfermedad sin toxicidad observable."
       },
       {
         en: "The work received an Honorable Mention for its 'pertinence and clinical relevance,' as it provides new knowledge and demonstrates for the first time the potential of CRISPR/nCas9 as a therapeutic approach for these devastating diseases, laying the foundation for future advances in gene therapy.",
-        es: "El trabajo recibió una mención honorífica por su «pertinencia y relevancia clínica», ya que aporta nuevo conocimiento y demuestra por primera vez el potencial de CRISPR/nCas9 como enfoque terapéutico para estas enfermedades devastadoras, sentando las bases para futuros avances en terapia génica."
+        es: "El trabajo recibió una mención honorífica por su «pertinencia y relevancia clínica», porque aporta conocimiento nuevo y muestra por primera vez el potencial de CRISPR/nCas9 como terapia para estas enfermedades."
       }
     ],
     url: "https://www.faae.org.co/premios-nacionales/ciencias-2023-crispr-ncas9-based-genome-editing-for-gm2-gangliosidoses-and-mucopolysaccharidoses-iva-using-non-viral-vectors/",
@@ -138,8 +138,8 @@ export const awardsData: Recognition[] = [
     ],
     summary: [
       {
-        en: "In 2021 the journal Pharmaceutics chose as an Editor's Choice article the review on delivery systems for nucleic acids and proteins that I wrote with Julián D. Torres-Vanegas, then my doctoral student, and Juan Carlos Cruz, among some 3,600 articles published in 2020 and 2021.",
-        es: "En 2021 la revista Pharmaceutics eligió como Editor's Choice la revisión sobre sistemas de entrega de ácidos nucleicos y proteínas que escribí con Julián D. Torres-Vanegas, entonces mi doctorando, y Juan Carlos Cruz, entre unos 3.600 artículos publicados en 2020 y 2021."
+        en: "In 2021 the journal Pharmaceutics chose as an Editor's Choice article the review on delivery systems for nucleic acids and proteins that I wrote with Julian Daniel Torres Vanegas, then my doctoral student, and Juan Carlos Cruz, among some 3,600 articles published in 2020 and 2021.",
+        es: "En 2021 la revista Pharmaceutics eligió como Editor's Choice la revisión sobre sistemas de entrega de ácidos nucleicos y proteínas que escribí con Julian Daniel Torres Vanegas, entonces mi doctorando, y Juan Carlos Cruz, entre unos 3.600 artículos publicados en 2020 y 2021."
       }
     ],
     url: "https://doi.org/10.3390/pharmaceutics13030428",
@@ -180,7 +180,7 @@ export const awardsData: Recognition[] = [
     summary: [
       {
         en: "The National Renewable Energy Laboratory awards its Director's Fellowship to attract exceptionally qualified early-career scientists and engineers with outstanding credentials in renewable energy research. In 2013 it went to three Ph.D. graduates in the United States, for a postdoctoral appointment at NREL in Golden, Colorado, the largest research center in the country devoted to renewable energy.",
-        es: "El National Renewable Energy Laboratory otorga su Director's Fellowship para atraer a científicos e ingenieros jóvenes excepcionalmente calificados, con credenciales sobresalientes en investigación en energías renovables. En 2013 la recibieron tres doctores en Estados Unidos, para una estancia posdoctoral en el NREL, en Golden (Colorado), el mayor centro de investigación de ese país dedicado a las energías renovables."
+        es: "El National Renewable Energy Laboratory otorga su Director's Fellowship para atraer a científicos e ingenieros jóvenes con una trayectoria sobresaliente en investigación en energías renovables. En 2013 la recibieron tres doctores en Estados Unidos, para una estancia posdoctoral en el NREL, en Golden (Colorado), el mayor centro de investigación de ese país dedicado a las energías renovables."
       },
       {
         en: "I did the stay in 2014 in the Biosciences group, under Dr. Katherine J. Chou, on the new generation of consolidated bioprocesses: the ability of an engineered microorganism to convert biomass into hydrogen, and its improvement through adaptive laboratory evolution.",
