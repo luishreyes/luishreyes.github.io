@@ -5,7 +5,7 @@ export const principles = {
   'purpose.teaching.h2':     { en: 'My teaching purpose',    es: 'Mi propósito docente' },
 
   // Research Purpose
-  'purpose.research.title':  { en: 'Engineering biology, forming people', es: 'Ingeniar la biología, formar personas' },
+  'purpose.research.title':  { en: 'Engineering biology, forming people', es: 'Ingeniería biológica, formación de personas' },
   'purpose.research.sub':    { en: 'Research lives in the overlap of two commitments: engineering biological systems to solve real problems in medicine, sustainability, and human experience, and forming the people who will solve the next ones.', es: 'La investigación vive en la intersección de dos compromisos: la ingeniería de sistemas biológicos para resolver problemas reales en medicina, sostenibilidad y experiencia humana, y la formación de las personas que resolverán los próximos.' },
   'purpose.research.h2':     { en: 'My research purpose',    es: 'Mi propósito investigador' },
 
