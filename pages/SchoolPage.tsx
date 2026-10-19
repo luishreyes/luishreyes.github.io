@@ -9,7 +9,8 @@ import { studentsData, graduatedStudentsData } from '../components/data/students
 import { undergraduateSummary, UNDERGRADUATE_RECORD_SINCE } from '../components/data/students/undergraduate';
 import { testimonials, type Testimonial } from '../components/data/teaching';
 import { graduateByName } from '../components/data/metrics';
-import { useI18n, localize, fill, type UIKey, type Lang } from '../context/i18n';
+import { schoolFigures as F } from '../components/data/students/school';
+import { useI18n, localize, fill, cardinal, type UIKey, type Lang } from '../context/i18n';
 
 /** Escuela: la investigación como una forma de hacer docencia. Un caso primero (Carlos), los de
  *  pregrado que siguieron, el curso de cerveza que se volvió escuela, dónde están los egresados,
@@ -63,24 +64,22 @@ const Barras: React.FC<{ titulo: string; pie: string; filas: { nombre: string; n
   );
 };
 
-// Agregados de los egresados de maestría y doctorado según su cargo de hoy, y de las empresas que
-// tienen a tres o más de mis estudiantes (de pregrado y de posgrado). Sin nombres de pregrado.
-const DESTINOS: { clave: UIKey; n: number }[] = [
-  { clave: 'school.dest.industry', n: 23 },
-  { clave: 'school.dest.public', n: 1 },
-  { clave: 'school.dest.academia', n: 9 },
-  { clave: 'school.dest.phd', n: 2 },
-  { clave: 'school.dest.own', n: 3 },
-  { clave: 'school.dest.school', n: 1 },
-];
-const EMPRESAS: [string, number][] = [['Universidad de los Andes', 7], ['MSD', 4], ['Zimmer Biomet', 4], ['Quala', 4], ['Sanofi', 3]];
-// Personas que codirigí con cada colega, según el registro académico (2018-10 a 2026-10).
-const COLEGAS: [string, number][] = [
-  ['Juan Carlos Cruz', 45], ['Diego Pradilla', 10], ['Andrés Fernando González', 9], ['Óscar Álvarez', 8],
-  ['Nicolás Ríos Ratkovich', 6], ['María Hernández Carrión', 5], ['Jorge Mario Gómez', 5], ['Miguel Ángel Fernández Niño', 3],
-];
+// Agregados de los egresados de maestría y doctorado según su cargo de hoy, de las empresas que tienen a
+// tres o más de mis estudiantes (de pregrado y de posgrado) y de las codirecciones por colega. Todo sale de
+// components/data/students/school.ts, que se genera aparte: ninguna cifra de esta página se escribe a mano.
+const DESTINOS = F.graduates.destinations.map(([k, n]) => ({ clave: `school.dest.${k}` as UIKey, n: n as number }));
+const EMPRESAS = F.firms as [string, number][];
+const COLEGAS = (F.colleaguesList as [string, number][]).filter(([, n]) => n > 1);
+const COLEGAS_UNO = (F.colleaguesList as [string, number][]).filter(([, n]) => n === 1).map(([nombre]) => nombre);
 
-// Los cuatro doctores, en el orden en que los cuenta el capítulo.
+/** Cifra en palabras (cardinal, de 2 a 10) con mayúscula inicial si abre la frase. */
+const palabra = (n: number, lang: Lang, may = false) => {
+  const w = cardinal(n, lang);
+  return may ? w[0].toUpperCase() + w.slice(1) : w;
+};
+const obrasDe = (nombre: string) => (F.works as Record<string, { total: number; first: number; byYear: Record<string, number> }>)[nombre];
+
+// Los doctores, en el orden en que los cuenta el capítulo.
 const DOCTORES: { nombre: string; texto: UIKey }[] = [
   { nombre: 'Julian Daniel Torres Vanegas', texto: 'school.phd.torres' },
   { nombre: 'Brayan Rodríguez', texto: 'school.phd.brayan' },
@@ -109,8 +108,8 @@ export const SchoolPage: React.FC = () => {
   const { t, lang } = useI18n();
   const irA = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
 
-  const egresados = graduatedStudentsData.phd.length + graduatedStudentsData.ms.length;
-  const conocidos = DESTINOS.reduce((s, d) => s + d.n, 0);
+  const egresados = F.graduates.total;
+  const conocidos = F.graduates.known;
   const destinos = [
     ...DESTINOS.map((d) => ({ nombre: t(d.clave), n: d.n })),
     { nombre: t('school.dest.none'), n: egresados - conocidos, suave: true },
@@ -124,7 +123,10 @@ export const SchoolPage: React.FC = () => {
       const ia = ORDEN_VOCES.indexOf(a.name), ib = ORDEN_VOCES.indexOf(b.name);
       return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
     });
-  const doctorado = graduatedStudentsData.phd.length + studentsData.phd.length;
+  const doctorado = F.doctorate;
+  const carlosObras = obrasDe('Carlos Manuel Ramírez Acosta');
+  const cristianObras = obrasDe('Cristian F. Rodríguez');
+  const pd = (n: number) => palabra(n, lang);
 
   return (
     <PageWrapper noPadding>
@@ -133,7 +135,7 @@ export const SchoolPage: React.FC = () => {
         entrada={
           <>
             <p>{t('school.lead')}</p>
-            <p className="mt-6 text-[length:var(--t-m)] font-normal leading-[1.55] text-tinta-800 [text-wrap:pretty]">{t('school.intro')}</p>
+            <p className="mt-6 text-[length:var(--t-m)] font-normal leading-[1.55] text-tinta-800 [text-wrap:pretty]">{fill(t('school.intro'), { people: F.people })}</p>
           </>
         }
         foto={{ src: fotos.portadaEscuela.src, alt: localize(fotos.portadaEscuela.alt, lang), posicion: fotos.portadaEscuela.foco }}
@@ -153,7 +155,7 @@ export const SchoolPage: React.FC = () => {
                 <Link to="/teaching/testimonials" className="a-enlace a-s">{t('school.case.pandas')} <span aria-hidden="true">→</span></Link>
               </Sube>
               <Sube className="mt-6"><p className="a-texto">{t('school.case.p2')}</p></Sube>
-              <Sube className="mt-4"><p className="a-texto"><Rico texto={t('school.case.p3')} /></p></Sube>
+              <Sube className="mt-4"><p className="a-texto"><Rico texto={fill(t('school.case.p3'), { during: pd(carlosObras.byYear['2020'] ?? 0), first: pd(carlosObras.first), total: pd(carlosObras.total) })} /></p></Sube>
             </div>
             <Sube delay={0.08} className="lg:sticky lg:top-24">
               <Figura src={fotos.gradoCarlos.src} alt={localize(fotos.gradoCarlos.alt, lang)} pie={`${localize(fotos.gradoCarlos.alt, lang)}.`} posicion="center 40%" />
@@ -183,7 +185,7 @@ export const SchoolPage: React.FC = () => {
                 <Sube as="li" key={titulo} delay={0.05 * i} className="py-8 border-b-2 border-papel-300">
                   <h3 className="a-h3">{t(titulo)}.</h3>
                   <p className="a-texto mt-4">
-                    <Rico texto={fill(t(texto), { n: 13, total: undergraduateSummary.total })} />
+                    <Rico texto={fill(t(texto), { n: F.coauthors, total: undergraduateSummary.total, grad: pd(undergraduateSummary.destinos.find(([k]) => k === 'posgrado')?.[1] ?? 0) })} />
                   </p>
                 </Sube>
               ))}
@@ -256,7 +258,7 @@ export const SchoolPage: React.FC = () => {
           <div className="mt-12 grid gap-x-14 gap-y-4 lg:grid-cols-2">
             <Sube><p className="a-texto">{fill(t('school.ms.p1'), { total: egresados, known: conocidos })}</p></Sube>
             <Sube delay={0.06}>
-              <p className="a-texto">{t('school.ms.p2')}</p>
+              <p className="a-texto">{fill(t('school.ms.p2'), { total: cristianObras.total, first: cristianObras.first })}</p>
               <p className="a-texto">{t('school.ms.p3')}</p>
             </Sube>
           </div>
@@ -265,7 +267,7 @@ export const SchoolPage: React.FC = () => {
               <Barras titulo={t('school.ms.dest.title')} pie={fill(t('school.ms.dest.caption'), { total: egresados, known: conocidos })} filas={destinos} />
             </Sube>
             <Sube delay={0.06}>
-              <Barras titulo={t('school.ms.firms.title')} pie={t('school.ms.firms.caption')} filas={EMPRESAS.map(([nombre, n]) => ({ nombre, n }))} />
+              <Barras titulo={t('school.ms.firms.title')} pie={fill(t('school.ms.firms.caption'), { n: pd(F.firmsWithTwo), N: palabra(F.firmsWithTwo, lang, true) })} filas={EMPRESAS.map(([nombre, n]) => ({ nombre, n }))} />
             </Sube>
           </div>
           <div className="mt-16 grid gap-6 md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
@@ -282,7 +284,7 @@ export const SchoolPage: React.FC = () => {
       <section className="a-hundido a-campo">
         <div className="a-c">
           <Sube><Cabecera titulo={t('school.phd.title')} /></Sube>
-          <Sube className="mt-10"><p className="a-entrada max-w-[52ch]">{t('school.phd.lead')}</p></Sube>
+          <Sube className="mt-10"><p className="a-entrada max-w-[52ch]">{fill(t('school.phd.lead'), { n: pd(doctores.length) })}</p></Sube>
           <ul className="mt-12 border-t-2 border-tinta-900">
             {doctores.map(({ nombre, texto, s }, i) => (
               <Sube
@@ -296,12 +298,12 @@ export const SchoolPage: React.FC = () => {
                   <h3 className="a-h3">{nombre}.</h3>
                   <p className="a-meta mt-3">{localize(s!.program, lang)} · {s!.graduationYear}</p>
                 </div>
-                <p className="a-texto col-span-2 lg:col-span-1"><Rico texto={t(texto)} /></p>
+                <p className="a-texto col-span-2 lg:col-span-1"><Rico texto={fill(t(texto), { total: pd(obrasDe(nombre).total), first: pd(obrasDe(nombre).first) })} /></p>
               </Sube>
             ))}
           </ul>
           <Sube className="mt-14">
-            <p className="a-texto font-medium text-tinta-900">{t('school.phd.close')}</p>
+            <p className="a-texto font-medium text-tinta-900">{fill(t('school.phd.close'), { n: pd(doctores.length) })}</p>
             <Link to="/teaching/philosophy" className="a-enlace mt-4 inline-block">{t('school.phd.philosophy')} <span aria-hidden="true">→</span></Link>
           </Sube>
           <div className="mt-14 grid gap-6 md:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
@@ -311,7 +313,7 @@ export const SchoolPage: React.FC = () => {
 
           <div className="mt-20 grid gap-12 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start">
             <div>
-              <Sube><h3 className="a-h3">{t('school.phd.current')}.</h3></Sube>
+              <Sube><h3 className="a-h3">{fill(t('school.phd.current'), { N: palabra(studentsData.phd.length, lang, true) })}.</h3></Sube>
               <ul className="mt-6 border-t-2 border-tinta-900">
                 {studentsData.phd.map((s, i) => (
                   <Sube as="li" key={s.name} delay={0.04 * i} className="py-6 border-b-2 border-papel-300">
@@ -369,27 +371,30 @@ export const SchoolPage: React.FC = () => {
           <Sube><Cabecera titulo={t('school.n.title')} /></Sube>
           <Sube className="mt-14">
             <div className="a-cifras">
-              <div><b>174</b><span>{t('school.n.people')}</span></div>
+              <div><b>{F.people}</b><span>{t('school.n.people')}</span></div>
               <div><b>{undergraduateSummary.total}</b><span>{t('school.n.ug')}</span></div>
-              <div><b>39</b><span>{t('school.n.ms')}</span></div>
+              <div><b>{F.masters}</b><span>{t('school.n.ms')}</span></div>
               <div><b>{doctorado}</b><span>{t('school.n.phd')}</span></div>
-              <div><b>13</b><span>{t('school.n.coauthors')}</span></div>
-              <div><b>33</b><span>{t('school.n.talks')}</span></div>
-              <div><b>61</b><span>{t('school.n.juries')}</span></div>
+              <div><b>{F.coauthors}</b><span>{t('school.n.coauthors')}</span></div>
+              <div><b>{F.talks.withStudent}</b><span>{fill(t('school.n.talks'), { since2017: F.talks.since2017 })}</span></div>
+              <div><b>{F.juries.total}</b><span>{fill(t('school.n.juries'), { dept: F.juries.dept, bio: F.juries.bio })}</span></div>
+              <div><b>{F.current.phd + F.current.ms}</b><span>{fill(t('school.n.current'), { phd: F.current.phd, ms: F.current.ms })}</span></div>
             </div>
           </Sube>
           <div className="mt-16 grid gap-x-14 gap-y-4 lg:grid-cols-2">
             <Sube>
-              <p className="a-texto">{t('school.n.p1')}</p>
-              <p className="a-texto">{t('school.n.p2')}</p>
-              <p className="a-texto">{t('school.n.p3')}</p>
+              <p className="a-texto">{fill(t('school.n.p1'), { Both: palabra(F.bothLevels, lang, true), people: F.people, phd: pd(F.current.phd), ms: pd(F.current.ms) })}</p>
+              <p className="a-texto">{fill(t('school.n.p2'), { total: F.undergrad, known: F.ug.known, abroad: F.ug.abroad, ...Object.fromEntries(F.ug.destinations.map(([k, n]) => [({ industria: 'industry', posgrado: 'grad', academia: 'academia', emprendimiento: 'own', sinDato: 'none' } as Record<string, string>)[k as string], n])) })}</p>
+              <p className="a-texto">{fill(t('school.n.p3'), F.talks)}</p>
             </Sube>
-            <Sube delay={0.06}><p className="a-texto">{t('school.n.p4')}</p></Sube>
+            <Sube delay={0.06}><p className="a-texto">{fill(t('school.n.p4'), { coAdvised: F.coAdvised, record: F.record, colleagues: F.colleagues, cruz: F.withCruz })}</p></Sube>
           </div>
           <div className="mt-16 grid gap-16 lg:grid-cols-2 lg:items-start">
             <Sube>
               <Barras titulo={t('school.n.colleagues')} pie={t('school.n.colleagues.caption')} filas={COLEGAS.map(([nombre, n]) => ({ nombre, n }))} />
-              <p className="a-s mt-4 text-tinta-800">{t('school.n.others')}: {t('school.n.othersEach')}.</p>
+              {COLEGAS_UNO.length > 0 && (
+                <p className="a-s mt-4 text-tinta-800">{COLEGAS_UNO.join(', ').replace(/, ([^,]*)$/, lang === 'es' ? ' y $1' : ' and $1')}: {t('school.n.othersEach')}.</p>
+              )}
             </Sube>
             <div>
               <Sube><h3 className="a-h3">{t('school.table.title')}.</h3></Sube>
@@ -408,7 +413,7 @@ export const SchoolPage: React.FC = () => {
       <section id="pregrado" className="a-papel a-campo scroll-mt-16">
         <div className="a-c">
           <Sube><Cabecera titulo={t('school.ug.title')} /></Sube>
-          <Sube className="mt-10"><p className="a-texto">{fill(t('school.ug.intro'), { since: UNDERGRADUATE_RECORD_SINCE })}</p></Sube>
+          <Sube className="mt-10"><p className="a-texto">{fill(t('school.ug.intro'), { since: UNDERGRADUATE_RECORD_SINCE, total: F.undergrad })}</p></Sube>
           {/* Sin nombres: cuántos, en qué proyectos y dónde están hoy (decisión del profesor). */}
           <div className="mt-14 grid gap-14 lg:grid-cols-2">
             <Sube>

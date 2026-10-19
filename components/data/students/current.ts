@@ -14,5 +14,6 @@ export const studentsData: {
         { name: 'Brayan Stick Chacón Fontecha', degree: 'M.S.', info: { en: 'Extracting bioactive compounds from native fauna with potential biomedical applications.', es: 'Extrae compuestos bioactivos de fauna nativa con potenciales aplicaciones biomédicas.' } },
         { name: 'Andrés Felipe Becerra Zárrate', degree: 'M.S.', info: { en: 'M.S. in Chemical Engineering, co-advised with Juan Carlos Cruz. He previously earned his M.S. in Product and Process Design with me (see Alumni).', es: 'Maestría en Ingeniería Química, codirigido con Juan Carlos Cruz. Antes se graduó conmigo de la Maestría en Diseño de Productos y Procesos (ver Egresados).' } },
         { name: 'Paula Andrea Villamarín Manrique', degree: 'M.S.', info: { en: 'M.S. in Biomedical Engineering, co-advised. As an undergraduate she worked with me on the scale-down of iron oxide nanoparticle production.', es: 'Maestría en Ingeniería Biomédica, en codirección. En el pregrado trabajó conmigo en el escalamiento descendente de la producción de nanopartículas de óxido de hierro.' } },
+        { name: 'Sara Juliana Cuadrado Sierra', degree: 'M.S.', info: { en: 'Master’s in Technological Innovation Management; the project is still to be defined.', es: 'Maestría en Gestión de la Innovación Tecnológica; el proyecto está por definir.' } },
     ]
 };
