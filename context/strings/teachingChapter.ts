@@ -217,6 +217,7 @@ export const teachingChapter = {
   'tch.sim.explorador-torre-de-platos':   { en: 'Tray tower in 3D', es: 'Torre de platos en 3D' },
   'tch.sim.explorador-graficos':          { en: 'Chart explorer', es: 'Explorador de gráficos' },
   'tch.sim.explorador-destilacion-lotes': { en: 'Batch distillation explorer', es: 'Explorador de destilación por lotes' },
+  'tch.sim.explorador-ecofiltro':        { en: 'Ecofilter (biotrickling filter) explorer', es: 'Explorador del ecofiltro' },
 
   // ── Operaciones Unitarias (/teaching/unit-ops) ───────────────────
   'tch.uo.title':       { en: 'Unit Operations', es: 'Operaciones Unitarias' },

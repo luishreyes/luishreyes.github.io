@@ -1198,6 +1198,17 @@ export const pou202620Course: Course = {
       tags: ['comunicación visual', 'elección de gráfico', 'tarea visual', 'Cleveland-McGill', 'canónicos', 'canónicos en vivo', 'razón de tinta', 'factor de mentira', 'ética de la figura', 'catálogo'],
     },
     {
+      id: 'explorador-ecofiltro',
+      week: 16,
+      title: 'Explorador del ecofiltro',
+      description:
+        'Un caso de frontera: el biopercolador de la Central Hidroeléctrica El Paraíso, que retira el sulfuro de hidrógeno (H₂S) del gas del tanque de aquietamiento. Véalo en isométrico, como un equipo de planta: la torre de 3 m de diámetro abierta por su eje, con la entrada de gas, la rejilla, los 6 m de empaque estructurado en capas, los aspersores y el eliminador de niebla; a un lado el demister y los dos ventiladores (al de servicio se le ve el rotor) y al otro el tanque de recirculación con su bomba sumergible, el rotámetro y la válvula de la reposición. El H₂S sube por el lecho y se va quedando en la película de líquido según el perfil que calcula el modelo de la tesis de maestría de Jesús Rafael Acevedo Mastrogiacomo (balances de Diks y Ottengraf, cinética de Monod integrada en la biopelícula y transferencia de Bravo, Rocha y Fair), que reproduce los datos de operación de la planta. Mueva la carga, el variador del ventilador, la altura del lecho, el riego, la fracción que moja el aspersor y la actividad de la biopelícula. Incluye la curva del ventilador contra la del sistema, la salida contra el caudal, el techo que pone la transferencia de masa, el balance de azufre con el sulfato y el pH de la purga frente a lo que mide el laboratorio, lo que haría falta para llegar a 20 ppm y nueve configuraciones, entre ellas la promesa de diseño y los fallos que encontró el diagnóstico.',
+      sessionNumber: 31,
+      file: 'Explorador_Ecofiltro.html',
+      bannerImg: '/classroom/iqya-2031-2026-20/simuladores-banners/explorador-ecofiltro.jpg',
+      tags: ['biopercolador', 'H₂S', 'transferencia de masa', 'biopelícula', 'ventiladores', 'curva del sistema', 'balance de azufre', 'diagnóstico', 'caso de frontera', 'isométrico'],
+    },
+    {
       id: 'explorador-destilacion-lotes',
       week: 14,
       title: 'Explorador de destilación por lotes',
