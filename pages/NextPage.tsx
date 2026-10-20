@@ -18,7 +18,7 @@ const PASOS: { cuando: UIKey; titulo: UIKey; texto: UIKey; clave?: boolean }[] =
 ];
 
 const SIMULADORES = [
-  { src: '/classroom/iqya-2031-2026-20/simuladores-banners/explorador-filtracion.jpg', nombre: 'tch.sim.explorador-filtracion' as UIKey },
+  { src: '/classroom/iqya-2031-2026-20/simuladores-banners/explorador-ecofiltro.jpg', nombre: 'tch.sim.explorador-ecofiltro' as UIKey },
   { src: '/classroom/iqya-2031-2026-20/simuladores-banners/explorador-bombas-centrifugas.jpg', nombre: 'tch.sim.explorador-bombas-centrifugas' as UIKey },
 ];
 
@@ -35,9 +35,9 @@ const CICLO: { titulo: UIKey; texto: UIKey }[] = [
 ];
 
 const ESTADO: { titulo: UIKey; items: UIKey[] }[] = [
-  { titulo: 'next.status.running', items: ['next.st.research', 'next.st.novus'] },
+  { titulo: 'next.status.running', items: ['next.st.research', 'next.st.novus', 'next.st.simulator'] },
   { titulo: 'next.status.proposed', items: ['next.st.casf', 'next.st.help'] },
-  { titulo: 'next.status.tobuild', items: ['next.st.simulator', 'next.st.ia', 'next.st.seedbed', 'next.st.sites'] },
+  { titulo: 'next.status.tobuild', items: ['next.st.diagnosis', 'next.st.ia', 'next.st.seedbed', 'next.st.sites'] },
 ];
 
 const COMPROMISOS: UIKey[] = ['next.promise.1', 'next.promise.2', 'next.promise.3'];
