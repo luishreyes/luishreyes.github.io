@@ -8,210 +8,25 @@
 <link rel="stylesheet" href="/classroom-fonts.css">
 <link rel="stylesheet" href="/classroom/vendor/katex/katex.min.css">
 <script defer src="/classroom/vendor/katex/katex.min.js"></script>
+<link rel="stylesheet" href="/classroom/simulador.css">
 <style>
-:root {
-  --accent: #5980A6; --accent-50: #F6F9FC; --accent-100: #EFF4F9; --accent-200: #D3E0EC; --accent-300: #A9C3D8; --accent-600: #416180; --accent-700: #2C455D;
-  --text: #1c1b1a; --bg: #fff; --divider: #1c1b1a;
-  --n50: #faf9f8; --n100: #f4f2f0; --n200: #e9e6e3; --n300: #d8d5d2; --n400: #b3afab; --n500: #8a8683; --n600: #6b6764; --n700: #4f4b48; --n800: #35322f;
-  --redline: #C8452B; --ok: #2F7D5B; --warn: #B7791F;
-  --font-body: 'Manrope Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-mono: 'JetBrains Mono Variable', ui-monospace, Menlo, Consolas, monospace;
-  --ink: #1c1b1a; --paper: #fff; --grid: rgba(89,128,166,.09); --muted-ink: #6b6764; --hl: #5980A6;
-  --top-h: 128px; --ctl-w: 330px;
-}
-:root[data-canvas="blueprint"] { --ink: #e6eef7; --paper: #12304d; --grid: rgba(255,255,255,.06); --muted-ink: #9fb6cc; --hl: #FFBF00; }
-* { box-sizing: border-box; }
-html, body { margin: 0; }
-body { background: var(--bg); color: var(--text); font-family: var(--font-body); -webkit-font-smoothing: antialiased; font-size: 15px; line-height: 1.5; }
-button { font-family: inherit; }
-:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.mono { font-family: var(--font-mono); }
-.kick { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--accent); font-weight: 600; }
-.lbl { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--n600); font-weight: 700; }
-.small { font-size: 12.5px; color: var(--n600); line-height: 1.5; }
-
-/* ---------- cabecera fija con indicadores ---------- */
-.top { position: sticky; top: 0; z-index: 40; background: #fff; border-bottom: 2px solid var(--divider); }
-.top-row { display: flex; align-items: center; gap: 18px; padding: 12px 22px 10px; }
-.top-row h1 { font-size: 21px; font-weight: 780; letter-spacing: -.02em; margin: 2px 0 0; line-height: 1.1; }
-.top-row .sp { flex: 1; }
-.ctx { font-size: 12.5px; color: var(--n600); }
-.ctx b { color: var(--text); }
-.status { border: 2px solid var(--text); padding: 6px 12px; font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; font-weight: 700; background: #fff; cursor: pointer; display: inline-flex; gap: 8px; align-items: center; color: var(--text); }
-.status i { width: 9px; height: 9px; border-radius: 50%; background: var(--ok); }
-.status.adv i { background: var(--warn); } .status.inv i { background: var(--redline); }
-.status.inv { border-color: var(--redline); color: var(--redline); }
-.kpis { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); border-top: 1px solid var(--n300); }
-.kpi { padding: 7px 14px 8px; border-right: 1px solid var(--n300); min-width: 0; }
-.kpi:last-child { border-right: none; }
-.kpi .v { font-family: var(--font-mono); font-size: 19px; font-weight: 750; font-variant-numeric: tabular-nums; white-space: nowrap; transition: color .2s; }
-.kpi .v small { font-size: 11px; font-weight: 600; color: var(--n600); margin-left: 3px; }
-.kpi .u { font-size: 11px; color: var(--n600); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.kpi.bad .v { color: var(--redline); }
-.kpi .v.flash { animation: kf .6s ease; }
-@keyframes kf { 0% { color: var(--accent); } 100% { } }
-
-/* ---------- estructura ---------- */
-.shell { display: grid; grid-template-columns: var(--ctl-w) minmax(0, 1fr); }
-.ctl { position: sticky; top: var(--top-h); height: calc(100vh - var(--top-h)); overflow-y: auto; border-right: 2px solid var(--divider); background: var(--n50); padding: 4px 0 30px; overscroll-behavior: contain; }
-.ctl section { padding: 14px 20px 16px; border-bottom: 1px solid var(--n300); }
-.ctl h2 { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; color: var(--n700); margin: 0 0 10px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
-.ctl h2 .n { color: var(--accent); }
-.opts { display: grid; gap: 6px; }
-.opt { display: grid; grid-template-columns: 14px 1fr auto; gap: 10px; align-items: center; text-align: left; border: 1.5px solid var(--n300); background: #fff; padding: 8px 10px; cursor: pointer; font-size: 13.5px; font-weight: 650; color: var(--text); transition: border-color .12s, background .12s; }
-.opt:hover { border-color: var(--text); }
-.opt[aria-pressed="true"] { border-color: var(--accent); background: var(--accent); color: #fff; }
-.opt .dotc { width: 12px; height: 12px; border-radius: 50%; border: 1px solid rgba(0,0,0,.3); }
-.opt .x { font-family: var(--font-mono); font-size: 11px; font-weight: 600; opacity: .75; }
-.mills { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-.mill { border: 1.5px solid var(--n300); background: #fff; padding: 8px 6px 7px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12px; font-weight: 700; color: var(--text); transition: border-color .12s, background .12s; }
-.mill svg { width: 44px; height: 30px; }
-.mill:hover { border-color: var(--text); }
-.mill[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-100); box-shadow: inset 0 -3px 0 var(--accent); color: var(--accent-700); }
-.mill:last-child:nth-child(odd) { grid-column: 1 / -1; flex-direction: row; justify-content: center; gap: 10px; }
-.seg { display: flex; border: 2px solid var(--text); background: #fff; }
-.seg button { flex: 1; border: none; border-right: 1px solid var(--text); background: #fff; padding: 7px 8px; font-size: 12.5px; font-weight: 650; cursor: pointer; color: var(--text); }
-.seg button:last-child { border-right: none; }
-.seg button[aria-pressed="true"] { background: var(--accent); color: #fff; }
-.seg.inline { display: inline-flex; }
-.sl { margin-top: 12px; }
-.sl .row { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
-.sl .row span:first-child { font-size: 12.5px; font-weight: 650; color: var(--n800); }
-.sl .row b { font-family: var(--font-mono); font-size: 13.5px; font-weight: 750; }
-.sl .hint { font-size: 11.5px; color: var(--n600); margin-top: 2px; }
-.sl .hint.bad { color: var(--redline); font-weight: 650; }
-input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 22px; background: transparent; cursor: pointer; margin: 2px 0 0; }
-input[type=range]::-webkit-slider-runnable-track { height: 2px; background: var(--n400); }
-input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 18px; background: var(--accent); margin-top: -8px; border: none; }
-input[type=range]::-moz-range-track { height: 2px; background: var(--n400); }
-input[type=range]::-moz-range-thumb { width: 12px; height: 18px; background: var(--accent); border: none; border-radius: 0; }
-.toggle { display: flex; align-items: center; gap: 9px; font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 10px; }
-.toggle input { appearance: none; width: 30px; height: 17px; border: 1.5px solid var(--text); position: relative; background: #fff; cursor: pointer; margin: 0; flex: none; }
-.toggle input::after { content: ''; position: absolute; top: 2px; left: 2px; width: 10px; height: 10px; background: var(--text); transition: transform .15s; }
-.toggle input:checked { background: var(--accent); border-color: var(--accent); }
-.toggle input:checked::after { transform: translateX(13px); background: #fff; }
-select.sel { width: 100%; border: 1.5px solid var(--text); padding: 7px 8px; font: inherit; font-size: 13px; background: #fff; margin-top: 6px; }
-
-main { min-width: 0; }
-.tabs { position: sticky; top: var(--top-h); z-index: 30; display: flex; background: #fff; border-bottom: 2px solid var(--divider); overflow-x: auto; scrollbar-width: none; }
-.tabs button { border: none; background: #fff; padding: 12px 18px 11px; font-size: 14px; font-weight: 700; cursor: pointer; color: var(--n600); border-right: 1px solid var(--n300); white-space: nowrap; display: flex; align-items: baseline; gap: 8px; position: relative; }
-.tabs button .k { font-family: var(--font-mono); font-size: 10.5px; color: var(--n400); }
-.tabs button:hover { color: var(--text); background: var(--accent-50); }
-.tabs button[aria-selected="true"] { color: var(--accent-700); background: var(--accent-100); }
-.tabs button[aria-selected="true"]::after { content: ''; position: absolute; left: 0; right: 0; bottom: -2px; height: 4px; background: var(--accent); }
-.tabs .sp { flex: 1; border-right: none; }
-.tabs .canv { display: flex; align-items: center; padding: 0 12px; gap: 6px; }
-.tabs .canv button { padding: 5px 9px; border: 1.5px solid var(--n300); font-size: 11.5px; }
-.tabs .canv button[aria-pressed="true"] { background: var(--text); color: #fff; border-color: var(--text); }
-.panel { display: none; padding: 22px 26px 60px; }
-.panel.on { display: block; animation: pin .3s ease both; }
-@keyframes pin { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-.ph h2 { font-size: 23px; font-weight: 760; letter-spacing: -.02em; margin: 0 12px 0 0; display: inline; }
-.ph .lbl { display: inline-block; }
-.ph p { margin: 8px 0 0; color: var(--n700); font-size: 14.5px; max-width: 82ch; }
-#svgSankey text { paint-order: stroke; stroke: #fff; stroke-width: 4px; stroke-linejoin: round; }
-:root[data-canvas="blueprint"] #svgSankey text { stroke: var(--paper); }
-.card { border: 2px solid var(--divider); background: #fff; margin-top: 18px; }
-.card-h { display: flex; align-items: center; gap: 12px; padding: 8px 14px; border-bottom: 1.5px solid var(--divider); font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; font-weight: 700; color: var(--n700); flex-wrap: wrap; }
-.card-h .t { color: var(--text); }
-.card-h .sp { flex: 1; }
-.card-b { padding: 16px 18px; }
-.two { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 18px; align-items: start; }
-.three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; align-items: start; }
-.stage { position: relative; background: var(--paper); }
-.stage canvas { display: block; width: 100%; height: clamp(320px, 52vh, 520px); touch-action: pan-y; }
-.hud { position: absolute; left: 12px; top: 12px; display: flex; gap: 6px; flex-wrap: wrap; pointer-events: none; }
-.chip { font-family: var(--font-mono); font-size: 11px; font-weight: 700; padding: 4px 8px; border: 1.5px solid var(--text); background: rgba(255,255,255,.94); color: var(--text); letter-spacing: .02em; }
-.chip.acc { background: var(--accent); border-color: var(--accent); color: #fff; }
-.chip.red { background: var(--redline); border-color: var(--redline); color: #fff; }
-.play { position: absolute; right: 12px; top: 12px; display: flex; gap: 6px; }
-.play button { border: 1.5px solid var(--text); background: #fff; height: 30px; min-width: 30px; padding: 0 8px; cursor: pointer; display: inline-grid; place-items: center; font-family: var(--font-mono); font-size: 11px; font-weight: 700; color: var(--text); }
-.play button[aria-pressed="true"] { background: var(--text); color: #fff; }
-.caption { padding: 12px 16px; border-top: 1.5px solid var(--divider); font-size: 13.5px; color: var(--n800); background: var(--n50); line-height: 1.55; }
-.caption b { color: var(--accent-700); }
-.spec { display: grid; grid-template-columns: 1fr auto; font-size: 13px; }
-.spec > div { padding: 6px 0; border-bottom: 1px solid var(--n200); }
-.spec .v { font-weight: 700; text-align: right; font-family: var(--font-mono); font-size: 12.5px; }
-.warn { display: grid; grid-template-columns: 22px 1fr; gap: 8px; padding: 9px 0; border-bottom: 1px solid var(--n200); font-size: 13.5px; line-height: 1.5; animation: pin .25s ease both; }
-.warn i { width: 18px; height: 18px; display: grid; place-items: center; font-style: normal; font-weight: 800; font-size: 12px; color: #fff; background: var(--warn); margin-top: 1px; }
-.warn.c i { background: var(--redline); }
-.warn.ok i { background: var(--ok); }
-svg.ch { width: 100%; height: auto; display: block; font-family: var(--font-body); }
-svg.ch text { fill: var(--ink); }
-.chart-bg { fill: var(--paper); }
-table.t { width: 100%; border-collapse: collapse; font-size: 13px; }
-table.t th { text-align: right; padding: 6px 8px; border-bottom: 2px solid var(--text); font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--n700); font-weight: 700; }
-table.t th:first-child, table.t td:first-child { text-align: left; }
-table.t td { text-align: right; padding: 6px 8px; border-bottom: 1px solid var(--n200); font-variant-numeric: tabular-nums; }
-table.t td:first-child { font-weight: 700; }
-table.t tr.tot td { border-top: 2px solid var(--text); font-weight: 800; }
-table.t tr:hover td { background: var(--accent-50); }
-.flowstep td:first-child { font-weight: 600 !important; }
-.flowstep .op { font-family: var(--font-mono); color: var(--accent-700); font-weight: 700; }
-.mcards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 2px solid var(--divider); margin-top: 18px; background: #fff; }
-.mcards > div { padding: 12px 16px; border-right: 1px solid var(--n300); border-bottom: 1px solid var(--n300); }
-.mcards > div:nth-child(3n) { border-right: none; }
-.mcards .v { font-family: var(--font-mono); font-size: 22px; font-weight: 780; margin-top: 2px; }
-.mcards .u { font-size: 11.5px; color: var(--n600); }
-.mcards .bad { color: var(--redline); }
-.eqs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0; border: 2px solid var(--divider); margin-top: 18px; background: #fff; }
-.eqs > div { padding: 16px 18px; border-right: 1px solid var(--n300); border-bottom: 1px solid var(--n300); }
-.eqs > div:nth-child(2n) { border-right: none; }
-.eqs .f { font-size: 17px; margin: 8px 0 6px; min-height: 28px; overflow-x: auto; }
-.eqs .n2 { font-size: 12.5px; color: var(--n600); }
-.callout { border-left: 4px solid var(--accent); background: var(--accent-100); padding: 12px 16px; margin-top: 18px; font-size: 13.5px; line-height: 1.6; }
-.callout.ink { border-left-color: var(--text); background: var(--n100); }
-.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12px; color: var(--n700); }
-.legend span { display: inline-flex; align-items: center; gap: 6px; }
-.legend i { display: inline-block; width: 24px; border-top: 2.5px solid var(--accent); }
-.legend i.k { border-top: 2px dashed var(--ink); } .legend i.r { border-top: 2px dotted var(--ink); }
-.legend i.box { width: 12px; height: 10px; border: 1px solid var(--accent-700); background: var(--accent-200); }
-.readout { font-family: var(--font-mono); font-size: 12px; color: var(--n700); min-height: 18px; }
-.mobile-ctl { display: none; }
-@media (max-width: 1100px) { .two { grid-template-columns: 1fr; } .kpi .v { font-size: 16px; } }
-@media (max-width: 900px) {
-  .top-row .kick, .top-row .ctx, .top-row .sp { display: none; }
-  .top-row h1 { font-size: 15px; flex: 1; }
-  .status { padding: 4px 8px; font-size: 9.5px; }
-  .kpi { padding: 4px 10px 5px; } .kpi .v { font-size: 14.5px; } .kpi .u { display: none; } .kpi .lbl { font-size: 9px; }
-  .hud .chip:not(.acc):not(.red) { display: none; }
-  .hud { top: 50px; }
-  .kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .kpi:nth-child(3) { border-right: none; } .kpi:nth-child(-n+3) { border-bottom: 1px solid var(--n300); }
-  .shell { grid-template-columns: 1fr; }
-  .ctl { position: fixed; left: 0; right: 0; bottom: 0; top: auto; height: 72vh; z-index: 60; transform: translateY(102%); transition: transform .25s ease; border-right: none; border-top: 2px solid var(--divider); box-shadow: 0 -12px 40px -10px rgba(0,0,0,.3); }
-  .ctl.open { transform: none; }
-  .mobile-ctl { display: inline-flex; position: fixed; right: 14px; bottom: 14px; z-index: 61; background: var(--accent); color: #fff; border: none; padding: 12px 16px; font-weight: 750; font-size: 14px; box-shadow: 0 6px 20px -6px rgba(0,0,0,.4); gap: 8px; align-items: center; }
-  .panel { padding: 16px 14px 90px; }
-  .three, .eqs, .mcards { grid-template-columns: minmax(0, 1fr); }
-  .eqs > div, .mcards > div { border-right: none !important; }
-  .top-row { flex-wrap: wrap; padding: 10px 14px; }
-  .tabs .canv { display: none; }
-}
-
-
 /* ---------- propios del explorador del ecofiltro ---------- */
-.mode-note { font-size: 12px; color: var(--n700); margin-top: 8px; line-height: 1.45; }
-.sub { font-family: var(--font-mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent-700); font-weight: 700; margin: 16px 0 2px; }
-.btnw { width: 100%; margin-top: 12px; border: 2px solid var(--text); background: #fff; padding: 8px 10px; font-weight: 750; font-size: 12.5px; cursor: pointer; color: var(--text); text-align: left; }
-.btnw:hover { background: var(--accent-50); }
+
 .fixed { font-size: 12px; color: var(--n700); line-height: 1.5; margin-top: 10px; border-top: 1px dashed var(--n300); padding-top: 8px; }
 .fixed b { font-family: var(--font-mono); font-size: 11.5px; }
 #svgProf text, #svgRates text, #svgFan text, #svgSweepQ text, #svgSweepJ text, #svgS text, #svgL text, #svgRec text, #svgAct text { paint-order: stroke; stroke: var(--paper); stroke-width: 3px; stroke-linejoin: round; }
-.hov { cursor: crosshair; }
+
 .stage .hud { right: 220px; }
-.kpi .lbl { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
 @media (max-width: 900px) { .stage .hud { right: 12px; } }
 .stage canvas { height: clamp(360px, 62vh, 600px); }
-.pill { display: inline-block; font-family: var(--font-mono); font-size: 10.5px; font-weight: 700; padding: 2px 7px; border: 1.5px solid currentColor; margin-left: 6px; }
-.pill.ok { color: var(--ok); } .pill.w { color: var(--warn); } .pill.c { color: var(--redline); }
+
 .stack { display: flex; height: 38px; border: 1.5px solid var(--divider); margin-top: 8px; overflow: hidden; }
-.stack > div { height: 100%; position: relative; transition: flex-basis .3s ease; min-width: 0; }
+
 .stack > div span { position: absolute; left: 6px; top: 50%; transform: translateY(-50%); font-family: var(--font-mono); font-size: 10.5px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; max-width: calc(100% - 8px); }
 .stack-leg { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 18px; margin-top: 12px; font-size: 12.5px; }
 .stack-leg div { display: grid; grid-template-columns: 12px 1fr auto; gap: 8px; align-items: center; }
-.stack-leg i { width: 12px; height: 12px; display: block; }
-.stack-leg b { font-family: var(--font-mono); font-size: 12px; }
+
 .lab { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 18px; }
 .lab label { display: block; font-size: 12.5px; font-weight: 650; color: var(--n800); }
 .lab input[type=number] { width: 100%; border: 1.5px solid var(--text); padding: 7px 8px; font-family: var(--font-mono); font-size: 13.5px; margin-top: 5px; background: #fff; }
@@ -221,7 +36,6 @@ table.t tr:hover td { background: var(--accent-50); }
 .need td.si { color: var(--ok); font-weight: 700; }
 .regime { display: inline-block; font-family: var(--font-mono); font-size: 11px; font-weight: 700; padding: 3px 8px; border: 1.5px solid var(--accent); color: var(--accent-700); background: var(--accent-100); }
 @media (max-width: 900px) { .stack-leg, .lab { grid-template-columns: 1fr; } }
-@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 
 /* la figura isométrica del ecofiltro (scripts/figuras/ecofiltro) */
 .ec-fig{display:block;background:var(--paper)}
@@ -240,65 +54,30 @@ table.t tr:hover td { background: var(--accent-50); }
 .iso.ec-fig[data-theme="blueprint"] .ec-mol{fill:#FFBF00}
 .iso.ec-fig[data-theme="blueprint"] .ec-drop,.iso.ec-fig[data-theme="blueprint"] .ec-cone{fill:#8fc3ee}
 .ec-fig [data-live]{pointer-events:none}
-.iz-wrap{position:relative}
-.iz-wrap.iz-on .iso-svg{cursor:grab}.iz-wrap.iz-on .iso-svg:active{cursor:grabbing}
-.iz-ctl{position:absolute;right:10px;bottom:8px;display:flex;gap:4px}
+
 .iz-ctl button{border:1.5px solid var(--ink);background:var(--paper);color:var(--ink);height:28px;min-width:28px;padding:0 7px;font-family:var(--font-mono);font-size:13px;font-weight:700;cursor:pointer;line-height:1}
-.iz-ctl button[data-z="fit"]{font-size:10.5px;letter-spacing:.04em}
-.iz-ctl button:disabled{opacity:.35;cursor:default}
-.iz-ctl button:focus-visible{outline:2px solid #FFBF00;outline-offset:1px}
+
 .seg.mini button{padding:4px 10px;font-size:11.5px}
 .card-h .seg{text-transform:none;letter-spacing:0;font-family:var(--font-body)}
 @media (max-width:640px){#figNote{display:none}}
 /* sistema en pantalla y configuraciones del curso */
-.ctl .cfgnow { background: var(--accent-50); }
-.cfgnow-l { font-family: var(--font-mono); font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--n600); font-weight: 700; }
-.cfgnow-n { font-size: 14.5px; font-weight: 750; margin-top: 3px; line-height: 1.3; }
-.cfgnow-n small { display: block; font-size: 11.5px; font-weight: 600; color: var(--n600); margin-top: 2px; }
-.cfgnow-b { margin-top: 8px; border: none; background: none; padding: 0; font: inherit; font-size: 12.5px; font-weight: 700; color: var(--accent-700); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
-.cfgs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin-top: 18px; }
-.cfg { border: 2px solid var(--divider); background: #fff; display: flex; flex-direction: column; }
-.cfg.on { border-color: var(--accent); box-shadow: inset 0 -4px 0 var(--accent); }
-.cfg svg { display: block; width: 100%; height: auto; background: var(--paper); border-bottom: 1.5px solid var(--divider); }
-.cfg .cb { padding: 12px 16px 14px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
-.cfg .ct { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
-.cfg h3 { margin: 0; font-size: 16px; font-weight: 780; }
-.cfg .src { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-700); font-weight: 700; }
-.cfg p { margin: 0; font-size: 13.5px; color: var(--n700); line-height: 1.5; }
-.cfg .facts { display: grid; grid-template-columns: auto 1fr; gap: 3px 12px; font-size: 12.5px; margin: 2px 0 0; }
-.cfg .facts dt { color: var(--n600); font-weight: 600; }
-.cfg .facts dd { margin: 0; font-weight: 650; }
-.cfg .res { font-family: var(--font-mono); font-size: 12.5px; font-weight: 700; border-top: 1px solid var(--n200); padding-top: 8px; }
-.cfg .res span { color: var(--n600); font-weight: 600; }
-.cfg .note { font-size: 12.5px; color: var(--n600); }
-.cfg button { margin-top: auto; align-self: flex-start; border: 2px solid var(--text); background: var(--text); color: #fff; font: inherit; font-size: 12.5px; font-weight: 750; padding: 7px 12px; cursor: pointer; }
-.cfg.on button { background: #fff; color: var(--text); }
-.cfg button:disabled { opacity: .6; cursor: default; }
-.ideas { margin: 0; padding-left: 18px; display: grid; gap: 6px; font-size: 13.5px; line-height: 1.5; }
-.ideas b { color: var(--accent-700); }
+
 .sel.addfit { margin-top: 8px; color: var(--accent-700); font-weight: 650; border-style: dashed; }
 .fitempty { font-size: 12px; color: var(--n600); padding: 4px 0 2px; }
-@media (max-width: 1100px) { .cfgs { grid-template-columns: 1fr; } }
-@media (max-width: 1400px) { .tabs button { padding-left: 12px; padding-right: 12px; } }
+
 @media (max-width: 1320px) { .tabs button { padding-left: 9px; padding-right: 9px; font-size: 13px; gap: 6px; } .tabs .canv { padding: 0 8px; } }
 /* rejilla de dos columnas en celular */
 @media (max-width: 1100px) { .two { grid-template-columns: minmax(0, 1fr); } .two > * { min-width: 0; } }
 /* ---------- actividad de clase ---------- */
 .viewsw { flex: none; }
 .viewsw button { padding: 6px 12px; font-size: 12.5px; white-space: nowrap; }
-body.mode-act .shell, body.mode-act #kpisExp, body.mode-act #mobCtl, body.mode-act #status, body.mode-act #ctx { display: none; }
-body:not(.mode-act) #act, body:not(.mode-act) #kpisAct { display: none; }
-.act { padding: 18px 26px 70px; }
-.act-lead { margin: 0; font-size: 15px; line-height: 1.6; color: var(--n800); max-width: 96ch; }
-.act-lead b { color: var(--text); }
-.act-grid { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 0 18px; align-items: start; }
-.act-side .card-b { padding: 14px 16px; }
-.act-side .sl:first-child { margin-top: 0; }
-.ap-scroll { overflow-x: auto; background: var(--paper); }
-#actPlant { display: block; width: 100%; height: auto; font-family: var(--font-body); }
+.viewsw-m { display: none; margin: 12px 14px 0; }
+.viewsw-m button { font-size: 13px; }
+body.mode-act .shell:not(#aShell), body.mode-act #kpisExp, body.mode-act #mobCtl, body.mode-act #status, body.mode-act #ctx { display: none; }
+body:not(.mode-act) #aShell, body:not(.mode-act) #kpisAct, body:not(.mode-act) #aMobCtl, body:not(.mode-act) #aStatus, body:not(.mode-act) #aCtx { display: none; }
+/* el diagrama de la planta */
+#actPlant { display: block; width: 100%; height: auto; font-family: var(--font-body); background: var(--paper); }
 #actPlant text { fill: var(--ink); }
-#actPlant .mut { fill: var(--muted-ink); }
-#actPlant .ink { stroke: var(--ink); fill: none; }
 #actPlant .wall { stroke: var(--ink); stroke-width: 2.2; fill: var(--paper); }
 #actPlant .duct { stroke: var(--ink); stroke-width: 9; fill: none; stroke-linejoin: round; }
 #actPlant .duct-in { stroke: var(--paper); stroke-width: 5.4; fill: none; stroke-linejoin: round; }
@@ -308,62 +87,52 @@ body:not(.mode-act) #act, body:not(.mode-act) #kpisAct { display: none; }
 #actPlant .wflow { stroke: #fff; stroke-width: 1.6; fill: none; stroke-dasharray: 10 14; opacity: .8; }
 #actPlant .bub { fill: #fff; opacity: .8; }
 #actPlant .inst { fill: var(--paper); stroke: var(--ink); stroke-width: 1.5; }
-#actPlant .inst-t { font-family: var(--font-mono); font-size: 8.5px; font-weight: 700; text-anchor: middle; }
+#actPlant .inst-t { font-family: var(--font-mono); font-size: 10px; font-weight: 700; text-anchor: middle; }
 #actPlant .sig { stroke: var(--ink); stroke-width: 1.3; fill: none; stroke-dasharray: 5 3; }
-#actPlant .rd { font-family: var(--font-mono); font-size: 12.5px; font-weight: 750; }
+#actPlant .rd { font-family: var(--font-mono); font-size: 13px; font-weight: 750; }
 #actPlant .rd.bad { fill: var(--redline); }
-#actPlant .tag { font-family: var(--font-mono); font-size: 12px; font-weight: 750; }
-#actPlant .cap { font-size: 11.5px; fill: var(--muted-ink); }
-#actPlant .ctl-off { opacity: .22; }
+#actPlant .rd.good { fill: var(--ok); }
 #actPlant .ctl-on .inst { stroke: var(--hl); stroke-width: 2.6; }
 #actPlant .puff { fill: #C98A12; }
 #actPlant .smoke { fill: var(--n400); }
 #actPlant .house { fill: var(--paper); stroke: var(--ink); stroke-width: 1.4; stroke-linejoin: round; }
 #actPlant .hill { fill: none; stroke: var(--n300); stroke-width: 1.4; }
 #actPlant .air { stroke: var(--ok); stroke-width: 1.8; fill: none; }
-#actPlant .airh { fill: var(--ok); }
-#actPlant .air-t { fill: var(--ok); font-size: 11px; font-weight: 700; }
+#actPlant .air-t { fill: var(--ok); font-size: 11.5px; font-weight: 700; }
+#actPlant .pz-band { fill: var(--n50); }
+#actPlant .pz-zero { stroke: var(--ink); stroke-width: 1.2; stroke-dasharray: 5 3; }
+#actPlant .pz-line { stroke: var(--ink); stroke-width: 2.2; fill: none; stroke-linejoin: round; }
+#actPlant .pz-fan { stroke: var(--hl); stroke-width: 3; fill: none; }
+#actPlant .pz-leak { fill: var(--redline); opacity: .08; }
+#actPlant .pz-guide { stroke: var(--n300); stroke-width: 1; stroke-dasharray: 2 4; }
+#actPlant.narrow .rd { font-size: 17px; }
+#actPlant.narrow .inst-t { font-size: 12px; }
 :root[data-canvas="blueprint"] #actPlant .wflow { stroke: var(--paper); }
-.aplay { display: flex; gap: 6px; }
-#aSpeed button { white-space: nowrap; }
-.ap-hint { display: none; font-size: 12px; color: var(--n600); padding: 6px 14px 0; }
-.aplay button { border: 1.5px solid var(--text); background: #fff; height: 28px; min-width: 30px; padding: 0 8px; cursor: pointer; display: inline-grid; place-items: center; font-family: var(--font-mono); font-size: 11px; font-weight: 700; color: var(--text); }
-.aplay button:hover { background: var(--accent-50); }
-.aclock { font-family: var(--font-mono); font-size: 12px; letter-spacing: .02em; text-transform: none; color: var(--text); font-weight: 700; }
-.aclock.end { color: var(--ok); }
+:root[data-canvas="blueprint"] #actPlant .pz-band { fill: rgba(255,255,255,.04); }
+/* fin de la corrida */
+.aend { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(440px, calc(100% - 28px)); background: #fff; border: 2px solid var(--divider); box-shadow: 0 18px 40px -18px rgba(0,0,0,.45); padding: 16px 18px; }
+.aend[hidden] { display: none; }
+.aend h3 { margin: 0 0 6px; font-size: 17px; font-weight: 780; }
+.aend p { margin: 0; font-size: 13.5px; color: var(--n700); line-height: 1.5; }
+.aend .row { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+.aend .row button { border: 2px solid var(--text); background: var(--text); color: #fff; font: inherit; font-size: 13px; font-weight: 750; padding: 7px 12px; cursor: pointer; }
+.aend .row button + button { background: #fff; color: var(--text); }
+/* quién manda en automático */
 .acmd { margin-top: 12px; font-size: 12.5px; line-height: 1.5; padding: 8px 10px; border-left: 3px solid var(--accent); background: var(--accent-50); }
 .acmd b { font-family: var(--font-mono); font-size: 12px; }
-.acmd.p { border-left-color: var(--warn); background: #fbf5ea; }
+.acmd.p { border-left-color: var(--n600); background: var(--n100); }
 .acmd.x { border-left-color: var(--redline); background: #fbefec; }
-.abal { margin-top: 4px; display: grid; grid-template-columns: 1fr auto; font-size: 12.5px; }
-.abal > div { padding: 4px 0; border-bottom: 1px solid var(--n200); }
-.abal .v { font-family: var(--font-mono); font-weight: 700; text-align: right; font-size: 12px; }
-.abal .bad { color: var(--redline); }
-.aruns { margin-top: 14px; }
-.aruns table.t { font-size: 11.5px; }
-.aruns table.t th { font-size: 9.5px; padding: 5px 4px; }
-.aruns table.t td { padding: 5px 4px; }
-.aruns table.t td:first-child { font-weight: 650; }
-.aruns .none { font-size: 12px; color: var(--n600); }
-#aTrend, #aPress, #aFan { display: block; width: 100%; height: auto; }
-#aTrend text, #aPress text, #aFan text { paint-order: stroke; stroke: var(--paper); stroke-width: 3px; stroke-linejoin: round; }
+#aTrend, #aPress, #aFan, #aEta, #aIO { display: block; width: 100%; height: auto; }
+#aTrend text, #aPress text, #aFan text, #aEta text, #aIO text { paint-order: stroke; stroke: var(--paper); stroke-width: 3px; stroke-linejoin: round; }
 .abern { margin-top: 10px; font-family: var(--font-mono); font-size: 12.5px; line-height: 1.6; color: var(--n800); overflow-x: auto; }
 .abern b { color: var(--text); }
-.act .ideas { padding-left: 20px; }
-.act .ideas li { padding-left: 2px; }
-@media (max-width: 1100px) {
-  .act-grid { grid-template-columns: minmax(0, 1fr); }
-  .act-main { display: contents; }
-  .act-main > .card:first-child { order: 1; }
-  .act-side { order: 2; }
-  .act-main > .card:nth-child(2) { order: 3; }
-}
+#aRuns table.t td:first-child { font-weight: 650; }
+#aRuns .none { font-size: 13px; color: var(--n600); }
+#aShell .eqs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 @media (max-width: 900px) {
-  .act { padding: 14px 14px 60px; }
-  .ap-scroll #actPlant { min-width: 780px; }
-  .ap-hint { display: block; }
-  .viewsw { order: 3; width: 100%; }
-  .viewsw button { padding: 6px 8px; font-size: 12px; }
+  #viewSw { display: none; }
+  .viewsw-m { display: flex; }
+  #aShell .eqs { grid-template-columns: minmax(0, 1fr); }
 }
 /*ECO_CSS_START*/
 .iso{
@@ -520,9 +289,11 @@ body:not(.mode-act) #act, body:not(.mode-act) #kpisAct { display: none; }
       <h1 id="h1">El ventilador del ecofiltro</h1>
     </div>
     <div class="ctx" id="ctx"></div>
+    <div class="ctx" id="aCtx"></div>
     <span class="sp"></span>
     <div class="seg viewsw" id="viewSw" role="group" aria-label="Vista"><button type="button" data-v="act" aria-pressed="true">Actividad de clase</button><button type="button" data-v="exp" aria-pressed="false">Explorador completo</button></div>
     <button type="button" class="status" id="status" title="Ver el diagnóstico"><i></i><span id="statusTxt">Cumple 20 ppm</span></button>
+    <button type="button" class="status" id="aStatus" title="Ver el balance de la corrida"><i></i><span id="aStatusTxt">Sin fugas</span></button>
   </div>
   <div class="kpis" id="kpisExp">
     <div class="kpi"><div class="lbl">Caudal de gas</div><div class="v" id="kQ">—</div><div class="u" id="kQu">m³/s</div></div>
@@ -534,72 +305,123 @@ body:not(.mode-act) #act, body:not(.mode-act) #kpisAct { display: none; }
   </div>
   <div class="kpis" id="kpisAct">
     <div class="kpi"><div class="lbl">H₂S que llega</div><div class="v" id="kaIn">—</div><div class="u">ppm · tanque de aquietamiento</div></div>
-    <div class="kpi" id="kaOutc"><div class="lbl">H₂S a la salida</div><div class="v" id="kaOut">—</div><div class="u">ppm · criterio interno de 20 ppm</div></div>
+    <div class="kpi" id="kaOutc"><div class="lbl">H₂S a la salida</div><div class="v" id="kaOut">—</div><div class="u" id="kaOutu">ppm · criterio interno de 20 ppm</div></div>
     <div class="kpi" id="kaLeakc"><div class="lbl">Fugas hacia El Colegio</div><div class="v" id="kaLeak">—</div><div class="u" id="kaLeaku">g/h</div></div>
     <div class="kpi" id="kaPc"><div class="lbl">Presión del tanque</div><div class="v" id="kaP">—</div><div class="u" id="kaPu">Pa</div></div>
     <div class="kpi"><div class="lbl">Ventilador V-101</div><div class="v" id="kaF">—</div><div class="u" id="kaFu">Hz</div></div>
     <div class="kpi"><div class="lbl">Potencia</div><div class="v" id="kaW">—</div><div class="u" id="kaWu">kW</div></div>
   </div>
 </header>
+<div class="seg viewsw-m" id="viewSwM" role="group" aria-label="Vista"><button type="button" data-v="act" aria-pressed="true">Actividad de clase</button><button type="button" data-v="exp" aria-pressed="false">Explorador completo</button></div>
 
-<div class="act" id="act">
-  <p class="act-lead">La Central Hidroeléctrica El Paraíso, en El Colegio (Cundinamarca), genera energía con agua del río Bogotá. Al frenarse en el tanque de aquietamiento, esa agua suelta sulfuro de hidrógeno (H₂S), un gas tóxico con olor a huevo podrido que, si se escapa, llega a las casas del pueblo. El ventilador <b>V-101</b> saca el gas del tanque y lo empuja por el ecofiltro, donde una biopelícula de bacterias oxida el H₂S, y por el carbón activado antes de la chimenea. Usted lo opera aquí con el modelo dinámico de la planta que construyó Jesús Rafael Acevedo Mastrogiacomo en su maestría: la carga de H₂S cambia hora por hora y el ventilador tiene que seguirla.</p>
-  <div class="act-grid">
-    <div class="act-main">
+<div class="shell" id="aShell">
+  <aside class="ctl" id="aCtl" aria-label="Controles de la actividad">
+    <section class="cfgnow"><div class="cfgnow-l">Corrida en pantalla</div><div class="cfgnow-n" id="aNow"></div><button type="button" class="cfgnow-b" id="aToBal">Ver el balance y las corridas</button></section>
+
+    <section><h2><span class="n">01</span> Operación del V-101</h2>
+      <div class="seg" id="aMode"><button type="button" data-v="man">Manual</button><button type="button" data-v="auto">Automático</button></div>
+      <div id="aMan">
+        <div class="sl"><div class="row"><span>Frecuencia del motor</span><b id="vaF"></b></div><input type="range" id="aF" min="20" max="60" step="0.5" aria-label="Frecuencia del motor del V-101"><div class="hint" id="aFHint"></div></div>
+        <div class="mode-note">Usted fija la velocidad; el caudal y la presión del tanque salen del cruce de la curva del ventilador con la del sistema.</div>
+      </div>
+      <div id="aAuto">
+        <div class="sl"><div class="row"><span>Consigna de H₂S a la salida</span><b id="vaSP"></b></div><input type="range" id="aSP" min="5" max="60" step="1" aria-label="Consigna de H₂S a la salida del ecofiltro"><div class="hint">El criterio interno es de 20 ppm a la salida del ecofiltro</div></div>
+        <label class="toggle"><input type="checkbox" id="aLim"> Límite de presión: el tanque siempre en succión</label>
+        <div class="mode-note">El AIC-102 mide el H₂S a la salida del ecofiltro y mueve la frecuencia: si sale más de la consigna frena el ventilador, para que el gas pase más tiempo en el lecho; si sale menos, lo acelera. Con el límite de presión, el PIC-101 no lo deja frenar tanto que el tanque suba por encima de −50 Pa.</div>
+        <div class="acmd" id="aCmd"></div>
+      </div>
+    </section>
+
+    <section><h2><span class="n">02</span> Carga de H₂S</h2>
+      <div class="opts" id="aScen"></div>
+      <div class="mode-note" id="aScenD"></div>
+      <div class="mode-note">Cambiar la carga reinicia la corrida.</div>
+    </section>
+
+    <section><h2><span class="n">03</span> Ductos y demisters</h2>
+      <div class="seg" id="aK"><button type="button" data-v="clean">Limpios</button><button type="button" data-v="dirty">Sucios</button></div>
+      <div class="mode-note" id="aKD"></div>
+    </section>
+  </aside>
+
+  <main id="aMain">
+    <nav class="tabs" id="tabsAct" role="tablist" aria-label="Vistas de la actividad">
+      <button type="button" role="tab" data-atab="pl" aria-selected="true"><span class="k">1</span>Planta</button>
+      <button type="button" role="tab" data-atab="pr" aria-selected="false"><span class="k">2</span>Presiones</button>
+      <button type="button" role="tab" data-atab="rm" aria-selected="false"><span class="k">3</span>Remoción y carga</button>
+      <button type="button" role="tab" data-atab="bl" aria-selected="false"><span class="k">4</span>Balance y corridas</button>
+      <button type="button" role="tab" data-atab="ec" aria-selected="false"><span class="k">5</span>Ecuaciones</button>
+      <button type="button" role="tab" data-atab="gu" aria-selected="false"><span class="k">6</span>La actividad</button>
+      <span class="sp"></span>
+      <div class="canv"><button type="button" data-canvas="paper" aria-pressed="true">Papel</button><button type="button" data-canvas="blueprint" aria-pressed="false">Blueprint</button></div>
+    </nav>
+
+    <!-- 1 · Planta -->
+    <section class="panel apanel on" data-apanel="pl">
+      <div class="ph"><h2>La planta en el tiempo</h2><span class="lbl">Central Hidroeléctrica El Paraíso · El Colegio, Cundinamarca</span><p>El V-101 saca el gas del tanque de aquietamiento y lo empuja por el ecofiltro y el carbón activado. Si saca menos gas del que suelta el agua, el tanque sube de presión y el H₂S se escapa hacia el pueblo. La carga cambia hora por hora: siga la corrida en el diagrama y en las tendencias.</p></div>
       <div class="card">
-        <div class="card-h"><span class="t">La planta</span><span class="aclock" id="aClock"></span><span class="sp"></span>
-          <div class="aplay"><button type="button" id="aPlay" aria-label="Pausar"></button><button type="button" id="aReset" aria-label="Volver al comienzo de la corrida" title="Volver al comienzo de la corrida"></button></div>
-          <div class="seg inline mini" id="aSpeed" aria-label="Velocidad de la simulación"><button type="button" data-v="600">10 min/s</button><button type="button" data-v="3600">1 h/s</button><button type="button" data-v="21600">6 h/s</button></div>
+        <div class="stage" id="aStage">
+          <svg id="actPlant" role="img" aria-label="Diagrama de la planta: el tanque de aquietamiento, el biofiltro, el demister D-101, el ventilador V-101, el ecofiltro E-101, el demister D-102, el carbón activado y la chimenea, con sus instrumentos, el lazo de control y la presión a lo largo del tren de gas"></svg>
+          <div class="hud" id="aHud"></div>
+          <div class="play" id="aPlayBar"><button type="button" id="aPlay" aria-label="Pausar"></button><button type="button" data-asp="600" title="10 min de planta por segundo">10 min/s</button><button type="button" data-asp="3600" title="1 h de planta por segundo">1 h/s</button><button type="button" data-asp="21600" title="6 h de planta por segundo">6 h/s</button><button type="button" id="aReset" aria-label="Volver al comienzo de la corrida" title="Volver al comienzo de la corrida"></button></div>
+          <div class="aend" id="aEnd" hidden></div>
         </div>
-        <div class="ap-hint">Deslice el diagrama hacia la derecha para ver el resto del tren de gas.</div>
-        <div class="ap-scroll"><svg id="actPlant" viewBox="0 0 1000 430" role="img" aria-label="Diagrama de la planta: el tanque de aquietamiento, el biofiltro, el demister D-101, el ventilador V-101, el ecofiltro E-101, el demister D-102, el carbón activado y la chimenea, con sus instrumentos y el lazo de control"></svg></div>
         <div class="caption" id="aCap"></div>
       </div>
       <div class="card">
         <div class="card-h"><span class="t">Lo que va pasando</span><span class="sp"></span><span id="aTrendNote"></span></div>
         <div class="card-b"><svg id="aTrend" role="img" aria-label="Tendencias de la corrida: H₂S que llega, H₂S a la salida, frecuencia del ventilador y presión del tanque"></svg></div>
       </div>
-    </div>
-    <aside class="act-side" aria-label="Controles de la actividad">
-      <div class="card"><div class="card-h"><span class="t">Operación del V-101</span></div><div class="card-b">
-        <div class="seg" id="aMode"><button type="button" data-v="man">Manual</button><button type="button" data-v="auto">Automático</button></div>
-        <div id="aMan">
-          <div class="sl"><div class="row"><span>Frecuencia del motor</span><b id="vaF"></b></div><input type="range" id="aF" min="20" max="60" step="0.5" aria-label="Frecuencia del motor del V-101"><div class="hint" id="aFHint"></div></div>
-          <div class="mode-note">Usted fija la velocidad; el caudal y la presión del tanque salen del cruce de la curva del ventilador con la del sistema.</div>
-        </div>
-        <div id="aAuto">
-          <div class="sl"><div class="row"><span>Consigna de H₂S a la salida</span><b id="vaSP"></b></div><input type="range" id="aSP" min="5" max="60" step="1" aria-label="Consigna de H₂S a la salida del ecofiltro"><div class="hint">El criterio interno es de 20 ppm a la salida del ecofiltro</div></div>
-          <label class="toggle"><input type="checkbox" id="aLim"> Límite de presión: el tanque siempre en succión</label>
-          <div class="mode-note">El AIC-102 mide el H₂S a la salida del ecofiltro y mueve la frecuencia: si sale más de la consigna frena el ventilador, para que el gas pase más tiempo en el lecho; si sale menos, lo acelera. Con el límite de presión, el PIC-101 no lo deja frenar tanto que el tanque suba por encima de −50 Pa.</div>
-          <div class="acmd" id="aCmd"></div>
-        </div>
-      </div></div>
-      <div class="card"><div class="card-h"><span class="t">Carga de H₂S</span><span class="sp"></span><span>reinicia la corrida</span></div><div class="card-b">
-        <div class="opts" id="aScen"></div><div class="mode-note" id="aScenD"></div>
-      </div></div>
-      <div class="card"><div class="card-h"><span class="t">Ductos y demisters</span></div><div class="card-b">
-        <div class="seg" id="aK"><button type="button" data-v="clean">Limpios</button><button type="button" data-v="dirty">Sucios</button></div><div class="mode-note" id="aKD"></div>
-      </div></div>
-      <div class="card"><div class="card-h"><span class="t">Balance de la corrida</span><span class="sp"></span><span id="aBalT"></span></div><div class="card-b">
-        <div class="small">El H₂S que ha salido del agua, según a dónde fue</div>
-        <div class="stack" id="aStack"></div><div class="stack-leg" id="aLeg"></div>
-        <div class="abal" id="aBal"></div>
-        <div class="aruns" id="aRuns"></div>
-      </div></div>
-    </aside>
-  </div>
-  <div class="two">
-    <div class="card"><div class="card-h"><span class="t">La presión a lo largo del tren de gas</span><span class="sp"></span><span>manométrica</span></div>
-      <div class="card-b"><svg id="aPress" role="img" aria-label="Presión manométrica en cada punto del tren de gas"></svg><div class="abern" id="aBern"></div></div></div>
-    <div class="card"><div class="card-h"><span class="t">El ventilador contra el sistema</span><span class="sp"></span><div class="legend"><span><i></i>V-101 ahora</span><span><i class="k"></i>sistema</span></div></div>
-      <div class="card-b"><svg id="aFan" role="img" aria-label="Curva del ventilador contra la curva del sistema"></svg><div class="readout" id="aFanRead"></div></div></div>
-  </div>
-  <div class="eqs" id="aEqs"></div>
-  <div class="two">
-    <div class="card"><div class="card-h"><span class="t">Para la actividad</span></div><div class="card-b"><ol class="ideas" id="aIdeas"></ol></div></div>
-    <div class="callout ink" id="aAssump"></div>
-  </div>
+    </section>
+
+    <!-- 2 · Presiones -->
+    <section class="panel apanel" data-apanel="pr">
+      <div class="ph"><h2>El gas, como un fluido incompresible</h2><span class="lbl">balance de energía mecánica · curva del ventilador</span><p>Las presiones del tren se apartan menos del 2 % de la atmosférica, así que el gas se trata como incompresible y vale el balance de energía mecánica con pérdidas entre el tanque y la salida de la chimenea. El caudal sale del cruce de la curva del ventilador con la del sistema.</p></div>
+      <div class="two eq2">
+        <div class="card"><div class="card-h"><span class="t">La presión a lo largo del tren de gas</span><span class="sp"></span><span>manométrica</span></div>
+          <div class="card-b"><svg id="aPress" role="img" aria-label="Presión manométrica en cada punto del tren de gas"></svg><div class="abern" id="aBern"></div></div></div>
+        <div class="card"><div class="card-h"><span class="t">El ventilador contra el sistema</span><span class="sp"></span><div class="legend"><span><i></i>V-101 ahora</span><span><i class="k"></i>sistema</span></div></div>
+          <div class="card-b"><svg id="aFan" role="img" aria-label="Curva del ventilador contra la curva del sistema"></svg><div class="readout" id="aFanRead"></div></div></div>
+      </div>
+    </section>
+
+    <!-- 3 · Remoción y carga -->
+    <section class="panel apanel" data-apanel="rm">
+      <div class="ph"><h2>La remoción depende de la carga</h2><span class="lbl">curva del modelo y puntos de la corrida</span><p>Con poca carga, el ecofiltro retira casi todo lo que la transferencia gas-líquido le deja disolver; con mucha, la biopelícula no da abasto y la remoción cae. La caída no es lineal: casi no se nota por debajo de 100 ppm y se acentúa por encima de 300.</p></div>
+      <div class="two eq2">
+        <div class="card"><div class="card-h"><span class="t">Remoción contra H₂S que llega</span><span class="sp"></span><div class="legend"><span><i></i>caudal de ahora</span><span><i class="k"></i>a 60 Hz</span><span><i class="r"></i>en el piso de la succión</span></div></div>
+          <div class="card-b"><svg id="aEta" role="img" aria-label="Remoción del ecofiltro contra el H₂S que llega"></svg><div class="readout" id="aEtaRead"></div></div></div>
+        <div class="card"><div class="card-h"><span class="t">H₂S que sale contra H₂S que llega</span><span class="sp"></span><div class="legend"><span><i></i>modelo</span><span><i class="box"></i>la corrida</span></div></div>
+          <div class="card-b"><svg id="aIO" role="img" aria-label="H₂S a la salida contra el H₂S que llega al ecofiltro"></svg><div class="readout" id="aIORead"></div></div></div>
+      </div>
+      <div class="callout" id="aEtaNote"></div>
+    </section>
+
+    <!-- 4 · Balance y corridas -->
+    <section class="panel apanel" data-apanel="bl">
+      <div class="ph"><h2>Balance y corridas</h2><span class="lbl" id="aBalT"></span><p>A dónde fue el H₂S que salió del agua en la corrida en pantalla, y las corridas que ya terminó, para comparar estrategias.</p></div>
+      <div class="card"><div class="card-h"><span class="t">El H₂S que salió del agua, según a dónde fue</span><span class="sp"></span><span id="aBalTot"></span></div><div class="card-b"><div class="stack" id="aStack"></div><div class="stack-leg" id="aLeg"></div></div></div>
+      <div class="mcards" id="aCards"></div>
+      <div class="card"><div class="card-h"><span class="t">Corridas terminadas</span><span class="sp"></span><span>las ocho últimas</span></div><div class="card-b" style="overflow-x:auto" id="aRuns"></div></div>
+    </section>
+
+    <!-- 5 · Ecuaciones -->
+    <section class="panel apanel" data-apanel="ec">
+      <div class="ph"><h2>Ecuaciones</h2><span class="lbl">con los valores del instante</span><p>El modelo dinámico de la planta de la tesis de maestría de Jesús Rafael Acevedo Mastrogiacomo, con el ecofiltro del explorador completo.</p></div>
+      <div class="eqs" id="aEqs"></div>
+    </section>
+
+    <!-- 6 · La actividad -->
+    <section class="panel apanel" data-apanel="gu">
+      <div class="ph"><h2>La actividad</h2><span class="lbl">Proyecto de Operaciones Unitarias · flujo de fluidos</span><p id="aLead"></p></div>
+      <div class="two">
+        <div class="card"><div class="card-h"><span class="t">Para la actividad</span></div><div class="card-b"><ol class="ideas" id="aIdeas"></ol></div></div>
+        <div class="callout ink" id="aAssump" style="margin-top:18px"></div>
+      </div>
+    </section>
+  </main>
 </div>
+<button type="button" class="mobile-ctl" id="aMobCtl">Controles</button>
 <div class="shell">
   <aside class="ctl" id="ctl" aria-label="Controles">
     <section class="cfgnow"><div class="cfgnow-l">Sistema en pantalla</div><div class="cfgnow-n" id="cfgNow"></div><button type="button" class="cfgnow-b" id="toCfg">Ver las configuraciones</button></section>
@@ -647,7 +469,7 @@ body:not(.mode-act) #act, body:not(.mode-act) #kpisAct { display: none; }
   </aside>
 
   <main id="main">
-    <nav class="tabs" role="tablist" aria-label="Vistas">
+    <nav class="tabs" id="tabsExp" role="tablist" aria-label="Vistas">
       <button type="button" role="tab" data-tab="pd" aria-selected="true"><span class="k">1</span>Por dentro</button>
       <button type="button" role="tab" data-tab="pf" aria-selected="false"><span class="k">2</span>Perfiles</button>
       <button type="button" role="tab" data-tab="ve" aria-selected="false"><span class="k">3</span>Ventilador</button>
@@ -1721,13 +1543,13 @@ function buildControls() {
   $('#toCfg').addEventListener('click', function () { setTab('cf'); if (window.innerWidth < 900) { $('#ctl').classList.remove('open'); $('#mobCtl').textContent = 'Controles'; } });
   $('#cfgCards').addEventListener('click', function (e) { var b = e.target.closest('button[data-cfg]'); if (b) loadCfg(b.dataset.cfg); });
   $('#status').addEventListener('click', function () { setTab('pd'); setTimeout(function () { $('#diagCard').scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 50); });
-  $$('.tabs [role=tab]').forEach(function (b) { b.addEventListener('click', function () { setTab(b.dataset.tab); }); });
+  $$('#tabsExp [role=tab]').forEach(function (b) { b.addEventListener('click', function () { setTab(b.dataset.tab); }); });
   $$('.tabs .canv button').forEach(function (b) { b.addEventListener('click', function () { document.documentElement.setAttribute('data-canvas', b.dataset.canvas); $$('.tabs .canv button').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); }); store.set('canvas', b.dataset.canvas); update(); }); });
   $('#mobCtl').addEventListener('click', function () { $('#ctl').classList.toggle('open'); this.textContent = $('#ctl').classList.contains('open') ? 'Cerrar' : 'Controles'; });
   $('#btnPlay').addEventListener('click', togglePlay);
   $('#btnReset').addEventListener('click', function () { scene.reset(); });
   $$('.play [data-sp]').forEach(function (b) { b.addEventListener('click', function () { scene.speed = parseFloat(b.dataset.sp); pressed('.play [data-sp]', 'sp', b.dataset.sp); }); });
-  document.addEventListener('keydown', function (e) { if (/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return; if (view === 'act') { if (e.key === ' ' && !/BUTTON/.test(e.target.tagName)) { e.preventDefault(); aToggle(); } return; } var i = '1234567'.indexOf(e.key); if (i >= 0) setTab(['pd', 'pf', 've', 'az', 'di', 'ec', 'cf'][i]); if (e.key === ' ' && tab === 'pd') { e.preventDefault(); togglePlay(); } });
+  document.addEventListener('keydown', function (e) { if (/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return; if (view === 'act') { var ia = '123456'.indexOf(e.key); if (ia >= 0) aSetTab(['pl', 'pr', 'rm', 'bl', 'ec', 'gu'][ia]); if (e.key === ' ' && !/BUTTON/.test(e.target.tagName)) { e.preventDefault(); aToggle(); } return; } var i = '1234567'.indexOf(e.key); if (i >= 0) setTab(['pd', 'pf', 've', 'az', 'di', 'ec', 'cf'][i]); if (e.key === ' ' && tab === 'pd') { e.preventDefault(); togglePlay(); } });
   var cv = store.get('canvas', 'paper'); document.documentElement.setAttribute('data-canvas', cv); $$('.tabs .canv button').forEach(function (x) { x.setAttribute('aria-pressed', x.dataset.canvas === cv ? 'true' : 'false'); });
   hoverSetup();
 }
@@ -1742,9 +1564,9 @@ function setV(id, v) { var el = document.getElementById(id); if (el && el.innerH
 function pressed(sel, attr, val) { $$(sel).forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset[attr]) === String(val) ? 'true' : 'false'); }); }
 function setTab(t) {
   tab = t;
-  $$('.tabs [role=tab]').forEach(function (b) { b.setAttribute('aria-selected', b.dataset.tab === t ? 'true' : 'false'); });
-  $$('.panel').forEach(function (p) { p.classList.toggle('on', p.dataset.panel === t); });
-  var tb = $('.tabs'), on = $('.tabs [aria-selected="true"]');
+  $$('#tabsExp [role=tab]').forEach(function (b) { b.setAttribute('aria-selected', b.dataset.tab === t ? 'true' : 'false'); });
+  $$('#main .panel').forEach(function (p) { p.classList.toggle('on', p.dataset.panel === t); });
+  var tb = $('#tabsExp'), on = $('#tabsExp [aria-selected="true"]');
   if (on && tb.scrollWidth > tb.clientWidth) { var l = on.offsetLeft, rr = l + on.offsetWidth; if (l < tb.scrollLeft) tb.scrollLeft = l - 8; else if (rr > tb.scrollLeft + tb.clientWidth) tb.scrollLeft = rr - tb.clientWidth + 8; }
   if (t === 'pd' && scene) { scene.resize(); }
   renderTab();
@@ -2302,14 +2124,16 @@ function plantStep(p, dt) {
 }
 
 /* ---------- actividad de clase: la interfaz ----------
-   La página abre en la actividad. La corrida arranca siempre en la semana típica, en manual a 45 Hz y con los ductos
-   limpios; nada se guarda entre visitas. */
-var view = 'act';
+   La página abre en la actividad, con la misma estructura de los demás simuladores: controles a la izquierda,
+   pestañas, el diagrama con sus indicadores encima y la corrida debajo. La corrida arranca siempre en la semana
+   típica, en manual a 45 Hz y con los ductos limpios; nada se guarda entre visitas. */
+var view = 'act', atab = 'pl';
 var ACTS = { mode: 'man', f: 45, sp: 20, lim: true, scen: 'semana', K: 'clean', speed: 3600 };
-var A = null, aRun = true, aEnded = false, aLastT = 0, aDirty = true, aChartAt = 0, aEqAt = 0, aRuns = [];
-var aVis = { ang: 0, gas: 0, bf: 0, water: 0, t: 0 }, aStill = false;
+var A = null, aRun = true, aEnded = false, aLastT = 0, aDirty = true, aChartAt = 0, aEqAt = 0, aRuns = [], aLayout = null;
+var aVis = { ang: 0, gas: 0, bf: 0, water: 0, t: 0, els: null }, aStill = false;
 try { aStill = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches); } catch (e) { }
 var UNOM = 2600;               /* rpm del V-101 a 60 Hz */
+var AH2S = '#A8741A';          /* el H₂S, y nada más, va en ocre */
 var AC = { bf: 'var(--accent-300)', btf: 'var(--ok)', carbon: 'var(--n600)', leak: 'var(--redline)' };
 
 /* la frecuencia por debajo de la cual el tanque sube por encima de la atmosférica */
@@ -2326,17 +2150,20 @@ function aClock(t) {
   var d = Math.floor(t / 86400), s = t - d * 86400, h = Math.floor(s / 3600), m = Math.floor((s - h * 3600) / 60);
   return 'día ' + (d + 1) + ' · ' + (h < 10 ? '0' : '') + h + ':' + (m < 10 ? '0' : '') + m;
 }
-function aTxt(id, v) { var el = document.getElementById(id); if (el && el.textContent !== v) el.textContent = v; }
+/* el diagrama puede ir en dos copias (celular): cada id del dibujo tiene su gemelo con _2 */
+function aEls(id) { var a = document.getElementById(id), b = document.getElementById(id + '_2'); return b ? [a, b] : (a ? [a] : []); }
+function aTxt(id, v) { aEls(id).forEach(function (el) { if (el.textContent !== v) el.textContent = v; }); }
 function aHtml(id, v) { var el = document.getElementById(id); if (el && el.innerHTML !== v) el.innerHTML = v; }
-function aCls(id, c, on) { var el = document.getElementById(id); if (el) el.classList.toggle(c, !!on); }
+function aCls(id, c, on) { aEls(id).forEach(function (el) { el.classList.toggle(c, !!on); }); }
+function aAttr(id, k, v) { aEls(id).forEach(function (el) { el.setAttribute(k, v); }); }
 function aSgn(x, d) { return (x > 0.5 * Math.pow(10, -(d || 0)) ? '+' : '') + fmtN(x, d || 0); }
 function fmtKg(g) { return g >= 1000 ? fmtN(g / 1000, g >= 1e5 ? 0 : 1) + ' kg' : fmtN(g, 0) + ' g'; }
 
 /* ---------- la corrida ---------- */
 function aNew() {
   A = plantNew({ f: ACTS.f, K: PLANT.K[ACTS.K], mode: ACTS.mode, sp: ACTS.sp, lim: ACTS.lim, scen: ACTS.scen });
-  A.tags = {}; A.spSet = {}; A.fMin = null; A.fMax = null; A.yOut = A.cout; A.yMax2 = 0;
-  aTag(); aEnded = false; aRun = true; aSyncPlay(); aSync(); aDirty = true;
+  A.tags = {}; A.spSet = {}; A.fMin = null; A.fMax = null; A.yMax2 = 0;
+  aTag(); aEnded = false; aRun = !aStill; aSyncPlay(); aSync(); aDirty = true;
 }
 function aTag() {
   if (!A) return;
@@ -2357,8 +2184,8 @@ function aRunLabel() {
 }
 function aFinish() {
   aEnded = true; aRun = false;
-  var a = A.acc, tot = a.bf + a.btf + a.carbon + a.leak;
-  aRuns.unshift({ name: aRunLabel(), scen: byId(SCEN, A.scen).name, leak: a.leak, hOver: a.hOver, carbon: a.carbon, kWh: a.kWh, tot: tot });
+  var a = A.acc;
+  aRuns.unshift({ name: aRunLabel(), scen: byId(SCEN, A.scen).name, leak: a.leak, hOver: a.hOver, carbon: a.carbon, kWh: a.kWh });
   if (aRuns.length > 8) aRuns.pop();
   aSyncPlay(); aDirty = true;
 }
@@ -2374,6 +2201,12 @@ function setMode(m) {
   else { ACTS.f = clamp(Math.round(A.f * 2) / 2, PLANT.fmin, PLANT.fmax); A.f = ACTS.f; A.cmd = 'man'; }
   ACTS.mode = A.mode = m; aTag(); aSync(); aDirty = true;
 }
+function aSetTab(t) {
+  atab = t;
+  $$('#tabsAct [role=tab]').forEach(function (b) { b.setAttribute('aria-selected', b.dataset.atab === t ? 'true' : 'false'); });
+  $$('#aShell .apanel').forEach(function (p) { p.classList.toggle('on', p.dataset.apanel === t); });
+  aDirty = true;
+}
 
 /* ---------- el ciclo ---------- */
 function actLoop(ts) {
@@ -2383,7 +2216,7 @@ function actLoop(ts) {
       var end = A.days * 86400, sim = dtr * ACTS.speed, n = Math.max(1, Math.ceil(sim / 10)), dt = sim / n;
       for (var i = 0; i < n; i++) { plantStep(A, Math.min(dt, end - A.t)); if (A.t >= end - 1e-6) { aFinish(); break; } }
     }
-    aAnim(aRun && !aEnded && !aStill ? dtr : 0);
+    if (atab === 'pl') aAnim(aRun && !aEnded && !aStill ? dtr : 0);
     if (aDirty || ts - aChartAt > 250) { aChartAt = ts; aDirty = false; aRender(); }
   }
   requestAnimationFrame(actLoop);
@@ -2391,15 +2224,17 @@ function actLoop(ts) {
 
 /* ---------- controles ---------- */
 function aBuild() {
-  $('#actPlant').innerHTML = aPlantSvg();
+  aPlantBuild();
   $('#aReset').innerHTML = SVGI.reset;
   $('#aScen').innerHTML = SCEN.map(function (s) {
     return '<button type="button" class="opt" data-v="' + s.id + '"><span class="dotc" style="background:' + s.dot + '"></span><span>' + esc(s.name) + '</span><span class="x">' + s.days + (s.days === 1 ? ' día' : ' días') + '</span></button>';
   }).join('');
+  $('#aLead').innerHTML = 'La Central Hidroeléctrica El Paraíso, en El Colegio (Cundinamarca), genera energía con agua del río Bogotá. Al frenarse en el tanque de aquietamiento, esa agua suelta sulfuro de hidrógeno (H₂S), un gas tóxico con olor a huevo podrido que, si se escapa, llega a las casas del pueblo. El ventilador V-101 saca el gas del tanque y lo empuja por el ecofiltro, donde una biopelícula de bacterias oxida el H₂S, y por el carbón activado antes de la chimenea. Usted lo opera con el modelo dinámico de la planta que construyó Jesús Rafael Acevedo Mastrogiacomo en su maestría.';
   $('#aIdeas').innerHTML = [
-    'Con los ductos limpios y en manual, busque la frecuencia más baja con la que el tanque no bota gas. Compruébela con el balance de energía mecánica y con la curva del ventilador.',
+    'Con los ductos limpios y en manual, busque la frecuencia más baja con la que el tanque no bota gas. Compruébela con el balance de energía mecánica y con la curva del ventilador (pestaña 2).',
     'Ensucie los ductos y los demisters. ¿Qué les pasa al caudal, a la presión del tanque y a la potencia? ¿Hasta dónde tiene que subir la frecuencia para que el tanque vuelva a quedar en succión?',
-    'Corra la semana típica en manual y después en automático, con la consigna en 20 ppm. Compare las fugas, las horas por encima de 20 ppm, el H₂S que llega al carbón y la energía. ¿Por qué el control acelera el ventilador en las madrugadas?',
+    'Corra la semana típica en manual y después en automático, con la consigna en 20 ppm. Compare en la pestaña 4 las fugas, las horas por encima de 20 ppm, el H₂S que llega al carbón y la energía. ¿Por qué el control acelera el ventilador en las madrugadas?',
+    'Mire la pestaña 3 mientras corre la temporada seca. ¿Por qué la remoción cae cuando llega más H₂S, y por qué no cae en la misma proporción?',
     'Apague el límite de presión y corra la temporada seca. ¿A dónde va el H₂S que deja de pasar por el ecofiltro?'
   ].map(function (t) { return '<li>' + t + '</li>'; }).join('');
   $$('#aMode button').forEach(function (b) { b.addEventListener('click', function () { setMode(b.dataset.v); }); });
@@ -2408,15 +2243,21 @@ function aBuild() {
   $('#aLim').addEventListener('change', function () { ACTS.lim = A.lim = this.checked; if (A.mode === 'auto') { A.IH = A.f; A.IP = A.f; } aTag(); aSync(); aDirty = true; });
   $('#aScen').addEventListener('click', function (e) { var b = e.target.closest('button[data-v]'); if (!b) return; ACTS.scen = b.dataset.v; aNew(); });
   $$('#aK button').forEach(function (b) { b.addEventListener('click', function () { ACTS.K = b.dataset.v; A.K = PLANT.K[ACTS.K]; aTag(); aSync(); aDirty = true; }); });
-  $$('#aSpeed button').forEach(function (b) { b.addEventListener('click', function () { ACTS.speed = parseFloat(b.dataset.v); aSync(); }); });
+  $$('#aPlayBar [data-asp]').forEach(function (b) { b.addEventListener('click', function () { ACTS.speed = parseFloat(b.dataset.asp); aSync(); }); });
   $('#aPlay').addEventListener('click', aToggle);
   $('#aReset').addEventListener('click', aNew);
-  $$('#viewSw button').forEach(function (b) { b.addEventListener('click', function () { setView(b.dataset.v); }); });
-  window.addEventListener('resize', function () { aDirty = true; });
+  $$('#tabsAct [role=tab]').forEach(function (b) { b.addEventListener('click', function () { aSetTab(b.dataset.atab); }); });
+  $('#aToBal').addEventListener('click', function () { aSetTab('bl'); aCloseCtl(); });
+  $('#aStatus').addEventListener('click', function () { aSetTab('bl'); });
+  $('#aEnd').addEventListener('click', function (e) { var b = e.target.closest('button[data-end]'); if (!b) return; if (b.dataset.end === 'bal') aSetTab('bl'); else aNew(); });
+  $('#aMobCtl').addEventListener('click', function () { var c = $('#aCtl'); c.classList.toggle('open'); this.textContent = c.classList.contains('open') ? 'Cerrar' : 'Controles'; });
+  $$('#viewSw button, #viewSwM button').forEach(function (b) { b.addEventListener('click', function () { setView(b.dataset.v); }); });
+  window.addEventListener('resize', function () { aPlantBuild(); aDirty = true; });
 }
+function aCloseCtl() { var c = $('#aCtl'); if (c.classList.contains('open')) { c.classList.remove('open'); $('#aMobCtl').textContent = 'Controles'; } }
 function aSync() {
   var auto = ACTS.mode === 'auto';
-  pressed('#aMode button', 'v', ACTS.mode); pressed('#aK button', 'v', ACTS.K); pressed('#aSpeed button', 'v', ACTS.speed); pressed('#aScen button', 'v', ACTS.scen);
+  pressed('#aMode button', 'v', ACTS.mode); pressed('#aK button', 'v', ACTS.K); pressed('#aPlayBar [data-asp]', 'asp', ACTS.speed); pressed('#aScen button', 'v', ACTS.scen);
   show('aMan', !auto); show('aAuto', auto);
   var f = $('#aF'); if (parseFloat(f.value) !== ACTS.f) f.value = ACTS.f;
   var sp = $('#aSP'); if (parseFloat(sp.value) !== ACTS.sp) sp.value = ACTS.sp;
@@ -2431,42 +2272,66 @@ function aSync() {
 }
 function setView(v) {
   view = v; document.body.classList.toggle('mode-act', v === 'act');
-  pressed('#viewSw button', 'v', v);
+  pressed('#viewSw button, #viewSwM button', 'v', v);
   aTxt('kick', v === 'act' ? 'POU · IQYA-2031 · Actividad de clase' : 'POU · IQYA-2031 · Caso de frontera: un biopercolador');
   aTxt('h1', v === 'act' ? 'El ventilador del ecofiltro' : 'Explorador del ecofiltro');
   fitTop();
-  if (v === 'exp') { if (scene) scene.resize(); update(); } else aDirty = true;
+  if (v === 'exp') { if (scene) scene.resize(); update(); } else { aPlantBuild(); aDirty = true; }
   window.scrollTo(0, 0);
 }
 
-/* ---------- el diagrama de la planta ---------- */
+/* ---------- el diagrama de la planta ----------
+   Coordenadas de 0 a 1000 a lo ancho. Arriba queda una franja libre para los indicadores y los botones de la
+   corrida; abajo, alineada con cada equipo, la presión manométrica a lo largo del tren de gas. En pantallas angostas
+   el mismo dibujo va partido en dos, uno debajo del otro. */
 var A_HOUSES = [[214, 98, 22], [241, 101, 17], [266, 96, 24], [295, 100, 19], [321, 97, 22], [348, 102, 17]];
+var A_PZX = [232, 470, 556, 620, 670, 941], A_PZN = ['tanque', 'succión', 'descarga', 'base', 'tope', 'chimenea'];
+var A_Y0 = -44, A_H = 652, A_SPLIT = 560;
+function aPlantBuild() {
+  var svg = $('#actPlant'); if (!svg) return;
+  var w = (svg.parentNode && svg.parentNode.clientWidth) || window.innerWidth, lay = w < 700 ? 'narrow' : 'wide';
+  if (lay === aLayout && svg.firstChild) return;
+  aLayout = lay; aVis.els = null;
+  var d = aPlantSvg();
+  if (lay === 'wide') { svg.setAttribute('viewBox', '0 ' + A_Y0 + ' 1000 ' + A_H); svg.innerHTML = d; svg.classList.remove('narrow'); }
+  else {
+    var d2 = d.replace(/id="([^"]+)"/g, 'id="$1_2"').replace(/url\(#([^)]+)\)/g, 'url(#$1_2)');
+    var w2 = 1000 - A_SPLIT, dx = (A_SPLIT - w2) / 2;
+    /* en celular los botones de la corrida son más altos: la franja de arriba crece */
+    svg.setAttribute('viewBox', '0 ' + (A_Y0 - 56) + ' ' + A_SPLIT + ' ' + (2 * A_H + 56));
+    svg.innerHTML = '<defs><clipPath id="aCutA"><rect x="0" y="' + (A_Y0 - 56) + '" width="' + A_SPLIT + '" height="' + (A_H + 56) + '"/></clipPath><clipPath id="aCutB"><rect x="' + A_SPLIT + '" y="' + A_Y0 + '" width="' + w2 + '" height="' + A_H + '"/></clipPath></defs>' +
+      '<g clip-path="url(#aCutA)">' + d + '</g><g transform="translate(' + (dx - A_SPLIT) + ',' + A_H + ')"><g clip-path="url(#aCutB)">' + d2 + '</g></g>' +
+      '<path d="M0 ' + (A_Y0 + A_H) + 'H' + A_SPLIT + '" style="stroke:var(--n300);stroke-width:2;stroke-dasharray:6 6"/>';
+    svg.classList.add('narrow');
+  }
+  if (A) { aPlantLive(); aAnim(0); }
+}
 function aPlantSvg() {
   var s = '', i, M = MUT;
   var duct = function (d, id, cls) { return '<path class="duct" d="' + d + '"/><path class="duct-in" d="' + d + '"/><path class="' + (cls || 'gasflow') + '"' + (id ? ' id="' + id + '"' : '') + ' d="' + d + '"/>'; };
   var inst = function (x, y, a, b, panel) { return '<circle class="inst" cx="' + x + '" cy="' + y + '" r="14"/>' + (panel ? '<line x1="' + (x - 14) + '" y1="' + y + '" x2="' + (x + 14) + '" y2="' + y + '" style="stroke:var(--ink);stroke-width:1"/>' : '') + '<text class="inst-t" x="' + x + '" y="' + (y - 3) + '">' + a + '</text><text class="inst-t" x="' + x + '" y="' + (y + 10) + '">' + b + '</text>'; };
-  s += '<defs><linearGradient id="aBedG" x1="0" y1="1" x2="0" y2="0"><stop id="aBedG0" offset="0" stop-color="#C98A12" stop-opacity=".4"/><stop id="aBedG1" offset="1" stop-color="#C98A12" stop-opacity=".1"/></linearGradient>' +
+  s += '<defs><linearGradient id="aBedG" x1="0" y1="1" x2="0" y2="0"><stop id="aBedG0" offset="0" stop-color="' + AH2S + '" stop-opacity=".4"/><stop id="aBedG1" offset="1" stop-color="' + AH2S + '" stop-opacity=".1"/></linearGradient>' +
     '<clipPath id="aBedC"><rect x="603" y="116" width="84" height="134"/></clipPath><clipPath id="aCarbC"><rect x="832" y="112" width="58" height="136"/></clipPath>' +
     '<marker id="aArr" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8Z" style="fill:var(--ink)"/></marker>' +
     '<marker id="aArrG" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L8 4L0 8Z" style="fill:var(--ok)"/></marker></defs>';
-  s += '<rect class="chart-bg" x="0" y="0" width="1000" height="430"/>';
+  s += '<rect class="chart-bg" x="0" y="' + A_Y0 + '" width="1000" height="' + A_H + '"/>';
   /* el pueblo */
   s += '<path class="hill" d="M150 106C196 76 250 70 296 86S372 96 404 82"/>';
   A_HOUSES.forEach(function (q) { var x = q[0], y = q[1], w = q[2], h = w * 0.78; s += '<path class="house" d="M' + (x - w / 2) + ' ' + y + 'V' + r1(y - h) + 'L' + x + ' ' + r1(y - h - w * 0.45) + 'L' + (x + w / 2) + ' ' + r1(y - h) + 'V' + y + 'Z"/><rect x="' + (x - 3) + '" y="' + (y - 8) + '" width="6" height="8" style="fill:var(--ink)"/>'; });
-  s += TX(200, 36, 'El Colegio', { fs: 14, fw: 750 }) + TX(200, 51, 'las casas vecinas', { fs: 11, c: M });
-  s += '<g id="aPuffs">'; for (i = 0; i < 10; i++) s += '<circle class="puff" r="4" cx="323" cy="160" opacity="0"/>'; s += '</g>';
+  s += TX(204, 34, 'El Colegio', { fs: 14, fw: 750 }) + TX(204, 49, 'las casas vecinas', { fs: 11, c: M });
+  s += '<g class="apuffs">'; for (i = 0; i < 10; i++) s += '<circle class="puff" r="4" cx="323" cy="160" opacity="0"/>'; s += '</g>';
   /* el biofiltro, en su lazo */
-  s += duct('M120 196H95', 'aBf1', 'bfflow') + duct('M95 254H120', 'aBf2', 'bfflow');
+  s += duct('M120 196H95', null, 'bfflow') + duct('M95 254H120', null, 'bfflow');
   s += '<rect class="wall" x="22" y="186" width="73" height="110" rx="4" style="stroke-width:1.8"/>';
   for (i = 0; i < 26; i++) s += '<circle cx="' + (30 + (i * 37) % 58) + '" cy="' + (232 + (i * 23) % 26) + '" r="1.6" style="fill:var(--n400)"/>';
   s += TX(58.5, 206, 'B-101', { a: 'middle', fs: 11.5, fw: 750, mono: true }) + TX(58.5, 221, 'biofiltro', { a: 'middle', fs: 10.5, c: M });
   s += TX(58.5, 276, 'lazo', { a: 'middle', fs: 10.5, c: M }) + TX(58.5, 289, 'interno', { a: 'middle', fs: 10.5, c: M });
   /* el tanque de aquietamiento */
   s += '<rect class="wall" x="120" y="175" width="225" height="170"/>';
-  s += '<rect id="aTankGas" x="121.2" y="176.2" width="222.6" height="93.6" style="fill:#C98A12;fill-opacity:.2"/>';
+  s += '<rect id="aTankGas" x="121.2" y="176.2" width="222.6" height="93.6" style="fill:' + AH2S + ';fill-opacity:.2"/>';
   s += '<rect class="water" x="121.2" y="270" width="222.6" height="73.8"/>';
-  s += '<path class="wflow" id="aWf1" d="M126 294H340"/><path class="wflow" id="aWf2" d="M126 322H340"/>';
-  s += '<g id="aBubs">'; for (i = 0; i < 7; i++) s += '<circle class="bub" r="2.2" cx="' + (140 + i * 29) + '" cy="330"/>'; s += '</g>';
+  s += '<path class="wflow" d="M126 294H340"/><path class="wflow" d="M126 322H340"/>';
+  s += '<g class="abubs">'; for (i = 0; i < 7; i++) s += '<circle class="bub" r="2.2" cx="' + (140 + i * 29) + '" cy="330"/>'; s += '</g>';
   s += '<rect class="wall" x="310" y="166" width="26" height="9" style="stroke-width:1.6"/>';
   s += TX(132, 195, 'TA-101', { fs: 12, fw: 750, mono: true }) + TX(132, 210, 'tanque de aquietamiento', { fs: 11, c: M });
   s += '<path d="M97 318H117" style="stroke:var(--ink);stroke-width:1.6;fill:none" marker-end="url(#aArr)"/><path d="M345 318H364" style="stroke:var(--ink);stroke-width:1.6;fill:none" marker-end="url(#aArr)"/>';
@@ -2488,7 +2353,7 @@ function aPlantSvg() {
   s += '<text class="rd" id="aRdkW" x="545" y="343"></text>';
   s += '<text class="rd" id="aRdDp" x="520" y="226" text-anchor="middle"></text><text class="rd" id="aRdQ" x="520" y="243" text-anchor="middle"></text>';
   s += '<path d="M472 338H503" style="stroke:var(--ink);stroke-width:1.3"/><rect class="wall" x="404" y="316" width="68" height="32" rx="2" style="stroke-width:1.6"/>';
-  s += TX(438, 328, 'SIC-101', { a: 'middle', fs: 9, fw: 700, mono: true }) + '<text class="rd" id="aRdF" x="438" y="343" text-anchor="middle"></text>';
+  s += TX(438, 328, 'SIC-101', { a: 'middle', fs: 10, fw: 700, mono: true }) + '<text class="rd" id="aRdF" x="438" y="343" text-anchor="middle"></text>';
   /* el ecofiltro */
   s += duct('M645 72V50H783V58') + duct('M783 128V150H830') + duct('M892 130H930');
   s += '<rect class="wall" x="600" y="72" width="90" height="273" rx="10"/>';
@@ -2496,9 +2361,9 @@ function aPlantSvg() {
   s += '<g clip-path="url(#aBedC)">'; for (i = -8; i < 12; i++) s += '<path d="M' + (603 + i * 12) + ' 250L' + (603 + i * 12 + 134) + ' 116" style="stroke:var(--n400);stroke-width:.8"/><path d="M' + (603 + i * 12) + ' 116L' + (603 + i * 12 + 134) + ' 250" style="stroke:var(--n400);stroke-width:.8"/>'; s += '</g>';
   s += '<rect x="603" y="116" width="84" height="134" style="fill:none;stroke:var(--ink);stroke-width:1.2"/>';
   s += '<path d="M612 100H678" style="stroke:var(--ink);stroke-width:2"/>';
-  for (i = 0; i < 5; i++) s += '<path d="M' + (618 + i * 13.5) + ' 100L' + (613 + i * 13.5) + ' 110M' + (618 + i * 13.5) + ' 100L' + (623 + i * 13.5) + ' 110" style="stroke:#5980A6;stroke-width:1.2"/>';
+  for (i = 0; i < 5; i++) s += '<path d="M' + (618 + i * 13.5) + ' 100L' + (613 + i * 13.5) + ' 110M' + (618 + i * 13.5) + ' 100L' + (623 + i * 13.5) + ' 110" style="stroke:#7aa0b8;stroke-width:1.4"/>';
   s += '<rect class="water" x="601.2" y="312" width="87.6" height="31.8"/>';
-  s += TX(645, 92, 'riego', { a: 'middle', fs: 10, c: M }) + TX(645, 186, 'lecho', { a: 'middle', fs: 11, fw: 650 });
+  s += TX(645, 92, 'riego', { a: 'middle', fs: 10.5, c: M }) + TX(645, 186, 'lecho', { a: 'middle', fs: 11, fw: 650 });
   /* D-102, carbón activado y chimenea */
   s += '<rect class="wall" x="768" y="58" width="30" height="70" rx="9"/>';
   for (i = 0; i < 3; i++) s += '<path d="M' + (774 + i * 7) + ' 68L' + (777 + i * 7) + ' 76L' + (774 + i * 7) + ' 84L' + (777 + i * 7) + ' 92L' + (774 + i * 7) + ' 100L' + (777 + i * 7) + ' 108L' + (774 + i * 7) + ' 116" style="stroke:var(--n500);stroke-width:1;fill:none"/>';
@@ -2507,11 +2372,11 @@ function aPlantSvg() {
   s += '<g clip-path="url(#aCarbC)">'; for (i = 0; i < 90; i++) s += '<circle cx="' + (834 + (i * 13) % 56) + '" cy="' + (200 + (i * 7) % 46) + '" r="2" style="fill:var(--n500)"/>'; s += '</g>';
   s += TX(861, 150, 'carbón', { a: 'middle', fs: 10.5, fw: 650 }) + TX(861, 164, 'activado', { a: 'middle', fs: 10.5, fw: 650 });
   s += '<rect class="wall" x="930" y="26" width="22" height="319"/>';
-  s += '<g id="aSmoke">'; for (i = 0; i < 4; i++) s += '<circle class="smoke" r="5" cx="941" cy="20" opacity="0"/>'; s += '</g>';
-  /* instrumentos y control */
+  s += '<g class="asmoke">'; for (i = 0; i < 4; i++) s += '<circle class="smoke" r="5" cx="941" cy="20" opacity="0"/>'; s += '</g>';
+  /* instrumentos y control: el lazo automático solo se dibuja cuando existe */
   s += '<path d="M735 78V50" style="stroke:var(--ink);stroke-width:1.3"/>' + inst(735, 92, 'AIT', '102') + '<text class="rd" id="aRdOut" x="735" y="124" text-anchor="middle"></text>';
-  s += '<g id="aCtlH"><path class="sig" d="M735 106V266"/><path class="sig" d="M735 294V412H452"/>' + inst(735, 280, 'AIC', '102', true) + '<text class="rd" id="aRdSP" x="753" y="284" style="font-size:11.5px"></text></g>';
-  s += '<g id="aCtlP"><path class="sig" d="M372 186V398"/><path class="sig" d="M386 412H428"/>' + inst(372, 412, 'PIC', '101', true) + '<text class="rd" id="aRdPSP" x="352" y="416" text-anchor="end" style="font-size:11.5px">−50 Pa</text></g>';
+  s += '<g id="aCtlH"><path class="sig" d="M735 106V266"/><path class="sig" d="M735 294V412H452"/>' + inst(735, 280, 'AIC', '102', true) + '<text class="rd" id="aRdSP" x="753" y="284" style="font-size:12px"></text></g>';
+  s += '<g id="aCtlP"><path class="sig" d="M372 186V398"/><path class="sig" d="M386 412H428"/>' + inst(372, 412, 'PIC', '101', true) + '<text class="rd" x="352" y="416" text-anchor="end" style="font-size:12px">−50 Pa</text></g>';
   s += '<g id="aCtlS"><path class="sig" d="M440 400V348"/><rect class="inst" x="428" y="400" width="24" height="24" rx="1"/><text class="inst-t" x="440" y="416" style="font-size:12px">&gt;</text></g>';
   /* suelo y rótulos */
   s += '<path d="M0 349H1000" style="stroke:var(--n400);stroke-width:1.2"/>';
@@ -2519,6 +2384,12 @@ function aPlantSvg() {
   s += TX(520, 368, 'V-101', { a: 'middle', fs: 11.5, fw: 750, mono: true }) + TX(520, 382, 'ventilador', { a: 'middle', fs: 10.5, c: M });
   s += TX(645, 368, 'E-101', { a: 'middle', fs: 11.5, fw: 750, mono: true }) + TX(645, 382, 'ecofiltro', { a: 'middle', fs: 10.5, c: M });
   s += TX(861, 368, 'adsorción', { a: 'middle', fs: 10.5, c: M }) + TX(941, 368, 'chimenea', { a: 'middle', fs: 10.5, c: M });
+  /* la presión a lo largo del tren, alineada con cada equipo */
+  s += '<rect class="pz-band" x="0" y="436" width="1000" height="172"/>';
+  s += TX(14, 458, 'Presión manométrica a lo largo del tren de gas', { fs: 12.5, fw: 750 });
+  s += '<path class="pz-zero" id="aPzZero" d="M0 520H1000"/><text class="rd" id="aPzZeroL" x="14" y="515" style="font-size:11px;font-weight:600;fill:var(--muted-ink)">atmosférica</text>';
+  s += '<path class="pz-line" id="aPzLine" d=""/><path class="pz-fan" id="aPzFan" d=""/>';
+  for (i = 0; i < 6; i++) s += '<circle id="aPzD' + i + '" r="4.5" cx="' + A_PZX[i] + '" cy="520" style="fill:var(--ink);stroke:var(--paper);stroke-width:2"/><text class="rd" id="aPzL' + i + '" x="' + A_PZX[i] + '" y="510" text-anchor="middle" style="font-size:12px"></text>' + TX(A_PZX[i], 602, A_PZN[i], { a: 'middle', fs: 10.5, c: M });
   return s;
 }
 /* lo que se mueve: el rodete, el gas por los ductos, el agua, las burbujas, las fugas y la chimenea */
@@ -2526,82 +2397,116 @@ function aAnim(dt) {
   if (!A) return;
   var h = A.h, k = dt;
   aVis.t += k; aVis.ang = (aVis.ang + k * A.f / 60 * 330) % 360; aVis.gas -= k * h.Q * 30; aVis.bf -= k * 30; aVis.water -= k * 26;
-  var rot = document.getElementById('aRot'); if (rot) rot.setAttribute('transform', 'rotate(' + r1(aVis.ang) + ' 520 290)');
-  if (!aVis.els) aVis.els = { gas: $$('#actPlant .gasflow'), bf: $$('#actPlant .bfflow'), w: $$('#actPlant .wflow'), bub: $$('#aBubs circle'), puff: $$('#aPuffs circle'), smoke: $$('#aSmoke circle') };
-  var V = aVis.els;
+  aAttr('aRot', 'transform', 'rotate(' + r1(aVis.ang) + ' 520 290)');
+  if (!aVis.els) aVis.els = { gas: $$('#actPlant .gasflow'), bf: $$('#actPlant .bfflow'), w: $$('#actPlant .wflow'), bub: $$('#actPlant .abubs circle'), puff: $$('#actPlant .apuffs circle'), smoke: $$('#actPlant .asmoke circle') };
+  var V = aVis.els, nb = V.bub.length / (aLayout === 'narrow' ? 2 : 1), np = V.puff.length / (aLayout === 'narrow' ? 2 : 1), ns = V.smoke.length / (aLayout === 'narrow' ? 2 : 1);
   V.gas.forEach(function (p) { p.style.strokeDashoffset = r1(aVis.gas); });
   V.bf.forEach(function (p) { p.style.strokeDashoffset = r1(aVis.bf); });
   V.w.forEach(function (p) { p.style.strokeDashoffset = r1(aVis.water); });
-  V.bub.forEach(function (c, i) { var u = ((aVis.t * 0.5 + i * 0.37) % 1); c.setAttribute('cy', r1(340 - u * 68)); c.setAttribute('opacity', r1(0.85 * (1 - u))); });
+  V.bub.forEach(function (c, j) { var i = j % nb, u = ((aVis.t * 0.5 + i * 0.37) % 1); c.setAttribute('cy', r1(340 - u * 68)); c.setAttribute('opacity', r1(0.85 * (1 - u))); });
   var lk = clamp(A.leakGh / 150, 0, 1);
-  V.puff.forEach(function (c, i) {
-    var u = ((aVis.t * 0.32 + i / 10) % 1), x = 323 - u * 40 + Math.sin(u * 7 + i) * 9 * u, y = 162 - u * 72;
+  V.puff.forEach(function (c, j) {
+    var i = j % np, u = ((aVis.t * 0.32 + i / 10) % 1), x = 323 - u * 40 + Math.sin(u * 7 + i) * 9 * u, y = 162 - u * 72;
     c.setAttribute('cx', r1(x)); c.setAttribute('cy', r1(y)); c.setAttribute('r', r1(3 + u * 6)); c.setAttribute('opacity', r1(lk * 0.75 * (1 - u * 0.7)));
   });
   var sm = clamp(A.carbonGh / 60, 0.15, 0.6);
-  V.smoke.forEach(function (c, i) { var u = ((aVis.t * 0.25 + i / 4) % 1); c.setAttribute('cy', r1(22 - u * 18)); c.setAttribute('cx', r1(941 + u * 10)); c.setAttribute('r', r1(4 + u * 5)); c.setAttribute('opacity', r1(sm * (1 - u))); });
+  V.smoke.forEach(function (c, j) { var i = j % ns, u = ((aVis.t * 0.25 + i / 4) % 1); c.setAttribute('cy', r1(22 - u * 18)); c.setAttribute('cx', r1(941 + u * 10)); c.setAttribute('r', r1(4 + u * 5)); c.setAttribute('opacity', r1(sm * (1 - u))); });
 }
 function aTint(ppm) { return clamp(Math.log10(Math.max(ppm, 1)) / Math.log10(700), 0, 1) * 0.55 + 0.04; }
 function aPlantLive() {
   var h = A.h, auto = A.mode === 'auto';
-  $('#aTankGas').style.fillOpacity = r1(aTint(A.cin) * 100) / 100;
-  $('#aBedG0').setAttribute('stop-opacity', r1(aTint(A.cin) * 100) / 100); $('#aBedG1').setAttribute('stop-opacity', r1(aTint(A.cout) * 100) / 100);
+  aEls('aTankGas').forEach(function (el) { el.style.fillOpacity = r1(aTint(A.cin) * 100) / 100; });
+  aAttr('aBedG0', 'stop-opacity', r1(aTint(A.cin) * 100) / 100); aAttr('aBedG1', 'stop-opacity', r1(aTint(A.cout) * 100) / 100);
   aTxt('aRdIn', fmtPpm(A.yIn) + ' ppm'); aTxt('aRdOut', fmtPpm(A.yOut) + ' ppm'); aCls('aRdOut', 'bad', A.yOut > CRIT);
-  aTxt('aRdP', aSgn(h.dP) + ' Pa'); aCls('aRdP', 'bad', h.dP > 0.5);
+  aTxt('aRdP', aSgn(h.dP) + ' Pa'); aCls('aRdP', 'bad', h.dP > 0.5); aCls('aRdP', 'good', h.dP <= 0.5);
   aTxt('aRdF', fmtN(A.f, 1) + ' Hz'); aTxt('aRdkW', fmtN(h.kW, 1) + ' kW');
   aTxt('aRdDp', 'Δp ' + fmtN(h.dPfan, 0) + ' Pa'); aTxt('aRdQ', fmtN(h.Q, 2) + ' m³/s');
   aTxt('aRdSP', 'consigna ' + fmtN(A.sp, 0) + ' ppm');
-  $('#aAir').style.display = h.dP < -5 ? '' : 'none';
-  var on = function (id, st) { var g = document.getElementById(id); g.classList.toggle('ctl-off', st === 0); g.classList.toggle('ctl-on', st === 2); };
+  aEls('aAir').forEach(function (el) { el.style.display = h.dP < -5 ? '' : 'none'; });
+  var on = function (id, st) { aEls(id).forEach(function (g) { g.style.display = st === 0 ? 'none' : ''; g.classList.toggle('ctl-on', st === 2); }); };
   on('aCtlH', !auto ? 0 : (A.cmd === 'H' || A.cmd === 'max' || A.cmd === 'min' ? 2 : 1));
   on('aCtlP', !auto || !A.lim ? 0 : (A.cmd === 'P' ? 2 : 1));
   on('aCtlS', !auto || !A.lim ? 0 : 1);
+  /* la presión a lo largo del tren */
+  var n = h.nodes, mn = Math.min.apply(null, n), mx = Math.max.apply(null, n);
+  var lo = -Math.max(600, aNice(Math.max(1, -mn) * 1.2)), hi = Math.max(1500, aNice(Math.max(1, mx) * 1.15));
+  var Y = function (p) { return 586 - (p - lo) / (hi - lo) * 100; };
+  aAttr('aPzZero', 'd', 'M0 ' + r1(Y(0)) + 'H1000'); aAttr('aPzZeroL', 'y', r1(Y(0) - 5));
+  aAttr('aPzLine', 'd', n.map(function (p, i) { return (i ? 'L' : 'M') + A_PZX[i] + ' ' + r1(Y(p)); }).join(''));
+  aAttr('aPzFan', 'd', 'M' + A_PZX[1] + ' ' + r1(Y(n[1])) + 'L' + A_PZX[2] + ' ' + r1(Y(n[2])));
+  n.forEach(function (p, i) {
+    aAttr('aPzD' + i, 'cy', r1(Y(p)));
+    aEls('aPzD' + i).forEach(function (el) { el.style.fill = i === 0 ? (p > 0.5 ? 'var(--redline)' : 'var(--ok)') : (i === 1 || i === 2 ? 'var(--hl)' : 'var(--ink)'); });
+    var below = i === 1, y = below ? Y(p) + 17 : Y(p) - 9;
+    aAttr('aPzL' + i, 'y', r1(clamp(y, 472, 590)));
+    aTxt('aPzL' + i, aSgn(p) + (i === 0 ? ' Pa' : ''));
+    aCls('aPzL' + i, 'bad', i === 0 && p > 0.5); aCls('aPzL' + i, 'good', i === 0 && p <= 0.5);
+  });
 }
 
 /* ---------- lo que se escribe ---------- */
 function aRender() {
   if (!A) return;
-  var h = A.h, auto = A.mode === 'auto';
-  aTxt('aClock', aClock(A.t)); aCls('aClock', 'end', aEnded);
-  /* indicadores */
-  aTxt('kaIn', fmtPpm(A.yIn)); aTxt('kaOut', fmtPpm(A.yOut)); aCls('kaOutc', 'bad', A.yOut > CRIT);
-  aTxt('kaLeak', A.leakGh > 0.05 ? fmtG(A.leakGh) : '0'); aTxt('kaLeaku', A.leakGh > 0.05 ? 'g/h de H₂S que salen del tanque' : 'g/h · el tanque no bota gas'); aCls('kaLeakc', 'bad', A.leakGh > 0.05);
+  var h = A.h, auto = A.mode === 'auto', sc = byId(SCEN, A.scen), leak = A.leakGh > 0.05, over = A.yOut > CRIT;
+  /* cabecera */
+  aTxt('kaIn', fmtPpm(A.yIn)); aTxt('kaOut', fmtPpm(A.yOut)); aCls('kaOutc', 'bad', over);
+  aTxt('kaLeak', leak ? fmtG(A.leakGh) : '0'); aTxt('kaLeaku', leak ? 'g/h de H₂S que salen del tanque' : 'g/h · el tanque no bota gas'); aCls('kaLeakc', 'bad', leak);
   aTxt('kaP', aSgn(h.dP)); aTxt('kaPu', 'Pa · ' + (h.dP > 0.5 ? 'sobrepresión: sale gas' : 'succión: entra aire')); aCls('kaPc', 'bad', h.dP > 0.5);
   aTxt('kaF', fmtN(A.f, 1)); aTxt('kaFu', 'Hz · ' + fmtN(h.Q, 2) + ' m³/s · ' + fmtN(UNOM * A.f / FAN.fnom, 0) + ' rpm');
   aTxt('kaW', fmtN(h.kW, 1)); aTxt('kaWu', 'kW en el eje · ' + fmtN(A.acc.kWh, 0) + ' kWh en la corrida');
-  aPlantLive();
-  /* la frase de abajo del diagrama */
-  var c1 = h.dP > 0.5
-    ? 'El V-101 saca menos gas del que suelta el agua: el tanque está en <b>' + aSgn(h.dP) + ' Pa</b> y se escapan <b>' + fmtG(A.leakGh) + ' g/h</b> de H₂S hacia El Colegio.'
-    : 'El tanque está en succión (<b>' + aSgn(h.dP) + ' Pa</b>): por las rendijas entra aire y no sale gas hacia El Colegio.';
-  var c2 = ' Al ecofiltro llegan <b>' + fmtPpm(A.cin) + ' ppm</b> y salen <b>' + fmtPpm(A.cout) + '</b>, el ' + fmtN(A.eta * 100, 0) + ' % de remoción' +
-    (A.cout > CRIT ? ', por encima del criterio interno de ' + CRIT + ' ppm: el carbón activado recibe ' + fmtG(A.carbonGh) + ' g/h y se gasta más rápido.' : ', dentro del criterio interno de ' + CRIT + ' ppm.');
-  aHtml('aCap', (aEnded ? '<b>Terminó la corrida.</b> Compare su balance con el de las otras en la tabla. ' : '') + c1 + c2);
-  /* quién manda en automático */
+  var modeTxt = auto ? 'automático, ' + (A.cmd === 'P' ? 'manda la presión' : A.cmd === 'max' ? 'en 60 Hz' : A.cmd === 'min' ? 'en 20 Hz' : 'manda el H₂S') : 'manual a ' + fmtN(A.f, 1) + ' Hz';
+  aHtml('aCtx', '<b>' + esc(sc.name) + '</b> · ' + aClock(A.t) + ' · ' + modeTxt + (A.K === PLANT.K.dirty ? ' · ductos sucios' : ''));
+  var st = $('#aStatus'); st.className = 'status' + (leak ? ' inv' : over ? ' adv' : '');
+  aTxt('aStatusTxt', leak ? 'Fugas hacia El Colegio' : over ? 'Sin fugas · más de 20 ppm' : 'Sin fugas · cumple 20 ppm');
+  /* barra lateral */
+  aHtml('aNow', esc(sc.name) + '<small>' + (aEnded ? 'terminó la corrida' : aClock(A.t) + ' · ' + modeTxt) + '</small>');
   if (auto) {
     var t, k = '';
     if (A.cmd === 'P') { t = 'Manda el <b>PIC-101</b>: para bajar el H₂S tendría que frenar más el ventilador y el tanque empezaría a botar gas. La salida queda en ' + fmtPpm(A.yOut) + ' ppm.'; k = 'p'; }
     else if (A.cmd === 'max') t = 'El AIC-102 llevó el ventilador al máximo, <b>60 Hz</b>: aun así salen ' + fmtPpm(A.yOut) + ' ppm, menos que la consigna.';
-    else if (A.cmd === 'min') { t = 'El AIC-102 frenó el ventilador hasta el mínimo, <b>20 Hz</b>, y salen ' + fmtPpm(A.yOut) + ' ppm. ' + (A.leakGh > 0.05 ? 'El tanque bota ' + fmtG(A.leakGh) + ' g/h de H₂S.' : ''); k = 'x'; }
-    else { t = 'Manda el <b>AIC-102</b>: mueve la frecuencia para que salgan ' + fmtN(A.sp, 0) + ' ppm.' + (A.leakGh > 0.05 ? ' Sin el límite de presión, el tanque bota ' + fmtG(A.leakGh) + ' g/h de H₂S.' : ''); if (A.leakGh > 0.05) k = 'x'; }
+    else if (A.cmd === 'min') { t = 'El AIC-102 frenó el ventilador hasta el mínimo, <b>20 Hz</b>, y salen ' + fmtPpm(A.yOut) + ' ppm. ' + (leak ? 'El tanque bota ' + fmtG(A.leakGh) + ' g/h de H₂S.' : ''); k = 'x'; }
+    else { t = 'Manda el <b>AIC-102</b>: mueve la frecuencia para que salgan ' + fmtN(A.sp, 0) + ' ppm.' + (leak ? ' Sin el límite de presión, el tanque bota ' + fmtG(A.leakGh) + ' g/h de H₂S.' : ''); if (leak) k = 'x'; }
     aHtml('aCmd', t); $('#aCmd').className = 'acmd' + (k ? ' ' + k : '');
   }
-  aBalance(); aTrend(); aPress(); aFan();
-  var now = performance.now(); if (now - aEqAt > 600) { aEqAt = now; aEqs(); }
+  if (atab === 'pl') {
+    aPlantLive();
+    aHtml('aHud', '<span class="chip acc">' + aClock(A.t) + '</span><span class="chip">' + esc(sc.name) + '</span><span class="chip">' + esc(modeTxt.charAt(0).toUpperCase() + modeTxt.slice(1)) + '</span>' + (leak ? '<span class="chip red">fugas ' + fmtG(A.leakGh) + ' g/h</span>' : ''));
+    var c1 = h.dP > 0.5
+      ? 'El V-101 saca menos gas del que suelta el agua: el tanque está en <b>' + aSgn(h.dP) + ' Pa</b> y se escapan <b>' + fmtG(A.leakGh) + ' g/h</b> de H₂S hacia El Colegio.'
+      : 'El tanque está en succión (<b>' + aSgn(h.dP) + ' Pa</b>): por las rendijas entra aire y no sale gas hacia El Colegio.';
+    var c2 = ' Al ecofiltro llegan <b>' + fmtPpm(A.cin) + ' ppm</b> y salen <b>' + fmtPpm(A.cout) + '</b>, el ' + fmtN(A.eta * 100, 0) + ' % de remoción' +
+      (A.cout > CRIT ? ', por encima del criterio interno de ' + CRIT + ' ppm: el carbón activado recibe ' + fmtG(A.carbonGh) + ' g/h y se gasta más rápido.' : ', dentro del criterio interno de ' + CRIT + ' ppm.');
+    aHtml('aCap', '<b>' + aClock(A.t).charAt(0).toUpperCase() + aClock(A.t).slice(1) + '.</b> ' + c1 + c2);
+    var en = $('#aEnd');
+    if (aEnded) {
+      var a = A.acc;
+      aHtml('aEnd', '<h3>Terminó la corrida</h3><p>' + esc(sc.name) + ', ' + esc(aRunLabel().charAt(0).toLowerCase() + aRunLabel().slice(1)) + '. Fugas hacia El Colegio: <b>' + fmtKg(a.leak) + '</b>. Horas con más de ' + CRIT + ' ppm a la salida: <b>' + fmtN(a.hOver, 0) + ' h</b>. Al carbón activado: <b>' + fmtKg(a.carbon) + '</b>. Energía: <b>' + fmtN(a.kWh, 0) + ' kWh</b>.</p><div class="row"><button type="button" data-end="bal">Ver el balance y las corridas</button><button type="button" data-end="new">Repetir la corrida</button></div>');
+      en.hidden = false;
+    } else en.hidden = true;
+    aTrend();
+  } else if (atab === 'pr') { aPress(); aFan(); }
+  else if (atab === 'rm') aRemoval();
+  else if (atab === 'bl') aBalance();
+  else if (atab === 'ec') { var now = performance.now(); if (now - aEqAt > 600) { aEqAt = now; aEqs(); } }
+  else if (atab === 'gu') aAssump();
 }
 function aBalance() {
-  var a = A.acc, tot = a.bf + a.btf + a.carbon + a.leak || 1;
+  var a = A.acc, tot = a.bf + a.btf + a.carbon + a.leak || 1, hrs = A.t / 3600 || 1;
   var parts = [['B-101, en el lazo interno', a.bf, AC.bf], ['E-101, el ecofiltro', a.btf, AC.btf], ['al carbón activado', a.carbon, AC.carbon], ['fugas hacia El Colegio', a.leak, AC.leak]];
   aHtml('aStack', parts.map(function (p) { var w = p[1] / tot * 100; return '<div style="flex-basis:' + r1(w) + '%;background:' + p[2] + '">' + (w > 9 ? '<span>' + fmtN(w, 0) + ' %</span>' : '') + '</div>'; }).join(''));
-  aHtml('aLeg', parts.map(function (p) { return '<div><i style="background:' + p[2] + '"></i><span>' + p[0] + '</span><b>' + fmtKg(p[1]) + '</b></div>'; }).join(''));
-  aTxt('aBalT', aClock(A.t));
-  var hrs = A.t / 3600 || 1;
-  aHtml('aBal', '<div>Energía del V-101</div><div class="v">' + fmtN(a.kWh, 0) + ' kWh</div>' +
-    '<div>Horas con más de ' + CRIT + ' ppm a la salida</div><div class="v' + (a.hOver > 0.05 ? ' bad' : '') + '">' + fmtN(a.hOver, 1) + ' h · ' + fmtN(a.hOver / hrs * 100, 0) + ' %</div>' +
-    '<div>Horas con fugas</div><div class="v' + (a.hLeak > 0.05 ? ' bad' : '') + '">' + fmtN(a.hLeak, 1) + ' h</div>');
+  aHtml('aLeg', parts.map(function (p) { return '<div><i style="background:' + p[2] + '"></i><span>' + p[0] + '</span><b>' + fmtKg(p[1]) + ' · ' + fmtN(p[1] / tot * 100, 0) + ' %</b></div>'; }).join(''));
+  aTxt('aBalT', byId(SCEN, A.scen).name + ' · ' + aClock(A.t));
+  aTxt('aBalTot', fmtKg(tot) + ' en total');
+  var card = function (l, v, u, bad) { return '<div><div class="lbl">' + l + '</div><div class="v' + (bad ? ' bad' : '') + '">' + v + '</div><div class="u">' + u + '</div></div>'; };
+  aHtml('aCards', card('Fugas hacia El Colegio', fmtKg(a.leak), 'de H₂S que salió del tanque sin tratar', a.leak > 1) +
+    card('Horas con fugas', fmtN(a.hLeak, 1) + ' h', 'con el tanque por encima de la atmosférica', a.hLeak > 0.05) +
+    card('Horas con más de ' + CRIT + ' ppm', fmtN(a.hOver, 1) + ' h', fmtN(a.hOver / hrs * 100, 0) + ' % de la corrida, a la salida del ecofiltro', a.hOver > 0.05) +
+    card('Al carbón activado', fmtKg(a.carbon), 'lo que el ecofiltro deja pasar', false) +
+    card('Energía del V-101', fmtN(a.kWh, 0) + ' kWh', 'en el eje, con η = ' + fmtN(FAN.eta * 100, 0) + ' %', false) +
+    card('Frecuencia media', fmtN(A.log.length ? A.log.reduce(function (s, r) { return s + r[3]; }, 0) / A.log.length : A.f, 1) + ' Hz', 'en lo que va de la corrida', false));
   if (!aRuns.length) aHtml('aRuns', '<div class="none">Cuando termine una corrida, quedará aquí para compararla con las siguientes.</div>');
-  else aHtml('aRuns', '<table class="t"><thead><tr><th>Corrida</th><th>Fugas</th><th>&gt; ' + CRIT + ' ppm</th><th>Al carbón</th><th>Energía</th></tr></thead><tbody>' +
-    aRuns.map(function (r) { return '<tr><td>' + esc(r.name) + '<div class="small">' + esc(r.scen) + '</div></td><td>' + fmtKg(r.leak) + '</td><td>' + fmtN(r.hOver, 0) + ' h</td><td>' + fmtKg(r.carbon) + '</td><td>' + fmtN(r.kWh, 0) + ' kWh</td></tr>'; }).join('') + '</tbody></table>');
+  else aHtml('aRuns', '<table class="t"><thead><tr><th>Corrida</th><th>Carga</th><th>Fugas</th><th>Horas &gt; ' + CRIT + ' ppm</th><th>Al carbón</th><th>Energía</th></tr></thead><tbody>' +
+    aRuns.map(function (r) { return '<tr><td>' + esc(r.name) + '</td><td>' + esc(r.scen) + '</td><td>' + fmtKg(r.leak) + '</td><td>' + fmtN(r.hOver, 0) + ' h</td><td>' + fmtKg(r.carbon) + '</td><td>' + fmtN(r.kWh, 0) + ' kWh</td></tr>'; }).join('') + '</tbody></table>');
 }
 function aW(id, min) { var el = document.getElementById(id), w = el ? el.clientWidth : 0; return Math.max(min || 300, Math.round(w || 600)); }
 function aNice(v) { var p = Math.pow(10, Math.floor(Math.log10(v))), m = v / p; return (m <= 1 ? 1 : m <= 2 ? 2 : m <= 2.5 ? 2.5 : m <= 5 ? 5 : 10) * p; }
@@ -2614,7 +2519,7 @@ function aTrend() {
   log.forEach(function (r) { if (r[2] * 1.1 > mxOut) mxOut = aNice(r[2] * 1.1); if (r[1] * 1.05 > mxIn) mxIn = aNice(r[1] * 1.05); });
   A.yMax2 = Math.max(A.yMax2 || 0, mxOut);
   var P = [
-    { t: 'H₂S que llega al ecofiltro, ppm', lo: 0, hi: mxIn, i: 1, col: 'var(--warn)' },
+    { t: 'H₂S que llega al ecofiltro, ppm', lo: 0, hi: mxIn, i: 1, col: AH2S },
     { t: 'H₂S a la salida del ecofiltro, ppm', lo: 0, hi: mxOut, i: 2, col: 'var(--ink)' },
     { t: 'Frecuencia del V-101, Hz', lo: 20, hi: 60, i: 3, col: 'var(--hl)' },
     { t: 'Presión del tanque, Pa', lo: -600, hi: 500, i: 4, col: 'var(--ink)' }
@@ -2625,21 +2530,20 @@ function aTrend() {
     out += E('rect', { x: x0, y: y0, width: x1 - x0, height: ph, class: 'chart-bg' });
     var st = niceStep(p.hi - p.lo, 3);
     for (var v = Math.ceil(p.lo / st) * st; v <= p.hi + 1e-9; v += st) { out += LN(x0, Y(v), x1, Y(v), 'stroke:var(--n300);stroke-width:.7;opacity:.75'); out += TX(x0 - 5, Y(v) + 3.5, fmtN(v, 0), { a: 'end', fs: fs, c: MUT }); }
-    /* días o horas */
     var step = A.days > 1 ? 24 : 3;
     for (var t = step; t < Hh; t += step) out += LN(X(t), y0, X(t), y1, 'stroke:var(--n300);stroke-width:.7;opacity:.75');
     out += TX(x0, y0 - 6, p.t, { fs: narrow ? 10.5 : 11.5, fw: 700 });
     if (p.i === 2) { out += LN(x0, Y(CRIT), x1, Y(CRIT), RED) + TX(x1 - 4, Y(CRIT) - 4, CRIT + ' ppm', { a: 'end', fs: fs, c: 'var(--redline)', fw: 700 }); if (A.mode === 'auto' && Math.abs(A.sp - CRIT) > 0.5) out += LN(x0, Y(A.sp), x1, Y(A.sp), 'stroke:var(--hl);stroke-width:1.3;stroke-dasharray:3 3'); }
-    if (p.i === 3) { var fl = floorF(A.K); out += LN(x0, Y(fl), x1, Y(fl), 'stroke:var(--warn);stroke-width:1.4;stroke-dasharray:6 4') + TX(x1 - 4, Y(fl) + 13, 'por debajo de ' + fmtN(fl, 1) + ' Hz el tanque bota gas', { a: 'end', fs: fs, c: 'var(--warn)', fw: 700 }); }
-    if (p.i === 4) { out += E('rect', { x: x0, y: Y(p.hi), width: x1 - x0, height: Y(0) - Y(p.hi), style: 'fill:var(--redline);opacity:.07' }) + LN(x0, Y(0), x1, Y(0), 'stroke:var(--ink);stroke-width:1.2') + TX(x1 - 4, Y(0) - 5, 'atmosférica: arriba, el gas sale del tanque', { a: 'end', fs: fs, c: 'var(--redline)', fw: 700 }); }
+    if (p.i === 3) { var fl = floorF(A.K); out += E('rect', { x: x0, y: Y(fl), width: x1 - x0, height: Y(p.lo) - Y(fl), style: 'fill:var(--redline);opacity:.06' }) + LN(x0, Y(fl), x1, Y(fl), 'stroke:var(--redline);stroke-width:1.3;stroke-dasharray:6 4') + TX(x1 - 4, Y(fl) + 13, 'por debajo de ' + fmtN(fl, 1) + ' Hz el tanque bota gas', { a: 'end', fs: fs, c: 'var(--redline)', fw: 700 }); }
+    if (p.i === 4) { out += E('rect', { x: x0, y: Y(p.hi), width: x1 - x0, height: Y(0) - Y(p.hi), style: 'fill:var(--redline);opacity:.06' }) + LN(x0, Y(0), x1, Y(0), 'stroke:var(--ink);stroke-width:1.2') + TX(x1 - 4, Y(0) - 5, 'atmosférica: arriba, el gas sale del tanque', { a: 'end', fs: fs, c: 'var(--redline)', fw: 700 }); }
     if (log.length > 1) {
-      var col = p.i === 1 ? 1 : p.i === 2 ? 2 : p.i === 3 ? 3 : 4, d = '';
-      for (var j = 0; j < log.length; j++) d += (j ? 'L' : 'M') + r1(X(log[j][0])) + ' ' + r1(Y(log[j][col]));
+      var d = '';
+      for (var j = 0; j < log.length; j++) d += (j ? 'L' : 'M') + r1(X(log[j][0])) + ' ' + r1(Y(log[j][p.i]));
       out += PATH(d, 'stroke:' + p.col + ';stroke-width:' + (p.i === 4 ? 1.6 : 1.9) + ';stroke-linejoin:round');
-      if (p.i === 4) { /* las fugas, en rojo */ var dd = ''; for (j = 0; j < log.length; j++) if (log[j][4] > 0.5) dd += 'M' + r1(X(log[j][0])) + ' ' + r1(Y(0)) + 'V' + r1(Y(log[j][4])); if (dd) out += PATH(dd, 'stroke:var(--redline);stroke-width:2;opacity:.8'); }
-      if (p.i === 3 && A.tags && (A.tags.auto || A.tags.autonl)) { /* quién mandaba */
+      if (p.i === 4) { var dd = ''; for (j = 0; j < log.length; j++) if (log[j][4] > 0.5) dd += 'M' + r1(X(log[j][0])) + ' ' + r1(Y(0)) + 'V' + r1(Y(log[j][4])); if (dd) out += PATH(dd, 'stroke:var(--redline);stroke-width:2;opacity:.6'); }
+      if (p.i === 3 && A.tags && (A.tags.auto || A.tags.autonl)) {
         var cur = null, from = 0, band = '';
-        var flush = function (to) { if (cur === 'P' || cur === 'H' || cur === 'max' || cur === 'min') band += E('rect', { x: r1(X(from)), y: y0, width: Math.max(0.5, r1(X(to) - X(from))), height: 5, style: 'fill:' + (cur === 'P' ? 'var(--warn)' : cur === 'H' ? 'var(--hl)' : 'var(--n500)') }); };
+        var flush = function (to) { if (cur === 'P' || cur === 'H' || cur === 'max' || cur === 'min') band += E('rect', { x: r1(X(from)), y: y0, width: Math.max(0.5, r1(X(to) - X(from))), height: 5, style: 'fill:' + (cur === 'P' ? 'var(--n600)' : cur === 'H' ? 'var(--hl)' : 'var(--n300)') }); };
         for (j = 0; j < log.length; j++) { if (log[j][7] !== cur) { flush(log[j][0]); cur = log[j][7]; from = log[j][0]; } }
         flush(log[log.length - 1][0]); out += band;
       }
@@ -2653,29 +2557,29 @@ function aTrend() {
   out += LN(xn, top - 2, xn, yb, 'stroke:var(--ink);stroke-width:1;opacity:.45');
   el.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
   el.innerHTML = out;
-  aHtml('aTrendNote', A.tags && (A.tags.auto || A.tags.autonl) ? '<span style="color:var(--hl)">■</span> manda el H₂S · <span style="color:var(--warn)">■</span> manda la presión' : 'una muestra cada 5 min');
+  aHtml('aTrendNote', A.tags && (A.tags.auto || A.tags.autonl) ? 'franja sobre la frecuencia: <span style="color:var(--hl)">■</span> manda el H₂S · <span style="color:var(--n600)">■</span> manda la presión' : 'una muestra cada 5 min');
 }
 var A_NODES = [['tanque', 'TA-101'], ['succión', 'V-101'], ['descarga', 'V-101'], ['base', 'E-101'], ['tope', 'E-101'], ['salida', 'chimenea']];
 function aPress() {
   var el = $('#aPress'), W = aW('aPress', 300), narrow = W < 480, h = A.h, n = h.nodes, K = A.K, s = PLANT.split, Q = h.Q;
-  var x0 = narrow ? 44 : 56, x1 = W - 14, y0 = 18, y1 = 236, H = 284, fs = narrow ? 9.5 : 10.5;
+  var x0 = narrow ? 44 : 56, x1 = W - 14, y0 = 18, y1 = 236, H = 284, fs = narrow ? 10 : 10.5;
   var lo = -Math.max(600, aNice(Math.max(1, -Math.min.apply(null, n)) * 1.15)), hi = Math.max(2000, aNice(Math.max(1, Math.max.apply(null, n)) * 1.15));
   var X = function (i) { return x0 + 20 + i * (x1 - x0 - 40) / 5; }, Y = function (v) { return y1 - (v - lo) / (hi - lo) * (y1 - y0); };
   var out = E('rect', { x: x0, y: y0, width: x1 - x0, height: y1 - y0, class: 'chart-bg' });
   var st = niceStep(hi - lo, 5);
   for (var v = Math.ceil(lo / st) * st; v <= hi + 1e-9; v += st) { out += LN(x0, Y(v), x1, Y(v), 'stroke:var(--n300);stroke-width:.7;opacity:.75'); out += TX(x0 - 5, Y(v) + 3.5, fmtN(v, 0), { a: 'end', fs: fs, c: MUT }); }
   out += LN(x0, Y(0), x1, Y(0), 'stroke:var(--ink);stroke-width:1.3;stroke-dasharray:5 3') + TX((X(1) + X(2)) / 2 + 10, Y(0) + 15, 'atmosférica, 82,6 kPa', { fs: fs, c: MUT, fw: 650 });
-  var segs = [[0, 1, 'D-101 y ducto', -s[0] * K * Q * Q], [1, 2, 'V-101', h.dPfan], [2, 3, 'ducto', -s[1] * K * Q * Q], [3, 4, 'lecho', -h.bed], [4, 5, 'D-102, carbón y chimenea', -s[2] * K * Q * Q]];
+  var segs = [[0, 1, -s[0] * K * Q * Q], [1, 2, h.dPfan], [2, 3, -s[1] * K * Q * Q], [3, 4, -h.bed], [4, 5, -s[2] * K * Q * Q]];
   segs.forEach(function (g) {
-    var up = g[3] > 0;
+    var up = g[2] > 0;
     out += LN(X(g[0]), Y(n[g[0]]), X(g[1]), Y(n[g[1]]), up ? 'stroke:var(--hl);stroke-width:3' : 'stroke:var(--ink);stroke-width:2');
     if (!narrow || g[1] !== 5) {
       var xm = (X(g[0]) + X(g[1])) / 2, ym = (Y(n[g[0]]) + Y(n[g[1]])) / 2;
-      out += TX(xm + (up ? -6 : 6), ym + (up ? 0 : -6), (up ? '+' : '−') + fmtN(Math.abs(g[3]), 0), { a: up ? 'end' : 'start', fs: fs, fw: 700, c: up ? 'var(--hl)' : 'var(--ink)' });
+      out += TX(xm + (up ? -6 : 6), ym + (up ? 0 : -6), (up ? '+' : '−') + fmtN(Math.abs(g[2]), 0), { a: up ? 'end' : 'start', fs: fs, fw: 700, c: up ? 'var(--hl)' : 'var(--ink)' });
     }
   });
   n.forEach(function (v, i) {
-    out += dot(X(i), Y(v), 4.5, i === 0 && v > 0.5 ? 'var(--redline)' : (i === 0 ? 'var(--ok)' : 'var(--ink)'));
+    out += dot(X(i), Y(v), 4.5, i === 0 ? (v > 0.5 ? 'var(--redline)' : 'var(--ok)') : 'var(--ink)');
     out += TX(X(i), y1 + 15, A_NODES[i][0], { a: 'middle', fs: fs, c: MUT }) + TX(X(i), y1 + 28, A_NODES[i][1], { a: 'middle', fs: fs, c: MUT, fw: 700 });
   });
   out += TX(X(0) - 12, Y(n[0]) - 10, aSgn(n[0]) + ' Pa', { fs: fs + 1, fw: 750, c: n[0] > 0.5 ? 'var(--redline)' : 'var(--ok)' });
@@ -2690,20 +2594,20 @@ function aSysDp(Q, K) {
   return (bc.beta + K) * Q * Q + bc.alpha * Q - (PT - PATM);
 }
 function aFan() {
-  var el = $('#aFan'), W = aW('aFan', 300), narrow = W < 480, h = A.h, K = A.K, fs = narrow ? 9.5 : 10.5;
+  var el = $('#aFan'), W = aW('aFan', 300), narrow = W < 480, h = A.h, K = A.K, fs = narrow ? 10 : 10.5;
   var x0 = narrow ? 46 : 58, x1 = W - 14, y0 = 14, y1 = 240, H = 280, qmax = 2, lo = -400, hi = 3600;
   var X = function (q) { return x0 + q / qmax * (x1 - x0); }, Y = function (v) { return y1 - (clamp(v, lo - 200, hi + 200) - lo) / (hi - lo) * (y1 - y0); };
   var out = E('rect', { x: x0, y: y0, width: x1 - x0, height: y1 - y0, class: 'chart-bg' }), v, q, d, i;
   var qg = QGEN / PATM;
-  out += E('rect', { x: x0, y: y0, width: X(qg) - x0, height: y1 - y0, style: 'fill:var(--redline);opacity:.07' });
+  out += E('rect', { x: x0, y: y0, width: X(qg) - x0, height: y1 - y0, style: 'fill:var(--redline);opacity:.06' });
   for (v = 0; v <= hi; v += 1000) { out += LN(x0, Y(v), x1, Y(v), 'stroke:var(--n300);stroke-width:.7;opacity:.75') + TX(x0 - 5, Y(v) + 3.5, fmtN(v, 0), { a: 'end', fs: fs, c: MUT }); }
   for (q = 0; q <= qmax + 1e-9; q += 0.5) { out += LN(X(q), y0, X(q), y1, 'stroke:var(--n300);stroke-width:.7;opacity:.75') + TX(X(q), y1 + 15, fmtN(q, 1), { a: 'middle', fs: fs, c: MUT }); }
   out += TX((x0 + x1) / 2, y1 + 32, 'Q, m³/s', { a: 'middle', fs: fs + 0.5, c: MUT });
   out += TX(x0 - (narrow ? 34 : 44), (y0 + y1) / 2, 'Δp del ventilador, Pa', { a: 'middle', fs: fs + 0.5, c: MUT, tr: 'rotate(-90 ' + (x0 - (narrow ? 34 : 44)) + ' ' + ((y0 + y1) / 2) + ')' });
   out += LN(X(qg), y0, X(qg), y1, 'stroke:var(--redline);stroke-width:1.3;stroke-dasharray:5 4') + TX(X(qg) - 5, y0 + 14, 'el tanque bota gas', { a: 'end', fs: fs, c: 'var(--redline)', fw: 700 }) + TX(X(qg) + 5, y0 + 14, 'entra aire', { fs: fs, c: 'var(--ok)', fw: 700 });
   [30, 40, 50, 60].forEach(function (f) {
-    d = ''; var last = null;
-    for (i = 0; i <= 60; i++) { q = i / 60 * qmax; v = FAN.c * Math.pow(f / FAN.fnom, 2) - FAN.b * q * q; if (v < lo) break; d += (i ? 'L' : 'M') + r1(X(q)) + ' ' + r1(Y(v)); last = [q, v]; }
+    d = '';
+    for (i = 0; i <= 60; i++) { q = i / 60 * qmax; v = FAN.c * Math.pow(f / FAN.fnom, 2) - FAN.b * q * q; if (v < lo) break; d += (i ? 'L' : 'M') + r1(X(q)) + ' ' + r1(Y(v)); }
     out += PATH(d, 'stroke:var(--n400);stroke-width:1.1');
     out += TX(X(0) + 4, Y(FAN.c * Math.pow(f / FAN.fnom, 2)) - 4, f + ' Hz', { fs: fs - 0.5, c: MUT });
   });
@@ -2720,29 +2624,73 @@ function aFan() {
     (dq >= 0 ? fmtN(dq, 2) + ' m³/s más que el gas que suelta el agua (' + fmtN(qg, 2) + ' m³/s): esa diferencia entra como aire por las rendijas.' : fmtN(-dq, 2) + ' m³/s menos que el gas que suelta el agua (' + fmtN(qg, 2) + ' m³/s): lo que falta se escapa por las rendijas.') +
     ' La curva del sistema se empina a la derecha de esa línea porque, para sacar más gas del que se desprende, el ventilador tiene que chupar aire de afuera.');
 }
+/* ---------- la remoción contra la carga ---------- */
+function aQat(f) { return plantHyd(f, A.K).Q; }
+function aCeil(Q) { return ceiling(modelOf(Object.assign({}, BASE, { fanMode: 'q', qset: Q }))); }
+function aRemoval() {
+  var Qn = A.h.Q, Q60 = aQat(60), Qfl = aQat(floorF(A.K) + 0.2), log = A.log, i;
+  var curves = [[Qn, HL], [Q60, INK.replace('stroke-width:2', 'stroke-width:1.6') + ';stroke-dasharray:7 4'], [Qfl, 'stroke:var(--ink);stroke-width:1.6;stroke-dasharray:2 3']];
+  var pts = []; var stride = Math.max(1, Math.floor(log.length / 400)); for (i = 0; i < log.length; i += stride) pts.push(log[i]);
+  /* remoción contra entrada, eje logarítmico */
+  var el = $('#aEta'), W = aW('aEta', 300), narrow = W < 480, H = narrow ? 300 : 320;
+  var a = axes({ x0: narrow ? 46 : 56, x1: W - 14, y0: 14, y1: H - 46, xmin: 10, xmax: 2000, ymin: 0, ymax: 100, xlog: true, ny: 5, xlab: 'H₂S que llega, ppm (escala logarítmica)', ylab: 'Remoción, %', ylabOff: narrow ? 34 : 42, clip: 'aEtaC' });
+  var out = a.svg, ce = aCeil(Qn) * 100;
+  out += LN(a.o.x0, a.Y(ce), a.o.x1, a.Y(ce), 'stroke:var(--accent-300);stroke-width:1.4;stroke-dasharray:4 4') + TX(a.o.x1 - 6, a.Y(ce) - 5, 'techo de la transferencia, ' + fmtN(ce, 0) + ' %', { a: 'end', fs: 10.5, c: 'var(--accent-700)', fw: 700 });
+  out += '<g clip-path="url(#aEtaC)">';
+  curves.forEach(function (c) { var d = ''; for (var k = 0; k <= 60; k++) { var ppm = Math.pow(10, 1 + k / 60 * Math.log10(200)); d += (k ? 'L' : 'M') + r1(a.X(ppm)) + ' ' + r1(a.Y(etaOf(c[0], ppm) * 100)); } out += PATH(d, c[1]); });
+  pts.forEach(function (r) { var eta = r[1] > 0 ? (1 - r[2] / r[1]) * 100 : 0; out += E('circle', { cx: r1(a.X(clamp(r[1], 10, 2000))), cy: r1(a.Y(eta)), r: 2.2, style: 'fill:var(--accent-200);stroke:var(--accent-700);stroke-width:.5' }); });
+  out += '</g>' + dot(a.X(clamp(A.cin, 10, 2000)), a.Y(A.eta * 100), 6, 'var(--hl)');
+  el.setAttribute('viewBox', '0 0 ' + W + ' ' + H); el.innerHTML = out;
+  var e50 = etaOf(Qn, 50) * 100, e200 = etaOf(Qn, 200) * 100, e700 = etaOf(Qn, 700) * 100;
+  aHtml('aEtaRead', 'Ahora llegan ' + fmtPpm(A.cin) + ' ppm con ' + fmtN(Qn, 2) + ' m³/s y el ecofiltro retira el ' + fmtN(A.eta * 100, 0) + ' %. Con el mismo caudal retiraría el ' + fmtN(e50, 0) + ' % de 50 ppm, el ' + fmtN(e200, 0) + ' % de 200 ppm y el ' + fmtN(e700, 0) + ' % de 700 ppm.');
+  /* salida contra entrada, como la figura 5.2 de la tesis */
+  var el2 = $('#aIO'), W2 = aW('aIO', 300), n2w = W2 < 480;
+  var xmax = aNice(Math.max(400, Math.max.apply(null, A.ser) * 1.1, A.cin * 1.1)), ymax = aNice(Math.max(100, xmax * 0.5));
+  var b = axes({ x0: n2w ? 46 : 56, x1: W2 - 14, y0: 14, y1: H - 46, xmin: 0, xmax: xmax, ymin: 0, ymax: ymax, ny: 5, nx: 5, xlab: 'H₂S que llega, ppm', ylab: 'H₂S que sale, ppm', ylabOff: n2w ? 34 : 42, clip: 'aIOC' });
+  var o2 = b.svg;
+  o2 += '<g clip-path="url(#aIOC)">' + LN(b.X(0), b.Y(0), b.X(Math.min(xmax, ymax)), b.Y(Math.min(xmax, ymax)), 'stroke:var(--n400);stroke-width:1.2;stroke-dasharray:3 4');
+  o2 += LN(b.o.x0, b.Y(CRIT), b.o.x1, b.Y(CRIT), RED);
+  curves.forEach(function (c) { var d = ''; for (var k = 0; k <= 60; k++) { var ppm = Math.max(1, k / 60 * xmax); d += (k ? 'L' : 'M') + r1(b.X(ppm)) + ' ' + r1(b.Y(ppm * (1 - etaOf(c[0], ppm)))); } o2 += PATH(d, c[1]); });
+  pts.forEach(function (r) { o2 += E('circle', { cx: r1(b.X(r[1])), cy: r1(b.Y(r[2])), r: 2.2, style: 'fill:var(--accent-200);stroke:var(--accent-700);stroke-width:.5' }); });
+  o2 += '</g>' + dot(b.X(Math.min(A.cin, xmax)), b.Y(Math.min(A.cout, ymax)), 6, 'var(--hl)');
+  o2 += TX(b.X(Math.min(xmax, ymax)) - 6, b.Y(Math.min(xmax, ymax)) + 14, 'sin remoción', { a: 'end', fs: 10.5, c: MUT }) + TX(b.o.x1 - 6, b.Y(CRIT) - 5, CRIT + ' ppm', { a: 'end', fs: 10.5, c: 'var(--redline)', fw: 700 });
+  el2.setAttribute('viewBox', '0 0 ' + W2 + ' ' + H); el2.innerHTML = o2;
+  var cmax = xmax, cin20 = 0; for (i = 1; i <= 400; i++) { var c0 = i / 400 * cmax; if (c0 * (1 - etaOf(Qn, c0)) <= CRIT) cin20 = c0; }
+  aHtml('aIORead', 'Con ' + fmtN(Qn, 2) + ' m³/s, el ecofiltro deja ' + CRIT + ' ppm o menos mientras al tanque no lleguen más de ' + fmtN(cin20, 0) + ' ppm. Los puntos son las muestras de la corrida en pantalla.');
+  aHtml('aEtaNote', '<b>La remoción no es una constante del equipo.</b> Con poca carga, el ecofiltro retira casi todo lo que alcanza a disolverse en la película de líquido: el límite es la transferencia gas-líquido, el techo de ' + fmtN(ce, 0) + ' % que marca la línea punteada, y cambia con el caudal, no con la carga. Con mucha carga, el límite pasa a la biopelícula: consume con la raíz cuadrada de la concentración (cinética de orden ½, la de Monod integrada en la biopelícula), así que si la carga se cuadruplica el consumo apenas se duplica. Por eso la curva casi no baja entre 10 y 100 ppm y cae entre 300 y 2000. Frenar el ventilador sube toda la curva, porque el gas pasa más tiempo en el lecho, pero no puede bajar del piso que pone la succión del tanque.');
+}
 function aEqs() {
   var h = A.h, el = $('#aEqs'); if (!el) return;
   if (!el.children.length) {
     var cells = [
       ['El gas, como un líquido', 'aE1', 'aN1'], ['Balance de energía mecánica', 'aE2', 'aN2'], ['La curva del ventilador', 'aE3', 'aN3'],
-      ['El gas del tanque', 'aE4', 'aN4'], ['El H₂S del tanque', 'aE5', 'aN5'], ['El control automático', 'aE6', 'aN6']
+      ['El gas del tanque', 'aE4', 'aN4'], ['El H₂S del tanque', 'aE5', 'aN5'], ['El control automático', 'aE6', 'aN6'],
+      ['El techo de la transferencia', 'aE7', 'aN7'], ['El consumo en la biopelícula', 'aE8', 'aN8']
     ];
     el.innerHTML = cells.map(function (c) { return '<div><div class="lbl">' + c[0] + '</div><div class="f" id="' + c[1] + '"></div><div class="n2" id="' + c[2] + '"></div></div>'; }).join('');
   }
   var nw = window.innerWidth < 640, bc = bedCoef(REF.L, REF.A), mx = Math.max(Math.abs(Math.min.apply(null, h.nodes)), Math.max.apply(null, h.nodes));
+  var g = function (a, b) { return nw ? '\\begin{gathered}' + a + '\\\\[4pt]' + b + '\\end{gathered}' : a + ',\\quad ' + b; };
   tex('aE1', '\\frac{\\Delta\\rho}{\\rho} \\approx \\frac{\\Delta p}{p} = \\frac{' + n2(mx, 0) + '}{82\\,600} = ' + n2(mx / PATM * 100, 1) + '\\ \\%', true);
   aHtml('aN1', 'A 82,6 kPa y 25 °C el aire húmedo pesa ρ = ' + fmtN(GAS.rho, 3) + ' kg/m³. Con presiones que no se apartan más del ' + fmtN(mx / PATM * 100, 1) + ' % de la atmosférica, la densidad tampoco: el gas se trata como un fluido incompresible.');
   tex('aE2', nw ? '\\begin{gathered}p_T + \\Delta p_V = p_{atm} \\\\ + K Q^2 + \\alpha Q + \\beta Q^2\\end{gathered}' : 'p_T + \\Delta p_V = p_{atm} + K Q^2 + \\alpha Q + \\beta Q^2', true);
   aHtml('aN2', 'Bernoulli entre el tanque y la salida de la chimenea, con las pérdidas: K = ' + fmtN(A.K, 0) + ' Pa·s²/m⁶ en ductos y demisters, y α = ' + fmtN(bc.alpha, 0) + ' Pa·s/m³ y β = ' + fmtN(bc.beta, 0) + ' Pa·s²/m⁶ en el lecho (Ergun). La energía cinética de la salida va dentro de K.');
-  tex('aE3', (nw ? '\\begin{gathered}' : '') + '\\Delta p_V = c\\left(\\frac{f}{60}\\right)^2 - bQ^2' + (nw ? '\\\\[4pt]' : ', \\quad ') + 'W = \\frac{Q\\,\\Delta p_V}{\\eta}' + (nw ? '\\end{gathered}' : ''), true);
+  tex('aE3', g('\\Delta p_V = c\\left(\\frac{f}{60}\\right)^2 - bQ^2', 'W = \\frac{Q\\,\\Delta p_V}{\\eta}'), true);
   aHtml('aN3', 'c = ' + fmtN(FAN.c, 0) + ' Pa y b = ' + fmtN(FAN.b, 0) + ' Pa·s²/m⁶ (leyes de afinidad sobre los datos del fabricante), η = ' + fmtN(FAN.eta * 100, 0) + ' %. Ahora: ' + fmtN(h.dPfan, 0) + ' Pa × ' + fmtN(h.Q, 2) + ' m³/s / ' + fmtN(FAN.eta, 2) + ' = ' + fmtN(h.kW, 1) + ' kW.');
   tex('aE4', '\\frac{RT}{M}\\,\\dot m = p_T\\,Q + \\lambda\\,p_T\\,(p_T - p_{atm})', true);
   aHtml('aN4', 'El agua suelta ṁ = 1 kg/s de gas, unos ' + fmtN(QGEN / PATM, 2) + ' m³/s. Lo que el V-101 no se lleva sale por las rendijas (λ = 10⁻³ m³/(s·Pa)); si se lleva más, el término cambia de signo y entra aire. Ahora: ' + (h.dP > 0.5 ? 'salen ' + fmtN(h.leak, 3) + ' m³/s de gas.' : 'entran ' + fmtN(h.infil, 3) + ' m³/s de aire.'));
   tex('aE5', nw ? '\\begin{gathered}V_T\\frac{dC_T}{dt} = \\dot n(t) + Q_E C_F \\\\ - (Q_E + Q + Q_{fuga})\\,C_T\\end{gathered}' : 'V_T\\frac{dC_T}{dt} = \\dot n(t) + Q_E C_F - (Q_E + Q + Q_{fuga})\\,C_T', true);
-  aHtml('aN5', 'V<sub>T</sub> = 7000 m³. ṅ(t) es el H₂S que suelta el agua, la carga que cambia; el lazo del biofiltro mueve Q<sub>E</sub> = 2,04 m³/s y le devuelve el gas con C<sub>F</sub> (cinética de orden ½). El ecofiltro, con el modelo del explorador, deja pasar ' + fmtN((1 - A.eta) * 100, 0) + ' % de lo que le llega.');
-  tex('aE6', (nw ? '\\begin{gathered}' : '') + 'f = \\max(f_{AIC},\\, f_{PIC})' + (nw ? '\\\\[4pt]' : ',\\quad ') + 'f_{AIC} = K_c\\,e + \\frac{K_c}{\\tau_I}\\int e\\,dt' + (nw ? '\\end{gathered}' : ''), true);
+  aHtml('aN5', 'V<sub>T</sub> = 7000 m³. ṅ(t) es el H₂S que suelta el agua, la carga que cambia; el lazo del biofiltro mueve Q<sub>E</sub> = 2,04 m³/s y le devuelve el gas con C<sub>F</sub> (cinética de orden ½). El ecofiltro deja pasar ' + fmtN((1 - A.eta) * 100, 0) + ' % de lo que le llega.');
+  tex('aE6', g('f = \\max(f_{AIC},\\, f_{PIC})', 'f_{AIC} = K_c\\,e + \\frac{K_c}{\\tau_I}\\int e\\,dt'), true);
   aHtml('aN6', 'e = C<sub>consigna</sub> − C<sub>salida</sub>, con K<sub>c</sub> = ' + fmtN(CTL.KcH, 1) + ' Hz/ppm y τ<sub>I</sub> = ' + fmtN(CTL.TiH / 60, 0) + ' min. El PIC-101 pide la frecuencia que deja el tanque en −50 Pa (K<sub>c</sub> = ' + fmtN(CTL.KcP, 2) + ' Hz/Pa, τ<sub>I</sub> = ' + fmtN(CTL.TiP / 60, 0) + ' min) y el selector se queda con la mayor. Los analizadores responden con 1 min de retraso.');
-  aHtml('aAssump', '<b>De dónde sale el modelo.</b> La planta es la de la tesis de maestría de Jesús Rafael Acevedo Mastrogiacomo (Universidad de los Andes, 2026), con sus parámetros nominales: el desprendimiento de gas, las rendijas del tanque, el lazo del biofiltro, la curva del ventilador y la resistencia de los ductos. El ecofiltro, su riego y su biopelícula son los de la operación de referencia del explorador completo. ' +
+  var ce = aCeil(h.Q);
+  tex('aE7', '\\eta_{max} = 1 - \\exp\\!\\left(-\\frac{K_L a_w\\,H\\,L}{u_G}\\right) = ' + n2(ce * 100, 0) + '\\ \\%', true);
+  aHtml('aN7', 'La remoción si la biopelícula consumiera al instante todo lo que se disuelve. Depende del caudal (u<sub>G</sub> = Q/A) y del riego, no de la carga: con ' + fmtN(h.Q, 2) + ' m³/s es el ' + fmtN(ce * 100, 0) + ' %.');
+  tex('aE8', 'r = k_S\\sqrt{C_L - k_M\\ln\\!\\left(1 + \\frac{C_L}{k_M}\\right)}', true);
+  aHtml('aN8', 'Monod integrada en la biopelícula, con k<sub>M</sub> = 2×10⁻⁵ mol/m³: a las concentraciones de la planta se comporta como de orden ½, y la remoción cae cuando sube la carga. Llegan ' + fmtPpm(A.cin) + ' ppm y el ecofiltro retira el ' + fmtN(A.eta * 100, 0) + ' %.');
+}
+function aAssump() {
+  aHtml('aAssump', '<b>De dónde sale el modelo.</b> La planta es la de la tesis de maestría de Jesús Rafael Acevedo Mastrogiacomo (Universidad de los Andes, 2026), con sus parámetros nominales: el desprendimiento de gas, las rendijas del tanque, el lazo del biofiltro, la curva del ventilador y la resistencia de los ductos. El ecofiltro, su riego y su biopelícula son los de la operación de referencia del explorador completo, calibrados para reproducir la curva de salida contra entrada de la tesis. ' +
     'La carga de H₂S es sintética, pero sigue lo que registró la planta en el tanque de aquietamiento: casi siempre baja, con media cercana a 103 ppm, y episodios que llegaron a unos 710 ppm en la temporada seca de 2023. ' +
     'Hoy el V-101 no tiene variador de frecuencia; la actividad supone uno, con 2600 rpm a 60 Hz. El reparto de K entre la succión y la descarga (40 % antes del ventilador) es un supuesto para dibujar las presiones.');
 }
