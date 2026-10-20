@@ -381,7 +381,7 @@ body:not(.mode-act) #aShell, body:not(.mode-act) #kpisAct, body:not(.mode-act) #
       </div>
       <div class="card">
         <div class="card-h"><span class="t">Lo que va pasando</span><span class="sp"></span><span id="aTrendNote"></span></div>
-        <div class="card-b"><svg id="aTrend" role="img" aria-label="Tendencias de la corrida: H₂S que llega, H₂S a la salida, frecuencia del ventilador y presión del tanque"></svg></div>
+        <div class="card-b"><svg id="aTrend" role="img" aria-label="Tendencias de la corrida: H₂S que llega, H₂S a la salida, remoción del ecofiltro, frecuencia del ventilador y presión del tanque"></svg></div>
       </div>
     </section>
 
@@ -2131,7 +2131,7 @@ function plantStep(p, dt) {
   if (cout > CRIT) p.acc.hOver += dt / 3600; if (h.leak > 1e-6) p.acc.hLeak += dt / 3600;
   p.leakGh = h.leak * CT * MW * 3600; p.Jgh = h.Q * CT * eta * MW * 3600; p.carbonGh = h.Q * CT * (1 - eta) * MW * 3600;
   p.t += dt;
-  if (p.t >= p.nextLog) { p.log.push([p.t / 3600, cin, cout, p.f, h.dP, p.leakGh, h.kW, p.cmd, scenAt(p.ser, tH)]); p.nextLog += p.logEvery; }
+  if (p.t >= p.nextLog) { p.log.push([p.t / 3600, cin, cout, p.f, h.dP, p.leakGh, h.kW, p.cmd, scenAt(p.ser, tH), eta * 100]); p.nextLog += p.logEvery; }
 }
 
 /* ---------- actividad de clase: la interfaz ----------
@@ -2245,7 +2245,9 @@ function aBuild() {
     'Ensucie los ductos y los demisters. ¿Qué les pasa al caudal, a la presión del tanque y a la potencia? ¿Hasta dónde tiene que subir la frecuencia para que el tanque vuelva a quedar en succión?',
     'Corra la semana típica en manual y después en automático, con la consigna en 20 ppm. Compare en la pestaña 4 las fugas, las horas por encima de 20 ppm, el H₂S que llega al carbón y la energía. ¿Por qué el control acelera el ventilador en las madrugadas?',
     'Mire la pestaña 3 mientras corre la temporada seca. ¿Por qué la remoción cae cuando llega más H₂S, y por qué no cae en la misma proporción?',
-    'Apague el límite de presión y corra la temporada seca. ¿A dónde va el H₂S que deja de pasar por el ecofiltro?'
+    'Apague el límite de presión y corra la temporada seca. ¿A dónde va el H₂S que deja de pasar por el ecofiltro?',
+    'Con la frecuencia fija, ajuste una recta a la salida contra la entrada de la semana típica (pestaña 3). ¿Qué tan bien ajusta? Compare en la tendencia la remoción cuando llegan unos 50 ppm y cuando llegan más de 300: ¿la relación es lineal?',
+    'En la pestaña 5 están los tiempos de la planta. ¿Por qué el H₂S que llega al ecofiltro se demora en seguir a la carga, y por qué la salida responde casi al instante? ¿Qué le falta al modelo para ver cómo se adapta la biopelícula a un salto de carga, como el del escalón?'
   ].map(function (t) { return '<li>' + t + '</li>'; }).join('');
   $$('#aMode button').forEach(function (b) { b.addEventListener('click', function () { setMode(b.dataset.v); }); });
   $('#aF').addEventListener('input', function () { ACTS.f = parseFloat(this.value); if (A.mode === 'man') { A.f = ACTS.f; aTag(); } aSync(); aDirty = true; });
@@ -2520,10 +2522,11 @@ function aTrend() {
   var P = [
     { t: 'H₂S que llega al ecofiltro, ppm', lo: 0, hi: mxIn, i: 1, col: AH2S },
     { t: 'H₂S a la salida del ecofiltro, ppm', lo: 0, hi: mxOut, i: 2, col: 'var(--ink)' },
+    { t: 'Remoción del ecofiltro, %', lo: 30, hi: 90, i: 9, col: 'var(--n700)' },
     { t: 'Frecuencia del V-101, Hz', lo: 20, hi: 60, i: 3, col: 'var(--hl)' },
     { t: 'Presión del tanque, Pa', lo: -600, hi: 500, i: 4, col: 'var(--ink)' }
   ];
-  var H = top + 4 * ph + 3 * gap + 26;
+  var H = top + P.length * ph + (P.length - 1) * gap + 26;
   P.forEach(function (p, k) {
     var y0 = top + k * (ph + gap), y1 = y0 + ph, Y = function (v) { return y1 - (clamp(v, p.lo, p.hi) - p.lo) / (p.hi - p.lo) * ph; };
     out += E('rect', { x: x0, y: y0, width: x1 - x0, height: ph, class: 'chart-bg' });
@@ -2549,7 +2552,7 @@ function aTrend() {
     }
     out += E('rect', { x: x0, y: y0, width: x1 - x0, height: ph, style: 'fill:none;stroke:var(--ink);stroke-width:1.3' });
   });
-  var yb = top + 4 * ph + 3 * gap;
+  var yb = top + P.length * ph + (P.length - 1) * gap;
   if (A.days > 1) for (var dd2 = 0; dd2 < A.days; dd2++) out += TX(X(dd2 * 24 + 12), yb + 16, (narrow ? 'd' : 'día ') + (dd2 + 1), { a: 'middle', fs: fs, c: MUT });
   else for (var hh = 0; hh <= 24; hh += 6) out += TX(X(hh), yb + 16, hh + ' h', { a: 'middle', fs: fs, c: MUT });
   var xn = X(Math.min(A.t / 3600, Hh));
@@ -2664,7 +2667,7 @@ function aEqs() {
     var cells = [
       ['El gas, como un líquido', 'aE1', 'aN1'], ['Balance de energía mecánica', 'aE2', 'aN2'], ['La curva del ventilador', 'aE3', 'aN3'],
       ['El gas del tanque', 'aE4', 'aN4'], ['El H₂S del tanque', 'aE5', 'aN5'], ['El control automático', 'aE6', 'aN6'],
-      ['El techo de la transferencia', 'aE7', 'aN7'], ['El consumo en la biopelícula', 'aE8', 'aN8']
+      ['El techo de la transferencia', 'aE7', 'aN7'], ['El consumo en la biopelícula', 'aE8', 'aN8'], ['Los tiempos de la planta', 'aE9', 'aN9']
     ];
     el.innerHTML = cells.map(function (c) { return '<div><div class="lbl">' + c[0] + '</div><div class="f" id="' + c[1] + '"></div><div class="n2" id="' + c[2] + '"></div></div>'; }).join('');
   }
@@ -2687,11 +2690,15 @@ function aEqs() {
   aHtml('aN7', 'La remoción si la biopelícula consumiera al instante todo lo que se disuelve. Depende del caudal (u<sub>G</sub> = Q/A) y del riego, no de la carga: con ' + fmtN(h.Q, 2) + ' m³/s es el ' + fmtN(ce * 100, 0) + ' %.');
   tex('aE8', 'r = k_S\\sqrt{C_L - k_M\\ln\\!\\left(1 + \\frac{C_L}{k_M}\\right)}', true);
   aHtml('aN8', 'Monod integrada en la biopelícula, con k<sub>M</sub> = 2×10⁻⁵ mol/m³: a las concentraciones de la planta se comporta como de orden ½, y la remoción cae cuando sube la carga. Llegan ' + fmtPpm(A.cin) + ' ppm y el ecofiltro retira el ' + fmtN(A.eta * 100, 0) + ' %.');
+  var tauT = PLANT.VT / (PLANT.QE + h.Q + h.leak), ebrt = REF.A * REF.L / h.Q;
+  tex('aE9', g('\\tau_T = \\frac{V_T}{Q_E + Q + Q_{fuga}} = ' + n2(tauT / 60, 0) + '\\ \\text{min}', '\\text{EBRT} = \\frac{A\\,L}{Q} = ' + n2(ebrt, 0) + '\\ \\text{s}'), true);
+  aHtml('aN9', 'El tanque amortigua la carga: el H₂S que llega al ecofiltro sigue a lo que suelta el agua con unos ' + fmtN(tauT / 60, 0) + ' min de retraso. El tiempo de residencia en lecho vacío (EBRT, por su sigla en inglés) es de ' + fmtN(ebrt, 0) + ' s, así que frente a una carga que cambia en horas la salida sigue a la entrada casi al instante, como concluye la tesis: el ecofiltro es lo más rápido de la planta y el tanque lo más lento. El modelo deja fuera la respuesta de la biopelícula, que la tesis supone constante en la escala de la operación y que en una planta real es más lenta: después de un salto de carga, la remoción cae y tarda en recuperarse.');
 }
 function aAssump() {
   aHtml('aAssump', '<b>De dónde sale el modelo.</b> La planta es la de la tesis de maestría de Jesús Rafael Acevedo Mastrogiacomo (Universidad de los Andes, 2026), con sus parámetros nominales: el desprendimiento de gas, las rendijas del tanque, el lazo del biofiltro, la curva del ventilador y la resistencia de los ductos. El ecofiltro, su riego y su biopelícula son los de la operación de referencia del explorador completo, calibrados para reproducir la curva de salida contra entrada de la tesis. ' +
     'La carga de H₂S es sintética, pero sigue lo que registró la planta en el tanque de aquietamiento: casi siempre baja, con media cercana a 103 ppm, y episodios que llegaron a unos 710 ppm en la temporada seca de 2023. ' +
-    'Hoy el V-101 no tiene variador de frecuencia; la actividad supone uno, con 2600 rpm a 60 Hz. El reparto de K entre la succión y la descarga (40 % antes del ventilador) es un supuesto para dibujar las presiones.');
+    'Hoy el V-101 no tiene variador de frecuencia; la actividad supone uno, con 2600 rpm a 60 Hz. El reparto de K entre la succión y la descarga (40 % antes del ventilador) es un supuesto para dibujar las presiones. ' +
+    'El ecofiltro va en estado cuasiestacionario y con la biopelícula de actividad constante, como en la tesis: responde al instante a lo que le llega y no muestra cómo se adapta la biopelícula a un cambio de carga.');
 }
 /* ---------- inicio ---------- */
 function init() {
