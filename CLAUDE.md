@@ -114,7 +114,7 @@ Para crear o editar contenido del Classroom, lee la guía correspondiente:
 | **Presentaciones** (otros cursos) | [PRESENTATIONS.md](PRESENTATIONS.md) | Diapositivas HTML autocontenidas con íconos SVG Lucide, navegación, imágenes, interactividad |
 | **"Qué hay para hoy"** | [HOY.md](HOY.md) | Popup con cronograma de próximos 7 días |
 | **Simuladores, exploradores y manuales** (`simulaciones/`) | [SIMULADORES.md](SIMULADORES.md) | **⚠️ OBLIGATORIO.** Apariencia neutra y común a todos los cursos: cargan `/classroom/simulador.css` antes de su `<style>`, que solo trae lo propio. Estructura, colores con un solo significado, mínimos de contraste, letra y tamaño de controles, y `node scripts/revisar-simuladores.mjs` antes de publicar. |
-| **Identidad Narrativas Visuales** (`iqya-3751`) | [NARRATIVAS-DESIGN.md](NARRATIVAS-DESIGN.md) | **⚠️ OBLIGATORIO para `iqya-3751-2026-20`.** Identidad propia (carbón · hueso · citrón, Big Shoulders + Archivo, visor). Este curso NO usa el landing claro compartido ni el syllabus Deloitte: landing y Material tienen componente propio (ramificado por slug), y el `programa.html` va en clave oscura. Incluye reglas móvil (una columna, tablas scrolleables), la regla «nada de azul» y el visor de scroll. Leer antes de tocar cualquier superficie del curso. |
+| **Identidad Narrativas Visuales** (`iqya-3751`) | [NARRATIVAS-DESIGN.md](NARRATIVAS-DESIGN.md) | **⚠️ OBLIGATORIO para `iqya-3751-2026-20`.** Identidad propia (carbón · hueso · citrón, Big Shoulders + Archivo, visor). Este curso NO usa el landing claro compartido ni el syllabus Deloitte: landing y Material tienen componente propio (ramificado por slug), y el `programa.html` va en clave oscura. Incluye reglas móvil (una columna, tablas scrolleables), la regla «nada de azul» y el visor de scroll. Leer antes de tocar cualquier superficie del curso, salvo sus simuladores, que siguen [SIMULADORES.md](SIMULADORES.md). |
 
 ### Cómo crear un curso nuevo
 
@@ -161,7 +161,7 @@ Si un curso define `manualRelease: true`, **nada se abre solo por fecha**: el eq
 
 ### Simuladores de POU 2026-20 (`/classroom/iqya-2031-2026-20/simulations`)
 
-**Una sola apariencia** (pedido del profesor, 20 oct 2026): los simuladores no llevan la identidad de ningún curso ni la del portafolio. Todos cargan `/classroom/simulador.css` y siguen [SIMULADORES.md](SIMULADORES.md); la versión 2027-10 de Molienda también.
+**Una sola apariencia** (pedido del profesor, 20 oct 2026): los simuladores no llevan la identidad de ningún curso ni la del portafolio. Todos cargan `/classroom/simulador.css` y siguen [SIMULADORES.md](SIMULADORES.md); la versión 2027-10 de Molienda y el explorador de gráficos de Narrativas Visuales también.
 
 `PouSimulationsPage` reúne los simuladores del curso como tarjetas con captura, en el orden del semestre, con la misma regla de publicación del Material: el estudiante ve los publicados (`sim:{id}`) y los demás como tarjetas selladas con su semana; el equipo docente los ve todos con su botón Publicada/Oculta (controles compartidos en `components/classroom/PouPublishControls.tsx`). Se llega desde el botón «Simuladores» de la portada y desde el Material. Cada simulador declara su captura con `bannerImg`: `public/classroom/iqya-2031-2026-20/simuladores-banners/{id}.jpg`, 800×500 a color (16:10, < 100 KB), recortada de la vista principal del simulador. Al rediseñar un simulador, vuelva a capturar su miniatura.
 

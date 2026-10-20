@@ -28,8 +28,10 @@ Cada simulador la carga antes de su propio `<style>`:
   reglas de la hoja común ni redefine sus tokens. Si algo debe cambiar en todos, se cambia en la hoja.
 - **Las figuras generadas** (los bloques entre marcadores `*_CSS_START` / `*_CSS_END` que escriben los `splice.mjs`
   de `scripts/figuras/`) se quedan en el `<style>` de cada simulador.
-- El **Explorador de gráficos** y el **Manual de diagramas** son un catálogo y un manual, con su propia estructura:
-  no cargan la hoja, pero usan los mismos tokens, las mismas letras y los mismos mínimos de tamaño.
+- El **Explorador de gráficos** de Proyecto de Operaciones Unitarias, el de **Narrativas Visuales** y el **Manual de
+  diagramas** son catálogos y un manual, con su propia estructura: no cargan la hoja, pero usan los mismos tokens, las
+  mismas letras, la misma paleta en sus gráficas (gris de contexto, azul de foco, ladrillo de negativo) y los mismos
+  mínimos de tamaño.
 
 ## La apariencia
 

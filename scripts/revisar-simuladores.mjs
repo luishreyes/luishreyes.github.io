@@ -77,5 +77,5 @@ for (const f of archivos) {
   malos += notas.length ? 1 : 0;
 }
 await browser.close(); server.close();
-console.log(malos ? `\n${malos} de ${archivos.length} con algo por revisar.` : `\nLos ${archivos.length} pasan la revisión.`);
+console.log(malos ? `\n${malos} de ${archivos.length} con algo por revisar.` : (archivos.length === 1 ? '\nPasa la revisión.' : `\nLos ${archivos.length} pasan la revisión.`));
 process.exit(malos ? 1 : 0);

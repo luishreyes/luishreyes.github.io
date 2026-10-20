@@ -3,6 +3,9 @@
 > **Leer antes de tocar cualquier superficie del curso `iqya-3751-2026-20`.**
 > Este curso NO usa el landing claro compartido ni el syllabus Deloitte de los demás
 > cursos: tiene identidad propia. Todo lo que se construya para él debe respetar este documento.
+> **Excepción: los simuladores.** El explorador de gráficos (`simulaciones/explorador-graficos.html`) y cualquier
+> simulador del curso siguen [SIMULADORES.md](SIMULADORES.md), con la apariencia neutra y común de los simuladores
+> del aula, no la de este documento (decisión del profesor, 20 oct 2026).
 
 ## Filosofía
 
