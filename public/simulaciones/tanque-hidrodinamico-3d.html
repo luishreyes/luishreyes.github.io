@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<meta name="theme-color" content="#040811" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<title>Tanque Hidrodinámico 3D</title>
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #040811;
+    --bg-glass: rgba(12, 19, 31, 0.84);
+    --border-glass: rgba(125, 211, 252, 0.24);
+    --panel: rgba(9, 15, 26, 0.95);
+    --block: rgba(15, 23, 42, 0.7);
+    --accent: #38bdf8;
+    --ok-bg: rgba(21, 128, 61, 0.7);
+    --ok-border: rgba(34, 197, 94, 0.75);
+    --ok-fg: #dcfce7;
+    --warn: #fbbf24;
+    --text-main: #f1f5f9;
+    --text-soft: #cbd5e1;
+    --text-dim: #94a3b8;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+
+  html, body {
+    width: 100%; height: 100%; overflow: hidden;
+    background: var(--bg); color: var(--text-main);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    touch-action: none; overscroll-behavior: none;
+  }
+
+  #canvas-container { position: fixed; inset: 0; z-index: 1; }
+  #canvas-container canvas { display: block; touch-action: none; }
+
+  .top-bar {
+    position: fixed;
+    top: calc(10px + env(safe-area-inset-top, 0px));
+    left: calc(10px + env(safe-area-inset-left, 0px));
+    right: calc(10px + env(safe-area-inset-right, 0px));
+    z-index: 20; display: flex; justify-content: space-between; align-items: flex-start;
+    gap: 6px; pointer-events: none;
+  }
+  .pill-group { display: flex; flex-wrap: wrap; gap: 6px; pointer-events: auto; }
+  .pill-group.right { justify-content: flex-end; }
+
+  .pill-btn {
+    appearance: none; border: 1px solid var(--border-glass); background: var(--bg-glass);
+    -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+    color: var(--text-main); padding: 9px 12px; border-radius: 999px;
+    font-family: inherit; font-size: 13px; font-weight: 600; line-height: 1; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 6px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+    transition: transform 0.12s ease, background 0.2s ease, border-color 0.2s ease;
+    min-height: 38px;
+  }
+  .pill-btn:active { transform: scale(0.95); }
+  .pill-btn:focus-visible, .preset-btn:focus-visible, .close-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .pill-btn.primary { border-color: rgba(56, 189, 248, 0.55); background: rgba(14, 116, 144, 0.6); }
+  .pill-btn.sensor-active { border-color: var(--ok-border); background: var(--ok-bg); color: var(--ok-fg); }
+  .pill-btn.sensor-warn { border-color: rgba(251, 191, 36, 0.7); background: rgba(120, 80, 10, 0.6); color: #fef3c7; }
+
+  .drawer-backdrop { position: fixed; inset: 0; background: rgba(2, 6, 14, 0.5); z-index: 25; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; }
+  .drawer-backdrop.open { opacity: 1; pointer-events: auto; }
+
+  .controls-drawer {
+    position: fixed; top: 0; left: 0; bottom: 0; width: min(340px, 88vw); z-index: 30;
+    background: var(--panel); -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px);
+    border-right: 1px solid var(--border-glass);
+    padding: calc(14px + env(safe-area-inset-top, 0px)) 16px calc(24px + env(safe-area-inset-bottom, 0px)) calc(16px + env(safe-area-inset-left, 0px));
+    overflow-y: auto; -webkit-overflow-scrolling: touch;
+    transform: translateX(-104%); transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+    box-shadow: 12px 0 36px rgba(0, 0, 0, 0.65); touch-action: pan-y;
+  }
+  .controls-drawer.open { transform: translateX(0); }
+
+  .drawer-header { display: flex; align-items: center; justify-content: space-between; padding-bottom: 12px; margin-bottom: 14px; border-bottom: 1px solid rgba(148, 163, 184, 0.16); }
+  .drawer-title { font-size: 15px; font-weight: 700; color: #e0f2fe; }
+  .close-btn { background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); color: var(--text-main); border-radius: 8px; padding: 7px 11px; font-family: inherit; font-size: 12px; font-weight: 600; line-height: 1; cursor: pointer; }
+
+  .section-block { margin-bottom: 14px; background: var(--block); border: 1px solid rgba(148, 163, 184, 0.14); border-radius: 12px; padding: 12px; display: grid; gap: 12px; }
+  .section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); }
+  .control-label { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; color: var(--text-soft); margin-bottom: 6px; }
+  .control-val { color: var(--accent); font-variant-numeric: tabular-nums; font-weight: 600; white-space: nowrap; }
+  input[type="range"] { width: 100%; accent-color: var(--accent); cursor: pointer; height: 24px; touch-action: pan-x; }
+
+  .preset-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .preset-btn { background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(148, 163, 184, 0.22); color: #e2e8f0; padding: 9px 8px; border-radius: 8px; font-family: inherit; font-size: 12px; font-weight: 600; line-height: 1.2; cursor: pointer; }
+  .preset-btn.active { background: rgba(14, 165, 233, 0.28); border-color: var(--accent); color: #fff; }
+
+  .note { font-size: 11px; line-height: 1.5; color: var(--text-dim); background: rgba(2, 6, 15, 0.6); padding: 9px 10px; border-radius: 8px; border: 1px solid rgba(148, 163, 184, 0.12); }
+  .note b { color: var(--text-soft); }
+  .note.warn { border-color: rgba(251, 191, 36, 0.35); }
+  .note.warn b { color: var(--warn); }
+
+  .bottom-hud {
+    position: fixed;
+    bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+    left: calc(12px + env(safe-area-inset-left, 0px));
+    z-index: 15; display: flex; align-items: center; gap: 10px;
+    background: var(--bg-glass); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+    border: 1px solid var(--border-glass); padding: 8px 12px 8px 8px; border-radius: 18px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45); max-width: calc(100vw - 24px);
+  }
+  #clinometer-canvas { width: 66px; height: 66px; border-radius: 50%; cursor: grab; touch-action: none; flex: none; }
+  .hud-readout { font-size: 11px; line-height: 1.5; font-variant-numeric: tabular-nums; min-width: 0; }
+  .hud-readout strong { color: #e0f2fe; display: block; font-size: 11.5px; }
+  .hud-sub { color: var(--text-dim); white-space: nowrap; }
+
+  .toast-msg {
+    position: fixed; bottom: calc(100px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%);
+    z-index: 40; background: rgba(15, 23, 42, 0.94); border: 1px solid rgba(56, 189, 248, 0.45); color: #f8fafc;
+    padding: 9px 15px; border-radius: 999px; font-size: 12px; font-weight: 500; pointer-events: none;
+    opacity: 0; transition: opacity 0.25s ease; text-align: center; width: max-content; max-width: 90vw;
+  }
+  .toast-msg.visible { opacity: 1; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .controls-drawer, .drawer-backdrop, .toast-msg, .pill-btn { transition: none; }
+  }
+</style>
+</head>
+<body>
+<div id="canvas-container"></div>
+
+<div class="top-bar">
+  <div class="pill-group">
+    <button id="btn-toggle-controls" class="pill-btn" type="button">⚙️ Controles</button>
+    <button id="btn-sensor" class="pill-btn primary" type="button">📱 Activar sensor</button>
+    <button id="btn-calibrate" class="pill-btn" type="button" title="Fijar la postura actual como 0°">🎯 0°</button>
+  </div>
+  <div class="pill-group right">
+    <button id="btn-drop" class="pill-btn" type="button">💧 Gota</button>
+    <button id="btn-slosh" class="pill-btn" type="button">🌊 Ola</button>
+  </div>
+</div>
+
+<div id="drawer-backdrop" class="drawer-backdrop"></div>
+
+<aside id="controls-drawer" class="controls-drawer" aria-label="Parámetros del fluido">
+  <div class="drawer-header">
+    <span class="drawer-title">Parámetros del fluido</span>
+    <button id="btn-close-drawer" class="close-btn" type="button">✕ Cerrar</button>
+  </div>
+
+  <div class="section-block">
+    <div class="section-title">Acelerómetro y nivel</div>
+    <div>
+      <div class="control-label"><span>Sensibilidad de inclinación</span><span id="val-sensitivity" class="control-val">60%</span></div>
+      <input type="range" id="slider-sensitivity" min="10" max="100" step="5" value="60" />
+    </div>
+    <div>
+      <div class="control-label"><span>Nivel base del tanque</span><span id="val-level" class="control-val">250 mm</span></div>
+      <input type="range" id="slider-level" min="190" max="300" step="5" value="250" />
+    </div>
+    <div id="sensor-status-box" class="note">
+      Modo táctil activo. Toque <b>Activar sensor</b> o arrastre la burbuja del nivel, abajo a la izquierda.
+    </div>
+  </div>
+
+  <div class="section-block">
+    <div class="section-title">Gotas y ondas</div>
+    <div>
+      <div class="control-label"><span>Frecuencia de goteo</span><span id="val-freq" class="control-val">Cada 3.2 s</span></div>
+      <input type="range" id="slider-freq" min="0" max="6" step="0.4" value="3.2" />
+    </div>
+    <div>
+      <div class="control-label"><span>Tamaño de gota</span><span id="val-size" class="control-val">Mediana</span></div>
+      <input type="range" id="slider-size" min="0.5" max="1.4" step="0.1" value="0.9" />
+    </div>
+    <div>
+      <div class="control-label"><span>Amortiguación (viscosidad)</span><span id="val-damping" class="control-val">Baja</span></div>
+      <input type="range" id="slider-damping" min="0.975" max="0.996" step="0.001" value="0.990" />
+    </div>
+  </div>
+
+  <div class="section-block">
+    <div class="section-title">Propiedades ópticas del líquido</div>
+    <div class="preset-grid">
+      <button class="preset-btn active" type="button" data-preset="water">Agua</button>
+      <button class="preset-btn" type="button" data-preset="mercury">Mercurio</button>
+      <button class="preset-btn" type="button" data-preset="oil">Aceite</button>
+      <button class="preset-btn" type="button" data-preset="cyber">Ciber-fluido</button>
+    </div>
+  </div>
+
+  <div class="note">
+    La superficie libre sigue la ley hidrostática: queda perpendicular a la gravedad, así que en el marco del tanque se inclina con el mismo ángulo que el celular (escalado por la sensibilidad, con tope de ±15°). Las ondas resuelven la ecuación de onda 2D con paso fijo de 60 Hz. La caída de la gota va en cámara lenta.
+  </div>
+</aside>
+
+<div class="bottom-hud">
+  <canvas id="clinometer-canvas" width="132" height="132" aria-label="Nivel de burbuja, arrastre para inclinar"></canvas>
+  <div class="hud-readout">
+    <strong id="hud-mode-label">Nivel de burbuja (táctil)</strong>
+    <div id="hud-angles" class="hud-sub">Cabeceo 0.0° · Alabeo 0.0°</div>
+    <div id="hud-meniscus" class="hud-sub">Δ nivel en pared: ±0.0 mm</div>
+  </div>
+</div>
+
+<div id="toast" class="toast-msg" role="status" aria-live="polite"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  // ---------- Utilidades ----------
+  const DEG = 180 / Math.PI;
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const toastEl = document.getElementById("toast");
+  let toastTimer = null;
+  function showToast(msg, ms = 2800) {
+    toastEl.textContent = msg;
+    toastEl.classList.add("visible");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toastEl.classList.remove("visible"), ms);
+  }
+
+  // ---------- Cajón de controles ----------
+  const drawer = document.getElementById("controls-drawer");
+  const backdrop = document.getElementById("drawer-backdrop");
+  function setDrawerOpen(open) { drawer.classList.toggle("open", open); backdrop.classList.toggle("open", open); }
+  document.getElementById("btn-toggle-controls").addEventListener("click", () => setDrawerOpen(!drawer.classList.contains("open")));
+  document.getElementById("btn-close-drawer").addEventListener("click", () => setDrawerOpen(false));
+  backdrop.addEventListener("click", () => setDrawerOpen(false));
+
+  // ---------- Geometría y escala física ----------
+  // 1 unidad de escena = 100 mm. El fondo del tanque es 0 mm en la regla.
+  const MM_PER_UNIT = 100;
+  const TANK_SIZE = 7.0;
+  const HALF_TANK = TANK_SIZE * 0.5;
+  const TANK_HEIGHT = 4.2;
+  const TANK_BOTTOM_Y = -2.2;
+  const MAX_TILT_DEG = 15.0;      // tope para que el líquido no rebase las paredes
+  const DROP_G = 9.2;             // gravedad de la gota en unidades/s² (≈ 0.09 g: cámara lenta)
+
+  const state = {
+    sensitivity: 0.6,
+    baseLevelMm: 250,
+    dropInterval: 3.2,
+    dropSize: 0.9,
+    waveDamping: 0.990,
+    targetPitchDeg: 0, targetRollDeg: 0,
+    smoothPitchDeg: 0, smoothRollDeg: 0,
+    measuredPitch: 0, measuredRoll: 0,
+    sensorActive: false, sensorEvents: 0, sensorSource: "Ninguno",
+    manualHold: false
+  };
+
+  const levelY = () => TANK_BOTTOM_Y + state.baseLevelMm / MM_PER_UNIT;
+
+  // ---------- Renderizador y cámara ----------
+  const container = document.getElementById("canvas-container");
+  const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.08;
+  container.appendChild(renderer.domElement);
+
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x040811);
+  const camera = new THREE.PerspectiveCamera(46, window.innerWidth / window.innerHeight, 0.1, 200);
+
+  // Distancia que encuadra el tanque completo en cualquier relación de aspecto (en vertical el móvil es angosto)
+  function fitRadius() {
+    const aspect = window.innerWidth / window.innerHeight;
+    const vHalf = (camera.fov * Math.PI / 180) / 2;
+    const hHalf = Math.atan(Math.tan(vHalf) * aspect);
+    const needW = 5.0, needH = 4.4;
+    return clamp(Math.max(needW / Math.tan(hHalf), needH / Math.tan(vHalf)), 10, 34);
+  }
+  const cam = { theta: 0.52, phi: 1.05, zoom: 1, targetY: 0 };
+  function updateCamera() {
+    const r = fitRadius() * cam.zoom;
+    const sp = Math.sin(cam.phi);
+    camera.position.set(r * sp * Math.sin(cam.theta), cam.targetY + r * Math.cos(cam.phi), r * sp * Math.cos(cam.theta));
+    camera.lookAt(0, cam.targetY, 0);
+  }
+  updateCamera();
+
+  // Órbita con un dedo y zoom con dos dedos (pellizco) o rueda
+  const pointers = new Map();
+  let pinchStart = 0, zoomStart = 1;
+  const cv = renderer.domElement;
+  cv.addEventListener("pointerdown", (e) => {
+    cv.setPointerCapture(e.pointerId);
+    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (pointers.size === 2) {
+      const [a, b] = [...pointers.values()];
+      pinchStart = Math.hypot(a.x - b.x, a.y - b.y);
+      zoomStart = cam.zoom;
+    }
+  });
+  cv.addEventListener("pointermove", (e) => {
+    const p = pointers.get(e.pointerId);
+    if (!p) return;
+    if (pointers.size === 1) {
+      cam.theta -= (e.clientX - p.x) * 0.0065;
+      cam.phi = clamp(cam.phi - (e.clientY - p.y) * 0.0065, 0.3, 1.45);
+    }
+    p.x = e.clientX; p.y = e.clientY;
+    if (pointers.size === 2 && pinchStart > 0) {
+      const [a, b] = [...pointers.values()];
+      const d = Math.hypot(a.x - b.x, a.y - b.y);
+      cam.zoom = clamp(zoomStart * pinchStart / Math.max(d, 1), 0.55, 1.8);
+    }
+    updateCamera();
+  });
+  const endPointer = (e) => { pointers.delete(e.pointerId); if (pointers.size < 2) pinchStart = 0; };
+  cv.addEventListener("pointerup", endPointer);
+  cv.addEventListener("pointercancel", endPointer);
+  cv.addEventListener("wheel", (e) => { cam.zoom = clamp(cam.zoom + e.deltaY * 0.0006, 0.55, 1.8); updateCamera(); }, { passive: true });
+
+  // ---------- Luces y entorno ----------
+  scene.add(new THREE.HemisphereLight(0xbae6fd, 0x020617, 0.7));
+  const keyLight = new THREE.DirectionalLight(0xffffff, 0.9);
+  keyLight.position.set(4, 8, 5);
+  scene.add(keyLight);
+
+  function createStudioEnvMap() {
+    const size = 256, faces = [];
+    for (let f = 0; f < 6; f++) {
+      const c = document.createElement("canvas");
+      c.width = c.height = size;
+      const ctx = c.getContext("2d");
+      if (f === 2) {
+        ctx.fillStyle = "#0b1528"; ctx.fillRect(0, 0, size, size);
+        ctx.fillStyle = "#e0f2fe"; ctx.fillRect(36, 36, 72, 184);
+        ctx.fillStyle = "#7dd3fc"; ctx.fillRect(148, 36, 72, 184);
+      } else if (f === 3) {
+        ctx.fillStyle = "#030712"; ctx.fillRect(0, 0, size, size);
+      } else {
+        const g = ctx.createLinearGradient(0, 0, 0, size);
+        g.addColorStop(0, "#1e3a5f"); g.addColorStop(0.48, "#0f172a");
+        g.addColorStop(0.52, "#38bdf8"); g.addColorStop(1, "#050b16");
+        ctx.fillStyle = g; ctx.fillRect(0, 0, size, size);
+        ctx.fillStyle = "rgba(186, 230, 253, 0.78)";
+        ctx.fillRect(42, 24, 24, 96); ctx.fillRect(190, 24, 24, 96);
+      }
+      faces.push(c);
+    }
+    const t = new THREE.CubeTexture(faces);
+    t.needsUpdate = true;
+    return t;
+  }
+  const envCubeMap = createStudioEnvMap();
+
+  function createTileTexture() {
+    const c = document.createElement("canvas");
+    c.width = c.height = 512;
+    const ctx = c.getContext("2d");
+    ctx.fillStyle = "#0c263b"; ctx.fillRect(0, 0, 512, 512);
+    const cells = 8, step = 512 / cells;
+    for (let y = 0; y < cells; y++) for (let x = 0; x < cells; x++) {
+      ctx.fillStyle = (x + y) % 2 === 0 ? "#0f314d" : "#0b243a";
+      ctx.fillRect(x * step + 2, y * step + 2, step - 4, step - 4);
+    }
+    ctx.strokeStyle = "#38bdf8"; ctx.lineWidth = 2; ctx.strokeRect(4, 4, 504, 504);
+    return new THREE.CanvasTexture(c);
+  }
+  const tileTexture = createTileTexture();
+
+  // ---------- Tanque ----------
+  const tankCenterY = TANK_BOTTOM_Y + TANK_HEIGHT * 0.5;
+  const tankEdges = new THREE.LineSegments(
+    new THREE.EdgesGeometry(new THREE.BoxGeometry(TANK_SIZE, TANK_HEIGHT, TANK_SIZE)),
+    new THREE.LineBasicMaterial({ color: 0x7dd3fc, transparent: true, opacity: 0.45 })
+  );
+  tankEdges.position.y = tankCenterY;
+  scene.add(tankEdges);
+
+  const glassBox = new THREE.Mesh(
+    new THREE.BoxGeometry(TANK_SIZE, TANK_HEIGHT, TANK_SIZE),
+    new THREE.MeshStandardMaterial({ color: 0x93c5fd, transparent: true, opacity: 0.08, roughness: 0.1, metalness: 0, envMap: envCubeMap, side: THREE.DoubleSide, depthWrite: false })
+  );
+  glassBox.position.y = tankCenterY;
+  scene.add(glassBox);
+
+  // Regla en mm con la misma escala que la física (0 mm = fondo, 420 mm = borde)
+  function createRulerTexture() {
+    const W = 128, H = 1024;
+    const c = document.createElement("canvas");
+    c.width = W; c.height = H;
+    const ctx = c.getContext("2d");
+    const totalMm = TANK_HEIGHT * MM_PER_UNIT;
+    ctx.strokeStyle = "rgba(186, 230, 253, 0.85)";
+    ctx.fillStyle = "rgba(224, 242, 254, 0.92)";
+    ctx.font = "bold 22px monospace";
+    for (let mm = 10; mm < totalMm; mm += 10) {
+      const y = H - (mm / totalMm) * H;
+      const major = mm % 50 === 0;
+      ctx.lineWidth = major ? 3 : 1.5;
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(major ? 34 : 18, y); ctx.stroke();
+      if (major) ctx.fillText(mm + "", 40, y + 8);
+    }
+    return new THREE.CanvasTexture(c);
+  }
+  const ruler = new THREE.Mesh(
+    new THREE.PlaneGeometry(0.95, TANK_HEIGHT),
+    new THREE.MeshBasicMaterial({ map: createRulerTexture(), transparent: true, side: THREE.DoubleSide, depthWrite: false })
+  );
+  ruler.position.set(-HALF_TANK + 0.48, tankCenterY, HALF_TANK + 0.01);
+  scene.add(ruler);
+
+  const meniscusGeo = new THREE.BufferGeometry();
+  meniscusGeo.setAttribute("position", new THREE.BufferAttribute(new Float32Array(15), 3));
+  const meniscusLine = new THREE.Line(meniscusGeo, new THREE.LineBasicMaterial({ color: 0x38bdf8 }));
+  meniscusLine.frustumCulled = false;
+  scene.add(meniscusLine);
+
+  // Pipeta (fija al tanque, igual que el celular)
+  const PIPETTE_TIP_Y = 2.6;
+  const pipetteMat = new THREE.MeshStandardMaterial({ color: 0xe0f2fe, transparent: true, opacity: 0.45, roughness: 0.05, metalness: 0.1, envMap: envCubeMap });
+  const tube = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.14, 1.4, 24, 1, true), pipetteMat);
+  tube.position.y = PIPETTE_TIP_Y + 1.05;
+  const tip = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.038, 0.35, 24, 1, true), pipetteMat);
+  tip.position.y = PIPETTE_TIP_Y + 0.175;
+  scene.add(tube, tip);
+
+  // ---------- Solver de la ecuación de onda 2D ----------
+  // Fila z de la malla = índice iy, coordenada z del mundo crece con iy (consistente con la inyección de pulsos).
+  const GRID = 128;
+  const N = GRID * GRID;
+  const DX = TANK_SIZE / (GRID - 1);
+  let hCurr = new Float32Array(N), hPrev = new Float32Array(N), hNext = new Float32Array(N);
+  const H_LIM = 0.32;
+
+  function injectGaussianPulse(worldX, worldZ, radiusCells, strength) {
+    const cx = Math.round((worldX / HALF_TANK + 1) * 0.5 * (GRID - 1));
+    const cz = Math.round((worldZ / HALF_TANK + 1) * 0.5 * (GRID - 1));
+    const r2 = radiusCells * radiusCells;
+    const ir = Math.ceil(radiusCells * 2.2);
+    for (let dz = -ir; dz <= ir; dz++) {
+      const z = cz + dz;
+      if (z < 1 || z > GRID - 2) continue;
+      for (let dx = -ir; dx <= ir; dx++) {
+        const x = cx + dx;
+        if (x < 1 || x > GRID - 2) continue;
+        const i = z * GRID + x;
+        const v = strength * Math.exp(-(dx * dx + dz * dz) / r2);
+        hCurr[i] = clamp(hCurr[i] + v, -H_LIM, H_LIM);
+        hPrev[i] = clamp(hPrev[i] + v, -H_LIM, H_LIM);
+      }
+    }
+  }
+
+  // Oleaje: el líquido se retrasa respecto al plano hidrostático cuando la pendiente cambia.
+  // Se suma -Δpendiente·x a la parte dinámica; la onda luego relaja y rebota en las paredes.
+  function injectSlosh(dSlopeX, dSlopeZ, gain) {
+    if (Math.abs(dSlopeX) < 1e-6 && Math.abs(dSlopeZ) < 1e-6) return;
+    for (let iz = 1; iz < GRID - 1; iz++) {
+      const z = -HALF_TANK + iz * DX;
+      for (let ix = 1; ix < GRID - 1; ix++) {
+        const x = -HALF_TANK + ix * DX;
+        const i = iz * GRID + ix;
+        hCurr[i] = clamp(hCurr[i] - (dSlopeX * x + dSlopeZ * z) * gain, -H_LIM, H_LIM);
+      }
+    }
+  }
+
+  function stepWave() {
+    const c2 = 0.25;                 // número de Courant al cuadrado, < 0.5 para estabilidad en 2D
+    const damp = state.waveDamping;
+    for (let z = 1; z < GRID - 1; z++) {
+      const row = z * GRID;
+      for (let x = 1; x < GRID - 1; x++) {
+        const i = row + x;
+        const lap = hCurr[i - 1] + hCurr[i + 1] + hCurr[i - GRID] + hCurr[i + GRID] - 4 * hCurr[i];
+        let v = (2 * hCurr[i] - hPrev[i] + c2 * lap) * damp;
+        if (!(v === v)) v = 0;
+        hNext[i] = v > H_LIM ? H_LIM : v < -H_LIM ? -H_LIM : v;
+      }
+    }
+    // Paredes reflectantes (Neumann) con leve absorción
+    for (let k = 0; k < GRID; k++) {
+      hNext[k] = hNext[GRID + k] * 0.94;
+      hNext[(GRID - 1) * GRID + k] = hNext[(GRID - 2) * GRID + k] * 0.94;
+      hNext[k * GRID] = hNext[k * GRID + 1] * 0.94;
+      hNext[k * GRID + GRID - 1] = hNext[k * GRID + GRID - 2] * 0.94;
+    }
+    const t = hPrev; hPrev = hCurr; hCurr = hNext; hNext = t;
+  }
+
+  // ---------- Malla del agua (alturas y derivadas como atributos: sin texturas flotantes) ----------
+  // Las texturas Float con filtrado lineal no funcionan en iPhone; por eso todo va en atributos de vértice.
+  const waterGeo = new THREE.BufferGeometry();
+  const wPos = new Float32Array(N * 3);
+  const wUv = new Float32Array(N * 2);
+  const wWave = new Float32Array(N * 4);
+  for (let iz = 0; iz < GRID; iz++) for (let ix = 0; ix < GRID; ix++) {
+    const i = iz * GRID + ix;
+    wPos[i * 3] = -HALF_TANK + ix * DX;
+    wPos[i * 3 + 1] = 0;
+    wPos[i * 3 + 2] = -HALF_TANK + iz * DX;
+    wUv[i * 2] = ix / (GRID - 1);
+    wUv[i * 2 + 1] = iz / (GRID - 1);
+  }
+  const idx = new Uint32Array((GRID - 1) * (GRID - 1) * 6);
+  let k = 0;
+  for (let iz = 0; iz < GRID - 1; iz++) for (let ix = 0; ix < GRID - 1; ix++) {
+    const a = iz * GRID + ix, b = a + 1, c = a + GRID, d = c + 1;
+    idx[k++] = a; idx[k++] = c; idx[k++] = b;
+    idx[k++] = b; idx[k++] = c; idx[k++] = d;
+  }
+  waterGeo.setIndex(new THREE.BufferAttribute(idx, 1));
+  waterGeo.setAttribute("position", new THREE.BufferAttribute(wPos, 3));
+  waterGeo.setAttribute("uv", new THREE.BufferAttribute(wUv, 2));
+  const waveAttr = new THREE.BufferAttribute(wWave, 4);
+  waveAttr.setUsage(THREE.DynamicDrawUsage);
+  waterGeo.setAttribute("aWave", waveAttr);
+
+  function uploadWave() {
+    const inv2dx = 1 / (2 * DX);
+    for (let z = 0; z < GRID; z++) {
+      const zm = (z > 0 ? z - 1 : 0) * GRID, zp = (z < GRID - 1 ? z + 1 : GRID - 1) * GRID, row = z * GRID;
+      for (let x = 0; x < GRID; x++) {
+        const xm = x > 0 ? x - 1 : 0, xp = x < GRID - 1 ? x + 1 : GRID - 1;
+        const i = row + x, p = i * 4;
+        wWave[p] = hCurr[i];
+        wWave[p + 1] = (hCurr[row + xp] - hCurr[row + xm]) * inv2dx;
+        wWave[p + 2] = (hCurr[zp + x] - hCurr[zm + x]) * inv2dx;
+        wWave[p + 3] = (hCurr[row + xp] + hCurr[row + xm] + hCurr[zp + x] + hCurr[zm + x] - 4 * hCurr[i]) / (DX * DX);
+      }
+    }
+    waveAttr.needsUpdate = true;
+  }
+
+  const PRESETS = {
+    water:   { deep: 0x062844, shallow: 0x38bdf8, spec: 0xffffff, fresnel: 0.02, absorption: 0.45, drop: 0x7dd3fc },
+    mercury: { deep: 0x1e293b, shallow: 0xcbd5e1, spec: 0xf8fafc, fresnel: 0.78, absorption: 2.8, drop: 0xe2e8f0 },
+    oil:     { deep: 0x422006, shallow: 0xfacc15, spec: 0xfef08a, fresnel: 0.04, absorption: 0.95, drop: 0xfde047 },
+    cyber:   { deep: 0x2e1065, shallow: 0x22d3ee, spec: 0xf472b6, fresnel: 0.18, absorption: 0.65, drop: 0x38bdf8 }
+  };
+
+  const waterUniforms = {
+    uEnvMap: { value: envCubeMap },
+    uTileMap: { value: tileTexture },
+    uBaseY: { value: levelY() },
+    uBottomY: { value: TANK_BOTTOM_Y },
+    uHalfTank: { value: HALF_TANK },
+    uSlopeX: { value: 0 },
+    uSlopeZ: { value: 0 },
+    uDeepColor: { value: new THREE.Color(PRESETS.water.deep) },
+    uShallowColor: { value: new THREE.Color(PRESETS.water.shallow) },
+    uSpecularColor: { value: new THREE.Color(PRESETS.water.spec) },
+    uFresnelBias: { value: PRESETS.water.fresnel },
+    uAbsorption: { value: PRESETS.water.absorption },
+    uLightDir: { value: new THREE.Vector3(0.45, 0.85, 0.35).normalize() }
+  };
+
+  const waterMat = new THREE.ShaderMaterial({
+    uniforms: waterUniforms,
+    transparent: true,
+    side: THREE.DoubleSide,
+    vertexShader: `
+      attribute vec4 aWave;
+      uniform float uBaseY;
+      uniform float uSlopeX;
+      uniform float uSlopeZ;
+      varying vec3 vWorldPos;
+      varying vec3 vNormal;
+      varying float vLap;
+      void main() {
+        vec3 pos = position;
+        pos.y = uBaseY + pos.x * uSlopeX + pos.z * uSlopeZ + aWave.x;
+        vNormal = normalize(vec3(-(aWave.y + uSlopeX), 1.0, -(aWave.z + uSlopeZ)));
+        vLap = aWave.w;
+        vec4 wp = modelMatrix * vec4(pos, 1.0);
+        vWorldPos = wp.xyz;
+        gl_Position = projectionMatrix * viewMatrix * wp;
+      }
+    `,
+    fragmentShader: `
+      uniform samplerCube uEnvMap;
+      uniform sampler2D uTileMap;
+      uniform float uBottomY;
+      uniform float uHalfTank;
+      uniform vec3 uDeepColor;
+      uniform vec3 uShallowColor;
+      uniform vec3 uSpecularColor;
+      uniform float uFresnelBias;
+      uniform float uAbsorption;
+      uniform vec3 uLightDir;
+      varying vec3 vWorldPos;
+      varying vec3 vNormal;
+      varying float vLap;
+      void main() {
+        vec3 N = normalize(vNormal);
+        vec3 V = normalize(cameraPosition - vWorldPos);
+        if (dot(N, V) < 0.0) N = -N;
+        vec3 R = reflect(-V, N);
+        vec3 env = textureCube(uEnvMap, R).rgb;
+
+        // Refracción aire→agua (n = 1.333) hasta el fondo
+        vec3 T = refract(-V, N, 1.0 / 1.333);
+        float depth = max(0.05, vWorldPos.y - uBottomY);
+        vec2 floorXZ = vWorldPos.xz + T.xz * (depth / max(0.2, -T.y));
+        vec2 tileUv = clamp(floorXZ / (2.0 * uHalfTank) + 0.5, 0.0, 1.0);
+        vec3 tile = texture2D(uTileMap, tileUv).rgb;
+
+        // Cáusticas aproximadas: las crestas cóncavas enfocan la luz (laplaciano negativo)
+        float caustic = clamp(1.0 - vLap * 0.35, 0.5, 2.2);
+        tile *= caustic;
+
+        // Beer-Lambert sobre el camino óptico refractado
+        float path = depth / max(0.2, -T.y);
+        float transmittance = exp(-path * uAbsorption);
+        vec3 body = mix(uDeepColor, uShallowColor * tile * 1.35, transmittance);
+
+        // Fresnel-Schlick (exponente 5)
+        float cosT = clamp(dot(V, N), 0.0, 1.0);
+        float fresnel = uFresnelBias + (1.0 - uFresnelBias) * pow(1.0 - cosT, 5.0);
+
+        vec3 H = normalize(uLightDir + V);
+        float spec = pow(max(dot(N, H), 0.0), 140.0);
+        vec3 col = mix(body, env * 1.25, clamp(fresnel, 0.0, 1.0)) + uSpecularColor * spec * 1.1;
+        gl_FragColor = vec4(col, 0.96);
+      }
+    `
+  });
+  const waterMesh = new THREE.Mesh(waterGeo, waterMat);
+  waterMesh.frustumCulled = false;
+  waterMesh.renderOrder = 2;
+  scene.add(waterMesh);
+
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(TANK_SIZE, TANK_SIZE), new THREE.MeshBasicMaterial({ map: tileTexture }));
+  floor.rotation.x = -Math.PI / 2;
+  floor.position.y = TANK_BOTTOM_Y;
+  scene.add(floor);
+
+  // ---------- Gota, corona y chorro de Worthington ----------
+  const dropletMat = new THREE.MeshStandardMaterial({ color: PRESETS.water.drop, roughness: 0.05, metalness: 0.2, transparent: true, opacity: 0.9, envMap: envCubeMap, envMapIntensity: 1.5 });
+  const mainDrop = new THREE.Mesh(new THREE.SphereGeometry(0.11, 24, 24), dropletMat);
+  scene.add(mainDrop);
+  const jetGeo = new THREE.CylinderGeometry(0.035, 0.095, 1.0, 20);
+  jetGeo.translate(0, 0.5, 0);
+  const jet = new THREE.Mesh(jetGeo, dropletMat);
+  jet.visible = false;
+  scene.add(jet);
+
+  const CROWN_COUNT = 10;
+  const crownGeo = new THREE.SphereGeometry(0.036, 12, 12);
+  const crown = [];
+  for (let i = 0; i < CROWN_COUNT; i++) {
+    const m = new THREE.Mesh(crownGeo, dropletMat);
+    m.visible = false;
+    scene.add(m);
+    crown.push({ mesh: m, active: false, x: 0, y: 0, z: 0, vx: 0, vy: 0, vz: 0 });
+  }
+
+  const drop = { phase: "pendant", timer: 0, x: 0, y: PIPETTE_TIP_Y, z: 0, vx: 0, vy: 0, vz: 0, ix: 0, iz: 0, t: 0 };
+  const surfaceAt = (x, z, sx, sz) => levelY() + x * sx + z * sz;
+
+  // Gravedad en el marco del tanque: si el tanque se inclina, aparece una componente lateral hacia el lado bajo.
+  function gravityInTank(sx, sz) {
+    const inv = 1 / Math.sqrt(1 + sx * sx + sz * sz);
+    return { x: DROP_G * sx * inv, y: -DROP_G * inv, z: DROP_G * sz * inv };
+  }
+
+  function releaseDrop(vy) {
+    drop.phase = "falling";
+    drop.timer = 0;
+    drop.x = 0; drop.z = 0; drop.y = PIPETTE_TIP_Y - 0.05;
+    drop.vx = 0; drop.vz = 0; drop.vy = vy;
+    mainDrop.visible = true;
+  }
+
+  function updateDrop(dt, sx, sz) {
+    const s = state.dropSize;
+    const g = gravityInTank(sx, sz);
+
+    if (drop.phase === "pendant") {
+      mainDrop.visible = true;
+      jet.visible = false;
+      if (state.dropInterval <= 0.1) {
+        mainDrop.position.set(0, PIPETTE_TIP_Y - 0.03, 0);
+        mainDrop.scale.setScalar(0.45 * s);
+      } else {
+        drop.timer += dt;
+        const grow = Math.min(1.1, state.dropInterval * 0.45);
+        const p = Math.min(1, drop.timer / grow);
+        const sc = (0.35 + 0.65 * p) * s;
+        mainDrop.position.set(0, PIPETTE_TIP_Y - 0.04 * p, 0);
+        mainDrop.scale.set(sc * 0.92, sc * (1 + 0.18 * p), sc * 0.92);
+        if (drop.timer >= grow) releaseDrop(-0.35);
+      }
+    } else if (drop.phase === "falling") {
+      drop.vx += g.x * dt; drop.vy += g.y * dt; drop.vz += g.z * dt;
+      drop.x = clamp(drop.x + drop.vx * dt, -HALF_TANK * 0.8, HALF_TANK * 0.8);
+      drop.y += drop.vy * dt;
+      drop.z = clamp(drop.z + drop.vz * dt, -HALF_TANK * 0.8, HALF_TANK * 0.8);
+
+      const speed = Math.min(5, Math.hypot(drop.vx, drop.vy, drop.vz));
+      const stretch = 1 + speed * 0.065, inv = 1 / Math.sqrt(stretch);
+      mainDrop.position.set(drop.x, drop.y, drop.z);
+      mainDrop.scale.set(s * inv, s * stretch, s * inv);
+
+      const surf = surfaceAt(drop.x, drop.z, sx, sz);
+      if (drop.y <= surf) {
+        drop.phase = "rebound"; drop.t = 0; drop.ix = drop.x; drop.iz = drop.z;
+        mainDrop.visible = false;
+        injectGaussianPulse(drop.ix, drop.iz, 3.2, -0.07 * s);
+        for (let i = 0; i < CROWN_COUNT; i++) {
+          const ang = (i / CROWN_COUNT) * Math.PI * 2 + (Math.random() - 0.5) * 0.2;
+          const rs = (0.85 + Math.random() * 0.35) * s;
+          const cd = crown[i];
+          cd.active = true; cd.mesh.visible = true;
+          cd.x = drop.ix + Math.cos(ang) * 0.12; cd.z = drop.iz + Math.sin(ang) * 0.12; cd.y = surf + 0.03;
+          cd.vx = Math.cos(ang) * rs; cd.vz = Math.sin(ang) * rs; cd.vy = (1.55 + Math.random() * 0.35) * s;
+        }
+      }
+    } else {
+      drop.t += dt;
+      const t = drop.t;
+      const surf = surfaceAt(drop.ix, drop.iz, sx, sz);
+      if (t >= 0.11 && t - dt < 0.11) injectGaussianPulse(drop.ix, drop.iz, 2.4, 0.05 * s);
+      if (t > 0.08 && t < 0.58) {
+        const jt = (t - 0.08) / 0.5;
+        const jh = Math.sin(jt * Math.PI) * 0.72 * s;
+        const jw = (1 - jt * 0.45) * s;
+        jet.visible = true;
+        jet.position.set(drop.ix, surf - 0.04, drop.iz);
+        jet.scale.set(jw, Math.max(0.05, jh), jw);
+        if (jt > 0.25 && jt < 0.88) {
+          mainDrop.visible = true;
+          mainDrop.position.set(drop.ix, surf + jh + Math.sin((jt - 0.25) * Math.PI * 1.4) * 0.22 * s, drop.iz);
+          mainDrop.scale.setScalar(0.62 * s);
+        } else mainDrop.visible = false;
+      } else { jet.visible = false; mainDrop.visible = false; }
+      if (t >= Math.max(1.2, state.dropInterval - 1.1)) { drop.phase = "pendant"; drop.timer = 0; }
+    }
+
+    for (const cd of crown) {
+      if (!cd.active) continue;
+      cd.vx += g.x * 0.85 * dt; cd.vy += g.y * 0.85 * dt; cd.vz += g.z * 0.85 * dt;
+      cd.x += cd.vx * dt; cd.y += cd.vy * dt; cd.z += cd.vz * dt;
+      cd.mesh.position.set(cd.x, cd.y, cd.z);
+      if (cd.y <= surfaceAt(cd.x, cd.z, sx, sz)) {
+        cd.active = false; cd.mesh.visible = false;
+        if (Math.abs(cd.x) < HALF_TANK * 0.92 && Math.abs(cd.z) < HALF_TANK * 0.92) injectGaussianPulse(cd.x, cd.z, 1.6, -0.012);
+      }
+    }
+  }
+
+  // ---------- Sensores: giroscopio (orientación) y acelerómetro ----------
+  // Se trabaja con el vector "arriba" en el marco de la pantalla, así no hay bloqueo de cardán
+  // cuando el celular se sostiene casi vertical, y la calibración vale para cualquier postura.
+  const btnSensor = document.getElementById("btn-sensor");
+  const statusBox = document.getElementById("sensor-status-box");
+  const hudMode = document.getElementById("hud-mode-label");
+  const isIOS = typeof DeviceMotionEvent !== "undefined" && typeof DeviceMotionEvent.requestPermission === "function";
+  const inFrame = (() => { try { return window.self !== window.top; } catch (_) { return true; } })();
+
+  const norm3 = (v) => { const l = Math.hypot(v[0], v[1], v[2]) || 1; return [v[0] / l, v[1] / l, v[2] / l]; };
+  const dot3 = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+  const cross3 = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+
+  function screenAngle() {
+    let a = 0;
+    if (window.screen && window.screen.orientation && typeof window.screen.orientation.angle === "number") a = window.screen.orientation.angle;
+    else if (typeof window.orientation === "number") a = window.orientation;
+    return ((a % 360) + 360) % 360;
+  }
+  // Rota un vector del marco del dispositivo al marco de la pantalla (vertical/horizontal)
+  function deviceToScreen(v) {
+    const a = screenAngle() * Math.PI / 180, c = Math.cos(a), s = Math.sin(a);
+    return [v[0] * c - v[1] * s, v[0] * s + v[1] * c, v[2]];
+  }
+
+  let calib = null, calibPending = true, lastOrientationTs = 0, upFilt = null;
+  function setCalibration(up) {
+    const e3 = up;
+    let e1 = [1 - e3[0] * e3[0], -e3[0] * e3[1], -e3[0] * e3[2]];
+    if (Math.hypot(e1[0], e1[1], e1[2]) < 0.2) e1 = cross3([0, 1, 0], e3);
+    e1 = norm3(e1);
+    calib = { e1, e2: cross3(e3, e1), e3 };
+    calibPending = false;
+  }
+
+  function feedUp(upDevice, source) {
+    const u = norm3(deviceToScreen(upDevice));
+    if (!Number.isFinite(u[0]) || !Number.isFinite(u[1]) || !Number.isFinite(u[2])) return;
+    state.sensorEvents++;
+    state.sensorSource = source;
+    if (calibPending || !calib) setCalibration(u);
+
+    const ux = dot3(u, calib.e1), uy = dot3(u, calib.e2), uz = dot3(u, calib.e3);
+    // Alabeo > 0: lado derecho abajo. Cabeceo > 0: borde superior arriba.
+    const roll = Math.atan2(-ux, uz) * DEG;
+    const pitch = Math.atan2(uy, uz) * DEG;
+    state.measuredRoll = roll;
+    state.measuredPitch = pitch;
+    if (state.manualHold) return;
+
+    const dead = (v) => (Math.abs(v) < 0.3 ? 0 : v - Math.sign(v) * 0.3);
+    state.targetRollDeg = clamp(dead(roll) * state.sensitivity, -MAX_TILT_DEG, MAX_TILT_DEG);
+    state.targetPitchDeg = clamp(dead(pitch) * state.sensitivity, -MAX_TILT_DEG, MAX_TILT_DEG);
+  }
+
+  function onOrientation(e) {
+    if (e.beta == null || e.gamma == null) return;
+    const b = e.beta / DEG, g = e.gamma / DEG;
+    lastOrientationTs = performance.now();
+    // Dirección vertical del mundo expresada en ejes del dispositivo (convención W3C Z-X'-Y'')
+    feedUp([-Math.cos(b) * Math.sin(g), Math.sin(b), Math.cos(b) * Math.cos(g)], "giroscopio");
+  }
+
+  function onMotion(e) {
+    const now = performance.now();
+    const ag = e.accelerationIncludingGravity;
+    // Solo se usa el acelerómetro si no llegan datos de orientación (evita mezclar convenciones)
+    if (ag && ag.x != null && now - lastOrientationTs > 600) {
+      const sign = isIOS ? -1 : 1;   // iOS reporta el vector con signo opuesto a Android
+      const up = norm3([sign * ag.x, sign * ag.y, sign * (ag.z || 0)]);
+      upFilt = upFilt ? norm3([upFilt[0] * 0.8 + up[0] * 0.2, upFilt[1] * 0.8 + up[1] * 0.2, upFilt[2] * 0.8 + up[2] * 0.2]) : up;
+      feedUp(upFilt, "acelerómetro");
+    }
+    // Sacudidas: aceleración lineal horizontal en el marco de pantalla
+    const a = e.acceleration;
+    if (a && a.x != null) {
+      const sA = deviceToScreen([a.x || 0, a.y || 0, 0]);
+      const mag = Math.hypot(sA[0], sA[1]);
+      if (mag > 2.0) injectSlosh(clamp(sA[0] * 0.004, -0.04, 0.04), clamp(-sA[1] * 0.004, -0.04, 0.04), 0.5 * state.sensitivity);
+    }
+  }
+
+  let listening = false;
+  function attachListeners() {
+    if (listening) return;
+    listening = true;
+    window.addEventListener("deviceorientation", onOrientation, true);
+    window.addEventListener("devicemotion", onMotion, true);
+  }
+
+  let wakeLock = null;
+  async function keepAwake() {
+    try { if ("wakeLock" in navigator && !wakeLock) { wakeLock = await navigator.wakeLock.request("screen"); wakeLock.addEventListener("release", () => { wakeLock = null; }); } } catch (_) { wakeLock = null; }
+  }
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible" && state.sensorActive) keepAwake(); });
+
+  function setStatus(html, warn) { statusBox.innerHTML = html; statusBox.classList.toggle("warn", !!warn); }
+
+  function activateSensor() {
+    if (!window.isSecureContext) {
+      setStatus("<b>Se necesita HTTPS.</b> Los navegadores solo entregan el acelerómetro y el giroscopio en páginas seguras. Aloje el archivo en un sitio https y ábralo desde ahí.", true);
+      showToast("El sensor requiere abrir la página por HTTPS.", 4000);
+      return;
+    }
+    // iOS exige pedir permiso dentro del mismo toque, antes de cualquier await
+    const reqs = [];
+    if (typeof DeviceOrientationEvent !== "undefined" && typeof DeviceOrientationEvent.requestPermission === "function") reqs.push(DeviceOrientationEvent.requestPermission());
+    if (typeof DeviceMotionEvent !== "undefined" && typeof DeviceMotionEvent.requestPermission === "function") reqs.push(DeviceMotionEvent.requestPermission());
+
+    Promise.allSettled(reqs).then((res) => {
+      if (reqs.length && !res.some((r) => r.status === "fulfilled" && r.value === "granted")) {
+        if (inFrame) {
+          setStatus("<b>El visor bloquea el sensor.</b> Esta página está incrustada (por ejemplo, dentro de la app de Claude) y el navegador no permite el movimiento ahí. Abra la versión alojada en un sitio HTTPS desde Safari o Chrome. Aquí puede arrastrar la burbuja.", true);
+          showToast("Este visor bloquea el sensor. Abra la versión alojada.", 4500);
+          setDrawerOpen(true);
+        } else {
+          setStatus("<b>Permiso no concedido.</b> En iPhone vaya a Ajustes › Safari, active «Movimiento y orientación», recargue la página y vuelva a tocar Activar sensor.", true);
+          showToast("Permiso de movimiento denegado.", 3500);
+        }
+        return;
+      }
+      calibPending = true;
+      state.sensorEvents = 0;
+      attachListeners();
+      keepAwake();
+      state.sensorActive = true;
+      btnSensor.classList.remove("primary", "sensor-warn");
+      btnSensor.classList.add("sensor-active");
+      btnSensor.textContent = "🟢 Sensor activo";
+      hudMode.textContent = "Nivel por sensor";
+      showToast("Sensor conectado. Su postura actual es 0°.");
+
+      setTimeout(() => {
+        if (state.sensorEvents === 0) {
+          state.sensorActive = false;
+          btnSensor.classList.remove("sensor-active");
+          btnSensor.classList.add("sensor-warn");
+          btnSensor.textContent = "⚠️ Sin datos";
+          hudMode.textContent = "Nivel de burbuja (táctil)";
+          setStatus(inFrame
+            ? "<b>Esta vista no entrega datos del sensor.</b> Cuando la página va incrustada en otra (como el visor de Claude), el navegador bloquea el movimiento. Abra la versión alojada por HTTPS, o arrastre la burbuja."
+            : "<b>No llegan datos del sensor.</b> Puede que este equipo no tenga acelerómetro o que el navegador lo tenga desactivado. Arrastre la burbuja para inclinar.", true);
+          showToast("No llegan datos del sensor: use la burbuja.", 4000);
+        } else {
+          setStatus("<b>Recibiendo datos</b> del " + state.sensorSource + ". Toque 🎯 0° para recalibrar en otra postura.");
+        }
+      }, 1200);
+    });
+  }
+  btnSensor.addEventListener("click", activateSensor);
+
+  document.getElementById("btn-calibrate").addEventListener("click", () => {
+    calibPending = true;
+    state.targetPitchDeg = 0;
+    state.targetRollDeg = 0;
+    showToast(state.sensorActive ? "Nivel calibrado: 0.0° en su postura actual." : "Nivel en 0.0°.");
+  });
+
+  const onScreenRotate = () => { calibPending = true; setTimeout(onResize, 120); };
+  if (window.screen && window.screen.orientation && window.screen.orientation.addEventListener) window.screen.orientation.addEventListener("change", onScreenRotate);
+  else window.addEventListener("orientationchange", onScreenRotate);
+
+  // ---------- Nivel de burbuja (también se arrastra) ----------
+  // Como en un nivel real, la burbuja se va hacia el lado alto.
+  const clino = document.getElementById("clinometer-canvas");
+  const cctx = clino.getContext("2d");
+  let dragging = false;
+  function tiltFromPointer(e) {
+    const r = clino.getBoundingClientRect();
+    const maxR = r.width * 0.32;
+    const dx = clamp(e.clientX - (r.left + r.width / 2), -maxR, maxR);
+    const dy = clamp(e.clientY - (r.top + r.height / 2), -maxR, maxR);
+    state.targetRollDeg = -(dx / maxR) * MAX_TILT_DEG;
+    state.targetPitchDeg = -(dy / maxR) * MAX_TILT_DEG;
+  }
+  clino.addEventListener("pointerdown", (e) => {
+    e.stopPropagation();
+    dragging = true; state.manualHold = true;
+    clino.setPointerCapture(e.pointerId);
+    if (!state.sensorActive) hudMode.textContent = "Nivel manual (táctil)";
+    tiltFromPointer(e);
+  });
+  clino.addEventListener("pointermove", (e) => { if (dragging) { e.stopPropagation(); tiltFromPointer(e); } });
+  const endDrag = (e) => { dragging = false; state.manualHold = false; try { clino.releasePointerCapture(e.pointerId); } catch (_) {} };
+  clino.addEventListener("pointerup", endDrag);
+  clino.addEventListener("pointercancel", endDrag);
+
+  function drawClino(pitch, roll) {
+    const w = clino.width, h = clino.height, cx = w / 2, cy = h / 2, r = w * 0.45;
+    cctx.clearRect(0, 0, w, h);
+    cctx.beginPath(); cctx.arc(cx, cy, r, 0, Math.PI * 2);
+    cctx.fillStyle = "rgba(8, 17, 32, 0.92)"; cctx.fill();
+    cctx.lineWidth = 2; cctx.strokeStyle = "rgba(56, 189, 248, 0.5)"; cctx.stroke();
+    cctx.beginPath();
+    cctx.arc(cx, cy, r * 0.22, 0, Math.PI * 2);
+    cctx.moveTo(cx - r, cy); cctx.lineTo(cx + r, cy);
+    cctx.moveTo(cx, cy - r); cctx.lineTo(cx, cy + r);
+    cctx.lineWidth = 1.2; cctx.strokeStyle = "rgba(148, 163, 184, 0.3)"; cctx.stroke();
+    const k = r * 0.72;
+    const bx = cx - (roll / MAX_TILT_DEG) * k, by = cy - (pitch / MAX_TILT_DEG) * k;
+    const g = cctx.createRadialGradient(bx - 3, by - 3, 2, bx, by, 13);
+    g.addColorStop(0, "#e0f2fe"); g.addColorStop(0.55, "#38bdf8"); g.addColorStop(1, "rgba(2, 132, 199, 0.25)");
+    cctx.beginPath(); cctx.arc(bx, by, 12, 0, Math.PI * 2); cctx.fillStyle = g; cctx.fill();
+  }
+
+  // ---------- Controles ----------
+  let pendingSlosh = null;
+  document.getElementById("btn-drop").addEventListener("click", () => releaseDrop(-0.6));
+  document.getElementById("btn-slosh").addEventListener("click", () => { pendingSlosh = [0.06, 0.045]; });
+
+  function bindSlider(id, valId, fn) {
+    const el = document.getElementById(id), out = document.getElementById(valId);
+    el.addEventListener("input", () => { out.textContent = fn(parseFloat(el.value)); });
+  }
+  bindSlider("slider-sensitivity", "val-sensitivity", (v) => { state.sensitivity = v / 100; return v + "%"; });
+  bindSlider("slider-level", "val-level", (v) => { state.baseLevelMm = v; return v + " mm"; });
+  bindSlider("slider-freq", "val-freq", (v) => { state.dropInterval = v; return v <= 0.1 ? "Pausado" : "Cada " + v.toFixed(1) + " s"; });
+  bindSlider("slider-size", "val-size", (v) => { state.dropSize = v; return v < 0.75 ? "Pequeña" : v > 1.05 ? "Grande" : "Mediana"; });
+  bindSlider("slider-damping", "val-damping", (v) => { state.waveDamping = v; return v < 0.982 ? "Alta" : v < 0.989 ? "Media" : "Baja"; });
+
+  document.querySelectorAll(".preset-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".preset-btn").forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      const p = PRESETS[btn.dataset.preset];
+      waterUniforms.uDeepColor.value.setHex(p.deep);
+      waterUniforms.uShallowColor.value.setHex(p.shallow);
+      waterUniforms.uSpecularColor.value.setHex(p.spec);
+      waterUniforms.uFresnelBias.value = p.fresnel;
+      waterUniforms.uAbsorption.value = p.absorption;
+      dropletMat.color.setHex(p.drop);
+    });
+  });
+
+  window.addEventListener("keydown", (e) => {
+    const s = 1.5;
+    if (e.key === "ArrowLeft" || e.key === "a" || e.key === "A") state.targetRollDeg = clamp(state.targetRollDeg - s, -MAX_TILT_DEG, MAX_TILT_DEG);
+    else if (e.key === "ArrowRight" || e.key === "d" || e.key === "D") state.targetRollDeg = clamp(state.targetRollDeg + s, -MAX_TILT_DEG, MAX_TILT_DEG);
+    else if (e.key === "ArrowUp" || e.key === "w" || e.key === "W") state.targetPitchDeg = clamp(state.targetPitchDeg - s, -MAX_TILT_DEG, MAX_TILT_DEG);
+    else if (e.key === "ArrowDown" || e.key === "s" || e.key === "S") state.targetPitchDeg = clamp(state.targetPitchDeg + s, -MAX_TILT_DEG, MAX_TILT_DEG);
+    else if (e.key === "0") { state.targetPitchDeg = 0; state.targetRollDeg = 0; }
+  });
+
+  // ---------- Bucle principal ----------
+  const hudAngles = document.getElementById("hud-angles");
+  const hudMen = document.getElementById("hud-meniscus");
+  const corners = [[-HALF_TANK, -HALF_TANK], [HALF_TANK, -HALF_TANK], [HALF_TANK, HALF_TANK], [-HALF_TANK, HALF_TANK], [-HALF_TANK, -HALF_TANK]];
+  const STEP = 1 / 60;
+  let acc = 0, last = performance.now(), prevSX = 0, prevSZ = 0, hudTick = 0;
+
+  function frame(now) {
+    requestAnimationFrame(frame);
+    const dt = clamp((now - last) / 1000, 0.001, 0.05);
+    last = now;
+
+    // Filtro exponencial independiente de la tasa de refresco (60, 90 o 120 Hz)
+    const a = 1 - Math.exp(-dt * 5);
+    state.smoothPitchDeg += (state.targetPitchDeg - state.smoothPitchDeg) * a;
+    state.smoothRollDeg += (state.targetRollDeg - state.smoothRollDeg) * a;
+
+    const sx = Math.tan(state.smoothRollDeg / DEG);
+    const sz = Math.tan(state.smoothPitchDeg / DEG);
+
+    injectSlosh(sx - prevSX, sz - prevSZ, 0.6);
+    prevSX = sx; prevSZ = sz;
+    if (pendingSlosh) { injectSlosh(pendingSlosh[0], pendingSlosh[1], 1); pendingSlosh = null; }
+
+    const base = levelY();
+    waterUniforms.uBaseY.value = base;
+    waterUniforms.uSlopeX.value = sx;
+    waterUniforms.uSlopeZ.value = sz;
+
+    const mp = meniscusGeo.attributes.position.array;
+    for (let i = 0; i < 5; i++) {
+      const x = corners[i][0], z = corners[i][1];
+      mp[i * 3] = x; mp[i * 3 + 1] = base + x * sx + z * sz; mp[i * 3 + 2] = z;
+    }
+    meniscusGeo.attributes.position.needsUpdate = true;
+
+    updateDrop(dt, sx, sz);
+
+    // Paso fijo para que la velocidad de las ondas no dependa del celular
+    acc += dt;
+    let n = 0;
+    while (acc >= STEP && n < 4) { stepWave(); acc -= STEP; n++; }
+    if (n === 4) acc = 0;
+    if (n > 0) uploadWave();
+
+    if (++hudTick % 3 === 0) {
+      const showP = state.sensorActive && !state.manualHold ? state.measuredPitch : state.smoothPitchDeg;
+      const showR = state.sensorActive && !state.manualHold ? state.measuredRoll : state.smoothRollDeg;
+      hudAngles.textContent = "Cabeceo " + showP.toFixed(1) + "° · Alabeo " + showR.toFixed(1) + "°";
+      hudMen.textContent = "Δ nivel en pared: ±" + (Math.hypot(sx, sz) * HALF_TANK * MM_PER_UNIT).toFixed(1) + " mm";
+    }
+    drawClino(state.smoothPitchDeg, state.smoothRollDeg);
+    renderer.render(scene, camera);
+  }
+
+  function onResize() {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    updateCamera();
+  }
+  window.addEventListener("resize", onResize);
+
+  if (inFrame) setStatus("Modo táctil activo. Arrastre la burbuja para inclinar. <b>Si esta página va incrustada en otra</b>, el navegador puede bloquear el sensor; en ese caso ábrala directamente por HTTPS.");
+  uploadWave();
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
