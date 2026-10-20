@@ -2247,7 +2247,7 @@ function aBuild() {
     'Mire la pestaña 3 mientras corre la temporada seca. ¿Por qué la remoción cae cuando llega más H₂S, y por qué no cae en la misma proporción?',
     'Apague el límite de presión y corra la temporada seca. ¿A dónde va el H₂S que deja de pasar por el ecofiltro?',
     'Con la frecuencia fija, ajuste una recta a la salida contra la entrada de la semana típica (pestaña 3). ¿Qué tan bien ajusta? Compare en la tendencia la remoción cuando llegan unos 50 ppm y cuando llegan más de 300: ¿la relación es lineal?',
-    'En la pestaña 5 están los tiempos de la planta. ¿Por qué el H₂S que llega al ecofiltro se demora en seguir a la carga, y por qué la salida responde casi al instante? ¿Qué le falta al modelo para ver cómo se adapta la biopelícula a un salto de carga, como el del escalón?'
+    'En la pestaña 5 están los tiempos de la planta. ¿Por qué el H₂S que llega al ecofiltro se demora en seguir a la carga, y por qué la salida responde casi al instante? ¿En qué casos dejaría de valer esa aproximación, por ejemplo después de días sin carga?'
   ].map(function (t) { return '<li>' + t + '</li>'; }).join('');
   $$('#aMode button').forEach(function (b) { b.addEventListener('click', function () { setMode(b.dataset.v); }); });
   $('#aF').addEventListener('input', function () { ACTS.f = parseFloat(this.value); if (A.mode === 'man') { A.f = ACTS.f; aTag(); } aSync(); aDirty = true; });
@@ -2661,6 +2661,9 @@ function aRemoval() {
   aHtml('aIORead', 'Con ' + fmtN(Qn, 2) + ' m³/s, el ecofiltro deja ' + CRIT + ' ppm o menos mientras al tanque no lleguen más de ' + fmtN(cin20, 0) + ' ppm. Los puntos son las muestras de la corrida en pantalla.');
   aHtml('aEtaNote', '<b>La remoción no es una constante del equipo.</b> Con poca carga, el ecofiltro retira casi todo lo que alcanza a disolverse en la película de líquido: el límite es la transferencia gas-líquido, el techo de ' + fmtN(ce, 0) + ' % que marca la línea punteada, y cambia con el caudal, no con la carga. Con mucha carga, el límite pasa a la biopelícula: consume con la raíz cuadrada de la concentración (cinética de orden ½, la de Monod integrada en la biopelícula), así que si la carga se cuadruplica el consumo apenas se duplica. Por eso la curva casi no baja entre 10 y 100 ppm y cae entre 300 y 2000. Frenar el ventilador sube toda la curva, porque el gas pasa más tiempo en el lecho, pero no puede bajar del piso que pone la succión del tanque.');
 }
+/* la retención de líquido del lecho de referencia (Nusselt sobre el empaque) y el caudal de riego, para el tiempo del líquido */
+var A_LIQ = null;
+function aLiq() { if (!A_LIQ) { var m = modelOf(Object.assign({}, BASE)); A_LIQ = { hL: profiles(m, 30).k.hL, QL: m.QL }; } return A_LIQ; }
 function aEqs() {
   var h = A.h, el = $('#aEqs'); if (!el) return;
   if (!el.children.length) {
@@ -2690,15 +2693,15 @@ function aEqs() {
   aHtml('aN7', 'La remoción si la biopelícula consumiera al instante todo lo que se disuelve. Depende del caudal (u<sub>G</sub> = Q/A) y del riego, no de la carga: con ' + fmtN(h.Q, 2) + ' m³/s es el ' + fmtN(ce * 100, 0) + ' %.');
   tex('aE8', 'r = k_S\\sqrt{C_L - k_M\\ln\\!\\left(1 + \\frac{C_L}{k_M}\\right)}', true);
   aHtml('aN8', 'Monod integrada en la biopelícula, con k<sub>M</sub> = 2×10⁻⁵ mol/m³: a las concentraciones de la planta se comporta como de orden ½, y la remoción cae cuando sube la carga. Llegan ' + fmtPpm(A.cin) + ' ppm y el ecofiltro retira el ' + fmtN(A.eta * 100, 0) + ' %.');
-  var tauT = PLANT.VT / (PLANT.QE + h.Q + h.leak), ebrt = REF.A * REF.L / h.Q;
+  var tauT = PLANT.VT / (PLANT.QE + h.Q + h.leak), ebrt = REF.A * REF.L / h.Q, liq = aLiq(), tauL = liq.hL * REF.A * REF.L / liq.QL;
   tex('aE9', g('\\tau_T = \\frac{V_T}{Q_E + Q + Q_{fuga}} = ' + n2(tauT / 60, 0) + '\\ \\text{min}', '\\text{EBRT} = \\frac{A\\,L}{Q} = ' + n2(ebrt, 0) + '\\ \\text{s}'), true);
-  aHtml('aN9', 'El tanque amortigua la carga: el H₂S que llega al ecofiltro sigue a lo que suelta el agua con unos ' + fmtN(tauT / 60, 0) + ' min de retraso. El tiempo de residencia en lecho vacío (EBRT, por su sigla en inglés) es de ' + fmtN(ebrt, 0) + ' s, así que frente a una carga que cambia en horas la salida sigue a la entrada casi al instante, como concluye la tesis: el ecofiltro es lo más rápido de la planta y el tanque lo más lento. El modelo deja fuera la respuesta de la biopelícula, que la tesis supone constante en la escala de la operación y que en una planta real es más lenta: después de un salto de carga, la remoción cae y tarda en recuperarse.');
+  aHtml('aN9', 'El tanque amortigua la carga: el H₂S que llega al ecofiltro sigue a lo que suelta el agua con unos ' + fmtN(tauT / 60, 0) + ' min de retraso. El tiempo de residencia en lecho vacío (EBRT, por su sigla en inglés) es de ' + fmtN(ebrt, 0) + ' s, y el líquido que baja por el empaque, que retiene el ' + fmtN(liq.hL * 100, 1) + ' % del lecho, tarda unos ' + fmtN(tauL / 60, 0) + ' min. Frente a una carga que cambia en horas, la salida sigue a la entrada casi al instante, como concluye la tesis: el ecofiltro es lo más rápido de la planta y el tanque lo más lento. La biopelícula va con actividad constante, como en la tesis. En biopercoladores de H₂S ya aclimatados, la literatura reporta que un salto de carga apenas baja la remoción y que se recupera en pocas horas; las adaptaciones de días aparecen después de periodos largos sin carga.');
 }
 function aAssump() {
   aHtml('aAssump', '<b>De dónde sale el modelo.</b> La planta es la de la tesis de maestría de Jesús Rafael Acevedo Mastrogiacomo (Universidad de los Andes, 2026), con sus parámetros nominales: el desprendimiento de gas, las rendijas del tanque, el lazo del biofiltro, la curva del ventilador y la resistencia de los ductos. El ecofiltro, su riego y su biopelícula son los de la operación de referencia del explorador completo, calibrados para reproducir la curva de salida contra entrada de la tesis. ' +
     'La carga de H₂S es sintética, pero sigue lo que registró la planta en el tanque de aquietamiento: casi siempre baja, con media cercana a 103 ppm, y episodios que llegaron a unos 710 ppm en la temporada seca de 2023. ' +
     'Hoy el V-101 no tiene variador de frecuencia; la actividad supone uno, con 2600 rpm a 60 Hz. El reparto de K entre la succión y la descarga (40 % antes del ventilador) es un supuesto para dibujar las presiones. ' +
-    'El ecofiltro va en estado cuasiestacionario y con la biopelícula de actividad constante, como en la tesis: responde al instante a lo que le llega y no muestra cómo se adapta la biopelícula a un cambio de carga.');
+    'El ecofiltro va en estado cuasiestacionario y con la biopelícula de actividad constante, como en la tesis: el gas cruza el lecho en segundos y el líquido en minutos, mucho menos que lo que tarda en cambiar la carga.');
 }
 /* ---------- inicio ---------- */
 function init() {
