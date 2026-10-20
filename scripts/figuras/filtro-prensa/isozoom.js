@@ -6,13 +6,13 @@
    en las dos. Solo cambia el viewBox: el dibujo y el código en vivo
    siguen en las mismas coordenadas.
    ==================================================================== */
-function IsoZoom(wrap, svg, W, H) {
+function IsoZoom(wrap, svg, W, H, X0, Y0) {
   var self = this;
-  this.wrap = wrap; this.svg = svg; this.W = W; this.H = H; this.max = 5; this.vb = [0, 0, W, H];
+  this.wrap = wrap; this.svg = svg; this.W = W; this.H = H; this.x0 = X0 || 0; this.y0 = Y0 || 0; this.max = 5; this.vb = [this.x0, this.y0, W, H];
   this.ptr = {}; this.pinch = null; this.drag = null; this.lastTap = null;
   svg.style.touchAction = 'pan-y';
   svg.addEventListener('pointerdown', function (e) {
-    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    if (e.pointerType === 'mouse' && e.button !== 0) return; self.kind = e.pointerType;
     self.ptr[e.pointerId] = { x: e.clientX, y: e.clientY };
     var ids = Object.keys(self.ptr);
     if (ids.length === 2) { self.startPinch(); self.drag = null; self.tap = null; self.lastTap = null; }
@@ -45,7 +45,7 @@ function IsoZoom(wrap, svg, W, H) {
     if (ids.length === 1 && self.zoomed()) { var p = self.ptr[ids[0]]; self.drag = { x: p.x, y: p.y, vb: self.vb.slice() }; } else if (!ids.length) self.drag = null;
   };
   svg.addEventListener('pointerup', up); svg.addEventListener('pointercancel', up); svg.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse') up(e); });
-  svg.addEventListener('dblclick', function (e) { if (self.zoomed()) self.fit(); else self.zoomAt(2.4, e.clientX, e.clientY); });
+  svg.addEventListener('dblclick', function (e) { if (self.kind && self.kind !== 'mouse') return; if (self.zoomed()) self.fit(); else self.zoomAt(2.4, e.clientX, e.clientY); });
   svg.addEventListener('wheel', function (e) {
     if (!(e.ctrlKey || e.metaKey)) return; // la rueda sola sigue moviendo la página
     e.preventDefault(); self.zoomAt(Math.exp(-e.deltaY * 0.0025), e.clientX, e.clientY);
@@ -56,7 +56,7 @@ function IsoZoom(wrap, svg, W, H) {
       if (b.dataset.z === 'in') self.zoomAt(1.6, cx, cy); else if (b.dataset.z === 'out') self.zoomAt(1 / 1.6, cx, cy); else self.fit();
     });
   });
-  this.set(0, 0, W);
+  this.fit();
 }
 IsoZoom.prototype.zoomed = function () { return this.vb[2] < this.W - 0.5; };
 // px de pantalla → unidades del viewBox (preserveAspectRatio: xMidYMid meet)
@@ -68,7 +68,7 @@ IsoZoom.prototype.toSvg = function (cx, cy) {
 };
 IsoZoom.prototype.set = function (x, y, w) {
   var W = this.W, H = this.H; w = Math.max(W / this.max, Math.min(W, w)); var h = w * H / W;
-  x = Math.max(0, Math.min(W - w, x)); y = Math.max(0, Math.min(H - h, y));
+  x = Math.max(this.x0, Math.min(this.x0 + W - w, x)); y = Math.max(this.y0, Math.min(this.y0 + H - h, y));
   this.vb = [x, y, w, h];
   this.svg.setAttribute('viewBox', x.toFixed(2) + ' ' + y.toFixed(2) + ' ' + w.toFixed(2) + ' ' + h.toFixed(2));
   var z = this.zoomed(); this.svg.style.touchAction = z ? 'none' : 'pan-y'; this.wrap.classList.toggle('iz-on', z);
@@ -79,7 +79,7 @@ IsoZoom.prototype.zoomAt = function (f, cx, cy) {
   var p = this.toSvg(cx, cy), vb = this.vb, w = Math.max(this.W / this.max, Math.min(this.W, vb[2] / f)), s = w / vb[2];
   this.set(p[0] - (p[0] - vb[0]) * s, p[1] - (p[1] - vb[1]) * s, w);
 };
-IsoZoom.prototype.fit = function () { this.set(0, 0, this.W); };
+IsoZoom.prototype.fit = function () { this.set(this.x0, this.y0, this.W); };
 IsoZoom.prototype.startPinch = function () {
   var ids = Object.keys(this.ptr), a = this.ptr[ids[0]], b = this.ptr[ids[1]];
   var mid = [(a.x + b.x) / 2, (a.y + b.y) / 2];

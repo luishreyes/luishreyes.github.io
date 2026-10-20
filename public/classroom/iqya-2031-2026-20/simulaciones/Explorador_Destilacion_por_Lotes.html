@@ -1790,7 +1790,7 @@ function IsoZoom(wrap, svg, W, H) {
   this.ptr = {}; this.pinch = null; this.drag = null; this.lastTap = null;
   svg.style.touchAction = 'pan-y';
   svg.addEventListener('pointerdown', function (e) {
-    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    if (e.pointerType === 'mouse' && e.button !== 0) return; self.kind = e.pointerType;
     self.ptr[e.pointerId] = { x: e.clientX, y: e.clientY };
     var ids = Object.keys(self.ptr);
     if (ids.length === 2) { self.startPinch(); self.drag = null; self.tap = null; self.lastTap = null; }
@@ -1823,7 +1823,7 @@ function IsoZoom(wrap, svg, W, H) {
     if (ids.length === 1 && self.zoomed()) { var p = self.ptr[ids[0]]; self.drag = { x: p.x, y: p.y, vb: self.vb.slice() }; } else if (!ids.length) self.drag = null;
   };
   svg.addEventListener('pointerup', up); svg.addEventListener('pointercancel', up); svg.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse') up(e); });
-  svg.addEventListener('dblclick', function (e) { if (self.zoomed()) self.fit(); else self.zoomAt(2.4, e.clientX, e.clientY); });
+  svg.addEventListener('dblclick', function (e) { if (self.kind && self.kind !== 'mouse') return; if (self.zoomed()) self.fit(); else self.zoomAt(2.4, e.clientX, e.clientY); });
   svg.addEventListener('wheel', function (e) {
     if (!(e.ctrlKey || e.metaKey)) return; // la rueda sola sigue moviendo la página
     e.preventDefault(); self.zoomAt(Math.exp(-e.deltaY * 0.0025), e.clientX, e.clientY);
