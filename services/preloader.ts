@@ -14,12 +14,12 @@ const prioritizedImageUrls = [
 
   // --- Page Specific Banners (in navigation order) ---
   // Principles
-  '/images/site/campus-mision-historia-y-simbolos-0.webp', // Teaching Purpose
-  '/images/site/generales-campus-2015-2015-69.jpg', // Research Purpose
-  '/images/uniandes-bw.jpg', // Teaching Philosophy
+  '/images/portafolio/claustro/ingrimo.jpg', // Teaching Purpose
+  '/images/portafolio/claustro/urban-grid.jpg', // Research Purpose
+  '/images/portafolio/claustro/into-the-wall.jpg', // Teaching Philosophy
 
   // Teaching
-  '/images/site/04.png', // Teaching Overview
+  '/images/portafolio/claustro/the-pause.jpg', // Teaching Overview
 
   // Service
   '/images/site/img-4560-2.jpg', // Institutional Overview

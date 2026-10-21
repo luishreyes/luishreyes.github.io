@@ -101,7 +101,7 @@ export const teaching = {
   'profdev.record.title':    { en: 'Workshops and courses', es: 'Talleres y cursos' },
   'profdev.place.title':     { en: 'At Universidad de los Andes', es: 'En la Universidad de los Andes' },
   'profdev.place.text':      { en: '{n} of the {total} took place at Universidad de los Andes, in Bogotá.', es: '{n} de los {total} fueron en la Universidad de los Andes, en Bogotá.' },
-  'profdev.place.alt1':      { en: 'Aerial view of the campus of Universidad de los Andes in Bogotá', es: 'Vista aérea del campus de la Universidad de los Andes en Bogotá' },
-  'profdev.place.alt2':      { en: 'Buildings and gardens of the campus of Universidad de los Andes', es: 'Edificios y jardines del campus de la Universidad de los Andes' },
-  'profdev.place.alt3':      { en: 'A building of Universidad de los Andes', es: 'Un edificio de la Universidad de los Andes' },
+  'profdev.place.alt1':      { en: 'An indoor staircase reflected in glass at Universidad de los Andes, with someone crossing above', es: 'Una escalera interior reflejada en un vidrio en la Universidad de los Andes, con alguien cruzando arriba' },
+  'profdev.place.alt2':      { en: 'Ferns in a concrete well seen from above, at Universidad de los Andes', es: 'Helechos en un pozo de concreto vistos desde arriba, en la Universidad de los Andes' },
+  'profdev.place.alt3':      { en: 'A silhouette behind diagonal slats beside a grey wall, at Universidad de los Andes', es: 'Una silueta detrás de una celosía de franjas diagonales, junto a una pared gris, en la Universidad de los Andes' },
 } as const;

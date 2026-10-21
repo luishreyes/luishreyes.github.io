@@ -99,7 +99,7 @@ export const researchChapter = {
   'rc.pg.role':        { en: 'My role', es: 'Mi papel' },
   'rc.pg.pubs':        { en: 'Where it was published', es: 'Dónde se publicó' },
   'rc.pg.sdg':         { en: 'Contributes to the United Nations Sustainable Development Goals (SDG)', es: 'Aporta a los Objetivos de Desarrollo Sostenible (ODS) de las Naciones Unidas' },
-  'rc.pg.photo.alt':   { en: 'The campus of Universidad de los Andes in Bogotá', es: 'El campus de la Universidad de los Andes en Bogotá' },
+  'rc.pg.photo.alt':   { en: 'A floor of black and white triangular tiles at Universidad de los Andes, with someone sitting on a bench', es: 'Un piso de baldosas de triángulos blancos y negros en la Universidad de los Andes, con alguien sentado en una banca' },
 
   'rc.sdg.2':  { en: 'Zero hunger', es: 'Hambre cero' },
   'rc.sdg.3':  { en: 'Good health and well-being', es: 'Salud y bienestar' },

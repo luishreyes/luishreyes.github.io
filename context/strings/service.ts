@@ -16,8 +16,8 @@ export const service = {
   'service.and':              { en: 'and', es: 'y' },
 
   // Pictures (alt text says what is in the frame, nothing more)
-  'service.img.building':    { en: 'A building of the Universidad de los Andes in Bogotá', es: 'Un edificio de la Universidad de los Andes en Bogotá' },
-  'service.img.learning':    { en: 'Students working on laptops in a learning space at the Universidad de los Andes', es: 'Estudiantes trabajando con sus computadores en un espacio de aprendizaje de la Universidad de los Andes' },
+  'service.img.building':    { en: 'An indoor staircase reflected in glass at Universidad de los Andes, with someone crossing above', es: 'Una escalera interior reflejada en un vidrio en la Universidad de los Andes, con alguien cruzando arriba' },
+  'service.img.learning':    { en: 'Two students working on their laptops in class', es: 'Dos estudiantes trabajan con sus portátiles en clase' },
   'service.img.portrait':    { en: 'Luis H. Reyes', es: 'Luis H. Reyes' },
 
   // Committees / Leadership

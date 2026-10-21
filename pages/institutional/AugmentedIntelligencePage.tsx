@@ -222,7 +222,7 @@ export const AugmentedIntelligencePage: React.FC = () => {
             </ol>
           </div>
           <Sube delay={0.1} className="overflow-hidden aspect-[4/3] lg:aspect-[4/5]">
-            <img src="/images/site/uandes-2.jpg" alt={t('service.img.learning')} loading="lazy" className="a-foto a-bn" style={{ objectPosition: '50% 55%' }} />
+            <img src="/images/portafolio/docencia/estudiantes-portatiles.jpg" alt={t('service.img.learning')} loading="lazy" className="a-foto a-bn" style={{ objectPosition: '50% 55%' }} />
           </Sube>
         </div>
       </section>

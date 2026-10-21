@@ -299,7 +299,7 @@ export const ContinuingEducationPage = () => {
             </div>
             <Sube delay={0.08}>
               <figure>
-                <img src="/images/site/campus-mision-historia-y-simbolos-0.webp" alt={t('training.open.alt')} loading="lazy" className="a-bn w-full aspect-[4/3] object-cover" />
+                <img src="/images/portafolio/claustro/ingrimo.jpg" alt={t('training.open.alt')} loading="lazy" className="a-bn w-full aspect-[4/3] object-cover" style={{ objectPosition: '50% 55%' }} />
                 <figcaption className="a-pie">{t('training.open.photo')}</figcaption>
               </figure>
             </Sube>

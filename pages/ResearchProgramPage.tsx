@@ -401,7 +401,7 @@ export const ResearchProgramPage = () => {
       <EncabezadoPagina
         titulo={t('rc.pg.title')}
         entrada={<p className="[text-wrap:pretty]">{t('rc.pg.lead')}</p>}
-        foto={{ src: '/images/site/generales-campus-2015-2015-69.jpg', alt: t('rc.pg.photo.alt'), posicion: '60% center' }}
+        foto={{ src: '/images/portafolio/claustro/urban-grid.jpg', alt: t('rc.pg.photo.alt'), posicion: '50% 35%' }}
       >
         <nav aria-label={t('rc.pg.cases')} className="mt-10">
           <ul className="a-filtros">

@@ -23,7 +23,7 @@ export const about = {
   'home.vectors.opposed':  { en: 'Opposed', es: 'Opuestos' },
   'home.vectors.note':     { en: 'Both vectors have the same magnitude. The teacher points at learning; the student arrives at the angle you choose. What moves forward is the sum.', es: 'Los dos vectores tienen la misma magnitud. El profesor apunta al aprendizaje; el estudiante llega con el ángulo que usted escoja. Lo que avanza es la suma.' },
   'home.vectors.more':     { en: 'Read the teaching philosophy', es: 'Leer la filosofía docente' },
-  'home.band.alt':         { en: 'Chemical engineering students on the Universidad de los Andes campus', es: 'Estudiantes de ingeniería química en el campus de la Universidad de los Andes' },
+  'home.band.alt':         { en: 'Brick steps in light and shadow on the Universidad de los Andes campus', es: 'Escalones de ladrillo con luz y sombra en el campus de la Universidad de los Andes' },
   'home.contents.title':   { en: 'Contents', es: 'Contenido' },
   'home.contents.context':  { en: 'What changed since 2017: students, AI, research and the University.', es: 'Lo que cambió desde 2017: los estudiantes, la IA, la investigación y la Universidad.' },
   'home.contents.trajectory': { en: 'Five stretches and the decisions behind them.', es: 'Cinco tramos y las decisiones que los explican.' },

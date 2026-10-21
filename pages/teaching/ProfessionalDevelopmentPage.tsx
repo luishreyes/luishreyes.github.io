@@ -11,10 +11,11 @@ const enUniandes = professionalDevelopmentData.filter((a) =>
   localize(a.institution, 'en').includes('Universidad de los Andes'),
 ).length;
 
-const CAMPUS: { src: string; alt: UIKey }[] = [
-  { src: '/images/site/campus-mision-historia-y-simbolos-0.webp', alt: 'profdev.place.alt1' },
-  { src: '/images/site/generales-campus-2015-2015-69.jpg', alt: 'profdev.place.alt2' },
-  { src: '/images/uniandes-bw.jpg', alt: 'profdev.place.alt3' },
+// Tres fotos de la serie «Claustro», del profesor, tomadas en el campus.
+const CAMPUS: { src: string; alt: UIKey; pos: string }[] = [
+  { src: '/images/portafolio/claustro/into-the-wall.jpg', alt: 'profdev.place.alt1', pos: '50% 40%' },
+  { src: '/images/portafolio/claustro/enclosure.jpg', alt: 'profdev.place.alt2', pos: '50% 50%' },
+  { src: '/images/portafolio/claustro/celosia.jpg', alt: 'profdev.place.alt3', pos: '66% 40%' },
 ];
 
 export const ProfessionalDevelopmentPage = () => {
@@ -76,7 +77,7 @@ export const ProfessionalDevelopmentPage = () => {
             <Sube className="md:row-span-2">
               <figure className="h-full">
                 <div className="overflow-hidden aspect-[4/3] md:aspect-auto md:h-full">
-                  <img src={CAMPUS[0].src} alt={t(CAMPUS[0].alt)} loading="lazy" className="a-foto a-bn" />
+                  <img src={CAMPUS[0].src} alt={t(CAMPUS[0].alt)} loading="lazy" className="a-foto a-bn" style={{ objectPosition: CAMPUS[0].pos }} />
                 </div>
               </figure>
             </Sube>
@@ -84,7 +85,7 @@ export const ProfessionalDevelopmentPage = () => {
               <Sube key={c.src} delay={0.08 * (i + 1)}>
                 <figure>
                   <div className="overflow-hidden aspect-[16/10]">
-                    <img src={c.src} alt={t(c.alt)} loading="lazy" className="a-foto a-bn" />
+                    <img src={c.src} alt={t(c.alt)} loading="lazy" className="a-foto a-bn" style={{ objectPosition: c.pos }} />
                   </div>
                 </figure>
               </Sube>

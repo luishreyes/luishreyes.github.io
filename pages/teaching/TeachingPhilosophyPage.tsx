@@ -111,11 +111,11 @@ export const TeachingPhilosophyPage: React.FC = () => {
       <figure ref={banda} className="a-papel">
         <div className="overflow-hidden h-[52svh] min-h-[280px] max-h-[620px]">
           <motion.img
-            src="/images/site/04.png"
+            src="/images/portafolio/claustro/urban-grid.jpg"
             alt={t('tch.ph.campus')}
             loading="lazy"
             className="a-foto a-bn"
-            style={{ objectPosition: 'center 70%', ...(reduce ? {} : { scale: escala }) }}
+            style={{ objectPosition: '50% 35%', ...(reduce ? {} : { scale: escala }) }}
           />
         </div>
         <figcaption className="a-c a-pie">{t('tch.ph.campus')}</figcaption>

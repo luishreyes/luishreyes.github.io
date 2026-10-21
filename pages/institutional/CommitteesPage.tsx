@@ -188,7 +188,7 @@ export const CommitteesPage: React.FC = () => {
         titulo={t('committees.title')}
         entrada={<p>{fill(t('committees.sub'), { first: primero })}</p>}
         accion={{ label: t('svc.committees.cta'), onClick: () => document.getElementById('evaluar')?.scrollIntoView({ behavior: 'smooth' }) }}
-        foto={{ src: '/images/uniandes-bw.jpg', alt: t('service.img.building'), posicion: '62% 50%' }}
+        foto={{ src: '/images/portafolio/claustro/into-the-wall.jpg', alt: t('service.img.building'), posicion: '50% 40%' }}
       />
 
       {/* ── El gobierno de la Universidad, con la carga del Comité de Ética ── */}
