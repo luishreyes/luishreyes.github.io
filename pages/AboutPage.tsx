@@ -62,7 +62,7 @@ export const AboutPage: React.FC = () => {
           <Sube><Cabecera titulo={t('home.declaration.title')} /></Sube>
           <div className="mt-12 grid gap-12 lg:grid-cols-[minmax(0,0.75fr)_minmax(0,1.25fr)]">
             <Sube>
-              <img src="/images/site/1756469286343.jpg" alt={t('home.portrait.alt')} className="a-bn w-full aspect-[4/5] object-cover" />
+              <img src="/images/site/retrato-luis-h-reyes-2026.jpg" alt={t('home.portrait.alt')} className="a-bn w-full aspect-[4/5] object-cover object-[70%_50%]" />
             </Sube>
             <Sube delay={0.08}>
               <p className="a-texto">{t('home.declaration.p1')}</p>

@@ -10,7 +10,7 @@
 // The main hero image is already preloaded via a <link> tag in index.html for maximum speed.
 const prioritizedImageUrls = [
   // About Page (second image)
-  '/images/site/1756469286343.jpg',
+  '/images/site/retrato-luis-h-reyes-2026.jpg',
 
   // --- Page Specific Banners (in navigation order) ---
   // Principles
