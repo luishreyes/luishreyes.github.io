@@ -36,9 +36,9 @@ export const authorship = {
 
 export const scholar = {
   /** Fecha de la foto del perfil (AAAA-MM-DD). */
-  asOf: '2026-10-02',
-  citations: 3222,
-  hIndex: 31,
+  asOf: '2026-10-21',
+  citations: 3268,
+  hIndex: 32,
   i10Index: 64,
   /** Citas que recibió cada año, según las barras del perfil al 28 de septiembre de 2026.
    *  La de 2026 va hasta finales de septiembre. */
