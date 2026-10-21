@@ -50,9 +50,9 @@ export const scholar = {
 };
 
 /** Publicaciones por año y por clase: artículos (de investigación y de revisión),
- *  capítulos, libros y otras (editoriales, divulgación, preprints y otros). Sin las
- *  ponencias, las patentes ni la traducción al español publicada en Palmas, que es la
- *  misma obra que su original en inglés. */
+ *  capítulos, libros y otras (editoriales, divulgación, preprints y otros), sin las
+ *  ponencias ni las patentes. Las traducciones al español de Palmas, con DOI propio, van
+ *  en otras. */
 export type ClasePublicacion = 'articles' | 'chapters' | 'books' | 'other';
 
 export const publicationsPerYear: Record<number, Record<ClasePublicacion, number>> = {
@@ -70,16 +70,16 @@ export const publicationsPerYear: Record<number, Record<ClasePublicacion, number
   2021: { articles: 9, chapters: 0, books: 0, other: 0 },
   2022: { articles: 12, chapters: 1, books: 1, other: 2 },
   2023: { articles: 11, chapters: 0, books: 1, other: 2 },
-  2024: { articles: 12, chapters: 2, books: 1, other: 4 },
+  2024: { articles: 12, chapters: 2, books: 1, other: 5 },
   2025: { articles: 8, chapters: 14, books: 1, other: 1 },
-  2026: { articles: 3, chapters: 1, books: 1, other: 0 },
+  2026: { articles: 3, chapters: 1, books: 1, other: 2 },
 };
 
 export const publications = {
   /** Fecha del registro del que salen las cifras. */
-  asOf: '2026-10-12',
+  asOf: '2026-10-21',
   since: 2007,
-  total: 114,
+  total: 117,
   patents: 2,
   /** Artículos en revistas (de investigación y de revisión) y su cuartil Scimago en el
    *  año de publicación (los de 2026, con la tabla de 2025, la última publicada). */
@@ -102,11 +102,7 @@ export const minciencias = {
   groupCategory: 'A1',
 };
 
-/** En products.json, `status: 'secondary'` marca una publicación secundaria: la misma
- *  obra que otra, publicada otra vez (la traducción al español en Palmas). Se lista, pero
- *  no se cuenta. */
-export const SECONDARY = 'secondary';
-
-/** Lo que cuenta como publicación: ni las ponencias, ni las patentes, ni lo secundario. */
-export const esPublicacion = (p: Pick<Product, 'type' | 'status'>) =>
-  p.type !== 'Conference' && p.type !== 'Patent' && p.status !== SECONDARY;
+/** Lo que cuenta como publicación: ni las ponencias ni las patentes. Las traducciones al
+ *  español de Palmas tienen DOI propio y cuentan como divulgación. */
+export const esPublicacion = (p: Pick<Product, 'type'>) =>
+  p.type !== 'Conference' && p.type !== 'Patent';

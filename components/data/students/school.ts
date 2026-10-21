@@ -128,16 +128,16 @@ export const schoolFigures = {
       "translations": 0
     },
     "Brayan Rodríguez": {
-      "total": 5,
+      "total": 6,
       "first": 4,
       "byYear": {
         "2021": 1,
         "2023": 1,
         "2024": 1,
         "2025": 1,
-        "2026": 1
+        "2026": 2
       },
-      "translations": 0
+      "translations": 1
     },
     "Julian Daniel Torres Vanegas": {
       "total": 4,
@@ -151,14 +151,14 @@ export const schoolFigures = {
       "translations": 0
     },
     "Julián Fernando Becerra-Encinales": {
-      "total": 3,
-      "first": 3,
+      "total": 6,
+      "first": 6,
       "byYear": {
-        "2024": 1,
+        "2024": 2,
         "2025": 1,
-        "2026": 1
+        "2026": 3
       },
-      "translations": 1
+      "translations": 3
     }
   },
   "breweries": {

@@ -75,7 +75,7 @@ const palabra = (n: number, lang: Lang, may = false) => {
   const w = cardinal(n, lang);
   return may ? w[0].toUpperCase() + w.slice(1) : w;
 };
-const obrasDe = (nombre: string) => (F.works as Record<string, { total: number; first: number; byYear: Record<string, number> }>)[nombre];
+const obrasDe = (nombre: string) => (F.works as Record<string, { total: number; first: number; byYear: Record<string, number>; translations: number }>)[nombre];
 
 // Los doctores, en el orden en que los cuenta el capítulo.
 const DOCTORES: { nombre: string; texto: UIKey }[] = [
@@ -296,7 +296,7 @@ export const SchoolPage: React.FC = () => {
                   <h3 className="a-h3">{nombre}.</h3>
                   <p className="a-meta mt-3">{localize(s!.program, lang)} · {s!.graduationYear}</p>
                 </div>
-                <p className="a-texto col-span-2 lg:col-span-1"><Rico texto={fill(t(texto), { total: pd(obrasDe(nombre).total), first: pd(obrasDe(nombre).first) })} /></p>
+                <p className="a-texto col-span-2 lg:col-span-1"><Rico texto={fill(t(texto), { total: pd(obrasDe(nombre).total), first: pd(obrasDe(nombre).first), articles: pd(obrasDe(nombre).total - obrasDe(nombre).translations) })} /></p>
               </Sube>
             ))}
           </ul>

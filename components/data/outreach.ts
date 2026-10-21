@@ -59,6 +59,42 @@ export const outreachData: OutreachActivity[] = [
     url: 'https://youtu.be/fQQH2BbAbUM',
   },
   {
+    year: 2026,
+    date: 'Vol. 47, No. 2',
+    title: {
+      en: 'Spanish translation in Palmas: palm growers and sustainability practices',
+      es: 'Traducción en Palmas: los palmicultores y las prácticas sostenibles',
+    },
+    location: {
+      en: 'Palmas, «Extensión» section · Corporación Centro de Investigación en Palma de Aceite (Cenipalma)',
+      es: 'Palmas, sección «Extensión» · Corporación Centro de Investigación en Palma de Aceite (Cenipalma)',
+    },
+    description: {
+      en: "Cenipalma translated into Spanish the Scientific Reports article led by Julián F. Becerra-Encinales, with Brayan Rodríguez, «Patrones de cumplimiento en la adopción de prácticas de sostenibilidad: análisis clúster de productores de palma de aceite en Colombia», and published it with its own DOI in the magazine that the palm oil sector reads.",
+      es: "Cenipalma tradujo al español el artículo de Scientific Reports que encabeza Julián F. Becerra-Encinales, con Brayan Rodríguez, «Patrones de cumplimiento en la adopción de prácticas de sostenibilidad: análisis clúster de productores de palma de aceite en Colombia», y lo publicó con DOI propio en la revista que lee el sector palmero.",
+    },
+    type: 'Media Feature',
+    url: 'https://doi.org/10.56866/01212923.14540',
+  },
+  {
+    year: 2026,
+    date: 'Vol. 47, No. 1',
+    title: {
+      en: 'Spanish translation in Palmas: a systemic model of technology extension',
+      es: 'Traducción en Palmas: un modelo sistémico de extensión tecnológica',
+    },
+    location: {
+      en: 'Palmas, «Extensión» section · Corporación Centro de Investigación en Palma de Aceite (Cenipalma)',
+      es: 'Palmas, sección «Extensión» · Corporación Centro de Investigación en Palma de Aceite (Cenipalma)',
+    },
+    description: {
+      en: "Cenipalma translated into Spanish the Sustainability article led by Julián F. Becerra-Encinales, «Un enfoque sistémico de la extensión tecnológica sostenible: un modelo dinámico para el cultivo de palma de aceite en Colombia», and published it with its own DOI in the magazine that the palm oil sector reads.",
+      es: "Cenipalma tradujo al español el artículo de Sustainability que encabeza Julián F. Becerra-Encinales, «Un enfoque sistémico de la extensión tecnológica sostenible: un modelo dinámico para el cultivo de palma de aceite en Colombia», y lo publicó con DOI propio en la revista que lee el sector palmero.",
+    },
+    type: 'Media Feature',
+    url: 'https://doi.org/10.56866/01212923.14539',
+  },
+  {
     year: 2025,
     date: 'October 30',
     title: {

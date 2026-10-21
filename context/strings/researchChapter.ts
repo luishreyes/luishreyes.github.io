@@ -185,7 +185,6 @@ export const researchChapter = {
 
   // ── Productos (/research/products) ──
   'rc.products.intro':     { en: '{pubs} publications since {first}, {patents} patents and {talks} conference talks. {cites} citations in Google Scholar on {date}.', es: '{pubs} publicaciones desde {first}, {patents} patentes y {talks} ponencias en congresos. {cites} citas en Google Scholar al {date}.' },
-  'rc.products.secondary': { en: 'Spanish version of an article published in Sustainability in 2024, not counted as a separate publication', es: 'Versión en español de un artículo publicado en Sustainability en 2024, que no se cuenta como otra publicación' },
 
   // ── Proyectos (/research/grants) ──
   'rc.pr.title':       { en: 'Projects', es: 'Proyectos' },

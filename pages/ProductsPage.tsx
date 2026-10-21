@@ -9,7 +9,7 @@ import { useI18n, localize, fill, type UIKey } from '../context/i18n';
 import { researchLinesMap } from '../components/data/research';
 import { editedBooksData } from '../components/data/editorships';
 import { fotos, type Foto } from '../components/data/fotos';
-import { scholar, esPublicacion, SECONDARY } from '../components/data/citations';
+import { scholar, esPublicacion } from '../components/data/citations';
 import type { Product, ProductType, ResearchArea } from '../types';
 
 type Orden = 'newest' | 'oldest' | 'cited';
@@ -117,7 +117,7 @@ export const ProductsPage = () => {
     setTipos((prev) => (prev.includes(tipo) ? prev.filter((x) => x !== tipo) : [...prev, tipo]));
 
   const numero = (n: number) => n.toLocaleString(lang === 'es' ? 'es-CO' : 'en-US');
-  // La cifra de citas es la del perfil de Google Scholar, con su fecha; lo secundario no se cuenta.
+  // La cifra de citas es la del perfil de Google Scholar, con su fecha.
   const intro = fill(t('rc.products.intro'), {
     pubs: products.filter(esPublicacion).length,
     first: primerAno ?? '',
@@ -126,7 +126,6 @@ export const ProductsPage = () => {
     cites: numero(scholar.citations),
     date: new Date(`${scholar.asOf}T12:00:00`).toLocaleDateString(lang === 'es' ? 'es-CO' : 'en-GB', { day: 'numeric', month: 'long', year: 'numeric' }),
   });
-  const ficha = (p: Product) => (p.status === SECONDARY ? { ...p, status: t('rc.products.secondary') } : p);
 
   return (
     <PageWrapper noPadding>
@@ -278,7 +277,7 @@ export const ProductsPage = () => {
                     {g.items.map((p, i) => (
                       <Sube as="li" key={p.doi} delay={0.03 * Math.min(i, 5)} className="border-b-2 border-papel-300">
                         <ProductSection
-                          product={ficha(p)}
+                          product={p}
                           citationCount={citas[p.doi] ?? null}
                           cover={PORTADAS[p.doi]}
                           showYear={g.ano === null}
