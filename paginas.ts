@@ -192,11 +192,10 @@ export function paginaOSuperior(pathname: string): Pagina | undefined {
 }
 
 /**
- * Si la dirección tiene páginas debajo. Cuando existe una carpeta con el nombre
- * de la página (la de /teaching/courses para /teaching), GitHub Pages puede
- * redirigir /teaching a /teaching/, como hace hoy con /classroom. Por eso esas
- * páginas se escriben como teaching.html y como teaching/index.html, y su
- * dirección canónica lleva la barra: es la que responde 200 en cualquier caso.
+ * Si la dirección tiene páginas debajo. Esas páginas se escriben como
+ * teaching.html y también como teaching/index.html: GitHub Pages sirve
+ * teaching.html para /teaching aunque exista la carpeta (comprobado en vivo el
+ * 21 oct 2026), y el index.html responde a quien llega con barra final.
  */
 export function tieneHijas(ruta: string): boolean {
   if (ruta === '/') return false;
@@ -206,7 +205,7 @@ export function tieneHijas(ruta: string): boolean {
 
 /** La dirección completa que se declara como canónica y va en el sitemap. */
 export function canonica(ruta: string): string {
-  return `${SITIO}${ruta}${tieneHijas(ruta) ? '/' : ''}`;
+  return `${SITIO}${ruta}`;
 }
 
 export const tituloDe = (p: Pagina | undefined, lang: Lang): string =>

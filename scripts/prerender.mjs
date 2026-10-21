@@ -250,14 +250,12 @@ for (const p of paginas) {
 }
 for (const r of m.REDIRECCIONES) escribir(`${r.desde.slice(1)}.html`, redireccion(r), r.desde);
 
-// Una página sin hijas cuyo nombre coincide con una carpeta de public/: GitHub Pages podría
-// redirigirla a la versión con barra, que no tendría archivo. Se escribe también ahí.
+// Una página sin hijas cuyo nombre coincide con una carpeta de public/: también responde con barra final.
 for (const p of paginas) {
   if (p.ruta === '/' || m.tieneHijas(p.ruta)) continue;
   const carpeta = path.join(DIST, p.ruta.slice(1));
   if (existsSync(carpeta) && statSync(carpeta).isDirectory()) {
     escribir(`${p.ruta.slice(1)}/index.html`, documento(p, capturas.get(p.ruta)), p.ruta);
-    avisar(`${p.ruta} coincide con una carpeta de public/: su dirección canónica debería llevar barra final.`);
   }
 }
 

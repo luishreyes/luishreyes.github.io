@@ -70,7 +70,9 @@ GitHub Pages solo sirve archivos. Antes del 21 oct 2026 todo menos la portada re
 
 **Qué entra al sitemap:** el portafolio, el Aula, el Archivo y la portada de cada curso que no esté oculto (`hidden`). Las páginas interiores de los cursos responden 200 pero llevan `noindex`, porque sin código solo muestran la reja. El prerender entra sin código: nada de lo que está detrás de la reja queda en el HTML.
 
-**Barra final:** las direcciones con páginas debajo (`/teaching`, `/research`, `/service`, `/classroom`, `/classroom/{slug}`…) declaran la canónica con barra (`/teaching/`), porque GitHub Pages puede redirigirlas a esa forma (lo hace con `/classroom`). El script de `index.html` quita la barra al cargar y la app sigue usando las direcciones sin barra.
+**Barra final:** GitHub Pages sirve `teaching.html` para `/teaching` aunque exista la carpeta `teaching/` (comprobado en vivo el 21 oct 2026), así que todas las direcciones canónicas van sin barra, como los enlaces de la app. Las páginas con páginas debajo se escriben también como `ruta/index.html` para quien llega con barra (`/classroom/`, como quedaron enlaces viejos), y el script de `index.html` le quita la barra al cargar.
+
+**Google Search Console:** la propiedad es el prefijo `https://portfolio.luishreyes.com/`, verificada con la etiqueta `google-site-verification` de `index.html` (el prerender la copia a todas las páginas). No se borra: Google la revisa de vez en cuando. El sitemap enviado es `sitemap.xml`.
 
 **Al navegar**, `components/Metadatos.tsx` cambia el título, el `lang` (los cursos van en `es`) y la canónica.
 
