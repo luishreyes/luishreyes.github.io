@@ -1,8 +1,8 @@
 /* ====================================================================
    El ecofiltro en isométrico (skill anatomy), para la pestaña «Por
    dentro» del Explorador del ecofiltro.
-   Concepto: el biopercolador E-101 de la Central Hidroeléctrica El
-   Paraíso. El ventilador V-101 saca el gas del tanque de aquietamiento
+   Concepto: el biopercolador E-101 de una central hidroeléctrica
+   colombiana. El ventilador V-101 saca el gas del tanque de aquietamiento
    por el demister D-101 y lo empuja por debajo del lecho; el gas sube por
    6 m de empaque estructurado mojado y sale por arriba, por el demister
    D-102, hacia el tanque de adsorción. El riego cae de los aspersores,

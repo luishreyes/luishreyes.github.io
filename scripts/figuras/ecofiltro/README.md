@@ -1,7 +1,7 @@
 # El ecofiltro en isométrico (skill `anatomy`)
 
-Figura de la pestaña «Por dentro» del Explorador del ecofiltro (POU 2026-20): el biopercolador E-101 de la Central
-Hidroeléctrica El Paraíso con su tren de gas y su lazo de riego. La torre va abierta por el plano vertical de su eje
+Figura de la pestaña «Por dentro» del Explorador del ecofiltro (POU 2026-20): el biopercolador E-101 de una central
+hidroeléctrica colombiana con su tren de gas y su lazo de riego. La torre va abierta por el plano vertical de su eje
 que mira al lector: se ven la entrada de gas que descarga hacia abajo, el fondo con el líquido de riego, las vigas y
 la parrilla de soporte, los 6 m de empaque estructurado en doce capas (cada una girada 90° respecto a la de abajo), la
 rejilla de sujeción, el cabezal de aspersores con sus ramales y el eliminador de niebla. Afuera van el demister D-101,
