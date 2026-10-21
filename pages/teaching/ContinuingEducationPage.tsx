@@ -86,9 +86,9 @@ const pct = (rate = 0) => Math.round(rate * 100);
 
 // ── Piezas ───────────────────────────────────────────────────────────────────
 
-const Figura: React.FC<{ foto: Foto; pie: string; lang: Lang; proporcion?: string; className?: string }> = ({ foto, pie, lang, proporcion = 'aspect-[4/3]', className = '' }) => (
+const Figura: React.FC<{ foto: Foto; pie: string; lang: Lang; proporcion?: string; className?: string; foco?: string }> = ({ foto, pie, lang, proporcion = 'aspect-[4/3]', className = '', foco }) => (
   <figure className={className}>
-    <img src={foto.src} alt={localize(foto.alt, lang)} loading="lazy" className={`a-bn w-full ${proporcion} object-cover`} />
+    <img src={foto.src} alt={localize(foto.alt, lang)} loading="lazy" className={`a-bn w-full ${proporcion} object-cover`} style={foco ? { objectPosition: foco } : undefined} />
     <figcaption className="a-pie">{pie}</figcaption>
   </figure>
 );
@@ -354,6 +354,11 @@ export const ContinuingEducationPage = () => {
               </figure>
             </Sube>
           </div>
+
+          {/* Una sesión del programa para Ecopetrol, a lo ancho: en pantalla grande, recortada a 2:1. */}
+          <Sube className="mt-20">
+            <Figura foto={fotos.ecopetrolClase} pie={t('training.orgs.photo2')} lang={lang} proporcion="aspect-[4/3] lg:aspect-[2/1]" foco={fotos.ecopetrolClase.foco} />
+          </Sube>
 
           {/* El muro de logos: el mismo peso visual para todos (área constante, con tope de ancho y alto). */}
           <Sube className="mt-20">
