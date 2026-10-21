@@ -19,7 +19,7 @@ import { serviceChapter } from './strings/serviceChapter';
 export type Lang = 'en' | 'es';
 
 // ── UI strings (merged from per-section modules) ────────────
-const ui = {
+export const ui = {
   ...nav,
   ...about,
   ...research,
@@ -105,9 +105,9 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     return navigator.language.startsWith('es') ? 'es' : 'en';
   });
 
+  // El lang del documento lo pone components/Metadatos.tsx: las páginas de los cursos van en español.
   useEffect(() => {
     window.localStorage.setItem(STORAGE_KEY, lang);
-    document.documentElement.lang = lang;
   }, [lang]);
 
   const setLang = (l: Lang) => setLangState(l);

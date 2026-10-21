@@ -61,6 +61,8 @@ import { DocViewerPage } from './components/classroom/DocViewerPage';
 import { startSequentialImagePreloading } from './services/preloader';
 import { AppDataContext } from './context/AppDataContext';
 import { I18nProvider, localize } from './context/i18n';
+import { Metadatos } from './components/Metadatos';
+import { REDIRECCIONES } from './paginas';
 
 const App: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -160,6 +162,7 @@ const App: React.FC = () => {
       {/* El portafolio habla con la línea del portafolio docente impreso (.portafolio); el aula conserva el tema de cada curso. */}
       <MotionConfig reducedMotion="user">
       <main className={`relative ${enAula ? '' : 'portafolio'}`}>
+        <Metadatos />
         <Navbar onDownloadCv={handleDownloadCv} />
         <div>
           <AnimatePresence mode="wait">
@@ -170,16 +173,16 @@ const App: React.FC = () => {
               <Route path="/next" element={<NextPage />} />
               <Route path="/school" element={<SchoolPage />} />
               <Route path="/teaching/strategies" element={<StrategiesPage />} />
-              <Route path="/simulators" element={<Navigate to="/teaching/strategies#simuladores" replace />} />
-              {/* Cada filosofía abre su capítulo; las direcciones viejas de /principles redirigen. */}
+              {/* Cada filosofía abre su capítulo; las direcciones viejas de /principles y el atajo /simulators redirigen (paginas.ts). */}
+              {REDIRECCIONES.map(({ desde, hacia }) => (
+                <React.Fragment key={desde}>
+                  <Route path={desde} element={<Navigate to={hacia} replace />} />
+                </React.Fragment>
+              ))}
               <Route path="/teaching/purpose" element={<TeachingPurposePage />} />
               <Route path="/teaching/philosophy" element={<TeachingPhilosophyPage />} />
               <Route path="/research/purpose" element={<ResearchPurposePage />} />
               <Route path="/service/purpose" element={<ServicePurposePage />} />
-              <Route path="/principles/teaching" element={<Navigate to="/teaching/purpose" replace />} />
-              <Route path="/principles/philosophy" element={<Navigate to="/teaching/philosophy" replace />} />
-              <Route path="/principles/research" element={<Navigate to="/research/purpose" replace />} />
-              <Route path="/principles/service" element={<Navigate to="/service/purpose" replace />} />
               <Route path="/research" element={<ResearchOverviewPage />} />
               <Route path="/research/program" element={<ResearchProgramPage />} />
               <Route path="/research/products" element={<ProductsPage />} />

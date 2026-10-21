@@ -7,7 +7,7 @@
 Portafolio docente personal hospedado en GitHub Pages.
 
 - **Repo:** `luishreyes/luishreyes.github.io`
-- **URL live:** https://luishreyes.github.io
+- **URL live:** https://portfolio.luishreyes.com (archivo `CNAME`; luishreyes.github.io redirige ahí)
 - **Stack:** React 19 + TypeScript + Vite + React Router 7 + Tailwind CSS + Framer Motion
 - **Deploy:** Automático al hacer push a `main` (workflow `.github/workflows/deploy.yml`)
 
@@ -32,6 +32,7 @@ public/
       slides/         ← Presentaciones HTML autocontenidas
         img/          ← Imágenes de las presentaciones
 routes.ts             ← Definición de rutas
+paginas.ts            ← Título, idioma y sitemap de cada página (ver «Buscadores»)
 App.tsx               ← Router principal
 ```
 
@@ -56,6 +57,24 @@ La página `/research/products`, las cifras de citas, índice h e i10 del resume
 ### Imágenes (ya no salen de Supabase)
 
 Desde oct 2026 el sitio no usa Supabase para nada. Las fotos de egresados viven en `public/images/students/{slug}.jpg` (el slug es el nombre de su ficha en `components/data/students/graduated/`), las de testimonios en `public/images/testimonials/` y las de páginas en `public/images/site/`, todas con ruta relativa (`/images/...`). Las de egresados y testimonios van recortadas al cuadrado desde arriba, al 88 % del lado menor, para dejar fuera la estrella de Gemini de la esquina. Los originales se copiaron con el workflow manual `fotos-supabase.yml` a la rama `fotos-supabase`.
+
+## Buscadores: un HTML por página (21 oct 2026)
+
+GitHub Pages solo sirve archivos. Antes del 21 oct 2026 todo menos la portada respondía 404 y la app entraba por `404.html`, así que Google no indexaba nada más. Ahora `npm run build` corre `vite build` y después `scripts/prerender.mjs`, que:
+
+- Abre cada página de `paginas.ts` en Chromium sobre `dist/`, como un visitante nuevo y en inglés, y escribe su HTML (`ruta.html`; las que tienen páginas debajo, también `ruta/index.html`) con título, `meta description`, `lang`, dirección canónica y etiquetas Open Graph. El contenido va dentro de `#root` en `<div data-previo>`, escondido: React lo reemplaza al arrancar y el visitante ve lo mismo que antes. Lo leen los buscadores y quien no tiene JavaScript.
+- Escribe `sitemap.xml`, `robots.txt` y una página que redirige por cada entrada de `REDIRECCIONES` (las mismas que usa `App.tsx`).
+- `404.html` queda para lo que no existe y para el visor del aula (`/classroom/{slug}/ver/...`).
+
+**Página nueva:** su ruta en `App.tsx` y `routes.ts`, y su título en `PORTAFOLIO` de `paginas.ts`. El prerender avisa si una ruta de `routes.ts` se queda sin página. Las de los cursos salen solas de los datos del aula. La descripción es la entrada de la página (`.a-entrada`, la de `EncabezadoPagina` y `Apertura`); si es muy corta se completa con el cargo.
+
+**Qué entra al sitemap:** el portafolio, el Aula, el Archivo y la portada de cada curso que no esté oculto (`hidden`). Las páginas interiores de los cursos responden 200 pero llevan `noindex`, porque sin código solo muestran la reja. El prerender entra sin código: nada de lo que está detrás de la reja queda en el HTML.
+
+**Barra final:** las direcciones con páginas debajo (`/teaching`, `/research`, `/service`, `/classroom`, `/classroom/{slug}`…) declaran la canónica con barra (`/teaching/`), porque GitHub Pages puede redirigirlas a esa forma (lo hace con `/classroom`). El script de `index.html` quita la barra al cargar y la app sigue usando las direcciones sin barra.
+
+**Al navegar**, `components/Metadatos.tsx` cambia el título, el `lang` (los cursos van en `es`) y la canónica.
+
+**Chromium:** en GitHub Actions usa el Google Chrome del runner; en la nube, el de Playwright; en el Mac, Chrome (o `CHROME_PATH`). Si no lo encuentra, las páginas salen con sus metadatos pero sin contenido y el build avisa (`::warning::` en Actions). El script solo corre sobre un `dist/` recién construido: para repetirlo, `npm run build`.
 
 ## Classroom — Sistema de intranet académica
 

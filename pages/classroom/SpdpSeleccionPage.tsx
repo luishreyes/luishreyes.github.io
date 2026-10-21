@@ -114,10 +114,6 @@ export const SpdpSeleccionPage: React.FC<{ course: Course }> = ({ course }) => {
     }
   }, [estado]);
 
-  useEffect(() => {
-    document.title = 'Selección de retos · SPDP 2026-20';
-  }, []);
-
   const lista = useMemo(() => [...estudiantes202620, ...estado.extras], [estado.extras]);
   const previos = useMemo(() => new Map(lista.map((n) => [n, retoPrevio(n)])), [lista]);
 

@@ -69,7 +69,6 @@ export const SpdpResultadosPage: React.FC<{ course: Course }> = ({ course }) => 
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    document.title = 'Resultados de la selección · SPDP 2026-20';
   }, []);
 
   const estudiantes = res.estudiantes.filter((e) => !q || sinTildes(e.nombre).includes(sinTildes(q)));
