@@ -40,12 +40,12 @@ export const scholar = {
   citations: 3268,
   hIndex: 32,
   i10Index: 64,
-  /** Citas que recibió cada año, según las barras del perfil al 28 de septiembre de 2026.
-   *  La de 2026 va hasta finales de septiembre. */
-  perYearAsOf: '2026-09-28',
+  /** Citas que recibió cada año, según las barras del perfil al 21 de octubre de 2026.
+   *  La de 2026 va hasta esa fecha. */
+  perYearAsOf: '2026-10-21',
   perYear: {
     2012: 19, 2013: 44, 2014: 74, 2015: 69, 2016: 101, 2017: 84, 2018: 112,
-    2019: 131, 2020: 146, 2021: 214, 2022: 277, 2023: 348, 2024: 438, 2025: 600, 2026: 518,
+    2019: 131, 2020: 146, 2021: 214, 2022: 277, 2023: 348, 2024: 440, 2025: 601, 2026: 560,
   } as Record<number, number>,
 };
 
