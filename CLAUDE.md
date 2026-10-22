@@ -51,6 +51,7 @@ La página `/research/products`, las cifras de citas, índice h e i10 del resume
 
 - **Agregar o corregir un producto:** editar el JSON (en GitHub o aquí) y pushear a `main`; el deploy lo publica. Cada entrada tiene la forma de `Product` (`types.ts`) más `citations` (número o `null`). `type` debe ser un `ProductType`, `researchAreas` uno de los ocho `ResearchArea`, `publicationDate` en `AAAA-MM-DD` y `doi` único (la lista lo usa como `key`; para lo que no tiene DOI se usa un identificador propio, como ya hacen las patentes y los libros autopublicados).
 - **Las citas son una foto fija:** se actualizan a mano en `citations`.
+- **«En palabras sencillas» va en los dos idiomas:** cada punto de `laymanSummary` lleva `question` y `answer` como `{en, es}`, y la página muestra el del idioma escogido. Un producto nuevo entra así, con las reglas de redacción del profesor en los dos idiomas y sin nada dirigido a un evaluador.
 - `scripts/export-supabase.mjs` + el workflow manual `export-supabase.yml` hicieron la migración desde Supabase (oct 2026); solo se vuelven a correr para un rescate, y sobrescriben el archivo.
 - ⚠️ Nada de dinero: ni montos, ni ingresos, ni financiación de estudiantes (decisión del profesor, 17 oct 2026).
 
