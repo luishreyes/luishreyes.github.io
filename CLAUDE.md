@@ -372,3 +372,6 @@ Los PDFs originales de clase suelen traer **ilustraciones tipo caricatura genera
 - Cuando el usuario da un **video** de un equipo, el **video es el recurso principal** de esa diapositiva (no una caricatura). Consolidar en una sola diapositiva con el video grande + pestañas/botones (Construcción / Cómo funciona / Ventajas) en vez de repartir caricaturas en varias diapositivas.
 - Si no hay imagen limpia ni video para un tema, preferir un **esquema propio (SVG/HTML)** o una diapositiva tipográfica limpia; **jamás** rellenar con la caricatura del PDF.
 - Reemplazar contenido obsoleto cuando el usuario lo pida (p. ej. «elimine la filtración centrífuga y ponga la decantadora centrífuga»).
+
+### #10: Nada de libros ni normas en `public/`
+Todo lo que está en `public/` lo puede descargar cualquiera, con o sin código del aula, y el repositorio es público. Por eso **no se suben capítulos de libros (McCabe, Towler, Darby…) ni normas (ISO, BS, ISA)**, aunque sean la lectura de referencia (pedido del profesor, 22 oct 2026: «Quitemos lo público… Borrar eso»). La tarjeta de referencia de una lectura (`.doccard`) los cita con autor y libro, lleva la etiqueta LIBRO o NORMA y enlaza a la [Biblioteca](https://biblioteca.uniandes.edu.co) («EN LA BIBLIOTECA →»). Solo se enlaza un PDF cuando su autor lo publica gratis en su propio sitio, y se enlaza allá, sin copiarlo.
