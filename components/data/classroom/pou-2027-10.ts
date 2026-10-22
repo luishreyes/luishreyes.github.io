@@ -34,10 +34,17 @@ const LECTURAS_PROPIAS = new Set([
 
 // Resúmenes de lecturas y talleres que cambiaron de caso para aceite esencial.
 const RESUMENES: Record<string, string> = {
+  'lectura-01-operaciones-unitarias':
+    'Cómo una sola idea ordenó toda la ingeniería química, y cómo se lee con ella la planta de aceite esencial del semestre. El origen del concepto con Davis, Little y el MIT, su evolución en el siglo XX, las dos clasificaciones (por fenómeno de transporte y por tipo de operación) con las siete operaciones de la planta, y los balances de materia y energía con un ejemplo del extractor.',
   'programa-del-curso':
     'El programa completo de IQYA-2031 para 2027-10: horarios y equipo, descripción y metodología (PO-PBL y aula invertida), el reto de la planta de aceite esencial, resultados ABET, contenido por módulo, distribución de la nota, entregas por semana, escala AIAS de uso de IA y políticas del curso.',
   'taller-02-analisis-granulometrico':
     'Se resuelve en un cuaderno de Google Colab, que se abre desde la página con un clic. Tres casos de la planta: la cáscara que sale del desgarrador, que se juzga contra tres criterios del extractor; dos equipos de desgarrado que compiten por preparar la carga y donde ninguno domina al otro; y una carta de control del D50 con las muestras de una semana. Incluye el ajuste de los tres modelos clásicos de distribución, log-normal, Rosin-Rammler y Gates-Gaudin-Schuhmann, y cinco preguntas de análisis con sustento bibliográfico en formato IEEE. En parejas, con pareja distinta a la del Taller 1.',
+};
+
+// Lecturas reescritas para 2027-10: su tiempo real de lectura y la fecha de la revisión.
+const REVISADAS: Record<string, { readingMinutes: number; date: string }> = {
+  'lectura-01-operaciones-unitarias': { readingMinutes: 25, date: '2026-10-22' },
 };
 
 // Descripciones que en 2026-20 hablaban de la planta de pectina.
@@ -163,6 +170,7 @@ export const pou202710Course: Course = {
         ? {
             ...r,
             summary: RESUMENES[r.slug] ?? r.summary,
+            ...REVISADAS[r.slug],
             href: r.href?.replace('/iqya-2031-2026-20/', '/iqya-2031-2027-10/'),
           }
         : r.slug === 'reto-pectina'

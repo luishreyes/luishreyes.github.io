@@ -81,12 +81,18 @@ uv run python publicar.py escenas/iqya-2031-2026-20/punto_operacion.py PuntoOper
 
 | Opción | Qué hace |
 |---|---|
-| `--fondo` | `blanco` (diapositiva `.s`, por defecto), `papel` (`.s--tint`) u `oscuro` (`.s--dark`). El video lleva el fondo de su diapositiva. |
+| `--deck` / `--carpeta` | Dónde se publica: `--deck Bombas_Centrifugas` es la presentación; `--carpeta lecturas/Lectura_01` sirve para una lectura o cualquier carpeta del curso. |
+| `--tema` | `industry` (POU 2026-20, por defecto) o `uniandes` (POU 2027-10: azul noche, oliva y el amarillo solo como relleno). |
+| `--fondo` | `blanco` (diapositiva `.s`, por defecto), `papel` (`.s--tint`) u `oscuro` (`.s--dark`); con `uniandes`, también `nieve`, el blanco de los recuadros de las secciones pares de las lecturas. El video lleva el fondo de donde va. |
 | `--formato` | `16:9` (1920 × 1080, por defecto), `4:3` (1440 × 1080) o `1:1` (1080 × 1080). |
 | `--nombre` | Nombre de los archivos; por defecto, la clase en kebab-case (`punto-operacion`). |
 | `--titulo` | Lo que lee un lector de pantalla y el `alt` del póster. |
 
 Deja en `assets/video/` del deck el `.mp4` (H.264 a 30 cuadros, sin audio, con el índice al comienzo para que arranque sin bajar entero) y el `.webp` con el último cuadro, e imprime el HTML de la diapositiva con las pausas ya calculadas. Tarda unos tres minutos para 30 segundos de video. El video sale tal como lo codifica Manim, sin recodificar: el de ejemplo (30 segundos) pesa 1,9 MB. Si uno pasa de 5 MB, revisar la escena (rellenos que cambian en cada cuadro, demasiados objetos moviéndose).
+
+## En una lectura
+
+Una lectura no tiene la flecha del deck: el video va como figura, con controles, y el póster (el último cuadro) es la figura completa para quien no lo reproduce y para la impresión. `publicar.py --carpeta lecturas/...` imprime el HTML: `<video>` dentro de `figure.fig` con `poster`, `controls`, `muted`, `playsinline` y `preload="none"`. La lectura necesita una regla para que el video ocupe el ancho (`figure.fig video { width: 100%; height: auto; display: block; }`). **Deje libre la franja de abajo del cuadro** (unos 0,9 unidades de Manim): ahí se dibujan los controles del navegador y tapan lo que haya. Primer ejemplo: la Figura 1 de la Lectura 1 de POU 2027-10 (`escenas/iqya-2031-2027-10/planta_operaciones.py`).
 
 ## En la diapositiva
 
@@ -120,7 +126,7 @@ Y el HTML que imprime `publicar.py`, dentro de la diapositiva:
 
 ## Otra identidad de curso
 
-`estilo.py` tiene la identidad Industry de POU 2026-20 (acero, ámbar, Barlow). Para otro curso: agregar su letra en `fuentes/` (TTF con licencia libre y su archivo de licencia; las de `@fontsource` vienen en woff2 y Pango no las lee) y sus colores, escogidos por una variable de entorno como el fondo. Los nombres (`TINTA`, `ACERO`...) se conservan para que las escenas no cambien.
+`estilo.py` tiene dos identidades: Industry, de POU 2026-20 (acero y ámbar), y Uniandes, de POU 2027-10 (azul noche, oliva y amarillo), las dos con Barlow, porque la FF Dax de Uniandes no se puede autoalojar. Se escogen con `--tema`. Para otro curso: agregar su letra en `fuentes/` (TTF con licencia libre y su archivo de licencia; las de `@fontsource` vienen en woff2 y Pango no las lee) y sus colores, escogidos por una variable de entorno como el fondo. Los nombres (`TINTA`, `ACERO`...) se conservan para que las escenas no cambien.
 
 ## Problemas comunes
 

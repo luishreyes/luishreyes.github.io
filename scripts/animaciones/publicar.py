@@ -1,20 +1,26 @@
-"""Renderiza una escena de Manim y la deja lista en una presentación del aula.
+"""Renderiza una escena de Manim y la deja lista en una presentación o una lectura del aula.
 
     uv run publicar.py ESCENA.py Clase --curso SLUG --deck CARPETA [opciones]
+    uv run publicar.py ESCENA.py Clase --curso SLUG --carpeta lecturas/Lectura_NN [opciones]
     uv run publicar.py ESCENA.py Clase --borrador          (solo para revisar)
 
 Opciones:
+  --deck      la presentación: equivale a --carpeta slides/CARPETA
+  --carpeta   cualquier carpeta dentro del curso, como lecturas/Lectura_01
+  --tema      industry (POU 2026-20, por defecto) | uniandes (POU 2027-10)
+  --fondo     el de la diapositiva o la lectura: blanco | papel | oscuro, y en
+              uniandes también nieve (los recuadros de las secciones pares de las lecturas)
   --nombre    nombre de los archivos publicados (por defecto, la clase en kebab-case)
-  --fondo     blanco | papel | oscuro: el de la diapositiva (.s, .s--tint, .s--dark)
   --formato   16:9 | 4:3 | 1:1 (1080 px de alto; 16:9 es 1920 × 1080)
   --titulo    lo que lee un lector de pantalla (por defecto, el nombre)
   --borrador  480p a 15 cuadros en media/, sin publicar nada
 
-Publica en public/classroom/{curso}/slides/{deck}/assets/video/:
+Publica en {carpeta}/assets/video/:
   {nombre}.mp4   H.264 sin audio, con el índice al comienzo (arranca sin bajar entero)
   {nombre}.webp  el último cuadro: póster, vista con movimiento reducido e impresión
-e imprime el HTML de la diapositiva con las pausas de cada sección
-(self.next_section en la escena). Ver ANIMACIONES.md.
+e imprime el HTML: en una presentación, con las pausas de cada sección
+(self.next_section en la escena); en una lectura, una figura con controles.
+Ver ANIMACIONES.md.
 """
 import argparse
 import json
@@ -36,8 +42,8 @@ def kebab(nombre):
     return re.sub(r"(?<!^)(?=[A-Z])", "-", nombre).lower()
 
 
-def renderizar(escena, clase, ancho, alto, fps, fondo):
-    entorno = dict(os.environ, ANIM_FONDO=fondo,
+def renderizar(escena, clase, ancho, alto, fps, fondo, tema):
+    entorno = dict(os.environ, ANIM_FONDO=fondo, ANIM_TEMA=tema,
                    PYTHONPATH=os.pathsep.join(p for p in (str(AQUI), os.environ.get("PYTHONPATH")) if p))
     subprocess.run(
         [sys.executable, "-m", "manim", "render", str(escena), clase,
@@ -86,9 +92,11 @@ def main():
     p.add_argument("clase")
     p.add_argument("--curso")
     p.add_argument("--deck")
+    p.add_argument("--carpeta")
+    p.add_argument("--tema", default="industry", choices=["industry", "uniandes"])
     p.add_argument("--nombre")
     p.add_argument("--titulo")
-    p.add_argument("--fondo", default="blanco", choices=["blanco", "papel", "oscuro"])
+    p.add_argument("--fondo", default="blanco", choices=["blanco", "papel", "nieve", "oscuro"])
     p.add_argument("--formato", default="16:9", choices=list(FORMATOS))
     p.add_argument("--borrador", action="store_true")
     a = p.parse_args()
@@ -97,16 +105,17 @@ def main():
     ancho, alto = FORMATOS[a.formato]
     if a.borrador:
         ancho, alto, fps = round(ancho * 480 / alto) // 2 * 2, 480, 15
-        video, _ = renderizar(escena, a.clase, ancho, alto, fps, a.fondo)
+        video, _ = renderizar(escena, a.clase, ancho, alto, fps, a.fondo, a.tema)
         print(f"\nBorrador: {video}")
         return
-    if not (a.curso and a.deck):
-        p.error("para publicar hacen falta --curso y --deck (o use --borrador)")
+    carpeta = a.carpeta or (f"slides/{a.deck}" if a.deck else None)
+    if not (a.curso and carpeta):
+        p.error("para publicar hacen falta --curso y --deck o --carpeta (o use --borrador)")
 
-    destino = RAIZ / "public" / "classroom" / a.curso / "slides" / a.deck
+    destino = RAIZ / "public" / "classroom" / a.curso / carpeta
     if not destino.is_dir():
-        p.error(f"no existe la presentación {destino.relative_to(RAIZ)}")
-    video, secciones = renderizar(escena, a.clase, ancho, alto, FPS, a.fondo)
+        p.error(f"no existe la carpeta {destino.relative_to(RAIZ)}")
+    video, secciones = renderizar(escena, a.clase, ancho, alto, FPS, a.fondo, a.tema)
     nombre = a.nombre or kebab(a.clase)
     mp4 = destino / "assets" / "video" / f"{nombre}.mp4"
     poster = mp4.with_suffix(".webp")
@@ -116,6 +125,18 @@ def main():
     rel = f"assets/video/{nombre}"
     titulo = a.titulo or nombre.replace("-", " ").capitalize()
     print(f"\nPublicado: {mp4.relative_to(RAIZ)} ({mp4.stat().st_size / 1e6:.1f} MB) y {poster.name}")
+    if not carpeta.startswith("slides/"):
+        # Una lectura no tiene la flecha del deck: el video lleva controles, y el
+        # póster (el último cuadro) es la figura completa para quien no lo reproduce.
+        print("\nHTML para la lectura (la figura completa es el póster):\n")
+        print(f'<figure class="fig full">\n'
+              f'  <div class="fig-frame">\n'
+              f'    <video class="anim-lectura" src="{rel}.mp4" poster="{rel}.webp" width="{ancho}" height="{alto}"\n'
+              f'           controls muted playsinline preload="none" aria-label="Animación: {titulo}"></video>\n'
+              f'  </div>\n'
+              f'  <figcaption><b>Figura N.</b> …</figcaption>\n'
+              f'</figure>')
+        return
     print("\nHTML para la diapositiva (una vez por presentación, después de deck-stage.js:"
           ' <script src="/classroom/animaciones.js"></script>):\n')
     print(f'<div class="anim-caja">\n'

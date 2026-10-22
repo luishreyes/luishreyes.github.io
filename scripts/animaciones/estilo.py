@@ -8,13 +8,16 @@ Registra la letra del curso (Barlow, autoalojada en fuentes/), pinta el
 fondo de la diapositiva donde va el video y deja listos los colores, los
 textos, las fórmulas con coma decimal y unos ejes con números en Barlow.
 
-El fondo lo escoge publicar.py con --fondo (variable ANIM_FONDO): blanco
-para una diapositiva `.s`, papel para `.s--tint` y oscuro para `.s--dark`.
-Los colores de tinta cambian con él, así que las escenas usan los nombres
-de aquí (TINTA, ACERO...) y nunca un hex suelto.
+La identidad la escoge publicar.py con --tema (variable ANIM_TEMA):
+«industry», la de POU 2026-20 (acero y ámbar), o «uniandes», la de POU
+2027-10 (azul noche, oliva y el amarillo solo como relleno). El fondo, con
+--fondo (variable ANIM_FONDO): el de la diapositiva o la lectura que recibe
+el video. Los colores de tinta cambian con los dos, así que las escenas usan
+los nombres de aquí (TINTA, ACERO...) y nunca un hex suelto. ACERO es el
+acento funcional de cada tema: el acero en Industry, la oliva en Uniandes.
 
-Identidad: «Industry» de POU 2026-20 (assets/deloitte.css de sus
-presentaciones). Para otro curso se agrega su paleta y su letra aquí.
+La letra es Barlow en los dos temas. La de Uniandes (FF Dax) no se puede
+autoalojar por su licencia de Adobe.
 """
 import os
 from pathlib import Path
@@ -30,29 +33,57 @@ for _f in sorted((AQUI / "fuentes").glob("*.ttf")):
 LETRA = "Barlow"
 LETRA_TITULO = "Barlow Condensed"
 
-# ── Fondo: el de la diapositiva que recibe el video ─────────────────────
-FONDOS = {
-    "blanco": "#F7F7F8",  # .s        (--blanco)
-    "papel": "#E9E9EA",   # .s--tint  (--papel)
-    "oscuro": "#111111",  # .s--dark
+# ── Tema y fondo ────────────────────────────────────────────────────────
+TEMA = os.environ.get("ANIM_TEMA", "industry")
+FONDOS_POR_TEMA = {
+    "industry": {                # assets/deloitte.css de las presentaciones de 2026-20
+        "blanco": "#F7F7F8",     # .s        (--blanco)
+        "papel": "#E9E9EA",      # .s--tint  (--papel)
+        "oscuro": "#111111",     # .s--dark
+    },
+    "uniandes": {                # assets/identidad.css de 2027-10
+        "blanco": "#F6F8FA",     # superficie base (--blanco)
+        "papel": "#EDF0F3",      # fondo tenue (--papel)
+        "nieve": "#FFFFFF",      # recuadros de las secciones pares de las lecturas (--nieve)
+        "oscuro": "#19222F",     # diapositivas oscuras (--navy)
+    },
 }
+if TEMA not in FONDOS_POR_TEMA:
+    raise ValueError(f"ANIM_TEMA debe ser uno de {list(FONDOS_POR_TEMA)}, no {TEMA!r}")
+FONDOS = FONDOS_POR_TEMA[TEMA]
 FONDO_NOMBRE = os.environ.get("ANIM_FONDO", "blanco")
 if FONDO_NOMBRE not in FONDOS:
-    raise ValueError(f"ANIM_FONDO debe ser uno de {list(FONDOS)}, no {FONDO_NOMBRE!r}")
+    raise ValueError(f"Con el tema {TEMA}, ANIM_FONDO debe ser uno de {list(FONDOS)}, no {FONDO_NOMBRE!r}")
 FONDO = FONDOS[FONDO_NOMBRE]
 OSCURO = FONDO_NOMBRE == "oscuro"
 config.background_color = FONDO
 
-# ── Colores (Industry; en oscuro, los de su bloque [data-theme=dark]) ───
-TINTA = "#FFFFFF" if OSCURO else "#1D1F20"      # texto y trazo principal
-TINTA_2 = "#B9B9BC" if OSCURO else "#5D5D60"    # texto secundario, ejes
-TINTA_3 = "#8A8A8E" if OSCURO else "#7A7A7D"    # guías, notas
-REJILLA = "#2E2E31" if OSCURO else "#C9C9CC"    # rejilla, curvas de referencia
-ACERO = "#7FA6CC" if OSCURO else "#5980A6"      # el acento del curso
-ACERO_OSC = "#9BBEDD" if OSCURO else "#416180"
-ACERO_CLARO = "#22303D" if OSCURO else "#E8EFF6"
-TEAL = "#8FB3D2" if OSCURO else "#2C455D"       # segundo trazo, de la misma familia
-AMBAR = "#E0922F"                               # advertencia o pérdida, nunca decorativo
+# ── Colores ─────────────────────────────────────────────────────────────
+AMBAR = "#E0922F"                                   # advertencia o pérdida, nunca decorativo
+if TEMA == "industry":                              # en oscuro, los de su bloque [data-theme=dark]
+    TINTA = "#FFFFFF" if OSCURO else "#1D1F20"      # texto y trazo principal
+    TINTA_2 = "#B9B9BC" if OSCURO else "#5D5D60"    # texto secundario, ejes
+    TINTA_3 = "#8A8A8E" if OSCURO else "#7A7A7D"    # guías, notas
+    REJILLA = "#2E2E31" if OSCURO else "#C9C9CC"    # rejilla, curvas de referencia
+    ACERO = "#7FA6CC" if OSCURO else "#5980A6"      # el acento del curso
+    ACERO_OSC = "#9BBEDD" if OSCURO else "#416180"
+    ACERO_CLARO = "#22303D" if OSCURO else "#E8EFF6"
+    TEAL = "#8FB3D2" if OSCURO else "#2C455D"       # segundo trazo, de la misma familia
+    NAVY = OLIVA = AMARILLO = None                  # solo existen en el tema Uniandes
+else:
+    # El amarillo da 1,15:1 sobre blanco: es relleno y marca, nunca texto ni trazo
+    # fino. En fondo oscuro se invierte y el amarillo pasa a ser el acento.
+    NAVY = "#19222F"
+    OLIVA = "#6E6A00"
+    AMARILLO = "#FFF500"
+    TINTA = "#FFFFFF" if OSCURO else NAVY
+    TINTA_2 = "#C2C7CE" if OSCURO else "#525C64"
+    TINTA_3 = "#939AA3" if OSCURO else "#5D666E"
+    REJILLA = "#39414B" if OSCURO else "#D3D9DF"
+    ACERO = AMARILLO if OSCURO else OLIVA           # acento funcional
+    ACERO_OSC = AMARILLO if OSCURO else "#565200"
+    ACERO_CLARO = "#262D35" if OSCURO else "#FFFCCC"
+    TEAL = "#C2C7CE" if OSCURO else NAVY
 
 # ── Tamaños (font_size de Manim) ────────────────────────────────────────
 # En un video de 1920 px de ancho, 30 da letra de unos 50 px. El video casi
