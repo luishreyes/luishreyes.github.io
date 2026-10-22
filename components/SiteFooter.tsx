@@ -45,7 +45,7 @@ export const SiteFooter: React.FC<{ onDownloadCv: () => void }> = ({ onDownloadC
                     </li>
                   ))}
                   <li>
-                    <a className="a-enlace" href="https://luishreyes.myportfolio.com" target="_blank" rel="noopener noreferrer">
+                    <a className="a-enlace" href="https://photography.luishreyes.com" target="_blank" rel="noopener noreferrer">
                       {t('footer.photography')}
                     </a>
                   </li>
