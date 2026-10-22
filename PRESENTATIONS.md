@@ -293,6 +293,12 @@ CSS requerido:
 
 ---
 
+## Animaciones propias (Manim)
+
+Cuando la diapositiva explica algo que se mueve (un punto de operación que se desplaza, una construcción gráfica paso a paso, una ecuación que se despeja), la animación se hace con Manim y entra como video propio, no de YouTube: se detiene al final de cada paso y la flecha sigue con el siguiente. Escenas, publicación, HTML y comportamiento en [ANIMACIONES.md](ANIMACIONES.md). Requiere `<script src="/classroom/animaciones.js"></script>` después de `deck-stage.js`.
+
+---
+
 ## Componente interactivo: `.lossmenu` (menú de pestañas A/B/C)
 
 Para slides con varias opciones/categorías de imágenes que se quieren mostrar una a la vez en clase:
