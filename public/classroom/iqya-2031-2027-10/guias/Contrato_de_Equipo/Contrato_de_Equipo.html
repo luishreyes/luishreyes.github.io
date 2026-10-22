@@ -224,6 +224,11 @@ table.tabla td.fijo small { display: block; font-weight: 400; color: var(--gris-
   .conflicto { border: 1pt solid #ccd0d5; background: none; padding: 8pt 10pt; }
   .firmas td { padding-top: 20pt; }
   .pie-doc { margin-top: 24pt; }
+
+  /* La declaración de las firmas es parte del contrato, no una ayuda:
+     sin ella el papel tendría firmas sin nada que las respalde. */
+  .ayuda.declaracion { display: block !important; margin: 4pt 0 8pt; font-size: 10.5pt; color: #000 !important; }
+  .solo-movil { display: none; }
 }
 
 /* ── Identidad del curso en pantalla (2027-10) ───────────────────────
@@ -244,11 +249,31 @@ table.tabla td.fijo small { display: block; font-weight: 400; color: var(--gris-
   section.bloque > h2 { text-transform: none; font-weight: 600; letter-spacing: -.01em; border-bottom: 0; }
   label.campo > span.rot { font-size: 13px; }
   .aviso, .ayuda { font-size: 15px; }
-  .tabla { display: block; overflow-x: auto; max-width: 100%; }
 }
+.solo-movil { display: none; }
 @media screen and (max-width: 759px) {
   .hoja { padding: 0 16px; }
   .encabezado { margin: 0 -16px 8px; padding: 28px 16px 24px; }
+
+  /* ── Tablas en el celular: cada fila se vuelve una ficha ─────────────
+     A 390 px la tabla de roles dejaba las responsabilidades y los
+     indicadores fuera de la pantalla. Aquí las celdas se apilan y cada
+     una lleva su rótulo (data-label, que el script copia del encabezado
+     de la columna). La impresión no pasa por aquí. */
+  table.tabla, table.tabla tbody, table.tabla tr, table.tabla td { display: block; width: 100% !important; }
+  table.tabla thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  table.tabla tr { padding: 14px 0 16px; border-bottom: 2px solid var(--gris-4); }
+  table.tabla tbody tr:first-child { padding-top: 4px; }
+  table.tabla td { border: 0; padding: 4px 0; }
+  table.tabla td[data-label]::before {
+    content: attr(data-label); display: block; margin-bottom: 4px;
+    font-size: 13px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--gris-3);
+  }
+  table.tabla td.cab { font-size: 18px; font-weight: 600; color: var(--gris-1); padding-top: 0; text-align: left; }
+  table.tabla td.cab small { display: inline; }
+  .solo-movil { display: inline; }
+  .firmas td { padding-top: 4px; }
+  .firmas .linea-firma { height: 40px; }
 }
 </style>
 </head>
@@ -270,8 +295,10 @@ table.tabla td.fijo small { display: block; font-weight: 400; color: var(--gris-
   <header class="encabezado">
     <p class="curso">IQYA-2031 · Proyecto de Operaciones Unitarias · 2027-10</p>
     <h1>Contrato de equipo</h1>
-    <p>Este documento fija cómo va a trabajar su equipo durante las dieciséis semanas.
-       Llénelo con su equipo, imprímalo y entréguelo firmado.</p>
+    <p>Este documento fija cómo va a trabajar su equipo durante el semestre: las dieciséis
+       semanas de clase y la sesión de pósteres de la semana 17. Se llena y se firma en clase,
+       en la sesión 2 de la semana 1. Llénenlo en equipo, imprímanlo y fírmenlo todos antes de
+       salir: al final de esa sesión cada equipo sale con su contrato impreso y firmado.</p>
   </header>
 
   <div class="aviso no-imprimir">
@@ -405,7 +432,7 @@ table.tabla td.fijo small { display: block; font-weight: 400; color: var(--gris-
   <!-- ── 8 ───────────────────────────────────────────────────────────── -->
   <section class="bloque">
     <h2>Firmas</h2>
-    <p class="ayuda" style="color:var(--gris-1)">Declaramos que hemos leído, discutido y aceptado
+    <p class="ayuda declaracion" style="color:var(--gris-1)">Declaramos que hemos leído, discutido y aceptado
        este contrato. Nos comprometemos a cumplirlo y a mantener evidencia de nuestro trabajo
        conforme a lo aquí pactado.</p>
     <table class="tabla firmas" id="tabla-firmas">
@@ -432,6 +459,7 @@ table.tabla td.fijo small { display: block; font-weight: 400; color: var(--gris-
     ['Analítica y modelamiento', 'Curación de datos, modelos y sensibilidad', 'Reproducibilidad; supuestos reportados'],
     ['Vocería', 'Presentaciones y comunicación externa', 'Entregables claros y a tiempo'],
     ['Gestión de riesgos', 'Identificación, evaluación y mitigación', 'Riesgos actualizados cada semana'],
+    ['Simulación y diagramas', 'Modelo de simulación y diagramas al día con el último balance', 'Versión vigente de la simulación y de los diagramas en cada entrega'],
   ];
   const CONFLICTOS = ['De tarea', 'De proceso', 'Interpersonal', 'De seguridad'];
   const PASOS = [
@@ -454,7 +482,7 @@ table.tabla td.fijo small { display: block; font-weight: 400; color: var(--gris-
   // Roles
   $('#tabla-roles tbody').innerHTML = ROLES.map((r, i) => `
     <tr>
-      <td class="fijo">${r[0]}</td>
+      <td class="fijo cab">${r[0]}</td>
       <td>${campo('rol' + i + '-resp', 1)}</td>
       <td>${campo('rol' + i + '-supl', 1)}</td>
       <td class="fijo" style="font-weight:400;color:var(--gris-2);width:auto">${r[1]}</td>
@@ -464,7 +492,7 @@ table.tabla td.fijo small { display: block; font-weight: 400; color: var(--gris-
   // Normas
   $('#tabla-normas tbody').innerHTML = Array.from({ length: 12 }, (_, i) => `
     <tr>
-      <td class="n">${i + 1}</td>
+      <td class="n cab"><span class="solo-movil">Norma </span>${i + 1}</td>
       <td>${campo('norma' + i + '-t', 2)}</td>
       <td>${campo('norma' + i + '-i', 2)}</td>
       <td>${campo('norma' + i + '-c', 2)}</td>
@@ -517,6 +545,18 @@ table.tabla td.fijo small { display: block; font-weight: 400; color: var(--gris-
       <td><div class="linea-firma"></div></td>
       <td>${campo('firma' + i + '-f', 1)}</td>
     </tr>`).join('');
+
+  // Rótulos para el celular: cada celda lleva el encabezado de su columna,
+  // que la hoja de estilos muestra encima cuando las filas se apilan.
+  // La celda que hace de título de la ficha (.cab) no lo necesita.
+  document.querySelectorAll('table.tabla').forEach((t) => {
+    const rotulos = Array.from(t.querySelectorAll('thead th')).map((th) => th.textContent.trim());
+    t.querySelectorAll('tbody tr').forEach((tr) => {
+      Array.from(tr.children).forEach((td, j) => {
+        if (rotulos[j] && !td.classList.contains('cab')) td.dataset.label = rotulos[j];
+      });
+    });
+  });
 
   // ── Crecimiento de los campos ────────────────────────────────────────
   // Un textarea de alto fijo recorta el texto al imprimir, así que cada uno

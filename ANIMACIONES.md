@@ -122,7 +122,8 @@ Y el HTML que imprime `publicar.py`, dentro de la diapositiva:
 - **Clic o Enter sobre el video:** lo mismo, y al final lo repite desde el comienzo.
 - **Al volver** desde la diapositiva siguiente, el video aparece completo en su último cuadro.
 - **Movimiento reducido:** no arranca solo; muestra el último cuadro y se reproduce con un clic.
-- **Impresión y PDF documento:** sale el póster (`img.anim-impresion`). El `deck-doc.css` de POU ya lo hace para `build-deck-doc.mjs`.
+- **Impresión y PDF documento:** sale el póster (`img.anim-impresion`). `build-deck-doc.mjs` lo fuerza en el PDF documento (`CURSO=iqya-2031-2027-10 node scripts/build-deck-doc.mjs Presentacion_del_Curso` para un curso distinto de 2026-20).
+- **Ejemplo en un deck de 2027-10:** la diapositiva «Por qué el limoneno sale con el vapor por debajo de 100 °C» de la Presentación del curso (`escenas/iqya-2031-2027-10/arrastre_vapor.py`).
 
 **Diseño:** el video a la derecha en un split (como los de YouTube, principio #5) o a todo el ancho bajo el título. Sin borde ni sombra propios: el fondo del video es el de la diapositiva, así que la animación se ve dibujada sobre ella. Después de publicar, regenerar el PDF documento del deck.
 

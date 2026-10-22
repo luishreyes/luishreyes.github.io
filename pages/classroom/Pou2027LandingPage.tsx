@@ -378,10 +378,10 @@ export const Pou2027LandingPage: React.FC<{ course: Course }> = ({ course }) => 
                 <Sube><h2>Con quién va a trabajar</h2></Sube>
                 <div className="gente">
                   {course.team.map((m, i) => (
-                    <Sube key={m.email} delay={i * 0.07}>
+                    <Sube key={`${m.role}-${i}`} delay={i * 0.07}>
                       <h3>{m.name}</h3>
                       <span className="rol">{m.role}</span>
-                      <a href={`mailto:${m.email}`}>{m.email}</a>
+                      {m.email && <a href={`mailto:${m.email}`}>{m.email}</a>}
                       {m.officeHours && <span className="hora">{m.officeHours}</span>}
                     </Sube>
                   ))}

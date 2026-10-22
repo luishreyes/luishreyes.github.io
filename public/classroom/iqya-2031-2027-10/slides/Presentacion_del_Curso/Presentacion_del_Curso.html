@@ -15,6 +15,42 @@
   .kicker::before{content:"";width:46px;height:5px;background:var(--verde);border-radius:3px;}
   .s--dark .kicker{color:var(--verde);}
   h1.s-title{font-size:92px;line-height:1.02;font-weight:700;margin:0;letter-spacing:-.015em;}
+  /* Las seis comparten escala: la más ancha (310 px) ocupa a lo sumo un tercio
+     de la figura, así el enlace mide lo mismo en todas a cualquier ancho. */
+  .moleculas { container-type: inline-size; }
+  .moleculas .mol-marco { background: #fff; padding: 22px 22px 6px; }
+  .moleculas .mol-titulo { font-weight: 600; margin: 0 0 14px; line-height: 1.3; }
+  .moleculas .mol-fila { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px 24px; margin: 0 0 24px; }
+  .moleculas .mol { display: flex; flex-direction: column; align-items: center; text-align: center; min-width: 0; }
+  .moleculas .mol-img { height: calc(84 * min(1px, 28cqi / 310)); display: flex; align-items: center; justify-content: center; margin-bottom: 10px; max-width: 100%; }
+  figure.moleculas .mol .mol-img img { width: calc(var(--w) * min(1px, 28cqi / 310)); max-width: 100%; height: auto; display: block; }
+  .moleculas .mol b { font-weight: 600; line-height: 1.25; }
+  .moleculas .mol-form { color: #525C64; font-size: .9em; }
+  /* En una columna angosta van de a dos, y el decanal ocupa la fila entera. */
+  @container (max-width: 820px) {
+    .moleculas .mol-fila { grid-template-columns: repeat(2, 1fr); gap: 16px 14px; }
+    .moleculas .mol-img { height: calc(84 * min(1px, 45cqi / 310)); }
+    figure.moleculas .mol .mol-img img { width: calc(var(--w) * min(1px, 45cqi / 310)); }
+    .moleculas .mol.ancha { grid-column: span 2; }
+  }
+  @container (max-width: 520px) {
+    .moleculas .mol-marco { padding: 16px 12px 2px; }
+    .moleculas .mol-img { height: calc(84 * min(1px, 52cqi / 310)); }
+    figure.moleculas .mol .mol-img img { width: calc(var(--w) * min(1px, 52cqi / 310)); }
+  }
+  /* En la diapositiva de 1920 px las estructuras pueden crecer hasta 1,7 veces. */
+  .s .moleculas { margin: 8px 0 0; }
+  .s .moleculas figcaption { color: var(--gris-2); margin-top: 12px; max-width: 1400px; }
+  @container (min-width: 821px) {
+    .s .moleculas .mol-img { height: calc(84 * min(1.7px, 28cqi / 310)); }
+    .s figure.moleculas .mol .mol-img img { width: calc(var(--w) * min(1.7px, 28cqi / 310)); }
+    .s .moleculas .mol-marco { padding: 26px 30px 4px; }
+    .s .moleculas .mol-titulo { font-size: 28px; }
+    .s .moleculas .mol b { font-size: 26px; }
+    .s .moleculas .mol-form { font-size: 22px; }
+  }
+  @media (min-width: 821px) { .s .moleculas figcaption { font-size: 20px; } }
+  .anim-caja.anim-reto { max-width: 1290px; margin: 6px auto 0; }
   h2.s-head{font-size:58px;line-height:1.06;font-weight:700;margin:0 0 14px;letter-spacing:-.01em;}
   .s-lead{font-size:32px;line-height:1.45;color:var(--gris-2);max-width:40ch;font-weight:400;}
   .s p{font-size:30px;line-height:1.5;}
@@ -375,9 +411,13 @@
   .cxmatrix td{padding:18px 18px;border-bottom:1px solid var(--gris-5);vertical-align:middle;}
   .cxmatrix td:first-child{font-weight:600;color:var(--gris-1);}
   .cxmatrix td.c{text-align:center;}
-  .cxmatrix .dot{display:inline-block;width:24px;height:24px;border-radius:50%;background:var(--verde);}
-  .cxmatrix .dot.t{background:var(--teal);}
-  .cxmatrix .dot.o{background:none;border:2.5px solid var(--gris-4);}
+  .cxmatrix .dot,.cxlegend .dot{display:inline-block;width:24px;height:24px;border-radius:50%;background:var(--verde);flex-shrink:0;}
+  .cxmatrix .dot.t,.cxlegend .dot.t{background:var(--teal);}
+  .cxmatrix .dot.o,.cxlegend .dot.o{background:none;border:2.5px solid var(--gris-4);}
+  /* Leyenda de la matriz: qué dice cada punto. */
+  .cxlegend{display:flex;flex-wrap:wrap;gap:14px 48px;margin:22px 0 0;padding:0;list-style:none;}
+  .cxlegend li{display:inline-flex;align-items:center;gap:14px;font-size:23px;color:var(--gris-2);margin:0;}
+  .cxlegend li b{color:var(--gris-1);}
   .cxmatrix .so{display:inline-block;min-width:40px;height:40px;line-height:40px;border-radius:6px;
     background:var(--verde-claro);color:var(--verde-osc);font-weight:700;text-align:center;margin-right:12px;}
 
@@ -465,8 +505,31 @@
   .fml { font-size: 1.3em; }
   .card .fml, .cards .fml { font-size: 1.12em; }
 
+  /* ── Lo que falta confirmar para 2027-10 (equipo, horario, fechas) ── */
+  .pend{display:flex;width:fit-content;max-width:100%;align-items:center;gap:12px;align-self:flex-start;margin:6px 0 0;padding:8px 18px;
+    border:2px dashed var(--ambar);background:#FFF6E8;color:#7A4400;font-size:22px;font-weight:700;line-height:1.3;}
+  .pend svg{width:1em;height:1em;flex-shrink:0;}
+  .s--dark .pend{background:transparent;color:#F5C27A;}
+  .divider .pend{margin-top:30px;}
+
+  /* ── Plataformas con enlace ── */
+  a.platform-link{color:inherit;text-decoration:none;border-bottom:3px solid var(--amarillo);}
+  a.platform-link::after{content:" \2197";font-size:.7em;opacity:.6;}
+  a.platform-link:hover{border-bottom-color:var(--navy);}
+  a.platform-link:focus-visible{outline:3px solid var(--oliva);outline-offset:3px;}
+
   /* ── Celular: componentes propios de esta presentación ── */
   @media (max-width:768px){
+    /* Las dos gráficas de la nota se deslizan de lado con su letra a 13 px o más. */
+    .desliza > svg.ev{min-width:1150px;}
+    .desliza > svg.coev{min-width:1100px;}
+    .s p.pend{font-size:15px !important;line-height:1.4 !important;padding:6px 10px !important;gap:8px !important;}
+    .divider .pend{margin-top:16px !important;}
+    .cxlegend{gap:8px !important;margin-top:14px !important;flex-direction:column !important;}
+    .cxlegend li{font-size:13px !important;gap:10px !important;}
+    .cxlegend .dot{width:16px !important;height:16px !important;}
+    .tbl-sm th{font-size:13px !important;padding:10px 12px !important;}
+    .tbl-sm td{padding:10px 12px !important;}
     .stat-grid{grid-template-columns:1fr !important;gap:28px !important;margin-top:24px !important;}
     .stat-cell .num{font-size:88px !important;}
     .stat-cell .lbl{font-size:16px !important;margin-top:8px !important;}
@@ -531,7 +594,8 @@
     <div class="cover-meta">
       <div><b>Curso</b>Proyecto de Operaciones Unitarias</div>
       <div><b>Proyecto del semestre</b>Planta de aceite esencial de cítricos</div>
-      <div><b>Periodo</b>2027-10 · 16 semanas · 3 créditos</div>
+      <div><b>Periodo</b>2027-10 · 3 créditos</div>
+      <div><b>Duración</b>16 semanas de clase y la semana 17 para los pósters finales</div>
     </div>
   </div>
 </section>
@@ -618,7 +682,7 @@
     <path class="det-v" d="M1155 96 v22M1145 101 l20 12M1165 101 l-20 12"/>
     <text class="n" x="1155" y="248">06</text>
     <text class="lbl" x="1155" y="277">Winterización</text>
-    <text class="sub" x="1155" y="301">ceras a 5-10 °C</text>
+    <text class="sub" x="1155" y="301">5-10 °C y filtro</text>
   </g>
   <path class="flow" d="M1237 178 H1283"/>
 
@@ -654,7 +718,7 @@
   <h2 class="s-head">De qué tamaño es este reto</h2>
   <div class="stat-grid">
     <div class="stat-cell"><div class="num">8</div><div class="lbl">estaciones encadenadas en una sola planta</div></div>
-    <div class="stat-cell teal"><div class="num">17</div><div class="lbl">semanas para diseñarla, dimensionarla y simularla</div></div>
+    <div class="stat-cell teal"><div class="num">16</div><div class="lbl">semanas de clase para diseñarla, dimensionarla y simularla, y la semana 17 para los pósters finales</div></div>
     <div class="stat-cell amber"><div class="num">60<span style="font-size:.55em;">%</span></div><div class="lbl">de la nota se construye trabajando en equipo</div></div>
   </div>
 </section>
@@ -664,7 +728,7 @@
   <div class="kicker">Sesión 01 · Presentación del curso</div>
   <h2 class="s-head">Lo que veremos hoy</h2>
   <div class="cxobjs" style="margin-top:26px;">
-    <div class="o"><span class="k">01</span><div><b>El reto del semestre</b><span>Hervir a 98 lo que hierve a 176</span></div></div>
+    <div class="o"><span class="k">01</span><div><b>El reto del semestre</b><span>Hervir a 98&nbsp;°C lo que hierve a 176&nbsp;°C (a nivel del mar; en Bogotá, unos 90&nbsp;°C)</span></div></div>
     <div class="o"><span class="k">05</span><div><b>El semestre en el tiempo</b><span>Módulos, cronograma y fechas clave</span></div></div>
     <div class="o"><span class="k">02</span><div><b>El equipo docente</b><span>Quiénes lo acompañan y cómo comunicarse</span></div></div>
     <div class="o"><span class="k">06</span><div><b>Evaluación y uso de IA</b><span>Distribución de nota, bitácoras, coevaluación, escala AIAS</span></div></div>
@@ -680,7 +744,8 @@
   <div>
     <div class="part">Parte 1</div>
     <h2>El reto del semestre</h2>
-    <p class="sub">Hervir a 98 lo que hierve a 176: de la cáscara que deja una juguera a aceite esencial rectificado.</p>
+    <p class="sub">Hervir a 98&nbsp;°C lo que hierve a 176&nbsp;°C: de la cáscara que deja una juguera a aceite esencial rectificado.</p>
+    <p class="sub" style="font-size:24px;margin-top:14px;">Los 98&nbsp;°C son a nivel del mar. En Bogotá, a unos 75 kPa, la mezcla de agua y limoneno hierve a unos 90&nbsp;°C.</p>
     <div class="dctx"><b>8 estaciones</b><span>encadenadas en una sola planta que ustedes diseñan</span></div>
   </div>
 </section>
@@ -766,7 +831,7 @@
     <path class="det-v" d="M1155 96 v22M1145 101 l20 12M1165 101 l-20 12"/>
     <text class="n" x="1155" y="248">06</text>
     <text class="lbl" x="1155" y="277">Winterización</text>
-    <text class="sub" x="1155" y="301">ceras a 5-10 °C</text>
+    <text class="sub" x="1155" y="301">5-10 °C y filtro</text>
   </g>
   <path class="flow" d="M1237 178 H1283"/>
 
@@ -804,23 +869,63 @@
   </div>
 </section>
 
+<!-- 05b · Por qué hierve a 98 °C (animación de Manim: scripts/animaciones/escenas/iqya-2031-2027-10/arrastre_vapor.py) -->
+<section class="s" data-screen-label="Hervir a 98 °C">
+  <div class="kicker">La física del reto</div>
+  <h2 class="s-head">Por qué el limoneno sale con el vapor por debajo de 100&nbsp;°C</h2>
+  <div class="anim-caja anim-reto">
+    <video class="anim" src="assets/video/arrastre-vapor.mp4" poster="assets/video/arrastre-vapor.webp" width="1920" height="1080"
+           data-pausas="3.45,6.95,10.85,15.05" muted playsinline preload="auto"
+           role="button" tabindex="0" aria-label="Animación: por qué el limoneno sale con el vapor por debajo de 100 °C. Flecha derecha para avanzar"></video>
+    <img class="anim-impresion" src="assets/video/arrastre-vapor.webp" alt="Presión de vapor del agua, del limoneno y de su suma contra la temperatura: juntos hierven a 97,6 °C a 1 atm y a 89,6 °C en Bogotá; en equilibrio cada kilo de vapor arrastraría 0,69 kg de aceite, y en planta arrastra 0,013." width="1920" height="1080">
+  </div>
+</section>
+
 <!-- 06 · Materias primas -->
 <section class="s s--tint" data-screen-label="Materias primas">
   <div class="kicker">Elija su punto de partida</div>
   <h2 class="s-head">Cuatro materias primas posibles</h2>
   <p class="lead-top">La elección se justifica con tres criterios y con datos de su región. Cualquiera de las cuatro sirve si su equipo la sustenta.</p>
-  <table class="tbl-sm" style="margin-top:26px;">
+  <div class="databar" style="margin-top:22px;">
+    <span class="chip">Humedad de la cáscara: 70 a 75&nbsp;%</span>
+    <span class="chip">Aceite esencial: 0,5 a 3&nbsp;% en base húmeda</span>
+    <span class="chip chip--teal">El valor de cada especie lo acota su equipo con fuentes</span>
+  </div>
+  <table class="tbl-sm" style="margin-top:20px;">
     <thead>
       <tr><th>Materia prima</th><th>Aceite que aporta</th><th>Disponibilidad</th><th>Para tener en cuenta</th></tr>
     </thead>
     <tbody>
-      <tr><td><b>Lima Tahití</b></td><td>Destilado, de grado comercial</td><td>Alta, por el descarte de exportación</td><td>El aceite de lima se vende destilado, como el que sale de esta planta</td></tr>
+      <tr><td><b>Lima Tahití</b></td><td>Destilado, de grado comercial, con unos 55&nbsp;% de limoneno</td><td>Alta, por el descarte de exportación</td><td>El aceite de lima se vende destilado, como el que sale de esta planta</td></tr>
       <tr><td><b>Naranja Valencia</b></td><td>90-95 % de limoneno</td><td>La mayor de las cuatro</td><td>El caso mejor documentado en la literatura</td></tr>
       <tr><td><b>Mandarina</b></td><td>Más oxigenados que la naranja</td><td>Depende de la región</td><td>Cambia el corte de la columna de rectificación</td></tr>
-      <tr><td><b>Toronja</b></td><td>Menor rendimiento</td><td>Menor que la de naranja</td><td>Paga más por su nota aromática</td></tr>
+      <tr><td><b>Toronja</b></td><td>Menor rendimiento</td><td>Menor que la de naranja</td><td>Mayor valor por su nota aromática</td></tr>
     </tbody>
   </table>
-  <p class="foot-note">Humedad de entrada, contenido de aceite y volumen disponible: los tres datos que debe sustentar en la primera bitácora.</p>
+  <p class="foot-note">Humedad de entrada, contenido de aceite y volumen disponible: los tres datos que debe sustentar en la primera bitácora. Los rangos de arriba son los de la cáscara en general. Limoneno del aceite destilado de lima: Pino y Rosado (2001), <i>Journal of Essential Oil Research</i> 13, 179-180.</p>
+</section>
+
+<!-- 06b · Qué hay en el aceite (estructuras de chemdraw-mcp en ../../assets/moleculas/) -->
+<section class="s" data-screen-label="Qué hay en el aceite">
+  <div class="kicker">El producto</div>
+  <h2 class="s-head">Qué separa la columna al final de la planta</h2>
+  <figure class="fig-deck moleculas">
+    <div class="mol-marco">
+      <p class="mol-titulo">Hidrocarburos terpénicos: la mayor parte del aceite</p>
+      <div class="mol-fila">
+        <div class="mol"><span class="mol-img"><img src="/classroom/iqya-2031-2027-10/assets/moleculas/limoneno.svg" width="167" height="72" style="--w:167" alt="Estructura del (R)-limoneno" loading="lazy"></span><b>(R)-Limoneno</b><span class="mol-form">C<sub>10</sub>H<sub>16</sub></span></div>
+        <div class="mol"><span class="mol-img"><img src="/classroom/iqya-2031-2027-10/assets/moleculas/gamma-terpineno.svg" width="165" height="71" style="--w:165" alt="Estructura del γ-terpineno" loading="lazy"></span><b>γ-Terpineno</b><span class="mol-form">C<sub>10</sub>H<sub>16</sub></span></div>
+        <div class="mol"><span class="mol-img"><img src="/classroom/iqya-2031-2027-10/assets/moleculas/beta-pineno.svg" width="114" height="71" style="--w:114" alt="Estructura del β-pineno" loading="lazy"></span><b>β-Pineno</b><span class="mol-form">C<sub>10</sub>H<sub>16</sub></span></div>
+      </div>
+      <p class="mol-titulo">Oxigenados: pocos, pero dan el aroma</p>
+      <div class="mol-fila">
+        <div class="mol"><span class="mol-img"><img src="/classroom/iqya-2031-2027-10/assets/moleculas/linalol.svg" width="211" height="73" style="--w:211" alt="Estructura del linalol" loading="lazy"></span><b>Linalol</b><span class="mol-form">C<sub>10</sub>H<sub>18</sub>O</span></div>
+        <div class="mol"><span class="mol-img"><img src="/classroom/iqya-2031-2027-10/assets/moleculas/geranial.svg" width="251" height="68" style="--w:251" alt="Estructura del geranial" loading="lazy"></span><b>Geranial (citral a)</b><span class="mol-form">C<sub>10</sub>H<sub>16</sub>O</span></div>
+        <div class="mol ancha"><span class="mol-img"><img src="/classroom/iqya-2031-2027-10/assets/moleculas/decanal.svg" width="310" height="36" style="--w:310" alt="Estructura del decanal" loading="lazy"></span><b>Decanal</b><span class="mol-form">C<sub>10</sub>H<sub>20</sub>O</span></div>
+      </div>
+    </div>
+    <figcaption>Los hidrocarburos terpénicos forman la mayor parte del aceite; los oxigenados son pocos, pero dan el aroma, y su perfil cambia con la especie. Todos tienen diez carbonos: separarlos pide una columna con varias etapas. Estructuras dibujadas con RDKit a partir de PubChem.</figcaption>
+  </figure>
 </section>
 
 <!-- 07 · Alcance: las ocho estaciones (planta interactiva) -->
@@ -905,7 +1010,7 @@
     <path class="det-v" d="M1155 96 v22M1145 101 l20 12M1165 101 l-20 12"/>
     <text class="n" x="1155" y="248">06</text>
     <text class="lbl" x="1155" y="277">Winterización</text>
-    <text class="sub" x="1155" y="301">ceras a 5-10 °C</text>
+    <text class="sub" x="1155" y="301">5-10 °C y filtro</text>
   </g>
   <path class="flow" d="M1237 178 H1283"/>
 
@@ -933,7 +1038,7 @@
   <path class="flow-r" d="M945 130 V42 H555 V96"/>
   <text class="rlbl" x="750" y="30">hidrolato, vuelve al arrastre</text>
 </svg></div>
-    <div class="opdoc" aria-hidden="true"><div class="opdoc-item"><b>01 · Materia prima</b><span>Cáscara de lima, naranja, mandarina o toronja que deja la juguera, con 70-75 % de humedad y 0,5-3 % de aceite en base húmeda. La especie fija el rendimiento y el perfil del aceite que llega a la columna.</span></div><div class="opdoc-item"><b>02 · Lavado y desgarrado</b><span>La cáscara se lava en un tanque agitado y se desgarra a 5-10 mm para romper las glándulas de aceite. El tamaño de partícula reaparece aguas abajo, en el tiempo de lote del arrastre.</span></div><div class="opdoc-item"><b>03 · Arrastre de vapor</b><span>El vapor vivo atraviesa el lecho de cáscara y se lleva el aceite por debajo de 100 °C, aunque el limoneno hierva a 176 °C. Se calculan la relación de vapor, el tiempo de lote y el tamaño del extractor.</span></div><div class="opdoc-item"><b>04 · Condensación</b><span>El condensador devuelve a líquido la mezcla de vapor de agua y aceite. Es la carga térmica más grande de la planta, y de él depende el caudal de agua de enfriamiento.</span></div><div class="opdoc-item"><b>05 · Decantador florentino</b><span>Aceite y agua no se mezclan, así que se separan por densidad, sin gastar energía. El hidrolato que sale por abajo puede volver al arrastre, lo que se conoce como cohobación.</span></div><div class="opdoc-item"><b>06 · Winterización</b><span>El aceite crudo se enfría a 5-10 °C para cristalizar las ceras, que se retiran en un filtro. Se elige el equipo y se calcula el área de filtrado a partir de la torta que se forma.</span></div><div class="opdoc-item"><b>07 · Rectificación al vacío</b><span>La columna que hace el producto. Opera entre 10 y 20 mbar porque el limoneno se degrada arriba de 150 °C. Se diseña por McCabe-Thiele, con empaque, reflujo y servicios.</span></div><div class="opdoc-item"><b>08 · Producto</b><span>Aceite esencial rectificado, con especificación de calidad. Qué tan puro debe salir lo decide la economía del proyecto, y esa decisión la sustenta su equipo.</span></div></div>
+    <div class="opdoc" aria-hidden="true"><div class="opdoc-item"><b>01 · Materia prima</b><span>Cáscara de lima, naranja, mandarina o toronja que deja la juguera, con 70-75 % de humedad y 0,5-3 % de aceite en base húmeda. La especie fija el rendimiento y el perfil del aceite que llega a la columna.</span></div><div class="opdoc-item"><b>02 · Lavado y desgarrado</b><span>La cáscara se lava en un tanque agitado y se desgarra a 5-10 mm para romper las glándulas de aceite. El tamaño de partícula reaparece aguas abajo, en el tiempo de lote del arrastre.</span></div><div class="opdoc-item"><b>03 · Arrastre de vapor</b><span>El vapor vivo atraviesa el lecho de cáscara y se lleva el aceite por debajo de 100&nbsp;°C, aunque el limoneno hierva a 176&nbsp;°C. Se calculan la relación de vapor, el tiempo de lote y el tamaño del extractor.</span></div><div class="opdoc-item"><b>04 · Condensación</b><span>El condensador devuelve a líquido la mezcla de vapor de agua y aceite. Es la carga térmica más grande de la planta, y de él depende el caudal de agua de enfriamiento.</span></div><div class="opdoc-item"><b>05 · Decantador florentino</b><span>Aceite y agua no se mezclan, así que se separan por densidad, sin gastar energía. El hidrolato que sale por abajo puede volver al arrastre, lo que se conoce como cohobación.</span></div><div class="opdoc-item"><b>06 · Winterización</b><span>El aceite que sale del florentino todavía lleva agua de dos formas: en gotas finas, que lo enturbian, y disuelta. Se enfría a 5-10&nbsp;°C para que se separen el agua y lo poco pesado que arrastró el vapor, y pasa por un filtro de profundidad, cuyo medio de celulosa retiene las trazas de agua, la turbidez y las partículas finas antes de la columna. No es el desparafinado del aceite prensado en frío: las ceras de la cáscara no son volátiles y casi no pasan con el vapor. Se escoge el equipo de enfriamiento y se dimensiona el filtro.</span></div><div class="opdoc-item"><b>07 · Rectificación al vacío</b><span>La columna que hace el producto. Opera entre 10 y 20 mbar porque el limoneno se degrada arriba de 150&nbsp;°C. Se diseña por McCabe-Thiele, con empaque, reflujo y servicios.</span></div><div class="opdoc-item"><b>08 · Producto</b><span>Aceite esencial rectificado, con especificación de calidad. Qué tan puro debe salir lo decide la economía del proyecto, y esa decisión la sustenta su equipo.</span></div></div>
     <div class="opdetail">
       <h4>Toque una estación para verla en detalle</h4>
       <p class="hintx">Cada una es una decisión de diseño que su equipo tendrá que tomar y justificar en las bitácoras.</p>
@@ -958,6 +1063,7 @@
     <h2>El equipo docente</h2>
     <p class="sub">Quiénes lo acompañan este semestre, cuándo nos vemos y cómo comunicarse.</p>
     <div class="dctx"><b>3 personas</b><span>profesor, asistente y monitora, disponibles todo el semestre</span></div>
+    <p class="pend"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Por confirmar: el equipo y el horario de 2027-10</p>
   </div>
 </section>
 
@@ -965,6 +1071,7 @@
 <section class="s" data-screen-label="Equipo docente">
   <div class="kicker">Con quién va a trabajar</div>
   <h2 class="s-head">Equipo docente</h2>
+  <p class="pend"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Por confirmar: el equipo de 2027-10. Se muestra el de 2026-20.</p>
   <div class="cxpeople">
     <div class="p">
       <div class="av">LR</div>
@@ -994,14 +1101,15 @@
 <section class="s s--tint" data-screen-label="Horario y comunicación">
   <div class="kicker">Cuándo nos vemos y cómo escribirnos</div>
   <h2 class="s-head">Dos sesiones por semana, un solo canal</h2>
+  <p class="pend"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Por confirmar: el horario y el equipo de 2027-10. Se muestran los de 2026-20.</p>
   <div class="cxweek" style="grid-template-columns:repeat(2,1fr);max-width:900px;">
-    <div class="d on"><p class="dn">Martes</p><p class="hh">11:00 a.m. a 12:20 m.</p><p class="tt">Sesión magistral</p></div>
-    <div class="d on"><p class="dn">Jueves</p><p class="hh">11:00 a.m. a 12:20 m.</p><p class="tt">Sesión magistral</p></div>
+    <div class="d on"><p class="dn">Martes</p><p class="hh">11:00 a.m. a 12:20 p.m.</p><p class="tt">Sesión magistral</p></div>
+    <div class="d on"><p class="dn">Jueves</p><p class="hh">11:00 a.m. a 12:20 p.m.</p><p class="tt">Sesión magistral</p></div>
   </div>
   <div class="split" style="margin-top:30px;">
     <div class="copy">
       <div class="callout verde" style="margin:0;">
-        <h4>El salón se publica en BloqueNeón</h4>
+        <h4>El salón se publica en <a class="platform-link" href="https://bloqueneon.uniandes.edu.co" target="_blank" rel="noopener">Bloque Neón</a></h4>
         <p>La asistencia a las magistrales es obligatoria y hay control diario. El quiz se hace al inicio de la sesión, sin excepción.</p>
       </div>
     </div>
@@ -1031,11 +1139,11 @@
   <div class="cxobjs">
     <div class="o"><span class="k">01</span><div><b>Diseñar operaciones unitarias</b><span>Del manejo de sólidos al transporte de fluidos y la separación por destilación.</span></div></div>
     <div class="o"><span class="k">05</span><div><b>Documentar como profesional</b><span>Bitácoras de cálculo y reportes ejecutivos claros y trazables.</span></div></div>
-    <div class="o"><span class="k">02</span><div><b>Elaborar diagramas de ingeniería</b><span>PBD, PFD y P&amp;ID según estándares industriales.</span></div></div>
+    <div class="o"><span class="k">02</span><div><b>Elaborar diagramas de ingeniería</b><span>El PBD y el PFD de su planta, y el P&amp;ID que se practica en el Taller 1, según estándares industriales.</span></div></div>
     <div class="o"><span class="k">06</span><div><b>Trabajar en equipo</b><span>Gestionar tiempo y recursos en un grupo fijo todo el semestre.</span></div></div>
     <div class="o"><span class="k">03</span><div><b>Especificar equipos</b><span>Con criterios técnicos, económicos y de sostenibilidad.</span></div></div>
     <div class="o"><span class="k">07</span><div><b>Pensar de forma crítica</b><span>Elegir entre alternativas de diseño con argumentos de ingeniería.</span></div></div>
-    <div class="o"><span class="k">04</span><div><b>Simular en ASPEN Plus</b><span>Modelar el proceso y validar con él los cálculos hechos a mano.</span></div></div>
+    <div class="o"><span class="k">04</span><div><b>Simular en <a class="platform-link" href="https://www.aspentech.com/en/products/engineering/aspen-plus" target="_blank" rel="noopener">ASPEN Plus</a></b><span>Modelar el proceso y validar con él los cálculos hechos a mano.</span></div></div>
     <div class="o"><span class="k">08</span><div><b>Comunicar resultados</b><span>A audiencias distintas, con informes y sustentaciones.</span></div></div>
   </div>
 </section>
@@ -1065,7 +1173,12 @@
         <td class="c"><span class="dot"></span></td><td class="c"><span class="dot o"></span></td><td class="c"><span class="dot"></span></td><td class="c"><span class="dot o"></span></td><td class="c"><span class="dot o"></span></td></tr>
     </tbody>
   </table>
-  <p class="foot-note">Los cuatro objetivos del programa (PEO) que enmarcan el curso: diseño creativo para problemas reales, análisis multiescala de procesos sostenibles, comunicación y colaboración, y ejercicio ético de la profesión.</p>
+  <ul class="cxlegend" aria-label="Leyenda de la matriz">
+    <li><span class="dot"></span><span><b>Se evalúa ahí:</b> resultado técnico (1, 2 y 7)</span></li>
+    <li><span class="dot t"></span><span><b>Se evalúa ahí:</b> resultado profesional (3 y 5)</span></li>
+    <li><span class="dot o"></span><span>No se evalúa con esa actividad</span></li>
+  </ul>
+  <p class="foot-note" style="margin-top:20px;">Los cuatro objetivos del programa (PEO) que enmarcan el curso: diseño creativo para problemas reales, análisis multiescala de procesos sostenibles, comunicación y colaboración, y ejercicio ético de la profesión.</p>
 </section>
 
 <!-- 15 · Divisor: Cómo aprendemos -->
@@ -1127,7 +1240,7 @@
   <div>
     <div class="part">Parte 5</div>
     <h2>El semestre en el tiempo</h2>
-    <p class="sub">Siete módulos que recorren la planta de izquierda a derecha, repartidos en diecisiete semanas.</p>
+    <p class="sub">Siete módulos que recorren la planta de izquierda a derecha, en 16 semanas de clase y la semana 17 para los pósters finales.</p>
     <div class="dctx"><b>4 bitácoras</b><span>marcan el ritmo del proyecto de principio a fin</span></div>
   </div>
 </section>
@@ -1213,7 +1326,7 @@
     <path class="det-v" d="M1155 96 v22M1145 101 l20 12M1165 101 l-20 12"/>
     <text class="n" x="1155" y="248">06</text>
     <text class="lbl" x="1155" y="277">Winterización</text>
-    <text class="sub" x="1155" y="301">ceras a 5-10 °C</text>
+    <text class="sub" x="1155" y="301">5-10 °C y filtro</text>
   </g>
   <path class="flow" d="M1237 178 H1283"/>
 
@@ -1242,12 +1355,12 @@
   <text class="rlbl" x="750" y="30">hidrolato, vuelve al arrastre</text>
 </svg></div>
   <div class="cxmodmap">
-    <div class="m"><span class="badge" style="background:#565200;">M1</span><span class="mt"><b>Fundamentos y diagramación</b><span>Estación 01 y todo el proceso · PBD, PFD y P&amp;ID</span></span></div>
+    <div class="m"><span class="badge" style="background:#565200;">M1</span><span class="mt"><b>Fundamentos y diagramación</b><span>Estación 01 y todo el proceso · PBD y PFD del proyecto; el P&amp;ID, en el Taller 1</span></span></div>
     <div class="m"><span class="badge" style="background:#6E6A00;">M2</span><span class="mt"><b>Sólidos y agitación</b><span>Estación 02 · lavado y desgarrado</span></span></div>
     <div class="m"><span class="badge" style="background:#525C64;">M3</span><span class="mt"><b>Arrastre de vapor</b><span>Estación 03 · el extractor, primera destilación</span></span></div>
     <div class="m"><span class="badge" style="background:#565200;">M4</span><span class="mt"><b>Transporte de fluidos</b><span>Entre estaciones · hidrolato, aceite y vapor</span></span></div>
-    <div class="m"><span class="badge" style="background:#565200;">M5</span><span class="mt"><b>Transferencia de calor</b><span>Estaciones 04 y 05 · condensador y decantador</span></span></div>
-    <div class="m"><span class="badge" style="background:#6E6A00;">M6</span><span class="mt"><b>Filtración</b><span>Estación 06 · winterización y ceras</span></span></div>
+    <div class="m"><span class="badge" style="background:#565200;">M5</span><span class="mt"><b>Transferencia de calor</b><span>Estación 04 · el condensador. Junto a él, el florentino (05): separación mecánica</span></span></div>
+    <div class="m"><span class="badge" style="background:#6E6A00;">M6</span><span class="mt"><b>Filtración</b><span>Estación 06 · winterización: frío y filtro de profundidad</span></span></div>
     <div class="m"><span class="badge" style="background:#525C64;">M7</span><span class="mt"><b>Rectificación al vacío</b><span>Estación 07 · la columna que hace el producto</span></span></div>
     <div class="m"><span class="badge" style="background:#333;">Fin</span><span class="mt"><b>Cierre del proyecto</b><span>Documento final, pósters y sustentación</span></span></div>
   </div>
@@ -1255,10 +1368,11 @@
 
 <!-- 20 · Línea de tiempo -->
 <section class="s s--tint" data-screen-label="Cronograma del semestre">
-  <div class="kicker">Diecisiete semanas de un vistazo</div>
+  <div class="kicker">El semestre de un vistazo</div>
   <h2 class="s-head">El semestre completo</h2>
-  <div class="desliza"><svg class="cxtl" viewBox="0 0 1680 584" xmlns="http://www.w3.org/2000/svg">
-  <text class="mon" x="822" y="24">FECHAS POR CONFIRMAR CON EL CALENDARIO 2027-10</text>
+  <p class="lead-top">16 semanas de clase y la semana 17 para los pósters finales.</p>
+  <p class="pend"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Por confirmar: las fechas, con el calendario 2027-10. Los hitos ya están fijos por semana.</p>
+  <div class="desliza"><svg class="cxtl" viewBox="0 32 1680 552" xmlns="http://www.w3.org/2000/svg">
   <rect x="44" y="40" width="176" height="26" rx="6" fill="#565200"/><text class="mlbl" x="132" y="59">M1 · Fundamentos</text>
   <rect x="228" y="40" width="84" height="26" rx="6" fill="#6E6A00"/><text class="mlbl" x="270" y="59">M2</text>
   <rect x="320" y="40" width="84" height="26" rx="6" fill="#525C64"/><text class="mlbl" x="362" y="59">M3</text>
@@ -1276,13 +1390,13 @@
   <rect class="cell" x="504" y="78" width="84" height="170" rx="6"/><text class="wk" x="546" y="126">6</text><line class="rule" x1="518" y1="146" x2="574" y2="126"/><text class="tema" x="546" y="180">Bombas</text><text class="tema" x="546" y="206">y NPSH</text>
   <rect class="cell" x="596" y="78" width="84" height="170" rx="6"/><text class="wk" x="638" y="126">7</text><line class="rule" x1="610" y1="146" x2="666" y2="126"/><text class="tema" x="638" y="180">Agitación</text><text class="tema" x="638" y="206">y mezclado</text>
   <rect class="cell" x="688" y="78" width="84" height="170" rx="6"/><text class="wk" x="730" y="126">8</text><line class="rule" x1="702" y1="146" x2="758" y2="126"/><text class="tema" x="730" y="180">Calor:</text><text class="tema" x="730" y="206">condensador</text>
-  <rect class="cell" x="780" y="78" width="84" height="170" rx="6"/><text class="wk" x="822" y="126">9</text><line class="rule" x1="794" y1="146" x2="850" y2="126"/><text class="tema" x="822" y="180">Ceras y</text><text class="tema" x="822" y="206">filtración</text>
+  <rect class="cell" x="780" y="78" width="84" height="170" rx="6"/><text class="wk" x="822" y="126">9</text><line class="rule" x1="794" y1="146" x2="850" y2="126"/><text class="tema" x="822" y="180">Frío y</text><text class="tema" x="822" y="206">filtración</text>
   <rect class="cell" x="872" y="78" width="84" height="170" rx="6"/><text class="wk" x="914" y="126">10</text><line class="rule" x1="886" y1="146" x2="942" y2="126"/><text class="tema" x="914" y="180">Flash y</text><text class="tema" x="914" y="206">Rayleigh</text>
   <rect class="cell" x="964" y="78" width="84" height="170" rx="6"/><text class="wk" x="1006" y="126">11</text><line class="rule" x1="978" y1="146" x2="1034" y2="126"/><text class="tema" x="1006" y="180">McCabe-</text><text class="tema" x="1006" y="206">Thiele</text>
   <rect class="cell" x="1056" y="78" width="84" height="170" rx="6"/><text class="wk" x="1098" y="126">12</text><line class="rule" x1="1070" y1="146" x2="1126" y2="126"/><text class="tema" x="1098" y="180">Vacío e</text><text class="tema" x="1098" y="206">internos</text>
   <rect class="cell" x="1148" y="78" width="84" height="170" rx="6"/><text class="wk" x="1190" y="126">13</text><line class="rule" x1="1162" y1="146" x2="1218" y2="126"/><text class="tema" x="1190" y="180">Azeótropos</text>
   <rect class="cell" x="1240" y="78" width="84" height="170" rx="6"/><text class="wk" x="1282" y="126">14</text><line class="rule" x1="1254" y1="146" x2="1310" y2="126"/><text class="tema" x="1282" y="180">Laboratorio</text><text class="tema" x="1282" y="206">de arrastre</text>
-  <rect class="cell" x="1332" y="78" width="84" height="170" rx="6"/><text class="wk" x="1374" y="126">15</text><line class="rule" x1="1346" y1="146" x2="1402" y2="126"/><text class="tema" x="1374" y="180">Pósters y</text><text class="tema" x="1374" y="206">bitácora 4</text>
+  <rect class="cell" x="1332" y="78" width="84" height="170" rx="6"/><text class="wk" x="1374" y="126">15</text><line class="rule" x1="1346" y1="146" x2="1402" y2="126"/><text class="tema" x="1374" y="180">Laboratorio</text><text class="tema" x="1374" y="206">y bitácora 4</text>
   <rect class="cell" x="1424" y="78" width="84" height="170" rx="6"/><text class="wk" x="1466" y="126">16</text><line class="rule" x1="1438" y1="146" x2="1494" y2="126"/><text class="tema" x="1466" y="180">Retro</text><text class="tema" x="1466" y="206">final</text>
   <rect class="cell" x="1516" y="78" width="84" height="170" rx="6"/><text class="wk" x="1558" y="126">17</text><line class="rule" x1="1530" y1="146" x2="1586" y2="126"/><text class="tema" x="1558" y="180">Pósters</text><text class="tema" x="1558" y="206">y cierre</text>
   <line class="rule" x1="40" y1="278" x2="1624" y2="278"/><text class="lane" x="40" y="320">Quices</text>
@@ -1343,7 +1457,7 @@
 <section class="s" data-screen-label="Distribución de la nota">
   <div class="kicker">Transparencia total</div>
   <h2 class="s-head">Distribución de la nota</h2>
-  <svg class="ev" viewBox="0 0 1680 300" xmlns="http://www.w3.org/2000/svg">
+  <div class="desliza"><svg class="ev" viewBox="0 0 1680 330" xmlns="http://www.w3.org/2000/svg">
   <rect class="seg" x="40" y="34" width="160" height="78" fill="#565200"/><text class="pct" x="120" y="84">10 %</text>
   <rect class="seg" x="200" y="34" width="160" height="78" fill="#6E6A00"/><text class="pct" x="280" y="84">10 %</text>
   <rect class="seg" x="360" y="34" width="320" height="78" fill="#525C64"/><text class="pct" x="520" y="84">20 %</text>
@@ -1358,11 +1472,11 @@
   <line x1="1080" y1="116" x2="1080" y2="120" stroke="#D0D0D0" stroke-width="1.5"/><text class="nm" x="1080" y="146">Sustentaciones</text><text class="md" x="1080" y="166">Grupos · 4 en el semestre</text>
   <line x1="1320" y1="116" x2="1320" y2="166" stroke="#D0D0D0" stroke-width="1.5"/><text class="nm" x="1320" y="192">Proyecto final</text><text class="md" x="1320" y="212">Grupos · documento técnico</text>
   <line x1="1560" y1="116" x2="1560" y2="120" stroke="#D0D0D0" stroke-width="1.5"/><text class="nm" x="1560" y="146">Presentación final</text><text class="md" x="1560" y="166">Grupos · sustentación</text>
-  <rect x="40" y="248" width="152" height="7" rx="3.5" fill="#565200"/><text class="grp" x="120" y="284" fill="#565200">Individual · 10 %</text>
-  <rect x="200" y="248" width="152" height="7" rx="3.5" fill="#6E6A00"/><text class="grp" x="280" y="284" fill="#6E6A00">Complementarias · 10 %</text>
-  <rect x="360" y="248" width="312" height="7" rx="3.5" fill="#525C64"/><text class="grp" x="520" y="284" fill="#525C64">En parejas · 20 %</text>
-  <rect x="680" y="248" width="952" height="7" rx="3.5" fill="#6E6A00"/><text class="grp" x="1160" y="284" fill="#6E6A00">En grupo · 60 %</text>
-</svg>
+  <rect x="40" y="248" width="152" height="7" rx="3.5" fill="#565200"/><text class="grp" x="110" y="284" fill="#565200">Individual</text><text class="grp" x="110" y="316" fill="#565200">10 %</text>
+  <rect x="200" y="248" width="152" height="7" rx="3.5" fill="#6E6A00"/><text class="grp" x="294" y="284" fill="#6E6A00">Complementarias</text><text class="grp" x="294" y="316" fill="#6E6A00">10 %</text>
+  <rect x="360" y="248" width="312" height="7" rx="3.5" fill="#525C64"/><text class="grp" x="520" y="284" fill="#525C64">En parejas</text><text class="grp" x="520" y="316" fill="#525C64">20 %</text>
+  <rect x="680" y="248" width="952" height="7" rx="3.5" fill="#6E6A00"/><text class="grp" x="1160" y="284" fill="#6E6A00">En grupo</text><text class="grp" x="1160" y="316" fill="#6E6A00">60 %</text>
+</svg></div>
 </section>
 
 <!-- 23 · Bitácoras -->
@@ -1370,10 +1484,10 @@
   <div class="kicker">El corazón documental del proyecto</div>
   <h2 class="s-head">Cuatro bitácoras marcan el ritmo</h2>
   <div class="cxsteps">
-    <div class="st"><div class="num" style="background:#565200;">1</div><h3>Semana 3</h3><p>Materia prima elegida y justificada, balance global y manejo de sólidos: lavado y desgarrado.</p></div>
-    <div class="st"><div class="num" style="background:#6E6A00;">2</div><h3>Semana 7</h3><p>Transporte de fluidos, bombas y agitación del tanque de lavado y del cristalizador.</p></div>
+    <div class="st"><div class="num" style="background:#565200;">1</div><h3>Semana 3</h3><p>Materia prima elegida y justificada, PBD, balance global y manejo de sólidos: lavado y desgarrado.</p></div>
+    <div class="st"><div class="num" style="background:#6E6A00;">2</div><h3>Semana 7</h3><p>PFD completo, transporte de fluidos, bombas y agitación del tanque de lavado y del tanque de winterización.</p></div>
     <div class="st"><div class="num" style="background:#525C64;">3</div><h3>Semana 10</h3><p>Arrastre de vapor, condensador y winterización, con el tiempo de lote ajustado a datos.</p></div>
-    <div class="st"><div class="num" style="background:#6E6A00;">4</div><h3>Semana 15</h3><p>Rectificación al vacío e integración de toda la planta.</p></div>
+    <div class="st"><div class="num" style="background:#6E6A00;">4</div><h3>Semana 15</h3><p>Rectificación al vacío e integración de toda la planta, con el PFD final.</p></div>
   </div>
   <div class="callout verde" style="margin-top:34px;">
     <h4>Qué contiene cada bitácora</h4>
@@ -1385,7 +1499,7 @@
 <section class="s" data-screen-label="Coevaluación">
   <div class="kicker">La nota individual dentro del grupo</div>
   <h2 class="s-head">Cómo funciona la coevaluación</h2>
-  <svg class="coev" viewBox="0 0 1680 300" xmlns="http://www.w3.org/2000/svg">
+  <div class="desliza"><svg class="coev" viewBox="0 0 1680 300" xmlns="http://www.w3.org/2000/svg">
   <text class="ctit" x="40" y="30">Nota grupal de la bitácora: 4,2</text>
   <text class="cnm" x="40" y="94">Estudiante A</text>
   <rect x="300" y="70" width="1180" height="42" rx="6" fill="#F2F2F2"/>
@@ -1404,7 +1518,7 @@
   <text class="cfin" x="1512" y="246">4,0</text>
   <text class="chd" x="1512" y="50">Nota final</text>
   <text class="cft" x="40" y="288">La coevaluación más alta del equipo se toma como 100 %. Las demás notas se ajustan en proporción.</text>
-</svg>
+</svg></div>
   <div class="callout amber" style="margin-top:14px;">
     <h4>Dos reglas que no se negocian</h4>
     <p>La coevaluación es autónoma y no se modifica bajo ninguna circunstancia. Por cada coevaluación no realizada se descuenta 1,0 punto de esa evaluación. Los criterios los define su equipo al inicio del semestre.</p>
@@ -1435,6 +1549,7 @@
     <h2>Expectativas y apoyo</h2>
     <p class="sub">Lo que se espera de usted, lo que puede esperar del curso y con qué red cuenta si algo se complica.</p>
     <div class="dctx"><b>Semana 11</b><span>fecha límite de retiro, con más del 50 % de las notas publicadas</span></div>
+    <p class="pend"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Por confirmar: la semana de retiro, con el calendario 2027-10</p>
   </div>
 </section>
 
@@ -1450,7 +1565,7 @@
     </div>
     <div class="card card--teal">
       <span class="card-n" style="color:var(--teal);">Entregas</span>
-      <h3>Por BloqueNeón y a tiempo</h3>
+      <h3>Por <a class="platform-link" href="https://bloqueneon.uniandes.edu.co" target="_blank" rel="noopener">Bloque Neón</a> y a tiempo</h3>
       <p>Los quices no admiten entrega tardía. Talleres y documento final pierden una unidad por cada 15 minutos de demora.</p>
     </div>
     <div class="card card--amber">
@@ -1473,7 +1588,7 @@
     <div class="card">
       <span class="card-n">Equipo</span>
       <h3>Grupos fijos de 4 a 5</h3>
-      <p>El grupo se mantiene todo el semestre. Los problemas internos se reportan primero al asistente y luego al profesor.</p>
+      <p>Los grupos los arma el profesor y se mantienen todo el semestre. Los problemas internos se reportan primero al asistente y luego al profesor.</p>
     </div>
     <div class="card card--teal">
       <span class="card-n" style="color:var(--teal);">Ajustes e identidad</span>
@@ -1496,11 +1611,11 @@
   <div class="kicker">Antes de la próxima clase</div>
   <h2 class="s-head">Qué debe hacer esta semana</h2>
   <div class="cxcheck">
-    <div class="c"><span class="box">1</span><div><b>Conforme su equipo</b><span>Grupo fijo de 4 a 5 personas para todo el semestre.</span></div></div>
-    <div class="c"><span class="box">4</span><div><b>Revise la guía del reto</b><span>«Hervir a 98 lo que hierve a 176», en Material del curso.</span></div></div>
+    <div class="c"><span class="box">1</span><div><b>Conozca su equipo</b><span>El profesor arma los grupos de 4 a 5 personas y los anuncia en la segunda sesión. Su grupo es fijo para todo el semestre.</span></div></div>
+    <div class="c"><span class="box">4</span><div><b>Revise la guía del reto</b><span>«Hervir a 98&nbsp;°C lo que hierve a 176&nbsp;°C», en Material del curso. Los 98&nbsp;°C son a nivel del mar; en Bogotá, unos 90&nbsp;°C.</span></div></div>
     <div class="c"><span class="box">2</span><div><b>Acuerden el contrato de equipo</b><span>Normas, roles y la matriz de coevaluación que usarán todo el semestre.</span></div></div>
     <div class="c"><span class="box">5</span><div><b>Elija una materia prima candidata</b><span>Empiece a justificarla con humedad, contenido de aceite y volumen regional.</span></div></div>
-    <div class="c"><span class="box">3</span><div><b>Lea la Lectura 01</b><span>Operaciones unitarias. De ahí sale el primer quiz.</span></div></div>
+    <div class="c"><span class="box">3</span><div><b>Lea la Lectura&nbsp;01</b><span>Operaciones unitarias. De ahí sale el primer quiz.</span></div></div>
     <div class="c"><span class="box">6</span><div><b>Explore la página del curso</b><span>Material organizado por semana, con el cronograma y el botón «¿Qué hay para hoy?».</span></div></div>
   </div>
 </section>
@@ -1514,7 +1629,7 @@
   <div style="position:relative;z-index:2;">
     <p class="course">IQYA-2031 · Empecemos</p>
     <h1 class="s-title">Manos a la planta</h1>
-    <p class="session">Nos vemos el jueves con los equipos conformados y la primera lectura hecha.</p>
+    <p class="session">Nos vemos en la próxima sesión, donde se anuncian los equipos. Llegue con la Lectura&nbsp;01 hecha.</p>
     <div class="cover-meta">
       <div><b>Contacto</b>lh.reyes@uniandes.edu.co</div>
       <div><b>Asunto del correo</b>[IQYA-2031] - Tema</div>
@@ -1526,6 +1641,7 @@
 </deck-stage>
 
 <script src="assets/deck-stage.js"></script>
+<script src="/classroom/animaciones.js"></script>
 <script>
 (function(){
   var stage=document.querySelector('deck-stage');
@@ -1566,7 +1682,7 @@
 (function(){
   var lb=document.createElement('dialog');
   lb.className='lightbox';
-  lb.innerHTML='<button class="lb-close" aria-label="Cerrar">✕</button><div class="lb-content"></div>';
+  lb.innerHTML='<button class="lb-close" aria-label="Cerrar"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button><div class="lb-content"></div>';
   document.body.appendChild(lb);
   var content=lb.querySelector('.lb-content');
   function close(){if(lb.open)lb.close();}
@@ -1591,7 +1707,7 @@
       var badge=document.createElement('span');
       badge.className='zoom-badge';
       badge.setAttribute('aria-hidden','true');
-      badge.textContent='⤢';
+      badge.innerHTML='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>';
       badge.addEventListener('click',trigger);
       parent.appendChild(badge);
     }
@@ -1610,7 +1726,7 @@
     arrastre:      ['03 · Arrastre de vapor', 'El vapor vivo atraviesa el lecho de cáscara y se lleva el aceite por debajo de 100 °C, aunque el limoneno hierva a 176 °C. Se calculan la relación de vapor, el tiempo de lote y el tamaño del extractor.'],
     condensacion:  ['04 · Condensación', 'El condensador devuelve a líquido la mezcla de vapor de agua y aceite. Es la carga térmica más grande de la planta, y de él depende el caudal de agua de enfriamiento.'],
     decantador:    ['05 · Decantador florentino', 'Aceite y agua no se mezclan, así que se separan por densidad, sin gastar energía. El hidrolato que sale por abajo puede volver al arrastre, lo que se conoce como cohobación.'],
-    winterizacion: ['06 · Winterización', 'El aceite crudo se enfría a 5-10 °C para cristalizar las ceras, que se retiran en un filtro. Se elige el equipo y se calcula el área de filtrado a partir de la torta que se forma.'],
+    winterizacion: ['06 · Winterización', 'El aceite que sale del florentino todavía lleva agua de dos formas: en gotas finas, que lo enturbian, y disuelta. Se enfría a 5-10 °C para que se separen el agua y lo poco pesado que arrastró el vapor, y pasa por un filtro de profundidad, cuyo medio de celulosa retiene las trazas de agua, la turbidez y las partículas finas antes de la columna. No es el desparafinado del aceite prensado en frío: las ceras de la cáscara no son volátiles y casi no pasan con el vapor. Se escoge el equipo de enfriamiento y se dimensiona el filtro.'],
     rectificacion: ['07 · Rectificación al vacío', 'La columna que hace el producto. Opera entre 10 y 20 mbar porque el limoneno se degrada arriba de 150 °C. Se diseña por McCabe-Thiele, con empaque, reflujo y servicios.'],
     producto:      ['08 · Producto', 'Aceite esencial rectificado, con especificación de calidad. Qué tan puro debe salir lo decide la economía del proyecto, y esa decisión la sustenta su equipo.']
   };

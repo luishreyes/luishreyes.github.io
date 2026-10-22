@@ -28,7 +28,7 @@
   .s--dark .s-foot{color:rgba(255,255,255,.45);}
   .s--dark .s-foot .num{color:rgba(255,255,255,.8);}
   .s--dark .s-foot .tag::before{background:rgba(255,255,255,.3);}
-  .s--dark{background:#111;color:#fff;}
+  .s--dark{background:var(--navy);color:#fff;}
   .s--dark h1.s-title,.s--dark h2.s-head,.s--dark h2{color:#fff;}
   .s--tint{background:var(--papel);}
 
@@ -46,7 +46,7 @@
   .cover-meta b{display:block;color:var(--gris-1);font-size:26px;font-weight:700;margin-bottom:4px;}
 
   /* Divisor de parte */
-  .divider{background:#111;color:#fff;justify-content:center;}
+  .divider{background:var(--navy);color:#fff;justify-content:center;}
   .divider .part{font-size:24px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--verde);margin-bottom:22px;}
   .divider h2{font-size:86px;line-height:1.02;margin:0;letter-spacing:-.02em;}
   .divider .sub{font-size:30px;color:rgba(255,255,255,.62);margin-top:24px;max-width:38ch;line-height:1.4;}
@@ -66,6 +66,11 @@
   .callout p{font-size:27px;margin:0;line-height:1.45;}
   .callout.amber{border-left-color:var(--ambar);background:#fdf6ec;}
 
+  /* Fuente de un dato, al pie del contenido */
+  .s .foot-note{margin:30px 0 0;font-size:22px;color:var(--gris-3);line-height:1.4;}
+  .platform-link{color:inherit;text-decoration:none;border-bottom:2px solid var(--verde);font-weight:600;}
+  .platform-link::after{content:" \2197";}
+
   .split{display:flex;gap:60px;align-items:flex-start;margin-top:20px;}
   .split .copy{flex:1;min-width:0;}
 
@@ -78,7 +83,9 @@
   .teamgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:22px;margin-top:36px;}
   .teambox{border:3px dashed var(--gris-4);min-height:420px;display:flex;flex-direction:column;}
   .teambox .th{background:var(--verde);color:#fff;font-size:26px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:14px 18px;text-align:center;}
-  .teambox .tb{flex:1;}
+  .teambox .tb{flex:1;padding:18px;}
+  /* Marcador visible: se reemplaza por los nombres cuando haya lista de inscritos. */
+  .teambox .pendiente{font-size:21px;line-height:1.35;color:var(--gris-3);font-style:italic;margin:0;}
 
   /* Buena norma contra mala norma */
   .vs{display:grid;grid-template-columns:1fr 1fr;gap:34px;margin-top:30px;}
@@ -117,6 +124,19 @@
   .barra .fin small{display:block;font-size:18px;font-weight:400;color:var(--gris-3);letter-spacing:.06em;text-transform:uppercase;}
   .nota-coev{font-size:23px;color:var(--gris-2);margin-top:24px;line-height:1.4;}
   .nota-coev b{color:var(--gris-1);}
+  /* En el modo oscuro del deck el relleno pasa a amarillo y el tope a gris claro:
+     la cifra de la barra va en tinta oscura para que se siga leyendo. */
+  html.deck-dark .barra .relleno span{color:#14181C;}
+  /* La leyenda nombra el color de la barra más alta en cada modo. */
+  .nota-coev .en-oscuro{display:none;}
+  html.deck-dark .nota-coev .en-claro{display:none;}
+  html.deck-dark .nota-coev .en-oscuro{display:inline;}
+
+  /* Modo oscuro: los fondos claros fijos de esta presentación pasan a tono
+     oscuro, porque el texto se aclara y sobre ellos no se leía. */
+  html.deck-dark .callout.amber{background:var(--papel);}
+  html.deck-dark .vs .lado.mala{background:var(--papel);border-color:#8C5A5A;}
+  html.deck-dark .vs .mala .et{color:#F0A89C;}
 
   /* Las ocho secciones del contrato */
   .secciones{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-top:32px;}
@@ -141,11 +161,22 @@
   .fml { font-size: 1.3em; }
   .card .fml, .cards .fml { font-size: 1.12em; }
 
+  /* Movimiento reducido: nada se anima ni se desliza, tampoco las barras del
+     simulador de coevaluación, que saltan directo a su ancho nuevo. */
+  @media (prefers-reduced-motion:reduce){
+    deck-stage section *,deck-stage section *::before,deck-stage section *::after{animation:none !important;transition:none !important;}
+  }
+
   /* ── Celular: componentes propios de esta presentación ── */
   @media (max-width:768px){
+    /* El motor apila las diapositivas: el pie va al final de cada una, no flotando. */
+    .s-foot{position:static !important;left:auto !important;right:auto !important;bottom:auto !important;margin-top:20px !important;}
+    .s .foot-note{margin-top:16px !important;font-size:13px !important;}
     .teamgrid{grid-template-columns:1fr 1fr !important;gap:12px !important;}
     .teambox{min-height:140px !important;}
     .teambox .th{font-size:15px !important;padding:10px !important;}
+    .teambox .tb{padding:10px !important;}
+    .teambox .pendiente{font-size:15px !important;}
     .vs,.coev,.secciones,.bloques{grid-template-columns:1fr !important;gap:16px !important;}
     .vs .lado,.coev .mandos{padding:18px 16px !important;}
     .vs .et,.grupal .et{font-size:13px !important;}
@@ -156,7 +187,7 @@
     .fila .nom,.barra .nom{font-size:15px !important;}
     .fila .val{font-size:16px !important;}
     .grupal .cifra{font-size:28px !important;}
-    .barra{grid-template-columns:80px 1fr 72px !important;gap:10px !important;}
+    .barra{grid-template-columns:96px 1fr 72px !important;gap:10px !important;}
     .barra .riel{height:30px !important;}
     .barra .relleno span,.barra .fin small{font-size:13px !important;}
     .barra .fin{font-size:17px !important;}
@@ -186,7 +217,7 @@
   <div style="position:relative;z-index:2;">
     <p class="course">IQYA-2031 · Sesión 02</p>
     <h1 class="s-title">Equipos, coevaluación y contrato</h1>
-    <p class="session">Cómo vamos a trabajar juntos durante las próximas dieciséis semanas.</p>
+    <p class="session">Cómo vamos a trabajar juntos durante las dieciséis semanas de clase, hasta la sesión final de pósteres en la semana 17.</p>
     <div class="cover-meta">
       <div><b>Curso</b>Proyecto de Operaciones Unitarias</div>
       <div><b>Proyecto del semestre</b>Planta de aceite esencial de cítricos</div>
@@ -223,7 +254,7 @@
 </section>
 
 <!-- 03 · Divisor -->
-<section class="s divider" data-screen-label="Divisor · Por qué el equipo">
+<section class="s s--dark divider" data-screen-label="Divisor · Por qué el equipo" data-nofoot>
   <div class="part">Parte 1</div>
   <h2>El equipo no es<br>logística. Es el<br>método.</h2>
   <p class="sub">Una planta no la diseña una persona. Ni en la industria ni en este curso.</p>
@@ -237,7 +268,7 @@
     <div class="stat-cell"><div class="num">60 %</div><div class="lbl">de la nota se construye en equipo</div></div>
     <div class="stat-cell"><div class="num">4</div><div class="lbl">bitácoras de cálculo por grupo</div></div>
     <div class="stat-cell"><div class="num">5</div><div class="lbl">coevaluaciones a lo largo del semestre</div></div>
-    <div class="stat-cell"><div class="num">16</div><div class="lbl">semanas con el mismo equipo</div></div>
+    <div class="stat-cell"><div class="num">16</div><div class="lbl">semanas de clase con el mismo equipo. En la semana 17, la sesión final de pósteres</div></div>
   </div>
   <div class="callout amber">
     <p>Su nota individual no sale de lo que usted hizo solo. Sale de lo que su equipo produjo y de cómo el equipo evaluó su aporte.</p>
@@ -267,6 +298,7 @@
       <p>El trabajo importa para quien lo hace, y el equipo cree que sirve para algo más que la nota.</p>
     </div>
   </div>
+  <p class="foot-note">Fuente: Project Aristotle, en <a class="platform-link" href="https://rework.withgoogle.com/intl/en/guides/understand-team-effectiveness" target="_blank" rel="noopener">Google re:Work, «Understand team effectiveness»</a>.</p>
 </section>
 
 <!-- 06 · Seguridad psicológica -->
@@ -324,10 +356,10 @@
 </section>
 
 <!-- 08 · Divisor equipos -->
-<section class="s divider" data-screen-label="Divisor · Sus equipos">
+<section class="s s--dark divider" data-screen-label="Divisor · Sus equipos" data-nofoot>
   <div class="part">Parte 2</div>
   <h2>Sus equipos</h2>
-  <p class="sub">Ya están asignados y son los mismos hasta diciembre.</p>
+  <p class="sub">Ya están asignados y son los mismos hasta la sesión de pósteres de la semana 17.</p>
 </section>
 
 <!-- 09 · Cómo se armaron -->
@@ -346,7 +378,7 @@
       <p>Cada equipo mezcla hombres y mujeres. En ingeniería se trabaja así, y aquí también.</p>
     </div>
     <div class="card">
-      <span class="card-n">Hasta diciembre</span>
+      <span class="card-n">Hasta la semana 17</span>
       <h3>No se reasignan</h3>
       <p>El equipo de hoy es con el que sustenta el proyecto final. No hay cambios de grupo durante el semestre.</p>
     </div>
@@ -356,24 +388,30 @@
   </div>
 </section>
 
-<!-- 10 · Revelación de equipos: se llena el día de clase -->
+<!-- 10 · Revelación de equipos: se llena el día de clase.
+     POR COMPLETAR al iniciar 2027-10: cuántos grupos hay y quiénes son, según la
+     lista de inscritos. Cambiar cada marcador «Integrantes por confirmar» por los
+     cuatro o cinco nombres del grupo, agregar o quitar recuadros según el número
+     de grupos y borrar la nota de pendiente del pie. -->
 <section class="s" data-screen-label="Los equipos (se llena en clase)">
   <div class="kicker">2027-10</div>
-  <h2 class="s-head">Los cinco equipos</h2>
+  <h2 class="s-head">Así quedaron los equipos</h2>
+  <p class="s-lead">Cada equipo tiene cuatro o cinco integrantes.</p>
   <div class="teamgrid">
-    <div class="teambox"><div class="th">Grupo 01</div><div class="tb"></div></div>
-    <div class="teambox"><div class="th">Grupo 02</div><div class="tb"></div></div>
-    <div class="teambox"><div class="th">Grupo 03</div><div class="tb"></div></div>
-    <div class="teambox"><div class="th">Grupo 04</div><div class="tb"></div></div>
-    <div class="teambox"><div class="th">Grupo 05</div><div class="tb"></div></div>
+    <div class="teambox"><div class="th">Grupo 01</div><div class="tb"><p class="pendiente">Integrantes por confirmar</p></div></div>
+    <div class="teambox"><div class="th">Grupo 02</div><div class="tb"><p class="pendiente">Integrantes por confirmar</p></div></div>
+    <div class="teambox"><div class="th">Grupo 03</div><div class="tb"><p class="pendiente">Integrantes por confirmar</p></div></div>
+    <div class="teambox"><div class="th">Grupo 04</div><div class="tb"><p class="pendiente">Integrantes por confirmar</p></div></div>
+    <div class="teambox"><div class="th">Grupo 05</div><div class="tb"><p class="pendiente">Integrantes por confirmar</p></div></div>
   </div>
+  <p class="foot-note">Pendiente: la cantidad de grupos y sus integrantes se completan con la lista de inscritos de 2027-10.</p>
 </section>
 
 <!-- 11 · Divisor coevaluación -->
-<section class="s divider" data-screen-label="Divisor · Coevaluación">
+<section class="s s--dark divider" data-screen-label="Divisor · Coevaluación" data-nofoot>
   <div class="part">Parte 3</div>
   <h2>La nota es<br>del equipo. Su<br>parte, no.</h2>
-  <p class="sub">Cómo la coevaluación convierte una nota grupal en cinco notas individuales.</p>
+  <p class="sub">Cómo la coevaluación convierte una nota grupal en una nota individual para cada integrante.</p>
 </section>
 
 <!-- 12 · Reglas -->
@@ -450,10 +488,10 @@
 </section>
 
 <!-- 15 · Divisor contrato -->
-<section class="s divider" data-screen-label="Divisor · El contrato">
+<section class="s s--dark divider" data-screen-label="Divisor · El contrato" data-nofoot>
   <div class="part">Parte 4</div>
   <h2>El contrato<br>de equipo</h2>
-  <p class="sub">Lo que hoy parece burocracia es lo que en octubre resuelve una discusión en dos minutos.</p>
+  <p class="sub">Lo que hoy parece burocracia es lo que en la semana 10 resuelve una discusión en dos minutos.</p>
 </section>
 
 <!-- 16 · Qué es -->
@@ -465,7 +503,7 @@
   <div class="cards">
     <div class="card">
       <span class="card-n">Sin contrato</span>
-      <h3>«Yo pensé que lo hacías tú»</h3>
+      <h3>«Yo pensé que lo hacía usted»</h3>
       <p>La discusión se vuelve sobre quién dijo qué. No hay forma de resolverla con evidencia.</p>
     </div>
     <div class="card card--teal">
@@ -493,7 +531,7 @@
     <div class="secc"><div class="n">5</div><b>Conflictos</b><span>La ruta que se agota antes de escalar al profesor.</span></div>
     <div class="secc"><div class="n">6</div><b>Criterios de coevaluación</b><span>Con qué se van a calificar entre ustedes. Suman 100.</span></div>
     <div class="secc"><div class="n">7</div><b>Sanciones y reparación</b><span>Qué pasa y cómo se repara, según la gravedad.</span></div>
-    <div class="secc"><div class="n">8</div><b>Firmas</b><span>Los cinco firman. Ahí deja de ser un borrador.</span></div>
+    <div class="secc"><div class="n">8</div><b>Firmas</b><span>Firman todos los integrantes. Ahí deja de ser un borrador.</span></div>
   </div>
 </section>
 
@@ -563,15 +601,33 @@
 </section>
 
 <!-- 21 · Cierre -->
-<section class="s divider" data-screen-label="Cierre">
+<section class="s s--dark divider" data-screen-label="Cierre" data-nofoot>
   <div class="part">Para el martes</div>
   <h2>Lea la Lectura 01<br>y traiga el contrato<br>firmado.</h2>
-  <p class="sub">De la lectura sale el primer quiz. Del contrato salen los próximos cuatro meses.</p>
+  <p class="sub">De la lectura sale el primer quiz. Del contrato sale el resto del semestre.</p>
 </section>
 
 </deck-stage>
 
 <script src="assets/deck-stage.js"></script>
+<script>
+  /* Pie con etiqueta del curso + número de diapositiva (esquina inferior derecha) */
+  (function () {
+    var stage = document.querySelector('deck-stage');
+    var slides = Array.prototype.filter.call(stage.children, function (n) { return n.tagName === 'SECTION'; });
+    var total = slides.length;
+    slides.forEach(function (s, i) {
+      var f = document.createElement('div');
+      f.className = 's-foot';
+      var label = s.hasAttribute('data-nofoot')
+        ? 'Equipos, coevaluación y contrato · IQYA-2031'
+        : 'Equipos, coevaluación y contrato · Proyecto de Operaciones Unitarias';
+      f.innerHTML = '<span class="tag">' + label + '</span><span class="num">' + (i + 1) + ' / ' + total + '</span>';
+      s.appendChild(f);
+    });
+  })();
+</script>
+
 <script>
 /* ── Coevaluación en vivo ────────────────────────────────────────────────
    Cinco integrantes con la coevaluación que recibieron. La más alta define
@@ -616,7 +672,8 @@
     for (i = 0; i < notas.length; i++) {
       var pct = (notas[i] / tope) * 100;
       var fin = Math.min(5, grupal * pct / 100);
-      document.getElementById('r' + i).style.width = pct.toFixed(1).replace('.', ',') + '%';
+      // El ancho es CSS y lleva punto decimal; la coma va solo en el texto visible.
+      document.getElementById('r' + i).style.width = pct.toFixed(1) + '%';
       document.getElementById('p' + i).textContent = coma(pct, 1) + ' %';
       document.getElementById('f' + i).textContent = coma(fin, 1);
       document.getElementById('b' + i).classList.toggle('tope', notas[i] === tope);
@@ -625,7 +682,7 @@
       return Math.min(5, grupal * (x / tope));
     })), 1);
     document.getElementById('leyenda').innerHTML =
-      'La barra en <b>azul oscuro</b> es la coevaluación más alta del equipo: esa define el 100 %. ' +
+      'La barra en <b><span class="en-claro">azul oscuro</span><span class="en-oscuro">gris claro</span></b> es la coevaluación más alta del equipo: esa define el 100 %. ' +
       'Con estos números, entre el primero y el último hay <b>' + dif + ' puntos</b> de diferencia ' +
       'sobre la misma bitácora.';
   }

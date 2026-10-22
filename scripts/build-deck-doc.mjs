@@ -14,6 +14,8 @@
 // Uso:
 //   node scripts/build-deck-doc.mjs Diagramas_de_Ingenieria
 //   node scripts/build-deck-doc.mjs Diagramas_de_Ingenieria http://localhost:8765
+//   CURSO=iqya-2031-2027-10 node scripts/build-deck-doc.mjs Presentacion_del_Curso
+// Las animaciones de Manim (video.anim) salen con su póster, el último cuadro.
 import { chromium } from 'playwright';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
@@ -21,7 +23,8 @@ import fs from 'node:fs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(__dirname, '../public');
-const SLUG = 'iqya-2031-2026-20';
+const SLUG = process.env.CURSO || 'iqya-2031-2026-20';
+const PERIODO = SLUG.match(/\d{4}-\d{2}$/)?.[0] ?? '';
 const deck = process.argv[2];
 const base = process.argv[3] || 'http://localhost:8765';
 if (!deck) { console.error('Uso: node scripts/build-deck-doc.mjs <Carpeta_del_deck> [url-base]'); process.exit(1); }
@@ -31,13 +34,16 @@ const htmlName = fs.readdirSync(dir).find((f) => /^Presentacion_.*\.html$/.test(
 if (!htmlName) { console.error('No encontré Presentacion_*.html en', dir); process.exit(1); }
 const html = fs.readFileSync(path.join(dir, htmlName), 'utf8');
 const pdfName = (html.match(/data-doc-pdf="([^"]+)"/) || [])[1] || htmlName.replace(/\.html$/, '_documento.pdf');
-const css = fs.readFileSync(path.join(ROOT, 'classroom', SLUG, '_industry', 'deck-doc.css'), 'utf8');
+// La hoja que apila las diapositivas es la de 2026-20, salvo que el curso traiga la suya.
+const propia = path.join(ROOT, 'classroom', SLUG, '_industry', 'deck-doc.css');
+const css = fs.readFileSync(fs.existsSync(propia) ? propia : path.join(ROOT, 'classroom', 'iqya-2031-2026-20', '_industry', 'deck-doc.css'), 'utf8')
+  + 'video.anim{display:none!important}img.anim-impresion{display:block!important}';
 
 const foot = '<div style="width:100%;font-family:Arial,Helvetica,sans-serif;font-size:7px;color:#8A887F;padding:0 0.5in;'
-  + 'display:flex;justify-content:space-between;box-sizing:border-box;"><span>Proyecto de Operaciones Unitarias · IQYA-2031 · 2026-20</span>'
+  + `display:flex;justify-content:space-between;box-sizing:border-box;"><span>Proyecto de Operaciones Unitarias · IQYA-2031 · ${PERIODO}</span>`
   + '<span class="pageNumber"></span></div>';
 
-const browser = await chromium.launch();
+const browser = await chromium.launch({ args: process.getuid?.() === 0 ? ['--no-sandbox'] : [] });
 try {
   const page = await browser.newPage({ viewport: { width: 1100, height: 1400 } });
   await page.emulateMedia({ media: 'screen' });

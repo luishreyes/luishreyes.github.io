@@ -12,9 +12,11 @@ import { pou202620Course } from './pou-2026-20';
 // previa mientras se arma el semestre.
 //
 // PENDIENTE antes de abrirlo a estudiantes:
-//   · `modules`, `presentations` y casi todo `readings` todavía son los de
-//     pectina, heredados de 2026-20. Ya es propio de 2027-10: el reto.
-//   · `schedule` y `cronograma` esperan el calendario oficial de 2027-10.
+//   · `presentations` y casi todo `readings` todavía son los de pectina,
+//     heredados de 2026-20. Ya son propios de 2027-10: el reto, los módulos
+//     y el material de las semanas 1 a 3.
+//   · `schedule`, `cronograma`, el equipo de asistentes y las fechas esperan
+//     el calendario oficial de 2027-10.
 //   · Falta el banner propio del semestre: mientras tanto usa el de 2026-20.
 // Material ya reescrito para aceite esencial: vive en /classroom/iqya-2031-2027-10/.
 // Cada semana que se migra suma aquí sus ids y slugs.
@@ -53,7 +55,14 @@ const DESCRIPCIONES: Record<string, string> = {
     'La sesión inaugural completa: bienvenida y la planta de aceite esencial, equipo docente, objetivos y resultados ABET, las ocho estaciones del proceso, metodología, módulos y ritmo del semestre, evaluación, uso de IA y expectativas.',
   'diagramas-ingenieria':
     'BFD, PFD y P&ID: el lenguaje visual de la ingeniería química. Simbología de equipos e instrumentos, codificación de equipos (Turton), balance de masa y mejores prácticas, aplicados a la planta de aceite esencial.',
+  'trabajo-en-equipo':
+    'Qué distingue a un equipo que funciona, cómo la coevaluación convierte la nota del equipo en una nota individual para cada integrante, con un ejemplo que se mueve en vivo, y las ocho secciones del contrato que cada equipo firma en clase.',
 };
+
+// Lo que todavía no se sabe de 2027-10 (equipo de asistentes, fechas) va
+// «por confirmar», y las entregas se fijan por semana hasta que salga el
+// calendario.
+const POR_CONFIRMAR = 'Por confirmar';
 
 export const pou202710Course: Course = {
   ...pou202620Course,
@@ -69,6 +78,131 @@ export const pou202710Course: Course = {
   // llegue a la tarjeta ve que el semestre se está armando y no pasa.
   staffOnlyAccess: true,
   identidad: 'uniandes',
+  duration: '16 semanas y la 17 de pósters',
+
+  team: [
+    pou202620Course.team[0],
+    { name: POR_CONFIRMAR, role: 'Asistente', email: '' },
+    { name: POR_CONFIRMAR, role: 'Monitoría', email: '' },
+  ],
+
+  objectives: pou202620Course.objectives.map((o) => o.replace('(BFD, PFD, P&ID)', '(PBD, PFD y P&ID)')),
+
+  abet: {
+    ...pou202620Course.abet,
+    outcomes: pou202620Course.abet.outcomes.map((o, i) =>
+      i === 0
+        ? {
+            ...o,
+            indicators: o.indicators.map((ind) =>
+              ind.startsWith('1.1.1')
+                ? '1.1.1 Define el problema de diseño de la planta de aceite esencial, con sus dos destilaciones: el arrastre de vapor y la rectificación al vacío.'
+                : ind,
+            ),
+          }
+        : o,
+    ),
+  },
+
+  modules: [
+    {
+      title: 'Módulo 1 · Fundamentos y diagramación',
+      topics: [
+        'Introducción al proyecto y formación de equipos.',
+        'Diagramas de ingeniería: PBD, PFD y P&ID (el P&ID se practica en el Taller 1 y no es un entregable).',
+        'Simbología y estándares ISA.',
+        'Materia prima y alcance del proyecto.',
+      ],
+    },
+    {
+      title: 'Módulo 2 · Manejo de sólidos',
+      topics: [
+        'Caracterización y propiedades de sólidos.',
+        'Distribución de tamaños de partícula.',
+        'Teoría y equipos de reducción de tamaño.',
+        'Desgarrado de la cáscara húmeda y potencia del molino de cuchillas.',
+      ],
+    },
+    {
+      title: 'Módulo 3 · Arrastre de vapor',
+      topics: [
+        'Equilibrio de líquidos inmiscibles.',
+        'Relación de vapor e hidrodifusión del aceite en la cáscara.',
+        'Diseño del extractor.',
+      ],
+    },
+    {
+      title: 'Módulo 4 · Transporte de fluidos y agitación',
+      topics: [
+        'Ecuación de Bernoulli y pérdidas mayores y menores.',
+        'Bombas centrífugas, curvas características y NPSH.',
+        'Servicios de la planta y vapor vivo.',
+        'Agitación del tanque de lavado y del tanque de enfriamiento; criterios de escalado.',
+      ],
+    },
+    {
+      title: 'Módulo 5 · Transferencia de calor',
+      topics: [
+        'El condensador del arrastre, la carga térmica más grande de la planta.',
+        'Método LMTD y efectividad-NTU.',
+        'Selección y dimensionamiento.',
+        'Integración energética del proceso.',
+      ],
+    },
+    {
+      title: 'Módulo 6 · Separaciones mecánicas',
+      topics: [
+        'Decantación de aceite y agua en el florentino.',
+        'Teoría de filtración y resistencia del medio filtrante.',
+        'Winterización: el enfriado y el filtro de profundidad del aceite.',
+      ],
+    },
+    {
+      title: 'Módulo 7 · Rectificación al vacío',
+      topics: [
+        'Equilibrio líquido-vapor (repaso).',
+        'Destilación flash y diferencial.',
+        'Método McCabe-Thiele y efecto de la presión.',
+        'Platos y empaques, con HETP.',
+        'Azeótropos.',
+      ],
+    },
+  ],
+
+  evaluation: pou202620Course.evaluation.map((e) =>
+    e.component === 'Presentación final'
+      ? { ...e, description: 'Grupos · Sustentación de pósters en la semana 17.' }
+      : e,
+  ),
+
+  deliveries: {
+    bitacoras: [3, 7, 10, 15].map((w, i) => ({ label: `Entrega ${i + 1}`, date: `Domingo de la semana ${w}` })),
+    coevaluations: [
+      ...[4, 8, 11, 16].map((w, i) => ({ label: `Coevaluación ${i + 1}`, date: `Lunes de la semana ${w}` })),
+      { label: 'Coevaluación 5', date: 'Semana 17 · documento y pósters' },
+    ],
+    feedback: [4, 8, 11, 16].map((w, i) => ({ label: `Retroalimentación ${i + 1}`, date: `Semana ${w}` })),
+  },
+
+  policies: pou202620Course.policies.map((p) => ({
+    ...p,
+    items: p.items.map((it) =>
+      it.startsWith('Correo del curso:')
+        ? 'Correo del curso: lh.reyes@uniandes.edu.co. Los correos del equipo de asistentes se publican al iniciar el semestre.'
+        : it.replace('BloqueNeón', 'Bloque Neón'),
+    ),
+  })),
+
+  community: pou202620Course.community.map((c) => ({
+    ...c,
+    items: c.items.map((it) =>
+      it.startsWith('La fecha límite para retirarse')
+        ? 'La fecha límite para retirarse del curso la fija el calendario académico de 2027-10 (por confirmar).'
+        : it === 'Informa al profesor en las primeras dos semanas.'
+        ? 'Informe al profesor en las primeras dos semanas.'
+        : it,
+    ),
+  })),
 
   tagline:
     'Diseñe una planta de aceite esencial a partir de cáscara de cítricos',
@@ -101,12 +235,12 @@ export const pou202710Course: Course = {
     // Formato «Etapa · Operación»: el landing de 2027-10 lo parte en dos.
     scope: [
       'Selección y caracterización de la materia prima · Materia prima',
-      'Diagramas del proceso: PBD, PFD y P&ID · Diagramas',
+      'Diagramas del proceso: PBD y PFD · Diagramas',
       'Lavado, acondicionamiento y desgarrado · Sólidos y agitación',
       'Arrastre de vapor: el extractor · Destilación',
       'Transporte de fluidos y servicios · Fluidos',
-      'Condensación y decantador florentino · Intercambio de calor',
-      'Winterización y filtración de ceras · Filtración',
+      'Condensación y decantador florentino · Calor y decantación',
+      'Winterización: enfriado y filtrado del aceite · Separaciones mecánicas',
       'Rectificación al vacío: la columna que hace el producto · Destilación',
     ],
   },
