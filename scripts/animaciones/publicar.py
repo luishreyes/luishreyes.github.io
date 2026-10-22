@@ -126,13 +126,15 @@ def main():
     titulo = a.titulo or nombre.replace("-", " ").capitalize()
     print(f"\nPublicado: {mp4.relative_to(RAIZ)} ({mp4.stat().st_size / 1e6:.1f} MB) y {poster.name}")
     if not carpeta.startswith("slides/"):
-        # Una lectura no tiene la flecha del deck: el video lleva controles, y el
-        # póster (el último cuadro) es la figura completa para quien no lo reproduce.
-        print("\nHTML para la lectura (la figura completa es el póster):\n")
+        # Una lectura no tiene la flecha del deck: el video arranca solo al llegar
+        # a él (data-auto), lleva controles, y el póster (el último cuadro) es la
+        # figura completa para quien no lo reproduce.
+        print("\nHTML para la lectura (una vez por lectura, antes de </body>:"
+              "\n  <script src=\"/classroom/animaciones-lectura.js\"></script>):\n")
         print(f'<figure class="fig full">\n'
               f'  <div class="fig-frame">\n'
-              f'    <video class="anim-lectura" src="{rel}.mp4" poster="{rel}.webp" width="{ancho}" height="{alto}"\n'
-              f'           controls muted playsinline preload="none" aria-label="Animación: {titulo}"></video>\n'
+              f'    <video src="{rel}.mp4" poster="{rel}.webp" width="{ancho}" height="{alto}"\n'
+              f'           controls muted playsinline preload="none" data-auto aria-label="Animación: {titulo}"></video>\n'
               f'  </div>\n'
               f'  <figcaption><b>Figura N.</b> …</figcaption>\n'
               f'</figure>')
