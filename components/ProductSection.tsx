@@ -120,8 +120,8 @@ export const ProductSection = ({ product, citationCount, cover, showYear = false
                     <div className="mt-3 space-y-5">
                       {product.laymanSummary.map((item, i) => (
                         <div key={i}>
-                          <p className="font-semibold text-tinta-900">{item.question}</p>
-                          <p className="mt-1 a-texto text-tinta-800">{item.answer}</p>
+                          <p className="font-semibold text-tinta-900">{localize(item.question, lang)}</p>
+                          <p className="mt-1 a-texto text-tinta-800">{localize(item.answer, lang)}</p>
                         </div>
                       ))}
                     </div>

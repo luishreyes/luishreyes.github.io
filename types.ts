@@ -22,9 +22,10 @@ export type ResearchArea =
   | 'Multisensory Experience Design'
   | 'Scholarship of Teaching & Learning';
 
+/** Una pregunta y su respuesta en palabras sencillas, en los dos idiomas. */
 export interface LaymanSummaryPoint {
-  question: string;
-  answer: string;
+  question: Localized;
+  answer: Localized;
 }
 
 export interface Product {

@@ -174,8 +174,8 @@ export const PublicationSection = ({ publication, index, citationCount, isLoadin
                             <motion.div {...{variants: summaryVariants}} className="mt-6 space-y-6 pt-4 border-t border-slate-200">
                                 {publication.laymanSummary.map((item, i) => (
                                     <motion.div key={i} {...{variants: summaryItemVariants}}>
-                                        <h4 className="font-semibold text-slate-800">{item.question}</h4>
-                                        <p className="mt-1 text-slate-600">{item.answer}</p>
+                                        <h4 className="font-semibold text-slate-800">{localize(item.question, lang)}</h4>
+                                        <p className="mt-1 text-slate-600">{localize(item.answer, lang)}</p>
                                     </motion.div>
                                 ))}
                             </motion.div>
