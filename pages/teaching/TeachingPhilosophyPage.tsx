@@ -115,7 +115,7 @@ export const TeachingPhilosophyPage: React.FC = () => {
             alt={t('tch.ph.campus')}
             loading="lazy"
             className="a-foto a-bn"
-            style={{ objectPosition: '50% 35%', ...(reduce ? {} : { scale: escala }) }}
+            style={{ objectPosition: '50% 25%', ...(reduce ? {} : { scale: escala }) }}
           />
         </div>
         <figcaption className="a-c a-pie">{t('tch.ph.campus')}</figcaption>

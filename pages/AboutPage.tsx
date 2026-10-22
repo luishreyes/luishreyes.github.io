@@ -80,7 +80,7 @@ export const AboutPage: React.FC = () => {
 
       {/* ── La gente para la que existe todo lo anterior ── */}
       <Sube>
-        <img src="/images/portafolio/claustro/the-pause.jpg" alt={t('home.band.alt')} loading="lazy" className="a-bn block w-full h-[46svh] min-h-[240px] object-cover" style={{ objectPosition: '50% 66%' }} />
+        <img src="/images/portafolio/claustro/the-pause.jpg" alt={t('home.band.alt')} loading="lazy" className="a-bn block w-full h-[46svh] min-h-[240px] object-cover" style={{ objectPosition: '50% 14%' }} />
       </Sube>
 
       {/* ── Lo único de la portada que se toca: la suma de vectores ── */}
