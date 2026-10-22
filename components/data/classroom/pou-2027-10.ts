@@ -109,7 +109,7 @@ export const pou202710Course: Course = {
       title: 'Módulo 1 · Fundamentos y diagramación',
       topics: [
         'Introducción al proyecto y formación de equipos.',
-        'Diagramas de ingeniería: PBD, PFD y P&ID (el P&ID se practica en el Taller 1 y no es un entregable).',
+        'Diagramas de ingeniería: PBD, PFD y P&ID. El entregable es el PFD completo; el P&ID se practica en el Taller 1.',
         'Simbología y estándares ISA.',
         'Materia prima y alcance del proyecto.',
       ],
@@ -235,7 +235,7 @@ export const pou202710Course: Course = {
     // Formato «Etapa · Operación»: el landing de 2027-10 lo parte en dos.
     scope: [
       'Selección y caracterización de la materia prima · Materia prima',
-      'Diagramas del proceso: PBD y PFD · Diagramas',
+      'Diagramas del proceso: el PFD completo · Diagramas',
       'Lavado, acondicionamiento y desgarrado · Sólidos y agitación',
       'Arrastre de vapor: el extractor · Destilación',
       'Transporte de fluidos y servicios · Fluidos',
