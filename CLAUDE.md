@@ -317,6 +317,13 @@ Este repositorio es público: cualquiera lee su código y su historial, y `publi
 - **Aquí solo va lo que se reparte:** el plano con errores, renombrado sin la semilla (`public/classroom/{slug}/talleres/Taller_NN/Taller_NN_PFD.svg` y `.pdf`). El Taller 1 de 2027-10 usa uno de ron, y sus preguntas no dependen de los errores de un plano en particular: el semestre siguiente basta con generar otro y cambiar los dos archivos.
 - **Nunca** se nombran aquí semillas, soluciones ni códigos: ni en páginas, ni en comentarios, ni en commits. `planeacion/`, `guiones/` y `scripts/pfd/` están en `.gitignore` para que no vuelvan por error.
 
+### Libro de operaciones unitarias (en preparación desde el 23 oct 2026)
+Notas de clase con forma de libro de consulta: lo que se ve en POU y un poco más, con la voz del profesor, referencias a libros, artículos y fabricantes, figuras isométricas, animaciones y simuladores. No se mueve de un semestre a otro: cuando un capítulo esté publicado, la lectura de esa semana se vuelve corta y remite a sus secciones.
+- **Se escribe en el repositorio privado `luishreyes/libro-operaciones-unitarias`** (`../libro-operaciones-unitarias`; en la nube, con `add_repo`). Su README tiene el plan y las decisiones, y `CONTENIDO.md` el índice. Allá se quedan los borradores y las fuentes de consulta.
+- **Se publica aquí, en `public/libro/`**, público y sin código: el HTML que genera Quarto, solo con los capítulos que el profesor aprobó.
+- **Las figuras isométricas se hacen con el skill `anatomy`**, en `scripts/figuras/{equipo}/`, igual que las de los simuladores; las animaciones, con Manim; las moléculas, con chemdraw-mcp.
+- Piloto: el capítulo de bombas.
+
 ### Skill `design-taste-frontend` (taste skill: dirección de arte de páginas)
 Instalado en `.claude/skills/design-taste-frontend/` desde [Leonxlnx/taste-skill](https://github.com/Leonxlnx/taste-skill) (MIT, v2.0.0, commit `f624f37`, oct 2026), sin cambios. Se invoca con `/design-taste-frontend`. Le da dirección de arte a una página pública para que no se vea genérica: `scripts/draw.mjs` reparte direcciones sacadas de un estudio de 247 sitios, `scripts/lint.mjs` revisa el código y `scripts/inspect.mjs` mide la página en Chromium a 1440, 768 y 390 px y guarda capturas, que luego se critican y se corrigen (hasta tres rondas).
 - **Dónde sí:** las páginas públicas del portafolio (inicio, investigación, docencia, estudiantes), las landings de los cursos y el rediseño de cualquier página que se vea de plantilla. **Dónde no:** simuladores, Material, visores y demás pantallas de aplicación (el propio skill las excluye), ni lecturas, programas y presentaciones, que siguen sus guías (`LECTURAS-HTML.md`, `PROGRAMA.md`, `PRESENTATIONS.md`, `EDCO-SLIDES.md`).
