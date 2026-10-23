@@ -86,7 +86,7 @@
   }
 
   function videoActivo() {
-    var s = stage.querySelector('section.active');
+    var s = stage.querySelector('section[data-deck-active]');
     return s ? s.querySelector('video.anim') : null;
   }
 
@@ -105,7 +105,7 @@
   });
 
   // deck-stage pudo anunciar la primera diapositiva antes de que cargara este archivo.
-  var inicial = stage.querySelector('section.active');
+  var inicial = stage.querySelector('section[data-deck-active]');
   if (inicial) entrar(inicial, false);
 
   // En captura, para responder antes que deck-stage (que escucha en window, en burbuja).

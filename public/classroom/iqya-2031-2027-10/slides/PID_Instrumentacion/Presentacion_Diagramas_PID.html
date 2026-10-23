@@ -113,6 +113,9 @@
   .figbox { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; margin-top: 10px; }
   .figbox img { max-width: 92%; max-height: 720px; width: auto; height: auto; object-fit: contain; border: 2px solid var(--gris-5); border-radius: var(--radio); box-shadow: var(--sombra); background: #fff; }
   .figbox .figcap { font-size: 23px; color: var(--gris-2); text-align: center; max-width: 80ch; line-height: 1.4; }
+  .figbox--fit img { max-height: 600px; }
+  .split--fig { grid-template-columns: 0.72fr 1.28fr; }
+  .nw { white-space: nowrap; }
 
   /* ====== Callout ====== */
   .callout { background: var(--papel); border-radius: var(--radio); padding: 36px 40px; border-left: 8px solid var(--teal); }
@@ -133,8 +136,6 @@
   .compare .pfd .lbl { color: var(--gris-3); }
   .compare .pid .lbl { color: var(--verde-osc); }
 
-  /* ====== Fórmulas ====== */
-  .fml  .card .fml
   /* ====== Divisor / Cierre ====== */
   .divider { justify-content: center; }
   .divider .part { font-size: 26px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--verde); margin-bottom: 28px; }
@@ -176,6 +177,78 @@
   }
   .lightbox .lb-close:hover { background: rgba(255,255,255,.3); }
   @media print { .zoom-badge, .lightbox { display: none !important; } }
+
+  /* ====== Figuras propias en SVG (unidad de HDS del Manual de diagramas) ====== */
+  .img-panel.fig-svg { background: #fff; }
+  /* Una figura ancha no debe ensanchar la columna: la que se desliza es la figura, no el texto. */
+  .split > * { min-width: 0; }
+  .fig-svg .desliza { max-width: 100%; }
+  svg.pid { display: block; width: 100%; height: auto; font-family: var(--tipo); cursor: zoom-in; }
+  svg.pid text { fill: var(--navy); }
+  svg.pid .k { fill: none; stroke: var(--navy); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+  svg.pid .kf { fill: #fff; stroke: var(--navy); stroke-width: 2; stroke-linejoin: round; }
+  svg.pid .kt { fill: none; stroke: var(--navy); stroke-width: 1.3; }
+  svg.pid .fi { fill: var(--navy); stroke: none; }
+  svg.pid .proc { fill: none; stroke: var(--navy); stroke-width: 2.8; stroke-linejoin: round; }
+  svg.pid .proc2 { fill: none; stroke: var(--navy); stroke-width: 1.8; stroke-linejoin: round; }
+  svg.pid .util { fill: none; stroke: var(--navy); stroke-width: 1.8; stroke-linejoin: round; }
+  svg.pid .sig { fill: none; stroke: var(--navy); stroke-width: 1.5; stroke-dasharray: 7 5; }
+  svg.pid .sigs { fill: none; stroke: var(--navy); stroke-width: 1.5; }
+  svg.pid .imp { fill: none; stroke: var(--navy); stroke-width: 1.2; }
+  svg.pid .sep { fill: none; stroke: var(--gris-4); stroke-width: 2; }
+  svg.pid .sep-d { fill: none; stroke: var(--oliva); stroke-width: 1.4; stroke-dasharray: 3 4; }
+  svg.pid .zona { fill: var(--amarillo-claro); stroke: none; }
+  svg.pid .t-eq { font-size: 17px; font-weight: 700; }
+  svg.pid .t-lbl { font-size: 16px; font-weight: 600; }
+  svg.pid .t-s { font-size: 15px; font-weight: 400; fill: var(--gris-2); }
+  svg.pid .t-ttl { font-size: 14px; font-weight: 700; letter-spacing: .12em; fill: var(--oliva-osc); }
+  svg.pid .annot { fill: var(--oliva-osc); font-weight: 700; }
+  svg.pid .bub-t { font-size: 15px; font-weight: 700; }
+  svg.pid .bub-n { font-size: 12px; font-weight: 600; }
+  svg.pid .dmd-t { font-size: 13px; font-weight: 700; }
+  /* Paso a paso del lazo: resalta un elemento y atenúa los demás */
+  svg.pid .hot { transition: opacity .2s ease; }
+  svg.pid.dim-others .hot:not(.sel) { opacity: .25; }
+  svg.pid .hot.sel .k, svg.pid .hot.sel .kf, svg.pid .hot.sel .sig, svg.pid .hot.sel .sigs, svg.pid .hot.sel .imp { stroke: var(--oliva); }
+  svg.pid .hot.sel .kf { fill: var(--amarillo-claro); }
+  svg.pid .hot.sel text { fill: var(--oliva-osc); }
+  .figtabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 14px; }
+  .figtab { font: inherit; font-size: 20px; font-weight: 700; padding: 8px 20px; border: 2px solid var(--gris-4); background: #fff; color: var(--gris-2); cursor: pointer; transition: background .15s ease, color .15s ease, border-color .15s ease; }
+  .figtab:hover { border-color: var(--navy); color: var(--navy); }
+  .figtab[aria-pressed="true"] { background: var(--navy); border-color: var(--navy); color: #fff; }
+  .figtab:focus-visible, svg.pid:focus-visible { outline: 3px solid var(--oliva); outline-offset: 3px; }
+  .fig-svg [data-v][hidden] { display: none; }
+  .lightbox svg.pid { width: 94vw; max-width: 1700px; max-height: 92vh; background: #fff; padding: 2vmin; cursor: zoom-out; box-sizing: border-box; }
+  @media (max-width: 768px) {
+    .figtabs { gap: 6px; margin-bottom: 10px; }
+    .figtab { font-size: 14px; padding: 6px 12px; }
+  }
+
+  /* ====== Enlaces a plataformas (copiado de la Presentación del curso) ====== */
+  a.platform-link { color: inherit; text-decoration: none; border-bottom: 3px solid var(--amarillo); }
+  a.platform-link::after { content: " \2197"; font-size: .7em; opacity: .6; }
+  a.platform-link:hover { border-bottom-color: var(--navy); }
+  a.platform-link:focus-visible { outline: 3px solid var(--oliva); outline-offset: 3px; }
+
+  /* ====== Entrada de la diapositiva activa (deck-stage marca data-deck-active) ====== */
+  @keyframes fadeInUp { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+  deck-stage > section[data-deck-active] .kicker { animation: fadeInUp .35s ease both; }
+  deck-stage > section[data-deck-active] h1, deck-stage > section[data-deck-active] h2 { animation: fadeInUp .4s .05s ease both; }
+  deck-stage > section[data-deck-active] .split > *, deck-stage > section[data-deck-active] .cards > *,
+  deck-stage > section[data-deck-active] .agenda-list > li, deck-stage > section[data-deck-active] .compare > .col,
+  deck-stage > section[data-deck-active] .figbox { animation: fadeInUp .45s .12s ease both; }
+  deck-stage > section[data-deck-active] .split > *:nth-child(2), deck-stage > section[data-deck-active] .cards > *:nth-child(2),
+  deck-stage > section[data-deck-active] .agenda-list > li:nth-child(2), deck-stage > section[data-deck-active] .compare > .col:nth-child(2) { animation-delay: .2s; }
+  deck-stage > section[data-deck-active] .cards > *:nth-child(3), deck-stage > section[data-deck-active] .agenda-list > li:nth-child(3),
+  deck-stage > section[data-deck-active] .compare > .col:nth-child(3) { animation-delay: .28s; }
+  deck-stage > section[data-deck-active] .cards > *:nth-child(4), deck-stage > section[data-deck-active] .agenda-list > li:nth-child(4),
+  deck-stage > section[data-deck-active] .compare > .col:nth-child(4) { animation-delay: .36s; }
+  deck-stage > section[data-deck-active] .compare > .col:nth-child(5) { animation-delay: .44s; }
+  .lb-close:focus-visible { outline: 3px solid var(--amarillo); outline-offset: 3px; }
+  @media (prefers-reduced-motion: reduce) {
+    deck-stage > section *, deck-stage > section *::before, deck-stage > section *::after,
+    .lightbox, .lightbox * { animation: none !important; transition: none !important; }
+  }
 
   /* ====== Mobile responsive (≤768px) ====== */
   @media (max-width: 768px) {
@@ -290,8 +363,8 @@
     </div>
     <div class="cover-meta">
       <div><b>Curso</b>Proyecto de Operaciones Unitarias</div>
-      <div><b>Proyecto del semestre</b>Planta de aceite esencial de cítricos</div>
-      <div><b>Norma base</b>ISA-5.1</div>
+      <div><b>Caso guía</b>Unidad de hidrodesulfuración, área 200</div>
+      <div><b>Norma base</b>ANSI/ISA-5.1-2024</div>
     </div>
   </section>
 
@@ -302,23 +375,29 @@
     <ul class="agenda-list">
       <li><span class="n">01</span><span class="t"><b>Qué es un P&amp;ID y qué lo hace distinto</b><span>Documento maestro, contractual y convergente. Qué migra del PFD y qué información nueva aporta.</span></span></li>
       <li><span class="n">02</span><span class="t"><b>El lenguaje: simbología, tags y válvulas</b><span>Norma ISA-5.1, sistema de identificación única y representación de válvulas.</span></span></li>
-      <li><span class="n">03</span><span class="t"><b>Instrumentación y lazos de control</b><span>Casos aplicados a un destilador, especificación de líneas y lazos de caudal y temperatura.</span></span></li>
+      <li><span class="n">03</span><span class="t"><b>Instrumentación y lazos de control</b><span>Un destilador y la unidad de HDS: especificación de líneas y lazos de caudal y temperatura.</span></span></li>
       <li><span class="n">04</span><span class="t"><b>Notas, seguridad y diferencias clave</b><span>Notas operativas, seguridad integrada y el salto del PFD al P&amp;ID.</span></span></li>
     </ul>
+    <p class="foot-note">Todos los ejemplos siguen un mismo caso: la <b>unidad de hidrodesulfuración (HDS, área 200)</b> del <a class="platform-link" href="/classroom/iqya-2031-2026-20/simulaciones/Manual_Diagramas.html" target="_blank" rel="noopener">Manual de diagramas</a> del curso, con sus mismos tags, números de línea y convenciones.</p>
   </section>
 
   <!-- 03 · Del PFD al P&ID -->
   <section class="s" data-screen-label="Del PFD al PID">
-    <div class="split split--wideL">
+    <div class="split split--wideR">
       <div class="copy">
         <div class="kicker">Evolución hacia el detalle constructivo</div>
         <h2>Del PFD al P&amp;ID</h2>
-        <p>El P&amp;ID transforma el diseño conceptual del PFD en un documento constructivo completo. Mientras el PFD responde "¿qué equipos necesitamos y cómo se conectan?", el P&amp;ID responde "¿cómo construimos, operamos y controlamos esta planta de forma segura?".</p>
+        <p>El P&amp;ID transforma el diseño conceptual del PFD en un documento constructivo completo. Mientras el PFD responde «¿qué equipos necesitamos y cómo se conectan?», el P&amp;ID responde «¿cómo construimos, operamos y controlamos esta planta de forma segura?».</p>
         <p style="margin-top:18px;">No es solo añadir detalles: es un cambio de audiencia y de propósito. El P&amp;ID es el lenguaje que convierte ideas en realidad construible.</p>
       </div>
-      <div class="img-panel">
-        <img src="assets/img/Monitor_PID_CAD.webp" alt="P&ID en desarrollo en una estación CAD">
-        <p class="figcap">Un P&amp;ID en desarrollo. Cada símbolo es una instrucción precisa para quien construye y opera.</p>
+      <div class="img-panel fig-svg" data-figtabs>
+        <div class="figtabs" role="group" aria-label="Nivel del diagrama">
+          <button type="button" class="figtab" data-v="pfd" aria-pressed="false">PFD</button>
+          <button type="button" class="figtab" data-v="pid" aria-pressed="true">P&amp;ID</button>
+        </div>
+        <div class="desliza" data-v="pfd" hidden><svg class="pid" viewBox="0 0 900 530" role="img" aria-label="V-201 en el PFD: corrientes 9, 10 y 11, lazos LC y PC y la PSV a la antorcha" xmlns="http://www.w3.org/2000/svg"><g transform="translate(420 260)"><path d="M -45 -140 A 45 19.8 0 0 1 45 -140 V 140 A 45 19.8 0 0 1 -45 140 Z" class="kf"/><path d="M -45 -95.2 H 45 M -45 -88.2 H 45" class="kt"/><path d="M -42 -88.19999999999999 L -31.5 -91.69999999999999 L -21 -84.69999999999999 L -10.5 -91.69999999999999 L 0 -84.69999999999999 L 10.5 -91.69999999999999 L 21 -84.69999999999999 L 31.5 -91.69999999999999 L 42 -84.69999999999999" class="kt"/><path d="M -45 16.8 Q -9 16.8 -9 44.8" class="kt"/></g><text x="474" y="430" class="t-eq">V-201</text><path d="M 20 300 L 374 300" class="proc"/><path d="M 374 300 L 361 305.46 L 361 294.54 Z" class="fi"/><g transform="translate(200 300)"><path d="M 0 -15 L 16 0 L 0 15 L -16 0 Z" class="kf"/><text x="0" y="5" class="dmd-t" text-anchor="middle">9</text></g><text x="24" y="286" class="t-s">de E-203</text><path d="M 420 100 L 420 60 L 880 60" class="proc"/><path d="M 880 60 L 867 65.46 L 867 54.54 Z" class="fi"/><g transform="translate(800 60)"><path d="M 0 -15 L 16 0 L 0 15 L -16 0 Z" class="kf"/><text x="0" y="5" class="dmd-t" text-anchor="middle">11</text></g><text x="876" y="36" class="t-s" text-anchor="end">gas a C-202</text><path d="M 420 420 L 420 470 L 880 470" class="proc"/><path d="M 880 470 L 867 475.46 L 867 464.54 Z" class="fi"/><g transform="translate(800 470)"><path d="M 0 -15 L 16 0 L 0 15 L -16 0 Z" class="kf"/><text x="0" y="5" class="dmd-t" text-anchor="middle">10</text></g><text x="876" y="498" class="t-s" text-anchor="end">nafta dulce</text><g transform="translate(640 60) rotate(180)"><path d="M -11 -7.26 L 0 0 L -11 7.26 Z M 11 -7.26 L 0 0 L 11 7.26 Z" class="kf"/><path d="M 0 0 V -14.3" class="k"/><path d="M -9.9 -14.3 A 9.9 6.82 0 0 1 9.9 -14.3 Z" class="kf"/></g><g transform="translate(640 150)"><circle r="20" class="kf"/><text x="0" y="5" class="bub-t" text-anchor="middle">PC</text></g><path d="M 640 130 L 640 81" class="sig"/><path d="M 620 150 L 466 150" class="sig"/><g transform="translate(640 470)"><path d="M -11 -7.26 L 0 0 L -11 7.26 Z M 11 -7.26 L 0 0 L 11 7.26 Z" class="kf"/><path d="M 0 0 V -14.3" class="k"/><path d="M -9.9 -14.3 A 9.9 6.82 0 0 1 9.9 -14.3 Z" class="kf"/></g><g transform="translate(640 300)"><circle r="20" class="kf"/><text x="0" y="5" class="bub-t" text-anchor="middle">LC</text></g><path d="M 620 300 L 466 300" class="sig"/><path d="M 640 320 L 640 449" class="sig"/><path d="M 392 108 L 392 50" class="util"/><g transform="translate(392 42) scale(-1 1)"><path d="M -5.94 9 L 0 0 L 5.94 9 Z M 9 -5.94 L 0 0 L 9 5.94 Z" class="kf"/><path d="M 0 0 V -2.7 L 4.05 -4.32 L -4.05 -6.48 L 4.05 -8.64 L -4.05 -10.8 L 0 -12.42 V -14.4 M -4.05 -14.4 H 4.05" class="k"/></g><path d="M 383 42 L 300 42" class="util"/><path d="M 300 42 L 311 37.38 L 311 46.62 Z" class="fi"/><text x="294" y="47" class="t-s" text-anchor="end">a la antorcha</text></svg></div>
+        <div class="desliza" data-v="pid"><svg class="pid" viewBox="0 0 900 530" role="img" aria-label="V-201 en el P&amp;ID: lazos de nivel y presión, alarmas, PSV-201, enclavamiento I-202 y estación de control con bypass" xmlns="http://www.w3.org/2000/svg"><g transform="translate(420 260)"><path d="M -45 -140 A 45 19.8 0 0 1 45 -140 V 140 A 45 19.8 0 0 1 -45 140 Z" class="kf"/><path d="M -45 -95.2 H 45 M -45 -88.2 H 45" class="kt"/><path d="M -42 -88.19999999999999 L -31.5 -91.69999999999999 L -21 -84.69999999999999 L -10.5 -91.69999999999999 L 0 -84.69999999999999 L 10.5 -91.69999999999999 L 21 -84.69999999999999 L 31.5 -91.69999999999999 L 42 -84.69999999999999" class="kt"/><path d="M -45 16.8 Q -9 16.8 -9 44.8" class="kt"/></g><text x="474" y="430" class="t-eq">V-201</text><text x="474" y="450" class="t-s">Separador flash</text><path d="M 20 300 L 374 300" class="proc"/><path d="M 374 300 L 361 305.46 L 361 294.54 Z" class="fi"/><text x="24" y="286" class="t-lbl">6"-CS-209 · de E-203</text><g transform="translate(120 300)"><path d="M -10 -6.6 L 0 0 L -10 6.6 Z M 10 -6.6 L 0 0 L 10 6.6 Z" class="kf"/></g><g transform="translate(720 60)"><path d="M -10 -6.6 L 0 0 L -10 6.6 Z M 10 -6.6 L 0 0 L 10 6.6 Z" class="kf"/></g><g transform="translate(560 60)"><path d="M -10 -6.6 L 0 0 L -10 6.6 Z M 10 -6.6 L 0 0 L 10 6.6 Z" class="kf"/></g><g transform="translate(560 470)"><path d="M -10 -6.6 L 0 0 L -10 6.6 Z M 10 -6.6 L 0 0 L 10 6.6 Z" class="kf"/></g><g transform="translate(720 470)"><path d="M -10 -6.6 L 0 0 L -10 6.6 Z M 10 -6.6 L 0 0 L 10 6.6 Z" class="kf"/></g><g transform="translate(222 300)"><path d="M -11 -7.26 L 0 0 L -11 7.26 Z M 11 -7.26 L 0 0 L 11 7.26 Z" class="kf"/><path d="M 0 0 V -12.1" class="k"/><rect x="-6.6" y="-25.3" width="13.2" height="13.2" class="kf"/><text x="0" y="-14.7" class="bub-n" text-anchor="middle">S</text></g><text x="222" y="330" class="t-s" text-anchor="middle">XV-209</text><g transform="translate(222 180)"><rect x="-22" y="-22" width="44" height="44" class="kf"/><path d="M 0 -22 L 22 0 L 0 22 L -22 0 Z" class="k"/><path d="M -13.02 0 H 13.02" class="k"/><text x="0" y="-4" class="bub-t" text-anchor="middle">I</text><text x="0" y="14" class="bub-n" text-anchor="middle">202</text></g><path d="M 222 202 L 222 275" class="sig"/><g transform="translate(302 180)"><circle r="20" class="kf"/><text x="0" y="-4" class="bub-t" text-anchor="middle"  style="font-size:11.2px">LSHH</text><text x="0" y="12.5" class="bub-n" text-anchor="middle">202</text></g><path d="M 322 180 H 374" class="imp"/><path d="M 282 180 L 244 180" class="sig"/><g transform="translate(302 246)"><circle r="20" class="kf"/><text x="0" y="-4" class="bub-t" text-anchor="middle">TI</text><text x="0" y="12.5" class="bub-n" text-anchor="middle">209</text></g><path d="M 302 266 V 300" class="imp"/><circle cx="302" cy="300" r="3.6" class="fi"/><rect x="486" y="226" width="12" height="148" class="kf"/><path d="M 492 236 V 364" class="kt" stroke-dasharray="2 3"/><path d="M 466 232 H 486 M 466 368 H 486" class="imp"/><text x="504" y="400" class="t-s">LG-201</text><path d="M 420 100 L 420 60 L 880 60" class="proc"/><path d="M 880 60 L 867 65.46 L 867 54.54 Z" class="fi"/><text x="876" y="44" class="t-lbl" text-anchor="end">4"-CS-211 · a C-202</text><g transform="translate(640 60) rotate(180)"><path d="M -11 -7.26 L 0 0 L -11 7.26 Z M 11 -7.26 L 0 0 L 11 7.26 Z" class="kf"/><path d="M 0 0 V -14.3" class="k"/><path d="M -9.9 -14.3 A 9.9 6.82 0 0 1 9.9 -14.3 Z" class="kf"/></g><text x="662" y="88" class="t-s">PV-201</text><g transform="translate(540 150)"><circle r="20" class="kf"/><text x="0" y="-4" class="bub-t" text-anchor="middle">PT</text><text x="0" y="12.5" class="bub-n" text-anchor="middle">201</text></g><path d="M 520 150 H 466" class="imp"/><g transform="translate(640 150)"><rect x="-21" y="-21" width="42" height="42" class="kf"/><circle r="20" class="k"/><path d="M -20 0 H 20" class="k"/><text x="0" y="-4" class="bub-t" text-anchor="middle">PIC</text><text x="0" y="14" class="bub-n" text-anchor="middle">201</text></g><path d="M 560 150 L 619 150" class="sig"/><path d="M 640 129 L 640 81" class="sig"/><path d="M 392 108 L 392 50" class="util"/><g transform="translate(392 84) rotate(90)"><path d="M -8 -5.28 L 0 0 L -8 5.28 Z M 8 -5.28 L 0 0 L 8 5.28 Z" class="kf"/></g><text x="380" y="89" class="t-s annot" text-anchor="end">CSO</text><g transform="translate(392 42) scale(-1 1)"><path d="M -5.94 9 L 0 0 L 5.94 9 Z M 9 -5.94 L 0 0 L 9 5.94 Z" class="kf"/><path d="M 0 0 V -2.7 L 4.05 -4.32 L -4.05 -6.48 L 4.05 -8.64 L -4.05 -10.8 L 0 -12.42 V -14.4 M -4.05 -14.4 H 4.05" class="k"/></g><path d="M 383 42 L 250 42" class="util"/><path d="M 250 42 L 261 37.38 L 261 46.62 Z" class="fi"/><text x="244" y="38" class="t-lbl" text-anchor="end">3"-CS-FL01</text><text x="244" y="56" class="t-s" text-anchor="end">a la antorcha</text><text x="404" y="22" class="t-s annot">PSV-201 · set 1,2 × P de operación</text><g transform="translate(540 300)"><circle r="20" class="kf"/><text x="0" y="-4" class="bub-t" text-anchor="middle">LT</text><text x="0" y="12.5" class="bub-n" text-anchor="middle">201</text></g><path d="M 466 222 H 540 V 280 M 466 378 H 540 V 320" class="imp"/><g transform="translate(640 300)"><rect x="-21" y="-21" width="42" height="42" class="kf"/><circle r="20" class="k"/><path d="M -20 0 H 20" class="k"/><text x="0" y="-4" class="bub-t" text-anchor="middle">LIC</text><text x="0" y="14" class="bub-n" text-anchor="middle">201</text></g><path d="M 560 300 L 619 300" class="sig"/><path d="M 640 321 L 640 449" class="sig"/><g transform="translate(752 246)"><rect x="-21" y="-21" width="42" height="42" class="kf"/><circle r="20" class="k"/><path d="M -20 0 H 20" class="k"/><text x="0" y="-4" class="bub-t" text-anchor="middle">LAH</text><text x="0" y="14" class="bub-n" text-anchor="middle">201</text></g><g transform="translate(752 354)"><rect x="-21" y="-21" width="42" height="42" class="kf"/><circle r="20" class="k"/><path d="M -20 0 H 20" class="k"/><text x="0" y="-4" class="bub-t" text-anchor="middle">LAL</text><text x="0" y="14" class="bub-n" text-anchor="middle">201</text></g><path d="M 661 290 L 731 256 M 661 310 L 731 344" class="sig"/><path d="M 420 420 L 420 470 L 880 470" class="proc"/><path d="M 880 470 L 867 475.46 L 867 464.54 Z" class="fi"/><text x="876" y="458" class="t-lbl" text-anchor="end">4"-CS-210</text><text x="876" y="494" class="t-s" text-anchor="end">nafta dulce</text><g transform="translate(640 470)"><path d="M -11 -7.26 L 0 0 L -11 7.26 Z M 11 -7.26 L 0 0 L 11 7.26 Z" class="kf"/><path d="M 0 0 V -14.3" class="k"/><path d="M -9.9 -14.3 A 9.9 6.82 0 0 1 9.9 -14.3 Z" class="kf"/></g><text x="612" y="494" class="t-s" text-anchor="end">LV-201</text><path d="M 520 470 L 520 505 L 760 505 L 760 474" class="proc2"/><circle cx="520" cy="470" r="3.6" class="fi"/><circle cx="760" cy="470" r="3.6" class="fi"/><g transform="translate(640 505)"><path d="M -9 -5.94 L 0 0 L -9 5.94 Z M 9 -5.94 L 0 0 L 9 5.94 Z" class="kf"/><circle r="2.88" class="fi"/></g><text x="640" y="526" class="t-s" text-anchor="middle">bypass</text><path d="M 420 448 L 372 448" class="proc2"/><g transform="translate(392 448)"><path d="M -7 -4.62 L 0 0 L -7 4.62 Z M 7 -4.62 L 0 0 L 7 4.62 Z" class="kf"/></g><g transform="translate(360 452)"><path d="M -12 -10 H 12 L 0 8 Z" class="kf"/><path d="M 0 8 V 16 M -8 16 H 8" class="k"/></g><text x="348" y="490" class="t-s" text-anchor="end">drenaje</text></svg></div>
+        <p class="figcap">El separador V-201 de la unidad de HDS en los dos niveles. En el PFD, tres corrientes numeradas y dos lazos resumidos (LC y PC); en el P&amp;ID, cada instrumento con su tag, los bloqueos, el bypass, el drenaje y el enclavamiento I-202 por nivel muy alto. Cada símbolo es una instrucción precisa para quien construye y opera.</p>
       </div>
     </div>
   </section>
@@ -343,7 +422,7 @@
         <h2>Qué migra del PFD</h2>
         <p>El P&amp;ID comienza donde termina el PFD: conserva toda la información esencial y la expande.</p>
         <ul>
-          <li>Todos los equipos principales con sus códigos (V-101, P-201).</li>
+          <li>Todos los equipos principales con sus códigos (R-201, V-201, P-201).</li>
           <li>Líneas de proceso principales con sus números.</li>
           <li>Condiciones de operación básicas (temperatura, presión, flujo).</li>
           <li>Topología general del proceso.</li>
@@ -351,8 +430,8 @@
       </div>
       <div class="callout">
         <h4>EL DETALLE SE REFINA</h4>
-        <div class="eq">PFD: "P-201"</div>
-        <div class="eq" style="margin-bottom:0;">P&amp;ID: "P-201A/B, bombas centrífugas horizontales, 50 m³/h @ 45 m, motor 15 kW, 3600 rpm"</div>
+        <div class="eq">PFD: «P-201»</div>
+        <div class="eq" style="margin-bottom:0;">P&amp;ID: «P-201 A/B, bombas centrífugas horizontales, 210 m³/h @ 45 m, motor de 37 kW, 3600 rpm»</div>
         <p class="ex"><b>Trazabilidad:</b> cualquier elemento del P&amp;ID debe poder rastrearse hasta el PFD original.</p>
       </div>
     </div>
@@ -382,16 +461,18 @@
   <section class="s" data-screen-label="Simbologia ISA">
     <div class="split split--wideL">
       <div class="copy">
-        <div class="kicker">Norma ISA-5.1</div>
+        <div class="kicker">Norma ANSI/ISA-5.1-2024</div>
         <h2>Simbología de instrumentación</h2>
         <ul>
-          <li><b>Círculo vacío:</b> instrumento montado en campo.</li>
-          <li><b>Círculo con línea horizontal:</b> montaje en panel.</li>
-          <li><b>Círculo con línea punteada:</b> función en el DCS.</li>
+          <li><b>Círculo sin línea:</b> instrumento montado en campo.</li>
+          <li><b>Línea horizontal continua:</b> en la sala de control principal, al frente del panel o en la consola, a la vista del operador.</li>
+          <li><b>Doble línea horizontal:</b> en un panel auxiliar o local, también accesible al operador.</li>
+          <li><b>Línea horizontal discontinua:</b> en la sala de control, pero detrás del panel o dentro de un gabinete; el operador no lo ve en operación normal.</li>
+          <li><b>Círculo dentro de un cuadrado:</b> función del DCS, de pantalla y control compartidos, como ZIO y ZIC en la figura.</li>
           <li><b>Primera letra:</b> variable medida (T, P, F, L).</li>
           <li><b>Letras siguientes:</b> función (I=indicador, T=transmisor, C=controlador, V=válvula).</li>
         </ul>
-        <p style="margin-top:16px;font-size:25px;">TIC-301 es un controlador indicador de temperatura, lazo 301. El instrumentista sabe qué instalar con solo ver el símbolo.</p>
+        <p style="margin-top:16px;font-size:25px;">TIC-201 es un controlador indicador de temperatura, lazo 201. El instrumentista sabe qué instalar con solo ver el símbolo.</p>
       </div>
       <div class="img-panel">
         <img src="assets/img/Simbologia_Instrumentos_ISA.webp" alt="Símbolos ISA de instrumentos sobre una válvula">
@@ -428,31 +509,33 @@
     <h2 class="s-head">Sistema de tags</h2>
     <div class="cards">
       <div class="card">
-        <span class="card-n">Instrumentos · XXY-###</span>
+        <span class="card-n">Instrumentos · XMY-###</span>
         <ul>
-          <li><b>XX</b> variable y función (TI, PT, FIC)</li>
-          <li><b>Y</b> modificador opcional (D=diferencial)</li>
+          <li><b>X</b> variable medida (T, P, F, L)</li>
+          <li><b>M</b> modificador opcional, justo después de la primera letra (D = diferencial: PDT, PDI)</li>
+          <li><b>Y</b> una o más funciones (TI, PT, FIC)</li>
           <li><b>###</b> número único de lazo</li>
-          <li><b>A</b> sufijo para múltiples elementos</li>
+          <li><b>A</b> sufijo para varios elementos iguales del lazo</li>
         </ul>
-        <p style="font-size:22px;color:var(--verde-osc);font-weight:700;margin-top:auto;">Ejemplo: TIC-201</p>
+        <p style="font-size:22px;color:var(--verde-osc);font-weight:700;margin-top:auto;">Ejemplo: TIC-201 · PDI-204</p>
       </div>
       <div class="card card--teal">
         <span class="card-n">Equipos · X-###Y</span>
         <ul>
-          <li><b>X</b> tipo de equipo (P, V, E)</li>
-          <li><b>###</b> área y número secuencial</li>
-          <li><b>Y</b> sufijo para redundantes</li>
+          <li><b>X</b> tipo de equipo (P, V, E, R, T, C)</li>
+          <li><b>###</b> área y número secuencial (201: área 200, equipo 01)</li>
+          <li><b>Y</b> sufijo para redundantes (A, B)</li>
         </ul>
-        <p style="font-size:22px;color:var(--teal);font-weight:700;margin-top:auto;">Ejemplo: P-201A</p>
+        <p style="font-size:22px;color:var(--teal);font-weight:700;margin-top:auto;">Ejemplo: P-201 A</p>
       </div>
       <div class="card">
-        <span class="card-n">Válvulas · XV-####</span>
+        <span class="card-n">Válvulas · XV-###</span>
         <ul>
-          <li><b>X</b> tipo (HV=manual, XV=bloqueo)</li>
-          <li><b>####</b> número único</li>
+          <li><b>X</b> tipo (HV = manual, XV = todo o nada)</li>
+          <li><b>###</b> número único, con el área al frente</li>
+          <li>Las de control y las de alivio llevan las letras y el número de su lazo: FV-201, PSV-201</li>
         </ul>
-        <p style="font-size:22px;color:var(--verde-osc);font-weight:700;margin-top:auto;">Ejemplo: PSV-4567</p>
+        <p style="font-size:22px;color:var(--verde-osc);font-weight:700;margin-top:auto;">Ejemplo: XV-209</p>
       </div>
     </div>
     <p class="foot-note">La consistencia es crítica: estos tags aparecen en P&amp;ID, planos eléctricos, órdenes de compra, etiquetas físicas y sistemas de mantenimiento <b>durante décadas.</b></p>
@@ -475,28 +558,28 @@
       </div>
       <div class="img-panel">
         <img src="assets/img/Simbologia_Valvulas_KIMRAY.webp" alt="Guía de símbolos de válvulas y actuadores">
-        <p class="figcap">Guía de símbolos de válvulas y actuadores (ANSI/ISA-S-1.1). El P&amp;ID muestra tipo, orientación y accesibilidad.</p>
+        <p class="figcap">Guía de símbolos de válvulas y actuadores de <a class="platform-link" href="https://kimray.com" target="_blank" rel="noopener">Kimray</a>, basada en ANSI/ISA-5.1-2009 (la guía la cita como «ANSI/ISA-S-1.1»). El P&amp;ID muestra tipo, orientación y accesibilidad.</p>
       </div>
     </div>
   </section>
 
   <!-- 11 · Ejemplo comparativo PFD vs P&ID -->
   <section class="s" data-screen-label="Comparativo bomba">
-    <div class="split split--wideR">
+    <div class="split split--fig">
       <div class="copy">
         <div class="kicker">El mismo equipo, dos niveles</div>
         <h2>PFD frente a P&amp;ID: una bomba</h2>
-        <p>En el PFD, P-201 es un círculo con triángulo, una línea de entrada y salida, quizá "15 kW" como dato básico. En el P&amp;ID, esa misma bomba se vuelve un sistema de 15 o más componentes:</p>
+        <p>En el PFD, P-201 es un círculo con triángulo, una línea de entrada y otra de salida, quizá «37&nbsp;kW» como dato básico. En el P&amp;ID, esa misma bomba se vuelve un sistema de 15 o más componentes:</p>
         <ul style="font-size:24px;">
-          <li>P-201A/B (redundancia), filtro temporal y manómetros locales (PI-201, PI-202).</li>
-          <li>Transmisor de presión diferencial (PDT-201), válvulas de succión y descarga (check más compuerta).</li>
-          <li>Válvula de control con bypass, drenajes y venteos.</li>
+          <li>P-201 A y B: una opera y la otra queda de respaldo. Cada una lleva un filtro Y en la succión con su indicador de presión diferencial (PDI-204, PDI-205); en el arranque se agrega un filtro temporal.</li>
+          <li>Válvulas de bloqueo en la succión y en la descarga, una check en cada descarga y un manómetro local antes de ella (PI-202, PI-203).</li>
+          <li>El lazo de caudal 201 con su válvula de control FV-201 y su bypass, más drenajes y venteos.</li>
         </ul>
         <p style="margin-top:14px;font-size:25px;">Esta expansión ocurre para CADA elemento del PFD.</p>
       </div>
-      <div class="img-panel">
-        <img src="assets/img/Comparativo_PFD_vs_PID.webp" alt="Comparación entre PFD y P&ID del mismo lazo">
-        <p class="figcap">El mismo lazo, representado en PFD y en P&amp;ID.</p>
+      <div class="img-panel fig-svg">
+        <div class="desliza"><svg class="pid" viewBox="0 0 1000 700" role="img" aria-label="La bomba P-201 en el PFD y en el P&amp;ID: P-201 A y B con filtros, bloqueos, check, indicadores, drenajes, venteo y el lazo de caudal 201 con su bypass" xmlns="http://www.w3.org/2000/svg"><text x="24" y="30" class="t-ttl">EN EL PFD</text><path d="M 40 98 L 206 98" class="proc"/><path d="M 206 98 L 193 103.46 L 193 92.54 Z" class="fi"/><text x="40" y="86" class="t-s">nafta ácida</text><g transform="translate(230 98)"><circle r="22" class="kf"/><path d="M -11 -13.64 L 17.16 0 L -11 13.64 Z" class="k"/><path d="M -12.32 18.26 L -17.6 28.16 H 17.6 L 12.32 18.26" class="k"/></g><text x="230" y="148" class="t-eq" text-anchor="middle">P-201</text><path d="M 230 76 L 700 76" class="proc"/><path d="M 700 76 L 687 81.46 L 687 70.54 Z" class="fi"/><g transform="translate(430 76)"><path d="M -11 -7.26 L 0 0 L -11 7.26 Z M 11 -7.26 L 0 0 L 11 7.26 Z" class="kf"/><path d="M 0 0 V -14.3" class="k"/><path d="M -9.9 -14.3 A 9.9 6.82 0 0 1 9.9 -14.3 Z" class="kf"/></g><g transform="translate(430 32)"><circle r="17" class="kf"/><text x="0" y="5" class="bub-t" text-anchor="middle">FC</text></g><path d="M 430 49 L 430 55" class="sig"/><path d="M 447 32 L 500 32 L 500 76" class="sig"/><circle cx="500" cy="76" r="3.6" class="fi"/><text x="708" y="81" class="t-s">a E-201</text><text x="540" y="112" class="t-s">Un ícono por equipo, sin respaldo; el lazo</text><text x="540" y="130" class="t-s">de caudal cabe en una burbuja (FC).</text><path d="M 20 166 H 990" class="sep"/><text x="24" y="196" class="t-ttl">EN EL P&amp;ID</text><rect x="556" y="168" width="434" height="192" class="zona"/><text x="566" y="352" class="t-s annot">Lazo de caudal 201</text><path d="M 20 236 L 90 236 L 90 600" class="proc"/><path d="M 56 236 L 43 241.46 L 43 230.54 Z" class="fi"/><text x="24" y="224" class="t-lbl">8"-CS-202 · nafta ácida</text><path d="M 90 380 L 306 380" class="proc"/><circle cx="90" cy="380" r="3.6" class="fi"/><g transform="translate(142 380)"><path d="M -11 -7.26 L 0 0 L -11 7.26 Z M 11 -7.26 L 0 0 L 11 7.26 Z" class="kf"/></g><g transform="translate(206 380)"><g transform="translate(0 0) rotate(45)"><rect x="2" y="-8" width="32" height="16" class="kf"/><path d="M 6 0 H 30" class="kt" stroke-dasharray="3 3"/></g></g><path d="M 234 406 V 432" class="proc2"/><g transform="translate(234 420) rotate(90)"><path d="M -6.5 -4.29 L 0 0 L -6.5 4.29 Z M 6.5 -4.29 L 0 0 L 6.5 4.29 Z" class="kf"/></g><g transform="translate(234 440)"><path d="M -7.199999999999999 -6 H 7.199999999999999 L 0 4.8 Z" class="kf"/><path d="M 0 4.8 V 9.6 M -4.8 9.6 H 4.8" class="k"/></g><g transform="translate(214 316)"><circle r="20" class="kf"/><text x="0" y="-4" class="bub-t" text-anchor="middle">PDI</text><text x="0" y="12.5" class="bub-n" text-anchor="middle">204</text></g><path d="M 188 380 V 316 H 194 M 244 380 V 316 H 234" class="imp"/><g transform="translate(330 380)"><path d="M -13.92 19.2 L -21.6 31.68 H 21.6 L 13.92 19.2" class="k"/><circle r="24" class="kf"/><path d="M 0 -24 H 25.2" class="proc2"/></g><path d="M 354 380 H 366" class="k"/><g transform="translate(379 380)"><circle r="13" class="kf"/><text x="0" y="5" class="bub-t" text-anchor="middle">M</text></g><text x="330" y="438" class="t-eq" text-anchor="middle">P-201 A</text><text x="330" y="457" class="t-s" text-anchor="middle">en operación</text><path d="M 355.2 356 L 355.2 300 L 530 300" class="proc"/><g transform="translate(400 250)"><circle r="20" class="kf"/><text x="0" y="-4" class="bub-t" text-anchor="middle">PI</text><text x="0" y="12.5" class="bub-n" text-anchor="middle">202</text></g><path d="M 400 300 V 270" class="imp"/><circle cx="400" cy="300" r="3" class="fi"/><g transform="translate(440 300)"><path d="M -11 -7.26 V 7.26 M 11 -7.26 V 7.26 M -11 7.26 L 11 -7.26" class="k"/><path d="M -6.6 -14.26 H 6.6" class="kt"/><path d="M 8.25 -14.26 L 2.25 -11.74 L 2.25 -16.78 Z" class="fi"/></g><path d="M 469 300 V 326" class="proc2"/><g transform="translate(469 314) rotate(90)"><path d="M -6.5 -4.29 L 0 0 L -6.5 4.29 Z M 6.5 -4.29 L 0 0 L 6.5 4.29 Z" class="kf"/></g><g transform="translate(469 334)"><path d="M -7.199999999999999 -6 H 7.199999999999999 L 0 4.8 Z" class="kf"/><path d="M 0 4.8 V 9.6 M -4.8 9.6 H 4.8" class="k"/></g><g transform="translate(500 300)"><path d="M -11 -7.26 L 0 0 L -11 7.26 Z M 11 -7.26 L 0 0 L 11 7.26 Z" class="kf"/></g><circle cx="530" cy="300" r="3.6" class="fi"/><path d="M 90 600 L 306 600" class="proc"/><circle cx="90" cy="600" r="3.6" class="fi"/><g transform="translate(142 600)"><path d="M -11 -7.26 L 0 0 L -11 7.26 Z M 11 -7.26 L 0 0 L 11 7.26 Z" class="kf"/></g><g transform="translate(206 600)"><g transform="translate(0 0) rotate(45)"><rect x="2" y="-8" width="32" height="16" class="kf"/><path d="M 6 0 H 30" class="kt" stroke-dasharray="3 3"/></g></g><path d="M 234 626 V 652" class="proc2"/><g transform="translate(234 640) rotate(90)"><path d="M -6.5 -4.29 L 0 0 L -6.5 4.29 Z M 6.5 -4.29 L 0 0 L 6.5 4.29 Z" class="kf"/></g><g transform="translate(234 660)"><path d="M -7.199999999999999 -6 H 7.199999999999999 L 0 4.8 Z" class="kf"/><path d="M 0 4.8 V 9.6 M -4.8 9.6 H 4.8" class="k"/></g><g transform="translate(214 536)"><circle r="20" class="kf"/><text x="0" y="-4" class="bub-t" text-anchor="middle">PDI</text><text x="0" y="12.5" class="bub-n" text-anchor="middle">205</text></g><path d="M 188 600 V 536 H 194 M 244 600 V 536 H 234" class="imp"/><g transform="translate(330 600)"><path d="M -13.92 19.2 L -21.6 31.68 H 21.6 L 13.92 19.2" class="k"/><circle r="24" class="kf"/><path d="M 0 -24 H 25.2" class="proc2"/></g><path d="M 354 600 H 366" class="k"/><g transform="translate(379 600)"><circle r="13" class="kf"/><text x="0" y="5" class="bub-t" text-anchor="middle">M</text></g><text x="330" y="658" class="t-eq" text-anchor="middle">P-201 B</text><text x="330" y="677" class="t-s" text-anchor="middle">respaldo</text><path d="M 355.2 576 L 355.2 520 L 530 520" class="proc"/><g transform="translate(400 470)"><circle r="20" class="kf"/><text x="0" y="-4" class="bub-t" text-anchor="middle">PI</text><text x="0" y="12.5" class="bub-n" text-anchor="middle">203</text></g><path d="M 400 520 V 490" class="imp"/><circle cx="400" cy="520" r="3" class="fi"/><g transform="translate(440 520)"><path d="M -11 -7.26 V 7.26 M 11 -7.26 V 7.26 M -11 7.26 L 11 -7.26" class="k"/><path d="M -6.6 -14.26 H 6.6" class="kt"/><path d="M 8.25 -14.26 L 2.25 -11.74 L 2.25 -16.78 Z" class="fi"/></g><path d="M 469 520 V 546" class="proc2"/><g transform="translate(469 534) rotate(90)"><path d="M -6.5 -4.29 L 0 0 L -6.5 4.29 Z M 6.5 -4.29 L 0 0 L 6.5 4.29 Z" class="kf"/></g><g transform="translate(469 554)"><path d="M -7.199999999999999 -6 H 7.199999999999999 L 0 4.8 Z" class="kf"/><path d="M 0 4.8 V 9.6 M -4.8 9.6 H 4.8" class="k"/></g><g transform="translate(500 520)"><path d="M -11 -7.26 L 0 0 L -11 7.26 Z M 11 -7.26 L 0 0 L 11 7.26 Z" class="kf"/></g><circle cx="530" cy="520" r="3.6" class="fi"/><path d="M 530 520 L 530 260 L 990 260" class="proc"/><path d="M 990 260 L 977 265.46 L 977 254.54 Z" class="fi"/><path d="M 530 260 V 232" class="proc2"/><g transform="translate(530 246) rotate(90)"><path d="M -6.5 -4.29 L 0 0 L -6.5 4.29 Z M 6.5 -4.29 L 0 0 L 6.5 4.29 Z" class="kf"/></g><path d="M 523 232 H 537" class="k"/><text x="518" y="242" class="t-s" text-anchor="end">venteo</text><text x="986" y="250" class="t-s" text-anchor="end">a E-201</text><g transform="translate(590 260)"><path d="M -3.5 -14 V 14 M 3.5 -14 V 14" class="k"/></g><text x="590" y="296" class="t-s" text-anchor="middle">FE-201</text><path d="M 586 246 V 236 H 622 V 222 M 594 246 V 242 H 634 V 222" class="imp"/><g transform="translate(628 202)"><circle r="20" class="kf"/><text x="0" y="-4" class="bub-t" text-anchor="middle">FT</text><text x="0" y="12.5" class="bub-n" text-anchor="middle">201</text></g><path d="M 648 202 L 699 202" class="sig"/><g transform="translate(720 202)"><rect x="-21" y="-21" width="42" height="42" class="kf"/><circle r="20" class="k"/><path d="M -20 0 H 20" class="k"/><text x="0" y="-4" class="bub-t" text-anchor="middle">FIC</text><text x="0" y="14" class="bub-n" text-anchor="middle">201</text></g><path d="M 741 202 L 791 202" class="sig"/><g transform="translate(811 202)"><circle r="20" class="kf"/><text x="0" y="-4" class="bub-t" text-anchor="middle">FY</text><text x="0" y="12.5" class="bub-n" text-anchor="middle">201</text></g><text x="838" y="190" class="t-s annot">I/P</text><path d="M 831 202 L 880 202 L 880 240" class="sigs"/><path d="M 848.5 195.94 L 855.5 208.06" class="sigs"/><path d="M 855.5 195.94 L 862.5 208.06" class="sigs"/><path d="M 886.06 214 L 873.94 221" class="sigs"/><path d="M 886.06 221 L 873.94 228" class="sigs"/><circle cx="806" cy="260" r="3" class="fi"/><g transform="translate(842 260)"><path d="M -9 -5.94 L 0 0 L -9 5.94 Z M 9 -5.94 L 0 0 L 9 5.94 Z" class="kf"/></g><g transform="translate(880 260)"><path d="M -11 -7.26 L 0 0 L -11 7.26 Z M 11 -7.26 L 0 0 L 11 7.26 Z" class="kf"/><path d="M 0 0 V -14.3" class="k"/><path d="M -9.9 -14.3 A 9.9 6.82 0 0 1 9.9 -14.3 Z" class="kf"/></g><g transform="translate(918 260)"><path d="M -9 -5.94 L 0 0 L -9 5.94 Z M 9 -5.94 L 0 0 L 9 5.94 Z" class="kf"/></g><circle cx="952" cy="260" r="3" class="fi"/><text x="892" y="292" class="t-s">FV-201</text><path d="M 806 260 L 806 334 L 952 334 L 952 260" class="proc2"/><g transform="translate(880 334)"><path d="M -9 -5.94 L 0 0 L -9 5.94 Z M 9 -5.94 L 0 0 L 9 5.94 Z" class="kf"/><circle r="2.88" class="fi"/></g><text x="880" y="354" class="t-s" text-anchor="middle">bypass</text><path d="M 861 260 V 286" class="proc2"/><g transform="translate(861 274) rotate(90)"><path d="M -6.5 -4.29 L 0 0 L -6.5 4.29 Z M 6.5 -4.29 L 0 0 L 6.5 4.29 Z" class="kf"/></g><g transform="translate(861 294)"><path d="M -7.199999999999999 -6 H 7.199999999999999 L 0 4.8 Z" class="kf"/><path d="M 0 4.8 V 9.6 M -4.8 9.6 H 4.8" class="k"/></g><text x="690" y="288" class="t-lbl" text-anchor="middle">6"-CS-201</text><text x="600" y="432" class="t-ttl">LEYENDA</text><g transform="translate(622 466)"><circle r="11" class="kf"/><text x="0" y="5" class="bub-t" text-anchor="middle"></text></g><text x="650" y="471" class="t-s">Instrumento en campo</text><g transform="translate(818 466)"><rect x="-12" y="-12" width="24" height="24" class="kf"/><circle r="11" class="k"/><path d="M -11 0 H 11" class="k"/><text x="0" y="5" class="bub-t" text-anchor="middle"></text></g><text x="846" y="471" class="t-s">Función en el DCS</text><path d="M 606 512 H 638" class="sig"/><text x="650" y="517" class="t-s">Señal eléctrica</text><path d="M 800 512 L 836 512" class="sigs"/><path d="M 811 505.94 L 818 518.06" class="sigs"/><path d="M 818 505.94 L 825 518.06" class="sigs"/><text x="846" y="517" class="t-s">Señal neumática</text><path d="M 606 558 H 638" class="imp"/><text x="650" y="563" class="t-s">Toma de impulso</text><g transform="translate(818 558)"><path d="M -10 -6.6 L 0 0 L -10 6.6 Z M 10 -6.6 L 0 0 L 10 6.6 Z" class="kf"/></g><text x="846" y="563" class="t-s">Compuerta: bloqueo</text><g transform="translate(622 604)"><path d="M -10 -6.6 L 0 0 L -10 6.6 Z M 10 -6.6 L 0 0 L 10 6.6 Z" class="kf"/><circle r="3.2" class="fi"/></g><text x="650" y="609" class="t-s">Globo: regulación</text><g transform="translate(818 607)"><path d="M -10 -6.6 V 6.6 M 10 -6.6 V 6.6 M -10 6.6 L 10 -6.6" class="k"/><path d="M -6 -13.6 H 6" class="kt"/><path d="M 7.5 -13.6 L 1.5 -11.08 L 1.5 -16.12 Z" class="fi"/></g><text x="846" y="609" class="t-s">Check: no retorno</text><g transform="translate(608 644)"><g transform="translate(0 0) rotate(45)"><rect x="2" y="-8" width="32" height="16" class="kf"/><path d="M 6 0 H 30" class="kt" stroke-dasharray="3 3"/></g></g><text x="650" y="655" class="t-s">Filtro Y</text><g transform="translate(818 647)"><path d="M -7.199999999999999 -6 H 7.199999999999999 L 0 4.8 Z" class="kf"/><path d="M 0 4.8 V 9.6 M -4.8 9.6 H 4.8" class="k"/></g><text x="846" y="655" class="t-s">Drenaje</text></svg></div>
+        <p class="figcap">La bomba de alimento de nafta de la unidad de HDS: arriba como se dibuja en el PFD, abajo en el P&amp;ID. Haga clic para ampliar.</p>
       </div>
     </div>
   </section>
@@ -505,7 +588,7 @@
   <section class="s" data-screen-label="PID real">
     <div class="kicker">100 % del detalle</div>
     <h2 class="s-head">Así se ve un P&amp;ID terminado</h2>
-    <div class="figbox">
+    <div class="figbox figbox--fit">
       <img src="assets/img/PID_Real_Cristalizador.webp" alt="P&ID mecánico completo de un cristalizador industrial">
       <p class="figcap">P&amp;ID mecánico de un cristalizador industrial: hasta la última válvula, dren e instrumento queda especificado. Haga clic para ampliar y recorrer el detalle.</p>
     </div>
@@ -521,14 +604,14 @@
         <ul style="font-size:25px;">
           <li><b>Temperatura (TI):</b> en la cabeza y en la zona de alimentación, para vigilar el perfil térmico.</li>
           <li><b>Presión (PI):</b> en la cabeza, variable que fija el equilibrio de separación.</li>
-          <li><b>Nivel (LL):</b> en el fondo y en el tambor de reflujo, contra vaciado o inundación.</li>
+          <li><b>Nivel (LI):</b> en el fondo y en el tambor de reflujo, contra vaciado o inundación.</li>
           <li><b>Caudal (FI):</b> en alimentación, reflujo, destilado y fondos, para cerrar los balances.</li>
           <li><b>Reflujo y rehervidor:</b> la válvula de vapor regula el calor del rehervidor.</li>
         </ul>
       </div>
       <div class="img-panel">
         <img src="assets/img/Instrumentacion_Destilador.webp" alt="Columna de destilación instrumentada con condensador, tambor de reflujo y rehervidor">
-        <p class="figcap">Columna de destilación con condensador, tambor de reflujo y rehervidor instrumentados.</p>
+        <p class="figcap">Columna de destilación con condensador, tambor de reflujo y rehervidor instrumentados. La figura rotula los niveles «LL»; según ISA-5.1, el indicador de nivel es LI y su transmisor, LT.</p>
       </div>
     </div>
   </section>
@@ -541,37 +624,46 @@
         <h2>Especificación de líneas</h2>
         <p>Cada línea lleva un código alfanumérico que la describe por completo, igual que un tag identifica a un equipo o a un instrumento.</p>
         <p style="margin-top:16px;font-size:25px;">El código viaja con la línea en planos, listas de materiales y en la propia tubería instalada.</p>
+        <p style="margin-top:16px;font-size:25px;">El curso usa la forma corta diámetro, material y número (4"-CS-201). La industria agrega el servicio, la clase de tubería y el aislamiento, como en el código de la derecha.</p>
       </div>
       <div class="callout">
-        <h4>4"-PG-3001-HC1-I</h4>
-        <div class="eq">4"<small>Diámetro nominal</small></div>
-        <div class="eq">PG<small>Servicio: Process General</small></div>
-        <div class="eq">3001<small>Número único de línea</small></div>
-        <div class="eq">HC1<small>Especificación: Hot Carbon steel clase 1</small></div>
-        <div class="eq" style="margin-bottom:0;">I<small>Aislamiento</small></div>
-        <p class="ex"><b>Ejemplos:</b> 3"-PF-2001-SS2 (mosto fermentado, acero inoxidable sanitario) · 2"-ST-5001-CS2-I (vapor saturado, carbon steel, aislado).</p>
+        <h4>6"-P-2015-A1A-IH</h4>
+        <div class="eq">6"<small>Diámetro nominal (NPS 6, DN 150)</small></div>
+        <div class="eq">P<small>Servicio: proceso</small></div>
+        <div class="eq">2015<small>Número único de línea: el 2 indica el área 200</small></div>
+        <div class="eq">A1A<small>Clase de tubería: material, clase de presión de las bridas y sobreespesor de corrosión</small></div>
+        <div class="eq" style="margin-bottom:0;">IH<small>Aislamiento de conservación de calor</small></div>
+        <p class="ex"><b>Ejemplos de la unidad de HDS en la forma corta:</b> <span class="nw">6"-CS-209</span> (efluente de <span class="nw">E-203</span> a <span class="nw">V-201</span>, acero al carbono) · <span class="nw">4"-CS-210</span> (nafta dulce del fondo de <span class="nw">V-201</span>, acero al carbono).</p>
       </div>
     </div>
   </section>
 
   <!-- 15 · Lazo de control de caudal -->
   <section class="s" data-screen-label="Lazo de caudal">
-    <div class="split split--wideR">
+    <div class="split split--fig">
       <div class="copy">
         <div class="kicker">Lazo de realimentación</div>
         <h2>Lazo de control de caudal</h2>
         <ul>
-          <li><b>FE:</b> elemento primario que mide el caudal de vapor.</li>
-          <li><b>FT:</b> transmisor que envía la señal al controlador.</li>
-          <li><b>FIC:</b> controlador PI que genera la señal correctiva.</li>
-          <li><b>I/P:</b> convertidor corriente a aire que acciona la válvula neumática.</li>
-          <li><b>Válvula de control:</b> regula el paso del vapor según el controlador.</li>
+          <li><b>FE-201:</b> placa de orificio, el elemento primario que mide el caudal de nafta.</li>
+          <li><b>FT-201:</b> transmisor en campo que envía la señal de 4-20&nbsp;mA al controlador.</li>
+          <li><b>FIC-201:</b> controlador PI en el DCS que genera la señal correctiva.</li>
+          <li><b>FY-201 (I/P):</b> convertidor de corriente a aire que acciona la válvula neumática.</li>
+          <li><b>FV-201:</b> válvula de control que regula el paso de nafta según el controlador.</li>
         </ul>
         <p style="margin-top:14px;font-size:25px;">El P&amp;ID dibuja con claridad la señal eléctrica, la transmisión neumática y la dirección del flujo.</p>
       </div>
-      <div class="img-panel">
-        <img src="assets/img/Lazo_Control_Caudal.webp" alt="Lazo de control de caudal de vapor">
-        <p class="figcap">Lazo de caudal de vapor: FE, FT, FIC, I/P y válvula de control.</p>
+      <div class="img-panel fig-svg" data-steps>
+        <div class="figtabs" role="group" aria-label="Recorrido de la señal">
+          <button type="button" class="figtab" data-k="fe" aria-pressed="false">FE-201</button>
+          <button type="button" class="figtab" data-k="ft" aria-pressed="false">FT-201</button>
+          <button type="button" class="figtab" data-k="fic" aria-pressed="false">FIC-201</button>
+          <button type="button" class="figtab" data-k="fy" aria-pressed="false">FY-201</button>
+          <button type="button" class="figtab" data-k="fv" aria-pressed="false">FV-201</button>
+          <button type="button" class="figtab" data-k="todo" aria-pressed="true">Todo</button>
+        </div>
+        <div class="desliza"><svg class="pid" viewBox="0 0 900 296" role="img" aria-label="Lazo de caudal 201: FE-201, FT-201, FIC-201 en el DCS, FY-201 y FV-201 sobre la línea 6&quot;-CS-201" xmlns="http://www.w3.org/2000/svg"><text x="300" y="40" class="t-s annot" text-anchor="middle">campo</text><text x="480" y="40" class="t-s annot" text-anchor="middle">sala de control</text><text x="730" y="40" class="t-s annot" text-anchor="middle">campo</text><path d="M 390 26 V 160" class="sep-d"/><path d="M 570 26 V 160" class="sep-d"/><path d="M 30 200 L 880 200" class="proc"/><path d="M 880 200 L 867 205.46 L 867 194.54 Z" class="fi"/><text x="30" y="236" class="t-lbl">6"-CS-201 · nafta ácida de P-201 A/B</text><text x="880" y="236" class="t-s" text-anchor="end">a E-201</text><g class="hot" data-k="fe"><g transform="translate(220 200)"><path d="M -3.5 -15 V 15 M 3.5 -15 V 15" class="k"/></g><text x="212" y="182" class="t-s" text-anchor="end">FE-201</text></g><g class="hot" data-k="ft"><path d="M 216 185 V 150 H 294 V 132 M 224 185 V 158 H 306 V 132" class="imp"/><g transform="translate(300 110)"><circle r="20" class="kf"/><text x="0" y="-4" class="bub-t" text-anchor="middle">FT</text><text x="0" y="12.5" class="bub-n" text-anchor="middle">201</text></g></g><g class="hot" data-k="fic"><path d="M 320 110 L 459 110" class="sig"/><g transform="translate(480 110)"><rect x="-21" y="-21" width="42" height="42" class="kf"/><circle r="20" class="k"/><path d="M -20 0 H 20" class="k"/><text x="0" y="-4" class="bub-t" text-anchor="middle">FIC</text><text x="0" y="14" class="bub-n" text-anchor="middle">201</text></g></g><g class="hot" data-k="fy"><path d="M 501 110 L 600 110" class="sig"/><g transform="translate(620 110)"><circle r="20" class="kf"/><text x="0" y="-4" class="bub-t" text-anchor="middle">FY</text><text x="0" y="12.5" class="bub-n" text-anchor="middle">201</text></g><text x="620" y="80" class="t-s annot" text-anchor="middle">I/P</text></g><g class="hot" data-k="fv"><path d="M 640 110 L 730 110 L 730 178" class="sigs"/><path d="M 663 103.94 L 670 116.06" class="sigs"/><path d="M 670 103.94 L 677 116.06" class="sigs"/><path d="M 693 103.94 L 700 116.06" class="sigs"/><path d="M 700 103.94 L 707 116.06" class="sigs"/><path d="M 736.06 125.67 L 723.94 132.67" class="sigs"/><path d="M 736.06 132.67 L 723.94 139.67" class="sigs"/><path d="M 736.06 148.33 L 723.94 155.33" class="sigs"/><path d="M 736.06 155.33 L 723.94 162.33" class="sigs"/><g transform="translate(730 200)"><path d="M -11 -7.26 L 0 0 L -11 7.26 Z M 11 -7.26 L 0 0 L 11 7.26 Z" class="kf"/><path d="M 0 0 V -14.3" class="k"/><path d="M -9.9 -14.3 A 9.9 6.82 0 0 1 9.9 -14.3 Z" class="kf"/></g><text x="752" y="226" class="t-s">FV-201</text></g><text x="30" y="280" class="t-s">Señal eléctrica de 4-20 mA en trazo discontinuo; señal neumática de 3-15 psig con rayas dobles.</text></svg></div>
+        <p class="figcap">Lazo de caudal 201 de la alimentación de nafta, el mismo del Manual de diagramas. Pulse cada tag para seguir la señal.</p>
       </div>
     </div>
   </section>
@@ -582,18 +674,18 @@
       <div class="copy">
         <div class="kicker">Lazo de realimentación · temperatura</div>
         <h2>Lazo de control de temperatura</h2>
-        <p>Sobre un intercambiador (HE), el lazo mantiene la temperatura de salida del producto:</p>
+        <p>Sobre el calentador E-202 (E es la letra de Turton para los intercambiadores), el lazo mantiene en 249&nbsp;°C la mezcla reactiva que sale hacia C-201:</p>
         <ul>
-          <li><b>TE:</b> elemento que mide la temperatura del producto a la salida.</li>
-          <li><b>TIT:</b> transmisor que envía la señal de temperatura.</li>
-          <li><b>TC:</b> controlador que la compara con el set point y genera la corrección.</li>
-          <li><b>Válvula de control:</b> regula el caudal de calorportador que entra al intercambiador.</li>
+          <li><b>TE-202:</b> elemento que mide la temperatura del producto a la salida, dentro de un termopozo.</li>
+          <li><b>TIT-202:</b> transmisor indicador que envía la señal de temperatura.</li>
+          <li><b>TIC-202:</b> controlador en el DCS que la compara con el set point y genera la corrección.</li>
+          <li><b>TV-202:</b> válvula de control que regula el vapor de alta presión (HPS), el caloportador que entra al intercambiador. La mueve el convertidor <span class="nw">TY-202</span>.</li>
         </ul>
-        <p style="margin-top:14px;font-size:25px;">Si la temperatura de salida baja, el TC abre la válvula y admite más calorportador caliente; si sube, la cierra.</p>
+        <p style="margin-top:14px;font-size:25px;">Si la temperatura de salida baja, el <span class="nw">TIC-202</span> abre <span class="nw">TV-202</span> y admite más vapor; si sube, la cierra.</p>
       </div>
-      <div class="img-panel">
-        <img src="assets/img/Lazo_Control_Temperatura.webp" alt="Lazo de control de temperatura sobre un intercambiador de calor">
-        <p class="figcap">Lazo de temperatura sobre un intercambiador: TE, TIT, TC y válvula sobre el calorportador.</p>
+      <div class="img-panel fig-svg">
+        <div class="desliza"><svg class="pid" viewBox="0 0 900 480" role="img" aria-label="Lazo de temperatura 202 sobre E-202: TE-202, TIT-202, TIC-202 en el DCS, TY-202 y TV-202 sobre el vapor de alta presión" xmlns="http://www.w3.org/2000/svg"><path d="M 30 330 L 314 330" class="proc"/><path d="M 314 330 L 301 335.46 L 301 324.54 Z" class="fi"/><text x="30" y="316" class="t-s">mezcla reactiva de E-201</text><g transform="translate(360 330)"><circle r="46" class="kf"/><path d="M -46 0 H -25.3 L -11.5 -23 L 11.5 23 L 25.3 0 H 46" class="k"/></g><text x="304" y="398" class="t-eq" text-anchor="end">E-202</text><path d="M 406 330 L 880 330" class="proc"/><path d="M 880 330 L 867 335.46 L 867 324.54 Z" class="fi"/><text x="880" y="316" class="t-s" text-anchor="end">a C-201 · 249 °C</text><path d="M 360 34 L 360 284" class="util"/><path d="M 360 284 L 355.38 273 L 364.62 273 Z" class="fi"/><text x="348" y="46" class="t-lbl" text-anchor="end">HPS</text><g transform="translate(360 92) rotate(90)"><path d="M -9 -5.94 L 0 0 L -9 5.94 Z M 9 -5.94 L 0 0 L 9 5.94 Z" class="kf"/></g><g transform="translate(360 214) rotate(90)"><path d="M -9 -5.94 L 0 0 L -9 5.94 Z M 9 -5.94 L 0 0 L 9 5.94 Z" class="kf"/></g><g transform="translate(360 152) rotate(90)"><path d="M -11 -7.26 L 0 0 L -11 7.26 Z M 11 -7.26 L 0 0 L 11 7.26 Z" class="kf"/><path d="M 0 0 V -14.3" class="k"/><path d="M -9.9 -14.3 A 9.9 6.82 0 0 1 9.9 -14.3 Z" class="kf"/></g><text x="346" y="160" class="t-s" text-anchor="end">TV-202</text><path d="M 360 68 L 270 68 L 270 238 L 360 238" class="proc2"/><circle cx="360" cy="68" r="3" class="fi"/><circle cx="360" cy="238" r="3" class="fi"/><g transform="translate(270 152) rotate(90)"><path d="M -9 -5.94 L 0 0 L -9 5.94 Z M 9 -5.94 L 0 0 L 9 5.94 Z" class="kf"/><circle r="2.88" class="fi"/></g><text x="258" y="196" class="t-s" text-anchor="end">bypass</text><path d="M 360 376 L 360 470" class="util"/><path d="M 360 470 L 355.38 459 L 364.62 459 Z" class="fi"/><g transform="translate(360 420)"><rect x="-10" y="-10" width="20" height="20" class="kf"/><text x="0" y="5" class="bub-n" text-anchor="middle">T</text></g><text x="376" y="425" class="t-s">trampa de vapor</text><text x="348" y="466" class="t-lbl" text-anchor="end">ES</text><path d="M 640 330 V 296" class="imp"/><circle cx="640" cy="330" r="3" class="fi"/><g transform="translate(640 276)"><circle r="20" class="kf"/><text x="0" y="-4" class="bub-t" text-anchor="middle">TE</text><text x="0" y="12.5" class="bub-n" text-anchor="middle">202</text></g><text x="662" y="308" class="t-s">termopozo</text><path d="M 640 256 V 172" class="imp"/><g transform="translate(640 152)"><circle r="20" class="kf"/><text x="0" y="-4" class="bub-t" text-anchor="middle">TIT</text><text x="0" y="12.5" class="bub-n" text-anchor="middle">202</text></g><path d="M 620 152 L 561 152" class="sig"/><g transform="translate(540 152)"><rect x="-21" y="-21" width="42" height="42" class="kf"/><circle r="20" class="k"/><path d="M -20 0 H 20" class="k"/><text x="0" y="-4" class="bub-t" text-anchor="middle">TIC</text><text x="0" y="14" class="bub-n" text-anchor="middle">202</text></g><text x="540" y="112" class="t-s annot" text-anchor="middle">set point 249 °C</text><path d="M 519 152 L 471 152" class="sig"/><g transform="translate(451 152)"><circle r="20" class="kf"/><text x="0" y="-4" class="bub-t" text-anchor="middle">TY</text><text x="0" y="12.5" class="bub-n" text-anchor="middle">202</text></g><text x="451" y="196" class="t-s annot" text-anchor="middle">I/P</text><path d="M 431 152 L 375 152" class="sigs"/><path d="M 410 158.06 L 403 145.94" class="sigs"/><path d="M 403 158.06 L 396 145.94" class="sigs"/></svg></div>
+        <p class="figcap">Lazo de temperatura 202 sobre E-202: el vapor entra por arriba con su estación de control y el condensado sale por la trampa hacia el retorno ES.</p>
       </div>
     </div>
   </section>
@@ -616,18 +708,18 @@
     <div class="cards">
       <div class="card">
         <span class="card-n">Instrucciones operativas</span>
-        <p class="qn"><b>"MANTENER PENDIENTE 1% HACIA V-201"</b> asegura el drenaje completo.</p>
-        <p class="qn"><b>"NO OPERAR HV-201 CON P-201 EN MARCHA"</b> previene el golpe de ariete.</p>
+        <p class="qn"><b>«MANTENER PENDIENTE 1 % HACIA V-201»</b> asegura el drenaje completo.</p>
+        <p class="qn"><b>«NO OPERAR HV-201 CON P-201 EN MARCHA»</b> previene el golpe de ariete.</p>
       </div>
       <div class="card card--teal">
         <span class="card-n">Seguridad en mantenimiento</span>
-        <p class="qn"><b>"BRIDA SPECTACLE NORMALMENTE INSTALADA"</b> indica aislamiento positivo.</p>
-        <p class="qn"><b>"PURGAR CON N₂ ANTES DE MANTENIMIENTO"</b> salva vidas.</p>
+        <p class="qn"><b>«BRIDA EN OCHO NORMALMENTE INSTALADA»</b> indica aislamiento positivo.</p>
+        <p class="qn"><b>«PURGAR CON N₂ ANTES DE MANTENIMIENTO»</b> salva vidas.</p>
       </div>
       <div class="card">
         <span class="card-n">Previsión futura</span>
-        <p class="qn"><b>"CONEXIÓN FUTURA PARA TANQUE V-205"</b> anticipa la expansión.</p>
-        <p class="qn"><b>"INSTALAR CHECK LO MÁS CERCA POSIBLE A LA BOMBA"</b> previene el contraflujo.</p>
+        <p class="qn"><b>«CONEXIÓN FUTURA PARA RECIPIENTE V-205»</b> anticipa la expansión.</p>
+        <p class="qn"><b>«INSTALAR CHECK LO MÁS CERCA POSIBLE A LA BOMBA»</b> previene el contraflujo.</p>
       </div>
     </div>
     <p class="foot-note">Estas notas resultan de experiencia dolorosa en plantas similares. Ignorarlas garantiza repetir errores costosos: <b>el P&amp;ID es el repositorio de la sabiduría operacional acumulada.</b></p>
@@ -635,7 +727,7 @@
 
   <!-- 19 · Seguridad integrada en el P&ID -->
   <section class="s" data-screen-label="Seguridad integrada">
-    <div class="split split--wideL">
+    <div class="split split--wideR">
       <div class="copy">
         <div class="kicker">La seguridad se diseña, no se añade</div>
         <h2>Seguridad integrada en el P&amp;ID</h2>
@@ -648,9 +740,9 @@
         </ul>
         <p style="margin-top:14px;font-size:25px;">Un P&amp;ID bien hecho permite un HAZOP sistemático: identificar modos de falla y salvaguardas antes de construir.</p>
       </div>
-      <div class="img-panel">
-        <img src="assets/img/Seguridad_PSV_SellosCoche.webp" alt="Arreglo de válvulas de alivio PSV con sellos de coche y bypass">
-        <p class="figcap">Arreglo de alivio con PSV redundantes, sellos de coche (car seals) y línea de bypass.</p>
+      <div class="img-panel fig-svg">
+        <div class="desliza"><svg class="pid" viewBox="0 80 900 530" role="img" aria-label="Alivio de V-201 con PSV-201 A en servicio y PSV-201 B de repuesto, bloqueos sellados CSO y CSC, venteos, bypass manual y carrete desmontable" xmlns="http://www.w3.org/2000/svg"><path d="M 450 600 L 450 470" class="proc"/><g transform="translate(450 566)"><path d="M -12 -4 H 12 M -12 4 H 12" class="k"/></g><g transform="translate(450 512)"><path d="M -12 -4 H 12 M -12 4 H 12" class="k"/></g><text x="470" y="544" class="t-s">carrete desmontable</text><text x="470" y="596" class="t-s">de la cima de V-201</text><path d="M 230 470 L 670 470" class="proc"/><circle cx="450" cy="470" r="3.6" class="fi"/><path d="M 330 120 L 890 120" class="proc"/><path d="M 890 120 L 877 125.46 L 877 114.54 Z" class="fi"/><text x="886" y="104" class="t-lbl" text-anchor="end">3"-CS-FL01 · a la antorcha</text><path d="M 230 470 L 230 256" class="proc"/><g transform="translate(230 404) rotate(90)"><path d="M -11 -7.26 L 0 0 L -11 7.26 Z M 11 -7.26 L 0 0 L 11 7.26 Z" class="kf"/></g><text x="212" y="409" class="t-s annot" text-anchor="end">CSO</text><path d="M 230 330 H 184" class="proc2"/><g transform="translate(204 330)"><path d="M -7 -4.62 L 0 0 L -7 4.62 Z M 7 -4.62 L 0 0 L 7 4.62 Z" class="kf"/></g><path d="M 184 322 V 338" class="k"/><text x="176" y="335" class="t-s" text-anchor="end">venteo</text><g transform="translate(230 240) "><path d="M -10.56 16 L 0 0 L 10.56 16 Z M 16 -10.56 L 0 0 L 16 10.56 Z" class="kf"/><path d="M 0 0 V -4.8 L 7.2 -7.68 L -7.2 -11.52 L 7.2 -15.36 L -7.2 -19.2 L 0 -22.08 V -25.6 M -7.2 -25.6 H 7.2" class="k"/></g><path d="M 246 240 L 330 240 L 330 120" class="proc2"/><circle cx="330" cy="120" r="3.6" class="fi"/><g transform="translate(288 240)"><path d="M -10 -6.6 L 0 0 L -10 6.6 Z M 10 -6.6 L 0 0 L 10 6.6 Z" class="kf"/></g><text x="288" y="270" class="t-s annot" text-anchor="middle">CSO</text><text x="208" y="234" class="t-eq" text-anchor="end">PSV-201 A</text><text x="208" y="254" class="t-s" text-anchor="end">en servicio</text><path d="M 670 470 L 670 256" class="proc"/><g transform="translate(670 404) rotate(90)"><path d="M -11 -7.26 L 0 0 L -11 7.26 Z M 11 -7.26 L 0 0 L 11 7.26 Z" class="kf"/></g><text x="688" y="409" class="t-s annot">CSC</text><path d="M 670 330 H 716" class="proc2"/><g transform="translate(696 330)"><path d="M -7 -4.62 L 0 0 L -7 4.62 Z M 7 -4.62 L 0 0 L 7 4.62 Z" class="kf"/></g><path d="M 716 322 V 338" class="k"/><text x="724" y="335" class="t-s">venteo</text><g transform="translate(670 240) scale(-1 1)"><path d="M -10.56 16 L 0 0 L 10.56 16 Z M 16 -10.56 L 0 0 L 16 10.56 Z" class="kf"/><path d="M 0 0 V -4.8 L 7.2 -7.68 L -7.2 -11.52 L 7.2 -15.36 L -7.2 -19.2 L 0 -22.08 V -25.6 M -7.2 -25.6 H 7.2" class="k"/></g><path d="M 654 240 L 570 240 L 570 120" class="proc2"/><circle cx="570" cy="120" r="3.6" class="fi"/><g transform="translate(612 240)"><path d="M -10 -6.6 L 0 0 L -10 6.6 Z M 10 -6.6 L 0 0 L 10 6.6 Z" class="kf"/></g><text x="612" y="270" class="t-s annot" text-anchor="middle">CSC</text><text x="692" y="234" class="t-eq">PSV-201 B</text><text x="692" y="254" class="t-s">de repuesto</text><path d="M 450 470 L 450 120" class="proc2"/><circle cx="450" cy="120" r="3.6" class="fi"/><g transform="translate(450 390) rotate(90)"><path d="M -10 -6.6 L 0 0 L -10 6.6 Z M 10 -6.6 L 0 0 L 10 6.6 Z" class="kf"/></g><g transform="translate(450 300) rotate(90)"><path d="M -10 -6.6 L 0 0 L -10 6.6 Z M 10 -6.6 L 0 0 L 10 6.6 Z" class="kf"/><circle r="3.2" class="fi"/></g><text x="466" y="395" class="t-s annot">CSC</text><text x="466" y="305" class="t-s">bypass manual</text></svg></div>
+        <p class="figcap">Alivio de V-201 con PSV redundantes: PSV-201 A en servicio, con sus bloqueos sellados abiertos (CSO, del inglés <i>car sealed open</i>), y PSV-201 B de repuesto, aislada con bloqueos sellados cerrados (CSC). Venteos para despresurizar antes de retirar una válvula, bypass manual sellado cerrado y carrete desmontable en la entrada.</p>
       </div>
     </div>
   </section>
@@ -671,7 +763,7 @@
         <div class="pid"><span class="lbl">P&amp;ID</span>100%, hasta la última válvula de drenaje.</div>
       </div>
       <div class="col">
-        <div class="ch">Status legal</div>
+        <div class="ch">Estatus legal</div>
         <div class="pfd"><span class="lbl">PFD</span>Guía de diseño revisable.</div>
         <div class="pid"><span class="lbl">P&amp;ID</span>Documento contractual vinculante.</div>
       </div>
@@ -693,7 +785,7 @@
     <div>
       <div class="kicker">Para recordar</div>
       <h2>En el P&amp;ID la seguridad se diseña dentro del proceso, no se añade después: es donde las ideas se vuelven una planta construible.</h2>
-      <div class="next"><span class="pill">A trabajar</span><span>Lleve el PFD de su planta de aceite esencial al nivel P&amp;ID: instrumente, proteja y especifique cada línea.</span></div>
+      <div class="next"><span class="pill">A trabajar</span><span>En el Taller 1 se practica el P&amp;ID: instrumente, proteja y especifique cada línea. El entregable del proyecto es el PFD completo.</span></div>
     </div>
   </section>
 
@@ -741,6 +833,27 @@
       if (e.key === 'Escape' && lb.open) { e.stopPropagation(); close(); }
     }, true);
 
+    /* Las figuras propias en SVG también se amplían: se copia el SVG al diálogo. */
+    function openSvg(svg) {
+      content.innerHTML = '';
+      var c = svg.cloneNode(true);
+      c.classList.remove('dim-others');
+      content.appendChild(c);
+      if (!lb.open) lb.showModal();
+    }
+    document.querySelectorAll('deck-stage .img-panel svg.pid').forEach(function (svg) {
+      var parent = svg.parentElement;
+      if (getComputedStyle(parent).position === 'static') parent.style.position = 'relative';
+      function trigger(e) { e.stopPropagation(); openSvg(svg); }
+      svg.addEventListener('click', trigger);
+      var badge = document.createElement('span');
+      badge.className = 'zoom-badge';
+      badge.setAttribute('aria-hidden', 'true');
+      badge.textContent = '\u2922';
+      badge.addEventListener('click', trigger);
+      parent.appendChild(badge);
+    });
+
     document.querySelectorAll('deck-stage .img-panel img, deck-stage .figbox img').forEach(function (img) {
       var parent = img.parentElement;
       if (getComputedStyle(parent).position === 'static') parent.style.position = 'relative';
@@ -752,6 +865,36 @@
       badge.textContent = '\u2922';
       badge.addEventListener('click', trigger);
       parent.appendChild(badge);
+    });
+  })();
+</script>
+
+<script>
+  /* Figuras con dos vistas (PFD / P&ID) y paso a paso de un lazo */
+  (function () {
+    document.querySelectorAll('[data-figtabs]').forEach(function (fig) {
+      var tabs = fig.querySelectorAll('.figtab[data-v]');
+      var views = fig.querySelectorAll('.desliza[data-v]');
+      tabs.forEach(function (t) {
+        t.addEventListener('click', function (e) {
+          e.stopPropagation();
+          tabs.forEach(function (o) { o.setAttribute('aria-pressed', o === t ? 'true' : 'false'); });
+          views.forEach(function (v) { v.hidden = v.getAttribute('data-v') !== t.getAttribute('data-v'); });
+        });
+      });
+    });
+    document.querySelectorAll('[data-steps]').forEach(function (fig) {
+      var svg = fig.querySelector('svg.pid');
+      var btns = fig.querySelectorAll('.figtab[data-k]');
+      btns.forEach(function (b) {
+        b.addEventListener('click', function (e) {
+          e.stopPropagation();
+          var k = b.getAttribute('data-k'), all = k === 'todo';
+          btns.forEach(function (o) { o.setAttribute('aria-pressed', o === b ? 'true' : 'false'); });
+          svg.classList.toggle('dim-others', !all);
+          svg.querySelectorAll('.hot').forEach(function (g) { g.classList.toggle('sel', !all && g.getAttribute('data-k') === k); });
+        });
+      });
     });
   })();
 </script>

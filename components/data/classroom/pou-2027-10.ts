@@ -38,6 +38,8 @@ const LECTURAS_PROPIAS = new Set([
 const RESUMENES: Record<string, string> = {
   'lectura-01-operaciones-unitarias':
     'Cómo una sola idea ordenó toda la ingeniería química, y cómo se lee con ella la planta de aceite esencial del semestre. El origen del concepto con Davis, Little y el MIT, su evolución en el siglo XX, las dos clasificaciones (por fenómeno de transporte y por tipo de operación) con las siete operaciones de la planta, y los balances de materia y energía con un ejemplo del extractor.',
+  'lectura-02-diagramas-ingenieria':
+    'Por qué los ingenieros de proceso dibujan sus plantas, y cómo se lee ese dibujo en sus tres niveles con una sola unidad: la de hidrodesulfuración del Manual de diagramas, dibujada como PBD con un balance de masa que cierra, como PFD con sus nueve equipos y quince corrientes, y como P&ID del separador V-201. Recorre la historia de las normas ISA-5.1 (edición vigente de 2024), BS 1553 e ISO 10628, los códigos de equipos y de servicios de Turton, la tabla de corrientes, la diferencia entre un PC y una PSV y lo que debe contener el PFD que entrega su equipo.',
   'programa-del-curso':
     'El programa completo de IQYA-2031 para 2027-10: horarios y equipo, descripción y metodología (PO-PBL y aula invertida), el reto de la planta de aceite esencial, resultados ABET, contenido por módulo, distribución de la nota, entregas por semana, escala AIAS de uso de IA y políticas del curso.',
   'taller-02-analisis-granulometrico':
@@ -45,8 +47,12 @@ const RESUMENES: Record<string, string> = {
 };
 
 // Lecturas reescritas para 2027-10: su tiempo real de lectura y la fecha de la revisión.
-const REVISADAS: Record<string, { readingMinutes: number; date: string }> = {
+const REVISADAS: Record<string, { readingMinutes: number; date: string; tags?: string[] }> = {
   'lectura-01-operaciones-unitarias': { readingMinutes: 25, date: '2026-10-22' },
+  'lectura-02-diagramas-ingenieria': {
+    readingMinutes: 42, date: '2026-10-22',
+    tags: ['diagramas', 'PBD', 'PFD', 'P&ID', 'simbología', 'Turton', 'ISO 10628', 'ISA-5.1', 'HDS'],
+  },
 };
 
 // Descripciones que en 2026-20 hablaban de la planta de pectina.
@@ -54,7 +60,9 @@ const DESCRIPCIONES: Record<string, string> = {
   'presentacion-del-curso':
     'La sesión inaugural completa: bienvenida y la planta de aceite esencial, equipo docente, objetivos y resultados ABET, las ocho estaciones del proceso, metodología, módulos y ritmo del semestre, evaluación, uso de IA y expectativas.',
   'diagramas-ingenieria':
-    'BFD, PFD y P&ID: el lenguaje visual de la ingeniería química. Simbología de equipos e instrumentos, codificación de equipos (Turton), balance de masa y mejores prácticas, aplicados a la planta de aceite esencial.',
+    'PBD, PFD y P&ID: el lenguaje visual de la ingeniería química. Simbología de equipos (Turton e ISO 10628), codificación de equipos y corrientes, balance de masa con cierre de ±1 % y buenas prácticas, con la unidad de hidrodesulfuración del Manual de diagramas como ejemplo.',
+  'pid-instrumentacion':
+    'Simbología ANSI/ISA-5.1-2024 para instrumentación, lazos de control, seguridad (PSV) y cómo una bomba del PFD se vuelve su P&ID, con la unidad de hidrodesulfuración del Manual de diagramas como ejemplo.',
   'trabajo-en-equipo':
     'Qué distingue a un equipo que funciona, cómo la coevaluación convierte la nota del equipo en una nota individual para cada integrante, con un ejemplo que se mueve en vivo, y las ocho secciones del contrato que cada equipo firma en clase.',
 };
@@ -110,7 +118,7 @@ export const pou202710Course: Course = {
       topics: [
         'Introducción al proyecto y formación de equipos.',
         'Diagramas de ingeniería: PBD, PFD y P&ID. El entregable es el PFD completo; el P&ID se practica en el Taller 1.',
-        'Simbología y estándares ISA.',
+        'Simbología: Turton e ISO 10628 para los equipos, ANSI/ISA-5.1 para los instrumentos.',
         'Materia prima y alcance del proyecto.',
       ],
     },
@@ -255,9 +263,13 @@ export const pou202710Course: Course = {
       : { ...p, carpeta: 'iqya-2031-2026-20' },
   ),
   // Los simuladores se sirven desde 2026-20, salvo los que ya tienen versión
-  // 2027-10. El de molienda trae la cáscara húmeda y el molino de cuchillas.
+  // 2027-10. El de molienda trae la cáscara húmeda y el molino de cuchillas;
+  // el Manual de diagramas es el mismo, con sus ejemplos de pectina pasados a
+  // la unidad HDS o al proyecto de cada equipo.
   simulations: (pou202620Course.simulations ?? []).map((sim) =>
-    sim.id === 'explorador-molienda'
+    sim.id === 'manual-diagramas'
+      ? sim
+      : sim.id === 'explorador-molienda'
       ? {
           ...sim,
           description:
