@@ -114,7 +114,7 @@ Para la semana 3: el Taller 2 todavía dice «BloqueNeón» sin enlace (dos vece
 
 El Taller 1 pide 15 errores y el bono desde 13: si otro semestre se siembra otro número, se cambia en la pregunta 2.1 y en el recuadro del bono.
 
-Decisiones ya tomadas (oct 2026): el profesor forma los equipos de 4 a 5; el entregable de diagramas es el PFD completo (el PBD es su borrador y el P&ID se practica en el Taller 1, sin entregarse); la winterización es el enfriado y filtrado del aceite del florentino con un filtro de profundidad, no un desencerado, y va en la Bitácora 3; la presentación final es la sesión de pósters de la semana 17; el contrato firmado se sube a Bloque Neón; las fuentes de fabricantes (como Pall) sirven de referencia.
+Decisiones ya tomadas (oct 2026): el profesor forma los equipos de 4 a 5; el entregable de diagramas es el PFD completo (el PBD es su borrador y el P&ID se practica en el Taller 1, sin entregarse); la winterización es el enfriado y filtrado del aceite del florentino con un filtro de profundidad, no un desencerado, y va en la Bitácora 3; la presentación final es la sesión de pósters de la semana 17; el contrato firmado se sube a Bloque Neón; las fuentes de fabricantes (como Pall) sirven de referencia. En el Taller 1 se quedan el PBD de la 1.1 y el boceto P&ID de la 4.3 (23 oct 2026), y lo que le falta al diseño de la planta, reportado aparte de los errores y justificado, no descuenta y da puntos extra. Qué cuenta para eso está en la clave del taller, en el repositorio privado: aquí no se nombra.
 
 **⚠️ Terminología:** la UI pública dice "Material del curso", no "Lecturas". Los objetos de datos siguen llamándose `readings` / `Reading` en el código por compatibilidad. La URL sigue siendo `/classroom/{slug}/readings/...`.
 
