@@ -87,14 +87,17 @@ const { RACK, LANE, H101, E101, R101, E102, V102, C101 } = PB;
   C101.ys.forEach(y => { rect(C101.m0 - 4, y - 9, C101.x1 + 4, y + 9, 'kt'); rect(C101.m0, y - C101.mR, C101.m1, y + C101.mR); rect(C101.x0, y - C101.R, C101.x1, y + C101.R); });
   rect(E102.x1 + 4, E102.y + 10, E102.x1 + 14, E102.y + 22, 'kt');
   // códigos y coordenadas (E y N en mm desde el eje del rack en x = 0, y = 0)
-  const tag = (x, y, t, c, anc = 'start') => out.push(txt(X(x), Y(y), t, 'lbl', anc) + txt(X(x), Y(y) + 16, c, 'lbl-ms muted', anc));
-  const co = (x, y) => `E ${mm(x)} · N ${mm(-y)}`;
-  tag(H101.x - 18, H101.y - 26, 'H-101', co(H101.x, H101.y), 'start');
+  // los rótulos llevan un halo de papel para que los ejes de los pórticos no los crucen
+  const halo = h => h.replace('<text ', '<text style="paint-order:stroke;stroke:#fff;stroke-width:5px;stroke-linejoin:round" ');
+  const tag = (x, y, t, c, anc = 'start') => out.push(halo(txt(X(x), Y(y), t, 'lbl', anc)) + halo(txt(X(x), Y(y) + 16, c, 'lbl-ms muted', anc)));
+  const neg = v => mm(v).replace('-', '−');
+  const co = (x, y) => `E ${neg(x)} · N ${neg(-y)}`;
+  tag(H101.x - 18, H101.y - 30, 'H-101', co(H101.x, H101.y), 'start');
   tag(R101.x + 22, R101.y - 6, 'R-101', co(R101.x, R101.y));
   tag(E101.x0 - 10, E101.y + 16, 'E-101', co((E101.x0 + E101.x1) / 2, E101.y));
   tag(E102.x0, E102.y + 16, 'E-102', co((E102.x0 + E102.x1) / 2, E102.y));
   tag(V102.x + 10, V102.y - 14, 'V-102', co(V102.x, V102.y));
-  tag(C101.m0 - 4, C101.ys[1] + 18, 'C-101 A/B', `E ${mm((C101.m0 + C101.x1) / 2)} · N ${mm(-C101.ys[0])} y ${mm(-C101.ys[1])}`);
+  tag(C101.m0 - 4, C101.ys[1] + 18, 'C-101 A/B', `E ${neg((C101.m0 + C101.x1) / 2)} · N ${neg(-C101.ys[0])} y ${neg(-C101.ys[1])}`);
   out.push(txt(X(RACK.x0), Y(-RACK.y) - 8, 'Rack de tuberías', 'lbl-s', 'start'));
   // cotas: separación de los pórticos y ancho del rack
   const cota = (x0, x1, y, t) => out.push(`<path d="M ${X(x0)} ${Y(y)} H ${X(x1)} M ${X(x0)} ${Y(y) - 5} v 10 M ${X(x1)} ${Y(y) - 5} v 10" class="dim"/>` + txt((X(x0) + X(x1)) / 2, Y(y) - 5, t, 'lbl-ms annot', 'middle'));

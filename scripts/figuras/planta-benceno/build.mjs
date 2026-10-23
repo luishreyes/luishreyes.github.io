@@ -271,7 +271,7 @@ const E1f = exchanger("e101", { ...E1, saddles: [E1.x0 + 8, E1.x1 - 8] }, { nozz
   in: { on: "chW", at: [E1.x0 - 4.5, E1.y, E1.z + E1.R], dir: ZD, r: rB },
   out: { on: "chE", at: [E1.x1 + 4.5, E1.y, E1.z + E1.R], dir: ZD, r: rB },
   steam: { on: "shell", at: [E1.x1 - 4, E1.y, E1.z + E1.R], dir: ZD, r: rM, neck: 3.4 },
-  cond: { on: "shell", at: [E1.x0 + 16, E1.y, E1.z - E1.R], dir: [0, 0, -1], r: rS, neck: 1.6 },
+  cond: { on: "shell", at: [E1.x0 + 22, E1.y, E1.z - E1.R], dir: [0, 0, -1], r: rS, neck: 1.6 },
 } });
 const E2f = exchanger("e102", { ...E2, saddles: [E2.x0 + 16, E2.x1 - 16] }, { nozzles: {
   in: { on: "shell", at: [E2.x0 + 10, E2.y, E2.z + E2.R], dir: ZD, r: rB, neck: 3.6 },
@@ -293,7 +293,7 @@ const VSH = turned("v102.shell", VF, vprof.map((p) => (p.length === 2 ? p : p)),
   disc(`stand.v102.leg${i}`, ZA([c[0], c[1], 0.8]), 0, V2.z0 + 8 - 0.8, 0.9, { tone: "lo" }, { owner: "v102.shell" });
   box(`stand.v102.plate${i}`, [c[0] - 2, c[1] - 2, 0], [c[0] + 2, c[1] + 2, 0.8], { tone: "lo" }, { r: 0.2 });
 });
-const V_IN = nozzle("v102.in", VSH, [V2.x - V2.R, V2.y, 40], [-1, 0, 0], rB, { owner: "v102.shell", neck: 4 });
+const V_IN = nozzle("v102.in", VSH, [V2.x - V2.R, V2.y, 42], [-1, 0, 0], rB, { owner: "v102.shell", neck: 4 });
 const V_GAS = nozzle("v102.gas", VSH, [V2.x, V2.y, V2.z1 + V2.hd - 0.3], ZD, rB, { owner: "v102.shell", neck: 4 });
 const V_LIQ = nozzle("v102.liq", VSH, [V2.x, V2.y, V2.z0 - V2.hd + 0.3], [0, 0, -1], rM, { owner: "v102.shell", neck: 2 });
 // visor de nivel del lado del lector: dos tomas y el vidrio entre ellas
@@ -333,7 +333,7 @@ C1.ys.forEach((Y, u) => {
    ==================================================================== */
 const GROUND = (name, x, y, w = 6) => box(`stand.${name}`, [x - w / 2, y - w / 2, 0], [x + w / 2, y + w / 2, 1.2], { tone: "lo" }, { r: 0.3 });
 // cabezales que corren a lo largo del rack: agua de enfriamiento y tea
-pipe("cws.hdr", [[RK.x0, LN.cws, laneZ(2)], [RK.x1, LN.cws, laneZ(2)]], 2, { open: [true, true], touch: ONRACK });
+pipe("cws.hdr", [[RK.x0 + 8, LN.cws, laneZ(2)], [RK.x1, LN.cws, laneZ(2)]], 2, { open: [true, true], touch: ONRACK });
 const FLT = [V2.x - 12, LN.flare, laneZ(2.2)];
 pipe("flare.hdr", [[RK.x0, LN.flare, laneZ(2.2)], [RK.x1, LN.flare, laneZ(2.2)]], 2.2, { open: [true, true], touch: ONRACK, balls: [{ name: "flare.tee", c: FLT, R: 3.0 }] });
 // válvula de seguridad de V-102: boquilla de lado en el espacio de vapor, cuerpo, bonete y descarga a la tea

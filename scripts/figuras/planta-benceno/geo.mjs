@@ -7,7 +7,7 @@
    El separador V-102 sale del balance del libro (1,2 m × 3,4 m); el reactor, de las proporciones de Turton
    (tabla 1.7). El resto de las medidas son de diseño preliminar, sin pretensión de detalle. */
 export const PB = {
-  AZ: 135, EL: 40,
+  AZ: 135, EL: 35.264,   // isométrico verdadero: elevación de arctan(1/√2); los tres ejes se acortan igual
   // rack: pórticos cada 6 m, 5 m de ancho, vigas a 5,5 m
   RACK: { xs: [-15, 45, 105, 165, 225, 285], y: 25, z: 52, t: 3, c: 3, x0: -40, x1: 305 },
   LANE: { feed: -16, hps: -10, cws: -3, purge: 4, recycle: 11, flare: 18 },   // carriles de las líneas sobre el rack (y)

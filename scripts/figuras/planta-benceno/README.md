@@ -1,7 +1,7 @@
 # Sección de reacción de la planta de benceno en isométrico (skill `anatomy`)
 
 Figuras del capítulo 2 del libro de operaciones unitarias, Los diagramas de ingeniería. La planta es la de
-hidrodesalquilación de tolueno a benceno de Turton (apéndice B), con el balance del libro; aquí va solo la
+hidrodesalquilación de tolueno a benceno del capítulo 1 de Turton, con el balance del libro; aquí va solo la
 sección de reacción: el horno H-101 con su chimenea, el precalentador E-101, el reactor R-101 sobre su faldón
 con la plataforma de la cabeza y la escalera de jaula, el rack de tuberías con seis pórticos, el enfriador
 E-102, el separador de alta V-102 con su válvula de seguridad a la tea y su válvula de nivel, y los
@@ -11,7 +11,8 @@ La disposición es la disposición en línea con el rack al centro (Turton, sec.
 frío al sur, con las distancias mínimas de su tabla 1.11. El separador sale del dimensionamiento del libro
 (1,2 m × 3,4 m); el resto de las medidas son de diseño preliminar.
 
-Del mismo modelo salen cuatro vistas, para que el lector compare cómo se dibuja una misma planta:
+El isométrico es verdadero (acimut de 135°, elevación de 35,26°): los tres ejes se acortan igual. Del mismo
+modelo salen cuatro vistas, para que el lector compare cómo se dibuja una misma planta:
 
 | Parcial del libro | Vista |
 |---|---|
