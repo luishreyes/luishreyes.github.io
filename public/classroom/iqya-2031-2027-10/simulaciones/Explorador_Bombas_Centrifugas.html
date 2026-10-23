@@ -1,0 +1,2056 @@
+<!DOCTYPE html>
+<html lang="es" data-canvas="paper">
+<head>
+<meta charset="utf-8">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Explorador de bombas centrífugas · Proyecto de Operaciones Unitarias</title>
+<link rel="stylesheet" href="/classroom-fonts.css">
+<link rel="stylesheet" href="/classroom/vendor/katex/katex.min.css">
+<script defer src="/classroom/vendor/katex/katex.min.js"></script>
+<link rel="stylesheet" href="/classroom/simulador.css">
+<style>
+/* ---------- propios del explorador de Bernoulli ---------- */
+.mills { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.mill svg { width: 40px; height: 26px; }
+.mill:last-child:nth-child(odd) { grid-column: auto; flex-direction: column; gap: 4px; }
+
+.stack { display: flex; height: 34px; border: 1.5px solid var(--divider); margin-top: 8px; overflow: hidden; }
+
+.stack > div span { position: absolute; left: 5px; top: 50%; transform: translateY(-50%); font-family: var(--font-mono); font-size: 10.5px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; max-width: calc(100% - 6px); }
+.stack-leg { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 16px; margin-top: 10px; font-size: 12px; }
+.stack-leg div { display: grid; grid-template-columns: 12px 1fr auto; gap: 7px; align-items: center; }
+
+.stage .hud { right: 300px; }
+
+@media (max-width: 900px) { .stage .hud { right: 12px; } }
+
+/* ---------- propios del explorador de bombas ---------- */
+.mills { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.mill .sz { font-family: var(--font-mono); font-size: 10.5px; font-weight: 600; color: var(--n600); }
+
+.three2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 0.9fr); gap: 18px; align-items: start; }
+.chk { display: grid; grid-template-columns: 22px 1fr auto; gap: 8px; padding: 9px 0; border-bottom: 1px solid var(--n200); font-size: 13.5px; align-items: start; }
+.chk i { width: 18px; height: 18px; display: grid; place-items: center; font-style: normal; font-weight: 800; font-size: 12px; color: #fff; margin-top: 1px; }
+.chk i.ok { background: var(--ok); } .chk i.w { background: var(--warn); } .chk i.c { background: var(--redline); }
+.chk b { font-family: var(--font-mono); font-size: 12px; white-space: nowrap; }
+.nsbar { position: relative; height: 26px; margin: 26px 0 8px; display: flex; border: 1.5px solid var(--divider); }
+.nsbar > div { flex: 1; font-size: 10.5px; display: grid; place-items: center; color: var(--n700); border-right: 1px solid var(--n300); text-align: center; line-height: 1.1; }
+.nsbar > div:last-child { border-right: none; }
+.nsbar .mk { position: absolute; top: -20px; transform: translateX(-50%); font-family: var(--font-mono); font-size: 11px; font-weight: 800; color: var(--accent-700); white-space: nowrap; }
+.nsbar .mk::after { content: ''; position: absolute; left: 50%; top: 15px; width: 2px; height: 31px; background: var(--accent); }
+.two.eq2 { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+@media (max-width: 1100px) { .three2, .two.eq2 { grid-template-columns: 1fr; } }
+
+/* sistema en pantalla y configuraciones del curso */
+
+/* con la séptima pestaña, la barra se aprieta un poco para que Papel/Blueprint quepa hacia 1280 px */
+
+/* rejilla de dos columnas en celular */
+@media (max-width: 1100px) { .two { grid-template-columns: minmax(0, 1fr); } .two > * { min-width: 0; } }
+
+/* la instalación en isométrico (scripts/figuras/bomba) */
+/*PBFIG_CSS_START*/
+.iso{
+  --anatomy-page:#0b0b0b;--anatomy-card:#131313;--anatomy-text:#a3a3a3;--anatomy-strong:#e6e6e6;--anatomy-muted:#6e6e6e;
+  --anatomy-paper:#131313;--anatomy-face:#1b1b1b;--anatomy-top:#1c1c1c;
+  --anatomy-shade-0:#0f0f0f;--anatomy-shade-1:#121212;--anatomy-shade-2:#151515;--anatomy-shade-3:#181818;
+  --anatomy-lit-top:#262626;--anatomy-lit-shade:#1d1d1d;
+  --anatomy-hi:#d4d4d4;--anatomy-mid:#6a6a6a;--anatomy-lo:#3e3e3e;--anatomy-faint:#2a2a2a;--anatomy-lit:#ffffff;
+  --anatomy-halo:#050505;--anatomy-halo-opacity:.9;--anatomy-dot:#e6e6e6;
+  --anatomy-red:#ff6b6b;--anatomy-green:#6be0a0;--anatomy-blue:#6b9bff;
+  --anatomy-weight:.6px;--anatomy-ease:cubic-bezier(.32,.72,0,1);
+  --anatomy-mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --anatomy-lift:inset 0 1px 0 0 #ffffff0a,inset 0 0 0 1px #ffffff06,0 0 0 1px #00000026,0 1px 1px -.5px #00000014,0 3px 3px -1.5px #00000014,0 6px 6px -3px #00000014,0 12px 12px -6px #00000014;
+}
+.iso[data-theme="light"]{
+  --anatomy-page:#f2f2ef;--anatomy-card:#fbfbfa;--anatomy-text:#57575a;--anatomy-strong:#18181a;--anatomy-muted:#8c8c90;
+  --anatomy-paper:#fbfbfa;--anatomy-face:#ffffff;--anatomy-top:#ffffff;
+  --anatomy-shade-0:#dcdcd9;--anatomy-shade-1:#e5e5e2;--anatomy-shade-2:#ededea;--anatomy-shade-3:#f4f4f1;
+  --anatomy-lit-top:#ffffff;--anatomy-lit-shade:#eeeeeb;
+  --anatomy-hi:#26262a;--anatomy-mid:#8a8a8f;--anatomy-lo:#b4b4b8;--anatomy-faint:#d4d4d6;--anatomy-lit:#000000;
+  --anatomy-halo:#8a8a80;--anatomy-halo-opacity:.32;--anatomy-dot:#3a3a3e;
+  --anatomy-red:#e5484d;--anatomy-green:#30a46c;--anatomy-blue:#3e63dd;
+  --anatomy-lift:inset 0 1px 0 0 #ffffff,0 0 0 1px #0000000f,0 1px 1px -.5px #0000000a,0 3px 3px -1.5px #0000000a,0 6px 6px -3px #0000000a,0 12px 12px -6px #0000000a;
+}
+.iso-svg{display:block;width:100%;height:auto;overflow:visible}
+.iso-svg path,.iso-svg circle{vector-effect:non-scaling-stroke}
+.iso-fill{fill:var(--anatomy-paper);stroke:none}
+.iso-solid[data-lit]>.iso-fill{fill:var(--anatomy-face)}
+.iso-shade,.iso-top{stroke:none}
+.iso-shade[data-shade="0"]{fill:var(--anatomy-shade-0)}
+.iso-shade[data-shade="1"]{fill:var(--anatomy-shade-1)}
+.iso-shade[data-shade="2"]{fill:var(--anatomy-shade-2)}
+.iso-shade[data-shade="3"]{fill:var(--anatomy-shade-3)}
+.iso-top{fill:var(--anatomy-top)}
+.iso-solid[data-lit]>.iso-top{fill:var(--anatomy-lit-top)}
+.iso-solid[data-lit]>.iso-shade{fill:var(--anatomy-lit-shade)}
+.iso-solid[data-seamless]>.iso-shade,.iso-solid[data-seamless]>.iso-top{stroke-width:.4;stroke-linejoin:round}
+.iso-solid[data-seamless]>.iso-shade[data-shade="0"]{stroke:var(--anatomy-shade-0)}
+.iso-solid[data-seamless]>.iso-shade[data-shade="1"]{stroke:var(--anatomy-shade-1)}
+.iso-solid[data-seamless]>.iso-shade[data-shade="2"]{stroke:var(--anatomy-shade-2)}
+.iso-solid[data-seamless]>.iso-shade[data-shade="3"]{stroke:var(--anatomy-shade-3)}
+.iso-solid[data-seamless]>.iso-top{stroke:var(--anatomy-top)}
+.iso-solid[data-seamless][data-lit]>.iso-top{stroke:var(--anatomy-lit-top)}
+.iso-solid[data-seamless][data-lit]>.iso-shade{stroke:var(--anatomy-lit-shade)}
+.iso-solid[data-lit]>.iso-edge{stroke:var(--anatomy-lit)}
+.iso-halo{fill:var(--anatomy-halo);stroke:none;filter:blur(9px);opacity:var(--anatomy-halo-opacity);transform:translateY(3px)}
+.iso-line{fill:none;stroke:var(--anatomy-lo);stroke-width:var(--anatomy-weight);stroke-linecap:round;stroke-linejoin:round}
+.iso-line[data-tone="hi"]{stroke:var(--anatomy-hi)}
+.iso-line[data-tone="mid"]{stroke:var(--anatomy-mid)}
+.iso-line[data-tone="lo"]{stroke:var(--anatomy-lo)}
+.iso-line[data-tone="faint"]{stroke:var(--anatomy-faint)}
+.iso-line[data-tone="lit"]{stroke:var(--anatomy-lit)}
+.iso-line[data-tone="red"]{stroke:var(--anatomy-red)}
+.iso-line[data-tone="green"]{stroke:var(--anatomy-green)}
+.iso-line[data-tone="blue"]{stroke:var(--anatomy-blue)}
+.iso-line[data-dotted]{stroke-dasharray:.01 3.5;stroke-width:1}
+.iso-line[data-dashed]{stroke-dasharray:3 3}
+.iso-line[data-flow]{stroke-dasharray:2 6}
+.iso-wire-end{fill:var(--anatomy-paper);stroke:var(--anatomy-lo);stroke-width:var(--anatomy-weight)}
+.iso-wire[data-tone="hi"] .iso-wire-end{stroke:var(--anatomy-hi)}
+.iso-wire[data-tone="mid"] .iso-wire-end{stroke:var(--anatomy-mid)}
+.iso-wire[data-tone="faint"] .iso-wire-end{stroke:var(--anatomy-faint)}
+.iso-wire[data-tone="lit"] .iso-wire-end{stroke:var(--anatomy-lit)}
+.iso-dots circle{fill:var(--anatomy-dot);stroke:none;opacity:.32}
+.iso-dots[data-tone="hi"] circle{opacity:.85}
+.iso-dots[data-tone="mid"] circle{opacity:.45}
+.iso-dots[data-tone="lo"] circle{opacity:.22}
+.iso-dots[data-tone="faint"] circle{opacity:.12}
+.iso-face-text{fill:var(--anatomy-mid);font-family:var(--anatomy-mono);letter-spacing:.04em}
+.iso-face-text[data-tone="hi"]{fill:var(--anatomy-hi)}
+.iso-face-text[data-tone="lo"]{fill:var(--anatomy-lo)}
+.iso-face-text[data-tone="faint"]{fill:var(--anatomy-faint)}
+.tb-body{fill:var(--anatomy-shade-2);stroke:none}
+.tb-shine{fill:var(--anatomy-top);stroke:none}
+.tb-shade{fill:var(--anatomy-shade-0);stroke:none}
+.tb-ring{fill:none;stroke:var(--anatomy-lo);stroke-width:.45;stroke-linecap:butt;stroke-linejoin:round}
+.tb-ring[data-tone="mid"]{stroke:var(--anatomy-mid)}
+.tb-ring[data-tone="faint"]{stroke:var(--anatomy-faint)}
+.tb-ring[data-tone="hi"]{stroke:var(--anatomy-hi)}
+@keyframes iso-flow{to{stroke-dashoffset:-32}}
+@keyframes iso-pulse{0%,100%{opacity:.18}12%{opacity:1}40%{opacity:.18}}
+.iso-line[data-flow]{animation:iso-flow 1600ms linear infinite}
+.iso-dots circle[data-pulse]{animation:iso-pulse 1600ms steps(1,end) infinite;animation-delay:var(--pulse-at,0ms)}
+.iso-figure{margin:32px 0 36px}
+.iso-plate{position:relative;padding:52px 24px;border-radius:0;background:var(--anatomy-card);box-shadow:0 0 0 1px var(--anatomy-mid);--anatomy-paper:var(--anatomy-card)}
+.iso-plate-corners{position:absolute;inset:18px 20px;pointer-events:none}
+.iso-plate-corner{position:absolute;color:var(--anatomy-muted);font-family:var(--anatomy-mono);font-size:10.5px;line-height:1;letter-spacing:.04em;white-space:nowrap}
+.iso-plate-corner[data-corner="fig"]{top:0;left:0;color:var(--anatomy-text)}
+.iso-plate-corner[data-corner="title"]{top:0;right:0;text-transform:uppercase;letter-spacing:.1em}
+.iso-plate-corner[data-corner="hint"]{bottom:0;left:0;text-transform:uppercase;letter-spacing:.1em}
+.iso-plate-corner[data-corner="readout"]{right:0;bottom:0;color:var(--anatomy-text);font-variant-numeric:tabular-nums}
+.iso-plate .iso-svg{margin:0 auto}
+.iso-legend{display:grid;gap:8px;margin-top:12px;color:var(--anatomy-muted);font-size:13px;line-height:1.55}
+.iso-keys{display:flex;flex-wrap:wrap;gap:6px 18px}
+.iso-key{display:inline-flex;align-items:center;gap:7px}
+.iso-swatch{width:16px;height:10px;flex:none;overflow:visible}
+.iso-swatch path{fill:none;stroke:var(--anatomy-hi);stroke-width:1;vector-effect:non-scaling-stroke;stroke-linejoin:round;stroke-linecap:round}
+.iso-swatch[data-mark="raised"] path,.iso-swatch[data-mark="flat"] path{stroke:var(--anatomy-mid)}
+.iso-swatch[data-mark="lit"] path{stroke:var(--anatomy-lit)}
+.iso-swatch[data-mark="dim"] path{stroke:var(--anatomy-lo)}
+.iso-swatch[data-mark="dotted"] path{stroke-dasharray:.01 3;stroke-width:1.4}
+.iso-swatch[data-mark="dashed"] path{stroke-dasharray:3 2.5}
+.iso-swatch[data-mark="red"] path{stroke:var(--anatomy-red)}
+.iso-swatch[data-mark="green"] path{stroke:var(--anatomy-green)}
+.iso-swatch[data-mark="blue"] path{stroke:var(--anatomy-blue)}
+.iso-swatch-crease{stroke:var(--anatomy-lo)!important}
+@media (max-width:560px){.iso-plate{padding:48px 12px 70px}.iso-plate-corner[data-corner="hint"]{bottom:18px}}
+@media (prefers-reduced-motion:reduce){.iso-line[data-flow],.iso-dots circle[data-pulse]{animation:none}}
+
+/* la instalación de bombeo: fundición, concreto, motor, guarda y lo vivo */
+.pb-items .pb-cast{--anatomy-paper:#dfe2e5;--anatomy-face:#dfe2e5;--anatomy-top:#e9ebed;--anatomy-shade-0:#c1c6cb;--anatomy-shade-1:#cacfd3;--anatomy-shade-2:#d3d7da;--anatomy-shade-3:#dadde0}
+.pb-items .pb-conc{--anatomy-paper:#e8e6e1;--anatomy-face:#e8e6e1;--anatomy-top:#efede9;--anatomy-shade-0:#d2cfc8;--anatomy-shade-1:#d9d6d0;--anatomy-shade-2:#dfddd7;--anatomy-shade-3:#e4e2dc}
+.pb-items [data-live]{pointer-events:none}
+.fl-dial .fl-tick{fill:none;stroke:var(--anatomy-mid,#666);stroke-width:.32;stroke-linecap:round}
+.fl-needle{fill:none;stroke:var(--redline,#C8452B);stroke-width:.42;stroke-linecap:round}
+.fl-redarc{fill:none;stroke:var(--redline,#C8452B);stroke-opacity:.55;stroke-width:.5}
+.fl-hub{fill:var(--anatomy-hi,#222)}
+.pb-items .pb-motor{--anatomy-paper:#e4e8ea;--anatomy-face:#e4e8ea;--anatomy-top:#edf0f1;--anatomy-shade-0:#c7cdd1;--anatomy-shade-1:#d0d5d8;--anatomy-shade-2:#d8dcdf;--anatomy-shade-3:#dfe2e4}
+.pb-items .pb-glass{--anatomy-paper:#f1f6fa;--anatomy-top:#f7fbfd;--anatomy-face:#f1f6fa;--anatomy-shade-0:#dfe9f1;--anatomy-shade-1:#e6eef4;--anatomy-shade-2:#ecf2f7;--anatomy-shade-3:#f1f6fa}
+/* el impulsor (vivo): disco, álabes, cubo y tuerca */
+.pb-imp-e{fill:#9aa3ab;stroke:var(--anatomy-ink,#2b2b2b);stroke-width:.3px;stroke-linejoin:round}
+.pb-imp-f{fill:#c9d0d6;stroke:var(--anatomy-ink,#2b2b2b);stroke-width:.3px;stroke-linejoin:round}
+.pb-vane-s{fill:#8e979f;stroke:none}
+.pb-vane{fill:#e3e7ea;stroke:var(--anatomy-ink,#2b2b2b);stroke-width:.3px;stroke-linejoin:round}
+.pb-hub{fill:#d5dadf;stroke:var(--anatomy-ink,#2b2b2b);stroke-width:.3px}
+.pb-nut{fill:#b6bdc4;stroke:var(--anatomy-ink,#2b2b2b);stroke-width:.3px;stroke-linejoin:round}
+/* el líquido, las burbujas, el vidrio del tanque, el vástago y el acople */
+.pb-p{stroke:none;opacity:.92}
+.pb-bub{fill:#fff;stroke:#2b4f7a;stroke-width:.18px;opacity:.95}
+.pb-col{fill:#5b8fc9;opacity:.85}
+.pb-rod{fill:#e7ebee;stroke:var(--anatomy-ink,#2b2b2b);stroke-width:.25px}
+.pb-wheel{fill:#d2d8dd;fill-rule:evenodd;stroke:var(--anatomy-ink,#2b2b2b);stroke-width:.3px}
+.pb-spoke{fill:none;stroke:#8e979f;stroke-width:.9px;stroke-linecap:round}
+.pb-bolt{fill:var(--anatomy-ink,#2b2b2b);opacity:.75}
+/*PBFIG_CSS_END*/
+.hx-fig{display:block;background:var(--paper);position:relative}
+.hx-fig .iso-svg{display:block;width:100%;height:auto;max-height:clamp(440px,80vh,860px);margin:0 auto;overflow:hidden}
+.hx-fig.hx-loading .hx-slot{min-height:clamp(380px,56vh,560px);opacity:.35}
+.iso.hx-fig[data-theme="light"]{--anatomy-paper:#fff;--anatomy-card:#fff}
+.iso.hx-fig[data-theme="blueprint"]{
+  --anatomy-paper:#12304d;--anatomy-face:#173b60;--anatomy-top:#1c4672;
+  --anatomy-shade-0:#0e2843;--anatomy-shade-1:#112e4c;--anatomy-shade-2:#143555;--anatomy-shade-3:#173c5f;
+  --anatomy-lit-top:#22507f;--anatomy-lit-shade:#1a436c;
+  --anatomy-hi:#e6eef7;--anatomy-mid:#9fb6cc;--anatomy-lo:#6d8fb0;--anatomy-faint:#3e6489;--anatomy-lit:#FFBF00;
+  --anatomy-halo:#06182b;--anatomy-halo-opacity:.6;--anatomy-dot:#e6eef7;--anatomy-ink:#e6eef7}
+.iso.hx-fig[data-theme="blueprint"] .pb-cast,.iso.hx-fig[data-theme="blueprint"] .pb-motor,.iso.hx-fig[data-theme="blueprint"] .pb-conc,.iso.hx-fig[data-theme="blueprint"] .pb-tank{--anatomy-paper:#173b60;--anatomy-face:#173b60;--anatomy-top:#1c4672;--anatomy-shade-0:#0e2843;--anatomy-shade-1:#112e4c;--anatomy-shade-2:#143555;--anatomy-shade-3:#173c5f}
+.iso.hx-fig[data-theme="blueprint"] .pb-glass{--anatomy-paper:#2a4f73;--anatomy-face:#2a4f73;--anatomy-top:#33608a;--anatomy-shade-0:#20425f;--anatomy-shade-1:#244766;--anatomy-shade-2:#274c6c;--anatomy-shade-3:#2a4f73}
+.iso.hx-fig[data-theme="blueprint"] .pb-imp-e{fill:#0e2843}.iso.hx-fig[data-theme="blueprint"] .pb-imp-f{fill:#1c4672}
+.iso.hx-fig[data-theme="blueprint"] .pb-vane-s{fill:#0e2843}.iso.hx-fig[data-theme="blueprint"] .pb-vane{fill:#2a5a88}
+.iso.hx-fig[data-theme="blueprint"] .pb-hub,.iso.hx-fig[data-theme="blueprint"] .pb-rod{fill:#22507f}.iso.hx-fig[data-theme="blueprint"] .pb-nut,.iso.hx-fig[data-theme="blueprint"] .pb-wheel{fill:#2a5a88}
+.hx-tags{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none}
+.hx-tag{position:absolute;transform:translate(10px,-50%);font-family:var(--font-mono);font-size:11px;line-height:1.3;white-space:nowrap;font-weight:600;color:var(--ink,#1c1b1a);text-shadow:0 0 3px var(--paper),0 0 3px var(--paper),0 0 2px var(--paper)}
+.hx-tag.r{transform:translate(calc(-100% - 10px),-50%);text-align:right}
+.hx-tag.b{transform:translate(-12px,10px)}
+.hx-tag b{font-weight:700}
+.hx-leg{position:absolute;right:132px;bottom:14px;display:flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:10.5px;color:var(--muted-ink);pointer-events:none}
+.hx-leg i{display:block;width:110px;height:8px;background:linear-gradient(90deg,rgb(43,76,126),rgb(89,128,166),rgb(143,184,201),rgb(232,195,90),rgb(217,130,43))}
+.hx-leg em{font-style:normal;margin-left:6px}
+
+.iz-ctl button{border:1.5px solid var(--ink);background:var(--paper);color:var(--ink);height:28px;min-width:28px;padding:0 7px;font-family:var(--font-mono);font-size:13px;font-weight:700;cursor:pointer;line-height:1}
+
+@media (max-width: 640px) { .hx-leg{position:static;justify-content:center;padding:6px 12px 10px} .hx-tag{font-size:10px} }
+</style>
+</head>
+<body>
+<header class="top" id="top">
+  <div class="top-row">
+    <div>
+      <div class="kick">POU · IQYA-2031 · Selección de bombas</div>
+      <h1>Explorador de bombas centrífugas</h1>
+    </div>
+    <div class="ctx" id="ctx"></div>
+    <span class="sp"></span>
+    <button type="button" class="status" id="status" title="Ver el diagnóstico"><i></i><span id="statusTxt">Selección sana</span></button>
+  </div>
+  <div class="kpis">
+    <div class="kpi"><div class="lbl">Caudal</div><div class="v" id="kQ">—</div><div class="u" id="kQu">—</div></div>
+    <div class="kpi"><div class="lbl">Cabeza</div><div class="v" id="kH">—</div><div class="u" id="kHu">—</div></div>
+    <div class="kpi"><div class="lbl">Eficiencia</div><div class="v" id="kE">—</div><div class="u" id="kEu">—</div></div>
+    <div class="kpi" id="kXc"><div class="lbl">Posición en la curva</div><div class="v" id="kX">—</div><div class="u">del caudal del BEP · ventana 70 a 110 %</div></div>
+    <div class="kpi"><div class="lbl">Potencia al freno</div><div class="v" id="kP">—</div><div class="u" id="kPu">—</div></div>
+    <div class="kpi" id="kNc"><div class="lbl">Margen de NPSH</div><div class="v" id="kN">—</div><div class="u" id="kNu">—</div></div>
+  </div>
+</header>
+
+<div class="shell">
+  <aside class="ctl" id="ctl" aria-label="Controles">
+    <section class="cfgnow"><div class="cfgnow-l">Sistema en pantalla</div><div class="cfgnow-n" id="cfgNow"></div><button type="button" class="cfgnow-b" id="toCfg">Ver las configuraciones</button></section>
+    <section><h2><span class="n">01</span> Bomba</h2>
+      <div class="mills" id="casBtns"></div>
+      <p class="small" id="casNote" style="margin:8px 0 0"></p>
+      <div class="sl"><div class="row"><span>Velocidad nominal del motor</span></div><div class="seg" id="nSeg" style="margin-top:6px"><button type="button" data-v="1750">1750 rpm · 4 polos</button><button type="button" data-v="3500">3500 rpm · 2 polos</button></div><div class="hint">Red de 60 Hz, como en Colombia</div></div>
+      <div class="sl"><div class="row"><span>Diámetro del impulsor</span><b id="vD"></b></div><input type="range" id="D" min="100" max="260" step="1"><div class="hint" id="Dhint"></div></div>
+      <div class="sl"><div class="row"><span>Velocidad con variador</span><b id="vvfd"></b></div><input type="range" id="vfd" min="40" max="110" step="1"><div class="hint" id="vfdHint"></div></div>
+      <div class="sl"><div class="row"><span>Arreglo</span></div><div class="seg" id="arrSeg" style="margin-top:6px"><button type="button" data-v="una">Una bomba</button><button type="button" data-v="paralelo">Dos en paralelo</button><button type="button" data-v="serie">Dos en serie</button></div></div>
+    </section>
+    <section><h2><span class="n">02</span> Fluido</h2><div class="opts" id="fluBtns"></div>
+      <div class="sl" id="TRow"><div class="row"><span>Temperatura de bombeo</span><b id="vT"></b></div><input type="range" id="T" min="0" max="100" step="1"></div>
+      <div class="sl" id="pMuRow"><div class="row"><span>Viscosidad del extracto μ</span><b id="vpMu"></b></div><input type="range" id="pMu" min="1" max="60" step="0.5"><div class="hint">Dato de referencia: mídalo con el viscosímetro del laboratorio</div></div>
+      <div id="customBox">
+        <div class="sl"><div class="row"><span>Densidad ρ</span><b id="vcRho"></b></div><input type="range" id="cRho" min="500" max="1800" step="5"></div>
+        <div class="sl"><div class="row"><span>Viscosidad μ (escala logarítmica)</span><b id="vcMuExp"></b></div><input type="range" id="cMuExp" min="-4" max="0" step="0.05"></div>
+        <div class="sl"><div class="row"><span>Presión de vapor Pv</span><b id="vcPv"></b></div><input type="range" id="cPv" min="0" max="90" step="0.5"></div>
+      </div>
+      <div class="spec" id="specFlu" style="margin-top:10px"></div>
+    </section>
+    <section><h2><span class="n">03</span> Sistema</h2>
+      <div class="sl"><div class="row"><span>Caudal requerido Q<sub>d</sub></span><b id="vlQd"></b></div><input type="range" id="lQd" min="0" max="2.4" step="0.005"></div>
+      <div class="sl"><div class="row"><span>Nivel de succión z<sub>s</sub></span><b id="vzs"></b></div><input type="range" id="zs" min="-7" max="10" step="0.1"><div class="hint" id="zsHint"></div></div>
+      <div class="sl"><div class="row"><span>Nivel de descarga z<sub>d</sub></span><b id="vzd"></b></div><input type="range" id="zd" min="-5" max="120" step="0.5"><div class="hint">Respecto al eje de la bomba (z = 0)</div></div>
+      <div class="sl"><div class="row"><span>Presión del tanque de succión P<sub>1</sub></span><b id="vP1"></b></div><input type="range" id="P1" min="-60" max="300" step="5"><div class="hint">Manométrica · 0 = abierto</div></div>
+      <div class="sl"><div class="row"><span>Presión del destino P<sub>2</sub></span><b id="vP2"></b></div><input type="range" id="P2" min="-60" max="800" step="5"></div>
+      <div class="sl"><div class="row"><span>Pérdidas en la succión a Q<sub>d</sub></span><b id="vhfs"></b></div><input type="range" id="hfs" min="0" max="6" step="0.05"></div>
+      <div class="sl"><div class="row"><span>Pérdidas en la descarga a Q<sub>d</sub></span><b id="vhfd"></b></div><input type="range" id="hfd" min="0" max="80" step="0.5"><div class="hint">Calcúlelas con el Explorador de Bernoulli</div></div>
+      <div class="sl"><div class="row"><span>Válvula de regulación a Q<sub>d</sub></span><b id="vhv"></b></div><input type="range" id="hv" min="0" max="60" step="0.5"><div class="hint">Cabeza que se quema estrangulando</div></div>
+    </section>
+    <section><h2><span class="n">04</span> Sitio, criterios y vista</h2>
+      <div class="sl"><div class="row"><span>Altitud del sitio</span><b id="valt"></b></div><input type="range" id="alt" min="0" max="3500" step="50"><div class="hint" id="altHint"></div></div>
+      <div class="sl"><div class="row"><span>Margen de NPSH exigido</span><b id="vmarg"></b></div><input type="range" id="marg" min="0.3" max="3" step="0.1"></div>
+      <div class="sl"><div class="row"><span>Factor de servicio del motor</span><b id="vFS"></b></div><input type="range" id="FS" min="1" max="1.3" step="0.05"></div>
+      <div class="sl"><div class="row"><span>Unidades</span></div><div class="seg" id="unitSeg" style="margin-top:6px"><button type="button" data-v="si">m³/h · m · kW</button><button type="button" data-v="us">GPM · pie · HP</button></div></div>
+      <label class="toggle"><input type="checkbox" id="isl"> Islas de eficiencia en la carta</label>
+      <label class="toggle"><input type="checkbox" id="grid"> Cuadrícula en las gráficas</label>
+      <button type="button" class="seg inline" id="resetAll" style="margin-top:14px;padding:7px 12px;font-weight:700;font-size:12.5px;cursor:pointer">Volver al caso base</button>
+    </section>
+  </aside>
+
+  <main id="main">
+    <nav class="tabs" role="tablist" aria-label="Vistas">
+      <button type="button" role="tab" data-tab="ins" aria-selected="true"><span class="k">1</span>Instalación</button>
+      <button type="button" role="tab" data-tab="in" aria-selected="false"><span class="k">2</span>Por dentro</button>
+      <button type="button" role="tab" data-tab="ca" aria-selected="false"><span class="k">3</span>Carta</button>
+      <button type="button" role="tab" data-tab="np" aria-selected="false"><span class="k">4</span>NPSH</button>
+      <button type="button" role="tab" data-tab="re" aria-selected="false"><span class="k">5</span>Regulación</button>
+      <button type="button" role="tab" data-tab="sp" aria-selected="false"><span class="k">6</span>Serie y paralelo</button>
+      <button type="button" role="tab" data-tab="se" aria-selected="false"><span class="k">7</span>Selección</button>
+      <button type="button" role="tab" data-tab="cf" aria-selected="false"><span class="k">8</span>Configuraciones</button>
+      <span class="sp"></span>
+      <div class="canv"><button type="button" data-canvas="paper" aria-pressed="true">Papel</button><button type="button" data-canvas="blueprint" aria-pressed="false">Blueprint</button></div>
+    </nav>
+
+    <!-- 1 · por dentro -->
+    <section class="panel on" data-panel="ins">
+      <div class="ph"><h2>La instalación</h2><span class="lbl" id="insLbl"></span><p id="insLead"></p></div>
+      <div class="card">
+        <div class="stage">
+          <div class="hx-fig iso hx-loading" id="pbFig" data-theme="light" role="img" aria-label="Instalación de bombeo en isométrico: el tanque de succión con su nivel, la línea de succión con su válvula y la reducción excéntrica, la bomba centrífuga con la tapa de succión abierta para ver el impulsor, la caja de rodamientos, el acople y el motor sobre su base, y la descarga con su manómetro, la retención y la válvula de regulación"><div class="iz-wrap"><div class="hx-slot"></div><div class="hx-tags" aria-hidden="true"></div><div class="iz-ctl" role="group" aria-label="Acercar la figura"><button type="button" data-z="in" aria-label="Acercar" title="Acercar (también: pellizco o ctrl + rueda)">+</button><button type="button" data-z="out" aria-label="Alejar" title="Alejar">−</button><button type="button" data-z="fit" aria-label="Ver la figura completa" title="Ver todo">todo</button></div></div><div class="hx-leg" aria-hidden="true"></div></div>
+          <div class="hud" id="insHud"></div>
+          <div class="play"><button type="button" id="insPlay" aria-label="Pausar"></button><button type="button" data-isp="0.5">½×</button><button type="button" data-isp="1" aria-pressed="true">1×</button><button type="button" data-isp="3">3×</button></div>
+        </div>
+        <div class="caption" id="insCap"></div>
+      </div>
+    </section>
+
+    <section class="panel" data-panel="in">
+      <div class="ph"><h2>La bomba por dentro</h2><span class="lbl" id="inLbl"></span><p id="inLead"></p></div>
+      <div class="card">
+        <div class="stage">
+          <canvas id="pumpCv" aria-label="Animación del impulsor y la voluta" style="height:clamp(380px,62vh,600px)"></canvas>
+          <div class="hud" id="hud"></div>
+          <div class="play"><button type="button" id="btnPlay" aria-label="Pausar"></button><button type="button" data-sp="0.25">¼×</button><button type="button" data-sp="1" aria-pressed="true">1×</button><button type="button" data-sp="3">3×</button><button type="button" id="btnReset" aria-label="Reiniciar"></button></div>
+        </div>
+        <div class="caption" id="inCap"></div>
+      </div>
+      <div class="two eq2">
+        <div class="card"><div class="card-h"><span class="t">Triángulos de velocidad</span><span class="sp"></span><span>Euler</span></div><div class="card-b"><svg class="ch" id="svgTri" viewBox="0 0 420 230"></svg><div class="spec" id="specTri" style="margin-top:8px"></div></div></div>
+        <div class="card"><div class="card-h"><span class="t">Presión a lo largo de la bomba</span><span class="sp"></span><span>absoluta, m de líquido</span></div><div class="card-b"><svg class="ch" id="svgPress" viewBox="0 0 420 330"></svg><p class="small" id="pressNote" style="margin:8px 0 0"></p></div></div>
+      </div>
+      <div class="card" id="diagCard"><div class="card-h"><span class="t">Diagnóstico</span><span class="sp"></span><span id="diagCount"></span></div><div class="card-b" id="warnings" style="padding-top:4px"></div></div>
+    </section>
+
+    <!-- 2 · carta -->
+    <section class="panel" data-panel="ca">
+      <div class="ph"><h2>Carta de la bomba</h2><span class="lbl" id="caLbl"></span><p>Como la carta de un catálogo: una curva H-Q por cada diámetro de impulsor, las islas de eficiencia, el NPSH requerido y la potencia al freno sobre el mismo eje de caudal. Encima, la curva del sistema y el punto de operación. La banda verde es la ventana de 70 a 110 % del BEP; la parábola punteada es la de afinidad: por ella se mueve el punto si cambia la velocidad.</p></div>
+      <div class="card"><div class="card-h"><span class="t">Cabeza, eficiencia, NPSH y potencia</span><span class="sp"></span><div class="legend" id="caLegend"></div></div>
+        <div class="card-b"><svg class="ch hov" id="svgChart" viewBox="0 0 900 640" role="img" aria-label="Carta de la bomba"></svg><div class="readout" id="caRead">Pase el cursor para leer la carta a cualquier caudal.</div></div></div>
+      <div class="mcards" id="caCards"></div>
+    </section>
+
+    <!-- 3 · NPSH -->
+    <section class="panel" data-panel="np">
+      <div class="ph"><h2>NPSH y cavitación</h2><span class="lbl">disponible contra requerido</span><p>El NPSH disponible es una propiedad de la instalación: la energía absoluta en la succión por encima de la presión de vapor. El requerido es de la bomba: el fabricante lo mide como el NPSH al que la cabeza cae 3 % (NPSH3). Las burbujas empiezan antes, hacia 1,2 a 1,5 veces NPSH3.</p></div>
+      <div class="two">
+        <div class="card"><div class="card-h"><span class="t">NPSH contra caudal</span><span class="sp"></span><div class="legend"><span><i style="border-top:2.5px solid var(--ink)"></i>disponible</span><span><i></i>NPSH3</span><span><i style="border-top:2px dashed var(--hl)"></i>inicio de burbujas</span></div></div><div class="card-b"><svg class="ch hov" id="svgNpsh" viewBox="0 0 520 330"></svg><div class="readout" id="npRead"></div></div></div>
+        <div class="card"><div class="card-h"><span class="t">De dónde sale el NPSH disponible</span></div><div class="card-b"><svg class="ch" id="svgNpshBar" viewBox="0 0 520 330"></svg></div></div>
+      </div>
+      <div class="card" id="npTcard"><div class="card-h"><span class="t">Temperatura máxima de bombeo</span></div><div class="card-b"><svg class="ch" id="svgNpshT" viewBox="0 0 900 300"></svg><p class="small" id="npTnote" style="margin:8px 0 0"></p></div></div>
+    </section>
+
+    <!-- 4 · regulación -->
+    <section class="panel" data-panel="re">
+      <div class="ph"><h2>Regulación del caudal</h2><span class="lbl">válvula · variador · recorte</span><p id="reLead"></p></div>
+      <div class="two">
+        <div class="card"><div class="card-h"><span class="t">Tres maneras de entregar Q<sub>d</sub></span></div><div class="card-b"><svg class="ch" id="svgReg" viewBox="0 0 520 360"></svg></div></div>
+        <div class="card"><div class="card-h"><span class="t">Potencia al freno según el caudal requerido</span></div><div class="card-b"><svg class="ch hov" id="svgRegP" viewBox="0 0 520 360"></svg><div class="readout" id="reRead"></div></div></div>
+      </div>
+      <div class="mcards" id="reCards"></div>
+    </section>
+
+    <!-- 5 · serie y paralelo -->
+    <section class="panel" data-panel="sp">
+      <div class="ph"><h2>Bombas en serie y en paralelo</h2><span class="lbl">dos bombas iguales</span><p>En paralelo se suman los caudales a la misma cabeza; en serie, las cabezas al mismo caudal. Cuál conviene depende de la curva del sistema: con un sistema dominado por la fricción el paralelo gana poco caudal, y con mucha cabeza estática la serie es la que levanta.</p></div>
+      <div class="card"><div class="card-h"><span class="t">Curvas combinadas</span><span class="sp"></span><div class="legend"><span><i style="border-top:2.5px solid var(--ink)"></i>sistema</span><span><i></i>una bomba</span><span><i style="border-top:2.5px solid var(--ok)"></i>paralelo</span><span><i style="border-top:2.5px solid var(--warn)"></i>serie</span></div></div>
+        <div class="card-b"><svg class="ch" id="svgSP" viewBox="0 0 900 400"></svg></div></div>
+      <div class="card"><div class="card-h"><span class="t">Comparación</span></div><div class="card-b" style="overflow-x:auto"><table class="t" id="spTable"></table></div></div>
+    </section>
+
+    <!-- 6 · selección -->
+    <section class="panel" data-panel="se">
+      <div class="ph"><h2>Selección y ecuaciones</h2><span class="lbl">lista de chequeo de la Lectura 06</span><p>Lo que debe verificar antes de escoger una bomba para el proyecto, con los valores de la selección actual.</p></div>
+      <div class="two">
+        <div class="card"><div class="card-h"><span class="t">Lista de chequeo</span></div><div class="card-b" id="checks" style="padding-top:4px"></div></div>
+        <div>
+          <div class="card" style="margin-top:18px"><div class="card-h"><span class="t">Motor</span></div><div class="card-b"><div class="spec" id="specMotor"></div></div></div>
+          <div class="card"><div class="card-h"><span class="t">Velocidad específica</span></div><div class="card-b"><div class="nsbar" id="nsBar"></div><p class="small" id="nsNote" style="margin:6px 0 0"></p></div></div>
+          <div class="card"><div class="card-h"><span class="t">Corrección por viscosidad · ANSI/HI 9.6.7</span></div><div class="card-b"><div class="spec" id="specHI"></div><p class="small" id="hiNote" style="margin:8px 0 0"></p></div></div>
+        </div>
+      </div>
+      <div class="eqs" id="eqs"></div>
+      <div class="callout ink" id="assump"></div>
+    </section>
+
+    <!-- 7 · configuraciones -->
+    <section class="panel" data-panel="cf">
+      <div class="ph"><h2>Configuraciones</h2><span class="lbl">cargue una y siga cambiándola</span><p id="cfLead"></p></div>
+      <div class="cfgs" id="cfgCards"></div>
+      <div class="card"><div class="card-h"><span class="t">Para probar en el sistema que tiene en pantalla</span><span class="sp"></span><span>un cambio a la vez</span></div><div class="card-b"><ul class="ideas" id="cfgIdeas"></ul></div></div>
+    </section>
+  </main>
+</div>
+<button type="button" class="mobile-ctl" id="mobCtl">Controles</button>
+<script>
+/* ---------- propiedades de los fluidos ---------- */
+function antoineKPa(A, B, C, T) { return Math.pow(10, A - B / (C + T)) * 0.133322; }
+function waterRho(T) { return 1000 * (1 - (T + 288.9414) / (508929.2 * (T + 68.12963)) * Math.pow(T - 3.9863, 2)); } // Thiesen (PTB)
+function waterMu(T) { return 2.414e-5 * Math.pow(10, 247.8 / (T + 273.15 - 140)); } // Vogel, Pa·s
+function waterPv(T) { return antoineKPa(8.07131, 1730.63, 233.426, T); } // Antoine, 1 a 100 °C
+var GLY_T = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
+var GLY_MU = [3900, 1410, 612, 284, 142, 81.3, 50.6, 31.9, 21.3, 14.8]; // mPa·s, Segur y Oberstar (1951)
+function glyMu(T) {
+  if (T <= GLY_T[0]) return GLY_MU[0] / 1000;
+  for (var i = 1; i < GLY_T.length; i++) if (T <= GLY_T[i]) {
+    var t = (T - GLY_T[i - 1]) / (GLY_T[i] - GLY_T[i - 1]);
+    return Math.exp(Math.log(GLY_MU[i - 1]) + t * (Math.log(GLY_MU[i]) - Math.log(GLY_MU[i - 1]))) / 1000;
+  }
+  return GLY_MU[GLY_MU.length - 1] / 1000;
+}
+// ISO VG 32: ν = 32 cSt a 40 °C y 5,4 cSt a 100 °C (IV ≈ 100), interpolado con Walther (ASTM D341)
+function oilNu(T) { var lg = 9.5304 - 3.7464 * Math.log10(T + 273.15); return Math.pow(10, Math.pow(10, lg)) - 0.7; } // cSt
+var FLUIDS = [
+  { id: 'agua', name: 'Agua', color: '#3F86D1', T: [1, 95], src: 'ρ: Thiesen (PTB) · μ: Vogel · Pv: Antoine',
+    props: function (T) { return { rho: waterRho(T), mu: waterMu(T), Pv: waterPv(T) }; },
+    note: 'Agua de servicios y de proceso. La viscosidad cae a la tercera parte entre 20 y 80 °C; la presión de vapor sube de 2,3 a 47 kPa.' },
+  { id: 'etanol', name: 'Etanol', color: '#8DB9E4', T: [0, 70], src: 'ρ lineal · μ: Andrade · Pv: Antoine',
+    props: function (T) { return { rho: 806.4 - 0.85 * T, mu: Math.exp(-5.702 + 1725 / (T + 273.15)) / 1000, Pv: antoineKPa(8.20417, 1642.89, 230.3, T) }; },
+    note: 'Solvente de extracción y de limpieza, común en plantas de alimentos y de aromas. Muy volátil: a 40 °C su presión de vapor ya es 18 kPa, así que la succión se vuelve el punto crítico.' },
+  { id: 'glicerina', name: 'Glicerina', color: '#D9B54E', T: [10, 100], src: 'μ: Segur y Oberstar (1951)',
+    props: function (T) { return { rho: 1261 - 0.62 * (T - 20), mu: glyMu(T), Pv: 0.0001 }; },
+    note: 'Líquido newtoniano muy viscoso: a 20 °C es 1400 veces más viscoso que el agua. Útil para ver el flujo laminar y su perfil parabólico.' },
+  { id: 'aceite', name: 'Aceite ISO VG 32', color: '#BF8F2A', T: [0, 100], src: 'ν: Walther (ASTM D341), 32 cSt a 40 °C',
+    props: function (T) { var rho = 870 - 0.63 * T; return { rho: rho, mu: oilNu(T) * rho / 1e6, Pv: 0.0001 }; },
+    note: 'Aceite mineral ligero (grado ISO VG 32, típico de lubricación e hidráulica). Cae en flujo laminar o de transición en casi toda la escala de diseño.' },
+  { id: 'extracto', name: 'Extracto acuoso caliente', color: '#D0913A', T: [20, 90], custom: 'mu', project: true, src: 'ρ y Pv del agua; μ a medir',
+    props: function (T, s) { return { rho: waterRho(T) + 8, mu: s.pMu / 1000, Pv: waterPv(T) }; },
+    note: 'Un extracto acuoso caliente de una planta de alimentos, con cerca de 1 % de sólidos. Su densidad y su presión de vapor son las del agua a la misma temperatura; la viscosidad depende de los sólidos disueltos y en suspensión, y puede ser pseudoplástica: el valor que se usa aquí es un dato de referencia que se mide en el laboratorio.' },
+  { id: 'custom', name: 'Personalizado', color: '#6F9BC4', T: null, custom: 'all', src: 'propiedades del usuario',
+    props: function (T, s) { return { rho: s.cRho, mu: Math.pow(10, s.cMuExp), Pv: s.cPv }; },
+    note: 'Defina densidad, viscosidad y presión de vapor a la temperatura de proceso.' }
+];
+
+/* ---------- formato ---------- */
+function fmtN(n, d) {
+  if (n === null || n === undefined || !isFinite(n)) return '—';
+  d = d === undefined ? 1 : d;
+  var neg = n < 0 && Math.abs(n) >= 0.5 * Math.pow(10, -d), s = Math.abs(n).toFixed(d), p = s.split('.'), int = p[0];
+  if (int.length > 4) int = int.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  return (neg ? '−' : '') + int + (p[1] ? ',' + p[1] : '');
+}
+var SUP = { '-': '⁻', '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴', '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹' };
+function sup(n) { return String(n).split('').map(function (c) { return SUP[c] || c; }).join(''); }
+function fmtSci(x, d) { if (!(x > 0)) return fmtN(x, d); var e = Math.floor(Math.log10(x)), m = x / Math.pow(10, e); if (m >= 9.995) { m /= 10; e++; } return fmtN(m, d == null ? 2 : d) + '×10' + sup(e); }
+function fmtRe(Re) { if (!(Re > 0)) return '0'; if (Re < 1e4) return fmtN(Re, Re < 100 ? 1 : 0); return fmtSci(Re, 2); }
+function fmtF(f) { return f >= 1 ? fmtN(f, 2) : (f >= 0.1 ? fmtN(f, 3) : fmtN(f, 4)); }
+function fmtMu(mu) { return mu >= 0.1 ? fmtN(mu, 2) + ' Pa·s' : fmtN(mu * 1000, mu < 0.01 ? 3 : 1) + ' mPa·s'; }
+function fmtQ(Qs) { var h = Qs * 3600; return fmtN(h, h < 10 ? 2 : (h < 100 ? 1 : 0)); }
+function fmtKW(k) { return k < 10 ? fmtN(k, 2) : fmtN(k, 1); }
+/* ====================================================================
+   Explorador de bombas centrífugas · modelo (SI interno: m³/s, m, W)
+   Bomba radial de una etapa construida con la ecuación de Euler (con
+   deslizamiento de Wiesner) y pérdidas: fricción, choque a la entrada,
+   fugas, fricción de disco, mecánicas y recirculación a carga parcial.
+   Las leyes de afinidad salen solas del modelo; el recorte del impulsor
+   las cumple solo de forma aproximada, como en una bomba real.
+   ==================================================================== */
+var G = 9.81, RHO_W = 998;
+// carcasa de referencia 2×3-8 (impulsor máximo de 8 pulgadas); las otras son semejantes
+var REF = { D2max: 0.203, b2: 0.00931, beta2: 27, z: 6, D1: 0.080, dh: 0.025, kf: 56100, A: 19.6, Qsf: 0.01528, QL: 0.03, Cdf: 0.0025, Pm: 250, Rrec: 0.0095, tau: 0.92, Nref: 3500 };
+var SIGMA = 1 - Math.sqrt(Math.sin(REF.beta2 * Math.PI / 180)) / Math.pow(REF.z, 0.7); // Wiesner
+var CASINGS = [
+  { id: 's', name: '1½×2-6', lam: 0.75, nozS: 52.5, nozD: 40.9, note: 'Carcasa pequeña: succión de 2″, descarga de 1½″, impulsor de hasta 6″.' },
+  { id: 'm', name: '2×3-8', lam: 1.0, nozS: 77.9, nozD: 52.5, note: 'Carcasa mediana: succión de 3″, descarga de 2″, impulsor de hasta 8″.' },
+  { id: 'l', name: '3×4-10', lam: 1.25, nozS: 102.3, nozD: 77.9, note: 'Carcasa grande: succión de 4″, descarga de 3″, impulsor de hasta 10″.' }
+];
+var IEC_MOTORS = [0.18, 0.25, 0.37, 0.55, 0.75, 1.1, 1.5, 2.2, 3, 4, 5.5, 7.5, 11, 15, 18.5, 22, 30, 37, 45, 55, 75, 90, 110, 132, 160, 200, 250, 315];
+// eficiencia nominal IE3 (IEC 60034-30-1), 4 polos, valores de referencia
+var IE3 = [[0.12, 0.65], [0.18, 0.69], [0.25, 0.73], [0.37, 0.77], [0.55, 0.80], [0.75, 0.825], [1.1, 0.841], [1.5, 0.853], [2.2, 0.867], [3, 0.877], [4, 0.886], [5.5, 0.896], [7.5, 0.904], [11, 0.914], [15, 0.921], [18.5, 0.926], [22, 0.930], [30, 0.936], [37, 0.939], [45, 0.942], [55, 0.946], [75, 0.950], [90, 0.952], [110, 0.954], [132, 0.956], [160, 0.958], [200, 0.960], [250, 0.960], [315, 0.960]];
+function byId(list, id) { for (var i = 0; i < list.length; i++) if (list[i].id === id) return list[i]; return list[0]; }
+function patmKPa(alt) { return 101.325 * Math.pow(1 - 2.25577e-5 * alt, 5.25588); }
+function gShock(t) { return (Math.sqrt(t * t + 0.04) - 0.2) / (Math.sqrt(1.04) - 0.2); }
+function ie3(kW) { for (var i = 0; i < IE3.length; i++) if (IE3[i][0] >= kW - 1e-9) return IE3[i][1]; return 0.96; }
+function bisect(fn, lo, hi, it) { var flo = fn(lo); for (var i = 0; i < (it || 70); i++) { var m = 0.5 * (lo + hi), fm = fn(m); if ((fm > 0) === (flo > 0)) { lo = m; flo = fm; } else hi = m; } return 0.5 * (lo + hi); }
+
+/* ---------- bomba con agua ---------- */
+function pumpW(N, D, cas) {
+  var lam = cas.lam, w = N * Math.PI / 30, n = N / REF.Nref, Qsf = REF.Qsf * n * lam * lam * lam;
+  var b2 = REF.b2 * lam, A2 = Math.PI * D * b2 * REF.tau, u2 = w * D / 2, tb2 = Math.tan(REF.beta2 * Math.PI / 180);
+  var D1 = REF.D1 * lam, dh = REF.dh * lam, A1 = Math.PI / 4 * (D1 * D1 - dh * dh), r1 = 0.45 * D1, u1 = w * r1;
+  var kf = REF.kf / Math.pow(lam, 4), Ash = REF.A * n * n * lam * lam, cdisk = RHO_W * Math.pow(w, 3) * Math.pow(D / 2, 5);
+  function Hth(Q) { return (SIGMA * u2 * u2 - u2 * (Q / A2) / tb2) / G; }
+  function H(Q) { return Hth(Q) - kf * Q * Q - Ash * gShock((Qsf - Q) / Qsf); }
+  function P(Q) { var ht = Hth(Q), QL = REF.QL * Qsf * Math.sqrt(Math.max(ht, 0.1) / (93 * n * n * lam * lam)); return RHO_W * G * (Q + QL) * ht + REF.Cdf * cdisk + REF.Pm * Math.pow(n, 1.5) * lam * lam * lam + REF.Rrec * cdisk * Math.pow(Math.max(0, 1 - Q / Qsf), 1.5); }
+  function eta(Q) { return Q > 0 ? Math.max(0, RHO_W * G * Q * H(Q) / P(Q)) : 0; }
+  function npsh3(Q) { var c1 = Q / A1, w1s = c1 * c1 + u1 * u1, x = Q / Qsf; return (1.1 * c1 * c1 + 0.22 * w1s) / (2 * G) * (1 + 0.3 * Math.pow(Math.max(0, 0.6 - x) / 0.6, 2)); }
+  // BEP por sección dorada
+  var a = 0.2 * Qsf, b = 1.6 * Qsf, gr = 0.618034;
+  for (var i = 0; i < 60; i++) { var c = b - gr * (b - a), d = a + gr * (b - a); if (eta(c) > eta(d)) b = d; else a = c; }
+  var qB = 0.5 * (a + b);
+  var qZ = bisect(function (q) { return H(q); }, Qsf * 0.5, Qsf * 3);
+  return { N: N, D: D, cas: cas, lam: lam, w: w, n: n, Qsf: Qsf, u2: u2, u1: u1, A1: A1, A2: A2, tb2: tb2, r1: r1, r2: D / 2, D1: D1, dh: dh, b2: b2,
+    Hth: Hth, H: H, P: P, eta: eta, npsh3: npsh3, qB: qB, hB: H(qB), eB: eta(qB), qZero: qZ, beta1B: Math.atan((Qsf / A1) / u1) * 180 / Math.PI };
+}
+/* ---------- corrección por viscosidad: ANSI/HI 9.6.7 ---------- */
+function hiCorr(pw, nuCst) {
+  // forma SI de la norma: Q en m³/h, H en m, ν en cSt, N en rpm (la de EE. UU., con GPM y pie, lleva 26,6)
+  var Qh = pw.qB * 3600, Hm = pw.hB;
+  var B = 16.5 * Math.sqrt(Math.max(nuCst, 0.01)) * Math.pow(Hm, 0.0625) / (Math.pow(Qh, 0.375) * Math.pow(pw.N, 0.25));
+  if (B <= 1) return { B: B, CQ: 1, CHb: 1, Ce: 1, on: false, valid: true, CH: function () { return 1; } };
+  var Bc = Math.min(B, 40), CQ = Math.pow(2.71, -0.165 * Math.pow(Math.log10(Bc), 3.15)), Ce = Math.pow(Bc, -0.0547 * Math.pow(Bc, 0.69));
+  return { B: B, CQ: CQ, CHb: CQ, Ce: Ce, on: true, valid: B < 40, CH: function (Qw) { return 1 - (1 - CQ) * Math.pow(Math.max(Qw, 0) / pw.qB, 0.75); } };
+}
+/* ---------- bomba con el fluido del proceso ---------- */
+function pumpF(pw, P, hi) {
+  var rr = P.rho / RHO_W;
+  return { pw: pw, hi: hi,
+    H: function (Q) { var qw = Q / hi.CQ; return hi.CH(qw) * pw.H(qw); },
+    eta: function (Q) { return hi.Ce * pw.eta(Q / hi.CQ); },
+    P: function (Q) { var qw = Q / hi.CQ; return rr * hi.CQ * hi.CH(qw) / hi.Ce * pw.P(qw); },
+    npsh3: function (Q) { return pw.npsh3(Q / hi.CQ); },
+    qB: pw.qB * hi.CQ, hB: pw.hB * hi.CHb, eB: pw.eB * hi.Ce, qEnd: 1.3 * pw.qB * hi.CQ, qZero: pw.qZero * hi.CQ };
+}
+// caída de cabeza por cavitación: 3 % cuando NPSHa = NPSH3 (definición del ensayo)
+function cavDrop(ratio) { if (!(ratio > 0)) return 1; if (ratio >= 1) return 0.03 * Math.exp(-(ratio - 1) * 7); return Math.min(1, 0.03 + 0.97 * Math.pow(1 - ratio, 0.8)); }
+
+/* ---------- sistema ---------- */
+function setupSystem(s, P, Patm) {
+  var rg = P.rho * G, Qd = Math.pow(10, s.lQd) / 3600;
+  var Hst = (s.zd - s.zs) + (s.P2 - s.P1) * 1000 / rg;
+  var kS = s.hfs / (Qd * Qd), kD = (s.hfd + s.hv) / (Qd * Qd);
+  return { Qd: Qd, Hst: Hst, kS: kS, kD: kD, rg: rg,
+    H: function (Q) { return Hst + (kS + kD) * Q * Q; },
+    npsha: function (Q) { return (Patm + s.P1 - P.Pv) * 1000 / rg + s.zs - kS * Q * Q; } };
+}
+function perPump(arr, Q) { return arr === 'paralelo' ? Q / 2 : Q; }
+function setHead(pf, sys, arr, Q, cav) {
+  var q1 = perPump(arr, Q), h1 = pf.H(q1);
+  var dr = cav ? cavDrop(sys.npsha(Q) / pf.npsh3(q1)) : 0;
+  if (arr === 'serie') return h1 * (1 - dr) + h1;
+  return h1 * (1 - dr);
+}
+function solveOp(pf, sys, arr) {
+  var f = function (Q) { return setHead(pf, sys, arr, Q, true) - sys.H(Q); };
+  if (f(1e-7) <= 0) return null;
+  var hi = (arr === 'paralelo' ? 2 : 1) * pf.qZero * 1.02;
+  if (f(hi) > 0) hi *= 2;
+  var Q = bisect(f, 1e-7, hi);
+  return { Q: Q, H: sys.H(Q), q1: perPump(arr, Q), h1: arr === 'serie' ? sys.H(Q) / 2 : sys.H(Q) };
+}
+function motorPick(Pmax, FS) { var need = Pmax * FS; for (var i = 0; i < IEC_MOTORS.length; i++) if (IEC_MOTORS[i] >= need - 1e-9) return IEC_MOTORS[i]; return null; }
+
+/* ---------- triángulos de velocidad y presiones internas ---------- */
+function triangles(pw, Qw, H) {
+  var c1 = Qw / pw.A1, u1 = pw.u1, w1 = Math.sqrt(c1 * c1 + u1 * u1), b1 = Math.atan2(c1, u1) * 180 / Math.PI;
+  var cm2 = Qw / pw.A2, u2 = pw.u2, cu2 = SIGMA * u2 - cm2 / pw.tb2, cu2inf = u2 - cm2 / pw.tb2, wu2 = u2 - cu2;
+  var w2 = Math.sqrt(cm2 * cm2 + wu2 * wu2), c2 = Math.sqrt(cm2 * cm2 + cu2 * cu2), Hth = u2 * cu2 / G;
+  return { c1: c1, u1: u1, w1: w1, beta1: b1, beta1B: pw.beta1B, inc: pw.beta1B - b1, cm2: cm2, u2: u2, cu2: cu2, cu2inf: cu2inf, wu2: wu2, w2: w2, c2: c2,
+    beta2: Math.atan2(cm2, wu2) * 180 / Math.PI, beta2B: REF.beta2, alpha2: Math.atan2(cm2, cu2) * 180 / Math.PI, Hth: Hth, etah: H / Hth, slip: SIGMA };
+}
+function innerPressures(pw, tri, H, npsha, npsh3, P, cas, q1) {
+  var rg = P.rho * G, pv = P.Pv * 1000 / rg;
+  var As = Math.PI / 4 * Math.pow(cas.nozS / 1000, 2), Ad = Math.PI / 4 * Math.pow(cas.nozD / 1000, 2);
+  var vs = q1 / As, vd = q1 / Ad, vhs = vs * vs / (2 * G), vhd = vd * vd / (2 * G);
+  var p0 = npsha + pv - vhs;
+  var p1 = p0 + vhs - (1.05 * tri.c1 * tri.c1) / (2 * G);
+  var npshi = 1.3 * npsh3, pmin = Math.min(pv + (npsha - npshi), p1 - 0.05);
+  var dimp = (tri.u2 * tri.u2 - tri.u1 * tri.u1 + tri.w1 * tri.w1 - tri.w2 * tri.w2) / (2 * G) - 0.5 * (tri.Hth - H);
+  var p2 = p1 + dimp, p4 = p0 + H + vhs - vhd, p3 = p2 + 0.7 * (p4 - p2);
+  return { pv: pv, vs: vs, vd: vd, npshi: npshi, pts: [
+    { k: 'Brida de succión', x: 0, p: p0 }, { k: 'Ojo del impulsor', x: 1, p: p1 }, { k: 'Borde de ataque del álabe', x: 1.3, p: pmin },
+    { k: 'Salida del impulsor', x: 2.2, p: p2 }, { k: 'Voluta', x: 3.1, p: p3 }, { k: 'Brida de descarga', x: 4, p: p4 }] };
+}
+
+/* ---------- cálculo completo ---------- */
+function compute(s, lite) {
+  var fl = byId(FLUIDS, s.fluid), T = fl.T ? Math.max(fl.T[0], Math.min(fl.T[1], s.T)) : s.T;
+  var P = fl.props(T, s); P.nu = P.mu / P.rho;
+  var cas = byId(CASINGS, s.casing), Dmax = REF.D2max * cas.lam, Dmin = 0.75 * Dmax, D = Math.max(Dmin, Math.min(Dmax, s.D / 1000));
+  var N = s.N0 * s.vfd / 100, Patm = patmKPa(s.alt);
+  var pw = pumpW(N, D, cas), hi = hiCorr(pw, P.nu * 1e6), pf = pumpF(pw, P, hi);
+  var sys = setupSystem(s, P, Patm), arr = s.arr;
+  var op = solveOp(pf, sys, arr);
+  var R = { s: s, fl: fl, T: T, P: P, cas: cas, D: D, Dmin: Dmin, Dmax: Dmax, N: N, Patm: Patm, pw: pw, hi: hi, pf: pf, sys: sys, arr: arr, op: op, rg: P.rho * G };
+  if (op) {
+    var q1 = op.q1, h1 = pf.H(q1), qw = q1 / hi.CQ;
+    R.eta = pf.eta(q1); R.x = q1 / pf.qB; R.Pshaft1 = pf.P(q1) / 1000; R.nP = arr === 'una' ? 1 : 2; R.Pshaft = R.Pshaft1 * R.nP;
+    R.Phyd = R.rg * op.Q * op.H / 1000;
+    R.npsha = sys.npsha(op.Q); R.npsh3 = pf.npsh3(q1); R.npshi = 1.3 * R.npsh3; R.margin = R.npsha - R.npsh3;
+    R.drop = cavDrop(R.npsha / R.npsh3);
+    R.tri = triangles(pw, qw, pw.H(qw));
+    R.press = innerPressures(pw, R.tri, h1 * (1 - R.drop), R.npsha, R.npsh3, P, cas, q1);
+    R.beyond = q1 > pf.qEnd;
+  }
+  // motor: potencia máxima en la curva publicada (no sobrecargable) con factor de servicio
+  var pmax = 0; for (var i = 0; i <= 60; i++) pmax = Math.max(pmax, pf.P(pf.qEnd * i / 60) / 1000);
+  R.PmaxCurve = pmax; R.motor = motorPick(pmax, s.FS); R.motorPt = op ? motorPick(R.Pshaft1, s.FS) : null;
+  R.etaM = R.motor ? ie3(R.motor) : 0.9; R.Pelec = op ? R.Pshaft / R.etaM : 0;
+  // velocidad específica en el BEP (agua)
+  R.nq = N * Math.sqrt(pw.qB) / Math.pow(pw.hB, 0.75); R.NsUS = N * Math.sqrt(pw.qB * 15850.32) / Math.pow(pw.hB * 3.28084, 0.75);
+  R.regul = lite ? null : regulation(s, P, cas, sys, Patm, arr);
+  R.arrs = lite ? null : ['una', 'paralelo', 'serie'].map(function (a) { return { a: a, op: solveOp(pf, sys, a) }; });
+  R.warn = diagnose(R);
+  return R;
+}
+/* tres maneras de entregar el caudal requerido Q_d: válvula, variador, recorte */
+function regulation(s, P, cas, sys, Patm, arr) {
+  var Dmax = REF.D2max * cas.lam, Dmin = 0.75 * Dmax, D = Math.max(Dmin, Math.min(Dmax, s.D / 1000));
+  var mk = function (N, Dd) { var pw = pumpW(N, Dd, cas); return pumpF(pw, P, hiCorr(pw, P.nu * 1e6)); };
+  var base = mk(s.N0, D);
+  function at(Q) {
+    var q1 = perPump(arr, Q), Hs = sys.H(Q), n = arr === 'una' ? 1 : 2, out = { Q: Q, Hs: Hs };
+    var Hp = setHead(base, sys, arr, Q, false);
+    out.thr = Hp >= Hs ? { P: n * base.P(q1) / 1000, dH: Hp - Hs, eta: base.eta(q1) } : null;
+    // variador: velocidad que pone la curva de la bomba sobre el sistema
+    var f = function (r) { return setHead(mk(s.N0 * r, D), sys, arr, Q, false) - Hs; };
+    if (f(1.1) > 0 && f(0.2) < 0) { var r = bisect(f, 0.2, 1.1, 40), pv = mk(s.N0 * r, D); out.vfd = { P: n * pv.P(q1) / 1000, n: r, eta: pv.eta(q1) }; }
+    // recorte del impulsor a plena velocidad
+    var g = function (Dd) { return setHead(mk(s.N0, Dd), sys, arr, Q, false) - Hs; };
+    if (g(Dmax) > 0 && g(Dmin) < 0) { var Dd = bisect(g, Dmin, Dmax, 40), pt = mk(s.N0, Dd); out.trim = { P: n * pt.P(q1) / 1000, D: Dd, eta: pt.eta(q1) }; }
+    else if (g(Dmin) >= 0) out.trimMin = true;
+    return out;
+  }
+  var Qd = sys.Qd, pts = [];
+  for (var i = 0; i <= 24; i++) pts.push(at(Qd * (0.4 + 0.8 * i / 24)));
+  return { at: at(Qd), pts: pts };
+}
+
+/* ---------- diagnóstico ---------- */
+function diagnose(R) {
+  var w = [], s = R.s, pf = R.pf;
+  function add(sev, t) { w.push({ sev: sev, t: t }); }
+  if (!R.op && setHead(pf, R.sys, R.arr, 1e-7, false) > R.sys.Hst) { add('c', 'Cavitación tan severa que la bomba no levanta la cabeza estática: el NPSH disponible a caudal casi nulo (' + fmtN(R.sys.npsha(0), 2) + ' m) no alcanza el requerido (' + fmtN(pf.npsh3(1e-6), 2) + ' m). Suba el tanque de succión o enfríe el líquido.'); return w; }
+  if (!R.op) { add('c', 'La bomba no vence la cabeza estática: su cabeza a caudal cero (' + fmtN(setHead(pf, R.sys, R.arr, 1e-7, false), 1) + ' m) no supera los ' + fmtN(R.sys.Hst, 1) + ' m del sistema. No hay punto de operación: suba la velocidad, use un impulsor mayor o ponga dos bombas en serie.'); return w; }
+  if (R.hi.on && !R.hi.valid) add('c', 'Viscosidad fuera del rango de ANSI/HI 9.6.7 (B = ' + fmtN(R.hi.B, 1) + ' > 40): una centrífuga no es adecuada. Use una bomba de desplazamiento positivo.');
+  if (R.npsha < R.npsh3) add('c', 'Cavitación: NPSH disponible (' + fmtN(R.npsha, 2) + ' m) menor que el requerido (' + fmtN(R.npsh3, 2) + ' m). La cabeza cae ' + fmtN(100 * R.drop, 0) + ' % y el impulsor se erosiona. Suba el tanque, acorte la succión, enfríe el líquido o baje la velocidad.');
+  else if (R.npsha < R.npsh3 + s.marg || R.npsha < 1.1 * R.npsh3) add('w', 'Margen de NPSH insuficiente: ' + fmtN(R.margin, 2) + ' m sobre el requerido. La Lectura 06 pide 0,5 a 1 m (o 10 a 25 %); aquí se exige ' + fmtN(s.marg, 1) + ' m.');
+  else if (R.npsha < R.npshi) add('w', 'Cavitación incipiente: el NPSH disponible supera el NPSH3 pero no el de inicio de burbujas (≈ 1,3 × NPSH3 = ' + fmtN(R.npshi, 2) + ' m). Habrá algo de ruido y erosión lenta en los álabes.');
+  if (R.beyond) add('c', 'El punto de operación cae más allá del final de la curva publicada (' + fmtN(100 * R.x, 0) + ' % del BEP): ruido, vibración y riesgo de cavitación. Agregue resistencia a la descarga o elija una bomba mayor.');
+  else if (R.x < 0.7 || R.x > 1.1) add('w', 'La bomba opera al ' + fmtN(100 * R.x, 0) + ' % del caudal de mejor eficiencia, fuera de la ventana de 70 a 110 % de la Lectura 06' + (R.x < 0.7 ? ': recirculación interna, empujes radiales y calentamiento.' : ': NPSH requerido alto y riesgo de cavitación.'));
+  if (R.x < 0.45) add('w', 'Caudal muy bajo para esta bomba: con menos del 45 % del BEP aparece recirculación en la entrada y la salida del impulsor (se ve en la animación).');
+  if (R.hi.on && R.hi.valid) add(R.hi.Ce < 0.97 ? 'w' : 'ok', 'Fluido viscoso (ν = ' + fmtN(R.P.nu * 1e6, 1) + ' cSt, B = ' + fmtN(R.hi.B, 2) + '): según ANSI/HI 9.6.7 el caudal se multiplica por ' + fmtN(R.hi.CQ, 3) + ', la cabeza en el BEP por ' + fmtN(R.hi.CHb, 3) + ' y la eficiencia por ' + fmtN(R.hi.Ce, 3) + '.');
+  if (s.vfd > 100) add('w', 'Velocidad sobre la nominal del motor (' + fmtN(s.vfd, 0) + ' %): verifique con el fabricante la velocidad máxima de la bomba y la potencia del motor.');
+  if (R.motor === null) add('c', 'No hay motor estándar en la tabla para ' + fmtN(R.PmaxCurve * s.FS, 1) + ' kW.');
+  if (Math.abs(R.D - R.Dmax) < 1e-4 && !R.beyond) add('ok', 'El impulsor está en el diámetro máximo de la carcasa: no queda margen para crecer si la demanda aumenta.');
+  if (!w.some(function (x) { return x.sev !== 'ok'; })) add('ok', 'Selección sana: punto dentro de la ventana de eficiencia, margen de NPSH suficiente y motor que no se sobrecarga en toda la curva.');
+  return w;
+}
+/* ====================================================================
+   La bomba por dentro: vista frontal de impulsor y voluta en cámara
+   lenta. Las partículas siguen la cinemática real (velocidad relativa
+   entre álabes más la rotación), se colorean con la presión estática y
+   se forman burbujas donde la presión cae bajo la de vapor.
+   ==================================================================== */
+function cssVar(n) { return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+function clamp(x, a, b) { return x < a ? a : (x > b ? b : x); }
+var PAL = [[43, 76, 126], [89, 128, 166], [143, 184, 201], [232, 195, 90], [217, 130, 43]];
+function palAt(t) { t = clamp(t, 0, 1) * (PAL.length - 1); var i = Math.min(PAL.length - 2, Math.floor(t)), f = t - i, a = PAL[i], b = PAL[i + 1]; return 'rgb(' + Math.round(a[0] + (b[0] - a[0]) * f) + ',' + Math.round(a[1] + (b[1] - a[1]) * f) + ',' + Math.round(a[2] + (b[2] - a[2]) * f) + ')'; }
+var SLOW = 150; // cámara lenta: el tiempo en pantalla corre 150 veces más despacio
+
+function PumpScene(cv) { this.cv = cv; this.ctx = cv.getContext('2d'); this.running = true; this.speed = 1; this.rot = 0; this.t = 0; this.parts = []; this.bub = []; this.flash = []; this.spawnAcc = 0; this.R = null; }
+PumpScene.prototype.resize = function () {
+  var r = this.cv.getBoundingClientRect(); if (!r.width) return;
+  var dpr = Math.min(2, window.devicePixelRatio || 1);
+  this.W = r.width; this.H = r.height; this.cv.width = Math.round(r.width * dpr); this.cv.height = Math.round(r.height * dpr);
+  this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0); if (this.R) this.layout();
+};
+PumpScene.prototype.configure = function (R) { var first = !this.R; this.R = R; if (!this.W) this.resize(); this.layout(); if (first) this.prime(); };
+PumpScene.prototype.reset = function () { this.parts = []; this.bub = []; this.flash = []; this.prime(); };
+PumpScene.prototype.layout = function () {
+  var R = this.R, W = this.W, H = this.H; if (!W || !R) return;
+  var pw = R.pw, mob = W < 640;
+  var r2m = R.Dmax / 2, rOutMax = r2m * (1.10 + 0.62);
+  var avail = Math.min((mob ? W * 0.34 : W * 0.36) , (H - 70) / 2.25);
+  var k = avail / rOutMax; // px por metro
+  var L = { mob: mob, k: k, cx: mob ? W * 0.43 : W * 0.40, cy: H * 0.56 };
+  L.r1 = pw.D1 / 2 * k; L.rh = pw.dh / 2 * k; L.r2 = R.D / 2 * k; L.r2m = r2m * k; L.r3 = r2m * 1.10 * k; L.dv = r2m * 0.62 * k;
+  L.th = 0; // lengüeta a las 3
+  // álabe: ángulo de 0 en r1 a θoff(r2), con β variando de β1B a β2B (medido desde la tangente)
+  var b1 = (pw.beta1B || 18) * Math.PI / 180, b2 = REF.beta2 * Math.PI / 180, n = 30, off = [0], rr = [pw.D1 / 2], r1m = pw.D1 / 2, r2mm = R.D / 2;
+  for (var i = 1; i <= n; i++) { var ra = r1m + (r2mm - r1m) * (i - 1) / n, rb = r1m + (r2mm - r1m) * i / n, rm = 0.5 * (ra + rb), bt = b1 + (b2 - b1) * (rm - r1m) / (r2mm - r1m); off.push(off[i - 1] - (rb - ra) / (rm * Math.tan(bt))); rr.push(rb); }
+  L.boff = off; L.brr = rr; L.z = REF.z;
+  this.Lo = L;
+  this.col = { ink: cssVar('--ink') || '#1c1b1a', paper: cssVar('--paper') || '#fff', muted: cssVar('--muted-ink') || '#6b6764', hl: cssVar('--hl') || '#5980A6', red: cssVar('--redline') || '#C8452B', grid: cssVar('--grid') };
+};
+PumpScene.prototype.bladeOff = function (rm) { var L = this.Lo, rr = L.brr, off = L.boff; if (rm <= rr[0]) return 0; for (var i = 1; i < rr.length; i++) if (rm <= rr[i]) { var t = (rm - rr[i - 1]) / (rr[i] - rr[i - 1]); return off[i - 1] + (off[i] - off[i - 1]) * t; } return off[off.length - 1]; };
+PumpScene.prototype.rOut = function (phi) { var L = this.Lo; return L.r3 + L.dv * clamp(phi / (2 * Math.PI), 0, 1); };
+// presión estática (m, absoluta) en cada zona: para el color
+PumpScene.prototype.pAt = function (zone, f) {
+  var R = this.R; if (!R.press) return 0; var p = R.press.pts;
+  if (zone === 'eye') return p[1].p;
+  if (zone === 'imp') { var dip = Math.max(0, 1 - f / 0.18); return p[1].p + (p[3].p - p[1].p) * Math.pow(f, 1.3) - (p[1].p - p[2].p) * dip * dip; }
+  if (zone === 'vol') return p[3].p + (p[4].p - p[3].p) * f;
+  return p[4].p + (p[5].p - p[4].p) * f;
+};
+PumpScene.prototype.pColor = function (pv) { var R = this.R, p = R.press.pts, lo = Math.min(p[2].p, R.press.pv), hi = p[5].p; if (pv < R.press.pv) return this.col.red; return palAt((pv - lo) / Math.max(1e-6, hi - lo)); };
+PumpScene.prototype.prime = function () { for (var i = 0; i < 260; i++) this.step(0.03, true); };
+PumpScene.prototype.spawn = function () {
+  var L = this.Lo, a = Math.random() * 2 * Math.PI, r = L.rh + (L.r1 - L.rh) * Math.sqrt(Math.random());
+  this.parts.push({ z: 'eye', r: r, th: a, f: Math.random() * 0.7 + 0.15, life: 0 });
+};
+PumpScene.prototype.step = function (dt, silent) {
+  var R = this.R, L = this.Lo; if (!R || !L || !R.op) return;
+  var pw = R.pw, k = L.k, h = dt * this.speed / SLOW, w = pw.w, q = R.op.q1 / R.hi.CQ, tri = R.tri;
+  this.rot += w * h; this.t += dt;
+  // caudal de partículas proporcional al caudal real
+  this.spawnAcc += dt * this.speed * clamp(70 * q / pw.qB, 8, 130);
+  while (this.spawnAcc > 1) { this.spawnAcc -= 1; if (this.parts.length < 900) this.spawn(); }
+  var b1 = pw.b2 * 1.7, b2 = pw.b2, r1m = pw.D1 / 2, r2m = R.D / 2, rec = clamp((0.6 - R.x) / 0.6, 0, 1);
+  for (var i = this.parts.length - 1; i >= 0; i--) {
+    var p = this.parts[i]; p.life += h;
+    if (p.z === 'eye') { var rmE = p.r / k, cr = q / (2 * Math.PI * Math.max(rmE, 0.004) * b1); p.r += cr * k * h * 0.6; if (p.r >= L.r1) { p.z = 'imp'; p.ch = Math.floor((((p.th - this.rot) % (2 * Math.PI)) + 4 * Math.PI) % (2 * Math.PI) / (2 * Math.PI / L.z)); } continue; }
+    if (p.z === 'imp') {
+      var rm = p.r / k, fr = clamp((rm - r1m) / (r2m - r1m), 0, 1), bb = b1 + (b2 - b1) * fr, cm = q / (2 * Math.PI * rm * bb * REF.tau);
+      p.r += cm * k * h; if (rec > 0 && fr < 0.25) p.f += (Math.random() - 0.5) * rec * 0.08;
+      p.f = clamp(p.f + (Math.random() - 0.5) * 0.01, 0.08, 0.92);
+      p.th = this.rot + p.ch * 2 * Math.PI / L.z + this.bladeOff(rm) + p.f * 2 * Math.PI / L.z;
+      if (p.r >= L.r2) { p.z = 'vol'; p.rv = L.r2; p.ph = ((p.th - L.th) % (2 * Math.PI) + 4 * Math.PI) % (2 * Math.PI); p.trav = 0; }
+      continue;
+    }
+    if (p.z === 'vol') {
+      var ro = this.rOut(p.ph), rmid = (L.r2 + 0.35 * (ro - L.r2)) + p.f * 0.55 * (ro - L.r2);
+      p.rv += (rmid - p.rv) * Math.min(1, 6 * h * w / 20);
+      var cu = tri.cu2 * L.r2 / Math.max(p.rv, L.r2), dph = cu / (p.rv / k) * h;
+      p.ph += dph; p.trav += dph;
+      if (p.ph >= 2 * Math.PI) { p.z = 'noz'; p.y = 0; p.xr = p.rv; }
+      continue;
+    }
+    if (p.z === 'noz') { var vdz = (R.press.vd || 3); p.y += vdz * k * h * 1.4 + 0.6; if (p.y > L.cy + 10) this.parts.splice(i, 1); }
+  }
+  // burbujas: nacen en el lado de succión del álabe cerca del borde de ataque
+  var pr = R.press, sev = pr ? (pr.pv - pr.pts[2].p) : -1;
+  if (sev > 0 && !silent) {
+    var rate = clamp(sev / Math.max(0.3, R.npshi) * 200, 14, 260) * dt * this.speed;
+    for (var j = 0; j < rate; j++) if (this.bub.length < 360) { var ch = Math.floor(Math.random() * L.z), rr0 = L.r1 * (1.02 + Math.random() * 0.16); this.bub.push({ ch: ch, r: rr0, s: 0, max: 2.6 + Math.random() * 3.4 * clamp(sev, 0.4, 3) / 1.2, age: 0 }); }
+  }
+  var pv = pr ? pr.pv : 0;
+  for (var m = this.bub.length - 1; m >= 0; m--) {
+    var b = this.bub[m], rm2 = b.r / k, fr2 = clamp((rm2 - r1m) / (r2m - r1m), 0, 1), cm2 = q / (2 * Math.PI * rm2 * (b1 + (b2 - b1) * fr2) * REF.tau);
+    b.r += cm2 * k * h; b.age += dt;
+    var pl = this.pAt('imp', fr2);
+    if (pl < pv + 0.6 * sev) b.s = Math.min(b.max, b.s + dt * 14); else { b.s -= dt * 22; if (b.s <= 0) { var th = this.rot + b.ch * 2 * Math.PI / L.z + this.bladeOff(rm2) - 0.05; this.flash.push({ x: L.cx + b.r * Math.cos(th), y: L.cy - b.r * Math.sin(th), a: 1 }); this.bub.splice(m, 1); continue; } }
+    if (b.r > L.r2) this.bub.splice(m, 1);
+  }
+  for (var f = this.flash.length - 1; f >= 0; f--) { this.flash[f].a -= dt * 4; if (this.flash[f].a <= 0) this.flash.splice(f, 1); }
+};
+PumpScene.prototype.draw = function () {
+  var R = this.R, L = this.Lo, c = this.ctx; if (!R || !L) return;
+  var W = this.W, H = this.H, col = this.col, cx = L.cx, cy = L.cy, i;
+  c.clearRect(0, 0, W, H); c.fillStyle = col.paper; c.fillRect(0, 0, W, H);
+  c.strokeStyle = col.grid; c.lineWidth = 1;
+  for (var gx = 0; gx < W; gx += 24) { c.beginPath(); c.moveTo(gx + 0.5, 0); c.lineTo(gx + 0.5, H); c.stroke(); }
+  for (var gy = 0; gy < H; gy += 24) { c.beginPath(); c.moveTo(0, gy + 0.5); c.lineTo(W, gy + 0.5); c.stroke(); }
+  var font = cssVar('--font-body') || 'sans-serif', mono = cssVar('--font-mono') || 'monospace';
+  if (!R.op) { c.fillStyle = col.red; c.font = '700 15px ' + font; c.textAlign = 'center'; c.fillText('Sin punto de operación: la bomba no mueve el líquido', W / 2, H / 2); return; }
+  var X = function (r, th) { return cx + r * Math.cos(th); }, Y = function (r, th) { return cy - r * Math.sin(th); };
+  // voluta: anillo coloreado por presión
+  var NS = 72;
+  for (i = 0; i < NS; i++) {
+    var p0 = i / NS * 2 * Math.PI, p1 = (i + 1) / NS * 2 * Math.PI, a0 = L.th + p0, a1 = L.th + p1;
+    c.beginPath(); c.moveTo(X(L.r2m * 1.02, a0), Y(L.r2m * 1.02, a0)); c.lineTo(X(this.rOut(p0), a0), Y(this.rOut(p0), a0)); c.lineTo(X(this.rOut(p1), a1), Y(this.rOut(p1), a1)); c.lineTo(X(L.r2m * 1.02, a1), Y(L.r2m * 1.02, a1)); c.closePath();
+    c.fillStyle = this.pColor(this.pAt('vol', (i + 0.5) / NS)); c.globalAlpha = 0.32; c.fill(); c.globalAlpha = 1;
+  }
+  // boquilla de descarga (vertical, a la derecha)
+  var xa = cx + L.r3, xb = cx + this.rOut(2 * Math.PI), ytop = 18;
+  var gr = c.createLinearGradient(0, cy, 0, ytop); gr.addColorStop(0, this.pColor(this.pAt('noz', 0))); gr.addColorStop(1, this.pColor(this.pAt('noz', 1)));
+  c.fillStyle = gr; c.globalAlpha = 0.32; c.fillRect(xa, ytop, xb - xa, cy - ytop); c.globalAlpha = 1;
+  // carcasa
+  c.strokeStyle = col.ink; c.lineWidth = 3; c.beginPath();
+  for (i = 0; i <= NS; i++) { var ph = i / NS * 2 * Math.PI, rr = this.rOut(ph), aa = L.th + ph; if (i) c.lineTo(X(rr, aa), Y(rr, aa)); else c.moveTo(X(rr, aa), Y(rr, aa)); }
+  c.lineTo(xb, ytop); c.moveTo(xa, ytop); c.lineTo(xa, cy - 2); c.stroke();
+  // lengüeta
+  c.beginPath(); c.moveTo(xa, cy - 2); c.quadraticCurveTo(xa - 4, cy + 6, X(L.r3, L.th - 0.12), Y(L.r3, L.th - 0.12)); c.stroke();
+  c.fillStyle = col.ink; c.fillRect(xa - 6, ytop - 6, xb - xa + 12, 6);
+  // disco del impulsor coloreado por presión radial
+  var rg = c.createRadialGradient(cx, cy, L.r1, cx, cy, L.r2);
+  for (i = 0; i <= 6; i++) rg.addColorStop(i / 6, this.pColor(this.pAt('imp', i / 6)));
+  c.fillStyle = rg; c.globalAlpha = 0.42; c.beginPath(); c.arc(cx, cy, L.r2, 0, 6.2832); c.arc(cx, cy, L.r1, 0, 6.2832, true); c.fill(); c.globalAlpha = 1;
+  // ojo
+  c.fillStyle = this.pColor(this.pAt('eye')); c.globalAlpha = 0.35; c.beginPath(); c.arc(cx, cy, L.r1, 0, 6.2832); c.fill(); c.globalAlpha = 1;
+  c.strokeStyle = col.muted; c.lineWidth = 1; c.setLineDash([3, 3]); c.beginPath(); c.arc(cx, cy, L.r1, 0, 6.2832); c.stroke(); c.setLineDash([]);
+  c.strokeStyle = col.ink; c.lineWidth = 1.5; c.beginPath(); c.arc(cx, cy, L.r2, 0, 6.2832); c.stroke();
+  // partículas
+  for (i = 0; i < this.parts.length; i++) {
+    var p = this.parts[i], x, y, pc;
+    if (p.z === 'eye') { x = X(p.r, p.th); y = Y(p.r, p.th); pc = this.pColor(this.pAt('eye')); }
+    else if (p.z === 'imp') { x = X(p.r, p.th); y = Y(p.r, p.th); pc = this.pColor(this.pAt('imp', clamp((p.r - L.r1) / (L.r2 - L.r1), 0, 1))); }
+    else if (p.z === 'vol') { var a2 = L.th + p.ph; x = X(p.rv, a2); y = Y(p.rv, a2); pc = this.pColor(this.pAt('vol', p.ph / (2 * Math.PI))); }
+    else { x = xa + (p.xr - L.r3) / (this.rOut(2 * Math.PI) - L.r3) * (xb - xa); x = clamp(x, xa + 2, xb - 2); y = cy - p.y; pc = this.pColor(this.pAt('noz', clamp(p.y / (cy - ytop), 0, 1))); }
+    c.fillStyle = pc; c.beginPath(); c.arc(x, y, 2.1, 0, 6.2832); c.fill();
+  }
+  // álabes
+  var z = L.z, nPts = 16;
+  c.strokeStyle = col.ink; c.lineWidth = Math.max(2.4, L.r2 * 0.035); c.lineCap = 'round';
+  for (var b = 0; b < z; b++) {
+    c.beginPath();
+    for (i = 0; i <= nPts; i++) { var rm = (R.pw.D1 / 2) + (R.D / 2 - R.pw.D1 / 2) * i / nPts, th = this.rot + b * 2 * Math.PI / z + this.bladeOff(rm), rp = rm * L.k; if (i) c.lineTo(X(rp, th), Y(rp, th)); else c.moveTo(X(rp, th), Y(rp, th)); }
+    c.stroke();
+  }
+  c.fillStyle = col.ink; c.beginPath(); c.arc(cx, cy, L.rh, 0, 6.2832); c.fill();
+  c.fillStyle = col.paper; c.beginPath(); c.arc(cx, cy, L.rh * 0.4, 0, 6.2832); c.fill();
+  // recirculación a carga parcial
+  var rec = clamp((0.7 - R.x) / 0.5, 0, 1);
+  if (rec > 0) {
+    c.strokeStyle = col.red; c.lineWidth = 1.6; c.globalAlpha = 0.35 + 0.5 * rec;
+    for (i = 0; i < 4; i++) { var ang = i * Math.PI / 2 + this.t * 0.7, rx = X(L.r1 * 1.05, ang), ry = Y(L.r1 * 1.05, ang), rs = 6 + 8 * rec; c.beginPath(); c.arc(rx, ry, rs, this.t * 5 + i, this.t * 5 + i + 4.4); c.stroke(); }
+    for (i = 0; i < 3; i++) { var ang2 = L.th + 0.6 + i * 0.9 - this.t * 0.4, rx2 = X(L.r2 * 1.04, ang2), ry2 = Y(L.r2 * 1.04, ang2); c.beginPath(); c.arc(rx2, ry2, 5 + 6 * rec, -this.t * 5 + i, -this.t * 5 + i + 4.2); c.stroke(); }
+    c.globalAlpha = 1;
+  }
+  // burbujas y colapsos
+  c.lineWidth = 1;
+  for (i = 0; i < this.bub.length; i++) { var bu = this.bub[i]; if (bu.s <= 0.1) continue; var thb = this.rot + bu.ch * 2 * Math.PI / z + this.bladeOff(bu.r / L.k) - 0.06; c.fillStyle = 'rgba(255,255,255,0.95)'; c.strokeStyle = col.red; c.lineWidth = 1.4; c.beginPath(); c.arc(X(bu.r, thb), Y(bu.r, thb), bu.s * Math.max(1, L.r2 / 95), 0, 6.2832); c.fill(); c.stroke(); }
+  for (i = 0; i < this.flash.length; i++) { var fl = this.flash[i]; c.strokeStyle = col.red; c.globalAlpha = fl.a; c.lineWidth = 1.4; c.beginPath(); for (var sgm = 0; sgm < 6; sgm++) { var aa2 = sgm * Math.PI / 3; c.moveTo(fl.x + Math.cos(aa2) * 2, fl.y + Math.sin(aa2) * 2); c.lineTo(fl.x + Math.cos(aa2) * (4 + 5 * (1 - fl.a)), fl.y + Math.sin(aa2) * (4 + 5 * (1 - fl.a))); } c.stroke(); c.globalAlpha = 1; }
+  // triángulo de salida sobre la punta superior
+  this.drawTriangle();
+  if (!L.mob && W > 900) this.drawInset();
+  // rótulos
+  c.font = '600 11px ' + font; c.fillStyle = col.muted; c.textAlign = 'center';
+  if (!L.mob) {
+    c.fillText('ojo · entrada axial', cx, cy + L.r1 + 14);
+    c.textAlign = 'left'; c.fillText('lengüeta', xa + 8, cy + 16);
+    c.fillText('descarga', xb + 8, ytop + 18);
+    var lv = L.th + Math.PI * 1.15, rl = this.rOut(Math.PI * 1.15) + 12; c.textAlign = 'right'; c.fillText('voluta', X(rl, lv), Y(rl, lv));
+  }
+  c.textAlign = 'left'; c.font = '700 11px ' + mono; c.fillStyle = col.ink;
+  c.fillText(fmtN(R.N, 0) + ' rpm · cámara lenta ×1/' + SLOW, 12, H - 12);
+  // escala de color
+  if (!L.mob) {
+    var lx = W - 190, ly = H - 34, lw = 150;
+    for (i = 0; i < lw; i++) { c.fillStyle = palAt(i / lw); c.fillRect(lx + i, ly, 1, 9); }
+    c.font = '600 10px ' + font; c.fillStyle = col.muted; c.textAlign = 'left'; c.fillText('presión estática: baja', lx, ly - 5); c.textAlign = 'right'; c.fillText('alta', lx + lw, ly - 5);
+    c.fillStyle = col.red; c.fillRect(lx, ly + 13, 9, 9); c.fillStyle = col.muted; c.textAlign = 'left'; c.fillText('bajo la presión de vapor', lx + 14, ly + 21);
+  }
+};
+PumpScene.prototype.drawTriangle = function () {
+  var R = this.R, L = this.Lo, c = this.ctx, col = this.col, t = R.tri; if (!t) return;
+  var px = L.cx, py = L.cy - L.r2, sc = L.r2 * 0.95 / Math.max(t.u2, 1);
+  var oy = this.rOut(Math.PI / 2) - L.r2 + 14; c.strokeStyle = col.muted; c.setLineDash([2, 3]); c.lineWidth = 1; c.beginPath(); c.moveTo(px, py); c.lineTo(px, py - oy); c.stroke(); c.setLineDash([]); py -= oy;
+  var u = [-t.u2 * sc, 0], cc = [-t.cu2 * sc, -t.cm2 * sc * 3], ww = [cc[0] - u[0], cc[1] - u[1]];
+  var arrow = function (x0, y0, dx, dy, color, lab, lw) {
+    var x1 = x0 + dx, y1 = y0 + dy, a = Math.atan2(dy, dx);
+    c.strokeStyle = color; c.fillStyle = color; c.lineWidth = lw || 2.2; c.beginPath(); c.moveTo(x0, y0); c.lineTo(x1, y1); c.stroke();
+    c.beginPath(); c.moveTo(x1, y1); c.lineTo(x1 - 8 * Math.cos(a - 0.4), y1 - 8 * Math.sin(a - 0.4)); c.lineTo(x1 - 8 * Math.cos(a + 0.4), y1 - 8 * Math.sin(a + 0.4)); c.closePath(); c.fill();
+    if (lab) { c.font = '800 11px ' + (cssVar('--font-mono') || 'monospace'); c.textAlign = 'center'; var tw = c.measureText(lab).width + 6; c.fillStyle = col.paper; c.fillRect(x0 + dx * 0.55 - tw / 2, y0 + dy * 0.55 - 18, tw, 13); c.fillStyle = color; c.fillText(lab, x0 + dx * 0.55, y0 + dy * 0.55 - 8); }
+  };
+  arrow(px, py, u[0], u[1], col.muted, 'u₂', 2);
+  arrow(px + u[0], py + u[1], ww[0], ww[1], col.hl, 'w₂');
+  arrow(px, py, cc[0], cc[1], col.red, 'c₂', 2.6);
+  c.font = '600 10px ' + (cssVar('--font-body') || 'sans-serif'); c.fillStyle = col.muted; c.textAlign = 'left';
+  if (!L.mob) { c.textAlign = 'left'; c.fillText('triángulo de salida · cₘ ×3', px + 10, py + 14); }
+};
+
+PumpScene.prototype.drawInset = function () {
+  var R = this.R, c = this.ctx, col = this.col, pf = R.pf, sys = R.sys, op = R.op, n = R.arr === 'paralelo' ? 2 : 1, ser = R.arr === 'serie' ? 2 : 1;
+  var x0 = 40, x1 = Math.min(250, this.Lo.cx - this.rOut(Math.PI) - 40), y0 = 78, y1 = 228; if (x1 - x0 < 140) return;
+  var Qm = Math.max(pf.qEnd * n * 1.1, op.Q * 1.2), Hm = Math.max(pf.H(0) * ser * 1.15, op.H * 1.2);
+  var X = function (q) { return x0 + q / Qm * (x1 - x0); }, Y = function (h) { return y1 - h / Hm * (y1 - y0); };
+  c.fillStyle = col.paper; c.globalAlpha = 0.9; c.fillRect(x0 - 30, y0 - 22, x1 - x0 + 40, y1 - y0 + 46); c.globalAlpha = 1;
+  c.strokeStyle = col.ink; c.lineWidth = 1.2; c.strokeRect(x0, y0, x1 - x0, y1 - y0);
+  var font = cssVar('--font-body') || 'sans-serif'; c.font = '700 10.5px ' + font; c.fillStyle = col.ink; c.textAlign = 'left'; c.fillText('Punto de operación', x0 - 26, y0 - 8);
+  c.save(); c.beginPath(); c.rect(x0, y0, x1 - x0, y1 - y0); c.clip();
+  c.strokeStyle = 'rgba(47,125,91,0.28)'; c.lineWidth = 9; c.lineCap = 'round'; c.beginPath();
+  for (var i = 0; i <= 12; i++) { var q = (0.7 + 0.4 * i / 12) * pf.qB * n; if (i) c.lineTo(X(q), Y(ser * pf.H(q / n))); else c.moveTo(X(q), Y(ser * pf.H(q / n))); } c.stroke();
+  c.lineWidth = 2.2; c.strokeStyle = col.ink; c.beginPath(); for (i = 0; i <= 40; i++) { var q2 = pf.qEnd * n * i / 40; if (i) c.lineTo(X(q2), Y(ser * pf.H(q2 / n))); else c.moveTo(X(q2), Y(ser * pf.H(q2 / n))); } c.stroke();
+  c.strokeStyle = col.hl; c.beginPath(); for (i = 0; i <= 40; i++) { var q3 = Qm * i / 40; if (i) c.lineTo(X(q3), Y(sys.H(q3))); else c.moveTo(X(q3), Y(sys.H(q3))); } c.stroke();
+  c.restore();
+  var pul = 4 + 1.5 * Math.sin(this.t * 4);
+  c.fillStyle = col.hl; c.beginPath(); c.arc(X(op.Q), Y(op.H), pul + 2, 0, 6.2832); c.fill();
+  c.fillStyle = col.paper; c.beginPath(); c.arc(X(op.Q), Y(op.H), 2, 0, 6.2832); c.fill();
+  c.font = '600 9.5px ' + font; c.fillStyle = col.muted; c.textAlign = 'center'; c.fillText('Q', (x0 + x1) / 2, y1 + 13);
+  c.save(); c.translate(x0 - 9, (y0 + y1) / 2); c.rotate(-Math.PI / 2); c.fillText('H', 0, 0); c.restore();
+  c.textAlign = 'left'; c.fillStyle = col.ink; c.fillText('bomba', x0 + 4, Y(ser * pf.H(0)) - 4); c.fillStyle = col.hl; c.fillText('sistema', x0 + 4, Math.min(Y(sys.H(0)) - 4, y1 - 4));
+};
+var pscene = null, lastT = 0;
+function animLoop(ts) {
+  var dt = lastT ? Math.min(0.05, (ts - lastT) / 1000) : 0.016; lastT = ts;
+  if (pscene && pscene.R && tab === 'in' && !document.hidden) { if (pscene.running) pscene.step(dt); pscene.draw(); }
+  if (pfig && R && tab === 'ins' && !document.hidden) {
+    var blue = document.documentElement.getAttribute('data-canvas') === 'blueprint', host = pfig.host, red = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (host.getAttribute('data-theme') !== (blue ? 'blueprint' : 'light')) host.setAttribute('data-theme', blue ? 'blueprint' : 'light');
+    pfig.frame(R, pfig.running && !red ? dt * pfig.speed : 0, !pfig.running || red);
+  }
+  if (window.tweenTick) window.tweenTick(dt);
+  requestAnimationFrame(animLoop);
+}
+/* ====================================================================
+   Acercar y mover una figura isométrica (la misma del filtro prensa y del flash). En pantallas táctiles: pellizco
+   para acercar, arrastre con un dedo para moverse cuando está acercada y
+   doble toque para alternar. En escritorio: ctrl + rueda (o el pellizco
+   del trackpad), arrastre y doble clic. Los botones + − y «todo» sirven
+   en las dos. Solo cambia el viewBox: el dibujo y el código en vivo
+   siguen en las mismas coordenadas.
+   ==================================================================== */
+function IsoZoom(wrap, svg, W, H) {
+  var self = this;
+  this.wrap = wrap; this.svg = svg; this.W = W; this.H = H; this.max = 5; this.vb = [0, 0, W, H];
+  this.ptr = {}; this.pinch = null; this.drag = null; this.lastTap = null;
+  svg.style.touchAction = 'pan-y';
+  svg.addEventListener('pointerdown', function (e) {
+    if (e.pointerType === 'mouse' && e.button !== 0) return; self.kind = e.pointerType;
+    self.ptr[e.pointerId] = { x: e.clientX, y: e.clientY };
+    var ids = Object.keys(self.ptr);
+    if (ids.length === 2) { self.startPinch(); self.drag = null; self.tap = null; self.lastTap = null; }
+    else if (ids.length === 1) {
+      self.tap = e.pointerType !== 'mouse' ? { t: performance.now(), x: e.clientX, y: e.clientY } : null;
+      if (self.zoomed()) { self.drag = { x: e.clientX, y: e.clientY, vb: self.vb.slice() }; try { svg.setPointerCapture(e.pointerId); } catch (er) {} }
+    }
+  });
+  svg.addEventListener('pointermove', function (e) {
+    if (!self.ptr[e.pointerId]) return;
+    self.ptr[e.pointerId] = { x: e.clientX, y: e.clientY };
+    if (self.pinch && Object.keys(self.ptr).length >= 2) { e.preventDefault(); self.movePinch(); return; }
+    if (self.drag) {
+      e.preventDefault();
+      var k = self.unit(), d = self.drag;
+      self.set(d.vb[0] - (e.clientX - d.x) * k, d.vb[1] - (e.clientY - d.y) * k, d.vb[2]);
+    }
+  });
+  var up = function (e) {
+    // doble toque: acerca donde se tocó, o vuelve a la vista completa (solo toques cortos y quietos)
+    var tp = self.tap; self.tap = null;
+    if (tp && e.type === 'pointerup' && performance.now() - tp.t < 260 && Math.hypot(e.clientX - tp.x, e.clientY - tp.y) < 10 && Object.keys(self.ptr).length === 1) {
+      var lt = self.lastTap, now = performance.now();
+      if (lt && now - lt.t < 360 && Math.hypot(e.clientX - lt.x, e.clientY - lt.y) < 30) { self.lastTap = null; if (self.zoomed()) self.fit(); else self.zoomAt(2.4, e.clientX, e.clientY); }
+      else self.lastTap = { t: now, x: e.clientX, y: e.clientY };
+    }
+    delete self.ptr[e.pointerId];
+    if (Object.keys(self.ptr).length < 2) self.pinch = null;
+    var ids = Object.keys(self.ptr);
+    if (ids.length === 1 && self.zoomed()) { var p = self.ptr[ids[0]]; self.drag = { x: p.x, y: p.y, vb: self.vb.slice() }; } else if (!ids.length) self.drag = null;
+  };
+  svg.addEventListener('pointerup', up); svg.addEventListener('pointercancel', up); svg.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse') up(e); });
+  svg.addEventListener('dblclick', function (e) { if (self.kind && self.kind !== 'mouse') return; if (self.zoomed()) self.fit(); else self.zoomAt(2.4, e.clientX, e.clientY); });
+  svg.addEventListener('wheel', function (e) {
+    if (!(e.ctrlKey || e.metaKey)) return; // la rueda sola sigue moviendo la página
+    e.preventDefault(); self.zoomAt(Math.exp(-e.deltaY * 0.0025), e.clientX, e.clientY);
+  }, { passive: false });
+  // los botones se enlazan una vez y actúan sobre la figura que esté puesta (la figura cambia con el cabezal y las corazas)
+  wrap._iz = this;
+  if (!wrap.dataset.izBound) {
+    wrap.dataset.izBound = '1';
+    Array.prototype.forEach.call(wrap.querySelectorAll('[data-z]'), function (b) {
+      b.addEventListener('click', function () {
+        var z = wrap._iz; if (!z) return;
+        var r = z.svg.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+        if (b.dataset.z === 'in') z.zoomAt(1.6, cx, cy); else if (b.dataset.z === 'out') z.zoomAt(1 / 1.6, cx, cy); else z.fit();
+      });
+    });
+  }
+  this.set(0, 0, W);
+}
+IsoZoom.prototype.zoomed = function () { return this.vb[2] < this.W - 0.5; };
+// px de pantalla → unidades del viewBox (preserveAspectRatio: xMidYMid meet)
+IsoZoom.prototype.unit = function () { var r = this.svg.getBoundingClientRect(); return Math.max(this.vb[2] / (r.width || 1), this.vb[3] / (r.height || 1)); };
+IsoZoom.prototype.toSvg = function (cx, cy) {
+  var r = this.svg.getBoundingClientRect(), k = this.unit(), vb = this.vb;
+  var ox = (r.width - vb[2] / k) / 2, oy = (r.height - vb[3] / k) / 2;
+  return [vb[0] + (cx - r.left - ox) * k, vb[1] + (cy - r.top - oy) * k];
+};
+IsoZoom.prototype.set = function (x, y, w) {
+  var W = this.W, H = this.H; w = Math.max(W / this.max, Math.min(W, w)); var h = w * H / W;
+  x = Math.max(0, Math.min(W - w, x)); y = Math.max(0, Math.min(H - h, y));
+  this.vb = [x, y, w, h];
+  this.svg.setAttribute('viewBox', x.toFixed(2) + ' ' + y.toFixed(2) + ' ' + w.toFixed(2) + ' ' + h.toFixed(2));
+  var z = this.zoomed(); this.svg.style.touchAction = z ? 'none' : 'pan-y'; this.wrap.classList.toggle('iz-on', z);
+  var out = this.wrap.querySelector('[data-z="out"]'), fit = this.wrap.querySelector('[data-z="fit"]'), inb = this.wrap.querySelector('[data-z="in"]');
+  if (out) out.disabled = !z; if (fit) fit.disabled = !z; if (inb) inb.disabled = w <= W / this.max + 0.5;
+};
+IsoZoom.prototype.zoomAt = function (f, cx, cy) {
+  var p = this.toSvg(cx, cy), vb = this.vb, w = Math.max(this.W / this.max, Math.min(this.W, vb[2] / f)), s = w / vb[2];
+  this.set(p[0] - (p[0] - vb[0]) * s, p[1] - (p[1] - vb[1]) * s, w);
+};
+IsoZoom.prototype.fit = function () { this.set(0, 0, this.W); };
+IsoZoom.prototype.startPinch = function () {
+  var ids = Object.keys(this.ptr), a = this.ptr[ids[0]], b = this.ptr[ids[1]];
+  var mid = [(a.x + b.x) / 2, (a.y + b.y) / 2];
+  this.pinch = { d: Math.hypot(a.x - b.x, a.y - b.y) || 1, vb: this.vb.slice(), at: this.toSvg(mid[0], mid[1]), k: this.unit() };
+};
+IsoZoom.prototype.movePinch = function () {
+  var ids = Object.keys(this.ptr), a = this.ptr[ids[0]], b = this.ptr[ids[1]], P = this.pinch;
+  var d = Math.hypot(a.x - b.x, a.y - b.y) || 1, mid = [(a.x + b.x) / 2, (a.y + b.y) / 2];
+  var w = Math.max(this.W / this.max, Math.min(this.W, P.vb[2] * P.d / d)), k = P.k * w / P.vb[2];
+  // el punto que estaba bajo los dedos sigue bajo los dedos (acerca y mueve a la vez)
+  var r = this.svg.getBoundingClientRect(), h = w * this.H / this.W, ox = (r.width - w / k) / 2, oy = (r.height - h / k) / 2;
+  this.set(P.at[0] - (mid[0] - r.left - ox) * k, P.at[1] - (mid[1] - r.top - oy) * k, w);
+};
+/* ====================================================================
+   La instalación de bombeo en isométrico (scripts/figuras/bomba). Hay dos:
+   succión inundada (el tanque arriba del eje) y succión con elevación (la
+   bomba sobre su pedestal y el tanque abajo); cada una vive en
+   fig/bomba/ y se pide solo cuando hace falta. La mueve el mismo modelo
+   del explorador: el impulsor gira 150 veces más despacio que el real con
+   su diámetro, el líquido lleva el color de su presión estática, hay
+   burbujas cuando el NPSH disponible no alcanza y los manómetros, el
+   nivel del tanque y el vástago de la válvula siguen al punto de operación.
+   ==================================================================== */
+/*PBFIG_START*/
+/* instalación de bombeo en isométrico: generado por build.mjs */
+var FPump = (function () {
+/* Prisma a lo largo de x (o de y, o de cualquier eje con un marco F) con una sección cualquiera, cóncava incluida.
+   Se pinta cara por cara, de atrás hacia adelante, y cada cara lleva sus
+   aristas: así una arista que queda detrás de otra cara del mismo sólido
+   no se ve. La tapa que mira al lector va al final: tapa todo lo que el
+   prisma tiene detrás de ella. Sin imports: el mismo texto corre en la
+   página para reconstruir las tortas en cada cuadro. */
+function xCam(P) {
+  const a = (P.azimuth * Math.PI) / 180, e = (P.elevation * Math.PI) / 180, k = P.scale * Math.sqrt(1.6);
+  const sA = Math.sin(a), cA = Math.cos(a), sE = Math.sin(e), cE = Math.cos(e);
+  const l = [-sA, cA, 1.2], ln = Math.hypot(l[0], l[1], l[2]);
+  return {
+    pr: (x, y, z) => [P.origin[0] + (x * sA - y * cA) * k, P.origin[1] + ((x * cA + y * sA) * sE - z * cE) * k],
+    V: [cA * cE, sA * cE, sE],
+    L: [l[0] / ln, l[1] / ln, l[2] / ln],
+    depth: (x, y, z) => (x * cA + y * sA) * cE + z * sE,
+  };
+}
+function xPrismSvg(C, poly, x0, x1, opts = {}) { return prismSvg(C, poly, x0, x1, opts); }
+// prisma a lo largo de x (sección en y, z) o de y (sección en x, z); skip: aristas de la sección cuyas caras no se pintan
+function prismSvg(C, poly, x0, x1, { tone = "mid", crease = "faint", cls = "", flat = false, axis = "x", skip = null, cap: capMode = "auto", F = null } = {}) {
+  const f1 = (v) => { const t = (Math.round(v * 10) / 10).toFixed(1).replace(/\.0$/, ""); return t === "-0" ? "0" : t; };
+  const pth = (pts) => pts.map(([x, y], i) => (i ? "L" : "M") + f1(x) + " " + f1(y)).join("") + "Z";
+  const seg = (a, b) => "M" + f1(a[0]) + " " + f1(a[1]) + "L" + f1(b[0]) + " " + f1(b[1]);
+  const area = (pts) => { let s = 0; for (let i = 0; i < pts.length; i++) { const p = pts[i], q = pts[(i + 1) % pts.length]; s += p[0] * q[1] - q[0] * p[1]; } return s; };
+  const orient = (pts) => (area(pts) < 0 ? pts.slice().reverse() : pts);
+  const band = (s) => { const B = [0, 0.2, 0.42, 0.62]; let t = 0; while (t < B.length && s >= B[t]) t++; return t; };
+  const flip = area(poly) < 0, ring = flip ? poly.slice().reverse() : poly.slice();
+  const n = ring.length, V = C.V, L = C.L, dot = (u, w) => u[0] * w[0] + u[1] * w[1] + u[2] * w[2];
+  const ax = axis === "y";
+  // con un marco F = { o, a, u, v } la sección va en (u, v) y el prisma corre a lo largo de a
+  const w3 = F ? (s, p, q) => [F.o[0] + F.a[0] * s + F.u[0] * p + F.v[0] * q, F.o[1] + F.a[1] * s + F.u[1] * p + F.v[1] * q, F.o[2] + F.a[2] * s + F.u[2] * p + F.v[2] * q] : null;
+  const at3 = F ? (s, p, q) => C.pr(...w3(s, p, q)) : (s, u, v) => (ax ? C.pr(u, s, v) : C.pr(s, u, v));
+  const skipped = (j) => skip && skip.has(flip ? (n - 2 - j + n) % n : j);
+  const P0 = ring.map(([y, z]) => at3(x0, y, z)), P1 = ring.map(([y, z]) => at3(x1, y, z));
+  const faces = [];
+  for (let j = 0; j < n; j++) {
+    const [ya, za] = ring[j], [yb, zb] = ring[(j + 1) % n], len = Math.hypot(yb - ya, zb - za) || 1;
+    const nrm = F ? [0, 1, 2].map((i) => (F.u[i] * (zb - za) - F.v[i] * (yb - ya)) / len) : ax ? [(zb - za) / len, 0, -(yb - ya) / len] : [0, (zb - za) / len, -(yb - ya) / len];
+    const d = F ? C.depth(...w3((x0 + x1) / 2, (ya + yb) / 2, (za + zb) / 2)) : ax ? C.depth((ya + yb) / 2, (x0 + x1) / 2, (za + zb) / 2) : C.depth((x0 + x1) / 2, (ya + yb) / 2, (za + zb) / 2);
+    faces.push({ kind: "side", j, nrm, vis: dot(nrm, V) > 1e-6 && !skipped(j), d });
+  }
+  const AX = F ? F.a : ax ? [0, 1, 0] : [1, 0, 0], vc = dot(AX, V);
+  const capHi = { kind: "cap", hi: true, nrm: AX, vis: vc > 1e-6 }, capLo = { kind: "cap", hi: false, nrm: AX.map((c) => -c), vis: vc < -1e-6 };
+  const sharp = (j) => { // arista longitudinal en el vértice j: entre la cara j-1 y la j
+    const a = ring[(j - 1 + n) % n], b = ring[j], c = ring[(j + 1) % n];
+    const u = [b[0] - a[0], b[1] - a[1]], w = [c[0] - b[0], c[1] - b[1]];
+    return (u[0] * w[0] + u[1] * w[1]) / ((Math.hypot(u[0], u[1]) * Math.hypot(w[0], w[1])) || 1) < Math.cos(0.35);
+  };
+  const order = faces.filter((f) => f.vis).sort((p, q) => p.d - q.d);
+  const cap = capHi.vis ? capHi : capLo.vis ? capLo : null;
+  const rank = new Map(order.map((f, i) => [f.j, i]));
+  const fill = [];
+  const out = [];
+  const paint = (pts, nrm) => { const b = band(dot(nrm, L)); return b >= 4 ? `<path class="iso-top" d="${pth(pts)}"/>` : `<path class="iso-shade" data-shade="${b}" d="${pth(pts)}"/>`; };
+  for (const f of capMode === "only" ? [] : order) {
+    const j = f.j, k2 = (j + 1) % n, quad = orient([P0[j], P1[j], P1[k2], P0[k2]]);
+    fill.push(pth(quad));
+    const edges = [], creases = [];
+    // aristas longitudinales en los dos extremos de la cara
+    for (const [v, other] of [[j, (j - 1 + n) % n], [k2, k2]]) {
+      const o = faces[other], mine = rank.get(j), theirs = o.vis ? rank.get(o.j) : -1;
+      if (!o.vis) edges.push(seg(P0[v], P1[v]));
+      else if (theirs < mine && sharp(v)) creases.push(seg(P0[v], P1[v]));
+    }
+    // aristas de las tapas
+    if (!capLo.vis) edges.push(seg(P0[j], P0[k2]));
+    if (!capHi.vis) edges.push(seg(P1[j], P1[k2]));
+    out.push(flat ? `<path class="iso-shade" data-shade="2" d="${pth(quad)}"/>` : paint(quad, f.nrm));
+    if (creases.length) out.push(`<path class="iso-line iso-crease" data-tone="${crease}" d="${creases.join("")}"/>`);
+    if (edges.length) out.push(`<path class="iso-line iso-edge" data-tone="${tone}" d="${edges.join("")}"/>`);
+  }
+  if (cap && capMode !== "none") {
+    const pts = cap.hi ? P1 : P0, poly2 = orient(pts.slice());
+    fill.push(pth(poly2));
+    out.push(flat ? `<path class="iso-shade" data-shade="3" d="${pth(poly2)}"/>` : paint(poly2, cap.nrm));
+    const edges = [], creases = [];
+    for (let j = 0; j < n; j++) (faces[j].vis ? creases : edges).push(seg(pts[j], pts[(j + 1) % n]));
+    if (creases.length) out.push(`<path class="iso-line iso-crease" data-tone="${crease}" d="${creases.join("")}"/>`);
+    if (edges.length) out.push(`<path class="iso-line iso-edge" data-tone="${tone}" d="${edges.join("")}"/>`);
+  }
+  return `<g class="iso-solid${cls ? " " + cls : ""}"><path class="iso-fill" d="${fill.join("")}"/>${out.join("")}</g>`;
+}
+/* secciones de uso común, en (y, z) */
+function halfOct(zc, r, steps = 8) { // media boca (y ≤ 0) de una perforación a lo largo de x, de arriba hacia abajo
+  const pts = [];
+  for (let i = 0; i <= steps; i++) { const t = Math.PI / 2 + (Math.PI * i) / steps; pts.push([r * Math.cos(t), zc + r * Math.sin(t)]); }
+  return pts.map(([y, z]) => [Math.abs(y) < 1e-9 ? 0 : y, z]);
+}
+function notched(yb, z0, z1, holes) { // rectángulo y∈[yb,0], z∈[z0,z1] con medias bocas en y = 0
+  const pts = [[0, z0], [yb, z0], [yb, z1], [0, z1]];
+  for (const h of [...holes].sort((a, b) => b.zc - a.zc)) pts.push(...halfOct(h.zc, h.r, h.steps || 8));
+  return pts;
+}
+/* Medidas de la instalación de bombeo que comparten build.mjs y la página. Sin imports: el mismo texto corre en las
+   dos. Unidades: 1 = 1 cm, z hacia arriba. La bomba es una 2×3-8 de succión axial (carcasa de referencia del
+   explorador: impulsor de hasta 203 mm, ojo de 80 mm, succión de 3″ y descarga de 2″), con el eje a lo largo de x: la
+   succión mira hacia +x y el motor queda en −x. La voluta está en el plano yz; su ángulo θ se mide desde +y hacia +z
+   (el impulsor gira con θ creciente). La lengüeta está en θ = 0 y la garganta sube por el lado +y hasta la boquilla
+   de descarga. Se quita la mitad de arriba de la tapa de succión (y de la boquilla de succión) para ver el impulsor. */
+const PB = {
+  AZ: 35, EL: 30,
+  zA: 42,                                     // altura del eje
+  xP: 30,                                     // plano medio del impulsor
+  r2: 10.15, r1: 4.0, rh: 2.6,                // impulsor máximo, ojo y cubo
+  r3: 11.2, dv: 6.3, wall: 1.4,               // círculo base de la voluta, crecimiento de la espiral y pared
+  bw: 3.4,                                    // medio ancho interior de la carcasa (a lo largo de x)
+  zT: 20,                                     // alto de la garganta sobre el eje
+  vanes: 6, beta1: 18, beta2: 27,             // álabes (ángulos de entrada y salida desde la tangente)
+  vane: [-1.4, 1.0],                          // los álabes, de la cara del disco al borde libre (a lo largo de x)
+  disk: [-2.2, -1.4],                         // disco de atrás del impulsor abierto
+  suc: { r: 3.9, ro: 4.45, len: 10, fr: 9.5, ft: 2.4 },  // boquilla de succión de 3″ (interior, exterior) y su brida
+  dis: { r: 2.63, ro: 3.0, len: 8, fr: 7.6, ft: 2.0 },   // boquilla de descarga de 2″
+};
+function axesOf(az) {
+  const a = (az * Math.PI) / 180, sA = Math.sin(a), cA = Math.cos(a);
+  return { T: [sA, -cA, 0], HV: [cA, sA, 0] };
+}
+/* radio interior de la voluta en θ (0 en la lengüeta, 2π a la entrada de la garganta) */
+function rOut(t) { return PB.r3 + PB.dv * Math.max(0, Math.min(1, t / (2 * Math.PI))); }
+const yThroat = () => [PB.r3, PB.r3 + PB.dv];         // la garganta, entre la lengüeta y la pared de afuera
+const yNoz = () => PB.r3 + PB.dv / 2;                  // eje de la boquilla de descarga
+/* θ donde la cara de afuera de la pared de la voluta corta la cara de afuera de la pared de la lengüeta (y = r3 − wall) */
+function tTongue() { let lo = 0.05, hi = 1.5; for (let i = 0; i < 50; i++) { const m = (lo + hi) / 2; if ((rOut(m) + PB.wall) * Math.cos(m) > PB.r3 - PB.wall) lo = m; else hi = m; } return (lo + hi) / 2; }
+/* contornos en (y, z) relativos al eje: el de afuera de la carcasa y las mitades de la pared */
+function outerContour(n = 72) {
+  const w = PB.wall, tt = tTongue(), pts = [];
+  // de la cara de afuera de la lengüeta (arriba de la garganta) hacia abajo, la espiral por arriba, a la izquierda y por abajo, y la garganta de afuera
+  pts.push([PB.r3 - w, PB.zT]);
+  for (let i = 0; i <= n; i++) { const t = tt + ((2 * Math.PI - tt) * i) / n, r = rOut(t) + w; pts.push([r * Math.cos(t), r * Math.sin(t)]); }
+  pts.push([PB.r3 + PB.dv + w, PB.zT]);
+  return pts;
+}
+/* la punta de la lengüeta: donde la espiral cruza la recta y = r3 de la cara de adentro de la garganta */
+function tTip() { let lo = 0.02, hi = 0.6; for (let i = 0; i < 50; i++) { const m = (lo + hi) / 2; if (rOut(m) * Math.cos(m) > PB.r3) lo = m; else hi = m; } return (lo + hi) / 2; }
+const zTip = () => rOut(tTip()) * Math.sin(tTip());
+/* la pared de la voluta en la mitad de arriba (z ≥ 0): la espiral de θ₀ (la lengüeta) a π, la pared de adentro de la
+   garganta y la cuña de la lengüeta entre las dos */
+function wallUpper(n = 48) {
+  const w = PB.wall, tt = tTongue(), t0 = tTip(), out = [];
+  for (let i = n; i >= 0; i--) { const t = t0 + ((Math.PI - t0) * i) / n, r = rOut(t); out.push([r * Math.cos(t), r * Math.sin(t)]); }
+  out.push([PB.r3, PB.zT], [PB.r3 - w, PB.zT]);
+  for (let i = 0; i <= n; i++) { const t = tt + ((Math.PI - tt) * i) / n, r = rOut(t) + w; out.push([r * Math.cos(t), r * Math.sin(t)]); }
+  return out.map(([y, z]) => [y, Math.abs(z) < 1e-9 ? 0 : z]);
+}
+/* la pared de la voluta en la mitad de abajo (z ≤ 0), de θ = π a 2π */
+function wallLower(n = 48) {
+  const w = PB.wall, out = [];
+  for (let i = 0; i <= n; i++) { const t = Math.PI + (Math.PI * i) / n, r = rOut(t) + w; out.push([r * Math.cos(t), r * Math.sin(t)]); }
+  for (let i = n; i >= 0; i--) { const t = Math.PI + (Math.PI * i) / n, r = rOut(t); out.push([r * Math.cos(t), r * Math.sin(t)]); }
+  return out.map(([y, z]) => [y, Math.abs(z) < 1e-9 ? 0 : z]);
+}
+/* la pared de afuera de la garganta (z ≥ 0) */
+function wallThroat() { const [a, b] = yThroat(); return [[b, 0], [b + PB.wall, 0], [b + PB.wall, PB.zT], [b, PB.zT]]; }
+/* el canal de la voluta en la mitad de arriba (para el fluido): entre el círculo base y la espiral, hasta la lengüeta */
+function passUpper(n = 48) {
+  const out = [], t0 = tTip();
+  for (let i = 0; i <= n; i++) { const t = (Math.PI * i) / n; out.push([PB.r3 * Math.cos(t), PB.r3 * Math.sin(t)]); }
+  for (let i = n; i >= 0; i--) { const t = t0 + ((Math.PI - t0) * i) / n, r = rOut(t); out.push([r * Math.cos(t), r * Math.sin(t)]); }
+  return out.map(([y, z]) => [y, Math.abs(z) < 1e-9 ? 0 : z]);
+}
+/* la garganta (para el fluido) */
+function passThroat() { const [a, b] = yThroat(); return [[a, 0], [b, 0], [b, PB.zT], [a, PB.zT]]; }
+/* el álabe: ángulo de envolvimiento φ(r) desde el ojo hasta r2 (β de β1 a β2, medido desde la tangente) */
+function vaneOff(r, r2 = PB.r2) {
+  const b1 = (PB.beta1 * Math.PI) / 180, b2 = (PB.beta2 * Math.PI) / 180, r0 = PB.r1 * 0.95, n = 40;
+  let off = 0;
+  for (let i = 0; i < n; i++) {
+    const ra = r0 + ((r2 - r0) * i) / n, rb = r0 + ((r2 - r0) * (i + 1)) / n;
+    if (ra >= r) break;
+    const rm = (ra + Math.min(rb, r)) / 2, bt = b1 + ((b2 - b1) * (rm - r0)) / (r2 - r0);
+    off -= (Math.min(rb, r) - ra) / (rm * Math.tan(bt));
+  }
+  return off;
+}
+// media corona (v ≤ 0) entre r0 y r1 en el plano (u, v) de un marco; con r0 = 0, medio disco
+function halfRing(r0, r1, n = 36) {
+  const out = [];
+  for (let i = 0; i <= n; i++) { const t = Math.PI + (Math.PI * i) / n; out.push([r1 * Math.cos(t), r1 * Math.sin(t)]); }
+  if (r0 > 1e-6) for (let i = n; i >= 0; i--) { const t = Math.PI + (Math.PI * i) / n; out.push([r0 * Math.cos(t), r0 * Math.sin(t)]); }
+  return out.map(([u, v]) => [Math.abs(u) < 1e-9 ? 0 : u, Math.abs(v) < 1e-9 ? 0 : v]);
+}
+/* el plano que mira al lector parte la voluta: lo que queda de θ < TS va adelante del impulsor y lo de θ > TS, atrás */
+const TS = (3 * Math.PI) / 4;
+/* la pared de arriba entre ta y tb (con la lengüeta y la garganta si ta es la punta de la lengüeta) */
+function wallUpperPart(ta, tb, n = 32) {
+  const w = PB.wall, tt = tTongue(), t0 = tTip(), out = [], near = ta <= t0 + 1e-9;
+  const a = Math.max(ta, t0);
+  for (let i = n; i >= 0; i--) { const t = a + ((tb - a) * i) / n, r = rOut(t); out.push([r * Math.cos(t), r * Math.sin(t)]); }
+  if (near) out.push([PB.r3, PB.zT], [PB.r3 - w, PB.zT]);
+  const b = near ? tt : ta;
+  for (let i = 0; i <= n; i++) { const t = b + ((tb - b) * i) / n, r = rOut(t) + w; out.push([r * Math.cos(t), r * Math.sin(t)]); }
+  return out.map(([y, z]) => [y, Math.abs(z) < 1e-9 ? 0 : z]);
+}
+/* el canal de la voluta entre ta y tb */
+function passPart(ta, tb, n = 32) {
+  const out = [], t0 = tTip(), a = Math.max(ta, 0);
+  for (let i = 0; i <= n; i++) { const t = a + ((tb - a) * i) / n; out.push([PB.r3 * Math.cos(t), PB.r3 * Math.sin(t)]); }
+  for (let i = n; i >= 0; i--) { const t = Math.max(t0, a) + ((tb - Math.max(t0, a)) * i) / n, r = rOut(t); out.push([r * Math.cos(t), r * Math.sin(t)]); }
+  return out.map(([y, z]) => [y, Math.abs(z) < 1e-9 ? 0 : z]);
+}
+/* una corona entre r0 y r1, de t0 a t1 (en el plano yz, θ desde +y) */
+function arcRing(r0, r1, t0, t1, n = 32) {
+  const out = [];
+  for (let i = 0; i <= n; i++) { const t = t0 + ((t1 - t0) * i) / n; out.push([r1 * Math.cos(t), r1 * Math.sin(t)]); }
+  for (let i = n; i >= 0; i--) { const t = t0 + ((t1 - t0) * i) / n; out.push([r0 * Math.cos(t), r0 * Math.sin(t)]); }
+  return out.map(([u, v]) => [Math.abs(u) < 1e-9 ? 0 : u, Math.abs(v) < 1e-9 ? 0 : v]);
+}
+/* ====================================================================
+   La instalación de bombeo en vivo. La página le pasa el resultado del
+   modelo del explorador (en el punto de operación):
+   · el impulsor gira 150 veces más despacio que el real (como en la vista
+     «Por dentro»), con su diámetro recortado; el líquido entra por la
+     boquilla de succión, pasa al ojo, sale por los canales entre álabes,
+     da la vuelta por la voluta y sube por la garganta, coloreado con la
+     presión estática de cada zona;
+   · burbujas en los bordes de ataque de los álabes cuando el NPSH
+     disponible no alcanza el de inicio de la cavitación (1,3 × NPSH3), y
+     muchas más bajo el NPSH3;
+   · las agujas de los manómetros (succión, descarga y tanque), el nivel
+     del tanque en su vidrio, el vástago de la válvula de regulación y las
+     marcas del acople, que giran con el eje.
+   ==================================================================== */
+var PAL = [[43, 76, 126], [89, 128, 166], [143, 184, 201], [232, 195, 90], [217, 130, 43]];
+function palAt(t) { t = Math.max(0, Math.min(1, t)) * (PAL.length - 1); var i = Math.min(PAL.length - 2, Math.floor(t)), f = t - i, a = PAL[i], b = PAL[i + 1]; return 'rgb(' + Math.round(a[0] + (b[0] - a[0]) * f) + ',' + Math.round(a[1] + (b[1] - a[1]) * f) + ',' + Math.round(a[2] + (b[2] - a[2]) * f) + ')'; }
+var SLOW = 150;
+function FPump(host, D) {
+  this.host = host; this.D = D; this.svg = host.querySelector('svg'); this.C = xCam(D.P);
+  var svg = this.svg, q = function (n) { return svg.querySelector('[data-live="' + n + '"]'); };
+  this.el = { imp: q('imp'), vol: q('flow.vol'), volf: q('flow.volf'), thr: q('flow.thr'), suc: q('flow.suc'), ps: q('ps'), pd: q('pd'), p1: q('p1'), lcol: q('lcol'), gv: q('gv.stem'), cpl: q('cpl') };
+  this.rot = 0; this.t = 0; this.parts = []; this.acc = 0; this.seed = 11; this.open = 1;
+  var k0 = this.C.pr(0, 0, 0), kx = this.C.pr(1, 0, 0); this.px = Math.hypot(kx[0] - k0[0], kx[1] - k0[1]);
+}
+FPump.prototype.P = function (x, y, z) { return this.C.pr(x, y, z); };
+FPump.prototype.rnd = function () { this.seed = (this.seed * 16807) % 2147483647; return this.seed / 2147483647; };
+/* un punto del plano de la voluta: x a lo largo del eje, (r, θ) en el plano yz (θ desde +y hacia +z) */
+FPump.prototype.Q = function (x, r, th) { return this.P(PB.xP + x, r * Math.cos(th), this.D.zA + r * Math.sin(th)); };
+FPump.prototype.path = function (pts) { return 'M' + pts.map(function (p) { return p[0].toFixed(2) + ' ' + p[1].toFixed(2); }).join('L') + 'Z'; };
+FPump.prototype.dial = function (el, frac) { if (!el) return; var a = 225 - 270 * Math.max(-0.02, Math.min(1.03, isFinite(frac) ? frac : 0)); el.setAttribute('transform', 'rotate(' + a.toFixed(1) + ')'); };
+/* presión (m, absoluta) por zona, para el color: la misma escala de la vista «Por dentro» */
+FPump.prototype.pAt = function (s, zone, f) {
+  var p = s.press;
+  if (zone === 'suc') return p[0];
+  if (zone === 'eye') return p[1];
+  if (zone === 'imp') { var dip = Math.max(0, 1 - f / 0.18); return p[1] + (p[3] - p[1]) * Math.pow(f, 1.3) - (p[1] - p[2]) * dip * dip; }
+  if (zone === 'vol') return p[3] + (p[4] - p[3]) * f;
+  return p[4] + (p[5] - p[4]) * f;
+};
+FPump.prototype.col = function (s, pv) { var p = s.press, lo = Math.min(p[2], s.pv), hi = p[5]; return pv < s.pv ? '#C8452B' : palAt((pv - lo) / Math.max(1e-6, hi - lo)); };
+/* s = { N (rpm), r2 (cm, recortado), press: [6 presiones, m abs], pv (m), cm1 (m/s en la succión), cm2, c2u, uThroat (m/s), Qrel (Q/QBEP),
+         cav (0 sin cavitación, 0..1 incipiente, >1 bajo el NPSH3), ps, pd, p1 (fracción de cada escala), level (0..1), open (0..1), dt, snap } */
+FPump.prototype.update = function (s) {
+  var dt = Math.max(0, Math.min(0.1, s.dt || 0)), h = dt / SLOW, w = s.N * Math.PI / 30;
+  // la primera vez corre medio minuto por dentro: en pausa o con movimiento reducido el líquido ya llena la bomba
+  if (!this.primed) { this.primed = true; for (var i = 0; i < 400; i++) { this.rot += w * 0.1 / SLOW; this.t += 0.1; this.step(s, 0.1); } }
+  if (!s.snap) { this.t += dt; this.rot += w * h; this.step(s, dt); }
+  this.drawImp(s); this.drawFlow(s);
+  this.dial(this.el.ps, s.ps); this.dial(this.el.pd, s.pd); this.dial(this.el.p1, s.p1);
+  this.level(s); this.stem(s); this.coupling(s);
+};
+/* el líquido: partículas de la succión al ojo, por los canales del impulsor, la voluta y la garganta (cm, tiempo lento) */
+FPump.prototype.step = function (s, dt) {
+  var k = 100 / SLOW, self = this, r1 = PB.r1, r2 = s.r2, x0 = PB.bw + PB.wall + PB.suc.len;
+  // caudal de partículas proporcional al caudal (relativo al BEP)
+  this.acc += dt * Math.max(4, Math.min(40, 22 * (s.Qrel || 1)));
+  while (this.acc > 1 && this.parts.length < 260) {
+    this.acc -= 1;
+    var a = Math.PI + Math.PI * this.rnd(), rr = (PB.suc.r - 0.4) * Math.sqrt(this.rnd());
+    this.parts.push({ z: 'suc', x: x0, r: rr, th: a, f: this.rnd(), age: 0 });
+  }
+  var vS = Math.max(0.3, s.cm1 * k), vM = Math.max(0.3, s.cm2 * k), vU = Math.max(0.5, s.c2u * k), vT = Math.max(0.3, s.uThroat * k);
+  this.parts = this.parts.filter(function (p) {
+    p.age += dt;
+    if (p.z === 'suc') { p.x -= vS * dt; if (p.x < PB.bw + PB.wall) { p.z = 'eye'; } return true; }
+    if (p.z === 'eye') { p.x -= vS * dt; p.r += 0.6 * vS * dt; if (p.x < 0.2) { p.z = 'imp'; p.rel = p.th - self.rot; p.rr = Math.max(p.r, r1 * 0.95); p.x = -0.2 + 0.9 * p.f; } return true; }
+    if (p.z === 'imp') { p.rr += vM * dt * (r2 / Math.max(p.rr, 1)); p.th = p.rel + self.rot + vaneOff(p.rr, r2) - vaneOff(r1 * 0.95, r2); if (p.rr >= r2) { p.z = 'vol'; p.r = r2 + 0.3; p.f = 0; } return true; }
+    if (p.z === 'vol') { p.th += (vU / Math.max(p.r, 1)) * dt; p.r = Math.min(p.r + 0.25 * dt, (r2 + rOut(((p.th % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI))) / 2 + 0.6); var tn = ((p.th % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI); p.f = tn / (2 * Math.PI); if (p.age > 40) return false; if (tn > 1.95 * Math.PI) { p.z = 'thr'; p.y = PB.r3 + PB.dv * (0.25 + 0.5 * self.rnd()); p.zz = 0; p.x = (self.rnd() - 0.5) * 2 * (PB.bw - 0.5); } return true; }
+    if (p.z === 'thr') { p.zz += vT * dt; return p.zz < PB.zT; }
+    return false;
+  });
+};
+FPump.prototype.drawImp = function (s) {
+  var el = this.el.imp; if (!el) return;
+  var self = this, z = PB.vanes, r2 = s.r2, r0 = PB.r1 * 0.95, V = this.C.V, out = [];
+  var xd0 = PB.disk[0], xd1 = PB.disk[1], xv0 = PB.vane[0], xv1 = PB.vane[1];
+  var circ = function (x, r, n) { var pts = []; for (var i = 0; i < n; i++) pts.push(self.Q(x, r, 2 * Math.PI * i / n)); return self.path(pts); };
+  // el disco de atrás: su canto y su cara
+  out.push('<path class="pb-imp-e" d="' + circ(xd0, r2, 64) + '"/><path class="pb-imp-f" d="' + circ(xd1, r2, 64) + '"/>');
+  // los álabes de atrás hacia adelante; cada uno es una cinta curva extruida a lo largo del eje
+  var vanes = [];
+  for (var b = 0; b < z; b++) {
+    var a0 = this.rot + b * 2 * Math.PI / z, front = [], back = [], n = 12, tk = 0.3;
+    var cl = []; for (var i = 0; i <= n; i++) { var r = r0 + (r2 - r0) * i / n; cl.push([r, a0 + vaneOff(r, r2) - vaneOff(r0, r2)]); }
+    var side = function (sg) { return cl.map(function (c) { return [c[0], c[1] + sg * tk / c[0]]; }); };
+    var A = side(1), B = side(-1).reverse(), ring = A.concat(B);
+    ring.forEach(function (c) { front.push(self.Q(xv1, c[0], c[1])); back.push(self.Q(xv0, c[0], c[1])); });
+    var mid = cl[n >> 1], mx = PB.xP, my = mid[0] * Math.cos(mid[1]), mz = self.D.zA + mid[0] * Math.sin(mid[1]);
+    vanes.push({ d: mx * V[0] + my * V[1] + mz * V[2], f: front, k: back });
+  }
+  vanes.sort(function (p, q) { return p.d - q.d; });
+  vanes.forEach(function (v) {
+    var sides = '';
+    for (var i = 0; i < v.f.length; i++) { var j = (i + 1) % v.f.length; sides += 'M' + v.f[i][0].toFixed(2) + ' ' + v.f[i][1].toFixed(2) + 'L' + v.f[j][0].toFixed(2) + ' ' + v.f[j][1].toFixed(2) + 'L' + v.k[j][0].toFixed(2) + ' ' + v.k[j][1].toFixed(2) + 'L' + v.k[i][0].toFixed(2) + ' ' + v.k[i][1].toFixed(2) + 'Z'; }
+    out.push('<path class="pb-vane-s" d="' + sides + '"/><path class="pb-vane" d="' + self.path(v.f) + '"/>');
+  });
+  // el líquido en los canales (encima del disco, entre los álabes) y las burbujas en los bordes de ataque
+  var pts = [];
+  this.parts.forEach(function (p) {
+    if (p.z !== 'imp' && p.z !== 'eye') return;
+    var r = p.z === 'eye' ? p.r : p.rr, f = p.z === 'eye' ? 0 : (r - r0) / Math.max(1e-6, r2 - r0), q = self.Q(p.x, r, p.th);
+    pts.push('<circle class="pb-p" cx="' + q[0].toFixed(1) + '" cy="' + q[1].toFixed(1) + '" r=".55" style="fill:' + self.col(s, self.pAt(s, p.z === 'eye' ? 'eye' : 'imp', f)) + '"/>');
+  });
+  if (s.cav > 0) {
+    var nb = Math.round(Math.min(1, s.cav) * 4 + Math.max(0, s.cav - 1) * 10), t = this.t;
+    for (var b2 = 0; b2 < z; b2++) for (var j2 = 0; j2 < nb; j2++) {
+      var ph = ((j2 / Math.max(1, nb)) + t * 0.6 + b2 * 0.37) % 1, rb = r0 * (1.02 + 0.55 * ph * (s.cav > 1 ? 1.6 : 1)), ab = this.rot + b2 * 2 * Math.PI / z + vaneOff(rb, r2) - vaneOff(r0, r2) - 0.16 - 0.05 * j2, qb = this.Q(0.2 + 0.5 * ((j2 * 7) % 3) / 2, rb, ab);
+      pts.push('<circle class="pb-bub" cx="' + qb[0].toFixed(1) + '" cy="' + qb[1].toFixed(1) + '" r="' + (0.55 * (1 - 0.75 * ph) + 0.2).toFixed(2) + '"/>');
+    }
+  }
+  // el cubo y la tuerca del impulsor
+  out.push(pts.join(''));
+  out.push('<path class="pb-imp-e" d="' + circ(xv1 + 0.2, PB.rh, 24) + '"/><path class="pb-hub" d="' + circ(xv1 + 0.9, PB.rh, 24) + '"/>');
+  var hex = []; for (var i2 = 0; i2 < 6; i2++) hex.push(this.Q(xv1 + 0.95, 1.5, this.rot + i2 * Math.PI / 3));
+  out.push('<path class="pb-nut" d="' + this.path(hex) + '"/>');
+  el.innerHTML = out.join('');
+};
+FPump.prototype.drawFlow = function (s) {
+  var self = this, v = [], vf = [], t = [], u = [];
+  this.parts.forEach(function (p) {
+    if (p.z === 'vol') { var tn = ((p.th % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI); if (tn > Math.PI) return; var q = self.Q(((p.f * 7.3) % 1 - 0.5) * 2 * (PB.bw - 0.6), p.r, tn); (tn < TS ? v : vf).push('<circle class="pb-p" cx="' + q[0].toFixed(1) + '" cy="' + q[1].toFixed(1) + '" r=".6" style="fill:' + self.col(s, self.pAt(s, 'vol', p.f)) + '"/>'); }
+    else if (p.z === 'thr') { var q2 = self.P(PB.xP + p.x, p.y, self.D.zA + p.zz); t.push('<circle class="pb-p" cx="' + q2[0].toFixed(1) + '" cy="' + q2[1].toFixed(1) + '" r=".6" style="fill:' + self.col(s, self.pAt(s, 'dis', p.zz / PB.zT)) + '"/>'); }
+    else if (p.z === 'suc') { var q3 = self.Q(p.x, p.r, p.th); u.push('<circle class="pb-p" cx="' + q3[0].toFixed(1) + '" cy="' + q3[1].toFixed(1) + '" r=".6" style="fill:' + self.col(s, self.pAt(s, 'suc', 0)) + '"/>'); }
+  });
+  if (this.el.vol) this.el.vol.innerHTML = v.join('');
+  if (this.el.volf) this.el.volf.innerHTML = vf.join('');
+  if (this.el.thr) this.el.thr.innerHTML = t.join('');
+  if (this.el.suc) this.el.suc.innerHTML = u.join('');
+};
+/* el nivel del tanque en su vidrio */
+FPump.prototype.level = function (s) {
+  var el = this.el.lcol, g = this.D.lg; if (!el || !g) return;
+  var zl = g.z0 + (g.z1 - g.z0) * Math.max(0, Math.min(1, s.level)), a = this.P(g.x, g.y, g.z0), b = this.P(g.x, g.y, zl), w = 0.6 * this.px;
+  el.innerHTML = zl > g.z0 + 0.1 ? '<path class="pb-col" d="M' + (a[0] - w).toFixed(2) + ' ' + a[1].toFixed(2) + 'L' + (a[0] + w).toFixed(2) + ' ' + a[1].toFixed(2) + 'L' + (b[0] + w).toFixed(2) + ' ' + b[1].toFixed(2) + 'L' + (b[0] - w).toFixed(2) + ' ' + b[1].toFixed(2) + 'Z"/>' : '';
+};
+/* el vástago de la válvula de regulación y su volante: sale más cuanto más abierta está */
+FPump.prototype.stem = function (s) {
+  var el = this.el.gv, g = this.D.gv; if (!el || !g) return;
+  var target = Math.max(0, Math.min(1, s.open == null ? 1 : s.open));
+  this.open += (target - this.open) * Math.min(1, (s.dt || 0) * 4); if (s.snap) this.open = target;
+  var self = this, c = g.c, n = g.dir, e1 = [-n[1], n[0], 0], e2 = [0, 0, 1], sTop = 16.5 + 7.5 * this.open;
+  var at = function (sv, u, v2) { return self.P(c[0] + n[0] * sv + e1[0] * u, c[1] + n[1] * sv + e1[1] * u, c[2] + v2); };
+  var rod = [at(15, -0.55, 0), at(sTop, -0.55, 0), at(sTop, 0.55, 0), at(15, 0.55, 0)];
+  var rim = [], hub = []; for (var i = 0; i < 28; i++) { var a = 2 * Math.PI * i / 28; rim.push(at(sTop, 5.8 * Math.cos(a), 5.8 * Math.sin(a))); hub.push(at(sTop, 4.6 * Math.cos(a), 4.6 * Math.sin(a))); }
+  var spokes = ''; for (var j = 0; j < 5; j++) { var b = 2 * Math.PI * j / 5 + 0.4, p0 = at(sTop, 1.1 * Math.cos(b), 1.1 * Math.sin(b)), p1 = at(sTop, 4.8 * Math.cos(b), 4.8 * Math.sin(b)); spokes += 'M' + p0[0].toFixed(2) + ' ' + p0[1].toFixed(2) + 'L' + p1[0].toFixed(2) + ' ' + p1[1].toFixed(2); }
+  el.innerHTML = '<path class="pb-rod" d="' + this.path(rod) + '"/><path class="pb-wheel" d="' + this.path(rim) + this.path(hub.slice().reverse()) + '"/><path class="pb-spoke" d="' + spokes + '"/>';
+};
+/* las marcas del acople: los pernos de las bridas del espaciador, que giran con el eje */
+FPump.prototype.coupling = function (s) {
+  var el = this.el.cpl; if (!el) return;
+  var V = this.C.V, out = [];
+  for (var i = 0; i < 4; i++) {
+    var a = this.rot + i * Math.PI / 2, n = [0, Math.cos(a), Math.sin(a)];
+    if (n[1] * V[1] + n[2] * V[2] < 0.05) continue;
+    [-57.2, -64.8].forEach(function (x) { var q = this.P(x, 3.65 * Math.cos(a), this.D.zA + 3.65 * Math.sin(a)); out.push('<circle class="pb-bolt" cx="' + q[0].toFixed(2) + '" cy="' + q[1].toFixed(2) + '" r=".5"/>'); }, this);
+  }
+  el.innerHTML = out.join('');
+};
+
+return FPump;
+})();
+var PB_FIGS = {"inundada":{"P":{"origin":[308.6172903464334,381.8810239005338],"scale":1.2019314365524614,"azimuth":35,"elevation":30},"W":680,"H":500,"sc":1.5203363723455745,"lift":false,"zA":42,"ends":{"dest":[30,-34,158.8],"tank":[112,-62,169.5],"ps":[70.46743493814583,0.6774052364171511,58.14258359797832],"pd":[40.97663739347249,22.035924247104017,93.80000000000001],"gv":[51.29795315151379,29.262987345127197,133.8],"pump":[24,28,10],"motor":[-141,0,46]},"tank":{"x":112,"y":-62,"R":27,"z0":90,"z1":156,"hd":13.5},"lg":{"x":139.03201746153673,"y":-43.07197760041548,"z0":98.6,"z1":147.4},"gv":{"c":[30,14.35,133.8],"dir":[0.8191520442889918,0.573576436351046,0]}},"elevacion":{"P":{"origin":[311.4812165015038,391.3827228354607],"scale":1.0922454688414878,"azimuth":35,"elevation":30},"W":680,"H":500,"sc":1.3815933782150298,"lift":true,"zA":122,"ends":{"dest":[30,-34,238.8],"tank":[112,-62,89.5],"ps":[70.46743493814583,0.6774052364171511,138.14258359797833],"pd":[40.97663739347249,22.035924247104017,173.8],"gv":[51.29795315151379,29.262987345127197,213.8],"pump":[24,28,90],"motor":[-141,0,126]},"tank":{"x":112,"y":-62,"R":27,"z0":22,"z1":76,"hd":13.5},"lg":{"x":139.03201746153673,"y":-43.07197760041548,"z0":30.6,"z1":67.4},"gv":{"c":[30,14.35,213.8],"dir":[0.8191520442889918,0.573576436351046,0]}}};
+/*PBFIG_END*/
+var PB_GEO_R2 = 10.15, pfig = null; // el impulsor máximo del dibujo (cm), el de geo.mjs
+function PumpFig(host) {
+  this.host = host; this.wrap = host.querySelector('.iz-wrap'); this.slot = host.querySelector('.hx-slot');
+  this.tagBox = host.querySelector('.hx-tags'); this.leg = host.querySelector('.hx-leg');
+  this.key = ''; this.f = null; this.D = null; this.cache = {}; this.tagKey = ''; this.running = true; this.speed = 1;
+}
+PumpFig.prototype.ok = function () { return typeof FPump === 'function' && !!PB_FIGS.inundada; };
+PumpFig.prototype.want = function (sub) {
+  var self = this; if (sub === this.key || !PB_FIGS[sub]) return;
+  this.key = sub; this.f = null; this.tagKey = ''; this.host.classList.add('hx-loading');
+  var got = this.cache[sub] ? Promise.resolve(this.cache[sub]) : fetch('fig/bomba/bomba-' + sub + '.svg').then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); });
+  got.then(function (t) {
+    self.cache[sub] = t; if (self.key !== sub) return;
+    self.slot.innerHTML = t; self.D = PB_FIGS[sub];
+    self.f = new FPump(self.slot, self.D);
+    self.zoom = typeof IsoZoom === 'function' ? new IsoZoom(self.wrap, self.slot.querySelector('svg'), self.D.W, self.D.H) : null;
+    self.host.classList.remove('hx-loading');
+  }).catch(function () { self.host.classList.remove('hx-loading'); self.key = ''; });
+};
+/* la escala de un manómetro: el primer valor redondo que deja la lectura en el último cuarto o antes */
+function gaugeMax(p) { var opts = [100, 160, 250, 400, 600, 1000, 1600, 2500]; for (var i = 0; i < opts.length; i++) if (opts[i] >= 1.25 * p) return opts[i]; return 4000; }
+/* lo que la figura necesita del modelo: velocidades, presiones, cavitación, lecturas y nivel */
+PumpFig.prototype.stateOf = function (r) {
+  var s = r.s, op = r.op, Patm = r.Patm, rg = r.rg, sub = s.zs >= 0 ? 'inundada' : 'elevacion';
+  var o = { sub: sub, N: r.N, r2: PB_GEO_R2 * r.D / r.Dmax, open: 1 / Math.sqrt(1 + Math.max(0, s.hv) / 1.5) };
+  if (op && r.press) {
+    var p = r.press.pts.map(function (q) { return q.p; }), t = r.tri;
+    o.press = p; o.pv = r.press.pv; o.cm1 = r.press.vs; o.cm2 = t.cm2; o.c2u = t.cu2; o.uThroat = r.press.vd; o.Qrel = r.x;
+    o.cav = r.npsha >= r.npshi ? 0 : (r.npsha >= r.npsh3 ? (r.npshi - r.npsha) / Math.max(1e-6, r.npshi - r.npsh3) : 1 + Math.min(1, 3 * (r.npsh3 - r.npsha) / Math.max(1e-6, r.npsh3)));
+    o.kps = p[0] * rg / 1000 - Patm; o.kpd = p[5] * rg / 1000 - Patm;
+  } else {
+    // sin punto de operación: la bomba gira con la descarga cerrada por la cabeza estática; no hay caudal
+    o.press = [1, 1, 1, 1, 1, 1]; o.pv = 0; o.cm1 = 0; o.cm2 = 0; o.c2u = 0; o.uThroat = 0; o.Qrel = 0; o.cav = 0;
+    o.kps = (s.P1 + rg * s.zs / 1000); o.kpd = o.kps;
+  }
+  o.sMax = gaugeMax(Math.max(150, o.kps)); o.dMax = gaugeMax(Math.max(160, o.kpd)); o.tMax = gaugeMax(Math.max(150, s.P1));
+  o.ps = (o.kps + 100) / (o.sMax + 100); o.pd = Math.max(0, o.kpd) / o.dMax; o.p1 = (s.P1 + 100) / (o.tMax + 100);
+  o.level = sub === 'inundada' ? 0.12 + 0.82 * Math.min(1, s.zs / 10) : 0.9 - 0.8 * Math.min(1, -s.zs / 7);
+  return o;
+};
+/* r: el resultado del modelo; dt: segundos de animación (0 en pausa) */
+PumpFig.prototype.frame = function (r, dt, snap) {
+  var o = this.stateOf(r); this.want(o.sub);
+  if (!this.f) return;
+  o.dt = dt; o.snap = snap; this.f.update(o);
+  this.tags(r, o);
+};
+PumpFig.prototype.tags = function (r, o) {
+  var D = this.D, f = this.f, svg = f.svg, vb = (svg.getAttribute('viewBox') || '').split(' ').map(Number), s = r.s, op = r.op;
+  var narrow = this.host.getBoundingClientRect().width < 560, kP = function (v) { return fmtN(v, Math.abs(v) < 10 ? 1 : 0) + ' kPa'; };
+  var list = [
+    { p: D.ends.tank, a: 'l', t: ['tanque de succión', 'zₛ = ' + (s.zs > 0 ? '+' : '') + fh(s.zs) + ' ' + lH() + ' · ' + (s.P1 === 0 ? 'abierto' : 'P₁ = ' + kP(s.P1))] },
+    { p: D.ends.ps, a: 'l', t: ['succión', kP(o.kps) + ' manométrica'] },
+    { p: D.ends.pd, a: 'r', t: ['descarga', kP(o.kpd) + ' manométrica'] },
+    { p: D.ends.gv, a: 'r', t: ['válvula de regulación', s.hv > 0 ? 'quema ' + fh(s.hv) + ' ' + lH() + ' a Q_d' : 'abierta'] },
+    { p: D.ends.dest, a: 'l', t: ['al destino', 'z_d = ' + fh(s.zd) + ' ' + lH() + (s.P2 ? ' · P₂ = ' + kP(s.P2) : '')] },
+    { p: D.ends.pump, a: 'r', t: [r.cas.name + ' · ' + fmtN(r.D * 1000, 0) + ' mm · ' + fmtN(r.N, 0) + ' rpm', op ? fq(op.q1) + ' ' + lQ() + ' a ' + fh(op.h1) + ' ' + lH() : 'sin caudal'] },
+    { p: D.ends.motor, a: 'r', t: ['motor', r.motor ? fmtN(r.motor, r.motor < 10 ? 1 : 0) + ' kW' : 'sin motor estándar'] }
+  ];
+  var wr = this.wrap.getBoundingClientRect(), sr = svg.getBoundingClientRect(), box = [sr.left - wr.left, sr.top - wr.top, sr.width, sr.height].map(Math.round);
+  // en pantallas angostas, solo el tanque y los dos manómetros, con su lectura
+  if (narrow) list = list.slice(0, 3).map(function (q, i) { q.t = [q.t[1]]; if (i === 0) q.a = 'r'; return q; });
+  var key = box.join(',') + '|' + vb.join(',') + '|' + list.map(function (q) { return q.t.join('/'); }).join('|');
+  if (key === this.tagKey) return; this.tagKey = key;
+  var st = this.tagBox.style; st.left = box[0] + 'px'; st.top = box[1] + 'px'; st.width = box[2] + 'px'; st.height = box[3] + 'px';
+  var W = vb[2] || D.W, H = vb[3] || D.H, x0 = vb[0] || 0, y0 = vb[1] || 0;
+  this.tagBox.innerHTML = list.map(function (q) {
+    var p = f.C.pr(q.p[0], q.p[1], q.p[2]), x = (p[0] - x0) / W * 100, y = (p[1] - y0) / H * 100;
+    if (x < -2 || x > 102 || y < -2 || y > 102) return '';
+    return '<div class="hx-tag ' + q.a + '" style="left:' + x.toFixed(2) + '%;top:' + y.toFixed(2) + '%">' + q.t.map(function (l, i) { return i ? '<b>' + esc(l).replace(/_d/g, '<sub>d</sub>') + '</b>' : esc(l); }).join('<br>') + '</div>';
+  }).join('');
+  if (this.leg) this.leg.innerHTML = '<span>baja</span><i></i><span>alta</span><em>presión estática</em>';
+};
+/* ====================================================================
+   Interfaz: controles, indicadores, pestañas y gráficas
+   ==================================================================== */
+var $ = function (s, r) { return (r || document).querySelector(s); };
+var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+/* Entre visitas solo se recuerda el fondo (papel o blueprint): los valores del simulador arrancan siempre en el caso
+   del curso, para que nadie lo encuentre en el punto en que otro lo dejó. Se borra lo que guardaban las versiones anteriores. */
+var STORE_KEEP = { canvas: 1 };
+try { Object.keys(localStorage).forEach(function (k) { if (k.indexOf('pou-bombas:') === 0 && !STORE_KEEP[k.slice(11)]) localStorage.removeItem(k); }); } catch (e) { }
+var store = { get: function (k, d) { if (!STORE_KEEP[k]) return d; try { var v = localStorage.getItem('pou-bombas:' + k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } }, set: function (k, v) { if (!STORE_KEEP[k]) return; try { localStorage.setItem('pou-bombas:' + k, JSON.stringify(v)); } catch (e) { } } };
+function clone(o) { return JSON.parse(JSON.stringify(o)); }
+
+var BASE = { casing: 'm', N0: 1750, vfd: 100, D: 190, arr: 'una', fluid: 'agua', T: 25, pMu: 4, cRho: 1000, cMuExp: -3, cPv: 2.3, lQd: Math.log10(25), zs: 2, zd: 12, P1: 0, P2: 0, hfs: 0.5, hfd: 5, hv: 0, alt: 2600, FS: 1.15, marg: 1.0, units: 'si', isl: true, grid: true };
+/* Configuraciones del curso: cada una es un sistema completo (bomba, niveles, presiones y pérdidas de la línea). Se cargan
+   desde la pestaña 7 y conservan las unidades y las opciones de vista. Las que nacen de un fluido concreto lo fijan (fix) y
+   lo dicen en la tarjeta; las demás conservan el fluido que el estudiante tiene escogido. */
+var CONFIGS = [
+  { id: 'agua', name: 'Línea de agua de servicios', src: 'Caso base del explorador', fix: ['fluid', 'T'], fluNote: 'la del caso base', s: {},
+    desc: 'Una bomba 2×3-8 a 1750 rpm, con impulsor de 190 mm, en una línea diseñada para 25 m³/h de agua hacia un tanque 10 m más arriba, con 5,5 m de fricción a ese caudal. Con la válvula abierta pasa 27,3 m³/h a 16,6 m, con 6,6 m de fricción y al 108 % del BEP: una selección sana que sirve de referencia para comparar las demás.',
+    note: 'Los números son propios del explorador: la bomba, los niveles y las pérdidas de la línea son ilustrativos.' },
+  { id: 'extracto', name: 'Extracto caliente al filtro prensa', src: 'Ejemplo del explorador · datos supuestos', fix: ['fluid', 'T'], fluNote: 'el del caso',
+    s: { casing: 's', N0: 3500, D: 117, fluid: 'extracto', T: 85, lQd: Math.log10(15), zs: 1.5, zd: 3.5, P2: 150, hfs: 0.35, hfd: 6 },
+    desc: 'En una planta de alimentos, un extracto acuoso a 85 °C, su temperatura de proceso, va del tanque de extracción al filtro prensa, que trabaja a 150 kPa. Lo mueve una carcasa pequeña 1½×2-6 a 3500 rpm con el impulsor recortado a 117 mm, que pasa 15,3 m³/h, apenas sobre los 15 m³/h que pide el filtro, al 80 % del BEP.',
+    note: 'Se supusieron la bomba, los niveles, la presión del filtro, las pérdidas y los 15 m³/h. A 85 °C la presión de vapor del extracto ya es de 58 kPa y el margen de NPSH baja a 1,5 m. La viscosidad es la que tenga en el panel 02 (4 mPa·s por defecto, un valor de referencia): cámbiela por la que se mida en el laboratorio.' },
+  { id: 'sobre', name: 'Bomba sobredimensionada', src: 'Ejemplo del explorador · Lectura 06',
+    s: { casing: 'l', D: 254, lQd: Math.log10(20), zs: 2, zd: 34, hfs: 0.3, hfd: 2 },
+    desc: 'Una carcasa grande 3×4-10 con el impulsor máximo de 254 mm en una línea diseñada para 20 m³/h hacia un tanque 32 m más arriba. Con agua y la válvula abierta pasa 26,5 m³/h, al 52 % del BEP: recirculación, una eficiencia del 58 % y un motor de 11 kW para 4,5 kW al freno.',
+    note: 'Los números son propios del explorador: la bomba, el tanque y las pérdidas. La pestaña 4 compara lo que cuesta llevarla a los 20 m³/h con la válvula, con el variador o recortando el impulsor.' },
+  { id: 'cavita', name: 'Succión negativa con agua caliente', src: 'Ejemplo del explorador · NPSH de la Lectura 06', fix: ['fluid', 'T'], fluNote: 'la fija el caso',
+    s: { N0: 3500, D: 195, T: 60, lQd: Math.log10(48), zs: -3, zd: 55, hfs: 1.0, hfd: 12 },
+    desc: 'El tanque está 3 m por debajo del eje de la bomba y el agua llega a 60 °C, con la presión atmosférica de Bogotá. La línea es para 48 m³/h a 3500 rpm, pero el NPSH disponible (2,0 m) no alcanza el requerido (2,3 m): la bomba cavita, pierde el 20 % de la cabeza y se queda en 35,9 m³/h.',
+    note: 'Los números son propios del explorador: la bomba, los niveles, las pérdidas y la temperatura. Pruebe una cosa a la vez. Con el tanque al nivel del eje (zₛ = 0, panel 03) queda sana, con 1,6 m de margen; enfriar el agua a 20 °C (panel 02) deja 0,5 m, todavía con aviso; con el variador entre el 83 y el 92 % (panel 01) deja de cavitar, pero no pasa de 37 m³/h. Bajar a 1750 rpm no sirve: a caudal cero la bomba da 21 m y no vence los 58 m de cabeza estática.' },
+  { id: 'viscoso', name: 'Bombeo de aceite viscoso', src: 'Ejemplo del explorador · ANSI/HI 9.6.7', fix: ['fluid', 'T'], fluNote: 'lo fija el caso',
+    s: { fluid: 'aceite', T: 20, D: 203, lQd: Math.log10(20), zs: 2, zd: 14, hfs: 0.5, hfd: 3 },
+    desc: 'La carcasa 2×3-8 con el impulsor máximo mueve aceite ISO VG 32 a 20 °C, de 86 cSt. Con esa viscosidad la curva de agua del fabricante ya no vale: ANSI/HI 9.6.7 la corrige: el caudal del BEP baja al 88 % y la eficiencia al 60 % de la del agua. La línea es para 20 m³/h; con la válvula abierta pasa 24,6 m³/h, al 108 % del BEP corregido.',
+    note: 'Los números son propios del explorador: la bomba, la línea y el aceite. En la pestaña 6 compare el BEP con agua y con el aceite.' },
+  { id: 'paralelo', name: 'Dos bombas en paralelo', src: 'Ejemplo del explorador · Lectura 06',
+    s: { D: 203, arr: 'paralelo', lQd: Math.log10(45), zs: 2, zd: 12, hfs: 0.4, hfd: 8 },
+    desc: 'Dos bombas 2×3-8 iguales, con el impulsor máximo, comparten succión y descarga en una línea diseñada para 45 m³/h hacia el tanque del caso base, 10 m más arriba. Con agua y la válvula abierta pasan 51,0 m³/h, unos 25,5 m³/h cada una, al 98 % de su BEP.',
+    note: 'Los números son propios del explorador: la bomba y las pérdidas de la línea. La pestaña 5 compara este arreglo con una sola bomba (35,7 m³/h) y con dos en serie (44,2 m³/h) en el mismo sistema.' }
+];
+var BASE_ID = 'agua', KEEP_FLUID = ['fluid', 'T', 'pMu', 'cRho', 'cMuExp', 'cPv'], KEEP_VIEW = ['units', 'isl', 'grid'];
+function cfgState(id, from) {
+  var c = byId(CONFIGS, id), s = Object.assign(clone(BASE), clone(c.s)), fix = c.fix || [];
+  if (from) KEEP_FLUID.filter(function (k) { return fix.indexOf(k) < 0; }).concat(KEEP_VIEW).forEach(function (k) { s[k] = from[k]; });
+  s.cfg = c.id; s.cfgMod = false; return s;
+}
+var state = cfgState(BASE_ID);
+var R = null, RV = null, tab = 'ins';
+var SVGI = {
+  pause: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M8 5v14M16 5v14"/></svg>',
+  play: '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l12-7.5z"/></svg>',
+  reset: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>'
+};
+var CAS_ICON = '<svg viewBox="0 0 44 30" aria-hidden="true"><path d="M8 15 a12 12 0 1 1 24 0 a12 12 0 0 1 -12 12 h-2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M32 15 V3 h6 V15" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="20" cy="15" r="3" fill="currentColor"/><path d="M20 15 q4 -6 8 -4 M20 15 q-6 -2 -6 -8 M20 15 q2 6 -2 8" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>';
+
+/* ---------- unidades ---------- */
+function US() { return state.units === 'us'; }
+function uQ(Qs) { return US() ? Qs * 15850.32 : Qs * 3600; } function lQ() { return US() ? 'GPM' : 'm³/h'; }
+function uH(m) { return US() ? m * 3.28084 : m; } function lH() { return US() ? 'pie' : 'm'; }
+function uP(kW) { return US() ? kW / 0.7457 : kW; } function lP() { return US() ? 'HP' : 'kW'; }
+function fq(Qs) { var v = uQ(Qs); return fmtN(v, v < 10 ? 2 : (v < 100 ? 1 : 0)); }
+function fh(m) { var v = uH(m); return fmtN(v, Math.abs(v) < 10 ? 2 : 1); }
+function fp(kW) { var v = uP(kW); return fmtN(v, v < 10 ? 2 : 1); }
+function fD(Dm) { return fmtN(Dm * 1000, 0) + ' mm (' + fmtN(Dm / 0.0254, 2) + '″)'; }
+
+/* ---------- controles ---------- */
+var SLIDERS = ['D', 'vfd', 'T', 'pMu', 'cRho', 'cMuExp', 'cPv', 'lQd', 'zs', 'zd', 'P1', 'P2', 'hfs', 'hfd', 'hv', 'alt', 'marg', 'FS'];
+var FLUID_SLIDERS = { T: 1, pMu: 1, cRho: 1, cMuExp: 1, cPv: 1 };
+function loadCfg(id) { state = cfgState(id, state); pscene && pscene.reset(); update(true); setTab('ins'); window.scrollTo(0, 0); }
+/* volver al sistema del curso completo, fluido incluido; solo se conservan las opciones de vista */
+function resetAll() { var old = state; state = cfgState(BASE_ID); KEEP_VIEW.forEach(function (k) { state[k] = old[k]; }); pscene && pscene.reset(); update(true); }
+function buildControls() {
+  $('#casBtns').innerHTML = CASINGS.map(function (c) { return '<button type="button" class="mill" data-c="' + c.id + '">' + CAS_ICON + esc(c.name) + '<span class="sz">' + fmtN(REF.D2max * c.lam * 1000, 0) + ' mm</span></button>'; }).join('');
+  $('#fluBtns').innerHTML = FLUIDS.filter(function (f) { return f.id !== 'glicerina'; }).map(function (f) { return '<button type="button" class="opt" data-f="' + f.id + '"><span class="dotc" style="background:' + f.color + '"></span><span>' + esc(f.name) + '</span><span class="x">' + (f.project ? 'μ a medir' : (f.custom ? 'ρ, μ, Pv' : '')) + '</span></button>'; }).join('');
+  $$('#casBtns .mill').forEach(function (b) { b.addEventListener('click', function () { var old = byId(CASINGS, state.casing), nw = byId(CASINGS, b.dataset.c); if (nw.id === old.id) return; state.casing = nw.id; state.D = Math.round(state.D * nw.lam / old.lam); dirty(); }); });
+  $$('#fluBtns .opt').forEach(function (b) { b.addEventListener('click', function () { var f = byId(FLUIDS, b.dataset.f); if (f.id === state.fluid) return; state.fluid = f.id; if (f.T) state.T = clamp(state.T, f.T[0], f.T[1]); dirty('fluid', 'fluid'); }); });
+  [['#nSeg', 'N0', true], ['#arrSeg', 'arr'], ['#unitSeg', 'units', false, 'view']].forEach(function (a) { $$(a[0] + ' button').forEach(function (b) { b.addEventListener('click', function () { var v = a[2] ? +b.dataset.v : b.dataset.v; if (state[a[1]] === v) return; state[a[1]] = v; dirty(a[3], a[1]); }); }); });
+  SLIDERS.forEach(function (k) { var el = document.getElementById(k); el.addEventListener('input', function () { state[k] = parseFloat(el.value); dirty(FLUID_SLIDERS[k] ? 'fluid' : null, k); }); });
+  ['isl', 'grid'].forEach(function (k) { var el = document.getElementById(k); el.addEventListener('change', function () { state[k] = el.checked; dirty('view', k); }); });
+  $('#resetAll').addEventListener('click', resetAll);
+  $('#toCfg').addEventListener('click', function () { setTab('cf'); if (window.innerWidth < 900) { $('#ctl').classList.remove('open'); $('#mobCtl').textContent = 'Controles'; } });
+  $('#cfgCards').addEventListener('click', function (e) { var b = e.target.closest('button[data-cfg]'); if (b) loadCfg(b.dataset.cfg); });
+  $('#status').addEventListener('click', function () { setTab('in'); setTimeout(function () { $('#diagCard').scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 50); });
+  $$('.tabs [role=tab]').forEach(function (b) { b.addEventListener('click', function () { setTab(b.dataset.tab); }); });
+  $$('.tabs .canv button').forEach(function (b) { b.addEventListener('click', function () { document.documentElement.setAttribute('data-canvas', b.dataset.canvas); $$('.tabs .canv button').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); }); store.set('canvas', b.dataset.canvas); pscene && pscene.layout(); renderTab(); }); });
+  $('#mobCtl').addEventListener('click', function () { $('#ctl').classList.toggle('open'); this.textContent = $('#ctl').classList.contains('open') ? 'Cerrar' : 'Controles'; });
+  document.addEventListener('keydown', function (e) { if (/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return; var i = '12345678'.indexOf(e.key); if (i >= 0) setTab(['ins', 'in', 'ca', 'np', 're', 'sp', 'se', 'cf'][i]); if (e.key === ' ' && tab === 'ins') { e.preventDefault(); toggleIns(); } if (e.key === ' ' && tab === 'in') { e.preventDefault(); togglePlay(); } });
+  $('#btnPlay').innerHTML = SVGI.pause; $('#btnReset').innerHTML = SVGI.reset;
+  $('#btnPlay').addEventListener('click', togglePlay); $('#btnReset').addEventListener('click', function () { pscene.reset(); });
+  $('#insPlay').innerHTML = SVGI.pause; $('#insPlay').addEventListener('click', toggleIns);
+  $$('.play [data-isp]').forEach(function (b) { b.addEventListener('click', function () { if (pfig) pfig.speed = +b.dataset.isp; $$('.play [data-isp]').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); }); }); });
+  $$('.play [data-sp]').forEach(function (b) { b.addEventListener('click', function () { pscene.speed = +b.dataset.sp; $$('.play [data-sp]').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); }); }); });
+  var cv = store.get('canvas', 'paper'); document.documentElement.setAttribute('data-canvas', cv); $$('.tabs .canv button').forEach(function (x) { x.setAttribute('aria-pressed', x.dataset.canvas === cv ? 'true' : 'false'); });
+  hoverSetup();
+}
+/* un cambio del estudiante. Si toca el sistema, o el fluido de una configuración que lo fija, lo que hay en pantalla ya no es
+   la configuración cargada tal cual. Las opciones de vista y el fluido de las configuraciones que lo conservan no cuentan. */
+function dirty(kind, key) {
+  var fix = byId(CONFIGS, state.cfg).fix || [];
+  if (kind !== 'view' && (kind !== 'fluid' || fix.indexOf(key) >= 0)) state.cfgMod = true;
+  update();
+}
+function toggleIns() { if (!pfig) return; pfig.running = !pfig.running; $('#insPlay').innerHTML = pfig.running ? SVGI.pause : SVGI.play; }
+function togglePlay() { pscene.running = !pscene.running; $('#btnPlay').innerHTML = pscene.running ? SVGI.pause : SVGI.play; }
+function setTab(t) {
+  tab = t;
+  $$('.tabs [role=tab]').forEach(function (b) { b.setAttribute('aria-selected', b.dataset.tab === t ? 'true' : 'false'); });
+  $$('.panel').forEach(function (p) { p.classList.toggle('on', p.dataset.panel === t); });
+  if (t === 'in' && pscene) pscene.resize();
+  renderTab();
+}
+function setV(id, v) { var el = document.getElementById(id); if (el && el.innerHTML !== v) { el.innerHTML = v; if (el.classList.contains('v')) { el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); } } }
+function pressed(sel, attr, val) { $$(sel).forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset[attr]) === String(val) ? 'true' : 'false'); }); }
+
+/* transición suave de diámetro y velocidad en las cartas */
+var VIS = null;
+window.tweenTick = function (dt) {
+  if (!VIS || !R) return;
+  var done = true, kf = 1 - Math.exp(-dt / 0.08);
+  ['D', 'vfd'].forEach(function (k) { var tg = k === 'D' ? R.D * 1000 : state[k]; var d = tg - VIS[k]; if (Math.abs(d) > (k === 'D' ? 0.15 : 0.08)) { VIS[k] += d * kf; done = false; } else VIS[k] = tg; });
+  if (VIS.casing !== state.casing || VIS.N0 !== state.N0) { VIS.casing = state.casing; VIS.N0 = state.N0; }
+  if (done) { if (RV) { RV = null; renderTab(); } return; }
+  if (tab === 'ca' || tab === 'np') { RV = compute(Object.assign({}, state, { D: VIS.D, vfd: VIS.vfd }), true); renderTab(); }
+};
+
+function update(jump) {
+  R = compute(state);
+  if (!VIS || jump || VIS.casing !== state.casing || VIS.N0 !== state.N0) VIS = { D: R.D * 1000, vfd: state.vfd, casing: state.casing, N0: state.N0 };
+  var s = state, r = R, fl = r.fl, P = r.P;
+  pressed('#casBtns .mill', 'c', s.casing); pressed('#fluBtns .opt', 'f', s.fluid);
+  pressed('#nSeg button', 'v', s.N0); pressed('#arrSeg button', 'v', s.arr); pressed('#unitSeg button', 'v', s.units);
+  var dEl = $('#D'); dEl.min = Math.round(r.Dmin * 1000); dEl.max = Math.round(r.Dmax * 1000);
+  if (s.D < +dEl.min || s.D > +dEl.max) s.D = clamp(s.D, +dEl.min, +dEl.max);
+  SLIDERS.forEach(function (k) { var el = document.getElementById(k); if (parseFloat(el.value) !== s[k]) el.value = s[k]; });
+  ['isl', 'grid'].forEach(function (k) { document.getElementById(k).checked = !!s[k]; });
+  $('#casNote').textContent = r.cas.note;
+  setV('vD', fD(r.D)); $('#Dhint').textContent = 'Rango de la carcasa: ' + fmtN(r.Dmin * 1000, 0) + ' a ' + fmtN(r.Dmax * 1000, 0) + ' mm (recorte hasta 75 %)';
+  setV('vvfd', fmtN(s.vfd, 0) + ' % · ' + fmtN(r.N, 0) + ' rpm'); $('#vfdHint').textContent = 'Leyes de afinidad: Q ∝ N, H ∝ N², P ∝ N³ · ' + fmtN(60 * s.vfd / 100, 1) + ' Hz';
+  // fluido
+  $('#TRow').style.display = fl.T ? 'block' : 'none';
+  if (fl.T) { var tEl = $('#T'); tEl.min = fl.T[0]; tEl.max = fl.T[1]; if (parseFloat(tEl.value) !== r.T) tEl.value = r.T; }
+  setV('vT', fmtN(r.T, 0) + ' °C');
+  $('#pMuRow').style.display = fl.custom === 'mu' ? 'block' : 'none'; setV('vpMu', fmtN(s.pMu, 1) + ' mPa·s');
+  $('#customBox').style.display = fl.custom === 'all' ? 'block' : 'none';
+  setV('vcRho', fmtN(s.cRho, 0) + ' kg/m³'); setV('vcMuExp', fmtMu(Math.pow(10, s.cMuExp))); setV('vcPv', fmtN(s.cPv, 1) + ' kPa');
+  $('#specFlu').innerHTML = [['Densidad ρ', fmtN(P.rho, 1) + ' kg/m³'], ['Viscosidad cinemática ν', fmtN(P.nu * 1e6, P.nu < 1e-5 ? 2 : 1) + ' cSt'], ['Presión de vapor Pv', fmtN(P.Pv, P.Pv < 1 ? 3 : 1) + ' kPa'], ['Gravedad específica', fmtN(P.rho / 999, 3)]].map(function (a) { return '<div>' + a[0] + '</div><div class="v">' + a[1] + '</div>'; }).join('');
+  // sistema
+  setV('vlQd', fq(r.sys.Qd) + ' ' + lQ());
+  setV('vzs', fh(s.zs) + ' ' + lH()); $('#zsHint').textContent = s.zs < 0 ? 'Nivel bajo el eje: altura de succión (succión negativa)' : 'Nivel sobre el eje: succión inundada';
+  setV('vzd', fh(s.zd) + ' ' + lH()); setV('vP1', fmtN(s.P1, 0) + ' kPa'); setV('vP2', fmtN(s.P2, 0) + ' kPa');
+  setV('vhfs', fh(s.hfs) + ' ' + lH()); setV('vhfd', fh(s.hfd) + ' ' + lH()); setV('vhv', fh(s.hv) + ' ' + lH());
+  setV('valt', fmtN(s.alt, 0) + ' msnm'); $('#altHint').textContent = 'Patm = ' + fmtN(r.Patm, 1) + ' kPa' + (Math.abs(s.alt - 2600) < 60 ? ' · Bogotá' : '');
+  setV('vmarg', fh(s.marg) + ' ' + lH()); setV('vFS', fmtN(s.FS, 2));
+  var cf = byId(CONFIGS, s.cfg);
+  $('#ctx').innerHTML = '<b>' + esc(cf.name) + (s.cfgMod ? ', con cambios' : '') + '</b> · ' + esc(r.cas.name) + ' · ' + fmtN(r.N, 0) + ' rpm · ' + esc(fluName(s)) + (s.arr !== 'una' ? ' · dos en ' + s.arr : '');
+  $('#cfgNow').innerHTML = esc(cf.name) + '<small>' + esc(s.cfgMod ? 'con sus cambios' : cf.src) + '</small>';
+  renderKPIs();
+  var sev = r.warn.some(function (w) { return w.sev === 'c'; }) ? 'inv' : (r.warn.some(function (w) { return w.sev === 'w'; }) ? 'adv' : '');
+  $('#status').className = 'status' + (sev ? ' ' + sev : ''); $('#statusTxt').textContent = sev === 'inv' ? 'No viable' : (sev === 'adv' ? 'Con advertencias' : 'Selección sana');
+  renderTab();
+  if (pscene) pscene.configure(R);
+}
+function renderKPIs() {
+  var r = R, op = r.op;
+  setV('kQ', op ? fq(op.Q) : '0'); setV('kQu', lQ() + (op ? ' · requerido ' + fq(r.sys.Qd) : ''));
+  setV('kH', op ? fh(op.H) : '—'); setV('kHu', lH() + ' de líquido · ' + (op ? fmtN(op.H * r.rg / 1000, 0) + ' kPa' : ''));
+  setV('kE', op ? fmtN(100 * r.eta, 1) + ' %' : '—'); setV('kEu', 'máxima ' + fmtN(100 * r.pf.eB, 1) + ' % en el BEP');
+  setV('kX', op ? fmtN(100 * r.x, 0) + ' %' : '—'); $('#kXc').classList.toggle('bad', !!op && (r.x < 0.7 || r.x > 1.1));
+  setV('kP', op ? fp(r.Pshaft) : '—'); setV('kPu', lP() + (r.motor ? ' · motor ' + (r.nP > 1 ? '2 × ' : '') + fmtN(r.motor, r.motor < 1 ? 2 : (r.motor < 10 ? 1 : 0)) + ' kW' : ''));
+  setV('kN', op ? (r.margin >= 0 ? '+' : '') + fh(r.margin) : '—'); setV('kNu', op ? lH() + ' · NPSHa ' + fh(r.npsha) + ' / NPSH3 ' + fh(r.npsh3) : '');
+  $('#kNc').classList.toggle('bad', !!op && r.margin < state.marg);
+}
+function renderTab() {
+  if (!R) return; var r = RV || R;
+  if (tab === 'ins') renderInstall();
+  else if (tab === 'in') renderInside();
+  else if (tab === 'ca') renderChart(r);
+  else if (tab === 'np') renderNpsh(r);
+  else if (tab === 're') renderReg();
+  else if (tab === 'sp') renderSP();
+  else if (tab === 'se') renderSel();
+  else if (tab === 'cf') renderConfigs();
+}
+
+/* ---------- utilidades SVG ---------- */
+function E(tag, a, inner) { var s = '<' + tag; for (var k in a) if (a[k] != null && a[k] !== '') s += ' ' + k + '="' + a[k] + '"'; return s + '>' + (inner == null ? '' : inner) + '</' + tag + '>'; }
+function TX(x, y, s, o) { o = o || {}; return E('text', { x: r1(x), y: r1(y), 'text-anchor': o.a, 'font-size': o.fs || 11, 'font-weight': o.fw, transform: o.tr, style: o.c ? 'fill:' + o.c : null, 'font-family': o.mono ? 'var(--font-mono)' : null }, esc(s)); }
+function LN(x1, y1, x2, y2, st) { return E('line', { x1: r1(x1), y1: r1(y1), x2: r1(x2), y2: r1(y2), style: st }); }
+function PATH(d, st, clip) { return E('path', { d: d, style: 'fill:none;' + st, 'clip-path': clip ? 'url(#' + clip + ')' : null }); }
+function r1(x) { return Math.round(x * 10) / 10; }
+function poly(arr) { return arr.map(function (p, i) { return (i ? 'L' : 'M') + r1(p[0]) + ' ' + r1(p[1]); }).join(' '); }
+function niceStep(range, n) { var raw = range / (n || 5), p = Math.pow(10, Math.floor(Math.log10(raw))), m = raw / p; return (m < 1.5 ? 1 : (m < 3 ? 2 : (m < 7 ? 5 : 10))) * p; }
+var MUT = 'var(--muted-ink)';
+function axes(o) { // o: x0,x1,y0,y1, xmax, ymin, ymax, xlab, ylab, xs (display multiplier), ys, clip
+  var out = E('rect', { x: o.x0, y: o.y0, width: o.x1 - o.x0, height: o.y1 - o.y0, class: 'chart-bg' });
+  var X = function (v) { return o.x0 + v / o.xmax * (o.x1 - o.x0); }, Y = function (v) { return o.y1 - (v - o.ymin) / (o.ymax - o.ymin) * (o.y1 - o.y0); };
+  var dx = niceStep(o.xmax * o.xs, o.nx || 8), dy = niceStep((o.ymax - o.ymin) * o.ys, o.ny || 5);
+  for (var v = 0; v <= o.xmax * o.xs + 1e-9; v += dx) { var xx = X(v / o.xs); if (state.grid) out += LN(xx, o.y0, xx, o.y1, 'stroke:var(--n300);stroke-width:.7;opacity:.7'); if (!o.noXlab) out += TX(xx, o.y1 + 15, fmtN(v, dx < 1 ? 1 : 0), { a: 'middle', c: MUT, fs: 10.5 }); }
+  for (v = Math.ceil(o.ymin * o.ys / dy) * dy; v <= o.ymax * o.ys + 1e-9; v += dy) { var yy = Y(v / o.ys); if (state.grid) out += LN(o.x0, yy, o.x1, yy, 'stroke:var(--n300);stroke-width:.7;opacity:.7'); out += TX(o.x0 - 6, yy + 4, fmtN(v, dy < 1 ? 1 : 0), { a: 'end', c: MUT, fs: 10.5 }); }
+  out += E('rect', { x: o.x0, y: o.y0, width: o.x1 - o.x0, height: o.y1 - o.y0, style: 'fill:none;stroke:var(--ink);stroke-width:1.5' });
+  if (o.clip) out += E('clipPath', { id: o.clip }, E('rect', { x: o.x0, y: o.y0, width: o.x1 - o.x0, height: o.y1 - o.y0 }));
+  if (o.xlab) out += TX((o.x0 + o.x1) / 2, o.y1 + 32, o.xlab, { a: 'middle', c: MUT, fs: 11 });
+  if (o.ylab) out += TX(o.x0 - 40, (o.y0 + o.y1) / 2, o.ylab, { a: 'middle', c: MUT, fs: 11, tr: 'rotate(-90 ' + (o.x0 - 40) + ' ' + ((o.y0 + o.y1) / 2) + ')' });
+  return { svg: out, X: X, Y: Y };
+}
+function samp(fn, a, b, n) { var o = []; for (var i = 0; i <= n; i++) { var q = a + (b - a) * i / n; o.push([q, fn(q)]); } return o; }
+
+/* ---------- 1 · por dentro ---------- */
+/* la instalación en isométrico: lo que la figura no dice con números lo dicen el título, la entrada y la leyenda */
+function renderInstall() {
+  var r = R, s = state, op = r.op, up = s.zs >= 0;
+  $('#insLbl').textContent = r.cas.name + ' · ' + (up ? 'succión inundada' : 'succión con elevación') + (r.arr === 'una' ? '' : ' · dos en ' + r.arr);
+  var lead = 'El nivel del tanque está ' + fh(Math.abs(s.zs)) + ' ' + lH() + (up ? ' por encima' : ' por debajo') + ' del eje de la bomba' + (s.P1 ? ', con ' + fmtN(s.P1, 0) + ' kPa sobre el líquido' : '') + '. La bomba lo toma por la boquilla de succión, el impulsor le da energía y la descarga lo sube hasta el destino, ' + fh(s.zd) + ' ' + lH() + ' sobre el eje. ';
+  lead += op ? 'Pasa ' + fq(op.Q) + ' ' + lQ() + ' a ' + fh(op.H) + ' ' + lH() + (r.nP > 1 ? ' (' + fq(op.q1) + ' ' + lQ() + ' por bomba)' : '') + ', con un NPSH disponible de ' + fh(r.npsha) + ' ' + lH() + ' frente a ' + fh(r.npsh3) + ' ' + lH() + ' requeridos.' : 'No hay punto de operación: la bomba no vence la cabeza estática del sistema.';
+  $('#insLead').innerHTML = lead;
+  var chips = [];
+  if (op) {
+    chips.push('<span class="chip acc">' + fmtN(100 * r.x, 0) + ' % del BEP</span>', '<span class="chip">η ' + fmtN(100 * r.eta, 1) + ' %</span>');
+    if (r.npsha < r.npsh3) chips.push('<span class="chip red">Cavitación · cabeza −' + fmtN(100 * r.drop, 0) + ' %</span>');
+    else if (r.npsha < r.npshi) chips.push('<span class="chip red">Burbujas incipientes</span>');
+    else chips.push('<span class="chip">NPSH: margen ' + fh(r.margin) + ' ' + lH() + '</span>');
+  } else chips.push('<span class="chip red">Sin flujo</span>');
+  $('#insHud').innerHTML = chips.join('');
+  var cap = '<b>Cómo leerlo.</b> A la carcasa le falta la mitad de arriba de la tapa de succión: se ven el impulsor, la voluta y la garganta que sube a la descarga. El impulsor gira ' + SLOW + ' veces más despacio que el real, como en la pestaña «Por dentro», con el diámetro del caso (' + fmtN(r.D * 1000, 0) + ' mm de ' + fmtN(r.Dmax * 1000, 0) + ' posibles), y el líquido lleva el color de su presión estática: baja en el ojo, sube a lo largo del álabe y en la voluta. ';
+  cap += op ? 'Cuando el NPSH disponible no alcanza el de inicio de la cavitación (≈ 1,3 × NPSH3 = ' + fh(r.npshi) + ' ' + lH() + ') nacen burbujas en los bordes de ataque de los álabes; bajo el NPSH3 (' + fh(r.npsh3) + ' ' + lH() + ') son muchas y la cabeza cae. ' : '';
+  cap += 'Los manómetros marcan la presión manométrica en las bridas de succión y de descarga y la del tanque; el vidrio del tanque muestra su nivel sin escala (la etiqueta da el valor). El vástago de la válvula de regulación sale más cuanto más abierta está. ';
+  cap += 'La figura es un equipo tipo, una 2×3-8 con su motor: con otra carcasa cambian los números, no el dibujo' + (r.arr === 'una' ? '' : '; con dos bombas en ' + r.arr + ' se dibuja una de ellas') + '. Se acerca con pellizco, ctrl + rueda o los botones + −.';
+  $('#insCap').innerHTML = cap;
+}
+function renderInside() {
+  var r = R, s = state, op = r.op;
+  $('#inLbl').textContent = fmtN(r.N, 0) + ' rpm · D = ' + fmtN(r.D * 1000, 0) + ' mm';
+  if (!op) { $('#inLead').textContent = 'Sin punto de operación: revise el diagnóstico.'; $('#hud').innerHTML = '<span class="chip red">Sin flujo</span>'; $('#svgTri').innerHTML = ''; $('#svgPress').innerHTML = ''; $('#specTri').innerHTML = ''; renderWarn(); return; }
+  var t = r.tri;
+  $('#inLead').innerHTML = 'El líquido entra por el ojo, los álabes lo aceleran hacia la periferia y la voluta convierte esa velocidad en presión. A ' + fmtN(r.N, 0) + ' rpm la punta del álabe corre a ' + fmtN(t.u2, 1) + ' m/s y la bomba entrega ' + fh(op.h1) + ' ' + lH() + ' a ' + fq(op.q1) + ' ' + lQ() + (r.nP > 1 ? ' por bomba' : '') + '.';
+  var chips = ['<span class="chip acc">' + fmtN(100 * r.x, 0) + ' % del BEP</span>', '<span class="chip">η ' + fmtN(100 * r.eta, 1) + ' %</span>', '<span class="chip">u₂ ' + fmtN(t.u2, 1) + ' m/s</span>'];
+  if (r.npsha < r.npsh3) chips.push('<span class="chip red">Cavitación · cabeza −' + fmtN(100 * r.drop, 0) + ' %</span>');
+  else if (r.npsha < r.npshi) chips.push('<span class="chip red">Burbujas incipientes</span>');
+  if (r.x < 0.7) chips.push('<span class="chip red">Recirculación</span>');
+  $('#hud').innerHTML = chips.join('');
+  var cap = '<b>Cámara lenta ×1/' + SLOW + '.</b> Las partículas siguen la velocidad relativa entre los álabes más la rotación, y su color es la presión estática: baja en el ojo, sube a lo largo del álabe y termina de subir en la voluta. ';
+  if (r.npsha < r.npshi) cap += 'En el borde de ataque, en el lado de succión del álabe, la presión cae bajo la de vapor y nacen <b>burbujas</b>; unos milímetros adelante la presión sube y colapsan (los destellos rojos son los colapsos que erosionan el metal). ';
+  if (r.x < 0.7) cap += 'A este caudal tan bajo aparece <b>recirculación</b> en la entrada y en la salida del impulsor. ';
+  cap += 'El triángulo de salida muestra la velocidad de la punta u₂, la relativa w₂ y la absoluta c₂ = u₂ + w₂.';
+  $('#inCap').innerHTML = cap;
+  renderTri(); renderPress(); renderWarn();
+}
+function renderTri() {
+  var t = R.tri, W = 420, H = 330, o = '';
+  var arrow = function (x0, y0, dx, dy, col, lab, dash) {
+    var x1 = x0 + dx, y1 = y0 + dy, a = Math.atan2(dy, dx), hd = 8;
+    var s = LN(x0, y0, x1, y1, 'stroke:' + col + ';stroke-width:2.2' + (dash ? ';stroke-dasharray:4 3' : ''));
+    if (!dash) s += E('path', { d: 'M' + r1(x1) + ' ' + r1(y1) + 'L' + r1(x1 - hd * Math.cos(a - 0.4)) + ' ' + r1(y1 - hd * Math.sin(a - 0.4)) + 'L' + r1(x1 - hd * Math.cos(a + 0.4)) + ' ' + r1(y1 - hd * Math.sin(a + 0.4)) + 'Z', style: 'fill:' + col });
+    if (lab) s += TX(x0 + dx * 0.5 + (dy === 0 ? 0 : 10), y0 + dy * 0.5 + (dy === 0 ? 15 : 0), lab, { c: col, fw: 800, fs: 11, mono: true, a: dy === 0 ? 'middle' : 'start' });
+    return s;
+  };
+  // entrada (izquierda): u1 horizontal, c1 meridional (sin prerrotación), w1 = c1 − u1; escala real
+  var sc1 = 165 / Math.max(t.u1, 1), bx = 18, by = 150;
+  o += TX(12, 20, 'Entrada (ojo)', { fw: 800, fs: 12 });
+  o += arrow(bx, by, t.u1 * sc1, 0, 'var(--muted-ink)', 'u₁ = ' + fmtN(t.u1, 1));
+  o += arrow(bx, by, 0, -t.c1 * sc1, 'var(--redline)', '');
+  o += TX(bx + 4, by - t.c1 * sc1 - 6, 'c₁ = ' + fmtN(t.c1, 2), { c: 'var(--redline)', fw: 800, fs: 11, mono: true });
+  o += arrow(bx + t.u1 * sc1, by, -t.u1 * sc1, -t.c1 * sc1, 'var(--hl)', '');
+  o += TX(bx + t.u1 * sc1 * 0.55, by - t.c1 * sc1 * 0.55 - 8, 'w₁ = ' + fmtN(t.w1, 1), { c: 'var(--hl)', fw: 800, fs: 11, mono: true });
+  var lb = 70, a1 = t.beta1B * Math.PI / 180; o += LN(bx + t.u1 * sc1, by, bx + t.u1 * sc1 - lb * Math.cos(a1), by - lb * Math.sin(a1), 'stroke:var(--ink);stroke-width:1;stroke-dasharray:3 3');
+  o += TX(bx, by + 32, 'β₁ = ' + fmtN(t.beta1, 1) + '° · álabe ' + fmtN(t.beta1B, 1) + '°', { fs: 10.5, c: MUT });
+  o += TX(bx, by + 46, 'incidencia ' + (t.inc >= 0 ? '+' : '') + fmtN(t.inc, 1) + '°' + (Math.abs(t.inc) > 3 ? (t.inc > 0 ? ' · carga parcial' : ' · sobrecarga') : ''), { fs: 10.5, c: Math.abs(t.inc) > 3 ? 'var(--redline)' : MUT, fw: 700 });
+  // salida (derecha): cₘ exagerada ×3 para ver los ángulos; la línea del álabe usa la misma escala
+  var sc2 = 185 / Math.max(t.u2, 1), cx = 410, cy = 150, ex = 3, cmv = t.cm2 * sc2 * ex;
+  o += TX(222, 20, 'Salida (punta del álabe)', { fw: 800, fs: 12 });
+  o += arrow(cx, cy, -t.u2 * sc2, 0, 'var(--muted-ink)', 'u₂ = ' + fmtN(t.u2, 1));
+  o += arrow(cx, cy, -t.cu2inf * sc2, -cmv, 'var(--ink)', '', true);
+  o += arrow(cx, cy, -t.cu2 * sc2, -cmv, 'var(--redline)', '');
+  o += arrow(cx - t.u2 * sc2, cy, (t.u2 - t.cu2) * sc2, -cmv, 'var(--hl)', '');
+  o += TX(cx - t.cu2 * sc2 * 0.5 + 6, cy - cmv * 0.5 - 6, 'c₂ = ' + fmtN(t.c2, 1), { c: 'var(--redline)', fw: 800, fs: 11, mono: true });
+  o += TX(cx - t.u2 * sc2 + 2, cy - cmv - 6, 'w₂ = ' + fmtN(t.w2, 1), { c: 'var(--hl)', fw: 800, fs: 11, mono: true });
+  o += TX(cx - 2, by + 32, 'cᵤ₂ = ' + fmtN(t.cu2, 1) + ' m/s · ideal ' + fmtN(t.cu2inf, 1) + ' (punteada)', { a: 'end', fs: 10.5, c: MUT });
+  o += TX(cx - 2, by + 46, 'deslizamiento σ = ' + fmtN(t.slip, 3) + ' (Wiesner) · cₘ₂ ×3', { a: 'end', fs: 10.5, c: MUT });
+  o += TX(210, 222, 'velocidades en m/s', { a: 'middle', fs: 10, c: MUT });
+  $('#svgTri').innerHTML = o.replace(/c_u2/g, 'cᵤ₂');
+  $('#specTri').innerHTML = [['Cabeza teórica de Euler, u₂c<sub>u2</sub>/g', fh(t.Hth) + ' ' + lH()], ['Cabeza real H', fh(R.pw.H(R.op.q1 / R.hi.CQ)) + ' ' + lH()], ['Eficiencia hidráulica η<sub>h</sub>', fmtN(100 * t.etah, 1) + ' %'], ['Ángulo del flujo a la salida β₂', fmtN(t.beta2, 1) + '° (álabe ' + fmtN(t.beta2B, 0) + '°)']].map(function (a) { return '<div>' + a[0] + '</div><div class="v">' + a[1] + '</div>'; }).join('');
+}
+function renderPress() {
+  var pr = R.press, pts = pr.pts, W = 420, H = 330, x0 = 54, x1 = W - 34, y0 = 16, y1 = H - 64;
+  var lo = Math.min(0, pr.pv - 1, Math.min.apply(null, pts.map(function (p) { return p.p; })) - 1), hi = Math.max.apply(null, pts.map(function (p) { return p.p; })) * 1.08;
+  var ax = axes({ x0: x0, x1: x1, y0: y0, y1: y1, xmax: 4, ymin: lo, ymax: hi, xs: 1, ys: US() ? 3.28084 : 1, nx: 4, ny: 5, noXlab: true, ylab: 'p absoluta (' + lH() + ')' });
+  var o = ax.svg, X = ax.X, Y = ax.Y;
+  o += E('rect', { x: x0, y: r1(Y(pr.pv)), width: x1 - x0, height: r1(y1 - Y(pr.pv)), style: 'fill:var(--redline);opacity:.10' });
+  o += LN(x0, Y(pr.pv), x1, Y(pr.pv), 'stroke:var(--redline);stroke-width:1.4;stroke-dasharray:5 4');
+  o += TX(x1 - 4, Y(pr.pv) - 5, 'presión de vapor', { a: 'end', fs: 10, c: 'var(--redline)', fw: 700 });
+  var sm = []; for (var i = 0; i < pts.length - 1; i++) { var a = pts[i], b = pts[i + 1]; for (var k = 0; k < 12; k++) { var tt = k / 12, e = 0.5 - 0.5 * Math.cos(Math.PI * tt); sm.push([X(a.x + (b.x - a.x) * tt), Y(a.p + (b.p - a.p) * e)]); } } sm.push([X(4), Y(pts[pts.length - 1].p)]);
+  o += PATH(poly(sm), 'stroke:var(--hl);stroke-width:2.6');
+  var short = ['succión', 'ojo', 'borde de ataque', 'salida impulsor', 'voluta', 'descarga'];
+  pts.forEach(function (p, i) {
+    var bad = p.p < pr.pv;
+    o += E('circle', { cx: r1(X(p.x)), cy: r1(Y(p.p)), r: 4.5, style: 'fill:' + (bad ? 'var(--redline)' : 'var(--paper)') + ';stroke:' + (bad ? 'var(--redline)' : 'var(--hl)') + ';stroke-width:2' });
+    o += TX(X(p.x), y1 + 16 + (i % 2) * 13, short[i], { a: 'middle', fs: 10, c: MUT });
+    o += TX(X(p.x) + (i === 0 ? 6 : 0), Y(p.p) - 9, fh(p.p), { a: i === 0 ? 'start' : 'middle', fs: 10.5, fw: 700, mono: true });
+  });
+  // NPSH disponible como cota en la succión
+  var ytot = Y(pts[0].p + pr.vs * pr.vs / (2 * G));
+  o += LN(x0 + 30, Y(pr.pv), x0 + 30, ytot, 'stroke:var(--ink);stroke-width:1.4');
+  o += TX(x0 + 34, (Y(pr.pv) + ytot) / 2 + 4, 'NPSHₐ', { fs: 10.5, fw: 800 });
+  $('#svgPress').innerHTML = o;
+  var mn = pts[2].p - pr.pv;
+  $('#pressNote').innerHTML = 'El mínimo está en el borde de ataque del álabe: ' + (mn < 0 ? '<b style="color:var(--redline)">' + fh(-mn) + ' ' + lH() + ' bajo la presión de vapor</b>, ahí nacen las burbujas, que colapsan cuando la presión se recupera hacia la salida del impulsor.' : fh(mn) + ' ' + lH() + ' sobre la presión de vapor: sin burbujas.') + ' Entre succión y descarga la bomba suma H = ' + fh(R.op.h1) + ' ' + lH() + '.';
+}
+function renderWarn() {
+  var w = R.warn, nc = w.filter(function (x) { return x.sev === 'c'; }).length, nw = w.filter(function (x) { return x.sev === 'w'; }).length;
+  $('#diagCount').innerHTML = nc ? '<span class="pill c">' + nc + ' crítico' + (nc > 1 ? 's' : '') + '</span>' : (nw ? '<span class="pill w">' + nw + ' aviso' + (nw > 1 ? 's' : '') + '</span>' : '<span class="pill ok">en orden</span>');
+  $('#warnings').innerHTML = w.map(function (x) { return '<div class="warn ' + (x.sev === 'c' ? 'c' : (x.sev === 'ok' ? 'ok' : '')) + '"><i>' + (x.sev === 'ok' ? '✓' : '!') + '</i><div>' + esc(x.t) + '</div></div>'; }).join('');
+}
+
+/* ---------- 2 · carta ---------- */
+var CH = null;
+function chartFamily(r) {
+  var Ds = []; for (var i = 0; i < 5; i++) Ds.push(r.Dmin + (r.Dmax - r.Dmin) * i / 4);
+  return Ds.map(function (Dd) { var pw = pumpW(r.N, Dd, r.cas); return { D: Dd, pf: pumpF(pw, r.P, hiCorr(pw, r.P.nu * 1e6)) }; });
+}
+function renderChart(r) {
+  var s = state, W = 900, x0 = 70, x1 = 820, mainY = [16, 350], npY = [384, 476], pY = [512, 600];
+  var fam = chartFamily(r), big = fam[fam.length - 1].pf, pf = r.pf, sys = r.sys, arr = r.arr, nset = arr === 'paralelo' ? 2 : 1;
+  var Qmax = Math.max(big.qEnd * 1.12 * nset, (r.op ? r.op.Q * 1.12 : 0), sys.Qd * 1.25);
+  var Hmax = Math.max(big.H(0) * (arr === 'serie' ? 2 : 1) * 1.12, sys.H(Qmax * 0.6), 5); Hmax = Math.min(Hmax, Math.max(big.H(0) * (arr === 'serie' ? 2.3 : 1.25), sys.Hst * 1.3 + 5));
+  var ax = axes({ x0: x0, x1: x1, y0: mainY[0], y1: mainY[1], xmax: Qmax, ymin: 0, ymax: Hmax, xs: US() ? 15850.32 : 3600, ys: US() ? 3.28084 : 1, noXlab: true, ylab: 'Cabeza H (' + lH() + ')', clip: 'cmain' });
+  var o = ax.svg, X = ax.X, Y = ax.Y;
+  // islas de eficiencia
+  if (s.isl) {
+    var dens = []; for (var j = 0; j <= 8; j++) { var Dd = r.Dmin + (r.Dmax - r.Dmin) * j / 8, pw2 = pumpW(r.N, Dd, r.cas); dens.push(pumpF(pw2, r.P, hiCorr(pw2, r.P.nu * 1e6))); }
+    var emax = Math.max.apply(null, dens.map(function (q) { return q.eB; })) * 100;
+    var lv = [30, 40, 50, 55, 60, 64, 67, 70, 72, 74, 76, 78].filter(function (L) { return L < emax - 0.4; }).slice(-6);
+    lv.forEach(function (L) {
+      var ok = dens.filter(function (q) { return q.eB * 100 > L + 0.2; }); if (ok.length < 1) return;
+      var side = function (q, left) { if (!left && q.eta(q.qEnd) * 100 > L) return q.qEnd; return bisect(function (Q) { return q.eta(Q) * 100 - L; }, left ? 1e-6 : q.qB, left ? q.qB : q.qEnd, 40); };
+      var pl = [], i2;
+      for (i2 = ok.length - 1; i2 >= 0; i2--) { var ql = side(ok[i2], true); pl.push([X(ql * nset), Y(ok[i2].H(ql) * (arr === 'serie' ? 2 : 1))]); }
+      var bot = ok[0], qa = side(bot, true), qb = side(bot, false); for (i2 = 1; i2 < 10; i2++) { var qq = qa + (qb - qa) * i2 / 10; pl.push([X(qq * nset), Y(bot.H(qq) * (arr === 'serie' ? 2 : 1))]); }
+      for (i2 = 0; i2 < ok.length; i2++) { var qr = side(ok[i2], false); pl.push([X(qr * nset), Y(ok[i2].H(qr) * (arr === 'serie' ? 2 : 1))]); }
+      var top = ok[ok.length - 1], ta = side(top, false), tb = side(top, true); for (i2 = 1; i2 < 10; i2++) { var q3 = ta + (tb - ta) * i2 / 10; pl.push([X(q3 * nset), Y(top.H(q3) * (arr === 'serie' ? 2 : 1))]); }
+      o += E('path', { d: poly(pl) + 'Z', 'clip-path': 'url(#cmain)', style: 'fill:var(--ok);fill-opacity:' + (0.035 + 0.02 * lv.indexOf(L)) + ';stroke:var(--ok);stroke-width:1;stroke-dasharray:3 3' });
+      o += TX(pl[0][0] - 4, pl[0][1] - 4, L + ' %', { a: 'end', fs: 10, c: 'var(--ok)', fw: 700 });
+    });
+  }
+  var setH = function (q, f) { var qq = f.pw ? q / nset : q; return (arr === 'serie' ? 2 : 1) * f.H(qq); };
+  // familia de curvas
+  fam.forEach(function (f) {
+    var pts = samp(function (Q) { return setH(Q, f.pf); }, 0, f.pf.qEnd * nset, 50).map(function (p) { return [X(p[0]), Y(p[1])]; });
+    o += PATH(poly(pts), 'stroke:var(--n500);stroke-width:1.2', 'cmain');
+    var e = pts[pts.length - 1]; o += E('circle', { cx: r1(e[0]), cy: r1(e[1]), r: 2.5, style: 'fill:var(--n500)' });
+    o += TX(e[0] + 5, e[1] + 4, fmtN(f.D * 1000, 0) + ' mm', { fs: 10, c: MUT });
+  });
+  // curva activa con su ventana 70–110 %
+  var cur = samp(function (Q) { return setH(Q, pf); }, 0, pf.qEnd * nset, 70).map(function (p) { return [X(p[0]), Y(p[1])]; });
+  var por = samp(function (Q) { return setH(Q, pf); }, 0.7 * pf.qB * nset, 1.1 * pf.qB * nset, 20).map(function (p) { return [X(p[0]), Y(p[1])]; });
+  o += PATH(poly(por), 'stroke:var(--ok);stroke-width:11;opacity:.25;stroke-linecap:round', 'cmain');
+  o += PATH(poly(cur), 'stroke:var(--ink);stroke-width:2.8', 'cmain');
+  var bq = pf.qB * nset, bh = setH(bq, pf);
+  o += E('path', { d: 'M' + r1(X(bq)) + ' ' + r1(Y(bh) - 7) + 'l7 7l-7 7l-7 -7z', style: 'fill:var(--paper);stroke:var(--ink);stroke-width:2' }) + TX(X(bq) + 10, Y(bh) - 9, 'BEP', { fw: 800, fs: 10.5 });
+  // sistema
+  var sc = samp(function (Q) { return sys.H(Q); }, 0, Qmax, 60).map(function (p) { return [X(p[0]), Y(p[1])]; });
+  o += PATH(poly(sc), 'stroke:var(--hl);stroke-width:2.6', 'cmain');
+  o += TX(X(Qmax) - 6, Y(sys.H(Qmax)) + (Y(sys.H(Qmax)) < mainY[0] + 20 ? 30 : -8), 'sistema', { a: 'end', c: 'var(--hl)', fw: 700 });
+  o += E('rect', { x: r1(X(sys.Qd) - 5), y: r1(Y(sys.H(sys.Qd)) - 5), width: 10, height: 10, style: 'fill:var(--paper);stroke:var(--hl);stroke-width:2' });
+  if (r.op) {
+    var op = r.op, xo = X(op.Q), yo = Y(op.H);
+    var af = samp(function (Q) { return op.H * Math.pow(Q / op.Q, 2); }, 0, Qmax, 40).map(function (p) { return [X(p[0]), Y(p[1])]; });
+    o += PATH(poly(af), 'stroke:var(--ink);stroke-width:1;stroke-dasharray:2 4;opacity:.7', 'cmain');
+    o += LN(xo, yo, xo, mainY[1], 'stroke:var(--hl);stroke-width:1;stroke-dasharray:3 3') + LN(x0, yo, xo, yo, 'stroke:var(--hl);stroke-width:1;stroke-dasharray:3 3');
+    o += E('circle', { cx: r1(xo), cy: r1(yo), r: 7, style: 'fill:var(--hl);stroke:var(--paper);stroke-width:2.5' });
+    o += TX(xo + 12, yo + 20, fq(op.Q) + ' ' + lQ() + ' · ' + fh(op.H) + ' ' + lH() + ' · η ' + fmtN(100 * r.eta, 1) + ' %', { fw: 800, fs: 11.5, c: 'var(--hl)' });
+  }
+  // NPSH
+  var npMax = Math.min(Math.max(pf.npsh3(pf.qEnd) * 1.4, sys.npsha(0) * 1.12, 2), 40);
+  var an = axes({ x0: x0, x1: x1, y0: npY[0], y1: npY[1], xmax: Qmax, ymin: 0, ymax: npMax, xs: US() ? 15850.32 : 3600, ys: US() ? 3.28084 : 1, noXlab: true, ny: 3, ylab: 'NPSH (' + lH() + ')', clip: 'cnp' });
+  o += an.svg;
+  var n3 = samp(function (Q) { return pf.npsh3(Q / nset); }, 0, pf.qEnd * nset, 40).map(function (p) { return [an.X(p[0]), an.Y(p[1])]; });
+  var na = samp(function (Q) { return sys.npsha(Q); }, 0, Qmax, 40).map(function (p) { return [an.X(p[0]), an.Y(p[1])]; });
+  o += PATH(poly(na), 'stroke:var(--ink);stroke-width:2', 'cnp') + PATH(poly(n3), 'stroke:var(--hl);stroke-width:2.4', 'cnp');
+  o += TX(x1 - 6, Math.max(an.Y(sys.npsha(Qmax * 0.95)) - 5, npY[0] + 12), 'NPSHₐ', { a: 'end', fs: 10, fw: 700 }) + TX(an.X(pf.qEnd * nset) + 4, an.Y(pf.npsh3(pf.qEnd)) + 4, 'NPSH3', { fs: 10, fw: 700, c: 'var(--hl)' });
+  // potencia
+  var pmx = Math.max(big.P(big.qEnd) / 1000 * nset, (r.motor || 0) * nset) * 1.15;
+  var ap = axes({ x0: x0, x1: x1, y0: pY[0], y1: pY[1], xmax: Qmax, ymin: 0, ymax: pmx, xs: US() ? 15850.32 : 3600, ys: US() ? 1 / 0.7457 : 1, ny: 3, ylab: 'P (' + lP() + ')', xlab: 'Caudal Q (' + lQ() + ')', clip: 'cp' });
+  o += ap.svg;
+  fam.forEach(function (f) { o += PATH(poly(samp(function (Q) { return nset * f.pf.P(Q / nset) / 1000; }, 0, f.pf.qEnd * nset, 30).map(function (p) { return [ap.X(p[0]), ap.Y(p[1])]; })), 'stroke:var(--n500);stroke-width:1', 'cp'); });
+  o += PATH(poly(samp(function (Q) { return nset * pf.P(Q / nset) / 1000; }, 0, pf.qEnd * nset, 40).map(function (p) { return [ap.X(p[0]), ap.Y(p[1])]; })), 'stroke:var(--ink);stroke-width:2.4', 'cp');
+  if (r.motor) { var ym = ap.Y(r.motor * nset / s.FS); o += LN(x0, ym, x1, ym, 'stroke:var(--warn);stroke-width:1.4;stroke-dasharray:6 4') + TX(x1 - 4, ym - 4, 'motor ' + fmtN(r.motor, r.motor < 10 ? 1 : 0) + ' kW ÷ FS ' + fmtN(s.FS, 2), { a: 'end', fs: 10, c: 'var(--warn)', fw: 700 }); }
+  if (r.op) { o += LN(X(r.op.Q), npY[0], X(r.op.Q), pY[1], 'stroke:var(--hl);stroke-width:1;stroke-dasharray:3 3'); o += E('circle', { cx: r1(an.X(r.op.Q)), cy: r1(an.Y(r.npsh3)), r: 4.5, style: 'fill:var(--hl)' }) + E('circle', { cx: r1(an.X(r.op.Q)), cy: r1(an.Y(r.npsha)), r: 4.5, style: 'fill:var(--ink)' }) + E('circle', { cx: r1(ap.X(r.op.Q)), cy: r1(ap.Y(r.Pshaft)), r: 4.5, style: 'fill:var(--hl)' }); }
+  o += E('g', { id: 'caCur' }, '');
+  $('#svgChart').innerHTML = o;
+  CH = { x0: x0, x1: x1, Qmax: Qmax, Y: Y, an: an, ap: ap, y0: mainY[0], y1: pY[1], r: r, nset: nset };
+  $('#caLbl').textContent = r.cas.name + ' · ' + fmtN(r.N, 0) + ' rpm' + (r.hi.on ? ' · corregida por viscosidad' : '');
+  $('#caLegend').innerHTML = '<span><i style="border-top:2.5px solid var(--ink)"></i>impulsor de ' + fmtN(r.D * 1000, 0) + ' mm</span><span><i style="border-top:1.5px solid var(--n500)"></i>otros diámetros</span><span><i></i>sistema</span><span><i style="border-top:8px solid var(--ok);opacity:.35"></i>70 a 110 % del BEP</span>';
+  var cards = [['BEP del impulsor', fq(pf.qB) + ' ' + lQ(), fh(pf.hB) + ' ' + lH() + ' · η ' + fmtN(100 * pf.eB, 1) + ' %'], ['Cabeza a caudal cero', fh(pf.H(1e-9)) + ' ' + lH(), 'shutoff · ' + fmtN(pf.H(1e-9) / pf.hB, 2) + ' × la del BEP'], ['Fin de la curva publicada', fq(pf.qEnd) + ' ' + lQ(), '130 % del BEP']];
+  $('#caCards').innerHTML = cards.map(function (c) { return '<div><div class="lbl">' + c[0] + '</div><div class="v">' + c[1] + '</div><div class="u">' + c[2] + '</div></div>'; }).join('');
+}
+
+/* ---------- 3 · NPSH ---------- */
+var NP = null;
+function renderNpsh(r) {
+  var pf = r.pf, sys = r.sys, nset = r.arr === 'paralelo' ? 2 : 1, W = 520, H = 330;
+  var Qmax = Math.max(pf.qEnd * nset * 1.1, sys.Qd * 1.2), top = Math.max(sys.npsha(0), pf.npsh3(pf.qEnd) * 1.3) * 1.1, bot = Math.min(0, sys.npsha(Qmax)) - 0.5;
+  var ax = axes({ x0: 52, x1: W - 14, y0: 14, y1: H - 46, xmax: Qmax, ymin: bot, ymax: top, xs: US() ? 15850.32 : 3600, ys: US() ? 3.28084 : 1, ylab: 'NPSH (' + lH() + ')', xlab: 'Caudal Q (' + lQ() + ')', clip: 'cn' });
+  var o = ax.svg, X = ax.X, Y = ax.Y;
+  var A = samp(function (Q) { return sys.npsha(Q); }, 0, Qmax, 60), N3 = samp(function (Q) { return pf.npsh3(Q / nset); }, 0, Qmax, 60);
+  var bad = []; A.forEach(function (p, i) { if (p[1] < N3[i][1]) bad.push(i); });
+  if (bad.length) { var a0 = bad[0], a1 = bad[bad.length - 1], poly1 = []; for (var i = a0; i <= a1; i++) poly1.push([X(N3[i][0]), Y(N3[i][1])]); for (i = a1; i >= a0; i--) poly1.push([X(A[i][0]), Y(A[i][1])]); o += E('path', { d: poly(poly1) + 'Z', 'clip-path': 'url(#cn)', style: 'fill:var(--redline);opacity:.18' }); o += TX(X(A[Math.round((a0 + a1) / 2)][0]), Y(top) + 14, 'cavitación', { a: 'middle', c: 'var(--redline)', fw: 800, fs: 11 }); }
+  o += PATH(poly(N3.map(function (p) { return [X(p[0]), Y(p[1] * 1.3)]; })), 'stroke:var(--hl);stroke-width:1.4;stroke-dasharray:5 4', 'cn');
+  o += PATH(poly(N3.map(function (p) { return [X(p[0]), Y(p[1] + state.marg)]; })), 'stroke:var(--warn);stroke-width:1.2;stroke-dasharray:1 3', 'cn');
+  o += PATH(poly(N3.map(function (p) { return [X(p[0]), Y(p[1])]; })), 'stroke:var(--hl);stroke-width:2.6', 'cn');
+  o += PATH(poly(A.map(function (p) { return [X(p[0]), Y(p[1])]; })), 'stroke:var(--ink);stroke-width:2.6', 'cn');
+  o += TX(X(Qmax) - 4, Y(N3[N3.length - 1][1] + state.marg) - 5, 'NPSH3 + margen', { a: 'end', fs: 10, c: 'var(--warn)' });
+  if (r.op) { var xo = X(r.op.Q); o += LN(xo, 14, xo, H - 46, 'stroke:var(--n500);stroke-dasharray:3 3') + E('circle', { cx: r1(xo), cy: r1(Y(r.npsha)), r: 5, style: 'fill:var(--ink)' }) + E('circle', { cx: r1(xo), cy: r1(Y(r.npsh3)), r: 5, style: 'fill:var(--hl)' }) + TX(xo + 8, Y(r.npsha) - 8, 'margen ' + fh(r.margin) + ' ' + lH(), { fw: 800, fs: 11 }); }
+  o += E('g', { id: 'npCur' }, '');
+  $('#svgNpsh').innerHTML = o; NP = { X: X, Y: Y, x0: 52, x1: W - 14, Qmax: Qmax, r: r, nset: nset };
+  // cascada del NPSH disponible
+  var P = r.P, rg = r.rg, Qo = r.op ? r.op.Q : sys.Qd;
+  var terms = [['Presión atmosférica', r.Patm * 1000 / rg], ['Presión del tanque P₁', state.P1 * 1000 / rg], ['Nivel z_s'.replace('_s', 'ₛ'), state.zs], ['Pérdidas de succión', -sys.kS * Qo * Qo], ['Presión de vapor', -P.Pv * 1000 / rg]];
+  var cum = 0, ext = [0]; terms.forEach(function (t) { cum += t[1]; ext.push(cum); });
+  var vmax = Math.max.apply(null, ext) * 1.08, vmin = Math.min(0, Math.min.apply(null, ext)), bx0 = 168, bx1 = 500, rowH = 40, o2 = '';
+  var BX = function (v) { return bx0 + (v - vmin) / (vmax - vmin) * (bx1 - bx0); };
+  cum = 0;
+  terms.forEach(function (t, i) { var a = cum, b = cum + t[1]; cum = b; var y = 14 + i * rowH; o2 += TX(bx0 - 8, y + 22, t[0], { a: 'end', fs: 11 }); o2 += E('rect', { x: r1(Math.min(BX(a), BX(b))), y: y + 8, width: r1(Math.max(1.5, Math.abs(BX(b) - BX(a)))), height: 22, style: 'fill:' + (t[1] >= 0 ? 'var(--accent-300)' : 'var(--redline)') + ';opacity:' + (t[1] >= 0 ? 1 : 0.7) }); o2 += TX(Math.max(BX(a), BX(b)) + 5, y + 23, (t[1] >= 0 ? '+' : '') + fh(t[1]), { fs: 10.5, mono: true, fw: 700 }); });
+  var yN = 14 + terms.length * rowH;
+  o2 += TX(bx0 - 8, yN + 22, 'NPSH disponible', { a: 'end', fs: 11.5, fw: 800 }) + E('rect', { x: r1(BX(Math.min(0, cum))), y: yN + 8, width: r1(Math.abs(BX(cum) - BX(0))), height: 22, style: 'fill:var(--ink)' }) + TX(BX(Math.max(cum, 0)) + 5, yN + 23, fh(cum) + ' ' + lH(), { fs: 11, mono: true, fw: 800 });
+  if (r.op) { var yR = yN + rowH; o2 += TX(bx0 - 8, yR + 22, 'NPSH3 de la bomba', { a: 'end', fs: 11, c: 'var(--hl)', fw: 700 }) + E('rect', { x: r1(BX(0)), y: yR + 8, width: r1(BX(r.npsh3) - BX(0)), height: 22, style: 'fill:var(--hl)' }) + TX(BX(r.npsh3) + 5, yR + 23, fh(r.npsh3) + ' ' + lH(), { fs: 10.5, mono: true, fw: 700, c: 'var(--hl)' }); }
+  o2 += LN(BX(0), 8, BX(0), yN + rowH + 34, 'stroke:var(--ink);stroke-width:1');
+  $('#svgNpshBar').innerHTML = o2;
+  // barrido de temperatura
+  var fl = r.fl, card = $('#npTcard');
+  if (!fl.T || !r.op) { card.style.display = 'none'; return; }
+  card.style.display = 'block';
+  var Ts = [], tmax = null; for (var T = fl.T[0]; T <= fl.T[1] + 1e-9; T += 1) { var pp = fl.props(T, state), na = (r.Patm + state.P1 - pp.Pv) * 1000 / (pp.rho * G) + state.zs - sys.kS * Qo * Qo; Ts.push([T, na]); if (na >= r.npsh3 + state.marg) tmax = T; }
+  var lo = Math.min(Math.min.apply(null, Ts.map(function (p) { return p[1]; })), 0) - 0.5, hi = Math.max(Ts[0][1], r.npsh3 + state.marg) * 1.1;
+  var at = axes({ x0: 60, x1: 880, y0: 14, y1: 250, xmax: fl.T[1], ymin: lo, ymax: hi, xs: 1, ys: US() ? 3.28084 : 1, ylab: 'NPSHₐ (' + lH() + ')', xlab: 'Temperatura de bombeo (°C)', clip: 'ct' });
+  var o3 = at.svg;
+  o3 += PATH(poly(Ts.map(function (p) { return [at.X(p[0]), at.Y(p[1])]; })), 'stroke:var(--ink);stroke-width:2.6', 'ct');
+  o3 += LN(60, at.Y(r.npsh3 + state.marg), 880, at.Y(r.npsh3 + state.marg), 'stroke:var(--warn);stroke-width:1.4;stroke-dasharray:6 4') + TX(876, at.Y(r.npsh3 + state.marg) - 5, 'NPSH3 + margen', { a: 'end', fs: 10.5, c: 'var(--warn)', fw: 700 });
+  o3 += LN(60, at.Y(r.npsh3), 880, at.Y(r.npsh3), 'stroke:var(--hl);stroke-width:1.4') + TX(876, at.Y(r.npsh3) + 13, 'NPSH3', { a: 'end', fs: 10.5, c: 'var(--hl)', fw: 700 });
+  o3 += E('circle', { cx: r1(at.X(r.T)), cy: r1(at.Y(r.npsha)), r: 5.5, style: 'fill:var(--hl);stroke:var(--paper);stroke-width:2' }) + TX(at.X(r.T) + 8, at.Y(r.npsha) - 8, 'actual ' + fmtN(r.T, 0) + ' °C', { fw: 800, fs: 11 });
+  if (tmax != null && tmax < fl.T[1]) o3 += LN(at.X(tmax), 14, at.X(tmax), 250, 'stroke:var(--redline);stroke-width:1.4;stroke-dasharray:3 3') + TX(at.X(tmax) + 5, 28, 'T máx ≈ ' + fmtN(tmax, 0) + ' °C', { fs: 11, fw: 800, c: 'var(--redline)' });
+  $('#svgNpshT').innerHTML = o3;
+  $('#npTnote').textContent = 'Al calentar, la presión de vapor sube y el NPSH disponible cae. ' + (tmax == null ? 'Con esta succión no hay temperatura que cumpla el margen.' : (tmax >= fl.T[1] ? 'En todo el rango de temperatura se cumple el margen exigido.' : 'Con esta succión y este caudal, la temperatura máxima de bombeo con el margen exigido es ≈ ' + fmtN(tmax, 0) + ' °C. La pendiente se agrava en Bogotá, donde la presión atmosférica es menor.'));
+}
+
+/* ---------- 4 · regulación ---------- */
+var REG = null;
+function renderReg() {
+  var r = R, reg = r.regul, g = reg.at, s = state, sys = r.sys, Qd = sys.Qd, arr = r.arr, nset = arr === 'paralelo' ? 2 : 1;
+  var mk = function (N, Dd) { var pw = pumpW(N, Dd, r.cas); return pumpF(pw, r.P, hiCorr(pw, r.P.nu * 1e6)); };
+  var base = mk(s.N0, r.D), Qmax = Math.max(base.qEnd * nset * 1.1, Qd * 1.4);
+  var sH = function (f, Q) { return (arr === 'serie' ? 2 : 1) * f.H(Q / nset); };
+  var Hmax = Math.max(sH(base, 0) * 1.15, sys.H(Qd) * 1.3);
+  var ax = axes({ x0: 56, x1: 506, y0: 14, y1: 312, xmax: Qmax, ymin: 0, ymax: Hmax, xs: US() ? 15850.32 : 3600, ys: US() ? 3.28084 : 1, ylab: 'H (' + lH() + ')', xlab: 'Caudal Q (' + lQ() + ')', clip: 'cr' });
+  var o = ax.svg, X = ax.X, Y = ax.Y, line = function (fn, a, b, st) { return PATH(poly(samp(fn, a, b, 50).map(function (p) { return [X(p[0]), Y(p[1])]; })), st, 'cr'); };
+  o += line(function (Q) { return sys.H(Q); }, 0, Qmax, 'stroke:var(--hl);stroke-width:2.6');
+  o += line(function (Q) { return sH(base, Q); }, 0, base.qEnd * nset, 'stroke:var(--ink);stroke-width:2.4');
+  if (g.thr) { var Kx = (sH(base, Qd) - sys.H(Qd)) / (Qd * Qd); o += line(function (Q) { return sys.H(Q) + Kx * Q * Q; }, 0, Qmax, 'stroke:var(--redline);stroke-width:1.6;stroke-dasharray:6 4'); }
+  if (g.vfd) { var fv = mk(s.N0 * g.vfd.n, r.D); o += line(function (Q) { return sH(fv, Q); }, 0, fv.qEnd * nset, 'stroke:var(--ok);stroke-width:2;stroke-dasharray:6 4'); }
+  if (g.trim) { var ft = mk(s.N0, g.trim.D); o += line(function (Q) { return sH(ft, Q); }, 0, ft.qEnd * nset, 'stroke:var(--warn);stroke-width:2;stroke-dasharray:2 3'); }
+  o += LN(X(Qd), 14, X(Qd), 312, 'stroke:var(--n500);stroke-dasharray:3 3');
+  if (g.thr) o += E('circle', { cx: r1(X(Qd)), cy: r1(Y(sH(base, Qd))), r: 5, style: 'fill:var(--redline)' });
+  o += E('circle', { cx: r1(X(Qd)), cy: r1(Y(sys.H(Qd))), r: 5.5, style: 'fill:var(--hl);stroke:var(--paper);stroke-width:2' });
+  o += TX(X(Qd) + 6, 30, 'Q requerido', { fs: 10.5, fw: 700 });
+  $('#svgReg').innerHTML = o;
+  // potencia vs caudal requerido
+  var pts = reg.pts, pmx = 0; pts.forEach(function (p) { ['thr', 'vfd', 'trim'].forEach(function (k) { if (p[k]) pmx = Math.max(pmx, p[k].P); }); });
+  var a2 = axes({ x0: 56, x1: 506, y0: 14, y1: 312, xmax: pts[pts.length - 1].Q * 1.02, ymin: 0, ymax: pmx * 1.15 || 1, xs: US() ? 15850.32 : 3600, ys: US() ? 1 / 0.7457 : 1, ylab: 'P al freno (' + lP() + ')', xlab: 'Caudal requerido (' + lQ() + ')', clip: 'crp' });
+  var o2 = a2.svg, seg = function (k, st) { var arrp = pts.filter(function (p) { return p[k]; }).map(function (p) { return [a2.X(p.Q), a2.Y(p[k].P)]; }); return arrp.length > 1 ? PATH(poly(arrp), st, 'crp') : ''; };
+  o2 += seg('thr', 'stroke:var(--redline);stroke-width:2.6') + seg('trim', 'stroke:var(--warn);stroke-width:2.4;stroke-dasharray:2 3') + seg('vfd', 'stroke:var(--ok);stroke-width:2.6');
+  o2 += LN(a2.X(Qd), 14, a2.X(Qd), 312, 'stroke:var(--n500);stroke-dasharray:3 3');
+  o2 += TX(66, 32, 'válvula', { fs: 11, fw: 800, c: 'var(--redline)' }) + TX(66, 48, 'recorte del impulsor', { fs: 11, fw: 800, c: 'var(--warn)' }) + TX(66, 64, 'variador', { fs: 11, fw: 800, c: 'var(--ok)' });
+  o2 += E('g', { id: 'reCur' }, '');
+  $('#svgRegP').innerHTML = o2; REG = { a: a2, pts: pts };
+  $('#reLead').innerHTML = 'Para entregar ' + fq(Qd) + ' ' + lQ() + ' (el caudal requerido) hay tres caminos: <b>estrangular</b> una válvula y quemar la cabeza que sobra, bajar la <b>velocidad</b> con un variador o <b>recortar</b> el impulsor una vez. La potencia de la izquierda es la que paga cada uno.';
+  var card = function (lab, x, base) { if (!x) return '<div><div class="lbl">' + lab + '</div><div class="v">—</div><div class="u">no alcanza el caudal con esta bomba</div></div>'; var sv = base && base.P ? 1 - x.P / base.P : 0; return '<div><div class="lbl">' + lab + '</div><div class="v">' + fp(x.P) + ' ' + lP() + '</div><div class="u">η ' + fmtN(100 * x.eta, 1) + ' % · ' + fmtN(x.P * 8000, 0) + ' kWh/año' + (sv > 0.005 ? ' · ahorra ' + fmtN(100 * sv, 0) + ' %' : '') + (x.n ? ' · ' + fmtN(100 * x.n, 0) + ' % de velocidad' : '') + (x.D ? ' · D = ' + fmtN(x.D * 1000, 0) + ' mm' : '') + (x.dH ? ' · quema ' + fh(x.dH) + ' ' + lH() : '') + '</div></div>'; };
+  $('#reCards').innerHTML = card('Estrangulando la válvula', g.thr) + card('Con variador', g.vfd, g.thr) + card('Recortando el impulsor', g.trim, g.thr);
+}
+
+/* ---------- 5 · serie y paralelo ---------- */
+function renderSP() {
+  var r = R, pf = r.pf, sys = r.sys, W = 900, Qmax = Math.max(pf.qEnd * 2.1, sys.Qd * 1.3), Hmax = Math.max(pf.H(0) * 2.15, sys.H(Qmax * 0.5));
+  Hmax = Math.min(Hmax, Math.max(pf.H(0) * 2.3, sys.Hst + 5));
+  var ax = axes({ x0: 64, x1: 880, y0: 14, y1: 350, xmax: Qmax, ymin: 0, ymax: Hmax, xs: US() ? 15850.32 : 3600, ys: US() ? 3.28084 : 1, ylab: 'H (' + lH() + ')', xlab: 'Caudal Q (' + lQ() + ')', clip: 'csp' });
+  var o = ax.svg, X = ax.X, Y = ax.Y, ln = function (fn, a, b, st) { return PATH(poly(samp(fn, a, b, 60).map(function (p) { return [X(p[0]), Y(p[1])]; })), st, 'csp'); };
+  o += ln(function (Q) { return sys.H(Q); }, 0, Qmax, 'stroke:var(--ink);stroke-width:2.6');
+  var qz = Math.min(pf.qZero, pf.qEnd * 1.6);
+  o += ln(function (Q) { return pf.H(Q); }, 0, pf.qEnd, 'stroke:var(--hl);stroke-width:2.4') + ln(function (Q) { return pf.H(Q); }, pf.qEnd, qz, 'stroke:var(--hl);stroke-width:1.4;stroke-dasharray:4 4');
+  o += ln(function (Q) { return pf.H(Q / 2); }, 0, pf.qEnd * 2, 'stroke:var(--ok);stroke-width:2.4') + ln(function (Q) { return pf.H(Q / 2); }, pf.qEnd * 2, qz * 2, 'stroke:var(--ok);stroke-width:1.4;stroke-dasharray:4 4');
+  o += ln(function (Q) { return 2 * pf.H(Q); }, 0, pf.qEnd, 'stroke:var(--warn);stroke-width:2.4') + ln(function (Q) { return 2 * pf.H(Q); }, pf.qEnd, qz, 'stroke:var(--warn);stroke-width:1.4;stroke-dasharray:4 4');
+  o += TX(X(pf.qEnd) + 4, Y(pf.H(pf.qEnd)) - 6, 'fin de curva', { fs: 10, c: MUT });
+  var colA = { una: 'var(--hl)', paralelo: 'var(--ok)', serie: 'var(--warn)' }, nm = { una: 'una', paralelo: 'paralelo', serie: 'serie' };
+  r.arrs.forEach(function (a) { if (!a.op) return; var dy = { una: 22, paralelo: -12, serie: -16 }[a.a], lft = a.a === 'serie'; o += E('circle', { cx: r1(X(a.op.Q)), cy: r1(Y(a.op.H)), r: a.a === r.arr ? 7.5 : 5.5, style: 'fill:' + colA[a.a] + ';stroke:var(--paper);stroke-width:2' }) + LN(X(a.op.Q), Y(a.op.H), X(a.op.Q) + (lft ? -8 : 8), Y(a.op.H) + dy + 4, 'stroke:' + colA[a.a] + ';stroke-width:1') + TX(X(a.op.Q) + (lft ? -10 : 10), Y(a.op.H) + dy, nm[a.a] + ' · ' + fq(a.op.Q) + ' ' + lQ() + ' · ' + fh(a.op.H) + ' ' + lH(), { fw: 800, fs: 11, c: colA[a.a], a: lft ? 'end' : null }); });
+  $('#svgSP').innerHTML = o;
+  var rows = r.arrs.map(function (a) {
+    if (!a.op) return '<tr><td>' + ({ una: 'Una bomba', paralelo: 'Dos en paralelo', serie: 'Dos en serie' })[a.a] + '</td><td colspan="6" style="text-align:left">sin punto de operación</td></tr>';
+    var q1 = a.op.q1, n = a.a === 'una' ? 1 : 2, e = pf.eta(q1), Pk = n * pf.P(q1) / 1000, npa = sys.npsha(a.op.Q), mg = npa - pf.npsh3(q1);
+    return '<tr' + (a.a === r.arr ? ' style="background:var(--accent-100)"' : '') + '><td>' + ({ una: 'Una bomba', paralelo: 'Dos en paralelo', serie: 'Dos en serie' })[a.a] + '</td><td>' + fq(a.op.Q) + '</td><td>' + fh(a.op.H) + '</td><td>' + fq(q1) + ' / ' + fh(a.op.h1) + '</td><td>' + fmtN(100 * e, 1) + ' %</td><td>' + fp(Pk) + '</td><td>' + fh(mg) + '</td></tr>';
+  });
+  $('#spTable').innerHTML = '<thead><tr><th>Arreglo</th><th>Q (' + lQ() + ')</th><th>H (' + lH() + ')</th><th>Por bomba Q / H</th><th style="text-transform:none">η</th><th>P total (' + lP() + ')</th><th>Margen NPSH (' + lH() + ')</th></tr></thead><tbody>' + rows.join('') + '</tbody>';
+}
+
+/* ---------- 6 · selección ---------- */
+function renderSel() {
+  var r = R, s = state, pf = r.pf, op = r.op;
+  var ck = function (ok, txt, val) { return '<div class="chk"><i class="' + (ok === true ? 'ok' : (ok === 'w' ? 'w' : 'c')) + '">' + (ok === true ? '✓' : '!') + '</i><div>' + txt + '</div><b>' + (val || '') + '</b></div>'; };
+  var h = '';
+  h += ck(!!op, 'Existe punto de operación: la curva de la bomba corta la del sistema.', op ? fq(op.Q) + ' ' + lQ() : 'no');
+  if (op) {
+    h += ck(r.x >= 0.7 && r.x <= 1.1 ? true : 'w', 'El punto cae en la ventana de 70 a 110 % del caudal del BEP (Lectura 06).', fmtN(100 * r.x, 0) + ' %');
+    h += ck(!r.beyond, 'El punto está dentro de la curva publicada por el fabricante.', fmtN(100 * op.q1 / pf.qEnd, 0) + ' % del final');
+    var mreq = Math.max(s.marg, 0.1 * r.npsh3);
+    h += ck(r.margin >= mreq ? true : (r.margin >= 0 ? 'w' : false), 'NPSH disponible sobre el requerido con margen (≥ ' + fh(mreq) + ' ' + lH() + ').', (r.margin >= 0 ? '+' : '') + fh(r.margin) + ' ' + lH());
+    h += ck(r.motor ? true : false, 'Motor que no se sobrecarga en toda la curva, con factor de servicio ' + fmtN(s.FS, 2) + '.', r.motor ? fmtN(r.motor, r.motor < 10 ? 1 : 0) + ' kW' : '—');
+    h += ck(r.D < 0.96 * r.Dmax ? true : 'w', 'El impulsor deja margen para crecer si aumenta la demanda.', fmtN(100 * r.D / r.Dmax, 0) + ' % del máximo');
+    h += ck(!r.hi.on ? true : (r.hi.valid ? 'w' : false), 'Viscosidad dentro de lo que una centrífuga maneja bien (B ≤ 1 sin corrección, B < 40 con HI 9.6.7).', 'B = ' + fmtN(r.hi.B, 2));
+  }
+  $('#checks').innerHTML = h;
+  var nP = r.nP || 1;
+  $('#specMotor').innerHTML = [['Potencia al freno en el punto', op ? fp(r.Pshaft1) + ' ' + lP() + (nP > 1 ? ' por bomba' : '') : '—'], ['Máxima en la curva publicada', fp(r.PmaxCurve) + ' ' + lP()], ['× factor de servicio ' + fmtN(s.FS, 2), fp(r.PmaxCurve * s.FS) + ' ' + lP()], ['Motor IEC elegido', r.motor ? fmtN(r.motor, r.motor < 10 ? 1 : 0) + ' kW (' + fmtN(r.motor / 0.7457, 1) + ' HP)' : '—'], ['Eficiencia del motor, IE3', fmtN(100 * r.etaM, 1) + ' %'], ['Potencia eléctrica', op ? fp(r.Pelec) + ' ' + lP() : '—'], ['Energía a 8000 h/año', op ? fmtN(r.Pelec * 8000, 0) + ' kWh' : '—']].map(function (a) { return '<div>' + a[0] + '</div><div class="v">' + a[1] + '</div>'; }).join('');
+  // velocidad específica
+  var ns = r.NsUS, pos = clamp((Math.log10(ns) - Math.log10(300)) / (Math.log10(15000) - Math.log10(300)), 0, 1);
+  var cut = function (v) { return 100 * (Math.log10(v) - Math.log10(300)) / (Math.log10(15000) - Math.log10(300)); };
+  $('#nsBar').innerHTML = '<div style="flex:0 0 ' + cut(1000) + '%">radial angosto</div><div style="flex:0 0 ' + (cut(4000) - cut(1000)) + '%">radial</div><div style="flex:0 0 ' + (cut(9000) - cut(4000)) + '%">flujo mixto</div><div>axial</div><span class="mk" style="left:' + (100 * pos) + '%">N<sub>s</sub> = ' + fmtN(ns, 0) + '</span>';
+  $('#nsNote').innerHTML = 'N<sub>s</sub> = N√Q / H<sup>3/4</sup> en el BEP (rpm, GPM, pie) = ' + fmtN(ns, 0) + '; en SI, n<sub>q</sub> = ' + fmtN(r.nq, 1) + ' (rpm, m³/s, m). Un valor bajo indica impulsor radial y angosto: mucha cabeza y poco caudal por etapa.';
+  var hi = r.hi;
+  $('#specHI').innerHTML = [['Viscosidad cinemática ν', fmtN(r.P.nu * 1e6, 1) + ' cSt'], ['Parámetro B', fmtN(hi.B, 2) + (hi.on ? '' : ' · no corrige (B ≤ 1)')], ['C<sub>Q</sub> (caudal)', fmtN(hi.CQ, 3)], ['C<sub>H</sub> en el BEP (cabeza)', fmtN(hi.CHb, 3)], ['C<sub>η</sub> (eficiencia)', fmtN(hi.Ce, 3)], ['BEP con agua', fq(r.pw.qB) + ' ' + lQ() + ' · ' + fh(r.pw.hB) + ' ' + lH() + ' · ' + fmtN(100 * r.pw.eB, 1) + ' %'], ['BEP con el fluido', fq(pf.qB) + ' ' + lQ() + ' · ' + fh(pf.hB) + ' ' + lH() + ' · ' + fmtN(100 * pf.eB, 1) + ' %']].map(function (a) { return '<div>' + a[0] + '</div><div class="v">' + a[1] + '</div>'; }).join('');
+  $('#hiNote').textContent = hi.on ? (hi.valid ? 'Las curvas que ve en la carta ya están corregidas: con este fluido la bomba entrega menos caudal y cabeza, y gasta más potencia.' : 'B supera 40: fuera del rango del método. Use una bomba de desplazamiento positivo.') : 'Con esta viscosidad la curva de agua del fabricante vale sin corregir.';
+  renderEqs();
+}
+var katexReady = false;
+function tex(id, s, disp) { var el = typeof id === 'string' ? document.getElementById(id) : id; if (!el) return; if (window.katex) { try { window.katex.render(s, el, { throwOnError: false, displayMode: !!disp }); return; } catch (e) { } } el.textContent = s; }
+function n2(x, d) { return fmtN(x, d).replace(',', '{,}').replace('−', '-'); }
+function renderEqs() {
+  var r = R, t = r.tri, op = r.op, P = r.P;
+  var items = [
+    ['Ecuación de Euler', op ? 'H_{th}=\\frac{u_2\\,c_{u2}}{g}=\\frac{(' + n2(t.u2, 2) + ')(' + n2(t.cu2, 2) + ')}{9{,}81}=' + n2(t.Hth, 2) + '\\ \\text{m}' : 'H_{th}=\\frac{u_2\\,c_{u2}}{g}', 'Cabeza que el impulsor le daría a un fluido ideal. La real es H = η_h·H_th por las pérdidas hidráulicas.'.replace('η_h', 'ηₕ').replace('H_th', 'Hₜₕ')],
+    ['Deslizamiento (Wiesner)', '\\sigma=1-\\frac{\\sqrt{\\sin\\beta_{2B}}}{z^{0{,}7}}=' + n2(SIGMA, 3) + ',\\quad c_{u2}=\\sigma u_2-\\frac{c_{m2}}{\\tan\\beta_{2B}}', 'Con un número finito de álabes el flujo no sigue exactamente el ángulo del álabe: c_u2 queda por debajo del valor ideal.'.replace('c_u2', 'cᵤ₂')],
+    ['Leyes de afinidad', '\\frac{Q_2}{Q_1}=\\frac{N_2}{N_1},\\quad \\frac{H_2}{H_1}=\\left(\\frac{N_2}{N_1}\\right)^2,\\quad \\frac{P_2}{P_1}=\\left(\\frac{N_2}{N_1}\\right)^3', 'Exactas para cambios de velocidad; para el recorte del impulsor son solo aproximadas (compare las curvas de la carta).'],
+    ['NPSH disponible', '\\text{NPSH}_A=\\frac{P_{atm}+P_1-P_v}{\\rho g}+z_s-h_{f,s}' + (op ? '=' + n2(r.npsha, 2) + '\\ \\text{m}' : ''), 'Debe superar al NPSH3 de la bomba con margen: 0,5 a 1 m o 10 a 25 % (Lectura 06).'],
+    ['Potencia', op ? 'P=\\frac{\\rho g Q H}{\\eta}=\\frac{' + n2(P.rho, 0) + '(9{,}81)(' + n2(op.q1, 5) + ')(' + n2(op.h1, 2) + ')}{' + n2(r.eta, 3) + '}=' + n2(r.Pshaft1, 2) + '\\ \\text{kW}' : 'P=\\frac{\\rho g Q H}{\\eta}', 'Potencia al freno por bomba. La eléctrica divide además por la eficiencia del motor.'],
+    ['Velocidad específica', 'N_s=\\frac{N\\sqrt{Q}}{H^{3/4}}=' + n2(r.NsUS, 0) + '\\quad(\\text{rpm, GPM, pie})', 'Se evalúa en el BEP con el diámetro máximo o el actual; caracteriza la forma del impulsor.'],
+    ['Viscosidad: ANSI/HI 9.6.7', '\\begin{aligned}B&=16{,}5\\,\\frac{\\nu^{0{,}5}H_{BEP}^{0{,}0625}}{Q_{BEP}^{0{,}375}N^{0{,}25}}\\\\C_Q&=2{,}71^{-0{,}165(\\log B)^{3{,}15}},\\quad C_\\eta=B^{-0{,}0547B^{0{,}69}}\\end{aligned}', 'ν en cSt, H en m, Q en m³/h y N en rpm. C_H = 1 − (1 − C_Q)(Q/Q_BEP)^0,75.'.replace(/C_H/g, 'C_H').replace('Q_BEP', 'Qᴮᴱᴾ')],
+    ['Caída por cavitación', '\\frac{\\Delta H}{H}=3\\,\\%\\ \\text{cuando}\\ \\text{NPSH}_A=\\text{NPSH}_3', 'Así se define el NPSH requerido en el ensayo (ANSI/HI 14.6). Las burbujas aparecen antes, hacia 1,2 a 1,5 × NPSH3.']
+  ];
+  $('#eqs').innerHTML = items.map(function (it, i) { return '<div><div class="lbl">' + it[0] + '</div><div class="f" id="eq' + i + '"></div><div class="n2">' + esc(it[2]) + '</div></div>'; }).join('');
+  items.forEach(function (it, i) { tex('eq' + i, it[1], true); });
+  $('#assump').innerHTML = '<b>Cómo está hecha la bomba.</b> Es una bomba radial de una etapa construida con la ecuación de Euler y el deslizamiento de Wiesner (6 álabes, β₂ = 27°), con pérdidas por fricción, por choque a la entrada fuera del caudal de diseño, fugas por los anillos, fricción de disco, pérdidas mecánicas y recirculación a carga parcial. Está calibrada para comportarse como una bomba comercial: η máxima de 70 a 76 %, cabeza a caudal cero de 1,1 a 1,2 veces la del BEP y potencia a caudal cero cercana al 45 % de la del BEP. Las tres carcasas son geométricamente semejantes (Q ∝ D³, H ∝ D²). '
+    + 'El NPSH3 sale de la velocidad en el ojo y de la velocidad relativa en el borde de ataque (forma de Gülich) y crece con N². La corrección por viscosidad es la de ANSI/HI 9.6.7. Los motores son tamaños IEC con eficiencia IE3 de referencia (IEC 60034-30-1). '
+    + 'Es un modelo didáctico: para un diseño real use las curvas del fabricante, como en el Taller 4. Propiedades de los fluidos: las del Explorador de Bernoulli.';
+}
+
+/* ---------- 7 · configuraciones del curso ---------- */
+/* nombre del fluido en minúscula inicial (sin tocar siglas como ISO VG) y su temperatura recortada al rango de datos */
+function fluName(st) {
+  var fl = byId(FLUIDS, st.fluid);
+  if (fl.custom === 'all') return 'fluido personalizado';
+  return fl.name.charAt(0).toLowerCase() + fl.name.slice(1) + (fl.T ? ' a ' + fmtN(clamp(st.T, fl.T[0], fl.T[1]), 0) + '\u00a0°C' : '');
+}
+function fhs(m) { return fmtN(uH(m), 2).replace(/,?0+$/, ''); } // alturas de las tarjetas sin ceros sobrantes
+var NB = '\u00a0', ARR_TXT = { una: 'una bomba', paralelo: 'dos en paralelo', serie: 'dos en serie' };
+function cfgResult(r) {
+  var sev = r.warn.some(function (w) { return w.sev === 'c'; }) ? ' · no viable' : (r.warn.some(function (w) { return w.sev === 'w'; }) ? ' · con avisos' : ' · selección sana');
+  if (!r.op) return 'sin punto de operación' + sev;
+  return 'Q = ' + fq(r.op.Q) + NB + lQ() + ' a ' + fh(r.op.H) + NB + lH() + ' · ' + fmtN(100 * r.x, 0) + NB + '% del BEP · ' + fp(r.Pshaft) + NB + lP() + ' · margen de NPSH ' + (r.margin >= 0 ? '+' : '') + fh(r.margin) + NB + lH() + sev;
+}
+/* número y unidad en la misma línea */
+function nbU(t) { return t.replace(/(\d) (?=(%|°C|°|µm|mm|m³\/h|m³|m²|m\/s|m|rpm|kW|W\/m²K|W|kPa|kg\/m³|g\/cm³|cSt|min|s|h⁻¹|L|mPa·s|Pa·s|vvm)(?![\p{L}\d]))/gu, '$1 '); }
+function renderConfigs() {
+  var s = state;
+  $('#cfLead').innerHTML = 'Cada tarjeta es un sistema completo: la bomba, los niveles, las presiones y las pérdidas de la línea. Su etiqueta dice de dónde salen los números. Al cargar una se conservan las unidades y las opciones de vista. '
+    + 'Las que nacen de un fluido concreto lo fijan y lo dicen; las demás se calculan con el que tiene escogido (<b>' + esc(fluName(s)) + '</b>), aunque su descripción da los números con agua. Después la sigue cambiando pieza por pieza en los controles.';
+  $('#cfgCards').innerHTML = CONFIGS.map(function (c) {
+    var st = cfgState(c.id, s), r = compute(st, true), on = s.cfg === c.id, cas = byId(CASINGS, st.casing), Qd = Math.pow(10, st.lQd) / 3600, fixed = (c.fix || []).indexOf('fluid') >= 0;
+    var facts = [
+      ['Bomba', cas.name + ' a ' + fmtN(st.N0, 0) + NB + 'rpm' + (st.vfd !== 100 ? ' (variador al ' + fmtN(st.vfd, 0) + NB + '%)' : '') + ' · impulsor de ' + fmtN(st.D, 0) + NB + 'mm · ' + ARR_TXT[st.arr]],
+      ['Sistema', fq(Qd) + NB + lQ() + ' · niveles de succión ' + fhs(st.zs) + ' y de descarga ' + fhs(st.zd) + NB + lH() + (st.P1 ? ' · tanque a ' + fmtN(st.P1, 0) + NB + 'kPa' : '') + (st.P2 ? ' · destino a ' + fmtN(st.P2, 0) + NB + 'kPa' : '')],
+      ['Pérdidas', 'succión ' + fhs(st.hfs) + ' y descarga ' + fhs(st.hfd) + NB + lH() + (st.hv ? ' · válvula ' + fhs(st.hv) + NB + lH() : '') + ' a ' + fq(Qd) + NB + lQ()],
+      ['Fluido', fixed ? fluName(st) + ' (' + c.fluNote + ')' : 'el suyo, ' + fluName(st)]];
+    return '<div class="cfg' + (on ? ' on' : '') + '"><div class="cb"><div class="ct"><h3>' + esc(c.name) + '</h3><span class="src">' + esc(c.src) + '</span></div><p>' + nbU(esc(c.desc)) + '</p>'
+      + '<dl class="facts">' + facts.map(function (q) { return '<dt>' + q[0] + '</dt><dd>' + esc(q[1]) + '</dd>'; }).join('') + '</dl>'
+      + '<div class="res"><span>Con ' + esc(fluName(st)) + ':</span> ' + cfgResult(r) + '</div>' + (c.note ? '<div class="note">' + nbU(esc(c.note)) + '</div>' : '')
+      + '<button type="button" data-cfg="' + c.id + '"' + (on && !s.cfgMod ? ' disabled' : '') + '>' + (on ? (s.cfgMod ? 'Volver a cargarla sin sus cambios' : 'Es la que está en pantalla') : 'Cargar esta configuración') + '</button></div></div>';
+  }).join('');
+  $('#cfgIdeas').innerHTML = [
+    '<b>Bomba (01):</b> baje la velocidad con el variador y siga en la carta (pestaña 2) cómo el punto baja por la curva del sistema; la potencia al freno cae mucho más rápido que el caudal.',
+    '<b>Bomba (01):</b> escoja «Dos en paralelo» y luego «Dos en serie»; la pestaña 5 muestra cuánto gana cada arreglo con este sistema.',
+    '<b>Fluido (02):</b> caliente el líquido y mire en la pestaña 3 cómo la presión de vapor se come el NPSH disponible; en Bogotá el agua cerca de 95\u00a0°C ya hace cavitar la bomba.',
+    '<b>Sistema (03):</b> lleve el nivel de succión por debajo del eje (z<sub>s</sub> negativo); sube la cabeza estática, cae el caudal y el margen de NPSH se estrecha.',
+    '<b>Sitio (04):</b> cambie la altitud a 0\u00a0msnm y compare el NPSH disponible al nivel del mar con el de Bogotá.'
+  ].map(function (t) { return '<li>' + t + '</li>'; }).join('');
+}
+
+/* ---------- lectura con el cursor ---------- */
+function svgPt(svg, e) { var b = svg.getBoundingClientRect(), vb = svg.viewBox.baseVal; return { x: (e.clientX - b.left) / b.width * vb.width, y: (e.clientY - b.top) / b.height * vb.height }; }
+function hoverSetup() {
+  $('#svgChart').addEventListener('mousemove', function (e) {
+    if (!CH) return; var p = svgPt(this, e); if (p.x < CH.x0 || p.x > CH.x1) return;
+    var Q = (p.x - CH.x0) / (CH.x1 - CH.x0) * CH.Qmax, r = CH.r, n = CH.nset, q1 = Q / n, H = (r.arr === 'serie' ? 2 : 1) * r.pf.H(q1);
+    $('#caCur').innerHTML = LN(p.x, CH.y0, p.x, CH.y1, 'stroke:var(--ink);stroke-width:.8;opacity:.5') + E('circle', { cx: r1(p.x), cy: r1(CH.Y(H)), r: 4, style: 'fill:var(--ink)' });
+    $('#caRead').textContent = 'Q = ' + fq(Q) + ' ' + lQ() + ' · bomba ' + fh(H) + ' ' + lH() + ' · η ' + fmtN(100 * r.pf.eta(q1), 1) + ' % · NPSH3 ' + fh(r.pf.npsh3(q1)) + ' ' + lH() + ' · P ' + fp(n * r.pf.P(q1) / 1000) + ' ' + lP() + ' · sistema ' + fh(r.sys.H(Q)) + ' ' + lH();
+  });
+  $('#svgNpsh').addEventListener('mousemove', function (e) {
+    if (!NP) return; var p = svgPt(this, e); if (p.x < NP.x0 || p.x > NP.x1) return;
+    var Q = (p.x - NP.x0) / (NP.x1 - NP.x0) * NP.Qmax, a = NP.r.sys.npsha(Q), n3 = NP.r.pf.npsh3(Q / NP.nset);
+    $('#npCur').innerHTML = LN(p.x, 14, p.x, 284, 'stroke:var(--ink);stroke-width:.8;opacity:.5');
+    $('#npRead').textContent = 'Q = ' + fq(Q) + ' ' + lQ() + ' · NPSHa ' + fh(a) + ' · NPSH3 ' + fh(n3) + ' · margen ' + fh(a - n3) + ' ' + lH();
+  });
+  $('#svgRegP').addEventListener('mousemove', function (e) {
+    if (!REG) return; var p = svgPt(this, e), a = REG.a, pts = REG.pts, Q = (p.x - 56) / (506 - 56) * pts[pts.length - 1].Q * 1.02, best = pts[0];
+    pts.forEach(function (q) { if (Math.abs(q.Q - Q) < Math.abs(best.Q - Q)) best = q; });
+    var f = function (x) { return x ? fp(x.P) + ' ' + lP() : '—'; };
+    $('#reCur').innerHTML = LN(a.X(best.Q), 14, a.X(best.Q), 312, 'stroke:var(--ink);stroke-width:.8;opacity:.5');
+    $('#reRead').textContent = 'Q = ' + fq(best.Q) + ' ' + lQ() + ' · válvula ' + f(best.thr) + ' · recorte ' + f(best.trim) + ' · variador ' + f(best.vfd);
+  });
+}
+
+/* ---------- inicio ---------- */
+function init() {
+  buildControls();
+  pscene = new PumpScene($('#pumpCv'));
+  pfig = typeof PumpFig === 'function' ? new PumpFig($('#pbFig')) : null;
+  setTab(tab);
+  update(true);
+  pscene.resize(); pscene.configure(R);
+  window.addEventListener('resize', function () { pscene.resize(); fitTop(); });
+  fitTop(); if (window.ResizeObserver) new ResizeObserver(fitTop).observe($('#top'));
+  requestAnimationFrame(animLoop);
+}
+function fitTop() { document.documentElement.style.setProperty('--top-h', $('#top').offsetHeight + 'px'); }
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init); else init();
+</script>
+</body>
+</html>
